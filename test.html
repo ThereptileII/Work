@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dimensionering av Avfallsutrymme</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 20px;
+        }
+
+        header, footer {
+            background-color: #1b4f91;
+            color: white;
+            padding: 10px;
+            text-align: center;
+        }
+
+        header a, footer a {
+            color: white;
+            text-decoration: none;
+            margin: 0 10px;
+        }
+
+        h1 {
+            color: #1b4f91;
+            font-size: 1.8rem;
+        }
+
+        .form-container {
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            max-width: 1000px;
+            margin: auto;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .form-control {
+            margin-bottom: 20px;
+        }
+
+        label {
+            font-weight: bold;
+        }
+
+        input, select {
+            width: 100%;
+            padding: 10px;
+            margin-top: 5px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+
+        button {
+            background-color: #1b4f91;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+            border-radius: 4px;
+        }
+
+        button:hover {
+            background-color: #163a6d;
+        }
+
+        .error-message {
+            color: red;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        .results {
+            background-color: #ecf0f1;
+            padding: 20px;
+            border-radius: 5px;
+            margin-top: 20px;
+        }
+
+        canvas {
+            border: 1px solid #ddd;
+            margin-top: 20px;
+        }
+
+        .tooltip {
+            position: absolute;
+            display: none;
+            background-color: white;
+            color: black;
+            border: 1px solid black;
+            padding: 5px;
+            border-radius: 3px;
+            font-size: 12px;
+            pointer-events: none;
+            z-index: 1000;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+
+        th, td {
+            border: 1px solid #ddd;
+            padding: 10px;
+            text-align: left;
+        }
+
+        th {
+            background-color: #f9f9f9;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <img src="your-logo.png" alt="Company Logo" style="height: 50px;">
+        <nav>
+            <a href="#">Home</a>
+            <a href="#">About Us</a>
+            <a href="#">Contact</a>
+        </nav>
+    </header>
+
+    <h1>Dimensionering av Avfallsutrymme</h1>
+
+    <div class="form-container">
+        <!-- Error message area -->
+        <div id="errorMessage" class="error-message"></div>
+
+        <!-- Type of Business Input -->
+        <div class="form-control">
+            <label for="businessType">Typ av verksamhet:</label>
+            <select id="businessType">
+                <option value="Lägenhet liten">Lägenhet liten</option>
+                <option value="Lägenheter mellan">Lägenheter mellan</option>
+                <option value="Lägenheter stor">Lägenheter stor</option>
+            </select>
+        </div>
+
+        <div class="form-control">
+            <label for="numUnits">Antal hushåll (min. 7 hushåll):</label>
+            <input type="number" id="numUnits" placeholder="Ange antal hushåll" min="7" />
+        </div>
+
+        <!-- Waste Types Input -->
+        <table>
+            <thead>
+                <tr>
+                    <th>Avfallstyp</th>
+                    <th>Tömningsintervall</th>
+                    <th>Kärlstorlek</th>
+                </tr>
+            </thead>
+            <tbody id="wasteTable"></tbody>
+        </table>
+
+        <!-- Calculation Button -->
+        <button onclick="validateAndCalculate()">Beräkna Antal Kärl och Yta</button>
+    </div>
+
+    <div class="results" id="results"></div>
+
+    <!-- Canvas for drawing the layout -->
+    <canvas id="roomCanvas" width="1000" height="500"></canvas>
+    <div class="tooltip" id="tooltip"></div>
+
+    <footer>
+        <p>© 2024 Your Company Name</p>
+    </footer>
+
+    <script>
+        const wasteGeneration = {
+            "Lägenhet liten": { Restavfall: 40, Matavfall: 5, Tidningar: 2.5, Pappersförpackningar: 40, Plastförpackningar: 20, Metallförpackningar: 1.0, Glas: 1.0 },
+            "Lägenheter mellan": { Restavfall: 50, Matavfall: 10, Tidningar: 5, Pappersförpackningar: 50, Plastförpackningar: 30, Metallförpackningar: 2.0, Glas: 2.0 },
+            "Lägenheter stor": { Restavfall: 60, Matavfall: 15, Tidningar: 7.5, Pappersförpackningar: 60, Plastförpackningar: 40, Metallförpackningar: 3.0, Glas: 3.0 }
+        };
+
+        const wasteTypes = {
+            Restavfall: { intervals: ['2 ggr / vecka', 'Varje vecka', 'Varannan vecka'], sizes: [190, 370, 660] },
+            Matavfall: { intervals: ['2 ggr / vecka', 'Varje vecka'], sizes: [140] },
+            Tidningar: { intervals: ['var 8 vecka', 'var 4 vecka', 'Varannan vecka', 'Varje vecka'], sizes: [190, 370, 660] },
+            Pappersförpackningar: { intervals: ['2 ggr / vecka', 'Varje vecka', 'Varannan vecka'], sizes: [370, 660] },
+            Plastförpackningar: { intervals: ['2 ggr / vecka', 'Varje vecka', 'Varannan vecka'], sizes: [370, 660] },
+            Metallförpackningar: { intervals: ['var 8 vecka', 'var 4 vecka', 'Varannan vecka', 'Varje vecka'], sizes: [190, 370] },
+            Glas: { intervals: ['var 8 vecka', 'var 4 vecka', 'Varannan vecka', 'Varje vecka'], sizes: [190] }
+        };
+
+        const containerDimensions = {
+            '140': { long: 0.55, short: 0.5 },
+            '190': { long: 0.69, short: 0.559 },
+            '240': { long: 0.731, short: 0.58 },
+            '370': { long: 0.811, short: 0.77 },
+            '660': { long: 0.774, short: 1.265 }
+        };
+
+        const intervalColors = {
+            '2 ggr / vecka': '#FF9999',
+            'Varje vecka': '#FFFF99',
+            'Varannan vecka': '#99FF99',
+            'var 4 vecka': '#99CCFF',
+            'var 8 vecka': '#FF99FF'
+        };
+
+        // Error message element
+        const errorMessage = document.getElementById('errorMessage');
+
+        // Validation and calculation function
+        function validateAndCalculate() {
+            const numUnits = parseFloat(document.getElementById('numUnits').value);
+
+            // Check if the number of units is less than 7
+            if (isNaN(numUnits) || numUnits < 7) {
+                errorMessage.innerHTML = "Antal hushåll måste vara minst 7. För färre hushåll används 4-fackstunnor.";
+                return; // Stop further execution
+            }
+
+            // Clear error message if input is valid
+            errorMessage.innerHTML = "";
+
+            // Proceed with the container calculation if valid
+            calculateContainers();
+        }
+
+        // Generate waste type table dynamically
+        const wasteTable = document.getElementById('wasteTable');
+        Object.keys(wasteTypes).forEach(wasteType => {
+            const row = document.createElement('tr');
+            row.innerHTML = `
+                <td>${wasteType.replace('_', ' ')}</td>
+                <td>
+                    <select id="${wasteType}_interval">
+                        ${wasteTypes[wasteType].intervals.map(i => `<option value="${i}">${i}</option>`).join('')}
+                    </select>
+                </td>
+                <td>
+                    <select id="${wasteType}_size">
+                        ${wasteTypes[wasteType].sizes.map(s => `<option value="${s}">${s}</option>`).join('')}
+                    </select>
+                </td>
+            `;
+            wasteTable.appendChild(row);
+        });
+
+        function calculateContainers() {
+            const businessType = document.getElementById('businessType').value;
+            const numUnits = parseFloat(document.getElementById('numUnits').value);
+            let containerTable = [];
+            let containerPlacement = [];
+            const canvas = document.getElementById('roomCanvas');
+            const ctx = canvas.getContext('2d');
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            const scaleFactor = 50; // 1 meter = 50px
+
+            let totalRoomSize = 0;
+            let summary = {};
+
+            Object.keys(wasteTypes).forEach(wasteType => {
+                const interval = document.getElementById(`${wasteType}_interval`).value;
+                const size = document.getElementById(`${wasteType}_size`).value;
+                const generationPerUnit = wasteGeneration[businessType][wasteType];
+                let wastePerCollection = (generationPerUnit * numUnits) * (interval.includes('Varannan vecka') ? 2 : interval.includes('2 ggr / vecka') ? 0.5 : 1);
+                const containersNeeded = Math.ceil(wastePerCollection / size);
+
+                const containerDim = containerDimensions[size];
+                const containerWidth = containerDim.short;
+                const containerLength = containerDim.long;
+
+                // Add container details to summary for each waste type
+                if (!summary[wasteType]) {
+                    summary[wasteType] = { interval, containersNeeded, totalSize: 0 };
+                }
+                summary[wasteType].totalSize += containersNeeded * containerWidth * containerLength;
+
+                // Add container to table
+                for (let i = 0; i < containersNeeded; i++) {
+                    containerTable.push({
+                        type: wasteType,
+                        interval: interval,
+                        width: containerWidth,
+                        length: containerLength,
+                        color: intervalColors[interval] || '#FFFFFF'
+                    });
+                }
+            });
+
+            // Split into two rows
+            const half = Math.ceil(containerTable.length / 2);
+            let currentXTop = 10, currentXBottom = 10, topRowY = 10, bottomRowY = 10 + (containerTable[0].width * 2 * scaleFactor);
+
+            containerTable.forEach((container, index) => {
+                const xPos = index < half ? currentXTop : currentXBottom;
+                const yPos = index < half ? topRowY : bottomRowY;
+
+                containerPlacement.push({
+                    x: xPos,
+                    y: yPos,
+                    width: container.width,
+                    length: container.length,
+                    color: container.color,
+                    type: container.type,
+                    interval: container.interval
+                });
+
+                if (index < half) {
+                    currentXTop += (container.length * scaleFactor) + 10;
+                } else {
+                    currentXBottom += (container.length * scaleFactor) + 10;
+                }
+            });
+
+            const totalRoomLength = Math.max(currentXTop, currentXBottom);
+            const totalRoomWidth = bottomRowY + (containerTable[0].width * scaleFactor);
+
+            // Draw containers
+            containerPlacement.forEach(container => {
+                ctx.fillStyle = container.color;
+                ctx.fillRect(container.x, container.y, container.length * scaleFactor, container.width * scaleFactor);
+                ctx.strokeRect(container.x, container.y, container.length * scaleFactor, container.width * scaleFactor);
+            });
+
+            // Draw black box around containers to simulate the room
+            ctx.strokeStyle = '#000000';
+            ctx.lineWidth = 2;
+            ctx.strokeRect(10, 10, totalRoomLength, totalRoomWidth);
+
+            totalRoomSize = totalRoomLength * totalRoomWidth / (scaleFactor * scaleFactor);
+
+            // Display results summary
+            let resultsHTML = '<h3>Resultat</h3>';
+            Object.keys(summary).forEach(wasteType => {
+                resultsHTML += `<p>Kärl ${wasteType}, Hämtning ${summary[wasteType].interval}: ${summary[wasteType].containersNeeded} st, Storlek: ${summary[wasteType].totalSize.toFixed(2)} m²</p>`;
+            });
+            resultsHTML += `<p><strong>Total rumstorlek:</strong> ${totalRoomSize.toFixed(2)} m²</p>`;
+            document.getElementById('results').innerHTML = resultsHTML;
+        }
+    </script>
+
+</body>
+</html>
+
