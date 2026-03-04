@@ -57,7 +57,8 @@ static volatile HeadingRef headingRef = REF_MAG;
 static float hdg_deg_now = 0.0f;       // from 127250
 static float locked_hdg_deg = NAN;     // from 65360 / set at AUTO/TRACK
 static float xte_nm = 0.0f;            // from 129283
-static float dtw_nm = 0.0f;            // (optional) from 129284 if decoded
+static float dtw_nm = 0.0f;            // from 129284 if available
+static float nav_brg_mag_deg = NAN;    // from 129284 if available
 static float cog_mag_deg=0.0f, sog_kn=0.0f;
 static float awa_deg=0.0f, aws_kn=0.0f, stw_kn=0.0f;
 
@@ -370,6 +371,62 @@ struct FPBuf {
 
 static void gf_reset(){ grp={}; grp.active=false; }
 
+
+struct NavFPBuf {
+  bool active=false; uint8_t sa=0xFF, seq=0xFF, total=0, next=0, filled=0;
+  uint8_t buf[96];
+} navfp;
+
+static void navfp_reset(){ navfp={}; navfp.active=false; }
+
+static inline bool n2k_u16_valid(uint16_t v){ return v!=0xFFFF; }
+static inline bool n2k_u32_valid(uint32_t v){ return v!=0xFFFFFFFFUL; }
+
+static void decode_129284_payload(const uint8_t* p, int n){
+  if (!p || n < 5) return;
+
+  // PGN 129284 payload starts with SID(1), then Distance To Waypoint (U32, 0.01 m/bit).
+  uint32_t raw_dtw = (uint32_t)p[1] | ((uint32_t)p[2] << 8) | ((uint32_t)p[3] << 16) | ((uint32_t)p[4] << 24);
+  if (n2k_u32_valid(raw_dtw)){
+    dtw_nm = ((float)raw_dtw * 0.01f) / 1852.0f;
+  }
+
+  // Later in the payload are bearings in radians*1e-4 (U16):
+  // Origin->Destination at offsets 12..13, Position->Destination at 14..15.
+  // Prefer Position->Destination when available.
+  float brg_candidate = NAN;
+  if (n >= 16){
+    uint16_t brg_pos_raw = (uint16_t)p[14] | ((uint16_t)p[15] << 8);
+    if (n2k_u16_valid(brg_pos_raw)) brg_candidate = (float)brg_pos_raw * 0.0001f * 180.0f / (float)M_PI;
+  }
+  if (!isfinite(brg_candidate) && n >= 14){
+    uint16_t brg_org_raw = (uint16_t)p[12] | ((uint16_t)p[13] << 8);
+    if (n2k_u16_valid(brg_org_raw)) brg_candidate = (float)brg_org_raw * 0.0001f * 180.0f / (float)M_PI;
+  }
+  if (isfinite(brg_candidate)){
+    while (brg_candidate < 0.0f) brg_candidate += 360.0f;
+    while (brg_candidate >= 360.0f) brg_candidate -= 360.0f;
+    if (headingRef == REF_MAG) nav_brg_mag_deg = brg_candidate;
+  }
+}
+
+static void feed_129284(uint8_t sa, const uint8_t* d, int n){
+  if (!d || n < 2) return;
+  uint8_t fi=d[0]&0x1F, seq=(d[0]>>5)&0x07;
+  if (fi==0){
+    navfp_reset(); navfp.active=true; navfp.sa=sa; navfp.seq=seq; navfp.next=1; navfp.filled=0;
+    navfp.total=d[1]; if (navfp.total>sizeof(navfp.buf)) { navfp_reset(); return; }
+    int take=min(6,(int)navfp.total); memcpy(navfp.buf,d+2,take); navfp.filled=take;
+    decode_129284_payload(navfp.buf, navfp.filled);
+    if (navfp.filled>=navfp.total) navfp_reset();
+  }else if (navfp.active && navfp.sa==sa && navfp.seq==seq && fi==navfp.next){
+    navfp.next++; int remain=(int)navfp.total-(int)navfp.filled; int take=min(7,remain);
+    memcpy(navfp.buf+navfp.filled,d+1,take); navfp.filled+=take;
+    decode_129284_payload(navfp.buf, navfp.filled);
+    if (navfp.filled>=navfp.total) navfp_reset();
+  }else navfp_reset();
+}
+
 static void handle_126208_request(uint32_t target){
   switch(target){
     case 65379: { uint8_t p[8]; memset(p,0xFF,8); n2k_send_single(65379,p,8,3);} return;
@@ -410,6 +467,7 @@ static bool apply_rm_selector_or_button(const uint8_t* b, int n){
         if (nm==PM_TRACK){ st_press(ST_CODE_AUTO); locked_hdg_deg=hdg_deg_now; } // accept track
 
         send_65379_mode(currentMode);
+        send_127237((SteeringMode)currentMode, headingRef, isnan(locked_hdg_deg)?hdg_deg_now:locked_hdg_deg);
       }
       did=true;
     }
@@ -438,7 +496,8 @@ static void handle_126208_full(const uint8_t* b, int n){
   uint8_t func = b[0];
   uint32_t target = (uint32_t)b[1] | ((uint32_t)b[2]<<8) | ((uint32_t)b[3]<<16);
 
-  if (func==0x01){ handle_126208_request(target); return; }
+  // Group Function code 0=request, 1=command, 2=acknowledge.
+  if (func==0x00){ handle_126208_request(target); return; }
 
   if (target==PGN_RM_PILOT_MODE || target==PGN_RM_LOCKED_HEADING){
     bool acted = apply_rm_selector_or_button(b+4, n-4);
@@ -467,10 +526,24 @@ static void feed_126208(uint8_t sa, const uint8_t* d, int n){
     if (grp.filled>=grp.total){ handle_126208_full(grp.buf,grp.total); gf_reset(); }
   }else gf_reset();
 }
+
+static bool looks_like_126208_single(const uint8_t* d, int n){
+  if (!d || n < 4 || n > 8) return false;
+
+  // 126208 function code is 0=request, 1=command, 2=acknowledge.
+  if (d[0] > 0x02) return false;
+
+  uint32_t target = (uint32_t)d[1] | ((uint32_t)d[2] << 8) | ((uint32_t)d[3] << 16);
+  return (target != 0);
+}
+
 // Detect single-frame vs fast-packet 126208
 static void handle_126208_entry(uint8_t sa, const uint8_t* d, int n){
   if (n<=0) return;
-  if ((d[0] & 0xE0) >= 0xA0) { // A0..E0.. → single-frame
+
+  // Some MFDs send compact 126208 frames in a single 8-byte CAN frame.
+  // If this does not look like that format, fall back to fast-packet reassembly.
+  if (looks_like_126208_single(d, n)) {
     handle_126208_full(d, n);
   } else {
     feed_126208(sa, d, n);
@@ -540,12 +613,16 @@ void loop(){
         break;
       }
       case PGN_XTE: {
-        if (n>=8){ float meters = 0.0f; memcpy(&meters, b+0, sizeof(float)); xte_nm = meters / 1852.0f; }
+        if (n>=8){
+          // PGN 129283 XTE is signed int32 at 0.01 m/bit.
+          int32_t xte_cm = (int32_t)((uint32_t)b[0] | ((uint32_t)b[1] << 8) | ((uint32_t)b[2] << 16) | ((uint32_t)b[3] << 24));
+          float meters = (float)xte_cm * 0.01f;
+          xte_nm = meters / 1852.0f;
+        }
         break;
       }
       case PGN_NAVDATA: {
-        // Optional: If you want DTW/BRG from 129284, decode here (spec offsets differ by variants).
-        // This sketch keeps DTW=0 and uses locked_hdg/cog/hdg for BRG to build 0x85 reliably.
+        feed_129284((uint8_t)(m.identifier & 0xFF), b, n);
         break;
       }
       case PGN_ROUTE_WP: {
@@ -559,6 +636,8 @@ void loop(){
   // Periodic N2K TX (silent)
   uint32_t now=millis();
   if (now - lastRM > 1000){
+    // Keep proprietary pilot mode/state visible for MFD/OpenCPN consumers.
+    send_65379_mode(currentMode);
     if (currentMode!=PM_STBY && !isnan(locked_hdg_deg)) send_65360_locked_heading(locked_hdg_deg);
     lastRM=now;
   }
@@ -579,7 +658,7 @@ void loop(){
   if (now - lastST > 1000){
     // Use locked heading (AUTO/TRACK) or fall back to COG/HDG for the BRG we report
     float brg = (!isnan(locked_hdg_deg)) ? locked_hdg_deg
-                 : (cog_mag_deg>0 ? cog_mag_deg : hdg_deg_now);
+                 : (isfinite(nav_brg_mag_deg) ? nav_brg_mag_deg : (cog_mag_deg>0 ? cog_mag_deg : hdg_deg_now));
     st_send_nav_0x85(xte_nm, brg, dtw_nm, currentMode==PM_TRACK);
     lastST=now;
   }
