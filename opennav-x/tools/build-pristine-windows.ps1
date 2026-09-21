@@ -7,7 +7,7 @@ $Evidence = Join-Path $Root 'evidence/local'
 New-Item -ItemType Directory -Force $Evidence | Out-Null
 Start-Transcript -Path (Join-Path $Evidence "windows-$Architecture.log")
 function Run([string]$Program, [string[]]$Arguments) {
-    & $Program @Arguments
+    & $Program @Arguments 2>&1 | Tee-Object -FilePath (Join-Path $Evidence 'windows-native-output.log') -Append
     if ($LASTEXITCODE -ne 0) { throw "$Program failed with exit code $LASTEXITCODE" }
 }
 try {
@@ -38,9 +38,10 @@ try {
         '-DOCPN_BUNDLE_TCDATA=OFF', "-DCMAKE_INSTALL_PREFIX=$Install")
     Run cmake @('--build', $Build, '--config', 'Release', '--parallel', '2')
     Run cmake @('--install', $Build, '--config', 'Release')
-    Run ctest @('--test-dir', $Build, '-C', 'Release', '--output-on-failure',
+    Run ctest @('--test-dir', (Join-Path $Build 'test'), '-C', 'Release', '--output-on-failure', '--no-tests=error',
         '--timeout', '90', '--output-junit', (Join-Path $Evidence 'windows-tests.xml'))
     Get-FileHash (Join-Path $Build 'Release/opencpn.exe') -Algorithm SHA256 |
         Format-List | Out-File (Join-Path $Evidence 'windows-executable-sha256.txt')
     Run python @((Join-Path $PSScriptRoot 'verify-upstream.py'))
+    & (Join-Path $PSScriptRoot 'capture-pristine-windows.ps1')
 } finally { Stop-Transcript }

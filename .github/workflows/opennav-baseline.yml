@@ -27,12 +27,18 @@ jobs:
           git clone --depth 1 --branch Release_5.12.4 https://github.com/OpenCPN/OpenCPN.git opennav-x/upstream/OpenCPN
           python3 opennav-x/tools/verify-upstream.py
       - name: Install upstream build dependencies
+        env:
+          DEBIAN_FRONTEND: noninteractive
         run: |
           sudo apt-get update
           sudo apt-get install -y equivs devscripts ninja-build
           sudo mk-build-deps --install --remove --tool='apt-get -y --no-install-recommends' opennav-x/upstream/OpenCPN/ci/control
       - name: Build and test pristine Linux baseline
         run: bash opennav-x/tools/build-pristine-linux.sh
+      - name: Capture isolated Linux development baseline
+        run: |
+          sudo apt-get install -y xvfb xdotool imagemagick
+          bash opennav-x/tools/capture-pristine-linux.sh
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         if: always()
         with:

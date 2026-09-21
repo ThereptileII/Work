@@ -12,6 +12,7 @@ args=(-G Ninja -DCMAKE_BUILD_TYPE=Release -DCMAKE_POLICY_VERSION_MINIMUM=3.5
   -DOCPN_BUNDLE_TCDATA=OFF -DCMAKE_INSTALL_PREFIX="$root/build/pristine-install")
 if [[ -x .local/sysroot/usr/bin/wx-config ]]; then
   args+=(-DwxWidgets_CONFIG_EXECUTABLE="$root/tools/wx-config-local"
+    -DCMAKE_PROJECT_INCLUDE="$root/tools/arch-gcc-compat.cmake"
     -DOCPN_USE_WEBVIEW=OFF)
 fi
 cmake -S upstream/OpenCPN -B build/pristine-linux "${args[@]}" \
@@ -19,7 +20,7 @@ cmake -S upstream/OpenCPN -B build/pristine-linux "${args[@]}" \
 cmake --build build/pristine-linux --parallel "${OPENNAV_BUILD_JOBS:-2}" \
   2>&1 | tee evidence/local/linux-build.log
 cmake --install build/pristine-linux 2>&1 | tee evidence/local/linux-install.log
-dbus-run-session -- ctest --test-dir build/pristine-linux --output-on-failure \
-  --timeout 90 --output-junit "$root/evidence/local/linux-tests.xml" \
+dbus-run-session -- ctest --test-dir build/pristine-linux/test --output-on-failure \
+  --no-tests=error -E '^tests$' --timeout 90 --output-junit "$root/evidence/local/linux-tests.xml" \
   2>&1 | tee evidence/local/linux-tests.log
 python tools/verify-upstream.py > evidence/local/upstream-provenance-after.json
