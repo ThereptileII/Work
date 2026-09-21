@@ -1,0 +1,22 @@
+{
+  "commit": "52d6f8f0f02459b0f05a6028732e619b8d1ec9c7",
+  "run": "https://github.com/ThereptileII/Work/actions/runs/35661170605",
+  "result": "automated gates passed; superseded before acceptance after native visual review",
+  "linux_integrated_tests": 67,
+  "windows_integrated_tests": 57,
+  "portable_contracts_per_platform": 9,
+  "preview_screens": "All ten required preview views rendered correctly; managed AUI pages and native visibility assertions passed.",
+  "remaining_visual_failure": "Live navigation regression captures showed the route summary at the bottom-left over the Navigation button after the initial narrow window expanded. Showing a previously hidden sizer item did not relayout its parent.",
+  "fix": "Relayout the bottom row when the route label changes text or visibility. Add a native narrow-to-wide resize assertion checking actual label/button bounds.",
+  "evidence_artifact_id": 10668280581,
+  "evidence_zip_sha256": "ed7a20f9a9aa299ec58eede17d17244859f0547503881e1790d44a9ad793670f",
+  "superseded_package_artifact_id": 10668490402,
+  "evidence_sha256": {
+    "preview-results.json": "89edbc79089dd278785ccb173c847908dd083f6af834665fbaa456a6b82acc73",
+    "preview-03-route.png": "e3f51e1c64b3e771b849b47997d1f75b14158d7ab285cd1647e112eaca9f3b30",
+    "preview-04-energy.png": "20145aa636fac4789a41ee12c54837ad21d34eca8cd650a9e76aaabfe92f84b7",
+    "preview-05-diagnostics.png": "c2414ba7309d07de439ee08807f49cf8829041d6d9212296410b59ee2c4a3e64",
+    "navigation-02-live.png": "b235e9f0441477b0d3c22d3eecccbebd13192615aa16e6a28b6e84c90643e13f"
+  },
+  "superseded_package_sha256": "1934d240a5fc7faaba9cd2cd4cebe02b1fe049c833f3576ee8bff53d5c99dee2"
+}

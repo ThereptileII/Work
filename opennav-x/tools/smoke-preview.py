@@ -154,6 +154,13 @@ try:
         native_log=(profile/'opencpn.log').read_text(errors='replace')
         assert 'TC_FILE_NOT_FOUND' not in native_log,'Portable resource paths do not resolve'
         assert 'Using portable plugin dir:' in native_log
+        # Exercise the label's hidden-to-visible transition, not just a wide
+        # first launch. This exposed an overlap in the live navigation captures.
+        assert ui.SetWindowPos(handle,None,0,0,960,800,4)
+        time.sleep(.6)
+        ui.size_window(handle)
+        ui.assert_route_summary_layout(handle)
+        report['checks'].append('Bottom route summary lays out after narrow-to-wide resize')
     first=data(lambda d:d['data_mode']=='DEMO' and 'arrival_soc' in d['energy'])
     assert first['route']['source'].startswith('DEMO')
     capture('preview-01-navigation-day')

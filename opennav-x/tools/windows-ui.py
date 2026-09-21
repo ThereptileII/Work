@@ -152,6 +152,16 @@ def assert_preview_page(handle, page):
     assert ChildWindowFromPointEx(handle, point, 1) == child, 'Another pane covers the page'
     return {'page': page, 'native_pixels': dimensions, 'visible_and_uncovered': True}
 
+def assert_route_summary_layout(handle):
+    """A label hidden at narrow startup must rejoin its sizer when expanded."""
+    labels = children(handle)
+    summary = [h for h, text in labels if text == 'Route unavailable' or text.endswith(' NM to destination')]
+    demo = [h for h, text in labels if text == 'Demo']
+    assert len(summary) == len(demo) == 1, 'Route summary or Demo button missing'
+    a, b = W.RECT(), W.RECT()
+    assert GetWindowRect(summary[0], C.byref(a)) and GetWindowRect(demo[0], C.byref(b))
+    assert a.left >= b.right and b.top <= a.top < a.bottom <= b.bottom, 'Route summary overlaps bottom controls'
+
 def capture(handle, path):
     size_window(handle)
     width, height = 1280, 800

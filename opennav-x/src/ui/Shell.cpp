@@ -239,10 +239,16 @@ void Shell::Tick() {
   const auto distance =
       route ? vessel::AssessRoute(*route, now).remaining_distance_nm
             : std::nullopt;
-  route_summary_->SetLabel(
-      distance ? wxString::Format("%.1f NM to destination", *distance)
-               : "Route unavailable");
-  route_summary_->Show(frame_.GetClientSize().x >= frame_.FromDIP(1060));
+  const wxString summary = distance
+      ? wxString::Format("%.1f NM to destination", *distance)
+      : "Route unavailable";
+  const bool show_summary = frame_.GetClientSize().x >= frame_.FromDIP(1060);
+  const bool summary_layout = route_summary_->GetLabel() != summary ||
+                              route_summary_->IsShown() != show_summary;
+  route_summary_->SetLabel(summary);
+  route_summary_->Show(show_summary);
+  if (summary_layout)
+    route_summary_->GetParent()->Layout();
   if (page_ && page_->IsShown())
     page_->Update(current_page_, mode_, state_, now,
                   actions_.build_info ? actions_.build_info()

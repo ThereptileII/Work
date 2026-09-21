@@ -5,7 +5,8 @@ passed at `c5a0fd0`. Developer Preview consumes it through owned Vessel Data
 snapshots; see the presentation section below and current acceptance in status.
 Linux and native MSVC portable tests pass. Explicit Win32 contracts passed at
 `ae5ed81` and `c2535f5`, matching the approved application ABI; earlier portable
-jobs used the generator default. The six contracts include the energy model.
+jobs used the generator default. The current nine-contract suite includes the
+energy core and its Demo-driven snapshot consumer.
 Full integration gates and remaining product work are tracked in
 [project status](status.md).
 
@@ -19,10 +20,11 @@ No Leaf-specific CAN decoding belongs here or in the UI.
 
 OpenCPN `model/include/model/route.h::m_route_length` is total planned route
 length. `routeman.h::GetCurrentRngToActivePoint` is range to the active waypoint.
-Neither is blindly treated as remaining distance to the destination. This
-increment accepts an explicit current remaining-distance sample; a later
-read-only route bridge must calculate it using the actual remaining legs and
-OpenCPN's route geometry. No upstream source is changed for the energy model.
+Neither is blindly treated as remaining distance to the destination. The
+accepted read-only route bridge observes the current active-point range plus
+subsequent stored legs after normal OpenCPN progress, preserving pinned geometry
+and coherence rules. `VesselEnergy` accepts that owned snapshot without retaining
+upstream objects. No upstream source is changed for the energy calculation.
 
 ## Inputs and assumptions
 
@@ -75,10 +77,10 @@ stationary/charging states, missing/stale/uncertain inputs, invalid domains,
 floating-point limits and conservation/monotonicity across a grid of capacities
 and SOCs. Windows MSVC runs the same portable contract.
 
-Remaining before a user-facing energy feature: acquire actual battery SOC and
+Remaining before live vessel energy acceptance: acquire actual battery SOC and
 net discharge with provenance; configure/calibrate usable capacity and reserve;
-integrate remaining route distance; define presentation/uncertainty; build the
-propulsion screen; validate with recorded and live boat data; review Windows UI.
+validate against recorded and live boat data. The preview supplies the first
+advisory presentation with explicit synthetic inputs, as described below.
 The model has no device control path. Its original core acceptance predates the
 preview presentation described below.
 

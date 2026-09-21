@@ -162,8 +162,9 @@ slice only. The release limitations above remain open.
 
 The read-only selected-navigation slice also passed both gates at `bc0af30`;
 see `docs/navigation-data-bridge.md` for native screenshot review and limitations.
-The first advisory energy calculation component is documented in
-`docs/energy-model.md`; no energy values are yet displayed in the shell.
+The first advisory energy calculation component and its subsequent explicit
+Demo presentation are documented in `docs/energy-model.md`. Live battery
+acquisition and capacity/reserve calibration remain unavailable.
 
 The latest complete regression gate is recorded in [project status](status.md),
 including explicit Win32 contracts and the restart-test publication-race fix.
