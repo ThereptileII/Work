@@ -100,9 +100,10 @@ Mode plumbing must account for upstream `--safe_mode` as well as OpenNav's
 `--safe-mode`, reject ambiguous normal flags, preserve command-line profile
 arguments, and wait for successful graceful shutdown before relaunch. Module
 blocking must happen before any new hardware/control objects can be created.
-The independent startup-policy tests do not yet establish runtime behavior.
+The independent startup-policy tests are supplemented by the shared-profile
+runtime cycles recorded below.
 
-## Evidence status — 2026-09-21
+## Initial evidence and investigation history — 2026-09-21
 
 - [Run 35618922901](https://github.com/ThereptileII/Work/actions/runs/35618922901),
   commit `f81d54402edeace7406dcb100bf4291f7d9a4535`: all seven CI jobs passed,
@@ -141,11 +142,12 @@ The independent startup-policy tests do not yet establish runtime behavior.
   upstream REST tests use the same port 8443. A parallel local attempt reached
   the GUI server and failed authentication; its log is retained separately.
 - These subsequent fixes and the expanded same-profile Safe Mode/native process
-  exit assertions require a new same-commit Windows gate before slice acceptance.
+  exit assertions passed the later same-commit gate recorded below.
 - Hosted Linux's Azure kernel has no vcan module; real CAN tests remain unavailable.
 - Real-chart regression, representative plugins, non-default Windows DPI,
-  hardware interaction and installer lifecycle remain release gates. SmartNav,
-  hardware adapters and installer integration have not started.
+  hardware interaction and installer lifecycle remain release gates. The advisory
+  energy calculation core is implemented; hardware adapters and installer
+  integration have not started.
 
 ## First dual-mode slice acceptance
 
@@ -162,3 +164,6 @@ The read-only selected-navigation slice also passed both gates at `bc0af30`;
 see `docs/navigation-data-bridge.md` for native screenshot review and limitations.
 The first advisory energy calculation component is documented in
 `docs/energy-model.md`; no energy values are yet displayed in the shell.
+
+The latest complete regression gate is recorded in [project status](status.md),
+including explicit Win32 contracts and the restart-test publication-race fix.

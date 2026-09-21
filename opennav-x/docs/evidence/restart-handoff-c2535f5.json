@@ -1,0 +1,35 @@
+{
+  "code_commit": "c2535f5aa94e9693f999f65952dda144a3fe6c24",
+  "run": "https://github.com/ThereptileII/Work/actions/runs/35641825356",
+  "native_job": 106472718796,
+  "platform": "Native Windows 2022 MSVC Win32 on x64",
+  "scope": "Test probe completion publication and restart lifecycle",
+  "prior_failure": {
+    "commit": "0cc83305b449c321f653b4d1c884451b713a32bc",
+    "job": 106467527161,
+    "assertion": "Restart arguments were changed",
+    "local_reproduction": "Old test and probe with a 200 ms delay after result-file creation reproduce the assertion."
+  },
+  "change": "Separate startup signal and atomically published result after close; 100 ms delayed write; monitor parent until exit.",
+  "production_restart_changed": false,
+  "full_contracts_passed": 6,
+  "additional_consecutive_lifecycle_passes": 10,
+  "log_evidence": [
+    "2026-09-21T18:58:22.1366634Z ##[group]Run cmake -S opennav-x -B opennav-x/build/contracts -G \"Visual Studio 17 2022\" -A Win32",
+    "2026-09-21T18:58:22.1367413Z \u001b[36;1mcmake -S opennav-x -B opennav-x/build/contracts -G \"Visual Studio 17 2022\" -A Win32\u001b[0m",
+    "2026-09-21T18:58:55.2869955Z 1/6 Test #1: restart_lifecycle_contract .......   Passed    2.23 sec",
+    "2026-09-21T18:58:55.3326893Z 5/6 Test #5: energy_prediction_contract .......   Passed    0.01 sec",
+    "2026-09-21T18:58:55.4024031Z 100% tests passed, 0 tests failed out of 6",
+    "2026-09-21T18:58:57.7807987Z     Test #1: restart_lifecycle_contract .......   Passed    1.99 sec",
+    "2026-09-21T18:58:59.7754271Z     Test #1: restart_lifecycle_contract .......   Passed    1.99 sec",
+    "2026-09-21T18:59:01.7713943Z     Test #1: restart_lifecycle_contract .......   Passed    2.00 sec",
+    "2026-09-21T18:59:03.7640060Z     Test #1: restart_lifecycle_contract .......   Passed    1.99 sec",
+    "2026-09-21T18:59:05.7783261Z     Test #1: restart_lifecycle_contract .......   Passed    2.01 sec",
+    "2026-09-21T18:59:07.7732971Z     Test #1: restart_lifecycle_contract .......   Passed    1.99 sec",
+    "2026-09-21T18:59:09.7665014Z     Test #1: restart_lifecycle_contract .......   Passed    1.99 sec",
+    "2026-09-21T18:59:11.7591537Z     Test #1: restart_lifecycle_contract .......   Passed    1.99 sec",
+    "2026-09-21T18:59:13.7512955Z     Test #1: restart_lifecycle_contract .......   Passed    1.99 sec",
+    "2026-09-21T18:59:15.7447021Z 1/1 Test #1: restart_lifecycle_contract .......   Passed    1.99 sec",
+    "2026-09-21T18:59:15.7454675Z 100% tests passed, 0 tests failed out of 1"
+  ]
+}

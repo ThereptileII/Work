@@ -1,0 +1,80 @@
+{
+  "commit": "c2535f5aa94e9693f999f65952dda144a3fe6c24",
+  "run": "https://github.com/ThereptileII/Work/actions/runs/35641825356",
+  "artifact_id": 10657984607,
+  "artifact_sha256": "b55995ec0dc794b21bce0dc701eab03de9ab8f17ffb0333b665804af00a9cc7b",
+  "executable_sha256": "d9cf1fd0bf2fbf187a22d7d8a58107897a49b5508b4a30fa7874a83ed6548f1d",
+  "review_date": "2026-09-21",
+  "authority": "Native Windows MSVC Win32 on x64, 1280x800, 96 DPI, software rendering",
+  "scope": "Regression review of shell, same-profile modes and selected navigation; energy calculation core tested without UI",
+  "tests": {
+    "windows_integrated": 50,
+    "windows_failures": 0,
+    "linux_integrated": 60,
+    "linux_failures": 0,
+    "portable_each_platform": 6,
+    "additional_restart_repeats_each_platform": 10
+  },
+  "observations": [
+    "No shell clipping or overlap at tested resolution and DPI. Day/dusk/night controls render; real-chart night readability remains unvalidated.",
+    "Missing data uses unavailable dashes, not zero.",
+    "Explicit simulator displays 16.2 kn wind, 8.4 m transducer depth, 6.3 kn SOG and 147 degree COG; paused values show STALE 7s.",
+    "Synthetic NMEA through real OpenCPN input displays 6.3 kn and 147 degrees LIVE; wind/depth remain unavailable.",
+    "Position-only input leaves speed/course STALE 7s. Stopping all input shows Navigation stale and STALE 14s.",
+    "Legacy retains native menus and bundled Dashboard toolbar icon; Safe omits that plugin icon while retaining its saved enabled preference.",
+    "Return from Legacy shows XNav and No vessel input; simulation is not silently resumed.",
+    "Mode-cycle fixture persistence and clean exits pass. Loopback sent 11 RMC and 33 GGA sentences without transport errors."
+  ],
+  "limitations": [
+    "No nautical chart collection or physical devices",
+    "96 DPI only; no 125/150 percent DPI acceptance",
+    "No installer or third-party plugin compatibility acceptance",
+    "Energy core is not connected to UI or live batteries"
+  ],
+  "screenshots": [
+    {
+      "file": "01-xnav-unavailable.png",
+      "sha256": "0eed83ca9b6e2f73060837fc250fee6cd0bccfc23b3d8ecfa2ed649888813226"
+    },
+    {
+      "file": "02-xnav-dusk.png",
+      "sha256": "fdb67da393fa9d49d8331adc1049c8df77a23fab8d74249d4f7acc3ca9b3aeed"
+    },
+    {
+      "file": "03-xnav-night.png",
+      "sha256": "dda9fc1b316c18af81395d46e712051ea6cd34ffaab684df8cdb150563eabd8e"
+    },
+    {
+      "file": "04-xnav-simulation.png",
+      "sha256": "bbceb3777ff087a9daac940088a5d2c292b8d87ce2bfc9384c7e1e68e5c8e01a"
+    },
+    {
+      "file": "05-xnav-stale.png",
+      "sha256": "21e82120a4810982c7ed67d7d212e628fe996ab3e5439d478b735d1f13e0a15b"
+    },
+    {
+      "file": "06-xnav-after-legacy.png",
+      "sha256": "1d9d357295acee4428e37ac9e2e6e5507874b3bdd0dccf8d569df5f1fc39fdb8"
+    },
+    {
+      "file": "11-legacy-after-xnav.png",
+      "sha256": "f2930c32da05daaf7663f0d8202af06c2a50cf77d127c2daca0f2f689cc6b5f6"
+    },
+    {
+      "file": "12-safe-shared-profile.png",
+      "sha256": "295dcd0a369b7e9921d2367da917ef905d2c5b411b02b6fbf7b0bd328c938448"
+    },
+    {
+      "file": "navigation-02-live.png",
+      "sha256": "7eefbe3c41a4f0e9b3d29a002f1e4dc195f8b23e7a268f968275e7e02bf9b87b"
+    },
+    {
+      "file": "navigation-03-position-only-velocity-stale.png",
+      "sha256": "4cfc54bb7c2083d67fb4038a17698dd7c31cc1648e3dc5f7c6cb00903ea9aa77"
+    },
+    {
+      "file": "navigation-04-all-stale.png",
+      "sha256": "1d69e0311396eabb074b68dd21c209bbf254e51bc2dd5f7665db132f9490f06a"
+    }
+  ]
+}

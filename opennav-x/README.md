@@ -19,6 +19,9 @@ The application preserves OpenCPN 5.12.4's supported **32-bit application/plugin
 ABI on 64-bit Windows**, as explicitly approved by the user. Native Windows
 MSVC validation remains mandatory. Windows screenshots govern UI acceptance.
 
+Current accepted increments, tested revisions and remaining release work are in
+[the development status](docs/status.md).
+
 ## Build and evidence
 
 - Exact upstream revision and ABI: [upstream.lock.json](upstream.lock.json).

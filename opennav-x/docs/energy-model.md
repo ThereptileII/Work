@@ -2,10 +2,11 @@
 
 Implemented after the dual-mode Windows gate passed at `c5a0fd0`. This is a
 tested calculation component, not the completed propulsion/energy product screen.
-Linux and native MSVC portable tests pass at `5e1320d`. The Windows contract
-lane is being aligned explicitly to Win32, matching the approved application
-ABI; earlier portable jobs used the generator default. Full integration gates
-remain tracked in the project status.
+Linux and native MSVC portable tests pass. Explicit Win32 contracts passed at
+`ae5ed81` and `c2535f5`, matching the approved application ABI; earlier portable
+jobs used the generator default. The six contracts include the energy model.
+Full integration gates and remaining product work are tracked in
+[project status](status.md).
 
 ## Source inspection and boundary
 

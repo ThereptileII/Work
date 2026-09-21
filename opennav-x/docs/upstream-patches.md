@@ -22,7 +22,7 @@ For each change record:
 
 Do not leave undocumented direct OpenCPN modifications.
 
-## First dual-mode integration (in progress)
+## First dual-mode integration (accepted development slice)
 
 `patches/opencpn-5.12.4-xnav.patch` is applied only to the disposable
 `build/integration-source` worktree. The pinned submodule remains pristine.
@@ -43,9 +43,10 @@ Public plugin API 1.20 does not provide ownership of application startup,
 main-frame chrome or shutdown. Narrow core hooks are necessary; zoom, follow,
 theme, chart, route and configuration behavior reuse the existing implementation.
 All GUI hooks are guarded by OPENNAV_X. No device command logic is added.
-The first native Windows mode-cycle and visual review passed at `f81d544` (see
-baseline.md). Later fixes require a fresh same-commit gate; compilation alone is
-not acceptance.
+The expanded native Windows mode-cycle and visual review passed at `c5a0fd0`
+(see baseline.md), including the shutdown and Safe Mode preference fixes below.
+Selected-navigation integration passed at `bc0af30`. These are development-slice
+gates, not production release acceptance.
 
 ### Shutdown timer guard
 
