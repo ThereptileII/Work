@@ -1,7 +1,9 @@
 # Read-only remaining active-route distance
 
-Status: implemented, platform validation in progress. Do not connect to the
-arrival-SOC product UI until both platform gates and native review are recorded.
+Status: accepted development slice at `954b4505e18e9128dc02e75cf05d0c02bdbad188`.
+Both platform gates and native 1280×800 review passed in
+[run 35648822128](https://github.com/ThereptileII/Work/actions/runs/35648822128).
+Production arrival-SOC UI remains disconnected.
 
 ## Ownership and boundary
 
@@ -26,6 +28,23 @@ the application thread, then use `AssessRoute(snapshot, now)` or
 `RouteDistanceSample(snapshot, now)` at consumption time. Acquisition checks
 current route identity/geometry/active point and can invalidate a previous
 publication. It cannot calculate distance or renew its observation time.
+
+For example, a future consumer acquires and assesses the current publication on
+the application thread before scheduling any work with its owned values:
+
+```cpp
+const auto snapshot = opennav::CurrentRouteProgress();
+if (snapshot) {
+  const auto assessment = opennav::vessel::AssessRoute(
+      *snapshot, opennav::vessel::Clock::now());
+  // Use assessment.remaining_distance_nm only when it has a value.
+  // Preserve snapshot identity, revision and timestamps with derived results.
+}
+```
+
+An asynchronous result must be discarded if its originating route revision or
+active waypoint no longer matches the current publication. Reassessing only
+the age of an old retained snapshot cannot detect a later route edit.
 
 ## Snapshot and units
 
@@ -145,3 +164,21 @@ The model fixture supplies a minimal GUI-friend shim to initialize empty icon
 collections normally created by the real GUI. The model test executable does
 not link the GUI implementation. This keeps normal model destruction valid
 without changing upstream access, ownership or navigation calculations.
+
+## Accepted evidence
+
+All seven portable contracts pass on Linux and native Win32 MSVC, including 28
+route scenarios and the existing energy tests. Each platform also passes ten
+additional restart lifecycle repetitions. Clean integrated builds pass 67
+compiled Linux tests and 57 Windows tests, including seven route/model tests.
+Each application passes all 26 normal-timer route observations, the synthetic
+navigation-input sequence and the shared-profile XNav / Legacy / Safe cycle.
+
+The [native review](evidence/windows-954b450-review.json) records 13 reviewed
+1280×800/96-DPI captures, executable and artifact hashes. The
+[Linux record](evidence/linux-954b450-review.json) records the clean hosted gate.
+[Original native observations](evidence/route-954b450-observations.json) retain
+validity, provenance and times; the matching Linux run agrees on every state,
+route revision, active identity/index and distance. No invalid observation
+contains a distance value. These are synthetic-data development gates; hardware,
+installer, real-chart and broader DPI release acceptance remain open.

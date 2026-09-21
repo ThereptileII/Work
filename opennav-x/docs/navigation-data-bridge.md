@@ -68,7 +68,7 @@ physical sensor provenance and the remaining vessel fields are still pending.
 
 ## Remaining active-route distance
 
-The next read-only consumer uses selected position provenance while observing
+The read-only route observer uses selected position provenance while observing
 normal OpenCPN route progress. Its contract, lifetime/coherence rules and tests
 are documented separately in [route-progress-contract.md](route-progress-contract.md).
 The original navigation subscriber and displayed SOG/COG behavior remain unchanged.

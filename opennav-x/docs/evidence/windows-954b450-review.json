@@ -1,0 +1,99 @@
+{
+  "commit": "954b4505e18e9128dc02e75cf05d0c02bdbad188",
+  "run": "https://github.com/ThereptileII/Work/actions/runs/35648822128",
+  "job_id": 106495818909,
+  "artifact_id": 10661986185,
+  "artifact_sha256": "b23e0a403a54cca875db776ff74df66c365f7279beeb9e536d777adc622c4955",
+  "executable_sha256": "f0e18175a2039d32a4d4af1fc0799338bffd42d0cebac99913013b8b57d98acf",
+  "review_date": "2026-09-21",
+  "authority": "Native Windows MSVC Win32 on x64, 1280x800, 96 DPI, software rendering",
+  "scope": "Read-only route-progress contract, existing shell and shared-profile mode/navigation regressions",
+  "tests": {
+    "windows_integrated": 57,
+    "windows_failures": 0,
+    "portable_contracts": 7,
+    "portable_route_scenarios": 28,
+    "model_bound_route_cases": 7,
+    "normal_timer_route_observations": 26,
+    "additional_restart_repeats": 10
+  },
+  "observations": [
+    "No new shell clipping or overlap at the tested resolution and DPI. Day/dusk/night controls render as before; no route or energy product screen was added.",
+    "Missing values remain unavailable dashes. Explicit simulation displays 16.2 kn wind, 8.4 m depth, 6.3 kn SOG and 147 degree COG; pausing shows STALE 7s.",
+    "Synthetic NMEA displays 6.3 kn and 147 degrees LIVE. Position-only updates leave velocity STALE 7s; stopped input shows Navigation stale and STALE 14s. Wind/depth remain unavailable.",
+    "Route fixture live capture retains existing navigation display. Route input loss shows Navigation stale and STALE 6s; its contract has StalePosition with distance absent.",
+    "Legacy retains native menu/toolbar and bundled Dashboard icon. Safe omits the plugin icon while the mode fixture preserves the saved enabled preference.",
+    "Return to XNav shows No vessel input; explicit simulation is not resumed. Shared profile navigation/configuration fixture checks and clean exits pass.",
+    "All 26 normal-timer observations pass. First/middle/final, actual arrival, skip, reversal, edit, duplicate identity, stale/recovery, deactivation and active deletion retain upstream distance semantics.",
+    "Invalid route observations omit distance. Immediate read after point change, deactivation and active deletion keeps the original observation time. Retained values survive deletion.",
+    "Navigation loopback sent 12 RMC and 34 GGA sentences; route loopback sent 65 of each, with no transport errors."
+  ],
+  "limitations": [
+    "Synthetic routes and navigation input, no nautical chart collection or physical devices",
+    "96 DPI and software rendering only; no 125/150 percent DPI or target-hardware acceptance",
+    "No installer or third-party plugin compatibility acceptance",
+    "Route revisions identify observed changes within a process session, not persistent database revisions",
+    "No production arrival-SOC wiring, autonomous steering or final route UI"
+  ],
+  "evidence_sha256": {
+    "windows-tests.xml": "3c6f06470686d50bfb584ba767f039fc7e043e33369177d9ff07d605eb11acd2",
+    "mode-cycle-results.json": "2ba5d77e90a76b2f0206a0fb4806ca1c9866bb67638854b4ece34c6b1c0c3f74",
+    "navigation-input-results.json": "ab0daf1d00657a5fbb6f157b156a0fa13a6a483efdd328560316c73d7b8cf378",
+    "route-input-results.json": "b4b6167ab6f688dd431787d83c9896fb78da701fdd5a66967b72f1f6ef96d863",
+    "route-progress-results.json": "fc5e469f3f7a3fe57e77b10beda84b66a41dd162a55a4e7e730a22deea265b31"
+  },
+  "screenshots": [
+    {
+      "file": "01-xnav-unavailable.png",
+      "sha256": "142dd28b478a5eab7d29d459809a840303725684d1d75ffad7024d887fd227b7"
+    },
+    {
+      "file": "02-xnav-dusk.png",
+      "sha256": "79c10c86e2dfff61d9020f14a29249faa3f168306a682993ce3cbd9dc5157b34"
+    },
+    {
+      "file": "03-xnav-night.png",
+      "sha256": "4b150c805c17c3e777862ba324a4afd6708eaf7ef41b86f27608534c1f7d4c6d"
+    },
+    {
+      "file": "04-xnav-simulation.png",
+      "sha256": "b36aadfc09170fb2429b7051b84fa55ca3479573f55b7b7355cfc1ee0dfb123d"
+    },
+    {
+      "file": "05-xnav-stale.png",
+      "sha256": "21f4f16dbbb4fb72e5793de9929517405853de0bab237d1d1ac074557dc87bd2"
+    },
+    {
+      "file": "06-xnav-after-legacy.png",
+      "sha256": "d32787bdb506b294790402c4ad29fdb413a22439a961983229ce4d7a7af7ea0b"
+    },
+    {
+      "file": "11-legacy-after-xnav.png",
+      "sha256": "f2930c32da05daaf7663f0d8202af06c2a50cf77d127c2daca0f2f689cc6b5f6"
+    },
+    {
+      "file": "12-safe-shared-profile.png",
+      "sha256": "295dcd0a369b7e9921d2367da917ef905d2c5b411b02b6fbf7b0bd328c938448"
+    },
+    {
+      "file": "navigation-02-live.png",
+      "sha256": "fa860b0859b079dcc71b23ca22ec413924a6f6a5c46f40c00791041dcfe07544"
+    },
+    {
+      "file": "navigation-03-position-only-velocity-stale.png",
+      "sha256": "e1ec08cd870cb9ea8e3fa92cb57d2cd83b65150d62e928fbf6f69f103a39832c"
+    },
+    {
+      "file": "navigation-04-all-stale.png",
+      "sha256": "16ab1546a8b6efdc14b0798513ed4a90890c41ecf647530b3633dd57d0db4b8c"
+    },
+    {
+      "file": "route-01-active-route.png",
+      "sha256": "fa860b0859b079dcc71b23ca22ec413924a6f6a5c46f40c00791041dcfe07544"
+    },
+    {
+      "file": "route-02-stale-position.png",
+      "sha256": "72b50ed2d28b6b2d7a507b0f08eef00e3b25ad8de6c5969c4204d719982b31ae"
+    }
+  ]
+}

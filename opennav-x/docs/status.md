@@ -6,9 +6,9 @@ The approved Windows target preserves its Win32 application/plugin ABI on a
 native Windows x64 host. The tracked upstream submodule remains pristine;
 reviewed patches apply to a disposable integration worktree.
 
-The remaining active-route distance slice is implemented and undergoing both
-platform gates; see [its contract](route-progress-contract.md). No arrival-SOC
-product UI has been connected.
+The read-only remaining active-route distance slice has passed both platform
+gates and native screenshot review; see [its contract](route-progress-contract.md).
+No arrival-SOC product UI has been connected.
 
 ## Accepted development increments
 
@@ -18,6 +18,7 @@ product UI has been connected.
 | XNav / Legacy / Safe | Controlled restart, shared configuration/navigation database, Safe precedence, saved normal-mode preference, clean exits and bundled Dashboard enabled preference preserved. Synthetic waypoint/route/track/connection/AIS-setting fixtures survive the cycle. |
 | Selected navigation | Read-only position/SOG/COG from OpenCPN's selected navigation bus. Real decoder input through an isolated synthetic NMEA loopback stream; position-only updates do not freshen old speed/course. Heading is withheld where provenance is insufficient. |
 | Advisory energy core | Tested reserve-aware range and arrival SOC, explicit model assumptions, no prediction from invalid/stale/missing inputs, energy-shortfall reporting. This calculation module is not connected to live batteries, route distance or a product screen. |
+| Remaining active-route distance | Immutable owned snapshot copied around normal OpenCPN progress: current active-point range plus subsequent stored legs, NM, route/revision/active-point identity and separate observation/position times. Edits, skips, reversal, deletion, ambiguity and stale/invalid inputs withhold distance. No production energy/UI connection. |
 
 The shell/mode slice first passed both platforms at `c5a0fd0`; selected
 navigation passed at `bc0af30`. Their native review records are in
@@ -27,29 +28,37 @@ for the inspected source boundaries and exact limitations.
 
 ## Latest regression gate
 
-Code/test revision: `c2535f5aa94e9693f999f65952dda144a3fe6c24` on the remote
-`opennav-x` branch; local equivalent: `42f8410`.
-[Native and Linux CI run](https://github.com/ThereptileII/Work/actions/runs/35641825356).
+Code/test revision: `954b4505e18e9128dc02e75cf05d0c02bdbad188` on the remote
+`opennav-x` branch; local equivalent: `a7f2b33`.
+[Native and Linux CI run](https://github.com/ThereptileII/Work/actions/runs/35648822128).
 
-All seven CI jobs passed. Win32 and Linux portable lanes pass all six contracts,
+All seven CI jobs passed. Win32 and Linux portable lanes pass all seven contracts,
 plus ten consecutive restart lifecycle checks each. Integrated application
-regressions pass 50 compiled tests on Windows and 60 on Linux. Shared-profile
-mode cycles and synthetic NMEA input checks pass on both platforms. The pristine
+regressions pass 57 compiled tests on Windows and 67 on Linux, including seven
+tests against real upstream route objects and antimeridian geometry. The portable
+route contract covers 28 scenarios; the normal-timer application fixture passes
+26 observations on each platform, including deletion while active. Corresponding
+states, identities, revisions and distances agree between Linux and Windows.
+Shared-profile mode cycles and synthetic NMEA input checks also pass. The pristine
 Linux baseline classifies its documented upstream test defects; those defects
 are not counted as passing tests.
 
 Reviewed native 1280×800/96-DPI captures and executable/artifact hashes are in
-[the final Windows review](evidence/windows-c2535f5-review.json). All 75 local
+[the final Windows review](evidence/windows-954b450-review.json), with
+[Linux evidence](evidence/linux-954b450-review.json) and the
+[recorded route observations](evidence/route-954b450-observations.json). All 86 local
 source/build/test/patch files match the tested remote revision. Documentation
 commits after this code revision do not change the tested executable.
 
-A previous Win32 contract run at `0cc8330` failed while reading restart-test
-arguments. The old probe exposed its result filename before writing finished.
-Adding a delay to that write reproduced the assertion locally without changing
-arguments. The test now records process startup separately and atomically
-publishes the completed result; a deliberate write delay and ten repeated
-checks exercise this timing window. Production restart code did not change.
-This failure is retained in the history rather than hidden by a successful rerun.
+The first route candidate, `c923b87`, failed both integrated builds because its
+model fixture accessed private icon collections. The fixture now initializes
+those collections through the existing GUI friend boundary. A preceding local
+teardown crash was traced with GDB to the missing GUI initialization. This repair
+changes test setup, not upstream model access or navigation behavior. The corrected
+implementation passed at `8062fb2`; the accepted revision above additionally
+tests active deletion and waits for the stale UI refresh before capture.
+The earlier restart-test publication repair and its regression history remain
+recorded in [the prior evidence](evidence/restart-handoff-c2535f5.json).
 
 ## Remaining product and release gates
 
@@ -57,8 +66,9 @@ This failure is retained in the history rather than hidden by a successful rerun
   workflows incrementally with the approved XNav presentation. Preserve existing
   functionality through Legacy throughout that work.
 - Acquire wind, depth, rudder, propulsion, battery, tank and connectivity data
-  with source/age metadata. Integrate remaining route geometry and actual battery
-  inputs before exposing energy estimates; calibrate against recorded boat data.
+  with source/age metadata. Integrate actual battery inputs and the accepted
+  route-distance contract before exposing energy estimates; calibrate against
+  recorded boat data.
 - Add advisory SmartNav route events, turn/timeline prediction, hazard look-ahead
   and AIS context behind tested source contracts. Later sailing/anchor work
   remains separate. No autonomous steering is implemented.
@@ -77,6 +87,6 @@ This failure is retained in the history rather than hidden by a successful rerun
   representative Windows navigation PC. Hosted MSVC evidence is necessary but
   does not establish target-hardware or at-sea acceptance.
 
-Next vertical slice: use the [active-route source inspection](route-distance-inspection.md) to expose a
-read-only remaining-distance contract, with route-transition/invalid-data tests
-and both platform gates, before connecting arrival-energy predictions to UI.
+The requested route-distance slice is complete. Arrival-SOC product UI remains
+future work; any next energy slice must also establish battery source/age,
+capacity/reserve assumptions and prediction invalidation when the route changes.

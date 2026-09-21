@@ -1,0 +1,78 @@
+{
+  "code_commit": "954b4505e18e9128dc02e75cf05d0c02bdbad188",
+  "run": "https://github.com/ThereptileII/Work/actions/runs/35648822128",
+  "jobs": [
+    {
+      "id": 106495818434,
+      "name": "Native MSVC upstream Win32 ABI on Windows x64",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 106495818758,
+      "name": "contracts (ubuntu-24.04)",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 106495818788,
+      "name": "contracts (windows-2022)",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 106495818882,
+      "name": "linux",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 106495818909,
+      "name": "Native MSVC XNav / Legacy / Safe slice",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 106495818933,
+      "name": "Linux integrated regression gate",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 106495818936,
+      "name": "Approved OpenCPN ABI on Windows x64",
+      "status": "completed",
+      "conclusion": "success"
+    }
+  ],
+  "artifacts": [
+    {
+      "id": 10661986185,
+      "name": "windows-integration-954b4505e18e9128dc02e75cf05d0c02bdbad188",
+      "digest": "sha256:b23e0a403a54cca875db776ff74df66c365f7279beeb9e536d777adc622c4955",
+      "expires_at": "2026-12-20T20:04:52Z"
+    },
+    {
+      "id": 10661628894,
+      "name": "linux-pristine-954b4505e18e9128dc02e75cf05d0c02bdbad188",
+      "digest": "sha256:91b61d071fb70bce0dd05172d6968d89391f9687e55aebdabaf8cb730d91be24",
+      "expires_at": "2026-12-20T20:04:52Z"
+    },
+    {
+      "id": 10661354989,
+      "name": "linux-integration-954b4505e18e9128dc02e75cf05d0c02bdbad188",
+      "digest": "sha256:142d1d20655733784fe659f4ef53ada88444f3a7eab96a045d18a8d113b71467",
+      "expires_at": "2026-12-20T20:04:52Z"
+    },
+    {
+      "id": 10661083570,
+      "name": "windows-pristine-954b4505e18e9128dc02e75cf05d0c02bdbad188",
+      "digest": "sha256:cfa8377c155d30786fa75ce60af7e4e56a1c0b029607a67bced88ce4e117cdf8",
+      "expires_at": "2026-12-20T20:04:52Z"
+    }
+  ],
+  "limitations": [
+    "Pristine Linux classifies documented upstream defects; this is not a claim that those tests passed.",
+    "All integrated application regressions pass without baseline exceptions."
+  ]
+}

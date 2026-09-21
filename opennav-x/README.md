@@ -12,8 +12,11 @@ to OpenCPN-selected position, SOG and COG; its native validation is tracked in
 [the data bridge notes](docs/navigation-data-bridge.md). Missing inputs display unavailable;
 stopped samples age into stale data. No OpenNav steering or radar commands exist.
 An advisory range/arrival-SOC calculation module has portable tests; it is not
-yet connected to battery acquisition or the UI. Hardware adapters and the
-Windows installer remain later slices.
+yet connected to battery acquisition or the UI. A read-only
+[remaining-route snapshot](docs/route-progress-contract.md) observes OpenCPN's
+normal progress with route identity, revision, position age and explicit validity;
+it does not feed a production energy screen. Hardware adapters and the Windows
+installer remain later slices.
 
 The application preserves OpenCPN 5.12.4's supported **32-bit application/plugin
 ABI on 64-bit Windows**, as explicitly approved by the user. Native Windows

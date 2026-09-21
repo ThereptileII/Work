@@ -1,0 +1,43 @@
+{
+  "commit": "954b4505e18e9128dc02e75cf05d0c02bdbad188",
+  "run": "https://github.com/ThereptileII/Work/actions/runs/35648822128",
+  "job_id": 106495818933,
+  "artifact_id": 10661354989,
+  "artifact_sha256": "142d1d20655733784fe659f4ef53ada88444f3a7eab96a045d18a8d113b71467",
+  "review_date": "2026-09-21",
+  "platform": "Ubuntu 24.04 hosted clean integrated build, GCC, wxGTK, software rendering",
+  "tests": {
+    "linux_integrated": 67,
+    "linux_failures": 0,
+    "portable_contracts": 7,
+    "portable_route_scenarios": 28,
+    "model_bound_route_cases": 7,
+    "normal_timer_route_observations": 26,
+    "additional_restart_repeats": 10
+  },
+  "observations": [
+    "Clean hosted integrated build and all 67 compiled regressions pass without exceptions.",
+    "Shared-profile XNav / Legacy / Safe cycle, persisted navigation/configuration fixture checks, IPC shutdown and clean restarts pass.",
+    "Selected-navigation loopback transport and lifecycle pass: 10 RMC and 31 GGA sent, no transport errors.",
+    "Normal route-progress loopback passes all 26 observations: 66 RMC and 66 GGA sent, no transport errors.",
+    "All recorded route states, route revisions, active identities/indices and NM distances agree with the native Windows fixture.",
+    "Reviewed route captures show LIVE 6.3 kn / 147 degrees, then Navigation stale and STALE 6s. Wind/depth remain unavailable. The existing stock route console remains unchanged.",
+    "Local Arch development also passed 67 regressions, seven contracts, 28 portable route scenarios and 26 application observations. Local screenshots are development evidence; Windows is the rendering authority."
+  ],
+  "evidence_sha256": {
+    "xnav-linux-tests.xml": "90fa9a6b951cec17756ca7f78b5d38755ef4ba95588d75618c29f00da29211c7",
+    "xnav-linux-build.log": "a99f3ccd38fede5efcd7a5979791dbd74c650877a9c520c99206bca13b7b469b",
+    "linux-mode-cycle-results.json": "10a26084e8ee7d790000df7c32260f8fc073c1f17b3bc12ca40d5d78bc56739b",
+    "navigation-input-results.json": "5ad188d3de31566aebf152101b4620bcb859c80fd2ae9ae4cd51626ace1ce055",
+    "route-input-results.json": "4c164e30af812d6e01d174e1b98d3685cf6273af399ce5d19ac7a330c6cbf81a",
+    "route-progress-results.json": "f3ff7f920b773bb618d787c822c76ae2782ce82630a745d555f57ae423f6e38c",
+    "route-01-active-route.png": "1f4442cf901d3918428d5ac3391a7d82769701d75bf2bb378adc2e08e25c9154",
+    "route-02-stale-position.png": "e5e45fafcbfd6c5d98bdd902d93fabd193fe4ed1e62836614e7cd066bbbe86d7"
+  },
+  "source_equivalence": "source-mirror-954b450.json",
+  "all_ci_gates": "route-954b450-gates.json",
+  "limitations": [
+    "Synthetic routes and navigation, no physical devices or nautical chart collection",
+    "No production arrival-SOC UI, installer, target-hardware or sea-trial acceptance"
+  ]
+}
