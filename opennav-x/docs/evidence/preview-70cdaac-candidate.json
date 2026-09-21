@@ -1,0 +1,32 @@
+{
+  "commit": "70cdaacf0310a66aa4592ad973ea1d50354b7aee",
+  "run": "https://github.com/ThereptileII/Work/actions/runs/35658840297",
+  "result": "not accepted; native visual review failed and package test cleanup failed",
+  "linux_integrated_tests": 67,
+  "windows_integrated_tests": 57,
+  "portable_contracts_per_platform": 9,
+  "functional_package_checks": "All scenario, launcher, clean application shutdown, persistence and isolated-profile assertions passed before cleanup. This is not package acceptance.",
+  "failures": [
+    "Route, Energy and Diagnostics were covered by the real chart after native Windows resize. The unmanaged overlay was not a reliable AUI layout participant.",
+    "The test fixture SQLite reader retained a connection after leaving its transaction context, preventing disposable directory deletion on Windows."
+  ],
+  "fixes": [
+    "Manage the alternate center page through the existing AUI manager, hide navigation panes while it is shown, and restore prior visibility before upstream saves its perspective. No canvas reparenting.",
+    "Close fixture-only read connections explicitly.",
+    "Check native page bounds and sibling visibility after resize, alongside mandatory screenshot review."
+  ],
+  "evidence_artifact_id": 10667240580,
+  "evidence_zip_sha256": "f8d4f9f9955f70f91b5be468048fea9b89f5fdc8563d2a435b3ff10f14158015",
+  "evidence_sha256": {
+    "preview-01-navigation-day.png": "8d16ad92114774d6b9061b914891ee0c88d34f3bbb9769bfe0c3bf236abf847c",
+    "preview-02-navigation-night.png": "64699dabf9ad5621055e64094ac79971750d31e1bd6d7a09c1dfc2bc7fc0a75a",
+    "preview-03-route.png": "6940649b2a7a71c625ec04fa68e22831cfb7ac8cd88d9bd3404f3ebec88b3f3f",
+    "preview-04-energy.png": "953222c3102b75b250f5f0418c7b1297884ba938cc213ddc68e9add5b0e813f7",
+    "preview-05-diagnostics.png": "9ed712ad882f41dcd4704bcb682bd1e946296fc7e05562f94342023bffdb8e32",
+    "preview-06-stale.png": "60a3eca751b76e73b63c71717edb64ce1d05511fce7457a3c7376bf8479ffd00",
+    "preview-06b-unavailable.png": "4c65baec4abeeb52c25c5c46a2c713daf9ff8f5f5e28035800ad437db8a2825e",
+    "preview-06c-shortfall.png": "68dafe3d70869e0c50cd1cf6fd0669887a8ebd1582e5ad46d02cc1d35a39ccfc",
+    "preview-07-legacy.png": "9cd7ac2210d12b81f6f80c774f9687d5d72d9c415b78390427cd86d16e43e837",
+    "preview-08-safe.png": "4b199d08fcf6747ef6dc362eb3f04f33bc6fe2f4a104fba58253f4670c7e1d48"
+  }
+}

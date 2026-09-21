@@ -117,6 +117,10 @@ def capture(name):
     else:
         time.sleep(.4);subprocess.run(['import','-window','root',str(path)],env=env,check=True)
     report['screenshots'].append(path.name)
+def page_capture(name, page):
+    capture(name)
+    if windows:
+        report.setdefault('page_visibility', []).append(ui.assert_preview_page(handle, page))
 def close_current():
     if windows:
         h=ui.monitor_process(pid);ui.close(handle);ui.wait_clean_exit(h)
@@ -160,11 +164,11 @@ try:
     capture('preview-02-navigation-night')
     if windows:ui.click_text(pid,'Light')
     else:xdo('click',1);time.sleep(.5)
-    command('Route','r');capture('preview-03-route')
-    command('Energy','e');capture('preview-04-energy')
+    command('Route','r');page_capture('preview-03-route','Route')
+    command('Energy','e');page_capture('preview-04-energy','Energy')
     if windows:ui.click_text(pid,'System');ui.click_text(pid,'Diagnostics')
     else:xdo('key','ctrl+shift+i');time.sleep(.5)
-    capture('preview-05-diagnostics')
+    page_capture('preview-05-diagnostics','Diagnostics')
     later=data(lambda d:item(d,'Battery SOC')['value']<item(first,'Battery SOC')['value'])
     assert item(later,'Latitude')['value']!=item(first,'Latitude')['value']
     assert later['route']['remaining_nm']<first['route']['remaining_nm']
@@ -173,10 +177,10 @@ try:
     command('Energy','e');scenario('Sensors stale',1)
     stale=data(lambda d:item(d,'Battery SOC')['quality']=='STALE',timeout=12)
     assert 'arrival_soc' not in stale['energy'] and 'remaining_nm' not in stale['route']
-    capture('preview-06-stale')
+    page_capture('preview-06-stale','Energy')
     scenario('Sensors unavailable',2)
     missing=data(lambda d:item(d,'Depth below transducer')['quality']=='UNAVAILABLE')
-    assert 'arrival_soc' not in missing['energy'];capture('preview-06b-unavailable')
+    assert 'arrival_soc' not in missing['energy'];page_capture('preview-06b-unavailable','Energy')
     scenario('Route inactive',3)
     inactive=data(lambda d:d['route']['state']=='NoActiveRoute')
     assert 'arrival_soc' not in inactive['energy'] and 'range_nm' in inactive['energy']
@@ -188,8 +192,15 @@ try:
     scenario('High power',6);data(lambda d:item(d,'Motor electrical power').get('value')==18)
     scenario('Energy shortfall',7)
     shortfall=data(lambda d:d['energy'].get('shortfall_kwh',0)>0)
-    assert 'arrival_soc' not in shortfall['energy'];capture('preview-06c-shortfall')
+    assert 'arrival_soc' not in shortfall['energy'];page_capture('preview-06c-shortfall','Energy')
     report['checks'].append('All eight GUI-selected scenarios pass validity/shortfall assertions')
+    command('Navigation','n')
+    if windows:
+        assert not any(caption.startswith('OpenNav page:') for _, caption in ui.children(handle))
+        ui.click_text(pid,'+')
+        ui.click_text(pid,'Route')
+        ui.assert_preview_page(handle,'Route')
+        report['checks'].append('Page resize/visibility and Navigation return with chart zoom passed')
     if windows:
         ui.click_text(pid,'System');ui.click_text(pid,'Open Legacy OpenCPN')
     else:xdo('key','ctrl+shift+l')

@@ -136,8 +136,10 @@ Shell::Shell(wxFrame &frame, wxAuiManager &manager, ShellActions actions,
   actions_row->Add(system, 0, wxALL, frame_.FromDIP(4));
   bottom->SetSizer(actions_row);
   page_ = new PreviewPanel(&frame_);
-  page_->Hide();
-  frame_.Bind(wxEVT_SIZE, &Shell::OnSize, this);
+  // An unmanaged overlay is reordered behind ChartCanvas by the native AUI
+  // resize path. Use the same layout manager for the alternate center page.
+  manager_.AddPane(page_, wxAuiPaneInfo().Name("OpenNavPage").CenterPane()
+                             .PaneBorder(false).Hide());
   std::vector<std::pair<int, std::function<void()>>> commands = {
       {'D', [this] { StartDemo(); }},
       {'P',
@@ -174,12 +176,14 @@ Shell::Shell(wxFrame &frame, wxAuiManager &manager, ShellActions actions,
 
 Shell::~Shell() {
   timer_.Stop();
-  frame_.Unbind(wxEVT_SIZE, &Shell::OnSize, this);
   for (const auto &c : commands_)
     frame_.Unbind(wxEVT_MENU, &Shell::OnCommand, this, c.first);
   frame_.SetAcceleratorTable(wxNullAcceleratorTable);
-  if (page_)
+  if (page_) {
+    ShowNavigation();
+    manager_.DetachPane(page_);
     page_->Destroy();
+  }
   for (auto *pane : panes_) {
     manager_.DetachPane(pane);
     pane->Destroy();
@@ -268,29 +272,43 @@ void Shell::SelectDemo(vessel::DemoScenario scenario) {
   ApplyTheme();
   Tick();
 }
-void Shell::LayoutPage() {
-  if (!page_)
-    return;
-  const auto size = frame_.GetClientSize();
-  const int top = panes_[0]->GetSize().y, bottom = panes_[3]->GetSize().y,
-            left = panes_[1]->GetSize().x;
-  page_->SetSize(left, top, std::max(100, size.x - left),
-                 std::max(100, size.y - top - bottom));
-  if (page_->IsShown())
-    page_->Raise();
-}
-void Shell::OnSize(wxSizeEvent &event) {
-  event.Skip();
-  LayoutPage();
-}
 void Shell::ShowNavigation() {
-  page_->Hide();
+  manager_.GetPane(page_).Hide();
+  for (const auto &saved : navigation_visibility_) {
+    auto &pane = manager_.GetPane(saved.first);
+    if (pane.IsOk())
+      pane.Show(saved.second);
+  }
+  navigation_visibility_.clear();
+  manager_.Update();
+  // A hidden page must not keep keyboard focus (GTK drops frame accelerators
+  // in that state). Restore focus to a visible chart without reparenting it.
+  for (const auto &name : actions_.navigation_panes) {
+    auto &pane = manager_.GetPane(name);
+    if (pane.IsOk() && pane.IsShown() && pane.window) {
+      pane.window->SetFocus();
+      break;
+    }
+  }
   frame_.Refresh();
 }
 void Shell::ShowPage(PreviewPage page) {
+  if (navigation_visibility_.empty()) {
+    auto names = actions_.navigation_panes;
+    names.push_back("OpenNavTools");
+    names.push_back("OpenNavData");
+    for (const auto &name : names) {
+      auto &pane = manager_.GetPane(name);
+      if (pane.IsOk()) {
+        navigation_visibility_.push_back({name, pane.IsShown()});
+        pane.Hide();
+      }
+    }
+  }
   current_page_ = page;
-  page_->Show();
-  LayoutPage();
+  manager_.GetPane(page_).Show();
+  manager_.Update();
+  page_->SetFocus();
   Tick();
 }
 

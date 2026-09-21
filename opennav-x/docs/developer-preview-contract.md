@@ -68,6 +68,14 @@ source/validity/age. Atomic `logs/opennav-diagnostics.json` retains full values,
 monotonic timestamps and validity; it is diagnostic data, not a public remote
 API. Explicit non-packaged test profiles write it inside the profile.
 
+Content pages participate in the existing AUI layout as an alternate center pane.
+The integration supplies the pinned chart pane identities; the shell temporarily
+hides navigation panes and restores their previous visibility on return or before
+upstream saves its perspective. Chart canvases keep their original ownership and
+parent. Native tests verify page geometry and sibling visibility after resize,
+as well as return to the chart. An earlier unmanaged overlay failed Windows
+visual review despite passing data assertions; that candidate is not accepted.
+
 Legacy and Safe retain upstream UI. System permits controlled XNav restart,
 Legacy switch and Safe startup. Demo is intentionally not restored across a
 mode switch; `Run-XNav-Demo.cmd` explicitly requests it. All packaged modes use

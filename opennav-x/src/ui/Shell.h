@@ -15,6 +15,9 @@
 namespace opennav::ui {
 
 struct ShellActions {
+  // Integration supplies AUI identities, never chart objects. Page visibility
+  // is restored before OpenCPN saves its normal perspective on close.
+  std::vector<wxString> navigation_panes;
   std::function<void()> zoom_in, zoom_out, follow, legacy;
   std::function<void()> restart_xnav, safe, diagnostics_folder;
   std::function<vessel::RouteProgress()> route;
@@ -24,7 +27,7 @@ struct ShellActions {
   std::function<void(LightMode)> theme;
 };
 
-// Chrome only. The existing OpenCPN ChartCanvas stays in its existing AUI pane.
+// The existing OpenCPN ChartCanvas stays in its original parent/AUI pane.
 // Destroy before the owning frame's AUI manager is uninitialized.
 class Shell final : public wxEvtHandler {
 public:
@@ -45,8 +48,6 @@ private:
   void ShowDemo();
   void ShowPage(PreviewPage page);
   void ShowNavigation();
-  void LayoutPage();
-  void OnSize(wxSizeEvent &event);
   void OnCommand(wxCommandEvent &event);
   void StartDemo();
   void SelectDemo(vessel::DemoScenario scenario);
@@ -61,6 +62,7 @@ private:
   vessel::DemoSource demo_{vessel::Clock::now()};
   PreviewPanel *page_ = nullptr;
   PreviewPage current_page_ = PreviewPage::Route;
+  std::vector<std::pair<wxString, bool>> navigation_visibility_;
   wxTimer timer_;
   std::vector<wxPanel *> panes_;
   std::vector<XNavButton *> buttons_;

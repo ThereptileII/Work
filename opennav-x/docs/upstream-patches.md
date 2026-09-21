@@ -143,3 +143,11 @@ before initialization. Inspection of `AbstractPlatform::NormalizePath` and the
 startup tide-data defaults showed that portable relative paths use that base.
 An extracted native candidate exposed missing tide files when started from the
 package root; no navigation or resource-loading implementation was changed.
+
+Preview content pages use the existing AUI manager's center-pane support.
+Inspection of `MyFrame::CreateCanvasLayout` identifies `ChartCanvas` and
+`ChartCanvas2`; `MyFrame::ODoSetSize` updates that manager on resize. Integration
+passes only those pane names into the shell. The shell restores the original
+visibility before the existing `PrepareClose` hook lets upstream persist its
+perspective. No new upstream hook or canvas reparenting is needed. This fixes
+native Windows covering unmanaged overlay pages during resize.

@@ -1,5 +1,6 @@
 """Synthetic, disconnected fixtures for mode persistence; never a live profile."""
 from pathlib import Path
+from contextlib import closing
 import configparser
 import shutil
 import sqlite3
@@ -43,7 +44,7 @@ def snapshot(profile):
     if nav is None:
         # 5.12.4 imports legacy GPX and removes navobj.xml; validate the actual
         # SQLite store, not an untouched backup file. Never write to this DB.
-        with sqlite3.connect((profile / 'navobj.db').resolve().as_uri() + '?mode=ro', uri=True) as db:
+        with closing(sqlite3.connect((profile / 'navobj.db').resolve().as_uri() + '?mode=ro', uri=True)) as db:
             assert db.execute('PRAGMA integrity_check').fetchone() == ('ok',)
             assert not db.execute('PRAGMA foreign_key_check').fetchall()
             for tag, table in [('wpt', 'routepoints'), ('rte', 'routes'), ('trk', 'tracks')]:

@@ -181,6 +181,9 @@ void Attach(MyFrame& frame, wxAuiManager& manager, wxFileConfig& config) {
   }
   frame.SetTitle("OpenNav X / OpenCPN");
   ui::ShellActions actions;
+  // Names assigned by MyFrame::CreateCanvasLayout in the pinned OpenCPN.
+  // The UI only toggles pane visibility; it never owns/reparents a canvas.
+  actions.navigation_panes = {"ChartCanvas", "ChartCanvas2"};
   actions.zoom_in = [&frame] { frame.GetPrimaryCanvas()->ZoomCanvas(2.0, false); };
   actions.zoom_out = [&frame] { frame.GetPrimaryCanvas()->ZoomCanvas(0.5, false); };
   actions.follow = [&frame] { frame.TogglebFollow(frame.GetPrimaryCanvas()); };

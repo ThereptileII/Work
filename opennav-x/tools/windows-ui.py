@@ -24,6 +24,8 @@ GetWindowTextW = declare(user, 'GetWindowTextW', C.c_int, W.HWND, W.LPWSTR, C.c_
 IsWindowVisible = declare(user, 'IsWindowVisible', W.BOOL, W.HWND)
 GetWindowRect = declare(user, 'GetWindowRect', W.BOOL, W.HWND, C.POINTER(W.RECT))
 GetClientRect = declare(user, 'GetClientRect', W.BOOL, W.HWND, C.POINTER(W.RECT))
+ScreenToClient = declare(user, 'ScreenToClient', W.BOOL, W.HWND, C.POINTER(W.POINT))
+ChildWindowFromPointEx = declare(user, 'ChildWindowFromPointEx', W.HWND, W.HWND, W.POINT, W.UINT)
 GetDpiForWindow = declare(user, 'GetDpiForWindow', W.UINT, W.HWND)
 SetWindowPos = declare(user, 'SetWindowPos', W.BOOL, W.HWND, W.HWND, C.c_int, C.c_int, C.c_int, C.c_int, W.UINT)
 PostMessageW = declare(user, 'PostMessageW', W.BOOL, W.HWND, W.UINT, W.WPARAM, W.LPARAM)
@@ -130,6 +132,25 @@ def size_window(handle):
     rect = W.RECT()
     GetWindowRect(handle, C.byref(rect))
     assert (rect.right - rect.left, rect.bottom - rect.top) == (1280, 800)
+
+def assert_preview_page(handle, page):
+    """Check native page bounds and sibling z-order after a real resize.
+
+    Data assertions alone cannot detect a chart covering the selected page.
+    This check is in addition to, not a substitute for, screenshot review.
+    """
+    label = 'OpenNav page: ' + page
+    matches = [child for child, caption in children(handle) if caption == label]
+    assert len(matches) == 1, f'Visible page not found: {label}'
+    child = matches[0]
+    rect = W.RECT()
+    assert GetWindowRect(child, C.byref(rect))
+    dimensions = [rect.right - rect.left, rect.bottom - rect.top]
+    assert dimensions[0] >= 940 and dimensions[1] >= 500, dimensions
+    point = W.POINT((rect.left + rect.right) // 2, (rect.top + rect.bottom) // 2)
+    assert ScreenToClient(handle, C.byref(point))
+    assert ChildWindowFromPointEx(handle, point, 1) == child, 'Another pane covers the page'
+    return {'page': page, 'native_pixels': dimensions, 'visible_and_uncovered': True}
 
 def capture(handle, path):
     size_window(handle)

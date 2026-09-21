@@ -90,6 +90,9 @@ void PreviewPanel::Update(PreviewPage page, LightMode mode,
   if (page != page_)
     Scroll(0, 0);
   page_ = page;
+  SetLabel(page == PreviewPage::Route ? "OpenNav page: Route"
+           : page == PreviewPage::Energy ? "OpenNav page: Energy"
+                                         : "OpenNav page: Diagnostics");
   mode_ = mode;
   state_ = s;
   now_ = now;
