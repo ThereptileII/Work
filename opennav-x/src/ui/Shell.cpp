@@ -7,6 +7,14 @@
 #include <utility>
 
 namespace opennav::ui {
+namespace {
+class SystemPopup final : public wxPopupTransientWindow {
+ public:
+  explicit SystemPopup(wxWindow* parent) : wxPopupTransientWindow(parent, wxBORDER_NONE) {}
+ protected:
+  void OnDismiss() override { Destroy(); }
+};
+}  // namespace
 
 wxPanel* Shell::MakePane(const wxString& name, wxAuiPaneInfo placement) {
   auto* panel = new wxPanel(&frame_, wxID_ANY);
@@ -138,7 +146,7 @@ void Shell::Tick() {
 }
 
 void Shell::ShowSystem() {
-  auto* popup = new wxPopupTransientWindow(&frame_, wxBORDER_NONE);
+  auto* popup = new SystemPopup(&frame_);
   popup->SetBackgroundColour(Colour(Theme(mode_).elevated));
   auto* layout = new wxBoxSizer(wxVERTICAL);
   const int gap = frame_.FromDIP(12);

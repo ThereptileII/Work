@@ -3,6 +3,8 @@ $ErrorActionPreference = 'Stop'
 $Root = Split-Path $PSScriptRoot -Parent
 $Build = Join-Path $Root "build/$Variant-windows"
 $Evidence = Join-Path $Root 'evidence/local'
+& python (Join-Path $PSScriptRoot 'windows-ui.py') | Out-File (Join-Path $Evidence 'windows-display.json')
+if ($LASTEXITCODE -ne 0) { throw 'Native display does not support 1280x800 capture' }
 $Profile = Join-Path $Root ('build/profiles/' + [Guid]::NewGuid().ToString())
 & python (Join-Path $PSScriptRoot 'prepare-test-profile.py') --build $Build --profile $Profile
 if ($LASTEXITCODE -ne 0) { throw 'Cannot create isolated profile' }
@@ -52,7 +54,7 @@ try {
     $Rect = New-Object OpenNavCapture+Rect
     [OpenNavCapture]::GetWindowRect($Proc.MainWindowHandle, [ref]$Rect) | Out-Null
     if ($Rect.right - $Rect.left -ne 1280 -or $Rect.bottom - $Rect.top -ne 800) {
-        throw 'Native window is not 1280x800'
+        throw "Native window is $($Rect.right - $Rect.left)x$($Rect.bottom - $Rect.top), expected 1280x800"
     }
     $Bitmap = New-Object System.Drawing.Bitmap(1280, 800)
     $Graphics = [System.Drawing.Graphics]::FromImage($Bitmap)

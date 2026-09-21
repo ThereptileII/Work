@@ -47,7 +47,7 @@ int main() {
     }
     Require(!OpenNavModulesAllowed(StartupMode::Legacy), "Legacy isolates new modules");
     Require(!OpenNavModulesAllowed(static_cast<StartupMode>(99)), "Unknown mode fails closed");
-    std::cout << "Startup policy contract passed; OpenCPN runtime integration is not yet implemented.\n";
+    std::cout << "Startup policy contract passed; runtime acceptance is a separate integration gate.\n";
     return 0;
   } catch (const std::exception& error) {
     std::cerr << error.what() << '\n';

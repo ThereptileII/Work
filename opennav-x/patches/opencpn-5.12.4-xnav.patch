@@ -1,5 +1,71 @@
---- a/gui/src/ocpn_app.cpp
-+++ b/gui/src/ocpn_app.cpp
+diff --git i/CMakeLists.txt w/CMakeLists.txt
+index 11e429677..2d54c45b3 100644
+--- i/CMakeLists.txt
++++ w/CMakeLists.txt
+@@ -2771,6 +2771,11 @@ endif ()
+ add_subdirectory(model)
+ target_link_libraries(${PACKAGE_NAME} PUBLIC ocpn::model-src ocpn::model)
+ 
++set(OPENNAV_ROOT "" CACHE PATH "Optional OpenNav X integration source root")
++if(OPENNAV_ROOT)
++  include("${OPENNAV_ROOT}/src/integration/OpenCPN.cmake")
++endif()
++
+ if (OCPN_BUILD_TEST)
+ 
+   add_subdirectory(libs/gtest)
+diff --git i/gui/src/canvasMenu.cpp w/gui/src/canvasMenu.cpp
+index b65126b6c..0cceb4c8d 100644
+--- i/gui/src/canvasMenu.cpp
++++ w/gui/src/canvasMenu.cpp
+@@ -24,6 +24,9 @@
+  **************************************************************************/
+ 
+ // For compilers that support precompilation, includes "wx.h".
++#ifdef OPENNAV_X
++#include "integration/OpenCPNIntegration.h"
++#endif
+ #include <wx/wxprec.h>
+ 
+ #include <wx/aui/aui.h>
+@@ -1060,6 +1063,9 @@ void CanvasMenuHandler::CanvasPopupMenu(int x, int y, int seltype) {
+   setMenuStyleSheet(menuAIS, GetOCPNGUIScaledFont(_("Menu")));
+ #endif
+ 
++#ifdef OPENNAV_X
++  opennav::AppendModeMenu(*menuFocus);
++#endif
+   parent->PopupMenu(menuFocus, x, y);
+ 
+ #ifdef __ANDROID__
+diff --git i/gui/src/chcanv.cpp w/gui/src/chcanv.cpp
+index 258ae04bc..ec86c6c2e 100644
+--- i/gui/src/chcanv.cpp
++++ w/gui/src/chcanv.cpp
+@@ -24,6 +24,9 @@
+  **************************************************************************/
+ 
+ // For compilers that support precompilation, includes "wx.h".
++#ifdef OPENNAV_X
++#include "integration/OpenCPNIntegration.h"
++#endif
+ #include <wx/wxprec.h>
+ 
+ #ifndef WX_PRECOMP
+@@ -7122,6 +7125,9 @@ void ChartCanvas::ProcessNewGUIScale() {
+ }
+ 
+ void ChartCanvas::CreateMUIBar() {
++#ifdef OPENNAV_X
++  if (opennav::IsXNav()) return;
++#endif
+   if (g_useMUI && !m_muiBar) {  // rebuild if necessary
+ 
+     // We need to update the m_bENCGroup flag, at least for the initial creation
+diff --git i/gui/src/ocpn_app.cpp w/gui/src/ocpn_app.cpp
+index a7670a674..707ecbe42 100644
+--- i/gui/src/ocpn_app.cpp
++++ w/gui/src/ocpn_app.cpp
 @@ -22,6 +22,9 @@
   *   Free Software Foundation, Inc.,                                       *
   *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
@@ -10,7 +76,7 @@
  #include "config.h"
  
  #ifdef __MINGW32__
-@@ -843,6 +846,9 @@
+@@ -843,6 +846,9 @@ bool MyApp::OpenFile(const std::string &path) {
  
  #ifndef __ANDROID__
  void MyApp::OnInitCmdLine(wxCmdLineParser &parser) {
@@ -20,7 +86,7 @@
    // Add OpenCPN specific command line options. Help message
    // is hardcoded in kUsage;
    parser.AddSwitch("h", "help", "", wxCMD_LINE_OPTION_HELP);
-@@ -895,12 +901,19 @@
+@@ -895,12 +901,19 @@ static void ParseLoglevel(wxCmdLineParser &parser) {
  #ifndef __ANDROID__
  bool MyApp::OnCmdLineHelp(wxCmdLineParser &parser) {
    std::cout << kUsage;
@@ -40,7 +106,7 @@
    long number;
    wxString repo;
    wxString plugin;
-@@ -917,7 +930,11 @@
+@@ -917,7 +930,11 @@ bool MyApp::OnCmdLineParsed(wxCmdLineParser &parser) {
      g_unit_test_1 = static_cast<int>(number);
      if (g_unit_test_1 == 0) g_unit_test_1 = -1;
    }
@@ -52,7 +118,7 @@
    ParseLoglevel(parser);
    wxString wxstr;
    if (parser.Found("configdir", &wxstr)) {
-@@ -931,6 +948,9 @@
+@@ -931,6 +948,9 @@ bool MyApp::OnCmdLineParsed(wxCmdLineParser &parser) {
  
    bool has_start_options = false;
    static const std::vector<std::string> kStartOptions = {
@@ -62,7 +128,7 @@
        "unit_test_2",
        "p",
        "fullscreen",
-@@ -1314,6 +1334,9 @@
+@@ -1314,6 +1334,9 @@ bool MyApp::OnInit() {
    pConfig = g_Platform->GetConfigObject();
    InitBaseConfig(pConfig);
    pConfig->LoadMyConfig();
@@ -72,7 +138,7 @@
  
    //  Override for some safe and nice default values if the config file was
    //  created from scratch
-@@ -1990,6 +2013,9 @@
+@@ -1990,6 +2013,9 @@ bool MyApp::OnInit() {
      StartMDNSService(g_hostname.ToStdString(), "opencpn-object-control-service",
                       8000);
    }
@@ -82,7 +148,7 @@
    return TRUE;
  }
  
-@@ -2118,6 +2144,9 @@
+@@ -2118,6 +2144,9 @@ int MyApp::OnExit() {
    g_Platform->OnExit_2();
    safe_mode::clear_check();
    delete g_Platform;
@@ -92,8 +158,10 @@
  
    return TRUE;
  }
---- a/gui/src/ocpn_frame.cpp
-+++ b/gui/src/ocpn_frame.cpp
+diff --git i/gui/src/ocpn_frame.cpp w/gui/src/ocpn_frame.cpp
+index 8b7a14403..30d1bf560 100644
+--- i/gui/src/ocpn_frame.cpp
++++ w/gui/src/ocpn_frame.cpp
 @@ -22,6 +22,9 @@
   *   Free Software Foundation, Inc.,                                       *
   *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
@@ -104,7 +172,7 @@
  #include "config.h"
  
  #ifdef __MINGW32__
-@@ -1669,6 +1672,9 @@
+@@ -1669,6 +1672,9 @@ void MyFrame::OnCloseWindow(wxCloseEvent &event) {
  
    if (bDBUpdateInProgress) return;
  
@@ -114,7 +182,7 @@
    b_inCloseWindow = true;
  
    ::wxSetCursor(wxCURSOR_WAIT);
-@@ -3636,7 +3642,11 @@
+@@ -3636,7 +3642,11 @@ void MyFrame::ConfigureStatusBar() {
    UseNativeStatusBar(false);  // better for MSW, undocumented in frame.cpp
  #endif
  
@@ -127,7 +195,7 @@
      if (!m_pStatusBar) {
        m_pStatusBar =
            CreateStatusBar(m_StatusBarFieldCount, 0);  // No wxST_SIZEGRIP needed
-@@ -3690,6 +3700,9 @@
+@@ -3690,6 +3700,9 @@ void MyFrame::BuildMenuBar(void) {
      showMenuBar = true;
  #endif
  
@@ -137,7 +205,7 @@
    if (showMenuBar) {
      //  Menu bar has some dependencies on S52 PLIB, so be sure it is loaded.
      LoadS57();
-@@ -3701,6 +3714,13 @@
+@@ -3701,6 +3714,13 @@ void MyFrame::BuildMenuBar(void) {
                                 // to populate the OS X App Menu correctly
      }
  
@@ -151,8 +219,21 @@
      UpdateGlobalMenuItems();  // update the state of the menu items (checkmarks
                                // etc.)
    } else {
---- a/gui/src/toolbar.cpp
-+++ b/gui/src/toolbar.cpp
+@@ -5808,6 +5828,10 @@ void MyFrame::OnFrameTimer1(wxTimerEvent &event) {
+   ProcessUnitTest();
+   g_tick++;
+   ProcessQuitFlag();
++#ifdef OPENNAV_X
++  // ProcessQuitFlag may destroy the frame/console during this timer callback.
++  if (b_inCloseWindow) return;
++#endif
+ 
+   if (bDBUpdateInProgress) return;
+ 
+diff --git i/gui/src/toolbar.cpp w/gui/src/toolbar.cpp
+index e71022302..0cdc305e1 100644
+--- i/gui/src/toolbar.cpp
++++ w/gui/src/toolbar.cpp
 @@ -23,6 +23,9 @@
   *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
   **************************************************************************/
@@ -163,7 +244,7 @@
  #include <wx/wxprec.h>
  
  #ifndef WX_PRECOMP
-@@ -509,6 +512,9 @@
+@@ -509,6 +512,9 @@ wxPoint ocpnFloatingToolbarDialog::GetToolbarPosition() {
  }
  
  bool ocpnFloatingToolbarDialog::MouseEvent(wxMouseEvent &event) {
@@ -173,7 +254,7 @@
    if (g_disable_main_toolbar) return false;
    if (m_ptoolbar) {
      bool bproc = m_ptoolbar->OnMouseEvent(event, m_position);
-@@ -554,6 +560,9 @@
+@@ -554,6 +560,9 @@ void ocpnFloatingToolbarDialog::Realize() {
  }
  
  void ocpnFloatingToolbarDialog::DrawDC(ocpnDC &dc, double displayScale) {
@@ -183,7 +264,7 @@
    if (m_ptoolbar) {
      m_ptoolbar->CreateBitmap();
      if (m_ptoolbar->GetBitmap().IsOk()) {
-@@ -564,6 +573,9 @@
+@@ -564,6 +573,9 @@ void ocpnFloatingToolbarDialog::DrawDC(ocpnDC &dc, double displayScale) {
  }
  
  void ocpnFloatingToolbarDialog::DrawGL(ocpnDC &gldc, double displayScale) {
@@ -193,61 +274,3 @@
    if (g_disable_main_toolbar) return;
  
  #ifdef ocpnUSE_GL
---- a/gui/src/chcanv.cpp
-+++ b/gui/src/chcanv.cpp
-@@ -24,6 +24,9 @@
-  **************************************************************************/
- 
- // For compilers that support precompilation, includes "wx.h".
-+#ifdef OPENNAV_X
-+#include "integration/OpenCPNIntegration.h"
-+#endif
- #include <wx/wxprec.h>
- 
- #ifndef WX_PRECOMP
-@@ -7122,6 +7125,9 @@
- }
- 
- void ChartCanvas::CreateMUIBar() {
-+#ifdef OPENNAV_X
-+  if (opennav::IsXNav()) return;
-+#endif
-   if (g_useMUI && !m_muiBar) {  // rebuild if necessary
- 
-     // We need to update the m_bENCGroup flag, at least for the initial creation
---- a/gui/src/canvasMenu.cpp
-+++ b/gui/src/canvasMenu.cpp
-@@ -24,6 +24,9 @@
-  **************************************************************************/
- 
- // For compilers that support precompilation, includes "wx.h".
-+#ifdef OPENNAV_X
-+#include "integration/OpenCPNIntegration.h"
-+#endif
- #include <wx/wxprec.h>
- 
- #include <wx/aui/aui.h>
-@@ -1060,6 +1063,9 @@
-   setMenuStyleSheet(menuAIS, GetOCPNGUIScaledFont(_("Menu")));
- #endif
- 
-+#ifdef OPENNAV_X
-+  opennav::AppendModeMenu(*menuFocus);
-+#endif
-   parent->PopupMenu(menuFocus, x, y);
- 
- #ifdef __ANDROID__
---- a/CMakeLists.txt
-+++ b/CMakeLists.txt
-@@ -2771,6 +2771,11 @@
- add_subdirectory(model)
- target_link_libraries(${PACKAGE_NAME} PUBLIC ocpn::model-src ocpn::model)
- 
-+set(OPENNAV_ROOT "" CACHE PATH "Optional OpenNav X integration source root")
-+if(OPENNAV_ROOT)
-+  include("${OPENNAV_ROOT}/src/integration/OpenCPN.cmake")
-+endif()
-+
- if (OCPN_BUILD_TEST)
- 
-   add_subdirectory(libs/gtest)

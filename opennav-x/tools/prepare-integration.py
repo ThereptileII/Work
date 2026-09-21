@@ -4,6 +4,8 @@ import json
 from pathlib import Path
 import subprocess
 import sys
+import os
+import tempfile
 
 root = Path(__file__).resolve().parents[1]
 source = root / 'upstream/OpenCPN'
@@ -20,15 +22,20 @@ if not target.exists():
 head = subprocess.check_output(['git', '-C', str(target), 'rev-parse', 'HEAD'], text=True).strip()
 if head != lock['commit']:
     raise SystemExit('Refusing to patch a worktree with a different OpenCPN revision')
-patch = root / 'patches/opencpn-5.12.4-xnav.patch'
-# Refuse to overwrite edits. A second invocation accepts only this exact patch.
-expected = subprocess.check_output(['git', 'apply', '--numstat', str(patch)], text=True)
-if subprocess.check_output(['git', '-C', str(target), 'status', '--porcelain', '--untracked-files=no'], text=True).strip():
-    reverse = subprocess.run(['git', '-C', str(target), 'apply', '--reverse', '--check', str(patch)])
-    actual = subprocess.check_output(['git', '-C', str(target), 'diff', '--numstat'], text=True)
-    if reverse.returncode or sorted(actual.splitlines()) != sorted(expected.splitlines()):
-        raise SystemExit('Integration worktree contains unexpected changes; refusing to overwrite')
-else:
-    run('git', '-C', str(target), 'apply', '--check', str(patch))
-    run('git', '-C', str(target), 'apply', str(patch))
+patches = [root / 'patches/opencpn-5.12.4-xnav.patch',
+           root / 'patches/opencpn-5.12.4-regression-tests.patch']
+# A temporary index describes the exact reviewed result without touching the
+# worktree's real index. This catches extra edits, even with identical line counts.
+if not subprocess.check_output(['git', '-C', str(target), 'status', '--porcelain', '--untracked-files=no'], text=True).strip():
+    for patch in patches:
+        run('git', '-C', str(target), 'apply', '--check', str(patch))
+        run('git', '-C', str(target), 'apply', str(patch))
+with tempfile.TemporaryDirectory(prefix='opennav-index-') as directory:
+    env = dict(os.environ, GIT_INDEX_FILE=str(Path(directory) / 'index'))
+    subprocess.run(['git', '-C', str(target), 'read-tree', lock['commit']], env=env, check=True)
+    for patch in patches:
+        subprocess.run(['git', '-C', str(target), 'apply', '--cached', str(patch)], env=env, check=True)
+    comparison = subprocess.run(['git', '-C', str(target), 'diff', '--quiet'], env=env)
+    if comparison.returncode:
+        raise SystemExit('Integration worktree differs from reviewed patches; refusing to overwrite')
 print(target)

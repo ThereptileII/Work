@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<gpx version="1.1" creator="OpenCPN" xmlns="http://www.topografix.com/GPX/1/1" xmlns:opencpn="http://www.opencpn.org">
+  <wpt lat="56.700000" lon="12.600000"><time>2026-01-01T11:00:00Z</time><name>SIMULATED persistence mark</name><sym>diamond</sym><type>WPT</type><extensions><opencpn:guid>ae43f488-caa5-445b-88e3-0112875a3471</opencpn:guid><opencpn:viz>1</opencpn:viz><opencpn:shared>1</opencpn:shared></extensions></wpt>
+  <rte><name>SIMULATED persistence route</name><extensions><opencpn:guid>ae43f488-caa5-445b-88e3-0112875a3472</opencpn:guid><opencpn:viz>1</opencpn:viz><opencpn:planned_speed>5.00</opencpn:planned_speed></extensions>
+    <rtept lat="56.710000" lon="12.610000"><time>2026-01-01T11:01:00Z</time><name>SIM start</name><sym>diamond</sym><extensions><opencpn:guid>ae43f488-caa5-445b-88e3-0112875a3473</opencpn:guid></extensions></rtept>
+    <rtept lat="56.720000" lon="12.630000"><time>2026-01-01T11:02:00Z</time><name>SIM finish</name><sym>diamond</sym><extensions><opencpn:guid>ae43f488-caa5-445b-88e3-0112875a3474</opencpn:guid></extensions></rtept>
+  </rte>
+  <trk><name>SIMULATED persistence track</name><extensions><opencpn:guid>ae43f488-caa5-445b-88e3-0112875a3475</opencpn:guid><opencpn:viz>1</opencpn:viz></extensions><trkseg>
+    <trkpt lat="56.680000" lon="12.600000"><time>2026-01-01T12:00:00Z</time></trkpt>
+    <trkpt lat="56.690000" lon="12.610000"><time>2026-01-01T12:01:00Z</time></trkpt>
+  </trkseg></trk>
+</gpx>

@@ -34,9 +34,12 @@ jobs:
           sudo apt-get install -y equivs devscripts ninja-build
           sudo mk-build-deps --install --remove --tool='apt-get -y --no-install-recommends' opennav-x/upstream/OpenCPN/ci/control
           sudo locale-gen sv_SE.UTF-8 en_US.UTF-8
-          sudo modprobe vcan
-          sudo ip link add dev vcan0 type vcan
-          sudo ip link set dev vcan0 up
+          if sudo modprobe vcan; then
+            sudo ip link add dev vcan0 type vcan
+            sudo ip link set dev vcan0 up
+          else
+            echo 'Hosted kernel has no vcan module; CAN environment remains unavailable.'
+          fi
           mkdir -p "$HOME/.opencpn"
       - name: Build and test pristine Linux baseline
         run: bash opennav-x/tools/build-pristine-linux.sh
@@ -48,6 +51,29 @@ jobs:
         if: always()
         with:
           name: linux-pristine-${{ github.sha }}
+          path: opennav-x/evidence/local
+  linux-integration:
+    name: Linux integrated regression gate
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+      - name: Fetch pinned source and install dependencies
+        env:
+          DEBIAN_FRONTEND: noninteractive
+        run: |
+          git clone --depth 1 --branch Release_5.12.4 https://github.com/OpenCPN/OpenCPN.git opennav-x/upstream/OpenCPN
+          sudo apt-get update
+          sudo apt-get install -y equivs devscripts ninja-build xvfb xdotool imagemagick
+          sudo mk-build-deps --install --remove --tool='apt-get -y --no-install-recommends' opennav-x/upstream/OpenCPN/ci/control
+          sudo locale-gen sv_SE.UTF-8 en_US.UTF-8
+          mkdir -p "$HOME/.opencpn"
+      - name: Build integrated application and run regressions without exceptions
+        run: bash opennav-x/tools/build-integration-linux.sh
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: linux-integration-${{ github.sha }}
           path: opennav-x/evidence/local
   windows-upstream-abi:
     name: Native MSVC upstream Win32 ABI on Windows x64

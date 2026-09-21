@@ -43,3 +43,32 @@ theme, chart, route and configuration behavior reuse the existing implementation
 All GUI hooks are guarded by OPENNAV_X. No device command logic is added.
 Windows and Linux interaction acceptance remains pending; compilation alone is
 not acceptance. See baseline.md for the independent pristine-build results.
+
+### Shutdown timer guard
+
+The frame timer hook also returns after ProcessQuitFlag closes the frame. A
+pristine Linux core showed APConsole::IsShown reached later in the same timer
+callback after cleanup. This one guard affects no normal navigation work and
+runs only in the integrated build. Regression: normal close, mode restart and
+IPC quit must all exit without a crash. Pristine source retains the original
+behavior for comparison. This change is pending runtime validation.
+
+## Upstream regression-test repairs (separate patch)
+
+`opencpn-5.12.4-regression-tests.patch` changes tests only:
+
+- `test/ipc-srv-tests.cpp`: own the callback instead of capturing a constructor
+  parameter by reference; use atomic result flags; allow up to 10 seconds for
+  process startup instead of 100 ms; request event-loop exit on the main thread.
+  A separately compiled diagnostic version with capture/deadline fixes completed
+  all four IPC commands in 456 ms where pristine failed or hung.
+- `test/n2k_tests.cpp`: use registry Deactivate for the registry-removal assertion.
+  A driver's Close closes transport but does not relinquish registry ownership.
+  No production driver behavior is changed.
+- `test/CMakeLists.txt`: discover compiled gtest cases at test time instead of
+  registering #ifdef-disabled tests by scanning source. This avoids false passes
+  for test names with no compiled matching case.
+
+These are independently reviewable from the GUI hooks. Pristine tests retain
+original behavior and logs. Integrated Linux regressions must pass the repaired
+suite; new or unrelated failures are not covered by a baseline exception.

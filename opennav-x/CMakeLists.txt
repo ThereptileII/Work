@@ -1,5 +1,9 @@
 cmake_minimum_required(VERSION 3.24)
 project(OpenNavX VERSION 0.1.0 LANGUAGES CXX)
+if(MSVC)
+  # Labels and paths are UTF-8 regardless of the Windows runner's code page.
+  add_compile_options(/utf-8)
+endif()
 
 option(OPENNAV_BUILD_TESTS "Build portable OpenNav contract tests" ON)
 option(OPENNAV_BUILD_UI_COMPONENTS "Build wxWidgets OpenNav UI primitives" OFF)
@@ -38,6 +42,15 @@ endif()
 
 if(OPENNAV_BUILD_TESTS)
   enable_testing()
+  find_package(Python3 REQUIRED COMPONENTS Interpreter)
+  add_executable(restart_probe tests/restart_probe.cpp)
+  target_link_libraries(restart_probe PRIVATE opennav_platform)
+  if(WIN32)
+    add_dependencies(restart_probe opennav-restart)
+  endif()
+  add_test(NAME restart_lifecycle_contract COMMAND ${Python3_EXECUTABLE}
+    ${CMAKE_CURRENT_SOURCE_DIR}/tests/restart_lifecycle.py $<TARGET_FILE:restart_probe>)
+  set_tests_properties(restart_lifecycle_contract PROPERTIES TIMEOUT 30)
   add_executable(startup_mode_tests tests/startup_mode_tests.cpp)
   target_link_libraries(startup_mode_tests PRIVATE opennav_integration)
   add_test(NAME startup_mode_contract COMMAND startup_mode_tests)

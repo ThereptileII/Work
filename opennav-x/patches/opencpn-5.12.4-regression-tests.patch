@@ -1,0 +1,127 @@
+--- a/test/ipc-srv-tests.cpp
++++ b/test/ipc-srv-tests.cpp
+@@ -30,6 +30,7 @@
+ 
+ #include "config.h"
+ 
++#include <atomic>
+ #include <chrono>
+ #include <cstdlib>
+ #include <string>
+@@ -83,7 +84,7 @@
+ 
+     /** Create object which invokes action when kp is notified. */
+     ObsListener(const KeyProvider& kp, std::function<void()> action)
+-        : ObsListener(kp, [&](ObservedEvt&) { action(); }) {}
++        : ObsListener(kp, [action](ObservedEvt&) { action(); }) {}
+ 
+     /** Initiate an object yet not listening. */
+     void Init(const KeyProvider& kp,
+@@ -105,38 +106,38 @@
+   }
+ 
+   void TestRaise(IpcServer& server) {
+-    int result0 = 5;
++    std::atomic<int> result0{5};
+     ObsListener listener(server.on_raise, [&result0]() { result0 = 17; });
+     auto cmd = std::string(CMAKE_BINARY_DIR) + "/test/ipc-client raise";
+     FILE* stream = popen(cmd.c_str(), "r");
+ 
+     std::thread t([&] {
+-      for (int i = 0; result0 == 5 && i < 10; i++)
++      for (int i = 0; result0 == 5 && i < 1000; i++)
+         std::this_thread::sleep_for(10ms);
+-      ExitMainLoop();
+-    });
+-    wxAppConsole::OnRun();
+-    t.join();
+-
+-    EXPECT_EQ(result0, 17) << "TestRaise";
++      CallAfter([this] { ExitMainLoop(); });
++    });
++    wxAppConsole::OnRun();
++    t.join();
++
++    EXPECT_EQ(result0.load(), 17) << "TestRaise";
+     EXPECT_EQ(pclose(stream), 0);
+   }
+ 
+   void TestQuit(IpcServer& server) {
+-    int result0 = 7;
++    std::atomic<int> result0{7};
+     ObsListener listener(server.on_quit, [&result0]() { result0 = 13; });
+     auto cmd = std::string(CMAKE_BINARY_DIR) + "/test/ipc-client quit";
+     FILE* stream = popen(cmd.c_str(), "r");
+ 
+     std::thread t([&] {
+-      for (int i = 0; result0 == 7 && i < 10; i++)
++      for (int i = 0; result0 == 7 && i < 1000; i++)
+         std::this_thread::sleep_for(10ms);
+-      ExitMainLoop();
+-    });
+-    wxAppConsole::OnRun();
+-    t.join();
+-
+-    EXPECT_EQ(result0, 13) << "TestQuit";
++      CallAfter([this] { ExitMainLoop(); });
++    });
++    wxAppConsole::OnRun();
++    t.join();
++
++    EXPECT_EQ(result0.load(), 13) << "TestQuit";
+     EXPECT_EQ(pclose(stream), 0);
+   }
+ 
+@@ -150,7 +151,7 @@
+     char buff[2048];
+     std::thread t([&] {
+       line = fgets(buff, sizeof(buff), stream);
+-      ExitMainLoop();
++      CallAfter([this] { ExitMainLoop(); });
+     });
+     wxAppConsole::OnRun();
+     t.join();
+@@ -170,7 +171,7 @@
+     char* line = 0;
+     std::thread t([&] {
+       line = fgets(buff, sizeof(buff), stream);
+-      ExitMainLoop();
++      CallAfter([this] { ExitMainLoop(); });
+     });
+     wxAppConsole::OnRun();
+     t.join();
+--- a/test/n2k_tests.cpp
++++ b/test/n2k_tests.cpp
+@@ -149,11 +149,11 @@
+     params.socketCAN_port = "vcan0";
+     params.Type = SOCKETCAN;
+     auto driver = CommDriverN2KSocketCAN::Create(&params, msgbus);
+-    auto raw_driver = driver.get();
+     CommDriverRegistry::GetInstance().Activate(std::move(driver));
+     ProcessPendingEvents();
+     int0 = registry.GetDrivers().size() - start_size;
+-    raw_driver->Close();
++    // Close() shuts the transport; registry ownership is removed by Deactivate.
++    registry.Deactivate(FindDriver(registry.GetDrivers(), "vcan0"));
+     int1 = registry.GetDrivers().size() - start_size;
+     registry.CloseAllDrivers();
+     int2 = registry.GetDrivers().size();
+--- a/test/CMakeLists.txt
++++ b/test/CMakeLists.txt
+@@ -105,13 +105,13 @@
+ endif ()
+ 
+ include(GoogleTest)
+-gtest_add_tests(TARGET tests)
+-gtest_add_tests(TARGET buffer_tests)
++gtest_discover_tests(tests DISCOVERY_MODE PRE_TEST)
++gtest_discover_tests(buffer_tests DISCOVERY_MODE PRE_TEST)
+ 
+ if (LINUX AND NOT DEFINED ENV{FLATPAK_ID} AND NOT OCPN_DISTRO_BUILD)
+   # We don't have a session bus available when testing flatpak
+   # so these can just be run in native builds.
+-  gtest_add_tests(TARGET ipc-srv-tests)
++  gtest_discover_tests(ipc-srv-tests DISCOVERY_MODE PRE_TEST)
+   # gtest_add_tests(TARGET dbus_tests)      dbus tests broken on wayland
+ endif ()
+ 
