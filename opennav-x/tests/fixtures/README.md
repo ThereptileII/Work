@@ -24,3 +24,12 @@ The same disposable profile contains one **disabled**, input-only loopback
 connection and AIS CPA-warning settings (enabled, 0.75 NM). This tests settings
 persistence; it does not claim to simulate an actual AIS encounter. No fixture
 is loaded into a real navigation profile or transmitted to a device.
+
+## Plugin preference coverage
+
+The shared-profile fixture enables the bundled Dashboard plugin and checks its
+saved enabled preference after every transition, including Safe Mode and the
+following normal startup. It has no instrument panes configured, so the plugin
+can initialize without covering the canonical screenshot. Safe Mode must suppress initialization for its session
+without persisting a disabled normal-mode preference. Other third-party plugins
+still need representative Windows compatibility tests.

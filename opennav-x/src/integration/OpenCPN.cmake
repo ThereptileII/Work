@@ -8,6 +8,10 @@ add_subdirectory("${OPENNAV_ROOT}" "${CMAKE_BINARY_DIR}/opennav")
 target_sources(${PACKAGE_NAME} PRIVATE "${OPENNAV_ROOT}/src/integration/OpenCPNIntegration.cpp")
 target_include_directories(${PACKAGE_NAME} PRIVATE "${OPENNAV_ROOT}/src")
 target_compile_definitions(${PACKAGE_NAME} PRIVATE OPENNAV_X=1)
+# Preserve normal plugin preferences while upstream Safe Mode blocks loading.
+# Limit this additional definition to the one affected model translation unit.
+set_property(SOURCE "${CMAKE_SOURCE_DIR}/model/src/plugin_loader.cpp"
+  DIRECTORY "${CMAKE_SOURCE_DIR}/model" APPEND PROPERTY COMPILE_DEFINITIONS OPENNAV_X=1)
 target_link_libraries(${PACKAGE_NAME} PRIVATE opennav_integration opennav_platform opennav_ui)
 if(WIN32)
   install(TARGETS opennav-restart RUNTIME DESTINATION .)

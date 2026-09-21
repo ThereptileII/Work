@@ -103,32 +103,45 @@ The independent startup-policy tests do not yet establish runtime behavior.
 
 ## Evidence status — 2026-09-21
 
-- Pristine Linux Release build and local install succeed. Normal Ctrl+Q exit
-  succeeds; the genuine coastline baseline is `evidence/local/11-legacy-mode-linux.png`.
-- Native Windows MSVC Win32 build and install succeed. Run 35613737769,
-  commit a2c9d6630bbddd314036a2796726a48863e9e114: **60/60 CTest entries pass**.
-  Its screenshot exposed a missing tide-data startup modal and is rejected.
-  Resource bundling and deferred-startup checks are being revalidated.
-- Portable startup, vessel-quality and Windows-argument contracts pass on both
-  platforms. The added process-lifecycle test currently passes locally; native
-  Windows execution of this new test is pending.
-- Local Swedish-locale test passes after generating the locale. Linux upstream
-  DriverRegistry.RegisterDriver fails even with vcan0: its test calls Close()
-  then expects registry removal, but removal belongs to Deactivate().
-- Upstream IpcServer.Commands fails/aborts on Linux. Its test has a callback
-  captured by reference beyond parameter lifetime; investigation remains open.
-  These failures are retained as failures, not silently marked passed.
-- Upstream CMake scans test source and can register tests disabled by #ifdef;
-  CTest entry totals are not a claim that every entry executed a gtest case.
-- A pristine IPC quit produced SIGSEGV in APConsole::IsShown from
-  MyFrame::OnFrameTimer1. ProcessQuitFlag can close the frame, after which the
-  timer handler continues. Normal GUI close works. Backtrace retained in
+- [Run 35618922901](https://github.com/ThereptileII/Work/actions/runs/35618922901),
+  commit `f81d54402edeace7406dcb100bf4291f7d9a4535`: all seven CI jobs passed,
+  including native MSVC Win32 pristine and integrated builds on Windows x64,
+  portable contracts on both platforms and strict integrated Linux regressions.
+- Reviewed native Windows 1280×800 screenshots: XNav unavailable, day/dusk/night,
+  explicit simulation, paused/stale data, Legacy, Safe Mode and return to XNav.
+  No clipping or overlap at the tested 100% DPI setting. This is first-slice
+  visual evidence, not acceptance of the complete visual design or release UI.
+  Local artifact copy: `evidence/local/windows-f81d544/`; CI artifacts retain
+  the full commit in their names. No real nautical charts or sensors loaded.
+- Windows mode-cycle fixtures retain waypoint, route and track GUIDs, names,
+  ordered coordinates/timestamps in the actual SQLite navigation database,
+  disabled input-connection configuration and AIS CPA-warning configuration.
+  Database integrity and foreign-key checks pass. This does not establish AIS
+  target behavior, live connection behavior or third-party plugin compatibility.
+- All four portable contracts pass on Linux and native Windows, including
+  parent-exit ordering and restart argument preservation. Integrated Linux
+  discovers and passes 60 compiled gtest cases. Pristine source-scanned CTest
+  entry totals may include names without a compiled matching case.
+- Pristine Linux's known registry/IPC test defects are reported by the baseline
+  classifier, not counted as passing tests. The integrated test-only patch fixes
+  callback ownership, event-loop exit, timeout and registry ownership assertions.
+- A pristine Linux IPC quit crashed in APConsole::IsShown after the timer's
+  ProcessQuitFlag closed the frame. The guarded integration returns after close;
+  individual XNav, Legacy and Safe IPC-close checks pass locally. Backtrace:
   `evidence/local/pristine-shutdown-backtrace.log`.
-- Run 35616403676, commit 324a72b67fb6de7399ccc244d8d83383805f0bb7, introduces
-  the first guarded integration build. Windows results pending. Linux CI
-  dependency setup found the hosted Azure kernel has no vcan module; this is
-  an environment limitation, not a reason to claim CAN tests passed.
-- Real-chart regression, route/waypoint/track/AIS/connection persistence,
-  plugin behavior, non-default DPI and mode-switch interaction remain pending.
-- The dual-mode slice is **in progress**. SmartNav, hardware adapters and
-  installer integration are not started. No production-release acceptance.
+- A subsequent Linux canvas-menu mode switch exposed synchronous canvas deletion
+  during menu-handler unwinding. OpenNav now queues the close. Local shared-profile
+  cycling reaches XNav → Legacy → XNav → Safe → persisted XNav with clean exits.
+  Its initial IPC test also exposed a test-profile socket pathname over Linux's
+  107-byte limit; the fixture now uses a short private temporary path with spaces.
+- The integrated Safe Mode hooks also preserve bundled plugin enabled preferences;
+  the expanded Linux cycle passes with Dashboard enabled throughout.
+- Run GUI interaction tests after CTest, not concurrently: the application and
+  upstream REST tests use the same port 8443. A parallel local attempt reached
+  the GUI server and failed authentication; its log is retained separately.
+- These subsequent fixes and the expanded same-profile Safe Mode/native process
+  exit assertions require a new same-commit Windows gate before slice acceptance.
+- Hosted Linux's Azure kernel has no vcan module; real CAN tests remain unavailable.
+- Real-chart regression, representative plugins, non-default Windows DPI,
+  hardware interaction and installer lifecycle remain release gates. SmartNav,
+  hardware adapters and installer integration have not started.

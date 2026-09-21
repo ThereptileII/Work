@@ -1,0 +1,68 @@
+{
+  "commit": "f81d54402edeace7406dcb100bf4291f7d9a4535",
+  "run": "https://github.com/ThereptileII/Work/actions/runs/35618922901",
+  "artifact_id": 10648490106,
+  "authority": "Native Windows Server 2022 MSVC Win32 on x64",
+  "review_date": "2026-09-21",
+  "scope": "First XNav shell only; software rendering and synthetic disconnected fixtures",
+  "observations": [
+    "Day/dusk/night chrome follows the corresponding tokens.",
+    "Unavailable values use dashes and UNAVAILABLE labels.",
+    "Explicit simulator renders wind 16.2 kn, transducer depth 8.4 m, SOG 6.3 kn, COG 147 deg.",
+    "Paused values mute and show STALE 7s; SIMULATION PAUSED remains visible.",
+    "Legacy and Safe preserve stock interface layout; return to XNav restores shell."
+  ],
+  "limitations": [
+    "Full product design is not implemented.",
+    "No real nautical chart readability acceptance.",
+    "Non-default DPI and touch hardware not validated.",
+    "Later source changes require a new native gate."
+  ],
+  "screenshots": [
+    {
+      "file": "01-xnav-unavailable.png",
+      "sha256": "e992866ca4d278c0cc3db11e48f3c385ef247356e93ccd58e821080a5f67c1d9",
+      "review": "First-slice layout legible; no overlap or clipped primary controls."
+    },
+    {
+      "file": "02-xnav-dusk.png",
+      "sha256": "827e44aefd55a35dc5f310808f344862ac045d88534d7c5210889dbd409463fb",
+      "review": "First-slice layout legible; no overlap or clipped primary controls."
+    },
+    {
+      "file": "03-xnav-night.png",
+      "sha256": "9d00ec609e9e919819a7d6a2e2cbb94462c3a3baa6376a6852076afa5668a4c6",
+      "review": "First-slice layout legible; no overlap or clipped primary controls."
+    },
+    {
+      "file": "04-xnav-simulation.png",
+      "sha256": "85e8f2a812fa4494dc3c24c8632b19fc7d86b5af7206323c42bceeff5f2c6752",
+      "review": "First-slice layout legible; no overlap or clipped primary controls."
+    },
+    {
+      "file": "05-xnav-stale.png",
+      "sha256": "c57cddb4e2abe28ae9d10a6b9fdc06ec88b94c58f8934a41b84d7b1a92e8b573",
+      "review": "First-slice layout legible; no overlap or clipped primary controls."
+    },
+    {
+      "file": "06-xnav-after-legacy.png",
+      "sha256": "daa8fe30a0026540550795bafb2b2d7d10f8b5c06ba3c3b703e9c66c99200dec",
+      "review": "First-slice layout legible; no overlap or clipped primary controls."
+    },
+    {
+      "file": "11-legacy-after-xnav.png",
+      "sha256": "39813132494072ef63af4e6ae8d7a3fc2fbac2838b99b2bf18f6efae3ffe8f02",
+      "review": "First-slice layout legible; no overlap or clipped primary controls."
+    },
+    {
+      "file": "11-legacy-mode.png",
+      "sha256": "2c3f11260c1101326eae833eed29d1745305aaeb612e03476c9389fb7180a131",
+      "review": "First-slice layout legible; no overlap or clipped primary controls."
+    },
+    {
+      "file": "12-safe-mode.png",
+      "sha256": "f1c3c2820b1e29884c69c31227bc1d530910dad274fdf1c2a40615f0838c8ac5",
+      "review": "First-slice layout legible; no overlap or clipped primary controls."
+    }
+  ]
+}

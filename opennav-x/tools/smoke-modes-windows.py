@@ -75,20 +75,35 @@ try:
     ready(2)
     saved('XNav to Legacy')
     ui.capture(handle, evidence / '11-legacy-after-xnav.png')
+    old_process_handle = ui.monitor_process(pid)
     ui.click_menu(handle, 'Switch to XNav')
+    ui.wait_clean_exit(old_process_handle)
     next_handle, next_pid = ui.wait_window('OpenNav X / OpenCPN')
     assert next_pid != pid
     handle, pid = next_handle, next_pid
     ready(3)
     saved('Legacy to XNav')
     ui.capture(handle, evidence / '06-xnav-after-legacy.png')
+    last_process_handle = ui.monitor_process(pid)
     ui.close(handle)
-    deadline = time.monotonic() + 30
-    while ui.windows(pid) and time.monotonic() < deadline:
-        time.sleep(.2)
-    assert not ui.windows(pid), 'Final XNav window failed to close'
-    time.sleep(1)
+    ui.wait_clean_exit(last_process_handle)
     saved('Final XNav close')
+    # Safe Mode must win over both conflicting normal flags, preserve the saved
+    # normal preference, and use the exact same navigation/configuration store.
+    safe = subprocess.Popen([str(exe), '--configdir', str(profile), '--no_opengl',
+                             '--xnav', '--legacy', '--safe-mode'])
+    handle, pid = ui.wait_window('OpenNav Safe Mode / OpenCPN', safe.pid)
+    ready(4)
+    ui.capture(handle, evidence / '12-safe-shared-profile.png')
+    ui.close(handle)
+    assert safe.wait(timeout=30) == 0
+    saved('Safe override and close')
+    normal = subprocess.Popen([str(exe), '--configdir', str(profile), '--no_opengl'])
+    handle, pid = ui.wait_window('OpenNav X / OpenCPN', normal.pid)
+    ready(5)
+    ui.close(handle)
+    assert normal.wait(timeout=30) == 0
+    saved('Persisted XNav after Safe Mode')
     report['result'] = 'interaction and fixture persistence passed; visual review required'
 finally:
     if handle and ui.windows(pid):
@@ -97,5 +112,6 @@ finally:
     if process.poll() is None:
         process.terminate()
         process.wait(timeout=10)
-    shutil.copytree(profile, evidence / 'mode-cycle-profile', dirs_exist_ok=True)
+    shutil.copytree(profile, evidence / 'mode-cycle-profile', dirs_exist_ok=True,
+                    ignore=shutil.ignore_patterns('*.pem'))
     (evidence / 'mode-cycle-results.json').write_text(json.dumps(report, indent=2))

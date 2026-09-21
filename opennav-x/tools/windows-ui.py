@@ -1,6 +1,7 @@
 """Native Win32 UI automation and PNG capture; test tooling, never product code."""
 import ctypes as C
 from ctypes import wintypes as W
+import json
 from pathlib import Path
 import struct
 import time
@@ -23,6 +24,7 @@ GetWindowTextW = declare(user, 'GetWindowTextW', C.c_int, W.HWND, W.LPWSTR, C.c_
 IsWindowVisible = declare(user, 'IsWindowVisible', W.BOOL, W.HWND)
 GetWindowRect = declare(user, 'GetWindowRect', W.BOOL, W.HWND, C.POINTER(W.RECT))
 GetClientRect = declare(user, 'GetClientRect', W.BOOL, W.HWND, C.POINTER(W.RECT))
+GetDpiForWindow = declare(user, 'GetDpiForWindow', W.UINT, W.HWND)
 SetWindowPos = declare(user, 'SetWindowPos', W.BOOL, W.HWND, W.HWND, C.c_int, C.c_int, C.c_int, C.c_int, W.UINT)
 PostMessageW = declare(user, 'PostMessageW', W.BOOL, W.HWND, W.UINT, W.WPARAM, W.LPARAM)
 SendMessageW = declare(user, 'SendMessageW', C.c_ssize_t, W.HWND, W.UINT, W.WPARAM, W.LPARAM)
@@ -154,6 +156,10 @@ def capture(handle, path):
         Path(path).write_bytes(b'\x89PNG\r\n\x1a\n' +
             chunk(b'IHDR', struct.pack('!2I5B', width, height, 8, 2, 0, 0, 0)) +
             chunk(b'IDAT', zlib.compress(rows)) + chunk(b'IEND', b''))
+        Path(path).with_suffix('.json').write_text(json.dumps({
+            'title': text(handle), 'outer_pixels': [width, height],
+            'window_dpi': GetDpiForWindow(handle), 'rendering': 'software --no_opengl',
+            'authority': 'native Windows', 'visual_review': 'required'}, indent=2))
     finally:
         SelectObject(memory, previous)
         DeleteObject(bitmap)
@@ -207,3 +213,26 @@ def ensure_desktop():
 if __name__ == '__main__':
     import json
     print(json.dumps(ensure_desktop()))
+
+kernel = C.WinDLL('kernel32', use_last_error=True)
+OpenProcess = declare(kernel, 'OpenProcess', W.HANDLE, W.DWORD, W.BOOL, W.DWORD)
+WaitForSingleObject = declare(kernel, 'WaitForSingleObject', W.DWORD, W.HANDLE, W.DWORD)
+GetExitCodeProcess = declare(kernel, 'GetExitCodeProcess', W.BOOL, W.HANDLE, C.POINTER(W.DWORD))
+CloseHandle = declare(kernel, 'CloseHandle', W.BOOL, W.HANDLE)
+
+def monitor_process(pid):
+    handle = OpenProcess(0x00100000 | 0x1000, False, pid)
+    if not handle:
+        raise C.WinError(C.get_last_error())
+    return handle
+
+def wait_clean_exit(handle, timeout_ms=30000):
+    try:
+        if WaitForSingleObject(handle, timeout_ms) != 0:
+            raise RuntimeError('Native process did not exit within the deadline')
+        code = W.DWORD()
+        if not GetExitCodeProcess(handle, C.byref(code)):
+            raise C.WinError(C.get_last_error())
+        assert code.value == 0, f'Native process exited with code {code.value}'
+    finally:
+        CloseHandle(handle)

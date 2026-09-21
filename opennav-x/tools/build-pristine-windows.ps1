@@ -21,6 +21,25 @@ try {
         Run python @((Join-Path $PSScriptRoot 'prepare-integration.py'))
         $Source = Join-Path $Root 'build/integration-source'
     }
+    # Upstream's batch file can continue after a failed wget/7z operation.
+    # Prepopulate the exact supported wx bundle with checked, retryable fetches.
+    $Wx = Join-Path $Source 'cache/wxWidgets-3.2.8'
+    $Downloads = Join-Path $Source 'cache/opennav-downloads'
+    New-Item -ItemType Directory -Force $Downloads | Out-Null
+    $WxLock = Get-Content (Join-Path $PSScriptRoot 'windows-wx.lock.json') -Raw | ConvertFrom-Json
+    foreach ($Item in $WxLock.archives) {
+        $Archive = Join-Path $Downloads $Item.file
+        if (-not (Test-Path $Archive) -or ((Get-FileHash $Archive -Algorithm SHA256).Hash.ToLowerInvariant() -ne $Item.sha256)) {
+            Run curl.exe @('--fail', '--location', '--silent', '--show-error', '--retry', '3',
+                '--retry-all-errors', '--connect-timeout', '20', '--max-time', '180', '--output', $Archive, $Item.url)
+        }
+        if ((Get-FileHash $Archive -Algorithm SHA256).Hash.ToLowerInvariant() -ne $Item.sha256) {
+            throw "Dependency checksum mismatch: $($Item.file)"
+        }
+        Run 7z @('x', '-y', "-o$Wx", $Archive)
+    }
+    if (-not (Test-Path (Join-Path $Wx 'include/wx/version.h'))) { throw 'wxWidgets headers missing after extraction' }
+    Copy-Item (Join-Path $PSScriptRoot 'windows-wx.lock.json') (Join-Path $Evidence 'windows-wx-provenance.json')
     Push-Location $Source
     try {
         Run cmd @('/c', 'buildwin\win_deps.bat')

@@ -40,6 +40,8 @@ int main() {
     Require(Assess(sample, time).quality == Quality::Uncertain, "Uncertainty retained");
     sample.validity = Validity::Invalid;
     Require(!Assess(sample, time).value, "Invalid data suppressed");
+    sample.validity = static_cast<Validity>(99);
+    Require(!Assess(sample, time).value, "Unknown validity fails closed");
     bool invalid_policy_rejected = false;
     try { (void)Assess(sample, time, Freshness{5s, 2s}); }
     catch (const std::invalid_argument&) { invalid_policy_rejected = true; }

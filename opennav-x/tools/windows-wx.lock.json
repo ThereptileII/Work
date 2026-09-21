@@ -1,0 +1,25 @@
+{
+  "version": "3.2.8",
+  "abi": "vc14x x86 DLL",
+  "provenance": "Downloaded from official wxWidgets release over HTTPS, hashes recorded 2026-09-21",
+  "archives": [
+    {
+      "file": "wxMSW-3.2.8_vc14x_Dev.7z",
+      "url": "https://github.com/wxWidgets/wxWidgets/releases/download/v3.2.8/wxMSW-3.2.8_vc14x_Dev.7z",
+      "sha256": "2d1469322e89293e351260954f0575a18629a78d53a39e0545b1594f221f5810",
+      "bytes": 33824019
+    },
+    {
+      "file": "wxWidgets-3.2.8-headers.7z",
+      "url": "https://github.com/wxWidgets/wxWidgets/releases/download/v3.2.8/wxWidgets-3.2.8-headers.7z",
+      "sha256": "996041908057574ee3836a5f5e03f40858ffc61011231f19a5e87297b74b74e2",
+      "bytes": 1454469
+    },
+    {
+      "file": "wxMSW-3.2.8_vc14x_ReleaseDLL.7z",
+      "url": "https://github.com/wxWidgets/wxWidgets/releases/download/v3.2.8/wxMSW-3.2.8_vc14x_ReleaseDLL.7z",
+      "sha256": "a1a9b44932c9f3a6c309956535128cbd6a259200b1bfa150e8c108525204a014",
+      "bytes": 3781947
+    }
+  ]
+}

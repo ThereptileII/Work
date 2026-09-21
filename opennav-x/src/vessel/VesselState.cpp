@@ -11,7 +11,8 @@ Assessment Assess(const Sample& sample, Time now, Freshness freshness) {
     throw std::invalid_argument("Freshness requires 0 <= aging < stale");
   }
   if (!sample.value || !std::isfinite(*sample.value) || sample.source.empty() ||
-      sample.validity == Validity::Invalid) {
+      (sample.validity != Validity::Measured && sample.validity != Validity::Estimated &&
+       sample.validity != Validity::Uncertain)) {
     return {};
   }
   if (sample.observed_at > now) {

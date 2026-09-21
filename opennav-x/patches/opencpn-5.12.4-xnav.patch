@@ -1,7 +1,7 @@
-diff --git i/CMakeLists.txt w/CMakeLists.txt
+diff --git a/CMakeLists.txt b/CMakeLists.txt
 index 11e429677..2d54c45b3 100644
---- i/CMakeLists.txt
-+++ w/CMakeLists.txt
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
 @@ -2771,6 +2771,11 @@ endif ()
  add_subdirectory(model)
  target_link_libraries(${PACKAGE_NAME} PUBLIC ocpn::model-src ocpn::model)
@@ -14,10 +14,10 @@ index 11e429677..2d54c45b3 100644
  if (OCPN_BUILD_TEST)
  
    add_subdirectory(libs/gtest)
-diff --git i/gui/src/canvasMenu.cpp w/gui/src/canvasMenu.cpp
+diff --git a/gui/src/canvasMenu.cpp b/gui/src/canvasMenu.cpp
 index b65126b6c..0cceb4c8d 100644
---- i/gui/src/canvasMenu.cpp
-+++ w/gui/src/canvasMenu.cpp
+--- a/gui/src/canvasMenu.cpp
++++ b/gui/src/canvasMenu.cpp
 @@ -24,6 +24,9 @@
   **************************************************************************/
  
@@ -38,10 +38,10 @@ index b65126b6c..0cceb4c8d 100644
    parent->PopupMenu(menuFocus, x, y);
  
  #ifdef __ANDROID__
-diff --git i/gui/src/chcanv.cpp w/gui/src/chcanv.cpp
+diff --git a/gui/src/chcanv.cpp b/gui/src/chcanv.cpp
 index 258ae04bc..ec86c6c2e 100644
---- i/gui/src/chcanv.cpp
-+++ w/gui/src/chcanv.cpp
+--- a/gui/src/chcanv.cpp
++++ b/gui/src/chcanv.cpp
 @@ -24,6 +24,9 @@
   **************************************************************************/
  
@@ -62,10 +62,10 @@ index 258ae04bc..ec86c6c2e 100644
    if (g_useMUI && !m_muiBar) {  // rebuild if necessary
  
      // We need to update the m_bENCGroup flag, at least for the initial creation
-diff --git i/gui/src/ocpn_app.cpp w/gui/src/ocpn_app.cpp
+diff --git a/gui/src/ocpn_app.cpp b/gui/src/ocpn_app.cpp
 index a7670a674..707ecbe42 100644
---- i/gui/src/ocpn_app.cpp
-+++ w/gui/src/ocpn_app.cpp
+--- a/gui/src/ocpn_app.cpp
++++ b/gui/src/ocpn_app.cpp
 @@ -22,6 +22,9 @@
   *   Free Software Foundation, Inc.,                                       *
   *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
@@ -158,10 +158,10 @@ index a7670a674..707ecbe42 100644
  
    return TRUE;
  }
-diff --git i/gui/src/ocpn_frame.cpp w/gui/src/ocpn_frame.cpp
+diff --git a/gui/src/ocpn_frame.cpp b/gui/src/ocpn_frame.cpp
 index 8b7a14403..30d1bf560 100644
---- i/gui/src/ocpn_frame.cpp
-+++ w/gui/src/ocpn_frame.cpp
+--- a/gui/src/ocpn_frame.cpp
++++ b/gui/src/ocpn_frame.cpp
 @@ -22,6 +22,9 @@
   *   Free Software Foundation, Inc.,                                       *
   *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
@@ -230,10 +230,25 @@ index 8b7a14403..30d1bf560 100644
  
    if (bDBUpdateInProgress) return;
  
-diff --git i/gui/src/toolbar.cpp w/gui/src/toolbar.cpp
+diff --git a/gui/src/pluginmanager.cpp b/gui/src/pluginmanager.cpp
+index ef2314764..7475af772 100644
+--- a/gui/src/pluginmanager.cpp
++++ b/gui/src/pluginmanager.cpp
+@@ -1280,6 +1280,10 @@ wxString PlugInManager::GetPluginOrder() {
+ }
+ 
+ bool PlugInManager::UpdateConfig() {
++#ifdef OPENNAV_X
++  // Safe Mode disables plugins for this session, not the next normal startup.
++  if (safe_mode::get_mode()) return true;
++#endif
+   //    pConfig->SetPath( _T("/PlugIns/") );
+   //    pConfig->Write( _T("PluginOrder"), GetPluginOrder() );
+ 
+diff --git a/gui/src/toolbar.cpp b/gui/src/toolbar.cpp
 index e71022302..0cdc305e1 100644
---- i/gui/src/toolbar.cpp
-+++ w/gui/src/toolbar.cpp
+--- a/gui/src/toolbar.cpp
++++ b/gui/src/toolbar.cpp
 @@ -23,6 +23,9 @@
   *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
   **************************************************************************/
@@ -274,3 +289,17 @@ index e71022302..0cdc305e1 100644
    if (g_disable_main_toolbar) return;
  
  #ifdef ocpnUSE_GL
+diff --git a/model/src/plugin_loader.cpp b/model/src/plugin_loader.cpp
+index dd8543de5..cd4b3b797 100644
+--- a/model/src/plugin_loader.cpp
++++ b/model/src/plugin_loader.cpp
+@@ -625,7 +625,9 @@ bool PluginLoader::LoadPluginCandidate(const wxString& file_name,
+ 
+       if (safe_mode::get_mode()) {
+         pic->m_enabled = false;
++#ifndef OPENNAV_X
+         enabled.Set(false);
++#endif
+       }
+       if (dynamic_cast<wxApp*>(wxAppConsole::GetInstance())) {
+         // The CLI has no graphics context, but plugins assumes there is.

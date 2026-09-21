@@ -42,8 +42,13 @@ void RequestMode(InterfaceMode mode) {
   restart = mode;
   // OpenCPN may refuse close while initialising, compressing or updating charts.
   // Only PrepareClose commits the request and releases the shell.
-  host->Close();
-  if (host) restart.reset();
+  // A canvas popup still unwinds and unbinds handlers after its menu callback.
+  // Closing there would delete the canvas while that stack is still active.
+  host->CallAfter([] {
+    if (!host) { restart.reset(); return; }
+    host->Close();
+    if (host) restart.reset();  // Upstream vetoed the close request.
+  });
 }
 
 ui::LightMode Light() {

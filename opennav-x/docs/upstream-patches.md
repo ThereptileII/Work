@@ -36,13 +36,16 @@ Do not leave undocumented direct OpenCPN modifications.
 | gui/src/toolbar.cpp | Suppress only main stock toolbar rendering and mouse handling in XNav | Legacy toolbar and plugin tools; medium risk |
 | gui/src/chcanv.cpp | Skip main MUI chrome in XNav; chart logic unchanged | Chart interaction and Legacy controls; low risk |
 | gui/src/canvasMenu.cpp | Context-menu fallback for mode switch | Menu access with hidden menu bar; low risk |
+| model/src/plugin_loader.cpp | Keep plugins inactive in Safe Mode without persisting disabled preferences | Enabled Dashboard fixture through Safe and normal restart; low risk |
+| gui/src/pluginmanager.cpp | Avoid saving temporary Safe Mode plugin states as normal preferences | Same shared-profile fixture; low risk |
 
 Public plugin API 1.20 does not provide ownership of application startup,
 main-frame chrome or shutdown. Narrow core hooks are necessary; zoom, follow,
 theme, chart, route and configuration behavior reuse the existing implementation.
 All GUI hooks are guarded by OPENNAV_X. No device command logic is added.
-Windows and Linux interaction acceptance remains pending; compilation alone is
-not acceptance. See baseline.md for the independent pristine-build results.
+The first native Windows mode-cycle and visual review passed at `f81d544` (see
+baseline.md). Later fixes require a fresh same-commit gate; compilation alone is
+not acceptance.
 
 ### Shutdown timer guard
 
@@ -51,7 +54,25 @@ pristine Linux core showed APConsole::IsShown reached later in the same timer
 callback after cleanup. This one guard affects no normal navigation work and
 runs only in the integrated build. Regression: normal close, mode restart and
 IPC quit must all exit without a crash. Pristine source retains the original
-behavior for comparison. This change is pending runtime validation.
+behavior for comparison. Individual integrated Linux IPC-close checks pass in
+all three modes; the shared-profile cycle also checks IPC close after restart.
+
+OpenNav mode requests now queue the close with `CallAfter`. A Linux core showed
+that immediate close from a canvas popup deleted the canvas before
+`InvokeCanvasMenu` finished unbinding its handlers. This fix lives in the
+OpenNav bridge; it adds no further upstream edits. The Linux cycle uses this
+context-menu path, while Windows exercises the Legacy menu-bar path.
+
+### Safe Mode plugin preferences
+
+Upstream's loader both disables a bundled plugin in memory and writes `bEnabled`
+false; the GUI plugin manager can also save that temporary state. The integration
+guards those two writes in Safe Mode. Loading and initialization remain disabled
+as upstream requires, and normal-mode changes still save normally. The model
+definition is scoped to `plugin_loader.cpp` from OpenNav's CMake integration.
+This prevents even an intermediate flush or abnormal Safe Mode exit from
+permanently disabling the user's bundled plugins. A bundled Dashboard plugin
+enabled in the fixture must remain enabled after every mode transition.
 
 ## Upstream regression-test repairs (separate patch)
 

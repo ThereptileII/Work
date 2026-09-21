@@ -3,11 +3,13 @@ from pathlib import Path
 import configparser
 import shutil
 import sqlite3
+import sys
 import xml.etree.ElementTree as ET
 
 ROOT = Path(__file__).resolve().parents[1]
 NS = {'g': 'http://www.topografix.com/GPX/1/1', 'o': 'http://www.opencpn.org'}
 CONNECTION = '1;0;127.0.0.1;10110;0;;4800;1;0;0;;0;;0;0;0;0;0;SIMULATED disabled input;0;;0;1;'
+PLUGIN = 'dashboard_pi.dll' if sys.platform == 'win32' else 'libdashboard_pi.so'
 
 def seed(profile):
     assert (profile / 'OPENNAV_TEST_PROFILE').is_file(), 'Only disposable test profiles are allowed'
@@ -16,6 +18,10 @@ def seed(profile):
     with (profile / 'opencpn.conf').open('a') as stream:
         stream.write('\n[Settings/NMEADataSource]\nDataConnections=' + CONNECTION + '\n')
         stream.write('[Settings/AIS]\nbCPAWarn=1\nCPAWarnNMi=0.75\n')
+        stream.write(f'[PlugIns/{PLUGIN}]\nbEnabled=1\n')
+        # Exercise DLL initialization without opening a separate instrument pane
+        # over the canonical XNav layout screenshots.
+        stream.write('[PlugIns/Dashboard]\nVersion=2\nDashboardCount=0\n')
 
 def snapshot(profile):
     assert (profile / 'OPENNAV_TEST_PROFILE').is_file()
@@ -59,5 +65,7 @@ def snapshot(profile):
     result['connection'] = connection
     result['ais_cpa_warn'] = config.getboolean('Settings/AIS', 'bCPAWarn')
     result['ais_cpa_nm'] = config.getfloat('Settings/AIS', 'CPAWarnNMi')
+    result['dashboard_enabled'] = config.getboolean('PlugIns/' + PLUGIN, 'bEnabled')
+    assert result['dashboard_enabled'], 'Safe Mode changed the normal plugin preference'
     assert result['ais_cpa_warn'] and result['ais_cpa_nm'] == .75
     return result

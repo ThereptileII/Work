@@ -157,8 +157,8 @@ void Shell::ShowSystem() {
   layout->Add(heading, 0, wxALL, gap);
   auto* info = new wxStaticText(popup, wxID_ANY,
       "OpenNav X / development slice\nOpenCPN 5.12.4 / API 1.20\nMode: XNav\n" +
-      wxString(simulation_ ? "Data: explicit simulator" : "Data: unavailable; live adapter pending") +
-      "\nAutopilot / radar commands: disabled");
+      wxString(simulation_ ? "Data: explicit simulator" : "Data: no connected source") +
+      "\nOpenNav device controls: unavailable");
   info->SetFont(UiFont(*popup, 13));
   info->SetForegroundColour(Colour(Theme(mode_).secondary));
   layout->Add(info, 0, wxLEFT | wxRIGHT | wxBOTTOM, gap);
@@ -177,9 +177,11 @@ void Shell::ShowSystem() {
   auto* legacy = new XNavButton(popup, wxID_ANY, "Open Legacy OpenCPN", "Save and restart in Legacy OpenCPN");
   legacy->SetLightMode(mode_);
   legacy->Bind(wxEVT_BUTTON, [this, popup](wxCommandEvent&) {
+    // Closing the host can synchronously destroy this Shell and its actions.
+    const auto restart_action = actions_.legacy;
     popup->Dismiss();
     popup->Destroy();
-    if (actions_.legacy) actions_.legacy();
+    if (restart_action) restart_action();
   });
   layout->Add(legacy, 0, wxEXPAND | wxLEFT | wxRIGHT | wxBOTTOM, gap);
   popup->SetSizerAndFit(layout);
