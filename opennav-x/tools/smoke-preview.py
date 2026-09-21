@@ -22,6 +22,7 @@ evidence=root/'evidence/local';evidence.mkdir(parents=True,exist_ok=True)
 temporary=tempfile.TemporaryDirectory(prefix='OpenNav preview ',dir=None if windows else '/tmp')
 temp=Path(temporary.name)
 env=dict(os.environ);ui=None;xserver=None;app=None;handle=None;pid=None
+normal_locations=[];normal_before={}
 report={'authority':'native Windows extracted ZIP' if windows else 'Linux development',
         'checks':[],'screenshots':[],'higher_dpi':'Not exercised by this hosted desktop; manual validation remains open'}
 
@@ -29,7 +30,24 @@ def module(name):
     spec=importlib.util.spec_from_file_location(name,root/'tools'/f'{name}.py')
     mod=importlib.util.module_from_spec(spec);spec.loader.exec_module(mod);return mod
 
+def normal_snapshot():
+    result={}
+    for location in normal_locations:
+        candidates=location.rglob('*') if location.is_dir() else [location]
+        for file in candidates:
+            if file.is_file(): result[str(file)]=hashlib.sha256(file.read_bytes()).hexdigest()
+    return result
+
 if windows:
+    # Read-only audit of existing Windows OpenCPN config/install locations.
+    # APPDATA alone is insufficient: upstream also uses common application data.
+    for key in ['APPDATA','LOCALAPPDATA','PROGRAMDATA']:
+        if os.environ.get(key):
+            base=Path(os.environ[key])
+            normal_locations += [base/'opencpn',base/'opencpn.ini',base/'opencpn.log']
+    for key in ['ProgramFiles','ProgramFiles(x86)']:
+        if os.environ.get(key): normal_locations.append(Path(os.environ[key])/'OpenCPN')
+    normal_before=normal_snapshot()
     ui=module('windows-ui');report['display']=ui.ensure_desktop()
     with zipfile.ZipFile(args.package) as z:z.extractall(temp)
     package=temp/'OpenNavX-DeveloperPreview';profile=package/'profile';logs=package/'logs';exe=package/'app/opencpn.exe'
@@ -52,6 +70,9 @@ else:
     env['DISPLAY']=f':{number}'
     xserver=subprocess.Popen(['Xvfb',env['DISPLAY'],'-screen','0','1280x800x24','-nolisten','tcp'],env=env,stdout=subprocess.DEVNULL,stderr=subprocess.DEVNULL)
     time.sleep(1)
+# Only this freshly extracted disposable test copy receives the fixture marker.
+# The downloadable profile remains a clean user preview, without test hooks.
+if windows: (profile/'OPENNAV_TEST_PROFILE').write_text('CI disposable extracted preview only\n')
 fixtures=module('profile-fixtures');fixtures.seed(profile);expected_profile=fixtures.snapshot(profile)
 
 def xdo(*arguments):
@@ -110,7 +131,9 @@ def close_current():
         raise RuntimeError('Preview did not exit cleanly')
 def preserved():
     assert fixtures.snapshot(profile)==expected_profile,'Preview changed seeded navigation/configuration fixtures'
-    if windows:assert (normal/'opencpn.ini').read_text()=='NORMAL PROFILE MUST NOT CHANGE\n'
+    if windows:
+        assert (normal/'opencpn.ini').read_text()=='NORMAL PROFILE MUST NOT CHANGE\n'
+        assert normal_snapshot()==normal_before,'Existing normal OpenCPN files changed'
 def launch(mode,demo=False,launcher=None,direct=False):
     if windows and launcher:
         return subprocess.Popen([os.environ['COMSPEC'],'/d','/c',str(package/launcher)],cwd=temp,env=env,stdout=subprocess.DEVNULL,stderr=subprocess.DEVNULL)
@@ -186,6 +209,8 @@ try:
         assert (normal/'opencpn.ini').read_text()=='NORMAL PROFILE MUST NOT CHANGE\n'
         assert sorted(p.name for p in normal.iterdir())==['opencpn.ini']
         report['checks'].append('All four launchers, direct executable launch and external-profile refusal passed with no development PATH')
+        report['checks'].append('Normal profile canary and existing OpenCPN files under APPDATA, LOCALAPPDATA, PROGRAMDATA and Program Files remain unchanged')
+        report['normal_files_audited']=len(normal_before)
     else:
         close_current();app=launch('safe-mode');handle,pid=window('OpenNav Safe Mode / OpenCPN');ready(4);capture('preview-08-safe');close_current();preserved()
     handle=None

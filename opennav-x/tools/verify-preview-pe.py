@@ -55,7 +55,7 @@ def main():
         dependencies=[]
         for dependency in imports(binary):
             local=next((p for folder in (binary.parent,app) for p in folder.iterdir() if p.name.lower()==dependency),None)
-            mandatory=dependency.startswith(('msvcp','vcruntime','concrt','wx','lib','archive','zlib','glew'))
+            mandatory=dependency != 'msvcrt.dll' and dependency.startswith(('msvcp','msvcr','vcruntime','vcomp','concrt','wx','lib','archive','zlib','glew'))
             if local:origin=str(local.relative_to(app))
             elif not mandatory and (dependency.startswith(('api-ms-win-','ext-ms-win-')) or (system/dependency).is_file()):origin='Windows OS'
             else:origin='MISSING';report['missing'].append({'binary':str(binary.relative_to(app)),'dll':dependency})

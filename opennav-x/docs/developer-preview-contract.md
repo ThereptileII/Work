@@ -102,7 +102,9 @@ mode, selected NMEA, normal-timer route and repeated restart gates continue.
 `smoke-preview.py` exercises every scenario and page, moving values, withheld
 predictions and shared-profile mode switching. Native Windows additionally tests
 all launchers, direct EXE isolation, refused external profile, unchanged normal
-profile canary, package hashes and DLL closure. It captures ten native 1280x800
+profile canary, unchanged existing common/user OpenCPN files, package hashes
+and DLL closure. The test harness marks only its disposable extracted copy for
+fixture seeding; the shipped profile contains no test marker. It captures ten native 1280x800
 images for review. 125/150% DPI, touch, target PC and at-sea validation remain
 explicit manual limitations where the hosted desktop cannot provide them.
 

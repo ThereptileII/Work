@@ -57,6 +57,12 @@ std::optional<double> Distance(const vessel::VesselState &s, vessel::Time now) {
                                   .remaining_distance_nm
                             : std::nullopt;
 }
+wxString DestinationName(const vessel::VesselState &s) {
+  if (!s.navigation.route || s.navigation.route->route_id.empty() ||
+      s.navigation.route->state == vessel::RouteState::NoActiveRoute)
+    return "No active route";
+  return s.simulated ? "Sheltered bay" : "OpenCPN active route";
+}
 wxString PointName(const vessel::VesselState &s) {
   if (!s.navigation.route || s.navigation.route->active_waypoint_id.empty())
     return "No active waypoint";
@@ -152,13 +158,14 @@ void PreviewPanel::Paint(wxPaintEvent &) {
     p.Value(state_.propulsion.motor_temperature_c, b.x + cw / 2, b.y + 188,
             "Motor / C", 0, 27);
     const auto gear = vessel::AssessText(state_.propulsion.gear, now_);
-    p.Text("Gear: " +
-               (gear.value ? W(*state_.propulsion.gear.value) : "Unavailable"),
+    p.Text("Gear: " + (gear.value ? W(*gear.value) + " / " +
+                                        W(vessel::QualityName(gear.quality))
+                                  : "Unavailable"),
            b.x + 20, b.y + 284, 11, c.secondary);
     b = xy(2);
     p.Card(b.x, b.y, cw, ch, "DESTINATION");
-    p.Text(state_.simulated ? "Sheltered bay" : "Active OpenCPN route",
-           b.x + 20, b.y + 48, 19, c.primary, true, cw - 40);
+    p.Text(DestinationName(state_), b.x + 20, b.y + 48, 19, c.primary, true,
+           cw - 40);
     p.Text(distance ? wxString::Format("%.1f NM remaining", *distance)
                     : "Remaining distance unavailable",
            b.x + 20, b.y + 80, 15, c.secondary, false, cw - 40);
@@ -205,8 +212,8 @@ void PreviewPanel::Paint(wxPaintEvent &) {
     const int columns = width >= 760 ? 2 : 1,
               cw = (width - 2 * margin - gap * (columns - 1)) / columns;
     p.Card(margin, 96, cw, 325, "DESTINATION");
-    p.Text(state_.simulated ? "Sheltered bay" : "OpenCPN active route",
-           margin + 20, 145, 24, c.primary, true, cw - 40);
+    p.Text(DestinationName(state_), margin + 20, 145, 24, c.primary, true,
+           cw - 40);
     p.Text(distance ? wxString::Format("%.2f", *distance) : Dash(), margin + 20,
            187, 52, c.accent, true);
     p.Text("NM remaining along route", margin + 20, 249, 14, c.secondary);
