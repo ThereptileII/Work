@@ -117,3 +117,31 @@ energy and restart tests remain required independently.
 
 No final route UI, route editing workflow, battery adapter, production arrival-SOC
 connection or steering capability is added by this slice.
+
+## Required scenario coverage
+
+| Requirement | Automated evidence |
+| --- | --- |
+| First / middle / final active waypoint | Portable cases; real upstream antimeridian test; normal-timer scenario |
+| Arrival / advance | Portable old-range rejection and recovery; upstream actually advances during application scenario |
+| Skipped waypoint | Portable transition; actual `ActivateNextPoint(..., true)` followed by normal timer |
+| Deactivation | Portable absence; immediate getter invalidation and following application pass |
+| Deletion | Real model removal and retained lifetime; deletion while active in application scenario |
+| Reversal | Actual pinned `Route::Reverse`, revision rejection and stable recovery |
+| Active edit | Geometry/leg change; open route or waypoint edit flags; application edit and recovery |
+| Repeated identity | Duplicate GUIDs and the same object appearing twice in a real route |
+| Invalid leg distance | Negative and nonfinite incoming legs, including already-travelled legs |
+| NaN / infinite / overflow distance | Explicit portable rejection with absent result |
+| Missing position | Portable absent sample; no default coordinate/distance |
+| Stale position | Exact 5-second boundary, retained-snapshot assessment, loopback stop/resume |
+| Out-of-order observation | Observation and position watermarks independently tested |
+| Route identity / revision change | Stable revision, changed GUID, edit/reverse revisions and transition suppression |
+| Antimeridian geometry | Actual pinned `DistGreatCircle` and stored Mercator legs, compared with console traversal |
+| No active route | Portable absence and normal application pass |
+| Route changed during read | Before/after rejection plus nested event edit-then-restore guard |
+| Lifetime / thread boundary | Immutable retained values survive model deletion; worker-thread read rejected |
+
+The model fixture supplies a minimal GUI-friend shim to initialize empty icon
+collections normally created by the real GUI. The model test executable does
+not link the GUI implementation. This keeps normal model destruction valid
+without changing upstream access, ownership or navigation calculations.

@@ -125,10 +125,17 @@ void RouteScenarioStep(const RouteProgress& s) {
         Invalid(CurrentRouteProgress(),"immediate deactivation invalidation");break;
       case 18:
         Invalid(s,"deactivated route remains unavailable");
-        Check(g_pRouteMan->DeleteRoute(route),"Cannot delete fixture route");route=nullptr;
+        g_pRouteMan->ActivateRoute(route,route->GetPoint(2));
+        Invalid(CurrentRouteProgress(),"reactivation awaiting normal progress");break;
+      case 19:Invalid(s,"reactivated route transition");break;
+      case 20:
+        Valid(s,1,"active route immediately before deletion");
+        Check(g_pRouteMan->DeleteRoute(route),"Cannot delete active fixture route");route=nullptr;
         Check(retained && retained->remaining_distance_nm && retained->active_waypoint_id=="OPENNAV-TEST-point-1",
               "Retained immutable snapshot did not survive deletion");
-        Invalid(CurrentRouteProgress(),"deleted route unavailable; retained copy safe");
+        Invalid(CurrentRouteProgress(),"active deletion invalidates immediately; retained copy safe");break;
+      case 21:
+        Invalid(s,"deleted active route remains unavailable on next normal pass");
         report["result"]=wxString::FromUTF8("passed");report["phase"]=wxString::FromUTF8("done");finished=true;break;
     }
     ++step;Write();

@@ -56,7 +56,8 @@ class OpenNavRouteGeometry : public ::testing::Test {
     routes.Append(route.get());
   }
   void TearDown() override {
-    manager->DeactivateRoute(); manager.reset(); route.reset();
+    if (manager) manager->DeactivateRoute();
+    manager.reset(); route.reset();
     routes.Clear(); waypoints.reset();
     pWayPointMan=previous_waypoints; pRouteList=previous_routes; g_pRouteMan=previous_manager;
     initializer.reset();

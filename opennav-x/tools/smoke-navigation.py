@@ -155,6 +155,12 @@ try:
                     phase[0] = 'none'
                 elif result.get('phase') == 'resume-input':
                     if not seen_stale:
+                        # Route observation and the shell's 250 ms repaint have
+                        # independent schedules. Keep input stopped while the
+                        # visible rail catches up to the proven stale contract.
+                        time.sleep(.6)
+                        if windows:
+                            assert any(caption == 'Navigation stale' for _, caption in ui.children(handle))
                         capture('02-stale-position')
                         seen_stale = True
                     phase[0] = 'rmc'
