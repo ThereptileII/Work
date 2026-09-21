@@ -9,10 +9,12 @@
 namespace opennav {
 namespace {
 std::optional<vessel::Time> ObservationTime(const timespec& sent) {
+  // Sample our clock first. If preempted between clock reads, this ordering
+  // overestimates age rather than making a delayed observation look newer.
+  const auto received = vessel::Clock::now();
   timespec current{};
   if (sent.tv_sec < 0 || sent.tv_nsec < 0 || sent.tv_nsec >= 1000000000 ||
       clock_gettime(CLOCK_MONOTONIC, &current) != 0) return std::nullopt;
-  const auto received = vessel::Clock::now();
   const auto age = std::chrono::seconds(current.tv_sec - sent.tv_sec)
                  + std::chrono::nanoseconds(current.tv_nsec - sent.tv_nsec);
   if (age < std::chrono::nanoseconds::zero()) return std::nullopt;
