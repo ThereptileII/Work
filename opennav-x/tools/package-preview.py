@@ -113,8 +113,7 @@ for license_file in source.rglob('*'):
         target = destination / 'docs/licenses/OpenCPN' / relative
         target.parent.mkdir(parents=True, exist_ok=True)
         shutil.copy2(license_file, target)
-wx_license = ROOT / 'build/integration-source/cache/wxWidgets-3.2.8/docs/licence.txt'
-if wx_license.exists(): shutil.copy2(wx_license, destination / 'docs/licenses/wxWidgets.txt')
+shutil.copytree(ROOT / 'docs/third-party/wxWidgets-3.2.8', destination / 'docs/licenses/wxWidgets-3.2.8')
 (destination / 'docs/SOURCE_AND_LICENSES.md').write_text(f'''# Source and third-party notices
 
 OpenCPN and this integration are distributed under their applicable GPL terms.

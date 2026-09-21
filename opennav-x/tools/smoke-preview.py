@@ -143,6 +143,13 @@ def launch(mode,demo=False,launcher=None,direct=False):
 try:
     app=launch('xnav',True,'Run-XNav-Demo.cmd' if windows else None)
     handle,pid=window('OpenNav X / OpenCPN');ready(1)
+    if windows:
+        rect=ui.W.RECT();ui.GetWindowRect(handle,ui.C.byref(rect))
+        report['initial_outer_pixels']=[rect.right-rect.left,rect.bottom-rect.top]
+        assert rect.right-rect.left>=1280 and rect.bottom-rect.top>=740,report['initial_outer_pixels']
+        native_log=(profile/'opencpn.log').read_text(errors='replace')
+        assert 'TC_FILE_NOT_FOUND' not in native_log,'Portable resource paths do not resolve'
+        assert 'Using portable plugin dir:' in native_log
     first=data(lambda d:d['data_mode']=='DEMO' and 'arrival_soc' in d['energy'])
     assert first['route']['source'].startswith('DEMO')
     capture('preview-01-navigation-day')
@@ -217,6 +224,22 @@ try:
     report['checks'].append('XNav / Legacy / Safe clean lifecycle and shared navigation/config persistence passed; mode switch stops Demo')
     report['result']='passed; screenshot review required'
 finally:
+    if windows and 'result' not in report:
+        # Preserve the actual startup dialog instead of dismissing it. Terminate
+        # only an executable belonging to this freshly extracted test package.
+        query=ui.declare(ui.kernel,'QueryFullProcessImageNameW',ui.W.BOOL,ui.W.HANDLE,ui.W.DWORD,ui.W.LPWSTR,ui.C.POINTER(ui.W.DWORD))
+        terminate=ui.declare(ui.kernel,'TerminateProcess',ui.W.BOOL,ui.W.HANDLE,ui.W.UINT)
+        seen=set();report['failure_windows']=[]
+        for h,process,title in ui.windows():
+            ph=ui.OpenProcess(0x1000|1,False,process)
+            if not ph:continue
+            try:
+                size=ui.W.DWORD(32768);name=ui.C.create_unicode_buffer(size.value)
+                if query(ph,0,name,ui.C.byref(size)) and str(Path(name.value).resolve()).casefold()==str(exe.resolve()).casefold():
+                    report['failure_windows'].append({'title':title,'children':[caption for _,caption in ui.children(h)]})
+                    if process not in seen:terminate(ph,1);seen.add(process)
+            finally:ui.CloseHandle(ph)
+        time.sleep(.5)
     if handle and windows:
         try:ui.close(handle)
         except Exception:pass

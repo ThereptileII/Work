@@ -28,6 +28,7 @@
 #include <wx/utils.h>
 #include "ocpn_plugin.h"
 
+#include <algorithm>
 #include <iostream>
 #include <memory>
 #include <optional>
@@ -116,6 +117,10 @@ bool ParseCommandLine(wxCmdLineParser& parser) {
     if(preview_paths) {
       g_bportable=true;g_configdir=platform::PathUtf8(preview_paths->profile);configdir=wxString::FromUTF8(g_configdir);
       diagnostic_directory=platform::PathUtf8(preview_paths->logs);
+      // OpenCPN normalizes portable resources relative to PrivateDataDir.
+      // Match that base for direct launch and restart as well as the launchers.
+      if(!wxSetWorkingDirectory(configdir))
+        throw std::runtime_error("Cannot use the Developer Preview profile as its working directory");
       if(parser.Found("remote")) throw std::runtime_error("Developer Preview does not send remote commands to another OpenCPN instance");
     } else if(!configdir.empty()) diagnostic_directory=configdir.ToStdString(wxConvUTF8);
   } catch(const std::exception& e) {std::cerr<<e.what()<<'\n';return false;}
@@ -161,8 +166,15 @@ void SelectMode(wxFileConfig& config, bool upstream_safe) {
   wxLogMessage("OpenNav startup: %s", selected == StartupMode::Safe ? "safe" : IsXNav() ? "xnav" : "legacy");
 }
 
-void Attach(MyFrame& frame, wxAuiManager& manager, wxFileConfig&) {
+void Attach(MyFrame& frame, wxAuiManager& manager, wxFileConfig& config) {
   host = &frame;
+  if(preview_paths && !config.ReadBool("/OpenNav/PreviewWindowPlaced",false)) {
+    const auto desktop=wxGetClientDisplayRect();
+    const auto preferred=frame.FromDIP(wxSize(1280,800));
+    frame.SetSize(wxRect(desktop.GetPosition(),wxSize(std::min(desktop.width,preferred.x),
+                                                    std::min(desktop.height,preferred.y))));
+    config.Write("/OpenNav/PreviewWindowPlaced",true);
+  }
   if (!IsXNav()) {
     frame.SetTitle(selected == StartupMode::Safe ? "OpenNav Safe Mode / OpenCPN" : "OpenCPN / Legacy");
     return;

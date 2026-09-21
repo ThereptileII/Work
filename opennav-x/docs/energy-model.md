@@ -1,7 +1,8 @@
-# Advisory energy model, first increment
+# Advisory energy model and preview presentation
 
-Implemented after the dual-mode Windows gate passed at `c5a0fd0`. This is a
-tested calculation component, not the completed propulsion/energy product screen.
+The tested calculation core was implemented after the dual-mode Windows gate
+passed at `c5a0fd0`. Developer Preview consumes it through owned Vessel Data
+snapshots; see the presentation section below and current acceptance in status.
 Linux and native MSVC portable tests pass. Explicit Win32 contracts passed at
 `ae5ed81` and `c2535f5`, matching the approved application ABI; earlier portable
 jobs used the generator default. The six contracts include the energy model.

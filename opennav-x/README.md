@@ -5,18 +5,19 @@ OpenCPN. **This repository is a development build, not a navigation release.**
 The authoritative scope and acceptance requirements are in
 [the project specification](OpenNavX_Codex_Project_Specification.md).
 
-The initial implemented slice provides custom XNav chrome around OpenCPN's
-existing chart canvas, Legacy/Safe startup, controlled mode restart and an
-explicitly labelled vessel-data simulator. A second slice subscribes read-only
-to OpenCPN-selected position, SOG and COG; its native validation is tracked in
-[the data bridge notes](docs/navigation-data-bridge.md). Missing inputs display unavailable;
-stopped samples age into stale data. No OpenNav steering or radar commands exist.
-An advisory range/arrival-SOC calculation module has portable tests; it is not
-yet connected to battery acquisition or the UI. A read-only
-[remaining-route snapshot](docs/route-progress-contract.md) observes OpenCPN's
-normal progress with route identity, revision, position age and explicit validity;
-it does not feed a production energy screen. Hardware adapters and the Windows
-installer remain later slices.
+Developer Preview 0.1 provides custom XNav Navigation, Route, Energy and System
+views around OpenCPN's real chart canvas, plus Legacy/Safe startup and controlled
+mode restarts. Explicit deterministic Demo scenarios exercise complete vessel
+data and advisory range/arrival-SOC predictions. Live selected position/SOG/COG
+and the accepted [remaining-route snapshot](docs/route-progress-contract.md)
+retain OpenCPN ownership, provenance and freshness. Missing/stale inputs withhold
+predictions; live battery acquisition and calibrated capacity/reserve remain
+future work. No OpenNav steering or radar commands exist.
+
+The [preview contract](docs/developer-preview-contract.md) documents ownership,
+Demo separation, energy assumptions, portable isolation and test gates. The
+preview does not patch an installed OpenCPN or use its normal profile. Hardware
+adapters and the production Windows installer remain later milestones.
 
 The application preserves OpenCPN 5.12.4's supported **32-bit application/plugin
 ABI on 64-bit Windows**, as explicitly approved by the user. Native Windows

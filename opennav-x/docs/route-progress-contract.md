@@ -3,7 +3,9 @@
 Status: accepted development slice at `954b4505e18e9128dc02e75cf05d0c02bdbad188`.
 Both platform gates and native 1280×800 review passed in
 [run 35648822128](https://github.com/ThereptileII/Work/actions/runs/35648822128).
-Production arrival-SOC UI remains disconnected.
+The Developer Preview now consumes this contract for advisory presentation.
+Live battery acquisition and calibrated configuration remain unavailable; see
+[the preview contract](developer-preview-contract.md).
 
 ## Ownership and boundary
 

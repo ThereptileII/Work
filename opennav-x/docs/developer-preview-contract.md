@@ -78,7 +78,10 @@ the same private profile and existing restart/persistence mechanism.
 `app/OPENNAV_PORTABLE_PREVIEW` identifies an intact package. Before upstream
 profile initialization, the integration derives sibling `profile` and `logs`
 from the executable, rejects external `--configdir`, canonical path escape and
-remote-command startup, then forces upstream portable mode. Direct executable
+remote-command startup, then forces upstream portable mode. The process working directory is the private
+profile, matching OpenCPN portable resource normalization; this also applies to
+direct launch and restart. First launch fits the window to the available desktop.
+Direct executable
 launch is also isolated. Do not remove this marker or rearrange app resources.
 Three small guarded upstream changes preserve that mode after command parsing,
 force independent startup instead of forwarding to another installation, and

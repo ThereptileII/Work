@@ -1,0 +1,15 @@
+{
+  "commit": "f1f496ff2955ba6d2b96416c146288b85546b9a0",
+  "run": "https://github.com/ThereptileII/Work/actions/runs/35656721377",
+  "result": "not accepted; official package publication blocked",
+  "linux_integrated_tests": 67,
+  "windows_integrated_tests": 57,
+  "portable_contracts_per_platform": 9,
+  "dll_binaries_audited": 87,
+  "failure": "Portable startup could not load bundled tide files because relative resource paths used the private profile as their base while the working directory was the package root. OpenCPN displayed its no-harmonic-data dialog.",
+  "verified_isolation_before_failure": "Startup log resolves data/resources and plugins to app and configuration/log to profile inside the extracted copy.",
+  "fix": "Set the validated private profile as the process working directory before upstream initialization. Apply to direct launch and restart as well as launchers. Native package test now rejects TC_FILE_NOT_FOUND and preserves unexpected dialog captions.",
+  "evidence_artifact_id": 10666303038,
+  "evidence_zip_sha256": "0a536bf65e971a184ea1610d7895c87dfcbbc7a9021afef39c5011c613856be6",
+  "startup_log_sha256": "19efd76a45529809649ed5f174149d26fd8473661940fa6d265e15b056d68516"
+}

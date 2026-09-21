@@ -137,3 +137,9 @@ patched. Outside the package the existing behavior remains unchanged. Merge
 risk is startup ordering. Portable contract tests, direct-EXE and launcher
 smoke tests with an external-profile canary cover the boundary on native Windows.
 No route-progress/autopilot implementation changes were needed for the preview.
+
+The preview integration also sets the working directory to the private profile
+before initialization. Inspection of `AbstractPlatform::NormalizePath` and the
+startup tide-data defaults showed that portable relative paths use that base.
+An extracted native candidate exposed missing tide files when started from the
+package root; no navigation or resource-loading implementation was changed.

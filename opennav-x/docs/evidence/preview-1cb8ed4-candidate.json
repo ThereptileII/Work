@@ -1,0 +1,21 @@
+{
+  "commit": "1cb8ed40e707f45de11f982beae9c52d02640bea",
+  "run": "https://github.com/ThereptileII/Work/actions/runs/35655131720",
+  "result": "not accepted; official package publication blocked",
+  "native_msvc_build": "passed",
+  "windows_integrated_tests": 57,
+  "portable_contracts_per_platform": 9,
+  "dll_binaries_audited": 87,
+  "missing_dll_imports": [],
+  "failure": "Extracted-package fixture seeding refused an unmarked profile before application launch. The package was assembled but not published as the official preview.",
+  "fix": "The smoke test marks only its disposable extracted test profile before seeding. The shipped preview remains unmarked. Final acceptance requires a new complete run.",
+  "evidence_artifact_id": 10665950274,
+  "evidence_zip_sha256": "3b8abb3a549395e7013c9095413182d1acd06cec04a97bf410d85d54d1925abc",
+  "evidence_sha256": {
+    "windows-tests.xml": "c3ee5525bd9452aad7dc40f03d511e2c83f3155c8b03953c9ddc0c7c94f656b5",
+    "preview-dll-audit.json": "54bb9e6175fbc6367650403e667f9586054436848016a0c7aee2ba849225cce9",
+    "mode-cycle-results.json": "207a2e3ca62682c5d540fd9237efa6af21a5f52f8287e677d7ececa6f6a10565",
+    "navigation-input-results.json": "ab0daf1d00657a5fbb6f157b156a0fa13a6a483efdd328560316c73d7b8cf378",
+    "route-progress-results.json": "3a5885f28d4f8616ef081f8d1143fc8e765c79ea994792f5a332c697df998c4a"
+  }
+}
