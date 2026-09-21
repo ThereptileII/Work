@@ -10,7 +10,8 @@ No administrator rights or installed OpenCPN are needed for the preview.
    successful GitHub Actions run. GitHub's artifact download contains the
    application ZIP and its SHA-256 file.
 2. Extract `OpenNavX-DeveloperPreview-win64.zip` into a writable local folder,
-   for example `Downloads\OpenNavX test`. Keep all its folders together. Do not
+   for example `%USERPROFILE%\XNav` (enter `%USERPROFILE%` in File Explorer and
+   create an `XNav` folder). Keep the path short and all folders together. Do not
    extract into Program Files or run from inside the ZIP.
 3. Open `OpenNavX-DeveloperPreview` and double-click **Run-XNav-Demo.cmd**.
 4. Confirm the real OpenCPN chart canvas appears and the top bar visibly says

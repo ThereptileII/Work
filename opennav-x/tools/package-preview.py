@@ -37,6 +37,14 @@ for required in ['msvcp140.dll', 'vcruntime140.dll']:
 (app / 'OPENNAV_PORTABLE_PREVIEW').write_text('OpenNav X portable Developer Preview 0.1\n')
 for directory in ['profile', 'logs', 'demo', 'docs/licenses']:
     (destination / directory).mkdir(parents=True)
+# PluginPaths::InitWindowsPaths and GetPluginDataPath use PrivateDataDir/plugins
+# in portable mode, independently of the platform's app/plugins directory.
+# Retain the installed resources and provide the same bundled plugins at that
+# upstream portable location; never discover/copy a normal installed plugin.
+shutil.copytree(app / 'plugins', destination / 'profile/plugins')
+for required in ['dashboard_pi.dll', 'chartdldr_pi.dll', 'grib_pi.dll', 'wmm_pi.dll']:
+    if not (destination / 'profile/plugins' / required).is_file():
+        raise SystemExit('Bundled portable plugin missing: ' + required)
 config = (args.build / 'include/config.h').read_text()
 version = re.search(r'#define VERSION_FULL "([^"]+)"', config).group(1)
 date = re.search(r'#define VERSION_DATE "([^"]+)"', config).group(1)

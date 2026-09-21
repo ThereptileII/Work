@@ -33,6 +33,10 @@ not an installer or a finished navigation product.
   cannot establish touch or target-hardware acceptance.
 - Run one copy of a given extracted preview profile at a time. Close the preview
   before restarting it from a launcher. Mode switching handles its own restart.
+- Use a short writable extraction path, such as `%USERPROFILE%\XNav`. Upstream
+  SVG icon cache filenames include the resource path and can exceed Windows
+  path limits in deeply nested folders. Native CI observed nonfatal cache-write
+  warnings on its long temporary path; broader long-path support remains open.
 - The application is unsigned. No OpenNav telemetry uploader is included.
 - Optional OpenCPN web content may require the Windows Edge WebView2 runtime;
   the preview screens and demo do not use embedded web content. MSVC runtime and

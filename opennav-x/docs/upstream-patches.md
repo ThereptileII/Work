@@ -151,3 +151,10 @@ passes only those pane names into the shell. The shell restores the original
 visibility before the existing `PrepareClose` hook lets upstream persist its
 perspective. No new upstream hook or canvas reparenting is needed. This fixes
 native Windows covering unmanaged overlay pages during resize.
+
+Packaging also follows `PluginPaths::InitWindowsPaths` and
+`AbstractPlatform::GetPluginDataPath`: portable plugin binaries and resources
+must be available in `PrivateDataDir/plugins`. The installed `app/plugins`
+directory alone does not make them discoverable in portable mode. Supplying
+the bundled copies in `profile/plugins` needs no upstream loading change.
+Native package tests verify initialization/unloading and Safe suppression.

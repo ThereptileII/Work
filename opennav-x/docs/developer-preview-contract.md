@@ -104,6 +104,12 @@ check runtime closure. File hashes and ZIP SHA-256 accompany build provenance;
 corresponding source is published separately. See [human test guide](preview/TEST_ME_FIRST.md)
 and [limitations](preview/KNOWN_LIMITATIONS.md).
 
+OpenCPN's Windows portable plugin loader uses `profile/plugins`, separately from
+the platform's `app/plugins` path. The package supplies its bundled DLLs and data
+in both locations; the portable loader uses the private-profile copies. The test
+requires actual Dashboard initialization/clean unloading across normal launches
+and inactivity in Safe Mode, not just retention of an enabled configuration flag.
+
 ## Gates
 
 Nine portable CTest contracts include new deterministic Demo/energy and portable

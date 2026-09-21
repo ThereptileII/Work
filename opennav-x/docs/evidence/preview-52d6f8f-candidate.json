@@ -18,5 +18,8 @@
     "preview-05-diagnostics.png": "c2414ba7309d07de439ee08807f49cf8829041d6d9212296410b59ee2c4a3e64",
     "navigation-02-live.png": "b235e9f0441477b0d3c22d3eecccbebd13192615aa16e6a28b6e84c90643e13f"
   },
-  "superseded_package_sha256": "1934d240a5fc7faaba9cd2cd4cebe02b1fe049c833f3576ee8bff53d5c99dee2"
+  "superseded_package_sha256": "1934d240a5fc7faaba9cd2cd4cebe02b1fe049c833f3576ee8bff53d5c99dee2",
+  "additional_package_audit": "Portable plugin loader searched profile/plugins, which was absent, although the platform log mentioned app/plugins. Saved enabled preferences alone did not establish DLL initialization.",
+  "plugin_fix": "Bundle the installed plugins and data into the upstream portable profile/plugins location; require Dashboard discovery and completed initialized lifecycle in all normal package launches, with no initialization in Safe.",
+  "long_path_observation": "SVG bitmap cache writes can exceed legacy Windows path limits under the long CI extraction path. In-memory icon rendering continues; a short extraction path is documented. No upstream cache implementation change."
 }

@@ -154,6 +154,8 @@ try:
         native_log=(profile/'opencpn.log').read_text(errors='replace')
         assert 'TC_FILE_NOT_FOUND' not in native_log,'Portable resource paths do not resolve'
         assert 'Using portable plugin dir:' in native_log
+        assert any('PluginLoader: Loading PlugIn:' in line and line.endswith('\\profile\\plugins\\dashboard_pi.dll')
+                   for line in native_log.splitlines()), 'Bundled Dashboard was not discovered by the portable loader'
         # Exercise the label's hidden-to-visible transition, not just a wide
         # first launch. This exposed an overlap in the live navigation captures.
         assert ui.SetWindowPos(handle,None,0,0,960,800,4)
@@ -236,6 +238,22 @@ try:
         report['checks'].append('All four launchers, direct executable launch and external-profile refusal passed with no development PATH')
         report['checks'].append('Normal profile canary and existing OpenCPN files under APPDATA, LOCALAPPDATA, PROGRAMDATA and Program Files remain unchanged')
         report['normal_files_audited']=len(normal_before)
+        # Deactivation is logged only for a successfully initialized plugin.
+        # Verify all completed normal launches, and no activation in Safe Mode,
+        # using the upstream lifecycle rather than only the saved preference.
+        sessions=(profile/'opencpn.log').read_text(errors='replace').split('OpenNav startup: ')[1:]
+        normal_plugins=safe_plugins=0
+        for session in sessions:
+            initialized=any('PluginLoader: Deactivating PlugIn:' in line and line.endswith('\\profile\\plugins\\dashboard_pi.dll')
+                            for line in session.splitlines())
+            if session.startswith('safe'):
+                assert not initialized, 'Dashboard initialized during Safe Mode'
+                safe_plugins+=1
+            else:
+                assert initialized, 'Dashboard did not initialize/cleanly unload in a normal mode'
+                normal_plugins+=1
+        assert normal_plugins==6 and safe_plugins==2,(normal_plugins,safe_plugins)
+        report['checks'].append('Bundled Dashboard initialized and cleanly unloaded in six normal launches; inactive in both Safe launches')
     else:
         close_current();app=launch('safe-mode');handle,pid=window('OpenNav Safe Mode / OpenCPN');ready(4);capture('preview-08-safe');close_current();preserved()
     handle=None
