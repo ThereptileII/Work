@@ -12,6 +12,7 @@ namespace opennav {
 class NavigationBridge final {
  public:
   explicit NavigationBridge(std::function<void(const vessel::VesselState&)> receive);
+  const vessel::Navigation& PositionState() const { return input_.State().navigation; }
  private:
   vessel::NavigationInput input_;
   std::function<void(const vessel::VesselState&)> receive_;

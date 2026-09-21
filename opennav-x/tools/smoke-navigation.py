@@ -13,6 +13,10 @@ import tempfile
 import threading
 import time
 
+route_fixture = sys.argv[1:] == ['--route-fixture']
+if sys.argv[1:] and not route_fixture:
+    raise SystemExit('Usage: smoke-navigation.py [--route-fixture]')
+prefix = 'route' if route_fixture else 'navigation'
 root = Path(__file__).resolve().parents[1]
 windows = sys.platform == 'win32'
 evidence = root / 'evidence/local'
@@ -22,6 +26,8 @@ profile = Path(temporary.name) / 'profile'
 variant = 'xnav-windows' if windows else 'xnav-linux'
 subprocess.run([sys.executable, str(root / 'tools/prepare-test-profile.py'),
                 '--build', str(root / 'build' / variant), '--profile', str(profile)], check=True)
+if route_fixture:
+    (profile / 'OPENNAV_ROUTE_FIXTURE').write_text('Explicit isolated integration-test driver.\n')
 server = socket.socket()
 server.bind(('127.0.0.1', 0))
 server.listen(1)
@@ -102,8 +108,8 @@ try:
                                    env=env, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
         time.sleep(1)
         exe = root / 'build/xnav-install/bin/opencpn'
-    with (evidence / 'navigation-input-launch.log').open('w') as output:
-        app = subprocess.Popen([str(exe), '--configdir', str(profile), '--no_opengl', '--xnav'],
+    with (evidence / f'{prefix}-input-launch.log').open('w') as output:
+        app = subprocess.Popen([str(exe), '--configdir', str(profile), '--no_opengl', '--xnav'] + (['--xnav-route-fixture'] if route_fixture else []),
                                env=env, stdout=output, stderr=output)
     deadline = time.monotonic() + 60
     while True:
@@ -123,29 +129,60 @@ try:
         subprocess.run(['xdotool', 'windowsize', handle, '1280', '800', 'windowmove', handle, '0', '0'], env=env, check=True)
 
     def capture(name):
-        path = evidence / f'navigation-{name}.png'
+        path = evidence / f'{prefix}-{name}.png'
         if windows:
             ui.capture(handle, path)
         else:
             subprocess.run(['import', '-window', 'root', str(path)], env=env, check=True)
         report['screenshots'].append(path.name)
 
-    capture('01-unavailable')
-    phase[0] = 'rmc'
-    time.sleep(3)
-    assert counts['rmc'] >= 5 and not failures
-    if windows:
-        assert any(caption == 'OpenCPN navigation' for _, caption in ui.children(handle)), 'UI did not receive selected data'
-    capture('02-live')
-    phase[0] = 'gga'
-    time.sleep(6.2)
-    capture('03-position-only-velocity-stale')
-    phase[0] = 'none'
-    time.sleep(6.2)
-    if windows:
-        assert any(caption == 'Navigation stale' for _, caption in ui.children(handle)), 'UI did not age stopped data'
-    capture('04-all-stale')
-    assert not failures, failures
+    if route_fixture:
+        phase[0] = 'rmc'
+        deadline = time.monotonic() + 100
+        seen_live = seen_stale = False
+        while time.monotonic() < deadline:
+            assert app.poll() is None, 'Route fixture process exited'
+            result_file = profile / 'route-fixture-results.json'
+            if result_file.exists():
+                result = json.loads(result_file.read_text())
+                assert result['result'] != 'failed', result
+                checks = result.get('checks', [])
+                if any(x['check'] == 'middle point real upstream progress' for x in checks) and not seen_live:
+                    capture('01-active-route')
+                    seen_live = True
+                if result.get('phase') == 'stop-input':
+                    phase[0] = 'none'
+                elif result.get('phase') == 'resume-input':
+                    if not seen_stale:
+                        capture('02-stale-position')
+                        seen_stale = True
+                    phase[0] = 'rmc'
+                if result['result'] == 'passed':
+                    assert seen_live and seen_stale, 'Missing route scenario captures'
+                    report['route_contract'] = result
+                    (evidence / 'route-progress-results.json').write_text(json.dumps(result, indent=2))
+                    break
+            time.sleep(.2)
+        else:
+            raise RuntimeError('Route fixture did not finish normal navigation passes')
+        assert not failures, failures
+    else:
+        capture('01-unavailable')
+        phase[0] = 'rmc'
+        time.sleep(3)
+        assert counts['rmc'] >= 5 and not failures
+        if windows:
+            assert any(caption == 'OpenCPN navigation' for _, caption in ui.children(handle)), 'UI did not receive selected data'
+        capture('02-live')
+        phase[0] = 'gga'
+        time.sleep(6.2)
+        capture('03-position-only-velocity-stale')
+        phase[0] = 'none'
+        time.sleep(6.2)
+        if windows:
+            assert any(caption == 'Navigation stale' for _, caption in ui.children(handle)), 'UI did not age stopped data'
+        capture('04-all-stale')
+        assert not failures, failures
     stop.set()
     thread.join(timeout=3)
     if windows:
@@ -166,7 +203,7 @@ finally:
         xserver.wait(timeout=10)
     report['sent'] = counts
     report['transport_errors'] = failures
-    (evidence / 'navigation-input-results.json').write_text(json.dumps(report, indent=2))
-    shutil.copytree(profile, evidence / 'navigation-input-profile', dirs_exist_ok=True,
+    (evidence / f'{prefix}-input-results.json').write_text(json.dumps(report, indent=2))
+    shutil.copytree(profile, evidence / f'{prefix}-input-profile', dirs_exist_ok=True,
                     ignore=shutil.ignore_patterns('opencpn-ipc', '*.pem'))
     temporary.cleanup()

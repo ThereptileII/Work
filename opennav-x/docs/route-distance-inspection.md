@@ -1,6 +1,7 @@
 # Next slice: read-only remaining route distance
 
-Source inspection only; no route-distance bridge is implemented or accepted yet.
+This pre-implementation inspection is retained as the source reference. The
+implementation and current validation status are in [route-progress-contract.md](route-progress-contract.md).
 References below apply to pinned OpenCPN 5.12.4 (`37fd0cd`).
 
 - `gui/src/concanv.cpp`, route-total branch: the existing navigation console

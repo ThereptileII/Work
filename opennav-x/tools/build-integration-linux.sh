@@ -8,6 +8,7 @@ python tools/prepare-integration.py
 args=(-G Ninja -DCMAKE_BUILD_TYPE=Release -DCMAKE_POLICY_VERSION_MINIMUM=3.5
   -DOCPN_BUILD_TEST=ON -DOCPN_BUNDLE_DOCS=OFF -DOCPN_BUNDLE_GSHHS=ON
   -DOCPN_BUNDLE_TCDATA=ON -DOPENNAV_ROOT="$root"
+  -DOPENNAV_ENABLE_ROUTE_SCENARIO=ON
   -DCMAKE_INSTALL_PREFIX="$root/build/xnav-install")
 if [[ -x .local/sysroot/usr/bin/wx-config ]]; then
   args+=(-DwxWidgets_CONFIG_EXECUTABLE="$root/tools/wx-config-local"

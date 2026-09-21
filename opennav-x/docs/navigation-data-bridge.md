@@ -65,3 +65,10 @@ Linux's matching sequence and mode cycle pass; the integrated regression suite
 passes 60 compiled cases. Native Windows passes 50 platform-available cases and
 the portable contract suite. This establishes the selected-navigation slice;
 physical sensor provenance and the remaining vessel fields are still pending.
+
+## Remaining active-route distance
+
+The next read-only consumer uses selected position provenance while observing
+normal OpenCPN route progress. Its contract, lifetime/coherence rules and tests
+are documented separately in [route-progress-contract.md](route-progress-contract.md).
+The original navigation subscriber and displayed SOG/COG behavior remain unchanged.

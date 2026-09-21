@@ -7,6 +7,7 @@ set(OPENNAV_BUILD_TESTS OFF CACHE BOOL "" FORCE)
 add_subdirectory("${OPENNAV_ROOT}" "${CMAKE_BINARY_DIR}/opennav")
 target_sources(${PACKAGE_NAME} PRIVATE "${OPENNAV_ROOT}/src/integration/OpenCPNIntegration.cpp")
 target_sources(${PACKAGE_NAME} PRIVATE "${OPENNAV_ROOT}/src/integration/NavigationBridge.cpp")
+target_sources(${PACKAGE_NAME} PRIVATE "${OPENNAV_ROOT}/src/integration/OpenCPNRouteReader.cpp")
 target_include_directories(${PACKAGE_NAME} PRIVATE "${OPENNAV_ROOT}/src")
 target_compile_definitions(${PACKAGE_NAME} PRIVATE OPENNAV_X=1)
 # Preserve normal plugin preferences while upstream Safe Mode blocks loading.
@@ -14,6 +15,15 @@ target_compile_definitions(${PACKAGE_NAME} PRIVATE OPENNAV_X=1)
 set_property(SOURCE "${CMAKE_SOURCE_DIR}/model/src/plugin_loader.cpp"
   DIRECTORY "${CMAKE_SOURCE_DIR}/model" APPEND PROPERTY COMPILE_DEFINITIONS OPENNAV_X=1)
 target_link_libraries(${PACKAGE_NAME} PRIVATE opennav_integration opennav_platform opennav_ui)
+option(OPENNAV_ENABLE_ROUTE_SCENARIO "Compile isolated route integration test driver" OFF)
+if(OPENNAV_ENABLE_ROUTE_SCENARIO)
+  if(NOT OCPN_BUILD_TEST)
+    message(FATAL_ERROR "Route scenario is permitted only with upstream tests enabled")
+  endif()
+  target_sources(${PACKAGE_NAME} PRIVATE "${OPENNAV_ROOT}/tests/RouteProgressScenario.cpp")
+  target_include_directories(${PACKAGE_NAME} PRIVATE "${OPENNAV_ROOT}/tests")
+  target_compile_definitions(${PACKAGE_NAME} PRIVATE OPENNAV_ROUTE_TESTS=1)
+endif()
 if(WIN32)
   install(TARGETS opennav-restart RUNTIME DESTINATION .)
   add_custom_command(TARGET ${PACKAGE_NAME} POST_BUILD
@@ -21,3 +31,16 @@ if(WIN32)
       $<TARGET_FILE:opennav-restart> $<TARGET_FILE_DIR:${PACKAGE_NAME}>)
   add_dependencies(${PACKAGE_NAME} opennav-restart)
 endif()
+
+# The upstream test target is declared after this optional integration hook.
+# Defer attaching model-bound tests; test sources stay outside upstream.
+function(opennav_attach_route_tests)
+  if(TARGET tests)
+    target_sources(tests PRIVATE
+      "${OPENNAV_ROOT}/tests/route_progress_upstream_tests.cpp"
+      "${OPENNAV_ROOT}/src/integration/OpenCPNRouteReader.cpp")
+    target_include_directories(tests PRIVATE "${OPENNAV_ROOT}/src")
+    target_link_libraries(tests PRIVATE opennav_integration)
+  endif()
+endfunction()
+cmake_language(DEFER DIRECTORY "${CMAKE_SOURCE_DIR}" CALL opennav_attach_route_tests)

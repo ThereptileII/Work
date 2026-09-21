@@ -94,3 +94,18 @@ enabled in the fixture must remain enabled after every mode transition.
 These are independently reviewable from the GUI hooks. Pristine tests retain
 original behavior and logs. Integrated Linux regressions must pass the repaired
 suite; new or unrelated failures are not covered by a baseline exception.
+
+## Remaining-route observer (validation in progress)
+
+The frame timer has two additional `OPENNAV_X`-guarded calls immediately before
+and after its existing `RoutemanGui::UpdateProgress()` call. They copy and validate
+state; they do not trigger, reorder or replace navigation processing. No model
+route/autopilot implementation is patched. Merge risk is the progress-call
+location/order and upstream route lifetime semantics. Coverage: portable route
+contracts, real upstream model/antimeridian tests, and the opt-in normal-timer
+route scenario on Linux and native Windows. See [route contract](route-progress-contract.md).
+
+The integration CMake hook attaches model-bound tests after the upstream test
+target is declared, using CMake's deferred call facility. Test sources remain
+outside upstream. The optional scenario driver is compiled only when explicitly
+enabled with upstream testing; production/default builds omit it.

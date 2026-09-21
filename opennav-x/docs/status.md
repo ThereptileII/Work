@@ -6,6 +6,10 @@ The approved Windows target preserves its Win32 application/plugin ABI on a
 native Windows x64 host. The tracked upstream submodule remains pristine;
 reviewed patches apply to a disposable integration worktree.
 
+The remaining active-route distance slice is implemented and undergoing both
+platform gates; see [its contract](route-progress-contract.md). No arrival-SOC
+product UI has been connected.
+
 ## Accepted development increments
 
 | Increment | Evidence and practical limit |

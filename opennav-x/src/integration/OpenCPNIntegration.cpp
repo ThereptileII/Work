@@ -1,8 +1,14 @@
 #include "integration/OpenCPNIntegration.h"
 #include "integration/NavigationBridge.h"
+#include "integration/OpenCPNRouteReader.h"
+#include "integration/RoutePassWatch.h"
 #include "integration/StartupMode.h"
 #include "platform/PlatformIntegration.h"
 #include "ui/Shell.h"
+#ifdef OPENNAV_ROUTE_TESTS
+#include "RouteProgressScenario.h"
+#include <wx/filefn.h>
+#endif
 
 #include "chcanv.h"
 #include "ocpn_frame.h"
@@ -26,14 +32,25 @@ extern ocpnFloatingToolbarDialog* g_MainToolbar;
 extern bool g_bDeferredInitDone;
 
 namespace opennav {
+namespace integration {
+struct ObservedRoutePass {
+  explicit ObservedRoutePass(RouteRead r) : read(std::move(r)) {}
+  RouteRead read;
+  mutable RoutePassWatch watch;
+};
+}
 namespace {
 using integration::InterfaceMode;
 using integration::StartupMode;
 integration::StartupFlags flags;
 StartupMode selected = StartupMode::Legacy;
 bool demo = false;
+#ifdef OPENNAV_ROUTE_TESTS
+std::string route_test_profile;
+#endif
 std::unique_ptr<ui::Shell> shell;
 std::unique_ptr<NavigationBridge> navigation;
+std::unique_ptr<integration::RouteProgressInput> route_progress;
 MyFrame* host = nullptr;
 std::optional<InterfaceMode> restart;
 std::vector<std::string> profile_arguments;
@@ -65,6 +82,9 @@ void AddCommandLine(wxCmdLineParser& parser) {
   parser.AddSwitch("", "legacy", "Original OpenCPN interface");
   parser.AddSwitch("", "safe-mode", "Legacy recovery; OpenNav modules disabled");
   parser.AddSwitch("", "xnav-demo", "Explicit simulated XNav telemetry; no device commands");
+#ifdef OPENNAV_ROUTE_TESTS
+  parser.AddSwitch("", "xnav-route-fixture", "TEST BUILD ONLY: isolated route contract scenario");
+#endif
 }
 
 bool ParseCommandLine(wxCmdLineParser& parser) {
@@ -82,6 +102,16 @@ bool ParseCommandLine(wxCmdLineParser& parser) {
     profile_arguments.push_back("--configdir");
     profile_arguments.push_back(configdir.ToStdString(wxConvUTF8));
   }
+#ifdef OPENNAV_ROUTE_TESTS
+  if (parser.Found("xnav-route-fixture")) {
+    if (!flags.xnav || flags.safe || flags.legacy || demo || configdir.empty() ||
+        !wxFileExists(configdir + "/OPENNAV_ROUTE_FIXTURE")) {
+      std::cerr << "Route fixture requires explicit XNav and a marked disposable profile\n";
+      return false;
+    }
+    route_test_profile = configdir.ToStdString(wxConvUTF8);
+  }
+#endif
   if (parser.Found("portable")) profile_arguments.push_back("--portable");
   if (parser.Found("no_opengl")) profile_arguments.push_back("--no_opengl");
   if (parser.Found("fullscreen")) profile_arguments.push_back("--fullscreen");
@@ -130,6 +160,34 @@ void Attach(MyFrame& frame, wxAuiManager& manager, wxFileConfig&) {
   navigation = std::make_unique<NavigationBridge>([](const vessel::VesselState& state) {
     if (shell) shell->UpdateState(state);
   });
+  route_progress = std::make_unique<integration::RouteProgressInput>(
+      "OpenNav session " + std::to_string(vessel::Clock::now().time_since_epoch().count()));
+#ifdef OPENNAV_ROUTE_TESTS
+  if (!route_test_profile.empty()) test::EnableRouteScenario(route_test_profile);
+#endif
+}
+
+RouteObservation BeforeRouteProgress() {
+  if (!navigation || !route_progress) return {};
+  return std::make_shared<const integration::ObservedRoutePass>(
+      integration::ReadRouteProgress(navigation->PositionState()));
+}
+
+void AfterRouteProgress(const RouteObservation& before) {
+  if (!before || !navigation || !route_progress) return;
+  auto after = integration::ReadRouteProgress(navigation->PositionState());
+  after.interrupted = before->watch.Finish();
+  route_progress->Complete(before->read, after, vessel::Clock::now());
+#ifdef OPENNAV_ROUTE_TESTS
+  test::RouteScenarioStep(route_progress->Current());
+#endif
+}
+
+vessel::RouteProgress CurrentRouteProgress() {
+  if (!navigation || !route_progress) return {};
+  const auto read = integration::ReadRouteProgress(navigation->PositionState());
+  route_progress->CheckCurrent(read.route, vessel::Clock::now());
+  return route_progress->Current();
 }
 
 void AppendModeMenu(wxMenu& menu) {
@@ -158,6 +216,7 @@ bool PrepareClose(wxFileConfig& config) {
   }
   // Remove OpenNav AUI panes before upstream persists its stock perspective.
   navigation.reset();
+  route_progress.reset();
   shell.reset();
   host = nullptr;
   return true;

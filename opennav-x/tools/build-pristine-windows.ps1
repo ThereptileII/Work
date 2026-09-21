@@ -54,7 +54,7 @@ try {
     if (-not $Gettext) { throw 'Poedit gettext tools not found after dependency installation' }
     $env:PATH += ";$Gettext;$Wx\lib\vc14x_dll;$Source\cache\buildwin"
     $OpenNavArgs = @()
-    if ($Integration) { $OpenNavArgs = @("-DOPENNAV_ROOT=$Root") }
+    if ($Integration) { $OpenNavArgs = @("-DOPENNAV_ROOT=$Root", '-DOPENNAV_ENABLE_ROUTE_SCENARIO=ON') }
     Run cmake (@('-S', $Source, '-B', $Build, '-G', 'Visual Studio 17 2022',
         '-A', $Architecture, '-DCMAKE_POLICY_VERSION_MINIMUM=3.5', '-DCMAKE_BUILD_TYPE=Release',
         "-DwxWidgets_ROOT_DIR=$Wx", "-DwxWidgets_LIB_DIR=$Wx/lib/vc14x_dll",
@@ -72,6 +72,7 @@ try {
     if ($Integration) {
         Run python @((Join-Path $PSScriptRoot 'smoke-modes-windows.py'))
         Run python @((Join-Path $PSScriptRoot 'smoke-navigation.py'))
+        Run python @((Join-Path $PSScriptRoot 'smoke-navigation.py'), '--route-fixture')
         & (Join-Path $PSScriptRoot 'capture-pristine-windows.ps1') -Variant xnav -Mode legacy -Name '11-legacy-mode'
         & (Join-Path $PSScriptRoot 'capture-pristine-windows.ps1') -Variant xnav -Mode safe-mode -Name '12-safe-mode'
     } else {
