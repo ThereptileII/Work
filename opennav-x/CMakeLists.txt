@@ -1,0 +1,21 @@
+cmake_minimum_required(VERSION 3.24)
+project(OpenNavX VERSION 0.1.0 LANGUAGES CXX)
+
+option(OPENNAV_BUILD_TESTS "Build portable OpenNav contract tests" ON)
+# Upstream is built separately and stays pristine until baseline gates pass.
+add_library(opennav_integration src/integration/StartupMode.cpp)
+target_include_directories(opennav_integration PUBLIC src)
+target_compile_features(opennav_integration PUBLIC cxx_std_17)
+set_target_properties(opennav_integration PROPERTIES CXX_EXTENSIONS OFF)
+if(MSVC)
+  target_compile_options(opennav_integration PRIVATE /W4 /WX /permissive-)
+else()
+  target_compile_options(opennav_integration PRIVATE -Wall -Wextra -Wpedantic -Werror)
+endif()
+
+if(OPENNAV_BUILD_TESTS)
+  enable_testing()
+  add_executable(startup_mode_tests tests/startup_mode_tests.cpp)
+  target_link_libraries(startup_mode_tests PRIVATE opennav_integration)
+  add_test(NAME startup_mode_contract COMMAND startup_mode_tests)
+endif()

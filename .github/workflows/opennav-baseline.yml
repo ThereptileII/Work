@@ -6,10 +6,17 @@ on:
   workflow_dispatch:
 permissions:
   contents: read
-concurrency:
-  group: opennav-baseline-${{ github.ref }}
-  cancel-in-progress: true
 jobs:
+  contracts:
+    strategy:
+      matrix:
+        os: [ubuntu-24.04, windows-2022]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+      - run: cmake -S opennav-x -B opennav-x/build/contracts
+      - run: cmake --build opennav-x/build/contracts --config Release
+      - run: ctest --test-dir opennav-x/build/contracts -C Release --output-on-failure
   linux:
     runs-on: ubuntu-24.04
     timeout-minutes: 60
@@ -49,15 +56,15 @@ jobs:
         with:
           name: windows-pristine-${{ github.sha }}
           path: opennav-x/evidence/local
-  specification-x64:
-    name: Specification x64 application gate (unresolved ABI)
+  application-abi:
+    name: Approved OpenCPN ABI on Windows x64
     runs-on: windows-2022
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
-      - name: Require explicit architecture resolution
+      - name: Verify approved application architecture
         shell: pwsh
         run: |
           $lock = Get-Content opennav-x/upstream.lock.json | ConvertFrom-Json
-          if ($lock.architectureDecision -eq 'pending') {
-            throw 'Spec requires x64 application; supported OpenCPN 5.12.4 ABI is Win32. Decision and native evidence required.'
+          if ($lock.approvedApplicationArchitecture -ne 'x86' -or $lock.requiredWindowsHostArchitecture -ne 'x64') {
+            throw 'This pipeline validates the approved x86 application ABI on Windows x64 only.'
           }

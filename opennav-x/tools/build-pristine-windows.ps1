@@ -23,9 +23,14 @@ try {
     $Wx = Join-Path $Source 'cache/wxWidgets-3.2.8'
     $Build = Join-Path $Root 'build/pristine-windows'
     $Install = Join-Path $Root 'build/pristine-install'
-    $env:PATH += ";C:\Program Files (x86)\Poedit\Gettexttools\bin;$Wx\lib\vc14x_dll;$Source\cache\buildwin"
+    $Gettext = @(
+        "$env:ProgramFiles\Poedit\Gettexttools\bin",
+        "${env:ProgramFiles(x86)}\Poedit\Gettexttools\bin"
+    ) | Where-Object { Test-Path (Join-Path $_ 'msgfmt.exe') } | Select-Object -First 1
+    if (-not $Gettext) { throw 'Poedit gettext tools not found after dependency installation' }
+    $env:PATH += ";$Gettext;$Wx\lib\vc14x_dll;$Source\cache\buildwin"
     Run cmake @('-S', $Source, '-B', $Build, '-G', 'Visual Studio 17 2022',
-        '-A', $Architecture, '-DCMAKE_POLICY_VERSION_MINIMUM=3.5',
+        '-A', $Architecture, '-DCMAKE_POLICY_VERSION_MINIMUM=3.5', '-DCMAKE_BUILD_TYPE=Release',
         "-DwxWidgets_ROOT_DIR=$Wx", "-DwxWidgets_LIB_DIR=$Wx/lib/vc14x_dll",
         '-DwxWidgets_CONFIGURATION=mswu', '-DOCPN_CI_BUILD=ON',
         '-DOCPN_BUILD_TEST=ON', '-DOCPN_BUNDLE_WXDLLS=ON',
