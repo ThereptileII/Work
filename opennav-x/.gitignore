@@ -1,0 +1,7 @@
+/build/
+/.local/
+/evidence/local/
+__pycache__/
+*.pyc
+/OpenNavX_Codex_Starter.zip
+/OpenNavX_Design_Mockups.zip

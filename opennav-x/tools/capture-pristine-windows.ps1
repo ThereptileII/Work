@@ -1,13 +1,13 @@
-param([string]$Name = '11-legacy-mode')
+param([string]$Name = '11-legacy-mode', [string]$Variant = 'pristine', [string]$Mode = '')
 $ErrorActionPreference = 'Stop'
 $Root = Split-Path $PSScriptRoot -Parent
-$Build = Join-Path $Root 'build/pristine-windows'
+$Build = Join-Path $Root "build/$Variant-windows"
 $Evidence = Join-Path $Root 'evidence/local'
 $Profile = Join-Path $Root ('build/profiles/' + [Guid]::NewGuid().ToString())
 & python (Join-Path $PSScriptRoot 'prepare-test-profile.py') --build $Build --profile $Profile
 if ($LASTEXITCODE -ne 0) { throw 'Cannot create isolated profile' }
 Add-Type -AssemblyName System.Drawing
-Add-Type @'
+if (-not ("OpenNavCapture" -as [type])) { Add-Type @'
 using System;
 using System.Runtime.InteropServices;
 public static class OpenNavCapture {
@@ -19,9 +19,12 @@ public static class OpenNavCapture {
   [StructLayout(LayoutKind.Sequential)] public struct Rect { public int left, top, right, bottom; }
 }
 '@
+}
 [OpenNavCapture]::SetProcessDPIAware() | Out-Null
-$Exe = Join-Path $Root 'build/pristine-install/opencpn.exe'
-$Proc = Start-Process -FilePath $Exe -ArgumentList @("--configdir=`"$Profile`"", '--no_opengl') -PassThru
+$Exe = Join-Path $Root "build/$Variant-install/opencpn.exe"
+$LaunchArgs = @("--configdir=`"$Profile`"", '--no_opengl')
+if ($Mode) { $LaunchArgs += "--$Mode" }
+$Proc = Start-Process -FilePath $Exe -ArgumentList $LaunchArgs -PassThru
 try {
     $Deadline = (Get-Date).AddSeconds(60)
     do {
@@ -30,7 +33,16 @@ try {
         if ($Proc.HasExited) { throw "OpenCPN exited during startup: $($Proc.ExitCode)" }
     } until ($Proc.MainWindowHandle -ne 0 -or (Get-Date) -gt $Deadline)
     if ($Proc.MainWindowHandle -eq 0) { throw 'OpenCPN window not found' }
-    Start-Sleep -Seconds 8
+    $Deadline = (Get-Date).AddSeconds(60)
+    do {
+        Start-Sleep -Milliseconds 500
+        $Proc.Refresh()
+        if ($Proc.HasExited) { throw 'OpenCPN exited before deferred initialization' }
+        $LogPath = Join-Path $Profile 'opencpn.log'
+        $Ready = (Test-Path $LogPath) -and ((Get-Content $LogPath -Raw) -match 'OnInitTimer.*Finalize Canvases')
+    } until ($Ready -or (Get-Date) -gt $Deadline)
+    if (-not $Ready) { throw 'Deferred initialization did not finish; refusing to capture a startup dialog' }
+    if ($Proc.MainWindowTitle -match '^OpenCPN (Info|Error|Warning)$') { throw 'Startup modal still open' }
     $Proc.Refresh()
     [OpenNavCapture]::ShowWindow($Proc.MainWindowHandle, 9) | Out-Null
     if (-not [OpenNavCapture]::SetWindowPos($Proc.MainWindowHandle, [IntPtr]::Zero, 0, 0, 1280, 800, 4)) {
@@ -61,7 +73,7 @@ try {
 } finally {
     $Proc.Refresh()
     if (-not $Proc.HasExited) { Stop-Process -Id $Proc.Id }
-    $ProfileEvidence = Join-Path $Evidence 'baseline-profile'
+    $ProfileEvidence = Join-Path $Evidence "$Name-profile"
     New-Item -ItemType Directory -Force $ProfileEvidence | Out-Null
     Copy-Item (Join-Path $Profile '*') $ProfileEvidence -Recurse -Force
 }

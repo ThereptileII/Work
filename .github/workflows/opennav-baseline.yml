@@ -33,6 +33,11 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y equivs devscripts ninja-build
           sudo mk-build-deps --install --remove --tool='apt-get -y --no-install-recommends' opennav-x/upstream/OpenCPN/ci/control
+          sudo locale-gen sv_SE.UTF-8 en_US.UTF-8
+          sudo modprobe vcan
+          sudo ip link add dev vcan0 type vcan
+          sudo ip link set dev vcan0 up
+          mkdir -p "$HOME/.opencpn"
       - name: Build and test pristine Linux baseline
         run: bash opennav-x/tools/build-pristine-linux.sh
       - name: Capture isolated Linux development baseline
@@ -61,6 +66,23 @@ jobs:
         if: always()
         with:
           name: windows-pristine-${{ github.sha }}
+          path: opennav-x/evidence/local
+  windows-integration:
+    name: Native MSVC XNav / Legacy / Safe slice
+    runs-on: windows-2022
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+      - name: Fetch pinned source
+        run: |
+          git clone --depth 1 --branch Release_5.12.4 https://github.com/OpenCPN/OpenCPN.git opennav-x/upstream/OpenCPN
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+      - name: Build and exercise integrated modes
+        run: ./opennav-x/tools/build-pristine-windows.ps1 -Architecture Win32 -Integration
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: windows-integration-${{ github.sha }}
           path: opennav-x/evidence/local
   application-abi:
     name: Approved OpenCPN ABI on Windows x64

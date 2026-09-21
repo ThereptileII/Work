@@ -34,8 +34,9 @@ xdotool windowsize "$window" 1280 800
 xdotool windowmove "$window" 0 0
 sleep 5
 import -window root evidence/local/11-legacy-mode-linux.png
-# Use OpenCPN's IPC quit against the same isolated profile.
-build/pristine-install/bin/opencpn --configdir "$profile" --remote --quit
+# Exercise the normal user exit path through the chart canvas.
+xdotool windowfocus "$window"
+xdotool key --clearmodifiers ctrl+q
 for ((attempt=0; attempt<30; attempt++)); do
   if ! kill -0 "$app_pid" 2>/dev/null; then break; fi
   sleep 1

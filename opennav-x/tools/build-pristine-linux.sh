@@ -8,8 +8,8 @@ fi
 mkdir -p evidence/local
 python tools/verify-upstream.py | tee evidence/local/upstream-provenance.json
 args=(-G Ninja -DCMAKE_BUILD_TYPE=Release -DCMAKE_POLICY_VERSION_MINIMUM=3.5
-  -DOCPN_BUILD_TEST=ON -DOCPN_BUNDLE_DOCS=OFF -DOCPN_BUNDLE_GSHHS=OFF
-  -DOCPN_BUNDLE_TCDATA=OFF -DCMAKE_INSTALL_PREFIX="$root/build/pristine-install")
+  -DOCPN_BUILD_TEST=ON -DOCPN_BUNDLE_DOCS=OFF -DOCPN_BUNDLE_GSHHS=ON
+  -DOCPN_BUNDLE_TCDATA=ON -DCMAKE_INSTALL_PREFIX="$root/build/pristine-install")
 if [[ -x .local/sysroot/usr/bin/wx-config ]]; then
   args+=(-DwxWidgets_CONFIG_EXECUTABLE="$root/tools/wx-config-local"
     -DCMAKE_PROJECT_INCLUDE="$root/tools/arch-gcc-compat.cmake"
