@@ -138,12 +138,24 @@ void Shell::Tick() {
   speed_->SetReading(state_.navigation.sog_kn, now);
   course_->SetReading(state_.navigation.cog_deg, now);
   clock_->SetLabel(wxDateTime::Now().Format("%H:%M"));
-  const wxString label = simulation_ ? (simulation_paused_ ? "SIMULATION PAUSED" : "SIMULATION")
-                                     : "No vessel input";
+  const wxString label = simulation_ ? wxString(simulation_paused_ ? "SIMULATION PAUSED" : "SIMULATION")
+                                     : InputSummary();
   if (source_->GetLabel() != label) {
     source_->SetLabel(label);
     source_->GetParent()->Layout();
   }
+}
+
+wxString Shell::InputSummary() const {
+  bool present = false, current = false;
+  for (const auto* sample : {&state_.navigation.latitude_deg, &state_.navigation.sog_kn,
+                            &state_.navigation.cog_deg}) {
+    const auto assessment = vessel::Assess(*sample, vessel::Clock::now());
+    present = present || assessment.value.has_value();
+    current = current || assessment.quality == vessel::Quality::Live ||
+                         assessment.quality == vessel::Quality::Aging;
+  }
+  return current ? "OpenCPN navigation" : present ? "Navigation stale" : "No vessel input";
 }
 
 void Shell::ShowSystem() {
@@ -157,7 +169,7 @@ void Shell::ShowSystem() {
   layout->Add(heading, 0, wxALL, gap);
   auto* info = new wxStaticText(popup, wxID_ANY,
       "OpenNav X / development slice\nOpenCPN 5.12.4 / API 1.20\nMode: XNav\n" +
-      wxString(simulation_ ? "Data: explicit simulator" : "Data: no connected source") +
+      (simulation_ ? wxString("Data: explicit simulator") : "Data: " + InputSummary()) +
       "\nOpenNav device controls: unavailable");
   info->SetFont(UiFont(*popup, 13));
   info->SetForegroundColour(Colour(Theme(mode_).secondary));

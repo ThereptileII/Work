@@ -7,7 +7,9 @@ The authoritative scope and acceptance requirements are in
 
 Current work is the first vertical slice: custom XNav chrome around OpenCPN's
 existing chart canvas, Legacy/Safe startup, controlled mode restart and an
-explicitly labelled vessel-data simulator. Missing inputs display unavailable;
+explicitly labelled vessel-data simulator. A second slice subscribes read-only
+to OpenCPN-selected position, SOG and COG; its native validation is tracked in
+[the data bridge notes](docs/navigation-data-bridge.md). Missing inputs display unavailable;
 stopped samples age into stale data. No OpenNav steering or radar commands exist.
 SmartNav, real vessel adapters and the Windows installer are later slices.
 

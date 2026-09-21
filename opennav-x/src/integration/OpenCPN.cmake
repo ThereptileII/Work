@@ -6,6 +6,7 @@ set(OPENNAV_BUILD_UI_COMPONENTS ON CACHE BOOL "" FORCE)
 set(OPENNAV_BUILD_TESTS OFF CACHE BOOL "" FORCE)
 add_subdirectory("${OPENNAV_ROOT}" "${CMAKE_BINARY_DIR}/opennav")
 target_sources(${PACKAGE_NAME} PRIVATE "${OPENNAV_ROOT}/src/integration/OpenCPNIntegration.cpp")
+target_sources(${PACKAGE_NAME} PRIVATE "${OPENNAV_ROOT}/src/integration/NavigationBridge.cpp")
 target_include_directories(${PACKAGE_NAME} PRIVATE "${OPENNAV_ROOT}/src")
 target_compile_definitions(${PACKAGE_NAME} PRIVATE OPENNAV_X=1)
 # Preserve normal plugin preferences while upstream Safe Mode blocks loading.

@@ -34,6 +34,7 @@ class Shell final : public wxEvtHandler {
   void ApplyTheme();
   void Tick();
   void ShowSystem();
+  wxString InputSummary() const;
   wxFrame& frame_;
   wxAuiManager& manager_;
   ShellActions actions_;

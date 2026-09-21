@@ -1,4 +1,5 @@
 #include "integration/OpenCPNIntegration.h"
+#include "integration/NavigationBridge.h"
 #include "integration/StartupMode.h"
 #include "platform/PlatformIntegration.h"
 #include "ui/Shell.h"
@@ -32,6 +33,7 @@ integration::StartupFlags flags;
 StartupMode selected = StartupMode::Legacy;
 bool demo = false;
 std::unique_ptr<ui::Shell> shell;
+std::unique_ptr<NavigationBridge> navigation;
 MyFrame* host = nullptr;
 std::optional<InterfaceMode> restart;
 std::vector<std::string> profile_arguments;
@@ -125,6 +127,9 @@ void Attach(MyFrame& frame, wxAuiManager& manager, wxFileConfig&) {
                                                              : GLOBAL_COLOR_SCHEME_DAY);
   };
   shell = std::make_unique<ui::Shell>(frame, manager, std::move(actions), Light(), demo);
+  navigation = std::make_unique<NavigationBridge>([](const vessel::VesselState& state) {
+    if (shell) shell->UpdateState(state);
+  });
 }
 
 void AppendModeMenu(wxMenu& menu) {
@@ -152,6 +157,7 @@ bool PrepareClose(wxFileConfig& config) {
     }
   }
   // Remove OpenNav AUI panes before upstream persists its stock perspective.
+  navigation.reset();
   shell.reset();
   host = nullptr;
   return true;

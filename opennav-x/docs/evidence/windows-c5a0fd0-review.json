@@ -1,0 +1,37 @@
+{
+  "commit": "c5a0fd0b34126da0c93bdaaf78970e8eb03c3c7e",
+  "run": "https://github.com/ThereptileII/Work/actions/runs/35637082041",
+  "artifact_id": 10657510906,
+  "review_date": "2026-09-21",
+  "scope": "Dual-mode first slice; not production release acceptance",
+  "authority": "Native Windows MSVC Win32 on x64, 1280x800, 96 DPI, software chart rendering",
+  "observations": [
+    "No overlap/clipping in reviewed XNav day/night screens.",
+    "Missing values unavailable; paused simulator values muted and STALE 7s.",
+    "Dashboard toolbar icon present in Legacy; absent in Safe Mode.",
+    "Same-profile Safe override and return to saved XNav preference pass with Dashboard enabled setting preserved.",
+    "All monitored native application exits are zero."
+  ],
+  "screenshots": [
+    {
+      "file": "01-xnav-unavailable.png",
+      "sha256": "061c9c34acb93a6c6ac8dea829e00bebf6e535c2a44c146c52ee1da4abeab37f"
+    },
+    {
+      "file": "03-xnav-night.png",
+      "sha256": "9a13cd2b19749f2404d8740480670bf3838a1bcf132e3f36dddc197a0aaa3d56"
+    },
+    {
+      "file": "05-xnav-stale.png",
+      "sha256": "f14770c4c9c75c72a5c94b21fb5a86ea0e28ad2b4a4f60ac24cca8c331d8fccc"
+    },
+    {
+      "file": "12-safe-shared-profile.png",
+      "sha256": "295dcd0a369b7e9921d2367da917ef905d2c5b411b02b6fbf7b0bd328c938448"
+    },
+    {
+      "file": "11-legacy-after-xnav.png",
+      "sha256": "f2930c32da05daaf7663f0d8202af06c2a50cf77d127c2daca0f2f689cc6b5f6"
+    }
+  ]
+}

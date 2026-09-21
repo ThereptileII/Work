@@ -72,6 +72,8 @@ jobs:
         run: bash opennav-x/tools/build-integration-linux.sh
       - name: Exercise shared profile mode cycle and IPC shutdown
         run: python3 opennav-x/tools/smoke-modes-linux.py
+      - name: Exercise real OpenCPN input with synthetic loopback NMEA
+        run: python3 opennav-x/tools/smoke-navigation.py
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         if: always()
         with:

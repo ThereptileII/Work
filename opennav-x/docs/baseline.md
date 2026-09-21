@@ -1,6 +1,7 @@
 # Pristine OpenCPN baseline
 
-Status: baseline validation in progress; not a completed product milestone.
+Status: initial dual-mode development slice has passed both platform gates at
+`c5a0fd0`; this is not production-release acceptance.
 
 ## Provenance
 
@@ -145,3 +146,17 @@ The independent startup-policy tests do not yet establish runtime behavior.
 - Real-chart regression, representative plugins, non-default Windows DPI,
   hardware interaction and installer lifecycle remain release gates. SmartNav,
   hardware adapters and installer integration have not started.
+
+## First dual-mode slice acceptance
+
+[Run 35637082041](https://github.com/ThereptileII/Work/actions/runs/35637082041),
+commit `c5a0fd0b34126da0c93bdaaf78970e8eb03c3c7e`, passed the Linux integrated
+regression/mode-cycle gate and native MSVC integration gate. Native Windows
+confirms clean exits, same-profile Safe override, saved XNav preference after
+Safe, and the enabled Dashboard preference preserved through every transition.
+Reviewed 1280×800 captures report 96 DPI. Review and image hashes are recorded in
+`docs/evidence/windows-c5a0fd0-review.json`. This closes the first shell/mode
+slice only. The release limitations above remain open.
+
+Next slice: read-only selected navigation input, documented in
+`docs/navigation-data-bridge.md`; its additional Windows gate is pending.

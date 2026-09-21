@@ -71,6 +71,7 @@ try {
     Run python @((Join-Path $PSScriptRoot 'verify-upstream.py'))
     if ($Integration) {
         Run python @((Join-Path $PSScriptRoot 'smoke-modes-windows.py'))
+        Run python @((Join-Path $PSScriptRoot 'smoke-navigation.py'))
         & (Join-Path $PSScriptRoot 'capture-pristine-windows.ps1') -Variant xnav -Mode legacy -Name '11-legacy-mode'
         & (Join-Path $PSScriptRoot 'capture-pristine-windows.ps1') -Variant xnav -Mode safe-mode -Name '12-safe-mode'
     } else {
