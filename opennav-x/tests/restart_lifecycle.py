@@ -20,13 +20,23 @@ with tempfile.TemporaryDirectory(prefix='opennav restart ') as directory:
             time.sleep(0.02)
         time.sleep(0.5)
         assert parent.poll() is None, 'Parent did not stay alive for the test'
-        assert not marker.exists(), 'Replacement started while old process was alive'
-        assert parent.wait(timeout=10) == 0, 'Parent failed'
+        assert not pathlib.Path(str(marker) + '.started').exists(), 'Replacement started while old process was alive'
+        deadline = time.monotonic() + 10
+        while parent.poll() is None:
+            if pathlib.Path(str(marker) + '.started').exists():
+                # Recheck after observing the signal: the parent could have
+                # exited between the first poll and reading the marker.
+                assert parent.poll() is not None, 'Replacement overlapped its parent'
+            if time.monotonic() > deadline:
+                raise RuntimeError('Parent did not exit')
+            time.sleep(.02)
+        assert parent.returncode == 0, 'Parent failed'
         deadline = time.monotonic() + 10
         while not marker.exists() and time.monotonic() < deadline:
             time.sleep(0.02)
         expected = b'12:profile path\n11:with spaces\n12:quote"slash\\\n0:\n'
-        assert marker.read_bytes() == expected, 'Restart arguments were changed'
+        actual = marker.read_bytes()
+        assert actual == expected, f'Restart arguments were changed: {actual!r}'
     finally:
         if parent.poll() is None:
             parent.kill()

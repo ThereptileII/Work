@@ -15,7 +15,18 @@ int main(int argc, char** argv) {
     std::this_thread::sleep_for(std::chrono::milliseconds(1800));
     return 0;
   }
-  std::ofstream output(marker, std::ios::binary);
-  for (int i = 3; i < argc; ++i) output << std::string(argv[i]).size() << ':' << argv[i] << '\n';
-  return output ? 0 : 4;
+  std::ofstream(marker.string() + ".started") << "started";
+  const auto pending = marker.string() + ".pending";
+  {
+    std::ofstream output(pending, std::ios::binary);
+    // Exercise the exact window which used to let the reader observe an empty
+    // result file before this process finished writing its arguments.
+    std::this_thread::sleep_for(std::chrono::milliseconds(100));
+    for (int i = 3; i < argc; ++i) output << std::string(argv[i]).size() << ':' << argv[i] << '\n';
+    output.close();
+    if (!output) return 4;
+  }
+  // Publishing the completed result must be atomic, including on native NTFS.
+  std::filesystem::rename(pending, marker);
+  return 0;
 }

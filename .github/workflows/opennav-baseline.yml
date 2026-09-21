@@ -22,6 +22,8 @@ jobs:
         run: cmake -S opennav-x -B opennav-x/build/contracts -G "Visual Studio 17 2022" -A Win32
       - run: cmake --build opennav-x/build/contracts --config Release
       - run: ctest --test-dir opennav-x/build/contracts -C Release --output-on-failure
+      - name: Repeat the restart handoff with deliberately delayed result publication
+        run: ctest --test-dir opennav-x/build/contracts -C Release -R restart_lifecycle_contract --repeat until-fail:10 --output-on-failure
   linux:
     runs-on: ubuntu-24.04
     timeout-minutes: 60
