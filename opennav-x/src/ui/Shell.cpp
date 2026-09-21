@@ -20,7 +20,7 @@ wxPanel* Shell::MakePane(const wxString& name, wxAuiPaneInfo placement) {
   auto* panel = new wxPanel(&frame_, wxID_ANY);
   panel->SetName(name);
   manager_.AddPane(panel, placement.Name(name).CaptionVisible(false)
-      .CloseButton(false).PaneBorder(false).Resizable(false).DockFixed().Fixed());
+      .CloseButton(false).PaneBorder(false).Resizable(true).DockFixed());
   panes_.push_back(panel);
   return panel;
 }
@@ -53,6 +53,7 @@ Shell::Shell(wxFrame& frame, wxAuiManager& manager, ShellActions actions,
   row->Add(Text(top, "OpenNav X", 22, true), 0, wxALIGN_CENTER_VERTICAL | wxLEFT, gap * 2);
   row->AddSpacer(gap * 3);
   clock_ = Text(top, "", 15);
+  clock_->SetMinSize(frame_.FromDIP(wxSize(56, 24)));
   row->Add(clock_, 0, wxALIGN_CENTER_VERTICAL);
   row->AddStretchSpacer();
   source_ = Text(top, "No vessel input", 13, true);

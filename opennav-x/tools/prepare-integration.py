@@ -34,7 +34,8 @@ with tempfile.TemporaryDirectory(prefix='opennav-index-') as directory:
     env = dict(os.environ, GIT_INDEX_FILE=str(Path(directory) / 'index'))
     subprocess.run(['git', '-C', str(target), 'read-tree', lock['commit']], env=env, check=True)
     for patch in patches:
-        subprocess.run(['git', '-C', str(target), 'apply', '--cached', str(patch)], env=env, check=True)
+        subprocess.run(['git', '-C', str(target), 'apply', '--cached'],
+                       input=patch.read_bytes().replace(b'\r\n', b'\n'), env=env, check=True)
     comparison = subprocess.run(['git', '-C', str(target), 'diff', '--quiet'], env=env)
     if comparison.returncode:
         raise SystemExit('Integration worktree differs from reviewed patches; refusing to overwrite')

@@ -2,6 +2,7 @@
 from pathlib import Path
 import configparser
 import shutil
+import sqlite3
 import xml.etree.ElementTree as ET
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -10,7 +11,7 @@ CONNECTION = '1;0;127.0.0.1;10110;0;;4800;1;0;0;;0;;0;0;0;0;0;SIMULATED disabled
 
 def seed(profile):
     assert (profile / 'OPENNAV_TEST_PROFILE').is_file(), 'Only disposable test profiles are allowed'
-    assert not (profile / 'navobj.xml').exists(), 'Never replace existing navigation data'
+    assert not (profile / 'navobj.xml').exists() and not (profile / 'navobj.db').exists(), 'Never replace existing navigation data'
     shutil.copyfile(ROOT / 'tests/fixtures/mode-persistence.gpx', profile / 'navobj.xml')
     with (profile / 'opencpn.conf').open('a') as stream:
         stream.write('\n[Settings/NMEADataSource]\nDataConnections=' + CONNECTION + '\n')
@@ -20,9 +21,9 @@ def snapshot(profile):
     assert (profile / 'OPENNAV_TEST_PROFILE').is_file()
     config = configparser.RawConfigParser(strict=False)
     config.read(profile / 'opencpn.conf', encoding='utf-8-sig')
-    nav = ET.parse(profile / 'navobj.xml').getroot()
     result = {}
-    for tag in ('wpt', 'rte', 'trk'):
+    nav = ET.parse(profile / 'navobj.xml').getroot() if not (profile / 'navobj.db').exists() else None
+    for tag in (() if nav is None else ('wpt', 'rte', 'trk')):
         objects = []
         for item in nav.findall('g:' + tag, NS):
             name = item.findtext('g:name', namespaces=NS)
@@ -33,6 +34,23 @@ def snapshot(profile):
                             'points': [(float(p.attrib['lat']), float(p.attrib['lon']), p.findtext('g:time', namespaces=NS)) for p in points]})
         assert len(objects) == 1, f'{tag} fixture missing or duplicated: {objects}'
         result[tag] = objects
+    if nav is None:
+        # 5.12.4 imports legacy GPX and removes navobj.xml; validate the actual
+        # SQLite store, not an untouched backup file. Never write to this DB.
+        with sqlite3.connect((profile / 'navobj.db').resolve().as_uri() + '?mode=ro', uri=True) as db:
+            assert db.execute('PRAGMA integrity_check').fetchone() == ('ok',)
+            assert not db.execute('PRAGMA foreign_key_check').fetchall()
+            for tag, table in [('wpt', 'routepoints'), ('rte', 'routes'), ('trk', 'tracks')]:
+                rows = db.execute(f"SELECT guid, name FROM {table} WHERE name LIKE 'SIMULATED persistence%' ORDER BY guid").fetchall()
+                assert len(rows) == 1, f'{tag} fixture missing or duplicated in navobj.db'
+                guid, name = rows[0]
+                if tag == 'wpt':
+                    points = db.execute('SELECT lat, lon, Time FROM routepoints WHERE guid=?', (guid,)).fetchall()
+                elif tag == 'rte':
+                    points = db.execute('SELECT p.lat, p.lon, p.Time FROM routepoints p JOIN routepoints_link l ON p.guid=l.point_guid WHERE l.route_guid=? ORDER BY l.point_order', (guid,)).fetchall()
+                else:
+                    points = db.execute('SELECT latitude, longitude, timestamp FROM trk_points WHERE track_guid=? ORDER BY point_order', (guid,)).fetchall()
+                result[tag] = [{'name': name, 'guid': guid, 'points': points}]
     serialized = config.get('Settings/NMEADataSource', 'DataConnections')
     matches = [s.split(';') for s in serialized.split('|') if 'SIMULATED disabled input' in s]
     assert len(matches) == 1, 'Connection fixture was removed or duplicated'

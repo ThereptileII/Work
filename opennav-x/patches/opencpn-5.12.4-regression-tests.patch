@@ -102,7 +102,7 @@
      int0 = registry.GetDrivers().size() - start_size;
 -    raw_driver->Close();
 +    // Close() shuts the transport; registry ownership is removed by Deactivate.
-+    registry.Deactivate(FindDriver(registry.GetDrivers(), "vcan0"));
++    registry.Deactivate(FindDriver(registry.GetDrivers(), params.GetStrippedDSPort()));
      int1 = registry.GetDrivers().size() - start_size;
      registry.CloseAllDrivers();
      int2 = registry.GetDrivers().size();
