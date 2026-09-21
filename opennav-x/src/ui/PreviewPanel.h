@@ -1,0 +1,24 @@
+#pragma once
+#include "smartnav/VesselEnergy.h"
+#include "ui/Controls.h"
+#include <vector>
+#include <wx/scrolwin.h>
+
+namespace opennav::ui {
+enum class PreviewPage { Route, Energy, Diagnostics };
+class PreviewPanel final : public wxScrolledWindow {
+public:
+  explicit PreviewPanel(wxWindow *parent);
+  void Update(PreviewPage page, LightMode mode,
+              const vessel::VesselState &state, vessel::Time now,
+              const std::vector<std::string> &build_info);
+
+private:
+  void Paint(wxPaintEvent &);
+  PreviewPage page_ = PreviewPage::Route;
+  LightMode mode_ = LightMode::Day;
+  vessel::VesselState state_;
+  vessel::Time now_{};
+  std::vector<std::string> info_;
+};
+} // namespace opennav::ui

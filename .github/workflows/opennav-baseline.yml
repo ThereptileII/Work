@@ -1,4 +1,4 @@
-name: OpenNav baseline
+name: OpenNav Developer Preview
 on:
   push:
     branches: [opennav-x]
@@ -83,6 +83,8 @@ jobs:
         run: python3 opennav-x/tools/smoke-navigation.py
       - name: Observe normal upstream route progress with isolated synthetic routes
         run: python3 opennav-x/tools/smoke-navigation.py --route-fixture
+      - name: Exercise preview pages and all demo scenarios
+        run: python3 opennav-x/tools/smoke-preview.py
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         if: always()
         with:
@@ -108,6 +110,7 @@ jobs:
           path: opennav-x/evidence/local
   windows-integration:
     name: Native MSVC XNav / Legacy / Safe slice
+    needs: contracts
     runs-on: windows-2022
     timeout-minutes: 60
     steps:
@@ -118,6 +121,16 @@ jobs:
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
       - name: Build and exercise integrated modes
         run: ./opennav-x/tools/build-pristine-windows.ps1 -Architecture Win32 -Integration
+      - name: Package and test the extracted Developer Preview
+        run: ./opennav-x/tools/package-preview-windows.ps1
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: preview-candidate-${{ github.sha }}
+          path: |
+            opennav-x/build/developer-preview/OpenNavX-DeveloperPreview-win64.zip
+            opennav-x/build/developer-preview/OpenNavX-DeveloperPreview-win64.zip.sha256
+            opennav-x/build/developer-preview/OpenNavX-DeveloperPreview-source.zip
+          if-no-files-found: error
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         if: always()
         with:
@@ -135,3 +148,29 @@ jobs:
           if ($lock.approvedApplicationArchitecture -ne 'x86' -or $lock.requiredWindowsHostArchitecture -ne 'x64') {
             throw 'This pipeline validates the approved x86 application ABI on Windows x64 only.'
           }
+  publish-preview:
+    name: Publish Developer Preview after both platform gates
+    needs: [contracts, linux, linux-integration, windows-upstream-abi, windows-integration, application-abi]
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          name: preview-candidate-${{ github.sha }}
+          path: preview
+      - name: Verify native package hash
+        working-directory: preview
+        run: sha256sum --check OpenNavX-DeveloperPreview-win64.zip.sha256
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: OpenNavX-DeveloperPreview-win64
+          path: |
+            preview/OpenNavX-DeveloperPreview-win64.zip
+            preview/OpenNavX-DeveloperPreview-win64.zip.sha256
+          if-no-files-found: error
+          retention-days: 90
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: OpenNavX-DeveloperPreview-corresponding-source
+          path: preview/OpenNavX-DeveloperPreview-source.zip
+          if-no-files-found: error
+          retention-days: 90

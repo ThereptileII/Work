@@ -17,6 +17,7 @@ vessel::RouteProgress CurrentRouteProgress();
 void AddCommandLine(wxCmdLineParser& parser);
 bool ParseCommandLine(wxCmdLineParser& parser);
 bool SafeRequested();
+bool IsPortablePreview();
 bool IsXNav();
 void SelectMode(wxFileConfig& config, bool upstream_safe);
 void Attach(MyFrame& frame, wxAuiManager& manager, wxFileConfig& config);

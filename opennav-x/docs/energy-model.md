@@ -78,4 +78,15 @@ Remaining before a user-facing energy feature: acquire actual battery SOC and
 net discharge with provenance; configure/calibrate usable capacity and reserve;
 integrate remaining route distance; define presentation/uncertainty; build the
 propulsion screen; validate with recorded and live boat data; review Windows UI.
-The model has no device control path and is not connected to the shell yet.
+The model has no device control path. Its original core acceptance predates the
+preview presentation described below.
+
+## Developer Preview presentation
+
+The accepted route snapshot now feeds `VesselEnergy` and the preview Route/Energy
+views. See [the preview contract](developer-preview-contract.md) for freshness,
+source separation and explicit Demo assumptions. Demo uses 48 kWh / 15% reserve;
+live configuration remains unavailable. The existing numerical model is unchanged.
+Nine portable tests now include Demo-driven valid, stale, missing, high-power,
+low-SOC, inactive-route and energy-shortfall consumption. Production live battery
+acquisition and calibration remain future work.

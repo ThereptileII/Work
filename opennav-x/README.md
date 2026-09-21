@@ -51,3 +51,11 @@ Integration patches apply only to a disposable pinned worktree under `build/`.
 They do not modify an installed OpenCPN. Always use a disposable `--configdir`
 for development; the capture scripts create one automatically. No supported
 installer compatibility entries are published until their Windows gates pass.
+
+## Windows Developer Preview 0.1
+
+The current milestone packages an isolated portable preview, with explicit Demo
+scenarios, Route/Energy/System pages and the real OpenCPN chart canvas. Acceptance
+and exact downloadable build are tracked in [status](docs/status.md). Read the
+[Windows test guide](docs/preview/TEST_ME_FIRST.md) and
+[limitations](docs/preview/KNOWN_LIMITATIONS.md). This is not approved for navigation.

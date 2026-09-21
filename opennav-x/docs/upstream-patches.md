@@ -119,3 +119,21 @@ The integration CMake hook attaches model-bound tests after the upstream test
 target is declared, using CMake's deferred call facility. Test sources remain
 outside upstream. The optional scenario driver is compiled only when explicitly
 enabled with upstream testing; production/default builds omit it.
+
+## Portable Developer Preview isolation
+
+Three further `OPENNAV_X`-guarded hooks in `gui/src/ocpn_app.cpp` apply only when
+`IsPortablePreview()` has validated the package marker and local profile:
+
+- Preserve forced portable mode when upstream parses `-p` after the early hook.
+- Treat preview launch as explicit startup, avoiding forwarding to an existing
+  normal OpenCPN instance.
+- Skip LAN REST server/mDNS setup for the isolated preview.
+
+Inspection used `MyApp::OnCmdLineParsed`, the subsequent startup/instance path,
+`OCPNPlatform::GetPrivateDataDir`, and the LAN service setup in `OnInit`.
+Profile override is copied before initialization; no normal installation is
+patched. Outside the package the existing behavior remains unchanged. Merge
+risk is startup ordering. Portable contract tests, direct-EXE and launcher
+smoke tests with an external-profile canary cover the boundary on native Windows.
+No route-progress/autopilot implementation changes were needed for the preview.

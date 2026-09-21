@@ -63,7 +63,7 @@ index 258ae04bc..ec86c6c2e 100644
  
      // We need to update the m_bENCGroup flag, at least for the initial creation
 diff --git a/gui/src/ocpn_app.cpp b/gui/src/ocpn_app.cpp
-index a7670a674..707ecbe42 100644
+index a7670a674..ce77f3261 100644
 --- a/gui/src/ocpn_app.cpp
 +++ b/gui/src/ocpn_app.cpp
 @@ -22,6 +22,9 @@
@@ -86,7 +86,7 @@ index a7670a674..707ecbe42 100644
    // Add OpenCPN specific command line options. Help message
    // is hardcoded in kUsage;
    parser.AddSwitch("h", "help", "", wxCMD_LINE_OPTION_HELP);
-@@ -895,12 +901,19 @@ static void ParseLoglevel(wxCmdLineParser &parser) {
+@@ -895,18 +901,29 @@ static void ParseLoglevel(wxCmdLineParser &parser) {
  #ifndef __ANDROID__
  bool MyApp::OnCmdLineHelp(wxCmdLineParser &parser) {
    std::cout << kUsage;
@@ -106,7 +106,17 @@ index a7670a674..707ecbe42 100644
    long number;
    wxString repo;
    wxString plugin;
-@@ -917,7 +930,11 @@ bool MyApp::OnCmdLineParsed(wxCmdLineParser &parser) {
+ 
+   g_unit_test_2 = parser.Found("unit_test_2");
++#ifdef OPENNAV_X
++  g_bportable = parser.Found("p") || opennav::IsPortablePreview();
++#else
+   g_bportable = parser.Found("p");
++#endif
+   g_start_fullscreen = parser.Found("fullscreen");
+   g_bdisable_opengl = parser.Found("no_opengl");
+   g_rebuild_gl_cache = parser.Found("rebuild_gl_raster_cache");
+@@ -917,7 +934,11 @@ bool MyApp::OnCmdLineParsed(wxCmdLineParser &parser) {
      g_unit_test_1 = static_cast<int>(number);
      if (g_unit_test_1 == 0) g_unit_test_1 = -1;
    }
@@ -118,9 +128,15 @@ index a7670a674..707ecbe42 100644
    ParseLoglevel(parser);
    wxString wxstr;
    if (parser.Found("configdir", &wxstr)) {
-@@ -931,6 +948,9 @@ bool MyApp::OnCmdLineParsed(wxCmdLineParser &parser) {
+@@ -929,8 +950,15 @@ bool MyApp::OnCmdLineParsed(wxCmdLineParser &parser) {
+     }
+   }
  
++#ifdef OPENNAV_X
++  bool has_start_options = opennav::IsPortablePreview();
++#else
    bool has_start_options = false;
++#endif
    static const std::vector<std::string> kStartOptions = {
 +#ifdef OPENNAV_X
 +      "xnav", "legacy", "safe-mode", "xnav-demo",
@@ -128,7 +144,7 @@ index a7670a674..707ecbe42 100644
        "unit_test_2",
        "p",
        "fullscreen",
-@@ -1314,6 +1334,9 @@ bool MyApp::OnInit() {
+@@ -1314,6 +1342,9 @@ bool MyApp::OnInit() {
    pConfig = g_Platform->GetConfigObject();
    InitBaseConfig(pConfig);
    pConfig->LoadMyConfig();
@@ -138,7 +154,20 @@ index a7670a674..707ecbe42 100644
  
    //  Override for some safe and nice default values if the config file was
    //  created from scratch
-@@ -1990,6 +2013,9 @@ bool MyApp::OnInit() {
+@@ -1977,7 +2008,11 @@ bool MyApp::OnInit() {
+   std::vector<std::string> ipv4_addrs = get_local_ipv4_addresses();
+ 
+   // If network connection is available, start the server and mDNS client
+-  if (ipv4_addrs.size()) {
++  if (ipv4_addrs.size()
++#ifdef OPENNAV_X
++      && !opennav::IsPortablePreview()
++#endif
++  ) {
+     std::string ipAddr = ipv4_addrs[0];
+ 
+     wxString data_dir = g_Platform->GetPrivateDataDir();
+@@ -1990,6 +2025,9 @@ bool MyApp::OnInit() {
      StartMDNSService(g_hostname.ToStdString(), "opencpn-object-control-service",
                       8000);
    }
@@ -148,7 +177,7 @@ index a7670a674..707ecbe42 100644
    return TRUE;
  }
  
-@@ -2118,6 +2144,9 @@ int MyApp::OnExit() {
+@@ -2118,6 +2156,9 @@ int MyApp::OnExit() {
    g_Platform->OnExit_2();
    safe_mode::clear_check();
    delete g_Platform;

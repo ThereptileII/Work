@@ -8,7 +8,11 @@ reviewed patches apply to a disposable integration worktree.
 
 The read-only remaining active-route distance slice has passed both platform
 gates and native screenshot review; see [its contract](route-progress-contract.md).
-No arrival-SOC product UI has been connected.
+Developer Preview 0.1 is implemented and undergoing package/platform acceptance.
+It adds explicit deterministic Demo data, advisory energy presentation and an
+isolated portable Windows package; see [its contract](developer-preview-contract.md).
+The latest accepted gate below remains the route slice until preview evidence
+is recorded. Live battery acquisition and calibration remain unavailable.
 
 ## Accepted development increments
 
@@ -87,6 +91,7 @@ recorded in [the prior evidence](evidence/restart-handoff-c2535f5.json).
   representative Windows navigation PC. Hosted MSVC evidence is necessary but
   does not establish target-hardware or at-sea acceptance.
 
-The requested route-distance slice is complete. Arrival-SOC product UI remains
-future work; any next energy slice must also establish battery source/age,
-capacity/reserve assumptions and prediction invalidation when the route changes.
+The current milestone is the isolated Windows Developer Preview. Stop after
+publishing and validating its ZIP for manual testing; do not start the production
+installer. [Test guide](preview/TEST_ME_FIRST.md) and
+[known limitations](preview/KNOWN_LIMITATIONS.md) ship inside the package.

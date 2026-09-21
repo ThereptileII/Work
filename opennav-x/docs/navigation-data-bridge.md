@@ -72,3 +72,10 @@ The read-only route observer uses selected position provenance while observing
 normal OpenCPN route progress. Its contract, lifetime/coherence rules and tests
 are documented separately in [route-progress-contract.md](route-progress-contract.md).
 The original navigation subscriber and displayed SOG/COG behavior remain unchanged.
+
+## Developer Preview consumers
+
+The shell now copies the current immutable route publication alongside selected
+navigation values on the application thread. The separate Demo source never
+modifies this live state or fills its missing inputs. Extended fields and
+diagnostics are described in the [preview contract](developer-preview-contract.md).
