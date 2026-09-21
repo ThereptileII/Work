@@ -1,0 +1,63 @@
+name: OpenNav baseline
+on:
+  push:
+    branches: [opennav-x]
+    paths: ['opennav-x/**', '.github/workflows/opennav-baseline.yml']
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: opennav-baseline-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  linux:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+      - name: Fetch pinned pristine source
+        run: |
+          git clone --depth 1 --branch Release_5.12.4 https://github.com/OpenCPN/OpenCPN.git opennav-x/upstream/OpenCPN
+          python3 opennav-x/tools/verify-upstream.py
+      - name: Install upstream build dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y equivs devscripts ninja-build
+          sudo mk-build-deps --install --remove --tool='apt-get -y --no-install-recommends' opennav-x/upstream/OpenCPN/ci/control
+      - name: Build and test pristine Linux baseline
+        run: bash opennav-x/tools/build-pristine-linux.sh
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: linux-pristine-${{ github.sha }}
+          path: opennav-x/evidence/local
+  windows-upstream-abi:
+    name: Native MSVC upstream Win32 ABI on Windows x64
+    runs-on: windows-2022
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+      - name: Fetch pinned pristine source
+        run: |
+          git clone --depth 1 --branch Release_5.12.4 https://github.com/OpenCPN/OpenCPN.git opennav-x/upstream/OpenCPN
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          python opennav-x/tools/verify-upstream.py
+      - name: Build and test supported upstream ABI
+        run: ./opennav-x/tools/build-pristine-windows.ps1 -Architecture Win32
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: windows-pristine-${{ github.sha }}
+          path: opennav-x/evidence/local
+  specification-x64:
+    name: Specification x64 application gate (unresolved ABI)
+    runs-on: windows-2022
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+      - name: Require explicit architecture resolution
+        shell: pwsh
+        run: |
+          $lock = Get-Content opennav-x/upstream.lock.json | ConvertFrom-Json
+          if ($lock.architectureDecision -eq 'pending') {
+            throw 'Spec requires x64 application; supported OpenCPN 5.12.4 ABI is Win32. Decision and native evidence required.'
+          }

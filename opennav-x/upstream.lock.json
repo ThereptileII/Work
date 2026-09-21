@@ -1,0 +1,10 @@
+{
+  "repository": "https://github.com/OpenCPN/OpenCPN.git",
+  "tag": "Release_5.12.4",
+  "commit": "37fd0cddb7334fe489e9f18aa163977a9c5c84f7",
+  "pluginApi": "1.20",
+  "upstreamWindowsApplicationArchitecture": "x86",
+  "requiredWindowsHostArchitecture": "x64",
+  "specificationApplicationArchitecture": "x64",
+  "architectureDecision": "pending"
+}
