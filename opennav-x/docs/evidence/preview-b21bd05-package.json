@@ -1,0 +1,22 @@
+{
+  "commit": "b21bd05ce75f22c91ac12927207d264b8b3efde4",
+  "result": "passed",
+  "artifact_id": 10668776591,
+  "artifact_sha256": "9861698facb879e157397d03bd69e1c3c3524b4b9f857df00118562f68098332",
+  "zip_name": "OpenNavX-DeveloperPreview-win64.zip",
+  "zip_sha256": "cfa9e9e462aea63da6df5c8cce324d4fd8769e2799b0976d02931f03be0c8e58",
+  "zip_bytes": 48386718,
+  "file_hashes_verified": 997,
+  "file_count": 998,
+  "executable_sha256": "c5a1fc4f6ea5311760a0e658f647217b2ccb44556cf46f06693f1f8d0797d7ab",
+  "executable_matches_native_tested_binary": true,
+  "manifest": "asInvoker",
+  "bundled_plugin_private_profile_copies_verified": 4,
+  "test_fixtures_or_runtime_logs_shipped": false,
+  "build_info": "# Build information\r\n\r\n- OpenNav X: 0.1 Developer Preview\r\n- Git commit: `b21bd05ce75f22c91ac12927207d264b8b3efde4`\r\n- OpenCPN: 5.12.4\r\n- Pinned upstream: `37fd0cddb7334fe489e9f18aa163977a9c5c84f7`\r\n- Compiler: MSVC 19.44.35228.0 / 4 byte pointers\r\n- Architecture: Win32/x86 application and plugin ABI; Windows 10/11 x64 host\r\n- Build date (UTC): 2026-09-21T22:37:45Z\r\n- CI run: https://github.com/ThereptileII/Work/actions/runs/35663416666\r\n- Modes: XNav, explicit Demo, Legacy, Safe; package-local profile only\r\n- Rendering gate: 1280\u00d7800 / 96 DPI / software rendering\r\n- ZIP SHA-256: supplied alongside the ZIP. It cannot be embedded in itself.\r\n- File hashes: `FILE_SHA256.json` in the package root.\r\n\r\nSee TEST_ME_FIRST.md and KNOWN_LIMITATIONS.md before running.\r\n",
+  "source_artifact_id": 10668976466,
+  "source_artifact_sha256": "03802ca87cafe24c5b5c78f4999dceb908047f7519d9f6c857b47bd4d25d0877",
+  "source_zip_sha256": "e95c52fc1412defbce0e7f9556278435186ed06184f4107a06f8e4cea210e72b",
+  "source_implementation_files_verified": 103,
+  "integrated_ocpn_app_matches": true
+}

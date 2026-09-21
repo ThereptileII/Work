@@ -1,0 +1,190 @@
+{
+  "commit": "b21bd05ce75f22c91ac12927207d264b8b3efde4",
+  "run": "https://github.com/ThereptileII/Work/actions/runs/35663416666",
+  "review_date": "2026-09-22",
+  "jobs": [
+    {
+      "id": 106543648639,
+      "name": "Linux integrated regression gate",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 106543648875,
+      "name": "linux",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 106543648880,
+      "name": "Approved OpenCPN ABI on Windows x64",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 106543648890,
+      "name": "Native MSVC upstream Win32 ABI on Windows x64",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 106543648921,
+      "name": "contracts (ubuntu-24.04)",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 106543649067,
+      "name": "contracts (windows-2022)",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 106544000079,
+      "name": "Native MSVC XNav / Legacy / Safe slice",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 106547708545,
+      "name": "Publish Developer Preview after both platform gates",
+      "status": "completed",
+      "conclusion": "success"
+    }
+  ],
+  "artifacts": [
+    {
+      "id": 10668976466,
+      "name": "OpenNavX-DeveloperPreview-corresponding-source",
+      "size_in_bytes": 78073296,
+      "url": "https://api.github.com/repos/ThereptileII/Work/actions/artifacts/10668976466",
+      "archive_download_url": "https://api.github.com/repos/ThereptileII/Work/actions/artifacts/10668976466/zip",
+      "expired": false,
+      "created_at": "2026-09-21T22:50:34Z",
+      "expires_at": "2026-12-20T22:34:58Z",
+      "updated_at": "2026-09-21T22:50:34Z",
+      "digest": "sha256:03802ca87cafe24c5b5c78f4999dceb908047f7519d9f6c857b47bd4d25d0877",
+      "workflow_run": {
+        "id": 35663416666,
+        "repository_id": 864043804,
+        "head_repository_id": 864043804,
+        "head_branch": "opennav-x",
+        "head_sha": "b21bd05ce75f22c91ac12927207d264b8b3efde4"
+      }
+    },
+    {
+      "id": 10668805929,
+      "name": "linux-pristine-b21bd05ce75f22c91ac12927207d264b8b3efde4",
+      "size_in_bytes": 475705,
+      "url": "https://api.github.com/repos/ThereptileII/Work/actions/artifacts/10668805929",
+      "archive_download_url": "https://api.github.com/repos/ThereptileII/Work/actions/artifacts/10668805929/zip",
+      "expired": false,
+      "created_at": "2026-09-21T22:44:51Z",
+      "expires_at": "2026-12-20T22:34:58Z",
+      "updated_at": "2026-09-21T22:44:51Z",
+      "digest": "sha256:a201d305fd42646d23f86df8648eb43e2ad5f5150c7b4de30634b7582a39b7b5",
+      "workflow_run": {
+        "id": 35663416666,
+        "repository_id": 864043804,
+        "head_repository_id": 864043804,
+        "head_branch": "opennav-x",
+        "head_sha": "b21bd05ce75f22c91ac12927207d264b8b3efde4"
+      }
+    },
+    {
+      "id": 10668776591,
+      "name": "OpenNavX-DeveloperPreview-win64",
+      "size_in_bytes": 47933352,
+      "url": "https://api.github.com/repos/ThereptileII/Work/actions/artifacts/10668776591",
+      "archive_download_url": "https://api.github.com/repos/ThereptileII/Work/actions/artifacts/10668776591/zip",
+      "expired": false,
+      "created_at": "2026-09-21T22:50:31Z",
+      "expires_at": "2026-12-20T22:34:58Z",
+      "updated_at": "2026-09-21T22:50:31Z",
+      "digest": "sha256:9861698facb879e157397d03bd69e1c3c3524b4b9f857df00118562f68098332",
+      "workflow_run": {
+        "id": 35663416666,
+        "repository_id": 864043804,
+        "head_repository_id": 864043804,
+        "head_branch": "opennav-x",
+        "head_sha": "b21bd05ce75f22c91ac12927207d264b8b3efde4"
+      }
+    },
+    {
+      "id": 10668318980,
+      "name": "linux-integration-b21bd05ce75f22c91ac12927207d264b8b3efde4",
+      "size_in_bytes": 3418420,
+      "url": "https://api.github.com/repos/ThereptileII/Work/actions/artifacts/10668318980",
+      "archive_download_url": "https://api.github.com/repos/ThereptileII/Work/actions/artifacts/10668318980/zip",
+      "expired": false,
+      "created_at": "2026-09-21T22:47:43Z",
+      "expires_at": "2026-12-20T22:34:58Z",
+      "updated_at": "2026-09-21T22:47:43Z",
+      "digest": "sha256:8488fdf643ee74acb2a6b745ff886329615db4a364decec96497bd69b462d16e",
+      "workflow_run": {
+        "id": 35663416666,
+        "repository_id": 864043804,
+        "head_repository_id": 864043804,
+        "head_branch": "opennav-x",
+        "head_sha": "b21bd05ce75f22c91ac12927207d264b8b3efde4"
+      }
+    },
+    {
+      "id": 10667878911,
+      "name": "windows-pristine-b21bd05ce75f22c91ac12927207d264b8b3efde4",
+      "size_in_bytes": 496045,
+      "url": "https://api.github.com/repos/ThereptileII/Work/actions/artifacts/10667878911",
+      "archive_download_url": "https://api.github.com/repos/ThereptileII/Work/actions/artifacts/10667878911/zip",
+      "expired": false,
+      "created_at": "2026-09-21T22:45:51Z",
+      "expires_at": "2026-12-20T22:34:58Z",
+      "updated_at": "2026-09-21T22:45:51Z",
+      "digest": "sha256:82e94aee15de8b58f65437751cbe49a3751e266960d0db95909d040089bd0400",
+      "workflow_run": {
+        "id": 35663416666,
+        "repository_id": 864043804,
+        "head_repository_id": 864043804,
+        "head_branch": "opennav-x",
+        "head_sha": "b21bd05ce75f22c91ac12927207d264b8b3efde4"
+      }
+    },
+    {
+      "id": 10667834761,
+      "name": "preview-candidate-b21bd05ce75f22c91ac12927207d264b8b3efde4",
+      "size_in_bytes": 126006626,
+      "url": "https://api.github.com/repos/ThereptileII/Work/actions/artifacts/10667834761",
+      "archive_download_url": "https://api.github.com/repos/ThereptileII/Work/actions/artifacts/10667834761/zip",
+      "expired": false,
+      "created_at": "2026-09-21T22:50:14Z",
+      "expires_at": "2026-12-20T22:34:58Z",
+      "updated_at": "2026-09-21T22:50:14Z",
+      "digest": "sha256:bd3690e73d029de692e59a99810535b8a33ccb45e1511d41a02a15a89ec67172",
+      "workflow_run": {
+        "id": 35663416666,
+        "repository_id": 864043804,
+        "head_repository_id": 864043804,
+        "head_branch": "opennav-x",
+        "head_sha": "b21bd05ce75f22c91ac12927207d264b8b3efde4"
+      }
+    },
+    {
+      "id": 10667814816,
+      "name": "windows-integration-b21bd05ce75f22c91ac12927207d264b8b3efde4",
+      "size_in_bytes": 8077710,
+      "url": "https://api.github.com/repos/ThereptileII/Work/actions/artifacts/10667814816",
+      "archive_download_url": "https://api.github.com/repos/ThereptileII/Work/actions/artifacts/10667814816/zip",
+      "expired": false,
+      "created_at": "2026-09-21T22:50:18Z",
+      "expires_at": "2026-12-20T22:34:58Z",
+      "updated_at": "2026-09-21T22:50:18Z",
+      "digest": "sha256:848adc1b043180dc32b0e14c877dc4ae67ffa20ec7dda49f8c6accfd3c493bb0",
+      "workflow_run": {
+        "id": 35663416666,
+        "repository_id": 864043804,
+        "head_repository_id": 864043804,
+        "head_branch": "opennav-x",
+        "head_sha": "b21bd05ce75f22c91ac12927207d264b8b3efde4"
+      }
+    }
+  ]
+}

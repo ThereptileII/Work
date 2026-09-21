@@ -55,8 +55,13 @@ installer compatibility entries are published until their Windows gates pass.
 
 ## Windows Developer Preview 0.1
 
-The current milestone packages an isolated portable preview, with explicit Demo
-scenarios, Route/Energy/System pages and the real OpenCPN chart canvas. Acceptance
-and exact downloadable build are tracked in [status](docs/status.md). Read the
+The accepted preview packages explicit Demo scenarios, Route/Energy/System pages
+and the real OpenCPN chart canvas.
+[Download OpenNavX-DeveloperPreview-win64](https://github.com/ThereptileII/Work/actions/runs/35663416666/artifacts/10668776591)
+from the [successful CI run](https://github.com/ThereptileII/Work/actions/runs/35663416666).
+Extract the inner `OpenNavX-DeveloperPreview-win64.zip` into a short writable
+folder, then run `Run-XNav-Demo.cmd`. Its private profile and bundled runtime do
+not require modifying an installed OpenCPN. Exact revision, test counts and
+native screenshot evidence are tracked in [status](docs/status.md). Read the
 [Windows test guide](docs/preview/TEST_ME_FIRST.md) and
 [limitations](docs/preview/KNOWN_LIMITATIONS.md). This is not approved for navigation.

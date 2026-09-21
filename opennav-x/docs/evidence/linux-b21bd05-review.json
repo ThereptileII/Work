@@ -1,0 +1,78 @@
+{
+  "commit": "b21bd05ce75f22c91ac12927207d264b8b3efde4",
+  "run": "https://github.com/ThereptileII/Work/actions/runs/35663416666",
+  "job_id": 106543648639,
+  "artifact_id": 10668318980,
+  "artifact_sha256": "8488fdf643ee74acb2a6b745ff886329615db4a364decec96497bd69b462d16e",
+  "review_date": "2026-09-22",
+  "result": "accepted for isolated Developer Preview 0.1; not navigation approval",
+  "platform": "Ubuntu 24.04 hosted clean integrated build, GCC, wxGTK, software rendering",
+  "tests": {
+    "integrated_passed": 67,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "portable_contract_suites_passed": 9,
+    "additional_restart_repeats_passed": 10,
+    "portable_route_scenarios": 28,
+    "model_bound_route_cases": 7,
+    "normal_timer_route_observations": 26,
+    "demo_scenarios": 8
+  },
+  "smoke_checks": [
+    "Moving position, SOC, route distance and advisory destination SOC change",
+    "All eight GUI-selected scenarios pass validity/shortfall assertions",
+    "XNav / Legacy / Safe clean lifecycle and shared navigation/config persistence passed; mode switch stops Demo"
+  ],
+  "observations": [
+    "Clean hosted integrated build passes all 67 compiled tests without failures, errors or skips.",
+    "Existing XNav/Legacy/Safe shared-profile mode cycle, selected loopback NMEA, all 26 normal-timer route observations and clean lifecycle pass.",
+    "All eight Demo scenarios pass moving-data and validity/shortfall assertions; mode restarts stop Demo.",
+    "Reviewed Energy, stale Energy and selected live navigation captures are readable without overlap. Stale predictions are absent and the live bottom route summary is correctly placed.",
+    "Windows remains authoritative for preview rendering, packaged DLL/plugin loading and acceptance."
+  ],
+  "evidence_sha256": {
+    "xnav-linux-tests.xml": "c4ef3b66737afd01ddc01e6a5f49e46bfdd7a775782a9dc5aedbdf3266390ccf",
+    "linux-mode-cycle-results.json": "4c7a9e43aa45b5f2d82a660643f0567e98b8e001ba2aa5375b06404400dbfc36",
+    "preview-linux-results.json": "ad83a03983f976053fa5bb8800f93529d7c17857478f29f031711cc345191d37",
+    "navigation-input-results.json": "5ad188d3de31566aebf152101b4620bcb859c80fd2ae9ae4cd51626ace1ce055",
+    "route-input-results.json": "c228df965657b3aa4e965411d8fb6fb0f8f9eb563f4184eac954335acce77d55",
+    "route-progress-results.json": "00a0c88fcfeefd16fa40fa6f705fae4a02bc78f71b48dca71f202c383253df8b"
+  },
+  "screenshots_reviewed": [
+    {
+      "file": "preview-04-energy-linux.png",
+      "sha256": "0a3ad86d9fd0ec30643e6c3b9faf9b624700415a758d6119e04cb77b1eed4b38",
+      "pixels": [
+        1280,
+        800
+      ]
+    },
+    {
+      "file": "preview-06-stale-linux.png",
+      "sha256": "be0069df6976d18bd893e4c7823247c0b48d4e3207e8be7e71305cfecbe4f4f7",
+      "pixels": [
+        1280,
+        800
+      ]
+    },
+    {
+      "file": "navigation-02-live.png",
+      "sha256": "86f5655eb285d7916ebf1a79f3f1b2e3b77ababe373d3c78abd73753a14a162b",
+      "pixels": [
+        1280,
+        800
+      ]
+    }
+  ],
+  "source_equivalence": "source-mirror-b21bd05.json",
+  "contracts": "preview-b21bd05-contracts.json",
+  "all_ci_gates": "preview-b21bd05-gates.json",
+  "limitations": [
+    "Synthetic inputs and overview coastline, no nautical chart collection or physical devices",
+    "96 DPI/software rendering only; 125/150 percent scaling, touch and navigation-PC acceptance remain open",
+    "Demo telemetry does not drive OpenCPN ownship or activate its route; separate synthetic provenance",
+    "Live propulsion/battery acquisition and calibrated capacity/reserve are not implemented",
+    "No installer, updater, device command, crash recovery or at-sea approval"
+  ]
+}

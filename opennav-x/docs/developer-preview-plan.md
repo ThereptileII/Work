@@ -22,5 +22,14 @@ it does not activate, edit or advance the user's OpenCPN routes or send NMEA.
 The preview must not use simulated telemetry as a fallback for missing live data.
 Capacity and reserve in Demo are labelled fixture assumptions, never boat defaults.
 
-Acceptance remains pending until the final downloadable artifact passes both
-platform gates. Do not advance into the production installer automatically.
+All five steps are complete at packaged revision
+`b21bd05ce75f22c91ac12927207d264b8b3efde4`.
+[The exact CI run](https://github.com/ThereptileII/Work/actions/runs/35663416666)
+passed all eight jobs, including native extracted-package testing. The final
+1280×800 Windows screenshot review and archive audit are recorded in
+[status](status.md) and [validation evidence](preview-validation.md).
+The downloadable artifact is `OpenNavX-DeveloperPreview-win64`.
+
+Next action: user manual testing on a normal Windows PC, then review that feedback.
+Do not advance into the production installer automatically. This acceptance
+applies to the isolated Developer Preview, not navigation use.

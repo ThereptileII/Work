@@ -1,0 +1,262 @@
+{
+  "commit": "b21bd05ce75f22c91ac12927207d264b8b3efde4",
+  "run": "https://github.com/ThereptileII/Work/actions/runs/35663416666",
+  "job_id": 106544000079,
+  "artifact_id": 10667814816,
+  "artifact_sha256": "848adc1b043180dc32b0e14c877dc4ae67ffa20ec7dda49f8c6accfd3c493bb0",
+  "review_date": "2026-09-22",
+  "result": "accepted for isolated Developer Preview 0.1; not navigation approval",
+  "platform": "Native Windows Server 2022 x64, MSVC 19.44.35228.0 Win32 ABI, wxWidgets 3.2.8, software rendering",
+  "tests": {
+    "integrated_passed": 57,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "portable_contract_suites_passed": 9,
+    "additional_restart_repeats_passed": 10,
+    "portable_route_scenarios": 28,
+    "model_bound_route_cases": 7,
+    "normal_timer_route_observations": 26,
+    "demo_scenarios": 8
+  },
+  "smoke_checks": [
+    "All extracted package file hashes match",
+    "Bottom route summary lays out after narrow-to-wide resize",
+    "Moving position, SOC, route distance and advisory destination SOC change",
+    "All eight GUI-selected scenarios pass validity/shortfall assertions",
+    "Page resize/visibility and Navigation return with chart zoom passed",
+    "All four launchers, direct executable launch and external-profile refusal passed with no development PATH",
+    "Normal profile canary and existing OpenCPN files under APPDATA, LOCALAPPDATA, PROGRAMDATA and Program Files remain unchanged",
+    "Bundled Dashboard initialized and cleanly unloaded in six normal launches; inactive in both Safe launches",
+    "XNav / Legacy / Safe clean lifecycle and shared navigation/config persistence passed; mode switch stops Demo"
+  ],
+  "observations": [
+    "Main Day and Night preserve the dominant real chart canvas and prominent DEMO banner. All five data-rail values and bottom navigation remain readable. Overview land retains upstream palette behavior.",
+    "Route page shows next waypoint Harbour mouth 1/3, 17.46 NM, advisory 2h46m and estimated arrival SOC 31.1 percent with explicit DEMO synthetic provenance.",
+    "Energy page shows battery 76 percent, 344 V, 22.7 A, propulsion 7.4 kW/833 RPM/63 C and advisory arrival 31.0 percent/range 23.5 NM. Whole-pack power and capacity/reserve assumptions are visible.",
+    "Diagnostics shows exact packaged commit, upstream pin, MSVC version, Windows/96 DPI, private profile and per-item source/age. Scrollbar makes all diagnostic entries reachable.",
+    "Stale screenshot shows dim retained values and STALE 6s with arrival SOC/range absent. Unavailable scenario omits disconnected values and withholds predictions while other valid values remain.",
+    "Energy-shortfall view explicitly reports 10.4 kWh shortfall and unavailable arrival SOC; advisory range is 3.6 NM above reserve.",
+    "Legacy and Safe retain original OpenCPN menus/canvas; Safe suppresses plugins. Mode and shared-profile persistence assertions pass.",
+    "Selected-navigation captures show LIVE 6.3 kn/147 degrees, then velocity STALE 7s after position-only observations, then STALE 14s after all input stops. Wind/depth/unproven heading remain unavailable.",
+    "Existing route fixture captures preserve the navigation layout; stale position capture shows STALE 6s. All 26 underlying normal-timer route contract observations pass; the capture itself is not used as proof of an active route value.",
+    "No clipping or unintended overlap found in the 15 reviewed 1280x800 captures. All content pages have nonzero visible/uncovered native bounds. Narrow-to-wide resizing keeps the bottom route summary beside its buttons.",
+    "ZIP launched with only Windows system directories on PATH. All four launchers, direct executable startup and external-profile refusal pass. The shipped archive contains no test fixture marker or runtime logs.",
+    "Long temporary runner paths still produce nonfatal upstream SVG cache-write warnings; short writable extraction paths are documented. No DPI beyond 96 was exercised."
+  ],
+  "evidence_sha256": {
+    "windows-tests.xml": "a2814ec017e79ed213a0046ff19ecfda2326f9f7e51791b15429d04d83f09c9e",
+    "mode-cycle-results.json": "1bc78fe4debf636f1f90119c1bc029a767deef5bd3ccf4245254820a773774b1",
+    "preview-results.json": "e732b67f39fd452f040fa7a5a0bbcf17912cf7ae2d980512644841b8e05114bb",
+    "navigation-input-results.json": "ab0daf1d00657a5fbb6f157b156a0fa13a6a483efdd328560316c73d7b8cf378",
+    "route-input-results.json": "a070c6b5b539bbbb961cbd164ec6e1e3747ecc43b3a46f5cc6f8493195d168d4",
+    "route-progress-results.json": "92baf3f1fb454a5b0c853784635bf9e1ff7e72432571780d11bb7348355a0eab",
+    "preview-dll-audit.json": "54bb9e6175fbc6367650403e667f9586054436848016a0c7aee2ba849225cce9",
+    "windows-executable-sha256.txt": "664c0c5745730ede1d7192e077df85892433a57f3f5af302cdf0f12e1fb051b0",
+    "windows-wx-provenance.json": "2fb563c4de7819d4b10d7a567e59510cd033c3b9cb55ce4ebb654964da60267f"
+  },
+  "screenshots_reviewed": [
+    {
+      "file": "preview-01-navigation-day.png",
+      "sha256": "99b20fadf8dcb47c0ea9f7e4ad2c00cfd6917a780c5b96afb99a3a22c892525a",
+      "pixels": [
+        1280,
+        800
+      ]
+    },
+    {
+      "file": "preview-02-navigation-night.png",
+      "sha256": "64699dabf9ad5621055e64094ac79971750d31e1bd6d7a09c1dfc2bc7fc0a75a",
+      "pixels": [
+        1280,
+        800
+      ]
+    },
+    {
+      "file": "preview-03-route.png",
+      "sha256": "677d086b57bb0dfe711cdcda02f4750042d446e5d1a1787797db6dd6de282d77",
+      "pixels": [
+        1280,
+        800
+      ]
+    },
+    {
+      "file": "preview-04-energy.png",
+      "sha256": "958b62b1feab1af22546838b553f34439a13fb1af655a6778b3b79890476a4aa",
+      "pixels": [
+        1280,
+        800
+      ]
+    },
+    {
+      "file": "preview-05-diagnostics.png",
+      "sha256": "13f18d6a8a81473a5eecd07a77ec2a815f405684417cb09264205e59c882baff",
+      "pixels": [
+        1280,
+        800
+      ]
+    },
+    {
+      "file": "preview-06-stale.png",
+      "sha256": "c8be7606a3fb15c35628f960b1904fa0dc0f39d933a60222508c3b7cbb78c492",
+      "pixels": [
+        1280,
+        800
+      ]
+    },
+    {
+      "file": "preview-06b-unavailable.png",
+      "sha256": "87995aaabc8a86fdeeeed5e25aeb800dcb90f5f779bd609d6576d319da6d1ef3",
+      "pixels": [
+        1280,
+        800
+      ]
+    },
+    {
+      "file": "preview-06c-shortfall.png",
+      "sha256": "a738d38fa8a6ddbc719165a49ca6102509225da2f18b92da72853c119919d56d",
+      "pixels": [
+        1280,
+        800
+      ]
+    },
+    {
+      "file": "preview-07-legacy.png",
+      "sha256": "9a8b62db90e7a55108768defe61edfa575f1ca4e1587a75e6d1c644d1d971c27",
+      "pixels": [
+        1280,
+        800
+      ]
+    },
+    {
+      "file": "preview-08-safe.png",
+      "sha256": "ac0005a445a8405155afa7f3b4bcd182eff3eda971efb159fdd2b26ce42dd795",
+      "pixels": [
+        1280,
+        800
+      ]
+    },
+    {
+      "file": "navigation-02-live.png",
+      "sha256": "aab1056a6c97846b1ca91d44152b9141a6174b628fba9275092a2cc208973185",
+      "pixels": [
+        1280,
+        800
+      ]
+    },
+    {
+      "file": "navigation-03-position-only-velocity-stale.png",
+      "sha256": "18cf6ca47d7a39ff97734aa8180eebfd699c758333df8e82a239060aa968fe12",
+      "pixels": [
+        1280,
+        800
+      ]
+    },
+    {
+      "file": "navigation-04-all-stale.png",
+      "sha256": "19dd11b4d8870c1fc62a85d12f9382f99eb5e51559dcbd68e65e48924d8e412b",
+      "pixels": [
+        1280,
+        800
+      ]
+    },
+    {
+      "file": "route-01-active-route.png",
+      "sha256": "0720fa298074186183c193f8b1522a12930d87e4925f9c3dee6ab4e26926dbfc",
+      "pixels": [
+        1280,
+        800
+      ]
+    },
+    {
+      "file": "route-02-stale-position.png",
+      "sha256": "1ddbe2c165ebdc896cf6948f07df759138cebe62ba13e6de1b55b13f4950dd77",
+      "pixels": [
+        1280,
+        800
+      ]
+    }
+  ],
+  "source_equivalence": "source-mirror-b21bd05.json",
+  "contracts": "preview-b21bd05-contracts.json",
+  "all_ci_gates": "preview-b21bd05-gates.json",
+  "limitations": [
+    "Synthetic inputs and overview coastline, no nautical chart collection or physical devices",
+    "96 DPI/software rendering only; 125/150 percent scaling, touch and navigation-PC acceptance remain open",
+    "Demo telemetry does not drive OpenCPN ownship or activate its route; separate synthetic provenance",
+    "Live propulsion/battery acquisition and calibrated capacity/reserve are not implemented",
+    "No installer, updater, device command, crash recovery or at-sea approval"
+  ],
+  "executable_sha256": "c5a1fc4f6ea5311760a0e658f647217b2ccb44556cf46f06693f1f8d0797d7ab",
+  "package_record": "preview-b21bd05-package.json",
+  "screenshot_dpi": 96,
+  "packaged_window_initial_pixels": [
+    1280,
+    760
+  ],
+  "page_visibility": [
+    {
+      "page": "Route",
+      "native_pixels": [
+        1264,
+        649
+      ],
+      "visible_and_uncovered": true
+    },
+    {
+      "page": "Energy",
+      "native_pixels": [
+        1264,
+        649
+      ],
+      "visible_and_uncovered": true
+    },
+    {
+      "page": "Diagnostics",
+      "native_pixels": [
+        1264,
+        649
+      ],
+      "visible_and_uncovered": true
+    },
+    {
+      "page": "Energy",
+      "native_pixels": [
+        1264,
+        649
+      ],
+      "visible_and_uncovered": true
+    },
+    {
+      "page": "Energy",
+      "native_pixels": [
+        1264,
+        649
+      ],
+      "visible_and_uncovered": true
+    },
+    {
+      "page": "Energy",
+      "native_pixels": [
+        1264,
+        649
+      ],
+      "visible_and_uncovered": true
+    }
+  ],
+  "normal_installation_audit": {
+    "canary_unchanged": true,
+    "external_opencpn_files_existing_on_runner": 0,
+    "external_opencpn_files_created": 0,
+    "scope": "APPDATA, LOCALAPPDATA, PROGRAMDATA and Program Files; actual installed OpenCPN coexistence remains a manual PC check"
+  },
+  "dll_import_audit": {
+    "installed_pe_files": 87,
+    "missing_imports": 0,
+    "private_plugin_copies_verified": 4
+  },
+  "plugin_lifecycle": {
+    "dashboard_initialized_and_cleanly_unloaded_normal_launches": 6,
+    "safe_launches_without_dashboard_initialization": 2
+  }
+}
