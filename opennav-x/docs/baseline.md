@@ -158,5 +158,7 @@ Reviewed 1280×800 captures report 96 DPI. Review and image hashes are recorded 
 `docs/evidence/windows-c5a0fd0-review.json`. This closes the first shell/mode
 slice only. The release limitations above remain open.
 
-Next slice: read-only selected navigation input, documented in
-`docs/navigation-data-bridge.md`; its additional Windows gate is pending.
+The read-only selected-navigation slice also passed both gates at `bc0af30`;
+see `docs/navigation-data-bridge.md` for native screenshot review and limitations.
+The first advisory energy calculation component is documented in
+`docs/energy-model.md`; no energy values are yet displayed in the shell.

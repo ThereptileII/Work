@@ -55,7 +55,13 @@ Run these GUI tests sequentially after CTest: upstream REST tests and OpenCPN
 both use port 8443. Windows native build, screenshots, shared-profile cycle and
 the five portable contracts must pass at the same commit before acceptance.
 
-Linux build, five portable contracts and the loopback sequence pass locally.
-Reviewed Linux screenshots show 6.3 kn / 147°, then STALE 6s while position is
-still current, then Navigation stale / STALE 13s after all input stops. Native
-Windows acceptance is pending for this slice.
+Both platform gates pass at `bc0af30d647120c90dc603a97fcf7a6ea0e6415c` in
+[run 35638553140](https://github.com/ThereptileII/Work/actions/runs/35638553140).
+All seven CI jobs succeeded. Reviewed native Windows 1280×800/96 DPI screenshots
+show 6.3 kn / 147°, then STALE 7s while position continues, then Navigation stale
+and STALE 14s after all input stops. Wind and depth stay unavailable. Numeric
+and layout review hashes are in `docs/evidence/windows-bc0af30-review.json`.
+Linux's matching sequence and mode cycle pass; the integrated regression suite
+passes 60 compiled cases. Native Windows passes 50 platform-available cases and
+the portable contract suite. This establishes the selected-navigation slice;
+physical sensor provenance and the remaining vessel fields are still pending.

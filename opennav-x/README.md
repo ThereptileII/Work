@@ -5,13 +5,15 @@ OpenCPN. **This repository is a development build, not a navigation release.**
 The authoritative scope and acceptance requirements are in
 [the project specification](OpenNavX_Codex_Project_Specification.md).
 
-Current work is the first vertical slice: custom XNav chrome around OpenCPN's
+The initial implemented slice provides custom XNav chrome around OpenCPN's
 existing chart canvas, Legacy/Safe startup, controlled mode restart and an
 explicitly labelled vessel-data simulator. A second slice subscribes read-only
 to OpenCPN-selected position, SOG and COG; its native validation is tracked in
 [the data bridge notes](docs/navigation-data-bridge.md). Missing inputs display unavailable;
 stopped samples age into stale data. No OpenNav steering or radar commands exist.
-SmartNav, real vessel adapters and the Windows installer are later slices.
+An advisory range/arrival-SOC calculation module has portable tests; it is not
+yet connected to battery acquisition or the UI. Hardware adapters and the
+Windows installer remain later slices.
 
 The application preserves OpenCPN 5.12.4's supported **32-bit application/plugin
 ABI on 64-bit Windows**, as explicitly approved by the user. Native Windows

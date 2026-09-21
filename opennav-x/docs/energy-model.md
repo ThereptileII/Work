@@ -2,7 +2,10 @@
 
 Implemented after the dual-mode Windows gate passed at `c5a0fd0`. This is a
 tested calculation component, not the completed propulsion/energy product screen.
-Linux tests pass; same-commit native MSVC validation is required before acceptance.
+Linux and native MSVC portable tests pass at `5e1320d`. The Windows contract
+lane is being aligned explicitly to Win32, matching the approved application
+ABI; earlier portable jobs used the generator default. Full integration gates
+remain tracked in the project status.
 
 ## Source inspection and boundary
 

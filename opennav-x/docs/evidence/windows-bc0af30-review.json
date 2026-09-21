@@ -1,0 +1,30 @@
+{
+  "commit": "bc0af30d647120c90dc603a97fcf7a6ea0e6415c",
+  "run": "https://github.com/ThereptileII/Work/actions/runs/35638553140",
+  "artifact_id": 10656879887,
+  "review_date": "2026-09-21",
+  "authority": "Native Windows MSVC Win32 on x64, 1280x800, 96 DPI, software chart rendering",
+  "scope": "Read-only selected navigation; synthetic input through real OpenCPN TCP/decoder/priority bus",
+  "observations": [
+    "Live SOG 6.3 kn and COG 147 degrees match fixture.",
+    "Wind and transducer depth remain unavailable.",
+    "Position-only traffic leaves SOG/COG stale (7 seconds in capture).",
+    "After all traffic stops, source label becomes Navigation stale; speed/course show STALE 14s.",
+    "Primary layout has no clipping or overlap.",
+    "Graceful exit code zero; 11 RMC and 33 GGA sentences sent; no transport errors."
+  ],
+  "screenshots": [
+    {
+      "file": "navigation-02-live.png",
+      "sha256": "7250a74b6b66b367e1d0efd740210d1d6603eb2a5ed123065d81783c4a908ee7"
+    },
+    {
+      "file": "navigation-03-position-only-velocity-stale.png",
+      "sha256": "1108f393b9c8b47fd491fed29a7684279cc9c020903dc1218ed660f2e803a4af"
+    },
+    {
+      "file": "navigation-04-all-stale.png",
+      "sha256": "116ee8e20c27bef23b2b2970f0111e687cd932ad02c7b4faf544ad0ed2d1739c"
+    }
+  ]
+}
