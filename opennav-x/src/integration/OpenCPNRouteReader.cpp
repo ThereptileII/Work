@@ -20,12 +20,14 @@ RouteCopy CopyActiveRoute(Routeman* manager) {
   r.registered = pRouteList && manager->IsRouteValid(route);
   if (!r.registered) return r;
   r.id = route->GetGUID().ToStdString(wxConvUTF8);
+  r.editing = route->m_bIsBeingEdited || route->m_bIsBeingCreated;
   auto* active = manager->GetpActivePoint();
   r.active_point_consistent = active && active == route->m_pRouteActivePoint;
   std::size_t matches = 0;
   for (auto* node = route->pRoutePointList->GetFirst(); node; node = node->GetNext()) {
     const auto* point = node->GetData();
     if (!point) { r.registered = false; return r; }
+    r.editing = r.editing || point->m_bRPIsBeingEdited;
     const auto id = point->m_GUID.ToStdString(wxConvUTF8);
     if (point == active) {
       ++matches; r.active_index = r.points.size(); r.active_point_id = id;

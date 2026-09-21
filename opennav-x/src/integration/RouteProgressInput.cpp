@@ -30,6 +30,7 @@ RouteState CheckPosition(const RouteRead& r, Time now) {
 RouteState CheckRoute(const RouteCopy& r) {
   if (!r.active) return RouteState::NoActiveRoute;
   if (!r.registered || r.id.empty() || r.points.empty()) return RouteState::InvalidRoute;
+  if (r.editing) return RouteState::RouteEditing;
   if (!r.active_point_consistent || !r.active_index || *r.active_index >= r.points.size() ||
       r.active_point_id.empty() || r.points[*r.active_index].id != r.active_point_id)
     return RouteState::InvalidActivePoint;
@@ -48,7 +49,7 @@ RouteState CheckRoute(const RouteCopy& r) {
 }  // namespace
 
 bool SameRoute(const RouteCopy& a, const RouteCopy& b) {
-  if (a.active != b.active || a.registered != b.registered || a.id != b.id ||
+  if (a.active != b.active || a.registered != b.registered || a.editing != b.editing || a.id != b.id ||
       a.points.size() != b.points.size()) return false;
   for (std::size_t i = 0; i < a.points.size(); ++i) {
     const auto& x = a.points[i]; const auto& y = b.points[i];

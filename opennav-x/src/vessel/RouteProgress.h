@@ -9,7 +9,7 @@ namespace opennav::vessel {
 
 enum class RouteState {
   Valid, NoActiveRoute, InvalidRoute, InvalidActivePoint, AmbiguousPoint,
-  RouteChanged, ActivePointChanged, PositionChanged, InvalidLeg, InvalidRange,
+  RouteChanged, RouteEditing, ActivePointChanged, PositionChanged, InvalidLeg, InvalidRange,
   ArithmeticLimit, MissingPosition, StalePosition, UncertainPosition,
   PositionMismatch, OutOfOrder, InterruptedPass, AwaitingProgress
 };

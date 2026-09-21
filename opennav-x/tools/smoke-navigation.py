@@ -145,6 +145,7 @@ try:
             result_file = profile / 'route-fixture-results.json'
             if result_file.exists():
                 result = json.loads(result_file.read_text())
+                assert result['result'] in ('running', 'failed', 'passed'), 'Invalid route fixture report state'
                 assert result['result'] != 'failed', result
                 checks = result.get('checks', [])
                 if any(x['check'] == 'middle point real upstream progress' for x in checks) and not seen_live:

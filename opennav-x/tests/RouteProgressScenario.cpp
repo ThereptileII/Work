@@ -38,7 +38,7 @@ void Write() {
 void Record(const char* label,const RouteProgress& s) {
   wxJSONValue entry;
   entry["check"]=wxString::FromUTF8(label);
-  entry["state"]=RouteStateName(s->state);
+  entry["state"]=wxString::FromUTF8(RouteStateName(s->state));
   entry["route_id"]=wxString::FromUTF8(s->route_id);
   entry["revision_scope"]=wxString::FromUTF8(s->revision_scope);
   entry["route_revision"]=wxString::Format("%llu",static_cast<unsigned long long>(s->route_revision));
@@ -80,8 +80,8 @@ void NewRoute() {
 void EnableRouteScenario(const std::string& profile) {
   Check(!profile.empty() && wxFileExists(wxString::FromUTF8(profile)+"/OPENNAV_ROUTE_FIXTURE"),
         "Route fixture requires its explicit disposable profile marker");
-  directory=profile;report["result"]="running";report["phase"]="input";
-  report["fixture"]="Synthetic loopback position and test routes; no device output";Write();
+  directory=profile;report["result"]=wxString::FromUTF8("running");report["phase"]=wxString::FromUTF8("input");
+  report["fixture"]=wxString::FromUTF8("Synthetic loopback position and test routes; no device output");Write();
 }
 void RouteScenarioStep(const RouteProgress& s) {
   if(directory.empty() || finished || !g_bDeferredInitDone) return;
@@ -115,10 +115,10 @@ void RouteScenarioStep(const RouteProgress& s) {
         route->GetPoint(3)->m_GUID=route->GetPoint(2)->m_GUID;break;
       case 13:Invalid(s,"repeated waypoint identity");route->GetPoint(3)->m_GUID=third_id;break;
       case 14:Invalid(s,"restored geometry requires new pass");break;
-      case 15:Valid(s,1,"restored route");report["phase"]="stop-input";break;
+      case 15:Valid(s,1,"restored route");report["phase"]=wxString::FromUTF8("stop-input");break;
       case 16:
         if(s->state!=RouteState::StalePosition) return;
-        Invalid(s,"stopped loopback position becomes stale");report["phase"]="resume-input";break;
+        Invalid(s,"stopped loopback position becomes stale");report["phase"]=wxString::FromUTF8("resume-input");break;
       case 17:
         if(s->state!=RouteState::Valid) return;
         Valid(s,1,"fresh position resumes route contract");g_pRouteMan->DeactivateRoute();
@@ -129,11 +129,11 @@ void RouteScenarioStep(const RouteProgress& s) {
         Check(retained && retained->remaining_distance_nm && retained->active_waypoint_id=="OPENNAV-TEST-point-1",
               "Retained immutable snapshot did not survive deletion");
         Invalid(CurrentRouteProgress(),"deleted route unavailable; retained copy safe");
-        report["result"]="passed";report["phase"]="done";finished=true;break;
+        report["result"]=wxString::FromUTF8("passed");report["phase"]=wxString::FromUTF8("done");finished=true;break;
     }
     ++step;Write();
   } catch(const std::exception& e) {
-    report["result"]="failed";report["error"]=wxString::FromUTF8(e.what());finished=true;Write();
+    report["result"]=wxString::FromUTF8("failed");report["error"]=wxString::FromUTF8(e.what());finished=true;Write();
   }
 }
 }  // namespace opennav::test

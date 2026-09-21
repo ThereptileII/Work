@@ -63,6 +63,7 @@ int main() {
     test("deletion and retained lifetime", [] { Change([](auto& r){r.route.registered=false;r.route.points.clear();},RouteState::InvalidRoute); });
     test("reversal", [] { Change([](auto& r){std::reverse(r.route.points.begin(),r.route.points.end()); r.route.active_index=2;},RouteState::RouteChanged); });
     test("edit while active", [] { Change([](auto& r){r.route.points[1].latitude_deg=56.5; r.route.points[1].incoming_leg_nm=8;},RouteState::RouteChanged); });
+    test("open edit stays unavailable even with stable copied values", [] {auto r=Fixture();r.route.editing=true;Invalid(Evaluate(r),RouteState::RouteEditing); });
     test("repeated identity including inactive point", [] {auto r=Fixture(); r.route.points[2].id="b"; Invalid(Evaluate(r),RouteState::AmbiguousPoint); });
     test("invalid active waypoint", [] {auto r=Fixture(); r.route.active_index.reset(); Invalid(Evaluate(r),RouteState::InvalidActivePoint); });
     test("negative leg including travelled leg", [] {auto r=Fixture(2); r.route.points[1].incoming_leg_nm=-1; Invalid(Evaluate(r),RouteState::InvalidLeg); });

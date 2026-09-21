@@ -12,6 +12,7 @@ struct RoutePointCopy {
 };
 struct RouteCopy {
   bool active = false, registered = true, active_point_consistent = true;
+  bool editing = false;
   std::string id, active_point_id;
   std::optional<std::size_t> active_index;
   std::vector<RoutePointCopy> points;

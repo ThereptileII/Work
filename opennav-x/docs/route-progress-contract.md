@@ -65,7 +65,9 @@ Copies bracket **normal** upstream progress. A route geometry, active point or
 position change inside that pass rejects the result. This matters because
 upstream can advance to another waypoint while retaining the just-computed
 range to the previous one. An observed edit/reversal or active-point change
-between passes also gets an unavailable transition; a subsequent stable normal
+between passes also gets an unavailable transition. An open route/waypoint edit
+or route creation is withheld even if its copied values temporarily stop changing.
+A subsequent stable normal
 pass can produce distance for the new state.
 
 A temporary event filter detects nested event dispatch during the pass. It

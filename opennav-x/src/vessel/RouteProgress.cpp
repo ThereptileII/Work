@@ -7,7 +7,7 @@ const char* RouteStateName(RouteState state) {
   switch (state) {
 #define STATE(x) case RouteState::x: return #x
     STATE(Valid); STATE(NoActiveRoute); STATE(InvalidRoute);
-    STATE(InvalidActivePoint); STATE(AmbiguousPoint); STATE(RouteChanged);
+    STATE(InvalidActivePoint); STATE(AmbiguousPoint); STATE(RouteChanged); STATE(RouteEditing);
     STATE(ActivePointChanged); STATE(PositionChanged); STATE(InvalidLeg);
     STATE(InvalidRange); STATE(ArithmeticLimit); STATE(MissingPosition);
     STATE(StalePosition); STATE(UncertainPosition); STATE(PositionMismatch);

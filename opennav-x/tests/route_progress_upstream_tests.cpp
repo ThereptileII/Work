@@ -10,6 +10,18 @@
 #include <wx/init.h>
 #include <memory>
 #include <thread>
+#include <stdexcept>
+
+// This model-only test binary does not link the real GUI. Supply its existing
+// friend boundary solely to initialize the empty icon collections normally
+// created by WayPointmanGui::ProcessIcons. No upstream visibility/ABI changes.
+class WayPointmanGui {
+ public:
+  static void InitializeModelFixture(WayPointman& model) {
+    model.m_pLegacyIconArray = new SortedArrayOfMarkIcon([](MarkIcon*, MarkIcon*){return 0;});
+    model.m_pExtendedIconArray = new SortedArrayOfMarkIcon([](MarkIcon*, MarkIcon*){return 0;});
+  }
+};
 
 using namespace opennav;
 using namespace opennav::integration;
@@ -31,8 +43,7 @@ class OpenNavRouteGeometry : public ::testing::Test {
     initializer=std::make_unique<wxInitializer>();
     ASSERT_TRUE(initializer->IsOk());
     waypoints = std::make_unique<WayPointman>([](wxString){return wxColour(0,0,0);});
-    waypoints->m_pLegacyIconArray = new SortedArrayOfMarkIcon([](MarkIcon*, MarkIcon*){return 0;});
-    waypoints->m_pExtendedIconArray = new SortedArrayOfMarkIcon([](MarkIcon*, MarkIcon*){return 0;});
+    WayPointmanGui::InitializeModelFixture(*waypoints);
     pWayPointMan = waypoints.get(); pRouteList = &routes;
     manager = std::make_unique<Routeman>(RoutePropDlgCtx{}, RoutemanDlgCtx{});
     g_pRouteMan = manager.get();
@@ -126,6 +137,15 @@ TEST_F(OpenNavRouteGeometry, NestedEventGuardRejectsEditThenRestore) {
   auto b=Read(1);EXPECT_TRUE(SameRoute(a.route,b.route));b.interrupted=true;
   RouteProgressInput input("upstream-test");input.Complete(a,b,Time{100s});
   EXPECT_EQ(input.Current()->state,RouteState::InterruptedPass);
+  EXPECT_FALSE(input.Current()->remaining_distance_nm);
+}
+TEST_F(OpenNavRouteGeometry, OpenRouteOrPointEditRemainsUnavailable) {
+  auto a=Read(1);route->m_bIsBeingEdited=true;a.route=CopyActiveRoute(manager.get());
+  RouteProgressInput input("upstream-test");input.Complete(a,a,Time{100s});
+  EXPECT_EQ(input.Current()->state,RouteState::RouteEditing);
+  route->m_bIsBeingEdited=false;route->GetPoint(3)->m_bRPIsBeingEdited=true;
+  a.route=CopyActiveRoute(manager.get());input.Complete(a,a,Time{101s});
+  EXPECT_EQ(input.Current()->state,RouteState::RouteEditing);
   EXPECT_FALSE(input.Current()->remaining_distance_nm);
 }
 TEST_F(OpenNavRouteGeometry, CopyRefusesWorkerThread) {
