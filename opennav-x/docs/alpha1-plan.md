@@ -36,6 +36,8 @@ implemented abstraction from a physically validated integration.
 
 Increment 1 passed at `16dbaf72d7923742a5acaadf0fae42ee490e7cf6`, run 36047288188.
 The replacement ZIP and expanded chart-startup matrix are verified on both
-platforms; all nine relevant native chart captures were reviewed. Increment 2
-now begins using [the inspected boundaries](alpha1-source-inspection.md).
-No Alpha functionality or installer is accepted yet.
+platforms; all nine relevant native chart captures were reviewed. Increments
+2–3 core contracts pass both platform gates at `0e65cd5` and `82efd08`.
+The marine decoder/subscription increment passes local tests; native acceptance
+and product UI integration are in progress. The installer and Alpha release
+have not passed acceptance. See status for exact revision/evidence links.

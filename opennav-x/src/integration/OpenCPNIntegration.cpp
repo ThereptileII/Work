@@ -1,5 +1,6 @@
 #include "integration/OpenCPNIntegration.h"
 #include "integration/NavigationBridge.h"
+#include "integration/MarineBridge.h"
 #include "integration/OpenCPNRouteReader.h"
 #include "integration/RoutePassWatch.h"
 #include "integration/StartupMode.h"
@@ -61,6 +62,8 @@ std::string route_test_profile;
 #endif
 std::unique_ptr<ui::Shell> shell;
 std::unique_ptr<NavigationBridge> navigation;
+std::unique_ptr<integration::MarineBridge> marine;
+vessel::VesselState selected_navigation;
 std::unique_ptr<integration::RouteProgressInput> route_progress;
 MyFrame* host = nullptr;
 std::optional<InterfaceMode> restart;
@@ -202,6 +205,9 @@ void Attach(MyFrame& frame, wxAuiManager& manager, wxFileConfig& config) {
   actions.restart_xnav=[] {RequestMode(InterfaceMode::XNav);};
   actions.safe=[] {RequestMode(InterfaceMode::Legacy,true);};
   actions.route=[] {return CurrentRouteProgress();};
+  actions.live_state=[] {
+    return marine ? marine->Merge(selected_navigation,vessel::Clock::now()) : selected_navigation;
+  };
   actions.build_info=[&frame] {return integration::PreviewBuildInfo(frame.GetDPI().x,g_configdir);};
   actions.diagnostics_folder=[] {
     if(!diagnostic_directory.empty()) wxLaunchDefaultApplication(wxString::FromUTF8(diagnostic_directory));
@@ -221,8 +227,9 @@ void Attach(MyFrame& frame, wxAuiManager& manager, wxFileConfig& config) {
   };
   shell = std::make_unique<ui::Shell>(frame, manager, std::move(actions), Light(), demo);
   navigation = std::make_unique<NavigationBridge>([](const vessel::VesselState& state) {
-    if (shell) shell->UpdateState(state);
+    selected_navigation = state;
   });
+  marine = std::make_unique<integration::MarineBridge>();
   route_progress = std::make_unique<integration::RouteProgressInput>(
       "OpenNav session " + std::to_string(vessel::Clock::now().time_since_epoch().count()));
 #ifdef OPENNAV_ROUTE_TESTS
@@ -279,6 +286,8 @@ bool PrepareClose(wxFileConfig& config) {
   }
   // Remove OpenNav AUI panes before upstream persists its stock perspective.
   navigation.reset();
+  marine.reset();
+  selected_navigation = {};
   route_progress.reset();
   shell.reset();
   host = nullptr;

@@ -20,7 +20,7 @@ It is not the sensor's original measurement time. Signal K timestamps require
 their own validation and must not be replaced with UI read time.
 
 `libs/N2KParser` already decodes standard PGNs for heading, rudder, attitude,
-water speed, depth, wind, temperature, engine RPM/temperature, DC state/battery
+water speed, depth, wind, sea temperature, engine RPM, DC state/battery
 status and fluid levels. Reuse these parsers. Its vector wrapper assumes an
 Actisense envelope and accesses its header without bounds checks; validate
 envelope type, PGN and declared length before calling it. NA sentinels are not
@@ -28,6 +28,14 @@ measurements. `plugins/dashboard_pi/src/dashboard_pi.cpp` demonstrates supported
 subscriptions and source identity, but its depth offset presentation is **not**
 the OpenNav below-transducer field: retain physical meaning rather than copying
 Dashboard's display conversion blindly.
+
+Implementation inspection found PGN 127489's coolant parser and supporting
+types are compiled out in this baseline (`#if 0`). Alpha does not enable or
+rewrite them; coolant remains available through a supported Signal K path.
+PGN 127508 uses signed 0.01 V and its encoder saturates at 327.66 V. Alpha
+rejects that ambiguous endpoint; a higher-voltage pack requires Signal K or a
+separately specified marine extension. Do not reinterpret unknown signed wire
+data as unsigned. Both limits are covered in the marine decoder tests.
 
 Per-quantity OpenNav precedence applies only to the newly observed instruments.
 Keep source identity including transport/PGN/device instance, source receipt

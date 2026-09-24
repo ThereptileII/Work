@@ -27,18 +27,30 @@ executable matches the native tested binary. It is still Developer Preview 0.1,
 not the requested Alpha 1 deliverable. Alpha implementation now proceeds under
 the [stage plan](alpha1-plan.md) and [inspected boundaries](alpha1-source-inspection.md).
 
-**Alpha core in progress:** instrument source policies, coherent battery-current
-normalization and optional calibrated propulsion curves now pass 15 portable
-test suites locally. These additions preserve selected navigation and the
-original energy core. Marine-bus/UI integration and native acceptance are still
-pending; this is not yet an Alpha release. See the
-[source contract](vessel-source-contract.md) and [energy model](energy-model.md).
-The next local increment adds copied route steps, advisory timeline/turn/energy/
-AIS events, the unavailable live chart-corridor boundary, manual autopilot
-simulator/feedback contracts and radar capability/status interfaces. All 22
-portable suites and 67 integrated Linux tests pass; native/UI acceptance remains
-pending. See [SmartNav](smartnav-alpha-contract.md) and
-[adapters](hardware-adapter-contract.md). Live command output remains disabled.
+**Alpha core gates passed:** `0e65cd5fade0cc8dd493ca734c61502325e912aa`
+adds instrument source policies, coherent battery-current normalization and
+calibrated propulsion curves. Its eight CI jobs pass with 15 portable suites
+per platform, Linux 67 / Windows 57 integrated tests and native review of four
+representative captures. [Gate](evidence/alpha-core-0e65cd5-gates.json),
+[review](evidence/windows-alpha-core-0e65cd5-review.json).
+`82efd086b5eaa752c0cbd7c3b90718e9bbd4c426` adds owned route steps,
+advisory timeline/turn/energy/AIS events, the unavailable live chart-corridor
+boundary, manual autopilot simulator/feedback and radar status interfaces.
+Its eight jobs pass with 22 portable suites per platform and the retained
+67 Linux / 57 Windows integrated regressions.
+[Gate and test incident note](evidence/alpha-advisory-82efd08-gates.json).
+These are internal core milestones, not an Alpha product release. See
+[sources](vessel-source-contract.md), [energy](energy-model.md),
+[SmartNav](smartnav-alpha-contract.md) and [adapters](hardware-adapter-contract.md).
+Live command output remains disabled.
+
+**Marine bridge in progress:** application-thread subscriptions now reuse
+OpenCPN's NMEA 2000, NMEA 0183 and Signal K input bus. Thirteen new pinned-codec
+tests bring integrated Linux to 80 passing cases. The new instrument loopback
+test passes real decoder/subscriber/UI propagation, source metadata, stale state
+and invalidation. Native acceptance is pending. See the
+[marine input contract](marine-input-contract.md), including the pinned battery
+voltage limit and compiled-out coolant PGN. No physical boat gate is accepted.
 
 **Manual-preview feedback:** the user completed the Windows test and reported
 one issue: the chart background disappears after Legacy → XNav. This is reproduced

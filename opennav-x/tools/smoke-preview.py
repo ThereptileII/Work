@@ -305,6 +305,13 @@ try:
     report['checks'].append('Real bundled coastline remains rendered after Legacy return and Safe restart')
     report['result']='passed; screenshot review required'
 finally:
+    if not windows and 'result' not in report:
+        report['failure_process_exit']=app.poll() if app else None
+        found=subprocess.run(['xdotool','search','--onlyvisible','--name','.*'],env=env,capture_output=True,text=True)
+        report['failure_windows']=[]
+        for window_id in found.stdout.splitlines():
+            title=subprocess.run(['xdotool','getwindowname',window_id],env=env,capture_output=True,text=True)
+            report['failure_windows'].append({'id':window_id,'title':title.stdout.strip()})
     if windows and 'result' not in report:
         # Preserve the actual startup dialog instead of dismissing it. Terminate
         # only an executable belonging to this freshly extracted test package.

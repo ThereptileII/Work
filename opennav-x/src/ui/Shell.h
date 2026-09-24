@@ -21,6 +21,7 @@ struct ShellActions {
   std::function<void()> zoom_in, zoom_out, follow, legacy;
   std::function<void()> restart_xnav, safe, diagnostics_folder;
   std::function<vessel::RouteProgress()> route;
+  std::function<vessel::VesselState()> live_state;
   std::function<std::vector<std::string>()> build_info;
   std::function<void(const vessel::VesselState &)> diagnostic_snapshot;
   std::function<void()> demo_chart;

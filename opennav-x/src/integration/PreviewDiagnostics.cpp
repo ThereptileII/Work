@@ -37,6 +37,9 @@ void WritePreviewDiagnostics(const std::string &path,
     v["name"] = wxString::FromUTF8(item.name);
     v["unit"] = wxString::FromUTF8(item.unit);
     v["source"] = wxString::FromUTF8(item.sample->source);
+    v["device_id"] = wxString::FromUTF8(item.sample->device_id);
+    v["aging_after_ms"] = static_cast<int>(item.sample->freshness.aging_after.count());
+    v["stale_after_ms"] = static_cast<int>(item.sample->freshness.stale_after.count());
     v["validity"] =
         wxString::FromUTF8(vessel::ValidityName(item.sample->validity));
     v["quality"] = wxString::FromUTF8(vessel::QualityName(a.quality));

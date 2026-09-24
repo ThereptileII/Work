@@ -3,6 +3,9 @@
 Alpha extends other instruments through the separate
 [source contract](vessel-source-contract.md). The selected-navigation behavior
 documented below remains unchanged.
+The Alpha [marine bridge](marine-input-contract.md) now observes additional
+instrument messages through OpenCPN's input bus; the original slice's remaining
+field limitations below describe its historical scope.
 
 OpenCPN revision: `37fd0cddb7334fe489e9f18aa163977a9c5c84f7`.
 Scope: position, SOG and COG from OpenCPN's decoded, priority-selected message

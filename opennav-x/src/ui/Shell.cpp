@@ -216,8 +216,10 @@ void Shell::Tick() {
   const auto now = vessel::Clock::now();
   if (simulation_)
     state_ = demo_.Read(now);
-  else if (actions_.route)
-    state_.navigation.route = actions_.route();
+  else {
+    if (actions_.live_state) state_ = actions_.live_state();
+    if (actions_.route) state_.navigation.route = actions_.route();
+  }
   wind_->SetReading(state_.wind.apparent_speed_kn, now);
   depth_->SetReading(state_.environment.depth_below_transducer_m, now);
   speed_->SetReading(state_.navigation.sog_kn, now);

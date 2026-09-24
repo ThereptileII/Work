@@ -1,0 +1,103 @@
+{
+  "commit": "0e65cd5fade0cc8dd493ca734c61502325e912aa",
+  "run": 36051075721,
+  "authority": "Native Windows Server 2022 MSVC Win32, 1280x800, 96 DPI",
+  "reviewed": [
+    {
+      "file": "preview-01-navigation-day.png",
+      "sha256": "8d16ad92114774d6b9061b914891ee0c88d34f3bbb9769bfe0c3bf236abf847c"
+    },
+    {
+      "file": "preview-05-diagnostics.png",
+      "sha256": "0480a1cdb5ff650da5614368b8990f3ea431cc5bcf9eecd95e14679c712c4ddc"
+    },
+    {
+      "file": "preview-09-returned-xnav.png",
+      "sha256": "a0196681dcf03ff7c50dcb44c2da507a7f3f034b71b9e60fa4d5c89f51dd94dc"
+    },
+    {
+      "file": "preview-12-safe-to-xnav.png",
+      "sha256": "a0196681dcf03ff7c50dcb44c2da507a7f3f034b71b9e60fa4d5c89f51dd94dc"
+    }
+  ],
+  "findings": [
+    "Chart remains dominant with visible land and water at Demo startup and after both return-to-XNav paths.",
+    "Diagnostics shows exact commit/compiler and explicit Demo provenance. Visible layout has no clipping regression.",
+    "All nine deterministic chart checks pass. The other captures were not individually re-reviewed for this core-only increment."
+  ],
+  "chart_rendering": [
+    {
+      "phase": "Direct XNav startup",
+      "reference_color_fractions": {
+        "aac3f0": 0.60568669527897,
+        "aaaf50": 0.39431330472103004
+      },
+      "coastline_visible": true
+    },
+    {
+      "phase": "XNav to Legacy",
+      "reference_color_fractions": {
+        "aac3f0": 0.598175965665236,
+        "aaaf50": 0.40182403433476394
+      },
+      "coastline_visible": true
+    },
+    {
+      "phase": "XNav to Legacy to XNav",
+      "reference_color_fractions": {
+        "aac3f0": 0.6319027181688126,
+        "aaaf50": 0.3680972818311874
+      },
+      "coastline_visible": true
+    },
+    {
+      "phase": "XNav to Safe",
+      "reference_color_fractions": {
+        "aac3f0": 0.598175965665236,
+        "aaaf50": 0.40182403433476394
+      },
+      "coastline_visible": true
+    },
+    {
+      "phase": "Safe to XNav",
+      "reference_color_fractions": {
+        "aac3f0": 0.6319027181688126,
+        "aaaf50": 0.3680972818311874
+      },
+      "coastline_visible": true
+    },
+    {
+      "phase": "Direct OpenNav X / OpenCPN launcher startup",
+      "reference_color_fractions": {
+        "aac3f0": 0.6319027181688126,
+        "aaaf50": 0.3680972818311874
+      },
+      "coastline_visible": true
+    },
+    {
+      "phase": "Direct OpenCPN / Legacy launcher startup",
+      "reference_color_fractions": {
+        "aac3f0": 0.598175965665236,
+        "aaaf50": 0.40182403433476394
+      },
+      "coastline_visible": true
+    },
+    {
+      "phase": "Direct OpenNav Safe Mode / OpenCPN launcher startup",
+      "reference_color_fractions": {
+        "aac3f0": 0.598175965665236,
+        "aaaf50": 0.40182403433476394
+      },
+      "coastline_visible": true
+    },
+    {
+      "phase": "Direct startup with old Preview 0.1 basemap setting",
+      "reference_color_fractions": {
+        "aac3f0": 0.6319027181688126,
+        "aaaf50": 0.3680972818311874
+      },
+      "coastline_visible": true
+    }
+  ],
+  "scope": "Internal core gate, not Alpha 1 release or higher-DPI/boat approval."
+}

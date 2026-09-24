@@ -9,6 +9,15 @@ target_sources(${PACKAGE_NAME} PRIVATE "${OPENNAV_ROOT}/src/integration/OpenCPNI
 target_sources(${PACKAGE_NAME} PRIVATE "${OPENNAV_ROOT}/src/integration/NavigationBridge.cpp")
 target_sources(${PACKAGE_NAME} PRIVATE "${OPENNAV_ROOT}/src/integration/OpenCPNRouteReader.cpp")
 target_sources(${PACKAGE_NAME} PRIVATE "${OPENNAV_ROOT}/src/integration/PreviewDiagnostics.cpp")
+add_library(opennav_marine
+  "${OPENNAV_ROOT}/src/integration/N2kInstruments.cpp"
+  "${OPENNAV_ROOT}/src/integration/NmeaInstruments.cpp"
+  "${OPENNAV_ROOT}/src/integration/SignalKInstruments.cpp")
+target_include_directories(opennav_marine PUBLIC "${OPENNAV_ROOT}/src" PRIVATE ${wxWidgets_INCLUDE_DIRS})
+target_link_libraries(opennav_marine PUBLIC opennav_vessel ocpn::N2KParser ocpn::nmea0183 ocpn::wxjson ${wxWidgets_LIBRARIES})
+target_compile_features(opennav_marine PUBLIC cxx_std_17)
+target_sources(${PACKAGE_NAME} PRIVATE "${OPENNAV_ROOT}/src/integration/MarineBridge.cpp")
+target_link_libraries(${PACKAGE_NAME} PRIVATE opennav_marine)
 set(OPENNAV_BUILD_COMMIT "$ENV{GITHUB_SHA}")
 if(NOT OPENNAV_BUILD_COMMIT)
   execute_process(COMMAND git rev-parse HEAD WORKING_DIRECTORY "${OPENNAV_ROOT}"
@@ -50,9 +59,10 @@ function(opennav_attach_route_tests)
   if(TARGET tests)
     target_sources(tests PRIVATE
       "${OPENNAV_ROOT}/tests/route_progress_upstream_tests.cpp"
+      "${OPENNAV_ROOT}/tests/marine_decoder_upstream_tests.cpp"
       "${OPENNAV_ROOT}/src/integration/OpenCPNRouteReader.cpp")
     target_include_directories(tests PRIVATE "${OPENNAV_ROOT}/src")
-    target_link_libraries(tests PRIVATE opennav_integration)
+    target_link_libraries(tests PRIVATE opennav_integration opennav_marine)
   endif()
 endfunction()
 cmake_language(DEFER DIRECTORY "${CMAKE_SOURCE_DIR}" CALL opennav_attach_route_tests)

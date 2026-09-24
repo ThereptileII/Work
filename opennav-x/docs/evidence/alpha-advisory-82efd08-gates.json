@@ -1,0 +1,98 @@
+{
+  "commit": "82efd086b5eaa752c0cbd7c3b90718e9bbd4c426",
+  "local_commit": "bf7d967",
+  "run_url": "https://github.com/ThereptileII/Work/actions/runs/36052766087",
+  "jobs": [
+    {
+      "id": 107812156424,
+      "name": "Approved OpenCPN ABI on Windows x64",
+      "conclusion": "success"
+    },
+    {
+      "id": 107812156562,
+      "name": "Linux integrated regression gate",
+      "conclusion": "success"
+    },
+    {
+      "id": 107812156576,
+      "name": "contracts (ubuntu-24.04)",
+      "conclusion": "success"
+    },
+    {
+      "id": 107812156650,
+      "name": "contracts (windows-2022)",
+      "conclusion": "success"
+    },
+    {
+      "id": 107812156899,
+      "name": "Native MSVC upstream Win32 ABI on Windows x64",
+      "conclusion": "success"
+    },
+    {
+      "id": 107812157257,
+      "name": "linux",
+      "conclusion": "success"
+    },
+    {
+      "id": 107812815151,
+      "name": "Native MSVC XNav / Legacy / Safe slice",
+      "conclusion": "success"
+    },
+    {
+      "id": 107818121222,
+      "name": "Publish Developer Preview after both platform gates",
+      "conclusion": "success"
+    }
+  ],
+  "artifacts": [
+    {
+      "id": 10832515014,
+      "name": "linux-pristine-82efd086b5eaa752c0cbd7c3b90718e9bbd4c426",
+      "bytes": 476126,
+      "digest": "sha256:faee5c23d3ebaf3b1c45d0c968d375e96fa31f7f1ac10cd51d567eeb4eff2f63"
+    },
+    {
+      "id": 10832415571,
+      "name": "OpenNavX-DeveloperPreview-corresponding-source",
+      "bytes": 78151954,
+      "digest": "sha256:a6022e15c339c6b4f56bae5981e2b22b82aafe618214bbef9f2739d18dd42827"
+    },
+    {
+      "id": 10832165777,
+      "name": "OpenNavX-DeveloperPreview-win64",
+      "bytes": 47943614,
+      "digest": "sha256:0e6c39d2a95840dc976a95549c02fc298d372df0722e1f26eb2cb61955250e7c"
+    },
+    {
+      "id": 10832071166,
+      "name": "linux-integration-82efd086b5eaa752c0cbd7c3b90718e9bbd4c426",
+      "bytes": 3350010,
+      "digest": "sha256:ab9177f0ef2b1e0e142bc5be91c3ff37f9ccd490f9f66929f19c7a568d87cc71"
+    },
+    {
+      "id": 10831488336,
+      "name": "windows-integration-82efd086b5eaa752c0cbd7c3b90718e9bbd4c426",
+      "bytes": 8347097,
+      "digest": "sha256:ca7de487c748cbf87f9ec3d5d084bc069e53fe6346f2e30f83736491134574f9"
+    },
+    {
+      "id": 10831402912,
+      "name": "windows-pristine-82efd086b5eaa752c0cbd7c3b90718e9bbd4c426",
+      "bytes": 496439,
+      "digest": "sha256:d1afdcaf180ba7b4447a0edaa3f3e339b0866ed8baa7c9a26828d7cb1b55cbc9"
+    },
+    {
+      "id": 10831244039,
+      "name": "preview-candidate-82efd086b5eaa752c0cbd7c3b90718e9bbd4c426",
+      "bytes": 126095546,
+      "digest": "sha256:3ed538b91d2f33841705be40aa338352b6894296213a6e73a2093990bd2d2f08"
+    }
+  ],
+  "portable_suites_per_platform": 22,
+  "integrated_suites": {
+    "linux": 67,
+    "windows": 57
+  },
+  "status": "All jobs passed. Owned route steps/advisory and adapter cores only; no new product UI acceptance or physical hardware acceptance.",
+  "local_preview_note": "First added direct Legacy startup lookup timed out after five clean completed sessions; failure retained locally. Repeat passed. Failure diagnostics improved; hosted Linux and native Windows same-commit gates both passed."
+}

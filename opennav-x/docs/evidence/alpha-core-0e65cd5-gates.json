@@ -1,0 +1,103 @@
+{
+  "commit": "0e65cd5fade0cc8dd493ca734c61502325e912aa",
+  "local_commit": "503517cfbea47ab9d8ff4d4fae5fafb06b7327af",
+  "run_url": "https://github.com/ThereptileII/Work/actions/runs/36051075721",
+  "jobs": [
+    {
+      "id": 107806467243,
+      "name": "Native MSVC upstream Win32 ABI on Windows x64",
+      "conclusion": "success"
+    },
+    {
+      "id": 107806467558,
+      "name": "Approved OpenCPN ABI on Windows x64",
+      "conclusion": "success"
+    },
+    {
+      "id": 107806467564,
+      "name": "contracts (ubuntu-24.04)",
+      "conclusion": "success"
+    },
+    {
+      "id": 107806467591,
+      "name": "contracts (windows-2022)",
+      "conclusion": "success"
+    },
+    {
+      "id": 107806467599,
+      "name": "linux",
+      "conclusion": "success"
+    },
+    {
+      "id": 107806467622,
+      "name": "Linux integrated regression gate",
+      "conclusion": "success"
+    },
+    {
+      "id": 107807152547,
+      "name": "Native MSVC XNav / Legacy / Safe slice",
+      "conclusion": "success"
+    },
+    {
+      "id": 107811968732,
+      "name": "Publish Developer Preview after both platform gates",
+      "conclusion": "success"
+    }
+  ],
+  "artifacts": [
+    {
+      "id": 10831385261,
+      "name": "windows-pristine-0e65cd5fade0cc8dd493ca734c61502325e912aa",
+      "bytes": 497855,
+      "digest": "sha256:58ee9ec37c402a3f6e9e8a97d2b0a1b0dd282bc1824cedbf0f7f8f7b8963beff"
+    },
+    {
+      "id": 10830818255,
+      "name": "OpenNavX-DeveloperPreview-win64",
+      "bytes": 47938476,
+      "digest": "sha256:9b56f4cab5982323ff6fa408bf71bf270cd0162da9c1558d351314d8ca53456f"
+    },
+    {
+      "id": 10830703486,
+      "name": "OpenNavX-DeveloperPreview-corresponding-source",
+      "bytes": 78131353,
+      "digest": "sha256:cd55ad5d6adc3f9cef26cbb90039dbcbb6c87150f086365b92c0edf88e6a537e"
+    },
+    {
+      "id": 10830643449,
+      "name": "linux-integration-0e65cd5fade0cc8dd493ca734c61502325e912aa",
+      "bytes": 3348186,
+      "digest": "sha256:a48e343c7a21d38790f9d52045a63206b794fae1f55fb3c5369292fe143e6e4d"
+    },
+    {
+      "id": 10830598422,
+      "name": "preview-candidate-0e65cd5fade0cc8dd493ca734c61502325e912aa",
+      "bytes": 126069807,
+      "digest": "sha256:91693d2a14a57536c494f6d75b5992245ac00191cd58f340fa21ec74d1953038"
+    },
+    {
+      "id": 10830409768,
+      "name": "windows-integration-0e65cd5fade0cc8dd493ca734c61502325e912aa",
+      "bytes": 8348267,
+      "digest": "sha256:3bfdec77939e1bc475fa1cee5258f7a50d343e96a18cca7a463bd872eef9b1f1"
+    },
+    {
+      "id": 10830349929,
+      "name": "linux-pristine-0e65cd5fade0cc8dd493ca734c61502325e912aa",
+      "bytes": 475725,
+      "digest": "sha256:a3041cdce99b78d8e7d05b1718590ebf7c811cc3ab93e7e66e76f28fb8dd87ec"
+    }
+  ],
+  "portable_suites_per_platform": 15,
+  "linux_integrated": {
+    "tests": 67,
+    "failures": 0,
+    "skipped": 0
+  },
+  "windows_integrated": {
+    "tests": 57,
+    "failures": 0,
+    "skipped": 0
+  },
+  "limit": "Alpha source-selection and calibrated-energy core; live marine/UI integration remains subsequent work. Win32 ABI on x64 Windows; no hardware acceptance."
+}

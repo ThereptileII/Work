@@ -14,9 +14,10 @@ import threading
 import time
 
 route_fixture = sys.argv[1:] == ['--route-fixture']
-if sys.argv[1:] and not route_fixture:
-    raise SystemExit('Usage: smoke-navigation.py [--route-fixture]')
-prefix = 'route' if route_fixture else 'navigation'
+instruments = sys.argv[1:] == ['--instruments']
+if sys.argv[1:] and not (route_fixture or instruments):
+    raise SystemExit('Usage: smoke-navigation.py [--route-fixture|--instruments]')
+prefix = 'route' if route_fixture else 'instruments' if instruments else 'navigation'
 root = Path(__file__).resolve().parents[1]
 windows = sys.platform == 'win32'
 evidence = root / 'evidence/local'
@@ -73,9 +74,18 @@ def transmit():
             # Fixed synthetic position. Sent only into this disposable profile.
             peer.sendall(sentence(f'GPGGA,{utc},5642.000,N,01236.000,E,1,08,1.0,0.0,M,0.0,M,,'))
             counts['gga'] += 1
-            if mode == 'rmc':
+            if mode in ('rmc', 'invalid'):
                 peer.sendall(sentence(f'GPRMC,{utc},A,5642.000,N,01236.000,E,6.3,147.0,{now:%d%m%y},,,A'))
                 counts['rmc'] += 1
+                if instruments:
+                    bodies = ['IIHDT,149,T','IIVHW,149,T,145,M,6,N,11.1,K','IIDPT,8.4,-2',
+                              'IIMWV,72,R,16.2,N,A','IIMWV,94,T,12.8,N,A',
+                              'IIMTW,15.4,C','IIRSA,-4,A,,V']
+                    if mode == 'invalid':
+                        bodies = ['IIHDT,,T','IIVHW,,T,,M,,N,,K','IIDPT,,-2',
+                                  'IIMWV,72,R,16.2,N,V','IIMWV,94,T,12.8,N,V',
+                                  'IIMTW,,C','IIRSA,-4,V,,V']
+                    for body in bodies: peer.sendall(sentence(body))
     except Exception as error:
         if not stop.is_set():
             failures.append(str(error))
@@ -91,6 +101,12 @@ report = {'authority': 'native Windows' if windows else 'Linux development',
           'fixture': 'Synthetic NMEA over loopback; no external devices or production profile',
           'expected': {'sog_kn': 6.3, 'cog_deg': 147, 'wind': 'unavailable', 'depth': 'unavailable'},
           'screenshots': [], 'visual_review': 'required'}
+if instruments:
+    report['expected'] = {'selected_sog_kn': 6.3, 'selected_cog_deg': 147,
+                          'depth_below_transducer_m': 8.4, 'heading_true_deg': 149,
+                          'stw_kn': 6, 'aws_kn': 16.2, 'awa_deg': 72,
+                          'tws_kn': 12.8, 'twa_deg': 94, 'rudder_deg': -4,
+                          'water_temperature_c': 15.4}
 
 try:
     if windows:
@@ -136,7 +152,34 @@ try:
             subprocess.run(['import', '-window', 'root', str(path)], env=env, check=True)
         report['screenshots'].append(path.name)
 
-    if route_fixture:
+    if instruments:
+        def snapshot(name):
+            record=json.loads((profile/'opennav-diagnostics.json').read_text())
+            (evidence/f'instruments-{name}.json').write_text(json.dumps(record,indent=2))
+            return {item['name']:item for item in record['data']}
+        capture('01-unavailable')
+        phase[0]='rmc';time.sleep(3)
+        values=snapshot('02-live')
+        expected={'Heading':149,'Speed through water':6,'Depth below transducer':8.4,
+                  'Apparent wind speed':16.2,'Apparent wind angle':72,
+                  'True wind speed':12.8,'True wind angle':94,'Rudder':-4,'Water temperature':15.4}
+        for name,value in expected.items():
+            assert abs(values[name]['value']-value)<.01,(name,values[name])
+            assert 'NMEA0183' in values[name]['source'],values[name]
+            assert values[name]['quality'] in ('LIVE','ESTIMATED'),values[name]
+        capture('02-live')
+        phase[0]='gga';time.sleep(6.2);values=snapshot('03-stale')
+        for name in expected: assert values[name]['quality']=='STALE',(name,values[name])
+        capture('03-stale')
+        phase[0]='invalid';time.sleep(3);values=snapshot('04-unavailable')
+        for name in expected: assert 'value' not in values[name],(name,values[name])
+        capture('04-unavailable')
+        report['checks']=['Upstream loopback -> marine bridge -> live UI snapshots',
+                          'Depth offset not applied; sensor meanings and source preserved',
+                          'Position-only updates cannot refresh instruments',
+                          'Invalid sensor status and empty fields suppress retained values']
+        assert not failures,failures
+    elif route_fixture:
         phase[0] = 'rmc'
         deadline = time.monotonic() + 100
         seen_live = seen_stale = False
