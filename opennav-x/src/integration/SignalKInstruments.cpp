@@ -54,7 +54,8 @@ Utc(const std::string &text) {
       fields.tm_sec != original.tm_sec)
     return {};
   return std::chrono::system_clock::from_time_t(seconds) +
-         std::chrono::nanoseconds(nanoseconds);
+         std::chrono::duration_cast<std::chrono::system_clock::duration>(
+             std::chrono::nanoseconds(nanoseconds));
 }
 std::vector<std::string> Parts(const std::string &path) {
   std::vector<std::string> result;

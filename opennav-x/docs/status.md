@@ -6,6 +6,14 @@ The approved Windows target preserves its Win32 application/plugin ABI on a
 native Windows x64 host. The tracked upstream submodule remains pristine;
 reviewed patches apply to a disposable integration worktree.
 
+**Marine native gate correction in progress:** the `e89fa4197936feea78b3f8d3141fadeb83e2f448`
+run [36054748008](https://github.com/ThereptileII/Work/actions/runs/36054748008)
+passes Linux and portable contracts but fails MSVC compilation: Windows uses a
+100 ns `system_clock` duration, so adding nanoseconds requires an explicit
+narrowing duration cast. The correction rounds observation time down (never
+freshens it) and adds a fractional timestamp regression. This revision is not
+accepted on Windows and no package was published from the failed run.
+
 **Alpha 1 foundation gate closed:** `16dbaf72d7923742a5acaadf0fae42ee490e7cf6`
 passes all eight jobs in [run 36047288188](https://github.com/ThereptileII/Work/actions/runs/36047288188).
 Linux passes 67 integrated tests, Windows 57; each passes ten portable contracts

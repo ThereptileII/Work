@@ -222,6 +222,22 @@ TEST(OpenNavMarine, SignalKContextTimestampAndNulls) {
     EXPECT_FALSE(s.environment.depth_below_transducer_m.value);
   }
 }
+TEST(OpenNavMarine, SignalKFractionalTimestampNativeClockResolution) {
+  const auto observations =
+      Sk(R"({"path":"environment.depth.belowTransducer","value":8.4})",
+         "2026-09-24T11:59:59.123456789Z");
+  ASSERT_EQ(observations.size(), 1u);
+  const auto age = std::chrono::duration_cast<std::chrono::nanoseconds>(
+                       epoch - observations.front().sample.observed_at)
+                       .count();
+  // Windows system_clock is 100 ns; Linux is normally 1 ns. Truncation must
+  // make this observation older, never move its timestamp into the future.
+  EXPECT_GE(age, 876543211);
+  EXPECT_LE(age, 876543311);
+  EXPECT_TRUE(Sk(R"({"path":"environment.depth.belowTransducer","value":8.4})",
+                 "2026-09-24T12:00:00.000000100Z")
+                  .empty());
+}
 TEST(OpenNavMarine, SignalKSourceMissingAndUnknownPaths) {
   auto v = DecodeSignalKInstruments(
       R"({"context":"vessels.test","updates":[{"timestamp":"2026-09-24T12:00:00Z","values":[{"path":"environment.depth.belowTransducer","value":8}]}]})",
