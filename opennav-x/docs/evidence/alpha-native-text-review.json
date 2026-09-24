@@ -1,0 +1,10 @@
+{
+  "candidate": "bef23943fd350c1521a9ff2abb1299e23bf723b3",
+  "reviewed": [
+    "dpi-100-sheet.png",
+    "dpi-100-instruments.png"
+  ],
+  "result": "defect found; not accepted",
+  "finding": "Implicit narrow-string to wxString conversion garbles UTF-8 degree, multiplication, arrow and en-dash glyphs on Windows locale. Explicit FromUTF8 applied at UI boundaries. Native replacement review required.",
+  "local_validation": "90 integrated tests pass after correction; all prior assertions retained."
+}

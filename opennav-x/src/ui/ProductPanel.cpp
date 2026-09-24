@@ -297,13 +297,14 @@ void ProductPanel::RouteActions() {
   Text("PLANNED LEGS / OpenCPN stored distances and courses", 18);
   for (std::size_t i = 0; i < route_.points.size(); ++i) {
     const auto &p = route_.points[i];
-    Text(wxString::Format("%u  ", static_cast<unsigned>(i + 1)) +
-         Name(p.name, p.id) +
-         (p.incoming_nm ? wxString::Format("   %.2f NM", *p.incoming_nm)
-                        : "   Start") +
-         (p.incoming_course_true_deg
-              ? wxString::Format("   %.0f° true", *p.incoming_course_true_deg)
-              : ""));
+    Text(
+        wxString::Format("%u  ", static_cast<unsigned>(i + 1)) +
+        Name(p.name, p.id) +
+        (p.incoming_nm ? wxString::Format("   %.2f NM", *p.incoming_nm)
+                       : "   Start") +
+        (p.incoming_course_true_deg
+             ? wxString::Format(W("   %.0f° true"), *p.incoming_course_true_deg)
+             : ""));
   }
 }
 void ProductPanel::PointActions() {
@@ -399,7 +400,7 @@ void ProductPanel::PilotActions() {
   }
   for (int delta : {-10, -1, 1, 10})
     Action(
-        wxString::Format("%+d° magnetic course", delta),
+        wxString::Format(W("%+d° magnetic course"), delta),
         [this, delta] {
           actions_.pilot_command(adapters::PilotAction::AlterCourse, delta);
         },
@@ -543,7 +544,7 @@ void ProductPanel::Build() {
                 ? "DEMO / synthetic instruments"
                 : "Selected marine sources / stale values retain their age");
 #define VAL(label, unit, field)                                                \
-  Value(label, unit, [](const auto &s) { return s.vessel.field; });
+  Value(W(label), W(unit), [](const auto &s) { return s.vessel.field; });
     VAL("SOG", "kn", navigation.sog_kn)
     VAL("COG", "deg true", navigation.cog_deg)
     VAL("HEADING", "deg true", navigation.heading_true_deg)

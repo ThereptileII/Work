@@ -68,9 +68,9 @@ void ProductPanel::EnergySettings() {
     auto s = actions_.settings();
     auto f = EditSheet(
         *this, mode_, "Battery assumptions",
-        "Capacity is deliverable energy over the reported 0–100% SOC span. "
-        "Reserve is an explicit percentage. Blank leaves an input "
-        "unconfigured. Use decimal dots.",
+        W("Capacity is deliverable energy over the reported 0–100% SOC span. "
+          "Reserve is an explicit percentage. Blank leaves an input "
+          "unconfigured. Use decimal dots."),
         {{"Usable capacity / kWh", N(s.energy.battery.capacity_kwh), 64},
          {"Reserve SOC / %", N(s.energy.battery.reserve_soc_percent), 64},
          {"Minimum passage speed / kn", N(s.energy.battery.minimum_speed_kn),
@@ -144,9 +144,9 @@ void ProductPanel::EnergySettings() {
     });
   EndActions();
   Text("CONSUMPTION MODEL", 18);
-  Text(e.consumption == smartnav::ConsumptionModel::MeasuredPack
-           ? "Measured whole-pack V × I / estimated electrical power"
-           : "Calibrated speed-to-power curve / estimated consumption");
+  Text(W(e.consumption == smartnav::ConsumptionModel::MeasuredPack
+             ? "Measured whole-pack V × I / estimated electrical power"
+             : "Calibrated speed-to-power curve / estimated consumption"));
   Text("Constant present conditions; no weather, current or route-leg "
        "consumption forecast. Estimates are withheld for stale/missing inputs "
        "and outside the imported speed domain.");
@@ -200,7 +200,8 @@ void ProductPanel::EnergySettings() {
         "efficiency. Whole-pack curves already include all electrical loads; "
         "these fields are then unused.",
         {{"Hotel load / kW", N(s.energy.hotel_kw), 64},
-         {"Shaft-to-pack efficiency / 0–1", N(s.energy.shaft_efficiency), 64}});
+         {W("Shaft-to-pack efficiency / 0–1"), N(s.energy.shaft_efficiency),
+          64}});
     if (!f)
       return;
     try {
@@ -265,8 +266,8 @@ void ProductPanel::Sources() {
           "live input conversions, not simulated values. Old instrument "
           "observations will be cleared.\n";
       for (const auto &m : mappings)
-        review += W(m.path) + " → " + W(vessel::Describe(m.quantity).name) +
-                  " / value × " + N(m.scale) + " + " + N(m.offset) + " " +
+        review += W(m.path) + W(" → ") + W(vessel::Describe(m.quantity).name) +
+                  W(" / value × ") + N(m.scale) + " + " + N(m.offset) + " " +
                   W(vessel::Describe(m.quantity).unit) + "\n";
       if (!ConfirmSheet(*this, mode_, "Confirm propulsion mapping", review,
                         "Use mappings"))
@@ -294,7 +295,7 @@ void ProductPanel::Sources() {
       !state_.settings.signal_k_mappings.empty());
   EndActions();
   for (const auto &m : state_.settings.signal_k_mappings)
-    Text(W(m.path) + " / " + W(vessel::Describe(m.quantity).name) + " / × " +
+    Text(W(m.path) + " / " + W(vessel::Describe(m.quantity).name) + W(" / × ") +
          N(m.scale) + " + " + N(m.offset) + " " +
          W(vessel::Describe(m.quantity).unit));
   for (const auto &q : vessel::Quantities()) {
