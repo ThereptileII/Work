@@ -64,7 +64,9 @@ function AtomicJson([string]$Path, $Value) {
   $bytes = $Utf8.GetBytes(($Value | ConvertTo-Json -Depth 16))
   $file = New-Object IO.FileStream($temp, [IO.FileMode]::CreateNew, [IO.FileAccess]::Write, [IO.FileShare]::None)
   try { $file.Write($bytes, 0, $bytes.Length); $file.Flush($true) } finally { $file.Dispose() }
-  if (Test-Path -LiteralPath $Path) { [IO.File]::Replace($temp, $Path, $null) }
+  # Windows PowerShell 5.1 converts $null to an empty string for this .NET
+  # string parameter; File.Replace rejects that as an invalid backup path.
+  if (Test-Path -LiteralPath $Path) { [IO.File]::Replace($temp, $Path, [System.Management.Automation.Language.NullString]::Value) }
   else { [IO.File]::Move($temp, $Path) }
 }
 function Generation([string]$Id) {

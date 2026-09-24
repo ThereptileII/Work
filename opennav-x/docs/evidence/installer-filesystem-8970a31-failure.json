@@ -1,0 +1,13 @@
+{
+  "commit": "8970a31c615faf9c7866607332ae082122e5c0b8",
+  "run": "https://github.com/ThereptileII/Work/actions/runs/36074524793",
+  "job": 107882643774,
+  "status": "native filesystem contract failed; not accepted",
+  "passed_before_failure": 17,
+  "failure": "Windows PowerShell 5.1 coerces $null to empty string for File.Replace backup filename, causing path is not of a legal form on the first replacement. Initial publication and refusal cases passed.",
+  "correction": "Pass System.Management.Automation.Language.NullString.Value to supply a real null .NET string. Same native test must pass under both host architectures.",
+  "sources": [
+    "https://learn.microsoft.com/en-us/dotnet/api/system.management.automation.language.nullstring",
+    "https://learn.microsoft.com/en-us/dotnet/api/system.io.file.replace"
+  ]
+}

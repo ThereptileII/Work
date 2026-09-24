@@ -86,3 +86,8 @@ PowerShell 5.1. It checks literal resource names, path traversal/reserved names,
 reparse ancestors, native atomic JSON replacement, owned-file corruption and PE
 architecture. It never executes the installer entry point or writes outside its
 new temporary fixture. These checks do not replace the full installed lifecycle.
+
+Native PowerShell 5.1 exposed `$null` coercion to an empty backup-path string in
+`File.Replace`. Atomic replacement now supplies `NullString.Value`, preserving
+the no-backup-file .NET contract. The actual native replacement test remains the
+acceptance gate; the failed candidate is retained in evidence.
