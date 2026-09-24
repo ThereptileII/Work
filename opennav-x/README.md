@@ -1,41 +1,47 @@
 # OpenNav X
 
-OpenNav X is being developed as a touch-first marine navigation interface on
-OpenCPN. **This repository is a development build, not a navigation release.**
-The authoritative scope and acceptance requirements are in
-[the project specification](OpenNavX_Codex_Project_Specification.md).
+OpenNav X is a touch-first marine navigation interface on OpenCPN. **Alpha 1 is
+under qualification; it is not approved for navigation or production use.**
+The [project specification](OpenNavX_Codex_Project_Specification.md),
+[approved design](docs/design/OpenNavX_Design_Reference.png) and
+[current status/evidence](docs/status.md) define scope and acceptance.
 
-Developer Preview 0.1 provides custom XNav Navigation, Route, Energy and System
-views around OpenCPN's real chart canvas, plus Legacy/Safe startup and controlled
-mode restarts. Explicit deterministic Demo scenarios exercise complete vessel
-data and advisory range/arrival-SOC predictions. Live selected position/SOG/COG
-and the accepted [remaining-route snapshot](docs/route-progress-contract.md)
-retain OpenCPN ownership, provenance and freshness. Missing/stale inputs withhold
-predictions; live battery acquisition and calibrated capacity/reserve remain
-future work. No OpenNav steering or radar commands exist.
+The Alpha integrates the real OpenCPN chart canvas with XNav navigation,
+route/waypoint workflows, AIS cards, configurable instruments, energy prediction,
+SmartNav advisories, anchor watch, settings and diagnostics. OpenCPN owns charts,
+objects, selected navigation and AIS calculations. OpenNav consumers retain owned
+snapshots with source, observation time and explicit validity/freshness.
 
-The [preview contract](docs/developer-preview-contract.md) documents ownership,
-Demo separation, energy assumptions, portable isolation and test gates. The
-preview does not patch an installed OpenCPN or use its normal profile. Hardware
-adapters and the production Windows installer remain later milestones.
+Live marine inputs reuse OpenCPN NMEA 0183, supported NMEA 2000 and own-vessel
+Signal K infrastructure. Battery/propulsion configuration and optional mappings
+are explicit. Missing or stale inputs suppress dependent predictions. Demo is
+clearly marked and supplies deterministic desktop scenarios. The manual autopilot
+simulator, unavailable live radar adapter and chart-corridor abstraction preserve
+separate hardware/physical-validation gates. SmartNav has no steering path.
 
-The application preserves OpenCPN 5.12.4's supported **32-bit application/plugin
-ABI on 64-bit Windows**, as explicitly approved by the user. Native Windows
-MSVC validation remains mandatory. Windows screenshots govern UI acceptance.
+Legacy and Safe Mode preserve the shared OpenCPN profile. The portable ZIP has
+its own isolated profile. The exact-hash-gated Alpha installer stages a per-user
+integration beside the supported stock installation; it leaves the original
+program intact. Native install/repair/update/rollback/uninstall qualification
+must pass before a stock hash enters the public compatibility allowlist.
 
-Current accepted increments, tested revisions and remaining release work are in
-[the development status](docs/status.md).
+The application preserves OpenCPN 5.12.4's **x86/Win32 application and plugin ABI
+on Windows x64**, as approved by the user. `win64` distribution names describe
+the host. Native Windows MSVC, rendering, DPI, DLL/plugin and installer gates
+remain authoritative. Linux supplies fast build, model and integration feedback.
 
-## Build and evidence
+## Architecture and testing
 
-- Exact upstream revision and ABI: [upstream.lock.json](upstream.lock.json).
-- Toolchains, commands and limitations: [docs/baseline.md](docs/baseline.md).
-- Narrow source hooks: [docs/upstream-patches.md](docs/upstream-patches.md).
-- Decisions: [docs/ARCHITECTURE_DECISIONS.md](docs/ARCHITECTURE_DECISIONS.md).
-- Approved visual board: [design reference](docs/design/OpenNavX_Design_Reference.png).
-- CI: [isolated opennav-x branch](https://github.com/ThereptileII/Work/tree/opennav-x/opennav-x).
-
-Portable contract tests:
+- [Pinned upstream and ABI](upstream.lock.json)
+- [Architecture decisions](docs/ARCHITECTURE_DECISIONS.md)
+- [OpenCPN integration patches](docs/upstream-patches.md)
+- [Vessel Data and marine sources](docs/navigation-data-bridge.md)
+- [Read-only remaining-route contract](docs/route-progress-contract.md)
+- [Alpha settings](docs/alpha-settings-contract.md)
+- [Installer transaction contract](docs/installer-transaction-contract.md)
+- [Chart/plugin/DPI evidence](docs/chart-plugin-performance-validation.md)
+- [Physical validation procedures](docs/physical-validation.md)
+- [CI branch](https://github.com/ThereptileII/Work/tree/opennav-x/opennav-x)
 
 ```sh
 cmake -S . -B build/contracts -DCMAKE_BUILD_TYPE=Release
@@ -43,27 +49,23 @@ cmake --build build/contracts --config Release
 ctest --test-dir build/contracts -C Release --output-on-failure
 ```
 
-Linux OpenCPN baseline: `bash tools/build-pristine-linux.sh`.
+Linux baseline: `bash tools/build-pristine-linux.sh`.
 Linux integration: `bash tools/build-integration-linux.sh`.
 Windows: `./tools/build-pristine-windows.ps1 -Architecture Win32`; add
-`-Integration` for the guarded XNav source build.
-
+`-Integration` for XNav. See [toolchain setup](docs/baseline.md).
 Integration patches apply only to a disposable pinned worktree under `build/`.
-They do not modify an installed OpenCPN. Always use a disposable `--configdir`
-for development; the capture scripts create one automatically. No supported
-installer compatibility entries are published until their Windows gates pass.
+Use disposable `--configdir` profiles for development; the harnesses create them.
 
-## Windows Developer Preview 0.1
+## Windows packages
 
-The accepted preview packages explicit Demo scenarios, Route/Energy/System pages
-and the real OpenCPN chart canvas.
-[Download OpenNavX-DeveloperPreview-win64](https://github.com/ThereptileII/Work/actions/runs/36044190692/artifacts/10829050279)
-from the [successful CI run](https://github.com/ThereptileII/Work/actions/runs/36044190692).
-This corrected build preserves the bundled coastline through Legacy/XNav/Safe
-restarts and repairs the earlier preview's default-basemap path.
-Extract the inner `OpenNavX-DeveloperPreview-win64.zip` into a short writable
-folder, then run `Run-XNav-Demo.cmd`. Its private profile and bundled runtime do
-not require modifying an installed OpenCPN. Exact revision, test counts and
-native screenshot evidence are tracked in [status](docs/status.md). Read the
-[Windows test guide](docs/preview/TEST_ME_FIRST.md) and
-[limitations](docs/preview/KNOWN_LIMITATIONS.md). This is not approved for navigation.
+Alpha download names are `OpenNavX-Alpha1-Portable-win64.zip` and
+`OpenNavX-Alpha1-Setup.exe`, accompanied by hashes, corresponding source and the
+[test guide](docs/alpha/OpenNavX-Alpha1-Test-Guide.md). The
+`OpenNavX-Alpha1-Windows` artifact is published only after both platform gates
+and accepted compatibility qualification. See [status](docs/status.md) for the
+exact accepted run; a candidate build or successful compile is not acceptance.
+Read [known limitations](docs/alpha/KNOWN_LIMITATIONS.md) before testing.
+
+The preceding repaired Developer Preview foundation remains recorded in
+[run 36047288188](https://github.com/ThereptileII/Work/actions/runs/36047288188),
+with its [verified portable artifact](https://github.com/ThereptileII/Work/actions/runs/36047288188/artifacts/10830135079).

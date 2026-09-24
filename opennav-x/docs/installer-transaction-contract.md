@@ -79,3 +79,10 @@ Native automation quotes option values (`/OPENCPN="path with spaces"`) rather
 than the entire option, so the selected stock path is actually parsed. The
 normal no-argument wizard is exercised and captured before cancellation; this
 supplements the silent lifecycle suite. [NSIS GetOptions source](https://github.com/kichik/nsis/blob/master/Include/FileFunc.nsh).
+
+Before native compilation, the Windows contract job executes the actual
+filesystem-helper AST definitions under both 32-bit and 64-bit Windows
+PowerShell 5.1. It checks literal resource names, path traversal/reserved names,
+reparse ancestors, native atomic JSON replacement, owned-file corruption and PE
+architecture. It never executes the installer entry point or writes outside its
+new temporary fixture. These checks do not replace the full installed lifecycle.

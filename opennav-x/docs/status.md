@@ -6,6 +6,16 @@ The approved Windows target preserves its Win32 application/plugin ABI on a
 native Windows x64 host. The tracked upstream submodule remains pristine;
 reviewed patches apply to a disposable integration worktree.
 
+**Latest native UI/chart observation:** `33447f2` passes 90 Linux / 80 Windows
+integrated tests and 28 portable suites per platform. Configurable displays,
+actual 100/125/150% DPI/touch, real NOAA ENC load/zoom/pan/follow and native plugin
+manager checks pass. Four relevant native captures were reviewed. The route
+creation test persisted three points, but its two-press edit gesture triggered
+double-click behavior; the replacement uses upstream press-drag-release. The
+full chart gate and installer remain unaccepted. [Review](evidence/windows-alpha-33447f2-review.json).
+Linux now also passes switching the actual quilt reference between two public
+NOAA cells in software and llvmpipe OpenGL. [Local evidence](evidence/alpha-two-cell-chart-local.json).
+
 **Installer qualification in progress:** the native loader/resource check and
 portable/DPI gates pass at `46c1d64`, but installer packaging stopped before
 execution because the compatibility manifest was absent from the published tree.

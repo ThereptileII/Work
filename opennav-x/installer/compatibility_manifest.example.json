@@ -1,12 +1,13 @@
 {
-  "openNavVersion": "0.1.0",
+  "openNavVersion": "0.2.0-alpha1",
   "supportedOpenCpn": [
     {
       "version": "REPLACE_WITH_PINNED_VERSION",
-      "arch": "x64",
+      "arch": "x86",
       "executableSha256": "REPLACE_AFTER_WINDOWS_BASELINE",
-      "integrationPackage": "win-x64-ocpn-REPLACE",
-      "pluginApiMin": "DETECT_FROM_PINNED_SOURCE"
+      "integrationPackage": "OpenNavX-Alpha1-Setup.exe",
+      "pluginApiMin": "DETECT_FROM_PINNED_SOURCE",
+      "upstreamCommit": "REPLACE_WITH_VALIDATED_PIN"
     }
   ]
 }

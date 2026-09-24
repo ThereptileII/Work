@@ -53,6 +53,47 @@ despite the usual Windows default being `opencpn.ini`.
 Software-rendered baseline screenshots (`--no_opengl`) must be identified as
 such. They do not prove OpenGL, real-chart readability or target-PC acceptance.
 
+## ADR-005 — Per-user side-by-side Alpha installation
+
+**Status:** Implemented candidate; native lifecycle qualification pending.
+
+Install complete integration generations under LocalAppData and keep the exact
+hash-verified stock OpenCPN executable unchanged. All installed modes use the
+normal shared profile located by OpenCPN. The portable distribution retains its
+separate profile. This refines the specification's replace/back-up flow: no
+Program Files replacement or elevation is necessary for OpenNav-owned files.
+Atomic generation selection, retained prior files and verified ownership support
+repair/update/rollback/uninstall without restoring old navigation data. The
+public compatibility allowlist remains empty until disposable native lifecycle
+and UI gates pass. See [transaction contract](installer-transaction-contract.md).
+
+## ADR-006 — Explicit Alpha hardware and chart-query boundaries
+
+**Status:** Implemented and contract-tested; physical gates remain open.
+
+Autopilot commands pass only through the manual adapter interface with fresh
+feedback, pending-command identity and timeout handling. Alpha supplies a
+simulator; live output is disabled. SmartNav has no dependency that can send a
+command. Radar reports unavailable without an accepted source. The hazard
+corridor has a tested provider contract but no live ENC coverage provider:
+viewport object queries alone cannot establish complete future-path coverage or
+safe clearance. This uses the user's permission to complete abstractions and
+continue while retaining explicit physical/upstream integration gates.
+
+## ADR-007 — Reuse OpenCPN transport and selected navigation
+
+**Status:** Marine input gate accepted; calibration/physical validation open.
+
+OpenNav subscribes to existing OpenCPN marine-message services and its selected
+navigation contract; it does not open a second NMEA/Signal K transport. Owned
+Vessel Data separates normalized quantities, source precedence, provenance and
+freshness from UI and SmartNav. Standard marine meanings are retained. Optional
+vendor/boat Signal K mappings are explicitly configured and never depend on
+Leaf EV-CAN identifiers. Capacity, reserve and pack-current sign have no invented
+live defaults. A mapping interpretation change invalidates retained observations.
+See [marine bridge](navigation-data-bridge.md) and
+[propulsion mapping](propulsion-source-mapping.md).
+
 Record significant decisions here using this format.
 
 ## ADR-000 — Template
