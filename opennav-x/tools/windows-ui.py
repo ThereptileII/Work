@@ -28,6 +28,7 @@ GetClientRect = declare(user, 'GetClientRect', W.BOOL, W.HWND, C.POINTER(W.RECT)
 ScreenToClient = declare(user, 'ScreenToClient', W.BOOL, W.HWND, C.POINTER(W.POINT))
 ChildWindowFromPointEx = declare(user, 'ChildWindowFromPointEx', W.HWND, W.HWND, W.POINT, W.UINT)
 GetDpiForWindow = declare(user, 'GetDpiForWindow', W.UINT, W.HWND)
+SetForegroundWindow = declare(user, 'SetForegroundWindow', W.BOOL, W.HWND)
 SetWindowPos = declare(user, 'SetWindowPos', W.BOOL, W.HWND, W.HWND, C.c_int, C.c_int, C.c_int, C.c_int, W.UINT)
 PostMessageW = declare(user, 'PostMessageW', W.BOOL, W.HWND, W.UINT, W.WPARAM, W.LPARAM)
 SendMessageW = declare(user, 'SendMessageW', C.c_ssize_t, W.HWND, W.UINT, W.WPARAM, W.LPARAM)
@@ -53,7 +54,14 @@ class BitmapHeader(C.Structure):
 CreateDIBSection = declare(gdi, 'CreateDIBSection', W.HBITMAP, W.HDC,
                            C.POINTER(BitmapHeader), W.UINT, C.POINTER(C.c_void_p), W.HANDLE, W.DWORD)
 
-user.SetProcessDPIAware()
+# Keep automation coordinates in physical pixels during monitor DPI changes.
+# The application uses the pinned upstream PerMonitorV2 manifest independently.
+try:
+    SetProcessDpiAwarenessContext=declare(user,'SetProcessDpiAwarenessContext',W.BOOL,C.c_void_p)
+    if not SetProcessDpiAwarenessContext(C.c_void_p(-4)):
+        user.SetProcessDPIAware()
+except AttributeError:
+    user.SetProcessDPIAware()
 
 def text(handle):
     buffer = C.create_unicode_buffer(2048)
@@ -97,6 +105,12 @@ def click_text(pid, label):
         for root, _, _ in windows(pid):
             for handle, caption in children(root):
                 if caption == label:
+                    native_class=C.create_unicode_buffer(128)
+                    GetClassNameW(handle,native_class,len(native_class))
+                    # A confirmation sheet can use the same heading and button
+                    # text. Static text is never an actionable control.
+                    if native_class.value.lower() == 'static':
+                        continue
                     rect = W.RECT()
                     GetClientRect(handle, C.byref(rect))
                     position = (rect.right // 2) | ((rect.bottom // 2) << 16)
@@ -205,9 +219,13 @@ def assert_route_summary_layout(handle):
     assert GetWindowRect(summary[0], C.byref(a)) and GetWindowRect(demo[0], C.byref(b))
     assert a.left >= b.right and b.top <= a.top < a.bottom <= b.bottom, 'Route summary overlaps bottom controls'
 
-def capture(handle, path):
-    size_window(handle)
-    width, height = 1280, 800
+def capture(handle, path, resize=True):
+    if resize:
+        size_window(handle)
+    rect=W.RECT()
+    assert GetWindowRect(handle,C.byref(rect))
+    width,height=rect.right-rect.left,rect.bottom-rect.top
+    assert 0 < width <= 8192 and 0 < height <= 8192
     screen = GetDC(None)
     memory = CreateCompatibleDC(screen)
     header = BitmapHeader(C.sizeof(BitmapHeader), width, -height, 1, 32, 0, 0, 0, 0, 0, 0)
@@ -258,13 +276,13 @@ class DevMode(C.Structure):
 EnumDisplaySettingsW = declare(user, 'EnumDisplaySettingsW', W.BOOL, W.LPCWSTR, W.DWORD, C.POINTER(DevMode))
 ChangeDisplaySettingsW = declare(user, 'ChangeDisplaySettingsW', W.LONG, C.POINTER(DevMode), W.DWORD)
 
-def ensure_desktop():
+def ensure_desktop(minimum_width=1280,minimum_height=800):
     current = DevMode()
     current.size = C.sizeof(current)
     if not EnumDisplaySettingsW(None, 0xFFFFFFFF, C.byref(current)):
         raise RuntimeError('Cannot read native display mode')
     before = (current.width, current.height, current.bits)
-    if current.width >= 1280 and current.height >= 800:
+    if current.width >= minimum_width and current.height >= minimum_height:
         return {'before': before, 'after': before}
     modes = []
     index = 0
@@ -273,7 +291,7 @@ def ensure_desktop():
         candidate.size = C.sizeof(candidate)
         if not EnumDisplaySettingsW(None, index, C.byref(candidate)):
             break
-        if candidate.width >= 1280 and candidate.height >= 800 and candidate.bits >= 24:
+        if candidate.width >= minimum_width and candidate.height >= minimum_height and candidate.bits >= 24:
             modes.append(candidate)
         index += 1
     modes.sort(key=lambda m: m.width * m.height)

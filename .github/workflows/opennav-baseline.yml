@@ -127,6 +127,8 @@ jobs:
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
       - name: Build and exercise integrated modes
         run: ./opennav-x/tools/build-pristine-windows.ps1 -Architecture Win32 -Integration
+      - name: Native 100 / 125 / 150 percent DPI and touch interactions
+        run: python opennav-x/tools/smoke-dpi-windows.py
       - name: Package and test the extracted Developer Preview
         run: ./opennav-x/tools/package-preview-windows.ps1
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02

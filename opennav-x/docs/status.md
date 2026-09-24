@@ -1,4 +1,4 @@
-# Development status — 2026-09-24
+# Development status — 2026-09-25
 
 **Development build; production Definition of Done remains open.** The selected
 baseline is OpenCPN 5.12.4 at `37fd0cddb7334fe489e9f18aa163977a9c5c84f7`.
@@ -24,7 +24,10 @@ new Windows property-sheet automation misread a cross-process edit buffer.
 `bdb58f9` corrects the edit helper; its property-sheet assertions pass, but
 Windows then exposed an unclosed SQLite verifier connection during cleanup.
 [Second record](evidence/alpha-products-bdb58f9-candidate.json). `5c8428e` closes
-that connection explicitly and is being gated with live settings. No assertion
+that connection explicitly. Its native 76 integrated cases and object/settings
+regressions pass; package interaction then exposed a selector matching the
+AUTO confirmation heading instead of its identically labelled button. The
+selector now excludes non-actionable static text; native rerun is pending. No assertion
 was removed. This UI milestone is not yet accepted on Windows.
 
 **Live settings increment in progress:** explicit battery/current/curve
@@ -35,6 +38,12 @@ persistence, live energy consumers, vessel safety assumptions and radar status.
 Native acceptance is pending. The installer,
 broader chart/plugin/DPI validation and final Alpha packaging remain ahead.
 This is not an Alpha release candidate.
+
+**Native scaling validation in progress:** the disposable Windows gate now
+requests actual monitor 100/125/150% scaling and verifies both Win32 and wx
+DPI. It exercises native touch injection, sheets, day/night and Legacy/Safe
+round trips with coastline assertions. This is pending native results; no
+rescaled screenshot is treated as DPI acceptance.
 
 **Startup recovery increment in progress:** the XNav startup journal selects
 upstream Safe Mode after two unfinished starts and preserves human retry

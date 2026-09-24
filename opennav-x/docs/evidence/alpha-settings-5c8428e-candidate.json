@@ -1,0 +1,16 @@
+{
+  "commit": "5c8428e53d704bba3bf5f5efca7d857c2d624b15",
+  "ci_run": "https://github.com/ThereptileII/Work/actions/runs/36064427657",
+  "status": "not accepted; package UI regression gate failed",
+  "linux_integrated": 86,
+  "windows_integrated": 76,
+  "portable_each": 25,
+  "windows_artifact": 10836262110,
+  "download_sha256": "6edff39f0998159c5b94e2df8d55691cd69758149d2fb6d6474f5880cec30ede",
+  "findings": [
+    "Native build, integrated tests, mode/instrument/route/object interactions passed.",
+    "Extracted package stopped on AUTO feedback assertion; no command request appeared in app log.",
+    "Sheet heading and confirmation button both use Request AUTO. Automation enumerated static heading first and sent mouse messages to non-actionable text.",
+    "Correct selector to skip native Static class; retain all command/new-feedback assertions. Replacement native evidence required."
+  ]
+}
