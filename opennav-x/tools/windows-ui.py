@@ -107,13 +107,21 @@ def click_text(pid, label):
     visible = [(title, children(h)) for h, _, title in windows(pid)]
     raise RuntimeError(f'Control not found: {label}: {visible}')
 
+def control_text(handle):
+    # GetWindowText reads another process's cached caption, not its EDIT buffer.
+    # https://learn.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-getwindowtextw
+    buffer=C.create_unicode_buffer(32769)
+    SendMessageW(handle,0x000D,len(buffer),C.cast(buffer,C.c_void_p).value)
+    return buffer.value
+
 def set_text_in_dialog(pid, title, previous, value):
     dialog,_=wait_window(title,pid)
-    matches=[h for h,caption in children(dialog) if caption==previous]
+    matches=[h for h,_ in children(dialog) if control_text(h)==previous]
     assert len(matches)==1,(title,previous,children(dialog))
     buffer=C.create_unicode_buffer(value)
     assert SendMessageW(matches[0],0x000C,0,C.cast(buffer,C.c_void_p).value),'Edit field rejected text'
-    assert text(matches[0])==value
+    observed=control_text(matches[0])
+    assert observed==value,(title,previous,value,observed)
 
 def click_menu(handle, label):
     def search(menu):

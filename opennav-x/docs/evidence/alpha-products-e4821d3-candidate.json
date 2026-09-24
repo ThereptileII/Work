@@ -1,0 +1,12 @@
+{
+  "revision": "e4821d30ecadb54b4a94eac2e249d2c4835802c5",
+  "localRevision": "f091b0e7e80d02bccc4a2ba306d8c67a4a6ca83c",
+  "sourceEquivalence": "38 committed changed files compared byte-for-byte to remote git objects",
+  "run": "https://github.com/ThereptileII/Work/actions/runs/36060773242",
+  "accepted": false,
+  "linux": "Integrated gate passed; 81 compiled tests, object fixture, existing mode/navigation/route/instrument and expanded preview interactions",
+  "windows": "Native MSVC build and all 71 compiled tests passed. Modes, navigation, route, instrument tests passed. Object fixture completed its model checks, but the added property-sheet automation failed while reading back edited text. Preview/package gate was not accepted.",
+  "failure": "set_text_in_dialog used GetWindowTextW to read another process's EDIT buffer after WM_SETTEXT. That API does not retrieve cross-process edit-control text; use WM_GETTEXT, per Microsoft documentation. No assertion is removed. Native revalidation is required.",
+  "source": "https://learn.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-getwindowtextw",
+  "windowsArtifact": {"id":10834443987,"sha256":"eacc39c16eb54d778d19ad85d6f8a8f3498ded7cd2211b2e8dbe5d554f9b18db"}
+}
