@@ -77,7 +77,10 @@ try:
         official=temporary/'official-setup.exe'
         urllib.request.urlretrieve('https://github.com/OpenCPN/OpenCPN/releases/download/Release_5.12.4/opencpn_5.12.4-0%2B3720.37fd0cd_setup.exe',official)
         assert sha(official)==SETUP_HASH
-        r=subprocess.run([str(official),'/S','/D='+str(stock)],timeout=180)
+        # NSIS documents an unquoted, final /D= path even when it contains spaces.
+        # Pass directly to CreateProcess (shell=False), not through a command shell.
+        assert '"' not in str(stock)
+        r=subprocess.run(subprocess.list2cmdline([str(official),'/S'])+' /D='+str(stock),timeout=180)
         assert r.returncode==0,r.returncode
         original=stock/'opencpn.exe';assert sha(original)==STOCK_HASH
         stock_before=inventory(stock)
@@ -151,7 +154,13 @@ try:
         # Exercise the conventional uninstall executable as well as the engine.
         maintain=generation()/'Maintain.exe';out=EVIDENCE/'installer-uninstall.json'
         result=subprocess.run([str(maintain),'/S','/ACTION=Uninstall','/REPORT='+str(out)],timeout=120)
-        assert result.returncode==0 and not (INSTALL/'state.json').exists()
+        assert result.returncode==0
+        # A normal NSIS uninstaller copies itself to a temporary process. The
+        # durable engine report, not the initial wrapper exit, is completion.
+        deadline=time.monotonic()+120
+        while not out.exists() and time.monotonic()<deadline:time.sleep(.2)
+        assert out.exists() and json.loads(out.read_text(encoding='utf-8-sig'))['status']=='passed'
+        assert not (INSTALL/'state.json').exists()
         assert inventory(profile)==before and inventory(stock)==stock_before
         assert not list((INSTALL/'generations').glob('*/app/opencpn.exe')), 'Unmodified OpenNav application binaries remain'
         assert list((INSTALL/'generations').glob('*/app/plugins/alpha-user-preserved.txt')), 'Custom additions were removed'

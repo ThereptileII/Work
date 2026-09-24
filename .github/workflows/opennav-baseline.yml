@@ -1,4 +1,4 @@
-name: OpenNav Developer Preview
+name: OpenNav X Alpha
 on:
   push:
     branches: [opennav-x]
@@ -14,6 +14,8 @@ jobs:
     runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+      - name: Verify published distribution inputs before compilation
+        run: python opennav-x/tools/verify-distribution-inputs.py
       - name: Configure Linux contracts
         if: runner.os == 'Linux'
         run: cmake -S opennav-x -B opennav-x/build/contracts

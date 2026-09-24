@@ -58,3 +58,8 @@ checks diagnostic hashes, uninstalls and launches original OpenCPN. Every case
 must pass before populating the public compatibility manifest. Linux checks the
 real loader path and profile non-mutation; PowerShell 7 parsing on Linux is a
 syntax aid, not a substitute for native PowerShell 5.1 execution.
+
+The stock setup fixture follows NSIS's special final, unquoted `/D=` argument
+contract even for paths with spaces. Conventional uninstall tests wait for the
+engine's durable result because NSIS normally copies the uninstaller into a
+second temporary process. See [NSIS command-line contract](https://nsis.sourceforge.io/Docs/Chapter3.html).
