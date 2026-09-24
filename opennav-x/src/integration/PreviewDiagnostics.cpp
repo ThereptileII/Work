@@ -129,6 +129,10 @@ void WritePreviewDiagnostics(const std::string &path,
           : "Calibrated curve");
   report["settings"]["curve_source"] =
       wxString::FromUTF8(settings.energy.curve.source);
+  for (const auto &key : settings.data_rail)
+    report["settings"]["data_rail"].Append(wxString::FromUTF8(key));
+  for (const auto &key : settings.instruments)
+    report["settings"]["instruments"].Append(wxString::FromUTF8(key));
   report["settings"]["signal_k_mappings"] = wxJSONValue(wxJSONTYPE_ARRAY);
   for (const auto &m : settings.signal_k_mappings) {
     wxJSONValue item;

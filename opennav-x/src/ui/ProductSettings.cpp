@@ -1,5 +1,7 @@
 #include "ui/ProductPanel.h"
 #include "ui/Sheet.h"
+#include "vessel/DisplayItems.h"
+#include <algorithm>
 #include <cmath>
 #include <filesystem>
 #include <fstream>
@@ -392,5 +394,79 @@ void ProductPanel::SourceDetail() {
   if (!any)
     Text("No live source has been observed for this quantity. Missing data "
          "remains unavailable.");
+}
+} // namespace opennav::ui
+
+namespace opennav::ui {
+void ProductPanel::DisplaySettings() {
+  Heading("Display", "Palettes / Touch layout / Instruments");
+  Action("Back to Settings",
+         [this] { ShowPage(ProductPage::Settings, mode_); });
+  BeginActions(3);
+  for (const auto &choice :
+       std::vector<std::pair<wxString, LightMode>>{{"Day", LightMode::Day},
+                                                   {"Dusk", LightMode::Dusk},
+                                                   {"Night", LightMode::Night}})
+    Action(choice.first, [this, choice] {
+      if (actions_.theme)
+        actions_.theme(choice.second);
+    });
+  EndActions();
+  Text("Palette changes also use OpenCPN's chart presentation. Hardware screen "
+       "brightness is controlled by Windows or the display.");
+  BeginActions(2);
+  Action("Configure data rail",
+         [this] { ShowPage(ProductPage::RailLayout, mode_); });
+  Action("Configure instruments",
+         [this] { ShowPage(ProductPage::InstrumentLayout, mode_); });
+  Action("Fullscreen / window", actions_.navigation.fullscreen);
+  EndActions();
+  Text(wxString::Format("Current UI DPI: %d. Windows display scaling controls "
+                        "text and touch dimensions.",
+                        GetDPI().x));
+}
+void ProductPanel::InstrumentSelection(bool rail) {
+  Heading(rail ? "Data rail layout" : "Instrument layout",
+          "Selected values retain their original source, validity and age");
+  Action("Back to Display", [this] { ShowPage(ProductPage::Display, mode_); });
+  const auto config = actions_.settings ? actions_.settings() : state_.settings;
+  const auto selected = rail ? config.data_rail : config.instruments;
+  Text(rail ? "Choose 1 to 6 values. Presets replace the rail; individual "
+              "selections appear in selection order."
+            : "Choose the values shown on the instrument page. At least one "
+              "value must remain selected.");
+  if (rail) {
+    BeginActions(3);
+    for (const auto &preset :
+         std::vector<std::pair<wxString, std::vector<std::string>>>{
+             {"Navigation rail", {"sog", "cog", "heading", "depth", "aws"}},
+             {"Sailing rail", {"aws", "awa", "tws", "twa", "stw", "depth"}},
+             {"Energy rail", {"soc", "pack_power", "rpm", "sog", "depth"}}})
+      Action(preset.first, [this, preset] {
+        auto s = actions_.settings();
+        s.data_rail = preset.second;
+        SaveSettings(std::move(s));
+      });
+    EndActions();
+  }
+  BeginActions(2);
+  for (const auto &item : vessel::DisplayItems(state_.vessel)) {
+    const std::string key = item.key;
+    const bool included =
+        std::find(selected.begin(), selected.end(), key) != selected.end();
+    Action((included ? "Shown / " : "Add / ") + W(item.title),
+           [this, rail, key] {
+             auto s = actions_.settings();
+             auto &list = rail ? s.data_rail : s.instruments;
+             const auto found = std::find(list.begin(), list.end(), key);
+             if (found != list.end())
+               list.erase(found);
+             else
+               list.push_back(key);
+             SaveSettings(std::move(s));
+           },
+           included ? selected.size() > 1 : !rail || selected.size() < 6);
+  }
+  EndActions();
 }
 } // namespace opennav::ui

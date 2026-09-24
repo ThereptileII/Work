@@ -1,0 +1,328 @@
+{
+  "commit": "a749e8d2a38bec811b0b011919bf4ea383388343",
+  "run": "https://github.com/ThereptileII/Work/actions/runs/36070046214",
+  "status": "Native package and actual DPI interactions passed; overall candidate failed ENC fixture loading",
+  "linux_integrated": 90,
+  "windows_integrated": 80,
+  "portable_each": 27,
+  "artifact_id": 10838925517,
+  "artifact_sha256": "7c42331a5b42e99af3060091199a013c0c2fb4dc462a319950c694741f2cef41",
+  "scales": [
+    {
+      "percent": 100,
+      "GetDpiForWindow": 96,
+      "wxDpi": 96,
+      "buttons": {
+        "Navigation": [
+          112,
+          48
+        ],
+        "Route": [
+          88,
+          48
+        ],
+        "Energy": [
+          88,
+          48
+        ],
+        "Demo": [
+          88,
+          48
+        ],
+        "Menu": [
+          88,
+          48
+        ],
+        "System": [
+          112,
+          48
+        ],
+        "Light": [
+          72,
+          48
+        ],
+        "+": [
+          48,
+          48
+        ],
+        "\u2212": [
+          48,
+          48
+        ],
+        "GPS": [
+          48,
+          48
+        ]
+      },
+      "chart_rendering": [
+        {
+          "phase": "100% Day",
+          "reference_color_fractions": {
+            "aac3f0": 0.60568669527897,
+            "aaaf50": 0.39431330472103004
+          },
+          "coastline_visible": true
+        },
+        {
+          "phase": "100% Legacy",
+          "reference_color_fractions": {
+            "aac3f0": 0.5636623748211731,
+            "aaaf50": 0.4363376251788269
+          },
+          "coastline_visible": true
+        },
+        {
+          "phase": "100% returned XNav",
+          "reference_color_fractions": {
+            "aac3f0": 0.60568669527897,
+            "aaaf50": 0.39431330472103004
+          },
+          "coastline_visible": true
+        },
+        {
+          "phase": "100% Safe",
+          "reference_color_fractions": {
+            "aac3f0": 0.5636623748211731,
+            "aaaf50": 0.4363376251788269
+          },
+          "coastline_visible": true
+        },
+        {
+          "phase": "100% Safe to XNav",
+          "reference_color_fractions": {
+            "aac3f0": 0.60568669527897,
+            "aaaf50": 0.39431330472103004
+          },
+          "coastline_visible": true
+        }
+      ],
+      "touch": "Injected native down/up on Menu changed the page; physical touch remains untested"
+    },
+    {
+      "percent": 125,
+      "GetDpiForWindow": 120,
+      "wxDpi": 120,
+      "buttons": {
+        "Navigation": [
+          140,
+          60
+        ],
+        "Route": [
+          110,
+          60
+        ],
+        "Energy": [
+          110,
+          60
+        ],
+        "Demo": [
+          110,
+          60
+        ],
+        "Menu": [
+          110,
+          60
+        ],
+        "System": [
+          140,
+          60
+        ],
+        "Light": [
+          90,
+          60
+        ],
+        "+": [
+          60,
+          60
+        ],
+        "\u2212": [
+          60,
+          60
+        ],
+        "GPS": [
+          60,
+          60
+        ]
+      },
+      "chart_rendering": [
+        {
+          "phase": "125% Day",
+          "reference_color_fractions": {
+            "aac3f0": 0.613340486409156,
+            "aaaf50": 0.3858011444921316
+          },
+          "coastline_visible": true
+        },
+        {
+          "phase": "125% Legacy",
+          "reference_color_fractions": {
+            "aac3f0": 0.5629470672389127,
+            "aaaf50": 0.43705293276108725
+          },
+          "coastline_visible": true
+        },
+        {
+          "phase": "125% returned XNav",
+          "reference_color_fractions": {
+            "aac3f0": 0.613340486409156,
+            "aaaf50": 0.3858011444921316
+          },
+          "coastline_visible": true
+        },
+        {
+          "phase": "125% Safe",
+          "reference_color_fractions": {
+            "aac3f0": 0.5629470672389127,
+            "aaaf50": 0.43705293276108725
+          },
+          "coastline_visible": true
+        },
+        {
+          "phase": "125% Safe to XNav",
+          "reference_color_fractions": {
+            "aac3f0": 0.613340486409156,
+            "aaaf50": 0.3858011444921316
+          },
+          "coastline_visible": true
+        }
+      ],
+      "touch": "Injected native down/up on Menu changed the page; physical touch remains untested"
+    },
+    {
+      "percent": 150,
+      "GetDpiForWindow": 144,
+      "wxDpi": 144,
+      "buttons": {
+        "Navigation": [
+          168,
+          72
+        ],
+        "Route": [
+          132,
+          72
+        ],
+        "Energy": [
+          132,
+          72
+        ],
+        "Demo": [
+          132,
+          72
+        ],
+        "Menu": [
+          132,
+          72
+        ],
+        "System": [
+          168,
+          72
+        ],
+        "Light": [
+          108,
+          72
+        ],
+        "+": [
+          72,
+          72
+        ],
+        "\u2212": [
+          72,
+          72
+        ],
+        "GPS": [
+          72,
+          72
+        ]
+      },
+      "chart_rendering": [
+        {
+          "phase": "150% Day",
+          "reference_color_fractions": {
+            "aac3f0": 0.615379113018598,
+            "aaaf50": 0.3765736766809728
+          },
+          "coastline_visible": true
+        },
+        {
+          "phase": "150% Legacy",
+          "reference_color_fractions": {
+            "aac3f0": 0.5600500715307583,
+            "aaaf50": 0.43994992846924175
+          },
+          "coastline_visible": true
+        },
+        {
+          "phase": "150% returned XNav",
+          "reference_color_fractions": {
+            "aac3f0": 0.615379113018598,
+            "aaaf50": 0.3765736766809728
+          },
+          "coastline_visible": true
+        },
+        {
+          "phase": "150% Safe",
+          "reference_color_fractions": {
+            "aac3f0": 0.5600500715307583,
+            "aaaf50": 0.43994992846924175
+          },
+          "coastline_visible": true
+        },
+        {
+          "phase": "150% Safe to XNav",
+          "reference_color_fractions": {
+            "aac3f0": 0.615379113018598,
+            "aaaf50": 0.3765736766809728
+          },
+          "coastline_visible": true
+        }
+      ],
+      "touch": "Injected native down/up on Menu changed the page; physical touch remains untested"
+    }
+  ],
+  "reviewed": [
+    {
+      "image": "dpi-125-sheet.png",
+      "sha256": "f0566d38c498e6232c5ac3259ed25f8f33f2df12e8558d9eae6e10d89f55ef26"
+    },
+    {
+      "image": "dpi-150-instruments.png",
+      "sha256": "8b0f35bac6b4969d7b6753ada024abf64bf76c19c2174fbab1aabc68114df10f"
+    },
+    {
+      "image": "dpi-125-01-navigation-day.png",
+      "sha256": "730749f621df9e03989bf5c7a2a8e4f6a91cedc83d7a4fcca5118f470a36a6ec"
+    },
+    {
+      "image": "dpi-150-02-navigation-night.png",
+      "sha256": "9a9ffb3c9c083eddb216920fb4990adf9b8bb3a2ca230b598e2418250d20882c"
+    },
+    {
+      "image": "dpi-150-route.png",
+      "sha256": "092643ebc178c1ebf83728e631eded29142f58c58b173bd63a0651b36f7b9ba7"
+    },
+    {
+      "image": "dpi-100-instruments.png",
+      "sha256": "15fe79a53c12f7f61ebf886904cf2d42e779e58b5a513911d51314b931852d26"
+    },
+    {
+      "image": "dpi-125-returned-xnav.png",
+      "sha256": "4a392b25e76195d7d38e9a64c411796d3a6d1839a0f6f42778cbb8d4cbd6555a"
+    },
+    {
+      "image": "dpi-150-safe-to-xnav.png",
+      "sha256": "fb1bf3945b5daf9e2996066d744926b71f13abde1fcbe8d9e4557e9d8b335ba4"
+    }
+  ],
+  "visual_findings": [
+    "Correct degree glyph and battery range en-dash verified in replacement screenshots.",
+    "125/150 percent layouts retain dominant chart, scaled touch controls, readable headings and scrolling content.",
+    "Returned XNav and Safe-to-XNav coastlines remain visible.",
+    "Native title bar and stock chart compass remain; physical touch and target GPU validation still required."
+  ],
+  "failure": {
+    "gate": "Native NOAA ENC chart fixture",
+    "observed": "Upstream chart database has zero entries; plugin loader state is correct. No all-water capture accepted.",
+    "cause": "Fixture writes unescaped Windows backslash path into wxFileConfig text; pinned wx 3.2.8 FilterInValue treats backslashes as escapes. Use forward-slash absolute paths in synthetic config.",
+    "fix": "tools/smoke-charts.py uses chartdir.as_posix(); native rerun required."
+  }
+}

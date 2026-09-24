@@ -1,4 +1,5 @@
 #include "application/Settings.h"
+#include "vessel/DisplayItems.h"
 #include <cmath>
 #include <functional>
 #include <iostream>
@@ -165,6 +166,43 @@ void Live() {
   Check(!s.battery.usable_capacity_kwh.value,
         "Configuration did not fabricate sensor capacity");
 }
+void Display() {
+  application::Settings s;
+  s.data_rail = {"soc", "pack_power", "rpm"};
+  s.instruments = {"sog", "stw", "depth", "water_temp", "rudder"};
+  const auto decoded =
+      application::DecodeSettings(application::EncodeSettings(s));
+  Check(decoded.data_rail == s.data_rail &&
+            decoded.instruments == s.instruments,
+        "Display selections round trip");
+  auto bad = s;
+  bad.data_rail = {"depth", "depth"};
+  Reject([&] { application::ValidateSettings(bad); });
+  bad = s;
+  bad.instruments = {};
+  Reject([&] { application::ValidateSettings(bad); });
+  bad = s;
+  bad.data_rail = {"sog", "cog", "heading", "stw", "depth", "aws", "soc"};
+  Reject([&] { application::ValidateSettings(bad); });
+  bad = s;
+  bad.instruments = {"invented_sensor"};
+  Reject([&] { application::ValidateSettings(bad); });
+  vessel::VesselState state;
+  const auto observed = vessel::Time{} + 10s;
+  state.battery.soc_percent = {23, "test battery", observed,
+                               vessel::Validity::Measured};
+  for (const auto &item : vessel::DisplayItems(state)) {
+    if (std::string(item.key) == "soc") {
+      Check(item.sample->observed_at == observed,
+            "Display selection preserves observation time");
+      Check(vessel::Assess(*item.sample, observed + 10s).quality ==
+                vessel::Quality::Stale,
+            "Display does not freshen stale SOC");
+    }
+    if (std::string(item.key) == "depth")
+      Check(!item.sample->value, "Missing displayed depth remains unavailable");
+  }
+}
 int main(int argc, char **argv) {
   try {
     Check(argc == 2, "Choose group");
@@ -175,6 +213,8 @@ int main(int argc, char **argv) {
       Invalid();
     else if (arg == "mappings")
       Mappings();
+    else if (arg == "display")
+      Display();
     else if (arg == "live")
       Live();
     else

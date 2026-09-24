@@ -9,6 +9,10 @@ namespace opennav::application {
 // Configuration is not sensor telemetry. Missing numeric configuration is NaN;
 // it never becomes a freshly observed battery/safety datum on a UI read.
 struct Settings {
+  std::vector<std::string> data_rail{"aws", "depth", "sog", "cog", "heading"};
+  std::vector<std::string> instruments{
+      "sog", "cog",   "heading",    "stw",      "aws",    "awa", "tws",
+      "twa", "depth", "water_temp", "pressure", "rudder", "heel"};
   smartnav::EnergyConfiguration energy;
   vessel::CurrentConvention current = vessel::CurrentConvention::Unconfigured;
   smartnav::HazardConfiguration hazard;

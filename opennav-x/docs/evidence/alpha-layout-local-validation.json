@@ -1,0 +1,16 @@
+{
+  "status": "Linux passed; native replacement pending",
+  "portable_contracts": 28,
+  "integrated_tests": 90,
+  "preview_smoke": "passed with Display page and all retained scenarios",
+  "changes": [
+    "Bounded persisted rail/instrument selection without sample-age changes",
+    "Explicit palette settings and shared XNav components",
+    "Synthetic Windows ENC path encoding fix; native acceptance still pending"
+  ],
+  "logs": [
+    "alpha-layout-contract-tests.log",
+    "alpha-layout-integrated.log",
+    "alpha-layout-preview.log"
+  ]
+}

@@ -6,6 +6,17 @@ The approved Windows target preserves its Win32 application/plugin ABI on a
 native Windows x64 host. The tracked upstream submodule remains pristine;
 reviewed patches apply to a disposable integration worktree.
 
+**Current native product/DPI candidate:** `a749e8d2a38bec811b0b011919bf4ea383388343`
+passes 90 Linux / 80 Windows integrated tests and 27 portable contracts per
+platform. Native package interactions, manual DEMO pilot feedback, settings and
+actual 100/125/150% DPI/touch assertions pass. Eight replacement native images
+were reviewed; UTF-8 labels and scaled coastline returns are correct. The full
+candidate fails the new ENC fixture: its unescaped Windows configuration path
+leaves the upstream chart database empty. The fixture now writes forward-slash
+paths, consistent with pinned wxFileConfig escaping; native rerun is required.
+No empty chart is accepted. [Evidence](evidence/windows-alpha-a749e8d-review.json).
+Historical pending records below remain for traceability; this is not Alpha release acceptance.
+
 **Marine input gate accepted:** `785aa451293a8e137c130ef63829f3e5997bbabd`
 passes all eight jobs in [run 36057131335](https://github.com/ThereptileII/Work/actions/runs/36057131335).
 Linux passes 81 integrated cases and Windows 71; both pass 22 portable contracts.
@@ -331,3 +342,10 @@ Independent native package, installer, DPI and chart gates now each run after a
 successful integrated build even when another independent gate fails. A failure
 still fails the job and prevents publishing; this preserves diagnostics without
 weakening any acceptance assertion.
+
+**Configurable display increment:** ordered data-rail/instrument selections and
+navigation/sailing/energy rail presets use existing Vessel Data without changing
+sample age. Display exposes Day/Dusk/Night and fullscreen through existing
+OpenCPN actions. Linux passes 28 portable contracts, 90 integrated tests and the
+expanded preview smoke. Native selector/palette review is pending.
+[Contract](display-layout-contract.md), [local evidence](evidence/alpha-layout-local-validation.json).

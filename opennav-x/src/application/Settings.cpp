@@ -1,4 +1,5 @@
 #include "application/Settings.h"
+#include "vessel/DisplayItems.h"
 #include <cmath>
 #include <iomanip>
 #include <locale>
@@ -43,6 +44,19 @@ std::string SettingNumber(double n) {
 }
 void ValidateSettings(const Settings &s) {
   ValidateSignalKMappings(s.signal_k_mappings);
+  auto display = [](const std::vector<std::string> &keys, std::size_t maximum) {
+    Require(!keys.empty() && keys.size() <= maximum,
+            "Choose between one and the permitted number of instruments");
+    std::set<std::string> known, selected;
+    const vessel::VesselState empty;
+    for (const auto &item : vessel::DisplayItems(empty))
+      known.insert(item.key);
+    for (const auto &key : keys)
+      Require(known.count(key) && selected.insert(key).second,
+              "Unknown or duplicate display instrument");
+  };
+  display(s.data_rail, 6);
+  display(s.instruments, 23);
   const auto &e = s.energy;
   Range(e.battery.capacity_kwh, .001, 100000, "usable capacity (kWh)");
   Range(e.battery.reserve_soc_percent, 0, 100, "reserve SOC (%)");
@@ -103,6 +117,17 @@ std::string EncodeSettings(const Settings &s) {
       {"draft", SettingNumber(s.hazard.draft_m)},
       {"margin", SettingNumber(s.hazard.safety_margin_m)},
       {"corridor", SettingNumber(s.hazard.corridor_half_width_m)}};
+  auto join = [](const std::vector<std::string> &keys) {
+    std::string result;
+    for (const auto &key : keys) {
+      if (!result.empty())
+        result += ',';
+      result += key;
+    }
+    return result;
+  };
+  r["display.rail"] = join(s.data_rail);
+  r["display.instruments"] = join(s.instruments);
   if (!s.signal_k_mappings.empty())
     r["signal_k_mappings"] = ExportSignalKMappings(s.signal_k_mappings);
   if (!e.curve.points.empty()) {
@@ -198,6 +223,19 @@ Settings DecodeSettings(const std::string &record) {
   }
   if (r.count("signal_k_mappings"))
     s.signal_k_mappings = ImportSignalKMappings(take("signal_k_mappings"));
+  auto display = [&](const char *key, std::vector<std::string> &target) {
+    if (!r.count(key))
+      return; // Older records retain established default layout.
+    const auto value = take(key);
+    Require(!value.empty() && value.back() != ',', "Invalid display list");
+    target.clear();
+    std::istringstream list(value);
+    std::string item;
+    while (std::getline(list, item, ','))
+      target.push_back(item);
+  };
+  display("display.rail", s.data_rail);
+  display("display.instruments", s.instruments);
   Require(r.empty(), "Unknown settings fields");
   ValidateSettings(s);
   return s;

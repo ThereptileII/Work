@@ -66,6 +66,8 @@ private:
   wxStaticText *Text(wxWindow *parent, const wxString &text, int size,
                      bool bold = false);
   void ApplyTheme();
+  void SetLight(LightMode mode);
+  void UpdateRail(const std::vector<std::string> &keys, vessel::Time now);
   void Tick();
   std::string PageTitle() const;
   void ShowSystem();
@@ -96,7 +98,9 @@ private:
   std::vector<XNavButton *> buttons_;
   std::vector<std::pair<int, std::function<void()>>> commands_;
   std::vector<wxStaticText *> labels_;
-  XNavDataValue *wind_, *depth_, *speed_, *course_, *heading_;
+  wxScrolledWindow *rail_scroll_ = nullptr;
+  std::vector<std::string> rail_keys_;
+  std::vector<std::pair<std::string, XNavDataValue *>> rail_values_;
   wxStaticText *clock_, *source_, *route_summary_;
 };
 

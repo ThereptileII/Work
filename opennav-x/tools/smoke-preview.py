@@ -253,13 +253,15 @@ try:
     for title,key,name in [('Energy configuration','k','energy-settings'),
                            ('Data Sources','o','sources'),
                            ('Vessel safety settings','q','vessel-settings'),
-                           ('Radar status','z','radar-status')]:
+                           ('Radar status','z','radar-status'),
+                           ('Display & layout','f','display')]:
         if windows:
             command('Menu','m');ui.click_text(pid,'Settings');ui.click_text(pid,title)
         else:xdo('key','ctrl+shift+'+key);time.sleep(.6)
-        data(lambda d:d.get('ui_page')==title)
+        expected_page='Display' if name=='display' else title
+        data(lambda d:d.get('ui_page')==expected_page)
         capture('alpha-'+name)
-        if windows:ui.assert_product_page(handle,title)
+        if windows:ui.assert_product_page(handle,expected_page)
         if windows and name=='energy-settings':
             ui.click_text(pid,'Configure battery & reserve')
             ui.set_dialog_fields(pid,'Battery assumptions',['24','20','0.5'])
@@ -268,6 +270,22 @@ try:
             assert data()['data_mode']=='DEMO', 'Live configuration must not silently disable/replace DEMO'
             capture('alpha-energy-settings-saved')
             report['checks'].append('Native battery assumption sheet saves explicit live configuration; DEMO remains separate')
+        if windows and name=='display':
+            ui.click_text(pid,'Dusk');time.sleep(.5);capture('alpha-display-dusk')
+            ui.click_text(pid,'Night');time.sleep(.5);capture('alpha-display-night')
+            ui.click_text(pid,'Day');time.sleep(.5)
+            ui.click_text(pid,'Configure data rail');ui.click_text(pid,'Energy rail')
+            data(lambda d:d['settings']['data_rail']==['soc','pack_power','rpm','sog','depth'])
+            command('Navigation','n');capture('alpha-energy-rail')
+            command('Menu','m');ui.click_text(pid,'Settings');ui.click_text(pid,'Display & layout')
+            ui.click_text(pid,'Configure data rail');ui.click_text(pid,'Navigation rail')
+            data(lambda d:d['settings']['data_rail']==['sog','cog','heading','depth','aws'])
+            ui.click_text(pid,'Back to Display');ui.click_text(pid,'Configure instruments')
+            ui.click_text(pid,'Shown / PRESSURE')
+            data(lambda d:'pressure' not in d['settings']['instruments'])
+            ui.click_text(pid,'Add / PRESSURE')
+            data(lambda d:'pressure' in d['settings']['instruments'])
+            report['checks'].append('Native palettes, data-rail presets and instrument selection preserve telemetry provenance')
     report['checks'].append('Energy, source, vessel-safety and radar settings pages captured')
     later=data(lambda d:item(d,'Battery SOC')['value']<item(first,'Battery SOC')['value'])
     assert item(later,'Latitude')['value']!=item(first,'Latitude')['value']

@@ -26,7 +26,10 @@ enum class ProductPage {
   Sources,
   SourceDetail,
   VesselSettings,
-  Radar
+  Radar,
+  Display,
+  RailLayout,
+  InstrumentLayout
 };
 struct ProductState {
   vessel::VesselState vessel;
@@ -44,6 +47,7 @@ struct ProductState {
 struct ProductActions {
   application::NavigationActions navigation;
   std::function<void()> chart, route_summary, energy, diagnostics;
+  std::function<void(LightMode)> theme;
   std::function<void(adapters::PilotAction, double)> pilot_command;
   std::function<void(bool)> pilot_enable;
   std::function<application::Settings()> settings;
@@ -79,6 +83,8 @@ private:
   void EnergySettings();
   void Sources();
   void SourceDetail();
+  void DisplaySettings();
+  void InstrumentSelection(bool rail);
   void SaveSettings(application::Settings settings);
   ProductActions actions_;
   ProductState state_;

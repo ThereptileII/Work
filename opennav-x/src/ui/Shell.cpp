@@ -1,6 +1,7 @@
 #include "ui/Shell.h"
 
 #include "smartnav/Advisories.h"
+#include "vessel/DisplayItems.h"
 #include <wx/accel.h>
 #include <wx/datetime.h>
 #include <wx/popupwin.h>
@@ -73,12 +74,9 @@ Shell::Shell(wxFrame &frame, wxAuiManager &manager, ShellActions actions,
   row->Add(source_, 0, wxALIGN_CENTER_VERTICAL | wxRIGHT, gap * 2);
   auto *theme =
       Button(top, "Light", "Cycle day, dusk and night palettes", [this] {
-        mode_ = mode_ == LightMode::Day    ? LightMode::Dusk
-                : mode_ == LightMode::Dusk ? LightMode::Night
-                                           : LightMode::Day;
-        if (actions_.theme)
-          actions_.theme(mode_);
-        ApplyTheme();
+        SetLight(mode_ == LightMode::Day    ? LightMode::Dusk
+                 : mode_ == LightMode::Dusk ? LightMode::Night
+                                            : LightMode::Day);
       });
   theme->SetMinSize(frame_.FromDIP(wxSize(72, 48)));
   row->Add(theme, 0, wxALL, frame_.FromDIP(4));
@@ -106,21 +104,12 @@ Shell::Shell(wxFrame &frame, wxAuiManager &manager, ShellActions actions,
   auto *right =
       MakePane("OpenNavData", wxAuiPaneInfo().Right().Layer(1).BestSize(
                                   frame_.FromDIP(spacing::right_rail), -1));
-  auto *scroll = new wxScrolledWindow(right, wxID_ANY, wxDefaultPosition,
+  rail_scroll_ = new wxScrolledWindow(right, wxID_ANY, wxDefaultPosition,
                                       wxDefaultSize, wxVSCROLL | wxBORDER_NONE);
-  scroll->SetScrollRate(0, frame_.FromDIP(24));
-  auto *rail = new wxBoxSizer(wxVERTICAL);
-  wind_ = new XNavDataValue(scroll, "APPARENT WIND", "kn");
-  depth_ = new XNavDataValue(scroll, "DEPTH", "m / transducer");
-  speed_ = new XNavDataValue(scroll, "SOG", "kn");
-  course_ = new XNavDataValue(scroll, "COG", "deg true", 0);
-  heading_ = new XNavDataValue(scroll, "HEADING", "deg true", 0);
-  for (auto *value : {wind_, depth_, speed_, course_, heading_})
-    rail->Add(value, 0, wxEXPAND);
-  rail->AddStretchSpacer();
-  scroll->SetSizer(rail);
+  rail_scroll_->SetScrollRate(0, frame_.FromDIP(24));
+  rail_scroll_->SetSizer(new wxBoxSizer(wxVERTICAL));
   auto *rail_container = new wxBoxSizer(wxVERTICAL);
-  rail_container->Add(scroll, 1, wxEXPAND);
+  rail_container->Add(rail_scroll_, 1, wxEXPAND);
   right->SetSizer(rail_container);
 
   auto *bottom = MakePane("OpenNavActions",
@@ -158,6 +147,7 @@ Shell::Shell(wxFrame &frame, wxAuiManager &manager, ShellActions actions,
   ProductActions product_actions;
   product_actions.navigation = actions_.navigation;
   product_actions.settings = actions_.settings;
+  product_actions.theme = [this](LightMode mode) { SetLight(mode); };
   product_actions.save_settings = actions_.save_settings;
   product_actions.chart = [this] { ShowNavigation(); };
   product_actions.route_summary = [this] { ShowPage(PreviewPage::Route); };
@@ -191,6 +181,7 @@ Shell::Shell(wxFrame &frame, wxAuiManager &manager, ShellActions actions,
       {'O', [this] { ShowProduct(ProductPage::Sources); }},
       {'Q', [this] { ShowProduct(ProductPage::VesselSettings); }},
       {'Z', [this] { ShowProduct(ProductPage::Radar); }},
+      {'F', [this] { ShowProduct(ProductPage::Display); }},
       {'D', [this] { StartDemo(); }},
       {'P',
        [this] {
@@ -260,10 +251,43 @@ void Shell::ApplyTheme() {
     label->SetForegroundColour(Colour(colors.secondary));
   for (auto *button : buttons_)
     button->SetLightMode(mode_);
-  for (auto *value : {wind_, depth_, speed_, course_, heading_})
-    value->SetLightMode(mode_);
+  for (const auto &value : rail_values_)
+    value.second->SetLightMode(mode_);
   source_->SetForegroundColour(
       Colour(simulation_ ? colors.attention : colors.secondary));
+}
+
+void Shell::SetLight(LightMode mode) {
+  mode_ = mode;
+  if (actions_.theme)
+    actions_.theme(mode);
+  ApplyTheme();
+}
+void Shell::UpdateRail(const std::vector<std::string> &keys, vessel::Time now) {
+  const auto items = vessel::DisplayItems(state_);
+  if (keys != rail_keys_) {
+    rail_scroll_->Freeze();
+    rail_scroll_->GetSizer()->Clear(true);
+    rail_values_.clear();
+    rail_keys_ = keys;
+    for (const auto &key : keys)
+      for (const auto &item : items)
+        if (key == item.key) {
+          auto *value =
+              new XNavDataValue(rail_scroll_, wxString::FromUTF8(item.title),
+                                wxString::FromUTF8(item.unit));
+          value->SetLightMode(mode_);
+          rail_values_.push_back({key, value});
+          rail_scroll_->GetSizer()->Add(value, 0, wxEXPAND);
+        }
+    rail_scroll_->FitInside();
+    rail_scroll_->Layout();
+    rail_scroll_->Thaw();
+  }
+  for (const auto &value : rail_values_)
+    for (const auto &item : items)
+      if (value.first == item.key)
+        value.second->SetReading(*item.sample, now);
 }
 
 void Shell::Tick() {
@@ -317,11 +341,7 @@ void Shell::Tick() {
     p.advice = smartnav::Advise(state_, energy, p.ais, now);
     product_->Update(p, mode_);
   }
-  wind_->SetReading(state_.wind.apparent_speed_kn, now);
-  depth_->SetReading(state_.environment.depth_below_transducer_m, now);
-  speed_->SetReading(state_.navigation.sog_kn, now);
-  course_->SetReading(state_.navigation.cog_deg, now);
-  heading_->SetReading(state_.navigation.heading_true_deg, now);
+  UpdateRail(config.data_rail, now);
   clock_->SetLabel(simulation_ ? "10:42" : wxDateTime::Now().Format("%H:%M"));
   const wxString label =
       simulation_

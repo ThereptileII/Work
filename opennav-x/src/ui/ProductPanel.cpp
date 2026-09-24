@@ -1,6 +1,7 @@
 #include "ui/ProductPanel.h"
 #include "ui/Sheet.h"
 #include "vessel/DataItems.h"
+#include "vessel/DisplayItems.h"
 #include <algorithm>
 #include <cmath>
 #include <wx/wrapsizer.h>
@@ -142,6 +143,12 @@ std::string ProductPanel::PageTitle() const {
     return "Manual autopilot";
   case ProductPage::Anchor:
     return "Anchor watch";
+  case ProductPage::Display:
+    return "Display";
+  case ProductPage::RailLayout:
+    return "Data rail layout";
+  case ProductPage::InstrumentLayout:
+    return "Instrument layout";
   case ProductPage::Settings:
     return "Settings";
   case ProductPage::EnergySettings:
@@ -543,22 +550,20 @@ void ProductPanel::Build() {
             state_.vessel.simulated
                 ? "DEMO / synthetic instruments"
                 : "Selected marine sources / stale values retain their age");
-#define VAL(label, unit, field)                                                \
-  Value(W(label), W(unit), [](const auto &s) { return s.vessel.field; });
-    VAL("SOG", "kn", navigation.sog_kn)
-    VAL("COG", "deg true", navigation.cog_deg)
-    VAL("HEADING", "deg true", navigation.heading_true_deg)
-    VAL("STW", "kn", navigation.stw_kn)
-    VAL("APPARENT WIND", "kn", wind.apparent_speed_kn)
-    VAL("APPARENT ANGLE", "deg relative", wind.apparent_angle_deg)
-    VAL("TRUE WIND", "kn", wind.true_speed_kn)
-    VAL("TRUE ANGLE", "deg relative", wind.true_angle_deg)
-    VAL("DEPTH", "m / transducer", environment.depth_below_transducer_m)
-    VAL("WATER TEMP", "°C", environment.water_temperature_c)
-    VAL("PRESSURE", "hPa", environment.pressure_hpa)
-    VAL("RUDDER", "deg", rudder.angle_deg)
-    VAL("HEEL", "deg", rudder.heel_deg)
-#undef VAL
+    Action("Configure instruments",
+           [this] { ShowPage(ProductPage::InstrumentLayout, mode_); });
+    const auto config =
+        actions_.settings ? actions_.settings() : state_.settings;
+    for (const auto &key : config.instruments)
+      for (const auto &item : vessel::DisplayItems(state_.vessel))
+        if (key == item.key)
+          Value(W(item.title), W(item.unit), [key](const auto &state) {
+            for (const auto &selected : vessel::DisplayItems(state.vessel))
+              if (key == selected.key)
+                return *selected.sample;
+            return vessel::Sample{};
+          });
+
   } else if (page_ == ProductPage::Ais) {
     Heading("AIS targets", state_.ais.simulated
                                ? "DEMO targets / not chart traffic"
@@ -727,6 +732,8 @@ void ProductPanel::Build() {
     Action("Autopilot permissions & status",
            [this] { ShowPage(ProductPage::Pilot, mode_); });
     Action("Radar status", [this] { ShowPage(ProductPage::Radar, mode_); });
+    Action("Display & layout",
+           [this] { ShowPage(ProductPage::Display, mode_); });
     Action("System diagnostics", actions_.diagnostics);
     Action("Fullscreen / window", actions_.navigation.fullscreen);
     Action("Advanced / Legacy Settings", actions_.navigation.legacy_settings);
@@ -735,6 +742,11 @@ void ProductPanel::Build() {
     Text("Navigation units, chart presentation, alarms and connection "
          "management remain available in Advanced / Legacy Settings. XNav "
          "instrument units are labelled explicitly.");
+  } else if (page_ == ProductPage::Display) {
+    DisplaySettings();
+  } else if (page_ == ProductPage::RailLayout ||
+             page_ == ProductPage::InstrumentLayout) {
+    InstrumentSelection(page_ == ProductPage::RailLayout);
   } else if (page_ == ProductPage::EnergySettings) {
     EnergySettings();
   } else if (page_ == ProductPage::Sources) {

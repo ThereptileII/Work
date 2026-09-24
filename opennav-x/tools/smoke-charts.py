@@ -67,7 +67,7 @@ def transmit():
   finally:peer.close()
 thread=threading.Thread(target=transmit,daemon=True);thread.start()
 with (profile/'opencpn.conf').open('a') as f:
- f.write('\n[Settings]\nOpenGL=0\nChartQuilting=1\n[ChartDirectories]\nChartDir1='+str(chartdir)+'\n[Settings/GlobalState]\nVPLatLon=47.6000,-122.3600\nVPScale=0.15\n')
+ f.write('\n[Settings]\nOpenGL=0\nChartQuilting=1\n[ChartDirectories]\nChartDir1='+chartdir.as_posix()+'\n[Settings/GlobalState]\nVPLatLon=47.6000,-122.3600\nVPScale=0.15\n')
  f.write('\n[Settings/NMEADataSource]\nDataConnections='+fixtures.CONNECTION+'|'+f'1;0;127.0.0.1;{server.getsockname()[1]};0;;4800;1;0;0;;0;;0;0;0;0;1;SIMULATED chart loopback;0;;0;1;\n')
  for name in ['wmm','grib']:
   plugin=name+'_pi.dll' if windows else 'lib'+name+'_pi.so'
@@ -107,6 +107,8 @@ def data(predicate=lambda d:True):
    if predicate(d):return d
   except (OSError,json.JSONDecodeError,KeyError):pass
   time.sleep(.15)
+ if 'd' in locals():
+  (evidence/'charts-failed-diagnostic.json').write_text(json.dumps(d,indent=2)+'\n')
  raise RuntimeError('Chart diagnostic assertion timed out')
 def chart(c):return c['runtime']['chart']
 def enc(d):return any(c['file']=='US5SEAFL.000' for c in chart(d).get('quilt_members',[]))
