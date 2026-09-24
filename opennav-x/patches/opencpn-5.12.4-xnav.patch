@@ -93,20 +93,21 @@ index 258ae04bc..047c4e89d 100644
    if (NULL == g_pais_query_dialog_active) {
      int pos_x = g_ais_query_dialog_x;
 diff --git a/gui/src/ocpn_app.cpp b/gui/src/ocpn_app.cpp
-index a7670a674..563e2b95c 100644
+index a7670a674..f796a4d85 100644
 --- a/gui/src/ocpn_app.cpp
 +++ b/gui/src/ocpn_app.cpp
-@@ -22,6 +22,9 @@
+@@ -22,6 +22,10 @@
   *   Free Software Foundation, Inc.,                                       *
   *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
   **************************************************************************/
 +#ifdef OPENNAV_X
 +#include "integration/OpenCPNIntegration.h"
++#include "integration/InstallerSelfTest.h"
 +#endif
  #include "config.h"
  
  #ifdef __MINGW32__
-@@ -843,6 +846,9 @@ bool MyApp::OpenFile(const std::string &path) {
+@@ -843,6 +847,9 @@ bool MyApp::OpenFile(const std::string &path) {
  
  #ifndef __ANDROID__
  void MyApp::OnInitCmdLine(wxCmdLineParser &parser) {
@@ -116,7 +117,7 @@ index a7670a674..563e2b95c 100644
    // Add OpenCPN specific command line options. Help message
    // is hardcoded in kUsage;
    parser.AddSwitch("h", "help", "", wxCMD_LINE_OPTION_HELP);
-@@ -895,18 +901,29 @@ static void ParseLoglevel(wxCmdLineParser &parser) {
+@@ -895,18 +902,30 @@ static void ParseLoglevel(wxCmdLineParser &parser) {
  #ifndef __ANDROID__
  bool MyApp::OnCmdLineHelp(wxCmdLineParser &parser) {
    std::cout << kUsage;
@@ -132,6 +133,7 @@ index a7670a674..563e2b95c 100644
  bool MyApp::OnCmdLineParsed(wxCmdLineParser &parser) {
 +#ifdef OPENNAV_X
 +  if (!opennav::ParseCommandLine(parser)) return false;
++  if (opennav::integration::InstallerSelfTestRequested()) return true;
 +#endif
    long number;
    wxString repo;
@@ -146,7 +148,7 @@ index a7670a674..563e2b95c 100644
    g_start_fullscreen = parser.Found("fullscreen");
    g_bdisable_opengl = parser.Found("no_opengl");
    g_rebuild_gl_cache = parser.Found("rebuild_gl_raster_cache");
-@@ -917,7 +934,11 @@ bool MyApp::OnCmdLineParsed(wxCmdLineParser &parser) {
+@@ -917,7 +936,11 @@ bool MyApp::OnCmdLineParsed(wxCmdLineParser &parser) {
      g_unit_test_1 = static_cast<int>(number);
      if (g_unit_test_1 == 0) g_unit_test_1 = -1;
    }
@@ -158,7 +160,7 @@ index a7670a674..563e2b95c 100644
    ParseLoglevel(parser);
    wxString wxstr;
    if (parser.Found("configdir", &wxstr)) {
-@@ -929,8 +950,15 @@ bool MyApp::OnCmdLineParsed(wxCmdLineParser &parser) {
+@@ -929,8 +952,15 @@ bool MyApp::OnCmdLineParsed(wxCmdLineParser &parser) {
      }
    }
  
@@ -174,7 +176,20 @@ index a7670a674..563e2b95c 100644
        "unit_test_2",
        "p",
        "fullscreen",
-@@ -1100,6 +1128,10 @@ bool MyApp::OnInit() {
+@@ -1026,6 +1056,12 @@ MyApp::MyApp()
+ 
+ bool MyApp::OnInit() {
+   if (!wxApp::OnInit()) return false;
++#ifdef OPENNAV_X
++  if (opennav::integration::InstallerSelfTestRequested()) {
++    m_exitcode = opennav::integration::RunInstallerSelfTest();
++    return true;
++  }
++#endif
+ #ifdef __ANDROID__
+   androidEnableBackButton(false);
+   androidEnableOptionItems(false);
+@@ -1100,6 +1136,10 @@ bool MyApp::OnInit() {
    }
  
  #ifndef __ANDROID__
@@ -185,7 +200,7 @@ index a7670a674..563e2b95c 100644
    // Check if last run failed, set up safe_mode.
    if (!safe_mode::get_mode()) {
      safe_mode::check_last_start();
-@@ -1314,6 +1346,9 @@ bool MyApp::OnInit() {
+@@ -1314,6 +1354,9 @@ bool MyApp::OnInit() {
    pConfig = g_Platform->GetConfigObject();
    InitBaseConfig(pConfig);
    pConfig->LoadMyConfig();
@@ -195,7 +210,7 @@ index a7670a674..563e2b95c 100644
  
    //  Override for some safe and nice default values if the config file was
    //  created from scratch
-@@ -1977,7 +2012,11 @@ bool MyApp::OnInit() {
+@@ -1977,7 +2020,11 @@ bool MyApp::OnInit() {
    std::vector<std::string> ipv4_addrs = get_local_ipv4_addresses();
  
    // If network connection is available, start the server and mDNS client
@@ -208,7 +223,7 @@ index a7670a674..563e2b95c 100644
      std::string ipAddr = ipv4_addrs[0];
  
      wxString data_dir = g_Platform->GetPrivateDataDir();
-@@ -1990,6 +2029,9 @@ bool MyApp::OnInit() {
+@@ -1990,10 +2037,16 @@ bool MyApp::OnInit() {
      StartMDNSService(g_hostname.ToStdString(), "opencpn-object-control-service",
                       8000);
    }
@@ -218,7 +233,14 @@ index a7670a674..563e2b95c 100644
    return TRUE;
  }
  
-@@ -2118,6 +2160,9 @@ int MyApp::OnExit() {
+ int MyApp::OnExit() {
++#ifdef OPENNAV_X
++  if (opennav::integration::InstallerSelfTestRequested()) return 0;
++#endif
+   wxLogMessage(_T("opencpn::MyApp starting exit."));
+   m_checker.OnExit();
+   m_usb_watcher.Stop();
+@@ -2118,6 +2171,9 @@ int MyApp::OnExit() {
    g_Platform->OnExit_2();
    safe_mode::clear_check();
    delete g_Platform;

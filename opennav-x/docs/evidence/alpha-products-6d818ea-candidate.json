@@ -1,0 +1,12 @@
+{
+  "commit": "6d818eacb6d6176c4f413e1bbf0121582c5086aa",
+  "run": "https://github.com/ThereptileII/Work/actions/runs/36068507631",
+  "linux_integrated": 89,
+  "windows_integrated": 79,
+  "portable_each": 26,
+  "status": "candidate failed; not accepted",
+  "failure": "Native package advanced through AUTO confirmation; degree-symbol course button did not match expected Unicode label. Explicit UTF-8 UI conversions are in a749e8d replacement.",
+  "windows_artifact_id": 10837469358,
+  "windows_artifact_sha256": "2b88f0c91e5bb818f4941068575249b3b56114b5e485f9bd5366fbe569041b5d",
+  "dpi_chart_windows": "not run because earlier package gate failed"
+}

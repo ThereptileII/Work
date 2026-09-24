@@ -1,4 +1,5 @@
 #include "integration/OpenCPNIntegration.h"
+#include "integration/InstallerSelfTest.h"
 #include "adapters/Autopilot.h"
 #include "adapters/Radar.h"
 #include "integration/MarineBridge.h"
@@ -127,6 +128,7 @@ ui::LightMode Light() {
 }  // namespace
 
 void AddCommandLine(wxCmdLineParser& parser) {
+  integration::AddInstallerSelfTest(parser);
   parser.AddSwitch("", "xnav", "OpenNav X interface");
   parser.AddSwitch("", "legacy", "Original OpenCPN interface");
   parser.AddSwitch("", "safe-mode", "Legacy recovery; OpenNav modules disabled");
@@ -138,6 +140,7 @@ void AddCommandLine(wxCmdLineParser& parser) {
 }
 
 bool ParseCommandLine(wxCmdLineParser& parser) {
+  if (integration::ParseInstallerSelfTest(parser)) return true;
   flags = {parser.Found("xnav"), parser.Found("legacy"),
            parser.Found("safe-mode") || parser.Found("safe_mode")};
   demo = parser.Found("xnav-demo");

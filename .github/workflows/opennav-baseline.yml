@@ -77,6 +77,8 @@ jobs:
           mkdir -p "$HOME/.opencpn"
       - name: Build integrated application and run regressions without exceptions
         run: bash opennav-x/tools/build-integration-linux.sh
+      - name: Staged loader check without profile initialization
+        run: python3 opennav-x/tools/smoke-installer-selftest.py --app opennav-x/build/xnav-install/bin/opencpn
       - name: Exercise shared profile mode cycle and IPC shutdown
         run: python3 opennav-x/tools/smoke-modes-linux.py
       - name: Exercise real OpenCPN input with synthetic loopback NMEA
@@ -128,12 +130,26 @@ jobs:
           git clone --depth 1 --branch Release_5.12.4 https://github.com/OpenCPN/OpenCPN.git opennav-x/upstream/OpenCPN
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
       - name: Build and exercise integrated modes
+        id: integrated
         run: ./opennav-x/tools/build-pristine-windows.ps1 -Architecture Win32 -Integration
+      - name: Staged native loader check without profile initialization
+        if: ${{ !cancelled() && steps.integrated.conclusion == 'success' }}
+        run: python opennav-x/tools/smoke-installer-selftest.py --app opennav-x/build/xnav-install/opencpn.exe
       - name: Package and test the extracted Developer Preview
+        if: ${{ !cancelled() && steps.integrated.conclusion == 'success' }}
         run: ./opennav-x/tools/package-preview-windows.ps1
+      - name: Build and exercise candidate Alpha installer
+        if: ${{ !cancelled() && steps.integrated.conclusion == 'success' }}
+        run: |
+          python opennav-x/tools/package-alpha-installer.py --preview opennav-x/build/developer-preview/OpenNavX-DeveloperPreview --output opennav-x/build/alpha-installer --candidate
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          python opennav-x/tools/smoke-installer-windows.py
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
       - name: Native 100 / 125 / 150 percent DPI and touch interactions
+        if: ${{ !cancelled() && steps.integrated.conclusion == 'success' }}
         run: python opennav-x/tools/smoke-dpi-windows.py
       - name: Public ENC chart and plugin rendering gate
+        if: ${{ !cancelled() && steps.integrated.conclusion == 'success' }}
         run: python opennav-x/tools/smoke-charts.py
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:

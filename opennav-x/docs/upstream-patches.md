@@ -217,3 +217,15 @@ records; they do not open/recompose charts or invoke plugin methods. The XNav
 plugin entry uses upstream's built-in initial-page mechanism (Plugins index 5
 in the inspected pinned `options::CreateControls`). Chart route editing reuses
 OpenCPN's normal point dragging. See [chart/plugin/performance gate](chart-plugin-performance-validation.md).
+
+## Alpha installer loader check (candidate)
+
+The existing `ocpn_app.cpp` patch adds a guarded explicit self-test exit path.
+Command parsing recognizes `--opennav-self-test` before portable/profile logic;
+`OnCmdLineParsed` returns before upstream argument side effects. Immediately
+after `wxApp::OnInit`, `OnInit` runs the loader/resource report and uses the
+existing `m_exitcode` / `OnRun` mechanism. `OnExit` bypasses normal teardown only
+for this mode because platform/profile services were never initialized. Normal
+starts follow the existing code. This avoids using a full OpenCPN startup as an
+installer probe that could modify the shared profile. See
+[transaction contract](installer-transaction-contract.md).

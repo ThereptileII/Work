@@ -316,3 +316,18 @@ The isolated Windows Developer Preview milestone is delivered. **Stop for the
 user's manual Windows test and feedback; do not start the production installer.**
 [Test guide](preview/TEST_ME_FIRST.md) and
 [known limitations](preview/KNOWN_LIMITATIONS.md) ship inside the package.
+
+## Installer qualification increment (not release acceptance)
+
+The side-by-side Alpha setup and transaction engine now exist as a candidate.
+The public compatibility allowlist remains empty. Native NSIS/PowerShell 5.1
+qualification will exercise the official pinned stock binary, shared profile,
+mode/chart behavior, repair/update/rollback/uninstall and interrupted commits.
+Linux passes 90 integrated tests and the actual loader/resource self-test,
+including no profile mutation and report-overwrite refusal. Native acceptance,
+UI review, final Alpha distribution names and the manual-test guide remain open.
+See [installer transaction contract](installer-transaction-contract.md).
+Independent native package, installer, DPI and chart gates now each run after a
+successful integrated build even when another independent gate fails. A failure
+still fails the job and prevents publishing; this preserves diagnostics without
+weakening any acceptance assertion.
