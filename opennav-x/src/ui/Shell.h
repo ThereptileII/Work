@@ -50,6 +50,11 @@ public:
   Shell(wxFrame &frame, wxAuiManager &manager, ShellActions actions,
         LightMode mode, bool simulation);
   ~Shell() override;
+  struct UpdateMetrics {
+    std::uint64_t ticks = 0;
+    double last_ms = 0, mean_ms = 0, maximum_ms = 0;
+  };
+  UpdateMetrics Metrics() const { return metrics_; }
   void UpdateState(const vessel::VesselState &state);
   void ShowAis(int mmsi);
   void ShowObject(const std::string &id, bool route);
@@ -72,6 +77,7 @@ private:
   void StartDemo();
   void SelectDemo(vessel::DemoScenario scenario);
   wxString InputSummary() const;
+  UpdateMetrics metrics_;
   wxFrame &frame_;
   wxAuiManager &manager_;
   ShellActions actions_;

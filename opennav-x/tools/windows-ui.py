@@ -44,6 +44,7 @@ SelectObject = declare(gdi, 'SelectObject', W.HGDIOBJ, W.HDC, W.HGDIOBJ)
 DeleteObject = declare(gdi, 'DeleteObject', W.BOOL, W.HGDIOBJ)
 DeleteDC = declare(gdi, 'DeleteDC', W.BOOL, W.HDC)
 PrintWindow = declare(user, 'PrintWindow', W.BOOL, W.HWND, W.HDC, W.UINT)
+BitBlt = declare(gdi, 'BitBlt', W.BOOL, W.HDC, C.c_int, C.c_int, C.c_int, C.c_int, W.HDC, C.c_int, C.c_int, W.DWORD)
 
 class BitmapHeader(C.Structure):
     _fields_ = [('size', W.DWORD), ('width', W.LONG), ('height', W.LONG),
@@ -219,7 +220,7 @@ def assert_route_summary_layout(handle):
     assert GetWindowRect(summary[0], C.byref(a)) and GetWindowRect(demo[0], C.byref(b))
     assert a.left >= b.right and b.top <= a.top < a.bottom <= b.bottom, 'Route summary overlaps bottom controls'
 
-def capture(handle, path, resize=True):
+def capture(handle, path, resize=True, screen_pixels=False):
     if resize:
         size_window(handle)
     rect=W.RECT()
@@ -237,7 +238,10 @@ def capture(handle, path, resize=True):
         raise C.WinError(C.get_last_error())
     previous = SelectObject(memory, bitmap)
     try:
-        if not PrintWindow(handle, memory, 2):
+        if screen_pixels:
+            if not BitBlt(memory,0,0,width,height,screen,rect.left,rect.top,0x00CC0020):
+                raise RuntimeError('Native screen capture failed')
+        elif not PrintWindow(handle, memory, 2):
             raise RuntimeError('Native PrintWindow failed')
         bgra = C.string_at(bits, width * height * 4)
         rgb = bytearray(width * height * 3)
@@ -250,7 +254,7 @@ def capture(handle, path, resize=True):
             chunk(b'IDAT', zlib.compress(rows)) + chunk(b'IEND', b''))
         Path(path).with_suffix('.json').write_text(json.dumps({
             'title': text(handle), 'outer_pixels': [width, height],
-            'window_dpi': GetDpiForWindow(handle), 'rendering': 'software --no_opengl',
+            'window_dpi': GetDpiForWindow(handle), 'capture': 'visible screen pixels' if screen_pixels else 'PrintWindow',
             'authority': 'native Windows', 'visual_review': 'required'}, indent=2))
         return bytes(rgb)
     finally:

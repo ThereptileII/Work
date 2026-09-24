@@ -210,3 +210,10 @@ and `startcheck.dat` behavior remain intact. The existing SelectMode/Attach,
 normal frame-processing and close boundaries account for startup health and
 clean exit; no new navigation processing is triggered. See
 [startup recovery contract](startup-recovery.md).
+
+Alpha chart/plugin diagnostics add no direct upstream patch. GUI-thread copies
+read the pinned viewport, quilt index vector, chart table and plugin loader
+records; they do not open/recompose charts or invoke plugin methods. The XNav
+plugin entry uses upstream's built-in initial-page mechanism (Plugins index 5
+in the inspected pinned `options::CreateControls`). Chart route editing reuses
+OpenCPN's normal point dragging. See [chart/plugin/performance gate](chart-plugin-performance-validation.md).

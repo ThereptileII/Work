@@ -267,6 +267,7 @@ void Shell::ApplyTheme() {
 }
 
 void Shell::Tick() {
+  const auto begin = std::chrono::steady_clock::now();
   const auto now = vessel::Clock::now();
   if (simulation_)
     state_ = demo_.Read(now);
@@ -353,6 +354,12 @@ void Shell::Tick() {
                                       : std::vector<std::string>{});
   if (actions_.diagnostic_snapshot)
     actions_.diagnostic_snapshot(state_, energy, PageTitle());
+  metrics_.last_ms = std::chrono::duration<double, std::milli>(
+                         std::chrono::steady_clock::now() - begin)
+                         .count();
+  ++metrics_.ticks;
+  metrics_.mean_ms += (metrics_.last_ms - metrics_.mean_ms) / metrics_.ticks;
+  metrics_.maximum_ms = std::max(metrics_.maximum_ms, metrics_.last_ms);
 }
 
 std::string Shell::PageTitle() const {

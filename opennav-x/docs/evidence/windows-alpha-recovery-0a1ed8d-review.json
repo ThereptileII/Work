@@ -1,0 +1,70 @@
+{
+  "authority": "native Windows",
+  "checks": [
+    "Owned XNav process terminated before healthy startup 1; navigation fixtures preserved",
+    "Owned XNav process terminated before healthy startup 2; navigation fixtures preserved",
+    "Third explicit XNav launch automatically starts Safe; recovery notice and disabled plugin verified",
+    "Human menu retry resets guard with saved evidence; clean close and navigation/config/plugin persistence passed"
+  ],
+  "screenshots": [
+    "recovery-01-xnav.png",
+    "recovery-02-safe.png",
+    "recovery-03-retry.png"
+  ],
+  "chart_rendering": [
+    {
+      "phase": "Automatic Safe recovery",
+      "reference_color_fractions": {
+        "aac3f0": 0.5625894134477826,
+        "aaaf50": 0.43741058655221743
+      },
+      "coastline_visible": true
+    },
+    {
+      "phase": "Human-requested XNav retry",
+      "reference_color_fractions": {
+        "aac3f0": 0.60568669527897,
+        "aaaf50": 0.39431330472103004
+      },
+      "coastline_visible": true
+    }
+  ],
+  "display": {
+    "before": [
+      1280,
+      800,
+      32
+    ],
+    "after": [
+      1280,
+      800,
+      32
+    ]
+  },
+  "result": "passed; native screenshot review required",
+  "commit": "0a1ed8d81c27b11cd7f7e5941bc8cbd533bbdadf",
+  "ci_run": "https://github.com/ThereptileII/Work/actions/runs/36065457728",
+  "status": "Recovery scenario accepted locally and natively; full candidate fails separate known package selector gate",
+  "native_integrated_tests": 79,
+  "linux_integrated_tests": 89,
+  "portable_contracts_each": 26,
+  "artifact_id": 10837081811,
+  "artifact_sha256": "506347c5d01f07e375ed7eaa51ff3531ddc4fb2212cd3fd5bed651092692b02e",
+  "reviewed": [
+    {
+      "file": "recovery-01-xnav.png",
+      "sha256": "3486ae4b7939c0d8fa5c951c01d7bb30c913cea819bb4950cdd85c54f84e058d",
+      "review": "Native 1280x800: coastline and expected mode UI visible, unavailable readings explicit, no unintended layout change"
+    },
+    {
+      "file": "recovery-02-safe.png",
+      "sha256": "81af675a5b6d963894bab420a3f493593f5de61dbd5a247c555e8be7e1cd4a38",
+      "review": "Native 1280x800: coastline and expected mode UI visible, unavailable readings explicit, no unintended layout change"
+    },
+    {
+      "file": "recovery-03-retry.png",
+      "sha256": "d3e138f4f802d49926e5fa224586d823c27a8b4b62f632ebb495f5d4244a8e1a",
+      "review": "Native 1280x800: coastline and expected mode UI visible, unavailable readings explicit, no unintended layout change"
+    }
+  ]
+}

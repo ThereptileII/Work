@@ -268,6 +268,22 @@ void ProductPanel::RouteActions() {
       },
       route_.editable);
   Action(
+      "Edit route points on chart",
+      [this] {
+        if (ConfirmSheet(
+                *this, mode_, "Edit route geometry",
+                "Drag the route's points on the chart using OpenCPN's "
+                "normal editing behavior. Shared points can affect more "
+                "than one route. Inspect the planned legs before activation.",
+                "Open chart")) {
+          if (actions_.chart)
+            actions_.chart();
+          if (actions_.navigation.view_route)
+            actions_.navigation.view_route(route_.id);
+        }
+      },
+      route_.editable);
+  Action(
       "Reverse route",
       [this] {
         if (ConfirmSheet(*this, mode_, "Reverse route",
@@ -474,7 +490,7 @@ void ProductPanel::Build() {
       Action("Create route on chart", [this] {
         if (ConfirmSheet(
                 *this, mode_, "Create route",
-                "Tap chart positions to add route points. Use Finish on the "
+                "Tap chart positions to add route points. Use Done on the "
                 "left rail when done. This creates a real OpenCPN route.",
                 "Create route")) {
           if (actions_.chart)

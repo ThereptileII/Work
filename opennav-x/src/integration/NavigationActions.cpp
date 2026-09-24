@@ -11,6 +11,7 @@
 #include <cmath>
 #include <wx/log.h>
 extern RouteManagerDialog *pRouteManagerDialog;
+extern int options_lastPage, options_subpage;
 namespace opennav::integration {
 application::NavigationActions
 MakeNavigationActions(MyFrame &frame,
@@ -111,7 +112,14 @@ MakeNavigationActions(MyFrame &frame,
   a.toggle_ais = [&frame] { frame.ToggleAISDisplay(frame.GetPrimaryCanvas()); };
   a.fullscreen = [&frame] { frame.ToggleFullScreen(); };
   a.legacy_settings = [&frame] { frame.DoSettings(); };
-  a.plugin_settings = a.legacy_settings;
+  a.plugin_settings = [&frame] {
+    // Pinned options::CreateControls creates Display, Charts, Connections,
+    // Ships, User Interface, then Plugins. Plugin-added pages follow these.
+    // Reuse upstream's own initial-page state, without owning its dialog.
+    options_lastPage = 5;
+    options_subpage = -1;
+    frame.DoSettings();
+  };
   a.legacy_route_manager = [&frame] {
     pRouteManagerDialog = RouteManagerDialog::getInstance(&frame);
     pRouteManagerDialog->UpdateLists();

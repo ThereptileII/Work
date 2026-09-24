@@ -10,6 +10,7 @@
 #include "integration/PreviewResources.h"
 #include "integration/RecoveryStore.h"
 #include "integration/RoutePassWatch.h"
+#include "integration/RuntimeDiagnostics.h"
 #include "integration/SettingsStore.h"
 #include "integration/StartupMode.h"
 #include "model/base_platform.h"
@@ -338,12 +339,26 @@ void Attach(MyFrame& frame, wxAuiManager& manager, wxFileConfig& config) {
     if (diagnostic_directory.empty() || now - last < std::chrono::seconds(1))
       return;
     last=now;
+    auto runtime =
+        integration::ReadRuntimeDiagnostics(*frame.GetPrimaryCanvas());
+    if (shell) {
+      const auto metrics = shell->Metrics();
+      runtime["ui_update"]["ticks"] = wxString::Format(
+          "%llu", static_cast<unsigned long long>(metrics.ticks));
+      runtime["ui_update"]["last_ms"] = metrics.last_ms;
+      runtime["ui_update"]["mean_ms"] = metrics.mean_ms;
+      runtime["ui_update"]["maximum_ms"] = metrics.maximum_ms;
+      runtime["ui_update"]["timer_period_ms"] = 250;
+      runtime["ui_update"]["scope"] =
+          wxString("Shell update callback including diagnostics; excludes "
+                   "asynchronous chart painting");
+    }
     integration::WritePreviewDiagnostics(
         diagnostic_directory + "/opennav-diagnostics.json", state,
         integration::PreviewBuildInfo(
             frame.GetDPI().x,
             g_BasePlatform->GetPrivateDataDir().ToStdString(wxConvUTF8)),
-        energy, settings->Read(), marine->Sources().Health(now), page);
+        energy, settings->Read(), marine->Sources().Health(now), page, runtime);
   };
   actions.demo_chart=[] { if(g_bDeferredInitDone) JumpToPosition(59.08,18.5,0.003); };
   actions.theme = [&frame](ui::LightMode mode) {

@@ -26,9 +26,11 @@ void WritePreviewDiagnostics(const std::string &path,
                              const smartnav::EnergyPrediction &e,
                              const application::Settings &settings,
                              const std::vector<vessel::SourceHealth> &sources,
-                             const std::string &ui_page) {
+                             const std::string &ui_page,
+                             const wxJSONValue &runtime) {
   const auto now = vessel::Clock::now();
   wxJSONValue report;
+  report["runtime"] = runtime;
   report["ui_page"] = wxString::FromUTF8(ui_page);
   report["version"] = wxString("0.1 Developer Preview");
   report["data_mode"] =

@@ -49,7 +49,21 @@ rescaled screenshot is treated as DPI acceptance.
 upstream Safe Mode after two unfinished starts and preserves human retry
 records. Linux passes 26 portable and 89 integrated tests plus the actual
 process-termination/recovery/persistence scenario, including two coastline
-checks. Native acceptance remains pending. [Contract](startup-recovery.md).
+checks. Native 79 integrated cases and the actual recovery scenario now pass at
+`0a1ed8d`; reviewed all three native recovery captures. Full candidate acceptance
+is still blocked by the separate confirmation-selector package test.
+[Native evidence](evidence/windows-alpha-recovery-0a1ed8d-review.json).
+[Contract](startup-recovery.md).
+
+**Chart/plugin/performance increment in progress:** Linux passes 89 integrated
+and 26 portable cases plus the expanded preview and NOAA ENC software/OpenGL
+scenario. Zoom, pan, selected-position follow, overlays and Legacy returns retain
+real ENC quilt content. Dashboard/WMM/GRIB loader records pass. Linux OpenGL uses
+llvmpipe, not a physical GPU. Native manager/route-gesture/chart gates are pending.
+[Local evidence](evidence/alpha-chart-local-validation.json),
+[contract](chart-plugin-performance-validation.md). The side-by-side
+[installer design](installer-alpha-design.md) is recorded; implementation and
+native lifecycle acceptance remain open.
 
 **Alpha 1 foundation gate closed:** `16dbaf72d7923742a5acaadf0fae42ee490e7cf6`
 passes all eight jobs in [run 36047288188](https://github.com/ThereptileII/Work/actions/runs/36047288188).

@@ -4,6 +4,7 @@
 #include "vessel/VesselState.h"
 #include <string>
 #include <vector>
+#include <wx/jsonval.h>
 namespace opennav::integration {
 std::vector<std::string> PreviewBuildInfo(int dpi, const std::string &profile);
 void WritePreviewDiagnostics(const std::string &path,
@@ -12,5 +13,6 @@ void WritePreviewDiagnostics(const std::string &path,
                              const smartnav::EnergyPrediction &energy,
                              const application::Settings &settings,
                              const std::vector<vessel::SourceHealth> &sources,
-                             const std::string &ui_page = "");
+                             const std::string &ui_page,
+                             const wxJSONValue &runtime);
 } // namespace opennav::integration
