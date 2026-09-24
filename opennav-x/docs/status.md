@@ -1,10 +1,20 @@
-# Development status — 2026-09-22
+# Development status — 2026-09-24
 
 **Development build; production Definition of Done remains open.** The selected
 baseline is OpenCPN 5.12.4 at `37fd0cddb7334fe489e9f18aa163977a9c5c84f7`.
 The approved Windows target preserves its Win32 application/plugin ABI on a
 native Windows x64 host. The tracked upstream submodule remains pristine;
 reviewed patches apply to a disposable integration worktree.
+
+**Manual-preview feedback:** the user completed the Windows test and reported
+one issue: the chart background disappears after Legacy → XNav. This is reproduced
+with the accepted executable in portable mode. The previous mode gate verified
+process/data persistence but missed coastline rendering after restart; its
+all-water Legacy/Safe captures should not have been accepted as normal.
+See [reproduction evidence](evidence/chart-restart-b21bd05-reproduction.json).
+The repair is implemented; its replacement ZIP awaits both platform gates and
+native screenshot review. Existing accepted artifact links below identify the
+affected build until replacement evidence is published.
 
 The read-only remaining active-route distance slice has passed both platform
 gates and native screenshot review; see [its contract](route-progress-contract.md).

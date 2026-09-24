@@ -62,7 +62,14 @@ if windows:
     report['runtime_path']=env['PATH']
 else:
     if ctypes.CDLL(None).prctl(36,1,0,0,0)!=0:raise RuntimeError('Cannot track restarted processes')
-    profile=temp/'profile';logs=profile;exe=root/'build/xnav-install/bin/opencpn'
+    # Exercise the same portable resource save/reload path as Windows. Ordinary
+    # non-portable mode/input coverage remains in the existing smoke scripts.
+    package=temp/'OpenNavX-DeveloperPreview';app_dir=package/'app';app_dir.mkdir(parents=True)
+    for resource in (root/'build/xnav-install/share/opencpn').iterdir():
+        (app_dir/resource.name).symlink_to(resource,target_is_directory=resource.is_dir())
+    exe=app_dir/'opencpn';shutil.copy2(root/'build/xnav-install/bin/opencpn',exe)
+    (app_dir/'OPENNAV_PORTABLE_PREVIEW').write_text('Isolated Linux portable regression fixture\n')
+    profile=package/'profile';logs=package/'logs'
     subprocess.run([sys.executable,str(root/'tools/prepare-test-profile.py'),'--build',str(root/'build/xnav-linux'),'--profile',str(profile)],check=True)
     with (profile/'opencpn.conf').open('a') as f:f.write('\n[Settings/GlobalState]\nVPLatLon=59.0800,18.5000\nVPScale=0.003\n')
     number=111
@@ -74,6 +81,7 @@ else:
 # The downloadable profile remains a clean user preview, without test hooks.
 if windows: (profile/'OPENNAV_TEST_PROFILE').write_text('CI disposable extracted preview only\n')
 fixtures=module('profile-fixtures');fixtures.seed(profile);expected_profile=fixtures.snapshot(profile)
+chartcheck=module('chart-render-check')
 
 def xdo(*arguments):
     return subprocess.check_output(['xdotool',*map(str,arguments)],env=env,text=True).strip()
@@ -113,10 +121,14 @@ def scenario(label,index):
     else:xdo('key','ctrl+shift+F'+str(index+1));time.sleep(.4)
 def capture(name):
     path=evidence/(name+('.png' if windows else '-linux.png'))
-    if windows:ui.capture(handle,path)
+    if windows:rgb=ui.capture(handle,path)
     else:
         time.sleep(.4);subprocess.run(['import','-window','root',str(path)],env=env,check=True)
+        rgb=subprocess.check_output(['convert',str(path),'-depth','8','rgb:-'],env=env)
     report['screenshots'].append(path.name)
+    return rgb
+def chart_capture(name,phase):
+    report.setdefault('chart_rendering',[]).append(chartcheck.check(capture(name),chart_colors,phase))
 def page_capture(name, page):
     capture(name)
     if windows:
@@ -125,7 +137,22 @@ def close_current():
     if windows:
         h=ui.monitor_process(pid);ui.close(handle);ui.wait_clean_exit(h)
     else:
-        subprocess.run([str(exe),'--configdir',str(profile),'--remote','--quit'],env=env,check=True,timeout=15)
+        # Portable previews intentionally refuse remote commands. Send the
+        # ordinary window-manager close event to this test window instead.
+        xlib=ctypes.CDLL('libX11.so.6')
+        xlib.XOpenDisplay.argtypes=[ctypes.c_char_p];xlib.XOpenDisplay.restype=ctypes.c_void_p
+        display=xlib.XOpenDisplay(env['DISPLAY'].encode());assert display
+        xlib.XInternAtom.argtypes=[ctypes.c_void_p,ctypes.c_char_p,ctypes.c_int];xlib.XInternAtom.restype=ctypes.c_ulong
+        class Event(ctypes.Structure):
+            _fields_=[('type',ctypes.c_int),('serial',ctypes.c_ulong),('send',ctypes.c_int),
+                      ('display',ctypes.c_void_p),('window',ctypes.c_ulong),('message',ctypes.c_ulong),
+                      ('format',ctypes.c_int),('data',ctypes.c_long*5)]
+        event=Event();event.type=33;event.display=display;event.window=int(handle);event.format=32
+        event.message=xlib.XInternAtom(display,b'WM_PROTOCOLS',0)
+        event.data[0]=xlib.XInternAtom(display,b'WM_DELETE_WINDOW',0)
+        xlib.XSendEvent.argtypes=[ctypes.c_void_p,ctypes.c_ulong,ctypes.c_int,ctypes.c_long,ctypes.c_void_p]
+        xlib.XFlush.argtypes=[ctypes.c_void_p];xlib.XCloseDisplay.argtypes=[ctypes.c_void_p]
+        xlib.XSendEvent(display,int(handle),0,0,ctypes.byref(event));xlib.XFlush(display);xlib.XCloseDisplay(display)
         deadline=time.monotonic()+30
         while time.monotonic()<deadline:
             child,status=os.waitpid(pid,os.WNOHANG)
@@ -165,7 +192,7 @@ try:
         report['checks'].append('Bottom route summary lays out after narrow-to-wide resize')
     first=data(lambda d:d['data_mode']=='DEMO' and 'arrival_soc' in d['energy'])
     assert first['route']['source'].startswith('DEMO')
-    capture('preview-01-navigation-day')
+    chart_colors=chartcheck.reference(capture('preview-01-navigation-day'))
     if windows:
         ui.click_text(pid,'Light');ui.click_text(pid,'Light')
     else:
@@ -214,7 +241,7 @@ try:
         ui.click_text(pid,'System');ui.click_text(pid,'Open Legacy OpenCPN')
     else:xdo('key','ctrl+shift+l')
     assert app.wait(timeout=35)==0
-    handle,pid=window('OpenCPN / Legacy');ready(2);preserved();capture('preview-07-legacy')
+    handle,pid=window('OpenCPN / Legacy');ready(2);preserved();chart_capture('preview-07-legacy','XNav to Legacy')
     if windows:
         old=ui.monitor_process(pid);ui.click_menu(handle,'Switch to XNav');ui.wait_clean_exit(old)
     else:
@@ -223,14 +250,20 @@ try:
     handle,pid=window('OpenNav X / OpenCPN');ready(3)
     live=data(lambda d:d['data_mode']!='DEMO')
     assert 'arrival_soc' not in live['energy'];preserved()
+    chart_capture('preview-09-returned-xnav','Legacy to XNav')
     if windows:
         old=ui.monitor_process(pid);ui.click_text(pid,'System');ui.click_text(pid,'Safe Mode');ui.wait_clean_exit(old)
-        handle,pid=window('OpenNav Safe Mode / OpenCPN');ready(4);capture('preview-08-safe');close_current();preserved()
+        handle,pid=window('OpenNav Safe Mode / OpenCPN');ready(4);chart_capture('preview-08-safe','XNav to Safe');close_current();preserved()
         count=4
         for launcher,title in [('Run-XNav.cmd','OpenNav X / OpenCPN'),('Run-Legacy.cmd','OpenCPN / Legacy'),('Run-Safe.cmd','OpenNav Safe Mode / OpenCPN')]:
             app=launch('',launcher=launcher);handle,pid=window(title);count+=1;ready(count);close_current();assert app.wait(timeout=15)==0;preserved()
-        # Direct executable launch must also remain inside the package.
-        app=launch('',direct=True);handle,pid=window('OpenNav X / OpenCPN');count+=1;ready(count);close_current();assert app.wait(timeout=15)==0;preserved()
+        # Reproduce the persisted empty-path artifact from Preview 0.1. Direct
+        # startup must repair it without importing or rewriting chart choices.
+        with (profile/'opencpn.conf').open('a') as stream:
+            stream.write('\n[Directories]\nBaseShapefileDir=./\n')
+        app=launch('',direct=True);handle,pid=window('OpenNav X / OpenCPN');count+=1;ready(count)
+        chart_capture('preview-10-repaired-basemap','Direct startup with old Preview 0.1 basemap setting')
+        close_current();assert app.wait(timeout=15)==0;preserved()
         refused=subprocess.run([str(exe),'--xnav','--configdir',str(normal)],env=env,capture_output=True,timeout=20)
         assert b'refuses a profile outside' in refused.stderr,refused.stderr
         assert (normal/'opencpn.ini').read_text()=='NORMAL PROFILE MUST NOT CHANGE\n'
@@ -255,9 +288,10 @@ try:
         assert normal_plugins==6 and safe_plugins==2,(normal_plugins,safe_plugins)
         report['checks'].append('Bundled Dashboard initialized and cleanly unloaded in six normal launches; inactive in both Safe launches')
     else:
-        close_current();app=launch('safe-mode');handle,pid=window('OpenNav Safe Mode / OpenCPN');ready(4);capture('preview-08-safe');close_current();preserved()
+        close_current();app=launch('safe-mode');handle,pid=window('OpenNav Safe Mode / OpenCPN');ready(4);chart_capture('preview-08-safe','XNav to Safe');close_current();preserved()
     handle=None
     report['checks'].append('XNav / Legacy / Safe clean lifecycle and shared navigation/config persistence passed; mode switch stops Demo')
+    report['checks'].append('Real bundled coastline remains rendered after Legacy return and Safe restart')
     report['result']='passed; screenshot review required'
 finally:
     if windows and 'result' not in report:

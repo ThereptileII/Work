@@ -65,6 +65,11 @@ on a mode restart: select Demo again explicitly. **System → Safe Mode** starts
 Legacy recovery with OpenNav modules and plugins inactive. **Restart XNav**
 restarts the normal interface. Close all preview windows before using a launcher.
 
+Confirm the coastline remains visible in Legacy, after returning to XNav, and
+in Safe Mode. The chart should retain its location/zoom; a blank water-only view
+after switching from a coastal view is a failure. This build repairs the earlier
+preview's saved default-basemap path; custom chart locations stay unchanged.
+
 - `Run-XNav.cmd`: XNav with live fields unavailable until a supported input exists.
 - `Run-XNav-Demo.cmd`: explicitly simulated trip and propulsion/energy data.
 - `Run-Legacy.cmd`: original OpenCPN interface, same preview profile.

@@ -158,3 +158,27 @@ must be available in `PrivateDataDir/plugins`. The installed `app/plugins`
 directory alone does not make them discoverable in portable mode. Supplying
 the bundled copies in `profile/plugins` needs no upstream loading change.
 Native package tests verify initialization/unloading and Safe suppression.
+
+## Portable chart restoration after mode restart
+
+The user's 2026-09-24 Windows test exposed a lost background coastline after
+Legacy → XNav. Inspection traced it to `MyConfig::UpdateSettings` in `navutil.cpp`
+calling `AbstractPlatform::NormalizePath` for an empty `gWorldShapefileLocation`.
+In portable mode this serializes as `./` (Windows `.\`). On the next launch,
+`ShapeBaseChartSet::Reset` treats that as an explicit profile-directory location
+instead of selecting the bundled `basemap_shp` default.
+
+The repair uses the existing `SelectMode` hook immediately after `LoadMyConfig`
+and before canvas creation. For a validated portable preview only, it resolves
+an empty default to existing bundled shapefiles. It repairs the old dot-directory
+value only when the profile contains no shapefile basemap. Custom paths, including
+missing custom paths, remain unchanged. OpenCPN's normal save logic then stores
+the nonempty path relative to the portable profile. No additional upstream patch,
+renderer, chart-database, chart-directory or navigation change is needed.
+
+Regression coverage adds portable resource policy cases, real coastline pixel
+checks through the controlled XNav/Legacy/XNav/Safe cycle, and native direct
+startup with the old broken setting. Linux preview smoke now uses portable
+resource layout as Windows does; the existing non-portable mode/input regressions
+remain separate. The old executable fails the new rendering check on both the
+Legacy and returned-XNav captures. Native acceptance is recorded in status.md.

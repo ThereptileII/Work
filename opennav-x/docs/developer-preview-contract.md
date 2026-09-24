@@ -129,3 +129,13 @@ The official artifact is published only after every required workflow job
 passes. Human/native screenshot review and evidence records are still required
 before declaring the exact package accepted. No production installer follows
 automatically.
+
+The chart-restoration repair adds a tenth contract for portable basemap defaults
+and migration. An empty upstream shapefile default must not round-trip into an
+explicit empty profile-directory lookup. The integration resolves the existing
+bundled data before canvas construction in all preview modes, preserves custom
+paths, and recognizes the old preview's dot-directory artifact. Normal OpenCPN
+chart configuration and rendering remain authoritative. The preview smoke test
+now checks actual coastline pixels after Legacy return and Safe restart, with
+an additional Windows capture after migrating the old setting. Data/process
+assertions alone do not establish that the chart has rendered.

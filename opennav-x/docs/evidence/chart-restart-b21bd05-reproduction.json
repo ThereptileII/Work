@@ -1,0 +1,18 @@
+{
+  "reported_by": "User manual Windows test, 2026-09-24",
+  "affected_commit": "b21bd05ce75f22c91ac12927207d264b8b3efde4",
+  "local_reproduction": "Unmodified accepted executable, isolated portable Linux profile, actual XNav to Legacy to XNav controlled restarts",
+  "result": "reproduced",
+  "persisted_setting": "Directories/BaseShapefileDir=./",
+  "cause": "Portable NormalizePath(empty) changes the default shapefile lookup to the private profile directory on next launch",
+  "new_render_assertion_failed_as_expected": [
+    "Legacy restart: coastline disappeared or chart canvas is covered: {'aac3f0': 1.0, 'aaaf50': 0.0}",
+    "Legacy to XNav: coastline disappeared or chart canvas is covered: {'aac3f0': 1.0, 'aaaf50': 0.0}"
+  ],
+  "screenshots": {
+    "chart-repro-01.png": "f0edf9411f6859891f4d8d5b9073f585eda9f695e6a0f6bba8d2e2d3d28882b5",
+    "chart-repro-02.png": "ecdbe47d34ab37d8130d89e6f9c883d9aa00908626ab5cbcff29b9d2289ea219",
+    "chart-repro-03.png": "ed3efd4f3d255e9852d6ce177d8c4babbd383ab3efdd2408532bfcb005604736"
+  },
+  "prior_test_gap": "Mode test checked process/data persistence without verifying coastline pixels after return; old all-water Legacy/Safe captures were mistakenly accepted as normal."
+}

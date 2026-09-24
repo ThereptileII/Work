@@ -191,6 +191,7 @@ def capture(handle, path):
             'title': text(handle), 'outer_pixels': [width, height],
             'window_dpi': GetDpiForWindow(handle), 'rendering': 'software --no_opengl',
             'authority': 'native Windows', 'visual_review': 'required'}, indent=2))
+        return bytes(rgb)
     finally:
         SelectObject(memory, previous)
         DeleteObject(bitmap)

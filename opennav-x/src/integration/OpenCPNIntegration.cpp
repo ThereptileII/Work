@@ -6,6 +6,7 @@
 #include "platform/PlatformIntegration.h"
 #include "platform/PortableProfile.h"
 #include "integration/PreviewDiagnostics.h"
+#include "integration/PreviewResources.h"
 #include "ui/Shell.h"
 #ifdef OPENNAV_ROUTE_TESTS
 #include "RouteProgressScenario.h"
@@ -39,6 +40,7 @@ extern ocpnFloatingToolbarDialog* g_MainToolbar;
 extern bool g_bDeferredInitDone;
 extern bool g_bportable;
 extern std::string g_configdir;
+extern wxString gWorldShapefileLocation;
 
 namespace opennav {
 namespace integration {
@@ -150,6 +152,15 @@ bool IsXNav() { return selected == StartupMode::XNav; }
 bool HideLegacyToolbar(const void* toolbar) { return IsXNav() && toolbar == g_MainToolbar; }
 
 void SelectMode(wxFileConfig& config, bool upstream_safe) {
+  if (preview_paths) {
+    const auto basemap = integration::PreviewBasemapDefault(
+        preview_paths->root, gWorldShapefileLocation.ToStdString(wxConvUTF8));
+    if (basemap) {
+      gWorldShapefileLocation = wxString::FromUTF8(platform::PathUtf8(*basemap));
+      wxLogMessage("OpenNav portable basemap: using bundled coastline at %s",
+                   gWorldShapefileLocation);
+    }
+  }
   wxString value;
   std::optional<InterfaceMode> persisted;
   if (config.Read("/OpenNav/InterfaceMode", &value)) {
