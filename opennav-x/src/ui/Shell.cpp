@@ -1,5 +1,6 @@
 #include "ui/Shell.h"
 
+#include "smartnav/Advisories.h"
 #include <wx/accel.h>
 #include <wx/datetime.h>
 #include <wx/popupwin.h>
@@ -95,22 +96,32 @@ Shell::Shell(wxFrame &frame, wxAuiManager &manager, ShellActions actions,
   tools->Add(
       Button(left, "GPS", "Follow own ship using OpenCPN", actions_.follow), 0,
       wxALL, frame_.FromDIP(4));
+  finish_route_ = Button(left, "Done", "Finish creating OpenCPN route",
+                         actions_.navigation.finish_route);
+  tools->Add(finish_route_, 0, wxALL, frame_.FromDIP(4));
+  finish_route_->Hide();
   tools->AddStretchSpacer();
   left->SetSizer(tools);
 
   auto *right =
       MakePane("OpenNavData", wxAuiPaneInfo().Right().Layer(1).BestSize(
                                   frame_.FromDIP(spacing::right_rail), -1));
+  auto *scroll = new wxScrolledWindow(right, wxID_ANY, wxDefaultPosition,
+                                      wxDefaultSize, wxVSCROLL | wxBORDER_NONE);
+  scroll->SetScrollRate(0, frame_.FromDIP(24));
   auto *rail = new wxBoxSizer(wxVERTICAL);
-  wind_ = new XNavDataValue(right, "APPARENT WIND", "kn");
-  depth_ = new XNavDataValue(right, "DEPTH", "m / transducer");
-  speed_ = new XNavDataValue(right, "SOG", "kn");
-  course_ = new XNavDataValue(right, "COG", "deg true", 0);
-  heading_ = new XNavDataValue(right, "HEADING", "deg true", 0);
+  wind_ = new XNavDataValue(scroll, "APPARENT WIND", "kn");
+  depth_ = new XNavDataValue(scroll, "DEPTH", "m / transducer");
+  speed_ = new XNavDataValue(scroll, "SOG", "kn");
+  course_ = new XNavDataValue(scroll, "COG", "deg true", 0);
+  heading_ = new XNavDataValue(scroll, "HEADING", "deg true", 0);
   for (auto *value : {wind_, depth_, speed_, course_, heading_})
     rail->Add(value, 0, wxEXPAND);
   rail->AddStretchSpacer();
-  right->SetSizer(rail);
+  scroll->SetSizer(rail);
+  auto *rail_container = new wxBoxSizer(wxVERTICAL);
+  rail_container->Add(scroll, 1, wxEXPAND);
+  right->SetSizer(rail_container);
 
   auto *bottom = MakePane("OpenNavActions",
                           wxAuiPaneInfo().Bottom().Layer(10).BestSize(
@@ -121,7 +132,8 @@ Shell::Shell(wxFrame &frame, wxAuiManager &manager, ShellActions actions,
            {"Navigation", [this] { ShowNavigation(); }},
            {"Route", [this] { ShowPage(PreviewPage::Route); }},
            {"Energy", [this] { ShowPage(PreviewPage::Energy); }},
-           {"Demo", [this] { ShowDemo(); }}}) {
+           {"Demo", [this] { ShowDemo(); }},
+           {"Menu", [this] { ShowProduct(ProductPage::Home); }}}) {
     auto *b = Button(bottom, entry.first, entry.first, entry.second);
     b->SetMinSize(
         frame_.FromDIP(wxSize(entry.first == "Navigation" ? 112 : 88, 48)));
@@ -138,9 +150,41 @@ Shell::Shell(wxFrame &frame, wxAuiManager &manager, ShellActions actions,
   page_ = new PreviewPanel(&frame_);
   // An unmanaged overlay is reordered behind ChartCanvas by the native AUI
   // resize path. Use the same layout manager for the alternate center page.
-  manager_.AddPane(page_, wxAuiPaneInfo().Name("OpenNavPage").CenterPane()
-                             .PaneBorder(false).Hide());
+  manager_.AddPane(page_, wxAuiPaneInfo()
+                              .Name("OpenNavPage")
+                              .CenterPane()
+                              .PaneBorder(false)
+                              .Hide());
+  ProductActions product_actions;
+  product_actions.navigation = actions_.navigation;
+  product_actions.chart = [this] { ShowNavigation(); };
+  product_actions.route_summary = [this] { ShowPage(PreviewPage::Route); };
+  product_actions.energy = [this] { ShowPage(PreviewPage::Energy); };
+  product_actions.diagnostics = [this] { ShowPage(PreviewPage::Diagnostics); };
+  product_actions.pilot_command = [this](auto action, double delta) {
+    if (actions_.pilot_command)
+      actions_.pilot_command(simulation_, action, delta);
+  };
+  product_actions.pilot_enable = [this](bool enabled) {
+    if (actions_.pilot_enable)
+      actions_.pilot_enable(simulation_, enabled);
+  };
+  product_ = new ProductPanel(&frame_, std::move(product_actions));
+  manager_.AddPane(product_, wxAuiPaneInfo()
+                                 .Name("OpenNavProduct")
+                                 .CenterPane()
+                                 .PaneBorder(false)
+                                 .Hide());
   std::vector<std::pair<int, std::function<void()>>> commands = {
+      {'M', [this] { ShowProduct(ProductPage::Home); }},
+      {'W', [this] { ShowProduct(ProductPage::Waypoints); }},
+      {'B', [this] { ShowProduct(ProductPage::Routes); }},
+      {'A', [this] { ShowProduct(ProductPage::Ais); }},
+      {'V', [this] { ShowProduct(ProductPage::Instruments); }},
+      {'J', [this] { ShowProduct(ProductPage::Advice); }},
+      {'Y', [this] { ShowProduct(ProductPage::Pilot); }},
+      {'H', [this] { ShowProduct(ProductPage::Anchor); }},
+      {'G', [this] { ShowProduct(ProductPage::Settings); }},
       {'D', [this] { StartDemo(); }},
       {'P',
        [this] {
@@ -184,6 +228,10 @@ Shell::~Shell() {
     manager_.DetachPane(page_);
     page_->Destroy();
   }
+  if (product_) {
+    manager_.DetachPane(product_);
+    product_->Destroy();
+  }
   for (auto *pane : panes_) {
     manager_.DetachPane(pane);
     pane->Destroy();
@@ -217,8 +265,39 @@ void Shell::Tick() {
   if (simulation_)
     state_ = demo_.Read(now);
   else {
-    if (actions_.live_state) state_ = actions_.live_state();
-    if (actions_.route) state_.navigation.route = actions_.route();
+    if (actions_.live_state)
+      state_ = actions_.live_state();
+    if (actions_.route)
+      state_.navigation.route = actions_.route();
+  }
+  const bool creating = actions_.route_creating && actions_.route_creating();
+  if (finish_route_->IsShown() != creating) {
+    finish_route_->Show(creating);
+    finish_route_->GetParent()->Layout();
+  }
+  if (product_) {
+    ProductState p;
+    p.vessel = state_;
+    p.now = now;
+    if (simulation_)
+      p.ais = vessel::DemoAis(state_);
+    else if (actions_.navigation.ais)
+      p.ais = actions_.navigation.ais();
+    if (!simulation_ && actions_.navigation.anchor)
+      p.anchor = actions_.navigation.anchor();
+    else
+      p.anchor.state =
+          "No DEMO anchor watch / real anchor controls disabled in DEMO";
+    if (actions_.pilot_tick)
+      p.pilot = actions_.pilot_tick(simulation_);
+    if (actions_.pilot_log)
+      p.pilot_log = actions_.pilot_log(simulation_);
+    p.advice = smartnav::Advise(
+        state_,
+        smartnav::PredictVesselEnergy(smartnav::PreviewEnergyModel(simulation_),
+                                      state_, now),
+        p.ais, now);
+    product_->Update(p, mode_);
   }
   wind_->SetReading(state_.wind.apparent_speed_kn, now);
   depth_->SetReading(state_.environment.depth_below_transducer_m, now);
@@ -241,9 +320,9 @@ void Shell::Tick() {
   const auto distance =
       route ? vessel::AssessRoute(*route, now).remaining_distance_nm
             : std::nullopt;
-  const wxString summary = distance
-      ? wxString::Format("%.1f NM to destination", *distance)
-      : "Route unavailable";
+  const wxString summary =
+      distance ? wxString::Format("%.1f NM to destination", *distance)
+               : "Route unavailable";
   const bool show_summary = frame_.GetClientSize().x >= frame_.FromDIP(1060);
   const bool summary_layout = route_summary_->GetLabel() != summary ||
                               route_summary_->IsShown() != show_summary;
@@ -256,9 +335,18 @@ void Shell::Tick() {
                   actions_.build_info ? actions_.build_info()
                                       : std::vector<std::string>{});
   if (actions_.diagnostic_snapshot)
-    actions_.diagnostic_snapshot(state_);
+    actions_.diagnostic_snapshot(state_, PageTitle());
 }
 
+std::string Shell::PageTitle() const {
+  if (product_ && product_->IsShown())
+    return product_->PageTitle();
+  if (page_ && page_->IsShown())
+    return current_page_ == PreviewPage::Route    ? "Route"
+           : current_page_ == PreviewPage::Energy ? "Energy"
+                                                  : "Diagnostics";
+  return "Navigation";
+}
 void Shell::OnCommand(wxCommandEvent &event) {
   for (const auto &c : commands_)
     if (c.first == event.GetId()) {
@@ -282,6 +370,8 @@ void Shell::SelectDemo(vessel::DemoScenario scenario) {
 }
 void Shell::ShowNavigation() {
   manager_.GetPane(page_).Hide();
+  if (product_)
+    manager_.GetPane(product_).Hide();
   for (const auto &saved : navigation_visibility_) {
     auto &pane = manager_.GetPane(saved.first);
     if (pane.IsOk())
@@ -300,7 +390,28 @@ void Shell::ShowNavigation() {
   }
   frame_.Refresh();
 }
+void Shell::ShowProduct(ProductPage page) {
+  ShowPage(PreviewPage::Route);
+  manager_.GetPane(page_).Hide();
+  manager_.GetPane(product_).Show();
+  product_->ShowPage(page, mode_);
+  manager_.Update();
+  product_->SetFocus();
+  Tick();
+}
+void Shell::ShowObject(const std::string &id, bool route) {
+  ShowProduct(route ? ProductPage::Routes : ProductPage::Waypoints);
+  product_->ShowObject(id, route, mode_);
+  Tick();
+}
+void Shell::ShowAis(int mmsi) {
+  ShowProduct(ProductPage::Ais);
+  product_->ShowAis(mmsi, mode_);
+  Tick();
+}
 void Shell::ShowPage(PreviewPage page) {
+  if (product_)
+    manager_.GetPane(product_).Hide();
   if (navigation_visibility_.empty()) {
     auto names = actions_.navigation_panes;
     names.push_back("OpenNavTools");
@@ -381,10 +492,10 @@ void Shell::ShowSystem() {
   layout->Add(heading, 0, wxALL, gap);
   auto *info = new wxStaticText(
       popup, wxID_ANY,
-      "OpenNav X / development slice\nOpenCPN 5.12.4 / API 1.20\nMode: XNav\n" +
+      "OpenNav X / Alpha development\nOpenCPN 5.12.4 / API 1.20\nMode: XNav\n" +
           (simulation_ ? wxString("Data: explicit simulator")
                        : "Data: " + InputSummary()) +
-          "\nOpenNav device controls: unavailable");
+          "\nLive hardware output: disabled");
   info->SetFont(UiFont(*popup, 13));
   info->SetForegroundColour(Colour(Theme(mode_).secondary));
   layout->Add(info, 0, wxLEFT | wxRIGHT | wxBOTTOM, gap);

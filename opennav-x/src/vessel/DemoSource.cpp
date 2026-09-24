@@ -3,6 +3,14 @@
 #include <cmath>
 
 namespace opennav::vessel {
+AisState DemoAis(const VesselState& s) {
+  AisState out;if(!s.simulated)return out;out.available=true;out.simulated=true;out.source="DEMO AIS encounter fixture";out.observed_at=s.navigation.latitude_deg.observed_at;
+  const auto at=out.observed_at;
+  auto sample=[&](double v){Sample x{v,out.source,at,Validity::Estimated};if(!s.navigation.latitude_deg.value)x={};return x;};
+  for(int i=0;i<2;++i){AisTarget t;t.mmsi=990000001+i;t.name=i?"DEMO Ferry":"DEMO Coastal";t.status="Simulated encounter";t.source=out.source;t.observed_at=at;t.active=true;t.upstream_alarm=i==0;
+    t.latitude_deg=sample(59.1+i*.01);t.longitude_deg=sample(18.6);t.sog_kn=sample(i?12:7);t.cog_deg=sample(260);t.heading_true_deg=sample(259);t.range_nm=sample(i?3.2:1.1);t.bearing_true_deg=sample(50);t.cpa_nm=sample(i?1.6:.2);t.tcpa_minutes=sample(i?18:6);out.targets.push_back(t);}
+  return out;
+}
 const char *ScenarioName(DemoScenario s) {
   switch (s) {
   case DemoScenario::Cruise:

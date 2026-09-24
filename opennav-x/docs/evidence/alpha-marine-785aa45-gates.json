@@ -1,0 +1,35 @@
+{
+  "commit": "785aa451293a8e137c130ef63829f3e5997bbabd",
+  "local_source_commit": "63e1fbe",
+  "ci_run": "https://github.com/ThereptileII/Work/actions/runs/36057131335",
+  "result": "all eight jobs passed",
+  "linux_integrated": 81,
+  "windows_integrated": 71,
+  "portable_contracts_each": 22,
+  "failed_predecessor": {
+    "commit": "e89fa4197936feea78b3f8d3141fadeb83e2f448",
+    "run": "https://github.com/ThereptileII/Work/actions/runs/36054748008",
+    "reason": "MSVC rejects implicit nanoseconds narrowing to Windows 100 ns system_clock",
+    "correction": "Explicit duration_cast rounds down; fractional timestamp regression added"
+  },
+  "regressions": [
+    "Existing mode and persistence tests",
+    "Selected navigation loopback",
+    "Remaining active-route fixture",
+    "New live instruments loopback / stale / invalid cases",
+    "Portable package launch and coastline restart matrix"
+  ],
+  "artifacts": [
+    {
+      "platform": "Windows",
+      "id": 10833801101,
+      "sha256": "3f790aaf6dcba475ca5887b7e54580ed016bc92907268556e7ece3ea163f5544"
+    },
+    {
+      "platform": "Linux",
+      "id": 10832834849,
+      "sha256": "b966154481405a5b6bc57d9313c07102d4785a823fcd6af4b35214db534473ce"
+    }
+  ],
+  "physical_validation": "Not performed; codecs and loopback are hardware independent"
+}

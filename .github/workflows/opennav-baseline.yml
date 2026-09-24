@@ -85,6 +85,8 @@ jobs:
         run: python3 opennav-x/tools/smoke-navigation.py --route-fixture
       - name: Marine instrument input through the upstream loopback connection
         run: python3 opennav-x/tools/smoke-navigation.py --instruments
+      - name: Navigation objects, AIS and anchor integration
+        run: python3 opennav-x/tools/smoke-navigation.py --objects
       - name: Exercise preview pages and all demo scenarios
         run: python3 opennav-x/tools/smoke-preview.py
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02

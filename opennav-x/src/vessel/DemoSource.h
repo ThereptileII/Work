@@ -1,5 +1,6 @@
 #pragma once
 #include "vessel/RouteProgress.h"
+#include "vessel/AisState.h"
 
 namespace opennav::vessel {
 enum class DemoScenario {
@@ -17,6 +18,7 @@ const char *ScenarioName(DemoScenario scenario);
 // clock never enters the fixture. It does not calculate real route geometry.
 VesselState DemoFixture(DemoScenario scenario, unsigned seconds,
                         Time observed_at);
+AisState DemoAis(const VesselState& synthetic);
 class DemoSource {
 public:
   explicit DemoSource(Time start) : start_(start) {}

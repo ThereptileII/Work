@@ -215,6 +215,37 @@ try:
     if windows:ui.click_text(pid,'System');ui.click_text(pid,'Diagnostics')
     else:xdo('key','ctrl+shift+i');time.sleep(.5)
     page_capture('preview-05-diagnostics','Diagnostics')
+    # Alpha product pages use real touch-button actions on Windows and public
+    # frame shortcuts on Linux. Existing preview regression assertions remain.
+    for title,key,name in [('Vessel instruments','v','instruments'),
+                           ('AIS targets','a','ais'),('SmartNav advisories','j','smartnav'),
+                           ('Manual autopilot','y','autopilot'),('Anchor watch','h','anchor'),
+                           ('Settings','g','settings'),('Routes','b','routes'),
+                           ('Waypoints','w','waypoints')]:
+        command('Menu','m')
+        if windows: ui.click_text(pid,title)
+        else: xdo('key','ctrl+shift+'+key);time.sleep(.6)
+        expected_page='SmartNav' if name=='smartnav' else title
+        data(lambda d:d.get('ui_page')==expected_page)
+        capture('alpha-'+name)
+        if windows:ui.assert_product_page(handle,expected_page)
+        if windows and name=='autopilot':
+            ui.click_text(pid,'Enable / disable DEMO manual control');ui.click_text(pid,'Enable DEMO')
+            ui.click_text(pid,'AUTO');ui.click_text(pid,'Request AUTO');time.sleep(1)
+            captions=[caption for _,caption in ui.children(handle)]
+            assert any(c.startswith('AUTO / Feedback current') for c in captions),captions
+            assert any(c.startswith('Command: Confirmed') for c in captions),captions
+            ui.click_text(pid,'+1° magnetic course');time.sleep(1)
+            assert any(c.startswith('Command: Confirmed') for _,c in ui.children(handle))
+            capture('alpha-autopilot-confirmed')
+            ui.click_text(pid,'STANDBY');time.sleep(1)
+            assert any(c.startswith('STANDBY / Feedback current') for _,c in ui.children(handle))
+            ui.click_text(pid,'Enable / disable DEMO manual control')
+            report['checks'].append('Native manual DEMO enable/AUTO/+1/STANDBY/disable with new-feedback confirmation')
+
+        if windows:
+            assert not any(caption.startswith('OpenNav page:') for _,caption in ui.children(handle)), 'Preview pane covers Alpha page'
+    report['checks'].append('Alpha menu and eight product page interactions captured')
     later=data(lambda d:item(d,'Battery SOC')['value']<item(first,'Battery SOC')['value'])
     assert item(later,'Latitude')['value']!=item(first,'Latitude')['value']
     assert later['route']['remaining_nm']<first['route']['remaining_nm']

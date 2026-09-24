@@ -107,6 +107,14 @@ def click_text(pid, label):
     visible = [(title, children(h)) for h, _, title in windows(pid)]
     raise RuntimeError(f'Control not found: {label}: {visible}')
 
+def set_text_in_dialog(pid, title, previous, value):
+    dialog,_=wait_window(title,pid)
+    matches=[h for h,caption in children(dialog) if caption==previous]
+    assert len(matches)==1,(title,previous,children(dialog))
+    buffer=C.create_unicode_buffer(value)
+    assert SendMessageW(matches[0],0x000C,0,C.cast(buffer,C.c_void_p).value),'Edit field rejected text'
+    assert text(matches[0])==value
+
 def click_menu(handle, label):
     def search(menu):
         for position in range(GetMenuItemCount(menu)):
@@ -151,6 +159,16 @@ def assert_preview_page(handle, page):
     assert ScreenToClient(handle, C.byref(point))
     assert ChildWindowFromPointEx(handle, point, 1) == child, 'Another pane covers the page'
     return {'page': page, 'native_pixels': dimensions, 'visible_and_uncovered': True}
+
+def assert_product_page(handle, page):
+    label='OpenNav Alpha page: '+page
+    matches=[child for child,caption in children(handle) if caption==label]
+    assert len(matches)==1,f'Visible Alpha page not found: {label}'
+    child=matches[0];rect=W.RECT();assert GetWindowRect(child,C.byref(rect))
+    assert rect.right-rect.left>=940 and rect.bottom-rect.top>=500
+    point=W.POINT((rect.left+rect.right)//2,(rect.top+rect.bottom)//2)
+    assert ScreenToClient(handle,C.byref(point))
+    assert ChildWindowFromPointEx(handle,point,1)==child,'Another pane covers the Alpha page'
 
 def assert_route_summary_layout(handle):
     """A label hidden at narrow startup must rejoin its sizer when expanded."""

@@ -74,6 +74,7 @@ try {
         Run python @((Join-Path $PSScriptRoot 'smoke-navigation.py'))
         Run python @((Join-Path $PSScriptRoot 'smoke-navigation.py'), '--route-fixture')
         Run python @((Join-Path $PSScriptRoot 'smoke-navigation.py'), '--instruments')
+        Run python @((Join-Path $PSScriptRoot 'smoke-navigation.py'), '--objects')
         & (Join-Path $PSScriptRoot 'capture-pristine-windows.ps1') -Variant xnav -Mode legacy -Name '11-legacy-mode'
         & (Join-Path $PSScriptRoot 'capture-pristine-windows.ps1') -Variant xnav -Mode safe-mode -Name '12-safe-mode'
     } else {

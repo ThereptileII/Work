@@ -30,6 +30,16 @@ int main() {
           "Deterministic position");
     Check(a.battery.soc_percent.value == b.battery.soc_percent.value,
           "Deterministic SOC");
+    auto traffic = DemoAis(a);
+    Check(traffic.simulated && traffic.targets.size() == 2,
+          "Labelled AIS fixture");
+    Check(DemoAis(VesselState{}).targets.empty(),
+          "Live state never manufactures AIS");
+    Check(traffic.targets.front().cpa_nm.source.find("DEMO") == 0,
+          "Synthetic CPA identifies source");
+    Check(Assess(traffic.targets.front().cpa_nm, t + 6s).quality ==
+              Quality::Stale,
+          "Demo traffic does not freshen on read");
     auto later = DemoFixture(DemoScenario::Cruise, 30, t + 30s);
     Check(later.navigation.latitude_deg.value !=
               a.navigation.latitude_deg.value,

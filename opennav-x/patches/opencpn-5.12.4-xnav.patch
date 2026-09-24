@@ -39,7 +39,7 @@ index b65126b6c..0cceb4c8d 100644
  
  #ifdef __ANDROID__
 diff --git a/gui/src/chcanv.cpp b/gui/src/chcanv.cpp
-index 258ae04bc..ec86c6c2e 100644
+index 258ae04bc..047c4e89d 100644
 --- a/gui/src/chcanv.cpp
 +++ b/gui/src/chcanv.cpp
 @@ -24,6 +24,9 @@
@@ -62,6 +62,36 @@ index 258ae04bc..ec86c6c2e 100644
    if (g_useMUI && !m_muiBar) {  // rebuild if necessary
  
      // We need to update the m_bENCGroup flag, at least for the initial creation
+@@ -10434,6 +10440,9 @@ void ChartCanvas::ShowObjectQueryWindow(int x, int y, float zlat, float zlon) {
+ }
+ 
+ void ChartCanvas::ShowMarkPropertiesDialog(RoutePoint *markPoint) {
++#ifdef OPENNAV_X
++  if (markPoint && opennav::ShowNavigationObjectCard(markPoint->m_GUID.ToStdString(wxConvUTF8), false)) return;
++#endif
+   bool bNew = false;
+   if (!g_pMarkInfoDialog) {  // There is one global instance of the MarkProp
+                              // Dialog
+@@ -10492,6 +10501,9 @@ void ChartCanvas::ShowMarkPropertiesDialog(RoutePoint *markPoint) {
+ }
+ 
+ void ChartCanvas::ShowRoutePropertiesDialog(wxString title, Route *selected) {
++#ifdef OPENNAV_X
++  if (selected && opennav::ShowNavigationObjectCard(selected->GetGUID().ToStdString(wxConvUTF8), true)) return;
++#endif
+   pRoutePropDialog = RoutePropDlgImpl::getInstance(this);
+   pRoutePropDialog->SetRouteAndUpdate(selected);
+   // pNew->UpdateProperties();
+@@ -13448,6 +13460,9 @@ wxString ChartCanvas::FindValidUploadPort() {
+ 
+ void ShowAISTargetQueryDialog(wxWindow *win, int mmsi) {
+   if (!win) return;
++#ifdef OPENNAV_X
++  if (opennav::ShowAisCard(mmsi)) return;
++#endif
+ 
+   if (NULL == g_pais_query_dialog_active) {
+     int pos_x = g_ais_query_dialog_x;
 diff --git a/gui/src/ocpn_app.cpp b/gui/src/ocpn_app.cpp
 index a7670a674..ce77f3261 100644
 --- a/gui/src/ocpn_app.cpp
@@ -188,7 +218,7 @@ index a7670a674..ce77f3261 100644
    return TRUE;
  }
 diff --git a/gui/src/ocpn_frame.cpp b/gui/src/ocpn_frame.cpp
-index 8b7a14403..e755f8bad 100644
+index 8b7a14403..501b229a0 100644
 --- a/gui/src/ocpn_frame.cpp
 +++ b/gui/src/ocpn_frame.cpp
 @@ -22,6 +22,9 @@
@@ -259,7 +289,17 @@ index 8b7a14403..e755f8bad 100644
  
    if (bDBUpdateInProgress) return;
  
-@@ -5850,7 +5874,13 @@ void MyFrame::OnFrameTimer1(wxTimerEvent &event) {
+@@ -5817,6 +5841,9 @@ void MyFrame::OnFrameTimer1(wxTimerEvent &event) {
+   ProcessDeferredTrackOn();
+   SendFixToPlugins();
+   ProcessAnchorWatch();
++#ifdef OPENNAV_X
++  opennav::AfterAnchorWatch();
++#endif
+   ProcessLogAndBells();
+ 
+   if (ShouldRestartTrack()) TrackDailyRestart();
+@@ -5850,7 +5877,13 @@ void MyFrame::OnFrameTimer1(wxTimerEvent &event) {
    nBlinkerTick++;
  
    // This call sends autopilot output strings to output ports.

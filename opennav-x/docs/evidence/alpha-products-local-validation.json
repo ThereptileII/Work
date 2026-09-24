@@ -1,0 +1,21 @@
+{
+  "status": "local pre-commit validation; native product gate pending",
+  "parent_local_commit": "63e1fbe",
+  "linux_integrated": 81,
+  "portable_contracts": 22,
+  "object_scenario_checks": 10,
+  "alpha_page_interactions": 8,
+  "coastline_checks": 7,
+  "test_files": {
+    "objects-input-results.json": "a926745f009c5953df740e7def983d3fb423f024336814b6640e97844fb27b2f",
+    "preview-linux-results.json": "167a43383382253a893056d7a3566c1f50ed27c9f6ab06a20e2559f3da27b6fd",
+    "alpha-product-final-local.log": "89b55cd94817da4864a9606fc32ba2d98b0270ea391e291e3673854536fd5af4",
+    "alpha-products-contracts-final.log": "ac8f48c7d0042d7c40363defa70a0b3a69a2021e71ddea3fef026236ec23a815",
+    "alpha-products-modes.log": "892d5b1fe61084ded0368ddc6292bc9574b35eba413dc943abe3c29c860a3948",
+    "alpha-products-navigation.log": "987b04ba824f34438152c159c8b8fd90d4978d39cab2f973640bfa7eb7d46aa6",
+    "alpha-products-route.log": "06998055a19940d1156cfb67401b26b2fe421cf87e9db607f6c42b17a8047b42",
+    "alpha-products-instruments.log": "ab92d264212703c88772edacf47461293e2b8f5b2a5a364b34c09d0841665e4c",
+    "alpha-object-final-boundary.log": "fe3eb6d138ad0503112a5aae85e31eca61246113096d33d4fdecef8983828acb"
+  },
+  "incident": "First expanded Linux interaction run hit GTK Ctrl+Shift+U Unicode composition; moved pilot shortcut to Y and require diagnostic page identity before capture. Repeat and final expanded runs passed. Failed run log retained locally as alpha-product-preview.log."
+}

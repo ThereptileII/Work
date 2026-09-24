@@ -2,6 +2,7 @@
 
 #include "ui/Controls.h"
 #include "ui/PreviewPanel.h"
+#include "ui/ProductPanel.h"
 #include "vessel/DemoSource.h"
 
 #include <wx/aui/aui.h>
@@ -19,11 +20,18 @@ struct ShellActions {
   // is restored before OpenCPN saves its normal perspective on close.
   std::vector<wxString> navigation_panes;
   std::function<void()> zoom_in, zoom_out, follow, legacy;
+  application::NavigationActions navigation;
+  std::function<bool()> route_creating;
+  std::function<adapters::PilotView(bool)> pilot_tick;
+  std::function<std::vector<adapters::PilotCommand>(bool)> pilot_log;
+  std::function<void(bool, adapters::PilotAction, double)> pilot_command;
+  std::function<void(bool, bool)> pilot_enable;
   std::function<void()> restart_xnav, safe, diagnostics_folder;
   std::function<vessel::RouteProgress()> route;
   std::function<vessel::VesselState()> live_state;
   std::function<std::vector<std::string>()> build_info;
-  std::function<void(const vessel::VesselState &)> diagnostic_snapshot;
+  std::function<void(const vessel::VesselState &, const std::string &)>
+      diagnostic_snapshot;
   std::function<void()> demo_chart;
   std::function<void(LightMode)> theme;
 };
@@ -36,6 +44,8 @@ public:
         LightMode mode, bool simulation);
   ~Shell() override;
   void UpdateState(const vessel::VesselState &state);
+  void ShowAis(int mmsi);
+  void ShowObject(const std::string &id, bool route);
 
 private:
   wxPanel *MakePane(const wxString &name, wxAuiPaneInfo placement);
@@ -45,7 +55,9 @@ private:
                      bool bold = false);
   void ApplyTheme();
   void Tick();
+  std::string PageTitle() const;
   void ShowSystem();
+  void ShowProduct(ProductPage page);
   void ShowDemo();
   void ShowPage(PreviewPage page);
   void ShowNavigation();
@@ -62,6 +74,8 @@ private:
   bool simulation_paused_ = false;
   vessel::DemoSource demo_{vessel::Clock::now()};
   PreviewPanel *page_ = nullptr;
+  ProductPanel *product_ = nullptr;
+  XNavButton *finish_route_ = nullptr;
   PreviewPage current_page_ = PreviewPage::Route;
   std::vector<std::pair<wxString, bool>> navigation_visibility_;
   wxTimer timer_;

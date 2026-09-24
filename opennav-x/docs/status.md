@@ -6,13 +6,23 @@ The approved Windows target preserves its Win32 application/plugin ABI on a
 native Windows x64 host. The tracked upstream submodule remains pristine;
 reviewed patches apply to a disposable integration worktree.
 
-**Marine native gate correction in progress:** the `e89fa4197936feea78b3f8d3141fadeb83e2f448`
-run [36054748008](https://github.com/ThereptileII/Work/actions/runs/36054748008)
-passes Linux and portable contracts but fails MSVC compilation: Windows uses a
-100 ns `system_clock` duration, so adding nanoseconds requires an explicit
-narrowing duration cast. The correction rounds observation time down (never
-freshens it) and adds a fractional timestamp regression. This revision is not
-accepted on Windows and no package was published from the failed run.
+**Marine input gate accepted:** `785aa451293a8e137c130ef63829f3e5997bbabd`
+passes all eight jobs in [run 36057131335](https://github.com/ThereptileII/Work/actions/runs/36057131335).
+Linux passes 81 integrated cases and Windows 71; both pass 22 portable contracts.
+The new loopback instrument scenario verifies heading, STW, wind, depth, rudder
+and temperature, including stopped and invalid sensor reports. Native live/stale/
+unavailable screens and two return-to-XNav coastline captures were reviewed.
+The failed predecessor and explicit Windows clock-precision correction remain
+recorded in [gate evidence](evidence/alpha-marine-785aa45-gates.json).
+
+**Alpha product workflows in progress:** copied route/waypoint catalogs, guarded
+human actions, deferred chart context cards, AIS, instruments, SmartNav timeline,
+manual autopilot simulation and anchor-watch observation are implemented. The
+new integrated object scenario passes locally, including stock waypoint undo and
+actual database persistence. The expanded Linux interaction gate passes eight
+Alpha pages and seven coastline restart checks. Native validation is pending;
+this is not an Alpha release candidate. Settings/calibration, installer lifecycle,
+broader chart/plugin/DPI validation and final packaging remain ahead.
 
 **Alpha 1 foundation gate closed:** `16dbaf72d7923742a5acaadf0fae42ee490e7cf6`
 passes all eight jobs in [run 36047288188](https://github.com/ThereptileII/Work/actions/runs/36047288188).
@@ -52,13 +62,10 @@ These are internal core milestones, not an Alpha product release. See
 [SmartNav](smartnav-alpha-contract.md) and [adapters](hardware-adapter-contract.md).
 Live command output remains disabled.
 
-**Marine bridge in progress:** application-thread subscriptions now reuse
-OpenCPN's NMEA 2000, NMEA 0183 and Signal K input bus. Thirteen new pinned-codec
-tests bring integrated Linux to 80 passing cases. The new instrument loopback
-test passes real decoder/subscriber/UI propagation, source metadata, stale state
-and invalidation. Native acceptance is pending. See the
-[marine input contract](marine-input-contract.md), including the pinned battery
-voltage limit and compiled-out coolant PGN. No physical boat gate is accepted.
+The marine bridge reuses OpenCPN's NMEA 2000, NMEA 0183 and Signal K input
+bus. See the [marine input contract](marine-input-contract.md), including the
+pinned battery voltage limit and compiled-out coolant PGN. Codec/loopback
+acceptance does not imply a passed physical boat gate.
 
 **Manual-preview feedback:** the user completed the Windows test and reported
 one issue: the chart background disappears after Legacy → XNav. This is reproduced

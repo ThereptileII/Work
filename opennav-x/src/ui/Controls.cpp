@@ -88,8 +88,9 @@ void XNavButton::Paint(wxPaintEvent&) {
   dc.DrawRoundedRectangle(1, 1, size.x - 2, size.y - 2, FromDIP(spacing::control_radius));
   dc.SetFont(UiFont(*this, 14, false));
   dc.SetTextForeground(Colour(IsEnabled() ? colors.primary : colors.muted));
-  const auto extent = dc.GetTextExtent(GetLabel());
-  dc.DrawText(GetLabel(), (size.x - extent.x) / 2, (size.y - extent.y) / 2);
+  const auto label=wxControl::Ellipsize(GetLabel(),dc,wxELLIPSIZE_END,std::max(1,size.x-FromDIP(20)));
+  const auto extent = dc.GetTextExtent(label);
+  dc.DrawText(label, (size.x - extent.x) / 2, (size.y - extent.y) / 2);
 }
 
 XNavDataValue::XNavDataValue(wxWindow* parent, const wxString& label,

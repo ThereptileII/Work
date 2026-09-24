@@ -1,0 +1,48 @@
+{
+  "commit": "785aa451293a8e137c130ef63829f3e5997bbabd",
+  "ci_run": "https://github.com/ThereptileII/Work/actions/runs/36057131335",
+  "authority": "native Windows x64 / Win32 ABI",
+  "screenshots": [
+    {
+      "file": "instruments-02-live.png",
+      "sha256": "360e61fee054bf7967ab799d4a6f0ec39810a08e0d277fffdd190f070f14792c",
+      "pixels": [
+        1280,
+        800
+      ]
+    },
+    {
+      "file": "instruments-03-stale.png",
+      "sha256": "d3ae39c9f0589dd42d84996a2cf0d2ca3588205d742fdd2ce6c08c5daa3d747e",
+      "pixels": [
+        1280,
+        800
+      ]
+    },
+    {
+      "file": "instruments-04-unavailable.png",
+      "sha256": "7d2d2999baadd36a6ffe01fbbc96e385bf26bca48c99909548c641ef764d3b70",
+      "pixels": [
+        1280,
+        800
+      ]
+    },
+    {
+      "file": "preview-09-returned-xnav.png",
+      "sha256": "a24a982c0eb545a4ac38af509fa481f5974187586c490875d1600a673c69070b",
+      "pixels": [
+        1280,
+        800
+      ]
+    },
+    {
+      "file": "preview-12-safe-to-xnav.png",
+      "sha256": "a24a982c0eb545a4ac38af509fa481f5974187586c490875d1600a673c69070b",
+      "pixels": [
+        1280,
+        800
+      ]
+    }
+  ],
+  "review": "Live 149 deg heading, 16.2 kn wind and 8.4 m depth; stopped instruments visibly stale; invalid sensors use unavailable dash. Legacy-to-XNav and Safe-to-XNav retain real land/water coastline. No new clipping in reviewed 1280x800 captures. Other native captures have automated gates but were not individually re-reviewed for this increment."
+}

@@ -1,10 +1,18 @@
 #include "smartnav/Advisories.h"
 #include <algorithm>
 #include <cmath>
+#include <iomanip>
 #include <set>
+#include <sstream>
 
 namespace opennav::smartnav {
 namespace {
+std::string Rounded(double value, int decimals) {
+  std::ostringstream s;
+  s.imbue(std::locale::classic());
+  s << std::fixed << std::setprecision(decimals) << value;
+  return s.str();
+}
 bool Fresh(const vessel::Sample &s, vessel::Time now) {
   const auto q = vessel::Assess(s, now).quality;
   return q == vessel::Quality::Live || q == vessel::Quality::Aging ||
@@ -111,7 +119,7 @@ NavigationAdvice Advise(const vessel::VesselState &s,
     e.kind = EventKind::ArrivalSoc;
     e.title = "Estimated destination SOC";
     e.detail = a.soc_percent
-                   ? std::to_string(*a.soc_percent) + "% (constant conditions)"
+                   ? Rounded(*a.soc_percent, 1) + "% (constant conditions)"
                    : "Unavailable: energy exhausted before destination";
     if (std::isfinite(a.passage_hours))
       e.seconds_from_now = a.passage_hours * 3600;
@@ -121,7 +129,7 @@ NavigationAdvice Advise(const vessel::VesselState &s,
       e.severity = Severity::Warning;
       e.title = "Insufficient route energy";
       e.detail =
-          std::to_string(a.energy_shortfall_kwh) + " kWh estimated shortfall";
+          Rounded(a.energy_shortfall_kwh, 1) + " kWh estimated shortfall";
       advice.events.push_back(e);
     } else if (a.below_reserve) {
       e.kind = EventKind::Reserve;
@@ -157,8 +165,9 @@ NavigationAdvice Advise(const vessel::VesselState &s,
       e.severity = Severity::Warning;
       e.identity = std::to_string(target.mmsi);
       e.title = target.name.empty() ? e.identity : target.name;
-      e.detail = "OpenCPN AIS alarm; CPA " +
-                 std::to_string(*target.cpa_nm.value) + " NM";
+      e.detail = std::string(ais.simulated ? "DEMO encounter; CPA "
+                                           : "OpenCPN AIS alarm; CPA ") +
+                 Rounded(*target.cpa_nm.value, 2) + " NM";
       e.seconds_from_now = *target.tcpa_minutes.value * 60;
       e.source = target.source;
       e.observed_at =

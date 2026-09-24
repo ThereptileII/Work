@@ -6,5 +6,6 @@ namespace opennav::integration {
 std::vector<std::string> PreviewBuildInfo(int dpi, const std::string &profile);
 void WritePreviewDiagnostics(const std::string &path,
                              const vessel::VesselState &state,
-                             const std::vector<std::string> &info);
+                             const std::vector<std::string> &info,
+                             const std::string &ui_page = "");
 } // namespace opennav::integration

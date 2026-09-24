@@ -15,9 +15,10 @@ import time
 
 route_fixture = sys.argv[1:] == ['--route-fixture']
 instruments = sys.argv[1:] == ['--instruments']
-if sys.argv[1:] and not (route_fixture or instruments):
-    raise SystemExit('Usage: smoke-navigation.py [--route-fixture|--instruments]')
-prefix = 'route' if route_fixture else 'instruments' if instruments else 'navigation'
+objects = sys.argv[1:] == ['--objects']
+if sys.argv[1:] and not (route_fixture or instruments or objects):
+    raise SystemExit('Usage: smoke-navigation.py [--route-fixture|--instruments|--objects]')
+prefix = 'objects' if objects else 'route' if route_fixture else 'instruments' if instruments else 'navigation'
 root = Path(__file__).resolve().parents[1]
 windows = sys.platform == 'win32'
 evidence = root / 'evidence/local'
@@ -29,6 +30,8 @@ subprocess.run([sys.executable, str(root / 'tools/prepare-test-profile.py'),
                 '--build', str(root / 'build' / variant), '--profile', str(profile)], check=True)
 if route_fixture:
     (profile / 'OPENNAV_ROUTE_FIXTURE').write_text('Explicit isolated integration-test driver.\n')
+if objects:
+    (profile / 'OPENNAV_OBJECT_FIXTURE').write_text('Explicit isolated object integration test.\n')
 server = socket.socket()
 server.bind(('127.0.0.1', 0))
 server.listen(1)
@@ -125,7 +128,7 @@ try:
         time.sleep(1)
         exe = root / 'build/xnav-install/bin/opencpn'
     with (evidence / f'{prefix}-input-launch.log').open('w') as output:
-        app = subprocess.Popen([str(exe), '--configdir', str(profile), '--no_opengl', '--xnav'] + (['--xnav-route-fixture'] if route_fixture else []),
+        app = subprocess.Popen([str(exe), '--configdir', str(profile), '--no_opengl', '--xnav'] + (['--xnav-route-fixture'] if route_fixture else ['--xnav-object-fixture'] if objects else []),
                                env=env, stdout=output, stderr=output)
     deadline = time.monotonic() + 60
     while True:
@@ -152,7 +155,36 @@ try:
             subprocess.run(['import', '-window', 'root', str(path)], env=env, check=True)
         report['screenshots'].append(path.name)
 
-    if instruments:
+    if objects:
+        phase[0]='rmc';deadline=time.monotonic()+70;seen=set()
+        while time.monotonic()<deadline:
+            assert app.poll() is None,'Object fixture exited'
+            path=profile/'objects-fixture-results.json'
+            if path.exists():
+                result=json.loads(path.read_text());assert result['result']!='failed',result
+                current=result.get('phase','')
+                if current in ['route-card','waypoint-card','ais-card'] and current not in seen:
+                    time.sleep(.6);capture(current);seen.add(current)
+                if result['result']=='passed':
+                    assert len(seen)==3,seen
+                    report['object_contract']=result;break
+            time.sleep(.2)
+        else:raise RuntimeError('Object contract fixture timed out')
+        assert not failures,failures
+        if windows:
+            ui.click_text(app.pid,'Menu');ui.click_text(app.pid,'Waypoints')
+            ui.click_text(app.pid,'ALPHA TEST edited / mark');ui.click_text(app.pid,'Edit waypoint')
+            ui.set_text_in_dialog(app.pid,'Edit waypoint','ALPHA TEST edited','ALPHA TEST UI edited')
+            ui.click_text(app.pid,'Save');time.sleep(.6)
+            assert any(c=='ALPHA TEST UI edited' for _,c in ui.children(handle))
+            capture('waypoint-edit-sheet-result')
+            ui.click_text(app.pid,'Delete isolated waypoint');ui.click_text(app.pid,'Cancel')
+            assert any(c=='ALPHA TEST UI edited' for _,c in ui.children(handle)), 'Cancel changed the mark'
+            ui.click_text(app.pid,'Edit waypoint')
+            ui.set_text_in_dialog(app.pid,'Edit waypoint','ALPHA TEST UI edited','ALPHA TEST edited')
+            ui.click_text(app.pid,'Save')
+            report['native_edit_confirmation']='Themed property sheet saves and refreshes; delete cancellation preserves mark'
+    elif instruments:
         def snapshot(name):
             record=json.loads((profile/'opennav-diagnostics.json').read_text())
             (evidence/f'instruments-{name}.json').write_text(json.dumps(record,indent=2))
@@ -240,6 +272,14 @@ try:
     else:
         subprocess.run([str(exe), '--configdir', str(profile), '--remote', '--quit'], env=env, check=True, timeout=15)
     assert app.wait(timeout=30) == 0, 'Navigation test did not close cleanly'
+    if objects:
+        import sqlite3
+        with sqlite3.connect(profile/'navobj.db') as db:
+            assert db.execute('select name from routes where guid=?',('OPENNAV-ALPHA-OBJECT-ROUTE',)).fetchone()==('ALPHA TEST renamed route',)
+            assert db.execute('select count(*) from routepoints where Name=?',('ALPHA TEST edited',)).fetchone()==(1,)
+        report['checks']=['Navigation object and AIS contracts through actual integrated executable',
+                          'Deferred chart-selection cards and clean close',
+                          'Route and restored waypoint persisted in existing OpenCPN navobj.db']
     report['result'] = 'loopback transport and lifecycle passed; numeric and stale screenshot review required'
 finally:
     stop.set()

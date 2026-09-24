@@ -61,11 +61,21 @@ wxString DestinationName(const vessel::VesselState &s) {
   if (!s.navigation.route || s.navigation.route->route_id.empty() ||
       s.navigation.route->state == vessel::RouteState::NoActiveRoute)
     return "No active route";
-  return s.simulated ? "Sheltered bay" : "OpenCPN active route";
+  const auto &route = *s.navigation.route;
+  if (!route.remaining_steps.empty() &&
+      !route.remaining_steps.back().name.empty())
+    return W(route.remaining_steps.back().name);
+  return route.route_name.empty() ? "OpenCPN active route"
+                                  : W(route.route_name);
 }
 wxString PointName(const vessel::VesselState &s) {
   if (!s.navigation.route || s.navigation.route->active_waypoint_id.empty())
     return "No active waypoint";
+  const auto &route = *s.navigation.route;
+  if (!route.remaining_steps.empty() &&
+      route.remaining_steps.front().waypoint_id == route.active_waypoint_id &&
+      !route.remaining_steps.front().name.empty())
+    return W(route.remaining_steps.front().name);
   auto id = s.navigation.route->active_waypoint_id;
   if (id.rfind("DEMO-", 0) == 0)
     id = id.substr(5);
@@ -90,7 +100,7 @@ void PreviewPanel::Update(PreviewPage page, LightMode mode,
   if (page != page_)
     Scroll(0, 0);
   page_ = page;
-  SetLabel(page == PreviewPage::Route ? "OpenNav page: Route"
+  SetLabel(page == PreviewPage::Route    ? "OpenNav page: Route"
            : page == PreviewPage::Energy ? "OpenNav page: Energy"
                                          : "OpenNav page: Diagnostics");
   mode_ = mode;

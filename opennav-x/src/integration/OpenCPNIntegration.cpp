@@ -1,6 +1,9 @@
 #include "integration/OpenCPNIntegration.h"
 #include "integration/NavigationBridge.h"
 #include "integration/MarineBridge.h"
+#include "integration/NavigationActions.h"
+#include "integration/NavigationObjects.h"
+#include "adapters/Autopilot.h"
 #include "integration/OpenCPNRouteReader.h"
 #include "integration/RoutePassWatch.h"
 #include "integration/StartupMode.h"
@@ -11,6 +14,7 @@
 #include "ui/Shell.h"
 #ifdef OPENNAV_ROUTE_TESTS
 #include "RouteProgressScenario.h"
+#include "NavigationObjectScenario.h"
 #include <wx/filefn.h>
 #endif
 
@@ -42,6 +46,7 @@ extern bool g_bDeferredInitDone;
 extern bool g_bportable;
 extern std::string g_configdir;
 extern wxString gWorldShapefileLocation;
+extern wxString g_AW1GUID,g_AW2GUID;
 
 namespace opennav {
 namespace integration {
@@ -58,11 +63,20 @@ integration::StartupFlags flags;
 StartupMode selected = StartupMode::Legacy;
 bool demo = false;
 #ifdef OPENNAV_ROUTE_TESTS
-std::string route_test_profile;
+std::string route_test_profile,object_test_profile;
 #endif
 std::unique_ptr<ui::Shell> shell;
 std::unique_ptr<NavigationBridge> navigation;
 std::unique_ptr<integration::MarineBridge> marine;
+application::AnchorState anchor_state;
+struct PilotServices {
+  adapters::UnavailableAutopilot hardware;
+  adapters::SimulatedAutopilot simulator{vessel::Clock::now()};
+  adapters::ManualAutopilot live{hardware},demo{simulator};
+  bool was_demo=false;
+  adapters::ManualAutopilot& Select(bool simulated){return simulated?demo:live;}
+};
+std::unique_ptr<PilotServices> pilots;
 vessel::VesselState selected_navigation;
 std::unique_ptr<integration::RouteProgressInput> route_progress;
 MyFrame* host = nullptr;
@@ -102,6 +116,7 @@ void AddCommandLine(wxCmdLineParser& parser) {
   parser.AddSwitch("", "xnav-demo", "Explicit simulated XNav telemetry; no device commands");
 #ifdef OPENNAV_ROUTE_TESTS
   parser.AddSwitch("", "xnav-route-fixture", "TEST BUILD ONLY: isolated route contract scenario");
+  parser.AddSwitch("", "xnav-object-fixture", "TEST BUILD ONLY: isolated navigation object scenario");
 #endif
 }
 
@@ -134,6 +149,12 @@ bool ParseCommandLine(wxCmdLineParser& parser) {
     profile_arguments.push_back(configdir.ToStdString(wxConvUTF8));
   }
 #ifdef OPENNAV_ROUTE_TESTS
+  if(parser.Found("xnav-object-fixture")){
+    if(!flags.xnav||flags.safe||flags.legacy||demo||configdir.empty()||parser.Found("xnav-route-fixture")||!wxFileExists(configdir+"/OPENNAV_OBJECT_FIXTURE")){
+      std::cerr<<"Object fixture requires explicit XNav and a marked disposable profile\n";return false;
+    }
+    object_test_profile=configdir.ToStdString(wxConvUTF8);
+  }
   if (parser.Found("xnav-route-fixture")) {
     if (!flags.xnav || flags.safe || flags.legacy || demo || configdir.empty() ||
         !wxFileExists(configdir + "/OPENNAV_ROUTE_FIXTURE")) {
@@ -198,6 +219,17 @@ void Attach(MyFrame& frame, wxAuiManager& manager, wxFileConfig& config) {
   // Names assigned by MyFrame::CreateCanvasLayout in the pinned OpenCPN.
   // The UI only toggles pane visibility; it never owns/reparents a canvas.
   actions.navigation_panes = {"ChartCanvas", "ChartCanvas2"};
+  actions.navigation=integration::MakeNavigationActions(frame,[]{return selected_navigation.navigation;},[]{
+    auto copy=anchor_state;
+    if(!copy.waypoint_id.empty() && copy.waypoint_id!=g_AW1GUID.ToStdString(wxConvUTF8) && copy.waypoint_id!=g_AW2GUID.ToStdString(wxConvUTF8)){copy={};copy.state="Anchor watch changed; waiting for normal observation";}
+    return copy;
+  });
+  actions.route_creating=[&frame]{return frame.GetPrimaryCanvas()->m_routeState>0;};
+  pilots=std::make_unique<PilotServices>();
+  actions.pilot_tick=[](bool simulated){const auto now=vessel::Clock::now();if(pilots->was_demo!=simulated){pilots->Select(pilots->was_demo).Enable(false,now);pilots->was_demo=simulated;}auto& p=pilots->Select(simulated);p.Tick(now);return p.GetState(now);};
+  actions.pilot_log=[](bool simulated){return pilots->Select(simulated).Log();};
+  actions.pilot_command=[](bool simulated,auto action,double delta){auto c=pilots->Select(simulated).Request(action,delta,vessel::Clock::now());wxLogMessage("OpenNav manual autopilot [%s] request %llu: %s / %s",simulated?"DEMO":"unavailable hardware",static_cast<unsigned long long>(c.request.id),wxString::FromUTF8(adapters::CommandStateName(c.state)),wxString::FromUTF8(c.detail));};
+  actions.pilot_enable=[](bool simulated,bool enabled){pilots->Select(simulated).Enable(enabled,vessel::Clock::now());wxLogMessage("OpenNav manual autopilot %s: %s",simulated?"DEMO":"unavailable hardware",enabled?"enable requested":"disabled");};
   actions.zoom_in = [&frame] { frame.GetPrimaryCanvas()->ZoomCanvas(2.0, false); };
   actions.zoom_out = [&frame] { frame.GetPrimaryCanvas()->ZoomCanvas(0.5, false); };
   actions.follow = [&frame] { frame.TogglebFollow(frame.GetPrimaryCanvas()); };
@@ -212,12 +244,12 @@ void Attach(MyFrame& frame, wxAuiManager& manager, wxFileConfig& config) {
   actions.diagnostics_folder=[] {
     if(!diagnostic_directory.empty()) wxLaunchDefaultApplication(wxString::FromUTF8(diagnostic_directory));
   };
-  actions.diagnostic_snapshot=[&frame,last=vessel::Time{}](const vessel::VesselState& state) mutable {
+  actions.diagnostic_snapshot=[&frame,last=vessel::Time{}](const vessel::VesselState& state,const std::string& page) mutable {
     const auto now=vessel::Clock::now();
     if(diagnostic_directory.empty() || now-last<std::chrono::seconds(1))return;
     last=now;
     integration::WritePreviewDiagnostics(diagnostic_directory+"/opennav-diagnostics.json",state,
-                                         integration::PreviewBuildInfo(frame.GetDPI().x,g_configdir));
+                                         integration::PreviewBuildInfo(frame.GetDPI().x,g_configdir),page);
   };
   actions.demo_chart=[] { if(g_bDeferredInitDone) JumpToPosition(59.08,18.5,0.003); };
   actions.theme = [&frame](ui::LightMode mode) {
@@ -234,8 +266,22 @@ void Attach(MyFrame& frame, wxAuiManager& manager, wxFileConfig& config) {
       "OpenNav session " + std::to_string(vessel::Clock::now().time_since_epoch().count()));
 #ifdef OPENNAV_ROUTE_TESTS
   if (!route_test_profile.empty()) test::EnableRouteScenario(route_test_profile);
+  if (!object_test_profile.empty()) test::EnableObjectScenario(object_test_profile);
 #endif
 }
+
+void AfterAnchorWatch(){
+  if(!navigation)return;
+  auto current=integration::ObserveAnchor(selected_navigation.navigation,vessel::Clock::now());
+  if(current.waypoint_id==anchor_state.waypoint_id)current.recent_positions=anchor_state.recent_positions;
+  if(current.distance_m.value && selected_navigation.navigation.latitude_deg.observed_at>anchor_state.distance_m.observed_at){
+    current.recent_positions.push_back({{*selected_navigation.navigation.latitude_deg.value,*selected_navigation.navigation.longitude_deg.value},selected_navigation.navigation.latitude_deg.observed_at});
+    if(current.recent_positions.size()>300)current.recent_positions.erase(current.recent_positions.begin());
+  }
+  anchor_state=std::move(current);
+}
+bool ShowNavigationObjectCard(const std::string& id,bool route){if(!IsXNav()||!shell||!host)return false;host->CallAfter([id,route]{if(shell)shell->ShowObject(id,route);});return true;}
+bool ShowAisCard(int mmsi){if(!IsXNav()||!shell||!host)return false;host->CallAfter([mmsi]{if(shell)shell->ShowAis(mmsi);});return true;}
 
 RouteObservation BeforeRouteProgress() {
   if (!navigation || !route_progress) return {};
@@ -250,6 +296,7 @@ void AfterRouteProgress(const RouteObservation& before) {
   route_progress->Complete(before->read, after, vessel::Clock::now());
 #ifdef OPENNAV_ROUTE_TESTS
   test::RouteScenarioStep(route_progress->Current());
+  test::ObjectScenarioStep(selected_navigation.navigation);
 #endif
 }
 
@@ -290,6 +337,7 @@ bool PrepareClose(wxFileConfig& config) {
   selected_navigation = {};
   route_progress.reset();
   shell.reset();
+  pilots.reset();anchor_state={};
   host = nullptr;
   return true;
 }

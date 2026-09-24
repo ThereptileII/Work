@@ -182,3 +182,20 @@ startup with the old broken setting. Linux preview smoke now uses portable
 resource layout as Windows does; the existing non-portable mode/input regressions
 remain separate. The old executable fails the new rendering check on both the
 Legacy and returned-XNav captures. Native acceptance is recorded in status.md.
+
+## Alpha navigation context and anchor observation (pending gate)
+
+Four narrow additions stay inside the existing reviewed GUI patch paths:
+
+- Immediately after normal `MyFrame::ProcessAnchorWatch`, copy the anchor result
+  into OpenNav values. Reads never run anchor-watch processing.
+- `ChartCanvas::ShowMarkPropertiesDialog` and `ShowRoutePropertiesDialog` offer
+  an XNav context-card dispatch before opening the normal legacy dialog.
+- `ShowAISTargetQueryDialog` similarly offers an XNav target card.
+
+Each dispatch copies GUID/MMSI and defers UI work until the upstream event stack
+unwinds. If XNav is not active, the original path remains unchanged. No model,
+storage, AIS calculation, autopilot output or plugin ABI method changes. See
+[navigation object contract](navigation-objects-contract.md). Normal frame/canvas
+commands are used through the integration action service rather than new hooks
+for every toolbar control.

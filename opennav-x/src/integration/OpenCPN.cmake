@@ -17,6 +17,8 @@ target_include_directories(opennav_marine PUBLIC "${OPENNAV_ROOT}/src" PRIVATE $
 target_link_libraries(opennav_marine PUBLIC opennav_vessel ocpn::N2KParser ocpn::nmea0183 ocpn::wxjson ${wxWidgets_LIBRARIES})
 target_compile_features(opennav_marine PUBLIC cxx_std_17)
 target_sources(${PACKAGE_NAME} PRIVATE "${OPENNAV_ROOT}/src/integration/MarineBridge.cpp")
+target_sources(${PACKAGE_NAME} PRIVATE "${OPENNAV_ROOT}/src/integration/NavigationObjects.cpp"
+  "${OPENNAV_ROOT}/src/integration/NavigationActions.cpp")
 target_link_libraries(${PACKAGE_NAME} PRIVATE opennav_marine)
 set(OPENNAV_BUILD_COMMIT "$ENV{GITHUB_SHA}")
 if(NOT OPENNAV_BUILD_COMMIT)
@@ -41,7 +43,8 @@ if(OPENNAV_ENABLE_ROUTE_SCENARIO)
   if(NOT OCPN_BUILD_TEST)
     message(FATAL_ERROR "Route scenario is permitted only with upstream tests enabled")
   endif()
-  target_sources(${PACKAGE_NAME} PRIVATE "${OPENNAV_ROOT}/tests/RouteProgressScenario.cpp")
+  target_sources(${PACKAGE_NAME} PRIVATE "${OPENNAV_ROOT}/tests/RouteProgressScenario.cpp"
+    "${OPENNAV_ROOT}/tests/NavigationObjectScenario.cpp")
   target_include_directories(${PACKAGE_NAME} PRIVATE "${OPENNAV_ROOT}/tests")
   target_compile_definitions(${PACKAGE_NAME} PRIVATE OPENNAV_ROUTE_TESTS=1)
 endif()

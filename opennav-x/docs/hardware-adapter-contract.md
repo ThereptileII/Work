@@ -51,3 +51,14 @@ control or radar/AIS fusion is claimed.
 heading wrap, one pending request, rejected transmission, exact timeout, late
 feedback, STANDBY preemption, global disable and no automatic retransmission.
 They require no physical hardware. Physical and native UI tests remain gates.
+
+## Alpha UI integration (pending native gate)
+
+The integration session owns separate unavailable-live and simulated manual
+controllers. XNav receives copied feedback, capabilities and command log entries.
+Leaving Demo disables that simulator controller; normal restart reconstructs
+both with control disabled. The pilot sheet requires explicit simulator enable,
+confirms mode requests, shows pending/confirmed/rejected/timeout state and keeps
+STANDBY directly accessible. No UI request reaches live hardware in this Alpha
+foundation. Windows automation exercises enable, AUTO, +1, STANDBY and disable,
+checking new-feedback confirmation rather than the button press alone.

@@ -12,6 +12,9 @@ namespace integration { struct ObservedRoutePass; }
 using RouteObservation = std::shared_ptr<const integration::ObservedRoutePass>;
 RouteObservation BeforeRouteProgress();
 void AfterRouteProgress(const RouteObservation& before);
+void AfterAnchorWatch();
+bool ShowAisCard(int mmsi);
+bool ShowNavigationObjectCard(const std::string& id,bool route);
 // Application-thread acquisition; returned immutable values may be retained.
 vessel::RouteProgress CurrentRouteProgress();
 void AddCommandLine(wxCmdLineParser& parser);
