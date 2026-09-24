@@ -9,6 +9,9 @@ namespace opennav::integration {
 using namespace vessel;
 namespace {
 bool SameNumber(double a, double b) { return a == b || (std::isnan(a) && std::isnan(b)); }
+bool SameCourse(const std::optional<double>& a, const std::optional<double>& b) {
+  return a.has_value() == b.has_value() && (!a || SameNumber(*a, *b));
+}
 bool SameSample(const Sample& a, const Sample& b) {
   return a.value == b.value && a.observed_at == b.observed_at &&
          a.source == b.source && a.validity == b.validity;
@@ -50,12 +53,13 @@ RouteState CheckRoute(const RouteCopy& r) {
 
 bool SameRoute(const RouteCopy& a, const RouteCopy& b) {
   if (a.active != b.active || a.registered != b.registered || a.editing != b.editing || a.id != b.id ||
-      a.points.size() != b.points.size()) return false;
+      a.points.size() != b.points.size() || a.name != b.name) return false;
   for (std::size_t i = 0; i < a.points.size(); ++i) {
     const auto& x = a.points[i]; const auto& y = b.points[i];
     if (x.id != y.id || !SameNumber(x.latitude_deg, y.latitude_deg) ||
         !SameNumber(x.longitude_deg, y.longitude_deg) ||
-        !SameNumber(x.incoming_leg_nm, y.incoming_leg_nm)) return false;
+        !SameNumber(x.incoming_leg_nm, y.incoming_leg_nm) || x.name != y.name ||
+        !SameCourse(x.incoming_course_true_deg, y.incoming_course_true_deg)) return false;
   }
   return true;
 }
@@ -70,6 +74,7 @@ RouteProgressInput::RouteProgressInput(std::string scope) : scope_(std::move(sco
 RouteProgressSnapshot RouteProgressInput::Describe(const RouteRead& r, Time now) const {
   RouteProgressSnapshot s;
   s.route_id = r.route.id; s.revision_scope = scope_; s.route_revision = revision_;
+  s.route_name = r.route.name;
   s.active_waypoint_id = r.route.active_point_id;
   s.active_waypoint_index = r.route.active_index; s.waypoint_count = r.route.points.size();
   s.observed_at = now;
@@ -89,6 +94,7 @@ void RouteProgressInput::Complete(const RouteRead& before, const RouteRead& afte
       (position_watermark_ && after.position.latitude_deg.value && position_time < *position_watermark_)) {
     auto rejected = *current_;
     rejected.state = RouteState::OutOfOrder; rejected.remaining_distance_nm.reset();
+    rejected.remaining_steps.clear();
     Publish(std::move(rejected));
     return;
   }
@@ -133,7 +139,18 @@ void RouteProgressInput::Complete(const RouteRead& before, const RouteRead& afte
         distance += leg;
       }
       if (!std::isfinite(distance)) s.state = RouteState::ArithmeticLimit;
-      if (s.state == RouteState::Valid) s.remaining_distance_nm = distance;
+      if (s.state == RouteState::Valid) {
+        s.remaining_distance_nm = distance;
+        for (std::size_t i = *after.route.active_index; i < after.route.points.size(); ++i) {
+          const auto& p = after.route.points[i];
+          const bool first = i == *after.route.active_index;
+          auto course = first ? after.bearing_to_active_true_deg : p.incoming_course_true_deg;
+          if (course && (!std::isfinite(*course) || *course < 0 || *course > 360)) course.reset();
+          if (course == 360) course = 0;
+          s.remaining_steps.push_back({p.id, p.name, p.latitude_deg, p.longitude_deg,
+              first ? *after.range_to_active_nm : p.incoming_leg_nm, course});
+        }
+      }
     }
   }
   Publish(std::move(s));
@@ -148,6 +165,7 @@ void RouteProgressInput::CheckCurrent(const RouteCopy& current, Time now) {
   if (s.state == RouteState::Valid) s.state = SameRoute(*last_route_, current)
       ? RouteState::ActivePointChanged : RouteState::RouteChanged;
   s.remaining_distance_nm.reset();
+  s.remaining_steps.clear();
   (void)now;  // A consumer request cannot renew the observation timestamp.
   Publish(std::move(s));
 }

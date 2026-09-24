@@ -182,6 +182,8 @@ EnergyPrediction PredictConfiguredEnergy(const EnergyConfiguration &c,
   else if (!s.simulated &&
            input.total_discharge_kw.device_id != c.battery_device_id)
     return fail(EnergyReason::MissingInput);
-  return PredictEnergy(model, input, now);
+  auto prediction = PredictEnergy(model, input, now);
+  prediction.input_route = s.navigation.route;
+  return prediction;
 }
 } // namespace opennav::smartnav

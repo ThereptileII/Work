@@ -9,6 +9,8 @@ namespace opennav::integration {
 struct RoutePointCopy {
   std::string id;
   double latitude_deg = 0, longitude_deg = 0, incoming_leg_nm = 0;
+  std::string name{};
+  std::optional<double> incoming_course_true_deg{};
 };
 struct RouteCopy {
   bool active = false, registered = true, active_point_consistent = true;
@@ -16,6 +18,7 @@ struct RouteCopy {
   std::string id, active_point_id;
   std::optional<std::size_t> active_index;
   std::vector<RoutePointCopy> points;
+  std::string name{};
 };
 struct RouteRead {
   bool interrupted = false;
@@ -24,6 +27,7 @@ struct RouteRead {
   bool upstream_position_valid = false;
   double upstream_latitude_deg = 0, upstream_longitude_deg = 0;
   std::optional<double> range_to_active_nm;
+  std::optional<double> bearing_to_active_true_deg{};
 };
 
 bool SameRoute(const RouteCopy& a, const RouteCopy& b);  // geometry, order, IDs

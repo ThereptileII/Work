@@ -1,6 +1,7 @@
 # Hardware adapter boundary
 
-Not implemented. Autopilot and radar belong in separate adapters with fresh
-observed state, acknowledgements, timeouts and command-rate limits. Requested
-state is never treated as observed state. Safe Mode must prevent adapter
-creation and command transmission. No autonomous steering in the first release.
+The Alpha interfaces, manual autopilot reducer and deterministic simulators are
+implemented with portable tests. See `docs/hardware-adapter-contract.md`.
+Only an explicitly enabled simulator can accept commands in Alpha; live output
+is unavailable. Requested state is never observed state. No SmartNav dependency
+or autonomous steering path exists. Native UI and physical tests remain gates.

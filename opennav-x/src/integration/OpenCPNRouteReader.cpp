@@ -20,12 +20,13 @@ RouteCopy CopyActiveRoute(Routeman* manager) {
   r.registered = pRouteList && manager->IsRouteValid(route);
   if (!r.registered) return r;
   r.id = route->GetGUID().ToStdString(wxConvUTF8);
+  r.name = route->m_RouteNameString.ToStdString(wxConvUTF8);
   r.editing = route->m_bIsBeingEdited || route->m_bIsBeingCreated;
   auto* active = manager->GetpActivePoint();
   r.active_point_consistent = active && active == route->m_pRouteActivePoint;
   std::size_t matches = 0;
   for (auto* node = route->pRoutePointList->GetFirst(); node; node = node->GetNext()) {
-    const auto* point = node->GetData();
+    auto* point = node->GetData();
     if (!point) { r.registered = false; return r; }
     r.editing = r.editing || point->m_bRPIsBeingEdited;
     const auto id = point->m_GUID.ToStdString(wxConvUTF8);
@@ -35,7 +36,9 @@ RouteCopy CopyActiveRoute(Routeman* manager) {
     // The first point has no incoming route leg. Do not expose an irrelevant
     // retained segment value left on it by a reversed/shared route.
     r.points.push_back({id, point->m_lat, point->m_lon,
-                       r.points.empty() ? 0.0 : point->m_seg_len});
+                       r.points.empty() ? 0.0 : point->m_seg_len,
+                       point->GetName().ToStdString(wxConvUTF8),
+                       r.points.empty() ? std::nullopt : std::optional<double>{point->GetCourse()}});
   }
   r.active_point_consistent = r.active_point_consistent && matches == 1;
   return r;
@@ -48,8 +51,10 @@ RouteRead ReadRouteProgress(const vessel::Navigation& position) {
   r.upstream_position_valid = bGPSValid;
   r.upstream_latitude_deg = gLat; r.upstream_longitude_deg = gLon;
   if (r.route.active && r.route.registered && r.route.active_point_consistent &&
-      g_pRouteMan->m_bDataValid)
+      g_pRouteMan->m_bDataValid) {
     r.range_to_active_nm = g_pRouteMan->GetCurrentRngToActivePoint();
+    r.bearing_to_active_true_deg = g_pRouteMan->GetCurrentBrgToActivePoint();
+  }
   return r;
 }
 }  // namespace opennav::integration

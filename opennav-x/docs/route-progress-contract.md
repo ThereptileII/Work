@@ -1,5 +1,9 @@
 # Read-only remaining active-route distance
 
+Alpha adds owned remaining waypoint/leg steps to the same coherent publication
+for [advisory timeline consumers](smartnav-alpha-contract.md). This does not
+replace the accepted distance calculation or loosen its validity rules.
+
 Status: accepted development slice at `954b4505e18e9128dc02e75cf05d0c02bdbad188`.
 Both platform gates and native 1280×800 review passed in
 [run 35648822128](https://github.com/ThereptileII/Work/actions/runs/35648822128).

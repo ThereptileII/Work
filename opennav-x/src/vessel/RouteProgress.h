@@ -4,6 +4,7 @@
 #include <cstddef>
 #include <cstdint>
 #include <memory>
+#include <vector>
 
 namespace opennav::vessel {
 
@@ -18,6 +19,13 @@ const char* RouteStateName(RouteState state);
 // Owned values only. Published as shared_ptr<const ...>; safe to retain after
 // OpenCPN edits/deletes a route. This is evidence as of observation, not a live
 // route handle. Consumers must use the current publication and assess its age.
+struct RouteStep {
+  std::string waypoint_id, name;
+  double latitude_deg = 0, longitude_deg = 0;
+  // First step uses normal progress range; later steps use stored route legs.
+  double distance_from_previous_nm = 0;
+  std::optional<double> course_true_deg;
+};
 struct RouteProgressSnapshot {
   std::string route_id;
   std::string revision_scope;  // process-local revision namespace, not persistent
@@ -31,6 +39,8 @@ struct RouteProgressSnapshot {
   RouteState state = RouteState::AwaitingProgress;
   std::string source;
   std::string position_source;
+  std::string route_name;
+  std::vector<RouteStep> remaining_steps;
 };
 using RouteProgress = std::shared_ptr<const RouteProgressSnapshot>;
 

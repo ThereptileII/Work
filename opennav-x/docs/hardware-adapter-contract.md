@@ -1,0 +1,53 @@
+# Alpha hardware-adapter contract
+
+The portable adapter library depends only on Vessel Data. SmartNav does not
+link it. UI manual actions are the only intended caller of `ManualAutopilot`.
+Safe and Legacy do not instantiate OpenNav control components.
+
+## Autopilot
+
+`IAutopilot` separates capabilities, observed state, explicit polling and send.
+`ManualAutopilot` defaults globally disabled. Alpha permits commands only to an
+explicitly enabled simulator; there is no live hardware transmitter. The live
+placeholder reports unavailable. Capability bits gate STANDBY/AUTO/TRACK/WIND
+and ±1/±10 course changes. Course changes require confirmed AUTO and fresh
+locked magnetic heading. AUTO requires fresh measured magnetic heading.
+
+Only one command may be pending. STANDBY can supersede it and can be attempted
+with stale feedback. Transport acceptance means pending, never successful mode
+change. Success needs a subsequent fresh feedback sequence, later than the
+request, matching the requested mode/heading. Timeout at three seconds reports
+unknown outcome, with no automatic retry. Late feedback remains observed truth
+but cannot retroactively acknowledge an expired request. Disabling control does
+not claim to cancel an already transmitted command; physical STANDBY remains
+necessary if its outcome is uncertain. The last 128 command transitions are
+retained for diagnostics. UI confirmation is a separate manual interaction gate.
+
+The deterministic simulator publishes feedback after 500 ms and periodic state
+at one second. Reading state never refreshes it. Rejection and communication-loss
+scenarios are controllable. Simulated TRACK/WIND exercise capabilities only;
+they are not evidence of physical navigation control.
+
+The inspected ESP32/ST4000 path and required boat tests are recorded in
+[source inspection](alpha1-source-inspection.md) and
+[physical validation](physical-validation.md). Real commands require a separately
+validated transport and fresh physical pilot feedback; transmitted command echo
+or NMEA group acknowledgement is not sufficient. No Leaf/SeaTalk wire details
+are embedded in XNav UI.
+
+## Radar
+
+`IRadar` exposes availability, capabilities and presentation (Off/Overlay/Focus).
+The live placeholder reports unavailable and refuses active presentation. The
+status simulator exercises capability/disconnection transitions, clearly marks
+DEMO, and generates no radar echoes. Presentation changes do not renew source
+time. Existing plugin integration remains a separate gate; no custom Pathfinder
+control or radar/AIS fusion is claimed.
+
+## Tests
+
+`autopilot_manual_feedback`, `autopilot_failures`, `autopilot_ack_evidence` and
+`radar_capability_contract` cover defaults, capabilities, measured feedback,
+heading wrap, one pending request, rejected transmission, exact timeout, late
+feedback, STANDBY preemption, global disable and no automatic retransmission.
+They require no physical hardware. Physical and native UI tests remain gates.

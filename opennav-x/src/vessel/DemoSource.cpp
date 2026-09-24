@@ -106,12 +106,23 @@ VesselState DemoFixture(DemoScenario scenario, unsigned seconds, Time at) {
                                              : "DEMO-Sheltered-bay";
     route->state = RouteState::Valid;
     route->remaining_distance_nm = distance;
+    route->route_name = "DEMO coastal passage";
+    const double courses[] = {80, 112, 85};
+    const char* ids[] = {"DEMO-Harbour-mouth", "DEMO-Outer-channel", "DEMO-Sheltered-bay"};
+    const char* names[] = {"Harbour mouth", "Outer channel", "Sheltered bay"};
+    for (unsigned i = index; i < 3; ++i) {
+      const double leg = i == index ? distance - (index == 0 ? 12.2 : index == 1 ? 6.2 : 0)
+                                    : i == 1 ? 6.0 : 6.2;
+      route->remaining_steps.push_back({ids[i], names[i], 59.1 + i * 0.02,
+                                       18.6 + i * 0.1, leg, courses[i]});
+    }
     const double previous = distance + speed / 60.0;
     if (seconds && scenario != DemoScenario::RouteEnding &&
         ((distance <= 12.2 && previous > 12.2) ||
          (distance <= 6.2 && previous > 6.2))) {
       route->state = RouteState::ActivePointChanged;
       route->remaining_distance_nm.reset();
+      route->remaining_steps.clear();
     }
   }
   s.navigation.route = std::move(route);

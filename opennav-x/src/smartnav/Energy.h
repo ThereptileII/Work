@@ -52,6 +52,8 @@ struct EnergyPrediction {
   Prediction<ArrivalEstimate> arrival;
   std::string model_source;
   vessel::Time calculated_at{};
+  // Wrapper provenance: the exact immutable route publication used for arrival.
+  std::shared_ptr<const vessel::RouteProgressSnapshot> input_route{};
 };
 
 // Every output is an advisory ESTIMATE: constant present speed/net discharge,

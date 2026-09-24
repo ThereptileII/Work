@@ -16,7 +16,9 @@ EnergyPrediction PredictVesselEnergy(const EnergyModel &m,
   if (s.navigation.route)
     inputs.distance_remaining_nm =
         vessel::RouteDistanceSample(*s.navigation.route, now);
-  return PredictEnergy(m, inputs, now);
+  auto prediction = PredictEnergy(m, inputs, now);
+  prediction.input_route = s.navigation.route;
+  return prediction;
 }
 const char *EnergyReasonName(EnergyReason r) {
   switch (r) {

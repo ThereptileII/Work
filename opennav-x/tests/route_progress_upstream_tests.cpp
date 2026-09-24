@@ -94,6 +94,13 @@ TEST_F(OpenNavRouteGeometry, AntimeridianFirstMiddleFinalMatchUpstream) {
     ASSERT_TRUE(input.Current()->remaining_distance_nm);
     EXPECT_DOUBLE_EQ(*input.Current()->remaining_distance_nm,expected);
     EXPECT_NEAR(*input.Current()->remaining_distance_nm,console_distance,0.001);
+    ASSERT_EQ(input.Current()->remaining_steps.size(), 3 - index);
+    for(std::size_t i=index+1; i<3; ++i) {
+      const auto& step=input.Current()->remaining_steps[i-index];
+      ASSERT_TRUE(step.course_true_deg);
+      EXPECT_DOUBLE_EQ(*step.course_true_deg,route->GetPoint(static_cast<int>(i)+1)->GetCourse());
+      EXPECT_DOUBLE_EQ(step.distance_from_previous_nm,route->GetPoint(static_cast<int>(i)+1)->m_seg_len);
+    }
   }
 }
 TEST_F(OpenNavRouteGeometry, ActualReverseAndEditChangeRevision) {

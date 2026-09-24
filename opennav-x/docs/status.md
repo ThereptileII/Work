@@ -33,6 +33,12 @@ test suites locally. These additions preserve selected navigation and the
 original energy core. Marine-bus/UI integration and native acceptance are still
 pending; this is not yet an Alpha release. See the
 [source contract](vessel-source-contract.md) and [energy model](energy-model.md).
+The next local increment adds copied route steps, advisory timeline/turn/energy/
+AIS events, the unavailable live chart-corridor boundary, manual autopilot
+simulator/feedback contracts and radar capability/status interfaces. All 22
+portable suites and 67 integrated Linux tests pass; native/UI acceptance remains
+pending. See [SmartNav](smartnav-alpha-contract.md) and
+[adapters](hardware-adapter-contract.md). Live command output remains disabled.
 
 **Manual-preview feedback:** the user completed the Windows test and reported
 one issue: the chart background disappears after Legacy → XNav. This is reproduced
