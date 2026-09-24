@@ -165,6 +165,15 @@ def preserved():
     if windows:
         assert (normal/'opencpn.ini').read_text()=='NORMAL PROFILE MUST NOT CHANGE\n'
         assert normal_snapshot()==normal_before,'Existing normal OpenCPN files changed'
+def switch_to_xnav(count, phase, name):
+    global handle, pid
+    if windows:
+        old=ui.monitor_process(pid);ui.click_menu(handle,'Switch to XNav');ui.wait_clean_exit(old)
+    else:
+        old=pid;xdo('mousemove',600,400,'click',3);time.sleep(.4);xdo('key','End','Return')
+        _,status=os.waitpid(old,0);assert os.waitstatus_to_exitcode(status)==0
+    handle,pid=window('OpenNav X / OpenCPN');ready(count);preserved()
+    chart_capture(name,phase)
 def launch(mode,demo=False,launcher=None,direct=False):
     if windows and launcher:
         return subprocess.Popen([os.environ['COMSPEC'],'/d','/c',str(package/launcher)],cwd=temp,env=env,stdout=subprocess.DEVNULL,stderr=subprocess.DEVNULL)
@@ -193,6 +202,7 @@ try:
     first=data(lambda d:d['data_mode']=='DEMO' and 'arrival_soc' in d['energy'])
     assert first['route']['source'].startswith('DEMO')
     chart_colors=chartcheck.reference(capture('preview-01-navigation-day'))
+    chart_capture('preview-11-startup-xnav','Direct XNav startup')
     if windows:
         ui.click_text(pid,'Light');ui.click_text(pid,'Light')
     else:
@@ -242,21 +252,18 @@ try:
     else:xdo('key','ctrl+shift+l')
     assert app.wait(timeout=35)==0
     handle,pid=window('OpenCPN / Legacy');ready(2);preserved();chart_capture('preview-07-legacy','XNav to Legacy')
-    if windows:
-        old=ui.monitor_process(pid);ui.click_menu(handle,'Switch to XNav');ui.wait_clean_exit(old)
-    else:
-        old=pid;xdo('mousemove',600,400,'click',3);time.sleep(.4);xdo('key','End','Return')
-        _,status=os.waitpid(old,0);assert os.waitstatus_to_exitcode(status)==0
-    handle,pid=window('OpenNav X / OpenCPN');ready(3)
+    switch_to_xnav(3,'XNav to Legacy to XNav','preview-09-returned-xnav')
     live=data(lambda d:d['data_mode']!='DEMO')
     assert 'arrival_soc' not in live['energy'];preserved()
-    chart_capture('preview-09-returned-xnav','Legacy to XNav')
     if windows:
         old=ui.monitor_process(pid);ui.click_text(pid,'System');ui.click_text(pid,'Safe Mode');ui.wait_clean_exit(old)
-        handle,pid=window('OpenNav Safe Mode / OpenCPN');ready(4);chart_capture('preview-08-safe','XNav to Safe');close_current();preserved()
-        count=4
+        handle,pid=window('OpenNav Safe Mode / OpenCPN');ready(4);chart_capture('preview-08-safe','XNav to Safe')
+        switch_to_xnav(5,'Safe to XNav','preview-12-safe-to-xnav');close_current();preserved()
+        count=5
         for launcher,title in [('Run-XNav.cmd','OpenNav X / OpenCPN'),('Run-Legacy.cmd','OpenCPN / Legacy'),('Run-Safe.cmd','OpenNav Safe Mode / OpenCPN')]:
-            app=launch('',launcher=launcher);handle,pid=window(title);count+=1;ready(count);close_current();assert app.wait(timeout=15)==0;preserved()
+            app=launch('',launcher=launcher);handle,pid=window(title);count+=1;ready(count)
+            chart_capture('preview-13-'+launcher[4:-4].lower(),'Direct '+title+' launcher startup')
+            close_current();assert app.wait(timeout=15)==0;preserved()
         # Reproduce the persisted empty-path artifact from Preview 0.1. Direct
         # startup must repair it without importing or rewriting chart choices.
         with (profile/'opencpn.conf').open('a') as stream:
@@ -285,10 +292,14 @@ try:
             else:
                 assert initialized, 'Dashboard did not initialize/cleanly unload in a normal mode'
                 normal_plugins+=1
-        assert normal_plugins==6 and safe_plugins==2,(normal_plugins,safe_plugins)
-        report['checks'].append('Bundled Dashboard initialized and cleanly unloaded in six normal launches; inactive in both Safe launches')
+        assert normal_plugins==7 and safe_plugins==2,(normal_plugins,safe_plugins)
+        report['checks'].append('Bundled Dashboard initialized and cleanly unloaded in seven normal launches; inactive in both Safe launches')
     else:
-        close_current();app=launch('safe-mode');handle,pid=window('OpenNav Safe Mode / OpenCPN');ready(4);chart_capture('preview-08-safe','XNav to Safe');close_current();preserved()
+        close_current();app=launch('safe-mode');handle,pid=window('OpenNav Safe Mode / OpenCPN');ready(4);chart_capture('preview-08-safe','XNav to Safe')
+        switch_to_xnav(5,'Safe to XNav','preview-12-safe-to-xnav');close_current();preserved()
+        app=launch('legacy');handle,pid=window('OpenCPN / Legacy');ready(6)
+        chart_capture('preview-13-legacy','Direct Legacy startup')
+        switch_to_xnav(7,'Direct Legacy to XNav','preview-14-legacy-to-xnav');close_current();preserved()
     handle=None
     report['checks'].append('XNav / Legacy / Safe clean lifecycle and shared navigation/config persistence passed; mode switch stops Demo')
     report['checks'].append('Real bundled coastline remains rendered after Legacy return and Safe restart')

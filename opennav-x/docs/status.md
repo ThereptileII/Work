@@ -85,8 +85,10 @@ owned by OpenCPN. No additional upstream patch was needed.
 [CI jobs/artifacts](evidence/chart-fix-bcc3fa2-gates.json) and
 [source equivalence](evidence/source-mirror-bcc3fa2.json) preserve the evidence.
 Documentation-only commits after this revision do not change the packaged binary.
-The next step is a user retest of Legacy → XNav; no production installer work is
-started.
+The user has now accepted the preview direction and authorized the
+[Alpha 1 stage](alpha1-plan.md). Its first gate expands chart checks to direct
+Legacy startup and Safe → XNav. Alpha functionality and the Alpha installer
+remain in progress; no Alpha package has been accepted yet.
 
 ## Initial Developer Preview gate (superseded for the chart-restart bug)
 
