@@ -113,6 +113,20 @@ try:
     state=(profile/'opennav-startup.state').read_text();assert 'failures 0' in state and 'pending 0' in state,state
     report['checks'].append('Human menu retry resets guard with saved evidence; clean close and navigation/config/plugin persistence passed')
     report['result']='passed; native screenshot review required'
+except Exception as error:
+    report['result']='failed';report['error']=repr(error)
+    if windows:
+        report['visible_windows']=[]
+        for owner in owned:
+            for h,process,title in ui.windows(owner):
+                report['visible_windows'].append({'pid':process,'title':title})
+                try:
+                    name='recovery-failed-'+str(len(report['visible_windows']))+'.png'
+                    ui.capture(h,evidence/name,resize=False,screen_pixels=True)
+                    report['screenshots'].append(name)
+                except Exception as capture_error:
+                    report.setdefault('capture_errors',[]).append(repr(capture_error))
+    raise
 finally:
     for child in owned:
         if windows:subprocess.run(['taskkill','/PID',str(child),'/F'],capture_output=True)

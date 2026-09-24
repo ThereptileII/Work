@@ -1,0 +1,50 @@
+{
+  "authority": "native Windows",
+  "checks": [
+    "Owned XNav process terminated before healthy startup 1; navigation fixtures preserved",
+    "Owned XNav process terminated before healthy startup 2; navigation fixtures preserved",
+    "Third explicit XNav launch automatically starts Safe; recovery notice and disabled plugin verified"
+  ],
+  "screenshots": [
+    "recovery-01-xnav.png",
+    "recovery-02-safe.png"
+  ],
+  "chart_rendering": [
+    {
+      "phase": "Automatic Safe recovery",
+      "reference_color_fractions": {
+        "aac3f0": 0.5625894134477826,
+        "aaaf50": 0.43741058655221743
+      },
+      "coastline_visible": true
+    }
+  ],
+  "display": {
+    "before": [
+      1280,
+      800,
+      32
+    ],
+    "after": [
+      1280,
+      800,
+      32
+    ]
+  },
+  "commit": "54029a3f774797fadcf46b61ab29319f543580a0",
+  "run": "https://github.com/ThereptileII/Work/actions/runs/36073537399",
+  "artifact_id": 10839109990,
+  "artifact_sha256": "3a0c4fa35d1f48673ee588cba0c76fc8c2d9d713cc2096ada9d3c155cd220e55",
+  "status": "failed; not accepted",
+  "linux_integrated": 90,
+  "windows_integrated": 80,
+  "portable_each": 28,
+  "failure": "Timeout waiting 30 seconds for automatic Safe process to exit after human Switch to XNav menu action. Exact cause not established.",
+  "observations": [
+    "Recovery record reset to failures 0 / pending 0 and retry backup exists",
+    "Safe coastline/preserved fixtures passed before timeout",
+    "No final failure screenshot existed in this harness revision",
+    "Other native candidates passed recovery; repeat gate and mode-request trace added, no assertion removed"
+  ],
+  "followup": "Capture visible native windows before terminating a failed owned test process; log request/close boundaries; retain three independent native recovery cycles."
+}

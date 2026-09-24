@@ -56,3 +56,10 @@ transactional recovery for arbitrary upstream defects, or an at-sea approval.
 Failures before OpenCPN's platform/single-instance initialization cannot be
 handled by an in-process guard; the standalone Safe/Legacy launchers and
 installer repair remain necessary recovery paths.
+
+An intermittent native Safe-to-XNav return timeout at `54029a3` is retained in
+[failure evidence](evidence/windows-recovery-54029a3-failure.json). The guard
+record reset and coastline checks passed, but process exit did not; the precise
+cause was not established from that run. Mode-request/close logging and failed
+window captures now improve diagnosis. Final native qualification includes three
+separate actual crash/recovery cycles; no automatic test retry hides a failure.

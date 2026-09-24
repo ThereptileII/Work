@@ -144,6 +144,19 @@ jobs:
       - name: Staged native loader check without profile initialization
         if: ${{ !cancelled() && steps.integrated.conclusion == 'success' }}
         run: python opennav-x/tools/smoke-installer-selftest.py --app opennav-x/build/xnav-install/opencpn.exe
+      - name: Repeat native crash-recovery returns with separate evidence
+        if: ${{ !cancelled() && steps.integrated.conclusion == 'success' }}
+        run: |
+          New-Item -ItemType Directory -Path opennav-x/evidence/local/recovery-repeat-0 | Out-Null
+          Get-ChildItem opennav-x/evidence/local -Filter 'recovery-*' | Where-Object { $_.Name -notlike 'recovery-repeat-*' } | Move-Item -Destination opennav-x/evidence/local/recovery-repeat-0
+          foreach ($Attempt in 1..2) {
+            python opennav-x/tools/smoke-recovery.py
+            $Result = $LASTEXITCODE
+            $Capture = "opennav-x/evidence/local/recovery-repeat-$Attempt"
+            New-Item -ItemType Directory -Path $Capture | Out-Null
+            Get-ChildItem opennav-x/evidence/local -Filter 'recovery-*' | Where-Object { $_.Name -notlike 'recovery-repeat-*' } | Move-Item -Destination $Capture
+            if ($Result -ne 0) { exit $Result }
+          }
       - name: Package and test the extracted Alpha portable build
         if: ${{ !cancelled() && steps.integrated.conclusion == 'success' }}
         run: ./opennav-x/tools/package-preview-windows.ps1

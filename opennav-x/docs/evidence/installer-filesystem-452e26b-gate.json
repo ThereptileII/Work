@@ -1,0 +1,15 @@
+{
+  "commit": "452e26bf472194979aa27663417b4a31291d6364",
+  "run": "https://github.com/ThereptileII/Work/actions/runs/36074618706",
+  "job": 107882935633,
+  "scope": "Native filesystem/portable contract job only; not installer or Alpha release acceptance",
+  "powershell": "5.1.20348.5622",
+  "native_filesystem_checks": {
+    "x64_host": 24,
+    "x86_host": 24
+  },
+  "portable_ctest": 28,
+  "restart_handoff_extra_repeats": 10,
+  "result": "passed",
+  "regression": "Atomic replacement now passes after the failed 8970a31 null-string binding case"
+}

@@ -100,6 +100,10 @@ std::optional<platform::PreviewPaths> preview_paths;
 
 void RequestMode(InterfaceMode mode,bool safe=false) {
   if (!host || !g_bDeferredInitDone || restart) return;
+  wxLogMessage("OpenNav human mode request: %s", safe ? "safe"
+                                                 : mode == InterfaceMode::XNav
+                                                     ? "xnav"
+                                                     : "legacy");
   if (mode == InterfaceMode::XNav && recovery && recovery->RequiresSafe() &&
       !recovery->Retry()) {
     wxMessageBox("Cannot reset the startup recovery record. Inspect the "
@@ -115,8 +119,13 @@ void RequestMode(InterfaceMode mode,bool safe=false) {
   // Closing there would delete the canvas while that stack is still active.
   host->CallAfter([] {
     if (!host) { restart.reset(); return; }
+    wxLogMessage("OpenNav mode request: asking OpenCPN to close");
     host->Close();
-    if (host) restart.reset();  // Upstream vetoed the close request.
+    if (host) {
+      wxLogMessage(
+          "OpenNav mode request: OpenCPN kept the current window open");
+      restart.reset(); // Upstream vetoed the close request.
+    }
   });
 }
 
@@ -433,6 +442,7 @@ void AppendModeMenu(wxMenu& menu) {
 }
 
 bool PrepareClose(wxFileConfig& config) {
+  wxLogMessage("OpenNav close preparation: preserving shared configuration");
   if (restart && !restart_safe) {
     wxString previous;
     const bool had_value = config.Read("/OpenNav/InterfaceMode", &previous);
