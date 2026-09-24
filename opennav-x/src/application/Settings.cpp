@@ -42,6 +42,7 @@ std::string SettingNumber(double n) {
   return out.str();
 }
 void ValidateSettings(const Settings &s) {
+  ValidateSignalKMappings(s.signal_k_mappings);
   const auto &e = s.energy;
   Range(e.battery.capacity_kwh, .001, 100000, "usable capacity (kWh)");
   Range(e.battery.reserve_soc_percent, 0, 100, "reserve SOC (%)");
@@ -71,11 +72,13 @@ void ValidateSettings(const Settings &s) {
     Require(p.first >= vessel::Quantity::Heading &&
                 p.first < vessel::Quantity::Count,
             "Unknown source quantity");
-    Size(p.second.pinned_source, 1024, "source identity");
+    Size(p.second.pinned_source, 512, "source identity");
     const auto &f = p.second.freshness;
     Require(f.aging_after.count() > 0 && f.stale_after > f.aging_after &&
-                f.stale_after <= vessel::Duration{3600000},
-            "Source ages must satisfy 0 < aging < stale <= 3600 s");
+                f.stale_after <= vessel::Duration{300000},
+            "Source ages must satisfy 0 < aging < stale <= 300 s");
+    vessel::SensorRegistry verifier;
+    verifier.Configure(p.first, p.second); // Share the live reducer's limits.
   }
 }
 std::string EncodeSettings(const Settings &s) {
@@ -100,6 +103,8 @@ std::string EncodeSettings(const Settings &s) {
       {"draft", SettingNumber(s.hazard.draft_m)},
       {"margin", SettingNumber(s.hazard.safety_margin_m)},
       {"corridor", SettingNumber(s.hazard.corridor_half_width_m)}};
+  if (!s.signal_k_mappings.empty())
+    r["signal_k_mappings"] = ExportSignalKMappings(s.signal_k_mappings);
   if (!e.curve.points.empty()) {
     r["curve"] = smartnav::ExportPowerCurve(e.curve);
     r["curve_source"] = e.curve.source;
@@ -184,13 +189,15 @@ Settings DecodeSettings(const std::string &record) {
     p.pinned_source = take(key);
     auto duration = [&](const std::string &k) {
       const auto d = ParseSettingNumber(take(k));
-      Require(std::isfinite(d) && d >= 0 && d <= 3600000 && std::floor(d) == d,
+      Require(std::isfinite(d) && d >= 0 && d <= 300000 && std::floor(d) == d,
               "Invalid source duration");
       return vessel::Duration{static_cast<long long>(d)};
     };
     p.freshness = {duration(key + ".aging"), duration(key + ".stale")};
     s.sources[q.quantity] = p;
   }
+  if (r.count("signal_k_mappings"))
+    s.signal_k_mappings = ImportSignalKMappings(take("signal_k_mappings"));
   Require(r.empty(), "Unknown settings fields");
   ValidateSettings(s);
   return s;

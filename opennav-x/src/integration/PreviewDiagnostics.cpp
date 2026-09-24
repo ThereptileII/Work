@@ -129,6 +129,17 @@ void WritePreviewDiagnostics(const std::string &path,
           : "Calibrated curve");
   report["settings"]["curve_source"] =
       wxString::FromUTF8(settings.energy.curve.source);
+  report["settings"]["signal_k_mappings"] = wxJSONValue(wxJSONTYPE_ARRAY);
+  for (const auto &m : settings.signal_k_mappings) {
+    wxJSONValue item;
+    item["path"] = wxString::FromUTF8(m.path);
+    item["quantity"] = wxString::FromUTF8(vessel::Describe(m.quantity).key);
+    item["scale"] = m.scale;
+    item["offset"] = m.offset;
+    item["canonical_unit"] =
+        wxString::FromUTF8(vessel::Describe(m.quantity).unit);
+    report["settings"]["signal_k_mappings"].Append(item);
+  }
   for (const auto &source : sources) {
     wxJSONValue v;
     const auto a = vessel::Assess(source.sample, now);

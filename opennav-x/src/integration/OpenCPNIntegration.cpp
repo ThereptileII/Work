@@ -270,6 +270,7 @@ void Attach(MyFrame& frame, wxAuiManager& manager, wxFileConfig& config) {
   settings = std::make_unique<integration::SettingsStore>(config);
   marine = std::make_unique<integration::MarineBridge>();
   auto configure_sources = [] {
+    marine->SetBindings(settings->Read().signal_k_mappings);
     for (const auto &q : vessel::Quantities()) {
       auto p = settings->Read().sources.find(q.quantity);
       marine->Sources().Configure(q.quantity,

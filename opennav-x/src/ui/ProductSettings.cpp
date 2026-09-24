@@ -238,6 +238,65 @@ void ProductPanel::Sources() {
        "never enters this live source registry.");
   Action("Connections / Advanced settings",
          actions_.navigation.legacy_settings);
+  Text("Explicit propulsion mappings: " +
+       wxString::Format("%u", static_cast<unsigned>(
+                                  state_.settings.signal_k_mappings.size())));
+  BeginActions(2);
+  Action("Import propulsion Signal K mapping", [this] {
+    wxFileDialog file(this, "Import documented propulsion mapping", {}, {},
+                      "CSV files (*.csv)|*.csv|All files|*",
+                      wxFD_OPEN | wxFD_FILE_MUST_EXIST);
+    if (file.ShowModal() != wxID_OK)
+      return;
+    try {
+      const auto path =
+          std::filesystem::u8path(file.GetPath().ToStdString(wxConvUTF8));
+      if (std::filesystem::file_size(path) > 16384)
+        throw std::invalid_argument("Mapping exceeds 16 KiB");
+      std::ifstream in(path, std::ios::binary);
+      std::string csv(16385, '\0');
+      in.read(csv.data(), csv.size());
+      csv.resize(static_cast<std::size_t>(in.gcount()));
+      if (in.bad())
+        throw std::invalid_argument("Cannot read mapping");
+      auto mappings = application::ImportSignalKMappings(csv);
+      wxString review =
+          "Confirm against the bridge's documented fields and units. These are "
+          "live input conversions, not simulated values. Old instrument "
+          "observations will be cleared.\n";
+      for (const auto &m : mappings)
+        review += W(m.path) + " → " + W(vessel::Describe(m.quantity).name) +
+                  " / value × " + N(m.scale) + " + " + N(m.offset) + " " +
+                  W(vessel::Describe(m.quantity).unit) + "\n";
+      if (!ConfirmSheet(*this, mode_, "Confirm propulsion mapping", review,
+                        "Use mappings"))
+        return;
+      auto settings = actions_.settings();
+      settings.signal_k_mappings = std::move(mappings);
+      SaveSettings(std::move(settings));
+    } catch (const std::exception &e) {
+      Result({false, e.what()});
+    }
+  });
+  Action(
+      "Remove custom propulsion mappings",
+      [this] {
+        if (!ConfirmSheet(*this, mode_, "Remove propulsion mappings",
+                          "Standard marine inputs remain available. All "
+                          "retained instrument observations will be cleared "
+                          "and reacquired from normal input messages.",
+                          "Remove mappings"))
+          return;
+        auto settings = actions_.settings();
+        settings.signal_k_mappings.clear();
+        SaveSettings(std::move(settings));
+      },
+      !state_.settings.signal_k_mappings.empty());
+  EndActions();
+  for (const auto &m : state_.settings.signal_k_mappings)
+    Text(W(m.path) + " / " + W(vessel::Describe(m.quantity).name) + " / × " +
+         N(m.scale) + " + " + N(m.offset) + " " +
+         W(vessel::Describe(m.quantity).unit));
   for (const auto &q : vessel::Quantities()) {
     Action(W(q.name), [this, q] {
       source_quantity_ = q.quantity;
@@ -295,8 +354,8 @@ void ProductPanel::SourceDetail() {
     try {
       auto duration = [](const std::string &v) {
         double d = application::ParseSettingNumber(v);
-        if (!std::isfinite(d) || d < 1 || d > 3600000 || std::floor(d) != d)
-          throw std::invalid_argument("Use whole milliseconds in 1..3600000");
+        if (!std::isfinite(d) || d < 1 || d > 300000 || std::floor(d) != d)
+          throw std::invalid_argument("Use whole milliseconds in 1..300000");
         return vessel::Duration{static_cast<long long>(d)};
       };
       s.sources[q].freshness = {duration((*values)[0]), duration((*values)[1])};

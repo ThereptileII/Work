@@ -65,6 +65,15 @@ llvmpipe, not a physical GPU. Native manager/route-gesture/chart gates are pendi
 [installer design](installer-alpha-design.md) is recorded; implementation and
 native lifecycle acceptance remain open.
 
+**Explicit propulsion mapping increment in progress:** Data Sources imports
+bounded, documented Signal K motor-temperature/electrical/shaft-power mappings,
+stores them in the shared profile and clears observations after interpretation
+changes. No mapping or Leaf CAN assumption is enabled by default. Linux passes
+27 portable and 90 integrated cases, instrument loopback and the preview smoke.
+Source-policy validation now uses the reducer's limits before saving.
+[Contract](propulsion-source-mapping.md), [local evidence](evidence/alpha-mapping-local-validation.json).
+Native acceptance remains pending.
+
 **Alpha 1 foundation gate closed:** `16dbaf72d7923742a5acaadf0fae42ee490e7cf6`
 passes all eight jobs in [run 36047288188](https://github.com/ThereptileII/Work/actions/runs/36047288188).
 Linux passes 67 integrated tests, Windows 57; each passes ten portable contracts

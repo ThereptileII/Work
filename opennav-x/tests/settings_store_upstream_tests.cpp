@@ -26,6 +26,8 @@ TEST(OpenNavSettings, PersistsInSharedProfileWithoutChangingOtherEntries) {
     integration::SettingsStore store(config);
     EXPECT_TRUE(std::isnan(store.Read().energy.battery.capacity_kwh));
     auto s = Config();
+    s.signal_k_mappings = {{"propulsion.main.electricalPower",
+                            vessel::Quantity::MotorPower, .001, 0}};
     s.sources[vessel::Quantity::Depth] = {
         "specific-source", {vessel::Duration{1200}, vessel::Duration{3500}}};
     ASSERT_TRUE(store.Save(s).ok);
@@ -34,6 +36,8 @@ TEST(OpenNavSettings, PersistsInSharedProfileWithoutChangingOtherEntries) {
     wxFileConfig config("", "", path, "", wxCONFIG_USE_LOCAL_FILE);
     integration::SettingsStore store(config);
     EXPECT_EQ(store.Read().energy.battery.capacity_kwh, 24);
+    ASSERT_EQ(store.Read().signal_k_mappings.size(), 1u);
+    EXPECT_EQ(store.Read().signal_k_mappings[0].scale, .001);
     EXPECT_EQ(store.Read().energy.battery_device_id, "pack-test");
     EXPECT_EQ(store.Read().sources.at(vessel::Quantity::Depth).pinned_source,
               "specific-source");

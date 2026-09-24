@@ -83,3 +83,7 @@ truncation/PGN/NA checks, heading/wind reference semantics, voltage saturation,
 units, checksums/status, missing versus zero, Signal K context/time/source and
 explicit extensions. Live UI subscription tests and native MSVC remain required
 integration gates. Boat data and sensor calibration are not physically accepted.
+
+Advanced explicit propulsion mapping import and persistence are described in
+[propulsion-source-mapping.md](propulsion-source-mapping.md). Standard marine
+paths retain precedence; no proprietary boat fields are assumed by default.

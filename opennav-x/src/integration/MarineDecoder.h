@@ -1,4 +1,5 @@
 #pragma once
+#include "application/MarineMapping.h"
 #include "vessel/SensorRegistry.h"
 #include <cstdint>
 #include <vector>
@@ -15,11 +16,7 @@ Decode0183Instruments(const std::string &sentence,
                       vessel::Time observation);
 // Explicit extension mapping. Canonical-unit scale/offset must be configured;
 // no proprietary propulsion/battery wire meanings are guessed.
-struct SignalKBinding {
-  std::string path;
-  vessel::Quantity quantity = vessel::Quantity::MotorPower;
-  double scale = 1, offset = 0;
-};
+using SignalKBinding = application::SignalKMapping;
 std::vector<vessel::SensorObservation> DecodeSignalKInstruments(
     const std::string &json, const std::string &self_context,
     const std::string &interface_identity, vessel::Time received,

@@ -1,6 +1,7 @@
 #pragma once
 #include "integration/MarineDecoder.h"
 #include "observable.h"
+#include <algorithm>
 #include <memory>
 
 namespace opennav::integration {
@@ -14,6 +15,16 @@ public:
   vessel::VesselState Merge(vessel::VesselState navigation,
                             vessel::Time now) const;
   void SetBindings(std::vector<SignalKBinding> bindings) {
+    application::ValidateSignalKMappings(bindings);
+    const bool same =
+        bindings.size() == bindings_.size() &&
+        std::equal(bindings.begin(), bindings.end(), bindings_.begin(),
+                   [](const auto &a, const auto &b) {
+                     return a.path == b.path && a.quantity == b.quantity &&
+                            a.scale == b.scale && a.offset == b.offset;
+                   });
+    if (!same)
+      sources_.Clear(); // Never retain values interpreted by an old mapping.
     bindings_ = std::move(bindings);
   }
 

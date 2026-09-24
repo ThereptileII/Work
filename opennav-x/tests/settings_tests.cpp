@@ -86,7 +86,10 @@ void Invalid() {
   s.sources[vessel::Quantity::Depth].freshness = {3s, 1s};
   Reject([&] { application::EncodeSettings(s); });
   s = Config();
-  s.sources[vessel::Quantity::Depth].freshness = {1s, 3601s};
+  s.sources[vessel::Quantity::Depth].freshness = {1s, 301s};
+  Reject([&] { application::EncodeSettings(s); });
+  s = Config();
+  s.sources[vessel::Quantity::Depth].pinned_source = std::string(513, 'a');
   Reject([&] { application::EncodeSettings(s); });
   s = Config();
   s.energy.battery_device_id = std::string("bad\0device", 10);
@@ -94,6 +97,39 @@ void Invalid() {
   s = Config();
   s.hazard.corridor_half_width_m = 0;
   Reject([&] { application::EncodeSettings(s); });
+}
+void Mappings() {
+  auto s = Config();
+  s.signal_k_mappings = application::ImportSignalKMappings(
+      "OpenNavXSignalK,1\r\npath,quantity,scale,offset\r\n"
+      "propulsion.main.motorTemperature,motor_temperature,1,-273.15\r\n"
+      "propulsion.main.electricalPower,motor_power,0.001,0\r\n");
+  auto decoded = application::DecodeSettings(application::EncodeSettings(s));
+  Check(decoded.signal_k_mappings.size() == 2 &&
+            decoded.signal_k_mappings[1].scale == .001,
+        "Persisted explicit mapping conversions");
+  Check(application::ExportSignalKMappings(decoded.signal_k_mappings) ==
+            application::ExportSignalKMappings(s.signal_k_mappings),
+        "Mapping roundtrip");
+  const std::string prefix = "OpenNavXSignalK,1\npath,quantity,scale,offset\n";
+  for (const auto &row : {"propulsion.main.voltage,battery_voltage,1,0\n",
+                          "navigation.foo,motor_power,1,0\n",
+                          "propulsion.main.foo,motor_power,0,0\n",
+                          "propulsion.main.foo,motor_power,nan,0\n",
+                          "propulsion.main.foo,motor_power,1,inf\n",
+                          "propulsion.main.foo,motor_power,1,\n",
+                          "propulsion..foo,motor_power,1,0\n",
+                          "propulsion.main.coolantTemperature,motor_temperature,1,0\n",
+                          "propulsion.main.foo,motor_power,1,0,extra\n",
+                          "propulsion.main.foo,motor_power,1,0\npropulsion."
+                          "main.foo,shaft_power,1,0\n"})
+    Reject([&] { application::ImportSignalKMappings(prefix + row); });
+  s.signal_k_mappings.resize(17, s.signal_k_mappings[0]);
+  Reject([&] { application::EncodeSettings(s); });
+  Reject([&] { application::ImportSignalKMappings(std::string(16385, 'x')); });
+  Check(application::DecodeSettings(application::EncodeSettings(Config()))
+            .signal_k_mappings.empty(),
+        "Existing records acquire no implicit mappings");
 }
 void Live() {
   auto c = application::DecodeSettings(application::EncodeSettings(Config()));
@@ -137,6 +173,8 @@ int main(int argc, char **argv) {
       RoundTrip();
     else if (arg == "invalid")
       Invalid();
+    else if (arg == "mappings")
+      Mappings();
     else if (arg == "live")
       Live();
     else

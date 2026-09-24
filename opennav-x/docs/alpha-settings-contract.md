@@ -89,3 +89,12 @@ explicit live battery observations can feed range and route arrival estimates.
 Native acceptance remains pending until status
 links the exact passing revision. Physical capacity/current calibration and
 recorded boat power curves remain unaccepted boat tests.
+
+Explicit optional propulsion mappings are documented in
+[propulsion-source-mapping.md](propulsion-source-mapping.md). Configuration
+validation shares the live registry's source-policy validation: source pins are
+at most 512 bytes and stale thresholds at most 300 seconds. The earlier settings
+validator's one-hour/1024-byte bounds exceeded the reducer's accepted limits;
+those inputs now fail before saving instead of causing an exception while
+applying persisted settings. Energy and selected-navigation freshness ceilings
+remain unchanged.

@@ -1,4 +1,5 @@
 #pragma once
+#include "application/MarineMapping.h"
 #include "smartnav/EnergyConfiguration.h"
 #include "smartnav/HazardLookAhead.h"
 #include "vessel/SensorRegistry.h"
@@ -12,6 +13,7 @@ struct Settings {
   vessel::CurrentConvention current = vessel::CurrentConvention::Unconfigured;
   smartnav::HazardConfiguration hazard;
   std::map<vessel::Quantity, vessel::SourcePolicy> sources;
+  std::vector<SignalKMapping> signal_k_mappings;
 };
 // Bounded, versioned serialization for one OpenCPN profile entry. Rejects
 // unknown fields, duplicates, malformed numbers and unsupported versions.

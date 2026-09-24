@@ -1,0 +1,20 @@
+{
+  "status": "Linux development pass; native exact-commit gate pending",
+  "portable_contracts": 27,
+  "integrated_tests": 90,
+  "post_validation_correction_targeted_tests": 20,
+  "checks": [
+    "Explicit mapping roundtrip, boundaries, malformed/nonfinite/duplicate/unsupported fields",
+    "Persisted mapping through pinned Signal K decoder with original timestamp, stale/null/domain checks and no battery-power alias",
+    "Shared profile stores mapping without changing other entries",
+    "Source policy limits validated before save using live reducer validation",
+    "Existing instrument loopback and full preview scenarios passed"
+  ],
+  "logs": {
+    "alpha-mapping-contracts-final2-tests.log": "70581d3da753f066eb4ddfd7c52b935149080e389d5ddbdc5423dbb5092fc605",
+    "alpha-mapping-final-tests.log": "e3fd9594b802f1b7eaa0c3dd4dad2c0ecd5bbea9e93fb4e138fe956018159811",
+    "alpha-mapping-targeted-tests.log": "855c8280e286a3a05fd1824643d2da43bd639d12170f36ee9abe3beb5060b6f6",
+    "alpha-mapping-instruments.log": "f61c1d28b33effd45df09ea807b498098ab5c2395ea4fca21aef00490a2c188f",
+    "alpha-mapping-preview.log": "6384cb4f5aaf9348094aea0e18d804a9a02f5a045af104f7a4838c80d24466af"
+  }
+}

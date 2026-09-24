@@ -318,3 +318,43 @@ TEST(OpenNavMarine, ConfiguredLiveBatteryFeedsEnergyWithoutDemoDefaults) {
   EXPECT_FALSE(smartnav::PredictConfiguredEnergy(loaded.energy, state, epoch)
                    .arrival.estimate);
 }
+
+TEST(OpenNavMarine, PersistedPropulsionMappingsPreserveAgeAndDomain) {
+  application::Settings configured;
+  configured.signal_k_mappings = application::ImportSignalKMappings(
+      "OpenNavXSignalK,1\npath,quantity,scale,offset\n"
+      "propulsion.main.electricalPower,motor_power,0.001,0\n"
+      "propulsion.main.motorTemperature,motor_temperature,1,-273.15\n");
+  const auto settings =
+      application::DecodeSettings(application::EncodeSettings(configured));
+  const auto wall =
+      std::chrono::system_clock::time_point{std::chrono::seconds(1790251200)};
+  const std::string json =
+      R"({"context":"vessels.test","updates":[{"timestamp":"2026-09-24T11:59:58Z","$source":"boat-bridge","values":[{"path":"propulsion.main.electricalPower","value":7200},{"path":"propulsion.main.motorTemperature","value":335.15}]}]})";
+  auto samples = DecodeSignalKInstruments(json, "vessels.test", "boat", epoch,
+                                          wall, settings.signal_k_mappings);
+  ASSERT_EQ(samples.size(), 2u);
+  auto state = State(samples);
+  ASSERT_TRUE(state.propulsion.electrical_power_kw.value);
+  EXPECT_NEAR(*state.propulsion.electrical_power_kw.value, 7.2, 1e-9);
+  EXPECT_NEAR(*state.propulsion.motor_temperature_c.value, 62, 1e-9);
+  EXPECT_EQ(state.propulsion.electrical_power_kw.observed_at, epoch - 2s);
+  EXPECT_EQ(Assess(state.propulsion.electrical_power_kw, epoch + 3s).quality,
+            Quality::Stale);
+  EXPECT_NE(state.propulsion.electrical_power_kw.source.find("boat-bridge"),
+            std::string::npos);
+  EXPECT_FALSE(state.battery.net_discharge_kw.value);
+  EXPECT_TRUE(
+      DecodeSignalKInstruments(json, "vessels.test", "boat", epoch, wall, {})
+          .empty());
+  auto invalid = json;
+  invalid.replace(invalid.find("7200"), 4, "null");
+  state = State(DecodeSignalKInstruments(invalid, "vessels.test", "boat", epoch,
+                                         wall, settings.signal_k_mappings));
+  EXPECT_FALSE(state.propulsion.electrical_power_kw.value);
+  invalid = json;
+  invalid.replace(invalid.find("7200"), 4, "1e308");
+  state = State(DecodeSignalKInstruments(invalid, "vessels.test", "boat", epoch,
+                                         wall, settings.signal_k_mappings));
+  EXPECT_FALSE(state.propulsion.electrical_power_kw.value);
+}
