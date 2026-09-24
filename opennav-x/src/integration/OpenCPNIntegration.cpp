@@ -8,9 +8,12 @@
 #include "integration/OpenCPNRouteReader.h"
 #include "integration/PreviewDiagnostics.h"
 #include "integration/PreviewResources.h"
+#include "integration/RecoveryStore.h"
 #include "integration/RoutePassWatch.h"
 #include "integration/SettingsStore.h"
 #include "integration/StartupMode.h"
+#include "model/base_platform.h"
+#include "model/safe_mode.h"
 #include "platform/PlatformIntegration.h"
 #include "platform/PortableProfile.h"
 #include "ui/Shell.h"
@@ -71,6 +74,8 @@ std::unique_ptr<ui::Shell> shell;
 std::unique_ptr<NavigationBridge> navigation;
 std::unique_ptr<integration::MarineBridge> marine;
 std::unique_ptr<integration::SettingsStore> settings;
+std::unique_ptr<integration::RecoveryStore> recovery;
+bool recovery_safe = false;
 adapters::UnavailableRadar radar;
 application::AnchorState anchor_state;
 struct PilotServices {
@@ -93,6 +98,13 @@ std::optional<platform::PreviewPaths> preview_paths;
 
 void RequestMode(InterfaceMode mode,bool safe=false) {
   if (!host || !g_bDeferredInitDone || restart) return;
+  if (mode == InterfaceMode::XNav && recovery && recovery->RequiresSafe() &&
+      !recovery->Retry()) {
+    wxMessageBox("Cannot reset the startup recovery record. Inspect the "
+                 "profile storage and diagnostics before retrying XNav.",
+                 "OpenNav recovery", wxOK | wxICON_ERROR, host);
+    return;
+  }
   restart = mode;
   restart_safe=safe;
   // OpenCPN may refuse close while initialising, compressing or updating charts.
@@ -179,6 +191,16 @@ bool IsPortablePreview() { return preview_paths.has_value(); }
 bool IsXNav() { return selected == StartupMode::XNav; }
 bool HideLegacyToolbar(const void* toolbar) { return IsXNav() && toolbar == g_MainToolbar; }
 
+bool CheckStartupRecovery() {
+  recovery = std::make_unique<integration::RecoveryStore>(
+      g_BasePlatform->GetPrivateDataDir());
+  recovery_safe = recovery->RequiresSafe() && !flags.legacy;
+  if (recovery_safe)
+    wxLogWarning("OpenNav automatic Safe Mode: %s",
+                 wxString::FromUTF8(recovery->Reason()));
+  return recovery_safe;
+}
+
 void SelectMode(wxFileConfig& config, bool upstream_safe) {
   if (preview_paths) {
     const auto basemap = integration::PreviewBasemapDefault(
@@ -200,7 +222,23 @@ void SelectMode(wxFileConfig& config, bool upstream_safe) {
   }
   auto effective_flags = flags;
   effective_flags.safe = effective_flags.safe || upstream_safe;
+  effective_flags.safe = effective_flags.safe || recovery_safe;
   selected = integration::ResolveStartup(effective_flags, persisted).mode;
+  if (IsXNav() && recovery && !recovery->BeginXNav()) {
+    selected = StartupMode::Safe;
+    recovery_safe = true;
+    safe_mode::set_mode(true);
+  }
+  if (diagnostic_directory.empty() && IsXNav()) {
+    const auto folder =
+        wxFileName(g_BasePlatform->GetPrivateDataDir(), "opennav-logs")
+            .GetFullPath();
+    if (wxDirExists(folder) ||
+        wxFileName::Mkdir(folder, wxS_DIR_DEFAULT, wxPATH_MKDIR_FULL))
+      diagnostic_directory = folder.ToStdString(wxConvUTF8);
+    else
+      wxLogWarning("OpenNav diagnostic directory unavailable: %s", folder);
+  }
   executable = wxStandardPaths::Get().GetExecutablePath().ToStdString(wxConvUTF8);
   wxLogMessage("OpenNav startup: %s", selected == StartupMode::Safe ? "safe" : IsXNav() ? "xnav" : "legacy");
 }
@@ -216,6 +254,15 @@ void Attach(MyFrame& frame, wxAuiManager& manager, wxFileConfig& config) {
   }
   if (!IsXNav()) {
     frame.SetTitle(selected == StartupMode::Safe ? "OpenNav Safe Mode / OpenCPN" : "OpenCPN / Legacy");
+    if (recovery_safe)
+      frame.CallAfter([&frame] {
+        wxMessageBox(
+            "XNav did not complete startup reliably. OpenCPN is running in "
+            "Safe Mode with OpenNav modules, plugins and OpenGL disabled. "
+            "Navigation data has not been reset. Inspect the OpenCPN log; use "
+            "Switch to XNav only when ready to retry.",
+            "OpenNav startup recovery", wxOK | wxICON_INFORMATION, &frame);
+      });
     return;
   }
   frame.SetTitle("OpenNav X / OpenCPN");
@@ -275,7 +322,11 @@ void Attach(MyFrame& frame, wxAuiManager& manager, wxFileConfig& config) {
                                     settings->Read().current, now);
     return state;
   };
-  actions.build_info=[&frame] {return integration::PreviewBuildInfo(frame.GetDPI().x,g_configdir);};
+  actions.build_info = [&frame] {
+    return integration::PreviewBuildInfo(
+        frame.GetDPI().x,
+        g_BasePlatform->GetPrivateDataDir().ToStdString(wxConvUTF8));
+  };
   actions.diagnostics_folder=[] {
     if(!diagnostic_directory.empty()) wxLaunchDefaultApplication(wxString::FromUTF8(diagnostic_directory));
   };
@@ -289,8 +340,10 @@ void Attach(MyFrame& frame, wxAuiManager& manager, wxFileConfig& config) {
     last=now;
     integration::WritePreviewDiagnostics(
         diagnostic_directory + "/opennav-diagnostics.json", state,
-        integration::PreviewBuildInfo(frame.GetDPI().x, g_configdir), energy,
-        settings->Read(), marine->Sources().Health(now), page);
+        integration::PreviewBuildInfo(
+            frame.GetDPI().x,
+            g_BasePlatform->GetPrivateDataDir().ToStdString(wxConvUTF8)),
+        energy, settings->Read(), marine->Sources().Health(now), page);
   };
   actions.demo_chart=[] { if(g_bDeferredInitDone) JumpToPosition(59.08,18.5,0.003); };
   actions.theme = [&frame](ui::LightMode mode) {
@@ -310,6 +363,8 @@ void Attach(MyFrame& frame, wxAuiManager& manager, wxFileConfig& config) {
 }
 
 void AfterAnchorWatch(){
+  if (recovery && IsXNav())
+    recovery->ObserveHealthy(g_bDeferredInitDone, vessel::Clock::now());
   if(!navigation)return;
   auto current=integration::ObserveAnchor(selected_navigation.navigation,vessel::Clock::now());
   if(current.waypoint_id==anchor_state.waypoint_id)current.recent_positions=anchor_state.recent_positions;
@@ -370,6 +425,8 @@ bool PrepareClose(wxFileConfig& config) {
       return false;
     }
   }
+  if (recovery && IsXNav())
+    recovery->CleanClose();
   // Remove OpenNav AUI panes before upstream persists its stock perspective.
   navigation.reset();
   marine.reset();

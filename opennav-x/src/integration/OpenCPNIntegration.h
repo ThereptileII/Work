@@ -20,6 +20,9 @@ vessel::RouteProgress CurrentRouteProgress();
 void AddCommandLine(wxCmdLineParser& parser);
 bool ParseCommandLine(wxCmdLineParser& parser);
 bool SafeRequested();
+// Called after the upstream single-instance check, before its recovery dialog
+// and before plugins/OpenGL initialization.
+bool CheckStartupRecovery();
 bool IsPortablePreview();
 bool IsXNav();
 void SelectMode(wxFileConfig& config, bool upstream_safe);

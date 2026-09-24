@@ -21,8 +21,11 @@ manual autopilot simulation and anchor-watch observation are implemented. The
 `e4821d3` candidate passes Linux and native MSVC compilation/71 tests, but its
 new Windows property-sheet automation misread a cross-process edit buffer.
 [Failure record](evidence/alpha-products-e4821d3-candidate.json) is retained;
-`bdb58f9` corrects the helper without removing an assertion and is being gated.
-This UI milestone is not yet accepted on Windows.
+`bdb58f9` corrects the edit helper; its property-sheet assertions pass, but
+Windows then exposed an unclosed SQLite verifier connection during cleanup.
+[Second record](evidence/alpha-products-bdb58f9-candidate.json). `5c8428e` closes
+that connection explicitly and is being gated with live settings. No assertion
+was removed. This UI milestone is not yet accepted on Windows.
 
 **Live settings increment in progress:** explicit battery/current/curve
 configuration, per-quantity source selection and freshness, shared-profile
@@ -32,6 +35,12 @@ persistence, live energy consumers, vessel safety assumptions and radar status.
 Native acceptance is pending. The installer,
 broader chart/plugin/DPI validation and final Alpha packaging remain ahead.
 This is not an Alpha release candidate.
+
+**Startup recovery increment in progress:** the XNav startup journal selects
+upstream Safe Mode after two unfinished starts and preserves human retry
+records. Linux passes 26 portable and 89 integrated tests plus the actual
+process-termination/recovery/persistence scenario, including two coastline
+checks. Native acceptance remains pending. [Contract](startup-recovery.md).
 
 **Alpha 1 foundation gate closed:** `16dbaf72d7923742a5acaadf0fae42ee490e7cf6`
 passes all eight jobs in [run 36047288188](https://github.com/ThereptileII/Work/actions/runs/36047288188).

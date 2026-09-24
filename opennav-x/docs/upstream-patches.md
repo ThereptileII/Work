@@ -199,3 +199,14 @@ storage, AIS calculation, autopilot output or plugin ABI method changes. See
 [navigation object contract](navigation-objects-contract.md). Normal frame/canvas
 commands are used through the integration action service rather than new hooks
 for every toolbar control.
+
+## Alpha startup recovery
+
+The existing `ocpn_app.cpp` patch adds one guarded call to
+`CheckStartupRecovery()` after the normal single-instance check and before
+`safe_mode::check_last_start()`. A blocked XNav startup calls upstream
+`safe_mode::set_mode(true)` before plugin/GL setup. Normal OpenCPN Safe Restart
+and `startcheck.dat` behavior remain intact. The existing SelectMode/Attach,
+normal frame-processing and close boundaries account for startup health and
+clean exit; no new navigation processing is triggered. See
+[startup recovery contract](startup-recovery.md).

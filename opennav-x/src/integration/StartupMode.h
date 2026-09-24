@@ -5,7 +5,7 @@
 
 namespace opennav::integration {
 
-// These are startup policy contracts, not yet wired into OpenCPN's lifecycle.
+// Startup policy shared by the integration lifecycle and portable tests.
 enum class InterfaceMode { XNav, Legacy };
 enum class StartupMode { XNav, Legacy, Safe };
 enum class SelectionSource { Default, Persisted, CommandLine };

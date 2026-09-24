@@ -19,7 +19,8 @@ target_compile_features(opennav_marine PUBLIC cxx_std_17)
 target_sources(${PACKAGE_NAME} PRIVATE "${OPENNAV_ROOT}/src/integration/MarineBridge.cpp")
 target_sources(${PACKAGE_NAME} PRIVATE "${OPENNAV_ROOT}/src/integration/NavigationObjects.cpp"
   "${OPENNAV_ROOT}/src/integration/NavigationActions.cpp"
-  "${OPENNAV_ROOT}/src/integration/SettingsStore.cpp")
+  "${OPENNAV_ROOT}/src/integration/SettingsStore.cpp"
+  "${OPENNAV_ROOT}/src/integration/RecoveryStore.cpp")
 target_link_libraries(${PACKAGE_NAME} PRIVATE opennav_marine)
 set(OPENNAV_BUILD_COMMIT "$ENV{GITHUB_SHA}")
 if(NOT OPENNAV_BUILD_COMMIT)
@@ -65,6 +66,8 @@ function(opennav_attach_route_tests)
       "${OPENNAV_ROOT}/tests/route_progress_upstream_tests.cpp"
       "${OPENNAV_ROOT}/tests/marine_decoder_upstream_tests.cpp"
       "${OPENNAV_ROOT}/tests/settings_store_upstream_tests.cpp"
+      "${OPENNAV_ROOT}/tests/recovery_store_upstream_tests.cpp"
+      "${OPENNAV_ROOT}/src/integration/RecoveryStore.cpp"
       "${OPENNAV_ROOT}/src/integration/SettingsStore.cpp"
       "${OPENNAV_ROOT}/src/integration/OpenCPNRouteReader.cpp")
     target_include_directories(tests PRIVATE "${OPENNAV_ROOT}/src")

@@ -1,0 +1,64 @@
+{
+  "status": "Local development evidence; native exact-commit acceptance pending",
+  "portableTests": 26,
+  "integratedTests": 89,
+  "checks": {
+    "authority": "Linux development",
+    "checks": [
+      "Owned XNav process terminated before healthy startup 1; navigation fixtures preserved",
+      "Owned XNav process terminated before healthy startup 2; navigation fixtures preserved",
+      "Third explicit XNav launch automatically starts Safe; recovery notice and disabled plugin verified",
+      "Human menu retry resets guard with saved evidence; clean close and navigation/config/plugin persistence passed"
+    ],
+    "screenshots": [
+      "recovery-01-xnav-linux.png",
+      "recovery-02-safe-linux.png",
+      "recovery-03-retry-linux.png"
+    ],
+    "chart_rendering": [
+      {
+        "phase": "Automatic Safe recovery",
+        "reference_color_fractions": {
+          "aac3f0": 0.5638054363376251,
+          "aaaf50": 0.41587982832618026
+        },
+        "coastline_visible": true
+      },
+      {
+        "phase": "Human-requested XNav retry",
+        "reference_color_fractions": {
+          "aac3f0": 0.6076180257510729,
+          "aaaf50": 0.3726752503576538
+        },
+        "coastline_visible": true
+      }
+    ],
+    "result": "passed; native screenshot review required"
+  },
+  "existingGates": "Shared-profile mode cycle and expanded preview/scenarios/coastline checks passed",
+  "logs": {
+    "alpha-recovery-contracts.log": "0cbbf65f57e4619f2e0b99fad4c12d05e82c625dee92ca1c10730dd799bb0836",
+    "alpha-recovery-build.log": "9f3284d21f017a9538dc19a02755c1e9840e7cccc268b41ef2396b895fdcac28",
+    "alpha-recovery-smoke.log": "ddd21e4c157fe7575fa037f10951ba41a4c49b7eadbb51cf4bd066255505d687",
+    "alpha-recovery-modes.log": "9734bb2317f55b6f79cdd5b5c3104634142ef25f75f56697e404417c1c329407",
+    "alpha-recovery-preview.log": "39eba04055171dc1a901ab02c160a56adaec6e9975e94e0d4ebac6632aa6e0b1",
+    "alpha-recovery-final-build.log": "0d4793dcfdb32bdd12e64685436a223e34602be96ba12efabe96b55b9fbd8b51"
+  },
+  "reviewedScreenshots": [
+    {
+      "file": "recovery-01-xnav-linux.png",
+      "sha256": "6a17df0a0146fc356eceea6ef69e5064275b5bd2d26e87a4d63393a23935fc1b",
+      "review": "1280x800 Linux: visible coastline and no unexpected XNav/Legacy layout change"
+    },
+    {
+      "file": "recovery-02-safe-linux.png",
+      "sha256": "f1d5232b352c74242e420ec880169058fe6864602d0b8aa843ac3eb86a6ce054",
+      "review": "1280x800 Linux: visible coastline and no unexpected XNav/Legacy layout change"
+    },
+    {
+      "file": "recovery-03-retry-linux.png",
+      "sha256": "6a17df0a0146fc356eceea6ef69e5064275b5bd2d26e87a4d63393a23935fc1b",
+      "review": "1280x800 Linux: visible coastline and no unexpected XNav/Legacy layout change"
+    }
+  ]
+}
