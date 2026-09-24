@@ -72,3 +72,10 @@ version header and original candidate executable in a `finally` block; the
 fixture is excluded from release downloads. Loader checks verify product version
 as well as build commit. Literal upstream resource names containing `&` are
 accepted as filenames; they never enter a shell command.
+
+NSIS `GetOptions` clears the output on an absent option. Normal wizard startup
+therefore explicitly restores Install (Setup) or Repair (maintenance) defaults.
+Native automation quotes option values (`/OPENCPN="path with spaces"`) rather
+than the entire option, so the selected stock path is actually parsed. The
+normal no-argument wizard is exercised and captured before cancellation; this
+supplements the silent lifecycle suite. [NSIS GetOptions source](https://github.com/kichik/nsis/blob/master/Include/FileFunc.nsh).

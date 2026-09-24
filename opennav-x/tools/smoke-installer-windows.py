@@ -34,8 +34,11 @@ def state():return json.loads((INSTALL/'state.json').read_text(encoding='utf-8-s
 def generation():return INSTALL/'generations'/state()['current']
 def setup(action,stock,expected=0,failure='',executable=SETUP):
     out=EVIDENCE/f'installer-{len(report["checks"]):02}-{action}.json'
-    cmd=[str(executable),'/S','/ACTION='+action,'/OPENCPN='+str(stock),'/REPORT='+str(out)]
-    if failure:cmd+=['/FAILURE='+failure]
+    assert all('"' not in str(value) for value in (stock,out,action,failure))
+    # GetOptions recognizes /NAME="value with spaces", not a quoted entire
+    # "/NAME=value with spaces" argument. This goes directly to CreateProcess.
+    cmd=subprocess.list2cmdline([str(executable)])+' /S /ACTION='+action+' /OPENCPN="'+str(stock)+'" /REPORT="'+str(out)+'"'
+    if failure:cmd+=' /FAILURE='+failure
     result=subprocess.run(cmd,timeout=180)
     assert result.returncode==expected,(action,result.returncode,out.read_text() if out.exists() else 'No report')
     assert out.exists(),out
@@ -69,6 +72,27 @@ def launch(exe,mode,title,profile,name):
     return p,h,rgb
 def close(p,h):
     ui.close(h);assert p.wait(timeout=30)==0;owned.discard(p.pid)
+def wizard(stock):
+    p=subprocess.Popen([str(SETUP)]);owned.add(p.pid)
+    title='OpenNav X Alpha 1 Setup'
+    h,_=ui.wait_window(title,p.pid,timeout=45)
+    ui.capture(h,EVIDENCE/'installer-wizard-welcome.png',resize=False,screen_pixels=True)
+    report['screenshots'].append('installer-wizard-welcome.png')
+    get_item=ui.declare(ui.user,'GetDlgItem',ctypes.c_void_p,ctypes.c_void_p,ctypes.c_int)
+    ui.PostMessageW(get_item(h,1),0x00F5,0,0)
+    deadline=time.monotonic()+10
+    while time.monotonic()<deadline:
+        if any('Select the original installed' in label for _,label in ui.children(h)):break
+        time.sleep(.1)
+    else:raise RuntimeError('Installer selection page did not open')
+    assert any(ui.control_text(child)=='Install' for child,_ in ui.children(h)), 'Missing normal-launch Install default'
+    ui.set_dialog_fields(p.pid,title,[str(stock)])
+    ui.capture(h,EVIDENCE/'installer-wizard-selection.png',resize=False,screen_pixels=True)
+    report['screenshots'].append('installer-wizard-selection.png')
+    ui.PostMessageW(get_item(h,2),0x00F5,0,0)
+    p.wait(timeout=30);owned.discard(p.pid)
+    assert not INSTALL.exists()
+    check('Conventional wizard opens without command-line options; default Install and path input work; Cancel changes no installation')
 try:
     assert not INSTALL.exists(),'Runner must not contain a previous/user Alpha installation'
     report['display']=ui.ensure_desktop()
@@ -86,6 +110,7 @@ try:
         original=stock/'opencpn.exe';assert sha(original)==STOCK_HASH
         stock_before=inventory(stock)
         check('Official supported OpenCPN installed and exact PE executable SHA-256 verified')
+        wizard(original)
         bad=temporary/'unknown';bad.mkdir();shutil.copy2(original,bad/'opencpn.exe')
         with (bad/'opencpn.exe').open('ab') as f:f.write(b'unsupported build')
         setup('Install',bad/'opencpn.exe',expected=1)

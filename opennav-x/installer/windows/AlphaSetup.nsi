@@ -47,6 +47,9 @@ Function .onInit
   StrCpy $FailurePoint ""
   ${GetParameters} $0
   ${GetOptions} $0 "/ACTION=" $Action
+  ${If} ${Errors}
+    StrCpy $Action "Install"
+  ${EndIf}
   ${GetOptions} $0 "/OPENCPN=" $StockPath
   ${GetOptions} $0 "/REPORT=" $ReportPath
   ${GetOptions} $0 "/FAILURE=" $FailurePoint
@@ -116,6 +119,9 @@ Function un.onInit
   StrCpy $ReportPath ""
   ${GetParameters} $0
   ${GetOptions} $0 "/ACTION=" $Action
+  ${If} ${Errors}
+    StrCpy $Action "Repair"
+  ${EndIf}
   ${GetOptions} $0 "/REPORT=" $ReportPath
   ${If} $Action != "Uninstall"
   ${AndIf} $Action != "Rollback"
