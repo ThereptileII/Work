@@ -54,7 +54,9 @@ int main(int argc, char **argv) {
                                  std::to_string(GetLastError()));
       POINTER_TOUCH_INFO contact{};
       contact.pointerInfo.pointerType = PT_TOUCH;
-      contact.pointerInfo.pointerId = 1;
+      // Contact slots are zero based; maxCount is one. Follow Microsoft's
+      // InjectTouchPointerInput sample rather than submitting slot 1 of 1.
+      contact.pointerInfo.pointerId = 0;
       contact.pointerInfo.ptPixelLocation = {x, y};
       contact.pointerInfo.pointerFlags =
           POINTER_FLAG_DOWN | POINTER_FLAG_INRANGE | POINTER_FLAG_INCONTACT;

@@ -1,0 +1,13 @@
+{
+  "commit": "bef23943fd350c1521a9ff2abb1299e23bf723b3",
+  "ci_run": "https://github.com/ThereptileII/Work/actions/runs/36066670334",
+  "status": "not accepted; native touch helper rejected down contact",
+  "linux_integrated": 89,
+  "windows_integrated": 79,
+  "portable_each": 26,
+  "artifact_id": 10837193588,
+  "artifact_sha256": "54ae05b46f913fb394279addc17a52677351d4ebbd642018ff8daf6d366f9651",
+  "observed": "Native helper built and monitor DPI query/set succeeded; application 100% pages/sheet and bounds assertions passed. Touch down returned Win32 error 87; no 125/150% acceptance or package gate claimed.",
+  "correction": "Use contact slot zero with maxCount one, following Microsoft sample; preserve actual page-change assertion and rerun.",
+  "reference": "https://github.com/microsoft/Windows-classic-samples/blob/main/Samples/InjectTouchPointerInput/cpp/InjectTouch.cpp"
+}
