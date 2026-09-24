@@ -1,5 +1,42 @@
 # Advisory energy model and preview presentation
 
+## Alpha calibrated input contract
+
+`EnergyConfiguration` adds a live-input wrapper around the unchanged numerical
+core. A live calculation requires explicitly configured usable capacity, reserve
+and battery device identity. SOC and measured whole-pack discharge must belong
+to that device. Missing configuration suppresses estimates. Demo remains an
+explicit separate source and is never substituted for live telemetry.
+
+An optional empirical curve uses this UTF-8/ASCII CSV format (the numbers below
+are test examples, not installed boat defaults):
+
+```csv
+OpenNavXPowerCurve,1
+reference,STW
+basis,whole-pack
+speed_kn,power_kw
+2,1
+4,3
+6,9
+```
+
+`reference` is explicitly `STW` or `SOG`. `basis` is `whole-pack`,
+`motor-electrical` or `shaft`. Speeds must increase strictly; two to 512 finite
+positive power points are accepted. The import is bounded to 32 KiB and retains
+its source. Linear interpolation is allowed only inside the measured domain;
+there is no extrapolation. Motor curves require configured hotel power; shaft
+curves additionally require configured efficiency in (0,1]. Neither is guessed.
+The required speed sample must be fresh. The estimate keeps its original time,
+uses SOG for passage duration, and reports its curve/reference/power assumptions.
+This remains a constant-condition advisory estimate, not a leg/weather forecast.
+
+`energy_curve_import` and `energy_live_configuration` cover format/units,
+round-trip import, domain limits, interpolation, STW/SOG distinction, battery
+identity, efficiency/hotel configuration, stale inputs, invalid route states and
+energy shortfall. UI configuration and physical calibration acceptance remain
+separate gates. Existing energy and Demo regressions are retained.
+
 The tested calculation core was implemented after the dual-mode Windows gate
 passed at `c5a0fd0`. Developer Preview consumes it through owned Vessel Data
 snapshots; see the presentation section below and current acceptance in status.

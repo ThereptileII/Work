@@ -1,5 +1,9 @@
 # Read-only selected navigation slice
 
+Alpha extends other instruments through the separate
+[source contract](vessel-source-contract.md). The selected-navigation behavior
+documented below remains unchanged.
+
 OpenCPN revision: `37fd0cddb7334fe489e9f18aa163977a9c5c84f7`.
 Scope: position, SOG and COG from OpenCPN's decoded, priority-selected message
 bus. No connection ownership, NMEA parsing, chart mutation or output commands

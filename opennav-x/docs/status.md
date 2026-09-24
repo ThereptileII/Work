@@ -27,6 +27,13 @@ executable matches the native tested binary. It is still Developer Preview 0.1,
 not the requested Alpha 1 deliverable. Alpha implementation now proceeds under
 the [stage plan](alpha1-plan.md) and [inspected boundaries](alpha1-source-inspection.md).
 
+**Alpha core in progress:** instrument source policies, coherent battery-current
+normalization and optional calibrated propulsion curves now pass 15 portable
+test suites locally. These additions preserve selected navigation and the
+original energy core. Marine-bus/UI integration and native acceptance are still
+pending; this is not yet an Alpha release. See the
+[source contract](vessel-source-contract.md) and [energy model](energy-model.md).
+
 **Manual-preview feedback:** the user completed the Windows test and reported
 one issue: the chart background disappears after Legacy → XNav. This is reproduced
 with the accepted executable in portable mode. The previous mode gate verified
