@@ -30,6 +30,11 @@ passed all eight jobs, including native extracted-package testing. The final
 [status](status.md) and [validation evidence](preview-validation.md).
 The downloadable artifact is `OpenNavX-DeveloperPreview-win64`.
 
-Next action: user manual testing on a normal Windows PC, then review that feedback.
+The user's manual test on 2026-09-24 found a missing coastline after Legacy → XNav.
+The corrected preview passed both platform gates and native review at
+`bcc3fa2bd3ec01b3217a530c3079ae82e0683d0c`; [status](status.md) links the replacement
+download and reproduction/acceptance evidence.
+
+Next action: user retest of the corrected mode switch on a normal Windows PC.
 Do not advance into the production installer automatically. This acceptance
 applies to the isolated Developer Preview, not navigation use.

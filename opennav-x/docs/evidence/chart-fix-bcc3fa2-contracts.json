@@ -1,0 +1,28 @@
+{
+  "commit": "bcc3fa2bd3ec01b3217a530c3079ae82e0683d0c",
+  "run": "https://github.com/ThereptileII/Work/actions/runs/36044190692",
+  "platforms": [
+    {
+      "platform": "Linux",
+      "job_id": 107783527254,
+      "contracts_passed": 10,
+      "additional_restart_repeats_passed": 10,
+      "confirmation": [
+        "2026-09-24T18:52:13.3083980Z  9/10 Test  #9: preview_resources_contract .......   Passed    0.00 sec",
+        "2026-09-24T18:52:13.3097665Z 100% tests passed, 0 tests failed out of 10",
+        "2026-09-24T18:52:32.7530676Z 100% tests passed, 0 tests failed out of 1"
+      ]
+    },
+    {
+      "platform": "Native MSVC Win32 on Windows x64",
+      "job_id": 107783527364,
+      "contracts_passed": 10,
+      "additional_restart_repeats_passed": 10,
+      "confirmation": [
+        "2026-09-24T18:53:06.1761637Z  9/10 Test  #9: preview_resources_contract .......   Passed    0.01 sec",
+        "2026-09-24T18:53:06.2509628Z 100% tests passed, 0 tests failed out of 10",
+        "2026-09-24T18:53:26.8768419Z 100% tests passed, 0 tests failed out of 1"
+      ]
+    }
+  ]
+}

@@ -1,5 +1,11 @@
 # Developer Preview 0.1 validation record
 
+This is the initial preview's historical record. The 2026-09-24 manual test
+exposed a missing coastline after portable restarts which the initial visual
+review missed. The corrected build, new rendering assertions and replacement
+artifact are accepted in [status](status.md), with
+[native repair evidence](evidence/windows-bcc3fa2-review.json).
+
 Accepted application revision: `b21bd05ce75f22c91ac12927207d264b8b3efde4`.
 [Native/Linux CI run](https://github.com/ThereptileII/Work/actions/runs/35663416666).
 Review date: 2026-09-22 (the CI run occurred on 2026-09-21 UTC).

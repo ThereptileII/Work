@@ -57,8 +57,10 @@ installer compatibility entries are published until their Windows gates pass.
 
 The accepted preview packages explicit Demo scenarios, Route/Energy/System pages
 and the real OpenCPN chart canvas.
-[Download OpenNavX-DeveloperPreview-win64](https://github.com/ThereptileII/Work/actions/runs/35663416666/artifacts/10668776591)
-from the [successful CI run](https://github.com/ThereptileII/Work/actions/runs/35663416666).
+[Download OpenNavX-DeveloperPreview-win64](https://github.com/ThereptileII/Work/actions/runs/36044190692/artifacts/10829050279)
+from the [successful CI run](https://github.com/ThereptileII/Work/actions/runs/36044190692).
+This corrected build preserves the bundled coastline through Legacy/XNav/Safe
+restarts and repairs the earlier preview's default-basemap path.
 Extract the inner `OpenNavX-DeveloperPreview-win64.zip` into a short writable
 folder, then run `Run-XNav-Demo.cmd`. Its private profile and bundled runtime do
 not require modifying an installed OpenCPN. Exact revision, test counts and

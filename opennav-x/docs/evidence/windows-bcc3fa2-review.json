@@ -1,0 +1,230 @@
+{
+  "commit": "bcc3fa2bd3ec01b3217a530c3079ae82e0683d0c",
+  "run": "https://github.com/ThereptileII/Work/actions/runs/36044190692",
+  "job_id": 107784148615,
+  "artifact_id": 10828189238,
+  "artifact_sha256": "5262951e4c29c1920d02c395ff20167edf89123b69a8a739cd3df618cb9a4da0",
+  "executable_sha256": "b529e748bc512f2979d39e05a00a0f993fdb7c32f062f5d6a89ac577958cb841",
+  "review_date": "2026-09-24",
+  "authority": "Native MSVC 19.44.35228.0, Win32 application ABI on Windows Server 2022 x64, wxWidgets 3.2.8, 1280x800, 96 DPI, software rendering",
+  "result": "accepted portable Developer Preview chart-restoration fix; not navigation approval",
+  "tests": {
+    "integrated": 57,
+    "failures": 0,
+    "skipped": 0,
+    "portable_contracts": 10,
+    "extra_restart_repeats": 10,
+    "normal_timer_route_observations": 26,
+    "demo_scenarios": 8,
+    "native_chart_render_checks": 4
+  },
+  "package_smoke": {
+    "authority": "native Windows extracted ZIP",
+    "checks": [
+      "All extracted package file hashes match",
+      "Bottom route summary lays out after narrow-to-wide resize",
+      "Moving position, SOC, route distance and advisory destination SOC change",
+      "All eight GUI-selected scenarios pass validity/shortfall assertions",
+      "Page resize/visibility and Navigation return with chart zoom passed",
+      "All four launchers, direct executable launch and external-profile refusal passed with no development PATH",
+      "Normal profile canary and existing OpenCPN files under APPDATA, LOCALAPPDATA, PROGRAMDATA and Program Files remain unchanged",
+      "Bundled Dashboard initialized and cleanly unloaded in six normal launches; inactive in both Safe launches",
+      "XNav / Legacy / Safe clean lifecycle and shared navigation/config persistence passed; mode switch stops Demo",
+      "Real bundled coastline remains rendered after Legacy return and Safe restart"
+    ],
+    "screenshots": [
+      "preview-01-navigation-day.png",
+      "preview-02-navigation-night.png",
+      "preview-03-route.png",
+      "preview-04-energy.png",
+      "preview-05-diagnostics.png",
+      "preview-06-stale.png",
+      "preview-06b-unavailable.png",
+      "preview-06c-shortfall.png",
+      "preview-07-legacy.png",
+      "preview-09-returned-xnav.png",
+      "preview-08-safe.png",
+      "preview-10-repaired-basemap.png"
+    ],
+    "higher_dpi": "Not exercised by this hosted desktop; manual validation remains open",
+    "display": {
+      "before": [
+        1280,
+        800,
+        32
+      ],
+      "after": [
+        1280,
+        800,
+        32
+      ]
+    },
+    "runtime_path": "C:\\Windows\\System32;C:\\Windows",
+    "initial_outer_pixels": [
+      1280,
+      760
+    ],
+    "page_visibility": [
+      {
+        "page": "Route",
+        "native_pixels": [
+          1264,
+          649
+        ],
+        "visible_and_uncovered": true
+      },
+      {
+        "page": "Energy",
+        "native_pixels": [
+          1264,
+          649
+        ],
+        "visible_and_uncovered": true
+      },
+      {
+        "page": "Diagnostics",
+        "native_pixels": [
+          1264,
+          649
+        ],
+        "visible_and_uncovered": true
+      },
+      {
+        "page": "Energy",
+        "native_pixels": [
+          1264,
+          649
+        ],
+        "visible_and_uncovered": true
+      },
+      {
+        "page": "Energy",
+        "native_pixels": [
+          1264,
+          649
+        ],
+        "visible_and_uncovered": true
+      },
+      {
+        "page": "Energy",
+        "native_pixels": [
+          1264,
+          649
+        ],
+        "visible_and_uncovered": true
+      }
+    ],
+    "chart_rendering": [
+      {
+        "phase": "XNav to Legacy",
+        "reference_color_fractions": {
+          "aac3f0": 0.598175965665236,
+          "aaaf50": 0.40182403433476394
+        },
+        "coastline_visible": true
+      },
+      {
+        "phase": "Legacy to XNav",
+        "reference_color_fractions": {
+          "aac3f0": 0.6319027181688126,
+          "aaaf50": 0.3680972818311874
+        },
+        "coastline_visible": true
+      },
+      {
+        "phase": "XNav to Safe",
+        "reference_color_fractions": {
+          "aac3f0": 0.598175965665236,
+          "aaaf50": 0.40182403433476394
+        },
+        "coastline_visible": true
+      },
+      {
+        "phase": "Direct startup with old Preview 0.1 basemap setting",
+        "reference_color_fractions": {
+          "aac3f0": 0.6319027181688126,
+          "aaaf50": 0.3680972818311874
+        },
+        "coastline_visible": true
+      }
+    ],
+    "normal_files_audited": 0,
+    "result": "passed; screenshot review required"
+  },
+  "default_resolution_log_count": 2,
+  "observations": [
+    "Legacy and Safe now render the Swedish coastline at the retained viewport instead of a water-only canvas.",
+    "Returned XNav shows the same coastline with source unavailable and no fabricated live navigation values after Demo stops.",
+    "Direct startup with the old dot-directory setting repairs the lookup and renders the coastline; first default resolution and old-setting migration each appear in the native log.",
+    "All 12 preview screenshots were reviewed. Day/Night, Route, Energy, Diagnostics, stale, unavailable and shortfall screens retain their existing layout and explicit data states, without new clipping or overlap.",
+    "Bundled Dashboard initialization/unload, Safe suppression, all four launchers, direct EXE isolation, external-profile refusal and shared navigation/config persistence pass.",
+    "No chart renderer, chart directory, chart database, route-distance or navigation-input implementation changed; the existing post-config-load integration hook resolves portable basemap defaults only."
+  ],
+  "screenshots_reviewed": [
+    {
+      "file": "preview-01-navigation-day.png",
+      "sha256": "8d16ad92114774d6b9061b914891ee0c88d34f3bbb9769bfe0c3bf236abf847c"
+    },
+    {
+      "file": "preview-02-navigation-night.png",
+      "sha256": "64699dabf9ad5621055e64094ac79971750d31e1bd6d7a09c1dfc2bc7fc0a75a"
+    },
+    {
+      "file": "preview-03-route.png",
+      "sha256": "677d086b57bb0dfe711cdcda02f4750042d446e5d1a1787797db6dd6de282d77"
+    },
+    {
+      "file": "preview-04-energy.png",
+      "sha256": "958b62b1feab1af22546838b553f34439a13fb1af655a6778b3b79890476a4aa"
+    },
+    {
+      "file": "preview-05-diagnostics.png",
+      "sha256": "7da0ec77ae6d385da04b4a6909e55753c1ff6bc5b7cbb05a19b54fc3f5115436"
+    },
+    {
+      "file": "preview-06-stale.png",
+      "sha256": "c8be7606a3fb15c35628f960b1904fa0dc0f39d933a60222508c3b7cbb78c492"
+    },
+    {
+      "file": "preview-06b-unavailable.png",
+      "sha256": "87995aaabc8a86fdeeeed5e25aeb800dcb90f5f779bd609d6576d319da6d1ef3"
+    },
+    {
+      "file": "preview-06c-shortfall.png",
+      "sha256": "a738d38fa8a6ddbc719165a49ca6102509225da2f18b92da72853c119919d56d"
+    },
+    {
+      "file": "preview-07-legacy.png",
+      "sha256": "8ca9ac6d4d758d6549f16aa4f121dc13ce95b408e1c71a755840cda3b59f8126"
+    },
+    {
+      "file": "preview-09-returned-xnav.png",
+      "sha256": "cb74f70a902ec8dda6de6e35e637666c1a1c19f6bb62483107370c1af8f59dd9"
+    },
+    {
+      "file": "preview-08-safe.png",
+      "sha256": "27f93be9afa9736aa024a704ec10469459f642d206a6d23957bb2680df6abf1f"
+    },
+    {
+      "file": "preview-10-repaired-basemap.png",
+      "sha256": "0847b054ed5434f1c8623fa7f5e7a490a0bc7d5770ad18d210a7e4fb3a4d216c"
+    }
+  ],
+  "evidence_sha256": {
+    "windows-tests.xml": "9e5528b91cce3d2947f2203844e9efafdc81b8c2c05243c9e644202efcf01367",
+    "preview-results.json": "0439173b189d9f1935a18337bbb89600cdf8349532e53f6638f223d7bcc4cddd",
+    "preview-dll-audit.json": "54bb9e6175fbc6367650403e667f9586054436848016a0c7aee2ba849225cce9",
+    "mode-cycle-results.json": "1f5608e4c4f4ed684c266cb8b90011f2c5159827a474899cfc6e4d65387410ee",
+    "navigation-input-results.json": "37bc87dab5b9aaa5ebf85b04ade85cfddb1b726627e6f7fd878a267531916e38",
+    "route-input-results.json": "fafd1af7c927e113f63537a2d9f97300dde2cd8117dc6991b1f5d58bc9fa1d62",
+    "route-progress-results.json": "dafab8ed7e7ba48402a904202fd1427c61166239541a37d27ed591153fb022dd",
+    "preview-profile/opencpn.conf": "77d543e6163bbef1985c213d2daa43197219baa49f498ea35602a06e3fa3d345",
+    "preview-profile/opencpn.log": "aa030c49aafd6c2ec08b68239988f67e94e4f8de5a465e2aff30a59f800a7041"
+  },
+  "limitations": [
+    "Bundled overview coastline only; nautical chart collections and physical devices were not exercised by this fixture",
+    "Custom paths are preserved, including unavailable paths; a dot-directory selection containing basemap shapefiles is preserved",
+    "125/150 percent DPI, touch, target PC and at-sea acceptance remain open",
+    "Native runner audits a profile canary and external locations but contains no installed production OpenCPN"
+  ]
+}

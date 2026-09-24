@@ -12,9 +12,9 @@ with the accepted executable in portable mode. The previous mode gate verified
 process/data persistence but missed coastline rendering after restart; its
 all-water Legacy/Safe captures should not have been accepted as normal.
 See [reproduction evidence](evidence/chart-restart-b21bd05-reproduction.json).
-The repair is implemented; its replacement ZIP awaits both platform gates and
-native screenshot review. Existing accepted artifact links below identify the
-affected build until replacement evidence is published.
+**The repair has passed Linux and native Windows gates, package tests and native
+screenshot review at `bcc3fa2bd3ec01b3217a530c3079ae82e0683d0c`.** The replacement
+download below supersedes the affected `b21bd05` preview.
 
 The read-only remaining active-route distance slice has passed both platform
 gates and native screenshot review; see [its contract](route-progress-contract.md).
@@ -25,7 +25,7 @@ advisory energy presentation and an isolated portable Windows package; see
 testing, not approved for navigation. Live battery acquisition and calibration
 remain unavailable.
 
-[Download the Windows artifact](https://github.com/ThereptileII/Work/actions/runs/35663416666/artifacts/10668776591).
+[Download the corrected Windows artifact](https://github.com/ThereptileII/Work/actions/runs/36044190692/artifacts/10829050279).
 It contains `OpenNavX-DeveloperPreview-win64.zip` and its SHA-256 sidecar. Extract
 the application ZIP into a short writable path and run `Run-XNav-Demo.cmd`.
 Follow [TEST_ME_FIRST](preview/TEST_ME_FIRST.md). The preview uses its own profile
@@ -48,7 +48,47 @@ navigation passed at `bc0af30`. Their native review records are in
 [navigation bridge](navigation-data-bridge.md) and [energy model](energy-model.md)
 for the inspected source boundaries and exact limitations.
 
-## Accepted Developer Preview gate
+## Accepted chart-restoration repair
+
+Packaged revision: `bcc3fa2bd3ec01b3217a530c3079ae82e0683d0c`;
+local equivalent: `9ede87671687c653c531e0307e237155536d6906`.
+[Exact successful CI run](https://github.com/ThereptileII/Work/actions/runs/36044190692).
+All eight jobs passed. OpenCPN remains pinned at 5.12.4 with its supported Win32
+application/plugin ABI on Windows x64.
+
+The existing post-config-load integration hook now resolves an empty portable
+basemap default to existing bundled shapefiles before canvas creation. It repairs
+the old preview's generated `./` setting when that directory contains no basemap
+shapefiles. Custom locations, chart directories/databases and rendering remain
+owned by OpenCPN. No additional upstream patch was needed.
+
+- Linux: 67 integrated tests, ten portable contracts, ten extra restart repeats,
+  mode/persistence, selected NMEA, 26 route observations and all eight Demo
+  scenarios pass. Portable preview smoke now also exercises the Windows-style
+  resource lifecycle; Legacy/returned-XNav/Safe coastline checks pass.
+- Native Windows: 57 integrated tests, ten portable contracts, ten extra restart
+  repeats and existing mode/navigation/route/Demo regressions pass. Extracted ZIP
+  tests pass four coastline checks, including migration of the old setting on
+  direct startup. Launcher/isolation, DLL and plugin lifecycle checks pass.
+- Reviewed all 12 native preview captures at 1280×800/96 DPI. Coastline remains
+  visible in Legacy, returned XNav, Safe and the migrated profile; other preview
+  screens retain their layout and validity states. Higher DPI remains untested.
+- The downloaded application ZIP is 48,389,585 bytes, SHA-256
+  `2923f22853aa77c367f374246b7a0926d9ac91a534c512435adf91b8b90bf90a`.
+  All 997 file hashes pass; its executable matches the native tested binary.
+  All 112 compared local/remote source/build/test/patch inputs match.
+
+[Windows review](evidence/windows-bcc3fa2-review.json),
+[Linux review](evidence/linux-bcc3fa2-review.json),
+[contracts](evidence/chart-fix-bcc3fa2-contracts.json),
+[package audit](evidence/chart-fix-bcc3fa2-package.json),
+[CI jobs/artifacts](evidence/chart-fix-bcc3fa2-gates.json) and
+[source equivalence](evidence/source-mirror-bcc3fa2.json) preserve the evidence.
+Documentation-only commits after this revision do not change the packaged binary.
+The next step is a user retest of Legacy → XNav; no production installer work is
+started.
+
+## Initial Developer Preview gate (superseded for the chart-restart bug)
 
 Packaged code/test revision: `b21bd05ce75f22c91ac12927207d264b8b3efde4` on the
 remote `opennav-x` branch; local equivalent:

@@ -1,0 +1,99 @@
+{
+  "commit": "bcc3fa2bd3ec01b3217a530c3079ae82e0683d0c",
+  "run": "https://github.com/ThereptileII/Work/actions/runs/36044190692",
+  "job_id": 107783527219,
+  "artifact_id": 10828242995,
+  "artifact_sha256": "8c19efe79321212fd4b0aef8912e3b05887729b5608cff787e6212eb43889377",
+  "review_date": "2026-09-24",
+  "platform": "Hosted Ubuntu 24.04, clean integrated build, portable preview UI smoke",
+  "tests": {
+    "integrated": 67,
+    "failures": 0,
+    "skipped": 0,
+    "portable_contracts": 10,
+    "extra_restart_repeats": 10,
+    "normal_timer_route_observations": 26,
+    "demo_scenarios": 8
+  },
+  "preview": {
+    "authority": "Linux development",
+    "checks": [
+      "Moving position, SOC, route distance and advisory destination SOC change",
+      "All eight GUI-selected scenarios pass validity/shortfall assertions",
+      "XNav / Legacy / Safe clean lifecycle and shared navigation/config persistence passed; mode switch stops Demo",
+      "Real bundled coastline remains rendered after Legacy return and Safe restart"
+    ],
+    "screenshots": [
+      "preview-01-navigation-day-linux.png",
+      "preview-02-navigation-night-linux.png",
+      "preview-03-route-linux.png",
+      "preview-04-energy-linux.png",
+      "preview-05-diagnostics-linux.png",
+      "preview-06-stale-linux.png",
+      "preview-06b-unavailable-linux.png",
+      "preview-06c-shortfall-linux.png",
+      "preview-07-legacy-linux.png",
+      "preview-09-returned-xnav-linux.png",
+      "preview-08-safe-linux.png"
+    ],
+    "higher_dpi": "Not exercised by this hosted desktop; manual validation remains open",
+    "chart_rendering": [
+      {
+        "phase": "XNav to Legacy",
+        "reference_color_fractions": {
+          "aac3f0": 0.5638054363376251,
+          "aaaf50": 0.41587982832618026
+        },
+        "coastline_visible": true
+      },
+      {
+        "phase": "Legacy to XNav",
+        "reference_color_fractions": {
+          "aac3f0": 0.6076180257510729,
+          "aaaf50": 0.3726752503576538
+        },
+        "coastline_visible": true
+      },
+      {
+        "phase": "XNav to Safe",
+        "reference_color_fractions": {
+          "aac3f0": 0.5638054363376251,
+          "aaaf50": 0.41587982832618026
+        },
+        "coastline_visible": true
+      }
+    ],
+    "result": "passed; screenshot review required"
+  },
+  "reviewed_screenshots": [
+    {
+      "file": "preview-07-legacy-linux.png",
+      "sha256": "ccc79c3d60e561c7897aafcdb95a677e2cc4c315336a066b84eba8d9f26a3921"
+    },
+    {
+      "file": "preview-09-returned-xnav-linux.png",
+      "sha256": "9c82823369762934e92c5b19069bcc52589adab15a657833ba4021c4767565bf"
+    },
+    {
+      "file": "preview-08-safe-linux.png",
+      "sha256": "ccc79c3d60e561c7897aafcdb95a677e2cc4c315336a066b84eba8d9f26a3921"
+    }
+  ],
+  "observations": [
+    "The old accepted executable reproduced the water-only view in the portable mode cycle; the new color-presence assertion rejected it.",
+    "All three reviewed fixed-mode captures show the real coastline in the retained Swedish coastal view. No missing or fabricated navigation values appear after Demo stops.",
+    "The portable config stores ../app/basemap_shp rather than an empty/default path normalized to ./; native platform acceptance remains separately required."
+  ],
+  "evidence_sha256": {
+    "xnav-linux-tests.xml": "80190d1cec1edc3eea7aaa3b21e9cf14f812fc905b7c599f0dab029fede2f687",
+    "preview-linux-results.json": "675337ca263fcd85cc4a0e0a1d15d493d98998fbe62bdd5952d21d0805b5180b",
+    "linux-mode-cycle-results.json": "698e1544d60412cf7642845064981f7563ea18db9927c879a3dae832145439eb",
+    "navigation-input-results.json": "5ad188d3de31566aebf152101b4620bcb859c80fd2ae9ae4cd51626ace1ce055",
+    "route-input-results.json": "419f339a9c511e529c30df77621053f10b088cab3bf4218a8c57220756e0d510",
+    "route-progress-results.json": "25f1d5a44971606e7bb6bf23b3c498579428b104733ab33def17b3d9c9e748fc"
+  },
+  "limitations": [
+    "Overview coastline only, no nautical chart collection",
+    "Windows remains authoritative for rendering and the distributed package"
+  ]
+}

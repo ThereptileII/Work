@@ -112,8 +112,8 @@ and inactivity in Safe Mode, not just retention of an enabled configuration flag
 
 ## Gates
 
-Nine portable CTest contracts include new deterministic Demo/energy and portable
-profile tests, alongside all existing energy, route, freshness and mode tests.
+Ten portable CTest contracts include deterministic Demo/energy, portable profile
+and basemap-resource tests, alongside existing energy, route, freshness and mode tests.
 The unchanged integrated suite contains 67 Linux / 57 Windows tests. Existing
 mode, selected NMEA, normal-timer route and repeated restart gates continue.
 `smoke-preview.py` exercises every scenario and page, moving values, withheld
@@ -130,8 +130,8 @@ passes. Human/native screenshot review and evidence records are still required
 before declaring the exact package accepted. No production installer follows
 automatically.
 
-The chart-restoration repair adds a tenth contract for portable basemap defaults
-and migration. An empty upstream shapefile default must not round-trip into an
+The resource contract covers portable basemap defaults and migration.
+An empty upstream shapefile default must not round-trip into an
 explicit empty profile-directory lookup. The integration resolves the existing
 bundled data before canvas construction in all preview modes, preserves custom
 paths, and recognizes the old preview's dot-directory artifact. Normal OpenCPN
