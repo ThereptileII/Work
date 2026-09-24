@@ -6,6 +6,15 @@ The approved Windows target preserves its Win32 application/plugin ABI on a
 native Windows x64 host. The tracked upstream submodule remains pristine;
 reviewed patches apply to a disposable integration worktree.
 
+**Installer qualification in progress:** the native loader/resource check and
+portable/DPI gates pass at `46c1d64`, but installer packaging stopped before
+execution because the compatibility manifest was absent from the published tree.
+The complete tracked source (including license/specification references) is now
+published at `54029a3`, with an early distribution-input gate. The public
+allowlist remains empty. No installer lifecycle or final Alpha acceptance is
+claimed. [Failure record](evidence/alpha-installer-46c1d64-candidate.json),
+[source audit](evidence/alpha-source-publication-audit.json).
+
 **Current native product/DPI candidate:** `a749e8d2a38bec811b0b011919bf4ea383388343`
 passes 90 Linux / 80 Windows integrated tests and 27 portable contracts per
 platform. Native package interactions, manual DEMO pilot feedback, settings and

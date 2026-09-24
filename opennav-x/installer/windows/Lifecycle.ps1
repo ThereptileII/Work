@@ -43,7 +43,7 @@ function PlainPath([string]$Path) {
   return $full
 }
 function RelativePath([string]$Base, [string]$Name) {
-  if ($Name -notmatch '^[A-Za-z0-9_ .()/+-]+$' -or $Name.Contains('\') -or
+  if ($Name -notmatch '^[A-Za-z0-9_ .()&/+-]+$' -or $Name.Contains('\') -or
       $Name.StartsWith('/') -or $Name -match '(^|/)\.{1,2}(/|$)' -or
       $Name -match '(^|/)(CON|PRN|AUX|NUL|COM[0-9]|LPT[0-9])(\.|/|$)' -or
       $Name -match '[. ](/|$)' -or $Name.Contains('//')) { throw "Unsafe package path: $Name" }
@@ -145,7 +145,7 @@ function ReadGeneration([string]$Id) {
   if ($manifest.owner -ne $Owner) { throw 'Unknown generation ownership.' }
   return $manifest
 }
-function SelfTest([string]$Directory, [string]$Commit) {
+function SelfTest([string]$Directory, [string]$Commit, [string]$Version) {
   $reportPath = Join-Path $Directory ('loader-' + [guid]::NewGuid().ToString('N') + '.json')
   $exe = Join-Path $Directory 'app\opencpn.exe'
   $null = PeArchitecture $exe
@@ -153,7 +153,7 @@ function SelfTest([string]$Directory, [string]$Commit) {
   if (-not $process.WaitForExit(30000)) { $process.Kill(); throw 'Staged executable loader self-test timed out.' }
   if ($process.ExitCode -ne 0) { throw "Staged executable self-test failed: $($process.ExitCode)" }
   $result = ReadJson $reportPath
-  if (-not $result.passed -or $result.commit -cne $Commit -or $result.profile_initialized -or $result.plugins_loaded) { throw 'Executable identity/self-test report mismatch.' }
+  if (-not $result.passed -or $result.commit -cne $Commit -or $result.version -cne $Version -or $result.profile_initialized -or $result.plugins_loaded) { throw 'Executable identity/self-test report mismatch.' }
   Remove-Item -LiteralPath $reportPath
   Log "Loader/resource self-test passed for $Commit"
 }
@@ -358,7 +358,7 @@ try {
         $old = ReadGeneration $state.current
         $null = PreserveAdditions (Generation $state.current) $stage $old.managedFiles
       }
-      SelfTest $stage $package.commit
+      SelfTest $stage $package.commit $package.version
       AtomicJson (Join-Path $stage 'ownership.json') @{owner=$Owner; version=$package.version; commit=$package.commit; packageSha256=$ManifestSha256; files=@(FileRecords $stage); managedFiles=@(FileRecords $maintenance | ForEach-Object { [pscustomobject]@{path=('maintenance/'+$_.path);sha256=$_.sha256} }) + @($package.files) + @([pscustomobject]@{path='Lifecycle.ps1';sha256=(Hash (Join-Path $stage 'Lifecycle.ps1'))}, [pscustomobject]@{path='Maintain.exe';sha256=(Hash (Join-Path $stage 'Maintain.exe'))}); importedPlugins=$retained}
       $previous = ''; if ($state) { $previous = $state.current }
       $next = @{owner=$Owner;schema=1;stock=$stock;current=$id;previous=$previous}
@@ -372,7 +372,7 @@ try {
     } elseif ($Action -eq 'Rollback' -and $state.previous) {
       $old = ReadGeneration $state.previous
       VerifyFiles (Generation $state.previous) $old.files
-      SelfTest (Generation $state.previous) $old.commit
+      SelfTest (Generation $state.previous) $old.commit $old.version
       $next = @{owner=$Owner;schema=1;stock=$state.stock;current=$state.previous;previous=''}
       AtomicJson (Join-Path $Root 'transaction.json') @{owner=$Owner;action=$Action;before=$state;after=$next}
       AtomicJson (Join-Path $Root 'state.json') $next

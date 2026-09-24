@@ -63,3 +63,12 @@ The stock setup fixture follows NSIS's special final, unquoted `/D=` argument
 contract even for paths with spaces. Conventional uninstall tests wait for the
 engine's durable result because NSIS normally copies the uninstaller into a
 second temporary process. See [NSIS command-line contract](https://nsis.sourceforge.io/Docs/Chapter3.html).
+
+The update gate compiles a distinct `0.2.0-alpha0-ci` application and packages it
+as a private fixture. It installs/launches that executable, upgrades to the exact
+Alpha candidate, verifies version/hash changes and prior-generation retention,
+and then runs the remaining lifecycle. Fixture compilation restores the tracked
+version header and original candidate executable in a `finally` block; the
+fixture is excluded from release downloads. Loader checks verify product version
+as well as build commit. Literal upstream resource names containing `&` are
+accepted as filenames; they never enter a shell command.

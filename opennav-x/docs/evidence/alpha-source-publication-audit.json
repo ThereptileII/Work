@@ -1,0 +1,8 @@
+{
+  "published_commit": "54029a3f774797fadcf46b61ab29319f543580a0",
+  "method": "Compare every local tracked Git blob with the published opennav-x prefix; .github stays at repository root. Exclude upstream gitlink and local .gitmodules; CI fetches and independently verifies upstream.lock.json.",
+  "missing_files": [],
+  "binary_reference": "Original DOCX published byte-identically; blob ca4bd0ee936677c22f81d4ef054207010b8199d1",
+  "difference": "Historical route-954b450-observations.json differs only by CRLF versus LF. Parsed/text observations are identical; neither evidence content was changed.",
+  "preflight": "verify-distribution-inputs.py checks required license, specification, design, installer and guide inputs before contract compilation. Compatibility allowlist remains empty."
+}

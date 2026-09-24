@@ -32,9 +32,9 @@ def inventory(p):return {f.relative_to(p).as_posix():sha(f) for f in p.rglob('*'
 def check(name):report['checks'].append(name);print(name,flush=True)
 def state():return json.loads((INSTALL/'state.json').read_text(encoding='utf-8-sig'))
 def generation():return INSTALL/'generations'/state()['current']
-def setup(action,stock,expected=0,failure=''):
+def setup(action,stock,expected=0,failure='',executable=SETUP):
     out=EVIDENCE/f'installer-{len(report["checks"]):02}-{action}.json'
-    cmd=[str(SETUP),'/S','/ACTION='+action,'/OPENCPN='+str(stock),'/REPORT='+str(out)]
+    cmd=[str(executable),'/S','/ACTION='+action,'/OPENCPN='+str(stock),'/REPORT='+str(out)]
     if failure:cmd+=['/FAILURE='+failure]
     result=subprocess.run(cmd,timeout=180)
     assert result.returncode==expected,(action,result.returncode,out.read_text() if out.exists() else 'No report')
@@ -72,6 +72,7 @@ def close(p,h):
 try:
     assert not INSTALL.exists(),'Runner must not contain a previous/user Alpha installation'
     report['display']=ui.ensure_desktop()
+    subprocess.run([sys.executable,str(ROOT/'tools/build-installer-prior-fixture.py')],check=True)
     with tempfile.TemporaryDirectory(prefix='OpenNav installer ') as temp:
         temporary=Path(temp);stock=temporary/'stock OpenCPN';stock.mkdir()
         official=temporary/'official-setup.exe'
@@ -102,9 +103,22 @@ try:
         with (profile/'opencpn.conf').open('a') as f:f.write('\n[Settings/GlobalState]\nVPLatLon=59.0800,18.5000\nVPScale=0.003\n')
         shutil.copy2(profile/'opencpn.conf',profile/'opencpn.ini')
         expected=fixtures.snapshot(profile);before=inventory(profile)
-        setup('Install',original)
+        prior=ROOT/'build/prior-alpha-fixture/setup/OpenNavX-Alpha1-Setup.exe'
+        setup('Install',original,executable=prior)
         assert inventory(profile)==before and inventory(stock)==stock_before
-        check('Clean Alpha install preserves every stock/profile byte and creates shared-profile shortcuts')
+        assert json.loads((generation()/'ownership.json').read_text())['version']=='0.2.0-alpha0-ci'
+        old_exe=generation()/'app/opencpn.exe'
+        assert sha(old_exe)!=sha(ROOT/'build/xnav-install/opencpn.exe')
+        p,h,rgb=launch(old_exe,['--xnav'],'OpenNav X / OpenCPN',profile,'installer-00-prior-test-version')
+        charts.reference(rgb);close(p,h);assert fixture_snapshot(profile)==expected
+        prior_generation=state()['current'];before=inventory(profile)
+        check('Distinct compiled prior Alpha test version installs and opens real coastline with shared fixtures')
+        setup('Update',original)
+        assert state()['previous']==prior_generation
+        assert json.loads((generation()/'ownership.json').read_text())['version']=='0.2.0-alpha1'
+        assert sha(generation()/'app/opencpn.exe')==sha(ROOT/'build/xnav-install/opencpn.exe')
+        assert inventory(profile)==before and inventory(stock)==stock_before
+        check('Prior test version updates to the exact Alpha candidate executable; stock/profile unchanged')
         first=state()['current'];exe=generation()/'app/opencpn.exe'
         assert not (exe.parent/'OPENNAV_PORTABLE_PREVIEW').exists()
         p,h,rgb=launch(exe,['--xnav'],'OpenNav X / OpenCPN',profile,'installer-01-xnav')
