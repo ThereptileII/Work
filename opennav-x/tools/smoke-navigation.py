@@ -274,7 +274,8 @@ try:
     assert app.wait(timeout=30) == 0, 'Navigation test did not close cleanly'
     if objects:
         import sqlite3
-        with sqlite3.connect(profile/'navobj.db') as db:
+        from contextlib import closing
+        with closing(sqlite3.connect(profile/'navobj.db')) as db:
             assert db.execute('select name from routes where guid=?',('OPENNAV-ALPHA-OBJECT-ROUTE',)).fetchone()==('ALPHA TEST renamed route',)
             assert db.execute('select count(*) from routepoints where Name=?',('ALPHA TEST edited',)).fetchone()==(1,)
         report['checks']=['Navigation object and AIS contracts through actual integrated executable',

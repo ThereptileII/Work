@@ -1,0 +1,11 @@
+{
+  "revision": "bdb58f9e0c83ee346a30c7b42bd3f6274435819b",
+  "localRevision": "c6df7af",
+  "sourceEquivalence": "Both changed committed files compared byte-for-byte to remote git objects",
+  "run": "https://github.com/ThereptileII/Work/actions/runs/36062779470",
+  "accepted": false,
+  "windows": "Native MSVC and all 71 compiled tests passed. Mode/navigation/route/instrument and navigation-object checks passed. Property sheet edit, delete cancellation, restoration and database assertions now pass. Test failed during temporary-directory cleanup because the verifier retained its SQLite connection.",
+  "repair": "Use contextlib.closing for the verifier connection. Python's SQLite context manager commits or rolls back a transaction but does not close the connection. No regression assertion is removed.",
+  "windowsArtifact": {"id":10835008226,"sha256":"697df6d35740e76b32a03dd884e7b749f96b0cf5b12034b24b267c0e28077a1a"},
+  "alphaAccepted": false
+}
