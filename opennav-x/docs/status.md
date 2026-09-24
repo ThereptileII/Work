@@ -6,6 +6,27 @@ The approved Windows target preserves its Win32 application/plugin ABI on a
 native Windows x64 host. The tracked upstream submodule remains pristine;
 reviewed patches apply to a disposable integration worktree.
 
+**Alpha 1 foundation gate closed:** `16dbaf72d7923742a5acaadf0fae42ee490e7cf6`
+passes all eight jobs in [run 36047288188](https://github.com/ThereptileII/Work/actions/runs/36047288188).
+Linux passes 67 integrated tests, Windows 57; each passes ten portable contracts
+and ten extra restart repeats. Existing selected-navigation, route, Demo,
+lifecycle and persistence gates pass. Seven Linux and nine native Windows
+chart-content checks cover direct XNav/Legacy/Safe startup, XNav → Legacy → XNav,
+Safe → XNav and the old portable basemap setting. Reviewed all nine relevant
+native 1280×800/96-DPI chart captures; none is blank/all-water. The chart-restart
+regression is closed for this foundation. Higher DPI, OpenGL and nautical-chart
+coverage are separate Alpha gates, not implied by this result.
+
+[Windows review](evidence/windows-foundation-16dbaf7-review.json),
+[Linux review](evidence/linux-foundation-16dbaf7-review.json),
+[package audit](evidence/foundation-16dbaf7-package.json) and
+[exact CI jobs/artifacts](evidence/foundation-16dbaf7-gates.json) preserve the
+replacement evidence. [Foundation preview download](https://github.com/ThereptileII/Work/actions/runs/36047288188/artifacts/10830135079)
+contains the verified application ZIP; all 997 file hashes pass and its
+executable matches the native tested binary. It is still Developer Preview 0.1,
+not the requested Alpha 1 deliverable. Alpha implementation now proceeds under
+the [stage plan](alpha1-plan.md) and [inspected boundaries](alpha1-source-inspection.md).
+
 **Manual-preview feedback:** the user completed the Windows test and reported
 one issue: the chart background disappears after Legacy → XNav. This is reproduced
 with the accepted executable in portable mode. The previous mode gate verified
@@ -86,9 +107,9 @@ owned by OpenCPN. No additional upstream patch was needed.
 [source equivalence](evidence/source-mirror-bcc3fa2.json) preserve the evidence.
 Documentation-only commits after this revision do not change the packaged binary.
 The user has now accepted the preview direction and authorized the
-[Alpha 1 stage](alpha1-plan.md). Its first gate expands chart checks to direct
-Legacy startup and Safe → XNav. Alpha functionality and the Alpha installer
-remain in progress; no Alpha package has been accepted yet.
+[Alpha 1 stage](alpha1-plan.md). The expanded foundation gate is closed above.
+Alpha functionality and the Alpha installer remain in progress; no Alpha
+package has been accepted yet.
 
 ## Initial Developer Preview gate (superseded for the chart-restart bug)
 

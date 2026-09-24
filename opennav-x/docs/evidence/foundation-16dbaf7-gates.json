@@ -1,0 +1,611 @@
+{
+  "commit": "16dbaf72d7923742a5acaadf0fae42ee490e7cf6",
+  "run": "https://github.com/ThereptileII/Work/actions/runs/36047288188",
+  "jobs": [
+    {
+      "id": 107793853519,
+      "name": "Native MSVC upstream Win32 ABI on Windows x64",
+      "status": "completed",
+      "conclusion": "success",
+      "run_id": 36047288188,
+      "logs_url": null,
+      "steps": [
+        {
+          "name": "Set up job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 1
+        },
+        {
+          "name": "Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 2
+        },
+        {
+          "name": "Fetch pinned pristine source",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 3
+        },
+        {
+          "name": "Build and test supported upstream ABI",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 4
+        },
+        {
+          "name": "Run actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 5
+        },
+        {
+          "name": "Post Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 10
+        },
+        {
+          "name": "Complete job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 11
+        }
+      ]
+    },
+    {
+      "id": 107793853710,
+      "name": "Linux integrated regression gate",
+      "status": "completed",
+      "conclusion": "success",
+      "run_id": 36047288188,
+      "logs_url": null,
+      "steps": [
+        {
+          "name": "Set up job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 1
+        },
+        {
+          "name": "Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 2
+        },
+        {
+          "name": "Fetch pinned source and install dependencies",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 3
+        },
+        {
+          "name": "Build integrated application and run regressions without exceptions",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 4
+        },
+        {
+          "name": "Exercise shared profile mode cycle and IPC shutdown",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 5
+        },
+        {
+          "name": "Exercise real OpenCPN input with synthetic loopback NMEA",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 6
+        },
+        {
+          "name": "Observe normal upstream route progress with isolated synthetic routes",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 7
+        },
+        {
+          "name": "Exercise preview pages and all demo scenarios",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 8
+        },
+        {
+          "name": "Run actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 9
+        },
+        {
+          "name": "Post Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 18
+        },
+        {
+          "name": "Complete job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 19
+        }
+      ]
+    },
+    {
+      "id": 107793853872,
+      "name": "Approved OpenCPN ABI on Windows x64",
+      "status": "completed",
+      "conclusion": "success",
+      "run_id": 36047288188,
+      "logs_url": null,
+      "steps": [
+        {
+          "name": "Set up job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 1
+        },
+        {
+          "name": "Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 2
+        },
+        {
+          "name": "Verify approved application architecture",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 3
+        },
+        {
+          "name": "Post Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 6
+        },
+        {
+          "name": "Complete job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 7
+        }
+      ]
+    },
+    {
+      "id": 107793853880,
+      "name": "contracts (windows-2022)",
+      "status": "completed",
+      "conclusion": "success",
+      "run_id": 36047288188,
+      "logs_url": null,
+      "steps": [
+        {
+          "name": "Set up job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 1
+        },
+        {
+          "name": "Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 2
+        },
+        {
+          "name": "Configure Linux contracts",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 3
+        },
+        {
+          "name": "Configure contracts for the supported Windows application ABI",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 4
+        },
+        {
+          "name": "Run cmake --build opennav-x/build/contracts --config Release",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 5
+        },
+        {
+          "name": "Run ctest --test-dir opennav-x/build/contracts -C Release --output-on-failure",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 6
+        },
+        {
+          "name": "Repeat the restart handoff with deliberately delayed result publication",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 7
+        },
+        {
+          "name": "Post Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 14
+        },
+        {
+          "name": "Complete job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 15
+        }
+      ]
+    },
+    {
+      "id": 107793853975,
+      "name": "contracts (ubuntu-24.04)",
+      "status": "completed",
+      "conclusion": "success",
+      "run_id": 36047288188,
+      "logs_url": null,
+      "steps": [
+        {
+          "name": "Set up job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 1
+        },
+        {
+          "name": "Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 2
+        },
+        {
+          "name": "Configure Linux contracts",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 3
+        },
+        {
+          "name": "Configure contracts for the supported Windows application ABI",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 4
+        },
+        {
+          "name": "Run cmake --build opennav-x/build/contracts --config Release",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 5
+        },
+        {
+          "name": "Run ctest --test-dir opennav-x/build/contracts -C Release --output-on-failure",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 6
+        },
+        {
+          "name": "Repeat the restart handoff with deliberately delayed result publication",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 7
+        },
+        {
+          "name": "Post Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 14
+        },
+        {
+          "name": "Complete job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 15
+        }
+      ]
+    },
+    {
+      "id": 107793853983,
+      "name": "linux",
+      "status": "completed",
+      "conclusion": "success",
+      "run_id": 36047288188,
+      "logs_url": null,
+      "steps": [
+        {
+          "name": "Set up job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 1
+        },
+        {
+          "name": "Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 2
+        },
+        {
+          "name": "Fetch pinned pristine source",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 3
+        },
+        {
+          "name": "Install upstream build dependencies",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 4
+        },
+        {
+          "name": "Build and test pristine Linux baseline",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 5
+        },
+        {
+          "name": "Capture isolated Linux development baseline",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 6
+        },
+        {
+          "name": "Run actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 7
+        },
+        {
+          "name": "Post Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 14
+        },
+        {
+          "name": "Complete job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 15
+        }
+      ]
+    },
+    {
+      "id": 107794356328,
+      "name": "Native MSVC XNav / Legacy / Safe slice",
+      "status": "completed",
+      "conclusion": "success",
+      "run_id": 36047288188,
+      "logs_url": null,
+      "steps": [
+        {
+          "name": "Set up job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 1
+        },
+        {
+          "name": "Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 2
+        },
+        {
+          "name": "Fetch pinned source",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 3
+        },
+        {
+          "name": "Build and exercise integrated modes",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 4
+        },
+        {
+          "name": "Package and test the extracted Developer Preview",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 5
+        },
+        {
+          "name": "Run actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 6
+        },
+        {
+          "name": "Run actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 7
+        },
+        {
+          "name": "Post Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 14
+        },
+        {
+          "name": "Complete job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 15
+        }
+      ]
+    },
+    {
+      "id": 107799576612,
+      "name": "Publish Developer Preview after both platform gates",
+      "status": "completed",
+      "conclusion": "success",
+      "run_id": 36047288188,
+      "logs_url": null,
+      "steps": [
+        {
+          "name": "Set up job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 1
+        },
+        {
+          "name": "Run actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 2
+        },
+        {
+          "name": "Verify native package hash",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 3
+        },
+        {
+          "name": "Run actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 4
+        },
+        {
+          "name": "Run actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 5
+        },
+        {
+          "name": "Complete job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 6
+        }
+      ]
+    }
+  ],
+  "artifacts": [
+    {
+      "id": 10830135079,
+      "name": "OpenNavX-DeveloperPreview-win64",
+      "size_in_bytes": 47937072,
+      "url": "https://api.github.com/repos/ThereptileII/Work/actions/artifacts/10830135079",
+      "archive_download_url": "https://api.github.com/repos/ThereptileII/Work/actions/artifacts/10830135079/zip",
+      "expired": false,
+      "created_at": "2026-09-24T19:34:05Z",
+      "expires_at": "2026-12-23T19:18:49Z",
+      "updated_at": "2026-09-24T19:34:05Z",
+      "digest": "sha256:32287d6c624a94ee8346ec85e0d571510a7c623ff8850677f5c5caeadc59bbaa",
+      "workflow_run": {
+        "id": 36047288188,
+        "repository_id": 864043804,
+        "head_repository_id": 864043804,
+        "head_branch": "opennav-x",
+        "head_sha": "16dbaf72d7923742a5acaadf0fae42ee490e7cf6"
+      }
+    },
+    {
+      "id": 10829830846,
+      "name": "OpenNavX-DeveloperPreview-corresponding-source",
+      "size_in_bytes": 78104133,
+      "url": "https://api.github.com/repos/ThereptileII/Work/actions/artifacts/10829830846",
+      "archive_download_url": "https://api.github.com/repos/ThereptileII/Work/actions/artifacts/10829830846/zip",
+      "expired": false,
+      "created_at": "2026-09-24T19:34:08Z",
+      "expires_at": "2026-12-23T19:18:49Z",
+      "updated_at": "2026-09-24T19:34:08Z",
+      "digest": "sha256:294589349ab07f5ba73f51f4f71ebb0e27464c53544bd3c786233d514b41b541",
+      "workflow_run": {
+        "id": 36047288188,
+        "repository_id": 864043804,
+        "head_repository_id": 864043804,
+        "head_branch": "opennav-x",
+        "head_sha": "16dbaf72d7923742a5acaadf0fae42ee490e7cf6"
+      }
+    },
+    {
+      "id": 10829513395,
+      "name": "linux-integration-16dbaf72d7923742a5acaadf0fae42ee490e7cf6",
+      "size_in_bytes": 3349625,
+      "url": "https://api.github.com/repos/ThereptileII/Work/actions/artifacts/10829513395",
+      "archive_download_url": "https://api.github.com/repos/ThereptileII/Work/actions/artifacts/10829513395/zip",
+      "expired": false,
+      "created_at": "2026-09-24T19:33:56Z",
+      "expires_at": "2026-12-23T19:18:49Z",
+      "updated_at": "2026-09-24T19:33:56Z",
+      "digest": "sha256:c715cdb033a9593eea94502855512494949ae1003156783d02c025f22d16f082",
+      "workflow_run": {
+        "id": 36047288188,
+        "repository_id": 864043804,
+        "head_repository_id": 864043804,
+        "head_branch": "opennav-x",
+        "head_sha": "16dbaf72d7923742a5acaadf0fae42ee490e7cf6"
+      }
+    },
+    {
+      "id": 10829332844,
+      "name": "windows-pristine-16dbaf72d7923742a5acaadf0fae42ee490e7cf6",
+      "size_in_bytes": 496715,
+      "url": "https://api.github.com/repos/ThereptileII/Work/actions/artifacts/10829332844",
+      "archive_download_url": "https://api.github.com/repos/ThereptileII/Work/actions/artifacts/10829332844/zip",
+      "expired": false,
+      "created_at": "2026-09-24T19:29:00Z",
+      "expires_at": "2026-12-23T19:18:49Z",
+      "updated_at": "2026-09-24T19:29:00Z",
+      "digest": "sha256:bb27b4ee9b2ad500bc3f06e63932f6df300d1fa7f2ffe82bb00e0a048aceca2a",
+      "workflow_run": {
+        "id": 36047288188,
+        "repository_id": 864043804,
+        "head_repository_id": 864043804,
+        "head_branch": "opennav-x",
+        "head_sha": "16dbaf72d7923742a5acaadf0fae42ee490e7cf6"
+      }
+    },
+    {
+      "id": 10829178448,
+      "name": "windows-integration-16dbaf72d7923742a5acaadf0fae42ee490e7cf6",
+      "size_in_bytes": 8347698,
+      "url": "https://api.github.com/repos/ThereptileII/Work/actions/artifacts/10829178448",
+      "archive_download_url": "https://api.github.com/repos/ThereptileII/Work/actions/artifacts/10829178448/zip",
+      "expired": false,
+      "created_at": "2026-09-24T19:31:59Z",
+      "expires_at": "2026-12-23T19:18:49Z",
+      "updated_at": "2026-09-24T19:31:59Z",
+      "digest": "sha256:62f7bed77a2da72fd482a020815f5449d76cda5c9ec46f9323900e626e26f0ee",
+      "workflow_run": {
+        "id": 36047288188,
+        "repository_id": 864043804,
+        "head_repository_id": 864043804,
+        "head_branch": "opennav-x",
+        "head_sha": "16dbaf72d7923742a5acaadf0fae42ee490e7cf6"
+      }
+    },
+    {
+      "id": 10829118396,
+      "name": "preview-candidate-16dbaf72d7923742a5acaadf0fae42ee490e7cf6",
+      "size_in_bytes": 126041183,
+      "url": "https://api.github.com/repos/ThereptileII/Work/actions/artifacts/10829118396",
+      "archive_download_url": "https://api.github.com/repos/ThereptileII/Work/actions/artifacts/10829118396/zip",
+      "expired": false,
+      "created_at": "2026-09-24T19:31:56Z",
+      "expires_at": "2026-12-23T19:18:49Z",
+      "updated_at": "2026-09-24T19:31:56Z",
+      "digest": "sha256:376b86fe2a4efc57bc46bb0127e8dfc3837962862af3b95e452d7c37e56eeaf2",
+      "workflow_run": {
+        "id": 36047288188,
+        "repository_id": 864043804,
+        "head_repository_id": 864043804,
+        "head_branch": "opennav-x",
+        "head_sha": "16dbaf72d7923742a5acaadf0fae42ee490e7cf6"
+      }
+    },
+    {
+      "id": 10828644617,
+      "name": "linux-pristine-16dbaf72d7923742a5acaadf0fae42ee490e7cf6",
+      "size_in_bytes": 476225,
+      "url": "https://api.github.com/repos/ThereptileII/Work/actions/artifacts/10828644617",
+      "archive_download_url": "https://api.github.com/repos/ThereptileII/Work/actions/artifacts/10828644617/zip",
+      "expired": false,
+      "created_at": "2026-09-24T19:30:22Z",
+      "expires_at": "2026-12-23T19:18:49Z",
+      "updated_at": "2026-09-24T19:30:22Z",
+      "digest": "sha256:6c85a48daa698955e125a968a76c4f368fa6e0e3d66a53b66a880c51856ee622",
+      "workflow_run": {
+        "id": 36047288188,
+        "repository_id": 864043804,
+        "head_repository_id": 864043804,
+        "head_branch": "opennav-x",
+        "head_sha": "16dbaf72d7923742a5acaadf0fae42ee490e7cf6"
+      }
+    }
+  ]
+}

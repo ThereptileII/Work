@@ -34,6 +34,8 @@ implemented abstraction from a physically validated integration.
 
 ## Current state
 
-Increment 1 is in progress. The existing `bcc3fa2` repair passed the previous
-Linux/Windows gates; the expanded Alpha chart-startup matrix is being verified.
-No Alpha functionality is accepted yet.
+Increment 1 passed at `16dbaf72d7923742a5acaadf0fae42ee490e7cf6`, run 36047288188.
+The replacement ZIP and expanded chart-startup matrix are verified on both
+platforms; all nine relevant native chart captures were reviewed. Increment 2
+now begins using [the inspected boundaries](alpha1-source-inspection.md).
+No Alpha functionality or installer is accepted yet.

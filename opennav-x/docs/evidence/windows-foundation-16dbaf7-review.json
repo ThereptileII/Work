@@ -1,0 +1,111 @@
+{
+  "commit": "16dbaf72d7923742a5acaadf0fae42ee490e7cf6",
+  "ci_run": "https://github.com/ThereptileII/Work/actions/runs/36047288188",
+  "artifact_id": 10829178448,
+  "artifact_sha256": "62f7bed77a2da72fd482a020815f5449d76cda5c9ec46f9323900e626e26f0ee",
+  "authority": "Native Windows 2022 / MSVC 19.44.35228.0 / Win32 ABI",
+  "integrated_tests": 57,
+  "portable_contracts": 10,
+  "restart_repeats": 10,
+  "chart_rendering": [
+    {
+      "phase": "Direct XNav startup",
+      "reference_color_fractions": {
+        "aac3f0": 0.60568669527897,
+        "aaaf50": 0.39431330472103004
+      },
+      "coastline_visible": true
+    },
+    {
+      "phase": "XNav to Legacy",
+      "reference_color_fractions": {
+        "aac3f0": 0.598175965665236,
+        "aaaf50": 0.40182403433476394
+      },
+      "coastline_visible": true
+    },
+    {
+      "phase": "XNav to Legacy to XNav",
+      "reference_color_fractions": {
+        "aac3f0": 0.6319027181688126,
+        "aaaf50": 0.3680972818311874
+      },
+      "coastline_visible": true
+    },
+    {
+      "phase": "XNav to Safe",
+      "reference_color_fractions": {
+        "aac3f0": 0.598175965665236,
+        "aaaf50": 0.40182403433476394
+      },
+      "coastline_visible": true
+    },
+    {
+      "phase": "Safe to XNav",
+      "reference_color_fractions": {
+        "aac3f0": 0.6319027181688126,
+        "aaaf50": 0.3680972818311874
+      },
+      "coastline_visible": true
+    },
+    {
+      "phase": "Direct OpenNav X / OpenCPN launcher startup",
+      "reference_color_fractions": {
+        "aac3f0": 0.6319027181688126,
+        "aaaf50": 0.3680972818311874
+      },
+      "coastline_visible": true
+    },
+    {
+      "phase": "Direct OpenCPN / Legacy launcher startup",
+      "reference_color_fractions": {
+        "aac3f0": 0.598175965665236,
+        "aaaf50": 0.40182403433476394
+      },
+      "coastline_visible": true
+    },
+    {
+      "phase": "Direct OpenNav Safe Mode / OpenCPN launcher startup",
+      "reference_color_fractions": {
+        "aac3f0": 0.598175965665236,
+        "aaaf50": 0.40182403433476394
+      },
+      "coastline_visible": true
+    },
+    {
+      "phase": "Direct startup with old Preview 0.1 basemap setting",
+      "reference_color_fractions": {
+        "aac3f0": 0.6319027181688126,
+        "aaaf50": 0.3680972818311874
+      },
+      "coastline_visible": true
+    }
+  ],
+  "captures_created": 17,
+  "reviewed": {
+    "preview-11-startup-xnav.png": "8d16ad92114774d6b9061b914891ee0c88d34f3bbb9769bfe0c3bf236abf847c",
+    "preview-07-legacy.png": "8ca9ac6d4d758d6549f16aa4f121dc13ce95b408e1c71a755840cda3b59f8126",
+    "preview-09-returned-xnav.png": "5086bc37bc3fa8169ea8f4711e7bae3d5628665f9d8e3d8cdb07c58e61eb596b",
+    "preview-08-safe.png": "27f93be9afa9736aa024a704ec10469459f642d206a6d23957bb2680df6abf1f",
+    "preview-12-safe-to-xnav.png": "5086bc37bc3fa8169ea8f4711e7bae3d5628665f9d8e3d8cdb07c58e61eb596b",
+    "preview-13-xnav.png": "5086bc37bc3fa8169ea8f4711e7bae3d5628665f9d8e3d8cdb07c58e61eb596b",
+    "preview-13-legacy.png": "2266b87f0282230d609ccde9b1f5d7ddb8cef7c38a0ffaf42ce71148e6d25444",
+    "preview-13-safe.png": "27f93be9afa9736aa024a704ec10469459f642d206a6d23957bb2680df6abf1f",
+    "preview-10-repaired-basemap.png": "5086bc37bc3fa8169ea8f4711e7bae3d5628665f9d8e3d8cdb07c58e61eb596b"
+  },
+  "visual_result": "All nine relevant 1280x800 / 96 DPI software chart captures retain substantial coastline and water. Safe return and direct Legacy were also inspected individually. XNav controls and Legacy chrome retain their expected layout.",
+  "package_checks": [
+    "All extracted package file hashes match",
+    "Bottom route summary lays out after narrow-to-wide resize",
+    "Moving position, SOC, route distance and advisory destination SOC change",
+    "All eight GUI-selected scenarios pass validity/shortfall assertions",
+    "Page resize/visibility and Navigation return with chart zoom passed",
+    "All four launchers, direct executable launch and external-profile refusal passed with no development PATH",
+    "Normal profile canary and existing OpenCPN files under APPDATA, LOCALAPPDATA, PROGRAMDATA and Program Files remain unchanged",
+    "Bundled Dashboard initialized and cleanly unloaded in seven normal launches; inactive in both Safe launches",
+    "XNav / Legacy / Safe clean lifecycle and shared navigation/config persistence passed; mode switch stops Demo",
+    "Real bundled coastline remains rendered after Legacy return and Safe restart"
+  ],
+  "higher_dpi": "Not part of this foundation closure; Alpha DPI gate remains open",
+  "result": "Windows foundation gate passed"
+}

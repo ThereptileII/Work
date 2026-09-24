@@ -1,0 +1,12 @@
+{
+  "commit": "16dbaf72d7923742a5acaadf0fae42ee490e7cf6",
+  "run": "https://github.com/ThereptileII/Work/actions/runs/36047288188",
+  "artifact_id": 10830135079,
+  "zip_name": "OpenNavX-DeveloperPreview-win64.zip",
+  "zip_sha256": "e3c209ae92820bf613eb0c29408fc1b50e25a97ad41569a5989723bc0e30be6e",
+  "zip_bytes": 48389617,
+  "executable_sha256": "705e060de5503dd2b38e3b10b73294090658d69a548afe32ea579e450334b77e",
+  "file_hashes_verified": 997,
+  "executable_matches_native_tested_binary": true,
+  "result": "passed"
+}
