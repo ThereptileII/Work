@@ -18,11 +18,20 @@ recorded in [gate evidence](evidence/alpha-marine-785aa45-gates.json).
 **Alpha product workflows in progress:** copied route/waypoint catalogs, guarded
 human actions, deferred chart context cards, AIS, instruments, SmartNav timeline,
 manual autopilot simulation and anchor-watch observation are implemented. The
-new integrated object scenario passes locally, including stock waypoint undo and
-actual database persistence. The expanded Linux interaction gate passes eight
-Alpha pages and seven coastline restart checks. Native validation is pending;
-this is not an Alpha release candidate. Settings/calibration, installer lifecycle,
-broader chart/plugin/DPI validation and final packaging remain ahead.
+`e4821d3` candidate passes Linux and native MSVC compilation/71 tests, but its
+new Windows property-sheet automation misread a cross-process edit buffer.
+[Failure record](evidence/alpha-products-e4821d3-candidate.json) is retained;
+`bdb58f9` corrects the helper without removing an assertion and is being gated.
+This UI milestone is not yet accepted on Windows.
+
+**Live settings increment in progress:** explicit battery/current/curve
+configuration, per-quantity source selection and freshness, shared-profile
+persistence, live energy consumers, vessel safety assumptions and radar status.
+[Contract](alpha-settings-contract.md). Linux currently passes 25 portable and
+86 integrated tests; expanded Linux preview and instrument loopback pass.
+Native acceptance is pending. The installer,
+broader chart/plugin/DPI validation and final Alpha packaging remain ahead.
+This is not an Alpha release candidate.
 
 **Alpha 1 foundation gate closed:** `16dbaf72d7923742a5acaadf0fae42ee490e7cf6`
 passes all eight jobs in [run 36047288188](https://github.com/ThereptileII/Work/actions/runs/36047288188).

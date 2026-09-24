@@ -1,4 +1,5 @@
 #include "N2kMessages.h"
+#include "application/Settings.h"
 #include "integration/MarineDecoder.h"
 #include <cmath>
 #include <gtest/gtest.h>
@@ -267,4 +268,53 @@ TEST(OpenNavMarine, SignalKPropulsionAndExplicitExtensionMapping) {
       {{"propulsion.port.electricalPower", Quantity::MotorPower, .001, 0}}));
   EXPECT_NEAR(*s.propulsion.electrical_power_kw.value, 7.2, .001);
   EXPECT_FALSE(s.battery.net_discharge_kw.value);
+}
+
+// This joins the pinned Signal K decoder, registry, persisted explicit settings
+// and energy core. Route geometry itself remains covered by
+// OpenNavRouteGeometry.
+TEST(OpenNavMarine, ConfiguredLiveBatteryFeedsEnergyWithoutDemoDefaults) {
+  auto state = State(Sk(
+      R"({"path":"electrical.batteries.propulsion.voltage","value":48},{"path":"electrical.batteries.propulsion.current","value":-50},{"path":"electrical.batteries.propulsion.capacity.stateOfCharge","value":0.8})"));
+  ASSERT_TRUE(state.battery.soc_percent.value);
+  state.navigation.sog_kn = {5, "Test selected navigation", epoch,
+                             Validity::Measured};
+  auto route = std::make_shared<RouteProgressSnapshot>();
+  route->state = RouteState::Valid;
+  route->route_id = "contract-route";
+  route->route_revision = 1;
+  route->revision_scope = "test";
+  route->active_waypoint_id = "destination";
+  route->active_waypoint_index = 0;
+  route->waypoint_count = 1;
+  route->remaining_distance_nm = 10;
+  route->observed_at = epoch;
+  route->position_observed_at = epoch;
+  route->source = "Test route publication / no geometry inference";
+  route->position_source = "Test selected navigation";
+  state.navigation.route = route;
+  application::Settings setting;
+  setting.energy.battery = {24, 20, .5, "Explicit test calibration"};
+  setting.energy.battery_device_id = state.battery.soc_percent.device_id;
+  setting.current = CurrentConvention::PositiveCharge;
+  const auto loaded =
+      application::DecodeSettings(application::EncodeSettings(setting));
+  NormalizeBatteryPower(state, loaded.energy.battery_device_id, loaded.current,
+                        epoch);
+  ASSERT_EQ(state.battery.net_discharge_kw.value, 2.4);
+  ASSERT_FALSE(state.simulated);
+  auto prediction =
+      smartnav::PredictConfiguredEnergy(loaded.energy, state, epoch);
+  ASSERT_TRUE(prediction.range.estimate);
+  EXPECT_NEAR(prediction.range.estimate->range_nm, 30, 1e-9);
+  ASSERT_TRUE(prediction.arrival.estimate);
+  EXPECT_NEAR(*prediction.arrival.estimate->soc_percent, 60, 1e-9);
+  EXPECT_EQ(prediction.input_route, state.navigation.route);
+  EXPECT_FALSE(state.battery.usable_capacity_kwh.value);
+  EXPECT_FALSE(
+      smartnav::PredictConfiguredEnergy(loaded.energy, state, epoch + 5s)
+          .arrival.estimate);
+  state.battery.soc_percent.device_id = "different-pack";
+  EXPECT_FALSE(smartnav::PredictConfiguredEnergy(loaded.energy, state, epoch)
+                   .arrival.estimate);
 }

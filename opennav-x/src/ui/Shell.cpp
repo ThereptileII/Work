@@ -157,6 +157,8 @@ Shell::Shell(wxFrame &frame, wxAuiManager &manager, ShellActions actions,
                               .Hide());
   ProductActions product_actions;
   product_actions.navigation = actions_.navigation;
+  product_actions.settings = actions_.settings;
+  product_actions.save_settings = actions_.save_settings;
   product_actions.chart = [this] { ShowNavigation(); };
   product_actions.route_summary = [this] { ShowPage(PreviewPage::Route); };
   product_actions.energy = [this] { ShowPage(PreviewPage::Energy); };
@@ -185,6 +187,10 @@ Shell::Shell(wxFrame &frame, wxAuiManager &manager, ShellActions actions,
       {'Y', [this] { ShowProduct(ProductPage::Pilot); }},
       {'H', [this] { ShowProduct(ProductPage::Anchor); }},
       {'G', [this] { ShowProduct(ProductPage::Settings); }},
+      {'K', [this] { ShowProduct(ProductPage::EnergySettings); }},
+      {'O', [this] { ShowProduct(ProductPage::Sources); }},
+      {'Q', [this] { ShowProduct(ProductPage::VesselSettings); }},
+      {'Z', [this] { ShowProduct(ProductPage::Radar); }},
       {'D', [this] { StartDemo(); }},
       {'P',
        [this] {
@@ -270,6 +276,14 @@ void Shell::Tick() {
     if (actions_.route)
       state_.navigation.route = actions_.route();
   }
+  const auto config =
+      actions_.settings ? actions_.settings() : application::Settings{};
+  const auto model =
+      simulation_ ? smartnav::PreviewEnergyModel(true) : config.energy.battery;
+  const auto energy =
+      simulation_
+          ? smartnav::PredictVesselEnergy(model, state_, now)
+          : smartnav::PredictConfiguredEnergy(config.energy, state_, now);
   const bool creating = actions_.route_creating && actions_.route_creating();
   if (finish_route_->IsShown() != creating) {
     finish_route_->Show(creating);
@@ -292,11 +306,14 @@ void Shell::Tick() {
       p.pilot = actions_.pilot_tick(simulation_);
     if (actions_.pilot_log)
       p.pilot_log = actions_.pilot_log(simulation_);
-    p.advice = smartnav::Advise(
-        state_,
-        smartnav::PredictVesselEnergy(smartnav::PreviewEnergyModel(simulation_),
-                                      state_, now),
-        p.ais, now);
+    p.settings = config;
+    if (actions_.settings_status)
+      p.settings_status = actions_.settings_status();
+    if (actions_.source_health)
+      p.sources = actions_.source_health();
+    if (actions_.radar)
+      p.radar = actions_.radar();
+    p.advice = smartnav::Advise(state_, energy, p.ais, now);
     product_->Update(p, mode_);
   }
   wind_->SetReading(state_.wind.apparent_speed_kn, now);
@@ -331,11 +348,11 @@ void Shell::Tick() {
   if (summary_layout)
     route_summary_->GetParent()->Layout();
   if (page_ && page_->IsShown())
-    page_->Update(current_page_, mode_, state_, now,
+    page_->Update(current_page_, mode_, state_, now, model, energy,
                   actions_.build_info ? actions_.build_info()
                                       : std::vector<std::string>{});
   if (actions_.diagnostic_snapshot)
-    actions_.diagnostic_snapshot(state_, PageTitle());
+    actions_.diagnostic_snapshot(state_, energy, PageTitle());
 }
 
 std::string Shell::PageTitle() const {

@@ -7,6 +7,12 @@ namespace opennav::smartnav {
 namespace {
 EnergyReason Check(const vessel::Sample& sample, vessel::Time now, vessel::Freshness freshness) {
   if (sample.value && !std::isfinite(*sample.value)) return EnergyReason::InvalidInput;
+  // The consumer ceiling cannot relax a stricter per-source policy, and a
+  // long source threshold cannot relax the established energy freshness gate.
+  freshness.aging_after =
+      std::min(freshness.aging_after, sample.freshness.aging_after);
+  freshness.stale_after =
+      std::min(freshness.stale_after, sample.freshness.stale_after);
   const auto assessed = vessel::Assess(sample, now, freshness);
   switch (assessed.quality) {
     case vessel::Quality::Live:

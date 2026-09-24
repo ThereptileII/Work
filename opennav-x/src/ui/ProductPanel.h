@@ -1,6 +1,8 @@
 #pragma once
 #include "adapters/Autopilot.h"
+#include "adapters/Radar.h"
 #include "application/NavigationObjects.h"
+#include "application/Settings.h"
 #include "smartnav/Advisories.h"
 #include "ui/Controls.h"
 #include <wx/scrolwin.h>
@@ -19,7 +21,12 @@ enum class ProductPage {
   Advice,
   Pilot,
   Anchor,
-  Settings
+  Settings,
+  EnergySettings,
+  Sources,
+  SourceDetail,
+  VesselSettings,
+  Radar
 };
 struct ProductState {
   vessel::VesselState vessel;
@@ -28,6 +35,10 @@ struct ProductState {
   adapters::PilotView pilot;
   std::vector<adapters::PilotCommand> pilot_log;
   smartnav::NavigationAdvice advice;
+  application::Settings settings;
+  std::string settings_status;
+  std::vector<vessel::SourceHealth> sources;
+  adapters::RadarState radar;
   vessel::Time now{};
 };
 struct ProductActions {
@@ -35,6 +46,9 @@ struct ProductActions {
   std::function<void()> chart, route_summary, energy, diagnostics;
   std::function<void(adapters::PilotAction, double)> pilot_command;
   std::function<void(bool)> pilot_enable;
+  std::function<application::Settings()> settings;
+  std::function<application::CommandResult(const application::Settings &)>
+      save_settings;
 };
 class ProductPanel final : public wxScrolledWindow {
 public:
@@ -62,6 +76,10 @@ private:
   void PointActions();
   void CreateMark();
   void PilotActions();
+  void EnergySettings();
+  void Sources();
+  void SourceDetail();
+  void SaveSettings(application::Settings settings);
   ProductActions actions_;
   ProductState state_;
   ProductPage page_ = ProductPage::Home;
@@ -69,6 +87,7 @@ private:
   application::Route route_;
   application::Waypoint point_;
   int mmsi_ = 0;
+  vessel::Quantity source_quantity_ = vessel::Quantity::Depth;
   wxBoxSizer *body_ = nullptr;
   wxGridSizer *grid_ = nullptr;
   wxGridSizer *actions_grid_ = nullptr;

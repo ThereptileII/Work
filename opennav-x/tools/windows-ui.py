@@ -20,6 +20,7 @@ def declare(dll, name, result, *args):
 EnumWindows = declare(user, 'EnumWindows', W.BOOL, CALLBACK, W.LPARAM)
 EnumChildWindows = declare(user, 'EnumChildWindows', W.BOOL, W.HWND, CALLBACK, W.LPARAM)
 GetWindowThreadProcessId = declare(user, 'GetWindowThreadProcessId', W.DWORD, W.HWND, C.POINTER(W.DWORD))
+GetClassNameW = declare(user, 'GetClassNameW', C.c_int, W.HWND, W.LPWSTR, C.c_int)
 GetWindowTextW = declare(user, 'GetWindowTextW', C.c_int, W.HWND, W.LPWSTR, C.c_int)
 IsWindowVisible = declare(user, 'IsWindowVisible', W.BOOL, W.HWND)
 GetWindowRect = declare(user, 'GetWindowRect', W.BOOL, W.HWND, C.POINTER(W.RECT))
@@ -122,6 +123,22 @@ def set_text_in_dialog(pid, title, previous, value):
     assert SendMessageW(matches[0],0x000C,0,C.cast(buffer,C.c_void_p).value),'Edit field rejected text'
     observed=control_text(matches[0])
     assert observed==value,(title,previous,value,observed)
+
+def set_dialog_fields(pid, title, values):
+    dialog,_=wait_window(title,pid)
+    fields=[]
+    for handle,_ in children(dialog):
+        name=C.create_unicode_buffer(128)
+        GetClassNameW(handle,name,len(name))
+        if name.value.lower()=='edit':
+            rect=W.RECT();GetWindowRect(handle,C.byref(rect))
+            fields.append((rect.top,handle))
+    fields.sort()
+    assert len(fields)==len(values),(title,len(fields),len(values))
+    for (_,handle),value in zip(fields,values):
+        buffer=C.create_unicode_buffer(value)
+        assert SendMessageW(handle,0x000C,0,C.cast(buffer,C.c_void_p).value)
+        assert control_text(handle)==value,(title,value,control_text(handle))
 
 def click_menu(handle, label):
     def search(menu):

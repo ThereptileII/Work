@@ -23,6 +23,9 @@ std::vector<std::string> PreviewBuildInfo(int dpi, const std::string &profile) {
 void WritePreviewDiagnostics(const std::string &path,
                              const vessel::VesselState &state,
                              const std::vector<std::string> &info,
+                             const smartnav::EnergyPrediction &e,
+                             const application::Settings &settings,
+                             const std::vector<vessel::SourceHealth> &sources,
                              const std::string &ui_page) {
   const auto now = vessel::Clock::now();
   wxJSONValue report;
@@ -112,8 +115,43 @@ void WritePreviewDiagnostics(const std::string &path,
     if (a.remaining_distance_nm)
       report["route"]["remaining_nm"] = *a.remaining_distance_nm;
   }
-  const auto e = smartnav::PredictVesselEnergy(
-      smartnav::PreviewEnergyModel(state.simulated), state, now);
+  report["settings"]["battery_device"] =
+      wxString::FromUTF8(settings.energy.battery_device_id);
+  report["settings"]["capacity_kwh"] = wxString::FromUTF8(
+      application::SettingNumber(settings.energy.battery.capacity_kwh));
+  report["settings"]["reserve_percent"] = wxString::FromUTF8(
+      application::SettingNumber(settings.energy.battery.reserve_soc_percent));
+  report["settings"]["consumption"] = wxString(
+      settings.energy.consumption == smartnav::ConsumptionModel::MeasuredPack
+          ? "Measured whole pack"
+          : "Calibrated curve");
+  report["settings"]["curve_source"] =
+      wxString::FromUTF8(settings.energy.curve.source);
+  for (const auto &source : sources) {
+    wxJSONValue v;
+    const auto a = vessel::Assess(source.sample, now);
+    v["quantity"] = wxString::FromUTF8(vessel::Describe(source.quantity).key);
+    v["source_id"] = wxString::FromUTF8(source.source_id);
+    v["device_id"] = wxString::FromUTF8(source.sample.device_id);
+    v["selected"] = source.selected;
+    v["priority"] = static_cast<int>(source.priority);
+    v["quality"] = wxString::FromUTF8(vessel::QualityName(a.quality));
+    v["validity"] =
+        wxString::FromUTF8(vessel::ValidityName(source.sample.validity));
+    v["aging_after_ms"] =
+        static_cast<int>(source.sample.freshness.aging_after.count());
+    v["stale_after_ms"] =
+        static_cast<int>(source.sample.freshness.stale_after.count());
+    if (a.age)
+      v["age_ms"] =
+          static_cast<int>(std::min<long long>(a.age->count(), 2147483647));
+    if (a.value)
+      v["value"] = *a.value;
+    auto policy = settings.sources.find(source.quantity);
+    v["pinned_source"] = wxString::FromUTF8(
+        policy == settings.sources.end() ? "" : policy->second.pinned_source);
+    report["source_candidates"].Append(v);
+  }
   report["energy"]["arrival_validity"] =
       wxString::FromUTF8(smartnav::EnergyReasonName(e.arrival.reason));
   report["energy"]["model"] = wxString::FromUTF8(e.model_source);

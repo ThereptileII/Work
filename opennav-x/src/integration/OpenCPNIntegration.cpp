@@ -1,16 +1,18 @@
 #include "integration/OpenCPNIntegration.h"
-#include "integration/NavigationBridge.h"
+#include "adapters/Autopilot.h"
+#include "adapters/Radar.h"
 #include "integration/MarineBridge.h"
 #include "integration/NavigationActions.h"
+#include "integration/NavigationBridge.h"
 #include "integration/NavigationObjects.h"
-#include "adapters/Autopilot.h"
 #include "integration/OpenCPNRouteReader.h"
+#include "integration/PreviewDiagnostics.h"
+#include "integration/PreviewResources.h"
 #include "integration/RoutePassWatch.h"
+#include "integration/SettingsStore.h"
 #include "integration/StartupMode.h"
 #include "platform/PlatformIntegration.h"
 #include "platform/PortableProfile.h"
-#include "integration/PreviewDiagnostics.h"
-#include "integration/PreviewResources.h"
 #include "ui/Shell.h"
 #ifdef OPENNAV_ROUTE_TESTS
 #include "RouteProgressScenario.h"
@@ -68,6 +70,8 @@ std::string route_test_profile,object_test_profile;
 std::unique_ptr<ui::Shell> shell;
 std::unique_ptr<NavigationBridge> navigation;
 std::unique_ptr<integration::MarineBridge> marine;
+std::unique_ptr<integration::SettingsStore> settings;
+adapters::UnavailableRadar radar;
 application::AnchorState anchor_state;
 struct PilotServices {
   adapters::UnavailableAutopilot hardware;
@@ -215,7 +219,31 @@ void Attach(MyFrame& frame, wxAuiManager& manager, wxFileConfig& config) {
     return;
   }
   frame.SetTitle("OpenNav X / OpenCPN");
+  settings = std::make_unique<integration::SettingsStore>(config);
+  marine = std::make_unique<integration::MarineBridge>();
+  auto configure_sources = [] {
+    for (const auto &q : vessel::Quantities()) {
+      auto p = settings->Read().sources.find(q.quantity);
+      marine->Sources().Configure(q.quantity,
+                                  p == settings->Read().sources.end()
+                                      ? vessel::SourcePolicy{}
+                                      : p->second);
+    }
+  };
+  configure_sources();
   ui::ShellActions actions;
+  actions.settings = [] { return settings->Read(); };
+  actions.settings_status = [] { return settings->Status(); };
+  actions.save_settings = [configure_sources](const auto &s) {
+    auto result = settings->Save(s);
+    if (result.ok)
+      configure_sources();
+    return result;
+  };
+  actions.source_health = [] {
+    return marine->Sources().Health(vessel::Clock::now());
+  };
+  actions.radar = [] { return radar.GetState(); };
   // Names assigned by MyFrame::CreateCanvasLayout in the pinned OpenCPN.
   // The UI only toggles pane visibility; it never owns/reparents a canvas.
   actions.navigation_panes = {"ChartCanvas", "ChartCanvas2"};
@@ -237,19 +265,32 @@ void Attach(MyFrame& frame, wxAuiManager& manager, wxFileConfig& config) {
   actions.restart_xnav=[] {RequestMode(InterfaceMode::XNav);};
   actions.safe=[] {RequestMode(InterfaceMode::Legacy,true);};
   actions.route=[] {return CurrentRouteProgress();};
-  actions.live_state=[] {
-    return marine ? marine->Merge(selected_navigation,vessel::Clock::now()) : selected_navigation;
+  actions.live_state = [] {
+    const auto now = vessel::Clock::now();
+    auto state =
+        marine ? marine->Merge(selected_navigation, now) : selected_navigation;
+    if (settings)
+      vessel::NormalizeBatteryPower(state,
+                                    settings->Read().energy.battery_device_id,
+                                    settings->Read().current, now);
+    return state;
   };
   actions.build_info=[&frame] {return integration::PreviewBuildInfo(frame.GetDPI().x,g_configdir);};
   actions.diagnostics_folder=[] {
     if(!diagnostic_directory.empty()) wxLaunchDefaultApplication(wxString::FromUTF8(diagnostic_directory));
   };
-  actions.diagnostic_snapshot=[&frame,last=vessel::Time{}](const vessel::VesselState& state,const std::string& page) mutable {
+  actions.diagnostic_snapshot = [&frame, last = vessel::Time{}](
+                                    const vessel::VesselState &state,
+                                    const smartnav::EnergyPrediction &energy,
+                                    const std::string &page) mutable {
     const auto now=vessel::Clock::now();
-    if(diagnostic_directory.empty() || now-last<std::chrono::seconds(1))return;
+    if (diagnostic_directory.empty() || now - last < std::chrono::seconds(1))
+      return;
     last=now;
-    integration::WritePreviewDiagnostics(diagnostic_directory+"/opennav-diagnostics.json",state,
-                                         integration::PreviewBuildInfo(frame.GetDPI().x,g_configdir),page);
+    integration::WritePreviewDiagnostics(
+        diagnostic_directory + "/opennav-diagnostics.json", state,
+        integration::PreviewBuildInfo(frame.GetDPI().x, g_configdir), energy,
+        settings->Read(), marine->Sources().Health(now), page);
   };
   actions.demo_chart=[] { if(g_bDeferredInitDone) JumpToPosition(59.08,18.5,0.003); };
   actions.theme = [&frame](ui::LightMode mode) {
@@ -258,10 +299,8 @@ void Attach(MyFrame& frame, wxAuiManager& manager, wxFileConfig& config) {
                                                              : GLOBAL_COLOR_SCHEME_DAY);
   };
   shell = std::make_unique<ui::Shell>(frame, manager, std::move(actions), Light(), demo);
-  navigation = std::make_unique<NavigationBridge>([](const vessel::VesselState& state) {
-    selected_navigation = state;
-  });
-  marine = std::make_unique<integration::MarineBridge>();
+  navigation = std::make_unique<NavigationBridge>(
+      [](const vessel::VesselState &state) { selected_navigation = state; });
   route_progress = std::make_unique<integration::RouteProgressInput>(
       "OpenNav session " + std::to_string(vessel::Clock::now().time_since_epoch().count()));
 #ifdef OPENNAV_ROUTE_TESTS
@@ -337,6 +376,7 @@ bool PrepareClose(wxFileConfig& config) {
   selected_navigation = {};
   route_progress.reset();
   shell.reset();
+  settings.reset();
   pilots.reset();anchor_state={};
   host = nullptr;
   return true;

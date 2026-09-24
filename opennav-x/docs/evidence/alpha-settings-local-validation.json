@@ -1,0 +1,44 @@
+{
+  "status": "Local development validation only; native exact-commit acceptance pending",
+  "precedingLocalCommit": "c6df7af",
+  "portableTests": 25,
+  "integratedTests": 86,
+  "preview": "Existing scenarios, twelve Alpha product/settings pages, seven nonblank coastline checks and mode cycles passed",
+  "marineLoopback": "Passed: selected navigation, instrument live/stale/invalid states, no freshness renewal from position-only input",
+  "newGroups": [
+    "Settings schema and curve roundtrip",
+    "Invalid/unconfigured settings fail closed",
+    "Source policy and energy freshness",
+    "Actual wxFileConfig persistence, corruption, flush failure and thread boundary",
+    "Signal K decoder to registry/configuration/route energy"
+  ],
+  "screenshotsReviewed": [
+    {
+      "file": "alpha-energy-settings-linux.png",
+      "sha256": "2804e7d576f0db8b22bc2b415082f9607ec0a6d3357102213a7abe547c1e89c5",
+      "review": "Linux 1280x800 development view; explicit live/Demo boundaries; no observed unintended clipping at 100 percent"
+    },
+    {
+      "file": "alpha-sources-linux.png",
+      "sha256": "c9e307674240ddda092e7eebcc989b4f3ac89fa66ee504f675b7c817243aba34",
+      "review": "Linux 1280x800 development view; explicit live/Demo boundaries; no observed unintended clipping at 100 percent"
+    },
+    {
+      "file": "alpha-vessel-settings-linux.png",
+      "sha256": "7a8c53a36a915313ffdbc563dfc1a1cf97a8cbcf16ad9e1b33dd48bc0a0d6cee",
+      "review": "Linux 1280x800 development view; explicit live/Demo boundaries; no observed unintended clipping at 100 percent"
+    },
+    {
+      "file": "alpha-radar-status-linux.png",
+      "sha256": "06304be168c4a175f41fa0e3162ea8dc584b7cb09b7f5741d391abf0de756c7c",
+      "review": "Linux 1280x800 development view; explicit live/Demo boundaries; no observed unintended clipping at 100 percent"
+    }
+  ],
+  "logs": {
+    "alpha-settings-contracts.log": "9424b633d13df7645d7a13d03ed4b295606c9a61194eb0a1d4c10bcaf38b6ebf",
+    "alpha-settings-complete-tests.log": "dcc0363a23c96b65b9df11244a7e75be39e021349e78a2fba422ec753073b5f2",
+    "alpha-settings-preview.log": "2d30ad25fa0d9274e16b50fdf4e04dbf896507813f43a77c0a1a4ed4d2b80b69",
+    "alpha-settings-instruments.log": "89427364821e7ca47eba2913707fcb3aedea2093fa84e1652c6600f9bd92dd05"
+  },
+  "physicalAcceptance": false
+}

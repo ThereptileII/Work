@@ -144,6 +144,16 @@ std::string ProductPanel::PageTitle() const {
     return "Anchor watch";
   case ProductPage::Settings:
     return "Settings";
+  case ProductPage::EnergySettings:
+    return "Energy configuration";
+  case ProductPage::Sources:
+    return "Data Sources";
+  case ProductPage::SourceDetail:
+    return "Source selection";
+  case ProductPage::VesselSettings:
+    return "Vessel safety settings";
+  case ProductPage::Radar:
+    return "Radar status";
   }
   return "Unknown";
 }
@@ -689,20 +699,98 @@ void ProductPanel::Build() {
           [](const auto &s) { return s.vessel.wind.apparent_speed_kn; });
   } else if (page_ == ProductPage::Settings) {
     Heading("Settings", "Vessel / Navigation / Sources / Display / System");
+    BeginActions(2);
     Action("Vessel instruments",
            [this] { ShowPage(ProductPage::Instruments, mode_); });
-    Action("Energy assumptions", actions_.energy);
-    Action("Data source diagnostics", actions_.diagnostics);
+    Action("Vessel safety settings",
+           [this] { ShowPage(ProductPage::VesselSettings, mode_); });
+    Action("Energy configuration",
+           [this] { ShowPage(ProductPage::EnergySettings, mode_); });
+    Action("Data Sources", [this] { ShowPage(ProductPage::Sources, mode_); });
     Action("Autopilot permissions & status",
            [this] { ShowPage(ProductPage::Pilot, mode_); });
-    EndActions();
-    Text("RADAR / Unavailable", 18);
-    Text("No validated radar adapter is connected. Off / Overlay / Radar Focus "
-         "capabilities will be supplied by a real adapter; no synthetic live "
-         "radar.");
+    Action("Radar status", [this] { ShowPage(ProductPage::Radar, mode_); });
+    Action("System diagnostics", actions_.diagnostics);
     Action("Fullscreen / window", actions_.navigation.fullscreen);
     Action("Advanced / Legacy Settings", actions_.navigation.legacy_settings);
     Action("OpenCPN plugins", actions_.navigation.plugin_settings);
+    EndActions();
+    Text("Navigation units, chart presentation, alarms and connection "
+         "management remain available in Advanced / Legacy Settings. XNav "
+         "instrument units are labelled explicitly.");
+  } else if (page_ == ProductPage::EnergySettings) {
+    EnergySettings();
+  } else if (page_ == ProductPage::Sources) {
+    Sources();
+  } else if (page_ == ProductPage::SourceDetail) {
+    SourceDetail();
+  } else if (page_ == ProductPage::Radar) {
+    Heading("Radar",
+            "Adapter availability / Receive and presentation capabilities");
+    Action("Back to Settings",
+           [this] { ShowPage(ProductPage::Settings, mode_); });
+    LiveText([](const auto &s) { return W(s.radar.status); });
+    LiveText([](const auto &s) {
+      return "Source: " +
+             W(s.radar.source.empty() ? "Unavailable" : s.radar.source) +
+             " / " + (s.radar.available ? "AVAILABLE" : "NO DATA");
+    });
+    LiveText([](const auto &s) {
+      return wxString("Overlay: ") +
+             (s.radar.capabilities.overlay ? "supported" : "unavailable") +
+             " / Radar Focus: " +
+             (s.radar.capabilities.focus ? "supported" : "unavailable") +
+             " / Receive: " +
+             (s.radar.capabilities.receive ? "supported" : "unavailable");
+    });
+    Text("No validated radar display adapter is integrated in Alpha. "
+         "Presentation remains Off. Existing compatible plugin interfaces "
+         "remain accessible through Legacy; no synthetic radar is used in live "
+         "mode.");
+    Action("OpenCPN plugins", actions_.navigation.plugin_settings);
+  } else if (page_ == ProductPage::VesselSettings) {
+    Heading("Vessel safety settings",
+            "Future corridor advice / Explicit vessel dimensions");
+    Action("Back to Settings",
+           [this] { ShowPage(ProductPage::Settings, mode_); });
+    Text("These settings belong to the advisory corridor contract. They do not "
+         "change OpenCPN chart safety contours or depth alarms. Live "
+         "chart-corridor coverage is currently unavailable; no hazard "
+         "clearance is asserted.");
+    LiveText([](const auto &s) {
+      auto value = [](double n) {
+        return std::isfinite(n) ? wxString::Format("%.2f m", n)
+                               : wxString("Unconfigured");
+      };
+      return "Draft: " + value(s.settings.hazard.draft_m) +
+             " / Margin: " + value(s.settings.hazard.safety_margin_m) +
+             " / Corridor half width: " + value(s.settings.hazard.corridor_half_width_m);
+    });
+    Action("Configure draft & margin", [this] {
+      auto s = actions_.settings();
+      auto n = [](double v) {
+        return std::isfinite(v) ? wxString::Format("%.6g", v) : wxString{};
+      };
+      auto f = EditSheet(
+          *this, mode_, "Vessel corridor assumptions",
+          "Metres. Blank leaves a field unconfigured. This does not enable a "
+          "live ENC hazard service.",
+          {{"Vessel draft / m", n(s.hazard.draft_m), 64},
+           {"Safety margin / m", n(s.hazard.safety_margin_m), 64},
+           {"Corridor half width / m", n(s.hazard.corridor_half_width_m), 64}});
+      if (!f)
+        return;
+      try {
+        s.hazard.draft_m = application::ParseSettingNumber((*f)[0]);
+        s.hazard.safety_margin_m = application::ParseSettingNumber((*f)[1]);
+        s.hazard.corridor_half_width_m =
+            application::ParseSettingNumber((*f)[2]);
+        SaveSettings(std::move(s));
+      } catch (const std::exception &e) {
+        Result({false, e.what()});
+      }
+    });
+    Action("Chart / alarm settings", actions_.navigation.legacy_settings);
   }
   body_->AddSpacer(FromDIP(24));
   Layout();

@@ -11,6 +11,8 @@ public:
   explicit PreviewPanel(wxWindow *parent);
   void Update(PreviewPage page, LightMode mode,
               const vessel::VesselState &state, vessel::Time now,
+              const smartnav::EnergyModel &model,
+              const smartnav::EnergyPrediction &energy,
               const std::vector<std::string> &build_info);
 
 private:
@@ -19,6 +21,8 @@ private:
   LightMode mode_ = LightMode::Day;
   vessel::VesselState state_;
   vessel::Time now_{};
+  smartnav::EnergyModel model_;
+  smartnav::EnergyPrediction energy_;
   std::vector<std::string> info_;
 };
 } // namespace opennav::ui

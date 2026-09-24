@@ -2,8 +2,9 @@
 
 ## Alpha calibrated input contract
 
-`EnergyConfiguration` adds a live-input wrapper around the unchanged numerical
-core. A live calculation requires explicitly configured usable capacity, reserve
+`EnergyConfiguration` adds a live-input wrapper around the tested numerical
+core. The Alpha settings integration also honors shorter per-source freshness
+limits without relaxing the established energy age ceiling. A live calculation requires explicitly configured usable capacity, reserve
 and battery device identity. SOC and measured whole-pack discharge must belong
 to that device. Missing configuration suppresses estimates. Demo remains an
 explicit separate source and is never substituted for live telemetry.
@@ -34,8 +35,10 @@ This remains a constant-condition advisory estimate, not a leg/weather forecast.
 `energy_curve_import` and `energy_live_configuration` cover format/units,
 round-trip import, domain limits, interpolation, STW/SOG distinction, battery
 identity, efficiency/hotel configuration, stale inputs, invalid route states and
-energy shortfall. UI configuration and physical calibration acceptance remain
-separate gates. Existing energy and Demo regressions are retained.
+energy shortfall. The [Alpha settings contract](alpha-settings-contract.md)
+connects explicit profile configuration and normalized live inputs to the route,
+energy, diagnostic and advisory consumers. Physical calibration acceptance
+remains a separate boat gate. Existing energy and Demo regressions are retained.
 
 The tested calculation core was implemented after the dual-mode Windows gate
 passed at `c5a0fd0`. Developer Preview consumes it through owned Vessel Data

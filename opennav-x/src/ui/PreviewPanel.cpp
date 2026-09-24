@@ -96,6 +96,8 @@ PreviewPanel::PreviewPanel(wxWindow *parent)
 }
 void PreviewPanel::Update(PreviewPage page, LightMode mode,
                           const vessel::VesselState &s, vessel::Time now,
+                          const smartnav::EnergyModel &model,
+                          const smartnav::EnergyPrediction &energy,
                           const std::vector<std::string> &info) {
   if (page != page_)
     Scroll(0, 0);
@@ -106,6 +108,8 @@ void PreviewPanel::Update(PreviewPage page, LightMode mode,
   mode_ = mode;
   state_ = s;
   now_ = now;
+  model_ = model;
+  energy_ = energy;
   info_ = info;
   Refresh();
 }
@@ -118,8 +122,8 @@ void PreviewPanel::Paint(wxPaintEvent &) {
   Painter p{*this, dc, c, now_};
   const int width = std::max(320, ToDIP(GetClientSize().x)), margin = 24,
             gap = 16;
-  const auto model = smartnav::PreviewEnergyModel(state_.simulated);
-  const auto energy = smartnav::PredictVesselEnergy(model, state_, now_);
+  const auto &model = model_;
+  const auto &energy = energy_;
   const auto distance = Distance(state_, now_);
   const auto arrival = energy.arrival.estimate;
   const wxString title = page_ == PreviewPage::Energy  ? "Propulsion & energy"
@@ -160,8 +164,11 @@ void PreviewPanel::Paint(wxPaintEvent &) {
     p.Value(state_.battery.voltage_v, b.x + 20, b.y + 188, "V", 0, 27);
     p.Value(state_.battery.current_a, b.x + cw / 2, b.y + 188,
             "A / + discharge", 1, 27);
-    p.Text(state_.simulated ? "48 kWh usable  /  15% reserve"
-                            : "Capacity / reserve unconfigured",
+    p.Text(std::isfinite(model.capacity_kwh) &&
+                   std::isfinite(model.reserve_soc_percent)
+               ? wxString::Format("%.1f kWh configured / %.1f%% reserve",
+                                  model.capacity_kwh, model.reserve_soc_percent)
+               : "Capacity / reserve unconfigured",
            b.x + 20, b.y + 284, 11, c.secondary, false, cw - 40);
     b = xy(1);
     p.Card(b.x, b.y, cw, ch, "PROPULSION");
@@ -218,7 +225,8 @@ void PreviewPanel::Paint(wxPaintEvent &) {
                                       arrival->energy_required_kwh)
                    : W(smartnav::EnergyReasonName(energy.arrival.reason)),
            x, y + 112, 13, c.secondary, false, width - x - 44);
-    p.Text("Constant speed and net power. No weather/current forecast.",
+    p.Text("Estimated at present conditions. See Settings / Energy for "
+           "assumptions.",
            margin + 20, y + 160, 11, c.muted, false, width - margin * 2 - 40);
     bottom = y + 212;
   } else if (page_ == PreviewPage::Route) {

@@ -174,6 +174,10 @@ def switch_to_xnav(count, phase, name):
         _,status=os.waitpid(old,0);assert os.waitstatus_to_exitcode(status)==0
     handle,pid=window('OpenNav X / OpenCPN');ready(count);preserved()
     chart_capture(name,phase)
+    if windows:
+        saved=data(lambda d:d['settings']['capacity_kwh']=='24' and d['settings']['reserve_percent']=='20')
+        assert saved['settings']['battery_device']=='', 'No battery identity may be fabricated'
+        report['checks'].append('Explicit live energy configuration survived mode restart')
 def launch(mode,demo=False,launcher=None,direct=False):
     if windows and launcher:
         return subprocess.Popen([os.environ['COMSPEC'],'/d','/c',str(package/launcher)],cwd=temp,env=env,stdout=subprocess.DEVNULL,stderr=subprocess.DEVNULL)
@@ -246,6 +250,25 @@ try:
         if windows:
             assert not any(caption.startswith('OpenNav page:') for _,caption in ui.children(handle)), 'Preview pane covers Alpha page'
     report['checks'].append('Alpha menu and eight product page interactions captured')
+    for title,key,name in [('Energy configuration','k','energy-settings'),
+                           ('Data Sources','o','sources'),
+                           ('Vessel safety settings','q','vessel-settings'),
+                           ('Radar status','z','radar-status')]:
+        if windows:
+            command('Menu','m');ui.click_text(pid,'Settings');ui.click_text(pid,title)
+        else:xdo('key','ctrl+shift+'+key);time.sleep(.6)
+        data(lambda d:d.get('ui_page')==title)
+        capture('alpha-'+name)
+        if windows:ui.assert_product_page(handle,title)
+        if windows and name=='energy-settings':
+            ui.click_text(pid,'Configure battery & reserve')
+            ui.set_dialog_fields(pid,'Battery assumptions',['24','20','0.5'])
+            ui.click_text(pid,'Save')
+            data(lambda d:d['settings']['capacity_kwh']=='24' and d['settings']['reserve_percent']=='20')
+            assert data()['data_mode']=='DEMO', 'Live configuration must not silently disable/replace DEMO'
+            capture('alpha-energy-settings-saved')
+            report['checks'].append('Native battery assumption sheet saves explicit live configuration; DEMO remains separate')
+    report['checks'].append('Energy, source, vessel-safety and radar settings pages captured')
     later=data(lambda d:item(d,'Battery SOC')['value']<item(first,'Battery SOC')['value'])
     assert item(later,'Latitude')['value']!=item(first,'Latitude')['value']
     assert later['route']['remaining_nm']<first['route']['remaining_nm']
