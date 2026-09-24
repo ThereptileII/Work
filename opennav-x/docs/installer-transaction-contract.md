@@ -24,13 +24,16 @@ is recovered by rebuilding shortcuts from the committed state. Unpublished
 staging directories remain available for diagnosis. No interrupted operation
 restores an old navigation database over newer user work.
 
-Repair uses a new generation with known-good owned files. User additions are
+Repair uses a new generation with known-good owned files from its retained,
+hash-verified package. The maintenance wizard offers Repair, Rollback, Uninstall
+and Diagnostics; updating uses a newer Setup download. User additions are
 carried forward separately from the managed payload; collisions fail closed.
 Update retains the previous generation. Rollback verifies and restores it;
 rolling back the first installation unregisters the integration. Uninstall
-removes the registration and shortcuts while retaining recovery generations and
-logs. These retained backups are intentional in Alpha and are documented for
-manual removal after verification. The untouched stock shortcut remains usable.
+removes registration, shortcuts and hash-matching publisher-owned files. Modified
+files, custom additions, unpublished staging and diagnostic logs are retained.
+These items are documented for manual inspection/removal after verification.
+The untouched stock shortcut remains usable.
 This is not a claim of a final production uninstaller or crash-proof filesystem.
 
 The engine refuses running OpenCPN processes, unknown ownership, redirected

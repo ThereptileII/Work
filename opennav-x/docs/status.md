@@ -349,3 +349,15 @@ sample age. Display exposes Day/Dusk/Night and fullscreen through existing
 OpenCPN actions. Linux passes 28 portable contracts, 90 integrated tests and the
 expanded preview smoke. Native selector/palette review is pending.
 [Contract](display-layout-contract.md), [local evidence](evidence/alpha-layout-local-validation.json).
+
+**Alpha packaging/maintenance candidate:** runtime labels and generated package
+metadata now use `0.2.0-alpha1`. The final inventory names are
+`OpenNavX-Alpha1-Portable-win64.zip`, `OpenNavX-Alpha1-Setup.exe`, the test guide,
+source ZIP and `SHA256SUMS.txt`. User-download publication is disabled while the
+public compatibility manifest is empty, even if a candidate CI run passes.
+The maintenance wizard adds offline repair from a retained verified package;
+uninstall removes unchanged publisher-owned files while preserving modified or
+custom additions and diagnostics. Linux passes 28 portable / 90 integrated
+cases, loader isolation and the preview smoke. Native installer qualification
+and final Alpha acceptance remain open. [Local record](evidence/alpha-package-local-validation.json),
+[draft manual guide](alpha/OpenNavX-Alpha1-Test-Guide.md).

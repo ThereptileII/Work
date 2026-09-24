@@ -160,8 +160,11 @@ bool ParseCommandLine(wxCmdLineParser& parser) {
       // OpenCPN normalizes portable resources relative to PrivateDataDir.
       // Match that base for direct launch and restart as well as the launchers.
       if(!wxSetWorkingDirectory(configdir))
-        throw std::runtime_error("Cannot use the Developer Preview profile as its working directory");
-      if(parser.Found("remote")) throw std::runtime_error("Developer Preview does not send remote commands to another OpenCPN instance");
+        throw std::runtime_error(
+            "Cannot use the portable OpenNav profile as its working directory");
+      if (parser.Found("remote"))
+        throw std::runtime_error("portable OpenNav does not send remote "
+                                 "commands to another OpenCPN instance");
     } else if(!configdir.empty()) diagnostic_directory=configdir.ToStdString(wxConvUTF8);
   } catch(const std::exception& e) {std::cerr<<e.what()<<'\n';return false;}
   if (!configdir.empty()) {

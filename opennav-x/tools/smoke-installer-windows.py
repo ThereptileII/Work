@@ -126,7 +126,7 @@ try:
         before=inventory(profile)
         damaged=generation()/'app/uidata/styles.xml';damaged.write_bytes(b'corrupt owned resource')
         custom=generation()/'app/plugins/alpha-user-preserved.txt';custom.write_text('user extension must persist')
-        setup('Repair',original);assert state()['current']!=first and damaged.read_bytes()==b'corrupt owned resource'
+        engine('Repair');assert state()['current']!=first and damaged.read_bytes()==b'corrupt owned resource'
         assert (generation()/'app/uidata/styles.xml').read_bytes()!=b'corrupt owned resource'
         assert (generation()/'app/plugins/alpha-user-preserved.txt').read_text()==custom.read_text()
         assert inventory(profile)==before
@@ -153,7 +153,9 @@ try:
         result=subprocess.run([str(maintain),'/S','/ACTION=Uninstall','/REPORT='+str(out)],timeout=120)
         assert result.returncode==0 and not (INSTALL/'state.json').exists()
         assert inventory(profile)==before and inventory(stock)==stock_before
-        check('Conventional uninstaller unregisters integration; exact stock and user data unchanged; recovery generations retained')
+        assert not list((INSTALL/'generations').glob('*/app/opencpn.exe')), 'Unmodified OpenNav application binaries remain'
+        assert list((INSTALL/'generations').glob('*/app/plugins/alpha-user-preserved.txt')), 'Custom additions were removed'
+        check('Conventional uninstaller removes verified owned app files; exact stock/profile unchanged; custom additions retained')
         p,h,rgb=launch(original,[],'OpenCPN 5.12.4',profile,'installer-05-restored-stock')
         charts.check(rgb,colors,'Untouched stock after uninstall');close(p,h)
         assert fixture_snapshot(profile)==expected

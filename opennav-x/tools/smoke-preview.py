@@ -50,7 +50,7 @@ if windows:
     normal_before=normal_snapshot()
     ui=module('windows-ui');report['display']=ui.ensure_desktop()
     with zipfile.ZipFile(args.package) as z:z.extractall(temp)
-    package=temp/'OpenNavX-DeveloperPreview';profile=package/'profile';logs=package/'logs';exe=package/'app/opencpn.exe'
+    package=temp/'OpenNavX-Alpha1-Portable';profile=package/'profile';logs=package/'logs';exe=package/'app/opencpn.exe'
     manifest=json.loads((package/'FILE_SHA256.json').read_text())
     for name,expected in manifest.items():assert hashlib.sha256((package/name).read_bytes()).hexdigest()==expected,name
     report['checks'].append('All extracted package file hashes match')
@@ -64,7 +64,7 @@ else:
     if ctypes.CDLL(None).prctl(36,1,0,0,0)!=0:raise RuntimeError('Cannot track restarted processes')
     # Exercise the same portable resource save/reload path as Windows. Ordinary
     # non-portable mode/input coverage remains in the existing smoke scripts.
-    package=temp/'OpenNavX-DeveloperPreview';app_dir=package/'app';app_dir.mkdir(parents=True)
+    package=temp/'OpenNavX-Alpha1-Portable';app_dir=package/'app';app_dir.mkdir(parents=True)
     for resource in (root/'build/xnav-install/share/opencpn').iterdir():
         (app_dir/resource.name).symlink_to(resource,target_is_directory=resource.is_dir())
     exe=app_dir/'opencpn';shutil.copy2(root/'build/xnav-install/bin/opencpn',exe)

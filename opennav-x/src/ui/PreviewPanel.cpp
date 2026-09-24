@@ -292,7 +292,7 @@ void PreviewPanel::Paint(wxPaintEvent &) {
     int y = 96;
     p.Card(margin, y, width - 2 * margin,
            static_cast<int>(info_.size()) * 22 + 62,
-           "DEVELOPER PREVIEW 0.1 / NOT FOR NAVIGATION");
+           "ALPHA 1 / NOT FOR NAVIGATION");
     for (const auto &line : info_) {
       p.Text(W(line), margin + 20, y + 44, 12, c.secondary, false,
              width - 2 * margin - 40);

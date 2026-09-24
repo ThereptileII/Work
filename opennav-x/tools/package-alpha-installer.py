@@ -4,6 +4,7 @@ import argparse
 import hashlib
 import json
 import os
+import re
 from pathlib import Path
 import shutil
 import subprocess
@@ -36,7 +37,8 @@ with zipfile.ZipFile(a.output/'payload.zip','w',zipfile.ZIP_DEFLATED,compresslev
             data=f.read_bytes();z.writestr(path,data)
             records.append({'path':path,'sha256':hashlib.sha256(data).hexdigest()})
 commit=os.environ['GITHUB_SHA']
-package={'schema':1,'version':'0.2.0-alpha1','commit':commit,
+version=re.search(r'Version\[\] = "([^"]+)"',(ROOT/'src/application/Version.h').read_text()).group(1)
+package={'schema':1,'version':version,'commit':commit,
          'payloadSha256':hashlib.sha256((a.output/'payload.zip').read_bytes()).hexdigest(),
          'supportedOpenCpn':manifest['supportedOpenCpn'],'files':records,
          'qualification':'candidate' if a.candidate else 'accepted'}

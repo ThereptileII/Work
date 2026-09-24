@@ -29,7 +29,7 @@ Page custom SourcePage SourceLeave
 !define MUI_FINISHPAGE_RUN_TEXT "Launch OpenNav X Alpha 1"
 !define MUI_FINISHPAGE_RUN_FUNCTION LaunchXNav
 !insertmacro MUI_PAGE_FINISH
-!insertmacro MUI_UNPAGE_CONFIRM
+UninstPage custom un.MaintenancePage un.MaintenanceLeave
 !insertmacro MUI_UNPAGE_INSTFILES
 !insertmacro MUI_UNPAGE_FINISH
 !insertmacro MUI_LANGUAGE "English"
@@ -112,7 +112,7 @@ Function LaunchXNav
 FunctionEnd
 Function un.onInit
   SetShellVarContext current
-  StrCpy $Action "Uninstall"
+  StrCpy $Action "Repair"
   StrCpy $ReportPath ""
   ${GetParameters} $0
   ${GetOptions} $0 "/ACTION=" $Action
@@ -120,9 +120,32 @@ Function un.onInit
   ${If} $Action != "Uninstall"
   ${AndIf} $Action != "Rollback"
   ${AndIf} $Action != "Diagnostics"
+  ${AndIf} $Action != "Repair"
     MessageBox MB_ICONSTOP "Use the original Setup download for Repair or Update."
     Abort
   ${EndIf}
+FunctionEnd
+Function un.MaintenancePage
+  !insertmacro MUI_HEADER_TEXT "Maintain OpenNav X Alpha 1" "Original OpenCPN and navigation data are preserved."
+  nsDialogs::Create 1018
+  Pop $0
+  ${NSD_CreateLabel} 0 0 100% 45u "Repair restores OpenNav-owned files from the retained package. Rollback restores the prior application generation, or removes the first installation. Uninstall removes verified OpenNav-owned files and registration; modified/custom additions and diagnostics remain."
+  Pop $0
+  ${NSD_CreateDropList} 0 55u 100% 70u ""
+  Pop $ActionControl
+  ${NSD_CB_AddString} $ActionControl "Repair"
+  ${NSD_CB_AddString} $ActionControl "Rollback"
+  ${NSD_CB_AddString} $ActionControl "Uninstall"
+  ${NSD_CB_AddString} $ActionControl "Diagnostics"
+  ${NSD_CB_SelectString} $ActionControl "$Action"
+  ${NSD_CreateLabel} 0 100u 100% 40u "Close all OpenCPN modes before repair, rollback or uninstall. Diagnostics writes a report in %LOCALAPPDATA%\OpenNavXAlpha1\logs. To update, download and run the newer Alpha Setup."
+  Pop $0
+  GetDlgItem $0 $HWNDPARENT 1
+  SendMessage $0 ${WM_SETTEXT} 0 "STR:Continue"
+  nsDialogs::Show
+FunctionEnd
+Function un.MaintenanceLeave
+  ${NSD_GetText} $ActionControl $Action
 FunctionEnd
 Section "Uninstall"
   nsExec::ExecToLog '"$SYSDIR\WindowsPowerShell\v1.0\powershell.exe" -NoProfile -NonInteractive -ExecutionPolicy Bypass -File "$INSTDIR\Lifecycle.ps1" -Action "$Action" -Report "$ReportPath"'

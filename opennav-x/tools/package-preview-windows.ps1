@@ -11,8 +11,8 @@ $Output = Join-Path $Root 'build/developer-preview'
 python (Join-Path $PSScriptRoot 'package-preview.py') --install "$Root/build/xnav-install" `
     --build "$Root/build/xnav-windows" --runtime $Runtime.FullName --output $Output
 if ($LASTEXITCODE -ne 0) { throw 'Preview assembly failed' }
-python (Join-Path $PSScriptRoot 'verify-preview-pe.py') "$Output/OpenNavX-DeveloperPreview/app" `
+python (Join-Path $PSScriptRoot 'verify-preview-pe.py') "$Output/OpenNavX-Alpha1-Portable/app" `
     --report "$Root/evidence/local/preview-dll-audit.json"
 if ($LASTEXITCODE -ne 0) { throw 'Preview dependency closure failed' }
-python (Join-Path $PSScriptRoot 'smoke-preview.py') --package "$Output/OpenNavX-DeveloperPreview-win64.zip"
+python (Join-Path $PSScriptRoot 'smoke-preview.py') --package "$Output/OpenNavX-Alpha1-Portable-win64.zip"
 if ($LASTEXITCODE -ne 0) { throw 'Extracted portable preview smoke test failed' }

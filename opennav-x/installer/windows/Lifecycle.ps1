@@ -197,6 +197,29 @@ function RemoveShell {
     if (@(Get-ChildItem -LiteralPath $Shortcuts -Force).Count -eq 0) { Remove-Item -LiteralPath $Shortcuts }
   }
 }
+function RemoveOwnedGenerations {
+  $base = Join-Path $Root 'generations'
+  if (-not (Test-Path -LiteralPath $base)) { return }
+  foreach ($directory in Get-ChildItem -LiteralPath $base -Directory) {
+    $path = Generation $directory.Name
+    $null = PlainPath $path
+    if (-not (Test-Path -LiteralPath (Join-Path $path 'ownership.json'))) {
+      Log ('Retained unpublished staging directory: ' + $directory.Name)
+      continue
+    }
+    $record = ReadGeneration $directory.Name
+    foreach ($file in $record.managedFiles) {
+      $target = RelativePath $path $file.path
+      if (-not [IO.File]::Exists($target)) { continue }
+      if ((Hash $target) -ceq $file.sha256) {
+        try { Remove-Item -LiteralPath $target }
+        catch { Log ('Retained locked owned file: ' + $directory.Name + '/' + $file.path) }
+      } else { Log ('Retained modified file: ' + $directory.Name + '/' + $file.path) }
+    }
+    # Imported/custom additions and ownership provenance are intentionally kept.
+    # No untrusted recursive directory deletion or delayed system-wide removal.
+  }
+}
 function Failure([string]$Point) {
   if ($FailurePoint -eq $Point) {
     if ($env:GITHUB_ACTIONS -ne 'true') { throw 'Fault injection is limited to disposable CI.' }
@@ -258,6 +281,15 @@ try {
   if (Test-Path -LiteralPath (Join-Path $Root 'owner.json')) {
     if ((ReadJson (Join-Path $Root 'owner.json')).owner -ne $Owner) { throw 'Unknown root ownership.' }
   }
+  if ($Action -eq 'Repair' -and -not $PackageDirectory -and $state) {
+    $installed = ReadGeneration $state.current
+    $PackageDirectory = Join-Path (Generation $state.current) 'maintenance'
+    $ManifestSha256 = $installed.packageSha256
+  }
+  if ($Action -eq 'Diagnostics' -and -not $Report) {
+    if (-not $state) { throw 'No installed generation; rerun Setup diagnostics with a report path.' }
+    $Report = Join-Path $Root ('logs\diagnostics-' + [DateTime]::UtcNow.ToString('yyyyMMdd-HHmmss') + '.json')
+  }
   if ($Action -in @('Install','Update','Repair','Preflight')) {
     $PackageDirectory = PlainPath $PackageDirectory
     if ($ManifestSha256 -cnotmatch '^[a-f0-9]{64}$' -or (Hash (Join-Path $PackageDirectory 'package.json')) -cne $ManifestSha256) { throw 'Package manifest integrity check failed.' }
@@ -312,6 +344,12 @@ try {
       if (Test-Path -LiteralPath (Join-Path $stage 'app\OPENNAV_PORTABLE_PREVIEW')) { throw 'An installed integration must not contain a portable profile marker.' }
       Copy-Item -LiteralPath $PSCommandPath -Destination (Join-Path $stage 'Lifecycle.ps1')
       Copy-Item -LiteralPath (Join-Path $PackageDirectory 'Maintain.exe') -Destination (Join-Path $stage 'Maintain.exe')
+      $maintenance = Join-Path $stage 'maintenance'
+      $null = New-Item -ItemType Directory -Path $maintenance
+      foreach ($name in @('package.json','payload.zip','Maintain.exe')) {
+        Copy-Item -LiteralPath (Join-Path $PackageDirectory $name) -Destination (Join-Path $maintenance $name)
+      }
+
       # Unbundled installed plugins stay beside the integrated executable, retaining names/resources.
       $pluginRoot = Join-Path ([IO.Path]::GetDirectoryName($stock.path)) 'plugins'
       $bundledPluginFiles = @($package.files | Where-Object { $_.path.StartsWith('app/plugins/') } | ForEach-Object { [pscustomobject]@{path=$_.path.Substring(12);sha256=$_.sha256} })
@@ -321,7 +359,7 @@ try {
         $null = PreserveAdditions (Generation $state.current) $stage $old.managedFiles
       }
       SelfTest $stage $package.commit
-      AtomicJson (Join-Path $stage 'ownership.json') @{owner=$Owner; version=$package.version; commit=$package.commit; files=@(FileRecords $stage); managedFiles=@($package.files) + @([pscustomobject]@{path='Lifecycle.ps1';sha256=(Hash (Join-Path $stage 'Lifecycle.ps1'))}, [pscustomobject]@{path='Maintain.exe';sha256=(Hash (Join-Path $stage 'Maintain.exe'))}); importedPlugins=$retained}
+      AtomicJson (Join-Path $stage 'ownership.json') @{owner=$Owner; version=$package.version; commit=$package.commit; packageSha256=$ManifestSha256; files=@(FileRecords $stage); managedFiles=@(FileRecords $maintenance | ForEach-Object { [pscustomobject]@{path=('maintenance/'+$_.path);sha256=$_.sha256} }) + @($package.files) + @([pscustomobject]@{path='Lifecycle.ps1';sha256=(Hash (Join-Path $stage 'Lifecycle.ps1'))}, [pscustomobject]@{path='Maintain.exe';sha256=(Hash (Join-Path $stage 'Maintain.exe'))}); importedPlugins=$retained}
       $previous = ''; if ($state) { $previous = $state.current }
       $next = @{owner=$Owner;schema=1;stock=$stock;current=$id;previous=$previous}
       AtomicJson (Join-Path $Root 'transaction.json') @{owner=$Owner;action=$Action;before=$state;after=$next}
@@ -346,8 +384,8 @@ try {
       RemoveShell
       Remove-Item -LiteralPath (Join-Path $Root 'state.json')
       Remove-Item -LiteralPath (Join-Path $Root 'transaction.json')
-      # Retain backups and unknown additions for recovery; no untrusted recursive deletion.
-      Log 'Integration unregistered. Original OpenCPN remains unchanged. Recovery generations retained.'
+      RemoveOwnedGenerations
+      Log 'Integration unregistered and verified owned files removed. Modified/custom additions and diagnostics retained; original OpenCPN unchanged.'
     }
     if ($state -and (Hash $state.stock.path) -cne $state.stock.sha256) { throw 'Unexpected stock hash change during transaction.' }
   }

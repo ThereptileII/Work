@@ -1,5 +1,6 @@
 #include "integration/PreviewDiagnostics.h"
 #include "OpenNavBuild.h"
+#include "application/Version.h"
 #include "smartnav/VesselEnergy.h"
 #include "vessel/DataItems.h"
 #include <algorithm>
@@ -11,7 +12,8 @@
 
 namespace opennav::integration {
 std::vector<std::string> PreviewBuildInfo(int dpi, const std::string &profile) {
-  return {"OpenNav X 0.1 Developer Preview / Interface: XNav",
+  return {std::string("OpenNav X ") + application::Edition + " / " +
+              application::Version + " / Interface: XNav",
           "OpenCPN 5.12.4 / 37fd0cddb7334fe489e9f18aa163977a9c5c84f7",
           "Build: " OPENNAV_BUILD_COMMIT,
           "Compiler: " OPENNAV_BUILD_COMPILER,
@@ -32,7 +34,7 @@ void WritePreviewDiagnostics(const std::string &path,
   wxJSONValue report;
   report["runtime"] = runtime;
   report["ui_page"] = wxString::FromUTF8(ui_page);
-  report["version"] = wxString("0.1 Developer Preview");
+  report["version"] = wxString::FromUTF8(application::Version);
   report["data_mode"] =
       wxString(state.simulated ? "DEMO" : "OPENCPN selected navigation");
   report["build_commit"] = wxString(OPENNAV_BUILD_COMMIT);

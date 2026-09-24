@@ -1,0 +1,16 @@
+{
+  "version": "0.2.0-alpha1",
+  "status": "Linux passed; native installer and final Alpha artifacts pending",
+  "portable_contracts": 28,
+  "integrated_tests": 90,
+  "loader_profile_isolation": "passed",
+  "preview_smoke": "passed",
+  "powershell": "7.6.6 Linux syntax parse only; native Windows PowerShell 5.1 is mandatory",
+  "workflow": "Alpha user-download publication requires nonempty accepted compatibility manifest plus all native and Linux gates; candidate artifacts explicitly marked",
+  "logs": [
+    "alpha-package-contract-tests.log",
+    "alpha-package-integrated.log",
+    "alpha-package-loader.log",
+    "alpha-package-preview.log"
+  ]
+}

@@ -1,5 +1,6 @@
 #include "integration/InstallerSelfTest.h"
 #include "OpenNavBuild.h"
+#include "application/Version.h"
 #include <filesystem>
 #include <wx/cmdline.h>
 #include <wx/file.h>
@@ -39,6 +40,7 @@ int RunInstallerSelfTest() {
   wxJSONValue report;
   report["contract"] = wxString("OpenNavX.LoaderSelfTest.1");
   report["commit"] = wxString(OPENNAV_BUILD_COMMIT);
+  report["version"] = wxString::FromUTF8(application::Version);
   report["upstream"] = wxString("37fd0cddb7334fe489e9f18aa163977a9c5c84f7");
   report["compiler"] = wxString(OPENNAV_BUILD_COMPILER);
   report["profile_initialized"] = false;
