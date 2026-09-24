@@ -1,0 +1,501 @@
+{
+  "chart_origin": "https://www.charts.noaa.gov/ENCs/US5SEAFL.zip",
+  "chart_sha256": "b027e029dc7b76595381d89e3718145eb5069e5a03917e78bada4f8ebe8c84e4",
+  "agreement": "https://charts.noaa.gov/ENCs/ENC_Agreement.shtml",
+  "scope": "Disposable rendering fixture; not redistributed as a navigation product",
+  "authority": "Linux development",
+  "phases": [
+    {
+      "requested_rendering": "software",
+      "runtime": {
+        "chart": {
+          "canvas_pixels": {
+            "height": 446,
+            "width": 702
+          },
+          "latitude": 47.6,
+          "database_entries": 2,
+          "follow": false,
+          "quilt_members": [
+            {
+              "type": 5,
+              "native_scale": 12000,
+              "file": "US5SEAFL.000",
+              "index": 0
+            }
+          ],
+          "opengl_enabled": false,
+          "quilt_reference": 0,
+          "quilt": true,
+          "scale_ppm": 0.150000006,
+          "longitude": -122.36
+        },
+        "ui_update": {
+          "timer_period_ms": 250,
+          "mean_ms": 2.727431167,
+          "scope": "Shell update callback including diagnostics; excludes asynchronous chart painting",
+          "maximum_ms": 9.891652,
+          "ticks": "6",
+          "last_ms": 0.137402
+        },
+        "plugins": [
+          {
+            "version": "1.4",
+            "name": "ChartDownloader",
+            "api": 113,
+            "file": "libchartdldr_pi.so",
+            "initialized": false,
+            "enabled": false
+          },
+          {
+            "version": "1.2",
+            "name": "Dashboard",
+            "api": 108,
+            "file": "libdashboard_pi.so",
+            "initialized": true,
+            "enabled": true
+          },
+          {
+            "version": "5.0",
+            "name": "GRIB",
+            "api": 116,
+            "file": "libgrib_pi.so",
+            "initialized": true,
+            "enabled": true
+          },
+          {
+            "version": "1.1",
+            "name": "WMM",
+            "api": 108,
+            "file": "libwmm_pi.so",
+            "initialized": true,
+            "enabled": true
+          }
+        ]
+      },
+      "startup_to_enc_seconds": 4.459,
+      "captures": [
+        {
+          "screenshot": "chart-software-01-loaded-linux.png",
+          "interior_colors": 2042,
+          "non_background_fraction": 0.172
+        },
+        {
+          "screenshot": "chart-software-02-zoom-linux.png",
+          "interior_colors": 608,
+          "non_background_fraction": 0.04263095238095238
+        },
+        {
+          "screenshot": "chart-software-03-follow-linux.png",
+          "interior_colors": 2016,
+          "non_background_fraction": 0.1720357142857143
+        },
+        {
+          "screenshot": "chart-software-03a-adjacent-cell-linux.png",
+          "interior_colors": 738,
+          "non_background_fraction": 0.044071428571428574
+        },
+        {
+          "screenshot": "chart-software-03b-returned-cell-linux.png",
+          "interior_colors": 2014,
+          "non_background_fraction": 0.17177380952380952
+        },
+        {
+          "screenshot": "chart-software-04-restored-linux.png",
+          "interior_colors": 2056,
+          "non_background_fraction": 0.1723095238095238
+        },
+        {
+          "screenshot": "chart-software-05-legacy-linux.png",
+          "interior_colors": 1999,
+          "non_background_fraction": 0.17727380952380953
+        },
+        {
+          "screenshot": "chart-software-06-returned-linux.png",
+          "interior_colors": 2056,
+          "non_background_fraction": 0.1723095238095238
+        }
+      ],
+      "performance": {
+        "idle_live_input_seconds": 10.000330278999172,
+        "cpu_percent_one_core": 10.39965652118525,
+        "resident_bytes": 253067264,
+        "shell_update": {
+          "timer_period_ms": 250,
+          "mean_ms": 2.10293844,
+          "scope": "Shell update callback including diagnostics; excludes asynchronous chart painting",
+          "maximum_ms": 9.891652,
+          "ticks": "50",
+          "last_ms": 0.384447
+        },
+        "scope": "CI desktop / one NOAA ENC / 3 plugins / 3.3 Hz RMC; not target navigation PC"
+      },
+      "chart_switch": {
+        "synthetic_position_jump": true,
+        "adjacent": {
+          "canvas_pixels": {
+            "height": 686,
+            "width": 1086
+          },
+          "latitude": 47.59,
+          "database_entries": 2,
+          "follow": true,
+          "quilt_members": [
+            {
+              "type": 5,
+              "native_scale": 12000,
+              "file": "US5SEAFK.000",
+              "index": 1
+            }
+          ],
+          "opengl_enabled": false,
+          "quilt_reference": 1,
+          "quilt": true,
+          "scale_ppm": 0.1500150114,
+          "longitude": -122.447
+        },
+        "returned": {
+          "canvas_pixels": {
+            "height": 686,
+            "width": 1086
+          },
+          "latitude": 47.6000188,
+          "database_entries": 2,
+          "follow": true,
+          "quilt_members": [
+            {
+              "type": 5,
+              "native_scale": 12000,
+              "file": "US5SEAFL.000",
+              "index": 0
+            }
+          ],
+          "opengl_enabled": false,
+          "quilt_reference": 0,
+          "quilt": true,
+          "scale_ppm": 0.1500150114,
+          "longitude": -122.360017
+        }
+      },
+      "plugin_manager": "native Windows interaction is authoritative; loader records checked here"
+    },
+    {
+      "requested_rendering": "opengl",
+      "runtime": {
+        "chart": {
+          "canvas_pixels": {
+            "height": 686,
+            "width": 1086
+          },
+          "latitude": 47.6,
+          "database_entries": 2,
+          "follow": false,
+          "quilt_members": [
+            {
+              "type": 5,
+              "native_scale": 12000,
+              "file": "US5SEAFL.000",
+              "index": 0
+            }
+          ],
+          "opengl_enabled": true,
+          "quilt_reference": 0,
+          "quilt": true,
+          "scale_ppm": 0.1500149965,
+          "longitude": -122.36
+        },
+        "ui_update": {
+          "timer_period_ms": 250,
+          "mean_ms": 2.4031767,
+          "scope": "Shell update callback including diagnostics; excludes asynchronous chart painting",
+          "maximum_ms": 9.332767,
+          "ticks": "10",
+          "last_ms": 0.386588
+        },
+        "plugins": [
+          {
+            "version": "1.4",
+            "name": "ChartDownloader",
+            "api": 113,
+            "file": "libchartdldr_pi.so",
+            "initialized": false,
+            "enabled": false
+          },
+          {
+            "version": "1.2",
+            "name": "Dashboard",
+            "api": 108,
+            "file": "libdashboard_pi.so",
+            "initialized": true,
+            "enabled": true
+          },
+          {
+            "version": "5.0",
+            "name": "GRIB",
+            "api": 116,
+            "file": "libgrib_pi.so",
+            "initialized": true,
+            "enabled": true
+          },
+          {
+            "version": "1.1",
+            "name": "WMM",
+            "api": 108,
+            "file": "libwmm_pi.so",
+            "initialized": true,
+            "enabled": true
+          }
+        ]
+      },
+      "startup_to_enc_seconds": 4.907,
+      "captures": [
+        {
+          "screenshot": "chart-opengl-01-loaded-linux.png",
+          "interior_colors": 1385,
+          "non_background_fraction": 0.15925
+        },
+        {
+          "screenshot": "chart-opengl-02-zoom-linux.png",
+          "interior_colors": 353,
+          "non_background_fraction": 0.030857142857142857
+        },
+        {
+          "screenshot": "chart-opengl-03-follow-linux.png",
+          "interior_colors": 1369,
+          "non_background_fraction": 0.15930952380952382
+        },
+        {
+          "screenshot": "chart-opengl-03a-adjacent-cell-linux.png",
+          "interior_colors": 447,
+          "non_background_fraction": 0.02666666666666667
+        },
+        {
+          "screenshot": "chart-opengl-03b-returned-cell-linux.png",
+          "interior_colors": 1369,
+          "non_background_fraction": 0.15930952380952382
+        },
+        {
+          "screenshot": "chart-opengl-04-restored-linux.png",
+          "interior_colors": 1369,
+          "non_background_fraction": 0.15930952380952382
+        },
+        {
+          "screenshot": "chart-opengl-05-legacy-linux.png",
+          "interior_colors": 1302,
+          "non_background_fraction": 0.15896428571428572
+        },
+        {
+          "screenshot": "chart-opengl-06-returned-linux.png",
+          "interior_colors": 1369,
+          "non_background_fraction": 0.15930952380952382
+        }
+      ],
+      "gl_status": "enabled; inspect renderer log",
+      "performance": {
+        "idle_live_input_seconds": 10.000498572997458,
+        "cpu_percent_one_core": 8.99955130667293,
+        "resident_bytes": 377749504,
+        "shell_update": {
+          "timer_period_ms": 250,
+          "mean_ms": 2.18909736,
+          "scope": "Shell update callback including diagnostics; excludes asynchronous chart painting",
+          "maximum_ms": 9.332767,
+          "ticks": "50",
+          "last_ms": 0.177018
+        },
+        "scope": "CI desktop / one NOAA ENC / 3 plugins / 3.3 Hz RMC; not target navigation PC"
+      },
+      "chart_switch": {
+        "synthetic_position_jump": true,
+        "adjacent": {
+          "canvas_pixels": {
+            "height": 686,
+            "width": 1086
+          },
+          "latitude": 47.59,
+          "database_entries": 2,
+          "follow": true,
+          "quilt_members": [
+            {
+              "type": 5,
+              "native_scale": 12000,
+              "file": "US5SEAFK.000",
+              "index": 1
+            }
+          ],
+          "opengl_enabled": true,
+          "quilt_reference": 1,
+          "quilt": true,
+          "scale_ppm": 0.150030002,
+          "longitude": -122.447
+        },
+        "returned": {
+          "canvas_pixels": {
+            "height": 686,
+            "width": 1086
+          },
+          "latitude": 47.6,
+          "database_entries": 2,
+          "follow": true,
+          "quilt_members": [
+            {
+              "type": 5,
+              "native_scale": 12000,
+              "file": "US5SEAFL.000",
+              "index": 0
+            }
+          ],
+          "opengl_enabled": true,
+          "quilt_reference": 0,
+          "quilt": true,
+          "scale_ppm": 0.150030002,
+          "longitude": -122.36
+        }
+      }
+    }
+  ],
+  "screenshots": [
+    "chart-software-01-loaded-linux.png",
+    "chart-software-02-zoom-linux.png",
+    "chart-software-03-follow-linux.png",
+    "chart-software-03a-adjacent-cell-linux.png",
+    "chart-software-03b-returned-cell-linux.png",
+    "chart-software-overlay-linux.png",
+    "chart-software-04-restored-linux.png",
+    "chart-software-05-legacy-linux.png",
+    "chart-software-06-returned-linux.png",
+    "chart-opengl-01-loaded-linux.png",
+    "chart-opengl-02-zoom-linux.png",
+    "chart-opengl-03-follow-linux.png",
+    "chart-opengl-03a-adjacent-cell-linux.png",
+    "chart-opengl-03b-returned-cell-linux.png",
+    "chart-opengl-overlay-linux.png",
+    "chart-opengl-04-restored-linux.png",
+    "chart-opengl-05-legacy-linux.png",
+    "chart-opengl-06-returned-linux.png"
+  ],
+  "adjacent_chart": {
+    "origin": "https://www.charts.noaa.gov/ENCs/US5SEAFK.zip",
+    "sha256": "99c9b55d49828503666668e956f91444ee79b434db4bdf65f3104c3e42c32d51",
+    "switch_position": [
+      47.59,
+      -122.447
+    ]
+  },
+  "result": "passed; native screenshot review and physical GPU gate remain separate",
+  "renderer_log": [
+    "01:40:00.807 WARNING fileconf.cpp:631 file '/tmp/opennav charts xvt_zkk4/profile/opencpn.conf', line 642: key 'OpenGL' was first found at line 107.",
+    "01:40:00.807 WARNING fileconf.cpp:1835 entry 'OpenGL' appears more than once in group '/Settings'",
+    "01:40:00.856 MESSAGE OCPNPlatform.cpp:923 Starting OpenGL test...",
+    "01:40:00.856 MESSAGE OCPNPlatform.cpp:733 Starting OpenGL test utility: \"/home/standard/Projects/X-nav/build/xnav-install/bin/opencpn-glutil\" opengl-info \"/tmp/opennav charts xvt_zkk4/profile/gl_caps.json\"",
+    "01:40:01.070 MESSAGE OCPNPlatform.cpp:930 OpenGL test complete.",
+    "01:40:01.070 MESSAGE OCPNPlatform.cpp:952 OpenGL determined CAPABLE.",
+    "01:40:01.266 MESSAGE glChartCanvas.cpp:1085 OpenGL-> Renderer String: llvmpipe (LLVM 22.1.8, 256 bits)",
+    "01:40:01.266 MESSAGE glChartCanvas.cpp:1094 OpenGL-> Version reported:  4.6 (Compatibility Profile) Mesa 26.2.2-arch1.1",
+    "01:40:01.266 MESSAGE glChartCanvas.cpp:1102 OpenGL-> GLSL Version reported:  4.60",
+    "01:40:01.271 MESSAGE glChartCanvas.cpp:1183 OpenGL-> Texture rectangle format: de1",
+    "01:40:01.271 MESSAGE glChartCanvas.cpp:1198 OpenGL-> Using Vertexbuffer Objects",
+    "01:40:01.275 MESSAGE glChartCanvas.cpp:1056 OpenGL-> Framebuffer OK, size = 1278",
+    "01:40:01.275 MESSAGE glChartCanvas.cpp:1266 OpenGL-> Using Framebuffer Objects",
+    "01:40:01.275 MESSAGE glChartCanvas.cpp:1269 OpenGL-> Using FBO Stencil buffer",
+    "01:40:01.275 MESSAGE glChartCanvas.cpp:1276 OpenGL-> Using Stencil buffer clipping",
+    "01:40:01.275 MESSAGE glChartCanvas.cpp:1281 OpenGL-> Using Scissor Clipping",
+    "01:40:01.275 MESSAGE glChartCanvas.cpp:1422 OpenGL-> Not Using compression",
+    "01:40:01.275 MESSAGE glChartCanvas.cpp:1292 OpenGL-> Minimum cartographic line width:  1.0",
+    "01:40:01.275 MESSAGE glChartCanvas.cpp:1295 OpenGL-> Minimum symbol line width:  1.0",
+    "01:40:01.344 MESSAGE glChartCanvas.cpp:1056 OpenGL-> Framebuffer OK, size = 1278",
+    "01:40:01.884 MESSAGE glChartCanvas.cpp:1056 OpenGL-> Framebuffer OK, size = 1278",
+    "01:40:02.013 MESSAGE glChartCanvas.cpp:1056 OpenGL-> Framebuffer OK, size = 1278",
+    "01:40:02.066 MESSAGE glChartCanvas.cpp:1056 OpenGL-> Framebuffer OK, size = 1086",
+    "01:40:02.067 MESSAGE glChartCanvas.cpp:1056 OpenGL-> Framebuffer OK, size = 1086",
+    "01:40:02.109 MESSAGE glChartCanvas.cpp:1056 OpenGL-> Framebuffer OK, size = 1086",
+    "01:40:02.919 MESSAGE glChartCanvas.cpp:1056 OpenGL-> Framebuffer OK, size = 1086",
+    "01:40:03.026 MESSAGE glChartCanvas.cpp:1056 OpenGL-> Framebuffer OK, size = 1086",
+    "01:40:03.094 MESSAGE glChartCanvas.cpp:1056 OpenGL-> Framebuffer OK, size = 1086",
+    "01:40:03.458 MESSAGE OCPNPlatform.cpp:923 Starting OpenGL test...",
+    "01:40:03.458 MESSAGE OCPNPlatform.cpp:952 OpenGL determined CAPABLE.",
+    "01:40:03.460 MESSAGE OCPNPlatform.cpp:923 Starting OpenGL test...",
+    "01:40:03.460 MESSAGE OCPNPlatform.cpp:952 OpenGL determined CAPABLE.",
+    "01:40:04.173 MESSAGE glChartCanvas.cpp:1056 OpenGL-> Framebuffer OK, size = 1086",
+    "01:40:04.252 MESSAGE glChartCanvas.cpp:1056 OpenGL-> Framebuffer OK, size = 1086",
+    "01:40:26.644 MESSAGE glChartCanvas.cpp:1056 OpenGL-> Framebuffer OK, size = 1086",
+    "01:40:28.508 MESSAGE glChartCanvas.cpp:1056 OpenGL-> Framebuffer OK, size = 1086",
+    "01:40:28.589 MESSAGE glChartCanvas.cpp:1056 OpenGL-> Framebuffer OK, size = 1086",
+    "01:40:29.183 WARNING fileconf.cpp:631 file '/tmp/opennav charts xvt_zkk4/profile/opencpn.conf', line 642: key 'OpenGL' was first found at line 107.",
+    "01:40:29.183 WARNING fileconf.cpp:1835 entry 'OpenGL' appears more than once in group '/Settings'",
+    "01:40:29.233 MESSAGE OCPNPlatform.cpp:923 Starting OpenGL test...",
+    "01:40:29.233 MESSAGE OCPNPlatform.cpp:733 Starting OpenGL test utility: \"/home/standard/Projects/X-nav/build/xnav-install/bin/opencpn-glutil\" opengl-info \"/tmp/opennav charts xvt_zkk4/profile/gl_caps.json\"",
+    "01:40:29.450 MESSAGE OCPNPlatform.cpp:930 OpenGL test complete.",
+    "01:40:29.450 MESSAGE OCPNPlatform.cpp:952 OpenGL determined CAPABLE.",
+    "01:40:29.717 MESSAGE glChartCanvas.cpp:1085 OpenGL-> Renderer String: llvmpipe (LLVM 22.1.8, 256 bits)",
+    "01:40:29.717 MESSAGE glChartCanvas.cpp:1094 OpenGL-> Version reported:  4.6 (Compatibility Profile) Mesa 26.2.2-arch1.1",
+    "01:40:29.717 MESSAGE glChartCanvas.cpp:1102 OpenGL-> GLSL Version reported:  4.60",
+    "01:40:29.722 MESSAGE glChartCanvas.cpp:1183 OpenGL-> Texture rectangle format: de1",
+    "01:40:29.722 MESSAGE glChartCanvas.cpp:1198 OpenGL-> Using Vertexbuffer Objects",
+    "01:40:29.726 MESSAGE glChartCanvas.cpp:1056 OpenGL-> Framebuffer OK, size = 1278",
+    "01:40:29.726 MESSAGE glChartCanvas.cpp:1266 OpenGL-> Using Framebuffer Objects",
+    "01:40:29.726 MESSAGE glChartCanvas.cpp:1269 OpenGL-> Using FBO Stencil buffer",
+    "01:40:29.726 MESSAGE glChartCanvas.cpp:1276 OpenGL-> Using Stencil buffer clipping",
+    "01:40:29.726 MESSAGE glChartCanvas.cpp:1281 OpenGL-> Using Scissor Clipping",
+    "01:40:29.726 MESSAGE glChartCanvas.cpp:1422 OpenGL-> Not Using compression",
+    "01:40:29.726 MESSAGE glChartCanvas.cpp:1292 OpenGL-> Minimum cartographic line width:  1.0",
+    "01:40:29.726 MESSAGE glChartCanvas.cpp:1295 OpenGL-> Minimum symbol line width:  1.0",
+    "01:40:29.833 MESSAGE glChartCanvas.cpp:1056 OpenGL-> Framebuffer OK, size = 1278",
+    "01:40:29.866 MESSAGE glChartCanvas.cpp:1056 OpenGL-> Framebuffer OK, size = 1278",
+    "01:40:29.899 MESSAGE glChartCanvas.cpp:1056 OpenGL-> Framebuffer OK, size = 1278",
+    "01:40:29.937 MESSAGE glChartCanvas.cpp:1056 OpenGL-> Framebuffer OK, size = 1278",
+    "01:40:30.501 MESSAGE glChartCanvas.cpp:1056 OpenGL-> Framebuffer OK, size = 1278",
+    "01:40:31.353 MESSAGE glChartCanvas.cpp:1056 OpenGL-> Framebuffer OK, size = 1278",
+    "01:40:31.475 MESSAGE glChartCanvas.cpp:1056 OpenGL-> Framebuffer OK, size = 1278",
+    "01:40:31.568 MESSAGE glChartCanvas.cpp:1056 OpenGL-> Framebuffer OK, size = 1278",
+    "01:40:31.937 MESSAGE OCPNPlatform.cpp:923 Starting OpenGL test...",
+    "01:40:31.937 MESSAGE OCPNPlatform.cpp:952 OpenGL determined CAPABLE.",
+    "01:40:31.939 MESSAGE OCPNPlatform.cpp:923 Starting OpenGL test...",
+    "01:40:31.939 MESSAGE OCPNPlatform.cpp:952 OpenGL determined CAPABLE.",
+    "01:40:32.687 MESSAGE glChartCanvas.cpp:1056 OpenGL-> Framebuffer OK, size = 1278",
+    "01:40:32.777 MESSAGE glChartCanvas.cpp:1056 OpenGL-> Framebuffer OK, size = 1278",
+    "01:40:35.700 WARNING fileconf.cpp:631 file '/tmp/opennav charts xvt_zkk4/profile/opencpn.conf', line 642: key 'OpenGL' was first found at line 107.",
+    "01:40:35.700 WARNING fileconf.cpp:1835 entry 'OpenGL' appears more than once in group '/Settings'",
+    "01:40:35.750 MESSAGE OCPNPlatform.cpp:923 Starting OpenGL test...",
+    "01:40:35.750 MESSAGE OCPNPlatform.cpp:733 Starting OpenGL test utility: \"/home/standard/Projects/X-nav/build/xnav-install/bin/opencpn-glutil\" opengl-info \"/tmp/opennav charts xvt_zkk4/profile/gl_caps.json\"",
+    "01:40:35.966 MESSAGE OCPNPlatform.cpp:930 OpenGL test complete.",
+    "01:40:35.966 MESSAGE OCPNPlatform.cpp:952 OpenGL determined CAPABLE.",
+    "01:40:36.161 MESSAGE glChartCanvas.cpp:1085 OpenGL-> Renderer String: llvmpipe (LLVM 22.1.8, 256 bits)",
+    "01:40:36.161 MESSAGE glChartCanvas.cpp:1094 OpenGL-> Version reported:  4.6 (Compatibility Profile) Mesa 26.2.2-arch1.1",
+    "01:40:36.161 MESSAGE glChartCanvas.cpp:1102 OpenGL-> GLSL Version reported:  4.60",
+    "01:40:36.165 MESSAGE glChartCanvas.cpp:1183 OpenGL-> Texture rectangle format: de1",
+    "01:40:36.165 MESSAGE glChartCanvas.cpp:1198 OpenGL-> Using Vertexbuffer Objects",
+    "01:40:36.169 MESSAGE glChartCanvas.cpp:1056 OpenGL-> Framebuffer OK, size = 1278",
+    "01:40:36.169 MESSAGE glChartCanvas.cpp:1266 OpenGL-> Using Framebuffer Objects",
+    "01:40:36.169 MESSAGE glChartCanvas.cpp:1269 OpenGL-> Using FBO Stencil buffer",
+    "01:40:36.169 MESSAGE glChartCanvas.cpp:1276 OpenGL-> Using Stencil buffer clipping",
+    "01:40:36.169 MESSAGE glChartCanvas.cpp:1281 OpenGL-> Using Scissor Clipping",
+    "01:40:36.169 MESSAGE glChartCanvas.cpp:1422 OpenGL-> Not Using compression",
+    "01:40:36.169 MESSAGE glChartCanvas.cpp:1292 OpenGL-> Minimum cartographic line width:  1.0",
+    "01:40:36.169 MESSAGE glChartCanvas.cpp:1295 OpenGL-> Minimum symbol line width:  1.0",
+    "01:40:36.243 MESSAGE glChartCanvas.cpp:1056 OpenGL-> Framebuffer OK, size = 1278",
+    "01:40:36.892 MESSAGE glChartCanvas.cpp:1056 OpenGL-> Framebuffer OK, size = 1278",
+    "01:40:37.207 MESSAGE glChartCanvas.cpp:1056 OpenGL-> Framebuffer OK, size = 1278",
+    "01:40:37.675 MESSAGE glChartCanvas.cpp:1056 OpenGL-> Framebuffer OK, size = 1086",
+    "01:40:37.676 MESSAGE glChartCanvas.cpp:1056 OpenGL-> Framebuffer OK, size = 1086",
+    "01:40:37.762 MESSAGE glChartCanvas.cpp:1056 OpenGL-> Framebuffer OK, size = 1086",
+    "01:40:37.959 MESSAGE glChartCanvas.cpp:1056 OpenGL-> Framebuffer OK, size = 1086",
+    "01:40:38.076 MESSAGE glChartCanvas.cpp:1056 OpenGL-> Framebuffer OK, size = 1086",
+    "01:40:38.166 MESSAGE glChartCanvas.cpp:1056 OpenGL-> Framebuffer OK, size = 1086",
+    "01:40:38.542 MESSAGE OCPNPlatform.cpp:923 Starting OpenGL test...",
+    "01:40:38.542 MESSAGE OCPNPlatform.cpp:952 OpenGL determined CAPABLE.",
+    "01:40:38.544 MESSAGE OCPNPlatform.cpp:923 Starting OpenGL test...",
+    "01:40:38.544 MESSAGE OCPNPlatform.cpp:952 OpenGL determined CAPABLE.",
+    "01:40:39.239 MESSAGE glChartCanvas.cpp:1056 OpenGL-> Framebuffer OK, size = 1086",
+    "01:40:39.323 MESSAGE glChartCanvas.cpp:1056 OpenGL-> Framebuffer OK, size = 1086",
+    "01:40:41.551 MESSAGE glChartCanvas.cpp:1056 OpenGL-> Framebuffer OK, size = 1086",
+    "01:40:41.630 MESSAGE glChartCanvas.cpp:1056 OpenGL-> Framebuffer OK, size = 1086"
+  ],
+  "local_git_base": "3227eb4",
+  "working_change": "Two public NOAA cells; no application source change",
+  "visual_review": {
+    "file": "chart-opengl-03a-adjacent-cell-linux.png",
+    "sha256": "46cf051db8bb642229ed67fcbbf0dffce18be12227a8ddf69f6e8f1e165690a6",
+    "notes": "Real depth contours, soundings, traffic lanes and labels visible. Linux llvmpipe is not physical GPU acceptance."
+  }
+}

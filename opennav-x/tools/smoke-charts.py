@@ -41,12 +41,31 @@ with zipfile.ZipFile(io.BytesIO(content)) as z:
   p=Path(f.filename);assert not p.is_absolute() and '..' not in p.parts
  z.extractall(cache)
 chartdir=cache/'ENC_ROOT';assert (chartdir/'US5SEAFL/US5SEAFL.000').is_file()
+# Adjacent cell's inspected exchange catalog bounds: 47.55..47.625 N,
+# -122.475..-122.4 E. Keep its catalog/notices separate from the first exchange.
+adjacent_url='https://www.charts.noaa.gov/ENCs/US5SEAFK.zip'
+adjacent_digest='99c9b55d49828503666668e956f91444ee79b434db4bdf65f3104c3e42c32d51'
+adjacent_archive=cache/'US5SEAFK.zip'
+if not adjacent_archive.exists():
+ with urllib.request.urlopen(adjacent_url,timeout=60) as response:content=response.read(64*1024*1024+1)
+ assert len(content)<=64*1024*1024
+ adjacent_archive.write_bytes(content)
+content=adjacent_archive.read_bytes();assert hashlib.sha256(content).hexdigest()==adjacent_digest,'Adjacent NOAA fixture changed; inspect before repinning'
+with zipfile.ZipFile(io.BytesIO(content)) as z:
+ assert sum(f.file_size for f in z.infolist())<256*1024*1024
+ for f in z.infolist():
+  p=Path(f.filename);assert not p.is_absolute() and '..' not in p.parts
+ z.extractall(cache/'adjacent')
+adjacent_dir=cache/'adjacent/ENC_ROOT'
+assert (adjacent_dir/'US5SEAFK/US5SEAFK.000').is_file()
+report['adjacent_chart']={'origin':adjacent_url,'sha256':adjacent_digest,'switch_position':[47.59,-122.447]}
 tmp=tempfile.TemporaryDirectory(prefix='opennav charts ',dir=None if windows else '/tmp');profile=Path(tmp.name)/'profile'
 variant='xnav-windows' if windows else 'xnav-linux'
 subprocess.run([sys.executable,str(root/'tools/prepare-test-profile.py'),'--build',str(root/'build'/variant),'--profile',str(profile)],check=True)
 fixtures.seed(profile);expected=fixtures.snapshot(profile)
 server=socket.socket();server.bind(('127.0.0.1',0));server.listen(1);server.settimeout(.2)
 stop=threading.Event();errors=[]
+position=(47.6,-122.36)
 def sentence(body):
  checksum=0
  for c in body.encode():checksum^=c
@@ -60,7 +79,9 @@ def transmit():
    assert address[0]=='127.0.0.1';peer.settimeout(2)
    while not stop.wait(.3):
     now=datetime.datetime.now(datetime.timezone.utc)
-    peer.sendall(sentence(f'GPRMC,{now:%H%M%S},A,4736.000,N,12221.600,W,3.0,90.0,{now:%d%m%y},,,A'))
+    lat,lon=position
+    lat_min=(lat-int(lat))*60;lon_min=(abs(lon)-int(abs(lon)))*60
+    peer.sendall(sentence(f'GPRMC,{now:%H%M%S},A,{int(lat):02}{lat_min:06.3f},N,{int(abs(lon)):03}{lon_min:06.3f},W,3.0,90.0,{now:%d%m%y},,,A'))
   except (BrokenPipeError,ConnectionResetError,ConnectionAbortedError):pass
   except Exception as e:
    if not stop.is_set():errors.append(str(e))
@@ -68,6 +89,7 @@ def transmit():
 thread=threading.Thread(target=transmit,daemon=True);thread.start()
 with (profile/'opencpn.conf').open('a') as f:
  f.write('\n[Settings]\nOpenGL=0\nChartQuilting=1\n[ChartDirectories]\nChartDir1='+chartdir.as_posix()+'\n[Settings/GlobalState]\nVPLatLon=47.6000,-122.3600\nVPScale=0.15\n')
+ f.write('\n[ChartDirectories]\nChartDir2='+adjacent_dir.as_posix()+'\n')
  f.write('\n[Settings/NMEADataSource]\nDataConnections='+fixtures.CONNECTION+'|'+f'1;0;127.0.0.1;{server.getsockname()[1]};0;;4800;1;0;0;;0;;0;0;0;0;1;SIMULATED chart loopback;0;;0;1;\n')
  for name in ['wmm','grib']:
   plugin=name+'_pi.dll' if windows else 'lib'+name+'_pi.so'
@@ -112,6 +134,7 @@ def data(predicate=lambda d:True):
  raise RuntimeError('Chart diagnostic assertion timed out')
 def chart(c):return c['runtime']['chart']
 def enc(d):return any(c['file']=='US5SEAFL.000' for c in chart(d).get('quilt_members',[]))
+def reference_cell(d,name):return any(c['file']==name and c['index']==chart(d)['quilt_reference'] for c in chart(d).get('quilt_members',[]))
 def capture(name,check=True):
  p=evidence/(name+('.png' if windows else '-linux.png'))
  if windows:ui.SetForegroundWindow(handle);rgb=ui.capture(handle,p,screen_pixels=True)
@@ -189,6 +212,14 @@ try:
   data(lambda d:abs(chart(d)['longitude']-before['longitude'])>.0001)
   command('GPS','F2');d=data(lambda d:chart(d)['follow'] and abs(chart(d)['latitude']-47.6)<.0001 and abs(chart(d)['longitude']+122.36)<.0001 and enc(d))
   entry['captures'].append(capture('chart-'+rendering+'-03-follow'))
+  position=(47.59,-122.447)
+  switched=data(lambda d:chart(d)['follow'] and abs(chart(d)['longitude']-position[1])<.0001 and reference_cell(d,'US5SEAFK.000'))
+  entry['captures'].append(capture('chart-'+rendering+'-03a-adjacent-cell'))
+  entry['chart_switch']={'synthetic_position_jump':True,'adjacent':chart(switched)}
+  position=(47.6,-122.36)
+  restored=data(lambda d:abs(chart(d)['longitude']-position[1])<.0001 and reference_cell(d,'US5SEAFL.000'))
+  entry['chart_switch']['returned']=chart(restored)
+  entry['captures'].append(capture('chart-'+rendering+'-03b-returned-cell'))
   command('Menu','ctrl+shift+m');data(lambda d:d['ui_page']=='Menu');capture('chart-'+rendering+'-overlay',False)
   command('Navigation','ctrl+shift+n');data(lambda d:d['ui_page']=='Navigation' and enc(d))
   entry['captures'].append(capture('chart-'+rendering+'-04-restored'))
@@ -221,13 +252,17 @@ try:
      with closing(sqlite3.connect((profile/'navobj.db').resolve().as_uri()+'?mode=ro',uri=True)) as db:
       return db.execute("SELECT r.guid,p.guid,p.lat,p.lon FROM routes r JOIN routepoints_link l ON r.guid=l.route_guid JOIN routepoints p ON p.guid=l.point_guid WHERE r.name NOT LIKE 'SIMULATED persistence%' OR r.name IS NULL ORDER BY l.point_order").fetchall()
     points=created_points();assert len(points)==3,points
-    # OpenCPN's standard edit gesture: select a point, then drag it. XNav does
-    # not implement another route geometry store or geodesic calculation.
-    ui.user.SetCursorPos(430,300);ui.user.mouse_event(2,0,0,0,0);ui.user.mouse_event(4,0,0,0,0);time.sleep(.3)
-    ui.user.mouse_event(2,0,0,0,0)
+    entry['captures'].append(capture('chart-created-route-before-edit'))
+    # In upstream desktop mode LeftDown selects the point and starts editing.
+    # A separate selection click then another down within 300 ms is a Windows
+    # double-click and opens Mark Properties, preventing the intended drag.
+    ui.user.SetCursorPos(430,300);time.sleep(.6);ui.user.mouse_event(2,0,0,0,0);time.sleep(.15)
     for x in range(430,471,5):ui.user.SetCursorPos(x,320);time.sleep(.08)
     ui.user.mouse_event(4,0,0,0,0);time.sleep(.7)
-    changed=created_points();assert len(changed)==3 and changed[0][:2]==points[0][:2] and changed[0][2:]!=points[0][2:],(points,changed)
+    changed=created_points()
+    if not (len(changed)==3 and changed[0][:2]==points[0][:2] and changed[0][2:]!=points[0][2:]):
+     capture('chart-route-edit-failed',False)
+     raise AssertionError((points,changed,ui.windows(pid)))
     entry['route_geometry']='Native chart gestures created a three-point route and persisted a point move with unchanged identities'
     entry['captures'].append(capture('chart-created-and-edited-route'))
    entry['plugin_manager']='native manager opened and listed Dashboard/WMM' if windows else 'native Windows interaction is authoritative; loader records checked here'

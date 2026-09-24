@@ -18,6 +18,7 @@ $Owner = 'OpenNavX.Alpha1.SideBySide.1'
 $Utf8 = New-Object System.Text.UTF8Encoding($false)
 $SessionLog = New-Object System.Collections.Generic.List[string]
 $TransactionLock = $null
+$OwnsRoot = $false
 
 function Log([string]$Message) {
   $line = [DateTime]::UtcNow.ToString('o') + ' ' + $Message
@@ -280,7 +281,9 @@ try {
   if ((Test-Path -LiteralPath $Root) -and -not $state -and -not (Test-Path -LiteralPath (Join-Path $Root 'owner.json'))) { throw 'Existing directory is not an OpenNav-owned installation.' }
   if (Test-Path -LiteralPath (Join-Path $Root 'owner.json')) {
     if ((ReadJson (Join-Path $Root 'owner.json')).owner -ne $Owner) { throw 'Unknown root ownership.' }
+    $OwnsRoot = $true
   }
+  if (-not $OwnsRoot -and (Test-Path -LiteralPath $Shortcuts)) { throw 'Existing shortcut directory has no verified OpenNav owner; preserve and inspect it.' }
   if ($Action -eq 'Repair' -and -not $PackageDirectory -and $state) {
     $installed = ReadGeneration $state.current
     $PackageDirectory = Join-Path (Generation $state.current) 'maintenance'
@@ -332,6 +335,7 @@ try {
     if (-not (Test-Path -LiteralPath $Root)) {
       $null = New-Item -ItemType Directory -Path $Root
       AtomicJson (Join-Path $Root 'owner.json') @{owner=$Owner}
+      $OwnsRoot = $true
     }
     $TransactionLock = [IO.File]::Open((Join-Path $Root 'transaction.lock'), [IO.FileMode]::OpenOrCreate, [IO.FileAccess]::ReadWrite, [IO.FileShare]::None)
     Recover
@@ -397,7 +401,7 @@ try {
   exit 1
 } finally {
   if ($TransactionLock) { $TransactionLock.Dispose() }
-  if ((Test-Path -LiteralPath (Join-Path $Root 'owner.json'))) {
+  if ($OwnsRoot -and (Test-Path -LiteralPath (Join-Path $Root 'owner.json'))) {
     try {
       $logs = PlainPath (Join-Path $Root 'logs'); $null = New-Item -ItemType Directory -Path $logs -Force
       [IO.File]::WriteAllLines((Join-Path $logs ([DateTime]::UtcNow.ToString('yyyyMMdd-HHmmss-fff')+'-'+$Action+'.log')), $SessionLog, $Utf8)

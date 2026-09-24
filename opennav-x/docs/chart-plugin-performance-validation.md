@@ -9,6 +9,13 @@ payload. [NOAA agreement](https://charts.noaa.gov/ENCs/ENC_Agreement.shtml),
 [Coast Survey licensing](https://nauticalcharts.noaa.gov/data/data-licensing.html).
 It is a rendering test, not an approved or current chart service for navigation.
 
+The adjacent US5SEAFK exchange set is independently pinned and keeps its own
+catalog/notices. Input-only synthetic RMC jumps between inspected Seattle
+positions while following; both software and requested OpenGL must switch the
+actual upstream quilt reference to US5SEAFK and back to US5SEAFL, with nautical
+detail in each capture. This jump is a rendering fixture, not a simulated
+continuous passage.
+
 At the Seattle fixture viewpoint the test requires US5SEAFL in OpenCPN's actual
 quilt membership and substantial interior symbol/contour detail in native
 pixels. It then exercises zoom, pan, own-ship follow using explicit input-only
@@ -44,3 +51,10 @@ Native PNG review remains mandatory in addition to model/pixel assertions. The
 returned screenshots must show nautical features, not just a nonempty window.
 Hardware GL, extended chart catalogs, real plugin combinations and underway
 responsiveness remain in the physical test procedure.
+
+The native geometry gate uses the pinned desktop press-drag-release gesture.
+The initial harness inserted a selection click only 300 ms before a second
+press, triggering upstream double-click properties instead of dragging. No
+route persistence assertion was removed; a failed edit now retains a capture
+and visible window inventory. Touch route editing remains a separate manual
+validation item from the injected navigation-button touch gate.

@@ -91,6 +91,13 @@ try:
         setup('Install',bad/'opencpn.exe',expected=1)
         assert not INSTALL.exists();assert inventory(stock)==stock_before
         check('Unknown executable hash refused before creating install root or changing stock')
+        INSTALL.mkdir();(INSTALL/'owner.json').write_text('{"owner":"foreign fixture"}')
+        (INSTALL/'keep.txt').write_text('Do not claim or change this directory')
+        unowned=inventory(INSTALL)
+        setup('Install',original,expected=1)
+        assert inventory(INSTALL)==unowned and inventory(stock)==stock_before
+        shutil.rmtree(INSTALL) # Only the explicitly created disposable fixture.
+        check('Unknown installation ownership refused without adding logs or changing files')
         # Obtain wx standard profile path without initializing it; never guess it.
         loader=temporary/'locations.json'
         r=subprocess.run([str(ROOT/'build/xnav-install/opencpn.exe'),'--opennav-self-test',str(loader)],timeout=30)

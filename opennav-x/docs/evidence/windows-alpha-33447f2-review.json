@@ -1,0 +1,45 @@
+{
+  "commit": "33447f2230c69c408134dcf4ddcf3c1a14204257",
+  "run": "https://github.com/ThereptileII/Work/actions/runs/36072119268",
+  "status": "candidate not accepted: missing installer manifest; native route drag harness double-click",
+  "linux_integrated": 90,
+  "windows_integrated": 80,
+  "portable_each": 28,
+  "artifact_id": 10839063661,
+  "artifact_sha256": "c1b146ad8ef4676add3b877f8352170ab9a279ab0dde13f7246ce41bd86ca77b",
+  "passed": [
+    "Native package including configurable displays",
+    "Actual native 100/125/150 percent DPI and touch",
+    "Native NOAA ENC load, zoom/pan/follow/overlay",
+    "Dashboard, WMM and GRIB initialized; plugin manager opened",
+    "Native three-point route creation persisted"
+  ],
+  "remaining": [
+    "Direct route-point drag replacement must pass",
+    "Native GL and chart mode returns not reached in this candidate",
+    "Installer lifecycle not executed"
+  ],
+  "reviewed": [
+    {
+      "file": "chart-software-03-follow.png",
+      "sha256": "ec572d8969eb643a465f4c0cc8d16a5f80e081cb602fbe5e47eddcede6709c12",
+      "notes": "Actual NOAA soundings, coastline and ownship; chart remains dominant"
+    },
+    {
+      "file": "alpha-display.png",
+      "sha256": "12ec350efd069d36f8d6b96879a2652a5578e81051cb46639481c52d03fafd4c",
+      "notes": "Display actions readable; touch-sized consistent palette and layout"
+    },
+    {
+      "file": "alpha-display-dusk.png",
+      "sha256": "5c21c5f1f998eb3a625d067726725bcd02bb1171167e974be9a48bfeaa82531d",
+      "notes": "Dusk palette applied; text and actions remain readable"
+    },
+    {
+      "file": "chart-plugin-manager.png",
+      "sha256": "e12ede69d2fb409c5f5c86a574830e81927bf685c0965816ec2279d26cfbb95e",
+      "notes": "Normal upstream plugin manager visible; Dashboard, GRIB and WMM enabled"
+    }
+  ],
+  "dpi_result": "passed; native visual review required"
+}
