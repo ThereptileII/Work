@@ -1,13 +1,14 @@
-# Bounded normalized recording and replay — Beta design
+# Bounded normalized recording and replay — Beta contract
 
-Status: implemented in the current Beta working tree; native acceptance pending. This extends
+Status: software-qualified at `a3e6e08` on Linux and native Windows; see
+[Beta 1 acceptance](evidence/beta1-a3e6e08-accepted.json). Physical boat recordings/calibration remain a separate gate. This extends
 Vessel Data; it does not replace OpenCPN's transport or navigation processing.
 
 ## Capture and privacy boundary
 
 Recording is an explicit action, OFF on every application start. Capture copied
 normalized observations/state at a bounded cadence, preserving each original
-observation age, validity, source and device identity. A unchanged observation
+observation age, validity, source and device identity. An unchanged observation
 must not become fresh just because another frame is captured. Include the
 configuration assumptions required to interpret an energy estimate.
 
@@ -133,5 +134,6 @@ malformed/oversized/Unicode/nonfinite inputs, pause/end/rewind, calibration
 filtering, asynchronous rotation/failed IO, control and navigation-mutation
 isolation, and transport preflight. `tools/smoke-recording.py` drives the real UI
 in an offline disposable profile on both platforms and retains screenshots and
-recorded/exported evidence. Acceptance is recorded separately for the exact
-published revision after both platform gates and native visual review.
+recorded/exported evidence. Both runtime gates, native file-dialog/export checks
+and reviewed replay/commissioning captures passed at `a3e6e08`; see
+[Beta 1 acceptance](evidence/beta1-a3e6e08-accepted.json). Replay chart motion remains intentionally outside this contract.

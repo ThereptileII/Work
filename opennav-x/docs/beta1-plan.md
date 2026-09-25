@@ -77,4 +77,21 @@ its own version and download names.
 
 First Beta input acceptance: `a371767`, 97 Linux / 87 Windows integrated cases
 and 31 portable suites per platform. Recording increment local gate: 38 portable
-suites, runtime recording/replay and existing Linux regressions; native pending.
+suites, runtime recording/replay and existing Linux regressions; native was
+pending at that earlier increment.
+
+## Stage disposition — 2026-09-25
+
+Beta 1 `a3e6e0812e01d2aee8f0b83807527b9a0c0fc79a` is software-qualified in
+[run 36137990012](https://github.com/ThereptileII/Work/actions/runs/36137990012): 60 portable suites per platform, 106 Linux / 98 Windows
+integrated cases, 29 installer lifecycle checks, actual three-hour runs on both
+platforms, native DPI/touch and downloaded package/visual review. All ten jobs
+passed. See [Beta 1 acceptance](evidence/beta1-a3e6e08-accepted.json) and [current status](status.md). Earlier failed candidates
+remain rejected; their replacement evidence is retained.
+
+Alpha feedback has been addressed as classified above. Post-build review
+deliberately defers the cosmetic Diagnostics Alpha caption and 150% transient
+System-popup/Alerts overlap; no unresolved serious navigation-data regression
+was observed in the qualified tests. Physical boat, target GPU/touch, live ENC
+corridor and Pathfinder gates remain explicit. Stop here for manual desktop
+and boat feedback; do not begin production or autonomous steering.

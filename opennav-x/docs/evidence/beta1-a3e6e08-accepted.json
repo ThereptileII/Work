@@ -1,0 +1,1391 @@
+{
+  "schema": "OpenNavX.BetaQualification.1",
+  "status": "Beta 1 software qualified for manual desktop and staged boat commissioning; physical acceptance outstanding",
+  "date_utc": "2026-09-25",
+  "version": "0.3.0-beta1",
+  "commit": "a3e6e0812e01d2aee8f0b83807527b9a0c0fc79a",
+  "local_equivalent_commit": "ae458db9160d55060defb79deb048902f08f0c32",
+  "run": "https://github.com/ThereptileII/Work/actions/runs/36137990012",
+  "upstream_version": "5.12.4",
+  "upstream_commit": "37fd0cddb7334fe489e9f18aa163977a9c5c84f7",
+  "architecture": "Win32/x86 application and supported OpenCPN plugin ABI on Windows 10/11 x64; win64 names the host",
+  "compiler": "MSVC 19.44.35229.0 / 4 byte pointers",
+  "jobs": [
+    {
+      "id": 108080724045,
+      "name": "Linux integrated regression gate",
+      "conclusion": "success"
+    },
+    {
+      "id": 108080724199,
+      "name": "contracts (ubuntu-24.04)",
+      "conclusion": "success"
+    },
+    {
+      "id": 108080724261,
+      "name": "Approved OpenCPN ABI on Windows x64",
+      "conclusion": "success"
+    },
+    {
+      "id": 108080724274,
+      "name": "linux",
+      "conclusion": "success"
+    },
+    {
+      "id": 108080724308,
+      "name": "Native MSVC upstream Win32 ABI on Windows x64",
+      "conclusion": "success"
+    },
+    {
+      "id": 108080724347,
+      "name": "Boat C6 producer expiry compile (no flashing)",
+      "conclusion": "success"
+    },
+    {
+      "id": 108080724408,
+      "name": "contracts (windows-2022)",
+      "conclusion": "success"
+    },
+    {
+      "id": 108080724575,
+      "name": "Official OpenCPN installation prerequisite",
+      "conclusion": "success"
+    },
+    {
+      "id": 108081639642,
+      "name": "Native MSVC XNav / Legacy / Safe slice",
+      "conclusion": "success"
+    },
+    {
+      "id": 108161336766,
+      "name": "Publish Beta after both platform and installer gates",
+      "conclusion": "success"
+    }
+  ],
+  "artifacts": [
+    {
+      "id": 10876556381,
+      "name": "beta-candidate-a3e6e0812e01d2aee8f0b83807527b9a0c0fc79a",
+      "size_in_bytes": 173010067,
+      "digest": "sha256:badb57cdfb2a8f5e745c01127e4e6b30e0177c5af42a6425e97f52109217122d"
+    },
+    {
+      "id": 10876531379,
+      "name": "OpenNavX-Beta1-Windows",
+      "size_in_bytes": 173009871,
+      "digest": "sha256:d69b6e9ac108168494300ad734ad7e40835967c06519e849012ef5947ad9a343"
+    },
+    {
+      "id": 10876391498,
+      "name": "windows-integration-a3e6e0812e01d2aee8f0b83807527b9a0c0fc79a",
+      "size_in_bytes": 20154418,
+      "digest": "sha256:0b27a6e465dacc5e3a37531b1ad5da00b16d7c0e2147dc698456dada745b35cf"
+    },
+    {
+      "id": 10875117803,
+      "name": "linux-integration-a3e6e0812e01d2aee8f0b83807527b9a0c0fc79a",
+      "size_in_bytes": 12598047,
+      "digest": "sha256:f00ec95a5a8bce5e6f2dfc4c5e0eff7ac864d1fb4474643c486784bbbb9016e2"
+    },
+    {
+      "id": 10866825058,
+      "name": "linux-pristine-a3e6e0812e01d2aee8f0b83807527b9a0c0fc79a",
+      "size_in_bytes": 475747,
+      "digest": "sha256:2b61d3f299748c4f4a8ed11249ccfbe0645c60498d1697ccdf5ae99cc8faeba7"
+    },
+    {
+      "id": 10866505164,
+      "name": "windows-pristine-a3e6e0812e01d2aee8f0b83807527b9a0c0fc79a",
+      "size_in_bytes": 495679,
+      "digest": "sha256:ce2021e228b3a15be6d8c9cba6bd484b22539469a21fc0b719c5836f89f52670"
+    },
+    {
+      "id": 10865069499,
+      "name": "boat-firmware-a3e6e0812e01d2aee8f0b83807527b9a0c0fc79a",
+      "size_in_bytes": 2683,
+      "digest": "sha256:71a3aded6d4d96dc93e5d13220c5a8c2e772b6449b7bb974b031386d1e01dbc1"
+    },
+    {
+      "id": 10864788525,
+      "name": "official-prerequisite-a3e6e0812e01d2aee8f0b83807527b9a0c0fc79a",
+      "size_in_bytes": 220810,
+      "digest": "sha256:e76e7d5b4553b2978df3e816b0aba1676f6fbaf638b6743dcc22ca67401d5113"
+    }
+  ],
+  "download": {
+    "artifact_name": "OpenNavX-Beta1-Windows",
+    "artifact_id": 10876531379,
+    "url": "https://github.com/ThereptileII/Work/actions/runs/36137990012/artifacts/10876531379",
+    "archive_sha256": "d69b6e9ac108168494300ad734ad7e40835967c06519e849012ef5947ad9a343",
+    "status": "Downloaded named final artifact; outer digest, five release SHA256SUMS entries, ZIP safety/CRC and exact native executable checked",
+    "release_files": {
+      "OpenNavX-Beta1-Portable-win64.zip": {
+        "sha256": "ab84fd30b0b9969bc05ff2ff71934188e9dd0ade7f1987325df5e9ffd67e7e04",
+        "bytes": 48893110
+      },
+      "OpenNavX-Beta1-source.zip": {
+        "sha256": "daf73f76e18ae935459f50228a92f4db33ab91a1f2075cc7b524913ad9c14d16",
+        "bytes": 81824233
+      },
+      "OpenNavX-Beta1-Setup.exe": {
+        "sha256": "8e1b3432a5a44499ffb41b125f62df07e846b2cfe1ca0936409ed021d413e128",
+        "bytes": 43967980
+      },
+      "OpenNavX-Beta1-Test-Guide.md": {
+        "sha256": "1af6ff534bfeb973af9cc8104f3c0d45cf56175482e95d1c50178758e3582aa1",
+        "bytes": 11656
+      },
+      "OpenNavX-Beta1-Boat-Commissioning.md": {
+        "sha256": "91c440edd4136719691fb4b6f06fd27bd9b113e1da5f690fda1dbdb7e779a9c1",
+        "bytes": 6918
+      }
+    },
+    "portable": {
+      "files_verified": 1009,
+      "executable_sha256": "6f20acea9f90c840e0dcfbbf70782c2f1fc2480be7439058b48947cc9f7b91b6",
+      "pe_machine": "i386",
+      "matches_tested_native_executable": true,
+      "build_info": "# Build information\r\n\r\n- OpenNav X: Beta 1 / 0.3.0-beta1\r\n- Git commit: `a3e6e0812e01d2aee8f0b83807527b9a0c0fc79a`\r\n- OpenCPN: 5.12.4\r\n- Pinned upstream: `37fd0cddb7334fe489e9f18aa163977a9c5c84f7`\r\n- Compiler: MSVC 19.44.35229.0 / 4 byte pointers\r\n- Architecture: Win32/x86 application and plugin ABI; Windows 10/11 x64 host\r\n- Build date (UTC): 2026-09-25T13:02:32Z\r\n- CI run: https://github.com/ThereptileII/Work/actions/runs/36137990012\r\n- Modes: XNav, explicit Demo, Legacy, Safe; package-local profile only\r\n- UI gates: native 1280×800 / 96, 120, 144 DPI; software and available OpenGL/fallback\r\n- Stock OpenCPN executable SHA-256 for installer qualification: `7c6547562cca7954671eaab72833ca9d788710fd9808b6a699b6dc823852ae0c`\r\n- Setup uses the normal profile; this ZIP uses its own profile only.\r\n- See the same-commit CI/evidence record for actual acceptance and limitations.\r\n- ZIP SHA-256: supplied alongside the ZIP. It cannot be embedded in itself.\r\n- File hashes: `FILE_SHA256.json` in the package root.\r\n\r\nSee TEST_ME_FIRST.md and KNOWN_LIMITATIONS.md before running.\r\n"
+    },
+    "source": {
+      "files_verified_by_crc": 4814,
+      "compatibility": {
+        "openNavVersion": "0.3.0-beta1",
+        "supportedOpenCpn": [
+          {
+            "version": "5.12.4",
+            "arch": "x86",
+            "executableSha256": "7c6547562cca7954671eaab72833ca9d788710fd9808b6a699b6dc823852ae0c",
+            "upstreamCommit": "37fd0cddb7334fe489e9f18aa163977a9c5c84f7",
+            "integrationPackage": "OpenNavX-Beta1-Setup.exe",
+            "qualificationCommit": "7bc36e426a55926045ea1aece0ebe96ef9417863",
+            "qualificationRun": "https://github.com/ThereptileII/Work/actions/runs/36088505518",
+            "qualificationEvidence": "docs/evidence/alpha-installer-7bc36e4-qualification.json",
+            "stockSetupSha256": "e949f55de57611afe2fc0dad5a8ac33795c46ba488cb40ca07b65f639a07b8aa"
+          }
+        ]
+      },
+      "integrated_upstream_source_present": true,
+      "guides_match": true
+    }
+  },
+  "test_counts": {
+    "portable_suites_per_platform": 60,
+    "linux_integrated_cases": 106,
+    "windows_integrated_cases": 98,
+    "additional_restart_repetitions_per_platform": 10,
+    "native_filesystem_checks_per_powershell_51_host": 39,
+    "powershell_host_bits": [
+      32,
+      64
+    ],
+    "installer_lifecycle_checks": 29,
+    "native_loader_selftest_checks": 5,
+    "independent_native_crash_recovery_cycles": 3,
+    "note": "Counts are separate suites/check categories, not a deduplicated grand total. No failed candidate counts are promoted."
+  },
+  "runtime_reports": {
+    "linux": [
+      {
+        "report": "navigation-input-results.json",
+        "sha256": "5ad188d3de31566aebf152101b4620bcb859c80fd2ae9ae4cd51626ace1ce055",
+        "result": "loopback transport and lifecycle passed; numeric and stale screenshot review required",
+        "listed_check_groups": 0
+      },
+      {
+        "report": "route-progress-results.json",
+        "sha256": "9a1d8f488e90538f4adf520919d1f33faa087f0c83b9ed2c12a723843f99fbe3",
+        "result": "passed",
+        "listed_check_groups": 26
+      },
+      {
+        "report": "instruments-input-results.json",
+        "sha256": "2cc0b2ac5fcd742e212997da2666f8f502e3da598348960659b06bcf3c59ca96",
+        "result": "loopback transport and lifecycle passed; numeric and stale screenshot review required",
+        "listed_check_groups": 4
+      },
+      {
+        "report": "n2k-input-results.json",
+        "sha256": "e91ddd0f09cdb7e04ad0bbfc525de5ceaa39b8d17545717e5beba18f86369ab6",
+        "result": "loopback transport and lifecycle passed; numeric and stale screenshot review required",
+        "listed_check_groups": 7
+      },
+      {
+        "report": "boat-input-results.json",
+        "sha256": "afa85a01de553945dd6701ef3f19798b60e548314e47f201ae32b7810569607f",
+        "result": "loopback transport and lifecycle passed; numeric and stale screenshot review required",
+        "listed_check_groups": 5
+      },
+      {
+        "report": "signalk-results.json",
+        "sha256": "a76592eeb39ec6e84e895208579a549593aae464eb6d9ad291339a3335b31a23",
+        "result": "passed",
+        "listed_check_groups": 5
+      },
+      {
+        "report": "pilot-results.json",
+        "sha256": "4a6d4707d0d5aaa50ead8e29165f50771c8c6fe913f43cc4234e86ab5254f4b0",
+        "result": "passed; screenshot review required",
+        "listed_check_groups": 6
+      },
+      {
+        "report": "objects-input-results.json",
+        "sha256": "f99cbd9bc3953f969433a08e47f36009c1e2ab8a062fb1fedd86dc6e559a8fb6",
+        "result": "loopback transport and lifecycle passed; numeric and stale screenshot review required",
+        "listed_check_groups": 3
+      },
+      {
+        "report": "recording-results.json",
+        "sha256": "7438974544d39cc9415697d0f6c9dad8fea651d5abbf24930ab8b33dec377d9e",
+        "result": "passed; screenshot review required",
+        "listed_check_groups": 4
+      },
+      {
+        "report": "preview-linux-results.json",
+        "sha256": "32b075f77b51f007fb6d32b11e5d6a59c3b6d97b7ebceb789af7ce06f36c5c4a",
+        "result": "passed; screenshot review required",
+        "listed_check_groups": 8
+      }
+    ],
+    "windows": [
+      {
+        "report": "navigation-input-results.json",
+        "sha256": "37bc87dab5b9aaa5ebf85b04ade85cfddb1b726627e6f7fd878a267531916e38",
+        "result": "loopback transport and lifecycle passed; numeric and stale screenshot review required",
+        "listed_check_groups": 0
+      },
+      {
+        "report": "route-progress-results.json",
+        "sha256": "e624b466266ed2dc12d6278b0dc827df8fa10f52ad6586574f2286370bb7b387",
+        "result": "passed",
+        "listed_check_groups": 26
+      },
+      {
+        "report": "instruments-input-results.json",
+        "sha256": "f26949db0797174c49af5aae84c2012db505ae2838a29c8de1339dc8b8e096ec",
+        "result": "loopback transport and lifecycle passed; numeric and stale screenshot review required",
+        "listed_check_groups": 4
+      },
+      {
+        "report": "n2k-input-results.json",
+        "sha256": "2025aca2a3a5fb8d878396814c1bc8f65773ac7d1cfb3e6210d6cb34a8c64a90",
+        "result": "loopback transport and lifecycle passed; numeric and stale screenshot review required",
+        "listed_check_groups": 7
+      },
+      {
+        "report": "boat-input-results.json",
+        "sha256": "7e0c914e9c7e4e6b7f5ca2f97f776d173f0afbdb24f17d782f1cc72120c76ad3",
+        "result": "loopback transport and lifecycle passed; numeric and stale screenshot review required",
+        "listed_check_groups": 5
+      },
+      {
+        "report": "signalk-results.json",
+        "sha256": "cda5b542e194f3e24f0522ee8b13c70012ca7165c7fcc97557559b2d8f0bfaaf",
+        "result": "passed",
+        "listed_check_groups": 5
+      },
+      {
+        "report": "pilot-results.json",
+        "sha256": "aa89e1fa355dbba68b6c67475f77bcd9b84f259bf9a5ec7eccab20cc5876bb4b",
+        "result": "passed; screenshot review required",
+        "listed_check_groups": 6
+      },
+      {
+        "report": "objects-input-results.json",
+        "sha256": "77a95d2782b60970a4fb7eb462b90e23ec910058ea4134b47fbf9b3bf8a43dc6",
+        "result": "loopback transport and lifecycle passed; numeric and stale screenshot review required",
+        "listed_check_groups": 3
+      },
+      {
+        "report": "recording-results.json",
+        "sha256": "c445eb2e563519c28f56fc8f94bf6eb516c516cc049d601eddc28e9f2aee1f95",
+        "result": "passed; screenshot review required",
+        "listed_check_groups": 6
+      },
+      {
+        "report": "preview-results.json",
+        "sha256": "590a3428bafc57f0304bdf1610820c94c2f396084d6d7e664547c488584010ae",
+        "result": "passed; screenshot review required",
+        "listed_check_groups": 19
+      }
+    ]
+  },
+  "installer": {
+    "status": "passed",
+    "checks": [
+      "Official supported OpenCPN installed and exact PE executable SHA-256 verified",
+      "Registry discovery handles the official build-suffixed key and verifies its exact hash without modification",
+      "Conventional wizard opens without command-line options; default Install and path input work; Cancel changes no installation",
+      "Unknown executable hash refused before creating install root or changing stock",
+      "Unknown installation ownership refused without adding logs or changing files",
+      "Actual Alpha wizard Install preflight, staging and Finish complete successfully without command-line options",
+      "Exact candidate clean install and first-install rollback preserve stock/profile; real coastline and candidate hash verified",
+      "Accepted Alpha 1 release installs and opens real coastline with shared fixtures",
+      "Accepted Alpha 1 updates to the exact Beta candidate executable; stock/profile unchanged",
+      "Installed XNav starts against normal wx profile; coastline and navigation fixtures preserved",
+      "Installed Legacy and Safe start with charts and shared navigation/config/plugin preferences",
+      "Installed XNav to Legacy to XNav controlled restart retains real coastline",
+      "Repair replaces corrupt owned resources in a new generation; original damaged backup and custom additions retained",
+      "Update preserves shared profile and user plugin additions; prior generation backed up",
+      "Rollback restores exact prior generation without restoring older navigation data",
+      "Concurrent transaction lock refuses update; active executable/state/profile/stock remain exact",
+      "Actual NTFS permission denial during staging preserves active installation; ACL restored",
+      "Corrupt payload fails SHA-256 preflight without changing active installation",
+      "Interrupted extraction never publishes incomplete generation or changes active state",
+      "Missing required wx DLL exits with loader failure before commit, without OS modal residue",
+      "Locked atomic state file preserves previous generation and durable recovery journal without temporary residue",
+      "Rerun after file-lock failure repairs and recovers normally",
+      "Interrupted update before atomic commit retains active app and recovers on rerun",
+      "Interrupted post-commit shortcut publication recovers from durable journal",
+      "Diagnostics verifies installed hashes without collecting navigation or raw sensor data",
+      "Conventional uninstaller removes verified owned app files; exact stock/profile unchanged; custom additions retained",
+      "Restored official OpenCPN safety notice acknowledged through its visible Agree button",
+      "Stock resource defaults survive every generation and uninstall; explicit custom tide selection is preserved",
+      "Original official OpenCPN still loads charts and shared navigation data after uninstall"
+    ],
+    "stock_sha256": "7c6547562cca7954671eaab72833ca9d788710fd9808b6a699b6dc823852ae0c",
+    "setup_sha256": "8e1b3432a5a44499ffb41b125f62df07e846b2cfe1ca0936409ed021d413e128",
+    "report_sha256": "9a7e56e29c2e8f1dd61ddebce4a2c9f9cad9b8c4363636847b92d5b9b378a77e",
+    "actual_accepted_alpha_upgrade": {
+      "source": {
+        "version": "0.2.0-alpha1",
+        "commit": "08bc92fc778591a3978e594a54208d672ff9158f",
+        "runId": 36092747986,
+        "artifactId": 10847446708,
+        "archiveSha256": "ddf1ac1009edbc35b95a98731ea11184a9e20bfc86e3d9bead4bdf473005e6ff",
+        "maximumArchiveBytes": 180000000,
+        "setupName": "OpenNavX-Alpha1-Setup.exe",
+        "setupBytes": 43756308,
+        "setupSha256": "b2d2b0bce04461d97aadbe3ec8bbea6b843051ced072886127a8df1ce2e32aaa"
+      },
+      "verified": true,
+      "scope": "Exact accepted Alpha installer; subsequent real upgrade and rollback gates required"
+    },
+    "loader": {
+      "status": "passed",
+      "checks": 5,
+      "loader": {
+        "commit": "a3e6e0812e01d2aee8f0b83807527b9a0c0fc79a",
+        "passed": true,
+        "resources": {
+          "uidata/styles.xml": true,
+          "s57data/s57objectclasses.csv": true,
+          "s57data/chartsymbols.xml": true,
+          "gshhs/poly-c-1.dat": true
+        },
+        "version": "0.3.0-beta1",
+        "profile_initialized": false,
+        "normal_config_directory": "C:\\ProgramData\\opencpn",
+        "contract": "OpenNavX.LoaderSelfTest.1",
+        "plugins_loaded": false,
+        "compiler": "MSVC 19.44.35229.0 / 4 byte pointers",
+        "upstream": "37fd0cddb7334fe489e9f18aa163977a9c5c84f7"
+      },
+      "app_sha256": "6f20acea9f90c840e0dcfbbf70782c2f1fc2480be7439058b48947cc9f7b91b6"
+    },
+    "coexistence": "Real official installed OpenCPN with seeded charts/routes/tracks/waypoints/connection/plugin preferences survives install, modes, update, repair, rollback and uninstall. Original stock hash retained.",
+    "publication": "Side-by-side immutable generations; no Program Files binary replacement. Custom/modified files, logs and unpublished staging retained."
+  },
+  "endurance": {
+    "linux": {
+      "status": "passed",
+      "requested_seconds": 10800,
+      "release_duration": true,
+      "authority": "Linux development",
+      "scope": "Actual process, DEMO vessel/route/AIS, software chart, repeated UI and dropout recovery; no hardware commands",
+      "samples": 1080,
+      "screenshots": [
+        "start.png",
+        "end.png"
+      ],
+      "build_commit": "a3e6e0812e01d2aee8f0b83807527b9a0c0fc79a",
+      "startup_seconds": 3.7191303810000136,
+      "elapsed_seconds": 10800.174596115,
+      "resource_growth": {
+        "resident_bytes": 188416.0,
+        "handles": 0.0,
+        "threads": 0.0
+      },
+      "growth_limits": {
+        "resident_bytes": 134217728,
+        "private_bytes": 134217728,
+        "handles": 32,
+        "gdi_objects": 64,
+        "user_objects": 64,
+        "threads": 8
+      },
+      "cpu_percent_one_core": 1.6548075983797252,
+      "maximum_page_observation_seconds": 1.2480857749997085,
+      "ui_observation_limit_seconds": 8,
+      "route_progress_samples": 676,
+      "sample_sha256": "e1c8232fea69cc47ffd2f44898c38b9d226e48457fcd1295fb84d362b886fd37",
+      "observed_resource_ranges": {
+        "resident_bytes": {
+          "minimum": 233488384,
+          "maximum": 238080000
+        },
+        "handles": {
+          "minimum": 30,
+          "maximum": 32
+        },
+        "threads": {
+          "minimum": 9,
+          "maximum": 10
+        }
+      },
+      "page_actions": 540
+    },
+    "windows": {
+      "status": "passed",
+      "requested_seconds": 10800,
+      "release_duration": true,
+      "authority": "native Windows",
+      "scope": "Actual process, DEMO vessel/route/AIS, software chart, repeated UI and dropout recovery; no hardware commands",
+      "samples": 1080,
+      "screenshots": [
+        "start.png",
+        "end.png"
+      ],
+      "display": {
+        "before": [
+          1920,
+          1080,
+          32
+        ],
+        "after": [
+          1920,
+          1080,
+          32
+        ]
+      },
+      "build_commit": "a3e6e0812e01d2aee8f0b83807527b9a0c0fc79a",
+      "startup_seconds": 5.657000000000153,
+      "elapsed_seconds": 10800.109,
+      "resource_growth": {
+        "resident_bytes": 3112960.0,
+        "private_bytes": 3907584.0,
+        "handles": 0.0,
+        "gdi_objects": 0.0,
+        "user_objects": 0.0
+      },
+      "growth_limits": {
+        "resident_bytes": 134217728,
+        "private_bytes": 134217728,
+        "handles": 128,
+        "gdi_objects": 64,
+        "user_objects": 64,
+        "threads": 8
+      },
+      "cpu_percent_one_core": 1.0967381189137118,
+      "maximum_page_observation_seconds": 1.7340000000003783,
+      "ui_observation_limit_seconds": 8,
+      "route_progress_samples": 763,
+      "sample_sha256": "ee8203701323e6cd3bd4d6c9647d1c31dd98db1196466108691a67a7c7deced6",
+      "observed_resource_ranges": {
+        "resident_bytes": {
+          "minimum": 39563264,
+          "maximum": 101371904
+        },
+        "private_bytes": {
+          "minimum": 61730816,
+          "maximum": 69038080
+        },
+        "handles": {
+          "minimum": 486,
+          "maximum": 513
+        },
+        "gdi_objects": {
+          "minimum": 1729,
+          "maximum": 1757
+        },
+        "user_objects": {
+          "minimum": 613,
+          "maximum": 627
+        }
+      },
+      "page_actions": 540
+    }
+  },
+  "endurance_interpretation": "Two actual three-hour processes, 1080 samples and 540 page actions each. First/last warm-window median resource growth; not peak minus minimum. Page response includes 1 Hz observation and is not paint latency. No hardware commands. Not universal leak-free or target-PC acceptance.",
+  "charts_plugins": {
+    "linux": {
+      "report": "charts-results.json",
+      "sha256": "bfa78e6c31e1e365213a1c9f3f37633839d30a3071ebcfd1187f2ecd440ed185",
+      "chart_sha256": "b027e029dc7b76595381d89e3718145eb5069e5a03917e78bada4f8ebe8c84e4",
+      "adjacent_chart_sha256": "99c9b55d49828503666668e956f91444ee79b434db4bdf65f3104c3e42c32d51",
+      "phases": [
+        {
+          "requested": "software",
+          "opengl_enabled": false,
+          "gl_status": null,
+          "plugin_manager": "native Windows interaction is authoritative; loader records checked here",
+          "startup_to_enc_seconds": 3.434,
+          "performance": {
+            "idle_live_input_seconds": 10.00026793500001,
+            "cpu_percent_one_core": 2.0999437351575296,
+            "resident_bytes": 273522688,
+            "shell_update": {
+              "timer_period_ms": 250,
+              "mean_ms": 1.091862563,
+              "scope": "Shell update callback including diagnostics; excludes asynchronous chart painting",
+              "maximum_ms": 5.24075,
+              "ticks": "48",
+              "last_ms": 0.230907
+            },
+            "scope": "CI desktop / two loaded NOAA ENCs / 3 plugins / 3.3 Hz RMC; not target navigation PC"
+          },
+          "plugins": [
+            {
+              "version": "1.2",
+              "name": "Dashboard",
+              "api": 108,
+              "initialized": true,
+              "enabled": true
+            },
+            {
+              "version": "1.4",
+              "name": "ChartDownloader",
+              "api": 113,
+              "initialized": false,
+              "enabled": false
+            },
+            {
+              "version": "1.1",
+              "name": "WMM",
+              "api": 108,
+              "initialized": true,
+              "enabled": true
+            },
+            {
+              "version": "5.0",
+              "name": "GRIB",
+              "api": 116,
+              "initialized": true,
+              "enabled": true
+            }
+          ],
+          "chart_switch_verified": true
+        },
+        {
+          "requested": "opengl",
+          "opengl_enabled": true,
+          "gl_status": "enabled; inspect renderer log",
+          "plugin_manager": null,
+          "startup_to_enc_seconds": 6.909,
+          "performance": {
+            "idle_live_input_seconds": 10.000252785999919,
+            "cpu_percent_one_core": 2.399939332893597,
+            "resident_bytes": 346701824,
+            "shell_update": {
+              "timer_period_ms": 250,
+              "mean_ms": 1.087642235,
+              "scope": "Shell update callback including diagnostics; excludes asynchronous chart painting",
+              "maximum_ms": 5.007278,
+              "ticks": "51",
+              "last_ms": 0.228694
+            },
+            "scope": "CI desktop / two loaded NOAA ENCs / 3 plugins / 3.3 Hz RMC; not target navigation PC"
+          },
+          "plugins": [
+            {
+              "version": "1.2",
+              "name": "Dashboard",
+              "api": 108,
+              "initialized": true,
+              "enabled": true
+            },
+            {
+              "version": "1.4",
+              "name": "ChartDownloader",
+              "api": 113,
+              "initialized": false,
+              "enabled": false
+            },
+            {
+              "version": "1.1",
+              "name": "WMM",
+              "api": 108,
+              "initialized": true,
+              "enabled": true
+            },
+            {
+              "version": "5.0",
+              "name": "GRIB",
+              "api": 116,
+              "initialized": true,
+              "enabled": true
+            }
+          ],
+          "chart_switch_verified": true
+        }
+      ]
+    },
+    "windows": {
+      "report": "charts-results.json",
+      "sha256": "7cbfa59012944f17537e4c698836aaa086c80e34008d03b3557c5736a94ef2d8",
+      "chart_sha256": "b027e029dc7b76595381d89e3718145eb5069e5a03917e78bada4f8ebe8c84e4",
+      "adjacent_chart_sha256": "99c9b55d49828503666668e956f91444ee79b434db4bdf65f3104c3e42c32d51",
+      "phases": [
+        {
+          "requested": "software",
+          "opengl_enabled": false,
+          "gl_status": null,
+          "plugin_manager": "native manager opened and listed Dashboard/WMM",
+          "startup_to_enc_seconds": 6.469,
+          "performance": {
+            "idle_live_input_seconds": 10.0,
+            "cpu_percent_one_core": 0.46875,
+            "resident_bytes": 123490304,
+            "shell_update": {
+              "last_ms": 0.5916,
+              "ticks": "52",
+              "scope": "Shell update callback including diagnostics; excludes asynchronous chart painting",
+              "mean_ms": 3.191663462,
+              "timer_period_ms": 250,
+              "maximum_ms": 13.8702
+            },
+            "scope": "CI desktop / two loaded NOAA ENCs / 3 plugins / 3.3 Hz RMC; not target navigation PC"
+          },
+          "plugins": [
+            {
+              "name": "ChartDownloader",
+              "api": 113,
+              "version": "1.4",
+              "initialized": false,
+              "enabled": false
+            },
+            {
+              "name": "Dashboard",
+              "api": 108,
+              "version": "1.2",
+              "initialized": true,
+              "enabled": true
+            },
+            {
+              "name": "GRIB",
+              "api": 116,
+              "version": "5.0",
+              "initialized": true,
+              "enabled": true
+            },
+            {
+              "name": "WMM",
+              "api": 108,
+              "version": "1.1",
+              "initialized": true,
+              "enabled": true
+            }
+          ],
+          "chart_switch_verified": true
+        },
+        {
+          "requested": "opengl",
+          "opengl_enabled": false,
+          "gl_status": "host rejected OpenGL; verified upstream software fallback; hardware GL gate remains open",
+          "plugin_manager": null,
+          "startup_to_enc_seconds": 5.344,
+          "performance": {
+            "idle_live_input_seconds": 10.0,
+            "cpu_percent_one_core": 0.78125,
+            "resident_bytes": 121597952,
+            "shell_update": {
+              "last_ms": 0.4605,
+              "ticks": "53",
+              "scope": "Shell update callback including diagnostics; excludes asynchronous chart painting",
+              "mean_ms": 3.073975472,
+              "timer_period_ms": 250,
+              "maximum_ms": 13.4498
+            },
+            "scope": "CI desktop / two loaded NOAA ENCs / 3 plugins / 3.3 Hz RMC; not target navigation PC"
+          },
+          "plugins": [
+            {
+              "name": "ChartDownloader",
+              "api": 113,
+              "version": "1.4",
+              "initialized": false,
+              "enabled": false
+            },
+            {
+              "name": "Dashboard",
+              "api": 108,
+              "version": "1.2",
+              "initialized": true,
+              "enabled": true
+            },
+            {
+              "name": "GRIB",
+              "api": 116,
+              "version": "5.0",
+              "initialized": true,
+              "enabled": true
+            },
+            {
+              "name": "WMM",
+              "api": 108,
+              "version": "1.1",
+              "initialized": true,
+              "enabled": true
+            }
+          ],
+          "chart_switch_verified": true
+        }
+      ]
+    }
+  },
+  "dpi": {
+    "status": "passed; native visual review required",
+    "report_sha256": "592e0651690755f51c7bb94f3feb4c27032b245759c58e3e9e59a53e2ba22818",
+    "capture_count": 78,
+    "scales": [
+      {
+        "percent": 100,
+        "GetDpiForWindow": 96,
+        "wxDpi": 96,
+        "buttons": {
+          "Navigation": [
+            112,
+            48
+          ],
+          "Route": [
+            88,
+            48
+          ],
+          "Energy": [
+            88,
+            48
+          ],
+          "Pilot": [
+            88,
+            48
+          ],
+          "STBY": [
+            64,
+            48
+          ],
+          "Demo": [
+            88,
+            48
+          ],
+          "Menu": [
+            88,
+            48
+          ],
+          "System": [
+            112,
+            48
+          ],
+          "Light": [
+            72,
+            48
+          ],
+          "+": [
+            48,
+            48
+          ],
+          "−": [
+            48,
+            48
+          ],
+          "GPS": [
+            48,
+            48
+          ]
+        },
+        "menu_endpoint": "Last action fully visible; settled endpoint retained after Down disables",
+        "touch_scroll": "Native touch Up/Down and vertical pan move the actual diagnostics viewport",
+        "touch": "Injected native down/up on Menu changed the page; physical touch remains untested",
+        "fullscreen": "1920x1080 physical desktop; returned to 1280x800 with original DPI and controls"
+      },
+      {
+        "percent": 125,
+        "GetDpiForWindow": 120,
+        "wxDpi": 120,
+        "buttons": {
+          "Navigation": [
+            140,
+            60
+          ],
+          "Route": [
+            110,
+            60
+          ],
+          "Energy": [
+            110,
+            60
+          ],
+          "Pilot": [
+            110,
+            60
+          ],
+          "STBY": [
+            80,
+            60
+          ],
+          "Demo": [
+            110,
+            60
+          ],
+          "Menu": [
+            110,
+            60
+          ],
+          "System": [
+            140,
+            60
+          ],
+          "Light": [
+            90,
+            60
+          ],
+          "+": [
+            60,
+            60
+          ],
+          "−": [
+            60,
+            60
+          ],
+          "GPS": [
+            60,
+            60
+          ]
+        },
+        "menu_endpoint": "Last action fully visible; settled endpoint retained after Down disables",
+        "touch_scroll": "Native touch Up/Down and vertical pan move the actual diagnostics viewport",
+        "touch": "Injected native down/up on Menu changed the page; physical touch remains untested",
+        "fullscreen": "1920x1080 physical desktop; returned to 1280x800 with original DPI and controls"
+      },
+      {
+        "percent": 150,
+        "GetDpiForWindow": 144,
+        "wxDpi": 144,
+        "buttons": {
+          "Navigation": [
+            168,
+            72
+          ],
+          "Route": [
+            132,
+            72
+          ],
+          "Energy": [
+            132,
+            72
+          ],
+          "Pilot": [
+            132,
+            72
+          ],
+          "STBY": [
+            96,
+            72
+          ],
+          "Demo": [
+            132,
+            72
+          ],
+          "Menu": [
+            132,
+            72
+          ],
+          "System": [
+            168,
+            72
+          ],
+          "Light": [
+            108,
+            72
+          ],
+          "+": [
+            72,
+            72
+          ],
+          "−": [
+            72,
+            72
+          ],
+          "GPS": [
+            72,
+            72
+          ]
+        },
+        "menu_endpoint": "Last action fully visible; settled endpoint retained after Down disables",
+        "touch_scroll": "Native touch Up/Down and vertical pan move the actual diagnostics viewport",
+        "touch": "Injected native down/up on Menu changed the page; physical touch remains untested",
+        "fullscreen": "1920x1080 physical desktop; returned to 1280x800 with original DPI and controls"
+      }
+    ],
+    "window_pixels": [
+      1280,
+      800
+    ],
+    "fullscreen_pixels": [
+      1920,
+      1080
+    ],
+    "night_check": "Primary client area only; OS caption and file pickers excluded; route/energy/pilot/instruments/AIS/SmartNav/anchor/settings/recordings/bundle/diagnostics checked at all scales",
+    "physical_touch": "NOT RUN; Microsoft SDK injected down/up and pan only"
+  },
+  "visual_review": {
+    "authority": "Native Windows authoritative; actual downloaded original PNGs viewed",
+    "windows_reviewed_count": 40,
+    "windows_reviewed_images": [
+      {
+        "file": "preview-01-navigation-day.png",
+        "sha256": "9b164298eb1eb2874fd6e55ef9614c875b180a8c442fa2a98bd585f2038b2575",
+        "pixels": [
+          1280,
+          800
+        ],
+        "review": "Real coastline dominates the Day view; DEMO and persistent AIS alert are unmistakable. Numeric rail is legible. With the alert visible the lower heading card requires the provided rail scroll controls."
+      },
+      {
+        "file": "preview-02-navigation-night.png",
+        "sha256": "5aee3c03027599f52ca8e2fd82c84938f995953fed7d59787eef033f9e22ebed",
+        "pixels": [
+          1280,
+          800
+        ],
+        "review": "Primary chrome, data rail and software coastline use the dim Night palette; alarm remains visible. Lower rail content still requires scrolling."
+      },
+      {
+        "file": "preview-03-route.png",
+        "sha256": "5a3a86ed2327b6bb8e8139cfbc37222a35fb591d42ad67d2f1a73ac359d77ec8",
+        "pixels": [
+          1280,
+          800
+        ],
+        "review": "Destination, next point, remaining distance, advisory passage time and rounded arrival SOC are clear; synthetic route provenance is explicit."
+      },
+      {
+        "file": "preview-04-energy.png",
+        "sha256": "87001e7b916c2ec3caf8dae044dbac9ad8874d5b270a3ff760f904dc29577a0d",
+        "pixels": [
+          1280,
+          800
+        ],
+        "review": "Battery, propulsion and destination cards are legible; motor power differs from whole-pack consumption; ETA, reserve and estimated quality are explicit. Range content continues in the scroll viewport."
+      },
+      {
+        "file": "preview-05-diagnostics.png",
+        "sha256": "2d412ac1c27f069c5b4cbe3d1e0382827b67036be3226a75964e60ebf381e564",
+        "pixels": [
+          1280,
+          800
+        ],
+        "review": "Correct Beta version, exact commit, MSVC, upstream, DPI, source ages and model provenance are visible. Minor retained caption says ALPHA 1 / NOT FOR NAVIGATION; this cosmetic wording is recorded as a Beta limitation, not a build identity ambiguity."
+      },
+      {
+        "file": "preview-06-stale.png",
+        "sha256": "626f57fb2fb044890bb04facbcfcbc8f19ab42fab449678ad2a3da3393c9bbeb",
+        "pixels": [
+          1280,
+          800
+        ],
+        "review": "All retained energy inputs are grey with STALE ages; arrival, range, route distance and ETA are unavailable with Battery SOC stale reason. Alert strip stays above the page."
+      },
+      {
+        "file": "preview-07-legacy.png",
+        "sha256": "8ca9ac6d4d758d6549f16aa4f121dc13ce95b408e1c71a755840cda3b59f8126",
+        "pixels": [
+          1280,
+          800
+        ],
+        "review": "Normal OpenCPN Legacy toolbar/menu and real coastline are present."
+      },
+      {
+        "file": "preview-08-safe.png",
+        "sha256": "27f93be9afa9736aa024a704ec10469459f642d206a6d23957bb2680df6abf1f",
+        "pixels": [
+          1280,
+          800
+        ],
+        "review": "Safe title and original OpenCPN chart/controls visible with real coastline; no XNav product panel."
+      },
+      {
+        "file": "preview-09-returned-xnav.png",
+        "sha256": "838d447cbef6c0beb6da979eec7e5779467cb4a0a7ae3d1b7797aa54ae97f814",
+        "pixels": [
+          1280,
+          800
+        ],
+        "review": "Legacy to XNav returns with real coastline intact; Demo stops and missing live values remain unavailable."
+      },
+      {
+        "file": "preview-12-safe-to-xnav.png",
+        "sha256": "838d447cbef6c0beb6da979eec7e5779467cb4a0a7ae3d1b7797aa54ae97f814",
+        "pixels": [
+          1280,
+          800
+        ],
+        "review": "Safe to XNav retains coastline and isolated profile; no fabricated navigation after restart."
+      },
+      {
+        "file": "n2k-01-live-energy.png",
+        "sha256": "3706f5070361cab09e2a6ba6597e2ce4cbd5519d22ea2afba476114166e9f7b4",
+        "pixels": [
+          1280,
+          800
+        ],
+        "review": "Real OpenCPN loopback acquisition shows 68 percent SOC, 343 V, 820 RPM and forward gear; unconfigured identity/current/model and absent route suppress estimates."
+      },
+      {
+        "file": "boat-03-sensor-expiry-with-network-live.png",
+        "sha256": "a1adac28cbfeb3f26fc3dc112065a94404876867b3eeeb3780ae0af46c6fb46b",
+        "pixels": [
+          1280,
+          800
+        ],
+        "review": "Underlying sensor expiry removes battery/motor observations and forecasts while still-live discrete gear/regen remain separately sourced; warning is above the page."
+      },
+      {
+        "file": "boat-02-verified-marine-fields.png",
+        "sha256": "d8b3177f6c8a596018b98ea4c4561fb674cfd9a46c425d870f087ddd290349aa",
+        "pixels": [
+          1280,
+          800
+        ],
+        "review": "Configured boat mapping shows SOC 68, 343 V, 21 A, 820 RPM, motor 62 C and regeneration Two bars. V times I is labelled estimated whole-pack power; no active route/GPS means no fabricated arrival/range."
+      },
+      {
+        "file": "pilot-02-confirmed-manual.png",
+        "sha256": "02a870a4e1ec7690f5164bec9358b247dde0b93d7165e623fc2957c0c008ed06",
+        "pixels": [
+          1280,
+          800
+        ],
+        "review": "Actual OpenCPN TCP loopback panel reports subsequent-feedback confirmation, locked/actual magnetic heading 328 and unavailable rudder. TRACK/WIND are visibly unavailable; this is software loopback evidence only."
+      },
+      {
+        "file": "pilot-03-communication-loss.png",
+        "sha256": "5c65762fd01706bf130417546fbd3ffe634d264e70b7ae10cfa516f3d75f71cb",
+        "pixels": [
+          1280,
+          800
+        ],
+        "review": "Persistent critical feedback-loss alarm and TimedOut/outcome-unknown/no-retry text are visible; retained heading values are grey. Last AUTO label is explicitly qualified by stale feedback."
+      },
+      {
+        "file": "pilot-04-reconnected-control-off.png",
+        "sha256": "6867a0279c80526519ef284ffeac2e17745674bec3eb2826b6eb8b550f33ba36",
+        "pixels": [
+          1280,
+          800
+        ],
+        "review": "Reconnected STANDBY feedback is current while control is disabled; locked heading remains unavailable and actual magnetic heading is separately live."
+      },
+      {
+        "file": "recording-01-commissioning.png",
+        "sha256": "cb14c1e97e8486c160a8fb084e81953b7cfdc6569e0519c2db9b5e8040e7a576",
+        "pixels": [
+          1280,
+          800
+        ],
+        "review": "Commissioning actions, OFF-at-start recording state, retention/privacy information and separate replay controls are readable; alert/navigation access remains present."
+      },
+      {
+        "file": "recording-03-replay-energy.png",
+        "sha256": "a65b23a1fbd0581caad53013f76311f79b6f8470df0baae4fc60634f482511cf",
+        "pixels": [
+          1280,
+          800
+        ],
+        "review": "REPLAY is conspicuous in status and page; historical observations and disabled controls are explicit. Instruments-only recording supplies no fabricated active route or arrival."
+      },
+      {
+        "file": "recording-calibration-export-result.png",
+        "sha256": "09588a1039b6a7bc28702afd8f29eef2ffabb01b208b9c68a0f875562fdc65ac",
+        "pixels": [
+          1280,
+          800
+        ],
+        "review": "Calibration export action and bench source/age rows remain accessible after scrolling. Actual CSV validation is recorded separately by the runtime harness."
+      },
+      {
+        "file": "field-report-02-export-result.png",
+        "sha256": "2bb2c2a19d1fee62daecebf5ff7ca856fde8e955f24d4269f6a0c3e6e9b746bf",
+        "pixels": [
+          1280,
+          800
+        ],
+        "review": "Explicit diagnostic ZIP success, no-upload statement, privacy exclusions and optional selected-recording controls are readable; global alert remains visible."
+      },
+      {
+        "file": "dpi-125-02-navigation-night.png",
+        "sha256": "99e11e1490d05ad3e4bbc07e882cdc2468972b0f31f9978be79744609941620d",
+        "pixels": [
+          1280,
+          800
+        ],
+        "review": "At 125 percent, Night chrome and coastline remain dim and the main chart remains dominant. Lower COG/heading rail entries require scrolling."
+      },
+      {
+        "file": "dpi-150-menu-bottom.png",
+        "sha256": "cc51d6d266f022142c8fc3b5bfada6e4e5fe5daf72cd075ff4d6a44aee30cb12",
+        "pixels": [
+          1280,
+          800
+        ],
+        "review": "At 150 percent the menu's final Field diagnostic bundle action is fully visible and the endpoint remains stable; the former focus jump is absent."
+      },
+      {
+        "file": "dpi-150-night-pilot.png",
+        "sha256": "d3d9abc6cb9661f0e1dac4a104eeb3bda0872fe0d69e78820e016d170c97cc26",
+        "pixels": [
+          1280,
+          800
+        ],
+        "review": "Night pilot page is consistently styled at 150 percent, with explicit DEMO/control-disabled state. Expanded controls require scrolling; fixed bottom Pilot/STBY access remains present."
+      },
+      {
+        "file": "dpi-150-night-sheet.png",
+        "sha256": "26e043d3e466448f9ff90652e376c90554e436bcb5eb2b9e5ed63721eb56bca7",
+        "pixels": [
+          780,
+          456
+        ],
+        "review": "Actual native sheet uses the Night palette; capacity field and Cancel/Save plus scroll controls fit without resizing the dialog."
+      },
+      {
+        "file": "dpi-150-energy.png",
+        "sha256": "9e01f056dc82499c95622a872a61ed3f973c96f4eed60d6004d9fbd057a637f9",
+        "pixels": [
+          1280,
+          800
+        ],
+        "review": "At 150 percent cards keep readable full-size values and scroll instead of shrinking. Destination and lower card details require Down; fixed navigation and alert remain visible."
+      },
+      {
+        "file": "dpi-150-system-popup.png",
+        "sha256": "28132a1d924dfa739072be631122fdedceeff335f6d41e2192e4202b2690c52d",
+        "pixels": [
+          1280,
+          800
+        ],
+        "review": "All System actions fit on-screen at 150 percent. The popup partly overlaps the right Alerts button, while the critical text at left stays visible; dismiss the transient popup before opening Alerts. Recorded as a manual-test presentation limitation."
+      },
+      {
+        "file": "dpi-150-fullscreen.png",
+        "sha256": "91ae6b9ba52bd73c21bf9b5f5f92e9768d9d3cb8dc58db516586ddd8a3be90b4",
+        "pixels": [
+          1920,
+          1080
+        ],
+        "review": "Native 1920 by 1080 fullscreen at 144 DPI has intact display controls, alert and navigation, with no OS title bar. This capture is not a 1280 by 800 fullscreen claim."
+      },
+      {
+        "file": "dpi-150-returned-xnav.png",
+        "sha256": "5d8ba228c50ee36d604af268a2b87d5829413aa9faf84ccbe4cd7c0924cb27b3",
+        "pixels": [
+          1280,
+          800
+        ],
+        "review": "At 150 percent Legacy return retains real coastline and explicit unavailable data; lower rail values use the scroll controls."
+      },
+      {
+        "file": "objects-ais-card.png",
+        "sha256": "819ad9b15d17f3cd2c4cb721f5dad3697d54cedca98045e1f540e7050dcda528",
+        "pixels": [
+          1280,
+          800
+        ],
+        "review": "Actual loopback AIS card shows upstream SOG/COG/heading, bearing/range, CPA 0.4 NM and TCPA 7.5 min with age/estimated labels and upstream alarm. Chart selection is available."
+      },
+      {
+        "file": "objects-ais-selected-chart.png",
+        "sha256": "7ac403da6edfcf43c66dbfcb1e1cff369a444f28df96d03a6932bd9a6e3227ff",
+        "pixels": [
+          1280,
+          800
+        ],
+        "review": "Selected upstream AIS target is centered and visibly bracketed on the real chart; no independent collision interpretation."
+      },
+      {
+        "file": "route-01-active-route.png",
+        "sha256": "fab2269c46ea751f51f2e53b6558de90cd6b4e44c784140de9955ea1b5d083e6",
+        "pixels": [
+          1280,
+          800
+        ],
+        "review": "Real coastline and selected live navigation rail remain unobscured during the route harness. This particular capture says Route unavailable; the 26 structured route-state checks, not its filename, establish active-route distance behavior."
+      },
+      {
+        "file": "chart-plugin-manager.png",
+        "sha256": "1c9a3faf8cc2dfde80351879e85fcdb9b755e8917b9876983907bd247a2f73e8",
+        "pixels": [
+          749,
+          671
+        ],
+        "review": "Native manager is fully painted with Dashboard, GRIB and WMM enabled and Ok/Cancel/Apply controls. Advanced native dialog styling is deliberately preserved."
+      },
+      {
+        "file": "chart-software-06-returned.png",
+        "sha256": "5ab6dcd3233effe96a35bb083a00af0a3300786a3768a83c133115d06319f59c",
+        "pixels": [
+          1280,
+          800
+        ],
+        "review": "Native returned XNav retains real NOAA ENC soundings, shoreline, chart labels, route line and live vessel; no blank/all-water restart regression."
+      },
+      {
+        "file": "installer-wizard-installed.png",
+        "sha256": "7aecb9bef5b5e1e8ce7940ad22e145ea68c8c67e71d2bd080ed7805dc76d3689",
+        "pixels": [
+          503,
+          390
+        ],
+        "review": "Native Beta 1 Setup completion page correctly identifies installed Beta 1 and offers optional launch; no error dialog."
+      },
+      {
+        "file": "installer-04-returned-xnav.png",
+        "sha256": "ea473a49fa03620b4bd929972489e41d7b27ebc830eab318692a7832607abed3",
+        "pixels": [
+          1280,
+          800
+        ],
+        "review": "Installed XNav after mode round-trip retains coastline/background chart; absent live sensors explicitly unavailable."
+      },
+      {
+        "file": "installer-05-restored-stock.png",
+        "sha256": "5ae6bbb9ad82930aaa60173fa28e10442d322243cd3a1effb58f5bbbee7014b7",
+        "pixels": [
+          1280,
+          800
+        ],
+        "review": "Restored original OpenCPN 5.12.4 Legacy executable renders coastline and native tools after uninstall; preservation verified separately by hashes."
+      },
+      {
+        "file": "soak/end.png",
+        "sha256": "8362026b57e08635c218751e766934a45cc673c97e501165036c8d3a124679a0",
+        "pixels": [
+          1280,
+          800
+        ],
+        "review": "After three actual hours, DEMO and critical AIS alert remain explicit; coastline, live wind/depth/speed/course, route summary and bottom actions remain visible. Heading needs rail scrolling when alert occupies height; no blank chart."
+      },
+      {
+        "file": "beta-night-anchor.png",
+        "sha256": "a54c0ccf17f05e6de15ee84907b96e5f16f6daf8a31973995f0f13e01f53f679",
+        "pixels": [
+          1280,
+          800
+        ],
+        "review": "Dark Anchor watch surface distinguishes unavailable anchor/radius from live DEMO vessel, SOC/depth; historical/Demo real anchor controls disabled; wind lower in scroll. No intelligent drag claim."
+      },
+      {
+        "file": "beta-night-instruments.png",
+        "sha256": "45fa8ace52fe2a3f0a841c023dd1e5c0362b1e37d8a7f0aa91c7dca131781bbb",
+        "pixels": [
+          1280,
+          800
+        ],
+        "review": "Dark instrument cards display DEMO navigation/wind/depth with units and live state; scroll controls available; no bright primary surface."
+      },
+      {
+        "file": "beta-night-smartnav.png",
+        "sha256": "2e57d6ee1e2e4f3cfd76c6f584e8c169d74b56253dfb2eaa1a8b1e3e862bf76a",
+        "pixels": [
+          1280,
+          800
+        ],
+        "review": "Dark advisory-only SmartNav shows next course, course change, distance and estimated time, constant-SOG assumption and DEMO CPA timeline. Lower events accessible by scrolling; no autopilot command path."
+      }
+    ],
+    "linux": {
+      "commit": "a3e6e0812e01d2aee8f0b83807527b9a0c0fc79a",
+      "authority": "Linux development; native Windows review remains mandatory",
+      "artifact": 10875117803,
+      "artifact_sha256": "f00ec95a5a8bce5e6f2dfc4c5e0eff7ac864d1fb4474643c486784bbbb9016e2",
+      "reviewed_images": [
+        {
+          "file": "soak/end.png",
+          "sha256": "73d91aa041163e273d768d889ae81f2dc03898ede0926e82eee0b6bf7f0b9878",
+          "review": "After three actual hours the DEMO banner, persistent AIS alert, live rail and real coastline remain visible; manual STBY remains disabled."
+        },
+        {
+          "file": "chart-opengl-01-loaded-linux.png",
+          "sha256": "e69994ca8209a1585a6367b67a364f4fc29e5ff7995675fcccefd2f276e061a4",
+          "review": "Actual NOAA ENC through Linux llvmpipe OpenGL contains coastline, soundings, chart symbols and ownship; XNav rail is separate. Upstream chart labels remain busy at this fixture scale."
+        },
+        {
+          "file": "route-02-stale-position.png",
+          "sha256": "53a08b5f69c8f1d59ea72760ce1f4205f3652e1404452445c6eb415ec32f2292",
+          "review": "GPS loss has a persistent critical alert; retained SOG/COG are grey and STALE 6s, absent instruments remain unavailable, route summary unavailable, real coastline visible."
+        }
+      ]
+    },
+    "interpretation": "40 Windows images were individually reviewed, not every one of the 78 DPI captures. route-01-active-route.png shows an unavailable transition; structured 26-check route reports establish valid/invalid progress, not that screenshot."
+  },
+  "features": {
+    "marine": "Selected OpenCPN navigation, checksum-validated NMEA0183, observed N2K NAME/source/instance precedence, own-vessel bounded Signal K; age/rate/quality commissioning diagnostics",
+    "instrument_pgns": [
+      127245,
+      127250,
+      127257,
+      127488,
+      127489,
+      127493,
+      127505,
+      127506,
+      127508,
+      127751,
+      128259,
+      128267,
+      130306,
+      130310,
+      130316
+    ],
+    "boat": "SOC 127506 and high-voltage 127751; optional exactly bound vendor 61184 v2; independent 2500ms producer expiries, no desktop EV-CAN decoder; SOH unavailable when absent",
+    "recording_energy": "Bounded opt-in recording/replay, privacy-limited diagnostic bundle, filtered STW/SOG versus selected power-device CSV export, explicit curve import/configuration and advisory input-quality reasons; no automatic fitting or boat defaults",
+    "manual_pilot": "STANDBY, AUTO, -1, +1, -10, +10; exact physical NAME and TCP Actisense transport; feedback-confirmed lifecycle, timeout, 250ms anti-repeat, no retry, every-session OFF; pinned actual firmware parser tested",
+    "ais_smartnav": "OpenCPN AIS selection/card/details/CPA/TCPA/alarm and copied fresh context, turn/waypoint/destination/energy/AIS timeline; no steering path",
+    "anchor": "OpenCPN anchor-watch semantics with owned current location/history/depth/wind/battery; no advanced drag claim",
+    "hazard_radar": "Bounded/tested provider and capability architecture; live ENC corridor and Pathfinder adapter unavailable",
+    "recovery": "Two unfinished launches fall back to Safe, explicit manual retry, logs retained; three native cycles pass",
+    "hardening": "Malformed network/config/file bounds, reconnect/producer expiry, installer failures, actual Linux udev and Windows SetupAPI/registry lifetime tests"
+  },
+  "boat_firmware_compile": {
+    "arduino_cli": "1.5.1",
+    "core": "esp32:esp32@3.2.1",
+    "board": "esp32:esp32:XIAO_ESP32C6",
+    "websockets": "2.7.2",
+    "physical_validation": "NOT RUN; compile and host tests only",
+    "firmware_source": "Boat source 9baf01bca09522794a9678dfb3f3c0720d5c9943\nOriginal SHA256 a7fa8d8ad1c26f5f72401f84e42996242d375822f301f2ad4a930b5e718fc53d\nPatched SHA256 192841d02d9eacc7581a38d6816057f315491032393fcb188731c9d13cea6c0b\nNo physical acceptance or automatic flashing.\n",
+    "binary_sha256": {
+      "Nissan_ev_to_NMEA_and_wifi.ino.bin": "e6458c56cd43b7c80bb4b26db5ea5d1f6adfea25745fdfd0e0caee3cf15400a1",
+      "Nissan_ev_to_NMEA_and_wifi.ino.bootloader.bin": "a57485bef96b7be694204427b70d920263f076a352956cb0e36b9ffce0fa12a8",
+      "Nissan_ev_to_NMEA_and_wifi.ino.partitions.bin": "148b959cbff1c38aa8e1d5c0ba9d612c54997b945e56a63f41223eef650653a1",
+      "Nissan_ev_to_NMEA_and_wifi.ino.merged.bin": "c3f05f47c47b9b4851111b2c262ccc9a6f493067acbe2eeea3c754b21164e63d"
+    }
+  },
+  "physical_gates": [
+    "Review, flash and verify C6 v2 expiry producer; compare GPS/heading/STW/wind/depth/rudder/motor/battery/tank/AIS values, references and instances; disconnect every sensor group while bridge stays live.",
+    "Configure and verify battery capacity/reserve/current sign/hotel loads; collect speed/power recordings, review/export/import empirical curve and compare predictions underway.",
+    "Bind actual pilot NAME/interface; verify read-only feedback before permission. In secured safe conditions test each of six manual commands separately, new feedback, rejection/timeout/reconnect, and physical STANDBY. No TRACK/WIND.",
+    "Validate actual target-PC touchscreen, DPI, GPU/OpenGL, chart catalog, plugin combinations and extended operation.",
+    "Supervised underway route progress, SmartNav/AIS advice, measured depth versus chart data, anchor alarms and energy; never treat advisory output as navigation certification."
+  ],
+  "limitations": [
+    "Physical vessel, sensors, target PC, touchscreen and at-sea acceptance NOT RUN. Software commissioning release only; no navigation or production approval.",
+    "ESP32-C6 producer expiry patch compiled but not flashed. Older v1 mapping remains uncertain and cannot supply trusted advisory energy inputs.",
+    "Real pilot command transport supports only explicitly bound bidirectional TCP Actisense complete-PGN ASCII; physical PC/gateway/ESP32/SeaTalk/ST4000 path unaccepted. Every start/control reconnect is OFF. TRACK/WIND unavailable.",
+    "No accepted live ENC corridor provider or Pathfinder radar display/control adapter. Unavailable is explicit; no claim of safe water or collision avoidance.",
+    "Hosted Windows rejected hardware OpenGL; actual software fallback passed. Linux llvmpipe OpenGL passed. Target GPU, physical touch, broad chart/plugin catalogs remain open.",
+    "Diagnostic warning card still says ALPHA 1 / NOT FOR NAVIGATION above the correct Beta 1 version/commit. Cosmetic caption deferred, release identity verified independently.",
+    "At 150 percent the transient System popup partly covers the Alerts button; the critical text remains visible. Dismiss with Escape or an outside click before opening Alerts. Deferred presentation refinement.",
+    "At higher DPI or with alerts, the rail and long pages require Up/Down/pan scrolling. At 100 percent with an alert the lower heading card can be partly outside the viewport; users can prioritize speed in the configurable rail.",
+    "Native file pickers, installer and preserved Legacy/plugin dialogs can remain bright in Night. Primary XNav client surfaces passed dark-surface checks.",
+    "Unsigned Beta retains Alpha historical install directory, registry ownership and Start-menu folder for upgrade continuity. Installed modes share the normal profile; portable modes use an isolated profile.",
+    "Energy remains constant-condition advisory. Real capacity, current sign, hotel load, empirical curve and calibration need boat measurements. No hard-coded boat curve.",
+    "Recording replay does not move OpenCPN ownship or modify live route/AIS state. Default diagnostic export excludes navigation identifiers; selected recordings require explicit consent.",
+    "Pinned Signal K driver TLS/plain-WebSocket fallback policy is unchanged; trusted boat network only. External JSON bounds and malformed-input recovery are tested."
+  ],
+  "history": {
+    "alpha": "08bc92fc778591a3978e594a54208d672ff9158f",
+    "chart_restart_repair": "16dbaf7; repeated here with deterministic coastline and public ENC mode returns",
+    "rejected_candidates": "beta-qualification-repairs.json; all failed candidates remain rejected",
+    "documentation": "Acceptance and post-build review notes are a documentation-only follow-up. Packaged binaries, source ZIP and bundled guides remain exactly this commit."
+  },
+  "next_stage": "STOP for user desktop and boat feedback. No production release or autonomous steering."
+}

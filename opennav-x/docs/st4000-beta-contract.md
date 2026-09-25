@@ -1,4 +1,4 @@
-# ST4000 manual adapter — Beta development contract
+# ST4000 manual adapter — Beta contract
 
 The portable protocol/controller is connected to the application through
 OpenCPN's existing N2K driver registry and application-thread subscriptions.
@@ -119,8 +119,11 @@ Existing manual-controller failure tests retain exact timeout/stale/disable
 coverage. Their send-attempt timestamps now respect the new 250-ms anti-repeat
 rule; an explicit immediate-retry assertion was added, not removed.
 
-Local contracts currently pass 44 suites with the firmware oracle enabled.
-The integrated Linux build and 97 regressions also pass; native replacement gates remain required. Final boat acceptance must
+Final `a3e6e08` qualification passes 60 portable suites per platform with
+the firmware oracle, 106 Linux and 98 native Windows integrated cases. Actual
+OpenCPN TCP loopback validates all six serialized manual commands, fresh
+feedback confirmation, timeout/communication loss and reconnect remaining OFF.
+See [Beta 1 acceptance](evidence/beta1-a3e6e08-accepted.json); none of these tests sends to physical equipment. Final boat acceptance must
 verify configured device identity, read-only physical status, each secured-vessel
 command separately, rejected/lost feedback, communication loss and physical
 STANDBY. Prior firmware dockside evidence does not qualify this new PC adapter.

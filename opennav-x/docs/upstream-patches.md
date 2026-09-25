@@ -355,8 +355,8 @@ AIS symbol-selection predicate; reusing upstream framing avoids a second symbol
 renderer. Merge risk is low and localized to the existing query-highlight block.
 
 Validation: `ais_selection_lifetime`, existing integrated AIS contracts and the
-actual AIS card → chart workflow with native/Linux captures. Replacement native
-acceptance is mandatory before this hook is release-qualified.
+actual AIS card → chart workflow with native/Linux captures. Exact replacement
+acceptance passed at `a3e6e08`; see [Beta 1 acceptance](evidence/beta1-a3e6e08-accepted.json).
 
 Beta night rendering uses the existing deferred-initialization hook and public
 `ShapeBaseChartSet::SetBasemapLandColor` with the pinned `GSHHSChart` palette.
@@ -408,3 +408,14 @@ has no spies or test hooks. Temporary registry data is isolated and cleaned.
 The same-commit Windows build and real-process endurance remain mandatory.
 [SetupAPI ownership](https://learn.microsoft.com/en-us/windows/win32/api/setupapi/nf-setupapi-setupdicreatedeviceinfolist),
 [registry-key lifetime](https://learn.microsoft.com/en-us/windows-hardware/drivers/install/accessing-custom-device-properties).
+
+## Final Beta 1 qualification
+
+All documented hooks at `a3e6e0812e01d2aee8f0b83807527b9a0c0fc79a` passed
+106 Linux and 98 native Windows integrated cases, transport/UI/chart/mode gates
+and actual three-hour endurance on each platform. [Beta 1 acceptance](evidence/beta1-a3e6e08-accepted.json) identifies the
+exact artifacts and reviewed executable. Five Windows actual-API discovery
+ownership cases and three Linux udev reference cases are included in those
+counts. No further upstream code change is introduced by the acceptance-only
+documentation follow-up. Physical hardware and Windows GPU validation remain
+separate; the pristine pinned upstream checkout is unchanged.

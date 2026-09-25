@@ -195,3 +195,15 @@ Demo measurements as boat calibration. See `recording-replay-contract.md` and
 Use `OpenNavX-Beta1-Boat-Commissioning.md` aboard the boat. Read-only, deliberate
 control and supervised underway phases have separate acceptance records. A
 successful desktop test is not physical boat acceptance.
+
+## Post-build visual review notes for a3e6e08
+
+This repository addendum follows the build; the downloaded guide remains the
+original hash-verified build document. Check the Beta 1 version and commit in
+Diagnostics even though the warning card still has an older Alpha caption.
+At 125/150% use Up/Down or pan for lower rail values and page sections; reorder
+the rail if speed should be first. At 150%, dismiss the System popup with
+Escape or an outside click before opening the partly covered Alerts button.
+The critical alert text remains visible. Report any additional clipping with
+resolution, DPI, screenshot and diagnostic bundle. See
+[acceptance/status](../status.md) for the complete post-build review.

@@ -1,5 +1,5 @@
 {
-  "status": "rejected candidates; replacements require new exact-commit gates",
+  "status": "Historical rejected candidates; exact replacement qualified at a3e6e08. Failed runs remain rejected.",
   "native_hardening": {
     "commit": "f562f3805f1296fa5123fc0cbe2a684d6c0b4c15",
     "run": "https://github.com/ThereptileII/Work/actions/runs/36121533524",
@@ -49,7 +49,7 @@
     "source": "Pinned OpenCPN model/src/ser_ports.cpp lacked context/enumeration unref",
     "repair": "Local RAII for context, enumeration, device; failed/disappearing discovery guarded; Windows enumeration unchanged",
     "tests": "Three real-library ownership/failure integration cases added; all 106 Linux integrated cases pass",
-    "after_profile": "pending; not a release endurance result"
+    "after_profile": "See allocation_comparison below and final qualified replacement; old pending label superseded."
   },
   "acl_followup": {
     "run": "https://github.com/ThereptileII/Work/actions/runs/36126570249",
@@ -72,7 +72,7 @@
     "local_replacement_preview_captures": 44
   },
   "allocation_comparison": {
-    "status": "local development allocation comparison; full release qualification pending",
+    "status": "Local development allocation comparison; final exact-commit endurance qualified separately below",
     "actual_application": true,
     "instrumented_seconds_before": 252.57,
     "instrumented_seconds_after": 252.19,
@@ -168,6 +168,30 @@
     "repair": "RAII releases SetupAPI device-information lists and COM query registry handles; absent/failed Garmin presence query remains unavailable, detail allocation guarded. USB command/start path unchanged.",
     "native_tests_added": 5,
     "local_linux_integrated_passed": 106,
-    "replacement_native": "required"
+    "replacement_native": "Five new actual Windows API cases passed; 98 integrated overall at a3e6e08; actual three-hour Windows endurance passed."
+  },
+  "qualified_replacement": {
+    "commit": "a3e6e0812e01d2aee8f0b83807527b9a0c0fc79a",
+    "run": "https://github.com/ThereptileII/Work/actions/runs/36137990012",
+    "evidence": "beta1-a3e6e08-accepted.json",
+    "all_ci_jobs": 10,
+    "portable_per_platform": 60,
+    "linux_integrated": 106,
+    "windows_integrated": 98,
+    "installer_checks": 29,
+    "filesystem_per_powershell_host": 39,
+    "native_dpi": [
+      100,
+      125,
+      150
+    ],
+    "actual_endurance_seconds": {
+      "linux": 10800.174596115,
+      "windows": 10800.109
+    },
+    "downloaded_artifact": "OpenNavX-Beta1-Windows",
+    "native_images_reviewed": 40,
+    "physical_acceptance": "Not run; staged commissioning required",
+    "note": "Prior failures and partial/short runs are retained as history, not accepted release evidence."
   }
 }

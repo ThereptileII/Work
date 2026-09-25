@@ -14,7 +14,7 @@ before constructing the parser message. All fields are copied before returning.
 Unknown PGNs and malformed frames supply no observations. Missing-value
 sentinels invalidate fields rather than becoming zero.
 
-| PGN | Alpha normalized observations |
+| PGN | Normalized observations |
 | --- | --- |
 | 127245 | Measured rudder angle; command/order fields are not observations |
 | 127250 | True heading, or estimated magnetic heading plus same-message variation |
@@ -59,7 +59,8 @@ The Beta pilot increment adds connection-generation invalidation for reconnects
 within the same TCP driver. A newly observed generation clears claims/candidates;
 queued messages predating that generation are rejected. This supplements normal
 sample expiry and does not prove the gateway refreshed its underlying sensor.
-Native runtime acceptance of the new boundary is still pending.
+The exact `a3e6e08` Linux and native Windows reconnect/claim/loss tests
+passed; see [Beta 1 acceptance](evidence/beta1-a3e6e08-accepted.json). Gateway-to-physical-sensor freshness remains a boat gate.
 
 ## NMEA 0183
 
@@ -99,11 +100,12 @@ then the per-quantity freshness/validity rules in the
 [source contract](vessel-source-contract.md). Explicit pins override fallback.
 No source is blended with another device implicitly.
 
-Thirteen upstream-linked `OpenNavMarine` tests cover real pinned codecs,
+The initial thirteen upstream-linked `OpenNavMarine` tests covered real pinned codecs,
 truncation/PGN/NA checks, heading/wind reference semantics, voltage saturation,
 units, checksums/status, missing versus zero, Signal K context/time/source and
-explicit extensions. Live UI subscription tests and native MSVC remain required
-integration gates. Boat data and sensor calibration are not physically accepted.
+explicit extensions. Expanded Beta suites and actual 0183/N2K/boat/Signal K
+loopback gates passed on both platforms at `a3e6e08`. Counts and raw report
+hashes are in [Beta 1 acceptance](evidence/beta1-a3e6e08-accepted.json). Boat data and sensor calibration are not physically accepted.
 
 Advanced explicit propulsion mapping import and persistence are described in
 [propulsion-source-mapping.md](propulsion-source-mapping.md). Standard marine

@@ -1,4 +1,4 @@
-# Advisory energy model and preview presentation
+# Advisory energy model and calibrated input contract
 
 ## Alpha calibrated input contract
 
@@ -45,8 +45,9 @@ passed at `c5a0fd0`. Developer Preview consumes it through owned Vessel Data
 snapshots; see the presentation section below and current acceptance in status.
 Linux and native MSVC portable tests pass. Explicit Win32 contracts passed at
 `ae5ed81` and `c2535f5`, matching the approved application ABI; earlier portable
-jobs used the generator default. The current nine-contract suite includes the
-energy core and its Demo-driven snapshot consumer.
+jobs used the generator default. That earlier nine-contract suite included the energy core and Demo consumer.
+Beta qualification now runs 60 portable suites per platform plus the integrated
+marine/recording/runtime gates; see [Beta 1 acceptance](evidence/beta1-a3e6e08-accepted.json).
 Full integration gates and remaining product work are tracked in
 [project status](status.md).
 
@@ -124,17 +125,17 @@ advisory presentation with explicit synthetic inputs, as described below.
 The model has no device control path. Its original core acceptance predates the
 preview presentation described below.
 
-## Developer Preview presentation
+## Historical Developer Preview presentation
 
-The accepted route snapshot now feeds `VesselEnergy` and the preview Route/Energy
-views. See [the preview contract](developer-preview-contract.md) for freshness,
-source separation and explicit Demo assumptions. Demo uses 48 kWh / 15% reserve;
-live configuration remains unavailable. The existing numerical model is unchanged.
-Nine portable tests now include Demo-driven valid, stale, missing, high-power,
-low-SOC, inactive-route and energy-shortfall consumption. Production live battery
-acquisition and calibration remain future work.
+The Developer Preview first connected the accepted route snapshot to
+`VesselEnergy` and Route/Energy views. See [the preview contract](developer-preview-contract.md)
+for its freshness/source boundary. That preview used explicit Demo assumptions
+(48 kWh / 15% reserve) and did not yet configure live inputs. Its nine portable
+tests covered valid/stale/missing/high-power/low-SOC/inactive-route/shortfall cases.
+Alpha added explicit live configuration; Beta adds marine input, recording and
+calibration export as described above and below. Physical calibration remains open.
 
-## Beta recording/calibration boundary (in development)
+## Beta recording/calibration boundary
 
 The commissioning recorder preserves normalized measurements and energy
 assumptions without renewing sensor times. Its explicit calibration export
@@ -145,8 +146,8 @@ remain labelled. Export is for human review, not automatic model installation.
 The existing bounded empirical curve import and advisory model remain the
 prediction boundary. No unmeasured boat curve or usable capacity is supplied.
 See [recording/replay contract](recording-replay-contract.md) for file limits,
-privacy, capture/replay clocks and test gates. Exact native acceptance remains
-in [status](status.md); physical calibration remains outstanding.
+privacy, capture/replay clocks and test gates. Software export/replay/model
+acceptance is recorded in [Beta 1 acceptance](evidence/beta1-a3e6e08-accepted.json); physical calibration remains outstanding.
 
 ## Beta input quality and commissioning reasons
 

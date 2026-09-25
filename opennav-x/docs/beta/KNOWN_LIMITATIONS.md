@@ -83,3 +83,20 @@ Recordings retain at most three bounded segments; user-selected exports are
 not silently deleted. Diagnostic bundles include only the documented whitelist.
 Three-hour CI simulations qualify only their measured hosted environment, not
 physical touch, arbitrary plugins, all chart catalogs or target-PC endurance.
+
+## Post-build review of a3e6e08
+
+These repository notes follow qualification and do not modify the already
+hashed downloadable package or its bundled documents.
+
+- Diagnostics retains an **ALPHA 1 / NOT FOR NAVIGATION** caption above the
+  correct Beta 1 version/commit/compiler fields. The caption is cosmetic.
+- At 150% the transient System popup partly covers the Alerts button. Critical
+  alert text remains visible. Dismiss with Escape or an outside click before
+  opening Alerts. Placement refinement is deferred.
+- Rails and long pages require Up/Down or pan at larger DPI/limited height.
+  With an alert at 100%, the bottom heading card may already need scrolling.
+  Use rail configuration to prioritize speed or other instruments.
+
+The authoritative review and physical exclusions are in
+[current status](../status.md) and [exact-release evidence](../evidence/beta1-a3e6e08-accepted.json).

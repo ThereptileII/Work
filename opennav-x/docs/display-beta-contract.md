@@ -64,4 +64,16 @@ night-page/touch-scroll checks. The subsequent page assertion rejected a valid
 56-DIP alarm consumes 84 pixels at 150%. The replacement asserts exact native
 center boundaries below status/alerts and above navigation, near-full width,
 at least half-window usable height, and the existing sibling-occlusion check.
-No interaction/capture is removed. Replacement acceptance remains required.
+No interaction/capture was removed. The replacement passed all three native
+scales at `a3e6e08`; see [Beta 1 acceptance](evidence/beta1-a3e6e08-accepted.json).
+
+## Reviewed presentation limits
+
+The 150% transient System popup partially overlaps the Alerts button; the
+persistent critical text remains visible. Escape or an outside click dismisses
+the popup. Refining its placement is deferred to feedback after this Beta.
+Diagnostics still has an Alpha warning caption above the correct Beta version
+and commit. Neither defect changes data or control permission. Lower rail
+values/long page sections need the existing Up/Down/pan controls at limited
+height, including a partly visible heading card at 100% with an alert. These
+findings are not hidden by the automated layout pass; see [status](status.md).
