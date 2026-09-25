@@ -650,19 +650,54 @@ index 995a3fe35..05add9dc9 100644
    // Decode just enough of string to extract some identifiers
    // such as the sK version, "self" context, and target context
    if (root.HasMember("version")) {
-diff --git a/model/src/ser_ports.cpp b/model/src/ser_ports.cpp
-index 4e43dafec..86ac4b8d6 100644
---- a/model/src/ser_ports.cpp
-+++ b/model/src/ser_ports.cpp
-@@ -32,6 +32,7 @@
+diff --git i/model/src/garmin_protocol_mgr.cpp w/model/src/garmin_protocol_mgr.cpp
+index ca58d6585..c53462755 100644
+--- i/model/src/garmin_protocol_mgr.cpp
++++ w/model/src/garmin_protocol_mgr.cpp
+@@ -34,6 +34,7 @@
+ #include <math.h>
+ #include <time.h>
+ 
++#include <memory>
+ #include <vector>
+ 
+ #ifndef _MSC_VER
+@@ -351,7 +352,9 @@ bool GarminProtocolHandler::IsGarminPlugged() {
+   hdevinfo = SetupDiGetClassDevs((GUID *)&GARMIN_GUID1, NULL, NULL,
+                                  DIGCF_PRESENT | DIGCF_INTERFACEDEVICE);
+ 
+-  if (hdevinfo == INVALID_HANDLE_VALUE) return INVALID_HANDLE_VALUE;
++  if (hdevinfo == INVALID_HANDLE_VALUE) return false;
++  std::unique_ptr<void, decltype(&SetupDiDestroyDeviceInfoList)>
++      owned_info(hdevinfo, SetupDiDestroyDeviceInfoList);
+ 
+   infodata.cbSize = sizeof(infodata);
+ 
+@@ -365,8 +368,10 @@ bool GarminProtocolHandler::IsGarminPlugged() {
+   SP_DEVINFO_DATA devinfo;
+ 
+   SetupDiGetDeviceInterfaceDetail(hdevinfo, &infodata, NULL, 0, &size, NULL);
++  if (size < sizeof(SP_INTERFACE_DEVICE_DETAIL_DATA)) return false;
+ 
+   pdd = (PSP_INTERFACE_DEVICE_DETAIL_DATA)malloc(size);
++  if (!pdd) return false;
+   pdd->cbSize = sizeof(SP_INTERFACE_DEVICE_DETAIL_DATA);
+ 
+   devinfo.cbSize = sizeof(SP_DEVINFO_DATA);
+diff --git i/model/src/ser_ports.cpp w/model/src/ser_ports.cpp
+index 4e43dafec..7367c1f73 100644
+--- i/model/src/ser_ports.cpp
++++ w/model/src/ser_ports.cpp
+@@ -32,6 +32,8 @@
  
  #include <cassert>
  #include <iostream>
 +#include <memory>
++#include <type_traits>
  
  #pragma GCC diagnostic push
  #pragma GCC diagnostic ignored "-Wmaybe-uninitialized"
-@@ -320,7 +321,10 @@ static std::vector<struct device_data> get_links(struct udev_device* dev,
+@@ -320,7 +322,10 @@ static std::vector<struct device_data> get_links(struct udev_device* dev,
  }
  
  static std::vector<struct device_data> enumerate_udev_ports(struct udev* udev) {
@@ -674,7 +709,7 @@ index 4e43dafec..86ac4b8d6 100644
    udev_enumerate_add_match_subsystem(enumerate, "tty");
    udev_enumerate_scan_devices(enumerate);
    struct udev_list_entry* devices = udev_enumerate_get_list_entry(enumerate);
-@@ -330,8 +334,12 @@ static std::vector<struct device_data> enumerate_udev_ports(struct udev* udev) {
+@@ -330,8 +335,12 @@ static std::vector<struct device_data> enumerate_udev_ports(struct udev* udev) {
    struct udev_list_entry* entry;
    udev_list_entry_foreach(entry, devices) {
      const char* const path = udev_list_entry_get_name(entry);
@@ -688,7 +723,7 @@ index 4e43dafec..86ac4b8d6 100644
      struct device_data item(devnode, get_device_info(device));
      if (!std::regex_search(devnode, bad_ttys) &&
          (isTTYreal(path) || item.info.length() > 0)) {
-@@ -339,15 +347,15 @@ static std::vector<struct device_data> enumerate_udev_ports(struct udev* udev) {
+@@ -339,15 +348,15 @@ static std::vector<struct device_data> enumerate_udev_ports(struct udev* udev) {
        auto links = get_links(device, bad_ttys);
        items.insert(items.end(), links.begin(), links.end());
      }
@@ -707,3 +742,30 @@ index 4e43dafec..86ac4b8d6 100644
    wxArrayString* ports = new wxArrayString;
    for (const auto& item : dev_items) {
      std::string port(item.path);
+@@ -431,6 +440,8 @@ static wxArrayString* EnumerateWindowsSerialPorts(void) {
+                                  DIGCF_PRESENT | DIGCF_DEVICEINTERFACE);
+ 
+   if (hDevInfo != INVALID_HANDLE_VALUE) {
++    std::unique_ptr<void, decltype(&SetupDiDestroyDeviceInfoList)>
++        owned_info(hDevInfo, SetupDiDestroyDeviceInfoList);
+     BOOL bOk = TRUE;
+     SP_DEVICE_INTERFACE_DATA ifcData;
+ 
+@@ -472,6 +483,8 @@ static wxArrayString* EnumerateWindowsSerialPorts(void) {
+               SetupDiOpenDevRegKey(hDevInfo, &devdata, DICS_FLAG_GLOBAL, 0,
+                                    DIREG_DEV, KEY_QUERY_VALUE);
+           if (INVALID_HANDLE_VALUE != hDeviceRegistryKey) {
++            std::unique_ptr<std::remove_pointer<HKEY>::type, decltype(&RegCloseKey)>
++                owned_key(hDeviceRegistryKey, RegCloseKey);
+             DWORD RegKeyType;
+             wchar_t wport[80];
+             LPCWSTR cstr = wport;
+@@ -514,6 +527,8 @@ static wxArrayString* EnumerateWindowsSerialPorts(void) {
+                                     DIGCF_PRESENT | DIGCF_INTERFACEDEVICE);
+ 
+   if (hdeviceinfo != INVALID_HANDLE_VALUE) {
++    std::unique_ptr<void, decltype(&SetupDiDestroyDeviceInfoList)>
++        owned_garmin_info(hdeviceinfo, SetupDiDestroyDeviceInfoList);
+     if (GarminProtocolHandler::IsGarminPlugged()) {
+       wxLogMessage(_T("EnumerateSerialPorts() Found Garmin USB Device."));
+       preturn->Add(_T("Garmin-USB"));  // Add generic Garmin selectable device

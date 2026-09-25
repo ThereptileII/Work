@@ -184,7 +184,15 @@ function SelfTest([string]$Directory, [string]$Commit, [string]$Version) {
   $exe = Join-Path $Directory 'app\opencpn.exe'
   $null = PeArchitecture $exe
   if (-not ('OpenNav.InstallerErrorMode' -as [type])) {
-    Add-Type -TypeDefinition @'
+    # Windows PowerShell 5.1 resolves its implicit System.dll compiler
+    # reference against the current directory. NSIS also has a native plugin
+    # with that name. Compile only from the installed framework directory.
+    $framework = [Runtime.InteropServices.RuntimeEnvironment]::GetRuntimeDirectory()
+    $previousDirectory = [Environment]::CurrentDirectory
+    Push-Location -LiteralPath $framework
+    try {
+      [Environment]::CurrentDirectory = $framework
+      Add-Type -TypeDefinition @'
 using System.Runtime.InteropServices;
 namespace OpenNav {
   public static class InstallerErrorMode {
@@ -193,6 +201,10 @@ namespace OpenNav {
   }
 }
 '@
+    } finally {
+      [Environment]::CurrentDirectory = $previousDirectory
+      Pop-Location
+    }
   }
   # A missing import can fail before our executable's self-test code runs.
   # Launch directly with an inherited noninteractive error mode: a shell

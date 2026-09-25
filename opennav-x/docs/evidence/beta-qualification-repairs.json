@@ -143,5 +143,31 @@
       "sha256": "f07fe1ae05204b9467b8332d71168d687481f509426042a65d78ef0862ba7d7b"
     },
     "disposition": "Exact replacement native gate required; not accepted."
+  },
+  "nsis_compiler_shadow": {
+    "commit": "75d42c42b518c5bd402f684e3b89b7bad1c52201",
+    "run": "https://github.com/ThereptileII/Work/actions/runs/36134643332",
+    "status": "rejected",
+    "early_native_filesystem_checks_per_host": 38,
+    "native_portable": "passed",
+    "native_dpi": [
+      100,
+      125,
+      150
+    ],
+    "error": "Add-Type implicit System.dll resolved to the native NSIS plugin in its current directory; incorrect-format metadata error. Setup refused before commit.",
+    "artifact_sha256": "e156cf91c82e4548a1a56660846eac4e4f4bbee9d909280196619f0a24edf39a",
+    "repair": "Compile scoped interop from installed framework directory and restore PowerShell/process caller directories. Early fixture shadows System.dll with a native PE."
+  },
+  "windows_discovery_followup": {
+    "basis": "Pinned source inspection, not an accepted measured Windows endurance result",
+    "files": [
+      "model/src/ser_ports.cpp",
+      "model/src/garmin_protocol_mgr.cpp"
+    ],
+    "repair": "RAII releases SetupAPI device-information lists and COM query registry handles; absent/failed Garmin presence query remains unavailable, detail allocation guarded. USB command/start path unchanged.",
+    "native_tests_added": 5,
+    "local_linux_integrated_passed": 106,
+    "replacement_native": "required"
   }
 }

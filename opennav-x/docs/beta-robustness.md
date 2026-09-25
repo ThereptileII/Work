@@ -72,7 +72,11 @@ creation (`UseShellExecute=false`) with scoped inherited
 `SEM_FAILCRITICALERRORS | SEM_NOGPFAULTERRORBOX | SEM_NOOPENFILEERRORBOX`.
 The private installer host restores its previous error mode immediately after
 creation, then waits/reaps/disposes the child. No global registry/error-reporting
-policy is changed. Normal application launch is unaffected. Native fixtures
+policy is changed. The native interop class is compiled from the trusted .NET
+Framework directory, with both caller directories restored: Windows PowerShell
+5.1 otherwise resolves its implicit System.dll against NSIS's native plugin of
+the same name. An early native fixture deliberately shadows System.dll to
+qualify this boundary before the full Setup wizard. Normal application launch is unaffected. Native fixtures
 require child inheritance and parent restoration; the actual missing-DLL case
 must return a loader exit failure, not timeout or missing-report ambiguity, and
 leave no System Error window. The final stock welcome/chart check remains.

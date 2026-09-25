@@ -42,7 +42,8 @@ Do not leave undocumented direct OpenCPN modifications.
 | model/include/model/comm_drv_n2k_net.h | Beta: read-only detected format, monotonic connection generation/time | No output/discovery getters; low API risk |
 | model/src/comm_drv_n2k_net.cpp | Beta: advance connection provenance at socket replacement/connect/loss/close boundaries | Same-driver reconnect loopback; medium event-order risk |
 | model/src/comm_drv_signalk_net.cpp | Beta: bounded UTF-8/JSON preflight before recursive parser; type/length/control validation before handshake GetString access | Actual malformed/valid WebSocket input, all modes retain valid-message path; low decoder-entry merge risk |
-| model/src/ser_ports.cpp | Beta Linux lifetime repair: RAII releases udev contexts, enumeration and per-device references; null discovery/device nodes return unavailable/skip | Actual-reference wrapper tests, allocation profile and elapsed endurance; low risk, Windows path unchanged |
+| model/src/ser_ports.cpp | Beta discovery lifetime repair: release udev references, Windows SetupAPI lists and query registry keys; guard unavailable discovery | Actual API ownership/failure tests, allocation profile and elapsed endurance; low catalog-lifetime risk |
+| model/src/garmin_protocol_mgr.cpp | Beta: release the SetupAPI list in read-only IsGarminPlugged on every path; failed discovery returns false and failed detail allocation is guarded | Repeated actual native queries; no USB start/command path changed |
 
 Public plugin API 1.20 does not provide ownership of application startup,
 main-frame chrome or shutdown. Narrow core hooks are necessary; zoom, follow,
@@ -378,8 +379,8 @@ A four-minute allocation profile of the real integrated Linux process found
 `udev_enumerate_new()`; repeated background connection discovery retained them.
 The reviewed patch uses local unique ownership for context, enumeration and
 device references, handles failed creation and disappearing device nodes, and
-keeps the existing catalog/filter/link semantics. It changes no Windows code,
-boat transport or public API. A plugin/public getter cannot fix this lifetime
+keeps the existing catalog/filter/link semantics. The initial Linux repair changes
+no boat transport or public API; the Windows discovery follow-up is below. A plugin/public getter cannot fix this lifetime
 inside upstream discovery. The pristine source stays unchanged.
 
 Three Linux/libudev-only integration tests link wrappers around the real library
@@ -388,4 +389,22 @@ calls, and inject failed context/enumeration creation. They do not replace the
 catalog with invented devices. Allocation-profile comparison and the full
 three-hour application gate remain necessary to qualify the observed growth.
 The patch is independent of XNav presentation and also protects integrated
-Legacy/Safe. Merge risk is confined to the two small Linux discovery functions.
+Legacy/Safe. The Linux merge boundary is the two small discovery functions.
+
+Windows source inspection then found unclosed `SetupDiGetClassDevs` lists and
+`SetupDiOpenDevRegKey` handles in the same discovery function, plus an unclosed
+list in its read-only `GarminProtocolHandler::IsGarminPlugged` call. Scoped
+ownership now releases these, including failed/absent-device paths. Invalid
+Garmin enumeration returns false (the upstream INVALID_HANDLE_VALUE converted
+to true), and detail-size/allocation failure cannot dereference a null buffer.
+Garmin USB startup/output is unchanged. The source finding is not represented
+as a measured three-hour result.
+
+Five native integration tests compile the exact reviewed serial-discovery source
+with test-only Win32 API spies: real device-list lifetime, invalid-list failure,
+real temporary HKCU query handles with present/missing values, and repeated
+actual Garmin presence queries with bounded process handles. The application
+has no spies or test hooks. Temporary registry data is isolated and cleaned.
+The same-commit Windows build and real-process endurance remain mandatory.
+[SetupAPI ownership](https://learn.microsoft.com/en-us/windows/win32/api/setupapi/nf-setupapi-setupdicreatedeviceinfolist),
+[registry-key lifetime](https://learn.microsoft.com/en-us/windows-hardware/drivers/install/accessing-custom-device-properties).

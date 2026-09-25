@@ -37,6 +37,15 @@ ambiguous, edited or transitional state never becomes a valid zero arrival.
 
 ## Beta development
 
+Candidate `75d42c4` / run `36134643332` is **not accepted**. Native portable
+interaction and 100/125/150% DPI gates pass, including Menu endpoints and actual
+center-page bounds. Setup failed safely because PowerShell Add-Type resolved
+NSIS's native System.dll as a .NET compiler reference. Compilation is now scoped
+to the trusted framework directory; a shadow-DLL filesystem fixture covers it.
+The same review found Windows serial/Garmin discovery resources without cleanup.
+Scoped ownership and five native tests are added; Linux integrated build and
+all 106 cases pass. Exact replacement native/endurance qualification is required.
+
 Candidate `92a695f` / run `36130393824` is **not accepted**. The native
 portable package passed and all new installer failure/recovery cases preserved
 stock/profile, but the missing-DLL loader fixture left a Windows System Error

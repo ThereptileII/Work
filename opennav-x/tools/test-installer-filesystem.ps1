@@ -132,7 +132,18 @@ class OpenNavLoaderContractFixture {
   $Compiler = Join-Path ([Runtime.InteropServices.RuntimeEnvironment]::GetRuntimeDirectory()) 'csc.exe'
   & $Compiler /nologo /target:exe /platform:x86 ('/out:'+$LoaderExe) $LoaderSource
   if ($LASTEXITCODE -ne 0) { throw 'Could not compile native loader contract fixture.' }
-  SelfTest $LoaderStage 'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa' 'loader-fixture'
+  # NSIS's native System.dll must never become Add-Type's .NET reference.
+  Copy-Item -LiteralPath $Dll -Destination (Join-Path $Fixture 'System.dll')
+  $BeforeDirectory = [Environment]::CurrentDirectory
+  Push-Location -LiteralPath $Fixture
+  try {
+    [Environment]::CurrentDirectory = $Fixture
+    SelfTest $LoaderStage 'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa' 'loader-fixture'
+    Check (((Get-Location).Path -eq $Fixture) -and ([Environment]::CurrentDirectory -eq $Fixture)) 'Loader interop ignores native System.dll shadow and restores caller directories'
+  } finally {
+    [Environment]::CurrentDirectory = $BeforeDirectory
+    Pop-Location
+  }
   Check (@(Get-ChildItem -LiteralPath $LoaderStage -Filter 'loader-*.json').Count -eq 0) 'Actual loader wrapper waits for exit and consumes its verified fixture report'
   $BeforeErrorMode = [OpenNav.InstallerErrorMode]::GetErrorMode()
   SelfTest $LoaderStage 'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa' 'loader-fixture'
