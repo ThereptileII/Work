@@ -7,12 +7,13 @@ $Source = Join-Path $PSScriptRoot '../installer/windows/Lifecycle.ps1'
 $ParseErrors = $null
 $Ast = [System.Management.Automation.Language.Parser]::ParseFile($Source, [ref]$null, [ref]$ParseErrors)
 if ($ParseErrors) { throw ($ParseErrors | Out-String) }
-foreach ($Name in @('Hash','PlainPath','RelativePath','ReadJson','AtomicJson','PeArchitecture','FileRecords','VerifyFiles')) {
+foreach ($Name in @('Log','Hash','PlainPath','RelativePath','ReadJson','AtomicJson','PeArchitecture','FileRecords','VerifyFiles','SelfTest')) {
   $Definitions = @($Ast.FindAll({ param($Node) $Node -is [System.Management.Automation.Language.FunctionDefinitionAst] -and $Node.Name -eq $Name }, $true))
   if ($Definitions.Count -ne 1) { throw "Expected one actual engine function: $Name" }
   . ([scriptblock]::Create($Definitions[0].Extent.Text))
 }
 $Utf8 = New-Object System.Text.UTF8Encoding($false)
+$SessionLog = New-Object System.Collections.Generic.List[string]
 $Fixture = Join-Path ([IO.Path]::GetTempPath()) ('OpenNav filesystem ' + [guid]::NewGuid().ToString('N'))
 $null = New-Item -ItemType Directory -Path $Fixture
 $Checks = 0
@@ -57,6 +58,31 @@ try {
   $Dll = Join-Path ([Environment]::GetFolderPath('SystemX86')) 'kernel32.dll'
   Check ((PeArchitecture $Dll) -eq 'x86') 'Native PE i386 architecture'
   Refuses { PeArchitecture $Record } 'Non-PE data refused'
+  # This explicit test-only executable exercises the real process/identity
+  # wrapper, independently of the much slower integrated OpenCPN build.
+  # Its JSON is a fixture, not a claim of real chart/DLL/profile validation.
+  $LoaderStage = Join-Path $Fixture 'loader'; $LoaderApp = Join-Path $LoaderStage 'app'
+  $null = New-Item -ItemType Directory -Path $LoaderApp -Force
+  $LoaderSource = Join-Path $Fixture 'LoaderFixture.cs'
+  $LoaderExe = Join-Path $LoaderApp 'opencpn.exe'
+  $Code = @'
+using System;
+using System.IO;
+class OpenNavLoaderContractFixture {
+  static int Main(string[] args) {
+    if (args.Length != 2 || args[0] != "--opennav-self-test") return 64;
+    File.WriteAllText(args[1], "{\"passed\":true,\"commit\":\"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\",\"version\":\"loader-fixture\",\"profile_initialized\":false,\"plugins_loaded\":false}");
+    return 0;
+  }
+}
+'@
+  [IO.File]::WriteAllText($LoaderSource,$Code,$Utf8)
+  $Compiler = Join-Path ([Runtime.InteropServices.RuntimeEnvironment]::GetRuntimeDirectory()) 'csc.exe'
+  & $Compiler /nologo /target:exe /platform:x86 ('/out:'+$LoaderExe) $LoaderSource
+  if ($LASTEXITCODE -ne 0) { throw 'Could not compile native loader contract fixture.' }
+  SelfTest $LoaderStage 'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa' 'loader-fixture'
+  Check (@(Get-ChildItem -LiteralPath $LoaderStage -Filter 'loader-*.json').Count -eq 0) 'Actual loader wrapper waits for exit and consumes its verified fixture report'
+  Refuses { SelfTest $LoaderStage 'bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb' 'loader-fixture' } 'Loader wrapper refuses another executable identity'
   Write-Host "$Checks native filesystem checks passed in PowerShell $($PSVersionTable.PSVersion), $([IntPtr]::Size * 8)-bit host."
 } finally {
   if ($Junction -and (Test-Path -LiteralPath $Junction)) { [IO.Directory]::Delete($Junction) }

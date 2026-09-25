@@ -79,3 +79,8 @@ and queues once after that work returns. Safe selection still happens early;
 no plugin/control services are enabled to display the notice. The harness also
 asserts that the notice log follows canvas finalization. Native replacement
 acceptance is pending. [Ordering evidence](evidence/windows-recovery-bc892a7-startup-order.json).
+
+The replacement passes the full Linux gate and all three separate actual native
+recovery cycles at `fe37250`; reviewed Safe/returned-XNav captures retain the
+coastline. [Accepted recovery evidence](evidence/recovery-fe37250-gate.json).
+This closes the notice-order issue; it does not qualify the pending installer.

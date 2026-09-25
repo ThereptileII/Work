@@ -1,0 +1,53 @@
+{
+  "status": "failed",
+  "checks": [
+    "Official supported OpenCPN installed and exact PE executable SHA-256 verified",
+    "Registry discovery handles the official build-suffixed key and verifies its exact hash without modification",
+    "Conventional wizard opens without command-line options; default Install and path input work; Cancel changes no installation",
+    "Unknown executable hash refused before creating install root or changing stock",
+    "Unknown installation ownership refused without adding logs or changing files"
+  ],
+  "screenshots": [
+    "installer-wizard-welcome.png",
+    "installer-wizard-selection.png",
+    "installer-wizard-welcome.png",
+    "installer-wizard-selection.png",
+    "installer-failed-1.png",
+    "installer-failed-2.png"
+  ],
+  "authority": "native disposable Windows / PowerShell 5.1 / NSIS",
+  "display": {
+    "before": [
+      1280,
+      800,
+      32
+    ],
+    "after": [
+      1280,
+      800,
+      32
+    ]
+  },
+  "error": "RuntimeError('Alpha wizard did not reach Finish')",
+  "visible_windows": [
+    {
+      "pid": 8144,
+      "title": "OpenNav X Alpha 1 Setup"
+    },
+    {
+      "pid": 8144,
+      "title": "OpenNav X Alpha 1 Setup "
+    }
+  ],
+  "commit": "fe37250da6ced630d9b74f8a87c436d87b2cc7a0",
+  "run": "https://github.com/ThereptileII/Work/actions/runs/36079400432",
+  "artifact": 10842275822,
+  "artifact_sha256": "ce2d642183c5407db7adc2b564413f0b95e4964b36662e31b9b73aac441933da",
+  "artifact_bytes": 15024835,
+  "review": "Both native failure images reviewed: actual NSIS installation error notice. Preflight/discovery/hash and unknown ownership gates passed. The old harness retained the UI but omitted engine-private logs, so the underlying installation error is not established.",
+  "replacement": "Retain bounded installation engine logs/state on failure, detect the actual error notice promptly, and exercise the real loader process/identity wrapper against an explicit tiny CI-only executable in both native PowerShell hosts. No release gate replaced by the fixture.",
+  "image_hashes": {
+    "installer-failed-1.png": "6ce593d26e3cb09e92a37d96853181d0af65ea35e8ec52f6619f1d88296f6245",
+    "installer-failed-2.png": "f3c2097b9d834508633dc460b68717a8cc56241e6fee768383ca51feaa8bfaf5"
+  }
+}

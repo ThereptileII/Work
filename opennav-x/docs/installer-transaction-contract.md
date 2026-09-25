@@ -130,3 +130,11 @@ Integrity now streams bytes through .NET SHA-256 directly, with a fixed known
 vector in both 32/64-bit helper gates. No hash check is relaxed. The precise
 module-discovery cause is not claimed; the installer no longer relies on it.
 [Preflight failure](evidence/installer-preflight-8ae303c-hash-failure.json).
+
+Native `fe37250` passes preflight/discovery/refusal with streamed SHA-256, but
+its actual wizard reports a transaction error. Failed tests now retain bounded
+engine logs and state before runner disposal. A small explicitly synthetic
+loader executable exercises the real process/identity wrapper in both native
+PowerShell hosts; this supplements the mandatory real OpenCPN loader and
+installation gates, and is never included in Alpha application payloads.
+[Wizard failure](evidence/installer-wizard-fe37250-failure.json).

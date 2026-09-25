@@ -102,6 +102,10 @@ def wizard(stock,install=False):
         deadline=time.monotonic()+180
         while time.monotonic()<deadline:
             assert p.poll() is None,'Installer exited before its completion page'
+            for notice,_,_ in ui.windows(p.pid):
+                captions=[ui.control_text(child) for child,_ in ui.children(notice)]
+                if any('OpenNav setup did not complete' in caption for caption in captions):
+                    raise RuntimeError('Alpha wizard reported installation failure; retained engine logs contain the cause')
             if ui.control_text(get_item(h,1)).replace('&','')=='Finish' and ui.IsWindowEnabled(get_item(h,1)):
                 break
             time.sleep(.2)
@@ -260,6 +264,13 @@ try:
         report['status']='passed'
 except Exception as e:
     report['status']='failed';report['error']=repr(e)
+    # Preserve the actual transaction failure before the disposable runner is
+    # destroyed. Only bounded installation metadata, never the shared profile.
+    details=EVIDENCE/'installer-engine';details.mkdir(exist_ok=True)
+    for record in list((INSTALL/'logs').glob('*.log'))+[INSTALL/name for name in ('owner.json','state.json','transaction.json')]:
+        if record.is_file() and not record.is_symlink() and record.stat().st_size<=4194304:
+            shutil.copy2(record,details/record.name)
+            if record.suffix=='.log':print(record.read_text(encoding='utf-8-sig',errors='replace'),flush=True)
     report['visible_windows']=[]
     for owner in owned:
         for handle,pid,title in ui.windows(owner):

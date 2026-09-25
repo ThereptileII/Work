@@ -41,7 +41,7 @@ ambiguous, edited or transitional state never becomes a valid zero arrival.
 | SmartNav | Owned route steps, next turn, timeline, energy and existing AIS context advisories. Tested future chart-corridor abstraction; live chart hazard query remains unavailable. No absence-of-hazard safety claim. |
 | Autopilot/radar | Manual pilot interface, explicit DEMO simulator, capability/status/feedback/timeout logging, global disable. No live output adapter or SmartNav steering path. Radar capabilities/status abstraction; live radar unavailable. |
 | Settings/diagnostics | Shared-profile validated settings, source policies, empirical curves, explicit propulsion mappings, display selection and advanced OpenCPN access; build, mode, age, provenance, model and plugin/chart diagnostics. |
-| Recovery | Two unfinished XNav starts select Safe before optional modules; retry evidence retained. Native modal-dismissal test correction below awaits repeated validation. |
+| Recovery | Two unfinished XNav starts select Safe before optional modules; retry evidence retained. Deferred-notice repair passes three native recovery cycles; see evidence below. |
 | Distribution | Portable isolation and Alpha labels/source/license packaging; native NSIS per-user side-by-side setup, immutable generations, repair/update/rollback/uninstall and fault-recovery engine implemented. Full lifecycle qualification remains open. |
 
 Contracts: [sources](vessel-source-contract.md), [marine input](marine-input-contract.md),
@@ -103,9 +103,10 @@ requires modal dismissal and an enabled parent, and retains three independent
 forced-crash/recovery cycles. The actual click also failed at `bc892a7`;
 the notice now waits until upstream deferred canvas/focus initialization finishes.
 [Ordering evidence](evidence/windows-recovery-bc892a7-startup-order.json).
-Three prior local Linux cycles pass. The repaired integration passes 90 local
-Linux cases, 29 portable suites and the actual recovery with notice-order
-assertions; native replacement qualification is pending. [Failure review](evidence/windows-recovery-c26e456-modal-failure.json).
+The repaired integration passes the full Linux CI gate, 90 Linux / 80 Windows
+cases, 29 portable suites per platform and three separate native recovery
+cycles at `fe37250`. Three native coastline captures were reviewed.
+[Recovery acceptance](evidence/recovery-fe37250-gate.json). [Failure review](evidence/windows-recovery-c26e456-modal-failure.json).
 
 The official prerequisite now passes its native gate at `8ae303c`,
 [run 36077099717](https://github.com/ThereptileII/Work/actions/runs/36077099717):
@@ -117,10 +118,16 @@ Full Alpha lifecycle qualification remains pending. Its first real preflight at
 `8ae303c` cannot resolve Get-FileHash in the NSIS-launched process; streamed .NET
 SHA-256 replaces that dependency with a known-vector test.
 [Preflight failure](evidence/installer-preflight-8ae303c-hash-failure.json).
+Its replacement passes preflight, registry discovery, unknown-binary refusal
+and ownership protection at `fe37250`. Actual installation then shows an error
+notice. The harness now retains private engine logs and tests its real loader
+wrapper with an explicit small native fixture; real OpenCPN lifecycle acceptance
+is still mandatory. [Wizard failure](evidence/installer-wizard-fe37250-failure.json).
 
 ## Remaining Alpha release gates
 
-1. Resolve/validate the native recovery and plugin-manager paint gates; retain
+1. Retain the repaired native recovery gate and validate the final plugin-manager
+   paint/click gate (including upstream Ok capitalization); retain
    the passed chart-edit/switch/software-fallback and Linux OpenGL coverage.
 2. Complete actual official-stock installation plus Alpha install, prior-version
    update, repair, rollback, interrupted transaction, uninstall and restored
