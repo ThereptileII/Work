@@ -10,6 +10,9 @@ if ($PSVersionTable.PSVersion.Major -ne 5) { throw 'Use native Windows PowerShel
 $Sections = [Security.AccessControl.AccessControlSections]::Access
 $Acl = [IO.Directory]::GetAccessControl($Directory, $Sections)
 if ($Restore) {
+  # Restore from a fresh descriptor so no modification state from the current
+  # denied descriptor is retained by .NET's native persistence wrapper.
+  $Acl = New-Object System.Security.AccessControl.DirectorySecurity
   $Acl.SetSecurityDescriptorSddlForm([IO.File]::ReadAllText($Saved), $Sections)
   [IO.Directory]::SetAccessControl($Directory, $Acl)
   return
