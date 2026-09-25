@@ -37,6 +37,26 @@ ambiguous, edited or transitional state never becomes a valid zero arrival.
 
 ## Beta development
 
+AIS target cards now select/center the existing chart target with an expiring,
+owned selection. A shared observation epoch fixes live AIS advisories being
+incorrectly rejected as future data. SmartNav suppresses route-dependent advice
+on current GPS loss, incoherent sources, stale fixes and route transitions;
+newer coherent GPS fixes remain usable with fresh upstream route progress.
+Hazard provider failures and excessive/untrusted results degrade explicitly.
+The existing ENC query APIs remain insufficient for a complete corridor; no
+safe-route claim is made. Local **60 portable suites / 99 integrated cases**,
+actual AIS selection/advice, preview/mode and manual-pilot checks pass.
+[Contract](ais-beta-contract.md), [chart/radar boundary](beta-chart-radar-boundaries.md),
+[local evidence](evidence/beta-ais-advice-local.json). Native replacement pending.
+
+Run `36112601192` (`5b08227`) passes native compilation and the official
+prerequisite wizard, but is rejected at recording interaction: an asynchronous
+Ctrl+A selected/deleted a filename prefix during the test driver's WM_CHAR
+stream. The driver now selects synchronously, retains normal filename change
+notifications and exact full-path verification. No artifact from that failed
+run is accepted, and no product data or file validation is weakened.
+
+
 Recording/replay/calibration export, physical N2K NAME identity and the manual
 pilot loopback path are accepted as a software increment at `9a1872f`,
 [run 36106701545](https://github.com/ThereptileII/Work/actions/runs/36106701545).

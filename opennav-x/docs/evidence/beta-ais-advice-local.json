@@ -1,0 +1,291 @@
+{
+  "scope": "Linux AIS selection and SmartNav operational failure increment; native gate pending",
+  "source_parent": "0f02293178b8b7f196c0aecd3afb8ac0b391d6b1",
+  "portable_suites": 60,
+  "integrated_linux_cases": 99,
+  "runtime": {
+    "objects-input-results.json": {
+      "authority": "Linux development",
+      "fixture": "Synthetic NMEA over loopback; no external devices or production profile",
+      "expected": {
+        "sog_kn": 6.3,
+        "cog_deg": 147,
+        "wind": "unavailable",
+        "depth": "unavailable"
+      },
+      "screenshots": [
+        "objects-route-card.png",
+        "objects-waypoint-card.png",
+        "objects-ais-card.png",
+        "objects-ais-selected-chart.png"
+      ],
+      "visual_review": "required",
+      "live_ais_advice": "Copied actual AIS alarm reaches shell SmartNav at a coherent observation epoch",
+      "object_contract": {
+        "result": "passed",
+        "fixture": "Explicit loopback-only object contract test; no device output",
+        "checks": [
+          {
+            "check": "Thread boundary rejects worker access"
+          },
+          {
+            "check": "Waypoint create, edit and stale selection rejection"
+          },
+          {
+            "check": "Deletion uses OpenCPN undo; retained snapshot survives"
+          },
+          {
+            "check": "Route name edit, upstream reversal and immutable revision guard"
+          },
+          {
+            "check": "Repeated waypoint identity and layer protections"
+          },
+          {
+            "check": "Activation uses selected navigation; active route edits refused"
+          },
+          {
+            "check": "Stop navigation and explicit anchor-watch creation"
+          },
+          {
+            "check": "Anchor observation after normal processing; clearing retains mark"
+          },
+          {
+            "check": "AIS upstream CPA/TCPA, unavailable sentinel, loss, freshness and lifetime"
+          },
+          {
+            "check": "Route, waypoint and AIS chart selection use owned deferred cards"
+          }
+        ],
+        "phase": "done"
+      },
+      "ais_selection": "Actual target card to existing chart target/frame; copied selection identity reported",
+      "checks": [
+        "Navigation object and AIS contracts through actual integrated executable",
+        "Deferred chart-selection cards and clean close",
+        "Route and restored waypoint persisted in existing OpenCPN navobj.db"
+      ],
+      "result": "loopback transport and lifecycle passed; numeric and stale screenshot review required",
+      "sent": {
+        "rmc": 42,
+        "gga": 42
+      },
+      "transport_errors": []
+    },
+    "preview-linux-results.json": {
+      "authority": "Linux development",
+      "checks": [
+        "Alpha menu and eight product page interactions captured",
+        "Energy, source, vessel-safety and radar settings pages captured",
+        "Moving position, SOC, route distance and advisory destination SOC change",
+        "Global alerts persist across pages/acknowledgement, recover, and recur as new episodes",
+        "All eight GUI-selected scenarios pass validity/shortfall assertions",
+        "XNav / Legacy / Safe clean lifecycle and shared navigation/config persistence passed; mode switch stops Demo",
+        "Real bundled coastline remains rendered after Legacy return and Safe restart"
+      ],
+      "screenshots": [
+        "preview-01-navigation-day-linux.png",
+        "preview-11-startup-xnav-linux.png",
+        "preview-02-navigation-night-linux.png",
+        "preview-03-route-linux.png",
+        "preview-04-energy-linux.png",
+        "preview-05-diagnostics-linux.png",
+        "alpha-instruments-linux.png",
+        "alpha-ais-linux.png",
+        "alpha-smartnav-linux.png",
+        "alpha-autopilot-linux.png",
+        "alpha-anchor-linux.png",
+        "alpha-settings-linux.png",
+        "alpha-routes-linux.png",
+        "alpha-waypoints-linux.png",
+        "alpha-energy-settings-linux.png",
+        "alpha-sources-linux.png",
+        "alpha-vessel-settings-linux.png",
+        "alpha-radar-status-linux.png",
+        "alpha-display-linux.png",
+        "preview-06-stale-linux.png",
+        "beta-alerts-active-linux.png",
+        "beta-alerts-acknowledged-linux.png",
+        "preview-06b-unavailable-linux.png",
+        "preview-06c-shortfall-linux.png",
+        "preview-07-legacy-linux.png",
+        "preview-09-returned-xnav-linux.png",
+        "preview-08-safe-linux.png",
+        "preview-12-safe-to-xnav-linux.png",
+        "preview-13-legacy-linux.png",
+        "preview-14-legacy-to-xnav-linux.png"
+      ],
+      "higher_dpi": "Not exercised by this hosted desktop; manual validation remains open",
+      "chart_rendering": [
+        {
+          "phase": "Direct XNav startup",
+          "reference_color_fractions": {
+            "aac3f0": 0.5827610872675251,
+            "aaaf50": 0.39760371959942775
+          },
+          "coastline_visible": true
+        },
+        {
+          "phase": "XNav to Legacy",
+          "reference_color_fractions": {
+            "aac3f0": 0.5638054363376251,
+            "aaaf50": 0.41587982832618026
+          },
+          "coastline_visible": true
+        },
+        {
+          "phase": "XNav to Legacy to XNav",
+          "reference_color_fractions": {
+            "aac3f0": 0.6076180257510729,
+            "aaaf50": 0.3726752503576538
+          },
+          "coastline_visible": true
+        },
+        {
+          "phase": "XNav to Safe",
+          "reference_color_fractions": {
+            "aac3f0": 0.5638054363376251,
+            "aaaf50": 0.41587982832618026
+          },
+          "coastline_visible": true
+        },
+        {
+          "phase": "Safe to XNav",
+          "reference_color_fractions": {
+            "aac3f0": 0.6076180257510729,
+            "aaaf50": 0.3726752503576538
+          },
+          "coastline_visible": true
+        },
+        {
+          "phase": "Direct Legacy startup",
+          "reference_color_fractions": {
+            "aac3f0": 0.5638054363376251,
+            "aaaf50": 0.41587982832618026
+          },
+          "coastline_visible": true
+        },
+        {
+          "phase": "Direct Legacy to XNav",
+          "reference_color_fractions": {
+            "aac3f0": 0.6076180257510729,
+            "aaaf50": 0.3726752503576538
+          },
+          "coastline_visible": true
+        }
+      ],
+      "result": "passed; screenshot review required"
+    },
+    "pilot-results.json": {
+      "authority": "Linux development",
+      "hardware": "NONE; loopback simulated translator",
+      "checks": [
+        "Read-only startup despite saved manual permission",
+        "Actual UI and OpenCPN TCP serialization of AUTO/-1/+1/-10/+10/STANDBY",
+        "New matching physical-style feedback confirms; no optimistic target change",
+        "Missing feedback times out without retry; manual STANDBY remains available",
+        "Same-driver reconnect clears identity and session enablement; new claim required",
+        "Live TRACK/WIND unavailable; no SmartNav control path"
+      ],
+      "screenshots": [
+        "pilot-01-status-only-linux.png",
+        "pilot-confirmation-linux.png",
+        "pilot-confirmation-linux.png",
+        "pilot-confirmation-linux.png",
+        "pilot-02-confirmed-manual-linux.png",
+        "pilot-03-communication-loss-linux.png",
+        "pilot-04-reconnected-control-off-linux.png"
+      ],
+      "confirmations": [
+        {
+          "title": "Request AUTO",
+          "geometry": {
+            "WINDOW": "2097599",
+            "X": "380",
+            "Y": "250",
+            "WIDTH": "520",
+            "HEIGHT": "300",
+            "SCREEN": "0"
+          },
+          "name": "Request AUTO"
+        },
+        {
+          "title": "Enable physical pilot control?",
+          "geometry": {
+            "WINDOW": "2097642",
+            "X": "380",
+            "Y": "250",
+            "WIDTH": "520",
+            "HEIGHT": "300",
+            "SCREEN": "0"
+          },
+          "name": "Enable physical pilot control?"
+        },
+        {
+          "title": "Request AUTO",
+          "geometry": {
+            "WINDOW": "2097678",
+            "X": "380",
+            "Y": "250",
+            "WIDTH": "520",
+            "HEIGHT": "300",
+            "SCREEN": "0"
+          },
+          "name": "Request AUTO"
+        }
+      ],
+      "result": "passed; screenshot review required",
+      "sent": [
+        {
+          "key": 64,
+          "wire": "A104303.000 01CC3 1ED00 0163FF00FF03013B0703040640\r",
+          "time": 85548.234395439
+        },
+        {
+          "key": 81,
+          "wire": "A104305.000 01CC3 1ED00 0163FF00FF03013B0703040651\r",
+          "time": 85550.188966242
+        },
+        {
+          "key": 127,
+          "wire": "A104307.000 01CC3 1ED00 0163FF00FF03013B070304067F\r",
+          "time": 85552.201187929
+        },
+        {
+          "key": 209,
+          "wire": "A104308.000 01CC3 1ED00 0163FF00FF03013B07030406D1\r",
+          "time": 85553.305777159
+        },
+        {
+          "key": 80,
+          "wire": "A104310.000 01CC3 1ED00 0163FF00FF03013B0703040650\r",
+          "time": 85555.465410315
+        },
+        {
+          "key": 81,
+          "wire": "A104313.000 01CC3 1ED00 0163FF00FF03013B0703040651\r",
+          "time": 85557.623568875
+        },
+        {
+          "key": 0,
+          "wire": "A104318.000 01CC3 1ED00 0163FF00FF03013B0703040600\r",
+          "time": 85562.600099598
+        }
+      ],
+      "transport_failures": []
+    }
+  },
+  "review": "1280x800 actual AIS selection uses existing target frame and centers real coastline. Fixture marks overlap at preserved 100 NM scale; no independent CPA/TCPA or zoom model. Native review remains mandatory.",
+  "hashes": {
+    "beta-advice-contract-tests2.log": "10460d65f1363147b477b191f0abf1e35fa6cd81d4bc8c7aae6c35da75eee6a7",
+    "beta-advice-integrated-tests2.log": "c19e823a55c70f077314c2a1a57fc75c24175bbd04ce985212f91aacf4587f79",
+    "beta-advice-objects3.log": "1c979baf9d046d13b3a8c3359e85c0afa65cbfd0005719758049b48bc2d7e807",
+    "beta-advice-preview.log": "2d7d04cfde66a6698b9e68a5ff9480bfc18d8940fd7ae42abd778c57ed4f06ce",
+    "beta-advice-pilot.log": "c958dc3c7e2aa0702a2ddd7874fd2608a6c3be779ca125eebde19ff0ba90df8b",
+    "objects-ais-selected-chart.png": "a0d1ccc4bdc3089d18e51d1d2e4222456aa40a4d5dec30ace06c9e874a6f867d"
+  },
+  "limitations": [
+    "ENC corridor provider unavailable with inspected viewport-dependent APIs",
+    "Radar unavailable without a real provider",
+    "No physical pilot acceptance or autonomous steering"
+  ]
+}

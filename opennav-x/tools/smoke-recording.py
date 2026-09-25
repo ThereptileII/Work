@@ -73,10 +73,10 @@ def file_dialog(title,path,accept):
         ui.SetCursorPos((rect.left+rect.right)//2,(rect.top+rect.bottom)//2)
         ui.MouseEvent(2,0,0,0,0);ui.MouseEvent(4,0,0,0,0)
         time.sleep(.1)
-        key=ui.declare(ui.user,'keybd_event',None,ctypes.c_ubyte,ctypes.c_ubyte,ui.W.DWORD,ctypes.c_size_t)
-        key(0x11,0,0,0);key(0x41,0,0,0);key(0x41,0,2,0);key(0x11,0,2,0)
-        time.sleep(.1) # Drain queued focus/selection events before WM_CHAR.
-        # WM_CHAR follows actual focus/selection and triggers normal EN_CHANGE.
+        # Synchronous EM_SETSEL avoids a queued Ctrl+A arriving halfway through
+        # the synchronous WM_CHAR stream and deleting the filename prefix.
+        # WM_CHAR still exercises the Common Item Dialog's EN_CHANGE/model path.
+        ui.SendMessageW(edit,0x00B1,0,-1)
         encoded=str(path).encode('utf-16-le')
         for i in range(0,len(encoded),2):
             ui.SendMessageW(edit,0x0102,int.from_bytes(encoded[i:i+2],'little'),0)

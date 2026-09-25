@@ -679,6 +679,12 @@ void ProductPanel::Build() {
         wxString::Format(
             "MMSI %d / OpenCPN calculations; advisory presentation", mmsi_));
     Action("Back to targets", [this] { ShowPage(ProductPage::Ais, mode_); });
+    Action("Select target on chart", [this] {
+      if (actions_.navigation.view_ais) {
+        const auto result = actions_.navigation.view_ais(mmsi_);
+        if (!result.ok) Result(result);
+      }
+    }, !state_.vessel.simulated && !state_.vessel.replayed);
     LiveText([id = mmsi_](const auto &s) {
       auto *t = Target(s, id);
       return t ? Name(t->name, std::to_string(id)) + " / " + W(t->status) +

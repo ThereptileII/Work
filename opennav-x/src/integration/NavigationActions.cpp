@@ -8,6 +8,7 @@
 #include "ocpn_frame.h"
 #include "routemanagerdialog.h"
 #include "viewport.h"
+#include "vessel/AisSelection.h"
 #include <cmath>
 #include <wx/log.h>
 extern RouteManagerDialog *pRouteManagerDialog;
@@ -30,8 +31,25 @@ MakeNavigationActions(MyFrame &frame,
     return r;
   };
   a.catalog = CopyNavigationCatalog;
-  a.ais = [position] { return CopyAisState(position(), vessel::Clock::now()); };
+  a.ais = [position](vessel::Time now) { return CopyAisState(position(), now); };
   a.anchor = std::move(anchor);
+  a.view_ais = [&frame, position](int mmsi) {
+    const auto now = vessel::Clock::now();
+    const auto copied = CopyAisState(position(), now);
+    vessel::AisSelection check;
+    if (!check.Select(mmsi, copied, now))
+      return application::CommandResult{false, "Target position unavailable, ambiguous or stale"};
+    for (const auto &t : copied.targets)
+      if (t.mmsi == mmsi) {
+        auto *canvas = frame.GetPrimaryCanvas();
+        if (!canvas) break;
+        if (!canvas->GetShowAIS()) frame.ToggleAISDisplay(canvas);
+        frame.JumpToPosition(canvas, *t.latitude_deg.value, *t.longitude_deg.value, canvas->GetVPScale());
+        frame.InvalidateAllGL(); frame.RefreshAllCanvas(false);
+        return application::CommandResult{true, "Selected existing OpenCPN AIS target"};
+      }
+    return application::CommandResult{false, "Chart canvas unavailable"};
+  };
   a.activate = [position, result](const auto &r) {
     return result(ActivateRoute(r, position()));
   };

@@ -18,6 +18,13 @@ bool Fresh(const vessel::Sample &s, vessel::Time now) {
   return q == vessel::Quality::Live || q == vessel::Quality::Aging ||
          q == vessel::Quality::Estimated;
 }
+bool PositionSupportsRoute(const vessel::Navigation &n, const vessel::RouteProgressSnapshot &r, vessel::Time now) {
+  const auto &lat=n.latitude_deg, &lon=n.longitude_deg;
+  return lat.validity==vessel::Validity::Measured && lon.validity==vessel::Validity::Measured &&
+      Fresh(lat,now) && Fresh(lon,now) && std::abs(*lat.value)<=90 && std::abs(*lon.value)<=180 &&
+      lat.source==lon.source && lat.source==r.position_source && lat.observed_at==lon.observed_at &&
+      r.position_observed_at && lat.observed_at>=*r.position_observed_at;
+}
 bool Course(std::optional<double> n) {
   return n && std::isfinite(*n) && *n >= 0 && *n < 360;
 }
@@ -52,7 +59,7 @@ NavigationAdvice Advise(const vessel::VesselState &s,
   advice.calculated_at = now;
   advice.reason = "No coherent active route";
   const auto &r = s.navigation.route;
-  if (r && vessel::AssessRoute(*r, now).remaining_distance_nm &&
+  if (r && PositionSupportsRoute(s.navigation, *r, now) && vessel::AssessRoute(*r, now).remaining_distance_nm &&
       StepsValid(*r)) {
     advice.route_valid = true;
     advice.route_id = r->route_id;

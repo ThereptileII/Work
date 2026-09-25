@@ -265,7 +265,14 @@ void ObjectScenarioStep(const vessel::Navigation &selected) {
     } else if (step == 8) {
       ShowAISTargetQueryDialog(gFrame->GetPrimaryCanvas(), target->MMSI);
       report["phase"] = wxString("ais-card");
+    } else if (step == 9) {
+      // Explicit decoder-state fixture, not a second collision calculation.
+      // The no-dialog upstream state allows testing the advisory presentation
+      // without acknowledging or suppressing a real device alarm.
+      target->n_alert_state = AIS_ALERT_NO_DIALOG_SET;
+      report["phase"] = wxString("ais-advice");
     } else if (step == 11) {
+      target->n_alert_state = AIS_NO_ALERT;
       Check(retained_route.points.front().id != RouteCopy().points.front().id,
             "Retained pre-reversal route remains independent");
       report["result"] = wxString("passed");

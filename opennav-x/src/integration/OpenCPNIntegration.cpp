@@ -421,8 +421,7 @@ void Attach(MyFrame& frame, wxAuiManager& manager, wxFileConfig& config) {
     }
     return result;
   };
-  actions.pilot_tick = [](bool simulated) {
-    const auto now = vessel::Clock::now();
+  actions.pilot_tick = [](bool simulated, vessel::Time now) {
     if (pilots->was_demo != simulated) {
       pilots->Select(pilots->was_demo).Enable(false, now);
       pilots->was_demo = simulated;
@@ -515,6 +514,13 @@ void Attach(MyFrame& frame, wxAuiManager& manager, wxFileConfig& config) {
     auto runtime =
         integration::ReadRuntimeDiagnostics(*frame.GetPrimaryCanvas());
     if (shell) {
+      runtime["smartnav"]["route_valid"] = shell->Advice().route_valid;
+      runtime["smartnav"]["reason"] = wxString::FromUTF8(shell->Advice().reason);
+      runtime["smartnav"]["event_count"] = static_cast<int>(shell->Advice().events.size());
+      int ais_events=0;
+      for(const auto &event:shell->Advice().events) if(event.kind==smartnav::EventKind::AisEncounter) ++ais_events;
+      runtime["smartnav"]["ais_event_count"] = ais_events;
+      runtime["ais_selected_mmsi"] = shell->SelectedAis();
       runtime["alerts"] = wxJSONValue(wxJSONTYPE_ARRAY);
       for (const auto &a : shell->Alerts()) {
         wxJSONValue alert;
@@ -636,6 +642,7 @@ void AfterAnchorWatch(){
   anchor_state=std::move(current);
 }
 bool ShowNavigationObjectCard(const std::string& id,bool route){if(!IsXNav()||!shell||!host)return false;host->CallAfter([id,route]{if(shell)shell->ShowObject(id,route);});return true;}
+bool IsAisSelected(int mmsi) { return IsXNav() && shell && mmsi > 0 && shell->SelectedAis() == mmsi; }
 bool ShowAisCard(int mmsi){if(!IsXNav()||!shell||!host)return false;host->CallAfter([mmsi]{if(shell)shell->ShowAis(mmsi);});return true;}
 
 RouteObservation BeforeRouteProgress() {

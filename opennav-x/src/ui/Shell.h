@@ -4,6 +4,7 @@
 #include "ui/PreviewPanel.h"
 #include "ui/ProductPanel.h"
 #include "vessel/DemoSource.h"
+#include "vessel/AisSelection.h"
 
 #include <wx/aui/aui.h>
 #include <wx/frame.h>
@@ -24,7 +25,7 @@ struct ShellActions {
   std::function<void()> zoom_in, zoom_out, follow, legacy;
   application::NavigationActions navigation;
   std::function<bool()> route_creating;
-  std::function<adapters::PilotView(bool)> pilot_tick;
+  std::function<adapters::PilotView(bool, vessel::Time)> pilot_tick;
   std::function<std::vector<adapters::PilotCommand>(bool)> pilot_log;
   std::function<void(bool, adapters::PilotAction, double)> pilot_command;
   std::function<void(bool, bool)> pilot_enable;
@@ -63,6 +64,8 @@ public:
   const std::vector<application::Alert> &Alerts() const { return alerts_.Current(); }
   void UpdateState(const vessel::VesselState &state);
   void ShowAis(int mmsi);
+  const smartnav::NavigationAdvice &Advice() const { return field_snapshot_.advice; }
+  int SelectedAis() const { return ais_selection_.Selected(vessel::Clock::now()); }
   void ShowObject(const std::string &id, bool route);
 
 private:
@@ -86,6 +89,8 @@ private:
   void StartDemo();
   void SelectDemo(vessel::DemoScenario scenario);
   wxString InputSummary() const;
+  vessel::AisSelection ais_selection_;
+  vessel::AisState ais_state_;
   application::AlertCenter alerts_;
   wxPanel *alert_pane_ = nullptr;
   wxStaticText *alert_label_ = nullptr;

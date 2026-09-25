@@ -64,3 +64,19 @@ copies, stale/invalid/missing data, conflicting revisions and totals, energy
 provenance, AIS alarms/past/lost state, corridor geometry/draft, unknown datum,
 unavailable coverage and the no-proof-of-safety invariant. UI, live AIS bridge
 and chart-provider acceptance are separate integration gates.
+
+## Beta operational hardening
+
+Route advice additionally requires a currently valid measured position from the
+selected source used by the route observation. Coordinates must be coherent and
+respect their individual source freshness thresholds; a newer coherent fix may
+accompany still-fresh route progress without changing its distance calculation.
+Immediate position loss, source mismatch and stricter source expiry withhold
+route advice. Heading is not substituted for missing COG. Stopped/slow motion,
+uncertain course and skipped/changed route publications suppress the dependent
+turn/timing output. `smartnav_operational_failures` exercises these cases.
+
+The corridor also rejects replay, stricter position expiry and provider failure;
+oversized returned object sets are bounded/partial. See the [inspected Beta
+chart/radar limitations](beta-chart-radar-boundaries.md). No live hazard detection
+or safe-route claim is implied by the tested provider contract.

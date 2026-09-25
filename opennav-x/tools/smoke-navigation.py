@@ -217,12 +217,33 @@ try:
                 current=result.get('phase','')
                 if current in ['route-card','waypoint-card','ais-card'] and current not in seen:
                     time.sleep(.6);capture(current);seen.add(current)
+                if current=='ais-advice' and not report.get('live_ais_advice'):
+                    sample=read_json_snapshot(profile/'opennav-diagnostics.json')
+                    if sample['runtime'].get('smartnav',{}).get('ais_event_count',0)>0:
+                        report['live_ais_advice']='Copied actual AIS alarm reaches shell SmartNav at a coherent observation epoch'
                 if result['result']=='passed':
+                    assert report.get('live_ais_advice'),'No actual AIS advisory observed'
                     assert len(seen)==3,seen
                     report['object_contract']=result;break
             time.sleep(.2)
         else:raise RuntimeError('Object contract fixture timed out')
         assert not failures,failures
+        deadline=time.monotonic()+8
+        while time.monotonic()<deadline:
+            ready=read_json_snapshot(profile/'opennav-diagnostics.json')
+            if ready['ui_page']=='AIS target' and not ready['runtime'].get('alerts'):break
+            time.sleep(.15)
+        else:raise AssertionError('AIS fixture alarm did not resolve before card interaction')
+        if windows:ui.click_text(app.pid,'Select target on chart')
+        else:subprocess.run(['xdotool','mousemove','600','230','click','1'],env=env,check=True)
+        deadline=time.monotonic()+12
+        while time.monotonic()<deadline:
+            selected=read_json_snapshot(profile/'opennav-diagnostics.json')
+            if selected['ui_page']=='Navigation' and selected['runtime'].get('ais_selected_mmsi')==990000001:break
+            time.sleep(.2)
+        else:raise AssertionError(('AIS chart selection did not become current',selected))
+        capture('ais-selected-chart')
+        report['ais_selection']='Actual target card to existing chart target/frame; copied selection identity reported'
         if windows:
             ui.click_text(app.pid,'Menu');ui.click_text(app.pid,'Waypoints')
             ui.click_text(app.pid,'ALPHA TEST edited / mark');ui.click_text(app.pid,'Edit waypoint')

@@ -168,6 +168,14 @@ Shell::Shell(wxFrame &frame, wxAuiManager &manager, ShellActions actions,
   };
   product_actions.commissioning = actions_.commissioning;
   product_actions.navigation = actions_.navigation;
+  product_actions.navigation.view_ais = [this](int mmsi) {
+    if (state_.simulated || state_.replayed || !actions_.navigation.view_ais ||
+        !ais_selection_.Select(mmsi, ais_state_, vessel::Clock::now()))
+      return application::CommandResult{false, "A fresh live AIS target is required"};
+    const auto result = actions_.navigation.view_ais(mmsi);
+    if (result.ok) ShowNavigation(); else ais_selection_.Clear();
+    return result;
+  };
   product_actions.settings = actions_.settings;
   product_actions.theme = [this](LightMode mode) { SetLight(mode); };
   product_actions.save_settings = actions_.save_settings;
@@ -388,13 +396,13 @@ void Shell::Tick() {
     else if (simulation_)
       p.ais = vessel::DemoAis(state_);
     else if (actions_.navigation.ais)
-      p.ais = actions_.navigation.ais();
+      p.ais = actions_.navigation.ais(now);
     if (!simulation_ && !replay && actions_.navigation.anchor)
       p.anchor = actions_.navigation.anchor();
     else
       p.anchor.state = "Historical/DEMO data / real anchor controls disabled";
     if (actions_.pilot_tick)
-      p.pilot = actions_.pilot_tick(simulation_);
+      p.pilot = actions_.pilot_tick(simulation_, wall_now);
     if (actions_.pilot_log && !replay)
       p.pilot_log = actions_.pilot_log(simulation_);
     if (actions_.pilot_sources && !replay && !simulation_)
@@ -413,6 +421,9 @@ void Shell::Tick() {
       p.sources = actions_.source_health();
     if (actions_.radar && !replay)
       p.radar = actions_.radar();
+    ais_state_ = p.ais;
+    if (state_.simulated || state_.replayed) ais_selection_.Clear();
+    else ais_selection_.Observe(p.ais, now);
     p.advice = smartnav::Advise(state_, energy, p.ais, now);
     alerts_.Observe({state_, p.ais, p.anchor, energy, p.pilot, now});
     p.alerts = alerts_.Current();

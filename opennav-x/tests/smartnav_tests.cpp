@@ -121,6 +121,25 @@ void Turns() {
   s.navigation.route.reset();
   Check(!Advice(s).route_valid, "Inactive route withheld");
 }
+void Failures() {
+  auto s=Fixture();s.navigation.latitude_deg={};
+  Check(!Advice(s).route_valid,"Immediate GPS loss withholds cached route advice");
+  s=Fixture();s.navigation.latitude_deg.freshness={500ms,1500ms};
+  Check(!Advice(s,epoch+2s).route_valid,"Position source limit stricter than route default");
+  s=Fixture();s.navigation.longitude_deg.source="replacement input";
+  Check(!Advice(s).route_valid,"Mixed position source rejected");
+  s=Fixture();s.navigation.latitude_deg.observed_at+=1s;s.navigation.longitude_deg.observed_at+=1s;
+  Check(Advice(s,epoch+1s).route_valid,"Newer coherent selected fix can accompany still-fresh progress");
+  s=Fixture();s.navigation.sog_kn.value=0;
+  Check(Count(Advice(s),smartnav::EventKind::Turn)==0,"Stopped vessel no turn timing");
+  s=Fixture();s.navigation.cog_deg.validity=vessel::Validity::Uncertain;
+  Check(Count(Advice(s),smartnav::EventKind::Turn)==0,"Uncertain course no turn angle");
+  auto r=std::make_shared<vessel::RouteProgressSnapshot>(*s.navigation.route);
+  r->state=vessel::RouteState::ActivePointChanged;s.navigation.route=r;
+  Check(!Advice(s).route_valid,"Skipped/advancing waypoint no transient advice");
+  r->state=vessel::RouteState::RouteChanged;
+  Check(!Advice(s).route_valid,"Edited/reversed route no transient advice");
+}
 void EnergyAndAis() {
   auto s = Fixture();
   Check(Count(Advice(s), smartnav::EventKind::ArrivalSoc) == 1,
@@ -182,9 +201,10 @@ void EnergyAndAis() {
 }
 class ChartFixture final : public smartnav::IChartCorridor {
 public:
-  bool wrong_revision = false, missing_datum = false, empty = false;
+  bool wrong_revision = false, missing_datum = false, empty = false, fail = false, excessive = false;
   smartnav::CorridorEvidence
   Inspect(const smartnav::PathCorridor &path) const override {
+    if(fail)throw std::runtime_error("fixture provider failed");
     smartnav::CorridorEvidence e{path,
                                  smartnav::Coverage::Complete,
                                  "TEST chart intersection",
@@ -203,6 +223,7 @@ public:
            "chart datum",
            {},
            true}};
+    if(excessive)e.objects.resize(5000,e.objects.front());
     return e;
   }
 };
@@ -240,6 +261,15 @@ void Hazards() {
   s.simulated = true;
   Check(!smartnav::BuildCorridor(s, c, epoch),
         "Synthetic trip never queries live chart geometry");
+  s = Fixture();s.replayed=true;
+  Check(!smartnav::BuildCorridor(s,c,epoch),"Historical playback cannot query current charts");
+  s=Fixture();s.navigation.latitude_deg.freshness={500ms,1500ms};
+  Check(!smartnav::BuildCorridor(s,c,epoch+2s),"Strict position freshness applies to corridor");
+  f.wrong_revision=false;f.missing_datum=false;f.fail=true;
+  Check(smartnav::LookAhead(*p,c,f,epoch).coverage==smartnav::Coverage::Unavailable,"Provider failure unavailable");
+  f.fail=false;f.excessive=true;
+  const auto bounded=smartnav::LookAhead(*p,c,f,epoch);
+  Check(bounded.coverage==smartnav::Coverage::Partial && bounded.potential_hazards.size()<=4096,"Oversized chart evidence bounded and partial");
   s = Fixture();
   c.draft_m = std::numeric_limits<double>::quiet_NaN();
   Check(!smartnav::BuildCorridor(s, c, epoch), "Missing draft fails closed");
@@ -247,7 +277,9 @@ void Hazards() {
 int main(int argc, char **argv) {
   try {
     const std::string group = argc > 1 ? argv[1] : "";
-    if (group == "turns")
+    if (group == "failures")
+      Failures();
+    else if (group == "turns")
       Turns();
     else if (group == "events")
       EnergyAndAis();

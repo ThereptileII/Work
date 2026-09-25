@@ -14,6 +14,7 @@ RouteObservation BeforeRouteProgress();
 void AfterRouteProgress(const RouteObservation& before);
 void AfterAnchorWatch();
 bool ShowAisCard(int mmsi);
+bool IsAisSelected(int mmsi);
 bool ShowNavigationObjectCard(const std::string& id,bool route);
 // Application-thread acquisition; returned immutable values may be retained.
 vessel::RouteProgress CurrentRouteProgress();

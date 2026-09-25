@@ -43,8 +43,9 @@ struct AnchorState {
 // UI receives owned values and explicit human-command callbacks. The service
 // implementation remains inside the OpenCPN integration boundary.
 struct NavigationActions {
+  std::function<CommandResult(int)> view_ais;
   std::function<Catalog()> catalog;
-  std::function<vessel::AisState()> ais;
+  std::function<vessel::AisState(vessel::Time)> ais;
   std::function<AnchorState()> anchor;
   std::function<std::optional<Coordinate>()> chart_position;
   std::function<CommandResult(const Route &)> activate, reverse;

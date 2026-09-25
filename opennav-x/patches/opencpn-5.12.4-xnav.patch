@@ -566,3 +566,32 @@ index 74e79f678..262dc46dd 100644
    wxLogMessage(wxString::Format(_T("Closing NMEA NetworkDataStream %s"),
                                  GetNetPort().c_str()));
    m_stats_timer.Stop();
+diff --git i/gui/src/ais.cpp w/gui/src/ais.cpp
+index da348cd06..92b6a1230 100644
+--- i/gui/src/ais.cpp
++++ w/gui/src/ais.cpp
+@@ -24,6 +24,10 @@
+  ***************************************************************************
+  */
+
++#ifdef OPENNAV_X
++#include "integration/OpenCPNIntegration.h"
++#endif
++
+ #include <stdlib.h>
+ #include <math.h>
+ #include <time.h>
+@@ -1180,6 +1184,13 @@ static void AISDrawTarget(AisTargetData *td, ocpnDC &dc, ViewPort &vp,
+       TargetFrame(dc, wxPen(UBLCK, 2), TargetPoint.x, TargetPoint.y, 25);
+   }
+
++#ifdef OPENNAV_X
++  // OpenNav-owned selection reuses upstream symbol framing. No target data or
++  // AIS calculations are modified; Legacy retains its normal query selection.
++  if (opennav::IsAisSelected(td->MMSI))
++    TargetFrame(dc, wxPen(UBLCK, 2), TargetPoint.x, TargetPoint.y, 25);
++#endif
++
+   //       Render the COG line if the speed is greater than moored speed defined
+   //       by ais options dialog
+   if ((g_bShowCOG) && (target_sog > g_SOGminCOG_kts) && td->b_active) {

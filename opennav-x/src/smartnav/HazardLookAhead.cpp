@@ -38,7 +38,7 @@ UnavailableChartCorridor::Inspect(const PathCorridor &path) const {
 std::optional<PathCorridor> BuildCorridor(const vessel::VesselState &s,
                                           const HazardConfiguration &c,
                                           vessel::Time now) {
-  if (!ValidConfig(c) || s.simulated || !s.navigation.route)
+  if (!ValidConfig(c) || s.simulated || s.replayed || !s.navigation.route)
     return {};
   const auto &r = *s.navigation.route;
   if (!vessel::AssessRoute(r, now).remaining_distance_nm ||
@@ -46,7 +46,11 @@ std::optional<PathCorridor> BuildCorridor(const vessel::VesselState &s,
     return {};
   const auto &lat = s.navigation.latitude_deg;
   const auto &lon = s.navigation.longitude_deg;
-  if (!lat.value || !lon.value || lat.validity != vessel::Validity::Measured ||
+  const auto position_current = [now](const vessel::Sample &v) {
+    const auto a=vessel::Assess(v,now);
+    return a.value && (a.quality==vessel::Quality::Live || a.quality==vessel::Quality::Aging);
+  };
+  if (!position_current(lat) || !position_current(lon) || lat.validity != vessel::Validity::Measured ||
       lon.validity != vessel::Validity::Measured ||
       lat.observed_at != lon.observed_at ||
       lat.observed_at != r.position_observed_at || lat.source != lon.source ||
@@ -82,14 +86,19 @@ HazardAdvice LookAhead(const PathCorridor &p, const HazardConfiguration &c,
   for (const auto &point : p.path)
     if (!Point(point))
       return a;
-  const auto evidence = provider.Inspect(p);
+  CorridorEvidence evidence;
+  try { evidence=provider.Inspect(p); }
+  catch (...) { return a; } // Plugin/adapter failure is unavailable coverage.
   if (!SameQuery(p, evidence.query) || evidence.source.empty() ||
-      evidence.coverage == Coverage::Unavailable)
+      (evidence.coverage != Coverage::Partial && evidence.coverage != Coverage::Complete) || evidence.source.size() > 4096 || evidence.uncertainty.size() > 4096)
     return a;
-  a.coverage = evidence.coverage;
+  a.coverage = evidence.objects.size() > 4096 ? Coverage::Partial : evidence.coverage;
   a.source = evidence.source;
+  std::size_t inspected=0;
   for (const auto &object : evidence.objects) {
-    if (object.object_id.empty() || object.chart_source.empty() ||
+    if(++inspected>4096) break;
+    if (object.object_id.size()>4096 || object.description.size()>4096 || object.chart_source.size()>4096 || object.datum.size()>4096 ||
+        object.object_id.empty() || object.chart_source.empty() ||
         object.datum.empty() ||
         (object.minimum_charted_depth_m &&
          !std::isfinite(*object.minimum_charted_depth_m))) {

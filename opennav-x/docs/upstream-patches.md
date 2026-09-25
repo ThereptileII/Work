@@ -334,3 +334,19 @@ The subsequent boat-propulsion adapter adds no OpenCPN patch. It observes vendor
 decoders for all standard fields. Producer expiry changes are isolated in
 `hardware/leaf-bridge/`, applied to the separately hash-pinned boat firmware by
 `prepare-boat-firmware.py`; they never patch installed PC software or flash a board.
+
+## Beta AIS selection frame
+
+The next Beta change adds `gui/src/ais.cpp` as the twelfth production patch file.
+It guards one call to the existing `TargetFrame` rendering function with
+`OPENNAV_X` and a read-only `opennav::IsAisSelected(MMSI)` predicate. The existing
+Legacy query/alert highlighting remains unchanged. Selection retains one owned
+AIS snapshot and expires on target loss, deletion, ambiguity, age, out-of-order
+replacement or Demo/replay. No decoder state, CPA/TCPA, target geometry or
+COLREG interpretation changes. The plugin API offers overlays, not this existing
+AIS symbol-selection predicate; reusing upstream framing avoids a second symbol
+renderer. Merge risk is low and localized to the existing query-highlight block.
+
+Validation: `ais_selection_lifetime`, existing integrated AIS contracts and the
+actual AIS card → chart workflow with native/Linux captures. Replacement native
+acceptance is mandatory before this hook is release-qualified.
