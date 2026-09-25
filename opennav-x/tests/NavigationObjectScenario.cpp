@@ -21,6 +21,7 @@
 #include <wx/filefn.h>
 #include <wx/jsonwriter.h>
 #include <wx/thread.h>
+#include <wx/timer.h>
 extern bool g_bDeferredInitDone;
 extern MyFrame *gFrame;
 namespace opennav::test {
@@ -37,6 +38,22 @@ Route *test_route = nullptr;
 application::Waypoint retained_mark;
 application::Route retained_route;
 std::shared_ptr<AisTargetData> target;
+bool advisory_fixture = false;
+// Explicit decoder-state injection in the isolated no-output fixture. Keep
+// its synthetic reports current while Python exercises the actual target card.
+// The ordinary AIS timer may recalculate CPA/alarms; refresh this test state as
+// a continuing simulated feed, rather than depending on timer phase ordering.
+class AisFixtureFeed final : public wxTimer {
+  void Notify() override {
+    if (!target || !g_pAIS) { Stop(); return; }
+    target->PositionReportTicks = std::time(nullptr);
+    if (advisory_fixture) {
+      target->n_alert_state = AIS_ALERT_NO_DIALOG_SET;
+      target->CPA = .42; target->TCPA = 7.5; target->bCPA_Valid = true;
+    }
+  }
+};
+std::unique_ptr<AisFixtureFeed> ais_feed;
 void Check(bool condition, const char *message) {
   if (!condition)
     throw std::runtime_error(message);
@@ -87,6 +104,12 @@ void AddRoute() {
         "Insert actual test route");
 }
 } // namespace
+void StopObjectScenario() {
+  ais_feed.reset();
+  target.reset();
+  advisory_fixture = false;
+  finished = true;
+}
 void EnableObjectScenario(const std::string &profile) {
   Check(!profile.empty() && wxFileExists(wxString::FromUTF8(profile) +
                                          "/OPENNAV_OBJECT_FIXTURE"),
@@ -235,6 +258,10 @@ void ObjectScenarioStep(const vessel::Navigation &selected) {
                 it->cpa_nm.value == .42 && it->tcpa_minutes.value == 7.5,
             "AIS copies upstream results without calculation");
       auto retained = *it;
+      for (int read = 0; read < 64; ++read)
+        Check(CopyAisState(selected, Clock::now()).targets.front().latitude_deg.observed_at ==
+                  retained.latitude_deg.observed_at,
+              "Repeated reads preserve exact AIS position observation epoch");
       target->b_lost = true;
       auto lost = CopyAisState(selected, Clock::now());
       Check(!lost.targets.front().cpa_nm.value,
@@ -253,6 +280,8 @@ void ObjectScenarioStep(const vessel::Navigation &selected) {
       g_pAIS->GetTargetList().erase(target->MMSI);
       Check(retained.cpa_nm.value == .42, "AIS copy survives target removal");
       g_pAIS->GetTargetList()[target->MMSI] = target;
+      ais_feed = std::make_unique<AisFixtureFeed>();
+      ais_feed->Start(100);
       Record("AIS upstream CPA/TCPA, unavailable sentinel, loss, freshness and "
              "lifetime");
       gFrame->GetPrimaryCanvas()->ShowRoutePropertiesDialog("Test route",
@@ -270,8 +299,14 @@ void ObjectScenarioStep(const vessel::Navigation &selected) {
       // The no-dialog upstream state allows testing the advisory presentation
       // without acknowledging or suppressing a real device alarm.
       target->n_alert_state = AIS_ALERT_NO_DIALOG_SET;
+      advisory_fixture = true;
       report["phase"] = wxString("ais-advice");
+    } else if (step == 10 && !wxFileExists(wxString::FromUTF8(directory)+"/ais-advice-observed")) {
+      Check(++waited < 15, "Actual shell AIS advice observation timed out");
+      Write();
+      return;
     } else if (step == 11) {
+      advisory_fixture = false;
       target->n_alert_state = AIS_NO_ALERT;
       Check(retained_route.points.front().id != RouteCopy().points.front().id,
             "Retained pre-reversal route remains independent");

@@ -37,6 +37,27 @@ ambiguous, edited or transitional state never becomes a valid zero arrival.
 
 ## Beta development
 
+Release hardening adds bounded pre-parser Signal K validation, malformed marine
+input cases, control-byte rejection in source identities, seven additional
+installer failure/recovery checks and an actual elapsed-time resource harness.
+The two-minute Linux harness checkout passed; it is not the required three-hour
+release result. Development CI selects 120 seconds, while named Beta publication
+requires at least 10,800 seconds on each platform. [Robustness contract](beta-robustness.md).
+
+Display revision `84f7122` / run `36117089450` is **not accepted**: compilation,
+portable tests, recording and pilot checks passed, but AIS runtime gates exposed
+selection being cleared by sub-millisecond clock-conversion jitter and an
+advisory fixture racing the upstream alarm timer. Stable per-report observation
+epochs and a continuing isolated fixture repair those issues; the Linux actual
+object/card/chart gate now passes. Native replacement is mandatory. The Linux
+System popup test also now supplies the focus and resize settling normally
+provided by a window manager; explicit Escape handling releases its pointer grab.
+The full local preview passes with the popup visible. No failed run is promoted.
+The replacement local gates pass **60 portable suites / 103 integrated cases**,
+actual AIS selection/advice and real Signal K input/failure/recovery. Signal K
+now reuses OpenCPN's RapidJSON dependency after the loopback gate found wxJSON
+rejecting valid escaped Unicode source labels. [Local evidence](evidence/beta-hardening-local.json).
+
 Night/touch hardening now uses shared gesture/button scrolling without native
 scrollbars, preserves full instrument-card height and keyboard focus, reserves
 space for global alerts around sheets, and exposes Pilot plus a fixed manual

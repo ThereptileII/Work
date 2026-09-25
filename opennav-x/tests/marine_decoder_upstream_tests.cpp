@@ -1,6 +1,7 @@
 #include "N2kMessages.h"
 #include "application/Settings.h"
 #include "integration/MarineDecoder.h"
+#include "integration/ExternalJson.h"
 #include "integration/N2kSourceIdentity.h"
 #include <cmath>
 #include <gtest/gtest.h>
@@ -562,4 +563,71 @@ TEST(OpenNavMarine, BoundBoatFieldsUseActualPinnedMarineDecoder) {
   EXPECT_EQ(s.battery.soc_percent.validity,Validity::Measured);
   bridge.Assess(s.battery.soc_percent,Quantity::BatterySoc,epoch+501ms);
   EXPECT_EQ(s.battery.soc_percent.validity,Validity::Uncertain);
+}
+
+TEST(OpenNavMarine, NmeaRejectsUntrustedBytesBeforeWxParsing) {
+  for (int c = 0; c < 256; ++c) {
+    if (c >= 0x20 && c <= 0x7e) continue;
+    const auto body = std::string("IIDPT,8") + static_cast<char>(c) + ".4,-2";
+    EXPECT_TRUE(Decode0183Instruments(Sentence(body), "test", epoch).empty()) << c;
+  }
+  EXPECT_TRUE(Decode0183Instruments(Sentence("IIDPT," + std::string(300, '9') + ",0"), "test", epoch).empty());
+  for (const auto *value : {"1e309", "-1e309", "nan", "inf", "-inf"})
+    EXPECT_FALSE(State(Decode0183Instruments(Sentence(std::string("IIDPT,") + value + ",0"), "test", epoch)).environment.depth_below_transducer_m.value);
+  EXPECT_EQ(State(Decode0183Instruments(Sentence("IIDPT,0,0"), "test", epoch)).environment.depth_below_transducer_m.value, 0);
+}
+
+TEST(OpenNavMarine, N2kRejectsInvalidPriorityAndBoundedRandomEnvelopes) {
+  tN2kMsg m;
+  SetN2kPGN127508(m, 0, 48, -2);
+  for (unsigned p = 8; p < 256; ++p) {
+    auto wire = Envelope(m); wire[2] = static_cast<unsigned char>(p);
+    EXPECT_TRUE(DecodeN2kInstruments(m.PGN, wire, "test", epoch).empty());
+  }
+  std::uint32_t random = 0x584e4156;
+  for (std::size_t length = 0; length < 300; ++length) {
+    std::vector<unsigned char> wire(length);
+    for (auto &b : wire) { random = random * 1664525u + 1013904223u; b = static_cast<unsigned char>(random >> 24); }
+    for (auto pgn : InstrumentPgns()) {
+      const auto observations = DecodeN2kInstruments(pgn, wire, "test", epoch);
+      EXPECT_LE(observations.size(), 4u);
+      for (const auto &o : observations) {
+        if (o.sample.value) { EXPECT_TRUE(std::isfinite(*o.sample.value)); }
+      }
+    }
+  }
+}
+
+TEST(OpenNavMarine, SignalKRejectsDeepOrMalformedExternalText) {
+  const auto wall = std::chrono::system_clock::time_point{1790251200s};
+  const auto decode = [&](const std::string &s) { return DecodeSignalKInstruments(s, "vessels.test", "test", epoch, wall); };
+  for (int depth : {17, 256, 60000})
+    EXPECT_TRUE(decode(std::string(depth, '[') + "0" + std::string(depth, ']')).empty());
+  for (const auto &bad : {std::string("{\"bad\":\"\xff\"}"),
+                          std::string("{\"bad\":\"\xc0\x80\"}"),
+                          std::string("{\"bad\":\"\xed\xa0\x80\"}"),
+                          std::string("{\"bad\":\"\xf4\x90\x80\x80\"}"),
+                          std::string("{\"bad\":\"\0\"}", 11),
+                          std::string("{[}]"), std::string(262145, ' ')})
+    EXPECT_TRUE(decode(bad).empty());
+  auto observations = Sk("{\"path\":\"environment.depth.belowTransducer\",\"value\":8.4}");
+  ASSERT_EQ(observations.size(), 1u);
+  EXPECT_EQ(observations.front().sample.value, 8.4);
+  // Resource guards do not reject legitimate UTF-8 or braces inside strings.
+  EXPECT_TRUE(BoundedJsonText("{\"label\":\"\xc3\x85land \xe6\xb5\xb7 \xf0\x9f\x9a\xa4\",\"escaped\":\"\\\"{[}]\\\"\"}"));
+  EXPECT_TRUE(BoundedJsonText(std::string(16, '[') + "0" + std::string(16, ']')));
+  EXPECT_FALSE(BoundedJsonText(R"({"unterminated":"value})"));
+}
+
+TEST(OpenNavMarine, SignalKUnicodeSourceAndDriverFraming) {
+  const auto wall = std::chrono::system_clock::time_point{1790251200s};
+  auto json = std::string(R"({"context":"vessels.test","updates":[{"timestamp":"2026-09-24T12:00:00.000Z","$source":"test.\u00c5land","values":[{"path":"environment.depth.belowTransducer","value":8.4}]}]})") + "\r\n";
+  const auto escaped = DecodeSignalKInstruments(json, "vessels.test", "loopback", epoch, wall);
+  ASSERT_EQ(escaped.size(), 1u);
+  EXPECT_EQ(escaped.front().sample.value, 8.4);
+  EXPECT_NE(escaped.front().source_id.find("test.\xc3\x85land"), std::string::npos);
+  json.replace(json.find("\\u00c5"), 6, "\xc3\x85");
+  const auto raw = DecodeSignalKInstruments(json, "vessels.test", "loopback", epoch, wall);
+  ASSERT_EQ(raw.size(), 1u);
+  EXPECT_EQ(raw.front().source_id, escaped.front().source_id);
 }

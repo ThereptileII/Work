@@ -35,3 +35,14 @@ Pilot polling uses the same wall-clock tick epoch as its displayed readings,
 while replay retains its separate historical clock. This avoids briefly marking
 new simulator feedback as future data. Neither change renews a sensor timestamp
 on read or alters real feedback acknowledgement rules.
+
+Run `36117089450` exposed another clock-boundary defect: converting an unchanged
+wall-clock `PositionReportTicks` on every copy introduced tiny monotonic-time
+regressions, clearing retained chart selection. The integration now keeps one
+owned converted epoch per MMSI/report timestamp, bounded by the copied target
+set; deleted targets lose that cache. Only a new upstream report changes the
+observation, preserving OpenCPN's one-second report resolution. Sixty-four
+repeated real bridge reads must return the exact same position epoch. The
+isolated AIS fixture now supplies continuing synthetic report state and waits
+for the actual shell advisory observation, avoiding a race with OpenCPN's
+separate CPA/alarm timer. No production AIS calculation or timer is altered.

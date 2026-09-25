@@ -1,16 +1,25 @@
 #include "integration/MarineDecoder.h"
+#include "integration/ExternalJson.h"
 #include <algorithm>
 #include <cmath>
 #include <ctime>
 #include <iomanip>
 #include <map>
 #include <sstream>
-#include <wx/jsonreader.h>
-#include <wx/jsonval.h>
+#include "rapidjson/document.h"
 
 namespace opennav::integration {
 using vessel::Quantity;
 namespace {
+const rapidjson::Value &Member(const rapidjson::Value &object, const char *name) {
+  static const rapidjson::Value missing;
+  if (!object.IsObject()) return missing;
+  const auto it = object.FindMember(name);
+  return it == object.MemberEnd() ? missing : it->value;
+}
+std::string Text(const rapidjson::Value &value) {
+  return value.IsString() ? std::string(value.GetString(), value.GetStringLength()) : std::string{};
+}
 struct Mapping {
   Quantity quantity;
   double scale = 1, offset = 0;
@@ -153,53 +162,46 @@ DecodeSignalKInstruments(const std::string &json, const std::string &self,
                          std::chrono::system_clock::time_point wall,
                          const std::vector<SignalKBinding> &bindings) {
   std::vector<vessel::SensorObservation> result;
-  if (json.size() > 262144 || self.empty() || self == "vessels.self" ||
+  if (!BoundedJsonText(json) || self.empty() || self == "vessels.self" ||
       iface.empty() || iface.size() > 200 || bindings.size() > 64)
     return result;
-  wxJSONValue root;
-  wxJSONReader reader;
-  if (reader.Parse(wxString::FromUTF8(json), &root) != 0 || !root.IsObject() ||
-      !root["context"].IsString() ||
-      root["context"].AsString().ToStdString(wxConvUTF8) != self ||
-      !root["updates"].IsArray())
+  rapidjson::Document root;
+  root.Parse<rapidjson::kParseValidateEncodingFlag>(json.data(), json.size());
+  if (root.HasParseError() || !root.IsObject() ||
+      Text(Member(root, "context")) != self || !Member(root, "updates").IsArray())
     return result;
-  auto &updates = root["updates"];
+  const auto &updates = Member(root, "updates");
   if (updates.Size() > 512)
     return result;
-  for (int i = 0; i < updates.Size(); ++i) {
-    auto &update = updates[i];
-    if (!update.IsObject() || !update["timestamp"].IsString() ||
-        !update["values"].IsArray())
+  for (const auto &update : updates.GetArray()) {
+    if (!update.IsObject() || !Member(update, "timestamp").IsString() ||
+        !Member(update, "values").IsArray())
       continue;
     const auto time =
-        Utc(update["timestamp"].AsString().ToStdString(wxConvUTF8));
+        Utc(Text(Member(update, "timestamp")));
     if (!time || *time > wall || wall - *time > std::chrono::hours(24))
       continue;
     const auto at =
         received -
         std::chrono::duration_cast<vessel::Clock::duration>(wall - *time);
-    std::string source;
-    if (update["$source"].IsString())
-      source = update["$source"].AsString().ToStdString(wxConvUTF8);
-    else if (update["source"].IsObject() &&
-             update["source"]["label"].IsString()) {
-      source = update["source"]["label"].AsString().ToStdString(wxConvUTF8);
-      if (update["source"]["src"].IsString())
-        source +=
-            "/" + update["source"]["src"].AsString().ToStdString(wxConvUTF8);
-      else if (update["source"]["src"].IsInt())
-        source += "/" + std::to_string(update["source"]["src"].AsInt());
+    std::string source = Text(Member(update, "$source"));
+    const auto &origin = Member(update, "source");
+    if (source.empty() && origin.IsObject()) {
+      source = Text(Member(origin, "label"));
+      const auto &instance = Member(origin, "src");
+      if (!source.empty() && instance.IsString()) source += "/" + Text(instance);
+      else if (!source.empty() && instance.IsInt()) source += "/" + std::to_string(instance.GetInt());
     }
     if (source.empty() || source.size() > 120)
       continue;
-    auto &values = update["values"];
+    const auto &values = Member(update, "values");
     if (values.Size() > 256)
       continue;
-    for (int j = 0; j < values.Size() && result.size() < 1024; ++j) {
+    for (rapidjson::SizeType j = 0; j < values.Size() && result.size() < 1024; ++j) {
       auto &item = values[j];
-      if (!item.IsObject() || !item["path"].IsString())
+      if (!item.IsObject() || !Member(item, "path").IsString())
         continue;
-      const auto path = item["path"].AsString().ToStdString(wxConvUTF8);
+      const auto path = Text(Member(item, "path"));
       auto map = Map(path, bindings);
       const bool attitude = path == "navigation.attitude";
       if (attitude)
@@ -211,13 +213,10 @@ DecodeSignalKInstruments(const std::string &json, const std::string &self,
       vessel::Sample sample{{}, provenance, at, vessel::Validity::Invalid};
       sample.device_id =
           identity + "/" + (map->device.empty() ? "vessel" : map->device);
-      const auto &value = attitude ? item["value"]["roll"] : item["value"];
+      const auto &value = attitude ? Member(Member(item, "value"), "roll") : Member(item, "value");
       // JSON null, booleans and numeric-looking strings never become zero.
-      if (value.IsDouble() || value.IsInt() || value.IsUInt()) {
-        const double raw = value.IsDouble() ? value.AsDouble()
-                           : value.IsInt()
-                               ? static_cast<double>(value.AsInt())
-                               : static_cast<double>(value.AsUInt());
+      if (value.IsNumber()) {
+        const double raw = value.GetDouble();
         double number = raw * map->scale + map->offset;
         if (std::isfinite(number)) {
           sample.value = number;

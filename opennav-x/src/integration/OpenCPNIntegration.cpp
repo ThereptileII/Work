@@ -718,6 +718,9 @@ bool PrepareClose(wxFileConfig& config) {
   if (recovery && IsXNav())
     recovery->CleanClose();
   // Remove OpenNav AUI panes before upstream persists its stock perspective.
+#ifdef OPENNAV_ROUTE_TESTS
+  test::StopObjectScenario();
+#endif
   navigation.reset();
   marine.reset();
   selected_navigation = {};

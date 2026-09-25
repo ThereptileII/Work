@@ -6,12 +6,61 @@
   "runtime": {
     "preview-linux-results.json": {
       "authority": "Linux development",
-      "checks": [],
+      "checks": [
+        "Persistent page controls scroll diagnostics and return to top without native scrollbars",
+        "Alpha menu and eight product page interactions captured",
+        "Energy, source, vessel-safety and radar settings pages captured",
+        "Moving position, SOC, route distance and advisory destination SOC change",
+        "Global alerts persist across pages/acknowledgement, recover, and recur as new episodes",
+        "All eight GUI-selected scenarios pass validity/shortfall assertions",
+        "XNav / Legacy / Safe clean lifecycle and shared navigation/config persistence passed; mode switch stops Demo",
+        "Real bundled coastline remains rendered after Legacy return and Safe restart"
+      ],
       "screenshots": [
         "beta-system-popup-linux.png",
         "preview-01-navigation-day-linux.png",
         "preview-11-startup-xnav-linux.png",
-        "preview-02-navigation-night-linux.png"
+        "preview-02-navigation-night-linux.png",
+        "preview-03-route-linux.png",
+        "preview-04-energy-linux.png",
+        "preview-05-diagnostics-linux.png",
+        "alpha-instruments-linux.png",
+        "beta-night-instruments-linux.png",
+        "alpha-ais-linux.png",
+        "beta-night-ais-linux.png",
+        "alpha-smartnav-linux.png",
+        "beta-night-smartnav-linux.png",
+        "alpha-autopilot-linux.png",
+        "beta-night-autopilot-linux.png",
+        "alpha-anchor-linux.png",
+        "beta-night-anchor-linux.png",
+        "alpha-settings-linux.png",
+        "beta-night-settings-linux.png",
+        "alpha-routes-linux.png",
+        "beta-night-routes-linux.png",
+        "alpha-waypoints-linux.png",
+        "beta-night-waypoints-linux.png",
+        "alpha-energy-settings-linux.png",
+        "beta-night-energy-settings-linux.png",
+        "alpha-sources-linux.png",
+        "beta-night-sources-linux.png",
+        "alpha-vessel-settings-linux.png",
+        "beta-night-vessel-settings-linux.png",
+        "alpha-radar-status-linux.png",
+        "beta-night-radar-status-linux.png",
+        "alpha-display-linux.png",
+        "beta-night-display-linux.png",
+        "preview-06-stale-linux.png",
+        "beta-alerts-active-linux.png",
+        "beta-alerts-acknowledged-linux.png",
+        "preview-06b-unavailable-linux.png",
+        "preview-06c-shortfall-linux.png",
+        "preview-07-legacy-linux.png",
+        "preview-09-returned-xnav-linux.png",
+        "preview-08-safe-linux.png",
+        "preview-12-safe-to-xnav-linux.png",
+        "preview-13-legacy-linux.png",
+        "preview-14-legacy-to-xnav-linux.png"
       ],
       "higher_dpi": "Not exercised by this hosted desktop; manual validation remains open",
       "chart_rendering": [
@@ -22,23 +71,132 @@
             "aaaf50": 0.39760371959942775
           },
           "coastline_visible": true
+        },
+        {
+          "phase": "Night world-chart land/water palette",
+          "reference_color_fractions": {
+            "2a303c": 0.5831545064377682,
+            "2a2b14": 0.3979613733905579
+          },
+          "coastline_visible": true
+        },
+        {
+          "phase": "XNav to Legacy",
+          "reference_color_fractions": {
+            "aac3f0": 0.5638054363376251,
+            "aaaf50": 0.41587982832618026
+          },
+          "coastline_visible": true
+        },
+        {
+          "phase": "XNav to Legacy to XNav",
+          "reference_color_fractions": {
+            "aac3f0": 0.6076180257510729,
+            "aaaf50": 0.3726752503576538
+          },
+          "coastline_visible": true
+        },
+        {
+          "phase": "XNav to Safe",
+          "reference_color_fractions": {
+            "aac3f0": 0.5638054363376251,
+            "aaaf50": 0.41587982832618026
+          },
+          "coastline_visible": true
+        },
+        {
+          "phase": "Safe to XNav",
+          "reference_color_fractions": {
+            "aac3f0": 0.6076180257510729,
+            "aaaf50": 0.3726752503576538
+          },
+          "coastline_visible": true
+        },
+        {
+          "phase": "Direct Legacy startup",
+          "reference_color_fractions": {
+            "aac3f0": 0.5638054363376251,
+            "aaaf50": 0.41587982832618026
+          },
+          "coastline_visible": true
+        },
+        {
+          "phase": "Direct Legacy to XNav",
+          "reference_color_fractions": {
+            "aac3f0": 0.6076180257510729,
+            "aaaf50": 0.3726752503576538
+          },
+          "coastline_visible": true
         }
       ],
-      "failure_process_exit": null,
-      "failure_windows": [
+      "night_surfaces": [
         {
-          "id": "927",
-          "title": ""
+          "phase": "Vessel instruments",
+          "bright_fraction": 0.0,
+          "scope": "Primary client area; OS caption/file picker excluded"
         },
         {
-          "id": "2097202",
-          "title": "OpenNav X / OpenCPN"
+          "phase": "AIS targets",
+          "bright_fraction": 0.0,
+          "scope": "Primary client area; OS caption/file picker excluded"
         },
         {
-          "id": "2097203",
-          "title": ""
+          "phase": "SmartNav",
+          "bright_fraction": 0.0,
+          "scope": "Primary client area; OS caption/file picker excluded"
+        },
+        {
+          "phase": "Manual autopilot",
+          "bright_fraction": 0.0,
+          "scope": "Primary client area; OS caption/file picker excluded"
+        },
+        {
+          "phase": "Anchor watch",
+          "bright_fraction": 0.0,
+          "scope": "Primary client area; OS caption/file picker excluded"
+        },
+        {
+          "phase": "Settings",
+          "bright_fraction": 0.0,
+          "scope": "Primary client area; OS caption/file picker excluded"
+        },
+        {
+          "phase": "Routes",
+          "bright_fraction": 0.0,
+          "scope": "Primary client area; OS caption/file picker excluded"
+        },
+        {
+          "phase": "Waypoints",
+          "bright_fraction": 0.0,
+          "scope": "Primary client area; OS caption/file picker excluded"
+        },
+        {
+          "phase": "Energy configuration",
+          "bright_fraction": 0.0,
+          "scope": "Primary client area; OS caption/file picker excluded"
+        },
+        {
+          "phase": "Data Sources",
+          "bright_fraction": 0.0,
+          "scope": "Primary client area; OS caption/file picker excluded"
+        },
+        {
+          "phase": "Vessel safety settings",
+          "bright_fraction": 0.0,
+          "scope": "Primary client area; OS caption/file picker excluded"
+        },
+        {
+          "phase": "Radar status",
+          "bright_fraction": 0.0,
+          "scope": "Primary client area; OS caption/file picker excluded"
+        },
+        {
+          "phase": "Display",
+          "bright_fraction": 0.0,
+          "scope": "Primary client area; OS caption/file picker excluded"
         }
-      ]
+      ],
+      "result": "passed; screenshot review required"
     },
     "recording-results.json": {
       "authority": "Linux development",
@@ -179,5 +337,8 @@
     "Earlier top-of-page disabled focus broke Linux accelerators; corrected and actual regression passed",
     "No physical touchscreen or native GPU acceptance",
     "Exact compact-System candidate GUI rerun and native run remain required"
-  ]
+  ],
+  "note": "Earlier collected runtime JSON contained a popup-test failure. The replacement below is the completed 44-capture local run; native acceptance remains pending.",
+  "replacement_log": "beta-touch-popup-focus.log",
+  "replacement_log_sha256": "9cb33dced1fd2e6053f3bcfabadc93b9bdfb185993abb42d8421ca634cf3142d"
 }

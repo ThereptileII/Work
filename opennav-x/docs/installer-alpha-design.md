@@ -54,3 +54,10 @@ uninstall, preserved fixtures and custom harmonic sources. See
 [qualification evidence](evidence/alpha-installer-7bc36e4-qualification.json).
 The manifest-bearing release must additionally pass its own same-commit gates
 and download verification.
+
+Beta retains these identities for upgrade continuity and expands the native
+matrix with real locks, NTFS permission denial, corrupt payload, partial
+extraction and a missing required DLL. Atomic state failures clean their own
+temporary record while preserving the last durable state/journal. Unpublished
+stages remain identifiable diagnostic residue, never an active installation.
+[Failure matrix and endurance contract](beta-robustness.md).

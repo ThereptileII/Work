@@ -71,12 +71,18 @@ function AtomicJson([string]$Path, $Value) {
   $null = PlainPath $Path
   $temp = $Path + '.' + [guid]::NewGuid().ToString('N') + '.tmp'
   $bytes = $Utf8.GetBytes(($Value | ConvertTo-Json -Depth 16))
-  $file = New-Object IO.FileStream($temp, [IO.FileMode]::CreateNew, [IO.FileAccess]::Write, [IO.FileShare]::None)
-  try { $file.Write($bytes, 0, $bytes.Length); $file.Flush($true) } finally { $file.Dispose() }
-  # Windows PowerShell 5.1 converts $null to an empty string for this .NET
-  # string parameter; File.Replace rejects that as an invalid backup path.
-  if (Test-Path -LiteralPath $Path) { [IO.File]::Replace($temp, $Path, [System.Management.Automation.Language.NullString]::Value) }
-  else { [IO.File]::Move($temp, $Path) }
+  try {
+    $file = New-Object IO.FileStream($temp, [IO.FileMode]::CreateNew, [IO.FileAccess]::Write, [IO.FileShare]::None)
+    try { $file.Write($bytes, 0, $bytes.Length); $file.Flush($true) } finally { $file.Dispose() }
+    # Windows PowerShell 5.1 converts $null to an empty string for this .NET
+    # string parameter; File.Replace rejects that as an invalid backup path.
+    if (Test-Path -LiteralPath $Path) { [IO.File]::Replace($temp, $Path, [System.Management.Automation.Language.NullString]::Value) }
+    else { [IO.File]::Move($temp, $Path) }
+  } finally {
+    # Failed replacement (lock/ACL/full disk) leaves the last durable state
+    # intact. Remove only this transaction's unique temporary record.
+    if ([IO.File]::Exists($temp)) { [IO.File]::Delete($temp) }
+  }
 }
 function Generation([string]$Id) {
   if ($Id -notmatch '^[a-f0-9]{32}$') { throw 'Invalid generation identity.' }
@@ -280,6 +286,7 @@ function ExtractPayload([string]$Zip, [string]$Directory, $Files) {
       if ($entry.Length -lt 0 -or $total -gt 2147483648) { throw 'Payload exceeds extraction bounds.' }
       $null = New-Item -ItemType Directory -Path ([IO.Path]::GetDirectoryName($path)) -Force
       [IO.Compression.ZipFileExtensions]::ExtractToFile($entry, $path, $false)
+      Failure 'during-extraction'
     }
   } finally { $archive.Dispose() }
   VerifyFiles $Directory $Files

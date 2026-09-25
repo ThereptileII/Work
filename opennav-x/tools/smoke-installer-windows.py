@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """Disposable native Windows installer lifecycle, shared profile and chart gate."""
 import ctypes
+from contextlib import contextmanager
 import configparser
 import hashlib
 import importlib.util
@@ -13,6 +14,7 @@ import sys
 import tempfile
 import time
 import urllib.request
+import zipfile
 
 if sys.platform!='win32' or os.environ.get('GITHUB_ACTIONS')!='true':
     raise SystemExit('This destructive fixture is restricted to disposable Windows CI')
@@ -55,6 +57,48 @@ def engine(action,expected=0):
     r=subprocess.run([str(PS),'-NoProfile','-NonInteractive','-ExecutionPolicy','Bypass','-File',str(script),'-Action',action,'-Report',str(out)],timeout=120,capture_output=True)
     assert r.returncode==expected,(action,r.returncode,r.stdout.decode(errors='replace'),r.stderr.decode(errors='replace'))
     return json.loads(out.read_text(encoding='utf-8-sig'))
+def package_engine(directory, stock, expected=1):
+    out=operation_report('damaged-package')
+    result=subprocess.run([str(PS),'-NoProfile','-NonInteractive','-ExecutionPolicy','Bypass',
+        '-File',str(ROOT/'installer/windows/Lifecycle.ps1'),'-Action','Update','-OpenCpn',str(stock),
+        '-PackageDirectory',str(directory),'-ManifestSha256',sha(directory/'package.json'),
+        '-Report',str(out)],timeout=180,capture_output=True)
+    assert result.returncode==expected,(result.returncode,result.stderr.decode(errors='replace'))
+    return json.loads(out.read_text(encoding='utf-8-sig'))
+@contextmanager
+def file_lock(path, share=1):
+    kernel=ctypes.WinDLL('kernel32',use_last_error=True)
+    create=ui.declare(kernel,'CreateFileW',ctypes.c_void_p,ctypes.c_wchar_p,ctypes.c_ulong,
+        ctypes.c_ulong,ctypes.c_void_p,ctypes.c_ulong,ctypes.c_ulong,ctypes.c_void_p)
+    close_handle=ui.declare(kernel,'CloseHandle',ctypes.c_int,ctypes.c_void_p)
+    handle=create(str(path),0x80000000,share,None,3,0,None)
+    assert handle not in (None,ctypes.c_void_p(-1).value),ctypes.get_last_error()
+    try:yield
+    finally:assert close_handle(handle)
+@contextmanager
+def deny_generation_creation():
+    # Deny only CreateDirectories on this disposable generations directory.
+    # Existing application files remain readable; restore the exact ACL.
+    directory=INSTALL/'generations'; acl_file=EVIDENCE/'installer-original-acl.txt'
+    script=EVIDENCE/'installer-deny-stage.ps1'
+    script.write_text('''param([string]$Directory,[string]$Saved,[switch]$Restore)
+$ErrorActionPreference='Stop'
+$acl=Get-Acl -LiteralPath $Directory
+if ($Restore) {
+  $acl.SetSecurityDescriptorSddlForm([IO.File]::ReadAllText($Saved),[Security.AccessControl.AccessControlSections]::Access)
+  Set-Acl -LiteralPath $Directory -AclObject $acl; exit
+}
+[IO.File]::WriteAllText($Saved,$acl.GetSecurityDescriptorSddlForm([Security.AccessControl.AccessControlSections]::Access))
+$sid=[Security.Principal.WindowsIdentity]::GetCurrent().User
+$rule=New-Object Security.AccessControl.FileSystemAccessRule($sid,[Security.AccessControl.FileSystemRights]::CreateDirectories,[Security.AccessControl.AccessControlType]::Deny)
+$acl.AddAccessRule($rule); Set-Acl -LiteralPath $Directory -AclObject $acl
+''')
+    command=[str(PS),'-NoProfile','-NonInteractive','-ExecutionPolicy','Bypass','-File',str(script),str(directory),str(acl_file)]
+    subprocess.run(command,check=True,capture_output=True)
+    try:yield
+    finally:
+        subprocess.run(command+['-Restore'],check=True,capture_output=True)
+        acl_file.unlink();script.unlink()
 def wait_ready(profile,before):
     deadline=time.monotonic()+45
     while time.monotonic()<deadline:
@@ -276,6 +320,54 @@ try:
         check('Update preserves shared profile and user plugin additions; prior generation backed up')
         engine('Rollback');assert state()['current']==repaired and inventory(profile)==before
         check('Rollback restores exact prior generation without restoring older navigation data')
+        active_hash=sha(generation()/'app/opencpn.exe'); state_hash=sha(INSTALL/'state.json')
+        def unchanged():
+            assert state()['current']==repaired and sha(INSTALL/'state.json')==state_hash
+            assert sha(generation()/'app/opencpn.exe')==active_hash
+            assert inventory(profile)==before and inventory(stock)==stock_before
+        with file_lock(INSTALL/'transaction.lock',0):
+            failure=setup('Update',original,expected=1)
+            assert 'being used' in failure['error'].lower() or 'another process' in failure['error'].lower(),failure
+        unchanged();check('Concurrent transaction lock refuses update; active executable/state/profile/stock remain exact')
+        with deny_generation_creation():
+            failure=setup('Update',original,expected=1)
+            assert 'denied' in failure['error'].lower(),failure
+        unchanged();check('Actual NTFS permission denial during staging preserves active installation; ACL restored')
+        damaged_package=temporary/'damaged integration';damaged_package.mkdir()
+        for name in ('package.json','payload.zip'):
+            shutil.copy2(PACKAGE/name,damaged_package/name)
+        shutil.copy2(generation()/'Maintain.exe',damaged_package/'Maintain.exe')
+        with (damaged_package/'payload.zip').open('ab') as stream:stream.write(b'corrupt payload fixture')
+        failure=package_engine(damaged_package,original)
+        assert 'Payload ZIP integrity' in failure['error'],failure
+        unchanged();check('Corrupt payload fails SHA-256 preflight without changing active installation')
+        setup('Update',original,expected=1,failure='during-extraction')
+        unchanged();assert not (INSTALL/'transaction.json').exists()
+        check('Interrupted extraction never publishes incomplete generation or changes active state')
+        # Deliberately trusted CI package with one dependency absent: valid ZIP
+        # and manifest hashes are insufficient; the real staged loader must fail.
+        manifest=json.loads((PACKAGE/'package.json').read_text())
+        dependency=next(f['path'] for f in manifest['files'] if f['path'].lower().startswith('app/wxbase') and f['path'].endswith('.dll'))
+        with zipfile.ZipFile(PACKAGE/'payload.zip') as source, zipfile.ZipFile(damaged_package/'payload.zip','w',zipfile.ZIP_DEFLATED) as target:
+            for entry in source.infolist():
+                if entry.filename!=dependency:target.writestr(entry,source.read(entry.filename))
+        manifest['files']=[f for f in manifest['files'] if f['path']!=dependency]
+        manifest['payloadSha256']=sha(damaged_package/'payload.zip')
+        (damaged_package/'package.json').write_text(json.dumps(manifest))
+        set_error_mode=ui.declare(ctypes.WinDLL('kernel32'),'SetErrorMode',ctypes.c_uint,ctypes.c_uint)
+        old_error_mode=set_error_mode(0x8003)
+        try:failure=package_engine(damaged_package,original)
+        finally:set_error_mode(old_error_mode)
+        assert any(word in failure['error'].lower() for word in ('self-test','loader','report')),failure
+        unchanged();check('Missing required wx DLL rejected by actual staged executable loader before commit')
+        with file_lock(INSTALL/'state.json'):
+            setup('Update',original,expected=1)
+        unchanged();assert (INSTALL/'transaction.json').exists()
+        assert not list(INSTALL.glob('state.json.*.tmp'))
+        check('Locked atomic state file preserves previous generation and durable recovery journal without temporary residue')
+        setup('Repair',original);assert not (INSTALL/'transaction.json').exists()
+        repaired=state()['current']
+        check('Rerun after file-lock failure repairs and recovers normally')
         setup('Update',original,expected=1,failure='before-commit')
         assert state()['current']==repaired and (INSTALL/'transaction.json').exists()
         setup('Update',original);assert not (INSTALL/'transaction.json').exists()
@@ -299,7 +391,11 @@ try:
         assert out.exists() and json.loads(out.read_text(encoding='utf-8-sig'))['status']=='passed'
         assert not (INSTALL/'state.json').exists()
         assert inventory(profile)==before and inventory(stock)==stock_before
-        assert not list((INSTALL/'generations').glob('*/app/opencpn.exe')), 'Unmodified OpenNav application binaries remain'
+        for record in (INSTALL/'generations').glob('*/ownership.json'):
+            assert not (record.parent/'app/opencpn.exe').exists(), 'Unmodified committed OpenNav binary remains'
+        # Failed, unpublished stages deliberately remain diagnostic evidence;
+        # the engine never recursively deletes a tree without ownership.json.
+        report['unpublished_stages_retained']=sum(1 for d in (INSTALL/'generations').iterdir() if d.is_dir() and not (d/'ownership.json').exists())
         assert list((INSTALL/'generations').glob('*/app/plugins/alpha-user-preserved.txt')), 'Custom additions were removed'
         check('Conventional uninstaller removes verified owned app files; exact stock/profile unchanged; custom additions retained')
         p,h,rgb=launch(original,[],'OpenCPN 5.12.4-0',profile,'installer-05-restored-stock',stock_welcome=True)

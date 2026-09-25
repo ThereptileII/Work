@@ -88,6 +88,18 @@ void TestValidity() {
   }
   Check(r.Observe(Depth("", 8, t), t) == Admission::MissingSource,
         "Source identity mandatory");
+  for (int c = 0; c < 128; ++c) {
+    if (c >= 32 && c != 127) continue;
+    auto o = Depth("test", 8, t);
+    o.source_id += static_cast<char>(c);
+    Check(r.Observe(o, t) == Admission::MissingSource, "Source ID control byte refused");
+    o = Depth("test", 8, t); o.sample.source += static_cast<char>(c);
+    Check(r.Observe(o, t) == Admission::MissingSource, "Provenance control byte refused");
+    o = Depth("test", 8, t); o.sample.device_id += static_cast<char>(c);
+    Check(r.Observe(o, t) == Admission::MissingSource, "Device ID control byte refused");
+  }
+  Check(r.Observe(Depth("\xc3\x85land sensor", 8, t), t) == Admission::Accepted,
+        "Legitimate UTF-8 source labels remain usable");
   r.Clear();
   for (int n = 0; n < 32; ++n)
     r.Observe(Depth(std::to_string(n), n, t), t);

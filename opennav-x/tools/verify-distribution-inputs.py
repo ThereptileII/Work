@@ -16,5 +16,8 @@ if missing:
     raise SystemExit('Missing distribution inputs: ' + ', '.join(missing))
 manifest = json.loads((root / 'installer/windows/compatibility.json').read_text())
 assert isinstance(manifest['supportedOpenCpn'], list)
+qualification = json.loads((root/'release/qualification.json').read_text())
+if qualification['publishNamedRelease'] and qualification['stage'].startswith('beta'):
+    assert qualification['enduranceSeconds'] >= 10800, 'Named Beta requires actual three-hour endurance on each platform'
 print(f'{len(required)} distribution inputs present; '
       f'{len(manifest["supportedOpenCpn"])} accepted stock configurations')

@@ -24,6 +24,12 @@ Decode0183Instruments(const std::string &text, const std::string &iface,
   if (text.substr(star + 3) != "" && text.substr(star + 3) != "\r\n" &&
       text.substr(star + 3) != "\n")
     return out;
+  // NMEA 0183 is printable ASCII. Reject embedded controls/NUL and malformed
+  // UTF-8 before the wx/upstream text parser can truncate or replace bytes.
+  for (std::size_t i = 0; i < star; ++i)
+    if (static_cast<unsigned char>(text[i]) < 0x20 ||
+        static_cast<unsigned char>(text[i]) > 0x7e)
+      return out;
   for (std::size_t i = star + 1; i < star + 3; ++i)
     if (!std::isxdigit(static_cast<unsigned char>(text[i])))
       return out;

@@ -41,11 +41,16 @@ Do not leave undocumented direct OpenCPN modifications.
 | gui/src/pluginmanager.cpp | Avoid saving temporary Safe Mode plugin states as normal preferences | Same shared-profile fixture; low risk |
 | model/include/model/comm_drv_n2k_net.h | Beta: read-only detected format, monotonic connection generation/time | No output/discovery getters; low API risk |
 | model/src/comm_drv_n2k_net.cpp | Beta: advance connection provenance at socket replacement/connect/loss/close boundaries | Same-driver reconnect loopback; medium event-order risk |
+| model/src/comm_drv_signalk_net.cpp | Beta: bounded UTF-8/JSON preflight before recursive parser; type/length/control validation before handshake GetString access | Actual malformed/valid WebSocket input, all modes retain valid-message path; low decoder-entry merge risk |
 
 Public plugin API 1.20 does not provide ownership of application startup,
 main-frame chrome or shutdown. Narrow core hooks are necessary; zoom, follow,
 theme, chart, route and configuration behavior reuse the existing implementation.
 All GUI hooks are guarded by OPENNAV_X. No device command logic is added.
+The Signal K guard is also OPENNAV_X scoped, with the source-only model definition
+and include path in `OpenCPN.cmake`. It protects all integrated modes, leaves the
+pristine build untouched and does not replace upstream parsing or publication.
+See [Beta robustness](beta-robustness.md).
 The expanded native Windows mode-cycle and visual review passed at `c5a0fd0`
 (see baseline.md), including the shutdown and Safe Mode preference fixes below.
 Selected-navigation integration passed at `bc0af30`. These are development-slice

@@ -7,7 +7,7 @@ $Source = Join-Path $PSScriptRoot '../installer/windows/Lifecycle.ps1'
 $ParseErrors = $null
 $Ast = [System.Management.Automation.Language.Parser]::ParseFile($Source, [ref]$null, [ref]$ParseErrors)
 if ($ParseErrors) { throw ($ParseErrors | Out-String) }
-foreach ($Name in @('Log','Hash','PlainPath','RelativePath','ReadJson','AtomicJson','PeArchitecture','FileRecords','VerifyFiles','SelfTest')) {
+foreach ($Name in @('Log','Hash','PlainPath','RelativePath','ReadJson','AtomicJson','PeArchitecture','FileRecords','VerifyFiles','SelfTest','ExtractPayload','Failure')) {
   $Definitions = @($Ast.FindAll({ param($Node) $Node -is [System.Management.Automation.Language.FunctionDefinitionAst] -and $Node.Name -eq $Name }, $true))
   if ($Definitions.Count -ne 1) { throw "Expected one actual engine function: $Name" }
   . ([scriptblock]::Create($Definitions[0].Extent.Text))
@@ -18,6 +18,7 @@ $Fixture = Join-Path ([IO.Path]::GetTempPath()) ('OpenNav filesystem ' + [guid]:
 $null = New-Item -ItemType Directory -Path $Fixture
 $Checks = 0
 $Junction = $null
+$FailurePoint = ''
 function Check([bool]$Ok, [string]$Name) {
   if (-not $Ok) { throw "FAILED: $Name" }
   $script:Checks++; Write-Host "PASS: $Name"
@@ -49,6 +50,12 @@ try {
   AtomicJson $Record @{epoch=2;meaning='replacement'}
   Check ((ReadJson $Record).epoch -eq 2) 'Atomic replacement on native filesystem'
   Check (@(Get-ChildItem -LiteralPath $Fixture -Filter '*.tmp').Count -eq 0) 'No temporary publication residue'
+  $Before = Hash $Record
+  $Lock = [IO.File]::Open($Record, [IO.FileMode]::Open, [IO.FileAccess]::Read, [IO.FileShare]::Read)
+  try { Refuses { AtomicJson $Record @{epoch=3} } 'Locked atomic record refuses replacement' }
+  finally { $Lock.Dispose() }
+  Check ((Hash $Record) -ceq $Before) 'Locked publication preserves exact previous durable state'
+  Check (@(Get-ChildItem -LiteralPath $Fixture -Filter '*.tmp').Count -eq 0) 'Failed locked publication cleans only its temporary file'
   Refuses { ReadJson $Record 2 } 'Oversized JSON refused'
   $Bundle = Join-Path $Fixture 'bundle'; $null = New-Item -ItemType Directory -Path $Bundle
   [IO.File]::WriteAllText((Join-Path $Bundle 'file&name.txt'),'original',$Utf8)
@@ -57,6 +64,16 @@ try {
   Check ($Files.Count -eq 1) 'Owned inventory hash verification'
   [IO.File]::WriteAllText((Join-Path $Bundle 'file&name.txt'),'corrupt',$Utf8)
   Refuses { VerifyFiles $Bundle $Files } 'Corrupt owned file refused'
+  Add-Type -AssemblyName System.IO.Compression.FileSystem
+  $Zip = Join-Path $Fixture 'payload.zip'
+  [IO.Compression.ZipFile]::CreateFromDirectory($Bundle, $Zip)
+  $Extract = Join-Path $Fixture 'extracted'
+  Refuses { ExtractPayload $Zip $Extract $Files } 'Corrupt ZIP content refused against manifest hashes'
+  Remove-Item -LiteralPath $Extract -Recurse -Force
+  $Files = @(FileRecords $Bundle)
+  ExtractPayload $Zip $Extract $Files
+  Check ((Hash (Join-Path $Extract 'file&name.txt')) -ceq $Files[0].sha256) 'Valid bounded extraction checks every content hash'
+  Refuses { ExtractPayload $Zip (Join-Path $Fixture 'wrong-inventory') @() } 'ZIP inventory mismatch rejected before publication'
   $Dll = Join-Path ([Environment]::GetFolderPath('SystemX86')) 'kernel32.dll'
   Check ((PeArchitecture $Dll) -eq 'x86') 'Native PE i386 architecture'
   Refuses { PeArchitecture $Record } 'Non-PE data refused'

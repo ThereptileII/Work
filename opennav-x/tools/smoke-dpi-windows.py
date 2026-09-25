@@ -36,7 +36,7 @@ fixtures.seed(profile);expected=fixtures.snapshot(profile)
 with (profile/'opencpn.conf').open('a') as f:f.write('\n[Settings/GlobalState]\nVPLatLon=59.0800,18.5000\nVPScale=0.003\n')
 app=None;handle=None;pid=None;owned=set();count=0;colors=None
 
-def data(predicate,timeout=15):
+def data(predicate=lambda d:True,timeout=15):
     deadline=time.monotonic()+timeout
     while time.monotonic()<deadline:
         try:

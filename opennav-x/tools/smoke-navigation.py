@@ -221,6 +221,7 @@ try:
                     sample=read_json_snapshot(profile/'opennav-diagnostics.json')
                     if sample['runtime'].get('smartnav',{}).get('ais_event_count',0)>0:
                         report['live_ais_advice']='Copied actual AIS alarm reaches shell SmartNav at a coherent observation epoch'
+                        (profile/'ais-advice-observed').write_text('Observed actual shell diagnostic AIS event\n')
                 if result['result']=='passed':
                     assert report.get('live_ais_advice'),'No actual AIS advisory observed'
                     assert len(seen)==3,seen
@@ -467,7 +468,11 @@ finally:
     server.close()
     if app and app.poll() is None:
         app.terminate()
-        app.wait(timeout=10)
+        try:app.wait(timeout=10)
+        except subprocess.TimeoutExpired:
+            # Preserve the original test failure and its evidence if a modal
+            # upstream dialog prevents normal termination in this fixture.
+            app.kill();app.wait(timeout=5)
     if xserver:
         xserver.terminate()
         xserver.wait(timeout=10)

@@ -16,7 +16,7 @@ add_library(opennav_marine
   "${OPENNAV_ROOT}/src/integration/NmeaInstruments.cpp"
   "${OPENNAV_ROOT}/src/integration/SignalKInstruments.cpp")
 target_include_directories(opennav_marine PUBLIC "${OPENNAV_ROOT}/src" PRIVATE ${wxWidgets_INCLUDE_DIRS})
-target_link_libraries(opennav_marine PUBLIC opennav_vessel ocpn::N2KParser ocpn::nmea0183 ocpn::wxjson ${wxWidgets_LIBRARIES})
+target_link_libraries(opennav_marine PUBLIC opennav_vessel ocpn::N2KParser ocpn::nmea0183 ocpn::rapidjson ${wxWidgets_LIBRARIES})
 target_compile_features(opennav_marine PUBLIC cxx_std_17)
 target_sources(${PACKAGE_NAME} PRIVATE "${OPENNAV_ROOT}/src/integration/MarineBridge.cpp")
 target_sources(${PACKAGE_NAME} PRIVATE "${OPENNAV_ROOT}/src/integration/OpenCPNPilot.cpp")
@@ -42,6 +42,12 @@ target_compile_definitions(${PACKAGE_NAME} PRIVATE OPENNAV_X=1)
 # Limit this additional definition to the one affected model translation unit.
 set_property(SOURCE "${CMAKE_SOURCE_DIR}/model/src/plugin_loader.cpp"
   DIRECTORY "${CMAKE_SOURCE_DIR}/model" APPEND PROPERTY COMPILE_DEFINITIONS OPENNAV_X=1)
+# Bound untrusted Signal K before the upstream recursive parser, not only after
+# the driver has already decoded it. The pristine build has no OpenNav include.
+set_property(SOURCE "${CMAKE_SOURCE_DIR}/model/src/comm_drv_signalk_net.cpp"
+  DIRECTORY "${CMAKE_SOURCE_DIR}/model" APPEND PROPERTY COMPILE_DEFINITIONS OPENNAV_X=1)
+set_property(SOURCE "${CMAKE_SOURCE_DIR}/model/src/comm_drv_signalk_net.cpp"
+  DIRECTORY "${CMAKE_SOURCE_DIR}/model" APPEND PROPERTY INCLUDE_DIRECTORIES "${OPENNAV_ROOT}/src")
 target_link_libraries(${PACKAGE_NAME} PRIVATE opennav_integration opennav_platform opennav_ui)
 option(OPENNAV_ENABLE_ROUTE_SCENARIO "Compile isolated route integration test driver" OFF)
 if(OPENNAV_ENABLE_ROUTE_SCENARIO)

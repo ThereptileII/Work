@@ -16,7 +16,7 @@ DecodeN2kInstruments(std::uint64_t pgn, const std::vector<unsigned char> &bytes,
                      const std::string &iface, vessel::Time at) {
   std::vector<vessel::SensorObservation> out;
   if (iface.empty() || iface.size() > 200 || bytes.size() < 14 ||
-      bytes[0] != 0x93 ||
+      bytes[0] != 0x93 || bytes[2] > 7 ||
       std::find(InstrumentPgns().begin(), InstrumentPgns().end(), pgn) ==
           InstrumentPgns().end())
     return out;

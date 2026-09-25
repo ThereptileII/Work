@@ -100,7 +100,10 @@ def ready(count):
     while time.monotonic()<deadline:
         log=profile/'opencpn.log'
         if log.exists() and log.read_text(errors='replace').count('OnInitTimer...Finalize Canvases')>=count:
-            time.sleep(.6);return
+            # The pinned frame schedules a one-second recapture/Raise after
+            # its deferred SendSizeEvent. A bare Xvfb has no window manager to
+            # keep transient popups above that parent raise.
+            time.sleep(1.5);return
         time.sleep(.2)
     raise RuntimeError('Initialization incomplete')
 def data(predicate=lambda d:True,timeout=12):
@@ -111,7 +114,7 @@ def data(predicate=lambda d:True,timeout=12):
             if predicate(d):return d
         except (FileNotFoundError,json.JSONDecodeError,PermissionError):pass
         time.sleep(.2)
-    raise AssertionError('Diagnostic predicate did not become true')
+    raise AssertionError('Diagnostic predicate did not become true: '+json.dumps(d.get('runtime',{}).get('display',{})))
 def item(d,name):return next(i for i in d['data'] if i['name']==name)
 def command(label,shortcut):
     if windows:ui.click_text(pid,label)
@@ -204,8 +207,11 @@ try:
         ui.assert_route_summary_layout(handle)
         report['checks'].append('Bottom route summary lays out after narrow-to-wide resize')
     if not windows:
-        command('System','s');capture('beta-system-popup')
-        xdo('key','Escape');time.sleep(.3)
+        xdo('mousemove',1220,772,'click',1);time.sleep(.4);capture('beta-system-popup')
+        # Bare Xvfb has no window manager to move X input focus to a transient.
+        popup=xdo('search','--onlyvisible','--pid',pid,'--name','^opencpn$').splitlines()[-1]
+        xdo('windowfocus',popup)
+        xdo('key','Escape');xdo('windowfocus',handle);time.sleep(.3)
     first=data(lambda d:d['data_mode']=='DEMO' and 'arrival_soc' in d['energy'])
     assert first['route']['source'].startswith('DEMO')
     chart_colors=chartcheck.reference(capture('preview-01-navigation-day'))
@@ -213,7 +219,10 @@ try:
     if windows:
         ui.click_text(pid,'Light');ui.click_text(pid,'Light')
     else:
-        xdo('mousemove',1240,28,'click',1);time.sleep(.4);xdo('click',1);time.sleep(.4)
+        xdo('mousemove',1240,28,'click',1)
+        data(lambda d:d['runtime']['display']['light']=='Dusk')
+        xdo('mousemove',1240,28,'click',1)
+        data(lambda d:d['runtime']['display']['light']=='Night')
     report['chart_rendering'].append(chartcheck.night(capture('preview-02-navigation-night'),chart_colors,'Night world-chart land/water palette'))
     if windows:ui.click_text(pid,'Light')
     else:xdo('click',1);time.sleep(.5)

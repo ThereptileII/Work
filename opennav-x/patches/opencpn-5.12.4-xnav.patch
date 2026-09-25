@@ -595,3 +595,58 @@ index da348cd06..92b6a1230 100644
    //       Render the COG line if the speed is greater than moored speed defined
    //       by ais options dialog
    if ((g_bShowCOG) && (target_sog > g_SOGminCOG_kts) && td->b_active) {
+diff --git a/model/src/comm_drv_signalk_net.cpp b/model/src/comm_drv_signalk_net.cpp
+index 995a3fe35..05add9dc9 100644
+--- a/model/src/comm_drv_signalk_net.cpp
++++ b/model/src/comm_drv_signalk_net.cpp
+@@ -30,6 +30,9 @@
+ #include <thread>
+ 
+ #include "rapidjson/document.h"
++#ifdef OPENNAV_X
++#include "integration/ExternalJson.h"
++#endif
+ 
+ #include "model/comm_drv_signalk_net.h"
+ #include "model/comm_navmsg_bus.h"
+@@ -432,6 +435,9 @@ void CommDriverSignalKNet::handle_SK_sentence(
+   // LOG_DEBUG("%s\n", msg.c_str());
+ 
+   std::string* msg = event.GetPayload().get();
++#ifdef OPENNAV_X
++  if (!msg || !opennav::integration::BoundedJsonText(*msg)) return;
++#endif
+   std::string msgTerminated = *msg;
+   msgTerminated.append("\r\n");
+ 
+@@ -444,12 +450,30 @@ void CommDriverSignalKNet::handle_SK_sentence(
+   }
+ 
+   if (!root.IsObject()) {
++#ifdef OPENNAV_X
++    // Do not copy arbitrary network contents into normal diagnostic logs.
++    wxLogMessage("Signal K document is not an object; input rejected");
++#else
+     wxLogMessage(wxString::Format(
+         _T("SignalKDataStream ERROR: Message is not a JSON Object: %s"),
+         msg->c_str()));
++#endif
+     return;
+   }
+ 
++#ifdef OPENNAV_X
++  // Untrusted handshake/context fields are read with GetString below. Reject
++  // wrong types and embedded controls before RapidJSON assertions or truncation.
++  for (const char *name : {"version", "self", "context"}) {
++    if (!root.HasMember(name)) continue;
++    const auto &value = root[name];
++    if (!value.IsString() || value.GetStringLength() > 512) return;
++    for (unsigned i = 0; i < value.GetStringLength(); ++i)
++      if (static_cast<unsigned char>(value.GetString()[i]) < 0x20 ||
++          static_cast<unsigned char>(value.GetString()[i]) == 0x7f) return;
++  }
++#endif
++
+   // Decode just enough of string to extract some identifiers
+   // such as the sK version, "self" context, and target context
+   if (root.HasMember("version")) {

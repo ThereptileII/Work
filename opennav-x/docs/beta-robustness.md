@@ -1,0 +1,88 @@
+# Beta input, installation and endurance gates
+
+## External input
+
+Marine inputs are untrusted. The bridge bounds NMEA 0183 length/checksum and
+printable ASCII, validates N2K envelope length/PGN/source/priority (0..7), and
+rejects nonfinite/out-of-domain quantities. Source/device/provenance strings
+cannot contain control bytes. Unicode source labels remain supported.
+
+Signal K text has a 256 KiB / 16-level nesting preflight before recursive
+parsing. UTF-8 must be well formed; strings, escapes and balanced containers are
+checked without recursion. This is a resource/encoding guard, not a replacement
+JSON parser. The existing OpenCPN RapidJSON dependency still decides JSON syntax and marine values.
+A real loopback test found wxJSON rejecting a valid escaped Unicode source label;
+the OpenNav decoder now uses the same RapidJSON dependency as the upstream
+Signal K driver, with length-aware strings and validated UTF-8. Escaped/raw
+Unicode equivalence and the driver's CRLF framing have a dedicated regression.
+Per-update/value/observation bounds in the existing decoder remain in force.
+
+Inspection found OpenCPN `CommDriverSignalKNet::handle_SK_sentence` parses the
+message before publishing the marine bus event and accesses `version` / `self`
+with unguarded `GetString`. The integrated driver now applies the same bounded
+preflight and checks handshake/context field types, length and control bytes
+before those accesses. Valid messages retain the original driver/listener path.
+The pristine baseline is unchanged. This protects the application parsing
+boundary; it is not a claim of an audited WebSocket/TLS implementation. Upstream
+Signal K's TLS certificate-validation/fallback behavior is unchanged: use a
+trusted boat network/server, not an unauthenticated Internet endpoint.
+
+`OpenNavMarine` adds malformed ASCII, invalid priority, deterministic randomized
+envelopes, NaN/infinity/overflow and deeply nested/malformed Unicode JSON cases.
+`smoke-signalk.py` sends real loopback WebSocket frames through the actual driver,
+including wrong header types, control text, oversized/nested messages and null
+measurements, then requires expiry, recovery and clean process exit. It also
+checks live depth, voltage, SOC, motor RPM and Unicode provenance. No EV-CAN
+decoding or extra production network stack is introduced.
+
+## Installation failures
+
+Beta retains the accepted per-user immutable-generation architecture and exact
+stock SHA-256 allowlist. The new matrix supplements existing clean install,
+repair, prior-version upgrade, rollback, uninstall and pre/post-commit recovery:
+
+* A held transaction lock must refuse a concurrent update.
+* A real NTFS denial of staging-directory creation must preserve the active app.
+* A corrupt payload must fail SHA-256 preflight.
+* An interruption after extraction starts must never publish an incomplete app.
+* A deliberately trusted CI fixture with a required wx DLL absent must fail the
+  actual staged-executable loader check even though its fixture hashes match.
+* A locked state file must retain the previous atomic state and journal;
+  rerunning after release of the lock must recover successfully.
+
+Every failure compares the active executable/state and existing stock/profile
+hashes. ACL changes affect only a disposable CI directory and are restored.
+Atomic JSON failures remove only their own unique temporary record. The engine
+never recursively deletes unknown/custom data. Unpublished staging directories
+without a complete ownership manifest are retained as diagnostic residue, never
+registered or selected. The uninstall assertion therefore checks **all committed
+owned generations**, while separately counting deliberately failed unpublished
+stages; this is necessary for the expanded partial-extraction/dependency cases.
+This does not relax removal of any previously owned, hash-matching app file.
+
+## Actual elapsed endurance
+
+`tools/soak-runtime.py --seconds 10800` runs the real application for at least
+three hours of monotonic elapsed time. Accelerated DEMO trip time does not count
+as endurance. Short 120-second development runs validate the harness only.
+The test uses a disposable profile and no device output. Active route progress,
+battery/energy, AIS encounters and SmartNav run continuously; six product pages,
+chart zoom and palettes are exercised, with stale/unavailable episodes and
+recovery. The existing separate gates exercise live marine transports, repeated
+mode restarts, two public ENC cells, plugins and requested OpenGL/fallback.
+
+Ten-second JSONL samples retain process CPU, resident memory, file descriptors
+or Windows handles/private bytes/GDI/USER objects and UI update timing. Page
+response is measured from input through the next diagnostic observation (which
+publishes at 1 Hz), not represented as paint/frame latency. The callback timing
+excludes asynchronous chart painting. The gate requires continuing UI ticks,
+route progress, AIS context, energy suppression/recovery and a clean shutdown
+with unchanged seeded navigation/profile fixtures.
+
+After warm-up, first/last-window median growth must stay below 128 MiB resident
+or private memory, 128 Windows handles / 32 Linux descriptors, 64 GDI/USER
+objects or eight threads. Every page observation has an eight-second deadline.
+These are CI leak/stall tripwires, not a performance promise for boat hardware.
+Raw samples, CPU usage and all limits remain visible. Both integration jobs have
+a 300-minute timeout; release qualification must select the full duration.
+Physical touch, target-PC GPU and at-sea operation remain separate manual gates.

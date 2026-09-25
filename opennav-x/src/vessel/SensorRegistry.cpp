@@ -112,9 +112,15 @@ void SensorRegistry::Configure(Quantity q, SourcePolicy p) {
 }
 Admission SensorRegistry::Observe(SensorObservation o, Time now) {
   const auto &info = Describe(o.quantity);
+  const auto controls = [](const std::string &text) {
+    return std::any_of(text.begin(), text.end(), [](unsigned char c) {
+      return c < 0x20 || c == 0x7f;
+    });
+  };
   if (o.source_id.empty() || o.source_id.size() > 512 ||
       o.sample.source.empty() || o.sample.source.size() > 1024 ||
-      o.sample.device_id.size() > 512)
+      o.sample.device_id.size() > 512 || controls(o.source_id) ||
+      controls(o.sample.source) || controls(o.sample.device_id))
     return Admission::MissingSource;
   if (o.sample.observed_at > now)
     return Admission::Future;

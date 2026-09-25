@@ -18,6 +18,7 @@
 #include <cmath>
 #include <iomanip>
 #include <limits>
+#include <map>
 #include <set>
 #include <sstream>
 #include <stdexcept>
@@ -354,11 +355,16 @@ application::CommandResult CreateWaypoint(application::Coordinate position,
 vessel::AisState CopyAisState(const vessel::Navigation &position,
                               vessel::Time now) {
   Thread();
+  struct Observation { std::time_t report; std::optional<vessel::Time> at; };
+  static std::map<int, Observation> clocks;
+  std::map<int, Observation> current_clocks;
   vessel::AisState state;
   state.observed_at = now;
   state.source = "OpenCPN AIS model";
-  if (!g_pAIS)
+  if (!g_pAIS) {
+    clocks.clear();
     return state;
+  }
   state.available = true;
   const auto wall = std::chrono::system_clock::now();
   const bool own_position = Position(position, now);
@@ -391,13 +397,20 @@ vessel::AisState CopyAisState(const vessel::Navigation &position,
     const auto reported =
         std::chrono::system_clock::from_time_t(p->PositionReportTicks);
     const auto age = wall - reported;
-    const auto at =
+    auto at =
         age >= std::chrono::system_clock::duration::zero() &&
                 age < std::chrono::hours(24)
             ? std::optional<vessel::Time>{now -
                                           std::chrono::duration_cast<
                                               vessel::Clock::duration>(age)}
             : std::nullopt;
+    const auto previous = clocks.find(t.mmsi);
+    if (previous != clocks.end() && previous->second.report == p->PositionReportTicks)
+      at = previous->second.at;
+    // Convert a given upstream observation exactly once. Re-pairing wall and
+    // monotonic clocks on every UI read introduces sub-millisecond backwards
+    // jitter and incorrectly invalidates a retained target selection.
+    current_clocks.emplace(t.mmsi, Observation{p->PositionReportTicks, at});
     auto sample = [&](double value, double minimum, double maximum,
                       bool relative = false) {
       vessel::Sample s;
@@ -431,6 +444,7 @@ vessel::AisState CopyAisState(const vessel::Navigation &position,
   }
   std::sort(state.targets.begin(), state.targets.end(),
             [](const auto &a, const auto &b) { return a.mmsi < b.mmsi; });
+  clocks = std::move(current_clocks); // Removed targets retain no bridge state.
   return state;
 }
 application::AnchorState ObserveAnchor(const vessel::Navigation &position,

@@ -1,0 +1,174 @@
+{
+  "scope": "Uncommitted Beta hardening development; native replacement and full-duration qualification required",
+  "source_parent": "cef66753f60ffc69aa534f4157ac59734c4a9d32",
+  "portable_suites": 60,
+  "integrated_linux_cases": 103,
+  "native_accepted": false,
+  "endurance_release_qualified": false,
+  "runtime": {
+    "objects-input-results.json": {
+      "authority": "Linux development",
+      "fixture": "Synthetic NMEA over loopback; no external devices or production profile",
+      "expected": {
+        "sog_kn": 6.3,
+        "cog_deg": 147,
+        "wind": "unavailable",
+        "depth": "unavailable"
+      },
+      "screenshots": [
+        "objects-route-card.png",
+        "objects-waypoint-card.png",
+        "objects-ais-card.png",
+        "objects-ais-selected-chart.png"
+      ],
+      "visual_review": "required",
+      "live_ais_advice": "Copied actual AIS alarm reaches shell SmartNav at a coherent observation epoch",
+      "object_contract": {
+        "result": "passed",
+        "fixture": "Explicit loopback-only object contract test; no device output",
+        "checks": [
+          {
+            "check": "Thread boundary rejects worker access"
+          },
+          {
+            "check": "Waypoint create, edit and stale selection rejection"
+          },
+          {
+            "check": "Deletion uses OpenCPN undo; retained snapshot survives"
+          },
+          {
+            "check": "Route name edit, upstream reversal and immutable revision guard"
+          },
+          {
+            "check": "Repeated waypoint identity and layer protections"
+          },
+          {
+            "check": "Activation uses selected navigation; active route edits refused"
+          },
+          {
+            "check": "Stop navigation and explicit anchor-watch creation"
+          },
+          {
+            "check": "Anchor observation after normal processing; clearing retains mark"
+          },
+          {
+            "check": "AIS upstream CPA/TCPA, unavailable sentinel, loss, freshness and lifetime"
+          },
+          {
+            "check": "Route, waypoint and AIS chart selection use owned deferred cards"
+          }
+        ],
+        "phase": "done"
+      },
+      "ais_selection": "Actual target card to existing chart target/frame; copied selection identity reported",
+      "checks": [
+        "Navigation object and AIS contracts through actual integrated executable",
+        "Deferred chart-selection cards and clean close",
+        "Route and restored waypoint persisted in existing OpenCPN navobj.db"
+      ],
+      "result": "loopback transport and lifecycle passed; numeric and stale screenshot review required",
+      "sent": {
+        "rmc": 50,
+        "gga": 50
+      },
+      "transport_errors": []
+    },
+    "signalk-results.json": {
+      "authority": "Linux development",
+      "checks": [
+        "Actual WebSocket driver: depth, pack V/SOC, motor RPM and UTF-8 source provenance",
+        "Deep/oversized/wrong-type/control-text/malformed JSON: process survives and retained input expires",
+        "Valid input recovers through same connection after rejected frames",
+        "Explicit null invalidates depth instead of displaying zero",
+        "Whole marine input loss expires battery and suppresses predictions"
+      ],
+      "protocol": "Actual OpenCPN Signal K WebSocket input on loopback only",
+      "frames_sent": 25,
+      "build_commit": "cef66753f60ffc69aa534f4157ac59734c4a9d32",
+      "status": "passed",
+      "transport_errors": []
+    },
+    "soak-short/results.json": {
+      "status": "passed",
+      "requested_seconds": 120,
+      "release_duration": false,
+      "authority": "Linux development",
+      "scope": "Actual process, DEMO vessel/route/AIS, software chart, repeated UI and dropout recovery; no hardware commands",
+      "samples": 12,
+      "actions": [
+        {
+          "elapsed": 0.0,
+          "slot": 0,
+          "page_observation_seconds": 0.053485114985960536
+        },
+        {
+          "elapsed": 20.042,
+          "slot": 1,
+          "page_observation_seconds": 0.25085308800044004
+        },
+        {
+          "elapsed": 40.11,
+          "slot": 2,
+          "page_observation_seconds": 0.7581159719993593
+        },
+        {
+          "elapsed": 60.086,
+          "slot": 3,
+          "page_observation_seconds": 0.45346804898872506
+        },
+        {
+          "elapsed": 80.16,
+          "slot": 4,
+          "page_observation_seconds": 0.14839903700340074,
+          "dropout": "stale"
+        },
+        {
+          "elapsed": 100.131,
+          "slot": 5,
+          "page_observation_seconds": 0.2538672590017086,
+          "recovered": true
+        }
+      ],
+      "screenshots": [
+        "start.png",
+        "end.png"
+      ],
+      "build_commit": "0f02293178b8b7f196c0aecd3afb8ac0b391d6b1",
+      "startup_seconds": 4.950586902996292,
+      "elapsed_seconds": 120.06645710999146,
+      "resource_growth": {
+        "resident_bytes": 7471104.0,
+        "handles": 0.0,
+        "threads": 0.0
+      },
+      "growth_limits": {
+        "resident_bytes": 134217728,
+        "private_bytes": 134217728,
+        "handles": 32,
+        "gdi_objects": 64,
+        "user_objects": 64,
+        "threads": 8
+      },
+      "cpu_percent_one_core": 6.220641218588955,
+      "maximum_page_observation_seconds": 0.7581159719993593,
+      "ui_observation_limit_seconds": 8,
+      "route_progress_samples": 8
+    }
+  },
+  "logs": {
+    "beta-hardening-contracts.log": "10de789d61e5584c03a5593699839ad1f2377b1fb35c7f689677dd320b91abaa",
+    "beta-hardening-final-tests.log": "9fe4717e20ab8813d1d63ff0de687a4dc7de7b318f61eb8696b1bc8d491abfea",
+    "beta-ais-clock-runtime.log": "a10a3d764e0453505f65196d28ca89a9ad3546a347588719d0b22efcb18b04df",
+    "beta-signalk-runtime-final.log": "d4cdc4d2b2c77b1584a2f74922200a2b9413a4d62226dc37436035be58e65bbe",
+    "beta-soak-short.log": "677f1cd32ef73f191eb727ead899b7a531d0166ec1daa18bae5e22b6c003a960",
+    "beta-touch-popup-focus.log": "9cb33dced1fd2e6053f3bcfabadc93b9bdfb185993abb42d8421ca634cf3142d",
+    "beta-ais-clock-final.log": "c178eb11e1f36bb65bb8b10efdd8d8cb772be7b9a23c01d633d335228b6f0cbc"
+  },
+  "failed_ci": {
+    "commit": "84f7122103b8d271824bb571a937dd64cc8a043a",
+    "run": "https://github.com/ThereptileII/Work/actions/runs/36117089450",
+    "linux_failure": "AIS chart selection cleared by unstable wall/monotonic conversion",
+    "windows_failure": "No advisory sampled while isolated AIS alarm fixture raced normal upstream timer",
+    "accepted": false
+  }
+}

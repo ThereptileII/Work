@@ -14,7 +14,18 @@ namespace {
 class SystemPopup final : public wxPopupTransientWindow {
 public:
   explicit SystemPopup(wxWindow *parent)
-      : wxPopupTransientWindow(parent, wxBORDER_NONE) {}
+      : wxPopupTransientWindow(parent, wxBORDER_NONE) {
+    // GTK's generic transient focus handler observes CHAR, while focused
+    // custom controls receive CHAR_HOOK first. Close explicitly on Escape so
+    // the popup's pointer grab cannot consume the next navigation action.
+    Bind(wxEVT_CHAR_HOOK, [this](wxKeyEvent &event) {
+      if (event.GetKeyCode() != WXK_ESCAPE) { event.Skip(); return; }
+      auto *parent = GetParent();
+      Dismiss();
+      Destroy();
+      if (parent) parent->SetFocus();
+    });
+  }
 
 protected:
   void OnDismiss() override { Destroy(); }

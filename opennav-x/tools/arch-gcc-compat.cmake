@@ -8,13 +8,17 @@ if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU" AND CMAKE_CXX_COMPILER_VERSION VERSION_G
     # RapidJSON 1.1.0 contains an unused invalid template assignment operator.
     # GCC 16 diagnoses it eagerly; defer that diagnostic as older compilers do.
     # Instantiating the invalid operator would still be an error. Restrict this
-    # compatibility flag to the three translation units including the header.
+    # compatibility flag to translation units including this upstream header.
     function(opennav_rapidjson_gcc16_compat)
       foreach(unit ais_decoder comm_decoder comm_drv_signalk_net)
         set_property(SOURCE "${CMAKE_SOURCE_DIR}/model/src/${unit}.cpp"
           DIRECTORY "${CMAKE_SOURCE_DIR}/model"
           APPEND PROPERTY COMPILE_OPTIONS -Wno-template-body)
       endforeach()
+      if(OPENNAV_ROOT)
+        set_property(SOURCE "${OPENNAV_ROOT}/src/integration/SignalKInstruments.cpp"
+          APPEND PROPERTY COMPILE_OPTIONS -Wno-template-body)
+      endif()
     endfunction()
     cmake_language(DEFER CALL opennav_rapidjson_gcc16_compat)
   endif()
