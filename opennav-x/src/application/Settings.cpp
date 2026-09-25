@@ -44,6 +44,7 @@ std::string SettingNumber(double n) {
 }
 void ValidateSettings(const Settings &s) {
   adapters::ValidateSt4000Binding(s.pilot);
+  adapters::ValidateBoatN2kBinding(s.boat_bridge);
   ValidateSignalKMappings(s.signal_k_mappings);
   auto display = [](const std::vector<std::string> &keys, std::size_t maximum) {
     Require(!keys.empty() && keys.size() <= maximum,
@@ -133,6 +134,10 @@ std::string EncodeSettings(const Settings &s) {
     r["pilot.interface"] = s.pilot.interface_id;
     r["pilot.name"] = s.pilot.name;
     r["pilot.permission"] = s.pilot.permit_control ? "manual" : "display-only";
+  }
+  if (!s.boat_bridge.interface_id.empty()) {
+    r["boat_bridge.interface"] = s.boat_bridge.interface_id;
+    r["boat_bridge.name"] = s.boat_bridge.name;
   }
   if (!s.signal_k_mappings.empty())
     r["signal_k_mappings"] = ExportSignalKMappings(s.signal_k_mappings);
@@ -236,6 +241,10 @@ Settings DecodeSettings(const std::string &record) {
     Require(permission == "display-only" || permission == "manual",
             "Unknown pilot permission; control cannot be enabled");
     s.pilot.permit_control = permission == "manual";
+  }
+  if (r.count("boat_bridge.interface")) {
+    s.boat_bridge.interface_id = take("boat_bridge.interface");
+    s.boat_bridge.name = take("boat_bridge.name");
   }
   auto display = [&](const char *key, std::vector<std::string> &target) {
     if (!r.count(key))

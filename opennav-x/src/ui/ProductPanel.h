@@ -44,6 +44,7 @@ struct ProductState {
   smartnav::NavigationAdvice advice;
   application::Settings settings;
   std::string settings_status;
+  std::string boat_bridge_status;
   std::vector<vessel::SourceHealth> sources;
   adapters::RadarState radar;
   vessel::Time now{};

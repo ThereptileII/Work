@@ -81,6 +81,7 @@ struct Propulsion {
   // Normalized transmission enum: 0 forward, 1 neutral, 2 reverse.
   // Unknown/NA is missing, never interpreted as forward.
   Sample gear_code;
+  Sample regeneration_code; // 0 off, 1 one bar, 2 two bars; never inferred power.
   TextSample gear, regeneration;
 };
 struct Battery {

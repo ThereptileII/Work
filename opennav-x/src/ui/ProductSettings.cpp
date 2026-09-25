@@ -242,6 +242,8 @@ void ProductPanel::EnergySettings() {
   }
 }
 void ProductPanel::Sources() {
+  // Mapping is configured explicitly against an observed NAME, never an address
+  // guessed from a CAN example or inferred from a vendor frame alone.
   Heading("Data Sources",
           "OpenCPN input bus / Owned observations / Source precedence");
   Action("Back to Settings",
@@ -310,6 +312,31 @@ void ProductPanel::Sources() {
     Text(W(m.path) + " / " + W(vessel::Describe(m.quantity).name) + W(" / × ") +
          N(m.scale) + " + " + N(m.offset) + " " +
          W(vessel::Describe(m.quantity).unit));
+  Heading("Boat propulsion bridge", "Explicit marine mapping / no PC EV-CAN decoding");
+  LiveText([](const auto &s) { return W(s.boat_bridge_status); });
+  Text("The inspected bridge uses engine coolant for motor temperature and a "
+       "virtual fuel tank for SOC. This mapping suppresses that fictional tank "
+       "and reads its documented regeneration extension. Freshness requires "
+       "the reviewed v2 producer expiry firmware; older input stays uncertain "
+       "and cannot support energy predictions.");
+  BeginActions(2);
+  Action("Bind boat propulsion bridge", [this] {
+    auto s=actions_.settings();
+    auto values=EditSheet(*this,mode_,"Boat propulsion identity",
+        "Copy the exact interface and NAME from an actual address claim. "
+        "Verify the commissioning firmware procedure. No control output is enabled.",
+        {{"OpenCPN interface",W(s.boat_bridge.interface_id),140},
+         {"Observed NAME / lowercase hex",W(s.boat_bridge.name),16}});
+    if(!values)return;
+    s.boat_bridge={(*values)[0],(*values)[1]};SaveSettings(std::move(s));
+  });
+  Action("Remove boat mapping",[this] {
+    if(!ConfirmSheet(*this,mode_,"Remove boat mapping?",
+       "Standard PGN meanings return. The inspected bridge's virtual SOC fuel "
+       "tank must not be mistaken for physical fuel. Old samples will be cleared.","Remove mapping"))return;
+    auto s=actions_.settings();s.boat_bridge={};SaveSettings(std::move(s));
+  },!state_.settings.boat_bridge.interface_id.empty());
+  EndActions();
   for (const auto &q : vessel::Quantities()) {
     Action(W(q.name), [this, q] {
       source_quantity_ = q.quantity;

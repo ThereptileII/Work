@@ -184,7 +184,12 @@ void PreviewPanel::Paint(wxPaintEvent &) {
     p.Text("Gear: " + (gear.value ? W(*gear.value) + " / " +
                                         W(vessel::QualityName(gear.quality))
                                   : "Unavailable"),
-           b.x + 20, b.y + 284, 11, c.secondary);
+           b.x + 20, b.y + 274, 11, c.secondary, false, cw - 40);
+    const auto regen = vessel::AssessText(state_.propulsion.regeneration, now_);
+    p.Text("Regen setting: " + (regen.value ? W(*regen.value) + " / " +
+                                    W(vessel::QualityName(regen.quality))
+                                  : "Unavailable"),
+           b.x + 20, b.y + 292, 11, c.secondary, false, cw - 40);
     b = xy(2);
     p.Card(b.x, b.y, cw, ch, "DESTINATION");
     p.Text(DestinationName(state_), b.x + 20, b.y + 48, 19, c.primary, true,

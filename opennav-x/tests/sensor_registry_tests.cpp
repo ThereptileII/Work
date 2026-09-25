@@ -101,6 +101,19 @@ void TestValidity() {
     invalid = true;
   }
   Check(invalid, "Invalid freshness policy rejected");
+  for(double value:{-1.0,3.0,.5,std::numeric_limits<double>::infinity(),
+                    std::numeric_limits<double>::quiet_NaN()}) {
+    VesselState s;
+    s.propulsion.gear_code={value,"malformed enum",t,Validity::Measured};
+    s.propulsion.regeneration_code=s.propulsion.gear_code;
+    NormalizePropulsionStates(s);
+    Check(!s.propulsion.gear.value&&!s.propulsion.regeneration.value,
+          "Invalid discrete values never index the label tables");
+  }
+  VesselState zero;
+  zero.propulsion.regeneration_code={0,"real zero setting",t,Validity::Measured};
+  NormalizePropulsionStates(zero);
+  Check(zero.propulsion.regeneration.value=="Off","Measured zero remains distinct from unavailable");
 }
 void TestBattery() {
   VesselState s;

@@ -7,6 +7,21 @@ on:
 permissions:
   contents: read
 jobs:
+  boat-firmware:
+    name: Boat C6 producer expiry compile (no flashing)
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+      - name: Compile hash-pinned producer with reviewed expiry patch
+        run: |
+          mkdir -p opennav-x/evidence/local
+          python3 opennav-x/tools/build-boat-firmware-linux.py > opennav-x/evidence/local/boat-firmware-compile.log 2>&1
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: boat-firmware-${{ github.sha }}
+          path: opennav-x/evidence/local
   stock-prerequisite:
     name: Official OpenCPN installation prerequisite
     runs-on: windows-2022
@@ -41,6 +56,8 @@ jobs:
         run: python opennav-x/tools/verify-distribution-inputs.py
       - name: Verify the exact boat translator parser for host interoperability tests
         run: python opennav-x/tools/fetch-st4000-oracle.py opennav-x/build/st4000-firmware
+      - name: Prepare reviewed boat producer expiry and actual codec oracle
+        run: python opennav-x/tools/prepare-boat-firmware.py
       - name: Installer filesystem contracts in native Windows PowerShell 5.1
         if: runner.os == 'Windows'
         run: |
@@ -50,10 +67,10 @@ jobs:
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
       - name: Configure Linux contracts
         if: runner.os == 'Linux'
-        run: cmake -S opennav-x -B opennav-x/build/contracts -DOPENNAV_ST4000_ORACLE="${{ github.workspace }}/opennav-x/build/st4000-firmware"
+        run: cmake -S opennav-x -B opennav-x/build/contracts -DOPENNAV_ST4000_ORACLE="${{ github.workspace }}/opennav-x/build/st4000-firmware" -DOPENNAV_BOAT_ORACLE="${{ github.workspace }}/opennav-x/build/boat-firmware/Nissan_ev_to_NMEA_and_wifi"
       - name: Configure contracts for the supported Windows application ABI
         if: runner.os == 'Windows'
-        run: cmake -S opennav-x -B opennav-x/build/contracts -G "Visual Studio 17 2022" -A Win32 -DOPENNAV_ST4000_ORACLE="${{ github.workspace }}/opennav-x/build/st4000-firmware"
+        run: cmake -S opennav-x -B opennav-x/build/contracts -G "Visual Studio 17 2022" -A Win32 -DOPENNAV_ST4000_ORACLE="${{ github.workspace }}/opennav-x/build/st4000-firmware" -DOPENNAV_BOAT_ORACLE="${{ github.workspace }}/opennav-x/build/boat-firmware/Nissan_ev_to_NMEA_and_wifi"
       - run: cmake --build opennav-x/build/contracts --config Release
       - run: ctest --test-dir opennav-x/build/contracts -C Release --output-on-failure
       - name: Repeat the restart handoff with deliberately delayed result publication
@@ -127,6 +144,8 @@ jobs:
         run: python3 opennav-x/tools/smoke-navigation.py --instruments
       - name: Marine N2K commissioning inputs and loss of data
         run: python3 opennav-x/tools/smoke-navigation.py --n2k
+      - name: Boat-specific N2K mapping and independent producer expiry
+        run: python3 opennav-x/tools/smoke-navigation.py --boat
       - name: Manual pilot through actual OpenCPN TCP and loopback feedback
         run: python3 opennav-x/tools/smoke-pilot.py
       - name: Navigation objects, AIS and anchor integration
@@ -243,7 +262,7 @@ jobs:
           }
   publish-alpha:
     name: Publish Alpha after both platform and installer gates
-    needs: [contracts, linux, linux-integration, windows-upstream-abi, windows-integration, application-abi, stock-prerequisite]
+    needs: [contracts, linux, linux-integration, windows-upstream-abi, windows-integration, application-abi, stock-prerequisite, boat-firmware]
     runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262

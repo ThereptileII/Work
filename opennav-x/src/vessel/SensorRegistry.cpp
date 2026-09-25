@@ -53,7 +53,9 @@ namespace opennav::vessel {
   X(Gear, propulsion.gear_code, "gear", "Transmission gear",                   \
     "0 forward / 1 neutral / 2 reverse", 0, 2)                                 \
   X(OtherTank, tanks.other_percent, "other_tank", "Other fluid tank", "%", 0,  \
-    100)
+    100)                                                                      \
+  X(Regeneration, propulsion.regeneration_code, "regeneration",              \
+    "Regeneration setting", "0 off / 1 one bar / 2 two bars", 0, 2)
 
 const std::vector<QuantityInfo> &Quantities() {
   static const std::vector<QuantityInfo> values = {
@@ -129,7 +131,7 @@ Admission SensorRegistry::Observe(SensorObservation o, Time now) {
                      (o.sample.validity == Validity::Measured ||
                       o.sample.validity == Validity::Estimated ||
                       o.sample.validity == Validity::Uncertain) &&
-                     (o.quantity != Quantity::Gear ||
+                     ((o.quantity != Quantity::Gear && o.quantity != Quantity::Regeneration) ||
                       std::floor(*o.sample.value) == *o.sample.value);
   if (!valid) {
     o.sample.value.reset();
@@ -200,6 +202,14 @@ SourceSelection SensorRegistry::Select(Quantity q, Time now) const {
 VesselState SensorRegistry::Merge(VesselState s, Time now) const {
   for (const auto &q : Quantities())
     Field(s, q.quantity) = Select(q.quantity, now).sample;
+  NormalizePropulsionStates(s);
+  return s;
+}
+void NormalizePropulsionStates(VesselState &s) {
+  const auto enum_value=[](const Sample &v) {
+    return v.value && v.validity!=Validity::Invalid && std::isfinite(*v.value) &&
+           *v.value>=0 && *v.value<=2 && std::floor(*v.value)==*v.value;
+  };
   const auto &gear = s.propulsion.gear_code;
   s.propulsion.gear = {{},
                        gear.source,
@@ -207,11 +217,17 @@ VesselState SensorRegistry::Merge(VesselState s, Time now) const {
                        gear.validity,
                        gear.freshness,
                        gear.device_id};
-  if (gear.value && gear.validity != Validity::Invalid) {
+  if (enum_value(gear)) {
     static const char *names[] = {"Forward", "Neutral", "Reverse"};
     s.propulsion.gear.value = names[static_cast<unsigned>(*gear.value)];
   }
-  return s;
+  const auto &regen = s.propulsion.regeneration_code;
+  s.propulsion.regeneration = {{}, regen.source, regen.observed_at,
+                               regen.validity, regen.freshness, regen.device_id};
+  if (enum_value(regen)) {
+    static const char *names[] = {"Off", "One bar", "Two bars"};
+    s.propulsion.regeneration.value = names[static_cast<unsigned>(*regen.value)];
+  }
 }
 std::vector<SourceHealth> SensorRegistry::Health(Time now) const {
   std::vector<SourceHealth> result;

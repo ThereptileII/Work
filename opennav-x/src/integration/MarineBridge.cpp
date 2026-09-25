@@ -25,6 +25,7 @@ MarineBridge::MarineBridge() {
   changes->Init(CommDriverRegistry::GetInstance().evt_driverlist_change,
                 [this](ObservedEvt &) {
                   identities_.Clear();
+                  boat_.Reset();
                   network_generations_.clear();
                   sources_.Clear();
                   last_received_.reset();
@@ -47,6 +48,7 @@ MarineBridge::MarineBridge() {
                                                        m->payload.begin() + 21),
                             *at, now);
     if (result == ClaimResult::Changed || result == ClaimResult::Conflict) {
+      boat_.Reset();
       // Conservative invalidation: no old-address samples survive reassignment.
       // Normal incoming messages repopulate the bounded reducer.
       sources_.Clear();
@@ -54,6 +56,20 @@ MarineBridge::MarineBridge() {
     }
   });
   listeners_.push_back(std::move(claims));
+  auto vendor = std::make_unique<ObsListener>();
+  vendor->Init(Nmea2000Msg(61184), [this](ObservedEvt &event) {
+    const auto m = UnpackEvtPointer<Nmea2000Msg>(event);
+    if (!m || !m->source || m->payload.size()!=22 || m->payload[0]!=0x93 ||
+        m->payload[3]!=0 || m->payload[4]!=0xef || m->payload[5]!=0 ||
+        m->payload[12]!=8 || m->payload[7]>=254) return;
+    const auto now=vessel::Clock::now();
+    const auto at=Receipt(*m,now,std::chrono::system_clock::now());
+    if(!at || !CheckConnection(m->source->iface,*at))return;
+    Accept(boat_.Observe(identities_.Label(m->source->iface,m->payload[7]),
+                         m->payload[7],61184,
+                         {m->payload.begin()+13,m->payload.begin()+21},*at,now),now);
+  });
+  listeners_.push_back(std::move(vendor));
   for (const auto pgn : InstrumentPgns()) {
     auto listener = std::make_unique<ObsListener>();
     listener->Init(Nmea2000Msg(pgn), [this](ObservedEvt &event) {
@@ -113,6 +129,7 @@ bool MarineBridge::CheckConnection(const std::string &iface, vessel::Time at) {
     auto old = network_generations_.find(iface);
     if (old == network_generations_.end() || old->second != generation) {
       identities_.Clear();
+      boat_.Reset();
       sources_.Clear();
       last_received_.reset();
       network_generations_[iface] = generation;
@@ -127,7 +144,9 @@ void MarineBridge::Accept(std::vector<vessel::SensorObservation> observations,
   if (!wxIsMainThread())
     throw std::logic_error(
         "Marine observation requires the application thread");
+  boat_.Map(observations,now);
   for (auto &observation : observations) {
+    boat_.Assess(observation.sample,observation.quantity,now);
     const auto time = observation.sample.observed_at;
     const auto admission = sources_.Observe(std::move(observation), now);
     if ((admission == vessel::Admission::Accepted ||
@@ -139,10 +158,23 @@ void MarineBridge::Accept(std::vector<vessel::SensorObservation> observations,
 vessel::VesselState MarineBridge::Merge(vessel::VesselState state,
                                         vessel::Time now) const {
   auto result = sources_.Merge(std::move(state), now);
+  for(const auto &q:vessel::Quantities())
+    boat_.Assess(vessel::Field(result,q.quantity),q.quantity,now);
+  vessel::NormalizePropulsionStates(result);
   if (last_received_)
     result.connectivity.status = {"Observed marine instrument input",
                                   "OpenCPN input bus", *last_received_,
                                   vessel::Validity::Measured};
   return result;
+}
+void MarineBridge::SetBoatBridge(const adapters::BoatN2kBinding &binding) {
+  if(binding.interface_id!=boat_binding_.interface_id || binding.name!=boat_binding_.name)
+    sources_.Clear();
+  boat_.Configure(binding);boat_binding_=binding;
+}
+std::vector<vessel::SourceHealth> MarineBridge::Health(vessel::Time now) const {
+  auto values=sources_.Health(now);
+  for(auto &value:values)boat_.Assess(value.sample,value.quantity,now);
+  return values;
 }
 } // namespace opennav::integration

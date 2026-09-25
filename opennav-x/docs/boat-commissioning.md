@@ -24,6 +24,11 @@ instruments and physical STANDBY available. SmartNav is advice only.
 7. Inspect **producer sensor expiry**: the bridge must stop presenting retained
    EV data as fresh N2K values when its sensor input disappears. A network-only
    unplug test is insufficient. See [inspection](beta-boat-source-inspection.md).
+   The [reviewed producer expiry patch](boat-propulsion-contract.md) is available
+   as source and has a full C6 compile gate. Firmware flashing remains deliberate
+   and separate from installing OpenNav. Configure the exact observed boat bridge
+   NAME in Data Sources. v1 data stays uncertain; verify v2 per-group loss and
+   recovery before trusting dependent energy estimates.
 
 ## Phase B — propulsion and calibration
 

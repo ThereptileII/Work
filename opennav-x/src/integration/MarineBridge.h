@@ -1,6 +1,7 @@
 #pragma once
 #include "integration/MarineDecoder.h"
 #include "integration/N2kSourceIdentity.h"
+#include "adapters/BoatN2k.h"
 #include "observable.h"
 #include <algorithm>
 #include <memory>
@@ -18,6 +19,9 @@ public:
   std::vector<N2kIdentity> Identities() const {
     return identities_.Observations();
   }
+  void SetBoatBridge(const adapters::BoatN2kBinding &binding);
+  std::vector<vessel::SourceHealth> Health(vessel::Time now) const;
+  std::string BoatBridgeStatus(vessel::Time now) const { return boat_.Status(now); }
   void SetBindings(std::vector<SignalKBinding> bindings) {
     application::ValidateSignalKMappings(bindings);
     const bool same =
@@ -38,6 +42,8 @@ private:
   std::vector<std::unique_ptr<ObsListener>> listeners_;
   vessel::SensorRegistry sources_;
   N2kSourceIdentity identities_;
+  adapters::BoatN2k boat_;
+  adapters::BoatN2kBinding boat_binding_;
   std::map<std::string, std::uint64_t> network_generations_;
   std::vector<SignalKBinding> bindings_;
   std::optional<vessel::Time> last_received_;

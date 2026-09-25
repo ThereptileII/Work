@@ -91,6 +91,7 @@ void Privacy() {
       "private connection";
   r.assumptions.energy.curve.source = "C:/Personal/curve.csv";
   r.assumptions.pilot = {"private pilot interface", "c0508700e76004d2", true};
+  r.assumptions.boat_bridge = {"private propulsion interface", "40328200ffd23456"};
   const auto decoded =
       diagnostics::DecodeRecording(diagnostics::EncodeRecording(r));
   Check(!decoded.frames[0].state.navigation.route &&
@@ -101,6 +102,7 @@ void Privacy() {
         "Speed retained for calibration");
   Check(decoded.assumptions.sources.empty() &&
             decoded.assumptions.pilot.interface_id.empty() &&
+            decoded.assumptions.boat_bridge.interface_id.empty() &&
             !decoded.assumptions.pilot.permit_control &&
             decoded.assumptions.energy.curve.source != "C:/Personal/curve.csv",
         "Only selected model assumptions retained");

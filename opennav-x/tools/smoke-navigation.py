@@ -17,10 +17,11 @@ from diagnostic_snapshot import read_json_snapshot
 route_fixture = sys.argv[1:] == ['--route-fixture']
 instruments = sys.argv[1:] == ['--instruments']
 objects = sys.argv[1:] == ['--objects']
-n2k = sys.argv[1:] == ['--n2k']
+boat = sys.argv[1:] == ['--boat']
+n2k = sys.argv[1:] == ['--n2k'] or boat
 if sys.argv[1:] and not (route_fixture or instruments or objects or n2k):
-    raise SystemExit('Usage: smoke-navigation.py [--route-fixture|--instruments|--objects|--n2k]')
-prefix = 'n2k' if n2k else 'objects' if objects else 'route' if route_fixture else 'instruments' if instruments else 'navigation'
+    raise SystemExit('Usage: smoke-navigation.py [--route-fixture|--instruments|--objects|--n2k|--boat]')
+prefix = 'boat' if boat else 'n2k' if n2k else 'objects' if objects else 'route' if route_fixture else 'instruments' if instruments else 'navigation'
 root = Path(__file__).resolve().parents[1]
 windows = sys.platform == 'win32'
 evidence = root / 'evidence/local'
@@ -44,6 +45,15 @@ with (profile / 'opencpn.conf').open('a') as stream:
     stream.write('\n[Settings/NMEADataSource]\nDataConnections='
                  f'1;0;127.0.0.1;{port};{1 if n2k else 0};;4800;1;0;0;;0;;0;0;0;0;1;'
                  'SIMULATED loopback navigation fixture;0;;0;1;\n')
+    if boat:
+        iface=f'TCP:127.0.0.1:{port}'
+        settings={k:'' for k in ['corridor','draft','efficiency','hotel','margin']}
+        settings.update({'capacity':'24','reserve':'20','minimum_speed':'0.5',
+            'battery':f'NMEA2000/{iface}/NAME-40328200ffd23456/source-35/instance-0',
+            'current':'charge','consumption':'measured','model_source':'Explicit isolated commissioning test',
+            'boat_bridge.interface':iface,'boat_bridge.name':'40328200ffd23456'})
+        record='OpenNavXSettings 1\n'+''.join(json.dumps(k)+' '+json.dumps(v)+'\n' for k,v in sorted(settings.items()))
+        stream.write('\n[OpenNav]\nAlphaSettings='+record.replace('\\','\\\\').replace('\n','\\n')+'\n')
 stop = threading.Event()
 connected = threading.Event()
 phase = ['none']
@@ -58,7 +68,7 @@ def sentence(body):
 
 def transmit():
     peer = None
-    n2k_name = bytes.fromhex('4523c1ff008750c0')
+    n2k_name = bytes.fromhex('5634d2ff00823240' if boat else '4523c1ff008750c0')
     try:
         while not stop.is_set():
             try:
@@ -71,7 +81,7 @@ def transmit():
             return
         peer.settimeout(2)
         connected.set()
-        while not stop.wait(.3):
+        while not stop.wait(.1 if boat else .3):
             mode = phase[0]
             if mode == 'none':
                 continue
@@ -91,6 +101,12 @@ def transmit():
                     payloads[127493] = bytes.fromhex('00ffffffffffffff')
                 if mode == 'reidentified':
                     n2k_name = bytes.fromhex('4623c1ff008750c0')
+                if boat:
+                    payloads[127505]=bytes.fromhex('006842e8030000ff') # Virtual 68% / 100 L
+                    if mode != 'noheartbeat':
+                        version=1 if mode=='oldproducer' else 2
+                        flags=1 if version==1 else 0x81 if mode=='expired' else 0xf1
+                        payloads={61184:bytes([7,version,2,flags,255,255,255,255]),**payloads}
                 payloads = {60928: n2k_name, **payloads}
                 # Actisense complete-PGN ASCII, source 35, destination 255,
                 # priority 6. Existing OpenCPN network driver owns framing.
@@ -136,6 +152,10 @@ report = {'authority': 'native Windows' if windows else 'Linux development',
 if n2k:
     report['expected'] = {'battery_voltage_v': 343, 'battery_current_source_a': -21,
                           'soc_percent': 68, 'motor_rpm': 820, 'coolant_c': 62, 'gear': 'Forward'}
+if boat:
+    report['expected'].pop('coolant_c')
+    report['expected'].update({'motor_c':62,'virtual_fuel':'suppressed','regeneration':'Two bars',
+                               'v1_quality':'UNCERTAIN','v2_expiry':'per sensor group'})
 if instruments:
     report['expected'] = {'selected_sog_kn': 6.3, 'selected_cog_deg': 147,
                           'depth_below_transducer_m': 8.4, 'heading_true_deg': 149,
@@ -216,6 +236,47 @@ try:
             ui.set_text_in_dialog(app.pid,'Edit waypoint','ALPHA TEST UI edited','ALPHA TEST edited')
             ui.click_text(app.pid,'Save')
             report['native_edit_confirmation']='Themed property sheet saves and refreshes; delete cancellation preserves mark'
+    elif boat:
+        def snapshot(name):
+            record=read_json_snapshot(profile/'opennav-diagnostics.json')
+            (evidence/f'boat-{name}.json').write_text(json.dumps(record,indent=2))
+            return record,{v['name']:v for v in record['data']}
+        phase[0]='oldproducer';time.sleep(3)
+        record,values=snapshot('v1-uncertain')
+        assert values['Battery SOC']['quality']=='UNCERTAIN',values['Battery SOC']
+        assert values['Motor temperature']['quality']=='UNCERTAIN',values['Motor temperature']
+        assert 'value' not in values['Whole-pack net discharge']
+        assert 'value' not in values['Fuel tank']
+        if windows:ui.click_text(app.pid,'Energy')
+        else:subprocess.run(['xdotool','mousemove','275','764','click','1'],env=env,check=True)
+        capture('01-producer-unverified')
+        phase[0]='rmc';time.sleep(3)
+        record,values=snapshot('v2-live')
+        for name,value in {'Battery SOC':68,'Battery voltage':343,'Motor speed':820,'Motor temperature':62}.items():
+            assert abs(values[name]['value']-value)<.01 and values[name]['quality']=='LIVE',(name,values[name])
+        assert abs(values['Whole-pack net discharge']['value']-7.203)<.001
+        assert 'value' not in values['Engine coolant temperature'] and 'value' not in values['Fuel tank']
+        regen=next(v for v in record['text_data'] if v['name']=='Regeneration')
+        assert regen['value']=='Two bars' and regen['quality']=='LIVE',regen
+        capture('02-verified-marine-fields')
+        phase[0]='expired';time.sleep(2)
+        record,values=snapshot('producer-expired')
+        for name in ['Battery SOC','Battery voltage','Motor speed','Motor temperature','Whole-pack net discharge']:
+            assert 'value' not in values[name],(name,values[name])
+        assert next(v for v in record['text_data'] if v['name']=='Gear')['value']=='Forward'
+        capture('03-sensor-expiry-with-network-live')
+        phase[0]='noheartbeat';time.sleep(2)
+        record,values=snapshot('heartbeat-lost')
+        assert values['Battery SOC']['quality']=='UNCERTAIN' and 'value' not in values['Whole-pack net discharge']
+        phase[0]='rmc';time.sleep(2)
+        record,values=snapshot('recovered')
+        assert values['Battery SOC']['quality']=='LIVE'
+        report['checks']=['Actual OpenCPN bus with explicit NAME-bound boat mapping',
+            'Legacy producer values uncertain; no net power or fictitious fuel',
+            'v2 per-group expiry, real motor field, regeneration and coherent V x I',
+            'Continuing network traffic cannot mask expired EV sensor groups',
+            'Heartbeat loss suppresses dependent estimates; new sensor input recovers']
+        assert not failures,failures
     elif n2k:
         def n2k_snapshot(name):
             record = read_json_snapshot(profile/'opennav-diagnostics.json')

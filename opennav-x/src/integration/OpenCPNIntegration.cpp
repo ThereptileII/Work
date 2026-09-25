@@ -333,6 +333,7 @@ void Attach(MyFrame& frame, wxAuiManager& manager, wxFileConfig& config) {
   marine = std::make_unique<integration::MarineBridge>();
   auto configure_sources = [] {
     marine->SetBindings(settings->Read().signal_k_mappings);
+    marine->SetBoatBridge(settings->Read().boat_bridge);
     for (const auto &q : vessel::Quantities()) {
       auto p = settings->Read().sources.find(q.quantity);
       marine->Sources().Configure(q.quantity,
@@ -363,6 +364,7 @@ void Attach(MyFrame& frame, wxAuiManager& manager, wxFileConfig& config) {
   actions.commissioning = commissioning;
   actions.settings = [] { return settings->Read(); };
   actions.settings_status = [] { return settings->Status(); };
+  actions.boat_bridge_status = [] { return marine->BoatBridgeStatus(vessel::Clock::now()); };
   actions.save_settings = [configure_sources](const auto &s) {
     if (commissioning && commissioning->Replaying())
       return application::CommandResult{
@@ -380,7 +382,7 @@ void Attach(MyFrame& frame, wxAuiManager& manager, wxFileConfig& config) {
     return result;
   };
   actions.source_health = [] {
-    return marine->Sources().Health(vessel::Clock::now());
+    return marine->Health(vessel::Clock::now());
   };
   actions.radar = [] { return radar.GetState(); };
   // Names assigned by MyFrame::CreateCanvasLayout in the pinned OpenCPN.
@@ -524,6 +526,8 @@ void Attach(MyFrame& frame, wxAuiManager& manager, wxFileConfig& config) {
             static_cast<int>(view->elapsed.count());
       }
     }
+    if (marine && !state.replayed && !state.simulated)
+      runtime["boat_bridge"]["status"] = wxString::FromUTF8(marine->BoatBridgeStatus(now));
     if (pilots && !state.replayed) {
       const auto view = pilots->Select(state.simulated).GetState(now);
       auto &pilot = runtime["pilot"];
@@ -559,7 +563,7 @@ void Attach(MyFrame& frame, wxAuiManager& manager, wxFileConfig& config) {
         energy,
         state.replayed ? commissioning->ReplayAssumptions() : settings->Read(),
         state.replayed ? std::vector<vessel::SourceHealth>{}
-                       : marine->Sources().Health(now),
+                       : marine->Health(now),
         page, runtime);
   };
   actions.demo_chart=[] { if(g_bDeferredInitDone) JumpToPosition(59.08,18.5,0.003); };

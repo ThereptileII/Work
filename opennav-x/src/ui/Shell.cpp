@@ -363,6 +363,9 @@ void Shell::Tick() {
     p.settings = config;
     if (actions_.settings_status)
       p.settings_status = actions_.settings_status();
+    if (actions_.boat_bridge_status && !simulation_ && !replay)
+      p.boat_bridge_status = actions_.boat_bridge_status();
+    else p.boat_bridge_status = "DEMO/REPLAY / live boat mapping not applied";
     if (actions_.source_health && !replay)
       p.sources = actions_.source_health();
     if (actions_.radar && !replay)

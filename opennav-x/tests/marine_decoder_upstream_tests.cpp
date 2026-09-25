@@ -535,3 +535,31 @@ TEST(OpenNavMarine, ErrorCodesCannotBecomePlausibleMeasurements) {
   SetN2kPGN127505(m, 0, N2kft_Error, 70, 100);
   EXPECT_TRUE(DecodeN2kInstruments(m.PGN, Envelope(m), "test", epoch).empty());
 }
+
+TEST(OpenNavMarine, BoundBoatFieldsUseActualPinnedMarineDecoder) {
+  adapters::BoatN2k bridge;
+  bridge.Configure({"boat", "40328200ffd23456"});
+  const std::string identity="boat/NAME-40328200ffd23456";
+  bridge.Observe(identity,45,61184,{1,2,2,0xf1,255,255,255,255},epoch,epoch);
+  tN2kMsg coolant,tank,soc;
+  coolant.SetPGN(127489);coolant.DataLen=26;
+  std::fill(coolant.Data,coolant.Data+26,255);coolant.Data[0]=0;
+  coolant.Data[5]=0xeb;coolant.Data[6]=0x82;
+  SetN2kPGN127505(tank,0,N2kft_Fuel,68,100);
+  SetN2kPGN127506(soc,1,0,N2kDCt_Battery,68,255,N2kDoubleNA,N2kDoubleNA,N2kDoubleNA);
+  SensorRegistry registry;
+  for(const auto *m:{&coolant,&tank,&soc}) {
+    auto observations=DecodeN2kInstruments(m->PGN,Envelope(*m),identity,epoch+1ms);
+    bridge.Map(observations,epoch+1ms);
+    for(auto o:observations)registry.Observe(std::move(o),epoch+1ms);
+  }
+  auto s=registry.Merge({},epoch+1ms);
+  for(const auto&q:Quantities())bridge.Assess(Field(s,q.quantity),q.quantity,epoch+1ms);
+  EXPECT_NEAR(*s.propulsion.motor_temperature_c.value,62,.001);
+  EXPECT_FALSE(s.propulsion.coolant_temperature_c.value);
+  EXPECT_FALSE(s.tanks.fuel_percent.value);
+  EXPECT_EQ(s.battery.soc_percent.value,68);
+  EXPECT_EQ(s.battery.soc_percent.validity,Validity::Measured);
+  bridge.Assess(s.battery.soc_percent,Quantity::BatterySoc,epoch+501ms);
+  EXPECT_EQ(s.battery.soc_percent.validity,Validity::Uncertain);
+}

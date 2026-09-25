@@ -102,6 +102,15 @@ The replacement renames the field to `interface_id` without changing serialized
 configuration keys and adds `windows_sdk_macro_contract`. Native replacement
 build/runtime evidence is still required; the failed build is not accepted.
 
+The boat mapping increment binds an actual marine NAME, maps the inspected motor
+temperature field, suppresses its virtual SOC fuel tank, and decodes regeneration.
+Its reviewed boat-side firmware patch supplies independent 2500-ms sensor expiry
+and a v2 marine freshness contract. The PC withholds dependent predictions from
+v1/unverified input. The full sketch compiles for XIAO ESP32-C6, with no flashing.
+Local 51 portable suites (including both actual firmware oracles), 99 integrated
+cases and real OpenCPN loopback expiry tests pass in development; the final source
+and native replacement gates remain open. [Contract and firmware procedure](boat-propulsion-contract.md), [local evidence](evidence/beta-boat-expiry-local.json).
+
 ## Implemented Alpha product
 
 | Area | Current implementation and boundary |

@@ -35,6 +35,8 @@ template <class State> inline auto MakeDataItems(State &s) {
       {"Motor speed", "RPM", &s.propulsion.motor_rpm},
       {"Transmission gear", "0 forward / 1 neutral / 2 reverse",
        &s.propulsion.gear_code},
+      {"Regeneration setting", "0 off / 1 one bar / 2 two bars",
+       &s.propulsion.regeneration_code},
       {"Motor temperature", "C", &s.propulsion.motor_temperature_c},
       {"Engine coolant temperature", "C", &s.propulsion.coolant_temperature_c},
       {"Battery voltage", "V", &s.battery.voltage_v},

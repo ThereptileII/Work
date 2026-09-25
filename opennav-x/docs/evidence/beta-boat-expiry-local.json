@@ -1,0 +1,42 @@
+{
+  "status": "Linux development gate; native exact-revision acceptance pending",
+  "source_parent": "6e5f489fb01c0a0e0e19c66b8c12752e8be46f3c",
+  "portable_suites": 51,
+  "linux_integrated_cases": 99,
+  "boat_ui": "actual OpenCPN TCP N2K: v1 uncertain; v2 mapped; independent sensor expiry; heartbeat loss; recovery",
+  "regressions": [
+    "manual pilot loopback transport and feedback",
+    "recording/replay/calibration export"
+  ],
+  "screenshots_reviewed": [
+    "evidence/local/boat-01-producer-unverified.png",
+    "evidence/local/boat-02-verified-marine-fields.png",
+    "evidence/local/boat-03-sensor-expiry-with-network-live.png"
+  ],
+  "firmware": {
+    "arduino_cli": "1.5.1",
+    "core": "esp32:esp32@3.2.1",
+    "board": "esp32:esp32:XIAO_ESP32C6",
+    "websockets": "2.7.2",
+    "physical_validation": "NOT RUN; compile and host tests only",
+    "firmware_source": "Boat source 9baf01bca09522794a9678dfb3f3c0720d5c9943\nOriginal SHA256 a7fa8d8ad1c26f5f72401f84e42996242d375822f301f2ad4a930b5e718fc53d\nPatched SHA256 192841d02d9eacc7581a38d6816057f315491032393fcb188731c9d13cea6c0b\nNo physical acceptance or automatic flashing.\n",
+    "binary_sha256": {
+      "Nissan_ev_to_NMEA_and_wifi.ino.bootloader.bin": "a57485bef96b7be694204427b70d920263f076a352956cb0e36b9ffce0fa12a8",
+      "Nissan_ev_to_NMEA_and_wifi.ino.bin": "712b5708991e66a0aa2ef6185a2632119896087010cb6546b8e364457e8db96e",
+      "Nissan_ev_to_NMEA_and_wifi.ino.partitions.bin": "148b959cbff1c38aa8e1d5c0ba9d612c54997b945e56a63f41223eef650653a1",
+      "Nissan_ev_to_NMEA_and_wifi.ino.merged.bin": "64690b139e06da9e1b6409fcfbe5d06344a8e21582debc5064d7b8a6810b464b"
+    }
+  },
+  "hashes": {
+    "evidence/local/beta-boat-contract-final-tests.log": "00e42f906b75f8620cf66ac6893d85527b6d277121ed5be3aab4ad6ae363664a",
+    "evidence/local/beta-boat-final2-tests.log": "c50ff4f8769f75d8edc3496e75e647c53c3db9d95b40edef02c3c4cde351a885",
+    "evidence/local/boat-input-results.json": "b57591771896ac0e64253e3828f3ed0071d7b81940fc2b3c5a4c9494cb646c99",
+    "evidence/local/boat-firmware-build.json": "2e4eef499458d25d1504fe32a1213879b27c81af67568f1605a31eb58270685a",
+    "evidence/local/beta-boat-pilot-regression.log": "1a1a8f783301fc85f3f6439899602441df4baf24658d0ec54ceef8a5a47e602d",
+    "evidence/local/beta-boat-recording-regression.log": "afaf167b03a7511679372a029639f966579237a6ec256e4c8e9a6d8105d2ff41",
+    "evidence/local/boat-01-producer-unverified.png": "445ca056af532eae8b22dc743824366cf599d973b3a4ed76665cbecf01398170",
+    "evidence/local/boat-02-verified-marine-fields.png": "90e01ae9b364664513e2d1a2ed866b126d9d236669154ab7e1058e104ce0676e",
+    "evidence/local/boat-03-sensor-expiry-with-network-live.png": "b06a6c6baf419856139682654c6290ca06257ffcade4d48f3dd89591bfb319dc"
+  },
+  "physical": "No device flashed or physical command/data acceptance claimed"
+}

@@ -1,0 +1,165 @@
+--- a/Nissan_ev_to_NMEA_and_wifi.ino
++++ b/Nissan_ev_to_NMEA_and_wifi.ino
+@@ -13,6 +13,7 @@
+ 
+ #include <Arduino.h>
+ #include <math.h>
++#include "FreshTelemetry.h"
+ #include <string.h>
+ 
+ extern "C" {
+@@ -409,8 +410,10 @@
+   uint8_t gear = 0;       // 1=Drive,2=Neutral,3=Reverse; else 0
+   uint8_t regen = 0xFF;   // 0..2; else 0xFF
+   uint8_t sid = 0;
++  uint8_t expiryMask = 0;
+ } Telemetry;
+ Telemetry telem;
++boat_bridge::FreshTelemetry telemetryFreshness;
+ 
+ // ======== Switch Bank ========
+ static const uint8_t  SW_BANK_INSTANCE = 0;
+@@ -605,12 +608,9 @@
+ }
+ 
+ void n2kSend127505_FuelSoc(float soc){
+-  if(!isfinite(soc)) return;
+-  if(soc<0) soc=0; else if(soc>100) soc=100;
+-
+   uint8_t d[8]; memset(d,0xFF,8);
+   d[0]=SOC_FUEL_TANK_INSTANCE&0x0F; // upper nibble 0 = Fuel
+-  setS16(&d[1],(int16_t)lroundf(soc/0.004f));
++  if(isfinite(soc) && soc>=0 && soc<=100) setS16(&d[1],(int16_t)lroundf(soc/0.004f));
+   setU32(&d[3],(uint32_t)lroundf(SOC_FUEL_TANK_CAPACITY_L/0.1f));
+   if(n2kTransmit(PGN_FLUID_LEVEL,d,8)) n2kFuelTankTxFrames=n2kFuelTankTxFrames+1;
+ }
+@@ -633,11 +633,11 @@
+ void n2kSend127751(float V,float A_leaf){
+   float A_ch=-A_leaf;
+   uint8_t d[8]; memset(d,0xFF,8); d[0]=nextSid(); d[1]=0;
+-  setS16(&d[2],INT16_MAX);
++  setU16(&d[2],0xFFFF); // unsigned 0.1 V; correct N2K NA
+   setS24(&d[4],0x7FFFFF);
+-  if(isfinite(V)){
+-    int32_t raw=lroundf(V/0.1f);
+-    if(raw>=-32768 && raw<=32765) setS16(&d[2],(int16_t)raw);
++  if(isfinite(V) && V>=0 && V<=6553.2f){
++    uint32_t raw=lroundf(V/0.1f);
++    if(raw<0xFFFDu) setU16(&d[2],(uint16_t)raw);
+   }
+   if(isfinite(A_ch)){
+     int32_t raw=lroundf(A_ch/0.01f);
+@@ -650,7 +650,7 @@
+ void n2kSend127506(float soc){
+   uint8_t d[11]; memset(d,0xFF,sizeof(d));
+   d[0]=nextSid(); d[1]=0; d[2]=0; // SID, DC instance 0, Battery
+-  if(isfinite(soc) && soc>=0){
++  if(isfinite(soc) && soc>=0 && soc<=100){
+     int32_t raw=lroundf(soc);
+     if(raw<0) raw=0; else if(raw>100) raw=100;
+     d[3]=(uint8_t)raw;
+@@ -659,17 +659,16 @@
+ }
+ 
+ void n2kSend127489_EngineTemp(float mtC){
+-  if(!isfinite(mtC)) return;
+   uint8_t d[26]; memset(d,0xFF,sizeof(d)); d[0]=0;
+   float rawK=(mtC+273.15f)*100.0f;
+-  if(rawK>=0 && rawK<=65534){ uint16_t raw=(uint16_t)lroundf(rawK); setU16(&d[5],raw); }
++  if(isfinite(rawK) && rawK>=0 && rawK<65533){ uint16_t raw=(uint16_t)lroundf(rawK); setU16(&d[5],raw); }
+   n2kFastPacketTransmit(PGN_ENG_DYNAMIC,d,sizeof(d));
+ }
+ // Proprietary A (regen + Icharge + PkW)
+-void n2kSend61184(uint8_t sid,uint8_t regen,float V,float A_leaf){
++void n2kSend61184(uint8_t sid,uint8_t regen,float V,float A_leaf,uint8_t expiryMask){
+   uint8_t state=(regen<=2)?regen:0xFF; float A_ch=isfinite(A_leaf)?-A_leaf:NAN; float P_kW=(isfinite(V)&&isfinite(A_ch))?(V*A_ch/1000.0f):NAN;
+   uint8_t flags=0; if(state!=0xFF)flags|=0x01; if(isfinite(A_ch))flags|=0x02; if(isfinite(P_kW))flags|=0x04;
+-  uint8_t d[8]; memset(d,0xFF,8); d[0]=sid; d[1]=0x01; d[2]=(state==0xFF)?0xFF:state; d[3]=flags;
++  uint8_t d[8]; memset(d,0xFF,8); d[0]=sid; d[1]=0x02; d[2]=(state==0xFF)?0xFF:state; d[3]=flags|((expiryMask&15)<<4);
+   if(isfinite(A_ch)){int16_t ir=(int16_t)constrain((long)lroundf(A_ch/0.1f),-32768,32767); setS16(&d[4],ir);}
+   if(isfinite(P_kW)){int16_t pr=(int16_t)constrain((long)lroundf(P_kW/0.1f),-32768,32767); setS16(&d[6],pr);}
+   n2kTransmit(PGN_PROP_A,d,8,N2K_BCAST);
+@@ -708,7 +707,7 @@
+ 
+ // ======== Serial readout ========
+ void printStatusLine(){
+-  TEL_LOCK(); Telemetry t=telem; TEL_UNLOCK();
++  TEL_LOCK(); Telemetry t=telemetryFreshness.Snapshot(telem,millis()); TEL_UNLOCK();
+   float A_ch=isfinite(t.packA)? -t.packA : NAN;
+   float p_kw=(isfinite(t.packV)&&isfinite(A_ch))? (t.packV*A_ch/1000.0f):NAN;
+   Serial.print("RPM:"); if(t.rpmValid) Serial.print(t.rpm); else Serial.print("--");
+@@ -744,15 +743,19 @@
+ 
+       TEL_LOCK();
+       if(id==ID_PWR){
++        telemetryFreshness.Observe(boat_bridge::FreshTelemetry::PowerSoc,millis());
+         uint16_t rawV=(uint16_t)((b[2]<<2)|(b[3]>>6)); float V=rawV*0.5f;
+         int16_t rawA=(int16_t)((b[0]<<3)|(b[1]>>5)); if(rawA&0x0400) rawA|=0xF800;
+         float A=-(rawA/2.0f); uint8_t rawSOC=b[4]&0x7F;
+         telem.packV=V; telem.packA=A; telem.socPct=(rawSOC<=100)?(float)rawSOC:NAN;
+       } else if(id==ID_RPM){
++        telemetryFreshness.Observe(boat_bridge::FreshTelemetry::Rpm,millis());
+         int32_t rpm=0; telem.rpmValid=decodeLeafMotorRpm(b,rpm); telem.rpm=rpm;
+       } else if(id==ID_TEMP){
++        telemetryFreshness.Observe(boat_bridge::FreshTelemetry::Temperature,millis());
+         telem.motorTempC=b[5]*0.5f;
+       } else if(id==ID_GEAR){
++        telemetryFreshness.Observe(boat_bridge::FreshTelemetry::GearRegen,millis());
+         uint8_t g=b[0]; if(g<1||g>3) g=0; uint8_t rg=b[5]; if(rg>2) rg=0xFF;
+         telem.gear=g; telem.regen=rg; gearNow=g; gearChanged=(g!=lastGear);
+       }
+@@ -760,8 +763,8 @@
+ 
+       if(id==ID_GEAR && hN2K){
+         n2kSend127493(gearNow);
+-        TEL_LOCK(); Telemetry t=telem; TEL_UNLOCK();
+-        n2kSend61184(nextSid(), t.regen, t.packV, t.packA);
++        TEL_LOCK(); Telemetry t=telemetryFreshness.Snapshot(telem,millis()); TEL_UNLOCK();
++        n2kSend61184(nextSid(), t.regen, t.packV, t.packA, t.expiryMask);
+         if(gearChanged){ lastGear=gearNow; Serial.printf("[GEAR] -> %s | Regen: %s\n",
+           (gearNow?gearToStr(gearNow):String("--")).c_str(), (t.regen<=2?regenToStr(t.regen):String("--")).c_str()); }
+       }
+@@ -776,23 +779,20 @@
+   uint32_t lastFuelTankTxMs=0;
+   for(;;){
+     if(hN2K){
+-      TEL_LOCK(); Telemetry t=telem; TEL_UNLOCK();
++      TEL_LOCK(); Telemetry t=telemetryFreshness.Snapshot(telem,millis()); TEL_UNLOCK();
+       n2kSend127488(t.rpm,t.rpmValid);
+       n2kSend127493(t.gear);
+-      if(isfinite(t.packV)&&isfinite(t.packA)){
+-        n2kSend127508(t.packV,t.packA);
+-        n2kSend127751(t.packV,t.packA);
++      // Explicit NA clears retained receivers when any EV source group expires.
++      n2kSend127508(t.packV,t.packA);
++      n2kSend127751(t.packV,t.packA);
++      n2kSend127506(t.socPct);
++      uint32_t now=millis();
++      if((uint32_t)(now-lastFuelTankTxMs)>=SOC_FUEL_TANK_PERIOD_MS){
++        lastFuelTankTxMs=now;
++        n2kSend127505_FuelSoc(t.socPct);
+       }
+-      if(isfinite(t.socPct)){
+-        n2kSend127506(t.socPct);
+-        uint32_t now=millis();
+-        if((uint32_t)(now-lastFuelTankTxMs)>=SOC_FUEL_TANK_PERIOD_MS){
+-          lastFuelTankTxMs=now;
+-          n2kSend127505_FuelSoc(t.socPct);
+-        }
+-      }
+-      if(isfinite(t.motorTempC)) n2kSend127489_EngineTemp(t.motorTempC);
+-      n2kSend61184(nextSid(), t.regen, t.packV, t.packA);
++      n2kSend127489_EngineTemp(t.motorTempC);
++      n2kSend61184(nextSid(), t.regen, t.packV, t.packA, t.expiryMask);
+     }
+     vTaskDelay(period);
+   }
+@@ -856,7 +856,7 @@
+ void broadcastHealth(uint32_t now){ String json=healthJson(now); ws.broadcastTXT(json); }
+ 
+ String telemetryJson(){
+-  TEL_LOCK(); Telemetry t=telem; TEL_UNLOCK();
++  TEL_LOCK(); Telemetry t=telemetryFreshness.Snapshot(telem,millis()); TEL_UNLOCK();
+   uint32_t now=millis();
+   float A_ch=isfinite(t.packA)?-t.packA:NAN;
+   float p_kw=(isfinite(t.packV)&&isfinite(A_ch))?(t.packV*A_ch/1000.0f):NAN;

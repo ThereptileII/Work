@@ -34,6 +34,7 @@ struct ShellActions {
   std::function<vessel::VesselState()> live_state;
   std::function<application::Settings()> settings;
   std::function<std::string()> settings_status;
+  std::function<std::string()> boat_bridge_status;
   std::function<application::CommandResult(const application::Settings &)>
       save_settings;
   std::function<std::vector<vessel::SourceHealth>()> source_health;

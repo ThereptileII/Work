@@ -75,6 +75,7 @@ try {
         Run python @((Join-Path $PSScriptRoot 'smoke-navigation.py'), '--route-fixture')
         Run python @((Join-Path $PSScriptRoot 'smoke-navigation.py'), '--instruments')
         Run python @((Join-Path $PSScriptRoot 'smoke-navigation.py'), '--n2k')
+        Run python @((Join-Path $PSScriptRoot 'smoke-navigation.py'), '--boat')
         Run python @((Join-Path $PSScriptRoot 'smoke-recording.py'))
         Run python @((Join-Path $PSScriptRoot 'smoke-pilot.py'))
         Run python @((Join-Path $PSScriptRoot 'smoke-navigation.py'), '--objects')

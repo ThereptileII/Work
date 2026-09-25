@@ -36,6 +36,7 @@ enum class Quantity {
   Waste,
   Gear,
   OtherTank,
+  Regeneration,
   Count
 };
 struct QuantityInfo {
@@ -114,6 +115,7 @@ enum class CurrentConvention {
   PositiveDischarge,
   PositiveCharge
 };
+void NormalizePropulsionStates(VesselState &state);
 void NormalizeBatteryPower(VesselState &state, const std::string &device,
                            CurrentConvention convention, Time now);
 } // namespace opennav::vessel

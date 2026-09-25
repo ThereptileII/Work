@@ -328,3 +328,9 @@ identity/loss, recording/replay, mode and route regressions remain mandatory.
 Portable tests cover the adapter and settings independently, including command
 interpretation by the hash-pinned actual boat firmware parser. None of these
 desktop checks claim physical SeaTalk/N2K delivery.
+
+The subsequent boat-propulsion adapter adds no OpenCPN patch. It observes vendor
+61184 only behind an explicit interface/NAME binding and reuses standard marine
+decoders for all standard fields. Producer expiry changes are isolated in
+`hardware/leaf-bridge/`, applied to the separately hash-pinned boat firmware by
+`prepare-boat-firmware.py`; they never patch installed PC software or flash a board.
