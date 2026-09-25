@@ -69,7 +69,7 @@ void PilotConfiguration() {
         "Alpha settings migrate with pilot control OFF");
   s.pilot = {"TCP:127.0.0.1:7777", "c0508700e76004d2", false};
   auto decoded = application::DecodeSettings(application::EncodeSettings(s));
-  Check(decoded.pilot.interface == s.pilot.interface && decoded.pilot.name == s.pilot.name &&
+  Check(decoded.pilot.interface_id == s.pilot.interface_id && decoded.pilot.name == s.pilot.name &&
         !decoded.pilot.permit_control, "Configured binding remains display only");
   s.pilot.permit_control = true;
   const auto text = application::EncodeSettings(s);

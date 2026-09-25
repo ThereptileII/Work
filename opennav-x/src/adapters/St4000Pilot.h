@@ -8,7 +8,7 @@ namespace opennav::adapters {
 // NAME is the canonical 16-digit hex value from PGN 60928, not an OpenCPN
 // message-address label. No CAN or SeaTalk transport is owned by this adapter.
 struct St4000Binding {
-  std::string interface, name;
+  std::string interface_id, name;
   bool permit_control = false;
 };
 void ValidateSt4000Binding(const St4000Binding &binding);
@@ -22,14 +22,14 @@ struct PilotTransportStatus {
 class IN2kPilotTransport {
 public:
   virtual ~IN2kPilotTransport() = default;
-  virtual PilotTransportStatus Status(const std::string &interface) const = 0;
+  virtual PilotTransportStatus Status(const std::string &interface_id) const = 0;
   // true means attempted/accepted transport only, NEVER physical confirmation.
-  virtual bool Send(const std::string &interface, std::uint8_t destination,
+  virtual bool Send(const std::string &interface_id, std::uint8_t destination,
                     std::uint32_t pgn, std::uint8_t priority,
                     const std::vector<std::uint8_t> &data) = 0;
 };
 struct PilotN2kFrame {
-  std::string interface;
+  std::string interface_id;
   std::uint32_t pgn = 0;
   std::uint8_t source = 255;
   std::vector<std::uint8_t> data;

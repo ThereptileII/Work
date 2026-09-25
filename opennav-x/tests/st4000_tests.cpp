@@ -88,7 +88,7 @@ void Identity() {
   Check(pilot.GetState().mode == PilotMode::Unavailable,
         "No unverified source");
   auto wrong = Claim(epoch);
-  wrong.interface = "another-interface";
+  wrong.interface_id = "another-interface";
   pilot.Observe(wrong, epoch);
   Check(!pilot.Address(), "Interface is part of identity");
   pilot.Observe(Claim(epoch, 204, name + 1), epoch);

@@ -100,7 +100,7 @@ void Privacy() {
   Check(decoded.frames[0].state.navigation.sog_kn.value.has_value(),
         "Speed retained for calibration");
   Check(decoded.assumptions.sources.empty() &&
-            decoded.assumptions.pilot.interface.empty() &&
+            decoded.assumptions.pilot.interface_id.empty() &&
             !decoded.assumptions.pilot.permit_control &&
             decoded.assumptions.energy.curve.source != "C:/Personal/curve.csv",
         "Only selected model assumptions retained");

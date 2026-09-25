@@ -5,7 +5,7 @@
 
 namespace opennav::integration {
 struct N2kIdentity {
-  std::string interface, name;
+  std::string interface_id, name;
   unsigned address = 255;
   vessel::Time observed_at{};
 };
@@ -15,10 +15,10 @@ enum class ClaimResult { Ignored, Unchanged, Changed, Conflict };
 // explicitly address-based; no fake persistent identity is invented.
 class N2kSourceIdentity {
 public:
-  ClaimResult Observe(const std::string &interface, unsigned address,
+  ClaimResult Observe(const std::string &interface_id, unsigned address,
                       const std::vector<unsigned char> &data,
                       vessel::Time observed, vessel::Time now);
-  std::string Label(const std::string &interface, unsigned address) const;
+  std::string Label(const std::string &interface_id, unsigned address) const;
   std::vector<N2kIdentity> Observations() const;
   void Clear() { claims_.clear(); }
 

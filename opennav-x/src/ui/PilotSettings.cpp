@@ -19,7 +19,7 @@ void ProductPanel::PilotSettings() {
        "TRACK and WIND commands remain unavailable pending physical "
        "validation.");
   const auto &b = state_.settings.pilot;
-  Text("Interface: " + W(b.interface.empty() ? "Unconfigured" : b.interface) +
+  Text("Interface: " + W(b.interface_id.empty() ? "Unconfigured" : b.interface_id) +
        "\nNAME: " + W(b.name.empty() ? "Unconfigured" : b.name) +
        "\nPermission: " +
        (b.permit_control
@@ -37,7 +37,7 @@ void ProductPanel::PilotSettings() {
             "hexadecimal NAME digits. "
             "Do not use a guessed address or a decimal message label. Saving "
             "always returns to display-only.",
-            {{"OpenCPN NMEA2000 interface", W(s.pilot.interface), 200},
+            {{"OpenCPN NMEA2000 interface", W(s.pilot.interface_id), 200},
              {"Observed translator NAME", W(s.pilot.name), 16}});
         if (!fields)
           return;
@@ -51,7 +51,7 @@ void ProductPanel::PilotSettings() {
         if (actions_.pilot_identity)
           Result(actions_.pilot_identity());
       },
-      !b.interface.empty() && !state_.vessel.replayed &&
+      !b.interface_id.empty() && !state_.vessel.replayed &&
           !state_.vessel.simulated);
   Action(
       b.permit_control ? "Return to display-only"
@@ -71,7 +71,7 @@ void ProductPanel::PilotSettings() {
         s.pilot.permit_control = !s.pilot.permit_control;
         SaveSettings(s);
       },
-      !b.interface.empty() && !state_.vessel.replayed &&
+      !b.interface_id.empty() && !state_.vessel.replayed &&
           !state_.vessel.simulated);
   Action(
       "Remove translator binding",
@@ -86,7 +86,7 @@ void ProductPanel::PilotSettings() {
         s.pilot = {};
         SaveSettings(s);
       },
-      !b.interface.empty() && !state_.vessel.replayed);
+      !b.interface_id.empty() && !state_.vessel.replayed);
   EndActions();
   Heading("Observed compatible identities",
           "Actual address claims / not permission to operate equipment");

@@ -372,7 +372,7 @@ void Attach(MyFrame& frame, wxAuiManager& manager, wxFileConfig& config) {
     if (result.ok)
       configure_sources();
     if (result.ok && pilots &&
-        (old_pilot.interface != s.pilot.interface || old_pilot.name != s.pilot.name ||
+        (old_pilot.interface_id != s.pilot.interface_id || old_pilot.name != s.pilot.name ||
          old_pilot.permit_control != s.pilot.permit_control)) {
       pilots->live.Enable(false, vessel::Clock::now());
       pilots->hardware.Configure(s.pilot);
@@ -413,7 +413,7 @@ void Attach(MyFrame& frame, wxAuiManager& manager, wxFileConfig& config) {
     for (const auto &identity : marine->Identities()) {
       try { adapters::ParsePilotName(identity.name); }
       catch (const std::invalid_argument &) { continue; }
-      result.push_back(identity.interface + " / NAME " + identity.name +
+      result.push_back(identity.interface_id + " / NAME " + identity.name +
                        " / address " + std::to_string(identity.address));
       if (result.size() >= 8) break;
     }

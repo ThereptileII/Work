@@ -95,6 +95,13 @@ acceptance. The recording dialog gate at `11c0a5c` reached Save but its screensh
 helper incorrectly attempted to resize a native file dialog; the helper now
 preserves the dialog dimensions. No export pass is claimed from that failed run.
 
+Native pilot run `36104989528` at `07f4248` rejects the integrated build because
+the Windows SDK's COM `interface` macro expands a new C++ field name. Portable
+contracts on both platforms pass but do not include that SDK header context.
+The replacement renames the field to `interface_id` without changing serialized
+configuration keys and adds `windows_sdk_macro_contract`. Native replacement
+build/runtime evidence is still required; the failed build is not accepted.
+
 ## Implemented Alpha product
 
 | Area | Current implementation and boundary |

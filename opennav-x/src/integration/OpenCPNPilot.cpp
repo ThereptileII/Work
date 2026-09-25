@@ -35,7 +35,7 @@ OpenCPNPilot::OpenCPNPilot(std::function<bool()> allowed)
     auto listener = std::make_unique<ObsListener>();
     listener->Init(Nmea2000Msg(pgn), [this, pgn](ObservedEvt &event) {
       const auto m = UnpackEvtPointer<Nmea2000Msg>(event);
-      if (!m || !m->source || m->source->iface != binding_.interface ||
+      if (!m || !m->source || m->source->iface != binding_.interface_id ||
           m->payload.size() != 22 || m->payload[0] != 0x93 ||
           m->payload[12] != 8 || m->payload[7] >= 254)
         return;
@@ -52,7 +52,7 @@ OpenCPNPilot::OpenCPNPilot(std::function<bool()> allowed)
       const auto at =
           now - std::chrono::duration_cast<vessel::Clock::duration>(age);
       if (const auto *network =
-              dynamic_cast<CommDriverN2KNet *>(Driver(binding_.interface)))
+              dynamic_cast<CommDriverN2KNet *>(Driver(binding_.interface_id)))
         if (at < network->GetConnectionChangedAt())
           return;
       pilot_.Observe({m->source->iface, pgn, m->payload[7],
@@ -142,7 +142,7 @@ bool OpenCPNPilot::Send(const std::string &iface, std::uint8_t destination,
                         const std::vector<std::uint8_t> &data) {
   MainThread();
   const auto status = Status(iface);
-  if (!status.writable || iface != binding_.interface ||
+  if (!status.writable || iface != binding_.interface_id ||
       !((pgn == 126208 && binding_.permit_control && destination < 254 &&
          data.size() == 13) ||
         (pgn == 59904 && destination == 255 &&

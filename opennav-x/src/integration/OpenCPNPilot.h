@@ -20,8 +20,8 @@ public:
 
 private:
   adapters::PilotTransportStatus
-  Status(const std::string &interface) const override;
-  bool Send(const std::string &interface, std::uint8_t destination,
+  Status(const std::string &interface_id) const override;
+  bool Send(const std::string &interface_id, std::uint8_t destination,
             std::uint32_t pgn, std::uint8_t priority,
             const std::vector<std::uint8_t> &data) override;
   std::vector<std::unique_ptr<ObsListener>> listeners_;

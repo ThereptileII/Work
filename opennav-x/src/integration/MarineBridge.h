@@ -34,7 +34,7 @@ public:
 
 private:
   void Accept(std::vector<vessel::SensorObservation> samples, vessel::Time now);
-  bool CheckConnection(const std::string &interface, vessel::Time observed);
+  bool CheckConnection(const std::string &interface_id, vessel::Time observed);
   std::vector<std::unique_ptr<ObsListener>> listeners_;
   vessel::SensorRegistry sources_;
   N2kSourceIdentity identities_;

@@ -56,11 +56,11 @@ std::string FormatPilotName(std::uint64_t name) {
   return out.str();
 }
 void ValidateSt4000Binding(const St4000Binding &b) {
-  if (b.interface.empty() && b.name.empty() && !b.permit_control)
+  if (b.interface_id.empty() && b.name.empty() && !b.permit_control)
     return;
-  if (b.interface.empty() || b.interface.size() > 200)
+  if (b.interface_id.empty() || b.interface_id.size() > 200)
     throw std::invalid_argument("Select an existing OpenCPN N2K interface");
-  for (const unsigned char c : b.interface)
+  for (const unsigned char c : b.interface_id)
     if (c < 32 || c == 127)
       throw std::invalid_argument("Invalid pilot interface text");
   ParsePilotName(b.name);
@@ -112,7 +112,7 @@ void St4000Pilot::Invalidate(const std::string &why) {
 }
 void St4000Pilot::Configure(const St4000Binding &binding) {
   ValidateSt4000Binding(binding);
-  if (binding.interface == binding_.interface &&
+  if (binding.interface_id == binding_.interface_id &&
       binding.name == binding_.name) {
     binding_.permit_control = binding.permit_control;
     return; // A permission toggle must not clear an identity conflict.
@@ -131,7 +131,7 @@ void St4000Pilot::Configure(const St4000Binding &binding) {
 void St4000Pilot::Poll(vessel::Time) {
   if (!wanted_name_)
     return;
-  const auto status = transport_.Status(binding_.interface);
+  const auto status = transport_.Status(binding_.interface_id);
   if (connected_ != status.connected || transport_epoch_ != status.epoch) {
     connected_ = status.connected;
     transport_epoch_ = status.epoch;
@@ -141,14 +141,14 @@ void St4000Pilot::Poll(vessel::Time) {
   }
 }
 std::string St4000Pilot::Source() const {
-  return "ST4000 / NMEA2000 / " + binding_.interface + "/NAME-" +
+  return "ST4000 / NMEA2000 / " + binding_.interface_id + "/NAME-" +
          binding_.name + "/source-" +
          (address_ ? std::to_string(*address_) : "unavailable");
 }
 void St4000Pilot::Observe(const PilotN2kFrame &f, vessel::Time now) {
   Poll(now);
   if (!wanted_name_ || !connected_ || conflict_ ||
-      f.interface != binding_.interface || f.source >= 254 ||
+      f.interface_id != binding_.interface_id || f.source >= 254 ||
       f.observed_at < vessel::Time{} || f.observed_at > now ||
       now - f.observed_at >= std::chrono::seconds(3))
     return;
@@ -221,7 +221,7 @@ void St4000Pilot::Observe(const PilotN2kFrame &f, vessel::Time now) {
   }
 }
 PilotCapabilities St4000Pilot::Capabilities() const {
-  const auto s = transport_.Status(binding_.interface);
+  const auto s = transport_.Status(binding_.interface_id);
   const bool verified = wanted_name_ && address_ && !conflict_ && connected_ &&
                         s.connected && s.epoch == transport_epoch_;
   return {false,
@@ -246,21 +246,21 @@ bool St4000Pilot::Send(const PilotRequest &r) {
   if (data.empty())
     return false;
   last_send_ = r.issued_at;
-  return transport_.Send(binding_.interface, *address_, 126208, 3, data);
+  return transport_.Send(binding_.interface_id, *address_, 126208, 3, data);
 }
 bool St4000Pilot::RequestIdentity(vessel::Time now) {
   Poll(now);
-  const auto s = transport_.Status(binding_.interface);
+  const auto s = transport_.Status(binding_.interface_id);
   if (!wanted_name_ || !s.connected || !s.writable || conflict_ ||
       (last_identity_request_ &&
        (now < *last_identity_request_ ||
         now - *last_identity_request_ < std::chrono::seconds(5))))
     return false;
   last_identity_request_ = now;
-  return transport_.Send(binding_.interface, 255, 59904, 6, {0, 0xee, 0});
+  return transport_.Send(binding_.interface_id, 255, 59904, 6, {0, 0xee, 0});
 }
 std::string St4000Pilot::Status() const {
-  const auto s = transport_.Status(binding_.interface);
+  const auto s = transport_.Status(binding_.interface_id);
   return reason_ + " / " + s.detail +
          (binding_.permit_control ? " / configured control permission"
                                   : " / display-only permission");
