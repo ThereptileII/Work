@@ -1,0 +1,150 @@
+{
+  "scope": "Energy quality Linux development gate; native replacement pending",
+  "portable_suites": 55,
+  "integrated_linux_cases": 99,
+  "preview": {
+    "authority": "Linux development",
+    "checks": [
+      "Alpha menu and eight product page interactions captured",
+      "Energy, source, vessel-safety and radar settings pages captured",
+      "Moving position, SOC, route distance and advisory destination SOC change",
+      "All eight GUI-selected scenarios pass validity/shortfall assertions",
+      "XNav / Legacy / Safe clean lifecycle and shared navigation/config persistence passed; mode switch stops Demo",
+      "Real bundled coastline remains rendered after Legacy return and Safe restart"
+    ],
+    "screenshots": [
+      "preview-01-navigation-day-linux.png",
+      "preview-11-startup-xnav-linux.png",
+      "preview-02-navigation-night-linux.png",
+      "preview-03-route-linux.png",
+      "preview-04-energy-linux.png",
+      "preview-05-diagnostics-linux.png",
+      "alpha-instruments-linux.png",
+      "alpha-ais-linux.png",
+      "alpha-smartnav-linux.png",
+      "alpha-autopilot-linux.png",
+      "alpha-anchor-linux.png",
+      "alpha-settings-linux.png",
+      "alpha-routes-linux.png",
+      "alpha-waypoints-linux.png",
+      "alpha-energy-settings-linux.png",
+      "alpha-sources-linux.png",
+      "alpha-vessel-settings-linux.png",
+      "alpha-radar-status-linux.png",
+      "alpha-display-linux.png",
+      "preview-06-stale-linux.png",
+      "preview-06b-unavailable-linux.png",
+      "preview-06c-shortfall-linux.png",
+      "preview-07-legacy-linux.png",
+      "preview-09-returned-xnav-linux.png",
+      "preview-08-safe-linux.png",
+      "preview-12-safe-to-xnav-linux.png",
+      "preview-13-legacy-linux.png",
+      "preview-14-legacy-to-xnav-linux.png"
+    ],
+    "higher_dpi": "Not exercised by this hosted desktop; manual validation remains open",
+    "chart_rendering": [
+      {
+        "phase": "Direct XNav startup",
+        "reference_color_fractions": {
+          "aac3f0": 0.6076180257510729,
+          "aaaf50": 0.3726752503576538
+        },
+        "coastline_visible": true
+      },
+      {
+        "phase": "XNav to Legacy",
+        "reference_color_fractions": {
+          "aac3f0": 0.5638054363376251,
+          "aaaf50": 0.41587982832618026
+        },
+        "coastline_visible": true
+      },
+      {
+        "phase": "XNav to Legacy to XNav",
+        "reference_color_fractions": {
+          "aac3f0": 0.6076180257510729,
+          "aaaf50": 0.3726752503576538
+        },
+        "coastline_visible": true
+      },
+      {
+        "phase": "XNav to Safe",
+        "reference_color_fractions": {
+          "aac3f0": 0.5638054363376251,
+          "aaaf50": 0.41587982832618026
+        },
+        "coastline_visible": true
+      },
+      {
+        "phase": "Safe to XNav",
+        "reference_color_fractions": {
+          "aac3f0": 0.6076180257510729,
+          "aaaf50": 0.3726752503576538
+        },
+        "coastline_visible": true
+      },
+      {
+        "phase": "Direct Legacy startup",
+        "reference_color_fractions": {
+          "aac3f0": 0.5638054363376251,
+          "aaaf50": 0.41587982832618026
+        },
+        "coastline_visible": true
+      },
+      {
+        "phase": "Direct Legacy to XNav",
+        "reference_color_fractions": {
+          "aac3f0": 0.6076180257510729,
+          "aaaf50": 0.3726752503576538
+        },
+        "coastline_visible": true
+      }
+    ],
+    "result": "passed; screenshot review required"
+  },
+  "boat": {
+    "authority": "Linux development",
+    "fixture": "Synthetic NMEA over loopback; no external devices or production profile",
+    "expected": {
+      "battery_voltage_v": 343,
+      "battery_current_source_a": -21,
+      "soc_percent": 68,
+      "motor_rpm": 820,
+      "gear": "Forward",
+      "motor_c": 62,
+      "virtual_fuel": "suppressed",
+      "regeneration": "Two bars",
+      "v1_quality": "UNCERTAIN",
+      "v2_expiry": "per sensor group"
+    },
+    "screenshots": [
+      "boat-01-producer-unverified.png",
+      "boat-02-verified-marine-fields.png",
+      "boat-03-sensor-expiry-with-network-live.png"
+    ],
+    "visual_review": "required",
+    "checks": [
+      "Actual OpenCPN bus with explicit NAME-bound boat mapping",
+      "Legacy producer values uncertain; no net power or fictitious fuel",
+      "v2 per-group expiry, real motor field, regeneration and coherent V x I",
+      "Continuing network traffic cannot mask expired EV sensor groups",
+      "Heartbeat loss suppresses dependent estimates; new sensor input recovers"
+    ],
+    "result": "loopback transport and lifecycle passed; numeric and stale screenshot review required",
+    "sent": {
+      "rmc": 126,
+      "gga": 0
+    },
+    "transport_errors": []
+  },
+  "hashes": {
+    "evidence/local/beta-energy-quality-tests2.log": "bb8c5e83a05824aa0a6a98ab2072379b6ff754f961c9bad3d57df77ec55faaf2",
+    "evidence/local/beta-energy-quality-final-tests.log": "43ee2489bfebcdc4cc555dd88f072d1417f97d8b1f312bbb579aa1e591d46a14",
+    "evidence/local/preview-linux-results.json": "6520b8de9042c64c8319eba097d21d08cc4adf2648f6a0b9cf5ec1ecb6e37e77",
+    "evidence/local/boat-input-results.json": "5dac15d8ef5c2667ba82f4159e77d0299d78b76804d7993936f925ac6c2c55ee",
+    "evidence/local/preview-04-energy-linux.png": "cc7d9c9e62fddc9c68ddc23419607ef7a90ac845c26b2a6b03283f9c003f0049"
+  },
+  "review": "1280x800: input quality and advisory reserve shown without overlap; boat expiry suppresses input-dependent outputs. Final whole-percent arrival label compiled after this screenshot; native final capture remains required.",
+  "model": "No equations/calibration defaults changed; blockers and input-quality metadata added."
+}

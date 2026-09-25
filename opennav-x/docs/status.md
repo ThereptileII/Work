@@ -37,6 +37,17 @@ ambiguous, edited or transitional state never becomes a valid zero arrival.
 
 ## Beta development
 
+Recording/replay/calibration export, physical N2K NAME identity and the manual
+pilot loopback path are accepted as a software increment at `9a1872f`,
+[run 36106701545](https://github.com/ThereptileII/Work/actions/runs/36106701545).
+All nine jobs pass: 47 portable suites on each platform, 98 Linux / 88 Windows
+integrated cases, actual native export and pilot feedback/reconnect checks,
+22 installer lifecycle checks, charts and 100/125/150% DPI/injected touch.
+Eight new native captures were reviewed; artifact hashes were verified.
+[Acceptance](evidence/beta-recording-pilot-9a1872f-accepted.json). This supersedes
+the earlier recording/SDK failures below; boat expiry and field ZIP remain
+separate pending increments. No physical acceptance is claimed.
+
 The first Beta increment adds standard 127751 voltage/current, 127489 coolant,
 127493 gear, other tank instances and source cadence/invalid-input diagnostics.
 Accepted at `a3717673674fdcd7ad8126ea3f24e354139b13d3`,
@@ -121,6 +132,13 @@ is pending. Boat run `36107966976` (`2272759`) compiled the ESP32-C6 firmware bu
 Windows preparation rejected a CRLF patch checkout. The replacement normalizes
 only the temporary patch and verifies the exact patched source hash; a local
 CRLF reproduction passes. The failed native run is not accepted.
+
+Energy diagnostics now identify the specific blocking input and distinguish
+current, aging, estimated and unavailable input quality without claiming forecast
+accuracy. Local 55 portable suites, 99 integrated cases, all preview scenarios/
+mode cycles and actual boat expiry input pass. Native replacement acceptance
+remains required. [Energy contract](energy-model.md),
+[local evidence](evidence/beta-energy-quality-local.json).
 
 ## Implemented Alpha product
 

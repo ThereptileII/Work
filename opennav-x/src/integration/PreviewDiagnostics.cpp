@@ -123,6 +123,10 @@ void WritePreviewDiagnostics(const std::string &path,
     if (a.remaining_distance_nm)
       report["route"]["remaining_nm"] = *a.remaining_distance_nm;
   }
+  report["energy"]["range_quality"] = wxString::FromUTF8(smartnav::EnergyQualityName(e.range.quality));
+  report["energy"]["arrival_quality"] = wxString::FromUTF8(smartnav::EnergyQualityName(e.arrival.quality));
+  report["energy"]["range_input"] = wxString::FromUTF8(smartnav::EnergyInputName(e.range.input));
+  report["energy"]["arrival_input"] = wxString::FromUTF8(smartnav::EnergyInputName(e.arrival.input));
   report["settings"]["battery_device"] =
       wxString::FromUTF8(settings.energy.battery_device_id);
   report["settings"]["capacity_kwh"] = wxString::FromUTF8(
@@ -186,7 +190,7 @@ void WritePreviewDiagnostics(const std::string &path,
     report["source_candidates"].Append(v);
   }
   report["energy"]["arrival_validity"] =
-      wxString::FromUTF8(smartnav::EnergyReasonName(e.arrival.reason));
+      wxString::FromUTF8(smartnav::EnergyStatus(e.arrival.reason, e.arrival.input));
   report["energy"]["model"] = wxString::FromUTF8(e.model_source);
   if (e.range.estimate)
     report["energy"]["range_nm"] = e.range.estimate->range_nm;

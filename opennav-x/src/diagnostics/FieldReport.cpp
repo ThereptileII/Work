@@ -118,7 +118,7 @@ void FieldJournal::Observe(const FieldSnapshot &s, vessel::Time wall) {
                           : s.recording     ? "on"
                                             : "off");
   transition("arrival estimate",
-             smartnav::EnergyReasonName(s.energy.arrival.reason));
+             smartnav::EnergyStatus(s.energy.arrival.reason,s.energy.arrival.input));
   std::string events;
   for (const auto &e : s.advice.events) {
     if (events.size() > 1024)
@@ -201,8 +201,8 @@ BuildFieldReport(const FieldSnapshot &s, const FieldEnvironment &env,
     << "\nCurve points " << e.curve.points.size() << " / reference "
     << static_cast<int>(e.curve.reference) << " / power basis "
     << static_cast<int>(e.curve.basis) << '\n';
-  o << "Range: " << smartnav::EnergyReasonName(s.energy.range.reason)
-    << "\nArrival: " << smartnav::EnergyReasonName(s.energy.arrival.reason)
+  o << "Range: " << smartnav::EnergyStatus(s.energy.range.reason,s.energy.range.input)
+    << "\nArrival: " << smartnav::EnergyStatus(s.energy.arrival.reason,s.energy.arrival.input)
     << '\n';
   if (s.energy.arrival.estimate) {
     const auto &a = *s.energy.arrival.estimate;

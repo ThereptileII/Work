@@ -140,7 +140,7 @@ void PreviewPanel::Paint(wxPaintEvent &) {
   if (page_ == PreviewPage::Energy) {
     const int columns = width >= 940 ? 3 : width >= 660 ? 2 : 1;
     const int cw = (width - margin * 2 - gap * (columns - 1)) / columns,
-              ch = 308;
+              ch = 326;
     auto xy = [&](int i) {
       return wxPoint(margin + (i % columns) * (cw + gap),
                      96 + (i / columns) * (ch + gap));
@@ -198,8 +198,8 @@ void PreviewPanel::Paint(wxPaintEvent &) {
                     : "Remaining distance unavailable",
            b.x + 20, b.y + 80, 15, c.secondary, false, cw - 40);
     p.Estimate(arrival ? arrival->soc_percent : std::nullopt, b.x + 20,
-               b.y + 119, "Arrival SOC / %");
-    wxString reason = W(smartnav::EnergyReasonName(energy.arrival.reason));
+               b.y + 119, "Arrival SOC / %", 0);
+    wxString reason = W(smartnav::EnergyStatus(energy.arrival.reason, energy.arrival.input));
     if (arrival && arrival->energy_shortfall_kwh > 0)
       reason = wxString::Format("SHORTFALL  %.1f kWh",
                                 arrival->energy_shortfall_kwh);
@@ -214,6 +214,8 @@ void PreviewPanel::Paint(wxPaintEvent &) {
           wxString::Format("Reserve margin  %+.1f%%",
                            *arrival->soc_percent - model.reserve_soc_percent),
           b.x + 20, b.y + 271, 13, c.secondary);
+    p.Text("Input quality: " + W(smartnav::EnergyQualityName(energy.arrival.quality)),
+           b.x + 20, b.y + 301, 11, c.secondary, false, cw - 40);
     const int y = 96 + ((3 + columns - 1) / columns) * (ch + gap);
     p.Card(margin, y, width - margin * 2, 188,
            "RANGE AT PRESENT CONDITIONS  /  ADVISORY");
@@ -231,10 +233,9 @@ void PreviewPanel::Paint(wxPaintEvent &) {
            x, y + 78, 20, c.primary, true, width - x - 44);
     p.Text(arrival ? wxString::Format("Passage energy  %.1f kWh",
                                       arrival->energy_required_kwh)
-                   : "Passage energy: " + W(smartnav::EnergyReasonName(energy.arrival.reason)),
+                   : "Passage energy: " + W(smartnav::EnergyStatus(energy.arrival.reason, energy.arrival.input)),
            x, y + 112, 13, c.secondary, false, width - x - 44);
-    p.Text("Estimated at present conditions. See Settings / Energy for "
-           "assumptions.",
+    p.Text(W(smartnav::EnergyQualityName(energy.range.quality)) + " / Constant conditions; see Energy settings.",
            margin + 20, y + 160, 11, c.muted, false, width - margin * 2 - 40);
     bottom = y + 212;
   } else if (page_ == PreviewPage::Route) {
@@ -281,10 +282,10 @@ void PreviewPanel::Paint(wxPaintEvent &) {
            cw - 40);
     p.Text("ESTIMATED ARRIVAL SOC", x + 20, y + 207, 11, c.secondary, true);
     p.Text(arrival && arrival->soc_percent
-               ? wxString::Format("%.1f %%", *arrival->soc_percent)
+               ? wxString::Format("%.0f %%", *arrival->soc_percent)
                : "Unavailable",
            x + 20, y + 232, 30, c.accent, true);
-    p.Text("Advisory / inspect assumptions in Energy", x + 20, y + 287, 11,
+    p.Text("Advisory / " + W(smartnav::EnergyQualityName(energy.arrival.quality)), x + 20, y + 287, 11,
            c.muted, false, cw - 40);
     const int end = y + 345;
     p.Card(margin, end, width - 2 * margin, 114, "READ-ONLY ROUTE PROGRESS");
@@ -340,7 +341,7 @@ void PreviewPanel::Paint(wxPaintEvent &) {
              margin, y, 11, c.secondary);
       y += 24;
     }
-    p.Text("ENERGY  /  " + W(smartnav::EnergyReasonName(energy.arrival.reason)),
+    p.Text("ENERGY  /  " + W(smartnav::EnergyStatus(energy.arrival.reason, energy.arrival.input)),
            margin, y, 13, c.attention, true);
     y += 25;
     p.Text(model.source.empty()

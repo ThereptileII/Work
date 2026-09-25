@@ -132,43 +132,49 @@ EnergyPrediction PredictConfiguredEnergy(const EnergyConfiguration &c,
   if (s.navigation.route)
     input.distance_remaining_nm =
         vessel::RouteDistanceSample(*s.navigation.route, now);
-  auto fail = [&](EnergyReason reason) {
+  auto fail = [&](EnergyReason reason, EnergyInput blocked) {
     EnergyPrediction p;
     p.range.reason = p.arrival.reason = reason;
+    p.range.input = p.arrival.input = blocked;
     p.model_source = c.battery.source;
     p.calculated_at = now;
     return p;
   };
   if (!s.simulated && (c.battery_device_id.empty() ||
                        input.soc_percent.device_id != c.battery_device_id))
-    return fail(EnergyReason::MissingInput);
+    return fail(EnergyReason::MissingInput, EnergyInput::BatteryIdentity);
   auto model = c.battery;
   if (c.consumption == ConsumptionModel::CalibratedCurve) {
     if (!ValidPowerCurve(c.curve))
-      return fail(EnergyReason::InvalidModel);
+      return fail(EnergyReason::InvalidModel, EnergyInput::Curve);
     const auto &speed = c.curve.reference == SpeedReference::ThroughWater
                             ? s.navigation.stw_kn
                             : s.navigation.sog_kn;
     if (!Fresh(speed, now))
       return fail(vessel::Assess(speed, now).quality == vessel::Quality::Stale
                       ? EnergyReason::StaleInput
-                      : EnergyReason::MissingInput);
+                  : speed.validity == vessel::Validity::Uncertain
+                      ? EnergyReason::UncertainInput
+                  : speed.validity == vessel::Validity::Invalid && speed.value
+                      ? EnergyReason::InvalidInput
+                      : EnergyReason::MissingInput,
+                  EnergyInput::CurveSpeed);
     auto power = InterpolatePower(c.curve, *speed.value);
     if (!power)
-      return fail(EnergyReason::InvalidInput);
+      return fail(EnergyReason::InvalidInput, EnergyInput::CurveSpeed);
     if (c.curve.basis != PowerBasis::WholePack) {
       if (!std::isfinite(c.hotel_kw) || c.hotel_kw < 0 || c.hotel_kw > 10000)
-        return fail(EnergyReason::InvalidModel);
+        return fail(EnergyReason::InvalidModel, EnergyInput::HotelLoad);
       if (c.curve.basis == PowerBasis::Shaft) {
         if (!std::isfinite(c.shaft_efficiency) || c.shaft_efficiency <= 0 ||
             c.shaft_efficiency > 1)
-          return fail(EnergyReason::InvalidModel);
+          return fail(EnergyReason::InvalidModel, EnergyInput::Efficiency);
         *power /= c.shaft_efficiency;
       }
       *power += c.hotel_kw;
     }
     if (!std::isfinite(*power))
-      return fail(EnergyReason::ArithmeticLimit);
+      return fail(EnergyReason::ArithmeticLimit, EnergyInput::Consumption);
     input.total_discharge_kw = speed;
     input.total_discharge_kw.value = power;
     input.total_discharge_kw.validity = vessel::Validity::Estimated;
@@ -178,10 +184,10 @@ EnergyPrediction PredictConfiguredEnergy(const EnergyConfiguration &c,
     model.source += "; curve: " + c.curve.source + "; " +
                     Reference(c.curve.reference) + "; " + Basis(c.curve.basis);
   } else if (c.consumption != ConsumptionModel::MeasuredPack)
-    return fail(EnergyReason::InvalidModel);
+    return fail(EnergyReason::InvalidModel, EnergyInput::Curve);
   else if (!s.simulated &&
            input.total_discharge_kw.device_id != c.battery_device_id)
-    return fail(EnergyReason::MissingInput);
+    return fail(EnergyReason::MissingInput, EnergyInput::Consumption);
   auto prediction = PredictEnergy(model, input, now);
   prediction.input_route = s.navigation.route;
   return prediction;

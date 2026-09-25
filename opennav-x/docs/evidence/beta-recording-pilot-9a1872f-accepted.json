@@ -1,0 +1,445 @@
+{
+  "scope": "Accepted Beta recording/replay, N2K identity and manual pilot software increment; not Beta release or physical acceptance",
+  "commit": "9a1872f44aa8e1b5d9de2e621c6b3a55b4a9e7a7",
+  "local_commit": "6e5f489fb01c0a0e0e19c66b8c12752e8be46f3c",
+  "run": "https://github.com/ThereptileII/Work/actions/runs/36106701545",
+  "all_jobs": "9 passed",
+  "portable_suites_each_platform": 47,
+  "additional_restart_repetitions_each_platform": 10,
+  "linux_integrated": {
+    "name": "(empty)",
+    "tests": "98",
+    "failures": "0",
+    "disabled": "0",
+    "skipped": "0",
+    "hostname": "",
+    "time": "12",
+    "timestamp": "2026-09-25T07:29:14"
+  },
+  "windows_integrated": {
+    "name": "(empty)",
+    "tests": "88",
+    "failures": "0",
+    "disabled": "0",
+    "skipped": "0",
+    "hostname": "",
+    "time": "20",
+    "timestamp": "2026-09-25T07:28:48"
+  },
+  "windows_artifact": {
+    "id": 10851499820,
+    "sha256": "239b8c00992149a36e226c89f43dc2c934b4fa97ce2b1067ed35baa1b4fc40ce"
+  },
+  "linux_artifact": {
+    "id": 10851479703,
+    "sha256": "137c100f5a866965d43ea682fe1daa91acf2a2e45f59df9a6759eb05d92dee32"
+  },
+  "native_reviews": [
+    {
+      "file": "pilot-01-status-only.png",
+      "sha256": "0ba3d8dfd76f8addc8b4628813067fa7836e3e63fba6e31de2a196f44ece73d7",
+      "review": "1280x800 read-only startup; actual heading live, target/rudder unavailable; TRACK/WIND unavailable."
+    },
+    {
+      "file": "pilot-02-confirmed-manual.png",
+      "sha256": "57cd504e93017a40a32c23e38d7921bdc337ad2c8befe3cba8fcc22d171faba2",
+      "review": "Manual AUTO and course controls; confirmed by subsequent feedback; target/actual 328 degrees."
+    },
+    {
+      "file": "pilot-03-communication-loss.png",
+      "sha256": "3bd139abec23cd3b86a9971740075a7691609f3ccb0a5ca26f5792231c6007e1",
+      "review": "Feedback stale and grey; timeout explicitly outcome unknown and no automatic retry; STANDBY accessible."
+    },
+    {
+      "file": "pilot-04-reconnected-control-off.png",
+      "sha256": "330c08cc9fc94f6b60a9e3c8355506870bd717fefb7ed8d0f42daf67a1b9cf52",
+      "review": "New connection returns control OFF; fresh status/heading and unavailable target, no invented rudder."
+    },
+    {
+      "file": "recording-01-commissioning.png",
+      "sha256": "643d87260e7d42101aa6ce46b876ac4aa8efd74c403a7dae6489b9553abc05c7",
+      "review": "Commissioning controls, bounds, privacy and replay isolation visible."
+    },
+    {
+      "file": "recording-03-replay-energy.png",
+      "sha256": "aa6aaab4667eb642dedd95aab65fe4f97a892a9a08333cd04a401055f18d32a4",
+      "review": "REPLAY banner; owned recorded propulsion/energy, no route invented."
+    },
+    {
+      "file": "recording-04-replay-ended-stale.png",
+      "sha256": "91a72a533f470f96c23ee5eaaeb349def6a137fa15d4e01087c348bcaa322e13",
+      "review": "End-of-replay observations age grey; range and arrival withheld."
+    },
+    {
+      "file": "recording-calibration-export-result.png",
+      "sha256": "10eea1e27aeaa19e7d16b8db121f6cee9bb467b415ed786a4707187000b6fd18",
+      "review": "Successful five-pair export notice; CSV independently inspected for STW/whole-pack/DEMO provenance."
+    }
+  ],
+  "runtime": {
+    "pilot-results.json": {
+      "authority": "native Windows",
+      "hardware": "NONE; loopback simulated translator",
+      "checks": [
+        "Read-only startup despite saved manual permission",
+        "Actual UI and OpenCPN TCP serialization of AUTO/-1/+1/-10/+10/STANDBY",
+        "New matching physical-style feedback confirms; no optimistic target change",
+        "Missing feedback times out without retry; manual STANDBY remains available",
+        "Same-driver reconnect clears identity and session enablement; new claim required",
+        "Live TRACK/WIND unavailable; no SmartNav control path"
+      ],
+      "screenshots": [
+        "pilot-01-status-only.png",
+        "pilot-02-confirmed-manual.png",
+        "pilot-03-communication-loss.png",
+        "pilot-04-reconnected-control-off.png"
+      ],
+      "display": {
+        "before": [
+          1280,
+          800,
+          32
+        ],
+        "after": [
+          1280,
+          800,
+          32
+        ]
+      },
+      "result": "passed; screenshot review required",
+      "sent": [
+        {
+          "key": 64,
+          "wire": "A073215.000 01CC3 1ED00 0163FF00FF03013B0703040640\r",
+          "time": 1241.703
+        },
+        {
+          "key": 81,
+          "wire": "A073216.000 01CC3 1ED00 0163FF00FF03013B0703040651\r",
+          "time": 1243.312
+        },
+        {
+          "key": 127,
+          "wire": "A073217.000 01CC3 1ED00 0163FF00FF03013B070304067F\r",
+          "time": 1244.468
+        },
+        {
+          "key": 209,
+          "wire": "A073218.000 01CC3 1ED00 0163FF00FF03013B07030406D1\r",
+          "time": 1245.484
+        },
+        {
+          "key": 80,
+          "wire": "A073219.000 01CC3 1ED00 0163FF00FF03013B0703040650\r",
+          "time": 1246.484
+        },
+        {
+          "key": 81,
+          "wire": "A073221.000 01CC3 1ED00 0163FF00FF03013B0703040651\r",
+          "time": 1248.078
+        },
+        {
+          "key": 0,
+          "wire": "A073226.000 01CC3 1ED00 0163FF00FF03013B0703040600\r",
+          "time": 1253.375
+        }
+      ],
+      "transport_failures": []
+    },
+    "recording-results.json": {
+      "authority": "native Windows",
+      "checks": [
+        "Actual UI captured/saved 5 normalized frames without positions/route",
+        "Replay is identified; separate source state; hardware control blocked; end ages into stale",
+        "Rewind/pause/stop return to labelled demo without profile restart",
+        "Native calibration export saved finite source-labelled demo pairs"
+      ],
+      "screenshots": [
+        "recording-01-commissioning.png",
+        "recording-02-active.png",
+        "recording-03-replay-energy.png",
+        "recording-04-replay-ended-stale.png",
+        "recording-05-replay-paused.png",
+        "recording-calibration-export-result.png",
+        "recording-06-returned-diagnostics.png"
+      ],
+      "display": {
+        "before": [
+          1280,
+          800,
+          32
+        ],
+        "after": [
+          1280,
+          800,
+          32
+        ]
+      },
+      "file_dialogs": [
+        {
+          "title": "Open normalized recording",
+          "requested": "C:\\Users\\runneradmin\\AppData\\Local\\Temp\\OpenNav recording lighov25\\profile\\recordings\\session-8d5e7660-d2da710c\\segment-0.onxr",
+          "observed": "C:\\Users\\runneradmin\\AppData\\Local\\Temp\\OpenNav recording lighov25\\profile\\recordings\\session-8d5e7660-d2da710c\\segment-0.onxr"
+        },
+        {
+          "title": "Recording to export",
+          "requested": "C:\\Users\\runneradmin\\AppData\\Local\\Temp\\OpenNav recording lighov25\\profile\\recordings\\session-8d5e7660-d2da710c\\segment-0.onxr",
+          "observed": "C:\\Users\\runneradmin\\AppData\\Local\\Temp\\OpenNav recording lighov25\\profile\\recordings\\session-8d5e7660-d2da710c\\segment-0.onxr"
+        },
+        {
+          "title": "Save reviewed calibration observations",
+          "requested": "C:\\Users\\runneradmin\\AppData\\Local\\Temp\\OpenNav recording lighov25\\profile\\calibration.csv",
+          "observed": "C:\\Users\\runneradmin\\AppData\\Local\\Temp\\OpenNav recording lighov25\\profile\\calibration.csv"
+        }
+      ],
+      "calibration_export": {
+        "requested": "C:\\Users\\runneradmin\\AppData\\Local\\Temp\\OpenNav recording lighov25\\profile\\calibration.csv",
+        "files": [
+          "calibration.csv"
+        ],
+        "captions": [
+          "panel",
+          "OpenNav X",
+          "10:42",
+          "DEMO / Cruising",
+          "Light",
+          "panel",
+          "Navigation",
+          "Route",
+          "Energy",
+          "Demo",
+          "Menu",
+          "14.6 NM to destination",
+          "System",
+          "OpenNav Alpha page: Commissioning & recordings",
+          "Exported 5 pairs; omitted 0 unsuitable frames and 0 duplicate observations. Review before deriving/importing a power curve.",
+          "Boat commissioning",
+          "Source health / bounded recordings / isolated replay",
+          "Data sources & precedence",
+          "System diagnostics",
+          "Open recording folder",
+          "Recording OFF / 5 captured / 5 saved / 1 retained segments",
+          "Recording is off at startup. Up to one frame per second; checkpoints every 10 frames and on Stop. Retains up to three 8 MiB segments per session. Transport/device names remain in source\nprovenance. No raw bus stream or connection credentials.",
+          "Record instruments only",
+          "Record with navigation...",
+          "Stop & save recording",
+          "Open recording for REPLAY...",
+          "Replay OFF",
+          "REPLAY displays historical OpenNav data on a separate clock. It does not move OpenCPN's ownship, activate a route or operate equipment. AIS and anchor state are not recorded in this format.\nAt the end, retained observations age into stale state.",
+          "Pause / resume REPLAY",
+          "Rewind REPLAY",
+          "Stop REPLAY",
+          "Export calibration observations...",
+          "Bench overview",
+          "Verify one subsystem at a time / source detail in Data Sources",
+          "Latitude / 59.09 deg / LIVE / 0.00 s / DEMO deterministic trip v0.1",
+          "Longitude / 18.61 deg / LIVE / 0.00 s / DEMO deterministic trip v0.1",
+          "Speed over ground / 6.30 kn / LIVE / 0.00 s / DEMO deterministic trip v0.1",
+          "Course over ground / 80.65 deg true / LIVE / 0.00 s / DEMO deterministic trip v0.1",
+          "Heading / 82.90 deg true / LIVE / 0.00 s / DEMO deterministic trip v0.1",
+          "Speed through water / 6.09 kn / LIVE / 0.00 s / DEMO deterministic trip v0.1",
+          "Apparent wind speed / 17.62 kn / LIVE / 0.00 s / DEMO deterministic trip v0.1",
+          "Apparent wind angle / 75.80 deg / LIVE / 0.00 s / DEMO deterministic trip v0.1",
+          "True wind speed / 13.75 kn / LIVE / 0.00 s / DEMO deterministic trip v0.1",
+          "True wind angle / 96.85 deg / LIVE / 0.00 s / DEMO deterministic trip v0.1",
+          "Depth below transducer / 10.30 m / LIVE / 0.00 s / DEMO deterministic trip v0.1",
+          "Water temperature / 15.59 C / LIVE / 0.00 s / DEMO deterministic trip v0.1",
+          "Atmospheric pressure / No data / UNAVAILABLE / ",
+          "Rudder / 3.80 deg / LIVE / 0.00 s / DEMO deterministic trip v0.1",
+          "Heel / No data / UNAVAILABLE / ",
+          "Motor electrical power / 7.67 kW / LIVE / 0.00 s / DEMO deterministic trip v0.1",
+          "Shaft power / 6.75 kW / ESTIMATED / 0.00 s / DEMO configured assumption v0.1",
+          "Motor speed / 848.50 RPM / LIVE / 0.00 s / DEMO deterministic trip v0.1",
+          "Transmission gear / No data / UNAVAILABLE / ",
+          "Motor temperature / 63.90 C / LIVE / 0.00 s / DEMO deterministic trip v0.1",
+          "Engine coolant temperature / No data / UNAVAILABLE / ",
+          "Battery voltage / 344.90 V / LIVE / 0.00 s / DEMO deterministic trip v0.1",
+          "Battery current (+ discharge) / 23.41 A / LIVE / 0.00 s / DEMO deterministic trip v0.1",
+          "Battery current (source convention) / No data / UNAVAILABLE / ",
+          "Battery SOC / 68.62 % / LIVE / 0.00 s / DEMO deterministic trip v0.1",
+          "Battery SOH / 94.00 % / LIVE / 0.00 s / DEMO deterministic trip v0.1",
+          "Usable pack capacity / 48.00 kWh / ESTIMATED / 0.00 s / DEMO configured assumption v0.1",
+          "Whole-pack net discharge / 8.07 kW / LIVE / 0.00 s / DEMO deterministic trip v0.1",
+          "Fresh water tank / 72.00 % / LIVE / 0.00 s / DEMO deterministic trip v0.1",
+          "Fuel tank / No data / UNAVAILABLE / ",
+          "Waste tank / 18.00 % / LIVE / 0.00 s / DEMO deterministic trip v0.1",
+          "Other fluid tank / No data / UNAVAILABLE / ",
+          "Input rate / No data / UNAVAILABLE / "
+        ]
+      },
+      "result": "passed; screenshot review required"
+    },
+    "n2k-input-results.json": {
+      "authority": "native Windows",
+      "fixture": "Synthetic NMEA over loopback; no external devices or production profile",
+      "expected": {
+        "battery_voltage_v": 343,
+        "battery_current_source_a": -21,
+        "soc_percent": 68,
+        "motor_rpm": 820,
+        "coolant_c": 62,
+        "gear": "Forward"
+      },
+      "screenshots": [
+        "n2k-01-live-energy.png",
+        "n2k-02-stale-energy.png",
+        "n2k-03-invalid-energy.png"
+      ],
+      "visual_review": "required",
+      "display": {
+        "before": [
+          1280,
+          800,
+          32
+        ],
+        "after": [
+          1280,
+          800,
+          32
+        ]
+      },
+      "checks": [
+        "Actual OpenCPN TCP N2K driver -> NavMsgBus -> MarineBridge -> owned snapshots",
+        "HV voltage/current/SOC/RPM/coolant/gear byte fixtures and provenance",
+        "Real address claim unifies SOC and voltage/current pack identity; reassignment removes old samples",
+        "Duplicate NAME at another address suppresses ambiguous instrument data",
+        "No fabricated GPS, motor-temperature mapping or configured power",
+        "Source cadence and invalid counts; dropout suppresses live rate",
+        "N2K sensor loss/NA invalidates energy inputs and discrete gear"
+      ],
+      "result": "loopback transport and lifecycle passed; numeric and stale screenshot review required",
+      "sent": {
+        "rmc": 42,
+        "gga": 0
+      },
+      "transport_errors": []
+    },
+    "installer-lifecycle.json": {
+      "status": "passed",
+      "checks": [
+        "Official supported OpenCPN installed and exact PE executable SHA-256 verified",
+        "Registry discovery handles the official build-suffixed key and verifies its exact hash without modification",
+        "Conventional wizard opens without command-line options; default Install and path input work; Cancel changes no installation",
+        "Unknown executable hash refused before creating install root or changing stock",
+        "Unknown installation ownership refused without adding logs or changing files",
+        "Actual Alpha wizard Install preflight, staging and Finish complete successfully without command-line options",
+        "Exact candidate clean install and first-install rollback preserve stock/profile; real coastline and candidate hash verified",
+        "Distinct compiled prior Alpha test version installs and opens real coastline with shared fixtures",
+        "Prior test version updates to the exact Alpha candidate executable; stock/profile unchanged",
+        "Installed XNav starts against normal wx profile; coastline and navigation fixtures preserved",
+        "Installed Legacy and Safe start with charts and shared navigation/config/plugin preferences",
+        "Installed XNav to Legacy to XNav controlled restart retains real coastline",
+        "Repair replaces corrupt owned resources in a new generation; original damaged backup and custom additions retained",
+        "Update preserves shared profile and user plugin additions; prior generation backed up",
+        "Rollback restores exact prior generation without restoring older navigation data",
+        "Interrupted update before atomic commit retains active app and recovers on rerun",
+        "Interrupted post-commit shortcut publication recovers from durable journal",
+        "Diagnostics verifies installed hashes without collecting navigation or raw sensor data",
+        "Conventional uninstaller removes verified owned app files; exact stock/profile unchanged; custom additions retained",
+        "Restored official OpenCPN safety notice acknowledged through its visible Agree button",
+        "Stock resource defaults survive every generation and uninstall; explicit custom tide selection is preserved",
+        "Original official OpenCPN still loads charts and shared navigation data after uninstall"
+      ],
+      "operations": [
+        {
+          "action": "Preflight",
+          "report": "installer-00-Preflight.json"
+        },
+        {
+          "action": "Install",
+          "report": "installer-01-Install.json"
+        },
+        {
+          "action": "Install",
+          "report": "installer-02-Install.json"
+        },
+        {
+          "action": "Rollback",
+          "report": "installer-03-Rollback.json"
+        },
+        {
+          "action": "Install",
+          "report": "installer-04-Install.json"
+        },
+        {
+          "action": "Update",
+          "report": "installer-05-Update.json"
+        },
+        {
+          "action": "Repair",
+          "report": "installer-06-Repair.json"
+        },
+        {
+          "action": "Update",
+          "report": "installer-07-Update.json"
+        },
+        {
+          "action": "Rollback",
+          "report": "installer-08-Rollback.json"
+        },
+        {
+          "action": "Update",
+          "report": "installer-09-Update.json"
+        },
+        {
+          "action": "Update",
+          "report": "installer-10-Update.json"
+        },
+        {
+          "action": "Update",
+          "report": "installer-11-Update.json"
+        },
+        {
+          "action": "Repair",
+          "report": "installer-12-Repair.json"
+        },
+        {
+          "action": "Diagnostics",
+          "report": "installer-13-Diagnostics.json"
+        },
+        {
+          "action": "Uninstall",
+          "report": "installer-14-Uninstall.json"
+        }
+      ],
+      "screenshots": [
+        "installer-wizard-welcome.png",
+        "installer-wizard-selection.png",
+        "installer-wizard-welcome.png",
+        "installer-wizard-selection.png",
+        "installer-wizard-installed.png",
+        "installer-00-clean-candidate.png",
+        "installer-00-prior-test-version.png",
+        "installer-01-xnav.png",
+        "installer-02-legacy.png",
+        "installer-02-safe.png",
+        "installer-03-before-switch.png",
+        "installer-04-returned-xnav.png",
+        "installer-05-restored-stock-welcome.png",
+        "installer-05-restored-stock.png"
+      ],
+      "authority": "native disposable Windows / PowerShell 5.1 / NSIS",
+      "display": {
+        "before": [
+          1280,
+          800,
+          32
+        ],
+        "after": [
+          1280,
+          800,
+          32
+        ]
+      },
+      "stock_sha256": "7c6547562cca7954671eaab72833ca9d788710fd9808b6a699b6dc823852ae0c",
+      "setup_sha256": "1f10c964aa2b5b5357008cd159ff810750d0c259a5d950a92d4d81b450f12109"
+    }
+  },
+  "limits": [
+    "Loopback firmware-style feedback, no physical hardware delivery claimed.",
+    "Windows native scrollbar/titlebar and basemap night refinements remain Beta work.",
+    "Saved permission never starts enabled; only qualified TCP Actisense complete-PGN ASCII output. Other transports status-only; TRACK/WIND output unavailable.",
+    "Boat v2 expiry and field diagnostic ZIP belong to later pending revisions.",
+    "Candidate packages retain Alpha branding; no named release promoted during Beta development."
+  ]
+}

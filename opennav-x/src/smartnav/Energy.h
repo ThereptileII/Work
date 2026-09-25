@@ -27,13 +27,40 @@ struct EnergyInputs {
 };
 
 enum class EnergyReason {
-  None, InvalidModel, MissingInput, InvalidInput, StaleInput,
-  UncertainInput, NotUnderway, NotDischarging, ArithmeticLimit
+  None,
+  InvalidModel,
+  MissingInput,
+  InvalidInput,
+  StaleInput,
+  UncertainInput,
+  NotUnderway,
+  NotDischarging,
+  ArithmeticLimit
 };
+enum class EnergyInput {
+  None,
+  Model,
+  BatteryIdentity,
+  Soc,
+  RouteDistance,
+  Speed,
+  Consumption,
+  Curve,
+  CurveSpeed,
+  HotelLoad,
+  Efficiency
+};
+// Describes input condition, never statistical confidence or forecast accuracy.
+enum class EnergyQuality { Unavailable, Current, Aging, Modeled };
+const char *EnergyInputName(EnergyInput);
+const char *EnergyQualityName(EnergyQuality);
+std::string EnergyStatus(EnergyReason, EnergyInput);
 
 template <class T> struct Prediction {
   std::optional<T> estimate;
   EnergyReason reason = EnergyReason::MissingInput;
+  EnergyInput input = EnergyInput::None;
+  EnergyQuality quality = EnergyQuality::Unavailable;
 };
 
 struct RangeEstimate {
@@ -59,7 +86,8 @@ struct EnergyPrediction {
 // Every output is an advisory ESTIMATE: constant present speed/net discharge,
 // linear SOC-energy relationship, no weather/current/route-leg forecast.
 // No widgets, OpenCPN globals, device commands or automatic steering.
-EnergyPrediction PredictEnergy(const EnergyModel& model, const EnergyInputs& inputs,
-                               vessel::Time now, vessel::Freshness freshness = {});
+EnergyPrediction PredictEnergy(const EnergyModel &model,
+                               const EnergyInputs &inputs, vessel::Time now,
+                               vessel::Freshness freshness = {});
 
-}  // namespace opennav::smartnav
+} // namespace opennav::smartnav

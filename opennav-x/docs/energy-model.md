@@ -147,3 +147,34 @@ prediction boundary. No unmeasured boat curve or usable capacity is supplied.
 See [recording/replay contract](recording-replay-contract.md) for file limits,
 privacy, capture/replay clocks and test gates. Exact native acceptance remains
 in [status](status.md); physical calibration remains outstanding.
+
+## Beta input quality and commissioning reasons
+
+Each range/arrival result now identifies its blocking input separately from its
+failure reason: SOC, selected pack identity, SOG, route progress, whole-pack
+consumption, curve/reference speed, auxiliary load or efficiency. A stale SOC
+therefore reports **Battery SOC stale**, rather than an unexplained unavailable
+arrival. Invalid observed inputs remain distinct from never-observed inputs.
+
+Quality describes the inputs, not a statistical forecast guarantee:
+
+* **CURRENT INPUTS**: all required observations are measured and below their
+  aging thresholds. Predictions remain advisory and depend on configured model
+  assumptions.
+* **LIMITED / AGING INPUTS**: an input has crossed its aging threshold but remains
+  within every applicable stale limit.
+* **LIMITED / ESTIMATED INPUTS**: a required input is derived/modelled (including
+  V × I whole-pack power or an empirical propulsion curve).
+* **UNAVAILABLE**: required input/configuration fails the existing gate. No
+  quality label restores a suppressed estimate.
+
+The existing energy equations, capacity/reserve definitions, current sign,
+physical pack identity, zero-distance arrival exception, curve interpolation and
+no-extrapolation rule are preserved. No empirical boat curve is invented.
+Freshness ceilings cannot be relaxed by display reads or source settings. An
+arrival at a coherent zero distance needs current SOC/distance but no underway
+power forecast; its quality reflects those actual dependencies. The route page
+rounds advisory destination SOC to whole percent rather than implying BMS/model
+precision. Field reports and live diagnostics include the blocking input and
+quality. Physical capacity/curve/auxiliary-load validation remains part of boat
+commissioning.

@@ -1,5 +1,66 @@
 #include "smartnav/VesselEnergy.h"
 namespace opennav::smartnav {
+const char *EnergyInputName(EnergyInput i) {
+  switch (i) {
+  case EnergyInput::None:
+    return "";
+  case EnergyInput::Model:
+    return "Battery capacity / reserve";
+  case EnergyInput::BatteryIdentity:
+    return "Selected battery identity";
+  case EnergyInput::Soc:
+    return "Battery SOC";
+  case EnergyInput::RouteDistance:
+    return "Active route distance";
+  case EnergyInput::Speed:
+    return "Speed over ground";
+  case EnergyInput::Consumption:
+    return "Whole-pack consumption";
+  case EnergyInput::Curve:
+    return "Propulsion curve";
+  case EnergyInput::CurveSpeed:
+    return "Curve reference speed";
+  case EnergyInput::HotelLoad:
+    return "Auxiliary load";
+  case EnergyInput::Efficiency:
+    return "Shaft efficiency";
+  }
+  return "Unknown input";
+}
+const char *EnergyQualityName(EnergyQuality q) {
+  switch (q) {
+  case EnergyQuality::Unavailable:
+    return "UNAVAILABLE";
+  case EnergyQuality::Current:
+    return "CURRENT INPUTS";
+  case EnergyQuality::Aging:
+    return "LIMITED / AGING INPUTS";
+  case EnergyQuality::Modeled:
+    return "LIMITED / ESTIMATED INPUTS";
+  }
+  return "UNAVAILABLE";
+}
+std::string EnergyStatus(EnergyReason r, EnergyInput i) {
+  const auto input = std::string(EnergyInputName(i));
+  if (r == EnergyReason::None)
+    return "Valid advisory estimate";
+  if (input.empty())
+    return EnergyReasonName(r);
+  switch (r) {
+  case EnergyReason::MissingInput:
+    return input + " unavailable";
+  case EnergyReason::StaleInput:
+    return input + " stale";
+  case EnergyReason::UncertainInput:
+    return input + " uncertain";
+  case EnergyReason::InvalidInput:
+    return input + " invalid / outside model domain";
+  case EnergyReason::InvalidModel:
+    return input + " not configured";
+  default:
+    return input + ": " + EnergyReasonName(r);
+  }
+}
 EnergyModel PreviewEnergyModel(bool demo) {
   return demo ? EnergyModel{48, 15, 0.5,
                             "DEMO: 48 kWh usable, 15% reserve; constant speed "
