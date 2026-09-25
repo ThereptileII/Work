@@ -74,10 +74,12 @@ def stable_resources(profile,stock,tides=None):
     config.read(profile/'opencpn.ini',encoding='utf-8-sig')
     expected=tides or [stock/'tcdata/harmonics-dwf-20210110-free.tcd',stock/'tcdata/HARMONICS_NO_US.IDX']
     actual=[Path(v) for _,v in config.items('TideCurrentDataSources')]
-    assert actual==expected,(actual,expected)
+    # wx/Windows may expand the fixture's RUNNER~1 short-name alias. Require
+    # identical filesystem objects, not identical spellings of the same files.
+    assert len(actual)==len(expected) and all(a.samefile(e) for a,e in zip(actual,expected)),(actual,expected)
     assert all(p.is_file() for p in actual),'Retained tide sources must survive generation removal'
     for section,key,path in [('Directories','BasemapDir',stock/'gshhs'),('Directories','BaseShapefileDir',stock/'basemap_shp'),('Settings/AIS','AISAlertAudioFile',stock/'sounds/2bells.wav')]:
-        assert Path(config.get(section,key))==path,(section,key,config.get(section,key))
+        assert Path(config.get(section,key)).samefile(path),(section,key,config.get(section,key))
         assert path.exists()
 def launch(exe,mode,title,profile,name):
     before=count_starts(profile)

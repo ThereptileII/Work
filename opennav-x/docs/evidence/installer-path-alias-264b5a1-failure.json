@@ -1,0 +1,57 @@
+{
+  "commit": "264b5a1b7d38c417fbf5a3f0e964716ce481eecc",
+  "run": "https://github.com/ThereptileII/Work/actions/runs/36084771038",
+  "artifact": 10843732337,
+  "artifactSha256": "8847380b12f056d73d5e11152bb84f5ca869effd8a0e6045ac08e95a93a260cb",
+  "result": {
+    "status": "failed",
+    "checks": [
+      "Official supported OpenCPN installed and exact PE executable SHA-256 verified",
+      "Registry discovery handles the official build-suffixed key and verifies its exact hash without modification",
+      "Conventional wizard opens without command-line options; default Install and path input work; Cancel changes no installation",
+      "Unknown executable hash refused before creating install root or changing stock",
+      "Unknown installation ownership refused without adding logs or changing files",
+      "Actual Alpha wizard Install preflight, staging and Finish complete successfully without command-line options"
+    ],
+    "operations": [
+      {
+        "action": "Preflight",
+        "report": "installer-00-Preflight.json"
+      },
+      {
+        "action": "Install",
+        "report": "installer-01-Install.json"
+      },
+      {
+        "action": "Install",
+        "report": "installer-02-Install.json"
+      }
+    ],
+    "screenshots": [
+      "installer-wizard-welcome.png",
+      "installer-wizard-selection.png",
+      "installer-wizard-welcome.png",
+      "installer-wizard-selection.png",
+      "installer-wizard-installed.png",
+      "installer-00-clean-candidate.png"
+    ],
+    "authority": "native disposable Windows / PowerShell 5.1 / NSIS",
+    "display": {
+      "before": [
+        1280,
+        800,
+        32
+      ],
+      "after": [
+        1280,
+        800,
+        32
+      ]
+    },
+    "error": "AssertionError(([WindowsPath('C:/Users/runneradmin/AppData/Local/Temp/OpenNav installer iwbcs0pd/stock OpenCPN/tcdata/harmonics-dwf-20210110-free.tcd'), WindowsPath('C:/Users/runneradmin/AppData/Local/Temp/OpenNav installer iwbcs0pd/stock OpenCPN/tcdata/HARMONICS_NO_US.IDX')], [WindowsPath('C:/Users/RUNNER~1/AppData/Local/Temp/OpenNav installer iwbcs0pd/stock OpenCPN/tcdata/harmonics-dwf-20210110-free.tcd'), WindowsPath('C:/Users/RUNNER~1/AppData/Local/Temp/OpenNav installer iwbcs0pd/stock OpenCPN/tcdata/HARMONICS_NO_US.IDX')]))",
+    "visible_windows": []
+  },
+  "finding": "Actual clean install and launch succeed. Resource assertion compares the long runneradmin path with its RUNNER~1 Windows short-path alias.",
+  "replacement": "Require the same existing filesystem objects for every expected tide, coastline, basemap and alarm resource. Different/missing files still fail. Preserve list length and order.",
+  "acceptance": "Not full lifecycle acceptance; no release allowlist entry."
+}

@@ -107,7 +107,10 @@ verified original stock resources, preserving all custom selections. The new
 contract passes 30 portable suites on Linux and native MSVC. The dedicated
 post-locale hook also passes actual Linux XNav/Legacy/Safe harmonic loading with
 Unicode paths, removed generations and a retained custom source list. The full
-native lifecycle qualification remains pending.
+native lifecycle qualification remains pending. Its `264b5a1` check compared
+the long Windows path with a short-name alias; the replacement requires
+filesystem identity rather than spelling equality.
+[Alias evidence](evidence/installer-path-alias-264b5a1-failure.json).
 [Resource lifetime failure and repair](evidence/installer-resources-2803773-failure.json).
 The complete lifecycle, exact final artifact and public allowlist remain gated.
 
