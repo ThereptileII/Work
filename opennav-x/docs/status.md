@@ -50,6 +50,10 @@ Recording/replay, calibration export and the commissioning overview now pass
 UI, N2K loss-of-data and mode-cycle checks. Native Windows acceptance is pending.
 [Recording contract](recording-replay-contract.md),
 [local evidence](evidence/beta-recording-local.json).
+The first native recording attempt `6114f1e` compiled but rejected two portability
+cases (canonical TEMP path aliases and a text-mode test fixture). Corrections
+pass all 38 local portable suites; native replacement evidence is required.
+[Failure/repair record](evidence/beta-recording-6114f1e-failure.json).
 The interaction test also exposed and fixed first-open pane wrapping and focus
 after replay changes; native scaling remains a required gate. [Source inspection](beta-boat-source-inspection.md)
 records the actual producer contract and its retained-data freshness limitation.

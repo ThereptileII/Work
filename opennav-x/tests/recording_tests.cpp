@@ -258,6 +258,8 @@ void Storage() {
     }
     recorder.Stop();
     const auto status = recorder.Status();
+    Check(status.directory.parent_path() == fs::canonical(root),
+          "Session uses the resolved application-owned root");
     Check(!status.active && status.error.empty() && status.published == 8 &&
               status.segments == 3,
           "Bounded rotation finished");
@@ -304,7 +306,7 @@ void ControlBoundary() {
     const vessel::Time now{500s};
     const auto file = root / "record.onxr";
     {
-      std::ofstream out(file);
+      std::ofstream out(file, std::ios::binary);
       out << diagnostics::EncodeRecording(Fixture());
     }
     diagnostics::Commissioning service(root);

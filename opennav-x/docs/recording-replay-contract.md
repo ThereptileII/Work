@@ -88,6 +88,9 @@ snapshots at most once per second to an eight-frame queue, with serialization
 and IO on a worker. A slow/full queue or disk error stops recording and exposes
 the error in the page and main status bar. Only this session's own segment files
 are rotated, retaining three segments; previous sessions are never deleted.
+The chosen application log root is resolved once (including normal Windows
+short-name/case aliases); only the uniquely created canonical session directory
+is used for IO. Replacing session/file paths with links fails closed.
 Atomic checkpoints are published every ten frames and at stop/close. A crash
 can lose the last nine frames; the previous complete checkpoint remains usable.
 The UI shows captured versus saved counts. A normal stop joins the worker.

@@ -1,0 +1,26 @@
+{
+  "commit": "6114f1e101cb416175eea018ec2dc169827cdbe8",
+  "run": "https://github.com/ThereptileII/Work/actions/runs/36100145188",
+  "accepted": false,
+  "windows_job": 107960695699,
+  "msvc_build": "passed",
+  "portable_tests": {
+    "passed": 36,
+    "failed": 2,
+    "total": 38
+  },
+  "failures": [
+    {
+      "test": "recording_storage_rotation",
+      "message": "Recording directory must not traverse links",
+      "repair": "Resolve the app-owned root first instead of assuming Windows canonical/absolute path string inequality means a link; store the unique canonical session directory and retain later link-change protection."
+    },
+    {
+      "test": "recording_control_isolation",
+      "message": "Replay forbids every OpenNav hardware command",
+      "repair": "Write the fixture as binary, just like the real writer; Windows text mode introduced CRLF into a deliberately strict canonical-LF recording."
+    }
+  ],
+  "downstream_windows_runtime": "Skipped by dependency gate; no Beta release acceptance or named release artifact",
+  "replacement_local_tests": "38/38 portable suites pass; native replacement required"
+}

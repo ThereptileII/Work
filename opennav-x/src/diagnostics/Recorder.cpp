@@ -42,10 +42,12 @@ Recorder::Recorder(const fs::path &root, application::Settings assumptions,
       !limits.checkpoint_frames || limits.checkpoint_frames > 10)
     throw std::invalid_argument("Invalid recording limits");
   // A fixed application-owned root, no path ever supplied by file contents.
-  const auto absolute = fs::absolute(root).lexically_normal();
-  if (fs::weakly_canonical(absolute) != absolute)
-    throw std::invalid_argument("Recording directory must not traverse links");
-  fs::create_directories(absolute);
+  // Resolve the chosen application log root once. Windows may express TEMP
+  // using an 8.3 alias or different case: string inequality is not proof of a
+  // link escape. All subsequent IO uses the resolved owned directory only.
+  const auto resolved = fs::weakly_canonical(fs::absolute(root));
+  fs::create_directories(resolved);
+  const auto absolute = fs::canonical(resolved);
   std::random_device random;
   bool created = false;
   for (unsigned i = 0; i < 10 && !created; ++i) {
@@ -56,6 +58,7 @@ Recorder::Recorder(const fs::path &root, application::Settings assumptions,
   }
   if (!created)
     throw std::runtime_error("Cannot create unique recording session");
+  status_.directory = fs::canonical(status_.directory);
   status_.active = true;
   worker_ = std::thread(&Recorder::Work, this);
 }
