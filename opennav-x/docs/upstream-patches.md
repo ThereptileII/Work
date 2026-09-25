@@ -229,3 +229,16 @@ for this mode because platform/profile services were never initialized. Normal
 starts follow the existing code. This avoids using a full OpenCPN startup as an
 installer probe that could modify the shared profile. See
 [transaction contract](installer-transaction-contract.md).
+
+## Recovery notice after deferred startup
+
+A guarded call at the end of `MyFrame::OnInitTimer`, only when
+`g_bDeferredInitDone` is true, schedules `AfterDeferredInitialization()`.
+The informational recovery notice is queued once after upstream focus, frame
+raise, chart finalization and canvas refresh work finishes. Initial Safe
+selection remains before plugin/GL setup. This replaces the earlier Attach-time
+modal, which overlapped deferred startup and failed native dismissal. No
+navigation processing is triggered and ordinary Legacy startup is unaffected.
+The real-process gate asserts notice ordering, actual dismissal, enabled parent,
+retained chart/data and three separate native recovery cycles.
+[Failure and replacement](evidence/windows-recovery-bc892a7-startup-order.json).

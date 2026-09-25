@@ -103,6 +103,9 @@ try:
         xdo('windowfocus',handle,'mousemove',600,400,'click',3);time.sleep(.3);xdo('key','End','Return')
     assert app.wait(timeout=30)==0;owned.discard(app.pid)
     handle,pid=window('OpenNav X / OpenCPN');ready(4)
+    recovered_log=(profile/'opencpn.log').read_text(errors='replace').split('OpenNav startup: safe',1)[1]
+    assert recovered_log.count('OpenNav recovery notice after deferred startup')==1
+    assert recovered_log.index('OnInitTimer...Finalize Canvases') < recovered_log.index('OpenNav recovery notice after deferred startup')
     state=(profile/'opennav-startup.state').read_text()
     assert 'failures 0' in state and 'pending 1' in state,state
     assert list(profile.glob('opennav-startup.state.retry-*')),'Retry evidence not retained'

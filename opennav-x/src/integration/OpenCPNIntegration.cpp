@@ -78,6 +78,7 @@ std::unique_ptr<integration::MarineBridge> marine;
 std::unique_ptr<integration::SettingsStore> settings;
 std::unique_ptr<integration::RecoveryStore> recovery;
 bool recovery_safe = false;
+bool recovery_notice_scheduled = false;
 adapters::UnavailableRadar radar;
 application::AnchorState anchor_state;
 struct PilotServices {
@@ -270,15 +271,6 @@ void Attach(MyFrame& frame, wxAuiManager& manager, wxFileConfig& config) {
   }
   if (!IsXNav()) {
     frame.SetTitle(selected == StartupMode::Safe ? "OpenNav Safe Mode / OpenCPN" : "OpenCPN / Legacy");
-    if (recovery_safe)
-      frame.CallAfter([&frame] {
-        wxMessageBox(
-            "XNav did not complete startup reliably. OpenCPN is running in "
-            "Safe Mode with OpenNav modules, plugins and OpenGL disabled. "
-            "Navigation data has not been reset. Inspect the OpenCPN log; use "
-            "Switch to XNav only when ready to retry.",
-            "OpenNav startup recovery", wxOK | wxICON_INFORMATION, &frame);
-      });
     return;
   }
   frame.SetTitle("OpenNav X / OpenCPN");
@@ -391,6 +383,21 @@ void Attach(MyFrame& frame, wxAuiManager& manager, wxFileConfig& config) {
   if (!route_test_profile.empty()) test::EnableRouteScenario(route_test_profile);
   if (!object_test_profile.empty()) test::EnableObjectScenario(object_test_profile);
 #endif
+}
+
+void AfterDeferredInitialization() {
+  if (!recovery_safe || recovery_notice_scheduled || !host) return;
+  recovery_notice_scheduled = true;
+  host->CallAfter([] {
+    if (!host || restart) return;
+    wxLogMessage("OpenNav recovery notice after deferred startup");
+    wxMessageBox(
+        "XNav did not complete startup reliably. OpenCPN is running in "
+        "Safe Mode with OpenNav modules, plugins and OpenGL disabled. "
+        "Navigation data has not been reset. Inspect the OpenCPN log; use "
+        "Switch to XNav only when ready to retry.",
+        "OpenNav startup recovery", wxOK | wxICON_INFORMATION, host);
+  });
 }
 
 void AfterAnchorWatch(){

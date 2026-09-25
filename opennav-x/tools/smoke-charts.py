@@ -235,18 +235,30 @@ try:
      time.sleep(.2)
     else:raise RuntimeError('Upstream plugin manager not visible: '+repr(captions))
     # Child captions can exist before wx has thawed and painted the dialog.
-    # Require real interior pixels as well as the named plugin controls.
+    # Require real interior pixels and painted action buttons. A partial first
+    # paint can show the plugin list while the footer is still blank.
     ui.SetForegroundWindow(options);end=time.monotonic()+10
     while time.monotonic()<end:
      rgb=ui.capture(options,evidence/'chart-plugin-manager.png',resize=False,screen_pixels=True)
      rect=ui.W.RECT();assert ui.GetWindowRect(options,ctypes.byref(rect))
      width,height=rect.right-rect.left,rect.bottom-rect.top
      pixels=collections.Counter(bytes(rgb[(y*width+x)*3:(y*width+x)*3+3]) for y in range(100,height-70,2) for x in range(15,width-15,2))
-     if len(pixels)>=32:
-      entry['plugin_manager_interior_colors']=len(pixels);break
+     painted=[]
+     for child,caption in ui.children(options):
+      if caption.replace('&','') not in ('OK','Cancel','Apply'):continue
+      bounds=ui.W.RECT();assert ui.GetWindowRect(child,ctypes.byref(bounds))
+      left,right=bounds.left-rect.left+6,bounds.right-rect.left-6
+      top,bottom=bounds.top-rect.top+4,bounds.bottom-rect.top-4
+      if not (0<=left<right<width and 0<=top<bottom<height):continue
+      luminance=[sum(rgb[(y*width+x)*3:(y*width+x)*3+3]) for y in range(top,bottom) for x in range(left,right)]
+      if max(luminance)-min(luminance)>90:painted.append(caption.replace('&',''))
+     if len(pixels)>=32 and set(painted)=={'OK','Cancel','Apply'}:
+      entry['plugin_manager_interior_colors']=len(pixels)
+      entry['plugin_manager_painted_buttons']=painted
+      break
      time.sleep(.2)
     else:raise RuntimeError('Plugin manager controls exist but its contents did not paint')
-    report['screenshots'].append('chart-plugin-manager.png');ui.click_text(pid,'Cancel')
+    report['screenshots'].append('chart-plugin-manager.png');ui.dismiss_native_dialog(options,'Cancel')
    else:
     # Public settings keyboard focus is not guessed; Linux validates loading.
     # Native gate above verifies the actual upstream manager interaction.

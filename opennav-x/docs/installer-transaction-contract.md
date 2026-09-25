@@ -93,9 +93,10 @@ the no-backup-file .NET contract. The actual native replacement test remains the
 acceptance gate; the failed candidate is retained in evidence.
 
 The official OpenCPN prerequisite is installed only in the disposable fixture.
-Its unmodified upstream setup requests administrator access; the harness uses
-Windows ShellExecute RunAs and records the caller privilege, exit result and
-installed hash. It does not lower UAC policy or patch the prerequisite. This
+Its unmodified upstream setup requests administrator access; the harness drives
+the visible official wizard on the elevated disposable runner and records the
+caller privilege, all page transitions, exit result, installed hash and
+registration. It does not lower UAC policy or patch the prerequisite. This
 elevation belongs to installing stock OpenCPN, not to Alpha Setup, which remains
 `RequestExecutionLevel user`. A failed prerequisite never qualifies an Alpha
 installation or populates the compatibility allowlist.
@@ -109,3 +110,23 @@ require zero. This replaces an incorrect exit-code-only fixture assumption; it
 does not accept an aborted/missing wizard or unknown binary. The final lifecycle
 also launches the untouched stock application and checks chart/profile data.
 [Observed completion](evidence/installer-stock-exit-149c41b-observation.json).
+
+The strengthened stock prerequisite passes natively at `8ae303c`. Its reviewed
+completion page and verified registration are recorded in
+[the native prerequisite gate](evidence/installer-stock-8ae303c-gate.json). This
+qualifies fixture preparation only; the full Alpha lifecycle remains a separate
+mandatory acceptance gate.
+
+The native lifecycle also uses the actual no-argument Setup wizard to install
+the exact candidate into a clean integration state, requiring its visible
+completion page and zero exit. It launches the chart and rolls back that first
+installation before testing
+the distinct older-version update path. This checks the no-prior-generation
+rollback branch without treating an update as a substitute for clean install.
+
+The actual NSIS-launched PowerShell process at `8ae303c` cannot resolve
+`Get-FileHash`, despite the standalone native filesystem helpers passing.
+Integrity now streams bytes through .NET SHA-256 directly, with a fixed known
+vector in both 32/64-bit helper gates. No hash check is relaxed. The precise
+module-discovery cause is not claimed; the installer no longer relies on it.
+[Preflight failure](evidence/installer-preflight-8ae303c-hash-failure.json).

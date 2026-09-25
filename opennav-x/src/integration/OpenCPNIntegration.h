@@ -27,6 +27,8 @@ bool IsPortablePreview();
 bool IsXNav();
 void SelectMode(wxFileConfig& config, bool upstream_safe);
 void Attach(MyFrame& frame, wxAuiManager& manager, wxFileConfig& config);
+// Called at the end of normal deferred startup, after canvas/focus work.
+void AfterDeferredInitialization();
 void AppendModeMenu(wxMenu& menu);
 bool PrepareClose(wxFileConfig& config);
 void CompleteRestart();

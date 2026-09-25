@@ -72,14 +72,22 @@ def launch(exe,mode,title,profile,name):
     return p,h,rgb
 def close(p,h):
     ui.close(h);assert p.wait(timeout=30)==0;owned.discard(p.pid)
-def wizard(stock):
+def wizard(stock,install=False):
     p=subprocess.Popen([str(SETUP)]);owned.add(p.pid)
     title='OpenNav X Alpha 1 Setup'
     h,_=ui.wait_window(title,p.pid,timeout=45)
     ui.capture(h,EVIDENCE/'installer-wizard-welcome.png',resize=False,screen_pixels=True)
     report['screenshots'].append('installer-wizard-welcome.png')
     get_item=ui.declare(ui.user,'GetDlgItem',ctypes.c_void_p,ctypes.c_void_p,ctypes.c_int)
-    ui.PostMessageW(get_item(h,1),0x00F5,0,0)
+    def press(identifier):
+        ui.SetForegroundWindow(h)
+        button=get_item(h,identifier);assert button and ui.IsWindowEnabled(button)
+        rect=ui.W.RECT();assert ui.GetWindowRect(button,ctypes.byref(rect))
+        point=ui.W.POINT((rect.left+rect.right)//2,(rect.top+rect.bottom)//2)
+        assert ui.WindowFromPoint(point)==button,'Wizard button is obscured'
+        assert ui.SetCursorPos(point.x,point.y)
+        ui.MouseEvent(2,0,0,0,0);time.sleep(.05);ui.MouseEvent(4,0,0,0,0)
+    press(1)
     deadline=time.monotonic()+10
     while time.monotonic()<deadline:
         if any('Select the original installed' in label for _,label in ui.children(h)):break
@@ -89,10 +97,30 @@ def wizard(stock):
     ui.set_dialog_fields(p.pid,title,[str(stock)])
     ui.capture(h,EVIDENCE/'installer-wizard-selection.png',resize=False,screen_pixels=True)
     report['screenshots'].append('installer-wizard-selection.png')
-    ui.PostMessageW(get_item(h,2),0x00F5,0,0)
-    p.wait(timeout=30);owned.discard(p.pid)
-    assert not INSTALL.exists()
-    check('Conventional wizard opens without command-line options; default Install and path input work; Cancel changes no installation')
+    if install:
+        press(1)
+        deadline=time.monotonic()+180
+        while time.monotonic()<deadline:
+            assert p.poll() is None,'Installer exited before its completion page'
+            if ui.control_text(get_item(h,1)).replace('&','')=='Finish' and ui.IsWindowEnabled(get_item(h,1)):
+                break
+            time.sleep(.2)
+        else:raise RuntimeError('Alpha wizard did not reach Finish')
+        for child,caption in ui.children(h):
+            if caption.replace('&','')=='Launch OpenNav X Alpha 1':
+                ui.SendMessageW(child,0x00F1,0,0)
+        time.sleep(.5)
+        ui.capture(h,EVIDENCE/'installer-wizard-installed.png',resize=False,screen_pixels=True)
+        report['screenshots'].append('installer-wizard-installed.png')
+        press(1)
+        assert p.wait(timeout=30)==0
+        check('Actual Alpha wizard Install preflight, staging and Finish complete successfully without command-line options')
+    else:
+        press(2)
+        p.wait(timeout=30)
+        assert not INSTALL.exists()
+        check('Conventional wizard opens without command-line options; default Install and path input work; Cancel changes no installation')
+    owned.discard(p.pid)
 try:
     assert not INSTALL.exists(),'Runner must not contain a previous/user Alpha installation'
     report['display']=ui.ensure_desktop()
@@ -137,6 +165,17 @@ try:
         with (profile/'opencpn.conf').open('a') as f:f.write('\n[Settings/GlobalState]\nVPLatLon=59.0800,18.5000\nVPScale=0.003\n')
         shutil.copy2(profile/'opencpn.conf',profile/'opencpn.ini')
         expected=fixtures.snapshot(profile);before=inventory(profile)
+        wizard(original,install=True)
+        assert inventory(profile)==before and inventory(stock)==stock_before
+        assert not state()['previous']
+        assert sha(generation()/'app/opencpn.exe')==sha(ROOT/'build/xnav-install/opencpn.exe')
+        p,h,rgb=launch(generation()/'app/opencpn.exe',['--xnav'],'OpenNav X / OpenCPN',profile,'installer-00-clean-candidate')
+        charts.reference(rgb);close(p,h);assert fixture_snapshot(profile)==expected
+        before=inventory(profile)
+        engine('Rollback')
+        assert not (INSTALL/'state.json').exists()
+        assert inventory(profile)==before and inventory(stock)==stock_before
+        check('Exact candidate clean install and first-install rollback preserve stock/profile; real coastline and candidate hash verified')
         prior=ROOT/'build/prior-alpha-fixture/setup/OpenNavX-Alpha1-Setup.exe'
         setup('Install',original,executable=prior)
         assert inventory(profile)==before and inventory(stock)==stock_before
@@ -220,7 +259,18 @@ try:
         report['stock_sha256']=sha(original);report['setup_sha256']=sha(SETUP)
         report['status']='passed'
 except Exception as e:
-    report['status']='failed';report['error']=repr(e);raise
+    report['status']='failed';report['error']=repr(e)
+    report['visible_windows']=[]
+    for owner in owned:
+        for handle,pid,title in ui.windows(owner):
+            report['visible_windows'].append({'pid':pid,'title':title})
+            try:
+                name='installer-failed-'+str(len(report['visible_windows']))+'.png'
+                ui.capture(handle,EVIDENCE/name,resize=False,screen_pixels=True)
+                report['screenshots'].append(name)
+            except Exception as capture_error:
+                report.setdefault('capture_errors',[]).append(repr(capture_error))
+    raise
 finally:
     for pid in owned:
         subprocess.run(['taskkill','/PID',str(pid),'/T','/F'],capture_output=True)

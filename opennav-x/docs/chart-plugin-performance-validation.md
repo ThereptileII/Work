@@ -65,3 +65,8 @@ upstream software fallback is recorded, not relabelled hardware GL. Review
 rejected one plugin-manager capture taken before painting despite populated
 child controls. The replacement waits for both named plugins and nonblank
 interior screen pixels with a strict deadline.
+
+Review of `cdff41e` finds the plugin list painted but footer buttons still blank
+in a partial first frame. The native gate now also requires text contrast inside
+the actual OK/Cancel/Apply button interiors, then uses an actual Cancel hit and
+requires modal dismissal. [Partial-paint evidence](evidence/windows-plugin-cdff41e-partial-paint.json).

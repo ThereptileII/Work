@@ -39,6 +39,11 @@ The replacement ZIP and expanded chart-startup matrix are verified on both
 platforms; all nine relevant native chart captures were reviewed. Increments
 2–3 core contracts pass both platform gates at `0e65cd5` and `82efd08`.
 The marine decoder/subscription increment passed both platform gates at
-`785aa45`. Product UI and live settings integration are in progress; the initial
-native property-sheet helper failure is recorded and its correction is being gated. The installer and Alpha release
-have not passed acceptance. See status for exact revision/evidence links.
+`785aa45`. The integrated product screens, settings, adapters, recovery and
+installer engine are implemented and undergoing final native qualification.
+The current gates retain 90 Linux / 80 Windows integrated cases and 29 portable
+suites. Chart editing, actual ENC switching, software fallback and native
+100/125/150% DPI have passing candidate evidence. The official stock installer
+prerequisite is verified; repeated native recovery and the complete Alpha
+installer lifecycle remain required before publication. See [status](status.md)
+for exact revisions, failures, replacements and evidence links.

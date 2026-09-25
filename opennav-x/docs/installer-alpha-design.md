@@ -1,4 +1,4 @@
-# Alpha installer design (implementation and native gates pending)
+# Alpha installer design (native lifecycle qualification pending)
 
 Alpha installs an exact-version-gated integration **beside** the stock OpenCPN
 application, under the current user's LocalAppData. It does not overwrite the
@@ -16,13 +16,14 @@ any OpenNav install location, shortcut or profile is modified. Inspection of the
 until disposable native lifecycle tests pass.
 
 The package uses a conventional Windows setup wizard and an independently
-exercisable transaction engine. Planned invariants:
+exercisable transaction engine. Implemented invariants:
 
 * Verify the integration payload and every owned file before publication.
 * Reject path traversal, reparse points, unexpected ownership and running app
   processes; never follow a redirected installation/profile path during writes.
 * Stage a new application tree, run its real executable loader/resource self-test,
-  and publish it with a durable journal and recoverable directory swaps.
+  and publish an immutable generation through an atomic state record and durable
+  journal.
 * Preserve stock application files, normal navigation/profile data, user plugins
   and connections. Copy compatible system plugin additions into the integration
   tree with provenance; do not overwrite unknown additions on repair/update.
@@ -45,5 +46,8 @@ stock refusal, existing navigation/connection/plugin fixtures, all three modes,
 repair, update, rollback, uninstall, interrupted publication/recovery and stock
 hash equality after every action. The final manifest must identify only the
 stock binary actually tested, its Win32 ABI, pinned upstream revision and the
-matching integration package. This document records intended architecture, not
-a claim that these gates or the installer currently exist.
+matching integration package. Native Setup and prior-version fixtures compile;
+PowerShell 5.1 filesystem contracts pass in 32/64-bit hosts. The exact official
+prerequisite now passes [native installation checks](evidence/installer-stock-8ae303c-gate.json).
+The full Alpha lifecycle and final download remain pending; the public allowlist
+stays empty until those gates pass.

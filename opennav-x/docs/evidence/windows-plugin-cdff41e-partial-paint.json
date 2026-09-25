@@ -1,0 +1,12 @@
+{
+  "commit": "cdff41e737a30cbc45c8400f665be767ef6b655c",
+  "run": "https://github.com/ThereptileII/Work/actions/runs/36076340961",
+  "artifact": 10840821595,
+  "artifact_sha256": "de6722f47d07553cfd8e23b104b1276c040a64c830525a0d77e43ab8025762c9",
+  "artifact_bytes": 16433559,
+  "image": "chart-plugin-manager.png",
+  "image_sha256": "a62c2935fd440e32d997ce76dccae46e1bd6bd643dae536da91d44cea3a9681b",
+  "review": "Plugin names, icons and Enabled controls paint, but the three footer action buttons and final list entry were captured before completing paint. Reject as final visual evidence.",
+  "automated": "Native DPI, ENC switching and route edit pass; only the old official prerequisite prevents Alpha lifecycle in this candidate.",
+  "replacement": "Require interior contrast within OK, Cancel and Apply button rectangles in addition to plugin names and interior content; then actual visible Cancel click and modal disappearance."
+}

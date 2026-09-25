@@ -1,0 +1,47 @@
+{
+  "authority": "native Windows",
+  "checks": [
+    "Owned XNav process terminated before healthy startup 1; navigation fixtures preserved",
+    "Owned XNav process terminated before healthy startup 2; navigation fixtures preserved"
+  ],
+  "screenshots": [
+    "recovery-01-xnav.png",
+    "recovery-failed-1.png",
+    "recovery-failed-2.png"
+  ],
+  "chart_rendering": [],
+  "display": {
+    "before": [
+      1280,
+      800,
+      32
+    ],
+    "after": [
+      1280,
+      800,
+      32
+    ]
+  },
+  "result": "failed",
+  "error": "RuntimeError('Modal remained visible after actual click: OK')",
+  "visible_windows": [
+    {
+      "pid": 2572,
+      "title": "OpenNav startup recovery"
+    },
+    {
+      "pid": 2572,
+      "title": "OpenNav Safe Mode / OpenCPN"
+    }
+  ],
+  "commit": "bc892a7d6811e97c872b876fe971ccc867587bed",
+  "run": "https://github.com/ThereptileII/Work/actions/runs/36077658997",
+  "artifact": 10841536702,
+  "artifact_sha256": "7dad918a5e08b9a0a4182db53319ed69a2afd309b7b74aac2a9b3e741648dad8",
+  "review": "Actual visible OK hit also leaves the recovery notice open. Both native failure images reviewed. Attach schedules this notice before normal OpenCPN deferred initialization, which still changes focus, raises the frame and finalizes canvases under its modal loop.",
+  "replacement": "Schedule the notice once from a narrow hook at the end of OnInitTimer after g_bDeferredInitDone. Keep early Safe selection and all real-click/dismissal checks; assert notice log follows finalization and repeat three actual recovery cycles.",
+  "image_hashes": {
+    "recovery-failed-1.png": "df203fd25c5a327cc2e2fb63f9f37b01153e103498e057cf53939b36ac7f82de",
+    "recovery-failed-2.png": "493908f4645f615ddedb5ae30b77f27f04103a5a60d7abd367a3d13ce70c70fd"
+  }
+}

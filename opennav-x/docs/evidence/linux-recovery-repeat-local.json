@@ -1,0 +1,96 @@
+{
+  "authority": "Linux development; not native Windows acceptance",
+  "local_revision": "598a4ff",
+  "scope": "Three separate owned-process crash/recovery cycles on unchanged integration binary; Windows modal automation differs",
+  "attempts": [
+    {
+      "attempt": 0,
+      "report": "evidence/local/alpha-recovery-linux-repeat-0/recovery-linux-results.json",
+      "sha256": "7b58627de309cb5ddb02ef14e773e53e41195c690e44d58a9102f8d58d4def1f",
+      "checks": [
+        "Owned XNav process terminated before healthy startup 1; navigation fixtures preserved",
+        "Owned XNav process terminated before healthy startup 2; navigation fixtures preserved",
+        "Third explicit XNav launch automatically starts Safe; recovery notice and disabled plugin verified",
+        "Human menu retry resets guard with saved evidence; clean close and navigation/config/plugin persistence passed"
+      ],
+      "chart_rendering": [
+        {
+          "phase": "Automatic Safe recovery",
+          "reference_color_fractions": {
+            "aac3f0": 0.5638054363376251,
+            "aaaf50": 0.41587982832618026
+          },
+          "coastline_visible": true
+        },
+        {
+          "phase": "Human-requested XNav retry",
+          "reference_color_fractions": {
+            "aac3f0": 0.6076180257510729,
+            "aaaf50": 0.3726752503576538
+          },
+          "coastline_visible": true
+        }
+      ]
+    },
+    {
+      "attempt": 1,
+      "report": "evidence/local/alpha-recovery-linux-repeat-1/recovery-linux-results.json",
+      "sha256": "7b58627de309cb5ddb02ef14e773e53e41195c690e44d58a9102f8d58d4def1f",
+      "checks": [
+        "Owned XNav process terminated before healthy startup 1; navigation fixtures preserved",
+        "Owned XNav process terminated before healthy startup 2; navigation fixtures preserved",
+        "Third explicit XNav launch automatically starts Safe; recovery notice and disabled plugin verified",
+        "Human menu retry resets guard with saved evidence; clean close and navigation/config/plugin persistence passed"
+      ],
+      "chart_rendering": [
+        {
+          "phase": "Automatic Safe recovery",
+          "reference_color_fractions": {
+            "aac3f0": 0.5638054363376251,
+            "aaaf50": 0.41587982832618026
+          },
+          "coastline_visible": true
+        },
+        {
+          "phase": "Human-requested XNav retry",
+          "reference_color_fractions": {
+            "aac3f0": 0.6076180257510729,
+            "aaaf50": 0.3726752503576538
+          },
+          "coastline_visible": true
+        }
+      ]
+    },
+    {
+      "attempt": 2,
+      "report": "evidence/local/alpha-recovery-linux-repeat-2/recovery-linux-results.json",
+      "sha256": "7b58627de309cb5ddb02ef14e773e53e41195c690e44d58a9102f8d58d4def1f",
+      "checks": [
+        "Owned XNav process terminated before healthy startup 1; navigation fixtures preserved",
+        "Owned XNav process terminated before healthy startup 2; navigation fixtures preserved",
+        "Third explicit XNav launch automatically starts Safe; recovery notice and disabled plugin verified",
+        "Human menu retry resets guard with saved evidence; clean close and navigation/config/plugin persistence passed"
+      ],
+      "chart_rendering": [
+        {
+          "phase": "Automatic Safe recovery",
+          "reference_color_fractions": {
+            "aac3f0": 0.5638054363376251,
+            "aaaf50": 0.41587982832618026
+          },
+          "coastline_visible": true
+        },
+        {
+          "phase": "Human-requested XNav retry",
+          "reference_color_fractions": {
+            "aac3f0": 0.6076180257510729,
+            "aaaf50": 0.3726752503576538
+          },
+          "coastline_visible": true
+        }
+      ]
+    }
+  ],
+  "executable_sha256": "a02cca3b8ac8ef231bf601f353cdbaeb2f0b66e261f3556a6ab6927e8e6e0d07",
+  "local_revision_note": "Harness working tree during the run; integration executable hash identifies the unchanged tested binary."
+}

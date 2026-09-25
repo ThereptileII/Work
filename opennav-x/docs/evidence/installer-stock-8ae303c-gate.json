@@ -1,0 +1,36 @@
+{
+  "status": "passed",
+  "invocation": "Unmodified official stock interactive wizard",
+  "callerAdministrator": true,
+  "desktop": {
+    "before": [
+      1024,
+      768,
+      32
+    ],
+    "after": [
+      1280,
+      800,
+      32
+    ]
+  },
+  "stockExitCode": 1223,
+  "executableSha256": "7c6547562cca7954671eaab72833ca9d788710fd9808b6a699b6dc823852ae0c",
+  "registration": [
+    {
+      "key": "OpenCPN 5.12.4-0+37fd0cd",
+      "location": "D:\\a\\_temp\\OpenNav stock prerequisite\\stock OpenCPN",
+      "uninstaller": "\"D:\\a\\_temp\\OpenNav stock prerequisite\\stock OpenCPN\\Uninstall 5.12.4-0+37fd0cd.exe\""
+    }
+  ],
+  "exitCodeAnomaly": "Exact official package completed visibly and all hash/resource/registration postconditions passed despite 1223; Alpha lifecycle still requires zero.",
+  "commit": "8ae303c6470b7659235e0d0e16006a17b2c4a8f0",
+  "run": "https://github.com/ThereptileII/Work/actions/runs/36077099717",
+  "job": 107890648707,
+  "artifact": 10840596492,
+  "artifact_sha256": "f2a9e3159617ce13bf866e83bc6b5535253039fde4f4869c13aa47c6412c0fb7",
+  "artifact_bytes": 219942,
+  "reviewed_image": "official-wizard-8.png",
+  "image_sha256": "3c83196db8e5ec000d47b29299f1ee32495c33c01e272e6dc1854ec9283e4b86",
+  "review": "Actual completion page reviewed; optional launch and install-log boxes unchecked. Successful stock prerequisite only, not Alpha installer lifecycle acceptance."
+}

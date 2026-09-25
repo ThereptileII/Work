@@ -1,0 +1,27 @@
+{
+  "status": "failed",
+  "checks": [
+    "Official supported OpenCPN installed and exact PE executable SHA-256 verified"
+  ],
+  "screenshots": [],
+  "authority": "native disposable Windows / PowerShell 5.1 / NSIS",
+  "display": {
+    "before": [
+      1280,
+      800,
+      32
+    ],
+    "after": [
+      1280,
+      800,
+      32
+    ]
+  },
+  "error": "AssertionError(('Preflight', 1, '{\\n    \"status\":  \"failed\",\\n    \"error\":  \"The term \\\\u0027Get-FileHash\\\\u0027 is not recognized as the name of a cmdlet, function, script file, or operable program. Check the spelling of the name, or if a path was included, verify that the path is correct and try again.\",\\n    \"action\":  \"Preflight\",\\n    \"log\":  [\\n                \"2026-09-25T00:38:54.4013890Z FAILED: The term \\\\u0027Get-FileHash\\\\u0027 is not recognized as the name of a cmdlet, function, script file, or operable program. Check the spelling of the name, or if a path was included, verify that the path is correct and try again.\"\\n            ]\\n}'))",
+  "commit": "8ae303c6470b7659235e0d0e16006a17b2c4a8f0",
+  "run": "https://github.com/ThereptileII/Work/actions/runs/36077099717",
+  "artifact": 10841011358,
+  "artifact_sha256": "71f371668c4911a2833bdea2a0a6cf83c3067c821b596e512f17d58382c17236",
+  "replacement": "Stream .NET SHA-256 directly rather than depend on Get-FileHash discovery inside the actual NSIS-launched PowerShell. Add known SHA-256 abc vector to both native filesystem hosts. Preserve all exact-hash gates.",
+  "acceptance": "Failed before first Alpha mutation; public allowlist remains empty."
+}

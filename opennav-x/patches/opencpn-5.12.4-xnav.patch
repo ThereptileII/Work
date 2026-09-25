@@ -251,7 +251,7 @@ index a7670a674..f796a4d85 100644
    return TRUE;
  }
 diff --git a/gui/src/ocpn_frame.cpp b/gui/src/ocpn_frame.cpp
-index 8b7a14403..501b229a0 100644
+index 8b7a14403..d57ebcf18 100644
 --- a/gui/src/ocpn_frame.cpp
 +++ b/gui/src/ocpn_frame.cpp
 @@ -22,6 +22,9 @@
@@ -311,7 +311,17 @@ index 8b7a14403..501b229a0 100644
      UpdateGlobalMenuItems();  // update the state of the menu items (checkmarks
                                // etc.)
    } else {
-@@ -5808,6 +5828,10 @@ void MyFrame::OnFrameTimer1(wxTimerEvent &event) {
+@@ -5051,6 +5071,9 @@ void MyFrame::OnInitTimer(wxTimerEvent &event) {
+ 
+   RefreshAllCanvas(true);
+   wxGetApp().m_usb_watcher.Start();
++#ifdef OPENNAV_X
++  if (g_bDeferredInitDone) opennav::AfterDeferredInitialization();
++#endif
+ }
+ 
+ wxDEFINE_EVENT(EVT_BASIC_NAV_DATA, ObservedEvt);
+@@ -5808,6 +5831,10 @@ void MyFrame::OnFrameTimer1(wxTimerEvent &event) {
    ProcessUnitTest();
    g_tick++;
    ProcessQuitFlag();
@@ -322,7 +332,7 @@ index 8b7a14403..501b229a0 100644
  
    if (bDBUpdateInProgress) return;
  
-@@ -5817,6 +5841,9 @@ void MyFrame::OnFrameTimer1(wxTimerEvent &event) {
+@@ -5817,6 +5844,9 @@ void MyFrame::OnFrameTimer1(wxTimerEvent &event) {
    ProcessDeferredTrackOn();
    SendFixToPlugins();
    ProcessAnchorWatch();
@@ -332,7 +342,7 @@ index 8b7a14403..501b229a0 100644
    ProcessLogAndBells();
  
    if (ShouldRestartTrack()) TrackDailyRestart();
-@@ -5850,7 +5877,13 @@ void MyFrame::OnFrameTimer1(wxTimerEvent &event) {
+@@ -5850,7 +5880,13 @@ void MyFrame::OnFrameTimer1(wxTimerEvent &event) {
    nBlinkerTick++;
  
    // This call sends autopilot output strings to output ports.

@@ -71,3 +71,11 @@ a proven product close failure. The replacement clicks the actual visible
 button once, requires the modal to disappear, and rejects menu commands to
 a disabled parent. All three independent native cycles must still pass.
 [Failure review](evidence/windows-recovery-c26e456-modal-failure.json).
+
+The stricter actual-click gate also fails at `bc892a7`. The notice was scheduled
+from Attach while upstream deferred startup was still moving focus, raising the
+frame and finalizing canvases. It now waits for a narrow end-of-OnInitTimer hook
+and queues once after that work returns. Safe selection still happens early;
+no plugin/control services are enabled to display the notice. The harness also
+asserts that the notice log follows canvas finalization. Native replacement
+acceptance is pending. [Ordering evidence](evidence/windows-recovery-bc892a7-startup-order.json).

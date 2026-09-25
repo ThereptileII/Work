@@ -27,6 +27,9 @@ function Refuses([scriptblock]$Operation, [string]$Name) {
   Check $Failed $Name
 }
 try {
+  $Vector = Join-Path $Fixture 'sha256-vector.txt'
+  [IO.File]::WriteAllText($Vector,'abc',$Utf8)
+  Check ((Hash $Vector) -ceq 'ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad') 'Known SHA-256 vector through the actual engine'
   $Path = RelativePath $Fixture 'app/uidata/markicons/Service-Wine&Dine.svg'
   Check ($Path.EndsWith('Service-Wine&Dine.svg')) 'Literal upstream ampersand filename'
   foreach ($Invalid in @('../escape','app/../escape','/absolute','app\escape','app//empty','app/name.','app/name ','app/CON.svg','app/NUL','app/C:escape','app/a*','app/a?')) {

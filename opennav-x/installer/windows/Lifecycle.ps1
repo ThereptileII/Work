@@ -25,7 +25,16 @@ function Log([string]$Message) {
   $SessionLog.Add($line)
   Write-Host $line
 }
-function Hash([string]$Path) { (Get-FileHash -LiteralPath $Path -Algorithm SHA256).Hash.ToLowerInvariant() }
+function Hash([string]$Path) {
+  # NSIS can launch Windows PowerShell with an inherited module search path
+  # where Get-FileHash is unavailable. Integrity must not depend on that module.
+  $algorithm = [Security.Cryptography.SHA256]::Create()
+  $stream = $null
+  try {
+    $stream = [IO.File]::OpenRead($Path)
+    return ([BitConverter]::ToString($algorithm.ComputeHash($stream))).Replace('-','').ToLowerInvariant()
+  } finally { if ($stream) { $stream.Dispose() }; $algorithm.Dispose() }
+}
 function PlainPath([string]$Path) {
   if ([string]::IsNullOrWhiteSpace($Path) -or $Path -notmatch '^[A-Za-z]:[\\/]' -or $Path.Contains('"')) {
     throw 'Use an absolute path on a local Windows drive.'

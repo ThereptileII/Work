@@ -71,7 +71,8 @@ mode returns and performance sampling. The expanded native chart/route-edit gate
 rejects hardware OpenGL and correctly falls back to software. Eight screenshots
 were reviewed, including the edited route, adjacent ENC and scaled screens. A
 pre-paint blank plugin-manager screenshot was rejected and now has a bounded
-pixel-readiness gate. [Review](evidence/windows-chart-1460c05-review.json). No blank/all-water screenshot is accepted as chart evidence.
+pixel-readiness gate; subsequent review also requires painted footer buttons.
+[Partial-paint review](evidence/windows-plugin-cdff41e-partial-paint.json). [Review](evidence/windows-chart-1460c05-review.json). No blank/all-water screenshot is accepted as chart evidence.
 [Local chart evidence](evidence/alpha-two-cell-chart-local.json).
 
 Native Windows PowerShell 5.1 passes **24 actual filesystem assertions in each
@@ -99,16 +100,23 @@ A native Safe → XNav timeout at `54029a3` gained decisive screenshots at
 `c26e456`: the recovery notice was still open while automation invoked the
 disabled parent's menu. The replacement uses an actual visible button click,
 requires modal dismissal and an enabled parent, and retains three independent
-forced-crash/recovery cycles. Three local Linux cycles pass; the corrected
-native cycles are pending. [Failure review](evidence/windows-recovery-c26e456-modal-failure.json).
+forced-crash/recovery cycles. The actual click also failed at `bc892a7`;
+the notice now waits until upstream deferred canvas/focus initialization finishes.
+[Ordering evidence](evidence/windows-recovery-bc892a7-startup-order.json).
+Three prior local Linux cycles pass. The repaired integration passes 90 local
+Linux cases, 29 portable suites and the actual recovery with notice-order
+assertions; native replacement qualification is pending. [Failure review](evidence/windows-recovery-c26e456-modal-failure.json).
 
 The official prerequisite now passes its native gate at `8ae303c`,
 [run 36077099717](https://github.com/ThereptileII/Work/actions/runs/36077099717):
 actual completion page, exact executable SHA, chart/resources and matching
 32-bit uninstall registration are verified. The exact stock process still
 returns 1223 after completion; this narrowly documented exception does not
-apply to Alpha Setup or maintenance. Full Alpha lifecycle qualification remains
-pending.
+apply to Alpha Setup or maintenance. [Prerequisite evidence](evidence/installer-stock-8ae303c-gate.json).
+Full Alpha lifecycle qualification remains pending. Its first real preflight at
+`8ae303c` cannot resolve Get-FileHash in the NSIS-launched process; streamed .NET
+SHA-256 replaces that dependency with a known-vector test.
+[Preflight failure](evidence/installer-preflight-8ae303c-hash-failure.json).
 
 ## Remaining Alpha release gates
 
