@@ -650,3 +650,60 @@ index 995a3fe35..05add9dc9 100644
    // Decode just enough of string to extract some identifiers
    // such as the sK version, "self" context, and target context
    if (root.HasMember("version")) {
+diff --git a/model/src/ser_ports.cpp b/model/src/ser_ports.cpp
+index 4e43dafec..86ac4b8d6 100644
+--- a/model/src/ser_ports.cpp
++++ b/model/src/ser_ports.cpp
+@@ -32,6 +32,7 @@
+ 
+ #include <cassert>
+ #include <iostream>
++#include <memory>
+ 
+ #pragma GCC diagnostic push
+ #pragma GCC diagnostic ignored "-Wmaybe-uninitialized"
+@@ -320,7 +321,10 @@ static std::vector<struct device_data> get_links(struct udev_device* dev,
+ }
+ 
+ static std::vector<struct device_data> enumerate_udev_ports(struct udev* udev) {
+-  struct udev_enumerate* enumerate = udev_enumerate_new(udev);
++  std::unique_ptr<struct udev_enumerate, decltype(&udev_enumerate_unref)>
++      enumeration(udev_enumerate_new(udev), udev_enumerate_unref);
++  if (!enumeration) return {};
++  auto* enumerate = enumeration.get();
+   udev_enumerate_add_match_subsystem(enumerate, "tty");
+   udev_enumerate_scan_devices(enumerate);
+   struct udev_list_entry* devices = udev_enumerate_get_list_entry(enumerate);
+@@ -330,8 +334,12 @@ static std::vector<struct device_data> enumerate_udev_ports(struct udev* udev) {
+   struct udev_list_entry* entry;
+   udev_list_entry_foreach(entry, devices) {
+     const char* const path = udev_list_entry_get_name(entry);
+-    struct udev_device* device = udev_device_new_from_syspath(udev, path);
++    std::unique_ptr<struct udev_device, decltype(&udev_device_unref)>
++        owned_device(udev_device_new_from_syspath(udev, path), udev_device_unref);
++    if (!owned_device) continue;
++    auto* device = owned_device.get();
+     const char* const devnode = udev_device_get_devnode(device);
++    if (!devnode) continue;
+     struct device_data item(devnode, get_device_info(device));
+     if (!std::regex_search(devnode, bad_ttys) &&
+         (isTTYreal(path) || item.info.length() > 0)) {
+@@ -339,15 +347,15 @@ static std::vector<struct device_data> enumerate_udev_ports(struct udev* udev) {
+       auto links = get_links(device, bad_ttys);
+       items.insert(items.end(), links.begin(), links.end());
+     }
+-    udev_device_unref(device);
+   }
+   return items;
+ }
+ 
+ #pragma GCC diagnostic pop
+ static wxArrayString* EnumerateUdevSerialPorts(void) {
+-  struct udev* udev = udev_new();
+-  auto dev_items = enumerate_udev_ports(udev);
++  std::unique_ptr<struct udev, decltype(&udev_unref)> udev(udev_new(), udev_unref);
++  auto dev_items = udev ? enumerate_udev_ports(udev.get())
++                        : std::vector<struct device_data>{};
+   wxArrayString* ports = new wxArrayString;
+   for (const auto& item : dev_items) {
+     std::string port(item.path);

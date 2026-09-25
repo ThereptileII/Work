@@ -51,7 +51,7 @@ repair, prior-version upgrade, rollback, uninstall and pre/post-commit recovery:
   rerunning after release of the lock must recover successfully.
 
 Before the full installer matrix, two native filesystem checks qualify the
-permission fixture itself: CreateDirectory must be denied, then the exact DACL
+permission fixture itself: CreateDirectory must be denied, then the exact DACL entries/protection
 and ability to create a directory must be restored. The fixture uses the Windows
 PowerShell 5.1 .NET Framework ACL API without depending on inherited PowerShell
 module search paths; setup errors are retained separately from engine failures.
@@ -96,3 +96,10 @@ These are CI leak/stall tripwires, not a performance promise for boat hardware.
 Raw samples, CPU usage and all limits remain visible. Both integration jobs have
 a 300-minute timeout; release qualification must select the full duration.
 Physical touch, target-PC GPU and at-sea operation remain separate manual gates.
+
+Native restore evidence showed identical inherited ACEs with only Windows adding
+`SE_DACL_AUTO_INHERITED` bookkeeping (`D:` → `D:AI`). The permission fixture checks
+identical binary DACL entries and all other descriptor flags, including protection;
+it records both descriptors. This does not excuse changed permissions, ACE order,
+SIDs or inheritance flags. The actual denied operation and restored creation must
+both pass. Prior candidates failing the string-only comparison are not accepted.

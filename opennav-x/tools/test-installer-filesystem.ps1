@@ -45,11 +45,20 @@ try {
   $null = [IO.Directory]::CreateDirectory((Join-Path $Denied 'restored generation'))
   $RestoredSddl = [IO.Directory]::GetAccessControl($Denied,[Security.AccessControl.AccessControlSections]::Access).GetSecurityDescriptorSddlForm([Security.AccessControl.AccessControlSections]::Access)
   $SavedSddl = [IO.File]::ReadAllText($SavedAcl)
-  if ($RestoredSddl -cne $SavedSddl) {
-    Write-Host ('Original disposable DACL: '+$SavedSddl)
-    Write-Host ('Restored disposable DACL: '+$RestoredSddl)
-  }
-  Check ($RestoredSddl -ceq $SavedSddl) 'Permission fixture restores exact original DACL and directory creation'
+  Write-Host ('Original disposable DACL: '+$SavedSddl)
+  Write-Host ('Restored disposable DACL: '+$RestoredSddl)
+  # SetNamedSecurityInfo records SE_DACL_AUTO_INHERITED after applying the
+  # unchanged inherited entries. This bookkeeping flag is not an ACE or an
+  # inheritance-protection change. Compare exact ACL bytes and every other flag.
+  $BeforeAcl = New-Object System.Security.AccessControl.RawSecurityDescriptor($SavedSddl)
+  $AfterAcl = New-Object System.Security.AccessControl.RawSecurityDescriptor($RestoredSddl)
+  $BeforeBytes = New-Object byte[] $BeforeAcl.DiscretionaryAcl.BinaryLength
+  $AfterBytes = New-Object byte[] $AfterAcl.DiscretionaryAcl.BinaryLength
+  $BeforeAcl.DiscretionaryAcl.GetBinaryForm($BeforeBytes,0)
+  $AfterAcl.DiscretionaryAcl.GetBinaryForm($AfterBytes,0)
+  $Mask = -bnot [int][Security.AccessControl.ControlFlags]::DiscretionaryAclAutoInherited
+  Check (([Convert]::ToBase64String($BeforeBytes) -ceq [Convert]::ToBase64String($AfterBytes)) -and
+         (([int]$BeforeAcl.ControlFlags -band $Mask) -eq ([int]$AfterAcl.ControlFlags -band $Mask))) 'Permission fixture restores exact DACL entries, inheritance protection and directory creation'
   $Vector = Join-Path $Fixture 'sha256-vector.txt'
   [IO.File]::WriteAllText($Vector,'abc',$Utf8)
   Check ((Hash $Vector) -ceq 'ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad') 'Known SHA-256 vector through the actual engine'

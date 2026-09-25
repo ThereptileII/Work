@@ -40,5 +40,21 @@
     "build": "incremental Linux integrated build passed; final CI reconfigures exact commit",
     "preview_result": "passed; screenshot review required",
     "preview_captures": 44
+  },
+  "udev_leak": {
+    "before_profile_seconds": 252.57,
+    "before_heap_leaked_bytes_approx": 28440000,
+    "before_top_libudev_scan_retained_bytes_approx": 14310000,
+    "before_profile_sha256": "863515c504de6a043fcd6d46034e21d12694389f44a1b0490d63a25f9ecbdf4e",
+    "source": "Pinned OpenCPN model/src/ser_ports.cpp lacked context/enumeration unref",
+    "repair": "Local RAII for context, enumeration, device; failed/disappearing discovery guarded; Windows enumeration unchanged",
+    "tests": "Three real-library ownership/failure integration cases added; all 106 Linux integrated cases pass",
+    "after_profile": "pending; not a release endurance result"
+  },
+  "acl_followup": {
+    "run": "https://github.com/ThereptileII/Work/actions/runs/36126570249",
+    "original": "D:(A;OICIID;FA;;;SY)(A;OICIID;FA;;;BA)(A;OICIID;FA;;;LA)",
+    "restored": "D:AI(A;OICIID;FA;;;SY)(A;OICIID;FA;;;BA)(A;OICIID;FA;;;LA)",
+    "finding": "Identical ACEs, Windows added automatic-inheritance bookkeeping. Compare binary DACL and all other flags, still require denied/restored real operation."
   }
 }

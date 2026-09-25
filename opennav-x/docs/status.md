@@ -37,6 +37,16 @@ ambiguous, edited or transitional state never becomes a valid zero arrival.
 
 ## Beta development
 
+Release qualification is still in progress. A Linux allocation profile identified
+an upstream libudev serial-discovery leak; the reviewed integration patch now
+owns/frees contexts, scans and devices. Three actual-reference tests cover normal
+and failed discovery. Earlier short endurance passes are not treated as the
+required three-hour release result. Native permission-fixture comparison now
+checks exact ACE bytes/protection while allowing Windows' observed
+`SE_DACL_AUTO_INHERITED` bookkeeping flag. Candidate `25e96f6` remains unaccepted
+because its string-only DACL assertion failed; recorded ACEs were identical.
+
+
 The Beta packaging/display candidates `106b7a3` / run `36122795750` and
 `8236ee5` / run `36123576221` are **not accepted**. The longer endurance
 harness exposed an incorrect test expectation: the unavailable-instrument demo

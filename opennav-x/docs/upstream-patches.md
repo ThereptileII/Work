@@ -42,6 +42,7 @@ Do not leave undocumented direct OpenCPN modifications.
 | model/include/model/comm_drv_n2k_net.h | Beta: read-only detected format, monotonic connection generation/time | No output/discovery getters; low API risk |
 | model/src/comm_drv_n2k_net.cpp | Beta: advance connection provenance at socket replacement/connect/loss/close boundaries | Same-driver reconnect loopback; medium event-order risk |
 | model/src/comm_drv_signalk_net.cpp | Beta: bounded UTF-8/JSON preflight before recursive parser; type/length/control validation before handshake GetString access | Actual malformed/valid WebSocket input, all modes retain valid-message path; low decoder-entry merge risk |
+| model/src/ser_ports.cpp | Beta Linux lifetime repair: RAII releases udev contexts, enumeration and per-device references; null discovery/device nodes return unavailable/skip | Actual-reference wrapper tests, allocation profile and elapsed endurance; low risk, Windows path unchanged |
 
 Public plugin API 1.20 does not provide ownership of application startup,
 main-frame chrome or shutdown. Narrow core hooks are necessary; zoom, follow,
@@ -367,3 +368,24 @@ unified-diff context prefixes. Preparation feeds the identical LF-normalized
 stream to check/apply/temporary-index verification on every platform. Exact
 pinned revision and reviewed-worktree comparison remain mandatory; no ignored
 hunks or weakened source checks are introduced.
+
+## Beta serial-discovery lifetime repair
+
+A four-minute allocation profile of the real integrated Linux process found
+14.31 MB retained in libudev scan allocations, with stacks through
+`EnumerateSerialPorts` / `LoadSerialPorts`. Inspection of the pinned
+`model/src/ser_ports.cpp` confirmed no unref for `udev_new()` or
+`udev_enumerate_new()`; repeated background connection discovery retained them.
+The reviewed patch uses local unique ownership for context, enumeration and
+device references, handles failed creation and disappearing device nodes, and
+keeps the existing catalog/filter/link semantics. It changes no Windows code,
+boat transport or public API. A plugin/public getter cannot fix this lifetime
+inside upstream discovery. The pristine source stays unchanged.
+
+Three Linux/libudev-only integration tests link wrappers around the real library
+entry points, require each owned reference released across eight real discovery
+calls, and inject failed context/enumeration creation. They do not replace the
+catalog with invented devices. Allocation-profile comparison and the full
+three-hour application gate remain necessary to qualify the observed growth.
+The patch is independent of XNav presentation and also protects integrated
+Legacy/Safe. Merge risk is confined to the two small Linux discovery functions.
