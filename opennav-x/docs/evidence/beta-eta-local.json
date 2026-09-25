@@ -1,0 +1,11 @@
+{
+  "scope": "Development UI follow-up; final exact-commit native release gate required",
+  "source_parent": "c90fab92b054c1d65aceb3602d468aa5be866be4",
+  "change": "Relative ETA uses tested ArrivalEstimate passage_hours; unavailable predictions remain unavailable. Remaining visible Alpha labels removed.",
+  "linux_preview_captures": 44,
+  "linux_preview_result": "passed; screenshot review required",
+  "energy_capture_sha256": "eccead5f381ad0181a63fa7e98b29b6e77905deaa88759a09591d0d8c27dde7a",
+  "review": "1280x800: ETA fits between advisory SOC and reserve status; time is clearly approximate.",
+  "log_sha256": "1c2099bf1db2e38d6a33e632d660e67b2d2fe4fb4ff2d4330ee9ec5612f8626f",
+  "native_accepted": false
+}

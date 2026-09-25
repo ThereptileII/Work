@@ -198,6 +198,16 @@ void PreviewPanel::Paint(wxPaintEvent &) {
            b.x + 20, b.y + 80, 15, c.secondary, false, cw - 40);
     p.Estimate(arrival ? arrival->soc_percent : std::nullopt, b.x + 20,
                b.y + 119, "Arrival SOC / %", 0);
+    // Reuse the tested prediction's passage duration and its input validity.
+    // Do not derive a separate ETA from retained UI readings.
+    wxString eta = "ETA unavailable";
+    if (arrival && std::isfinite(arrival->passage_hours) &&
+        arrival->passage_hours >= 0 && arrival->passage_hours < 1000) {
+      const auto minutes = static_cast<unsigned>(arrival->passage_hours * 60);
+      eta = wxString::Format("ETA in ~%uh %02um / current SOG", minutes / 60,
+                             minutes % 60);
+    }
+    p.Text(eta, b.x + 20, b.y + 214, 12, c.secondary, false, cw - 40);
     wxString reason = W(smartnav::EnergyStatus(energy.arrival.reason, energy.arrival.input));
     if (arrival && arrival->energy_shortfall_kwh > 0)
       reason = wxString::Format("SHORTFALL  %.1f kWh",

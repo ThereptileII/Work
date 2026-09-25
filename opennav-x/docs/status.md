@@ -37,6 +37,13 @@ ambiguous, edited or transitional state never becomes a valid zero arrival.
 
 ## Beta development
 
+Candidate `106b7a3` / run `36122795750` is superseded by the final display
+follow-up: the Energy card now includes approximate ETA from the already-tested
+arrival prediction, and remaining visible Alpha labels are removed. Its complete
+Linux preview passes 44 captures. Native exact-commit qualification and three-hour
+endurance remain mandatory; no Beta release has yet been accepted.
+
+
 The hardening replacement is `f562f3805f1296fa5123fc0cbe2a684d6c0b4c15`,
 [run 36121533524](https://github.com/ThereptileII/Work/actions/runs/36121533524).
 It is pending native/runtime acceptance. Beta packaging now targets

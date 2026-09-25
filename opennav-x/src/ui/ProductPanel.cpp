@@ -539,8 +539,8 @@ void ProductPanel::Build() {
   notice_->SetFont(UiFont(*this, 14, true));
   body_->Add(notice_, 0, wxEXPAND | wxALL, FromDIP(12));
   notice_->Hide();
-  SetName("OpenNav Alpha product page");
-  SetLabel("OpenNav Alpha page: " + W(PageTitle()));
+  SetName("OpenNav product page");
+  SetLabel("OpenNav page: " + W(PageTitle()));
   if (page_ == ProductPage::Alerts) {
     AlertsPanel();
   } else if (page_ == ProductPage::FieldReport) {
@@ -548,7 +548,7 @@ void ProductPanel::Build() {
   } else if (page_ == ProductPage::Commissioning) {
     CommissioningPanel();
   } else if (page_ == ProductPage::Home) {
-    Heading("Navigate with OpenNav X", "Alpha / Chart, vessel and passage");
+    Heading("Navigate with OpenNav X", "Beta / Chart, vessel and passage");
     BeginActions(3);
     for (const auto &p : std::vector<std::pair<wxString, ProductPage>>{
              {"Routes", ProductPage::Routes},
@@ -891,7 +891,7 @@ void ProductPanel::Build() {
              " / Receive: " +
              (s.radar.capabilities.receive ? "supported" : "unavailable");
     });
-    Text("No validated radar display adapter is integrated in Alpha. "
+    Text("No validated radar display adapter is integrated in this Beta. "
          "Presentation remains Off. Existing compatible plugin interfaces "
          "remain accessible through Legacy; no synthetic radar is used in live "
          "mode.");

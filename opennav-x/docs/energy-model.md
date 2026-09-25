@@ -178,3 +178,10 @@ rounds advisory destination SOC to whole percent rather than implying BMS/model
 precision. Field reports and live diagnostics include the blocking input and
 quality. Physical capacity/curve/auxiliary-load validation remains part of boat
 commissioning.
+
+The Beta propulsion page also displays an approximate time to destination from
+the tested arrival prediction's `passage_hours`. It does not introduce a second
+route-distance or passage model in the UI. Missing/invalid required prediction
+inputs suppress this ETA along with arrival SOC; very long unrepresentable
+durations display unavailable. It is a relative estimate at current SOG, not a
+guaranteed clock-time arrival.

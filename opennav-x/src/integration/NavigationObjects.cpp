@@ -307,7 +307,7 @@ DeleteWaypoint(const application::Waypoint &selected) {
   if (!point || !Copy(point).removable || !pSelect)
     return {false,
             "Only an unchanged isolated, unprotected waypoint can be deleted "
-            "in Alpha",
+            "in this version",
             {}};
   auto *canvas = gFrame ? gFrame->GetPrimaryCanvas() : nullptr;
   auto *undo = canvas ? canvas->undo : nullptr;

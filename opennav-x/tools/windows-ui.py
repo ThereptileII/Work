@@ -263,14 +263,14 @@ def assert_preview_page(handle, page):
     return {'page': page, 'native_pixels': dimensions, 'visible_and_uncovered': True}
 
 def assert_product_page(handle, page):
-    label='OpenNav Alpha page: '+page
+    label='OpenNav page: '+page
     matches=[child for child,caption in children(handle) if caption==label]
-    assert len(matches)==1,f'Visible Alpha page not found: {label}'
+    assert len(matches)==1,f'Visible XNav page not found: {label}'
     child=matches[0];rect=W.RECT();assert GetWindowRect(child,C.byref(rect))
     assert rect.right-rect.left>=940 and rect.bottom-rect.top>=500
     point=W.POINT((rect.left+rect.right)//2,(rect.top+rect.bottom)//2)
     assert ScreenToClient(handle,C.byref(point))
-    assert ChildWindowFromPointEx(handle,point,1)==child,'Another pane covers the Alpha page'
+    assert ChildWindowFromPointEx(handle,point,1)==child,'Another pane covers the XNav page'
 
 def assert_route_summary_layout(handle):
     """A label hidden at narrow startup must rejoin its sizer when expanded."""
