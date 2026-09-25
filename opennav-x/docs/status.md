@@ -54,9 +54,20 @@ The first native recording attempt `6114f1e` compiled but rejected two portabili
 cases (canonical TEMP path aliases and a text-mode test fixture). Corrections
 pass all 38 local portable suites; native replacement evidence is required.
 [Failure/repair record](evidence/beta-recording-6114f1e-failure.json).
+Replacement `c123d47` passes all 38 contract suites on Linux and native Windows;
+integrated UI/packaging acceptance remains pending in
+[run 36100817823](https://github.com/ThereptileII/Work/actions/runs/36100817823).
 The interaction test also exposed and fixed first-open pane wrapping and focus
 after replay changes; native scaling remains a required gate. [Source inspection](beta-boat-source-inspection.md)
 records the actual producer contract and its retained-data freshness limitation.
+
+The next internal increment adds a copied-data ST4000 protocol adapter, explicit
+device binding, feedback/timeout/isolation rules and anti-repeat commands.
+All 44 local portable suites and 97 integrated Linux cases pass, including commands checked by the actual
+hash-pinned boat firmware parser. It is not yet connected to the application's
+live transport and does not claim physical acceptance.
+[Pilot development contract](st4000-beta-contract.md),
+[local gate](evidence/beta-pilot-protocol-local.json).
 
 ## Implemented Alpha product
 

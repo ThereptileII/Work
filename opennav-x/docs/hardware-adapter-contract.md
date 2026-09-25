@@ -1,4 +1,4 @@
-# Alpha hardware-adapter contract
+# Hardware-adapter contract
 
 The portable adapter library depends only on Vessel Data. SmartNav does not
 link it. UI manual actions are the only intended caller of `ManualAutopilot`.
@@ -7,11 +7,18 @@ Safe and Legacy do not instantiate OpenNav control components.
 ## Autopilot
 
 `IAutopilot` separates capabilities, observed state, explicit polling and send.
-`ManualAutopilot` defaults globally disabled. Alpha permits commands only to an
+`ManualAutopilot` defaults globally disabled. The accepted Alpha permits commands only to an
 explicitly enabled simulator; there is no live hardware transmitter. The live
 placeholder reports unavailable. Capability bits gate STANDBY/AUTO/TRACK/WIND
 and ±1/±10 course changes. Course changes require confirmed AUTO and fresh
 locked magnetic heading. AUTO requires fresh measured magnetic heading.
+
+Beta adds the separately tested [ST4000 protocol boundary](st4000-beta-contract.md).
+The live application still uses the unavailable placeholder until transport and
+native interaction qualification. The common controller now records requested
+state, bounds repeated send attempts to 250 ms and requires a new locked-heading
+observation for course confirmation. Changing device/connection cannot acknowledge
+an old command. No SmartNav output path is added.
 
 Only one command may be pending. STANDBY can supersede it and can be attempted
 with stale feedback. Transport acceptance means pending, never successful mode

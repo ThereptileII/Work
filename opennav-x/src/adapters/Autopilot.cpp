@@ -58,6 +58,7 @@ const char *CommandStateName(CommandState s) {
     STATE(TimedOut);
     STATE(Disabled);
     STATE(StaleFeedback);
+    STATE(Requested);
 #undef STATE
   }
   return "Unknown";
@@ -86,15 +87,22 @@ PilotView ManualAutopilot::GetState(vessel::Time now) const {
 }
 PilotCommand ManualAutopilot::Request(PilotAction action, double delta,
                                       vessel::Time now) {
+  const auto capabilities = adapter_.Capabilities();
+  if (last_sent_ && (now < *last_sent_ ||
+                    now - *last_sent_ < std::chrono::milliseconds(250))) {
+    auto refusal = command_;
+    refusal.state = CommandState::Rejected;
+    refusal.detail = "Touch repeat suppressed; no additional command sent";
+    return refusal;
+  }
   // A second non-standby request never replaces an unacknowledged command.
   if (command_.state == CommandState::Pending &&
-      action != PilotAction::Standby) {
+      (action != PilotAction::Standby || delta != 0 || !std::isfinite(delta))) {
     auto refusal = command_;
     refusal.state = CommandState::Rejected;
     refusal.detail = "One command is pending; wait for feedback or use STANDBY";
     return refusal;
   }
-  const auto capabilities = adapter_.Capabilities();
   const auto feedback = adapter_.GetState();
   if (command_.state == CommandState::Pending)
     Record(CommandState::Rejected,
@@ -107,10 +115,10 @@ PilotCommand ManualAutopilot::Request(PilotAction action, double delta,
     return command_;
   }
   ++next_id_;
-  if (!enabled_ || !capabilities.simulated) {
+  if (!enabled_ || (!capabilities.simulated && !capabilities.manual_control)) {
     Record(
         CommandState::Disabled,
-        "Alpha hardware output disabled; explicitly enabled simulator required",
+        "Control OFF; explicit permission and a verified adapter are required",
         now);
     return command_;
   }
@@ -153,6 +161,10 @@ PilotCommand ManualAutopilot::Request(PilotAction action, double delta,
         Wrap(*feedback.locked_heading_magnetic_deg.value + delta);
   }
   feedback_sequence_ = feedback.sequence;
+  connection_epoch_ = feedback.connection_epoch;
+  feedback_source_ = feedback.source;
+  Record(CommandState::Requested, "Manual request validated", now);
+  last_sent_ = now; // Also bound retries after a rejected transport attempt.
   if (!adapter_.Send(command_.request))
     Record(CommandState::Rejected, "Adapter rejected transmission", now);
   else
@@ -162,6 +174,11 @@ PilotCommand ManualAutopilot::Request(PilotAction action, double delta,
 }
 void ManualAutopilot::Tick(vessel::Time now) {
   adapter_.Poll(now);
+  const auto capabilities = adapter_.Capabilities();
+  if (enabled_ && !capabilities.simulated && !capabilities.manual_control) {
+    Enable(false, now); // Reconnection never silently re-enables live output.
+    return;
+  }
   if (command_.state != CommandState::Pending)
     return;
   // Late feedback cannot retroactively turn an expired command into success.
@@ -173,6 +190,12 @@ void ManualAutopilot::Tick(vessel::Time now) {
     return;
   }
   const auto feedback = adapter_.GetState();
+  if (feedback.connection_epoch != connection_epoch_ ||
+      feedback.source != feedback_source_) {
+    Record(CommandState::Rejected,
+           "Pilot identity/connection changed; previous outcome unknown", now);
+    return;
+  }
   bool matches = Fresh(feedback, now) &&
                  feedback.sequence > feedback_sequence_ &&
                  feedback.observed_at > command_.request.issued_at &&
@@ -180,6 +203,8 @@ void ManualAutopilot::Tick(vessel::Time now) {
   if (expected_heading_)
     matches =
         matches && Heading(feedback.locked_heading_magnetic_deg, now) &&
+        feedback.locked_heading_magnetic_deg.observed_at >
+            command_.request.issued_at &&
         std::abs(std::remainder(*feedback.locked_heading_magnetic_deg.value -
                                     *expected_heading_,
                                 360.0)) <= .5;

@@ -13,11 +13,15 @@ enum class CommandState {
   Rejected,
   TimedOut,
   Disabled,
-  StaleFeedback
+  StaleFeedback,
+  Requested
 };
 struct PilotCapabilities {
   bool simulated = false, standby = false, auto_mode = false, track = false,
        wind = false, alter_course = false;
+  // True only for an explicitly configured, identity-verified live adapter.
+  // This is permission/capability, never an assertion of hardware acceptance.
+  bool manual_control = false;
 };
 struct PilotFeedback {
   PilotMode mode = PilotMode::Unavailable;
@@ -25,6 +29,7 @@ struct PilotFeedback {
   vessel::Time observed_at{};
   std::uint64_t sequence = 0;
   std::string source;
+  std::uint64_t connection_epoch = 0;
 };
 struct PilotRequest {
   std::uint64_t id = 0;
@@ -68,6 +73,9 @@ private:
   IAutopilot &adapter_;
   bool enabled_ = false;
   std::uint64_t next_id_ = 1, feedback_sequence_ = 0;
+  std::uint64_t connection_epoch_ = 0;
+  std::string feedback_source_;
+  std::optional<vessel::Time> last_sent_;
   std::optional<double> expected_heading_;
   PilotCommand command_;
   std::vector<PilotCommand> log_;

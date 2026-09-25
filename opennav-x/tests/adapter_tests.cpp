@@ -72,21 +72,24 @@ void Failure() {
         "Adapter rejection explicit");
   simulator.SetFailure(false, true);
   Check(pilot.Request(PilotAction::Auto, 0, epoch).state ==
+            CommandState::Rejected,
+        "Immediate retry after transport rejection is bounded");
+  Check(pilot.Request(PilotAction::Auto, 0, epoch + 250ms).state ==
             CommandState::Pending,
         "Dropped response pending");
-  pilot.Tick(epoch + 3s);
-  Check(pilot.GetState(epoch + 3s).command.state == CommandState::TimedOut,
+  pilot.Tick(epoch + 3250ms);
+  Check(pilot.GetState(epoch + 3250ms).command.state == CommandState::TimedOut,
         "Exact timeout boundary");
-  Check(!pilot.GetState(epoch + 3s).fresh, "Read never refreshes feedback");
-  Check(pilot.Request(PilotAction::Auto, 0, epoch + 3s).state ==
+  Check(!pilot.GetState(epoch + 3250ms).fresh, "Read never refreshes feedback");
+  Check(pilot.Request(PilotAction::Auto, 0, epoch + 3250ms).state ==
             CommandState::StaleFeedback,
         "Stale state suppresses commands");
-  Check(pilot.Request(PilotAction::Standby, 0, epoch + 3s).state ==
+  Check(pilot.Request(PilotAction::Standby, 0, epoch + 3250ms).state ==
             CommandState::Pending,
         "Standby can be attempted with stale state");
   simulator.SetFailure(false, false);
-  pilot.Tick(epoch + 3500ms);
-  Check(pilot.GetState(epoch + 3500ms).feedback.mode == PilotMode::Standby,
+  pilot.Tick(epoch + 3750ms);
+  Check(pilot.GetState(epoch + 3750ms).feedback.mode == PilotMode::Standby,
         "Standby supersedes queued auto");
   pilot.Request(PilotAction::Auto, 0, epoch + 4s);
   pilot.Enable(false, epoch + 4100ms);

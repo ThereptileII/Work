@@ -39,6 +39,8 @@ jobs:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
       - name: Verify published distribution inputs before compilation
         run: python opennav-x/tools/verify-distribution-inputs.py
+      - name: Verify the exact boat translator parser for host interoperability tests
+        run: python opennav-x/tools/fetch-st4000-oracle.py opennav-x/build/st4000-firmware
       - name: Installer filesystem contracts in native Windows PowerShell 5.1
         if: runner.os == 'Windows'
         run: |
@@ -48,10 +50,10 @@ jobs:
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
       - name: Configure Linux contracts
         if: runner.os == 'Linux'
-        run: cmake -S opennav-x -B opennav-x/build/contracts
+        run: cmake -S opennav-x -B opennav-x/build/contracts -DOPENNAV_ST4000_ORACLE="${{ github.workspace }}/opennav-x/build/st4000-firmware"
       - name: Configure contracts for the supported Windows application ABI
         if: runner.os == 'Windows'
-        run: cmake -S opennav-x -B opennav-x/build/contracts -G "Visual Studio 17 2022" -A Win32
+        run: cmake -S opennav-x -B opennav-x/build/contracts -G "Visual Studio 17 2022" -A Win32 -DOPENNAV_ST4000_ORACLE="${{ github.workspace }}/opennav-x/build/st4000-firmware"
       - run: cmake --build opennav-x/build/contracts --config Release
       - run: ctest --test-dir opennav-x/build/contracts -C Release --output-on-failure
       - name: Repeat the restart handoff with deliberately delayed result publication

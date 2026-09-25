@@ -1,0 +1,24 @@
+{
+  "stage": "Beta ST4000 portable protocol boundary",
+  "acceptance": "Local only; native and real OpenCPN output integration pending",
+  "scope": "No live application transmitter attached; no physical commands or flashing",
+  "portable_suites": 44,
+  "integrated_linux_cases": 97,
+  "firmware_repository": "ThereptileII/Work",
+  "firmware_revision": "9baf01bca09522794a9678dfb3f3c0720d5c9943",
+  "firmware_parser_sha256": "874a92dbdd35b97a50ee0452913eb8ce9ff3eded6f7ac0d535c92a543e1183da",
+  "tests": [
+    "st4000_identity",
+    "st4000_feedback",
+    "st4000_encoding",
+    "st4000_commands",
+    "st4000_discovery",
+    "st4000_actual_firmware_parser"
+  ],
+  "logs": {
+    "beta-pilot-tests.log": "76c5158a70be39277334f567a5add4f0a16bcb78c46a759d527a370dcbd2cd9d",
+    "beta-pilot-integrated-tests.log": "7acc56a24f79ff6e0d720d19ca49ff25f609f9706eb6becc1d6914ff6cba3739",
+    "beta-pilot-build.log": "b7c4ad03aaa84ae46e5100c0bf743748c686b58f60c1738ebb3c22c6b34e5e28",
+    "beta-pilot-integrated-build-final.log": "8196942f85a531c4d56c0f5ce35b9c1ea20fdd563a9600b79c72bf8daff81e21"
+  }
+}
