@@ -53,7 +53,7 @@ function PlainPath([string]$Path) {
   return $full
 }
 function RelativePath([string]$Base, [string]$Name) {
-  if ($Name -notmatch '^[A-Za-z0-9_ .()&/+-]+$' -or $Name.Contains('\') -or
+  if ($Name -notmatch '^[A-Za-z0-9_ .()&@/+-]+$' -or $Name.Contains('\') -or
       $Name.StartsWith('/') -or $Name -match '(^|/)\.{1,2}(/|$)' -or
       $Name -match '(^|/)(CON|PRN|AUX|NUL|COM[0-9]|LPT[0-9])(\.|/|$)' -or
       $Name -match '[. ](/|$)' -or $Name.Contains('//')) { throw "Unsafe package path: $Name" }

@@ -138,3 +138,11 @@ loader executable exercises the real process/identity wrapper in both native
 PowerShell hosts; this supplements the mandatory real OpenCPN loader and
 installation gates, and is never included in Alpha application payloads.
 [Wizard failure](evidence/installer-wizard-fe37250-failure.json).
+
+The pinned Windows resources include `ca@valencia/LC_MESSAGES/wxstd.mo`.
+The original filename character rule rejected this legitimate locale modifier
+during staging. The literal `@` is now accepted; traversal/reserved-name/reparse
+checks remain unchanged. The actual native helper suite covers the exact path.
+Each maintenance operation also keeps its own result filename, so injected
+failure reports survive the following recovery attempt.
+[Payload-path reproduction](evidence/installer-locale-fe37250-reproduction.json).

@@ -22,7 +22,7 @@ INSTALL=Path(os.environ['LOCALAPPDATA'])/'OpenNavXAlpha1'
 STOCK_HASH='7c6547562cca7954671eaab72833ca9d788710fd9808b6a699b6dc823852ae0c'
 SETUP_HASH='e949f55de57611afe2fc0dad5a8ac33795c46ba488cb40ca07b65f639a07b8aa'
 PS=Path(os.environ['WINDIR'])/'System32/WindowsPowerShell/v1.0/powershell.exe'
-owned=set();report={'status':'running','checks':[],'screenshots':[],'authority':'native disposable Windows / PowerShell 5.1 / NSIS'}
+owned=set();report={'status':'running','checks':[],'operations':[],'screenshots':[],'authority':'native disposable Windows / PowerShell 5.1 / NSIS'}
 def module(name):
     spec=importlib.util.spec_from_file_location(name,ROOT/'tools'/f'{name}.py')
     m=importlib.util.module_from_spec(spec);spec.loader.exec_module(m);return m
@@ -32,8 +32,13 @@ def inventory(p):return {f.relative_to(p).as_posix():sha(f) for f in p.rglob('*'
 def check(name):report['checks'].append(name);print(name,flush=True)
 def state():return json.loads((INSTALL/'state.json').read_text(encoding='utf-8-sig'))
 def generation():return INSTALL/'generations'/state()['current']
+def operation_report(action):
+    out=EVIDENCE/f'installer-{len(report["operations"]):02}-{action}.json'
+    assert not out.exists(),'Each operation must retain its own report, including injected failures'
+    report['operations'].append({'action':action,'report':out.name})
+    return out
 def setup(action,stock,expected=0,failure='',executable=SETUP):
-    out=EVIDENCE/f'installer-{len(report["checks"]):02}-{action}.json'
+    out=operation_report(action)
     assert all('"' not in str(value) for value in (stock,out,action,failure))
     # GetOptions recognizes /NAME="value with spaces", not a quoted entire
     # "/NAME=value with spaces" argument. This goes directly to CreateProcess.
@@ -45,7 +50,7 @@ def setup(action,stock,expected=0,failure='',executable=SETUP):
     return json.loads(out.read_text(encoding='utf-8-sig'))
 def engine(action,expected=0):
     script=generation()/'Lifecycle.ps1'
-    out=EVIDENCE/f'installer-{len(report["checks"]):02}-{action}.json'
+    out=operation_report(action)
     r=subprocess.run([str(PS),'-NoProfile','-NonInteractive','-ExecutionPolicy','Bypass','-File',str(script),'-Action',action,'-Report',str(out)],timeout=120,capture_output=True)
     assert r.returncode==expected,(action,r.returncode,r.stdout.decode(errors='replace'),r.stderr.decode(errors='replace'))
     return json.loads(out.read_text(encoding='utf-8-sig'))
@@ -243,8 +248,9 @@ try:
         assert all(f['expected']==f['actual'] for f in diagnostics['files'])
         check('Diagnostics verifies installed hashes without collecting navigation or raw sensor data')
         # Exercise the conventional uninstall executable as well as the engine.
-        maintain=generation()/'Maintain.exe';out=EVIDENCE/'installer-uninstall.json'
-        result=subprocess.run([str(maintain),'/S','/ACTION=Uninstall','/REPORT='+str(out)],timeout=120)
+        maintain=generation()/'Maintain.exe';out=operation_report('Uninstall')
+        uninstall_command=subprocess.list2cmdline([str(maintain)])+' /S /ACTION=Uninstall /REPORT="'+str(out)+'"'
+        result=subprocess.run(uninstall_command,timeout=120)
         assert result.returncode==0
         # A normal NSIS uninstaller copies itself to a temporary process. The
         # durable engine report, not the initial wrapper exit, is completion.

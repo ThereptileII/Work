@@ -123,6 +123,10 @@ and ownership protection at `fe37250`. Actual installation then shows an error
 notice. The harness now retains private engine logs and tests its real loader
 wrapper with an explicit small native fixture; real OpenCPN lifecycle acceptance
 is still mandatory. [Wizard failure](evidence/installer-wizard-fe37250-failure.json).
+The fast real loader wrapper passes in both native hosts. Inspection then
+reproduced rejection of the bundled `ca@valencia` locale path; its literal `@`
+is now accepted, with path protections unchanged.
+[Payload-path reproduction](evidence/installer-locale-fe37250-reproduction.json).
 
 ## Remaining Alpha release gates
 

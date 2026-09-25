@@ -1,0 +1,10 @@
+{
+  "candidate": "fe37250da6ced630d9b74f8a87c436d87b2cc7a0",
+  "run": "https://github.com/ThereptileII/Work/actions/runs/36079400432",
+  "source": "Pinned OpenCPN CMakeLists.txt Windows wxstd.mo installation loop, observed native CMake install log, actual Lifecycle.ps1 RelativePath function",
+  "path": "app/share/locale/ca@valencia/LC_MESSAGES/wxstd.mo",
+  "reproduction": "The actual engine function rejects this required payload path as Unsafe package path before extraction. Reproduced locally at the pure filename-validation boundary. Native filesystem replacement acceptance remains required.",
+  "change": "Allow literal @ in relative filenames. Continue rejecting traversal, backslashes in manifest paths, reserved names, wildcards, trailing dots/spaces and reparse paths. Add the pinned locale path to both native filesystem hosts.",
+  "limits": "This is a demonstrated installer blocker. The earlier wizard failure lacked private engine logs, so its precise runtime error was not claimed from the generic notice alone.",
+  "audit": "All 921 observed native CMake install paths pass the revised filename character policy after normalizing separators as the actual package does."
+}

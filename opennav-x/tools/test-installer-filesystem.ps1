@@ -33,6 +33,8 @@ try {
   Check ((Hash $Vector) -ceq 'ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad') 'Known SHA-256 vector through the actual engine'
   $Path = RelativePath $Fixture 'app/uidata/markicons/Service-Wine&Dine.svg'
   Check ($Path.EndsWith('Service-Wine&Dine.svg')) 'Literal upstream ampersand filename'
+  $LocalePath = RelativePath $Fixture 'app/share/locale/ca@valencia/LC_MESSAGES/wxstd.mo'
+  Check ($LocalePath.Contains('ca@valencia')) 'Pinned upstream wx locale modifier remains a literal safe filename'
   foreach ($Invalid in @('../escape','app/../escape','/absolute','app\escape','app//empty','app/name.','app/name ','app/CON.svg','app/NUL','app/C:escape','app/a*','app/a?')) {
     Refuses { RelativePath $Fixture $Invalid } ('Unsafe relative path: '+$Invalid)
   }
