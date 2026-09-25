@@ -1,0 +1,65 @@
+{
+  "authority": "native Windows",
+  "checks": [
+    "Owned XNav process terminated before healthy startup 1; navigation fixtures preserved",
+    "Owned XNav process terminated before healthy startup 2; navigation fixtures preserved",
+    "Third explicit XNav launch automatically starts Safe; recovery notice and disabled plugin verified"
+  ],
+  "screenshots": [
+    "recovery-01-xnav.png",
+    "recovery-02-safe.png",
+    "recovery-failed-1.png",
+    "recovery-failed-2.png"
+  ],
+  "chart_rendering": [
+    {
+      "phase": "Automatic Safe recovery",
+      "reference_color_fractions": {
+        "aac3f0": 0.5625894134477826,
+        "aaaf50": 0.43741058655221743
+      },
+      "coastline_visible": true
+    }
+  ],
+  "display": {
+    "before": [
+      1280,
+      800,
+      32
+    ],
+    "after": [
+      1280,
+      800,
+      32
+    ]
+  },
+  "result": "failed",
+  "error": "TimeoutExpired(['D:\\\\a\\\\Work\\\\Work\\\\opennav-x\\\\build\\\\xnav-install\\\\opencpn.exe', '--configdir', 'C:\\\\Users\\\\RUNNER~1\\\\AppData\\\\Local\\\\Temp\\\\opennav recovery c9imy_1m\\\\profile', '--no_opengl', '--xnav'], 30)",
+  "visible_windows": [
+    {
+      "pid": 3464,
+      "title": "OpenNav startup recovery"
+    },
+    {
+      "pid": 3464,
+      "title": "OpenNav Safe Mode / OpenCPN"
+    }
+  ],
+  "commit": "c26e4561b9543e96894923cfe64e530eb8a3c1d0",
+  "run": "https://github.com/ThereptileII/Work/actions/runs/36075177176",
+  "artifact_id": 10840596353,
+  "artifact_sha256": "17dc4245b46c2efa93efea1274c16e92a08b2bb33cac81bc151a497b3903add1",
+  "acceptance": "Failed; replacement not yet accepted",
+  "review": "Both failure captures show the initial OpenNav startup recovery modal still visible. The old test posted a menu command to its disabled Safe parent without verifying dismissal. This does not establish a product shutdown defect.",
+  "replacement": "Use one actual visible native button click, require modal disappearance and enabled parent, retain three separate actual crash/recovery cycles. Do not retry a failed scenario.",
+  "reviewed_failure_images": [
+    {
+      "file": "recovery-failed-1.png",
+      "sha256": "a70071a95b85f817098c7fd36527185585fa23cc0b1674a62347a0e810b9a3b5"
+    },
+    {
+      "file": "recovery-failed-2.png",
+      "sha256": "42549dc7e1bc32f9a009df45945a7b3b428c4a61eefaef1c956572f39d2505a2"
+    }
+  ]
+}

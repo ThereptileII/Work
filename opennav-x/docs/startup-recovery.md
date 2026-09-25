@@ -63,3 +63,11 @@ record reset and coastline checks passed, but process exit did not; the precise
 cause was not established from that run. Mode-request/close logging and failed
 window captures now improve diagnosis. Final native qualification includes three
 separate actual crash/recovery cycles; no automatic test retry hides a failure.
+
+The repeated native failure at `c26e456` now has reviewed failure images: the
+initial recovery notice remains open while the old harness posts a menu command
+to the disabled Safe parent. This identifies an invalid test interaction, not
+a proven product close failure. The replacement clicks the actual visible
+button once, requires the modal to disappear, and rejects menu commands to
+a disabled parent. All three independent native cycles must still pass.
+[Failure review](evidence/windows-recovery-c26e456-modal-failure.json).

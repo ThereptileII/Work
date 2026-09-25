@@ -71,7 +71,7 @@ try:
         app=launch()
         if count==2:
             dialog,_=window('Safe Restart')
-            if windows:ui.click_text(app.pid,'Normal start')
+            if windows:ui.dismiss_native_dialog(dialog,'Normal start')
             else:xdo('windowfocus',dialog,'key','Return')
         handle,pid=window('OpenNav X / OpenCPN');ready(count)
         state=(profile/'opennav-startup.state').read_text()
@@ -82,9 +82,13 @@ try:
         report['checks'].append(f'Owned XNav process terminated before healthy startup {count}; navigation fixtures preserved')
     app=launch()
     dialog,_=window('OpenNav startup recovery')
-    if windows:ui.click_text(app.pid,'OK')
+    if windows:ui.dismiss_native_dialog(dialog,'OK')
     else:xdo('windowfocus',dialog,'key','Return')
     handle,pid=window('OpenNav Safe Mode / OpenCPN');ready(3)
+    if windows:
+        assert ui.IsWindowEnabled(handle), 'Safe parent remains disabled after recovery notice'
+        assert not any(title == 'OpenNav startup recovery' for _,_,title in ui.windows(pid))
+        report['checks'].append('Actual native recovery notice dismissed; Safe parent enabled before mode request')
     log=(profile/'opencpn.log').read_text(errors='replace')
     assert 'OpenNav automatic Safe Mode' in log
     safe=log.rsplit('OpenNav startup: safe',1)[-1]

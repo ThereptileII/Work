@@ -23,6 +23,10 @@ GetWindowThreadProcessId = declare(user, 'GetWindowThreadProcessId', W.DWORD, W.
 GetClassNameW = declare(user, 'GetClassNameW', C.c_int, W.HWND, W.LPWSTR, C.c_int)
 GetWindowTextW = declare(user, 'GetWindowTextW', C.c_int, W.HWND, W.LPWSTR, C.c_int)
 IsWindowVisible = declare(user, 'IsWindowVisible', W.BOOL, W.HWND)
+IsWindowEnabled = declare(user, 'IsWindowEnabled', W.BOOL, W.HWND)
+WindowFromPoint = declare(user, 'WindowFromPoint', W.HWND, W.POINT)
+SetCursorPos = declare(user, 'SetCursorPos', W.BOOL, C.c_int, C.c_int)
+MouseEvent = declare(user, 'mouse_event', None, W.DWORD, W.DWORD, W.DWORD, W.DWORD, C.c_size_t)
 GetWindowRect = declare(user, 'GetWindowRect', W.BOOL, W.HWND, C.POINTER(W.RECT))
 GetClientRect = declare(user, 'GetClientRect', W.BOOL, W.HWND, C.POINTER(W.RECT))
 ScreenToClient = declare(user, 'ScreenToClient', W.BOOL, W.HWND, C.POINTER(W.POINT))
@@ -130,6 +134,42 @@ def control_text(handle):
     SendMessageW(handle,0x000D,len(buffer),C.cast(buffer,C.c_void_p).value)
     return buffer.value
 
+def dismiss_native_dialog(dialog, label, timeout=10):
+    """Click the visible modal button once, then require actual dismissal.
+
+    Synthetic messages can reach a disabled parent while a modal is still open.
+    Recovery tests must model the human dismissal before any parent command.
+    """
+    deadline = time.monotonic() + timeout
+    SetForegroundWindow(dialog)
+    button = None
+    while time.monotonic() < deadline:
+        matches = []
+        for child, _ in children(dialog):
+            native_class = C.create_unicode_buffer(128)
+            GetClassNameW(child, native_class, len(native_class))
+            if (native_class.value.lower() == 'button' and IsWindowEnabled(child)
+                    and control_text(child).replace('&', '') == label):
+                matches.append(child)
+        if len(matches) == 1:
+            rect = W.RECT()
+            assert GetWindowRect(matches[0], C.byref(rect))
+            point = W.POINT((rect.left + rect.right) // 2, (rect.top + rect.bottom) // 2)
+            if WindowFromPoint(point) == matches[0]:
+                button = matches[0]
+                break
+        time.sleep(.1)
+    assert button, ('Visible enabled modal button not found', label, children(dialog))
+    assert SetCursorPos(point.x, point.y)
+    MouseEvent(2, 0, 0, 0, 0)
+    time.sleep(.05)
+    MouseEvent(4, 0, 0, 0, 0)
+    while time.monotonic() < deadline:
+        if not IsWindowVisible(dialog):
+            return
+        time.sleep(.1)
+    raise RuntimeError(f'Modal remained visible after actual click: {label}')
+
 def set_text_in_dialog(pid, title, previous, value):
     dialog,_=wait_window(title,pid)
     matches=[h for h,_ in children(dialog) if control_text(h)==previous]
@@ -156,6 +196,7 @@ def set_dialog_fields(pid, title, values):
         assert control_text(handle)==value,(title,value,control_text(handle))
 
 def click_menu(handle, label):
+    assert IsWindowEnabled(handle), 'Cannot invoke a disabled window menu behind a modal'
     def search(menu):
         for position in range(GetMenuItemCount(menu)):
             buffer = C.create_unicode_buffer(512)

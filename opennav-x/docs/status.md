@@ -41,7 +41,7 @@ ambiguous, edited or transitional state never becomes a valid zero arrival.
 | SmartNav | Owned route steps, next turn, timeline, energy and existing AIS context advisories. Tested future chart-corridor abstraction; live chart hazard query remains unavailable. No absence-of-hazard safety claim. |
 | Autopilot/radar | Manual pilot interface, explicit DEMO simulator, capability/status/feedback/timeout logging, global disable. No live output adapter or SmartNav steering path. Radar capabilities/status abstraction; live radar unavailable. |
 | Settings/diagnostics | Shared-profile validated settings, source policies, empirical curves, explicit propulsion mappings, display selection and advanced OpenCPN access; build, mode, age, provenance, model and plugin/chart diagnostics. |
-| Recovery | Two unfinished XNav starts select Safe before optional modules; retry evidence retained. Exact native intermittent close failure below remains under investigation. |
+| Recovery | Two unfinished XNav starts select Safe before optional modules; retry evidence retained. Native modal-dismissal test correction below awaits repeated validation. |
 | Distribution | Portable isolation and Alpha labels/source/license packaging; native NSIS per-user side-by-side setup, immutable generations, repair/update/rollback/uninstall and fault-recovery engine implemented. Full lifecycle qualification remains open. |
 
 Contracts: [sources](vessel-source-contract.md), [marine input](marine-input-contract.md),
@@ -95,10 +95,20 @@ Windows report replacement. The bounded access-only reader replacement passes
 rerun is pending. Corrupt evidence and product failure assertions still fail.
 [Failure and replacement](evidence/windows-json-publication-9981643-failure.json).
 
-A native Safe → XNav recovery timeout at `54029a3` remains unresolved. The
-replacement logs close boundaries, captures failed windows and requires three
-independent actual forced-crash/recovery cycles. No automatic test retry hides
-failure. [Failure record](evidence/windows-recovery-54029a3-failure.json).
+A native Safe → XNav timeout at `54029a3` gained decisive screenshots at
+`c26e456`: the recovery notice was still open while automation invoked the
+disabled parent's menu. The replacement uses an actual visible button click,
+requires modal dismissal and an enabled parent, and retains three independent
+forced-crash/recovery cycles. Three local Linux cycles pass; the corrected
+native cycles are pending. [Failure review](evidence/windows-recovery-c26e456-modal-failure.json).
+
+The official prerequisite now passes its native gate at `8ae303c`,
+[run 36077099717](https://github.com/ThereptileII/Work/actions/runs/36077099717):
+actual completion page, exact executable SHA, chart/resources and matching
+32-bit uninstall registration are verified. The exact stock process still
+returns 1223 after completion; this narrowly documented exception does not
+apply to Alpha Setup or maintenance. Full Alpha lifecycle qualification remains
+pending.
 
 ## Remaining Alpha release gates
 
