@@ -1,0 +1,18 @@
+{
+  "commit": "41819624de03ddfa3982bc6eca4b41a5056fe54d",
+  "run": "https://github.com/ThereptileII/Work/actions/runs/36075721705",
+  "job": 107886353700,
+  "status": "failed",
+  "native_report": {
+    "powershell": "5.1.20348.5622",
+    "callerAdministrator": true,
+    "exitCode": 1223,
+    "invocation": "ShellExecute RunAs /S /D=unquoted-final-path"
+  },
+  "artifact": {
+    "id": 10839477695,
+    "sha256": "c2c826995df67fe78a022227bfcee5a0371c7c3aa229368878b82d8297623e09",
+    "downloaded_report_verified": true
+  },
+  "next": "Capture official initial UI without silent flag. Do not accept extracted files as a passed stock installation."
+}

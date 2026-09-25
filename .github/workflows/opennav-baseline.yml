@@ -22,6 +22,9 @@ jobs:
           New-Item -ItemType Directory -Path opennav-x/evidence/local -Force | Out-Null
           & "$env:WINDIR/System32/WindowsPowerShell/v1.0/powershell.exe" -NoProfile -NonInteractive -ExecutionPolicy Bypass -File opennav-x/tools/install-official-opencpn-fixture.ps1 -Setup $Setup -Directory (Join-Path $Fixture 'stock OpenCPN') -Report opennav-x/evidence/local/official-prerequisite.json
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+      - name: Capture stock prerequisite failure dialog
+        if: failure()
+        run: python opennav-x/tools/inspect-official-installer-windows.py "$env:RUNNER_TEMP/OpenNav stock prerequisite/official-setup.exe" opennav-x/evidence/local
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         if: always()
         with:
