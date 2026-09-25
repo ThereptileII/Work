@@ -1,5 +1,6 @@
 #pragma once
 #include "integration/MarineDecoder.h"
+#include "integration/N2kSourceIdentity.h"
 #include "observable.h"
 #include <algorithm>
 #include <memory>
@@ -14,6 +15,9 @@ public:
   const vessel::SensorRegistry &Sources() const { return sources_; }
   vessel::VesselState Merge(vessel::VesselState navigation,
                             vessel::Time now) const;
+  std::vector<N2kIdentity> Identities() const {
+    return identities_.Observations();
+  }
   void SetBindings(std::vector<SignalKBinding> bindings) {
     application::ValidateSignalKMappings(bindings);
     const bool same =
@@ -32,6 +36,7 @@ private:
   void Accept(std::vector<vessel::SensorObservation> samples, vessel::Time now);
   std::vector<std::unique_ptr<ObsListener>> listeners_;
   vessel::SensorRegistry sources_;
+  N2kSourceIdentity identities_;
   std::vector<SignalKBinding> bindings_;
   std::optional<vessel::Time> last_received_;
 };

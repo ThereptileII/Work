@@ -1,0 +1,51 @@
+{
+  "stage": "Beta real N2K source identity repair",
+  "acceptance": "Local only; exact-commit native replacement pending",
+  "portable_suites": 45,
+  "integrated_linux_cases": 98,
+  "runtime": {
+    "authority": "Linux development",
+    "fixture": "Synthetic NMEA over loopback; no external devices or production profile",
+    "expected": {
+      "battery_voltage_v": 343,
+      "battery_current_source_a": -21,
+      "soc_percent": 68,
+      "motor_rpm": 820,
+      "coolant_c": 62,
+      "gear": "Forward"
+    },
+    "screenshots": [
+      "n2k-01-live-energy.png",
+      "n2k-02-stale-energy.png",
+      "n2k-03-invalid-energy.png"
+    ],
+    "visual_review": "required",
+    "checks": [
+      "Actual OpenCPN TCP N2K driver -> NavMsgBus -> MarineBridge -> owned snapshots",
+      "HV voltage/current/SOC/RPM/coolant/gear byte fixtures and provenance",
+      "Real address claim unifies SOC and voltage/current pack identity; reassignment removes old samples",
+      "Duplicate NAME at another address suppresses ambiguous instrument data",
+      "No fabricated GPS, motor-temperature mapping or configured power",
+      "Source cadence and invalid counts; dropout suppresses live rate",
+      "N2K sensor loss/NA invalidates energy inputs and discrete gear"
+    ],
+    "result": "loopback transport and lifecycle passed; numeric and stale screenshot review required",
+    "sent": {
+      "rmc": 39,
+      "gga": 0
+    },
+    "transport_errors": []
+  },
+  "boundary": "Observe actual PGN60928, clear candidates on claim changes, reject ambiguous NAME, retain address-only provenance before claim",
+  "remaining": "Same-driver TCP reconnect generation invalidation is pending the inspected transport getter hook. No live pilot output yet.",
+  "sha256": {
+    "beta-identity-tests.log": "ae692ffc7bf3a87317c074be76901cefff0907d3e502814beb544b1a40463d59",
+    "beta-identity-integrated-tests.log": "a8c801624f5f0c05febc767cdeb056415d234dfe22b96c57c5dc327e6c78206a",
+    "beta-identity-n2k.log": "6c0de3a1e9531123d7ea806b3f446ceeb4b5b3e74dcc484678436934f18252a1",
+    "beta-identity-recording.log": "6ac32d3fb81db7d589eb0248c1b3fccf4c8259335edadca5fb530ccffc47596c",
+    "n2k-live.json": "bb3edc39956b87c32ef434132ead21bf5243d1f5fafb5be12ded68f4688ec723",
+    "n2k-reidentified.json": "21578bc6fc3fa8f2b93d00198d3d7ce76d84e69a8a5b5ea199597209c30f045e",
+    "n2k-conflict.json": "bae777f938623159684f31169883bcbdf760096277c524008b6cfb3b9e7e39e7",
+    "n2k-input-results.json": "e91ddd0f09cdb7e04ad0bbfc525de5ceaa39b8d17545717e5beba18f86369ab6"
+  }
+}

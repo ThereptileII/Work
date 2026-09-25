@@ -69,8 +69,10 @@ def file_dialog(title,path,accept):
         ui.SetForegroundWindow(dialog)
         ui.SetCursorPos((rect.left+rect.right)//2,(rect.top+rect.bottom)//2)
         ui.MouseEvent(2,0,0,0,0);ui.MouseEvent(4,0,0,0,0)
+        time.sleep(.1)
         key=ui.declare(ui.user,'keybd_event',None,ctypes.c_ubyte,ctypes.c_ubyte,ui.W.DWORD,ctypes.c_size_t)
         key(0x11,0,0,0);key(0x41,0,0,0);key(0x41,0,2,0);key(0x11,0,2,0)
+        time.sleep(.1) # Drain queued focus/selection events before WM_CHAR.
         # WM_CHAR follows actual focus/selection and triggers normal EN_CHANGE.
         encoded=str(path).encode('utf-16-le')
         for i in range(0,len(encoded),2):

@@ -71,6 +71,17 @@ hash-pinned boat firmware parser. It is not yet connected to the application's
 live transport and does not claim physical acceptance.
 [Pilot development contract](st4000-beta-contract.md),
 [local gate](evidence/beta-pilot-protocol-local.json).
+Both native and Linux contract jobs now pass the 44-suite protocol increment at
+`2de6238`, including the actual firmware parser. Full runtime acceptance still
+depends on the pending recording export correction.
+
+A source inspection and native JSON review exposed synthetic OpenCPN address
+labels incorrectly used as physical NAME, splitting one battery across PGNs.
+The repair observes real 60928 claims, keeps SOC and V/I on one copied pack
+identity, clears reassigned samples and rejects duplicate NAME. Local 45 portable
+suites, 98 integrated cases and actual TCP identity/change/conflict/loss checks
+pass; recording/replay still passes locally. Native qualification is pending.
+[Identity evidence](evidence/beta-n2k-identity-local.json).
 
 ## Implemented Alpha product
 

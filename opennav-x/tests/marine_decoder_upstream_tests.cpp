@@ -1,6 +1,7 @@
 #include "N2kMessages.h"
 #include "application/Settings.h"
 #include "integration/MarineDecoder.h"
+#include "integration/N2kSourceIdentity.h"
 #include <cmath>
 #include <gtest/gtest.h>
 #include <iomanip>
@@ -72,6 +73,34 @@ TEST(OpenNavMarine, N2kBatteryPreservesInstanceAndSign) {
   EXPECT_FALSE(s.battery.current_a.value);
   EXPECT_NE(s.battery.voltage_v.device_id.find("instance-2"),
             std::string::npos);
+}
+TEST(OpenNavMarine, RealAddressClaimUnifiesPackAcrossDifferentPgns) {
+  N2kSourceIdentity identities;
+  const std::vector<unsigned char> name{0x45,0x23,0xc1,0xff,0,0x87,0x50,0xc0};
+  ASSERT_EQ(identities.Observe("real-bus",45,name,epoch,epoch),ClaimResult::Changed);
+  SensorRegistry registry;
+  tN2kMsg dc,soc;
+  SetN2kPGN127508(dc,0,48,-21,N2kDoubleNA,1);
+  SetN2kPGN127506(soc,1,0,N2kDCt_Battery,68,255,N2kDoubleNA,N2kDoubleNA,N2kDoubleNA);
+  for(const auto* m:{&dc,&soc})
+    for(auto observation:DecodeN2kInstruments(m->PGN,Envelope(*m),identities.Label("real-bus",45),epoch+1ms))
+      registry.Observe(std::move(observation),epoch+1ms);
+  auto state=registry.Merge({},epoch+1ms);
+  ASSERT_TRUE(state.battery.soc_percent.value);
+  ASSERT_EQ(state.battery.soc_percent.device_id,state.battery.voltage_v.device_id);
+  ASSERT_EQ(state.battery.soc_percent.device_id,state.battery.current_native_a.device_id);
+  EXPECT_NE(state.battery.soc_percent.device_id.find("NAME-c0508700ffc12345"),std::string::npos);
+  NormalizeBatteryPower(state,state.battery.soc_percent.device_id,CurrentConvention::PositiveCharge,epoch+1ms);
+  ASSERT_TRUE(state.battery.net_discharge_kw.value);
+  EXPECT_NEAR(*state.battery.net_discharge_kw.value,1.008,.001);
+  auto changed=name;changed[0]++;
+  ASSERT_EQ(identities.Observe("real-bus",45,changed,epoch+2ms,epoch+2ms),ClaimResult::Changed);
+  registry.Clear();
+  for(auto observation:DecodeN2kInstruments(dc.PGN,Envelope(dc),identities.Label("real-bus",45),epoch+3ms))
+    registry.Observe(std::move(observation),epoch+3ms);
+  state=registry.Merge({},epoch+3ms);
+  EXPECT_FALSE(state.battery.soc_percent.value);
+  EXPECT_FALSE(state.battery.net_discharge_kw.value);
 }
 TEST(OpenNavMarine, N2kHighVoltageSaturationIsUnavailable) {
   tN2kMsg message;

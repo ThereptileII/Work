@@ -1,4 +1,5 @@
 #include "integration/MarineBridge.h"
+#include "model/comm_drv_registry.h"
 #include "model/comm_navmsg.h"
 #include <stdexcept>
 #include <wx/thread.h>
@@ -19,11 +20,43 @@ MarineBridge::MarineBridge() {
   if (!wxIsMainThread())
     throw std::logic_error(
         "Marine subscriptions require the application thread");
+  auto changes = std::make_unique<ObsListener>();
+  changes->Init(CommDriverRegistry::GetInstance().evt_driverlist_change,
+                [this](ObservedEvt &) {
+                  identities_.Clear();
+                  sources_.Clear();
+                  last_received_.reset();
+                });
+  listeners_.push_back(std::move(changes));
+  auto claims = std::make_unique<ObsListener>();
+  claims->Init(Nmea2000Msg(60928), [this](ObservedEvt &event) {
+    const auto m = UnpackEvtPointer<Nmea2000Msg>(event);
+    if (!m || !m->source || m->payload.size() != 22 || m->payload[0] != 0x93 ||
+        m->payload[3] != 0 || m->payload[4] != 0xee || m->payload[5] != 0 ||
+        m->payload[12] != 8)
+      return;
+    const auto now = vessel::Clock::now();
+    const auto at = Receipt(*m, now, std::chrono::system_clock::now());
+    if (!at)
+      return;
+    const auto result =
+        identities_.Observe(m->source->iface, m->payload[7],
+                            std::vector<unsigned char>(m->payload.begin() + 13,
+                                                       m->payload.begin() + 21),
+                            *at, now);
+    if (result == ClaimResult::Changed || result == ClaimResult::Conflict) {
+      // Conservative invalidation: no old-address samples survive reassignment.
+      // Normal incoming messages repopulate the bounded reducer.
+      sources_.Clear();
+      last_received_.reset();
+    }
+  });
+  listeners_.push_back(std::move(claims));
   for (const auto pgn : InstrumentPgns()) {
     auto listener = std::make_unique<ObsListener>();
     listener->Init(Nmea2000Msg(pgn), [this](ObservedEvt &event) {
       const auto m = UnpackEvtPointer<Nmea2000Msg>(event);
-      if (!m || !m->source || m->source->iface.empty())
+      if (!m || !m->source || m->source->iface.empty() || m->payload.size() < 8)
         return;
       const auto now = vessel::Clock::now();
       const auto wall = std::chrono::system_clock::now();
@@ -32,7 +65,7 @@ MarineBridge::MarineBridge() {
         return;
       Accept(DecodeN2kInstruments(
                  m->PGN.pgn, m->payload,
-                 m->source->iface + "/NAME-" + m->source->to_string(), *at),
+                 identities_.Label(m->source->iface, m->payload[7]), *at),
              now);
     });
     listeners_.push_back(std::move(listener));

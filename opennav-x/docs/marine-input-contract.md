@@ -44,6 +44,21 @@ an explicit pin must be reviewed after that change. Receipt age is translated
 from upstream `system_clock` to the Vessel Data steady clock. Transport/sensor
 latency before OpenCPN is not claimed known.
 
+Beta resolves NAME only from actual PGN 60928 claims. The pinned network and
+serial driver's `PayloadToName` copies envelope bytes into a synthetic address
+label; it is **not** a device NAME and differs across PGNs from the same pack.
+It is no longer used as physical source identity. Without an observed claim,
+the source explicitly says `address-only`. A changed claim clears retained
+instrument candidates before repopulation; duplicate NAME at two addresses is
+ambiguous and supplies no samples. The bounded table holds at most 256 claims.
+OpenCPN driver-registry changes clear claims and observations. Source policy
+configuration remains intact. Existing pins containing synthetic decimal NAME
+labels must be deliberately reselected; they are not silently migrated.
+
+Connection-generation invalidation for reconnects within the same network
+driver is part of the pending pilot transport boundary; until that gate, a
+source claim is not proof of uninterrupted transport or physical sensor freshness.
+
 ## NMEA 0183
 
 HDT, VHW, DPT, DBT, MWV, MTW and RSA use the pinned `SENTENCE` checksum/field

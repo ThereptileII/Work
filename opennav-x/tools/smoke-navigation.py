@@ -58,6 +58,7 @@ def sentence(body):
 
 def transmit():
     peer = None
+    n2k_name = bytes.fromhex('4523c1ff008750c0')
     try:
         while not stop.is_set():
             try:
@@ -88,10 +89,15 @@ def transmit():
                     payloads[127751] = bytes.fromhex('0700ffffffff7fff')
                     payloads[127506] = bytes.fromhex('070000ffffffffffffffff')
                     payloads[127493] = bytes.fromhex('00ffffffffffffff')
+                if mode == 'reidentified':
+                    n2k_name = bytes.fromhex('4623c1ff008750c0')
+                payloads = {60928: n2k_name, **payloads}
                 # Actisense complete-PGN ASCII, source 35, destination 255,
                 # priority 6. Existing OpenCPN network driver owns framing.
                 data = ''.join(f'A001001.732 23FF6 {p:05X} {b.hex().upper()}\r\n'
                                for p, b in payloads.items())
+                if mode == 'conflict':
+                    data += f'A001001.732 24FF6 0EE00 {n2k_name.hex().upper()}\r\n'
                 peer.sendall(data.encode('ascii'))
                 counts['rmc'] += 1  # Legacy counter name: one synthetic batch.
                 continue
@@ -224,6 +230,10 @@ try:
             assert abs(values[name]['value'] - value) < .01, (name, values[name])
             assert values[name]['quality'] == 'LIVE', values[name]
             assert 'NMEA2000' in values[name]['source'], values[name]
+        pack_names=['Battery SOC','Battery voltage','Battery current (source convention)']
+        first_pack=values['Battery SOC']['device_id']
+        assert '/NAME-c0508700ffc12345/' in first_pack,first_pack
+        assert all(values[n]['device_id']==first_pack for n in pack_names),values
         assert 'value' not in values['Motor temperature']
         assert 'value' not in values['Whole-pack net discharge'], 'Current sign must be configured'
         assert 'value' not in values['Latitude'], 'Instrument source cannot fabricate GPS'
@@ -237,6 +247,12 @@ try:
         else:
             subprocess.run(['xdotool', 'mousemove', '275', '764', 'click', '1'], env=env, check=True)
         time.sleep(.5);capture('01-live-energy')
+        phase[0]='reidentified';time.sleep(2)
+        record,values=n2k_snapshot('reidentified')
+        second_pack=values['Battery SOC']['device_id']
+        assert second_pack!=first_pack and '/NAME-c0508700ffc12346/' in second_pack
+        assert all(values[n]['device_id']==second_pack for n in pack_names),values
+        assert all(first_pack not in s['device_id'] for s in record['source_candidates'])
         phase[0] = 'gga';time.sleep(6.2)
         record, values = n2k_snapshot('stale')
         for name in expected:
@@ -253,8 +269,14 @@ try:
                    for v in record['source_candidates']), record['source_candidates']
         assert 'value' not in next(v for v in record['text_data'] if v['name'] == 'Gear')
         capture('03-invalid-energy')
+        phase[0]='conflict';time.sleep(2)
+        record,values=n2k_snapshot('conflict')
+        assert all('value' not in values[n] for n in expected),values
+        assert not record.get('source_candidates'),record.get('source_candidates')
         report['checks'] = ['Actual OpenCPN TCP N2K driver -> NavMsgBus -> MarineBridge -> owned snapshots',
                             'HV voltage/current/SOC/RPM/coolant/gear byte fixtures and provenance',
+                            'Real address claim unifies SOC and voltage/current pack identity; reassignment removes old samples',
+                            'Duplicate NAME at another address suppresses ambiguous instrument data',
                             'No fabricated GPS, motor-temperature mapping or configured power',
                             'Source cadence and invalid counts; dropout suppresses live rate',
                             'N2K sensor loss/NA invalidates energy inputs and discrete gear']
