@@ -37,20 +37,30 @@ ambiguous, edited or transitional state never becomes a valid zero arrival.
 
 ## Beta development
 
-Candidate `106b7a3` / run `36122795750` is superseded by the final display
-follow-up: the Energy card now includes approximate ETA from the already-tested
-arrival prediction, and remaining visible Alpha labels are removed. Its complete
-Linux preview passes 44 captures. Native exact-commit qualification and three-hour
-endurance remain mandatory; no Beta release has yet been accepted.
+The Beta packaging/display candidates `106b7a3` / run `36122795750` and
+`8236ee5` / run `36123576221` are **not accepted**. The longer endurance
+harness exposed an incorrect test expectation: the unavailable-instrument demo
+retains GPS/route data, so only dependent energy advice must disappear. The
+replacement requires that distinction explicitly and exercises repeated cycles.
 
+Hardening revision `f562f3805f1296fa5123fc0cbe2a684d6c0b4c15`,
+[run 36121533524](https://github.com/ThereptileII/Work/actions/runs/36121533524),
+passed 60 portable suites on each platform, 103 Linux / 93 Windows integrated
+cases and actual Signal K, N2K, recording, pilot, AIS and recovery gates. It is
+**not accepted**: native 150% scaling exposed a menu endpoint focus jump, and the
+installer permission fixture failed before testing the actual denied operation.
+The replacement focuses the scroll viewport without selecting a child; native
+tests require the last menu action to remain fully visible at all three scales.
+The permission fixture now uses the native .NET Framework DACL API, saves/restores
+the exact DACL and retains error details. Two early native filesystem checks
+verify actual directory denial and restoration before the installer matrix.
 
-The hardening replacement is `f562f3805f1296fa5123fc0cbe2a684d6c0b4c15`,
-[run 36121533524](https://github.com/ThereptileII/Work/actions/runs/36121533524).
-It is pending native/runtime acceptance. Beta packaging now targets
-`0.3.0-beta1`, exact Beta download names and separate desktop/boat guides. The
-installer upgrade fixture is the hash-verified **actual accepted Alpha Setup**,
-not a relabeled current executable. Alpha installation identities remain stable.
-
+Beta packaging targets `0.3.0-beta1`, exact Beta download names and separate
+desktop/boat guides. The installer upgrade fixture is the hash-verified **actual
+accepted Alpha Setup**, not a relabeled current executable. Alpha installation
+identities remain stable. The Energy card includes approximate ETA from the
+existing tested arrival model. Exact-commit native acceptance and three-hour
+endurance on both platforms are still required; no Beta release is accepted yet.
 
 Release hardening adds bounded pre-parser Signal K validation, malformed marine
 input cases, control-byte rejection in source identities, seven additional

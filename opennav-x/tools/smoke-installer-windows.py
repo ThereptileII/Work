@@ -80,25 +80,22 @@ def deny_generation_creation():
     # Deny only CreateDirectories on this disposable generations directory.
     # Existing application files remain readable; restore the exact ACL.
     directory=INSTALL/'generations'; acl_file=EVIDENCE/'installer-original-acl.txt'
-    script=EVIDENCE/'installer-deny-stage.ps1'
-    script.write_text('''param([string]$Directory,[string]$Saved,[switch]$Restore)
-$ErrorActionPreference='Stop'
-$acl=Get-Acl -LiteralPath $Directory
-if ($Restore) {
-  $acl.SetSecurityDescriptorSddlForm([IO.File]::ReadAllText($Saved),[Security.AccessControl.AccessControlSections]::Access)
-  Set-Acl -LiteralPath $Directory -AclObject $acl; exit
-}
-[IO.File]::WriteAllText($Saved,$acl.GetSecurityDescriptorSddlForm([Security.AccessControl.AccessControlSections]::Access))
-$sid=[Security.Principal.WindowsIdentity]::GetCurrent().User
-$rule=New-Object Security.AccessControl.FileSystemAccessRule($sid,[Security.AccessControl.FileSystemRights]::CreateDirectories,[Security.AccessControl.AccessControlType]::Deny)
-$acl.AddAccessRule($rule); Set-Acl -LiteralPath $Directory -AclObject $acl
-''')
-    command=[str(PS),'-NoProfile','-NonInteractive','-ExecutionPolicy','Bypass','-File',str(script),str(directory),str(acl_file)]
-    subprocess.run(command,check=True,capture_output=True)
-    try:yield
+    script=ROOT/'tools/installer-deny-directory.ps1'
+    command=[str(PS),'-NoProfile','-NonInteractive','-ExecutionPolicy','Bypass',
+             '-File',str(script),'-Directory',str(directory),'-Saved',str(acl_file)]
+    def run_acl(restore=False):
+        result=subprocess.run(command+(['-Restore'] if restore else []),capture_output=True)
+        if result.returncode:
+            detail=(result.stdout+result.stderr).decode(errors='replace')
+            (EVIDENCE/'installer-acl-error.txt').write_text(detail,encoding='utf-8')
+            raise RuntimeError('Native ACL fixture failed: '+detail)
+    try:
+        run_acl()
+        yield
     finally:
-        subprocess.run(command+['-Restore'],check=True,capture_output=True)
-        acl_file.unlink();script.unlink()
+        if acl_file.exists():
+            run_acl(restore=True)
+            acl_file.unlink()
 def wait_ready(profile,before):
     deadline=time.monotonic()+45
     while time.monotonic()<deadline:

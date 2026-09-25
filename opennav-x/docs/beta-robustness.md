@@ -50,6 +50,12 @@ repair, prior-version upgrade, rollback, uninstall and pre/post-commit recovery:
 * A locked state file must retain the previous atomic state and journal;
   rerunning after release of the lock must recover successfully.
 
+Before the full installer matrix, two native filesystem checks qualify the
+permission fixture itself: CreateDirectory must be denied, then the exact DACL
+and ability to create a directory must be restored. The fixture uses the Windows
+PowerShell 5.1 .NET Framework ACL API without depending on inherited PowerShell
+module search paths; setup errors are retained separately from engine failures.
+
 Every failure compares the active executable/state and existing stock/profile
 hashes. ACL changes affect only a disposable CI directory and are restored.
 Atomic JSON failures remove only their own unique temporary record. The engine
@@ -68,7 +74,11 @@ as endurance. Short 120-second development runs validate the harness only.
 The test uses a disposable profile and no device output. Active route progress,
 battery/energy, AIS encounters and SmartNav run continuously; six product pages,
 chart zoom and palettes are exercised, with stale/unavailable episodes and
-recovery. The existing separate gates exercise live marine transports, repeated
+recovery. Whole-source staleness must suppress route advice; the instrument-only
+unavailable scenario deliberately retains GPS/route, suppresses energy and marks
+depth, RPM and battery current unavailable. The earlier blanket route-suppression
+assertion was incorrect and is not used as evidence of a product defect.
+The existing separate gates exercise live marine transports, repeated
 mode restarts, two public ENC cells, plugins and requested OpenGL/fallback.
 
 Ten-second JSONL samples retain process CPU, resident memory, file descriptors

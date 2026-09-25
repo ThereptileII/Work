@@ -1,0 +1,44 @@
+{
+  "status": "rejected candidates; replacements require new exact-commit gates",
+  "native_hardening": {
+    "commit": "f562f3805f1296fa5123fc0cbe2a684d6c0b4c15",
+    "run": "https://github.com/ThereptileII/Work/actions/runs/36121533524",
+    "linux_integrated": 103,
+    "windows_integrated": 93,
+    "portable_per_platform": 60,
+    "dpi_passed": [
+      100,
+      125
+    ],
+    "dpi_failure": "150 percent final Menu action cannot remain visible; viewport focus delegation repaired, replacement pending",
+    "installer_failure": "Permission fixture failed before testing denied operation; exact engine failure gate pending",
+    "windows_artifact_sha256": "3bde20ab21ebc8e6a3bcddafe23df3268c88e6fd4d27dcdd973629d52b004e6d"
+  },
+  "beta_candidate": {
+    "commit": "106b7a31aba1e3f5dee987d907798e28526f8312",
+    "run": "https://github.com/ThereptileII/Work/actions/runs/36122795750",
+    "accepted_alpha_setup_verified": true,
+    "actual_alpha_to_beta_upgrade": "passed with shared charts/profile/stock preserved before permission fixture failure",
+    "installer_failure_artifact_sha256": "adf0610aee9389a9eac14c66cbf83df1d7e94637e53204c61fe3abddccd242de",
+    "linux_endurance_failure": "Instrument-only unavailable scenario retains valid route; previous test incorrectly demanded route advice suppression. Dependency-specific predicate repaired."
+  },
+  "local_test_note": "An integrated CTest invocation overlapped the running GUI soak and four upstream REST tests conflicted on port 8443. This invocation is not accepted; full suite must rerun without an application. No test excluded.",
+  "local_harness_checkout": {
+    "status": "passed",
+    "requested_seconds": 600,
+    "elapsed_seconds": 600.1458755299973,
+    "release_duration": false,
+    "samples": 60,
+    "route_progress_samples": 38,
+    "dropout_cycles": 5,
+    "note": "Development harness validation only; concurrent CTest conflict means resource figures are not release evidence. Both isolated three-hour exact-commit CI runs remain required."
+  },
+  "local_isolated_replacement": {
+    "integrated_cases_passed": 103,
+    "failed": 0,
+    "log": "evidence/local/beta-scroll-tests-isolated.log",
+    "build": "incremental Linux integrated build passed; final CI reconfigures exact commit",
+    "preview_result": "passed; screenshot review required",
+    "preview_captures": 44
+  }
+}

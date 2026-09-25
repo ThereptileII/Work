@@ -46,3 +46,14 @@ The Linux palette harness separates single clicks beyond GTK's double-click
 interval and verifies each palette transition. Rapid input may be coalesced as
 a double-click; tests must not assume it represents two independent activations.
 This does not relax pilot command rate limits or create repeat actions.
+
+## Scroll endpoint regression
+
+Native qualification at 150% exposed wx panel focus delegation: disabling a
+focused Down button at the endpoint and calling ordinary panel `SetFocus()`
+could focus a child and scroll back to it. The replacement uses
+`SetFocusIgnoringChildren()` for page and rail viewports. This preserves keyboard
+focus without changing the visible position. Native 100/125/150% tests require
+the last menu action fully visible after settling at the bottom, in addition to
+touch pan, Up/Down, complete night workflows and mode/chart checks. Failed DPI
+runs now retain the visible failure capture and control geometry.

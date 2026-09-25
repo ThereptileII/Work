@@ -29,6 +29,21 @@ function Refuses([scriptblock]$Operation, [string]$Name) {
   Check $Failed $Name
 }
 try {
+  # Qualify the permission fixture before the expensive installer matrix.
+  # Retain the old provider's diagnostic if a pwsh-inherited module path broke it.
+  try { $null = Get-Acl -LiteralPath $Fixture; Write-Host 'ACL provider probe: available' }
+  catch { Write-Host ('ACL provider probe: ' + $_.Exception.Message) }
+  $Denied = Join-Path $Fixture 'denied staging'; $null = [IO.Directory]::CreateDirectory($Denied)
+  $SavedAcl = Join-Path $Fixture 'original-acl.txt'
+  $AclTool = Join-Path $PSScriptRoot 'installer-deny-directory.ps1'
+  try {
+    & $AclTool -Directory $Denied -Saved $SavedAcl
+    Refuses { [IO.Directory]::CreateDirectory((Join-Path $Denied 'new generation')) } 'Native NTFS staging denial is actually enforced'
+  } finally {
+    if ([IO.File]::Exists($SavedAcl)) { & $AclTool -Directory $Denied -Saved $SavedAcl -Restore }
+  }
+  $null = [IO.Directory]::CreateDirectory((Join-Path $Denied 'restored generation'))
+  Check ([IO.Directory]::GetAccessControl($Denied,[Security.AccessControl.AccessControlSections]::Access).GetSecurityDescriptorSddlForm([Security.AccessControl.AccessControlSections]::Access) -ceq [IO.File]::ReadAllText($SavedAcl)) 'Permission fixture restores exact original DACL and directory creation'
   $Vector = Join-Path $Fixture 'sha256-vector.txt'
   [IO.File]::WriteAllText($Vector,'abc',$Utf8)
   Check ((Hash $Vector) -ceq 'ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad') 'Known SHA-256 vector through the actual engine'

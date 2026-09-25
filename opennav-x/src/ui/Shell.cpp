@@ -571,7 +571,11 @@ void Shell::UpdateScrollControls() {
   auto *focus = wxWindow::FindFocus();
   if ((focus == page_up_ && !CanScrollPage(-1)) ||
       (focus == page_down_ && !CanScrollPage(1))) {
-    if (auto *s = CurrentScroll()) s->SetFocus();
+    // Focusing a panel normally delegates to a child and wxScrolledWindow
+    // then scrolls that child into view. At an endpoint this can jump back
+    // to the first action. Retain focus on the viewport itself before the
+    // endpoint button is disabled, preserving both scrolling and shortcuts.
+    if (auto *s = CurrentScroll()) s->SetFocusIgnoringChildren();
     else frame_.SetFocus();
   }
   bool changed = page_up_->IsShown() != scroll;
@@ -586,7 +590,7 @@ void Shell::UpdateScrollControls() {
   }
   if ((focus == rail_up_ && !rail_scroll_->CanScroll(-1)) ||
       (focus == rail_down_ && !rail_scroll_->CanScroll(1)))
-    rail_scroll_->SetFocus();
+    rail_scroll_->SetFocusIgnoringChildren();
   rail_up_->Enable(rail_scroll_->CanScroll(-1));
   rail_down_->Enable(rail_scroll_->CanScroll(1));
 }

@@ -187,8 +187,19 @@ try:
                     xdo('mousemove', 1240, 28, 'click', 1)
             elif slot == 4:
                 missing = (sequence//6) % 2
-                scenario('Sensors unavailable' if missing else 'Sensors stale', 2 if missing else 1,
-                         lambda d: 'arrival_soc' not in d['energy'] and not d['runtime']['smartnav']['route_valid'])
+                # Unavailable removes selected instruments/power, deliberately
+                # retaining GPS and route. Stale freezes the entire source.
+                # Require the appropriate dependency loss, not blanket advice loss.
+                def dropout(d):
+                    if 'arrival_soc' in d['energy']:
+                        return False
+                    if not missing:
+                        return not d['runtime']['smartnav']['route_valid']
+                    values = {item['name']: item for item in d['data']}
+                    return d['runtime']['smartnav']['route_valid'] and all(
+                        values[name]['quality'] == 'UNAVAILABLE' for name in
+                        ['Depth below transducer', 'Motor speed', 'Battery current (+ discharge)'])
+                scenario('Sensors unavailable' if missing else 'Sensors stale', 2 if missing else 1, dropout)
                 action['dropout'] = 'unavailable' if missing else 'stale'
             elif slot == 5:
                 scenario('Cruising', 0, lambda d: 'arrival_soc' in d['energy'] and d['runtime']['smartnav']['route_valid'])

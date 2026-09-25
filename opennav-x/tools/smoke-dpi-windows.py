@@ -91,6 +91,21 @@ try:
         entry['chart_rendering'].append(chart.night(night,colors,f'{scale}% Night'))
         entry['night_surfaces']=[chart.dark_surface(night,f'{scale}% Night navigation')]
         entry['native_caption_themed']=data()['runtime']['display']['native_caption_themed']
+        # Reaching the endpoint must not focus a hidden first child and jump
+        # back up. Require the final menu action fully visible after settling.
+        ui.click_text(pid,'Menu');data(lambda d:d['ui_page']=='Menu')
+        for _ in range(40):
+            if not data()['runtime']['display']['can_scroll_down']:break
+            ui.click_text(pid,'Down')
+        else:raise AssertionError('Menu cannot retain its bottom scroll endpoint')
+        bottom=data()['runtime']['display']['page_scroll_px'];time.sleep(1.2)
+        assert data()['runtime']['display']['page_scroll_px']==bottom,'Menu jumped after disabling Down'
+        last=[h for h,t in ui.children(handle) if t=='Field diagnostic bundle'];assert len(last)==1
+        area=ui.W.RECT();item=ui.W.RECT()
+        ui.GetWindowRect(ui.GetParent(last[0]),C.byref(area));ui.GetWindowRect(last[0],C.byref(item))
+        assert area.top<=item.top<item.bottom<=area.bottom,'Final menu action clipped at scroll endpoint'
+        capture(f'dpi-{scale}-menu-bottom')
+        entry['menu_endpoint']='Last action fully visible; settled endpoint retained after Down disables'
         # Review every main workflow at each scale in the actual night palette.
         for label,page in [('Route','Route'),('Energy','Energy'),('Pilot','Manual autopilot')]:
             ui.click_text(pid,label);data(lambda d:d['ui_page']==page)
@@ -182,6 +197,19 @@ try:
         close_current();assert fixtures.snapshot(profile)==expected
         report['scales'].append(entry)
     report['result']='passed; native visual review required'
+except Exception as error:
+    report['result']='failed';report['error']=repr(error)
+    try:
+        capture(f'dpi-{scale}-failure')
+        report['failure_diagnostics']=data(timeout=2)
+        geometry=[]
+        for control,label in ui.children(handle):
+            rect=ui.W.RECT();ui.GetWindowRect(control,C.byref(rect))
+            geometry.append({'label':label,'rect':[rect.left,rect.top,rect.right,rect.bottom],
+                             'enabled':bool(ui.IsWindowEnabled(control))})
+        report['failure_controls']=geometry
+    except Exception as capture_error:report['capture_error']=repr(capture_error)
+    raise
 finally:
     for p in owned:subprocess.run(['taskkill','/PID',str(p),'/F'],capture_output=True)
     report['restored']=dpi(original['percent'])
