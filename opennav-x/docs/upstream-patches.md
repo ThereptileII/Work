@@ -35,6 +35,7 @@ Do not leave undocumented direct OpenCPN modifications.
 | gui/src/ocpn_frame.cpp | Hide native chrome only in XNav, Legacy switch menu, detach panes before close | Close veto, restart, AUI persistence; medium risk |
 | gui/src/toolbar.cpp | Suppress only main stock toolbar rendering and mouse handling in XNav | Legacy toolbar and plugin tools; medium risk |
 | gui/src/chcanv.cpp | Skip main MUI chrome in XNav; chart logic unchanged | Chart interaction and Legacy controls; low risk |
+| gui/src/routeman_gui.cpp | Alpha: suppress native active-leg console show only in XNav | Real active-route widget assertion, original Legacy/Safe callback retained; low presentation risk |
 | gui/src/canvasMenu.cpp | Context-menu fallback for mode switch | Menu access with hidden menu bar; low risk |
 | model/src/plugin_loader.cpp | Keep plugins inactive in Safe Mode without persisting disabled preferences | Enabled Dashboard fixture through Safe and normal restart; low risk |
 | gui/src/pluginmanager.cpp | Avoid saving temporary Safe Mode plugin states as normal preferences | Same shared-profile fixture; low risk |
@@ -183,7 +184,7 @@ resource layout as Windows does; the existing non-portable mode/input regression
 remain separate. The old executable fails the new rendering check on both the
 Legacy and returned-XNav captures. Native acceptance is recorded in status.md.
 
-## Alpha navigation context and anchor observation (pending gate)
+## Alpha navigation context and anchor observation
 
 Four narrow additions stay inside the existing reviewed GUI patch paths:
 
@@ -218,7 +219,7 @@ plugin entry uses upstream's built-in initial-page mechanism (Plugins index 5
 in the inspected pinned `options::CreateControls`). Chart route editing reuses
 OpenCPN's normal point dragging. See [chart/plugin/performance gate](chart-plugin-performance-validation.md).
 
-## Alpha installer loader check (candidate)
+## Alpha installer loader check
 
 The existing `ocpn_app.cpp` patch adds a guarded explicit self-test exit path.
 Command parsing recognizes `--opennav-self-test` before portable/profile logic;
@@ -265,3 +266,26 @@ remain enabled. The config group scope is restored without writing it.
 The actual Linux application regression loads Unicode harmonic paths across
 XNav, Legacy and Safe starts while removing the prior executable generations.
 [Native lifetime failure](evidence/installer-resources-2803773-failure.json).
+
+All Alpha hooks above pass the full Linux/native Windows qualification at
+`7bc36e426a55926045ea1aece0ebe96ef9417863`, including actual installed mode
+returns, resource lifetime, recovery, objects/AIS/anchor and restored stock.
+[Qualification evidence](evidence/alpha-installer-7bc36e4-qualification.json).
+The final packaged revision and delivery acceptance are recorded in [status](status.md).
+
+## XNav active-leg console suppression
+
+Visual review of `32a6564` found the native "This Leg" console covering the XNav
+rail during actual route activation. `RoutemanGui::GetDlgCtx` now returns early
+from only its `show_with_fresh_fonts` callback when `opennav::IsXNav()` is true.
+The inspected `ConsoleCanvasWin/Frame::ShowWithFreshFonts` path handles only
+widget hiding, font/layout, positioning and showing; navigation processing and
+outputs are separate and unchanged. Legacy and Safe execute the original path.
+There is no public plugin API to replace this main-frame chrome policy.
+
+This adds the ninth production patch file; the pinned checkout remains pristine.
+The real GUI `RouteProgressScenario` asserts that the existing `APConsole` is
+hidden on each valid first/middle/final, advanced, reversed and reactivated route
+publication. It fails on the prior executable behavior and passes only when the
+rail remains unobscured. Existing mode, chart and installer tests remain required.
+[Finding and red-test evidence](evidence/alpha-console-32a6564-review.json).

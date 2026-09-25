@@ -86,8 +86,10 @@ Native Windows additionally edits the battery assumption sheet and verifies
 that those explicit values survive mode restart without replacing Demo or
 inventing a battery identity. An integrated Signal K decoder/registry/configuration/energy test proves that
 explicit live battery observations can feed range and route arrival estimates.
-Native acceptance remains pending until status
-links the exact passing revision. Physical capacity/current calibration and
+Native qualification passes at `7bc36e4`;
+[the evidence](evidence/alpha-installer-7bc36e4-qualification.json) and
+[status](status.md) identify qualification and final release revisions separately.
+Physical capacity/current calibration and
 recorded boat power curves remain unaccepted boat tests.
 
 Explicit optional propulsion mappings are documented in

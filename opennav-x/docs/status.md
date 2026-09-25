@@ -113,6 +113,14 @@ manifest now admits **only the tested stock executable SHA-256**:
 [Qualification and review](evidence/alpha-installer-7bc36e4-qualification.json).
 Earlier failure records remain under `docs/evidence/`; none is release acceptance.
 
+Visual review of the manifest-bearing `32a6564` candidate found the native
+active-leg console overlapping the XNav rail during real route activation.
+It is **not accepted for delivery**, even if its earlier automated checks pass.
+The replacement suppresses only that native widget in XNav and adds a real
+route/widget regression which fails before the fix. Legacy/Safe keep the original
+callback; route calculations and output processing remain unchanged.
+[Visual finding](evidence/alpha-console-32a6564-review.json).
+
 ## Remaining Alpha delivery gates
 
 1. Build the manifest-bearing release commit on Linux and native Windows;

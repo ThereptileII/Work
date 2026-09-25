@@ -382,6 +382,32 @@ index ef2314764..7475af772 100644
    //    pConfig->SetPath( _T("/PlugIns/") );
    //    pConfig->Write( _T("PluginOrder"), GetPluginOrder() );
  
+diff --git a/gui/src/routeman_gui.cpp b/gui/src/routeman_gui.cpp
+index 557627227..8a7a170e8 100644
+--- a/gui/src/routeman_gui.cpp
++++ b/gui/src/routeman_gui.cpp
+@@ -50,6 +50,9 @@
+ #include "ocpn_frame.h"
+ #include "routemanagerdialog.h"
+ #include "routeman_gui.h"
++#ifdef OPENNAV_X
++#include "integration/OpenCPNIntegration.h"
++#endif
+ #include "TrackPropDlg.h"
+ #include "vector2D.h"
+ #include "model/navobj_db.h"
+@@ -81,6 +84,11 @@ RoutemanDlgCtx RoutemanGui::GetDlgCtx() {
+   ctx.confirm_delete_ais_mob = []() { return ConfirmDeleteAisMob(); };
+   ctx.get_global_colour = [](wxString c) { return GetGlobalColor(c); };
+   ctx.show_with_fresh_fonts = [] {
++#ifdef OPENNAV_X
++    // XNav renders its own validity-aware route panel and vessel-data rail.
++    // Preserve this native console for Legacy and Safe modes only.
++    if (opennav::IsXNav()) return;
++#endif
+     if (console) console->ShowWithFreshFonts();
+   };
+   ctx.clear_console_background = []() {
 diff --git a/gui/src/toolbar.cpp b/gui/src/toolbar.cpp
 index e71022302..0cdc305e1 100644
 --- a/gui/src/toolbar.cpp

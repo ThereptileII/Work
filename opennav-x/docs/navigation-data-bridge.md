@@ -70,8 +70,10 @@ and STALE 14s after all input stops. Wind and depth stay unavailable. Numeric
 and layout review hashes are in `docs/evidence/windows-bc0af30-review.json`.
 Linux's matching sequence and mode cycle pass; the integrated regression suite
 passes 60 compiled cases. Native Windows passes 50 platform-available cases and
-the portable contract suite. This establishes the selected-navigation slice;
-physical sensor provenance and the remaining vessel fields are still pending.
+the portable contract suite. This established the selected-navigation slice at that revision. The later
+Alpha [marine-input contract](marine-input-contract.md) adds normalized vessel
+fields through the upstream bus, with passing Linux/native Windows qualification
+at `7bc36e4`. Physical sensor validation remains open.
 
 ## Remaining active-route distance
 

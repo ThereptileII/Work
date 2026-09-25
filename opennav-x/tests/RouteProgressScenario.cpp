@@ -1,5 +1,6 @@
 #include "RouteProgressScenario.h"
 #include "integration/OpenCPNIntegration.h"
+#include "concanv.h"
 #include "model/route.h"
 #include "model/route_point.h"
 #include "model/routeman.h"
@@ -16,6 +17,7 @@
 #include <stdexcept>
 
 extern bool g_bDeferredInitDone;
+extern APConsole* console;
 namespace opennav::test {
 using namespace vessel;
 using namespace std::chrono_literals;
@@ -59,6 +61,9 @@ void Valid(const RouteProgress& s,std::size_t index,const char* label) {
   double upstream=g_pRouteMan->GetCurrentRngToActivePoint();
   for(int i=static_cast<int>(index)+2;i<=route->GetnPoints();++i) upstream+=route->GetPoint(i)->m_seg_len;
   Check(std::abs(*s->remaining_distance_nm-upstream)<1e-9,"Snapshot differs from actual normal upstream progress");
+  Check(console && !console->IsShown(),
+        "XNav active route exposes the Legacy navigation console over the data rail");
+  report["xnav_legacy_console_hidden"]=true;
   Record(label,s);
 }
 void NewRoute() {

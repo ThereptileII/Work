@@ -50,9 +50,10 @@ control or radar/AIS fusion is claimed.
 `radar_capability_contract` cover defaults, capabilities, measured feedback,
 heading wrap, one pending request, rejected transmission, exact timeout, late
 feedback, STANDBY preemption, global disable and no automatic retransmission.
-They require no physical hardware. Physical and native UI tests remain gates.
+They require no physical hardware. Native UI qualification passed at `7bc36e4`;
+physical tests remain open. Final packaged acceptance is recorded in [status](status.md).
 
-## Alpha UI integration (pending native gate)
+## Alpha UI integration
 
 The integration session owns separate unavailable-live and simulated manual
 controllers. XNav receives copied feedback, capabilities and command log entries.
@@ -62,3 +63,8 @@ confirms mode requests, shows pending/confirmed/rejected/timeout state and keeps
 STANDBY directly accessible. No UI request reaches live hardware in this Alpha
 foundation. Windows automation exercises enable, AUTO, +1, STANDBY and disable,
 checking new-feedback confirmation rather than the button press alone.
+
+[Native qualification](evidence/alpha-installer-7bc36e4-qualification.json)
+includes the actual simulator enable, feedback confirmation and disable flow.
+This establishes the desktop foundation only; no physical pilot/radar command
+path or boat acceptance is implied.

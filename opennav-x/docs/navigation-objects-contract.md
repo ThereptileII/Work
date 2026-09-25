@@ -1,7 +1,8 @@
 # Alpha navigation objects and context cards
 
-Status: implementation and Linux validation in progress; not an accepted Alpha
-release. OpenCPN remains the sole owner of navigation objects and their storage.
+Status: Linux and native Windows qualification passed at `7bc36e4`; final
+packaged release acceptance is recorded in [status](status.md). OpenCPN remains
+the sole owner of navigation objects and their storage.
 
 ## Boundary
 
@@ -91,7 +92,11 @@ pages and retains seven deterministic coastline checks. A Linux Ctrl+Shift+U
 collision with GTK Unicode input was caught by the interaction test; the pilot
 shortcut is now Ctrl+Shift+Y and the test requires an explicit diagnostic page
 identity before capture. Native property-sheet and pilot command interactions
-are added to the Windows gate and remain pending for this increment.
+now pass in the native Windows gate. The full qualification retains 90 Linux /
+80 native Windows integrated cases and 30 portable suites on each platform,
+including persisted object edits, actual native sheets, AIS cards, anchor state
+and feedback-confirmed simulator controls.
+[Exact qualification evidence](evidence/alpha-installer-7bc36e4-qualification.json).
 
 The first route point has no incoming planned leg. Its OpenCPN route-properties
 course is not initialized by the route constructor, so the bridge never reads
