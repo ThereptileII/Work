@@ -41,6 +41,7 @@ inline std::vector<DataItem> DataItems(const VesselState &s) {
       {"Fresh water tank", "%", &s.tanks.fresh_water_percent},
       {"Fuel tank", "%", &s.tanks.fuel_percent},
       {"Waste tank", "%", &s.tanks.waste_percent},
+      {"Other fluid tank", "%", &s.tanks.other_percent},
       {"Input rate", "msg/s", &s.connectivity.received_messages_per_second}};
 }
 struct TextDataItem {

@@ -1,4 +1,4 @@
-# Alpha marine input bridge
+# Marine input bridge
 
 `MarineBridge` owns application-thread subscriptions to OpenCPN's `NavMsgBus`.
 It creates no serial, CAN, TCP or Signal K connection and sends no messages.
@@ -20,6 +20,9 @@ sentinels invalidate fields rather than becoming zero.
 | 127250 | True heading, or estimated magnetic heading plus same-message variation |
 | 127257 | Roll/heel |
 | 127488 | Engine/motor RPM |
+| 127489 | Engine coolant field; motor meaning requires explicit boat mapping |
+| 127493 | Transmission forward/neutral/reverse; unavailable for unknown |
+| 127751 | Wider-range DC voltage/current pair, by connection instance |
 | 127505 | Fresh water, fuel or waste tank level, by instance |
 | 127506 | Battery SOC/SOH; coulomb capacity is not guessed to be usable kWh |
 | 127508 | Battery voltage and source-convention current, by instance |
@@ -28,11 +31,12 @@ sentinels invalidate fields rather than becoming zero.
 | 130306 | Apparent wind, or estimated true wind with explicit ground/water reference |
 | 130310 / 130316 | Sea temperature; 130310 atmospheric pressure |
 
-PGN 127489 is compiled out in the pinned library. Its coolant temperature is not
-silently substituted for motor temperature. PGN 127508's signed 0.01-V codec
-cannot represent the boat's full high-voltage pack range; its 327.66-V saturation
-endpoint is withheld. Use a validated Signal K source or explicitly specified
-extension for that pack. Neither source is inferred from Leaf CAN frames.
+The pinned 127489 parser body is compiled out. Beta copies its inspected coolant
+field without modifying the upstream decoder. It does not silently substitute
+coolant for motor temperature. The signed 127508 codec still cannot represent
+HV pack voltage; 127751 now supplies a coherent wider-range pair. Its current
+sign is not inferred. See [actual boat-source inspection](beta-boat-source-inspection.md)
+for producer mappings, source-freshness limits and commissioning gates.
 
 Source identity retains interface, available NAME, source address, instance,
 PGN and reference meaning. Address reassignment changes the selection identity;
@@ -87,3 +91,13 @@ integration gates. Boat data and sensor calibration are not physically accepted.
 Advanced explicit propulsion mapping import and persistence are described in
 [propulsion-source-mapping.md](propulsion-source-mapping.md). Standard marine
 paths retain precedence; no proprietary boat fields are assumed by default.
+
+## Beta source health
+
+Bounded per-source counters and an interval EWMA expose update rate without raw
+bus logging. Duplicate/out-of-order/future observations cannot inflate the rate.
+Rate decays during dropout and becomes unavailable at the source stale threshold;
+reads never update it. Invalid input has a separate count and INVALID display
+state, with its original observation age. Device/PGN/instance and selection/
+priority remain visible. Other tank types retain fluid type in source identity;
+gear preserves validity and age when converted to its display text.

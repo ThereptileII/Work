@@ -35,6 +35,14 @@ position/observation ages and route/revision/point identity; invalid, stale,
 ambiguous, edited or transitional state never becomes a valid zero arrival.
 [Contract](route-progress-contract.md), [review](evidence/windows-954b450-review.json).
 
+## Beta increment in development
+
+The first Beta increment adds standard 127751 voltage/current, 127489 coolant,
+127493 gear, other tank instances and source cadence/invalid-input diagnostics.
+Local integrated build, 97 cases, 31 portable suites, actual TCP N2K
+loss-of-data smoke and mode lifecycle pass. Native Windows acceptance is pending. [Source inspection](beta-boat-source-inspection.md)
+records the actual producer contract and its retained-data freshness limitation.
+
 ## Implemented Alpha product
 
 | Area | Current implementation and boundary |

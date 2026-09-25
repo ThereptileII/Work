@@ -121,6 +121,8 @@ jobs:
         run: python3 opennav-x/tools/smoke-navigation.py --route-fixture
       - name: Marine instrument input through the upstream loopback connection
         run: python3 opennav-x/tools/smoke-navigation.py --instruments
+      - name: Marine N2K commissioning inputs and loss of data
+        run: python3 opennav-x/tools/smoke-navigation.py --n2k
       - name: Navigation objects, AIS and anchor integration
         run: python3 opennav-x/tools/smoke-navigation.py --objects
       - name: Crash-loop recovery with real disposable processes
@@ -246,6 +248,8 @@ jobs:
           import json, os
           with open('opennav-x/installer/windows/compatibility.json') as f:
               accepted = bool(json.load(f)['supportedOpenCpn'])
+          with open('opennav-x/release/qualification.json') as f:
+              accepted = accepted and json.load(f)['publishNamedRelease']
           with open(os.environ['GITHUB_OUTPUT'], 'a') as f:
               f.write('accepted=' + str(accepted).lower() + '\n')
           PY

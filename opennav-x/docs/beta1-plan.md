@@ -67,3 +67,9 @@ per platform, plus GUI/synthetic/recovery/installer checks recorded separately.
   upgrade from Alpha without renaming away or losing existing installation state.
 - Missing radar/ENC capability remains unavailable, with the precise limitation
   documented. Missing data is never replaced with simulation in live mode.
+
+During Beta development, `release/qualification.json` disables named release
+publication. Candidate packaging and every regression gate still execute. The
+accepted Alpha artifact remains pinned to `08bc92f`; development candidates
+must not replace it under an Alpha release name. Beta version/package branding
+and named publication are promoted together at the final delivery gate.

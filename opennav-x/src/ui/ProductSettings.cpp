@@ -25,10 +25,16 @@ const vessel::SourceHealth *Find(const ProductState &s, vessel::Quantity q,
 }
 wxString Health(const vessel::SourceHealth &h, vessel::Time now) {
   const auto a = vessel::Assess(h.sample, now);
+  const auto age = now >= h.sample.observed_at
+      ? std::optional<double>{std::chrono::duration<double>(now - h.sample.observed_at).count()}
+      : std::nullopt;
   return (a.value ? N(*a.value) + " " + W(vessel::Describe(h.quantity).unit)
                   : "No data") +
-         " / " + W(vessel::QualityName(a.quality)) +
-         (a.age ? wxString::Format(" / %.1f s", a.age->count() / 1000.) : "") +
+         " / " + (h.sample.validity == vessel::Validity::Invalid
+                       ? wxString("INVALID") : W(vessel::QualityName(a.quality))) +
+         (age ? wxString::Format(" / %.2f s", *age) : " / Clock mismatch") +
+         (h.frequency_hz ? wxString::Format(" / %.1f Hz", *h.frequency_hz)
+                         : " / Rate unavailable") +
          (h.selected ? " / SELECTED" : "");
 }
 } // namespace
@@ -377,7 +383,14 @@ void ProductPanel::SourceDetail() {
       Text(W(id), 18);
       LiveText([q, id](const auto &s) {
         const auto h = Find(s, q, id);
-        return h ? Health(*h, s.now) : wxString("Source no longer available");
+        return h ? Health(*h, s.now) + "\n" +
+                       W(vessel::ValidityName(h->sample.validity)) +
+                       " / Observations " + W(std::to_string(h->observations)) +
+                       " / Invalid " + W(std::to_string(h->invalid_observations)) +
+                       "\nObservation stamp (session ms): " +
+                       W(std::to_string(std::chrono::duration_cast<vessel::Duration>(
+                           h->sample.observed_at.time_since_epoch()).count()))
+                 : wxString("Source no longer available");
       });
       Text("Device: " +
            W(h.sample.device_id.empty() ? "Unspecified" : h.sample.device_id));

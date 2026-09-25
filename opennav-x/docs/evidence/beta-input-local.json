@@ -1,0 +1,51 @@
+{
+  "authority": "Linux development",
+  "fixture": "Synthetic NMEA over loopback; no external devices or production profile",
+  "expected": {
+    "battery_voltage_v": 343,
+    "battery_current_source_a": -21,
+    "soc_percent": 68,
+    "motor_rpm": 820,
+    "coolant_c": 62,
+    "gear": "Forward"
+  },
+  "screenshots": [
+    {
+      "file": "n2k-01-live-energy.png",
+      "sha256": "73969d31fa13bb75cd003ce903da9266cac03d19680994375c5e462fb92ed50c"
+    },
+    {
+      "file": "n2k-02-stale-energy.png",
+      "sha256": "3eadf70dbfc9dc638545e7b287563876986b427e1611fe9f7bfbab7752a5ee45"
+    },
+    {
+      "file": "n2k-03-invalid-energy.png",
+      "sha256": "dfd3cc66bb4bdfdddb34ec90ace2a837367d73eb0a57bf80c26f2918eb658c79"
+    }
+  ],
+  "visual_review": "Reviewed live/stale/unavailable energy layouts; no fabricated GPS, motor temperature, power or arrival estimate. Final live capture also verifies GPS unavailable / Marine input label.",
+  "checks": [
+    "Actual OpenCPN TCP N2K driver -> NavMsgBus -> MarineBridge -> owned snapshots",
+    "HV voltage/current/SOC/RPM/coolant/gear byte fixtures and provenance",
+    "No fabricated GPS, motor-temperature mapping or configured power",
+    "Source cadence and invalid counts; dropout suppresses live rate",
+    "N2K sensor loss/NA invalidates energy inputs and discrete gear"
+  ],
+  "result": "loopback transport and lifecycle passed; numeric and stale screenshot review required",
+  "sent": {
+    "rmc": 26,
+    "gga": 0
+  },
+  "transport_errors": [],
+  "scope": "Beta first live-input increment; local development validation, native Windows acceptance pending",
+  "integratedCases": 97,
+  "portableSuites": 31,
+  "commands": [
+    "cmake --build build/xnav-linux --parallel 3",
+    "cmake --install build/xnav-linux",
+    "ctest --test-dir build/xnav-linux/test --output-on-failure -E '^tests$'",
+    "ctest --test-dir build/contracts --output-on-failure",
+    "python3 tools/smoke-navigation.py --n2k",
+    "python3 tools/smoke-modes-linux.py"
+  ]
+}

@@ -78,6 +78,9 @@ struct Wind {
 struct Propulsion {
   Sample electrical_power_kw, motor_rpm, motor_temperature_c, shaft_power_kw;
   Sample coolant_temperature_c;
+  // Normalized transmission enum: 0 forward, 1 neutral, 2 reverse.
+  // Unknown/NA is missing, never interpreted as forward.
+  Sample gear_code;
   TextSample gear, regeneration;
 };
 struct Battery {
@@ -94,6 +97,8 @@ struct Rudder {
 };
 struct Tanks {
   Sample fresh_water_percent, fuel_percent, waste_percent;
+  Sample
+      other_percent; // Instance and fluid type retained in source provenance.
 };
 struct Connectivity {
   Sample received_messages_per_second;

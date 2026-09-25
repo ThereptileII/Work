@@ -17,9 +17,10 @@ from diagnostic_snapshot import read_json_snapshot
 route_fixture = sys.argv[1:] == ['--route-fixture']
 instruments = sys.argv[1:] == ['--instruments']
 objects = sys.argv[1:] == ['--objects']
-if sys.argv[1:] and not (route_fixture or instruments or objects):
-    raise SystemExit('Usage: smoke-navigation.py [--route-fixture|--instruments|--objects]')
-prefix = 'objects' if objects else 'route' if route_fixture else 'instruments' if instruments else 'navigation'
+n2k = sys.argv[1:] == ['--n2k']
+if sys.argv[1:] and not (route_fixture or instruments or objects or n2k):
+    raise SystemExit('Usage: smoke-navigation.py [--route-fixture|--instruments|--objects|--n2k]')
+prefix = 'n2k' if n2k else 'objects' if objects else 'route' if route_fixture else 'instruments' if instruments else 'navigation'
 root = Path(__file__).resolve().parents[1]
 windows = sys.platform == 'win32'
 evidence = root / 'evidence/local'
@@ -41,7 +42,7 @@ port = server.getsockname()[1]
 with (profile / 'opencpn.conf').open('a') as stream:
     # TCP client, checksums required, input only, enabled, loopback peer only.
     stream.write('\n[Settings/NMEADataSource]\nDataConnections='
-                 f'1;0;127.0.0.1;{port};0;;4800;1;0;0;;0;;0;0;0;0;1;'
+                 f'1;0;127.0.0.1;{port};{1 if n2k else 0};;4800;1;0;0;;0;;0;0;0;0;1;'
                  'SIMULATED loopback navigation fixture;0;;0;1;\n')
 stop = threading.Event()
 connected = threading.Event()
@@ -72,6 +73,27 @@ def transmit():
         while not stop.wait(.3):
             mode = phase[0]
             if mode == 'none':
+                continue
+            if n2k:
+                if mode == 'gga':
+                    continue  # Keep socket alive, stop every marine source.
+                payloads = {
+                    127751: bytes.fromhex('0700660dccf7ffff'),
+                    127506: bytes.fromhex('07000044ffffffffffffff'),
+                    127489: bytes.fromhex('00ffffffffeb82' + 'ff' * 19),
+                    127488: bytes.fromhex('00d00cffffffffff'),
+                    127493: bytes.fromhex('00fcffffffffffff')}
+                if mode == 'invalid':
+                    payloads = {p: bytes([0] + [255] * (len(b) - 1)) for p, b in payloads.items()}
+                    payloads[127751] = bytes.fromhex('0700ffffffff7fff')
+                    payloads[127506] = bytes.fromhex('070000ffffffffffffffff')
+                    payloads[127493] = bytes.fromhex('00ffffffffffffff')
+                # Actisense complete-PGN ASCII, source 35, destination 255,
+                # priority 6. Existing OpenCPN network driver owns framing.
+                data = ''.join(f'A001001.732 23FF6 {p:05X} {b.hex().upper()}\r\n'
+                               for p, b in payloads.items())
+                peer.sendall(data.encode('ascii'))
+                counts['rmc'] += 1  # Legacy counter name: one synthetic batch.
                 continue
             now = datetime.datetime.now(datetime.timezone.utc)
             utc = now.strftime('%H%M%S')
@@ -105,6 +127,9 @@ report = {'authority': 'native Windows' if windows else 'Linux development',
           'fixture': 'Synthetic NMEA over loopback; no external devices or production profile',
           'expected': {'sog_kn': 6.3, 'cog_deg': 147, 'wind': 'unavailable', 'depth': 'unavailable'},
           'screenshots': [], 'visual_review': 'required'}
+if n2k:
+    report['expected'] = {'battery_voltage_v': 343, 'battery_current_source_a': -21,
+                          'soc_percent': 68, 'motor_rpm': 820, 'coolant_c': 62, 'gear': 'Forward'}
 if instruments:
     report['expected'] = {'selected_sog_kn': 6.3, 'selected_cog_deg': 147,
                           'depth_below_transducer_m': 8.4, 'heading_true_deg': 149,
@@ -185,6 +210,55 @@ try:
             ui.set_text_in_dialog(app.pid,'Edit waypoint','ALPHA TEST UI edited','ALPHA TEST edited')
             ui.click_text(app.pid,'Save')
             report['native_edit_confirmation']='Themed property sheet saves and refreshes; delete cancellation preserves mark'
+    elif n2k:
+        def n2k_snapshot(name):
+            record = read_json_snapshot(profile/'opennav-diagnostics.json')
+            (evidence/f'n2k-{name}.json').write_text(json.dumps(record, indent=2))
+            return record, {item['name']: item for item in record['data']}
+        phase[0] = 'rmc'
+        time.sleep(4)
+        record, values = n2k_snapshot('live')
+        expected = {'Battery voltage': 343, 'Battery current (source convention)': -21,
+                    'Battery SOC': 68, 'Motor speed': 820, 'Engine coolant temperature': 62}
+        for name, value in expected.items():
+            assert abs(values[name]['value'] - value) < .01, (name, values[name])
+            assert values[name]['quality'] == 'LIVE', values[name]
+            assert 'NMEA2000' in values[name]['source'], values[name]
+        assert 'value' not in values['Motor temperature']
+        assert 'value' not in values['Whole-pack net discharge'], 'Current sign must be configured'
+        assert 'value' not in values['Latitude'], 'Instrument source cannot fabricate GPS'
+        gear = next(v for v in record['text_data'] if v['name'] == 'Gear')
+        assert gear['value'] == 'Forward' and gear['quality'] == 'LIVE', gear
+        assert any(x.get('frequency_hz', 0) > 1 and int(x['observations']) > 3
+                   for x in record['source_candidates']), record.get('source_candidates')
+        if windows:
+            assert any(c == 'GPS unavailable / Marine input' for _, c in ui.children(handle))
+            ui.click_text(app.pid, 'Energy')
+        else:
+            subprocess.run(['xdotool', 'mousemove', '275', '764', 'click', '1'], env=env, check=True)
+        time.sleep(.5);capture('01-live-energy')
+        phase[0] = 'gga';time.sleep(6.2)
+        record, values = n2k_snapshot('stale')
+        for name in expected:
+            assert values[name]['quality'] == 'STALE', (name, values[name])
+        assert all('frequency_hz' not in v for v in record['source_candidates'])
+        gear = next(v for v in record['text_data'] if v['name'] == 'Gear')
+        assert gear['quality'] == 'STALE', gear
+        capture('02-stale-energy')
+        phase[0] = 'invalid';time.sleep(3)
+        record, values = n2k_snapshot('invalid')
+        for name in expected:
+            assert 'value' not in values[name], (name, values[name])
+        assert all(v['state'] == 'INVALID' and int(v['invalid_observations']) > 0
+                   for v in record['source_candidates']), record['source_candidates']
+        assert 'value' not in next(v for v in record['text_data'] if v['name'] == 'Gear')
+        capture('03-invalid-energy')
+        report['checks'] = ['Actual OpenCPN TCP N2K driver -> NavMsgBus -> MarineBridge -> owned snapshots',
+                            'HV voltage/current/SOC/RPM/coolant/gear byte fixtures and provenance',
+                            'No fabricated GPS, motor-temperature mapping or configured power',
+                            'Source cadence and invalid counts; dropout suppresses live rate',
+                            'N2K sensor loss/NA invalidates energy inputs and discrete gear']
+        assert not failures, failures
     elif instruments:
         def snapshot(name):
             record=read_json_snapshot(profile/'opennav-diagnostics.json')

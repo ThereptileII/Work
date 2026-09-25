@@ -1,5 +1,6 @@
 #pragma once
 #include "vessel/VesselState.h"
+#include <cstdint>
 #include <map>
 #include <vector>
 
@@ -33,6 +34,8 @@ enum class Quantity {
   FreshWater,
   Fuel,
   Waste,
+  Gear,
+  OtherTank,
   Count
 };
 struct QuantityInfo {
@@ -76,6 +79,9 @@ struct SourceHealth {
   Sample sample;
   bool selected = false;
   unsigned priority = 0;
+  std::optional<double> frequency_hz;
+  std::uint64_t observations = 0;
+  std::uint64_t invalid_observations = 0;
 };
 
 // Application-thread reducer, with owned values only. Reads never mutate the
@@ -91,7 +97,13 @@ public:
   void Clear();
 
 private:
+  struct Statistics {
+    Time last{};
+    std::optional<double> interval_seconds;
+    std::uint64_t observations = 0, invalid = 0;
+  };
   std::map<Quantity, std::map<std::string, SensorObservation>> sources_;
+  std::map<Quantity, std::map<std::string, Statistics>> statistics_;
   std::map<Quantity, SourcePolicy> policies_;
 };
 

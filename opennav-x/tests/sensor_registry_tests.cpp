@@ -1,4 +1,5 @@
 #include "vessel/SensorRegistry.h"
+#include <cmath>
 #include <iostream>
 #include <limits>
 #include <stdexcept>
@@ -147,6 +148,51 @@ void TestBattery() {
   Check(!s.battery.net_discharge_kw.value,
         "Overflow withheld even without decoder domain guard");
 }
+void TestHealth() {
+  SensorRegistry r;
+  r.Observe(Depth("bus/depth", 8, t), t);
+  Check(!r.Health(t).front().frequency_hz,
+        "One reading cannot imply frequency");
+  for (int i = 1; i <= 10; ++i)
+    r.Observe(Depth("bus/depth", 8 + i * .01, t + i * 200ms), t + i * 200ms);
+  const auto h = r.Health(t + 2s).front();
+  Check(h.observations == 11 && h.invalid_observations == 0 && h.frequency_hz &&
+            std::abs(*h.frequency_hz - 5) < .00001,
+        "Observed 5 Hz source cadence");
+  r.Observe(Depth("bus/depth", 9, t + 2s), t + 2s);
+  r.Observe(Depth("bus/depth", 9, t + 1s), t + 2s);
+  r.Observe(Depth("bus/depth", 9, t + 3s), t + 2s);
+  Check(r.Health(t + 2s).front().observations == 11,
+        "Duplicates and rejected timestamps cannot inflate receipt count");
+  Check(r.Health(t + 3s).front().frequency_hz == 1,
+        "Frequency decays when input stops");
+  Check(!r.Health(t + 7s).front().frequency_hz,
+        "Stale source has no live-looking rate");
+  r.Observe(Depth("bus/depth", -1, t + 8s), t + 8s);
+  const auto invalid = r.Health(t + 8s).front();
+  Check(invalid.invalid_observations == 1 && !invalid.sample.value,
+        "Received invalid observation is visible separately from unavailable");
+  r.Clear();
+  r.Observe(Depth("bus/depth", 8, t + 9s), t + 9s);
+  Check(r.Health(t + 9s).front().observations == 1 &&
+            !r.Health(t + 9s).front().frequency_hz,
+        "Clearing mapping resets cadence and counters");
+  SensorObservation gear{Quantity::Gear,
+                         "engine/gear",
+                         {0, "N2K transmission", t, Validity::Measured},
+                         10};
+  r.Observe(gear, t + 9s);
+  auto state = r.Merge({}, t);
+  Check(state.propulsion.gear.value == "Forward", "Zero is valid forward gear");
+  Check(AssessText(r.Merge({}, t + 6s).propulsion.gear, t + 6s).quality ==
+            Quality::Stale,
+        "Gear text retains numeric observation age");
+  gear.sample.value = .5;
+  gear.sample.observed_at = t + 1s;
+  Check(r.Observe(gear, t + 9s) == Admission::InvalidValue &&
+            !r.Merge({}, t + 9s).propulsion.gear.value,
+        "Fractional or unknown gear must not select Forward");
+}
 int main(int argc, char **argv) {
   try {
     Check(argc == 2, "Choose test group");
@@ -155,6 +201,8 @@ int main(int argc, char **argv) {
       TestSelection();
     else if (group == "validity")
       TestValidity();
+    else if (group == "health")
+      TestHealth();
     else if (group == "battery")
       TestBattery();
     else

@@ -520,6 +520,12 @@ wxString Shell::InputSummary() const {
     current = current || assessment.quality == vessel::Quality::Live ||
               assessment.quality == vessel::Quality::Aging;
   }
+  if (!current) {
+    const auto input = vessel::AssessText(state_.connectivity.status,
+                                          vessel::Clock::now());
+    if (input.quality == vessel::Quality::Live || input.quality == vessel::Quality::Aging)
+      return "GPS unavailable / Marine input";
+  }
   return current   ? "OpenCPN navigation"
          : present ? "Navigation stale"
                    : "No vessel input";

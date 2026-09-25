@@ -358,3 +358,151 @@ TEST(OpenNavMarine, PersistedPropulsionMappingsPreserveAgeAndDomain) {
                                          wall, settings.signal_k_mappings));
   EXPECT_FALSE(state.propulsion.electrical_power_kw.value);
 }
+
+namespace {
+tN2kMsg Wire(unsigned pgn, std::initializer_list<unsigned char> bytes) {
+  tN2kMsg m;
+  m.SetPGN(pgn);
+  m.DataLen = static_cast<int>(bytes.size());
+  std::copy(bytes.begin(), bytes.end(), m.Data);
+  return m;
+}
+} // namespace
+TEST(OpenNavMarine, DcWideRangeVoltageCurrentFromBoatWire) {
+  // Independent byte fixture from boat firmware's n2kSend127751: 343.0 V,
+  // -21.00 A (positive charging convention), connection 0. No Leaf frames.
+  auto m = Wire(127751, {7, 0, 0x66, 0x0d, 0xcc, 0xf7, 0xff, 0xff});
+  auto s = State(DecodeN2kInstruments(m.PGN, Envelope(m), "boat", epoch));
+  ASSERT_EQ(s.battery.voltage_v.value, 343);
+  ASSERT_EQ(s.battery.current_native_a.value, -21);
+  EXPECT_EQ(s.battery.voltage_v.device_id,
+            s.battery.current_native_a.device_id);
+  NormalizeBatteryPower(s, s.battery.voltage_v.device_id,
+                        CurrentConvention::PositiveCharge, epoch);
+  ASSERT_TRUE(s.battery.net_discharge_kw.value);
+  EXPECT_NEAR(*s.battery.net_discharge_kw.value, 7.203, .000001);
+  EXPECT_EQ(s.battery.net_discharge_kw.validity, Validity::Estimated);
+  EXPECT_EQ(Assess(s.battery.net_discharge_kw, epoch + 5s).quality,
+            Quality::Stale);
+}
+TEST(OpenNavMarine, DcWideRangeSentinelsAndUnsignedVoltage) {
+  for (unsigned raw : {0x7ffffdu, 0x7ffffeu, 0x7fffffu, 0x800000u}) {
+    auto m = Wire(127751, {0, 0, 0xff, 0xff, static_cast<unsigned char>(raw),
+                           static_cast<unsigned char>(raw >> 8),
+                           static_cast<unsigned char>(raw >> 16), 0xff});
+    const auto s =
+        State(DecodeN2kInstruments(m.PGN, Envelope(m), "boat", epoch));
+    EXPECT_FALSE(s.battery.voltage_v.value);
+    EXPECT_FALSE(s.battery.current_native_a.value);
+  }
+  // Boat's older signed-NA 0x7fff exceeds the accepted battery domain and is
+  // invalid, not a 3276.7 V valid measurement. Standard voltage is unsigned.
+  auto m = Wire(127751, {0, 0, 0xff, 0x7f, 0, 0, 0, 0xff});
+  auto s = State(DecodeN2kInstruments(m.PGN, Envelope(m), "boat", epoch));
+  EXPECT_FALSE(s.battery.voltage_v.value);
+  EXPECT_EQ(s.battery.current_native_a.value, 0);
+  m.Data[1] = 255;
+  EXPECT_TRUE(DecodeN2kInstruments(m.PGN, Envelope(m), "boat", epoch).empty());
+}
+TEST(OpenNavMarine, DcWideRangePrecedenceKeepsEpochCoherent) {
+  SensorRegistry r;
+  auto wide = Wire(127751, {7, 0, 0x66, 0x0d, 0xcc, 0xf7, 0xff, 0xff});
+  tN2kMsg narrow;
+  SetN2kPGN127508(narrow, 0, N2kDoubleNA, -20);
+  for (const auto &m : {wide, narrow})
+    for (auto o : DecodeN2kInstruments(m.PGN, Envelope(m), "boat", epoch))
+      r.Observe(o, epoch);
+  auto s = r.Merge({}, epoch);
+  EXPECT_EQ(s.battery.current_native_a.value, -21);
+  NormalizeBatteryPower(s, s.battery.voltage_v.device_id,
+                        CurrentConvention::PositiveCharge, epoch);
+  EXPECT_TRUE(s.battery.net_discharge_kw.value);
+  // New narrow current must not mask the coherent 751 pair while fresh.
+  for (auto o :
+       DecodeN2kInstruments(narrow.PGN, Envelope(narrow), "boat", epoch + 1s))
+    r.Observe(o, epoch + 1s);
+  s = r.Merge({}, epoch + 1s);
+  EXPECT_EQ(s.battery.current_native_a.observed_at, epoch);
+  s = r.Merge({}, epoch + 5s);
+  NormalizeBatteryPower(s, s.battery.voltage_v.device_id,
+                        CurrentConvention::PositiveCharge, epoch + 5s);
+  EXPECT_FALSE(s.battery.net_discharge_kw.value);
+}
+TEST(OpenNavMarine, EngineTemperaturePreservesFieldMeaningAndLength) {
+  tN2kMsg m;
+  m.SetPGN(127489);
+  m.DataLen = 26;
+  std::fill(m.Data, m.Data + m.DataLen, 0xff);
+  m.Data[0] = 2;
+  // 62 C = 335.15 K = 33515 at the inspected pinned coolant offset.
+  m.Data[5] = 0xeb;
+  m.Data[6] = 0x82;
+  auto s = State(DecodeN2kInstruments(m.PGN, Envelope(m), "boat", epoch));
+  ASSERT_TRUE(s.propulsion.coolant_temperature_c.value);
+  EXPECT_NEAR(*s.propulsion.coolant_temperature_c.value, 62, .0001);
+  EXPECT_FALSE(s.propulsion.motor_temperature_c.value);
+  for (unsigned raw : {0xfffd, 0xfffe, 0xffff}) {
+    m.Data[5] = static_cast<unsigned char>(raw);
+    m.Data[6] = static_cast<unsigned char>(raw >> 8);
+    s = State(DecodeN2kInstruments(m.PGN, Envelope(m), "boat", epoch));
+    EXPECT_FALSE(s.propulsion.coolant_temperature_c.value);
+  }
+  m.DataLen = 25;
+  EXPECT_TRUE(DecodeN2kInstruments(m.PGN, Envelope(m), "boat", epoch).empty());
+}
+TEST(OpenNavMarine, TransmissionGearUsesPinnedDecoder) {
+  for (int code = 0; code != 4; ++code) {
+    tN2kMsg m;
+    SetN2kPGN127493(m, 2, static_cast<tN2kTransmissionGear>(code), N2kDoubleNA,
+                    N2kDoubleNA, 255);
+    const auto s =
+        State(DecodeN2kInstruments(m.PGN, Envelope(m), "boat", epoch));
+    if (code < 3) {
+      EXPECT_EQ(s.propulsion.gear_code.value, code);
+      EXPECT_TRUE(s.propulsion.gear.value);
+      EXPECT_EQ(s.propulsion.gear.observed_at, epoch);
+    } else
+      EXPECT_FALSE(s.propulsion.gear.value);
+  }
+}
+TEST(OpenNavMarine, BetaPgnTruncationAndReservedIdentity) {
+  for (const auto pgn : {127489u, 127493u, 127751u}) {
+    tN2kMsg m;
+    m.SetPGN(pgn);
+    m.DataLen = pgn == 127489 ? 26 : 8;
+    std::fill(m.Data, m.Data + m.DataLen, 0);
+    const auto wire = Envelope(m);
+    for (std::size_t length = 0; length < wire.size(); ++length)
+      EXPECT_TRUE(DecodeN2kInstruments(
+                      pgn, {wire.begin(), wire.begin() + length}, "boat", epoch)
+                      .empty());
+    auto bad = wire;
+    bad[7] = 254;
+    EXPECT_TRUE(DecodeN2kInstruments(pgn, bad, "boat", epoch).empty());
+  }
+}
+TEST(OpenNavMarine, ErrorCodesCannotBecomePlausibleMeasurements) {
+  tN2kMsg m;
+  SetN2kPGN127488(m, 0, 820, N2kDoubleNA, N2kInt8NA);
+  m.Data[1] = 0xfe;
+  m.Data[2] = 0xff;
+  EXPECT_FALSE(State(DecodeN2kInstruments(m.PGN, Envelope(m), "test", epoch))
+                   .propulsion.motor_rpm.value);
+  SetN2kPGN130306(m, 1, 5, DegToRad(70), N2kWind_Apparent);
+  m.Data[3] = 0xfe;
+  m.Data[4] = 0xff;
+  EXPECT_FALSE(State(DecodeN2kInstruments(m.PGN, Envelope(m), "test", epoch))
+                   .wind.apparent_angle_deg.value);
+  SetN2kPGN127508(m, 0, 12, 20);
+  m.Data[3] = 0xfe;
+  m.Data[4] = 0x7f;
+  EXPECT_FALSE(State(DecodeN2kInstruments(m.PGN, Envelope(m), "test", epoch))
+                   .battery.current_native_a.value);
+  SetN2kPGN127250(m, 1, DegToRad(70), N2kDoubleNA, DegToRad(4), N2khr_magnetic);
+  m.Data[1] = 0xfe;
+  m.Data[2] = 0xff;
+  EXPECT_FALSE(State(DecodeN2kInstruments(m.PGN, Envelope(m), "test", epoch))
+                   .navigation.heading_true_deg.value);
+  SetN2kPGN127505(m, 0, N2kft_Error, 70, 100);
+  EXPECT_TRUE(DecodeN2kInstruments(m.PGN, Envelope(m), "test", epoch).empty());
+}

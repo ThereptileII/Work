@@ -1,4 +1,5 @@
 #include "vessel/SensorRegistry.h"
+#include <algorithm>
 #include <cmath>
 #include <limits>
 #include <stdexcept>
@@ -48,7 +49,11 @@ namespace opennav::vessel {
   X(FreshWater, tanks.fresh_water_percent, "fresh_water", "Fresh water tank",  \
     "%", 0, 100)                                                               \
   X(Fuel, tanks.fuel_percent, "fuel", "Fuel tank", "%", 0, 100)                \
-  X(Waste, tanks.waste_percent, "waste", "Waste tank", "%", 0, 100)
+  X(Waste, tanks.waste_percent, "waste", "Waste tank", "%", 0, 100)            \
+  X(Gear, propulsion.gear_code, "gear", "Transmission gear",                   \
+    "0 forward / 1 neutral / 2 reverse", 0, 2)                                 \
+  X(OtherTank, tanks.other_percent, "other_tank", "Other fluid tank", "%", 0,  \
+    100)
 
 const std::vector<QuantityInfo> &Quantities() {
   static const std::vector<QuantityInfo> values = {
@@ -123,13 +128,33 @@ Admission SensorRegistry::Observe(SensorObservation o, Time now) {
                      *o.sample.value <= info.maximum &&
                      (o.sample.validity == Validity::Measured ||
                       o.sample.validity == Validity::Estimated ||
-                      o.sample.validity == Validity::Uncertain);
+                      o.sample.validity == Validity::Uncertain) &&
+                     (o.quantity != Quantity::Gear ||
+                      std::floor(*o.sample.value) == *o.sample.value);
   if (!valid) {
     o.sample.value.reset();
     o.sample.validity = Validity::Invalid;
   }
   if (o.quantity == Quantity::Heading && o.sample.value == 360)
     o.sample.value = 0;
+  auto &stats = statistics_[o.quantity][o.source_id];
+  // Same-epoch duplicates cannot inflate rate. Invalid observations still
+  // count as received input, but never count as a valid sensor value.
+  if (!stats.observations || o.sample.observed_at > stats.last) {
+    if (stats.observations) {
+      const double dt =
+          std::chrono::duration<double>(o.sample.observed_at - stats.last)
+              .count();
+      stats.interval_seconds = stats.interval_seconds
+                                   ? .75 * *stats.interval_seconds + .25 * dt
+                                   : dt;
+    }
+    stats.last = o.sample.observed_at;
+    if (stats.observations != std::numeric_limits<std::uint64_t>::max())
+      ++stats.observations;
+    if (!valid && stats.invalid != std::numeric_limits<std::uint64_t>::max())
+      ++stats.invalid;
+  }
   candidates[o.source_id] = std::move(o);
   return valid ? Admission::Accepted : Admission::InvalidValue;
 }
@@ -175,6 +200,17 @@ SourceSelection SensorRegistry::Select(Quantity q, Time now) const {
 VesselState SensorRegistry::Merge(VesselState s, Time now) const {
   for (const auto &q : Quantities())
     Field(s, q.quantity) = Select(q.quantity, now).sample;
+  const auto &gear = s.propulsion.gear_code;
+  s.propulsion.gear = {{},
+                       gear.source,
+                       gear.observed_at,
+                       gear.validity,
+                       gear.freshness,
+                       gear.device_id};
+  if (gear.value && gear.validity != Validity::Invalid) {
+    static const char *names[] = {"Forward", "Neutral", "Reverse"};
+    s.propulsion.gear.value = names[static_cast<unsigned>(*gear.value)];
+  }
   return s;
 }
 std::vector<SourceHealth> SensorRegistry::Health(Time now) const {
@@ -187,11 +223,28 @@ std::vector<SourceHealth> SensorRegistry::Health(Time now) const {
       result.push_back({group.first, entry.first, sample,
                         selected.selected_source == entry.first,
                         entry.second.priority});
+      const auto &stats = statistics_.at(group.first).at(entry.first);
+      auto &health = result.back();
+      health.observations = stats.observations;
+      health.invalid_observations = stats.invalid;
+      const auto quality = Assess(sample, now).quality;
+      if (stats.interval_seconds && *stats.interval_seconds > 0 &&
+          now >= stats.last &&
+          now - stats.last < sample.freshness.stale_after &&
+          quality != Quality::Stale) {
+        // Rate decays during a dropout; never retain a live-looking rate.
+        const auto elapsed =
+            std::chrono::duration<double>(now - stats.last).count();
+        health.frequency_hz = 1.0 / std::max(*stats.interval_seconds, elapsed);
+      }
     }
   }
   return result;
 }
-void SensorRegistry::Clear() { sources_.clear(); }
+void SensorRegistry::Clear() {
+  sources_.clear();
+  statistics_.clear();
+}
 
 void NormalizeBatteryPower(VesselState &s, const std::string &device,
                            CurrentConvention convention, Time now) {

@@ -154,6 +154,15 @@ void WritePreviewDiagnostics(const std::string &path,
     v["device_id"] = wxString::FromUTF8(source.sample.device_id);
     v["selected"] = source.selected;
     v["priority"] = static_cast<int>(source.priority);
+    v["unit"] = wxString::FromUTF8(vessel::Describe(source.quantity).unit);
+    v["observed_steady_ms"] = wxString::FromUTF8(std::to_string(
+        std::chrono::duration_cast<vessel::Duration>(source.sample.observed_at.time_since_epoch()).count()));
+    v["observations"] = wxString::FromUTF8(std::to_string(source.observations));
+    v["invalid_observations"] = wxString::FromUTF8(std::to_string(source.invalid_observations));
+    if (source.frequency_hz)
+      v["frequency_hz"] = *source.frequency_hz;
+    v["state"] = source.sample.validity == vessel::Validity::Invalid
+        ? wxString("INVALID") : wxString::FromUTF8(vessel::QualityName(a.quality));
     v["quality"] = wxString::FromUTF8(vessel::QualityName(a.quality));
     v["validity"] =
         wxString::FromUTF8(vessel::ValidityName(source.sample.validity));
@@ -161,9 +170,10 @@ void WritePreviewDiagnostics(const std::string &path,
         static_cast<int>(source.sample.freshness.aging_after.count());
     v["stale_after_ms"] =
         static_cast<int>(source.sample.freshness.stale_after.count());
-    if (a.age)
+    if (now >= source.sample.observed_at)
       v["age_ms"] =
-          static_cast<int>(std::min<long long>(a.age->count(), 2147483647));
+          static_cast<int>(std::min<long long>(std::chrono::duration_cast<vessel::Duration>(
+              now - source.sample.observed_at).count(), 2147483647));
     if (a.value)
       v["value"] = *a.value;
     auto policy = settings.sources.find(source.quantity);
