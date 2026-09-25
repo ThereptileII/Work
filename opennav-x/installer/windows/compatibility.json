@@ -1,4 +1,16 @@
 {
   "openNavVersion": "0.2.0-alpha1",
-  "supportedOpenCpn": []
+  "supportedOpenCpn": [
+    {
+      "version": "5.12.4",
+      "arch": "x86",
+      "executableSha256": "7c6547562cca7954671eaab72833ca9d788710fd9808b6a699b6dc823852ae0c",
+      "upstreamCommit": "37fd0cddb7334fe489e9f18aa163977a9c5c84f7",
+      "integrationPackage": "OpenNavX-Alpha1-Setup.exe",
+      "qualificationCommit": "7bc36e426a55926045ea1aece0ebe96ef9417863",
+      "qualificationRun": "https://github.com/ThereptileII/Work/actions/runs/36088505518",
+      "qualificationEvidence": "docs/evidence/alpha-installer-7bc36e4-qualification.json",
+      "stockSetupSha256": "e949f55de57611afe2fc0dad5a8ac33795c46ba488cb40ca07b65f639a07b8aa"
+    }
+  ]
 }

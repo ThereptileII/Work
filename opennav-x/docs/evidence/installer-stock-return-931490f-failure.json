@@ -136,6 +136,31 @@
       "file": "installer-failed-1.png",
       "sha256": "f6c7e6508ceadff03409c17fc7440a7cd445935e7025587132f05cb4b6220dae",
       "review": "Actual native stock safety notice with visible Agree and Cancel; not an application crash or chart acceptance."
+    },
+    {
+      "file": "installer-wizard-installed.png",
+      "sha256": "893ed5bf99fdd0c4409a107e61db575552bdb3ee377da9cd481e231c03a82880",
+      "review": "Actual native Setup completion page with Finish and optional launch."
+    },
+    {
+      "file": "installer-00-clean-candidate.png",
+      "sha256": "0c06b35689d0ff8acc0384f5c1c3ebceef3c91808f1cc8cd0f29d354bb00ea05",
+      "review": "Installed XNav displays detailed coastline and dominant chart. Unavailable navigation inputs remain unavailable."
+    },
+    {
+      "file": "installer-02-legacy.png",
+      "sha256": "fd300779172c5aced0ac913738d341dc2115ecc57099b7b80e8803191e2f0aca",
+      "review": "Installed Legacy retains stock menus, toolbar and detailed coastline."
+    },
+    {
+      "file": "installer-02-safe.png",
+      "sha256": "6d3c25abbf64818ecbca24e339beb13babe55859362542a050183ef50013890f",
+      "review": "Installed Safe retains detailed coastline and safe-mode title."
+    },
+    {
+      "file": "installer-04-returned-xnav.png",
+      "sha256": "462f1cb2cae9def9aaf6c11e350dba35c5e4d3243166815b751e971f762045f1",
+      "review": "Controlled installed Legacy to XNav return retains detailed coastline; no blank or all-water acceptance."
     }
   ],
   "acceptance": "Installer still gated until restored-stock chart/data checks pass; allowlist remains empty."

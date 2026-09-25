@@ -1,4 +1,4 @@
-# Alpha installer transaction contract (candidate; native acceptance pending)
+# Alpha installer transaction contract
 
 The NSIS setup runs as the current user. Windows PowerShell 5.1 implements the
 transaction engine. The installer is deliberately side-by-side: the original
@@ -8,10 +8,11 @@ marker is excluded. No profile import/copy is performed by installation.
 
 Before installation mutations, preflight checks the embedded manifest hash,
 payload hash, original executable SHA-256, PE i386 architecture and 5.12.4 file
-version. Registry locations only supply discovery hints. The public allowlist
-remains empty during qualification. A clearly marked CI-only candidate manifest
-uses the inspected official binary for disposable lifecycle tests; it does not
-establish release support or permit arbitrary version-string matching.
+version. Registry locations only supply discovery hints. The public allowlist contains only the stock binary qualified by
+[the complete native lifecycle](evidence/alpha-installer-7bc36e4-qualification.json).
+Before qualification, a clearly marked CI-only candidate manifest enabled
+disposable tests; it did not establish release support. Version strings alone
+never authorize installation.
 
 `%LOCALAPPDATA%/OpenNavXAlpha1` contains an ownership marker, atomic state pointer,
 transaction journal, immutable application generations and bounded per-action

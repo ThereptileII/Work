@@ -1,8 +1,9 @@
 # OpenNav X status — 2026-09-25
 
-**Alpha 1 (`0.2.0-alpha1`) is implemented and undergoing native qualification.
-It is not released or approved for navigation.** The final installer/portable
-artifact must not be published until the remaining gates below pass together.
+**Alpha 1 (`0.2.0-alpha1`) has passed native installer qualification.
+The final manifest-bearing download is undergoing release validation.** It is
+not approved for navigation. The final installer/portable artifact must pass
+the same-commit gates and download verification below.
 The user accepted the Developer Preview direction and authorized the complete
 [Alpha stage](alpha1-plan.md), including the Alpha installer.
 
@@ -42,7 +43,7 @@ ambiguous, edited or transitional state never becomes a valid zero arrival.
 | Autopilot/radar | Manual pilot interface, explicit DEMO simulator, capability/status/feedback/timeout logging, global disable. No live output adapter or SmartNav steering path. Radar capabilities/status abstraction; live radar unavailable. |
 | Settings/diagnostics | Shared-profile validated settings, source policies, empirical curves, explicit propulsion mappings, display selection and advanced OpenCPN access; build, mode, age, provenance, model and plugin/chart diagnostics. |
 | Recovery | Two unfinished XNav starts select Safe before optional modules; retry evidence retained. Deferred-notice repair passes three native recovery cycles; see evidence below. |
-| Distribution | Portable isolation and Alpha labels/source/license packaging; native NSIS per-user side-by-side setup, immutable generations, repair/update/rollback/uninstall and fault-recovery engine implemented. Full lifecycle qualification remains open. |
+| Distribution | Portable isolation and Alpha labels/source/license packaging; native NSIS per-user side-by-side setup, immutable generations, repair/update/rollback/uninstall and fault-recovery engine implemented. Full native lifecycle qualification passed; final release artifact validation remains open. |
 
 Contracts: [sources](vessel-source-contract.md), [marine input](marine-input-contract.md),
 [energy](energy-model.md), [SmartNav](smartnav-alpha-contract.md),
@@ -91,49 +92,36 @@ postconditions. Its narrowly observed post-completion exit 1223 is documented;
 Alpha Setup and maintenance still require exit zero.
 [Prerequisite gate](evidence/installer-stock-8ae303c-gate.json).
 
-The actual Alpha preflight, registry discovery and unknown-hash/ownership refusal
-pass. Full installation remains under qualification. Inspection reproduced
-rejection of the bundled `ca@valencia` locale path, now corrected without
-weakening traversal/reparse protections. At `2803773`, **28 actual filesystem
-and loader-wrapper assertions pass in each native PowerShell 5.1 host (x86 and
-x64)**. The loader fixture is explicitly a fast wrapper test; it does not replace
-real installed OpenCPN acceptance.
-[Payload-path reproduction](evidence/installer-locale-fe37250-reproduction.json),
-[fast native gate](evidence/installer-filesystem-2803773-gate.json).
-At `2803773`, clean native wizard installation, installed coastline launch and
-first-install rollback now pass. The later launch exposes a persisted tide-data
-path into the deleted generation. Installed resource defaults now resolve to the
-verified original stock resources, preserving all custom selections. The new
-contract passes 30 portable suites on Linux and native MSVC. The dedicated
-post-locale hook also passes actual Linux XNav/Legacy/Safe harmonic loading with
-Unicode paths, removed generations and a retained custom source list. The full
-native lifecycle qualification remains pending. Its `264b5a1` check compared
-the long Windows path with a short-name alias; the replacement requires
-filesystem identity rather than spelling equality.
-[Alias evidence](evidence/installer-path-alias-264b5a1-failure.json).
-[Resource lifetime failure and repair](evidence/installer-resources-2803773-failure.json).
-At `931490f`, install, update, repair, rollback, both interrupted-transaction
-recoveries, diagnostics and conventional uninstall pass with stock/profile
-preservation. The final untouched-stock launch awaits acknowledgement of the
-normal upstream version-change safety notice and its chart/data checks.
-[Stock-return evidence](evidence/installer-stock-return-931490f-failure.json).
-The complete lifecycle, exact final artifact and public allowlist remain gated.
+The complete native installer lifecycle now passes at
+`7bc36e426a55926045ea1aece0ebe96ef9417863`,
+[run 36088505518](https://github.com/ThereptileII/Work/actions/runs/36088505518),
+with **all nine jobs successful**. This covers real wizard install/cancel,
+registry discovery, unsupported-hash/ownership refusal, distinct prior-version
+update, owned-file repair, first-install and prior-generation rollback, both
+injected transaction failures, diagnostics, conventional uninstall and launch
+of untouched official OpenCPN with coastline and shared fixtures preserved.
+Custom Unicode harmonic sources survive generation changes and uninstall.
+Thirty portable suites pass on each platform; 28 native filesystem/loader-wrapper
+checks pass in each PowerShell 5.1 host. The actual application lifecycle remains
+separate from the helper fixtures.
 
-## Remaining Alpha release gates
+The downloaded native evidence archive was hash-verified. Ten native images were
+reviewed, including restored stock, installed mode return, real ENC chart/edited
+route return, plugin manager, Setup and 125/150% layout. The public compatibility
+manifest now admits **only the tested stock executable SHA-256**:
+`7c6547562cca7954671eaab72833ca9d788710fd9808b6a699b6dc823852ae0c`.
+[Qualification and review](evidence/alpha-installer-7bc36e4-qualification.json).
+Earlier failure records remain under `docs/evidence/`; none is release acceptance.
 
-1. Retain the repaired native recovery and accepted plugin-manager
-   paint/click gates (including upstream Ok capitalization); retain
-   the passed chart-edit/switch/software-fallback and Linux OpenGL coverage.
-2. Complete actual official-stock installation plus Alpha install, prior-version
-   update, repair, rollback, interrupted transaction, uninstall and restored
-   stock launch with exact hashes and shared-profile fixtures unchanged.
-3. Review the exact candidate's native screens, 100/125/150% DPI and installer
-   screenshots; retain measurable chart content and plugin checks.
-4. Populate the compatibility allowlist only with the exact verified stock
-   executable after its native lifecycle passes. It is currently **empty**.
-5. Pass every Linux/native job on the final commit; download and verify the
-   actual portable ZIP, Setup, source archive, guide and SHA256SUMS artifact.
-   No Alpha download has yet passed this acceptance gate.
+## Remaining Alpha delivery gates
+
+1. Build the manifest-bearing release commit on Linux and native Windows;
+   retain every existing functional, recovery, portable, DPI/chart/plugin and
+   installer lifecycle gate.
+2. Download the actual `OpenNavX-Alpha1-Windows` artifact and verify its portable
+   ZIP, Setup, source archive, guide and SHA256SUMS against the packaged commit.
+3. Review exact final native screenshots and record the accepted revision/run.
+   Candidate artifacts do not replace the final named download.
 
 The installer intentionally integrates **beside** the original OpenCPN instead
 of replacing its executable. Installed modes use the normal shared profile;

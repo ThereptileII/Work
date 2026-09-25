@@ -1,4 +1,4 @@
-# Alpha installer design (native lifecycle qualification pending)
+# Alpha installer design
 
 Alpha installs an exact-version-gated integration **beside** the stock OpenCPN
 application, under the current user's LocalAppData. It does not overwrite the
@@ -11,9 +11,9 @@ The stock installation is still mandatory. Preflight discovers its location,
 reads the PE architecture and version, and compares its executable SHA-256 to
 the compatibility manifest. Version strings and registry entries are hints,
 never authorization. Unsupported installations receive a clear refusal before
-any OpenNav install location, shortcut or profile is modified. Inspection of the
-5.12.4 stock release hash is not yet acceptance; the public allowlist stays empty
-until disposable native lifecycle tests pass.
+any OpenNav install location, shortcut or profile is modified. The 5.12.4 stock executable is now qualified by the complete disposable native
+lifecycle at `7bc36e426a55926045ea1aece0ebe96ef9417863`. Its exact hash is the
+only public allowlist entry; every release still runs the full lifecycle.
 
 The package uses a conventional Windows setup wizard and an independently
 exercisable transaction engine. Implemented invariants:
@@ -49,5 +49,8 @@ stock binary actually tested, its Win32 ABI, pinned upstream revision and the
 matching integration package. Native Setup and prior-version fixtures compile;
 PowerShell 5.1 filesystem contracts pass in 32/64-bit hosts. The exact official
 prerequisite now passes [native installation checks](evidence/installer-stock-8ae303c-gate.json).
-The full Alpha lifecycle and final download remain pending; the public allowlist
-stays empty until those gates pass.
+The full Alpha lifecycle has passed, including untouched stock launch after
+uninstall, preserved fixtures and custom harmonic sources. See
+[qualification evidence](evidence/alpha-installer-7bc36e4-qualification.json).
+The manifest-bearing release must additionally pass its own same-commit gates
+and download verification.

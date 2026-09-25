@@ -65,8 +65,12 @@ Confirm selection persists after a restart. Hardware brightness stays under
 Windows/display control. Check mouse and actual touch if your PC supports it.
 
 For real charts, exercise chart switching, zoom, pan and own-ship following with
-valid position input. Try both OpenGL and software rendering in Advanced
-Settings. Record GPU, driver, chart type and any rendering failure. A plain
+valid position input. The portable launchers force software rendering for a
+reliable starting point. To test your GPU, close OpenNav, open PowerShell in the
+portable folder and run `./app/opencpn.exe --portable --configdir "$PWD/profile" --xnav`
+without `--no_opengl`; enable OpenGL in Advanced / Legacy Settings. Use the
+normal launcher again to return to software rendering. Record GPU, driver,
+chart type and any rendering failure. A plain
 all-water image is not evidence that a known coastline/chart loaded correctly.
 
 ## 5. Routes, waypoints and AIS
@@ -143,7 +147,9 @@ Close all modes first. Open **Maintain OpenNav** in the Start-menu folder.
   your newer navigation data.
 - **Uninstall:** remove OpenNav registration and shortcuts. Then run the original
   OpenCPN shortcut and confirm charts, routes, tracks, waypoints, connections and
-  plugins. Original executable hashes must remain unchanged.
+  plugins. OpenCPN may show its normal safety notice again because the build
+  version changed; read it and choose Agree to continue. Original executable
+  hashes must remain unchanged.
 
 Alpha retains modified/custom files, unpublished staging and logs under
 `%LOCALAPPDATA%\OpenNavXAlpha1` after uninstall. Once you have verified original

@@ -41,11 +41,12 @@ platforms; all nine relevant native chart captures were reviewed. Increments
 The marine decoder/subscription increment passed both platform gates at
 `785aa45`. The integrated product screens, settings, adapters, recovery and
 installer engine are implemented and undergoing final native qualification.
-The current gates retain 90 Linux / 80 Windows integrated cases and 29 portable
+The current gates retain 90 Linux / 80 Windows integrated cases and 30 portable
 suites. Chart editing, actual ENC switching, software fallback and native
 100/125/150% DPI have passing candidate evidence. The official stock installer
 prerequisite and repeated native recovery are verified. The fully painted
-plugin-manager click/dismissal gate is accepted. The complete Alpha installer
-lifecycle and final same-commit artifact qualification remain required before
-publication. See [status](status.md)
+plugin-manager click/dismissal gate is accepted. The complete native installer lifecycle passed at `7bc36e4`, including
+restored official OpenCPN and preserved custom resources after uninstall. The
+exact tested stock hash is now allowlisted. Final manifest-bearing same-commit
+gates and artifact verification remain required before delivery. See [status](status.md)
 for exact revisions, failures, replacements and evidence links.

@@ -1,0 +1,54 @@
+{
+  "commit": "931490f4d3b434dcff98fd6f160fa54b44e3df58",
+  "run": "https://github.com/ThereptileII/Work/actions/runs/36086439616",
+  "artifact": 10844454273,
+  "artifactSha256": "70651f6544f40000946a54ecb5222e6e89e7df7653e8e3ee0e6ac4f4c698d878",
+  "scope": "Interim visual review only; failed lifecycle candidate is not accepted for release. Final packaged revision requires its own review.",
+  "images": [
+    {
+      "file": "alpha-instruments.png",
+      "sha256": "0534e947fe3819fbd964e63169a200eec18a86b9d7536d95bb19fa14be4060eb",
+      "review": "Large readable navigation/wind/depth tiles, labelled DEMO, vertical scrolling for additional instruments."
+    },
+    {
+      "file": "alpha-smartnav.png",
+      "sha256": "704e767aab1cbe739d981bad190023e87c2b85c8b843ab6a474158935e899f89",
+      "review": "Advisory turn values and future event list readable; no steering control in the advice view."
+    },
+    {
+      "file": "alpha-autopilot-confirmed.png",
+      "sha256": "8b56912f2b7f78452c32c984e51fb4210cf99f7c7a177ad153f23351b20d4fcf",
+      "review": "Explicit DEMO simulator, manual controls, matching-feedback confirmation and request log visible."
+    },
+    {
+      "file": "alpha-settings.png",
+      "sha256": "ea86ee4fffe500ca7c1f5ba1acf99fa745b83bd9168530b0b1ffa757b9e99cfa",
+      "review": "Consistent settings actions and advanced Legacy escape path visible."
+    },
+    {
+      "file": "objects-route-card.png",
+      "sha256": "69cfa41ae429b308fd122904b94839aa3b482c3ad772b8f99a4c18146e30cdea",
+      "review": "Actual copied upstream route with planned legs and guarded action entries."
+    },
+    {
+      "file": "objects-ais-card.png",
+      "sha256": "66a31d9e04cc165e41428793c9dc2fb3c45c1531c0ea2082c18f7faf34851f2d",
+      "review": "Upstream test AIS target with units and estimated relative CPA/TCPA values."
+    },
+    {
+      "file": "alpha-anchor.png",
+      "sha256": "e277adfacab466684b9cf052fed6a601a771428ed52adb247e674dfda9cde271",
+      "review": "DEMO anchor changes disabled; missing anchor remains unavailable."
+    },
+    {
+      "file": "dpi-150-sheet.png",
+      "sha256": "4af683ee6e47843a2a7574ede8c252ff3935757aa700e9a67101eaa6d296b42e",
+      "review": "Large readable inputs with scroll region and visible Save/Cancel footer."
+    },
+    {
+      "file": "dpi-150-energy.png",
+      "sha256": "b4174b998324a04a76e11b5bc56bd4839dd919185f724a9e331114433e468eb9",
+      "review": "Readable 150 percent battery/propulsion tiles; lower content intentionally scrolls rather than clipping controls."
+    }
+  ]
+}

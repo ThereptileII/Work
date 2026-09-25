@@ -1,0 +1,525 @@
+{
+  "commit": "7bc36e426a55926045ea1aece0ebe96ef9417863",
+  "run": "https://github.com/ThereptileII/Work/actions/runs/36088505518",
+  "scope": "Native stock compatibility qualification; final manifest-bearing release still requires all same-commit gates and downloaded artifact verification.",
+  "allJobs": "9 of 9 passed",
+  "linux": {
+    "integratedCases": 90,
+    "portableContractSuites": 30,
+    "restartRepetitions": 10,
+    "installedResourceRuntime": "XNav/Legacy/Safe actual harmonic loader with Unicode stock path, removed generations and custom subset passed",
+    "syntheticAndChartGates": "passed"
+  },
+  "windows": {
+    "integratedCases": 80,
+    "portableContractSuites": 30,
+    "restartRepetitions": 10,
+    "nativeRecoveryCycles": 3,
+    "powershell51ChecksPerHost": 28,
+    "powershellHostBits": [
+      32,
+      64
+    ]
+  },
+  "evidenceArtifact": {
+    "id": 10845741883,
+    "sha256": "af714a2db6acd465647a3354299aaa78d7ef66324d8cdc5d50e5be930ab1477a",
+    "downloadVerified": true
+  },
+  "installer": {
+    "status": "passed",
+    "checks": [
+      "Official supported OpenCPN installed and exact PE executable SHA-256 verified",
+      "Registry discovery handles the official build-suffixed key and verifies its exact hash without modification",
+      "Conventional wizard opens without command-line options; default Install and path input work; Cancel changes no installation",
+      "Unknown executable hash refused before creating install root or changing stock",
+      "Unknown installation ownership refused without adding logs or changing files",
+      "Actual Alpha wizard Install preflight, staging and Finish complete successfully without command-line options",
+      "Exact candidate clean install and first-install rollback preserve stock/profile; real coastline and candidate hash verified",
+      "Distinct compiled prior Alpha test version installs and opens real coastline with shared fixtures",
+      "Prior test version updates to the exact Alpha candidate executable; stock/profile unchanged",
+      "Installed XNav starts against normal wx profile; coastline and navigation fixtures preserved",
+      "Installed Legacy and Safe start with charts and shared navigation/config/plugin preferences",
+      "Installed XNav to Legacy to XNav controlled restart retains real coastline",
+      "Repair replaces corrupt owned resources in a new generation; original damaged backup and custom additions retained",
+      "Update preserves shared profile and user plugin additions; prior generation backed up",
+      "Rollback restores exact prior generation without restoring older navigation data",
+      "Interrupted update before atomic commit retains active app and recovers on rerun",
+      "Interrupted post-commit shortcut publication recovers from durable journal",
+      "Diagnostics verifies installed hashes without collecting navigation or raw sensor data",
+      "Conventional uninstaller removes verified owned app files; exact stock/profile unchanged; custom additions retained",
+      "Restored official OpenCPN safety notice acknowledged through its visible Agree button",
+      "Stock resource defaults survive every generation and uninstall; explicit custom tide selection is preserved",
+      "Original official OpenCPN still loads charts and shared navigation data after uninstall"
+    ],
+    "operations": [
+      {
+        "action": "Preflight",
+        "report": "installer-00-Preflight.json"
+      },
+      {
+        "action": "Install",
+        "report": "installer-01-Install.json"
+      },
+      {
+        "action": "Install",
+        "report": "installer-02-Install.json"
+      },
+      {
+        "action": "Rollback",
+        "report": "installer-03-Rollback.json"
+      },
+      {
+        "action": "Install",
+        "report": "installer-04-Install.json"
+      },
+      {
+        "action": "Update",
+        "report": "installer-05-Update.json"
+      },
+      {
+        "action": "Repair",
+        "report": "installer-06-Repair.json"
+      },
+      {
+        "action": "Update",
+        "report": "installer-07-Update.json"
+      },
+      {
+        "action": "Rollback",
+        "report": "installer-08-Rollback.json"
+      },
+      {
+        "action": "Update",
+        "report": "installer-09-Update.json"
+      },
+      {
+        "action": "Update",
+        "report": "installer-10-Update.json"
+      },
+      {
+        "action": "Update",
+        "report": "installer-11-Update.json"
+      },
+      {
+        "action": "Repair",
+        "report": "installer-12-Repair.json"
+      },
+      {
+        "action": "Diagnostics",
+        "report": "installer-13-Diagnostics.json"
+      },
+      {
+        "action": "Uninstall",
+        "report": "installer-14-Uninstall.json"
+      }
+    ],
+    "screenshots": [
+      "installer-wizard-welcome.png",
+      "installer-wizard-selection.png",
+      "installer-wizard-welcome.png",
+      "installer-wizard-selection.png",
+      "installer-wizard-installed.png",
+      "installer-00-clean-candidate.png",
+      "installer-00-prior-test-version.png",
+      "installer-01-xnav.png",
+      "installer-02-legacy.png",
+      "installer-02-safe.png",
+      "installer-03-before-switch.png",
+      "installer-04-returned-xnav.png",
+      "installer-05-restored-stock-welcome.png",
+      "installer-05-restored-stock.png"
+    ],
+    "authority": "native disposable Windows / PowerShell 5.1 / NSIS",
+    "display": {
+      "before": [
+        1280,
+        800,
+        32
+      ],
+      "after": [
+        1280,
+        800,
+        32
+      ]
+    },
+    "stock_sha256": "7c6547562cca7954671eaab72833ca9d788710fd9808b6a699b6dc823852ae0c",
+    "setup_sha256": "770fbcea4e376ec932639196ea757b010a84ed2af4bc62e8e9f8c4fd9cba78e3"
+  },
+  "portable": {
+    "result": "passed; screenshot review required"
+  },
+  "dpi": {
+    "result": "passed; native visual review required",
+    "scales": [
+      {
+        "percent": 100,
+        "GetDpiForWindow": 96,
+        "wxDpi": 96,
+        "buttons": {
+          "Navigation": [
+            112,
+            48
+          ],
+          "Route": [
+            88,
+            48
+          ],
+          "Energy": [
+            88,
+            48
+          ],
+          "Demo": [
+            88,
+            48
+          ],
+          "Menu": [
+            88,
+            48
+          ],
+          "System": [
+            112,
+            48
+          ],
+          "Light": [
+            72,
+            48
+          ],
+          "+": [
+            48,
+            48
+          ],
+          "\u2212": [
+            48,
+            48
+          ],
+          "GPS": [
+            48,
+            48
+          ]
+        },
+        "chart_rendering": [
+          {
+            "phase": "100% Day",
+            "reference_color_fractions": {
+              "aac3f0": 0.60568669527897,
+              "aaaf50": 0.39431330472103004
+            },
+            "coastline_visible": true
+          },
+          {
+            "phase": "100% Legacy",
+            "reference_color_fractions": {
+              "aac3f0": 0.5636623748211731,
+              "aaaf50": 0.4363376251788269
+            },
+            "coastline_visible": true
+          },
+          {
+            "phase": "100% returned XNav",
+            "reference_color_fractions": {
+              "aac3f0": 0.60568669527897,
+              "aaaf50": 0.39431330472103004
+            },
+            "coastline_visible": true
+          },
+          {
+            "phase": "100% Safe",
+            "reference_color_fractions": {
+              "aac3f0": 0.5636623748211731,
+              "aaaf50": 0.4363376251788269
+            },
+            "coastline_visible": true
+          },
+          {
+            "phase": "100% Safe to XNav",
+            "reference_color_fractions": {
+              "aac3f0": 0.60568669527897,
+              "aaaf50": 0.39431330472103004
+            },
+            "coastline_visible": true
+          }
+        ],
+        "touch": "Injected native down/up on Menu changed the page; physical touch remains untested"
+      },
+      {
+        "percent": 125,
+        "GetDpiForWindow": 120,
+        "wxDpi": 120,
+        "buttons": {
+          "Navigation": [
+            140,
+            60
+          ],
+          "Route": [
+            110,
+            60
+          ],
+          "Energy": [
+            110,
+            60
+          ],
+          "Demo": [
+            110,
+            60
+          ],
+          "Menu": [
+            110,
+            60
+          ],
+          "System": [
+            140,
+            60
+          ],
+          "Light": [
+            90,
+            60
+          ],
+          "+": [
+            60,
+            60
+          ],
+          "\u2212": [
+            60,
+            60
+          ],
+          "GPS": [
+            60,
+            60
+          ]
+        },
+        "chart_rendering": [
+          {
+            "phase": "125% Day",
+            "reference_color_fractions": {
+              "aac3f0": 0.613340486409156,
+              "aaaf50": 0.3858011444921316
+            },
+            "coastline_visible": true
+          },
+          {
+            "phase": "125% Legacy",
+            "reference_color_fractions": {
+              "aac3f0": 0.5629470672389127,
+              "aaaf50": 0.43705293276108725
+            },
+            "coastline_visible": true
+          },
+          {
+            "phase": "125% returned XNav",
+            "reference_color_fractions": {
+              "aac3f0": 0.613340486409156,
+              "aaaf50": 0.3858011444921316
+            },
+            "coastline_visible": true
+          },
+          {
+            "phase": "125% Safe",
+            "reference_color_fractions": {
+              "aac3f0": 0.5629470672389127,
+              "aaaf50": 0.43705293276108725
+            },
+            "coastline_visible": true
+          },
+          {
+            "phase": "125% Safe to XNav",
+            "reference_color_fractions": {
+              "aac3f0": 0.613340486409156,
+              "aaaf50": 0.3858011444921316
+            },
+            "coastline_visible": true
+          }
+        ],
+        "touch": "Injected native down/up on Menu changed the page; physical touch remains untested"
+      },
+      {
+        "percent": 150,
+        "GetDpiForWindow": 144,
+        "wxDpi": 144,
+        "buttons": {
+          "Navigation": [
+            168,
+            72
+          ],
+          "Route": [
+            132,
+            72
+          ],
+          "Energy": [
+            132,
+            72
+          ],
+          "Demo": [
+            132,
+            72
+          ],
+          "Menu": [
+            132,
+            72
+          ],
+          "System": [
+            168,
+            72
+          ],
+          "Light": [
+            108,
+            72
+          ],
+          "+": [
+            72,
+            72
+          ],
+          "\u2212": [
+            72,
+            72
+          ],
+          "GPS": [
+            72,
+            72
+          ]
+        },
+        "chart_rendering": [
+          {
+            "phase": "150% Day",
+            "reference_color_fractions": {
+              "aac3f0": 0.615379113018598,
+              "aaaf50": 0.3765736766809728
+            },
+            "coastline_visible": true
+          },
+          {
+            "phase": "150% Legacy",
+            "reference_color_fractions": {
+              "aac3f0": 0.5600500715307583,
+              "aaaf50": 0.43994992846924175
+            },
+            "coastline_visible": true
+          },
+          {
+            "phase": "150% returned XNav",
+            "reference_color_fractions": {
+              "aac3f0": 0.615379113018598,
+              "aaaf50": 0.3765736766809728
+            },
+            "coastline_visible": true
+          },
+          {
+            "phase": "150% Safe",
+            "reference_color_fractions": {
+              "aac3f0": 0.5600500715307583,
+              "aaaf50": 0.43994992846924175
+            },
+            "coastline_visible": true
+          },
+          {
+            "phase": "150% Safe to XNav",
+            "reference_color_fractions": {
+              "aac3f0": 0.615379113018598,
+              "aaaf50": 0.3765736766809728
+            },
+            "coastline_visible": true
+          }
+        ],
+        "touch": "Injected native down/up on Menu changed the page; physical touch remains untested"
+      }
+    ]
+  },
+  "charts": {
+    "result": "passed; native screenshot review and physical GPU gate remain separate",
+    "phases": [
+      {
+        "requestedRendering": "software",
+        "actualOpenGL": false,
+        "startupToEncSeconds": 6.063,
+        "performance": {
+          "idle_live_input_seconds": 10.0150000000001,
+          "cpu_percent_one_core": 1.2481278082875562,
+          "resident_bytes": 122937344,
+          "shell_update": {
+            "last_ms": 0.5644,
+            "ticks": "55",
+            "scope": "Shell update callback including diagnostics; excludes asynchronous chart painting",
+            "mean_ms": 3.533314545,
+            "timer_period_ms": 250,
+            "maximum_ms": 18.5125
+          },
+          "scope": "CI desktop / two loaded NOAA ENCs / 3 plugins / 3.3 Hz RMC; not target navigation PC"
+        },
+        "glStatus": null
+      },
+      {
+        "requestedRendering": "opengl",
+        "actualOpenGL": false,
+        "startupToEncSeconds": 5.047,
+        "performance": {
+          "idle_live_input_seconds": 10.0,
+          "cpu_percent_one_core": 0.9375,
+          "resident_bytes": 121729024,
+          "shell_update": {
+            "last_ms": 0.5852,
+            "ticks": "52",
+            "scope": "Shell update callback including diagnostics; excludes asynchronous chart painting",
+            "mean_ms": 3.645736538,
+            "timer_period_ms": 250,
+            "maximum_ms": 22.3084
+          },
+          "scope": "CI desktop / two loaded NOAA ENCs / 3 plugins / 3.3 Hz RMC; not target navigation PC"
+        },
+        "glStatus": "host rejected OpenGL; verified upstream software fallback; hardware GL gate remains open"
+      }
+    ]
+  },
+  "reviewedImages": [
+    {
+      "file": "installer-05-restored-stock-welcome.png",
+      "sha256": "9579869e6434c61675ba30d26f06aa3e9365bebe6475afd9ee7ae9893b8f27f1",
+      "review": "Official safety notice visible and then actually acknowledged by the test."
+    },
+    {
+      "file": "installer-05-restored-stock.png",
+      "sha256": "5ae6bbb9ad82930aaa60173fa28e10442d322243cd3a1effb58f5bbbee7014b7",
+      "review": "Untouched official OpenCPN 5.12.4-0 renders detailed coastline after Alpha uninstall."
+    },
+    {
+      "file": "installer-04-returned-xnav.png",
+      "sha256": "f5d1af1a48aefe941b7c3b697b0e669c8577149b5b33c9b9fce29d94d50a1557",
+      "review": "Installed Legacy to XNav controlled return retains detailed coastline and unavailable-data state."
+    },
+    {
+      "file": "chart-plugin-manager.png",
+      "sha256": "e12ede69d2fb409c5f5c86a574830e81927bf685c0965816ec2279d26cfbb95e",
+      "review": "Dashboard, GRIB and WMM enabled; all rows and Ok/Cancel/Apply fully painted; actual Cancel interaction passes."
+    },
+    {
+      "file": "installer-wizard-installed.png",
+      "sha256": "dc0fa712cf3221c99c54e877da7eee404d338f9589a79cea674b3b1590489345",
+      "review": "Actual Setup completion with Finish and optional launch."
+    },
+    {
+      "file": "dpi-125-01-navigation-day.png",
+      "sha256": "4c5ce7433397f454d96a57d085bf2f5be387609bc44382d1797bc8f36c437fd5",
+      "review": "1280x800 at 125 percent; dominant coastline chart, readable rail and reachable navigation controls."
+    },
+    {
+      "file": "dpi-150-energy.png",
+      "sha256": "407bff05b576edb39de797ecb70aedd9559390c61f575aa2762db2e505990866",
+      "review": "150 percent energy cards readable; lower content deliberately scrolls."
+    },
+    {
+      "file": "dpi-150-sheet.png",
+      "sha256": "4af683ee6e47843a2a7574ede8c252ff3935757aa700e9a67101eaa6d296b42e",
+      "review": "150 percent sheet scroll region retains reachable Save and Cancel controls."
+    },
+    {
+      "file": "chart-software-01-loaded.png",
+      "sha256": "554564a31bb8d7e56357f229439e62ff5d262209cba369cd95e614abfba00238",
+      "review": "Real NOAA ENC soundings, coastline, objects and ownship rendered."
+    },
+    {
+      "file": "chart-software-06-returned.png",
+      "sha256": "1bc29bc01c70df7de8cf6be350b72b7cb0909d08444ca65ce666f4315451c506",
+      "review": "Same ENC and edited three-point route remain after Legacy to XNav return."
+    }
+  ],
+  "physicalGates": "Physical marine input, live pilot output, radar, live ENC hazard provider, Windows GPU OpenGL, target PC/touch and at-sea acceptance remain open."
+}
