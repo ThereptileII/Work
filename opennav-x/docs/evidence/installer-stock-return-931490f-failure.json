@@ -1,0 +1,142 @@
+{
+  "commit": "931490f4d3b434dcff98fd6f160fa54b44e3df58",
+  "run": "https://github.com/ThereptileII/Work/actions/runs/36086439616",
+  "artifact": 10844698121,
+  "artifactSha256": "6fa98e646e1f578cb92a0561de098b5874173a3b8acd4a69672f7cef07e9f41f",
+  "result": {
+    "status": "failed",
+    "checks": [
+      "Official supported OpenCPN installed and exact PE executable SHA-256 verified",
+      "Registry discovery handles the official build-suffixed key and verifies its exact hash without modification",
+      "Conventional wizard opens without command-line options; default Install and path input work; Cancel changes no installation",
+      "Unknown executable hash refused before creating install root or changing stock",
+      "Unknown installation ownership refused without adding logs or changing files",
+      "Actual Alpha wizard Install preflight, staging and Finish complete successfully without command-line options",
+      "Exact candidate clean install and first-install rollback preserve stock/profile; real coastline and candidate hash verified",
+      "Distinct compiled prior Alpha test version installs and opens real coastline with shared fixtures",
+      "Prior test version updates to the exact Alpha candidate executable; stock/profile unchanged",
+      "Installed XNav starts against normal wx profile; coastline and navigation fixtures preserved",
+      "Installed Legacy and Safe start with charts and shared navigation/config/plugin preferences",
+      "Installed XNav to Legacy to XNav controlled restart retains real coastline",
+      "Repair replaces corrupt owned resources in a new generation; original damaged backup and custom additions retained",
+      "Update preserves shared profile and user plugin additions; prior generation backed up",
+      "Rollback restores exact prior generation without restoring older navigation data",
+      "Interrupted update before atomic commit retains active app and recovers on rerun",
+      "Interrupted post-commit shortcut publication recovers from durable journal",
+      "Diagnostics verifies installed hashes without collecting navigation or raw sensor data",
+      "Conventional uninstaller removes verified owned app files; exact stock/profile unchanged; custom additions retained"
+    ],
+    "operations": [
+      {
+        "action": "Preflight",
+        "report": "installer-00-Preflight.json"
+      },
+      {
+        "action": "Install",
+        "report": "installer-01-Install.json"
+      },
+      {
+        "action": "Install",
+        "report": "installer-02-Install.json"
+      },
+      {
+        "action": "Rollback",
+        "report": "installer-03-Rollback.json"
+      },
+      {
+        "action": "Install",
+        "report": "installer-04-Install.json"
+      },
+      {
+        "action": "Update",
+        "report": "installer-05-Update.json"
+      },
+      {
+        "action": "Repair",
+        "report": "installer-06-Repair.json"
+      },
+      {
+        "action": "Update",
+        "report": "installer-07-Update.json"
+      },
+      {
+        "action": "Rollback",
+        "report": "installer-08-Rollback.json"
+      },
+      {
+        "action": "Update",
+        "report": "installer-09-Update.json"
+      },
+      {
+        "action": "Update",
+        "report": "installer-10-Update.json"
+      },
+      {
+        "action": "Update",
+        "report": "installer-11-Update.json"
+      },
+      {
+        "action": "Repair",
+        "report": "installer-12-Repair.json"
+      },
+      {
+        "action": "Diagnostics",
+        "report": "installer-13-Diagnostics.json"
+      },
+      {
+        "action": "Uninstall",
+        "report": "installer-14-Uninstall.json"
+      }
+    ],
+    "screenshots": [
+      "installer-wizard-welcome.png",
+      "installer-wizard-selection.png",
+      "installer-wizard-welcome.png",
+      "installer-wizard-selection.png",
+      "installer-wizard-installed.png",
+      "installer-00-clean-candidate.png",
+      "installer-00-prior-test-version.png",
+      "installer-01-xnav.png",
+      "installer-02-legacy.png",
+      "installer-02-safe.png",
+      "installer-03-before-switch.png",
+      "installer-04-returned-xnav.png",
+      "installer-failed-1.png",
+      "installer-failed-2.png"
+    ],
+    "authority": "native disposable Windows / PowerShell 5.1 / NSIS",
+    "display": {
+      "before": [
+        1280,
+        800,
+        32
+      ],
+      "after": [
+        1280,
+        800,
+        32
+      ]
+    },
+    "error": "PermissionError(13, 'The process cannot access the file because it is being used by another process')",
+    "visible_windows": [
+      {
+        "pid": 5800,
+        "title": "Welcome to OpenCPN"
+      },
+      {
+        "pid": 5800,
+        "title": "OpenCPN 5.12.4-0"
+      }
+    ]
+  },
+  "finding": "Actual lifecycle passes through conventional uninstall, stock/profile preservation and all interrupted-transaction recovery checks. Restored stock launch presents the expected upstream Welcome to OpenCPN safety notice because the build version string changed. The fixture did not acknowledge it and also expected the wrong official frame title. Temporary-directory cleanup masked the initial failure with a locked-file PermissionError.",
+  "replacement": "Click visible Agree, require actual modal dismissal and enabled official OpenCPN 5.12.4-0 frame, then require coastline, shared fixtures and custom harmonic source preservation. Cleanup must not mask failures.",
+  "reviewedImages": [
+    {
+      "file": "installer-failed-1.png",
+      "sha256": "f6c7e6508ceadff03409c17fc7440a7cd445935e7025587132f05cb4b6220dae",
+      "review": "Actual native stock safety notice with visible Agree and Cancel; not an application crash or chart acceptance."
+    }
+  ],
+  "acceptance": "Installer still gated until restored-stock chart/data checks pass; allowlist remains empty."
+}

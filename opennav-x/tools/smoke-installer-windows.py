@@ -81,10 +81,21 @@ def stable_resources(profile,stock,tides=None):
     for section,key,path in [('Directories','BasemapDir',stock/'gshhs'),('Directories','BaseShapefileDir',stock/'basemap_shp'),('Settings/AIS','AISAlertAudioFile',stock/'sounds/2bells.wav')]:
         assert Path(config.get(section,key)).samefile(path),(section,key,config.get(section,key))
         assert path.exists()
-def launch(exe,mode,title,profile,name):
+def launch(exe,mode,title,profile,name,stock_welcome=False):
     before=count_starts(profile)
     p=subprocess.Popen([str(exe),'--no_opengl',*mode]);owned.add(p.pid)
+    if stock_welcome:
+        # The official release has a different ConfigVersionString/build date.
+        # Pinned MyApp::OnInit therefore presents its normal safety warning.
+        # Acknowledge the visible dialog; do not bypass it by editing the profile.
+        dialog,_=ui.wait_window('Welcome to OpenCPN',p.pid,timeout=45)
+        image=EVIDENCE/(name+'-welcome.png')
+        ui.capture(dialog,image,resize=False,screen_pixels=True)
+        report['screenshots'].append(image.name)
+        ui.dismiss_native_dialog(dialog,'Agree')
+        check('Restored official OpenCPN safety notice acknowledged through its visible Agree button')
     h,pid=ui.wait_window(title,p.pid,timeout=45);wait_ready(profile,before)
+    assert ui.IsWindowEnabled(h),'Application startup is still blocked by a modal dialog'
     image=EVIDENCE/(name+'.png');rgb=ui.capture(h,image)
     report['screenshots'].append(image.name)
     return p,h,rgb
@@ -147,7 +158,9 @@ try:
     assert not INSTALL.exists(),'Runner must not contain a previous/user Alpha installation'
     report['display']=ui.ensure_desktop()
     subprocess.run([sys.executable,str(ROOT/'tools/build-installer-prior-fixture.py')],check=True)
-    with tempfile.TemporaryDirectory(prefix='OpenNav installer ') as temp:
+    # On failure a live executable can still lock the disposable stock tree.
+    # Preserve the original test exception; owned processes are stopped below.
+    with tempfile.TemporaryDirectory(prefix='OpenNav installer ',ignore_cleanup_errors=True) as temp:
         temporary=Path(temp);stock=temporary/'stock OpenCPN';stock.mkdir()
         official=temporary/'official-setup.exe'
         urllib.request.urlretrieve('https://github.com/OpenCPN/OpenCPN/releases/download/Release_5.12.4/opencpn_5.12.4-0%2B3720.37fd0cd_setup.exe',official)
@@ -289,7 +302,7 @@ try:
         assert not list((INSTALL/'generations').glob('*/app/opencpn.exe')), 'Unmodified OpenNav application binaries remain'
         assert list((INSTALL/'generations').glob('*/app/plugins/alpha-user-preserved.txt')), 'Custom additions were removed'
         check('Conventional uninstaller removes verified owned app files; exact stock/profile unchanged; custom additions retained')
-        p,h,rgb=launch(original,[],'OpenCPN 5.12.4',profile,'installer-05-restored-stock')
+        p,h,rgb=launch(original,[],'OpenCPN 5.12.4-0',profile,'installer-05-restored-stock',stock_welcome=True)
         charts.check(rgb,colors,'Untouched stock after uninstall');close(p,h)
         assert fixture_snapshot(profile)==expected
         stable_resources(profile,stock,[custom_tide])

@@ -53,5 +53,12 @@
   },
   "finding": "Actual clean install and launch succeed. Resource assertion compares the long runneradmin path with its RUNNER~1 Windows short-path alias.",
   "replacement": "Require the same existing filesystem objects for every expected tide, coastline, basemap and alarm resource. Different/missing files still fail. Preserve list length and order.",
-  "acceptance": "Not full lifecycle acceptance; no release allowlist entry."
+  "acceptance": "Not full lifecycle acceptance; no release allowlist entry.",
+  "reviewedImages": [
+    {
+      "file": "installer-00-clean-candidate.png",
+      "sha256": "626d66c9089da5e7fbe34d8da148be3ea809065f99cef6c54a4a998eed3e89d6",
+      "review": "Native 1280x800 installed XNav shows the expected detailed coastline and dominant chart canvas; disconnected data are unavailable. This does not qualify the failed lifecycle."
+    }
+  ]
 }

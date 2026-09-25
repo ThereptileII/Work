@@ -58,7 +58,7 @@ Windows integrated cases and 22 portable suites per platform. These are internal
 milestones, not an Alpha release. [Marine acceptance](evidence/alpha-marine-785aa45-gates.json).
 
 Current candidates retain **90 Linux / 80 native Windows integrated cases**
-and **29 portable suites per platform**, with ten additional restart
+and **30 portable suites per platform**, with ten additional restart
 repetitions. The source, object/AIS/anchor, synthetic data and energy regressions
 remain enabled. Their platform-specific totals must not be added to repeated
 runs as if these were distinct tests.
@@ -112,6 +112,11 @@ the long Windows path with a short-name alias; the replacement requires
 filesystem identity rather than spelling equality.
 [Alias evidence](evidence/installer-path-alias-264b5a1-failure.json).
 [Resource lifetime failure and repair](evidence/installer-resources-2803773-failure.json).
+At `931490f`, install, update, repair, rollback, both interrupted-transaction
+recoveries, diagnostics and conventional uninstall pass with stock/profile
+preservation. The final untouched-stock launch awaits acknowledgement of the
+normal upstream version-change safety notice and its chart/data checks.
+[Stock-return evidence](evidence/installer-stock-return-931490f-failure.json).
 The complete lifecycle, exact final artifact and public allowlist remain gated.
 
 ## Remaining Alpha release gates
