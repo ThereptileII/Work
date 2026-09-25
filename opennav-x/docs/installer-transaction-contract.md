@@ -99,3 +99,13 @@ installed hash. It does not lower UAC policy or patch the prerequisite. This
 elevation belongs to installing stock OpenCPN, not to Alpha Setup, which remains
 `RequestExecutionLevel user`. A failed prerequisite never qualifies an Alpha
 installation or populates the compatibility allowlist.
+
+The exact official prerequisite has a native exit-status anomaly: `149c41b`
+completed every visible installation page including Finish yet returned 1223.
+The fixture now validates explicit completion text, exact executable hash,
+chart/UI resources and matching native uninstall registration before allowing
+that specific status for this stock package. OpenNav setup/maintenance still
+require zero. This replaces an incorrect exit-code-only fixture assumption; it
+does not accept an aborted/missing wizard or unknown binary. The final lifecycle
+also launches the untouched stock application and checks chart/profile data.
+[Observed completion](evidence/installer-stock-exit-149c41b-observation.json).

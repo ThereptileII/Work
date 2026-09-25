@@ -109,6 +109,9 @@ try:
         original=stock/'opencpn.exe';assert sha(original)==STOCK_HASH
         stock_before=inventory(stock)
         check('Official supported OpenCPN installed and exact PE executable SHA-256 verified')
+        setup('Preflight','')
+        assert not INSTALL.exists() and inventory(stock)==stock_before
+        check('Registry discovery handles the official build-suffixed key and verifies its exact hash without modification')
         wizard(original)
         bad=temporary/'unknown';bad.mkdir();shutil.copy2(original,bad/'opencpn.exe')
         with (bad/'opencpn.exe').open('ab') as f:f.write(b'unsupported build')

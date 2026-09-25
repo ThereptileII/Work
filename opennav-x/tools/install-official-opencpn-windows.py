@@ -8,6 +8,7 @@ from pathlib import Path
 import subprocess
 import sys
 import time
+import winreg
 
 assert sys.platform == "win32" and os.environ.get("GITHUB_ACTIONS") == "true"
 setup, directory, output = map(lambda p: Path(p).resolve(), sys.argv[1:])
@@ -66,6 +67,7 @@ try:
                 choice = 'Install'
             elif 'Finish' in buttons:
                 assert installed and (directory / 'opencpn.exe').exists()
+                assert 'has been installed on your computer.' in text
                 # Normal upstream Finish offers to launch the app/readme.
                 # Leave subsequent stock/profile launch to the explicit test.
                 for child, _ in children:
@@ -94,9 +96,35 @@ try:
                 time.sleep(.5)
         time.sleep(.2)
     assert process.poll() is not None, 'Official wizard timed out'
-    assert process.returncode == 0 and installed and finished, (process.returncode, installed, finished)
+    record['stockExitCode'] = process.returncode
+    assert installed and finished, (process.returncode, installed, finished)
     record['executableSha256'] = hashlib.sha256((directory / 'opencpn.exe').read_bytes()).hexdigest()
     assert record['executableSha256'] == '7c6547562cca7954671eaab72833ca9d788710fd9808b6a699b6dc823852ae0c'
+    assert (directory / 'uidata/styles.xml').stat().st_size > 0
+    assert any((directory / 'basemap_shp').glob('*.shp'))
+    assert (directory / 's57data').is_dir() and (directory / 'plugins').is_dir()
+    registration = []
+    key_path = r'SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall'
+    with winreg.OpenKey(winreg.HKEY_LOCAL_MACHINE, key_path, 0, winreg.KEY_READ | winreg.KEY_WOW64_32KEY) as base:
+        for index in range(winreg.QueryInfoKey(base)[0]):
+            name = winreg.EnumKey(base, index)
+            if not name.startswith('OpenCPN '):
+                continue
+            with winreg.OpenKey(base, name) as key:
+                location = winreg.QueryValueEx(key, 'InstallLocation')[0]
+                if Path(location).resolve() == directory:
+                    uninstall = winreg.QueryValueEx(key, 'UninstallString')[0]
+                    assert Path(uninstall.strip('"')).is_file()
+                    registration.append({'key': name, 'location': location, 'uninstaller': uninstall})
+    assert len(registration) == 1, registration
+    record['registration'] = registration
+    # Exact upstream package reaches its successful Finish page but leaves 1223
+    # as the process status on this hosted Windows environment. This exception
+    # applies only after all actual installation postconditions above, never
+    # to OpenNav Setup, a missing/aborted wizard, or an unknown stock binary.
+    assert process.returncode in (0, 1223), process.returncode
+    if process.returncode == 1223:
+        record['exitCodeAnomaly'] = 'Exact official package completed visibly and all hash/resource/registration postconditions passed despite 1223; Alpha lifecycle still requires zero.'
     record['status'] = 'passed'
 except Exception as error:
     record['status'] = 'failed'

@@ -1,0 +1,17 @@
+{
+  "commit": "149c41bd0bba1bcb49cefc6d84c2143b76c75c00",
+  "run": "https://github.com/ThereptileII/Work/actions/runs/36076761834",
+  "job": 107889583449,
+  "status": "Native fixture assertion failed; strengthened postcondition replacement pending",
+  "artifact_id": 10839588832,
+  "artifact_sha256": "2d124c36360f3c4be4c07e45bd1452d5bbfda791ba0517409d4a005dcbc347cd",
+  "download_verified": true,
+  "reviewed_screenshot": {
+    "file": "official-wizard-8.png",
+    "sha256": "f46ea88fee8d472f39f2feada6f872a403751d00b75cbf82cf7a411d1b73bd48",
+    "finding": "Actual official completion page states installation succeeded, with launch/log checkboxes unchecked"
+  },
+  "observation": "All wizard pages including Install and Finish executed, but official process returned 1223. Exit status alone does not distinguish success for this exact package. The prior fixture stopped before post-install hash/registration checks.",
+  "test_change_justification": "Replace unconditional stock exit==0 with required successful completion text and Finish action, exact stock SHA-256, nonempty chart/UI resources, matching native uninstall registration and uninstaller. Allow only 0 or observed 1223 after all these pass. OpenNav Setup/maintenance continue requiring zero. Final original-stock launch and preservation remain mandatory.",
+  "source_boundary": "Pinned NSIS template calls UAC and does not explicitly set an on-success process error level; the precise origin of 1223 is not proven. No stock executable or security policy is modified."
+}

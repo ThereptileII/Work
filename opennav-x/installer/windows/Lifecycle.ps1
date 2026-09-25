@@ -112,8 +112,19 @@ function DiscoverStock {
   foreach ($view in @([Microsoft.Win32.RegistryView]::Registry32, [Microsoft.Win32.RegistryView]::Registry64)) {
     $base = [Microsoft.Win32.RegistryKey]::OpenBaseKey([Microsoft.Win32.RegistryHive]::LocalMachine, $view)
     try {
-      $key = $base.OpenSubKey('Software\Microsoft\Windows\CurrentVersion\Uninstall\OpenCPN 5.12.4')
-      if ($key) { try { $location = [string]$key.GetValue('InstallLocation'); if ($location) { $paths.Add((Join-Path $location 'opencpn.exe')) } } finally { $key.Dispose() } }
+      $uninstall = $base.OpenSubKey('Software\Microsoft\Windows\CurrentVersion\Uninstall')
+      if ($uninstall) {
+        try {
+          # Stock keys can include the full build suffix (5.12.4-0+37fd0cd).
+          # These locations are discovery hints; StockInfo still requires the
+          # exact accepted executable hash, PE ABI and version resource.
+          foreach ($name in $uninstall.GetSubKeyNames()) {
+            if ($name -notmatch '^OpenCPN(?: |$)') { continue }
+            $key = $uninstall.OpenSubKey($name)
+            if ($key) { try { $location = [string]$key.GetValue('InstallLocation'); if ($location) { $paths.Add((Join-Path $location 'opencpn.exe')) } } finally { $key.Dispose() } }
+          }
+        } finally { $uninstall.Dispose() }
+      }
     } finally { $base.Dispose() }
   }
   $paths.Add((Join-Path ${env:ProgramFiles(x86)} 'OpenCPN\opencpn.exe'))

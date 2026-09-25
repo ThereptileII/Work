@@ -82,6 +82,9 @@ before any Alpha lifecycle. Explicit ShellExecute elevation also returns 1223 at
 verified administrator token. Initial stock UI capture is now required to
 identify the abort. The initial interactive stock language dialog is visible at
 `4712bf0`; the replacement uses its actual wizard to prepare the prerequisite.
+The stock wizard now visibly completes at `149c41b` yet returns 1223; stronger
+actual installation postconditions replace the exit-only assumption.
+[Observation](evidence/installer-stock-exit-149c41b-observation.json).
 Alpha remains per-user/as-invoker.
 [Filesystem gate](evidence/installer-filesystem-452e26b-gate.json),
 [prerequisite failure](evidence/installer-4203854-prerequisite-failure.json).
