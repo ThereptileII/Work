@@ -1,0 +1,18 @@
+{
+  "commit": "42038543503ef8ef2caf53ef2bed5977e58cb8b0",
+  "run": "https://github.com/ThereptileII/Work/actions/runs/36073785098",
+  "status": "candidate failed; not accepted",
+  "linux_integrated": 90,
+  "windows_integrated": 80,
+  "portable_each": 28,
+  "passed": [
+    "Native NSIS 3.10 compiles Alpha Setup and private prior-version Setup",
+    "Distinct alpha0-ci executable compiled and candidate executable/source restored",
+    "Native portable and DPI interactions"
+  ],
+  "failure": "Official upstream prerequisite installer exited 1223 before Alpha lifecycle began. Original direct CreateProcess invocation did not establish a supported installed fixture.",
+  "followup": "Use explicit ShellExecute RunAs for the unmodified official stock prerequisite only, preserving its required elevation and final unquoted NSIS /D argument. Record administrator context, result and installed hash. Alpha Setup stays asInvoker.",
+  "chart": "Old double-click route edit assertion still fails; replacement is already in later 1460c05.",
+  "artifact_id": 10839546814,
+  "artifact_sha256": "3f65ee598bb6fa2dff41f8d923a6329dd7bab9647d303564a3bd1a26346fcf8b"
+}

@@ -91,3 +91,11 @@ Native PowerShell 5.1 exposed `$null` coercion to an empty backup-path string in
 `File.Replace`. Atomic replacement now supplies `NullString.Value`, preserving
 the no-backup-file .NET contract. The actual native replacement test remains the
 acceptance gate; the failed candidate is retained in evidence.
+
+The official OpenCPN prerequisite is installed only in the disposable fixture.
+Its unmodified upstream setup requests administrator access; the harness uses
+Windows ShellExecute RunAs and records the caller privilege, exit result and
+installed hash. It does not lower UAC policy or patch the prerequisite. This
+elevation belongs to installing stock OpenCPN, not to Alpha Setup, which remains
+`RequestExecutionLevel user`. A failed prerequisite never qualifies an Alpha
+installation or populates the compatibility allowlist.

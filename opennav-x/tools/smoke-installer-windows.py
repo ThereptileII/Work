@@ -102,11 +102,11 @@ try:
         official=temporary/'official-setup.exe'
         urllib.request.urlretrieve('https://github.com/OpenCPN/OpenCPN/releases/download/Release_5.12.4/opencpn_5.12.4-0%2B3720.37fd0cd_setup.exe',official)
         assert sha(official)==SETUP_HASH
-        # NSIS documents an unquoted, final /D= path even when it contains spaces.
-        # Pass directly to CreateProcess (shell=False), not through a command shell.
-        assert '"' not in str(stock)
-        r=subprocess.run(subprocess.list2cmdline([str(official),'/S'])+' /D='+str(stock),timeout=180)
-        assert r.returncode==0,r.returncode
+        stock_report=EVIDENCE/'installer-official-prerequisite.json'
+        r=subprocess.run([str(PS),'-NoProfile','-NonInteractive','-ExecutionPolicy','Bypass',
+                          '-File',str(ROOT/'tools/install-official-opencpn-fixture.ps1'),
+                          '-Setup',str(official),'-Directory',str(stock),'-Report',str(stock_report)],timeout=180)
+        assert r.returncode==0,(r.returncode,stock_report.read_text() if stock_report.exists() else 'No prerequisite report')
         original=stock/'opencpn.exe';assert sha(original)==STOCK_HASH
         stock_before=inventory(stock)
         check('Official supported OpenCPN installed and exact PE executable SHA-256 verified')
