@@ -245,14 +245,15 @@ try:
      pixels=collections.Counter(bytes(rgb[(y*width+x)*3:(y*width+x)*3+3]) for y in range(100,height-70,2) for x in range(15,width-15,2))
      painted=[]
      for child,caption in ui.children(options):
-      if caption.replace('&','') not in ('OK','Cancel','Apply'):continue
+      label=caption.replace('&','').strip().casefold()
+      if label not in ('ok','cancel','apply'):continue
       bounds=ui.W.RECT();assert ui.GetWindowRect(child,ctypes.byref(bounds))
       left,right=bounds.left-rect.left+6,bounds.right-rect.left-6
       top,bottom=bounds.top-rect.top+4,bounds.bottom-rect.top-4
       if not (0<=left<right<width and 0<=top<bottom<height):continue
       luminance=[sum(rgb[(y*width+x)*3:(y*width+x)*3+3]) for y in range(top,bottom) for x in range(left,right)]
-      if max(luminance)-min(luminance)>90:painted.append(caption.replace('&',''))
-     if len(pixels)>=32 and set(painted)=={'OK','Cancel','Apply'}:
+      if max(luminance)-min(luminance)>90:painted.append(label)
+     if len(pixels)>=32 and set(painted)=={'ok','cancel','apply'}:
       entry['plugin_manager_interior_colors']=len(pixels)
       entry['plugin_manager_painted_buttons']=painted
       break

@@ -1,0 +1,11 @@
+{
+  "commit": "8ae303c6470b7659235e0d0e16006a17b2c4a8f0",
+  "run": "https://github.com/ThereptileII/Work/actions/runs/36077099717",
+  "artifact": 10841011358,
+  "artifact_sha256": "71f371668c4911a2833bdea2a0a6cf83c3067c821b596e512f17d58382c17236",
+  "image": "chart-plugin-manager.png",
+  "image_sha256": "e12ede69d2fb409c5f5c86a574830e81927bf685c0965816ec2279d26cfbb95e",
+  "review": "Complete native plugin manager reviewed: Dashboard, GRIB and WMM enabled, ChartDownloader disabled, catalogue controls and Ok/Cancel/Apply visible. This confirms the earlier blank footer was an early frame.",
+  "replacement_gate": "Check footer labels without capitalization sensitivity because pinned wx uses Ok; require actual button interior contrast and normal Cancel dismissal.",
+  "limitation": "Installer preflight failed on this candidate; not Alpha release acceptance."
+}
