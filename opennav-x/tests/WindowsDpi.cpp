@@ -40,7 +40,8 @@ DpiGet Get(const DISPLAYCONFIG_PATH_SOURCE_INFO &source) {
 int main(int argc, char **argv) {
   try {
     SetProcessDpiAwarenessContext(DPI_AWARENESS_CONTEXT_PER_MONITOR_AWARE_V2);
-    if (argc == 4 && std::string(argv[1]) == "--tap") {
+    if ((argc == 4 && std::string(argv[1]) == "--tap") ||
+        (argc == 6 && std::string(argv[1]) == "--pan")) {
       const auto permit = std::getenv("OPENNAV_DISPOSABLE_DESKTOP");
       if (!permit || std::string(permit) != "1")
         throw std::runtime_error(
@@ -49,6 +50,11 @@ int main(int argc, char **argv) {
       if (x < 0 || y < 0 || x >= GetSystemMetrics(SM_CXSCREEN) ||
           y >= GetSystemMetrics(SM_CYSCREEN))
         throw std::runtime_error("Touch outside primary test desktop");
+      const int end_x = argc == 6 ? std::stoi(argv[4]) : x;
+      const int end_y = argc == 6 ? std::stoi(argv[5]) : y;
+      if (end_x < 0 || end_y < 0 || end_x >= GetSystemMetrics(SM_CXSCREEN) ||
+          end_y >= GetSystemMetrics(SM_CYSCREEN))
+        throw std::runtime_error("Pan outside primary test desktop");
       if (!InitializeTouchInjection(1, TOUCH_FEEDBACK_NONE))
         throw std::runtime_error("Touch injection unavailable, error " +
                                  std::to_string(GetLastError()));
@@ -69,6 +75,16 @@ int main(int argc, char **argv) {
         throw std::runtime_error("Touch down failed, error " +
                                  std::to_string(GetLastError()));
       Sleep(100);
+      if (argc == 6) {
+        for (int i = 1; i <= 20; ++i) {
+          const int px = x + (end_x - x) * i / 20, py = y + (end_y - y) * i / 20;
+          contact.pointerInfo.ptPixelLocation = {px, py};
+          contact.rcContact = {px - 2, py - 2, px + 2, py + 2};
+          contact.pointerInfo.pointerFlags = POINTER_FLAG_UPDATE | POINTER_FLAG_INRANGE | POINTER_FLAG_INCONTACT;
+          if (!InjectTouchInput(1, &contact)) throw std::runtime_error("Touch pan failed");
+          Sleep(25);
+        }
+      }
       contact.pointerInfo.pointerFlags = POINTER_FLAG_UP;
       if (!InjectTouchInput(1, &contact))
         throw std::runtime_error("Touch up failed, error " +

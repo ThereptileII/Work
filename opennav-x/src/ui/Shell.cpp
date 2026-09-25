@@ -69,9 +69,25 @@ Shell::Shell(wxFrame &frame, wxAuiManager &manager, ShellActions actions,
   clock_ = Text(top, "", 15);
   clock_->SetMinSize(frame_.FromDIP(wxSize(56, 24)));
   row->Add(clock_, 0, wxALIGN_CENTER_VERTICAL);
-  row->AddStretchSpacer();
-  source_ = Text(top, "No vessel input", 13, true);
-  row->Add(source_, 0, wxALIGN_CENTER_VERTICAL | wxRIGHT, gap * 2);
+  source_ = new wxStaticText(top, wxID_ANY, "No vessel input", wxDefaultPosition,
+                             wxDefaultSize, wxST_ELLIPSIZE_END);
+  source_->SetFont(UiFont(*top, 13, true));
+  source_->SetMinSize(wxSize(0, -1));
+  labels_.push_back(source_);
+  row->Add(source_, 1, wxALIGN_CENTER_VERTICAL | wxLEFT | wxRIGHT, gap * 2);
+  page_up_ = Button(top, "Up", "Scroll page up", [this] {
+    if (auto *s = CurrentScroll()) s->Step(-1);
+    UpdateScrollControls();
+  });
+  page_down_ = Button(top, "Down", "Scroll page down", [this] {
+    if (auto *s = CurrentScroll()) s->Step(1);
+    UpdateScrollControls();
+  });
+  for (auto *b : {page_up_, page_down_}) {
+    b->SetMinSize(frame_.FromDIP(wxSize(64, 48)));
+    row->Add(b, 0, wxALL, frame_.FromDIP(4));
+    b->Hide();
+  }
   auto *theme =
       Button(top, "Light", "Cycle day, dusk and night palettes", [this] {
         SetLight(mode_ == LightMode::Day    ? LightMode::Dusk
@@ -116,12 +132,18 @@ Shell::Shell(wxFrame &frame, wxAuiManager &manager, ShellActions actions,
   auto *right =
       MakePane("OpenNavData", wxAuiPaneInfo().Right().Layer(1).BestSize(
                                   frame_.FromDIP(spacing::right_rail), -1));
-  rail_scroll_ = new wxScrolledWindow(right, wxID_ANY, wxDefaultPosition,
-                                      wxDefaultSize, wxVSCROLL | wxBORDER_NONE);
-  rail_scroll_->SetScrollRate(0, frame_.FromDIP(24));
+  rail_scroll_ = new XNavScroll(right);
   rail_scroll_->SetSizer(new wxBoxSizer(wxVERTICAL));
   auto *rail_container = new wxBoxSizer(wxVERTICAL);
   rail_container->Add(rail_scroll_, 1, wxEXPAND);
+  rail_actions_ = new wxPanel(right, wxID_ANY);
+  auto *rail_row = new wxBoxSizer(wxHORIZONTAL);
+  rail_up_ = Button(rail_actions_, "Up", "Scroll vessel rail up", [this] { rail_scroll_->Step(-1); UpdateScrollControls(); });
+  rail_down_ = Button(rail_actions_, "Down", "Scroll vessel rail down", [this] { rail_scroll_->Step(1); UpdateScrollControls(); });
+  for (auto *b : {rail_up_, rail_down_}) rail_row->Add(b, 1, wxALL, frame_.FromDIP(2));
+  rail_actions_->SetSizer(rail_row);
+  rail_container->Add(rail_actions_, 0, wxEXPAND);
+  rail_actions_->Hide();
   right->SetSizer(rail_container);
 
   auto *bottom = MakePane("OpenNavActions",
@@ -133,11 +155,22 @@ Shell::Shell(wxFrame &frame, wxAuiManager &manager, ShellActions actions,
            {"Navigation", [this] { ShowNavigation(); }},
            {"Route", [this] { ShowPage(PreviewPage::Route); }},
            {"Energy", [this] { ShowPage(PreviewPage::Energy); }},
+           {"Pilot", [this] { ShowProduct(ProductPage::Pilot); }},
+           {"STBY", [this] {
+              if (actions_.pilot_command && !state_.replayed)
+                actions_.pilot_command(simulation_, adapters::PilotAction::Standby, 0);
+            }},
            {"Demo", [this] { ShowDemo(); }},
            {"Menu", [this] { ShowProduct(ProductPage::Home); }}}) {
     auto *b = Button(bottom, entry.first, entry.first, entry.second);
     b->SetMinSize(
-        frame_.FromDIP(wxSize(entry.first == "Navigation" ? 112 : 88, 48)));
+        frame_.FromDIP(wxSize(entry.first == "Navigation" ? 112 : entry.first == "STBY" ? 64 : 88, 48)));
+    if (entry.first == "STBY") {
+      standby_ = b;
+      b->SetName("Manual STANDBY / requires enabled control");
+      b->SetToolTip("Manual STANDBY / requires enabled control; physical STANDBY remains independent");
+      b->Disable();
+    }
     actions_row->Add(b, 0, wxALL, frame_.FromDIP(4));
   }
   route_summary_ = Text(bottom, "Route unavailable", 12);
@@ -287,6 +320,9 @@ void Shell::UpdateState(const vessel::VesselState &state) {
 
 void Shell::ApplyTheme() {
   const auto colors = Theme(mode_);
+  caption_themed_ = ThemeWindowChrome(frame_, mode_);
+  rail_actions_->SetBackgroundColour(Colour(colors.surface));
+  rail_scroll_->SetBackgroundColour(Colour(colors.surface));
   for (auto *pane : panes_) {
     pane->SetBackgroundColour(Colour(colors.surface));
     pane->Refresh();
@@ -411,6 +447,7 @@ void Shell::Tick() {
       p.pilot = {};
       p.pilot.feedback.source = "Unavailable during REPLAY";
     }
+    standby_->Enable(!replay && p.pilot.enabled && p.pilot.capabilities.standby);
     p.settings = config;
     if (actions_.settings_status)
       p.settings_status = actions_.settings_status();
@@ -476,7 +513,7 @@ void Shell::Tick() {
   const wxString summary =
       distance ? wxString::Format("%.1f NM to destination", *distance)
                : "Route unavailable";
-  const bool show_summary = frame_.GetClientSize().x >= frame_.FromDIP(1060);
+  const bool show_summary = frame_.GetClientSize().x >= frame_.FromDIP(1240);
   const bool summary_layout = route_summary_->GetLabel() != summary ||
                               route_summary_->IsShown() != show_summary;
   route_summary_->SetLabel(summary);
@@ -487,6 +524,7 @@ void Shell::Tick() {
     page_->Update(current_page_, mode_, state_, now, model, energy,
                   actions_.build_info ? actions_.build_info()
                                       : std::vector<std::string>{});
+  UpdateScrollControls();
   if (actions_.diagnostic_snapshot)
     actions_.diagnostic_snapshot(state_, energy, PageTitle());
   metrics_.last_ms = std::chrono::duration<double, std::milli>(
@@ -495,6 +533,51 @@ void Shell::Tick() {
   ++metrics_.ticks;
   metrics_.mean_ms += (metrics_.last_ms - metrics_.mean_ms) / metrics_.ticks;
   metrics_.maximum_ms = std::max(metrics_.maximum_ms, metrics_.last_ms);
+}
+
+XNavScroll *Shell::CurrentScroll() const {
+  if (product_ && product_->IsShown()) return product_;
+  if (page_ && page_->IsShown()) return page_;
+  return nullptr;
+}
+int Shell::PageScrollPosition() const {
+  auto *s = CurrentScroll();
+  if (!s) return 0;
+  int x, y, ux, uy;
+  s->GetViewStart(&x, &y);
+  s->GetScrollPixelsPerUnit(&ux, &uy);
+  return y * uy;
+}
+bool Shell::CanScrollPage(int direction) const {
+  auto *s = CurrentScroll();
+  return s && s->CanScroll(direction);
+}
+const char *Shell::LightName() const {
+  return mode_ == LightMode::Day ? "Day" : mode_ == LightMode::Dusk ? "Dusk" : "Night";
+}
+void Shell::UpdateScrollControls() {
+  const bool scroll = CanScrollPage(-1) || CanScrollPage(1);
+  auto *focus = wxWindow::FindFocus();
+  if ((focus == page_up_ && !CanScrollPage(-1)) ||
+      (focus == page_down_ && !CanScrollPage(1))) {
+    if (auto *s = CurrentScroll()) s->SetFocus();
+    else frame_.SetFocus();
+  }
+  bool changed = page_up_->IsShown() != scroll;
+  for (auto *b : {page_up_, page_down_}) b->Show(scroll);
+  page_up_->Enable(CanScrollPage(-1));
+  page_down_->Enable(CanScrollPage(1));
+  if (changed) page_up_->GetParent()->Layout();
+  const bool rail = rail_scroll_->GetVirtualSize().y > rail_scroll_->GetParent()->GetClientSize().y;
+  if (rail_actions_->IsShown() != rail) {
+    rail_actions_->Show(rail);
+    rail_actions_->GetParent()->Layout();
+  }
+  if ((focus == rail_up_ && !rail_scroll_->CanScroll(-1)) ||
+      (focus == rail_down_ && !rail_scroll_->CanScroll(1)))
+    rail_scroll_->SetFocus();
+  rail_up_->Enable(rail_scroll_->CanScroll(-1));
+  rail_down_->Enable(rail_scroll_->CanScroll(1));
 }
 
 std::string Shell::PageTitle() const {
@@ -627,7 +710,7 @@ void Shell::ShowDemo() {
   layout->Add(grid, 0, wxLEFT | wxRIGHT | wxBOTTOM, frame_.FromDIP(16));
   popup->SetSizerAndFit(layout);
   popup->Position(
-      frame_.ClientToScreen(wxPoint(frame_.FromDIP(80), frame_.FromDIP(100))),
+      frame_.ClientToScreen(wxPoint(frame_.FromDIP(80), frame_.FromDIP(120))),
       wxSize());
   popup->Popup();
 }
@@ -664,13 +747,15 @@ void Shell::ShowSystem() {
   layout->Add(heading, 0, wxALL, gap);
   auto *info = new wxStaticText(
       popup, wxID_ANY,
-      "OpenNav X / Alpha development\nOpenCPN 5.12.4 / API 1.20\nMode: XNav\n" +
+      "OpenNav X / OpenCPN 5.12.4\nXNav / " +
           (simulation_ ? wxString("Data: explicit simulator")
                        : "Data: " + InputSummary()) +
-          "\nPilot control: " + (field_snapshot_.pilot.enabled ? "ENABLED" : "OFF"));
+          "\nPilot manual control: " + (field_snapshot_.pilot.enabled ? "ENABLED" : "OFF"));
   info->SetFont(UiFont(*popup, 13));
   info->SetForegroundColour(Colour(Theme(mode_).secondary));
   layout->Add(info, 0, wxLEFT | wxRIGHT | wxBOTTOM, gap);
+  auto *system_grid = new wxGridSizer(2, frame_.FromDIP(8), frame_.FromDIP(8));
+  layout->Add(system_grid, 0, wxEXPAND | wxLEFT | wxRIGHT | wxBOTTOM, gap);
   auto *pause = new XNavButton(
       popup, wxID_ANY,
       simulation_
@@ -689,7 +774,8 @@ void Shell::ShowSystem() {
     popup->Dismiss();
     popup->Destroy();
   });
-  layout->Add(pause, 0, wxEXPAND | wxLEFT | wxRIGHT | wxBOTTOM, gap);
+  pause->SetMinSize(frame_.FromDIP(wxSize(200, 48)));
+  system_grid->Add(pause, 1, wxEXPAND);
   auto *legacy = new XNavButton(popup, wxID_ANY, "Open Legacy OpenCPN",
                                 "Save and restart in Legacy OpenCPN");
   legacy->SetLightMode(mode_);
@@ -701,7 +787,8 @@ void Shell::ShowSystem() {
     if (restart_action)
       restart_action();
   });
-  layout->Add(legacy, 0, wxEXPAND | wxLEFT | wxRIGHT | wxBOTTOM, gap);
+  legacy->SetMinSize(frame_.FromDIP(wxSize(200, 48)));
+  system_grid->Add(legacy, 1, wxEXPAND);
   for (const auto &entry :
        std::vector<std::pair<wxString, std::function<void()>>>{
            {"Diagnostics", [this] { ShowPage(PreviewPage::Diagnostics); }},
@@ -718,7 +805,8 @@ void Shell::ShowSystem() {
       if (action)
         action();
     });
-    layout->Add(b, 0, wxEXPAND | wxLEFT | wxRIGHT | wxBOTTOM, gap);
+    b->SetMinSize(frame_.FromDIP(wxSize(200, 48)));
+    system_grid->Add(b, 1, wxEXPAND);
   }
   popup->SetSizerAndFit(layout);
   const auto client = frame_.GetClientSize();

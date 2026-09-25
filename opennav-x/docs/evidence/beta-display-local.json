@@ -1,0 +1,183 @@
+{
+  "scope": "Linux display/night/touch development evidence; native authoritative gate pending",
+  "source_parent": "5bce88d5f4fcc583b2034f46618effcc5bd5a387",
+  "portable_suites": 60,
+  "integrated_linux_cases": 99,
+  "runtime": {
+    "preview-linux-results.json": {
+      "authority": "Linux development",
+      "checks": [],
+      "screenshots": [
+        "beta-system-popup-linux.png",
+        "preview-01-navigation-day-linux.png",
+        "preview-11-startup-xnav-linux.png",
+        "preview-02-navigation-night-linux.png"
+      ],
+      "higher_dpi": "Not exercised by this hosted desktop; manual validation remains open",
+      "chart_rendering": [
+        {
+          "phase": "Direct XNav startup",
+          "reference_color_fractions": {
+            "aac3f0": 0.5827610872675251,
+            "aaaf50": 0.39760371959942775
+          },
+          "coastline_visible": true
+        }
+      ],
+      "failure_process_exit": null,
+      "failure_windows": [
+        {
+          "id": "927",
+          "title": ""
+        },
+        {
+          "id": "2097202",
+          "title": "OpenNav X / OpenCPN"
+        },
+        {
+          "id": "2097203",
+          "title": ""
+        }
+      ]
+    },
+    "recording-results.json": {
+      "authority": "Linux development",
+      "checks": [
+        "Actual UI captured/saved 5 normalized frames without positions/route",
+        "Replay is identified; separate source state; hardware control blocked; end ages into stale",
+        "Rewind/pause/stop return to labelled demo without profile restart",
+        "Actual diagnostic ZIP export: integrity, whitelist, profile/position privacy and DEMO provenance"
+      ],
+      "screenshots": [
+        "recording-01-commissioning-linux.png",
+        "recording-02-active-linux.png",
+        "recording-03-replay-energy-linux.png",
+        "recording-04-replay-ended-stale-linux.png",
+        "recording-05-replay-paused-linux.png",
+        "field-report-01-export-page-linux.png",
+        "field-report-02-export-result-linux.png",
+        "recording-06-returned-diagnostics-linux.png"
+      ],
+      "bundle_files": [
+        "field-report.zip"
+      ],
+      "result": "passed; screenshot review required"
+    },
+    "pilot-results.json": {
+      "authority": "Linux development",
+      "hardware": "NONE; loopback simulated translator",
+      "checks": [
+        "Read-only startup despite saved manual permission",
+        "Actual UI and OpenCPN TCP serialization of AUTO/-1/+1/-10/+10/STANDBY",
+        "New matching physical-style feedback confirms; no optimistic target change",
+        "Missing feedback times out without retry; manual STANDBY remains available",
+        "Same-driver reconnect clears identity and session enablement; new claim required",
+        "Live TRACK/WIND unavailable; no SmartNav control path"
+      ],
+      "screenshots": [
+        "pilot-01-status-only-linux.png",
+        "pilot-confirmation-linux.png",
+        "pilot-confirmation-linux.png",
+        "pilot-confirmation-linux.png",
+        "pilot-02-confirmed-manual-linux.png",
+        "pilot-03-communication-loss-linux.png",
+        "pilot-04-reconnected-control-off-linux.png"
+      ],
+      "confirmations": [
+        {
+          "title": "Request AUTO",
+          "geometry": {
+            "WINDOW": "2097576",
+            "X": "380",
+            "Y": "278",
+            "WIDTH": "520",
+            "HEIGHT": "300",
+            "SCREEN": "0"
+          },
+          "name": "Request AUTO"
+        },
+        {
+          "title": "Enable physical pilot control?",
+          "geometry": {
+            "WINDOW": "2097611",
+            "X": "380",
+            "Y": "278",
+            "WIDTH": "520",
+            "HEIGHT": "300",
+            "SCREEN": "0"
+          },
+          "name": "Enable physical pilot control?"
+        },
+        {
+          "title": "Request AUTO",
+          "geometry": {
+            "WINDOW": "2097647",
+            "X": "380",
+            "Y": "278",
+            "WIDTH": "520",
+            "HEIGHT": "300",
+            "SCREEN": "0"
+          },
+          "name": "Request AUTO"
+        }
+      ],
+      "result": "passed; screenshot review required",
+      "sent": [
+        {
+          "key": 64,
+          "wire": "A110924.000 01CC3 1ED00 0163FF00FF03013B0703040640\r",
+          "time": 87129.265565048
+        },
+        {
+          "key": 81,
+          "wire": "A110926.000 01CC3 1ED00 0163FF00FF03013B0703040651\r",
+          "time": 87131.378928163
+        },
+        {
+          "key": 127,
+          "wire": "A110928.000 01CC3 1ED00 0163FF00FF03013B070304067F\r",
+          "time": 87133.388310149
+        },
+        {
+          "key": 209,
+          "wire": "A110930.000 01CC3 1ED00 0163FF00FF03013B07030406D1\r",
+          "time": 87135.397898931
+        },
+        {
+          "key": 80,
+          "wire": "A110932.000 01CC3 1ED00 0163FF00FF03013B0703040650\r",
+          "time": 87137.413123585
+        },
+        {
+          "key": 81,
+          "wire": "A110935.000 01CC3 1ED00 0163FF00FF03013B0703040651\r",
+          "time": 87139.577614162
+        },
+        {
+          "key": 0,
+          "wire": "A110939.000 01CC3 1ED00 0163FF00FF03013B0703040600\r",
+          "time": 87144.55768705
+        }
+      ],
+      "transport_failures": []
+    }
+  },
+  "review": "1280x800 night chart land/water are dim and visible; full 126-DIP instrument cards preserve LIVE/UNAVAILABLE labels; direct Pilot and disabled-by-default STBY visible. Confirmation sheet leaves global alert/navigation bands visible. Native scaling, gesture and compact System popup acceptance remain pending.",
+  "hashes": {
+    "beta-touch-contract-final.log": "9db6641c5acabd05c08a204a708f03c1fd0ed1298bfd7cec5b172d1ea745cd16",
+    "beta-touch-integrated-final.log": "c4d306887a917e0905dacdcb0f7cfacf7f91e8f797dbfc337d2f2f5e52e35494",
+    "beta-touch-preview8.log": "7da87025a6d7dd268bd3ef70518948da92fcf32e6f56d2ae3997a28718666af3",
+    "beta-touch-recording.log": "e458a5f77ee62d01c6e5f6454ba295a0c83187fedf6bb284d5d2f7a5786f997b",
+    "beta-touch-pilot-final.log": "818a25c38242fe8e0ae69b42420b38ca1b07c28b30ac0930c9cae43e1acbd816",
+    "preview-02-navigation-night-linux.png": "d5344d3ab7a23d9e94ea47b7a589df46b6f304d8735c8c133d9fb5e974d93da2",
+    "beta-night-instruments-linux.png": "f4f0c08270a55a0fa5861c31aba51119a2edc9d75fd2b616179999a4eb189d21",
+    "beta-night-autopilot-linux.png": "ef6cd277c13c7112310f7f873590d4ab9a1a477fb021b1731da48b40ab879136",
+    "pilot-confirmation-linux.png": "1c96c2982d4b4b2b227860d15de23a6e4c9b444aa26b46fad05681f1e0763fb3"
+  },
+  "not_acceptance": [
+    "Earlier hidden-scrollbar layout compressed instrument state labels; corrected before this record",
+    "Earlier top-of-page disabled focus broke Linux accelerators; corrected and actual regression passed",
+    "No physical touchscreen or native GPU acceptance",
+    "Exact compact-System candidate GUI rerun and native run remain required"
+  ]
+}

@@ -29,6 +29,8 @@
 #endif
 
 #include "chcanv.h"
+#include "gshhs.h"
+#include "shapefile_basemap.h"
 #include "ocpn_frame.h"
 #include "toolbar.h"
 #include "viewport.h"
@@ -51,6 +53,7 @@
 #include <vector>
 
 extern ColorScheme global_color_scheme;
+extern ShapeBaseChartSet gShapeBasemap;
 extern ocpnFloatingToolbarDialog* g_MainToolbar;
 extern bool g_bDeferredInitDone;
 extern bool g_bportable;
@@ -514,6 +517,12 @@ void Attach(MyFrame& frame, wxAuiManager& manager, wxFileConfig& config) {
     auto runtime =
         integration::ReadRuntimeDiagnostics(*frame.GetPrimaryCanvas());
     if (shell) {
+      runtime["display"]["light"] = wxString::FromUTF8(shell->LightName());
+      runtime["display"]["native_caption_themed"] = shell->NativeCaptionThemed();
+      runtime["display"]["minimum_value_height_dip"] = shell->MinimumValueHeight();
+      runtime["display"]["page_scroll_px"] = shell->PageScrollPosition();
+      runtime["display"]["can_scroll_up"] = shell->CanScrollPage(-1);
+      runtime["display"]["can_scroll_down"] = shell->CanScrollPage(1);
       runtime["smartnav"]["route_valid"] = shell->Advice().route_valid;
       runtime["smartnav"]["reason"] = wxString::FromUTF8(shell->Advice().reason);
       runtime["smartnav"]["event_count"] = static_cast<int>(shell->Advice().events.size());
@@ -599,9 +608,15 @@ void Attach(MyFrame& frame, wxAuiManager& manager, wxFileConfig& config) {
   };
   actions.demo_chart=[] { if(g_bDeferredInitDone) JumpToPosition(59.08,18.5,0.003); };
   actions.theme = [&frame](ui::LightMode mode) {
-    frame.SetAndApplyColorScheme(mode == ui::LightMode::Night ? GLOBAL_COLOR_SCHEME_NIGHT
-                                : mode == ui::LightMode::Dusk ? GLOBAL_COLOR_SCHEME_DUSK
-                                                             : GLOBAL_COLOR_SCHEME_DAY);
+    const auto scheme = mode == ui::LightMode::Night ? GLOBAL_COLOR_SCHEME_NIGHT
+                        : mode == ui::LightMode::Dusk ? GLOBAL_COLOR_SCHEME_DUSK
+                                                     : GLOBAL_COLOR_SCHEME_DAY;
+    // The software shapefile renderer otherwise retains its constructor's day
+    // land colour. Reuse the pinned upstream world-chart palette exactly.
+    GSHHSChart palette;
+    palette.SetColorScheme(scheme);
+    gShapeBasemap.SetBasemapLandColor(palette.land);
+    frame.SetAndApplyColorScheme(scheme);
   };
   shell = std::make_unique<ui::Shell>(frame, manager, std::move(actions), Light(), demo);
   navigation = std::make_unique<NavigationBridge>(
@@ -615,6 +630,12 @@ void Attach(MyFrame& frame, wxAuiManager& manager, wxFileConfig& config) {
 }
 
 void AfterDeferredInitialization() {
+  if (shell && host) {
+    GSHHSChart palette;
+    palette.SetColorScheme(global_color_scheme);
+    gShapeBasemap.SetBasemapLandColor(palette.land);
+    host->GetPrimaryCanvas()->ReloadVP();
+  }
   if (!recovery_safe || recovery_notice_scheduled || !host) return;
   recovery_notice_scheduled = true;
   host->CallAfter([] {

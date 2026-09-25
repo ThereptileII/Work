@@ -573,7 +573,7 @@ index da348cd06..92b6a1230 100644
 @@ -24,6 +24,10 @@
   ***************************************************************************
   */
-
+ 
 +#ifdef OPENNAV_X
 +#include "integration/OpenCPNIntegration.h"
 +#endif
@@ -584,7 +584,7 @@ index da348cd06..92b6a1230 100644
 @@ -1180,6 +1184,13 @@ static void AISDrawTarget(AisTargetData *td, ocpnDC &dc, ViewPort &vp,
        TargetFrame(dc, wxPen(UBLCK, 2), TargetPoint.x, TargetPoint.y, 25);
    }
-
+ 
 +#ifdef OPENNAV_X
 +  // OpenNav-owned selection reuses upstream symbol framing. No target data or
 +  // AIS calculations are modified; Legacy retains its normal query selection.

@@ -6,7 +6,7 @@
 
 namespace opennav::ui {
 enum class PreviewPage { Route, Energy, Diagnostics };
-class PreviewPanel final : public wxScrolledWindow {
+class PreviewPanel final : public XNavScroll {
 public:
   explicit PreviewPanel(wxWindow *parent);
   void Update(PreviewPage page, LightMode mode,

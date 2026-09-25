@@ -37,6 +37,25 @@ ambiguous, edited or transitional state never becomes a valid zero arrival.
 
 ## Beta development
 
+Night/touch hardening now uses shared gesture/button scrolling without native
+scrollbars, preserves full instrument-card height and keyboard focus, reserves
+space for global alerts around sheets, and exposes Pilot plus a fixed manual
+STBY control. The software basemap uses OpenCPN's own night land/water palette.
+The System popup is compact enough for the 150% workspace. Local 60 portable
+suites / 99 integrated cases, 13 primary night-surface checks and actual
+recording/replay pass; final pilot/native results are recorded separately.
+Native tests now scroll actions into view, check card height, exercise touch
+pan, full-screen return and System popup bounds at 100/125/150%.
+[Display contract](display-beta-contract.md), [local evidence](evidence/beta-display-local.json). Windows remains authoritative;
+this paragraph is development progress, not Beta release acceptance.
+
+The AIS increment at `ac6fafa` / run `36114659033` passed both 60-suite contract
+jobs but its native build stopped before compilation on a CRLF-converted patch
+context line. The replacement preserves valid unified-diff prefixes and uses
+one LF-normalized stream for check, application and exact-source verification.
+No hunk is ignored, and the failed native run is not accepted.
+
+
 AIS target cards now select/center the existing chart target with an expiring,
 owned selection. A shared observation epoch fixes live AIS advisories being
 incorrectly rejected as future data. SmartNav suppresses route-dependent advice

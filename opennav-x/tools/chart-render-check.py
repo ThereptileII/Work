@@ -28,3 +28,19 @@ def check(rgb, colors, phase):
         f'{phase}: coastline disappeared or chart canvas is covered: {fractions}'
     return {'phase': phase, 'reference_color_fractions': fractions,
             'coastline_visible': True}
+
+
+def night(rgb, day_colors, phase):
+    """Pinned GSHHS SetColorScheme NIGHT multiplies land and water by 0.25."""
+    colors = [bytes(int(channel * .25) for channel in color) for color in day_colors]
+    return check(rgb, colors, phase)
+
+
+def dark_surface(rgb, phase):
+    """Primary client area only; native OS captions/file dialogs are separate."""
+    assert len(rgb) == 1280 * 800 * 3
+    pixels = [rgb[(y * 1280 + x) * 3:(y * 1280 + x) * 3 + 3]
+              for y in range(110, 730, 4) for x in range(8, 1272, 4)]
+    bright = sum(min(p) > 210 for p in pixels) / len(pixels)
+    assert bright < .005, f'{phase}: unexpected bright primary surface {bright:.3%}'
+    return {'phase': phase, 'bright_fraction': bright, 'scope': 'Primary client area; OS caption/file picker excluded'}

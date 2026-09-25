@@ -5,11 +5,27 @@
 
 #include <wx/control.h>
 #include <wx/panel.h>
+#include <wx/scrolwin.h>
 
 namespace opennav::ui {
 
 wxColour Colour(std::uint32_t rgb);
 wxFont UiFont(wxWindow& window, int pixels, bool bold = false);
+
+// Shared touch/wheel scrolling with no bright native scrollbar. Persistent
+// XNav navigation buttons are supplied outside the scrolling content.
+class XNavScroll : public wxScrolledWindow {
+ public:
+  explicit XNavScroll(wxWindow *parent);
+  bool Layout() override;
+  bool CanScroll(int direction) const;
+  void Step(int direction);
+  void Pan(wxPanGestureEvent &event);
+ private:
+  int pan_remainder_ = 0;
+};
+void EnableScrollGesture(wxWindow &window);
+bool ThemeWindowChrome(wxWindow &window, LightMode mode);
 
 class XNavButton final : public wxControl {
  public:

@@ -66,6 +66,11 @@ public:
   void ShowAis(int mmsi);
   const smartnav::NavigationAdvice &Advice() const { return field_snapshot_.advice; }
   int SelectedAis() const { return ais_selection_.Selected(vessel::Clock::now()); }
+  int PageScrollPosition() const;
+  bool CanScrollPage(int direction) const;
+  bool NativeCaptionThemed() const { return caption_themed_; }
+  int MinimumValueHeight() const { return product_ && product_->IsShown() ? product_->MinimumValueHeight() : 0; }
+  const char *LightName() const;
   void ShowObject(const std::string &id, bool route);
 
 private:
@@ -79,6 +84,8 @@ private:
   void UpdateRail(const std::vector<std::string> &keys, vessel::Time now);
   void Tick();
   void UpdateAlerts();
+  XNavScroll *CurrentScroll() const;
+  void UpdateScrollControls();
   std::string PageTitle() const;
   void ShowSystem();
   void ShowProduct(ProductPage page);
@@ -109,6 +116,7 @@ private:
   PreviewPanel *page_ = nullptr;
   ProductPanel *product_ = nullptr;
   XNavButton *finish_route_ = nullptr;
+  XNavButton *standby_ = nullptr;
   PreviewPage current_page_ = PreviewPage::Route;
   std::vector<std::pair<wxString, bool>> navigation_visibility_;
   wxTimer timer_;
@@ -116,7 +124,11 @@ private:
   std::vector<XNavButton *> buttons_;
   std::vector<std::pair<int, std::function<void()>>> commands_;
   std::vector<wxStaticText *> labels_;
-  wxScrolledWindow *rail_scroll_ = nullptr;
+  XNavScroll *rail_scroll_ = nullptr;
+  XNavButton *page_up_ = nullptr, *page_down_ = nullptr;
+  XNavButton *rail_up_ = nullptr, *rail_down_ = nullptr;
+  wxPanel *rail_actions_ = nullptr;
+  bool caption_themed_ = false;
   std::vector<std::string> rail_keys_;
   std::vector<std::pair<std::string, XNavDataValue *>> rail_values_;
   wxStaticText *clock_, *source_, *route_summary_;

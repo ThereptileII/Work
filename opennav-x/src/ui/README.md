@@ -1,10 +1,11 @@
 # UI boundary
 
-Pending the pristine Windows baseline and the approved concept board.
-wxWidgets shell components will frame the existing ChartCanvas; no replacement
-chart renderer or invented chart imagery. Theme tokens follow specification
-Revision 3. Simulation must require explicit activation and remain visibly
-labelled. Production startup renders unavailable values until data arrives.
+XNav frames the existing OpenCPN ChartCanvas through AUI without reparenting or
+replacing its renderer. UI consumes owned Vessel Data/route/AIS snapshots and
+SmartNav advice. All model changes and human commands pass through integration
+or adapter interfaces; no protocol parsing or navigation math belongs here.
 
-UI reads Vessel Data snapshots and SmartNav advice, and sends high-level
-requests to adapters. No protocol parsing or navigation math belongs here.
+Theme tokens, `XNavButton`, `XNavDataValue`, `XNavScroll` and sheets are shared
+across primary workflows. Demo and replay remain explicit. Source loss never
+turns into a valid zero or renewed age. Operational alerts stay visible above
+center pages. See `docs/display-beta-contract.md` for night/touch boundaries.

@@ -350,3 +350,15 @@ renderer. Merge risk is low and localized to the existing query-highlight block.
 Validation: `ais_selection_lifetime`, existing integrated AIS contracts and the
 actual AIS card → chart workflow with native/Linux captures. Replacement native
 acceptance is mandatory before this hook is release-qualified.
+
+Beta night rendering uses the existing deferred-initialization hook and public
+`ShapeBaseChartSet::SetBasemapLandColor` with the pinned `GSHHSChart` palette.
+No new patched source is needed. The software land color now follows the same
+upstream dusk/night multiplier as water in XNav; Legacy and ENC rules are intact.
+
+Native run `36114659033` rejected patch parsing at a blank AIS context line
+converted to CRLF by checkout. Patch files now have LF attributes and proper
+unified-diff context prefixes. Preparation feeds the identical LF-normalized
+stream to check/apply/temporary-index verification on every platform. Exact
+pinned revision and reviewed-worktree comparison remain mandatory; no ignored
+hunks or weakened source checks are introduced.

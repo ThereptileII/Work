@@ -26,8 +26,7 @@ wxString Reading(const vessel::Sample &sample, vessel::Time now,
 }
 } // namespace
 ProductPanel::ProductPanel(wxWindow *parent, ProductActions actions)
-    : wxScrolledWindow(parent, wxID_ANY, wxDefaultPosition, wxDefaultSize,
-                       wxVSCROLL | wxBORDER_NONE),
+    : XNavScroll(parent),
       actions_(std::move(actions)) {
   SetScrollRate(0, FromDIP(24));
   Bind(wxEVT_SIZE, [this](wxSizeEvent &e) {
@@ -62,6 +61,7 @@ void ProductPanel::Heading(const wxString &title, const wxString &subtitle) {
 }
 void ProductPanel::Text(const wxString &text, int size) {
   auto *label = new wxStaticText(this, wxID_ANY, text);
+  EnableScrollGesture(*label);
   label->SetFont(UiFont(*this, size, size > 18));
   label->SetForegroundColour(
       Colour(size > 18 ? Theme(mode_).primary : Theme(mode_).secondary));
@@ -72,6 +72,7 @@ void ProductPanel::Text(const wxString &text, int size) {
 void ProductPanel::LiveText(
     std::function<wxString(const ProductState &)> text) {
   auto *label = new wxStaticText(this, wxID_ANY, text(state_));
+  EnableScrollGesture(*label);
   label->SetFont(UiFont(*this, 14));
   label->SetForegroundColour(Colour(Theme(mode_).secondary));
   body_->Add(label, 0, wxEXPAND | wxLEFT | wxRIGHT | wxBOTTOM, FromDIP(16));
@@ -191,6 +192,14 @@ void ProductPanel::ShowPage(ProductPage page, LightMode mode) {
   mode_ = mode;
   Scroll(0, 0);
   Build();
+}
+int ProductPanel::MinimumValueHeight() const {
+  int minimum = 0;
+  for (const auto &v : values_) {
+    const int height = ToDIP(v.first->GetClientSize().y);
+    if (!minimum || height < minimum) minimum = height;
+  }
+  return minimum;
 }
 void ProductPanel::ShowAis(int mmsi, LightMode mode) {
   mmsi_ = mmsi;

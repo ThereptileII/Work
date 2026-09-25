@@ -68,11 +68,12 @@ struct ProductActions {
   std::function<application::CommandResult(const application::Settings &)>
       save_settings;
 };
-class ProductPanel final : public wxScrolledWindow {
+class ProductPanel final : public XNavScroll {
 public:
   ProductPanel(wxWindow *parent, ProductActions actions);
   void ShowPage(ProductPage page, LightMode mode);
   std::string PageTitle() const;
+  int MinimumValueHeight() const;
   void ShowAis(int mmsi, LightMode mode);
   void ShowObject(const std::string &id, bool route, LightMode mode);
   void Update(const ProductState &state, LightMode mode);

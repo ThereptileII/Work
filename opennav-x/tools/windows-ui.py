@@ -29,6 +29,7 @@ SetCursorPos = declare(user, 'SetCursorPos', W.BOOL, C.c_int, C.c_int)
 MouseEvent = declare(user, 'mouse_event', None, W.DWORD, W.DWORD, W.DWORD, W.DWORD, C.c_size_t)
 GetWindowRect = declare(user, 'GetWindowRect', W.BOOL, W.HWND, C.POINTER(W.RECT))
 GetClientRect = declare(user, 'GetClientRect', W.BOOL, W.HWND, C.POINTER(W.RECT))
+GetParent = declare(user, 'GetParent', W.HWND, W.HWND)
 ScreenToClient = declare(user, 'ScreenToClient', W.BOOL, W.HWND, C.POINTER(W.POINT))
 ChildWindowFromPointEx = declare(user, 'ChildWindowFromPointEx', W.HWND, W.HWND, W.POINT, W.UINT)
 GetDpiForWindow = declare(user, 'GetDpiForWindow', W.UINT, W.HWND)
@@ -116,6 +117,26 @@ def click_text(pid, label):
                     # text. Static text is never an actionable control.
                     if native_class.value.lower() == 'static':
                         continue
+                    # XNav controls in scrolled content must actually be visible
+                    # before interaction. HWND visibility alone includes clipped
+                    # offscreen children and would hide higher-DPI regressions.
+                    ancestor=GetParent(handle);viewport=None
+                    while ancestor:
+                        if text(ancestor).startswith(('OpenNav Alpha page:', 'OpenNav page:')):
+                            viewport=ancestor;break
+                        ancestor=GetParent(ancestor)
+                    if viewport:
+                        item=W.RECT();area=W.RECT()
+                        GetWindowRect(handle,C.byref(item));GetWindowRect(viewport,C.byref(area))
+                        if item.top<area.top or item.bottom>area.bottom:
+                            direction='Up' if item.top<area.top else 'Down'
+                            buttons=[h for h,t in children(root) if t==direction and IsWindowEnabled(h)]
+                            if len(buttons)==1:
+                                b=buttons[0];r=W.RECT();GetClientRect(b,C.byref(r))
+                                pos=(r.right//2)|((r.bottom//2)<<16)
+                                SendMessageW(b,0x201,1,pos);SendMessageW(b,0x202,0,pos)
+                                time.sleep(.3)
+                            continue
                     rect = W.RECT()
                     GetClientRect(handle, C.byref(rect))
                     position = (rect.right // 2) | ((rect.bottom // 2) << 16)

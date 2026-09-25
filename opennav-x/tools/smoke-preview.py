@@ -203,6 +203,9 @@ try:
         ui.size_window(handle)
         ui.assert_route_summary_layout(handle)
         report['checks'].append('Bottom route summary lays out after narrow-to-wide resize')
+    if not windows:
+        command('System','s');capture('beta-system-popup')
+        xdo('key','Escape');time.sleep(.3)
     first=data(lambda d:d['data_mode']=='DEMO' and 'arrival_soc' in d['energy'])
     assert first['route']['source'].startswith('DEMO')
     chart_colors=chartcheck.reference(capture('preview-01-navigation-day'))
@@ -211,7 +214,7 @@ try:
         ui.click_text(pid,'Light');ui.click_text(pid,'Light')
     else:
         xdo('mousemove',1240,28,'click',1);time.sleep(.4);xdo('click',1);time.sleep(.4)
-    capture('preview-02-navigation-night')
+    report['chart_rendering'].append(chartcheck.night(capture('preview-02-navigation-night'),chart_colors,'Night world-chart land/water palette'))
     if windows:ui.click_text(pid,'Light')
     else:xdo('click',1);time.sleep(.5)
     command('Route','r');page_capture('preview-03-route','Route')
@@ -219,6 +222,14 @@ try:
     if windows:ui.click_text(pid,'System');ui.click_text(pid,'Diagnostics')
     else:xdo('key','ctrl+shift+i');time.sleep(.5)
     page_capture('preview-05-diagnostics','Diagnostics')
+    data(lambda d:d['runtime']['display']['can_scroll_down'])
+    if windows:ui.click_text(pid,'Down')
+    else:xdo('mousemove',1164,28,'click',1)
+    data(lambda d:d['runtime']['display']['page_scroll_px']>0)
+    if windows:ui.click_text(pid,'Up')
+    else:xdo('mousemove',1092,28,'click',1)
+    data(lambda d:d['runtime']['display']['page_scroll_px']==0)
+    report['checks'].append('Persistent page controls scroll diagnostics and return to top without native scrollbars')
     # Alpha product pages use real touch-button actions on Windows and public
     # frame shortcuts on Linux. Existing preview regression assertions remain.
     for title,key,name in [('Vessel instruments','v','instruments'),
@@ -231,7 +242,17 @@ try:
         else: xdo('key','ctrl+shift+'+key);time.sleep(.6)
         expected_page='SmartNav' if name=='smartnav' else title
         data(lambda d:d.get('ui_page')==expected_page)
+        if name in ('instruments','autopilot'):
+            data(lambda d:d['runtime']['display']['minimum_value_height_dip']>=120)
         capture('alpha-'+name)
+        if windows:ui.click_text(pid,'Light');ui.click_text(pid,'Light')
+        else:
+            xdo('mousemove',1240,28,'click',1);time.sleep(.4);xdo('click',1)
+        data(lambda d:d['runtime']['display']['light']=='Night')
+        report.setdefault('night_surfaces',[]).append(chartcheck.dark_surface(capture('beta-night-'+name),expected_page))
+        if windows:ui.click_text(pid,'Light')
+        else:xdo('click',1)
+        data(lambda d:d['runtime']['display']['light']=='Day')
         if windows:ui.assert_product_page(handle,expected_page)
         if windows and name=='autopilot':
             ui.click_text(pid,'Enable / disable DEMO manual control');ui.click_text(pid,'Enable DEMO')
@@ -242,7 +263,7 @@ try:
             ui.click_text(pid,'+1° magnetic course');time.sleep(1)
             assert any(c.startswith('Command: Confirmed') for _,c in ui.children(handle))
             capture('alpha-autopilot-confirmed')
-            ui.click_text(pid,'STANDBY');time.sleep(1)
+            ui.click_text(pid,'STBY');time.sleep(1)
             assert any(c.startswith('STANDBY / Feedback current') for _,c in ui.children(handle))
             ui.click_text(pid,'Enable / disable DEMO manual control')
             report['checks'].append('Native manual DEMO enable/AUTO/+1/STANDBY/disable with new-feedback confirmation')
@@ -260,7 +281,17 @@ try:
         else:xdo('key','ctrl+shift+'+key);time.sleep(.6)
         expected_page='Display' if name=='display' else title
         data(lambda d:d.get('ui_page')==expected_page)
+        if name in ('instruments','autopilot'):
+            data(lambda d:d['runtime']['display']['minimum_value_height_dip']>=120)
         capture('alpha-'+name)
+        if windows:ui.click_text(pid,'Light');ui.click_text(pid,'Light')
+        else:
+            xdo('mousemove',1240,28,'click',1);time.sleep(.4);xdo('click',1)
+        data(lambda d:d['runtime']['display']['light']=='Night')
+        report.setdefault('night_surfaces',[]).append(chartcheck.dark_surface(capture('beta-night-'+name),expected_page))
+        if windows:ui.click_text(pid,'Light')
+        else:xdo('click',1)
+        data(lambda d:d['runtime']['display']['light']=='Day')
         if windows:ui.assert_product_page(handle,expected_page)
         if windows and name=='energy-settings':
             ui.click_text(pid,'Configure battery & reserve')

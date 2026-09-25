@@ -2,10 +2,100 @@
 
 #include <wx/dcbuffer.h>
 #include <wx/graphics.h>
+#include <wx/sizer.h>
+#ifdef __WXMSW__
+#include <wx/msw/wrapwin.h>
+#endif
 
 #include <memory>
 
 namespace opennav::ui {
+
+XNavScroll::XNavScroll(wxWindow *parent)
+    : wxScrolledWindow(parent, wxID_ANY, wxDefaultPosition, wxDefaultSize,
+                       wxVSCROLL | wxBORDER_NONE) {
+  SetScrollRate(0, FromDIP(24));
+  ShowScrollbars(wxSHOW_SB_NEVER, wxSHOW_SB_NEVER);
+  EnableScrollGesture(*this);
+}
+
+bool XNavScroll::Layout() {
+  if (!GetSizer()) return wxScrolledWindow::Layout();
+  // wx 3.2 ScrollLayout treats a hidden native scrollbar as disabled scrolling
+  // and shrinks the sizer to the viewport. Keep full-height content when using
+  // our explicit controls, otherwise quality labels and touch rows are clipped.
+  const wxSize content(GetClientSize().x,
+      std::max(GetVirtualSize().y, GetSizer()->GetMinSize().y));
+  GetSizer()->SetDimension(CalcScrolledPosition(wxPoint(0, 0)), content);
+  return true;
+}
+
+bool XNavScroll::CanScroll(int direction) const {
+  int x, y, ux, uy;
+  GetViewStart(&x, &y);
+  GetScrollPixelsPerUnit(&ux, &uy);
+  return direction < 0 ? y > 0
+      : y * uy + GetClientSize().y < GetVirtualSize().y;
+}
+
+void XNavScroll::Step(int direction) {
+  int x, y, ux, uy;
+  GetViewStart(&x, &y);
+  GetScrollPixelsPerUnit(&ux, &uy);
+  if (uy > 0)
+    Scroll(0, std::max(0, y + direction * std::max(1, GetClientSize().y * 2 / (3 * uy))));
+}
+
+void XNavScroll::Pan(wxPanGestureEvent &event) {
+  if (event.IsGestureStart()) pan_remainder_ = 0;
+  int x, y, ux, uy;
+  GetViewStart(&x, &y);
+  GetScrollPixelsPerUnit(&ux, &uy);
+  if (uy <= 0) return;
+  pan_remainder_ -= event.GetDelta().y;
+  const int steps = pan_remainder_ / uy;
+  pan_remainder_ %= uy;
+  Scroll(0, std::max(0, y + steps));
+}
+
+void EnableScrollGesture(wxWindow &window) {
+  window.EnableTouchEvents(wxTOUCH_VERTICAL_PAN_GESTURE);
+  window.Bind(wxEVT_GESTURE_PAN, [&window](wxPanGestureEvent &event) {
+    for (auto *parent = &window; parent; parent = parent->GetParent())
+      if (auto *scroll = dynamic_cast<XNavScroll *>(parent)) {
+        scroll->Pan(event);
+        return;
+      }
+    event.Skip();
+  });
+}
+
+bool ThemeWindowChrome(wxWindow &window, LightMode mode) {
+#ifdef __WXMSW__
+  // Documented DWM attributes; unsupported older Windows retain their native
+  // caption. No undocumented ordinals, global theme or registry changes.
+  const auto library = LoadLibraryExW(L"dwmapi.dll", nullptr, LOAD_LIBRARY_SEARCH_SYSTEM32);
+  if (!library) return false;
+  using SetAttribute = HRESULT(WINAPI *)(HWND, DWORD, LPCVOID, DWORD);
+  const auto set = reinterpret_cast<SetAttribute>(GetProcAddress(library, "DwmSetWindowAttribute"));
+  bool applied = false;
+  if (set) {
+    const auto c = Theme(mode);
+    const BOOL dark = TRUE;
+    const COLORREF caption = RGB((c.surface >> 16) & 255, (c.surface >> 8) & 255, c.surface & 255);
+    const COLORREF text = RGB((c.secondary >> 16) & 255, (c.secondary >> 8) & 255, c.secondary & 255);
+    const auto handle = static_cast<HWND>(window.GetHandle());
+    set(handle, 20, &dark, sizeof(dark));
+    const auto a = set(handle, 35, &caption, sizeof(caption));
+    const auto b = set(handle, 36, &text, sizeof(text));
+    applied = SUCCEEDED(a) && SUCCEEDED(b);
+  }
+  FreeLibrary(library);
+  return applied;
+#else
+  return false;
+#endif
+}
 
 wxColour Colour(std::uint32_t rgb) {
   return wxColour((rgb >> 16) & 255, (rgb >> 8) & 255, rgb & 255);
@@ -29,6 +119,15 @@ XNavButton::XNavButton(wxWindow* parent, wxWindowID id, const wxString& label,
   SetToolTip(accessible_name);
   SetMinSize(FromDIP(wxSize(spacing::touch, spacing::touch)));
   SetBackgroundStyle(wxBG_STYLE_PAINT);
+  EnableTouchEvents(wxTOUCH_VERTICAL_PAN_GESTURE);
+  Bind(wxEVT_GESTURE_PAN, [this](wxPanGestureEvent &e) {
+    pressed_ = false;
+    if (HasCapture()) ReleaseMouse();
+    Refresh();
+    for (auto *p = GetParent(); p; p = p->GetParent())
+      if (auto *scroll = dynamic_cast<XNavScroll *>(p)) { scroll->Pan(e); return; }
+    e.Skip();
+  });
   Bind(wxEVT_PAINT, &XNavButton::Paint, this);
   Bind(wxEVT_SET_FOCUS, [this](wxFocusEvent& e) { Refresh(); e.Skip(); });
   Bind(wxEVT_KILL_FOCUS, [this](wxFocusEvent& e) { pressed_ = false; Refresh(); e.Skip(); });
@@ -105,6 +204,7 @@ XNavDataValue::XNavDataValue(wxWindow* parent, const wxString& label,
   SetBackgroundStyle(wxBG_STYLE_PAINT);
   SetMinSize(FromDIP(wxSize(120, 120)));
   SetName(label + " unavailable");
+  EnableScrollGesture(*this);
   Bind(wxEVT_PAINT, &XNavDataValue::Paint, this);
 }
 

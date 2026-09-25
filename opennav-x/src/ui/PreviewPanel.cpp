@@ -84,8 +84,7 @@ wxString PointName(const vessel::VesselState &s) {
 }
 } // namespace
 PreviewPanel::PreviewPanel(wxWindow *parent)
-    : wxScrolledWindow(parent, wxID_ANY, wxDefaultPosition, wxDefaultSize,
-                       wxBORDER_NONE | wxVSCROLL) {
+    : XNavScroll(parent) {
   SetBackgroundStyle(wxBG_STYLE_PAINT);
   SetScrollRate(0, FromDIP(24));
   Bind(wxEVT_PAINT, &PreviewPanel::Paint, this);

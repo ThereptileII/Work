@@ -16,13 +16,12 @@ EditSheet(wxWindow &parent, LightMode mode, const wxString &title,
   dialog.SetBackgroundColour(Colour(c.elevated));
   const int gap = dialog.FromDIP(16);
   auto *outer = new wxBoxSizer(wxVERTICAL);
-  auto *content =
-      new wxScrolledWindow(&dialog, wxID_ANY, wxDefaultPosition, wxDefaultSize,
-                           wxVSCROLL | wxBORDER_NONE);
-  content->SetScrollRate(0, dialog.FromDIP(24));
+  auto *content = new XNavScroll(&dialog);
+  content->SetBackgroundColour(Colour(c.elevated));
   auto *body = new wxBoxSizer(wxVERTICAL);
   auto label = [&](const wxString &text, int size, bool bold) {
     auto *t = new wxStaticText(content, wxID_ANY, text);
+    EnableScrollGesture(*t);
     t->SetFont(UiFont(dialog, size, bold));
     t->SetForegroundColour(Colour(c.primary));
     t->Wrap(dialog.FromDIP(450));
@@ -48,6 +47,16 @@ EditSheet(wxWindow &parent, LightMode mode, const wxString &title,
   content->SetSizer(body);
   outer->Add(content, 1, wxEXPAND);
   auto *actions = new wxBoxSizer(wxHORIZONTAL);
+  std::vector<XNavButton *> scroll_buttons;
+  for (int direction : {-1, 1}) {
+    auto *b = new XNavButton(&dialog, wxID_ANY, direction < 0 ? "Up" : "Down", "Scroll sheet fields");
+    b->SetLightMode(mode);
+    b->Bind(wxEVT_BUTTON, [content, direction](wxCommandEvent &) { content->Step(direction); });
+    actions->Add(b, 0, wxALL, dialog.FromDIP(4));
+    b->SetMinSize(dialog.FromDIP(wxSize(64, 48)));
+    b->Hide();
+    scroll_buttons.push_back(b);
+  }
   for (const auto &pair : std::vector<std::pair<wxString, int>>{
            {"Cancel", wxID_CANCEL}, {accept, wxID_OK}}) {
     auto *b = new XNavButton(&dialog, wxID_ANY, pair.first, pair.first);
@@ -59,12 +68,23 @@ EditSheet(wxWindow &parent, LightMode mode, const wxString &title,
   }
   outer->Add(actions, 0, wxEXPAND);
   dialog.SetSizer(outer);
-  const auto available = wxGetTopLevelParent(&parent)->GetClientSize();
-  dialog.SetSize(wxSize(
+  auto *frame = wxGetTopLevelParent(&parent);
+  const auto available = frame->GetClientSize();
+  // Reserve both the status/alert layers and the fixed navigation/STBY row.
+  // A newly arriving alert must not appear behind an already-open sheet.
+  const int top = dialog.FromDIP(112), bottom = dialog.FromDIP(56);
+  const auto size = wxSize(
       std::min(dialog.FromDIP(520), available.x - dialog.FromDIP(24)),
       std::min(dialog.FromDIP(300 + 100 * static_cast<int>(fields.size())),
-               available.y - dialog.FromDIP(24))));
-  dialog.CentreOnParent();
+               std::max(dialog.FromDIP(160), available.y - top - bottom - dialog.FromDIP(24))));
+  dialog.SetSize(size);
+  dialog.Move(frame->ClientToScreen(wxPoint((available.x-size.x)/2,
+                     top + (available.y-top-bottom-size.y)/2)));
+  dialog.Layout();
+  content->FitInside();
+  const bool overflow = content->CanScroll(1);
+  for (auto *b : scroll_buttons) b->Show(overflow);
+  dialog.Layout();
   if (!inputs.empty())
     inputs.front()->SetFocus();
   if (dialog.ShowModal() != wxID_OK)
