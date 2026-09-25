@@ -16,6 +16,7 @@ class XNavButton final : public wxControl {
   XNavButton(wxWindow* parent, wxWindowID id, const wxString& label,
              const wxString& accessible_name);
   void SetLightMode(LightMode mode);
+  void SetLabel(const wxString &label) override;
 
  private:
   void Paint(wxPaintEvent& event);

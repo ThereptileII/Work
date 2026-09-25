@@ -295,7 +295,27 @@ try:
     command('Energy','e');scenario('Sensors stale',1)
     stale=data(lambda d:item(d,'Battery SOC')['quality']=='STALE',timeout=12)
     assert 'arrival_soc' not in stale['energy'] and 'remaining_nm' not in stale['route']
+    assert any(a['id'].startswith('position-') and a['level']=='CRITICAL' for a in stale['runtime']['alerts'])
     page_capture('preview-06-stale','Energy')
+    # Global strip survives center-page changes. Acknowledgement cannot resolve
+    # the fault and recovery followed by another dropout creates a new episode.
+    if windows:
+        alert_caption=next(c for _,c in ui.children(handle) if c.startswith('Alerts / '))
+        ui.click_text(pid,alert_caption)
+    else:xdo('key','ctrl+shift+F9');time.sleep(.5)
+    alert_data=data(lambda d:d.get('ui_page')=='Alerts')
+    gps=next(a for a in alert_data['runtime']['alerts'] if a['id'].startswith('position-'))
+    capture('beta-alerts-active')
+    if windows:ui.click_text(pid,'Acknowledge '+gps['id'])
+    else:
+        # First condition row: caption/action/source then two 52-DIP buttons.
+        gps_index=next(i for i,a in enumerate(alert_data['runtime']['alerts']) if a['id']==gps['id'])
+        xdo('mousemove',900,368+177*gps_index,'click',1)
+    acknowledged=data(lambda d:any(a['id']==gps['id'] and a['acknowledged'] for a in d['runtime']['alerts']))
+    assert any(a['episode']==gps['episode'] for a in acknowledged['runtime']['alerts'])
+    capture('beta-alerts-acknowledged')
+    command('Energy','e')
+    assert data()['runtime']['alerts'],'Alert must remain after acknowledgement/page change'
     scenario('Sensors unavailable',2)
     missing=data(lambda d:item(d,'Depth below transducer')['quality']=='UNAVAILABLE')
     assert 'arrival_soc' not in missing['energy'];page_capture('preview-06b-unavailable','Energy')
@@ -311,6 +331,14 @@ try:
     scenario('Energy shortfall',7)
     shortfall=data(lambda d:d['energy'].get('shortfall_kwh',0)>0)
     assert 'arrival_soc' not in shortfall['energy'];page_capture('preview-06c-shortfall','Energy')
+    assert any(a['id']=='energy-shortfall' for a in shortfall['runtime']['alerts'])
+    scenario('Cruising',0)
+    data(lambda d:not any(a['id'].startswith('position-') or a['id']=='energy-shortfall' for a in d['runtime'].get('alerts',[])))
+    scenario('Sensors stale',1)
+    recurrence=data(lambda d:any(a['id']==gps['id'] and a['episode']!=gps['episode'] and not a['acknowledged'] for a in d['runtime']['alerts']))
+    scenario('Cruising',0)
+    data(lambda d:not any(a['id'].startswith('position-') or a['id']=='energy-shortfall' for a in d['runtime'].get('alerts',[])))
+    report['checks'].append('Global alerts persist across pages/acknowledgement, recover, and recur as new episodes')
     report['checks'].append('All eight GUI-selected scenarios pass validity/shortfall assertions')
     command('Navigation','n')
     if windows:

@@ -66,6 +66,12 @@ XNavButton::XNavButton(wxWindow* parent, wxWindowID id, const wxString& label,
   });
 }
 
+void XNavButton::SetLabel(const wxString &label) {
+  if(GetLabel() == label) return;
+  wxControl::SetLabel(label);
+  Refresh();
+}
+
 void XNavButton::SetLightMode(LightMode mode) { mode_ = mode; Refresh(); }
 
 void XNavButton::Activate() {

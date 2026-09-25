@@ -140,6 +140,22 @@ mode cycles and actual boat expiry input pass. Native replacement acceptance
 remains required. [Energy contract](energy-model.md),
 [local evidence](evidence/beta-energy-quality-local.json).
 
+The boat-expiry/field-ZIP replacement `2da6791` passes both 54-suite contract
+jobs, 99 Linux / 89 native integrated cases and actual boat/ZIP/replay checks.
+Five new native captures were reviewed. The complete run remains **rejected**:
+the stock prerequisite wizard exposed a partially built Finish page before its
+completion text. Energy run `6cc9b9e` exposed the corresponding destination-page
+race in the separate prerequisite job. Automation now waits for stable required
+controls while preserving all destination/hash/resource/registration checks.
+[Failure and scoped visual evidence](evidence/beta-boat-field-2da6791-review.json).
+
+Operational alert development adds an always-visible condition strip, actionable
+list, episode-scoped acknowledgement and independent sensor-loss/pilot/AIS/anchor/
+energy conditions. It cannot acknowledge upstream alarms or emit a command.
+Anchor now also displays battery SOC. Local 58 portable suites, 99 integrated
+cases and actual page/acknowledgement/recovery scenarios pass; native replacement
+acceptance remains pending. [Alert contract](operational-alerts.md), [local evidence](evidence/beta-alerts-local.json).
+
 ## Implemented Alpha product
 
 | Area | Current implementation and boundary |

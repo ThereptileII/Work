@@ -1,0 +1,243 @@
+{
+  "scope": "Operational alerts Linux development gate; replacement native gate mandatory",
+  "source_parent": "63a89beea1299098c436a405acc1f3e7add2a80d",
+  "portable_suites": 58,
+  "integrated_linux_cases": 99,
+  "runtime": {
+    "preview-linux-results.json": {
+      "authority": "Linux development",
+      "checks": [
+        "Alpha menu and eight product page interactions captured",
+        "Energy, source, vessel-safety and radar settings pages captured",
+        "Moving position, SOC, route distance and advisory destination SOC change",
+        "Global alerts persist across pages/acknowledgement, recover, and recur as new episodes",
+        "All eight GUI-selected scenarios pass validity/shortfall assertions",
+        "XNav / Legacy / Safe clean lifecycle and shared navigation/config persistence passed; mode switch stops Demo",
+        "Real bundled coastline remains rendered after Legacy return and Safe restart"
+      ],
+      "screenshots": [
+        "preview-01-navigation-day-linux.png",
+        "preview-11-startup-xnav-linux.png",
+        "preview-02-navigation-night-linux.png",
+        "preview-03-route-linux.png",
+        "preview-04-energy-linux.png",
+        "preview-05-diagnostics-linux.png",
+        "alpha-instruments-linux.png",
+        "alpha-ais-linux.png",
+        "alpha-smartnav-linux.png",
+        "alpha-autopilot-linux.png",
+        "alpha-anchor-linux.png",
+        "alpha-settings-linux.png",
+        "alpha-routes-linux.png",
+        "alpha-waypoints-linux.png",
+        "alpha-energy-settings-linux.png",
+        "alpha-sources-linux.png",
+        "alpha-vessel-settings-linux.png",
+        "alpha-radar-status-linux.png",
+        "alpha-display-linux.png",
+        "preview-06-stale-linux.png",
+        "beta-alerts-active-linux.png",
+        "beta-alerts-acknowledged-linux.png",
+        "preview-06b-unavailable-linux.png",
+        "preview-06c-shortfall-linux.png",
+        "preview-07-legacy-linux.png",
+        "preview-09-returned-xnav-linux.png",
+        "preview-08-safe-linux.png",
+        "preview-12-safe-to-xnav-linux.png",
+        "preview-13-legacy-linux.png",
+        "preview-14-legacy-to-xnav-linux.png"
+      ],
+      "higher_dpi": "Not exercised by this hosted desktop; manual validation remains open",
+      "chart_rendering": [
+        {
+          "phase": "Direct XNav startup",
+          "reference_color_fractions": {
+            "aac3f0": 0.5827610872675251,
+            "aaaf50": 0.39760371959942775
+          },
+          "coastline_visible": true
+        },
+        {
+          "phase": "XNav to Legacy",
+          "reference_color_fractions": {
+            "aac3f0": 0.5638054363376251,
+            "aaaf50": 0.41587982832618026
+          },
+          "coastline_visible": true
+        },
+        {
+          "phase": "XNav to Legacy to XNav",
+          "reference_color_fractions": {
+            "aac3f0": 0.6076180257510729,
+            "aaaf50": 0.3726752503576538
+          },
+          "coastline_visible": true
+        },
+        {
+          "phase": "XNav to Safe",
+          "reference_color_fractions": {
+            "aac3f0": 0.5638054363376251,
+            "aaaf50": 0.41587982832618026
+          },
+          "coastline_visible": true
+        },
+        {
+          "phase": "Safe to XNav",
+          "reference_color_fractions": {
+            "aac3f0": 0.6076180257510729,
+            "aaaf50": 0.3726752503576538
+          },
+          "coastline_visible": true
+        },
+        {
+          "phase": "Direct Legacy startup",
+          "reference_color_fractions": {
+            "aac3f0": 0.5638054363376251,
+            "aaaf50": 0.41587982832618026
+          },
+          "coastline_visible": true
+        },
+        {
+          "phase": "Direct Legacy to XNav",
+          "reference_color_fractions": {
+            "aac3f0": 0.6076180257510729,
+            "aaaf50": 0.3726752503576538
+          },
+          "coastline_visible": true
+        }
+      ],
+      "result": "passed; screenshot review required"
+    },
+    "recording-results.json": {
+      "authority": "Linux development",
+      "checks": [
+        "Actual UI captured/saved 5 normalized frames without positions/route",
+        "Replay is identified; separate source state; hardware control blocked; end ages into stale",
+        "Rewind/pause/stop return to labelled demo without profile restart",
+        "Actual diagnostic ZIP export: integrity, whitelist, profile/position privacy and DEMO provenance"
+      ],
+      "screenshots": [
+        "recording-01-commissioning-linux.png",
+        "recording-02-active-linux.png",
+        "recording-03-replay-energy-linux.png",
+        "recording-04-replay-ended-stale-linux.png",
+        "recording-05-replay-paused-linux.png",
+        "field-report-01-export-page-linux.png",
+        "field-report-02-export-result-linux.png",
+        "recording-06-returned-diagnostics-linux.png"
+      ],
+      "bundle_files": [
+        "field-report.zip"
+      ],
+      "result": "passed; screenshot review required"
+    },
+    "pilot-results.json": {
+      "authority": "Linux development",
+      "hardware": "NONE; loopback simulated translator",
+      "checks": [
+        "Read-only startup despite saved manual permission",
+        "Actual UI and OpenCPN TCP serialization of AUTO/-1/+1/-10/+10/STANDBY",
+        "New matching physical-style feedback confirms; no optimistic target change",
+        "Missing feedback times out without retry; manual STANDBY remains available",
+        "Same-driver reconnect clears identity and session enablement; new claim required",
+        "Live TRACK/WIND unavailable; no SmartNav control path"
+      ],
+      "screenshots": [
+        "pilot-01-status-only-linux.png",
+        "pilot-confirmation-linux.png",
+        "pilot-confirmation-linux.png",
+        "pilot-confirmation-linux.png",
+        "pilot-02-confirmed-manual-linux.png",
+        "pilot-03-communication-loss-linux.png",
+        "pilot-04-reconnected-control-off-linux.png"
+      ],
+      "confirmations": [
+        {
+          "title": "Request AUTO",
+          "geometry": {
+            "WINDOW": "2097599",
+            "X": "380",
+            "Y": "250",
+            "WIDTH": "520",
+            "HEIGHT": "300",
+            "SCREEN": "0"
+          },
+          "name": "Request AUTO"
+        },
+        {
+          "title": "Enable physical pilot control?",
+          "geometry": {
+            "WINDOW": "2097640",
+            "X": "380",
+            "Y": "250",
+            "WIDTH": "520",
+            "HEIGHT": "300",
+            "SCREEN": "0"
+          },
+          "name": "Enable physical pilot control?"
+        },
+        {
+          "title": "Request AUTO",
+          "geometry": {
+            "WINDOW": "2097676",
+            "X": "380",
+            "Y": "250",
+            "WIDTH": "520",
+            "HEIGHT": "300",
+            "SCREEN": "0"
+          },
+          "name": "Request AUTO"
+        }
+      ],
+      "result": "passed; screenshot review required",
+      "sent": [
+        {
+          "key": 64,
+          "wire": "A101823.000 01CC3 1ED00 0163FF00FF03013B0703040640\r",
+          "time": 84068.09890352
+        },
+        {
+          "key": 81,
+          "wire": "A101825.000 01CC3 1ED00 0163FF00FF03013B0703040651\r",
+          "time": 84070.506972451
+        },
+        {
+          "key": 127,
+          "wire": "A101827.000 01CC3 1ED00 0163FF00FF03013B070304067F\r",
+          "time": 84072.515527564
+        },
+        {
+          "key": 209,
+          "wire": "A101829.000 01CC3 1ED00 0163FF00FF03013B07030406D1\r",
+          "time": 84074.377146331
+        },
+        {
+          "key": 80,
+          "wire": "A101831.000 01CC3 1ED00 0163FF00FF03013B0703040650\r",
+          "time": 84076.387213929
+        },
+        {
+          "key": 81,
+          "wire": "A101833.000 01CC3 1ED00 0163FF00FF03013B0703040651\r",
+          "time": 84078.545628875
+        },
+        {
+          "key": 0,
+          "wire": "A101839.000 01CC3 1ED00 0163FF00FF03013B0703040600\r",
+          "time": 84083.671661879
+        }
+      ],
+      "transport_failures": []
+    }
+  },
+  "review": "1280x800 alerts: persistent global strip and current list; acknowledged GPS condition remains visible and disabled for repeated acknowledgement. Recovered then repeated loss gets a new episode. Native rendering remains authoritative.",
+  "hashes": {
+    "beta-alert-final-tests.log": "0897c219ef55540aefcc9198c83034885c6748432571932fe6bcc0c4b33c70eb",
+    "beta-alert-preview2.log": "13550e4d35ef3775ce4018faef8273ec55705f4a193909d28d0e42636346d991",
+    "beta-alert-recording2.log": "00bb7e7cf17080835bda2b7f290dda2fc9810c7e3cd53495661c7f4ec6afb5b6",
+    "beta-alert-pilot.log": "c5e452a9d889d977b7333240f39293ec505ddfe90dc11dde4ef72a47123cafc9",
+    "beta-alerts-active-linux.png": "d61a3de374c69a0971e090bb68dc90d5c468487773ea1b8aafaa3025eb43c5e1",
+    "beta-alerts-acknowledged-linux.png": "3985adf47111bddbf094e3987c3830dceb5702ff9efb287c437baa0bd5b00bda",
+    "beta-alert-final-integrated-tests.log": "c0181e77ec907655c6b9bd0e8ec1ff2d2174f30b6f730f9748d33c273563a68a"
+  }
+}

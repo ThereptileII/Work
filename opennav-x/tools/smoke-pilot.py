@@ -121,7 +121,8 @@ def capture(name):
 def click(label,x,y):
     if windows:ui.click_text(app.pid,label)
     else:
-        xdo('windowfocus',handle);xdo('mousemove','--window',handle,x,y)
+        offset=56 if data().get('runtime',{}).get('alerts') else 0
+        xdo('windowfocus',handle);xdo('mousemove','--window',handle,x,y+offset)
         time.sleep(.15);xdo('mousedown',1);time.sleep(.08);xdo('mouseup',1);time.sleep(.4)
 def confirm(label):
     if windows:ui.click_text(app.pid,label)

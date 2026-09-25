@@ -81,6 +81,18 @@ Shell::Shell(wxFrame &frame, wxAuiManager &manager, ShellActions actions,
   theme->SetMinSize(frame_.FromDIP(wxSize(72, 48)));
   row->Add(theme, 0, wxALL, frame_.FromDIP(4));
   top->SetSizer(row);
+  alert_pane_ = MakePane("OpenNavAlerts", wxAuiPaneInfo().Top().Layer(9)
+      .BestSize(-1, frame_.FromDIP(56)).Hide());
+  auto *alert_row = new wxBoxSizer(wxHORIZONTAL);
+  alert_label_ = new wxStaticText(alert_pane_, wxID_ANY, "", wxDefaultPosition,
+      wxDefaultSize, wxST_ELLIPSIZE_END);
+  alert_label_->SetFont(UiFont(*alert_pane_, 15, true));
+  alert_label_->SetMinSize(wxSize(0, -1));
+  alert_row->Add(alert_label_, 1, wxALIGN_CENTER_VERTICAL | wxLEFT | wxRIGHT, gap * 2);
+  alert_button_ = Button(alert_pane_, "Alerts", "Inspect active alerts", [this] { ShowProduct(ProductPage::Alerts); });
+  alert_button_->SetMinSize(frame_.FromDIP(wxSize(136, 48)));
+  alert_row->Add(alert_button_, 0, wxALL, frame_.FromDIP(4));
+  alert_pane_->SetSizer(alert_row);
 
   auto *left =
       MakePane("OpenNavTools", wxAuiPaneInfo().Left().Layer(1).BestSize(
@@ -145,6 +157,10 @@ Shell::Shell(wxFrame &frame, wxAuiManager &manager, ShellActions actions,
                               .PaneBorder(false)
                               .Hide());
   ProductActions product_actions;
+  product_actions.acknowledge_alert = [this](const std::string &id, std::uint64_t episode) {
+    alerts_.Acknowledge(id, episode);
+    Tick();
+  };
   product_actions.field_bundle = [this](const std::optional<std::string> &recording) {
     return diagnostics::BuildFieldReport(field_snapshot_,
         actions_.field_environment ? actions_.field_environment() : diagnostics::FieldEnvironment{},
@@ -197,6 +213,7 @@ Shell::Shell(wxFrame &frame, wxAuiManager &manager, ShellActions actions,
       {'O', [this] { ShowProduct(ProductPage::Sources); }},
       {'C', [this] { ShowProduct(ProductPage::Commissioning); }},
       {'X', [this] { ShowProduct(ProductPage::FieldReport); }},
+      {WXK_F9, [this] { ShowProduct(ProductPage::Alerts); }},
       {'Q', [this] { ShowProduct(ProductPage::VesselSettings); }},
       {'Z', [this] { ShowProduct(ProductPage::Radar); }},
       {'F', [this] { ShowProduct(ProductPage::Display); }},
@@ -309,6 +326,26 @@ void Shell::UpdateRail(const std::vector<std::string> &keys, vessel::Time now) {
         value.second->SetReading(*item.sample, now);
 }
 
+void Shell::UpdateAlerts() {
+  const auto &alerts = alerts_.Current();
+  auto &pane = manager_.GetPane(alert_pane_);
+  const bool visible = !alerts.empty();
+  if (visible) {
+    const auto &a = alerts.front();
+    const auto colors = Theme(mode_);
+    const auto text = (state_.replayed ? wxString("REPLAY / ") : state_.simulated ? wxString("DEMO / ") : wxString()) +
+      wxString::FromUTF8(application::AlertLevelName(a.level)) + " / " + wxString::FromUTF8(a.title) +
+      (a.acknowledged ? " / acknowledged" : "");
+    if (alert_label_->GetLabel() != text) {
+      alert_label_->SetLabel(text);
+      alert_pane_->Layout();
+    }
+    alert_label_->SetForegroundColour(Colour(a.level == application::AlertLevel::Critical ? colors.alarm : colors.attention));
+    alert_button_->SetLabel(wxString::Format("Alerts / %u", static_cast<unsigned>(alerts.size())));
+    alert_pane_->SetBackgroundColour(Colour(colors.elevated));
+  }
+  if (pane.IsShown() != visible) { pane.Show(visible); manager_.Update(); }
+}
 void Shell::Tick() {
   const auto begin = std::chrono::steady_clock::now();
   const auto wall_now = vessel::Clock::now();
@@ -377,6 +414,9 @@ void Shell::Tick() {
     if (actions_.radar && !replay)
       p.radar = actions_.radar();
     p.advice = smartnav::Advise(state_, energy, p.ais, now);
+    alerts_.Observe({state_, p.ais, p.anchor, energy, p.pilot, now});
+    p.alerts = alerts_.Current();
+    UpdateAlerts();
     field_snapshot_ = {state_, config,
         simulation_ || replay ? std::vector<vessel::SourceHealth>{} : p.sources,
         energy, p.advice, p.pilot, p.radar, false, false, now};
@@ -385,6 +425,7 @@ void Shell::Tick() {
       field_snapshot_.recording=r.active;
       field_snapshot_.recording_error=!r.error.empty();
     }
+    field_snapshot_.alerts = p.alerts;
     field_journal_.Observe(field_snapshot_, wall_now);
     product_->Update(p, mode_);
   }

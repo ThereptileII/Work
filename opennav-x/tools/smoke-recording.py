@@ -35,7 +35,9 @@ def data(predicate=lambda d:True,timeout=15):
 def xdo(*args):return subprocess.check_output(['xdotool',*map(str,args)],env=env,text=True).strip()
 def click(label,x,y):
     if windows:ui.click_text(app.pid,label)
-    else:xdo('mousemove','--window',handle,x,y);xdo('click',1);time.sleep(.4)
+    else:
+        offset=56 if data().get('runtime',{}).get('alerts') else 0
+        xdo('mousemove','--window',handle,x,y+offset);xdo('click',1);time.sleep(.4)
 def page(label,shortcut):
     if windows:
         if label in ('Commissioning & recordings','Field diagnostic bundle'):ui.click_text(app.pid,'Menu')

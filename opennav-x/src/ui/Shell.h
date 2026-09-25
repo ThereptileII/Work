@@ -60,6 +60,7 @@ public:
     double last_ms = 0, mean_ms = 0, maximum_ms = 0;
   };
   UpdateMetrics Metrics() const { return metrics_; }
+  const std::vector<application::Alert> &Alerts() const { return alerts_.Current(); }
   void UpdateState(const vessel::VesselState &state);
   void ShowAis(int mmsi);
   void ShowObject(const std::string &id, bool route);
@@ -74,6 +75,7 @@ private:
   void SetLight(LightMode mode);
   void UpdateRail(const std::vector<std::string> &keys, vessel::Time now);
   void Tick();
+  void UpdateAlerts();
   std::string PageTitle() const;
   void ShowSystem();
   void ShowProduct(ProductPage page);
@@ -84,6 +86,10 @@ private:
   void StartDemo();
   void SelectDemo(vessel::DemoScenario scenario);
   wxString InputSummary() const;
+  application::AlertCenter alerts_;
+  wxPanel *alert_pane_ = nullptr;
+  wxStaticText *alert_label_ = nullptr;
+  XNavButton *alert_button_ = nullptr;
   UpdateMetrics metrics_;
   diagnostics::FieldSnapshot field_snapshot_;
   diagnostics::FieldJournal field_journal_;

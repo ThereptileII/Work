@@ -127,6 +127,12 @@ void FieldJournal::Observe(const FieldSnapshot &s, vessel::Time wall) {
               std::to_string(static_cast<int>(e.severity)) + "; ";
   }
   transition("advisory events", events.empty() ? "none" : events);
+  std::string alerts;
+  for (const auto &a : s.alerts) {
+    if(alerts.size() > 2048) break;
+    alerts += Text(a.id) + "/" + application::AlertLevelName(a.level) + (a.acknowledged ? "/ack; " : "/new; ");
+  }
+  transition("alerts", alerts.empty() ? "none" : alerts);
 }
 std::string FieldJournal::Export(vessel::Time wall) const {
   std::string text =
@@ -231,6 +237,10 @@ BuildFieldReport(const FieldSnapshot &s, const FieldEnvironment &env,
       << (a.seconds_from_now ? Number(*a.seconds_from_now) : "unavailable")
       << " / NM " << (a.distance_nm ? Number(*a.distance_nm) : "unavailable")
       << '\n';
+  if(s.alerts.size() > 32) throw std::invalid_argument("Excess alert report");
+  for(const auto &a : s.alerts)
+    o << "Alert " << Text(a.id) << " / " << application::AlertLevelName(a.level)
+      << " / acknowledged " << a.acknowledged << " / age " << Age(a.first_observed,s.now) << '\n';
   add("smartnav-events.txt", o.str());
   add("recent-transitions.log", journal.Export(wall));
   if (recording) {

@@ -3,6 +3,7 @@
 #include "adapters/Radar.h"
 #include "application/NavigationObjects.h"
 #include "application/Settings.h"
+#include "application/Alerts.h"
 #include "diagnostics/Commissioning.h"
 #include "diagnostics/FieldReport.h"
 #include "smartnav/Advisories.h"
@@ -34,9 +35,11 @@ enum class ProductPage {
   InstrumentLayout,
   Commissioning,
   PilotSettings,
-  FieldReport
+  FieldReport,
+  Alerts
 };
 struct ProductState {
+  std::vector<application::Alert> alerts;
   vessel::VesselState vessel;
   vessel::AisState ais;
   application::AnchorState anchor;
@@ -52,6 +55,7 @@ struct ProductState {
   vessel::Time now{};
 };
 struct ProductActions {
+  std::function<void(const std::string &, std::uint64_t)> acknowledge_alert;
   std::function<std::vector<diagnostics::BundleEntry>(const std::optional<std::string> &)> field_bundle;
   std::shared_ptr<diagnostics::Commissioning> commissioning;
   application::NavigationActions navigation;
@@ -94,6 +98,7 @@ private:
   void EnergySettings();
   void CommissioningPanel();
   void FieldReportPanel();
+  void AlertsPanel();
   void ExportFieldReport(bool include_recording);
   void Sources();
   void SourceDetail();

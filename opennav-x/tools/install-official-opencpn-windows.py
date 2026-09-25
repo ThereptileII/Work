@@ -44,6 +44,12 @@ try:
         for handle, pid, title in ui.windows(process.pid):
             children = ui.children(handle)
             controls = [ui.control_text(h) for h, _ in children]
+            # NSIS constructs inner controls after the page title/buttons.
+            # Never advance a half-built destination page through generic Next.
+            time.sleep(.15)
+            settled = ui.children(handle)
+            if [(h, ui.control_text(h)) for h, _ in settled] != [(h, c) for (h, _), c in zip(children, controls)]:
+                continue
             signature = (title, tuple(controls))
             if signature in acted:
                 continue
@@ -53,8 +59,10 @@ try:
             if 'Please select a language:' in text:
                 assert 'English' in controls
                 choice = 'OK'
-            elif 'Destination Folder' in text:
+            elif 'Choose Install Location' in text or 'Destination Folder' in text:
                 edits = [h for h, _ in children if native_class(h) == 'Edit']
+                if not edits:
+                    continue  # Wait for the native destination edit to exist.
                 assert len(edits) == 1, controls
                 value = ctypes.create_unicode_buffer(str(directory))
                 ui.SendMessageW(edits[0], 0x000C, 0, ctypes.cast(value, ctypes.c_void_p).value)
@@ -67,7 +75,11 @@ try:
                 choice = 'Install'
             elif 'Finish' in buttons:
                 assert installed and (directory / 'opencpn.exe').exists()
-                assert 'has been installed on your computer.' in text
+                if 'has been installed on your computer.' not in text:
+                    continue  # Finish button can precede the completion text.
+                labels=[ui.control_text(h).replace('&','').strip().lower() for h,_ in children if native_class(h)=='Button']
+                if not any(x.startswith('run ') for x in labels) or not any(x.startswith('show ') for x in labels):
+                    continue  # Do not miss the checked launch/readme options.
                 # Normal upstream Finish offers to launch the app/readme.
                 # Leave subsequent stock/profile launch to the explicit test.
                 for child, _ in children:

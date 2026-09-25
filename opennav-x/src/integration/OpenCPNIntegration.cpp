@@ -515,6 +515,15 @@ void Attach(MyFrame& frame, wxAuiManager& manager, wxFileConfig& config) {
     auto runtime =
         integration::ReadRuntimeDiagnostics(*frame.GetPrimaryCanvas());
     if (shell) {
+      runtime["alerts"] = wxJSONValue(wxJSONTYPE_ARRAY);
+      for (const auto &a : shell->Alerts()) {
+        wxJSONValue alert;
+        alert["id"] = wxString::FromUTF8(a.id);
+        alert["level"] = wxString::FromUTF8(application::AlertLevelName(a.level));
+        alert["acknowledged"] = a.acknowledged;
+        alert["episode"] = wxString::Format("%llu", static_cast<unsigned long long>(a.episode));
+        runtime["alerts"].Append(alert);
+      }
       const auto metrics = shell->Metrics();
       runtime["ui_update"]["ticks"] = wxString::Format(
           "%llu", static_cast<unsigned long long>(metrics.ticks));

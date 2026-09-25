@@ -137,6 +137,8 @@ std::string ProductPanel::PageTitle() const {
   switch (page_) {
   case ProductPage::Commissioning:
     return "Commissioning & recordings";
+  case ProductPage::Alerts:
+    return "Alerts";
   case ProductPage::FieldReport:
     return "Field diagnostic bundle";
   case ProductPage::Home:
@@ -220,8 +222,13 @@ void ProductPanel::ShowObject(const std::string &id, bool route,
 void ProductPanel::Update(const ProductState &state, LightMode mode) {
   const bool mode_changed = state_.vessel.replayed != state.vessel.replayed ||
                             state_.vessel.simulated != state.vessel.simulated;
+  bool alerts_changed = state_.alerts.size() != state.alerts.size();
+  if (!alerts_changed)
+    for (std::size_t i = 0; i < state.alerts.size(); ++i)
+      alerts_changed |= state_.alerts[i].episode != state.alerts[i].episode ||
+                        state_.alerts[i].acknowledged != state.alerts[i].acknowledged;
   state_ = state;
-  if (mode != mode_ || mode_changed) {
+  if (mode != mode_ || mode_changed || (page_ == ProductPage::Alerts && alerts_changed)) {
     auto *focus=wxWindow::FindFocus();
     const bool restore_focus=focus && (focus==this || IsDescendant(focus));
     mode_ = mode;
@@ -253,6 +260,32 @@ void ProductPanel::Update(const ProductState &state, LightMode mode) {
   if (changed) {
     Layout();
     FitInside();
+  }
+}
+void ProductPanel::AlertsPanel() {
+  Heading("Alerts", state_.vessel.replayed ? "REPLAY alerts / historical data"
+                     : state_.vessel.simulated ? "DEMO alerts / no vessel alarm acknowledgement"
+                     : "Active conditions / acknowledgement changes XNav presentation only");
+  Text("Acknowledged conditions remain visible until resolved. OpenCPN alarms and physical equipment remain independent.");
+  if (state_.alerts.empty()) Text("No active XNav alerts. This does not establish safe water or verify absent sensors.");
+  for (const auto &a : state_.alerts) {
+    Text(W(application::AlertLevelName(a.level)) + " / " + W(a.title), 20);
+    Text(W(a.action));
+    Text(W(a.source) + (a.acknowledged ? " / ACKNOWLEDGED" : " / NEW"), 12);
+    BeginActions(2);
+    Action("Inspect condition", [this, area = a.area] {
+      switch (area) {
+      case application::AlertArea::Sources: ShowPage(ProductPage::Sources, mode_); break;
+      case application::AlertArea::Ais: ShowPage(ProductPage::Ais, mode_); break;
+      case application::AlertArea::Anchor: ShowPage(ProductPage::Anchor, mode_); break;
+      case application::AlertArea::Pilot: ShowPage(ProductPage::Pilot, mode_); break;
+      case application::AlertArea::Energy: if(actions_.energy) actions_.energy(); break;
+      }
+    });
+    Action("Acknowledge " + W(a.id), [this, id = a.id, episode = a.episode] {
+      if (actions_.acknowledge_alert) actions_.acknowledge_alert(id, episode);
+    }, !a.acknowledged);
+    EndActions();
   }
 }
 void ProductPanel::CreateMark() {
@@ -499,7 +532,9 @@ void ProductPanel::Build() {
   notice_->Hide();
   SetName("OpenNav Alpha product page");
   SetLabel("OpenNav Alpha page: " + W(PageTitle()));
-  if (page_ == ProductPage::FieldReport) {
+  if (page_ == ProductPage::Alerts) {
+    AlertsPanel();
+  } else if (page_ == ProductPage::FieldReport) {
     FieldReportPanel();
   } else if (page_ == ProductPage::Commissioning) {
     CommissioningPanel();
@@ -514,6 +549,7 @@ void ProductPanel::Build() {
              {"SmartNav advisories", ProductPage::Advice},
              {"Manual autopilot", ProductPage::Pilot},
              {"Anchor watch", ProductPage::Anchor},
+             {"Alerts", ProductPage::Alerts},
              {"Settings", ProductPage::Settings}})
       Action(p.first, [this, p] { ShowPage(p.second, mode_); });
     Action("Chart orientation: North / Course up", [this] {
@@ -775,6 +811,7 @@ void ProductPanel::Build() {
             Result(actions_.navigation.clear_anchor(state_.anchor.waypoint_id));
         },
         !state_.vessel.simulated && !state_.vessel.replayed);
+    Value("BATTERY SOC", "%", [](const auto &s) { return s.vessel.battery.soc_percent; }, 0);
     Value("DISTANCE FROM ANCHOR", "m",
           [](const auto &s) { return s.anchor.distance_m; });
     Value("DEPTH", "m / transducer", [](const auto &s) {

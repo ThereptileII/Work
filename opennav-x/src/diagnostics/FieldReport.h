@@ -1,6 +1,7 @@
 #pragma once
 #include "adapters/Autopilot.h"
 #include "adapters/Radar.h"
+#include "application/Alerts.h"
 #include "diagnostics/Recording.h"
 #include "smartnav/Advisories.h"
 #include <deque>
@@ -16,6 +17,7 @@ struct FieldSnapshot {
   adapters::RadarState radar;
   bool recording = false, recording_error = false;
   vessel::Time now{};
+  std::vector<application::Alert> alerts;
 };
 struct FieldEnvironment {
   // Integration supplies build/plugin metadata only, never a profile path.
