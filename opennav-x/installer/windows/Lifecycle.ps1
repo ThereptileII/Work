@@ -183,9 +183,41 @@ function SelfTest([string]$Directory, [string]$Commit, [string]$Version) {
   $reportPath = Join-Path $Directory ('loader-' + [guid]::NewGuid().ToString('N') + '.json')
   $exe = Join-Path $Directory 'app\opencpn.exe'
   $null = PeArchitecture $exe
-  $process = Start-Process -FilePath $exe -ArgumentList @('--opennav-self-test', ('"' + $reportPath + '"')) -PassThru
-  if (-not $process.WaitForExit(30000)) { $process.Kill(); throw 'Staged executable loader self-test timed out.' }
-  if ($process.ExitCode -ne 0) { throw "Staged executable self-test failed: $($process.ExitCode)" }
+  if (-not ('OpenNav.InstallerErrorMode' -as [type])) {
+    Add-Type -TypeDefinition @'
+using System.Runtime.InteropServices;
+namespace OpenNav {
+  public static class InstallerErrorMode {
+    [DllImport("kernel32.dll")] public static extern uint GetErrorMode();
+    [DllImport("kernel32.dll")] public static extern uint SetErrorMode(uint mode);
+  }
+}
+'@
+  }
+  # A missing import can fail before our executable's self-test code runs.
+  # Launch directly with an inherited noninteractive error mode: a shell
+  # launch or an outer test runner's error mode is not this child's contract.
+  # Scope the process-wide setting to creation in this private installer host.
+  $start = New-Object Diagnostics.ProcessStartInfo
+  $start.FileName = $exe
+  $start.Arguments = '--opennav-self-test "' + $reportPath + '"'
+  $start.WorkingDirectory = Join-Path $Directory 'app'
+  $start.UseShellExecute = $false
+  $start.CreateNoWindow = $true
+  $process = $null
+  $oldMode = [OpenNav.InstallerErrorMode]::GetErrorMode()
+  try {
+    $null = [OpenNav.InstallerErrorMode]::SetErrorMode($oldMode -bor 0x8003)
+    $process = [Diagnostics.Process]::Start($start)
+  } finally { $null = [OpenNav.InstallerErrorMode]::SetErrorMode($oldMode) }
+  try {
+    if (-not $process.WaitForExit(30000)) {
+      $process.Kill()
+      $null = $process.WaitForExit(5000)
+      throw 'Staged executable loader self-test timed out.'
+    }
+    if ($process.ExitCode -ne 0) { throw "Staged executable self-test failed: $($process.ExitCode)" }
+  } finally { if ($process) { $process.Dispose() } }
   $result = ReadJson $reportPath
   if (-not $result.passed -or $result.commit -cne $Commit -or $result.version -cne $Version -or $result.profile_initialized -or $result.plugins_loaded) { throw 'Executable identity/self-test report mismatch.' }
   Remove-Item -LiteralPath $reportPath

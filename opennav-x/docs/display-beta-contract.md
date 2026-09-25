@@ -57,3 +57,11 @@ focus without changing the visible position. Native 100/125/150% tests require
 the last menu action fully visible after settling at the bottom, in addition to
 touch pan, Up/Down, complete night workflows and mode/chart checks. Failed DPI
 runs now retain the visible failure capture and control geometry.
+
+Native `92a695f` confirms the repaired 150% Menu endpoint and all primary
+night-page/touch-scroll checks. The subsequent page assertion rejected a valid
+492-pixel viewport because its old fixed minimum was 500 pixels. The visible
+56-DIP alarm consumes 84 pixels at 150%. The replacement asserts exact native
+center boundaries below status/alerts and above navigation, near-full width,
+at least half-window usable height, and the existing sibling-occlusion check.
+No interaction/capture is removed. Replacement acceptance remains required.

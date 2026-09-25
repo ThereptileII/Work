@@ -66,6 +66,18 @@ owned generations**, while separately counting deliberately failed unpublished
 stages; this is necessary for the expanded partial-extraction/dependency cases.
 This does not relax removal of any previously owned, hash-matching app file.
 
+The real missing-DLL case exposed an OS loader dialog retained after timeout,
+which later obscured stock OpenCPN. `SelfTest` now uses direct .NET process
+creation (`UseShellExecute=false`) with scoped inherited
+`SEM_FAILCRITICALERRORS | SEM_NOGPFAULTERRORBOX | SEM_NOOPENFILEERRORBOX`.
+The private installer host restores its previous error mode immediately after
+creation, then waits/reaps/disposes the child. No global registry/error-reporting
+policy is changed. Normal application launch is unaffected. Native fixtures
+require child inheritance and parent restoration; the actual missing-DLL case
+must return a loader exit failure, not timeout or missing-report ambiguity, and
+leave no System Error window. The final stock welcome/chart check remains.
+[Windows error-mode inheritance](https://learn.microsoft.com/en-us/windows/win32/api/errhandlingapi/nf-errhandlingapi-seterrormode).
+
 ## Actual elapsed endurance
 
 `tools/soak-runtime.py --seconds 10800` runs the real application for at least

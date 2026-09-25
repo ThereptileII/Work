@@ -106,5 +106,42 @@
       "maximum_page_observation_seconds": 1.160357861997909,
       "route_progress_samples": 38
     }
+  },
+  "installer_loader_dialog": {
+    "commit": "92a695f3e22861584432840aba1f4c87f80cecc1",
+    "run": "https://github.com/ThereptileII/Work/actions/runs/36130393824",
+    "status": "rejected; replacement required",
+    "native_checks_passed_before_failure": 26,
+    "error": "Final original OpenCPN welcome Agree button obscured by a retained missing-DLL System Error dialog from the deliberately damaged staged loader",
+    "loader_report": "Staged executable loader self-test timed out.",
+    "finding": "Stock/profile preservation and all seven new failure/recovery cases passed, but loader failure must not leave modal residue. This is an installer process-boundary defect, not delayed Agree enablement.",
+    "repair": "Direct ProcessStartInfo launch with UseShellExecute false and scoped inherited noninteractive error mode; restore parent mode, wait/reap and dispose child; require nonzero loader exit without OS modal residue.",
+    "native_additions": "Two parent error-mode restoration checks; child fixture requires inherited flags. Missing-DLL actual OpenCPN gate now rejects timeout/report-only failures and any System Error dialog.",
+    "artifact_sha256": "1e138cbdf69402139c484272b2cbb2fe40d5e411f1d0cb4257b8273c8d8e9833",
+    "reviewed_screenshot": {
+      "file": "installer-failed-2.png",
+      "sha256": "c01533ca7351aae3a954d435b153c27cc23fc3a929893e618c07b659b40c7790"
+    }
+  },
+  "dpi_alert_geometry": {
+    "commit": "92a695f3e22861584432840aba1f4c87f80cecc1",
+    "artifact_sha256": "a89f45a1b1aeae714bcaecfd7ebdce8d8d30d44cd20e6eb2686fd0d304407b49",
+    "completed_scales": [
+      100,
+      125
+    ],
+    "150_percent": "Menu endpoint fixed and all primary night pages/touch scrolling pass; then old fixed 500-pixel page assertion rejects 492-pixel center below visible 84-pixel alarm strip.",
+    "observed_route_rect": [
+      11,
+      213,
+      1269,
+      705
+    ],
+    "repair": "Replace fixed pre-alert height with native edges of status/alert/navigation panes, near-full frame width, at least half-frame usable height, and existing sibling-occlusion check. No screen or interaction test removed.",
+    "reviewed_screenshot": {
+      "file": "dpi-150-failure.png",
+      "sha256": "f07fe1ae05204b9467b8332d71168d687481f509426042a65d78ef0862ba7d7b"
+    },
+    "disposition": "Exact replacement native gate required; not accepted."
   }
 }

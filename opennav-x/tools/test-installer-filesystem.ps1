@@ -117,9 +117,12 @@ try {
   $Code = @'
 using System;
 using System.IO;
+using System.Runtime.InteropServices;
 class OpenNavLoaderContractFixture {
+  [DllImport("kernel32.dll")] static extern uint GetErrorMode();
   static int Main(string[] args) {
     if (args.Length != 2 || args[0] != "--opennav-self-test") return 64;
+    if ((GetErrorMode() & 0x8003) != 0x8003) return 65;
     File.WriteAllText(args[1], "{\"passed\":true,\"commit\":\"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\",\"version\":\"loader-fixture\",\"profile_initialized\":false,\"plugins_loaded\":false}");
     return 0;
   }
@@ -131,7 +134,11 @@ class OpenNavLoaderContractFixture {
   if ($LASTEXITCODE -ne 0) { throw 'Could not compile native loader contract fixture.' }
   SelfTest $LoaderStage 'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa' 'loader-fixture'
   Check (@(Get-ChildItem -LiteralPath $LoaderStage -Filter 'loader-*.json').Count -eq 0) 'Actual loader wrapper waits for exit and consumes its verified fixture report'
+  $BeforeErrorMode = [OpenNav.InstallerErrorMode]::GetErrorMode()
+  SelfTest $LoaderStage 'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa' 'loader-fixture'
+  Check ([OpenNav.InstallerErrorMode]::GetErrorMode() -eq $BeforeErrorMode) 'Loader child inherits noninteractive errors and successful launch restores parent mode'
   Refuses { SelfTest $LoaderStage 'bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb' 'loader-fixture' } 'Loader wrapper refuses another executable identity'
+  Check ([OpenNav.InstallerErrorMode]::GetErrorMode() -eq $BeforeErrorMode) 'Rejected loader identity preserves parent error mode'
   Write-Host "$Checks native filesystem checks passed in PowerShell $($PSVersionTable.PSVersion), $([IntPtr]::Size * 8)-bit host."
 } finally {
   if ($Junction -and (Test-Path -LiteralPath $Junction)) { [IO.Directory]::Delete($Junction) }

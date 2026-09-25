@@ -243,6 +243,34 @@ def size_window(handle):
     GetWindowRect(handle, C.byref(rect))
     assert (rect.right - rect.left, rect.bottom - rect.top) == (1280, 800)
 
+def assert_page_geometry(handle, child):
+    """Require the page to fill the actual center, including a visible alert.
+
+    At 150% in an 800-pixel window, the 56-DIP alert leaves a 492-pixel
+    viewport. A fixed pre-alert 500-pixel threshold rejects this valid layout.
+    Native pane edges, minimum usable area and occlusion remain mandatory.
+    """
+    labels = children(handle)
+    brand = [h for h, caption in labels if caption == 'OpenNav X']
+    navigation = [h for h, caption in labels if caption == 'Navigation']
+    alerts = [h for h, caption in labels if caption.startswith('Alerts / ')]
+    assert len(brand) == len(navigation) == 1 and len(alerts) <= 1
+    def bounds(window):
+        value = W.RECT()
+        assert GetWindowRect(window, C.byref(value))
+        return value
+    frame, rect = bounds(handle), bounds(child)
+    top = max(bounds(GetParent(h)).bottom for h in brand + alerts)
+    bottom = bounds(GetParent(navigation[0])).top
+    tolerance = max(4, 8 * GetDpiForWindow(handle) // 96)
+    dimensions = [rect.right - rect.left, rect.bottom - rect.top]
+    assert dimensions[0] >= max(940, frame.right-frame.left-4*tolerance), dimensions
+    assert dimensions[1] >= (frame.bottom-frame.top)//2, dimensions
+    assert 0 <= rect.top-top <= tolerance, ('Page overlaps/leaves space below status/alerts', rect.top, top)
+    assert 0 <= bottom-rect.bottom <= tolerance, ('Page overlaps/leaves space above navigation', rect.bottom, bottom)
+    assert frame.left <= rect.left < rect.right <= frame.right
+    return rect, dimensions
+
 def assert_preview_page(handle, page):
     """Check native page bounds and sibling z-order after a real resize.
 
@@ -253,10 +281,7 @@ def assert_preview_page(handle, page):
     matches = [child for child, caption in children(handle) if caption == label]
     assert len(matches) == 1, f'Visible page not found: {label}'
     child = matches[0]
-    rect = W.RECT()
-    assert GetWindowRect(child, C.byref(rect))
-    dimensions = [rect.right - rect.left, rect.bottom - rect.top]
-    assert dimensions[0] >= 940 and dimensions[1] >= 500, dimensions
+    rect, dimensions = assert_page_geometry(handle, child)
     point = W.POINT((rect.left + rect.right) // 2, (rect.top + rect.bottom) // 2)
     assert ScreenToClient(handle, C.byref(point))
     assert ChildWindowFromPointEx(handle, point, 1) == child, 'Another pane covers the page'
@@ -266,8 +291,7 @@ def assert_product_page(handle, page):
     label='OpenNav product page: '+page
     matches=[child for child,caption in children(handle) if caption==label]
     assert len(matches)==1,f'Visible XNav page not found: {label}'
-    child=matches[0];rect=W.RECT();assert GetWindowRect(child,C.byref(rect))
-    assert rect.right-rect.left>=940 and rect.bottom-rect.top>=500
+    child=matches[0];rect,_=assert_page_geometry(handle,child)
     point=W.POINT((rect.left+rect.right)//2,(rect.top+rect.bottom)//2)
     assert ScreenToClient(handle,C.byref(point))
     assert ChildWindowFromPointEx(handle,point,1)==child,'Another pane covers the XNav page'

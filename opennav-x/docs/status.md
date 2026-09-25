@@ -37,6 +37,19 @@ ambiguous, edited or transitional state never becomes a valid zero arrival.
 
 ## Beta development
 
+Candidate `92a695f` / run `36130393824` is **not accepted**. The native
+portable package passed and all new installer failure/recovery cases preserved
+stock/profile, but the missing-DLL loader fixture left a Windows System Error
+dialog covering the original OpenCPN welcome button at the final post-uninstall
+check. The installer now directly launches the self-test with a scoped inherited
+noninteractive error mode and restores the parent setting. The strengthened
+fixture requires prompt loader failure without modal residue. Two native
+error-mode restoration checks supplement the existing filesystem suite.
+Exact replacement qualification remains mandatory.
+The 150% Menu endpoint repair passes; the later route-page check exposed an
+outdated fixed-height test threshold with the new visible alert strip. The test
+now verifies the actual available center bounds and unobscured content.
+
 Candidate `0d4bcb7` / run `36127208962` is **not accepted**: both builds/core
 functional gates passed, but a fresh GitHub API check found the extracted Windows
 portable interaction step failed. An earlier cached status feed was stale.

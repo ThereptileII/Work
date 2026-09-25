@@ -354,12 +354,14 @@ try:
         manifest['files']=[f for f in manifest['files'] if f['path']!=dependency]
         manifest['payloadSha256']=sha(damaged_package/'payload.zip')
         (damaged_package/'package.json').write_text(json.dumps(manifest))
-        set_error_mode=ui.declare(ctypes.WinDLL('kernel32'),'SetErrorMode',ctypes.c_uint,ctypes.c_uint)
-        old_error_mode=set_error_mode(0x8003)
-        try:failure=package_engine(damaged_package,original)
-        finally:set_error_mode(old_error_mode)
-        assert any(word in failure['error'].lower() for word in ('self-test','loader','report')),failure
-        unchanged();check('Missing required wx DLL rejected by actual staged executable loader before commit')
+        # The production loader boundary must suppress its own OS error UI;
+        # an ambient Python error-mode override cannot qualify the installer.
+        failure=package_engine(damaged_package,original)
+        assert failure['error'].startswith('Staged executable self-test failed:'),failure
+        for _ in range(10):
+            assert not any(title=='opencpn.exe - System Error' for _,_,title in ui.windows()),'Loader failure left an operating-system modal dialog'
+            time.sleep(.1)
+        unchanged();check('Missing required wx DLL exits with loader failure before commit, without OS modal residue')
         with file_lock(INSTALL/'state.json'):
             setup('Update',original,expected=1)
         unchanged();assert (INSTALL/'transaction.json').exists()
