@@ -16,7 +16,7 @@ root=Path(__file__).resolve().parents[1]
 windows=sys.platform=='win32'
 evidence=root/'evidence/local';evidence.mkdir(parents=True,exist_ok=True)
 temporary=tempfile.TemporaryDirectory(prefix='OpenNav recording ')
-profile=Path(temporary.name)/'profile'
+profile=Path(temporary.name).resolve()/'profile'
 variant='xnav-windows' if windows else 'xnav-linux'
 subprocess.run([sys.executable,str(root/'tools/prepare-test-profile.py'),'--build',str(root/'build'/variant),'--profile',str(profile)],check=True)
 env=dict(os.environ);xserver=None;app=None;ui=None
@@ -61,9 +61,22 @@ def file_dialog(title,path,accept):
             if name.value.lower()=='edit' and ui.IsWindowEnabled(child):
                 rect=ui.W.RECT();ui.GetWindowRect(child,ctypes.byref(rect));edits.append((rect.top,child))
         assert edits,('No filename editor',ui.children(dialog))
-        edit=max(edits)[1];buffer=ctypes.create_unicode_buffer(str(path))
-        assert ui.SendMessageW(edit,0x000C,0,ctypes.cast(buffer,ctypes.c_void_p).value)
+        edit=max(edits)[1]
+        # Common Item Dialog maintains a filename model separate from edit text.
+        # Send real keyboard input so its change notifications and validation
+        # run, rather than merely changing the HWND caption with WM_SETTEXT.
+        rect=ui.W.RECT();assert ui.GetWindowRect(edit,ctypes.byref(rect))
+        ui.SetForegroundWindow(dialog)
+        ui.SetCursorPos((rect.left+rect.right)//2,(rect.top+rect.bottom)//2)
+        ui.MouseEvent(2,0,0,0,0);ui.MouseEvent(4,0,0,0,0)
+        key=ui.declare(ui.user,'keybd_event',None,ctypes.c_ubyte,ctypes.c_ubyte,ui.W.DWORD,ctypes.c_size_t)
+        key(0x11,0,0,0);key(0x41,0,0,0);key(0x41,0,2,0);key(0x11,0,2,0)
+        # WM_CHAR follows actual focus/selection and triggers normal EN_CHANGE.
+        encoded=str(path).encode('utf-16-le')
+        for i in range(0,len(encoded),2):
+            ui.SendMessageW(edit,0x0102,int.from_bytes(encoded[i:i+2],'little'),0)
         assert ui.control_text(edit)==str(path)
+        if accept=='Save':ui.capture(dialog,evidence/'recording-calibration-file-dialog.png')
         ui.dismiss_native_dialog(dialog,accept)
     else:
         xdo('key','ctrl+l');time.sleep(.2);xdo('type','--clearmodifiers','--',str(path));xdo('key','Return');time.sleep(.6)
@@ -144,6 +157,10 @@ try:
         output=profile/'calibration.csv';file_dialog('Save reviewed calibration observations',output,'Save')
         deadline=time.monotonic()+5
         while not output.exists() and time.monotonic()<deadline:time.sleep(.1)
+        report['calibration_export']={'requested':str(output),'files':[str(p.relative_to(profile)) for p in profile.rglob('*.csv')],
+                                      'captions':[c for _,c in ui.children(handle)]}
+        capture('recording-calibration-export-result')
+        assert output.exists(),report['calibration_export']
         assert output.read_text().startswith('OpenNavXCalibration,1\nreference,STW\nbasis,whole-pack')
         assert 'DEMO' in output.read_text();shutil.copy2(output,evidence/'recording-calibration.csv')
         report['checks'].append('Native calibration export saved finite source-labelled demo pairs')
@@ -154,6 +171,12 @@ try:
     else:subprocess.run([str(exe),'--configdir',str(profile),'--remote','--quit'],env=env,check=True,capture_output=True)
     assert app.wait(timeout=30)==0
     report['result']='passed; screenshot review required'
+except BaseException as error:
+    report['error']=str(error)
+    if app and app.poll() is None and 'handle' in globals():
+        try:capture('recording-failure')
+        except Exception:pass
+    raise
 finally:
     if app and app.poll() is None:app.terminate();app.wait(timeout=20)
     if xserver:xserver.terminate();xserver.wait(timeout=10)

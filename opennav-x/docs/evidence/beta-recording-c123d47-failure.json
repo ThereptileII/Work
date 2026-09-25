@@ -1,0 +1,22 @@
+{
+  "commit": "c123d47a38c804fa7a11f0f5490d2a467cfab095",
+  "run": "https://github.com/ThereptileII/Work/actions/runs/36100817823",
+  "acceptance": false,
+  "native_build": "passed",
+  "windows_contracts": 38,
+  "windows_integrated": 87,
+  "recording_steps_passed": [
+    "Actual UI captured/saved 5 normalized frames without positions/route",
+    "Replay is identified; separate source state; hardware control blocked; end ages into stale",
+    "Rewind/pause/stop return to labelled demo without profile restart"
+  ],
+  "failure": "Native calibration file-save interaction did not create the requested file. WM_SETTEXT replaced by focused edit keyboard/character input; actual output and failure captions/captures required. Product vs automation cause not yet conclusively established.",
+  "evidence_artifact": 10849786183,
+  "evidence_archive_sha256": "8d33dff7205219893850cb07e4005d4d41a967776ceb6551b87cd4865ab85f63",
+  "reviewed_images": {
+    "recording-01-commissioning.png": "643d87260e7d42101aa6ce46b876ac4aa8efd74c403a7dae6489b9553abc05c7",
+    "recording-03-replay-energy.png": "1a205f6def6186d972670ec9f28272d3adc61cbc793046995559262e15fa413a",
+    "recording-04-replay-ended-stale.png": "5be7de104e3b4e2983e0bfaeab7802910fba2a066ee19ca36653e1aa498d7e4d",
+    "recording-05-replay-paused.png": "fc35849bb4c8fa48be6cb35dc751cca9318101b195ddc87e577f2f8bf0ce5567"
+  }
+}

@@ -55,8 +55,11 @@ cases (canonical TEMP path aliases and a text-mode test fixture). Corrections
 pass all 38 local portable suites; native replacement evidence is required.
 [Failure/repair record](evidence/beta-recording-6114f1e-failure.json).
 Replacement `c123d47` passes all 38 contract suites on Linux and native Windows;
-integrated UI/packaging acceptance remains pending in
-[run 36100817823](https://github.com/ThereptileII/Work/actions/runs/36100817823).
+native MSVC and all 87 integrated cases also pass. Its actual recording/replay/
+stale/pause/rewind/stop checks pass, but calibration Save produced no requested
+file. The gate remains rejected while file-picker interaction is corrected and
+additional failure evidence is collected.
+[Failure record](evidence/beta-recording-c123d47-failure.json).
 The interaction test also exposed and fixed first-open pane wrapping and focus
 after replay changes; native scaling remains a required gate. [Source inspection](beta-boat-source-inspection.md)
 records the actual producer contract and its retained-data freshness limitation.
