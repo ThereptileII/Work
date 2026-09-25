@@ -30,7 +30,9 @@ std::optional<ResourceSelection> InstalledResourceDefaults(
     const auto executable = platform::PathFromUtf8(value);
     auto filename = platform::PathUtf8(executable.filename());
     std::transform(filename.begin(), filename.end(), filename.begin(),
-                   [](unsigned char c) { return c >= 'A' && c <= 'Z' ? c + ('a'-'A') : c; });
+                   [](unsigned char c) -> char {
+                     return static_cast<char>(c >= 'A' && c <= 'Z' ? c + ('a'-'A') : c);
+                   });
     if (!executable.is_absolute() || filename != "opencpn.exe" ||
         !NonemptyFile(executable)) return std::nullopt;
     const auto stock = executable.parent_path();
