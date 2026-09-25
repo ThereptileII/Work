@@ -56,5 +56,55 @@
     "original": "D:(A;OICIID;FA;;;SY)(A;OICIID;FA;;;BA)(A;OICIID;FA;;;LA)",
     "restored": "D:AI(A;OICIID;FA;;;SY)(A;OICIID;FA;;;BA)(A;OICIID;FA;;;LA)",
     "finding": "Identical ACEs, Windows added automatic-inheritance bookkeeping. Compare binary DACL and all other flags, still require denied/restored real operation."
+  },
+  "portable_role_collision": {
+    "commit": "0d4bcb77a82f91d49ad030cf7747fdb072b10cc8",
+    "run": "https://github.com/ThereptileII/Work/actions/runs/36127208962",
+    "linux_integrated_passed": 106,
+    "native_integrated_passed": 93,
+    "native_filesystem_checks_per_architecture": 36,
+    "portable_error": "AssertionError: Preview pane covers Alpha page",
+    "cause": "Beta label cleanup gave ProductPanel the PreviewPanel role prefix; strict visibility assertion therefore classified the visible product page as a preview overlay.",
+    "repair": "Distinct stable OpenNav product page prefix; overlap check retained; Navigation also requires product panels hidden.",
+    "disposition": "Run cancelled as already failed. No package accepted. Three-hour replacement required.",
+    "native_failure_screenshot_review": "alpha-instruments.png reviewed: product page visible/unobscured, touch navigation and values intact; no release acceptance claimed",
+    "failure_artifact_sha256": "74be005428af97ff1f1c95376fc3386b7410fe90ab1dd4b24ad545d7163918bd",
+    "local_replacement_preview_captures": 44
+  },
+  "allocation_comparison": {
+    "status": "local development allocation comparison; full release qualification pending",
+    "actual_application": true,
+    "instrumented_seconds_before": 252.57,
+    "instrumented_seconds_after": 252.19,
+    "before": {
+      "heap_leaked_bytes_approx": 28440000,
+      "retained_allocations": 496578,
+      "peak_heap_bytes_approx": 98120000,
+      "top_libudev_scan_retained_bytes_approx": 14310000
+    },
+    "after": {
+      "heap_leaked_bytes_approx": 11810000,
+      "retained_allocations": 135707,
+      "peak_heap_bytes_approx": 81790000,
+      "libudev_scan_in_top_12_leak_stacks": false
+    },
+    "tests": "106 Linux integrated cases pass, including three actual-reference discovery cases",
+    "limits": "Exit-retained allocations include upstream/library caches; not a claim of zero leaks. Instrumented RSS/CPU are not normal performance. Exact-commit three-hour CI remains required.",
+    "profile_sha256": {
+      "heap-beta": "863515c504de6a043fcd6d46034e21d12694389f44a1b0490d63a25f9ecbdf4e",
+      "heap-beta-fixed": "1bd8b81d7062e6f1e79070b55580cb2ff50a0001eb6370814cfbf8658b16593d"
+    },
+    "unprofiled_600_second_checkout": {
+      "status": "passed",
+      "elapsed_seconds": 600.1603291040083,
+      "resource_growth": {
+        "resident_bytes": 1441792,
+        "handles": 0,
+        "threads": 0
+      },
+      "cpu_percent_one_core": 6.514856824066647,
+      "maximum_page_observation_seconds": 1.160357861997909,
+      "route_progress_samples": 38
+    }
   }
 }

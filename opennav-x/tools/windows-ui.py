@@ -122,7 +122,7 @@ def click_text(pid, label):
                     # offscreen children and would hide higher-DPI regressions.
                     ancestor=GetParent(handle);viewport=None
                     while ancestor:
-                        if text(ancestor).startswith(('OpenNav Alpha page:', 'OpenNav page:')):
+                        if text(ancestor).startswith(('OpenNav Alpha page:', 'OpenNav product page:', 'OpenNav page:')):
                             viewport=ancestor;break
                         ancestor=GetParent(ancestor)
                     if viewport:
@@ -263,7 +263,7 @@ def assert_preview_page(handle, page):
     return {'page': page, 'native_pixels': dimensions, 'visible_and_uncovered': True}
 
 def assert_product_page(handle, page):
-    label='OpenNav page: '+page
+    label='OpenNav product page: '+page
     matches=[child for child,caption in children(handle) if caption==label]
     assert len(matches)==1,f'Visible XNav page not found: {label}'
     child=matches[0];rect=W.RECT();assert GetWindowRect(child,C.byref(rect))

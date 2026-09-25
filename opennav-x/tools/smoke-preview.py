@@ -273,7 +273,7 @@ try:
             report['checks'].append('Native manual DEMO enable/AUTO/+1/STANDBY/disable with new-feedback confirmation')
 
         if windows:
-            assert not any(caption.startswith('OpenNav page:') for _,caption in ui.children(handle)), 'Preview pane covers Alpha page'
+            assert not any(caption.startswith('OpenNav page:') for _,caption in ui.children(handle)), 'Preview pane covers product page'
     report['checks'].append('Alpha menu and eight product page interactions captured')
     for title,key,name in [('Energy configuration','k','energy-settings'),
                            ('Data Sources','o','sources'),
@@ -372,7 +372,7 @@ try:
     report['checks'].append('All eight GUI-selected scenarios pass validity/shortfall assertions')
     command('Navigation','n')
     if windows:
-        assert not any(caption.startswith('OpenNav page:') for _, caption in ui.children(handle))
+        assert not any(caption.startswith(('OpenNav page:', 'OpenNav product page:')) for _, caption in ui.children(handle))
         ui.click_text(pid,'+')
         ui.click_text(pid,'Route')
         ui.assert_preview_page(handle,'Route')

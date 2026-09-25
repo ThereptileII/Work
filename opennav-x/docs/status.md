@@ -43,6 +43,13 @@ portable interaction step failed. An earlier cached status feed was stale.
 The long endurance stage must now run only after all earlier Windows gates pass;
 portable/DPI failure captures upload immediately. Superseded qualifications are
 cancelled without publishing a package. Exact replacement evidence is required.
+The downloaded job log identifies a test-visible page-label collision after Alpha
+wording removal: product and preview panels shared a prefix, invalidating the
+strict overlap assertion. Product panels now have a distinct role label; the
+visibility/overlap assertion remains, and Navigation checks that both panel roles
+are hidden. The one-time job which retired three known failed runs is removed;
+normal branch concurrency now prevents superseded endurance jobs accumulating.
+
 
 Release qualification is still in progress. A Linux allocation profile identified
 an upstream libudev serial-discovery leak; the reviewed integration patch now

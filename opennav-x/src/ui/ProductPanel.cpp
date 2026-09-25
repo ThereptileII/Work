@@ -540,7 +540,7 @@ void ProductPanel::Build() {
   body_->Add(notice_, 0, wxEXPAND | wxALL, FromDIP(12));
   notice_->Hide();
   SetName("OpenNav product page");
-  SetLabel("OpenNav page: " + W(PageTitle()));
+  SetLabel("OpenNav product page: " + W(PageTitle()));
   if (page_ == ProductPage::Alerts) {
     AlertsPanel();
   } else if (page_ == ProductPage::FieldReport) {
