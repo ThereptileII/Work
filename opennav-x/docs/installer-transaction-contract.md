@@ -152,11 +152,20 @@ first-install rollback, then exposes an upstream persisted-resource lifetime
 problem: default tide paths refer to the removed application generation.
 The replacement writes an owned, bounded UTF-8 `app/OPENNAV_INSTALLED_STOCK`
 locator only after exact stock preflight (including required resources).
-At the existing post-config integration boundary, installed modes fill only
-unset tide/coastline/AIS-sound defaults from that original installation. Custom
+After upstream locale initialization, immediately before its resource-default
+block, installed modes fill only unset tide/coastline/AIS-sound defaults from
+that original installation. This preserves upstream string-conversion ordering
+for Unicode paths; the earlier post-config boundary precedes locale setup. Custom
 selections, including missing custom files, remain unchanged. The locator is
 not installation authorization and is never executed. Portable/unmarked builds
 retain existing behavior. Installer operations still do not write the profile.
 Native lifecycle checks inspect persisted resource paths after generation
 removal and preserve a real custom harmonic fixture through uninstall.
 [Failure and replacement](evidence/installer-resources-2803773-failure.json).
+
+The actual Linux application regression additionally loads the real harmonic
+files through a Unicode stock-resource path, deletes earlier executable
+generations, and restarts XNav, Legacy and Safe with retained/default and custom
+source lists. Its resource-locator executable is explicitly a non-executed
+fixture; it does not establish Windows stock-binary acceptance. This caught
+early string conversions which portable path tests could not expose.

@@ -1,0 +1,36 @@
+{
+  "authority": "Linux development; actual application/harmonic loader, synthetic stock-locator identity",
+  "phases": [
+    {
+      "mode": "--xnav",
+      "tides": 2,
+      "removedPriorGeneration": false,
+      "result": "passed"
+    },
+    {
+      "mode": "--legacy",
+      "tides": 2,
+      "removedPriorGeneration": true,
+      "result": "passed"
+    },
+    {
+      "mode": "--safe-mode",
+      "tides": 1,
+      "removedPriorGeneration": true,
+      "result": "passed"
+    }
+  ],
+  "result": "passed",
+  "scope": "Local post-locale integration repair; not native Windows installer acceptance",
+  "integratedTests": 90,
+  "portableSuites": 30,
+  "command": "source tools/local-env.sh; xvfb-run -a -s '-screen 0 1280x800x24 -nolisten tcp' python3 tools/smoke-installed-resources-linux.py",
+  "sourceSha256": {
+    "src/integration/OpenCPNIntegration.cpp": "e5f7daf3eb256f0da502b5cd7f316ea1e55ad2a7f7aac463487b2c1cad4ab2c5",
+    "src/integration/OpenCPNIntegration.h": "173a475290b1878514dc16c0c79631ddcf27979fc87b5edebf690305d5ecefb6",
+    "patches/opencpn-5.12.4-xnav.patch": "7d74e667d8bc5b91ec53e70976d10a18417c83129832cc3cf28873b34bbe1bec",
+    "tools/smoke-installed-resources-linux.py": "119e836219a864e086e14bb695f096387bc0f029153f919865d8b982cf7b232e"
+  },
+  "applicationLogSha256": "4653a0017f6ac4c45b9093bd304e621cc8705eef9be8c9fb35145137d632ac42",
+  "earlierFailures": "The early post-config hook converted fresh Unicode defaults before ChangeLocale; retained Unicode sources also needed the same configured list reread after locale setup. The final hook preserves the configured order and duplicate policy."
+}

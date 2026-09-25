@@ -111,6 +111,8 @@ jobs:
         run: bash opennav-x/tools/build-integration-linux.sh
       - name: Staged loader check without profile initialization
         run: python3 opennav-x/tools/smoke-installer-selftest.py --app opennav-x/build/xnav-install/bin/opencpn
+      - name: Retain real harmonic sources across installed generation changes
+        run: xvfb-run -a -s '-screen 0 1280x800x24 -nolisten tcp' python3 opennav-x/tools/smoke-installed-resources-linux.py
       - name: Exercise shared profile mode cycle and IPC shutdown
         run: python3 opennav-x/tools/smoke-modes-linux.py
       - name: Exercise real OpenCPN input with synthetic loopback NMEA

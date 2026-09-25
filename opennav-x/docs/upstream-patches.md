@@ -245,12 +245,23 @@ retained chart/data and three separate native recovery cycles.
 
 ## Stable installed resource defaults
 
-No new direct upstream hook is added. The existing `SelectMode` call immediately
-after `MyConfig::LoadMyConfig` observes loaded selections before `MyApp::OnInit`
-fills default GSHHS, tide/current and AIS sound paths. An installer-owned stock
-locator allows empty defaults to use the untouched original resources rather
-than a removable Alpha generation. `navutil.cpp` retains normal serialization
-and `TCMgr::LoadDataSources` retains normal harmonic decoding and warnings.
-Existing user paths are never replaced or supplemented. This applies equally
-to installed XNav/Legacy/Safe; unmarked and portable paths remain unchanged.
+A guarded `InitializeResourceDefaults()` call in `MyApp::OnInit`, after locale
+initialization and immediately before the pinned GSHHS/tide/AIS-sound default
+block, fills only unset selections from an installer-owned stock locator.
+These defaults refer to the untouched original installation, not a removable
+Alpha generation. `navutil.cpp` retains normal serialization and
+`TCMgr::LoadDataSources` retains normal harmonic decoding and warnings.
+Existing user paths are never replaced or supplemented. Installed XNav/Legacy/
+Safe share this boundary; unmarked and portable starts remain unchanged.
+
+The original post-config boundary is too early for Unicode tide paths:
+`wxString::ToStdString` there runs before `ChangeLocale` and can yield empty
+strings. The dedicated hook preserves upstream's locale/conversion ordering.
+Because the pinned config loader converts saved tide-source names before locale
+setup too, installed modes reread only that list after locale initialization,
+using the same entry order and duplicate removal. This repairs conversion, not
+the selected data: missing/custom paths remain selected and normal warnings
+remain enabled. The config group scope is restored without writing it.
+The actual Linux application regression loads Unicode harmonic paths across
+XNav, Legacy and Safe starts while removing the prior executable generations.
 [Native lifetime failure](evidence/installer-resources-2803773-failure.json).

@@ -221,14 +221,34 @@ bool CheckStartupRecovery() {
   return recovery_safe;
 }
 
-void SelectMode(wxFileConfig& config, bool upstream_safe) {
+void InitializeResourceDefaults(wxFileConfig& config) {
   // Installed generations can be removed by rollback/uninstall. Persist the
   // original stock defaults, never a disposable generation's resource paths.
-  // This is before upstream initializes empty defaults and loads tide data.
+  // Locale is initialized; upstream has not yet filled defaults or loaded tides.
   if (!preview_paths && !g_bportable) {
     const auto app = platform::PathFromUtf8(
         wxFileName(wxStandardPaths::Get().GetExecutablePath()).GetPath().ToStdString(wxConvUTF8));
     if (const auto defaults = integration::InstalledResourceDefaults(app)) {
+      // LoadMyConfig reads these strings before ChangeLocale. Re-read only
+      // this resource list after locale setup so Unicode paths survive the
+      // same ToStdString conversion used by the pinned loader. Preserve its
+      // entry order and duplicate removal; do not discard missing selections.
+      {
+        wxConfigPathChanger section(&config, "/TideCurrentDataSources/");
+        if (config.GetNumberOfEntries()) {
+          std::vector<std::string> configured;
+          wxString key, value;
+          long index;
+          for (bool more = config.GetFirstEntry(key, index); more;
+               more = config.GetNextEntry(key, index)) {
+            config.Read(key, &value);
+            const auto source = value.ToStdString();
+            if (std::find(configured.begin(), configured.end(), source) == configured.end())
+              configured.push_back(source);
+          }
+          TideCurrentDataSet = std::move(configured);
+        }
+      }
       integration::ResourceSelection selected_resources{
           TideCurrentDataSet, gWorldMapLocation.ToStdString(wxConvUTF8),
           gWorldShapefileLocation.ToStdString(wxConvUTF8),
@@ -246,6 +266,9 @@ void SelectMode(wxFileConfig& config, bool upstream_safe) {
       wxLogMessage("OpenNav installed resource defaults: original supported OpenCPN; configured selections preserved");
     }
   }
+}
+
+void SelectMode(wxFileConfig& config, bool upstream_safe) {
   if (preview_paths) {
     const auto basemap = integration::PreviewBasemapDefault(
         preview_paths->root, gWorldShapefileLocation.ToStdString(wxConvUTF8));

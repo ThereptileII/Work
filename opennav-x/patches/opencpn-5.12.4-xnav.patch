@@ -93,7 +93,7 @@ index 258ae04bc..047c4e89d 100644
    if (NULL == g_pais_query_dialog_active) {
      int pos_x = g_ais_query_dialog_x;
 diff --git a/gui/src/ocpn_app.cpp b/gui/src/ocpn_app.cpp
-index a7670a674..f796a4d85 100644
+index a7670a674..2047fcce3 100644
 --- a/gui/src/ocpn_app.cpp
 +++ b/gui/src/ocpn_app.cpp
 @@ -22,6 +22,10 @@
@@ -210,7 +210,18 @@ index a7670a674..f796a4d85 100644
  
    //  Override for some safe and nice default values if the config file was
    //  created from scratch
-@@ -1977,7 +2020,11 @@ bool MyApp::OnInit() {
+@@ -1509,6 +1552,10 @@ bool MyApp::OnInit() {
+ 
+   InitRestListeners();
+ 
++#ifdef OPENNAV_X
++  opennav::InitializeResourceDefaults(*pConfig);
++#endif
++
+   //      Establish the GSHHS Dataset location
+   gDefaultWorldMapLocation = "gshhs";
+   gDefaultWorldMapLocation.Prepend(g_Platform->GetSharedDataDir());
+@@ -1977,7 +2024,11 @@ bool MyApp::OnInit() {
    std::vector<std::string> ipv4_addrs = get_local_ipv4_addresses();
  
    // If network connection is available, start the server and mDNS client
@@ -223,7 +234,7 @@ index a7670a674..f796a4d85 100644
      std::string ipAddr = ipv4_addrs[0];
  
      wxString data_dir = g_Platform->GetPrivateDataDir();
-@@ -1990,10 +2037,16 @@ bool MyApp::OnInit() {
+@@ -1990,10 +2041,16 @@ bool MyApp::OnInit() {
      StartMDNSService(g_hostname.ToStdString(), "opencpn-object-control-service",
                       8000);
    }
@@ -240,7 +251,7 @@ index a7670a674..f796a4d85 100644
    wxLogMessage(_T("opencpn::MyApp starting exit."));
    m_checker.OnExit();
    m_usb_watcher.Stop();
-@@ -2118,6 +2171,9 @@ int MyApp::OnExit() {
+@@ -2118,6 +2175,9 @@ int MyApp::OnExit() {
    g_Platform->OnExit_2();
    safe_mode::clear_check();
    delete g_Platform;

@@ -200,9 +200,10 @@ try:
         stable_resources(profile,stock)
         # A real user-selected harmonic source must remain selected; defaults
         # must never replace or append to this list during any installed mode.
-        custom_tide=profile/'custom harmonic fixture.tcd'
+        custom_tide=profile/'custom Åland harmonic fixture.tcd'
         shutil.copy2(stock/'tcdata/harmonics-dwf-20210110-free.tcd',custom_tide)
         config=configparser.RawConfigParser(strict=False)
+        config.optionxform=str
         config.read(profile/'opencpn.ini',encoding='utf-8-sig')
         config['TideCurrentDataSources']={'tcds0':custom_tide.as_posix()}
         with (profile/'opencpn.ini').open('w',encoding='utf-8') as f:config.write(f)

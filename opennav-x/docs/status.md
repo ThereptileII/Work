@@ -104,7 +104,10 @@ At `2803773`, clean native wizard installation, installed coastline launch and
 first-install rollback now pass. The later launch exposes a persisted tide-data
 path into the deleted generation. Installed resource defaults now resolve to the
 verified original stock resources, preserving all custom selections. The new
-contract passes 30 portable suites locally; full native qualification is pending.
+contract passes 30 portable suites on Linux and native MSVC. The dedicated
+post-locale hook also passes actual Linux XNav/Legacy/Safe harmonic loading with
+Unicode paths, removed generations and a retained custom source list. The full
+native lifecycle qualification remains pending.
 [Resource lifetime failure and repair](evidence/installer-resources-2803773-failure.json).
 The complete lifecycle, exact final artifact and public allowlist remain gated.
 

@@ -26,6 +26,8 @@ bool CheckStartupRecovery();
 bool IsPortablePreview();
 bool IsXNav();
 void SelectMode(wxFileConfig& config, bool upstream_safe);
+// After locale initialization, immediately before upstream resource defaults.
+void InitializeResourceDefaults(wxFileConfig& config);
 void Attach(MyFrame& frame, wxAuiManager& manager, wxFileConfig& config);
 // Called at the end of normal deferred startup, after canvas/focus work.
 void AfterDeferredInitialization();
