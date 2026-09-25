@@ -16,6 +16,7 @@
 namespace opennav::ui {
 
 struct ShellActions {
+  std::shared_ptr<diagnostics::Commissioning> commissioning;
   // Integration supplies AUI identities, never chart objects. Page visibility
   // is restored before OpenCPN saves its normal perspective on close.
   std::vector<wxString> navigation_panes;

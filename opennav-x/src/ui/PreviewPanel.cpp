@@ -130,9 +130,12 @@ void PreviewPanel::Paint(wxPaintEvent &) {
                          : page_ == PreviewPage::Route ? "Route & destination"
                                                        : "System & diagnostics";
   p.Text(title, margin, 20, 26, c.primary, true);
-  p.Text(state_.simulated ? "DEMO  /  Synthetic trip  /  No device output"
-                          : "OPENCPN  /  Read-only vessel data",
-         margin, 58, 13, state_.simulated ? c.attention : c.secondary, true);
+  p.Text(state_.replayed
+             ? "REPLAY / Historical observations / Controls disabled"
+         : state_.simulated ? "DEMO  /  Synthetic trip  /  No device output"
+                            : "OPENCPN  /  Read-only vessel data",
+         margin, 58, 13,
+         state_.simulated || state_.replayed ? c.attention : c.secondary, true);
   int bottom = 0;
   if (page_ == PreviewPage::Energy) {
     const int columns = width >= 940 ? 3 : width >= 660 ? 2 : 1;
@@ -223,7 +226,7 @@ void PreviewPanel::Paint(wxPaintEvent &) {
            x, y + 78, 20, c.primary, true, width - x - 44);
     p.Text(arrival ? wxString::Format("Passage energy  %.1f kWh",
                                       arrival->energy_required_kwh)
-                   : W(smartnav::EnergyReasonName(energy.arrival.reason)),
+                   : "Passage energy: " + W(smartnav::EnergyReasonName(energy.arrival.reason)),
            x, y + 112, 13, c.secondary, false, width - x - 44);
     p.Text("Estimated at present conditions. See Settings / Energy for "
            "assumptions.",
@@ -282,10 +285,12 @@ void PreviewPanel::Paint(wxPaintEvent &) {
     p.Card(margin, end, width - 2 * margin, 114, "READ-ONLY ROUTE PROGRESS");
     p.Text(route ? W(route->source) : "No route source", margin + 20, end + 46,
            12, c.secondary, false, width - 2 * margin - 40);
-    p.Text(state_.simulated ? "Demo route and GPS are synthetic. The chart "
-                              "remains OpenCPN's real canvas."
-                            : "OpenCPN owns route activation, arrival and "
-                              "waypoint changes. No automatic steering.",
+    p.Text(state_.replayed
+               ? "REPLAY data is historical. The OpenCPN chart is separate."
+           : state_.simulated ? "Demo route and GPS are synthetic. The chart "
+                                "remains OpenCPN's real canvas."
+                              : "OpenCPN owns route activation, arrival and "
+                                "waypoint changes. No automatic steering.",
            margin + 20, end + 77, 11, c.muted, false, width - 2 * margin - 40);
     bottom = end + 138;
   } else {

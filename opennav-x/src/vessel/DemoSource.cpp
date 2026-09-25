@@ -88,6 +88,12 @@ VesselState DemoFixture(DemoScenario scenario, unsigned seconds, Time at) {
   s.battery.net_discharge_kw = measured(net);
   s.battery.soh_percent = measured(94);
   s.battery.usable_capacity_kwh = estimated(48);
+  for (auto *value : {&s.battery.soc_percent, &s.battery.voltage_v,
+                      &s.battery.current_a, &s.battery.net_discharge_kw,
+                      &s.battery.soh_percent, &s.battery.usable_capacity_kwh})
+    value->device_id = "DEMO / pack-1";
+  s.propulsion.electrical_power_kw.device_id =
+      s.propulsion.shaft_power_kw.device_id = "DEMO / motor-1";
   s.tanks.fresh_water_percent = measured(72);
   s.tanks.waste_percent = measured(18);
   s.connectivity.status = {"Isolated demo source", "DEMO internal generator",

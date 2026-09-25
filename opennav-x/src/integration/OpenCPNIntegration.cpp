@@ -1,8 +1,8 @@
 #include "integration/OpenCPNIntegration.h"
-#include "integration/InstallerSelfTest.h"
-#include "integration/InstalledResources.h"
 #include "adapters/Autopilot.h"
 #include "adapters/Radar.h"
+#include "integration/InstalledResources.h"
+#include "integration/InstallerSelfTest.h"
 #include "integration/MarineBridge.h"
 #include "integration/NavigationActions.h"
 #include "integration/NavigationBridge.h"
@@ -16,6 +16,7 @@
 #include "integration/SettingsStore.h"
 #include "integration/StartupMode.h"
 #include "model/base_platform.h"
+#include "model/comm_drv_registry.h"
 #include "model/safe_mode.h"
 #include "platform/PlatformIntegration.h"
 #include "platform/PortableProfile.h"
@@ -76,6 +77,7 @@ bool demo = false;
 std::string route_test_profile,object_test_profile;
 #endif
 std::unique_ptr<ui::Shell> shell;
+std::shared_ptr<diagnostics::Commissioning> commissioning;
 std::unique_ptr<NavigationBridge> navigation;
 std::unique_ptr<integration::MarineBridge> marine;
 std::unique_ptr<integration::SettingsStore> settings;
@@ -338,9 +340,30 @@ void Attach(MyFrame& frame, wxAuiManager& manager, wxFileConfig& config) {
   };
   configure_sources();
   ui::ShellActions actions;
+  commissioning = std::make_shared<diagnostics::Commissioning>(
+      std::filesystem::u8path(diagnostic_directory) / "recordings", [] {
+        for (const auto &driver :
+             CommDriverRegistry::GetInstance().GetDrivers()) {
+          const auto attributes = driver->GetAttributes();
+          const auto direction = attributes.find("ioDirection");
+          if ((direction != attributes.end() && direction->second != "IN") ||
+              (direction == attributes.end() &&
+               (driver->bus == NavAddr::Bus::N2000 ||
+                driver->bus == NavAddr::Bus::N0183 ||
+                driver->bus == NavAddr::Bus::Signalk)))
+            return std::string("Replay requires output-capable OpenCPN "
+                               "connections to be disabled. Use the isolated "
+                               "portable profile for offline review.");
+        }
+        return std::string{};
+      });
+  actions.commissioning = commissioning;
   actions.settings = [] { return settings->Read(); };
   actions.settings_status = [] { return settings->Status(); };
   actions.save_settings = [configure_sources](const auto &s) {
+    if (commissioning && commissioning->Replaying())
+      return application::CommandResult{
+          false, "Stop REPLAY before changing live settings"};
     auto result = settings->Save(s);
     if (result.ok)
       configure_sources();
@@ -358,12 +381,46 @@ void Attach(MyFrame& frame, wxAuiManager& manager, wxFileConfig& config) {
     if(!copy.waypoint_id.empty() && copy.waypoint_id!=g_AW1GUID.ToStdString(wxConvUTF8) && copy.waypoint_id!=g_AW2GUID.ToStdString(wxConvUTF8)){copy={};copy.state="Anchor watch changed; waiting for normal observation";}
     return copy;
   });
+  actions.navigation =
+      application::GuardNavigationChanges(std::move(actions.navigation), [] {
+        return !commissioning || !commissioning->Replaying();
+      });
   actions.route_creating=[&frame]{return frame.GetPrimaryCanvas()->m_routeState>0;};
   pilots=std::make_unique<PilotServices>();
-  actions.pilot_tick=[](bool simulated){const auto now=vessel::Clock::now();if(pilots->was_demo!=simulated){pilots->Select(pilots->was_demo).Enable(false,now);pilots->was_demo=simulated;}auto& p=pilots->Select(simulated);p.Tick(now);return p.GetState(now);};
+  actions.pilot_tick = [](bool simulated) {
+    const auto now = vessel::Clock::now();
+    if (pilots->was_demo != simulated) {
+      pilots->Select(pilots->was_demo).Enable(false, now);
+      pilots->was_demo = simulated;
+    }
+    auto &p = pilots->Select(simulated);
+    if (commissioning && !commissioning->AllowsHardwareControl()) {
+      pilots->live.Enable(false, now);
+      pilots->demo.Enable(false, now);
+    }
+    p.Tick(now);
+    return p.GetState(now);
+  };
   actions.pilot_log=[](bool simulated){return pilots->Select(simulated).Log();};
-  actions.pilot_command=[](bool simulated,auto action,double delta){auto c=pilots->Select(simulated).Request(action,delta,vessel::Clock::now());wxLogMessage("OpenNav manual autopilot [%s] request %llu: %s / %s",simulated?"DEMO":"unavailable hardware",static_cast<unsigned long long>(c.request.id),wxString::FromUTF8(adapters::CommandStateName(c.state)),wxString::FromUTF8(c.detail));};
-  actions.pilot_enable=[](bool simulated,bool enabled){pilots->Select(simulated).Enable(enabled,vessel::Clock::now());wxLogMessage("OpenNav manual autopilot %s: %s",simulated?"DEMO":"unavailable hardware",enabled?"enable requested":"disabled");};
+  actions.pilot_command = [](bool simulated, auto action, double delta) {
+    if (commissioning && !commissioning->AllowsHardwareControl())
+      return;
+    auto c =
+        pilots->Select(simulated).Request(action, delta, vessel::Clock::now());
+    wxLogMessage("OpenNav manual autopilot [%s] request %llu: %s / %s",
+                 simulated ? "DEMO" : "unavailable hardware",
+                 static_cast<unsigned long long>(c.request.id),
+                 wxString::FromUTF8(adapters::CommandStateName(c.state)),
+                 wxString::FromUTF8(c.detail));
+  };
+  actions.pilot_enable = [](bool simulated, bool enabled) {
+    if (enabled && commissioning && !commissioning->AllowsHardwareControl())
+      return;
+    pilots->Select(simulated).Enable(enabled, vessel::Clock::now());
+    wxLogMessage("OpenNav manual autopilot %s: %s",
+                 simulated ? "DEMO" : "unavailable hardware",
+                 enabled ? "enable requested" : "disabled");
+  };
   actions.zoom_in = [&frame] { frame.GetPrimaryCanvas()->ZoomCanvas(2.0, false); };
   actions.zoom_out = [&frame] { frame.GetPrimaryCanvas()->ZoomCanvas(0.5, false); };
   actions.follow = [&frame] { frame.TogglebFollow(frame.GetPrimaryCanvas()); };
@@ -411,12 +468,32 @@ void Attach(MyFrame& frame, wxAuiManager& manager, wxFileConfig& config) {
           wxString("Shell update callback including diagnostics; excludes "
                    "asynchronous chart painting");
     }
+    if (commissioning) {
+      const auto r = commissioning->RecordingStatus();
+      runtime["recording"]["active"] = r.active;
+      runtime["recording"]["captured"] = static_cast<int>(r.captured);
+      runtime["recording"]["published"] = static_cast<int>(r.published);
+      runtime["recording"]["error"] = wxString::FromUTF8(r.error);
+      runtime["replay"]["active"] = commissioning->Replaying();
+      runtime["replay"]["allows_hardware_control"] =
+          commissioning->AllowsHardwareControl();
+      if (const auto view = commissioning->ReadReplay(now)) {
+        runtime["replay"]["paused"] = view->paused;
+        runtime["replay"]["ended"] = view->ended;
+        runtime["replay"]["elapsed_ms"] =
+            static_cast<int>(view->elapsed.count());
+      }
+    }
     integration::WritePreviewDiagnostics(
         diagnostic_directory + "/opennav-diagnostics.json", state,
         integration::PreviewBuildInfo(
             frame.GetDPI().x,
             g_BasePlatform->GetPrivateDataDir().ToStdString(wxConvUTF8)),
-        energy, settings->Read(), marine->Sources().Health(now), page, runtime);
+        energy,
+        state.replayed ? commissioning->ReplayAssumptions() : settings->Read(),
+        state.replayed ? std::vector<vessel::SourceHealth>{}
+                       : marine->Sources().Health(now),
+        page, runtime);
   };
   actions.demo_chart=[] { if(g_bDeferredInitDone) JumpToPosition(59.08,18.5,0.003); };
   actions.theme = [&frame](ui::LightMode mode) {
@@ -522,6 +599,7 @@ bool PrepareClose(wxFileConfig& config) {
   selected_navigation = {};
   route_progress.reset();
   shell.reset();
+  commissioning.reset();
   settings.reset();
   pilots.reset();anchor_state={};
   host = nullptr;

@@ -117,6 +117,8 @@ jobs:
         run: python3 opennav-x/tools/smoke-modes-linux.py
       - name: Exercise real OpenCPN input with synthetic loopback NMEA
         run: python3 opennav-x/tools/smoke-navigation.py
+      - name: Record and replay normalized vessel state through the real UI
+        run: python3 opennav-x/tools/smoke-recording.py
       - name: Observe normal upstream route progress with isolated synthetic routes
         run: python3 opennav-x/tools/smoke-navigation.py --route-fixture
       - name: Marine instrument input through the upstream loopback connection

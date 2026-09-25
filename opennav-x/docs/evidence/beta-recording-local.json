@@ -1,0 +1,58 @@
+{
+  "scope": "Beta recording/replay commissioning increment local gate; native Windows pending",
+  "portable_suites": 38,
+  "existing_integrated_cases": 97,
+  "mode_cycle": "passed",
+  "actual_n2k_input": "passed",
+  "recording_ui": {
+    "authority": "Linux development",
+    "checks": [
+      "Actual UI captured/saved 5 normalized frames without positions/route",
+      "Replay is identified; separate source state; hardware control blocked; end ages into stale",
+      "Rewind/pause/stop return to labelled demo without profile restart"
+    ],
+    "screenshots": [
+      "recording-01-commissioning-linux.png",
+      "recording-02-active-linux.png",
+      "recording-03-replay-energy-linux.png",
+      "recording-04-replay-ended-stale-linux.png",
+      "recording-05-replay-paused-linux.png",
+      "recording-06-returned-diagnostics-linux.png"
+    ],
+    "result": "passed; screenshot review required"
+  },
+  "recording_log_sha256": "5133526e2607b3de83ea66e3973ae8907a5de6fbd8d0fff3609d0c10ecc2de02",
+  "contract_log_sha256": "c2bca140b7fd70749de26522334127c39d9695851005f7522dba23368f6fa392",
+  "screenshots": [
+    {
+      "file": "recording-01-commissioning-linux.png",
+      "sha256": "7fc004255c7254f895603163b817dd47b81041327895151c7b9d641f450c0569"
+    },
+    {
+      "file": "recording-02-active-linux.png",
+      "sha256": "06fdc90dc4dc1986135476670cc1853aa2b78b9add82aeff3ceeb714536565d5"
+    },
+    {
+      "file": "recording-03-replay-energy-linux.png",
+      "sha256": "d91e407cfb3363584149b10a9a8a709acc057e703587c694dd3beb1e1dbe3ea8"
+    },
+    {
+      "file": "recording-04-replay-ended-stale-linux.png",
+      "sha256": "c2ffd48e416c62d7e9ea09df3258fee8ebbe26e0b6607277d8dd5914740f08f6"
+    },
+    {
+      "file": "recording-05-replay-paused-linux.png",
+      "sha256": "428a8680b2cd583603ac21f09d7167995c206fb6ac1c0b1f7c089a4a1c10e07e"
+    },
+    {
+      "file": "recording-06-returned-diagnostics-linux.png",
+      "sha256": "a5b381e7e5181c887e5247c84b29abe1816e7c4aa8e4a0b4e1716a0c56e8ae14"
+    }
+  ],
+  "limits": [
+    "Linux is development validation; native Windows rendering and file-dialog/export workflow remain mandatory.",
+    "Recordings contain normalized selected state, not raw bus messages, AIS identities or anchor history.",
+    "Offline replay uses a separate clock and never updates OpenCPN navigation.",
+    "New commands/default controls remain disabled until later adapter/configuration and physical gates."
+  ]
+}

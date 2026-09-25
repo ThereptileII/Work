@@ -35,12 +35,23 @@ position/observation ages and route/revision/point identity; invalid, stale,
 ambiguous, edited or transitional state never becomes a valid zero arrival.
 [Contract](route-progress-contract.md), [review](evidence/windows-954b450-review.json).
 
-## Beta increment in development
+## Beta development
 
 The first Beta increment adds standard 127751 voltage/current, 127489 coolant,
 127493 gear, other tank instances and source cadence/invalid-input diagnostics.
-Local integrated build, 97 cases, 31 portable suites, actual TCP N2K
-loss-of-data smoke and mode lifecycle pass. Native Windows acceptance is pending. [Source inspection](beta-boat-source-inspection.md)
+Accepted at `a3717673674fdcd7ad8126ea3f24e354139b13d3`,
+[run 36096824548](https://github.com/ThereptileII/Work/actions/runs/36096824548):
+97 Linux / 87 Windows integrated cases, 31 portable suites on each platform,
+TCP N2K loss-of-data smoke, mode/chart/recovery/installer/DPI gates pass.
+The three new native live/stale/unavailable captures were reviewed.
+[Evidence](evidence/beta-input-a371767-accepted.json).
+Recording/replay, calibration export and the commissioning overview now pass
+38 portable suites, the Linux integrated build/97 existing cases, actual recording
+UI, N2K loss-of-data and mode-cycle checks. Native Windows acceptance is pending.
+[Recording contract](recording-replay-contract.md),
+[local evidence](evidence/beta-recording-local.json).
+The interaction test also exposed and fixed first-open pane wrapping and focus
+after replay changes; native scaling remains a required gate. [Source inspection](beta-boat-source-inspection.md)
 records the actual producer contract and its retained-data freshness limitation.
 
 ## Implemented Alpha product

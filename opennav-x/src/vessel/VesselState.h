@@ -115,6 +115,7 @@ struct VesselState {
   Tanks tanks;
   Connectivity connectivity;
   bool simulated = false;
+  bool replayed = false; // Isolated playback; never a live/control input.
 };
 
 // Explicit, deterministic fixture. Never installed as a live-data fallback.

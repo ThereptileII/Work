@@ -31,6 +31,18 @@ ProductPanel::ProductPanel(wxWindow *parent, ProductActions actions)
       actions_(std::move(actions)) {
   SetScrollRate(0, FromDIP(24));
   Bind(wxEVT_SIZE, [this](wxSizeEvent &e) {
+    const int width = GetClientSize().x;
+    if (width > 0 && width != layout_width_) {
+      layout_width_ = width;
+      for (auto &t : static_text_) {
+        t.first->SetLabel(t.second);
+        t.first->Wrap(std::max(200, width - FromDIP(64)));
+      }
+      for (auto &g : action_grids_)
+        g.first->SetCols(std::max(1, std::min(g.second, width / FromDIP(212))));
+      Layout();
+      FitInside();
+    }
     if (grid_) {
       const int cols = GetClientSize().x >= FromDIP(920)   ? 4
                        : GetClientSize().x >= FromDIP(600) ? 3
@@ -53,6 +65,7 @@ void ProductPanel::Text(const wxString &text, int size) {
   label->SetFont(UiFont(*this, size, size > 18));
   label->SetForegroundColour(
       Colour(size > 18 ? Theme(mode_).primary : Theme(mode_).secondary));
+  static_text_.push_back({label, text});
   label->Wrap(std::max(200, GetClientSize().x - FromDIP(64)));
   body_->Add(label, 0, wxEXPAND | wxLEFT | wxRIGHT | wxBOTTOM, FromDIP(16));
 }
@@ -101,6 +114,7 @@ void ProductPanel::BeginActions(int columns) {
   actions_grid_ = new wxGridSizer(
       std::max(1, std::min(columns, GetClientSize().x / FromDIP(212))),
       FromDIP(8), FromDIP(8));
+  action_grids_.push_back({actions_grid_, columns});
   body_->Add(actions_grid_, 0, wxEXPAND | wxALL, FromDIP(16));
 }
 void ProductPanel::Result(application::CommandResult result) {
@@ -121,6 +135,8 @@ void ProductPanel::Result(application::CommandResult result) {
 }
 std::string ProductPanel::PageTitle() const {
   switch (page_) {
+  case ProductPage::Commissioning:
+    return "Commissioning & recordings";
   case ProductPage::Home:
     return "Menu";
   case ProductPage::Routes:
@@ -198,10 +214,15 @@ void ProductPanel::ShowObject(const std::string &id, bool route,
   Result({false, "Selected object no longer available", {}});
 }
 void ProductPanel::Update(const ProductState &state, LightMode mode) {
+  const bool mode_changed = state_.vessel.replayed != state.vessel.replayed ||
+                            state_.vessel.simulated != state.vessel.simulated;
   state_ = state;
-  if (mode != mode_) {
+  if (mode != mode_ || mode_changed) {
+    auto *focus=wxWindow::FindFocus();
+    const bool restore_focus=focus && (focus==this || IsDescendant(focus));
     mode_ = mode;
     Build();
+    if((restore_focus || mode_changed) && IsShownOnScreen())SetFocus();
   }
   for (auto &v : values_)
     v.first->SetReading(v.second(state), state.now);
@@ -262,7 +283,8 @@ void ProductPanel::RouteActions() {
           Result(route_.active ? actions_.navigation.deactivate()
                                : actions_.navigation.activate(route_));
       },
-      !state_.vessel.simulated && (route_.active || route_.editable));
+      !state_.vessel.simulated && !state_.vessel.replayed &&
+          (route_.active || route_.editable));
   Action(
       "Edit route name / description",
       [this] {
@@ -353,7 +375,9 @@ void ProductPanel::PointActions() {
       point_.removable);
 }
 void ProductPanel::PilotActions() {
-  Heading("Manual autopilot", state_.vessel.simulated
+  Heading("Manual autopilot", state_.vessel.replayed
+                                  ? "REPLAY / All hardware controls disabled"
+                              : state_.vessel.simulated
                                   ? "DEMO adapter / no vessel commands"
                                   : "Live hardware output unavailable in Alpha "
                                     "/ physical validation pending");
@@ -379,7 +403,7 @@ void ProductPanel::PilotActions() {
                          "Enable DEMO"))
           actions_.pilot_enable(enable);
       },
-      state_.vessel.simulated);
+      state_.vessel.simulated && !state_.vessel.replayed);
   const auto caps = state_.pilot.capabilities;
   BeginActions(4);
   Action(
@@ -433,6 +457,8 @@ void ProductPanel::PilotActions() {
 void ProductPanel::Build() {
   Freeze();
   text_.clear();
+  static_text_.clear();
+  action_grids_.clear();
   values_.clear();
   grid_ = nullptr;
   actions_grid_ = nullptr;
@@ -449,7 +475,9 @@ void ProductPanel::Build() {
   notice_->Hide();
   SetName("OpenNav Alpha product page");
   SetLabel("OpenNav Alpha page: " + W(PageTitle()));
-  if (page_ == ProductPage::Home) {
+  if (page_ == ProductPage::Commissioning) {
+    CommissioningPanel();
+  } else if (page_ == ProductPage::Home) {
     Heading("Navigate with OpenNav X", "Alpha / Chart, vessel and passage");
     BeginActions(3);
     for (const auto &p : std::vector<std::pair<wxString, ProductPage>>{
@@ -482,12 +510,17 @@ void ProductPanel::Build() {
     });
     Action("Propulsion & energy", actions_.energy);
     Action("System & diagnostics", actions_.diagnostics);
+    Action("Commissioning & recordings",
+           [this] { ShowPage(ProductPage::Commissioning, mode_); });
   } else if (page_ == ProductPage::Routes || page_ == ProductPage::Waypoints) {
     const bool routes = page_ == ProductPage::Routes;
     Heading(routes ? "Routes" : "Waypoints",
-            state_.vessel.simulated ? "DEMO telemetry / this catalog contains "
-                                      "REAL OpenCPN navigation objects"
-                                    : "Shared OpenCPN navigation objects");
+            state_.vessel.replayed ? "REPLAY / This catalog contains real "
+                                     "OpenCPN objects; changes disabled"
+            : state_.vessel.simulated
+                ? "DEMO telemetry / this catalog contains "
+                  "REAL OpenCPN navigation objects"
+                : "Shared OpenCPN navigation objects");
     BeginActions(2);
     Action("Refresh catalog", [this] { Build(); });
     Action(routes ? "Waypoints" : "Routes", [this, routes] {
@@ -701,7 +734,7 @@ void ProductPanel::Build() {
             Result(actions_.navigation.start_anchor(radius));
           }
         },
-        !state_.vessel.simulated);
+        !state_.vessel.simulated && !state_.vessel.replayed);
     Action(
         "Clear anchor watch",
         [this] {
@@ -711,7 +744,7 @@ void ProductPanel::Build() {
                            "Clear watch"))
             Result(actions_.navigation.clear_anchor(state_.anchor.waypoint_id));
         },
-        !state_.vessel.simulated);
+        !state_.vessel.simulated && !state_.vessel.replayed);
     Value("DISTANCE FROM ANCHOR", "m",
           [](const auto &s) { return s.anchor.distance_m; });
     Value("DEPTH", "m / transducer", [](const auto &s) {
@@ -735,6 +768,8 @@ void ProductPanel::Build() {
     Action("Display & layout",
            [this] { ShowPage(ProductPage::Display, mode_); });
     Action("System diagnostics", actions_.diagnostics);
+    Action("Commissioning & recordings",
+           [this] { ShowPage(ProductPage::Commissioning, mode_); });
     Action("Fullscreen / window", actions_.navigation.fullscreen);
     Action("Advanced / Legacy Settings", actions_.navigation.legacy_settings);
     Action("OpenCPN plugins", actions_.navigation.plugin_settings);

@@ -54,7 +54,7 @@ for this stage. Serious navigation regressions must be fixed before acceptance.
 
 Every code increment remains buildable. Contract/unit gates are supplemented by
 actual runtime/bus/lifecycle/UI evidence; compilation alone is not acceptance.
-Existing counts are 90 Linux / 80 Windows integrated cases and 30 portable suites
+The accepted Alpha counts were 90 Linux / 80 Windows integrated cases and 30 portable suites
 per platform, plus GUI/synthetic/recovery/installer checks recorded separately.
 
 ## Decisions retained
@@ -73,3 +73,7 @@ publication. Candidate packaging and every regression gate still execute. The
 accepted Alpha artifact remains pinned to `08bc92f`; development candidates
 must not replace it under an Alpha release name. Beta version/package branding
 and named publication are promoted together at the final delivery gate.
+
+First Beta input acceptance: `a371767`, 97 Linux / 87 Windows integrated cases
+and 31 portable suites per platform. Recording increment local gate: 38 portable
+suites, runtime recording/replay and existing Linux regressions; native pending.

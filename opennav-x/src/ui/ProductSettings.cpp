@@ -39,6 +39,10 @@ wxString Health(const vessel::SourceHealth &h, vessel::Time now) {
 }
 } // namespace
 void ProductPanel::SaveSettings(application::Settings s) {
+  if (state_.vessel.replayed) {
+    Result({false, "Stop REPLAY before changing live settings"});
+    return;
+  }
   if (!actions_.save_settings)
     return;
   try {

@@ -3,6 +3,7 @@
 #include "adapters/Radar.h"
 #include "application/NavigationObjects.h"
 #include "application/Settings.h"
+#include "diagnostics/Commissioning.h"
 #include "smartnav/Advisories.h"
 #include "ui/Controls.h"
 #include <wx/scrolwin.h>
@@ -29,7 +30,8 @@ enum class ProductPage {
   Radar,
   Display,
   RailLayout,
-  InstrumentLayout
+  InstrumentLayout,
+  Commissioning
 };
 struct ProductState {
   vessel::VesselState vessel;
@@ -45,6 +47,7 @@ struct ProductState {
   vessel::Time now{};
 };
 struct ProductActions {
+  std::shared_ptr<diagnostics::Commissioning> commissioning;
   application::NavigationActions navigation;
   std::function<void()> chart, route_summary, energy, diagnostics;
   std::function<void(LightMode)> theme;
@@ -81,6 +84,7 @@ private:
   void CreateMark();
   void PilotActions();
   void EnergySettings();
+  void CommissioningPanel();
   void Sources();
   void SourceDetail();
   void DisplaySettings();
@@ -98,6 +102,9 @@ private:
   wxGridSizer *grid_ = nullptr;
   wxGridSizer *actions_grid_ = nullptr;
   wxStaticText *notice_ = nullptr;
+  int layout_width_ = 0;
+  std::vector<std::pair<wxStaticText *, wxString>> static_text_;
+  std::vector<std::pair<wxGridSizer *, int>> action_grids_;
   std::vector<
       std::pair<wxStaticText *, std::function<wxString(const ProductState &)>>>
       text_;

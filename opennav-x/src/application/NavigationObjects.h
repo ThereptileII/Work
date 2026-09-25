@@ -66,4 +66,8 @@ struct NavigationActions {
   std::function<CommandResult(double)> start_anchor;
   std::function<CommandResult(const std::string &)> clear_anchor;
 };
+// Restrict mutations while inspecting isolated recordings. Read-only catalog,
+// chart interaction and existing native OpenCPN state remain independent.
+NavigationActions GuardNavigationChanges(NavigationActions actions,
+                                         std::function<bool()> allowed);
 } // namespace opennav::application

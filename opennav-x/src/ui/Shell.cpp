@@ -145,6 +145,7 @@ Shell::Shell(wxFrame &frame, wxAuiManager &manager, ShellActions actions,
                               .PaneBorder(false)
                               .Hide());
   ProductActions product_actions;
+  product_actions.commissioning = actions_.commissioning;
   product_actions.navigation = actions_.navigation;
   product_actions.settings = actions_.settings;
   product_actions.theme = [this](LightMode mode) { SetLight(mode); };
@@ -154,11 +155,15 @@ Shell::Shell(wxFrame &frame, wxAuiManager &manager, ShellActions actions,
   product_actions.energy = [this] { ShowPage(PreviewPage::Energy); };
   product_actions.diagnostics = [this] { ShowPage(PreviewPage::Diagnostics); };
   product_actions.pilot_command = [this](auto action, double delta) {
-    if (actions_.pilot_command)
+    if (actions_.pilot_command &&
+        (!actions_.commissioning ||
+         actions_.commissioning->AllowsHardwareControl()))
       actions_.pilot_command(simulation_, action, delta);
   };
   product_actions.pilot_enable = [this](bool enabled) {
-    if (actions_.pilot_enable)
+    if (actions_.pilot_enable &&
+        (!enabled || !actions_.commissioning ||
+         actions_.commissioning->AllowsHardwareControl()))
       actions_.pilot_enable(simulation_, enabled);
   };
   product_ = new ProductPanel(&frame_, std::move(product_actions));
@@ -179,6 +184,7 @@ Shell::Shell(wxFrame &frame, wxAuiManager &manager, ShellActions actions,
       {'G', [this] { ShowProduct(ProductPage::Settings); }},
       {'K', [this] { ShowProduct(ProductPage::EnergySettings); }},
       {'O', [this] { ShowProduct(ProductPage::Sources); }},
+      {'C', [this] { ShowProduct(ProductPage::Commissioning); }},
       {'Q', [this] { ShowProduct(ProductPage::VesselSettings); }},
       {'Z', [this] { ShowProduct(ProductPage::Radar); }},
       {'F', [this] { ShowProduct(ProductPage::Display); }},
@@ -237,7 +243,8 @@ Shell::~Shell() {
 }
 
 void Shell::UpdateState(const vessel::VesselState &state) {
-  if (!simulation_)
+  if (!simulation_ &&
+      (!actions_.commissioning || !actions_.commissioning->Replaying()))
     state_ = state;
 }
 
@@ -292,8 +299,14 @@ void Shell::UpdateRail(const std::vector<std::string> &keys, vessel::Time now) {
 
 void Shell::Tick() {
   const auto begin = std::chrono::steady_clock::now();
-  const auto now = vessel::Clock::now();
-  if (simulation_)
+  const auto wall_now = vessel::Clock::now();
+  const auto replay = actions_.commissioning
+                          ? actions_.commissioning->ReadReplay(wall_now)
+                          : std::optional<diagnostics::ReplayView>{};
+  const auto now = replay ? replay->now : wall_now;
+  if (replay)
+    state_ = replay->state;
+  else if (simulation_)
     state_ = demo_.Read(now);
   else {
     if (actions_.live_state)
@@ -301,14 +314,17 @@ void Shell::Tick() {
     if (actions_.route)
       state_.navigation.route = actions_.route();
   }
-  const auto config =
-      actions_.settings ? actions_.settings() : application::Settings{};
-  const auto model =
-      simulation_ ? smartnav::PreviewEnergyModel(true) : config.energy.battery;
+  const auto config = replay ? actions_.commissioning->ReplayAssumptions()
+                      : actions_.settings ? actions_.settings()
+                                          : application::Settings{};
+  const auto model = simulation_ && !replay ? smartnav::PreviewEnergyModel(true)
+                                            : config.energy.battery;
   const auto energy =
-      simulation_
+      simulation_ && !replay
           ? smartnav::PredictVesselEnergy(model, state_, now)
           : smartnav::PredictConfiguredEnergy(config.energy, state_, now);
+  if (actions_.commissioning && !replay)
+    actions_.commissioning->Capture(state_, wall_now);
   const bool creating = actions_.route_creating && actions_.route_creating();
   if (finish_route_->IsShown() != creating) {
     finish_route_->Show(creating);
@@ -318,38 +334,59 @@ void Shell::Tick() {
     ProductState p;
     p.vessel = state_;
     p.now = now;
-    if (simulation_)
+    if (replay)
+      p.ais.source = "AIS not included in this recording";
+    else if (simulation_)
       p.ais = vessel::DemoAis(state_);
     else if (actions_.navigation.ais)
       p.ais = actions_.navigation.ais();
-    if (!simulation_ && actions_.navigation.anchor)
+    if (!simulation_ && !replay && actions_.navigation.anchor)
       p.anchor = actions_.navigation.anchor();
     else
-      p.anchor.state =
-          "No DEMO anchor watch / real anchor controls disabled in DEMO";
+      p.anchor.state = "Historical/DEMO data / real anchor controls disabled";
     if (actions_.pilot_tick)
       p.pilot = actions_.pilot_tick(simulation_);
-    if (actions_.pilot_log)
+    if (actions_.pilot_log && !replay)
       p.pilot_log = actions_.pilot_log(simulation_);
+    if (replay) {
+      p.pilot = {};
+      p.pilot.feedback.source = "Unavailable during REPLAY";
+    }
     p.settings = config;
     if (actions_.settings_status)
       p.settings_status = actions_.settings_status();
-    if (actions_.source_health)
+    if (actions_.source_health && !replay)
       p.sources = actions_.source_health();
-    if (actions_.radar)
+    if (actions_.radar && !replay)
       p.radar = actions_.radar();
     p.advice = smartnav::Advise(state_, energy, p.ais, now);
     product_->Update(p, mode_);
   }
   UpdateRail(config.data_rail, now);
   clock_->SetLabel(simulation_ ? "10:42" : wxDateTime::Now().Format("%H:%M"));
-  const wxString label =
-      simulation_
+  wxString label =
+      replay ? wxString::Format("REPLAY / %s / %.0f s",
+                                replay->paused  ? "PAUSED"
+                                : replay->ended ? "ENDED"
+                                                : "PLAYING",
+                                replay->elapsed.count() / 1000.0)
+      : simulation_
           ? "DEMO / " + wxString(simulation_paused_
                                      ? "PAUSED"
                                      : wxString::FromUTF8(vessel::ScenarioName(
                                            demo_.Scenario())))
           : InputSummary();
+  if (actions_.commissioning) {
+    const auto r = actions_.commissioning->RecordingStatus();
+    if (r.active)
+      label += " / REC";
+    if (!r.error.empty())
+      label += " / RECORD ERROR";
+  }
+  const auto source_color = Colour(
+      replay || simulation_ ? Theme(mode_).attention : Theme(mode_).secondary);
+  if (source_->GetForegroundColour() != source_color)
+    source_->SetForegroundColour(source_color);
   if (source_->GetLabel() != label) {
     source_->SetLabel(label);
     source_->GetParent()->Layout();
@@ -406,6 +443,11 @@ void Shell::StartDemo() {
     actions_.demo_chart();
 }
 void Shell::SelectDemo(vessel::DemoScenario scenario) {
+  if (actions_.commissioning) {
+    actions_.commissioning->StopReplay();
+    if (!simulation_)
+      actions_.commissioning->StopRecording();
+  }
   simulation_ = true;
   simulation_paused_ = false;
   demo_.Select(scenario, vessel::Clock::now());
@@ -438,6 +480,8 @@ void Shell::ShowProduct(ProductPage page) {
   ShowPage(PreviewPage::Route);
   manager_.GetPane(page_).Hide();
   manager_.GetPane(product_).Show();
+  manager_
+      .Update(); // Establish actual pane width before wrapping text/actions.
   product_->ShowPage(page, mode_);
   manager_.Update();
   product_->SetFocus();
@@ -583,6 +627,8 @@ void Shell::ShowSystem() {
   for (const auto &entry :
        std::vector<std::pair<wxString, std::function<void()>>>{
            {"Diagnostics", [this] { ShowPage(PreviewPage::Diagnostics); }},
+           {"Commissioning & recordings",
+            [this] { ShowProduct(ProductPage::Commissioning); }},
            {"Restart XNav", actions_.restart_xnav},
            {"Safe Mode", actions_.safe},
            {"Open diagnostics folder", actions_.diagnostics_folder}}) {

@@ -292,3 +292,17 @@ rail remains unobscured. Existing mode, chart and installer tests remain require
 
 The console hook and all preceding hooks also pass the final packaged Alpha
 revision `08bc92f`: [same-commit acceptance](evidence/alpha1-08bc92f-accepted.json).
+
+## Beta commissioning and recording integration
+
+The live-input/recording increments add no direct upstream patch files. N2K
+acquisition still observes `NavMsgBus`; the portable diagnostics service owns
+copied Vessel Data and route snapshots only. The integration supplies an output
+preflight using the pinned application's main-thread `CommDriverRegistry` and
+read-only `GetAttributes().ioDirection`; output-capable or unknown-direction
+marine connections refuse replay. OpenNav pilot enable/command callbacks and
+navigation/settings mutation callbacks are independently guarded during replay.
+Replay never invokes route processing, autopilot output or a marine send method.
+No upstream route, waypoint, driver or chart pointer escapes into the recorder.
+Arbitrary third-party plugin transports are not intercepted; offline recordings
+should be reviewed in the isolated portable profile.

@@ -30,13 +30,17 @@ void WritePreviewDiagnostics(const std::string &path,
                              const std::vector<vessel::SourceHealth> &sources,
                              const std::string &ui_page,
                              const wxJSONValue &runtime) {
-  const auto now = vessel::Clock::now();
+  const auto now = state.replayed ? e.calculated_at : vessel::Clock::now();
   wxJSONValue report;
   report["runtime"] = runtime;
   report["ui_page"] = wxString::FromUTF8(ui_page);
   report["version"] = wxString::FromUTF8(application::Version);
   report["data_mode"] =
-      wxString(state.simulated ? "DEMO" : "OPENCPN selected navigation");
+      wxString(state.replayed    ? "REPLAY"
+               : state.simulated ? "DEMO"
+                                 : "OPENCPN selected navigation");
+  report["clock"] = wxString(state.replayed ? "recorded session clock"
+                                            : "live monotonic clock");
   report["build_commit"] = wxString(OPENNAV_BUILD_COMMIT);
   for (const auto &line : info)
     report["build_info"].Append(wxString::FromUTF8(line));

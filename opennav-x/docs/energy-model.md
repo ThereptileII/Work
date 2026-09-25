@@ -133,3 +133,17 @@ live configuration remains unavailable. The existing numerical model is unchange
 Nine portable tests now include Demo-driven valid, stale, missing, high-power,
 low-SOC, inactive-route and energy-shortfall consumption. Production live battery
 acquisition and calibration remain future work.
+
+## Beta recording/calibration boundary (in development)
+
+The commissioning recorder preserves normalized measurements and energy
+assumptions without renewing sensor times. Its explicit calibration export
+selects STW/SOG, total-pack/motor/shaft basis and device identity, then withholds
+stale, uncertain, incoherent, duplicate, charging and stopped-vessel pairs.
+Measured and derived/estimated pairs retain their source quality; Demo pairs
+remain labelled. Export is for human review, not automatic model installation.
+The existing bounded empirical curve import and advisory model remain the
+prediction boundary. No unmeasured boat curve or usable capacity is supplied.
+See [recording/replay contract](recording-replay-contract.md) for file limits,
+privacy, capture/replay clocks and test gates. Exact native acceptance remains
+in [status](status.md); physical calibration remains outstanding.
