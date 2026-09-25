@@ -58,3 +58,10 @@ press, triggering upstream double-click properties instead of dragging. No
 route persistence assertion was removed; a failed edit now retains a capture
 and visible window inventory. Touch route editing remains a separate manual
 validation item from the injected navigation-button touch gate.
+
+Native `1460c05` passes the two-cell route/render gate and real route-point
+drag persistence. Its OpenGL request is rejected by the hosted driver; actual
+upstream software fallback is recorded, not relabelled hardware GL. Review
+rejected one plugin-manager capture taken before painting despite populated
+child controls. The replacement waits for both named plugins and nonblank
+interior screen pixels with a strict deadline.

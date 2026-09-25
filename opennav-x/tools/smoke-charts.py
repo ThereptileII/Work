@@ -199,7 +199,7 @@ try:
     fields=Path(f'/proc/{pid}/stat').read_text().split(') ',1)[1].split()
     return (int(fields[11])+int(fields[12]))/os.sysconf('SC_CLK_TCK'),int(fields[21])*os.sysconf('SC_PAGE_SIZE')
   cpu0,_=usage();t0=time.monotonic();time.sleep(10);cpu1,rss=usage();elapsed=time.monotonic()-t0
-  entry['performance']={'idle_live_input_seconds':elapsed,'cpu_percent_one_core':100*(cpu1-cpu0)/elapsed,'resident_bytes':rss,'shell_update':data()['runtime']['ui_update'],'scope':'CI desktop / one NOAA ENC / 3 plugins / 3.3 Hz RMC; not target navigation PC'}
+  entry['performance']={'idle_live_input_seconds':elapsed,'cpu_percent_one_core':100*(cpu1-cpu0)/elapsed,'resident_bytes':rss,'shell_update':data()['runtime']['ui_update'],'scope':'CI desktop / two loaded NOAA ENCs / 3 plugins / 3.3 Hz RMC; not target navigation PC'}
   scale=chart(d)['scale_ppm'];command('+','plus');data(lambda d:enc(d) and chart(d)['scale_ppm']>scale*1.2)
   entry['captures'].append(capture('chart-'+rendering+'-02-zoom'))
   command('−','minus');data(lambda d:enc(d) and chart(d)['scale_ppm']<scale*1.2)
@@ -234,7 +234,18 @@ try:
      if any('Dashboard' in c for c in captions) and any('WMM' in c for c in captions):break
      time.sleep(.2)
     else:raise RuntimeError('Upstream plugin manager not visible: '+repr(captions))
-    ui.capture(options,evidence/'chart-plugin-manager.png',resize=False,screen_pixels=True)
+    # Child captions can exist before wx has thawed and painted the dialog.
+    # Require real interior pixels as well as the named plugin controls.
+    ui.SetForegroundWindow(options);end=time.monotonic()+10
+    while time.monotonic()<end:
+     rgb=ui.capture(options,evidence/'chart-plugin-manager.png',resize=False,screen_pixels=True)
+     rect=ui.W.RECT();assert ui.GetWindowRect(options,ctypes.byref(rect))
+     width,height=rect.right-rect.left,rect.bottom-rect.top
+     pixels=collections.Counter(bytes(rgb[(y*width+x)*3:(y*width+x)*3+3]) for y in range(100,height-70,2) for x in range(15,width-15,2))
+     if len(pixels)>=32:
+      entry['plugin_manager_interior_colors']=len(pixels);break
+     time.sleep(.2)
+    else:raise RuntimeError('Plugin manager controls exist but its contents did not paint')
     report['screenshots'].append('chart-plugin-manager.png');ui.click_text(pid,'Cancel')
    else:
     # Public settings keyboard focus is not guessed; Linux validates loading.

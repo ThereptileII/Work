@@ -67,8 +67,11 @@ press-drag-release gate still requires native acceptance.
 
 Linux passes both software and llvmpipe OpenGL switching the actual quilt
 reference between two hash-pinned public NOAA ENC cells, including overlays,
-mode returns and performance sampling. Windows OpenGL/full chart gate remains
-pending. No blank/all-water screenshot is accepted as chart evidence.
+mode returns and performance sampling. The expanded native chart/route-edit gate passes at `1460c05`; Windows
+rejects hardware OpenGL and correctly falls back to software. Eight screenshots
+were reviewed, including the edited route, adjacent ENC and scaled screens. A
+pre-paint blank plugin-manager screenshot was rejected and now has a bounded
+pixel-readiness gate. [Review](evidence/windows-chart-1460c05-review.json). No blank/all-water screenshot is accepted as chart evidence.
 [Local chart evidence](evidence/alpha-two-cell-chart-local.json).
 
 Native Windows PowerShell 5.1 passes **24 actual filesystem assertions in each
@@ -77,7 +80,9 @@ atomic replacement. Native NSIS Setup and the separately compiled prior-version
 fixture build at `4203854`; the official prerequisite installer returns 1223
 before any Alpha lifecycle. Explicit ShellExecute elevation also returns 1223 at `4181962` despite a
 verified administrator token. Initial stock UI capture is now required to
-identify the abort; Alpha remains per-user/as-invoker.
+identify the abort. The initial interactive stock language dialog is visible at
+`4712bf0`; the replacement uses its actual wizard to prepare the prerequisite.
+Alpha remains per-user/as-invoker.
 [Filesystem gate](evidence/installer-filesystem-452e26b-gate.json),
 [prerequisite failure](evidence/installer-4203854-prerequisite-failure.json).
 
@@ -94,7 +99,8 @@ failure. [Failure record](evidence/windows-recovery-54029a3-failure.json).
 
 ## Remaining Alpha release gates
 
-1. Resolve/validate the native recovery and chart-edit/switch/OpenGL gates.
+1. Resolve/validate the native recovery and plugin-manager paint gates; retain
+   the passed chart-edit/switch/software-fallback and Linux OpenGL coverage.
 2. Complete actual official-stock installation plus Alpha install, prior-version
    update, repair, rollback, interrupted transaction, uninstall and restored
    stock launch with exact hashes and shared-profile fixtures unchanged.

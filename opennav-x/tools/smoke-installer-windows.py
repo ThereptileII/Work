@@ -103,9 +103,8 @@ try:
         urllib.request.urlretrieve('https://github.com/OpenCPN/OpenCPN/releases/download/Release_5.12.4/opencpn_5.12.4-0%2B3720.37fd0cd_setup.exe',official)
         assert sha(official)==SETUP_HASH
         stock_report=EVIDENCE/'installer-official-prerequisite.json'
-        r=subprocess.run([str(PS),'-NoProfile','-NonInteractive','-ExecutionPolicy','Bypass',
-                          '-File',str(ROOT/'tools/install-official-opencpn-fixture.ps1'),
-                          '-Setup',str(official),'-Directory',str(stock),'-Report',str(stock_report)],timeout=180)
+        r=subprocess.run([sys.executable,str(ROOT/'tools/install-official-opencpn-windows.py'),
+                          str(official),str(stock),str(stock_report)],timeout=240)
         assert r.returncode==0,(r.returncode,stock_report.read_text() if stock_report.exists() else 'No prerequisite report')
         original=stock/'opencpn.exe';assert sha(original)==STOCK_HASH
         stock_before=inventory(stock)

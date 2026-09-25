@@ -1,0 +1,504 @@
+{
+  "commit": "1460c05306e83dbeeb1b45e9e2237983677ff093",
+  "run": "https://github.com/ThereptileII/Work/actions/runs/36074062560",
+  "status": "Chart and DPI assertions passed; plugin screenshot replacement required; installer blocked",
+  "integrated_tests": {
+    "linux": 90,
+    "windows": 80
+  },
+  "portable_suites_each": 28,
+  "artifact": {
+    "id": 10840207266,
+    "sha256": "14befa44fd5de2b6251e83fef3b748db998143aed3e192e5ff29f1490e228cae",
+    "bytes": 15242407,
+    "download_verified": true
+  },
+  "reviewed_screenshots": [
+    {
+      "file": "chart-created-and-edited-route.png",
+      "sha256": "5fc992071bc5a341d9eed0b7c66f10cb8f36fc6a53532a9dff43d442d9a2df04",
+      "result": "reviewed; visible content and layout retained"
+    },
+    {
+      "file": "chart-software-03a-adjacent-cell.png",
+      "sha256": "06661e01a714f3611fb8a40186ee2077be0f76f6048181436eb3f84ba400c5e1",
+      "result": "reviewed; visible content and layout retained"
+    },
+    {
+      "file": "chart-opengl-06-returned.png",
+      "sha256": "4eef5e51c8030dac694dcf3ec993ad8d6403a23c37aa61a524a341ec72db565b",
+      "result": "reviewed; visible content and layout retained"
+    },
+    {
+      "file": "chart-software-05-legacy.png",
+      "sha256": "972442c475bd746e7ab064970b7855595cefcfa014937ac0c613c8e17e3c2d12",
+      "result": "reviewed; visible content and layout retained"
+    },
+    {
+      "file": "chart-plugin-manager.png",
+      "sha256": "72cabe922807e1e4b12024c92515835c130bdd746e6e727cc1073c0da82fad99",
+      "result": "pre-paint blank dialog rejected"
+    },
+    {
+      "file": "dpi-125-energy.png",
+      "sha256": "da01e166e9c2fb04b4bf1ab12cd4def268f5a95960325cfe134bec78098b535f",
+      "result": "reviewed; visible content and layout retained"
+    },
+    {
+      "file": "dpi-150-instruments.png",
+      "sha256": "4d896716bdc82b81e69839062a89bedb2e8cb948cf8ab34191edf3df8a40bc2d",
+      "result": "reviewed; visible content and layout retained"
+    },
+    {
+      "file": "dpi-150-safe-to-xnav.png",
+      "sha256": "6cae501d8d5dfd46c7d2d008f6afa15c22479aebacdb9921b60397c4cfa4fac4",
+      "result": "reviewed; visible content and layout retained"
+    }
+  ],
+  "notes": [
+    "Actual chart gestures create three points and move one with retained GUIDs and database persistence.",
+    "Both NOAA ENC quilt references switch and return; native returned XNav and Legacy contain actual coastlines, soundings and symbols.",
+    "OpenGL requested but rejected by upstream capability probe on the hosted Windows driver; SOFTWARE FALLBACK verified. No native hardware OpenGL claim.",
+    "125% energy and 150% instruments use scrolling for below-viewport content; 150% Safe-to-XNav retains coastline.",
+    "Plugin child controls/initialized records passed but the screenshot was taken before contents painted. Replacement adds bounded interior-pixel readiness and fails persistent blank dialogs.",
+    "Official prerequisite returned 1223; no Alpha installer lifecycle accepted."
+  ],
+  "chart_report": {
+    "chart_origin": "https://www.charts.noaa.gov/ENCs/US5SEAFL.zip",
+    "chart_sha256": "b027e029dc7b76595381d89e3718145eb5069e5a03917e78bada4f8ebe8c84e4",
+    "agreement": "https://charts.noaa.gov/ENCs/ENC_Agreement.shtml",
+    "scope": "Disposable rendering fixture; not redistributed as a navigation product",
+    "authority": "native Windows",
+    "phases": [
+      {
+        "requested_rendering": "software",
+        "runtime": {
+          "plugins": [
+            {
+              "name": "ChartDownloader",
+              "api": 113,
+              "version": "1.4",
+              "initialized": false,
+              "file": "chartdldr_pi.dll",
+              "enabled": false
+            },
+            {
+              "name": "Dashboard",
+              "api": 108,
+              "version": "1.2",
+              "initialized": true,
+              "file": "dashboard_pi.dll",
+              "enabled": true
+            },
+            {
+              "name": "GRIB",
+              "api": 116,
+              "version": "5.0",
+              "initialized": true,
+              "file": "grib_pi.dll",
+              "enabled": true
+            },
+            {
+              "name": "WMM",
+              "api": 108,
+              "version": "1.1",
+              "initialized": true,
+              "file": "wmm_pi.dll",
+              "enabled": true
+            }
+          ],
+          "ui_update": {
+            "last_ms": 0.4635,
+            "ticks": "11",
+            "scope": "Shell update callback including diagnostics; excludes asynchronous chart painting",
+            "mean_ms": 4.140781818,
+            "timer_period_ms": 250,
+            "maximum_ms": 18.2959
+          },
+          "chart": {
+            "longitude": -122.36,
+            "quilt": true,
+            "follow": false,
+            "quilt_members": [
+              {
+                "index": 0,
+                "native_scale": 12000,
+                "type": 5,
+                "file": "US5SEAFL.000"
+              }
+            ],
+            "latitude": 47.6,
+            "database_entries": 2,
+            "quilt_reference": 0,
+            "opengl_enabled": false,
+            "scale_ppm": 0.150000006,
+            "canvas_pixels": {
+              "height": 575,
+              "width": 1134
+            }
+          }
+        },
+        "startup_to_enc_seconds": 6.25,
+        "captures": [
+          {
+            "screenshot": "chart-software-01-loaded.png",
+            "interior_colors": 877,
+            "non_background_fraction": 0.13607142857142857
+          },
+          {
+            "screenshot": "chart-software-02-zoom.png",
+            "interior_colors": 186,
+            "non_background_fraction": 0.022154761904761906
+          },
+          {
+            "screenshot": "chart-software-03-follow.png",
+            "interior_colors": 878,
+            "non_background_fraction": 0.13616666666666666
+          },
+          {
+            "screenshot": "chart-software-03a-adjacent-cell.png",
+            "interior_colors": 212,
+            "non_background_fraction": 0.019833333333333335
+          },
+          {
+            "screenshot": "chart-software-03b-returned-cell.png",
+            "interior_colors": 901,
+            "non_background_fraction": 0.1361904761904762
+          },
+          {
+            "screenshot": "chart-software-04-restored.png",
+            "interior_colors": 878,
+            "non_background_fraction": 0.13616666666666666
+          },
+          {
+            "screenshot": "chart-created-route-before-edit.png",
+            "interior_colors": 965,
+            "non_background_fraction": 0.13995238095238094
+          },
+          {
+            "screenshot": "chart-created-and-edited-route.png",
+            "interior_colors": 980,
+            "non_background_fraction": 0.13932142857142857
+          },
+          {
+            "screenshot": "chart-software-05-legacy.png",
+            "interior_colors": 863,
+            "non_background_fraction": 0.13367857142857142
+          },
+          {
+            "screenshot": "chart-software-06-returned.png",
+            "interior_colors": 980,
+            "non_background_fraction": 0.13932142857142857
+          }
+        ],
+        "performance": {
+          "idle_live_input_seconds": 10.0,
+          "cpu_percent_one_core": 1.09375,
+          "resident_bytes": 123691008,
+          "shell_update": {
+            "last_ms": 0.5742,
+            "ticks": "57",
+            "scope": "Shell update callback including diagnostics; excludes asynchronous chart painting",
+            "mean_ms": 3.840414035,
+            "timer_period_ms": 250,
+            "maximum_ms": 18.8181
+          },
+          "scope": "CI desktop / one NOAA ENC / 3 plugins / 3.3 Hz RMC; not target navigation PC"
+        },
+        "chart_switch": {
+          "synthetic_position_jump": true,
+          "adjacent": {
+            "longitude": -122.447,
+            "quilt": true,
+            "follow": true,
+            "quilt_members": [
+              {
+                "index": 1,
+                "native_scale": 12000,
+                "type": 5,
+                "file": "US5SEAFK.000"
+              }
+            ],
+            "latitude": 47.59,
+            "database_entries": 2,
+            "quilt_reference": 1,
+            "opengl_enabled": false,
+            "scale_ppm": 0.1500150114,
+            "canvas_pixels": {
+              "height": 647,
+              "width": 1070
+            }
+          },
+          "returned": {
+            "longitude": -122.360017,
+            "quilt": true,
+            "follow": true,
+            "quilt_members": [
+              {
+                "index": 0,
+                "native_scale": 12000,
+                "type": 5,
+                "file": "US5SEAFL.000"
+              }
+            ],
+            "latitude": 47.6000188,
+            "database_entries": 2,
+            "quilt_reference": 0,
+            "opengl_enabled": false,
+            "scale_ppm": 0.1500150114,
+            "canvas_pixels": {
+              "height": 647,
+              "width": 1070
+            }
+          }
+        },
+        "route_geometry": "Native chart gestures created a three-point route and persisted a point move with unchanged identities",
+        "plugin_manager": "native manager opened and listed Dashboard/WMM"
+      },
+      {
+        "requested_rendering": "opengl",
+        "runtime": {
+          "plugins": [
+            {
+              "name": "ChartDownloader",
+              "api": 113,
+              "version": "1.4",
+              "initialized": false,
+              "file": "chartdldr_pi.dll",
+              "enabled": false
+            },
+            {
+              "name": "Dashboard",
+              "api": 108,
+              "version": "1.2",
+              "initialized": true,
+              "file": "dashboard_pi.dll",
+              "enabled": true
+            },
+            {
+              "name": "GRIB",
+              "api": 116,
+              "version": "5.0",
+              "initialized": true,
+              "file": "grib_pi.dll",
+              "enabled": true
+            },
+            {
+              "name": "WMM",
+              "api": 108,
+              "version": "1.1",
+              "initialized": true,
+              "file": "wmm_pi.dll",
+              "enabled": true
+            }
+          ],
+          "ui_update": {
+            "last_ms": 0.5193,
+            "ticks": "8",
+            "scope": "Shell update callback including diagnostics; excludes asynchronous chart painting",
+            "mean_ms": 3.6455,
+            "timer_period_ms": 250,
+            "maximum_ms": 14.1686
+          },
+          "chart": {
+            "longitude": -122.36,
+            "quilt": true,
+            "follow": false,
+            "quilt_members": [
+              {
+                "index": 0,
+                "native_scale": 12000,
+                "type": 5,
+                "file": "US5SEAFL.000"
+              }
+            ],
+            "latitude": 47.6,
+            "database_entries": 2,
+            "quilt_reference": 0,
+            "opengl_enabled": false,
+            "scale_ppm": 0.1500149965,
+            "canvas_pixels": {
+              "height": 647,
+              "width": 1070
+            }
+          }
+        },
+        "startup_to_enc_seconds": 5.454,
+        "captures": [
+          {
+            "screenshot": "chart-opengl-01-loaded.png",
+            "interior_colors": 980,
+            "non_background_fraction": 0.13932142857142857
+          },
+          {
+            "screenshot": "chart-opengl-02-zoom.png",
+            "interior_colors": 286,
+            "non_background_fraction": 0.02857142857142857
+          },
+          {
+            "screenshot": "chart-opengl-03-follow.png",
+            "interior_colors": 974,
+            "non_background_fraction": 0.1392857142857143
+          },
+          {
+            "screenshot": "chart-opengl-03a-adjacent-cell.png",
+            "interior_colors": 212,
+            "non_background_fraction": 0.019857142857142858
+          },
+          {
+            "screenshot": "chart-opengl-03b-returned-cell.png",
+            "interior_colors": 1014,
+            "non_background_fraction": 0.14008333333333334
+          },
+          {
+            "screenshot": "chart-opengl-04-restored.png",
+            "interior_colors": 976,
+            "non_background_fraction": 0.1393095238095238
+          },
+          {
+            "screenshot": "chart-opengl-05-legacy.png",
+            "interior_colors": 854,
+            "non_background_fraction": 0.13360714285714287
+          },
+          {
+            "screenshot": "chart-opengl-06-returned.png",
+            "interior_colors": 976,
+            "non_background_fraction": 0.1393095238095238
+          }
+        ],
+        "gl_status": "host rejected OpenGL; verified upstream software fallback; hardware GL gate remains open",
+        "performance": {
+          "idle_live_input_seconds": 10.0,
+          "cpu_percent_one_core": 1.25,
+          "resident_bytes": 121016320,
+          "shell_update": {
+            "last_ms": 0.5889,
+            "ticks": "50",
+            "scope": "Shell update callback including diagnostics; excludes asynchronous chart painting",
+            "mean_ms": 3.263152,
+            "timer_period_ms": 250,
+            "maximum_ms": 14.8299
+          },
+          "scope": "CI desktop / one NOAA ENC / 3 plugins / 3.3 Hz RMC; not target navigation PC"
+        },
+        "chart_switch": {
+          "synthetic_position_jump": true,
+          "adjacent": {
+            "longitude": -122.447,
+            "quilt": true,
+            "follow": true,
+            "quilt_members": [
+              {
+                "index": 1,
+                "native_scale": 12000,
+                "type": 5,
+                "file": "US5SEAFK.000"
+              }
+            ],
+            "latitude": 47.59,
+            "database_entries": 2,
+            "quilt_reference": 1,
+            "opengl_enabled": false,
+            "scale_ppm": 0.150030002,
+            "canvas_pixels": {
+              "height": 647,
+              "width": 1070
+            }
+          },
+          "returned": {
+            "longitude": -122.3600257,
+            "quilt": true,
+            "follow": true,
+            "quilt_members": [
+              {
+                "index": 0,
+                "native_scale": 12000,
+                "type": 5,
+                "file": "US5SEAFL.000"
+              }
+            ],
+            "latitude": 47.6000178,
+            "database_entries": 2,
+            "quilt_reference": 0,
+            "opengl_enabled": false,
+            "scale_ppm": 0.150030002,
+            "canvas_pixels": {
+              "height": 647,
+              "width": 1070
+            }
+          }
+        }
+      }
+    ],
+    "screenshots": [
+      "chart-software-01-loaded.png",
+      "chart-software-02-zoom.png",
+      "chart-software-03-follow.png",
+      "chart-software-03a-adjacent-cell.png",
+      "chart-software-03b-returned-cell.png",
+      "chart-software-overlay.png",
+      "chart-software-04-restored.png",
+      "chart-plugin-manager.png",
+      "chart-created-route-before-edit.png",
+      "chart-created-and-edited-route.png",
+      "chart-software-05-legacy.png",
+      "chart-software-06-returned.png",
+      "chart-opengl-01-loaded.png",
+      "chart-opengl-02-zoom.png",
+      "chart-opengl-03-follow.png",
+      "chart-opengl-03a-adjacent-cell.png",
+      "chart-opengl-03b-returned-cell.png",
+      "chart-opengl-overlay.png",
+      "chart-opengl-04-restored.png",
+      "chart-opengl-05-legacy.png",
+      "chart-opengl-06-returned.png"
+    ],
+    "adjacent_chart": {
+      "origin": "https://www.charts.noaa.gov/ENCs/US5SEAFK.zip",
+      "sha256": "99c9b55d49828503666668e956f91444ee79b434db4bdf65f3104c3e42c32d51",
+      "switch_position": [
+        47.59,
+        -122.447
+      ]
+    },
+    "display": {
+      "before": [
+        1920,
+        1080,
+        32
+      ],
+      "after": [
+        1920,
+        1080,
+        32
+      ]
+    },
+    "result": "passed; native screenshot review and physical GPU gate remain separate",
+    "renderer_log": [
+      "00:05:07.812 WARNING fileconf.cpp:631 file 'C:\\Users\\RUNNER~1\\AppData\\Local\\Temp\\opennav charts lueowfg8\\profile\\opencpn.conf', line 644: key 'OpenGL' was first found at line 107.",
+      "00:05:07.812 WARNING fileconf.cpp:1835 entry 'OpenGL' appears more than once in group '/Settings'",
+      "00:05:07.890 MESSAGE OCPNPlatform.cpp:923 Starting OpenGL test...",
+      "00:05:07.890 MESSAGE OCPNPlatform.cpp:733 Starting OpenGL test utility: \"D:\\a\\Work\\Work\\opennav-x\\build\\xnav-install\\opencpn-glutil.exe\" opengl-info \"C:\\Users\\RUNNER~1\\AppData\\Local\\Temp\\opennav charts lueowfg8\\profile\\gl_caps.json\"",
+      "00:05:08.048 MESSAGE OCPNPlatform.cpp:778 OpenGL test utility reports that OpenGL is not usable.",
+      "00:05:08.048 MESSAGE OCPNPlatform.cpp:930 OpenGL test complete.",
+      "00:05:10.621 MESSAGE OCPNPlatform.cpp:923 Starting OpenGL test...",
+      "00:05:10.621 MESSAGE OCPNPlatform.cpp:923 Starting OpenGL test...",
+      "00:05:33.337 WARNING fileconf.cpp:631 file 'C:\\Users\\RUNNER~1\\AppData\\Local\\Temp\\opennav charts lueowfg8\\profile\\opencpn.conf', line 644: key 'OpenGL' was first found at line 107.",
+      "00:05:33.337 WARNING fileconf.cpp:1835 entry 'OpenGL' appears more than once in group '/Settings'",
+      "00:05:33.415 MESSAGE OCPNPlatform.cpp:923 Starting OpenGL test...",
+      "00:05:33.415 MESSAGE OCPNPlatform.cpp:733 Starting OpenGL test utility: \"D:\\a\\Work\\Work\\opennav-x\\build\\xnav-install\\opencpn-glutil.exe\" opengl-info \"C:\\Users\\RUNNER~1\\AppData\\Local\\Temp\\opennav charts lueowfg8\\profile\\gl_caps.json\"",
+      "00:05:33.571 MESSAGE OCPNPlatform.cpp:778 OpenGL test utility reports that OpenGL is not usable.",
+      "00:05:33.571 MESSAGE OCPNPlatform.cpp:930 OpenGL test complete.",
+      "00:05:36.098 MESSAGE OCPNPlatform.cpp:923 Starting OpenGL test...",
+      "00:05:36.098 MESSAGE OCPNPlatform.cpp:923 Starting OpenGL test...",
+      "00:05:39.233 WARNING fileconf.cpp:631 file 'C:\\Users\\RUNNER~1\\AppData\\Local\\Temp\\opennav charts lueowfg8\\profile\\opencpn.conf', line 644: key 'OpenGL' was first found at line 107.",
+      "00:05:39.233 WARNING fileconf.cpp:1835 entry 'OpenGL' appears more than once in group '/Settings'",
+      "00:05:39.311 MESSAGE OCPNPlatform.cpp:923 Starting OpenGL test...",
+      "00:05:39.311 MESSAGE OCPNPlatform.cpp:733 Starting OpenGL test utility: \"D:\\a\\Work\\Work\\opennav-x\\build\\xnav-install\\opencpn-glutil.exe\" opengl-info \"C:\\Users\\RUNNER~1\\AppData\\Local\\Temp\\opennav charts lueowfg8\\profile\\gl_caps.json\"",
+      "00:05:39.468 MESSAGE OCPNPlatform.cpp:778 OpenGL test utility reports that OpenGL is not usable.",
+      "00:05:39.468 MESSAGE OCPNPlatform.cpp:930 OpenGL test complete.",
+      "00:05:42.013 MESSAGE OCPNPlatform.cpp:923 Starting OpenGL test...",
+      "00:05:42.013 MESSAGE OCPNPlatform.cpp:923 Starting OpenGL test..."
+    ]
+  }
+}

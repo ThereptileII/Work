@@ -20,7 +20,7 @@ jobs:
           $Setup = Join-Path $Fixture 'official-setup.exe'
           Invoke-WebRequest -Uri 'https://github.com/OpenCPN/OpenCPN/releases/download/Release_5.12.4/opencpn_5.12.4-0%2B3720.37fd0cd_setup.exe' -OutFile $Setup
           New-Item -ItemType Directory -Path opennav-x/evidence/local -Force | Out-Null
-          & "$env:WINDIR/System32/WindowsPowerShell/v1.0/powershell.exe" -NoProfile -NonInteractive -ExecutionPolicy Bypass -File opennav-x/tools/install-official-opencpn-fixture.ps1 -Setup $Setup -Directory (Join-Path $Fixture 'stock OpenCPN') -Report opennav-x/evidence/local/official-prerequisite.json
+          python opennav-x/tools/install-official-opencpn-windows.py $Setup (Join-Path $Fixture 'stock OpenCPN') opennav-x/evidence/local/official-prerequisite.json
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
       - name: Capture stock prerequisite failure dialog
         if: failure()
