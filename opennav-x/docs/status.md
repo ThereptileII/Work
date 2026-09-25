@@ -1,11 +1,16 @@
 # OpenNav X status — 2026-09-25
 
-**Alpha 1 (`0.2.0-alpha1`) has passed native installer qualification.
-The final manifest-bearing download is undergoing release validation.** It is
-not approved for navigation. The final installer/portable artifact must pass
-the same-commit gates and download verification below.
-The user accepted the Developer Preview direction and authorized the complete
-[Alpha stage](alpha1-plan.md), including the Alpha installer.
+**Alpha 1 (`0.2.0-alpha1`) is accepted as the software baseline. Beta 1 is in development.**
+The user reports Alpha manually tested and authorizes real-boat integration and
+release hardening. No navigation certification or physical boat acceptance is
+claimed. [Beta plan and feedback disposition](beta1-plan.md).
+
+The exact Alpha download is commit `08bc92fc778591a3978e594a54208d672ff9158f`,
+[run 36092747986](https://github.com/ThereptileII/Work/actions/runs/36092747986).
+All nine jobs pass. The downloaded artifact, its four release-file hashes,
+1,000 portable file hashes, source archive, build identity and x86 ABI were
+verified. Twenty-eight native screenshots and three Linux screenshots were
+reviewed. [Acceptance evidence](evidence/alpha1-08bc92f-accepted.json).
 
 OpenCPN remains pinned to **5.12.4 / `37fd0cddb7334fe489e9f18aa163977a9c5c84f7`**.
 Windows keeps the supported **x86 application/plugin ABI on Windows x64**.
@@ -43,7 +48,7 @@ ambiguous, edited or transitional state never becomes a valid zero arrival.
 | Autopilot/radar | Manual pilot interface, explicit DEMO simulator, capability/status/feedback/timeout logging, global disable. No live output adapter or SmartNav steering path. Radar capabilities/status abstraction; live radar unavailable. |
 | Settings/diagnostics | Shared-profile validated settings, source policies, empirical curves, explicit propulsion mappings, display selection and advanced OpenCPN access; build, mode, age, provenance, model and plugin/chart diagnostics. |
 | Recovery | Two unfinished XNav starts select Safe before optional modules; retry evidence retained. Deferred-notice repair passes three native recovery cycles; see evidence below. |
-| Distribution | Portable isolation and Alpha labels/source/license packaging; native NSIS per-user side-by-side setup, immutable generations, repair/update/rollback/uninstall and fault-recovery engine implemented. Full native lifecycle qualification passed; final release artifact validation remains open. |
+| Distribution | Portable isolation and Alpha labels/source/license packaging; native NSIS per-user side-by-side setup, immutable generations, repair/update/rollback/uninstall and fault-recovery engine implemented. Full native lifecycle and downloaded release validation passed at `08bc92f`. |
 
 Contracts: [sources](vessel-source-contract.md), [marine input](marine-input-contract.md),
 [energy](energy-model.md), [SmartNav](smartnav-alpha-contract.md),
@@ -121,15 +126,18 @@ route/widget regression which fails before the fix. Legacy/Safe keep the origina
 callback; route calculations and output processing remain unchanged.
 [Visual finding](evidence/alpha-console-32a6564-review.json).
 
-## Remaining Alpha delivery gates
+## Alpha delivery and Beta gates
 
-1. Build the manifest-bearing release commit on Linux and native Windows;
-   retain every existing functional, recovery, portable, DPI/chart/plugin and
-   installer lifecycle gate.
-2. Download the actual `OpenNavX-Alpha1-Windows` artifact and verify its portable
-   ZIP, Setup, source archive, guide and SHA256SUMS against the packaged commit.
-3. Review exact final native screenshots and record the accepted revision/run.
-   Candidate artifacts do not replace the final named download.
+The final console repair passes the exact packaged revision on Linux and Windows,
+including 26 real route-state checks and the widget visibility assertion.
+[Download Alpha](https://github.com/ThereptileII/Work/actions/runs/36092747986/artifacts/10847446708):
+the outer artifact **OpenNavX-Alpha1-Windows** contains
+`OpenNavX-Alpha1-Portable-win64.zip`, `OpenNavX-Alpha1-Setup.exe`, the test guide,
+source archive and `SHA256SUMS.txt`. Earlier candidates are superseded.
+
+Beta must retain all Alpha gates and add live commissioning, recording/replay,
+feedback-confirmed manual control, failure/security tests, several-hour soak,
+and exact packaged-revision Windows acceptance. Beta is not yet delivered.
 
 The installer intentionally integrates **beside** the original OpenCPN instead
 of replacing its executable. Installed modes use the normal shared profile;

@@ -267,7 +267,7 @@ The actual Linux application regression loads Unicode harmonic paths across
 XNav, Legacy and Safe starts while removing the prior executable generations.
 [Native lifetime failure](evidence/installer-resources-2803773-failure.json).
 
-All Alpha hooks above pass the full Linux/native Windows qualification at
+The installed-resource hooks pass the full Linux/native Windows qualification at
 `7bc36e426a55926045ea1aece0ebe96ef9417863`, including actual installed mode
 returns, resource lifetime, recovery, objects/AIS/anchor and restored stock.
 [Qualification evidence](evidence/alpha-installer-7bc36e4-qualification.json).
@@ -289,3 +289,6 @@ hidden on each valid first/middle/final, advanced, reversed and reactivated rout
 publication. It fails on the prior executable behavior and passes only when the
 rail remains unobscured. Existing mode, chart and installer tests remain required.
 [Finding and red-test evidence](evidence/alpha-console-32a6564-review.json).
+
+The console hook and all preceding hooks also pass the final packaged Alpha
+revision `08bc92f`: [same-commit acceptance](evidence/alpha1-08bc92f-accepted.json).
