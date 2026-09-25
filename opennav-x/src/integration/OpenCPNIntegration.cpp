@@ -1,5 +1,6 @@
 #include "integration/OpenCPNIntegration.h"
 #include "integration/InstallerSelfTest.h"
+#include "integration/InstalledResources.h"
 #include "adapters/Autopilot.h"
 #include "adapters/Radar.h"
 #include "integration/MarineBridge.h"
@@ -53,6 +54,8 @@ extern bool g_bDeferredInitDone;
 extern bool g_bportable;
 extern std::string g_configdir;
 extern wxString gWorldShapefileLocation;
+extern wxString gWorldMapLocation, g_sAIS_Alert_Sound_File;
+extern std::vector<std::string> TideCurrentDataSet;
 extern wxString g_AW1GUID,g_AW2GUID;
 
 namespace opennav {
@@ -219,6 +222,30 @@ bool CheckStartupRecovery() {
 }
 
 void SelectMode(wxFileConfig& config, bool upstream_safe) {
+  // Installed generations can be removed by rollback/uninstall. Persist the
+  // original stock defaults, never a disposable generation's resource paths.
+  // This is before upstream initializes empty defaults and loads tide data.
+  if (!preview_paths && !g_bportable) {
+    const auto app = platform::PathFromUtf8(
+        wxFileName(wxStandardPaths::Get().GetExecutablePath()).GetPath().ToStdString(wxConvUTF8));
+    if (const auto defaults = integration::InstalledResourceDefaults(app)) {
+      integration::ResourceSelection selected_resources{
+          TideCurrentDataSet, gWorldMapLocation.ToStdString(wxConvUTF8),
+          gWorldShapefileLocation.ToStdString(wxConvUTF8),
+          g_sAIS_Alert_Sound_File.ToStdString(wxConvUTF8)};
+      integration::ApplyResourceDefaults(selected_resources, *defaults);
+      if (TideCurrentDataSet.empty())
+        for (const auto& source : selected_resources.tides)
+          TideCurrentDataSet.push_back(wxString::FromUTF8(source).ToStdString());
+      if (gWorldMapLocation.empty())
+        gWorldMapLocation = wxString::FromUTF8(selected_resources.coastline) + wxFileName::GetPathSeparator();
+      if (gWorldShapefileLocation.empty())
+        gWorldShapefileLocation = wxString::FromUTF8(selected_resources.basemap);
+      if (g_sAIS_Alert_Sound_File.empty())
+        g_sAIS_Alert_Sound_File = wxString::FromUTF8(selected_resources.ais_alarm);
+      wxLogMessage("OpenNav installed resource defaults: original supported OpenCPN; configured selections preserved");
+    }
+  }
   if (preview_paths) {
     const auto basemap = integration::PreviewBasemapDefault(
         preview_paths->root, gWorldShapefileLocation.ToStdString(wxConvUTF8));

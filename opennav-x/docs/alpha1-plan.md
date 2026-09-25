@@ -44,6 +44,8 @@ installer engine are implemented and undergoing final native qualification.
 The current gates retain 90 Linux / 80 Windows integrated cases and 29 portable
 suites. Chart editing, actual ENC switching, software fallback and native
 100/125/150% DPI have passing candidate evidence. The official stock installer
-prerequisite is verified; repeated native recovery and the complete Alpha
-installer lifecycle remain required before publication. See [status](status.md)
+prerequisite and repeated native recovery are verified. The fully painted
+plugin-manager click/dismissal gate is accepted. The complete Alpha installer
+lifecycle and final same-commit artifact qualification remain required before
+publication. See [status](status.md)
 for exact revisions, failures, replacements and evidence links.

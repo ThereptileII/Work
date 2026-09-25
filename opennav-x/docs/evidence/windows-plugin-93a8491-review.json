@@ -1,0 +1,28 @@
+{
+  "commit": "93a8491ac4a374ee3bfc8a8432e018a2afa3615b",
+  "run": "https://github.com/ThereptileII/Work/actions/runs/36079722538",
+  "artifact": 10842117550,
+  "artifactSha256": "358a5f414e05fbd01a2e6130474f04bbc8a322f797ab2be06e08f391104a1f0c",
+  "scope": "Native plugin manager paint and dismissal replacement gate; not Alpha release acceptance",
+  "reviewed": [
+    {
+      "file": "chart-plugin-manager.png",
+      "sha256": "e12ede69d2fb409c5f5c86a574830e81927bf685c0965816ec2279d26cfbb95e",
+      "result": "Full visible Dashboard, GRIB and WMM entries enabled; ChartDownloader disabled; catalogue and Ok/Cancel/Apply footer rendered. No partial-paint acceptance."
+    }
+  ],
+  "automated": {
+    "pluginInteriorColors": 632,
+    "paintedButtons": [
+      "ok",
+      "cancel",
+      "apply"
+    ],
+    "actualCancelDismissal": "passed",
+    "nativeChartGate": "passed; two real NOAA ENC cells, actual route creation/drag, mode return and software fallback"
+  },
+  "limitations": [
+    "Native driver rejects OpenGL; hardware GPU validation remains open.",
+    "Full Alpha installer failed on this revision; compatibility allowlist stays closed."
+  ]
+}

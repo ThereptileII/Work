@@ -19,7 +19,7 @@ target_include_directories(opennav_platform PUBLIC src)
 target_compile_features(opennav_platform PUBLIC cxx_std_17)
 target_sources(opennav_platform PRIVATE src/platform/PortableProfile.cpp)
 # Upstream is built separately and stays pristine until baseline gates pass.
-add_library(opennav_integration src/integration/StartupMode.cpp src/integration/StartupRecovery.cpp src/integration/RouteProgressInput.cpp src/integration/PreviewResources.cpp)
+add_library(opennav_integration src/integration/StartupMode.cpp src/integration/StartupRecovery.cpp src/integration/RouteProgressInput.cpp src/integration/PreviewResources.cpp src/integration/InstalledResources.cpp)
 add_library(opennav_vessel src/vessel/VesselState.cpp src/vessel/NavigationInput.cpp src/vessel/RouteProgress.cpp src/vessel/DemoSource.cpp src/vessel/SensorRegistry.cpp)
 target_link_libraries(opennav_integration PUBLIC opennav_vessel)
 target_include_directories(opennav_vessel PUBLIC src)
@@ -56,6 +56,9 @@ endif()
 
 if(OPENNAV_BUILD_TESTS)
   enable_testing()
+  add_executable(installed_resources_tests tests/installed_resources_tests.cpp)
+  target_link_libraries(installed_resources_tests PRIVATE opennav_integration)
+  add_test(NAME installed_resource_defaults COMMAND installed_resources_tests)
   find_package(Python3 REQUIRED COMPONENTS Interpreter)
   add_test(NAME diagnostic_snapshot_publication COMMAND ${Python3_EXECUTABLE}
     ${CMAKE_CURRENT_SOURCE_DIR}/tests/diagnostic_snapshot_tests.py)

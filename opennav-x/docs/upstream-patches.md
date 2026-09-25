@@ -242,3 +242,15 @@ navigation processing is triggered and ordinary Legacy startup is unaffected.
 The real-process gate asserts notice ordering, actual dismissal, enabled parent,
 retained chart/data and three separate native recovery cycles.
 [Failure and replacement](evidence/windows-recovery-bc892a7-startup-order.json).
+
+## Stable installed resource defaults
+
+No new direct upstream hook is added. The existing `SelectMode` call immediately
+after `MyConfig::LoadMyConfig` observes loaded selections before `MyApp::OnInit`
+fills default GSHHS, tide/current and AIS sound paths. An installer-owned stock
+locator allows empty defaults to use the untouched original resources rather
+than a removable Alpha generation. `navutil.cpp` retains normal serialization
+and `TCMgr::LoadDataSources` retains normal harmonic decoding and warnings.
+Existing user paths are never replaced or supplemented. This applies equally
+to installed XNav/Legacy/Safe; unmarked and portable paths remain unchanged.
+[Native lifetime failure](evidence/installer-resources-2803773-failure.json).

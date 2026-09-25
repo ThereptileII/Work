@@ -114,6 +114,11 @@ function StockInfo([string]$Path, $Allowed) {
   if ($match.Count -ne 1) { throw "Unsupported OpenCPN executable. SHA-256: $hash. No application or profile files modified." }
   if ($match[0].version -ne '5.12.4' -or $match[0].upstreamCommit -ne '37fd0cddb7334fe489e9f18aa163977a9c5c84f7') { throw 'Unsupported baseline in manifest.' }
   if ($version.FileMajorPart -ne 5 -or $version.FileMinorPart -ne 12 -or $version.FileBuildPart -ne 4) { throw 'Version resource and compatibility manifest disagree.' }
+  if ($Utf8.GetByteCount($Path) -gt 4096) { throw 'Stock resource locator exceeds its application bound.' }
+  foreach ($relative in @('tcdata/harmonics-dwf-20210110-free.tcd','tcdata/HARMONICS_NO_US.IDX','tcdata/HARMONICS_NO_US','gshhs/poly-c-1.dat','basemap_shp/basemap_low.shp','sounds/2bells.wav')) {
+    $resource = RelativePath ([IO.Path]::GetDirectoryName($Path)) $relative
+    if (-not [IO.File]::Exists($resource) -or (Get-Item -LiteralPath $resource).Length -eq 0) { throw "Original OpenCPN resource missing; repair OpenCPN first: $relative" }
+  }
   return [pscustomobject]@{path=$Path; sha256=$hash; version='5.12.4'; arch=$architecture}
 }
 function DiscoverStock {
@@ -368,6 +373,10 @@ try {
       $null = New-Item -ItemType Directory -Path $stage -Force
       ExtractPayload (Join-Path $PackageDirectory 'payload.zip') $stage $package.files
       if (Test-Path -LiteralPath (Join-Path $stage 'app\OPENNAV_PORTABLE_PREVIEW')) { throw 'An installed integration must not contain a portable profile marker.' }
+      # Normal OpenCPN persists absolute default resource paths. Point new
+      # defaults at the untouched stock installation, not a removable generation.
+      $locator = Join-Path $stage 'app\OPENNAV_INSTALLED_STOCK'
+      [IO.File]::WriteAllText($locator, $stock.path, $Utf8)
       Copy-Item -LiteralPath $PSCommandPath -Destination (Join-Path $stage 'Lifecycle.ps1')
       Copy-Item -LiteralPath (Join-Path $PackageDirectory 'Maintain.exe') -Destination (Join-Path $stage 'Maintain.exe')
       $maintenance = Join-Path $stage 'maintenance'
@@ -385,7 +394,7 @@ try {
         $null = PreserveAdditions (Generation $state.current) $stage $old.managedFiles
       }
       SelfTest $stage $package.commit $package.version
-      AtomicJson (Join-Path $stage 'ownership.json') @{owner=$Owner; version=$package.version; commit=$package.commit; packageSha256=$ManifestSha256; files=@(FileRecords $stage); managedFiles=@(FileRecords $maintenance | ForEach-Object { [pscustomobject]@{path=('maintenance/'+$_.path);sha256=$_.sha256} }) + @($package.files) + @([pscustomobject]@{path='Lifecycle.ps1';sha256=(Hash (Join-Path $stage 'Lifecycle.ps1'))}, [pscustomobject]@{path='Maintain.exe';sha256=(Hash (Join-Path $stage 'Maintain.exe'))}); importedPlugins=$retained}
+      AtomicJson (Join-Path $stage 'ownership.json') @{owner=$Owner; version=$package.version; commit=$package.commit; packageSha256=$ManifestSha256; files=@(FileRecords $stage); managedFiles=@(FileRecords $maintenance | ForEach-Object { [pscustomobject]@{path=('maintenance/'+$_.path);sha256=$_.sha256} }) + @($package.files) + @([pscustomobject]@{path='Lifecycle.ps1';sha256=(Hash (Join-Path $stage 'Lifecycle.ps1'))}, [pscustomobject]@{path='Maintain.exe';sha256=(Hash (Join-Path $stage 'Maintain.exe'))}, [pscustomobject]@{path='app/OPENNAV_INSTALLED_STOCK';sha256=(Hash $locator)}); importedPlugins=$retained}
       $previous = ''; if ($state) { $previous = $state.current }
       $next = @{owner=$Owner;schema=1;stock=$stock;current=$id;previous=$previous}
       AtomicJson (Join-Path $Root 'transaction.json') @{owner=$Owner;action=$Action;before=$state;after=$next}

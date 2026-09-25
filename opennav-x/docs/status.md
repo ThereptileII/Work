@@ -57,81 +57,61 @@ at `82efd08`; marine codecs/loopback passed at `785aa45` with 81 Linux / 71
 Windows integrated cases and 22 portable suites per platform. These are internal
 milestones, not an Alpha release. [Marine acceptance](evidence/alpha-marine-785aa45-gates.json).
 
-Subsequent candidates retain **90 Linux / 80 native Windows integrated cases**.
-`33447f2` passes 28 portable suites per platform, native configurable displays,
-actual 100/125/150% DPI/touch, public NOAA ENC loading/zoom/pan/follow, plugin
-manager and actual three-point route creation. Four relevant native images were
-reviewed. Its route-edit automation used a double-click-like gesture; the new
-press-drag-release gate still requires native acceptance.
-[Native review](evidence/windows-alpha-33447f2-review.json).
+Current candidates retain **90 Linux / 80 native Windows integrated cases**
+and **29 portable suites per platform**, with ten additional restart
+repetitions. The source, object/AIS/anchor, synthetic data and energy regressions
+remain enabled. Their platform-specific totals must not be added to repeated
+runs as if these were distinct tests.
 
-Linux passes both software and llvmpipe OpenGL switching the actual quilt
-reference between two hash-pinned public NOAA ENC cells, including overlays,
-mode returns and performance sampling. The expanded native chart/route-edit gate passes at `1460c05`; Windows
-rejects hardware OpenGL and correctly falls back to software. Eight screenshots
-were reviewed, including the edited route, adjacent ENC and scaled screens. A
-pre-paint blank plugin-manager screenshot was rejected and now has a bounded
-pixel-readiness gate; subsequent review also requires painted footer buttons.
-[Partial-paint review](evidence/windows-plugin-cdff41e-partial-paint.json). [Review](evidence/windows-chart-1460c05-review.json). No blank/all-water screenshot is accepted as chart evidence.
-[Local chart evidence](evidence/alpha-two-cell-chart-local.json).
+The recovery-notice ordering repair passes at `fe37250` on both platforms,
+including three independent native forced-crash → Safe → human XNav retry
+cycles. Each requires actual modal dismissal, an enabled parent and visible
+coastline. Three corresponding images were reviewed.
+[Recovery acceptance](evidence/recovery-fe37250-gate.json).
 
-Native Windows PowerShell 5.1 passes **24 actual filesystem assertions in each
-32/64-bit host** at `452e26b`, after correcting .NET null-string binding during
-atomic replacement. Native NSIS Setup and the separately compiled prior-version
-fixture build at `4203854`; the official prerequisite installer returns 1223
-before any Alpha lifecycle. Explicit ShellExecute elevation also returns 1223 at `4181962` despite a
-verified administrator token. Initial stock UI capture is now required to
-identify the abort. The initial interactive stock language dialog is visible at
-`4712bf0`; the replacement uses its actual wizard to prepare the prerequisite.
-The stock wizard now visibly completes at `149c41b` yet returns 1223; stronger
-actual installation postconditions replace the exit-only assumption.
-[Observation](evidence/installer-stock-exit-149c41b-observation.json).
-Alpha remains per-user/as-invoker.
-[Filesystem gate](evidence/installer-filesystem-452e26b-gate.json),
-[prerequisite failure](evidence/installer-4203854-prerequisite-failure.json).
+Linux passes software and llvmpipe OpenGL with two hash-pinned public NOAA ENC
+cells, real quilt-reference switching, overlays and mode returns. Native
+Windows passes chart creation, point dragging, zoom/pan/follow, cell switching
+and software fallback. The hosted Windows driver rejects hardware OpenGL;
+physical GPU validation remains open.
+[Chart review](evidence/windows-chart-1460c05-review.json),
+[Linux chart evidence](evidence/alpha-two-cell-chart-local.json).
+No blank/all-water image is accepted as known chart-content evidence.
 
-`9981643` passes all 80 native compiled tests but its object-scenario reader races
-Windows report replacement. The bounded access-only reader replacement passes
-**29 Linux portable suites** and the actual object/AIS/anchor scenario; its native
-rerun is pending. Corrupt evidence and product failure assertions still fail.
-[Failure and replacement](evidence/windows-json-publication-9981643-failure.json).
+The strengthened native plugin-manager gate passes at `93a8491`: Dashboard,
+GRIB and WMM load, the list and Ok/Cancel/Apply controls are fully painted,
+and actual Cancel dismissal succeeds. The image was reviewed.
+[Plugin acceptance](evidence/windows-plugin-93a8491-review.json).
+Native 100/125/150% DPI and injected touch checks also pass on this candidate;
+final packaged-revision screenshots still require review.
 
-A native Safe → XNav timeout at `54029a3` gained decisive screenshots at
-`c26e456`: the recovery notice was still open while automation invoked the
-disabled parent's menu. The replacement uses an actual visible button click,
-requires modal dismissal and an enabled parent, and retains three independent
-forced-crash/recovery cycles. The actual click also failed at `bc892a7`;
-the notice now waits until upstream deferred canvas/focus initialization finishes.
-[Ordering evidence](evidence/windows-recovery-bc892a7-startup-order.json).
-The repaired integration passes the full Linux CI gate, 90 Linux / 80 Windows
-cases, 29 portable suites per platform and three separate native recovery
-cycles at `fe37250`. Three native coastline captures were reviewed.
-[Recovery acceptance](evidence/recovery-fe37250-gate.json). [Failure review](evidence/windows-recovery-c26e456-modal-failure.json).
+The exact official OpenCPN prerequisite is installed by its visible native
+wizard and verified against executable/resource/uninstall-registration
+postconditions. Its narrowly observed post-completion exit 1223 is documented;
+Alpha Setup and maintenance still require exit zero.
+[Prerequisite gate](evidence/installer-stock-8ae303c-gate.json).
 
-The official prerequisite now passes its native gate at `8ae303c`,
-[run 36077099717](https://github.com/ThereptileII/Work/actions/runs/36077099717):
-actual completion page, exact executable SHA, chart/resources and matching
-32-bit uninstall registration are verified. The exact stock process still
-returns 1223 after completion; this narrowly documented exception does not
-apply to Alpha Setup or maintenance. [Prerequisite evidence](evidence/installer-stock-8ae303c-gate.json).
-Full Alpha lifecycle qualification remains pending. Its first real preflight at
-`8ae303c` cannot resolve Get-FileHash in the NSIS-launched process; streamed .NET
-SHA-256 replaces that dependency with a known-vector test.
-[Preflight failure](evidence/installer-preflight-8ae303c-hash-failure.json).
-Its replacement passes preflight, registry discovery, unknown-binary refusal
-and ownership protection at `fe37250`. Actual installation then shows an error
-notice. The harness now retains private engine logs and tests its real loader
-wrapper with an explicit small native fixture; real OpenCPN lifecycle acceptance
-is still mandatory. [Wizard failure](evidence/installer-wizard-fe37250-failure.json).
-The fast real loader wrapper passes in both native hosts. Inspection then
-reproduced rejection of the bundled `ca@valencia` locale path; its literal `@`
-is now accepted, with path protections unchanged.
-[Payload-path reproduction](evidence/installer-locale-fe37250-reproduction.json).
+The actual Alpha preflight, registry discovery and unknown-hash/ownership refusal
+pass. Full installation remains under qualification. Inspection reproduced
+rejection of the bundled `ca@valencia` locale path, now corrected without
+weakening traversal/reparse protections. At `2803773`, **28 actual filesystem
+and loader-wrapper assertions pass in each native PowerShell 5.1 host (x86 and
+x64)**. The loader fixture is explicitly a fast wrapper test; it does not replace
+real installed OpenCPN acceptance.
+[Payload-path reproduction](evidence/installer-locale-fe37250-reproduction.json),
+[fast native gate](evidence/installer-filesystem-2803773-gate.json).
+At `2803773`, clean native wizard installation, installed coastline launch and
+first-install rollback now pass. The later launch exposes a persisted tide-data
+path into the deleted generation. Installed resource defaults now resolve to the
+verified original stock resources, preserving all custom selections. The new
+contract passes 30 portable suites locally; full native qualification is pending.
+[Resource lifetime failure and repair](evidence/installer-resources-2803773-failure.json).
+The complete lifecycle, exact final artifact and public allowlist remain gated.
 
 ## Remaining Alpha release gates
 
-1. Retain the repaired native recovery gate and validate the final plugin-manager
-   paint/click gate (including upstream Ok capitalization); retain
+1. Retain the repaired native recovery and accepted plugin-manager
+   paint/click gates (including upstream Ok capitalization); retain
    the passed chart-edit/switch/software-fallback and Linux OpenGL coverage.
 2. Complete actual official-stock installation plus Alpha install, prior-version
    update, repair, rollback, interrupted transaction, uninstall and restored

@@ -1,0 +1,19 @@
+{
+  "commit": "280377381423f82907fe6ea66956a8bd4ca4e57e",
+  "run": "https://github.com/ThereptileII/Work/actions/runs/36082169839",
+  "job": 107906291529,
+  "scope": "Fast actual Windows PowerShell filesystem and loader-wrapper gate, not full installer acceptance",
+  "windowsPowerShell": "5.1.20348.5622",
+  "checksPerHost": 28,
+  "hosts": [
+    "x86",
+    "x64"
+  ],
+  "result": "passed",
+  "portableCTestSuites": 29,
+  "restartRepetitions": 10,
+  "newCoverage": [
+    "Bundled ca@valencia locale path accepted while traversal and reserved path cases remain rejected.",
+    "Actual SelfTest wrapper uses a separately compiled, explicitly labelled loader fixture; actual OpenCPN lifecycle remains separately required."
+  ]
+}

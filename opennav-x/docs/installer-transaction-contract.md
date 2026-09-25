@@ -146,3 +146,17 @@ checks remain unchanged. The actual native helper suite covers the exact path.
 Each maintenance operation also keeps its own result filename, so injected
 failure reports survive the following recovery attempt.
 [Payload-path reproduction](evidence/installer-locale-fe37250-reproduction.json).
+
+Native `2803773` passes the real clean Setup wizard, installed chart launch and
+first-install rollback, then exposes an upstream persisted-resource lifetime
+problem: default tide paths refer to the removed application generation.
+The replacement writes an owned, bounded UTF-8 `app/OPENNAV_INSTALLED_STOCK`
+locator only after exact stock preflight (including required resources).
+At the existing post-config integration boundary, installed modes fill only
+unset tide/coastline/AIS-sound defaults from that original installation. Custom
+selections, including missing custom files, remain unchanged. The locator is
+not installation authorization and is never executed. Portable/unmarked builds
+retain existing behavior. Installer operations still do not write the profile.
+Native lifecycle checks inspect persisted resource paths after generation
+removal and preserve a real custom harmonic fixture through uninstall.
+[Failure and replacement](evidence/installer-resources-2803773-failure.json).

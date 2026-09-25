@@ -1,0 +1,92 @@
+{
+  "commit": "280377381423f82907fe6ea66956a8bd4ca4e57e",
+  "run": "https://github.com/ThereptileII/Work/actions/runs/36082169839",
+  "artifact": 10843281172,
+  "artifactSha256": "4f4828d9d6e44197c3d18583ad7c5014e97f91dd85138495cd0b7a0fb4052769",
+  "linuxIntegrated": 90,
+  "windowsIntegrated": 80,
+  "portableSuitesEach": 29,
+  "installerResult": {
+    "status": "failed",
+    "checks": [
+      "Official supported OpenCPN installed and exact PE executable SHA-256 verified",
+      "Registry discovery handles the official build-suffixed key and verifies its exact hash without modification",
+      "Conventional wizard opens without command-line options; default Install and path input work; Cancel changes no installation",
+      "Unknown executable hash refused before creating install root or changing stock",
+      "Unknown installation ownership refused without adding logs or changing files",
+      "Actual Alpha wizard Install preflight, staging and Finish complete successfully without command-line options",
+      "Exact candidate clean install and first-install rollback preserve stock/profile; real coastline and candidate hash verified"
+    ],
+    "operations": [
+      {
+        "action": "Preflight",
+        "report": "installer-00-Preflight.json"
+      },
+      {
+        "action": "Install",
+        "report": "installer-01-Install.json"
+      },
+      {
+        "action": "Install",
+        "report": "installer-02-Install.json"
+      },
+      {
+        "action": "Rollback",
+        "report": "installer-03-Rollback.json"
+      },
+      {
+        "action": "Install",
+        "report": "installer-04-Install.json"
+      }
+    ],
+    "screenshots": [
+      "installer-wizard-welcome.png",
+      "installer-wizard-selection.png",
+      "installer-wizard-welcome.png",
+      "installer-wizard-selection.png",
+      "installer-wizard-installed.png",
+      "installer-00-clean-candidate.png",
+      "installer-failed-1.png"
+    ],
+    "authority": "native disposable Windows / PowerShell 5.1 / NSIS",
+    "display": {
+      "before": [
+        1280,
+        800,
+        32
+      ],
+      "after": [
+        1280,
+        800,
+        32
+      ]
+    },
+    "error": "RuntimeError(\"Window not found: OpenNav X / OpenCPN; visible: [(2753148, 5648, 'OpenCPN Info')]\")",
+    "visible_windows": [
+      {
+        "pid": 5648,
+        "title": "OpenCPN Info"
+      }
+    ]
+  },
+  "reviewed": [
+    {
+      "file": "installer-wizard-installed.png",
+      "sha256": "c11f919d4141e08ef0edbc99ffbe25e4e2450733df954cdc6caf9340252ba813",
+      "review": "Actual Alpha wizard reached its completion page; launch option unchecked by the test."
+    },
+    {
+      "file": "installer-failed-1.png",
+      "sha256": "4e7870452a31af8bd7a76e2fe3b35cc90be99d3b49faad1da072711dd7392a89",
+      "review": "OpenCPN reports no harmonic tide/current data on launch after first-install rollback and prior-version install."
+    }
+  ],
+  "finding": "Clean candidate installation, real coastline launch and first-install rollback pass. OpenCPN persists absolute default harmonic paths into the removable generation; the subsequent app launch stops at its no-harmonic-data warning.",
+  "sourceBoundary": [
+    "gui/src/ocpn_app.cpp MyApp::OnInit default tide/coastline/AIS-sound resource selection",
+    "gui/src/navutil.cpp MyConfig LoadMyConfig and tide/resource serialization",
+    "gui/src/tcmgr.cpp TCMgr::LoadDataSources"
+  ],
+  "replacement": "Installed-only bounded stock-resource locator; seed only unset upstream defaults from the verified untouched stock installation. Preserve custom selections. Do not dismiss the warning or mutate the profile in the installer.",
+  "acceptance": "Not an Alpha release; full native lifecycle and allowlist remain gated."
+}

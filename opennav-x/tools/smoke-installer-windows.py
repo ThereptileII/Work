@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """Disposable native Windows installer lifecycle, shared profile and chart gate."""
 import ctypes
+import configparser
 import hashlib
 import importlib.util
 import json
@@ -68,6 +69,16 @@ def count_starts(profile):
 def fixture_snapshot(profile):
     shutil.copy2(profile/'opencpn.ini',profile/'opencpn.conf')
     return fixtures.snapshot(profile)
+def stable_resources(profile,stock,tides=None):
+    config=configparser.RawConfigParser(strict=False)
+    config.read(profile/'opencpn.ini',encoding='utf-8-sig')
+    expected=tides or [stock/'tcdata/harmonics-dwf-20210110-free.tcd',stock/'tcdata/HARMONICS_NO_US.IDX']
+    actual=[Path(v) for _,v in config.items('TideCurrentDataSources')]
+    assert actual==expected,(actual,expected)
+    assert all(p.is_file() for p in actual),'Retained tide sources must survive generation removal'
+    for section,key,path in [('Directories','BasemapDir',stock/'gshhs'),('Directories','BaseShapefileDir',stock/'basemap_shp'),('Settings/AIS','AISAlertAudioFile',stock/'sounds/2bells.wav')]:
+        assert Path(config.get(section,key))==path,(section,key,config.get(section,key))
+        assert path.exists()
 def launch(exe,mode,title,profile,name):
     before=count_starts(profile)
     p=subprocess.Popen([str(exe),'--no_opengl',*mode]);owned.add(p.pid)
@@ -180,11 +191,22 @@ try:
         assert sha(generation()/'app/opencpn.exe')==sha(ROOT/'build/xnav-install/opencpn.exe')
         p,h,rgb=launch(generation()/'app/opencpn.exe',['--xnav'],'OpenNav X / OpenCPN',profile,'installer-00-clean-candidate')
         charts.reference(rgb);close(p,h);assert fixture_snapshot(profile)==expected
+        stable_resources(profile,stock)
         before=inventory(profile)
         engine('Rollback')
         assert not (INSTALL/'state.json').exists()
         assert inventory(profile)==before and inventory(stock)==stock_before
         check('Exact candidate clean install and first-install rollback preserve stock/profile; real coastline and candidate hash verified')
+        stable_resources(profile,stock)
+        # A real user-selected harmonic source must remain selected; defaults
+        # must never replace or append to this list during any installed mode.
+        custom_tide=profile/'custom harmonic fixture.tcd'
+        shutil.copy2(stock/'tcdata/harmonics-dwf-20210110-free.tcd',custom_tide)
+        config=configparser.RawConfigParser(strict=False)
+        config.read(profile/'opencpn.ini',encoding='utf-8-sig')
+        config['TideCurrentDataSources']={'tcds0':custom_tide.as_posix()}
+        with (profile/'opencpn.ini').open('w',encoding='utf-8') as f:config.write(f)
+        before=inventory(profile)
         prior=ROOT/'build/prior-alpha-fixture/setup/OpenNavX-Alpha1-Setup.exe'
         setup('Install',original,executable=prior)
         assert inventory(profile)==before and inventory(stock)==stock_before
@@ -193,6 +215,7 @@ try:
         assert sha(old_exe)!=sha(ROOT/'build/xnav-install/opencpn.exe')
         p,h,rgb=launch(old_exe,['--xnav'],'OpenNav X / OpenCPN',profile,'installer-00-prior-test-version')
         charts.reference(rgb);close(p,h);assert fixture_snapshot(profile)==expected
+        stable_resources(profile,stock,[custom_tide])
         prior_generation=state()['current'];before=inventory(profile)
         check('Distinct compiled prior Alpha test version installs and opens real coastline with shared fixtures')
         setup('Update',original)
@@ -221,6 +244,7 @@ try:
         charts.check(rgb,colors,'Installed XNav Legacy XNav')
         monitor=ui.monitor_process(pid);ui.close(h);ui.wait_clean_exit(monitor);owned.discard(pid)
         assert fixture_snapshot(profile)==expected
+        stable_resources(profile,stock,[custom_tide])
         check('Installed XNav to Legacy to XNav controlled restart retains real coastline')
         before=inventory(profile)
         damaged=generation()/'app/uidata/styles.xml';damaged.write_bytes(b'corrupt owned resource')
@@ -265,6 +289,8 @@ try:
         p,h,rgb=launch(original,[],'OpenCPN 5.12.4',profile,'installer-05-restored-stock')
         charts.check(rgb,colors,'Untouched stock after uninstall');close(p,h)
         assert fixture_snapshot(profile)==expected
+        stable_resources(profile,stock,[custom_tide])
+        check('Stock resource defaults survive every generation and uninstall; explicit custom tide selection is preserved')
         check('Original official OpenCPN still loads charts and shared navigation data after uninstall')
         report['stock_sha256']=sha(original);report['setup_sha256']=sha(SETUP)
         report['status']='passed'
