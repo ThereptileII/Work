@@ -82,7 +82,15 @@ try:
                 capture(handle, title, controls, choice)
                 acted.add(signature)
                 assert len(acted) <= 16, 'Unexpected stock wizard page loop'
-                ui.PostMessageW(buttons[choice], 0x00F5, 0, 0)
+                # The stock StartMenu plug-in does not advance on a posted
+                # BM_CLICK in this native environment. Use the visible button
+                # hit target, as a person does, and require the next page.
+                rect = ui.W.RECT()
+                assert ui.GetWindowRect(buttons[choice], ctypes.byref(rect))
+                assert ui.user.SetCursorPos((rect.left + rect.right) // 2, (rect.top + rect.bottom) // 2)
+                ui.user.mouse_event(2, 0, 0, 0, 0)
+                ui.user.mouse_event(4, 0, 0, 0, 0)
+                print('Official wizard: ' + choice + ' / ' + title, flush=True)
                 time.sleep(.5)
         time.sleep(.2)
     assert process.poll() is not None, 'Official wizard timed out'

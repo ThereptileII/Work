@@ -1,0 +1,16 @@
+{
+  "commit": "cdff41e737a30cbc45c8400f665be767ef6b655c",
+  "run": "https://github.com/ThereptileII/Work/actions/runs/36076340961",
+  "job": 107888273450,
+  "status": "failed",
+  "artifact_id": 10839758510,
+  "artifact_sha256": "e0abf8e73e0d00fb243178dc815297303c0369b1c9ece581af731690668590e5",
+  "download_verified": true,
+  "native_observation": "Unmodified stock wizard passed language, welcome, license, components and destination selection. It did not advance past Start Menu after posted BM_CLICK; bounded timeout failed without accepting an installation.",
+  "reviewed_screenshot": {
+    "file": "official-wizard-6.png",
+    "sha256": "add1c2230ad22a0b4a9ff7cfee1b59ff2e0e8514ada2b8e4c1d98a4c958cea02",
+    "finding": "Visible enabled Next button and normal folder selection; no error dialog"
+  },
+  "replacement": "Use the actual visible button mouse hit target. Still require every page transition, successful exit and exact stock executable hash."
+}
