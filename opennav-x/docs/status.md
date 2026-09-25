@@ -37,6 +37,13 @@ ambiguous, edited or transitional state never becomes a valid zero arrival.
 
 ## Beta development
 
+Candidate `0d4bcb7` / run `36127208962` is **not accepted**: both builds/core
+functional gates passed, but a fresh GitHub API check found the extracted Windows
+portable interaction step failed. An earlier cached status feed was stale.
+The long endurance stage must now run only after all earlier Windows gates pass;
+portable/DPI failure captures upload immediately. Superseded qualifications are
+cancelled without publishing a package. Exact replacement evidence is required.
+
 Release qualification is still in progress. A Linux allocation profile identified
 an upstream libudev serial-discovery leak; the reviewed integration patch now
 owns/frees contexts, scans and devices. Three actual-reference tests cover normal

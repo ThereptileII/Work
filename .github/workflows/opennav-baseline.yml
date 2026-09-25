@@ -6,7 +6,41 @@ on:
   workflow_dispatch:
 permissions:
   contents: read
+concurrency:
+  group: opennav-beta-${{ github.ref }}
+  cancel-in-progress: true
 jobs:
+  retire-failed-candidates:
+    name: Retire three known failed qualifications before concurrency was enabled
+    runs-on: ubuntu-24.04
+    permissions:
+      actions: write
+    steps:
+      - name: Cancel only the exact failed superseded Beta runs
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          python3 - <<'PY'
+          import json, os, urllib.request
+          base = 'https://api.github.com/repos/ThereptileII/Work/actions/runs/'
+          headers = {'Authorization': 'Bearer '+os.environ['GH_TOKEN'], 'Accept': 'application/vnd.github+json'}
+          known = {36126360032:'89bf374a4dcb53eeb596bda2ee1551957d28aad2',
+                   36126570249:'25e96f60c4ffca171200547b5d4b367672c93fcc',
+                   36127208962:'0d4bcb77a82f91d49ad030cf7747fdb072b10cc8'}
+          def get(path):
+              return json.load(urllib.request.urlopen(urllib.request.Request(base+path, headers=headers), timeout=30))
+          for number, sha in known.items():
+              run = get(str(number))
+              assert run['head_sha']==sha and run['head_branch']=='opennav-x'
+              assert run['path']=='.github/workflows/opennav-baseline.yml'
+              if run['status']=='completed':
+                  print(number, 'already completed'); continue
+              jobs = get(str(number)+'/jobs?per_page=100')['jobs']
+              assert any(j['conclusion']=='failure' or any(s['conclusion']=='failure' for s in j['steps']) for j in jobs)
+              with urllib.request.urlopen(urllib.request.Request(base+str(number)+'/cancel', headers=headers, method='POST'), timeout=30) as response:
+                  assert response.status==202
+              print(number, 'known failed qualification cancelled; retain its logs')
+          PY
   boat-firmware:
     name: Boat C6 producer expiry compile (no flashing)
     runs-on: ubuntu-24.04
@@ -220,8 +254,16 @@ jobs:
             if ($Result -ne 0) { exit $Result }
           }
       - name: Package and test the extracted Beta portable build
+        id: portable
         if: ${{ !cancelled() && steps.integrated.conclusion == 'success' }}
         run: ./opennav-x/tools/package-preview-windows.ps1
+      - name: Preserve failed portable interaction evidence immediately
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: ${{ !cancelled() && steps.portable.conclusion == 'failure' }}
+        with:
+          name: windows-portable-failure-${{ github.sha }}
+          path: opennav-x/evidence/local/preview-*
+          if-no-files-found: error
       - name: Build and exercise candidate Beta installer
         env:
           OPENNAV_ARTIFACT_TOKEN: ${{ github.token }}
@@ -243,13 +285,20 @@ jobs:
           path: opennav-x/evidence/local/installer-*
           if-no-files-found: error
       - name: Native 100 / 125 / 150 percent DPI and touch interactions
+        id: dpi
         if: ${{ !cancelled() && steps.integrated.conclusion == 'success' }}
         run: python opennav-x/tools/smoke-dpi-windows.py
+      - name: Preserve failed DPI interaction evidence immediately
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: ${{ !cancelled() && steps.dpi.conclusion == 'failure' }}
+        with:
+          name: windows-dpi-failure-${{ github.sha }}
+          path: opennav-x/evidence/local/dpi-*
+          if-no-files-found: error
       - name: Public ENC chart and plugin rendering gate
         if: ${{ !cancelled() && steps.integrated.conclusion == 'success' }}
         run: python opennav-x/tools/smoke-charts.py
       - name: Actual elapsed-time native trip and resource stability
-        if: ${{ !cancelled() && steps.integrated.conclusion == 'success' }}
         run: |
           $Duration = (Get-Content opennav-x/release/qualification.json -Raw | ConvertFrom-Json).enduranceSeconds
           python opennav-x/tools/soak-runtime.py --seconds $Duration
