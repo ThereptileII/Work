@@ -21,7 +21,7 @@ parser.add_argument('--build', type=Path, required=True)
 parser.add_argument('--runtime', type=Path, required=True)
 parser.add_argument('--output', type=Path, required=True)
 args = parser.parse_args()
-destination = args.output / 'OpenNavX-Alpha1-Portable'
+destination = args.output / 'OpenNavX-Beta1-Portable'
 if destination.exists():
     raise SystemExit('Refusing to overwrite an existing preview directory')
 destination.mkdir(parents=True)
@@ -34,7 +34,7 @@ for dll in args.runtime.glob('*.dll'):
 for required in ['msvcp140.dll', 'vcruntime140.dll']:
     if not (app / required).is_file():
         raise SystemExit('App-local MSVC runtime missing: ' + required)
-(app / 'OPENNAV_PORTABLE_PREVIEW').write_text('OpenNav X portable Alpha 1\n')
+(app / 'OPENNAV_PORTABLE_PREVIEW').write_text('OpenNav X portable Beta 1\n')
 for directory in ['profile', 'logs', 'demo', 'docs/licenses']:
     (destination / directory).mkdir(parents=True)
 # PluginPaths::InitWindowsPaths and GetPluginDataPath use PrivateDataDir/plugins
@@ -63,7 +63,7 @@ for name, mode in launchers.items():
 setlocal
 cd /d "%~dp0"
 if not exist "%~dp0app\\opencpn.exe" (
-  echo Extract the entire OpenNav Alpha ZIP before running this launcher.
+  echo Extract the entire OpenNav Beta ZIP before running this launcher.
   pause
   exit /b 1
 )
@@ -79,9 +79,13 @@ if not "%preview_exit%"=="0" (
 exit /b %preview_exit%
 '''
     (destination / (name + '.cmd')).write_bytes(text.replace('\n', '\r\n').encode('utf-8'))
-for file in (ROOT / 'docs/alpha').glob('*.md'):
+for file in (ROOT / 'docs/beta').glob('*.md'):
     shutil.copy2(file, destination / 'docs' / file.name)
 shutil.copy2(ROOT / 'docs/physical-validation.md', destination / 'docs/physical-validation.md')
+for name in ['recording-replay-contract.md', 'energy-model.md', 'field-diagnostic-bundle.md',
+             'beta-boat-source-inspection.md', 'boat-propulsion-contract.md',
+             'st4000-beta-contract.md', 'beta-chart-radar-boundaries.md', 'beta-robustness.md']:
+    shutil.copy2(ROOT / 'docs' / name, destination / 'docs' / name)
 version_header = (ROOT / 'src/application/Version.h').read_text()
 product_version = re.search(r'Version\[\] = "([^"]+)"', version_header).group(1)
 commit = os.environ.get('GITHUB_SHA') or subprocess.check_output(['git', 'rev-parse', 'HEAD'], cwd=ROOT, text=True).strip()
@@ -93,7 +97,7 @@ if build_value('OPENNAV_BUILD_COMMIT') != commit:
     raise SystemExit('Executable build commit does not match package commit')
 info = f'''# Build information
 
-- OpenNav X: Alpha 1 / {product_version}
+- OpenNav X: Beta 1 / {product_version}
 - Git commit: `{commit}`
 - OpenCPN: 5.12.4
 - Pinned upstream: `37fd0cddb7334fe489e9f18aa163977a9c5c84f7`
@@ -147,13 +151,13 @@ in the Windows evidence and `tools/windows-wx.lock.json` in the source archive.
 manifest = {str(f.relative_to(destination)).replace('\\', '/'): hashlib.sha256(f.read_bytes()).hexdigest()
             for f in sorted(destination.rglob('*')) if f.is_file()}
 (destination / 'FILE_SHA256.json').write_text(json.dumps(manifest, indent=2) + '\n')
-archive = args.output / 'OpenNavX-Alpha1-Portable-win64.zip'
+archive = args.output / 'OpenNavX-Beta1-Portable-win64.zip'
 with zipfile.ZipFile(archive, 'w', zipfile.ZIP_DEFLATED, compresslevel=6) as z:
     for file in sorted(destination.rglob('*')):
         if file.is_file(): z.write(file, file.relative_to(args.output))
 (archive.with_suffix('.zip.sha256')).write_text(hashlib.sha256(archive.read_bytes()).hexdigest() + '  ' + archive.name + '\n')
 # Complete tracked integration source, not an expiring offer to fetch it later.
-with zipfile.ZipFile(args.output / 'OpenNavX-Alpha1-source.zip', 'w', zipfile.ZIP_DEFLATED) as z:
+with zipfile.ZipFile(args.output / 'OpenNavX-Beta1-source.zip', 'w', zipfile.ZIP_DEFLATED) as z:
     for directory, prefix in [(ROOT, 'opennav-x'), (ROOT / 'build/integration-source', 'OpenCPN-5.12.4-integrated')]:
         files = subprocess.check_output(['git', 'ls-files', '-z'], cwd=directory).decode().split('\0')
         for name in files:

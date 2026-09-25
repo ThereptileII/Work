@@ -41,3 +41,8 @@ view, test touch taps/pan, and capture primary workflows in night mode. Coastlin
 checks require both upstream land and water colors; dark primary surfaces are
 checked separately. Injected touch is software evidence, not acceptance of a
 physical marine touchscreen, wet/gloved use or the target GPU.
+
+The Linux palette harness separates single clicks beyond GTK's double-click
+interval and verifies each palette transition. Rapid input may be coalesced as
+a double-click; tests must not assume it represents two independent activations.
+This does not relax pilot command rate limits or create repeat actions.

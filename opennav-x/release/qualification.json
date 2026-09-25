@@ -1,7 +1,7 @@
 {
-  "stage": "beta1-development",
-  "publishNamedRelease": false,
-  "enduranceSeconds": 120,
+  "stage": "beta1-release-candidate",
+  "publishNamedRelease": true,
+  "enduranceSeconds": 10800,
   "acceptedAlphaCommit": "08bc92fc778591a3978e594a54208d672ff9158f",
-  "reason": "Beta increments retain candidate packaging and every regression gate. Named release publication resumes only for the fully qualified Beta package."
+  "reason": "Publish the named Beta artifact only after all exact-commit platform, native installer, UI and real three-hour endurance gates succeed. Physical boat acceptance remains separate."
 }

@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.24)
-project(OpenNavX VERSION 0.2.0 LANGUAGES CXX)
+project(OpenNavX VERSION 0.3.0 LANGUAGES CXX)
 if(MSVC)
   # Labels and paths are UTF-8 regardless of the Windows runner's code page.
   add_compile_options(/utf-8)

@@ -1,4 +1,4 @@
-name: OpenNav X Alpha
+name: OpenNav X Beta
 on:
   push:
     branches: [opennav-x]
@@ -188,6 +188,9 @@ jobs:
           path: opennav-x/evidence/local
   windows-integration:
     name: Native MSVC XNav / Legacy / Safe slice
+    permissions:
+      contents: read
+      actions: read
     needs: contracts
     runs-on: windows-2022
     timeout-minutes: 300
@@ -216,17 +219,19 @@ jobs:
             Get-ChildItem opennav-x/evidence/local -Filter 'recovery-*' | Where-Object { $_.Name -notlike 'recovery-repeat-*' } | Move-Item -Destination $Capture
             if ($Result -ne 0) { exit $Result }
           }
-      - name: Package and test the extracted Alpha portable build
+      - name: Package and test the extracted Beta portable build
         if: ${{ !cancelled() && steps.integrated.conclusion == 'success' }}
         run: ./opennav-x/tools/package-preview-windows.ps1
-      - name: Build and exercise candidate Alpha installer
+      - name: Build and exercise candidate Beta installer
+        env:
+          OPENNAV_ARTIFACT_TOKEN: ${{ github.token }}
         id: installer
         if: ${{ !cancelled() && steps.integrated.conclusion == 'success' }}
         run: |
           $Candidate = @()
           $Compatibility = Get-Content opennav-x/installer/windows/compatibility.json -Raw | ConvertFrom-Json
           if ($Compatibility.supportedOpenCpn.Count -eq 0) { $Candidate = @('--candidate') }
-          python opennav-x/tools/package-alpha-installer.py --preview opennav-x/build/developer-preview/OpenNavX-Alpha1-Portable --output opennav-x/build/alpha-installer @Candidate
+          python opennav-x/tools/package-alpha-installer.py --preview opennav-x/build/developer-preview/OpenNavX-Beta1-Portable --output opennav-x/build/beta-installer @Candidate
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
           python opennav-x/tools/smoke-installer-windows.py
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
@@ -248,12 +253,12 @@ jobs:
         run: |
           $Duration = (Get-Content opennav-x/release/qualification.json -Raw | ConvertFrom-Json).enduranceSeconds
           python opennav-x/tools/soak-runtime.py --seconds $Duration
-      - name: Collect tested Alpha downloads and hashes
+      - name: Collect tested Beta downloads and hashes
         run: python opennav-x/tools/alpha-artifacts.py
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
-          name: alpha-candidate-${{ github.sha }}
-          path: opennav-x/build/alpha-artifacts
+          name: beta-candidate-${{ github.sha }}
+          path: opennav-x/build/beta-artifacts
           if-no-files-found: error
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         if: always()
@@ -272,8 +277,8 @@ jobs:
           if ($lock.approvedApplicationArchitecture -ne 'x86' -or $lock.requiredWindowsHostArchitecture -ne 'x64') {
             throw 'This pipeline validates the approved x86 application ABI on Windows x64 only.'
           }
-  publish-alpha:
-    name: Publish Alpha after both platform and installer gates
+  publish-beta:
+    name: Publish Beta after both platform and installer gates
     needs: [contracts, linux, linux-integration, windows-upstream-abi, windows-integration, application-abi, stock-prerequisite, boat-firmware]
     runs-on: ubuntu-24.04
     steps:
@@ -292,20 +297,21 @@ jobs:
           PY
       - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
         with:
-          name: alpha-candidate-${{ github.sha }}
-          path: alpha
-      - name: Verify every native Alpha download hash
-        working-directory: alpha
+          name: beta-candidate-${{ github.sha }}
+          path: beta
+      - name: Verify every native Beta download hash
+        working-directory: beta
         run: sha256sum --check SHA256SUMS.txt
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         if: steps.qualification.outputs.accepted == 'true'
         with:
-          name: OpenNavX-Alpha1-Windows
+          name: OpenNavX-Beta1-Windows
           path: |
-            alpha/OpenNavX-Alpha1-Portable-win64.zip
-            alpha/OpenNavX-Alpha1-Setup.exe
-            alpha/OpenNavX-Alpha1-Test-Guide.md
-            alpha/SHA256SUMS.txt
-            alpha/OpenNavX-Alpha1-source.zip
+            beta/OpenNavX-Beta1-Portable-win64.zip
+            beta/OpenNavX-Beta1-Setup.exe
+            beta/OpenNavX-Beta1-Test-Guide.md
+            beta/OpenNavX-Beta1-Boat-Commissioning.md
+            beta/SHA256SUMS.txt
+            beta/OpenNavX-Beta1-source.zip
           if-no-files-found: error
           retention-days: 90

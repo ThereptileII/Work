@@ -1,7 +1,7 @@
-# Alpha physical validation procedures
+# OpenNav physical validation procedures
 
 **Not executed or accepted.** CI simulators cannot close these gates. Record the
-Alpha commit, Windows build/DPI/GPU, boat equipment/firmware, adapter identity,
+Application commit, Windows build/DPI/GPU, boat equipment/firmware, adapter identity,
 date, conditions, screenshots and diagnostics for each session. Do not include
 credentials or unrestricted raw voyage logs in a public report.
 
@@ -32,8 +32,10 @@ Record steady speed, whole-pack net discharge and SOC over representative boat
 conditions. State wind, current, sea state, hotel loads and battery conditions.
 Import a monotonic speed axis with explicit power semantics; verify interpolation
 only inside the calibrated domain. Compare predicted passage energy/arrival SOC
-with actual consumption. Mark discrepancies and uncertainty; an Alpha desktop
+with actual consumption. Mark discrepancies and uncertainty; a desktop
 fixture is not a boat-specific propulsion curve.
+
+For Beta, follow the ordered phases in [boat commissioning](boat-commissioning.md).
 
 ## Autopilot commissioning
 
@@ -59,14 +61,14 @@ been reviewed for this physical bridge.
    STANDBY. Diagnose rather than invent a successful acknowledgement.
 9. Test global disable, Legacy/Safe entry and application close. Verify absence
    of OpenNav command output. Disabling software does not prove pilot STANDBY.
-10. TRACK requires an appropriate supervised underway trial, fresh waypoint/XTE/
+10. TRACK is unavailable in Beta. A future supported adapter requires an appropriate supervised underway trial, fresh waypoint/XTE/
     bearing and variation where needed. Inspect the physical turn-acceptance
     prompt; no automatic second TRACK press or SmartNav steering is permitted.
-11. WIND requires a valid wind source and adapter capability. Verify physical
+11. WIND is unavailable in Beta. A future supported adapter requires a valid wind source and adapter capability. Verify physical
     Wind mode and loss-of-wind behavior in a supervised trial.
 
 The existing ESP32 bridge's prior dockside work does not accept this new Windows
-application/control path. No Alpha at-sea result is implied by simulator tests.
+application/control path. No OpenNav at-sea result is implied by simulator tests.
 
 ## Radar
 
@@ -84,4 +86,4 @@ readability, keyboard/mouse escape, OpenGL/software fallback, chart zoom/pan and
 mode restarts with the installed licensed charts/plugins. Measure startup, CPU,
 memory and interaction response with representative traffic. Exercise sensor
 loss and Safe recovery before an attended sea trial. Retain normal OpenCPN as
-the reference/fallback. Alpha is not certified or approved for navigation use.
+the reference/fallback. OpenNav is not certified or approved for navigation use.

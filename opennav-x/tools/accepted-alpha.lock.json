@@ -1,0 +1,11 @@
+{
+  "version": "0.2.0-alpha1",
+  "commit": "08bc92fc778591a3978e594a54208d672ff9158f",
+  "runId": 36092747986,
+  "artifactId": 10847446708,
+  "archiveSha256": "ddf1ac1009edbc35b95a98731ea11184a9e20bfc86e3d9bead4bdf473005e6ff",
+  "maximumArchiveBytes": 180000000,
+  "setupName": "OpenNavX-Alpha1-Setup.exe",
+  "setupBytes": 43756308,
+  "setupSha256": "b2d2b0bce04461d97aadbe3ec8bbea6b843051ced072886127a8df1ce2e32aaa"
+}

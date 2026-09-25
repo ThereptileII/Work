@@ -205,13 +205,13 @@ function PublishShell($State) {
   foreach ($pair in @(@('OpenNav X','--xnav'),@('OpenCPN Legacy','--legacy'),@('OpenNav Safe Mode','--safe-mode'))) {
     $link = $shell.CreateShortcut((Join-Path $Shortcuts ($pair[0]+'.lnk')))
     $link.TargetPath = Join-Path $directory 'app\opencpn.exe'; $link.Arguments = $pair[1]
-    $link.WorkingDirectory = Join-Path $directory 'app'; $link.Description = 'OpenNav X Alpha 1 - shared OpenCPN profile'; $link.Save()
+    $link.WorkingDirectory = Join-Path $directory 'app'; $link.Description = 'OpenNav X Beta 1 - shared OpenCPN profile'; $link.Save()
   }
   $link = $shell.CreateShortcut((Join-Path $Shortcuts 'Maintain OpenNav.lnk'))
   $link.TargetPath = Join-Path $directory 'Maintain.exe'; $link.WorkingDirectory = $directory; $link.Save()
   $null = New-Item -Path $Registry -Force
   foreach ($entry in @{
-    DisplayName='OpenNav X Alpha 1'; DisplayVersion=$generation.version; Publisher='OpenNav X project';
+    DisplayName='OpenNav X Beta 1'; DisplayVersion=$generation.version; Publisher='OpenNav X project';
     InstallLocation=$Root; DisplayIcon=(Join-Path $directory 'app\opencpn.exe');
     UninstallString=('"'+(Join-Path $directory 'Maintain.exe')+'" /ACTION=Uninstall');
     ModifyPath=('"'+(Join-Path $directory 'Maintain.exe')+'"');

@@ -61,3 +61,21 @@ extraction and a missing required DLL. Atomic state failures clean their own
 temporary record while preserving the last durable state/journal. Unpublished
 stages remain identifiable diagnostic residue, never an active installation.
 [Failure matrix and endurance contract](beta-robustness.md).
+
+## Beta identity and actual Alpha upgrade
+
+Beta changes the displayed product/version and downloadable package names to
+`0.3.0-beta1`. It deliberately keeps the Alpha-owned installation root, owner
+marker, uninstall registry key and Start-menu folder. Renaming those would
+strand the real Alpha installation and break generation rollback.
+
+The Beta lifecycle gate downloads the exact accepted `08bc92f` Alpha Setup from
+its original Actions artifact. Both outer ZIP and extracted installer hashes
+are pinned in `tools/accepted-alpha.lock.json`; it refuses an expired, missing
+or altered archive. A read-only Actions token is scoped to this CI step and is
+not forwarded to the storage redirect. The candidate is never relabeled as
+Alpha, rebuilt or substituted for the prior release. This replaces the Alpha
+stage's synthetic older-version fixture with stronger actual-release coverage.
+The test installs real Alpha, launches it with shared fixtures, updates to the
+exact Beta executable, rolls back, repairs and uninstalls while preserving stock
+and user data. Same-commit native results remain the acceptance authority.

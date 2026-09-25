@@ -55,7 +55,7 @@ such. They do not prove OpenGL, real-chart readability or target-PC acceptance.
 
 ## ADR-005 — Per-user side-by-side Alpha installation
 
-**Status:** Implemented candidate; native lifecycle qualification pending.
+**Status:** Accepted in Alpha `08bc92f`; every Beta release repeats native lifecycle qualification.
 
 Install complete integration generations under LocalAppData and keep the exact
 hash-verified stock OpenCPN executable unchanged. All installed modes use the
@@ -64,8 +64,9 @@ separate profile. This refines the specification's replace/back-up flow: no
 Program Files replacement or elevation is necessary for OpenNav-owned files.
 Atomic generation selection, retained prior files and verified ownership support
 repair/update/rollback/uninstall without restoring old navigation data. The
-public compatibility allowlist remains empty until disposable native lifecycle
-and UI gates pass. See [transaction contract](installer-transaction-contract.md).
+public compatibility allowlist contains only the qualified stock 5.12.4 x86
+executable SHA-256. Every integration release still requires its own lifecycle
+and UI gates. See [transaction contract](installer-transaction-contract.md).
 
 ## ADR-006 — Explicit Alpha hardware and chart-query boundaries
 
@@ -73,7 +74,8 @@ and UI gates pass. See [transaction contract](installer-transaction-contract.md)
 
 Autopilot commands pass only through the manual adapter interface with fresh
 feedback, pending-command identity and timeout handling. Alpha supplies a
-simulator; live output is disabled. SmartNav has no dependency that can send a
+simulator; live output was disabled. Beta adds the explicitly configured,
+feedback-confirmed ST4000 TCP adapter documented below. SmartNav has no dependency that can send a
 command. Radar reports unavailable without an accepted source. The hazard
 corridor has a tested provider contract but no live ENC coverage provider:
 viewport object queries alone cannot establish complete future-path coverage or
@@ -93,6 +95,58 @@ Leaf EV-CAN identifiers. Capacity, reserve and pack-current sign have no invente
 live defaults. A mapping interpretation change invalidates retained observations.
 See [marine bridge](navigation-data-bridge.md) and
 [propulsion mapping](propulsion-source-mapping.md).
+
+## ADR-008 — Beta boat identity and producer freshness
+
+**Status:** Implemented; exact release gates and physical commissioning separate.
+
+Bind boat-specific quantities and pilot commands to an explicit OpenCPN
+interface plus NMEA 2000 NAME, with ambiguity/loss failing closed. Receipt of a
+repeated bridge message cannot refresh retained EV sensor values. The isolated
+boat producer adapter requires its reviewed v2 validity heartbeat and expires
+four sensor groups independently. Standard PGNs retain their meanings; high
+pack voltage uses 127751. The desktop has no Leaf EV-CAN decoder.
+
+[Boat contract](boat-propulsion-contract.md), [source inspection](beta-boat-source-inspection.md).
+The producer firmware is hash-pinned and compile-tested; flashing and boat
+acceptance are separate deliberate steps.
+
+## ADR-009 — Manual pilot transport and output permission
+
+**Status:** Protocol/oracle and actual TCP loopback accepted as software; physical path open.
+
+Reuse the existing OpenCPN bidirectional Actisense complete-PGN ASCII TCP
+connection. Inspected serial/UDP/SeaSmart send paths do not support this command
+contract and remain status-only. Explicit saved permission and a fresh per-start
+session enable are both required. Six human commands have bounded pending state,
+rate limiting, fresh physical feedback confirmation and timeout without retries.
+TRACK/WIND remain unavailable. SmartNav cannot access the command interface.
+[Inspected protocol and contract](st4000-beta-contract.md).
+
+## ADR-010 — Recording privacy, replay and field reporting
+
+**Status:** Implemented with actual UI/transport tests; final release gates apply.
+
+Record normalized copied state with original ages into bounded rotating sessions.
+Locations/routes require opt-in. Replay has a virtual clock and unmistakable mode,
+never mutates OpenCPN navigation and disables control. Calibration export provides
+reviewable speed/power pairs without automatically fitting a boat model.
+Field bundles use an explicit bounded whitelist; no profile or raw-log directory
+walk. A selected recording requires additional consent. These facilities are
+software diagnostics, not voyage logging or a source of invented live readings.
+[Recording](recording-replay-contract.md), [bundle](field-diagnostic-bundle.md).
+
+## ADR-011 — Preserve Alpha installation identity in Beta
+
+**Status:** Implemented; actual accepted Alpha-to-Beta native gate required.
+
+Keep the per-user root, ownership marker, registry key and Start-menu folder
+established by Alpha. Change displayed version and download names to Beta.
+This avoids splitting installation state or losing recovery generations.
+The upgrade test uses the original hash-verified accepted Alpha installer,
+replacing the earlier synthetic previous-version fixture. No stock files are
+patched and no old navigation database is restored during rollback.
+[Installer design](installer-alpha-design.md).
 
 Record significant decisions here using this format.
 

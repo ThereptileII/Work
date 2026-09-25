@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Package the isolated native integration for the side-by-side Alpha installer."""
+"""Package the isolated native integration for the side-by-side version-gated installer."""
 import argparse
 import hashlib
 import json
@@ -45,7 +45,7 @@ package={'schema':1,'version':version,'commit':commit,
 record=a.output/'package.json';record.write_text(json.dumps(package,indent=2)+'\n',encoding='utf-8')
 compiler=Path(os.environ.get('ProgramFiles(x86)','C:/Program Files (x86)'))/'NSIS/makensis.exe'
 if not compiler.exists(): raise SystemExit('Native NSIS compiler missing')
-setup=a.output/'OpenNavX-Alpha1-Setup.exe'
+setup=a.output/'OpenNavX-Beta1-Setup.exe'
 subprocess.run([str(compiler),'/V3',f'/DOUTPUT={setup.resolve()}',
                f'/DPACKAGE={a.output.resolve()}',
                f'/DENGINE={ROOT / "installer/windows/Lifecycle.ps1"}',

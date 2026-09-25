@@ -50,7 +50,7 @@ if windows:
     normal_before=normal_snapshot()
     ui=module('windows-ui');report['display']=ui.ensure_desktop()
     with zipfile.ZipFile(args.package) as z:z.extractall(temp)
-    package=temp/'OpenNavX-Alpha1-Portable';profile=package/'profile';logs=package/'logs';exe=package/'app/opencpn.exe'
+    package=temp/'OpenNavX-Beta1-Portable';profile=package/'profile';logs=package/'logs';exe=package/'app/opencpn.exe'
     manifest=json.loads((package/'FILE_SHA256.json').read_text())
     for name,expected in manifest.items():assert hashlib.sha256((package/name).read_bytes()).hexdigest()==expected,name
     report['checks'].append('All extracted package file hashes match')
@@ -64,7 +64,7 @@ else:
     if ctypes.CDLL(None).prctl(36,1,0,0,0)!=0:raise RuntimeError('Cannot track restarted processes')
     # Exercise the same portable resource save/reload path as Windows. Ordinary
     # non-portable mode/input coverage remains in the existing smoke scripts.
-    package=temp/'OpenNavX-Alpha1-Portable';app_dir=package/'app';app_dir.mkdir(parents=True)
+    package=temp/'OpenNavX-Beta1-Portable';app_dir=package/'app';app_dir.mkdir(parents=True)
     for resource in (root/'build/xnav-install/share/opencpn').iterdir():
         (app_dir/resource.name).symlink_to(resource,target_is_directory=resource.is_dir())
     exe=app_dir/'opencpn';shutil.copy2(root/'build/xnav-install/bin/opencpn',exe)
@@ -115,6 +115,13 @@ def data(predicate=lambda d:True,timeout=12):
         except (FileNotFoundError,json.JSONDecodeError,PermissionError):pass
         time.sleep(.2)
     raise AssertionError('Diagnostic predicate did not become true: '+json.dumps(d.get('runtime',{}).get('display',{})))
+def light(expected):
+    # Distinct single clicks. GTK coalesces rapid physical clicks into a
+    # double-click event; that is not two independent button activations.
+    time.sleep(.65)
+    if windows:ui.click_text(pid,'Light')
+    else:xdo('mousemove',1240,28,'click',1)
+    data(lambda d:d['runtime']['display']['light']==expected)
 def item(d,name):return next(i for i in d['data'] if i['name']==name)
 def command(label,shortcut):
     if windows:ui.click_text(pid,label)
@@ -216,16 +223,9 @@ try:
     assert first['route']['source'].startswith('DEMO')
     chart_colors=chartcheck.reference(capture('preview-01-navigation-day'))
     chart_capture('preview-11-startup-xnav','Direct XNav startup')
-    if windows:
-        ui.click_text(pid,'Light');ui.click_text(pid,'Light')
-    else:
-        xdo('mousemove',1240,28,'click',1)
-        data(lambda d:d['runtime']['display']['light']=='Dusk')
-        xdo('mousemove',1240,28,'click',1)
-        data(lambda d:d['runtime']['display']['light']=='Night')
+    light('Dusk');light('Night')
     report['chart_rendering'].append(chartcheck.night(capture('preview-02-navigation-night'),chart_colors,'Night world-chart land/water palette'))
-    if windows:ui.click_text(pid,'Light')
-    else:xdo('click',1);time.sleep(.5)
+    light('Day')
     command('Route','r');page_capture('preview-03-route','Route')
     command('Energy','e');page_capture('preview-04-energy','Energy')
     if windows:ui.click_text(pid,'System');ui.click_text(pid,'Diagnostics')
@@ -254,14 +254,9 @@ try:
         if name in ('instruments','autopilot'):
             data(lambda d:d['runtime']['display']['minimum_value_height_dip']>=120)
         capture('alpha-'+name)
-        if windows:ui.click_text(pid,'Light');ui.click_text(pid,'Light')
-        else:
-            xdo('mousemove',1240,28,'click',1);time.sleep(.4);xdo('click',1)
-        data(lambda d:d['runtime']['display']['light']=='Night')
+        light('Dusk');light('Night')
         report.setdefault('night_surfaces',[]).append(chartcheck.dark_surface(capture('beta-night-'+name),expected_page))
-        if windows:ui.click_text(pid,'Light')
-        else:xdo('click',1)
-        data(lambda d:d['runtime']['display']['light']=='Day')
+        light('Day')
         if windows:ui.assert_product_page(handle,expected_page)
         if windows and name=='autopilot':
             ui.click_text(pid,'Enable / disable DEMO manual control');ui.click_text(pid,'Enable DEMO')
@@ -293,14 +288,9 @@ try:
         if name in ('instruments','autopilot'):
             data(lambda d:d['runtime']['display']['minimum_value_height_dip']>=120)
         capture('alpha-'+name)
-        if windows:ui.click_text(pid,'Light');ui.click_text(pid,'Light')
-        else:
-            xdo('mousemove',1240,28,'click',1);time.sleep(.4);xdo('click',1)
-        data(lambda d:d['runtime']['display']['light']=='Night')
+        light('Dusk');light('Night')
         report.setdefault('night_surfaces',[]).append(chartcheck.dark_surface(capture('beta-night-'+name),expected_page))
-        if windows:ui.click_text(pid,'Light')
-        else:xdo('click',1)
-        data(lambda d:d['runtime']['display']['light']=='Day')
+        light('Day')
         if windows:ui.assert_product_page(handle,expected_page)
         if windows and name=='energy-settings':
             ui.click_text(pid,'Configure battery & reserve')

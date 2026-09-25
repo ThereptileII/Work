@@ -70,3 +70,8 @@ Review of `cdff41e` finds the plugin list painted but footer buttons still blank
 in a partial first frame. The native gate now also requires text contrast inside
 the actual OK/Cancel/Apply button interiors, then uses an actual Cancel hit and
 requires modal dismissal. [Partial-paint evidence](evidence/windows-plugin-cdff41e-partial-paint.json).
+
+Beta adds the independent three-hour real-process endurance gate described in
+[robustness](beta-robustness.md). The original chart/plugin gates remain required
+on the same commit; simulated endurance does not substitute for physical GPU,
+chart-catalog, plugin-combination or underway testing.

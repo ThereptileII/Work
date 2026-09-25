@@ -68,11 +68,12 @@ per platform, plus GUI/synthetic/recovery/installer checks recorded separately.
 - Missing radar/ENC capability remains unavailable, with the precise limitation
   documented. Missing data is never replaced with simulation in live mode.
 
-During Beta development, `release/qualification.json` disables named release
-publication. Candidate packaging and every regression gate still execute. The
-accepted Alpha artifact remains pinned to `08bc92f`; development candidates
-must not replace it under an Alpha release name. Beta version/package branding
-and named publication are promoted together at the final delivery gate.
+Beta development increments kept named publication disabled. The Beta release
+candidate now selects 10,800 actual seconds on both platforms and enables named
+publication **only through the workflow job which depends on every other gate**.
+This setting is an instruction to qualify, not evidence of success. Failed runs
+must never be accepted. Exact accepted Alpha remains `08bc92f`; Beta carries
+its own version and download names.
 
 First Beta input acceptance: `a371767`, 97 Linux / 87 Windows integrated cases
 and 31 portable suites per platform. Recording increment local gate: 38 portable

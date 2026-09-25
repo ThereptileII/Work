@@ -20,7 +20,7 @@ if sys.platform!='win32' or os.environ.get('GITHUB_ACTIONS')!='true':
     raise SystemExit('This destructive fixture is restricted to disposable Windows CI')
 ROOT=Path(__file__).resolve().parents[1]
 EVIDENCE=ROOT/'evidence/local';EVIDENCE.mkdir(parents=True,exist_ok=True)
-PACKAGE=ROOT/'build/alpha-installer';SETUP=PACKAGE/'OpenNavX-Alpha1-Setup.exe'
+PACKAGE=ROOT/'build/beta-installer';SETUP=PACKAGE/'OpenNavX-Beta1-Setup.exe'
 INSTALL=Path(os.environ['LOCALAPPDATA'])/'OpenNavXAlpha1'
 STOCK_HASH='7c6547562cca7954671eaab72833ca9d788710fd9808b6a699b6dc823852ae0c'
 SETUP_HASH='e949f55de57611afe2fc0dad5a8ac33795c46ba488cb40ca07b65f639a07b8aa'
@@ -147,7 +147,7 @@ def close(p,h):
     ui.close(h);assert p.wait(timeout=30)==0;owned.discard(p.pid)
 def wizard(stock,install=False):
     p=subprocess.Popen([str(SETUP)]);owned.add(p.pid)
-    title='OpenNav X Alpha 1 Setup'
+    title='OpenNav X Beta 1 Setup'
     h,_=ui.wait_window(title,p.pid,timeout=45)
     ui.capture(h,EVIDENCE/'installer-wizard-welcome.png',resize=False,screen_pixels=True)
     report['screenshots'].append('installer-wizard-welcome.png')
@@ -184,7 +184,7 @@ def wizard(stock,install=False):
             time.sleep(.2)
         else:raise RuntimeError('Alpha wizard did not reach Finish')
         for child,caption in ui.children(h):
-            if caption.replace('&','')=='Launch OpenNav X Alpha 1':
+            if caption.replace('&','')=='Launch OpenNav X Beta 1':
                 ui.SendMessageW(child,0x00F1,0,0)
         time.sleep(.5)
         ui.capture(h,EVIDENCE/'installer-wizard-installed.png',resize=False,screen_pixels=True)
@@ -201,7 +201,10 @@ def wizard(stock,install=False):
 try:
     assert not INSTALL.exists(),'Runner must not contain a previous/user Alpha installation'
     report['display']=ui.ensure_desktop()
-    subprocess.run([sys.executable,str(ROOT/'tools/build-installer-prior-fixture.py')],check=True)
+    try:
+        subprocess.run([sys.executable,str(ROOT/'tools/build-installer-prior-fixture.py')],check=True)
+    finally:
+        os.environ.pop('OPENNAV_ARTIFACT_TOKEN',None)  # Do not pass it to any tested application.
     # On failure a live executable can still lock the disposable stock tree.
     # Preserve the original test exception; owned processes are stopped below.
     with tempfile.TemporaryDirectory(prefix='OpenNav installer ',ignore_cleanup_errors=True) as temp:
@@ -270,20 +273,20 @@ try:
         prior=ROOT/'build/prior-alpha-fixture/setup/OpenNavX-Alpha1-Setup.exe'
         setup('Install',original,executable=prior)
         assert inventory(profile)==before and inventory(stock)==stock_before
-        assert json.loads((generation()/'ownership.json').read_text())['version']=='0.2.0-alpha0-ci'
+        assert json.loads((generation()/'ownership.json').read_text())['version']=='0.2.0-alpha1'
         old_exe=generation()/'app/opencpn.exe'
         assert sha(old_exe)!=sha(ROOT/'build/xnav-install/opencpn.exe')
         p,h,rgb=launch(old_exe,['--xnav'],'OpenNav X / OpenCPN',profile,'installer-00-prior-test-version')
         charts.reference(rgb);close(p,h);assert fixture_snapshot(profile)==expected
         stable_resources(profile,stock,[custom_tide])
         prior_generation=state()['current'];before=inventory(profile)
-        check('Distinct compiled prior Alpha test version installs and opens real coastline with shared fixtures')
+        check('Accepted Alpha 1 release installs and opens real coastline with shared fixtures')
         setup('Update',original)
         assert state()['previous']==prior_generation
-        assert json.loads((generation()/'ownership.json').read_text())['version']=='0.2.0-alpha1'
+        assert json.loads((generation()/'ownership.json').read_text())['version']=='0.3.0-beta1'
         assert sha(generation()/'app/opencpn.exe')==sha(ROOT/'build/xnav-install/opencpn.exe')
         assert inventory(profile)==before and inventory(stock)==stock_before
-        check('Prior test version updates to the exact Alpha candidate executable; stock/profile unchanged')
+        check('Accepted Alpha 1 updates to the exact Beta candidate executable; stock/profile unchanged')
         first=state()['current'];exe=generation()/'app/opencpn.exe'
         assert not (exe.parent/'OPENNAV_PORTABLE_PREVIEW').exists()
         p,h,rgb=launch(exe,['--xnav'],'OpenNav X / OpenCPN',profile,'installer-01-xnav')

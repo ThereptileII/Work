@@ -37,12 +37,20 @@ ambiguous, edited or transitional state never becomes a valid zero arrival.
 
 ## Beta development
 
+The hardening replacement is `f562f3805f1296fa5123fc0cbe2a684d6c0b4c15`,
+[run 36121533524](https://github.com/ThereptileII/Work/actions/runs/36121533524).
+It is pending native/runtime acceptance. Beta packaging now targets
+`0.3.0-beta1`, exact Beta download names and separate desktop/boat guides. The
+installer upgrade fixture is the hash-verified **actual accepted Alpha Setup**,
+not a relabeled current executable. Alpha installation identities remain stable.
+
+
 Release hardening adds bounded pre-parser Signal K validation, malformed marine
 input cases, control-byte rejection in source identities, seven additional
 installer failure/recovery checks and an actual elapsed-time resource harness.
 The two-minute Linux harness checkout passed; it is not the required three-hour
-release result. Development CI selects 120 seconds, while named Beta publication
-requires at least 10,800 seconds on each platform. [Robustness contract](beta-robustness.md).
+release result. Short development CI selects 120 seconds. The release candidate now selects
+10,800 seconds on each platform; named publication depends on every gate. [Robustness contract](beta-robustness.md).
 
 Display revision `84f7122` / run `36117089450` is **not accepted**: compilation,
 portable tests, recording and pilot checks passed, but AIS runtime gates exposed
