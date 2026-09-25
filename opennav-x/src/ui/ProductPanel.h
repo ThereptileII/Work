@@ -4,6 +4,7 @@
 #include "application/NavigationObjects.h"
 #include "application/Settings.h"
 #include "diagnostics/Commissioning.h"
+#include "diagnostics/FieldReport.h"
 #include "smartnav/Advisories.h"
 #include "ui/Controls.h"
 #include <wx/scrolwin.h>
@@ -32,7 +33,8 @@ enum class ProductPage {
   RailLayout,
   InstrumentLayout,
   Commissioning,
-  PilotSettings
+  PilotSettings,
+  FieldReport
 };
 struct ProductState {
   vessel::VesselState vessel;
@@ -50,6 +52,7 @@ struct ProductState {
   vessel::Time now{};
 };
 struct ProductActions {
+  std::function<std::vector<diagnostics::BundleEntry>(const std::optional<std::string> &)> field_bundle;
   std::shared_ptr<diagnostics::Commissioning> commissioning;
   application::NavigationActions navigation;
   std::function<void()> chart, route_summary, energy, diagnostics;
@@ -90,6 +93,8 @@ private:
   void PilotSettings();
   void EnergySettings();
   void CommissioningPanel();
+  void FieldReportPanel();
+  void ExportFieldReport(bool include_recording);
   void Sources();
   void SourceDetail();
   void DisplaySettings();

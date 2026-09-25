@@ -19,11 +19,17 @@ target.mkdir(parents=True,exist_ok=True)
 with tempfile.TemporaryDirectory(prefix='OpenNav firmware patch ') as directory:
     working=Path(directory)
     subprocess.run(['git','init','-q',str(working)],check=True)
+    subprocess.run(['git','-C',str(working),'config','core.autocrlf','false'],check=True)
     (working/name).write_bytes(original)
-    subprocess.run(['git','-C',str(working),'apply','--check',str(root/'hardware/leaf-bridge/boat-bridge-v2-expiry.patch')],check=True)
-    subprocess.run(['git','-C',str(working),'apply',str(root/'hardware/leaf-bridge/boat-bridge-v2-expiry.patch')],check=True)
+    # Git for Windows can check out patch files as CRLF. Normalize only the
+    # reviewed patch copy, never the verified upstream source bytes.
+    patch=working/'reviewed.patch'
+    patch.write_bytes((root/'hardware/leaf-bridge/boat-bridge-v2-expiry.patch').read_bytes().replace(b'\r\n',b'\n'))
+    subprocess.run(['git','-C',str(working),'apply','--check',str(patch)],check=True)
+    subprocess.run(['git','-C',str(working),'apply',str(patch)],check=True)
     shutil.copy2(working/name,target/name)
 shutil.copy2(root/'hardware/leaf-bridge/FreshTelemetry.h',target/'FreshTelemetry.h')
+assert hashlib.sha256((target/name).read_bytes()).hexdigest()=='192841d02d9eacc7581a38d6816057f315491032393fcb188731c9d13cea6c0b','Patched producer bytes differ'
 source=(target/name).read_text(encoding='utf-8')
 # These exact generated producer functions, not rewritten test encoders, run
 # against the OpenNav normalized decoder/adapter in the host suite.

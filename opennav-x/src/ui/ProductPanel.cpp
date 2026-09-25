@@ -137,6 +137,8 @@ std::string ProductPanel::PageTitle() const {
   switch (page_) {
   case ProductPage::Commissioning:
     return "Commissioning & recordings";
+  case ProductPage::FieldReport:
+    return "Field diagnostic bundle";
   case ProductPage::Home:
     return "Menu";
   case ProductPage::Routes:
@@ -497,7 +499,9 @@ void ProductPanel::Build() {
   notice_->Hide();
   SetName("OpenNav Alpha product page");
   SetLabel("OpenNav Alpha page: " + W(PageTitle()));
-  if (page_ == ProductPage::Commissioning) {
+  if (page_ == ProductPage::FieldReport) {
+    FieldReportPanel();
+  } else if (page_ == ProductPage::Commissioning) {
     CommissioningPanel();
   } else if (page_ == ProductPage::Home) {
     Heading("Navigate with OpenNav X", "Alpha / Chart, vessel and passage");
@@ -534,6 +538,8 @@ void ProductPanel::Build() {
     Action("System & diagnostics", actions_.diagnostics);
     Action("Commissioning & recordings",
            [this] { ShowPage(ProductPage::Commissioning, mode_); });
+    Action("Field diagnostic bundle",
+           [this] { ShowPage(ProductPage::FieldReport, mode_); });
   } else if (page_ == ProductPage::Routes || page_ == ProductPage::Waypoints) {
     const bool routes = page_ == ProductPage::Routes;
     Heading(routes ? "Routes" : "Waypoints",
@@ -794,6 +800,8 @@ void ProductPanel::Build() {
     Action("System diagnostics", actions_.diagnostics);
     Action("Commissioning & recordings",
            [this] { ShowPage(ProductPage::Commissioning, mode_); });
+    Action("Field diagnostic bundle",
+           [this] { ShowPage(ProductPage::FieldReport, mode_); });
     Action("Fullscreen / window", actions_.navigation.fullscreen);
     Action("Advanced / Legacy Settings", actions_.navigation.legacy_settings);
     Action("OpenCPN plugins", actions_.navigation.plugin_settings);

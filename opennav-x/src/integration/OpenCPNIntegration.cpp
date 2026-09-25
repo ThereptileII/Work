@@ -485,6 +485,22 @@ void Attach(MyFrame& frame, wxAuiManager& manager, wxFileConfig& config) {
         frame.GetDPI().x,
         g_BasePlatform->GetPrivateDataDir().ToStdString(wxConvUTF8));
   };
+  actions.field_environment = [&frame] {
+    diagnostics::FieldEnvironment e;
+    e.build = integration::PreviewBuildInfo(frame.GetDPI().x, "withheld");
+    e.startup_recovery_required = recovery && recovery->RequiresSafe();
+    if (recovery) {
+      e.startup_failures_observed = recovery->FailuresObservedAtLaunch();
+      e.previous_launch_unfinished = recovery->PreviousLaunchUnfinished();
+    }
+    auto runtime = integration::ReadRuntimeDiagnostics(*frame.GetPrimaryCanvas());
+    auto &plugins = runtime["plugins"];
+    for (int i=0; i<plugins.Size() && i<128; ++i)
+      e.plugins.push_back(plugins[i]["name"].AsString().ToStdString(wxConvUTF8)+" / "+
+          plugins[i]["version"].AsString().ToStdString(wxConvUTF8)+" / initialized "+
+          (plugins[i]["initialized"].AsBool() ? "yes" : "no"));
+    return e;
+  };
   actions.diagnostics_folder=[] {
     if(!diagnostic_directory.empty()) wxLaunchDefaultApplication(wxString::FromUTF8(diagnostic_directory));
   };

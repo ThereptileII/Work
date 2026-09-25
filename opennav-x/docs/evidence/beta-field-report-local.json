@@ -1,0 +1,39 @@
+{
+  "scope": "Field report Linux development gate; exact native acceptance pending",
+  "source_parent": "390a77acc4f0cb95e82d25d499b6c5c10b449204",
+  "portable_suites": 54,
+  "integrated_linux_cases": 99,
+  "runtime": {
+    "authority": "Linux development",
+    "checks": [
+      "Actual UI captured/saved 5 normalized frames without positions/route",
+      "Replay is identified; separate source state; hardware control blocked; end ages into stale",
+      "Rewind/pause/stop return to labelled demo without profile restart",
+      "Actual diagnostic ZIP export: integrity, whitelist, profile/position privacy and DEMO provenance"
+    ],
+    "screenshots": [
+      "recording-01-commissioning-linux.png",
+      "recording-02-active-linux.png",
+      "recording-03-replay-energy-linux.png",
+      "recording-04-replay-ended-stale-linux.png",
+      "recording-05-replay-paused-linux.png",
+      "field-report-01-export-page-linux.png",
+      "field-report-02-export-result-linux.png",
+      "recording-06-returned-diagnostics-linux.png"
+    ],
+    "bundle_files": [
+      "field-report.zip"
+    ],
+    "result": "passed; screenshot review required"
+  },
+  "review": "1280x800 Linux field export and successful publication: coherent layout, explicit privacy/recording distinction; native remains authoritative",
+  "hashes": {
+    "evidence/local/beta-field-contract-final-tests.log": "ecf1975dc6975b19fd94ec6bce234554c46df02c8ecebaf996c47423dc06ecbb",
+    "evidence/local/beta-field-integrated-tests-final.log": "447fc609270e3f197f6a862798e98c7d2a3e97031ec897c0e863ab7e3fd41c12",
+    "evidence/local/recording-results.json": "7438974544d39cc9415697d0f6c9dad8fea651d5abbf24930ab8b33dec377d9e",
+    "evidence/local/field-report-linux.zip": "1fffac01b148c47e2f02d378ed13bdebafcb71a19ba779cdf5a4b9f2e556398b",
+    "evidence/local/field-report-01-export-page-linux.png": "8e50a9ee2717191e6d970551809b97c4999e4be136803b139467ea70b39a6b3b",
+    "evidence/local/field-report-02-export-result-linux.png": "1bc12aaa82a6090b0f499dc40b874b8d139d18fb3e6d8e12612d0adcfc6bba29"
+  },
+  "boat_prepare_repair": "Actual hash-pinned original + CRLF patch reproduction passes; output hash pinned; native replacement pending"
+}

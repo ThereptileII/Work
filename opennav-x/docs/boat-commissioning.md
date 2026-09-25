@@ -99,7 +99,11 @@ path; no synthetic radar in live mode. With a supported source, verify detection
 receive/display and only explicitly supported controls separately.
 
 Save versions, source-health records, recent events, command lifecycle and
-screenshots. Export only the diagnostic bundle and explicitly selected recording
+screenshots. Use **Menu → Field diagnostic bundle → Export Diagnostic Bundle**.
+The separate recording action requires explicit selection and consent; the
+default export withholds positions and device identities.
+[Bundle contents and privacy](field-diagnostic-bundle.md).
+Export only the diagnostic bundle and explicitly selected recording
 needed for the report; review navigation/location contents before sharing.
 Record PASS/FAIL/NOT TESTED for every step, failures and exact recovery procedure.
 No step is accepted merely because its procedure exists.

@@ -72,6 +72,9 @@ TEST(OpenNavRecovery, HealthyRequiresDeferredInitializationAndThirtySeconds) {
     ASSERT_TRUE(s.BeginXNav());
     s.ObserveHealthy(true, t);
     s.ObserveHealthy(true, t + 30s);
+    EXPECT_EQ(s.FailuresObservedAtLaunch(), 2u);
+    EXPECT_TRUE(s.PreviousLaunchUnfinished());
+    EXPECT_FALSE(s.RequiresSafe());
   }
   integration::RecoveryStore s(dir.path);
   EXPECT_FALSE(s.RequiresSafe());

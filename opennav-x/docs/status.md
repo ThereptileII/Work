@@ -111,6 +111,17 @@ Local 51 portable suites (including both actual firmware oracles), 99 integrated
 cases and real OpenCPN loopback expiry tests pass in development; the final source
 and native replacement gates remain open. [Contract and firmware procedure](boat-propulsion-contract.md), [local evidence](evidence/beta-boat-expiry-local.json).
 
+Beta field-report development adds a bounded local diagnostic ZIP with copied
+source health, numeric assumptions, adapter state and a transition journal.
+Position/device/route identities and arbitrary files are omitted by default;
+recording inclusion requires explicit selection and consent. The System popup
+now reports actual pilot enablement instead of the obsolete unconditional OFF
+label. All 54 portable suites, 99 Linux integrated cases and actual UI ZIP export/recording regression pass. [Local evidence](evidence/beta-field-report-local.json). [Privacy/export contract](field-diagnostic-bundle.md). Native acceptance
+is pending. Boat run `36107966976` (`2272759`) compiled the ESP32-C6 firmware but
+Windows preparation rejected a CRLF patch checkout. The replacement normalizes
+only the temporary patch and verifies the exact patched source hash; a local
+CRLF reproduction passes. The failed native run is not accepted.
+
 ## Implemented Alpha product
 
 | Area | Current implementation and boundary |

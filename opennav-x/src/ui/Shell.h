@@ -16,6 +16,7 @@
 namespace opennav::ui {
 
 struct ShellActions {
+  std::function<diagnostics::FieldEnvironment()> field_environment;
   std::shared_ptr<diagnostics::Commissioning> commissioning;
   // Integration supplies AUI identities, never chart objects. Page visibility
   // is restored before OpenCPN saves its normal perspective on close.
@@ -84,6 +85,8 @@ private:
   void SelectDemo(vessel::DemoScenario scenario);
   wxString InputSummary() const;
   UpdateMetrics metrics_;
+  diagnostics::FieldSnapshot field_snapshot_;
+  diagnostics::FieldJournal field_journal_;
   wxFrame &frame_;
   wxAuiManager &manager_;
   ShellActions actions_;

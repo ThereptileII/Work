@@ -10,6 +10,7 @@ import subprocess
 import sys
 import tempfile
 import time
+import zipfile
 from diagnostic_snapshot import read_json_snapshot
 
 root=Path(__file__).resolve().parents[1]
@@ -37,14 +38,14 @@ def click(label,x,y):
     else:xdo('mousemove','--window',handle,x,y);xdo('click',1);time.sleep(.4)
 def page(label,shortcut):
     if windows:
-        if label=='Commissioning & recordings':ui.click_text(app.pid,'Menu')
+        if label in ('Commissioning & recordings','Field diagnostic bundle'):ui.click_text(app.pid,'Menu')
         ui.click_text(app.pid,label)
     else:
         xdo('windowfocus',handle)
         if label=='Energy':xdo('mousemove','--window',handle,260,773);xdo('click',1)
         else:xdo('key','ctrl+shift+'+shortcut)
         time.sleep(.4)
-    expected={'Energy':'Energy','Commissioning & recordings':'Commissioning & recordings','Diagnostics':'Diagnostics','System diagnostics':'Diagnostics'}[label]
+    expected={'Energy':'Energy','Commissioning & recordings':'Commissioning & recordings','Diagnostics':'Diagnostics','System diagnostics':'Diagnostics','Field diagnostic bundle':'Field diagnostic bundle'}[label]
     data(lambda d:d['ui_page']==expected)
     if windows and label=='Energy':ui.assert_preview_page(handle,'Energy')
 def capture(name):
@@ -82,7 +83,13 @@ def file_dialog(title,path,accept):
         if accept=='Save':ui.capture(dialog,evidence/'recording-calibration-file-dialog.png',resize=False)
         ui.dismiss_native_dialog(dialog,accept)
     else:
-        xdo('key','ctrl+l');time.sleep(.2);xdo('type','--clearmodifiers','--',str(path));xdo('key','Return');time.sleep(.6)
+        dialog=xdo('search','--onlyvisible','--pid',app.pid,'--name','^'+title+'$').splitlines()[-1]
+        xdo('windowraise',dialog);xdo('windowfocus',dialog)
+        if accept=='Save':xdo('key','alt+n','ctrl+a')
+        else:xdo('key','ctrl+l')
+        time.sleep(.2);xdo('type','--clearmodifiers','--',str(path))
+        if accept=='Save':subprocess.run(['import','-window','root',str(evidence/'field-report-save-dialog-linux.png')],env=env,check=True)
+        xdo('key','Return');time.sleep(.6)
 
 def recording_frames(path):
     lines=path.read_text().splitlines();assert lines[0]=='OpenNavXRecording\t1\t0'
@@ -167,6 +174,37 @@ try:
         assert output.read_text().startswith('OpenNavXCalibration,1\nreference,STW\nbasis,whole-pack')
         assert 'DEMO' in output.read_text();shutil.copy2(output,evidence/'recording-calibration.csv')
         report['checks'].append('Native calibration export saved finite source-labelled demo pairs')
+    page('Field diagnostic bundle','x');capture('field-report-01-export-page')
+    click('Export Diagnostic Bundle',250,249)
+    bundle=profile/'field-report.zip';file_dialog('Export Diagnostic Bundle',bundle,'Save')
+    deadline=time.monotonic()+5
+    while not bundle.exists() and time.monotonic()<deadline:time.sleep(.1)
+    capture('field-report-02-export-result')
+    report['bundle_files']=[str(p.relative_to(profile)) for p in profile.rglob('*.zip')]
+    assert bundle.exists(),('Diagnostic ZIP not published',report['bundle_files'])
+    with zipfile.ZipFile(bundle) as z:
+        assert z.testzip() is None
+        assert set(z.namelist())=={'READ_ME.txt','build-and-recovery.txt','source-health.txt','energy-assumptions.txt','adapters.txt','smartnav-events.txt','recent-transitions.log'}
+        report_bytes=b''.join(z.read(n) for n in z.namelist())
+        assert str(profile).encode() not in report_bytes
+        assert b'Latitude / deg / withheld' in report_bytes
+        assert b'DEMO' in report_bytes and b'Build:' in report_bytes
+    shutil.copy2(bundle,evidence/('field-report.zip' if windows else 'field-report-linux.zip'))
+    report['checks'].append('Actual diagnostic ZIP export: integrity, whitelist, profile/position privacy and DEMO provenance')
+    if windows:
+        click('Export with selected recording...',0,0)
+        file_dialog('Explicitly select recording to share',files[0],'Open')
+        ui.click_text(app.pid,'Include selected recording')
+        selected=profile/'field-report-selected.zip';file_dialog('Export Diagnostic Bundle',selected,'Save')
+        deadline=time.monotonic()+5
+        while not selected.exists() and time.monotonic()<deadline:time.sleep(.1)
+        assert selected.exists(),'Explicit recording bundle absent'
+        with zipfile.ZipFile(selected) as z:
+            assert z.testzip() is None
+            assert z.read('selected-recording.onxr')==files[0].read_bytes()
+            assert b'Navigation included: NO' in z.read('recording-consent.txt')
+        shutil.copy2(selected,evidence/'field-report-selected.zip')
+        report['checks'].append('Native explicit recording selection, consent, ZIP content equality')
     page('Diagnostics','i') if not windows else page('System diagnostics','i')
     capture('recording-06-returned-diagnostics')
     if windows:

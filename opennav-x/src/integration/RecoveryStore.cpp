@@ -22,6 +22,8 @@ RecoveryStore::RecoveryStore(const wxString &directory) {
     file.Close();
     const auto previous = DecodeRecovery(text.ToStdString(wxConvUTF8));
     record_ = ObservePreviousStart(previous);
+    launch_failures_ = record_.failed_starts;
+    previous_unfinished_ = previous.pending;
     if (previous.pending) {
       wxLogWarning("OpenNav startup recovery: previous XNav startup did not "
                    "finish; consecutive failures %u",

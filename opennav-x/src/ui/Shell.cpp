@@ -145,6 +145,11 @@ Shell::Shell(wxFrame &frame, wxAuiManager &manager, ShellActions actions,
                               .PaneBorder(false)
                               .Hide());
   ProductActions product_actions;
+  product_actions.field_bundle = [this](const std::optional<std::string> &recording) {
+    return diagnostics::BuildFieldReport(field_snapshot_,
+        actions_.field_environment ? actions_.field_environment() : diagnostics::FieldEnvironment{},
+        field_journal_, vessel::Clock::now(), recording);
+  };
   product_actions.commissioning = actions_.commissioning;
   product_actions.navigation = actions_.navigation;
   product_actions.settings = actions_.settings;
@@ -191,6 +196,7 @@ Shell::Shell(wxFrame &frame, wxAuiManager &manager, ShellActions actions,
       {'K', [this] { ShowProduct(ProductPage::EnergySettings); }},
       {'O', [this] { ShowProduct(ProductPage::Sources); }},
       {'C', [this] { ShowProduct(ProductPage::Commissioning); }},
+      {'X', [this] { ShowProduct(ProductPage::FieldReport); }},
       {'Q', [this] { ShowProduct(ProductPage::VesselSettings); }},
       {'Z', [this] { ShowProduct(ProductPage::Radar); }},
       {'F', [this] { ShowProduct(ProductPage::Display); }},
@@ -371,6 +377,15 @@ void Shell::Tick() {
     if (actions_.radar && !replay)
       p.radar = actions_.radar();
     p.advice = smartnav::Advise(state_, energy, p.ais, now);
+    field_snapshot_ = {state_, config,
+        simulation_ || replay ? std::vector<vessel::SourceHealth>{} : p.sources,
+        energy, p.advice, p.pilot, p.radar, false, false, now};
+    if(actions_.commissioning) {
+      const auto r=actions_.commissioning->RecordingStatus();
+      field_snapshot_.recording=r.active;
+      field_snapshot_.recording_error=!r.error.empty();
+    }
+    field_journal_.Observe(field_snapshot_, wall_now);
     product_->Update(p, mode_);
   }
   UpdateRail(config.data_rail, now);
@@ -600,7 +615,7 @@ void Shell::ShowSystem() {
       "OpenNav X / Alpha development\nOpenCPN 5.12.4 / API 1.20\nMode: XNav\n" +
           (simulation_ ? wxString("Data: explicit simulator")
                        : "Data: " + InputSummary()) +
-          "\nLive hardware output: disabled");
+          "\nPilot control: " + (field_snapshot_.pilot.enabled ? "ENABLED" : "OFF"));
   info->SetFont(UiFont(*popup, 13));
   info->SetForegroundColour(Colour(Theme(mode_).secondary));
   layout->Add(info, 0, wxLEFT | wxRIGHT | wxBOTTOM, gap);
