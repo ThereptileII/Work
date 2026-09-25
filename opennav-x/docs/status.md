@@ -6,6 +6,24 @@ The approved Windows target preserves its Win32 application/plugin ABI on a
 native Windows x64 host. The tracked upstream submodule remains pristine;
 reviewed patches apply to a disposable integration worktree.
 
+**Current qualification work:** native NSIS compilation and the distinct prior-Alpha
+fixture compile pass at `4203854`; the official prerequisite installation stopped
+with code 1223 before the Alpha lifecycle could run. An explicit ShellExecute
+elevation path is under test for that stock prerequisite only. Alpha setup remains
+per-user/as-invoker. Native Windows PowerShell 5.1 filesystem checks now pass
+24 assertions in each 32/64-bit host at `452e26b` after fixing .NET null-string
+binding. The public compatibility allowlist remains empty pending full lifecycle
+acceptance. [Prerequisite failure](evidence/installer-4203854-prerequisite-failure.json),
+[filesystem gate](evidence/installer-filesystem-452e26b-gate.json).
+
+A separate `9981643` native run passes all 80 compiled tests but fails its object
+scenario reader on a Windows file-replacement access race. A bounded reader now
+handles only temporary missing/access-denied publication; fixture failures and
+corrupt evidence still fail. [Record](evidence/windows-json-publication-9981643-failure.json).
+The earlier intermittent Safe-to-XNav recovery timeout remains unaccepted;
+additional close-boundary diagnostics and three actual native recovery cycles
+are required by the replacement pipeline.
+
 **Latest native UI/chart observation:** `33447f2` passes 90 Linux / 80 Windows
 integrated tests and 28 portable suites per platform. Configurable displays,
 actual 100/125/150% DPI/touch, real NOAA ENC load/zoom/pan/follow and native plugin

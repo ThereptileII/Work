@@ -1,0 +1,28 @@
+{
+  "commit": "9981643c639bf5a078ec8c4aae057e188e619403",
+  "run": "https://github.com/ThereptileII/Work/actions/runs/36074164976",
+  "native_job": 107881923508,
+  "result": "failed; no Alpha release acceptance",
+  "integrated_tests": {
+    "linux": 90,
+    "windows": 80
+  },
+  "portable_tests_per_platform": 28,
+  "failure": {
+    "script": "tools/smoke-navigation.py --objects",
+    "operation": "read_text on objects-fixture-results.json while the upstream GUI thread replaces the report",
+    "exception": "PermissionError errno 13",
+    "interpretation": "Reader raced native file replacement; no failed product assertion was bypassed."
+  },
+  "replacement": "Bounded two-second retry only for missing/access-denied reads. Corrupt JSON, other I/O errors, failed fixture results and overall scenario timeout still fail. Four deterministic reader tests include permanent denial/missing deadlines.",
+  "artifact": {
+    "id": 10839763003,
+    "sha256": "caccb71fe29fa1f5445d770b415852fbc521b33c47c53ce69f67af1c57829582",
+    "bytes": 2470858
+  },
+  "replacement_linux_validation": {
+    "portable_ctest_suites": 29,
+    "result": "passed",
+    "actual_upstream_objects_ais_anchor_scenario": "passed"
+  }
+}

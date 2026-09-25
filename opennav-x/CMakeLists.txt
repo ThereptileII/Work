@@ -57,6 +57,8 @@ endif()
 if(OPENNAV_BUILD_TESTS)
   enable_testing()
   find_package(Python3 REQUIRED COMPONENTS Interpreter)
+  add_test(NAME diagnostic_snapshot_publication COMMAND ${Python3_EXECUTABLE}
+    ${CMAKE_CURRENT_SOURCE_DIR}/tests/diagnostic_snapshot_tests.py)
   add_executable(restart_probe tests/restart_probe.cpp)
   target_link_libraries(restart_probe PRIVATE opennav_platform)
   if(WIN32)

@@ -12,6 +12,7 @@ import sys
 import tempfile
 import threading
 import time
+from diagnostic_snapshot import read_json_snapshot
 
 route_fixture = sys.argv[1:] == ['--route-fixture']
 instruments = sys.argv[1:] == ['--instruments']
@@ -161,7 +162,7 @@ try:
             assert app.poll() is None,'Object fixture exited'
             path=profile/'objects-fixture-results.json'
             if path.exists():
-                result=json.loads(path.read_text());assert result['result']!='failed',result
+                result=read_json_snapshot(path);assert result['result']!='failed',result
                 current=result.get('phase','')
                 if current in ['route-card','waypoint-card','ais-card'] and current not in seen:
                     time.sleep(.6);capture(current);seen.add(current)
@@ -186,7 +187,7 @@ try:
             report['native_edit_confirmation']='Themed property sheet saves and refreshes; delete cancellation preserves mark'
     elif instruments:
         def snapshot(name):
-            record=json.loads((profile/'opennav-diagnostics.json').read_text())
+            record=read_json_snapshot(profile/'opennav-diagnostics.json')
             (evidence/f'instruments-{name}.json').write_text(json.dumps(record,indent=2))
             return {item['name']:item for item in record['data']}
         capture('01-unavailable')
@@ -219,7 +220,7 @@ try:
             assert app.poll() is None, 'Route fixture process exited'
             result_file = profile / 'route-fixture-results.json'
             if result_file.exists():
-                result = json.loads(result_file.read_text())
+                result = read_json_snapshot(result_file)
                 assert result['result'] in ('running', 'failed', 'passed'), 'Invalid route fixture report state'
                 assert result['result'] != 'failed', result
                 checks = result.get('checks', [])

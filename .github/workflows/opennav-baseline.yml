@@ -7,6 +7,26 @@ on:
 permissions:
   contents: read
 jobs:
+  stock-prerequisite:
+    name: Official OpenCPN installation prerequisite
+    runs-on: windows-2022
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+      - name: Install the exact official release in a disposable directory
+        run: |
+          $Fixture = Join-Path $env:RUNNER_TEMP 'OpenNav stock prerequisite'
+          New-Item -ItemType Directory -Path $Fixture -Force | Out-Null
+          $Setup = Join-Path $Fixture 'official-setup.exe'
+          Invoke-WebRequest -Uri 'https://github.com/OpenCPN/OpenCPN/releases/download/Release_5.12.4/opencpn_5.12.4-0%2B3720.37fd0cd_setup.exe' -OutFile $Setup
+          New-Item -ItemType Directory -Path opennav-x/evidence/local -Force | Out-Null
+          & "$env:WINDIR/System32/WindowsPowerShell/v1.0/powershell.exe" -NoProfile -NonInteractive -ExecutionPolicy Bypass -File opennav-x/tools/install-official-opencpn-fixture.ps1 -Setup $Setup -Directory (Join-Path $Fixture 'stock OpenCPN') -Report opennav-x/evidence/local/official-prerequisite.json
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: official-prerequisite-${{ github.sha }}
+          path: opennav-x/evidence/local
   contracts:
     strategy:
       matrix:
@@ -202,7 +222,7 @@ jobs:
           }
   publish-alpha:
     name: Publish Alpha after both platform and installer gates
-    needs: [contracts, linux, linux-integration, windows-upstream-abi, windows-integration, application-abi]
+    needs: [contracts, linux, linux-integration, windows-upstream-abi, windows-integration, application-abi, stock-prerequisite]
     runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
