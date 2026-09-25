@@ -166,6 +166,12 @@ Shell::Shell(wxFrame &frame, wxAuiManager &manager, ShellActions actions,
          actions_.commissioning->AllowsHardwareControl()))
       actions_.pilot_enable(simulation_, enabled);
   };
+  product_actions.pilot_identity = [this] {
+    if (simulation_ || !actions_.pilot_identity ||
+        (actions_.commissioning && !actions_.commissioning->AllowsHardwareControl()))
+      return application::CommandResult{false, "Identity refresh requires live commissioning mode"};
+    return actions_.pilot_identity();
+  };
   product_ = new ProductPanel(&frame_, std::move(product_actions));
   manager_.AddPane(product_, wxAuiPaneInfo()
                                  .Name("OpenNavProduct")
@@ -348,6 +354,8 @@ void Shell::Tick() {
       p.pilot = actions_.pilot_tick(simulation_);
     if (actions_.pilot_log && !replay)
       p.pilot_log = actions_.pilot_log(simulation_);
+    if (actions_.pilot_sources && !replay && !simulation_)
+      p.pilot_sources = actions_.pilot_sources();
     if (replay) {
       p.pilot = {};
       p.pilot.feedback.source = "Unavailable during REPLAY";

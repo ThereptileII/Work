@@ -27,6 +27,8 @@ struct ShellActions {
   std::function<std::vector<adapters::PilotCommand>(bool)> pilot_log;
   std::function<void(bool, adapters::PilotAction, double)> pilot_command;
   std::function<void(bool, bool)> pilot_enable;
+  std::function<application::CommandResult()> pilot_identity;
+  std::function<std::vector<std::string>()> pilot_sources;
   std::function<void()> restart_xnav, safe, diagnostics_folder;
   std::function<vessel::RouteProgress()> route;
   std::function<vessel::VesselState()> live_state;

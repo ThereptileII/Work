@@ -1,9 +1,9 @@
 # ST4000 manual adapter — Beta development contract
 
-This increment implements and tests the portable protocol/controller boundary.
-It does **not** yet attach a live transport to the application. Alpha's live
-placeholder stays unavailable until the next integration gate. No physical
-commands or firmware flashing occurred during this work.
+The portable protocol/controller is connected to the application through
+OpenCPN's existing N2K driver registry and application-thread subscriptions.
+Desktop loopback and native acceptance are separate from physical commissioning.
+No physical commands or firmware flashing occurred during this work.
 
 ## Inspected implementation
 
@@ -45,8 +45,9 @@ requires new identity observation and deliberate session enablement.
 Configuration permission defaults to display-only. Even with stored permission,
 `ManualAutopilot` starts disabled. Both explicit permission/capability and a
 human-enabled session are required. Replay, Demo/live transitions, Safe, Legacy
-and shutdown remain integration isolation boundaries. The subsequent integration
-must independently enforce them before exposing real output.
+and shutdown are independently enforced integration isolation boundaries. The
+application saves permission and exact binding in its validated shared settings;
+session enablement is never persisted. Editing identity resets permission.
 
 Human-requested identity refresh is ISO request 59904 for address claim 60928,
 on only the configured writable connection, at most once per five seconds.
@@ -75,7 +76,7 @@ is three seconds, with outcome unknown; late feedback remains visible but cannot
 retroactively confirm. Disabling does not pretend to cancel transmitted output.
 Physical STANDBY remains necessary when an outcome is uncertain.
 
-## OpenCPN transport findings for the next increment
+## Qualified OpenCPN transport boundary
 
 Pinned `model/src/plugin_api.cpp::WriteCommDriverN2K` ignores the boolean result
 of `SendMessage`; the network driver's `SendN2KNetwork` also returns true after
@@ -90,10 +91,24 @@ normal bus. Do not assume product-info subscriptions can identify the translator
 
 Network output varies by transport and detected format: TCP Actisense ASCII has
 an inspected output path; SeaSmart cannot transmit; UDP output is compiled out;
-other paths may start gateway discovery. The next bridge must report unsupported
-transports honestly and exercise the actual OpenCPN TX path using a loopback
-fixture. It must not create an independent marine network stack or invoke output
-methods as read-only status getters.
+other paths may start gateway discovery. `OpenCPNPilot` currently enables output
+only for an enabled bidirectional TCP connection with detected Actisense
+complete-PGN ASCII format. Other paths remain status-only. Serial output is not
+qualified: the pinned serial `SendMessage` attempts an eight-byte NAME extraction
+even for the three-byte ISO request payload. No serial control claim is made.
+
+Three narrow read-only network getters expose detected format, connection
+generation and its monotonic change time. Socket replacement, connect, loss,
+watchdog close, write-error close and explicit close advance the generation.
+Queued observations predating it are rejected. This prevents a reconnect of the
+same driver object retaining a previous device claim. Registry changes also
+invalidate state. No getter transmits/discovers/registers output PGNs.
+
+The application resolves a driver only while executing on the application
+thread. `SendMessage` is used solely for the explicit command/identity request;
+no driver pointer is retained by the portable adapter. Transport acceptance is
+always pending, never physical acknowledgement. The loopback fixture binds only
+127.0.0.1 and validates the actual OpenCPN-serialized bytes and UI behavior.
 
 ## Automated and physical gates
 

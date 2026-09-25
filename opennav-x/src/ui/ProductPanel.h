@@ -31,7 +31,8 @@ enum class ProductPage {
   Display,
   RailLayout,
   InstrumentLayout,
-  Commissioning
+  Commissioning,
+  PilotSettings
 };
 struct ProductState {
   vessel::VesselState vessel;
@@ -39,6 +40,7 @@ struct ProductState {
   application::AnchorState anchor;
   adapters::PilotView pilot;
   std::vector<adapters::PilotCommand> pilot_log;
+  std::vector<std::string> pilot_sources;
   smartnav::NavigationAdvice advice;
   application::Settings settings;
   std::string settings_status;
@@ -53,6 +55,7 @@ struct ProductActions {
   std::function<void(LightMode)> theme;
   std::function<void(adapters::PilotAction, double)> pilot_command;
   std::function<void(bool)> pilot_enable;
+  std::function<application::CommandResult()> pilot_identity;
   std::function<application::Settings()> settings;
   std::function<application::CommandResult(const application::Settings &)>
       save_settings;
@@ -83,6 +86,7 @@ private:
   void PointActions();
   void CreateMark();
   void PilotActions();
+  void PilotSettings();
   void EnergySettings();
   void CommissioningPanel();
   void Sources();
@@ -105,6 +109,7 @@ private:
   int layout_width_ = 0;
   std::vector<std::pair<wxStaticText *, wxString>> static_text_;
   std::vector<std::pair<wxGridSizer *, int>> action_grids_;
+  std::vector<std::pair<XNavButton *, adapters::PilotAction>> pilot_buttons_;
   std::vector<
       std::pair<wxStaticText *, std::function<wxString(const ProductState &)>>>
       text_;

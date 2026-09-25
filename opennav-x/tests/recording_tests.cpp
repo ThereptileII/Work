@@ -90,6 +90,7 @@ void Privacy() {
   r.assumptions.sources[vessel::Quantity::Depth].pinned_source =
       "private connection";
   r.assumptions.energy.curve.source = "C:/Personal/curve.csv";
+  r.assumptions.pilot = {"private pilot interface", "c0508700e76004d2", true};
   const auto decoded =
       diagnostics::DecodeRecording(diagnostics::EncodeRecording(r));
   Check(!decoded.frames[0].state.navigation.route &&
@@ -99,6 +100,8 @@ void Privacy() {
   Check(decoded.frames[0].state.navigation.sog_kn.value.has_value(),
         "Speed retained for calibration");
   Check(decoded.assumptions.sources.empty() &&
+            decoded.assumptions.pilot.interface.empty() &&
+            !decoded.assumptions.pilot.permit_control &&
             decoded.assumptions.energy.curve.source != "C:/Personal/curve.csv",
         "Only selected model assumptions retained");
   auto bytes = diagnostics::EncodeRecording(Fixture(true));

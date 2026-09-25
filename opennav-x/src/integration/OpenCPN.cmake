@@ -19,6 +19,7 @@ target_include_directories(opennav_marine PUBLIC "${OPENNAV_ROOT}/src" PRIVATE $
 target_link_libraries(opennav_marine PUBLIC opennav_vessel ocpn::N2KParser ocpn::nmea0183 ocpn::wxjson ${wxWidgets_LIBRARIES})
 target_compile_features(opennav_marine PUBLIC cxx_std_17)
 target_sources(${PACKAGE_NAME} PRIVATE "${OPENNAV_ROOT}/src/integration/MarineBridge.cpp")
+target_sources(${PACKAGE_NAME} PRIVATE "${OPENNAV_ROOT}/src/integration/OpenCPNPilot.cpp")
 target_sources(${PACKAGE_NAME} PRIVATE "${OPENNAV_ROOT}/src/integration/NavigationObjects.cpp"
   "${OPENNAV_ROOT}/src/integration/NavigationActions.cpp"
   "${OPENNAV_ROOT}/src/integration/SettingsStore.cpp"

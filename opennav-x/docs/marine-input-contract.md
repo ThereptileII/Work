@@ -55,9 +55,11 @@ OpenCPN driver-registry changes clear claims and observations. Source policy
 configuration remains intact. Existing pins containing synthetic decimal NAME
 labels must be deliberately reselected; they are not silently migrated.
 
-Connection-generation invalidation for reconnects within the same network
-driver is part of the pending pilot transport boundary; until that gate, a
-source claim is not proof of uninterrupted transport or physical sensor freshness.
+The Beta pilot increment adds connection-generation invalidation for reconnects
+within the same TCP driver. A newly observed generation clears claims/candidates;
+queued messages predating that generation are rejected. This supplements normal
+sample expiry and does not prove the gateway refreshed its underlying sensor.
+Native runtime acceptance of the new boundary is still pending.
 
 ## NMEA 0183
 

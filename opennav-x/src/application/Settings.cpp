@@ -43,6 +43,7 @@ std::string SettingNumber(double n) {
   return out.str();
 }
 void ValidateSettings(const Settings &s) {
+  adapters::ValidateSt4000Binding(s.pilot);
   ValidateSignalKMappings(s.signal_k_mappings);
   auto display = [](const std::vector<std::string> &keys, std::size_t maximum) {
     Require(!keys.empty() && keys.size() <= maximum,
@@ -128,6 +129,11 @@ std::string EncodeSettings(const Settings &s) {
   };
   r["display.rail"] = join(s.data_rail);
   r["display.instruments"] = join(s.instruments);
+  if (!s.pilot.interface.empty()) {
+    r["pilot.interface"] = s.pilot.interface;
+    r["pilot.name"] = s.pilot.name;
+    r["pilot.permission"] = s.pilot.permit_control ? "manual" : "display-only";
+  }
   if (!s.signal_k_mappings.empty())
     r["signal_k_mappings"] = ExportSignalKMappings(s.signal_k_mappings);
   if (!e.curve.points.empty()) {
@@ -223,6 +229,14 @@ Settings DecodeSettings(const std::string &record) {
   }
   if (r.count("signal_k_mappings"))
     s.signal_k_mappings = ImportSignalKMappings(take("signal_k_mappings"));
+  if (r.count("pilot.interface")) {
+    s.pilot.interface = take("pilot.interface");
+    s.pilot.name = take("pilot.name");
+    const auto permission = take("pilot.permission");
+    Require(permission == "display-only" || permission == "manual",
+            "Unknown pilot permission; control cannot be enabled");
+    s.pilot.permit_control = permission == "manual";
+  }
   auto display = [&](const char *key, std::vector<std::string> &target) {
     if (!r.count(key))
       return; // Older records retain established default layout.

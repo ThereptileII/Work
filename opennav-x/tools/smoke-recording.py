@@ -77,8 +77,9 @@ def file_dialog(title,path,accept):
         encoded=str(path).encode('utf-16-le')
         for i in range(0,len(encoded),2):
             ui.SendMessageW(edit,0x0102,int.from_bytes(encoded[i:i+2],'little'),0)
-        assert ui.control_text(edit)==str(path)
-        if accept=='Save':ui.capture(dialog,evidence/'recording-calibration-file-dialog.png')
+        report.setdefault('file_dialogs',[]).append({'title':title,'requested':str(path),'observed':ui.control_text(edit)})
+        assert ui.control_text(edit)==str(path),(title,ui.control_text(edit),str(path))
+        if accept=='Save':ui.capture(dialog,evidence/'recording-calibration-file-dialog.png',resize=False)
         ui.dismiss_native_dialog(dialog,accept)
     else:
         xdo('key','ctrl+l');time.sleep(.2);xdo('type','--clearmodifiers','--',str(path));xdo('key','Return');time.sleep(.6)

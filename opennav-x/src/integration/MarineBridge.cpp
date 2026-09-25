@@ -1,4 +1,5 @@
 #include "integration/MarineBridge.h"
+#include "model/comm_drv_n2k_net.h"
 #include "model/comm_drv_registry.h"
 #include "model/comm_navmsg.h"
 #include <stdexcept>
@@ -24,6 +25,7 @@ MarineBridge::MarineBridge() {
   changes->Init(CommDriverRegistry::GetInstance().evt_driverlist_change,
                 [this](ObservedEvt &) {
                   identities_.Clear();
+                  network_generations_.clear();
                   sources_.Clear();
                   last_received_.reset();
                 });
@@ -37,7 +39,7 @@ MarineBridge::MarineBridge() {
       return;
     const auto now = vessel::Clock::now();
     const auto at = Receipt(*m, now, std::chrono::system_clock::now());
-    if (!at)
+    if (!at || !CheckConnection(m->source->iface, *at))
       return;
     const auto result =
         identities_.Observe(m->source->iface, m->payload[7],
@@ -61,7 +63,7 @@ MarineBridge::MarineBridge() {
       const auto now = vessel::Clock::now();
       const auto wall = std::chrono::system_clock::now();
       const auto at = Receipt(*m, now, wall);
-      if (!at)
+      if (!at || !CheckConnection(m->source->iface, *at))
         return;
       Accept(DecodeN2kInstruments(
                  m->PGN.pgn, m->payload,
@@ -99,6 +101,26 @@ MarineBridge::MarineBridge() {
            now);
   });
   listeners_.push_back(std::move(listener));
+}
+bool MarineBridge::CheckConnection(const std::string &iface, vessel::Time at) {
+  for (const auto &driver : CommDriverRegistry::GetInstance().GetDrivers()) {
+    if (driver->bus != NavAddr::Bus::N2000 || driver->iface != iface)
+      continue;
+    const auto *network = dynamic_cast<const CommDriverN2KNet *>(driver.get());
+    if (!network || network->GetParams().NetProtocol != TCP)
+      return true;
+    const auto generation = network->GetConnectionGeneration();
+    auto old = network_generations_.find(iface);
+    if (old == network_generations_.end() || old->second != generation) {
+      identities_.Clear();
+      sources_.Clear();
+      last_received_.reset();
+      network_generations_[iface] = generation;
+    }
+    return network->GetSock() && network->GetSock()->IsConnected() &&
+           at >= network->GetConnectionChangedAt();
+  }
+  return true; // Other producers retain explicit address-only provenance.
 }
 void MarineBridge::Accept(std::vector<vessel::SensorObservation> observations,
                           vessel::Time now) {

@@ -62,6 +62,30 @@ void RoundTrip() {
              .sample.value,
         "Persisted pin never silently falls back");
 }
+void PilotConfiguration() {
+  auto s = Config();
+  const auto old = application::EncodeSettings(s);
+  Check(!application::DecodeSettings(old).pilot.permit_control,
+        "Alpha settings migrate with pilot control OFF");
+  s.pilot = {"TCP:127.0.0.1:7777", "c0508700e76004d2", false};
+  auto decoded = application::DecodeSettings(application::EncodeSettings(s));
+  Check(decoded.pilot.interface == s.pilot.interface && decoded.pilot.name == s.pilot.name &&
+        !decoded.pilot.permit_control, "Configured binding remains display only");
+  s.pilot.permit_control = true;
+  const auto text = application::EncodeSettings(s);
+  decoded = application::DecodeSettings(text);
+  Check(decoded.pilot.permit_control && text.find("enabled") == std::string::npos,
+        "Saved permission is distinct from session enablement");
+  s.pilot.name = "0000000000000000";
+  Reject([&] { application::EncodeSettings(s); });
+  auto bad = text;
+  auto at = bad.find("\"manual\"");
+  Check(at != std::string::npos,"Pilot permission fixture");
+  bad.replace(at,8,"\"enabled\"");
+  Reject([&] { application::DecodeSettings(bad); });
+  bad = old + "\"pilot.permission\" \"manual\"\n";
+  Reject([&] { application::DecodeSettings(bad); });
+}
 void Invalid() {
   auto s = Config();
   const auto record = application::EncodeSettings(s);
@@ -211,6 +235,8 @@ int main(int argc, char **argv) {
       RoundTrip();
     else if (arg == "invalid")
       Invalid();
+    else if (arg == "pilot")
+      PilotConfiguration();
     else if (arg == "mappings")
       Mappings();
     else if (arg == "display")

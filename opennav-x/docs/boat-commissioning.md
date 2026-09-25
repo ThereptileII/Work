@@ -44,6 +44,12 @@ trips. The estimate is advisory, not a guaranteed range.
 ## Phase C — autopilot status only
 
 Leave control OFF. Identify the translator by interface and device identity.
+In **Menu → Manual autopilot → Translator configuration**, bind the exact
+observed interface and hexadecimal NAME. Saving identity always selects
+display-only. The currently qualified PC output path is a bidirectional OpenCPN
+TCP connection using Actisense complete-PGN ASCII. Serial, UDP and SeaSmart
+remain status-only in this Beta integration; do not assume physical delivery
+from a transport description. Confirm the complete gateway path before commands.
 Compare reported STANDBY/AUTO and actual/commanded magnetic heading with the
 physical ST4000. Change state **at the physical pilot** and verify fresh feedback
 at the PC. Disconnect communications: PC state must become unavailable/stale.
@@ -55,7 +61,9 @@ unavailable until that complete path is specifically validated.
 Only after status tests pass, in a secured vessel/safe environment with a person
 at physical STANDBY and the drive safe for testing:
 
-1. Deliberately enable the configured manual-control connection.
+1. In translator configuration, deliberately save manual-control permission for
+   that verified identity. Return to the panel and enable this session. Saved
+   permission alone never starts an enabled session.
 2. Test STANDBY alone and compare physical feedback.
 3. Test AUTO alone; verify target/actual heading, physical mode and confirmation.
 4. Test +1, −1, +10 and −10 individually. Wait for physical feedback and the

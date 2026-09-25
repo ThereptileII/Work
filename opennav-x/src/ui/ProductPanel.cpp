@@ -157,6 +157,8 @@ std::string ProductPanel::PageTitle() const {
     return "SmartNav";
   case ProductPage::Pilot:
     return "Manual autopilot";
+  case ProductPage::PilotSettings:
+    return "Autopilot configuration";
   case ProductPage::Anchor:
     return "Anchor watch";
   case ProductPage::Display:
@@ -226,6 +228,17 @@ void ProductPanel::Update(const ProductState &state, LightMode mode) {
   }
   for (auto &v : values_)
     v.first->SetReading(v.second(state), state.now);
+  const auto &caps = state.pilot.capabilities;
+  for (auto &button : pilot_buttons_) {
+    const auto action = button.second;
+    const bool supported =
+        action == adapters::PilotAction::Standby ? caps.standby
+        : action == adapters::PilotAction::Auto ? caps.auto_mode
+        : action == adapters::PilotAction::Track ? caps.track
+        : action == adapters::PilotAction::Wind ? caps.wind
+                                               : caps.alter_course;
+    button.first->Enable(supported && !state.vessel.replayed);
+  }
   bool changed = false;
   for (auto &t : text_) {
     auto value = t.second(state);
@@ -379,8 +392,9 @@ void ProductPanel::PilotActions() {
                                   ? "REPLAY / All hardware controls disabled"
                               : state_.vessel.simulated
                                   ? "DEMO adapter / no vessel commands"
-                                  : "Live hardware output unavailable in Alpha "
-                                    "/ physical validation pending");
+                                  : "ST4000 / human commands only / boat commissioning required");
+  if (!state_.vessel.simulated && !state_.vessel.replayed)
+    Action("Translator configuration", [this] { ShowPage(ProductPage::PilotSettings, mode_); });
   LiveText([](const auto &s) {
     return W(adapters::PilotModeName(s.pilot.feedback.mode)) + " / " +
            (s.pilot.fresh ? "Feedback current"
@@ -392,24 +406,26 @@ void ProductPanel::PilotActions() {
     return "Command: " + W(adapters::CommandStateName(s.pilot.command.state)) +
            " / " + W(s.pilot.command.detail);
   });
+  LiveText([](const auto &s) { return W(s.pilot.adapter_status); });
   Action(
-      "Enable / disable DEMO manual control",
+      state_.vessel.simulated ? "Enable / disable DEMO manual control" : "Enable / disable manual control",
       [this] {
         const bool enable = !state_.pilot.enabled;
         if (!enable ||
-            ConfirmSheet(*this, mode_, "Enable manual simulator",
-                         "Commands affect only the labelled autopilot "
-                         "simulator. SmartNav has no command path.",
-                         "Enable DEMO"))
+            ConfirmSheet(*this, mode_, state_.vessel.simulated ? "Enable manual simulator" : "Enable physical pilot control?",
+                         state_.vessel.simulated ? "Commands affect only the labelled autopilot simulator. SmartNav has no command path." :
+                         "Manual buttons can move the vessel's rudder. Confirm the correct translator, a clear drive area and immediate physical STANDBY access. SmartNav cannot steer. Enable lasts only for this session.",
+                         state_.vessel.simulated ? "Enable DEMO" : "Enable manual control"))
           actions_.pilot_enable(enable);
       },
-      state_.vessel.simulated && !state_.vessel.replayed);
+      !state_.vessel.replayed && (state_.vessel.simulated || state_.settings.pilot.permit_control));
   const auto caps = state_.pilot.capabilities;
   BeginActions(4);
-  Action(
+  auto *standby = Action(
       "STANDBY",
       [this] { actions_.pilot_command(adapters::PilotAction::Standby, 0); },
       caps.standby);
+  pilot_buttons_.push_back({standby, adapters::PilotAction::Standby});
   for (const auto &p : std::vector<std::pair<adapters::PilotAction, wxString>>{
            {adapters::PilotAction::Auto, "AUTO"},
            {adapters::PilotAction::Track, "TRACK"},
@@ -418,7 +434,7 @@ void ProductPanel::PilotActions() {
         p.first == adapters::PilotAction::Auto    ? caps.auto_mode
         : p.first == adapters::PilotAction::Track ? caps.track
                                                   : caps.wind;
-    Action(
+    auto *button = Action(
         p.second,
         [this, p] {
           if (ConfirmSheet(*this, mode_, "Request " + p.second,
@@ -428,20 +444,25 @@ void ProductPanel::PilotActions() {
             actions_.pilot_command(p.first, 0);
         },
         supported);
+    pilot_buttons_.push_back({button, p.first});
   }
-  for (int delta : {-10, -1, 1, 10})
-    Action(
+  for (int delta : {-10, -1, 1, 10}) {
+    auto *button = Action(
         wxString::Format(W("%+d° magnetic course"), delta),
         [this, delta] {
           actions_.pilot_command(adapters::PilotAction::AlterCourse, delta);
         },
         caps.alter_course);
+    pilot_buttons_.push_back({button, adapters::PilotAction::AlterCourse});
+  }
   Value(
       "LOCKED HEADING", "deg magnetic",
       [](const auto &s) {
         return s.pilot.feedback.locked_heading_magnetic_deg;
       },
       0);
+  Value("ACTUAL HEADING", "deg magnetic", [](const auto &s) { return s.pilot.feedback.heading_magnetic_deg; }, 0);
+  Value("RUDDER", "deg", [](const auto &s) { return s.vessel.rudder.angle_deg; }, 1);
   LiveText([](const auto &s) {
     wxString log = "RECENT COMMAND LOG";
     const auto start = s.pilot_log.size() > 8 ? s.pilot_log.size() - 8 : 0;
@@ -459,6 +480,7 @@ void ProductPanel::Build() {
   text_.clear();
   static_text_.clear();
   action_grids_.clear();
+  pilot_buttons_.clear();
   values_.clear();
   grid_ = nullptr;
   actions_grid_ = nullptr;
@@ -680,7 +702,9 @@ void ProductPanel::Build() {
     Text("The chart-corridor query adapter is not yet connected. Measured "
          "depth is not a forecast. Absence of a detected hazard is not proof "
          "of safe water.");
-  } else if (page_ == ProductPage::Pilot)
+  } else if (page_ == ProductPage::PilotSettings)
+    PilotSettings();
+  else if (page_ == ProductPage::Pilot)
     PilotActions();
   else if (page_ == ProductPage::Anchor) {
     Heading("Anchor watch", "Uses OpenCPN anchor radius and alarm semantics / "

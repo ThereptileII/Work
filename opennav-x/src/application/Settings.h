@@ -1,4 +1,5 @@
 #pragma once
+#include "adapters/St4000Pilot.h"
 #include "application/MarineMapping.h"
 #include "smartnav/EnergyConfiguration.h"
 #include "smartnav/HazardLookAhead.h"
@@ -18,6 +19,7 @@ struct Settings {
   smartnav::HazardConfiguration hazard;
   std::map<vessel::Quantity, vessel::SourcePolicy> sources;
   std::vector<SignalKMapping> signal_k_mappings;
+  adapters::St4000Binding pilot;
 };
 // Bounded, versioned serialization for one OpenCPN profile entry. Rejects
 // unknown fields, duplicates, malformed numbers and unsupported versions.

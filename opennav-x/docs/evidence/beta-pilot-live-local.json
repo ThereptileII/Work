@@ -1,0 +1,34 @@
+{
+  "stage": "Beta manual pilot OpenCPN transport integration",
+  "acceptance": "Linux development; native and physical gates pending",
+  "hardware": "Loopback only; no physical output or firmware flash",
+  "portable_suites": 46,
+  "integrated_linux_cases": 98,
+  "checks": [
+    "Read-only startup despite saved manual permission",
+    "Actual UI and OpenCPN TCP serialization of AUTO/-1/+1/-10/+10/STANDBY",
+    "New matching physical-style feedback confirms; no optimistic target change",
+    "Missing feedback times out without retry; manual STANDBY remains available",
+    "Same-driver reconnect clears identity and session enablement; new claim required",
+    "Live TRACK/WIND unavailable; no SmartNav control path"
+  ],
+  "regressions": [
+    "Actual N2K input/identity/conflict/loss",
+    "Recording/replay capture, end ageing, pause, rewind, stop"
+  ],
+  "review": "Linux captures reviewed: controls and measured headings visible; missing rudder unavailable; stale headings dimmed and aged; timeout outcome unknown. Native review pending.",
+  "hashes": {
+    "beta-pilot-live-contract-tests.log": "89f903f5b605899716ff4ccc13c4bd03d96d6fcd69d462e810fd1619252b46d5",
+    "beta-pilot-live-integrated-tests.log": "c825011595103daf7f37db8715a8f90725fd59b2af7a2595b9fe7c211c3cd1d1",
+    "beta-pilot-live-build.log": "dcabd7960e9b6dd3b230529cffab01f26d339aeda1fab65208b08334abf49b69",
+    "beta-pilot-live-smoke.log": "af7c373afb325fe896c6b93a67119996cbc8c255cfc5ea40d07c27b16a1e80da",
+    "pilot-results.json": "f4c40aa67abe7c0ec319038bf4b8022bbc98ea94eca47a2351575c5bba29eda8",
+    "beta-pilot-n2k-regression.log": "4c1548d62a79a0e2703235988cf7c37e143daf7ee35e33a9c5b928df99473c7f",
+    "beta-pilot-recording-regression.log": "fdd7df63c504bc5cfc4cf47460574fd8b88076b8ec4e821c946c348ee9adec46",
+    "beta-pilot-patch-verification.log": "4e318e6d5fabe25167231ab6c003cf9e9476bcb15746897a1106a67f00319d79",
+    "pilot-01-status-only-linux.png": "7ddccb2f2a182431be41419c5b2b4f78cdfc1b039c9d76a331fa125d1818719f",
+    "pilot-02-confirmed-manual-linux.png": "036f5842e7f80a684912a0a97b8843751460a7ba81d71a91a28beb8d3404b90d",
+    "pilot-03-communication-loss-linux.png": "863b1024715cf02accfec59a4ac4d2a27e3b450258ec1461d925cd751459bf0f",
+    "pilot-04-reconnected-control-off-linux.png": "2f4684a970d20e1bae98a0f6f6351f2c16026cdde18474fba9deab228042fe9e"
+  }
+}

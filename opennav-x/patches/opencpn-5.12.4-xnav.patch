@@ -466,3 +466,103 @@ index dd8543de5..cd4b3b797 100644
        }
        if (dynamic_cast<wxApp*>(wxAppConsole::GetInstance())) {
          // The CLI has no graphics context, but plugins assumes there is.
+diff --git i/model/include/model/comm_drv_n2k_net.h w/model/include/model/comm_drv_n2k_net.h
+index c3532ab6e..38f2a4133 100644
+--- i/model/include/model/comm_drv_n2k_net.h
++++ w/model/include/model/comm_drv_n2k_net.h
+@@ -38,6 +38,8 @@
+ #include "model/conn_params.h"
+ 
+ #include <wx/datetime.h>
++#include <chrono>
++#include <cstdint>
+ 
+ #ifdef __WXGTK__
+ // newer versions of glib define its own GSocket but we unfortunately use this
+@@ -135,7 +137,23 @@ public:
+                    std::shared_ptr<const NavAddr> addr) override;
+   wxSocketBase* GetSock() const { return m_sock; }
+ 
++  // Read-only transport provenance for integrations. Querying these values
++  // does not discover a gateway, register PGNs or transmit a message.
++  N2K_Format GetN2kFormat() const { return m_n2k_format; }
++  std::uint64_t GetConnectionGeneration() const { return m_connection_generation; }
++  std::chrono::steady_clock::time_point GetConnectionChangedAt() const {
++    return m_connection_changed_at;
++  }
++
+ private:
++  void ConnectionChanged() {
++    ++m_connection_generation;
++    m_connection_changed_at = std::chrono::steady_clock::now();
++  }
++  std::uint64_t m_connection_generation = 1;
++  std::chrono::steady_clock::time_point m_connection_changed_at =
++      std::chrono::steady_clock::now();
++
+   ConnectionParams m_params;
+   DriverListener& m_listener;
+ 
+@@ -146,7 +164,7 @@ private:
+     return &m_socketread_watchdog_timer;
+   }
+   wxTimer* GetSocketTimer() { return &m_socket_timer; }
+-  void SetSock(wxSocketBase* sock) { m_sock = sock; }
++  void SetSock(wxSocketBase* sock) { ConnectionChanged(); m_sock = sock; }
+   void SetTSock(wxSocketBase* sock) { m_tsock = sock; }
+   wxSocketBase* GetTSock() const { return m_tsock; }
+   void SetSockServer(wxSocketServer* sock) { m_socket_server = sock; }
+diff --git i/model/src/comm_drv_n2k_net.cpp w/model/src/comm_drv_n2k_net.cpp
+index 74e79f678..262dc46dd 100644
+--- i/model/src/comm_drv_n2k_net.cpp
++++ w/model/src/comm_drv_n2k_net.cpp
+@@ -453,7 +453,7 @@ void CommDriverN2KNet::OnSocketReadWatchdogTimer(wxTimerEvent& event) {
+       // Reconnect on NO DATA is true, so try to reconnect now.
+       if (GetProtocol() == TCP) {
+         wxSocketClient* tcp_socket = dynamic_cast<wxSocketClient*>(GetSock());
+-        if (tcp_socket) tcp_socket->Close();
++        if (tcp_socket) { ConnectionChanged(); tcp_socket->Close(); }
+ 
+         int n_reconnect_delay = wxMax(N_DOG_TIMEOUT - 2, 2);
+         wxLogMessage(wxString::Format(" Reconnection scheduled in %d seconds.",
+@@ -1348,6 +1348,7 @@ void CommDriverN2KNet::OnSocketEvent(wxSocketEvent& event) {
+ #if 1
+ 
+     case wxSOCKET_LOST: {
++      ConnectionChanged();
+       m_driver_stats.available = false;
+       if (GetProtocol() == TCP || GetProtocol() == GPSD) {
+         if (GetBrxConnectEvent())
+@@ -1380,6 +1381,7 @@ void CommDriverN2KNet::OnSocketEvent(wxSocketEvent& event) {
+     }
+ 
+     case wxSOCKET_CONNECTION: {
++      ConnectionChanged();
+       m_driver_stats.available = true;
+       if (GetProtocol() == GPSD) {
+         //      Sign up for watcher mode, Cooked NMEA
+@@ -1415,6 +1417,7 @@ void CommDriverN2KNet::OnSocketEvent(wxSocketEvent& event) {
+ void CommDriverN2KNet::OnServerSocketEvent(wxSocketEvent& event) {
+   switch (event.GetSocketEvent()) {
+     case wxSOCKET_CONNECTION: {
++      ConnectionChanged();
+       m_driver_stats.available = true;
+       SetSock(GetSockServer()->Accept(false));
+ 
+@@ -1961,7 +1964,7 @@ bool CommDriverN2KNet::SendSentenceNetwork(
+             } else {
+               wxSocketClient* tcp_socket =
+                   dynamic_cast<wxSocketClient*>(GetSock());
+-              if (tcp_socket) tcp_socket->Close();
++              if (tcp_socket) { ConnectionChanged(); tcp_socket->Close(); }
+               if (!GetSocketTimer()->IsRunning())
+                 GetSocketTimer()->Start(
+                     5000, wxTIMER_ONE_SHOT);  // schedule a reconnect
+@@ -1997,6 +2000,7 @@ bool CommDriverN2KNet::SendSentenceNetwork(
+ }
+ 
+ void CommDriverN2KNet::Close() {
++  ConnectionChanged();
+   wxLogMessage(wxString::Format(_T("Closing NMEA NetworkDataStream %s"),
+                                 GetNetPort().c_str()));
+   m_stats_timer.Stop();

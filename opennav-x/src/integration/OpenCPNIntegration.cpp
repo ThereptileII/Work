@@ -1,5 +1,6 @@
 #include "integration/OpenCPNIntegration.h"
 #include "adapters/Autopilot.h"
+#include "integration/OpenCPNPilot.h"
 #include "adapters/Radar.h"
 #include "integration/InstalledResources.h"
 #include "integration/InstallerSelfTest.h"
@@ -87,7 +88,9 @@ bool recovery_notice_scheduled = false;
 adapters::UnavailableRadar radar;
 application::AnchorState anchor_state;
 struct PilotServices {
-  adapters::UnavailableAutopilot hardware;
+  explicit PilotServices(std::function<bool()> allowed)
+      : hardware(std::move(allowed)) {}
+  integration::OpenCPNPilot hardware;
   adapters::SimulatedAutopilot simulator{vessel::Clock::now()};
   adapters::ManualAutopilot live{hardware},demo{simulator};
   bool was_demo=false;
@@ -364,9 +367,16 @@ void Attach(MyFrame& frame, wxAuiManager& manager, wxFileConfig& config) {
     if (commissioning && commissioning->Replaying())
       return application::CommandResult{
           false, "Stop REPLAY before changing live settings"};
+    const auto old_pilot = settings->Read().pilot;
     auto result = settings->Save(s);
     if (result.ok)
       configure_sources();
+    if (result.ok && pilots &&
+        (old_pilot.interface != s.pilot.interface || old_pilot.name != s.pilot.name ||
+         old_pilot.permit_control != s.pilot.permit_control)) {
+      pilots->live.Enable(false, vessel::Clock::now());
+      pilots->hardware.Configure(s.pilot);
+    }
     return result;
   };
   actions.source_health = [] {
@@ -386,7 +396,29 @@ void Attach(MyFrame& frame, wxAuiManager& manager, wxFileConfig& config) {
         return !commissioning || !commissioning->Replaying();
       });
   actions.route_creating=[&frame]{return frame.GetPrimaryCanvas()->m_routeState>0;};
-  pilots=std::make_unique<PilotServices>();
+  pilots = std::make_unique<PilotServices>([] {
+    return pilots && !pilots->was_demo && !restart &&
+           (!commissioning || commissioning->AllowsHardwareControl());
+  });
+  pilots->was_demo = demo;
+  pilots->hardware.Configure(settings->Read().pilot);
+  actions.pilot_identity = [] {
+    const bool sent = pilots && pilots->hardware.RequestIdentity(vessel::Clock::now());
+    return application::CommandResult{
+        sent, sent ? "Identity request attempted; waiting for an observed address claim"
+                   : "Identity request withheld: check connection, format, isolation or five-second limit"};
+  };
+  actions.pilot_sources = [] {
+    std::vector<std::string> result;
+    for (const auto &identity : marine->Identities()) {
+      try { adapters::ParsePilotName(identity.name); }
+      catch (const std::invalid_argument &) { continue; }
+      result.push_back(identity.interface + " / NAME " + identity.name +
+                       " / address " + std::to_string(identity.address));
+      if (result.size() >= 8) break;
+    }
+    return result;
+  };
   actions.pilot_tick = [](bool simulated) {
     const auto now = vessel::Clock::now();
     if (pilots->was_demo != simulated) {
@@ -398,8 +430,16 @@ void Attach(MyFrame& frame, wxAuiManager& manager, wxFileConfig& config) {
       pilots->live.Enable(false, now);
       pilots->demo.Enable(false, now);
     }
+    const auto before = p.GetState(now).command.state;
     p.Tick(now);
-    return p.GetState(now);
+    auto view = p.GetState(now);
+    view.adapter_status = simulated ? "DEMO / simulated feedback" : pilots->hardware.Description();
+    if (before != view.command.state)
+      wxLogMessage("OpenNav manual pilot %llu: %s / %s",
+                   static_cast<unsigned long long>(view.command.request.id),
+                   wxString::FromUTF8(adapters::CommandStateName(view.command.state)),
+                   wxString::FromUTF8(view.command.detail));
+    return view;
   };
   actions.pilot_log=[](bool simulated){return pilots->Select(simulated).Log();};
   actions.pilot_command = [](bool simulated, auto action, double delta) {
@@ -408,7 +448,7 @@ void Attach(MyFrame& frame, wxAuiManager& manager, wxFileConfig& config) {
     auto c =
         pilots->Select(simulated).Request(action, delta, vessel::Clock::now());
     wxLogMessage("OpenNav manual autopilot [%s] request %llu: %s / %s",
-                 simulated ? "DEMO" : "unavailable hardware",
+                 simulated ? "DEMO" : "ST4000 live adapter",
                  static_cast<unsigned long long>(c.request.id),
                  wxString::FromUTF8(adapters::CommandStateName(c.state)),
                  wxString::FromUTF8(c.detail));
@@ -418,7 +458,7 @@ void Attach(MyFrame& frame, wxAuiManager& manager, wxFileConfig& config) {
       return;
     pilots->Select(simulated).Enable(enabled, vessel::Clock::now());
     wxLogMessage("OpenNav manual autopilot %s: %s",
-                 simulated ? "DEMO" : "unavailable hardware",
+                 simulated ? "DEMO" : "ST4000 live adapter",
                  enabled ? "enable requested" : "disabled");
   };
   actions.zoom_in = [&frame] { frame.GetPrimaryCanvas()->ZoomCanvas(2.0, false); };
@@ -483,6 +523,33 @@ void Attach(MyFrame& frame, wxAuiManager& manager, wxFileConfig& config) {
         runtime["replay"]["elapsed_ms"] =
             static_cast<int>(view->elapsed.count());
       }
+    }
+    if (pilots && !state.replayed) {
+      const auto view = pilots->Select(state.simulated).GetState(now);
+      auto &pilot = runtime["pilot"];
+      pilot["simulated"] = state.simulated;
+      pilot["enabled"] = view.enabled;
+      pilot["fresh"] = view.fresh;
+      pilot["mode"] = wxString::FromUTF8(adapters::PilotModeName(view.feedback.mode));
+      pilot["source"] = wxString::FromUTF8(view.feedback.source);
+      pilot["feedback_sequence"] = wxString::Format("%llu", static_cast<unsigned long long>(view.feedback.sequence));
+      pilot["connection_epoch"] = wxString::Format("%llu", static_cast<unsigned long long>(view.feedback.connection_epoch));
+      pilot["control_capability"] = view.capabilities.manual_control;
+      pilot["track_capability"] = view.capabilities.track;
+      pilot["wind_capability"] = view.capabilities.wind;
+      pilot["command_state"] = wxString::FromUTF8(adapters::CommandStateName(view.command.state));
+      pilot["command_detail"] = wxString::FromUTF8(view.command.detail);
+      pilot["command_id"] = wxString::Format("%llu", static_cast<unsigned long long>(view.command.request.id));
+      pilot["adapter"] = wxString::FromUTF8(state.simulated ? "DEMO" : pilots->hardware.Description());
+      const auto target = vessel::Assess(view.feedback.locked_heading_magnetic_deg, now);
+      const auto heading = vessel::Assess(view.feedback.heading_magnetic_deg, now);
+      pilot["locked_heading_quality"] = wxString::FromUTF8(vessel::QualityName(target.quality));
+      pilot["actual_heading_quality"] = wxString::FromUTF8(vessel::QualityName(heading.quality));
+      if (target.value) pilot["locked_heading_magnetic_deg"] = *target.value;
+      if (heading.value) pilot["actual_heading_magnetic_deg"] = *heading.value;
+      if (view.feedback.sequence && view.feedback.observed_at <= now)
+        pilot["mode_age_ms"] = static_cast<int>(std::min<long long>(2147483647,
+            std::chrono::duration_cast<vessel::Duration>(now-view.feedback.observed_at).count()));
     }
     integration::WritePreviewDiagnostics(
         diagnostic_directory + "/opennav-diagnostics.json", state,

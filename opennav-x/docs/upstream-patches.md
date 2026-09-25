@@ -39,6 +39,8 @@ Do not leave undocumented direct OpenCPN modifications.
 | gui/src/canvasMenu.cpp | Context-menu fallback for mode switch | Menu access with hidden menu bar; low risk |
 | model/src/plugin_loader.cpp | Keep plugins inactive in Safe Mode without persisting disabled preferences | Enabled Dashboard fixture through Safe and normal restart; low risk |
 | gui/src/pluginmanager.cpp | Avoid saving temporary Safe Mode plugin states as normal preferences | Same shared-profile fixture; low risk |
+| model/include/model/comm_drv_n2k_net.h | Beta: read-only detected format, monotonic connection generation/time | No output/discovery getters; low API risk |
+| model/src/comm_drv_n2k_net.cpp | Beta: advance connection provenance at socket replacement/connect/loss/close boundaries | Same-driver reconnect loopback; medium event-order risk |
 
 Public plugin API 1.20 does not provide ownership of application startup,
 main-frame chrome or shutdown. Narrow core hooks are necessary; zoom, follow,
@@ -306,3 +308,23 @@ Replay never invokes route processing, autopilot output or a marine send method.
 No upstream route, waypoint, driver or chart pointer escapes into the recorder.
 Arbitrary third-party plugin transports are not intercepted; offline recordings
 should be reviewed in the isolated portable profile.
+
+## Beta manual pilot transport provenance
+
+The pilot increment adds two production patch files (eleven total), the N2K
+network header and implementation listed above. Registry notifications alone
+cannot identify reconnects inside a retained driver object. Public plugin API
+1.20 exposes neither detected wire format nor connection generation/time;
+`WriteCommDriverN2K` also discards send success. The bridge therefore performs
+short-lived application-thread registry lookup and explicit driver sends only
+for human requests, guarded by identity/permission/session/replay boundaries.
+
+The added getters only observe format and monotonic transport provenance.
+Connection event ordering is the merge risk; inspect all close/reconnect paths
+when rebasing. No navigation or vendor command encoding is added upstream.
+`smoke-pilot.py` exercises actual TCP bytes, feedback, timeout and same-object
+reconnect in an isolated loopback profile on Linux/native Windows. Existing N2K
+identity/loss, recording/replay, mode and route regressions remain mandatory.
+Portable tests cover the adapter and settings independently, including command
+interpretation by the hash-pinned actual boat firmware parser. None of these
+desktop checks claim physical SeaTalk/N2K delivery.

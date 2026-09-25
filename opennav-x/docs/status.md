@@ -83,6 +83,18 @@ suites, 98 integrated cases and actual TCP identity/change/conflict/loss checks
 pass; recording/replay still passes locally. Native qualification is pending.
 [Identity evidence](evidence/beta-n2k-identity-local.json).
 
+The live pilot increment now uses an existing bidirectional OpenCPN TCP/Actisense
+complete-PGN ASCII connection. Exact observed NAME binding and saved permission
+remain separate from session enablement; control starts OFF. The actual loopback
+UI/transport test exercises AUTO, all four heading steps, STANDBY, missing-feedback
+timeout and same-driver reconnect without any physical hardware. New read-only
+network provenance hooks invalidate old identities and queued observations.
+Other transports remain status-only; TRACK/WIND output is unavailable. Native
+integration and final replacement visual evidence remain mandatory before Beta
+acceptance. The recording dialog gate at `11c0a5c` reached Save but its screenshot
+helper incorrectly attempted to resize a native file dialog; the helper now
+preserves the dialog dimensions. No export pass is claimed from that failed run.
+
 ## Implemented Alpha product
 
 | Area | Current implementation and boundary |

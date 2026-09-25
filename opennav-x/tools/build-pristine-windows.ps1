@@ -76,6 +76,7 @@ try {
         Run python @((Join-Path $PSScriptRoot 'smoke-navigation.py'), '--instruments')
         Run python @((Join-Path $PSScriptRoot 'smoke-navigation.py'), '--n2k')
         Run python @((Join-Path $PSScriptRoot 'smoke-recording.py'))
+        Run python @((Join-Path $PSScriptRoot 'smoke-pilot.py'))
         Run python @((Join-Path $PSScriptRoot 'smoke-navigation.py'), '--objects')
         Run python @((Join-Path $PSScriptRoot 'smoke-recovery.py'))
         & (Join-Path $PSScriptRoot 'capture-pristine-windows.ps1') -Variant xnav -Mode legacy -Name '11-legacy-mode'
