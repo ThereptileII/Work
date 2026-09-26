@@ -22,8 +22,10 @@ A version string cannot override the installer manifest.
    sources, then atomically publishes a versioned local recovery set. A `.partial`
    directory is an incomplete backup, never accepted recovery. Do not delete it
    before diagnosing a failure with `inspect-partial-backup.ps1`.
-3. Place a reviewed `boat-target.json` in the workspace, starting with
-   `boat-target.example.json`. Keep this machine-specific file private. All
+3. `initialize-target.ps1` creates a new private `boat-target.json` from the
+   verified real installation, with every launch attestation unset/false. It
+   refuses an existing target file. `boat-target.example.json` documents the
+   later reviewed fields. Keep this machine-specific file private. All
    installed deployment/launch scripts independently reject unsupported stock hashes.
 4. Commit, pass Linux/native Windows CI, and obtain the exact installer and its
    SHA-256 from the accepted artifact. Transfer via the established SSH alias.

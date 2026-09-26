@@ -116,27 +116,44 @@ or parent ACL is written. If staging permissions cannot be made identical, the
 operation stops before replacement.
 
 CI run `36273516935`, commit `62e28e5dfe42e96531f00dd88686634c167b0db8`,
-then found a pre-stage comparison failure:
-metadata capture used `Get-Acl -Audit`, while the three staging checks used plain
-`Get-Acl`. The logged ordinary descriptors matched; the captured audited
-descriptor was absent from that failed-run log, so the precise differing bit is
-**not established** by that evidence. The failure happened before staging ACL
-application or profile replacement.
+found a pre-stage comparison failure between an audited metadata descriptor and
+an ordinary descriptor. Its log lacked the audited value. The subsequent
+same-audit-scope attempt passed desktop Windows temporary tests but **failed
+Windows Server CI** and is superseded; consistent audit reads are not sufficient.
 
-Native metadata capture and all staging descriptor comparisons now use the same
-explicit audited query through `Get-PreparationAuditedAcl`. Microsoft's
+The decisive evidence is run `36274020524`, job `108493169274`, commit
+`eb2ba9e1f64ea43c24e6360a466035b5aa41703f`. On the same original file, ordinary
+`Get-Acl` returned three inherited access entries `(A;ID;FA;...)`, while
+`Get-Acl -Audit` returned them as explicit `(A;;FA;...)`. Both descriptor control
+words were `32772` (`0x8004`): this was **an ACE inheritance-flag difference**, not
+a descriptor control-bit normalization. Copying the audited DACL produced a
+staging DACL with three explicit plus three inherited entries and control
+`33796` (`0x8404`). The strict comparator correctly refused that six-entry
+staging descriptor before profile replacement. No duplicate or altered ACE is
+accepted as equivalent.
+
+The implementation now keeps these views separate. Ordinary
+`Get-PreparationAccessAcl` supplies the owner/group/DACL baseline copied to
+staging and compared before/after publication. An independent
+`Get-PreparationAuditedAcl` probe is used **only** to reject SACL/audit metadata;
+its DACL is never copied, normalized or treated as the preservation baseline.
+The ordinary view is read again after the audit probe and must match exactly,
+catching an intervening permission change. The audited value is retained only
+as diagnostic evidence. Owner/group, every ACE flag/order/type/right/identity,
+and the existing narrow post-stage control policy remain unchanged.
+
+Microsoft's
 [`Get-Acl` documentation](https://learn.microsoft.com/en-us/powershell/module/microsoft.powershell.security/get-acl?view=powershell-5.1)
-identifies `-Audit` as an additional SACL query; the maintained PowerShell
-[`ProcessRecord` implementation](https://github.com/PowerShell/PowerShell/blob/v7.4.13/src/Microsoft.PowerShell.Security/security/AclCommands.cs#L743)
-adds `AccessControlSections.Audit` to the owner/group/access request. Comparing
-different query scopes is therefore avoided rather than presuming their
-serialization is identical. This change adds no ignored control flag, does not
-relax the strict pre-stage comparison, and leaves SACL refusal intact. Native
-regressions enforce the query scope and prove that an altered audited owner is
-rejected before either original or staging permissions change. CI-only fixture
-diagnostics now include both ordinary/audited SDDL and control flags, as well as
-the actual captured metadata baseline; private account descriptors remain out of
-local boat-test output.
+describes `-Audit` as obtaining the SACL, while
+[`SECURITY_INFORMATION`](https://learn.microsoft.com/en-us/windows/win32/secauthz/security-information)
+defines separate owner, group, DACL and SACL information requests. The
+implementation follows that separation and does not infer access permissions
+from the audit query's transformed DACL. Native regression coverage deliberately
+reproduces the observed audit-view loss of `ID` on a temporary file; actual
+inherited access entries must survive unchanged. The separate changed-owner
+pre-stage refusal and actual audited-file refusal remain mandatory. CI-only
+fixture diagnostics include both SDDL views/control words and the captured
+ordinary baseline; no private boat account descriptor is printed by local tests.
 
 Rename replaces a file object; it does not merge extra metadata. The narrow
 profile tool therefore refuses readonly files, specialized attributes such as
@@ -171,29 +188,25 @@ recursive redirects, changed source inventories, exact-byte recovery refusal,
 intervening edits, duplicate journals and atomic publication. Native tests also
 check exclusive file locks and ACL preservation/privacy.
 
-At this revision 21 Linux portable contract groups pass, including all 639
-non-exempt bit changes in a bounded descriptor fixture. Native tests add actual
-SDDL equivalence, negative owner/group/protection/ordered-ACE/SACL cases, and
-the real rename permission check and an explicit protected owner/group/DACL
-fixture. Added native cases verify creation time/attributes, different-length
-reviewed restoration, readonly/named-stream/hardlink/audit refusal, and a
-read-sharing handle that permits preflight but rejects the final rename while
-retaining the exact stage and original. All 32 native PowerShell 5.1 groups
-passed on the boat PC in a unique temporary directory. Private result:
-`evidence/local/boat-beta2/native-preparation-movefile-final.json`.
-Windows Server CI qualification of this rename change remains pending.
-After the same-query-scope correction, all 21 portable groups and all 34 native
-PowerShell 5.1 preparation groups passed. The related commissioning and launch
-verification suites also passed 21 and 11 native groups respectively. These ran
-only in disposable temporary trees; private results are
-`evidence/local/boat-beta2/native-*-audit-scope.json`. Windows Server CI must still
-qualify the same correction in a fresh published commit; earlier Server failure
-and prior native 32-group results do not substitute for that gate.
+The 21 Linux portable contract groups pass, including all 639 non-exempt bit
+changes in a bounded descriptor fixture. Native tests add actual SDDL comparisons,
+negative owner/group/protection/ordered-ACE/SACL cases, real rename permissions,
+an explicit protected owner/group/DACL fixture, creation time/attributes,
+different-length restoration, readonly/named-stream/hardlink/audit refusal and
+delete-sharing lock behavior. The revised native 34-group suite additionally
+reproduces the observed audit-view DACL divergence and rejects an altered ordinary
+owner before staging. Fresh native Windows PowerShell 5.1 qualification passed
+all 34 groups, recorded in the private evidence file
+`evidence/local/boat-beta2/native-preparation-access-audit-final.json`.
+The commissioning suite passed 21 groups and launch verification passed 11
+against the same production implementation. Windows Server CI qualification of
+the corrected split remains pending; the earlier desktop results and failed
+same-audit-scope CI do not qualify that separate gate.
 CI failure reports include only disposable fixture
 SDDL and stack context; local boat test failures do not print account descriptors.
 The private
 inspected pair passed its exact byte/hash checks and strict parsing (783 keys).
-Native PowerShell 5.1 and actual boat execution remain separate gates. The exact
+Disposable native validation and actual boat execution remain separate gates. The exact
 authorized boat repair was already completed and verified using the prior
 boat-qualified implementation. These new tests are disposable future-tooling
 hardening; they do not repeat or alter that recovered profile.

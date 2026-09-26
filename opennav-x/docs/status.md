@@ -1,4 +1,4 @@
-# OpenNav X status — 2026-09-26
+# OpenNav X status — 2026-09-27
 
 **Beta 2 development is in progress; it is not yet qualified or deployed.**
 
@@ -140,11 +140,17 @@ No unrelated Desktop content is included in feedback documentation.
 - Product candidate `62e28e5dfe42e96531f00dd88686634c167b0db8`
   ([CI 36273516935](https://github.com/ThereptileII/Work/actions/runs/36273516935))
   matches all 515 committed local source blobs/modes. Both contract jobs pass;
-  integrated product gates are running. The maintenance job stopped before
-  replacement because its permission checks compared different `Get-Acl`
-  query scopes. The correction uses the same explicit audit scope throughout,
-  without expanding the ignored-bit policy, and passes 34/21/11 boat-local
-  temporary-file groups. Dedicated Server CI is pending. The native window
+  native MSVC and 102 integrated CTest cases pass, followed by selected-input,
+  Signal K and recording checks. The Windows pilot interaction gate stopped at
+  an unavailable course-button caption and is under investigation. Linux reached
+  the required elapsed-time stability test. Neither platform is yet accepted.
+  The maintenance job exposed a Windows Server security-descriptor difference:
+  `Get-Acl -Audit` can omit inherited ACE flags in its DACL view. The corrected
+  implementation uses the ordinary owner/group/DACL as the preservation baseline
+  and the audit view only to reject unsupported SACL metadata. It never copies
+  the transformed audit DACL or relaxes ordered-ACE checks. The corrected split
+  passes 34/21/11 boat-local temporary-file groups. Dedicated Server CI is pending.
+  The native window
   review helper passes 93 policy/compilation groups on Linux and Windows;
   actual UI actions remain unperformed. Both restored chart directories and
   the 442,271-byte Windows chart database are present; rendering is still pending.

@@ -195,33 +195,56 @@ try {
   if ($native) {
     $aclBefore=(Get-Acl -LiteralPath $ini).Sddl
     $metadataBefore=Get-PreparationNativeMetadata $ini
-    # Compare the same explicit query scope even on systems whose ordinary and
-    # audited reads happen to serialize identically. This catches the mixed-
-    # scope pre-stage regression on both desktop Windows and Server CI.
+    # Reproduce the decisive Server behavior even on desktop Windows: the audit
+    # query reports DACL ACEs without ID, but the ordinary query and actual file
+    # retain ID. Audit DACLs must never become a permission-copy baseline.
     $scopeStage=$ini+'.opennav-recovery-'+[guid]::NewGuid().ToString('N')+'.partial'
     Copy-PreparationFile $saved $scopeStage $vh $valid.Length
+    $ordinaryDescriptor=New-Object Security.AccessControl.RawSecurityDescriptor($aclBefore)
+    # RawAcl's pipeline adapter differs on Windows PowerShell 5.1. Read its
+    # indexed entries and compare integer flags without enumerator conversion.
+    $inheritedFlag=[int]([Security.AccessControl.AceFlags]::Inherited)
+    $inheritedCount=0
+    for ($aceIndex=0;$aceIndex -lt $ordinaryDescriptor.DiscretionaryAcl.Count;$aceIndex++) {
+      $entryFlags=[int]($ordinaryDescriptor.DiscretionaryAcl[$aceIndex].AceFlags)
+      if (($entryFlags -band $inheritedFlag) -ne 0) { $inheritedCount++ }
+    }
+    if ($inheritedCount -eq 0) { throw 'Regression fixture requires actual inherited access entries.' }
     function Get-Acl {
       param([string]$LiteralPath,[switch]$Audit)
-      if (-not $Audit) { throw 'Native staging changed the captured security-descriptor query scope.' }
-      Microsoft.PowerShell.Security\Get-Acl -LiteralPath $LiteralPath -Audit
+      if (-not $Audit) { return Microsoft.PowerShell.Security\Get-Acl -LiteralPath $LiteralPath }
+      $actual=Microsoft.PowerShell.Security\Get-Acl -LiteralPath $LiteralPath -Audit
+      $view=New-Object Security.AccessControl.RawSecurityDescriptor($actual.Sddl)
+      $inheritedFlag=[int]([Security.AccessControl.AceFlags]::Inherited)
+      for ($aceIndex=0;$aceIndex -lt $view.DiscretionaryAcl.Count;$aceIndex++) {
+        $ace=$view.DiscretionaryAcl[$aceIndex]
+        $entryFlags=[int]($ace.AceFlags)
+        $ace.AceFlags=[Security.AccessControl.AceFlags]($entryFlags -band (-bnot $inheritedFlag))
+        $view.DiscretionaryAcl[$aceIndex]=$ace
+      }
+      return [pscustomobject]@{Sddl=$view.GetSddlForm([Security.AccessControl.AccessControlSections]::All)}
     }
-    try { Set-PreparationStageAcl $ini $scopeStage $metadataBefore.acl }
-    finally { Remove-Item Function:Get-Acl }
-    Assert-PreparationAcl $metadataBefore.acl (Get-PreparationAuditedAcl $ini)
-    Assert-PreparationAcl $metadataBefore.acl (Get-PreparationAuditedAcl $scopeStage) -AllowDaclAutoInherited
-    if ((Get-Digest $ini) -cne $zh -or (Get-Digest $scopeStage) -cne $vh) { throw 'Security-scope fixture modified original/stage contents.' }
-    $checks.Add('Native metadata and all staging reads use the same explicit audit query scope, preserving exact original access rules')
+    try {
+      $separated=Get-PreparationNativeMetadata $ini
+      Assert-PreparationAcl $aclBefore $separated.acl
+      Reject {Assert-PreparationAcl $separated.acl $separated.auditAcl} 'transformed audit DACL is not equivalent to actual inherited access entries'
+      Set-PreparationStageAcl $ini $scopeStage $separated.acl
+    } finally { Remove-Item Function:Get-Acl }
+    Assert-PreparationAcl $metadataBefore.acl (Get-PreparationAccessAcl $ini)
+    Assert-PreparationAcl $metadataBefore.acl (Get-PreparationAccessAcl $scopeStage) -AllowDaclAutoInherited
+    if ((Get-Digest $ini) -cne $zh -or (Get-Digest $scopeStage) -cne $vh) { throw 'Separated security-view fixture modified original/stage contents.' }
+    $checks.Add('Native staging preserves actual inherited ACEs when audit retrieval presents them as explicit; no ACE flags/order/count are normalized')
     $wrong=New-Object Security.AccessControl.RawSecurityDescriptor($metadataBefore.acl)
     $otherOwner=if ($wrong.Owner.Value -ceq 'S-1-5-18') {'S-1-5-32-544'} else {'S-1-5-18'}
     $wrong.Owner=New-Object Security.Principal.SecurityIdentifier($otherOwner)
-    $stageAcl=Get-PreparationAuditedAcl $scopeStage
-    Reject { Set-PreparationStageAcl $ini $scopeStage ($wrong.GetSddlForm([Security.AccessControl.AccessControlSections]::All)) } 'changed audited owner before staging'
-    Assert-PreparationAcl $metadataBefore.acl (Get-PreparationAuditedAcl $ini)
-    Assert-PreparationAcl $stageAcl (Get-PreparationAuditedAcl $scopeStage)
-    $checks.Add('Changed audited owner is refused before any staging permission write; both original and stage remain exact')
+    $stageAcl=Get-PreparationAccessAcl $scopeStage
+    Reject { Set-PreparationStageAcl $ini $scopeStage ($wrong.GetSddlForm([Security.AccessControl.AccessControlSections]::All)) } 'changed ordinary access owner before staging'
+    Assert-PreparationAcl $metadataBefore.acl (Get-PreparationAccessAcl $ini)
+    Assert-PreparationAcl $stageAcl (Get-PreparationAccessAcl $scopeStage)
+    $checks.Add('Changed ordinary owner is refused before any staging permission write; both original and stage remain exact')
     Remove-Item -LiteralPath $scopeStage
     if ($env:GITHUB_ACTIONS -eq 'true') {
-      Write-Host (([pscustomobject]@{scope='disposable-ci-fixture-before-publication';ordinarySddl=$aclBefore;auditedSddl=$metadataBefore.acl;ordinaryFlags=[int](New-Object Security.AccessControl.RawSecurityDescriptor($aclBefore)).ControlFlags;auditedFlags=[int](New-Object Security.AccessControl.RawSecurityDescriptor($metadataBefore.acl)).ControlFlags}) | ConvertTo-Json -Compress)
+      Write-Host (([pscustomobject]@{scope='disposable-ci-fixture-before-publication';ordinarySddl=$aclBefore;auditedSddl=$metadataBefore.auditAcl;ordinaryFlags=[int](New-Object Security.AccessControl.RawSecurityDescriptor($aclBefore)).ControlFlags;auditedFlags=[int](New-Object Security.AccessControl.RawSecurityDescriptor($metadataBefore.auditAcl)).ControlFlags}) | ConvertTo-Json -Compress)
     }
   }
   Publish-PreparedProfile $ini $saved $zh $vh $valid.Length $journal

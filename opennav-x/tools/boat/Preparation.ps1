@@ -187,16 +187,20 @@ function Assert-PreparationStagePath([string]$Original,[string]$Stage) {
   }
 }
 function Get-PreparationAuditedAcl([string]$Path) {
-  # Keep the security-information request identical throughout native metadata
-  # capture, staging and publication. Get-Acl -Audit asks for an additional
-  # security-descriptor section; a non-Audit serialization is not the captured
-  # descriptor and must not be substituted during an exact comparison.
+  # Use this view ONLY to inspect SACL/audit metadata. Windows Server CI proved
+  # that -Audit can return its DACL with inherited ACE flags removed. Copying
+  # that DACL would turn inherited entries into explicit entries.
   return (Get-Acl -LiteralPath (Assert-LocalPath $Path) -Audit).Sddl
+}
+function Get-PreparationAccessAcl([string]$Path) {
+  # The ordinary owner/group/DACL view is the exact preservation baseline.
+  # Never normalize ACE flags/order/count or substitute the audited DACL.
+  return (Get-Acl -LiteralPath (Assert-LocalPath $Path)).Sddl
 }
 function Set-PreparationStageAcl([string]$Original,[string]$Stage,[string]$ExpectedAcl) {
   Assert-PreparationStagePath $Original $Stage
   if([Environment]::OSVersion.Platform -ne 'Win32NT'){throw 'Native staging permissions require Windows.'}
-  Assert-PreparationAcl $ExpectedAcl (Get-PreparationAuditedAcl $Original)
+  Assert-PreparationAcl $ExpectedAcl (Get-PreparationAccessAcl $Original)
   # A fresh FileSecurity marks all copied sections for persistence. Reusing an
   # unmodified Get-Acl object can leave owner/group sections unwritten. Never
   # set permissions on Original, saved candidate, backup or the parent folder.
@@ -204,8 +208,8 @@ function Set-PreparationStageAcl([string]$Original,[string]$Stage,[string]$Expec
   $sections=[Security.AccessControl.AccessControlSections]::Owner -bor [Security.AccessControl.AccessControlSections]::Group -bor [Security.AccessControl.AccessControlSections]::Access
   $permissions.SetSecurityDescriptorSddlForm($ExpectedAcl,$sections)
   Set-Acl -LiteralPath $Stage -AclObject $permissions
-  Assert-PreparationAcl $ExpectedAcl (Get-PreparationAuditedAcl $Stage) -AllowDaclAutoInherited
-  Assert-PreparationAcl $ExpectedAcl (Get-PreparationAuditedAcl $Original)
+  Assert-PreparationAcl $ExpectedAcl (Get-PreparationAccessAcl $Stage) -AllowDaclAutoInherited
+  Assert-PreparationAcl $ExpectedAcl (Get-PreparationAccessAcl $Original)
 }
 function Initialize-PreparationNative {
   if('OpenNavX.PreparationNative' -as [type]){return}
@@ -267,10 +271,14 @@ function Get-PreparationNativeMetadata([string]$Path) {
   # Rename carries the staging descriptor rather than merging destination ACLs.
   # Audit metadata is not part of the existing owner/group/DACL contract: require
   # a successful audit read and refuse it rather than silently dropping it.
+  $access=Get-PreparationAccessAcl $path
   $audited=Get-PreparationAuditedAcl $path
   $descriptor=New-Object Security.AccessControl.RawSecurityDescriptor($audited)
   if($null -ne $descriptor.SystemAcl -or ($descriptor.ControlFlags -band 0x2a30) -ne 0){throw 'Profile audit/security metadata requires separate review.'}
-  return [pscustomobject]@{attributes=$attributes;creationUtc=[IO.File]::GetCreationTimeUtc($path);acl=$audited}
+  # Audit retrieval must not silently alter the access baseline. Compare the
+  # ordinary view on both sides; the audited view is retained only as evidence.
+  Assert-PreparationAcl $access (Get-PreparationAccessAcl $path)
+  return [pscustomobject]@{attributes=$attributes;creationUtc=[IO.File]::GetCreationTimeUtc($path);acl=$access;auditAcl=$audited}
 }
 function Assert-PreparationNativeMetadata($Expected,$Actual,[switch]$AllowDaclAutoInherited) {
   if($Expected.attributes -ne $Actual.attributes -or $Expected.creationUtc.Ticks -ne $Actual.creationUtc.Ticks){throw 'Profile attributes or creation time changed.'}
