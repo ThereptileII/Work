@@ -67,7 +67,10 @@ class SourceDistributionTests(unittest.TestCase):
             self.assertEqual(source.read('.github/workflows/opennav-baseline.yml'), self.workflow.read_bytes())
             self.assertEqual(source.read('opennav-x/source-link'), b'source.cpp')
             self.assertEqual(source.getinfo('opennav-x/source-link').external_attr >> 16 & 0o170000, 0o120000)
-            self.assertEqual(source.read('OpenCPN-5.12.4-integrated/navigation.cpp'), b'reviewed integration\n')
+            # Preserve the exact checkout bytes, including the native Windows
+            # newline translation used when the fixture was written.
+            self.assertEqual(source.read('OpenCPN-5.12.4-integrated/navigation.cpp'),
+                             (self.upstream / 'navigation.cpp').read_bytes())
             self.assertEqual(json.loads(source.read('SOURCE_REFERENCE.json')), references)
             for name, record in references['files'].items():
                 self.assertEqual(hashlib.sha256(source.read(name)).hexdigest(), record['sha256'])
