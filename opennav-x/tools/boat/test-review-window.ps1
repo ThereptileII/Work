@@ -25,7 +25,7 @@ Pass 'Native helper compiles without executing Win32 APIs' {Initialize-WindowRev
 foreach($action in Get-WindowReviewActions) {
   Pass "Allows one fixed display action: $action" {$value=CopyValue $job;$value.reviewAction=$action;Assert-WindowReviewPolicy $value $installed $build $launch $request $now}
 }
-foreach($action in @('AUTO','STBY','STANDBY','TRACK','WIND','AlterCourse','EnableControl','ActivateRoute','CreateRoute','DeleteWaypoint','Import','Export','Plugin','Save','Restart','Legacy','Demo','Click','Key','CtrlShiftV','capture','Capture;AUTO','')) {
+foreach($action in @('AUTO','STBY','STANDBY','TRACK','WIND','AlterCourse','EnableControl','ActivateRoute','CreateRoute','DeleteWaypoint','Import','Export','Plugin','Save','Restart','RestartLegacy','RestartSafe','RestartXNav','Legacy','Demo','Click','Key','CtrlShiftV','capture','Capture;AUTO','')) {
   Refuse "Refuses non-reviewed action: $action" {$value=CopyValue $job;$value.reviewAction=$action;Assert-WindowReviewPolicy $value $installed $build $launch $request $now}
 }
 foreach($field in @('generation','buildCommit','executableSha256','executable','processId')) {
@@ -58,7 +58,7 @@ foreach($field in @('Id','Path','SessionId','MainWindowHandle','HasExited','Star
 Pass 'All pointer labels resolve to actual current source controls' {
   $root=[IO.Path]::GetFullPath((Join-Path $PSScriptRoot '..\..').Replace('\',[IO.Path]::DirectorySeparatorChar))
   $source='';foreach($name in @('Shell.cpp','ProductPanel.cpp','ProductSettings.cpp','Theme.h')){$source+=[IO.File]::ReadAllText((Join-Path $root ('src/ui/'+$name)))}
-  foreach($action in Get-WindowReviewActions | Where-Object {$_ -cnotin @('Capture','Resize1280x800','Escape')}) {
+  foreach($action in Get-WindowReviewActions | Where-Object {$_ -cnotin @('Capture','Resize1280x800','Escape','SelectFirstVisibleWaypoint','SelectFirstVisibleAis')}) {
     foreach($label in [OpenNavX.ReviewWindowNative]::ActionLabels($action)) {
       if(-not $source.Contains('"'+$label+'"')){throw ('Reviewed label absent from source: '+$label)}
     }
@@ -70,5 +70,63 @@ foreach($action in @('STBY','AUTO','TRACK','WIND','Save','Click','Key','EnableCo
 Pass 'Native helper has no global keyboard/mouse injector or arbitrary command API' {
   $source=[IO.File]::ReadAllText((Join-Path $PSScriptRoot 'ReviewWindowNative.cs'))
   if($source -match 'extern[^;]*(SendInput|keybd_event|mouse_event|SetCursorPos)' -or $source -match 'public static.*(SendMessage|Navigate|ActionKey)'){throw 'Unrestricted/global input API present.'}
+}
+
+function Row([long]$Handle,[string]$Label,[int]$Top=100,[int]$Left=100,[bool]$Enabled=$true,[bool]$Visible=$true,[bool]$DirectChild=$true) {
+  $row=New-Object OpenNavX.ReviewWindowNative+SelectionRow
+  $row.Handle=$Handle;$row.Label=$Label;$row.Top=$Top;$row.Left=$Left
+  $row.Enabled=$Enabled;$row.Visible=$Visible;$row.DirectChild=$DirectChild
+  return $row
+}
+$waypoint='SelectFirstVisibleWaypoint';$ais='SelectFirstVisibleAis'
+$wpPage=[OpenNavX.ReviewWindowNative]::SelectionPage($waypoint)
+$aisPage=[OpenNavX.ReviewWindowNative]::SelectionPage($ais)
+Pass 'Waypoint selection uses the first fully visible row by screen order, not enumeration or user name' {
+  $rows=@((Row 1 'Late / mark' 300),(Row 2 'Early / in route' 100),(Row 3 'Other / mark' 100 200))
+  if([OpenNavX.ReviewWindowNative]::ChooseSelectionRow($waypoint,$wpPage,$rows).Handle -ne 2){throw 'Unexpected first row'}
+}
+Pass 'Disabled, clipped and indirect controls cannot become list selections' {
+  $rows=@((Row 1 'Disabled / mark' 0 0 $false),(Row 2 'Clipped / mark' 0 0 $true $false),
+    (Row 3 'Nested / mark' 0 0 $true $true $false),(Row 4 'Usable / mark'))
+  if([OpenNavX.ReviewWindowNative]::ChooseSelectionRow($waypoint,$wpPage,$rows).Handle -ne 4){throw 'Unsafe selection'}
+}
+foreach($label in @('Vessel / Active','Vessel / Active / Under way using engine','Vessel / Inactive','Vessel / Lost',
+  'Vessel / Position doubtful','Beacon / Active distress beacon','Beacon / Distress beacon testing',
+  'Vessel / Active / Navigation status unavailable / ALARM','Name / with / separator / Lost','Åland / Active / Förtöjd')) {
+  Pass "Read-only AIS detail admits current upstream health/status label: $label" {
+    if([OpenNavX.ReviewWindowNative]::ChooseSelectionRow($ais,$aisPage,@((Row 1 $label))).Handle -ne 1){throw 'Reviewed AIS row was not selected'}
+  }
+}
+foreach($label in @('Refresh target list','Show / hide AIS on chart','AUTO','TRACK','Create waypoint at chart center','GO TO',
+  'Edit waypoint','Delete waypoint','Open Legacy OpenCPN','Safe Mode','Refresh catalog','',"vessel / Active`nAUTO",('X'*2047))) {
+  Pass "Fixed command or malformed caption cannot be a read-only list row: $($label.Substring(0,[Math]::Min(40,$label.Length)))" {
+    if([OpenNavX.ReviewWindowNative]::IsSelectionLabel($waypoint,$label) -or [OpenNavX.ReviewWindowNative]::IsSelectionLabel($ais,$label)){throw 'Command/malformed caption accepted'}
+  }
+}
+foreach($page in @('OpenNav product page: Autopilot','OpenNav product page: Routes','OpenNav product page: Waypoint detail',$aisPage,'')) {
+  Refuse 'Waypoint selection requires the exact list page even if another page has a matching caption' {
+    [OpenNavX.ReviewWindowNative]::ChooseSelectionRow($waypoint,$page,@((Row 1 'Example / mark')))
+  }
+}
+Refuse 'AIS selection refuses a waypoint page' {[OpenNavX.ReviewWindowNative]::ChooseSelectionRow($ais,$wpPage,@((Row 1 'Vessel / Active')))}
+Refuse 'No observed rows means unavailable, never an invented waypoint or AIS target' {[OpenNavX.ReviewWindowNative]::ChooseSelectionRow($waypoint,$wpPage,@())}
+Refuse 'Duplicate native control identities are ambiguous' {[OpenNavX.ReviewWindowNative]::ChooseSelectionRow($waypoint,$wpPage,@((Row 1 'A / mark'),(Row 1 'B / mark' 200)))}
+Refuse 'Overlapping first native rows are ambiguous' {[OpenNavX.ReviewWindowNative]::ChooseSelectionRow($waypoint,$wpPage,@((Row 1 'A / mark'),(Row 2 'B / mark')))}
+Refuse 'A null row is invalid' {[OpenNavX.ReviewWindowNative]::ChooseSelectionRow($waypoint,$wpPage,@($null))}
+Refuse 'An invalid native HWND is refused' {[OpenNavX.ReviewWindowNative]::ChooseSelectionRow($waypoint,$wpPage,@((Row 0 'A / mark')))}
+Refuse 'Bounded row inventory refuses unbounded input' {[OpenNavX.ReviewWindowNative]::ChooseSelectionRow($waypoint,$wpPage,(New-Object 'OpenNavX.ReviewWindowNative+SelectionRow[]' 4097))}
+foreach($action in @('Select','SelectAisByName','SelectWaypointById','RestartLegacy','RestartSafe','RestartXNav','GO TO','SelectFirstVisibleAIS')) {
+  Refuse "No arbitrary row or mode-restart native action: $action" {[OpenNavX.ReviewWindowNative]::SelectionPage($action)}
+}
+Pass 'Dynamic selection grammar matches the reviewed page/source boundaries' {
+  $root=[IO.Path]::GetFullPath((Join-Path $PSScriptRoot '..\..').Replace('\',[IO.Path]::DirectorySeparatorChar))
+  $panel=[IO.File]::ReadAllText((Join-Path $root 'src/ui/ProductPanel.cpp'))
+  $bridge=[IO.File]::ReadAllText((Join-Path $root 'src/integration/NavigationObjects.cpp'))
+  foreach($literal in @('" / in route"','" / mark"','ShowPage(ProductPage::WaypointDetail','ShowAis(id, mode_)')) {
+    if(-not $panel.Contains($literal)){throw 'Actual read-only row callback/label changed; review selection boundaries'}
+  }
+  foreach($literal in @('"Lost"','"Position doubtful"','"Active"','"Inactive"','"Active distress beacon"','"Distress beacon testing"')) {
+    if(-not $bridge.Contains($literal)){throw 'Actual AIS status grammar changed; review selection boundaries'}
+  }
 }
 [pscustomobject]@{status='passed';count=$checks.Count;checks=@($checks);nativeInteropCompiled=$true;nativeActionsExecuted=$false;boatAccess=$false;hardwareCommands=$false} | ConvertTo-Json -Depth 5

@@ -1,7 +1,7 @@
 # Read-only vessel/UI review. No application launch or equipment commands.
 . (Join-Path $PSScriptRoot 'Common.ps1')
 function Get-WindowReviewActions {
-  return @('Capture','Resize1280x800','Menu','Navigation','Routes','Waypoints','AIS','Instruments','Advice','PilotView','Anchor','Settings','Sources','Route','Energy','Diagnostics','System','Alerts','Escape','CyclePalette','ZoomIn','ZoomOut','Center','PageUp','PageDown')
+  return @('Capture','Resize1280x800','Menu','Navigation','Routes','Waypoints','AIS','Instruments','Advice','PilotView','Anchor','Settings','Sources','Route','Energy','Diagnostics','System','Alerts','Escape','CyclePalette','ZoomIn','ZoomOut','Center','PageUp','PageDown','SelectFirstVisibleWaypoint','SelectFirstVisibleAis')
 }
 function Assert-WindowReviewPolicy($Job,$Installed,$Build,$Launch,$Request,[datetime]$Now) {
   if($Job.action -cne 'ReviewWindow' -or $Job.reviewAction -cnotin (Get-WindowReviewActions)){throw 'Unsupported read-only window action.'}
@@ -89,17 +89,19 @@ function Invoke-WindowReview($Job) {
       $null=Read-WindowReview $Job;$process.Refresh()
       Assert-WindowReviewProcess $process $Job $review.launch ([Diagnostics.Process]::GetCurrentProcess().SessionId)
       if($process.MainWindowHandle -ne $frame){throw 'Reviewed main window changed.'}
+      $selection=$null
       switch($Job.reviewAction) {
         'Capture' {}
         'Resize1280x800' {[OpenNavX.ReviewWindowNative]::Resize1280x800($frame,$process.Id)}
         'Escape' {[OpenNavX.ReviewWindowNative]::Escape($frame,$process.Id)}
+        {$_ -cin @('SelectFirstVisibleWaypoint','SelectFirstVisibleAis')} {$selection=[OpenNavX.ReviewWindowNative]::SelectRow($frame,$process.Id,$Job.reviewAction)}
         default {[OpenNavX.ReviewWindowNative]::Click($frame,$process.Id,$Job.reviewAction)}
       }
       $after=Save-WindowReviewImage $frame $process.Id (Join-Path $directory 'after.png')
       return @{status='passed';action='ReviewWindow';reviewAction=$Job.reviewAction;utc=[datetime]::UtcNow.ToString('o');processId=$process.Id;
         buildCommit=$Job.buildCommit;generation=$Job.generation;executableSha256=$Job.executableSha256;launchResultSha256=$Job.launchResultSha256;
         reviewHelperSha256=$Job.reviewHelperSha256;nativeHelperSha256=$Job.nativeHelperSha256;
-        before=$before;after=$after;nativeWindow=$after.window;pages=@([OpenNavX.ReviewWindowNative]::VisiblePageLabels($frame));
+        before=$before;after=$after;nativeWindow=$after.window;selection=$selection;pages=@([OpenNavX.ReviewWindowNative]::VisiblePageLabels($frame));
         inputMethod='Targeted reviewed HWND mouse messages or focused-HWND Escape; no global keyboard/mouse input';readOnly=$true;actionsSent=$(if($Job.reviewAction -ceq 'Capture'){0}else{1});review='Private native pixels require human per-step visual review; no feature acceptance inferred.'}
     } finally {$null=[OpenNavX.ReviewWindowNative]::SetThreadDpiAwarenessContext($oldDpi)}
   } finally {$process.Dispose()}

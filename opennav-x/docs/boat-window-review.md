@@ -37,6 +37,8 @@ Each invocation permits exactly one of these actions:
 | `ZoomIn`, `ZoomOut`, `Center` | Existing visible chart controls |
 | `PageUp`, `PageDown` | Existing visible and enabled page scroll controls |
 | `Escape` | One Escape press/release to the same process's focused child HWND |
+| `SelectFirstVisibleWaypoint` | First enabled, fully visible waypoint row on the Waypoints list; opens its existing detail page |
+| `SelectFirstVisibleAis` | First enabled, fully visible target row on the AIS targets list; opens its existing detail page |
 
 The implementation selects fixed captions reviewed in `Shell.cpp` and
 `ProductPanel.cpp`; there is no arbitrary caption, coordinate, key, command ID,
@@ -79,3 +81,67 @@ helper. The native run used a separate validation tree on the boat PC; private
 result: `evidence/local/boat-beta2/native-window-review-policy.json`.
 No Win32 UI actions were executed by these tests. Actual installed-window
 interaction and per-step screenshots remain separate acceptance gates.
+
+
+## Bounded read-only list selection
+
+Open `Menu`, review the screenshot, then open `Waypoints` or `AIS` and review
+that screenshot before using the corresponding `SelectFirstVisible…` action.
+Each is a separate invocation using the same exact installed launch evidence.
+The helper chooses the topmost fully visible row, then the leftmost row at the
+same vertical position. It records that selected label and HWND in the private
+review result. Disabled, clipped, nested, duplicated and overlapping candidates
+are refused or excluded; absent objects remain absent. The tool neither creates
+test objects nor generates AIS reports.
+
+The native selector requires the exact product-list page, immediate page-child
+controls and the row-label grammar used by `ProductPanel.cpp` and the AIS bridge.
+Waypoints have the ` / mark` or ` / in route` suffix. AIS rows carry the existing
+OpenCPN-derived target-health prefix; optional navigation-status text remains
+upstream data. It rechecks the chosen page, caption, HWND, location, bounds,
+foreground and hit-test immediately before one target-local press/release. No
+name, MMSI, waypoint identifier, row index, arbitrary caption or position can be
+provided by a caller. Names and positions in the result are private evidence.
+
+Selection opens the existing **detail page**; it does not synthesize a tap on the
+chart or claim that the compact chart context-card interaction was exercised.
+GO TO, activation, waypoint editing/removal, target tracking, pilot buttons and
+connection changes remain inaccessible through this tooling. `Navigation` or
+`Menu` remains the existing way back. A missing expected detail page after the
+one click reports failure without retrying; inspect the saved pre-action image
+and capture the current state separately.
+
+The extension retains the same installed-generation/hash/PID/session checks and
+the successful independently audited launch request. It adds no new launch path
+and does not fabricate, refresh or substitute a commissioning attestation.
+
+## In-application restart remains outside this helper
+
+`RestartLegacy`, `RestartSafe` and `RestartXNav` are explicitly refused. The
+application's `PrepareClose` persists configuration; `CompleteRestart` starts
+`opennav-restart.exe`, which waits for exit and launches the next mode. External
+review tooling has no pause between persistence and the successor launch. The
+full commissioning audit deliberately requires all OpenCPN/helper processes
+closed, so it cannot be reused while that automatic sequence is in progress.
+
+A known same-generation child/PID proves process identity, but does not prove
+that the post-close configuration still has the reviewed connections, plugin
+permissions, chart paths and actuator settings. This extension therefore does
+not copy the new INI hash into an audit or accept that child as a newly audited
+launch. A safe automated in-application test needs a separately reviewed
+interposition/verification boundary and is not implemented here.
+
+The supported commissioning sequence remains: close normally, inspect the
+post-close configuration against the strict commissioning baseline, review and
+renew the audit, then use the existing guarded mode launcher. That validates
+separate mode starts; it must not be reported as an in-application mode-switch
+acceptance result. No forced close, repeated restart, restored output plugin or
+physical actuator command is used to get past a refusal.
+
+The selection extension's Linux policy/native-code compilation run passed
+**145 groups**, retaining all prior checks and adding source grammar, screen
+ordering, wrong-page, absent/disabled/clipped/nested rows, duplicate identities,
+malformed labels, unsafe actions and restart-refusal coverage. These tests never
+execute Win32 UI actions. Native PowerShell 5.1 execution and actual installed
+selection screenshots remain pending; the previous 93-group native result above
+does not qualify these additions.

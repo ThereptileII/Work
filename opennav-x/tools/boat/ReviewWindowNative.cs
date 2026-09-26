@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Runtime.InteropServices;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading;
 
 namespace OpenNavX {
@@ -21,6 +22,10 @@ namespace OpenNavX {
     }
     public sealed class WindowInfo {
       public long Handle;public int ProcessId;public uint Dpi;public Rect Bounds;public bool Maximized;
+    }
+    public sealed class SelectionRow {
+      public long Handle;public string Label;public int Top,Left;
+      public bool Enabled,Visible,DirectChild;
     }
     private delegate bool EnumCallback(IntPtr window,IntPtr parameter);
     [DllImport("user32.dll")] private static extern bool EnumChildWindows(IntPtr parent,EnumCallback callback,IntPtr parameter);
@@ -159,18 +164,81 @@ namespace OpenNavX {
         if(visible)matches.Add(h);
       }
       if(matches.Count!=1)throw new InvalidOperationException("Reviewed button must be unique, enabled and fully visible.");
-      var button=matches[0];Rect screen,client;
+      ClickReviewedButton(frame,pid,matches[0]);
+    }
+    private static void ClickReviewedButton(IntPtr frame,int pid,IntPtr button) {
+      AssertFrame(frame,pid);
+      if(!IsWindowVisible(button) || !IsWindowEnabled(button) || Owner(button)!=(uint)pid || !IsChild(frame,button))
+        throw new InvalidOperationException("Reviewed button identity changed before press.");
+      Rect screen,client;
       if(!GetWindowRect(button,out screen) || !GetClientRect(button,out client) || client.Width<24 || client.Height<24)throw new InvalidOperationException("Reviewed button geometry unavailable.");
       var hit=WindowFromPoint(new Point{X=(screen.Left+screen.Right)/2,Y=(screen.Top+screen.Bottom)/2});
       if(hit!=button && !IsChild(button,hit))throw new InvalidOperationException("Reviewed button is obscured; no click sent.");
       AssertFrame(frame,pid);
       var position=new IntPtr((client.Width/2)|((client.Height/2)<<16));UIntPtr result;
-      // Target only the verified custom HWND, not a global desktop coordinate.
-      // The two mouse messages represent one press/release, never a double click.
+      // One target-local press/release. No global input or click retry.
       var down=SendMessageTimeoutW(button,0x201,new UIntPtr(1),position,0x2,1000,out result);
       var up=SendMessageTimeoutW(button,0x202,UIntPtr.Zero,position,0x2,1000,out result);
       if(down==IntPtr.Zero || up==IntPtr.Zero)throw new InvalidOperationException("Reviewed button did not respond; no click retry.");
       Thread.Sleep(300);AssertFrame(frame,pid);
+    }
+    public static string SelectionPage(string action) {
+      switch(action) {
+        case "SelectFirstVisibleWaypoint":return "OpenNav product page: Waypoints";
+        case "SelectFirstVisibleAis":return "OpenNav product page: AIS targets";
+        default:throw new InvalidOperationException("Unsupported read-only row selection.");
+      }
+    }
+    public static bool IsSelectionLabel(string action,string label) {
+      SelectionPage(action); // Reject unknown actions even for empty labels.
+      if(String.IsNullOrEmpty(label) || label.Length>2046 || label.IndexOfAny(new char[]{'\r','\n','\0'})>=0)return false;
+      if(action=="SelectFirstVisibleWaypoint")
+        return Regex.IsMatch(label,@"^.+ / (?:mark|in route)$",RegexOptions.CultureInvariant);
+      // Exact source-derived health prefixes; optional upstream status text may
+      // be localized. Fixed page actions do not satisfy this grammar.
+      return Regex.IsMatch(label,@"^.+ / (?:Active|Inactive|Lost|Position doubtful|Active distress beacon|Distress beacon testing)(?: / .+)?$",RegexOptions.CultureInvariant);
+    }
+    public static SelectionRow ChooseSelectionRow(string action,string page,SelectionRow[] rows) {
+      if(page!=SelectionPage(action) || rows==null || rows.Length>4096)
+        throw new InvalidOperationException("Exact reviewed list page and bounded rows required.");
+      var candidates=new List<SelectionRow>();var identities=new HashSet<long>();
+      foreach(var row in rows) {
+        if(row==null || row.Handle<=0 || !identities.Add(row.Handle))throw new InvalidOperationException("Ambiguous row identity.");
+        if(row.Enabled && row.Visible && row.DirectChild && IsSelectionLabel(action,row.Label))candidates.Add(row);
+      }
+      if(candidates.Count==0)throw new InvalidOperationException("No reviewed list row is fully visible; no selection sent.");
+      candidates.Sort(delegate(SelectionRow a,SelectionRow b){int y=a.Top.CompareTo(b.Top);return y!=0?y:a.Left.CompareTo(b.Left);});
+      if(candidates.Count>1 && candidates[0].Top==candidates[1].Top && candidates[0].Left==candidates[1].Left)
+        throw new InvalidOperationException("Overlapping first rows are ambiguous.");
+      return candidates[0];
+    }
+    public static SelectionRow SelectRow(IntPtr frame,int pid,string action) {
+      var pageLabel=SelectionPage(action);var root=AssertFrame(frame,pid);var pages=new List<IntPtr>();
+      foreach(var h in Children(frame))
+        if(Text(h)==pageLabel && Owner(h)==(uint)pid && IsWindowEnabled(h))pages.Add(h);
+      if(pages.Count!=1)throw new InvalidOperationException("Exactly one reviewed waypoint/AIS list page must be visible.");
+      var page=pages[0];Rect pageBounds;
+      if(!GetWindowRect(page,out pageBounds))throw new InvalidOperationException("List page geometry unavailable.");
+      var rows=new List<SelectionRow>();
+      foreach(var h in Children(page)) {
+        if(GetParent(h)!=page || Owner(h)!=(uint)pid || Class(h)=="Static")continue;
+        Rect r;if(!GetWindowRect(h,out r))throw new InvalidOperationException("List changed while reading row bounds.");
+        rows.Add(new SelectionRow{Handle=h.ToInt64(),Label=Text(h),Top=r.Top,Left=r.Left,Enabled=IsWindowEnabled(h),
+          Visible=Contains(root.Bounds,r) && Contains(pageBounds,r),DirectChild=true});
+      }
+      var chosen=ChooseSelectionRow(action,Text(page),rows.ToArray());
+      var button=new IntPtr(chosen.Handle);Rect final;
+      // No caller supplies an HWND/name/coordinate. Recheck the live page and
+      // chosen row immediately before the sole bounded press/release.
+      AssertFrame(frame,pid);
+      if(Text(page)!=pageLabel || GetParent(button)!=page || Text(button)!=chosen.Label || !GetWindowRect(button,out final) ||
+          final.Top!=chosen.Top || final.Left!=chosen.Left || !Contains(pageBounds,final) || !Contains(root.Bounds,final))
+        throw new InvalidOperationException("Selected list/page changed before interaction; no retry.");
+      ClickReviewedButton(frame,pid,button);
+      var expected=action=="SelectFirstVisibleWaypoint"?"OpenNav product page: Waypoint detail":"OpenNav product page: AIS target";
+      if(Array.IndexOf(VisiblePageLabels(frame),expected)<0)
+        throw new InvalidOperationException("Selection did not expose its read-only detail page; inspect saved before image without retrying.");
+      return chosen;
     }
     public static string[] VisiblePageLabels(IntPtr frame) {
       var result=new List<string>();foreach(var h in Children(frame)) {
