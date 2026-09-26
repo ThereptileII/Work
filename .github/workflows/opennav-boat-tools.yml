@@ -1,0 +1,32 @@
+name: OpenNav boat tooling development checks
+on:
+  push:
+    branches: [opennav-x-boat-tools]
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: opennav-boat-tools-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  native-maintenance:
+    name: Disposable native Windows tooling checks
+    runs-on: windows-2022
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+      - name: Run every maintenance and visual-review policy suite without boat access
+        run: |
+          New-Item -ItemType Directory -Path opennav-x/evidence/local -Force | Out-Null
+          $Failed = @()
+          foreach ($Suite in @('boat-tools', 'official-upgrade-policy', 'preparation', 'commissioning', 'commissioning-launch', 'review-window')) {
+            & "$env:WINDIR/System32/WindowsPowerShell/v1.0/powershell.exe" -NoProfile -File "opennav-x/tools/boat/test-$Suite.ps1" 2>&1 | Tee-Object -FilePath "opennav-x/evidence/local/maintenance-$Suite.log"
+            if ($LASTEXITCODE -ne 0) { $Failed += $Suite }
+          }
+          if ($Failed.Count -ne 0) { throw ('Required tooling suites failed: ' + ($Failed -join ', ')) }
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: development-boat-tooling-${{ github.sha }}
+          path: opennav-x/evidence/local/maintenance-*.log
+          if-no-files-found: error

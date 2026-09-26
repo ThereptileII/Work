@@ -98,6 +98,10 @@ commissioning contracts run in their own mandatory native Windows CI job.
 Separating this from the C++ contract job allows MSVC/UI compilation and
 maintenance qualification to run concurrently; it does not remove a release
 gate. Deployment must also pass the specific maintenance tools it will use.
+The `opennav-x-boat-tools` development branch can run the same disposable native
+suites independently while a product build is in progress. Its result qualifies
+only the exact tooling revision, never an application release. Final publication
+still runs all suites against the exact final product commit.
 
 ## Preliminary display review while the installed prerequisite is blocked
 

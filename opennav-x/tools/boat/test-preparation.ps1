@@ -24,7 +24,7 @@ if (-not $native) {
   }
 }
 $checks=New-Object 'Collections.Generic.List[string]'
-$ini=$null;$aclBefore=$null;$sddl=$null
+$ini=$null;$aclBefore=$null;$sddl=$null;$metadataBefore=$null
 function Reject([scriptblock]$Action,[string]$Reason) {
   $rejected=$false
   try { $null=& $Action } catch { $rejected=$true }
@@ -192,7 +192,38 @@ try {
     Reject {Assert-PreparationAcl $sddl 'not an SDDL' -AllowDaclAutoInherited} 'invalid SDDL'
     $checks.Add('Native semantic ACL comparison rejects owner/group/protection, ordered ACE and SACL changes')
   }
-  if ($native) { $aclBefore=(Get-Acl -LiteralPath $ini).Sddl }
+  if ($native) {
+    $aclBefore=(Get-Acl -LiteralPath $ini).Sddl
+    $metadataBefore=Get-PreparationNativeMetadata $ini
+    # Compare the same explicit query scope even on systems whose ordinary and
+    # audited reads happen to serialize identically. This catches the mixed-
+    # scope pre-stage regression on both desktop Windows and Server CI.
+    $scopeStage=$ini+'.opennav-recovery-'+[guid]::NewGuid().ToString('N')+'.partial'
+    Copy-PreparationFile $saved $scopeStage $vh $valid.Length
+    function Get-Acl {
+      param([string]$LiteralPath,[switch]$Audit)
+      if (-not $Audit) { throw 'Native staging changed the captured security-descriptor query scope.' }
+      Microsoft.PowerShell.Security\Get-Acl -LiteralPath $LiteralPath -Audit
+    }
+    try { Set-PreparationStageAcl $ini $scopeStage $metadataBefore.acl }
+    finally { Remove-Item Function:Get-Acl }
+    Assert-PreparationAcl $metadataBefore.acl (Get-PreparationAuditedAcl $ini)
+    Assert-PreparationAcl $metadataBefore.acl (Get-PreparationAuditedAcl $scopeStage) -AllowDaclAutoInherited
+    if ((Get-Digest $ini) -cne $zh -or (Get-Digest $scopeStage) -cne $vh) { throw 'Security-scope fixture modified original/stage contents.' }
+    $checks.Add('Native metadata and all staging reads use the same explicit audit query scope, preserving exact original access rules')
+    $wrong=New-Object Security.AccessControl.RawSecurityDescriptor($metadataBefore.acl)
+    $otherOwner=if ($wrong.Owner.Value -ceq 'S-1-5-18') {'S-1-5-32-544'} else {'S-1-5-18'}
+    $wrong.Owner=New-Object Security.Principal.SecurityIdentifier($otherOwner)
+    $stageAcl=Get-PreparationAuditedAcl $scopeStage
+    Reject { Set-PreparationStageAcl $ini $scopeStage ($wrong.GetSddlForm([Security.AccessControl.AccessControlSections]::All)) } 'changed audited owner before staging'
+    Assert-PreparationAcl $metadataBefore.acl (Get-PreparationAuditedAcl $ini)
+    Assert-PreparationAcl $stageAcl (Get-PreparationAuditedAcl $scopeStage)
+    $checks.Add('Changed audited owner is refused before any staging permission write; both original and stage remain exact')
+    Remove-Item -LiteralPath $scopeStage
+    if ($env:GITHUB_ACTIONS -eq 'true') {
+      Write-Host (([pscustomobject]@{scope='disposable-ci-fixture-before-publication';ordinarySddl=$aclBefore;auditedSddl=$metadataBefore.acl;ordinaryFlags=[int](New-Object Security.AccessControl.RawSecurityDescriptor($aclBefore)).ControlFlags;auditedFlags=[int](New-Object Security.AccessControl.RawSecurityDescriptor($metadataBefore.acl)).ControlFlags}) | ConvertTo-Json -Compress)
+    }
+  }
   Publish-PreparedProfile $ini $saved $zh $vh $valid.Length $journal
   if ((Get-Digest $ini) -cne $vh -or (Get-Digest $tmp) -cne $vh -or (Get-Digest $originalSaved) -cne $zh) { throw 'Atomic replacement did not preserve exact sources.' }
   if ($native) {
@@ -313,9 +344,11 @@ try {
   # tests retain private account descriptors outside this script's output.
   $failure=@{status='failed';error=$_.Exception.Message;scriptStack=$_.ScriptStackTrace;completedChecks=@($checks)}
   if($native -and $env:GITHUB_ACTIONS -eq 'true') {
-    $failure.syntheticSddl=$sddl;$failure.beforeSddl=$aclBefore
+    $failure.syntheticSddl=$sddl;$failure.beforeSddl=$aclBefore;$failure.nativeMetadataBefore=$metadataBefore
     $failure.fixtureAcls=@(Get-ChildItem -LiteralPath $testRoot -File -Force | Where-Object {$_.Name -match '\.ini|\.partial$'} | ForEach-Object {
-      @{name=$_.Name;sddl=(Get-Acl -LiteralPath $_.FullName).Sddl}
+      $ordinary=(Get-Acl -LiteralPath $_.FullName).Sddl
+      $audited=Get-PreparationAuditedAcl $_.FullName
+      @{name=$_.Name;sddl=$ordinary;auditedSddl=$audited;ordinaryFlags=[int](New-Object Security.AccessControl.RawSecurityDescriptor($ordinary)).ControlFlags;auditedFlags=[int](New-Object Security.AccessControl.RawSecurityDescriptor($audited)).ControlFlags}
     })
   }
   Write-Host ($failure | ConvertTo-Json -Depth 6)

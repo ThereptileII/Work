@@ -10,6 +10,11 @@
     "connectionsOutputDisabled": false,
     "pluginOutputsReviewed": false,
     "noActiveRouteOutput": false,
+    "commissioning": {
+      "record": "REPLACE WITH THE EXACT PREPARED COMMISSIONING RECORD",
+      "recordSha256": "REPLACE AFTER INSPECTION",
+      "appliedSha256": "REPLACE AFTER VERIFIED APPLICATION"
+    },
     "pluginFiles": [
       {
         "path": "REPLACE WITH EVERY DISCOVERED PLUGIN CANDIDATE OR USE AN EMPTY ARRAY ONLY IF NONE EXIST",

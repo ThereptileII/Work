@@ -137,6 +137,17 @@ No unrelated Desktop content is included in feedback documentation.
   reviewed plugin quarantine, interrupted restoration and complete helper-file
   launch verification are independently tested; no application or physical
   command was launched during these checks.
+- Product candidate `62e28e5dfe42e96531f00dd88686634c167b0db8`
+  ([CI 36273516935](https://github.com/ThereptileII/Work/actions/runs/36273516935))
+  matches all 515 committed local source blobs/modes. Both contract jobs pass;
+  integrated product gates are running. The maintenance job stopped before
+  replacement because its permission checks compared different `Get-Acl`
+  query scopes. The correction uses the same explicit audit scope throughout,
+  without expanding the ignored-bit policy, and passes 34/21/11 boat-local
+  temporary-file groups. Dedicated Server CI is pending. The native window
+  review helper passes 93 policy/compilation groups on Linux and Windows;
+  actual UI actions remain unperformed. Both restored chart directories and
+  the 442,271-byte Windows chart database are present; rendering is still pending.
 
 ## Accepted Beta 1 baseline
 

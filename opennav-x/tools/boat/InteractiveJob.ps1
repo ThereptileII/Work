@@ -5,7 +5,7 @@ param([Parameter(Mandatory=$true)][string]$Request)
 $job=Read-Record $Request
 $result=@{status='failed';action=$job.action;utc=[DateTime]::UtcNow.ToString('o')}
 try {
-  if ($job.action -notin @('Launch','LaunchPortableReview','Close','Capture')) { throw 'Unsupported interactive action.' }
+  if ($job.action -notin @('Launch','LaunchPortableReview','Close','Capture','ReviewWindow')) { throw 'Unsupported interactive action.' }
   $exe=Assert-LocalPath $job.executable
   if ((Get-Digest $exe) -cne $job.executableSha256) { throw 'Application changed between dispatch and interactive execution.' }
   if ($job.action -in @('Launch','LaunchPortableReview')) {
@@ -42,6 +42,9 @@ try {
       if ($process.HasExited -or -not $process.MainWindowHandle) { throw 'Application failed to expose its normal window; inspect logs and Safe Mode.' }
       $result.pid=$process.Id;$result.mode=$job.mode;$result.status='passed'
     } finally {$process.Dispose()}
+  } elseif ($job.action -ceq 'ReviewWindow') {
+    . (Join-Path $PSScriptRoot 'ReviewWindow.ps1')
+    $result=Invoke-WindowReview $job
   } else {
     $process=Get-Process -Id $job.processId -ErrorAction Stop
     try {

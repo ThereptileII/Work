@@ -186,10 +186,17 @@ function Assert-PreparationStagePath([string]$Original,[string]$Stage) {
     throw 'Permissions may be prepared only on this new same-directory recovery staging file.'
   }
 }
+function Get-PreparationAuditedAcl([string]$Path) {
+  # Keep the security-information request identical throughout native metadata
+  # capture, staging and publication. Get-Acl -Audit asks for an additional
+  # security-descriptor section; a non-Audit serialization is not the captured
+  # descriptor and must not be substituted during an exact comparison.
+  return (Get-Acl -LiteralPath (Assert-LocalPath $Path) -Audit).Sddl
+}
 function Set-PreparationStageAcl([string]$Original,[string]$Stage,[string]$ExpectedAcl) {
   Assert-PreparationStagePath $Original $Stage
   if([Environment]::OSVersion.Platform -ne 'Win32NT'){throw 'Native staging permissions require Windows.'}
-  Assert-PreparationAcl $ExpectedAcl (Get-Acl -LiteralPath $Original).Sddl
+  Assert-PreparationAcl $ExpectedAcl (Get-PreparationAuditedAcl $Original)
   # A fresh FileSecurity marks all copied sections for persistence. Reusing an
   # unmodified Get-Acl object can leave owner/group sections unwritten. Never
   # set permissions on Original, saved candidate, backup or the parent folder.
@@ -197,8 +204,8 @@ function Set-PreparationStageAcl([string]$Original,[string]$Stage,[string]$Expec
   $sections=[Security.AccessControl.AccessControlSections]::Owner -bor [Security.AccessControl.AccessControlSections]::Group -bor [Security.AccessControl.AccessControlSections]::Access
   $permissions.SetSecurityDescriptorSddlForm($ExpectedAcl,$sections)
   Set-Acl -LiteralPath $Stage -AclObject $permissions
-  Assert-PreparationAcl $ExpectedAcl (Get-Acl -LiteralPath $Stage).Sddl -AllowDaclAutoInherited
-  Assert-PreparationAcl $ExpectedAcl (Get-Acl -LiteralPath $Original).Sddl
+  Assert-PreparationAcl $ExpectedAcl (Get-PreparationAuditedAcl $Stage) -AllowDaclAutoInherited
+  Assert-PreparationAcl $ExpectedAcl (Get-PreparationAuditedAcl $Original)
 }
 function Initialize-PreparationNative {
   if('OpenNavX.PreparationNative' -as [type]){return}
@@ -260,7 +267,7 @@ function Get-PreparationNativeMetadata([string]$Path) {
   # Rename carries the staging descriptor rather than merging destination ACLs.
   # Audit metadata is not part of the existing owner/group/DACL contract: require
   # a successful audit read and refuse it rather than silently dropping it.
-  $audited=(Get-Acl -LiteralPath $path -Audit).Sddl
+  $audited=Get-PreparationAuditedAcl $path
   $descriptor=New-Object Security.AccessControl.RawSecurityDescriptor($audited)
   if($null -ne $descriptor.SystemAcl -or ($descriptor.ControlFlags -band 0x2a30) -ne 0){throw 'Profile audit/security metadata requires separate review.'}
   return [pscustomobject]@{attributes=$attributes;creationUtc=[IO.File]::GetCreationTimeUtc($path);acl=$audited}

@@ -46,7 +46,7 @@ $processes = @(Get-CimInstance Win32_Process -Filter "Name='opencpn.exe'" |
 $profiles = @((Join-Path $env:ProgramData 'opencpn'),(Join-Path $env:APPDATA 'opencpn'))
 $profileStatus = @($profiles | ForEach-Object {
   [ordered]@{path=$_;exists=(Test-Path -LiteralPath $_);files=if(Test-Path -LiteralPath $_){
-    @(Get-ChildItem -LiteralPath $_ -File | Where-Object {$_.Name -match '^(opencpn\.(ini|conf)|navobj.*|chartlist\.dat)$'} | ForEach-Object {
+    @(Get-ChildItem -LiteralPath $_ -File | Where-Object {$_.Name -match '^(opencpn\.(ini|conf)|navobj.*|chartlist\.dat|CHRTLIST\.DAT)$'} | ForEach-Object {
       [ordered]@{name=$_.Name;bytes=$_.Length;sha256=(Get-FileHash -LiteralPath $_.FullName -Algorithm SHA256).Hash.ToLowerInvariant()}
     })}else{@()}}
 })

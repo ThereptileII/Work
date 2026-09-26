@@ -115,6 +115,29 @@ bytes and metadata immediately afterward. No original, saved candidate, backup
 or parent ACL is written. If staging permissions cannot be made identical, the
 operation stops before replacement.
 
+CI run `36273516935`, commit `62e28e5dfe42e96531f00dd88686634c167b0db8`,
+then found a pre-stage comparison failure:
+metadata capture used `Get-Acl -Audit`, while the three staging checks used plain
+`Get-Acl`. The logged ordinary descriptors matched; the captured audited
+descriptor was absent from that failed-run log, so the precise differing bit is
+**not established** by that evidence. The failure happened before staging ACL
+application or profile replacement.
+
+Native metadata capture and all staging descriptor comparisons now use the same
+explicit audited query through `Get-PreparationAuditedAcl`. Microsoft's
+[`Get-Acl` documentation](https://learn.microsoft.com/en-us/powershell/module/microsoft.powershell.security/get-acl?view=powershell-5.1)
+identifies `-Audit` as an additional SACL query; the maintained PowerShell
+[`ProcessRecord` implementation](https://github.com/PowerShell/PowerShell/blob/v7.4.13/src/Microsoft.PowerShell.Security/security/AclCommands.cs#L743)
+adds `AccessControlSections.Audit` to the owner/group/access request. Comparing
+different query scopes is therefore avoided rather than presuming their
+serialization is identical. This change adds no ignored control flag, does not
+relax the strict pre-stage comparison, and leaves SACL refusal intact. Native
+regressions enforce the query scope and prove that an altered audited owner is
+rejected before either original or staging permissions change. CI-only fixture
+diagnostics now include both ordinary/audited SDDL and control flags, as well as
+the actual captured metadata baseline; private account descriptors remain out of
+local boat-test output.
+
 Rename replaces a file object; it does not merge extra metadata. The narrow
 profile tool therefore refuses readonly files, specialized attributes such as
 EFS/compression/sparse/offline, multiple hard links, alternate named streams,
@@ -159,6 +182,13 @@ retaining the exact stage and original. All 32 native PowerShell 5.1 groups
 passed on the boat PC in a unique temporary directory. Private result:
 `evidence/local/boat-beta2/native-preparation-movefile-final.json`.
 Windows Server CI qualification of this rename change remains pending.
+After the same-query-scope correction, all 21 portable groups and all 34 native
+PowerShell 5.1 preparation groups passed. The related commissioning and launch
+verification suites also passed 21 and 11 native groups respectively. These ran
+only in disposable temporary trees; private results are
+`evidence/local/boat-beta2/native-*-audit-scope.json`. Windows Server CI must still
+qualify the same correction in a fresh published commit; earlier Server failure
+and prior native 32-group results do not substitute for that gate.
 CI failure reports include only disposable fixture
 SDDL and stack context; local boat test failures do not print account descriptors.
 The private
