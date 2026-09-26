@@ -39,7 +39,7 @@ index b65126b6c..0cceb4c8d 100644
  
  #ifdef __ANDROID__
 diff --git a/gui/src/chcanv.cpp b/gui/src/chcanv.cpp
-index 258ae04bc..047c4e89d 100644
+index 258ae04bc..af4793fa6 100644
 --- a/gui/src/chcanv.cpp
 +++ b/gui/src/chcanv.cpp
 @@ -24,6 +24,9 @@
@@ -52,7 +52,20 @@ index 258ae04bc..047c4e89d 100644
  #include <wx/wxprec.h>
  
  #ifndef WX_PRECOMP
-@@ -7122,6 +7125,9 @@ void ChartCanvas::ProcessNewGUIScale() {
+@@ -1094,6 +1097,12 @@ void ChartCanvas::SetupGlCanvas() {
+ void ChartCanvas::OnKillFocus(wxFocusEvent &WXUNUSED(event)) {
+   RefreshRect(wxRect(0, 0, GetClientSize().x, m_focus_indicator_pix), false);
+ 
++#ifdef OPENNAV_X
++  // XNav has explicit route Finish/Cancel/Undo touch actions outside the
++  // canvas. Focus moving to one of them must not commit the draft first.
++  if (opennav::IsXNav()) return;
++#endif
++
+   // On Android, we get a KillFocus on just about every keystroke.
+   //  Why?
+ #ifdef __ANDROID__
+@@ -7122,6 +7131,9 @@ void ChartCanvas::ProcessNewGUIScale() {
  }
  
  void ChartCanvas::CreateMUIBar() {
@@ -62,7 +75,7 @@ index 258ae04bc..047c4e89d 100644
    if (g_useMUI && !m_muiBar) {  // rebuild if necessary
  
      // We need to update the m_bENCGroup flag, at least for the initial creation
-@@ -10434,6 +10440,9 @@ void ChartCanvas::ShowObjectQueryWindow(int x, int y, float zlat, float zlon) {
+@@ -10434,6 +10446,9 @@ void ChartCanvas::ShowObjectQueryWindow(int x, int y, float zlat, float zlon) {
  }
  
  void ChartCanvas::ShowMarkPropertiesDialog(RoutePoint *markPoint) {
@@ -72,7 +85,7 @@ index 258ae04bc..047c4e89d 100644
    bool bNew = false;
    if (!g_pMarkInfoDialog) {  // There is one global instance of the MarkProp
                               // Dialog
-@@ -10492,6 +10501,9 @@ void ChartCanvas::ShowMarkPropertiesDialog(RoutePoint *markPoint) {
+@@ -10492,6 +10507,9 @@ void ChartCanvas::ShowMarkPropertiesDialog(RoutePoint *markPoint) {
  }
  
  void ChartCanvas::ShowRoutePropertiesDialog(wxString title, Route *selected) {
@@ -82,7 +95,33 @@ index 258ae04bc..047c4e89d 100644
    pRoutePropDialog = RoutePropDlgImpl::getInstance(this);
    pRoutePropDialog->SetRouteAndUpdate(selected);
    // pNew->UpdateProperties();
-@@ -13448,6 +13460,9 @@ wxString ChartCanvas::FindValidUploadPort() {
+@@ -10767,6 +10785,25 @@ void pupHandler_PasteTrack() {
+ }
+ 
+ bool ChartCanvas::InvokeCanvasMenu(int x, int y, int seltype) {
++#ifdef OPENNAV_X
++  // Use upstream hit-testing and geographic conversion. OpenNav receives only
++  // copied identities/coordinates, after the canvas event stack unwinds.
++  if (opennav::IsXNav() && !m_routeState && !m_bMeasure_Active) {
++    if ((seltype & SELTYPE_AISTARGET) && m_FoundAIS_MMSI > 0 &&
++        opennav::ShowAisCard(m_FoundAIS_MMSI)) return true;
++    if ((seltype & SELTYPE_ROUTEPOINT) && m_pFoundRoutePoint &&
++        opennav::ShowNavigationObjectCard(
++            m_pFoundRoutePoint->m_GUID.ToStdString(wxConvUTF8), false)) return true;
++    if ((seltype & SELTYPE_ROUTESEGMENT) && m_pSelectedRoute &&
++        opennav::ShowNavigationObjectCard(
++            m_pSelectedRoute->GetGUID().ToStdString(wxConvUTF8), true)) return true;
++    if (seltype == SELTYPE_UNKNOWN) {
++      double latitude, longitude;
++      GetCanvasPixPoint(x, y, latitude, longitude);
++      if (opennav::ShowChartContext(latitude, longitude)) return true;
++    }
++  }
++#endif
+   m_canvasMenu = new CanvasMenuHandler(this, m_pSelectedRoute, m_pSelectedTrack,
+                                        m_pFoundRoutePoint, m_FoundAIS_MMSI,
+                                        m_pIDXCandidate, m_nmea_log);
+@@ -13448,6 +13485,9 @@ wxString ChartCanvas::FindValidUploadPort() {
  
  void ShowAISTargetQueryDialog(wxWindow *win, int mmsi) {
    if (!win) return;
@@ -93,7 +132,7 @@ index 258ae04bc..047c4e89d 100644
    if (NULL == g_pais_query_dialog_active) {
      int pos_x = g_ais_query_dialog_x;
 diff --git a/gui/src/ocpn_app.cpp b/gui/src/ocpn_app.cpp
-index a7670a674..2047fcce3 100644
+index a7670a674..59f245cdf 100644
 --- a/gui/src/ocpn_app.cpp
 +++ b/gui/src/ocpn_app.cpp
 @@ -22,6 +22,10 @@
@@ -117,13 +156,15 @@ index a7670a674..2047fcce3 100644
    // Add OpenCPN specific command line options. Help message
    // is hardcoded in kUsage;
    parser.AddSwitch("h", "help", "", wxCMD_LINE_OPTION_HELP);
-@@ -895,18 +902,30 @@ static void ParseLoglevel(wxCmdLineParser &parser) {
+@@ -895,18 +902,32 @@ static void ParseLoglevel(wxCmdLineParser &parser) {
  #ifndef __ANDROID__
  bool MyApp::OnCmdLineHelp(wxCmdLineParser &parser) {
    std::cout << kUsage;
 +#ifdef OPENNAV_X
-+  std::cout << "  --xnav | --legacy | --safe-mode  OpenNav interface/recovery mode\n"
-+               "  --xnav-demo                     Explicit simulated telemetry\n";
++  std::cout << "  --xnav | --legacy | --safe-mode  OpenNav interface/recovery mode\n";
++#if XNAV_ENABLE_TEST_FIXTURES
++  std::cout << "  --xnav-demo                     Explicit simulated telemetry\n";
++#endif
 +#endif
    return false;
  }
@@ -148,7 +189,7 @@ index a7670a674..2047fcce3 100644
    g_start_fullscreen = parser.Found("fullscreen");
    g_bdisable_opengl = parser.Found("no_opengl");
    g_rebuild_gl_cache = parser.Found("rebuild_gl_raster_cache");
-@@ -917,7 +936,11 @@ bool MyApp::OnCmdLineParsed(wxCmdLineParser &parser) {
+@@ -917,7 +938,11 @@ bool MyApp::OnCmdLineParsed(wxCmdLineParser &parser) {
      g_unit_test_1 = static_cast<int>(number);
      if (g_unit_test_1 == 0) g_unit_test_1 = -1;
    }
@@ -160,7 +201,7 @@ index a7670a674..2047fcce3 100644
    ParseLoglevel(parser);
    wxString wxstr;
    if (parser.Found("configdir", &wxstr)) {
-@@ -929,8 +952,15 @@ bool MyApp::OnCmdLineParsed(wxCmdLineParser &parser) {
+@@ -929,8 +954,18 @@ bool MyApp::OnCmdLineParsed(wxCmdLineParser &parser) {
      }
    }
  
@@ -171,12 +212,15 @@ index a7670a674..2047fcce3 100644
 +#endif
    static const std::vector<std::string> kStartOptions = {
 +#ifdef OPENNAV_X
-+      "xnav", "legacy", "safe-mode", "xnav-demo",
++      "xnav", "legacy", "safe-mode",
++#if XNAV_ENABLE_TEST_FIXTURES
++      "xnav-demo",
++#endif
 +#endif
        "unit_test_2",
        "p",
        "fullscreen",
-@@ -1026,6 +1056,12 @@ MyApp::MyApp()
+@@ -1026,6 +1061,12 @@ MyApp::MyApp()
  
  bool MyApp::OnInit() {
    if (!wxApp::OnInit()) return false;
@@ -189,7 +233,7 @@ index a7670a674..2047fcce3 100644
  #ifdef __ANDROID__
    androidEnableBackButton(false);
    androidEnableOptionItems(false);
-@@ -1100,6 +1136,10 @@ bool MyApp::OnInit() {
+@@ -1100,6 +1141,10 @@ bool MyApp::OnInit() {
    }
  
  #ifndef __ANDROID__
@@ -200,7 +244,7 @@ index a7670a674..2047fcce3 100644
    // Check if last run failed, set up safe_mode.
    if (!safe_mode::get_mode()) {
      safe_mode::check_last_start();
-@@ -1314,6 +1354,9 @@ bool MyApp::OnInit() {
+@@ -1314,6 +1359,9 @@ bool MyApp::OnInit() {
    pConfig = g_Platform->GetConfigObject();
    InitBaseConfig(pConfig);
    pConfig->LoadMyConfig();
@@ -210,7 +254,7 @@ index a7670a674..2047fcce3 100644
  
    //  Override for some safe and nice default values if the config file was
    //  created from scratch
-@@ -1509,6 +1552,10 @@ bool MyApp::OnInit() {
+@@ -1509,6 +1557,10 @@ bool MyApp::OnInit() {
  
    InitRestListeners();
  
@@ -221,7 +265,7 @@ index a7670a674..2047fcce3 100644
    //      Establish the GSHHS Dataset location
    gDefaultWorldMapLocation = "gshhs";
    gDefaultWorldMapLocation.Prepend(g_Platform->GetSharedDataDir());
-@@ -1977,7 +2024,11 @@ bool MyApp::OnInit() {
+@@ -1977,7 +2029,11 @@ bool MyApp::OnInit() {
    std::vector<std::string> ipv4_addrs = get_local_ipv4_addresses();
  
    // If network connection is available, start the server and mDNS client
@@ -234,7 +278,7 @@ index a7670a674..2047fcce3 100644
      std::string ipAddr = ipv4_addrs[0];
  
      wxString data_dir = g_Platform->GetPrivateDataDir();
-@@ -1990,10 +2041,16 @@ bool MyApp::OnInit() {
+@@ -1990,10 +2046,16 @@ bool MyApp::OnInit() {
      StartMDNSService(g_hostname.ToStdString(), "opencpn-object-control-service",
                       8000);
    }
@@ -251,7 +295,7 @@ index a7670a674..2047fcce3 100644
    wxLogMessage(_T("opencpn::MyApp starting exit."));
    m_checker.OnExit();
    m_usb_watcher.Stop();
-@@ -2118,6 +2175,9 @@ int MyApp::OnExit() {
+@@ -2118,6 +2180,9 @@ int MyApp::OnExit() {
    g_Platform->OnExit_2();
    safe_mode::clear_check();
    delete g_Platform;
@@ -262,7 +306,7 @@ index a7670a674..2047fcce3 100644
    return TRUE;
  }
 diff --git a/gui/src/ocpn_frame.cpp b/gui/src/ocpn_frame.cpp
-index 8b7a14403..d57ebcf18 100644
+index 8b7a14403..1d1e278d1 100644
 --- a/gui/src/ocpn_frame.cpp
 +++ b/gui/src/ocpn_frame.cpp
 @@ -22,6 +22,9 @@
@@ -285,7 +329,17 @@ index 8b7a14403..d57ebcf18 100644
    b_inCloseWindow = true;
  
    ::wxSetCursor(wxCURSOR_WAIT);
-@@ -3636,7 +3642,11 @@ void MyFrame::ConfigureStatusBar() {
+@@ -3017,6 +3023,9 @@ void MyFrame::ScheduleReconfigAndSettingsReload(bool reload, bool new_dialog) {
+       if (index_hint != -1) cc->SetVPScale(restoreScale[i]);
+     }
+   }
++#ifdef OPENNAV_X
++  opennav::AfterSettingsReconfigured();
++#endif
+ }
+ 
+ ChartCanvas *MyFrame::GetFocusCanvas() {
+@@ -3636,7 +3645,11 @@ void MyFrame::ConfigureStatusBar() {
    UseNativeStatusBar(false);  // better for MSW, undocumented in frame.cpp
  #endif
  
@@ -298,7 +352,7 @@ index 8b7a14403..d57ebcf18 100644
      if (!m_pStatusBar) {
        m_pStatusBar =
            CreateStatusBar(m_StatusBarFieldCount, 0);  // No wxST_SIZEGRIP needed
-@@ -3690,6 +3700,9 @@ void MyFrame::BuildMenuBar(void) {
+@@ -3690,6 +3703,9 @@ void MyFrame::BuildMenuBar(void) {
      showMenuBar = true;
  #endif
  
@@ -308,7 +362,7 @@ index 8b7a14403..d57ebcf18 100644
    if (showMenuBar) {
      //  Menu bar has some dependencies on S52 PLIB, so be sure it is loaded.
      LoadS57();
-@@ -3701,6 +3714,13 @@ void MyFrame::BuildMenuBar(void) {
+@@ -3701,6 +3717,13 @@ void MyFrame::BuildMenuBar(void) {
                                 // to populate the OS X App Menu correctly
      }
  
@@ -322,7 +376,7 @@ index 8b7a14403..d57ebcf18 100644
      UpdateGlobalMenuItems();  // update the state of the menu items (checkmarks
                                // etc.)
    } else {
-@@ -5051,6 +5071,9 @@ void MyFrame::OnInitTimer(wxTimerEvent &event) {
+@@ -5051,6 +5074,9 @@ void MyFrame::OnInitTimer(wxTimerEvent &event) {
  
    RefreshAllCanvas(true);
    wxGetApp().m_usb_watcher.Start();
@@ -332,7 +386,7 @@ index 8b7a14403..d57ebcf18 100644
  }
  
  wxDEFINE_EVENT(EVT_BASIC_NAV_DATA, ObservedEvt);
-@@ -5808,6 +5831,10 @@ void MyFrame::OnFrameTimer1(wxTimerEvent &event) {
+@@ -5808,6 +5834,10 @@ void MyFrame::OnFrameTimer1(wxTimerEvent &event) {
    ProcessUnitTest();
    g_tick++;
    ProcessQuitFlag();
@@ -343,7 +397,7 @@ index 8b7a14403..d57ebcf18 100644
  
    if (bDBUpdateInProgress) return;
  
-@@ -5817,6 +5844,9 @@ void MyFrame::OnFrameTimer1(wxTimerEvent &event) {
+@@ -5817,6 +5847,9 @@ void MyFrame::OnFrameTimer1(wxTimerEvent &event) {
    ProcessDeferredTrackOn();
    SendFixToPlugins();
    ProcessAnchorWatch();
@@ -353,7 +407,7 @@ index 8b7a14403..d57ebcf18 100644
    ProcessLogAndBells();
  
    if (ShouldRestartTrack()) TrackDailyRestart();
-@@ -5850,7 +5880,13 @@ void MyFrame::OnFrameTimer1(wxTimerEvent &event) {
+@@ -5850,7 +5883,13 @@ void MyFrame::OnFrameTimer1(wxTimerEvent &event) {
    nBlinkerTick++;
  
    // This call sends autopilot output strings to output ports.

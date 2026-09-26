@@ -1,7 +1,7 @@
 {
-  "stage": "beta1-release-candidate",
-  "publishNamedRelease": true,
+  "stage": "beta2-development",
+  "publishNamedRelease": false,
   "enduranceSeconds": 10800,
   "acceptedAlphaCommit": "08bc92fc778591a3978e594a54208d672ff9158f",
-  "reason": "Publish the named Beta artifact only after all exact-commit platform, native installer, UI and real three-hour endurance gates succeed. Physical boat acceptance remains separate."
+  "reason": "Beta 2 named release remains withheld until exact-commit Linux/native Windows gates, production fixture exclusion, installer lifecycle and real boat-PC visual/read-only smoke acceptance. Boat currently has unsupported OpenCPN 5.12.2; no modification is authorized through the compatibility gate."
 }

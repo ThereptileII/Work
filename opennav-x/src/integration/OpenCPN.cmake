@@ -51,6 +51,9 @@ set_property(SOURCE "${CMAKE_SOURCE_DIR}/model/src/comm_drv_signalk_net.cpp"
 target_link_libraries(${PACKAGE_NAME} PRIVATE opennav_integration opennav_platform opennav_ui)
 option(OPENNAV_ENABLE_ROUTE_SCENARIO "Compile isolated route integration test driver" OFF)
 if(OPENNAV_ENABLE_ROUTE_SCENARIO)
+  if(NOT XNAV_ENABLE_TEST_FIXTURES)
+    message(FATAL_ERROR "Route scenarios require XNAV_ENABLE_TEST_FIXTURES=ON; they cannot be compiled into the installed product")
+  endif()
   if(NOT OCPN_BUILD_TEST)
     message(FATAL_ERROR "Route scenario is permitted only with upstream tests enabled")
   endif()
@@ -80,6 +83,7 @@ function(opennav_attach_route_tests)
     target_sources(tests PRIVATE
       "${OPENNAV_ROOT}/tests/route_progress_upstream_tests.cpp"
       "${OPENNAV_ROOT}/tests/marine_decoder_upstream_tests.cpp"
+      "${OPENNAV_ROOT}/tests/ais_clock_upstream_tests.cpp"
       "${OPENNAV_ROOT}/tests/settings_store_upstream_tests.cpp"
       "${OPENNAV_ROOT}/tests/recovery_store_upstream_tests.cpp"
       "${OPENNAV_ROOT}/src/integration/RecoveryStore.cpp"

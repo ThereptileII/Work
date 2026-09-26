@@ -5,6 +5,8 @@
 #include "model/ais_decoder.h"
 #include "model/ais_target_data.h"
 #include "model/comm_drv_registry.h"
+#include "model/comm_util.h"
+#include "model/conn_params.h"
 #include "model/navobj_db.h"
 #include "model/own_ship.h"
 #include "model/route.h"
@@ -31,7 +33,7 @@ using namespace vessel;
 using namespace std::chrono_literals;
 std::string directory;
 wxJSONValue report;
-int step = 0, waited = 0;
+int step = 0, waited = 0, advice_waited = 0;
 bool finished = false;
 std::string mark_id, anchor_id;
 Route *test_route = nullptr;
@@ -39,6 +41,11 @@ application::Waypoint retained_mark;
 application::Route retained_route;
 std::shared_ptr<AisTargetData> target;
 bool advisory_fixture = false;
+bool added_late_connection = false;
+int late_connection_ticks = 0;
+bool settings_capture_started = false;
+int settings_capture_waited = 0;
+std::time_t AisTicksNow() { return wxDateTime::Now().ToUTC().GetTicks(); }
 // Explicit decoder-state injection in the isolated no-output fixture. Keep
 // its synthetic reports current while Python exercises the actual target card.
 // The ordinary AIS timer may recalculate CPA/alarms; refresh this test state as
@@ -46,7 +53,7 @@ bool advisory_fixture = false;
 class AisFixtureFeed final : public wxTimer {
   void Notify() override {
     if (!target || !g_pAIS) { Stop(); return; }
-    target->PositionReportTicks = std::time(nullptr);
+    target->PositionReportTicks = AisTicksNow();
     if (advisory_fixture) {
       target->n_alert_state = AIS_ALERT_NO_DIALOG_SET;
       target->CPA = .42; target->TCPA = 7.5; target->bCPA_Valid = true;
@@ -127,10 +134,69 @@ void ObjectScenarioStep(const vessel::Navigation &selected) {
   try {
     Check(wxIsMainThread(), "Application thread required");
     Check(++waited < 60, "Object scenario timed out");
+    if (!added_late_connection) {
+      Check(TheConnectionParams().empty(), "Late-add fixture requires no initial connections");
+      Check(!selected.latitude_deg.value, "No selected GPS may precede connection addition");
+      // Give the actual application two completed navigation timer passes with
+      // no input. Add through the same API used by the normal connection editor.
+      if (++late_connection_ticks < 3) return;
+      std::ifstream in(directory + "/OPENNAV_OBJECT_INPUT_PORT");
+      unsigned port = 0;
+      Check(bool(in >> port) && port >= 1024 && port <= 65535,
+            "Explicit loopback input port required");
+      auto *connection = new ConnectionParams(wxString::Format(
+          "1;0;127.0.0.1;%u;0;;4800;1;0;0;;0;;0;0;0;0;1;"
+          "ISOLATED late-add GPS and AIS test;0;;0;1;", port));
+      Check(connection->Valid && connection->Type == NETWORK &&
+                connection->NetProtocol == TCP &&
+                connection->NetworkAddress == "127.0.0.1" &&
+                connection->Protocol == PROTO_NMEA0183 &&
+                connection->IOSelect == DS_TYPE_INPUT && connection->bEnabled,
+            "Late connection must be enabled input-only loopback NMEA0183");
+      connection->b_IsSetup = false;
+      TheConnectionParams().push_back(connection);
+      UpdateDatastreams();
+      added_late_connection = true;
+      report["late_connection_added_after_deferred"] = true;
+      Record("No startup GPS; real input connection added after deferred initialization");
+      report["phase"] = wxString("connection-added");
+      Write();
+      return;
+    }
     if (!selected.latitude_deg.value ||
         Assess(selected.latitude_deg, Clock::now()).quality != Quality::Live)
       return;
     if (step == 0) {
+      auto network_target = g_pAIS ? g_pAIS->Get_Target_Data_From_MMSI(990000002)
+                                  : std::shared_ptr<AisTargetData>{};
+      if (!network_target || !network_target->b_positionOnceValid) return;
+      Check(std::abs(*selected.latitude_deg.value - 56.7) < 1e-6 &&
+                std::abs(*selected.longitude_deg.value - 12.6) < 1e-6 &&
+                selected.sog_kn.value && std::abs(*selected.sog_kn.value - 6.3) < 1e-6,
+            "Late-added real connection delivers selected GPS without restart");
+      Check(std::abs(network_target->Lat - 56.82) < 1e-6 &&
+                std::abs(network_target->Lon - 12.9) < 1e-6 &&
+                std::abs(network_target->SOG - 7) < 1e-6 &&
+                network_target->COG == 0 && network_target->HDG == 0,
+            "Actual AIVDM decoding preserves target position and motion");
+      Check(!g_pAIS->Get_Target_Data_From_MMSI(990000003),
+            "Malformed AIS checksum cannot create a target");
+      const auto received = CopyAisState(selected, Clock::now());
+      auto observed = std::find_if(received.targets.begin(), received.targets.end(),
+                                  [](const auto &t) { return t.mmsi == 990000002; });
+      report["acquired_ais"]["active"] = network_target->b_active;
+      report["acquired_ais"]["lost"] = network_target->b_lost;
+      report["acquired_ais"]["doubtful"] = network_target->b_positionDoubtful;
+      report["acquired_ais"]["source_report_age_seconds"] =
+          static_cast<int>(AisTicksNow() - network_target->PositionReportTicks);
+      report["acquired_ais"]["copied"] = observed != received.targets.end();
+      report["acquired_ais"]["has_position"] =
+          observed != received.targets.end() && observed->latitude_deg.value.has_value();
+      Write();
+      Check(observed != received.targets.end() && observed->latitude_deg.value &&
+                Assess(observed->latitude_deg, Clock::now()).quality == Quality::Live,
+            "Actual AIS acquisition reaches owned current OpenNav target");
+      Record("Late-added GPS and actual TCP AIVDM AIS acquire without process restart");
       Check(pRouteList && pRouteList->IsEmpty() && pWayPointMan,
             "Empty disposable profile required");
       for (const auto &driver : GetActiveDrivers()) {
@@ -170,6 +236,30 @@ void ObjectScenarioStep(const vessel::Navigation &selected) {
             "Stock canvas undo restores deleted mark");
       Check(Mark(mark_id).name == retained_mark.name, "Restored mark identity");
       Record("Deletion uses OpenCPN undo; retained snapshot survives");
+      Check(!GoTo({gLat + .2, gLon + .2}, "No GPS", Navigation{}).ok,
+            "Go To refuses missing selected position");
+      Check(!GoTo({91, 0}, "Invalid position", selected).ok,
+            "Go To refuses invalid destination");
+      Check(GoTo({gLat + .2, gLon + .2}, "TEST destination", selected).ok,
+            "Go To creates upstream temporary route");
+      auto *goto_route = g_pRouteMan->GetpActiveRoute();
+      Check(goto_route && goto_route->GetnPoints() == 2 &&
+                goto_route->m_bDeleteOnArrival &&
+                g_pRouteMan->GetpActivePoint() == goto_route->GetPoint(2),
+            "Go To targets second point using native arrival lifecycle");
+      Check(!GoTo({gLat + .3, gLon + .3}, "Replacement", selected).ok,
+            "Go To cannot silently replace active navigation");
+      Check(g_pRouteMan->DeleteRoute(goto_route), "Remove temporary test route");
+      Check(GoToWaypoint(Mark(mark_id), selected).ok,
+            "Go To existing waypoint");
+      goto_route = g_pRouteMan->GetpActiveRoute();
+      Check(goto_route && goto_route->GetPoint(2)->m_GUID ==
+                                wxString::FromUTF8(mark_id),
+            "Go To reuses original waypoint identity");
+      Check(g_pRouteMan->DeleteRoute(goto_route) &&
+                pWayPointMan->FindWaypointByGuid(mark_id),
+            "Temporary route deletion preserves existing destination mark");
+      Record("Go To native temporary route, GPS/identity guards and user-waypoint lifetime");
       AddRoute();
       auto before = RouteCopy();
       Check(before.points.size() == 3 && before.points[1].incoming_nm ==
@@ -215,6 +305,10 @@ void ObjectScenarioStep(const vessel::Navigation &selected) {
       auto started = StartAnchor(selected, 50);
       Check(started.ok, "Start upstream anchor watch");
       anchor_id = started.identity;
+      auto *created_anchor = pWayPointMan->FindWaypointByGuid(anchor_id);
+      Check(created_anchor && created_anchor->GetName() == "50" &&
+                created_anchor->GetIconName() == "anchor",
+            "Anchor chart label uses whole metres and anchor icon");
       Check(!StartAnchor(selected, 50).ok, "No implicit anchor replacement");
       Check(!DeleteWaypoint(Mark(anchor_id)).ok, "Anchor mark protected");
       Record("Stop navigation and explicit anchor-watch creation");
@@ -226,10 +320,34 @@ void ObjectScenarioStep(const vessel::Navigation &selected) {
       Check(!watch.alarm, "At-anchor fixture not an alarm");
       Check(ClearAnchor(anchor_id).ok, "Clear upstream watch");
       Check(!ClearAnchor(anchor_id).ok, "Cleared watch cannot be reused");
-      Check(Mark(anchor_id).id == anchor_id,
-            "Anchor mark persists after clear");
+      Check(!pWayPointMan->FindWaypointByGuid(anchor_id),
+            "Clearing owned anchor removes its isolated mark");
       Record(
-          "Anchor observation after normal processing; clearing retains mark");
+          "Anchor observation, whole-metre label, anchor icon and owned-mark removal");
+      Check(!StartAnchor(selected, 50.25).ok,
+            "Fractional radius is not silently rounded");
+      auto user_watch = StartAnchor(selected, 60);
+      Check(user_watch.ok, "Second anchor watch");
+      auto *user_mark = pWayPointMan->FindWaypointByGuid(user_watch.identity);
+      user_mark->m_MarkDescription = "User-owned anchorage";
+      Check(NavObj_dB::GetInstance().UpdateRoutePoint(user_mark),
+            "Persist user annotation");
+      Check(ClearAnchor(user_watch.identity).ok &&
+                pWayPointMan->FindWaypointByGuid(user_watch.identity) == user_mark,
+            "Clearing user-repurposed watch preserves its waypoint");
+      auto old_watch = StartAnchor(selected, 70);
+      Check(old_watch.ok, "Create old-release ownership fixture");
+      auto *old_mark = pWayPointMan->FindWaypointByGuid(old_watch.identity);
+      old_mark->SetName("70.000000");
+      old_mark->SetIconName("diamond");
+      old_mark->m_MarkDescription =
+          "OpenNav anchor watch; radius stored using OpenCPN semantics";
+      Check(NavObj_dB::GetInstance().UpdateRoutePoint(old_mark),
+            "Persist exact Beta 1 watch shape");
+      Check(ClearAnchor(old_watch.identity).ok &&
+                !pWayPointMan->FindWaypointByGuid(old_watch.identity),
+            "Clearing an upgraded Beta 1 watch removes its owned mark");
+      Record("Anchor ownership preserves repurposed user marks and recognizes Beta 1 watches");
       Check(g_pAIS != nullptr, "AIS service exists");
       target = std::make_shared<AisTargetData>(AisTargetCallbacks{});
       target->MMSI = 990000001;
@@ -249,7 +367,7 @@ void ObjectScenarioStep(const vessel::Navigation &selected) {
       target->CPA = .42;
       target->TCPA = 7.5;
       target->bCPA_Valid = true;
-      target->PositionReportTicks = std::time(nullptr);
+      target->PositionReportTicks = AisTicksNow();
       g_pAIS->GetTargetList()[target->MMSI] = target;
       auto ais = CopyAisState(selected, Clock::now());
       auto it = std::find_if(ais.targets.begin(), ais.targets.end(),
@@ -276,7 +394,7 @@ void ObjectScenarioStep(const vessel::Navigation &selected) {
       Check(Assess(stale.targets.front().range_nm, Clock::now()).quality ==
                 Quality::Stale,
             "Repeated copy preserves AIS age");
-      target->PositionReportTicks = std::time(nullptr);
+      target->PositionReportTicks = AisTicksNow();
       g_pAIS->GetTargetList().erase(target->MMSI);
       Check(retained.cpa_nm.value == .42, "AIS copy survives target removal");
       g_pAIS->GetTargetList()[target->MMSI] = target;
@@ -287,6 +405,25 @@ void ObjectScenarioStep(const vessel::Navigation &selected) {
       gFrame->GetPrimaryCanvas()->ShowRoutePropertiesDialog("Test route",
                                                             test_route);
       report["phase"] = wxString("route-card");
+    } else if (step == 4) {
+      // Exact options-close path from the pinned source, while an XNav object
+      // page has hidden the native canvas. Rebuilding must reconcile its AUI
+      // pane immediately, without requiring an application restart.
+      if (!settings_capture_started) {
+        gFrame->ScheduleReconfigAndSettingsReload(false, false);
+        auto *canvas = gFrame->GetPrimaryCanvas();
+        Check(canvas && canvas->IsShown() && canvas->GetClientSize().x > 100 &&
+                  canvas->GetClientSize().y > 100,
+              "Settings reconfiguration restores visible usable chart canvas");
+        Record("Options canvas reconfiguration from hidden XNav page restores chart");
+        report["phase"] = wxString("settings-return");
+        settings_capture_started = true;
+      }
+      if (!wxFileExists(wxString::FromUTF8(directory) + "/settings-return-observed")) {
+        Check(++settings_capture_waited < 15, "Settings chart screenshot was not observed");
+        Write();
+        return;
+      }
     } else if (step == 5) {
       gFrame->GetPrimaryCanvas()->ShowMarkPropertiesDialog(
           pWayPointMan->FindWaypointByGuid(mark_id));
@@ -302,7 +439,7 @@ void ObjectScenarioStep(const vessel::Navigation &selected) {
       advisory_fixture = true;
       report["phase"] = wxString("ais-advice");
     } else if (step == 10 && !wxFileExists(wxString::FromUTF8(directory)+"/ais-advice-observed")) {
-      Check(++waited < 15, "Actual shell AIS advice observation timed out");
+      Check(++advice_waited < 15, "Actual shell AIS advice observation timed out");
       Write();
       return;
     } else if (step == 11) {
@@ -317,7 +454,7 @@ void ObjectScenarioStep(const vessel::Navigation &selected) {
       finished = true;
     }
     if (target)
-      target->PositionReportTicks = std::time(nullptr);
+      target->PositionReportTicks = AisTicksNow();
     ++step;
     Write();
   } catch (const std::exception &e) {

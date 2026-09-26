@@ -60,9 +60,15 @@ struct NavigationActions {
   std::function<CommandResult(Coordinate, const std::string &,
                               const std::string &)>
       create_waypoint;
+  std::function<CommandResult(Coordinate, const std::string &)> go_to;
+  std::function<CommandResult(const Waypoint &)> go_to_waypoint;
   std::function<void(const std::string &)> view_route, view_waypoint;
   std::function<void()> start_route, finish_route, measure, object_info,
       orientation, toggle_ais, fullscreen;
+  std::function<CommandResult()> undo_route_point, cancel_route;
+  std::function<CommandResult(const std::string &, const std::string &)>
+      finish_route_named;
+  std::function<void(Coordinate)> object_info_at;
   std::function<void()> legacy_settings, legacy_route_manager, plugin_settings;
   std::function<CommandResult(double)> start_anchor;
   std::function<CommandResult(const std::string &)> clear_anchor;

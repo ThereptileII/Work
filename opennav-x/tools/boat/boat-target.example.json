@@ -1,0 +1,21 @@
+{
+  "schema": 1,
+  "owner": "OpenNavX.BoatTarget.1",
+  "stockExecutable": "C:\\Program Files (x86)\\OpenCPN\\opencpn.exe",
+  "profileDirectory": "C:\\ProgramData\\opencpn",
+  "readOnlyAudit": {
+    "reviewedUtc": "REPLACE AFTER INSPECTION",
+    "buildCommit": "REPLACE WITH EXACT INSTALLED COMMIT",
+    "profileIniSha256": "REPLACE AFTER INSPECTION",
+    "connectionsOutputDisabled": false,
+    "pluginOutputsReviewed": false,
+    "noActiveRouteOutput": false,
+    "pluginFiles": [
+      {
+        "path": "REPLACE WITH EVERY DISCOVERED PLUGIN CANDIDATE OR USE AN EMPTY ARRAY ONLY IF NONE EXIST",
+        "sha256": "REPLACE AFTER INSPECTION",
+        "startupAndIdleReadOnly": false
+      }
+    ]
+  }
+}

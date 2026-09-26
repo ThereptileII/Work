@@ -105,6 +105,14 @@ def wait_window(title, pid=None, timeout=60):
         time.sleep(.1)
     raise RuntimeError(f'Window not found: {title}; visible: {windows(pid)}')
 
+def cycle_light(pid):
+    """Click the button naming the current palette, never a stale 'Light' label."""
+    labels=[]
+    for root,_,_ in windows(pid):
+        labels.extend(t for _,t in children(root) if t in ('Day','Dusk','Night'))
+    assert len(labels)==1, ('Current palette control must be unique', labels)
+    click_text(pid,labels[0])
+
 def click_text(pid, label):
     deadline = time.monotonic() + 5
     while time.monotonic() < deadline:
@@ -246,8 +254,7 @@ def size_window(handle):
 def assert_page_geometry(handle, child):
     """Require the page to fill the actual center, including a visible alert.
 
-    At 150% in an 800-pixel window, the 56-DIP alert leaves a 492-pixel
-    viewport. A fixed pre-alert 500-pixel threshold rejects this valid layout.
+    Alerts share the fixed status row; neither rail nor chart loses height.
     Native pane edges, minimum usable area and occlusion remain mandatory.
     """
     labels = children(handle)

@@ -1,4 +1,5 @@
 #include "smartnav/VesselEnergy.h"
+#include "integration/BuildFeatures.h"
 #include "ui/ProductPanel.h"
 #include "ui/Sheet.h"
 #include "vessel/DataItems.h"
@@ -61,11 +62,13 @@ void ProductPanel::CommissioningPanel() {
             "Record with navigation"))
       return;
     auto config = state_.settings;
+#if XNAV_ENABLE_TEST_FIXTURES
     if (state_.vessel.simulated) {
       config.energy.battery = smartnav::PreviewEnergyModel(true);
       config.energy.consumption = smartnav::ConsumptionModel::MeasuredPack;
       config.energy.battery_device_id = "DEMO / pack-1";
     }
+#endif
     Result(service->StartRecording(config, navigation, vessel::Clock::now()));
   };
   Action("Record instruments only", [start] { start(false); });
@@ -113,6 +116,10 @@ void ProductPanel::CommissioningPanel() {
         "OpenNav recording (*.onxr)|*.onxr", wxFD_OPEN | wxFD_FILE_MUST_EXIST);
     if (input.ShowModal() != wxID_OK)
       return;
+    auto device = state_.settings.energy.battery_device_id;
+#if XNAV_ENABLE_TEST_FIXTURES
+    if (state_.vessel.simulated) device = "DEMO / pack-1";
+#endif
     auto fields = EditSheet(
         *this, mode_, "Calibration observations",
         "Export finite, fresh, coherent speed/power pairs for review. This "
@@ -121,8 +128,7 @@ void ProductPanel::CommissioningPanel() {
         {{"Speed reference: STW or SOG", "STW", 3},
          {"Power: whole-pack, motor-electrical or shaft", "whole-pack", 20},
          {"Power device identity",
-          W(state_.vessel.simulated ? "DEMO / pack-1"
-                                    : state_.settings.energy.battery_device_id),
+          W(device),
           1024}},
         "Export...");
     if (!fields)

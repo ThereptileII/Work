@@ -1,3 +1,5 @@
+#include "adapters/SimulatedAutopilot.h"
+#include "adapters/RadarSimulator.h"
 #include "adapters/Autopilot.h"
 #include "adapters/Radar.h"
 #include <iostream>

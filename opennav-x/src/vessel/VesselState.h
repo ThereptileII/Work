@@ -120,6 +120,7 @@ struct VesselState {
 };
 
 // Explicit, deterministic fixture. Never installed as a live-data fallback.
+// Dedicated test library only; not linked into an installed product.
 VesselState SimulatorFixture(Time observed_at);
 
 } // namespace opennav::vessel

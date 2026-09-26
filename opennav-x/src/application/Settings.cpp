@@ -259,6 +259,10 @@ Settings DecodeSettings(const std::string &record) {
   };
   display("display.rail", s.data_rail);
   display("display.instruments", s.instruments);
+  // Migrate only the untouched Alpha/Beta 1 default. Custom source choices and
+  // ordering remain stored; additional values remain accessible in Instruments.
+  if (s.data_rail == std::vector<std::string>{"aws","depth","sog","cog","heading"})
+    s.data_rail = {"sog","depth","aws","heading"};
   Require(r.empty(), "Unknown settings fields");
   ValidateSettings(s);
   return s;

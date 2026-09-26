@@ -8,11 +8,11 @@ $Runtime = Get-ChildItem "$VS\VC\Redist\MSVC\*\x86\Microsoft.VC143.CRT" -Directo
     Sort-Object FullName -Descending | Select-Object -First 1
 if (-not $Runtime) { throw 'App-local x86 MSVC redistributable directory not found' }
 $Output = Join-Path $Root 'build/developer-preview'
-python (Join-Path $PSScriptRoot 'package-preview.py') --install "$Root/build/xnav-install" `
-    --build "$Root/build/xnav-windows" --runtime $Runtime.FullName --output $Output
-if ($LASTEXITCODE -ne 0) { throw 'Preview assembly failed' }
-python (Join-Path $PSScriptRoot 'verify-preview-pe.py') "$Output/OpenNavX-Beta1-Portable/app" `
+python (Join-Path $PSScriptRoot 'package-preview.py') --install "$Root/build/production-install" `
+    --build "$Root/build/production-windows" --runtime $Runtime.FullName --output $Output
+if ($LASTEXITCODE -ne 0) { throw 'Recovery assembly failed' }
+python (Join-Path $PSScriptRoot 'verify-preview-pe.py') "$Output/OpenNavX-Beta2-Portable-Recovery/app" `
     --report "$Root/evidence/local/preview-dll-audit.json"
-if ($LASTEXITCODE -ne 0) { throw 'Preview dependency closure failed' }
-python (Join-Path $PSScriptRoot 'smoke-preview.py') --package "$Output/OpenNavX-Beta1-Portable-win64.zip"
-if ($LASTEXITCODE -ne 0) { throw 'Extracted portable preview smoke test failed' }
+if ($LASTEXITCODE -ne 0) { throw 'Recovery dependency closure failed' }
+python (Join-Path $PSScriptRoot 'smoke-portable-production.py') --package "$Output/OpenNavX-Beta2-Portable-Recovery.zip"
+if ($LASTEXITCODE -ne 0) { throw 'Extracted production recovery smoke test failed' }

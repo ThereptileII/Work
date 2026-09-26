@@ -33,20 +33,46 @@ def data(predicate=lambda d:True,timeout=15):
         time.sleep(.2)
     raise AssertionError('Recording diagnostic predicate timed out')
 def xdo(*args):return subprocess.check_output(['xdotool',*map(str,args)],env=env,text=True).strip()
-def click(label,x,y):
-    if windows:ui.click_text(app.pid,label)
-    else:
-        offset=56 if data().get('runtime',{}).get('alerts') else 0
-        xdo('mousemove','--window',handle,x,y+offset);xdo('click',1);time.sleep(.4)
-def page(label,shortcut):
+def click(label):
     if windows:
-        if label in ('Commissioning & recordings','Field diagnostic bundle'):ui.click_text(app.pid,'Menu')
         ui.click_text(app.pid,label)
-    else:
-        xdo('windowfocus',handle)
-        if label=='Energy':xdo('mousemove','--window',handle,260,773);xdo('click',1)
-        else:xdo('key','ctrl+shift+'+shortcut)
-        time.sleep(.4)
+        return
+    # Use actual owner-drawn control bounds. Alerts now share the status row,
+    # and replay/recording actions can move after state or viewport changes.
+    deadline=time.monotonic()+20
+    while time.monotonic()<deadline:
+        display=data()['runtime']['display']
+        controls=display.get('interaction_controls',display.get('product_controls',[]))
+        choices={tuple(c[k] for k in ('x','y','width','height')):c
+                 for c in controls if c['label']==label}
+        visible=[c for c in choices.values() if c['visible'] and c['enabled']]
+        if visible:
+            assert len(visible)==1,('Ambiguous control',label,visible)
+            control=visible[0]
+            xdo('mousemove',control['x']+control['width']//2,
+                control['y']+control['height']//2);xdo('click',1);time.sleep(.4)
+            return
+        # Scroll through the same visible Up/Down controls used by a person;
+        # do not inject clicks into clipped/offscreen children.
+        enabled=[c for c in choices.values() if c['enabled']]
+        if len(enabled)==1:
+            top=max((c['y']+c['height'] for c in controls
+                     if c['label'] in ('Day','Dusk','Night','Menu') and c['visible']),default=56)
+            direction='Up' if enabled[0]['y']<top else 'Down'
+            scroll=[c for c in controls if c['label']==direction and c['visible'] and c['enabled']]
+            if len(scroll)==1:
+                before=display['page_scroll_px'];c=scroll[0]
+                xdo('mousemove',c['x']+c['width']//2,c['y']+c['height']//2);xdo('click',1)
+                data(lambda d:d['runtime']['display']['page_scroll_px']!=before)
+                continue
+        time.sleep(.2)
+    raise AssertionError(('Recording control unavailable',label,data()['ui_page'],choices))
+def page(label):
+    if label!='Energy':
+        click('System')
+        data(lambda d:d['ui_page']=='System')
+    click({'Field diagnostic bundle':'Export diagnostic bundle',
+           'System diagnostics':'Diagnostics'}.get(label,label))
     expected={'Energy':'Energy','Commissioning & recordings':'Commissioning & recordings','Diagnostics':'Diagnostics','System diagnostics':'Diagnostics','Field diagnostic bundle':'Field diagnostic bundle'}[label]
     data(lambda d:d['ui_page']==expected)
     if windows and label=='Energy':ui.assert_preview_page(handle,'Energy')
@@ -120,49 +146,56 @@ try:
         if log.exists() and 'OnInitTimer...Finalize Canvases' in log.read_text(errors='replace'):break
         time.sleep(.2)
     else:raise RuntimeError('Deferred startup failed')
-    if windows:handle,_=ui.wait_window('OpenNav X / OpenCPN',app.pid)
+    if windows:
+        handle,_=ui.wait_window('OpenNav X / OpenCPN',app.pid)
+        ui.size_window(handle)
     else:
         handle=xdo('search','--onlyvisible','--pid',app.pid,'--name','^OpenNav X / OpenCPN$').splitlines()[0]
         xdo('windowsize',handle,1280,800);xdo('windowmove',handle,0,0);xdo('windowfocus',handle)
+    # Wait for the application layout, not merely the asynchronous native size
+    # request. Otherwise a cached small-window button rectangle can be clicked
+    # after the window has already expanded.
+    data(lambda d:any(c['label']=='System' and c['visible'] and c['x']>1100 and c['y']>700
+                      for c in d['runtime']['display'].get('interaction_controls',[])))
     assert not data()['runtime']['recording']['active']
-    page('Commissioning & recordings','c');capture('recording-01-commissioning')
-    click('Record instruments only',260,363)
+    page('Commissioning & recordings');capture('recording-01-commissioning')
+    click('Record instruments only')
     data(lambda d:d['runtime']['recording']['active'])
     time.sleep(3.3)
     capture('recording-02-active')
-    page('Commissioning & recordings','c')
-    click('Stop & save recording',260,407)
+    page('Commissioning & recordings')
+    click('Stop & save recording')
     stopped=data(lambda d:not d['runtime']['recording']['active'] and d['runtime']['recording']['published']>=3)
     files=list((profile/'recordings').glob('session-*/*.onxr'));assert len(files)==1,files
     count=recording_frames(files[0]);assert count>=3
     shutil.copy2(files[0],evidence/'recording-private.onxr')
     report['checks'].append(f'Actual UI captured/saved {count} normalized frames without positions/route')
-    page('Commissioning & recordings','c')
-    click('Open recording for REPLAY...',850,407)
+    page('Commissioning & recordings')
+    click('Open recording for REPLAY...')
     file_dialog('Open normalized recording',files[0],'Open')
     replay=data(lambda d:d['data_mode']=='REPLAY')
     assert replay['runtime']['replay']['active'] and not replay['runtime']['replay']['allows_hardware_control']
     assert not replay.get('source_candidates'),'Live source candidates blended into replay'
-    page('Energy','e');capture('recording-03-replay-energy')
+    page('Energy');capture('recording-03-replay-energy')
     time.sleep(count+6)
     stale=data(lambda d:next(x for x in d['data'] if x['name']=='Battery SOC')['quality']=='STALE')
     capture('recording-04-replay-ended-stale')
     assert 'arrival_soc' not in stale['energy'],stale['energy']
     report['checks'].append('Replay is identified; separate source state; hardware control blocked; end ages into stale')
-    page('Commissioning & recordings','c')
-    click('Rewind REPLAY',615,565)
+    page('Commissioning & recordings')
+    click('Rewind REPLAY')
     data(lambda d:next(x for x in d['data'] if x['name']=='Battery SOC')['quality']!='STALE')
-    click('Pause / resume REPLAY',230,565)
+    click('Pause / resume REPLAY')
     paused=data(lambda d:d['runtime']['replay'].get('paused'))
     elapsed=paused['runtime']['replay']['elapsed_ms'];time.sleep(1.2)
     assert data()['runtime']['replay']['elapsed_ms']==elapsed,'Paused replay clock renewed'
     capture('recording-05-replay-paused')
-    click('Stop REPLAY',1000,565)
+    click('Stop REPLAY')
     data(lambda d:d['data_mode']=='DEMO' and not d['runtime']['replay']['active'])
     report['checks'].append('Rewind/pause/stop return to labelled demo without profile restart')
     if windows:
         # Export through the real themed parameter sheet and native file picker.
-        click('Export calibration observations...',0,0)
+        click('Export calibration observations...')
         file_dialog('Recording to export',files[0],'Open')
         ui.set_dialog_fields(app.pid,'Calibration observations',['STW','whole-pack','DEMO / pack-1'])
         ui.click_text(app.pid,'Export...')
@@ -176,8 +209,8 @@ try:
         assert output.read_text().startswith('OpenNavXCalibration,1\nreference,STW\nbasis,whole-pack')
         assert 'DEMO' in output.read_text();shutil.copy2(output,evidence/'recording-calibration.csv')
         report['checks'].append('Native calibration export saved finite source-labelled demo pairs')
-    page('Field diagnostic bundle','x');capture('field-report-01-export-page')
-    click('Export Diagnostic Bundle',250,249)
+    page('Field diagnostic bundle');capture('field-report-01-export-page')
+    click('Export Diagnostic Bundle')
     bundle=profile/'field-report.zip';file_dialog('Export Diagnostic Bundle',bundle,'Save')
     deadline=time.monotonic()+5
     while not bundle.exists() and time.monotonic()<deadline:time.sleep(.1)
@@ -194,7 +227,7 @@ try:
     shutil.copy2(bundle,evidence/('field-report.zip' if windows else 'field-report-linux.zip'))
     report['checks'].append('Actual diagnostic ZIP export: integrity, whitelist, profile/position privacy and DEMO provenance')
     if windows:
-        click('Export with selected recording...',0,0)
+        click('Export with selected recording...')
         file_dialog('Explicitly select recording to share',files[0],'Open')
         ui.click_text(app.pid,'Include selected recording')
         selected=profile/'field-report-selected.zip';file_dialog('Export Diagnostic Bundle',selected,'Save')
@@ -207,7 +240,7 @@ try:
             assert b'Navigation included: NO' in z.read('recording-consent.txt')
         shutil.copy2(selected,evidence/'field-report-selected.zip')
         report['checks'].append('Native explicit recording selection, consent, ZIP content equality')
-    page('Diagnostics','i') if not windows else page('System diagnostics','i')
+    page('Diagnostics') if not windows else page('System diagnostics')
     capture('recording-06-returned-diagnostics')
     if windows:
         monitor=ui.monitor_process(app.pid);ui.close(handle);ui.wait_clean_exit(monitor)

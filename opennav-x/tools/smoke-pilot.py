@@ -118,11 +118,23 @@ def capture(name):
     if windows:ui.capture(handle,p)
     else:subprocess.run(['import','-window','root',str(p)],env=env,check=True)
     report['screenshots'].append(p.name)
-def click(label,x,y):
-    if windows:ui.click_text(app.pid,label)
+spec=importlib.util.spec_from_file_location('product_interaction',root/'tools/product-interaction.py')
+interaction=importlib.util.module_from_spec(spec);spec.loader.exec_module(interaction)
+def product_scroll(direction):
+    if windows:ui.click_text(app.pid,'Down' if direction>0 else 'Up')
+    else:xdo('mousemove',700,430,'click',5 if direction>0 else 4)
+    time.sleep(.4)
+def click(label,x=0,y=0,enabled=True):
+    target=interaction.control(data,label,product_scroll,enabled=enabled)
+    if windows:
+        if enabled is False:
+            # Physical input on a disabled native control must emit nothing.
+            assert ui.SetCursorPos(target['x']+target['width']//2,target['y']+target['height']//2)
+            ui.MouseEvent(0x0002,0,0,0,0);time.sleep(.08);ui.MouseEvent(0x0004,0,0,0,0)
+        else:ui.click_text(app.pid,label)
     else:
-        offset=56 if data().get('runtime',{}).get('alerts') else 0
-        xdo('windowfocus',handle);xdo('mousemove','--window',handle,x,y+offset)
+        xdo('windowfocus',handle)
+        xdo('mousemove',target['x']+target['width']//2,target['y']+target['height']//2)
         time.sleep(.15);xdo('mousedown',1);time.sleep(.08);xdo('mouseup',1);time.sleep(.4)
 def confirm(label):
     if windows:ui.click_text(app.pid,label)
@@ -173,14 +185,16 @@ try:
     state=pilot(lambda p:p.get('fresh') and p.get('mode')=='STANDBY')
     assert not state['enabled'] and not sent,'Permission cannot auto-enable or emit controls'
     assert not state['track_capability'] and not state['wind_capability']
-    show_pilot();capture('pilot-01-status-only')
-    click('AUTO',475,406);confirm('Request AUTO')
-    pilot(lambda p:p.get('command_state')=='Disabled');assert not sent
+    show_pilot();report['grouped_regions']=interaction.grouped_regions(data);capture('pilot-01-status-only')
+    previous=pilot()['command_id']
+    click('AUTO',enabled=False);time.sleep(.8)
+    assert pilot()['command_id']==previous and not sent,'Disabled control must not request or send a command'
+    report['checks'].append('Control OFF disables AUTO; physical click creates no request or output')
     click('Enable / disable manual control',550,345);confirm('Enable manual control')
     pilot(lambda p:p.get('enabled'))
-    for label,key,delta,x in [('AUTO',0x40,0,475),('+1° magnetic course',0x51,1,790),
-                            ('-1° magnetic course',0x7f,-1,475),('+10° magnetic course',0xd1,10,1100),
-                            ('-10° magnetic course',0x50,-10,170)]:
+    for label,key,delta,x in [('AUTO',0x40,0,475),('+1°',0x51,1,790),
+                            ('-1°',0x7f,-1,475),('+10°',0xd1,10,1100),
+                            ('-10°',0x50,-10,170)]:
         before=len(sent);previous=int(pilot()['command_id'])
         click(label,x,406 if label=='AUTO' else 467)
         if label=='AUTO':confirm('Request AUTO')
@@ -190,7 +204,7 @@ try:
         assert abs(state['locked_heading_magnetic_deg']-target[0])<.02,state
     capture('pilot-02-confirmed-manual')
     silence.set();before=len(sent)
-    click('+1° magnetic course',790,467)
+    click('+1°',790,467)
     pilot(lambda p:p.get('command_state')=='TimedOut',timeout=10)
     assert len(sent)==before+1,'No automatic resend after missing feedback'
     time.sleep(1)

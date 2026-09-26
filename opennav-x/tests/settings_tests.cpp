@@ -191,6 +191,16 @@ void Live() {
         "Configuration did not fabricate sensor capacity");
 }
 void Display() {
+  application::Settings legacy;
+  legacy.data_rail={"aws","depth","sog","cog","heading"};
+  const auto migrated=application::DecodeSettings(application::EncodeSettings(legacy));
+  Check(migrated.data_rail==std::vector<std::string>{"sog","depth","aws","heading"},
+        "Untouched old five-value rail migrates to visible four-value helm layout");
+  Check(migrated.instruments==legacy.instruments,
+        "Rail migration does not remove instruments or sensor data");
+  legacy.data_rail={"soc","pack_power","rpm","depth","sog"};
+  Check(application::DecodeSettings(application::EncodeSettings(legacy)).data_rail==legacy.data_rail,
+        "Custom older rail settings remain stored for deliberate user selection");
   application::Settings s;
   s.data_rail = {"soc", "pack_power", "rpm"};
   s.instruments = {"sog", "stw", "depth", "water_temp", "rudder"};

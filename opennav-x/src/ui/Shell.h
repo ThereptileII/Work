@@ -3,7 +3,10 @@
 #include "ui/Controls.h"
 #include "ui/PreviewPanel.h"
 #include "ui/ProductPanel.h"
+#include "integration/BuildFeatures.h"
+#if XNAV_ENABLE_TEST_FIXTURES
 #include "vessel/DemoSource.h"
+#endif
 #include "vessel/AisSelection.h"
 
 #include <wx/aui/aui.h>
@@ -70,8 +73,15 @@ public:
   bool CanScrollPage(int direction) const;
   bool NativeCaptionThemed() const { return caption_themed_; }
   int MinimumValueHeight() const { return product_ && product_->IsShown() ? product_->MinimumValueHeight() : 0; }
+  std::vector<ProductGeometry> ProductControls() const { return product_ && product_->IsShown() ? product_->ControlGeometry() : std::vector<ProductGeometry>{}; }
+  std::vector<ProductGeometry> ProductRegions() const { return product_ && product_->IsShown() ? product_->RegionGeometry() : std::vector<ProductGeometry>{}; }
+  std::vector<ProductGeometry> RailRegions() const;
+  std::vector<ProductGeometry> InteractionControls() const;
+  bool RouteCreationActive() const { return actions_.route_creating && actions_.route_creating(); }
   const char *LightName() const;
   void ShowObject(const std::string &id, bool route);
+  void AfterCanvasLayoutChanged();
+  void ShowChartContext(application::Coordinate position);
 
 private:
   wxPanel *MakePane(const wxString &name, wxAuiPaneInfo placement);
@@ -94,7 +104,9 @@ private:
   void ShowNavigation();
   void OnCommand(wxCommandEvent &event);
   void StartDemo();
+#if XNAV_ENABLE_TEST_FIXTURES
   void SelectDemo(vessel::DemoScenario scenario);
+#endif
   wxString InputSummary() const;
   vessel::AisSelection ais_selection_;
   vessel::AisState ais_state_;
@@ -112,11 +124,15 @@ private:
   vessel::VesselState state_;
   bool simulation_ = false;
   bool simulation_paused_ = false;
+#if XNAV_ENABLE_TEST_FIXTURES
   vessel::DemoSource demo_{vessel::Clock::now()};
+#endif
   PreviewPanel *page_ = nullptr;
   ProductPanel *product_ = nullptr;
   XNavButton *finish_route_ = nullptr;
   XNavButton *standby_ = nullptr;
+  XNavButton *theme_button_ = nullptr;
+  XNavButton *undo_route_ = nullptr, *cancel_route_ = nullptr;
   PreviewPage current_page_ = PreviewPage::Route;
   std::vector<std::pair<wxString, bool>> navigation_visibility_;
   wxTimer timer_;
@@ -124,7 +140,7 @@ private:
   std::vector<XNavButton *> buttons_;
   std::vector<std::pair<int, std::function<void()>>> commands_;
   std::vector<wxStaticText *> labels_;
-  XNavScroll *rail_scroll_ = nullptr;
+  wxPanel *rail_scroll_ = nullptr;
   XNavButton *page_up_ = nullptr, *page_down_ = nullptr;
   XNavButton *rail_up_ = nullptr, *rail_down_ = nullptr;
   wxPanel *rail_actions_ = nullptr;

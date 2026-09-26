@@ -37,8 +37,13 @@ NavigationActions GuardNavigationChanges(NavigationActions a,
   a.edit_waypoint = Guard(a.edit_waypoint, allowed);
   a.delete_waypoint = Guard(a.delete_waypoint, allowed);
   a.create_waypoint = Guard(a.create_waypoint, allowed);
+  a.go_to = Guard(a.go_to, allowed);
+  a.go_to_waypoint = Guard(a.go_to_waypoint, allowed);
+  a.undo_route_point = Guard(a.undo_route_point, allowed);
+  a.cancel_route = Guard(a.cancel_route, allowed);
   a.start_route = Guard(a.start_route, allowed);
   a.finish_route = Guard(a.finish_route, allowed);
+  a.finish_route_named = Guard(a.finish_route_named, allowed);
   a.view_route = Guard(a.view_route, allowed);
   a.start_anchor = Guard(a.start_anchor, allowed);
   a.clear_anchor = Guard(a.clear_anchor, allowed);

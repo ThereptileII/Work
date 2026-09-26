@@ -1,0 +1,15 @@
+{
+  "status": "verified",
+  "backup": "boat-local versioned recovery set",
+  "applicationFiles": 2123,
+  "profileFiles": 539,
+  "bytes": 1318897252,
+  "originalExecutableSha256": "2fdcd6a2cdef7f730aa4c094fcd21302ed2a5d531a611ee180c06533f3a2cb48",
+  "navigationDataUploaded": false,
+  "stage": "Beta 2 preflight only",
+  "compatibility": "unsupported5.12.2; no deployment",
+  "timestamp": "2026-09-26",
+  "profile_recovery": "original zero-filled INI and nonzero temporary INI both preserved; no restoration",
+  "application_launches": 0,
+  "physical_commands_sent": 0
+}

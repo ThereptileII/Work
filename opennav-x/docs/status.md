@@ -1,4 +1,71 @@
-# OpenNav X status — 2026-09-25
+# OpenNav X status — 2026-09-26
+
+**Beta 2 development is in progress; it is not yet qualified or deployed.**
+
+The user's Desktop feedback has been read completely and recorded in
+[boat Beta 1 feedback](feedback/boat-beta1-feedback.md). The approved design
+reference is the Beta 2 baseline. Current work separates fixture-enabled CI
+executables from the installed product, refines shared visual components and
+navigation workflows, and adds repeatable boat deployment and maintenance tools.
+The accepted Beta 1 results below remain historical evidence, not Beta 2 gates.
+
+### Boat preflight — installation blocked
+
+Read-only inspection found **OpenCPN 5.12.2-0+b69f44c / x86**, executable SHA-256
+`2fdcd6a2cdef7f730aa4c094fcd21302ed2a5d531a611ee180c06533f3a2cb48`.
+This differs from the validated 5.12.4 binary; no compatibility entry has been
+added and no installed OpenCPN file has been modified. Permission to upgrade
+the prerequisite is pending. Tailscale, SSH and RustDesk remain running.
+
+The actual shared profile's `opencpn.ini` was already zero-filled at first
+inspection (21,380 bytes; last written 2026-09-20). A same-sized nonzero temporary
+INI from the same write interval is preserved as a potential recovery source.
+Neither file has been restored or replaced. A cold, hash-verified recovery set is complete: 2,123 application files and
+539 profile files (1,318,897,252 bytes). The earlier incomplete attempt remains
+separate and is not an accepted backup.
+Private chart/profile content remains on the boat PC or in ignored local
+inspection evidence, never in the repository.
+
+The normal profile includes an output-capable NMEA 2000 connection and enabled
+pilot plugins. No real-profile launch or physical command has been attempted.
+A read-only commissioning policy must address third-party plugin outputs as
+well as OpenNav's own control switch. Saved user diagnostics show prior live
+GPS, heading, wind and depth; this is not current-session hardware acceptance.
+Reported desktop mode is 1920×1080 and the saved application DPI is 144;
+1280×800 physical-display acceptance remains outstanding.
+
+The old Developer Preview portable folder has been retired by an atomic move
+into the boat-local recovery archive, with ownership hash checked before and
+after and a durable recovery journal. No profile/chart/user file was deleted.
+Beta 1 remains available until a known-good replacement can be installed. Old
+download ZIPs will be archived during final cleanup. No unrelated Desktop
+content is included in feedback documentation.
+
+### Beta 2 implementation and validation under way
+
+- Production defaults to `XNAV_ENABLE_TEST_FIXTURES=OFF`; deterministic sources
+  remain in separate test code. Package/installer self-tests must reject a
+  fixture-enabled executable.
+- Alerts share the fixed top status area; the primary rail has four visible
+  values without a narrow scrolling viewport. Center and the current palette
+  have explicit labels. System uses a page rather than a tall popup.
+- Route/energy, instruments, settings and manual pilot layouts are being
+  refined against the reference. Native and boat visual review are pending.
+- Integration fixes cover chart-layout restoration after actual settings
+  reconfiguration, whole-metre anchor labels, safe cleanup of XNav-owned anchor
+  marks and copied chart context/Go To actions.
+- Late-created input-only loopback GPS and actual AIS decoding pass 15 grouped
+  Linux object/integration checks in UTC+2. This exposed and fixed AIS observation
+  clock conversion that made fresh targets appear two hours stale. Four added
+  integrated clock tests pass in UTC and UTC+2. Boat reception remains pending.
+- Portable contract suite: 63 passing cases/suites in local development.
+  Integrated fixture-enabled Linux build passes; 106/106 existing integrated
+  regressions pass. New interaction smokes and all native Windows gates remain
+  pending.
+- Beta 2 installer wizard, versioned maintenance and boat scripts are implemented
+  but their new native lifecycle gates have not yet run.
+
+## Accepted Beta 1 baseline
 
 **Beta 1 software qualified: all ten CI jobs passed, downloaded release verified, native visual review complete.**
 

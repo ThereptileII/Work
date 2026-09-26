@@ -1,5 +1,8 @@
 #include "ui/ProductPanel.h"
 #include "ui/Sheet.h"
+#include "integration/BuildFeatures.h"
+#include <wx/dcbuffer.h>
+#include <wx/textctrl.h>
 #include "vessel/DataItems.h"
 #include "vessel/DisplayItems.h"
 #include <algorithm>
@@ -9,7 +12,8 @@ namespace opennav::ui {
 namespace {
 wxString W(const std::string &s) { return wxString::FromUTF8(s); }
 wxString Name(const std::string &name, const std::string &id) {
-  return W(name.empty() ? id : name);
+  (void)id;
+  return W(name.empty() ? "Unnamed" : name);
 }
 const vessel::AisTarget *Target(const ProductState &s, int mmsi) {
   for (const auto &t : s.ais.targets)
@@ -17,18 +21,34 @@ const vessel::AisTarget *Target(const ProductState &s, int mmsi) {
       return &t;
   return nullptr;
 }
-wxString Reading(const vessel::Sample &sample, vessel::Time now,
-                 const wxString &unit) {
-  auto a = vessel::Assess(sample, now);
-  return (a.value ? wxString::Format("%.1f ", *a.value) + unit
-                  : "Unavailable") +
-         " / " + W(vessel::QualityName(a.quality));
+void Metric(XNavPainter &p, const vessel::Sample &sample, vessel::Time now,
+            int x, int y, int width, const wxString &title, const wxString &unit,
+            int decimals = 1, int size = 36) {
+  const auto a = vessel::Assess(sample, now);
+  const bool stale = a.quality == vessel::Quality::Stale;
+  p.Text(title, x, y, 11, p.c.secondary, false, width);
+  p.Text(a.value && !stale ? wxString::Format("%.*f", decimals, *a.value) : wxString::FromUTF8("—"),
+         x, y + 24, size, stale ? p.c.muted : p.c.primary, false, width);
+  p.Text(unit, x, y + size + 30, 12, p.c.secondary, false, width);
+  if (a.quality != vessel::Quality::Live)
+    p.Text(a.quality == vessel::Quality::Unavailable ? "NO DATA" : W(vessel::QualityName(a.quality)),
+           x, y + size + 50, 11, stale ? p.c.attention : p.c.muted, false, width);
 }
 } // namespace
 ProductPanel::ProductPanel(wxWindow *parent, ProductActions actions)
     : XNavScroll(parent),
       actions_(std::move(actions)) {
   SetScrollRate(0, FromDIP(24));
+  Bind(wxEVT_CHAR_HOOK, [this](wxKeyEvent &event) {
+    auto *focus = wxWindow::FindFocus();
+    if (event.GetKeyCode() == WXK_ESCAPE &&
+        (!focus || (!dynamic_cast<wxTextCtrl *>(focus) &&
+                     wxGetTopLevelParent(focus) == wxGetTopLevelParent(this)))) {
+      CallAfter([this] { Back(); });
+      return;
+    }
+    event.Skip();
+  });
   Bind(wxEVT_SIZE, [this](wxSizeEvent &e) {
     const int width = GetClientSize().x;
     if (width > 0 && width != layout_width_) {
@@ -38,7 +58,7 @@ ProductPanel::ProductPanel(wxWindow *parent, ProductActions actions)
         t.first->Wrap(std::max(200, width - FromDIP(64)));
       }
       for (auto &g : action_grids_)
-        g.first->SetCols(std::max(1, std::min(g.second, width / FromDIP(212))));
+        g.sizer->SetCols(std::max(1, std::min(g.columns, width / FromDIP(g.minimum_width + 12))));
       Layout();
       FitInside();
     }
@@ -55,14 +75,66 @@ ProductPanel::ProductPanel(wxWindow *parent, ProductActions actions)
     e.Skip();
   });
 }
+void ProductPanel::Back() {
+  ProductPage parent = ProductPage::Home;
+  switch (page_) {
+  case ProductPage::Home: if (actions_.chart) actions_.chart(); return;
+  case ProductPage::RouteDetail: parent = ProductPage::Routes; break;
+  case ProductPage::WaypointDetail: parent = ProductPage::Waypoints; break;
+  case ProductPage::AisDetail: parent = ProductPage::Ais; break;
+  case ProductPage::SourceDetail: case ProductPage::BoatMapping: case ProductPage::SourcesAdvanced: parent = ProductPage::Sources; break;
+  case ProductPage::PilotSettings: parent = ProductPage::Pilot; break;
+  case ProductPage::RailLayout: case ProductPage::InstrumentLayout: parent = ProductPage::Display; break;
+  case ProductPage::EnergySettings: case ProductPage::VesselSettings:
+  case ProductPage::NavigationSettings: case ProductPage::Sources:
+  case ProductPage::Display: case ProductPage::Radar: parent = ProductPage::Settings; break;
+  case ProductPage::Commissioning: case ProductPage::FieldReport: parent = ProductPage::System; break;
+  default: break;
+  }
+  ShowPage(parent, mode_);
+}
 void ProductPanel::Heading(const wxString &title, const wxString &subtitle) {
-  Text(title, 26);
-  Text(subtitle, 13);
+  if (first_heading_) {
+    first_heading_ = false;
+    auto *row = new wxBoxSizer(wxHORIZONTAL);
+    auto *back = new XNavIconButton(this, wxID_ANY, XNavIcon::Back, "Back", "Back");
+    back->SetMinSize(FromDIP(wxSize(64, 48)));
+    back->SetLightMode(mode_);
+    back->Bind(wxEVT_BUTTON, [this](wxCommandEvent &) { CallAfter([this] { Back(); }); });
+    row->Add(back, 0, wxRIGHT, FromDIP(16));
+    auto *label = new wxStaticText(this, wxID_ANY, title);
+    label->SetFont(UiFont(*this, 28));
+    label->SetForegroundColour(Colour(Theme(mode_).primary));
+    EnableScrollGesture(*label);
+    row->Add(label, 1, wxALIGN_CENTER_VERTICAL);
+    body_->Add(row, 0, wxEXPAND | wxLEFT | wxRIGHT | wxBOTTOM, FromDIP(16));
+    if (!subtitle.empty()) Text(subtitle, 13);
+  } else {
+    Text(title, 22);
+    if (!subtitle.empty()) Text(subtitle, 13);
+  }
+}
+void ProductPanel::Visual(const wxString &name, int height,
+                          std::function<void(XNavPainter &, wxDC &, int)> draw) {
+  auto *panel = new wxPanel(this);
+  panel->SetName(name);
+  panel->SetMinSize(FromDIP(wxSize(280, height)));
+  panel->SetBackgroundStyle(wxBG_STYLE_PAINT);
+  EnableScrollGesture(*panel);
+  panel->Bind(wxEVT_PAINT, [this, panel, draw](wxPaintEvent &) {
+    wxAutoBufferedPaintDC dc(panel);
+    dc.SetBackground(wxBrush(Colour(Theme(mode_).background)));
+    dc.Clear();
+    XNavPainter painter(*panel, dc, mode_);
+    draw(painter, dc, panel->ToDIP(panel->GetClientSize().x));
+  });
+  body_->Add(panel, 0, wxEXPAND | wxLEFT | wxRIGHT | wxBOTTOM, FromDIP(16));
+  visuals_.push_back(panel);
 }
 void ProductPanel::Text(const wxString &text, int size) {
   auto *label = new wxStaticText(this, wxID_ANY, text);
   EnableScrollGesture(*label);
-  label->SetFont(UiFont(*this, size, size > 18));
+  label->SetFont(UiFont(*this, size));
   label->SetForegroundColour(
       Colour(size > 18 ? Theme(mode_).primary : Theme(mode_).secondary));
   static_text_.push_back({label, text});
@@ -74,16 +146,26 @@ void ProductPanel::LiveText(
   auto *label = new wxStaticText(this, wxID_ANY, text(state_));
   EnableScrollGesture(*label);
   label->SetFont(UiFont(*this, 14));
+  label->Wrap(std::max(200, GetClientSize().x - FromDIP(64)));
   label->SetForegroundColour(Colour(Theme(mode_).secondary));
   body_->Add(label, 0, wxEXPAND | wxLEFT | wxRIGHT | wxBOTTOM, FromDIP(16));
   text_.push_back({label, std::move(text)});
 }
+XNavButton *ProductPanel::StatusAction(const wxString &title,
+    std::function<wxString(const ProductState &)> status, std::function<void()> action) {
+  auto text = [title, status](const ProductState &state) { return title + "  ·  " + status(state); };
+  auto *button = Action(text(state_), std::move(action));
+  button->SetRole(ButtonRole::Quiet);
+  button->SetMinSize(FromDIP(wxSize(200, 64)));
+  button_text_.push_back({button, std::move(text)});
+  return button;
+}
 XNavButton *ProductPanel::Action(const wxString &label,
                                  std::function<void()> action, bool enabled) {
   auto *button = new XNavButton(this, wxID_ANY, label, label);
-  button->SetMinSize(FromDIP(wxSize(200, 52)));
+  button->SetMinSize(FromDIP(wxSize(actions_grid_ ? action_width_ : 200, 52)));
   button->SetLightMode(mode_);
-  button->Enable(enabled);
+  button->Enable(enabled && static_cast<bool>(action));
   button->Bind(wxEVT_BUTTON,
                [this, action = std::move(action)](wxCommandEvent &) {
                  CallAfter([action] {
@@ -111,11 +193,12 @@ void ProductPanel::Value(
   grid_->Add(v, 1, wxEXPAND);
   values_.push_back({v, std::move(value)});
 }
-void ProductPanel::BeginActions(int columns) {
+void ProductPanel::BeginActions(int columns, int minimum_width) {
+  action_width_ = minimum_width;
   actions_grid_ = new wxGridSizer(
-      std::max(1, std::min(columns, GetClientSize().x / FromDIP(212))),
+      std::max(1, std::min(columns, GetClientSize().x / FromDIP(minimum_width + 12))),
       FromDIP(8), FromDIP(8));
-  action_grids_.push_back({actions_grid_, columns});
+  action_grids_.push_back({actions_grid_, columns, minimum_width});
   body_->Add(actions_grid_, 0, wxEXPAND | wxALL, FromDIP(16));
 }
 void ProductPanel::Result(application::CommandResult result) {
@@ -140,6 +223,11 @@ std::string ProductPanel::PageTitle() const {
     return "Commissioning & recordings";
   case ProductPage::Alerts:
     return "Alerts";
+  case ProductPage::System:
+    return "System";
+  case ProductPage::NavigationSettings: return "Navigation settings";
+  case ProductPage::BoatMapping: return "Motor & battery setup";
+  case ProductPage::SourcesAdvanced: return "Advanced source details";
   case ProductPage::FieldReport:
     return "Field diagnostic bundle";
   case ProductPage::Home:
@@ -188,10 +276,12 @@ std::string ProductPanel::PageTitle() const {
   return "Unknown";
 }
 void ProductPanel::ShowPage(ProductPage page, LightMode mode) {
+  if (page != page_) pilot_advanced_ = false;
   page_ = page;
   mode_ = mode;
   Scroll(0, 0);
   Build();
+  if (IsShownOnScreen()) SetFocus();
 }
 int ProductPanel::MinimumValueHeight() const {
   int minimum = 0;
@@ -199,7 +289,32 @@ int ProductPanel::MinimumValueHeight() const {
     const int height = ToDIP(v.first->GetClientSize().y);
     if (!minimum || height < minimum) minimum = height;
   }
+  for (auto *panel : visuals_) {
+    const int height = ToDIP(panel->GetClientSize().y) - 48;
+    if (height > 0 && (!minimum || height < minimum)) minimum = height;
+  }
   return minimum;
+}
+std::vector<ProductGeometry> ProductPanel::ControlGeometry() const {
+  std::vector<ProductGeometry> out;
+  for (auto *child : GetChildren()) {
+    if (!dynamic_cast<XNavButton *>(child)) continue;
+    const auto rectangle = child->GetScreenRect();
+    out.push_back({child->GetLabel().ToStdString(wxConvUTF8), rectangle,
+                   child->IsEnabled(), IsShownOnScreen() && child->IsShownOnScreen() &&
+                   GetScreenRect().Contains(rectangle)});
+  }
+  return out;
+}
+std::vector<ProductGeometry> ProductPanel::RegionGeometry() const {
+  std::vector<ProductGeometry> out;
+  for (auto *panel : visuals_) {
+    const auto rectangle = panel->GetScreenRect();
+    out.push_back({panel->GetName().ToStdString(wxConvUTF8), rectangle, true,
+                   IsShownOnScreen() && panel->IsShownOnScreen() &&
+                   GetScreenRect().Contains(rectangle)});
+  }
+  return out;
 }
 void ProductPanel::ShowAis(int mmsi, LightMode mode) {
   mmsi_ = mmsi;
@@ -244,6 +359,8 @@ void ProductPanel::Update(const ProductState &state, LightMode mode) {
     Build();
     if((restore_focus || mode_changed) && IsShownOnScreen())SetFocus();
   }
+  for (auto &button : button_text_) button.first->SetLabel(button.second(state));
+  for (auto *visual : visuals_) visual->Refresh(false);
   for (auto &v : values_)
     v.first->SetReading(v.second(state), state.now);
   const auto &caps = state.pilot.capabilities;
@@ -255,7 +372,11 @@ void ProductPanel::Update(const ProductState &state, LightMode mode) {
         : action == adapters::PilotAction::Track ? caps.track
         : action == adapters::PilotAction::Wind ? caps.wind
                                                : caps.alter_course;
-    button.first->Enable(supported && !state.vessel.replayed);
+    const bool command_ready = state.pilot.enabled &&
+        (action == adapters::PilotAction::Standby || state.pilot.fresh) &&
+        (action != adapters::PilotAction::AlterCourse ||
+         state.pilot.feedback.mode == adapters::PilotMode::Auto);
+    button.first->Enable(supported && command_ready && !state.vessel.replayed);
   }
   bool changed = false;
   for (auto &t : text_) {
@@ -272,15 +393,23 @@ void ProductPanel::Update(const ProductState &state, LightMode mode) {
   }
 }
 void ProductPanel::AlertsPanel() {
-  Heading("Alerts", state_.vessel.replayed ? "REPLAY alerts / historical data"
-                     : state_.vessel.simulated ? "DEMO alerts / no vessel alarm acknowledgement"
-                     : "Active conditions / acknowledgement changes XNav presentation only");
-  Text("Acknowledged conditions remain visible until resolved. OpenCPN alarms and physical equipment remain independent.");
-  if (state_.alerts.empty()) Text("No active XNav alerts. This does not establish safe water or verify absent sensors.");
+  Heading("Alerts", state_.vessel.replayed ? "REPLAY / Historical conditions" : "Conditions needing your attention");
+  if (state_.alerts.empty()) Text("No current XNav alerts. Continue to monitor the chart, instruments and surroundings.");
   for (const auto &a : state_.alerts) {
-    Text(W(application::AlertLevelName(a.level)) + " / " + W(a.title), 20);
-    Text(W(a.action));
-    Text(W(a.source) + (a.acknowledged ? " / ACKNOWLEDGED" : " / NEW"), 12);
+    Visual("Alert " + W(a.title), 160, [this, id = a.id](XNavPainter &p, wxDC &dc, int width) {
+      for (const auto &alert : state_.alerts) if (alert.id == id) {
+        const auto color = alert.level == application::AlertLevel::Critical ? p.c.alarm
+                           : alert.level == application::AlertLevel::Warning ? p.c.attention
+                                                                            : p.c.accent;
+        p.Card(0, 0, width, 156, W(application::AlertLevelName(alert.level)));
+        dc.SetPen(*wxTRANSPARENT_PEN); dc.SetBrush(wxBrush(Colour(color)));
+        dc.DrawRoundedRectangle(p.D(0), p.D(12), p.D(4), p.D(132), p.D(2));
+        p.Text(W(alert.title), 24, 46, 23, p.c.primary, false, width - 48);
+        p.Text(W(alert.action), 24, 84, 14, p.c.secondary, false, width - 48);
+        p.Text(alert.acknowledged ? "Acknowledged / condition remains active" : "Needs attention",
+               24, 122, 11, color, false, width - 48);
+      }
+    });
     BeginActions(2);
     Action("Inspect condition", [this, area = a.area] {
       switch (area) {
@@ -296,6 +425,7 @@ void ProductPanel::AlertsPanel() {
     }, !a.acknowledged);
     EndActions();
   }
+  Text("Acknowledgement does not clear an active condition or acknowledge alarms on other equipment.", 12);
 }
 void ProductPanel::CreateMark() {
   if (!actions_.navigation.chart_position)
@@ -318,8 +448,8 @@ void ProductPanel::CreateMark() {
 void ProductPanel::RouteActions() {
   Heading(Name(route_.name, route_.id),
           route_.active
-              ? "ACTIVE / OpenCPN route"
-              : "OpenCPN route / copied selection; actions revalidate changes");
+              ? "Active passage"
+              : "Saved route");
   BeginActions(2);
   Action("Back to routes", [this] { ShowPage(ProductPage::Routes, mode_); });
   Action("View first point on chart", [this] {
@@ -380,7 +510,7 @@ void ProductPanel::RouteActions() {
       },
       route_.editable);
   EndActions();
-  Text("PLANNED LEGS / OpenCPN stored distances and courses", 18);
+  Text("PLANNED LEGS", 18);
   for (std::size_t i = 0; i < route_.points.size(); ++i) {
     const auto &p = route_.points[i];
     Text(
@@ -395,7 +525,7 @@ void ProductPanel::RouteActions() {
 }
 void ProductPanel::PointActions() {
   Heading(Name(point_.name, point_.id),
-          wxString::Format("%.6f, %.6f / OpenCPN waypoint", point_.latitude_deg,
+          wxString::Format("%.5f, %.5f", point_.latitude_deg,
                            point_.longitude_deg));
   Text(W(point_.description));
   BeginActions(2);
@@ -407,6 +537,15 @@ void ProductPanel::PointActions() {
     if (actions_.navigation.view_waypoint)
       actions_.navigation.view_waypoint(point_.id);
   });
+  Action("GO TO", [this] {
+    if (!actions_.navigation.go_to_waypoint) return;
+    if (ConfirmSheet(*this, mode_, "Go to " + Name(point_.name, point_.id),
+          "Start a passage to this waypoint? Check the chart and passage before starting.", "START")) {
+      const auto result = actions_.navigation.go_to_waypoint(point_);
+      if (result.ok && actions_.chart) actions_.chart();
+      else Result(result);
+    }
+  }, !state_.vessel.simulated && !state_.vessel.replayed)->SetRole(ButtonRole::Primary);
   Action(
       "Edit waypoint",
       [this] {
@@ -420,7 +559,7 @@ void ProductPanel::PointActions() {
       },
       point_.editable);
   Action(
-      "Delete isolated waypoint",
+      "Delete waypoint",
       [this] {
         if (ConfirmSheet(*this, mode_, "Delete waypoint",
                          Name(point_.name, point_.id) +
@@ -431,96 +570,142 @@ void ProductPanel::PointActions() {
       },
       point_.removable);
 }
+void ProductPanel::Instruments() {
+  Heading("Vessel instruments", state_.vessel.replayed
+      ? "REPLAY / Historical vessel readings" : "Navigation, wind and conditions");
+  const auto config = actions_.settings ? actions_.settings() : state_.settings;
+  const std::vector<std::pair<wxString, std::vector<std::string>>> groups{
+      {"NAVIGATION", {"sog", "cog", "heading", "stw"}},
+      {"WIND", {"aws", "awa", "tws", "twa"}},
+      {"CONDITIONS", {"depth", "water_temp", "pressure", "rudder", "heel"}},
+      {"ENERGY", {"soc", "voltage", "current", "pack_power", "motor_power", "rpm", "motor_temp"}},
+      {"TANKS", {"fresh_water", "fuel", "waste"}}};
+  for (const auto &group : groups) {
+    std::vector<std::string> chosen;
+    for (const auto &key : group.second)
+      if (std::find(config.instruments.begin(), config.instruments.end(), key) != config.instruments.end())
+        chosen.push_back(key);
+    if (chosen.empty()) continue;
+    // Each numeric region has a full readable 132 DIP below the common heading.
+    // More than four configured values in a family occupy a second grouped row.
+    for (std::size_t start = 0; start < chosen.size(); start += 4) {
+      const std::vector<std::string> row(chosen.begin() + start,
+          chosen.begin() + std::min(chosen.size(), start + 4));
+      Visual("Instruments " + group.first, 188,
+          [this, row, title = group.first](XNavPainter &p, wxDC &dc, int width) {
+        p.Card(0, 0, width, 184, title);
+        const int cell = (width - 48) / static_cast<int>(row.size());
+        const auto items = vessel::DisplayItems(state_.vessel);
+        for (std::size_t i = 0; i < row.size(); ++i)
+          for (const auto &item : items)
+            if (row[i] == item.key) {
+              const int decimals = row[i] == "cog" || row[i] == "heading" || row[i] == "awa" || row[i] == "twa" ? 0 : 1;
+              Metric(p, *item.sample, state_.now, 24 + static_cast<int>(i) * cell,
+                     52, cell - 16, W(item.title), W(item.unit), decimals);
+            }
+        if (title == "WIND") {
+          const auto angle = vessel::Assess(state_.vessel.wind.apparent_angle_deg, state_.now);
+          if (angle.value && (angle.quality == vessel::Quality::Live || angle.quality == vessel::Quality::Aging)) {
+            const double radians = *angle.value * 3.14159265358979323846 / 180.0;
+            const int cx = width - 42, cy = 26;
+            const int dx = static_cast<int>(std::sin(radians) * 14);
+            const int dy = static_cast<int>(-std::cos(radians) * 14);
+            dc.SetPen(wxPen(Colour(p.c.accent), p.D(2)));
+            dc.DrawLine(p.D(cx - dx), p.D(cy - dy), p.D(cx + dx), p.D(cy + dy));
+            dc.SetBrush(wxBrush(Colour(p.c.accent)));
+            dc.DrawCircle(p.D(cx + dx), p.D(cy + dy), p.D(3));
+          }
+        }
+      });
+    }
+  }
+  Action("Configure instruments", [this] { ShowPage(ProductPage::InstrumentLayout, mode_); });
+}
 void ProductPanel::PilotActions() {
   Heading("Manual autopilot", state_.vessel.replayed
-                                  ? "REPLAY / All hardware controls disabled"
-                              : state_.vessel.simulated
-                                  ? "DEMO adapter / no vessel commands"
-                                  : "ST4000 / human commands only / boat commissioning required");
-  if (!state_.vessel.simulated && !state_.vessel.replayed)
-    Action("Translator configuration", [this] { ShowPage(ProductPage::PilotSettings, mode_); });
-  LiveText([](const auto &s) {
-    return W(adapters::PilotModeName(s.pilot.feedback.mode)) + " / " +
-           (s.pilot.fresh ? "Feedback current"
-                          : "Feedback unavailable or stale") +
-           " / " +
-           (s.pilot.enabled ? "Manual control enabled" : "Control disabled");
+              ? "REPLAY / All hardware controls disabled" : "Human control / Feedback confirmed");
+  Visual("Autopilot heading", 192, [this](XNavPainter &p, wxDC &, int width) {
+    p.Card(0, 0, width, 188, "AUTOPILOT");
+    const auto &pilot = state_.pilot;
+    p.Text(pilot.fresh ? W(adapters::PilotModeName(pilot.feedback.mode)) : wxString("STATUS UNAVAILABLE"),
+           width / 2, 20, 15, pilot.fresh ? p.c.healthy : p.c.attention, false, width / 2 - 24);
+    auto locked = pilot.fresh ? pilot.feedback.locked_heading_magnetic_deg : vessel::Sample{};
+    auto heading = pilot.fresh ? pilot.feedback.heading_magnetic_deg : vessel::Sample{};
+    const int cell = (width - 48) / 3;
+    Metric(p, locked, state_.now, 24, 54, cell - 16, "COMMANDED HEADING", "° MAGNETIC", 0, 48);
+    Metric(p, heading, state_.now, 24 + cell, 54, cell - 16, "ACTUAL HEADING", "° MAGNETIC", 0, 32);
+    Metric(p, state_.vessel.rudder.angle_deg, state_.now, 24 + cell * 2, 54,
+           cell - 16, "RUDDER", "°", 1, 32);
   });
-  LiveText([](const auto &s) {
-    return "Command: " + W(adapters::CommandStateName(s.pilot.command.state)) +
-           " / " + W(s.pilot.command.detail);
-  });
-  LiveText([](const auto &s) { return W(s.pilot.adapter_status); });
-  Action(
-      state_.vessel.simulated ? "Enable / disable DEMO manual control" : "Enable / disable manual control",
-      [this] {
-        const bool enable = !state_.pilot.enabled;
-        if (!enable ||
-            ConfirmSheet(*this, mode_, state_.vessel.simulated ? "Enable manual simulator" : "Enable physical pilot control?",
-                         state_.vessel.simulated ? "Commands affect only the labelled autopilot simulator. SmartNav has no command path." :
-                         "Manual buttons can move the vessel's rudder. Confirm the correct translator, a clear drive area and immediate physical STANDBY access. SmartNav cannot steer. Enable lasts only for this session.",
-                         state_.vessel.simulated ? "Enable DEMO" : "Enable manual control"))
-          actions_.pilot_enable(enable);
-      },
-      !state_.vessel.replayed && (state_.vessel.simulated || state_.settings.pilot.permit_control));
-  const auto caps = state_.pilot.capabilities;
-  BeginActions(4);
-  auto *standby = Action(
-      "STANDBY",
-      [this] { actions_.pilot_command(adapters::PilotAction::Standby, 0); },
-      caps.standby);
+  BeginActions(4, 96);
+  for (int delta : {-10, -1, 1, 10}) {
+    auto *button = Action(wxString::Format("%+d°", delta), [this, delta] {
+      if (actions_.pilot_command)
+        actions_.pilot_command(adapters::PilotAction::AlterCourse, delta);
+    }, state_.pilot.enabled && state_.pilot.fresh &&
+       state_.pilot.capabilities.alter_course && state_.pilot.feedback.mode == adapters::PilotMode::Auto);
+    button->SetName(wxString::Format("%+d° magnetic course", delta));
+    button->SetMinSize(FromDIP(wxSize(96, 56)));
+    pilot_buttons_.push_back({button, adapters::PilotAction::AlterCourse});
+  }
+  EndActions();
+  BeginActions(2, 144);
+  auto *standby = Action("STANDBY", [this] {
+    if (actions_.pilot_command) actions_.pilot_command(adapters::PilotAction::Standby, 0);
+  }, state_.pilot.enabled && state_.pilot.capabilities.standby);
+  standby->SetRole(ButtonRole::Critical);
+  standby->SetMinSize(FromDIP(wxSize(144, 56)));
   pilot_buttons_.push_back({standby, adapters::PilotAction::Standby});
-  for (const auto &p : std::vector<std::pair<adapters::PilotAction, wxString>>{
+  for (const auto &choice : std::vector<std::pair<adapters::PilotAction, wxString>>{
            {adapters::PilotAction::Auto, "AUTO"},
            {adapters::PilotAction::Track, "TRACK"},
            {adapters::PilotAction::Wind, "WIND"}}) {
-    const bool supported =
-        p.first == adapters::PilotAction::Auto    ? caps.auto_mode
-        : p.first == adapters::PilotAction::Track ? caps.track
-                                                  : caps.wind;
-    auto *button = Action(
-        p.second,
-        [this, p] {
-          if (ConfirmSheet(*this, mode_, "Request " + p.second,
-                           "A pending request is not confirmation. Mode "
-                           "changes require new adapter feedback.",
-                           "Request " + p.second))
-            actions_.pilot_command(p.first, 0);
-        },
-        supported);
-    pilot_buttons_.push_back({button, p.first});
+    const auto &caps = state_.pilot.capabilities;
+    const bool supported = choice.first == adapters::PilotAction::Auto ? caps.auto_mode
+                         : choice.first == adapters::PilotAction::Track ? caps.track : caps.wind;
+    auto *button = Action(choice.second, [this, choice] {
+      if (ConfirmSheet(*this, mode_, "Request " + choice.second,
+            "The mode changes only after fresh pilot feedback confirms it.", "Request " + choice.second) &&
+          actions_.pilot_command)
+        actions_.pilot_command(choice.first, 0);
+    }, supported && state_.pilot.enabled && state_.pilot.fresh);
+    button->SetRole(choice.first == adapters::PilotAction::Auto ? ButtonRole::Primary : ButtonRole::Quiet);
+    pilot_buttons_.push_back({button, choice.first});
   }
-  for (int delta : {-10, -1, 1, 10}) {
-    auto *button = Action(
-        wxString::Format(W("%+d° magnetic course"), delta),
-        [this, delta] {
-          actions_.pilot_command(adapters::PilotAction::AlterCourse, delta);
-        },
-        caps.alter_course);
-    pilot_buttons_.push_back({button, adapters::PilotAction::AlterCourse});
-  }
-  Value(
-      "LOCKED HEADING", "deg magnetic",
-      [](const auto &s) {
-        return s.pilot.feedback.locked_heading_magnetic_deg;
-      },
-      0);
-  Value("ACTUAL HEADING", "deg magnetic", [](const auto &s) { return s.pilot.feedback.heading_magnetic_deg; }, 0);
-  Value("RUDDER", "deg", [](const auto &s) { return s.vessel.rudder.angle_deg; }, 1);
+  EndActions();
   LiveText([](const auto &s) {
-    wxString log = "RECENT COMMAND LOG";
-    const auto start = s.pilot_log.size() > 8 ? s.pilot_log.size() - 8 : 0;
-    for (std::size_t i = start; i < s.pilot_log.size(); ++i)
-      log += "\n" +
-             wxString::Format("#%llu ", static_cast<unsigned long long>(
-                                            s.pilot_log[i].request.id)) +
-             W(adapters::CommandStateName(s.pilot_log[i].state)) + " / " +
-             W(s.pilot_log[i].detail);
-    return log;
+    if (s.vessel.replayed) return wxString("Historical replay / control OFF");
+    if (!s.pilot.fresh) return wxString("Communication lost or unavailable. Check the pilot locally.");
+    if (s.pilot.command.state == adapters::CommandState::Pending ||
+        s.pilot.command.state == adapters::CommandState::Requested)
+      return wxString("Waiting for pilot confirmation");
+    if (s.pilot.command.state == adapters::CommandState::TimedOut)
+      return wxString("No confirmation received. Check the pilot locally; no command was retried.");
+    return wxString(s.pilot.enabled ? "Manual control enabled for this session" : "Control OFF / status only");
   });
+  wxString enable_label = "Enable / disable manual control";
+#if XNAV_ENABLE_TEST_FIXTURES
+  if (state_.vessel.simulated) enable_label = "Enable / disable DEMO manual control";
+#endif
+  Action(enable_label, [this] {
+    const bool enable = !state_.pilot.enabled;
+    wxString title = "Enable physical pilot control?";
+    wxString detail = "Manual buttons can move the vessel's rudder. Confirm the correct pilot, a clear drive area and immediate physical STANDBY access. Enable lasts only for this session.";
+    wxString accept = "Enable manual control";
+#if XNAV_ENABLE_TEST_FIXTURES
+    if (state_.vessel.simulated) { title = "Enable manual simulator"; detail = "Commands affect only the labelled test simulator."; accept = "Enable DEMO"; }
+#endif
+    if ((!enable || ConfirmSheet(*this, mode_, title, detail, accept)) && actions_.pilot_enable)
+      actions_.pilot_enable(enable);
+  }, !state_.vessel.replayed && (state_.vessel.simulated || state_.settings.pilot.permit_control));
+  if (!state_.vessel.simulated && !state_.vessel.replayed)
+    Action("Autopilot setup & diagnostics", [this] { ShowPage(ProductPage::PilotSettings, mode_); });
 }
 void ProductPanel::Build() {
   Freeze();
+  first_heading_ = true;
+  visuals_.clear();
+  button_text_.clear();
   text_.clear();
   static_text_.clear();
   action_grids_.clear();
@@ -543,6 +728,19 @@ void ProductPanel::Build() {
   SetLabel("OpenNav product page: " + W(PageTitle()));
   if (page_ == ProductPage::Alerts) {
     AlertsPanel();
+  } else if (page_ == ProductPage::System) {
+    Heading("System", "Interface, recovery and diagnostics");
+    BeginActions(2);
+    Action("Open Legacy OpenCPN",actions_.legacy);
+    Action("Restart XNav",actions_.restart_xnav);
+    Action("Safe Mode",actions_.safe);
+    Action("Diagnostics",actions_.diagnostics);
+    Action("Open diagnostics folder",actions_.diagnostics_folder);
+    Action("Commissioning & recordings",[this]{ShowPage(ProductPage::Commissioning,mode_);});
+    Action("Export diagnostic bundle",[this]{ShowPage(ProductPage::FieldReport,mode_);});
+    Action("Advanced / Legacy Settings",actions_.navigation.legacy_settings);
+    EndActions();
+    Text("Legacy and Safe use the same navigation data and charts. Switching interface saves your work and restarts the application.");
   } else if (page_ == ProductPage::FieldReport) {
     FieldReportPanel();
   } else if (page_ == ProductPage::Commissioning) {
@@ -561,39 +759,16 @@ void ProductPanel::Build() {
              {"Alerts", ProductPage::Alerts},
              {"Settings", ProductPage::Settings}})
       Action(p.first, [this, p] { ShowPage(p.second, mode_); });
-    Action("Chart orientation: North / Course up", [this] {
-      if (actions_.chart)
-        actions_.chart();
-      if (actions_.navigation.orientation)
-        actions_.navigation.orientation();
-    });
-    Action("Measure on chart", [this] {
-      if (actions_.chart)
-        actions_.chart();
-      if (actions_.navigation.measure)
-        actions_.navigation.measure();
-    });
-    Action("Chart information at center", [this] {
-      if (actions_.chart)
-        actions_.chart();
-      if (actions_.navigation.object_info)
-        actions_.navigation.object_info();
-    });
     Action("Propulsion & energy", actions_.energy);
-    Action("System & diagnostics", actions_.diagnostics);
-    Action("Commissioning & recordings",
-           [this] { ShowPage(ProductPage::Commissioning, mode_); });
-    Action("Field diagnostic bundle",
-           [this] { ShowPage(ProductPage::FieldReport, mode_); });
+    Action("System & diagnostics",
+           [this] { ShowPage(ProductPage::System, mode_); });
   } else if (page_ == ProductPage::Routes || page_ == ProductPage::Waypoints) {
     const bool routes = page_ == ProductPage::Routes;
-    Heading(routes ? "Routes" : "Waypoints",
-            state_.vessel.replayed ? "REPLAY / This catalog contains real "
-                                     "OpenCPN objects; changes disabled"
-            : state_.vessel.simulated
-                ? "DEMO telemetry / this catalog contains "
-                  "REAL OpenCPN navigation objects"
-                : "Shared OpenCPN navigation objects");
+    wxString source_note = state_.vessel.replayed ? "REPLAY / Saved routes and waypoints are read-only" : "Saved passages and places";
+#if XNAV_ENABLE_TEST_FIXTURES
+    if (state_.vessel.simulated && !state_.vessel.replayed) source_note = "DEMO telemetry / REAL saved routes and waypoints";
+#endif
+    Heading(routes ? "Routes" : "Waypoints", source_note);
     BeginActions(2);
     Action("Refresh catalog", [this] { Build(); });
     Action(routes ? "Waypoints" : "Routes", [this, routes] {
@@ -602,16 +777,8 @@ void ProductPanel::Build() {
     if (routes) {
       Action("Current passage", actions_.route_summary);
       Action("Create route on chart", [this] {
-        if (ConfirmSheet(
-                *this, mode_, "Create route",
-                "Tap chart positions to add route points. Use Done on the "
-                "left rail when done. This creates a real OpenCPN route.",
-                "Create route")) {
-          if (actions_.chart)
-            actions_.chart();
-          if (actions_.navigation.start_route)
-            actions_.navigation.start_route();
-        }
+        if (actions_.chart) actions_.chart();
+        if (actions_.navigation.start_route) actions_.navigation.start_route();
       });
     } else
       Action("Create waypoint at chart center", [this] { CreateMark(); });
@@ -652,69 +819,56 @@ void ProductPanel::Build() {
   else if (page_ == ProductPage::WaypointDetail)
     PointActions();
   else if (page_ == ProductPage::Instruments) {
-    Heading("Vessel instruments",
-            state_.vessel.simulated
-                ? "DEMO / synthetic instruments"
-                : "Selected marine sources / stale values retain their age");
-    Action("Configure instruments",
-           [this] { ShowPage(ProductPage::InstrumentLayout, mode_); });
-    const auto config =
-        actions_.settings ? actions_.settings() : state_.settings;
-    for (const auto &key : config.instruments)
-      for (const auto &item : vessel::DisplayItems(state_.vessel))
-        if (key == item.key)
-          Value(W(item.title), W(item.unit), [key](const auto &state) {
-            for (const auto &selected : vessel::DisplayItems(state.vessel))
-              if (key == selected.key)
-                return *selected.sample;
-            return vessel::Sample{};
-          });
-
+    Instruments();
   } else if (page_ == ProductPage::Ais) {
-    Heading("AIS targets", state_.ais.simulated
-                               ? "DEMO targets / not chart traffic"
-                               : "OpenCPN AIS / existing CPA, TCPA and alarms");
+    wxString traffic_note = "Traffic, closest approach and vessel information";
+#if XNAV_ENABLE_TEST_FIXTURES
+    if (state_.ais.simulated) traffic_note = "DEMO targets / not chart traffic";
+#endif
+    Heading("AIS targets", traffic_note);
     Action("Refresh target list", [this] { Build(); });
     Action("Show / hide AIS on chart", actions_.navigation.toggle_ais);
     if (state_.ais.targets.empty())
-      Text("No AIS targets available. Live traffic is never fabricated.");
+      Text("No AIS targets received. Check the AIS connection in Sensors.");
     for (const auto &t : state_.ais.targets)
       Action(Name(t.name, std::to_string(t.mmsi)) + " / " + W(t.status) +
                  (t.upstream_alarm ? " / ALARM" : ""),
              [this, id = t.mmsi] { ShowAis(id, mode_); });
   } else if (page_ == ProductPage::AisDetail) {
-    Heading(
-        "AIS target",
-        wxString::Format(
-            "MMSI %d / OpenCPN calculations; advisory presentation", mmsi_));
-    Action("Back to targets", [this] { ShowPage(ProductPage::Ais, mode_); });
+    const auto *selected_target = Target(state_, mmsi_);
+    Heading(selected_target ? Name(selected_target->name, std::to_string(mmsi_)) : wxString("AIS target"),
+            wxString::Format("MMSI %d", mmsi_));
+    Visual("AIS encounter", 220, [this](XNavPainter &p, wxDC &, int width) {
+      const auto *target = Target(state_, mmsi_);
+      p.Card(0, 0, width, 216, target && target->upstream_alarm ? "AIS ALARM" : "VESSEL MOTION & APPROACH");
+      if (!target) { p.Text("Target no longer available", 24, 64, 23, p.c.attention); return; }
+      const int cell = (width - 48) / 4;
+      Metric(p, target->sog_kn, state_.now, 24, 58, cell - 16, "SPEED", "kn");
+      Metric(p, target->cog_deg, state_.now, 24 + cell, 58, cell - 16, "COURSE", "° TRUE", 0);
+      Metric(p, target->cpa_nm, state_.now, 24 + cell * 2, 58, cell - 16, "CPA", "NM", 2);
+      Metric(p, target->tcpa_minutes, state_.now, 24 + cell * 3, 58, cell - 16, "TCPA", "min", 0);
+      p.Text(W(target->status), 24, 184, 12, target->upstream_alarm ? p.c.attention : p.c.secondary, false, width - 48);
+    });
+    BeginActions(2);
     Action("Select target on chart", [this] {
       if (actions_.navigation.view_ais) {
         const auto result = actions_.navigation.view_ais(mmsi_);
         if (!result.ok) Result(result);
+        else if (actions_.chart) actions_.chart();
       }
-    }, !state_.vessel.simulated && !state_.vessel.replayed);
-    LiveText([id = mmsi_](const auto &s) {
-      auto *t = Target(s, id);
-      return t ? Name(t->name, std::to_string(id)) + " / " + W(t->status) +
-                     (t->upstream_alarm ? " / OPENCPN ALARM" : "")
-               : "Target no longer available";
+    }, !state_.vessel.simulated && !state_.vessel.replayed)->SetRole(ButtonRole::Primary);
+    Action("Back to targets", [this] { ShowPage(ProductPage::Ais, mode_); });
+    EndActions();
+    Visual("AIS position", 180, [this](XNavPainter &p, wxDC &, int width) {
+      const auto *target = Target(state_, mmsi_);
+      p.Card(0, 0, width, 176, "POSITION RELATIVE TO VESSEL");
+      const int cell = (width - 48) / 3;
+      Metric(p, target ? target->range_nm : vessel::Sample{}, state_.now, 24, 48, cell - 16, "RANGE", "NM");
+      Metric(p, target ? target->bearing_true_deg : vessel::Sample{}, state_.now, 24 + cell, 48, cell - 16, "BEARING", "° TRUE", 0);
+      Metric(p, target ? target->heading_true_deg : vessel::Sample{}, state_.now, 24 + cell * 2, 48, cell - 16, "HEADING", "° TRUE", 0);
     });
-#define AISVAL(label, unit, field)                                             \
-  Value(label, unit, [id = mmsi_](const auto &s) {                             \
-    auto *t = Target(s, id);                                                   \
-    return t ? t->field : vessel::Sample{};                                    \
-  });
-    AISVAL("SOG", "kn", sog_kn)
-    AISVAL("COG", "deg true", cog_deg)
-    AISVAL("HEADING", "deg true", heading_true_deg)
-    AISVAL("RANGE", "NM", range_nm)
-    AISVAL("BEARING", "deg true", bearing_true_deg)
-    AISVAL("CPA", "NM", cpa_nm)
-    AISVAL("TCPA", "min", tcpa_minutes)
-#undef AISVAL
   } else if (page_ == ProductPage::Advice) {
-    Heading("SmartNav", "ADVISORY ONLY / no command path to autopilot");
+    Heading("SmartNav", "Passage timeline / Advice only");
     auto next = [](const ProductState &s, int field) {
       vessel::Sample sample;
       for (const auto &e : s.advice.events)
@@ -756,47 +910,37 @@ void ProductPanel::Build() {
       return text;
     });
     Text("CHART LOOK-AHEAD / Unavailable", 18);
-    Text("The chart-corridor query adapter is not yet connected. Measured "
-         "depth is not a forecast. Absence of a detected hazard is not proof "
-         "of safe water.");
+    Text("Chart hazard look-ahead is unavailable. Depth is measured at the "
+         "boat, not ahead. Always inspect the chart and surroundings.");
   } else if (page_ == ProductPage::PilotSettings)
     PilotSettings();
   else if (page_ == ProductPage::Pilot)
     PilotActions();
   else if (page_ == ProductPage::Anchor) {
-    Heading("Anchor watch", "Uses OpenCPN anchor radius and alarm semantics / "
-                            "no intelligent drag detection");
-    LiveText([](const auto &s) {
-      return W(s.anchor.state) + "\n" +
-             (s.anchor.anchor ? wxString::Format("Anchor %.6f, %.6f",
-                                                 s.anchor.anchor->latitude_deg,
-                                                 s.anchor.anchor->longitude_deg)
-                              : "No anchor position") +
-             "\n" +
-             (s.anchor.radius_m
-                  ? wxString::Format("Radius %.0f m", *s.anchor.radius_m)
-                  : "Radius unavailable") +
-             "\n" +
-             wxString::Format(
-                 "%u observed movement positions",
-                 static_cast<unsigned>(s.anchor.recent_positions.size()));
+    Heading("Anchor watch", "Distance, movement and watch radius");
+    Visual("Anchor watch", 224, [this](XNavPainter &p, wxDC &dc, int width) {
+      p.Card(0, 0, width, 220, "ANCHOR WATCH");
+      const auto &watch = state_.anchor;
+      const auto distance = vessel::Assess(watch.distance_m, state_.now);
+      const bool current = distance.value &&
+                           (distance.quality == vessel::Quality::Live ||
+                            distance.quality == vessel::Quality::Aging);
+      p.Text(watch.alarm ? "ANCHOR ALARM" : !watch.anchor ? "WATCH OFF" : current ? "WATCH ACTIVE" : "POSITION UNAVAILABLE",
+             24, 48, 20, watch.alarm ? p.c.alarm : current ? p.c.healthy : p.c.attention, false, width - 48);
+      const int half = (width - 48) / 2;
+      Metric(p, watch.distance_m, state_.now, 24, 86, half - 24, "DISTANCE FROM ANCHOR", "m", 0, 42);
+      p.Text("ALARM RADIUS", 24 + half, 86, 11, p.c.secondary);
+      p.Text(watch.radius_m ? wxString::Format("%.0f m", *watch.radius_m) : wxString::FromUTF8("—"),
+             24 + half, 110, 42, p.c.primary, false, half - 24);
+      if (current && watch.radius_m && std::abs(*watch.radius_m) > 0) {
+        dc.SetPen(*wxTRANSPARENT_PEN); dc.SetBrush(wxBrush(Colour(p.c.border)));
+        dc.DrawRoundedRectangle(p.D(24), p.D(200), p.D(width - 48), p.D(4), p.D(2));
+        dc.SetBrush(wxBrush(Colour(watch.alarm ? p.c.alarm : p.c.accent)));
+        dc.DrawRoundedRectangle(p.D(24), p.D(200),
+          p.D(static_cast<int>((width - 48) * std::clamp(*distance.value / std::abs(*watch.radius_m), 0.0, 1.0))), p.D(4), p.D(2));
+      }
     });
-    LiveText([](const auto &s) {
-      return "VESSEL  " +
-             Reading(s.vessel.navigation.latitude_deg, s.now, "lat") + " / " +
-             Reading(s.vessel.navigation.longitude_deg, s.now, "lon");
-    });
-    LiveText([](const auto &s) {
-      wxString history = "RECENT OBSERVED MOVEMENT";
-      const auto &h = s.anchor.recent_positions;
-      const auto first = h.size() > 5 ? h.size() - 5 : 0;
-      for (std::size_t i = first; i < h.size(); ++i)
-        history += wxString::Format(
-            "\n%.0f s ago   %.6f, %.6f",
-            std::chrono::duration<double>(s.now - h[i].observed_at).count(),
-            h[i].position.latitude_deg, h[i].position.longitude_deg);
-      return history;
-    });
+    BeginActions(2);
     Action(
         "Set anchor at vessel position",
         [this] {
@@ -820,47 +964,56 @@ void ProductPanel::Build() {
         "Clear anchor watch",
         [this] {
           if (ConfirmSheet(*this, mode_, "Clear anchor watch",
-                           "Stops this OpenCPN anchor watch. The mark remains "
-                           "in your navigation database.",
+                           "Stops the anchor watch. A mark created only for this watch "
+                           "will be removed; your existing waypoints are preserved.",
                            "Clear watch"))
             Result(actions_.navigation.clear_anchor(state_.anchor.waypoint_id));
         },
         !state_.vessel.simulated && !state_.vessel.replayed);
-    Value("BATTERY SOC", "%", [](const auto &s) { return s.vessel.battery.soc_percent; }, 0);
-    Value("DISTANCE FROM ANCHOR", "m",
-          [](const auto &s) { return s.anchor.distance_m; });
-    Value("DEPTH", "m / transducer", [](const auto &s) {
-      return s.vessel.environment.depth_below_transducer_m;
-    });
-    Value("WIND", "kn apparent",
-          [](const auto &s) { return s.vessel.wind.apparent_speed_kn; });
-  } else if (page_ == ProductPage::Settings) {
-    Heading("Settings", "Vessel / Navigation / Sources / Display / System");
-    BeginActions(2);
-    Action("Vessel instruments",
-           [this] { ShowPage(ProductPage::Instruments, mode_); });
-    Action("Vessel safety settings",
-           [this] { ShowPage(ProductPage::VesselSettings, mode_); });
-    Action("Energy configuration",
-           [this] { ShowPage(ProductPage::EnergySettings, mode_); });
-    Action("Data Sources", [this] { ShowPage(ProductPage::Sources, mode_); });
-    Action("Autopilot permissions & status",
-           [this] { ShowPage(ProductPage::Pilot, mode_); });
-    Action("Radar status", [this] { ShowPage(ProductPage::Radar, mode_); });
-    Action("Display & layout",
-           [this] { ShowPage(ProductPage::Display, mode_); });
-    Action("System diagnostics", actions_.diagnostics);
-    Action("Commissioning & recordings",
-           [this] { ShowPage(ProductPage::Commissioning, mode_); });
-    Action("Field diagnostic bundle",
-           [this] { ShowPage(ProductPage::FieldReport, mode_); });
-    Action("Fullscreen / window", actions_.navigation.fullscreen);
-    Action("Advanced / Legacy Settings", actions_.navigation.legacy_settings);
-    Action("OpenCPN plugins", actions_.navigation.plugin_settings);
     EndActions();
-    Text("Navigation units, chart presentation, alarms and connection "
-         "management remain available in Advanced / Legacy Settings. XNav "
-         "instrument units are labelled explicitly.");
+    Visual("Anchor conditions", 180, [this](XNavPainter &p, wxDC &, int width) {
+      p.Card(0, 0, width, 176, "CONDITIONS AT THE BOAT");
+      const int cell = (width - 48) / 3;
+      Metric(p, state_.vessel.environment.depth_below_transducer_m, state_.now, 24, 48, cell - 16, "DEPTH", "m / TRANSDUCER");
+      Metric(p, state_.vessel.wind.apparent_speed_kn, state_.now, 24 + cell, 48, cell - 16, "WIND", "kn APPARENT");
+      Metric(p, state_.vessel.battery.soc_percent, state_.now, 24 + cell * 2, 48, cell - 16, "BATTERY", "%", 0);
+    });
+    Action(anchor_history_ ? "Hide recorded positions" : "Recorded positions", [this] { anchor_history_ = !anchor_history_; Build(); });
+    if (anchor_history_) {
+      LiveText([](const auto &s) {
+        wxString text = s.anchor.anchor ? wxString::Format("Anchor %.5f, %.5f", s.anchor.anchor->latitude_deg, s.anchor.anchor->longitude_deg) : wxString("No anchor position");
+        const auto &history = s.anchor.recent_positions;
+        const auto first = history.size() > 8 ? history.size() - 8 : 0;
+        for (std::size_t i = first; i < history.size(); ++i)
+          text += wxString::Format("\n%.0f s ago  %.5f, %.5f", std::chrono::duration<double>(s.now - history[i].observed_at).count(), history[i].position.latitude_deg, history[i].position.longitude_deg);
+        return text;
+      });
+    }
+  } else if (page_ == ProductPage::Settings) {
+    Heading("Settings", "Your vessel, navigation and display");
+    BeginActions(2);
+    for (const auto &entry : std::vector<std::pair<wxString, ProductPage>>{
+        {"VESSEL", ProductPage::VesselSettings},
+        {"NAVIGATION", ProductPage::NavigationSettings},
+        {"SENSORS", ProductPage::Sources},
+        {"AUTOPILOT", ProductPage::PilotSettings},
+        {"RADAR", ProductPage::Radar},
+        {"DISPLAY", ProductPage::Display},
+        {"SYSTEM", ProductPage::System}})
+      Action(entry.first, [this, entry] { ShowPage(entry.second, mode_); });
+    EndActions();
+  } else if (page_ == ProductPage::NavigationSettings) {
+    Heading("Navigation", "Passages, chart presentation and alarms");
+    BeginActions(2);
+    Action("Routes", [this] { ShowPage(ProductPage::Routes, mode_); });
+    Action("Waypoints", [this] { ShowPage(ProductPage::Waypoints, mode_); });
+    Action("Chart orientation: North / Course up", [this] {
+      if (actions_.chart) actions_.chart();
+      if (actions_.navigation.orientation) actions_.navigation.orientation();
+    });
+    Action("Advanced / Legacy Settings", actions_.navigation.legacy_settings);
+    EndActions();
+    Text("Units, chart presentation and navigation alarm settings remain available in Advanced / Legacy Settings.");
   } else if (page_ == ProductPage::Display) {
     DisplaySettings();
   } else if (page_ == ProductPage::RailLayout ||
@@ -870,11 +1023,19 @@ void ProductPanel::Build() {
     EnergySettings();
   } else if (page_ == ProductPage::Sources) {
     Sources();
+  } else if (page_ == ProductPage::SourcesAdvanced) {
+    Heading("Advanced source details", "Values, source selection and freshness");
+    BeginActions(2);
+    for (const auto &q : vessel::Quantities())
+      Action(W(q.name), [this, q] { source_quantity_ = q.quantity; ShowPage(ProductPage::SourceDetail, mode_); });
+    EndActions();
+  } else if (page_ == ProductPage::BoatMapping) {
+    BoatMapping();
   } else if (page_ == ProductPage::SourceDetail) {
     SourceDetail();
   } else if (page_ == ProductPage::Radar) {
     Heading("Radar",
-            "Adapter availability / Receive and presentation capabilities");
+            "Radar connection and presentation");
     Action("Back to Settings",
            [this] { ShowPage(ProductPage::Settings, mode_); });
     LiveText([](const auto &s) { return W(s.radar.status); });
@@ -898,13 +1059,12 @@ void ProductPanel::Build() {
     Action("OpenCPN plugins", actions_.navigation.plugin_settings);
   } else if (page_ == ProductPage::VesselSettings) {
     Heading("Vessel safety settings",
-            "Future corridor advice / Explicit vessel dimensions");
+            "Dimensions and energy");
     Action("Back to Settings",
            [this] { ShowPage(ProductPage::Settings, mode_); });
-    Text("These settings belong to the advisory corridor contract. They do not "
-         "change OpenCPN chart safety contours or depth alarms. Live "
-         "chart-corridor coverage is currently unavailable; no hazard "
-         "clearance is asserted.");
+    Text("Draft and margin describe your vessel for future hazard advice. "
+         "They do not change chart safety contours or depth alarms. "
+         "Live chart hazard look-ahead is unavailable.");
     LiveText([](const auto &s) {
       auto value = [](double n) {
         return std::isfinite(n) ? wxString::Format("%.2f m", n)
@@ -914,6 +1074,7 @@ void ProductPanel::Build() {
              " / Margin: " + value(s.settings.hazard.safety_margin_m) +
              " / Corridor half width: " + value(s.settings.hazard.corridor_half_width_m);
     });
+    Action("Energy configuration", [this] { ShowPage(ProductPage::EnergySettings, mode_); });
     Action("Configure draft & margin", [this] {
       auto s = actions_.settings();
       auto n = [](double v) {

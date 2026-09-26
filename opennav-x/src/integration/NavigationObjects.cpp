@@ -1,4 +1,5 @@
 #include "integration/NavigationObjects.h"
+#include "integration/AisObservationTime.h"
 #include "MarkInfo.h"
 #include "RoutePropDlgImpl.h"
 #include "chcanv.h"
@@ -188,6 +189,27 @@ bool Position(const vessel::Navigation &n, vessel::Time now) {
          *lat.value == gLat && *lon.value == gLon &&
          std::abs(*lat.value) <= 90 && std::abs(*lon.value) <= 180;
 }
+CommandResult NavigateTo(RoutePoint *destination, bool existing) {
+  // Match pinned canvasMenu.cpp ID_DEF_MENU_GOTO_HERE / ID_WP_MENU_GOTO:
+  // OpenCPN owns the temporary two-point route and deletes it on arrival.
+  auto *origin = new RoutePoint(gLat, gLon, g_default_wp_icon,
+                                wxEmptyString, wxEmptyString);
+  pSelect->AddSelectableRoutePoint(gLat, gLon, origin);
+  auto *route = new ::Route;
+  pRouteList->Append(route);
+  route->AddPoint(origin);
+  route->AddPoint(destination);
+  if (existing) destination->SetShared(true);
+  pSelect->AddSelectableRouteSegment(gLat, gLon, destination->m_lat,
+                                     destination->m_lon, origin, destination,
+                                     route);
+  route->m_RouteNameString = "Go to " + destination->GetName();
+  route->m_RouteStartString = "Here";
+  route->m_RouteEndString = destination->GetName();
+  route->m_bDeleteOnArrival = true;
+  g_pRouteMan->ActivateRoute(route, destination);
+  return {true, "Go To started", String(route->GetGUID())};
+}
 } // namespace
 application::Catalog CopyNavigationCatalog() {
   Thread();
@@ -352,6 +374,39 @@ application::CommandResult CreateWaypoint(application::Coordinate position,
                                    position.longitude_deg, point);
   return {true, "Waypoint created", String(point->m_GUID)};
 }
+application::CommandResult GoTo(application::Coordinate destination,
+                                 const std::string &name,
+                                 const vessel::Navigation &position) {
+  Thread();
+  if (!g_pRouteMan || !pRouteList || !pSelect || !pWayPointMan ||
+      !Position(position, vessel::Clock::now()))
+    return {false, "Go To requires a current GPS position", {}};
+  if (g_pRouteMan->GetpActiveRoute())
+    return {false, "Stop current navigation before starting a new destination", {}};
+  if (!TextValid(name, {}) || !std::isfinite(destination.latitude_deg) ||
+      !std::isfinite(destination.longitude_deg) ||
+      std::abs(destination.latitude_deg) > 90 ||
+      std::abs(destination.longitude_deg) > 180)
+    return {false, "Choose a valid destination", {}};
+  auto *point = new RoutePoint(destination.latitude_deg, destination.longitude_deg,
+                               g_default_wp_icon, wxString::FromUTF8(name),
+                               wxEmptyString);
+  pSelect->AddSelectableRoutePoint(point->m_lat, point->m_lon, point);
+  return NavigateTo(point, false);
+}
+application::CommandResult GoToWaypoint(const application::Waypoint &selected,
+                                         const vessel::Navigation &position) {
+  Thread();
+  auto *point = Resolve(selected);
+  if (!point || !Copy(point).editable)
+    return {false, "Waypoint changed or protected; select it again", {}};
+  if (!g_pRouteMan || !pRouteList || !pSelect ||
+      !Position(position, vessel::Clock::now()))
+    return {false, "Go To requires a current GPS position", {}};
+  if (g_pRouteMan->GetpActiveRoute())
+    return {false, "Stop current navigation before starting a new destination", {}};
+  return NavigateTo(point, true);
+}
 vessel::AisState CopyAisState(const vessel::Navigation &position,
                               vessel::Time now) {
   Thread();
@@ -366,7 +421,7 @@ vessel::AisState CopyAisState(const vessel::Navigation &position,
     return state;
   }
   state.available = true;
-  const auto wall = std::chrono::system_clock::now();
+  const auto wall = wxDateTime::Now();
   const bool own_position = Position(position, now);
   for (const auto &entry : g_pAIS->GetTargetList()) {
     if (state.targets.size() >= 2000)
@@ -394,16 +449,7 @@ vessel::AisState CopyAisState(const vessel::Navigation &position,
                : t.active   ? "Active / navigation status " +
                                   std::to_string(p->NavStatus)
                             : "Inactive";
-    const auto reported =
-        std::chrono::system_clock::from_time_t(p->PositionReportTicks);
-    const auto age = wall - reported;
-    auto at =
-        age >= std::chrono::system_clock::duration::zero() &&
-                age < std::chrono::hours(24)
-            ? std::optional<vessel::Time>{now -
-                                          std::chrono::duration_cast<
-                                              vessel::Clock::duration>(age)}
-            : std::nullopt;
+    auto at = AisObservationAt(p->PositionReportTicks, wall, now);
     const auto previous = clocks.find(t.mmsi);
     if (previous != clocks.end() && previous->second.report == p->PositionReportTicks)
       at = previous->second.at;
@@ -500,38 +546,73 @@ application::CommandResult StartAnchor(const vessel::Navigation &position,
         "An upstream anchor watch already exists; clear it explicitly first",
         {}};
   if (!Position(position, vessel::Clock::now()) || !std::isfinite(radius) ||
-      radius < AnchorPointMinDist || radius > g_nAWMax)
+      radius < AnchorPointMinDist || radius > g_nAWMax ||
+      radius != std::round(radius))
     return {false,
-            "Fresh position and radius within OpenCPN anchor limits required",
+            "Fresh position and whole-metre radius within OpenCPN anchor limits required",
             {}};
-  auto result = CreateWaypoint(
-      {*position.latitude_deg.value, *position.longitude_deg.value},
-      std::to_string(radius),
-      "OpenNav anchor watch; radius stored using OpenCPN semantics");
-  if (!result.ok)
-    return result;
-  pAnchorWatchPoint1 = pWayPointMan->FindWaypointByGuid(result.identity);
-  g_AW1GUID = wxString::FromUTF8(result.identity);
+  if (!pWayPointMan || !pSelect)
+    return {false, "Navigation storage unavailable", {}};
+  auto *point = new RoutePoint(
+      *position.latitude_deg.value, *position.longitude_deg.value, "anchor",
+      wxString::Format("%.0f", radius), wxEmptyString);
+  point->m_bIsolatedMark = true;
+  // Human-readable ownership annotation; the clear path also recognizes the
+  // exact old Beta 1 description for upgrade continuity.
+  point->m_MarkDescription = "OpenNav temporary anchor watch";
+  if (!NavObj_dB::GetInstance().InsertRoutePoint(point)) {
+    delete point;
+    return {false, "Anchor save failed; watch unchanged", {}};
+  }
+  pSelect->AddSelectableRoutePoint(point->m_lat, point->m_lon, point);
+  pAnchorWatchPoint1 = point;
+  g_AW1GUID = point->m_GUID;
   wxJSONValue message;
   message["GUID"] = g_AW1GUID;
   SendJSONMessageToAllPlugins("OCPN_ANCHOR_WATCH_SET", message);
-  return {true, "OpenCPN anchor watch set", result.identity};
+  return {true, "Anchor watch set", String(point->m_GUID)};
 }
 application::CommandResult ClearAnchor(const std::string &id) {
   Thread();
   if (id.empty())
     return {false, "No anchor selected", {}};
-  if (String(g_AW1GUID) == id) {
+  RoutePoint *point = nullptr;
+  const bool first = String(g_AW1GUID) == id;
+  if (first) {
+    point = pAnchorWatchPoint1;
     pAnchorWatchPoint1 = nullptr;
     g_AW1GUID.Clear();
   } else if (String(g_AW2GUID) == id) {
+    point = pAnchorWatchPoint2;
     pAnchorWatchPoint2 = nullptr;
     g_AW2GUID.Clear();
   } else
     return {false, "Anchor changed; refresh selection", {}};
+  // Upstream may watch any existing user waypoint. Only delete an unchanged
+  // OpenNav-created isolated anchor; preserve a shared or repurposed user mark.
+  bool removed = false;
+  if (point && pWayPointMan &&
+      pWayPointMan->FindWaypointByGuid(id) == point &&
+      (point->GetDescription() == "OpenNav temporary anchor watch" ||
+       point->GetDescription() ==
+           "OpenNav anchor watch; radius stored using OpenCPN semantics") &&
+      point->m_bIsolatedMark && !point->IsShared() && Copy(point).removable) {
+    const auto deleted = DeleteWaypoint(Copy(point));
+    if (!deleted.ok) {
+      // Restore the watch if its removal cannot be persisted. Do not claim a
+      // completed clear while leaving an unexpected live chart mark behind.
+      if (first) { pAnchorWatchPoint1 = point; g_AW1GUID = wxString::FromUTF8(id); }
+      else { pAnchorWatchPoint2 = point; g_AW2GUID = wxString::FromUTF8(id); }
+      return {false, "Could not remove anchor mark; watch retained", id};
+    }
+    removed = true;
+  }
+  if (first) AnchorAlertOn1 = false;
+  else AnchorAlertOn2 = false;
   wxJSONValue message;
   message["GUID"] = wxString::FromUTF8(id);
   SendJSONMessageToAllPlugins("OCPN_ANCHOR_WATCH_CLEARED", message);
-  return {true, "Anchor watch cleared; mark retained", id};
+  return {true, removed ? "Anchor watch and temporary mark removed"
+                        : "Anchor watch cleared; existing user waypoint retained", id};
 }
 } // namespace opennav::integration

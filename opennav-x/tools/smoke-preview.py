@@ -15,15 +15,15 @@ import time
 import zipfile
 
 root=Path(__file__).resolve().parents[1]
-parser=argparse.ArgumentParser();parser.add_argument('--package',type=Path)
+parser=argparse.ArgumentParser();parser.add_argument('--install',type=Path);parser.add_argument('--runtime',type=Path)
 args=parser.parse_args();windows=sys.platform=='win32'
-if windows != bool(args.package):raise SystemExit('Native Windows requires --package; Linux uses its development install')
+if windows != bool(args.install):raise SystemExit('Native fixture tests require --install; Linux uses its development install')
 evidence=root/'evidence/local';evidence.mkdir(parents=True,exist_ok=True)
 temporary=tempfile.TemporaryDirectory(prefix='OpenNav preview ',dir=None if windows else '/tmp')
 temp=Path(temporary.name)
 env=dict(os.environ);ui=None;xserver=None;app=None;handle=None;pid=None
 normal_locations=[];normal_before={}
-report={'authority':'native Windows extracted ZIP' if windows else 'Linux development',
+report={'authority':'native Windows fixture-enabled disposable test tree' if windows else 'Linux development',
         'checks':[],'screenshots':[],'higher_dpi':'Not exercised by this hosted desktop; manual validation remains open'}
 
 def module(name):
@@ -49,11 +49,18 @@ if windows:
         if os.environ.get(key): normal_locations.append(Path(os.environ[key])/'OpenCPN')
     normal_before=normal_snapshot()
     ui=module('windows-ui');report['display']=ui.ensure_desktop()
-    with zipfile.ZipFile(args.package) as z:z.extractall(temp)
-    package=temp/'OpenNavX-Beta1-Portable';profile=package/'profile';logs=package/'logs';exe=package/'app/opencpn.exe'
-    manifest=json.loads((package/'FILE_SHA256.json').read_text())
-    for name,expected in manifest.items():assert hashlib.sha256((package/name).read_bytes()).hexdigest()==expected,name
-    report['checks'].append('All extracted package file hashes match')
+    package=temp/'OpenNavX-CI-Fixtures';profile=package/'profile';logs=package/'logs';exe=package/'app/opencpn.exe'
+    shutil.copytree(args.install,package/'app')
+    if not args.runtime or not args.runtime.is_dir():raise SystemExit('Native app-local runtime directory required')
+    for dll in args.runtime.glob('*.dll'):shutil.copy2(dll,package/'app'/dll.name)
+    (package/'app/OPENNAV_PORTABLE_PREVIEW').write_text('Internal fixture regression only; never distribute\n')
+    subprocess.run([sys.executable,str(root/'tools/prepare-test-profile.py'),'--build',str(root/'build/xnav-windows'),'--profile',str(profile)],check=True)
+    shutil.copytree(package/'app/plugins',profile/'plugins',dirs_exist_ok=True)
+    logs.mkdir()
+    with (profile/'opencpn.conf').open('a') as f:f.write('\n[Settings/GlobalState]\nVPLatLon=59.0800,18.5000\nVPScale=0.003\n')
+    for name,mode in {'Run-XNav':'--xnav','Run-XNav-Demo':'--xnav --xnav-demo','Run-Legacy':'--legacy','Run-Safe':'--safe-mode'}.items():
+        (package/(name+'.cmd')).write_text('@echo off\n"%~dp0app\\opencpn.exe" --portable --configdir "%~dp0profile" --no_opengl '+mode+' %*\nexit /b %errorlevel%\n')
+    report['checks'].append('Disposable fixture tree uses exact tested native install; never included in product package')
     # A fake normal roaming profile is an isolation canary, never the runner's
     # actual user profile. DLL lookup gets no compiler/dependency PATH entries.
     fake=temp/'normal user data';normal=fake/'opencpn';normal.mkdir(parents=True)
@@ -119,9 +126,27 @@ def light(expected):
     # Distinct single clicks. GTK coalesces rapid physical clicks into a
     # double-click event; that is not two independent button activations.
     time.sleep(.65)
-    if windows:ui.click_text(pid,'Light')
-    else:xdo('mousemove',1240,28,'click',1)
+    if windows:ui.cycle_light(pid)
+    else:shell_click(data()['runtime']['display']['light'])
     data(lambda d:d['runtime']['display']['light']==expected)
+interaction=module('product-interaction')
+def shell_click(label):
+    record=data(lambda d:any(r['label']==label and r['visible'] and r['enabled'] for r in d['runtime']['display']['interaction_controls']))
+    target=next(r for r in record['runtime']['display']['interaction_controls'] if r['label']==label and r['visible'] and r['enabled'])
+    xdo('mousemove',target['x']+target['width']//2,target['y']+target['height']//2,'click',1)
+    time.sleep(.4)
+def product_scroll(direction):
+    if windows:ui.click_text(pid,'Down' if direction>0 else 'Up')
+    else:xdo('mousemove',700,430,'click',5 if direction>0 else 4)
+    time.sleep(.4)
+def product_click(label,enabled=True):
+    target=interaction.control(data,label,product_scroll,enabled=enabled)
+    if windows:ui.click_text(pid,label)
+    else:
+        xdo('windowfocus',handle)
+        xdo('mousemove',target['x']+target['width']//2,target['y']+target['height']//2,'click',1)
+        time.sleep(.4)
+    return target
 def item(d,name):return next(i for i in d['data'] if i['name']==name)
 def command(label,shortcut):
     if windows:ui.click_text(pid,label)
@@ -214,11 +239,13 @@ try:
         ui.assert_route_summary_layout(handle)
         report['checks'].append('Bottom route summary lays out after narrow-to-wide resize')
     if not windows:
-        xdo('mousemove',1220,772,'click',1);time.sleep(.4);capture('beta-system-popup')
-        # Bare Xvfb has no window manager to move X input focus to a transient.
-        popup=xdo('search','--onlyvisible','--pid',pid,'--name','^opencpn$').splitlines()[-1]
-        xdo('windowfocus',popup)
-        xdo('key','Escape');xdo('windowfocus',handle);time.sleep(.3)
+        xdo('key','ctrl+shift+s');time.sleep(.5)
+        data(lambda d:d['ui_page']=='System')
+        capture('beta-system-page')
+        xdo('key','Escape');time.sleep(.4)
+        data(lambda d:d['ui_page']=='Menu')
+        command('Navigation','n')
+        data(lambda d:d['ui_page']=='Navigation')
     first=data(lambda d:d['data_mode']=='DEMO' and 'arrival_soc' in d['energy'])
     assert first['route']['source'].startswith('DEMO')
     chart_colors=chartcheck.reference(capture('preview-01-navigation-day'))
@@ -233,10 +260,10 @@ try:
     page_capture('preview-05-diagnostics','Diagnostics')
     data(lambda d:d['runtime']['display']['can_scroll_down'])
     if windows:ui.click_text(pid,'Down')
-    else:xdo('mousemove',1164,28,'click',1)
+    else:shell_click('Down')
     data(lambda d:d['runtime']['display']['page_scroll_px']>0)
     if windows:ui.click_text(pid,'Up')
-    else:xdo('mousemove',1092,28,'click',1)
+    else:shell_click('Up')
     data(lambda d:d['runtime']['display']['page_scroll_px']==0)
     report['checks'].append('Persistent page controls scroll diagnostics and return to top without native scrollbars')
     # Alpha product pages use real touch-button actions on Windows and public
@@ -253,24 +280,26 @@ try:
         data(lambda d:d.get('ui_page')==expected_page)
         if name in ('instruments','autopilot'):
             data(lambda d:d['runtime']['display']['minimum_value_height_dip']>=120)
+            report.setdefault('grouped_regions',[]).append(interaction.grouped_regions(data))
         capture('alpha-'+name)
         light('Dusk');light('Night')
         report.setdefault('night_surfaces',[]).append(chartcheck.dark_surface(capture('beta-night-'+name),expected_page))
         light('Day')
         if windows:ui.assert_product_page(handle,expected_page)
         if windows and name=='autopilot':
-            ui.click_text(pid,'Enable / disable DEMO manual control');ui.click_text(pid,'Enable DEMO')
-            ui.click_text(pid,'AUTO');ui.click_text(pid,'Request AUTO');time.sleep(1)
-            captions=[caption for _,caption in ui.children(handle)]
-            assert any(c.startswith('AUTO / Feedback current') for c in captions),captions
-            assert any(c.startswith('Command: Confirmed') for c in captions),captions
-            ui.click_text(pid,'+1° magnetic course');time.sleep(1)
-            assert any(c.startswith('Command: Confirmed') for _,c in ui.children(handle))
+            product_click('Enable / disable DEMO manual control');ui.click_text(pid,'Enable DEMO')
+            product_click('AUTO');ui.click_text(pid,'Request AUTO')
+            data(lambda d:d['runtime']['pilot']['mode']=='AUTO' and d['runtime']['pilot']['fresh'] and d['runtime']['pilot']['command_state']=='Confirmed')
+            previous=data()['runtime']['pilot']['command_id']
+            product_click('+1°')
+            data(lambda d:d['runtime']['pilot']['command_state']=='Confirmed' and d['runtime']['pilot']['command_id']!=previous)
             capture('alpha-autopilot-confirmed')
-            ui.click_text(pid,'STBY');time.sleep(1)
-            assert any(c.startswith('STANDBY / Feedback current') for _,c in ui.children(handle))
-            ui.click_text(pid,'Enable / disable DEMO manual control')
-            report['checks'].append('Native manual DEMO enable/AUTO/+1/STANDBY/disable with new-feedback confirmation')
+            ui.click_text(pid,'STBY')
+            data(lambda d:d['runtime']['pilot']['mode']=='STANDBY' and d['runtime']['pilot']['command_state']=='Confirmed')
+            product_click('Enable / disable DEMO manual control')
+            data(lambda d:not d['runtime']['pilot']['enabled'])
+            interaction.control(data,'AUTO',product_scroll,enabled=False)
+            report['checks'].append('Native manual test enable/AUTO/+1/STANDBY/disable with fresh feedback and disabled OFF controls')
 
         if windows:
             assert not any(caption.startswith('OpenNav page:') for _,caption in ui.children(handle)), 'Preview pane covers product page'
@@ -281,12 +310,16 @@ try:
                            ('Radar status','z','radar-status'),
                            ('Display & layout','f','display')]:
         if windows:
-            command('Menu','m');ui.click_text(pid,'Settings');ui.click_text(pid,title)
+            command('Menu','m');ui.click_text(pid,'Settings')
+            if name=='energy-settings':
+                ui.click_text(pid,'VESSEL');product_click('Energy configuration')
+            else:ui.click_text(pid,{'sources':'SENSORS','vessel-settings':'VESSEL','radar-status':'RADAR','display':'DISPLAY'}[name])
         else:xdo('key','ctrl+shift+'+key);time.sleep(.6)
         expected_page='Display' if name=='display' else title
         data(lambda d:d.get('ui_page')==expected_page)
         if name in ('instruments','autopilot'):
             data(lambda d:d['runtime']['display']['minimum_value_height_dip']>=120)
+            report.setdefault('grouped_regions',[]).append(interaction.grouped_regions(data))
         capture('alpha-'+name)
         light('Dusk');light('Night')
         report.setdefault('night_surfaces',[]).append(chartcheck.dark_surface(capture('beta-night-'+name),expected_page))
@@ -305,15 +338,15 @@ try:
             ui.click_text(pid,'Night');time.sleep(.5);capture('alpha-display-night')
             ui.click_text(pid,'Day');time.sleep(.5)
             ui.click_text(pid,'Configure data rail');ui.click_text(pid,'Energy rail')
-            data(lambda d:d['settings']['data_rail']==['soc','pack_power','rpm','sog','depth'])
+            data(lambda d:d['settings']['data_rail']==['soc','pack_power','sog','depth'])
             command('Navigation','n');capture('alpha-energy-rail')
-            command('Menu','m');ui.click_text(pid,'Settings');ui.click_text(pid,'Display & layout')
+            command('Menu','m');ui.click_text(pid,'Settings');ui.click_text(pid,'DISPLAY')
             ui.click_text(pid,'Configure data rail');ui.click_text(pid,'Navigation rail')
-            data(lambda d:d['settings']['data_rail']==['sog','cog','heading','depth','aws'])
+            data(lambda d:d['settings']['data_rail']==['sog','depth','aws','heading'])
             ui.click_text(pid,'Back to Display');ui.click_text(pid,'Configure instruments')
-            ui.click_text(pid,'Shown / PRESSURE')
+            product_click('Shown / PRESSURE')
             data(lambda d:'pressure' not in d['settings']['instruments'])
-            ui.click_text(pid,'Add / PRESSURE')
+            product_click('Add / PRESSURE')
             data(lambda d:'pressure' in d['settings']['instruments'])
             report['checks'].append('Native palettes, data-rail presets and instrument selection preserve telemetry provenance')
     report['checks'].append('Energy, source, vessel-safety and radar settings pages captured')
@@ -330,17 +363,13 @@ try:
     # Global strip survives center-page changes. Acknowledgement cannot resolve
     # the fault and recovery followed by another dropout creates a new episode.
     if windows:
-        alert_caption=next(c for _,c in ui.children(handle) if c.startswith('Alerts / '))
+        alert_caption=next(c for _,c in ui.children(handle) if c.startswith('Alerts '))
         ui.click_text(pid,alert_caption)
     else:xdo('key','ctrl+shift+F9');time.sleep(.5)
     alert_data=data(lambda d:d.get('ui_page')=='Alerts')
     gps=next(a for a in alert_data['runtime']['alerts'] if a['id'].startswith('position-'))
     capture('beta-alerts-active')
-    if windows:ui.click_text(pid,'Acknowledge '+gps['id'])
-    else:
-        # First condition row: caption/action/source then two 52-DIP buttons.
-        gps_index=next(i for i,a in enumerate(alert_data['runtime']['alerts']) if a['id']==gps['id'])
-        xdo('mousemove',900,368+177*gps_index,'click',1)
+    product_click('Acknowledge '+gps['id'])
     acknowledged=data(lambda d:any(a['id']==gps['id'] and a['acknowledged'] for a in d['runtime']['alerts']))
     assert any(a['episode']==gps['episode'] for a in acknowledged['runtime']['alerts'])
     capture('beta-alerts-acknowledged')

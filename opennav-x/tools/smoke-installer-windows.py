@@ -20,7 +20,7 @@ if sys.platform!='win32' or os.environ.get('GITHUB_ACTIONS')!='true':
     raise SystemExit('This destructive fixture is restricted to disposable Windows CI')
 ROOT=Path(__file__).resolve().parents[1]
 EVIDENCE=ROOT/'evidence/local';EVIDENCE.mkdir(parents=True,exist_ok=True)
-PACKAGE=ROOT/'build/beta-installer';SETUP=PACKAGE/'OpenNavX-Beta1-Setup.exe'
+PACKAGE=ROOT/'build/beta-installer';SETUP=PACKAGE/'OpenNavX-Beta2-Setup.exe'
 INSTALL=Path(os.environ['LOCALAPPDATA'])/'OpenNavXAlpha1'
 STOCK_HASH='7c6547562cca7954671eaab72833ca9d788710fd9808b6a699b6dc823852ae0c'
 SETUP_HASH='e949f55de57611afe2fc0dad5a8ac33795c46ba488cb40ca07b65f639a07b8aa'
@@ -51,10 +51,12 @@ def setup(action,stock,expected=0,failure='',executable=SETUP):
     assert result.returncode==expected,(action,result.returncode,out.read_text() if out.exists() else 'No report')
     assert out.exists(),out
     return json.loads(out.read_text(encoding='utf-8-sig'))
-def engine(action,expected=0):
+def engine(action,expected=0,shortcut_modes=''):
     script=generation()/'Lifecycle.ps1'
     out=operation_report(action)
-    r=subprocess.run([str(PS),'-NoProfile','-NonInteractive','-ExecutionPolicy','Bypass','-File',str(script),'-Action',action,'-Report',str(out)],timeout=120,capture_output=True)
+    command=[str(PS),'-NoProfile','-NonInteractive','-ExecutionPolicy','Bypass','-File',str(script),'-Action',action,'-Report',str(out)]
+    if shortcut_modes:command+=['-ShortcutModes',shortcut_modes]
+    r=subprocess.run(command,timeout=120,capture_output=True)
     assert r.returncode==expected,(action,r.returncode,r.stdout.decode(errors='replace'),r.stderr.decode(errors='replace'))
     return json.loads(out.read_text(encoding='utf-8-sig'))
 def package_engine(directory, stock, expected=1):
@@ -144,7 +146,7 @@ def close(p,h):
     ui.close(h);assert p.wait(timeout=30)==0;owned.discard(p.pid)
 def wizard(stock,install=False):
     p=subprocess.Popen([str(SETUP)]);owned.add(p.pid)
-    title='OpenNav X Beta 1 Setup'
+    title='OpenNav X Beta 2 Setup'
     h,_=ui.wait_window(title,p.pid,timeout=45)
     ui.capture(h,EVIDENCE/'installer-wizard-welcome.png',resize=False,screen_pixels=True)
     report['screenshots'].append('installer-wizard-welcome.png')
@@ -168,6 +170,15 @@ def wizard(stock,install=False):
     ui.capture(h,EVIDENCE/'installer-wizard-selection.png',resize=False,screen_pixels=True)
     report['screenshots'].append('installer-wizard-selection.png')
     if install:
+        for expected_page, image_name in [('Your recovery backup','backup'),('Start menu shortcuts','options'),('Ready to install','ready')]:
+            press(1)
+            deadline=time.monotonic()+45
+            while time.monotonic()<deadline:
+                if any(expected_page in label for _,label in ui.children(h)): break
+                time.sleep(.1)
+            else: raise RuntimeError('Beta 2 wizard page missing: '+expected_page)
+            image=EVIDENCE/('installer-wizard-'+image_name+'.png')
+            ui.capture(h,image,resize=False,screen_pixels=True); report['screenshots'].append(image.name)
         press(1)
         deadline=time.monotonic()+180
         while time.monotonic()<deadline:
@@ -175,20 +186,20 @@ def wizard(stock,install=False):
             for notice,_,_ in ui.windows(p.pid):
                 captions=[ui.control_text(child) for child,_ in ui.children(notice)]
                 if any('OpenNav setup did not complete' in caption for caption in captions):
-                    raise RuntimeError('Alpha wizard reported installation failure; retained engine logs contain the cause')
+                    raise RuntimeError('Beta 2 wizard reported installation failure; retained engine logs contain the cause')
             if ui.control_text(get_item(h,1)).replace('&','')=='Finish' and ui.IsWindowEnabled(get_item(h,1)):
                 break
             time.sleep(.2)
-        else:raise RuntimeError('Alpha wizard did not reach Finish')
+        else:raise RuntimeError('Beta 2 wizard did not reach Finish')
         for child,caption in ui.children(h):
-            if caption.replace('&','')=='Launch OpenNav X Beta 1':
+            if caption.replace('&','')=='Launch OpenNav X Beta 2':
                 ui.SendMessageW(child,0x00F1,0,0)
         time.sleep(.5)
         ui.capture(h,EVIDENCE/'installer-wizard-installed.png',resize=False,screen_pixels=True)
         report['screenshots'].append('installer-wizard-installed.png')
         press(1)
         assert p.wait(timeout=30)==0
-        check('Actual Alpha wizard Install preflight, staging and Finish complete successfully without command-line options')
+        check('Actual Beta 2 wizard detection, recovery, shortcuts, ready, validation and Finish pass without command-line options')
     else:
         press(2)
         p.wait(timeout=30)
@@ -234,12 +245,12 @@ try:
         check('Unknown installation ownership refused without adding logs or changing files')
         # Obtain wx standard profile path without initializing it; never guess it.
         loader=temporary/'locations.json'
-        r=subprocess.run([str(ROOT/'build/xnav-install/opencpn.exe'),'--opennav-self-test',str(loader)],timeout=30)
+        r=subprocess.run([str(ROOT/'build/production-install/opencpn.exe'),'--opennav-self-test',str(loader)],timeout=30)
         assert r.returncode==0
         profile=Path(json.loads(loader.read_text())['normal_config_directory'])
         assert str(profile).lower().startswith(os.environ['PROGRAMDATA'].lower()),profile
         if profile.exists():shutil.move(profile,temporary/'stock-created-profile')
-        subprocess.run([sys.executable,str(ROOT/'tools/prepare-test-profile.py'),'--build',str(ROOT/'build/xnav-windows'),'--profile',str(profile)],check=True)
+        subprocess.run([sys.executable,str(ROOT/'tools/prepare-test-profile.py'),'--build',str(ROOT/'build/production-windows'),'--profile',str(profile)],check=True)
         fixtures.seed(profile)
         with (profile/'opencpn.conf').open('a') as f:f.write('\n[Settings/GlobalState]\nVPLatLon=59.0800,18.5000\nVPScale=0.003\n')
         shutil.copy2(profile/'opencpn.conf',profile/'opencpn.ini')
@@ -247,7 +258,7 @@ try:
         wizard(original,install=True)
         assert inventory(profile)==before and inventory(stock)==stock_before
         assert not state()['previous']
-        assert sha(generation()/'app/opencpn.exe')==sha(ROOT/'build/xnav-install/opencpn.exe')
+        assert sha(generation()/'app/opencpn.exe')==sha(ROOT/'build/production-install/opencpn.exe')
         p,h,rgb=launch(generation()/'app/opencpn.exe',['--xnav'],'OpenNav X / OpenCPN',profile,'installer-00-clean-candidate')
         charts.reference(rgb);close(p,h);assert fixture_snapshot(profile)==expected
         stable_resources(profile,stock)
@@ -267,23 +278,30 @@ try:
         config['TideCurrentDataSources']={'tcds0':custom_tide.as_posix()}
         with (profile/'opencpn.ini').open('w',encoding='utf-8') as f:config.write(f)
         before=inventory(profile)
-        prior=ROOT/'build/prior-alpha-fixture/setup/OpenNavX-Alpha1-Setup.exe'
+        prior=ROOT/'build/prior-alpha-fixture/setup/OpenNavX-Beta1-Setup.exe'
         setup('Install',original,executable=prior)
         assert inventory(profile)==before and inventory(stock)==stock_before
-        assert json.loads((generation()/'ownership.json').read_text())['version']=='0.2.0-alpha1'
+        assert json.loads((generation()/'ownership.json').read_text())['version']=='0.3.0-beta1'
         old_exe=generation()/'app/opencpn.exe'
-        assert sha(old_exe)!=sha(ROOT/'build/xnav-install/opencpn.exe')
+        assert sha(old_exe)!=sha(ROOT/'build/production-install/opencpn.exe')
         p,h,rgb=launch(old_exe,['--xnav'],'OpenNav X / OpenCPN',profile,'installer-00-prior-test-version')
         charts.reference(rgb);close(p,h);assert fixture_snapshot(profile)==expected
         stable_resources(profile,stock,[custom_tide])
         prior_generation=state()['current'];before=inventory(profile)
-        check('Accepted Alpha 1 release installs and opens real coastline with shared fixtures')
+        check('Accepted Beta 1 release installs and opens real coastline with shared fixtures')
         setup('Update',original)
         assert state()['previous']==prior_generation
-        assert json.loads((generation()/'ownership.json').read_text())['version']=='0.3.0-beta1'
-        assert sha(generation()/'app/opencpn.exe')==sha(ROOT/'build/xnav-install/opencpn.exe')
+        assert json.loads((generation()/'ownership.json').read_text())['version']=='0.4.0-beta2'
+        assert sha(generation()/'app/opencpn.exe')==sha(ROOT/'build/production-install/opencpn.exe')
         assert inventory(profile)==before and inventory(stock)==stock_before
-        check('Accepted Alpha 1 updates to the exact Beta candidate executable; stock/profile unchanged')
+        check('Accepted Beta 1 updates to the exact Beta 2 candidate executable; stock/profile unchanged')
+        recoveries=list((INSTALL/'recovery').glob('*.json'))
+        assert recoveries,'Missing durable before-state recovery set'
+        latest=max(recoveries,key=lambda p:p.stat().st_mtime_ns)
+        recovery=json.loads(latest.read_text(encoding='utf-8-sig'))
+        assert recovery['before']['current']==prior_generation
+        assert recovery['stock']['sha256']==STOCK_HASH and recovery['nextVersion']=='0.4.0-beta2'
+        check('Versioned recovery record identifies exact Beta 1 generation, stock hash and Beta 2 target before update')
         first=state()['current'];exe=generation()/'app/opencpn.exe'
         assert not (exe.parent/'OPENNAV_PORTABLE_PREVIEW').exists()
         p,h,rgb=launch(exe,['--xnav'],'OpenNav X / OpenCPN',profile,'installer-01-xnav')
@@ -314,6 +332,18 @@ try:
         assert (generation()/'app/plugins/alpha-user-preserved.txt').read_text()==custom.read_text()
         assert inventory(profile)==before
         check('Repair replaces corrupt owned resources in a new generation; original damaged backup and custom additions retained')
+        engine('Repair',shortcut_modes='xnav')
+        shortcut_root=Path(os.environ['APPDATA'])/'Microsoft/Windows/Start Menu/Programs/OpenNav X Alpha 1'
+        assert (shortcut_root/'OpenNav X.lnk').exists() and (shortcut_root/'Maintain OpenNav.lnk').exists()
+        assert not (shortcut_root/'OpenCPN Legacy.lnk').exists() and not (shortcut_root/'OpenNav Safe Mode.lnk').exists()
+        assert state()['shortcutModes']==['xnav']
+        engine('Repair')
+        assert state()['shortcutModes']==['xnav'] and not (shortcut_root/'OpenCPN Legacy.lnk').exists()
+        check('Optional shortcuts respect explicit choices; retained-package repair preserves preferences')
+        engine('Repair',shortcut_modes='xnav,legacy,safe')
+        assert (shortcut_root/'OpenCPN Legacy.lnk').exists() and (shortcut_root/'OpenNav Safe Mode.lnk').exists()
+        assert inventory(profile)==before
+        check('Legacy and Safe shortcuts can be restored without altering shared navigation data')
         repaired=state()['current'];setup('Update',original)
         assert state()['previous']==repaired
         assert (generation()/'app/plugins/alpha-user-preserved.txt').exists()
@@ -362,6 +392,23 @@ try:
             assert not any(title=='opencpn.exe - System Error' for _,_,title in ui.windows()),'Loader failure left an operating-system modal dialog'
             time.sleep(.1)
         unchanged();check('Missing required wx DLL exits with loader failure before commit, without OS modal residue')
+        # A correctly hashed fixture-enabled executable is still forbidden in
+        # the installed product. Exercise the actual native loader identity,
+        # not merely a package label or cache option.
+        fixture_exe=ROOT/'build/xnav-install/opencpn.exe'
+        assert fixture_exe.is_file() and sha(fixture_exe)!=sha(ROOT/'build/production-install/opencpn.exe')
+        fixture_bytes=fixture_exe.read_bytes()
+        manifest=json.loads((PACKAGE/'package.json').read_text())
+        with zipfile.ZipFile(PACKAGE/'payload.zip') as source, zipfile.ZipFile(damaged_package/'payload.zip','w',zipfile.ZIP_DEFLATED) as target:
+            for entry in source.infolist():
+                target.writestr(entry,fixture_bytes if entry.filename=='app/opencpn.exe' else source.read(entry.filename))
+        for entry in manifest['files']:
+            if entry['path']=='app/opencpn.exe':entry['sha256']=sha(fixture_exe)
+        manifest['payloadSha256']=sha(damaged_package/'payload.zip')
+        (damaged_package/'package.json').write_text(json.dumps(manifest))
+        failure=package_engine(damaged_package,original)
+        assert 'Developer/test-fixture executable refused' in failure['error'],failure
+        unchanged();check('Correctly hashed native fixture-enabled executable is refused before product publication')
         with file_lock(INSTALL/'state.json'):
             setup('Update',original,expected=1)
         unchanged();assert (INSTALL/'transaction.json').exists()
@@ -406,6 +453,16 @@ try:
         stable_resources(profile,stock,[custom_tide])
         check('Stock resource defaults survive every generation and uninstall; explicit custom tide selection is preserved')
         check('Original official OpenCPN still loads charts and shared navigation data after uninstall')
+        before=inventory(profile)
+        setup('Install',original)
+        assert json.loads((generation()/'ownership.json').read_text())['version']=='0.4.0-beta2'
+        assert inventory(profile)==before and inventory(stock)==stock_before
+        check('Beta 2 reinstall after uninstall preserves original stock, shared profile and retained custom additions')
+        setup('Update',original)
+        assert state()['previous'] and inventory(profile)==before
+        check('Beta 2 same-version rebuild/update creates a rollback generation without changing user data')
+        engine('Uninstall')
+        assert inventory(profile)==before and inventory(stock)==stock_before
         report['stock_sha256']=sha(original);report['setup_sha256']=sha(SETUP)
         report['status']='passed'
 except Exception as e:

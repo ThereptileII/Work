@@ -46,3 +46,20 @@ repeated real bridge reads must return the exact same position epoch. The
 isolated AIS fixture now supplies continuing synthetic report state and waits
 for the actual shell advisory observation, avoiding a race with OpenCPN's
 separate CPA/alarm timer. No production AIS calculation or timer is altered.
+
+Beta 2's actual TCP `!AIVDM` acquisition test exposed a timezone defect hidden
+by the original model-only fixture: pinned `Parse_VDXBitstring`, N2K and Signal K
+position acquisition assign `PositionReportTicks` after `MakeGMT`/`MakeUTC`.
+The native expiry timer uses that same shifted local-wall clock. Those values
+cannot be compared directly with Unix `system_clock` timestamps. Fresh targets
+on the UTC+2 development host were incorrectly aged by two hours.
+
+`AisObservationAt` now derives elapsed age using the identical upstream clock
+domain and pairs it with the supplied monotonic observation. Missing, future,
+implausibly old and extreme reports remain unavailable. The existing per-report
+cache remains, so reads cannot refresh age. The isolated injected fixture now
+uses native report ticks as well. Four integrated tests cover native wx pairing,
+UTC/east/west elapsed-time vectors, stale age and invalid/future/overflow input;
+the actual no-restart connection and AIS acquisition scenario has passed on
+Linux under both UTC and Europe/Stockholm (UTC+2). Native Windows and physical
+receiver validation remain required before release acceptance.

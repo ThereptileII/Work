@@ -1,4 +1,5 @@
 #include "integration/PreviewDiagnostics.h"
+#include "integration/BuildFeatures.h"
 #include "OpenNavBuild.h"
 #include "application/Version.h"
 #include "smartnav/VesselEnergy.h"
@@ -16,6 +17,7 @@ std::vector<std::string> PreviewBuildInfo(int dpi, const std::string &profile) {
               application::Version + " / Interface: XNav",
           "OpenCPN 5.12.4 / 37fd0cddb7334fe489e9f18aa163977a9c5c84f7",
           "Build: " OPENNAV_BUILD_COMMIT,
+          "Build purpose: " + std::string(BuildPurpose()),
           "Compiler: " OPENNAV_BUILD_COMPILER,
           "Built: " OPENNAV_BUILD_DATE " / CI: " OPENNAV_BUILD_RUN,
           "OS: " + wxGetOsDescription().ToStdString(wxConvUTF8) +
@@ -42,6 +44,8 @@ void WritePreviewDiagnostics(const std::string &path,
   report["clock"] = wxString(state.replayed ? "recorded session clock"
                                             : "live monotonic clock");
   report["build_commit"] = wxString(OPENNAV_BUILD_COMMIT);
+  report["build_purpose"] = wxString::FromUTF8(BuildPurpose().data());
+  report["test_fixtures"] = TestFixturesEnabled();
   for (const auto &line : info)
     report["build_info"].Append(wxString::FromUTF8(line));
   for (const auto &item : vessel::DataItems(state)) {

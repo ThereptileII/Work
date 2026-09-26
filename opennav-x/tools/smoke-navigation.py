@@ -42,9 +42,17 @@ server.settimeout(.5)
 port = server.getsockname()[1]
 with (profile / 'opencpn.conf').open('a') as stream:
     # TCP client, checksums required, input only, enabled, loopback peer only.
-    stream.write('\n[Settings/NMEADataSource]\nDataConnections='
-                 f'1;0;127.0.0.1;{port};{1 if n2k else 0};;4800;1;0;0;;0;;0;0;0;0;1;'
-                 'SIMULATED loopback navigation fixture;0;;0;1;\n')
+    if objects:
+        # The marked scenario adds this real input connection AFTER startup,
+        # using the same UpdateDatastreams path as OpenCPN's connection editor.
+        # This deliberately tests the reported add-GPS-without-restart path.
+        stream.write('\n[Settings/NMEADataSource]\nDataConnections=\n'
+                     '[Settings/GlobalState]\nVPLatLon=59.0800,18.5000\nVPScale=0.003\n')
+        (profile / 'OPENNAV_OBJECT_INPUT_PORT').write_text(str(port) + '\n')
+    else:
+        stream.write('\n[Settings/NMEADataSource]\nDataConnections='
+                     f'1;0;127.0.0.1;{port};{1 if n2k else 0};;4800;1;0;0;;0;;0;0;0;0;1;'
+                     'SIMULATED loopback navigation fixture;0;;0;1;\n')
     if boat:
         iface=f'TCP:127.0.0.1:{port}'
         settings={k:'' for k in ['corridor','draft','efficiency','hotel','margin']}
@@ -57,14 +65,36 @@ with (profile / 'opencpn.conf').open('a') as stream:
 stop = threading.Event()
 connected = threading.Event()
 phase = ['none']
-counts = {'rmc': 0, 'gga': 0}
+counts = {'rmc': 0, 'gga': 0, 'ais': 0}
 failures = []
 
-def sentence(body):
+def sentence(body, delimiter='$'):
     checksum = 0
     for byte in body.encode('ascii'):
         checksum ^= byte
-    return f'${body}*{checksum:02X}\r\n'.encode('ascii')
+    return f'{delimiter}{body}*{checksum:02X}\r\n'.encode('ascii')
+
+
+def ais_position(mmsi):
+    # Type 1 positions match the pinned ais_decoder.cpp::Parse_VDXBitstring
+    # one-based fields (MMSI 9/30, SOG 51/10, lon 62/28, lat 90/27,
+    # COG 117/12, HDG 129/9). No copied model object substitutes for decoding.
+    bits = ['0'] * 168
+    def field(first, width, value):
+        assert 0 <= value < 1 << width
+        bits[first - 1:first - 1 + width] = f'{value:0{width}b}'
+    field(1, 6, 1)
+    field(9, 30, mmsi)
+    field(43, 8, 128)  # turn rate unavailable
+    field(51, 10, 70)  # 7 kn
+    field(62, 28, round(12.9 * 600000))
+    field(90, 27, round(56.82 * 600000))
+    field(138, 6, 60)  # no fabricated UTC second
+    armored = ''
+    for i in range(0, len(bits), 6):
+        value = int(''.join(bits[i:i + 6]), 2)
+        armored += chr(value + 48 + (8 if value >= 40 else 0))
+    return sentence(f'AIVDM,1,1,,A,{armored},0', '!')
 
 def transmit():
     peer = None
@@ -125,6 +155,12 @@ def transmit():
             if mode in ('rmc', 'invalid'):
                 peer.sendall(sentence(f'GPRMC,{utc},A,5642.000,N,01236.000,E,6.3,147.0,{now:%d%m%y},,,A'))
                 counts['rmc'] += 1
+                if objects:
+                    peer.sendall(ais_position(990000002))
+                    malformed = bytearray(ais_position(990000003))
+                    malformed[-4] = ord('0') if malformed[-4] != ord('0') else ord('1')
+                    peer.sendall(malformed)  # wrong checksum must not create a target
+                    counts['ais'] += 1
                 if instruments:
                     bodies = ['IIHDT,149,T','IIVHW,149,T,145,M,6,N,11.1,K','IIDPT,8.4,-2',
                               'IIMWV,72,R,16.2,N,A','IIMWV,94,T,12.8,N,A',
@@ -149,6 +185,10 @@ report = {'authority': 'native Windows' if windows else 'Linux development',
           'fixture': 'Synthetic NMEA over loopback; no external devices or production profile',
           'expected': {'sog_kn': 6.3, 'cog_deg': 147, 'wind': 'unavailable', 'depth': 'unavailable'},
           'screenshots': [], 'visual_review': 'required'}
+if objects:
+    report['time_environment'] = {'TZ': os.environ.get('TZ', '(system)'),
+                                  'names': list(time.tzname),
+                                  'utc_offset_seconds': datetime.datetime.now().astimezone().utcoffset().total_seconds()}
 if n2k:
     report['expected'] = {'battery_voltage_v': 343, 'battery_current_source_a': -21,
                           'soc_percent': 68, 'motor_rpm': 820, 'coolant_c': 62, 'gear': 'Forward'}
@@ -202,12 +242,33 @@ try:
     def capture(name):
         path = evidence / f'{prefix}-{name}.png'
         if windows:
-            ui.capture(handle, path)
+            rgb = ui.capture(handle, path)
         else:
             subprocess.run(['import', '-window', 'root', str(path)], env=env, check=True)
+            rgb = subprocess.check_output(['convert', str(path), '-depth', '8', 'rgb:-'], env=env)
         report['screenshots'].append(path.name)
+        return rgb
 
     if objects:
+        spec = importlib.util.spec_from_file_location('chartcheck', root / 'tools/chart-render-check.py')
+        chartcheck = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(chartcheck)
+        # xdotool's resize request returns before wx processes its size event.
+        # Require the native layout to have actually reached 1280x800 before
+        # learning chart colors; a partial small window/black desktop is not a
+        # valid land/water reference.
+        deadline=time.monotonic()+12
+        while time.monotonic()<deadline:
+            sized=read_json_snapshot(profile/'opennav-diagnostics.json')
+            display=sized['runtime']['display']
+            region=display.get('chart_region',{})
+            controls=display.get('interaction_controls',[])
+            if region.get('width',0)>1000 and region.get('height',0)>650 and any(
+                    c['label']=='System' and c['x']>1100 and c['y']>700 for c in controls):break
+            time.sleep(.2)
+        else:raise AssertionError('Actual chart layout did not reach 1280x800')
+        chart_colors = chartcheck.reference(capture('initial-no-input-chart'))
+        assert all(min(c)>0 for c in chart_colors),'Black desktop is not a chart color'
         phase[0]='rmc';deadline=time.monotonic()+70;seen=set()
         while time.monotonic()<deadline:
             assert app.poll() is None,'Object fixture exited'
@@ -215,8 +276,14 @@ try:
             if path.exists():
                 result=read_json_snapshot(path);assert result['result']!='failed',result
                 current=result.get('phase','')
-                if current in ['route-card','waypoint-card','ais-card'] and current not in seen:
-                    time.sleep(.6);capture(current);seen.add(current)
+                if current in ['route-card','settings-return','waypoint-card','ais-card'] and current not in seen:
+                    time.sleep(.6)
+                    rgb = capture(current)
+                    if current == 'settings-return':
+                        report.setdefault('chart_rendering', []).append(chartcheck.check(
+                            rgb, chart_colors, 'Actual settings reconfiguration returns coastline without restart'))
+                        (profile / 'settings-return-observed').write_text('Native chart land and water verified.\n')
+                    seen.add(current)
                 if current=='ais-advice' and not report.get('live_ais_advice'):
                     sample=read_json_snapshot(profile/'opennav-diagnostics.json')
                     if sample['runtime'].get('smartnav',{}).get('ais_event_count',0)>0:
@@ -224,7 +291,8 @@ try:
                         (profile/'ais-advice-observed').write_text('Observed actual shell diagnostic AIS event\n')
                 if result['result']=='passed':
                     assert report.get('live_ais_advice'),'No actual AIS advisory observed'
-                    assert len(seen)==3,seen
+                    assert len(seen)==4,seen
+                    assert result.get('late_connection_added_after_deferred') and counts['ais'] >= 3,result
                     report['object_contract']=result;break
             time.sleep(.2)
         else:raise RuntimeError('Object contract fixture timed out')
@@ -236,7 +304,13 @@ try:
             time.sleep(.15)
         else:raise AssertionError('AIS fixture alarm did not resolve before card interaction')
         if windows:ui.click_text(app.pid,'Select target on chart')
-        else:subprocess.run(['xdotool','mousemove','600','230','click','1'],env=env,check=True)
+        else:
+            choices=[c for c in ready['runtime']['display']['product_controls']
+                     if c['label']=='Select target on chart' and c['visible'] and c['enabled']]
+            assert len(choices)==1,('Current target action is not visible',choices)
+            choice=choices[0]
+            subprocess.run(['xdotool','mousemove',str(choice['x']+choice['width']//2),
+                            str(choice['y']+choice['height']//2),'click','1'],env=env,check=True)
         deadline=time.monotonic()+12
         while time.monotonic()<deadline:
             selected=read_json_snapshot(profile/'opennav-diagnostics.json')
@@ -252,7 +326,7 @@ try:
             ui.click_text(app.pid,'Save');time.sleep(.6)
             assert any(c=='ALPHA TEST UI edited' for _,c in ui.children(handle))
             capture('waypoint-edit-sheet-result')
-            ui.click_text(app.pid,'Delete isolated waypoint');ui.click_text(app.pid,'Cancel')
+            ui.click_text(app.pid,'Delete waypoint');ui.click_text(app.pid,'Cancel')
             assert any(c=='ALPHA TEST UI edited' for _,c in ui.children(handle)), 'Cancel changed the mark'
             ui.click_text(app.pid,'Edit waypoint')
             ui.set_text_in_dialog(app.pid,'Edit waypoint','ALPHA TEST UI edited','ALPHA TEST edited')

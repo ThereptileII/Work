@@ -5,6 +5,7 @@
 namespace opennav::smartnav {
 // Presentation bridge owns only values. Live capacity/reserve are deliberately
 // unconfigured until a separate source/configuration contract is implemented.
+// Defined only by the explicit developer/test fixture library.
 EnergyModel PreviewEnergyModel(bool demo);
 EnergyPrediction PredictVesselEnergy(const EnergyModel &model,
                                      const vessel::VesselState &state,

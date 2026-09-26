@@ -1,4 +1,5 @@
 #include "integration/OpenCPNIntegration.h"
+#include "integration/BuildFeatures.h"
 #include "adapters/Autopilot.h"
 #include "integration/OpenCPNPilot.h"
 #include "adapters/Radar.h"
@@ -16,6 +17,9 @@
 #include "integration/RuntimeDiagnostics.h"
 #include "integration/SettingsStore.h"
 #include "integration/StartupMode.h"
+#if XNAV_ENABLE_TEST_FIXTURES
+#include "adapters/SimulatedAutopilot.h"
+#endif
 #include "model/base_platform.h"
 #include "model/comm_drv_registry.h"
 #include "model/safe_mode.h"
@@ -47,6 +51,7 @@
 #include "ocpn_plugin.h"
 
 #include <algorithm>
+#include <cmath>
 #include <iostream>
 #include <memory>
 #include <optional>
@@ -94,8 +99,13 @@ struct PilotServices {
   explicit PilotServices(std::function<bool()> allowed)
       : hardware(std::move(allowed)) {}
   integration::OpenCPNPilot hardware;
+#if XNAV_ENABLE_TEST_FIXTURES
   adapters::SimulatedAutopilot simulator{vessel::Clock::now()};
   adapters::ManualAutopilot live{hardware},demo{simulator};
+#else
+  adapters::UnavailableAutopilot isolated;
+  adapters::ManualAutopilot live{hardware},demo{isolated};
+#endif
   bool was_demo=false;
   adapters::ManualAutopilot& Select(bool simulated){return simulated?demo:live;}
 };
@@ -153,7 +163,9 @@ void AddCommandLine(wxCmdLineParser& parser) {
   parser.AddSwitch("", "xnav", "OpenNav X interface");
   parser.AddSwitch("", "legacy", "Original OpenCPN interface");
   parser.AddSwitch("", "safe-mode", "Legacy recovery; OpenNav modules disabled");
+#if XNAV_ENABLE_TEST_FIXTURES
   parser.AddSwitch("", "xnav-demo", "Explicit simulated XNav telemetry; no device commands");
+#endif
 #ifdef OPENNAV_ROUTE_TESTS
   parser.AddSwitch("", "xnav-route-fixture", "TEST BUILD ONLY: isolated route contract scenario");
   parser.AddSwitch("", "xnav-object-fixture", "TEST BUILD ONLY: isolated navigation object scenario");
@@ -164,7 +176,9 @@ bool ParseCommandLine(wxCmdLineParser& parser) {
   if (integration::ParseInstallerSelfTest(parser)) return true;
   flags = {parser.Found("xnav"), parser.Found("legacy"),
            parser.Found("safe-mode") || parser.Found("safe_mode")};
+#if XNAV_ENABLE_TEST_FIXTURES
   demo = parser.Found("xnav-demo");
+#endif
   try { (void)integration::ResolveStartup(flags); }
   catch (const std::exception& error) { std::cerr << error.what() << '\n'; return false; }
   if (parser.Found("remote") && (flags.xnav || flags.legacy || flags.safe || demo)) {
@@ -208,6 +222,18 @@ bool ParseCommandLine(wxCmdLineParser& parser) {
     route_test_profile = configdir.ToStdString(wxConvUTF8);
   }
 #endif
+  try {
+    integration::TestStartupFlags requested;
+    requested.demo = demo;
+#ifdef OPENNAV_ROUTE_TESTS
+    requested.route = !route_test_profile.empty();
+    requested.objects = !object_test_profile.empty();
+#endif
+    integration::ValidateTestStartup(requested, flags);
+  } catch (const std::exception &error) {
+    std::cerr << error.what() << '\n';
+    return false;
+  }
   if (parser.Found("portable") || preview_paths) profile_arguments.push_back("--portable");
   if (parser.Found("no_opengl")) profile_arguments.push_back("--no_opengl");
   if (parser.Found("fullscreen")) profile_arguments.push_back("--fullscreen");
@@ -516,10 +542,34 @@ void Attach(MyFrame& frame, wxAuiManager& manager, wxFileConfig& config) {
     last=now;
     auto runtime =
         integration::ReadRuntimeDiagnostics(*frame.GetPrimaryCanvas());
+    runtime["test_fixtures"] = integration::TestFixturesEnabled();
+    runtime["build_purpose"] = wxString::FromUTF8(integration::BuildPurpose().data());
     if (shell) {
       runtime["display"]["light"] = wxString::FromUTF8(shell->LightName());
       runtime["display"]["native_caption_themed"] = shell->NativeCaptionThemed();
       runtime["display"]["minimum_value_height_dip"] = shell->MinimumValueHeight();
+      auto geometry = [](const std::vector<ui::ProductGeometry> &items) {
+        wxJSONValue result(wxJSONTYPE_ARRAY);
+        for(const auto &item:items) {
+          wxJSONValue row;
+          row["label"]=wxString::FromUTF8(item.label);
+          row["x"]=item.screen.x; row["y"]=item.screen.y;
+          row["width"]=item.screen.width; row["height"]=item.screen.height;
+          row["enabled"]=item.enabled; row["visible"]=item.visible;
+          result.Append(row);
+        }
+        return result;
+      };
+      runtime["display"]["product_controls"]=geometry(shell->ProductControls());
+      runtime["display"]["product_regions"]=geometry(shell->ProductRegions());
+      runtime["display"]["rail_regions"]=geometry(shell->RailRegions());
+      runtime["display"]["interaction_controls"]=geometry(shell->InteractionControls());
+      runtime["display"]["route_creation_active"]=shell->RouteCreationActive();
+      const auto chart_bounds=frame.GetPrimaryCanvas()->GetScreenRect();
+      runtime["display"]["chart_region"]["x"]=chart_bounds.x;
+      runtime["display"]["chart_region"]["y"]=chart_bounds.y;
+      runtime["display"]["chart_region"]["width"]=chart_bounds.width;
+      runtime["display"]["chart_region"]["height"]=chart_bounds.height;
       runtime["display"]["page_scroll_px"] = shell->PageScrollPosition();
       runtime["display"]["can_scroll_up"] = shell->CanScrollPage(-1);
       runtime["display"]["can_scroll_down"] = shell->CanScrollPage(1);
@@ -606,7 +656,9 @@ void Attach(MyFrame& frame, wxAuiManager& manager, wxFileConfig& config) {
                        : marine->Health(now),
         page, runtime);
   };
+#if XNAV_ENABLE_TEST_FIXTURES
   actions.demo_chart=[] { if(g_bDeferredInitDone) JumpToPosition(59.08,18.5,0.003); };
+#endif
   actions.theme = [&frame](ui::LightMode mode) {
     const auto scheme = mode == ui::LightMode::Night ? GLOBAL_COLOR_SCHEME_NIGHT
                         : mode == ui::LightMode::Dusk ? GLOBAL_COLOR_SCHEME_DUSK
@@ -650,6 +702,16 @@ void AfterDeferredInitialization() {
   });
 }
 
+void AfterSettingsReconfigured() {
+  // Options may detach/recreate AUI canvas panes. Reconcile only after upstream
+  // has completed its normal chart/configuration work; never retain old panes.
+  if (!shell || !host || !IsXNav()) return;
+  shell->AfterCanvasLayoutChanged();
+  host->InvalidateAllGL();
+  host->ReloadAllVP();
+  host->RefreshAllCanvas(false);
+}
+
 void AfterAnchorWatch(){
   if (recovery && IsXNav())
     recovery->ObserveHealthy(g_bDeferredInitDone, vessel::Clock::now());
@@ -663,6 +725,15 @@ void AfterAnchorWatch(){
   anchor_state=std::move(current);
 }
 bool ShowNavigationObjectCard(const std::string& id,bool route){if(!IsXNav()||!shell||!host)return false;host->CallAfter([id,route]{if(shell)shell->ShowObject(id,route);});return true;}
+bool ShowChartContext(double latitude, double longitude) {
+  if (!IsXNav() || !shell || !host || !std::isfinite(latitude) ||
+      !std::isfinite(longitude) || std::abs(latitude) > 90) return false;
+  longitude = std::remainder(longitude, 360.0);
+  host->CallAfter([latitude, longitude] {
+    if (shell) shell->ShowChartContext({latitude, longitude});
+  });
+  return true;
+}
 bool IsAisSelected(int mmsi) { return IsXNav() && shell && mmsi > 0 && shell->SelectedAis() == mmsi; }
 bool ShowAisCard(int mmsi){if(!IsXNav()||!shell||!host)return false;host->CallAfter([mmsi]{if(shell)shell->ShowAis(mmsi);});return true;}
 

@@ -1,5 +1,6 @@
 #include "ui/ProductPanel.h"
 #include "ui/Sheet.h"
+#include "integration/BuildFeatures.h"
 #include "vessel/DisplayItems.h"
 #include <algorithm>
 #include <cmath>
@@ -63,10 +64,11 @@ void ProductPanel::EnergySettings() {
           "Live vessel / Explicit assumptions / Advisory estimates");
   Action("Back to Settings",
          [this] { ShowPage(ProductPage::Settings, mode_); });
-  Text(state_.vessel.simulated ? "DEMO uses separate fixture assumptions. "
-                                 "Changes below affect live mode only."
-                               : "No boat capacity, reserve, current sign or "
-                                 "propulsion curve is guessed.");
+  Text("Set your boat's usable battery capacity, reserve and measured consumption.");
+#if XNAV_ENABLE_TEST_FIXTURES
+  if (state_.vessel.simulated)
+    Text("DEMO has separate test assumptions. These settings affect live input only.");
+#endif
   LiveText([](const auto &s) { return W(s.settings_status); });
   const auto config = actions_.settings ? actions_.settings() : state_.settings;
   const auto &e = config.energy;
@@ -242,77 +244,44 @@ void ProductPanel::EnergySettings() {
   }
 }
 void ProductPanel::Sources() {
-  // Mapping is configured explicitly against an observed NAME, never an address
-  // guessed from a CAN example or inferred from a vendor frame alone.
-  Heading("Data Sources",
-          "OpenCPN input bus / Owned observations / Source precedence");
-  Action("Back to Settings",
-         [this] { ShowPage(ProductPage::Settings, mode_); });
-  Text("GPS position, SOG and COG use OpenCPN's selected navigation input. "
-       "Instrument selection below does not replace that service. DEMO data "
-       "never enters this live source registry.");
-  Action("Connections / Advanced settings",
-         actions_.navigation.legacy_settings);
-  Text("Explicit propulsion mappings: " +
-       wxString::Format("%u", static_cast<unsigned>(
-                                  state_.settings.signal_k_mappings.size())));
+  Heading("Sensors", "Connection health at a glance");
   BeginActions(2);
-  Action("Import propulsion Signal K mapping", [this] {
-    wxFileDialog file(this, "Import documented propulsion mapping", {}, {},
-                      "CSV files (*.csv)|*.csv|All files|*",
-                      wxFD_OPEN | wxFD_FILE_MUST_EXIST);
-    if (file.ShowModal() != wxID_OK)
-      return;
-    try {
-      const auto path =
-          std::filesystem::u8path(file.GetPath().ToStdString(wxConvUTF8));
-      if (std::filesystem::file_size(path) > 16384)
-        throw std::invalid_argument("Mapping exceeds 16 KiB");
-      std::ifstream in(path, std::ios::binary);
-      std::string csv(16385, '\0');
-      in.read(csv.data(), csv.size());
-      csv.resize(static_cast<std::size_t>(in.gcount()));
-      if (in.bad())
-        throw std::invalid_argument("Cannot read mapping");
-      auto mappings = application::ImportSignalKMappings(csv);
-      wxString review =
-          "Confirm against the bridge's documented fields and units. These are "
-          "live input conversions, not simulated values. Old instrument "
-          "observations will be cleared.\n";
-      for (const auto &m : mappings)
-        review += W(m.path) + W(" → ") + W(vessel::Describe(m.quantity).name) +
-                  W(" / value × ") + N(m.scale) + " + " + N(m.offset) + " " +
-                  W(vessel::Describe(m.quantity).unit) + "\n";
-      if (!ConfirmSheet(*this, mode_, "Confirm propulsion mapping", review,
-                        "Use mappings"))
-        return;
-      auto settings = actions_.settings();
-      settings.signal_k_mappings = std::move(mappings);
-      SaveSettings(std::move(settings));
-    } catch (const std::exception &e) {
-      Result({false, e.what()});
-    }
-  });
-  Action(
-      "Remove custom propulsion mappings",
-      [this] {
-        if (!ConfirmSheet(*this, mode_, "Remove propulsion mappings",
-                          "Standard marine inputs remain available. All "
-                          "retained instrument observations will be cleared "
-                          "and reacquired from normal input messages.",
-                          "Remove mappings"))
-          return;
-        auto settings = actions_.settings();
-        settings.signal_k_mappings.clear();
-        SaveSettings(std::move(settings));
-      },
-      !state_.settings.signal_k_mappings.empty());
+  Action("Connections / Advanced settings", actions_.navigation.legacy_settings);
+  Action("Motor & battery setup", [this] { ShowPage(ProductPage::BoatMapping, mode_); });
   EndActions();
-  for (const auto &m : state_.settings.signal_k_mappings)
-    Text(W(m.path) + " / " + W(vessel::Describe(m.quantity).name) + W(" / × ") +
-         N(m.scale) + " + " + N(m.offset) + " " +
-         W(vessel::Describe(m.quantity).unit));
-  Heading("Boat propulsion bridge", "Explicit marine mapping / no PC EV-CAN decoding");
+  auto status = [](const vessel::Sample &sample, vessel::Time now) {
+    const auto a = vessel::Assess(sample, now);
+    if (a.quality == vessel::Quality::Stale) return wxString("Stale");
+    if (a.quality == vessel::Quality::Aging) return wxString("Aging");
+    if (a.quality == vessel::Quality::Uncertain) return wxString("Check source");
+    return wxString(a.value ? "Connected" : "No data");
+  };
+  BeginActions(2);
+  StatusAction("GPS", [status](const auto &s) { return status(s.vessel.navigation.latitude_deg, s.now); },
+               [this] { source_quantity_ = vessel::Quantity::Count; ShowPage(ProductPage::SourceDetail, mode_); });
+  for (const auto &entry : std::vector<std::pair<wxString, vessel::Quantity>>{
+      {"Heading", vessel::Quantity::Heading}, {"Depth", vessel::Quantity::Depth},
+      {"Wind", vessel::Quantity::ApparentWindSpeed}, {"Speed through water", vessel::Quantity::WaterSpeed},
+      {"Rudder", vessel::Quantity::Rudder}, {"Motor", vessel::Quantity::MotorRpm},
+      {"Battery", vessel::Quantity::BatterySoc}, {"Water temperature", vessel::Quantity::WaterTemperature},
+      {"Fresh water", vessel::Quantity::FreshWater}, {"Waste tank", vessel::Quantity::Waste}})
+    StatusAction(entry.first, [status, q = entry.second](const auto &s) {
+      return status(vessel::Field(s.vessel, q), s.now);
+    }, [this, q = entry.second] { source_quantity_ = q; ShowPage(ProductPage::SourceDetail, mode_); });
+  StatusAction("AIS", [](const auto &s) {
+    return wxString(s.ais.available && s.now >= s.ais.observed_at &&
+          s.now - s.ais.observed_at < std::chrono::seconds(5) ? "Connected" : "No current data");
+  }, [this] { ShowPage(ProductPage::Ais, mode_); });
+  EndActions();
+  Text("Select a sensor for its value, source and last update. Connection changes apply without restarting XNav.");
+  BeginActions(2);
+  Action("Advanced source details", [this] { ShowPage(ProductPage::SourcesAdvanced, mode_); });
+  Action("System diagnostics", actions_.diagnostics);
+  Action("Commissioning & recordings", [this] { ShowPage(ProductPage::Commissioning, mode_); });
+  EndActions();
+}
+void ProductPanel::BoatMapping() {
+  Heading("Motor & battery setup", "Advanced / Identify the installed bridge");
   LiveText([](const auto &s) { return W(s.boat_bridge_status); });
   Text("The inspected bridge uses engine coolant for motor temperature and a "
        "virtual fuel tank for SOC. This mapping suppresses that fictional tank "
@@ -337,24 +306,26 @@ void ProductPanel::Sources() {
     auto s=actions_.settings();s.boat_bridge={};SaveSettings(std::move(s));
   },!state_.settings.boat_bridge.interface_id.empty());
   EndActions();
-  for (const auto &q : vessel::Quantities()) {
-    Action(W(q.name), [this, q] {
-      source_quantity_ = q.quantity;
-      ShowPage(ProductPage::SourceDetail, mode_);
-    });
-    LiveText([q](const auto &s) {
-      for (const auto &h : s.sources)
-        if (h.quantity == q.quantity && h.selected)
-          return Health(h, s.now) + " / " + W(h.source_id);
-      return wxString("No selected source / NO DATA");
-    });
-  }
 }
 void ProductPanel::SourceDetail() {
+  if (source_quantity_ == vessel::Quantity::Count) {
+    Heading("GPS", "Position and speed selected by OpenCPN");
+    LiveText([](const auto &s) {
+      const auto position = vessel::Assess(s.vessel.navigation.latitude_deg, s.now);
+      return W(vessel::QualityName(position.quality)) +
+             (position.age ? wxString::Format(" / Last update %.1f s ago", position.age->count() / 1000.) : wxString(" / No observation"));
+    });
+    Value("LATITUDE", "°", [](const auto &s) { return s.vessel.navigation.latitude_deg; }, 5);
+    Value("LONGITUDE", "°", [](const auto &s) { return s.vessel.navigation.longitude_deg; }, 5);
+    Value("SOG", "kn", [](const auto &s) { return s.vessel.navigation.sog_kn; });
+    LiveText([](const auto &s) { return "Source: " + W(s.vessel.navigation.latitude_deg.source); });
+    Action("Connections / Advanced settings", actions_.navigation.legacy_settings);
+    return;
+  }
   const auto q = source_quantity_;
   Heading(
       W(vessel::Describe(q).name),
-      "Live source precedence / Observation age is never renewed by reading");
+      "Selected source and recent observations");
   Action("Back to Data Sources",
          [this] { ShowPage(ProductPage::Sources, mode_); });
   const auto config = actions_.settings();
@@ -471,27 +442,45 @@ void ProductPanel::DisplaySettings() {
 }
 void ProductPanel::InstrumentSelection(bool rail) {
   Heading(rail ? "Data rail layout" : "Instrument layout",
-          "Selected values retain their original source, validity and age");
+          rail ? "Four essentials, always visible" : "Choose the readings useful to you");
   Action("Back to Display", [this] { ShowPage(ProductPage::Display, mode_); });
   const auto config = actions_.settings ? actions_.settings() : state_.settings;
-  const auto selected = rail ? config.data_rail : config.instruments;
-  Text(rail ? "Choose 1 to 6 values. Presets replace the rail; individual "
-              "selections appear in selection order."
-            : "Choose the values shown on the instrument page. At least one "
-              "value must remain selected.");
+  auto selected = rail ? config.data_rail : config.instruments;
+  if (rail && selected.size() > 4) selected.resize(4);
+  const auto normalize = [](application::Settings &settings) {
+    for (std::size_t i = 4; i < settings.data_rail.size(); ++i)
+      if (std::find(settings.instruments.begin(), settings.instruments.end(), settings.data_rail[i]) == settings.instruments.end())
+        settings.instruments.push_back(settings.data_rail[i]);
+    if (settings.data_rail.size() > 4) settings.data_rail.resize(4);
+  };
+  Text(rail ? "Choose up to four readings. Move the most useful one to the top. Additional instruments stay available on the Instruments screen."
+            : "Choose the values shown in each instrument group. At least one must remain selected.");
   if (rail) {
     BeginActions(3);
-    for (const auto &preset :
-         std::vector<std::pair<wxString, std::vector<std::string>>>{
-             {"Navigation rail", {"sog", "cog", "heading", "depth", "aws"}},
-             {"Sailing rail", {"aws", "awa", "tws", "twa", "stw", "depth"}},
-             {"Energy rail", {"soc", "pack_power", "rpm", "sog", "depth"}}})
-      Action(preset.first, [this, preset] {
-        auto s = actions_.settings();
-        s.data_rail = preset.second;
-        SaveSettings(std::move(s));
+    for (const auto &preset : std::vector<std::pair<wxString, std::vector<std::string>>>{
+        {"Navigation rail", {"sog", "depth", "aws", "heading"}},
+        {"Sailing rail", {"aws", "awa", "heading", "depth"}},
+        {"Energy rail", {"soc", "pack_power", "sog", "depth"}}})
+      Action(preset.first, [this, preset, normalize] {
+        auto s = actions_.settings(); normalize(s); s.data_rail = preset.second; SaveSettings(std::move(s));
       });
     EndActions();
+    for (std::size_t i = 0; i < selected.size(); ++i) {
+      wxString title = W(selected[i]);
+      for (const auto &item : vessel::DisplayItems(state_.vessel))
+        if (selected[i] == item.key) title = W(item.title);
+      Text(wxString::Format("%u  ", static_cast<unsigned>(i + 1)) + title, 18);
+      BeginActions(2, 140);
+      for (int direction : {-1, 1})
+        Action(direction < 0 ? "Move up" : "Move down", [this, normalize, i, direction] {
+          auto s = actions_.settings(); normalize(s);
+          const auto other = static_cast<int>(i) + direction;
+          if (i < s.data_rail.size() && other >= 0 && other < static_cast<int>(s.data_rail.size()))
+            std::swap(s.data_rail[i], s.data_rail[static_cast<std::size_t>(other)]);
+          SaveSettings(std::move(s));
+        }, direction < 0 ? i > 0 : i + 1 < selected.size());
+      EndActions();
+    }
   }
   BeginActions(2);
   for (const auto &item : vessel::DisplayItems(state_.vessel)) {
@@ -499,8 +488,9 @@ void ProductPanel::InstrumentSelection(bool rail) {
     const bool included =
         std::find(selected.begin(), selected.end(), key) != selected.end();
     Action((included ? "Shown / " : "Add / ") + W(item.title),
-           [this, rail, key] {
+           [this, rail, key, normalize] {
              auto s = actions_.settings();
+             if (rail) normalize(s);
              auto &list = rail ? s.data_rail : s.instruments;
              const auto found = std::find(list.begin(), list.end(), key);
              if (found != list.end())
@@ -509,7 +499,7 @@ void ProductPanel::InstrumentSelection(bool rail) {
                list.push_back(key);
              SaveSettings(std::move(s));
            },
-           included ? selected.size() > 1 : !rail || selected.size() < 6);
+           included ? selected.size() > 1 : !rail || selected.size() < 4);
   }
   EndActions();
 }

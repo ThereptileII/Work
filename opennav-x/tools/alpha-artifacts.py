@@ -1,23 +1,48 @@
 #!/usr/bin/env python3
-"""Collect exact tested native Beta payloads and a checksummed download set."""
+"""Collect verified native Beta 2 product payloads and a checksummed download set.
+
+The workflow still gates publication on the complete same-commit Linux/Windows
+suite. These checks prevent assembling a product set from failed packaging tests.
+"""
 import hashlib
 import json
+import os
 from pathlib import Path
 import shutil
-ROOT=Path(__file__).resolve().parents[1]
-output=ROOT/'build/beta-artifacts'
-output.mkdir(parents=True,exist_ok=False)
-files=[ROOT/'build/developer-preview/OpenNavX-Beta1-Portable-win64.zip',
-       ROOT/'build/developer-preview/OpenNavX-Beta1-source.zip',
-       ROOT/'build/beta-installer/OpenNavX-Beta1-Setup.exe',
-       ROOT/'docs/beta/OpenNavX-Beta1-Test-Guide.md',
-       ROOT/'docs/beta/OpenNavX-Beta1-Boat-Commissioning.md']
-checks=[]
+
+ROOT = Path(__file__).resolve().parents[1]
+gates = {}
+for name in ('production-recovery-results.json', 'installer-lifecycle.json'):
+    record = json.loads((ROOT / 'evidence/local' / name).read_text())
+    gates[name] = record
+    if record.get('status') != 'passed':
+        raise SystemExit('Product artifact assembly requires passed native gate: ' + name)
+product = json.loads((ROOT / 'build/developer-preview/OpenNavX-Beta2-Portable-Recovery/docs/PRODUCT_BUILD.json').read_text())
+if product.get('test_fixtures') is not False or product.get('build_purpose') != 'INSTALLED PRODUCT' or product['commit'] != os.environ['GITHUB_SHA']:
+    raise SystemExit('Artifact set must contain the exact fixture-free product commit')
+output = ROOT / 'build/beta-artifacts'
+output.mkdir(parents=True, exist_ok=False)
+files = [ROOT / 'build/developer-preview/OpenNavX-Beta2-Portable-Recovery.zip',
+         ROOT / 'build/developer-preview/OpenNavX-Beta2-source.zip',
+         ROOT / 'build/beta-installer/OpenNavX-Beta2-Setup.exe',
+         ROOT / 'docs/beta2/OpenNavX-Beta2-Install-Guide.md',
+         ROOT / 'docs/beta2/OpenNavX-Beta2-Test-Guide.md']
+checks = []
+expected = {
+    'OpenNavX-Beta2-Portable-Recovery.zip': gates['production-recovery-results.json']['package_sha256'],
+    'OpenNavX-Beta2-Setup.exe': gates['installer-lifecycle.json']['setup_sha256'],
+}
 for source in files:
-    assert source.is_file(),source
-    target=output/source.name;shutil.copy2(source,target)
-    checks.append(hashlib.sha256(target.read_bytes()).hexdigest()+'  '+target.name)
-(output/'SHA256SUMS.txt').write_text('\n'.join(checks)+'\n')
-qualified=bool(json.loads((ROOT/'installer/windows/compatibility.json').read_text())['supportedOpenCpn'])
-(output/'QUALIFICATION.txt').write_text('Qualified compatibility manifest; final same-commit CI gates apply.\n' if qualified else 'CANDIDATE ONLY: compatibility manifest is not yet accepted. Do not distribute as accepted Beta.\n')
+    if not source.is_file():
+        raise SystemExit('Release file missing: ' + str(source))
+    if source.name in expected and hashlib.sha256(source.read_bytes()).hexdigest() != expected[source.name]:
+        raise SystemExit('Release payload differs from the native-tested bytes: ' + source.name)
+    target = output / source.name
+    shutil.copy2(source, target)
+    checks.append(hashlib.sha256(target.read_bytes()).hexdigest() + '  ' + target.name)
+(output / 'SHA256SUMS.txt').write_text('\n'.join(checks) + '\n')
+(output / 'QUALIFICATION.txt').write_text(
+    'Beta 2 candidate product: native package and installer gates passed.\n'
+    'Release acceptance additionally requires same-commit complete CI and boat-PC evidence.\n'
+    'Never treat an unsupported boat OpenCPN installation as qualified.\n')
 print(output)

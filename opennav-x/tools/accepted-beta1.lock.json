@@ -1,0 +1,11 @@
+{
+  "version": "0.3.0-beta1",
+  "commit": "a3e6e0812e01d2aee8f0b83807527b9a0c0fc79a",
+  "runId": 36137990012,
+  "artifactId": 10876531379,
+  "archiveSha256": "d69b6e9ac108168494300ad734ad7e40835967c06519e849012ef5947ad9a343",
+  "maximumArchiveBytes": 180000000,
+  "setupName": "OpenNavX-Beta1-Setup.exe",
+  "setupBytes": 43967980,
+  "setupSha256": "8e1b3432a5a44499ffb41b125f62df07e846b2cfe1ca0936409ed021d413e128"
+}

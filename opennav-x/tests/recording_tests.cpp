@@ -334,11 +334,28 @@ void ControlBoundary() {
       return application::CommandResult{true, "ok"};
     };
     actions.start_route = [&] { ++count; };
+    actions.go_to = [&](auto, const auto &) {
+      ++count; return application::CommandResult{true, "ok"};
+    };
+    actions.go_to_waypoint = [&](const auto &) {
+      ++count; return application::CommandResult{true, "ok"};
+    };
+    actions.undo_route_point = actions.cancel_route = [&] {
+      ++count; return application::CommandResult{true, "ok"};
+    };
+    actions.finish_route_named = [&](const auto &, const auto &) {
+      ++count; return application::CommandResult{true, "ok"};
+    };
     actions.legacy_settings = [&] { ++count; };
     actions = application::GuardNavigationChanges(
         std::move(actions), [&] { return !service.Replaying(); });
     Check(!actions.activate({}).ok && !actions.create_waypoint({}, "", "").ok,
           "Replay blocks real navigation mutations");
+    Check(!actions.go_to({}, "destination").ok &&
+              !actions.go_to_waypoint({}).ok &&
+              !actions.undo_route_point().ok && !actions.cancel_route().ok &&
+              !actions.finish_route_named("route", "description").ok,
+          "Replay blocks Go To and draft route mutation");
     actions.start_route();
     actions.legacy_settings();
     Check(count == 0, "Replay blocks advanced mutation entry");

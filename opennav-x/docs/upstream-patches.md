@@ -419,3 +419,31 @@ ownership cases and three Linux udev reference cases are included in those
 counts. No further upstream code change is introduced by the acceptance-only
 documentation follow-up. Physical hardware and Windows GPU validation remain
 separate; the pristine pinned upstream checkout is unchanged.
+
+## Beta 2 settings and chart context hooks
+
+Additional XNav-only hooks are under development. At the end of normal
+`MyFrame::ScheduleReconfigAndSettingsReload`, `AfterSettingsReconfigured`
+reconciles shell visibility after Options detaches/re-registers native canvas
+panes. This avoids competing center panes and hidden charts without restarting
+or replacing OpenCPN's chart/configuration processing. The object scenario
+requires a visible usable chart after that exact reconfiguration path.
+
+At the beginning of `ChartCanvas::InvokeCanvasMenu`, ordinary XNav position,
+waypoint, route and AIS contexts reuse upstream hit-testing/conversion and
+defer copied identities/coordinates to owned XNav cards. No raw pointer crosses
+the integration boundary. Measurement, route creation and unhandled advanced
+contexts retain native behavior; Legacy/Safe retain original menus.
+
+XNav's `ChartCanvas::OnKillFocus` leaves route completion to its explicit
+Finish/Cancel controls. Pinned mouse handling can reset the existing
+`m_FinishRouteOnKillFocus` flag after waypoint dialogs, so setting that flag
+once at Start Route was insufficient. The guard prevents a touch on Undo or
+Finish from committing a draft before the action callback; Legacy focus-loss
+behavior is unchanged.
+
+The patched command-line help/startup-option list now omits Demo for production
+builds, matching the compile-time fixture separation. No runtime profile or
+environment setting can enable missing generators. The reviewed worktree check
+passes; exact-release native/boat validation is still required. See
+[Beta 2 integration inspection](beta2-integration-feedback.md).

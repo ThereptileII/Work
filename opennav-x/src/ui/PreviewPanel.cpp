@@ -1,4 +1,6 @@
 #include "ui/PreviewPanel.h"
+#include "application/Version.h"
+#include "integration/BuildFeatures.h"
 #include "vessel/DataItems.h"
 #include <algorithm>
 #include <cmath>
@@ -8,50 +10,64 @@ namespace opennav::ui {
 namespace {
 wxString W(const std::string &s) { return wxString::FromUTF8(s); }
 wxString Dash() { return wxString::FromUTF8("—"); }
-struct Painter {
-  wxWindow &window;
+struct Painter : XNavPainter {
   wxDC &dc;
-  Palette c;
-  int D(int n) { return window.FromDIP(n); }
-  void Text(wxString s, int x, int y, int size, std::uint32_t color,
-            bool bold = false, int width = 0) {
-    dc.SetFont(UiFont(window, size, bold));
-    dc.SetTextForeground(Colour(color));
-    if (width > 0 && dc.GetTextExtent(s).x > D(width)) {
-      while (!s.empty() && dc.GetTextExtent(s + "...").x > D(width))
-        s.RemoveLast();
-      s += "...";
-    }
-    dc.DrawText(s, D(x), D(y));
-  }
-  void Card(int x, int y, int w, int h, const wxString &title) {
-    dc.SetPen(wxPen(Colour(c.border)));
-    dc.SetBrush(wxBrush(Colour(c.surface)));
-    dc.DrawRoundedRectangle(D(x), D(y), D(w), D(h), D(8));
-    Text(title, x + 20, y + 18, 12, c.secondary, true, w - 40);
-  }
-  void Value(const vessel::Sample &s, int x, int y, const wxString &unit,
-             int precision = 1, int size = 36) {
-    const auto a = vessel::Assess(s, now);
-    const bool stale = a.quality == vessel::Quality::Stale;
-    Text(a.value ? wxString::Format("%.*f", precision, *a.value) : Dash(), x, y,
-         size, stale ? c.muted : c.primary, true);
-    Text(unit, x, y + size + 7, 13, c.secondary);
-    wxString q = W(vessel::QualityName(a.quality));
-    if (a.age && a.quality != vessel::Quality::Live)
-      q += wxString::Format(" %.0fs", a.age->count() / 1000.0);
-    Text(q, x, y + size + 28, 10, stale ? c.attention : c.muted, true);
-  }
-  void Estimate(std::optional<double> v, int x, int y, const wxString &unit,
-                int precision = 1) {
-    Text(v ? wxString::Format("%.*f", precision, *v) : Dash(), x, y, 40,
-         c.accent, true);
-    Text(unit, x, y + 48, 13, c.secondary);
-    Text(v ? "ESTIMATED / ADVISORY" : "UNAVAILABLE", x, y + 70, 10, c.attention,
-         true);
-  }
   vessel::Time now;
+  Painter(wxWindow &window, wxDC &drawing, LightMode mode, vessel::Time at)
+      : XNavPainter(window, drawing, mode), dc(drawing), now(at) {}
+  void Value(const vessel::Sample &sample, int x, int y, const wxString &unit,
+             int precision = 1, int size = 48, int width = 200) {
+    const auto reading = vessel::Assess(sample, now);
+    const bool stale = reading.quality == vessel::Quality::Stale;
+    const auto number = reading.value && !stale
+                            ? wxString::Format("%.*f", precision, *reading.value)
+                            : Dash();
+    Text(number, x, y, size, stale ? c.muted : c.primary, false, width);
+    Text(unit, x, y + size + 4, 12, c.secondary, false, width);
+    if (reading.quality != vessel::Quality::Live) {
+      auto status = reading.quality == vessel::Quality::Unavailable
+                        ? wxString("NO DATA")
+                        : W(vessel::QualityName(reading.quality));
+      if (stale && reading.age)
+        status += wxString::Format(" / %.0f s", reading.age->count() / 1000.0);
+      Text(status, x, y + size + 24, 11,
+           stale || reading.quality == vessel::Quality::Uncertain
+               ? c.attention : c.muted, false, width);
+    }
+  }
+  void Estimate(std::optional<double> value, int x, int y, const wxString &unit,
+                int precision = 0, int size = 48, int width = 220) {
+    Text(value ? wxString::Format("%.*f", precision, *value) : Dash(), x, y,
+         size, value ? c.accent : c.muted, false, width);
+    Text(unit, x, y + size + 4, 12, c.secondary, false, width);
+  }
 };
+wxString ApproxTime(std::optional<double> seconds) {
+  if (!seconds || !std::isfinite(*seconds) || *seconds < 0 || *seconds >= 3600000)
+    return "Time unavailable";
+  const auto minutes = static_cast<unsigned>(*seconds / 60.0);
+  if (minutes < 1) return "Less than a minute";
+  if (minutes < 60) return wxString::Format("~%u min", minutes);
+  return wxString::Format("~%u h %02u min", minutes / 60, minutes % 60);
+}
+wxString EnergyMessage(const smartnav::Prediction<smartnav::ArrivalEstimate> &p) {
+  if (p.estimate) {
+    if (p.estimate->energy_shortfall_kwh > 0) return "Not enough energy to reach destination";
+    if (p.estimate->below_reserve) return "Arrival below your reserve";
+    return "Above your configured reserve";
+  }
+  if (p.reason == smartnav::EnergyReason::InvalidModel)
+    return "Set battery capacity and reserve in Settings";
+  // Data names are human-facing; protocol/source details belong in Diagnostics.
+  return W(smartnav::EnergyStatus(p.reason, p.input));
+}
+const smartnav::AdvisoryEvent *Event(const smartnav::NavigationAdvice &advice,
+                                   smartnav::EventKind kind) {
+  if (!advice.route_valid) return nullptr;
+  for (const auto &event : advice.events)
+    if (event.kind == kind) return &event;
+  return nullptr;
+}
 std::optional<double> Distance(const vessel::VesselState &s, vessel::Time now) {
   return s.navigation.route ? vessel::AssessRoute(*s.navigation.route, now)
                                   .remaining_distance_nm
@@ -76,11 +92,7 @@ wxString PointName(const vessel::VesselState &s) {
       route.remaining_steps.front().waypoint_id == route.active_waypoint_id &&
       !route.remaining_steps.front().name.empty())
     return W(route.remaining_steps.front().name);
-  auto id = s.navigation.route->active_waypoint_id;
-  if (id.rfind("DEMO-", 0) == 0)
-    id = id.substr(5);
-  std::replace(id.begin(), id.end(), '-', ' ');
-  return W(id);
+  return "Unnamed waypoint";
 }
 } // namespace
 PreviewPanel::PreviewPanel(wxWindow *parent)
@@ -97,7 +109,8 @@ void PreviewPanel::Update(PreviewPage page, LightMode mode,
                           const vessel::VesselState &s, vessel::Time now,
                           const smartnav::EnergyModel &model,
                           const smartnav::EnergyPrediction &energy,
-                          const std::vector<std::string> &info) {
+                          const std::vector<std::string> &info,
+                          const smartnav::NavigationAdvice &advice) {
   if (page != page_)
     Scroll(0, 0);
   page_ = page;
@@ -110,6 +123,7 @@ void PreviewPanel::Update(PreviewPage page, LightMode mode,
   model_ = model;
   energy_ = energy;
   info_ = info;
+  advice_ = advice;
   Refresh();
 }
 void PreviewPanel::Paint(wxPaintEvent &) {
@@ -118,201 +132,197 @@ void PreviewPanel::Paint(wxPaintEvent &) {
   const auto c = Theme(mode_);
   dc.SetBackground(wxBrush(Colour(c.background)));
   dc.Clear();
-  Painter p{*this, dc, c, now_};
+  Painter p{*this, dc, mode_, now_};
   const int width = std::max(320, ToDIP(GetClientSize().x)), margin = 24,
             gap = 16;
   const auto &model = model_;
   const auto &energy = energy_;
   const auto distance = Distance(state_, now_);
   const auto arrival = energy.arrival.estimate;
-  const wxString title = page_ == PreviewPage::Energy  ? "Propulsion & energy"
-                         : page_ == PreviewPage::Route ? "Route & destination"
-                                                       : "System & diagnostics";
-  p.Text(title, margin, 20, 26, c.primary, true);
-  p.Text(state_.replayed
-             ? "REPLAY / Historical observations / Controls disabled"
-         : state_.simulated ? "DEMO  /  Synthetic trip  /  No device output"
-                            : "OPENCPN  /  Read-only vessel data",
-         margin, 58, 13,
-         state_.simulated || state_.replayed ? c.attention : c.secondary, true);
+  const wxString title = page_ == PreviewPage::Energy  ? "Energy"
+                         : page_ == PreviewPage::Route ? "Passage"
+                                                       : "Diagnostics";
+  p.Text(title, margin, 20, 28, c.primary);
+  wxString subtitle = page_ == PreviewPage::Energy
+                          ? "Battery, propulsion and estimated arrival"
+                      : page_ == PreviewPage::Route
+                          ? "Your destination and the next maneuver"
+                          : "System details and data health";
+  if (state_.replayed) subtitle = "REPLAY / Historical data / Controls disabled";
+#if XNAV_ENABLE_TEST_FIXTURES
+  else if (state_.simulated) subtitle = "DEMO / Synthetic test trip / No device output";
+#endif
+  p.Text(subtitle, margin, 60, 13,
+         state_.simulated || state_.replayed ? c.attention : c.secondary, false,
+         width - 2 * margin);
+  const auto *destination = Event(advice_, smartnav::EventKind::Destination);
+  const auto *turn = Event(advice_, smartnav::EventKind::Turn);
   int bottom = 0;
   if (page_ == PreviewPage::Energy) {
-    const int columns = width >= 940 ? 3 : width >= 660 ? 2 : 1;
-    const int cw = (width - margin * 2 - gap * (columns - 1)) / columns,
-              ch = 326;
-    auto xy = [&](int i) {
-      return wxPoint(margin + (i % columns) * (cw + gap),
-                     96 + (i / columns) * (ch + gap));
-    };
-    auto b = xy(0);
-    p.Card(b.x, b.y, cw, ch, "BATTERY");
-    p.Value(state_.battery.soc_percent, b.x + 20, b.y + 48,
-            "State of charge / %", 0, 52);
+    const int columns = width >= 800 ? 3 : width >= 580 ? 2 : 1;
+    const int cw = (width - margin * 2 - gap * (columns - 1)) / columns;
+    const int card_height = 276;
+    const int bx = margin, by = 100;
+    p.Card(bx, by, cw, card_height, "BATTERY");
+    p.Value(state_.battery.soc_percent, bx + 24, by + 44, "% CHARGE", 0, 60, cw - 48);
     const auto soc = vessel::Assess(state_.battery.soc_percent, now_);
     dc.SetPen(*wxTRANSPARENT_PEN);
     dc.SetBrush(wxBrush(Colour(c.border)));
-    dc.DrawRoundedRectangle(p.D(b.x + 20), p.D(b.y + 164), p.D(cw - 40), p.D(6),
-                            p.D(3));
-    if (soc.value) {
-      dc.SetBrush(wxBrush(Colour(soc.quality == vessel::Quality::Stale ? c.muted
-                                 : *soc.value < 15 ? c.attention
-                                                   : c.healthy)));
-      dc.DrawRoundedRectangle(
-          p.D(b.x + 20), p.D(b.y + 164),
-          p.D(static_cast<int>((cw - 40) * std::clamp(*soc.value, 0.0, 100.0) /
-                               100)),
-          p.D(6), p.D(3));
+    dc.DrawRoundedRectangle(p.D(bx + 24), p.D(by + 154), p.D(cw - 48), p.D(4), p.D(2));
+    if (soc.value && soc.quality != vessel::Quality::Stale) {
+      const auto color = soc.quality == vessel::Quality::Uncertain ? c.attention
+                         : std::isfinite(model.reserve_soc_percent) &&
+                                   *soc.value <= model.reserve_soc_percent ? c.attention
+                                                                           : c.healthy;
+      dc.SetBrush(wxBrush(Colour(color)));
+      dc.DrawRoundedRectangle(p.D(bx + 24), p.D(by + 154),
+          p.D(static_cast<int>((cw - 48) * std::clamp(*soc.value, 0.0, 100.0) / 100)),
+          p.D(4), p.D(2));
     }
-    p.Value(state_.battery.voltage_v, b.x + 20, b.y + 188, "V", 0, 27);
-    p.Value(state_.battery.current_a, b.x + cw / 2, b.y + 188,
-            "A / + discharge", 1, 27);
-    p.Text(std::isfinite(model.capacity_kwh) &&
-                   std::isfinite(model.reserve_soc_percent)
-               ? wxString::Format("%.1f kWh configured / %.1f%% reserve",
-                                  model.capacity_kwh, model.reserve_soc_percent)
-               : "Capacity / reserve unconfigured",
-           b.x + 20, b.y + 284, 11, c.secondary, false, cw - 40);
-    b = xy(1);
-    p.Card(b.x, b.y, cw, ch, "PROPULSION");
-    p.Value(state_.propulsion.electrical_power_kw, b.x + 20, b.y + 48,
-            "kW / motor electrical", 1, 52);
-    p.Value(state_.propulsion.motor_rpm, b.x + 20, b.y + 188, "RPM", 0, 27);
-    p.Value(state_.propulsion.motor_temperature_c, b.x + cw / 2, b.y + 188,
-            "Motor / C", 0, 27);
-    const auto gear = vessel::AssessText(state_.propulsion.gear, now_);
-    p.Text("Gear: " + (gear.value ? W(*gear.value) + " / " +
-                                        W(vessel::QualityName(gear.quality))
-                                  : "Unavailable"),
-           b.x + 20, b.y + 274, 11, c.secondary, false, cw - 40);
-    const auto regen = vessel::AssessText(state_.propulsion.regeneration, now_);
-    p.Text("Regen setting: " + (regen.value ? W(*regen.value) + " / " +
-                                    W(vessel::QualityName(regen.quality))
-                                  : "Unavailable"),
-           b.x + 20, b.y + 292, 11, c.secondary, false, cw - 40);
-    b = xy(2);
-    p.Card(b.x, b.y, cw, ch, "DESTINATION");
-    p.Text(DestinationName(state_), b.x + 20, b.y + 48, 19, c.primary, true,
-           cw - 40);
-    p.Text(distance ? wxString::Format("%.1f NM remaining", *distance)
-                    : "Remaining distance unavailable",
-           b.x + 20, b.y + 80, 15, c.secondary, false, cw - 40);
-    p.Estimate(arrival ? arrival->soc_percent : std::nullopt, b.x + 20,
-               b.y + 119, "Arrival SOC / %", 0);
-    // Reuse the tested prediction's passage duration and its input validity.
-    // Do not derive a separate ETA from retained UI readings.
-    wxString eta = "ETA unavailable";
-    if (arrival && std::isfinite(arrival->passage_hours) &&
-        arrival->passage_hours >= 0 && arrival->passage_hours < 1000) {
-      const auto minutes = static_cast<unsigned>(arrival->passage_hours * 60);
-      eta = wxString::Format("ETA in ~%uh %02um / current SOG", minutes / 60,
-                             minutes % 60);
-    }
-    p.Text(eta, b.x + 20, b.y + 214, 12, c.secondary, false, cw - 40);
-    wxString reason = W(smartnav::EnergyStatus(energy.arrival.reason, energy.arrival.input));
-    if (arrival && arrival->energy_shortfall_kwh > 0)
-      reason = wxString::Format("SHORTFALL  %.1f kWh",
-                                arrival->energy_shortfall_kwh);
-    else if (arrival)
-      reason = arrival->below_reserve ? "BELOW CONFIGURED RESERVE"
-                                      : "Above configured reserve";
-    p.Text(reason, b.x + 20, b.y + 241, 13,
-           arrival && arrival->below_reserve ? c.attention : c.secondary, true,
-           cw - 40);
-    if (arrival && arrival->soc_percent)
-      p.Text(
-          wxString::Format("Reserve margin  %+.1f%%",
-                           *arrival->soc_percent - model.reserve_soc_percent),
-          b.x + 20, b.y + 271, 13, c.secondary);
-    p.Text("Input quality: " + W(smartnav::EnergyQualityName(energy.arrival.quality)),
-           b.x + 20, b.y + 301, 11, c.secondary, false, cw - 40);
-    const int y = 96 + ((3 + columns - 1) / columns) * (ch + gap);
-    p.Card(margin, y, width - margin * 2, 188,
-           "RANGE AT PRESENT CONDITIONS  /  ADVISORY");
-    p.Estimate(energy.range.estimate
-                   ? std::optional<double>{energy.range.estimate->range_nm}
-                   : std::nullopt,
-               margin + 20, y + 51, "NM above reserve");
-    const int x = width >= 660 ? margin + 280 : margin + 175;
-    p.Text("Whole-pack discharge (includes hotel load)", x, y + 52, 12,
-           c.secondary, false, width - x - 44);
+    p.Value(state_.battery.voltage_v, bx + 24, by + 178, "VOLT", 0, 28, cw / 2 - 32);
+    p.Value(state_.battery.current_a, bx + cw / 2 + 8, by + 178, "AMPERE", 1, 28, cw / 2 - 32);
     const auto net = vessel::Assess(state_.battery.net_discharge_kw, now_);
-    p.Text(net.value ? wxString::Format("%.1f kW  /  ", *net.value) +
-                           W(vessel::QualityName(net.quality))
-                     : "Unavailable",
-           x, y + 78, 20, c.primary, true, width - x - 44);
-    p.Text(arrival ? wxString::Format("Passage energy  %.1f kWh",
-                                      arrival->energy_required_kwh)
-                   : "Passage energy: " + W(smartnav::EnergyStatus(energy.arrival.reason, energy.arrival.input)),
-           x, y + 112, 13, c.secondary, false, width - x - 44);
-    p.Text(W(smartnav::EnergyQualityName(energy.range.quality)) + " / Constant conditions; see Energy settings.",
-           margin + 20, y + 160, 11, c.muted, false, width - margin * 2 - 40);
-    bottom = y + 212;
+    p.Text(net.value && net.quality != vessel::Quality::Stale
+               ? wxString::Format("Battery load  %.1f kW", *net.value)
+               : "Battery load unavailable",
+           bx + 24, by + 248, 12, c.secondary, false, cw - 48);
+    const int px = columns >= 2 ? margin + cw + gap : margin;
+    const int py = columns >= 2 ? by : by + card_height + gap;
+    p.Card(px, py, cw, card_height, "PROPULSION");
+    p.Value(state_.propulsion.electrical_power_kw, px + 24, py + 44,
+            "kW / MOTOR POWER", 1, 60, cw - 48);
+    p.Rule(px + 24, py + 154, cw - 48);
+    p.Value(state_.propulsion.motor_rpm, px + 24, py + 178, "RPM", 0, 28, cw / 2 - 32);
+    p.Value(state_.propulsion.motor_temperature_c, px + cw / 2 + 8, py + 178,
+            "MOTOR / °C", 0, 28, cw / 2 - 32);
+
+    const int full = width - 2 * margin;
+    int range_y = by + card_height + gap;
+    if (columns == 3) {
+      const int x = margin + 2 * (cw + gap);
+      p.Card(x, by, cw, card_height, "DESTINATION");
+      p.Text(DestinationName(state_), x + 24, by + 44, 20, c.primary, false, cw - 48);
+      p.Text(distance ? wxString::Format("%.1f NM", *distance) : "Distance unavailable",
+             x + 24, by + 76, 21, distance ? c.primary : c.muted, false, cw - 48);
+      p.Text(destination ? ApproxTime(destination->seconds_from_now) : "Time unavailable",
+             x + 24, by + 106, 14, c.secondary, false, cw - 48);
+      p.Rule(x + 24, by + 136, cw - 48);
+      p.Text("ESTIMATED ARRIVAL", x + 24, by + 152, 11, c.secondary);
+      p.Estimate(arrival ? arrival->soc_percent : std::nullopt, x + 24,
+                 by + 174, "% CHARGE", 0, 40, cw - 48);
+      wxString reserve = arrival && arrival->soc_percent && std::isfinite(model.reserve_soc_percent)
+                             ? wxString::Format("Reserve %+.0f%%", *arrival->soc_percent - model.reserve_soc_percent)
+                             : "Estimate unavailable";
+      if (arrival && arrival->energy_shortfall_kwh > 0) reserve = "Insufficient energy";
+      p.Text(reserve, x + 24, by + 244, 13,
+             arrival && arrival->below_reserve ? c.attention : c.secondary, false, cw - 48);
+    } else {
+      const int y = py + card_height + gap;
+      const int destination_height = columns == 2 ? 244 : 408;
+      p.Card(margin, y, full, destination_height, "DESTINATION");
+      const int half = columns == 2 ? full / 2 : full;
+      p.Text(DestinationName(state_), margin + 24, y + 46, 24, c.primary, false, half - 48);
+      p.Text(distance ? wxString::Format("%.1f", *distance) : Dash(),
+             margin + 24, y + 84, 42, distance ? c.primary : c.muted, false, half - 48);
+      p.Text("NM REMAINING", margin + 24, y + 136, 12, c.secondary);
+      p.Text(destination ? ApproxTime(destination->seconds_from_now) : "Time unavailable",
+             margin + 24, y + 164, 20, c.primary, false, half - 48);
+      p.Text("At current speed / approximate", margin + 24, y + 198, 11, c.secondary, false, half - 48);
+      const int ax = columns == 2 ? margin + half + 24 : margin + 24;
+      const int ay = columns == 2 ? y + 46 : y + 230;
+      p.Text("ESTIMATED ARRIVAL", ax, ay, 12, c.secondary);
+      p.Estimate(arrival ? arrival->soc_percent : std::nullopt, ax, ay + 24,
+                 "% CHARGE", 0, 48, half - 48);
+      wxString reserve = EnergyMessage(energy.arrival);
+      if (arrival && arrival->soc_percent && std::isfinite(model.reserve_soc_percent))
+        reserve = wxString::Format("Reserve %+.0f%%", *arrival->soc_percent - model.reserve_soc_percent);
+      p.Text(reserve, ax, ay + 110, 14,
+             arrival && arrival->below_reserve ? c.attention : c.secondary,
+             false, half - 48);
+      p.Text(energy.arrival.quality == smartnav::EnergyQuality::Aging
+                 ? "Estimate uses aging data"
+             : energy.arrival.quality == smartnav::EnergyQuality::Modeled
+                 ? "Estimate uses modeled consumption"
+             : arrival ? "Advisory / current conditions" : "Estimate unavailable",
+             ax, ay + 140, 11, c.muted, false, half - 48);
+      range_y = y + destination_height + gap;
+    }
+    p.Card(margin, range_y, full, 152, "ESTIMATED RANGE ABOVE RESERVE");
+    p.Estimate(energy.range.estimate ? std::optional<double>{energy.range.estimate->range_nm}
+                                    : std::nullopt,
+               margin + 24, range_y + 44, "NM", 0, 40, full / 2 - 40);
+    const int sx = margin + full / 2;
+    const int sw = full / 2 - 24;
+    const auto gear = vessel::AssessText(state_.propulsion.gear, now_);
+    const auto regen = vessel::AssessText(state_.propulsion.regeneration, now_);
+    p.Text("DRIVE", sx, range_y + 24, 11, c.secondary);
+    p.Text(gear.value && gear.quality != vessel::Quality::Stale ? W(*gear.value) : "Unavailable",
+           sx, range_y + 46, 17, c.primary, false, sw);
+    p.Text("REGENERATION", sx, range_y + 82, 11, c.secondary);
+    p.Text(regen.value && regen.quality != vessel::Quality::Stale ? W(*regen.value) : "Unavailable",
+           sx, range_y + 104, 17, c.primary, false, sw);
+    p.Text(!arrival ? EnergyMessage(energy.arrival)
+           : energy.arrival.quality == smartnav::EnergyQuality::Aging
+               ? wxString("Limited estimate: aging inputs. Assumptions are in Settings.")
+           : energy.arrival.quality == smartnav::EnergyQuality::Modeled
+               ? wxString("Estimated consumption. Assumptions are in Settings.")
+               : wxString("Advisory estimates at current conditions. Assumptions are in Settings."),
+           margin, range_y + 168, 12, c.secondary, false, full);
+    bottom = range_y + 208;
   } else if (page_ == PreviewPage::Route) {
-    const int columns = width >= 760 ? 2 : 1,
-              cw = (width - 2 * margin - gap * (columns - 1)) / columns;
-    p.Card(margin, 96, cw, 325, "DESTINATION");
-    p.Text(DestinationName(state_), margin + 20, 145, 24, c.primary, true,
-           cw - 40);
-    p.Text(distance ? wxString::Format("%.2f", *distance) : Dash(), margin + 20,
-           187, 52, c.accent, true);
-    p.Text("NM remaining along route", margin + 20, 249, 14, c.secondary);
-    p.Text("Estimated passage time", margin + 20, 300, 12, c.secondary);
-    const auto speed = vessel::Assess(state_.navigation.sog_kn, now_);
-    const bool reliable = speed.value && *speed.value >= 0.5 &&
-                          (speed.quality == vessel::Quality::Live ||
-                           speed.quality == vessel::Quality::Aging);
-    if (distance && reliable) {
-      const double minutes = *distance / (*speed.value) * 60;
-      p.Text(minutes < 60000
-                 ? wxString::Format("%dh %02dm", static_cast<int>(minutes) / 60,
-                                    static_cast<int>(minutes) % 60)
-                 : "Outside preview range",
-             margin + 20, 325, 28, c.primary, true);
-      p.Text("At current SOG / advisory", margin + 20, 371, 11, c.attention);
-    } else
-      p.Text("Unavailable", margin + 20, 330, 24, c.muted);
-    const int x = columns == 2 ? margin + cw + gap : margin,
-              y = columns == 2 ? 96 : 437;
-    p.Card(x, y, cw, 325, "NEXT WAYPOINT");
-    p.Text(PointName(state_), x + 20, y + 49, 22, c.primary, true, cw - 40);
+    const int columns = width >= 660 ? 2 : 1;
+    const int cw = (width - 2 * margin - gap * (columns - 1)) / columns;
+    p.Card(margin, 100, cw, 308, "DESTINATION");
+    p.Text(DestinationName(state_), margin + 24, 148, 26, c.primary, false, cw - 48);
+    p.Text(distance ? wxString::Format("%.1f", *distance) : Dash(),
+           margin + 24, 192, 60, distance ? c.accent : c.muted, false, cw - 48);
+    p.Text("NM REMAINING", margin + 24, 260, 12, c.secondary);
+    p.Rule(margin + 24, 298, cw - 48);
+    p.Text("ARRIVAL IN", margin + 24, 318, 12, c.secondary);
+    p.Text(destination ? ApproxTime(destination->seconds_from_now) : "Time unavailable",
+           margin + 24, 342, 26, c.primary, false, cw - 48);
+    const int x = columns == 2 ? margin + cw + gap : margin;
+    const int y = columns == 2 ? 100 : 424;
+    p.Card(x, y, cw, 308, "NEXT WAYPOINT");
+    p.Text(PointName(state_), x + 24, y + 48, 26, c.primary, false, cw - 48);
     const auto route = state_.navigation.route;
-    const auto assessment =
-        route ? vessel::AssessRoute(*route, now_) : vessel::RouteAssessment{};
-    p.Text(route && route->active_waypoint_index
-               ? wxString::Format(
-                     "Waypoint %u of %u",
-                     static_cast<unsigned>(*route->active_waypoint_index + 1),
-                     static_cast<unsigned>(route->waypoint_count))
-               : "No active route",
-           x + 20, y + 86, 13, c.secondary);
-    p.Text("NAVIGATION VALIDITY", x + 20, y + 127, 11, c.secondary, true);
-    p.Text(W(vessel::RouteStateName(assessment.state)), x + 20, y + 153, 17,
-           assessment.remaining_distance_nm ? c.healthy : c.attention, true,
-           cw - 40);
-    p.Text("ESTIMATED ARRIVAL SOC", x + 20, y + 207, 11, c.secondary, true);
-    p.Text(arrival && arrival->soc_percent
-               ? wxString::Format("%.0f %%", *arrival->soc_percent)
-               : "Unavailable",
-           x + 20, y + 232, 30, c.accent, true);
-    p.Text("Advisory / " + W(smartnav::EnergyQualityName(energy.arrival.quality)), x + 20, y + 287, 11,
-           c.muted, false, cw - 40);
-    const int end = y + 345;
-    p.Card(margin, end, width - 2 * margin, 114, "READ-ONLY ROUTE PROGRESS");
-    p.Text(route ? W(route->source) : "No route source", margin + 20, end + 46,
-           12, c.secondary, false, width - 2 * margin - 40);
-    p.Text(state_.replayed
-               ? "REPLAY data is historical. The OpenCPN chart is separate."
-           : state_.simulated ? "Demo route and GPS are synthetic. The chart "
-                                "remains OpenCPN's real canvas."
-                              : "OpenCPN owns route activation, arrival and "
-                                "waypoint changes. No automatic steering.",
-           margin + 20, end + 77, 11, c.muted, false, width - 2 * margin - 40);
-    bottom = end + 138;
+    const bool valid = route && vessel::AssessRoute(*route, now_).remaining_distance_nm.has_value();
+    const auto next = valid && !route->remaining_steps.empty()
+                          ? std::optional<double>{route->remaining_steps.front().distance_from_previous_nm}
+                          : std::nullopt;
+    p.Text(next ? wxString::Format("%.1f NM", *next) : "Distance unavailable",
+           x + 24, y + 92, 24, next ? c.primary : c.muted, false, cw - 48);
+    p.Rule(x + 24, y + 136, cw - 48);
+    p.Text("NEXT TURN", x + 24, y + 156, 12, c.secondary);
+    p.Text(turn && turn->course_change_deg
+               ? wxString::Format("%+.0f°", *turn->course_change_deg)
+           : valid && route->remaining_steps.size() == 1 ? "Final leg" : Dash(),
+           x + 24, y + 180, 36, turn ? c.accent : c.muted, false, cw - 48);
+    p.Text(turn ? ApproxTime(turn->seconds_from_now) : "Turn timing unavailable",
+           x + 24, y + 230, 17, c.secondary, false, cw - 48);
+    p.Text(turn && turn->course_true_deg
+               ? wxString::Format("New course %.0f° true / advisory", *turn->course_true_deg)
+               : "Steering remains under human control",
+           x + 24, y + 268, 11, c.muted, false, cw - 48);
+    const int end = y + 324;
+    p.Card(margin, end, width - 2 * margin, 148, "ESTIMATED ARRIVAL CHARGE");
+    p.Estimate(arrival ? arrival->soc_percent : std::nullopt, margin + 24,
+               end + 44, "% SOC", 0, 40, cw - 48);
+    const int detail_x = width >= 660 ? margin + cw + gap + 24 : margin + cw / 2;
+    const int detail_width = width - margin - detail_x - 24;
+    p.Text(EnergyMessage(energy.arrival), detail_x, end + 52, 14,
+           arrival && arrival->below_reserve ? c.attention : c.secondary,
+           false, detail_width);
+    p.Text(valid ? "Navigation data current" : "Navigation data unavailable",
+           detail_x, end + 86, 13, valid ? c.healthy : c.attention, false, detail_width);
+    p.Text("Times and charge are advisory estimates at current conditions.",
+           margin, end + 164, 11, c.muted, false, width - 2 * margin);
+    bottom = end + 200;
   } else {
     int y = 96;
     p.Card(margin, y, width - 2 * margin,
            static_cast<int>(info_.size()) * 22 + 62,
-           "ALPHA 1 / NOT FOR NAVIGATION");
+           W(std::string(application::Edition) + " / COMMISSIONING BUILD"));
     for (const auto &line : info_) {
       p.Text(W(line), margin + 20, y + 44, 12, c.secondary, false,
              width - 2 * margin - 40);
@@ -354,7 +364,7 @@ void PreviewPanel::Paint(wxPaintEvent &) {
            margin, y, 13, c.attention, true);
     y += 25;
     p.Text(model.source.empty()
-               ? "Live model is unconfigured; no demo battery defaults apply."
+               ? "Battery capacity and reserve have not been configured."
                : W(model.source),
            margin, y, 11, c.secondary, false, width - 2 * margin);
     y += 38;

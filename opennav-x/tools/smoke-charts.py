@@ -210,7 +210,7 @@ try:
    ui.user.mouse_event(4,0,0,0,0)
   else:xdo('mousemove',600,400,'mousedown',1,'mousemove',680,420,'sleep',.2,'mouseup',1)
   data(lambda d:abs(chart(d)['longitude']-before['longitude'])>.0001)
-  command('GPS','F2');d=data(lambda d:chart(d)['follow'] and abs(chart(d)['latitude']-47.6)<.0001 and abs(chart(d)['longitude']+122.36)<.0001 and enc(d))
+  command('Center','F2');d=data(lambda d:chart(d)['follow'] and abs(chart(d)['latitude']-47.6)<.0001 and abs(chart(d)['longitude']+122.36)<.0001 and enc(d))
   entry['captures'].append(capture('chart-'+rendering+'-03-follow'))
   position=(47.59,-122.447)
   switched=data(lambda d:chart(d)['follow'] and abs(chart(d)['longitude']-position[1])<.0001 and reference_cell(d,'US5SEAFK.000'))

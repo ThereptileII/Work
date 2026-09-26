@@ -1,5 +1,6 @@
 #pragma once
 
+#include "integration/BuildFeatures.h"
 #include <optional>
 #include <string_view>
 
@@ -33,5 +34,16 @@ StartupSelection ResolveStartup(
 // A hard upper bound for future module creation. This grants no hardware
 // command permission: actual adapters will require feedback and interlocks.
 bool OpenNavModulesAllowed(StartupMode mode);
+
+struct TestStartupFlags {
+  bool demo = false;
+  bool route = false;
+  bool objects = false;
+};
+
+// Defense in depth for integration callers: a release executable cannot
+// acquire fixture permission from arguments, saved settings or environment.
+// Disposable-profile ownership is additionally checked by the integration.
+void ValidateTestStartup(TestStartupFlags requested, StartupFlags mode);
 
 }  // namespace opennav::integration

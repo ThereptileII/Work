@@ -12,6 +12,10 @@ EditSheet(wxWindow &parent, LightMode mode, const wxString &title,
   wxDialog dialog(&parent, wxID_ANY, title, wxDefaultPosition, wxDefaultSize,
                   wxBORDER_NONE | wxTAB_TRAVERSAL);
   dialog.SetName(title);
+  dialog.Bind(wxEVT_CHAR_HOOK,[&dialog](wxKeyEvent &event){
+    if(event.GetKeyCode()==WXK_ESCAPE) dialog.EndModal(wxID_CANCEL);
+    else event.Skip();
+  });
   const auto c = Theme(mode);
   dialog.SetBackgroundColour(Colour(c.elevated));
   const int gap = dialog.FromDIP(16);
@@ -61,6 +65,7 @@ EditSheet(wxWindow &parent, LightMode mode, const wxString &title,
            {"Cancel", wxID_CANCEL}, {accept, wxID_OK}}) {
     auto *b = new XNavButton(&dialog, wxID_ANY, pair.first, pair.first);
     b->SetLightMode(mode);
+    b->SetRole(pair.second==wxID_OK?ButtonRole::Primary:ButtonRole::Quiet);
     b->Bind(wxEVT_BUTTON, [&dialog, id = pair.second](wxCommandEvent &) {
       dialog.EndModal(id);
     });
@@ -72,7 +77,7 @@ EditSheet(wxWindow &parent, LightMode mode, const wxString &title,
   const auto available = frame->GetClientSize();
   // Reserve both the status/alert layers and the fixed navigation/STBY row.
   // A newly arriving alert must not appear behind an already-open sheet.
-  const int top = dialog.FromDIP(112), bottom = dialog.FromDIP(56);
+  const int top = dialog.FromDIP(56), bottom = dialog.FromDIP(56);
   const auto size = wxSize(
       std::min(dialog.FromDIP(520), available.x - dialog.FromDIP(24)),
       std::min(dialog.FromDIP(300 + 100 * static_cast<int>(fields.size())),

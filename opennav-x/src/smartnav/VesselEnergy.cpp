@@ -61,12 +61,6 @@ std::string EnergyStatus(EnergyReason r, EnergyInput i) {
     return input + ": " + EnergyReasonName(r);
   }
 }
-EnergyModel PreviewEnergyModel(bool demo) {
-  return demo ? EnergyModel{48, 15, 0.5,
-                            "DEMO: 48 kWh usable, 15% reserve; constant speed "
-                            "and whole-pack discharge"}
-              : EnergyModel{};
-}
 EnergyPrediction PredictVesselEnergy(const EnergyModel &m,
                                      const vessel::VesselState &s,
                                      vessel::Time now) {

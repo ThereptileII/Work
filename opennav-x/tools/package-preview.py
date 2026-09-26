@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Assemble a fresh portable preview from the native CMake install, then ZIP it.
+"""Assemble the production-only portable recovery build from native CMake install.
 
 Packaging never reads an installed OpenCPN or a normal user profile.
 Windows runtime preparation and native gates are performed by the caller.
@@ -21,9 +21,11 @@ parser.add_argument('--build', type=Path, required=True)
 parser.add_argument('--runtime', type=Path, required=True)
 parser.add_argument('--output', type=Path, required=True)
 args = parser.parse_args()
-destination = args.output / 'OpenNavX-Beta1-Portable'
+if os.name != 'nt':
+    raise SystemExit('Recovery packaging and executable verification require native Windows')
+destination = args.output / 'OpenNavX-Beta2-Portable-Recovery'
 if destination.exists():
-    raise SystemExit('Refusing to overwrite an existing preview directory')
+    raise SystemExit('Refusing to overwrite an existing recovery directory')
 destination.mkdir(parents=True)
 shutil.copytree(args.install, destination / 'app')
 app = destination / 'app'
@@ -34,8 +36,8 @@ for dll in args.runtime.glob('*.dll'):
 for required in ['msvcp140.dll', 'vcruntime140.dll']:
     if not (app / required).is_file():
         raise SystemExit('App-local MSVC runtime missing: ' + required)
-(app / 'OPENNAV_PORTABLE_PREVIEW').write_text('OpenNav X portable Beta 1\n')
-for directory in ['profile', 'logs', 'demo', 'docs/licenses']:
+(app / 'OPENNAV_PORTABLE_PREVIEW').write_text('OpenNav X portable Beta 2 recovery\n')
+for directory in ['profile', 'logs', 'docs/licenses']:
     (destination / directory).mkdir(parents=True)
 # PluginPaths::InitWindowsPaths and GetPluginDataPath use PrivateDataDir/plugins
 # in portable mode, independently of the platform's app/plugins directory.
@@ -54,22 +56,22 @@ date = re.search(r'#define VERSION_DATE "([^"]+)"', config).group(1)
     '[Settings/GlobalState]\nFrameWinX=1280\nFrameWinY=800\nFrameWinPosX=0\nFrameWinPosY=0\nFrameMax=0\n'
     'VPLatLon=59.0800,18.5000\nVPScale=0.003\n'
     '[OpenNav]\nInterfaceMode=xnav\n', encoding='utf-8')
-(destination / 'profile/README.txt').write_text('Isolated preview profile. Do not copy a production OpenCPN profile here.\n')
+(destination / 'profile/README.txt').write_text('Isolated recovery profile. Configure charts locally if needed; installation uses your real OpenCPN profile.\n')
 (destination / 'logs/README.txt').write_text('OpenNav diagnostics and launcher output live here. Current OpenCPN log: ../profile/opencpn.log\n')
-launchers = {'Run-XNav': '--xnav', 'Run-XNav-Demo': '--xnav --xnav-demo',
+launchers = {'Run-XNav': '--xnav',
              'Run-Legacy': '--legacy', 'Run-Safe': '--safe-mode'}
 for name, mode in launchers.items():
     text = f'''@echo off
 setlocal
 cd /d "%~dp0"
 if not exist "%~dp0app\\opencpn.exe" (
-  echo Extract the entire OpenNav Beta ZIP before running this launcher.
+  echo Extract the entire OpenNav recovery ZIP before running this launcher.
   pause
   exit /b 1
 )
 if not exist "%~dp0profile" mkdir "%~dp0profile"
 if not exist "%~dp0logs" mkdir "%~dp0logs"
-"%~dp0app\\opencpn.exe" --portable --configdir "%~dp0profile" --no_opengl {mode} %* >> "%~dp0logs\\{name}.log" 2>&1
+"%~dp0app\\opencpn.exe" --portable --configdir "%~dp0profile" --no_opengl {mode} >> "%~dp0logs\\{name}.log" 2>&1
 set "preview_exit=%errorlevel%"
 if exist "%~dp0profile\\opencpn.log" copy /y "%~dp0profile\\opencpn.log" "%~dp0logs\\opencpn.log" >nul
 if not "%preview_exit%"=="0" (
@@ -79,13 +81,8 @@ if not "%preview_exit%"=="0" (
 exit /b %preview_exit%
 '''
     (destination / (name + '.cmd')).write_bytes(text.replace('\n', '\r\n').encode('utf-8'))
-for file in (ROOT / 'docs/beta').glob('*.md'):
+for file in (ROOT / 'docs/beta2').glob('*.md'):
     shutil.copy2(file, destination / 'docs' / file.name)
-shutil.copy2(ROOT / 'docs/physical-validation.md', destination / 'docs/physical-validation.md')
-for name in ['recording-replay-contract.md', 'energy-model.md', 'field-diagnostic-bundle.md',
-             'beta-boat-source-inspection.md', 'boat-propulsion-contract.md',
-             'st4000-beta-contract.md', 'beta-chart-radar-boundaries.md', 'beta-robustness.md']:
-    shutil.copy2(ROOT / 'docs' / name, destination / 'docs' / name)
 version_header = (ROOT / 'src/application/Version.h').read_text()
 product_version = re.search(r'Version\[\] = "([^"]+)"', version_header).group(1)
 commit = os.environ.get('GITHUB_SHA') or subprocess.check_output(['git', 'rev-parse', 'HEAD'], cwd=ROOT, text=True).strip()
@@ -95,9 +92,46 @@ def build_value(key):
     return re.search(r'#define ' + key + r' "([^"]+)"', build_header).group(1)
 if build_value('OPENNAV_BUILD_COMMIT') != commit:
     raise SystemExit('Executable build commit does not match package commit')
+if product_version != '0.4.0-beta2':
+    raise SystemExit('Beta 2 packaging requires the exact Beta 2 product version')
+selftest_path = args.output.resolve() / 'production-package-selftest.json'
+if selftest_path.exists():
+    raise SystemExit('Use a fresh package output: self-test evidence already exists')
+runtime_env = dict(os.environ)
+runtime_env['PATH'] = os.environ['SystemRoot'] + '/System32;' + os.environ['SystemRoot']
+# Native loader dialogs must not block CI if a required dependency is missing.
+import ctypes
+kernel = ctypes.WinDLL('kernel32', use_last_error=True)
+old_error_mode = kernel.SetErrorMode(0x8003)
+try:
+    checked = subprocess.run([str((app / 'opencpn.exe').resolve()), '--opennav-self-test',
+                              str(selftest_path)], cwd=app, env=runtime_env,
+                             capture_output=True, timeout=30)
+finally:
+    kernel.SetErrorMode(old_error_mode)
+if checked.returncode != 0 or not selftest_path.is_file():
+    raise SystemExit('Packaged executable loader self-test failed')
+actual = json.loads(selftest_path.read_text(encoding='utf-8-sig'))
+if (actual.get('passed') is not True or actual.get('test_fixtures') is not False or
+        actual.get('build_purpose') != 'INSTALLED PRODUCT' or actual.get('commit') != commit or
+        actual.get('version') != product_version or actual.get('profile_initialized') is not False or
+        actual.get('plugins_loaded') is not False):
+    raise SystemExit('Packaged executable is not the exact verified fixture-free product')
+for file in destination.rglob('*'):
+    relative = file.relative_to(destination)
+    if ('demo' in (part.casefold() for part in relative.parts) or
+            file.name in {'Run-XNav-Demo.cmd', 'OPENNAV_TEST_PROFILE', 'OPENNAV_ROUTE_FIXTURE',
+                          'OPENNAV_OBJECT_FIXTURE', 'scenarios.json'}):
+        raise SystemExit('Test/demo artifact refused in product package: ' + str(relative))
+(destination / 'docs/PRODUCT_BUILD.json').write_text(json.dumps({
+    'version': product_version, 'commit': commit, 'test_fixtures': False,
+    'build_purpose': 'INSTALLED PRODUCT',
+    'executable_sha256': hashlib.sha256((app / 'opencpn.exe').read_bytes()).hexdigest()
+}, indent=2) + '\n')
+
 info = f'''# Build information
 
-- OpenNav X: Beta 1 / {product_version}
+- OpenNav X: Beta 2 / {product_version}
 - Git commit: `{commit}`
 - OpenCPN: 5.12.4
 - Pinned upstream: `37fd0cddb7334fe489e9f18aa163977a9c5c84f7`
@@ -105,8 +139,11 @@ info = f'''# Build information
 - Architecture: Win32/x86 application and plugin ABI; Windows 10/11 x64 host
 - Build date (UTC): {build_value('OPENNAV_BUILD_DATE')}
 - CI run: {run}
-- Modes: XNav, explicit Demo, Legacy, Safe; package-local profile only
-- UI gates: native 1280×800 / 96, 120, 144 DPI; software and available OpenGL/fallback
+- Modes: XNav, Legacy, Safe; package-local recovery profile only
+- Build purpose: INSTALLED PRODUCT; test fixtures compiled OFF
+- No synthetic vessel-data source or scenario launcher is included
+- Required UI gates: native 1280×800 / 96, 120, 144 DPI and actual boat display
+- Actual acceptance is recorded separately for this exact commit; build output alone is not acceptance
 - Stock OpenCPN executable SHA-256 for installer qualification: `7c6547562cca7954671eaab72833ca9d788710fd9808b6a699b6dc823852ae0c`
 - Setup uses the normal profile; this ZIP uses its own profile only.
 - See the same-commit CI/evidence record for actual acceptance and limitations.
@@ -116,14 +153,6 @@ info = f'''# Build information
 See TEST_ME_FIRST.md and KNOWN_LIMITATIONS.md before running.
 '''
 (destination / 'docs/BUILD_INFO.md').write_text(info, encoding='utf-8')
-(destination / 'demo/scenarios.json').write_text(json.dumps({
-    'fixture_version': '0.1', 'source': 'DEMO built-in deterministic generator',
-    'note': 'Reference manifest; editing this file does not change the compiled fixture.',
-    'usable_capacity_kwh': 48, 'reserve_soc_percent': 15, 'hotel_load_kw': 0.4,
-    'trip_speedup': 60, 'initial_distance_nm': 18.2,
-    'scenarios': ['Cruising', 'Sensors stale', 'Sensors unavailable', 'Route inactive',
-                  'Route ending', 'Low battery', 'High power', 'Energy shortfall']
-}, indent=2) + '\n')
 source = ROOT / 'upstream/OpenCPN'
 for license_file in source.rglob('*'):
     if license_file.is_file() and license_file.name.lower().startswith(('copying', 'license', 'copyright')) and 'cache' not in license_file.relative_to(source).parts:
@@ -139,7 +168,9 @@ OpenCPN and this integration are distributed under their applicable GPL terms.
 Full project source: https://github.com/ThereptileII/Work/tree/{commit}/opennav-x
 Pinned OpenCPN source: https://github.com/OpenCPN/OpenCPN/tree/37fd0cddb7334fe489e9f18aa163977a9c5c84f7
 Build scripts, dependency locks and exact integration patches are in the project.
-The CI artifact also supplies a corresponding-source archive. See `licenses/`
+The CI artifact also supplies a corresponding-source archive with the exact root
+CI workflow, reviewed integrated OpenCPN files and a per-file SOURCE_REFERENCE.json.
+See `licenses/`
 for bundled OpenCPN/library notices and the installed application's license files.
 
 MSVC runtime DLLs are the x86 redistributable files from the licensed CI toolchain.
@@ -151,17 +182,12 @@ in the Windows evidence and `tools/windows-wx.lock.json` in the source archive.
 manifest = {str(f.relative_to(destination)).replace('\\', '/'): hashlib.sha256(f.read_bytes()).hexdigest()
             for f in sorted(destination.rglob('*')) if f.is_file()}
 (destination / 'FILE_SHA256.json').write_text(json.dumps(manifest, indent=2) + '\n')
-archive = args.output / 'OpenNavX-Beta1-Portable-win64.zip'
+archive = args.output / 'OpenNavX-Beta2-Portable-Recovery.zip'
 with zipfile.ZipFile(archive, 'w', zipfile.ZIP_DEFLATED, compresslevel=6) as z:
     for file in sorted(destination.rglob('*')):
         if file.is_file(): z.write(file, file.relative_to(args.output))
 (archive.with_suffix('.zip.sha256')).write_text(hashlib.sha256(archive.read_bytes()).hexdigest() + '  ' + archive.name + '\n')
-# Complete tracked integration source, not an expiring offer to fetch it later.
-with zipfile.ZipFile(args.output / 'OpenNavX-Beta1-source.zip', 'w', zipfile.ZIP_DEFLATED) as z:
-    for directory, prefix in [(ROOT, 'opennav-x'), (ROOT / 'build/integration-source', 'OpenCPN-5.12.4-integrated')]:
-        files = subprocess.check_output(['git', 'ls-files', '-z'], cwd=directory).decode().split('\0')
-        for name in files:
-            f = directory / name
-            if name and f.is_file() and not name.startswith('upstream/'):
-                z.write(f, prefix + '/' + name)
+# Complete exact source plus root CI recipe, not an expiring download offer.
+from source_package import create_source_archive
+create_source_archive(ROOT, commit, args.output / 'OpenNavX-Beta2-source.zip')
 print(archive)

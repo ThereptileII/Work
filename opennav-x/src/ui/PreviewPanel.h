@@ -1,5 +1,6 @@
 #pragma once
 #include "smartnav/VesselEnergy.h"
+#include "smartnav/Advisories.h"
 #include "ui/Controls.h"
 #include <vector>
 #include <wx/scrolwin.h>
@@ -13,7 +14,8 @@ public:
               const vessel::VesselState &state, vessel::Time now,
               const smartnav::EnergyModel &model,
               const smartnav::EnergyPrediction &energy,
-              const std::vector<std::string> &build_info);
+              const std::vector<std::string> &build_info,
+              const smartnav::NavigationAdvice &advice = {});
 
 private:
   void Paint(wxPaintEvent &);
@@ -24,5 +26,6 @@ private:
   smartnav::EnergyModel model_;
   smartnav::EnergyPrediction energy_;
   std::vector<std::string> info_;
+  smartnav::NavigationAdvice advice_;
 };
 } // namespace opennav::ui

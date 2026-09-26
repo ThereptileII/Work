@@ -47,4 +47,17 @@ bool OpenNavModulesAllowed(StartupMode mode) {
   return false;
 }
 
+void ValidateTestStartup(TestStartupFlags requested, StartupFlags mode) {
+  const unsigned count = static_cast<unsigned>(requested.demo) +
+                         static_cast<unsigned>(requested.route) +
+                         static_cast<unsigned>(requested.objects);
+  if (!count) return;
+  if (!TestFixturesEnabled())
+    throw std::invalid_argument("Synthetic test input is not available in this product build");
+  if (!mode.xnav || mode.legacy || mode.safe)
+    throw std::invalid_argument("Test input requires explicit XNav in a developer build");
+  if (count != 1)
+    throw std::invalid_argument("Choose only one isolated test input");
+}
+
 }  // namespace opennav::integration

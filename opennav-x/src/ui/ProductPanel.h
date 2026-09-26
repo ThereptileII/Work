@@ -36,7 +36,11 @@ enum class ProductPage {
   Commissioning,
   PilotSettings,
   FieldReport,
-  Alerts
+  Alerts,
+  System,
+  NavigationSettings,
+  BoatMapping,
+  SourcesAdvanced
 };
 struct ProductState {
   std::vector<application::Alert> alerts;
@@ -60,6 +64,7 @@ struct ProductActions {
   std::shared_ptr<diagnostics::Commissioning> commissioning;
   application::NavigationActions navigation;
   std::function<void()> chart, route_summary, energy, diagnostics;
+  std::function<void()> legacy, restart_xnav, safe, diagnostics_folder;
   std::function<void(LightMode)> theme;
   std::function<void(adapters::PilotAction, double)> pilot_command;
   std::function<void(bool)> pilot_enable;
@@ -68,23 +73,37 @@ struct ProductActions {
   std::function<application::CommandResult(const application::Settings &)>
       save_settings;
 };
+struct ProductGeometry {
+  std::string label;
+  wxRect screen;
+  bool enabled = false, visible = false;
+};
 class ProductPanel final : public XNavScroll {
 public:
   ProductPanel(wxWindow *parent, ProductActions actions);
   void ShowPage(ProductPage page, LightMode mode);
   std::string PageTitle() const;
   int MinimumValueHeight() const;
+  std::vector<ProductGeometry> ControlGeometry() const;
+  std::vector<ProductGeometry> RegionGeometry() const;
   void ShowAis(int mmsi, LightMode mode);
   void ShowObject(const std::string &id, bool route, LightMode mode);
   void Update(const ProductState &state, LightMode mode);
 
 private:
   void Build();
-  void BeginActions(int columns);
+  void BeginActions(int columns, int minimum_width = 200);
+  void Back();
+  void Visual(const wxString &name, int height,
+              std::function<void(XNavPainter &, wxDC &, int)> draw);
+  void Instruments();
   void EndActions() { actions_grid_ = nullptr; }
   void Heading(const wxString &title, const wxString &subtitle);
   void Text(const wxString &text, int size = 14);
   void LiveText(std::function<wxString(const ProductState &)> text);
+  XNavButton *StatusAction(const wxString &title,
+                          std::function<wxString(const ProductState &)> status,
+                          std::function<void()> action);
   XNavButton *Action(const wxString &label, std::function<void()> action,
                      bool enabled = true);
   void Value(const wxString &title, const wxString &unit,
@@ -102,6 +121,7 @@ private:
   void AlertsPanel();
   void ExportFieldReport(bool include_recording);
   void Sources();
+  void BoatMapping();
   void SourceDetail();
   void DisplaySettings();
   void InstrumentSelection(bool rail);
@@ -120,7 +140,14 @@ private:
   wxStaticText *notice_ = nullptr;
   int layout_width_ = 0;
   std::vector<std::pair<wxStaticText *, wxString>> static_text_;
-  std::vector<std::pair<wxGridSizer *, int>> action_grids_;
+  struct ActionGrid { wxGridSizer *sizer; int columns, minimum_width; };
+  std::vector<ActionGrid> action_grids_;
+  std::vector<wxPanel *> visuals_;
+  std::vector<std::pair<XNavButton *, std::function<wxString(const ProductState &)>>> button_text_;
+  int action_width_ = 200;
+  bool first_heading_ = true;
+  bool pilot_advanced_ = false;
+  bool anchor_history_ = false;
   std::vector<std::pair<XNavButton *, adapters::PilotAction>> pilot_buttons_;
   std::vector<
       std::pair<wxStaticText *, std::function<wxString(const ProductState &)>>>

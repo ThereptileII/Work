@@ -16,6 +16,7 @@ void AfterAnchorWatch();
 bool ShowAisCard(int mmsi);
 bool IsAisSelected(int mmsi);
 bool ShowNavigationObjectCard(const std::string& id,bool route);
+bool ShowChartContext(double latitude, double longitude);
 // Application-thread acquisition; returned immutable values may be retained.
 vessel::RouteProgress CurrentRouteProgress();
 void AddCommandLine(wxCmdLineParser& parser);
@@ -32,6 +33,8 @@ void InitializeResourceDefaults(wxFileConfig& config);
 void Attach(MyFrame& frame, wxAuiManager& manager, wxFileConfig& config);
 // Called at the end of normal deferred startup, after canvas/focus work.
 void AfterDeferredInitialization();
+// Reconcile XNav visibility after upstream Options rebuilds canvas panes.
+void AfterSettingsReconfigured();
 void AppendModeMenu(wxMenu& menu);
 bool PrepareClose(wxFileConfig& config);
 void CompleteRestart();

@@ -2,6 +2,7 @@
 
 #include "smartnav/Advisories.h"
 #include "vessel/DisplayItems.h"
+#include "ui/Sheet.h"
 #include <wx/accel.h>
 #include <wx/datetime.h>
 #include <wx/popupwin.h>
@@ -69,14 +70,14 @@ wxStaticText *Shell::Text(wxWindow *parent, const wxString &text, int size,
 Shell::Shell(wxFrame &frame, wxAuiManager &manager, ShellActions actions,
              LightMode mode, bool simulation)
     : frame_(frame), manager_(manager), actions_(std::move(actions)),
-      mode_(mode), simulation_(simulation), timer_(this) {
+      mode_(mode), simulation_(simulation && integration::TestFixturesEnabled()), timer_(this) {
   const int gap = frame_.FromDIP(spacing::base);
   auto *top = MakePane("OpenNavTop", wxAuiPaneInfo().Top().Layer(10).BestSize(
                                          -1, frame_.FromDIP(56)));
   auto *row = new wxBoxSizer(wxHORIZONTAL);
-  row->Add(Text(top, "OpenNav X", 22, true), 0,
+  row->Add(Text(top, "OpenNav X", 18, false), 0,
            wxALIGN_CENTER_VERTICAL | wxLEFT, gap * 2);
-  row->AddSpacer(gap * 3);
+  row->AddSpacer(gap * 2);
   clock_ = Text(top, "", 15);
   clock_->SetMinSize(frame_.FromDIP(wxSize(56, 24)));
   row->Add(clock_, 0, wxALIGN_CENTER_VERTICAL);
@@ -99,17 +100,18 @@ Shell::Shell(wxFrame &frame, wxAuiManager &manager, ShellActions actions,
     row->Add(b, 0, wxALL, frame_.FromDIP(4));
     b->Hide();
   }
-  auto *theme =
-      Button(top, "Light", "Cycle day, dusk and night palettes", [this] {
+  theme_button_ =
+      Button(top, LightName(), "Cycle day, dusk and night palettes", [this] {
         SetLight(mode_ == LightMode::Day    ? LightMode::Dusk
                  : mode_ == LightMode::Dusk ? LightMode::Night
                                             : LightMode::Day);
       });
-  theme->SetMinSize(frame_.FromDIP(wxSize(72, 48)));
-  row->Add(theme, 0, wxALL, frame_.FromDIP(4));
-  top->SetSizer(row);
-  alert_pane_ = MakePane("OpenNavAlerts", wxAuiPaneInfo().Top().Layer(9)
-      .BestSize(-1, frame_.FromDIP(56)).Hide());
+  theme_button_->SetMinSize(frame_.FromDIP(wxSize(72, 48)));
+  theme_button_->SetRole(ButtonRole::Quiet);
+  // Alerts occupy the existing status slot. They never steal chart/rail height.
+  alert_pane_ = new wxPanel(top, wxID_ANY);
+  alert_pane_->SetName("OpenNavAlerts");
+  alert_pane_->Hide();
   auto *alert_row = new wxBoxSizer(wxHORIZONTAL);
   alert_label_ = new wxStaticText(alert_pane_, wxID_ANY, "", wxDefaultPosition,
       wxDefaultSize, wxST_ELLIPSIZE_END);
@@ -117,9 +119,16 @@ Shell::Shell(wxFrame &frame, wxAuiManager &manager, ShellActions actions,
   alert_label_->SetMinSize(wxSize(0, -1));
   alert_row->Add(alert_label_, 1, wxALIGN_CENTER_VERTICAL | wxLEFT | wxRIGHT, gap * 2);
   alert_button_ = Button(alert_pane_, "Alerts", "Inspect active alerts", [this] { ShowProduct(ProductPage::Alerts); });
-  alert_button_->SetMinSize(frame_.FromDIP(wxSize(136, 48)));
+  alert_button_->SetMinSize(frame_.FromDIP(wxSize(88, 48)));
   alert_row->Add(alert_button_, 0, wxALL, frame_.FromDIP(4));
   alert_pane_->SetSizer(alert_row);
+  row->Add(alert_pane_,1,wxEXPAND);
+  row->Add(theme_button_,0,wxALL,frame_.FromDIP(4));
+  auto *menu=Button(top,"Menu","Open navigation menu",[this]{ShowProduct(ProductPage::Home);});
+  menu->SetIcon(XNavIcon::Menu);menu->SetRole(ButtonRole::Quiet);
+  menu->SetMinSize(frame_.FromDIP(wxSize(64,48)));
+  row->Add(menu,0,wxALL,frame_.FromDIP(4));
+  top->SetSizer(row);
 
   auto *left =
       MakePane("OpenNavTools", wxAuiPaneInfo().Left().Layer(1).BestSize(
@@ -130,31 +139,35 @@ Shell::Shell(wxFrame &frame, wxAuiManager &manager, ShellActions actions,
   tools->Add(Button(left, wxString::FromUTF8("−"), "Zoom chart out",
                     actions_.zoom_out),
              0, wxALL, frame_.FromDIP(4));
-  tools->Add(
-      Button(left, "GPS", "Follow own ship using OpenCPN", actions_.follow), 0,
-      wxALL, frame_.FromDIP(4));
-  finish_route_ = Button(left, "Done", "Finish creating OpenCPN route",
-                         actions_.navigation.finish_route);
+  auto *center=Button(left,"Center","Center chart on boat and follow position",actions_.follow);
+  center->SetIcon(XNavIcon::Ownship);center->SetMinSize(frame_.FromDIP(wxSize(56,64)));
+  tools->Add(center,0,wxALL,frame_.FromDIP(4));
+  finish_route_ = Button(left, "Done", "Name and save this route", [this] {
+    const auto fields=EditSheet(frame_,mode_,"Save route",
+      "Name this route. You can activate it after saving.",
+      {{"Name","",128},{"Description","",2048}},"Save route");
+    if(!fields || !actions_.navigation.finish_route_named) return;
+    const auto result=actions_.navigation.finish_route_named((*fields)[0],(*fields)[1]);
+    if(result.ok) { Tick(); ShowObject(result.identity,true); }
+    else ConfirmSheet(frame_,mode_,"Route not saved",wxString::FromUTF8(result.message),"Back");
+  });
   tools->Add(finish_route_, 0, wxALL, frame_.FromDIP(4));
   finish_route_->Hide();
+  undo_route_=Button(left,"Undo","Undo last route point",[this]{if(actions_.navigation.undo_route_point)actions_.navigation.undo_route_point();});
+  cancel_route_=Button(left,"Cancel","Cancel route creation",[this]{
+    if(actions_.navigation.cancel_route && ConfirmSheet(frame_,mode_,"Cancel route?","Discard this unfinished route? Existing routes are preserved.","Discard route"))actions_.navigation.cancel_route();
+  });
+  for(auto *b:{undo_route_,cancel_route_}){tools->Add(b,0,wxALL,frame_.FromDIP(4));b->Hide();}
   tools->AddStretchSpacer();
   left->SetSizer(tools);
 
   auto *right =
       MakePane("OpenNavData", wxAuiPaneInfo().Right().Layer(1).BestSize(
                                   frame_.FromDIP(spacing::right_rail), -1));
-  rail_scroll_ = new XNavScroll(right);
+  rail_scroll_ = new wxPanel(right,wxID_ANY);
   rail_scroll_->SetSizer(new wxBoxSizer(wxVERTICAL));
   auto *rail_container = new wxBoxSizer(wxVERTICAL);
   rail_container->Add(rail_scroll_, 1, wxEXPAND);
-  rail_actions_ = new wxPanel(right, wxID_ANY);
-  auto *rail_row = new wxBoxSizer(wxHORIZONTAL);
-  rail_up_ = Button(rail_actions_, "Up", "Scroll vessel rail up", [this] { rail_scroll_->Step(-1); UpdateScrollControls(); });
-  rail_down_ = Button(rail_actions_, "Down", "Scroll vessel rail down", [this] { rail_scroll_->Step(1); UpdateScrollControls(); });
-  for (auto *b : {rail_up_, rail_down_}) rail_row->Add(b, 1, wxALL, frame_.FromDIP(2));
-  rail_actions_->SetSizer(rail_row);
-  rail_container->Add(rail_actions_, 0, wxEXPAND);
-  rail_actions_->Hide();
   right->SetSizer(rail_container);
 
   auto *bottom = MakePane("OpenNavActions",
@@ -171,8 +184,10 @@ Shell::Shell(wxFrame &frame, wxAuiManager &manager, ShellActions actions,
               if (actions_.pilot_command && !state_.replayed)
                 actions_.pilot_command(simulation_, adapters::PilotAction::Standby, 0);
             }},
+#if XNAV_ENABLE_TEST_FIXTURES
            {"Demo", [this] { ShowDemo(); }},
-           {"Menu", [this] { ShowProduct(ProductPage::Home); }}}) {
+#endif
+           }) {
     auto *b = Button(bottom, entry.first, entry.first, entry.second);
     b->SetMinSize(
         frame_.FromDIP(wxSize(entry.first == "Navigation" ? 112 : entry.first == "STBY" ? 64 : 88, 48)));
@@ -181,15 +196,18 @@ Shell::Shell(wxFrame &frame, wxAuiManager &manager, ShellActions actions,
       b->SetName("Manual STANDBY / requires enabled control");
       b->SetToolTip("Manual STANDBY / requires enabled control; physical STANDBY remains independent");
       b->Disable();
+      b->SetRole(ButtonRole::Critical);
     }
+    else b->SetRole(ButtonRole::Quiet);
     actions_row->Add(b, 0, wxALL, frame_.FromDIP(4));
   }
-  route_summary_ = Text(bottom, "Route unavailable", 12);
-  actions_row->Add(route_summary_, 0, wxALIGN_CENTER_VERTICAL | wxLEFT, gap);
-  actions_row->AddStretchSpacer();
+  route_summary_ = new wxStaticText(bottom,wxID_ANY,"No active route",wxDefaultPosition,wxDefaultSize,wxST_ELLIPSIZE_END);
+  route_summary_->SetFont(UiFont(*bottom,14));route_summary_->SetMinSize(wxSize(0,-1));labels_.push_back(route_summary_);
+  actions_row->Add(route_summary_, 1, wxALIGN_CENTER_VERTICAL | wxLEFT, gap);
   auto *system = Button(bottom, "System", "System and Open Legacy OpenCPN",
                         [this] { ShowSystem(); });
   system->SetMinSize(frame_.FromDIP(wxSize(112, 48)));
+  system->SetRole(ButtonRole::Quiet);
   actions_row->Add(system, 0, wxALL, frame_.FromDIP(4));
   bottom->SetSizer(actions_row);
   page_ = new PreviewPanel(&frame_);
@@ -212,6 +230,8 @@ Shell::Shell(wxFrame &frame, wxAuiManager &manager, ShellActions actions,
   };
   product_actions.commissioning = actions_.commissioning;
   product_actions.navigation = actions_.navigation;
+  product_actions.navigation.legacy_settings=[this]{ShowNavigation();if(actions_.navigation.legacy_settings)actions_.navigation.legacy_settings();};
+  product_actions.navigation.plugin_settings=[this]{ShowNavigation();if(actions_.navigation.plugin_settings)actions_.navigation.plugin_settings();};
   product_actions.navigation.view_ais = [this](int mmsi) {
     if (state_.simulated || state_.replayed || !actions_.navigation.view_ais ||
         !ais_selection_.Select(mmsi, ais_state_, vessel::Clock::now()))
@@ -227,6 +247,10 @@ Shell::Shell(wxFrame &frame, wxAuiManager &manager, ShellActions actions,
   product_actions.route_summary = [this] { ShowPage(PreviewPage::Route); };
   product_actions.energy = [this] { ShowPage(PreviewPage::Energy); };
   product_actions.diagnostics = [this] { ShowPage(PreviewPage::Diagnostics); };
+  product_actions.legacy=actions_.legacy;
+  product_actions.restart_xnav=actions_.restart_xnav;
+  product_actions.safe=actions_.safe;
+  product_actions.diagnostics_folder=actions_.diagnostics_folder;
   product_actions.pilot_command = [this](auto action, double delta) {
     if (actions_.pilot_command &&
         (!actions_.commissioning ||
@@ -269,23 +293,29 @@ Shell::Shell(wxFrame &frame, wxAuiManager &manager, ShellActions actions,
       {'Q', [this] { ShowProduct(ProductPage::VesselSettings); }},
       {'Z', [this] { ShowProduct(ProductPage::Radar); }},
       {'F', [this] { ShowProduct(ProductPage::Display); }},
+#if XNAV_ENABLE_TEST_FIXTURES
       {'D', [this] { StartDemo(); }},
       {'P',
        [this] {
          simulation_paused_ = !simulation_paused_;
          demo_.Pause(simulation_paused_, vessel::Clock::now());
        }},
+#endif
       {'L', actions_.legacy},
       {'N', [this] { ShowNavigation(); }},
       {'R', [this] { ShowPage(PreviewPage::Route); }},
       {'E', [this] { ShowPage(PreviewPage::Energy); }},
       {'I', [this] { ShowPage(PreviewPage::Diagnostics); }},
       {'S', [this] { ShowSystem(); }},
+#if XNAV_ENABLE_TEST_FIXTURES
       {'T', [this] { ShowDemo(); }}};
   for (int i = 0; i < 8; ++i)
     commands.push_back({WXK_F1 + i, [this, i] {
                           SelectDemo(static_cast<vessel::DemoScenario>(i));
                         }});
+#else
+      };
+#endif
   std::vector<wxAcceleratorEntry> accelerators;
   for (const auto &command : commands) {
     const int id = wxWindow::NewControlId();
@@ -323,6 +353,39 @@ Shell::~Shell() {
   manager_.Update();
 }
 
+std::vector<ProductGeometry> Shell::RailRegions() const {
+  std::vector<ProductGeometry> result;
+  if (!rail_scroll_ || !rail_scroll_->IsShownOnScreen()) return result;
+  const auto bounds=rail_scroll_->GetScreenRect();
+  for (const auto &entry:rail_values_) {
+    const auto rect=entry.second->GetScreenRect();
+    result.push_back({entry.first,rect,entry.second->IsEnabled(),
+                      entry.second->IsShownOnScreen() && bounds.Contains(rect)});
+  }
+  return result;
+}
+
+std::vector<ProductGeometry> Shell::InteractionControls() const {
+  std::vector<ProductGeometry> result;
+  // Copy native bounds only. This diagnostic walk cannot invoke actions or
+  // retain widget lifetimes in a consumer. Modal sheets and transient chart
+  // cards are owned children too, even when they have a separate native HWND.
+  const auto collect = [&](const auto &self, wxWindow *window) -> void {
+    if (dynamic_cast<XNavButton *>(window)) {
+      const auto rectangle = window->GetScreenRect();
+      bool visible = window->IsShownOnScreen();
+      for (auto *parent = window->GetParent(); parent && !parent->IsTopLevel();
+           parent = parent->GetParent())
+        visible = visible && parent->GetScreenRect().Contains(rectangle);
+      result.push_back({window->GetLabel().ToStdString(wxConvUTF8), rectangle,
+                        window->IsEnabled(), visible});
+    }
+    for (auto *child : window->GetChildren()) self(self, child);
+  };
+  collect(collect, &frame_);
+  return result;
+}
+
 void Shell::UpdateState(const vessel::VesselState &state) {
   if (!simulation_ &&
       (!actions_.commissioning || !actions_.commissioning->Replaying()))
@@ -332,8 +395,9 @@ void Shell::UpdateState(const vessel::VesselState &state) {
 void Shell::ApplyTheme() {
   const auto colors = Theme(mode_);
   caption_themed_ = ThemeWindowChrome(frame_, mode_);
-  rail_actions_->SetBackgroundColour(Colour(colors.surface));
   rail_scroll_->SetBackgroundColour(Colour(colors.surface));
+  alert_pane_->SetBackgroundColour(Colour(colors.surface));
+  theme_button_->SetLabel(LightName());
   for (auto *pane : panes_) {
     pane->SetBackgroundColour(Colour(colors.surface));
     pane->Refresh();
@@ -356,22 +420,25 @@ void Shell::SetLight(LightMode mode) {
 }
 void Shell::UpdateRail(const std::vector<std::string> &keys, vessel::Time now) {
   const auto items = vessel::DisplayItems(state_);
-  if (keys != rail_keys_) {
+  // Four primary instruments always fit. Older profiles retain their complete
+  // preference list; extra choices remain available in Instruments/settings.
+  std::vector<std::string> visible(keys.begin(),keys.begin()+std::min<std::size_t>(4,keys.size()));
+  if (visible != rail_keys_) {
     rail_scroll_->Freeze();
     rail_scroll_->GetSizer()->Clear(true);
     rail_values_.clear();
-    rail_keys_ = keys;
-    for (const auto &key : keys)
+    rail_keys_ = visible;
+    for (const auto &key : visible)
       for (const auto &item : items)
         if (key == item.key) {
           auto *value =
               new XNavDataValue(rail_scroll_, wxString::FromUTF8(item.title),
                                 wxString::FromUTF8(item.unit));
           value->SetLightMode(mode_);
+          value->SetCompact(true);
           rail_values_.push_back({key, value});
-          rail_scroll_->GetSizer()->Add(value, 0, wxEXPAND);
+          rail_scroll_->GetSizer()->Add(value, 1, wxEXPAND);
         }
-    rail_scroll_->FitInside();
     rail_scroll_->Layout();
     rail_scroll_->Thaw();
   }
@@ -383,7 +450,6 @@ void Shell::UpdateRail(const std::vector<std::string> &keys, vessel::Time now) {
 
 void Shell::UpdateAlerts() {
   const auto &alerts = alerts_.Current();
-  auto &pane = manager_.GetPane(alert_pane_);
   const bool visible = !alerts.empty();
   if (visible) {
     const auto &a = alerts.front();
@@ -396,10 +462,13 @@ void Shell::UpdateAlerts() {
       alert_pane_->Layout();
     }
     alert_label_->SetForegroundColour(Colour(a.level == application::AlertLevel::Critical ? colors.alarm : colors.attention));
-    alert_button_->SetLabel(wxString::Format("Alerts / %u", static_cast<unsigned>(alerts.size())));
-    alert_pane_->SetBackgroundColour(Colour(colors.elevated));
+    alert_button_->SetLabel(wxString::Format("Alerts %u", static_cast<unsigned>(alerts.size())));
+    alert_button_->SetRole(a.level==application::AlertLevel::Critical?ButtonRole::Critical:ButtonRole::Primary);
   }
-  if (pane.IsShown() != visible) { pane.Show(visible); manager_.Update(); }
+  if (alert_pane_->IsShown() != visible) {
+    alert_pane_->Show(visible);source_->Show(!visible);
+    alert_pane_->GetParent()->Layout();
+  }
 }
 void Shell::Tick() {
   const auto begin = std::chrono::steady_clock::now();
@@ -410,8 +479,10 @@ void Shell::Tick() {
   const auto now = replay ? replay->now : wall_now;
   if (replay)
     state_ = replay->state;
+  #if XNAV_ENABLE_TEST_FIXTURES
   else if (simulation_)
     state_ = demo_.Read(now);
+  #endif
   else {
     if (actions_.live_state)
       state_ = actions_.live_state();
@@ -421,17 +492,23 @@ void Shell::Tick() {
   const auto config = replay ? actions_.commissioning->ReplayAssumptions()
                       : actions_.settings ? actions_.settings()
                                           : application::Settings{};
+  #if XNAV_ENABLE_TEST_FIXTURES
   const auto model = simulation_ && !replay ? smartnav::PreviewEnergyModel(true)
                                             : config.energy.battery;
   const auto energy =
       simulation_ && !replay
           ? smartnav::PredictVesselEnergy(model, state_, now)
           : smartnav::PredictConfiguredEnergy(config.energy, state_, now);
+  #else
+  const auto model=config.energy.battery;
+  const auto energy=smartnav::PredictConfiguredEnergy(config.energy,state_,now);
+  #endif
   if (actions_.commissioning && !replay)
     actions_.commissioning->Capture(state_, wall_now);
   const bool creating = actions_.route_creating && actions_.route_creating();
   if (finish_route_->IsShown() != creating) {
     finish_route_->Show(creating);
+    undo_route_->Show(creating);cancel_route_->Show(creating);
     finish_route_->GetParent()->Layout();
   }
   if (product_) {
@@ -440,14 +517,16 @@ void Shell::Tick() {
     p.now = now;
     if (replay)
       p.ais.source = "AIS not included in this recording";
+    #if XNAV_ENABLE_TEST_FIXTURES
     else if (simulation_)
       p.ais = vessel::DemoAis(state_);
+    #endif
     else if (actions_.navigation.ais)
       p.ais = actions_.navigation.ais(now);
     if (!simulation_ && !replay && actions_.navigation.anchor)
       p.anchor = actions_.navigation.anchor();
     else
-      p.anchor.state = "Historical/DEMO data / real anchor controls disabled";
+      p.anchor.state = "Historical data / anchor controls unavailable";
     if (actions_.pilot_tick)
       p.pilot = actions_.pilot_tick(simulation_, wall_now);
     if (actions_.pilot_log && !replay)
@@ -464,7 +543,7 @@ void Shell::Tick() {
       p.settings_status = actions_.settings_status();
     if (actions_.boat_bridge_status && !simulation_ && !replay)
       p.boat_bridge_status = actions_.boat_bridge_status();
-    else p.boat_bridge_status = "DEMO/REPLAY / live boat mapping not applied";
+    else p.boat_bridge_status = "Historical data / live boat mapping not applied";
     if (actions_.source_health && !replay)
       p.sources = actions_.source_health();
     if (actions_.radar && !replay)
@@ -496,11 +575,13 @@ void Shell::Tick() {
                                 : replay->ended ? "ENDED"
                                                 : "PLAYING",
                                 replay->elapsed.count() / 1000.0)
+      #if XNAV_ENABLE_TEST_FIXTURES
       : simulation_
           ? "DEMO / " + wxString(simulation_paused_
                                      ? "PAUSED"
                                      : wxString::FromUTF8(vessel::ScenarioName(
                                            demo_.Scenario())))
+      #endif
           : InputSummary();
   if (actions_.commissioning) {
     const auto r = actions_.commissioning->RecordingStatus();
@@ -524,7 +605,7 @@ void Shell::Tick() {
   const wxString summary =
       distance ? wxString::Format("%.1f NM to destination", *distance)
                : "Route unavailable";
-  const bool show_summary = frame_.GetClientSize().x >= frame_.FromDIP(1240);
+  const bool show_summary = true;
   const bool summary_layout = route_summary_->GetLabel() != summary ||
                               route_summary_->IsShown() != show_summary;
   route_summary_->SetLabel(summary);
@@ -534,7 +615,7 @@ void Shell::Tick() {
   if (page_ && page_->IsShown())
     page_->Update(current_page_, mode_, state_, now, model, energy,
                   actions_.build_info ? actions_.build_info()
-                                      : std::vector<std::string>{});
+                                      : std::vector<std::string>{}, field_snapshot_.advice);
   UpdateScrollControls();
   if (actions_.diagnostic_snapshot)
     actions_.diagnostic_snapshot(state_, energy, PageTitle());
@@ -583,16 +664,6 @@ void Shell::UpdateScrollControls() {
   page_up_->Enable(CanScrollPage(-1));
   page_down_->Enable(CanScrollPage(1));
   if (changed) page_up_->GetParent()->Layout();
-  const bool rail = rail_scroll_->GetVirtualSize().y > rail_scroll_->GetParent()->GetClientSize().y;
-  if (rail_actions_->IsShown() != rail) {
-    rail_actions_->Show(rail);
-    rail_actions_->GetParent()->Layout();
-  }
-  if ((focus == rail_up_ && !rail_scroll_->CanScroll(-1)) ||
-      (focus == rail_down_ && !rail_scroll_->CanScroll(1)))
-    rail_scroll_->SetFocusIgnoringChildren();
-  rail_up_->Enable(rail_scroll_->CanScroll(-1));
-  rail_down_->Enable(rail_scroll_->CanScroll(1));
 }
 
 std::string Shell::PageTitle() const {
@@ -614,10 +685,13 @@ void Shell::OnCommand(wxCommandEvent &event) {
     }
 }
 void Shell::StartDemo() {
+#if XNAV_ENABLE_TEST_FIXTURES
   SelectDemo(vessel::DemoScenario::Cruise);
   if (actions_.demo_chart)
     actions_.demo_chart();
+#endif
 }
+#if XNAV_ENABLE_TEST_FIXTURES
 void Shell::SelectDemo(vessel::DemoScenario scenario) {
   if (actions_.commissioning) {
     actions_.commissioning->StopReplay();
@@ -630,6 +704,7 @@ void Shell::SelectDemo(vessel::DemoScenario scenario) {
   ApplyTheme();
   Tick();
 }
+#endif
 void Shell::ShowNavigation() {
   manager_.GetPane(page_).Hide();
   if (product_)
@@ -696,6 +771,7 @@ void Shell::ShowPage(PreviewPage page) {
 }
 
 void Shell::ShowDemo() {
+#if XNAV_ENABLE_TEST_FIXTURES
   auto *popup = new SystemPopup(&frame_);
   popup->SetBackgroundColour(Colour(Theme(mode_).elevated));
   auto *layout = new wxBoxSizer(wxVERTICAL);
@@ -723,11 +799,19 @@ void Shell::ShowDemo() {
     grid->Add(b, 0, wxEXPAND);
   }
   layout->Add(grid, 0, wxLEFT | wxRIGHT | wxBOTTOM, frame_.FromDIP(16));
+  auto *pause=new XNavButton(popup,wxID_ANY,simulation_paused_?"Resume simulation":"Pause simulation","CI-only source pause");
+  pause->SetLightMode(mode_);
+  pause->Bind(wxEVT_BUTTON,[this,popup](wxCommandEvent&){
+    popup->Dismiss();popup->Destroy();simulation_paused_=!simulation_paused_;
+    demo_.Pause(simulation_paused_,vessel::Clock::now());
+  });
+  layout->Add(pause,0,wxEXPAND|wxLEFT|wxRIGHT|wxBOTTOM,frame_.FromDIP(16));
   popup->SetSizerAndFit(layout);
   popup->Position(
       frame_.ClientToScreen(wxPoint(frame_.FromDIP(80), frame_.FromDIP(120))),
       wxSize());
   popup->Popup();
+#endif
 }
 
 wxString Shell::InputSummary() const {
@@ -752,82 +836,60 @@ wxString Shell::InputSummary() const {
 }
 
 void Shell::ShowSystem() {
-  auto *popup = new SystemPopup(&frame_);
-  popup->SetBackgroundColour(Colour(Theme(mode_).elevated));
-  auto *layout = new wxBoxSizer(wxVERTICAL);
-  const int gap = frame_.FromDIP(12);
-  auto *heading = new wxStaticText(popup, wxID_ANY, "System");
-  heading->SetFont(UiFont(*popup, 20, true));
-  heading->SetForegroundColour(Colour(Theme(mode_).primary));
-  layout->Add(heading, 0, wxALL, gap);
-  auto *info = new wxStaticText(
-      popup, wxID_ANY,
-      "OpenNav X / OpenCPN 5.12.4\nXNav / " +
-          (simulation_ ? wxString("Data: explicit simulator")
-                       : "Data: " + InputSummary()) +
-          "\nPilot manual control: " + (field_snapshot_.pilot.enabled ? "ENABLED" : "OFF"));
-  info->SetFont(UiFont(*popup, 13));
-  info->SetForegroundColour(Colour(Theme(mode_).secondary));
-  layout->Add(info, 0, wxLEFT | wxRIGHT | wxBOTTOM, gap);
-  auto *system_grid = new wxGridSizer(2, frame_.FromDIP(8), frame_.FromDIP(8));
-  layout->Add(system_grid, 0, wxEXPAND | wxLEFT | wxRIGHT | wxBOTTOM, gap);
-  auto *pause = new XNavButton(
-      popup, wxID_ANY,
-      simulation_
-          ? (simulation_paused_ ? "Resume simulation" : "Pause simulation")
-          : "Start labelled simulation",
-      "Simulator control; never affects OpenCPN chart or device state");
-  pause->SetLightMode(mode_);
-  pause->Bind(wxEVT_BUTTON, [this, popup](wxCommandEvent &) {
-    if (!simulation_)
-      StartDemo();
-    else {
-      simulation_paused_ = !simulation_paused_;
-      demo_.Pause(simulation_paused_, vessel::Clock::now());
-    }
-    ApplyTheme();
-    popup->Dismiss();
-    popup->Destroy();
-  });
-  pause->SetMinSize(frame_.FromDIP(wxSize(200, 48)));
-  system_grid->Add(pause, 1, wxEXPAND);
-  auto *legacy = new XNavButton(popup, wxID_ANY, "Open Legacy OpenCPN",
-                                "Save and restart in Legacy OpenCPN");
-  legacy->SetLightMode(mode_);
-  legacy->Bind(wxEVT_BUTTON, [this, popup](wxCommandEvent &) {
-    // Closing the host can synchronously destroy this Shell and its actions.
-    const auto restart_action = actions_.legacy;
-    popup->Dismiss();
-    popup->Destroy();
-    if (restart_action)
-      restart_action();
-  });
-  legacy->SetMinSize(frame_.FromDIP(wxSize(200, 48)));
-  system_grid->Add(legacy, 1, wxEXPAND);
-  for (const auto &entry :
-       std::vector<std::pair<wxString, std::function<void()>>>{
-           {"Diagnostics", [this] { ShowPage(PreviewPage::Diagnostics); }},
-           {"Commissioning & recordings",
-            [this] { ShowProduct(ProductPage::Commissioning); }},
-           {"Restart XNav", actions_.restart_xnav},
-           {"Safe Mode", actions_.safe},
-           {"Open diagnostics folder", actions_.diagnostics_folder}}) {
-    auto *b = new XNavButton(popup, wxID_ANY, entry.first, entry.first);
-    b->SetLightMode(mode_);
-    b->Bind(wxEVT_BUTTON, [popup, action = entry.second](wxCommandEvent &) {
-      popup->Dismiss();
-      popup->Destroy();
-      if (action)
-        action();
-    });
-    b->SetMinSize(frame_.FromDIP(wxSize(200, 48)));
-    system_grid->Add(b, 1, wxEXPAND);
+  // A normal center page keeps the alert/status slot and fixed manual controls
+  // visible at every DPI; no transient popup can cover the Alerts action.
+  ShowProduct(ProductPage::System);
+}
+
+void Shell::AfterCanvasLayoutChanged() {
+  navigation_visibility_.clear();
+  for(const auto &name : actions_.navigation_panes) {
+    auto &pane=manager_.GetPane(name);
+    if(pane.IsOk())pane.Show();
   }
+  for(const auto &name : {"OpenNavTools","OpenNavData"}) {
+    auto &pane=manager_.GetPane(name);if(pane.IsOk())pane.Show();
+  }
+  ShowNavigation();
+}
+
+void Shell::ShowChartContext(application::Coordinate position) {
+  ShowNavigation();
+  auto *popup=new SystemPopup(&frame_);
+  popup->SetName("Chart position actions");
+  popup->SetBackgroundColour(Colour(Theme(mode_).elevated));
+  auto *layout=new wxBoxSizer(wxVERTICAL);
+  auto *location=new wxStaticText(popup,wxID_ANY,
+    wxString::Format("%.5f°   %.5f°",position.latitude_deg,position.longitude_deg));
+  location->SetFont(UiFont(*popup,18));
+  location->SetForegroundColour(Colour(Theme(mode_).primary));
+  layout->Add(location,0,wxALL,frame_.FromDIP(16));
+  auto *grid=new wxGridSizer(2,frame_.FromDIP(8),frame_.FromDIP(8));
+  const auto result=[this](const application::CommandResult &r) {
+    if(!r.ok)ConfirmSheet(frame_,mode_,"Unable to continue",wxString::FromUTF8(r.message),"Back");
+  };
+  const auto go=[this,position,result] {
+    if(!actions_.navigation.go_to)return;
+    if(ConfirmSheet(frame_,mode_,"Go to this position",
+      wxString::Format("Destination %.5f°  %.5f°. Start navigating to this position?",position.latitude_deg,position.longitude_deg),"Start"))
+      result(actions_.navigation.go_to(position,"Go To"));
+  };
+  const auto mark=[this,position,result] {
+    auto f=EditSheet(frame_,mode_,"Create waypoint","Save this chart position.",{{"Name","Waypoint",128}},"Save");
+    if(f && actions_.navigation.create_waypoint)result(actions_.navigation.create_waypoint(position,(*f)[0],""));
+  };
+  for(const auto &entry : std::vector<std::pair<wxString,std::function<void()>>>{
+    {"Go To",go},{"Waypoint",mark},{"Measure",actions_.navigation.measure},
+    {"Info",[this,position]{if(actions_.navigation.object_info_at)actions_.navigation.object_info_at(position);}}}) {
+    auto *b=new XNavButton(popup,wxID_ANY,entry.first,entry.first);
+    b->SetMinSize(frame_.FromDIP(wxSize(152,56)));b->SetLightMode(mode_);
+    if(entry.first=="Go To")b->SetRole(ButtonRole::Primary);
+    b->Bind(wxEVT_BUTTON,[popup,action=entry.second](wxCommandEvent&){popup->Dismiss();popup->Destroy();if(action)action();});
+    grid->Add(b,1,wxEXPAND);
+  }
+  layout->Add(grid,0,wxLEFT|wxRIGHT|wxBOTTOM,frame_.FromDIP(16));
   popup->SetSizerAndFit(layout);
-  const auto client = frame_.GetClientSize();
-  const auto corner = frame_.ClientToScreen(wxPoint(client.x, client.y));
-  popup->Move(corner.x - popup->GetSize().x - gap,
-              corner.y - popup->GetSize().y - frame_.FromDIP(64));
+  popup->Position(frame_.ClientToScreen(frame_.FromDIP(wxPoint(80,80))),wxSize());
   popup->Popup();
 }
 

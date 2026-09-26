@@ -1,4 +1,4 @@
-name: OpenNav X Beta
+name: OpenNav X Beta 2
 on:
   push:
     branches: [opennav-x]
@@ -58,6 +58,8 @@ jobs:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
       - name: Verify published distribution inputs before compilation
         run: python opennav-x/tools/verify-distribution-inputs.py
+      - name: Verify corresponding-source archive structure and integrity
+        run: python opennav-x/tools/test-source-package.py
       - name: Verify the exact boat translator parser for host interoperability tests
         run: python opennav-x/tools/fetch-st4000-oracle.py opennav-x/build/st4000-firmware
       - name: Prepare reviewed boat producer expiry and actual codec oracle
@@ -68,6 +70,11 @@ jobs:
           & "$env:WINDIR/System32/WindowsPowerShell/v1.0/powershell.exe" -NoProfile -File opennav-x/tools/test-installer-filesystem.ps1
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
           & "$env:WINDIR/SysWOW64/WindowsPowerShell/v1.0/powershell.exe" -NoProfile -File opennav-x/tools/test-installer-filesystem.ps1
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+      - name: Boat tooling recovery contracts on native Windows PowerShell 5.1
+        if: runner.os == 'Windows'
+        run: |
+          & "$env:WINDIR/System32/WindowsPowerShell/v1.0/powershell.exe" -NoProfile -File opennav-x/tools/boat/test-boat-tools.ps1
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
       - name: Configure Linux contracts
         if: runner.os == 'Linux'
@@ -154,7 +161,9 @@ jobs:
         run: python3 opennav-x/tools/smoke-signalk.py
       - name: Manual pilot through actual OpenCPN TCP and loopback feedback
         run: python3 opennav-x/tools/smoke-pilot.py
-      - name: Navigation objects, AIS and anchor integration
+      - name: Navigation objects, AIS and anchor integration in a non-UTC timezone
+        env:
+          TZ: Europe/Stockholm
         run: python3 opennav-x/tools/smoke-navigation.py --objects
       - name: Crash-loop recovery with real disposable processes
         run: python3 opennav-x/tools/smoke-recovery.py
@@ -166,6 +175,8 @@ jobs:
         run: |
           Duration=$(python3 -c 'import json; print(json.load(open("opennav-x/release/qualification.json"))["enduranceSeconds"])')
           python3 opennav-x/tools/soak-runtime.py --seconds "$Duration"
+      - name: Build fixture-free Linux product and run its loader check
+        run: bash opennav-x/tools/build-production-linux.sh
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         if: always()
         with:
@@ -222,27 +233,36 @@ jobs:
             Get-ChildItem opennav-x/evidence/local -Filter 'recovery-*' | Where-Object { $_.Name -notlike 'recovery-repeat-*' } | Move-Item -Destination $Capture
             if ($Result -ne 0) { exit $Result }
           }
-      - name: Package and test the extracted Beta portable build
-        id: portable
+      - name: Retain complete fixture UI and scenario regression suite
         if: ${{ !cancelled() && steps.integrated.conclusion == 'success' }}
+        run: ./opennav-x/tools/test-preview-windows.ps1
+      - name: Build native installed product without synthetic data
+        id: production
+        run: ./opennav-x/tools/build-pristine-windows.ps1 -Architecture Win32 -Integration -Production
+      - name: Package and test the fixture-free recovery distribution
+        id: portable
+        if: ${{ !cancelled() && steps.production.conclusion == 'success' }}
         run: ./opennav-x/tools/package-preview-windows.ps1
       - name: Preserve failed portable interaction evidence immediately
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         if: ${{ !cancelled() && steps.portable.conclusion == 'failure' }}
         with:
           name: windows-portable-failure-${{ github.sha }}
-          path: opennav-x/evidence/local/preview-*
+          path: |
+            opennav-x/evidence/local/preview-*
+            opennav-x/evidence/local/production-recovery-*
+            opennav-x/evidence/local/recovery-*
           if-no-files-found: error
       - name: Build and exercise candidate Beta installer
         env:
           OPENNAV_ARTIFACT_TOKEN: ${{ github.token }}
         id: installer
-        if: ${{ !cancelled() && steps.integrated.conclusion == 'success' }}
+        if: ${{ !cancelled() && steps.portable.conclusion == 'success' }}
         run: |
           $Candidate = @()
           $Compatibility = Get-Content opennav-x/installer/windows/compatibility.json -Raw | ConvertFrom-Json
           if ($Compatibility.supportedOpenCpn.Count -eq 0) { $Candidate = @('--candidate') }
-          python opennav-x/tools/package-alpha-installer.py --preview opennav-x/build/developer-preview/OpenNavX-Beta1-Portable --output opennav-x/build/beta-installer @Candidate
+          python opennav-x/tools/package-alpha-installer.py --preview opennav-x/build/developer-preview/OpenNavX-Beta2-Portable-Recovery --output opennav-x/build/beta-installer @Candidate
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
           python opennav-x/tools/smoke-installer-windows.py
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
@@ -323,13 +343,13 @@ jobs:
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         if: steps.qualification.outputs.accepted == 'true'
         with:
-          name: OpenNavX-Beta1-Windows
+          name: OpenNavX-Beta2-Windows
           path: |
-            beta/OpenNavX-Beta1-Portable-win64.zip
-            beta/OpenNavX-Beta1-Setup.exe
-            beta/OpenNavX-Beta1-Test-Guide.md
-            beta/OpenNavX-Beta1-Boat-Commissioning.md
+            beta/OpenNavX-Beta2-Portable-Recovery.zip
+            beta/OpenNavX-Beta2-Setup.exe
+            beta/OpenNavX-Beta2-Test-Guide.md
+            beta/OpenNavX-Beta2-Install-Guide.md
             beta/SHA256SUMS.txt
-            beta/OpenNavX-Beta1-source.zip
+            beta/OpenNavX-Beta2-source.zip
           if-no-files-found: error
           retention-days: 90

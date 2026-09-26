@@ -6,25 +6,35 @@ namespace {
 wxString W(const std::string &s) { return wxString::FromUTF8(s); }
 } // namespace
 void ProductPanel::PilotSettings() {
-  Heading("Autopilot configuration",
-          "Exact device binding / display-only by default");
-  Action("Back to manual autopilot",
-         [this] { ShowPage(ProductPage::Pilot, mode_); });
-  Text("The supported ST4000 translator must publish fresh physical SeaTalk "
-       "status. "
-       "Live output currently uses an existing bidirectional OpenCPN TCP "
-       "connection "
-       "carrying Actisense complete-PGN ASCII. Other transports remain "
-       "status-only. "
-       "TRACK and WIND commands remain unavailable pending physical "
-       "validation.");
+  Heading("Autopilot setup", "Display-only until deliberately enabled");
   const auto &b = state_.settings.pilot;
+  LiveText([](const auto &s) {
+    return wxString(s.settings.pilot.permit_control ? "Manual control permitted" : "Autopilot control OFF") +
+           (s.pilot.fresh ? " / Connected" : " / Waiting for pilot feedback");
+  });
+  Text("Saving permission does not engage the pilot. Manual control must also be enabled each session. SmartNav never steers the vessel.");
+  BeginActions(2);
+  Action("Back to manual autopilot", [this] { ShowPage(ProductPage::Pilot, mode_); });
+  Action(b.permit_control ? "Return to display-only" : "Permit manual live control...", [this] {
+    auto s = actions_.settings();
+    if (!s.pilot.permit_control && !ConfirmSheet(*this, mode_, "Permit physical pilot commands?",
+        "Verify the connected pilot, transport and secured-vessel commissioning checks first. Actual control stays OFF until you enable it for this session.",
+        "Save manual permission")) return;
+    s.pilot.permit_control = !s.pilot.permit_control;
+    SaveSettings(s);
+  }, !b.interface_id.empty() && !state_.vessel.replayed && !state_.vessel.simulated);
+  Action(pilot_advanced_ ? "Hide connection details" : "Advanced connection setup", [this] {
+    pilot_advanced_ = !pilot_advanced_; Build();
+  });
+  EndActions();
+  if (!pilot_advanced_) {
+    Text("STANDBY, AUTO and manual course changes are available only with a verified compatible pilot. TRACK and WIND remain unavailable.");
+    return;
+  }
+  Heading("Connection & diagnostics", "Advanced / Exact device identity");
+  Text("The ST4000 translator publishes physical SeaTalk feedback through the NMEA 2000 adapter. Control requires an existing bidirectional TCP Actisense connection. Other transports are status-only.");
   Text("Interface: " + W(b.interface_id.empty() ? "Unconfigured" : b.interface_id) +
-       "\nNAME: " + W(b.name.empty() ? "Unconfigured" : b.name) +
-       "\nPermission: " +
-       (b.permit_control
-            ? "Manual control permitted / session enable still required"
-            : "DISPLAY ONLY / control OFF"));
+       "\nNAME: " + W(b.name.empty() ? "Unconfigured" : b.name));
   LiveText([](const auto &s) { return W(s.pilot.adapter_status); });
   BeginActions(2);
   Action(
@@ -50,26 +60,6 @@ void ProductPanel::PilotSettings() {
       [this] {
         if (actions_.pilot_identity)
           Result(actions_.pilot_identity());
-      },
-      !b.interface_id.empty() && !state_.vessel.replayed &&
-          !state_.vessel.simulated);
-  Action(
-      b.permit_control ? "Return to display-only"
-                       : "Permit manual live control...",
-      [this] {
-        auto s = actions_.settings();
-        if (!s.pilot.permit_control &&
-            !ConfirmSheet(
-                *this, mode_, "Permit physical pilot commands?",
-                "This saves permission for the configured device only. Actual "
-                "control stays OFF until "
-                "you deliberately enable each session. Verify the translator "
-                "firmware and transport "
-                "in the boat commissioning checklist before enabling.",
-                "Save manual permission"))
-          return;
-        s.pilot.permit_control = !s.pilot.permit_control;
-        SaveSettings(s);
       },
       !b.interface_id.empty() && !state_.vessel.replayed &&
           !state_.vessel.simulated);
@@ -100,5 +90,13 @@ void ProductPanel::PilotSettings() {
       text += W(identity) + "\n";
     return text;
   });
+  LiveText([](const auto &s) {
+    wxString log = "RECENT COMMANDS";
+    const auto start = s.pilot_log.size() > 8 ? s.pilot_log.size() - 8 : 0;
+    for (std::size_t i = start; i < s.pilot_log.size(); ++i)
+      log += "\n" + W(adapters::CommandStateName(s.pilot_log[i].state)) + " / " + W(s.pilot_log[i].detail);
+    return log;
+  });
+
 }
 } // namespace opennav::ui

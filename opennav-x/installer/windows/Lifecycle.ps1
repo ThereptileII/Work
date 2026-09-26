@@ -7,7 +7,10 @@ param(
   [string]$PackageDirectory = '',
   [string]$ManifestSha256 = '',
   [string]$Report = '',
-  [string]$FailurePoint = ''
+  [string]$FailurePoint = '',
+  [ValidatePattern('^(|xnav(?:,legacy)?(?:,safe)?)$')]
+  [string]$ShortcutModes = '',
+  [string]$SummaryPath = ''
 )
 Set-StrictMode -Version Latest
 $ErrorActionPreference = 'Stop'
@@ -36,7 +39,7 @@ function Hash([string]$Path) {
   } finally { if ($stream) { $stream.Dispose() }; $algorithm.Dispose() }
 }
 function PlainPath([string]$Path) {
-  if ([string]::IsNullOrWhiteSpace($Path) -or $Path -notmatch '^[A-Za-z]:[\\/]' -or $Path.Contains('"')) {
+  if ([string]::IsNullOrWhiteSpace($Path) -or $Path -notmatch '^[A-Za-z]:[\\/]' -or $Path.Contains('"') -or $Path -match '[\x00-\x1f]') {
     throw 'Use an absolute path on a local Windows drive.'
   }
   $full = [IO.Path]::GetFullPath($Path).TrimEnd('\')
@@ -106,7 +109,7 @@ function PeArchitecture([string]$Path) {
     if ($offset -gt $f.Length - 24) { throw 'Invalid PE header.' }
     $f.Position = $offset
     if ($r.ReadUInt32() -ne 0x4550) { throw 'Invalid PE signature.' }
-    if ($r.ReadUInt16() -ne 0x14c) { throw 'This Alpha requires the supported x86 OpenCPN plugin ABI.' }
+    if ($r.ReadUInt16() -ne 0x14c) { throw 'This integration requires the supported x86 OpenCPN plugin ABI.' }
     return 'x86'
   } finally { $r.Dispose(); $f.Dispose() }
 }
@@ -232,6 +235,21 @@ namespace OpenNav {
   } finally { if ($process) { $process.Dispose() } }
   $result = ReadJson $reportPath
   if (-not $result.passed -or $result.commit -cne $Commit -or $result.version -cne $Version -or $result.profile_initialized -or $result.plugins_loaded) { throw 'Executable identity/self-test report mismatch.' }
+  if ($Version -match '^0\.4\.') {
+    if (-not $result.PSObject.Properties['test_fixtures'] -or $result.test_fixtures -ne $false -or
+        -not $result.PSObject.Properties['build_purpose'] -or $result.build_purpose -cne 'INSTALLED PRODUCT') {
+      throw 'Developer/test-fixture executable refused in the installed Beta 2 product.'
+    }
+  }
+  if ($result.PSObject.Properties['normal_config_directory']) {
+    $profile = PlainPath $result.normal_config_directory
+    if ([IO.Directory]::Exists($profile)) {
+      $null = [IO.Directory]::GetFileSystemEntries($profile)
+      $ini = Join-Path $profile 'opencpn.ini'
+      if ([IO.File]::Exists($ini)) { $stream = [IO.File]::OpenRead($ini); $stream.Dispose() }
+    }
+    Log 'Normal OpenCPN profile location accessible; profile content not modified.'
+  }
   Remove-Item -LiteralPath $reportPath
   Log "Loader/resource self-test passed for $Commit"
 }
@@ -244,18 +262,27 @@ function PublishShell($State) {
   }
   $directory = Generation $State.current
   $generation = ReadGeneration $State.current
+  $caption = 'OpenNav X'
+  if ($generation.version -match '^0\.4\.') { $caption = 'OpenNav X Beta 2' }
+  elseif ($generation.version -match '^0\.3\.') { $caption = 'OpenNav X Beta 1' }
+  elseif ($generation.version -match '^0\.2\.') { $caption = 'OpenNav X Alpha 1' }
   $null = New-Item -ItemType Directory -Path $Shortcuts -Force
   $shell = New-Object -ComObject WScript.Shell
-  foreach ($pair in @(@('OpenNav X','--xnav'),@('OpenCPN Legacy','--legacy'),@('OpenNav Safe Mode','--safe-mode'))) {
+  $selected = @('xnav','legacy','safe')
+  if ($State.PSObject.Properties['shortcutModes']) { $selected = @($State.shortcutModes) }
+  elseif ($State -is [Collections.IDictionary] -and $State.Contains('shortcutModes')) { $selected = @($State.shortcutModes) }
+  foreach ($pair in @(@('OpenNav X','--xnav','xnav'),@('OpenCPN Legacy','--legacy','legacy'),@('OpenNav Safe Mode','--safe-mode','safe'))) {
+    $shortcut = Join-Path $Shortcuts ($pair[0]+'.lnk')
+    if ($pair[2] -notin $selected) { if (Test-Path -LiteralPath $shortcut) { Remove-Item -LiteralPath (PlainPath $shortcut) }; continue }
     $link = $shell.CreateShortcut((Join-Path $Shortcuts ($pair[0]+'.lnk')))
     $link.TargetPath = Join-Path $directory 'app\opencpn.exe'; $link.Arguments = $pair[1]
-    $link.WorkingDirectory = Join-Path $directory 'app'; $link.Description = 'OpenNav X Beta 1 - shared OpenCPN profile'; $link.Save()
+    $link.WorkingDirectory = Join-Path $directory 'app'; $link.Description = 'OpenNav X - shared OpenCPN profile'; $link.Save()
   }
   $link = $shell.CreateShortcut((Join-Path $Shortcuts 'Maintain OpenNav.lnk'))
   $link.TargetPath = Join-Path $directory 'Maintain.exe'; $link.WorkingDirectory = $directory; $link.Save()
   $null = New-Item -Path $Registry -Force
   foreach ($entry in @{
-    DisplayName='OpenNav X Beta 1'; DisplayVersion=$generation.version; Publisher='OpenNav X project';
+    DisplayName=$caption; DisplayVersion=$generation.version; Publisher='OpenNav X project';
     InstallLocation=$Root; DisplayIcon=(Join-Path $directory 'app\opencpn.exe');
     UninstallString=('"'+(Join-Path $directory 'Maintain.exe')+'" /ACTION=Uninstall');
     ModifyPath=('"'+(Join-Path $directory 'Maintain.exe')+'"');
@@ -390,7 +417,25 @@ try {
     # Never trust a registry hint on maintenance paths either.
     if ((Hash $state.stock.path) -cne $state.stock.sha256) { throw 'Original OpenCPN changed; use diagnostics before maintenance.' }
   }
-  if ($Action -eq 'Preflight') { Log 'Preflight passed; no installed files or profiles changed.' }
+  if ($Action -eq 'Preflight') {
+    if ($SummaryPath) {
+      $summary = PlainPath $SummaryPath
+      if (Test-Path -LiteralPath $summary) { throw 'Preflight summary must use a new path.' }
+      $existing = ''; $suggested = 'Install'
+      $selected = @('xnav','legacy','safe')
+      if ($state) {
+        $existing = (ReadGeneration $state.current).version; $suggested = 'Update'
+        if ($state.PSObject.Properties['shortcutModes']) { $selected = @($state.shortcutModes) }
+      }
+      # The wizard reads only this private temporary INI. Never execute its values.
+      [IO.File]::WriteAllLines($summary, @('[Preflight]', ('Stock=' + $stock.path),
+        ('StockVersion=' + $stock.version), ('StockHash=' + $stock.sha256), ('Version=' + $package.version),
+        ('Existing=' + $existing), ('SuggestedAction=' + $suggested), ('Root=' + $Root),
+        ('Recovery=' + (Join-Path $Root 'recovery')),
+        ('LegacyShortcut=' + [int]('legacy' -in $selected)), ('SafeShortcut=' + [int]('safe' -in $selected))), [Text.Encoding]::Unicode)
+    }
+    Log 'Preflight passed; no installed files or profiles changed.'
+  }
   elseif ($Action -eq 'Diagnostics') {
     $result = @{owner=$Owner; state=$state; files=@(); stockVerified=$false}
     if ($state) {
@@ -406,7 +451,7 @@ try {
     Log 'Installation diagnostics written; no navigation coordinates or raw data collected.'
   } else {
     AssertClosed
-    if (-not $state -and $Action -notin @('Install','Update')) { throw 'No installed Alpha generation for this action.' }
+    if (-not $state -and $Action -notin @('Install','Update')) { throw 'No installed OpenNav generation for this action.' }
     if (Test-Path -LiteralPath $Registry) {
       if ((Get-ItemProperty -LiteralPath $Registry).OpenNavOwner -ne $Owner) { throw 'Unknown registry ownership.' }
     }
@@ -420,6 +465,19 @@ try {
     $state = ReadState
     if ($Action -in @('Install','Update','Repair')) {
       if ($Action -eq 'Repair' -and -not $state) { throw 'Repair requires an installed generation.' }
+      $modes = @('xnav','legacy','safe')
+      if ($ShortcutModes) { $modes = @($ShortcutModes.Split(',')) }
+      elseif ($state -and $state.PSObject.Properties['shortcutModes']) { $modes = @($state.shortcutModes) }
+      # Immutable previous generations are the application backup. Capture the
+      # exact before-state durably before staging; never copy/restore user data.
+      $recovery = PlainPath (Join-Path $Root 'recovery')
+      $null = New-Item -ItemType Directory -Path $recovery -Force
+      AtomicJson (Join-Path $recovery ([DateTime]::UtcNow.ToString('yyyyMMdd-HHmmss-fff') + '-' + [guid]::NewGuid().ToString('N') + '.json')) @{
+        schema=1; owner=$Owner; timestamp=[DateTime]::UtcNow.ToString('o'); action=$Action;
+        stock=$stock; before=$state; nextVersion=$package.version; nextCommit=$package.commit;
+        policy='Original OpenCPN and user profile remain untouched; prior application generation retained.'
+      }
+      Log 'Recovery record durable; verified original OpenCPN and previous integration remain available.'
       $id = [guid]::NewGuid().ToString('N'); $stage = Generation $id
       $null = New-Item -ItemType Directory -Path $stage -Force
       ExtractPayload (Join-Path $PackageDirectory 'payload.zip') $stage $package.files
@@ -445,9 +503,9 @@ try {
         $null = PreserveAdditions (Generation $state.current) $stage $old.managedFiles
       }
       SelfTest $stage $package.commit $package.version
-      AtomicJson (Join-Path $stage 'ownership.json') @{owner=$Owner; version=$package.version; commit=$package.commit; packageSha256=$ManifestSha256; files=@(FileRecords $stage); managedFiles=@(FileRecords $maintenance | ForEach-Object { [pscustomobject]@{path=('maintenance/'+$_.path);sha256=$_.sha256} }) + @($package.files) + @([pscustomobject]@{path='Lifecycle.ps1';sha256=(Hash (Join-Path $stage 'Lifecycle.ps1'))}, [pscustomobject]@{path='Maintain.exe';sha256=(Hash (Join-Path $stage 'Maintain.exe'))}, [pscustomobject]@{path='app/OPENNAV_INSTALLED_STOCK';sha256=(Hash $locator)}); importedPlugins=$retained}
+      AtomicJson (Join-Path $stage 'ownership.json') @{owner=$Owner; version=$package.version; commit=$package.commit; packageSha256=$ManifestSha256; shortcutModes=$modes; files=@(FileRecords $stage); managedFiles=@(FileRecords $maintenance | ForEach-Object { [pscustomobject]@{path=('maintenance/'+$_.path);sha256=$_.sha256} }) + @($package.files) + @([pscustomobject]@{path='Lifecycle.ps1';sha256=(Hash (Join-Path $stage 'Lifecycle.ps1'))}, [pscustomobject]@{path='Maintain.exe';sha256=(Hash (Join-Path $stage 'Maintain.exe'))}, [pscustomobject]@{path='app/OPENNAV_INSTALLED_STOCK';sha256=(Hash $locator)}); importedPlugins=$retained}
       $previous = ''; if ($state) { $previous = $state.current }
-      $next = @{owner=$Owner;schema=1;stock=$stock;current=$id;previous=$previous}
+      $next = @{owner=$Owner;schema=1;stock=$stock;current=$id;previous=$previous;shortcutModes=$modes}
       AtomicJson (Join-Path $Root 'transaction.json') @{owner=$Owner;action=$Action;before=$state;after=$next}
       Failure 'before-commit'
       AtomicJson (Join-Path $Root 'state.json') $next
@@ -459,7 +517,7 @@ try {
       $old = ReadGeneration $state.previous
       VerifyFiles (Generation $state.previous) $old.files
       SelfTest (Generation $state.previous) $old.commit $old.version
-      $next = @{owner=$Owner;schema=1;stock=$state.stock;current=$state.previous;previous=''}
+      $next = @{owner=$Owner;schema=1;stock=$state.stock;current=$state.previous;previous='';shortcutModes=$(if ($old.PSObject.Properties['shortcutModes']) { @($old.shortcutModes) } else { @('xnav','legacy','safe') })}
       AtomicJson (Join-Path $Root 'transaction.json') @{owner=$Owner;action=$Action;before=$state;after=$next}
       AtomicJson (Join-Path $Root 'state.json') $next
       PublishShell $next

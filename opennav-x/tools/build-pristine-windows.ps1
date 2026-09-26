@@ -1,9 +1,10 @@
-param([ValidateSet('Win32', 'x64')][string]$Architecture = 'Win32', [switch]$Integration)
+param([ValidateSet('Win32', 'x64')][string]$Architecture = 'Win32', [switch]$Integration, [switch]$Production)
 $ErrorActionPreference = 'Stop'
 Set-StrictMode -Version Latest
 $Root = Split-Path $PSScriptRoot -Parent
 $Source = Join-Path $Root 'upstream/OpenCPN'
-$Variant = if ($Integration) { 'xnav' } else { 'pristine' }
+if ($Production -and -not $Integration) { throw 'Production requires Integration' }
+$Variant = if ($Production) { 'production' } elseif ($Integration) { 'xnav' } else { 'pristine' }
 $Evidence = Join-Path $Root 'evidence/local'
 New-Item -ItemType Directory -Force $Evidence | Out-Null
 Start-Transcript -Path (Join-Path $Evidence "windows-$Variant-$Architecture.log")
@@ -54,7 +55,10 @@ try {
     if (-not $Gettext) { throw 'Poedit gettext tools not found after dependency installation' }
     $env:PATH += ";$Gettext;$Wx\lib\vc14x_dll;$Source\cache\buildwin"
     $OpenNavArgs = @()
-    if ($Integration) { $OpenNavArgs = @("-DOPENNAV_ROOT=$Root", '-DOPENNAV_ENABLE_ROUTE_SCENARIO=ON') }
+    if ($Integration) {
+        $Fixtures = if ($Production) { 'OFF' } else { 'ON' }
+        $OpenNavArgs = @("-DOPENNAV_ROOT=$Root", "-DOPENNAV_ENABLE_ROUTE_SCENARIO=$Fixtures", "-DXNAV_ENABLE_TEST_FIXTURES=$Fixtures")
+    }
     Run cmake (@('-S', $Source, '-B', $Build, '-G', 'Visual Studio 17 2022',
         '-A', $Architecture, '-DCMAKE_POLICY_VERSION_MINIMUM=3.5', '-DCMAKE_BUILD_TYPE=Release',
         "-DwxWidgets_ROOT_DIR=$Wx", "-DwxWidgets_LIB_DIR=$Wx/lib/vc14x_dll",
@@ -65,11 +69,11 @@ try {
     Run cmake @('--build', $Build, '--config', 'Release', '--parallel', '2')
     Run cmake @('--install', $Build, '--config', 'Release')
     Run ctest @('--test-dir', (Join-Path $Build 'test'), '-C', 'Release', '--output-on-failure', '--no-tests=error',
-        '--timeout', '90', '--output-junit', (Join-Path $Evidence 'windows-tests.xml'))
+        '--timeout', '90', '--output-junit', (Join-Path $Evidence "windows-$Variant-tests.xml"))
     Get-FileHash (Join-Path $Build 'Release/opencpn.exe') -Algorithm SHA256 |
-        Format-List | Out-File (Join-Path $Evidence 'windows-executable-sha256.txt')
+        Format-List | Out-File (Join-Path $Evidence "windows-$Variant-executable-sha256.txt")
     Run python @((Join-Path $PSScriptRoot 'verify-upstream.py'))
-    if ($Integration) {
+    if ($Integration -and -not $Production) {
         Run python @((Join-Path $PSScriptRoot 'smoke-modes-windows.py'))
         Run python @((Join-Path $PSScriptRoot 'smoke-navigation.py'))
         Run python @((Join-Path $PSScriptRoot 'smoke-navigation.py'), '--route-fixture')
@@ -83,7 +87,7 @@ try {
         Run python @((Join-Path $PSScriptRoot 'smoke-recovery.py'))
         & (Join-Path $PSScriptRoot 'capture-pristine-windows.ps1') -Variant xnav -Mode legacy -Name '11-legacy-mode'
         & (Join-Path $PSScriptRoot 'capture-pristine-windows.ps1') -Variant xnav -Mode safe-mode -Name '12-safe-mode'
-    } else {
+    } elseif (-not $Production) {
         & (Join-Path $PSScriptRoot 'capture-pristine-windows.ps1')
     }
 } finally { Stop-Transcript }

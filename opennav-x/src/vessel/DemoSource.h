@@ -3,6 +3,7 @@
 #include "vessel/AisState.h"
 
 namespace opennav::vessel {
+// Definitions live in opennav_test_fixtures, never a production runtime library.
 enum class DemoScenario {
   Cruise,
   Stale,
