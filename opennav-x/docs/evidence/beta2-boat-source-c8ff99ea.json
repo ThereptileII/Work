@@ -1,0 +1,16 @@
+{
+  "schema": 1,
+  "scope": "Boat source checkout only; not application acceptance",
+  "commit": "c8ff99eaf448147a17c02d99f3a71d430763a618",
+  "ciRun": "https://github.com/ThereptileII/Work/actions/runs/36275173742",
+  "sourceTree": "d1309541bd37053f862564849f2b93ae3c1aeed2",
+  "trackedSourceBlobsCompared": 528,
+  "blobOrModeDifferences": 0,
+  "nativeSourceMaintenanceGroupsPassed": 16,
+  "sourceCheckoutCreated": true,
+  "sourceUpdateResultSha256": "12103c7c63b1fadf4f7a33c986ce8986d9756b2824887988d2eb8a42dda00721",
+  "applicationChanged": false,
+  "applicationLaunched": false,
+  "hardwareCommands": 0,
+  "privateMachinePathsOmitted": true
+}

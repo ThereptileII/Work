@@ -16,6 +16,8 @@ struct AisState {
   std::vector<AisTarget> targets;
   std::string source;
   Time observed_at{};
+  // Decoder/model availability only. Neither this flag nor the copy timestamp
+  // establishes receiver connectivity or freshness of any target report.
   bool available = false, simulated = false;
 };
 } // namespace opennav::vessel

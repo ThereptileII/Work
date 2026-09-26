@@ -43,17 +43,29 @@ function Get-Target([string]$Workspace) {
   if ((Get-Digest $config.stockExecutable) -cne $supported) { throw 'Unsupported original OpenCPN executable. Stop; no install or launch performed.' }
   return $config
 }
-function Get-Installed {
-  $root=Assert-LocalPath (Join-Path ([Environment]::GetFolderPath('LocalApplicationData')) 'OpenNavXAlpha1')
+function Assert-NoActiveCommissioning([string]$Workspace) {
+  $marker=Assert-LocalPath (Join-Path $Workspace 'commissioning-active.json')
+  # Even an incomplete/invalid record requires inspection. Do not invalidate
+  # quarantined paths or the exact generation needed by the Restore operation.
+  if (Test-Path -LiteralPath $marker) { throw 'Restore the active read-only commissioning transaction before installation or maintenance.' }
+}
+function Read-InstalledIdentity([string]$Root,[ValidateSet('Launch','Repair','Uninstall')][string]$Purpose='Launch') {
+  $root=Assert-LocalPath $Root
   $state=Read-Record (Join-Path $root 'state.json')
-  if ($state.owner -cne 'OpenNavX.Alpha1.SideBySide.1' -or $state.current -cnotmatch '^[a-f0-9]{32}$') { throw 'Unrecognized installed integration ownership.' }
-  $generation=Assert-LocalPath (Join-Path $root ('generations\'+$state.current))
+  if ($state.schema -ne 1 -or $state.owner -cne 'OpenNavX.Alpha1.SideBySide.1' -or $state.current -cnotmatch '^[a-f0-9]{32}$') { throw 'Unrecognized installed integration ownership.' }
+  $generation=Assert-LocalPath (Join-Path (Join-Path $root 'generations') $state.current)
   $ownership=Read-Record (Join-Path $generation 'ownership.json')
   if ($ownership.owner -cne $state.owner) { throw 'Installed generation ownership mismatch.' }
-  $exe=Join-Path $generation 'app\opencpn.exe'
+  $exe=Assert-LocalPath (Join-Path (Join-Path $generation 'app') 'opencpn.exe')
   $record=@($ownership.managedFiles | Where-Object { $_.path -ceq 'app/opencpn.exe' })
-  if ($record.Count -ne 1 -or (Get-Digest $exe) -cne $record[0].sha256) { throw 'Installed executable hash mismatch; use Repair.' }
+  if ($record.Count -ne 1 -or $record[0].sha256 -cnotmatch '^[a-f0-9]{64}$') { throw 'Installed executable ownership is invalid; use the verified original Setup.' }
+  # Only offline Repair/Uninstall may inspect ownership despite a damaged app.
+  # They never execute this file; maintain.ps1 separately verifies Lifecycle.ps1.
+  if ($Purpose -eq 'Launch' -and (-not [IO.File]::Exists($exe) -or (Get-Digest $exe) -cne $record[0].sha256)) { throw 'Installed executable hash mismatch; use Repair.' }
   return [pscustomobject]@{root=$root;state=$state;generation=$generation;ownership=$ownership;executable=$exe}
+}
+function Get-Installed([ValidateSet('Launch','Repair','Uninstall')][string]$Purpose='Launch') {
+  return Read-InstalledIdentity (Join-Path ([Environment]::GetFolderPath('LocalApplicationData')) 'OpenNavXAlpha1') $Purpose
 }
 function New-RunDirectory([string]$Workspace,[string]$Purpose) {
   if ($Purpose -cnotmatch '^[a-z0-9-]+$') { throw 'Invalid run label.' }

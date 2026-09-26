@@ -159,6 +159,16 @@ No unrelated Desktop content is included in feedback documentation.
   actual UI actions remain unperformed. Both restored chart directories and
   the 442,271-byte Windows chart database are present; rendering is still pending.
 
+- Candidate `c8ff99eaf448147a17c02d99f3a71d430763a618`
+  ([CI 36275173742](https://github.com/ThereptileII/Work/actions/runs/36275173742))
+  includes explicit UTF-8 conversion for native degree/temperature captions and
+  readable alert actions. All 528 committed local blobs/modes match the remote
+  tree. Its native maintenance job passes, including 16 new source-checkout
+  groups. The exact source was retrieved into the managed boat workspace without
+  changing or launching the application. Full application qualification remains
+  pending; source retrieval is not deployment acceptance.
+  [Source-only evidence](evidence/beta2-boat-source-c8ff99ea.json).
+
 ## Accepted Beta 1 baseline
 
 **Beta 1 software qualified: all ten CI jobs passed, downloaded release verified, native visual review complete.**

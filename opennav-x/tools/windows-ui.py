@@ -106,12 +106,25 @@ def wait_window(title, pid=None, timeout=60):
     raise RuntimeError(f'Window not found: {title}; visible: {windows(pid)}')
 
 def cycle_light(pid):
-    """Click the button naming the current palette, never a stale 'Light' label."""
-    labels=[]
+    """Cycle the status-bar palette, independent of Display page choices."""
+    matches=[]
     for root,_,_ in windows(pid):
-        labels.extend(t for _,t in children(root) if t in ('Day','Dusk','Night'))
-    assert len(labels)==1, ('Current palette control must be unique', labels)
-    click_text(pid,labels[0])
+        controls=children(root)
+        brands=[h for h,t in controls if t=='OpenNav X']
+        if len(brands)!=1:
+            continue
+        top=GetParent(brands[0])
+        matches.extend((h,t) for h,t in controls
+                       if t in ('Day','Dusk','Night') and GetParent(h)==top)
+    assert len(matches)==1, ('Status-bar palette control must be unique', matches)
+    handle,label=matches[0]
+    assert IsWindowEnabled(handle), ('Status-bar palette control is disabled', label)
+    rect=W.RECT()
+    assert GetClientRect(handle,C.byref(rect)) and rect.right>0 and rect.bottom>0
+    position=(rect.right//2)|((rect.bottom//2)<<16)
+    SendMessageW(handle,0x201,1,position)
+    SendMessageW(handle,0x202,0,position)
+    time.sleep(.4)
 
 def click_text(pid, label):
     deadline = time.monotonic() + 5

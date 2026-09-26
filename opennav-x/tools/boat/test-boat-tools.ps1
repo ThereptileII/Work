@@ -1,17 +1,102 @@
 # Native disposable filesystem tests. Never uses real boat config or hardware.
 [CmdletBinding()]
-param([switch]$IsolatedLocal)
+param([switch]$IsolatedLocal,[switch]$PortableContracts)
 Set-StrictMode -Version Latest
 $ErrorActionPreference='Stop'
-if ([Environment]::OSVersion.Platform -ne 'Win32NT') {throw 'Native Windows is required.'}
-if (-not $IsolatedLocal -and $env:GITHUB_ACTIONS -ne 'true') {throw 'Default mode requires disposable native Windows CI; use -IsolatedLocal explicitly for temporary-file-only local checks.'}
+$native=[Environment]::OSVersion.Platform -eq 'Win32NT'
+if (-not $native -and -not $PortableContracts) {throw 'Native Windows is required unless portable maintenance contracts are explicitly selected.'}
+if ($native -and -not $IsolatedLocal -and $env:GITHUB_ACTIONS -ne 'true') {throw 'Default mode requires disposable native Windows CI; use -IsolatedLocal explicitly for temporary-file-only local checks.'}
 if ($IsolatedLocal -and @(Get-Process -Name opencpn -ErrorAction SilentlyContinue).Count) {throw 'Close OpenCPN/XNav normally before isolated local filesystem checks.'}
 $testEnvironment=if ($IsolatedLocal) {'native-windows-isolated-local-filesystem'} else {'native-windows-ci-filesystem'}
 . (Join-Path $PSScriptRoot 'Common.ps1')
 $root=Join-Path ([IO.Path]::GetTempPath()) ('OpenNav boat tools '+[guid]::NewGuid().ToString('N'))
 $null=New-Item -ItemType Directory -Path $root
+if (-not $native) {
+  function Assert-LocalPath([string]$Path) {
+    $full=[IO.Path]::GetFullPath($Path)
+    if ($full -ne $root -and -not $full.StartsWith($root+'/',[StringComparison]::Ordinal)) { throw 'Test path escaped its disposable root.' }
+    $walk=$full
+    while ($walk -ne $root) {
+      if ((Test-Path -LiteralPath $walk) -and ((Get-Item -LiteralPath $walk -Force).Attributes -band [IO.FileAttributes]::ReparsePoint)) { throw 'Redirected test path refused.' }
+      $walk=[IO.Path]::GetDirectoryName($walk)
+    }
+    return $full
+  }
+}
 $checks=New-Object 'Collections.Generic.List[string]'
 try {
+  $ownedRoot=Join-Path $root 'maintenance-fixture';$id='a'*32
+  $generation=Join-Path (Join-Path $ownedRoot 'generations') $id
+  $null=New-Item -ItemType Directory -Path (Join-Path $generation 'app') -Force
+  $exe=Join-Path (Join-Path $generation 'app') 'opencpn.exe'
+  [IO.File]::WriteAllBytes($exe,[byte[]]@(1,2,3,4));$exeHash=Get-Digest $exe
+  $statePath=Join-Path $ownedRoot 'state.json';$ownershipPath=Join-Path $generation 'ownership.json'
+  $owner='OpenNavX.Alpha1.SideBySide.1'
+  Write-Record $statePath @{schema=1;owner=$owner;current=$id;previous=''}
+  Write-Record $ownershipPath @{owner=$owner;managedFiles=@(@{path='app/opencpn.exe';sha256=$exeHash})}
+  $stateBytes=[IO.File]::ReadAllBytes($statePath);$ownershipBytes=[IO.File]::ReadAllBytes($ownershipPath)
+  $identity=Read-InstalledIdentity $ownedRoot
+  if ($identity.generation -ine $generation -or $identity.executable -ine $exe) {throw 'Exact generation identity was not preserved.'}
+  $checks.Add('Installed identity resolves one owned generation and verifies its exact executable by default')
+  foreach ($missing in @($false,$true)) {
+    if ($missing) {Remove-Item -LiteralPath $exe} else {[IO.File]::WriteAllText($exe,'corrupt owned executable; never launched')}
+    $rejected=$false;try {$null=Read-InstalledIdentity $ownedRoot} catch {$rejected=$true}
+    if (-not $rejected) {throw 'Damaged executable accepted by the normal launch identity path.'}
+    foreach ($spelling in @('launch','LAUNCH')) {
+      $rejected=$false;try {$null=Read-InstalledIdentity $ownedRoot $spelling} catch {$rejected=$true}
+      if (-not $rejected) {throw 'Launch-purpose casing bypassed executable verification.'}
+    }
+    foreach ($purpose in @('Repair','Uninstall')) {
+      $result=Read-InstalledIdentity $ownedRoot $purpose
+      if ($result.generation -ine $generation -or $result.executable -ine $exe) {throw 'Maintenance changed damaged executable identity.'}
+    }
+    if ($missing -ne (-not [IO.File]::Exists($exe))) {throw 'Maintenance identity inspection changed executable presence.'}
+    if (-not $missing -and [IO.File]::ReadAllText($exe) -cne 'corrupt owned executable; never launched') {throw 'Inspection changed damaged executable bytes.'}
+    $checks.Add($(if ($missing) {'Missing owned executable permits offline Repair/Uninstall identity inspection but never normal launch'} else {'Corrupt owned executable permits offline Repair/Uninstall identity inspection while preserving damaged bytes and blocking launch'}))
+  }
+  [IO.File]::WriteAllBytes($exe,[byte[]]@(1,2,3,4))
+  foreach ($purpose in @('Update','Rollback','Diagnostics','unknown')) {
+    $rejected=$false;try {$null=Read-InstalledIdentity $ownedRoot $purpose} catch {$rejected=$true}
+    if (-not $rejected) {throw 'Executable exception broadened beyond Repair/Uninstall.'}
+  }
+  foreach ($purpose in @('Launch','Repair','Uninstall')) {
+    [IO.File]::WriteAllText($statePath,'{"schema":1,"owner":"foreign","current":"'+$id+'"}')
+    $rejected=$false;try {$null=Read-InstalledIdentity $ownedRoot $purpose} catch {$rejected=$true}
+    if (-not $rejected) {throw 'Foreign generation ownership accepted.'}
+    [IO.File]::WriteAllBytes($statePath,$stateBytes)
+    [IO.File]::WriteAllText($ownershipPath,(@{owner=$owner;managedFiles=@(@{path='app/opencpn.exe';sha256='bad'})} | ConvertTo-Json -Depth 5))
+    $rejected=$false;try {$null=Read-InstalledIdentity $ownedRoot $purpose} catch {$rejected=$true}
+    if (-not $rejected) {throw 'Invalid executable ownership accepted for maintenance.'}
+    [IO.File]::WriteAllBytes($ownershipPath,$ownershipBytes)
+  }
+  $checks.Add('Maintenance exceptions retain ownership/hash-record checks and cannot be selected by unrelated actions')
+  $maintenanceWorkspace=Join-Path $root 'active-maintenance-fixture';$null=New-Item -ItemType Directory -Path $maintenanceWorkspace
+  Assert-NoActiveCommissioning $maintenanceWorkspace
+  $active=Join-Path $maintenanceWorkspace 'commissioning-active.json'
+  [IO.File]::WriteAllText($active,'incomplete active record still blocks maintenance');$activeHash=Get-Digest $active
+  $rejected=$false;try {Assert-NoActiveCommissioning $maintenanceWorkspace} catch {$rejected=$_.Exception.Message -like 'Restore the active read-only commissioning*'}
+  if (-not $rejected -or (Get-Digest $active) -cne $activeHash) {throw 'Active/incomplete commissioning ownership was ignored or modified.'}
+  $checks.Add('Active or incomplete commissioning marker blocks maintenance until deliberate restoration without changing its evidence')
+  if ($native) {
+    foreach ($action in @('Install','Update','Repair')) {
+      $rejected=$false
+      try {$null=& (Join-Path $PSScriptRoot 'install.ps1') -Workspace $maintenanceWorkspace -Setup (Join-Path $root 'never-execute.exe') -Sha256 ('0'*64) -ExpectedCommit ('a'*40) -Action $action}
+      catch {$rejected=$_.Exception.Message -like 'Restore the active read-only commissioning*'}
+      if (-not $rejected) {throw 'Setup wrapper did not reject active commissioning before target/setup access.'}
+    }
+    foreach ($action in @('Repair','Rollback','Uninstall')) {
+      $rejected=$false
+      try {$null=& (Join-Path $PSScriptRoot 'maintain.ps1') -Workspace $maintenanceWorkspace -Action $action}
+      catch {$rejected=$_.Exception.Message -like 'Restore the active read-only commissioning*'}
+      if (-not $rejected) {throw 'Maintenance wrapper did not reject active commissioning before installed application access.'}
+    }
+    if ((Get-Digest $active) -cne $activeHash -or @(Get-ChildItem -LiteralPath $maintenanceWorkspace -Force).Count -ne 1) {throw 'Rejected maintenance created or modified workspace files.'}
+    $checks.Add('All six mutating boat setup/maintenance entrypoints refuse active commissioning before target access, process launch or workspace writes')
+  }
+  if (-not $native) {
+    [pscustomobject]@{status='passed';environment='linux-portable-maintenance-contracts';scope='Unique temporary files only; no application, profile, registry or hardware access';checks=@($checks);count=$checks.Count} | ConvertTo-Json -Depth 5
+    return
+  }
   $stock=Join-Path $root 'stock';$profile=Join-Path $root 'profile';$workspace=Join-Path $root 'workspace'
   $null=New-Item -ItemType Directory -Path $stock,$profile
   [IO.File]::WriteAllBytes((Join-Path $stock 'opencpn.exe'),[byte[]]@(1,2,3,4))

@@ -2,6 +2,7 @@
 #include "ui/Sheet.h"
 #include "integration/BuildFeatures.h"
 #include "vessel/DisplayItems.h"
+#include "vessel/AisHealth.h"
 #include <algorithm>
 #include <cmath>
 #include <filesystem>
@@ -269,8 +270,7 @@ void ProductPanel::Sources() {
       return status(vessel::Field(s.vessel, q), s.now);
     }, [this, q = entry.second] { source_quantity_ = q; ShowPage(ProductPage::SourceDetail, mode_); });
   StatusAction("AIS", [](const auto &s) {
-    return wxString(s.ais.available && s.now >= s.ais.observed_at &&
-          s.now - s.ais.observed_at < std::chrono::seconds(5) ? "Connected" : "No current data");
+    return W(vessel::AisReportHealthName(vessel::AssessAisReports(s.ais, s.now)));
   }, [this] { ShowPage(ProductPage::Ais, mode_); });
   EndActions();
   Text("Select a sensor for its value, source and last update. Connection changes apply without restarting XNav.");

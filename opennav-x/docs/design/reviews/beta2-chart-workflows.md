@@ -42,3 +42,17 @@ Reviewed `flow-05-route-name-linux.png` now shows all three draft labels in full
 editing options. The dark naming sheets and chart card remain unclipped at
 1280×800. Native Windows, non-default DPI and boat-display review must still
 qualify these replacement screens; this Linux record does not claim those gates.
+
+## Outstanding source-audit finding — route detail lifecycle
+
+The selected `ProductPanel::route_` copy is refreshed on selection and successful
+explicit actions, but `ProductPanel::Update` does not refresh it after normal
+OpenCPN navigation advances or completes a route. An already-open Route detail
+can retain the **Active passage** caption and **Stop navigation** action after
+deactivation, or keep editing disabled until the user reopens the route.
+Relevant boundaries are `ProductPanel.cpp` (`Update`, `RouteActions`, `Result`).
+Integration mutations independently revalidate current OpenCPN state; this
+finding concerns stale workflow presentation, not a newly identified actuator
+output path. It remains open for correction and deterministic route-completion
+interaction coverage after the first boat artifact. This is not an accepted
+deferral or a claim that the workflow has passed boat review.

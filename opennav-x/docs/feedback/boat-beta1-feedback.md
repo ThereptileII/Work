@@ -53,6 +53,11 @@ No item is marked accepted on the boat yet. Current implementation/evidence:
   pinned decoder's shifted UTC-style ticks as Unix timestamps, aging fresh
   UTC+2 targets by two hours. The fix preserves elapsed upstream age and passes
   native-wx/unit and real loopback tests; actual boat reception remains open.
+  A further source audit found Sensors claiming AIS was connected whenever the
+  decoder existed. The row now describes actual target report health instead:
+  no targets, current, stale/lost, or unavailable. Fresh model copies cannot
+  refresh report age. Focused portable tests pass; exact-candidate native UI
+  and boat receiver evidence remain required.
 
 Every closure must identify the exact native candidate and actual boat evidence.
 No hardware result is inferred from simulator tests or earlier acceptance.

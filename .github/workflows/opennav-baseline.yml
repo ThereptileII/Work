@@ -71,6 +71,9 @@ jobs:
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
           & "$env:WINDIR/SysWOW64/WindowsPowerShell/v1.0/powershell.exe" -NoProfile -File opennav-x/tools/test-installer-filesystem.ps1
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+      - name: Portable maintenance refusal and recovery identity contracts
+        if: runner.os == 'Linux'
+        run: pwsh -NoProfile -File opennav-x/tools/boat/test-boat-tools.ps1 -PortableContracts
       - name: Configure Linux contracts
         if: runner.os == 'Linux'
         run: cmake -S opennav-x -B opennav-x/build/contracts -DOPENNAV_ST4000_ORACLE="${{ github.workspace }}/opennav-x/build/st4000-firmware" -DOPENNAV_BOAT_ORACLE="${{ github.workspace }}/opennav-x/build/boat-firmware/Nissan_ev_to_NMEA_and_wifi"

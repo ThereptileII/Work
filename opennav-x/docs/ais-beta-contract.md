@@ -23,6 +23,24 @@ alarm acknowledgement remains OpenCPN-owned: XNav alert acknowledgement affects
 only the presentation of a condition, and an empty AIS list is not proof that
 an AIS receiver is healthy or failed.
 
+The Sensors AIS row describes **report health**, not transport connectivity.
+An available OpenCPN decoder with an empty target set shows **No targets
+received**. At least one usable target position report shows **Targets current**;
+the existing report thresholds (15 seconds aging, 60 seconds stale) still apply.
+Retained expired coordinates show **Targets stale**, upstream lost targets show
+**Targets lost**, and invalid/future/incoherent target positions remain
+unavailable. Mixed traffic can have current and stale targets; this row reports
+current when at least one usable report exists, while individual targets retain
+their own state. The model-copy timestamp is never evidence of reception and
+cannot renew a position report. No receiver connection or fault is inferred
+from an empty list.
+
+`ais_report_health` covers an absent/empty decoder, current and aging reports,
+staleness at the report threshold despite fresh copy timestamps, newly received
+recovery, target removal/loss, mixed-age traffic, invalid/future/incoherent
+positions, and the bounded target count. This is portable contract coverage;
+native Sensors rendering and real receiver reception remain separate gates.
+
 `ais_selection_lifetime` covers retained copies, removal/loss/age, duplicate
 identity, invalid coordinates, antimeridian coordinates, future/incoherent and
 out-of-order observations, and Demo isolation. `smoke-navigation.py --objects`

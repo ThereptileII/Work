@@ -7,6 +7,7 @@ param(
   [ValidateSet('Install','Update','Repair')][string]$Action='Install'
 )
 . (Join-Path $PSScriptRoot 'Common.ps1')
+Assert-NoActiveCommissioning $Workspace
 $config=Get-Target $Workspace
 $setup=Assert-LocalPath $Setup
 if ((Get-Digest $setup) -cne $Sha256) { throw 'Setup hash differs from accepted CI release evidence.' }
@@ -23,6 +24,7 @@ $directory=New-RunDirectory $Workspace $Action.ToLowerInvariant();$report=Join-P
 $start=New-Object Diagnostics.ProcessStartInfo
 $start.FileName=$setup;$start.UseShellExecute=$false
 $start.Arguments='/S /ACTION='+$Action+' /OPENCPN="'+$config.stockExecutable+'" /REPORT="'+$report+'"'
+Assert-NoActiveCommissioning $Workspace
 $process=[Diagnostics.Process]::Start($start)
 try {
   if (-not $process.WaitForExit(240000)) { throw 'Setup is still running; inspect desktop/logs without force termination.' }
