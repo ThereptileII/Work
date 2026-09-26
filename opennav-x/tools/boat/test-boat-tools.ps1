@@ -1,9 +1,12 @@
-# Native disposable filesystem tests. Does not use real boat config or hardware.
+# Native disposable filesystem tests. Never uses real boat config or hardware.
 [CmdletBinding()]
-param()
+param([switch]$IsolatedLocal)
 Set-StrictMode -Version Latest
 $ErrorActionPreference='Stop'
-if ($env:GITHUB_ACTIONS -ne 'true' -or [Environment]::OSVersion.Platform -ne 'Win32NT') {throw 'Run only on disposable native Windows CI.'}
+if ([Environment]::OSVersion.Platform -ne 'Win32NT') {throw 'Native Windows is required.'}
+if (-not $IsolatedLocal -and $env:GITHUB_ACTIONS -ne 'true') {throw 'Default mode requires disposable native Windows CI; use -IsolatedLocal explicitly for temporary-file-only local checks.'}
+if ($IsolatedLocal -and @(Get-Process -Name opencpn -ErrorAction SilentlyContinue).Count) {throw 'Close OpenCPN/XNav normally before isolated local filesystem checks.'}
+$testEnvironment=if ($IsolatedLocal) {'native-windows-isolated-local-filesystem'} else {'native-windows-ci-filesystem'}
 . (Join-Path $PSScriptRoot 'Common.ps1')
 $root=Join-Path ([IO.Path]::GetTempPath()) ('OpenNav boat tools '+[guid]::NewGuid().ToString('N'))
 $null=New-Item -ItemType Directory -Path $root
@@ -103,7 +106,7 @@ try {
   $checks.Add('Portable extraction refuses traversal, ADS, drive paths, duplicate separators and Windows reserved names')
   Add-Type -AssemblyName System.IO.Compression
   Add-Type -AssemblyName System.IO.Compression.FileSystem
-  foreach ($archiveNames in @(@('OpenNavX-Beta2-Portable-Recovery/../outside'),@('wrong-root/file'),@('OpenNavX-Beta2-Portable-Recovery/app/A','OpenNavX-Beta2-Portable-Recovery/app/a'))) {
+  foreach ($archiveNames in @(@('OpenNavX-Beta2-Portable-Recovery/../outside'),@('wrong-root/file'),@('OpenNavX-Beta2-Portable-Recovery\app\file'),@('OpenNavX-Beta2-Portable-Recovery/app/A','OpenNavX-Beta2-Portable-Recovery/app/a'))) {
     $zipPath=Join-Path $root ([guid]::NewGuid().ToString('N')+'.zip')
     $zip=[IO.Compression.ZipFile]::Open($zipPath,[IO.Compression.ZipArchiveMode]::Create)
     try {foreach ($name in $archiveNames) {$null=$zip.CreateEntry($name)}} finally {$zip.Dispose()}
@@ -137,7 +140,17 @@ try {
   $hash=SaveFixtureManifest
   $null=Assert-ReviewPackage $package $hash $commit $true;Assert-ReviewProfile $reviewProfile
   $validZip=Join-Path $root 'accepted-recovery.zip'
-  [IO.Compression.ZipFile]::CreateFromDirectory($package,$validZip,[IO.Compression.CompressionLevel]::Optimal,$true)
+  # Windows PowerShell 5.1's Framework ZipFile.CreateFromDirectory can emit
+  # backslash-separated entries. Production Python packaging emits ZIP '/' paths.
+  # Build that exact format explicitly; retain rejection of backslash entry names.
+  $archive=[IO.Compression.ZipFile]::Open($validZip,[IO.Compression.ZipArchiveMode]::Create)
+  try {
+    foreach ($file in @(Get-ReviewFiles $package)) {
+      $relative='OpenNavX-Beta2-Portable-Recovery/'+$file.FullName.Substring($package.Length+1).Replace('\','/')
+      Assert-ReviewRelativePath $relative
+      $null=[IO.Compression.ZipFileExtensions]::CreateEntryFromFile($archive,$file.FullName,$relative,[IO.Compression.CompressionLevel]::Optimal)
+    }
+  } finally {$archive.Dispose()}
   $extracted=Expand-ReviewArchive $validZip (Join-Path $root 'accepted-extraction')
   $null=Assert-ReviewPackage $extracted $hash $commit $true
   [IO.File]::WriteAllText((Join-Path $package 'app/extra.dll'),'not in accepted package')
@@ -199,5 +212,51 @@ try {
   $rejected=$false;try {$null=& (Join-Path $PSScriptRoot 'retire-download.ps1') -Workspace $workspace -File $unrelated -ExpectedSha256 (Get-Digest $unrelated)} catch {$rejected=$true}
   if (-not $rejected -or -not [IO.File]::Exists($unrelated)) {throw 'Unrelated download was retired.'}
   $checks.Add('Obsolete download archive preserves exact bytes and durable locator; wrong hash and unrelated names cannot move')
-  [pscustomobject]@{status='passed';checks=@($checks);count=$checks.Count} | ConvertTo-Json -Depth 5
+  # Load only filesystem guard functions, never the real maintenance entry point.
+  $tokens=$null;$parseErrors=$null
+  $ast=[Management.Automation.Language.Parser]::ParseFile((Join-Path $PSScriptRoot 'upgrade-stock.ps1'),[ref]$tokens,[ref]$parseErrors)
+  if ($parseErrors.Count) {throw 'Stock upgrade script failed native parser.'}
+  foreach ($name in @('Upgrade-Relative','Get-UpgradeFiles','Assert-UpgradeFiles','Get-UnbundledPluginFiles','Restore-UpgradePlugins','Read-UpgradeRecord','Assert-UpgradeClosed')) {
+    $function=$ast.Find({param($node) $node -is [Management.Automation.Language.FunctionDefinitionAst] -and $node.Name -eq $name},$true)
+    if (-not $function) {throw ('Missing stock guard function: '+$name)}
+    . ([scriptblock]::Create($function.Extent.Text))
+  }
+  foreach ($relative in @('../bad','C:\outside','\outside','plugins\..\bad','plugins\NUL.txt','plugins\bad.','plugins\\bad')) {
+    $rejected=$false;try {$null=Upgrade-Relative $root $relative} catch {$rejected=$true}
+    if (-not $rejected) {throw 'Unsafe stock recovery relative path accepted.'}
+  }
+  $checks.Add('Stock upgrade recovery rejects absolute, traversal, device and ambiguous paths')
+  $upgradeProfile=Join-Path $root 'upgrade-profile';$null=New-Item -ItemType Directory $upgradeProfile
+  [IO.File]::WriteAllBytes((Join-Path $upgradeProfile 'opencpn.ini'),(New-Object byte[] 21380))
+  [IO.File]::WriteAllText((Join-Path $upgradeProfile '~RF-valid.tmp'),"[Settings]`nSentinel=unchanged")
+  $upgradeBefore=@(Get-UpgradeFiles $upgradeProfile);Assert-UpgradeFiles $upgradeProfile $upgradeBefore
+  [IO.File]::AppendAllText((Join-Path $upgradeProfile '~RF-valid.tmp'),'changed')
+  $rejected=$false;try {Assert-UpgradeFiles $upgradeProfile $upgradeBefore} catch {$rejected=$true}
+  if (-not $rejected) {throw 'Changed profile sibling accepted after upgrade.'}
+  if ((Get-Item -LiteralPath (Join-Path $upgradeProfile 'opencpn.ini')).Length -ne 21380) {throw 'Stock guard rewrote the damaged original profile.'}
+  $checks.Add('Stock upgrade inventory preserves zero-filled INI and verifies every temporary sibling byte-for-byte')
+  $upgradeBackup=Join-Path $root 'upgrade-backup';$upgradeApp=Join-Path $root 'upgrade-app'
+  $null=New-Item -ItemType Directory (Join-Path $upgradeBackup 'plugins\rtlsdr_pi\bin'),$upgradeApp -Force
+  [IO.File]::WriteAllText((Join-Path $upgradeBackup 'plugins\rtlsdr_pi.dll'),'original third-party plugin')
+  [IO.File]::WriteAllText((Join-Path $upgradeBackup 'plugins\rtlsdr_pi\bin\receiver.dll'),'original ancillary dependency')
+  [IO.File]::WriteAllText((Join-Path $upgradeBackup 'plugins\dashboard_pi.dll'),'old bundled version')
+  [IO.File]::WriteAllText((Join-Path $upgradeBackup 'Uninstall rtlsdr_pi.exe'),'original root plugin uninstaller; never executed')
+  $upgradeFiles=@(Get-UpgradeFiles $upgradeBackup)
+  if (@(Get-UnbundledPluginFiles $upgradeFiles).Count -ne 3) {throw 'Unbundled plugin ancillary/root-uninstaller classification failed.'}
+  $rejected=$false;try {$null=Restore-UpgradePlugins $upgradeApp $upgradeBackup $upgradeFiles $false} catch {$rejected=$true}
+  if (-not $rejected -or @(Get-UpgradeFiles $upgradeApp).Count) {throw 'Missing plugin silently accepted/restored without explicit flag.'}
+  $restored=@(Restore-UpgradePlugins $upgradeApp $upgradeBackup $upgradeFiles $true)
+  if ($restored.Count -ne 3 -or @(Get-UpgradeFiles $upgradeApp).Count -ne 3) {throw 'Third-party plugin/dependencies/root-uninstaller not restored exactly.'}
+  $null=Restore-UpgradePlugins $upgradeApp $upgradeBackup $upgradeFiles $false
+  [IO.File]::WriteAllText((Join-Path $upgradeApp 'plugins\rtlsdr_pi.dll'),'different current file')
+  $rejected=$false;try {$null=Restore-UpgradePlugins $upgradeApp $upgradeBackup $upgradeFiles $true} catch {$rejected=$true}
+  if (-not $rejected -or [IO.File]::ReadAllText((Join-Path $upgradeApp 'plugins\rtlsdr_pi.dll')) -cne 'different current file') {throw 'Changed plugin overwritten by recovery.'}
+  $checks.Add('Stock upgrade recovery preserves complete third-party plugin trees and root uninstaller, restores only missing exact files explicitly and refuses overwrites')
+  $upgradeRecord=Join-Path $root 'stock-preflight.json';Write-Record $upgradeRecord @{status='prepared';sentinel=1}
+  $upgradeHash=Get-Digest $upgradeRecord;$null=Read-UpgradeRecord $upgradeRecord $upgradeHash
+  [IO.File]::AppendAllText($upgradeRecord,' ')
+  $rejected=$false;try {$null=Read-UpgradeRecord $upgradeRecord $upgradeHash} catch {$rejected=$true}
+  if (-not $rejected) {throw 'Changed stock maintenance record accepted.'}
+  $checks.Add('Stock preflight/wizard evidence requires its exact recorded SHA-256')
+  [pscustomobject]@{status='passed';environment=$testEnvironment;scope='Unique temporary files only; no application, real profile, registry, service or hardware operations';checks=@($checks);count=$checks.Count} | ConvertTo-Json -Depth 5
 } finally {Remove-Item -LiteralPath $root -Recurse -Force}

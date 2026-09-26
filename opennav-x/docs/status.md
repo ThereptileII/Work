@@ -85,6 +85,24 @@ No unrelated Desktop content is included in feedback documentation.
   were reviewed in [the first native review](design/reviews/beta2-native-a0af22c.md).
   Complete Windows, packaging and boat gates remain pending. No Beta 2 release
   acceptance is implied.
+- Follow-up source `ee720380ac72b7459f5ff0538acecb9c2b650180`
+  ([CI 36269508823](https://github.com/ThereptileII/Work/actions/runs/36269508823))
+  matches all 493 local tracked source blobs and file modes. Its Windows boat-tool
+  fixture exposed .NET Framework ZIP backslash entries; the fixture now emits
+  the same slash paths as real Python packaging while rejection of unsafe ZIP
+  paths remains tested. The correction passes 21 isolated native Windows checks.
+  Linux build/CTest and navigation, recording, route, marine, Signal K and pilot
+  transport gates pass, but the object workflow stopped at compact waypoint
+  Details. This candidate is not qualified; the interaction failure is under
+  investigation before the next full run.
+- The authorized official-stock upgrade uses a separate reviewed visible-wizard
+  driver, not the OpenNav installer or silent replacement. Native PS5.1 passes
+  85 pure policy/helper checks. The real preflight correctly stopped on an
+  ambiguous registration: the bare OpenCPN key is the RTL-SDR plugin, whose full
+  registry values and root-level uninstaller must also survive. No installer
+  has run. Temporary-file profile-recovery tests found Windows ACL inheritance
+  metadata canonicalization; the real damaged INI remains untouched pending
+  that independent correction and native test.
 
 ## Accepted Beta 1 baseline
 

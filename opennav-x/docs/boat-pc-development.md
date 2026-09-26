@@ -126,6 +126,15 @@ limited display test; they do not replace later real-boat commissioning.
 
 ## Maintenance and old versions
 
+The separately authorized official 5.12.2 → 5.12.4 prerequisite upgrade follows
+[the exact source/hash and visible-wizard procedure](installer/stock-upgrade-5.12.2.md).
+`upgrade-stock.ps1` performs preflight and postflight only; it does not silently
+install or launch an application. It verifies all cold-copy/current file hashes
+and preserves the real profile verbatim, including pre-existing corruption.
+Missing unbundled plugin files may be restored explicitly from verified backup;
+changed files are never overwritten. This does not relax the normal installer
+allowlist or the subsequent read-only profile/plugin launch audit.
+
 `repair.ps1`, `rollback.ps1` and `uninstall.ps1` execute the verified installed
 transaction engine and recheck the untouched original executable. An unknown
 modified generation is preserved for inspection. Recovery does not restore old
@@ -158,3 +167,9 @@ refusal, atomic evidence publication, journaled portable retirement with
 private user-data preservation, strict audit booleans, corrupt/malformed profile
 rejection, connection directions and complete plugin inventories. These tests do not substitute for actual
 boat screenshots, connections, installed lifecycle or physical touch validation.
+Its default requires native Windows CI. An explicit `-IsolatedLocal` invocation
+allows the same temporary-file-only checks on native Windows with every OpenCPN
+process closed, and labels the output as local filesystem evidence. It never
+executes the dummy application/plugin files or reads/writes a real profile,
+registry, service or hardware connection. Do not impersonate CI by setting an
+environment variable on the boat.

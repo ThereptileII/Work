@@ -36,6 +36,23 @@ Bare-Xvfb owned-window stacking is recorded explicitly by the object harness.
 The ordinary chart-position user-flow gate additionally passes physical pointer
 input without a manual raise after avoiding redundant Navigation layout.
 
+The Linux `ee720380` CI object gate stopped at compact waypoint Details. Its
+stale-position capture shows the correctly placed card and visible Details
+button; the final diagnostics show Navigation and no card controls. This is
+consistent with an outside-click dismissal, but the exact event sequence was
+not recorded and the unmodified test passed on a local repeat. It is not
+evidence that the Details callback itself failed.
+
+The Linux object harness now settles pointer motion before the already
+documented bare-Xvfb ownership adjustment, asks XQueryPointer to verify the
+actual context window under the pointer, and sends one separated press/release.
+Two consecutive native hit-target observations are required before pressing.
+It records these observations and still requires the full Details page and
+chart return; there is no callback injection or action retry. Windows input is
+unchanged. The revised local gate passes all 17 object groups and eleven
+captures, including both waypoint and AIS Details. Exact-commit CI confirmation
+remains required; no production UI change was inferred from this one failure.
+
 Remaining review: Windows typography, modeless outside/escape behavior and
 100/125/150% layout, then supported-binary real boat-display captures. Do not
 close these gates using Linux screenshots.

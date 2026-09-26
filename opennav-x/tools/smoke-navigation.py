@@ -324,6 +324,33 @@ try:
             if cards:
                 subprocess.run(['xdotool','windowraise',cards[0],'windowfocus',cards[0]],env=env,check=True)
                 report['linux_context_stacking']='Bare Xvfb has no WM; explicit raise/focus models transient ownership, native pointer events remain real'
+                return int(cards[0])
+            return None
+        def linux_pointer_top_level():
+            # Ask the X server which actual top-level window is under the
+            # pointer. wx geometry alone cannot prove hit testing/stacking on
+            # bare Xvfb, especially after GTK processes queued motion/focus.
+            import ctypes
+            import ctypes.util
+            x11=ctypes.CDLL(ctypes.util.find_library('X11'))
+            x11.XOpenDisplay.argtypes=[ctypes.c_char_p];x11.XOpenDisplay.restype=ctypes.c_void_p
+            x11.XDefaultRootWindow.argtypes=[ctypes.c_void_p];x11.XDefaultRootWindow.restype=ctypes.c_ulong
+            x11.XQueryPointer.argtypes=[ctypes.c_void_p,ctypes.c_ulong,
+                ctypes.POINTER(ctypes.c_ulong),ctypes.POINTER(ctypes.c_ulong),
+                ctypes.POINTER(ctypes.c_int),ctypes.POINTER(ctypes.c_int),
+                ctypes.POINTER(ctypes.c_int),ctypes.POINTER(ctypes.c_int),ctypes.POINTER(ctypes.c_uint)]
+            x11.XQueryPointer.restype=ctypes.c_int
+            x11.XCloseDisplay.argtypes=[ctypes.c_void_p]
+            display=x11.XOpenDisplay(env['DISPLAY'].encode())
+            assert display,'Unable to inspect native X11 pointer target'
+            try:
+                root_window=ctypes.c_ulong();child=ctypes.c_ulong()
+                rx=ctypes.c_int();ry=ctypes.c_int();wx=ctypes.c_int();wy=ctypes.c_int();mask=ctypes.c_uint()
+                assert x11.XQueryPointer(display,x11.XDefaultRootWindow(display),
+                    ctypes.byref(root_window),ctypes.byref(child),ctypes.byref(rx),ctypes.byref(ry),
+                    ctypes.byref(wx),ctypes.byref(wy),ctypes.byref(mask)),'Pointer left the test display'
+                return {'window':child.value,'x':rx.value,'y':ry.value,'buttons':mask.value}
+            finally:x11.XCloseDisplay(display)
         def click_object(label):
             latest=wait_object(lambda s:any(c['enabled'] for c in context_controls(s,label)),
                                'Visible enabled action '+label)
@@ -332,11 +359,32 @@ try:
             assert len(unique)==1,('Ambiguous context action',label,choices)
             choice=next(iter(unique.values()))
             x,y=choice['x']+choice['width']//2,choice['y']+choice['height']//2
-            focus_context()
             if windows:
                 assert ui.SetCursorPos(x,y)
                 ui.MouseEvent(2,0,0,0,0);time.sleep(.05);ui.MouseEvent(4,0,0,0,0)
-            else:subprocess.run(['xdotool','mousemove',str(x),str(y),'click','1'],env=env,check=True)
+            else:
+                # Motion can queue GTK focus/raise work. Settle that first,
+                # then model transient ownership and verify the native target
+                # before sending exactly one physical press/release sequence.
+                subprocess.run(['xdotool','mousemove','--sync',str(x),str(y)],env=env,check=True)
+                time.sleep(.15)
+                card=focus_context()
+                pointer=linux_pointer_top_level()
+                if latest['ui_page']=='Navigation':
+                    assert card is not None,('Visible context action has no native owned window',label)
+                if card:
+                    deadline=time.monotonic()+2;stable=0
+                    while time.monotonic()<deadline:
+                        pointer=linux_pointer_top_level()
+                        stable=stable+1 if pointer['window']==card and pointer['x']==x and pointer['y']==y else 0
+                        if stable==2:break
+                        focus_context();time.sleep(.08)
+                    assert stable==2,('Native context hit target did not settle',label,card,pointer)
+                assert not pointer['buttons'] & (256|512|1024),'Unexpected held mouse button'
+                report.setdefault('native_pointer_checks',[]).append({'action':label,'expected_context':card,'pointer':pointer})
+                subprocess.run(['xdotool','mousedown','1'],env=env,check=True)
+                try:time.sleep(.06)
+                finally:subprocess.run(['xdotool','mouseup','1'],env=env,check=True)
         def chart_bounded_context(labels):
             latest=wait_object(lambda s:all(context_controls(s,label) for label in labels),
                                'Context actions visible over chart')
