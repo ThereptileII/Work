@@ -4,7 +4,7 @@
 param([string]$Workspace='C:\XNav',[ValidateRange(5,60)][int]$ObserveSeconds=15)
 . (Join-Path $PSScriptRoot 'Common.ps1')
 $config=Get-Target $Workspace;$installed=Get-Installed
-Assert-ReadOnlyAudit $config $installed
+$null=Assert-ReadOnlyAudit $config $installed $Workspace
 $directory=New-RunDirectory $Workspace 'smoke'
 $record=@{status='running';commit=$installed.ownership.commit;startedUtc=[DateTime]::UtcNow.ToString('o');actuatorCommandsAttempted=0;syntheticInputs=0;chartReview='pending native screenshot review';closedCleanly=$false}
 $running=$null

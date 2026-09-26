@@ -33,7 +33,10 @@ A version string cannot override the installer manifest.
    state. Record a short-lived read-only audit of the exact profile INI, plugin
    files and installed commit. Outputs from normal OpenCPN/plugins can exist
    independently of XNav's disabled autopilot controller. **Do not launch until
-   these are reviewed.** The script will not alter connections to pass this gate.
+   these are reviewed.** Use the separately journaled
+   [reversible commissioning procedure](installer/read-only-commissioning.md)
+   to preserve and isolate the reviewed output-capable connection/plugins.
+   Launch scripts do not alter connections to pass this gate.
    The audit uses actual JSON booleans (a string such as `"false"` is rejected),
    exact profile/build/plugin hashes, and a 24-hour expiry. It independently
    rejects corrupt/zero-filled INI files, output-enabled connections, restored
@@ -89,6 +92,12 @@ pending. Never use it as release acceptance. The final candidate artifact and
 named Beta 2 publication remain gated on complete same-commit CI and actual boat
 evidence. A failed endurance or other remaining gate invalidates qualification
 even if an earlier development review package exists.
+
+Boat recovery, official-upgrade policy, profile preparation and read-only
+commissioning contracts run in their own mandatory native Windows CI job.
+Separating this from the C++ contract job allows MSVC/UI compilation and
+maintenance qualification to run concurrently; it does not remove a release
+gate. Deployment must also pass the specific maintenance tools it will use.
 
 ## Preliminary display review while the installed prerequisite is blocked
 

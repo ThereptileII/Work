@@ -138,7 +138,7 @@ function Assert-PluginAudit([string[]]$Candidates,$Records) {
   }
   if ($seen.Count -ne @($Candidates).Count) { throw 'Plugin inventory incomplete; disabled plugins also require startup review.' }
 }
-function Assert-ReadOnlyAudit($Config,$Installed) {
+function Assert-ReadOnlyAudit($Config,$Installed,[string]$Workspace) {
   # An operator/code inspection creates this short-lived attestation only after
   # examining real connection directions, plugins and active-route state.
   # Never edit the live profile to make a test pass or silently disable sensors.
@@ -163,6 +163,10 @@ function Assert-ReadOnlyAudit($Config,$Installed) {
   $candidates=@(Get-AuditPluginCandidates $roots)
   Assert-PluginAudit $candidates $audit.pluginFiles
   if ((Get-Digest $ini) -cne $audit.profileIniSha256) { throw 'Profile changed during read-only audit.' }
+  # A per-DLL attestation is insufficient: plugins may execute helpers or load
+  # adjacent libraries. Bind the reviewed preparation and its complete trees at
+  # BOTH dispatch and the actual interactive launch boundary.
+  & (Join-Path $PSScriptRoot 'verify-commissioning-launch.ps1') -Workspace $Workspace -Audit $audit -Installed $Installed
 }
 function Invoke-InteractiveJob([string]$Workspace,$Job,[int]$TimeoutSeconds=90) {
   $directory=New-RunDirectory $Workspace $Job.action.ToLowerInvariant()

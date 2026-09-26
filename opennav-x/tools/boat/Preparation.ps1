@@ -153,7 +153,8 @@ function Assert-PreparationAclBytes([byte[]]$Expected,[byte[]]$Actual,[switch]$A
   # SECURITY_DESCRIPTOR_RELATIVE: revision, reserved, 16-bit control, offsets.
   # Native SDDL parsing below validates structure before this exact comparison.
   # Only the observed DACL AutoInherited metadata bit (0x0400) may differ after
-  # File.Replace. Do not mask protection, auto-inherit-required, SACL or ACE bits.
+  # native staging/publication. Do not mask protection, auto-inherit-required,
+  # SACL or ACE bits.
   foreach($descriptor in @($Expected,$Actual)) {
     if($descriptor.Length -lt 20 -or $descriptor.Length -gt 1048576 -or $descriptor[0] -ne 1 -or
         ($descriptor[3] -band 0x80) -eq 0){throw 'Expected bounded self-relative security descriptor.'}
@@ -199,23 +200,101 @@ function Set-PreparationStageAcl([string]$Original,[string]$Stage,[string]$Expec
   Assert-PreparationAcl $ExpectedAcl (Get-Acl -LiteralPath $Stage).Sddl -AllowDaclAutoInherited
   Assert-PreparationAcl $ExpectedAcl (Get-Acl -LiteralPath $Original).Sddl
 }
+function Initialize-PreparationNative {
+  if('OpenNavX.PreparationNative' -as [type]){return}
+  Add-Type -TypeDefinition @'
+using System;
+using System.ComponentModel;
+using System.IO;
+using System.Runtime.InteropServices;
+using Microsoft.Win32.SafeHandles;
+namespace OpenNavX {
+  public static class PreparationNative {
+    [StructLayout(LayoutKind.Sequential)]
+    private struct FileInformation {
+      public uint Attributes;
+      public System.Runtime.InteropServices.ComTypes.FILETIME Creation, Access, Write;
+      public uint Volume, SizeHigh, SizeLow, Links, IndexHigh, IndexLow;
+    }
+    [DllImport("kernel32.dll", SetLastError=true)]
+    [return: MarshalAs(UnmanagedType.Bool)]
+    private static extern bool GetFileInformationByHandle(SafeFileHandle file, out FileInformation info);
+    [DllImport("kernel32.dll", CharSet=CharSet.Unicode, SetLastError=true, ExactSpelling=true)]
+    [return: MarshalAs(UnmanagedType.Bool)]
+    private static extern bool MoveFileExW(string source, string destination, uint flags);
+    public static uint LinkCount(string path) {
+      using(var file=File.Open(path, FileMode.Open, FileAccess.Read, FileShare.Read)) {
+        FileInformation info;
+        if(!GetFileInformationByHandle(file.SafeFileHandle,out info))
+          throw new Win32Exception(Marshal.GetLastWin32Error(),"Cannot inspect profile file links.");
+        return info.Links;
+      }
+    }
+    public static void Publish(string stage, string original) {
+      // One same-volume rename; never copy/delete, defer until reboot, or retry
+      // by deleting the destination. Windows sharing/access errors stay errors.
+      if(!MoveFileExW(stage,original,0x1u | 0x8u))
+        throw new Win32Exception(Marshal.GetLastWin32Error(),"Profile rename refused; original and stage retained.");
+    }
+  }
+}
+'@
+}
+function Assert-PreparationAttributes([int]$Attributes) {
+  # Ordinary INI metadata only: Hidden, System, Archive, Normal, NotContentIndexed.
+  # Never clear ReadOnly or silently discard EFS, compression, sparse/offline,
+  # reparse or other specialized metadata while replacing a profile.
+  if($Attributes -eq 0 -or ($Attributes -band (-bnot 0x20a6)) -ne 0 -or
+      (($Attributes -band 0x80) -ne 0 -and $Attributes -ne 0x80)) {
+    throw 'Read-only or specialized profile attributes require separate review; no replacement attempted.'
+  }
+}
+function Get-PreparationNativeMetadata([string]$Path) {
+  $path=Assert-LocalPath $Path
+  $attributes=[int][IO.File]::GetAttributes($path)
+  Assert-PreparationAttributes $attributes
+  Initialize-PreparationNative
+  if([OpenNavX.PreparationNative]::LinkCount($path) -ne 1){throw 'Multiply linked profile files require separate review.'}
+  $streams=@(Get-Item -LiteralPath $path -Stream '*' -Force)
+  if($streams.Count -ne 1 -or $streams[0].Stream -cne ':$DATA'){throw 'Named or unknown profile streams require separate review.'}
+  # Rename carries the staging descriptor rather than merging destination ACLs.
+  # Audit metadata is not part of the existing owner/group/DACL contract: require
+  # a successful audit read and refuse it rather than silently dropping it.
+  $audited=(Get-Acl -LiteralPath $path -Audit).Sddl
+  $descriptor=New-Object Security.AccessControl.RawSecurityDescriptor($audited)
+  if($null -ne $descriptor.SystemAcl -or ($descriptor.ControlFlags -band 0x2a30) -ne 0){throw 'Profile audit/security metadata requires separate review.'}
+  return [pscustomobject]@{attributes=$attributes;creationUtc=[IO.File]::GetCreationTimeUtc($path);acl=$audited}
+}
+function Assert-PreparationNativeMetadata($Expected,$Actual,[switch]$AllowDaclAutoInherited) {
+  if($Expected.attributes -ne $Actual.attributes -or $Expected.creationUtc.Ticks -ne $Actual.creationUtc.Ticks){throw 'Profile attributes or creation time changed.'}
+  Assert-PreparationAcl $Expected.acl $Actual.acl -AllowDaclAutoInherited:$AllowDaclAutoInherited
+}
 function Publish-PreparedProfile([string]$Original,[string]$SavedCandidate,[string]$OriginalHash,[string]$CandidateHash,[int]$Length,[string]$Journal) {
   $original=Assert-LocalPath $Original;$savedCandidate=Assert-LocalPath $SavedCandidate
   $journal=Assert-LocalPath $Journal
   if (-not [IO.File]::Exists($journal)) { throw 'Durable apply journal required before replacement.' }
   if ((Get-Digest $original) -cne $OriginalHash) { throw 'Original changed before staging; no replacement attempted.' }
   $native=[Environment]::OSVersion.Platform -eq 'Win32NT'
-  $originalAcl=if($native){(Get-Acl -LiteralPath $original).Sddl}else{$null}
+  $metadata=if($native){Get-PreparationNativeMetadata $original}else{$null}
   $temporary=$original+'.opennav-recovery-'+[guid]::NewGuid().ToString('N')+'.partial'
   Copy-PreparationFile $savedCandidate $temporary $CandidateHash $Length
-  if($native){Set-PreparationStageAcl $original $temporary $originalAcl}
+  if($native){
+    Set-PreparationStageAcl $original $temporary $metadata.acl
+    [IO.File]::SetCreationTimeUtc($temporary,$metadata.creationUtc)
+    [IO.File]::SetAttributes($temporary,[IO.FileAttributes]$metadata.attributes)
+    Assert-PreparationNativeMetadata $metadata (Get-PreparationNativeMetadata $temporary) -AllowDaclAutoInherited
+  }
   if ((Get-Digest $original) -cne $OriginalHash) { throw 'Original changed immediately before atomic replacement; staged file retained.' }
-  if($native){Assert-PreparationAcl $originalAcl (Get-Acl -LiteralPath $original).Sddl}
-  # Same-directory replacement is atomic and retains destination permissions.
-  # Windows may materialize the DACL AutoInherited marker; the caller compares
-  # all permission data and retains raw before/after SDDL in private evidence.
-  # The original is already durably backed up. Never roll back to corrupt zeros.
-  [IO.File]::Replace($temporary,$original,[NullString]::Value,$false)
+  Assert-PreparationStagePath $original $temporary
+  if((Get-Digest $temporary) -cne $CandidateHash -or (Get-Item -LiteralPath $temporary -Force).Length -ne $Length){throw 'Staging bytes changed before publication.'}
+  # Callers have already required closed OpenCPN/plugin helpers and a durable
+  # cold backup/intent journal. No API here terminates a process or clears a lock.
+  if($native){
+    Assert-PreparationNativeMetadata $metadata (Get-PreparationNativeMetadata $original)
+    [OpenNavX.PreparationNative]::Publish($temporary,$original)
+  } else {
+    [IO.File]::Replace($temporary,$original,[NullString]::Value,$false)
+  }
   if ((Get-Digest $original) -cne $CandidateHash) { throw 'Recovery postcondition failed; inspect the durable journal without automatic rollback.' }
-  if($native){Assert-PreparationAcl $originalAcl (Get-Acl -LiteralPath $original).Sddl -AllowDaclAutoInherited}
+  if($native){Assert-PreparationNativeMetadata $metadata (Get-PreparationNativeMetadata $original) -AllowDaclAutoInherited}
 }

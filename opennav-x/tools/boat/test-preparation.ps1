@@ -137,6 +137,14 @@ try {
     Reject {Assert-PreparationStagePath $ini $wrong} 'only exact owned same-directory staging path may receive permissions'
   }
   $checks.Add('Staging permission writes cannot target original, saved candidate, TMP or another directory/name')
+  Initialize-PreparationNative
+  if(-not ('OpenNavX.PreparationNative' -as [type])){throw 'Native publication helper did not compile.'}
+  $checks.Add('Native rename interop compiles; only Windows tests invoke its fixed replace-existing/write-through flags')
+  foreach($attributes in @(2,4,32,128,8192,0x2026)){Assert-PreparationAttributes $attributes}
+  foreach($attributes in @(0,1,3,0x10,0x40,0x82,0x100,0x200,0x400,0x800,0x1000,0x4000,0x8000,0x10000,-1)) {
+    Reject {Assert-PreparationAttributes $attributes} 'read-only/directory/specialized/unrecognized metadata'
+  }
+  $checks.Add('Only ordinary profile attributes are supported; read-only and specialized metadata fail closed')
   # Valid self-relative fixture: owner BA, group BU, one inherited SY allow ACE.
   # Tests use no real SID, ACL mutation or Windows resource API on Linux.
   [byte[]]$descriptor=@(
@@ -218,11 +226,48 @@ try {
     Set-Acl -LiteralPath $owned -AclObject $ownedSecurity
     $ownedBefore=(Get-Acl -LiteralPath $owned).Sddl
     Assert-PreparationAcl $ownedExpected $ownedBefore -AllowDaclAutoInherited
+    $creation=[datetime]::SpecifyKind([datetime]'2020-02-03T04:05:06',[DateTimeKind]::Utc)
+    [IO.File]::SetCreationTimeUtc($owned,$creation)
+    [IO.File]::SetAttributes($owned,[IO.FileAttributes]0x2026)
     $ownedJournal=Join-Path $testRoot 'owned-applying.json';Write-Record $ownedJournal @{owner='OpenNavX.Preparation.ContractTest';status='applying'}
     Publish-PreparedProfile $owned $saved $zh $vh $valid.Length $ownedJournal
     Assert-PreparationAcl $ownedBefore (Get-Acl -LiteralPath $owned).Sddl -AllowDaclAutoInherited
     if((Get-Digest $owned) -cne $vh){throw 'Explicit-permission fixture did not publish exact bytes.'}
     $checks.Add('Native staging preserves a different explicit owner/group and protected ordered permission list')
+    if([IO.File]::GetCreationTimeUtc($owned).Ticks -ne $creation.Ticks -or [int][IO.File]::GetAttributes($owned) -ne 0x2026){throw 'Native rename lost creation time or supported file attributes.'}
+    $checks.Add('Native replacement preserves original creation UTC and hidden/system/archive/not-content-indexed attributes')
+    # A previous run may have legitimately saved a different-length INI. The
+    # same helper must support reviewed restoration without broadening hashes.
+    $longer=Join-Path $testRoot 'longer-profile.ini';[IO.File]::WriteAllBytes($longer,($zeros+[byte[]]@(0,0,0)))
+    $longerHash=Get-Digest $longer
+    Publish-PreparedProfile $longer $saved $longerHash $vh $valid.Length $journal
+    if((Get-Digest $longer) -cne $vh -or (Get-Item -LiteralPath $longer).Length -ne $valid.Length){throw 'Different-length reviewed restoration failed.'}
+    $checks.Add('Reviewed different-length current profile can be atomically restored to exact candidate bytes')
+    $special=Join-Path $testRoot 'special-profile.ini';[IO.File]::WriteAllBytes($special,$zeros)
+    [IO.File]::SetAttributes($special,[IO.FileAttributes]::ReadOnly)
+    try {Reject {Publish-PreparedProfile $special $saved $zh $vh $valid.Length $journal} 'read-only original'}
+    finally {[IO.File]::SetAttributes($special,[IO.FileAttributes]::Archive)}
+    if((Get-Digest $special) -cne $zh){throw 'Read-only profile was overwritten.'}
+    # .NET Framework path validation rejects colon syntax for ADS. Exercise the
+    # native filesystem provider on both PowerShell 5.1 and current PowerShell.
+    Set-Content -LiteralPath $special -Stream 'retained-metadata' -Value 'metadata-fixture' -Encoding Ascii -NoNewline
+    Reject {Publish-PreparedProfile $special $saved $zh $vh $valid.Length $journal} 'named stream original'
+    if((Get-Digest $special) -cne $zh -or (Get-Content -LiteralPath $special -Stream 'retained-metadata' -Raw -Encoding Ascii) -cne 'metadata-fixture'){throw 'Refused named stream profile changed.'}
+    Remove-Item -LiteralPath $special -Stream 'retained-metadata'
+    $hardLink=Join-Path $testRoot 'linked-profile.ini';$null=New-Item -ItemType HardLink -Path $hardLink -Target $special
+    Reject {Publish-PreparedProfile $special $saved $zh $vh $valid.Length $journal} 'multiply linked original'
+    if((Get-Digest $special) -cne $zh -or (Get-Digest $hardLink) -cne $zh){throw 'Refused hard links changed.'}
+    Remove-Item -LiteralPath $hardLink
+    $checks.Add('Native read-only, named-stream and hard-linked profiles are refused with all original data intact')
+    $auditSecurity=Get-Acl -LiteralPath $special -Audit
+    $auditRule=New-Object Security.AccessControl.FileSystemAuditRule((New-Object Security.Principal.SecurityIdentifier('S-1-5-18')),'ReadData','Success')
+    $auditSecurity.AddAuditRule($auditRule)
+    Set-Acl -LiteralPath $special -AclObject $auditSecurity
+    $auditBefore=(Get-Acl -LiteralPath $special -Audit).Sddl
+    Reject {Publish-PreparedProfile $special $saved $zh $vh $valid.Length $journal} 'audit metadata needs separate review'
+    Assert-PreparationAcl $auditBefore (Get-Acl -LiteralPath $special -Audit).Sddl
+    if((Get-Digest $special) -cne $zh){throw 'Audited profile was overwritten.'}
+    $checks.Add('Native auditing metadata is refused and retained rather than dropped during rename')
   }
   Reject { Publish-PreparedProfile $ini $saved $zh $vh $valid.Length $journal } 'repeat replacement of recovered state'
   if ((Get-Digest $ini) -cne $vh) { throw 'Repeat recovery rolled back working state.' }
@@ -238,6 +283,17 @@ try {
     finally { $lock.Dispose() }
     if ((Get-Digest $locked) -cne $zh) { throw 'Locked original changed.' }
     $checks.Add('Windows exclusive file lock refuses replacement without changing the original')
+    # Unlike the exclusive lock, this permits all preflight reads and stages the
+    # candidate, but must make the final rename fail with sharing violation.
+    $renameLocked=Join-Path $testRoot 'rename-locked.ini';[IO.File]::WriteAllBytes($renameLocked,$zeros)
+    $renameAcl=(Get-Acl -LiteralPath $renameLocked).Sddl
+    $lock=[IO.File]::Open($renameLocked,[IO.FileMode]::Open,[IO.FileAccess]::Read,[IO.FileShare]::Read)
+    try {Reject {Publish-PreparedProfile $renameLocked $saved $zh $vh $valid.Length $journal} 'read-sharing handle without delete sharing'}
+    finally {$lock.Dispose()}
+    $retainedStages=@(Get-ChildItem -LiteralPath $testRoot -File -Force | Where-Object {$_.Name -like 'rename-locked.ini.opennav-recovery-*.partial'})
+    if($retainedStages.Count -ne 1 -or (Get-Digest $retainedStages[0].FullName) -cne $vh -or (Get-Digest $renameLocked) -cne $zh){throw 'Rename lock did not retain original and exact staged candidate.'}
+    Assert-PreparationAcl $renameAcl (Get-Acl -LiteralPath $renameLocked).Sddl
+    $checks.Add('Native final rename respects delete-sharing locks and retains original permissions, bytes, journal and exact stage')
   }
   $checks.Add('Intervening user edits fail without overwriting existing data')
   if ($native) {

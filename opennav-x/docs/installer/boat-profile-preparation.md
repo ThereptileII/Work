@@ -61,10 +61,11 @@ any existing output configuration. Repair is **not** permission to launch.
 2. Review that record. `-Action Apply -Workspace C:\XNav -Record <prepared-record>
    -ExpectedRecordSha256 <returned-hash>` rechecks the executable, SID, source
    paths, both fixed hashes, full profile inventory, original ACL and closed
-   processes. A separate flushed apply journal precedes the same-directory atomic
-   replacement. The candidate bytes are copied without normalization or merging.
-   The new staging file receives the original's owner, group and DACL before
-   replacement; its permissions are then checked independently.
+   processes. A separate flushed apply journal precedes the same-directory
+   native rename. The candidate bytes are copied without normalization or
+   merging and flushed before publication. The new staging file receives the
+   original's owner, group, DACL, creation time and supported attributes before
+   replacement; its bytes and metadata are then checked independently.
 3. `-Action Verify` with the same record/hash verifies exact recovered bytes,
    unchanged TMP, unchanged non-INI profile contents and preserved destination
    permissions. Apply performs these postconditions too.
@@ -87,19 +88,45 @@ comparison policy are retained in private verification evidence; they must not
 be uploaded because they contain account SIDs. No permission repair or blanket
 `Set-Acl` is used on the original profile.
 
-The subsequent Windows Server CI run exposed a descriptor-size difference
-despite the earlier 23-group boat-PC disposable test passing. That difference
-is not accepted as an equivalent permission change. Windows
+Windows Server CI subsequently exposed a descriptor-size difference despite
+the boat-PC disposable tests passing: the final replacement added explicit
+copies of the inherited ACEs. That change is **not** accepted as equivalent
+permissions. Windows
 [`ReplaceFileW`](https://learn.microsoft.com/en-us/windows/win32/api/winbase/nf-winbase-replacefilew)
-documents DACL preservation/merging; owner and group are not listed among the
-preserved attributes. The recovery now constructs a fresh permission object
-containing the original owner/group/access sections and applies it **only to the
-new same-directory GUID-named staging file**. It verifies staging permissions,
-rechecks unchanged original permissions/bytes, and invokes atomic replacement
-without ignoring metadata errors. The final descriptor comparison remains strict
-apart from the already observed `0x0400` marker. No original, saved candidate,
-backup or parent ACL is written. If staging permissions cannot be made identical,
-the operation stops before replacement.
+documents DACL merging; even preparing identical staging permissions did not
+prevent this Server behavior. Native publication therefore uses
+[`MoveFileExW`](https://learn.microsoft.com/en-us/windows/win32/api/winbase/nf-winbase-movefileexw)
+with fixed `REPLACE_EXISTING | WRITE_THROUGH` flags (`0x9`). It submits one
+same-directory rename of the fully verified staging file. There is no
+cross-volume copy/delete fallback, destination deletion, retry that weakens
+sharing checks, delayed reboot operation, or automatic rollback. Microsoft's
+[file-security contract](https://learn.microsoft.com/en-us/windows/win32/fileio/file-security-and-access-rights)
+states that default inherited descriptors are assigned on creation, not rename.
+The final descriptor comparison remains exact apart from the already observed
+`0x0400` marker; additional, removed or reordered ACEs still fail.
+
+The helper creates a fresh permission object containing original owner/group/
+access sections and applies it **only to the new same-directory GUID-named
+staging file**. It also preserves creation UTC and ordinary Hidden, System,
+Archive, Normal or NotContentIndexed attributes. The replacement content's
+last-write time reflects staging, not the original content. Original bytes and
+metadata are checked again immediately before publication and destination
+bytes and metadata immediately afterward. No original, saved candidate, backup
+or parent ACL is written. If staging permissions cannot be made identical, the
+operation stops before replacement.
+
+Rename replaces a file object; it does not merge extra metadata. The narrow
+profile tool therefore refuses readonly files, specialized attributes such as
+EFS/compression/sparse/offline, multiple hard links, alternate named streams,
+and audit/SACL metadata. A successful explicit audit-descriptor read is required;
+insufficient permission to inspect it is an error. These cases need separate
+review, not an automatic lossy conversion. File identity is not preserved by
+staged replacement. The tool does not claim a storage-device power-loss
+transaction: flushed candidate/backups/intent, write-through rename and explicit
+postconditions provide recovery evidence, while the journal resolves an
+interruption. Closed-process checks remain mandatory in each calling maintenance
+transaction. Native exclusive or delete-sharing locks stop publication without
+terminating a process or modifying the destination.
 
 Any intervening user change stops the operation. The repaired INI becomes the
 working baseline for subsequent commissioning undo; the corrupt original is
@@ -121,13 +148,22 @@ recursive redirects, changed source inventories, exact-byte recovery refusal,
 intervening edits, duplicate journals and atomic publication. Native tests also
 check exclusive file locks and ACL preservation/privacy.
 
-At this revision 19 Linux portable contract groups pass, including all 639
+At this revision 21 Linux portable contract groups pass, including all 639
 non-exempt bit changes in a bounded descriptor fixture. Native tests add actual
 SDDL equivalence, negative owner/group/protection/ordered-ACE/SACL cases, and
-the real atomic-file-replacement permission check and an explicit protected
-owner/group/DACL fixture. CI failure reports include only disposable fixture
+the real rename permission check and an explicit protected owner/group/DACL
+fixture. Added native cases verify creation time/attributes, different-length
+reviewed restoration, readonly/named-stream/hardlink/audit refusal, and a
+read-sharing handle that permits preflight but rejects the final rename while
+retaining the exact stage and original. All 32 native PowerShell 5.1 groups
+passed on the boat PC in a unique temporary directory. Private result:
+`evidence/local/boat-beta2/native-preparation-movefile-final.json`.
+Windows Server CI qualification of this rename change remains pending.
+CI failure reports include only disposable fixture
 SDDL and stack context; local boat test failures do not print account descriptors.
 The private
 inspected pair passed its exact byte/hash checks and strict parsing (783 keys).
-Native PowerShell 5.1 and actual boat execution remain separate gates. No real
-profile was modified by these development checks.
+Native PowerShell 5.1 and actual boat execution remain separate gates. The exact
+authorized boat repair was already completed and verified using the prior
+boat-qualified implementation. These new tests are disposable future-tooling
+hardening; they do not repeat or alter that recovered profile.

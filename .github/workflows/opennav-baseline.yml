@@ -71,15 +71,6 @@ jobs:
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
           & "$env:WINDIR/SysWOW64/WindowsPowerShell/v1.0/powershell.exe" -NoProfile -File opennav-x/tools/test-installer-filesystem.ps1
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
-      - name: Boat tooling recovery contracts on native Windows PowerShell 5.1
-        if: runner.os == 'Windows'
-        run: |
-          & "$env:WINDIR/System32/WindowsPowerShell/v1.0/powershell.exe" -NoProfile -File opennav-x/tools/boat/test-boat-tools.ps1
-          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
-          & "$env:WINDIR/System32/WindowsPowerShell/v1.0/powershell.exe" -NoProfile -File opennav-x/tools/boat/test-official-upgrade-policy.ps1
-          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
-          & "$env:WINDIR/System32/WindowsPowerShell/v1.0/powershell.exe" -NoProfile -File opennav-x/tools/boat/test-preparation.ps1
-          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
       - name: Configure Linux contracts
         if: runner.os == 'Linux'
         run: cmake -S opennav-x -B opennav-x/build/contracts -DOPENNAV_ST4000_ORACLE="${{ github.workspace }}/opennav-x/build/st4000-firmware" -DOPENNAV_BOAT_ORACLE="${{ github.workspace }}/opennav-x/build/boat-firmware/Nissan_ev_to_NMEA_and_wifi"
@@ -90,6 +81,27 @@ jobs:
       - run: ctest --test-dir opennav-x/build/contracts -C Release --output-on-failure
       - name: Repeat the restart handoff with deliberately delayed result publication
         run: ctest --test-dir opennav-x/build/contracts -C Release -R restart_lifecycle_contract --repeat until-fail:10 --output-on-failure
+  boat-maintenance:
+    name: Native boat recovery and commissioning contracts
+    runs-on: windows-2022
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+      - name: Exercise disposable maintenance transactions in Windows PowerShell 5.1
+        run: |
+          New-Item -ItemType Directory -Path opennav-x/evidence/local -Force | Out-Null
+          $Failed = @()
+          foreach ($Suite in @('boat-tools', 'official-upgrade-policy', 'preparation', 'commissioning', 'commissioning-launch')) {
+            & "$env:WINDIR/System32/WindowsPowerShell/v1.0/powershell.exe" -NoProfile -File "opennav-x/tools/boat/test-$Suite.ps1" 2>&1 | Tee-Object -FilePath "opennav-x/evidence/local/maintenance-$Suite.log"
+            if ($LASTEXITCODE -ne 0) { $Failed += $Suite }
+          }
+          if ($Failed.Count -ne 0) { throw ('Required maintenance suites failed: ' + ($Failed -join ', ')) }
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: boat-maintenance-${{ github.sha }}
+          path: opennav-x/evidence/local/maintenance-*.log
+          if-no-files-found: error
   linux:
     runs-on: ubuntu-24.04
     timeout-minutes: 60
@@ -346,7 +358,7 @@ jobs:
           }
   publish-beta:
     name: Publish Beta after both platform and installer gates
-    needs: [contracts, linux, linux-integration, windows-upstream-abi, windows-integration, application-abi, stock-prerequisite, boat-firmware]
+    needs: [contracts, boat-maintenance, linux, linux-integration, windows-upstream-abi, windows-integration, application-abi, stock-prerequisite, boat-firmware]
     runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262

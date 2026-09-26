@@ -1,0 +1,41 @@
+{
+  "schema": 1,
+  "stage": "Beta 2 boat prerequisite recovery, not product acceptance",
+  "maintenanceSourceCommit": "6de7a5f1ba863523b911975971573badafc301e2",
+  "stockExecutableSha256": "7c6547562cca7954671eaab72833ca9d788710fd9808b6a699b6dc823852ae0c",
+  "managedPluginBackup": {
+    "status": "verified",
+    "bytes": 30851001,
+    "preparedSha256": "42d015bad8fd719b16614c1c8d58461cf63613d2099f243499feca89c4b11c12",
+    "verificationSha256": "c96688c75605b9162c24a9442d3bec37afddc4cb3972f135520329b44166cf91",
+    "applicationLaunched": false,
+    "pluginMoved": false
+  },
+  "profileRecovery": {
+    "status": "recovered",
+    "bytes": 21380,
+    "originalAllZeroSha256": "f84114bfa5c456c4b8f5f073141abb95537155f9f75d78dedc12db3ed5ab3867",
+    "exactCandidateAndRecoveredSha256": "a2e416b7d35d6d2f82dcf6b3a97136a8fba5a133435c2047e07e09022426aef9",
+    "preparedRecordSha256": "aae0bb6e934d046b5d9046bed2129254da32e3c46e9ab068c3dfe9aa542209e6",
+    "verificationSha256": "a019e1b8301c0b589c9a8e027cf4a4deedc38d5745a94c83466c0439bd55a949",
+    "corruptOriginalRetained": true,
+    "candidateRetained": true,
+    "nonIniProfileInventoryUnchanged": true,
+    "originalConnectionsUnchanged": true,
+    "ownerGroupPermissionsPreserved": true,
+    "onlyPermittedAclNormalization": "DACL AutoInherited metadata flag",
+    "workingRestoreBaselineSha256": "a2e416b7d35d6d2f82dcf6b3a97136a8fba5a133435c2047e07e09022426aef9"
+  },
+  "nativeTests": {
+    "disposableFilesystemGroups": 25,
+    "environment": "Actual boat Windows PowerShell 5.1, temporary files only"
+  },
+  "linuxTests": {
+    "portableGroups": 19,
+    "scope": "Development portable contracts, no Windows acceptance claim"
+  },
+  "applicationLaunched": false,
+  "physicalCommandsSent": false,
+  "pluginOutputAuditRequiredBeforeLaunch": true,
+  "privacy": "No personal paths, connection details, positions or chart/license data included"
+}

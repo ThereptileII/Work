@@ -27,7 +27,13 @@ This closes the stock-version prerequisite; Beta 2 still requires its own gates.
 The actual shared profile's `opencpn.ini` was already zero-filled at first
 inspection (21,380 bytes; last written 2026-09-20). A same-sized nonzero temporary
 INI from the same write interval is preserved as a potential recovery source.
-Neither file has been restored or replaced. A cold, hash-verified recovery set is complete: 2,123 application files and
+After the official upgrade, the exact verified temporary copy was restored with
+an atomic replacement. The corrupt original and candidate remain backed up; all
+other profile contents and owner/group/permissions were verified unchanged.
+Connection values were not edited and no application was launched. A separate
+30,851,001-byte managed-plugin/metadata backup is verified.
+[Profile recovery evidence](evidence/beta2-boat-profile-recovery.json).
+The original cold, hash-verified recovery set remains complete: 2,123 application files and
 539 profile files (1,318,897,252 bytes). The earlier incomplete attempt remains
 separate and is not an accepted backup.
 Private chart/profile content remains on the boat PC or in ignored local
@@ -107,13 +113,30 @@ No unrelated Desktop content is included in feedback documentation.
   plugin, with complete value/type and uninstaller preservation. Temporary-file
   recovery tests confirmed Windows adds the DACL AutoInherited metadata bit;
   ownership, protection and every ordered ACE must remain exact. The independent
-  real-profile repair remains separate from the completed stock upgrade.
+  real-profile recovery subsequently passed 25 native groups and was applied with
+  a separate journal, exact candidate hash and complete preservation checks.
 - Candidate `06f3bc32879cff4b1822ff53710388b1146d05a7`
   ([CI 36271371549](https://github.com/ThereptileII/Work/actions/runs/36271371549))
   includes the corrected ZIP fixture, X11 pointer-target observations and native
   boat maintenance tests. All 506 local tracked source blobs/modes match the
   published tree. The object harness passed two additional local 17-group runs;
   full candidate qualification is pending.
+- Follow-up `a6c15b22c2344a69437e4ef7d9d738fe3f1aed50`
+  ([CI 36272268284](https://github.com/ThereptileII/Work/actions/runs/36272268284))
+  exposed a Windows Server file-replacement ACL merge in the disposable profile
+  preparation suite. It is not an accepted build. Boat Windows 11 recovery had
+  already passed exact permission and content verification; the affected helper
+  is being hardened for both environments without loosening permission checks.
+  Maintenance suites now run in a separate mandatory native CI job, so MSVC/UI
+  validation can proceed concurrently. Final publication still requires every
+  maintenance suite, and adds the reversible commissioning transaction tests.
+- Boat-local disposable PowerShell 5.1 checks now pass 32 profile-preparation,
+  21 commissioning transaction and 11 launch-verification groups, plus the
+  existing 21 boat-tool groups. Portable counterparts pass 21, 12 and 11 groups.
+  Real commissioning has not yet been applied. Its one-byte input-only change,
+  reviewed plugin quarantine, interrupted restoration and complete helper-file
+  launch verification are independently tested; no application or physical
+  command was launched during these checks.
 
 ## Accepted Beta 1 baseline
 

@@ -14,7 +14,7 @@ try {
     if ($job.action -eq 'Launch') {
       $config=Get-Target $job.workspace;$installed=Get-Installed
       if ((Assert-LocalPath $installed.executable) -ine $exe) { throw 'Installed generation changed since dispatch.' }
-      Assert-ReadOnlyAudit $config $installed
+      $launchEnvironment=Assert-ReadOnlyAudit $config $installed $job.workspace
     } else {
       . (Join-Path $PSScriptRoot 'PortableReview.ps1')
       $review=Read-PortableReview $job.reviewRecord $job.reviewRecordSha256
@@ -26,6 +26,11 @@ try {
     if ($job.mode -notin @('--xnav','--legacy','--safe-mode')) { throw 'Only real-data navigation/recovery modes are permitted.' }
     $start=New-Object Diagnostics.ProcessStartInfo
     $start.FileName=$exe; $start.Arguments=$job.mode; $start.WorkingDirectory=[IO.Path]::GetDirectoryName($exe);$start.UseShellExecute=$false
+    if ($job.action -eq 'Launch') {
+      if ((Assert-LocalPath $launchEnvironment.workingDirectory) -ine [IO.Path]::GetDirectoryName($exe)) { throw 'Verified launch working directory does not match executable.' }
+      $start.WorkingDirectory=$launchEnvironment.workingDirectory
+      $start.EnvironmentVariables['PATH']=$launchEnvironment.path
+    }
     if ($job.action -eq 'LaunchPortableReview') {
       $start.Arguments='--portable --configdir "'+$review.product.profile+'" --no_opengl '+$job.mode
       $start.EnvironmentVariables['PATH']=$env:WINDIR+'\System32;'+$env:WINDIR
