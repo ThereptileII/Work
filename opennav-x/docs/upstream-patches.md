@@ -33,6 +33,36 @@ These are calls to existing pinned APIs, with no new upstream patch. Legacy and
 Safe continue through normal startup. Mode-cycle/chart-content checks and native
 DPI interaction review cover the presentation change; boat review is pending.
 
+### Beta 2 software Course-up repaint loop
+
+The replacement for native candidate `12100a74` changes only the software
+basemap block in `ChartCanvas::OnPaint`. The pinned implementation temporarily
+called `SetVPRotation(skew)` and then restored the live canvas rotation. Both
+calls enter `SetViewPoint`; `Quilt::IsQuiltDelta` treats the rotation difference
+as a change and the setter recomposes and calls `Refresh(false)`. A rotated
+paint therefore schedules another paint. Windows processes paint messages
+before timer messages, matching the retained native trace: the orientation
+callback and its complete Shell update return, then no timer updates arrive.
+
+The block now copies the viewport, sets its background rotation to the same
+skew, calls the pinned `ViewPort::SetBoxes`, and passes that copy to the existing
+basemap renderer. Physical pixel dimensions, center, scale, projection and
+Mercator override remain those of the original viewport. It deliberately does
+not substitute the expanded `svp` bitmap dimensions. The live canvas, quilt,
+cursor/plugin notifications and navigation state are untouched during this
+background drawing operation. The pristine pinned submodule is unchanged;
+the reviewed integration patch provides this correction in all integrated
+interface modes, including Legacy.
+
+The actual pointer workflow retains its North→Course→North interaction and
+requires at least four further Shell updates plus a newer LIVE GPS observation
+while Course-up remains selected. A Course-up screenshot is now retained as
+well as the restored North-up view. The Linux integrated build and all seven
+workflow groups pass locally. This regression had failed twice on native
+Windows before the fix; replacement native execution and rotated coastline
+review remain mandatory. See
+[the native trace review](design/reviews/beta2-native-12100a74-course-up.md).
+
 ## First dual-mode integration (accepted development slice)
 
 `patches/opencpn-5.12.4-xnav.patch` is applied only to the disposable
@@ -45,7 +75,7 @@ DPI interaction review cover the presentation change; boat review is pending.
 | gui/src/ocpn_app.cpp | CLI, selection after config load, attach shell, restart after cleanup | Mode precedence and shared profile; medium lifecycle risk |
 | gui/src/ocpn_frame.cpp | Hide native chrome only in XNav, Legacy switch menu, detach panes before close | Close veto, restart, AUI persistence; medium risk |
 | gui/src/toolbar.cpp | Suppress only main stock toolbar rendering and mouse handling in XNav | Legacy toolbar and plugin tools; medium risk |
-| gui/src/chcanv.cpp | Skip main MUI chrome in XNav; chart logic unchanged | Chart interaction and Legacy controls; low risk |
+| gui/src/chcanv.cpp | Skip main MUI chrome in XNav; software basemap painting uses a copied viewport instead of changing the canvas rotation | Chart interaction, rotated coastline rendering and Legacy controls; medium rendering risk |
 | gui/src/routeman_gui.cpp | Alpha: suppress native active-leg console show only in XNav | Real active-route widget assertion, original Legacy/Safe callback retained; low presentation risk |
 | gui/src/canvasMenu.cpp | Context-menu fallback for mode switch | Menu access with hidden menu bar; low risk |
 | model/src/plugin_loader.cpp | Keep plugins inactive in Safe Mode without persisting disabled preferences | Enabled Dashboard fixture through Safe and normal restart; low risk |

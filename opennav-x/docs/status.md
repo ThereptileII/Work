@@ -216,8 +216,8 @@ No unrelated Desktop content is included in feedback documentation.
   [Failed native evidence](evidence/beta2-windows-6160d3e4.json) and
   [four-image review](design/reviews/beta2-native-6160.md) preserve the exact
   downloaded artifact; none of these partial results implies acceptance.
-  All Linux functional CI steps pass; its three-hour endurance step is still
-  running at this record. The separate fixture-free Linux product passes
+  All Linux functional CI steps passed; its three-hour endurance step was later
+  canceled by the superseding candidate and is not accepted. The separate fixture-free Linux product passes
   110/110 integrated cases, five loader checks and seven synthetic-data exclusion
   groups. These results do not replace the failed native or pending boat gates.
 - Tooling-only `5b597bff0df7295a0ab1f3edbc3d45217582b56d` passes **340 checks
@@ -227,6 +227,20 @@ No unrelated Desktop content is included in feedback documentation.
   action or hardware command was executed. Automatic in-app restart remains
   outside the independently audited cold-launch procedure.
   [Tooling evidence](evidence/beta2-windows-tooling-5b597bf.json).
+
+- Candidate `12100a74ff619b7268a6e20902bd9d0de3b53b39`
+  ([CI 36279275114](https://github.com/ThereptileII/Work/actions/runs/36279275114))
+  passes 67/67 portable contracts on each platform, native MSVC and 102/102
+  integrated CTest cases, 340 maintenance checks, all 100/125/150% DPI checks
+  and both chart phases. The OpenGL-requested phase used the verified upstream
+  software fallback; hardware OpenGL remains open. Rail/alert bounds and
+  Legacy/Safe return coastlines pass at each scale. Actual ENC chart switching,
+  route creation/editing and plugin-manager paint pass. Pointer Course-up still
+  stops periodic updates after the callback has returned; fixture autopilot
+  interaction also fails. Packaging, installer and native endurance were skipped.
+  This is a failed development candidate, never deployed.
+  [Evidence](evidence/beta2-windows-12100a74.json) and
+  [four-screen review](design/reviews/beta2-native-12100.md).
 
 ## Accepted Beta 1 baseline
 

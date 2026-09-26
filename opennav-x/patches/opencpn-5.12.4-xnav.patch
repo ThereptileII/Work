@@ -39,7 +39,7 @@ index b65126b6c..0cceb4c8d 100644
  
  #ifdef __ANDROID__
 diff --git a/gui/src/chcanv.cpp b/gui/src/chcanv.cpp
-index 258ae04bc..af4793fa6 100644
+index 258ae04bc..c0e46923b 100644
 --- a/gui/src/chcanv.cpp
 +++ b/gui/src/chcanv.cpp
 @@ -24,6 +24,9 @@
@@ -121,7 +121,29 @@ index 258ae04bc..af4793fa6 100644
    m_canvasMenu = new CanvasMenuHandler(this, m_pSelectedRoute, m_pSelectedTrack,
                                         m_pFoundRoutePoint, m_FoundAIS_MMSI,
                                         m_pIDXCandidate, m_nmea_log);
-@@ -13448,6 +13485,9 @@ wxString ChartCanvas::FindValidUploadPort() {
+@@ -11813,13 +11850,14 @@ void ChartCanvas::OnPaint(wxPaintEvent &event) {
+       delete clip_region;
+ 
+       ocpnDC bgdc(temp_dc);
+-      double r = VPoint.rotation;
+-      SetVPRotation(VPoint.skew);
+-
+-      // pWorldBackgroundChart->RenderViewOnDC(bgdc, VPoint);
+-      gShapeBasemap.RenderViewOnDC(bgdc, VPoint);
+-
+-      SetVPRotation(r);
++      // Rendering must not change the canvas viewport. SetVPRotation() here
++      // recomposes a rotated quilt and invalidates the window on every paint,
++      // starving Windows timer messages. Keep the same background geometry
++      // (physical size, projection and skew) on a private viewport instead.
++      ViewPort background_vp = VPoint;
++      background_vp.SetRotationAngle(VPoint.skew);
++      background_vp.SetBoxes();
++      gShapeBasemap.RenderViewOnDC(bgdc, background_vp);
+     }
+   }  // temp_dc.IsOk();
+ 
+@@ -13448,6 +13486,9 @@ wxString ChartCanvas::FindValidUploadPort() {
  
  void ShowAISTargetQueryDialog(wxWindow *win, int mmsi) {
    if (!win) return;

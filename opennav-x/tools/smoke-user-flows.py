@@ -325,6 +325,7 @@ try:
     report['course_up_updates'] = {'before_tick': course_tick,
                                    'after_tick': int(course_after['runtime']['ui_update']['ticks']),
                                    'fresh_position_advanced': True}
+    capture('00-course-up')
     click('Course')
     control('North')
     report['checks'].append('Touch chart orientation toggles upstream North/Course state and restores North')

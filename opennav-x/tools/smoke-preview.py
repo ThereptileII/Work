@@ -13,6 +13,7 @@ import sys
 import tempfile
 import time
 import zipfile
+from diagnostic_snapshot import read_json_snapshot
 
 root=Path(__file__).resolve().parents[1]
 parser=argparse.ArgumentParser();parser.add_argument('--install',type=Path);parser.add_argument('--runtime',type=Path)
@@ -117,7 +118,7 @@ def data(predicate=lambda d:True,timeout=12):
     deadline=time.monotonic()+timeout
     while time.monotonic()<deadline:
         try:
-            d=json.loads((logs/'opennav-diagnostics.json').read_text())
+            d=read_json_snapshot(logs/'opennav-diagnostics.json')
             if predicate(d):return d
         except (FileNotFoundError,json.JSONDecodeError,PermissionError):pass
         time.sleep(.2)

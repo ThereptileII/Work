@@ -1,6 +1,7 @@
 import json
 from pathlib import Path
 import sys
+import tempfile
 import unittest
 from unittest.mock import Mock, patch
 
@@ -9,6 +10,22 @@ from diagnostic_snapshot import read_json_snapshot
 
 
 class DiagnosticSnapshotTests(unittest.TestCase):
+    def test_native_unicode_control_labels_survive_locale_independent_read(self):
+        # Native diagnostics publish UTF-8, even when Windows' default text
+        # encoding is CP1252. The wrong decoding is valid JSON but changes the
+        # control identity, so the actual product interaction cannot find it.
+        labels = ["+1°", "−", "Arkösund"]
+        report = {"runtime": {"display": {"product_controls": [
+            {"label": label, "visible": True, "enabled": True,
+             "width": 96, "height": 56} for label in labels]}}}
+        encoded = json.dumps(report, ensure_ascii=False).encode("utf-8")
+        wrong = json.loads(encoded.decode("cp1252"))
+        self.assertNotEqual(wrong, report)
+        with tempfile.TemporaryDirectory() as directory:
+            path = Path(directory) / "opennav-diagnostics.json"
+            path.write_bytes(encoded)
+            self.assertEqual(read_json_snapshot(path), report)
+
     def test_access_race_returns_complete_failed_report_without_reinterpreting_it(self):
         path = Mock()
         path.read_text.side_effect = [PermissionError(), FileNotFoundError(),

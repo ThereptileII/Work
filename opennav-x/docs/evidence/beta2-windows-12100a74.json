@@ -1,0 +1,101 @@
+{
+  "schema": 1,
+  "version": "0.4.0-beta2",
+  "commit": "12100a74ff619b7268a6e20902bd9d0de3b53b39",
+  "sourceTree": "0f1a10bf5c463e5c3cc600b84b068ff02e46dec7",
+  "ciRun": "https://github.com/ThereptileII/Work/actions/runs/36279275114",
+  "status": "failed; not packaged or deployed",
+  "scope": "Native fixture-enabled development build, Win32 MSVC on Windows Server 2022",
+  "upstream": {
+    "version": "5.12.4",
+    "commit": "37fd0cddb7334fe489e9f18aa163977a9c5c84f7"
+  },
+  "artifact": {
+    "id": 10919180016,
+    "name": "windows-integration-12100a74ff619b7268a6e20902bd9d0de3b53b39",
+    "bytes": 19485281,
+    "sha256": "786f1af20ec6b278134d058f507a8b74ce21a7ab30e03aa686b77f52c1753608",
+    "downloadedAndHashVerifiedAgainstApiAndUploadLog": true
+  },
+  "jobLogSha256": "086fa9b5086e8f33fbd80670ba4b2459487f2f3418686946e419dfc8f37d9fd4",
+  "passed": {
+    "nativeBuild": true,
+    "integratedCTest": 102,
+    "portableContractsLinux": 67,
+    "portableContractsWindows": 67,
+    "nativeMaintenanceChecks": 340,
+    "nativeMaintenanceSuites": 7,
+    "dpiPercent": [
+      100,
+      125,
+      150
+    ],
+    "observedDpi": [
+      96,
+      120,
+      144
+    ],
+    "coastlineModeChecksPerScale": 6,
+    "nightSurfacesPerScale": 12,
+    "chartPhases": [
+      "software",
+      "OpenGL requested but host rejected; upstream software fallback verified"
+    ],
+    "chartActions": [
+      "ENC load",
+      "zoom",
+      "follow",
+      "switch adjacent cell",
+      "return cell",
+      "three-point route save and point move with preserved identities",
+      "Legacy then XNav"
+    ],
+    "pluginManager": [
+      "Dashboard",
+      "WMM"
+    ],
+    "nativeCrashRecoveryRepeated": 3
+  },
+  "failed": [
+    {
+      "suite": "pointer flows",
+      "trigger": "North to Course",
+      "finding": "Dedicated bounded trace shows orientation and explicit Tick return; no subsequent periodic Tick. Window answers WM_NULL. Copied-viewport paint repair requires native replacement evidence."
+    },
+    {
+      "suite": "preview fixtures",
+      "trigger": "Simulated +1-degree control did not become usable",
+      "finding": "Failure retained for investigation; no physical adapter used."
+    }
+  ],
+  "notRun": [
+    "fixture-free native product build/package",
+    "candidate installer lifecycle",
+    "native endurance",
+    "boat deployment"
+  ],
+  "screenshotsReviewed": [
+    {
+      "name": "dpi-150-01-navigation-day.png",
+      "sha256": "9bd564ab667782805d806fe0f5ced03c62c2bfbe4f974d3fad2197cef520389b"
+    },
+    {
+      "name": "dpi-150-system-page.png",
+      "sha256": "147e5484ca5cb5c60282de4f2c1e39d1fe220a430dab71341d1e0e3ff3b29593"
+    },
+    {
+      "name": "chart-opengl-01-loaded.png",
+      "sha256": "70ffd4816d0ef5e152b96ca8dca8fa8bf0eefbe6bafeea06bd7cc559ab63d9d7"
+    },
+    {
+      "name": "beta-night-autopilot.png",
+      "sha256": "e11c31b1cee1a15a6b53fc4cf60b7c6fac539b0c5c06fab0ea4f5a8dba3f8a6a"
+    }
+  ],
+  "limits": [
+    "Fixture DEMO controls in this evidence are not the installed product",
+    "Hosted renderer did not provide hardware OpenGL",
+    "Boat 1280x800 acceptance remains pending",
+    "Linux functional CI passed; current endurance not yet accepted"
+  ]
+}
