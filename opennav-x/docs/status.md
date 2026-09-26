@@ -79,8 +79,9 @@ No unrelated Desktop content is included in feedback documentation.
   integrated clock tests pass in UTC and UTC+2. Sensors now distinguishes no AIS
   reports, current reports and stale/lost reports using actual target timestamps;
   decoder existence alone does not imply reception. Boat reception remains pending.
-- Latest local portable contract suite passes **65/65**, including AIS reception
-  health and native-frame/chart-layout geometry. The integrated Linux build
+- Latest local portable contract suite passes **67/67**, including AIS reception
+  health, native-frame/chart-layout geometry, current route-summary selection
+  and pairing diagnostic layout observations with native window bounds. The integrated Linux build
   passes **110/110 individual CTest cases** under the prescribed sequential
   invocation (excluding the duplicate upstream aggregate). The separate
   fixture-free Linux product previously passed 110/110 and five loader/resource
@@ -194,6 +195,38 @@ No unrelated Desktop content is included in feedback documentation.
   match the published tree. [Tooling evidence](evidence/beta2-windows-tooling-6f9ee02.json).
   This is maintenance-tool qualification only: no application or hardware command
   was launched, and it does not qualify the current product or boat deployment.
+
+- Candidate `6160d3e4bcd924853462f96a32f1b502a72a2884`
+  ([CI 36277024981](https://github.com/ThereptileII/Work/actions/runs/36277024981))
+  passes native MSVC, **102/102 integrated CTest cases** and the expanded
+  21-group navigation-object suite. Later Windows checks fail and no product
+  package is accepted or deployed. Pointer diagnostics stop updating after a
+  North-to-Course interaction; the Linux reproduction continues updating.
+  Bounded, opt-in tracing is added only to the fixture build to distinguish a
+  stalled event loop from diagnostic publication failure on the native rerun.
+  No speculative navigation behavior change or timeout relaxation is made.
+  Separately, the preview helper expected the old destination caption; the
+  plugin/route chart checks expected the old flat Settings and route-save flow.
+  Those checks now follow the actual UI while retaining geometry, plugin paint,
+  route identity and persistence assertions. The 150% rail failure paired
+  pre-resize diagnostics with current HWND bounds; the saved native image and
+  subsequent independent bounds show all four values fitting. The new barrier
+  synchronizes observation times before the same containment/touch assertions.
+  [DPI investigation](design/reviews/beta2-dpi-observation-6160.md).
+  [Failed native evidence](evidence/beta2-windows-6160d3e4.json) and
+  [four-image review](design/reviews/beta2-native-6160.md) preserve the exact
+  downloaded artifact; none of these partial results implies acceptance.
+  All Linux functional CI steps pass; its three-hour endurance step is still
+  running at this record. The separate fixture-free Linux product passes
+  110/110 integrated cases, five loader checks and seven synthetic-data exclusion
+  groups. These results do not replace the failed native or pending boat gates.
+- Tooling-only `5b597bff0df7295a0ab1f3edbc3d45217582b56d` passes **340 checks
+  across seven native Windows suites** in
+  [CI 36277973803](https://github.com/ThereptileII/Work/actions/runs/36277973803).
+  This extends fixed, read-only waypoint/AIS selection policy; no physical UI
+  action or hardware command was executed. Automatic in-app restart remains
+  outside the independently audited cold-launch procedure.
+  [Tooling evidence](evidence/beta2-windows-tooling-5b597bf.json).
 
 ## Accepted Beta 1 baseline
 

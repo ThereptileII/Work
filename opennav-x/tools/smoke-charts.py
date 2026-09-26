@@ -226,7 +226,9 @@ try:
   if rendering=='software':
    command('Menu','ctrl+shift+g')
    if windows:
-    ui.click_text(pid,'Settings');ui.click_text(pid,'OpenCPN plugins')
+    # The Alpha flat settings page became Beta's grouped settings. The Radar
+    # integration page retains the working entry into OpenCPN's plugin manager.
+    ui.click_text(pid,'Settings');ui.click_text(pid,'RADAR');ui.click_text(pid,'OpenCPN plugins')
     options,_=ui.wait_window('Options',pid)
     end=time.monotonic()+10
     while time.monotonic()<end:
@@ -266,16 +268,29 @@ try:
     pass
    command('Navigation','ctrl+shift+n')
    if windows:
-    ui.click_text(pid,'Menu');ui.click_text(pid,'Routes');ui.click_text(pid,'Create route on chart');ui.click_text(pid,'Create route')
-    data(lambda d:d['ui_page']=='Navigation')
+    ui.click_text(pid,'Menu');ui.click_text(pid,'Routes');ui.click_text(pid,'Create route on chart')
+    data(lambda d:d['ui_page']=='Navigation' and d['runtime']['display']['route_creation_active'])
     ui.SetForegroundWindow(handle)
     for x,y in [(430,300),(580,300),(720,360)]:
      ui.user.SetCursorPos(x,y);ui.user.mouse_event(2,0,0,0,0);ui.user.mouse_event(4,0,0,0,0);time.sleep(.4)
+    draft=data(lambda d:d['runtime']['display']['route_creation_active'])
     ui.click_text(pid,'Done')
+    route_name='SIMULATED ENC route gesture'
+    ui.set_dialog_fields(pid,'Save route',[route_name,'Disposable native chart editing test'])
+    ui.click_text(pid,'Save route')
+    data(lambda d:d['ui_page']=='Route detail' and not d['runtime']['display']['route_creation_active'])
     def created_points():
      with closing(sqlite3.connect((profile/'navobj.db').resolve().as_uri()+'?mode=ro',uri=True)) as db:
-      return db.execute("SELECT r.guid,p.guid,p.lat,p.lon FROM routes r JOIN routepoints_link l ON r.guid=l.route_guid JOIN routepoints p ON p.guid=l.point_guid WHERE r.name NOT LIKE 'SIMULATED persistence%' OR r.name IS NULL ORDER BY l.point_order").fetchall()
+      return db.execute("SELECT r.guid,p.guid,p.lat,p.lon FROM routes r JOIN routepoints_link l ON r.guid=l.route_guid JOIN routepoints p ON p.guid=l.point_guid WHERE r.name=? ORDER BY l.point_order",(route_name,)).fetchall()
     points=created_points();assert len(points)==3,points
+    # Save opens the real detail page. Return through the visible Navigation
+    # action without zooming to the route, preserving the original point pixels.
+    ui.click_text(pid,'Navigation')
+    restored=data(lambda d:d['ui_page']=='Navigation' and enc(d) and not d['runtime']['display']['route_creation_active'])
+    assert restored['runtime']['display']['chart_region']==draft['runtime']['display']['chart_region'], 'Saving the route changed its chart viewport'
+    for key in ('latitude','longitude','scale_ppm'):
+     assert abs(chart(restored)[key]-chart(draft)[key])<=1e-10, (key,chart(draft)[key],chart(restored)[key],'Route save changed point pixel locations')
+    assert chart(restored)['canvas_pixels']==chart(draft)['canvas_pixels']
     entry['captures'].append(capture('chart-created-route-before-edit'))
     # In upstream desktop mode LeftDown selects the point and starts editing.
     # A separate selection click then another down within 300 ms is a Windows
@@ -287,7 +302,7 @@ try:
     if not (len(changed)==3 and changed[0][:2]==points[0][:2] and changed[0][2:]!=points[0][2:]):
      capture('chart-route-edit-failed',False)
      raise AssertionError((points,changed,ui.windows(pid)))
-    entry['route_geometry']='Native chart gestures created a three-point route and persisted a point move with unchanged identities'
+    entry['route_geometry']='Native chart gestures created and named a three-point route; Save opened its detail page; Navigation restored the same viewport; point move persisted with unchanged identities'
     entry['captures'].append(capture('chart-created-and-edited-route'))
    entry['plugin_manager']='native manager opened and listed Dashboard/WMM' if windows else 'native Windows interaction is authoritative; loader records checked here'
   if windows:ui.click_text(pid,'System');ui.click_text(pid,'Open Legacy OpenCPN')

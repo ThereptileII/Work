@@ -4,6 +4,7 @@
 #include "application/Version.h"
 #include "smartnav/VesselEnergy.h"
 #include "vessel/DataItems.h"
+#include "diagnostics/TestUiTrace.h"
 #include <algorithm>
 #include <filesystem>
 #include <fstream>
@@ -206,14 +207,20 @@ void WritePreviewDiagnostics(const std::string &path,
   }
   wxJSONWriter writer;
   wxString content;
+  XNAV_TEST_UI_TRACE("publish.serialize");
   writer.Write(report, content);
   const auto pending = path + ".pending";
   {
     std::ofstream out(std::filesystem::u8path(pending), std::ios::binary);
     out << content.ToStdString(wxConvUTF8);
-    if (!out)
+    if (!out) {
+      XNAV_TEST_UI_TRACE("publish.pending-failed");
       return;
+    }
   }
-  wxRenameFile(wxString::FromUTF8(pending), wxString::FromUTF8(path), true);
+  XNAV_TEST_UI_TRACE("publish.replace");
+  const bool published = wxRenameFile(wxString::FromUTF8(pending), wxString::FromUTF8(path), true);
+  XNAV_TEST_UI_TRACE("publish.result", 0, published);
+  (void)published;
 }
 } // namespace opennav::integration

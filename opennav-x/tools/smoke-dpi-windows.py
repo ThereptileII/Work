@@ -17,6 +17,7 @@ def module(name):
     s=importlib.util.spec_from_file_location(name,root/'tools'/f'{name}.py')
     m=importlib.util.module_from_spec(s);s.loader.exec_module(m);return m
 ui=module('windows-ui');chart=module('chart-render-check');fixtures=module('profile-fixtures')
+geometry_observation=module('diagnostic-geometry')
 helper=root/'build/xnav-windows/Release/opennav-test-dpi.exe'
 exe=root/'build/xnav-install/opencpn.exe'
 env=dict(os.environ,OPENNAV_DISPOSABLE_DESKTOP='1')
@@ -79,9 +80,29 @@ def chrome_bounds():
     assert len(brand)==len(navigation)==1
     return bounds(ui.GetParent(brand[0])).bottom,bounds(ui.GetParent(navigation[0])).top
 
+def current_layout_observation():
+    # Diagnostics publishes at 1 Hz; size_window's native 0.5 s settle can still
+    # leave a pre-resize observation on disk. Pair its geometry with the actual
+    # HWND chrome, not with a fixed sleep or a predicate that waits for the rail
+    # to fit (which could conceal real clipping).
+    previous=int(data()['runtime']['ui_update']['ticks'])
+    def native_controls():
+        children=ui.children(handle);result={}
+        for label in ('Menu','Navigation','System'):
+            found=[control for control,text in children if text==label]
+            assert len(found)==1,(label,found)
+            rect=bounds(found[0])
+            result[label]=(rect.left,rect.top,rect.right,rect.bottom)
+        return result
+    expected=native_controls()
+    observed=data(lambda d:geometry_observation.matches_native_controls(d,expected,previous))
+    assert native_controls()==expected,'Native frame moved while pairing diagnostic geometry'
+    return observed
+
 def rail_geometry(scale):
-    d=data(lambda d:len(d['runtime']['display']['rail_regions'])==4)
+    d=current_layout_observation()
     regions=d['runtime']['display']['rail_regions'];frame=bounds(handle)
+    assert len(regions)==4,('Four primary rail values required',regions)
     top,bottom=chrome_bounds();previous=top
     for region in regions:
         x,y,w,h=(region[k] for k in ('x','y','width','height'))

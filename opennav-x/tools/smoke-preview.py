@@ -231,8 +231,8 @@ try:
         assert 'Using portable plugin dir:' in native_log
         assert any('PluginLoader: Loading PlugIn:' in line and line.endswith('\\profile\\plugins\\dashboard_pi.dll')
                    for line in native_log.splitlines()), 'Bundled Dashboard was not discovered by the portable loader'
-        # Exercise the label's hidden-to-visible transition, not just a wide
-        # first launch. This exposed an overlap in the live navigation captures.
+        # Exercise bottom-pane reflow after a narrow viewport, not just a wide
+        # first launch. Keep the destination summary clear of adjacent controls.
         assert ui.SetWindowPos(handle,None,0,0,960,800,4)
         time.sleep(.6)
         ui.size_window(handle)

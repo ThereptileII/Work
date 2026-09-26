@@ -3,6 +3,7 @@
 #include "smartnav/Advisories.h"
 #include "vessel/DisplayItems.h"
 #include "ui/Sheet.h"
+#include "diagnostics/TestUiTrace.h"
 #include <wx/accel.h>
 #include <wx/datetime.h>
 #include <wx/popupwin.h>
@@ -157,8 +158,11 @@ Shell::Shell(wxFrame &frame, wxAuiManager &manager, ShellActions actions,
   center->SetIcon(XNavIcon::Ownship);center->SetMinSize(frame_.FromDIP(wxSize(48,64)));
   tools->Add(center,0,wxALL,frame_.FromDIP(4));
   orientation_button_ = Button(left, "North", "Change chart orientation", [this] {
+    XNAV_TEST_UI_TRACE("orientation.begin", metrics_.ticks);
     if (actions_.navigation.orientation) actions_.navigation.orientation();
+    XNAV_TEST_UI_TRACE("orientation.upstream-return", metrics_.ticks);
     Tick();
+    XNAV_TEST_UI_TRACE("orientation.end", metrics_.ticks);
   });
   orientation_button_->SetIcon(XNavIcon::Compass);
   orientation_button_->SetRole(ButtonRole::Quiet);
@@ -513,6 +517,7 @@ void Shell::UpdateAlerts() {
   }
 }
 void Shell::Tick() {
+  XNAV_TEST_UI_TRACE("tick.begin", metrics_.ticks, timer_.IsRunning());
   const auto begin = std::chrono::steady_clock::now();
   const auto wall_now = vessel::Clock::now();
   if (actions_.chart_orientation) {
@@ -536,6 +541,7 @@ void Shell::Tick() {
     if (actions_.route)
       state_.navigation.route = actions_.route();
   }
+  XNAV_TEST_UI_TRACE("tick.input", metrics_.ticks);
   const auto config = replay ? actions_.commissioning->ReplayAssumptions()
                       : actions_.settings ? actions_.settings()
                                           : application::Settings{};
@@ -552,6 +558,7 @@ void Shell::Tick() {
   #endif
   if (actions_.commissioning && !replay)
     actions_.commissioning->Capture(state_, wall_now);
+  XNAV_TEST_UI_TRACE("tick.energy-recording", metrics_.ticks);
   const bool creating = actions_.route_creating && actions_.route_creating();
   if (finish_route_->IsShown() != creating) {
     finish_route_->Show(creating);
@@ -613,8 +620,10 @@ void Shell::Tick() {
     }
     field_snapshot_.alerts = p.alerts;
     field_journal_.Observe(field_snapshot_, wall_now);
+    XNAV_TEST_UI_TRACE("tick.services", metrics_.ticks);
     product_->Update(p, mode_);
   }
+  XNAV_TEST_UI_TRACE("tick.product", metrics_.ticks);
   UpdateRail(config.data_rail, now);
   UpdateContext(wall_now);
   clock_->SetLabel(simulation_ ? "10:42" : wxDateTime::Now().Format("%H:%M"));
@@ -673,14 +682,17 @@ void Shell::Tick() {
                   actions_.build_info ? actions_.build_info()
                                       : std::vector<std::string>{}, field_snapshot_.advice);
   UpdateScrollControls();
+  XNAV_TEST_UI_TRACE("tick.before-publication", metrics_.ticks);
   if (actions_.diagnostic_snapshot)
     actions_.diagnostic_snapshot(state_, energy, PageTitle());
+  XNAV_TEST_UI_TRACE("tick.published", metrics_.ticks);
   metrics_.last_ms = std::chrono::duration<double, std::milli>(
                          std::chrono::steady_clock::now() - begin)
                          .count();
   ++metrics_.ticks;
   metrics_.mean_ms += (metrics_.last_ms - metrics_.mean_ms) / metrics_.ticks;
   metrics_.maximum_ms = std::max(metrics_.maximum_ms, metrics_.last_ms);
+  XNAV_TEST_UI_TRACE("tick.end", metrics_.ticks);
 }
 
 XNavScroll *Shell::CurrentScroll() const {

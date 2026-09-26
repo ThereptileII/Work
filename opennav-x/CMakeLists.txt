@@ -196,6 +196,10 @@ if(OPENNAV_BUILD_TESTS)
     ${CMAKE_CURRENT_SOURCE_DIR}/tests/diagnostic_snapshot_tests.py)
   add_test(NAME navigation_chart_layout_geometry COMMAND ${Python3_EXECUTABLE}
     ${CMAKE_CURRENT_SOURCE_DIR}/tests/chart_layout_tests.py)
+  add_test(NAME windows_route_summary_layout_contract COMMAND ${Python3_EXECUTABLE}
+    ${CMAKE_CURRENT_SOURCE_DIR}/tests/windows_ui_layout_tests.py)
+  add_test(NAME native_diagnostic_geometry_observation COMMAND ${Python3_EXECUTABLE}
+    ${CMAKE_CURRENT_SOURCE_DIR}/tools/test-diagnostic-geometry.py)
   add_executable(restart_probe tests/restart_probe.cpp)
   target_link_libraries(restart_probe PRIVATE opennav_platform)
   if(WIN32)
