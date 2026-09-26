@@ -206,3 +206,7 @@ process closed, and labels the output as local filesystem evidence. It never
 executes the dummy application/plugin files or reads/writes a real profile,
 registry, service or hardware connection. Do not impersonate CI by setting an
 environment variable on the boat.
+
+Source updates use an owned, exact-commit checkout and preserve unrecognized or
+modified trees. See [source maintenance](installer/boat-source-checkout.md) for
+the first-checkout, update and interrupted-operation behavior.

@@ -149,7 +149,11 @@ No unrelated Desktop content is included in feedback documentation.
   implementation uses the ordinary owner/group/DACL as the preservation baseline
   and the audit view only to reject unsupported SACL metadata. It never copies
   the transformed audit DACL or relaxes ordered-ACE checks. The corrected split
-  passes 34/21/11 boat-local temporary-file groups. Dedicated Server CI is pending.
+  passes 34/21/11 boat-local temporary-file groups and the same native Windows
+  Server suites. Tooling commit `586df3875a8157e17b27da782b131420d9e6fbd6`
+  passes all six maintenance/review suites (266 groups) in
+  [CI 36274989439](https://github.com/ThereptileII/Work/actions/runs/36274989439).
+  This qualifies that tooling revision only, not the application.
   The native window
   review helper passes 93 policy/compilation groups on Linux and Windows;
   actual UI actions remain unperformed. Both restored chart directories and

@@ -154,7 +154,7 @@ void ProductPanel::LiveText(
 }
 XNavButton *ProductPanel::StatusAction(const wxString &title,
     std::function<wxString(const ProductState &)> status, std::function<void()> action) {
-  auto text = [title, status](const ProductState &state) { return title + "  ·  " + status(state); };
+  auto text = [title, status](const ProductState &state) { return title + W("  ·  ") + status(state); };
   auto *button = Action(text(state_), std::move(action));
   button->SetRole(ButtonRole::Quiet);
   button->SetMinSize(FromDIP(wxSize(200, 64)));
@@ -421,7 +421,7 @@ void ProductPanel::AlertsPanel() {
       case application::AlertArea::Energy: if(actions_.energy) actions_.energy(); break;
       }
     });
-    Action("Acknowledge " + W(a.id), [this, id = a.id, episode = a.episode] {
+    Action("Acknowledge " + W(a.title), [this, id = a.id, episode = a.episode] {
       if (actions_.acknowledge_alert) actions_.acknowledge_alert(id, episode);
     }, !a.acknowledged);
     EndActions();
@@ -531,7 +531,7 @@ void ProductPanel::RouteActions() {
         detail = point.incoming_nm && std::isfinite(*point.incoming_nm) && *point.incoming_nm >= 0
             ? wxString::Format("%.2f NM", *point.incoming_nm) : wxString("Leg distance unavailable");
         if (point.incoming_course_true_deg && std::isfinite(*point.incoming_course_true_deg))
-          detail += wxString::Format("  /  %.0f° true", *point.incoming_course_true_deg);
+          detail += wxString::Format(W("  /  %.0f° true"), *point.incoming_course_true_deg);
       }
       p.Text(detail, 60, 40, 14, p.c.secondary, false, width - 84);
       p.Rule(60, 72, width - 84);
@@ -670,19 +670,19 @@ void ProductPanel::PilotActions() {
     auto locked = pilot.fresh ? pilot.feedback.locked_heading_magnetic_deg : vessel::Sample{};
     auto heading = pilot.fresh ? pilot.feedback.heading_magnetic_deg : vessel::Sample{};
     const int cell = (width - 48) / 3;
-    Metric(p, locked, state_.now, 24, 54, cell - 16, "COMMANDED HEADING", "° MAGNETIC", 0, 48);
-    Metric(p, heading, state_.now, 24 + cell, 54, cell - 16, "ACTUAL HEADING", "° MAGNETIC", 0, 32);
+    Metric(p, locked, state_.now, 24, 54, cell - 16, "COMMANDED HEADING", W("° MAGNETIC"), 0, 48);
+    Metric(p, heading, state_.now, 24 + cell, 54, cell - 16, "ACTUAL HEADING", W("° MAGNETIC"), 0, 32);
     Metric(p, state_.vessel.rudder.angle_deg, state_.now, 24 + cell * 2, 54,
-           cell - 16, "RUDDER", "°", 1, 32);
+           cell - 16, "RUDDER", W("°"), 1, 32);
   });
   BeginActions(4, 96);
   for (int delta : {-10, -1, 1, 10}) {
-    auto *button = Action(wxString::Format("%+d°", delta), [this, delta] {
+    auto *button = Action(wxString::Format(W("%+d°"), delta), [this, delta] {
       if (actions_.pilot_command)
         actions_.pilot_command(adapters::PilotAction::AlterCourse, delta);
     }, state_.pilot.enabled && state_.pilot.fresh &&
        state_.pilot.capabilities.alter_course && state_.pilot.feedback.mode == adapters::PilotMode::Auto);
-    button->SetName(wxString::Format("%+d° magnetic course", delta));
+    button->SetName(wxString::Format(W("%+d° magnetic course"), delta));
     button->SetMinSize(FromDIP(wxSize(96, 56)));
     pilot_buttons_.push_back({button, adapters::PilotAction::AlterCourse});
   }
@@ -882,7 +882,7 @@ void ProductPanel::Build() {
       if (!target) { p.Text("Target no longer available", 24, 64, 23, p.c.attention); return; }
       const int cell = (width - 48) / 4;
       Metric(p, target->sog_kn, state_.now, 24, 58, cell - 16, "SPEED", "kn");
-      Metric(p, target->cog_deg, state_.now, 24 + cell, 58, cell - 16, "COURSE", "° TRUE", 0);
+      Metric(p, target->cog_deg, state_.now, 24 + cell, 58, cell - 16, "COURSE", W("° TRUE"), 0);
       Metric(p, target->cpa_nm, state_.now, 24 + cell * 2, 58, cell - 16, "CPA", "NM", 2);
       Metric(p, target->tcpa_minutes, state_.now, 24 + cell * 3, 58, cell - 16, "TCPA", "min", 0);
       p.Text(W(target->status), 24, 184, 12, target->upstream_alarm ? p.c.attention : p.c.secondary, false, width - 48);
@@ -902,8 +902,8 @@ void ProductPanel::Build() {
       p.Card(0, 0, width, 176, "POSITION RELATIVE TO VESSEL");
       const int cell = (width - 48) / 3;
       Metric(p, target ? target->range_nm : vessel::Sample{}, state_.now, 24, 48, cell - 16, "RANGE", "NM");
-      Metric(p, target ? target->bearing_true_deg : vessel::Sample{}, state_.now, 24 + cell, 48, cell - 16, "BEARING", "° TRUE", 0);
-      Metric(p, target ? target->heading_true_deg : vessel::Sample{}, state_.now, 24 + cell * 2, 48, cell - 16, "HEADING", "° TRUE", 0);
+      Metric(p, target ? target->bearing_true_deg : vessel::Sample{}, state_.now, 24 + cell, 48, cell - 16, "BEARING", W("° TRUE"), 0);
+      Metric(p, target ? target->heading_true_deg : vessel::Sample{}, state_.now, 24 + cell * 2, 48, cell - 16, "HEADING", W("° TRUE"), 0);
     });
   } else if (page_ == ProductPage::Advice) {
     Heading("SmartNav", "Passage timeline / Advice only");

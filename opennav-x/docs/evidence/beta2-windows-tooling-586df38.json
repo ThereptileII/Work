@@ -1,0 +1,44 @@
+{
+  "schema": 1,
+  "scope": "Beta 2 maintenance tooling qualification only",
+  "status": "passed",
+  "commit": "586df3875a8157e17b27da782b131420d9e6fbd6",
+  "ciRun": "https://github.com/ThereptileII/Work/actions/runs/36274989439",
+  "ciJob": "https://github.com/ThereptileII/Work/actions/runs/36274989439/job/108495883804",
+  "environment": {
+    "os": "Windows Server 2022 Datacenter 10.0.20348",
+    "runnerImage": "windows-2022, 20260920.314.1",
+    "testHost": "Native Windows PowerShell 5.1"
+  },
+  "suites": [
+    {"name": "boat-tools", "passed": 21},
+    {"name": "official-upgrade-policy", "passed": 86},
+    {"name": "preparation", "passed": 34},
+    {"name": "commissioning", "passed": 21},
+    {"name": "commissioning-launch", "passed": 11},
+    {"name": "review-window", "passed": 93}
+  ],
+  "totalPassed": 266,
+  "failures": 0,
+  "aclRegression": {
+    "ordinaryAndAuditedDaclDifferenceObserved": true,
+    "ordinaryAccessPermissionsPreserved": true,
+    "auditQueryUsedOnlyForSaclInspection": true,
+    "aceInheritanceOrderCountAndRightsRemainStrict": true
+  },
+  "evidence": {
+    "jobLogSha256": "8a663e36a78b1e4481fe37c617bea6038e2ec4ea05a57a3835e424e874701a7d",
+    "artifact": "development-boat-tooling-586df3875a8157e17b27da782b131420d9e6fbd6",
+    "artifactId": 10916541995
+  },
+  "applicationLaunched": false,
+  "physicalCommandsSent": false,
+  "realProfileModifiedByTheseTests": false,
+  "productReleaseAccepted": false,
+  "boatAcceptance": false,
+  "limitations": [
+    "Disposable filesystem and policy fixtures; no interactive boat or hardware acceptance.",
+    "This tooling-only run does not build or qualify the OpenNav product or its release packages.",
+    "The source-checkout suite was not part of this six-suite run."
+  ]
+}

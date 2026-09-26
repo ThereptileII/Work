@@ -368,10 +368,16 @@ try:
     else:xdo('key','ctrl+shift+F9');time.sleep(.5)
     alert_data=data(lambda d:d.get('ui_page')=='Alerts')
     gps=next(a for a in alert_data['runtime']['alerts'] if a['id'].startswith('position-'))
+    labels={c['label'] for c in alert_data['runtime']['display']['product_controls']}
+    assert all('Acknowledge '+a['id'] not in labels for a in alert_data['runtime']['alerts']), 'Normal alert actions must not expose internal identifiers'
+    previous_ack={(a['id'],a['episode']):a['acknowledged'] for a in alert_data['runtime']['alerts']}
     capture('beta-alerts-active')
-    product_click('Acknowledge '+gps['id'])
-    acknowledged=data(lambda d:any(a['id']==gps['id'] and a['acknowledged'] for a in d['runtime']['alerts']))
-    assert any(a['episode']==gps['episode'] for a in acknowledged['runtime']['alerts'])
+    product_click('Acknowledge Position unavailable or stale')
+    acknowledged=data(lambda d:any(a['id']==gps['id'] and a['episode']==gps['episode'] and a['acknowledged'] for a in d['runtime']['alerts']))
+    for a in acknowledged['runtime']['alerts']:
+        key=(a['id'],a['episode'])
+        if key in previous_ack and key!=(gps['id'],gps['episode']):
+            assert a['acknowledged']==previous_ack[key], 'Readable action must acknowledge only its original alert episode'
     capture('beta-alerts-acknowledged')
     command('Energy','e')
     assert data()['runtime']['alerts'],'Alert must remain after acknowledgement/page change'

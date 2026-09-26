@@ -1019,7 +1019,7 @@ void Shell::ShowChartContext(application::Coordinate position) {
     if (action == ContextAction::GoTo && actions_.navigation.go_to) {
       if (!live() || !CurrentMeasuredPosition(state_, vessel::Clock::now())) return;
       if (ConfirmSheet(frame_, mode_, "Go to this position",
-          wxString::Format("Destination %.5f° %.5f°. Check the chart before starting.",
+          wxString::Format(wxString::FromUTF8("Destination %.5f° %.5f°. Check the chart before starting."),
                            position.latitude_deg, position.longitude_deg), "Start") &&
           live() && CurrentMeasuredPosition(state_, vessel::Clock::now()))
         result(actions_.navigation.go_to(position, "Go To"));

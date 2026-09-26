@@ -199,9 +199,16 @@ owner before staging. Fresh native Windows PowerShell 5.1 qualification passed
 all 34 groups, recorded in the private evidence file
 `evidence/local/boat-beta2/native-preparation-access-audit-final.json`.
 The commissioning suite passed 21 groups and launch verification passed 11
-against the same production implementation. Windows Server CI qualification of
-the corrected split remains pending; the earlier desktop results and failed
-same-audit-scope CI do not qualify that separate gate.
+against the same production implementation. Windows Server 2022 CI subsequently
+passed preparation 34, commissioning 21 and launch verification 11 at commit
+`586df3875a8157e17b27da782b131420d9e6fbd6`,
+[run 36274989439, job 108495883804](https://github.com/ThereptileII/Work/actions/runs/36274989439/job/108495883804).
+The log confirms the ordinary and audited DACLs still differ on that runner;
+the successful suite therefore exercises the corrected separation on the
+previously failing platform. The six-suite tooling result is recorded in
+[`beta2-windows-tooling-586df38.json`](../evidence/beta2-windows-tooling-586df38.json).
+This qualifies the maintenance tooling only, not the product build, release,
+physical hardware, or actual interactive boat launch.
 CI failure reports include only disposable fixture
 SDDL and stack context; local boat test failures do not print account descriptors.
 The private

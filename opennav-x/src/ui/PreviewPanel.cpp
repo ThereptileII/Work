@@ -58,6 +58,8 @@ wxString EnergyMessage(const smartnav::Prediction<smartnav::ArrivalEstimate> &p)
   }
   if (p.reason == smartnav::EnergyReason::InvalidModel)
     return "Set battery capacity and reserve in Settings";
+  if (p.input == smartnav::EnergyInput::BatteryIdentity)
+    return "Battery source not identified";
   // Data names are human-facing; protocol/source details belong in Diagnostics.
   return W(smartnav::EnergyStatus(p.reason, p.input));
 }
@@ -194,7 +196,7 @@ void PreviewPanel::Paint(wxPaintEvent &) {
     p.Rule(px + 24, py + 154, cw - 48);
     p.Value(state_.propulsion.motor_rpm, px + 24, py + 178, "RPM", 0, 28, cw / 2 - 32);
     p.Value(state_.propulsion.motor_temperature_c, px + cw / 2 + 8, py + 178,
-            "MOTOR / °C", 0, 28, cw / 2 - 32);
+            W("MOTOR / °C"), 0, 28, cw / 2 - 32);
 
     const int full = width - 2 * margin;
     int range_y = by + card_height + gap;
@@ -295,13 +297,13 @@ void PreviewPanel::Paint(wxPaintEvent &) {
     p.Rule(x + 24, y + 136, cw - 48);
     p.Text("NEXT TURN", x + 24, y + 156, 12, c.secondary);
     p.Text(turn && turn->course_change_deg
-               ? wxString::Format("%+.0f°", *turn->course_change_deg)
+               ? wxString::Format(W("%+.0f°"), *turn->course_change_deg)
            : valid && route->remaining_steps.size() == 1 ? "Final leg" : Dash(),
            x + 24, y + 180, 36, turn ? c.accent : c.muted, false, cw - 48);
     p.Text(turn ? ApproxTime(turn->seconds_from_now) : "Turn timing unavailable",
            x + 24, y + 230, 17, c.secondary, false, cw - 48);
     p.Text(turn && turn->course_true_deg
-               ? wxString::Format("New course %.0f° true / advisory", *turn->course_true_deg)
+               ? wxString::Format(W("New course %.0f° true / advisory"), *turn->course_true_deg)
                : "Steering remains under human control",
            x + 24, y + 268, 11, c.muted, false, cw - 48);
     const int end = y + 324;

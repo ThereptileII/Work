@@ -186,6 +186,10 @@ try:
     assert not state['enabled'] and not sent,'Permission cannot auto-enable or emit controls'
     assert not state['track_capability'] and not state['wind_capability']
     show_pilot();report['grouped_regions']=interaction.grouped_regions(data);capture('pilot-01-status-only')
+    labels={c['label'] for c in data()['runtime']['display']['product_controls']}
+    course_labels={'-10°','-1°','+1°','+10°'}
+    assert course_labels.issubset(labels), ('Course labels must use Unicode degree signs', sorted(labels))
+    report['course_labels']=sorted(course_labels)
     previous=pilot()['command_id']
     click('AUTO',enabled=False);time.sleep(.8)
     assert pilot()['command_id']==previous and not sent,'Disabled control must not request or send a command'

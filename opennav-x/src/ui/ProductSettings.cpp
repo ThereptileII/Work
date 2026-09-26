@@ -315,8 +315,8 @@ void ProductPanel::SourceDetail() {
       return W(vessel::QualityName(position.quality)) +
              (position.age ? wxString::Format(" / Last update %.1f s ago", position.age->count() / 1000.) : wxString(" / No observation"));
     });
-    Value("LATITUDE", "°", [](const auto &s) { return s.vessel.navigation.latitude_deg; }, 5);
-    Value("LONGITUDE", "°", [](const auto &s) { return s.vessel.navigation.longitude_deg; }, 5);
+    Value("LATITUDE", W("°"), [](const auto &s) { return s.vessel.navigation.latitude_deg; }, 5);
+    Value("LONGITUDE", W("°"), [](const auto &s) { return s.vessel.navigation.longitude_deg; }, 5);
     Value("SOG", "kn", [](const auto &s) { return s.vessel.navigation.sog_kn; });
     LiveText([](const auto &s) { return "Source: " + W(s.vessel.navigation.latitude_deg.source); });
     Action("Connections / Advanced settings", actions_.navigation.legacy_settings);

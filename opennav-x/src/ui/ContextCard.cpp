@@ -187,9 +187,9 @@ void XNavContextCard::Paint(wxPaintEvent &) {
     p.Text("Chart position", 0, 8, 20, p.c.primary, false, width - 56);
     const bool valid = std::isfinite(position_.latitude_deg) && std::isfinite(position_.longitude_deg) &&
         std::abs(position_.latitude_deg) <= 90 && std::abs(position_.longitude_deg) <= 180;
-    p.Text(valid ? wxString::Format("%.5f°", position_.latitude_deg) : wxString("Position unavailable"),
+    p.Text(valid ? wxString::Format(W("%.5f°"), position_.latitude_deg) : wxString("Position unavailable"),
            0, 54, 22, p.c.primary, false, width);
-    if (valid) p.Text(wxString::Format("%.5f°", position_.longitude_deg), 0, 84, 22, p.c.primary);
+    if (valid) p.Text(wxString::Format(W("%.5f°"), position_.longitude_deg), 0, 84, 22, p.c.primary);
   } else if (kind_ == ContextKind::Ais) {
     p.Text(target_ ? W(target_->name.empty() ? std::to_string(target_->mmsi) : target_->name) : "AIS target unavailable",
            0, 8, 20, p.c.primary, false, width - 56);
@@ -201,20 +201,20 @@ void XNavContextCard::Paint(wxPaintEvent &) {
     p.Rule(0, 82, width);
     const auto empty = vessel::Sample{};
     metric("SPEED", target_ ? target_->sog_kn : empty, 0, 92, 1, " kn");
-    metric("COURSE", target_ ? target_->cog_deg : empty, width / 2, 92, 0, "°T");
+    metric("COURSE", target_ ? target_->cog_deg : empty, width / 2, 92, 0, W("°T"));
     metric("CPA", target_ ? target_->cpa_nm : empty, 0, 150, 2, " NM");
     metric("TCPA", target_ ? target_->tcpa_minutes : empty, width / 2, 150, 0, " min");
     p.Text("Range " + Number(target_ ? target_->range_nm : empty, now_, 1, " NM"), 0, 211, 12, p.c.secondary);
-    p.Text("Bearing " + Number(target_ ? target_->bearing_true_deg : empty, now_, 0, "°T"), width / 2, 211, 12, p.c.secondary);
+    p.Text("Bearing " + Number(target_ ? target_->bearing_true_deg : empty, now_, 0, W("°T")), width / 2, 211, 12, p.c.secondary);
   } else {
     p.Text(point_.waypoint ? Name(*point_.waypoint) : "Waypoint unavailable", 0, 8, 20, p.c.primary, false, width - 56);
     const bool position_valid = point_.waypoint && std::isfinite(point_.waypoint->latitude_deg) &&
         std::isfinite(point_.waypoint->longitude_deg) && std::abs(point_.waypoint->latitude_deg) <= 90 &&
         std::abs(point_.waypoint->longitude_deg) <= 180;
-    p.Text(position_valid ? wxString::Format("%.5f°  %.5f°", point_.waypoint->latitude_deg, point_.waypoint->longitude_deg)
+    p.Text(position_valid ? wxString::Format(W("%.5f°  %.5f°"), point_.waypoint->latitude_deg, point_.waypoint->longitude_deg)
                           : wxString("Position unavailable"), 0, 48, 12, p.c.secondary);
     metric("RANGE", point_.range_nm, 0, 87, 1, " NM");
-    metric("BEARING", point_.bearing_true_deg, width / 2, 87, 0, "°T");
+    metric("BEARING", point_.bearing_true_deg, width / 2, 87, 0, W("°T"));
     p.Text(W(point_.reason), 0, 151, 12, p.c.secondary, false, width);
   }
 }
