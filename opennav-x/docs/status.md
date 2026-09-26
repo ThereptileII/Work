@@ -9,15 +9,20 @@ executables from the installed product, refines shared visual components and
 navigation workflows, and adds repeatable boat deployment and maintenance tools.
 The accepted Beta 1 results below remain historical evidence, not Beta 2 gates.
 
-### Boat preflight — prerequisite upgrade authorized
+### Boat prerequisite — official 5.12.4 upgrade verified
 
 Read-only inspection found **OpenCPN 5.12.2-0+b69f44c / x86**, executable SHA-256
 `2fdcd6a2cdef7f730aa4c094fcd21302ed2a5d531a611ee180c06533f3a2cb48`.
-This differs from the validated 5.12.4 binary; no compatibility entry has been
-added and no installed OpenCPN file has been modified. The user has now explicitly
-authorized a backed-up upgrade to the exact validated official 5.12.4. Backup,
-installer and preservation checks precede that upgrade; Beta 2 deployment still
-requires its own product gates. Tailscale, SSH and RustDesk remain running.
+The user authorized a backed-up upgrade. The official visible Upgrade has now
+completed, and the installed **5.12.4 x86** executable matches the validated hash
+`7c6547562cca7954671eaab72833ca9d788710fd9808b6a699b6dc823852ae0c`.
+All 539 profile files remained byte-identical. Complete third-party plugin files,
+the RTL-SDR registration and its original uninstaller were preserved; no recovery
+copy-back was needed. The original cold backup remains verified and retained.
+The wizard's Upgrade/reset/summary/Finish screenshots were reviewed; Run and
+Show were unchecked, and OpenCPN was not launched. Tailscale, SSH and RustDesk
+remain running. [Upgrade evidence](evidence/beta2-boat-stock-5.12.4-upgrade.json).
+This closes the stock-version prerequisite; Beta 2 still requires its own gates.
 
 The actual shared profile's `opencpn.ini` was already zero-filled at first
 inspection (21,380 bytes; last written 2026-09-20). A same-sized nonzero temporary
@@ -97,12 +102,18 @@ No unrelated Desktop content is included in feedback documentation.
   investigation before the next full run.
 - The authorized official-stock upgrade uses a separate reviewed visible-wizard
   driver, not the OpenNav installer or silent replacement. Native PS5.1 passes
-  85 pure policy/helper checks. The real preflight correctly stopped on an
-  ambiguous registration: the bare OpenCPN key is the RTL-SDR plugin, whose full
-  registry values and root-level uninstaller must also survive. No installer
-  has run. Temporary-file profile-recovery tests found Windows ACL inheritance
-  metadata canonicalization; the real damaged INI remains untouched pending
-  that independent correction and native test.
+  86 policy/helper checks, 21 filesystem groups and 23 profile-preparation groups.
+  The bare OpenCPN registration is explicitly identified as the inspected RTL-SDR
+  plugin, with complete value/type and uninstaller preservation. Temporary-file
+  recovery tests confirmed Windows adds the DACL AutoInherited metadata bit;
+  ownership, protection and every ordered ACE must remain exact. The independent
+  real-profile repair remains separate from the completed stock upgrade.
+- Candidate `06f3bc32879cff4b1822ff53710388b1146d05a7`
+  ([CI 36271371549](https://github.com/ThereptileII/Work/actions/runs/36271371549))
+  includes the corrected ZIP fixture, X11 pointer-target observations and native
+  boat maintenance tests. All 506 local tracked source blobs/modes match the
+  published tree. The object harness passed two additional local 17-group runs;
+  full candidate qualification is pending.
 
 ## Accepted Beta 1 baseline
 

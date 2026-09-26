@@ -3,5 +3,5 @@
   "publishNamedRelease": false,
   "enduranceSeconds": 10800,
   "acceptedAlphaCommit": "08bc92fc778591a3978e594a54208d672ff9158f",
-  "reason": "Beta 2 named release remains withheld until exact-commit Linux/native Windows gates, production fixture exclusion, installer lifecycle and real boat-PC visual/read-only smoke acceptance. Boat currently has unsupported OpenCPN 5.12.2; no modification is authorized through the compatibility gate."
+  "reason": "Beta 2 named release remains withheld until exact-commit Linux/native Windows gates, production fixture exclusion, installer lifecycle and real boat-PC visual/read-only smoke acceptance. The user-authorized official stock upgrade to exact validated 5.12.4 is verified; real-profile preparation, safe plugin audit and Beta 2 boat acceptance remain pending. A separately labeled development review artifact may be used after native functional gates while endurance continues; it is never release qualification."
 }

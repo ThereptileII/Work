@@ -62,7 +62,9 @@ any existing output configuration. Repair is **not** permission to launch.
    -ExpectedRecordSha256 <returned-hash>` rechecks the executable, SID, source
    paths, both fixed hashes, full profile inventory, original ACL and closed
    processes. A separate flushed apply journal precedes the same-directory atomic
-   replacement. The candidate is copied without normalization or merging.
+   replacement. The candidate bytes are copied without normalization or merging.
+   The new staging file receives the original's owner, group and DACL before
+   replacement; its permissions are then checked independently.
 3. `-Action Verify` with the same record/hash verifies exact recovered bytes,
    unchanged TMP, unchanged non-INI profile contents and preserved destination
    permissions. Apply performs these postconditions too.
@@ -83,7 +85,21 @@ and identity remain exact. The comparator neither sorts/merges ACEs nor sets
 permissions. Invalid descriptors fail closed. Raw before/after SDDL and the
 comparison policy are retained in private verification evidence; they must not
 be uploaded because they contain account SIDs. No permission repair or blanket
-`Set-Acl` is used on the profile.
+`Set-Acl` is used on the original profile.
+
+The subsequent Windows Server CI run exposed a descriptor-size difference
+despite the earlier 23-group boat-PC disposable test passing. That difference
+is not accepted as an equivalent permission change. Windows
+[`ReplaceFileW`](https://learn.microsoft.com/en-us/windows/win32/api/winbase/nf-winbase-replacefilew)
+documents DACL preservation/merging; owner and group are not listed among the
+preserved attributes. The recovery now constructs a fresh permission object
+containing the original owner/group/access sections and applies it **only to the
+new same-directory GUID-named staging file**. It verifies staging permissions,
+rechecks unchanged original permissions/bytes, and invokes atomic replacement
+without ignoring metadata errors. The final descriptor comparison remains strict
+apart from the already observed `0x0400` marker. No original, saved candidate,
+backup or parent ACL is written. If staging permissions cannot be made identical,
+the operation stops before replacement.
 
 Any intervening user change stops the operation. The repaired INI becomes the
 working baseline for subsequent commissioning undo; the corrupt original is
@@ -105,10 +121,13 @@ recursive redirects, changed source inventories, exact-byte recovery refusal,
 intervening edits, duplicate journals and atomic publication. Native tests also
 check exclusive file locks and ACL preservation/privacy.
 
-At this revision 18 Linux portable contract groups pass, including all 639
+At this revision 19 Linux portable contract groups pass, including all 639
 non-exempt bit changes in a bounded descriptor fixture. Native tests add actual
 SDDL equivalence, negative owner/group/protection/ordered-ACE/SACL cases, and
-the real atomic-file-replacement permission check. The private
+the real atomic-file-replacement permission check and an explicit protected
+owner/group/DACL fixture. CI failure reports include only disposable fixture
+SDDL and stack context; local boat test failures do not print account descriptors.
+The private
 inspected pair passed its exact byte/hash checks and strict parsing (783 keys).
 Native PowerShell 5.1 and actual boat execution remain separate gates. No real
 profile was modified by these development checks.

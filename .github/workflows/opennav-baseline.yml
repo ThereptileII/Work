@@ -306,6 +306,16 @@ jobs:
       - name: Public ENC chart and plugin rendering gate
         if: ${{ !cancelled() && steps.integrated.conclusion == 'success' }}
         run: python opennav-x/tools/smoke-charts.py
+      - name: Prepare development boat review after native functional gates
+        if: ${{ success() && steps.installer.conclusion == 'success' && steps.dpi.conclusion == 'success' }}
+        run: python opennav-x/tools/alpha-artifacts.py --boat-review
+      - name: Upload development review only while endurance runs
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: ${{ success() && steps.installer.conclusion == 'success' && steps.dpi.conclusion == 'success' }}
+        with:
+          name: beta2-boat-review-pending-endurance-${{ github.sha }}
+          path: opennav-x/build/beta-boat-review
+          if-no-files-found: error
       - name: Actual elapsed-time native trip and resource stability
         run: |
           $Duration = (Get-Content opennav-x/release/qualification.json -Raw | ConvertFrom-Json).enduranceSeconds

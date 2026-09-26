@@ -1,0 +1,96 @@
+{
+  "schema": 1,
+  "stage": "Beta 2 prerequisite, not Beta 2 product acceptance",
+  "operation": "User-authorized official OpenCPN 5.12.2 to exact validated 5.12.4 upgrade",
+  "status": "verified",
+  "maintenanceSourceCommit": "22e1cc93df06d0c3398399422f8ef553144720e6",
+  "originalExecutableSha256": "2fdcd6a2cdef7f730aa4c094fcd21302ed2a5d531a611ee180c06533f3a2cb48",
+  "officialSetupSha256": "e949f55de57611afe2fc0dad5a8ac33795c46ba488cb40ca07b65f639a07b8aa",
+  "upgradedExecutableSha256": "7c6547562cca7954671eaab72833ca9d788710fd9808b6a699b6dc823852ae0c",
+  "version": "5.12.4",
+  "architecture": "Win32 x86 on Windows x64",
+  "upstreamCommit": "37fd0cddb7334fe489e9f18aa163977a9c5c84f7",
+  "recovery": {
+    "applicationFiles": 2123,
+    "profileFiles": 539,
+    "bytes": 1318897252,
+    "verifiedRecordSha256": "eb2b730aedf5d6887e695d98b822e941e301c217668c6fc7db51db27f2751848",
+    "retainedOnBoat": true
+  },
+  "wizard": {
+    "startedUtc": "2026-09-26T20:58:17.6169042Z",
+    "completedUtc": "2026-09-26T20:58:57.1904415Z",
+    "pages": [
+      "Language",
+      "Welcome",
+      "License",
+      "Upgrade",
+      "Components",
+      "StartMenu",
+      "Ready",
+      "Installing",
+      "Finish"
+    ],
+    "configurationDeletion": "none",
+    "runUnchecked": true,
+    "showUnchecked": true,
+    "exitCode": 1223,
+    "note": "1223 accepted only after observed Finish and all independent postconditions",
+    "evidenceSha256": "30fdb9992a061313dc39cf7cfa526972a2f4d730a75d837a01b979ecc150687e"
+  },
+  "postflight": {
+    "reportSha256": "5ccc3be63afe30369149815781f4e13d9146c7af1c589283b4cd288e8844595b",
+    "profileFilesByteIdentical": 539,
+    "thirdPartyPluginFilesUnchanged": true,
+    "rtlSdrRegistrationValuesAndTypesUnchanged": true,
+    "rtlSdrUninstallerSha256": "0da3cfb79b1cf2085f6f53c095abe60300f76f95a9503c09ce467a9c833912fb",
+    "missingPluginFilesRestored": 0,
+    "profileRepaired": false,
+    "applicationLaunched": false
+  },
+  "nativeMaintenanceChecks": {
+    "filesystem": 21,
+    "wizardPolicy": 86,
+    "profilePreparation": 23,
+    "scope": "Temporary files and pure policy checks; no hardware output"
+  },
+  "screenshotsReviewed": [
+    {
+      "page": "Upgrade",
+      "sha256": "a73cf8e5c9fa886cbf0d6be6922e8baf31341bc9e4aa17462be39a4319809265",
+      "scope": "Exact installer window, private boat-local evidence"
+    },
+    {
+      "page": "Components",
+      "sha256": "26f4444f0a46153d9c6964b56f8f6579ea387be25e2592bdab24673159920c16",
+      "scope": "Exact installer window, private boat-local evidence"
+    },
+    {
+      "page": "Ready",
+      "sha256": "50c9e57c6b3a9ab90beff119d3df9c17d2be969d60f6d9393b791079f0cbc1a4",
+      "scope": "Exact installer window, private boat-local evidence"
+    },
+    {
+      "page": "Finish",
+      "sha256": "d1c048467269213e25e362676bf5e320958ea7ac2ed90101a51b3e2790e0ca31",
+      "scope": "Exact installer window, private boat-local evidence"
+    }
+  ],
+  "remoteAccess": {
+    "Tailscale": "Running",
+    "sshd": "Running",
+    "RustDesk": "Running",
+    "configurationChanged": false
+  },
+  "safety": {
+    "physicalCommandsSent": false,
+    "applicationStarted": false,
+    "autonomousSteering": false
+  },
+  "remaining": [
+    "Recover pre-existing exact zero-filled INI from verified same-write TMP separately",
+    "Complete actual plugin/output audit before any real-profile application launch",
+    "Full Beta 2 native/Linux CI, real-profile deployment and boat visual qualification"
+  ],
+  "privacy": "No user names, chart paths, chart data, licenses or unrelated Desktop content included"
+}

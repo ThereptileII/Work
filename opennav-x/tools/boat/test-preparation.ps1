@@ -24,6 +24,7 @@ if (-not $native) {
   }
 }
 $checks=New-Object 'Collections.Generic.List[string]'
+$ini=$null;$aclBefore=$null;$sddl=$null
 function Reject([scriptblock]$Action,[string]$Reason) {
   $rejected=$false
   try { $null=& $Action } catch { $rejected=$true }
@@ -130,6 +131,12 @@ try {
   Write-Record $journal @{owner='OpenNavX.Preparation.ContractTest';status='applying';sourceSha256=$zh;targetSha256=$vh}
   Reject { Write-Record $journal @{status='overwrite'} } 'journal overwrite'
   $checks.Add('Replacement requires a durable, non-overwritable apply journal and preserves both source backups')
+  $stageName=$ini+'.opennav-recovery-'+('a'*32)+'.partial'
+  Assert-PreparationStagePath $ini $stageName
+  foreach($wrong in @($ini,$saved,$tmp,($ini+'.partial'),($ini+'.opennav-recovery-not-a-guid.partial'),(Join-Path $source ([IO.Path]::GetFileName($stageName))))) {
+    Reject {Assert-PreparationStagePath $ini $wrong} 'only exact owned same-directory staging path may receive permissions'
+  }
+  $checks.Add('Staging permission writes cannot target original, saved candidate, TMP or another directory/name')
   # Valid self-relative fixture: owner BA, group BU, one inherited SY allow ACE.
   # Tests use no real SID, ACL mutation or Windows resource API on Linux.
   [byte[]]$descriptor=@(
@@ -184,6 +191,38 @@ try {
     $aclAfter=(Get-Acl -LiteralPath $ini).Sddl
     Assert-PreparationAcl $aclBefore $aclAfter -AllowDaclAutoInherited
     $checks.Add('Windows atomic replacement preserves every permission while allowing only DACL AutoInherited metadata normalization')
+    # Exercise a different owner/group/explicit protected DACL from the parent.
+    # These objects exist only in this fresh disposable test directory.
+    $owned=Join-Path $testRoot 'owned-profile.ini';[IO.File]::WriteAllBytes($owned,$zeros)
+    $sid=[Security.Principal.WindowsIdentity]::GetCurrent().User.Value
+    $ownedSddl='O:'+$sid+'G:BUD:P(A;;FA;;;'+$sid+')(A;;FA;;;SY)(A;;FR;;;BU)'
+    $ownedSecurity=New-Object Security.AccessControl.FileSecurity
+    $ownedSections=[Security.AccessControl.AccessControlSections]::Owner -bor [Security.AccessControl.AccessControlSections]::Group -bor [Security.AccessControl.AccessControlSections]::Access
+    $ownedSecurity.SetSecurityDescriptorSddlForm($ownedSddl,$ownedSections)
+    # FileSecurity orders explicit ACEs canonically before persisting them.
+    # Assert the requested principals/rights separately, then use that exact
+    # native canonical order as the fixture's immutable replacement baseline.
+    $ownedExpected=$ownedSecurity.GetSecurityDescriptorSddlForm($ownedSections)
+    $expectedDescriptor=New-Object Security.AccessControl.RawSecurityDescriptor($ownedExpected)
+    if($expectedDescriptor.Owner.Value -cne $sid -or $expectedDescriptor.Group.Value -cne 'S-1-5-32-545' -or
+        ($expectedDescriptor.ControlFlags -band [Security.AccessControl.ControlFlags]::DiscretionaryAclProtected) -eq 0 -or
+        $expectedDescriptor.DiscretionaryAcl.Count -ne 3){throw 'Protected ACL fixture lost its intended owner/group/protection/count.'}
+    $desiredRights=@{$sid=0x1f01ff;'S-1-5-18'=0x1f01ff;'S-1-5-32-545'=0x120089}
+    foreach($ace in $expectedDescriptor.DiscretionaryAcl) {
+      $aceSid=$ace.SecurityIdentifier.Value
+      if($ace.AceType -ne [Security.AccessControl.AceType]::AccessAllowed -or $ace.AceFlags -ne [Security.AccessControl.AceFlags]::None -or
+          -not $desiredRights.ContainsKey($aceSid) -or $ace.AccessMask -ne $desiredRights[$aceSid]){throw 'Protected ACL fixture changed requested ACE semantics.'}
+      $desiredRights.Remove($aceSid)
+    }
+    if($desiredRights.Count){throw 'Protected ACL fixture omitted an intended principal.'}
+    Set-Acl -LiteralPath $owned -AclObject $ownedSecurity
+    $ownedBefore=(Get-Acl -LiteralPath $owned).Sddl
+    Assert-PreparationAcl $ownedExpected $ownedBefore -AllowDaclAutoInherited
+    $ownedJournal=Join-Path $testRoot 'owned-applying.json';Write-Record $ownedJournal @{owner='OpenNavX.Preparation.ContractTest';status='applying'}
+    Publish-PreparedProfile $owned $saved $zh $vh $valid.Length $ownedJournal
+    Assert-PreparationAcl $ownedBefore (Get-Acl -LiteralPath $owned).Sddl -AllowDaclAutoInherited
+    if((Get-Digest $owned) -cne $vh){throw 'Explicit-permission fixture did not publish exact bytes.'}
+    $checks.Add('Native staging preserves a different explicit owner/group and protected ordered permission list')
   }
   Reject { Publish-PreparedProfile $ini $saved $zh $vh $valid.Length $journal } 'repeat replacement of recovered state'
   if ((Get-Digest $ini) -cne $vh) { throw 'Repeat recovery rolled back working state.' }
@@ -213,4 +252,16 @@ try {
     $checks.Add('Native backup ACL grants only the current SID, administrators and SYSTEM')
   }
   [pscustomobject]@{status='passed';environment=$(if($native){'native-windows-disposable-filesystem'}else{'linux-powershell-portable-contracts'});count=$checks.Count;checks=@($checks);boatAccess=$false;applicationLaunched=$false;nativeFileSystemContracts=$native;productOrBoatAcceptance=$false} | ConvertTo-Json -Depth 5
+} catch {
+  # Only disposable CI fixture descriptors are printed publicly. Local boat
+  # tests retain private account descriptors outside this script's output.
+  $failure=@{status='failed';error=$_.Exception.Message;scriptStack=$_.ScriptStackTrace;completedChecks=@($checks)}
+  if($native -and $env:GITHUB_ACTIONS -eq 'true') {
+    $failure.syntheticSddl=$sddl;$failure.beforeSddl=$aclBefore
+    $failure.fixtureAcls=@(Get-ChildItem -LiteralPath $testRoot -File -Force | Where-Object {$_.Name -match '\.ini|\.partial$'} | ForEach-Object {
+      @{name=$_.Name;sddl=(Get-Acl -LiteralPath $_.FullName).Sddl}
+    })
+  }
+  Write-Host ($failure | ConvertTo-Json -Depth 6)
+  throw
 } finally { Remove-Item -LiteralPath $testRoot -Recurse -Force }

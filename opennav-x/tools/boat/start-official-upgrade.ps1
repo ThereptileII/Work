@@ -7,7 +7,8 @@ param(
   [string]$Record,
   [string]$ExpectedRecordSha256,
   [string]$DispatchRecord,
-  [string]$ExpectedDispatchRecordSha256
+  [string]$ExpectedDispatchRecordSha256,
+  [switch]$RetireUnstarted
 )
 . (Join-Path $PSScriptRoot 'Common.ps1')
 if ([Environment]::OSVersion.Platform -ne 'Win32NT' -or -not [Environment]::Is64BitProcess) {throw 'Native 64-bit Windows PowerShell required.'}
@@ -41,6 +42,13 @@ if ($Action -eq 'Collect') {
     return
   }
   if (-not [IO.File]::Exists($request.output)) {
+    if ($RetireUnstarted) {
+      if ($task.State -ne 'Ready' -or $info.LastTaskResult -ne 267011 -or $info.LastRunTime.Year -ge 2000 -or @($task.Triggers | Where-Object { $null -ne $_ }).Count -ne 0) {throw 'Only an exact reviewed task that has never run can be retired.'}
+      Write-Record (Join-Path ([IO.Path]::GetDirectoryName($DispatchRecord)) 'unstarted-retired.json') @{owner=$request.owner;taskName=$request.taskName;dispatchSha256=$ExpectedDispatchRecordSha256;neverRun=$true;applicationLaunched=$false;utc=[DateTime]::UtcNow.ToString('o')}
+      Unregister-ScheduledTask -TaskName $request.taskName -TaskPath '\' -Confirm:$false
+      @{status='unstarted-retired';taskRemoved=$true;applicationLaunched=$false} | ConvertTo-Json
+      return
+    }
     $attempted=$info.LastRunTime.ToUniversalTime() -ge [DateTime]::Parse($request.createdUtc).ToUniversalTime().AddSeconds(-1)
     $status=if ($attempted) {'failed-without-result'} else {'pending'}
     @{status=$status;taskState=$task.State.ToString();lastTaskResult=$info.LastTaskResult;output=$request.output;taskRetained=$true} | ConvertTo-Json
@@ -54,6 +62,7 @@ if ($Action -eq 'Collect') {
   @{status=$result.status;output=$request.output;sha256=(Get-Digest $request.output);lastTaskResult=$info.LastTaskResult;taskRemoved=$true;postflightRequired=$true} | ConvertTo-Json
   return
 }
+if ($RetireUnstarted) {throw 'RetireUnstarted is available only when collecting a known dispatch.'}
 if (@(Get-Process -Name opencpn -ErrorAction SilentlyContinue).Count) {throw 'Close OpenCPN/XNav normally before stock upgrade.'}
 $Record=Assert-LocalPath $Record
 if ($ExpectedRecordSha256 -cnotmatch '^[a-f0-9]{64}$' -or (Get-Digest $Record) -cne $ExpectedRecordSha256) {throw 'Prepared record hash mismatch.'}

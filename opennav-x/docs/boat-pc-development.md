@@ -7,9 +7,11 @@ here changes them, reboots the PC, elevates silently or sends actuator commands.
 
 Initial inspection found a free, suitable `C:\XNav` workspace and the actual
 normal profile at `C:\ProgramData\opencpn`. The original program is under
-`C:\Program Files (x86)\OpenCPN`. Its initially observed **5.12.2** hash is
-unsupported, so deployment is blocked pending the separately authorized
-prerequisite decision. A version string cannot override the installer manifest.
+`C:\Program Files (x86)\OpenCPN`. Its initially observed **5.12.2** hash was
+unsupported. The separately authorized official upgrade now passes exact 5.12.4
+hash and full profile/plugin preservation checks; see
+[the verified upgrade](evidence/beta2-boat-stock-5.12.4-upgrade.json).
+A version string cannot override the installer manifest.
 
 ## Repeatable sequence
 
@@ -71,6 +73,22 @@ reviewing those changes before the next launch; do not blindly refresh its hash.
 No script clicks pilot commands, activates routes, injects sensor input or creates
 synthetic AIS/radar. Native/boat visual review is separate from hardware control
 acceptance.
+
+## Early development review versus release acceptance
+
+After native functional, fixture-free package, installer lifecycle, DPI/touch
+and public chart/plugin gates pass, CI may upload
+`beta2-boat-review-pending-endurance-<commit>`. This is a separate development
+bundle with explicit pending-qualification text, the same tested payload hashes
+and source artifact. It allows supervised read-only boat iteration while the
+three-hour endurance gate continues. It does not bypass compatibility, backups,
+the real-profile plugin/output audit or the user prohibition on physical commands.
+
+Record any such deployment as **development review**, including all gates still
+pending. Never use it as release acceptance. The final candidate artifact and
+named Beta 2 publication remain gated on complete same-commit CI and actual boat
+evidence. A failed endurance or other remaining gate invalidates qualification
+even if an earlier development review package exists.
 
 ## Preliminary display review while the installed prerequisite is blocked
 

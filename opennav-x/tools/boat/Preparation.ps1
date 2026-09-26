@@ -178,18 +178,44 @@ function Assert-PreparationAcl([string]$Expected,[string]$Actual,[switch]$AllowD
   $before=Convert-PreparationAcl $Expected;$after=Convert-PreparationAcl $Actual
   Assert-PreparationAclBytes $before $after -AllowDaclAutoInherited:$AllowDaclAutoInherited
 }
+function Assert-PreparationStagePath([string]$Original,[string]$Stage) {
+  $original=Assert-LocalPath $Original;$stage=Assert-LocalPath $Stage
+  if([IO.Path]::GetDirectoryName($stage) -ine [IO.Path]::GetDirectoryName($original) -or
+      [IO.Path]::GetFileName($stage) -cnotmatch ('^'+[regex]::Escape([IO.Path]::GetFileName($original))+'\.opennav-recovery-[a-f0-9]{32}\.partial$')) {
+    throw 'Permissions may be prepared only on this new same-directory recovery staging file.'
+  }
+}
+function Set-PreparationStageAcl([string]$Original,[string]$Stage,[string]$ExpectedAcl) {
+  Assert-PreparationStagePath $Original $Stage
+  if([Environment]::OSVersion.Platform -ne 'Win32NT'){throw 'Native staging permissions require Windows.'}
+  Assert-PreparationAcl $ExpectedAcl (Get-Acl -LiteralPath $Original).Sddl
+  # A fresh FileSecurity marks all copied sections for persistence. Reusing an
+  # unmodified Get-Acl object can leave owner/group sections unwritten. Never
+  # set permissions on Original, saved candidate, backup or the parent folder.
+  $permissions=New-Object Security.AccessControl.FileSecurity
+  $sections=[Security.AccessControl.AccessControlSections]::Owner -bor [Security.AccessControl.AccessControlSections]::Group -bor [Security.AccessControl.AccessControlSections]::Access
+  $permissions.SetSecurityDescriptorSddlForm($ExpectedAcl,$sections)
+  Set-Acl -LiteralPath $Stage -AclObject $permissions
+  Assert-PreparationAcl $ExpectedAcl (Get-Acl -LiteralPath $Stage).Sddl -AllowDaclAutoInherited
+  Assert-PreparationAcl $ExpectedAcl (Get-Acl -LiteralPath $Original).Sddl
+}
 function Publish-PreparedProfile([string]$Original,[string]$SavedCandidate,[string]$OriginalHash,[string]$CandidateHash,[int]$Length,[string]$Journal) {
   $original=Assert-LocalPath $Original;$savedCandidate=Assert-LocalPath $SavedCandidate
   $journal=Assert-LocalPath $Journal
   if (-not [IO.File]::Exists($journal)) { throw 'Durable apply journal required before replacement.' }
   if ((Get-Digest $original) -cne $OriginalHash) { throw 'Original changed before staging; no replacement attempted.' }
+  $native=[Environment]::OSVersion.Platform -eq 'Win32NT'
+  $originalAcl=if($native){(Get-Acl -LiteralPath $original).Sddl}else{$null}
   $temporary=$original+'.opennav-recovery-'+[guid]::NewGuid().ToString('N')+'.partial'
   Copy-PreparationFile $savedCandidate $temporary $CandidateHash $Length
+  if($native){Set-PreparationStageAcl $original $temporary $originalAcl}
   if ((Get-Digest $original) -cne $OriginalHash) { throw 'Original changed immediately before atomic replacement; staged file retained.' }
+  if($native){Assert-PreparationAcl $originalAcl (Get-Acl -LiteralPath $original).Sddl}
   # Same-directory replacement is atomic and retains destination permissions.
   # Windows may materialize the DACL AutoInherited marker; the caller compares
   # all permission data and retains raw before/after SDDL in private evidence.
   # The original is already durably backed up. Never roll back to corrupt zeros.
-  [IO.File]::Replace($temporary,$original,[NullString]::Value)
+  [IO.File]::Replace($temporary,$original,[NullString]::Value,$false)
   if ((Get-Digest $original) -cne $CandidateHash) { throw 'Recovery postcondition failed; inspect the durable journal without automatic rollback.' }
+  if($native){Assert-PreparationAcl $originalAcl (Get-Acl -LiteralPath $original).Sddl -AllowDaclAutoInherited}
 }
