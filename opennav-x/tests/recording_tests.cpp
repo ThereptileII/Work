@@ -329,6 +329,7 @@ void ControlBoundary() {
       ++count;
       return application::CommandResult{true, "ok"};
     };
+    actions.deactivate = actions.activate;
     actions.create_waypoint = [&](auto, const auto &, const auto &) {
       ++count;
       return application::CommandResult{true, "ok"};
@@ -349,7 +350,8 @@ void ControlBoundary() {
     actions.legacy_settings = [&] { ++count; };
     actions = application::GuardNavigationChanges(
         std::move(actions), [&] { return !service.Replaying(); });
-    Check(!actions.activate({}).ok && !actions.create_waypoint({}, "", "").ok,
+    Check(!actions.activate({}).ok && !actions.deactivate({}).ok &&
+              !actions.create_waypoint({}, "", "").ok,
           "Replay blocks real navigation mutations");
     Check(!actions.go_to({}, "destination").ok &&
               !actions.go_to_waypoint({}).ok &&

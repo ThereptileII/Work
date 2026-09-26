@@ -23,6 +23,7 @@
 #include <limits>
 #include <thread>
 #include <wx/filefn.h>
+#include <wx/dialog.h>
 #include <wx/jsonwriter.h>
 #include <wx/thread.h>
 #include <wx/timer.h>
@@ -48,6 +49,11 @@ int late_connection_ticks = 0;
 bool settings_capture_started = false;
 bool navigation_settings_capture_started = false;
 int settings_capture_waited = 0;
+int route_detail_stage = 0;
+bool route_modal_changed = false;
+struct ArrivalPoint { double lat, lon, radius; };
+ArrivalPoint first_arrival{}, final_arrival{};
+Route *deleted_detail = nullptr;
 std::time_t AisTicksNow() { return wxDateTime::Now().ToUTC().GetTicks(); }
 // Explicit decoder-state injection in the isolated no-output fixture. Keep
 // its synthetic reports current while Python exercises the actual target card.
@@ -171,6 +177,151 @@ void AddRoute() {
   Check(NavObj_dB::GetInstance().InsertRoute(test_route),
         "Insert actual test route");
 }
+void CheckSelectedRouteStop(const Navigation &selected) {
+  const auto rendered = RouteCopy();
+  Check(CopyNavigationRoute(rendered.id)->revision == rendered.revision &&
+            !CopyNavigationRoute("missing-route") && !CopyNavigationRoute(""),
+        "Targeted route lookup is owned and missing identities remain unavailable");
+  bool refused = false;
+  std::thread worker([&] {
+    try { CopyNavigationRoute(rendered.id); }
+    catch (const std::logic_error &) { refused = true; }
+  });
+  worker.join();
+  Check(refused, "Targeted route lookup rejects off-thread access");
+  auto changed = rendered; changed.revision += "stale";
+  Check(!StopRoute(changed).ok && g_pRouteMan->GetpActiveRoute() == test_route,
+        "Stop rejects a changed revision without deactivating navigation");
+  auto *other = new Route;
+  other->m_GUID = test_route->GetGUID();
+  pRouteList->Append(other);
+  Check(!CopyNavigationRoute(rendered.id) && !StopRoute(rendered).ok &&
+            g_pRouteMan->GetpActiveRoute() == test_route,
+        "Duplicate route identities refuse lookup and Stop without choosing one");
+  other->m_GUID = "OPENNAV-ROUTE-STOP-OTHER";
+  for (int i = 0; i < 2; ++i)
+    other->AddPoint(new RoutePoint(gLat + .2 + .02 * i, gLon + .3 + .02 * i,
+        "diamond", "STOP TEST", wxEmptyString), false);
+  Check(NavObj_dB::GetInstance().InsertRoute(other), "Insert second disposable route");
+  Check(StopRoute(rendered).ok && !StopRoute(rendered).ok,
+        "Stop succeeds only once; no active route cannot report success");
+  const auto other_id = other->GetGUID().ToStdString(wxConvUTF8);
+  Check(ActivateRoute(*CopyNavigationRoute(other_id), selected).ok,
+        "Activate route B after route A");
+  Check(!StopRoute(rendered).ok && g_pRouteMan->GetpActiveRoute() == other,
+        "Rendered Stop A cannot stop subsequently active route B");
+  const auto retained_other = *CopyNavigationRoute(other_id);
+  Check(StopRoute(retained_other).ok && g_pRouteMan->DeleteRoute(other),
+        "Fresh route B selection can stop and delete its own route");
+  Check(!CopyNavigationRoute(other_id) && !StopRoute(retained_other).ok &&
+            retained_other.points.size() == 2,
+        "Deleted selection is unavailable while retained copy survives");
+  Record("Selected Stop identity/revision, A-to-B, duplicate, missing, deleted and thread guards");
+}
+bool HasVisibleText(wxWindow *window, const wxString &text) {
+  if (window->IsShownOnScreen() && window->GetLabel() == text) return true;
+  for (auto *child : window->GetChildren())
+    if (HasVisibleText(child, text)) return true;
+  return false;
+}
+bool HasActivationModal(wxWindow *window) {
+  if (auto *dialog = dynamic_cast<wxDialog *>(window);
+      dialog && dialog->IsModal() && dialog->GetTitle() == "Activate route") return true;
+  for (auto *child : window->GetChildren())
+    if (HasActivationModal(child)) return true;
+  return false;
+}
+bool ObserveRouteDetail(const Navigation &selected) {
+  // Keep the same open detail page throughout external changes. Python only
+  // observes native controls/screens; it does not reopen/refresh the page.
+  const char *phases[]{"route-card", "route-detail-renamed", "route-detail-active",
+                       "route-detail-advanced", "route-detail-completed",
+                       "route-detail-delete-selected", "route-detail-deleted"};
+  if (route_detail_stage == 3 && g_pRouteMan->GetpActivePoint() != test_route->GetPoint(2))
+    throw std::runtime_error("Normal OpenCPN processing did not advance the first waypoint");
+  if (route_detail_stage == 4 && g_pRouteMan->GetpActiveRoute())
+    throw std::runtime_error("Normal OpenCPN processing did not complete the final waypoint");
+  if (route_detail_stage == 2 || route_detail_stage == 3) {
+    const auto progress = CurrentRouteProgress();
+    if (!progress || progress->route_id != test_route->GetGUID().ToStdString(wxConvUTF8) ||
+        !AssessRoute(*progress, Clock::now()).remaining_distance_nm) {
+      Write(); return false; // wait for the next coherent upstream observation
+    }
+    if (route_detail_stage == 3)
+      Check(progress->active_waypoint_id == test_route->GetPoint(2)->m_GUID.ToStdString(wxConvUTF8),
+            "Open detail uses the newly advanced coherent waypoint contract");
+  }
+  if (route_detail_stage == 1 &&
+      !route_modal_changed && !HasVisibleText(gFrame, "BETA TEST externally renamed route")) {
+    Write(); return false; // allow the one-second selected-detail refresh
+  }
+  report["phase"] = wxString::FromUTF8(route_detail_stage == 1 && route_modal_changed
+      ? "route-detail-modal-changed" : phases[route_detail_stage]);
+  Write();
+  if (route_detail_stage == 1) {
+    if (!wxFileExists(wxString::FromUTF8(directory) + "/route-modal-opened")) return false;
+    if (!route_modal_changed) {
+      Check(HasActivationModal(gFrame), "Route confirmation is a real modal sheet");
+      Check(EditRoute(RouteCopy(), "BETA TEST changed during confirmation", "External change").ok,
+            "External change while a rendered activation confirmation remains open");
+      route_modal_changed = true;
+      return false;
+    }
+    if (!wxFileExists(wxString::FromUTF8(directory) + "/route-modal-confirmed")) return false;
+    Check(gFrame->IsEnabled() && !g_pRouteMan->GetpActiveRoute(),
+          "Stale activation confirmation cannot activate the changed route");
+    Check(EditRoute(RouteCopy(), "BETA TEST externally renamed route", "Shared database").ok,
+          "Restore renamed fixture after rejected confirmation");
+    Record("Actual modal defers detail rebuild and rejects a changed rendered activation selection");
+  }
+  if (!wxFileExists(wxString::FromUTF8(directory) + "/" +
+                    wxString::FromUTF8(phases[route_detail_stage]) + "-observed"))
+    return false;
+  if (route_detail_stage == 0) {
+    Check(EditRoute(RouteCopy(), "BETA TEST externally renamed route", "Shared database").ok,
+          "External route rename while detail remains open");
+  } else if (route_detail_stage == 1) {
+    Check(ActivateRoute(RouteCopy(), selected).ok, "Activate open route detail externally");
+  } else if (route_detail_stage == 2) {
+    auto *point = test_route->GetPoint(1);
+    first_arrival = {point->m_lat, point->m_lon, point->GetWaypointArrivalRadius()};
+    point->m_lat = gLat; point->m_lon = gLon; point->SetWaypointArrivalRadius(.1);
+    test_route->UpdateSegmentDistances();
+    g_pRouteMan->ActivateRoutePoint(test_route, point);
+  } else if (route_detail_stage == 3) {
+    auto *point = test_route->GetPoint(test_route->GetnPoints());
+    final_arrival = {point->m_lat, point->m_lon, point->GetWaypointArrivalRadius()};
+    point->m_lat = gLat; point->m_lon = gLon; point->SetWaypointArrivalRadius(.1);
+    test_route->UpdateSegmentDistances();
+    g_pRouteMan->ActivateRoutePoint(test_route, point);
+  } else if (route_detail_stage == 4) {
+    auto restore = [](RoutePoint *p, ArrivalPoint value) {
+      p->m_lat = value.lat; p->m_lon = value.lon; p->SetWaypointArrivalRadius(value.radius);
+    };
+    restore(test_route->GetPoint(1), first_arrival);
+    restore(test_route->GetPoint(test_route->GetnPoints()), final_arrival);
+    test_route->UpdateSegmentDistances();
+    NavObj_dB::GetInstance().UpdateRoute(test_route);
+    Record("Open route detail follows external rename, activation, normal waypoint advance and completion");
+    deleted_detail = new Route;
+    deleted_detail->m_RouteNameString = "BETA TEST removed detail";
+    for (int i = 0; i < 2; ++i)
+      deleted_detail->AddPoint(new RoutePoint(gLat + .3 + i * .01, gLon + .3,
+                                             "diamond", "DELETE TEST", wxEmptyString), false);
+    pRouteList->Append(deleted_detail);
+    Check(NavObj_dB::GetInstance().InsertRoute(deleted_detail), "Insert detail deletion fixture");
+    gFrame->GetPrimaryCanvas()->ShowRoutePropertiesDialog("Test deletion", deleted_detail);
+  } else if (route_detail_stage == 5) {
+    Check(g_pRouteMan->DeleteRoute(deleted_detail), "Delete selected route externally");
+    deleted_detail = nullptr;
+  } else {
+    Check(HasVisibleText(gFrame, "Route unavailable"), "Deleted route detail is explicitly unavailable");
+    Record("Open deleted-route detail removes activation/edit actions without reopening");
+    return true;
+  }
+  ++route_detail_stage;
+  return false;
+}
 } // namespace
 void StopObjectScenario() {
   ais_feed.reset();
@@ -194,7 +345,7 @@ void ObjectScenarioStep(const vessel::Navigation &selected) {
     return;
   try {
     Check(wxIsMainThread(), "Application thread required");
-    Check(++waited < 60, "Object scenario timed out");
+    Check(++waited < 95, "Object scenario timed out");
     if (!added_late_connection) {
       Check(TheConnectionParams().empty(), "Late-add fixture requires no initial connections");
       Check(!selected.latitude_deg.value, "No selected GPS may precede connection addition");
@@ -370,7 +521,7 @@ void ObjectScenarioStep(const vessel::Navigation &selected) {
     } else if (step == 1) {
       Check(g_pRouteMan->GetpActiveRoute() == test_route,
             "Normal progress preserves active route");
-      Check(StopRoute().ok, "Stop route");
+      CheckSelectedRouteStop(selected);
       auto started = StartAnchor(selected, 50);
       Check(started.ok, "Start upstream anchor watch");
       anchor_id = started.identity;
@@ -485,6 +636,8 @@ void ObjectScenarioStep(const vessel::Navigation &selected) {
       gFrame->GetPrimaryCanvas()->ShowRoutePropertiesDialog("Test route",
                                                             test_route);
       report["phase"] = wxString("route-card");
+    } else if (step == 3) {
+      if (!ObserveRouteDetail(selected)) return;
     } else if (step == 4) {
       // Exact options-close path from the pinned source, while an XNav object
       // page has hidden the native canvas. Rebuilding must reconcile its AUI

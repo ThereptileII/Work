@@ -194,6 +194,8 @@ if(OPENNAV_BUILD_TESTS)
     $<TARGET_FILE:opennav_adapters>)
   add_test(NAME diagnostic_snapshot_publication COMMAND ${Python3_EXECUTABLE}
     ${CMAKE_CURRENT_SOURCE_DIR}/tests/diagnostic_snapshot_tests.py)
+  add_test(NAME navigation_chart_layout_geometry COMMAND ${Python3_EXECUTABLE}
+    ${CMAKE_CURRENT_SOURCE_DIR}/tests/chart_layout_tests.py)
   add_executable(restart_probe tests/restart_probe.cpp)
   target_link_libraries(restart_probe PRIVATE opennav_platform)
   if(WIN32)

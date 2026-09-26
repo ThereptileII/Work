@@ -11,6 +11,7 @@
 #include <wx/scrolwin.h>
 #include <wx/sizer.h>
 #include <wx/stattext.h>
+#include <chrono>
 namespace opennav::ui {
 enum class ProductPage {
   Home,
@@ -92,6 +93,7 @@ public:
 
 private:
   void Build();
+  bool RefreshRoute();
   void BeginActions(int columns, int minimum_width = 200);
   void Back();
   void Visual(const wxString &name, int height,
@@ -131,6 +133,9 @@ private:
   ProductPage page_ = ProductPage::Home;
   LightMode mode_ = LightMode::Day;
   application::Route route_;
+  bool route_available_ = false;
+  bool rebuild_pending_ = false;
+  std::chrono::steady_clock::time_point route_refreshed_at_{};
   application::Waypoint point_;
   int mmsi_ = 0;
   vessel::Quantity source_quantity_ = vessel::Quantity::Depth;

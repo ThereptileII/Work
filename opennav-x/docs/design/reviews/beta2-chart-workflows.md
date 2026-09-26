@@ -43,16 +43,33 @@ editing options. The dark naming sheets and chart card remain unclipped at
 1280×800. Native Windows, non-default DPI and boat-display review must still
 qualify these replacement screens; this Linux record does not claim those gates.
 
-## Outstanding source-audit finding — route detail lifecycle
+## Route detail lifecycle correction
 
-The selected `ProductPanel::route_` copy is refreshed on selection and successful
-explicit actions, but `ProductPanel::Update` does not refresh it after normal
-OpenCPN navigation advances or completes a route. An already-open Route detail
-can retain the **Active passage** caption and **Stop navigation** action after
-deactivation, or keep editing disabled until the user reopens the route.
-Relevant boundaries are `ProductPanel.cpp` (`Update`, `RouteActions`, `Result`).
-Integration mutations independently revalidate current OpenCPN state; this
-finding concerns stale workflow presentation, not a newly identified actuator
-output path. It remains open for correction and deterministic route-completion
-interaction coverage after the first boat artifact. This is not an accepted
-deferral or a claim that the workflow has passed boat review.
+The source audit found that an already-open detail retained its selected route
+copy after normal arrival/deactivation, and that an old Stop confirmation could
+stop whichever route was active when confirmed. Beta 2 now reconciles only the
+selected owned route once per second while visible. The bridge rechecks the
+rendered identity/revision and requires that exact native route to be active
+before Stop. Missing or ambiguous identities show unavailable and remove route
+actions. Commands capture the rendered selection before entering a modal sheet.
+
+Timer-driven rebuilds are deferred while a modal dialog exists, preserving
+pending changes until it closes. The actual GTK test showed that the parent
+frame can remain `IsEnabled()` during a native modal grab; the guard therefore
+also checks the real `wxDialog::IsModal()` lifecycle. No route-progress or
+hardware-output method is used as a getter, and no upstream hook changed.
+
+The expanded input-only object fixture observes external rename and activation,
+normal upstream waypoint advance and completion, and deletion without reopening
+the detail. A real activation sheet stays open through an external route edit
+and two refresh intervals; confirming its original selection is rejected.
+Native Windows qualification for these changes remains required.
+
+Linux development revalidation passed 21 grouped object checks with 18 captures
+(`objects-input-results.json`) and the existing seven chart-workflow groups with
+eight captures (`user-flows-results.json`). Pixel review of the final active and
+advanced detail captures shows 14.5 NM / next point 3 changing to 8.7 NM / next
+point 2 after normal upstream arrival. Completion restores Activate, deletion
+shows Route unavailable with no mutation actions, and the unchanged confirmation
+sheet remains intact while its original selection becomes stale. These are
+isolated fixture results, not live navigation or native Windows acceptance.

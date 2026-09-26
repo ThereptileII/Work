@@ -284,6 +284,19 @@ application::Catalog CopyNavigationCatalog() {
     }
   return catalog;
 }
+std::optional<application::Route> CopyNavigationRoute(const std::string &id) {
+  Thread();
+  if (id.empty() || !pRouteList) return {};
+  ::Route *match = nullptr;
+  for (auto *node = pRouteList->GetFirst(); node; node = node->GetNext()) {
+    auto *route = node->GetData();
+    if (route && String(route->GetGUID()) == id) {
+      if (match) return {};
+      match = route;
+    }
+  }
+  return match ? std::optional<application::Route>(Copy(match)) : std::nullopt;
+}
 application::CommandResult ActivateRoute(const application::Route &selected,
                                          const vessel::Navigation &position) {
   Thread();
@@ -307,14 +320,16 @@ application::CommandResult ActivateRoute(const application::Route &selected,
                 : "Route active but persistence failed; inspect diagnostics",
           selected.id};
 }
-application::CommandResult StopRoute() {
+application::CommandResult StopRoute(const application::Route &selected) {
   Thread();
-  if (!g_pRouteMan)
-    return {false, "Navigation manager unavailable", {}};
-  auto *active = g_pRouteMan->GetpActiveRoute();
-  const auto id = active ? String(active->GetGUID()) : std::string{};
+  // Resolve the rendered identity AND revision immediately before dispatch.
+  // A confirmation for route A must never stop a newly active route B.
+  auto *route = selected.id.empty() || selected.revision.empty() ? nullptr : Resolve(selected);
+  if (!selected.active || !route || !route->IsActive() ||
+      g_pRouteMan->GetpActiveRoute() != route)
+    return {false, "Selected route changed or is no longer active; review the route", {}};
   g_pRouteMan->DeactivateRoute();
-  return {true, "Navigation stopped", id};
+  return {true, "Navigation stopped", selected.id};
 }
 application::CommandResult ReverseRoute(const application::Route &selected) {
   Thread();

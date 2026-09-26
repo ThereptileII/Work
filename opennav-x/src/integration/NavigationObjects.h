@@ -4,13 +4,14 @@
 
 namespace opennav::integration {
 application::Catalog CopyNavigationCatalog();
+std::optional<application::Route> CopyNavigationRoute(const std::string &id);
 application::WaypointContext CopyWaypointContext(
     const std::string &id, const vessel::Navigation &position, vessel::Time now);
 vessel::AisState CopyAisState(const vessel::Navigation &selected,
                               vessel::Time now);
 application::CommandResult ActivateRoute(const application::Route &selected,
                                          const vessel::Navigation &position);
-application::CommandResult StopRoute();
+application::CommandResult StopRoute(const application::Route &selected);
 application::CommandResult ReverseRoute(const application::Route &selected);
 application::CommandResult EditRoute(const application::Route &selected,
                                      const std::string &name,

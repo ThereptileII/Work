@@ -1,0 +1,50 @@
+{
+  "schema": 1,
+  "scope": "Beta 2 maintenance tooling qualification only",
+  "status": "passed",
+  "commit": "6f9ee027518307ac373d1080edf38534b1af1ff7",
+  "ciRun": "https://github.com/ThereptileII/Work/actions/runs/36275798350",
+  "ciJob": "https://github.com/ThereptileII/Work/actions/runs/36275798350/job/108498179985",
+  "environment": "Native Windows Server 2022, Windows PowerShell 5.1",
+  "sourceBlobsCompared": 533,
+  "sourceDifferences": 0,
+  "suites": [
+    {
+      "name": "boat-tools",
+      "passed": 27
+    },
+    {
+      "name": "official-upgrade-policy",
+      "passed": 86
+    },
+    {
+      "name": "preparation",
+      "passed": 34
+    },
+    {
+      "name": "commissioning",
+      "passed": 21
+    },
+    {
+      "name": "commissioning-launch",
+      "passed": 11
+    },
+    {
+      "name": "review-window",
+      "passed": 93
+    },
+    {
+      "name": "source-checkout",
+      "passed": 16
+    }
+  ],
+  "totalPassed": 288,
+  "failures": 0,
+  "jobLogSha256": "fbe4842ace6c855aa0859478a661202bc936b933c71ed468c8e44260c7527838",
+  "artifactId": 10916757418,
+  "artifactZipSha256": "263fd6e835caaea2bdb60c7f102a68d54faa769c82db59c8993f7b2478119a2a",
+  "applicationLaunched": false,
+  "hardwareCommands": 0,
+  "productReleaseAccepted": false,
+  "boatAcceptance": false
+}

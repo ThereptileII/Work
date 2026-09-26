@@ -234,6 +234,9 @@ try:
     assert connected.wait(10), 'OpenCPN did not connect to loopback fixture'
     if windows:
         handle, _ = ui.wait_window('OpenNav X / OpenCPN', app.pid)
+        # capture() normally resizes, but the object-layout gate runs before
+        # its first capture. Establish the native size before inspecting it.
+        ui.size_window(handle)
     else:
         handle = subprocess.check_output(['xdotool', 'search', '--onlyvisible', '--pid', str(app.pid),
                     '--name', '^OpenNav X / OpenCPN$'], env=env, text=True).splitlines()[0]
@@ -242,7 +245,7 @@ try:
     def capture(name):
         path = evidence / f'{prefix}-{name}.png'
         if windows:
-            rgb = ui.capture(handle, path, screen_pixels=objects)
+            rgb = ui.capture(handle, path, resize=not objects, screen_pixels=objects)
         else:
             subprocess.run(['import', '-window', 'root', str(path)], env=env, check=True)
             rgb = subprocess.check_output(['convert', str(path), '-depth', '8', 'rgb:-'], env=env)
@@ -282,20 +285,40 @@ try:
         spec = importlib.util.spec_from_file_location('chartcheck', root / 'tools/chart-render-check.py')
         chartcheck = importlib.util.module_from_spec(spec)
         spec.loader.exec_module(chartcheck)
-        # xdotool's resize request returns before wx processes its size event.
-        # Require the native layout to have actually reached 1280x800 before
-        # learning chart colors; a partial small window/black desktop is not a
-        # valid land/water reference.
+        # Native resizing returns before wx necessarily finishes its layout.
+        # Verify exact frame size and actual client-relative geometry before
+        # learning colors. Win32 decorations legitimately leave a shorter chart
+        # than bare Xvfb; a small startup frame is never an acceptable reference.
         deadline=time.monotonic()+12
+        layout_error=None
         while time.monotonic()<deadline:
             sized=read_json_snapshot(profile/'opennav-diagnostics.json')
             display=sized['runtime']['display']
-            region=display.get('chart_region',{})
-            controls=display.get('interaction_controls',[])
-            if region.get('width',0)>1000 and region.get('height',0)>650 and any(
-                    c['label']=='System' and c['x']>1100 and c['y']>700 for c in controls):break
+            if windows:
+                outer=ui.W.RECT();inner=ui.W.RECT();origin=ui.W.POINT(0,0)
+                assert ui.GetWindowRect(handle,ui.C.byref(outer)) and ui.GetClientRect(handle,ui.C.byref(inner))
+                assert ui.ScreenToClient(handle,ui.C.byref(origin))
+                frame={'x':outer.left,'y':outer.top,'width':outer.right-outer.left,'height':outer.bottom-outer.top}
+                client={'x':-origin.x,'y':-origin.y,'width':inner.right-inner.left,'height':inner.bottom-inner.top}
+            else:
+                geometry=subprocess.check_output(['xdotool','getwindowgeometry','--shell',handle],env=env,text=True)
+                values=dict(line.split('=',1) for line in geometry.splitlines() if '=' in line)
+                frame={k:int(values[n]) for k,n in [('x','X'),('y','Y'),('width','WIDTH'),('height','HEIGHT')]}
+                client=dict(frame)  # This isolated Xvfb run has no window manager/decorations.
+            try:
+                report['startup_layout']=chartcheck.navigation_layout(display,frame,client)
+                break
+            except AssertionError as error:
+                layout_error=str(error)
+                report['startup_layout_failure']={'reason':layout_error,'frame':frame,'client':client,'display':display}
             time.sleep(.2)
-        else:raise AssertionError('Actual chart layout did not reach 1280x800')
+        else:
+            path=evidence/f'{prefix}-startup-layout-failure.png'
+            if windows:ui.capture(handle,path,resize=False,screen_pixels=True)
+            else:subprocess.run(['import','-window','root',str(path)],env=env,check=True)
+            report['screenshots'].append(path.name)
+            raise AssertionError(('Actual 1280x800 navigation layout failed',layout_error,report['startup_layout_failure']))
+        report.pop('startup_layout_failure',None)
         def object_snapshot():
             return read_json_snapshot(profile/'opennav-diagnostics.json')
         def wait_object(predicate, description, timeout=10):
@@ -399,18 +422,66 @@ try:
             return latest
         chart_colors = chartcheck.reference(capture('initial-no-input-chart'))
         assert all(min(c)>0 for c in chart_colors),'Black desktop is not a chart color'
-        phase[0]='rmc';deadline=time.monotonic()+70;seen=set()
+        phase[0]='rmc';deadline=time.monotonic()+110;seen=set()
+        route_phases = ['route-card','route-detail-renamed','route-detail-active',
+                        'route-detail-advanced','route-detail-completed',
+                        'route-detail-delete-selected','route-detail-deleted']
+        def route_controls(sample,label):
+            return [c for c in sample['runtime']['display'].get('product_controls',[])
+                    if c['label']==label]
         while time.monotonic()<deadline:
             assert app.poll() is None,'Object fixture exited'
             path=profile/'objects-fixture-results.json'
             if path.exists():
                 result=read_json_snapshot(path);assert result['result']!='failed',result
                 current=result.get('phase','')
-                if current in ['route-card','settings-return','settings-return-navigation','waypoint-card','ais-card'] and current not in seen:
+                if current in route_phases+['settings-return','settings-return-navigation','waypoint-card','ais-card'] and current not in seen:
                     time.sleep(.6)
+                    if current in route_phases:
+                        active=current in ('route-detail-active','route-detail-advanced')
+                        removed=current=='route-detail-deleted'
+                        def reconciled(s):
+                            if s['ui_page']!='Route detail':return False
+                            stop=route_controls(s,'Stop navigation')
+                            activate=route_controls(s,'Activate route')
+                            if removed:
+                                mutations=['Stop navigation','Activate route','Edit route name / description',
+                                           'Edit route points on chart','Reverse route']
+                                return all(not route_controls(s,label) for label in mutations) and bool(route_controls(s,'Back to routes'))
+                            expected=stop if active else activate
+                            edits=route_controls(s,'Edit route name / description')
+                            return bool(expected and expected[0]['enabled'] and edits and
+                                        edits[0]['enabled']!=active and not (activate if active else stop))
+                        ready=wait_object(reconciled,'Open route detail follows '+current)
+                        report.setdefault('route_detail_lifecycle',[]).append({
+                            'phase':current,'controls':ready['runtime']['display']['product_controls']})
                     if current=='waypoint-card':chart_bounded_context(['GO TO','Details','Edit waypoint','Remove'])
                     if current=='ais-card':chart_bounded_context(['Show on chart','Details'])
                     rgb = capture(current)
+                    if current=='route-detail-renamed':
+                        click_object('Activate route')
+                        wait_object(lambda s:context_controls(s,'Cancel') and context_controls(s,'Activate'),
+                                    'Actual activation confirmation is open')
+                        (profile/'route-modal-opened').write_text('Owned activation confirmation visible.\n')
+                        modal_deadline=time.monotonic()+8
+                        while time.monotonic()<modal_deadline:
+                            modal_result=read_json_snapshot(path)
+                            assert modal_result['result']!='failed',modal_result
+                            if modal_result.get('phase')=='route-detail-modal-changed':break
+                            time.sleep(.15)
+                        else:raise AssertionError('Fixture did not change route behind confirmation')
+                        # Two refresh intervals while the dialog is alive: an
+                        # Update-driven DestroyChildren would invalidate it.
+                        time.sleep(2.2)
+                        wait_object(lambda s:context_controls(s,'Cancel') and context_controls(s,'Activate'),
+                                    'Route change must not rebuild a live modal sheet')
+                        capture('route-detail-stale-confirmation')
+                        click_object('Activate')
+                        wait_object(lambda s:not context_controls(s,'Cancel'),
+                                    'Stale confirmation closes normally')
+                        (profile/'route-modal-confirmed').write_text('Confirmed original activation intent after external edit.\n')
+                    if current in route_phases:
+                        (profile/(current+'-observed')).write_text('Open detail native actions and enabled state verified.\n')
                     if current in ('settings-return','settings-return-navigation'):
                         report.setdefault('chart_rendering', []).append(chartcheck.check(
                             rgb, chart_colors, 'Actual settings reconfiguration returns coastline without restart / '+current))
@@ -444,7 +515,7 @@ try:
                         (profile/'ais-advice-observed').write_text('Observed actual shell diagnostic AIS event\n')
                 if result['result']=='passed':
                     assert report.get('live_ais_advice'),'No actual AIS advisory observed'
-                    assert len(seen)==5,seen
+                    assert len(seen)==11,seen
                     assert result.get('late_connection_added_after_deferred') and counts['ais'] >= 3,result
                     report['object_contract']=result;break
             time.sleep(.2)
@@ -678,7 +749,7 @@ try:
         import sqlite3
         from contextlib import closing
         with closing(sqlite3.connect(profile/'navobj.db')) as db:
-            assert db.execute('select name from routes where guid=?',('OPENNAV-ALPHA-OBJECT-ROUTE',)).fetchone()==('ALPHA TEST renamed route',)
+            assert db.execute('select name from routes where guid=?',('OPENNAV-ALPHA-OBJECT-ROUTE',)).fetchone()==('BETA TEST externally renamed route',)
             assert db.execute('select count(*) from routepoints where Name=?',('ALPHA TEST edited',)).fetchone()==(1,)
         report['checks']=['Navigation object and AIS contracts through actual integrated executable',
                           'Deferred chart-selection cards and clean close',

@@ -71,23 +71,30 @@ No unrelated Desktop content is included in feedback documentation.
   reconfiguration, whole-metre anchor labels, safe cleanup of XNav-owned anchor
   marks and copied chart context/Go To actions.
 - Late-created input-only loopback GPS and actual AIS decoding pass 17 grouped
-  Linux object/integration checks, including copied waypoint context and compact
-  chart cards. Earlier UTC+2 testing exposed and fixed AIS observation
+  Linux object/integration checks in the earlier iteration. The expanded suite
+  now passes 21 groups with 18 screenshots, including copied waypoint context,
+  compact chart cards, settings return, active-route arrival/completion/deletion
+  and stale modal selections. Earlier UTC+2 testing exposed and fixed AIS observation
   clock conversion that made fresh targets appear two hours stale. Four added
-  integrated clock tests pass in UTC and UTC+2. Boat reception remains pending.
-- Portable contract suite: 63 passing cases/suites in local development.
-  Integrated fixture-enabled Linux build passes. The separate fixture-free
-  Linux product passes 110/110 integrated regressions and five loader/resource
-  self-test checks. These are local development results, not exact-release
-  qualification. Seven actual-pointer workflow groups also pass: orientation,
-  context dismissal, waypoint create/Go To/stop, route point entry/Undo,
-  cancellation and named save with a read-only database preservation audit.
-  Native and boat execution of these expanded workflows remains pending.
+  integrated clock tests pass in UTC and UTC+2. Sensors now distinguishes no AIS
+  reports, current reports and stale/lost reports using actual target timestamps;
+  decoder existence alone does not imply reception. Boat reception remains pending.
+- Latest local portable contract suite passes **65/65**, including AIS reception
+  health and native-frame/chart-layout geometry. The integrated Linux build
+  passes **110/110 individual CTest cases** under the prescribed sequential
+  invocation (excluding the duplicate upstream aggregate). The separate
+  fixture-free Linux product previously passed 110/110 and five loader/resource
+  self-test checks. Seven actual-pointer workflow groups pass with eight
+  screenshots: orientation, context dismissal, waypoint create/Go To/stop, route
+  point entry/Undo, cancellation and named save with a read-only database audit.
+  [Chart workflow and route-lifecycle review](design/reviews/beta2-chart-workflows.md).
+  These are local development results, not exact-release qualification. Native
+  and boat execution of the expanded workflows remains pending.
 - Beta 2 installer wizard, versioned maintenance and boat scripts are implemented
   but their new native lifecycle gates have not yet run.
 - First CI candidate `15e5a265` exposed a Windows-only line-ending assumption in
   a source-archive test. The corrected candidate `a0af22c248f8a81bb8068ccf3f64bd921478060f`
-  is running in [CI 36266809347](https://github.com/ThereptileII/Work/actions/runs/36266809347).
+  was exercised in [CI 36266809347](https://github.com/ThereptileII/Work/actions/runs/36266809347).
   Linux and Windows contract jobs pass. Native MSVC integration builds and all
   102 integrated CTest cases pass, followed by mode/persistence checks. Its
   navigation UI smoke stopped at an old source-caption assertion after alerts
@@ -95,7 +102,7 @@ No unrelated Desktop content is included in feedback documentation.
   alert and retained stale ages explicitly. Six native frame/mode screenshots
   were reviewed in [the first native review](design/reviews/beta2-native-a0af22c.md).
   Complete Windows, packaging and boat gates remain pending. No Beta 2 release
-  acceptance is implied.
+  acceptance is implied; later candidates below supersede it.
 - Follow-up source `ee720380ac72b7459f5ff0538acecb9c2b650180`
   ([CI 36269508823](https://github.com/ThereptileII/Work/actions/runs/36269508823))
   matches all 493 local tracked source blobs and file modes. Its Windows boat-tool
@@ -104,8 +111,8 @@ No unrelated Desktop content is included in feedback documentation.
   paths remains tested. The correction passes 21 isolated native Windows checks.
   Linux build/CTest and navigation, recording, route, marine, Signal K and pilot
   transport gates pass, but the object workflow stopped at compact waypoint
-  Details. This candidate is not qualified; the interaction failure is under
-  investigation before the next full run.
+  Details. This candidate was not qualified. The chart-card layout/focus
+  correction and repeated local checks below supersede that failed interaction.
 - The authorized official-stock upgrade uses a separate reviewed visible-wizard
   driver, not the OpenNav installer or silent replacement. Native PS5.1 passes
   86 policy/helper checks, 21 filesystem groups and 23 profile-preparation groups.
@@ -120,13 +127,13 @@ No unrelated Desktop content is included in feedback documentation.
   includes the corrected ZIP fixture, X11 pointer-target observations and native
   boat maintenance tests. All 506 local tracked source blobs/modes match the
   published tree. The object harness passed two additional local 17-group runs;
-  full candidate qualification is pending.
+  this candidate was superseded before full qualification.
 - Follow-up `a6c15b22c2344a69437e4ef7d9d738fe3f1aed50`
   ([CI 36272268284](https://github.com/ThereptileII/Work/actions/runs/36272268284))
   exposed a Windows Server file-replacement ACL merge in the disposable profile
   preparation suite. It is not an accepted build. Boat Windows 11 recovery had
   already passed exact permission and content verification; the affected helper
-  is being hardened for both environments without loosening permission checks.
+  was subsequently hardened for both environments without loosening permission checks.
   Maintenance suites now run in a separate mandatory native CI job, so MSVC/UI
   validation can proceed concurrently. Final publication still requires every
   maintenance suite, and adds the reversible commissioning transaction tests.
@@ -165,9 +172,28 @@ No unrelated Desktop content is included in feedback documentation.
   readable alert actions. All 528 committed local blobs/modes match the remote
   tree. Its native maintenance job passes, including 16 new source-checkout
   groups. The exact source was retrieved into the managed boat workspace without
-  changing or launching the application. Full application qualification remains
-  pending; source retrieval is not deployment acceptance.
+  changing or launching the application.
   [Source-only evidence](evidence/beta2-boat-source-c8ff99ea.json).
+  Native MSVC and **102/102 integrated CTest cases** passed; the loopback pilot
+  interaction also passed, and two native screenshots confirm correct degree
+  glyphs. The object gate then failed before its first chart screenshot because
+  the harness had left the application at its default **896×532** while testing
+  for a 1280×800 layout. This is not an accepted application build. The harness
+  now explicitly sizes the native window before validation and checks chart
+  dominance, four visible rail values and control separation against actual
+  frame/client geometry. It retains coastline checks and captures failure
+  evidence without resizing a pending modal. The replacement passed the local
+  21-group object run; its native rerun remains required.
+  [Native review](design/reviews/beta2-native-c8ff99ea.md) and
+  [partial native evidence](evidence/beta2-windows-c8ff99ea-partial.json).
+- Tooling-only commit `6f9ee027518307ac373d1080edf38534b1af1ff7` passes
+  **288 checks across seven suites** on native Windows Server 2022 / PowerShell
+  5.1 in [CI 36275798350](https://github.com/ThereptileII/Work/actions/runs/36275798350).
+  This includes source-checkout and launch guards in addition to profile recovery,
+  reversible commissioning and window-review policies. All 533 source blobs
+  match the published tree. [Tooling evidence](evidence/beta2-windows-tooling-6f9ee02.json).
+  This is maintenance-tool qualification only: no application or hardware command
+  was launched, and it does not qualify the current product or boat deployment.
 
 ## Accepted Beta 1 baseline
 

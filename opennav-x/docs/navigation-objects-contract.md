@@ -21,13 +21,28 @@ layers, active-route points and anchor marks are protected. A route member may
 not be deleted as an isolated mark. Large catalogs are capped and direct users
 to the existing manager.
 
+Beta 2 adds a selected-route read boundary, `CopyNavigationRoute(id)`, returning
+an owned optional copy only for one unambiguous GUID on the application thread.
+An open Route detail reconciles that selection at most once per second and only
+while visible. It does not copy the entire catalog on each 250 ms instrument
+tick. Normal arrival/advance data still comes from the route-progress contract;
+the observer never calls progress or autopilot-output processing to refresh it.
+Changed names, editability and active state rebuild the detail; deletion removes
+its route commands and shows unavailable. Each route callback captures the
+rendered selection by value, including the original Stop/Activate choice.
+Modal sheets defer all timer-triggered structural rebuilds, retaining pending
+changes until the modal closes. Integration still revalidates at dispatch.
+
 ## Reused OpenCPN operations
 
 - Route activation uses `Routeman::FindBestActivatePoint` and `ActivateRoute`
   with the selected navigation position; XNav refuses missing/stale position.
   The confirmation identifies that normal configured OpenCPN navigation outputs
   retain their existing behavior. XNav adds no autopilot output path.
-- Stop navigation calls the normal `DeactivateRoute`.
+- Stop navigation calls the normal `DeactivateRoute` only when the rendered
+  route's unique identity and exact revision still match the currently active
+  native route. A stale confirmation for route A cannot stop route B. Missing,
+  ambiguous, deleted and already-deactivated selections are rejected.
 - Reverse calls `Route::Reverse(false)` and updates the existing selectables
   and `NavObj_dB`. Names are retained. Active/protected routes cannot reverse.
 - Basic route/waypoint properties are written through `NavObj_dB`; failures

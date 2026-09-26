@@ -3,6 +3,7 @@
 #include "ui/ContextCard.h"
 #include "integration/BuildFeatures.h"
 #include <wx/dcbuffer.h>
+#include <wx/dialog.h>
 #include <wx/textctrl.h>
 #include "vessel/DataItems.h"
 #include "vessel/DisplayItems.h"
@@ -15,6 +16,14 @@ wxString W(const std::string &s) { return wxString::FromUTF8(s); }
 wxString Name(const std::string &name, const std::string &id) {
   (void)id;
   return W(name.empty() ? "Unnamed" : name);
+}
+bool ModalOpen() {
+  // GTK's native modal grab need not change wxFrame::IsEnabled(). Inspect the
+  // actual wxDialog lifecycle as well; this also covers other modal editors.
+  for (auto *window : wxTopLevelWindows)
+    if (auto *dialog = dynamic_cast<wxDialog *>(window); dialog && dialog->IsModal())
+      return true;
+  return false;
 }
 const vessel::AisTarget *Target(const ProductState &s, int mmsi) {
   for (const auto &t : s.ais.targets)
@@ -280,6 +289,7 @@ void ProductPanel::ShowPage(ProductPage page, LightMode mode) {
   if (page != page_) pilot_advanced_ = false;
   page_ = page;
   mode_ = mode;
+  rebuild_pending_ = false;
   Scroll(0, 0);
   Build();
   if (IsShownOnScreen()) SetFocus();
@@ -323,16 +333,17 @@ void ProductPanel::ShowAis(int mmsi, LightMode mode) {
 }
 void ProductPanel::ShowObject(const std::string &id, bool route,
                               LightMode mode) {
+  if (route) {
+    route_ = {};
+    route_.id = id;
+    route_available_ = false;
+    RefreshRoute();
+    ShowPage(ProductPage::RouteDetail, mode);
+    return;
+  }
   if (actions_.navigation.catalog) {
     const auto catalog = actions_.navigation.catalog();
-    if (route) {
-      for (const auto &r : catalog.routes)
-        if (r.id == id) {
-          route_ = r;
-          ShowPage(ProductPage::RouteDetail, mode);
-          return;
-        }
-    } else {
+    {
       for (const auto &p : catalog.waypoints)
         if (p.id == id) {
           point_ = p;
@@ -344,6 +355,16 @@ void ProductPanel::ShowObject(const std::string &id, bool route,
   ShowPage(route ? ProductPage::Routes : ProductPage::Waypoints, mode);
   Result({false, "Selected object no longer available", {}});
 }
+bool ProductPanel::RefreshRoute() {
+  route_refreshed_at_ = std::chrono::steady_clock::now();
+  const auto current = actions_.navigation.route
+      ? actions_.navigation.route(route_.id) : std::nullopt;
+  const bool changed = route_available_ != current.has_value() ||
+      (current && current->revision != route_.revision);
+  route_available_ = current.has_value();
+  if (current) route_ = *current;
+  return changed;
+}
 void ProductPanel::Update(const ProductState &state, LightMode mode) {
   const bool mode_changed = state_.vessel.replayed != state.vessel.replayed ||
                             state_.vessel.simulated != state.vessel.simulated;
@@ -353,11 +374,23 @@ void ProductPanel::Update(const ProductState &state, LightMode mode) {
       alerts_changed |= state_.alerts[i].episode != state.alerts[i].episode ||
                         state_.alerts[i].acknowledged != state.alerts[i].acknowledged;
   state_ = state;
-  if (mode != mode_ || mode_changed || (page_ == ProductPage::Alerts && alerts_changed)) {
+  rebuild_pending_ |= mode != mode_ || mode_changed ||
+      (page_ == ProductPage::Alerts && alerts_changed);
+  mode_ = mode;
+  // Sheets are stack-owned modal children. DestroyChildren during ShowModal
+  // would destroy their lifetime; retain ALL pending rebuild causes instead.
+  auto *frame = wxGetTopLevelParent(this);
+  if ((frame && !frame->IsEnabled()) || ModalOpen()) return;
+  if (page_ == ProductPage::RouteDetail && IsShownOnScreen() &&
+      std::chrono::steady_clock::now() - route_refreshed_at_ >= std::chrono::seconds(1))
+    rebuild_pending_ |= RefreshRoute();
+  if (rebuild_pending_) {
     auto *focus=wxWindow::FindFocus();
     const bool restore_focus=focus && (focus==this || IsDescendant(focus));
-    mode_ = mode;
+    const auto scroll = GetViewStart();
+    rebuild_pending_ = false;
     Build();
+    Scroll(scroll);
     if((restore_focus || mode_changed) && IsShownOnScreen())SetFocus();
   }
   for (auto &button : button_text_) button.first->SetLabel(button.second(state));
@@ -447,6 +480,14 @@ void ProductPanel::CreateMark() {
                                                (*fields)[1]));
 }
 void ProductPanel::RouteActions() {
+  if (!route_available_) {
+    Heading("Route unavailable", "The selected route was removed or cannot be identified.");
+    Action("Back to routes", [this] { ShowPage(ProductPage::Routes, mode_); });
+    return;
+  }
+  // Freeze what the human saw when these controls were built. Neither a timer
+  // refresh nor a modal event loop may retarget a queued command.
+  const auto selected = route_;
   Heading(Name(route_.name, route_.id),
           route_.active
               ? "Active passage"
@@ -489,23 +530,23 @@ void ProductPanel::RouteActions() {
     }
   });
   BeginActions(2);
-  Action("View first point on chart", [this] {
+  Action("View first point on chart", [this, selected] {
     if (actions_.chart)
       actions_.chart();
     if (actions_.navigation.view_route)
-      actions_.navigation.view_route(route_.id);
+      actions_.navigation.view_route(selected.id);
   }, static_cast<bool>(actions_.navigation.view_route))->SetRole(ButtonRole::Quiet);
   auto *navigate = Action(
       route_.active ? "Stop navigation" : "Activate route",
-      [this] {
+      [this, selected] {
         if (ConfirmSheet(
                 *this, mode_,
-                route_.active ? "Stop navigation" : "Activate route",
+                selected.active ? "Stop navigation" : "Activate route",
                 "This changes OpenCPN navigation. Existing configured OpenCPN "
                 "output connections retain their normal behavior.",
-                route_.active ? "Stop navigation" : "Activate"))
-          Result(route_.active ? actions_.navigation.deactivate()
-                               : actions_.navigation.activate(route_));
+                selected.active ? "Stop navigation" : "Activate"))
+          Result(selected.active ? actions_.navigation.deactivate(selected)
+                                  : actions_.navigation.activate(selected));
       },
       !state_.vessel.simulated && !state_.vessel.replayed &&
           (route_.active ? static_cast<bool>(actions_.navigation.deactivate)
@@ -541,18 +582,18 @@ void ProductPanel::RouteActions() {
   BeginActions(3);
   Action(
       "Edit route name / description",
-      [this] {
+      [this, selected] {
         auto f = EditSheet(*this, mode_, "Edit route",
                            "Change the saved route name and description.",
-                           {{"Name", W(route_.name), 128},
-                            {"Description", W(route_.description), 2048}});
+                           {{"Name", W(selected.name), 128},
+                            {"Description", W(selected.description), 2048}});
         if (f)
-          Result(actions_.navigation.edit_route(route_, (*f)[0], (*f)[1]));
+          Result(actions_.navigation.edit_route(selected, (*f)[0], (*f)[1]));
       },
       route_.editable && static_cast<bool>(actions_.navigation.edit_route))->SetRole(ButtonRole::Quiet);
   Action(
       "Edit route points on chart",
-      [this] {
+      [this, selected] {
         if (ConfirmSheet(
                 *this, mode_, "Edit route geometry",
                 "Drag the route's points on the chart using OpenCPN's "
@@ -562,18 +603,18 @@ void ProductPanel::RouteActions() {
           if (actions_.chart)
             actions_.chart();
           if (actions_.navigation.view_route)
-            actions_.navigation.view_route(route_.id);
+            actions_.navigation.view_route(selected.id);
         }
       },
       route_.editable && static_cast<bool>(actions_.navigation.view_route))->SetRole(ButtonRole::Quiet);
   Action(
       "Reverse route",
-      [this] {
+      [this, selected] {
         if (ConfirmSheet(*this, mode_, "Reverse route",
                          "Reverse planned leg order; waypoint names are "
                          "retained. Navigation must be inactive.",
                          "Reverse"))
-          Result(actions_.navigation.reverse(route_));
+          Result(actions_.navigation.reverse(selected));
       },
       route_.editable && static_cast<bool>(actions_.navigation.reverse))->SetRole(ButtonRole::Quiet);
   EndActions();
@@ -835,10 +876,7 @@ void ProductPanel::Build() {
                      wxString::Format(" / %u points",
                                       static_cast<unsigned>(r.points.size())) +
                      (r.active ? " / ACTIVE" : ""),
-                 [this, r] {
-                   route_ = r;
-                   ShowPage(ProductPage::RouteDetail, mode_);
-                 });
+                 [this, r] { ShowObject(r.id, true, mode_); });
       } else {
         if (catalog.waypoints.empty())
           Text("No waypoints saved.");

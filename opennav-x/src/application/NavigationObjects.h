@@ -51,12 +51,13 @@ struct AnchorState {
 struct NavigationActions {
   std::function<CommandResult(int)> view_ais;
   std::function<Catalog()> catalog;
+  // One owned selection, or unavailable for a missing/ambiguous identity.
+  std::function<std::optional<Route>(const std::string &)> route;
   std::function<WaypointContext(const std::string &, vessel::Time)> waypoint_context;
   std::function<vessel::AisState(vessel::Time)> ais;
   std::function<AnchorState()> anchor;
   std::function<std::optional<Coordinate>()> chart_position;
-  std::function<CommandResult(const Route &)> activate, reverse;
-  std::function<CommandResult()> deactivate;
+  std::function<CommandResult(const Route &)> activate, reverse, deactivate;
   std::function<CommandResult(const Route &, const std::string &,
                               const std::string &)>
       edit_route;

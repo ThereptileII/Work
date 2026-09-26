@@ -32,6 +32,7 @@ MakeNavigationActions(MyFrame &frame,
     return r;
   };
   a.catalog = CopyNavigationCatalog;
+  a.route = CopyNavigationRoute;
   a.waypoint_context = [position](const std::string &id, vessel::Time now) {
     return CopyWaypointContext(id, position(), now);
   };
@@ -57,7 +58,7 @@ MakeNavigationActions(MyFrame &frame,
   a.activate = [position, result](const auto &r) {
     return result(ActivateRoute(r, position()));
   };
-  a.deactivate = [result] { return result(StopRoute()); };
+  a.deactivate = [result](const auto &r) { return result(StopRoute(r)); };
   a.reverse = [result](const auto &r) { return result(ReverseRoute(r)); };
   a.edit_route = [result](const auto &r, const auto &name,
                           const auto &description) {

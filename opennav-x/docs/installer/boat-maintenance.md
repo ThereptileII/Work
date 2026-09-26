@@ -33,6 +33,6 @@ before profile initialization or plugin loading.
 The complete native suite passes 27 groups, retaining the original 21 and adding six, including
 all six mutating wrapper entrypoints refusing active commissioning before any
 target/process access. The boat's native temporary-file run is recorded privately
-in `evidence/local/boat-beta2/native-maintenance-repair-final.json`; the existing
+in `evidence/local/boat-beta2/native-maintenance-repair-casing-final.json`; the existing
 launch-verification suite also passes eleven Linux groups. These temporary
 fixtures do not qualify a real installation or hardware session.

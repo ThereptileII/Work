@@ -1,0 +1,39 @@
+{
+  "schema": 1,
+  "commit": "c8ff99eaf448147a17c02d99f3a71d430763a618",
+  "ciRun": "https://github.com/ThereptileII/Work/actions/runs/36275173742",
+  "ciJob": "https://github.com/ThereptileII/Work/actions/runs/36275173742/job/108496882437",
+  "status": "failed before native object interaction; partial evidence only",
+  "nativeBuild": "MSVC Win32 passed",
+  "integratedCTest": {"passed": 102, "failed": 0},
+  "pilotLoopback": {
+    "status": "passed",
+    "degreeLabels": ["-10°", "-1°", "+1°", "+10°"],
+    "nativeScreenshotsReviewed": [
+      {"file": "pilot-01-status-only.png", "sha256": "69589da5af54230a11ef68070226efd72b686e3e60b226e32aaf1836a3c88612"},
+      {"file": "pilot-02-confirmed-manual.png", "sha256": "f8c19f29643980990bcc7ef773e1ecab7876ea9fc6746df5c6213c76dae637e3"}
+    ],
+    "physicalCommandsSent": false
+  },
+  "failure": {
+    "test": "smoke-navigation.py --objects",
+    "message": "Actual chart layout did not reach 1280x800",
+    "desktopPixels": [1280, 800],
+    "retainedFramePixels": [896, 532],
+    "chartPixels": [686, 379],
+    "systemButtonOrigin": [771, 472],
+    "cause": "Windows layout assertion preceded the first capture-based resize; Linux-only chart-height threshold also needed a client-relative replacement",
+    "objectScreenshotsCaptured": 0,
+    "replacementNativeValidation": "pending"
+  },
+  "artifact": {
+    "id": 10917153416,
+    "name": "windows-integration-c8ff99eaf448147a17c02d99f3a71d430763a618",
+    "bytes": 3611789,
+    "sha256": "fe44f1ce87513af8f84d73b1f289d901cb9cc6fcdc83b3475baadb7cadbd4fa3",
+    "downloadedAndDigestVerified": true
+  },
+  "decodedJobLogSha256": "366dd5347a1456e8fb1ab290abfa6629386561435d13a4b6eebd11bfca5c7b7b",
+  "productReleaseAccepted": false,
+  "boatAcceptance": false
+}
