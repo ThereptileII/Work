@@ -1,0 +1,3 @@
+[submodule "upstream/OpenCPN"]
+	path = upstream/OpenCPN
+	url = https://github.com/OpenCPN/OpenCPN.git
