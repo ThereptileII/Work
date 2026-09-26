@@ -1,5 +1,6 @@
 #include "platform/PlatformIntegration.h"
 #include "platform/windows/WindowsArguments.h"
+#include "platform/windows/CommissioningRestartNative.h"
 
 #include <windows.h>
 #include <filesystem>
@@ -22,6 +23,8 @@ bool RestartAfterExit(const std::string& executable,
   const auto exe = Wide(executable);
   const auto helper = (std::filesystem::path(exe).parent_path() / L"opennav-restart.exe").wstring();
   if (!std::filesystem::exists(helper)) return false;
+  if (commissioning::StartupBinding().state != commissioning::GuardState::Unarmed)
+    return commissioning::SpawnGuardedHelper(helper, exe, arguments);
   std::wstring command = QuoteWindowsArgument(helper) + L" " +
       std::to_wstring(GetCurrentProcessId()) + L" " + QuoteWindowsArgument(exe);
   for (const auto& value : arguments) command += L" " + QuoteWindowsArgument(Wide(value));

@@ -9,6 +9,29 @@ concurrency:
   group: opennav-boat-tools-${{ github.ref }}
   cancel-in-progress: true
 jobs:
+  native-restart-transport:
+    name: Native Win32 commissioning restart process boundary
+    runs-on: windows-2022
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+      - name: Compile actual restart helper with marker-only test processes
+        run: |
+          cmake -S opennav-x/tests/commissioning-restart -B opennav-x/build/commissioning-restart -G "Visual Studio 17 2022" -A Win32
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          cmake --build opennav-x/build/commissioning-restart --config Release --parallel 2
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+      - name: Exercise native process and pipe boundary without OpenCPN or hardware
+        run: |
+          New-Item -ItemType Directory -Path opennav-x/evidence/local/restart-transport -Force | Out-Null
+          & "$env:WINDIR/System32/WindowsPowerShell/v1.0/powershell.exe" -NoProfile -ExecutionPolicy Bypass -File opennav-x/tools/test-commissioning-restart-windows.ps1 -Binaries opennav-x/build/commissioning-restart/Release -Evidence opennav-x/evidence/local/restart-transport 2>&1 | Tee-Object -FilePath opennav-x/evidence/local/restart-transport/native-process-tests.log
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: development-commissioning-restart-${{ github.sha }}
+          path: opennav-x/evidence/local/restart-transport
+          if-no-files-found: warn
   native-maintenance:
     name: Disposable native Windows tooling checks
     runs-on: windows-2022
