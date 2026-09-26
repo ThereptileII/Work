@@ -9,13 +9,15 @@ executables from the installed product, refines shared visual components and
 navigation workflows, and adds repeatable boat deployment and maintenance tools.
 The accepted Beta 1 results below remain historical evidence, not Beta 2 gates.
 
-### Boat preflight — installation blocked
+### Boat preflight — prerequisite upgrade authorized
 
 Read-only inspection found **OpenCPN 5.12.2-0+b69f44c / x86**, executable SHA-256
 `2fdcd6a2cdef7f730aa4c094fcd21302ed2a5d531a611ee180c06533f3a2cb48`.
 This differs from the validated 5.12.4 binary; no compatibility entry has been
-added and no installed OpenCPN file has been modified. Permission to upgrade
-the prerequisite is pending. Tailscale, SSH and RustDesk remain running.
+added and no installed OpenCPN file has been modified. The user has now explicitly
+authorized a backed-up upgrade to the exact validated official 5.12.4. Backup,
+installer and preservation checks precede that upgrade; Beta 2 deployment still
+requires its own product gates. Tailscale, SSH and RustDesk remain running.
 
 The actual shared profile's `opencpn.ini` was already zero-filled at first
 inspection (21,380 bytes; last written 2026-09-20). A same-sized nonzero temporary
@@ -37,9 +39,12 @@ Reported desktop mode is 1920×1080 and the saved application DPI is 144;
 The old Developer Preview portable folder has been retired by an atomic move
 into the boat-local recovery archive, with ownership hash checked before and
 after and a durable recovery journal. No profile/chart/user file was deleted.
-Beta 1 remains available until a known-good replacement can be installed. Old
-download ZIPs will be archived during final cleanup. No unrelated Desktop
-content is included in feedback documentation.
+Beta 1 remains available until a known-good replacement can be installed. Six
+obsolete download ZIPs (five identical accepted Beta 1 archives and one accepted
+Developer Preview archive, 912,982,707 bytes) have also been moved into versioned
+boat-local recovery storage. Every ZIP matched its accepted release SHA-256
+before and after the atomic move; durable records retain the original location.
+No unrelated Desktop content is included in feedback documentation.
 
 ### Beta 2 implementation and validation under way
 
@@ -54,16 +59,32 @@ content is included in feedback documentation.
 - Integration fixes cover chart-layout restoration after actual settings
   reconfiguration, whole-metre anchor labels, safe cleanup of XNav-owned anchor
   marks and copied chart context/Go To actions.
-- Late-created input-only loopback GPS and actual AIS decoding pass 15 grouped
-  Linux object/integration checks in UTC+2. This exposed and fixed AIS observation
+- Late-created input-only loopback GPS and actual AIS decoding pass 17 grouped
+  Linux object/integration checks, including copied waypoint context and compact
+  chart cards. Earlier UTC+2 testing exposed and fixed AIS observation
   clock conversion that made fresh targets appear two hours stale. Four added
   integrated clock tests pass in UTC and UTC+2. Boat reception remains pending.
 - Portable contract suite: 63 passing cases/suites in local development.
-  Integrated fixture-enabled Linux build passes; 106/106 existing integrated
-  regressions pass. New interaction smokes and all native Windows gates remain
-  pending.
+  Integrated fixture-enabled Linux build passes. The separate fixture-free
+  Linux product passes 110/110 integrated regressions and five loader/resource
+  self-test checks. These are local development results, not exact-release
+  qualification. Seven actual-pointer workflow groups also pass: orientation,
+  context dismissal, waypoint create/Go To/stop, route point entry/Undo,
+  cancellation and named save with a read-only database preservation audit.
+  Native and boat execution of these expanded workflows remains pending.
 - Beta 2 installer wizard, versioned maintenance and boat scripts are implemented
   but their new native lifecycle gates have not yet run.
+- First CI candidate `15e5a265` exposed a Windows-only line-ending assumption in
+  a source-archive test. The corrected candidate `a0af22c248f8a81bb8068ccf3f64bd921478060f`
+  is running in [CI 36266809347](https://github.com/ThereptileII/Work/actions/runs/36266809347).
+  Linux and Windows contract jobs pass. Native MSVC integration builds and all
+  102 integrated CTest cases pass, followed by mode/persistence checks. Its
+  navigation UI smoke stopped at an old source-caption assertion after alerts
+  moved into that header slot; the replacement asserts the critical-position
+  alert and retained stale ages explicitly. Six native frame/mode screenshots
+  were reviewed in [the first native review](design/reviews/beta2-native-a0af22c.md).
+  Complete Windows, packaging and boat gates remain pending. No Beta 2 release
+  acceptance is implied.
 
 ## Accepted Beta 1 baseline
 

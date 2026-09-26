@@ -22,7 +22,7 @@ prerequisite decision. A version string cannot override the installer manifest.
    before diagnosing a failure with `inspect-partial-backup.ps1`.
 3. Place a reviewed `boat-target.json` in the workspace, starting with
    `boat-target.example.json`. Keep this machine-specific file private. All
-   deployment/launch scripts independently reject unsupported stock hashes.
+   installed deployment/launch scripts independently reject unsupported stock hashes.
 4. Commit, pass Linux/native Windows CI, and obtain the exact installer and its
    SHA-256 from the accepted artifact. Transfer via the established SSH alias.
    `install.ps1` or `update.ps1` requires that hash and exact expected commit;
@@ -50,7 +50,10 @@ prerequisite decision. A version string cannot override the installer manifest.
    GUI in the SSH service session. One matching interactive Explorer session is
    required. The temporary task is removed afterwards; the application stays open.
 7. `capture-ui.ps1` captures only the native application rectangle, in physical
-   pixels with actual window DPI. Captures can contain vessel position or licensed
+   pixels with actual window DPI. It refuses hidden/minimized/off-screen windows,
+   requires the exact process to own the foreground immediately before/after the
+   capture, and discards pixels if the window moves; refused captures publish no
+   PNG. Captures can contain vessel position or licensed
    charts: retain them privately, and review before publishing cropped/redacted
    evidence. Display dimensions are measured, never assumed from the specification.
 8. `smoke-test.ps1` starts XNav, checks response/startup marker, captures the chart
@@ -69,6 +72,58 @@ No script clicks pilot commands, activates routes, injects sensor input or creat
 synthetic AIS/radar. Native/boat visual review is separate from hardware control
 acceptance.
 
+## Preliminary display review while the installed prerequisite is blocked
+
+A separate, fixture-free portable review can inspect the physical display without
+starting or modifying unsupported stock OpenCPN or its damaged/unknown profile.
+This is **preliminary display evidence only**. It does not qualify installation,
+the actual user profile, the real nautical charts, connections or vessel hardware.
+The installed launch checks above remain mandatory and have no override.
+
+Only after the exact candidate passes its Linux/native Windows product gates:
+
+1. Transfer the accepted `OpenNavX-Beta2-Portable-Recovery.zip` to `C:\XNav` and
+   obtain its SHA-256 and commit from the same accepted artifact. Run
+   `prepare-portable-review.ps1 -Archive <local-ZIP> -ExpectedArchiveSha256 <hash>
+   -ExpectedCommit <commit>`. It requires OpenCPN closed, records a private hash
+   inventory of normal OpenCPN application/profile/plugin files, extracts into a
+   new workspace run, and verifies all package files and the actual executable's
+   fixture-OFF loader identity before any GUI launch.
+2. The helper keeps a fresh package-only profile, disabling initialization of the
+   four audited bundled plugins. It never copies a real/Beta1 profile, plugins,
+   navigation objects, chart database or connection. A nonempty marine connection,
+   imported vessel settings, custom plugin path or navigation objects prevents
+   launch. Reviewed plugin constructors are limited to their bundled resources
+   and initial state; the enabled flag alone is not considered an isolation proof.
+3. Retain the returned `record` and `recordSha256` privately. Use
+   `portable-review.ps1 -Record <record> -ExpectedRecordSha256 <hash> -Action Launch
+   -Mode XNav` (or `Legacy`/`Safe`). A limited interactive task repeats the package
+   and profile checks and starts only the owned executable, fixed portable profile
+   and software-rendering arguments. The process inherits an OS-only DLL PATH.
+4. Use `-Action Capture -ProcessId <returned-PID> -Name navigation-day` to capture
+   the actual window and DPI, and `-Action Close -ProcessId <PID>` for normal close.
+   Capture and close remain available if profile changes now prevent another
+   launch. After an in-app mode restart, identify the new process by its exact
+   package executable path; never target an unrelated OpenCPN process.
+5. Inspect Day/Dusk/Night, unavailable data, instruments, energy, settings,
+   diagnostics and XNav/Legacy/Safe on the bundled real coastline. Do not activate
+   navigation, import charts/plugins, configure sensors, request pilot discovery,
+   enable control or click actuator commands. No synthetic vessel data is present.
+   Do not change Windows display/remote-access settings merely to obtain a size.
+   Record measured dimensions/DPI and the difference from the 1280×800 target.
+6. `-Action Close` and `-Action Verify` compare the normal installation/profile
+   inventory with the original hashes. Keep private native screenshots and logs
+   under the review run. Any changed original file, unexpected live input, output
+   driver or blocked close fails the review and requires inspection; the helper
+   never force-kills the process or silently rewrites a profile to pass.
+
+The portable integration forces profile/logs below its own package, refuses an
+external `--configdir` or `--remote`, and does not start OpenCPN's REST/mDNS service.
+Pinned OpenCPN creates marine drivers from configured connections; this review's
+connection list is empty. Pilot control remains unconfigured/OFF. These reviewed
+boundaries, exact package hashes and before/after normal-file checks support this
+limited display test; they do not replace later real-boat commissioning.
+
 ## Maintenance and old versions
 
 `repair.ps1`, `rollback.ps1` and `uninstall.ps1` execute the verified installed
@@ -83,8 +138,11 @@ entries and no running OpenCPN. All profile/chart/log additions are preserved. A
 before the move and a separate completion record follows verification; a power
 interruption cannot erase the known recovery location.
 It never guesses ownership from a folder name, deletes unrelated Desktop content,
-or prunes the active/previous installed recovery generation. ZIPs/shortcuts outside
-such a verified folder require separately inspected ownership before removal.
+or prunes the active/previous installed recovery generation. `retire-download.ps1`
+archives a separately identified obsolete OpenNav ZIP only when its bytes match
+the supplied accepted-release SHA-256; it also journals the location before its
+same-volume move. Unrelated filenames/hashes are refused. External shortcuts
+require separately inspected ownership before removal.
 
 ## Optional source/build operation
 

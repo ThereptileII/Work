@@ -348,6 +348,22 @@ try:
         assert state()['previous']==repaired
         assert (generation()/'app/plugins/alpha-user-preserved.txt').exists()
         check('Update preserves shared profile and user plugin additions; prior generation backed up')
+        previous=INSTALL/'generations'/repaired
+        rollback_marker=previous/'app/OPENNAV_PORTABLE_PREVIEW'
+        assert not rollback_marker.exists()
+        rollback_marker.write_text('unowned inherited rollback sentinel')
+        previous_files=inventory(previous); current_files=inventory(generation())
+        rollback_state=sha(INSTALL/'state.json')
+        try:
+            failure=engine('Rollback',expected=1)
+            assert 'portable profile marker' in failure['error'],failure
+            assert sha(INSTALL/'state.json')==rollback_state
+            assert inventory(previous)==previous_files and inventory(generation())==current_files
+            assert inventory(profile)==before and inventory(stock)==stock_before
+            assert not (INSTALL/'transaction.json').exists()
+        finally:
+            rollback_marker.unlink()
+        check('Rollback refuses an unowned portable marker in the previous generation without altering either generation, state or user data')
         engine('Rollback');assert state()['current']==repaired and inventory(profile)==before
         check('Rollback restores exact prior generation without restoring older navigation data')
         active_hash=sha(generation()/'app/opencpn.exe'); state_hash=sha(INSTALL/'state.json')
@@ -355,6 +371,26 @@ try:
             assert state()['current']==repaired and sha(INSTALL/'state.json')==state_hash
             assert sha(generation()/'app/opencpn.exe')==active_hash
             assert inventory(profile)==before and inventory(stock)==stock_before
+        # Unknown user additions are normally preserved, but cannot turn an
+        # installed generation back into a portable or developer distribution.
+        for relative, action, error in (
+                ('app/OPENNAV_PORTABLE_PREVIEW','Update','portable profile marker'),
+                ('Run-XNav-Demo.cmd','Repair','Developer/demo content refused'),
+                ('app/OPENNAV_ROUTE_FIXTURE','Update','Developer/demo content refused')):
+            addition=generation()/relative
+            assert not addition.exists()
+            addition.write_text('unowned inherited sentinel; must never reach a committed product')
+            previous_files=inventory(generation())
+            try:
+                failure=setup(action,original,expected=1)
+                assert error in failure['error'],failure
+                unchanged()
+                assert inventory(generation())==previous_files,'Rejected inheritance changed old generation'
+                assert not (INSTALL/'transaction.json').exists(),'Rejected content reached publication journal'
+            finally:
+                # Remove only the disposable sentinel inserted by this case.
+                addition.unlink()
+        unchanged();check('Update/repair reject inherited portable marker, Demo launcher and route fixture before publication; prior generation/state/stock/profile unchanged')
         with file_lock(INSTALL/'transaction.lock',0):
             failure=setup('Update',original,expected=1)
             assert 'being used' in failure['error'].lower() or 'another process' in failure['error'].lower(),failure

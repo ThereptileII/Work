@@ -5,7 +5,9 @@ CPA/TCPA and alarms. XNav lists targets and presents copied, timestamped values;
 SmartNav presents only existing upstream encounter context. No collision rule
 or steering command is introduced.
 
-A live target card offers **Select target on chart**. The integration rechecks
+A compact live target card remains over the chart and offers **Show on chart**
+and **Details**. Details retains the full target view and its **Select target on
+chart** action. The integration rechecks
 current target validity, enables existing AIS chart display if needed, and uses
 OpenCPN's existing chart centering. One owned target copy identifies the selection.
 The narrow renderer hook reuses OpenCPN's own `TargetFrame`; it does not mutate
@@ -63,3 +65,10 @@ UTC/east/west elapsed-time vectors, stale age and invalid/future/overflow input;
 the actual no-restart connection and AIS acquisition scenario has passed on
 Linux under both UTC and Europe/Stockholm (UTC+2). Native Windows and physical
 receiver validation remain required before release acceptance.
+
+The compact Beta 2 card uses the pinned `ais_get_status` text table within its
+native 0..21 bounds, with the same Class-B/base/meteo omission and SART
+active/testing distinction used by `AisTargetData::BuildQueryResult`. Unknown
+status remains explicitly unavailable. Normal UI no longer exposes numeric
+`navigation status 15` implementation text. The native object scenario covers
+ordinary status text, SART testing and an out-of-range status value.

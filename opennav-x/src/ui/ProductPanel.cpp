@@ -1,5 +1,6 @@
 #include "ui/ProductPanel.h"
 #include "ui/Sheet.h"
+#include "ui/ContextCard.h"
 #include "integration/BuildFeatures.h"
 #include <wx/dcbuffer.h>
 #include <wx/textctrl.h>
@@ -450,15 +451,51 @@ void ProductPanel::RouteActions() {
           route_.active
               ? "Active passage"
               : "Saved route");
+  Visual("Passage overview", 168, [this](XNavPainter &p, wxDC &, int width) {
+    const int split = width / 2;
+    p.Card(0, 0, width, 164, "DESTINATION");
+    p.Text(route_.points.empty() ? wxString("No destination")
+                                : Name(route_.points.back().name, ""),
+           20, 48, 28, p.c.primary, false, split - 40);
+    p.Text(wxString::Format("%u waypoints", static_cast<unsigned>(route_.points.size())),
+           20, 98, 14, p.c.secondary, false, split - 40);
+    const auto progress = state_.vessel.navigation.route;
+    const bool same = progress && progress->route_id == route_.id;
+    const auto distance = same ? vessel::AssessRoute(*progress, state_.now).remaining_distance_nm
+                               : std::nullopt;
+    if (route_.active) {
+      p.Text("REMAINING", split + 20, 16, 12, p.c.secondary, false, split - 40);
+      p.Text(distance ? wxString::Format("%.1f NM", *distance) : wxString::FromUTF8("—"),
+             split + 20, 48, 36, distance ? p.c.accent : p.c.muted, false, split - 40);
+      wxString next = "Navigation distance unavailable";
+      if (distance && !progress->remaining_steps.empty())
+        next = "Next: " + Name(progress->remaining_steps.front().name, "");
+      p.Text(next, split + 20, 104, 14, p.c.secondary, false, split - 40);
+      if (distance && state_.advice.route_valid && state_.advice.route_id == progress->route_id &&
+          state_.advice.route_revision == progress->route_revision &&
+          state_.advice.revision_scope == progress->revision_scope)
+        for (const auto &event : state_.advice.events)
+          if (event.kind == smartnav::EventKind::Destination && event.seconds_from_now &&
+              std::isfinite(*event.seconds_from_now) && *event.seconds_from_now >= 0)
+            p.Text(wxString::Format("Estimated %.0f min to destination", *event.seconds_from_now / 60),
+                   split + 20, 132, 12, p.c.secondary, false, split - 40);
+    } else {
+      p.Text("DEPARTURE", split + 20, 16, 12, p.c.secondary, false, split - 40);
+      p.Text(route_.points.empty() ? wxString::FromUTF8("—")
+                                  : Name(route_.points.front().name, ""),
+             split + 20, 48, 28, p.c.primary, false, split - 40);
+      p.Text("Review the chart before activation", split + 20, 104, 14,
+             p.c.secondary, false, split - 40);
+    }
+  });
   BeginActions(2);
-  Action("Back to routes", [this] { ShowPage(ProductPage::Routes, mode_); });
   Action("View first point on chart", [this] {
     if (actions_.chart)
       actions_.chart();
     if (actions_.navigation.view_route)
       actions_.navigation.view_route(route_.id);
-  });
-  Action(
+  }, static_cast<bool>(actions_.navigation.view_route))->SetRole(ButtonRole::Quiet);
+  auto *navigate = Action(
       route_.active ? "Stop navigation" : "Activate route",
       [this] {
         if (ConfirmSheet(
@@ -471,18 +508,48 @@ void ProductPanel::RouteActions() {
                                : actions_.navigation.activate(route_));
       },
       !state_.vessel.simulated && !state_.vessel.replayed &&
-          (route_.active || route_.editable));
+          (route_.active ? static_cast<bool>(actions_.navigation.deactivate)
+                         : route_.editable && static_cast<bool>(actions_.navigation.activate)));
+  navigate->SetRole(route_.active ? ButtonRole::Critical : ButtonRole::Primary);
+  EndActions();
+  Text("Planned legs", 20);
+  if (route_.points.empty()) Text("No waypoints in this route.");
+  for (std::size_t i = 0; i < route_.points.size(); ++i) {
+    const auto point = route_.points[i];
+    Visual("Planned leg " + wxString::Format("%u", static_cast<unsigned>(i + 1)), 80,
+        [this, point, i](XNavPainter &p, wxDC &, int width) {
+      const auto progress = state_.vessel.navigation.route;
+      const bool next = route_.active && progress && progress->route_id == route_.id &&
+          vessel::AssessRoute(*progress, state_.now).remaining_distance_nm &&
+          progress->active_waypoint_id == point.id;
+      p.Text(wxString::Format("%02u", static_cast<unsigned>(i + 1)), 8, 8, 20,
+             next ? p.c.accent : p.c.secondary);
+      p.Text(Name(point.name, ""), 60, 8, 21, p.c.primary, false, width - 170);
+      if (next) p.Text("NEXT", width - 72, 12, 12, p.c.accent);
+      wxString detail = "Departure";
+      if (i > 0) {
+        detail = point.incoming_nm && std::isfinite(*point.incoming_nm) && *point.incoming_nm >= 0
+            ? wxString::Format("%.2f NM", *point.incoming_nm) : wxString("Leg distance unavailable");
+        if (point.incoming_course_true_deg && std::isfinite(*point.incoming_course_true_deg))
+          detail += wxString::Format("  /  %.0f° true", *point.incoming_course_true_deg);
+      }
+      p.Text(detail, 60, 40, 14, p.c.secondary, false, width - 84);
+      p.Rule(60, 72, width - 84);
+    });
+  }
+  Text("Route options", 18);
+  BeginActions(3);
   Action(
       "Edit route name / description",
       [this] {
         auto f = EditSheet(*this, mode_, "Edit route",
-                           "Changes use the existing OpenCPN database.",
+                           "Change the saved route name and description.",
                            {{"Name", W(route_.name), 128},
                             {"Description", W(route_.description), 2048}});
         if (f)
           Result(actions_.navigation.edit_route(route_, (*f)[0], (*f)[1]));
       },
-      route_.editable);
+      route_.editable && static_cast<bool>(actions_.navigation.edit_route))->SetRole(ButtonRole::Quiet);
   Action(
       "Edit route points on chart",
       [this] {
@@ -498,7 +565,7 @@ void ProductPanel::RouteActions() {
             actions_.navigation.view_route(route_.id);
         }
       },
-      route_.editable);
+      route_.editable && static_cast<bool>(actions_.navigation.view_route))->SetRole(ButtonRole::Quiet);
   Action(
       "Reverse route",
       [this] {
@@ -508,20 +575,9 @@ void ProductPanel::RouteActions() {
                          "Reverse"))
           Result(actions_.navigation.reverse(route_));
       },
-      route_.editable);
+      route_.editable && static_cast<bool>(actions_.navigation.reverse))->SetRole(ButtonRole::Quiet);
   EndActions();
-  Text("PLANNED LEGS", 18);
-  for (std::size_t i = 0; i < route_.points.size(); ++i) {
-    const auto &p = route_.points[i];
-    Text(
-        wxString::Format("%u  ", static_cast<unsigned>(i + 1)) +
-        Name(p.name, p.id) +
-        (p.incoming_nm ? wxString::Format("   %.2f NM", *p.incoming_nm)
-                       : "   Start") +
-        (p.incoming_course_true_deg
-             ? wxString::Format(W("   %.0f° true"), *p.incoming_course_true_deg)
-             : ""));
-  }
+  Action("Back to routes", [this] { ShowPage(ProductPage::Routes, mode_); })->SetRole(ButtonRole::Quiet);
 }
 void ProductPanel::PointActions() {
   Heading(Name(point_.name, point_.id),
@@ -538,37 +594,19 @@ void ProductPanel::PointActions() {
       actions_.navigation.view_waypoint(point_.id);
   });
   Action("GO TO", [this] {
-    if (!actions_.navigation.go_to_waypoint) return;
-    if (ConfirmSheet(*this, mode_, "Go to " + Name(point_.name, point_.id),
-          "Start a passage to this waypoint? Check the chart and passage before starting.", "START")) {
-      const auto result = actions_.navigation.go_to_waypoint(point_);
-      if (result.ok && actions_.chart) actions_.chart();
-      else Result(result);
-    }
+    const auto result = WaypointSheet(*this, mode_, ContextAction::GoTo, point_, actions_.navigation);
+    if (!result) return;
+    if (result->ok && actions_.chart) actions_.chart();
+    else Result(*result);
   }, !state_.vessel.simulated && !state_.vessel.replayed)->SetRole(ButtonRole::Primary);
-  Action(
-      "Edit waypoint",
-      [this] {
-        auto f = EditSheet(*this, mode_, "Edit waypoint",
-                           "Active-route, anchor-watch and protected points "
-                           "are read-only here.",
-                           {{"Name", W(point_.name), 128},
-                            {"Description", W(point_.description), 2048}});
-        if (f)
-          Result(actions_.navigation.edit_waypoint(point_, (*f)[0], (*f)[1]));
-      },
-      point_.editable);
-  Action(
-      "Delete waypoint",
-      [this] {
-        if (ConfirmSheet(*this, mode_, "Delete waypoint",
-                         Name(point_.name, point_.id) +
-                             " will be removed from the shared OpenCPN "
-                             "database. This cannot be undone from XNav.",
-                         "Delete waypoint"))
-          Result(actions_.navigation.delete_waypoint(point_));
-      },
-      point_.removable);
+  Action("Edit waypoint", [this] {
+    const auto result = WaypointSheet(*this, mode_, ContextAction::Edit, point_, actions_.navigation);
+    if (result) Result(*result);
+  }, point_.editable);
+  Action("Delete waypoint", [this] {
+    const auto result = WaypointSheet(*this, mode_, ContextAction::Remove, point_, actions_.navigation);
+    if (result) Result(*result);
+  }, point_.removable);
 }
 void ProductPanel::Instruments() {
   Heading("Vessel instruments", state_.vessel.replayed

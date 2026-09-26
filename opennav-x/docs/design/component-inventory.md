@@ -9,7 +9,8 @@ the actual source boundary, not a claim that every role is a separate C++ class.
 | XNavButton | `ui/Controls.*`, `XNavButton` | Owner-drawn Normal/Quiet/Primary/Critical roles, pressed/focus/disabled states, keyboard/touch, semantic palette |
 | XNavIconButton | `ui/Controls.*`, `XNavIconButton` | Shared vector icons including Center, zoom, Back and menu; accessible text retained |
 | XNavCard | `XNavPainter::Card` | Shared rounded dark surface, quiet heading and border treatment |
-| XNavContextCard | `ProductPanel::Visual` plus `XNavPainter` | Owned-state instrument, pilot, AIS, anchor and alert groups; chart-position popup composes the same controls |
+| XNavContextCard | `ui/ContextCard.*` | Modeless chart-bounded AIS, waypoint and chart-position cards; copied state, explicit actions, outside/Escape dismissal, no pointer grab |
+| Product value group | `ProductPanel::Visual` plus `XNavPainter` | Owned-state instrument, pilot, AIS detail, anchor and alert groups |
 | XNavSheet | `ui/Sheet.*`, `EditSheet`/`ConfirmSheet` | Focused dark modal, explicit actions, bounded fields, scrollable content; no write before acceptance |
 | XNavDataValue | `ui/Controls.*`, `XNavDataValue` | Freshness/provenance-aware number; compact rail layout and standard larger layout |
 | XNavStatusIndicator | Shell status/alerts and `ProductPanel::StatusAction` | Connection/age states in plain language; detailed source metadata after selection |
@@ -18,7 +19,7 @@ the actual source boundary, not a claim that every role is a separate C++ class.
 | XNavListRow | Quiet `StatusAction`/`Action` composition | Sensor health, saved routes/marks and target selections; unavailable actions disabled |
 | XNavNavigationSummary | Shell summary and `PreviewPanel` Passage | Existing immutable route progress and SmartNav advice; no independent route geometry |
 | XNavAlert | Shell reserved status slot + alert context cards | Persistent condition, severity, inspect and acknowledge; never hides a critical condition behind page content |
-| XNavBottomBar | `ui/Shell.*` | Navigation/passage/pilot/system access and persistent STBY; preserved during pages |
+| XNavBottomBar | `ui/Shell.*` | Navigation/passage/pilot/system access and persistent STBY; route creation replaces only page shortcuts with 88-DIP Cancel/Undo/Done, without resizing the chart |
 | XNavDataRail | Shell + compact XNavDataValue | Four chosen primary values; no ordinary narrow-rail scrolling; alert presence does not change height |
 | XNavScroll | `ui/Controls.*` | Wheel/touch pan, hidden native scrollbar, explicit Up/Down, correct content extent |
 | XNavPainter | `ui/Controls.*` | Authoritative DIP text, card, separator, palette use; all painted product views share it |

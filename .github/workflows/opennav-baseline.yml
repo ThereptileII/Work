@@ -165,6 +165,8 @@ jobs:
         env:
           TZ: Europe/Stockholm
         run: python3 opennav-x/tools/smoke-navigation.py --objects
+      - name: Mouse chart gestures, waypoint Go To and route creation
+        run: python3 opennav-x/tools/smoke-user-flows.py
       - name: Crash-loop recovery with real disposable processes
         run: python3 opennav-x/tools/smoke-recovery.py
       - name: Exercise preview pages and all demo scenarios
@@ -220,6 +222,19 @@ jobs:
       - name: Staged native loader check without profile initialization
         if: ${{ !cancelled() && steps.integrated.conclusion == 'success' }}
         run: python opennav-x/tools/smoke-installer-selftest.py --app opennav-x/build/xnav-install/opencpn.exe
+      - name: Native pointer chart gestures, waypoint Go To and route creation
+        id: user_flows
+        if: ${{ !cancelled() && steps.integrated.conclusion == 'success' }}
+        run: python opennav-x/tools/smoke-user-flows.py
+      - name: Preserve failed native chart interaction evidence
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: ${{ !cancelled() && steps.user_flows.conclusion == 'failure' }}
+        with:
+          name: windows-user-flows-failure-${{ github.sha }}
+          path: |
+            opennav-x/evidence/local/flow-*
+            opennav-x/evidence/local/user-flows-*
+          if-no-files-found: error
       - name: Repeat native crash-recovery returns with separate evidence
         if: ${{ !cancelled() && steps.integrated.conclusion == 'success' }}
         run: |

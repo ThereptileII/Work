@@ -242,12 +242,41 @@ try:
     def capture(name):
         path = evidence / f'{prefix}-{name}.png'
         if windows:
-            rgb = ui.capture(handle, path)
+            rgb = ui.capture(handle, path, screen_pixels=objects)
         else:
             subprocess.run(['import', '-window', 'root', str(path)], env=env, check=True)
             rgb = subprocess.check_output(['convert', str(path), '-depth', '8', 'rgb:-'], env=env)
         report['screenshots'].append(path.name)
         return rgb
+
+    def assert_stale_navigation():
+        # The reserved status slot presents the critical GPS-loss alert instead
+        # of the ordinary source caption. Check that real safety presentation,
+        # retained observation age and the still-visible rail, not the obsolete
+        # pre-alert caption which is intentionally hidden.
+        deadline=time.monotonic()+5
+        latest={}
+        while time.monotonic()<deadline:
+            latest=read_json_snapshot(profile/'opennav-diagnostics.json')
+            values={v['name']:v for v in latest['data']}
+            names=('Latitude','Longitude','Speed over ground','Course over ground')
+            stale=all(values[n]['quality']=='STALE' and
+                      values[n].get('age_ms',-1)>=values[n]['stale_after_ms'] and
+                      'value' in values[n] for n in names)
+            alerts=latest['runtime'].get('alerts',[])
+            critical=any(a['id'] in ('position-lat','position-lon') and
+                         a['level']=='CRITICAL' and not a['acknowledged'] for a in alerts)
+            rail=latest['runtime']['display'].get('rail_regions',[])
+            visible=len(rail)==4 and all(r['visible'] for r in rail) and any(r['label']=='sog' for r in rail)
+            caption=(not windows or any(c.startswith('CRITICAL / Position unavailable or stale')
+                                       for _,c in ui.children(handle)))
+            if stale and critical and visible and caption:
+                report.setdefault('navigation_loss_checks',[]).append({
+                    'critical_alert_visible':True,'rail_visible':True,
+                    'stale_sources':{n:values[n] for n in names}})
+                return
+            time.sleep(.15)
+        raise AssertionError(('Stopped navigation not visibly degraded',latest))
 
     if objects:
         spec = importlib.util.spec_from_file_location('chartcheck', root / 'tools/chart-render-check.py')
@@ -267,6 +296,59 @@ try:
                     c['label']=='System' and c['x']>1100 and c['y']>700 for c in controls):break
             time.sleep(.2)
         else:raise AssertionError('Actual chart layout did not reach 1280x800')
+        def object_snapshot():
+            return read_json_snapshot(profile/'opennav-diagnostics.json')
+        def wait_object(predicate, description, timeout=10):
+            expires=time.monotonic()+timeout
+            latest={}
+            while time.monotonic()<expires:
+                assert app.poll() is None, 'Application exited during context interaction'
+                latest=object_snapshot()
+                if predicate(latest):return latest
+                time.sleep(.15)
+            raise AssertionError((description,latest))
+        def context_controls(sample,label):
+            return [c for c in sample['runtime']['display'].get('interaction_controls',[])
+                    if c['label']==label and c['visible']]
+        def focus_context():
+            if windows:return
+            # Bare Xvfb has no window manager to enforce transient-owner
+            # stacking after OpenCPN's deferred frame Raise(). Model that normal
+            # desktop ownership explicitly; mouse down/up still hit the real
+            # card controls. Native Windows receives no focus workaround.
+            found=subprocess.run(['xdotool','search','--all','--onlyvisible','--pid',str(app.pid),
+                                  '--name','^OpenNav (AIS|waypoint) context$'],env=env,
+                                 capture_output=True,text=True)
+            cards=found.stdout.splitlines()
+            assert len(cards)<=1,('Multiple compact contexts',cards)
+            if cards:
+                subprocess.run(['xdotool','windowraise',cards[0],'windowfocus',cards[0]],env=env,check=True)
+                report['linux_context_stacking']='Bare Xvfb has no WM; explicit raise/focus models transient ownership, native pointer events remain real'
+        def click_object(label):
+            latest=wait_object(lambda s:any(c['enabled'] for c in context_controls(s,label)),
+                               'Visible enabled action '+label)
+            choices=context_controls(latest,label)
+            unique={(c['x'],c['y'],c['width'],c['height']):c for c in choices if c['enabled']}
+            assert len(unique)==1,('Ambiguous context action',label,choices)
+            choice=next(iter(unique.values()))
+            x,y=choice['x']+choice['width']//2,choice['y']+choice['height']//2
+            focus_context()
+            if windows:
+                assert ui.SetCursorPos(x,y)
+                ui.MouseEvent(2,0,0,0,0);time.sleep(.05);ui.MouseEvent(4,0,0,0,0)
+            else:subprocess.run(['xdotool','mousemove',str(x),str(y),'click','1'],env=env,check=True)
+        def chart_bounded_context(labels):
+            latest=wait_object(lambda s:all(context_controls(s,label) for label in labels),
+                               'Context actions visible over chart')
+            assert latest['ui_page']=='Navigation',latest['ui_page']
+            rect=latest['runtime']['display']['chart_region']
+            for label in labels:
+                for control in context_controls(latest,label):
+                    assert (rect['x']<=control['x'] and rect['y']<=control['y'] and
+                            control['x']+control['width']<=rect['x']+rect['width'] and
+                            control['y']+control['height']<=rect['y']+rect['height']),control
+            focus_context()
+            return latest
         chart_colors = chartcheck.reference(capture('initial-no-input-chart'))
         assert all(min(c)>0 for c in chart_colors),'Black desktop is not a chart color'
         phase[0]='rmc';deadline=time.monotonic()+70;seen=set()
@@ -276,14 +358,37 @@ try:
             if path.exists():
                 result=read_json_snapshot(path);assert result['result']!='failed',result
                 current=result.get('phase','')
-                if current in ['route-card','settings-return','waypoint-card','ais-card'] and current not in seen:
+                if current in ['route-card','settings-return','settings-return-navigation','waypoint-card','ais-card'] and current not in seen:
                     time.sleep(.6)
+                    if current=='waypoint-card':chart_bounded_context(['GO TO','Details','Edit waypoint','Remove'])
+                    if current=='ais-card':chart_bounded_context(['Show on chart','Details'])
                     rgb = capture(current)
-                    if current == 'settings-return':
+                    if current in ('settings-return','settings-return-navigation'):
                         report.setdefault('chart_rendering', []).append(chartcheck.check(
-                            rgb, chart_colors, 'Actual settings reconfiguration returns coastline without restart'))
-                        (profile / 'settings-return-observed').write_text('Native chart land and water verified.\n')
+                            rgb, chart_colors, 'Actual settings reconfiguration returns coastline without restart / '+current))
+                        (profile / (current+'-observed')).write_text('Native chart land and water verified.\n')
                     seen.add(current)
+                    if current=='waypoint-card':
+                        phase[0]='none'
+                        wait_object(lambda s:any(not c['enabled'] for c in context_controls(s,'GO TO')),
+                                    'Stale GPS must disable compact waypoint Go To',timeout=10)
+                        capture('waypoint-stale-position')
+                        phase[0]='rmc'
+                        wait_object(lambda s:any(c['enabled'] for c in context_controls(s,'GO TO')),
+                                    'Fresh selected GPS restores range action')
+                        click_object('Details')
+                        wait_object(lambda s:s['ui_page']=='Waypoint detail','Compact waypoint opens full Details')
+                        capture('waypoint-details')
+                        click_object('View on chart')
+                        wait_object(lambda s:s['ui_page']=='Navigation','Waypoint Details returns to chart')
+                        (profile/'waypoint-context-observed').write_text('Compact, stale GPS guard, Details and chart return verified.\n')
+                    if current=='ais-card':
+                        click_object('Show on chart')
+                        wait_object(lambda s:s['ui_page']=='Navigation' and
+                                    s['runtime'].get('ais_selected_mmsi')==990000001,
+                                    'Compact AIS selects existing chart target')
+                        capture('ais-context-selected-chart')
+                        (profile/'ais-context-observed').write_text('Compact AIS chart selection verified.\n')
                 if current=='ais-advice' and not report.get('live_ais_advice'):
                     sample=read_json_snapshot(profile/'opennav-diagnostics.json')
                     if sample['runtime'].get('smartnav',{}).get('ais_event_count',0)>0:
@@ -291,7 +396,7 @@ try:
                         (profile/'ais-advice-observed').write_text('Observed actual shell diagnostic AIS event\n')
                 if result['result']=='passed':
                     assert report.get('live_ais_advice'),'No actual AIS advisory observed'
-                    assert len(seen)==4,seen
+                    assert len(seen)==5,seen
                     assert result.get('late_connection_added_after_deferred') and counts['ais'] >= 3,result
                     report['object_contract']=result;break
             time.sleep(.2)
@@ -300,17 +405,14 @@ try:
         deadline=time.monotonic()+8
         while time.monotonic()<deadline:
             ready=read_json_snapshot(profile/'opennav-diagnostics.json')
-            if ready['ui_page']=='AIS target' and not ready['runtime'].get('alerts'):break
+            if context_controls(ready,'Details') and not ready['runtime'].get('alerts'):break
             time.sleep(.15)
         else:raise AssertionError('AIS fixture alarm did not resolve before card interaction')
-        if windows:ui.click_text(app.pid,'Select target on chart')
-        else:
-            choices=[c for c in ready['runtime']['display']['product_controls']
-                     if c['label']=='Select target on chart' and c['visible'] and c['enabled']]
-            assert len(choices)==1,('Current target action is not visible',choices)
-            choice=choices[0]
-            subprocess.run(['xdotool','mousemove',str(choice['x']+choice['width']//2),
-                            str(choice['y']+choice['height']//2),'click','1'],env=env,check=True)
+        chart_bounded_context(['Show on chart','Details'])
+        click_object('Details')
+        wait_object(lambda s:s['ui_page']=='AIS target','Compact AIS opens full Details')
+        capture('ais-details')
+        click_object('Select target on chart')
         deadline=time.monotonic()+12
         while time.monotonic()<deadline:
             selected=read_json_snapshot(profile/'opennav-diagnostics.json')
@@ -488,8 +590,7 @@ try:
                         # independent schedules. Keep input stopped while the
                         # visible rail catches up to the proven stale contract.
                         time.sleep(.6)
-                        if windows:
-                            assert any(caption == 'Navigation stale' for _, caption in ui.children(handle))
+                        assert_stale_navigation()
                         capture('02-stale-position')
                         seen_stale = True
                     phase[0] = 'rmc'
@@ -515,8 +616,7 @@ try:
         capture('03-position-only-velocity-stale')
         phase[0] = 'none'
         time.sleep(6.2)
-        if windows:
-            assert any(caption == 'Navigation stale' for _, caption in ui.children(handle)), 'UI did not age stopped data'
+        assert_stale_navigation()
         capture('04-all-stale')
         assert not failures, failures
     stop.set()

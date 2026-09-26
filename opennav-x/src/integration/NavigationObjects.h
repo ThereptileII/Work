@@ -4,6 +4,8 @@
 
 namespace opennav::integration {
 application::Catalog CopyNavigationCatalog();
+application::WaypointContext CopyWaypointContext(
+    const std::string &id, const vessel::Navigation &position, vessel::Time now);
 vessel::AisState CopyAisState(const vessel::Navigation &selected,
                               vessel::Time now);
 application::CommandResult ActivateRoute(const application::Route &selected,

@@ -289,7 +289,8 @@ void XNavDataValue::SetReading(const vessel::Sample& sample, vessel::Time now) {
   const wxString age = reading_.age
       ? wxString::Format("%.1f s old", reading_.age->count() / 1000.0) : "Age unavailable";
   SetToolTip(source + "\n" + age);
-  SetName(label_ + ": " + (reading_.value ? wxString::Format("%.*f", decimals_, *reading_.value) : "Unavailable"));
+  SetName(label_ + ": " + (reading_.value ? wxString::Format("%.*f", decimals_, *reading_.value) : "Unavailable")
+          + " " + unit_ + " / " + wxString::FromUTF8(vessel::QualityName(reading_.quality)));
   if(changed) Refresh();
 }
 
@@ -300,25 +301,39 @@ void XNavDataValue::Paint(wxPaintEvent&) {
   dc.Clear();
   const int x = FromDIP(12);
   if (compact_) {
+    const int height = ToDIP(GetClientSize().y);
+    const bool roomy = height >= 108;
+    const int label_y = std::max(8, (height - (roomy ? 96 : 72)) / 2);
+    const int available = GetClientSize().x - 2 * x;
     dc.SetPen(wxPen(Colour(colors.border)));
     dc.DrawLine(x, GetClientSize().y-1, GetClientSize().x-x, GetClientSize().y-1);
-    dc.SetFont(UiFont(*this,11)); dc.SetTextForeground(Colour(colors.secondary));
+    dc.SetFont(UiFont(*this,12)); dc.SetTextForeground(Colour(colors.secondary));
     auto title=label_;
     if(title=="APPARENT WIND") title="WIND";
     if(title=="SPEED OVER GROUND") title="SOG";
-    dc.DrawText(title,x,FromDIP(8));
+    dc.DrawText(wxControl::Ellipsize(title,dc,wxELLIPSIZE_END,available),x,FromDIP(label_y));
     const bool stale=reading_.quality==vessel::Quality::Stale;
-    dc.SetFont(UiFont(*this,32));dc.SetTextForeground(Colour(stale?colors.muted:colors.primary));
     const auto value=reading_.value?wxString::Format("%.*f",decimals_,*reading_.value):wxString::FromUTF8("—");
-    dc.DrawText(value,x,FromDIP(24));
+    int value_size = roomy ? 44 : 32;
+    dc.SetFont(UiFont(*this,value_size));
+    while(value_size > 24 && dc.GetTextExtent(value).x > available) {
+      value_size -= 2; dc.SetFont(UiFont(*this,value_size));
+    }
+    dc.SetTextForeground(Colour(stale?colors.muted:colors.primary));
+    dc.DrawText(value,x,FromDIP(label_y+20));
     const int unit_x=x+dc.GetTextExtent(value).x+FromDIP(6);
     dc.SetFont(UiFont(*this,11));dc.SetTextForeground(Colour(colors.secondary));
     auto unit=unit_;if(unit.StartsWith("m /"))unit="m";if(unit=="deg true")unit=wxString::FromUTF8("°T");
-    if(unit_x+dc.GetTextExtent(unit).x<GetClientSize().x-FromDIP(8))dc.DrawText(unit,unit_x,FromDIP(43));
+    const bool inline_unit=unit_x+dc.GetTextExtent(unit).x<GetClientSize().x-FromDIP(8);
+    if(inline_unit)dc.DrawText(unit,unit_x,FromDIP(label_y+20+value_size-13));
     wxString status = reading_.quality==vessel::Quality::Live ? "LIVE" : wxString::FromUTF8(vessel::QualityName(reading_.quality));
     if(reading_.quality==vessel::Quality::Stale && reading_.age)status+=wxString::Format(" %.0fs",reading_.age->count()/1000.0);
     dc.SetFont(UiFont(*this,10));dc.SetTextForeground(Colour(stale?colors.attention:colors.muted));
-    dc.DrawText(status,x,FromDIP(64));
+    // If a long numeric value fills the rail, retain its unit on the status
+    // line. Never hide the unit or clip a valid heading at a narrower DPI.
+    if(!inline_unit)status=unit+"  "+status;
+    dc.DrawText(wxControl::Ellipsize(status,dc,wxELLIPSIZE_END,available),x,
+                FromDIP(label_y+(roomy?78:56)));
     return;
   }
   dc.SetPen(wxPen(Colour(colors.border)));

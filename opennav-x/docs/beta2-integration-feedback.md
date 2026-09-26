@@ -14,7 +14,10 @@ restores Navigation against current pane identities, invalidates chart rendering
 and reloads viewports. It does not own/reparent a canvas, rebuild the chart
 database or process navigation. Legacy/Safe skip the XNav work. The object
 scenario exercises this exact path while an XNav page has hidden the chart and
-requires an immediately visible, nonzero canvas.
+requires an immediately visible, nonzero canvas. A second check rebuilds while
+Navigation is already visible and requires a separate coastline capture. The
+genuine reconfiguration path explicitly commits AUI pane restoration, even when
+the ordinary same-page Navigation action skips unnecessary layout.
 
 ## Late GPS and AIS
 

@@ -26,6 +26,15 @@ additionally requires `test_fixtures=false` and `build_purpose=INSTALLED PRODUCT
 an executable containing CI/demo fixtures cannot be installed as Beta 2. Earlier
 accepted Beta 1 remains valid as the explicitly retained upgrade/rollback fixture.
 
+Reserved portable/test markers, Demo launchers and fixture resources are checked
+both after payload extraction and **after preserving unowned additions**, before
+the loader check or atomic publication. An inherited portable marker must never
+silently redirect installed XNav to a different profile. A rejected update/repair
+leaves the active generation, state, originals and navigation data unchanged;
+the offending addition remains available in its original generation for review.
+Rollback checks the retained generation for the same markers before its loader
+check and publication, including markers added after that generation was saved.
+
 The wizard offers optional Legacy and Safe shortcuts, with XNav and maintenance
 always available. Shortcut choices are saved with the application generation and
 restored on rollback. Normal updates/repairs preserve them unless the wizard
@@ -45,6 +54,9 @@ uninstall/reinstall, same-version generation update/rollback, shortcut preferenc
 persistence, and rejection of an actual fixture-enabled native executable even
 when its package and manifest hashes are internally consistent. Existing
 original-stock/profile/plugin-preservation and failure cases are retained.
+Inherited portable-marker, Demo-launcher and route-fixture cases verify refusal
+before the publication journal and byte-for-byte preservation of the old generation.
+An added portable marker also blocks rollback without changing either generation.
 
 A same-version generation test does not prove two distinct Beta 2 builds are
 compatible. That comparison requires retaining a subsequently accepted earlier

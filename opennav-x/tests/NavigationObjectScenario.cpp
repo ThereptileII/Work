@@ -7,6 +7,7 @@
 #include "model/comm_drv_registry.h"
 #include "model/comm_util.h"
 #include "model/conn_params.h"
+#include "model/georef.h"
 #include "model/navobj_db.h"
 #include "model/own_ship.h"
 #include "model/route.h"
@@ -19,6 +20,7 @@
 #include <cstring>
 #include <ctime>
 #include <fstream>
+#include <limits>
 #include <thread>
 #include <wx/filefn.h>
 #include <wx/jsonwriter.h>
@@ -33,7 +35,7 @@ using namespace vessel;
 using namespace std::chrono_literals;
 std::string directory;
 wxJSONValue report;
-int step = 0, waited = 0, advice_waited = 0;
+int step = 0, waited = 0, advice_waited = 0, context_waited = 0;
 bool finished = false;
 std::string mark_id, anchor_id;
 Route *test_route = nullptr;
@@ -44,6 +46,7 @@ bool advisory_fixture = false;
 bool added_late_connection = false;
 int late_connection_ticks = 0;
 bool settings_capture_started = false;
+bool navigation_settings_capture_started = false;
 int settings_capture_waited = 0;
 std::time_t AisTicksNow() { return wxDateTime::Now().ToUTC().GetTicks(); }
 // Explicit decoder-state injection in the isolated no-output fixture. Keep
@@ -94,6 +97,64 @@ application::Route RouteCopy() {
     if (r.id == test_route->GetGUID().ToStdString(wxConvUTF8))
       return r;
   throw std::runtime_error("Expected route missing");
+}
+void CheckWaypointContext(const Navigation &selected, const std::string &id) {
+  const auto now = Clock::now();
+  const auto context = CopyWaypointContext(id, selected, now);
+  Check(context.waypoint && context.range_nm.value && context.bearing_true_deg.value,
+        "Current waypoint context has direct range and bearing");
+  double bearing = NAN, distance = NAN;
+  DistanceBearingMercator(context.waypoint->latitude_deg,
+                          context.waypoint->longitude_deg, gLat, gLon,
+                          &bearing, &distance);
+  Check(context.range_nm.value == distance && context.bearing_true_deg.value == bearing,
+        "Waypoint range and bearing match pinned direct rhumb-line implementation");
+  Check(context.range_nm.observed_at == selected.latitude_deg.observed_at &&
+            context.range_nm.freshness.stale_after == selected.latitude_deg.freshness.stale_after &&
+            context.range_nm.validity == Validity::Estimated,
+        "Computed waypoint range retains selected position provenance and freshness");
+  const auto reread = CopyWaypointContext(id, selected, now + 100ms);
+  Check(reread.range_nm.observed_at == context.range_nm.observed_at,
+        "Reading waypoint context does not refresh selected position age");
+  const auto absent = CopyWaypointContext(id, Navigation{}, now);
+  Check(absent.waypoint && !absent.range_nm.value && !absent.bearing_true_deg.value,
+        "Missing position retains owned waypoint but no synthetic zero range");
+  const auto stale = CopyWaypointContext(id, selected,
+      selected.latitude_deg.observed_at + selected.latitude_deg.freshness.stale_after);
+  Check(stale.waypoint && !stale.range_nm.value && !stale.bearing_true_deg.value,
+        "Stale position suppresses waypoint range and bearing");
+  Check(!CopyWaypointContext("MISSING-IDENTITY", selected, now).waypoint,
+        "Missing waypoint identity stays unavailable");
+  bool thread_refused = false;
+  std::thread worker([&] {
+    try { CopyWaypointContext(id, selected, now); }
+    catch (const std::logic_error &) { thread_refused = true; }
+  });
+  worker.join();
+  Check(thread_refused, "Waypoint context rejects off-thread registry access");
+  auto *point = pWayPointMan->FindWaypointByGuid(id);
+  Check(point, "Test waypoint exists");
+  const auto old_lat = point->m_lat, old_lon = point->m_lon;
+  const auto original_lat = gLat, original_lon = gLon;
+  struct Restore {
+    RoutePoint *point; double lat, lon, own_lat, own_lon;
+    ~Restore() { point->m_lat = lat; point->m_lon = lon; gLat = own_lat; gLon = own_lon; }
+  } restore{point, old_lat, old_lon, original_lat, original_lon};
+  point->m_lat = std::numeric_limits<double>::quiet_NaN();
+  Check(context.waypoint->latitude_deg == old_lat && context.range_nm.value == distance,
+        "Retained waypoint context is independent of later native geometry changes");
+  Check(!CopyWaypointContext(id, selected, now).range_nm.value,
+        "Invalid waypoint geometry cannot produce a range");
+  point->m_lat = 10.0; point->m_lon = -179.9;
+  gLat = 10.0; gLon = 179.9;
+  auto crossing = selected;
+  crossing.latitude_deg.value = gLat; crossing.longitude_deg.value = gLon;
+  const auto antimeridian = CopyWaypointContext(id, crossing, now);
+  DistanceBearingMercator(10.0, -179.9, 10.0, 179.9, &bearing, &distance);
+  Check(antimeridian.range_nm.value == distance &&
+            antimeridian.bearing_true_deg.value == bearing && distance < 20,
+        "Antimeridian direct context matches pinned OpenCPN geometry");
+  Record("Waypoint context native range/bearing, antimeridian, freshness, missing/invalid and thread guards");
 }
 void AddRoute() {
   test_route = new Route;
@@ -227,8 +288,13 @@ void ObjectScenarioStep(const vessel::Navigation &selected) {
             "Reject old waypoint revision");
       retained_mark = Mark(mark_id);
       Check(!DeleteWaypoint(old).ok, "Reject deletion using old revision");
+      CheckWaypointContext(selected, mark_id);
+      const auto retained_context = CopyWaypointContext(mark_id, selected, Clock::now());
       Record("Waypoint create, edit and stale selection rejection");
       Check(DeleteWaypoint(retained_mark).ok, "Delete isolated mark");
+      Check(!CopyWaypointContext(mark_id, selected, Clock::now()).waypoint &&
+                retained_context.waypoint && retained_context.range_nm.value,
+            "Deleted waypoint unavailable while retained context remains independently owned");
       Check(retained_mark.name == "ALPHA TEST edited",
             "Retained mark copy remains independent");
       Check(!DeleteWaypoint(retained_mark).ok, "Repeat delete fails closed");
@@ -278,6 +344,9 @@ void ObjectScenarioStep(const vessel::Navigation &selected) {
       auto first = test_route->GetPoint(1), second = test_route->GetPoint(2);
       auto id = second->m_GUID;
       second->m_GUID = first->m_GUID;
+      Check(!CopyWaypointContext(first->m_GUID.ToStdString(wxConvUTF8), selected,
+                                  Clock::now()).waypoint,
+            "Ambiguous waypoint identity suppresses compact context");
       Check(!RouteCopy().editable, "Ambiguous repeated identity protected");
       Check(!ReverseRoute(RouteCopy()).ok, "Ambiguous reversal refused");
       second->m_GUID = id;
@@ -351,6 +420,7 @@ void ObjectScenarioStep(const vessel::Navigation &selected) {
       Check(g_pAIS != nullptr, "AIS service exists");
       target = std::make_shared<AisTargetData>(AisTargetCallbacks{});
       target->MMSI = 990000001;
+      target->NavStatus = UNDERWAY_USING_ENGINE;
       std::strcpy(target->ShipName, "ALPHA TEST AIS");
       target->b_nameValid = true;
       target->b_positionOnceValid = true;
@@ -375,6 +445,16 @@ void ObjectScenarioStep(const vessel::Navigation &selected) {
       Check(it != ais.targets.end() && it->range_nm.value == 1.234 &&
                 it->cpa_nm.value == .42 && it->tcpa_minutes.value == 7.5,
             "AIS copies upstream results without calculation");
+      Check(it->status == "Active / " + ais_get_status(UNDERWAY_USING_ENGINE).ToStdString(wxConvUTF8),
+            "AIS status uses bounded native human-readable status text");
+      const auto status_class = target->Class;
+      target->Class = AIS_SART; target->NavStatus = UNDEFINED;
+      Check(CopyAisState(selected, Clock::now()).targets.front().status == "Distress beacon testing",
+            "SART testing retains native beacon meaning");
+      target->Class = status_class; target->NavStatus = 999;
+      Check(CopyAisState(selected, Clock::now()).targets.front().status == "Active / Navigation status unavailable",
+            "Out-of-range AIS status cannot index native status table");
+      target->NavStatus = UNDERWAY_USING_ENGINE;
       auto retained = *it;
       for (int read = 0; read < 64; ++read)
         Check(CopyAisState(selected, Clock::now()).targets.front().latitude_deg.observed_at ==
@@ -425,13 +505,39 @@ void ObjectScenarioStep(const vessel::Navigation &selected) {
         return;
       }
     } else if (step == 5) {
+      if (!navigation_settings_capture_started) {
+        Check(gFrame->GetPrimaryCanvas()->IsShown(), "Already-Navigation settings precondition");
+        gFrame->ScheduleReconfigAndSettingsReload(false, false);
+        auto *canvas = gFrame->GetPrimaryCanvas();
+        Check(canvas && canvas->IsShown() && canvas->GetClientSize().x > 100 &&
+                  canvas->GetClientSize().y > 100,
+              "Settings on already-visible Navigation retains usable chart");
+        Record("Options reconfiguration while already on Navigation explicitly commits pane restoration");
+        report["phase"] = wxString("settings-return-navigation");
+        navigation_settings_capture_started = true;
+      }
+      if (!wxFileExists(wxString::FromUTF8(directory) + "/settings-return-navigation-observed")) {
+        Check(++settings_capture_waited < 30, "Already-Navigation settings chart not observed");
+        Write();
+        return;
+      }
       gFrame->GetPrimaryCanvas()->ShowMarkPropertiesDialog(
           pWayPointMan->FindWaypointByGuid(mark_id));
       report["phase"] = wxString("waypoint-card");
+    } else if (step == 6 && !wxFileExists(wxString::FromUTF8(directory) + "/waypoint-context-observed")) {
+      Check(++context_waited < 20, "Waypoint compact context and Details interaction not observed");
+      Write();
+      return;
     } else if (step == 8) {
       ShowAISTargetQueryDialog(gFrame->GetPrimaryCanvas(), target->MMSI);
       report["phase"] = wxString("ais-card");
     } else if (step == 9) {
+      if (!wxFileExists(wxString::FromUTF8(directory) + "/ais-context-observed")) {
+        Check(++context_waited < 35, "AIS compact chart selection not observed");
+        Write();
+        return;
+      }
+      ShowAISTargetQueryDialog(gFrame->GetPrimaryCanvas(), target->MMSI);
       // Explicit decoder-state fixture, not a second collision calculation.
       // The no-dialog upstream state allows testing the advisory presentation
       // without acknowledging or suppressing a real device alarm.

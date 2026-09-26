@@ -7,11 +7,25 @@
 #include <wx/datetime.h>
 #include <wx/popupwin.h>
 #include <wx/sizer.h>
+#include <wx/textctrl.h>
 
+#include <algorithm>
 #include <utility>
 
 namespace opennav::ui {
 namespace {
+bool CurrentMeasuredPosition(const vessel::VesselState &state, vessel::Time now) {
+  const auto &latitude = state.navigation.latitude_deg;
+  const auto &longitude = state.navigation.longitude_deg;
+  const auto current = [now](const vessel::Sample &sample) {
+    const auto a = vessel::Assess(sample, now);
+    return sample.validity == vessel::Validity::Measured && a.value &&
+        (a.quality == vessel::Quality::Live || a.quality == vessel::Quality::Aging);
+  };
+  return !state.simulated && !state.replayed && current(latitude) && current(longitude) &&
+      latitude.observed_at == longitude.observed_at && !latitude.source.empty() &&
+      latitude.source == longitude.source;
+}
 class SystemPopup final : public wxPopupTransientWindow {
 public:
   explicit SystemPopup(wxWindow *parent)
@@ -140,24 +154,16 @@ Shell::Shell(wxFrame &frame, wxAuiManager &manager, ShellActions actions,
                     actions_.zoom_out),
              0, wxALL, frame_.FromDIP(4));
   auto *center=Button(left,"Center","Center chart on boat and follow position",actions_.follow);
-  center->SetIcon(XNavIcon::Ownship);center->SetMinSize(frame_.FromDIP(wxSize(56,64)));
+  center->SetIcon(XNavIcon::Ownship);center->SetMinSize(frame_.FromDIP(wxSize(48,64)));
   tools->Add(center,0,wxALL,frame_.FromDIP(4));
-  finish_route_ = Button(left, "Done", "Name and save this route", [this] {
-    const auto fields=EditSheet(frame_,mode_,"Save route",
-      "Name this route. You can activate it after saving.",
-      {{"Name","",128},{"Description","",2048}},"Save route");
-    if(!fields || !actions_.navigation.finish_route_named) return;
-    const auto result=actions_.navigation.finish_route_named((*fields)[0],(*fields)[1]);
-    if(result.ok) { Tick(); ShowObject(result.identity,true); }
-    else ConfirmSheet(frame_,mode_,"Route not saved",wxString::FromUTF8(result.message),"Back");
+  orientation_button_ = Button(left, "North", "Change chart orientation", [this] {
+    if (actions_.navigation.orientation) actions_.navigation.orientation();
+    Tick();
   });
-  tools->Add(finish_route_, 0, wxALL, frame_.FromDIP(4));
-  finish_route_->Hide();
-  undo_route_=Button(left,"Undo","Undo last route point",[this]{if(actions_.navigation.undo_route_point)actions_.navigation.undo_route_point();});
-  cancel_route_=Button(left,"Cancel","Cancel route creation",[this]{
-    if(actions_.navigation.cancel_route && ConfirmSheet(frame_,mode_,"Cancel route?","Discard this unfinished route? Existing routes are preserved.","Discard route"))actions_.navigation.cancel_route();
-  });
-  for(auto *b:{undo_route_,cancel_route_}){tools->Add(b,0,wxALL,frame_.FromDIP(4));b->Hide();}
+  orientation_button_->SetIcon(XNavIcon::Compass);
+  orientation_button_->SetRole(ButtonRole::Quiet);
+  orientation_button_->SetMinSize(frame_.FromDIP(wxSize(48,56)));
+  tools->Add(orientation_button_, 0, wxALL, frame_.FromDIP(4));
   tools->AddStretchSpacer();
   left->SetSizer(tools);
 
@@ -174,6 +180,25 @@ Shell::Shell(wxFrame &frame, wxAuiManager &manager, ShellActions actions,
                           wxAuiPaneInfo().Bottom().Layer(10).BestSize(
                               -1, frame_.FromDIP(spacing::action_height)));
   auto *actions_row = new wxBoxSizer(wxHORIZONTAL);
+  finish_route_ = Button(bottom, "Done", "Name and save this route", [this] {
+    const auto fields=EditSheet(frame_,mode_,"Save route",
+      "Name this route. You can activate it after saving.",
+      {{"Name","",128},{"Description","",2048}},"Save route");
+    if(!fields || !actions_.navigation.finish_route_named) return;
+    const auto result=actions_.navigation.finish_route_named((*fields)[0],(*fields)[1]);
+    if(result.ok) { Tick(); ShowObject(result.identity,true); }
+    else ConfirmSheet(frame_,mode_,"Route not saved",wxString::FromUTF8(result.message),"Back");
+  });
+  undo_route_=Button(bottom,"Undo","Undo last route point",[this]{if(actions_.navigation.undo_route_point)actions_.navigation.undo_route_point();});
+  cancel_route_=Button(bottom,"Cancel","Cancel route creation",[this]{
+    if(actions_.navigation.cancel_route && ConfirmSheet(frame_,mode_,"Cancel route?","Discard this unfinished route? Existing routes are preserved.","Discard route"))actions_.navigation.cancel_route();
+  });
+  for (auto *button : {cancel_route_, undo_route_, finish_route_}) {
+    button->SetMinSize(frame_.FromDIP(wxSize(88, 48)));
+    button->SetRole(button == finish_route_ ? ButtonRole::Primary : ButtonRole::Quiet);
+    actions_row->Add(button, 0, wxALL, frame_.FromDIP(4));
+    button->Hide();
+  }
   for (const auto &entry :
        std::vector<std::pair<wxString, std::function<void()>>>{
            {"Navigation", [this] { ShowNavigation(); }},
@@ -189,6 +214,8 @@ Shell::Shell(wxFrame &frame, wxAuiManager &manager, ShellActions actions,
 #endif
            }) {
     auto *b = Button(bottom, entry.first, entry.first, entry.second);
+    if (entry.first == "Navigation" || entry.first == "Route" || entry.first == "Energy")
+      navigation_page_buttons_.push_back(b);
     b->SetMinSize(
         frame_.FromDIP(wxSize(entry.first == "Navigation" ? 112 : entry.first == "STBY" ? 64 : 88, 48)));
     if (entry.first == "STBY") {
@@ -334,6 +361,8 @@ Shell::Shell(wxFrame &frame, wxAuiManager &manager, ShellActions actions,
 
 Shell::~Shell() {
   timer_.Stop();
+  context_lifetime_.reset();
+  CloseContext();
   for (const auto &c : commands_)
     frame_.Unbind(wxEVT_MENU, &Shell::OnCommand, this, c.first);
   frame_.SetAcceleratorTable(wxNullAcceleratorTable);
@@ -367,22 +396,32 @@ std::vector<ProductGeometry> Shell::RailRegions() const {
 
 std::vector<ProductGeometry> Shell::InteractionControls() const {
   std::vector<ProductGeometry> result;
+  std::vector<wxWindow *> visited;
   // Copy native bounds only. This diagnostic walk cannot invoke actions or
   // retain widget lifetimes in a consumer. Modal sheets and transient chart
   // cards are owned children too, even when they have a separate native HWND.
   const auto collect = [&](const auto &self, wxWindow *window) -> void {
-    if (dynamic_cast<XNavButton *>(window)) {
+    if (std::find(visited.begin(), visited.end(), window) != visited.end()) return;
+    visited.push_back(window);
+    const bool field = dynamic_cast<wxTextCtrl *>(window) != nullptr && window->IsShownOnScreen();
+    if (dynamic_cast<XNavButton *>(window) || field) {
       const auto rectangle = window->GetScreenRect();
       bool visible = window->IsShownOnScreen();
       for (auto *parent = window->GetParent(); parent && !parent->IsTopLevel();
            parent = parent->GetParent())
         visible = visible && parent->GetScreenRect().Contains(rectangle);
-      result.push_back({window->GetLabel().ToStdString(wxConvUTF8), rectangle,
+      const auto label = field ? "Field: " + window->GetName() : window->GetLabel();
+      result.push_back({label.ToStdString(wxConvUTF8), rectangle,
                         window->IsEnabled(), visible});
     }
     for (auto *child : window->GetChildren()) self(self, child);
   };
   collect(collect, &frame_);
+  for (auto *window : wxTopLevelWindows) {
+    for (auto *parent = window->GetParent(); parent; parent = parent->GetParent()) {
+      if (parent == &frame_) { collect(collect, window); break; }
+    }
+  }
   return result;
 }
 
@@ -431,9 +470,12 @@ void Shell::UpdateRail(const std::vector<std::string> &keys, vessel::Time now) {
     for (const auto &key : visible)
       for (const auto &item : items)
         if (key == item.key) {
+          const int decimals = key == "heading" || key == "cog" || key == "awa" ||
+              key == "twa" || key == "rpm" || key == "soc" || key == "pressure" ||
+              key == "fresh_water" || key == "fuel" || key == "waste" ? 0 : 1;
           auto *value =
               new XNavDataValue(rail_scroll_, wxString::FromUTF8(item.title),
-                                wxString::FromUTF8(item.unit));
+                                wxString::FromUTF8(item.unit), decimals);
           value->SetLightMode(mode_);
           value->SetCompact(true);
           rail_values_.push_back({key, value});
@@ -473,6 +515,11 @@ void Shell::UpdateAlerts() {
 void Shell::Tick() {
   const auto begin = std::chrono::steady_clock::now();
   const auto wall_now = vessel::Clock::now();
+  if (actions_.chart_orientation) {
+    const auto orientation = wxString::FromUTF8(actions_.chart_orientation());
+    orientation_button_->SetLabel(orientation);
+    orientation_button_->SetName("Chart orientation: " + orientation + " up");
+  }
   const auto replay = actions_.commissioning
                           ? actions_.commissioning->ReadReplay(wall_now)
                           : std::optional<diagnostics::ReplayView>{};
@@ -509,6 +556,7 @@ void Shell::Tick() {
   if (finish_route_->IsShown() != creating) {
     finish_route_->Show(creating);
     undo_route_->Show(creating);cancel_route_->Show(creating);
+    for (auto *button : navigation_page_buttons_) button->Show(!creating);
     finish_route_->GetParent()->Layout();
   }
   if (product_) {
@@ -568,6 +616,7 @@ void Shell::Tick() {
     product_->Update(p, mode_);
   }
   UpdateRail(config.data_rail, now);
+  UpdateContext(wall_now);
   clock_->SetLabel(simulation_ ? "10:42" : wxDateTime::Now().Format("%H:%M"));
   wxString label =
       replay ? wxString::Format("REPLAY / %s / %.0f s",
@@ -602,9 +651,16 @@ void Shell::Tick() {
   const auto distance =
       route ? vessel::AssessRoute(*route, now).remaining_distance_nm
             : std::nullopt;
-  const wxString summary =
-      distance ? wxString::Format("%.1f NM to destination", *distance)
-               : "Route unavailable";
+  wxString summary = "Route unavailable";
+  if (distance) {
+    const auto destination = !route->remaining_steps.empty()
+        ? route->remaining_steps.back().name : route->route_name;
+    summary = wxString::Format("%.1f NM", *distance) + "  /  " +
+        (destination.empty() ? wxString("Destination") : wxString::FromUTF8(destination));
+  } else if (route && route->state == vessel::RouteState::NoActiveRoute) {
+    summary = "No active route";
+  }
+  if (creating) summary = "Build route / tap chart to add points";
   const bool show_summary = true;
   const bool summary_layout = route_summary_->GetLabel() != summary ||
                               route_summary_->IsShown() != show_summary;
@@ -706,6 +762,13 @@ void Shell::SelectDemo(vessel::DemoScenario scenario) {
 }
 #endif
 void Shell::ShowNavigation() {
+  CloseContext();
+  // Re-entering the already-visible chart needs no pane layout. A needless
+  // canvas resize schedules OpenCPN's delayed frame-focus recapture and also
+  // redraws the chart below the newly opened context card.
+  const bool layout = !navigation_visibility_.empty() || manager_.GetPane(page_).IsShown() ||
+      (product_ && manager_.GetPane(product_).IsShown());
+  if (!layout) return;
   manager_.GetPane(page_).Hide();
   if (product_)
     manager_.GetPane(product_).Hide();
@@ -739,16 +802,100 @@ void Shell::ShowProduct(ProductPage page) {
   Tick();
 }
 void Shell::ShowObject(const std::string &id, bool route) {
-  ShowProduct(route ? ProductPage::Routes : ProductPage::Waypoints);
-  product_->ShowObject(id, route, mode_);
-  Tick();
+  if (route) {
+    ShowProduct(ProductPage::Routes);
+    product_->ShowObject(id, true, mode_);
+    Tick();
+    return;
+  }
+  ShowNavigation();
+  context_waypoint_ = id;
+  const std::weak_ptr<int> lifetime = context_lifetime_;
+  context_ = new XNavContextCard(frame_, ContextKind::Waypoint,
+      [this, lifetime, id](ContextAction action, std::optional<application::Waypoint> point) {
+    if (lifetime.expired()) return;
+    if (action == ContextAction::Details) {
+      ShowProduct(ProductPage::Waypoints);
+      product_->ShowObject(id, false, mode_); Tick();
+      return;
+    }
+    if (!point || state_.simulated || state_.replayed) return;
+    const auto result = WaypointSheet(frame_, mode_, action, *point, actions_.navigation);
+    if (result && !result->ok)
+      ConfirmSheet(frame_, mode_, "Unable to continue", wxString::FromUTF8(result->message), "Back");
+    if (result && result->ok && (action == ContextAction::Remove || action == ContextAction::GoTo))
+      ShowNavigation();
+    else ShowObject(id, false);
+  });
+  UpdateContext(vessel::Clock::now());
+  if (context_) { context_->Show(); context_->Raise(); UpdateContext(vessel::Clock::now()); }
 }
 void Shell::ShowAis(int mmsi) {
-  ShowProduct(ProductPage::Ais);
-  product_->ShowAis(mmsi, mode_);
-  Tick();
+  ShowNavigation();
+  context_mmsi_ = mmsi;
+  const std::weak_ptr<int> lifetime = context_lifetime_;
+  context_ = new XNavContextCard(frame_, ContextKind::Ais,
+      [this, lifetime, mmsi](ContextAction action, std::optional<application::Waypoint>) {
+    if (lifetime.expired()) return;
+    if (action == ContextAction::Details) {
+      ShowProduct(ProductPage::Ais); product_->ShowAis(mmsi, mode_); Tick();
+    } else if (action == ContextAction::ShowAis) {
+      application::CommandResult result{false, "Target position unavailable or stale"};
+      if (!state_.simulated && !state_.replayed && actions_.navigation.view_ais &&
+          ais_selection_.Select(mmsi, ais_state_, vessel::Clock::now()))
+        result = actions_.navigation.view_ais(mmsi);
+      if (!result.ok) {
+        ais_selection_.Clear();
+        ConfirmSheet(frame_, mode_, "Unable to select target", wxString::FromUTF8(result.message), "Back");
+      }
+      ShowNavigation();
+    }
+  });
+  UpdateContext(vessel::Clock::now());
+  if (context_) { context_->Show(); context_->Raise(); UpdateContext(vessel::Clock::now()); }
+}
+void Shell::CloseContext() {
+  if (context_) context_->Dismiss();
+  context_ = nullptr;
+  context_waypoint_.clear();
+  context_mmsi_ = 0;
+  context_position_.reset();
+}
+void Shell::UpdateContext(vessel::Time now) {
+  if (!context_ || context_->IsBeingDeleted()) return;
+  const bool live = !state_.simulated && !state_.replayed;
+  if (context_mmsi_) {
+    std::optional<vessel::AisTarget> selected;
+    unsigned matches = 0;
+    if (live && ais_state_.available)
+      for (const auto &target : ais_state_.targets)
+        if (target.mmsi == context_mmsi_) { selected = target; ++matches; }
+    if (matches != 1) selected.reset();
+    context_->UpdateAis(std::move(selected), now, live, mode_);
+  } else if (!context_waypoint_.empty()) {
+    application::WaypointContext point;
+    if (actions_.navigation.waypoint_context)
+      point = actions_.navigation.waypoint_context(context_waypoint_, now);
+    if (!live) {
+      point.range_nm = {}; point.bearing_true_deg = {};
+      point.reason = "Live navigation unavailable during historical data";
+    }
+    context_->UpdateWaypoint(std::move(point), now, live, mode_);
+  } else if (context_position_) {
+    context_->UpdateChartPosition(*context_position_, mode_, live,
+                                 CurrentMeasuredPosition(state_, now));
+  }
+  for (const auto &name : actions_.navigation_panes) {
+    const auto &pane = manager_.GetPane(name);
+    if (pane.IsOk() && pane.IsShown() && pane.window) {
+      if (!context_->Place(pane.window->GetScreenRect())) CloseContext();
+      return;
+    }
+  }
+  CloseContext();
 }
 void Shell::ShowPage(PreviewPage page) {
+  CloseContext();
   if (product_)
     manager_.GetPane(product_).Hide();
   if (navigation_visibility_.empty()) {
@@ -851,46 +998,44 @@ void Shell::AfterCanvasLayoutChanged() {
     auto &pane=manager_.GetPane(name);if(pane.IsOk())pane.Show();
   }
   ShowNavigation();
+  // This is a genuine upstream reconfiguration, including when Navigation was
+  // already visible. Commit the restored pane flags even if ShowNavigation's
+  // ordinary same-page fast path had no layout work of its own.
+  manager_.Update();
 }
 
 void Shell::ShowChartContext(application::Coordinate position) {
   ShowNavigation();
-  auto *popup=new SystemPopup(&frame_);
-  popup->SetName("Chart position actions");
-  popup->SetBackgroundColour(Colour(Theme(mode_).elevated));
-  auto *layout=new wxBoxSizer(wxVERTICAL);
-  auto *location=new wxStaticText(popup,wxID_ANY,
-    wxString::Format("%.5f°   %.5f°",position.latitude_deg,position.longitude_deg));
-  location->SetFont(UiFont(*popup,18));
-  location->SetForegroundColour(Colour(Theme(mode_).primary));
-  layout->Add(location,0,wxALL,frame_.FromDIP(16));
-  auto *grid=new wxGridSizer(2,frame_.FromDIP(8),frame_.FromDIP(8));
-  const auto result=[this](const application::CommandResult &r) {
-    if(!r.ok)ConfirmSheet(frame_,mode_,"Unable to continue",wxString::FromUTF8(r.message),"Back");
-  };
-  const auto go=[this,position,result] {
-    if(!actions_.navigation.go_to)return;
-    if(ConfirmSheet(frame_,mode_,"Go to this position",
-      wxString::Format("Destination %.5f°  %.5f°. Start navigating to this position?",position.latitude_deg,position.longitude_deg),"Start"))
-      result(actions_.navigation.go_to(position,"Go To"));
-  };
-  const auto mark=[this,position,result] {
-    auto f=EditSheet(frame_,mode_,"Create waypoint","Save this chart position.",{{"Name","Waypoint",128}},"Save");
-    if(f && actions_.navigation.create_waypoint)result(actions_.navigation.create_waypoint(position,(*f)[0],""));
-  };
-  for(const auto &entry : std::vector<std::pair<wxString,std::function<void()>>>{
-    {"Go To",go},{"Waypoint",mark},{"Measure",actions_.navigation.measure},
-    {"Info",[this,position]{if(actions_.navigation.object_info_at)actions_.navigation.object_info_at(position);}}}) {
-    auto *b=new XNavButton(popup,wxID_ANY,entry.first,entry.first);
-    b->SetMinSize(frame_.FromDIP(wxSize(152,56)));b->SetLightMode(mode_);
-    if(entry.first=="Go To")b->SetRole(ButtonRole::Primary);
-    b->Bind(wxEVT_BUTTON,[popup,action=entry.second](wxCommandEvent&){popup->Dismiss();popup->Destroy();if(action)action();});
-    grid->Add(b,1,wxEXPAND);
-  }
-  layout->Add(grid,0,wxLEFT|wxRIGHT|wxBOTTOM,frame_.FromDIP(16));
-  popup->SetSizerAndFit(layout);
-  popup->Position(frame_.ClientToScreen(frame_.FromDIP(wxPoint(80,80))),wxSize());
-  popup->Popup();
+  context_position_ = position;
+  const std::weak_ptr<int> lifetime = context_lifetime_;
+  context_ = new XNavContextCard(frame_, ContextKind::ChartPosition,
+      [this, lifetime, position](ContextAction action, std::optional<application::Waypoint>) {
+    if (lifetime.expired()) return;
+    const auto live = [this] { return !state_.simulated && !state_.replayed; };
+    const auto result = [this](const application::CommandResult &value) {
+      if (!value.ok)
+        ConfirmSheet(frame_, mode_, "Unable to continue", wxString::FromUTF8(value.message), "Back");
+    };
+    if (action == ContextAction::GoTo && actions_.navigation.go_to) {
+      if (!live() || !CurrentMeasuredPosition(state_, vessel::Clock::now())) return;
+      if (ConfirmSheet(frame_, mode_, "Go to this position",
+          wxString::Format("Destination %.5f° %.5f°. Check the chart before starting.",
+                           position.latitude_deg, position.longitude_deg), "Start") &&
+          live() && CurrentMeasuredPosition(state_, vessel::Clock::now()))
+        result(actions_.navigation.go_to(position, "Go To"));
+    } else if (action == ContextAction::CreateWaypoint && actions_.navigation.create_waypoint) {
+      if (!live()) return;
+      const auto fields = EditSheet(frame_, mode_, "Create waypoint", "Save this chart position.",
+                                    {{"Name", "Waypoint", 128}}, "Save");
+      if (fields && live()) result(actions_.navigation.create_waypoint(position, (*fields)[0], ""));
+    } else if (action == ContextAction::Measure && actions_.navigation.measure) {
+      actions_.navigation.measure();
+    } else if (action == ContextAction::Info && actions_.navigation.object_info_at) {
+      actions_.navigation.object_info_at(position);
+    }
+  });
+  UpdateContext(vessel::Clock::now());
+  if (context_) { context_->Show(); context_->Raise(); UpdateContext(vessel::Clock::now()); }
 }
 
 } // namespace opennav::ui

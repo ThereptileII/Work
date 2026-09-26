@@ -417,6 +417,17 @@ void Attach(MyFrame& frame, wxAuiManager& manager, wxFileConfig& config) {
   // Names assigned by MyFrame::CreateCanvasLayout in the pinned OpenCPN.
   // The UI only toggles pane visibility; it never owns/reparents a canvas.
   actions.navigation_panes = {"ChartCanvas", "ChartCanvas2"};
+  actions.chart_orientation = [&frame] {
+    auto *canvas = frame.GetPrimaryCanvas();
+    if (!canvas) return std::string("Unavailable");
+    return std::string(canvas->GetUpMode() == COURSE_UP_MODE ? "Course"
+                      : canvas->GetUpMode() == HEAD_UP_MODE ? "Head" : "North");
+  };
+  // XNav supplies orientation and data health itself. This per-canvas flag
+  // does not change the persisted global Legacy compass preference.
+  for (auto *window : frame.GetChildren())
+    if (auto *canvas = dynamic_cast<ChartCanvas *>(window))
+      canvas->SetShowGPSCompassWindow(false);
   actions.navigation=integration::MakeNavigationActions(frame,[]{return selected_navigation.navigation;},[]{
     auto copy=anchor_state;
     if(!copy.waypoint_id.empty() && copy.waypoint_id!=g_AW1GUID.ToStdString(wxConvUTF8) && copy.waypoint_id!=g_AW2GUID.ToStdString(wxConvUTF8)){copy={};copy.state="Anchor watch changed; waiting for normal observation";}
@@ -683,6 +694,9 @@ void Attach(MyFrame& frame, wxAuiManager& manager, wxFileConfig& config) {
 
 void AfterDeferredInitialization() {
   if (shell && host) {
+    for (auto *window : host->GetChildren())
+      if (auto *canvas = dynamic_cast<ChartCanvas *>(window))
+        canvas->SetShowGPSCompassWindow(false);
     GSHHSChart palette;
     palette.SetColorScheme(global_color_scheme);
     gShapeBasemap.SetBasemapLandColor(palette.land);
@@ -706,6 +720,9 @@ void AfterSettingsReconfigured() {
   // Options may detach/recreate AUI canvas panes. Reconcile only after upstream
   // has completed its normal chart/configuration work; never retain old panes.
   if (!shell || !host || !IsXNav()) return;
+  for (auto *window : host->GetChildren())
+    if (auto *canvas = dynamic_cast<ChartCanvas *>(window))
+      canvas->SetShowGPSCompassWindow(false);
   shell->AfterCanvasLayoutChanged();
   host->InvalidateAllGL();
   host->ReloadAllVP();

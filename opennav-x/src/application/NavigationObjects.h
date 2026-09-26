@@ -27,6 +27,12 @@ struct CommandResult {
 struct Coordinate {
   double latitude_deg = 0, longitude_deg = 0;
 };
+struct WaypointContext {
+  std::optional<Waypoint> waypoint;
+  vessel::Sample range_nm, bearing_true_deg;
+  vessel::Time observed_at{};
+  std::string reason;
+};
 struct AnchorFix {
   Coordinate position;
   vessel::Time observed_at{};
@@ -45,6 +51,7 @@ struct AnchorState {
 struct NavigationActions {
   std::function<CommandResult(int)> view_ais;
   std::function<Catalog()> catalog;
+  std::function<WaypointContext(const std::string &, vessel::Time)> waypoint_context;
   std::function<vessel::AisState(vessel::Time)> ais;
   std::function<AnchorState()> anchor;
   std::function<std::optional<Coordinate>()> chart_position;

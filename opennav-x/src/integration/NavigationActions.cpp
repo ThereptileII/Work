@@ -32,6 +32,9 @@ MakeNavigationActions(MyFrame &frame,
     return r;
   };
   a.catalog = CopyNavigationCatalog;
+  a.waypoint_context = [position](const std::string &id, vessel::Time now) {
+    return CopyWaypointContext(id, position(), now);
+  };
   a.ais = [position](vessel::Time now) { return CopyAisState(position(), now); };
   a.anchor = std::move(anchor);
   a.view_ais = [&frame, position](int mmsi) {

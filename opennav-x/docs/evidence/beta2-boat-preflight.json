@@ -11,5 +11,18 @@
   "timestamp": "2026-09-26",
   "profile_recovery": "original zero-filled INI and nonzero temporary INI both preserved; no restoration",
   "application_launches": 0,
-  "physical_commands_sent": 0
+  "physical_commands_sent": 0,
+  "obsolete_downloads": {
+    "status": "archived with exact accepted release hashes",
+    "files": 6,
+    "bytes": 912982707,
+    "durable_recovery_locators": true,
+    "original_files_deleted": false,
+    "runnable_beta1_retained": true
+  },
+  "archive_guard_tests": {
+    "platform": "native boat Windows PowerShell, disposable files only",
+    "checks": 4,
+    "passed": true
+  }
 }

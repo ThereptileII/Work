@@ -143,6 +143,34 @@ def system_geometry(scale):
         data(lambda d:d['runtime']['display']['page_scroll_px']<previous)
     return checked
 
+def chart_context_geometry(scale):
+    display=data()['runtime']['display'];chart_area=display['chart_region']
+    assert ui.SetCursorPos(chart_area['x']+chart_area['width']//2,
+                           chart_area['y']+chart_area['height']//2)
+    ui.MouseEvent(8,0,0,0,0);time.sleep(.08);ui.MouseEvent(16,0,0,0,0)
+    labels={'Go to','Waypoint','Measure','Info'}
+    def controls(record):
+        return [c for c in record['runtime']['display'].get('interaction_controls',[])
+                if c['visible'] and c['label'] in labels]
+    record=data(lambda d:len(controls(d))==4)
+    assert record['ui_page']=='Navigation','Context replaced the chart'
+    checked=controls(record)
+    for c in checked:
+        assert chart_area['x']<=c['x']<c['x']+c['width']<=chart_area['x']+chart_area['width'],c
+        assert chart_area['y']<=c['y']<c['y']+c['height']<=chart_area['y']+chart_area['height'],c
+        assert c['height']>=48*scale/100,c
+    assert not next(c['enabled'] for c in checked if c['label']=='Go to'),'GPS-free Go To must be disabled'
+    assert next(c['enabled'] for c in checked if c['label']=='Waypoint'),'Chart waypoint creation requires no vessel fix'
+    path=evidence/f'dpi-{scale}-chart-context.png';ui.capture(handle,path,screen_pixels=True)
+    report['screenshots'].append(path.name)
+    close=[c for c in record['runtime']['display']['interaction_controls']
+           if c['visible'] and c['label']=='Close']
+    assert len(close)==1,close
+    c=close[0]
+    assert dpi('--tap',c['x']+c['width']//2,c['y']+c['height']//2)['touch_injected']
+    data(lambda d:not controls(d))
+    return {'controls':checked,'touch_close':'Native injected touch dismissed modeless card'}
+
 def close_current():
     global app
     process=ui.monitor_process(pid);ui.close(handle);ui.wait_clean_exit(process);owned.discard(pid)
@@ -160,6 +188,7 @@ try:
         assert not d['runtime']['alerts'],'Clean isolated input-free startup must have no inherited alert'
         entry['rail_without_alert']=rail_geometry(scale)
         capture(f'dpi-{scale}-00-navigation-no-input')
+        entry['chart_context']=chart_context_geometry(scale)
         ui.click_text(pid,'Demo');ui.click_text(pid,'Cruising')
         data(lambda d:d['data_mode']=='DEMO' and any(a['level']=='CRITICAL' for a in d['runtime']['alerts']))
         entry['rail_with_critical_alert']=rail_geometry(scale)

@@ -211,6 +211,55 @@ CommandResult NavigateTo(RoutePoint *destination, bool existing) {
   return {true, "Go To started", String(route->GetGUID())};
 }
 } // namespace
+application::WaypointContext CopyWaypointContext(
+    const std::string &id, const vessel::Navigation &position, vessel::Time now) {
+  Thread();
+  application::WaypointContext result;
+  result.observed_at = now;
+  result.reason = "Waypoint unavailable";
+  if (id.empty() || !pWayPointMan) return result;
+  RoutePoint *selected = nullptr;
+  for (auto *node = pWayPointMan->GetWaypointList()->GetFirst(); node;
+       node = node->GetNext()) {
+    auto *point = node->GetData();
+    if (point && String(point->m_GUID) == id) {
+      if (selected) { result.reason = "Waypoint identity ambiguous"; return result; }
+      selected = point;
+    }
+  }
+  if (!selected) return result;
+  result.waypoint = Copy(selected);
+  const auto &point = *result.waypoint;
+  if (!std::isfinite(point.latitude_deg) || !std::isfinite(point.longitude_deg) ||
+      std::abs(point.latitude_deg) > 90 || std::abs(point.longitude_deg) > 180) {
+    result.reason = "Waypoint position invalid";
+    return result;
+  }
+  if (!Position(position, now)) {
+    result.reason = "Vessel position unavailable or stale";
+    return result;
+  }
+  // Same direct rhumb-line range used by the pinned waypoint manager and
+  // chart cursor. This is not remaining route distance or a route calculation.
+  double bearing = NAN, distance = NAN;
+  DistanceBearingMercator(point.latitude_deg, point.longitude_deg,
+                          *position.latitude_deg.value,
+                          *position.longitude_deg.value, &bearing, &distance);
+  if (!std::isfinite(distance) || distance < 0 || !std::isfinite(bearing) ||
+      bearing < 0 || bearing > 360) {
+    result.reason = "Waypoint range unavailable";
+    return result;
+  }
+  const auto source = "OpenCPN direct waypoint rhumb-line / " + position.latitude_deg.source;
+  result.range_nm = {distance, source, position.latitude_deg.observed_at,
+                     vessel::Validity::Estimated};
+  result.bearing_true_deg = {bearing, source, position.latitude_deg.observed_at,
+                             vessel::Validity::Estimated};
+  result.range_nm.freshness = result.bearing_true_deg.freshness =
+      position.latitude_deg.freshness;
+  result.reason = "Direct range from vessel";
+  return result;
+}
 application::Catalog CopyNavigationCatalog() {
   Thread();
   application::Catalog catalog;
@@ -444,11 +493,21 @@ vessel::AisState CopyAisState(const vessel::Navigation &position,
       while (!t.name.empty() && (t.name.back() == '@' || t.name.back() == ' '))
         t.name.pop_back();
     }
-    t.status = t.lost       ? "Lost"
-               : t.doubtful ? "Position doubtful"
-               : t.active   ? "Active / navigation status " +
-                                  std::to_string(p->NavStatus)
-                            : "Inactive";
+    t.status = t.lost ? "Lost" : t.doubtful ? "Position doubtful" : t.active ? "Active" : "Inactive";
+    if (t.active && !t.lost && !t.doubtful) {
+      // Match pinned AisTargetData::BuildQueryResult's class/status boundary.
+      // A Class-B/base/meteo report has no navigational status. SART status
+      // codes mean active/testing, not the ordinary vessel-status enum.
+      if (p->Class == AIS_SART) {
+        if (p->NavStatus == RESERVED_14) t.status = "Active distress beacon";
+        else if (p->NavStatus == UNDEFINED) t.status = "Distress beacon testing";
+        else t.status += " / Beacon status unavailable";
+      } else if (p->Class != AIS_BASE && p->Class != AIS_CLASS_B && p->Class != AIS_METEO) {
+        if (p->NavStatus >= 0 && p->NavStatus <= 21 && p->NavStatus != UNDEFINED)
+          t.status += " / " + String(ais_get_status(p->NavStatus));
+        else t.status += " / Navigation status unavailable";
+      }
+    }
     auto at = AisObservationAt(p->PositionReportTicks, wall, now);
     const auto previous = clocks.find(t.mmsi);
     if (previous != clocks.end() && previous->second.report == p->PositionReportTicks)

@@ -3,6 +3,7 @@
 #include "ui/Controls.h"
 #include "ui/PreviewPanel.h"
 #include "ui/ProductPanel.h"
+#include "ui/ContextCard.h"
 #include "integration/BuildFeatures.h"
 #if XNAV_ENABLE_TEST_FIXTURES
 #include "vessel/DemoSource.h"
@@ -13,8 +14,10 @@
 #include <wx/frame.h>
 #include <wx/stattext.h>
 #include <wx/timer.h>
+#include <wx/weakref.h>
 
 #include <functional>
+#include <memory>
 #include <vector>
 
 namespace opennav::ui {
@@ -26,6 +29,7 @@ struct ShellActions {
   // is restored before OpenCPN saves its normal perspective on close.
   std::vector<wxString> navigation_panes;
   std::function<void()> zoom_in, zoom_out, follow, legacy;
+  std::function<std::string()> chart_orientation;
   application::NavigationActions navigation;
   std::function<bool()> route_creating;
   std::function<adapters::PilotView(bool, vessel::Time)> pilot_tick;
@@ -94,6 +98,8 @@ private:
   void UpdateRail(const std::vector<std::string> &keys, vessel::Time now);
   void Tick();
   void UpdateAlerts();
+  void CloseContext();
+  void UpdateContext(vessel::Time now);
   XNavScroll *CurrentScroll() const;
   void UpdateScrollControls();
   std::string PageTitle() const;
@@ -129,9 +135,16 @@ private:
 #endif
   PreviewPanel *page_ = nullptr;
   ProductPanel *product_ = nullptr;
+  wxWeakRef<XNavContextCard> context_;
+  std::string context_waypoint_;
+  int context_mmsi_ = 0;
+  std::optional<application::Coordinate> context_position_;
+  std::shared_ptr<int> context_lifetime_ = std::make_shared<int>(0);
+  std::vector<XNavButton *> navigation_page_buttons_;
   XNavButton *finish_route_ = nullptr;
   XNavButton *standby_ = nullptr;
   XNavButton *theme_button_ = nullptr;
+  XNavButton *orientation_button_ = nullptr;
   XNavButton *undo_route_ = nullptr, *cancel_route_ = nullptr;
   PreviewPage current_page_ = PreviewPage::Route;
   std::vector<std::pair<wxString, bool>> navigation_visibility_;

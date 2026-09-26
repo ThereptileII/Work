@@ -12,12 +12,12 @@ remote boat smoke tests.
 | Edit waypoint | Select saved mark → Edit waypoint → Save | 3 + text | Cancel retains original | Active/protected/shared cases are read-only where the integration cannot safely edit |
 | Waypoint Go To | Selected waypoint → GO TO → START | 2 after selection | Cancel retains navigation | Integration revalidates waypoint and selected position |
 | Remove waypoint | Selected mark → Delete waypoint → confirm | 2 after selection | Cancel preserves mark | Shared/protected marks remain disabled; no cascade deletion |
-| Create route | Menu → Routes → Create route on chart → tap points → Finish → name/save | 5 + points/name | Undo removes last draft point; Cancel discards the draft after confirmation | OpenCPN owns the draft and validation; details remain reviewable before activation |
+| Create route | Menu → Routes → Create route on chart → tap points → Done → name/save | 5 + points/name | Undo removes last draft point; Cancel in naming retains the draft; chart Cancel discards the draft after confirmation | OpenCPN owns the draft and validation; details remain reviewable before activation |
 | Activate route | Routes → select route → Activate route → confirm | 3 after list | Back returns to Routes | Revision/state revalidated; activation is not an autopilot mode request |
 | Stop route | Active route detail → Stop navigation → confirm | 2 | Cancel leaves passage active | No steering command; normal OpenCPN route output semantics remain unchanged |
 | Select AIS | Tap received target → compact card | 1 | Close/outside returns to chart | Expired/lost selection is cleared; no synthetic target substitution |
 | Inspect AIS | Selected card → Details; or Menu → AIS targets → vessel | 1 or 3 | Back returns to targets | Lost target shows unavailable; CPA/TCPA remain upstream results |
-| Chart orientation | Menu → chart orientation | 2 | Returns to chart | Uses the existing chart action, with available course provenance |
+| Chart orientation | Tap North/Course control beside Center | 1 | Chart remains visible | Label reads the actual OpenCPN selection; uses the existing North/Course action |
 | Display mode | Tap current Day/Dusk/Night label | 1 per step | No modal | Label and chart/XNav palette change together |
 | Instruments | Menu → Vessel instruments | 2 | Back → Menu; Navigation → chart | Stale/missing readings show their state; groups retain configured selections |
 | Propulsion/energy | Energy action, or Menu → Propulsion & energy | 1 or 2 | Navigation returns to chart | Dependent predictions are withheld and their blocking reason shown |
@@ -38,6 +38,9 @@ remote boat smoke tests.
   modal edit/confirmation sheet owns its own Escape/Cancel behavior.
 - Outside/Escape dismisses a transient chart card. An edit sheet does not
   silently save or discard a route; use its explicit Save/Cancel controls.
+- While creating a route, full-width Cancel/Undo/Done actions replace the three
+  page-navigation buttons in the bottom row. The chart and rail retain their
+  normal size, and Pilot/STBY/System remain accessible.
 - Alerts use the reserved status area and do not reduce the rail viewport.
   Acknowledgement never means the underlying condition is resolved.
 - Unsupported/missing callbacks produce disabled controls. Autopilot mode and
@@ -49,6 +52,15 @@ remote boat smoke tests.
   retain labelled deterministic scenarios for repeatable regression testing.
 
 ## Remaining acceptance work
+
+`tools/smoke-user-flows.py` exercises actual mouse presses and name entry using
+copied native control geometry. Its disposable profile has only a local,
+input-only GPS connection; it asserts that the connection emits no output.
+The Linux run covers orientation, card dismissal, chart-position waypoint
+creation, selected-waypoint Go To and stop, route point entry/Undo, both levels
+of cancellation, and named save. A read-only database audit verifies retained
+waypoint identity and the saved route's point count. This is automated desktop
+interaction evidence, not a physical touch-panel acceptance claim.
 
 Capture before/after native screens and repeat these flows on the boat display
 after compatibility preflight succeeds. The presence of a flow in this document

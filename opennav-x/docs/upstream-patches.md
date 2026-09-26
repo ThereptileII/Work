@@ -22,6 +22,17 @@ For each change record:
 
 Do not leave undocumented direct OpenCPN modifications.
 
+### Beta 2 chart presentation boundary
+
+The integration bridge reads `ChartCanvas::GetUpMode()` for the XNav orientation
+label and reuses its existing `MyFrame::SetUpMode` human action. It hides the
+native compass/GPS widget with per-canvas `SetShowGPSCompassWindow(false)` only
+while XNav owns the frame, also after deferred initialization or settings
+reconfiguration. It never changes the persisted global `g_bShowCompassWin`.
+These are calls to existing pinned APIs, with no new upstream patch. Legacy and
+Safe continue through normal startup. Mode-cycle/chart-content checks and native
+DPI interaction review cover the presentation change; boat review is pending.
+
 ## First dual-mode integration (accepted development slice)
 
 `patches/opencpn-5.12.4-xnav.patch` is applied only to the disposable

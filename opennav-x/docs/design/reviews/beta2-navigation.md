@@ -54,3 +54,17 @@ Further refinement: primary rail numbers can use more of their available space;
 the old compass/GPS canvas overlay needs review alongside a clear XNav orientation
 control; selected AIS/waypoint views still occupy a full page and should gain
 compact contextual presentation. Do not mark these resolved from this first pass.
+
+## Second candidate pass
+
+The rail now uses larger values when vertical space permits, fitting longer
+headings to the available width and retaining units on a separate line if
+necessary. The four fixed regions still share the available height; alerts do
+not add a layout row. A labelled orientation control beside Center reads the
+actual OpenCPN North/Course/Head selection and invokes the existing North/Course
+action. The stock compass/GPS widget is hidden per canvas only in XNav, including
+after settings recreate a canvas. The persisted Legacy preference is untouched.
+
+This pass needs new native and boat screenshots, including route creation at
+150% DPI, before visual acceptance. The source change alone is not evidence of
+correct clipping, typography or retained Legacy behavior.

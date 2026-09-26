@@ -379,6 +379,22 @@ function PreserveAdditions([string]$Source, [string]$Destination, $Known) {
   }
   return $retained
 }
+function AssertInstalledContent([string]$Directory,[string]$Version) {
+  foreach ($file in Get-ChildItem -LiteralPath $Directory -Recurse -Force -File) {
+    $relative=$file.FullName.Substring($Directory.Length+1).Replace('\','/')
+    $null=RelativePath $Directory $relative
+    # Re-run after preserving user additions: inherited files are not trusted
+    # merely because they were absent from the incoming payload inventory.
+    if ($file.Name -ieq 'OPENNAV_PORTABLE_PREVIEW') {
+      throw 'An installed integration must not contain a portable profile marker.'
+    }
+    if ($Version -match '^0\.4\.' -and
+        ($file.Name -in @('OPENNAV_TEST_PROFILE','OPENNAV_ROUTE_FIXTURE','OPENNAV_OBJECT_FIXTURE','Run-XNav-Demo.cmd','scenarios.json') -or
+         $file.Name -like 'opennav-test-*' -or $relative -match '^(?i:demo/|app/demo/)')) {
+      throw ('Developer/demo content refused in the installed Beta 2 product: '+$relative)
+    }
+  }
+}
 
 try {
   $Root = PlainPath $Root; $Shortcuts = PlainPath $Shortcuts
@@ -481,7 +497,7 @@ try {
       $id = [guid]::NewGuid().ToString('N'); $stage = Generation $id
       $null = New-Item -ItemType Directory -Path $stage -Force
       ExtractPayload (Join-Path $PackageDirectory 'payload.zip') $stage $package.files
-      if (Test-Path -LiteralPath (Join-Path $stage 'app\OPENNAV_PORTABLE_PREVIEW')) { throw 'An installed integration must not contain a portable profile marker.' }
+      AssertInstalledContent $stage $package.version
       # Normal OpenCPN persists absolute default resource paths. Point new
       # defaults at the untouched stock installation, not a removable generation.
       $locator = Join-Path $stage 'app\OPENNAV_INSTALLED_STOCK'
@@ -502,6 +518,7 @@ try {
         $old = ReadGeneration $state.current
         $null = PreserveAdditions (Generation $state.current) $stage $old.managedFiles
       }
+      AssertInstalledContent $stage $package.version
       SelfTest $stage $package.commit $package.version
       AtomicJson (Join-Path $stage 'ownership.json') @{owner=$Owner; version=$package.version; commit=$package.commit; packageSha256=$ManifestSha256; shortcutModes=$modes; files=@(FileRecords $stage); managedFiles=@(FileRecords $maintenance | ForEach-Object { [pscustomobject]@{path=('maintenance/'+$_.path);sha256=$_.sha256} }) + @($package.files) + @([pscustomobject]@{path='Lifecycle.ps1';sha256=(Hash (Join-Path $stage 'Lifecycle.ps1'))}, [pscustomobject]@{path='Maintain.exe';sha256=(Hash (Join-Path $stage 'Maintain.exe'))}, [pscustomobject]@{path='app/OPENNAV_INSTALLED_STOCK';sha256=(Hash $locator)}); importedPlugins=$retained}
       $previous = ''; if ($state) { $previous = $state.current }
@@ -516,6 +533,7 @@ try {
     } elseif ($Action -eq 'Rollback' -and $state.previous) {
       $old = ReadGeneration $state.previous
       VerifyFiles (Generation $state.previous) $old.files
+      AssertInstalledContent (Generation $state.previous) $old.version
       SelfTest (Generation $state.previous) $old.commit $old.version
       $next = @{owner=$Owner;schema=1;stock=$state.stock;current=$state.previous;previous='';shortcutModes=$(if ($old.PSObject.Properties['shortcutModes']) { @($old.shortcutModes) } else { @('xnav','legacy','safe') })}
       AtomicJson (Join-Path $Root 'transaction.json') @{owner=$Owner;action=$Action;before=$state;after=$next}
