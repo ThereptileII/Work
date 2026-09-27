@@ -68,7 +68,11 @@ $change=[Collections.Generic.Dictionary[string,string]]::new([StringComparer]::O
 Refuse {Assert-RestartIniDelta $before $after '--safe-mode'} 'Safe does not change persisted interface'
 $delta=@(Assert-RestartIniDelta $before $before '--safe-mode');Check ($delta.Count -eq 0) 'Safe unchanged mode accepted'
 Refuse {Assert-RestartIniDelta $before $before '--legacy'} 'target mode mismatch'
-$invalid=@{chartindex=@('-2','1000001','NaN','1.5');size=@('0','32769','-1','01','1.1');position=@('-32769','32769');boolean=@('true','false','2');color=@('0','4');latlon=@('91,0','0,181','NaN,0','Infinity,0','1,2,3');scale=@('0','-1','NaN','Infinity','1e999','10001');rotation=@('-360','360')}
+foreach($value in @('"   57.1234,   16.4567"','"-90.0000,180.0000"')) {
+ Assert-RestartScalar 'latlon' $value
+ Check $true 'wxFileConfig quoted coordinate pair retains bounded numeric validation'
+}
+$invalid=@{chartindex=@('-2','1000001','NaN','1.5');size=@('0','32769','-1','01','1.1');position=@('-32769','32769');boolean=@('true','false','2');color=@('0','4');latlon=@('91,0','0,181','NaN,0','Infinity,0','1,2,3','"91,0"','"0,181"','"NaN,0"','"1,2','1,2"','""1,2""','"1,2"garbage','"1,2;output=1"');scale=@('0','-1','NaN','Infinity','1e999','10001');rotation=@('-360','360')}
 foreach($kind in $invalid.Keys){foreach($value in $invalid[$kind]){Refuse {Assert-RestartScalar $kind $value} ('scalar bound '+$kind)}}
 $aui='layout2|name=ChartCanvas;caption=;state=768;dir=5;layer=0;row=0;pos=0;prop=100000;bestw=5;besth=5;minw=256;minh=800;maxw=-1;maxh=-1;floatx=-1;floaty=-1;floatw=-1;floath=-1|dock_size(5,0,0)=1280|'
 $withLayout=$before.Clone();$withLayout['AUI/AUIPerspective']=$aui
