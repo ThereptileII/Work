@@ -1,0 +1,161 @@
+{
+  "schema": 1,
+  "classification": "Native tooling development evidence; failed fixture qualification",
+  "source": {
+    "publishedCommit": "048ba7bdf8c5c834208cc33358e5401d083c67c0",
+    "localCommit": "fbf60bf2db73f42e70dff2368b3096a840efe857",
+    "tree": "b14c62585cec508b59a8ebcac1b7c92631aa02d0",
+    "mappedBlobsAndModesVerified": 619
+  },
+  "workflow": {
+    "runId": 36292255544,
+    "url": "https://github.com/ThereptileII/Work/actions/runs/36292255544",
+    "conclusion": "failure",
+    "jobs": [
+      {
+        "id": 108544465842,
+        "name": "Disposable native Windows tooling checks",
+        "conclusion": "success"
+      },
+      {
+        "id": 108544465981,
+        "name": "Actual official OpenCPN portable upgrade caution (en_US)",
+        "conclusion": "failure"
+      },
+      {
+        "id": 108544465994,
+        "name": "Actual COM shortcut migration (x64)",
+        "conclusion": "success"
+      },
+      {
+        "id": 108544466009,
+        "name": "Native Win32 commissioning restart process boundary",
+        "conclusion": "success"
+      },
+      {
+        "id": 108544466020,
+        "name": "Actual COM shortcut migration (x86)",
+        "conclusion": "success"
+      },
+      {
+        "id": 108544466043,
+        "name": "Read-only native warning desktop diagnostics",
+        "conclusion": "success"
+      },
+      {
+        "id": 108544466044,
+        "name": "Actual official OpenCPN portable upgrade caution (sv)",
+        "conclusion": "failure"
+      },
+      {
+        "id": 108544734356,
+        "name": "Actual restart broker with disposable marker-only installation",
+        "conclusion": "success"
+      },
+      {
+        "id": 108544734424,
+        "name": "Fixed guarded mode UI actions on disposable native windows",
+        "conclusion": "failure"
+      }
+    ]
+  },
+  "confirmedFailure": {
+    "actualOfficialLocales": [
+      "en_US",
+      "sv"
+    ],
+    "boundary": "Fixed1280x800 work-area guard before any zoom command",
+    "cause": "Disposable hosted desktop was not prepared to the required work-area size",
+    "normalCloseAfterRefusal": true,
+    "inertResizeFixture": "Failed readiness on the same insufficient-desktop precondition; callback error diagnostics added before rerun",
+    "productionGuardWeakened": false
+  },
+  "passedScopedChecks": {
+    "stockPolicyAndFullTree": 90,
+    "stockChartPolicyAndABI": 57,
+    "boatMaintenanceRetirement": 30,
+    "actualComShellLayoutX64": 132,
+    "actualComShellLayoutX86": 132,
+    "warningNativePolicy": 149,
+    "nativeTransportCodec": 886,
+    "nativeTransportChecks": 359,
+    "nativeTransportCases": 24,
+    "brokerChecks": 51,
+    "actualPrepareArmChecks": 47
+  },
+  "visualReview": {
+    "inspected": "Actual English stock post-Agree frame from the verified artifact",
+    "finding": "Bundled coastline is visible at the fixed disposable camera before attempted resize",
+    "twoZoomLevelsQualified": false
+  },
+  "artifacts": [
+    {
+      "id": 10922762058,
+      "name": "development-desktop-diagnostics-048ba7bdf8c5c834208cc33358e5401d083c67c0",
+      "sha256": "597f8fbf52379bc7a22fc50ce95d60d02b04fd034e4a2da6db34df1bd8cc0ede",
+      "bytes": 3271,
+      "apiUploadHashSizeCrcVerified": true
+    },
+    {
+      "id": 10922711327,
+      "name": "development-stock-welcome-sv-048ba7bdf8c5c834208cc33358e5401d083c67c0",
+      "sha256": "8d64583a4a42a8ec509cd55b382ab3f367ca9835bb7321d6034ae8ef1c1092ee",
+      "bytes": 419488,
+      "apiUploadHashSizeCrcVerified": true
+    },
+    {
+      "id": 10922631727,
+      "name": "development-commissioning-broker-048ba7bdf8c5c834208cc33358e5401d083c67c0",
+      "sha256": "f758c058bf119a72ed2695e7767321e4a78fe6dc97b15c8e06990d8a7906ae3b",
+      "bytes": 15827,
+      "apiUploadHashSizeCrcVerified": true
+    },
+    {
+      "id": 10922283669,
+      "name": "development-restart-window-048ba7bdf8c5c834208cc33358e5401d083c67c0",
+      "sha256": "d3ab51f473021797bd8f74d7eef820c19a2f110772d4ba3ee2ac21dd32ff30b0",
+      "bytes": 3834,
+      "apiUploadHashSizeCrcVerified": true
+    },
+    {
+      "id": 10922238736,
+      "name": "development-installer-shortcuts-x64-048ba7bdf8c5c834208cc33358e5401d083c67c0",
+      "sha256": "395e680d244ded6bdaacccc231a6776e8de509f432ad1172081608cbbfffd572",
+      "bytes": 1266,
+      "apiUploadHashSizeCrcVerified": true
+    },
+    {
+      "id": 10922187768,
+      "name": "development-stock-welcome-en_US-048ba7bdf8c5c834208cc33358e5401d083c67c0",
+      "sha256": "45a6bfdeebc3e6c12fcdbcf0fab35baaf47288ea3f63d7fcd75ab1f25a64610e",
+      "bytes": 423191,
+      "apiUploadHashSizeCrcVerified": true
+    },
+    {
+      "id": 10922129687,
+      "name": "development-boat-tooling-048ba7bdf8c5c834208cc33358e5401d083c67c0",
+      "sha256": "8481f6051b3a1923f643a857ab20484052fefb19a517498ef9b4285ee4a1394a",
+      "bytes": 21661,
+      "apiUploadHashSizeCrcVerified": true
+    },
+    {
+      "id": 10922129596,
+      "name": "development-installer-shortcuts-x86-048ba7bdf8c5c834208cc33358e5401d083c67c0",
+      "sha256": "5aba3081b1c2c176878f82e97ddde71bad2048d7249b6ae4639a786cac4cf0d2",
+      "bytes": 1266,
+      "apiUploadHashSizeCrcVerified": true
+    },
+    {
+      "id": 10922104853,
+      "name": "development-commissioning-restart-048ba7bdf8c5c834208cc33358e5401d083c67c0",
+      "sha256": "c96bedc19029d9ed3c4306356ebc2b74dd1d68cc5268e9f50d0889ff8892fb8a",
+      "bytes": 6210,
+      "apiUploadHashSizeCrcVerified": true
+    }
+  ],
+  "limits": [
+    "No boat operation or live profile was performed by these fixtures.",
+    "No successful resize or ZoomOut qualification is claimed from this failed run.",
+    "Actual native window, coastline and persisted-scale acceptance requires the corrected fixture run."
+  ]
+}

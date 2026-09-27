@@ -44,6 +44,44 @@ try {
     [IO.File]::WriteAllText($badIni,$bad,$encoding);$badReview=Review $inputFile $badIni
     Refuse "Matching text approval cannot override source/connection/chart/value policy $case" {Assert-CommissioningMigrationReview $inputFile $badIni $badReview}
   }
+  $stockBefore=Join-Path $testRoot 'stock-before.ini';$stockAfter=Join-Path $testRoot 'stock-after.ini'
+  $menu='Menu:1;10;-20;0;0;0;400;0;0;0;1;0;0;2;32;Segoe UI:rgb(0, 0, 0)'
+  $swedish='Meny:1;9;-18;0;0;0;400;0;0;0;1;0;0;2;32;Segoe UI:rgb(0, 0, 0)'
+  $stockText="[Settings]`r`nConfigVersionString=Version 5.12.2-0+b69f44c Build 2025-08-01`r`nLocale=sv`r`nLocaleOverride=sv_SE`r`nOpenGL=1`r`nGPUTextureMemSize=128`r`n[Settings/NMEADataSource]`r`nDataConnections=0;0;;0;1;COM8;115200;0;0;0;;0;;0;0;1;0;1;Gateway;0;;0`r`n[Settings/MSWFonts]`r`nsv-00c6075a=$menu`r`nsv-f4c5f476=$swedish`r`nsv_SE-f4c5f476=$swedish`r`n[Settings/GlobalState]`r`nOwnShipLatLon=`"   57.1000,   16.2000`"`r`n"
+  $stockMigrated=$stockText.Replace('Version 5.12.2-0+b69f44c Build 2025-08-01','Version 5.12.4-0+37fd0cd Build 2025-09-12').Replace('GPUTextureMemSize=128','GPUTextureMemSize=64').Replace("sv-00c6075a=$menu`r`n",'').Replace('57.1000','57.1001')
+  [IO.File]::WriteAllText($stockBefore,$stockText,$encoding);[IO.File]::WriteAllText($stockAfter,$stockMigrated,$encoding)
+  $stockReview=Review $stockBefore $stockAfter
+  Pass 'Exact reviewed stock GPU upgrade, obsolete English menu font removal and quoted coordinates preserve Swedish replacements' {$null=Assert-CommissioningMigrationReview $stockBefore $stockAfter $stockReview}
+  Refuse 'Source-proven removal still needs its explicit per-key review' {$v=Clone $stockReview;$v.changes=@($v.changes|Where-Object {$_.key -cne 'Settings/MSWFonts/sv-00c6075a'});Assert-CommissioningMigrationReview $stockBefore $stockAfter $v}
+  Refuse 'Removal review requires an explicit null after property, not an absent property' {
+    $v=Clone $stockReview;$entry=@($v.changes|Where-Object {$_.key -ceq 'Settings/MSWFonts/sv-00c6075a'})[0]
+    $entry.PSObject.Properties.Remove('after');Assert-CommissioningMigrationReview $stockBefore $stockAfter $v
+  }
+  [IO.File]::WriteAllText($badIni,$stockMigrated.Replace('[Settings/MSWFonts]',"[Settings/MSWFonts]`r`nsv-00c6075a="),$encoding)
+  Refuse 'Retaining the obsolete font with an empty value is not its permitted removal' {Assert-CommissioningMigrationReview $stockBefore $badIni (Review $stockBefore $badIni)}
+  $oldValues=Read-ProfileForAudit $stockBefore;$newValues=Read-ProfileForAudit $stockAfter
+  foreach($kind in @('budget-other','budget-missing','already-current','gl-disabled','old-version-unknown','menu-changed','locale-changed','translated-changed','translated-removed','wrong-font-key')) {
+    Refuse "Observed startup exception cannot authorize other changes: $kind" {
+      $was=$oldValues.Clone();$is=$newValues.Clone();$key='Settings/GPUTextureMemSize'
+      switch($kind) {
+        'budget-other' {$is[$key]='128'}
+        'budget-missing' {$was.Remove($key)}
+        'already-current' {$was['Settings/ConfigVersionString']=$is['Settings/ConfigVersionString']}
+        'gl-disabled' {$is['Settings/OpenGL']='0'}
+        'old-version-unknown' {$was['Settings/ConfigVersionString']='Version other'}
+        'menu-changed' {$key='Settings/MSWFonts/sv-00c6075a';$was[$key]=$menu.Replace(';10;',';11;')}
+        'locale-changed' {$key='Settings/MSWFonts/sv-00c6075a';$is['Settings/Locale']='en_US'}
+        'translated-changed' {$key='Settings/MSWFonts/sv-00c6075a';$is['Settings/MSWFonts/sv-f4c5f476']=$swedish.Replace(';9;',';10;')}
+        'translated-removed' {$key='Settings/MSWFonts/sv-00c6075a';$is.Remove('Settings/MSWFonts/sv_SE-f4c5f476')}
+        'wrong-font-key' {$key='Settings/MSWFonts/sv-f4c5f476'}
+      }
+      Assert-CommissioningStockUpgradeDelta $key $was $is
+    }
+  }
+  [IO.File]::WriteAllText($badIni,$stockMigrated.Replace("sv-f4c5f476=$swedish`r`n",''),$encoding)
+  Refuse 'Other font deletion is not a generic permitted removal' {Assert-CommissioningMigrationReview $stockBefore $badIni (Review $stockBefore $badIni)}
+  [IO.File]::WriteAllText($badIni,$stockMigrated.Replace("OpenGL=1`r`n",''),$encoding)
+  Refuse 'Unrelated key removal remains forbidden' {Assert-CommissioningMigrationReview $stockBefore $badIni (Review $stockBefore $badIni)}
   $context=[pscustomobject]@{sid='S-1-5-21-1';profile=(Join-Path $testRoot 'profile')}
   $prepared=[pscustomobject]@{owner=$script:CommissioningOwner;status='prepared';context=$context;baselineSha256=(Get-Digest $baseline);inputSha256=(Get-Digest $inputFile)}
   Refuse 'Synthetic root cannot replace fixed public recovery baseline' {Get-PreparedCommissioningBaseline $prepared $parent $workspace}

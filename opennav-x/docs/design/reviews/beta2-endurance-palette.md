@@ -18,6 +18,14 @@ instruments, AIS targets, SmartNav advisories, Demo, Cruising, Sensors stale,
 Sensors unavailable, and the two zoom symbols still match their actual paths.
 These are isolated fixture controls, never installed-product Demo controls.
 
-Python compilation passes. Actual native execution and the required three-hour
-run remain gates for the next exact product candidate; source inspection does
-not establish endurance acceptance.
+Candidate `8e780edc` later reached Windows endurance and failed exactly at
+the obsolete `Light` lookup, with **zero samples**. Its earlier installer,
+DPI, chart and production-package gates passed; the always-uploaded full
+Windows artifact retains that failure and the visible `Day` control list.
+The corresponding Linux endurance job was cancelled when the next candidate
+started; it is also incomplete. See
+[the native evidence record](../../evidence/beta2-windows-8e780edc.json).
+
+Python compilation passes. Actual native execution of the corrected selector
+and the required three-hour run remain gates for the next exact product
+candidate; source inspection does not establish endurance acceptance.

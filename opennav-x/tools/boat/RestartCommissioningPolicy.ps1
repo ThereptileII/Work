@@ -26,6 +26,10 @@ function Assert-RestartScalar([string]$Kind,[string]$Value) {
   switch -CaseSensitive ($Kind) {
     'boolean' {if($Value -cnotmatch '^[01]$'){throw 'Expected exact persisted boolean.'};return}
     'latlon' {
+      # wxFileConfig quotes strings with the leading padding emitted by pinned
+      # navutil's %10.4f coordinate pairs. Decode only one balanced outer pair
+      # here; never normalize quoting in source/path/connection configuration.
+      if($Value.StartsWith('"') -and $Value.EndsWith('"') -and $Value.Length -ge 2){$Value=$Value.Substring(1,$Value.Length-2)}
       if($Value -cnotmatch '^\s*-?[0-9]+(?:\.[0-9]+)?\s*,\s*-?[0-9]+(?:\.[0-9]+)?\s*$'){throw 'Invalid viewport coordinates.'}
       $parts=$Value.Split(',');$lat=[double]::Parse($parts[0],[Globalization.CultureInfo]::InvariantCulture);$lon=[double]::Parse($parts[1],[Globalization.CultureInfo]::InvariantCulture)
       if([double]::IsNaN($lat) -or [double]::IsInfinity($lat) -or [double]::IsNaN($lon) -or [double]::IsInfinity($lon) -or $lat -lt -90 -or $lat -gt 90 -or $lon -lt -180 -or $lon -gt 180){throw 'Viewport outside geographic bounds.'};return

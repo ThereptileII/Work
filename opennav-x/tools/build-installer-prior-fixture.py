@@ -4,6 +4,7 @@
 No source rewriting or version relabeling. The archive and extracted installer
 are hash-pinned, and an expired/missing artifact fails the qualification gate.
 """
+import argparse
 import hashlib
 import json
 import os
@@ -16,18 +17,24 @@ import zipfile
 if sys.platform != 'win32' or os.environ.get('GITHUB_ACTIONS') != 'true':
     raise SystemExit('Prior-version fixture requires disposable native CI')
 root = Path(__file__).resolve().parents[1]
-lock = json.loads((root / 'tools/accepted-beta1.lock.json').read_text())
-output = root / 'build/prior-alpha-fixture'
+parser = argparse.ArgumentParser()
+parser.add_argument('--early-beta2-layout', action='store_true',
+                    help='Exact early Beta 2 historical-layout regression fixture, never a release allowlist')
+args = parser.parse_args()
+fixture = 'early Beta 2 layout' if args.early_beta2_layout else 'accepted Beta 1'
+lock_name = 'early-beta2-layout.lock.json' if args.early_beta2_layout else 'accepted-beta1.lock.json'
+lock = json.loads((root / 'tools' / lock_name).read_text())
+output = root / ('build/prior-beta2-layout-fixture' if args.early_beta2_layout else 'build/prior-alpha-fixture')
 output.mkdir()
 api = 'https://api.github.com/repos/ThereptileII/Work/actions/artifacts/' + str(lock['artifactId'])
 token = os.environ.get('OPENNAV_ARTIFACT_TOKEN')
 if not token:
-    raise SystemExit('Read-only Actions token required for the accepted Beta 1 fixture')
+    raise SystemExit('Read-only Actions token required for the fixed prior installer fixture')
 headers = {'Accept': 'application/vnd.github+json', 'User-Agent': 'OpenNav-qualification',
            'Authorization': 'Bearer ' + token, 'X-GitHub-Api-Version': '2022-11-28'}
 with urllib.request.urlopen(urllib.request.Request(api, headers=headers), timeout=60) as response:
     metadata = json.load(response)
-assert not metadata['expired'], 'Accepted Beta 1 artifact expired; restore exact hash-pinned archive'
+assert not metadata['expired'], 'Prior installer artifact expired; restore exact hash-pinned archive'
 assert metadata['workflow_run']['head_sha'] == lock['commit']
 assert metadata['workflow_run']['id'] == lock['runId']
 assert metadata['digest'] == 'sha256:' + lock['archiveSha256']
@@ -40,18 +47,18 @@ try:
         urllib.request.Request(api + '/zip', headers=headers), timeout=60)
 except urllib.error.HTTPError as redirect:
     if redirect.code != 302:
-        raise SystemExit('Accepted Beta 1 archive request failed: HTTP ' + str(redirect.code)) from None
+        raise SystemExit('Prior installer archive request failed: HTTP ' + str(redirect.code)) from None
     location = redirect.headers['Location']
 else:
     raise SystemExit('Expected authenticated artifact redirect')
 assert location.startswith('https://'), 'Artifact transport must use TLS'
-archive = output / 'accepted-beta1.zip'
+archive = output / 'verified-prior-installer.zip'
 with urllib.request.urlopen(location, timeout=120) as response, archive.open('wb') as target:
     remaining = lock['maximumArchiveBytes']
     while block := response.read(1024 * 1024):
         remaining -= len(block)
         if remaining < 0:
-            raise SystemExit('Accepted Beta 1 archive exceeds its bound')
+            raise SystemExit('Prior installer archive exceeds its bound')
         target.write(block)
 assert hashlib.sha256(archive.read_bytes()).hexdigest() == lock['archiveSha256']
 setup = output / 'setup' / lock['setupName']
@@ -62,8 +69,9 @@ with zipfile.ZipFile(archive) as source:
     data = source.read(entry)
     assert hashlib.sha256(data).hexdigest() == lock['setupSha256']
     setup.write_bytes(data)
-(root / 'evidence/local/installer-prior-release.json').write_text(json.dumps({
+evidence_name = 'installer-prior-beta2-layout.json' if args.early_beta2_layout else 'installer-prior-release.json'
+(root / 'evidence/local' / evidence_name).write_text(json.dumps({
     'source': lock, 'verified': True,
-    'scope': 'Exact accepted Beta 1 installer; subsequent real upgrade and rollback gates required'
+    'scope': 'Exact '+fixture+' installer; subsequent real upgrade and rollback gates required'
 }, indent=2) + '\n')
-print('Exact accepted Beta 1 installer verified; candidate executable and source untouched')
+print('Exact '+fixture+' installer verified; candidate executable and source untouched')

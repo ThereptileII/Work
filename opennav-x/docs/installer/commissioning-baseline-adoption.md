@@ -52,8 +52,41 @@ reviewed locale persistence, and the already reviewed AUI/Dashboard deltas.
 Locale is **never changed automatically** or converted to English for testing.
 Any locale delta needs its own exact per-key review. Missing/removal, unknown
 keys, source/connection changes, chart-path changes, plugin enablement and
-control configuration are refused. Normal defaults outside this policy require
+control configuration are refused, except for the one source-proven obsolete
+font removal described below. Normal defaults outside this policy require
 a separate source-specific implementation and tests before adoption.
+
+### Observed official startup normalization
+
+A preliminary **live** boat INI copy identified three representation/migration
+cases. It is evidence for these narrow policy rules, not a closed-session
+inspection or permission to adopt the current file:
+
+- Quoted coordinate pairs are accepted only for existing latitude/longitude
+  display keys. Pinned `navutil.cpp` formats these with `%10.4f` padding, and
+  `wxFileConfig` quotes the string. One balanced outer quote pair is decoded for
+  the existing finite/range checks; stored bytes are preserved. Quotes in source,
+  path or connection values are not normalized.
+- `Settings/GPUTextureMemSize` may change from exactly `128` to `64` only across
+  the observed official 5.12.2/2025-08-01 to 5.12.4/2025-09-12 version markers,
+  with `Settings/OpenGL=1` preserved. Pinned
+  `OCPNPlatform.cpp::Initialize_3` lines 634–646 explicitly assigns this texture
+  budget during the GL-capable upgrade path. This setting is not proof of a
+  rendered chart or current graphics backend.
+- Only the exact obsolete `Settings/MSWFonts/sv-00c6075a` English `Menu` record
+  may be removed, preserving `Locale=sv`, `LocaleOverride=sv_SE` and both existing
+  translated Swedish menu records byte-for-byte. Pinned
+  `FontMgr.cpp::ScrubList` removes current-locale descriptions absent from the
+  translated candidate list; the Swedish catalogue translates `Menu` to `Meny`.
+  `navutil.cpp` lines 2543–2553 rewrites the surviving font list. Other font
+  removals, replacement edits and different obsolete values remain refused.
+
+Each case still needs its exact per-key source review bound to a fresh normal
+**post-close** inspection. Tests cover malformed quotes/out-of-range coordinates,
+incorrect version/budget/GL state, changed locale, altered/missing translated
+fonts, unrelated deletion and omission of the explicit removal approval.
+The removal review must contain an explicit JSON `null` for the new value;
+omitting that field or retaining the font key with an empty value is refused.
 
 The official executable `7c6547562cca7954671eaab72833ca9d788710fd9808b6a699b6dc823852ae0c`
 contains `5.12.4-0+37fd0cd` and `2025-09-12`; its permitted marker is exactly

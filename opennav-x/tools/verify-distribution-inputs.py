@@ -11,6 +11,7 @@ required = (
     'installer/windows/compatibility.json', 'installer/windows/AlphaSetup.nsi',
     'installer/windows/Lifecycle.ps1', 'docs/beta2/TEST_ME_FIRST.md',
     'docs/boat-commissioning.md', 'tools/accepted-beta1.lock.json',
+    'tools/early-beta2-layout.lock.json',
     'docs/beta2/KNOWN_LIMITATIONS.md', 'docs/beta2/OpenNavX-Beta2-Test-Guide.md',
     'docs/beta2/OpenNavX-Beta2-Install-Guide.md', 'docs/production-build-contract.md',
 )

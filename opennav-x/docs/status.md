@@ -11,6 +11,19 @@ The accepted Beta 1 results below remain historical evidence, not Beta 2 gates.
 
 ### Current candidate
 
+`fa27637eb30150b472acd631cd28e6426d43b9fe` is running in
+[CI 36291671816](https://github.com/ThereptileII/Work/actions/runs/36291671816).
+All 655 mapped blobs/modes match local
+`357d4fee21bc6a1c3211646f230b89feadb036a0`. It includes the corrected endurance
+palette action and unchanged-value layout caching. It is not accepted and will
+be superseded: subsequent source review found that an early 0.4 Beta 2 package
+still used the historical Start Menu layout. The new explicit layout marker
+preserves that package's immutable maintenance engine during rollback. Native
+x86/x64 COM tests pass; a complete genuine-package rollback test remains a gate
+for the next product candidate.
+
+### Retained development review package (not qualified)
+
 `8e780edc34f68abd693a5d5f6aecdb3ba05a75c4` was exercised in
 [CI 36287991989](https://github.com/ThereptileII/Work/actions/runs/36287991989).
 All 630 tracked blobs/modes match local `81ec667e1d3740b36b99eaf6a1ed7526b7edd044`;
@@ -18,16 +31,17 @@ CI fetches and verifies the unchanged pinned OpenCPN source. This replacement
 adds the exact-version installer caution flow, reviewed profile-migration
 preservation, complete broker fixtures and component-local dim-mode hover hints.
 The local contract suite passes **71/71**, integrated Linux CTest **110/110**,
-and actual wx object workflows **25 groups / 25 captures**. Native hover,
-installer, endurance and actual boat acceptance remain pending.
+and actual wx object workflows **25 groups / 25 captures**.
 The native functional suite, fixture-free recovery package, installer lifecycle,
 100/125/150% DPI/hover checks and chart/plugin gates passed. Their development
 review bundle and full native evidence have been downloaded and hash-verified.
 The Windows endurance harness then failed before its first sample because it
 still selected the removed Light caption. The next source uses the existing
 palette action and verifies Day/Dusk/Night. This candidate has no accepted
-Windows endurance result. Its Linux elapsed-time run remains incomplete and
-boat acceptance is pending; the development bundle is not a qualified release.
+Windows endurance result. Its Linux elapsed-time run was cancelled with 327
+retained samples and has no accepted endurance result. The hash-verified setup
+has been staged privately on the boat but has **not been executed**. Boat
+acceptance remains pending; the development bundle is not a qualified release.
 
 ### Previous candidate (not qualified)
 
@@ -97,6 +111,16 @@ its size; the display helper is being repaired without weakening capture checks.
 The exact launch log records an Intel UHD OpenGL4.6 canvas context. This is not
 proof of chart rendering or hardware acceleration. No physical command has been
 sent. Profile migration and normal-close preservation still require review.
+The replacement display helper has deterministic policy tests. Its first native
+fixture run refused an undersized disposable CI desktop before chart zoom;
+that is not resize/zoom acceptance. The CI workspace preparation is being
+corrected without changing the boat display or weakening the production guard.
+[Scoped tooling results](evidence/beta2-stock-chart-048ba7.json).
+Both configured chart directories are currently accessible, and the chart
+database still matches its pre-upgrade hash. A preliminary live INI comparison
+found seven startup changes; each is being checked against pinned source.
+This live copy cannot authorize baseline adoption: a normal close, fresh
+inspection and exact per-key migration review remain required.
 The configured N2K serial port is
 currently absent from read-only port inventory; no current N2K reception is
 inferred. A closed-copy navigation-database integrity/content baseline is also

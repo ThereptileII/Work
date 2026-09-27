@@ -3,7 +3,7 @@ param(
   [string]$Workspace='C:\XNav',
   [Parameter(Mandatory=$true)][string]$LaunchResult,
   [Parameter(Mandatory=$true)][ValidatePattern('^[a-f0-9]{64}$')][string]$ExpectedLaunchSha256,
-  [Parameter(Mandatory=$true)][ValidateSet('Capture','Resize1280x800','Close','InspectWelcome','FocusWelcome','AcknowledgeWelcome')][string]$Action,
+  [Parameter(Mandatory=$true)][ValidateSet('Capture','Resize1280x800','ZoomOut','Close','InspectWelcome','FocusWelcome','AcknowledgeWelcome')][string]$Action,
   [string]$WelcomeInspection,
   [ValidatePattern('^[a-f0-9]{64}$')][string]$ExpectedWelcomeInspectionSha256
 )

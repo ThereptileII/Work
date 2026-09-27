@@ -180,6 +180,8 @@ function ReadGeneration([string]$Id) {
   $directory = Generation $Id
   $manifest = ReadJson (Join-Path $directory 'ownership.json')
   if ($manifest.owner -ne $Owner) { throw 'Unknown generation ownership.' }
+  # In particular, reject an unknown rollback target before publishing state.
+  $null = ShortcutGroup $manifest
   return $manifest
 }
 function SelfTest([string]$Directory, [string]$Commit, [string]$Version) {
@@ -254,12 +256,19 @@ namespace OpenNav {
   Log "Loader/resource self-test passed for $Commit"
 }
 function ShellGroups {
-  # The historical group belongs to immutable Beta 1/Alpha maintenance engines.
+  # The historical group belongs to immutable older maintenance engines,
+  # including early 0.4 Beta 2 builds. Version alone does not identify layout.
   # Keep those engines usable after rollback; never rewrite their owned files.
   return @((Join-Path $Programs 'OpenNav X'), (Join-Path $Programs 'OpenNav X Alpha 1'))
 }
-function ShortcutGroup([string]$Version) {
-  if ($Version -match '^0\.[23]\.') { return (Join-Path $Programs 'OpenNav X Alpha 1') }
+function ShortcutGroup($Generation) {
+  if (-not $Generation.PSObject.Properties['shellLayout']) {
+    return (Join-Path $Programs 'OpenNav X Alpha 1')
+  }
+  if ($Generation.shellLayout -isnot [string] -or
+      $Generation.shellLayout -cne 'OpenNavX.NeutralStartMenu.1') {
+    throw 'Unknown generation Start-menu layout; preserve and inspect it.'
+  }
   return (Join-Path $Programs 'OpenNav X')
 }
 function ShortcutSpec([string]$Name) {
@@ -328,7 +337,7 @@ function PublishShell($State) {
   AssertShellOwnership
   $directory = Generation $State.current
   $generation = ReadGeneration $State.current
-  $group = ShortcutGroup $generation.version
+  $group = ShortcutGroup $generation
   $caption = 'OpenNav X'
   if ($generation.version -match '^0\.4\.') { $caption = 'OpenNav X Beta 2' }
   elseif ($generation.version -match '^0\.3\.') { $caption = 'OpenNav X Beta 1' }
@@ -591,7 +600,7 @@ try {
       }
       AssertInstalledContent $stage $package.version
       SelfTest $stage $package.commit $package.version
-      AtomicJson (Join-Path $stage 'ownership.json') @{owner=$Owner; version=$package.version; commit=$package.commit; packageSha256=$ManifestSha256; shortcutModes=$modes; files=@(FileRecords $stage); managedFiles=@(FileRecords $maintenance | ForEach-Object { [pscustomobject]@{path=('maintenance/'+$_.path);sha256=$_.sha256} }) + @($package.files) + @([pscustomobject]@{path='Lifecycle.ps1';sha256=(Hash (Join-Path $stage 'Lifecycle.ps1'))}, [pscustomobject]@{path='Maintain.exe';sha256=(Hash (Join-Path $stage 'Maintain.exe'))}, [pscustomobject]@{path='app/OPENNAV_INSTALLED_STOCK';sha256=(Hash $locator)}); importedPlugins=$retained}
+      AtomicJson (Join-Path $stage 'ownership.json') @{owner=$Owner; version=$package.version; commit=$package.commit; packageSha256=$ManifestSha256; shellLayout='OpenNavX.NeutralStartMenu.1'; shortcutModes=$modes; files=@(FileRecords $stage); managedFiles=@(FileRecords $maintenance | ForEach-Object { [pscustomobject]@{path=('maintenance/'+$_.path);sha256=$_.sha256} }) + @($package.files) + @([pscustomobject]@{path='Lifecycle.ps1';sha256=(Hash (Join-Path $stage 'Lifecycle.ps1'))}, [pscustomobject]@{path='Maintain.exe';sha256=(Hash (Join-Path $stage 'Maintain.exe'))}, [pscustomobject]@{path='app/OPENNAV_INSTALLED_STOCK';sha256=(Hash $locator)}); importedPlugins=$retained}
       $previous = ''; if ($state) { $previous = $state.current }
       $next = @{owner=$Owner;schema=1;stock=$stock;current=$id;previous=$previous;shortcutModes=$modes}
       AtomicJson (Join-Path $Root 'transaction.json') @{owner=$Owner;action=$Action;before=$state;after=$next}
