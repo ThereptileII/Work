@@ -70,10 +70,12 @@ Pass 'Recorded HWND and nested rectangle round trip into exact native type' {
   if($info.Frame -ne 123 -or $info.Modal -ne 456 -or $info.Bounds.Width -ne 600 -or $info.Bounds.Height -ne 400){throw 'Typed inspection conversion lost identity/geometry'}
 }
 Pass 'Native surface offers no generic selectors, messages, keys or coordinates' {
-  $allowed=@('Inspect','AssertUnchanged','Agree')
+  $allowed=@('Inspect','AssertUnchanged','Agree','FocusCaption')
   foreach($method in [OpenNavX.StockWelcomeNative].GetMethods([Reflection.BindingFlags]'Public,Static,DeclaredOnly')) {if($method.Name -cnotin $allowed){throw 'Unexpected native operation'}}
   $source=[IO.File]::ReadAllText((Join-Path $PSScriptRoot 'StockWelcomeNative.cs'))
-  if($source -match 'extern[^;]*(SendInput|keybd_event|mouse_event|SetCursorPos)'){throw 'Global input injection exposed'}
+  if($source -match 'extern[^;]*(keybd_event|mouse_event|SetCursorPos|AttachThreadInput)'){throw 'Unbounded input API exposed'}
+  $focus=[OpenNavX.StockWelcomeNative].GetMethod('FocusCaption')
+  if(($focus.GetParameters().ParameterType.FullName -join ',') -cne 'System.Int32,System.Int64'){throw 'Focus accepts arbitrary target input'}
 }
 foreach($fileName in @('StockWelcome.ps1','StockReview.ps1','review-stock.ps1')) {Pass "Parses $fileName" {$tokens=$null;$errors=$null;$null=[Management.Automation.Language.Parser]::ParseFile((Join-Path $PSScriptRoot $fileName),[ref]$tokens,[ref]$errors);if($errors.Count){throw ($errors|Out-String)}}}
 # Private diagnostics have no extra callable UI action. Exercise interpretation
@@ -201,4 +203,94 @@ Refuse 'Changed live pixels refuse before journal and before native Agree' {Invo
 if($script:captured -ne 1 -or $script:written -ne 0){throw 'Pixel mismatch reached acknowledgement intent'}
 Refuse 'Durable intent failure prevents native Agree' {Invoke-StockWelcomeAgreement 42 $null ('f'*64) 'before.png' 'intent.json'}
 if($script:captured -ne 2 -or $script:written -ne 1){throw 'Intent boundary was not exercised'}
+$native=[OpenNavX.StockWelcomeNative]
+$select=$native.GetMethod('ChooseCaptionPoint',[Reflection.BindingFlags]'NonPublic,Static')
+function Rectangle($Left,$Top,$Right,$Bottom){return [OpenNavX.StockWelcomeNative+Rect]@{Left=$Left;Top=$Top;Right=$Right;Bottom=$Bottom}}
+$window=Rectangle 100 100 700 500;$title=Rectangle 104 104 696 128
+Pass 'Point derives only from bounded native caption geometry' {
+ $point=$select.Invoke($null,[object[]]@($window,$title,[uint32]0))
+ if($point.X -ne 400 -or $point.Y -ne 116){throw 'Unexpected candidate'}
+}
+Pass 'Negative virtual-screen coordinates retain signed hit-test semantics' {
+ $point=$select.Invoke($null,[object[]]@((Rectangle -700 -500 -100 -100),(Rectangle -696 -496 -104 -472),[uint32]0))
+ if($point.X -ne -400 -or $point.Y -ne -484){throw 'Signed coordinates lost'}
+}
+foreach($state in @([uint32]1,[uint32]8,[uint32]32768,[uint32]65536)){
+ Refuse ('Unavailable/pressed/invisible/offscreen caption state '+$state) {$select.Invoke($null,[object[]]@($window,$title,$state))}
+}
+foreach($rect in @((Rectangle 0 104 696 128),(Rectangle 104 104 800 128),(Rectangle 104 90 696 128),(Rectangle 104 104 696 600),(Rectangle 104 104 106 128),(Rectangle 104 104 696 105))){
+ Refuse 'Clipped or empty caption cannot provide a point' {$select.Invoke($null,[object[]]@($window,$rect,[uint32]0))}
+}
+Refuse 'Coordinates outside native signed shorts cannot wrap into a different target' {$select.Invoke($null,[object[]]@((Rectangle 50000 100 50600 500),(Rectangle 50004 104 50596 128),[uint32]0))}
+Pass 'TITLEBARINFO native structure has six fixed DWORD states' {
+ $type=$native.GetNestedType('TitleBarInfo',[Reflection.BindingFlags]'NonPublic')
+ if([Runtime.InteropServices.Marshal]::SizeOf([Activator]::CreateInstance($type)) -ne 44){throw 'TITLEBARINFO ABI differs'}
+}
+# Pure injected delegates exercise the production delivery decision without
+# invoking any input API. Actual official en/sv modal acceptance is a native gate.
+Add-Type -TypeDefinition @'
+using System;
+namespace OpenNavX {
+ public static class CaptionDeliveryFixture {
+  public static int Deliveries,Releases,Verifications;public static uint Count,ReleaseCount;public static bool Changed;
+  public static Func<uint> Delivery(){return delegate{Deliveries++;return Count;};}
+  public static Func<uint> Release(){return delegate{Releases++;return ReleaseCount;};}
+  public static Action Verify(){return delegate{Verifications++;if(Changed)throw new InvalidOperationException("Changed/foreign warning after input");};}
+  public static void Reset(uint count,uint release,bool changed){Deliveries=Releases=Verifications=0;Count=count;ReleaseCount=release;Changed=changed;}
+ }
+}
+'@
+$deliver=$native.GetMethod('DeliverCaptionInput',[Reflection.BindingFlags]'NonPublic,Static')
+foreach($count in @([uint32]0,[uint32]1,[uint32]2,[uint32]4)){
+ foreach($released in @([uint32]0,[uint32]1)){
+  Pass ('Uncertain input count '+$count+' only permits one release cleanup, result '+$released) {
+   [OpenNavX.CaptionDeliveryFixture]::Reset($count,$released,$false);$errorText=$null
+   try{$deliver.Invoke($null,[object[]]@([OpenNavX.CaptionDeliveryFixture]::Delivery(),[OpenNavX.CaptionDeliveryFixture]::Release(),[OpenNavX.CaptionDeliveryFixture]::Verify()))}catch{$errorText=$_.Exception.ToString()}
+   $expectedRelease=if($count -gt 0){1}else{0}
+   if($errorText -notlike '*delivery uncertain*' -or [OpenNavX.CaptionDeliveryFixture]::Deliveries -ne 1 -or
+      [OpenNavX.CaptionDeliveryFixture]::Releases -ne $expectedRelease -or [OpenNavX.CaptionDeliveryFixture]::Verifications -ne 0){throw 'Partial input repeated a press, skipped cleanup or claimed focus'}
+  }
+ }
+}
+foreach($changed in @($false,$true)){
+ Pass ('Full delivery still verifies exact foreground/identity; changed='+$changed) {
+  [OpenNavX.CaptionDeliveryFixture]::Reset(3,0,$changed);$errorText=$null
+  try{$deliver.Invoke($null,[object[]]@([OpenNavX.CaptionDeliveryFixture]::Delivery(),[OpenNavX.CaptionDeliveryFixture]::Release(),[OpenNavX.CaptionDeliveryFixture]::Verify()))}catch{$errorText=$_.Exception.ToString()}
+  if([OpenNavX.CaptionDeliveryFixture]::Deliveries -ne 1 -or [OpenNavX.CaptionDeliveryFixture]::Releases -ne 0 -or [OpenNavX.CaptionDeliveryFixture]::Verifications -ne 1){throw 'Delivery accepted as verification'}
+  if($changed -and $errorText -notlike '*Changed/foreign warning*'){throw 'Changed target passed'}
+  if(-not $changed -and $errorText){throw $errorText}
+ }
+}
+Pass 'INPUT/MOUSEINPUT native layout uses pointer alignment on Win32 and Win64' {
+ $inputType=$native.GetNestedType('NativeInput',[Reflection.BindingFlags]'NonPublic')
+ $mouseType=$native.GetNestedType('MouseInput',[Reflection.BindingFlags]'NonPublic')
+ if([Runtime.InteropServices.Marshal]::SizeOf([Activator]::CreateInstance($inputType)) -ne $(if([IntPtr]::Size -eq 8){40}else{28}) -or
+    [Runtime.InteropServices.Marshal]::SizeOf([Activator]::CreateInstance($mouseType)) -ne $(if([IntPtr]::Size -eq 8){32}else{24})){throw 'INPUT ABI differs'}
+}
+$idle=$native.GetMethod('GuiInputIdle',[Reflection.BindingFlags]'NonPublic,Static')
+Pass 'Capture, menu and move loops refuse independent of foreground identity' {
+ foreach($bits in @([uint32]2,[uint32]4,[uint32]8,[uint32]16)){if($idle.Invoke($null,[object[]]@($bits,[IntPtr]::Zero))){throw 'Busy GUI accepted'}}
+ if($idle.Invoke($null,[object[]]@([uint32]0,[IntPtr]123))){throw 'Mouse capture accepted'}
+ if(-not $idle.Invoke($null,[object[]]@([uint32]1,[IntPtr]::Zero))){throw 'Caret blinking was confused with busy input'}
+}
+$absolute=$native.GetMethod('AbsoluteCoordinate',[Reflection.BindingFlags]'NonPublic,Static')
+Pass 'Absolute input respects virtual desktop bounds and negative origins' {
+ if($absolute.Invoke($null,[object[]]@(-1920,-1920,3840)) -ne 0 -or $absolute.Invoke($null,[object[]]@(1919,-1920,3840)) -ne 65535){throw 'Virtual desktop endpoints differ'}
+}
+foreach($argsValue in @(@(1920,-1920,3840),@(-1921,-1920,3840),@(0,0,1),@(0,0,65537))){Refuse 'Bad desktop size/point cannot route input elsewhere' {$absolute.Invoke($null,[object[]]$argsValue)}}
+$suitable=$native.GetMethod('InputDesktopSuitable',[Reflection.BindingFlags]'NonPublic,Static')
+$stateType=$native.GetNestedType('DesktopState',[Reflection.BindingFlags]'NonPublic')
+function DesktopState($Name,$Receives){$v=[Activator]::CreateInstance($stateType);$stateType.GetField('Name').SetValue($v,$Name);$stateType.GetField('ReceivesInput').SetValue($v,$Receives);return $v}
+Pass 'Focus admits only two known active Default desktop observations' {
+ if(-not $suitable.Invoke($null,[object[]]@((DesktopState 'Default' $true),(DesktopState 'Default' $true)))){throw 'Exact input desktop refused'}
+ foreach($value in @((DesktopState 'Winlogon' $true),(DesktopState 'Default' $false),(DesktopState 'Default' $null))){if($suitable.Invoke($null,[object[]]@((DesktopState 'Default' $true),$value))){throw 'Unknown/noninteractive desktop accepted'}}
+ $bad=DesktopState 'Default' $true;$stateType.GetField('NameError').SetValue($bad,5)
+ if($suitable.Invoke($null,[object[]]@($bad,(DesktopState 'Default' $true)))){throw 'Failed metadata became permission'}
+}
+Refuse 'Focus result cannot become an acknowledgement inspection' {$v=CopyValue $inspection;$v.reviewAction='FocusWelcome';Assert-StockWelcomeInspection $v $job $now}
+$beforeWrites=$script:written
+Refuse 'Caption journal failure prevents native input' {Invoke-StockWelcomeFocus 42 123 'intent.json'}
+if($script:written -ne $beforeWrites+1){throw 'Caption focus skipped exclusive durable intent'}
+Refuse 'Unknown PID refuses before caption journal or input' {Invoke-StockWelcomeFocus 0 123 'intent.json'}
+if($script:written -ne $beforeWrites+1){throw 'Malformed focus identity reached journal'}
 [pscustomobject]@{status='passed';count=$checks.Count;checks=$checks.ToArray();nativeInteropCompiled=$true;windowsApisInvoked=($null -ne $desktopProbe);desktopReadOnlyProbe=$desktopProbe;applicationLaunched=$false;boatAccess=$false;hardwareCommands=$false;actualStockModalAcceptance=$false} | ConvertTo-Json -Depth 6

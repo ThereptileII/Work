@@ -6,6 +6,7 @@ Unicode true
 !include "LogicLib.nsh"
 !include "x64.nsh"
 Name "OpenNav X Beta 2"
+UninstallCaption "OpenNav X Maintenance"
 OutFile "${OUTPUT}"
 RequestExecutionLevel user
 SetCompressor /SOLID lzma
@@ -44,7 +45,11 @@ Page custom ReadyPage
 !define MUI_FINISHPAGE_RUN_FUNCTION LaunchXNav
 !insertmacro MUI_PAGE_FINISH
 UninstPage custom un.MaintenancePage un.MaintenanceLeave
+!define MUI_PAGE_HEADER_TEXT "Applying OpenNav X maintenance"
+!define MUI_PAGE_HEADER_SUBTEXT "Original OpenCPN and navigation data are preserved."
 !insertmacro MUI_UNPAGE_INSTFILES
+!define MUI_FINISHPAGE_TITLE "OpenNav X maintenance complete"
+!define MUI_FINISHPAGE_TEXT "The selected maintenance action has completed.$\r$\n$\r$\nYour original OpenCPN and navigation data are preserved."
 !insertmacro MUI_UNPAGE_FINISH
 !insertmacro MUI_LANGUAGE "English"
 
@@ -208,7 +213,7 @@ Section "OpenNav X Beta integration"
   SetErrorLevel 0
 SectionEnd
 Function LaunchXNav
-  ExecShell "open" "$SMPROGRAMS\OpenNav X Alpha 1\OpenNav X.lnk"
+  ExecShell "open" "$SMPROGRAMS\OpenNav X\OpenNav X.lnk"
 FunctionEnd
 Function un.onInit
   SetShellVarContext current
@@ -229,7 +234,7 @@ Function un.onInit
   ${EndIf}
 FunctionEnd
 Function un.MaintenancePage
-  !insertmacro MUI_HEADER_TEXT "Maintain OpenNav X Beta 2" "Original OpenCPN and navigation data are preserved."
+  !insertmacro MUI_HEADER_TEXT "Maintain OpenNav X" "Original OpenCPN and navigation data are preserved."
   nsDialogs::Create 1018
   Pop $0
   ${NSD_CreateLabel} 0 0 100% 45u "Repair restores OpenNav-owned files from the retained package. Rollback restores the prior application generation, or removes the first installation. Uninstall removes verified OpenNav-owned files and registration; modified/custom additions and diagnostics remain."

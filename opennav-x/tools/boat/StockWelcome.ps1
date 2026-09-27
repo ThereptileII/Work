@@ -46,6 +46,11 @@ function Invoke-StockWelcomeAgreement([int]$ProcessId,$Info,[string]$ExpectedIma
   Write-Record $IntentPath @{owner='OpenNavX.StockWelcome.1';status='agree-intent';utc=[datetime]::UtcNow.ToString('o');processId=$ProcessId;imageSha256=$ExpectedImageHash;nativeWindow=$Info}
   [OpenNavX.StockWelcomeNative]::Agree($ProcessId,$Info)
 }
+function Invoke-StockWelcomeFocus([int]$ProcessId,[long]$StartedUtcTicks,[string]$IntentPath) {
+  if ($ProcessId -le 0 -or $StartedUtcTicks -le 0) { throw 'Exact launched process/start identity required for caption focus.' }
+  Write-Record $IntentPath @{owner='OpenNavX.StockWelcome.Focus.1';status='focus-intent';utc=[datetime]::UtcNow.ToString('o');processId=$ProcessId;processStartedUtcTicks=$StartedUtcTicks;action='Fixed warning caption only';acknowledgementSent=$false}
+  return [OpenNavX.StockWelcomeNative]::FocusCaption($ProcessId,$StartedUtcTicks)
+}
 function Invoke-StockWelcomeReview($Job,$Review,$Process,[string]$Sid,[int]$Session) {
   foreach ($name in @('welcomeHelperSha256','welcomeNativeSha256')) { if ($Job.$name -cnotmatch '^[a-f0-9]{64}$') { throw 'Pinned warning helper hashes required.' } }
   if ((Get-Digest (Join-Path $PSScriptRoot 'StockWelcome.ps1')) -cne $Job.welcomeHelperSha256 -or
@@ -57,6 +62,17 @@ function Invoke-StockWelcomeReview($Job,$Review,$Process,[string]$Sid,[int]$Sess
     welcomeHelperSha256=$Job.welcomeHelperSha256;welcomeNativeSha256=$Job.welcomeNativeSha256;mode='StockLegacy';actuatorCommandsIssuedByTool=$false;
     physicalBusSilenceNotClaimed=$true;bodyTextAccessible=$false;source='OpenCPN 37fd0cddb7334fe489e9f18aa163977a9c5c84f7 ShowNavWarning -> AlertDialog';
     review='Pinned English/Swedish GPL/no-warranty/navigation caution only. HTML body is verified by human review of the captured pixels; no text-accessibility claim.'}
+  if ($Job.reviewAction -ceq 'FocusWelcome') {
+    $null=Read-StockReview $Job;$Process.Refresh();Assert-StockProcess $Process $Job $Review.launch $Sid $Session
+    $ticks=([datetime]::Parse($Review.launch.processStartedUtc).ToUniversalTime()).Ticks
+    $info=Invoke-StockWelcomeFocus $Process.Id $ticks (Join-Path $directory 'focus-intent.json')
+    $null=Read-StockReview $Job;$Process.Refresh();Assert-StockProcess $Process $Job $Review.launch $Sid $Session
+    $image=Join-Path $directory 'focused-warning.png'
+    $result.imageSha256=Save-StockWelcomeCapture $Process.Id $info $image
+    $result.image=$image;$result.nativeWindow=$info;$result.focusVerified=$true;$result.acknowledgementSent=$false
+    $result.review='Fixed warning caption focused; warning remains present. This is not an InspectWelcome record and cannot authorize acknowledgement.'
+    return $result
+  }
   if ($Job.reviewAction -ceq 'InspectWelcome') {
     $info=[OpenNavX.StockWelcomeNative]::Inspect($Process.Id)
     $null=Read-StockReview $Job;$Process.Refresh();Assert-StockProcess $Process $Job $Review.launch $Sid $Session

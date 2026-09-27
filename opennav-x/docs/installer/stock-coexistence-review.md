@@ -176,3 +176,58 @@ proof of success. A timeout refuses before capture. This follows Microsoft's
 [asynchronous activation guidance](https://devblogs.microsoft.com/oldnewthing/20161118-00/?p=94745/)
 and adds no click, permission bypass or input-queue attachment. The native
 English/Swedish official-stock fixture must qualify this exact revision.
+
+
+## Separate fixed caption focus
+
+If `InspectWelcome` refuses solely because the verified warning is not the
+foreground window after its normal request/rendezvous, `-Action FocusWelcome`
+performs one ordinary title-bar click. It uses the same immutable stock launch,
+PID/creation tick/session, source/plugin/profile and helper-hash proof. It does
+not dismiss another program, hide the taskbar, attach input queues, change focus
+policy, switch/unlock desktops, or acknowledge the caution. The installed-product
+wrapper has not been extended to this action.
+
+The native helper accepts only PID and exact creation ticks; it does not accept
+coordinates, captions, HWNDs, messages or input selectors. It finds the complete
+pinned English/Swedish modal, derives the centre of its native title bar, requires
+`WindowFromPoint` to identify that same modal and `WM_NCHITTEST` to return
+`HTCAPTION`, and repeats all captured fields and geometry before input. Both
+helper and input desktops must be the active `Default` desktop. Held mouse
+buttons/modifiers, foreground or target mouse capture/menu/move loops, cloaked
+targets, covered windows, changed geometry, reused PIDs and ambiguous notices
+refuse. Other window titles are never collected. Refusals report bounded numeric
+HWND/PID, class, hit-test and DWM cloak observations; a cloak observation does not
+relax the existing strict overlap rule.
+
+An exclusive `focus-intent.json` precedes input. One `SendInput` call contains
+only absolute movement to that derived point, left-down and left-up. The batch
+is not an atomic HWND-targeted operation: a concurrent desktop change can still
+invalidate it, and subsequent verification must refuse. Partial delivery never
+repeats a press: a positive partial count permits at most one release-only
+cleanup, then reports an uncertain result even if cleanup was inserted. A
+failed release remains explicitly uncertain; the tool cannot claim a released
+button when Windows blocked input. No automatic retry occurs. Successful
+submission is followed by a bounded read-only wait for actual activation/release
+(sent messages can overtake queued input), the exact-modal rendezvous, PID/start recheck,
+unchanged notice, foreground/occlusion checks and released-button observation.
+
+An already foreground, fully verified warning requires no click.
+
+Only then can `focused-warning.png` be captured. Its result says
+`acknowledgementSent: false` and **cannot** serve as an acknowledgement inspection.
+Run the normal separate `InspectWelcome`, review its pixels and then use its
+hash-bound `AcknowledgeWelcome` if appropriate. No `Agree`/`Cancel` event is
+part of caption focus.
+
+Local verification now passes 127 warning policy/interop checks and 83 stock
+identity/full-transaction checks. These execute no pointer input and are not
+native or boat acceptance. The actual official 5.12.4 English/Swedish fixture
+must additionally prove the exact caption operation, wrong PID/start refusal,
+foreign-overlay refusal and modal retention before separate inspection/agreement.
+
+API boundaries: [GetTitleBarInfo](https://learn.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-gettitlebarinfo),
+[WM_NCHITTEST](https://learn.microsoft.com/en-us/windows/win32/inputdev/wm-nchittest),
+[SendInput](https://learn.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-sendinput),
+[MOUSEINPUT](https://learn.microsoft.com/en-us/windows/win32/api/winuser/ns-winuser-mouseinput),
+[DwmGetWindowAttribute](https://learn.microsoft.com/en-us/windows/win32/api/dwmapi/nf-dwmapi-dwmgetwindowattribute).

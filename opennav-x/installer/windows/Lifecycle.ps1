@@ -16,7 +16,7 @@ Set-StrictMode -Version Latest
 $ErrorActionPreference = 'Stop'
 $Root = Join-Path ([Environment]::GetFolderPath('LocalApplicationData')) 'OpenNavXAlpha1'
 $Registry = 'HKCU:\Software\Microsoft\Windows\CurrentVersion\Uninstall\OpenNavXAlpha1'
-$Shortcuts = Join-Path ([Environment]::GetFolderPath('Programs')) 'OpenNav X Alpha 1'
+$Programs = [Environment]::GetFolderPath('Programs')
 $Owner = 'OpenNavX.Alpha1.SideBySide.1'
 $Utf8 = New-Object System.Text.UTF8Encoding($false)
 $SessionLog = New-Object System.Collections.Generic.List[string]
@@ -253,33 +253,111 @@ namespace OpenNav {
   Remove-Item -LiteralPath $reportPath
   Log "Loader/resource self-test passed for $Commit"
 }
-function PublishShell($State) {
-  if (Test-Path -LiteralPath $Shortcuts) {
-    $null = PlainPath $Shortcuts
-    foreach ($f in Get-ChildItem -LiteralPath $Shortcuts -Force) {
-      if ($f.Name -notin @('OpenNav X.lnk','OpenCPN Legacy.lnk','OpenNav Safe Mode.lnk','Maintain OpenNav.lnk')) { throw 'Unknown item in OpenNav shortcut folder; preserve and inspect it.' }
-    }
+function ShellGroups {
+  # The historical group belongs to immutable Beta 1/Alpha maintenance engines.
+  # Keep those engines usable after rollback; never rewrite their owned files.
+  return @((Join-Path $Programs 'OpenNav X'), (Join-Path $Programs 'OpenNav X Alpha 1'))
+}
+function ShortcutGroup([string]$Version) {
+  if ($Version -match '^0\.[23]\.') { return (Join-Path $Programs 'OpenNav X Alpha 1') }
+  return (Join-Path $Programs 'OpenNav X')
+}
+function ShortcutSpec([string]$Name) {
+  switch -CaseSensitive ($Name) {
+    'OpenNav X.lnk'        { return @{target='app/opencpn.exe'; arguments='--xnav'; work='app'; mode='xnav'} }
+    'OpenCPN Legacy.lnk'   { return @{target='app/opencpn.exe'; arguments='--legacy'; work='app'; mode='legacy'} }
+    'OpenNav Safe Mode.lnk' { return @{target='app/opencpn.exe'; arguments='--safe-mode'; work='app'; mode='safe'} }
+    'Maintain OpenNav.lnk' { return @{target='Maintain.exe'; arguments=''; work=''; mode='maintenance'} }
+    default { throw 'Unknown item in OpenNav shortcut folder; preserve and inspect it.' }
   }
+}
+function AssertShortcut([string]$Path, $Shell) {
+  $null = PlainPath $Path
+  $item = Get-Item -LiteralPath $Path -Force
+  if ($item.PSIsContainer) { throw 'Directory in OpenNav shortcut folder; preserve and inspect it.' }
+  $spec = ShortcutSpec $item.Name
+  $link = $Shell.CreateShortcut($Path)
+  $target = PlainPath ([string]$link.TargetPath)
+  $base = (PlainPath (Join-Path $Root 'generations')) + '\'
+  if (-not $target.StartsWith($base, [StringComparison]::OrdinalIgnoreCase)) { throw 'Shortcut does not target an OpenNav-owned generation.' }
+  $relative = $target.Substring($base.Length).Replace('\','/')
+  if ($relative -cnotmatch '^([a-f0-9]{32})/(.+)$' -or $Matches[2] -cne $spec.target) { throw 'Unexpected OpenNav shortcut target.' }
+  $id = $Matches[1]
+  $record = ReadGeneration $id
+  $owned = @($record.managedFiles | Where-Object { $_.path -ceq $spec.target -and $_.sha256 -cmatch '^[a-f0-9]{64}$' })
+  if ($owned.Count -ne 1) { throw 'Shortcut target lacks unique generation ownership.' }
+  $directory = Generation $id
+  $work = $directory; if ($spec.work) { $work = Join-Path $directory $spec.work }
+  if ([string]$link.Arguments -cne $spec.arguments -or
+      -not [string]::Equals((PlainPath ([string]$link.WorkingDirectory)), $work, [StringComparison]::OrdinalIgnoreCase)) {
+    throw 'Modified OpenNav shortcut arguments or working directory; preserve and inspect it.'
+  }
+  # Missing/corrupt owned binaries remain repairable. The immutable ownership
+  # record, exact link target and invocation identify this shortcut, not the
+  # current content of a file which Repair is specifically intended to restore.
+}
+function AssertShellOwnership {
+  $shell = New-Object -ComObject WScript.Shell
+  foreach ($group in @(ShellGroups)) {
+    $null = PlainPath $group
+    if (-not (Test-Path -LiteralPath $group)) { continue }
+    if (-not [IO.Directory]::Exists($group)) { throw 'OpenNav shortcut group is not a directory.' }
+    $ownerPath = Join-Path $Root 'owner.json'
+    if (-not [IO.File]::Exists($ownerPath) -or (ReadJson $ownerPath).owner -cne $Owner) {
+      throw 'Existing shortcut directory has no verified OpenNav owner; preserve and inspect it.'
+    }
+    foreach ($file in Get-ChildItem -LiteralPath $group -Force) { AssertShortcut $file.FullName $shell }
+  }
+  if (Test-Path -LiteralPath $Registry) {
+    if ((Get-ItemProperty -LiteralPath $Registry).OpenNavOwner -cne $Owner) { throw 'Unknown uninstall registry ownership.' }
+  }
+}
+function RemoveShortcutGroup([string]$Group) {
+  if (-not (Test-Path -LiteralPath $Group)) { return }
+  $null = PlainPath $Group
+  $shell = New-Object -ComObject WScript.Shell
+  $files = @(Get-ChildItem -LiteralPath $Group -Force)
+  foreach ($file in $files) { AssertShortcut $file.FullName $shell }
+  foreach ($file in $files) {
+    AssertShortcut $file.FullName $shell
+    Remove-Item -LiteralPath $file.FullName
+  }
+  if (@(Get-ChildItem -LiteralPath $Group -Force).Count -eq 0) { Remove-Item -LiteralPath $Group }
+}
+function PublishShell($State) {
+  AssertShellOwnership
   $directory = Generation $State.current
   $generation = ReadGeneration $State.current
+  $group = ShortcutGroup $generation.version
   $caption = 'OpenNav X'
   if ($generation.version -match '^0\.4\.') { $caption = 'OpenNav X Beta 2' }
   elseif ($generation.version -match '^0\.3\.') { $caption = 'OpenNav X Beta 1' }
   elseif ($generation.version -match '^0\.2\.') { $caption = 'OpenNav X Alpha 1' }
-  $null = New-Item -ItemType Directory -Path $Shortcuts -Force
+  $null = New-Item -ItemType Directory -Path $group -Force
   $shell = New-Object -ComObject WScript.Shell
   $selected = @('xnav','legacy','safe')
   if ($State.PSObject.Properties['shortcutModes']) { $selected = @($State.shortcutModes) }
   elseif ($State -is [Collections.IDictionary] -and $State.Contains('shortcutModes')) { $selected = @($State.shortcutModes) }
-  foreach ($pair in @(@('OpenNav X','--xnav','xnav'),@('OpenCPN Legacy','--legacy','legacy'),@('OpenNav Safe Mode','--safe-mode','safe'))) {
-    $shortcut = Join-Path $Shortcuts ($pair[0]+'.lnk')
-    if ($pair[2] -notin $selected) { if (Test-Path -LiteralPath $shortcut) { Remove-Item -LiteralPath (PlainPath $shortcut) }; continue }
-    $link = $shell.CreateShortcut((Join-Path $Shortcuts ($pair[0]+'.lnk')))
-    $link.TargetPath = Join-Path $directory 'app\opencpn.exe'; $link.Arguments = $pair[1]
-    $link.WorkingDirectory = Join-Path $directory 'app'; $link.Description = 'OpenNav X - shared OpenCPN profile'; $link.Save()
+  foreach ($name in @('OpenNav X.lnk','OpenCPN Legacy.lnk','OpenNav Safe Mode.lnk','Maintain OpenNav.lnk')) {
+    $spec = ShortcutSpec $name
+    $path = Join-Path $group $name
+    if (Test-Path -LiteralPath $path) { AssertShortcut $path $shell }
+    if ($spec.mode -ne 'maintenance' -and $spec.mode -notin $selected) {
+      if (Test-Path -LiteralPath $path) { Remove-Item -LiteralPath $path }; continue
+    }
+    $link = $shell.CreateShortcut($path)
+    $link.TargetPath = RelativePath $directory $spec.target
+    $link.Arguments = $spec.arguments
+    $link.WorkingDirectory = $directory
+    if ($spec.work) { $link.WorkingDirectory = Join-Path $directory $spec.work }
+    $link.Description = 'OpenNav X - shared OpenCPN profile'
+    $link.Save()
+    AssertShortcut $path $shell
   }
-  $link = $shell.CreateShortcut((Join-Path $Shortcuts 'Maintain OpenNav.lnk'))
-  $link.TargetPath = Join-Path $directory 'Maintain.exe'; $link.WorkingDirectory = $directory; $link.Save()
+  # Publish a complete usable target group before removing verified old links.
+  # State is already durable; Recover can finish either direction after a crash.
+  Failure 'after-shortcuts'
+  foreach ($other in @(ShellGroups)) { if ($other -cne $group) { RemoveShortcutGroup $other } }
   $null = New-Item -Path $Registry -Force
   foreach ($entry in @{
     DisplayName=$caption; DisplayVersion=$generation.version; Publisher='OpenNav X project';
@@ -290,17 +368,9 @@ function PublishShell($State) {
   }.GetEnumerator()) { $null = New-ItemProperty -Path $Registry -Name $entry.Key -Value $entry.Value -PropertyType String -Force }
 }
 function RemoveShell {
-  if (Test-Path -LiteralPath $Registry) {
-    if ((Get-ItemProperty -LiteralPath $Registry).OpenNavOwner -ne $Owner) { throw 'Unknown uninstall registry ownership.' }
-    Remove-Item -LiteralPath $Registry -Recurse
-  }
-  if (Test-Path -LiteralPath $Shortcuts) {
-    foreach ($name in @('OpenNav X.lnk','OpenCPN Legacy.lnk','OpenNav Safe Mode.lnk','Maintain OpenNav.lnk')) {
-      $p = Join-Path $Shortcuts $name
-      if (Test-Path -LiteralPath $p) { Remove-Item -LiteralPath (PlainPath $p) }
-    }
-    if (@(Get-ChildItem -LiteralPath $Shortcuts -Force).Count -eq 0) { Remove-Item -LiteralPath $Shortcuts }
-  }
+  AssertShellOwnership
+  foreach ($group in @(ShellGroups)) { RemoveShortcutGroup $group }
+  if (Test-Path -LiteralPath $Registry) { Remove-Item -LiteralPath $Registry -Recurse }
 }
 function RemoveOwnedGenerations {
   $base = Join-Path $Root 'generations'
@@ -397,14 +467,15 @@ function AssertInstalledContent([string]$Directory,[string]$Version) {
 }
 
 try {
-  $Root = PlainPath $Root; $Shortcuts = PlainPath $Shortcuts
+  $Root = PlainPath $Root
+  foreach ($group in @(ShellGroups)) { $null = PlainPath $group }
   $state = ReadState
   if ((Test-Path -LiteralPath $Root) -and -not $state -and -not (Test-Path -LiteralPath (Join-Path $Root 'owner.json'))) { throw 'Existing directory is not an OpenNav-owned installation.' }
   if (Test-Path -LiteralPath (Join-Path $Root 'owner.json')) {
     if ((ReadJson (Join-Path $Root 'owner.json')).owner -ne $Owner) { throw 'Unknown root ownership.' }
     $OwnsRoot = $true
   }
-  if (-not $OwnsRoot -and (Test-Path -LiteralPath $Shortcuts)) { throw 'Existing shortcut directory has no verified OpenNav owner; preserve and inspect it.' }
+  AssertShellOwnership
   if ($Action -eq 'Repair' -and -not $PackageDirectory -and $state) {
     $installed = ReadGeneration $state.current
     $PackageDirectory = Join-Path (Generation $state.current) 'maintenance'
@@ -525,6 +596,7 @@ try {
       $next = @{owner=$Owner;schema=1;stock=$stock;current=$id;previous=$previous;shortcutModes=$modes}
       AtomicJson (Join-Path $Root 'transaction.json') @{owner=$Owner;action=$Action;before=$state;after=$next}
       Failure 'before-commit'
+      AssertShellOwnership
       AtomicJson (Join-Path $Root 'state.json') $next
       Failure 'after-commit'
       PublishShell $next
@@ -536,6 +608,7 @@ try {
       AssertInstalledContent (Generation $state.previous) $old.version
       SelfTest (Generation $state.previous) $old.commit $old.version
       $next = @{owner=$Owner;schema=1;stock=$state.stock;current=$state.previous;previous='';shortcutModes=$(if ($old.PSObject.Properties['shortcutModes']) { @($old.shortcutModes) } else { @('xnav','legacy','safe') })}
+      AssertShellOwnership
       AtomicJson (Join-Path $Root 'transaction.json') @{owner=$Owner;action=$Action;before=$state;after=$next}
       AtomicJson (Join-Path $Root 'state.json') $next
       PublishShell $next

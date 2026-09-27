@@ -17,6 +17,7 @@ using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using System.Text;
 public static class StockWarningFixtureInventory {
+ [StructLayout(LayoutKind.Sequential)] private struct Point {public int X,Y;}
  public sealed class Item {public long Handle,Owner,Parent;public uint ProcessId;public int Id;public string Title,Class;public bool Visible,Enabled;public List<Item> Children;}
  private delegate bool Callback(IntPtr h,IntPtr p);
  [DllImport("user32.dll")] private static extern bool EnumWindows(Callback cb,IntPtr p);
@@ -29,6 +30,10 @@ public static class StockWarningFixtureInventory {
  [DllImport("user32.dll")] private static extern int GetDlgCtrlID(IntPtr h);
  [DllImport("user32.dll")] private static extern bool IsWindowVisible(IntPtr h);
  [DllImport("user32.dll")] private static extern bool IsWindowEnabled(IntPtr h);
+ [DllImport("user32.dll")] private static extern bool GetCursorPos(out Point point);
+ [DllImport("user32.dll")] private static extern IntPtr GetForegroundWindow();
+ public static int[] Cursor(){Point point;if(!GetCursorPos(out point))throw new InvalidOperationException("Fixture cursor observation failed.");return new[]{point.X,point.Y};}
+ public static bool ForegroundIs(IntPtr window){return GetForegroundWindow()==window;}
  private static Item Read(IntPtr h){uint p;GetWindowThreadProcessId(h,out p);var t=new StringBuilder(2048);var c=new StringBuilder(256);GetWindowTextW(h,t,t.Capacity);GetClassNameW(h,c,c.Capacity);return new Item{Handle=h.ToInt64(),Owner=GetWindow(h,4).ToInt64(),Parent=GetParent(h).ToInt64(),ProcessId=p,Id=GetDlgCtrlID(h),Title=t.ToString(),Class=c.ToString(),Visible=IsWindowVisible(h),Enabled=IsWindowEnabled(h),Children=new List<Item>()};}
  public static Item[] ReadOwned(int pid){if(pid<=0)throw new InvalidOperationException("Exact fixture PID required.");var found=new List<Item>();Exception error=null;int count=0;
   EnumWindows(delegate(IntPtr h,IntPtr p){try{uint owner;GetWindowThreadProcessId(h,out owner);if(owner!=(uint)pid)return true;var item=Read(h);found.Add(item);if(++count>2048)throw new InvalidOperationException("Bounded fixture inventory exceeded.");
@@ -98,6 +103,40 @@ try {
  Write-Record (Join-Path $evidence 'actual-window-metadata.json') @{windows=$windows;processId=$process.Id;processCreatedFiletime=$report.processCreatedFiletime}
  Check (@($windows|Where-Object {$_.Visible -and $_.Title -ceq $expectedTitle}).Count -eq 1) 'Actual pinned wx first-start warning appeared'
  Start-Sleep -Milliseconds 500
+ $notice=[OpenNavX.StockWelcomeNative]::Inspect($process.Id)
+ # Exercise the separate fixed-caption action against the real wx modal. No
+ # target coordinates are passed to production code, and no agreement occurs.
+ $startedTicks=$process.StartTime.ToUniversalTime().Ticks
+ Refuse {[OpenNavX.StockWelcomeNative]::FocusCaption(0,$startedTicks)} 'Caption focus refuses a different process before input'
+ Refuse {[OpenNavX.StockWelcomeNative]::FocusCaption($process.Id,($startedTicks+1))} 'Caption focus refuses replaced process creation identity before input'
+ Add-Type -AssemblyName System.Windows.Forms
+ $cover=New-Object Windows.Forms.Form;$cover.FormBorderStyle=[Windows.Forms.FormBorderStyle]::None
+ $cover.ShowInTaskbar=$false;$cover.TopMost=$true;$cover.StartPosition=[Windows.Forms.FormStartPosition]::Manual
+ $cover.Text='Disposable unrelated fixture window';$cover.Bounds=New-Object Drawing.Rectangle($notice.Bounds.Left,$notice.Bounds.Top,$notice.Bounds.Width,80)
+ $script:fixtureCoverClicks=0;$cover.add_MouseDown({$script:fixtureCoverClicks++})
+ try {
+  $cover.Show();$cover.Activate();[Windows.Forms.Application]::DoEvents()
+  Check ([StockWarningFixtureInventory]::ForegroundIs($cover.Handle)) 'Disposable covering window owns foreground for refusal case'
+  $cursorBefore=[StockWarningFixtureInventory]::Cursor();$refusal=$null
+  try{$null=[OpenNavX.StockWelcomeNative]::FocusCaption($process.Id,$startedTicks)}catch{$refusal=$_.Exception.ToString()}
+  [Windows.Forms.Application]::DoEvents()
+  Check ($refusal -and ($refusal.Contains('covered') -or $refusal.Contains('obscured'))) 'Foreign window over the exact caption refuses before input'
+  Check (([StockWarningFixtureInventory]::Cursor() -join ',') -ceq ($cursorBefore -join ',') -and $script:fixtureCoverClicks -eq 0) 'Covered-caption refusal leaves cursor and foreign window untouched'
+  # Keep a genuine different foreground window, entirely clear of the warning.
+  $screen=[Windows.Forms.Screen]::PrimaryScreen.WorkingArea
+  $away=New-Object Drawing.Rectangle(($screen.Right-160),($screen.Bottom-100),160,100)
+  $warning=New-Object Drawing.Rectangle($notice.Bounds.Left,$notice.Bounds.Top,$notice.Bounds.Width,$notice.Bounds.Height)
+  if($away.IntersectsWith($warning)){throw 'Disposable desktop has no clear location for unrelated fixture window.'}
+  $cover.Bounds=$away;$cover.Activate();[Windows.Forms.Application]::DoEvents()
+  Check ([StockWarningFixtureInventory]::ForegroundIs($cover.Handle)) 'Unrelated fixture remains foreground without obscuring the caption'
+  $focusIntent=Join-Path $evidence 'focus-intent.json'
+  $focused=Invoke-StockWelcomeFocus $process.Id $startedTicks $focusIntent
+  [Windows.Forms.Application]::DoEvents()
+  Check ((Test-Path -LiteralPath $focusIntent) -and $focused.Modal -eq $notice.Modal -and $focused.Agree -eq $notice.Agree -and $focused.Cancel -eq $notice.Cancel) 'One durable caption-focus intent preserves actual warning and both buttons'
+  $report.focusImageSha256=Save-StockWelcomeCapture $process.Id $focused (Join-Path $evidence 'actual-stock-focused-warning.png')
+  Check ([StockWarningFixtureInventory]::ForegroundIs([IntPtr]$notice.Modal) -and $script:fixtureCoverClicks -eq 0) 'Fixed caption click focuses the warning without clicking the unrelated window or Agree'
+  $report.captionFocusVerified=$true
+ } finally {$cover.Close();$cover.Dispose();[Windows.Forms.Application]::DoEvents()}
  $notice=[OpenNavX.StockWelcomeNative]::Inspect($process.Id)
  $report.notice=$notice
  Assert-StockWelcomeWindow $notice $process.Id

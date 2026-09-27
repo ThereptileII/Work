@@ -211,6 +211,151 @@ namespace OpenNavX {
       var dpi=GetDpiForWindow(modal);if(dpi<72||dpi>384)throw new InvalidOperationException("Unexpected warning DPI.");
       return new NoticeInfo{Frame=frame.ToInt64(),Modal=modal.ToInt64(),Agree=agree.ToInt64(),Cancel=cancel.ToInt64(),Html=html.ToInt64(),ProcessId=pid,AgreeId=5100,CancelId=5101,Dpi=dpi,Bounds=bounds,Title=Text(modal),ModalClass=Class(modal),HtmlClass=Class(html),HtmlName=Text(html),AgreeText=Text(agree),CancelText=Text(cancel)};
     }
+    // Fixed warning title-bar focus only. There is no public point, HWND,
+    // caption, input event or message selector. Agreement remains separate.
+    [StructLayout(LayoutKind.Sequential)] private struct CaptionPoint { public int X,Y; }
+    [StructLayout(LayoutKind.Sequential)] private struct TitleBarInfo {
+      public uint Size;public Rect Bounds;
+      [MarshalAs(UnmanagedType.ByValArray,SizeConst=6)] public uint[] States;
+    }
+    [StructLayout(LayoutKind.Sequential)] private struct MouseInput {
+      public int X,Y;public uint Data,Flags,Time;public UIntPtr Extra;
+    }
+    [StructLayout(LayoutKind.Explicit)] private struct InputUnion { [FieldOffset(0)] public MouseInput Mouse; }
+    [StructLayout(LayoutKind.Sequential)] private struct NativeInput { public uint Type;public InputUnion Value; }
+    private sealed class CaptionCandidate { public NoticeInfo Notice;public Rect TitleBar;public int X,Y; }
+    [DllImport("user32.dll",SetLastError=true)] private static extern bool GetTitleBarInfo(IntPtr window,ref TitleBarInfo info);
+    [DllImport("user32.dll")] private static extern IntPtr WindowFromPoint(CaptionPoint point);
+    [DllImport("user32.dll")] private static extern short GetAsyncKeyState(int key);
+    [DllImport("user32.dll")] private static extern int GetSystemMetrics(int index);
+    [DllImport("user32.dll",SetLastError=true)] private static extern uint SendInput(uint count,[In] NativeInput[] inputs,int size);
+    [DllImport("dwmapi.dll")] private static extern int DwmGetWindowAttribute(IntPtr window,uint attribute,out uint value,uint bytes);
+    private static string WindowDiagnostic(IntPtr window){
+      uint cloak=0;int result=DwmGetWindowAttribute(window,14,out cloak,4); // DWMWA_CLOAKED, observation only.
+      return "{\"hwnd\":"+Number(window.ToInt64())+",\"pid\":"+Number(Pid(window))+",\"class\":"+JsonString(Class(window))+
+        ",\"cloakResult\":"+Number(result)+",\"cloak\":"+(result==0?Number(cloak):"null")+"}";
+    }
+    private static void AssertNotObscured(NoticeInfo notice){
+      bool found=false;foreach(var h in Windows(IntPtr.Zero)){
+        if(h==new IntPtr(notice.Modal)){found=true;break;}
+        // Preserve the existing strict capture rule. A cloaked observation is
+        // reported, never used to silently ignore an overlapping window.
+        if(IsWindowVisible(h)&&!IsIconic(h)&&Intersects(notice.Bounds,Bounds(h)))
+          throw new InvalidOperationException("Warning is obscured; obscuringWindow="+WindowDiagnostic(h));
+      }
+      if(!found)throw new InvalidOperationException("Warning disappeared during visibility verification.");
+    }
+    private static CaptionPoint ChooseCaptionPoint(Rect window,Rect title,uint state){
+      if(window.Width<200||window.Height<150||title.Width<32||title.Height<8||!Contains(window,title)||
+         (state&0x00018009)!=0)throw new InvalidOperationException("A fully visible available title bar is required; titleState="+Number(state)+".");
+      long x=((long)title.Left+title.Right)/2,y=((long)title.Top+title.Bottom)/2;
+      if(x<short.MinValue||x>short.MaxValue||y<short.MinValue||y>short.MaxValue)throw new InvalidOperationException("Caption point exceeds signed native hit-test coordinates.");
+      return new CaptionPoint{X=(int)x,Y=(int)y};
+    }
+    private static CaptionCandidate InspectCaptionCandidate(int pid){
+      var notice=Find(pid);var modal=new IntPtr(notice.Modal);
+      uint cloak;int cloakResult=DwmGetWindowAttribute(modal,14,out cloak,4);
+      if(cloakResult!=0||cloak!=0)throw new InvalidOperationException("Warning target visibility unavailable; target="+WindowDiagnostic(modal));
+      var title=new TitleBarInfo{Size=(uint)Marshal.SizeOf(typeof(TitleBarInfo)),States=new uint[6]};
+      if(!GetTitleBarInfo(modal,ref title))throw new InvalidOperationException("Native title bar information unavailable; error="+Number(Marshal.GetLastWin32Error())+".");
+      var point=ChooseCaptionPoint(notice.Bounds,title.Bounds,title.States[0]);
+      var actual=WindowFromPoint(point);
+      if(actual!=modal)throw new InvalidOperationException("Caption point is covered or belongs to another window; hitWindow="+WindowDiagnostic(actual));
+      int packed=unchecked((int)((uint)(ushort)point.X|((uint)(ushort)point.Y<<16)));UIntPtr hit;
+      bool hitCompleted=SendMessageTimeoutW(modal,0x0084,IntPtr.Zero,new IntPtr(packed),0x0003,5000,out hit)!=IntPtr.Zero;
+      if(!hitCompleted||hit.ToUInt64()!=2)
+        throw new InvalidOperationException("Caption requires HTCAPTION=2; completed="+JsonBool(hitCompleted)+" hitTest="+hit.ToUInt64().ToString(System.Globalization.CultureInfo.InvariantCulture)+" target="+WindowDiagnostic(modal));
+      var now=Find(pid);actual=WindowFromPoint(point);
+      if(!SameNotice(now,notice))throw new InvalidOperationException("Warning changed during caption inspection: "+ChangedFields(now,notice));
+      if(actual!=modal)throw new InvalidOperationException("Caption point changed; hitWindow="+WindowDiagnostic(actual));
+      AssertNotObscured(notice);
+      return new CaptionCandidate{Notice=notice,TitleBar=title.Bounds,X=point.X,Y=point.Y};
+    }
+    private static bool InputDesktopSuitable(DesktopState helper,DesktopState input){
+      return helper.HandleError==0&&helper.NameError==0&&helper.InputError==0&&input.HandleError==0&&input.NameError==0&&input.InputError==0&&
+        helper.Name=="Default"&&input.Name=="Default"&&helper.ReceivesInput==true&&input.ReceivesInput==true;
+    }
+    private static void AssertIdleInput(IntPtr modal){
+      var helperHandle=GetThreadDesktop(GetCurrentThreadId());
+      var helper=ReadDesktopState(helperHandle,helperHandle==IntPtr.Zero?Marshal.GetLastWin32Error():0);
+      var inputHandle=OpenInputDesktop(0,false,1);DesktopState input;
+      try{input=ReadDesktopState(inputHandle,inputHandle==IntPtr.Zero?Marshal.GetLastWin32Error():0);}
+      finally{if(inputHandle!=IntPtr.Zero&&!CloseDesktop(inputHandle))throw new InvalidOperationException("Input desktop handle release failed.");}
+      if(!InputDesktopSuitable(helper,input))throw new InvalidOperationException("Caption focus requires the same active Default input desktop. desktopDiagnostic="+SafeDesktopDiagnostic());
+      var foreground=GetForegroundWindow();uint ignored;uint thread=GetWindowThreadProcessId(foreground,out ignored);
+      var state=new GuiThreadInfo{Size=(uint)Marshal.SizeOf(typeof(GuiThreadInfo))};
+      if(thread==0||!GetGUIThreadInfo(thread,ref state)||!GuiInputIdle(state.Flags,state.Capture)||GetForegroundWindow()!=foreground)
+        throw new InvalidOperationException("Foreground input is busy, changed or unavailable. desktopDiagnostic="+SafeDesktopDiagnostic());
+      uint targetThread=GetWindowThreadProcessId(modal,out ignored);
+      var targetState=new GuiThreadInfo{Size=(uint)Marshal.SizeOf(typeof(GuiThreadInfo))};
+      if(targetThread==0||!GetGUIThreadInfo(targetThread,ref targetState)||!GuiInputIdle(targetState.Flags,targetState.Capture))
+        throw new InvalidOperationException("Exact warning GUI input is busy or unavailable; target="+WindowDiagnostic(modal));
+      // Never compensate for a held modifier/button by releasing the user's input.
+      foreach(int key in new[]{1,2,4,5,6,16,17,18,91,92})if((GetAsyncKeyState(key)&0x8000)!=0)
+        throw new InvalidOperationException("Caption focus refused while a mouse button or modifier is held; virtualKey="+Number(key)+".");
+    }
+    private static bool GuiInputIdle(uint flags,IntPtr capture){return (flags&0x1e)==0&&capture==IntPtr.Zero;}
+    private static int AbsoluteCoordinate(int pixel,int origin,int length){
+      if(length<2||length>65536||(long)pixel<origin||(long)pixel>=(long)origin+length)throw new InvalidOperationException("Caption point is outside the bounded virtual desktop.");
+      return (int)Math.Round(((long)pixel-origin)*65535.0/(length-1),MidpointRounding.AwayFromZero);
+    }
+    private static NativeInput MouseEvent(int x,int y,uint flags){
+      return new NativeInput{Type=0,Value=new InputUnion{Mouse=new MouseInput{X=x,Y=y,Flags=flags}}};
+    }
+    private static void DeliverCaptionInput(Func<uint> deliver,Func<uint> release,Action verify){
+      uint sent=deliver();
+      if(sent!=3){
+        // One release-only cleanup for uncertain partial delivery. Never repeat
+        // a down/move or claim success. A failed cleanup remains explicitly unknown.
+        uint? released=null;if(sent>0)released=release();
+        throw new InvalidOperationException("Caption input delivery uncertain; inserted="+Number(sent)+" expected=3; releaseOnlyCleanup="+(released.HasValue?Number(released.Value):"not-required")+". No retry or acknowledgement; verify button state before further input.");
+      }
+      verify(); // A submitted click alone is never proof of focus.
+    }
+    private static void AssertFocusProcess(int pid,long startedUtcTicks){
+      using(var process=System.Diagnostics.Process.GetProcessById(pid))
+      using(var caller=System.Diagnostics.Process.GetCurrentProcess()){
+        if(process.HasExited||process.SessionId!=caller.SessionId||process.StartTime.ToUniversalTime().Ticks!=startedUtcTicks)
+          throw new InvalidOperationException("Caption focus process/session/start identity changed.");
+      }
+    }
+    public static NoticeInfo FocusCaption(int pid,long startedUtcTicks){
+      AssertFocusProcess(pid,startedUtcTicks);
+      var first=InspectCaptionCandidate(pid);AssertIdleInput(new IntPtr(first.Notice.Modal));
+      if(GetForegroundWindow()==new IntPtr(first.Notice.Modal)){AssertUnchanged(pid,first.Notice);return first.Notice;}
+      int x=AbsoluteCoordinate(first.X,GetSystemMetrics(76),GetSystemMetrics(78));
+      int y=AbsoluteCoordinate(first.Y,GetSystemMetrics(77),GetSystemMetrics(79));
+      var inputs=new[]{MouseEvent(x,y,0xc001),MouseEvent(0,0,0x0002),MouseEvent(0,0,0x0004)};
+      AssertFocusProcess(pid,startedUtcTicks);AssertIdleInput(new IntPtr(first.Notice.Modal));
+      var final=InspectCaptionCandidate(pid);
+      if(!SameNotice(first.Notice,final.Notice)||!Same(first.TitleBar,final.TitleBar)||first.X!=final.X||first.Y!=final.Y)
+        throw new InvalidOperationException("Caption candidate changed before input; no click sent.");
+      if(x!=AbsoluteCoordinate(final.X,GetSystemMetrics(76),GetSystemMetrics(78))||y!=AbsoluteCoordinate(final.Y,GetSystemMetrics(77),GetSystemMetrics(79)))
+        throw new InvalidOperationException("Virtual desktop changed before caption input.");
+      int size=Marshal.SizeOf(typeof(NativeInput));
+      int deliveryError=0,releaseError=0;
+      try{DeliverCaptionInput(delegate{uint sent=SendInput(3,inputs,size);deliveryError=Marshal.GetLastWin32Error();return sent;},
+        delegate{uint released=SendInput(1,new[]{MouseEvent(0,0,0x0004)},size);releaseError=Marshal.GetLastWin32Error();return released;},delegate{
+        // Sent messages can overtake queued input. Observe actual activation
+        // before using WM_NULL as a rendezvous; never resend the click.
+        var wait=System.Diagnostics.Stopwatch.StartNew();
+        while(true){
+          AssertFocusProcess(pid,startedUtcTicks);var observed=Find(pid);
+          if(!SameNotice(first.Notice,observed))throw new InvalidOperationException("Warning changed while caption input was pending: "+ChangedFields(first.Notice,observed));
+          if(GetForegroundWindow()==new IntPtr(first.Notice.Modal)&&(GetAsyncKeyState(1)&0x8000)==0)break;
+          if(wait.ElapsedMilliseconds>=5000)throw new InvalidOperationException("Caption input submitted but focus/release was not observed; no retry. desktopDiagnostic="+SafeDesktopDiagnostic());
+          System.Threading.Thread.Sleep(20);
+        }
+        UIntPtr ignored;
+        if(SendMessageTimeoutW(new IntPtr(first.Notice.Modal),0,IntPtr.Zero,IntPtr.Zero,3,5000,out ignored)==IntPtr.Zero)
+          throw new InvalidOperationException("Caption click submitted but exact-modal rendezvous failed; focus uncertain, no retry.");
+        AssertFocusProcess(pid,startedUtcTicks);AssertUnchanged(pid,first.Notice);
+        if((GetAsyncKeyState(1)&0x8000)!=0)throw new InvalidOperationException("Caption click submitted but button state remains down; no further input.");
+      });}catch(InvalidOperationException error){
+        throw new InvalidOperationException(error.Message+" sendInputError="+Number(deliveryError)+" releaseInputError="+Number(releaseError)+". Error codes alone do not identify UIPI.",error);
+      }
+      return first.Notice;
+    }
     private static void VerifyActivation(bool requestReturned,bool rendezvousCompleted,Action verify){
       string result="Warning focusRequestReturned="+JsonBool(requestReturned)+". ";
       if(!rendezvousCompleted)throw new InvalidOperationException(result+"WM_NULL activation rendezvous failed or timed out; no capture or acknowledgement.");
@@ -237,11 +382,7 @@ namespace OpenNavX {
       if(!SameNotice(now,expected))throw new InvalidOperationException("Warning captured fields changed: "+ChangedFields(now,expected)+".");
       var foreground=GetForegroundWindow();
       if(foreground!=new IntPtr(now.Modal))throw new InvalidOperationException("Warning foreground differs: expected HWND "+now.Modal+" PID "+pid+"; observed HWND "+foreground.ToInt64()+" PID "+Pid(foreground)+". No capture or acknowledgement. desktopDiagnostic="+SafeDesktopDiagnostic());
-      bool found=false;foreach(var h in Windows(IntPtr.Zero)){
-        if(h==new IntPtr(now.Modal)){found=true;break;}
-        if(IsWindowVisible(h)&&!IsIconic(h)&&Intersects(now.Bounds,Bounds(h)))throw new InvalidOperationException("Warning is obscured; no capture or acknowledgement.");
-      }
-      if(!found)throw new InvalidOperationException("Warning disappeared during visibility verification.");
+      AssertNotObscured(now);
     }
     public static void Agree(int pid,NoticeInfo expected){
       AssertUnchanged(pid,expected);

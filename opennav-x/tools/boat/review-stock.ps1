@@ -3,7 +3,7 @@ param(
   [string]$Workspace='C:\XNav',
   [Parameter(Mandatory=$true)][string]$LaunchResult,
   [Parameter(Mandatory=$true)][ValidatePattern('^[a-f0-9]{64}$')][string]$ExpectedLaunchSha256,
-  [Parameter(Mandatory=$true)][ValidateSet('Capture','Resize1280x800','Close','InspectWelcome','AcknowledgeWelcome')][string]$Action,
+  [Parameter(Mandatory=$true)][ValidateSet('Capture','Resize1280x800','Close','InspectWelcome','FocusWelcome','AcknowledgeWelcome')][string]$Action,
   [string]$WelcomeInspection,
   [ValidatePattern('^[a-f0-9]{64}$')][string]$ExpectedWelcomeInspectionSha256
 )
@@ -13,7 +13,7 @@ $job=[pscustomobject]@{action='ReviewStock';reviewAction=$Action;workspace=(Asse
   executableSha256=(Get-Digest $config.stockExecutable);processId=$launch.pid;launchResult=$path;launchResultSha256=$ExpectedLaunchSha256;
   launchRequestSha256=(Get-Digest (Join-Path ([IO.Path]::GetDirectoryName($path)) 'request.json'));
   reviewHelperSha256=(Get-Digest (Join-Path $PSScriptRoot 'StockReview.ps1'));nativeHelperSha256=(Get-Digest (Join-Path $PSScriptRoot 'StockReviewNative.cs'))}
-if ($Action -cin @('InspectWelcome','AcknowledgeWelcome')) {
+if ($Action -cin @('InspectWelcome','FocusWelcome','AcknowledgeWelcome')) {
   $job | Add-Member -NotePropertyName welcomeHelperSha256 -NotePropertyValue (Get-Digest (Join-Path $PSScriptRoot 'StockWelcome.ps1'))
   $job | Add-Member -NotePropertyName welcomeNativeSha256 -NotePropertyValue (Get-Digest (Join-Path $PSScriptRoot 'StockWelcomeNative.cs'))
 }

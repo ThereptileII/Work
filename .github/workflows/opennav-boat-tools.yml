@@ -9,6 +9,28 @@ concurrency:
   group: opennav-boat-tools-${{ github.ref }}
   cancel-in-progress: true
 jobs:
+  native-installer-shortcuts:
+    name: Actual COM shortcut migration (${{ matrix.arch }})
+    strategy:
+      fail-fast: false
+      matrix:
+        arch: [x64, x86]
+    runs-on: windows-2022
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+      - name: Exercise actual lifecycle functions with disposable links and registration
+        run: |
+          New-Item -ItemType Directory -Path opennav-x/evidence/local/installer-shortcuts -Force | Out-Null
+          $Folder = if ('${{ matrix.arch }}' -eq 'x86') { 'SysWOW64' } else { 'System32' }
+          & "$env:WINDIR/$Folder/WindowsPowerShell/v1.0/powershell.exe" -NoProfile -File opennav-x/tools/test-installer-shortcuts.ps1 2>&1 | Tee-Object -FilePath opennav-x/evidence/local/installer-shortcuts/native-shortcuts.log
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: development-installer-shortcuts-${{ matrix.arch }}-${{ github.sha }}
+          path: opennav-x/evidence/local/installer-shortcuts
+          if-no-files-found: error
   native-desktop-diagnostics:
     name: Read-only native warning desktop diagnostics
     runs-on: windows-2022

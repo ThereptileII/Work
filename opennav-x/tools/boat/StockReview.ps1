@@ -38,7 +38,7 @@ function Assert-StockRequest($Job) {
 }
 function Assert-StockReviewPolicy($Job,$Launch,$Request,[datetime]$Now) {
   Assert-StockRequest $Request
-  if ($Job.action -cne 'ReviewStock' -or $Job.reviewAction -cnotin @('Capture','Resize1280x800','Close','InspectWelcome','AcknowledgeWelcome') -or
+  if ($Job.action -cne 'ReviewStock' -or $Job.reviewAction -cnotin @('Capture','Resize1280x800','Close','InspectWelcome','FocusWelcome','AcknowledgeWelcome') -or
       $Launch.status -cne 'passed' -or $Launch.action -cne 'LaunchStock' -or $Launch.mode -cne 'StockLegacy' -or
       $Job.processId -le 0 -or $Launch.pid -ne $Job.processId -or $Job.executable -ine $Request.executable -or
       $Job.executableSha256 -cne $Request.executableSha256 -or $Job.workspace -ine $Request.workspace -or
@@ -125,7 +125,7 @@ function Invoke-StockReview($Job) {
     $oldDpi=[OpenNavX.StockReviewNative]::SetThreadDpiAwarenessContext([IntPtr](-4))
     if ($oldDpi -eq [IntPtr]::Zero) { throw 'Physical DPI context unavailable.' }
     try {
-      if ($Job.reviewAction -cin @('InspectWelcome','AcknowledgeWelcome')) { return Invoke-StockWelcomeReview $Job $review $process $sid $session }
+      if ($Job.reviewAction -cin @('InspectWelcome','FocusWelcome','AcknowledgeWelcome')) { return Invoke-StockWelcomeReview $Job $review $process $sid $session }
       $frame=$process.MainWindowHandle
       [OpenNavX.StockReviewNative]::Foreground($frame,$process.Id)
       $null=Read-StockReview $Job;$process.Refresh();Assert-StockProcess $process $Job $review.launch $sid $session
