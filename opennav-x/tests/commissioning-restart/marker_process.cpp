@@ -53,7 +53,10 @@ int wmain(int argc,wchar_t** argv) {
     const bool armed=opennav::platform::RestartAfterExit(exe,{requested});
     std::ofstream(original/L"parent-armed.txt")<<(armed?"yes":"no")<<'\n'<<GetCurrentProcessId()<<'\n';
     if(!std::filesystem::exists(original/L"parent-fast-exit.txt")) {
-      const auto deadline=std::chrono::steady_clock::now()+std::chrono::seconds(15);
+      // Only the disposable scheduler harness requests extra setup time. This
+      // remains below the actual helper's unchanged 30-second parent deadline.
+      const auto hold=std::filesystem::exists(original/L"hold-parent-for-scheduler.txt")?25:15;
+      const auto deadline=std::chrono::steady_clock::now()+std::chrono::seconds(hold);
       while(!std::filesystem::exists(original/L"parent-release.txt")) {
         if(std::chrono::steady_clock::now()>=deadline)return 76;
         std::this_thread::sleep_for(std::chrono::milliseconds(20));

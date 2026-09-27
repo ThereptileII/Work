@@ -105,5 +105,12 @@ function Assert-RestartTaskIdentity($Task,$Arm,[string]$Sid) {
   if($Task.State.ToString() -cne 'Ready' -or @($Task.Actions).Count -ne 1 -or
      $Task.Actions[0].Execute -cne $Arm.execute -or $Task.Actions[0].Arguments -cne $Arm.arguments -or $Task.Actions[0].WorkingDirectory -or
      $Task.Principal.UserId -cne $Sid -or $Task.Principal.RunLevel.ToString() -cnotin @('Limited','0') -or
-     $Task.Principal.LogonType.ToString() -cnotin @('Interactive','3') -or @($Task.Triggers).Count -ne 0){throw 'Broker task running or differs from the exact owned limited interactive action.'}
+     $Task.Principal.LogonType.ToString() -cnotin @('Interactive','3') -or @($Task.Triggers).Count -ne 0){
+    $diagnostic=@{state=$Task.State.ToString();actionCount=@($Task.Actions).Count;
+      actions=@($Task.Actions|Select-Object Execute,Arguments,WorkingDirectory);
+      principal=@{userId=$Task.Principal.UserId;runLevel=$Task.Principal.RunLevel.ToString();logonType=$Task.Principal.LogonType.ToString()};
+      triggerCount=@($Task.Triggers).Count;triggersNull=($null -eq $Task.Triggers);
+      expected=@{execute=$Arm.execute;arguments=$Arm.arguments;sid=$Sid}}
+    throw ('Broker task running or differs from the exact owned limited interactive action: '+($diagnostic|ConvertTo-Json -Depth 5 -Compress))
+  }
 }

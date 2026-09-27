@@ -120,6 +120,7 @@ try {
  Start-ScheduledTask -TaskName $taskName;WaitMarker $taskMarker 30
  $until=[DateTime]::UtcNow.AddSeconds(10)
  do{$nativeTask=Get-ScheduledTask -TaskName $taskName;if($nativeTask.State.ToString() -ceq 'Ready'){break};Start-Sleep -Milliseconds 100}while([DateTime]::UtcNow -lt $until)
+ Write-Record (Join-Path $Evidence 'native-task-identity.json') @{state=$nativeTask.State.ToString();actions=@($nativeTask.Actions|Select-Object Execute,Arguments,WorkingDirectory);principal=@{userId=$nativeTask.Principal.UserId;runLevel=$nativeTask.Principal.RunLevel.ToString();logonType=$nativeTask.Principal.LogonType.ToString()};triggersNull=($null -eq $nativeTask.Triggers);triggerCount=@($nativeTask.Triggers).Count;expected=@{execute=$execute;arguments=$arguments;sid=$sid}}
  Assert-RestartTaskIdentity $nativeTask ([pscustomobject]@{execute=$execute;arguments=$arguments}) $sid
  Require $true 'native Arm/Collect CIM policy matches actual limited interactive trigger-free task'
  Unregister-ScheduledTask -TaskName $taskName -Confirm:$false;$taskName=$null

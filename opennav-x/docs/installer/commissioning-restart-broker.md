@@ -1,7 +1,7 @@
 # One-use commissioning restart verifier
 
 Development implementation only. The portable policy/parser/journal suite passes
-261 checks, plus the separate 77-check AUI/Dashboard policy suite. Native process/pipe tests, full real-application shutdown tests, and
+265 checks, plus the separate 77-check AUI/Dashboard policy suite. Native process/pipe tests, full real-application shutdown tests, and
 boat acceptance remain separate gates. These scripts are not enabled in the
 currently published application and must not be used to qualify an older build.
 
@@ -187,3 +187,31 @@ Both the helper/marker transport and maintenance suites must pass first in the
 same-commit tooling workflow. The full broker harness is
 implemented and parses; its native execution is still pending. No result is
 inferred from the fixture's construction or from portable parser tests.
+
+### Native Prepare and Arm/Collect fixture
+
+`tools/test-commissioning-prepare-arm-windows.ps1` separately executes the actual
+Prepare and Arm/Collect entrypoints. Their copied bytes, and the broker's copied
+bytes, must match the source exactly. Prepare creates the real private session,
+copies the baseline and shutdown review, and hashes the dependencies. The test
+also supplies an owned but incapable build record and requires refusal before
+session creation or application launch.
+
+Arm creates the actual limited, interactive scheduled task for the native
+PowerShell broker. Tests exercise wrong-parent identity, duplicate arming,
+premature collection, successful authorization and output-connection refusal.
+Collect must remove only its exact completed task and publish its durable record.
+No fixture force-terminates a process or task.
+
+Scheduled tasks do not inherit the worker's temporary environment. Only the
+copied test identity adapter therefore contains a fixed fixture digest/seal; the
+copied known-folder identity check uses that same synthetic TEMP location. Every
+path remains inside the unique marked fixture tree. Actual process identity,
+SID/session, task creation, private ACL, full plugin/quarantine audit, typed INI
+proof and named-pipe logic remain active.
+
+The initial marker parent and its cold-child journal are still fixture inputs.
+This test does not qualify the product's interactive cold-launch screen, real
+installation or boat scheduler. The marker's optional scheduler hold is bounded
+at 25 seconds; the native helper's 30-second parent timeout is unchanged. The
+harness is implemented and parses; native results remain pending.

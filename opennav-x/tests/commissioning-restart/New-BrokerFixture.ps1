@@ -1,6 +1,6 @@
 # Construction only; every file is synthetic and inside a caller-created TEMP
 # directory. The application/companion are the verified marker-only test build.
-function New-BrokerFixture([string]$Directory,[string]$Binaries,[string]$SourceTools,[string]$FixtureSources,[string]$Case) {
+function New-BrokerFixture([string]$Directory,[string]$Binaries,[string]$SourceTools,[string]$FixtureSources,[string]$Case,[switch]$WithoutRestartSession) {
  $null=New-Item -ItemType Directory -Path $Directory
  $scripts=Join-Path $Directory 'scripts';$null=New-Item -ItemType Directory -Path $scripts
  $names=@('Common.ps1','Preparation.ps1','Commissioning.ps1','verify-commissioning-launch.ps1','InteractiveJob.ps1','run-mode.ps1')
@@ -39,7 +39,7 @@ function New-BrokerFixture([string]$Directory,[string]$Binaries,[string]$SourceT
  Write-Record (Join-Path $installedRoot 'state.json') @{schema=1;owner=$ownership.owner;current=$generationId;stock=@{path=$stockExe}}
  $roots=@($managed,(Join-Path $stockApp 'plugins'),(Join-Path $app 'plugins')|Sort-Object)
  $environment=Get-CommissioningLaunchEnvironment $exe ([Environment]::GetFolderPath('Windows'))
- $context=[pscustomobject]@{workspace=$workspace;profile=$profile;managed=$managed;application=$stockApp;pluginRoots=$roots;installation=@{executable=$exe;commit=$commit};launchEnvironment=$environment}
+ $context=[pscustomobject]@{workspace=$workspace;profile=$profile;managed=$managed;application=$stockApp;pluginRoots=$roots;installation=@{executable=$exe;commit=$commit};launchEnvironment=$environment;sid=$sid;session=$windowsSession}
  $baseline=Join-Path $preparedDir 'baseline.ini';$input=Join-Path $preparedDir 'input-only.ini';$ini=Join-Path $profile 'opencpn.ini'
  $text="[Settings]`r`nPersistActiveRoute=0`r`n[Settings/NMEADataSource]`r`nDataConnections=0;0;;0;1;COM8;115200;0;1;0;;0;;0;0;1;0;1;Gateway;0;;0`r`n[Directories]`r`nChartDir=original`r`n[OpenNav]`r`nInterfaceMode=xnav`r`n"
  $bytes=(New-Object Text.UTF8Encoding($false,$true)).GetBytes($text)
@@ -69,6 +69,11 @@ function New-BrokerFixture([string]$Directory,[string]$Binaries,[string]$SourceT
  $target=Join-Path $workspace 'boat-target.json';Write-Record $target @{schema=1;owner='OpenNavX.BoatTarget.1';profileDirectory=$profile;stockExecutable=$stockExe;readOnlyAudit=$audit}
  $fixture=@{owner='OpenNavX.TestOnly.BrokerFixture.1';noMarineCode=$true;root=$Directory;workspace=$workspace;commonData=(Split-Path $profile -Parent);localData=$local;installedRoot=$installedRoot;stockExecutable=$stockExe;stockSha256=(Get-Digest $stockExe);context=$context;baselineSha256=$baselineHash}
  $fixtureFile=Join-Path $scripts 'fixture.identity.json';Write-Record $fixtureFile $fixture
+ if($WithoutRestartSession) {
+  $shutdown=Join-Path $Directory 'reviewed-shutdown.json'
+  Write-Record $shutdown @{schema=1;physicalCommands=0;reviewedUtc=[DateTime]::UtcNow.ToString('o');plugins=@(@{plugin='dashboard_pi';revision=('1'*40);sourceSha256=('2'*64);shutdownBoundary='INERT TEST ONLY'})}
+  return [pscustomobject]@{root=$Directory;scripts=$scripts;workspace=$workspace;app=$app;executable=$exe;helper=$helper;profile=$ini;plugin=$safe;identityHash=(Get-Digest $fixtureFile);shutdown=$shutdown;shutdownSha256=(Get-Digest $shutdown);productBuild=$build;generation=$generation}
+ }
  $sessionDir=New-PreparationDirectory ([pscustomobject]@{workspace=$workspace;sid=$sid}) 'restart-session'
  $before=Join-Path $sessionDir 'before.ini';[IO.File]::Copy($ini,$before)
  $shutdown=Join-Path $sessionDir 'shutdown-review.json';Write-Record $shutdown @{schema=1;physicalCommands=0;reviewedUtc=[DateTime]::UtcNow.ToString('o');plugins=@(@{plugin='dashboard_pi';revision=('1'*40);sourceSha256=('2'*64);shutdownBoundary='INERT TEST ONLY'})}

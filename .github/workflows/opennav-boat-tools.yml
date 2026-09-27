@@ -71,9 +71,16 @@ jobs:
           New-Item -ItemType Directory -Path opennav-x/evidence/local/restart-broker -Force | Out-Null
           & "$env:WINDIR/System32/WindowsPowerShell/v1.0/powershell.exe" -NoProfile -ExecutionPolicy Bypass -File opennav-x/tools/test-commissioning-broker-windows.ps1 -Binaries opennav-x/build/commissioning-restart/Release -Evidence opennav-x/evidence/local/restart-broker 2>&1 | Tee-Object -FilePath opennav-x/evidence/local/restart-broker/native-broker-tests.log
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+      - name: Exercise actual Prepare and scheduled Arm Collect against marker-only fixtures
+        run: |
+          New-Item -ItemType Directory -Path opennav-x/evidence/local/restart-prepare-arm -Force | Out-Null
+          & "$env:WINDIR/System32/WindowsPowerShell/v1.0/powershell.exe" -NoProfile -ExecutionPolicy Bypass -File opennav-x/tools/test-commissioning-prepare-arm-windows.ps1 -Binaries opennav-x/build/commissioning-restart/Release -Evidence opennav-x/evidence/local/restart-prepare-arm 2>&1 | Tee-Object -FilePath opennav-x/evidence/local/restart-prepare-arm/native-prepare-arm-tests.log
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         if: always()
         with:
           name: development-commissioning-broker-${{ github.sha }}
-          path: opennav-x/evidence/local/restart-broker
+          path: |
+            opennav-x/evidence/local/restart-broker
+            opennav-x/evidence/local/restart-prepare-arm
           if-no-files-found: warn
