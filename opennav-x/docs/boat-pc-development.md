@@ -245,3 +245,24 @@ environment variable on the boat.
 Source updates use an owned, exact-commit checkout and preserve unrecognized or
 modified trees. See [source maintenance](installer/boat-source-checkout.md) for
 the first-checkout, update and interrupted-operation behavior.
+
+## Separate qualified display-tool copy
+
+During an active guarded restart session, do not update its source checkout or
+replace dependency files. `stage-review-tools.ps1` can place an independently
+qualified, exact-manifest tool archive in `scripts/review-<commit>`. This operation
+checks transport/manifest/file hashes, flat entry names and bounds before
+publishing a completion record. It neither executes the copied tools nor alters
+the source checkout, application, profile or active transaction. Existing and
+incomplete destinations are preserved for inspection. The caller must first
+verify the intended tool commit's native CI and downloaded evidence.
+
+Only the explicitly reviewed display action then uses this separate script
+directory; restart Arm/Request/Collect continues through the session's original
+qualified dependency paths. The application build/launch provenance still has
+to match. Do not use a separate tool copy to bypass a failed restart audit.
+
+If connectivity fails, inspect the remote request/result journal and process
+identity after reconnection before retrying any action. An empty local response
+is not proof that the remote action did not execute. Preserve the active
+commissioning marker and recovery data while disconnected.

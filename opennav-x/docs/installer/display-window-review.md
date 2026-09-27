@@ -118,7 +118,10 @@ places a fresh decoy observation at the old root path and the real observation
 under `opennav-logs`. Missing, stale and wrong-commit real observations must
 refuse input even with that fresh decoy; normal and child-canvas cases still
 require the exact one DOWN/UP pair. Existing geometry, page and modal refusals
-remain. There are 23 native cases; qualification remains pending.
+remain. All 23 native cases and the complete nine-job tooling run passed at exact
+commit `f44f2b4c3a4a9217b3be7192dffe86ba210855bc`; downloaded/API/upload
+identity and archive integrity checks pass. [Scoped evidence](../evidence/beta2-installed-pan-tools-f44f2b.json).
+Actual boat pan remains pending.
 
 A separate boat observation found Windows PowerShell's MainWindowHandle selecting
 the process's native `tooltips_class32` hover window after a firewall Cancel

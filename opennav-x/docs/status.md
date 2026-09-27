@@ -33,10 +33,29 @@ acceptance must not be inferred.
 The new pan review found the tooling's diagnostic-path mismatch: the installed
 product writes under `opennav-logs`, while the helper looked at the profile root.
 The correction adds native wrapper cases for a decoy root file, missing/stale
-installed diagnostics and wrong commit. It is not yet deployed or native-qualified.
+installed diagnostics and wrong commit. Tooling `f44f2b4` passed all nine native
+jobs in [run 36310215706](https://github.com/ThereptileII/Work/actions/runs/36310215706),
+including 23 actual display cases. All nine downloaded artifacts match
+API/upload hashes, sizes and ZIP integrity. It is not yet deployed.
 The earlier main-window refusal was traced to a native hover tooltip after
 cancelling the network sheet; a bounded pointer-only move cleared it. No failed
 zoom/capture request sent input. Product/restart tools were not modified aboard.
+
+### Boat connectivity interruption — 09:50 UTC
+
+Tailscale reports the boat peer offline with last-seen 09:50 UTC; local
+Tailscale remains Running/online. SSH and Tailscale probes time out. No remote
+access settings were changed. The last confirmed XNav display was Diagnostics;
+a subsequent Menu request returned no remote receipt. Do not repeat it or infer
+process exit until the actual journal/process is inspected after reconnection.
+The commissioning transaction remains active and must be restored only after
+normal application close and reviewed profile deltas. Mode/maintenance/old-copy
+retirement gates remain open. [Partial display review](design/reviews/beta2-boat-7827-review.md).
+
+The staging command for a separate review-tool copy did not return a receipt;
+no archive or staging script was uploaded. A read-only run-directory check is
+required before retrying it. A versioned staging helper is being native-tested
+so newer qualified display tools can coexist with the frozen restart dependencies.
 
 ### Current boat review tools
 
