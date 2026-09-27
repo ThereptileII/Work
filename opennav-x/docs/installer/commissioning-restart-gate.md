@@ -1,6 +1,7 @@
 # Guarded in-app restart during boat commissioning
 
-Implementation in progress; no native or physical acceptance is implied.
+The standalone native transport gate has passed; complete broker/product and
+physical acceptance remain separate gates.
 This opt-in guard does not change ordinary XNav/Legacy/Safe restart behavior.
 It applies only to an explicitly prepared read-only commissioning session.
 No guard invokes a shell command, modifies the boat profile, changes connections,
@@ -167,15 +168,19 @@ powershell -NoProfile -ExecutionPolicy Bypass -File tools/boat/test-restart-comm
 ```
 
 Current local qualification: 886 portable codec/policy checks pass on Linux.
-Native run [36281616421](https://github.com/ThereptileII/Work/actions/runs/36281616421)
-compiled with MSVC and passed the codec plus the first 20 process cases,
-including actual XNav/Legacy/Safe child receipts and exact helper exit codes.
-Its immediate-parent-exit case timed out before pipe connection; the native
-image proof and direct exited-process probe above await a new native run.
-Earlier actual .NET Framework pending I/O tests also identified premature
+Native run [36282089707](https://github.com/ThereptileII/Work/actions/runs/36282089707)
+at `fe397d85727dac015cea11615ae8b66f5caf788a` passed MSVC compilation,
+886 codec checks and 359 process/I/O assertions across all 24 marker cases.
+The downloaded artifact hash is recorded in
+[the sanitized evidence record](../evidence/commissioning-restart-fe397.json).
+The genuinely exited-process probe confirmed Win32 image-query failure
+`ERROR_GEN_FAILURE` (31), successful native image query and exact equality with
+the held executable file's NT path. The immediate-parent-exit case now starts
+one bound child and returns helper exit 0. Earlier .NET Framework tests found
+premature
 `AsyncWaitHandle` disposal; the verifier now lets `Task.Factory.FromAsync` own
 the matching `End*` call and checks bounded cancellation of pending connect/read.
-The full 24-case matrix remains an open gate. Those scenarios cover all three
+The 24-case matrix covers all three
 allowed modes, unchanged unarmed behavior, malformed or empty arming, missing
 listeners, failed parent exit, tampered/expired permits, changed files, retained
 startup binding/environment and refusal of a subsequent switch without a broker.

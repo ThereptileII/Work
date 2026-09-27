@@ -210,3 +210,12 @@ function Invoke-InteractiveJob([string]$Workspace,$Job,[int]$TimeoutSeconds=90) 
     if ($task) { Unregister-ScheduledTask -TaskName $name -Confirm:$false }
   }
 }
+function Get-OptionalRestartBinding($Job,$Installed,$Config,$LaunchEnvironment) {
+  $names=@($Job.PSObject.Properties.Name)
+  $any=@($names | Where-Object {$_ -ieq 'restartSessionRecord' -or $_ -ieq 'restartSessionSha256'})
+  if(-not $any.Count){return $null}
+  if($Job.action -cne 'Launch' -or $any.Count -ne 2 -or $names -cnotcontains 'restartSessionRecord' -or $names -cnotcontains 'restartSessionSha256' -or
+     -not $Job.restartSessionRecord -or -not $Job.restartSessionSha256){throw 'Both exact optional commissioning restart fields are required for installed cold launch.'}
+  . (Join-Path $PSScriptRoot 'RestartCommissioning.ps1')
+  Get-RestartLaunchBinding $Job.restartSessionRecord $Job.restartSessionSha256 $Installed $Config $LaunchEnvironment
+}

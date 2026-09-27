@@ -42,7 +42,7 @@ jobs:
         run: |
           New-Item -ItemType Directory -Path opennav-x/evidence/local -Force | Out-Null
           $Failed = @()
-          foreach ($Suite in @('boat-tools', 'official-upgrade-policy', 'preparation', 'commissioning', 'commissioning-launch', 'review-window', 'source-checkout')) {
+          foreach ($Suite in @('boat-tools', 'official-upgrade-policy', 'preparation', 'commissioning', 'commissioning-launch', 'review-window', 'source-checkout', 'restart-commissioning', 'restart-aui-persistence')) {
             & "$env:WINDIR/System32/WindowsPowerShell/v1.0/powershell.exe" -NoProfile -File "opennav-x/tools/boat/test-$Suite.ps1" 2>&1 | Tee-Object -FilePath "opennav-x/evidence/local/maintenance-$Suite.log"
             if ($LASTEXITCODE -ne 0) { $Failed += $Suite }
           }
@@ -53,3 +53,27 @@ jobs:
           name: development-boat-tooling-${{ github.sha }}
           path: opennav-x/evidence/local/maintenance-*.log
           if-no-files-found: error
+  native-restart-broker:
+    name: Actual restart broker with disposable marker-only installation
+    needs: [native-restart-transport, native-maintenance]
+    runs-on: windows-2022
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+      - name: Compile the same-commit actual helper and marker-only processes
+        run: |
+          cmake -S opennav-x/tests/commissioning-restart -B opennav-x/build/commissioning-restart -G "Visual Studio 17 2022" -A Win32
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          cmake --build opennav-x/build/commissioning-restart --config Release --parallel 2
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+      - name: Exercise the unchanged broker, full audit, refusals and receipt uncertainty
+        run: |
+          New-Item -ItemType Directory -Path opennav-x/evidence/local/restart-broker -Force | Out-Null
+          & "$env:WINDIR/System32/WindowsPowerShell/v1.0/powershell.exe" -NoProfile -ExecutionPolicy Bypass -File opennav-x/tools/test-commissioning-broker-windows.ps1 -Binaries opennav-x/build/commissioning-restart/Release -Evidence opennav-x/evidence/local/restart-broker 2>&1 | Tee-Object -FilePath opennav-x/evidence/local/restart-broker/native-broker-tests.log
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: development-commissioning-broker-${{ github.sha }}
+          path: opennav-x/evidence/local/restart-broker
+          if-no-files-found: warn
