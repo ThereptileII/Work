@@ -1,12 +1,16 @@
 # Isolated verification fixtures; never reads installed software or vessel data.
 [CmdletBinding()]
-param([switch]$PortableContracts,[switch]$IsolatedLocal,[switch]$StockFixture)
+param([switch]$PortableContracts,[switch]$IsolatedLocal,[switch]$StockFixture,[switch]$InstalledWelcomeFixture)
 Set-StrictMode -Version Latest
 $ErrorActionPreference='Stop'
 $native=[Environment]::OSVersion.Platform -eq 'Win32NT'
 if (-not $native -and -not $PortableContracts) { throw 'Explicit portable contracts required off Windows.' }
 if ($native -and -not $IsolatedLocal -and $env:GITHUB_ACTIONS -ne 'true') { throw 'Disposable CI or explicit isolated local tests required.' }
 . (Join-Path $PSScriptRoot 'Commissioning.ps1')
+if ($InstalledWelcomeFixture) {
+  if ($StockFixture) { throw 'Installed warning fixture cannot impersonate stock.' }
+  . (Join-Path $PSScriptRoot 'InstalledWelcome.ps1')
+}
 $testRoot=Join-Path ([IO.Path]::GetTempPath()) ('OpenNav commissioning launch '+[guid]::NewGuid().ToString('N'))
 $null=New-Item -ItemType Directory -Path $testRoot
 $savedPath=$env:PATH
@@ -56,6 +60,28 @@ try {
   [IO.File]::WriteAllText($exe,'not an executable; never launched')
   $installed=[pscustomobject]@{executable=$exe;ownership=[pscustomobject]@{commit=('7'*40)}}
   $fixtureContext=[pscustomobject]@{workspace=$workspace;profile=$profile;pluginRoots=@($managed,$stock,$generation);installation=[pscustomobject]@{executable=$exe;commit=$installed.ownership.commit};launchEnvironment=[pscustomobject]@{workingDirectory=[IO.Path]::GetDirectoryName($exe);path=$search}}
+  if ($InstalledWelcomeFixture) {
+    $installed | Add-Member root (Join-Path $testRoot 'owned-installation')
+    $installed | Add-Member generation (Join-Path $testRoot 'generation')
+    $installed | Add-Member state ([pscustomobject]@{stock=[pscustomobject]@{path=(Join-Path $testRoot 'stock/opencpn.exe')}})
+    $null=New-Item -ItemType Directory -Path $installed.root
+    [IO.File]::WriteAllText((Join-Path $installed.root 'state.json'),'inert owned state')
+    [IO.File]::WriteAllText((Join-Path $installed.generation 'ownership.json'),'inert ownership')
+    $fixtureContext.installation=[pscustomobject]@{root=$installed.root;generation=$installed.generation;executable=$exe;commit=$installed.ownership.commit;
+      executableSha256=(Get-Digest $exe);stateSha256=(Get-Digest (Join-Path $installed.root 'state.json'));ownershipSha256=(Get-Digest (Join-Path $installed.generation 'ownership.json'))}
+    $fixtureContext | Add-Member localAppData (Join-Path $testRoot 'local')
+    $fixtureContext | Add-Member sid 'S-1-5-21-1'
+    $fixtureContext | Add-Member session 1
+    function Get-InstalledWelcomeEnvironment($Config,$Installed) {
+      return [pscustomobject]@{local=(Join-Path $testRoot 'local');profile=$profile;roots=@($fixtureContext.pluginRoots)}
+    }
+    $verify={param($Workspace,$Audit,$Installed)
+      $config=[pscustomobject]@{readOnlyAudit=$Audit;profileDirectory=$profile;stockExecutable=$Installed.state.stock.path}
+      $receipt=[pscustomobject]@{commissioning=$Audit.commissioning;sid='S-1-5-21-1';sessionId=1}
+      Assert-InstalledWelcomeRuntime $config $Installed $receipt $Workspace
+      return $fixtureContext.launchEnvironment
+    }
+  }
   if ($StockFixture) {
     $exe=Join-Path $testRoot 'stock/opencpn.exe'
     [IO.File]::WriteAllText($exe,'inert stock executable identity fixture; never launched')
@@ -81,6 +107,8 @@ try {
   $ini=Join-Path $profile 'opencpn.ini'
   $encoding=New-Object Text.UTF8Encoding($false,$true)
   $text="[Settings]`r`nPersistActiveRoute=0`r`n[Settings/NMEADataSource]`r`nDataConnections=0;0;;0;1;COM8;115200;0;1;0;;0;;0;0;1;0;1;Gateway;0;;0`r`n[Directories]`r`nChartDir=original`r`n"
+  # The real recovered-root contract includes its exact byte length.
+  $text+='#'+(' '*(21380-$encoding.GetByteCount($text)-3))+"`r`n"
   $bytes=$encoding.GetBytes($text)
   [IO.File]::WriteAllBytes($baseline,$bytes)
   $script:CommissioningBaseline=Get-Digest $baseline
@@ -123,6 +151,9 @@ try {
   $applied=Join-Path $directory 'applied.json'
   Write-Record $applied @{schema=1;owner=$script:CommissioningOwner;status='input-only-prepared';recordSha256=$recordSha;profileSha256=(Get-Digest $input);remainingPluginCount=1}
   $audit=[pscustomobject]@{profileIniSha256=(Get-Digest $ini);buildCommit=$installed.ownership.commit;reviewedUtc=[DateTime]::UtcNow.ToString('o');commissioning=[pscustomobject]@{record=$record;recordSha256=$recordSha;appliedSha256=(Get-Digest $applied)}}
+  if ($InstalledWelcomeFixture) {
+    foreach($field in @('connectionsOutputDisabled','pluginOutputsReviewed','noActiveRouteOutput')) { $audit | Add-Member $field $true }
+  }
   $arguments=@{Workspace=$workspace;Audit=$audit;Installed=$installed}
   if ($StockFixture) {
     $audit | Add-Member -NotePropertyName launchKind -NotePropertyValue 'StockLegacy'
@@ -139,6 +170,14 @@ try {
   $verifiedEnvironment=& $verify @arguments
   if ($verifiedEnvironment.workingDirectory -cne $fixtureContext.launchEnvironment.workingDirectory -or $verifiedEnvironment.path -cne $search) { throw 'Returned environment is not the pinned child launch environment.' }
   $checks.Add('Exact applied transaction with complete current loader-root trees and evidence verifies without launch')
+  if ($InstalledWelcomeFixture) {
+    foreach($path in @($exe,(Join-Path $installed.root 'state.json'),(Join-Path $installed.generation 'ownership.json'))) { Change-And-Reject $path 'installed generation identity changed after cold launch' }
+    $checks.Add('Running installed warning proof still pins executable, installation state and ownership bytes')
+    foreach($field in @('connectionsOutputDisabled','pluginOutputsReviewed','noActiveRouteOutput')) {
+      try { $audit.$field=$false;Reject {& $verify @arguments} 'missing independent read-only approval' } finally {$audit.$field=$true}
+    }
+    $checks.Add('No read-only commissioning boolean is manufactured or inferred')
+  }
   foreach ($path in $(if($StockFixture){@($helper,$stockHelper)}else{@($helper,$stockHelper,$generationHelper)})) { Change-And-Reject $path 'changed helper/runtime in an actual loader root' }
   $checks.Add('Changed helpers and runtime dependencies in all applicable roots refuse launch despite unchanged plugin DLLs')
   Change-And-Reject $safe 'changed retained plugin'
@@ -162,7 +201,11 @@ try {
   $originalIni=[IO.File]::ReadAllBytes($ini)
   try {
     [IO.File]::AppendAllText($ini,"[Display]`r`nPage=Instruments`r`n")
-    Reject {& $verify @arguments} 'unreviewed normal profile write'
+    if ($InstalledWelcomeFixture) {
+      # An already running application's harmless UI persistence is checked
+      # against protected input/chart keys, never used to renew a cold audit.
+      $null=& $verify @arguments
+    } else { Reject {& $verify @arguments} 'unreviewed normal profile write' }
     $audit.profileIniSha256=Get-Digest $ini
     $null=& $verify @arguments
     [IO.File]::WriteAllText($ini,$encoding.GetString($originalIni).Replace('ChartDir=original','ChartDir=changed'))
@@ -191,7 +234,7 @@ try {
   $checks.Add('Changing the actual root/context set invalidates the prepared source review')
   $null=& $verify @arguments
   $checks.Add('All rejected changes leave the original fixture transaction verifiable')
-  [pscustomobject]@{status='passed';identity=$(if($StockFixture){'stock-only'}else{'installed'});environment=$(if($native){'native-windows-disposable-filesystem'}else{'linux-powershell-portable-contracts'});count=$checks.Count;checks=@($checks);boatAccess=$false;applicationLaunched=$false;hardwareCommands=$false;productOrBoatAcceptance=$false} | ConvertTo-Json -Depth 6
+  [pscustomobject]@{status='passed';identity=$(if($StockFixture){'stock-only'}elseif($InstalledWelcomeFixture){'installed-warning-runtime'}else{'installed'});environment=$(if($native){'native-windows-disposable-filesystem'}else{'linux-powershell-portable-contracts'});count=$checks.Count;checks=@($checks);boatAccess=$false;applicationLaunched=$false;hardwareCommands=$false;productOrBoatAcceptance=$false} | ConvertTo-Json -Depth 6
 } finally {
   $env:PATH=$savedPath;$script:CommissioningBaseline=$savedBaseline
   Remove-Item -LiteralPath $testRoot -Recurse -Force

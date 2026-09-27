@@ -76,6 +76,7 @@ function Read-StockReview($Job) {
   $active=Read-Record (Join-Path $Job.workspace 'commissioning-active.json')
   if ($active.owner -cne $script:CommissioningOwner -or $active.record -ine $binding.record -or $active.recordSha256 -cne $binding.recordSha256) { throw 'Stock commissioning transaction is no longer active.' }
   $cold=[IO.Path]::GetDirectoryName($binding.record)
+  $null=Get-PreparedCommissioningBaseline $prepared $cold $Job.workspace
   if (@(Get-ChildItem -LiteralPath $cold -Filter 'restore*.json' -Force).Count -or
       (Get-Digest (Join-Path $cold 'applied.json')) -cne $binding.appliedSha256) { throw 'Stock transaction restored, incomplete or changed.' }
   $roots=@((Join-Path ([Environment]::GetFolderPath('LocalApplicationData')) 'opencpn\plugins'),(Join-Path ([IO.Path]::GetDirectoryName($Job.executable)) 'plugins')) | Sort-Object -Unique

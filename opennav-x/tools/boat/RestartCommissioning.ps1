@@ -3,7 +3,7 @@
 . (Join-Path $PSScriptRoot 'Preparation.ps1')
 . (Join-Path $PSScriptRoot 'RestartCommissioningPolicy.ps1')
 $script:RestartOwner='OpenNavX.ReadOnlyRestart.Session.1'
-$script:RestartDependencies=@('Common.ps1','InteractiveJob.ps1','run-mode.ps1','Preparation.ps1','Commissioning.ps1','verify-commissioning-launch.ps1','RestartCommissioningPolicy.ps1','RestartAuiPersistence.ps1','RestartDashboardPersistence.ps1','RestartCommissioning.ps1','RestartCommissioningNative.cs','RestartCommissioningPrepare.ps1','RestartCommissioningBroker.ps1','RestartCommissioningArm.ps1')
+$script:RestartDependencies=@('Common.ps1','InteractiveJob.ps1','run-mode.ps1','Preparation.ps1','Commissioning.ps1','CommissioningBaseline.ps1','verify-commissioning-launch.ps1','RestartCommissioningPolicy.ps1','RestartAuiPersistence.ps1','RestartDashboardPersistence.ps1','RestartCommissioning.ps1','RestartCommissioningNative.cs','RestartCommissioningPrepare.ps1','RestartCommissioningBroker.ps1','RestartCommissioningArm.ps1')
 function Initialize-RestartNative {
   if(-not ('OpenNavX.RestartCommissioningNative' -as [type])){Add-Type -Path (Join-Path $PSScriptRoot 'RestartCommissioningNative.cs')}
 }

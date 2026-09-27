@@ -62,6 +62,27 @@ namespace OpenNavX {
         a.ProcessId==b.ProcessId&&a.AgreeId==b.AgreeId&&a.CancelId==b.CancelId&&a.Dpi==b.Dpi&&Same(a.Bounds,b.Bounds)&&
         a.Title==b.Title&&a.ModalClass==b.ModalClass&&a.HtmlClass==b.HtmlClass&&a.HtmlName==b.HtmlName&&a.AgreeText==b.AgreeText&&a.CancelText==b.CancelText;
     }
+    private static string ChangedFields(NoticeInfo a,NoticeInfo b){
+      if(a==null||b==null)return "observation";
+      var fields=new List<string>();
+      if(a.Frame!=b.Frame)fields.Add("Frame");
+      if(a.Modal!=b.Modal)fields.Add("Modal");
+      if(a.Agree!=b.Agree)fields.Add("Agree");
+      if(a.Cancel!=b.Cancel)fields.Add("Cancel");
+      if(a.Html!=b.Html)fields.Add("Html");
+      if(a.ProcessId!=b.ProcessId)fields.Add("ProcessId");
+      if(a.AgreeId!=b.AgreeId)fields.Add("AgreeId");
+      if(a.CancelId!=b.CancelId)fields.Add("CancelId");
+      if(a.Dpi!=b.Dpi)fields.Add("Dpi");
+      if(a.Title!=b.Title)fields.Add("Title");
+      if(a.ModalClass!=b.ModalClass)fields.Add("ModalClass");
+      if(a.HtmlClass!=b.HtmlClass)fields.Add("HtmlClass");
+      if(a.HtmlName!=b.HtmlName)fields.Add("HtmlName");
+      if(a.AgreeText!=b.AgreeText)fields.Add("AgreeText");
+      if(a.CancelText!=b.CancelText)fields.Add("CancelText");
+      if(!Same(a.Bounds,b.Bounds))fields.Add("Bounds");
+      return String.Join(",",fields.ToArray());
+    }
     private static NoticeInfo Find(int pid){
       if(pid<=0)throw new InvalidOperationException("Exact launched process required.");
       IntPtr modal=IntPtr.Zero;var windows=Windows(IntPtr.Zero);
@@ -100,7 +121,9 @@ namespace OpenNavX {
     public static void AssertUnchanged(int pid,NoticeInfo expected){
       if(expected==null)throw new InvalidOperationException("A captured warning is required.");
       var now=Find(pid);
-      if(!SameNotice(now,expected)||GetForegroundWindow()!=new IntPtr(now.Modal))throw new InvalidOperationException("Warning identity, text, geometry or foreground changed.");
+      if(!SameNotice(now,expected))throw new InvalidOperationException("Warning captured fields changed: "+ChangedFields(now,expected)+".");
+      var foreground=GetForegroundWindow();
+      if(foreground!=new IntPtr(now.Modal))throw new InvalidOperationException("Warning foreground differs: expected HWND "+now.Modal+" PID "+pid+"; observed HWND "+foreground.ToInt64()+" PID "+Pid(foreground)+". No capture or acknowledgement.");
       bool found=false;foreach(var h in Windows(IntPtr.Zero)){
         if(h==new IntPtr(now.Modal)){found=true;break;}
         if(IsWindowVisible(h)&&!IsIconic(h)&&Intersects(now.Bounds,Bounds(h)))throw new InvalidOperationException("Warning is obscured; no capture or acknowledgement.");

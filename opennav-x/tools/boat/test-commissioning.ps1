@@ -1,6 +1,6 @@
 # Disposable contracts only. Does not inspect actual boat/profile/plugin state.
 [CmdletBinding()]
-param([switch]$PortableContracts,[switch]$IsolatedLocal)
+param([switch]$PortableContracts,[switch]$IsolatedLocal,[switch]$AdoptionFixture)
 Set-StrictMode -Version Latest
 $ErrorActionPreference='Stop'
 $native=[Environment]::OSVersion.Platform -eq 'Win32NT'
@@ -212,7 +212,7 @@ try {
     }
     foreach ($boundary in @(
       '[IO.File]::Move($item.path,$item.destination)',
-      'Publish-PreparedProfile $ini $inputProfile $script:CommissioningBaseline $prepared.inputSha256 21380 $apply')) {
+      'Publish-PreparedProfile $ini $inputProfile $baselineInfo.sha256 $prepared.inputSha256 $baselineInfo.bytes $apply')) {
       if (-not $body.Contains($boundary)) { throw 'Failure-injection boundary missing from actual entrypoint.' }
       $fault=[scriptblock]::Create($body.Replace($boundary,$boundary+"`nthrow 'Disposable injected interruption after Apply mutation'"))
       $arguments=New-FixtureTransaction
@@ -222,7 +222,7 @@ try {
     }
     $checks.Add('Native recovery handles Apply interruption after first DLL move and after INI publication with exact restoration')
     foreach ($boundary in @(
-      'Publish-PreparedProfile $ini $original $ReviewedCurrentIniSha256 $script:CommissioningBaseline 21380 $restore',
+      'Publish-PreparedProfile $ini $restoreSource $ReviewedCurrentIniSha256 $restoreHash $restoreBytes $restore',
       '[IO.File]::Move($item.destination,$item.path)',
       '# Only remove our exact short-lived ownership marker after durable completion.')) {
       if (-not $body.Contains($boundary)) { throw 'Failure-injection boundary missing from actual entrypoint.' }
@@ -236,6 +236,58 @@ try {
       Restore-FixtureTransaction $arguments
     }
     $checks.Add('Native recovery handles Restore interruption after baseline INI, first DLL return and durable completion before marker removal')
+    if($AdoptionFixture) {
+      $arguments=New-FixtureTransaction;$null=& $invoke -Action Apply @arguments
+      $beforeMigration=[IO.File]::ReadAllBytes($fixtureIni)
+      $migrationText=$encoding.GetString($beforeMigration).Replace('PersistActiveRoute=0',"PersistActiveRoute=0`r`nConfigVersionString=Version 5.12.4-0+37fd0cd Build 2025-09-12`r`nNavMessageShown=1`r`nLocale=sv")
+      $migrationText+="[Settings/GlobalState]`r`nFrameWinX=1280`r`nFrameWinY=800`r`n"
+      [IO.File]::WriteAllText($fixtureIni,$migrationText,$encoding)
+      $migrationBytes=[IO.File]::ReadAllBytes($fixtureIni)
+      $inspection=(& $invoke -Action InspectRestore @arguments)|ConvertFrom-Json
+      $inspected=Read-Record $inspection.inspection;$parentDir=[IO.Path]::GetDirectoryName($arguments.Record)
+      $reviewPath=Join-Path $workspace ('migration-review-'+[guid]::NewGuid().ToString('N')+'.json')
+      $entries=@(Get-CommissioningIniDiff (Join-Path $parentDir 'input-only.ini') $inspected.savedIni|ForEach-Object {@{key=$_.key;before=$_.before;after=$_.after;reason='Disposable explicit startup migration fixture';sourceBoundary='Pinned navutil startup/display writes';sourceRevision='37fd0cddb7334fe489e9f18aa163977a9c5c84f7'}})
+      Write-Record $reviewPath @{schema=1;owner='OpenNavX.ProfileMigrationReview.1';parentPreparedSha256=$arguments.ExpectedRecordSha256;inspectionSha256=$inspection.inspectionSha256;
+        beforeSha256=(Get-Digest (Join-Path $parentDir 'input-only.ini'));afterSha256=$inspection.currentIniSha256;reviewedUtc=[datetime]::UtcNow.ToString('o');changes=$entries}
+      $adoptBody=[IO.File]::ReadAllText((Join-Path $PSScriptRoot 'prepare-baseline-adoption.ps1')).Replace(". (Join-Path `$PSScriptRoot 'Commissioning.ps1')",'')
+      $prepareAdoption=[scriptblock]::Create($adoptBody)
+      $proposal=(& $prepareAdoption @arguments -Inspection $inspection.inspection -ExpectedInspectionSha256 $inspection.inspectionSha256 -MigrationReview $reviewPath -ExpectedReviewSha256 (Get-Digest $reviewPath))|ConvertFrom-Json
+      if((Get-Digest $fixtureIni) -cne $inspection.currentIniSha256 -or [IO.File]::Exists($unsafe)){throw 'Adoption Prepare changed profile or returned a quarantined plugin'}
+      $checks.Add('Native adoption preparation pins exact post-close inspection and independent per-key review without changing any live bytes')
+      $adoptArguments=@{AdoptionProposal=$proposal.proposal;ExpectedAdoptionSha256=$proposal.proposalSha256}
+      Reject {& $invoke -Action Inventory -Workspace $workspace -BaselineRecord $proposal.proposal -ExpectedBaselineSha256 $proposal.proposalSha256} 'unfinished adoption cannot authorize another commissioning session'
+      $restoreArguments=@{Inspection=$inspection.inspection;ExpectedInspectionSha256=$inspection.inspectionSha256;ReviewedCurrentIniSha256=$inspection.currentIniSha256}
+      $boundary='Publish-PreparedProfile $ini $restoreSource $ReviewedCurrentIniSha256 $restoreHash $restoreBytes $restore'
+      $fault=[scriptblock]::Create($body.Replace($boundary,$boundary+"`nthrow 'Disposable failure after adopted profile atomic publication'"))
+      Reject {& $fault -Action Restore @arguments @restoreArguments @adoptArguments} 'adoption interruption after exact publication'
+      $expectedAdopted=Get-CommissioningOutputBytes $migrationBytes
+      if((Get-Digest $fixtureIni) -cne (Get-CommissioningHash $expectedAdopted) -or -not(Test-Path -LiteralPath (Join-Path $workspace 'commissioning-active.json')) -or [IO.File]::Exists($unsafe)){throw 'Interrupted adoption lost ownership or published incorrect bytes'}
+      $checks.Add('Native interrupted adoption preserves every migrated byte except COM8 direction and retains original recovery ownership before plugin restoration')
+      Reject {& $invoke -Action InspectRestore @arguments} 'interrupted adoption cannot change restore target by omitting the proposal'
+      $inspection=(& $invoke -Action InspectRestore @arguments @adoptArguments)|ConvertFrom-Json
+      $restoreArguments=@{Inspection=$inspection.inspection;ExpectedInspectionSha256=$inspection.inspectionSha256;ReviewedCurrentIniSha256=$inspection.currentIniSha256}
+      $restored=(& $invoke -Action Restore @arguments @restoreArguments @adoptArguments)|ConvertFrom-Json
+      if(-not $restored.baselineRecord -or (Get-Digest $fixtureIni) -cne (Get-CommissioningHash $expectedAdopted) -or -not[IO.File]::Exists($unsafe) -or -not[IO.File]::Exists($unsafeSecond) -or (Test-Path -LiteralPath (Join-Path $workspace 'commissioning-active.json'))){throw 'Adoption recovery failed to preserve migration and restore complete original plugin inventory'}
+      $resolved=Read-CommissioningBaseline $workspace $restored.baselineRecord $restored.baselineRecordSha256
+      if($resolved.sha256 -cne (Get-Digest $fixtureIni) -or (Read-ProfileForAudit $fixtureIni)['Settings/Locale'] -cne 'sv'){throw 'Adopted lineage lost actual migrated Swedish profile'}
+      $checks.Add('Native explicit recovery completes canonical lineage only after original DLLs and preserved migrated profile are verified')
+      Reject {& $invoke -Action Inventory -Workspace $workspace} 'adopted baseline is never silently substituted for recovered root'
+      $baselineArguments=@{BaselineRecord=$restored.baselineRecord;ExpectedBaselineSha256=$restored.baselineRecordSha256}
+      $nextInventory=(& $invoke -Action Inventory -Workspace $workspace @baselineArguments)|ConvertFrom-Json
+      Reject {& $invoke -Action Prepare -Workspace $workspace -Plan $plan -ExpectedPlanSha256 (Get-Digest $plan) @baselineArguments} 'old source inventory does not cover new baseline'
+      $nextData=Read-Record $nextInventory.record
+      $freshDecisions=@($nextData.plugins|ForEach-Object{@{path=$_.path;sha256=$_.sha256;decision=$(if($_.path -eq $safe){'retain'}else{'quarantine'});reason='Fresh isolated source approval for adopted baseline';sourceBoundary='Fixture';sourceRevision=$(if($_.path -eq $safe){'1'*40}else{$null});startupAndIdleReadOnly=($_.path -eq $safe);evidencePath=$evidence;evidenceSha256=(Get-Digest $evidence)}})
+      $nextPlan=Join-Path $workspace ('fresh-plan-'+[guid]::NewGuid().ToString('N')+'.json')
+      Write-Record $nextPlan @{schema=1;owner='OpenNavX.ReadOnlyCommissioning.Plan.1';inventoryPath=$nextInventory.record;inventorySha256=$nextInventory.recordSha256;reviewedUtc=[datetime]::UtcNow.ToString('o');plugins=$freshDecisions}
+      $nextPrepared=(& $invoke -Action Prepare -Workspace $workspace -Plan $nextPlan -ExpectedPlanSha256 (Get-Digest $nextPlan) @baselineArguments)|ConvertFrom-Json
+      $nextArguments=@{Workspace=$workspace;Record=$nextPrepared.record;ExpectedRecordSha256=$nextPrepared.recordSha256}
+      $null=& $invoke -Action Apply @nextArguments
+      if((Get-Digest $fixtureIni) -cne (Get-CommissioningHash $migrationBytes)){throw 'New read-only session did not reuse preserved migrated input-only bytes'}
+      $nextInspection=(& $invoke -Action InspectRestore @nextArguments)|ConvertFrom-Json
+      $null=& $invoke -Action Restore @nextArguments -Inspection $nextInspection.inspection -ExpectedInspectionSha256 $nextInspection.inspectionSha256 -ReviewedCurrentIniSha256 $nextInspection.currentIniSha256
+      if((Get-Digest $fixtureIni) -cne $resolved.sha256){throw 'New transaction reset migrated baseline'}
+      $checks.Add('Native subsequent Inventory/Prepare requires explicit lineage and fresh source plan; Apply/Restore preserves the adopted configuration')
+    }
   }
   [pscustomobject]@{status='passed';environment=$(if($native){'native-windows-disposable-filesystem'}else{'linux-powershell-portable-contracts'});count=$checks.Count;checks=@($checks);boatAccess=$false;applicationLaunched=$false;productOrBoatAcceptance=$false} | ConvertTo-Json -Depth 6
 } finally { $env:PATH=$originalTestSearchPath;Remove-Item -LiteralPath $testRoot -Recurse -Force }

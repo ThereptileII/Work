@@ -83,12 +83,24 @@ this tool does not automatically dismiss them.
 - `tools/boat/test-restart-window-review.ps1`: 129 portable policy/native-compile
   and actual wire/journal checks, including identity/expiry denial, single-use
   intent, wrong receipt child, incomplete chains and the sixteenth-child limit.
-- Existing restart policy (269 local checks at this source boundary) and
-  display-only review (145 checks) remain passing.
+- Native Windows qualification of source-equivalent tooling commit
+  `6865c80c71d90acb322a9b7526162d5e15a2dd7e` passed in
+  [run 36284922855](https://github.com/ThereptileII/Work/actions/runs/36284922855).
+  The 129 checks above, restart policy (278 checks) and display-only review
+  (145 checks) passed in Windows PowerShell 5.1.
 - `tools/test-restart-window-native.ps1` provides nine native fixed-control
   fixtures: three XNav mode buttons, Legacy/Safe return menu, duplicate button,
   button replacement during press, hidden menu and unexpected modal. It starts
   only a bounded PowerShell/WinForms marker with no OpenCPN/profile/plugins.
-- Native execution of these new window fixtures, the actual installed UI path
-  and boat mode-restart acceptance are still pending. Earlier native broker and
-  marker-process qualification does not establish this UI handoff's acceptance.
+- All nine native window cases passed: each of the five permitted paths invoked
+  its callback once; all four refusal cases invoked none, including replacement
+  during the press. Artifact `10920366527` was verified against the API digest,
+  upload log and downloaded bytes: SHA-256
+  `ad692ceaf1c7816f641d463e54f4f98786ad645326e6416736b0cc0c29ad22d1`.
+- The same run also passed 886 codec checks, 359 native process assertions across
+  24 cases, 49 actual broker checks and 46 actual Prepare/Arm/Collect checks.
+  Private reports and hash receipts are retained under
+  `evidence/local/boat-beta2/window-6865c80/`.
+- These tests use disposable marker processes and controls. The actual installed
+  wxWidgets UI path, broker-to-installed-child review and boat mode-restart
+  acceptance remain pending; native marker qualification is not boat acceptance.

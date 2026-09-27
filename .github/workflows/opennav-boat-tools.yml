@@ -42,11 +42,15 @@ jobs:
         run: |
           New-Item -ItemType Directory -Path opennav-x/evidence/local -Force | Out-Null
           $Failed = @()
-          foreach ($Suite in @('boat-tools', 'official-upgrade-policy', 'preparation', 'commissioning', 'commissioning-launch', 'review-window', 'source-checkout', 'restart-commissioning', 'restart-aui-persistence', 'restart-window-review', 'stock-review', 'stock-welcome', 'startup-log')) {
+          foreach ($Suite in @('boat-tools', 'official-upgrade-policy', 'preparation', 'commissioning', 'commissioning-launch', 'review-window', 'source-checkout', 'restart-commissioning', 'restart-aui-persistence', 'restart-window-review', 'stock-review', 'stock-welcome', 'installed-welcome', 'baseline-adoption', 'startup-log')) {
             & "$env:WINDIR/System32/WindowsPowerShell/v1.0/powershell.exe" -NoProfile -File "opennav-x/tools/boat/test-$Suite.ps1" 2>&1 | Tee-Object -FilePath "opennav-x/evidence/local/maintenance-$Suite.log"
             if ($LASTEXITCODE -ne 0) { $Failed += $Suite }
           }
           if ($Failed.Count -ne 0) { throw ('Required tooling suites failed: ' + ($Failed -join ', ')) }
+      - name: Verify closed-copy navigation database audit without user data
+        run: |
+          python opennav-x/tools/boat/test-navigation-copy.py -v 2>&1 | Tee-Object -FilePath opennav-x/evidence/local/maintenance-navigation-copy.log
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         if: always()
         with:
@@ -65,11 +69,18 @@ jobs:
           New-Item -ItemType Directory -Path opennav-x/evidence/local/restart-window -Force | Out-Null
           & "$env:WINDIR/System32/WindowsPowerShell/v1.0/powershell.exe" -NoProfile -ExecutionPolicy Bypass -File opennav-x/tools/test-restart-window-native.ps1 -Evidence opennav-x/evidence/local/restart-window 2>&1 | Tee-Object -FilePath opennav-x/evidence/local/restart-window/native-window-tests.log
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+      - name: Exercise fixed display controls against fifteen native marker-window cases
+        run: |
+          New-Item -ItemType Directory -Path opennav-x/evidence/local/display-window -Force | Out-Null
+          & "$env:WINDIR/System32/WindowsPowerShell/v1.0/powershell.exe" -NoProfile -ExecutionPolicy Bypass -File opennav-x/tools/test-display-window-native.ps1 -Evidence opennav-x/evidence/local/display-window 2>&1 | Tee-Object -FilePath opennav-x/evidence/local/display-window/native-display-tests.log
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         if: always()
         with:
           name: development-restart-window-${{ github.sha }}
-          path: opennav-x/evidence/local/restart-window
+          path: |
+            opennav-x/evidence/local/restart-window
+            opennav-x/evidence/local/display-window
           if-no-files-found: error
   native-stock-welcome:
     name: Actual official OpenCPN portable upgrade caution (${{ matrix.locale }})

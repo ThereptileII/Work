@@ -68,7 +68,9 @@ alone does not qualify installation.
 
 The initial boat inspection found OpenCPN **5.12.2**, x86, executable SHA-256
 `2fdcd6a2cdef7f730aa4c094fcd21302ed2a5d531a611ee180c06533f3a2cb48`.
-This is unsupported. Beta 2 installation is blocked until an explicitly authorized
-and verified supported prerequisite is installed. No exception has been added to
-the allowlist. See the current project status for the latest boat decision and
-backup evidence; do not infer deployment from the existence of these scripts.
+That build was unsupported. The separately authorized, backed-up official upgrade
+now passes the exact validated 5.12.4 executable hash and complete profile/plugin
+preservation checks. No exception was added to the allowlist. See
+[the stock upgrade evidence](../evidence/beta2-boat-stock-5.12.4-upgrade.json)
+and current project status. This closes only the stock prerequisite; the Beta 2
+package, real-profile launch and installed lifecycle gates remain separate.

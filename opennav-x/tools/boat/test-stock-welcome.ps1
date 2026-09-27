@@ -45,6 +45,7 @@ foreach($title in @($inspection.nativeWindow.Title,$swedish.nativeWindow.Title))
   }
  }}
 }
+$fieldsMethod=[OpenNavX.StockWelcomeNative].GetMethod('ChangedFields',[Reflection.BindingFlags]'NonPublic,Static')
 $sameMethod=[OpenNavX.StockWelcomeNative].GetMethod('SameNotice',[Reflection.BindingFlags]'NonPublic,Static')
 $native=[OpenNavX.StockWelcomeNative+NoticeInfo]$inspection.nativeWindow
 Pass 'Exact copied native observation remains identical' {if(-not $sameMethod.Invoke($null,[object[]]@($native,[OpenNavX.StockWelcomeNative+NoticeInfo](CopyValue $inspection).nativeWindow))){throw 'Identical native evidence differs'}}
@@ -55,8 +56,10 @@ foreach($field in $native.GetType().GetFields()){
   elseif($field.FieldType -eq [string]){$field.SetValue($changed,'different')}
   else{$field.SetValue($changed,[Convert]::ChangeType(99,$field.FieldType))}
   if($sameMethod.Invoke($null,[object[]]@($native,$changed))){throw ('Omitted identity field '+$field.Name)}
+  if($fieldsMethod.Invoke($null,[object[]]@($native,$changed)) -cne $field.Name){throw ('Incorrect bounded mismatch diagnostic '+$field.Name)}
  }
 }
+Pass 'Identical observations produce no mismatch detail' {if($fieldsMethod.Invoke($null,[object[]]@($native,$native)) -cne ''){throw 'Unchanged observation misreported'}}
 Pass 'Changing the entire language tuple invalidates captured observation' {
  $changed=[OpenNavX.StockWelcomeNative+NoticeInfo]$swedish.nativeWindow
  if($sameMethod.Invoke($null,[object[]]@($native,$changed))){throw 'Changed language reused old observation'}

@@ -138,6 +138,7 @@ try {
   $afterImage=Join-Path $evidence 'actual-stock-after-agree.png';$bitmap.Save($afterImage,[Drawing.Imaging.ImageFormat]::Png)
  } finally {$graphics.Dispose();$bitmap.Dispose()}
  $report.afterImageSha256=Get-Digest $afterImage
+ $report.afterNativeWindow=$window
  Refuse {[OpenNavX.StockWelcomeNative]::AssertUnchanged($process.Id,$notice)} 'Old dismissed warning cannot be acknowledged a second time'
  Check ($process.CloseMainWindow() -and $process.WaitForExit(30000)) 'Actual official portable application closed normally without force termination'
  Check ($process.ExitCode -eq 0) 'Official stock normal close succeeded'

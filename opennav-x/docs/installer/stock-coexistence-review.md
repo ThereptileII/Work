@@ -80,7 +80,7 @@ the earlier commissioning INI can cause the warning to recur.
 review actions. They do not relax the ordinary enabled-main-frame checks:
 
 1. With the same exact stock launch receipt/hash, run `-Action InspectWelcome`.
-   Review the resulting private `welcome.png` and `review.json`. The English
+   Review the resulting private `welcome.png` and `review.json`. The English or Swedish
    notice must be OpenCPN's GPL/no-warranty and navigation caution, ending in
    **Agree** and **Cancel**. It must not be a chart purchase, licensing, privacy,
    permission or unrelated plugin dialog.
@@ -88,7 +88,7 @@ review actions. They do not relax the ordinary enabled-main-frame checks:
    -WelcomeInspection <that review.json> -ExpectedWelcomeInspectionSha256 <hash>`.
    The inspection must be no older than 30 minutes and match this launch, PID,
    helper revisions and image hash. The helper rechecks the full commissioning
-   proof, unique disabled frame/owned modal, exact English title, native classes,
+   proof, unique disabled frame/owned modal, exact English or Swedish title/button tuple, native classes,
    button IDs/captions, HTML content surface, complete on-screen bounds/DPI,
    foreground and lack of occlusion. A new capture must hash identically to the
    reviewed image before a durable, exclusive `agree-intent.json` is written.

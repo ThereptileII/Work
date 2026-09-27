@@ -5,7 +5,7 @@ param([Parameter(Mandatory=$true)][string]$Request)
 $job=Read-Record $Request
 $result=@{status='failed';action=$job.action;utc=[DateTime]::UtcNow.ToString('o')}
 try {
-  if ($job.action -cnotin @('Launch','LaunchPortableReview','Close','Capture','ReviewWindow','LaunchStock','ReviewStock','RequestGuardedMode','ReviewRestartChild')) { throw 'Unsupported interactive action.' }
+  if ($job.action -cnotin @('Launch','LaunchPortableReview','Close','Capture','ReviewWindow','LaunchStock','ReviewStock','ReviewInstalledWelcome','RequestGuardedMode','ReviewRestartChild')) { throw 'Unsupported interactive action.' }
   $exe=Assert-LocalPath $job.executable
   if ((Get-Digest $exe) -cne $job.executableSha256) { throw 'Application changed between dispatch and interactive execution.' }
   if ($job.action -cin @('RequestGuardedMode','ReviewRestartChild')) {
@@ -17,15 +17,20 @@ try {
   } elseif ($job.action -ceq 'ReviewStock') {
     . (Join-Path $PSScriptRoot 'StockReview.ps1')
     $result=Invoke-StockReview $job
+  } elseif ($job.action -ceq 'ReviewInstalledWelcome') {
+    . (Join-Path $PSScriptRoot 'InstalledWelcome.ps1')
+    $result=Invoke-InstalledWelcome $job
   } elseif ($job.action -in @('Launch','LaunchPortableReview')) {
     # Repeat the complete guard inside the interactive session, immediately
     # before launch. A queued task is not a reusable safety approval.
     $restartBinding=$null
     if ($job.action -eq 'Launch') {
+      $targetHash=Get-Digest (Join-Path $job.workspace 'boat-target.json')
       $config=Get-Target $job.workspace;$installed=Get-Installed
       if ((Assert-LocalPath $installed.executable) -ine $exe) { throw 'Installed generation changed since dispatch.' }
       $launchEnvironment=Assert-ReadOnlyAudit $config $installed $job.workspace
       $restartBinding=Get-OptionalRestartBinding $job $installed $config $launchEnvironment
+      if ((Get-Digest (Join-Path $job.workspace 'boat-target.json')) -cne $targetHash) { throw 'Installed launch target changed during audit.' }
     } else {
       . (Join-Path $PSScriptRoot 'PortableReview.ps1')
       $review=Read-PortableReview $job.reviewRecord $job.reviewRecordSha256
@@ -50,8 +55,17 @@ try {
       . (Join-Path $PSScriptRoot 'RestartCommissioning.ps1')
       Set-RestartLaunchBinding $start $restartBinding
     }
+    if ($job.action -ceq 'Launch' -and (Get-Digest (Join-Path $job.workspace 'boat-target.json')) -cne $targetHash) { throw 'Installed launch target changed before process creation.' }
     $process=[Diagnostics.Process]::Start($start)
     try {
+      if ($job.action -ceq 'Launch') {
+        $result.processStartedUtc=$process.StartTime.ToUniversalTime().ToString('o')
+        $result.sid=[Security.Principal.WindowsIdentity]::GetCurrent().User.Value
+        $result.sessionId=[Diagnostics.Process]::GetCurrentProcess().SessionId
+        $result.targetSha256=$targetHash;$result.executableSha256=$job.executableSha256
+        $result.generation=$installed.state.current;$result.buildCommit=$installed.ownership.commit
+        $result.commissioning=$config.readOnlyAudit.commissioning
+      }
       if($restartBinding){Save-RestartColdChild $process $restartBinding}
       $deadline=[DateTime]::UtcNow.AddSeconds(45)
       do { Start-Sleep -Milliseconds 250;$process.Refresh() } while (-not $process.HasExited -and -not $process.MainWindowHandle -and [DateTime]::UtcNow -lt $deadline)

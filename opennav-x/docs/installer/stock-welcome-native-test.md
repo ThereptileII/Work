@@ -64,3 +64,17 @@ verified against the API and upload log. Both corrected upgrade cases must still
 pass on their exact subsequent commit. Child output is explicitly redirected so
 a failed fixture does not keep the CI console pipe open; normal close is attempted
 only for its verified, enabled owned frame, never through an unknown modal.
+
+Both corrected upgrade jobs subsequently passed on tooling source
+`2b2c2c63a2e4ee1657161611355c8ac5815cb7a7`, run `36286949649`: English 38 checks,
+Swedish 40 checks. The downloaded English artifact SHA-256 is
+`4a00554e0ef7533eef0a4292200774d5e28273397e1500be0def14fc569777d5` and Swedish is
+`11e17419e8c15e729bc63f5aeb0eeea12af0adcd329ec5e8980d6819573ca114`; both match
+the API and upload logs, pass ZIP integrity, and their actual warning/after-frame
+pixels were reviewed. Each app closed normally with exit zero. This is primitive
+qualification, not evidence that a real boat warning has been accepted.
+
+If capture refuses, diagnostics distinguish captured-field changes from a
+foreground mismatch. They report changed field names or numeric HWND/PID values
+only, never an unrelated foreground window's title. The identity predicate and
+human inspection / one-use acknowledgement sequence remain unchanged.

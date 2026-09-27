@@ -163,3 +163,4 @@ function Assert-CommissioningRestoreIni([string]$InputOnly,[string]$Current) {
     if ($key -match '^(Settings/NMEADataSource/|Directories/|ChartDirectories/)' -and $before[$key] -cne $after[$key]) { throw 'Navigation, chart path or connection configuration changed; automatic baseline restore refused.' }
   }
 }
+. (Join-Path $PSScriptRoot 'CommissioningBaseline.ps1')
