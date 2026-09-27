@@ -33,6 +33,33 @@ These are calls to existing pinned APIs, with no new upstream patch. Legacy and
 Safe continue through normal startup. Mode-cycle/chart-content checks and native
 DPI interaction review cover the presentation change; boat review is pending.
 
+### Beta 2 saved plugin workspace restoration
+
+The XNav shell is attached before OpenCPN's deferred plugin initialization.
+The pinned `MyFrame::OnInitTimer` validates saved AUI perspectives by requiring
+every current pane name to be present. XNav deliberately removes its temporary
+panes before saving; their presence during startup therefore made the upstream
+validation skip the entire saved plugin layout. The corresponding locale
+reload contains the same validation/load sequence.
+
+Both boundaries now exclude only actual Shell-owned window pointers from that
+completeness check. All chart and plugin panes retain the upstream check. When
+the same manager loads the saved perspective, Shell copies its own pane infos,
+calls the existing wxAUI loader unchanged, and restores only those temporary
+infos with `SafeSet`. This matters because wxAUI first hides/docks every current
+pane. Active product-page chart visibility is also retained until that page
+closes. A different manager and all Legacy/Safe calls use normal wxAUI loading.
+No product code parses or merges perspective strings, reparents canvases,
+changes plugin configuration, or loads extra plugins.
+
+Tests seed an actual Dashboard window with nondefault floating position, size
+and dock proportion and check its runtime and saved state through
+XNav → Legacy → XNav, with the XNav rail visible and temporary pane names absent
+from the saved workspace. The isolated object regression verifies that a
+foreign manager with a pane named `OpenNavTop` receives ordinary behavior.
+Native Windows qualification remains required. Merge risk is medium: recheck
+the two upstream completeness/load locations and wxAUI semantics when rebasing.
+
 ### Beta 2 software Course-up repaint loop
 
 The replacement for native candidate `12100a74` changes only the software
@@ -73,7 +100,7 @@ review remain mandatory. See
 | --- | --- | --- |
 | CMakeLists.txt | Optional OPENNAV_ROOT adds separately maintained modules | Default pristine build; low risk |
 | gui/src/ocpn_app.cpp | CLI, selection after config load, attach shell, restart after cleanup | Mode precedence and shared profile; medium lifecycle risk |
-| gui/src/ocpn_frame.cpp | Hide native chrome only in XNav, Legacy switch menu, detach panes before close | Close veto, restart, AUI persistence; medium risk |
+| gui/src/ocpn_frame.cpp | Hide native chrome only in XNav, Legacy switch menu, detach panes before close; exclude owned temporary panes from persistent plugin-workspace validation and preserve them around loading | Close veto, restart, actual Dashboard workspace, foreign manager isolation; medium risk |
 | gui/src/toolbar.cpp | Suppress only main stock toolbar rendering and mouse handling in XNav | Legacy toolbar and plugin tools; medium risk |
 | gui/src/chcanv.cpp | Skip main MUI chrome in XNav; software basemap painting uses a copied viewport instead of changing the canvas rotation | Chart interaction, rotated coastline rendering and Legacy controls; medium rendering risk |
 | gui/src/routeman_gui.cpp | Alpha: suppress native active-leg console show only in XNav | Real active-route widget assertion, original Legacy/Safe callback retained; low presentation risk |

@@ -193,7 +193,14 @@ Shell::Shell(wxFrame &frame, wxAuiManager &manager, ShellActions actions,
     if(result.ok) { Tick(); ShowObject(result.identity,true); }
     else ConfirmSheet(frame_,mode_,"Route not saved",wxString::FromUTF8(result.message),"Back");
   });
-  undo_route_=Button(bottom,"Undo","Undo last route point",[this]{if(actions_.navigation.undo_route_point)actions_.navigation.undo_route_point();});
+  undo_route_=Button(bottom,"Undo","Undo last route point",[this]{
+    if (!actions_.navigation.undo_route_point) return;
+    const auto result = actions_.navigation.undo_route_point();
+    if (!result.ok)
+      ConfirmSheet(frame_, mode_, "Cannot undo route point", wxString::FromUTF8(result.message), "Back");
+    Tick();
+  });
+  undo_route_->Enable(false);
   cancel_route_=Button(bottom,"Cancel","Cancel route creation",[this]{
     if(actions_.navigation.cancel_route && ConfirmSheet(frame_,mode_,"Cancel route?","Discard this unfinished route? Existing routes are preserved.","Discard route"))actions_.navigation.cancel_route();
   });
@@ -386,6 +393,34 @@ Shell::~Shell() {
   manager_.Update();
 }
 
+bool Shell::OwnsPane(const wxWindow *window) const {
+  return window && (window == page_ || window == product_ ||
+      std::find(panes_.begin(), panes_.end(), window) != panes_.end());
+}
+
+bool Shell::LoadPersistentPerspective(const wxString &perspective) {
+  // wxAUI hides/docks every managed pane before loading a saved perspective.
+  // Our temporary panes deliberately never enter OpenCPN's saved workspace.
+  // Preserve only those owned objects; upstream still restores every chart and
+  // plugin pane using its original parser and normal configuration semantics.
+  std::vector<wxAuiPaneInfo> transient;
+  const auto &panes = manager_.GetAllPanes();
+  for (std::size_t i = 0; i < panes.GetCount(); ++i)
+    if (OwnsPane(panes[i].window)) transient.push_back(panes[i]);
+  const bool loaded = manager_.LoadPerspective(perspective, false);
+  for (const auto &saved : transient) {
+    auto &pane = manager_.GetPane(saved.window);
+    if (pane.IsOk()) pane.SafeSet(saved);
+  }
+  // A settings/locale reload can happen while a product page covers the chart.
+  // Restore the current page's chart visibility, not stale saved visibility.
+  for (const auto &saved : navigation_visibility_) {
+    auto &pane = manager_.GetPane(saved.first);
+    if (pane.IsOk()) pane.Hide();
+  }
+  return loaded;  // The existing upstream Update/Notify follows this call.
+}
+
 std::vector<ProductGeometry> Shell::RailRegions() const {
   std::vector<ProductGeometry> result;
   if (!rail_scroll_ || !rail_scroll_->IsShownOnScreen()) return result;
@@ -560,6 +595,9 @@ void Shell::Tick() {
     actions_.commissioning->Capture(state_, wall_now);
   XNAV_TEST_UI_TRACE("tick.energy-recording", metrics_.ticks);
   const bool creating = actions_.route_creating && actions_.route_creating();
+  undo_route_->Enable(creating && !state_.simulated && !state_.replayed &&
+      actions_.navigation.undo_route_point && actions_.navigation.can_undo_route_point &&
+      actions_.navigation.can_undo_route_point());
   if (finish_route_->IsShown() != creating) {
     finish_route_->Show(creating);
     undo_route_->Show(creating);cancel_route_->Show(creating);

@@ -1,8 +1,21 @@
 #include "platform/windows/WindowsArguments.h"
+#include "platform/windows/CommissioningRestartNative.h"
 #include <windows.h>
 #include <cwchar>
+#include <iostream>
 
 int wmain(int argc, wchar_t** argv) {
+  if(argc==2 && std::wcscmp(argv[1],L"--commissioning-protocol-self-test")==0) {
+    std::cout << "{\"contract\":\"OpenNavX.RestartCapability.1\","
+                 "\"role\":\"restart-helper\",\"commissioning_restart_protocol\":"
+              << opennav::platform::commissioning::ProtocolCapability()
+              << ",\"profile_accessed\":false,\"child_started\":false}\n";
+    return std::cout?0:2;
+  }
+  if (opennav::platform::commissioning::StartupBinding().state !=
+          opennav::platform::commissioning::GuardState::Unarmed ||
+      (argc > 1 && std::wcscmp(argv[1], L"--commissioning-v1") == 0))
+    return opennav::platform::commissioning::RunGuardedHelper(argc, argv);
   if (argc < 3) return 2;
   wchar_t* end = nullptr;
   const unsigned long id = std::wcstoul(argv[1], &end, 10);

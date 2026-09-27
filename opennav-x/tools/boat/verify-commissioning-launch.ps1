@@ -1,10 +1,11 @@
 # Verification only, immediately before a separately authorized normal launch.
 # No application, helper, transport, profile or transaction mutation occurs here.
-[CmdletBinding()]
+[CmdletBinding(DefaultParameterSetName='Installed')]
 param(
   [Parameter(Mandatory=$true)][string]$Workspace,
   [Parameter(Mandatory=$true)]$Audit,
-  [Parameter(Mandatory=$true)]$Installed
+  [Parameter(Mandatory=$true,ParameterSetName='Installed')]$Installed,
+  [Parameter(Mandatory=$true,ParameterSetName='Stock')][switch]$Stock
 )
 . (Join-Path $PSScriptRoot 'Commissioning.ps1')
 
@@ -19,8 +20,15 @@ function Assert-LaunchFreshReview([string]$Time) {
   if ($at -gt [DateTime]::UtcNow -or ([DateTime]::UtcNow-$at).TotalHours -gt 24) { throw 'Commissioning source review expired; no launch.' }
 }
 $context=Get-CommissioningContext $Workspace
-if (-not $context.installation -or $context.installation.executable -ine $Installed.executable -or
-    $context.installation.commit -cne $Installed.ownership.commit) { throw 'Commissioning does not cover this installed executable.' }
+if ($PSCmdlet.ParameterSetName -ceq 'Stock') {
+  if (-not $Stock) { throw 'Stock verification must be explicitly requested.' }
+  Assert-StockAuditIdentity $context.installation (Get-Digest $context.executable) $Audit
+  $launchExecutable=$context.executable
+} else {
+  if (-not $context.installation -or $context.installation.executable -ine $Installed.executable -or
+      $context.installation.commit -cne $Installed.ownership.commit) { throw 'Commissioning does not cover this installed executable.' }
+  $launchExecutable=$Installed.executable
+}
 $binding=$Audit.commissioning
 $recordPath=Assert-LocalPath $binding.record
 $separator=[IO.Path]::DirectorySeparatorChar
@@ -71,7 +79,7 @@ $planned=@($decisions | Where-Object {$_.decision -ceq 'quarantine'})
 if (@($prepared.quarantine).Count -ne $planned.Count) { throw 'Applied quarantine differs from source review.' }
 $seen=@{}
 $quarantineDirectory=Join-Path $directory 'quarantine'
-if ((Assert-LocalPath $context.launchEnvironment.workingDirectory) -ine [IO.Path]::GetDirectoryName($Installed.executable)) { throw 'Commissioning working directory differs from the exact installed executable.' }
+if ((Assert-LocalPath $context.launchEnvironment.workingDirectory) -ine [IO.Path]::GetDirectoryName($launchExecutable)) { throw 'Commissioning working directory differs from the exact launch executable.' }
 Assert-CommissioningQuarantine $quarantineDirectory $context.pluginRoots $context.launchEnvironment.path
 foreach ($move in @($prepared.quarantine)) {
   $path=Assert-LocalPath $move.path
@@ -96,7 +104,7 @@ if ((Get-Digest $ini) -cne $Audit.profileIniSha256) { throw 'Current launch prof
 Assert-InputOnlyProfile (Read-ProfileForAudit $ini)
 Assert-CommissioningRestoreIni $inputProfile $ini
 Assert-LaunchFreshReview $Audit.reviewedUtc
-if ($Audit.buildCommit -cne $Installed.ownership.commit) { throw 'Launch audit belongs to another build.' }
+if ($PSCmdlet.ParameterSetName -ceq 'Installed' -and $Audit.buildCommit -cne $Installed.ownership.commit) { throw 'Launch audit belongs to another build.' }
 Assert-CommissioningContext $context (Get-CommissioningContext $Workspace)
 if ((Get-Digest $ini) -cne $Audit.profileIniSha256) { throw 'Profile changed while verifying commissioning.' }
 # Only the exact verified child environment is returned. Caller must assign it

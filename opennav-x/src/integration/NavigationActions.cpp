@@ -96,10 +96,17 @@ MakeNavigationActions(MyFrame &frame,
     return application::Coordinate{vp.clat, lon};
   };
   a.view_waypoint = [&frame](const std::string &id) {
-    auto *p = pWayPointMan ? pWayPointMan->FindWaypointByGuid(id) : nullptr;
-    if (p)
-      frame.JumpToPosition(frame.GetPrimaryCanvas(), p->m_lat, p->m_lon,
-                           frame.GetPrimaryCanvas()->GetVPScale());
+    // Resolve exactly one registered identity using the same copied contract
+    // as the card. Chart centering needs valid mark geometry, not a GPS fix.
+    const auto context = CopyWaypointContext(id, {}, vessel::Clock::now());
+    const auto &p = context.waypoint;
+    if (!p || !std::isfinite(p->latitude_deg) || !std::isfinite(p->longitude_deg) ||
+        std::abs(p->latitude_deg) > 90 || std::abs(p->longitude_deg) > 180)
+      return application::CommandResult{false, "Waypoint position unavailable"};
+    auto *canvas = frame.GetPrimaryCanvas();
+    if (!canvas) return application::CommandResult{false, "Chart canvas unavailable"};
+    frame.JumpToPosition(canvas, p->latitude_deg, p->longitude_deg, canvas->GetVPScale());
+    return application::CommandResult{true, "Waypoint shown on chart"};
   };
   a.view_route = [&frame](const std::string &id) {
     if (!pRouteList)
@@ -169,16 +176,22 @@ MakeNavigationActions(MyFrame &frame,
     cc->m_FinishRouteOnKillFocus = true;
     return result({true, "Route saved", identity.ToStdString(wxConvUTF8)});
   };
-  a.undo_route_point = [&frame, result] {
+  a.can_undo_route_point = [&frame] {
     auto *cc = frame.GetPrimaryCanvas();
     if (!cc || cc->m_routeState <= 1 || !cc->m_pMouseRoute ||
         cc->m_pMouseRoute->GetnPoints() < 2 || !cc->undo ||
         cc->undo->InUndoableAction() || !cc->undo->AnythingToUndo())
-      return application::CommandResult{false, "No route point to undo"};
+      return false;
     const auto *next = cc->undo->GetNextUndoableAction();
     if (!next || next->type != Undo_AppendWaypoint || next->after.empty() ||
         next->after.front() != cc->m_pMouseRoute)
+      return false;
+    return true;
+  };
+  a.undo_route_point = [&frame, result, available = a.can_undo_route_point] {
+    if (!available())
       return application::CommandResult{false, "No current route point to undo"};
+    auto *cc = frame.GetPrimaryCanvas();
     const bool undone = cc->undo->UndoLastAction();
     cc->SetFocus();
     return result({undone, undone ? "Last route point removed" : "Could not undo point"});

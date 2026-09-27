@@ -85,6 +85,9 @@ public:
   const char *LightName() const;
   void ShowObject(const std::string &id, bool route);
   void AfterCanvasLayoutChanged();
+  bool OwnsPane(const wxWindow *window) const;
+  bool OwnsManager(const wxAuiManager &manager) const { return &manager == &manager_; }
+  bool LoadPersistentPerspective(const wxString &perspective);
   void ShowChartContext(application::Coordinate position);
 
 private:

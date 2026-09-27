@@ -341,19 +341,11 @@ void ProductPanel::ShowObject(const std::string &id, bool route,
     ShowPage(ProductPage::RouteDetail, mode);
     return;
   }
-  if (actions_.navigation.catalog) {
-    const auto catalog = actions_.navigation.catalog();
-    {
-      for (const auto &p : catalog.waypoints)
-        if (p.id == id) {
-          point_ = p;
-          ShowPage(ProductPage::WaypointDetail, mode);
-          return;
-        }
-    }
-  }
-  ShowPage(route ? ProductPage::Routes : ProductPage::Waypoints, mode);
-  Result({false, "Selected object no longer available", {}});
+  point_ = {};
+  point_.id = id;
+  point_available_ = false;
+  RefreshWaypoint();
+  ShowPage(ProductPage::WaypointDetail, mode);
 }
 bool ProductPanel::RefreshRoute() {
   route_refreshed_at_ = std::chrono::steady_clock::now();
@@ -363,6 +355,28 @@ bool ProductPanel::RefreshRoute() {
       (current && current->revision != route_.revision);
   route_available_ = current.has_value();
   if (current) route_ = *current;
+  return changed;
+}
+bool ProductPanel::RefreshWaypoint() {
+  point_refreshed_at_ = std::chrono::steady_clock::now();
+  const auto current = actions_.navigation.waypoint_context
+      ? actions_.navigation.waypoint_context(point_.id, point_refreshed_at_)
+      : application::WaypointContext{};
+  const auto &p = current.waypoint;
+  const bool valid = p && std::isfinite(p->latitude_deg) && std::isfinite(p->longitude_deg) &&
+      std::abs(p->latitude_deg) <= 90 && std::abs(p->longitude_deg) <= 180;
+  const auto usable = [&](const vessel::Sample &sample) {
+    const auto assessment = vessel::Assess(sample, point_refreshed_at_);
+    return assessment.value && (assessment.quality == vessel::Quality::Live ||
+        assessment.quality == vessel::Quality::Aging || assessment.quality == vessel::Quality::Estimated);
+  };
+  const bool go = valid && p->editable && usable(current.range_nm) && usable(current.bearing_true_deg);
+  const bool changed = point_available_ != p.has_value() ||
+      (p && p->revision != point_.revision) || point_position_valid_ != valid || point_can_go_ != go;
+  point_available_ = p.has_value();
+  point_position_valid_ = valid;
+  point_can_go_ = go;
+  if (p) point_ = *p;
   return changed;
 }
 void ProductPanel::Update(const ProductState &state, LightMode mode) {
@@ -384,6 +398,9 @@ void ProductPanel::Update(const ProductState &state, LightMode mode) {
   if (page_ == ProductPage::RouteDetail && IsShownOnScreen() &&
       std::chrono::steady_clock::now() - route_refreshed_at_ >= std::chrono::seconds(1))
     rebuild_pending_ |= RefreshRoute();
+  if (page_ == ProductPage::WaypointDetail && IsShownOnScreen() &&
+      std::chrono::steady_clock::now() - point_refreshed_at_ >= std::chrono::seconds(1))
+    rebuild_pending_ |= RefreshWaypoint();
   if (rebuild_pending_) {
     auto *focus=wxWindow::FindFocus();
     const bool restore_focus=focus && (focus==this || IsDescendant(focus));
@@ -621,33 +638,52 @@ void ProductPanel::RouteActions() {
   Action("Back to routes", [this] { ShowPage(ProductPage::Routes, mode_); })->SetRole(ButtonRole::Quiet);
 }
 void ProductPanel::PointActions() {
+  if (!point_available_) {
+    Heading("Waypoint unavailable", "This waypoint was removed or cannot be uniquely identified.");
+    Action("Back to waypoints", [this] { ShowPage(ProductPage::Waypoints, mode_); });
+    return;
+  }
   Heading(Name(point_.name, point_.id),
-          wxString::Format("%.5f, %.5f", point_.latitude_deg,
-                           point_.longitude_deg));
+          point_position_valid_ ? wxString::Format("%.5f, %.5f", point_.latitude_deg,
+                           point_.longitude_deg) : wxString("Position unavailable"));
   Text(W(point_.description));
+  if (!point_can_go_)
+    Text(point_.editable ? "GO TO needs a current vessel position." : "This waypoint is read-only here.");
+  const auto selected = point_;
+  const bool live = !state_.vessel.simulated && !state_.vessel.replayed;
+  const auto command = [this, selected](ContextAction action) {
+    RefreshWaypoint();
+    if (!point_available_ || point_.revision != selected.revision ||
+        (action == ContextAction::GoTo && !point_can_go_) ||
+        state_.vessel.simulated || state_.vessel.replayed) {
+      ShowObject(selected.id, false, mode_);
+      Result({false, "Waypoint or position changed. Review before continuing."});
+      return;
+    }
+    // Own the rendered intent across the modal. Integration checks this exact
+    // revision again after confirmation; the timer never rebuilds a live sheet.
+    const auto result = WaypointSheet(*this, mode_, action, selected, actions_.navigation);
+    if (!result) return;
+    if (action == ContextAction::GoTo && result->ok && actions_.chart) actions_.chart();
+    else {
+      ShowObject(selected.id, false, mode_);
+      Result(*result);
+    }
+  };
   BeginActions(2);
   Action("Back to waypoints",
          [this] { ShowPage(ProductPage::Waypoints, mode_); });
-  Action("View on chart", [this] {
-    if (actions_.chart)
-      actions_.chart();
-    if (actions_.navigation.view_waypoint)
-      actions_.navigation.view_waypoint(point_.id);
-  });
-  Action("GO TO", [this] {
-    const auto result = WaypointSheet(*this, mode_, ContextAction::GoTo, point_, actions_.navigation);
-    if (!result) return;
-    if (result->ok && actions_.chart) actions_.chart();
-    else Result(*result);
-  }, !state_.vessel.simulated && !state_.vessel.replayed)->SetRole(ButtonRole::Primary);
-  Action("Edit waypoint", [this] {
-    const auto result = WaypointSheet(*this, mode_, ContextAction::Edit, point_, actions_.navigation);
-    if (result) Result(*result);
-  }, point_.editable);
-  Action("Delete waypoint", [this] {
-    const auto result = WaypointSheet(*this, mode_, ContextAction::Remove, point_, actions_.navigation);
-    if (result) Result(*result);
-  }, point_.removable);
+  Action("View on chart", [this, selected] {
+    const auto result = actions_.navigation.view_waypoint(selected.id);
+    if (result.ok && actions_.chart) actions_.chart();
+    else Result(result);
+  }, point_position_valid_ && static_cast<bool>(actions_.navigation.view_waypoint));
+  Action("GO TO", [command] { command(ContextAction::GoTo); },
+      live && point_can_go_ && static_cast<bool>(actions_.navigation.go_to_waypoint))->SetRole(ButtonRole::Primary);
+  Action("Edit waypoint", [command] { command(ContextAction::Edit); },
+      live && point_.editable && static_cast<bool>(actions_.navigation.edit_waypoint));
+  Action("Delete waypoint", [command] { command(ContextAction::Remove); },
+      live && point_.removable && static_cast<bool>(actions_.navigation.delete_waypoint));
 }
 void ProductPanel::Instruments() {
   Heading("Vessel instruments", state_.vessel.replayed
@@ -665,14 +701,14 @@ void ProductPanel::Instruments() {
       if (std::find(config.instruments.begin(), config.instruments.end(), key) != config.instruments.end())
         chosen.push_back(key);
     if (chosen.empty()) continue;
-    // Each numeric region has a full readable 132 DIP below the common heading.
+    // Keep values, units and quality together without excessive card whitespace.
     // More than four configured values in a family occupy a second grouped row.
     for (std::size_t start = 0; start < chosen.size(); start += 4) {
       const std::vector<std::string> row(chosen.begin() + start,
           chosen.begin() + std::min(chosen.size(), start + 4));
-      Visual("Instruments " + group.first, 188,
+      Visual("Instruments " + group.first, 168,
           [this, row, title = group.first](XNavPainter &p, wxDC &dc, int width) {
-        p.Card(0, 0, width, 184, title);
+        p.Card(0, 0, width, 164, title);
         const int cell = (width - 48) / static_cast<int>(row.size());
         const auto items = vessel::DisplayItems(state_.vessel);
         for (std::size_t i = 0; i < row.size(); ++i)
@@ -882,10 +918,7 @@ void ProductPanel::Build() {
           Text("No waypoints saved.");
         for (const auto &p : catalog.waypoints)
           Action(Name(p.name, p.id) + (p.in_route ? " / in route" : " / mark"),
-                 [this, p] {
-                   point_ = p;
-                   ShowPage(ProductPage::WaypointDetail, mode_);
-                 });
+                 [this, id = p.id] { ShowObject(id, false, mode_); });
       }
     }
     Action("Advanced / Legacy route manager",

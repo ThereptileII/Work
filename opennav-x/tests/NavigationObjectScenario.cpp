@@ -1,6 +1,7 @@
 #include "NavigationObjectScenario.h"
 #include "chcanv.h"
 #include "integration/NavigationObjects.h"
+#include "integration/NavigationActions.h"
 #include "integration/OpenCPNIntegration.h"
 #include "model/ais_decoder.h"
 #include "model/ais_target_data.h"
@@ -24,6 +25,8 @@
 #include <thread>
 #include <wx/filefn.h>
 #include <wx/dialog.h>
+#include <wx/aui/aui.h>
+#include <wx/panel.h>
 #include <wx/jsonwriter.h>
 #include <wx/thread.h>
 #include <wx/timer.h>
@@ -54,6 +57,9 @@ bool route_modal_changed = false;
 struct ArrivalPoint { double lat, lon, radius; };
 ArrivalPoint first_arrival{}, final_arrival{};
 Route *deleted_detail = nullptr;
+RoutePoint *waypoint_detail = nullptr;
+int waypoint_detail_stage = 0;
+wxString duplicate_original_id;
 std::time_t AisTicksNow() { return wxDateTime::Now().ToUTC().GetTicks(); }
 // Explicit decoder-state injection in the isolated no-output fixture. Keep
 // its synthetic reports current while Python exercises the actual target card.
@@ -147,6 +153,14 @@ void CheckWaypointContext(const Navigation &selected, const std::string &id) {
     ~Restore() { point->m_lat = lat; point->m_lon = lon; gLat = own_lat; gLon = own_lon; }
   } restore{point, old_lat, old_lon, original_lat, original_lon};
   point->m_lat = std::numeric_limits<double>::quiet_NaN();
+  const auto view_actions = MakeNavigationActions(*gFrame, [selected] { return selected; }, {});
+  auto *canvas = gFrame->GetPrimaryCanvas();
+  const auto prior_view = canvas->GetVP();
+  Check(!view_actions.view_waypoint(id).ok &&
+            canvas->GetVP().clat == prior_view.clat && canvas->GetVP().clon == prior_view.clon,
+        "Invalid waypoint chart command rejects without changing viewport");
+  Check(!view_actions.view_waypoint("MISSING-IDENTITY").ok,
+        "Missing waypoint chart command rejects explicitly");
   Check(context.waypoint->latitude_deg == old_lat && context.range_nm.value == distance,
         "Retained waypoint context is independent of later native geometry changes");
   Check(!CopyWaypointContext(id, selected, now).range_nm.value,
@@ -229,6 +243,70 @@ bool HasActivationModal(wxWindow *window) {
       dialog && dialog->IsModal() && dialog->GetTitle() == "Activate route") return true;
   for (auto *child : window->GetChildren())
     if (HasActivationModal(child)) return true;
+  return false;
+}
+bool ObserveWaypointDetail(const Navigation &selected) {
+  const char *phases[]{"waypoint-detail-selected", "waypoint-detail-renamed",
+      "waypoint-detail-protected", "waypoint-detail-invalid", "waypoint-detail-ambiguous",
+      "waypoint-detail-deleted"};
+  if (!waypoint_detail && waypoint_detail_stage == 0) {
+    const auto created = CreateWaypoint({gLat + .2, gLon + .2}, "BETA TEST detail", "Detail lifetime test");
+    Check(created.ok, "Create temporary selected waypoint");
+    waypoint_detail = pWayPointMan->FindWaypointByGuid(created.identity);
+    Check(waypoint_detail, "Temporary selected waypoint registered");
+    gFrame->GetPrimaryCanvas()->ShowMarkPropertiesDialog(waypoint_detail);
+  }
+  if ((waypoint_detail_stage == 1 && !HasVisibleText(gFrame, "BETA TEST externally renamed mark")) ||
+      (waypoint_detail_stage == 3 && !HasVisibleText(gFrame, "Position unavailable"))) {
+    Write(); return false; // wait for the actual one-second detail refresh
+  }
+  report["phase"] = wxString::FromUTF8(phases[waypoint_detail_stage]);
+  Write();
+  if (!wxFileExists(wxString::FromUTF8(directory) + "/" +
+                   wxString::FromUTF8(phases[waypoint_detail_stage]) + "-observed")) return false;
+  if (waypoint_detail_stage == 0) {
+    Check(EditWaypoint(Mark(waypoint_detail->m_GUID.ToStdString(wxConvUTF8)),
+        "BETA TEST externally renamed mark", "Changed while detail remains open").ok,
+        "Rename selected waypoint externally");
+  } else if (waypoint_detail_stage == 1) {
+    Check(HasVisibleText(gFrame, "BETA TEST externally renamed mark"),
+          "Selected waypoint detail updates rendered name without reopening");
+    waypoint_detail->m_bIsInLayer = true;
+  } else if (waypoint_detail_stage == 2) {
+    waypoint_detail->m_bIsInLayer = false;
+    waypoint_detail->m_lat = std::numeric_limits<double>::quiet_NaN();
+  } else if (waypoint_detail_stage == 3) {
+    Check(HasVisibleText(gFrame, "Position unavailable"),
+          "Invalid selected waypoint displays no NaN coordinates");
+    waypoint_detail->m_lat = gLat + .2;
+    auto *other = pWayPointMan->FindWaypointByGuid(mark_id);
+    Check(other, "Original mark remains registered");
+    duplicate_original_id = other->m_GUID;
+    other->m_GUID = waypoint_detail->m_GUID;
+    const auto actions = MakeNavigationActions(*gFrame, [selected] { return selected; }, {});
+    const auto before = gFrame->GetPrimaryCanvas()->GetVP();
+    Check(!actions.view_waypoint(waypoint_detail->m_GUID.ToStdString(wxConvUTF8)).ok &&
+              gFrame->GetPrimaryCanvas()->GetVP().clat == before.clat &&
+              gFrame->GetPrimaryCanvas()->GetVP().clon == before.clon,
+          "Duplicate identity cannot center the chart on an arbitrary waypoint");
+  } else if (waypoint_detail_stage == 4) {
+    Check(HasVisibleText(gFrame, "Waypoint unavailable"),
+          "Ambiguous selected detail removes actions");
+    // The other test mark was not replaced or persisted under this temporary ID.
+    for (auto *n = pWayPointMan->GetWaypointList()->GetFirst(); n; n = n->GetNext())
+      if (n->GetData() != waypoint_detail && n->GetData()->m_GUID == waypoint_detail->m_GUID)
+        n->GetData()->m_GUID = duplicate_original_id;
+    Check(DeleteWaypoint(Mark(waypoint_detail->m_GUID.ToStdString(wxConvUTF8))).ok,
+          "Remove selected temporary mark through native database");
+    waypoint_detail = nullptr;
+  } else {
+    Check(HasVisibleText(gFrame, "Waypoint unavailable"),
+          "Deleted selected detail remains explicitly unavailable");
+    Record("Open waypoint detail refreshes rename/protection and refuses invalid, ambiguous and deleted selections");
+    Record("Chart centering rejects missing, nonfinite and duplicate waypoint identities without viewport mutation");
+    return true;
+  }
+  ++waypoint_detail_stage;
   return false;
 }
 bool ObserveRouteDetail(const Navigation &selected) {
@@ -345,13 +423,30 @@ void ObjectScenarioStep(const vessel::Navigation &selected) {
     return;
   try {
     Check(wxIsMainThread(), "Application thread required");
-    Check(++waited < 95, "Object scenario timed out");
+    Check(++waited < 130, "Object scenario timed out");
     if (!added_late_connection) {
       Check(TheConnectionParams().empty(), "Late-add fixture requires no initial connections");
       Check(!selected.latitude_deg.value, "No selected GPS may precede connection addition");
       // Give the actual application two completed navigation timer passes with
       // no input. Add through the same API used by the normal connection editor.
       if (++late_connection_ticks < 3) return;
+      {
+        // Same pane name is not ownership. A foreign manager must retain
+        // ordinary wxAUI behavior while the real XNav shell is active.
+        auto *other = new wxFrame(nullptr, wxID_ANY, "Isolated workspace check");
+        wxAuiManager manager(other);
+        auto *pane = new wxPanel(other);
+        manager.AddPane(pane, wxAuiPaneInfo().Name("OpenNavTop").Left());
+        const auto saved = manager.SavePerspective();
+        manager.GetPane(pane).Right();
+        Check(!opennav::IsTransientXNavPane(pane), "Pane names do not establish XNav ownership");
+        Check(opennav::LoadPersistentPerspective(manager, saved) &&
+                  manager.GetPane(pane).dock_direction == wxAUI_DOCK_LEFT,
+              "Foreign AUI manager uses normal perspective loading");
+        manager.UnInit();
+        other->Destroy();
+        Record("XNav workspace restoration is bound to actual owned pane pointers and manager");
+      }
       std::ifstream in(directory + "/OPENNAV_OBJECT_INPUT_PORT");
       unsigned port = 0;
       Check(bool(in >> port) && port >= 1024 && port <= 65535,
@@ -678,15 +773,17 @@ void ObjectScenarioStep(const vessel::Navigation &selected) {
           pWayPointMan->FindWaypointByGuid(mark_id));
       report["phase"] = wxString("waypoint-card");
     } else if (step == 6 && !wxFileExists(wxString::FromUTF8(directory) + "/waypoint-context-observed")) {
-      Check(++context_waited < 20, "Waypoint compact context and Details interaction not observed");
+      Check(++context_waited < 35, "Waypoint compact context and Details interaction not observed");
       Write();
       return;
+    } else if (step == 7) {
+      if (!ObserveWaypointDetail(selected)) return;
     } else if (step == 8) {
       ShowAISTargetQueryDialog(gFrame->GetPrimaryCanvas(), target->MMSI);
       report["phase"] = wxString("ais-card");
     } else if (step == 9) {
       if (!wxFileExists(wxString::FromUTF8(directory) + "/ais-context-observed")) {
-        Check(++context_waited < 35, "AIS compact chart selection not observed");
+        Check(++context_waited < 50, "AIS compact chart selection not observed");
         Write();
         return;
       }

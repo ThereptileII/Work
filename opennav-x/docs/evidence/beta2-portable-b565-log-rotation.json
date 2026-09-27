@@ -1,0 +1,30 @@
+{
+  "commit": "b565553d284e91f9aea552b3993428206de5247d",
+  "run": "https://github.com/ThereptileII/Work/actions/runs/36281109419",
+  "job": 108513422695,
+  "gate": "Fixture-free extracted native Windows portable package",
+  "status": "failed; replacement native evidence required",
+  "artifactId": 10919472034,
+  "artifactSha256": "456fdcf4de8282a0903d6884a89db2324cf333e4d553e4ae6f1f5bf5d14db4af",
+  "artifactVerification": "Downloaded bytes match GitHub API digest",
+  "reportedError": "Normal chart initialization did not complete",
+  "observed": {
+    "phase": "Safe-to-XNav, eighth application start",
+    "currentLogFinalizationMarkers": 1,
+    "rotatedLogFinalizationMarkers": 7,
+    "rotatedLogBytes": 1044495,
+    "currentLogBytes": 147474,
+    "currentShellTicks": 239,
+    "nativeScreenshot": "recovery-failure-8152.png",
+    "nativeScreenshotReviewed": true,
+    "visibleCoastline": true,
+    "productFixturesEnabled": false,
+    "previousModeCyclesCoastlineChecksPassed": true
+  },
+  "cause": "Harness counted lifetime Finalize Canvases markers only in the current log; normal upstream startup log rotation moved the previous seven markers to opencpn.log.log",
+  "repair": "Capture bytes before each deliberate startup/restart; require a fresh OpenCPN startup marker followed by finalization in new appended or replaced log bytes",
+  "localVerification": "Initial, append, rotation, unfinished and stale-marker tests pass; actual retained eighth-start logs recognize new startup and reject reused snapshot",
+  "preservedGates": ["Native coastline pixels", "Clean process exits", "Exact extracted file hashes", "Fixture-free unavailable data", "Normal profile isolation"],
+  "productAcceptance": false,
+  "boatAccess": false
+}

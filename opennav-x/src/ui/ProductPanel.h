@@ -94,6 +94,7 @@ public:
 private:
   void Build();
   bool RefreshRoute();
+  bool RefreshWaypoint();
   void BeginActions(int columns, int minimum_width = 200);
   void Back();
   void Visual(const wxString &name, int height,
@@ -137,6 +138,8 @@ private:
   bool rebuild_pending_ = false;
   std::chrono::steady_clock::time_point route_refreshed_at_{};
   application::Waypoint point_;
+  bool point_available_ = false, point_position_valid_ = false, point_can_go_ = false;
+  std::chrono::steady_clock::time_point point_refreshed_at_{};
   int mmsi_ = 0;
   vessel::Quantity source_quantity_ = vessel::Quantity::Depth;
   wxBoxSizer *body_ = nullptr;

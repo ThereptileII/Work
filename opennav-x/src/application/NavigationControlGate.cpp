@@ -40,6 +40,10 @@ NavigationActions GuardNavigationChanges(NavigationActions a,
   a.go_to = Guard(a.go_to, allowed);
   a.go_to_waypoint = Guard(a.go_to_waypoint, allowed);
   a.undo_route_point = Guard(a.undo_route_point, allowed);
+  if (a.can_undo_route_point)
+    a.can_undo_route_point = [check = a.can_undo_route_point, allowed] {
+      return allowed() && check();
+    };
   a.cancel_route = Guard(a.cancel_route, allowed);
   a.start_route = Guard(a.start_route, allowed);
   a.finish_route = Guard(a.finish_route, allowed);

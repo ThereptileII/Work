@@ -176,11 +176,11 @@ def data(predicate=lambda d: True, timeout=20):
                           last.get('runtime', {}).get('display', {})))
 
 
-def control(label):
+def control(label, enabled=True):
     selected = []
     def ready(record):
         selected[:] = [row for row in record.get('runtime', {}).get('display', {}).get('interaction_controls', [])
-                       if row['label'] == label and row['visible'] and row['enabled']]
+                       if row['label'] == label and row['visible'] and row['enabled']==enabled]
         # The owned modal is traversed after its underlying page. A confirmed
         # action can intentionally share its caption with that page action.
         return len(selected) == 1 or (len(selected) > 1 and any(
@@ -371,15 +371,22 @@ try:
     catalog('Routes')
     click('Create route on chart')
     data(lambda d: d['runtime']['display']['route_creation_active'])
-    draft_controls = {name: control(name) for name in ('Cancel', 'Undo', 'Done')}
+    draft_controls = {name: control(name, enabled=name!='Undo') for name in ('Cancel', 'Undo', 'Done')}
     assert all(bounds['width'] >= 88 and bounds['height'] >= 48 for bounds in draft_controls.values())
     draft_chart = data()['runtime']['display']['chart_region']
     assert draft_chart == initial_chart, (initial_chart, draft_chart)
     report['draft_controls'] = draft_controls
     report['checks'].append('Draft actions have full-width touch labels without changing chart or data-rail viewport')
-    for coordinate in [(.22, .62), (.45, .42), (.68, .64)]:
-        chart_click(*coordinate)
+    chart_click(.22, .62)
+    control('Undo', enabled=False)
+    chart_click(.45, .42)
+    control('Undo')
     click('Undo')
+    control('Undo', enabled=False)
+    chart_click(.45, .42)
+    chart_click(.68, .64)
+    click('Undo')
+    control('Undo')
     data(lambda d: d['runtime']['display']['route_creation_active'])
     click('Done')
     control('Save route')
@@ -392,6 +399,7 @@ try:
     data(lambda d: d['ui_page'] == 'Route detail' and not d['runtime']['display']['route_creation_active'])
     capture('06-saved-route')
     report['checks'].append('Three chart taps, Undo, naming Cancel retaining draft, and named Save open the real route detail')
+    report['checks'].append('Native draft Undo disabled with zero/one point, enabled with two, disabled after undo to one, and usable again after another point')
     catalog('Routes')
     click('Create route on chart')
     chart_click(.30, .75)

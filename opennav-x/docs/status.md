@@ -36,6 +36,11 @@ Connection values were not edited and no application was launched. A separate
 The original cold, hash-verified recovery set remains complete: 2,123 application files and
 539 profile files (1,318,897,252 bytes). The earlier incomplete attempt remains
 separate and is not an accepted backup.
+A second cold recovery set now preserves verified stock **5.12.4** plus the
+recovered working INI: 2,123 application files, 539 profile files and
+1,318,975,173 bytes. Every copy and final source inventory matched; independent
+executable/INI hashes also match. The original pre-upgrade set remains retained.
+[Working-state backup evidence](evidence/beta2-boat-stock-working-backup.json).
 Private chart/profile content remains on the boat PC or in ignored local
 inspection evidence, never in the repository.
 
@@ -241,6 +246,49 @@ No unrelated Desktop content is included in feedback documentation.
   This is a failed development candidate, never deployed.
   [Evidence](evidence/beta2-windows-12100a74.json) and
   [four-screen review](design/reviews/beta2-native-12100.md).
+
+- Replacement `b565553d284e91f9aea552b3993428206de5247d`
+  ([CI 36281109419](https://github.com/ThereptileII/Work/actions/runs/36281109419))
+  passes both 67-contract jobs, native integration, the Course-up pointer gate
+  and the complete fixture UI suite. Its fixture-free native build, 100/125/150%
+  DPI/touch checks and chart/plugin gates also pass. Software basemap rendering uses a
+  copied viewport instead of invalidating the live quilt during paint. Native
+  diagnostic JSON is read explicitly as UTF-8. Extracted portable testing fails
+  because its startup observer counts earlier initialization markers after
+  upstream log rotation; the actual Safe-to-XNav window has coastline content.
+  The corrected observer requires a fresh startup/finalization sequence and
+  retains chart/clean-exit checks. Installer and native endurance were skipped;
+  the candidate has not been deployed. [Failure evidence and repair](evidence/beta2-portable-b565-log-rotation.json).
+  The downloaded full native evidence archive matches the API and upload-log
+  SHA-256 `a548bac982aa8406b960584dd88b8a52071e04d546a5949da8ba2e0f78e78cb2`.
+- A separate plugin-workspace repair restores the normal upstream perspective
+  while preserving only XNav-owned temporary panes. It uses exact manager and
+  window identity. Local fixture and production builds pass, along with 110
+  integrated cases, 22 object groups and software/OpenGL chart checks including
+  actual floating Dashboard captures. The native and boat gates remain open.
+  [Workspace review](design/reviews/beta2-plugin-workspace.md).
+- The optional commissioning restart boundary passes 886 protocol checks and
+  359 native assertions across 24 marker-only process scenarios. This is a
+  deliberately armed, one-use recheck of the saved profile, plugin trees and
+  original process identity before launching a replacement. Normal unarmed
+  mode switching is unchanged. The full broker, actual Prepare/Arm procedure,
+  packaged application capability and boat transitions require separate gates;
+  these standalone results do not authorize an older helper or application.
+  [Native transport evidence](evidence/commissioning-restart-fe397.json).
+- Current local contracts pass **70/70**, including packaged guard capability
+  and startup-log rotation. Guard integration passes 110/110 in both fixture and
+  fixture-free Linux builds; the separate actual loader test preserves the
+  normal profile. Instrument whitespace refinement retains value fonts and
+  data-quality labels and passes the full Linux UI/scenario smoke.
+  [Instrument/energy viewport review](design/reviews/beta2-instrument-density.md).
+- Actual full restart-broker native tests now pass six marker-only cases and 48
+  assertions, including refused output/plugin changes and uncertain consumed
+  permits. The scheduled-task policy still needs a native replacement: observed
+  Task Scheduler uses an account name for its principal and null for no triggers.
+  Both representations must be verified without weakening exact SID/action
+  identity. Actual Prepare/Arm/Collect and real application transitions remain
+  pending. The separate stock-after-uninstall review tool has portable coverage
+  but has not launched stock OpenCPN on the boat.
 
 ## Accepted Beta 1 baseline
 

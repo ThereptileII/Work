@@ -544,7 +544,7 @@ void Attach(MyFrame& frame, wxAuiManager& manager, wxFileConfig& config) {
   actions.diagnostics_folder=[] {
     if(!diagnostic_directory.empty()) wxLaunchDefaultApplication(wxString::FromUTF8(diagnostic_directory));
   };
-  actions.diagnostic_snapshot = [&frame, last = vessel::Time{}](
+  actions.diagnostic_snapshot = [&frame, &manager, last = vessel::Time{}](
                                     const vessel::VesselState &state,
                                     const smartnav::EnergyPrediction &energy,
                                     const std::string &page) mutable {
@@ -557,6 +557,10 @@ void Attach(MyFrame& frame, wxAuiManager& manager, wxFileConfig& config) {
         integration::ReadRuntimeDiagnostics(*frame.GetPrimaryCanvas());
     runtime["test_fixtures"] = integration::TestFixturesEnabled();
     runtime["build_purpose"] = wxString::FromUTF8(integration::BuildPurpose().data());
+#if XNAV_ENABLE_TEST_FIXTURES
+    // Copied wxAUI state for the isolated plugin-workspace regression.
+    runtime["test_workspace_perspective"] = manager.SavePerspective();
+#endif
     if (shell) {
       runtime["display"]["light"] = wxString::FromUTF8(shell->LightName());
       runtime["display"]["native_caption_themed"] = shell->NativeCaptionThemed();
@@ -731,6 +735,16 @@ void AfterSettingsReconfigured() {
   host->InvalidateAllGL();
   host->ReloadAllVP();
   host->RefreshAllCanvas(false);
+}
+
+bool IsTransientXNavPane(const wxWindow *window) {
+  return shell && IsXNav() && shell->OwnsPane(window);
+}
+
+bool LoadPersistentPerspective(wxAuiManager &manager, const wxString &perspective) {
+  if (shell && IsXNav() && shell->OwnsManager(manager))
+    return shell->LoadPersistentPerspective(perspective);
+  return manager.LoadPerspective(perspective, false);
 }
 
 void AfterAnchorWatch(){

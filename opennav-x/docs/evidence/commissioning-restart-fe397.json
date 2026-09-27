@@ -1,0 +1,34 @@
+{
+  "scope": "Standalone native Windows marker-only restart transport; not broker, installed-product or boat acceptance",
+  "commit": "fe397d85727dac015cea11615ae8b66f5caf788a",
+  "sourceEquivalentLocalCommit": "9163ef5",
+  "run": "https://github.com/ThereptileII/Work/actions/runs/36282089707",
+  "job": 108515736576,
+  "compiler": "Native MSVC, Win32",
+  "codecChecksPassed": 886,
+  "nativeChecksPassed": 359,
+  "processCasesPassed": 24,
+  "artifact": "development-commissioning-restart-fe397d85727dac015cea11615ae8b66f5caf788a",
+  "artifactId": 10918903968,
+  "artifactSha256": "9ad92a20e08506db6fb98cfc50629e2b3c724cd438e520e2f7fda5046037033e",
+  "artifactVerification": "Downloaded bytes match both GitHub API digest and native upload log; JSON outcome inspected",
+  "exitedProcessImage": {
+    "genuineHandleRetained": true,
+    "win32QuerySucceeded": false,
+    "win32Error": 31,
+    "nativeQuerySucceeded": true,
+    "nativeFilePathMatched": true,
+    "differentExecutableRejected": true,
+    "fastParentCaseHelperExit": 0
+  },
+  "pendingAsyncConnectAndReadCancellationPassed": true,
+  "actualMarineCode": false,
+  "boatAccess": false,
+  "physicalOutput": false,
+  "outstanding": [
+    "Actual PowerShell Prepare and full commissioning broker native execution",
+    "Actual app/helper capability attestation in fixture-free product packaging",
+    "Full integrated Windows regressions and installed in-app restart",
+    "One reviewed real boat transition at a time"
+  ]
+}

@@ -5,16 +5,24 @@ param([Parameter(Mandatory=$true)][string]$Request)
 $job=Read-Record $Request
 $result=@{status='failed';action=$job.action;utc=[DateTime]::UtcNow.ToString('o')}
 try {
-  if ($job.action -notin @('Launch','LaunchPortableReview','Close','Capture','ReviewWindow')) { throw 'Unsupported interactive action.' }
+  if ($job.action -cnotin @('Launch','LaunchPortableReview','Close','Capture','ReviewWindow','LaunchStock','ReviewStock')) { throw 'Unsupported interactive action.' }
   $exe=Assert-LocalPath $job.executable
   if ((Get-Digest $exe) -cne $job.executableSha256) { throw 'Application changed between dispatch and interactive execution.' }
-  if ($job.action -in @('Launch','LaunchPortableReview')) {
+  if ($job.action -ceq 'LaunchStock') {
+    . (Join-Path $PSScriptRoot 'StockReview.ps1')
+    $result=Invoke-StockLaunch $job
+  } elseif ($job.action -ceq 'ReviewStock') {
+    . (Join-Path $PSScriptRoot 'StockReview.ps1')
+    $result=Invoke-StockReview $job
+  } elseif ($job.action -in @('Launch','LaunchPortableReview')) {
     # Repeat the complete guard inside the interactive session, immediately
     # before launch. A queued task is not a reusable safety approval.
+    $restartBinding=$null
     if ($job.action -eq 'Launch') {
       $config=Get-Target $job.workspace;$installed=Get-Installed
       if ((Assert-LocalPath $installed.executable) -ine $exe) { throw 'Installed generation changed since dispatch.' }
       $launchEnvironment=Assert-ReadOnlyAudit $config $installed $job.workspace
+      $restartBinding=Get-OptionalRestartBinding $job $installed $config $launchEnvironment
     } else {
       . (Join-Path $PSScriptRoot 'PortableReview.ps1')
       $review=Read-PortableReview $job.reviewRecord $job.reviewRecordSha256
@@ -35,8 +43,13 @@ try {
       $start.Arguments='--portable --configdir "'+$review.product.profile+'" --no_opengl '+$job.mode
       $start.EnvironmentVariables['PATH']=$env:WINDIR+'\System32;'+$env:WINDIR
     }
+    if($restartBinding) {
+      . (Join-Path $PSScriptRoot 'RestartCommissioning.ps1')
+      Set-RestartLaunchBinding $start $restartBinding
+    }
     $process=[Diagnostics.Process]::Start($start)
     try {
+      if($restartBinding){Save-RestartColdChild $process $restartBinding}
       $deadline=[DateTime]::UtcNow.AddSeconds(45)
       do { Start-Sleep -Milliseconds 250;$process.Refresh() } while (-not $process.HasExited -and -not $process.MainWindowHandle -and [DateTime]::UtcNow -lt $deadline)
       if ($process.HasExited -or -not $process.MainWindowHandle) { throw 'Application failed to expose its normal window; inspect logs and Safe Mode.' }

@@ -1,0 +1,33 @@
+{
+  "schema": 1,
+  "commit": "7e8677561ad443a7a2d77884681e2ebe324b3fe6",
+  "localSourceCommit": "ee807da29ac4952152fb0ef27f8c89cadabe9ca8",
+  "ciRun": "https://github.com/ThereptileII/Work/actions/runs/36280954099",
+  "status": "failed development tooling; not used on boat",
+  "scope": "Actual native Win32 restart helper with marker-only processes and Windows PowerShell 5.1; no OpenCPN marine code or hardware",
+  "nativeCompile": "passed",
+  "protocolChecks": 886,
+  "completedScenarios": [
+    "plain",
+    "partial",
+    "invalid",
+    "empty",
+    "both-empty",
+    "unsupported-mode",
+    "no-listener",
+    "parent-error"
+  ],
+  "failure": "First connected broker scenario threw Safe handle has been closed. The C# verifier disposed its asynchronous wait handle before .NET Framework EndWaitForConnection used it. EndRead/EndWrite shared the same pattern.",
+  "replacement": "Task-based Begin/End ownership plus pending-connect/read cancellation regressions; native replacement gate required",
+  "artifact": {
+    "id": 10918763988,
+    "sha256": "d2ad8318da866f0851ec29a5fe9a2c6540e8958bebffd7c3cf1332ab8095cd57",
+    "downloadedAndHashVerifiedAgainstApiAndUploadLog": true
+  },
+  "maintenance": {
+    "checks": 340,
+    "suites": 7,
+    "result": "passed separately"
+  },
+  "physicalCommands": 0
+}

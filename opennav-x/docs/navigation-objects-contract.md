@@ -33,6 +33,22 @@ rendered selection by value, including the original Stop/Activate choice.
 Modal sheets defer all timer-triggered structural rebuilds, retaining pending
 changes until the modal closes. Integration still revalidates at dispatch.
 
+Waypoint detail uses the existing unique `CopyWaypointContext` read boundary
+and reconciles the visible selection once per second. A renamed or protected
+waypoint updates without reopening; a deleted or ambiguous identity shows
+unavailable and has no object actions. Invalid coordinates show **Position
+unavailable**. GO TO requires current selected-position provenance and an
+editable waypoint, matching the compact card and command boundary. Commands
+retain the rendered selection across confirmation and revalidate after it;
+an external change cannot redirect the original intent. Chart centering needs
+valid, uniquely identified waypoint geometry but does not require GPS.
+
+Draft Undo availability inspects OpenCPN's current draft and next undo action.
+Zero/one-point drafts disable Undo because the pinned native append-undo path
+requires an earlier route point. The command checks the same eligibility again
+at dispatch and reports failure visibly; no new route editing model is added.
+These Beta 2 refinements require their own native Windows qualification.
+
 ## Reused OpenCPN operations
 
 - Route activation uses `Routeman::FindBestActivatePoint` and `ActivateRoute`

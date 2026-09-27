@@ -6,6 +6,8 @@ class wxFileConfig;
 class wxMenu;
 class wxAuiManager;
 class MyFrame;
+class wxWindow;
+class wxString;
 
 namespace opennav {
 namespace integration { struct ObservedRoutePass; }
@@ -35,6 +37,9 @@ void Attach(MyFrame& frame, wxAuiManager& manager, wxFileConfig& config);
 void AfterDeferredInitialization();
 // Reconcile XNav visibility after upstream Options rebuilds canvas panes.
 void AfterSettingsReconfigured();
+// Only actual XNav-owned temporary panes are excluded from saved workspaces.
+bool IsTransientXNavPane(const wxWindow *window);
+bool LoadPersistentPerspective(wxAuiManager &manager, const wxString &perspective);
 void AppendModeMenu(wxMenu& menu);
 bool PrepareClose(wxFileConfig& config);
 void CompleteRestart();
