@@ -105,3 +105,20 @@ fallback. The fresh native PowerShell fixture deliberately makes its own separat
 non-overlapping window foreground before invoking this path; denied activation
 still stops before capture and intent. Native qualification of this additional
 foreground transition is separate from the already-passed JSON reconstruction.
+
+The subsequent boat comparison retained identical warning identity but refused
+before intent because the full image changed around the activated title bar.
+Capture now observes at most 20 complete images over five seconds, at 150 ms
+intervals, after the single ordinary activation. Every observation runs the
+original before/after native identity, foreground and occlusion guards. A guard
+exception aborts immediately. Only two consecutive matches to the original
+reviewed full-image SHA permit publication of `before-agree.png` and then one
+acknowledgement intent. All `.settle-NN.png` observations remain private evidence;
+no body, title-bar, button or alpha pixels are cropped or excluded.
+
+Deterministic capture-sequence tests cover delayed paint, an isolated match
+followed by mismatch, persistent changes, identity failure and deadline expiry.
+These cases qualify settling decisions, not a claim to force actual DWM timing.
+The actual English/Swedish fresh-process fixture separately proves the production
+path retains two consecutive matching complete-window captures before Agree.
+A permanently different image still requires a new inspected/reviewed capture.

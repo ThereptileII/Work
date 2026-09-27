@@ -70,12 +70,32 @@ function Restore-StockWelcomeAgreementForeground([int]$ProcessId,$Info) {
   $null=[OpenNavX.StockWelcomeNative]::Inspect($ProcessId)
   [OpenNavX.StockWelcomeNative]::AssertUnchanged($ProcessId,$Info)
 }
+function Save-StockWelcomeSettledCapture([int]$ProcessId,$Info,[string]$ExpectedImageHash,[string]$BeforeImage) {
+  if ($ExpectedImageHash -cnotmatch '^[a-f0-9]{64}$' -or (Test-Path -LiteralPath $BeforeImage)) { throw 'New image path and exact reviewed hash required.' }
+  $watch=[Diagnostics.Stopwatch]::StartNew();$consecutive=0
+  # DWM can finish painting a newly active title bar after WM_NULL completes.
+  # Observe only: no focus/input retries, cropped pixels, or changed authority.
+  for($attempt=0;$attempt -lt 20 -and $watch.ElapsedMilliseconds -lt 5000;$attempt++) {
+    $candidate=$BeforeImage+'.settle-'+$attempt.ToString('00')+'.png'
+    $hash=Save-StockWelcomeCapture $ProcessId $Info $candidate
+    if ($watch.ElapsedMilliseconds -ge 5000) { break }
+    if ($hash -ceq $ExpectedImageHash) { $consecutive++ } else { $consecutive=0 }
+    if ($consecutive -eq 2) {
+      # Preserve every observation and publish only the exact reviewed image.
+      [IO.File]::Copy($candidate,$BeforeImage,$false)
+      if ((Get-Digest $BeforeImage) -cne $ExpectedImageHash) { throw 'Settled warning copy changed before acknowledgement.' }
+      return $ExpectedImageHash
+    }
+    if ($attempt -lt 19) { Start-Sleep -Milliseconds 150 }
+  }
+  throw 'Warning pixels did not settle to the exact reviewed image; no acknowledgement sent. Private full-image attempts retained.'
+}
 function Invoke-StockWelcomeAgreement([int]$ProcessId,$Info,[string]$ExpectedImageHash,[string]$BeforeImage,[string]$IntentPath) {
   if ($ExpectedImageHash -cnotmatch '^[a-f0-9]{64}$') { throw 'Reviewed warning image hash required.' }
   $Info=Convert-StockWelcomeWindow $Info
   if ($Info.ProcessId -ne $ProcessId) { throw 'Captured warning belongs to another process.' }
   Restore-StockWelcomeAgreementForeground $ProcessId $Info
-  $hash=Save-StockWelcomeCapture $ProcessId $Info $BeforeImage
+  $hash=Save-StockWelcomeSettledCapture $ProcessId $Info $ExpectedImageHash $BeforeImage
   if ($hash -cne $ExpectedImageHash) { throw 'Warning pixels changed since inspection; no acknowledgement sent.' }
   # Durable exclusive one-use intent. Even uncertain delivery cannot be retried
   # using this inspection. Never confuse transmission with modal dismissal.

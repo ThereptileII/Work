@@ -211,10 +211,62 @@ Pass 'Request return value is diagnostic; successful exact-modal checks remain m
   $activation.Invoke($null,[object[]]@($false,$true,[OpenNavX.StockActivationFixture]::Success()))
   if([OpenNavX.StockActivationFixture]::Checks -ne 1){throw 'Actual verification skipped'}
 }
+# Deterministic capture sequencing tests exercise the production settling body
+# with retained disposable file bytes; native actual-window tests remain separate.
+& {
+ $temporary=Join-Path ([IO.Path]::GetTempPath()) ('OpenNav-warning-settle-'+[guid]::NewGuid().ToString('N'))
+ $null=New-Item -ItemType Directory -Path $temporary
+ function Get-Digest([string]$Path) { $sha=[Security.Cryptography.SHA256]::Create();try{return ([BitConverter]::ToString($sha.ComputeHash([IO.File]::ReadAllBytes($Path)))).Replace('-','').ToLowerInvariant()}finally{$sha.Dispose()} }
+ function Start-Sleep { param([int]$Milliseconds) if($Milliseconds -ne 150){throw 'Unexpected settling interval'} }
+ function Save-StockWelcomeCapture([int]$ProcessId,$Info,[string]$Path) {
+  if($ProcessId -ne 42 -or $Info.Modal -ne 456){throw 'Original identity lost'}
+  $script:settleCalls++
+  if($script:settleDelay){[Threading.Thread]::Sleep(5100)}
+  if($script:settleThrowAt -eq $script:settleCalls){throw 'TEST exact native identity changed'}
+  if(Test-Path -LiteralPath $Path){throw 'Observation overwrite'}
+  $value=$script:settleSequence[[Math]::Min($script:settleCalls-1,$script:settleSequence.Count-1)]
+  [IO.File]::WriteAllText($Path,$value)
+  return Get-Digest $Path
+ }
+ function ResetSettle($Sequence) {$script:settleSequence=$Sequence;$script:settleCalls=0;$script:settleThrowAt=0;$script:settleDelay=$false}
+ try {
+  $seed=Join-Path $temporary 'expected';[IO.File]::WriteAllText($seed,'reviewed pixels');$expected=Get-Digest $seed
+  Pass 'Delayed complete frames must become two consecutive exact reviewed frames' {
+   ResetSettle @('painting','painting','reviewed pixels','reviewed pixels');$out=Join-Path $temporary 'delayed.png'
+   $hash=Save-StockWelcomeSettledCapture 42 $inspection.nativeWindow $expected $out
+   if($hash -cne $expected -or $settleCalls -ne 4 -or (Get-Digest $out) -cne $expected -or @(Get-ChildItem -LiteralPath $temporary -Filter 'delayed.png.settle-*.png').Count -ne 4){throw 'Delayed capture proof/retention differs'}
+  }
+  Pass 'A single match never hides a later mismatching complete frame' {
+   ResetSettle @('reviewed pixels','painting','reviewed pixels','reviewed pixels');$out=Join-Path $temporary 'transient.png'
+   $null=Save-StockWelcomeSettledCapture 42 $inspection.nativeWindow $expected $out
+   if($settleCalls -ne 4){throw 'Nonconsecutive reviewed frame was accepted'}
+  }
+  Pass 'Persistent mismatch is bounded and publishes no acknowledged image' {
+   ResetSettle @('changed full image');$out=Join-Path $temporary 'mismatch.png';$failed=$false
+   try{$null=Save-StockWelcomeSettledCapture 42 $inspection.nativeWindow $expected $out}catch{$failed=$true}
+   if(-not $failed -or $settleCalls -ne 20 -or (Test-Path -LiteralPath $out)){throw 'Mismatch did not fail within capture bound'}
+  }
+  Pass 'Changed native identity aborts immediately without capture retries or publication' {
+   ResetSettle @('painting','reviewed pixels');$script:settleThrowAt=2;$out=Join-Path $temporary 'identity.png';$failed=$false
+   try{$null=Save-StockWelcomeSettledCapture 42 $inspection.nativeWindow $expected $out}catch{$failed=$true}
+   if(-not $failed -or $settleCalls -ne 2 -or (Test-Path -LiteralPath $out)){throw 'Identity refusal retried or published'}
+  }
+  Pass 'An expired absolute settling deadline refuses even a matching capture' {
+   ResetSettle @('reviewed pixels');$script:settleDelay=$true;$out=Join-Path $temporary 'deadline.png';$failed=$false
+   try{$null=Save-StockWelcomeSettledCapture 42 $inspection.nativeWindow $expected $out}catch{$failed=$true}
+   if(-not $failed -or $settleCalls -ne 1 -or (Test-Path -LiteralPath $out)){throw 'Expired matching capture became authority'}
+  }
+  Pass 'Existing final image is never overwritten while settling' {
+   ResetSettle @('reviewed pixels');$failed=$false
+   try{$null=Save-StockWelcomeSettledCapture 42 $inspection.nativeWindow $expected $seed}catch{$failed=$true}
+   if(-not $failed -or $settleCalls -ne 0 -or (Get-Digest $seed) -cne $expected){throw 'Existing evidence changed'}
+  }
+ } finally {Remove-Item -LiteralPath $temporary -Recurse -Force}
+}
 function Restore-StockWelcomeAgreementForeground([int]$ProcessId,$Info) { if($script:rejectAgreementForeground){throw 'TEST ordinary foreground activation refused'} }
 $script:rejectAgreementForeground=$false
 $script:captured=0;$script:written=0
-function Save-StockWelcomeCapture([int]$ProcessId,$Info,[string]$Path){$script:captured++;return ('f'*64)}
+function Save-StockWelcomeSettledCapture([int]$ProcessId,$Info,[string]$ExpectedImageHash,[string]$BeforeImage){$script:captured++;return ('f'*64)}
 function Write-Record([string]$Path,$Record){$script:written++;throw 'TEST stop after durable-intent boundary; no native APIs invoked'}
 Refuse 'Malformed capture hash stops before capture or native APIs' {Invoke-StockWelcomeAgreement 42 $null 'bad' 'before.png' 'intent.json'}
 if($script:captured -ne 0 -or $script:written -ne 0){throw 'Malformed evidence reached capture/journal'}

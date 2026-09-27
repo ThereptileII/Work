@@ -172,6 +172,7 @@ try {
   $ackResult=$ackText|ConvertFrom-Json
   Check ($ackResult.status -ceq 'passed' -and $ackResult.freshProcessId -ne $PID -and $ackResult.powerShellEdition -ceq 'Desktop' -and $ackResult.powerShellMajor -eq 5 -and $ackResult.sharedProductionAgreement) 'Actual serialized NoticeInfo reaches shared acknowledgement in a fresh PowerShell 5.1 process'
   Check ($ackResult.ownForegroundBeforeAgreement -eq $true -and $ackResult.ordinaryActivationRestoredWarning -eq $true) 'Separate acknowledgement task foreground is restored by ordinary guarded activation before matching original pixels'
+  Check ($ackResult.twoConsecutiveReviewedImages -eq $true -and $ackResult.fullImageSettleCaptures -ge 2 -and $ackResult.fullImageSettleCaptures -le 20) 'Full warning image settles to two retained exact reviewed captures before one acknowledgement'
   $report.serializedAcknowledgement=$ackResult
  } finally {$ack.Dispose()}
  $agreed=$true;Check (Test-Path -LiteralPath $intent) 'Same production primitive durably records one intent before Agree'
