@@ -7,14 +7,27 @@ if(-not $root.StartsWith([IO.Path]::GetTempPath(),[StringComparison]::OrdinalIgn
    [IO.Path]::GetFileName($root) -cnotmatch '^opennav-display-window-[a-f0-9]{32}$'){throw 'Unique temporary display fixture required.'}
 $record=Get-Content -LiteralPath (Join-Path $root 'fixture.json') -Raw|ConvertFrom-Json
 if($record.owner -cne 'OpenNavX.NativeDisplayWindow.Fixture.1' -or
-   $record.action -cnotin @('Display','ToggleFullscreen','ToggleOrientation','CyclePalette') -or
-   $record.case -cnotin @('normal','return','course','wrong-page','ambiguous','replace-on-down','rename-on-down','move-on-down','duplicate-on-down','modal')){throw 'Unknown fixed fixture.'}
+   $record.action -cnotin @('Display','ToggleFullscreen','ToggleOrientation','CyclePalette','PanRight') -or
+   $record.case -cnotin @('normal','return','course','wrong-page','wrong-geometry','canvas-child','ambiguous','replace-on-down','rename-on-down','move-on-down','duplicate-on-down','modal')){throw 'Unknown fixed fixture.'}
 Add-Type -AssemblyName System.Windows.Forms
 Add-Type -TypeDefinition @'
 using System;
 using System.Runtime.InteropServices;
 public static class OpenNavDisplayFixtureLabel {
  [DllImport("user32.dll",CharSet=CharSet.Unicode)] public static extern bool SetWindowTextW(IntPtr h,string text);
+}
+'@
+Add-Type -ReferencedAssemblies System.Windows.Forms -TypeDefinition @'
+using System;
+using System.IO;
+using System.Windows.Forms;
+public sealed class OpenNavPanFixtureCanvas : Panel {
+ public string Output;
+ protected override void WndProc(ref Message m) {
+  if(m.WParam.ToInt64()==0x27 && (m.Msg==0x100 || m.Msg==0x101))
+   File.AppendAllText(Output,m.Msg==0x100 ? "PAN_RIGHT_DOWN\n" : "PAN_RIGHT_UP\n");
+  base.WndProc(ref m);
+ }
 }
 '@
 $form=New-Object Windows.Forms.Form
@@ -33,7 +46,9 @@ $palette.Add_Click({param($sender,$event) SaveClick ('Status '+$sender.Text);$se
 $bottom=New-Object Windows.Forms.Panel;$bottom.Location=New-Object Drawing.Point(0,520);$bottom.Size=New-Object Drawing.Size(860,64);$form.Controls.Add($bottom)
 $null=Button $bottom 'Navigation' 10 4
 $decoy=Button $bottom 'STBY' 220 4;$decoy.Add_Click({SaveClick 'UNSAFE_STBY'})
-$panel=New-Object Windows.Forms.Panel;$panel.Location=New-Object Drawing.Point(10,72);$panel.Size=New-Object Drawing.Size(840,430);$form.Controls.Add($panel)
+$panel=if($record.action -ceq 'PanRight'){New-Object OpenNavPanFixtureCanvas}else{New-Object Windows.Forms.Panel}
+if($record.action -ceq 'PanRight'){$panel.Output=Join-Path $root 'clicks.txt'}
+$panel.Location=New-Object Drawing.Point(10,72);$panel.Size=New-Object Drawing.Size(840,430);$form.Controls.Add($panel)
 $null=$panel.Handle
 $pageLabel=switch($record.action){'Display'{'OpenNav product page: Settings'};'ToggleFullscreen'{'OpenNav product page: Display'};'CyclePalette'{'OpenNav product page: Display'};default{''}}
 if($record.case -ceq 'wrong-page'){$pageLabel='OpenNav product page: Autopilot configuration'}
@@ -67,6 +82,11 @@ switch($record.action) {
   }
   $script:button=$palette
  }
+ 'PanRight' {
+  if($record.case -ceq 'canvas-child') {
+   $child=New-Object Windows.Forms.Panel;$child.Dock='Fill';$panel.Controls.Add($child)
+  }
+ }
 }
 if($record.case -ceq 'ambiguous') {
  $other=Button $script:button.Parent $script:button.Text 420 130 300;$other.Add_Click({SaveClick 'UNSAFE_DUPLICATE'})
@@ -89,7 +109,8 @@ $started=[datetime]::UtcNow;$timer=New-Object Windows.Forms.Timer;$timer.Interva
 $timer.Add_Tick({if((Test-Path -LiteralPath (Join-Path $root 'release')) -or ([datetime]::UtcNow-$started).TotalSeconds -gt 25){$form.Close()}})
 $form.Add_Shown({
  if($record.case -ceq 'return'){$form.FormBorderStyle='None';$form.WindowState='Maximized';$script:full=$true}
- [IO.File]::WriteAllText((Join-Path $root 'ready.json'),(@{pid=$PID;handle=$form.Handle.ToInt64();createdFiletime=[Diagnostics.Process]::GetCurrentProcess().StartTime.ToUniversalTime().ToFileTimeUtc().ToString()}|ConvertTo-Json -Compress))
+ $chart=$panel.RectangleToScreen($panel.ClientRectangle)
+ [IO.File]::WriteAllText((Join-Path $root 'ready.json'),(@{pid=$PID;handle=$form.Handle.ToInt64();createdFiletime=[Diagnostics.Process]::GetCurrentProcess().StartTime.ToUniversalTime().ToFileTimeUtc().ToString();chart=@{left=$chart.Left;top=$chart.Top;right=$chart.Right;bottom=$chart.Bottom}}|ConvertTo-Json -Depth 4 -Compress))
  $timer.Start()
  if($record.case -ceq 'modal'){$dialog=New-Object Windows.Forms.Form;$dialog.Text='Unexpected modal';$dialog.Size=New-Object Drawing.Size(300,200);$null=$dialog.ShowDialog($form);$dialog.Dispose()}
 })

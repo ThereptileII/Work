@@ -132,6 +132,7 @@ function Invoke-RestartWindowReview($Job) {
           default {
             Initialize-WindowReviewNative
             if($Job.reviewAction -ceq 'Escape'){[OpenNavX.ReviewWindowNative]::Escape($frame,$process.Id)}
+            elseif($Job.reviewAction -ceq 'PanRight'){Invoke-WindowReviewPan $frame $process.Id $Job.workspace $Job.buildCommit}
             elseif($Job.reviewAction -cin @('SelectFirstVisibleWaypoint','SelectFirstVisibleAis')){$result.selection=[OpenNavX.ReviewWindowNative]::SelectRow($frame,$process.Id,$Job.reviewAction)}
             else{[OpenNavX.ReviewWindowNative]::Click($frame,$process.Id,$Job.reviewAction)}
           }

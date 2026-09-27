@@ -52,6 +52,7 @@ namespace OpenNavX {
     [DllImport("user32.dll")] private static extern uint GetDpiForWindow(IntPtr window);
     [DllImport("dwmapi.dll")] private static extern int DwmGetWindowAttribute(IntPtr window,uint attribute,out Rect rect,uint bytes);
     [DllImport("user32.dll")] private static extern bool GetGUIThreadInfo(uint thread,ref GuiInfo info);
+    [DllImport("user32.dll")] private static extern short GetAsyncKeyState(int key);
     [DllImport("user32.dll",SetLastError=true)] private static extern IntPtr SendMessageTimeoutW(IntPtr window,uint message,UIntPtr wparam,IntPtr lparam,uint flags,uint timeout,out UIntPtr result);
 
     private static string Text(IntPtr h) { var text=new StringBuilder(2048);GetWindowTextW(h,text,text.Capacity);return text.ToString(); }
@@ -135,6 +136,47 @@ namespace OpenNavX {
       var down=SendMessageTimeoutW(info.Focus,0x100,new UIntPtr(0x1b),new IntPtr(1),0x2,1000,out result);
       var up=SendMessageTimeoutW(info.Focus,0x101,new UIntPtr(0x1b),new IntPtr(unchecked((int)0xc0000001)),0x2,1000,out result);
       if(down==IntPtr.Zero || up==IntPtr.Zero)throw new InvalidOperationException("Escape did not respond; no retry.");
+      Thread.Sleep(300);AssertFrame(frame,pid);
+    }
+    public static void PanRight(IntPtr frame,int pid,Rect chart) {
+      var root=AssertFrame(frame,pid);
+      if(VisiblePageLabels(frame).Length!=0 || !Contains(root.Bounds,chart) ||
+         chart.Width<root.Bounds.Width/2 || chart.Height<root.Bounds.Height/2)
+        throw new InvalidOperationException("Chart pan requires the unobscured Navigation canvas.");
+      // No held modifiers or pointer drag may turn this fixed arrow into a
+      // chart-stack shortcut, route edit or continuation of another gesture.
+      foreach(int key in new int[]{1,2,4,5,6,0x10,0x11,0x12,0x25,0x26,0x27,0x28,0x5b,0x5c})
+        if((GetAsyncKeyState(key)&0x8000)!=0)throw new InvalidOperationException("Release all mouse buttons and modifiers before chart pan.");
+      uint owner;var thread=GetWindowThreadProcessId(frame,out owner);
+      var gui=new GuiInfo();gui.Size=(uint)Marshal.SizeOf(typeof(GuiInfo));
+      if(!GetGUIThreadInfo(thread,ref gui) || gui.Capture!=IntPtr.Zero || gui.MenuOwner!=IntPtr.Zero || gui.MoveSize!=IntPtr.Zero)
+        throw new InvalidOperationException("Another native gesture or menu is active.");
+      var point=new Point{X=(chart.Left+chart.Right)/2,Y=(chart.Top+chart.Bottom)/2};
+      var candidates=new List<IntPtr>();
+      foreach(var h in Children(frame)) {
+        Rect observed;
+        if(Owner(h)==(uint)pid && GetParent(h)==frame && IsWindowEnabled(h) && GetWindowRect(h,out observed) &&
+           observed.Left==chart.Left && observed.Top==chart.Top && observed.Right==chart.Right && observed.Bottom==chart.Bottom)candidates.Add(h);
+      }
+      if(candidates.Count!=1)
+        throw new InvalidOperationException("Fresh chart geometry does not identify the exact native canvas.");
+      var canvas=candidates[0];var hit=WindowFromPoint(point);
+      // OpenGL owns a child surface inside the same source-identified canvas.
+      if(Owner(hit)!=(uint)pid || (hit!=canvas && !IsChild(canvas,hit)))
+        throw new InvalidOperationException("Another window obscures the chart pan target.");
+      var kind=Class(canvas);var caption=Text(canvas);UIntPtr result;
+      AssertFrame(frame,pid);
+      // Pinned ChartCanvas::OnKeyDown/OnKeyUp: an unmodified Right arrow pans
+      // the existing viewport and releases timed movement. No global input,
+      // chart clicks, route activation, arbitrary key or command ID is exposed.
+      if(SendMessageTimeoutW(canvas,0x100,new UIntPtr(0x27),new IntPtr(0x014d0001),0x2,1000,out result)==IntPtr.Zero)
+        throw new InvalidOperationException("Chart pan press uncertain; no retry.");
+      Thread.Sleep(150);
+      if(Owner(canvas)!=(uint)pid || GetParent(canvas)!=frame || Class(canvas)!=kind || Text(canvas)!=caption)
+        throw new InvalidOperationException("Chart identity changed during pan; no message to a replacement window.");
+      // Release this exact target even if foreground changes while held.
+      if(SendMessageTimeoutW(canvas,0x101,new UIntPtr(0x27),new IntPtr(unchecked((int)0xc14d0001)),0x2,1000,out result)==IntPtr.Zero)
+        throw new InvalidOperationException("Chart pan release uncertain; no retry.");
       Thread.Sleep(300);AssertFrame(frame,pid);
     }
     public static string[] ActionLabels(string action) {

@@ -59,11 +59,28 @@ Pass 'All pointer labels resolve to actual current source controls' {
   $root=[IO.Path]::GetFullPath((Join-Path $PSScriptRoot '..\..').Replace('\',[IO.Path]::DirectorySeparatorChar))
   $source='';foreach($name in @('Shell.cpp','ProductPanel.cpp','ProductSettings.cpp','Theme.h')){$source+=[IO.File]::ReadAllText((Join-Path $root ('src/ui/'+$name)))}
   $source+=[IO.File]::ReadAllText((Join-Path $root 'src/integration/OpenCPNIntegration.cpp'))
-  foreach($action in Get-WindowReviewActions | Where-Object {$_ -cnotin @('Capture','Resize1280x800','Escape','SelectFirstVisibleWaypoint','SelectFirstVisibleAis')}) {
+  foreach($action in Get-WindowReviewActions | Where-Object {$_ -cnotin @('Capture','Resize1280x800','Escape','PanRight','SelectFirstVisibleWaypoint','SelectFirstVisibleAis')}) {
     foreach($label in [OpenNavX.ReviewWindowNative]::ActionLabels($action)) {
       if(-not $source.Contains('"'+$label+'"')){throw ('Reviewed label absent from source: '+$label)}
     }
   }
+}
+$chartData=[pscustomobject]@{build_commit=('a'*40);build_purpose='INSTALLED PRODUCT';data_mode='OPENCPN selected navigation';ui_page='Navigation';runtime=[pscustomobject]@{display=[pscustomobject]@{route_creation_active=$false;chart_region=[pscustomobject]@{x=80;y=100;width=900;height=600}}}}
+Pass 'Fresh source-identified installed chart maps exact pixel rectangle' {
+  $r=Convert-WindowReviewChart $chartData ('a'*40) $now.AddSeconds(-1) $now
+  if($r.Left -ne 80 -or $r.Top -ne 100 -or $r.Right -ne 980 -or $r.Bottom -ne 700){throw 'Chart rectangle changed.'}
+}
+foreach($field in @('build_commit','build_purpose','data_mode','ui_page')) {
+  Refuse "Pan refuses changed diagnostic $field" {$v=CopyValue $chartData;$v.$field='unexpected';Convert-WindowReviewChart $v ('a'*40) $now $now}
+}
+foreach($at in @($now.AddSeconds(-6),$now.AddSeconds(1))) {
+  Refuse 'Pan refuses old/future diagnostic geometry' {Convert-WindowReviewChart $chartData ('a'*40) $at $now}
+}
+foreach($value in @($true,'false',$null,0)) {
+  Refuse 'Pan refuses active/ambiguous route editing' {$v=CopyValue $chartData;$v.runtime.display.route_creation_active=$value;Convert-WindowReviewChart $v ('a'*40) $now $now}
+}
+foreach($value in @(-1,0,99,32769,'900',900.5,$null)) {
+  Refuse 'Pan refuses malformed/hidden chart geometry' {$v=CopyValue $chartData;$v.runtime.display.chart_region.width=$value;Convert-WindowReviewChart $v ('a'*40) $now $now}
 }
 Pass 'Display controls retain exact source page scopes; orientation requires navigation chart tools' {
   if([OpenNavX.ReviewWindowNative]::ActionContext('Display') -cne 'OpenNav product page: Settings' -or

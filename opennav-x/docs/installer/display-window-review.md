@@ -61,3 +61,37 @@ launch/restart must still satisfy its independent profile audit.
 - Actual installed wx behavior and boat-display acceptance remain separate
   pending gates. Marker-window results do not establish physical fullscreen,
   chart-orientation or touch acceptance.
+
+## Bounded chart pan (replacement tooling qualification pending)
+
+`PanRight` addresses the remaining actual-boat pan review gap. It consumes a
+fresh (at most five seconds old), exact-build **INSTALLED PRODUCT** Navigation
+diagnostic record with normal OpenCPN data mode and no route creation. Copied
+chart geometry must identify one enabled direct-child canvas of the exact
+foreground frame; its center must hit that canvas or its OpenGL child. A product
+page, modal, other pointer capture/menu, held mouse button/modifier/arrow or
+ambiguous native geometry refuses input. It never clicks a chart object.
+
+The sole action sends one target-local Right-arrow down/up to that verified
+canvas. At pinned OpenCPN `37fd0cdd`, `ChartCanvas::OnKeyDown` either pans the
+viewport or starts normal smooth movement; `OnKeyUp` stops that movement. This
+is **screen-right**, not an independently calculated geographic bearing. The
+upstream callback first offers key events to subscribed plugins; the retained
+bundled Dashboard/GRIB/chart downloader/WMM and reviewed o-charts source do not
+subscribe to keyboard events. The existing complete plugin/read-only launch
+audit remains mandatory. No route operation, arbitrary key, global input or
+equipment command is exposed. Window and process identity are checked again
+before releasing the same target. An uncertain result is not retried.
+
+Before/after native image review must establish actual chart movement and
+continued content; a successful helper return alone is not pan acceptance. Use
+the separately reviewed Center action afterwards only with valid ownship data.
+This keyboard-based review does not qualify physical touch dragging.
+
+Local checks: **178** window-review policy/compilation checks, **133** completed
+restart-window policy checks and all **17** copied broker dependency checks pass.
+The native disposable suite now defines **20** cases: the previous 15 plus
+pan key-pair receipt on a canvas and a canvas with a child surface, wrong-page,
+wrong-geometry and modal refusals. Successful pan cases require exactly one
+down/up pair; refusal cases require no event. Native execution and boat use are
+still pending; no marker result substitutes for actual OpenCPN chart behavior.

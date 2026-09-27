@@ -10,14 +10,21 @@ executables from the installed product, refines shared visual components and
 navigation workflows, and adds repeatable boat deployment and maintenance tools.
 The accepted Beta 1 results below remain historical evidence, not Beta 2 gates.
 
-### Replacement validation in preparation
+### Current replacement validation
+
+`608756c4bf07232ebc6dc4823847b8892536d7ed` is running the complete gates in
+[CI 36303362540](https://github.com/ThereptileII/Work/actions/runs/36303362540).
+All **698** mapped blobs/modes match local
+`cd27a850922c8123793c959e9361bf386bd8a8c4`; the pinned baseline and eight unrelated
+repository blobs are preserved. Its separate branch keeps the earlier Linux
+elapsed-time evidence intact. No replacement product has been deployed.
 
 The current application candidate below is **not accepted**: its full Windows
 installer matrix passed, but the DPI gate timed out on its first physical chart
 context gesture. The bounded harness repair verifies the foreground process and
 actual chart HWND geometry before sending one click; no retry, scale or layout
 assertion is removed. [Failure and replacement scope](installer/beta2-maintenance-cancel-and-dpi-readiness.md).
-The boat remains unchanged while a new exact-commit run is prepared.
+The boat remains unchanged while that new exact-commit run proceeds.
 
 ### Previous full candidate (Windows DPI failed)
 
