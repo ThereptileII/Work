@@ -7,6 +7,8 @@
 #include <string>
 #include <thread>
 #include <chrono>
+#include <cwchar>
+#include <iostream>
 
 namespace {
 std::string Utf8(const std::wstring& text) {
@@ -22,6 +24,12 @@ std::string Environment(const wchar_t* name) {
 }
 int wmain(int argc,wchar_t** argv) {
   if(argc!=2)return 70;
+  if(std::wcscmp(argv[1],L"--marker-self-test")==0) {
+    std::cout << "{\"contract\":\"OpenNavX.NativeRestart.MarkerOnly.1\","
+                 "\"marine_code\":false,\"child_started\":false,"
+                 "\"profile_accessed\":false}\n";
+    return std::cout?0:78;
+  }
   wchar_t path[32768];const DWORD n=GetModuleFileNameW(nullptr,path,32768);
   if(!n || n==32768)return 71;
   const auto exe=Utf8(std::wstring(path,n));const std::string mode=Utf8(argv[1]);
@@ -64,6 +72,13 @@ int wmain(int argc,wchar_t** argv) {
      <<Environment(L"OPENNAV_TEST_RUNTIME_ADDITION")<<'\n'
      <<Environment(L"OPENNAV_TEST_COLD_ENVIRONMENT")<<'\n';
   out.close();if(!out)return 75;
+  if(std::filesystem::exists("hold-child.txt")) {
+    const auto deadline=std::chrono::steady_clock::now()+std::chrono::seconds(60);
+    while(!std::filesystem::exists("child-release.txt")) {
+      if(std::chrono::steady_clock::now()>=deadline)return 77;
+      std::this_thread::sleep_for(std::chrono::milliseconds(20));
+    }
+  }
   if(mode=="--legacy" && std::filesystem::exists("chain-without-listener.txt")) {
     std::this_thread::sleep_for(std::chrono::milliseconds(1000));
     std::ofstream("chain-armed.txt")<<(opennav::platform::RestartAfterExit(exe,{"--xnav"})?"yes":"no");

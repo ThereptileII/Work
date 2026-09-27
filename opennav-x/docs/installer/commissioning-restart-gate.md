@@ -59,6 +59,16 @@ list passes only that genuine handle to the companion. The helper checks PID,
 image, creation time and exit code 0; it cannot substitute a reused PID.
 The ordinary restart branch retains its existing process-wait behavior.
 
+The image proof compares `QueryFullProcessImageNameW(parent,
+PROCESS_NAME_NATIVE)` with `GetFinalPathNameByHandleW(executable,
+FILE_NAME_NORMALIZED | VOLUME_NAME_NT)` on the exact opened executable. PID,
+creation and successful exit remain independent mandatory checks. A failed
+query or different file path refuses the transition. No delay or fallback skips
+image proof when the parent exits before its companion initializes. The native
+runner retains a genuinely exited marker-process handle and records both
+Win32/native query success, error codes and the opened file's NT path, including
+a negative comparison with the different helper executable.
+
 ## Wire format, version 1
 
 Every message has a four-byte little-endian unsigned payload byte count, in
@@ -156,9 +166,16 @@ powershell -NoProfile -ExecutionPolicy Bypass -File tools/test-commissioning-res
 powershell -NoProfile -ExecutionPolicy Bypass -File tools/boat/test-restart-commissioning.ps1
 ```
 
-Current local qualification: 886 portable codec/policy checks pass on Linux;
-the PowerShell parser/policy suite passes 209 checks. Native compilation and the
-24 marker-process scenarios have not yet run. Those scenarios cover all three
+Current local qualification: 886 portable codec/policy checks pass on Linux.
+Native run [36281616421](https://github.com/ThereptileII/Work/actions/runs/36281616421)
+compiled with MSVC and passed the codec plus the first 20 process cases,
+including actual XNav/Legacy/Safe child receipts and exact helper exit codes.
+Its immediate-parent-exit case timed out before pipe connection; the native
+image proof and direct exited-process probe above await a new native run.
+Earlier actual .NET Framework pending I/O tests also identified premature
+`AsyncWaitHandle` disposal; the verifier now lets `Task.Factory.FromAsync` own
+the matching `End*` call and checks bounded cancellation of pending connect/read.
+The full 24-case matrix remains an open gate. Those scenarios cover all three
 allowed modes, unchanged unarmed behavior, malformed or empty arming, missing
 listeners, failed parent exit, tampered/expired permits, changed files, retained
 startup binding/environment and refusal of a subsequent switch without a broker.
@@ -173,3 +190,5 @@ audited launch remains a different test and must not be called in-app restart.
 Native API references: [restricted inherited handles](https://learn.microsoft.com/en-us/windows/win32/procthread/inheritance),
 [handle-list attribute](https://learn.microsoft.com/en-us/windows/win32/api/processthreadsapi/nf-processthreadsapi-updateprocthreadattribute),
 and [named-pipe server identity](https://learn.microsoft.com/en-us/windows/win32/api/winbase/nf-winbase-getnamedpipeserverprocessid).
+Native image-path flags: [QueryFullProcessImageNameW](https://learn.microsoft.com/en-us/windows/win32/api/winbase/nf-winbase-queryfullprocessimagenamew)
+and [GetFinalPathNameByHandleW](https://learn.microsoft.com/en-us/windows/win32/api/fileapi/nf-fileapi-getfinalpathnamebyhandlew).

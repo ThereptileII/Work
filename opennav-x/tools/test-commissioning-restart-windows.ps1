@@ -17,6 +17,10 @@ Add-Type -TypeDefinition @'
 using System;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Runtime.InteropServices;
+using System.Text;
+using System.Collections.Generic;
+using System.IO;
 public static class OpenNavRestartAsyncTest {
   static int faults;
   static void Fault(object sender,UnobservedTaskExceptionEventArgs args) {
@@ -26,6 +30,28 @@ public static class OpenNavRestartAsyncTest {
   public static int Finish() {
     GC.Collect();GC.WaitForPendingFinalizers();GC.Collect();
     TaskScheduler.UnobservedTaskException-=Fault;return faults;
+  }
+  [DllImport("kernel32.dll",CharSet=CharSet.Unicode,SetLastError=true)]
+  static extern bool QueryFullProcessImageNameW(IntPtr process,uint flags,StringBuilder path,ref uint size);
+  [DllImport("kernel32.dll",CharSet=CharSet.Unicode,SetLastError=true)]
+  static extern uint GetFinalPathNameByHandleW(IntPtr file,StringBuilder path,uint size,uint flags);
+  public static Dictionary<string,object> InspectExitedImage(IntPtr process,string executable) {
+    var result=new Dictionary<string,object>();
+    foreach(uint flags in new uint[]{0,1}) {
+      var path=new StringBuilder(32768);uint size=32768;
+      bool ok=QueryFullProcessImageNameW(process,flags,path,ref size);
+      int error=ok?0:Marshal.GetLastWin32Error();
+      string key=flags==0?"win32":"native";
+      result.Add(key+"Success",ok);result.Add(key+"Error",error);result.Add(key+"Path",ok?path.ToString():"");
+    }
+    using(var file=new FileStream(executable,FileMode.Open,FileAccess.Read,FileShare.Read)) {
+      var path=new StringBuilder(32768);
+      uint size=GetFinalPathNameByHandleW(file.SafeFileHandle.DangerousGetHandle(),path,32768,2);
+      int error=size==0?Marshal.GetLastWin32Error():0;
+      result.Add("fileSuccess",size>0 && size<32768);result.Add("fileError",error);
+      result.Add("fileNativePath",size>0 && size<32768?path.ToString():"");
+    }
+    return result;
   }
 }
 '@
@@ -40,8 +66,33 @@ function HashBytes([byte[]]$Bytes){$h=[Security.Cryptography.SHA256]::Create();t
 function RandomHash{$b=New-Object byte[] 32;$r=[Security.Cryptography.RandomNumberGenerator]::Create();try{$r.GetBytes($b)}finally{$r.Dispose()};return ([BitConverter]::ToString($b)).Replace('-','').ToLowerInvariant()}
 function WriteText([string]$Path,[string]$Text){[IO.File]::WriteAllText($Path,$Text,(New-Object Text.UTF8Encoding($false)))}
 function WaitFile([string]$Path){$end=[DateTime]::UtcNow.AddSeconds(10);while(-not [IO.File]::Exists($Path)){if([DateTime]::UtcNow -ge $end){throw ('Marker absent: '+$Path)};Start-Sleep -Milliseconds 20}}
-$status='failed';$failure=$null;$case=$null;$helperExit=$null;$receipt=$null;$currentHelperPid=$null;$currentParentPid=$null
+$status='failed';$failure=$null;$case=$null;$helperExit=$null;$receipt=$null;$currentHelperPid=$null;$currentParentPid=$null;$imageProbe=$null
 try {
+  # Refuse an actual application passed as -Binaries before invoking anything.
+  $marker=Join-Path $Binaries 'opencpn.exe';$signature='OpenNavX.NativeRestart.MarkerOnly.1'
+  Require ([Text.Encoding]::ASCII.GetString([IO.File]::ReadAllBytes($marker)).Contains($signature)) 'Compiled application has inert marker-only identity'
+  $probeStart=New-Object Diagnostics.ProcessStartInfo
+  $probeStart.FileName=$marker;$probeStart.Arguments='--marker-self-test';$probeStart.UseShellExecute=$false;$probeStart.RedirectStandardOutput=$true
+  $probe=[Diagnostics.Process]::Start($probeStart)
+  try {
+    $probeHandle=$probe.Handle;$probeCreated=$probe.StartTime.ToUniversalTime().ToFileTimeUtc().ToString()
+    $output=$probe.StandardOutput.ReadToEndAsync()
+    Require ($probe.WaitForExit(10000) -and $probe.ExitCode -is [int] -and $probe.ExitCode -eq 0) 'Marker capability probe exits normally with genuine handle retained'
+    $identity=$output.GetAwaiter().GetResult()|ConvertFrom-Json
+    Require (@($identity.PSObject.Properties.Name).Count -eq 4 -and $identity.contract -ceq $signature -and
+      $identity.marine_code -is [bool] -and -not $identity.marine_code -and
+      $identity.child_started -is [bool] -and -not $identity.child_started -and
+      $identity.profile_accessed -is [bool] -and -not $identity.profile_accessed) 'Marker probe confirms no marine code, child launch or profile access'
+    $imageProbe=[OpenNavRestartAsyncTest]::InspectExitedImage($probeHandle,$marker)
+    $imageProbe.Add('pid',$probe.Id);$imageProbe.Add('createdFiletime',$probeCreated)
+    Write-Output ($imageProbe|ConvertTo-Json -Compress)
+    Require ($imageProbe['nativeSuccess'] -and $imageProbe['fileSuccess'] -and
+      $imageProbe['nativePath'] -ieq $imageProbe['fileNativePath']) 'Exited process native image matches exact held executable NT path'
+    $otherImage=[OpenNavRestartAsyncTest]::InspectExitedImage($probeHandle,(Join-Path $Binaries 'opennav-restart.exe'))
+    Require ($otherImage['nativeSuccess'] -and $otherImage['fileSuccess'] -and
+      $otherImage['nativePath'] -ine $otherImage['fileNativePath']) 'Exited process identity does not match a different executable file'
+    Require ($probe.StartTime.ToUniversalTime().ToFileTimeUtc().ToString() -ceq $probeCreated) 'Exited process retains genuine creation identity'
+  } finally {$probe.Dispose()}
   $expired=[DateTime]::UtcNow.AddSeconds(-1)
   $memory=New-Object IO.MemoryStream
   try {
@@ -244,7 +295,7 @@ try {
 } catch {$failure=@{message=$_.Exception.Message;stack=$_.ScriptStackTrace;case=$case;parentPid=$currentParentPid;helperPid=$currentHelperPid;helperExitCode=$helperExit;receipt=$receipt};throw}
 finally {
   $null=New-Item -ItemType Directory -Force -Path $Evidence
-  $report=@{status=$status;authority='Native Windows marker-only standalone process tests';noMarineCode=$true;checks=$checks.ToArray();cases=$cases.ToArray();failure=$failure;temporary=$temporary}
+  $report=@{status=$status;authority='Native Windows marker-only standalone process tests';noMarineCode=$true;checks=$checks.ToArray();cases=$cases.ToArray();failure=$failure;temporary=$temporary;exitedProcessImageProbe=$imageProbe}
   WriteText (Join-Path $Evidence 'commissioning-restart-native.json') ($report|ConvertTo-Json -Depth 12)
 }
 Write-Output ('Native commissioning restart: '+$checks.Count+' checks across '+$cases.Count+' cases passed')

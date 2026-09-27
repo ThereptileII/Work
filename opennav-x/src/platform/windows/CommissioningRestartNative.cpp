@@ -89,9 +89,9 @@ std::uint64_t Created(HANDLE process) {
   if(!GetProcessTimes(process,&c,&e,&k,&u)) throw std::runtime_error("Cannot identify process creation");
   return Ticks(c);
 }
-std::wstring Image(HANDLE process) {
+std::wstring Image(HANDLE process,DWORD flags=0) {
   std::wstring s(32768,L'\0');DWORD n=static_cast<DWORD>(s.size());
-  if(!QueryFullProcessImageNameW(process,0,s.data(),&n)) throw std::runtime_error("Cannot identify process image");
+  if(!QueryFullProcessImageNameW(process,flags,s.data(),&n)) throw std::runtime_error("Cannot identify process image");
   s.resize(n);return s;
 }
 std::wstring Cwd() {
@@ -146,6 +146,13 @@ class LockedFile {
     if(handle.value==INVALID_HANDLE_VALUE) throw std::runtime_error("Critical file unavailable");
     BY_HANDLE_FILE_INFORMATION i{};
     if(!GetFileInformationByHandle(handle.value,&i) || (i.dwFileAttributes&(FILE_ATTRIBUTE_DIRECTORY|FILE_ATTRIBUTE_REPARSE_POINT)) || i.nNumberOfLinks!=1) throw std::runtime_error("Ambiguous critical file");
+  }
+  std::wstring NativePath() const {
+    std::wstring path(32768,L'\0');
+    const DWORD used=GetFinalPathNameByHandleW(handle.value,path.data(),
+        static_cast<DWORD>(path.size()),FILE_NAME_NORMALIZED|VOLUME_NAME_NT);
+    if(!used || used>=path.size())throw std::runtime_error("Cannot identify executable file path");
+    path.resize(used);return path;
   }
   std::string Digest() {
     LARGE_INTEGER zero{};
@@ -279,7 +286,15 @@ int RunGuardedHelper(int argc,wchar_t** argv) {
     if(!CanonicalNumber(argv[2],handle_value) || !handle_value || handle_value>UINTPTR_MAX ||
        !CanonicalNumber(argv[3],parent_pid) || !parent_pid || parent_pid>MAXDWORD) return 21;
     Handle parent(reinterpret_cast<HANDLE>(static_cast<std::uintptr_t>(handle_value)));
-    if(GetProcessId(parent.value)!=parent_pid || !SamePath(Image(parent.value),argv[6])) return 22;
+    // A retained process handle survives exit, but its Win32 image-path query
+    // can depend on already-destroyed user-mode process state. Compare the
+    // native process image name with the exact executable file's resolved NT
+    // path. There is no fallback which skips image identity on query failure.
+    {
+      LockedFile parent_executable(argv[6]);
+      if(GetProcessId(parent.value)!=parent_pid ||
+         !SamePath(Image(parent.value,PROCESS_NAME_NATIVE),parent_executable.NativePath())) return 22;
+    }
     const auto parent_created=Created(parent.value);
     if(WaitForSingleObject(parent.value,30000)!=WAIT_OBJECT_0) return 23;
     DWORD code=1;
