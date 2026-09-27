@@ -753,7 +753,7 @@ void ProductPanel::Instruments() {
 }
 void ProductPanel::PilotActions() {
   Heading("Manual autopilot", state_.vessel.replayed
-              ? "REPLAY / All hardware controls disabled" : "Human control / Feedback confirmed");
+              ? "REPLAY / All hardware controls disabled" : "Manual commands require feedback confirmation");
   Visual("Autopilot heading", 192, [this](XNavPainter &p, wxDC &, int width) {
     p.Card(0, 0, width, 188, "AUTOPILOT");
     const auto &pilot = state_.pilot;

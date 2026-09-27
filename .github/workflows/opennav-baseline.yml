@@ -1,7 +1,7 @@
 name: OpenNav X Beta 2
 on:
   push:
-    branches: [opennav-x, opennav-x-beta2-ui, opennav-x-beta2-dpi]
+    branches: [opennav-x, opennav-x-beta2-ui, opennav-x-beta2-dpi, opennav-x-beta2-refinement]
     paths: ['opennav-x/**', '.github/workflows/opennav-baseline.yml']
   workflow_dispatch:
 permissions:
@@ -152,7 +152,7 @@ jobs:
           New-Item -ItemType Directory -Path opennav-x/evidence/local/restart-window -Force | Out-Null
           & "$env:WINDIR/System32/WindowsPowerShell/v1.0/powershell.exe" -NoProfile -ExecutionPolicy Bypass -File opennav-x/tools/test-restart-window-native.ps1 -Evidence opennav-x/evidence/local/restart-window 2>&1 | Tee-Object -FilePath opennav-x/evidence/local/restart-window/native-window-tests.log
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
-      - name: Exercise fixed display controls against fifteen native marker-window cases
+      - name: Exercise fixed display controls against native marker-window cases
         run: |
           New-Item -ItemType Directory -Path opennav-x/evidence/local/display-window -Force | Out-Null
           & "$env:WINDIR/System32/WindowsPowerShell/v1.0/powershell.exe" -NoProfile -ExecutionPolicy Bypass -File opennav-x/tools/test-display-window-native.ps1 -Evidence opennav-x/evidence/local/display-window 2>&1 | Tee-Object -FilePath opennav-x/evidence/local/display-window/native-display-tests.log

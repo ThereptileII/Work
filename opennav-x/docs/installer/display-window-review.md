@@ -62,7 +62,7 @@ launch/restart must still satisfy its independent profile audit.
   pending gates. Marker-window results do not establish physical fullscreen,
   chart-orientation or touch acceptance.
 
-## Bounded chart pan (replacement tooling qualification pending)
+## Bounded chart pan (native tooling qualified; boat pan review pending)
 
 `PanRight` addresses the remaining actual-boat pan review gap. It consumes a
 fresh (at most five seconds old), exact-build **INSTALLED PRODUCT** Navigation
@@ -93,5 +93,13 @@ restart-window policy checks and all **17** copied broker dependency checks pass
 The native disposable suite now defines **20** cases: the previous 15 plus
 pan key-pair receipt on a canvas and a canvas with a child surface, wrong-page,
 wrong-geometry and modal refusals. Successful pan cases require exactly one
-down/up pair; refusal cases require no event. Native execution and boat use are
-still pending; no marker result substitutes for actual OpenCPN chart behavior.
+down/up pair; refusal cases require no event. Native execution passed all 20 cases at
+`07da8e307f174646f4fd2722ec84bda511f4bcfd`,
+[run 36303832915](https://github.com/ThereptileII/Work/actions/runs/36303832915).
+Both successful pan cases recorded exactly `PAN_RIGHT_DOWN`, `PAN_RIGHT_UP`;
+the three pan refusals recorded no event. The existing 14 mode-window cases
+also passed. All nine jobs and artifacts passed; API/upload/download SHA-256,
+byte sizes and ZIP CRC agree. The window artifact is `10926273331`, SHA-256
+`e6483d051adae22f062e8efc116cdc2a00059436f0c66a896a26e52421506e0c`.
+Actual boat use remains pending; no marker result substitutes for OpenCPN chart
+behavior or physical touch dragging.

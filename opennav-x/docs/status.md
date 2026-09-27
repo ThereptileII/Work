@@ -10,6 +10,25 @@ executables from the installed product, refines shared visual components and
 navigation workflows, and adds repeatable boat deployment and maintenance tools.
 The accepted Beta 1 results below remain historical evidence, not Beta 2 gates.
 
+### Current boat review tools
+
+`07da8e307f174646f4fd2722ec84bda511f4bcfd`,
+[run 36303832915](https://github.com/ThereptileII/Work/actions/runs/36303832915),
+passed all nine native jobs. Downloaded artifacts match upload/API SHA-256,
+sizes and ZIP integrity. Twenty display cases and fourteen mode cases pass;
+chart pan records one exact key pair or refuses without input. Source checkout
+on the boat passed at 07:51 UTC, with no application change or launch. Actual
+boat pan, touch and replacement visual acceptance remain open.
+
+### Native review refinement
+
+The retained native screenshots exposed an ambiguous autopilot subtitle. It now
+states “Manual commands require feedback confirmation”; this is a requirement,
+not a claim that feedback has arrived. [Twenty-screen review](design/reviews/beta2-native-9f592-review.md).
+The fixture-free Linux build/install passes. A separate complete CI candidate
+will qualify this refinement together with the bounded chart-pan tooling.
+No release or boat visual acceptance is claimed from the old screenshots.
+
 ### Current replacement validation
 
 `608756c4bf07232ebc6dc4823847b8892536d7ed` is running the complete gates in
@@ -59,7 +78,7 @@ That tooling passed all nine native jobs and was checked out on the boat without
 an application change. The subsequent owned-Legacy-window refinement is also
 qualified and is the current source checkout, described below.
 
-The current boat tooling is `3552a3ce2c2d78b8c46ec2a94639cd62d060bee6`,
+The preceding boat tooling was `3552a3ce2c2d78b8c46ec2a94639cd62d060bee6`,
 [run 36301703492](https://github.com/ThereptileII/Work/actions/runs/36301703492).
 All nine native jobs and downloaded/hash-verified artifacts pass. Fourteen
 actual mode-window cases include the preserved floating Legacy instruments;
