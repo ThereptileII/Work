@@ -1,0 +1,11 @@
+{
+  "commit": "8e780edc34f68abd693a5d5f6aecdb3ba05a75c4",
+  "runId": 36287991989,
+  "artifactId": 10922441496,
+  "archiveSha256": "172fe7f9b9556374a448f33d78ef9760e9838e1b4b3a291de3dcb2feea3899a5",
+  "maximumArchiveBytes": 180000000,
+  "setupName": "OpenNavX-Beta2-Setup.exe",
+  "setupBytes": 44088071,
+  "setupSha256": "0235a099e56a265a3dfe3f17de1f8dea1e66de2aa7a8c311bce0fd7a83d761ad",
+  "purpose": "Exact early Beta 2 with historical Start-menu layout; lifecycle regression fixture only, not accepted release"
+}

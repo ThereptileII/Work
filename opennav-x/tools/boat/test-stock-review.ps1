@@ -17,7 +17,7 @@ $now=[datetime]::UtcNow
 $request=[pscustomobject]@{action='LaunchStock';mode='StockLegacy';arguments='';executable='C:\Program Files (x86)\OpenCPN\opencpn.exe';executableSha256=$hash;workspace='C:\XNav';targetSha256=('b'*64)}
 $launch=[pscustomobject]@{status='passed';action='LaunchStock';mode='StockLegacy';pid=42;utc=$now.AddMinutes(-1).ToString('o');processStartedUtc=$now.AddSeconds(-58).ToString('o');executableSha256=$hash;targetSha256=('b'*64);sid='S-1-5-21-1';sessionId=1}
 $job=[pscustomobject]@{action='ReviewStock';reviewAction='Capture';processId=42;executable=$request.executable;executableSha256=$hash;workspace=$request.workspace}
-foreach($action in @('Capture','Resize1280x800','Close','InspectWelcome','FocusWelcome','AcknowledgeWelcome')) {Pass "One fixed stock action: $action" {$v=CopyValue $job;$v.reviewAction=$action;Assert-StockReviewPolicy $v $launch $request $now}}
+foreach($action in @('Capture','Resize1280x800','ZoomOut','Close','InspectWelcome','FocusWelcome','AcknowledgeWelcome')) {Pass "One fixed stock action: $action" {$v=CopyValue $job;$v.reviewAction=$action;Assert-StockReviewPolicy $v $launch $request $now}}
 foreach($launchArguments in @('--legacy','--safe-mode','--safe_mode','--xnav','--portable',' ', $null,@())) {Refuse 'Any nonempty or nonstring argument refused' {$v=CopyValue $request;$v.arguments=$launchArguments;Assert-StockRequest $v}}
 foreach($field in @('restartReview','restartBinding','restartSessionRecord','restartSessionSha256')) {Refuse 'Stock cannot arm an OpenNav restart broker' {$v=CopyValue $request;$v | Add-Member -NotePropertyName $field -NotePropertyValue @{};Assert-StockRequest $v}}
 foreach($action in @('AUTO','STBY','TRACK','WIND','ZoomIn','Center','Menu','Key','Click','Launch','LaunchPortableReview','Restart','Capture;Close','capture','')) {Refuse "Not a stock display action: $action" {$v=CopyValue $job;$v.reviewAction=$action;Assert-StockReviewPolicy $v $launch $request $now}}
@@ -31,10 +31,23 @@ Refuse 'Different user SID refused' {Assert-StockProcess $process $job $launch '
 foreach($fileName in @('StockReview.ps1','run-stock.ps1','review-stock.ps1','verify-commissioning-launch.ps1','InteractiveJob.ps1')) {Pass "Parses $fileName" {$tokens=$null;$errors=$null;$null=[Management.Automation.Language.Parser]::ParseFile((Join-Path $PSScriptRoot $fileName),[ref]$tokens,[ref]$errors);if($errors.Count){throw ($errors|Out-String)}}}
 Pass 'Stock native helper compiles without invoking Windows APIs' {Initialize-StockReviewNative}
 Pass 'Stock native helper exports no key/mouse/menu/command entry point' {
-  $allowed=@('Foreground','AssertFrame','AssertCapture','Resize1280x800','SetThreadDpiAwarenessContext')
+  $allowed=@('Foreground','AssertFrame','AssertCapture','Resize1280x800','ZoomOut','SetThreadDpiAwarenessContext')
   foreach($method in [OpenNavX.StockReviewNative].GetMethods([Reflection.BindingFlags]'Public,Static,DeclaredOnly')) {if($method.Name -cnotin $allowed){throw 'Unexpected native action'}}
   $source=[IO.File]::ReadAllText((Join-Path $PSScriptRoot 'StockReviewNative.cs'))
   if($source -match 'extern[^;]*(SendInput|keybd_event|mouse_event|SetCursorPos)'){throw 'Global input injector present'}
+}
+$workGuard=[OpenNavX.StockReviewNative].GetMethod('ValidateResizeWorkArea',[Reflection.BindingFlags]'NonPublic,Static')
+foreach($dimensions in @(@(1280,800),@(1920,1008))) {
+  Pass 'Fixed resize permits an adequate work area at a negative monitor origin' {
+    $rect=New-Object OpenNavX.StockReviewNative+Rect;$rect.Left=-1920;$rect.Top=-200;$rect.Right=$rect.Left+$dimensions[0];$rect.Bottom=$rect.Top+$dimensions[1]
+    $null=$workGuard.Invoke($null,[object[]]@($rect))
+  }
+}
+foreach($dimensions in @(@(1279,800),@(1280,799),@(0,0),@(-1280,800))) {
+  Refuse 'Fixed resize refuses insufficient or invalid work area without changing desktop settings' {
+    $rect=New-Object OpenNavX.StockReviewNative+Rect;$rect.Right=$dimensions[0];$rect.Bottom=$dimensions[1]
+    $null=$workGuard.Invoke($null,[object[]]@($rect))
+  }
 }
 $fixtureArguments=@{StockFixture=$true};if($PortableContracts){$fixtureArguments.PortableContracts=$true};if($IsolatedLocal){$fixtureArguments.IsolatedLocal=$true}
 $transaction=& (Join-Path $PSScriptRoot 'test-commissioning-launch.ps1') @fixtureArguments | ConvertFrom-Json

@@ -38,7 +38,7 @@ function Assert-StockRequest($Job) {
 }
 function Assert-StockReviewPolicy($Job,$Launch,$Request,[datetime]$Now) {
   Assert-StockRequest $Request
-  if ($Job.action -cne 'ReviewStock' -or $Job.reviewAction -cnotin @('Capture','Resize1280x800','Close','InspectWelcome','FocusWelcome','AcknowledgeWelcome') -or
+  if ($Job.action -cne 'ReviewStock' -or $Job.reviewAction -cnotin @('Capture','Resize1280x800','ZoomOut','Close','InspectWelcome','FocusWelcome','AcknowledgeWelcome') -or
       $Launch.status -cne 'passed' -or $Launch.action -cne 'LaunchStock' -or $Launch.mode -cne 'StockLegacy' -or
       $Job.processId -le 0 -or $Launch.pid -ne $Job.processId -or $Job.executable -ine $Request.executable -or
       $Job.executableSha256 -cne $Request.executableSha256 -or $Job.workspace -ine $Request.workspace -or
@@ -127,7 +127,9 @@ function Invoke-StockReview($Job) {
     try {
       if ($Job.reviewAction -cin @('InspectWelcome','FocusWelcome','AcknowledgeWelcome')) { return Invoke-StockWelcomeReview $Job $review $process $sid $session }
       $frame=$process.MainWindowHandle
-      [OpenNavX.StockReviewNative]::Foreground($frame,$process.Id)
+      # Fixed resize validates/focuses its exact frame internally and can recover
+      # a partially offscreen restored rectangle. Other operations stay strict.
+      if ($Job.reviewAction -cne 'Resize1280x800') { [OpenNavX.StockReviewNative]::Foreground($frame,$process.Id) }
       $null=Read-StockReview $Job;$process.Refresh();Assert-StockProcess $process $Job $review.launch $sid $session
       if ($process.MainWindowHandle -ne $frame) { throw 'Stock main window changed during verification.' }
       $result=@{status='passed';action='ReviewStock';reviewAction=$Job.reviewAction;utc=[datetime]::UtcNow.ToString('o');processId=$process.Id;
@@ -137,8 +139,19 @@ function Invoke-StockReview($Job) {
         if ($process.ExitCode -ne 0) { throw 'Stock application closed with an error.' }
         $result.exitCode=$process.ExitCode
       } else {
-        if ($Job.reviewAction -ceq 'Resize1280x800') { [OpenNavX.StockReviewNative]::Resize1280x800($frame,$process.Id) }
         $directory=Assert-StockImageDirectory $Job $sid
+        if ($Job.reviewAction -ceq 'Resize1280x800') {
+          $result.resize=[OpenNavX.StockReviewNative]::Resize1280x800($frame,$process.Id)
+          # Preserve numeric geometry even if a later toast/overlay correctly
+          # refuses the separate strict screenshot. This is not capture proof.
+          Write-Record (Join-Path $directory 'resize.json') @{owner='OpenNavX.StockResize.1';processId=$process.Id;utc=[datetime]::UtcNow.ToString('o');
+            launchResultSha256=$Job.launchResultSha256;nativeHelperSha256=$Job.nativeHelperSha256;geometry=$result.resize;captureVerified=$false}
+        }
+        if($Job.reviewAction -ceq 'ZoomOut') {
+          Write-Record (Join-Path $directory 'zoom-intent.json') @{owner='OpenNavX.StockChartReview.1';action='ZoomOut';commandId=2001;processId=$process.Id;utc=[datetime]::UtcNow.ToString('o');nativeHelperSha256=$Job.nativeHelperSha256;noRetry=$true}
+          $result.zoom=[OpenNavX.StockReviewNative]::ZoomOut($frame,$process.Id)
+          $null=Read-StockReview $Job;$process.Refresh();Assert-StockProcess $process $Job $review.launch $sid $session
+        }
         $info=[OpenNavX.StockReviewNative]::AssertFrame($frame,$process.Id)
         Add-Type -AssemblyName System.Drawing
         $bitmap=New-Object Drawing.Bitmap($info.Bounds.Width,$info.Bounds.Height);$graphics=[Drawing.Graphics]::FromImage($bitmap)

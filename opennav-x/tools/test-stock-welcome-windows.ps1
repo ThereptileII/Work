@@ -58,6 +58,23 @@ $report=@{status='running';locale=$Locale;checks=@();officialSetupSha256=$setupH
 function Check([bool]$Okay,[string]$Name){if(-not $Okay){throw ('FAILED: '+$Name)};$checks.Add($Name);Write-Host ('PASS: '+$Name)}
 function Refuse([scriptblock]$Body,[string]$Name){$bad=$false;try{$null=& $Body}catch{$bad=$true};Check $bad $Name}
 function CopyNotice($Info){$copy=New-Object OpenNavX.StockWelcomeNative+NoticeInfo;foreach($field in $Info.GetType().GetFields()){$field.SetValue($copy,$field.GetValue($Info))};return $copy}
+function CaptureChart([IntPtr]$Frame,[string]$Name) {
+ $window=[OpenNavX.StockReviewNative]::AssertFrame($Frame,$process.Id)
+ $bitmap=New-Object Drawing.Bitmap($window.Bounds.Width,$window.Bounds.Height);$graphics=[Drawing.Graphics]::FromImage($bitmap)
+ try {
+  [OpenNavX.StockReviewNative]::AssertCapture($Frame,$process.Id,$window)
+  $graphics.CopyFromScreen($window.Bounds.Left,$window.Bounds.Top,0,0,$bitmap.Size)
+  [OpenNavX.StockReviewNative]::AssertCapture($Frame,$process.Id,$window)
+  $path=Join-Path $evidence $Name;$bitmap.Save($path,[Drawing.Imaging.ImageFormat]::Png)
+  # The interior excludes all native decorations/status/toolbars. At the fixed
+  # coastline camera both large land and water areas must remain present.
+  $counts=@{};$total=0
+  for($y=150;$y -lt 630;$y+=4){for($x=120;$x -lt 1050;$x+=4){$color=$bitmap.GetPixel($x,$y).ToArgb().ToString();if(-not $counts.ContainsKey($color)){$counts[$color]=0};$counts[$color]++;$total++}}
+  $top=@($counts.GetEnumerator()|Sort-Object Value -Descending|Select-Object -First 2)
+  Check ($top.Count -eq 2 -and $top[0].Value/$total -gt 0.05 -and $top[1].Value/$total -gt 0.05 -and ($top[0].Value+$top[1].Value)/$total -gt 0.85) ('Bundled coastline has substantial land and water: '+$Name)
+  return @{imageSha256=(Get-Digest $path);window=$window;colors=@($top|ForEach-Object {@{argb=$_.Key;fraction=$_.Value/$total}})}
+ } finally {$graphics.Dispose();$bitmap.Dispose()}
+}
 try {
  Invoke-WebRequest -UseBasicParsing -Uri 'https://github.com/OpenCPN/OpenCPN/releases/download/Release_5.12.4/opencpn_5.12.4-0%2B3720.37fd0cd_setup.exe' -OutFile $setup -TimeoutSec 120
  Check ((Get-Digest $setup) -ceq $setupHash) 'Exact official setup verified before extraction'
@@ -79,7 +96,9 @@ try {
  if((Test-Path -LiteralPath $ini) -or (Test-Path -LiteralPath $log)){throw 'Official archive unexpectedly contains a profile/log.'}
  # Model the actual version-upgrade path. NavMessageShown=1 avoids first-install
  # portable chart hints; the old version STILL requires the genuine warning.
- $text="[Settings]`r`nConfigVersionString=Version 5.12.2-0+b69f44c`r`nNavMessageShown=1`r`nLocale=$Locale`r`nShowStatusBar=1`r`nShowMenuBar=1`r`nOpenGL=0`r`n[Settings/GlobalState]`r`nFrameWinX=900`r`nFrameWinY=640`r`nFrameWinPosX=20`r`nFrameWinPosY=20`r`nFrameMax=0`r`n[Settings/NMEADataSource]`r`nDataConnections=`r`n"
+ $text="[Settings]`r`nConfigVersionString=Version 5.12.2-0+b69f44c`r`nNavMessageShown=1`r`nLocale=$Locale`r`nShowStatusBar=1`r`nShowMenuBar=1`r`nSmoothPanZoom=0`r`nPlusMinusZoomFactor=2`r`nOpenGL=0`r`n[Settings/GlobalState]`r`nFrameWinX=900`r`nFrameWinY=640`r`nFrameWinPosX=20`r`nFrameWinPosY=20`r`nFrameMax=0`r`n[Settings/NMEADataSource]`r`nDataConnections=`r`n"
+ # Known bundled world-coastline camera only; no live/synthetic marine data.
+ $text+="[Canvas]`r`nCanvasConfig=0`r`n[Canvas/CanvasConfig1]`r`ncanvasVPLatLon=59.0800,18.5000`r`ncanvasVPScale=0.003`r`ncanvasbFollow=0`r`ncanvasInitialdBIndex=-1`r`n"
  foreach($name in $pluginNames){$text+="[PlugIns/$name]`r`nbEnabled=0`r`n"}
  [IO.File]::WriteAllText($ini,$text,(New-Object Text.UTF8Encoding($false)))
  Copy-Item -LiteralPath $ini -Destination (Join-Path $evidence 'portable-before.ini')
@@ -196,6 +215,18 @@ try {
  $report.afterImageSha256=Get-Digest $afterImage
  $report.afterNativeWindow=$window
  Refuse {[OpenNavX.StockWelcomeNative]::AssertUnchanged($process.Id,$notice)} 'Old dismissed warning cannot be acknowledged a second time'
+ $report.resize=[OpenNavX.StockReviewNative]::Resize1280x800($frame,$process.Id)
+ Check ($report.resize.After.Bounds.Width -eq 1280 -and $report.resize.After.Bounds.Height -eq 800) 'Actual official stock accepts the fixed fully contained physical resize'
+ Start-Sleep -Milliseconds 700
+ $report.chartBefore=CaptureChart $frame 'actual-stock-coast-before-zoom.png'
+ Refuse {[OpenNavX.StockReviewNative]::ZoomOut($frame,0)} 'Wrong process refuses stock zoom before dispatch'
+ $report.zoom=[OpenNavX.StockReviewNative]::ZoomOut($frame,$process.Id)
+ Check ($report.zoom.CommandId -eq 2001) 'One source-reviewed actual native Zoom Out menu command dispatched'
+ Start-Sleep -Milliseconds 700
+ $report.chartAfter=CaptureChart $frame 'actual-stock-coast-after-zoom.png'
+ Check ($report.chartBefore.imageSha256 -cne $report.chartAfter.imageSha256) 'Two actual bundled coastline views are visually distinct'
+ Check ((@($report.chartBefore.colors|ForEach-Object {$_.argb}|Sort-Object) -join ',') -ceq (@($report.chartAfter.colors|ForEach-Object {$_.argb}|Sort-Object) -join ',')) 'Both zoom levels retain the same substantial land and water colors'
+
  Check ($process.CloseMainWindow() -and $process.WaitForExit(30000)) 'Actual official portable application closed normally without force termination'
  Check ($process.ExitCode -eq 0) 'Official stock normal close succeeded'
  Copy-Item -LiteralPath $ini -Destination (Join-Path $evidence 'portable-after.ini')
@@ -203,6 +234,11 @@ try {
  Check ($profile['Settings/NMEADataSource/DataConnections'] -ceq '') 'Portable session retained empty marine connection list'
  foreach($name in $pluginNames){Check ($profile['PlugIns/'+$name+'/bEnabled'] -ceq '0') ('Bundled plugin remained disabled: '+$name)}
  Check ($profile['Settings/Locale'] -ceq $Locale) 'User locale preserved exactly after normal startup and close'
+ $savedScale=[double]::Parse($profile['Canvas/CanvasConfig1/canvasVPScale'],[Globalization.CultureInfo]::InvariantCulture)
+ Check ([math]::Abs($savedScale-0.0015) -lt 0.000002) 'Actual OpenCPN persisted the expected factor-two zoom-out scale'
+ Check ($profile['Canvas/CanvasConfig1/canvasbFollow'] -ceq '0') 'Chart zoom retained the non-follow fixture camera'
+ $report.chartScale=@{before=0.003;after=$savedScale;expectedFactor=2;knownFixtureCamera=$true}
+
  Check ($profile['Settings/NavMessageShown'] -ceq '1') 'Actual first-start acceptance was persisted by OpenCPN itself'
  Check (-not (Test-Path -LiteralPath $normalProfile)) 'Normal shared profile was never created or modified'
  Check ((Get-Digest $exe) -ceq $stockHash) 'Official executable stayed unchanged throughout the fixture'
@@ -232,6 +268,7 @@ finally {
  if($oldDpi -ne [IntPtr]::Zero){$null=[OpenNavX.StockReviewNative]::SetThreadDpiAwarenessContext($oldDpi)}
  if($log -and [IO.File]::Exists($log)){try{[IO.File]::WriteAllBytes((Join-Path $evidence 'portable-opencpn.log'),(Read-StartupLogBytes $log))}catch{$report.logCaptureError=$_.Exception.Message}}
  $report.agreeSent=$agreed;$report.checkCount=$checks.Count;$report.checks=$checks.ToArray()
+ $report.stockReviewNativeSha256=Get-Digest (Join-Path $PSScriptRoot 'boat\StockReviewNative.cs')
  $report.welcomeHelperSha256=Get-Digest (Join-Path $PSScriptRoot 'boat\StockWelcome.ps1');$report.welcomeNativeSha256=Get-Digest (Join-Path $PSScriptRoot 'boat\StockWelcomeNative.cs')
  Write-Record (Join-Path $evidence 'stock-warning-results.json') $report
 }

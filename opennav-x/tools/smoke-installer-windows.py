@@ -345,6 +345,35 @@ try:
         assert inventory(profile)==before and inventory(stock)==stock_before
         check('Exact candidate clean install and first-install rollback preserve stock/profile; real coastline and candidate hash verified')
         stable_resources(profile,stock)
+        # Early Beta 2 had the same 0.4 version but its immutable maintainer
+        # only knew the historical Alpha 1 folder. Test the exact published
+        # bytes; neither relabel a current package nor patch retained engines.
+        subprocess.run([sys.executable,str(ROOT/'tools/build-installer-prior-fixture.py'),
+                        '--early-beta2-layout'],check=True)
+        early_lock=json.loads((ROOT/'tools/early-beta2-layout.lock.json').read_text())
+        early_setup=ROOT/'build/prior-beta2-layout-fixture/setup'/early_lock['setupName']
+        before=inventory(profile)
+        setup('Install',original,executable=early_setup)
+        early_generation=state()['current'];early_owned=inventory(generation())
+        early_record=json.loads((generation()/'ownership.json').read_text())
+        assert early_record['version']=='0.4.0-beta2' and early_record['commit']==early_lock['commit']
+        assert 'shellLayout' not in early_record
+        assert (OLD_SHORTCUTS/'Maintain OpenNav.lnk').is_file() and not SHORTCUTS.exists()
+        setup('Update',original)
+        assert state()['previous']==early_generation
+        assert json.loads((generation()/'ownership.json').read_text())['shellLayout']=='OpenNavX.NeutralStartMenu.1'
+        assert (SHORTCUTS/'Maintain OpenNav.lnk').is_file() and not OLD_SHORTCUTS.exists()
+        assert inventory(profile)==before and inventory(stock)==stock_before
+        engine('Rollback')
+        assert state()['current']==early_generation and inventory(generation())==early_owned
+        assert (OLD_SHORTCUTS/'Maintain OpenNav.lnk').is_file() and not SHORTCUTS.exists()
+        early_diagnostics=maintenance('Diagnostics')
+        assert early_diagnostics['stockVerified'] and early_diagnostics['state']['current']==early_generation
+        assert all(f['expected']==f['actual'] for f in early_diagnostics['files'])
+        maintenance('Uninstall')
+        assert not (INSTALL/'state.json').exists() and not SHORTCUTS.exists() and not OLD_SHORTCUTS.exists()
+        assert inventory(profile)==before and inventory(stock)==stock_before
+        check('Exact historical-layout Beta 2 updates and rolls back with byte-identical old engine; original Maintain diagnostics and uninstall leave neither group')
         # A real user-selected harmonic source must remain selected; defaults
         # must never replace or append to this list during any installed mode.
         custom_tide=profile/'custom Åland harmonic fixture.tcd'
@@ -370,6 +399,7 @@ try:
         setup('Update',original)
         assert state()['previous']==prior_generation
         assert json.loads((generation()/'ownership.json').read_text())['version']=='0.4.0-beta2'
+        assert json.loads((generation()/'ownership.json').read_text())['shellLayout']=='OpenNavX.NeutralStartMenu.1'
         assert sha(generation()/'app/opencpn.exe')==sha(ROOT/'build/production-install/opencpn.exe')
         assert inventory(profile)==before and inventory(stock)==stock_before
         assert (SHORTCUTS/'OpenNav X.lnk').is_file() and not OLD_SHORTCUTS.exists()
@@ -451,6 +481,22 @@ try:
         assert (generation()/'app/plugins/alpha-user-preserved.txt').exists()
         check('Update preserves shared profile and user plugin additions; prior generation backed up')
         previous=INSTALL/'generations'/repaired
+        previous_ownership=previous/'ownership.json'
+        saved_ownership=previous_ownership.read_bytes()
+        rollback_state=sha(INSTALL/'state.json');shortcut_before=inventory(SHORTCUTS)
+        malformed=json.loads(saved_ownership);malformed['shellLayout']=None
+        previous_ownership.write_text(json.dumps(malformed),encoding='utf-8')
+        previous_files=inventory(previous);current_files=inventory(generation())
+        try:
+            failure=engine('Rollback',expected=1)
+            assert 'Unknown generation Start-menu layout' in failure['error'],failure
+            assert sha(INSTALL/'state.json')==rollback_state and inventory(SHORTCUTS)==shortcut_before
+            assert inventory(previous)==previous_files and inventory(generation())==current_files
+            assert inventory(profile)==before and inventory(stock)==stock_before
+            assert not (INSTALL/'transaction.json').exists()
+        finally:
+            previous_ownership.write_bytes(saved_ownership)
+        check('Unknown explicit rollback layout refuses before state/journal publication; owned generations, shortcuts and user data remain unchanged')
         rollback_marker=previous/'app/OPENNAV_PORTABLE_PREVIEW'
         assert not rollback_marker.exists()
         rollback_marker.write_text('unowned inherited rollback sentinel')
@@ -586,6 +632,7 @@ try:
         before=inventory(profile)
         setup('Install',original)
         assert json.loads((generation()/'ownership.json').read_text())['version']=='0.4.0-beta2'
+        assert json.loads((generation()/'ownership.json').read_text())['shellLayout']=='OpenNavX.NeutralStartMenu.1'
         assert inventory(profile)==before and inventory(stock)==stock_before
         check('Beta 2 reinstall after uninstall preserves original stock, shared profile and retained custom additions')
         setup('Update',original)
