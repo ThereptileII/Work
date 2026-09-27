@@ -73,6 +73,54 @@ def main_buttons(scale):
 def bounds(window):
     rect=ui.W.RECT();assert ui.GetWindowRect(window,C.byref(rect));return rect
 
+def primary_hint_hover(label, should_show, settle=1.5):
+    """Hover actual controls, observe native tooltip HWNDs and visible pixels."""
+    d=data()
+    if label=='Menu':
+        found=[h for h,t in ui.children(handle) if t==label];assert len(found)==1
+        r=bounds(found[0]);point=ui.W.POINT((r.left+r.right)//2,(r.top+r.bottom)//2)
+    else:
+        found=[r for r in d['runtime']['display']['rail_regions'] if r['label']=='sog' and r['visible']]
+        assert label=='SOG' and len(found)==1
+        r=found[0];point=ui.W.POINT(r['x']+r['width']//2,r['y']+r['height']//2)
+    foreground=ui.declare(ui.user,'GetForegroundWindow',ui.W.HWND)
+    ui.SetForegroundWindow(handle);assert foreground()==handle
+    # Enter from the chart, not from another help window or a retained hover.
+    chart_rect=d['runtime']['display']['chart_region']
+    assert ui.SetCursorPos(chart_rect['x']+40,chart_rect['y']+40)
+    time.sleep(.15)
+    hit=ui.WindowFromPoint(point);owner=ui.W.DWORD()
+    ui.GetWindowThreadProcessId(hit,C.byref(owner));assert owner.value==pid
+    ancestor=hit
+    while ancestor and ancestor!=handle:ancestor=ui.GetParent(ancestor)
+    assert ancestor==handle,'Hover target belongs to another top-level window'
+    if label=='Menu':assert hit==found[0]
+    assert ui.SetCursorPos(point.x,point.y)
+    def native_hints():
+        hints=[]
+        for h,_,text in ui.windows(pid):
+            name=C.create_unicode_buffer(256);ui.GetClassNameW(h,name,len(name))
+            if name.value=='tooltips_class32':hints.append({'handle':int(h),'text':text})
+        return hints
+    started=time.monotonic();observed=[]
+    deadline=started+(5 if should_show else settle)
+    while time.monotonic()<deadline:
+        assert foreground()==handle,'Another window interrupted the hover observation'
+        observed=native_hints()
+        if should_show and observed:break
+        assert should_show or not observed,(label,'Native tooltip visible in dim palette',observed)
+        time.sleep(.1)
+    assert bool(observed)==should_show,(label,'Day hover must prove the native tooltip path works')
+    name=f"dpi-{scale}-{d['runtime']['display']['light'].lower()}-{label.lower()}-hover.png"
+    rgb=ui.capture(handle,evidence/name,resize=False,screen_pixels=True)
+    report['screenshots'].append(name)
+    assert foreground()==handle and bool(native_hints())==should_show
+    result={'label':label,'palette':d['runtime']['display']['light'],
+            'native_tooltip_visible':bool(observed),'observed_seconds':round(time.monotonic()-started,3),
+            'screen_capture':name}
+    if not should_show:result['surface']=chart.dark_surface(rgb,result['palette']+' '+label+' hover')
+    return result
+
 def chrome_bounds():
     labels=ui.children(handle)
     brand=[h for h,t in labels if t=='OpenNav X']
@@ -218,13 +266,19 @@ try:
         rgb=capture(f'dpi-{scale}-01-navigation-day')
         if colors is None:colors=chart.reference(rgb)
         entry['chart_rendering'].append(chart.check(rgb,colors,f'{scale}% Day'))
+        day_hint=primary_hint_hover('Menu',True)
+        hover_settle=max(1.5,day_hint['observed_seconds']+.5)
+        entry['primary_hints']=[day_hint]
         ui.cycle_light(pid);data(lambda d:d['runtime']['display']['light']=='Dusk')
         capture(f'dpi-{scale}-navigation-dusk')
+        entry['primary_hints'].append(primary_hint_hover('Menu',False,hover_settle))
         ui.cycle_light(pid)
         data(lambda d:d['runtime']['display']['light']=='Night')
         night=capture(f'dpi-{scale}-02-navigation-night')
         entry['chart_rendering'].append(chart.night(night,colors,f'{scale}% Night'))
         entry['night_surfaces']=[chart.dark_surface(night,f'{scale}% Night navigation')]
+        for hint_label in ('Menu','SOG'):
+            entry['primary_hints'].append(primary_hint_hover(hint_label,False,hover_settle))
         entry['native_caption_themed']=data()['runtime']['display']['native_caption_themed']
         # Reaching the endpoint must not focus a hidden first child and jump
         # back up. Require the final menu action fully visible after settling.

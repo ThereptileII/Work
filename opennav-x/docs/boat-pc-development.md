@@ -67,6 +67,11 @@ A version string cannot override the installer manifest.
    and closes normally. It cannot accept an all-water/blank image: the result is
    explicitly **captured-review-required** until chart content is reviewed.
    `stop.ps1` requests normal close and refuses force termination on timeout.
+   Readiness requires a new upstream startup marker followed by its canvas
+   finalization. The observer handles appended or rotated logs; old completed
+   startups cannot pass a new launch. Its bounded shared read does not alter the
+   log or export marine text. A first-start modal must be handled through its
+   separately reviewed flow before unattended smoke testing is appropriate.
 9. `collect-logs.ps1` exports bounded deployment/process metadata only. For detailed
    source health use the product's explicit sanitized **Export Diagnostic Bundle**.
    The scripts do not copy raw navigation logs or the profile into reports.

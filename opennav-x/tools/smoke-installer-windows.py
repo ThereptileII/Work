@@ -30,6 +30,7 @@ def module(name):
     spec=importlib.util.spec_from_file_location(name,ROOT/'tools'/f'{name}.py')
     m=importlib.util.module_from_spec(spec);spec.loader.exec_module(m);return m
 ui=module('windows-ui');fixtures=module('profile-fixtures');charts=module('chart-render-check')
+welcome=module('installer-welcome');startup=module('startup-log')
 def sha(p):return hashlib.sha256(p.read_bytes()).hexdigest()
 def inventory(p):return {f.relative_to(p).as_posix():sha(f) for f in p.rglob('*') if f.is_file()}
 def check(name):report['checks'].append(name);print(name,flush=True)
@@ -102,13 +103,13 @@ def wait_ready(profile,before):
     deadline=time.monotonic()+45
     while time.monotonic()<deadline:
         log=profile/'opencpn.log'
-        if log.exists() and log.read_text(errors='replace').count('OnInitTimer...Finalize Canvases')>before:
+        if log.exists() and startup.initialized_since(before,log.read_bytes()):
             time.sleep(.6);return
         time.sleep(.1)
     raise RuntimeError('Installed app did not complete startup in shared profile')
-def count_starts(profile):
+def startup_baseline(profile):
     p=profile/'opencpn.log'
-    return p.read_text(errors='replace').count('OnInitTimer...Finalize Canvases') if p.exists() else 0
+    return p.read_bytes() if p.exists() else b''
 def fixture_snapshot(profile):
     shutil.copy2(profile/'opencpn.ini',profile/'opencpn.conf')
     return fixtures.snapshot(profile)
@@ -124,19 +125,46 @@ def stable_resources(profile,stock,tides=None):
     for section,key,path in [('Directories','BasemapDir',stock/'gshhs'),('Directories','BaseShapefileDir',stock/'basemap_shp'),('Settings/AIS','AISAlertAudioFile',stock/'sounds/2bells.wav')]:
         assert Path(config.get(section,key)).samefile(path),(section,key,config.get(section,key))
         assert path.exists()
-def launch(exe,mode,title,profile,name,stock_welcome=False):
-    before=count_starts(profile)
+def launch(exe,mode,title,profile,name,welcome_transition=None):
+    proof=None
+    if welcome_transition:
+        ownership=None
+        if welcome_transition!='candidate-to-stock':
+            assert exe.samefile(generation()/'app/opencpn.exe')
+            ownership=json.loads((generation()/'ownership.json').read_text(encoding='utf-8-sig'))
+        else:
+            assert exe.samefile(original) and not (INSTALL/'state.json').exists()
+        accepted=json.loads((ROOT/'tools/accepted-beta1.lock.json').read_text())
+        candidate=json.loads((ROOT/'build/developer-preview/OpenNavX-Beta2-Portable-Recovery/docs/PRODUCT_BUILD.json').read_text())
+        proof=welcome.version_transition(welcome_transition,sha(exe),ownership,accepted['commit'],candidate['commit'])
+    before=startup_baseline(profile)
     p=subprocess.Popen([str(exe),'--no_opengl',*mode]);owned.add(p.pid)
-    if stock_welcome:
-        # The official release has a different ConfigVersionString/build date.
-        # Pinned MyApp::OnInit therefore presents its normal safety warning.
-        # Acknowledge the visible dialog; do not bypass it by editing the profile.
+    if proof:
+        # Pinned MyApp::OnInit shows this caution whenever ConfigVersionString
+        # changes, including the genuine accepted Beta1/candidate transition.
+        # Preserve and acknowledge that visible notice; never edit its INI flags.
         dialog,_=ui.wait_window('Welcome to OpenCPN',p.pid,timeout=45)
+        assert p.poll() is None and sha(exe)==proof['executableSha256']
+        query=ui.declare(ui.kernel,'QueryFullProcessImageNameW',ctypes.c_int,ctypes.c_void_p,ctypes.c_ulong,ctypes.c_wchar_p,ctypes.POINTER(ctypes.c_ulong))
+        buffer=ctypes.create_unicode_buffer(32768);length=ctypes.c_ulong(len(buffer))
+        assert query(int(p._handle),0,buffer,ctypes.byref(length)) and Path(buffer.value).samefile(exe),'Welcome belongs to another executable'
+        def verify_notice():
+            assert p.poll() is None and sha(exe)==proof['executableSha256']
+            buttons=[]
+            for child,_ in ui.children(dialog):
+                kind=ctypes.create_unicode_buffer(128);ui.GetClassNameW(child,kind,len(kind))
+                if kind.value=='Button':
+                    assert ui.IsWindowEnabled(child)
+                    buttons.append(ui.control_text(child))
+            welcome.validate_notice(p.pid,dialog,ui.windows(p.pid),buttons)
+        verify_notice()
         image=EVIDENCE/(name+'-welcome.png')
         ui.capture(dialog,image,resize=False,screen_pixels=True)
         report['screenshots'].append(image.name)
+        verify_notice()
         ui.dismiss_native_dialog(dialog,'Agree')
-        check('Restored official OpenCPN safety notice acknowledged through its visible Agree button')
+        report.setdefault('versionNotices',[]).append(dict(proof,pid=p.pid,screenshot=image.name,transition=welcome_transition))
+        check('Expected '+welcome_transition+' safety notice captured and acknowledged through its visible Agree button')
     h,pid=ui.wait_window(title,p.pid,timeout=45);wait_ready(profile,before)
     assert ui.IsWindowEnabled(h),'Application startup is still blocked by a modal dialog'
     image=EVIDENCE/(name+'.png');rgb=ui.capture(h,image)
@@ -284,7 +312,7 @@ try:
         assert json.loads((generation()/'ownership.json').read_text())['version']=='0.3.0-beta1'
         old_exe=generation()/'app/opencpn.exe'
         assert sha(old_exe)!=sha(ROOT/'build/production-install/opencpn.exe')
-        p,h,rgb=launch(old_exe,['--xnav'],'OpenNav X / OpenCPN',profile,'installer-00-prior-test-version')
+        p,h,rgb=launch(old_exe,['--xnav'],'OpenNav X / OpenCPN',profile,'installer-00-prior-test-version',welcome_transition='candidate-to-beta1')
         charts.reference(rgb);close(p,h);assert fixture_snapshot(profile)==expected
         stable_resources(profile,stock,[custom_tide])
         prior_generation=state()['current'];before=inventory(profile)
@@ -304,7 +332,7 @@ try:
         check('Versioned recovery record identifies exact Beta 1 generation, stock hash and Beta 2 target before update')
         first=state()['current'];exe=generation()/'app/opencpn.exe'
         assert not (exe.parent/'OPENNAV_PORTABLE_PREVIEW').exists()
-        p,h,rgb=launch(exe,['--xnav'],'OpenNav X / OpenCPN',profile,'installer-01-xnav')
+        p,h,rgb=launch(exe,['--xnav'],'OpenNav X / OpenCPN',profile,'installer-01-xnav',welcome_transition='beta1-to-candidate')
         colors=charts.reference(rgb);close(p,h);assert fixture_snapshot(profile)==expected
         check('Installed XNav starts against normal wx profile; coastline and navigation fixtures preserved')
         for mode,title,name in [('--legacy','OpenCPN / Legacy','legacy'),('--safe-mode','OpenNav Safe Mode / OpenCPN','safe')]:
@@ -313,10 +341,10 @@ try:
         check('Installed Legacy and Safe start with charts and shared navigation/config/plugin preferences')
         # Controlled return through both product interfaces, not only separate launches.
         p,h,rgb=launch(exe,['--xnav'],'OpenNav X / OpenCPN',profile,'installer-03-before-switch')
-        before=count_starts(profile);ui.click_text(p.pid,'System');ui.click_text(p.pid,'Open Legacy OpenCPN')
+        before=startup_baseline(profile);ui.click_text(p.pid,'System');ui.click_text(p.pid,'Open Legacy OpenCPN')
         assert p.wait(timeout=35)==0;owned.discard(p.pid)
         h,pid=ui.wait_window('OpenCPN / Legacy');owned.add(pid);wait_ready(profile,before)
-        before=count_starts(profile);monitor=ui.monitor_process(pid);ui.click_menu(h,'Switch to XNav');ui.wait_clean_exit(monitor);owned.discard(pid)
+        before=startup_baseline(profile);monitor=ui.monitor_process(pid);ui.click_menu(h,'Switch to XNav');ui.wait_clean_exit(monitor);owned.discard(pid)
         h,pid=ui.wait_window('OpenNav X / OpenCPN');owned.add(pid);wait_ready(profile,before)
         rgb=ui.capture(h,EVIDENCE/'installer-04-returned-xnav.png');report['screenshots'].append('installer-04-returned-xnav.png')
         charts.check(rgb,colors,'Installed XNav Legacy XNav')
@@ -483,7 +511,7 @@ try:
         report['unpublished_stages_retained']=sum(1 for d in (INSTALL/'generations').iterdir() if d.is_dir() and not (d/'ownership.json').exists())
         assert list((INSTALL/'generations').glob('*/app/plugins/alpha-user-preserved.txt')), 'Custom additions were removed'
         check('Conventional uninstaller removes verified owned app files; exact stock/profile unchanged; custom additions retained')
-        p,h,rgb=launch(original,[],'OpenCPN 5.12.4-0',profile,'installer-05-restored-stock',stock_welcome=True)
+        p,h,rgb=launch(original,[],'OpenCPN 5.12.4-0',profile,'installer-05-restored-stock',welcome_transition='candidate-to-stock')
         charts.check(rgb,colors,'Untouched stock after uninstall');close(p,h)
         assert fixture_snapshot(profile)==expected
         stable_resources(profile,stock,[custom_tide])

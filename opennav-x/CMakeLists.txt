@@ -216,6 +216,8 @@ if(OPENNAV_BUILD_TESTS)
     ${CMAKE_CURRENT_SOURCE_DIR}/tests/restart_capability_tests.py)
   add_test(NAME startup_log_rotation_contract COMMAND ${Python3_EXECUTABLE}
     ${CMAKE_CURRENT_SOURCE_DIR}/tests/startup_log_tests.py)
+  add_test(NAME installer_expected_version_notice COMMAND ${Python3_EXECUTABLE}
+    ${CMAKE_CURRENT_SOURCE_DIR}/tests/installer_welcome_tests.py)
   add_executable(restart_probe tests/restart_probe.cpp)
   target_link_libraries(restart_probe PRIVATE opennav_platform)
   if(WIN32)

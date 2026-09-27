@@ -9,6 +9,39 @@ executables from the installed product, refines shared visual components and
 navigation workflows, and adds repeatable boat deployment and maintenance tools.
 The accepted Beta 1 results below remain historical evidence, not Beta 2 gates.
 
+### Current candidate
+
+`60cd054712c6a930147247970121a959d48e03bf` is running in
+[CI 36284246369](https://github.com/ThereptileII/Work/actions/runs/36284246369).
+All 591 tracked source blobs and modes match local source
+`f123bf5c3d33d979409a8f32418653ac56c2d413`; the pinned upstream gitlink is unchanged.
+The local portable contract suite passes **70/70**, and the sequential integrated
+Linux regression suite passes **110/110**. This candidate includes the
+startup-log rotation fix, preserved plugin workspace, tighter instrument spacing,
+fresh waypoint selection/permissions, and truthful route Undo eligibility.
+The expanded Linux object workflow passes 24 groups with 25 captures, and the
+actual-pointer workflow passes eight groups with nine captures. These local
+results do not replace native package or boat acceptance.
+
+The same candidate's native fixture-enabled functional suite, fixture-free
+recovery-package launch/mode smoke, DPI and chart/plugin checks have passed.
+Its installer gate failed when the accepted Beta 1 executable displayed the
+expected version-change navigation caution during the real update sequence.
+Candidate clean install, chart startup and first-install rollback had passed;
+the remaining lifecycle and native endurance steps are not accepted. The
+[narrow harness repair](installer/beta2-version-transition-notices.md) retains
+the actual captured warning and explicit Agree action, with exact owned-version
+checks. The expanded local portable suite passes **71/71**; a replacement native
+candidate is still required. Linux's three-hour
+elapsed-time trip began at 01:26 UTC and is not yet a completed endurance result.
+
+The separate exact-revision commissioning tooling has passed its native marker
+transport, full broker and actual Prepare/Arm/Collect gates; downloaded evidence
+and upload hashes are verified. See [the scoped qualification](installer/commissioning-restart-qualification.md).
+Actual installed-app launch, plugin shutdown, in-app mode transitions and boat
+screen review remain outstanding. Later UI-driver tooling is qualified separately;
+it is not part of the current candidate's acceptance evidence.
+
 ### Boat prerequisite — official 5.12.4 upgrade verified
 
 Read-only inspection found **OpenCPN 5.12.2-0+b69f44c / x86**, executable SHA-256
@@ -23,6 +56,28 @@ The wizard's Upgrade/reset/summary/Finish screenshots were reviewed; Run and
 Show were unchecked, and OpenCPN was not launched. Tailscale, SSH and RustDesk
 remain running. [Upgrade evidence](evidence/beta2-boat-stock-5.12.4-upgrade.json).
 This closes the stock-version prerequisite; Beta 2 still requires its own gates.
+
+A fresh stock-only commissioning inventory matched all nine previously reviewed
+plugin DLLs and their source evidence. The journaled one-byte input-only change
+and four temporary DLL quarantines are now applied and independently verified.
+The exact official stock executable has now launched with empty arguments on
+the interactive desktop. It is still at its first-start navigation caution; no
+acknowledgement has been sent. This preparation is for a real-chart stock baseline,
+not an installed-XNav launch attestation or visual acceptance.
+[Read-only preparation evidence](evidence/beta2-boat-stock-readonly-preparation.json).
+The saved profile uses Swedish (`Locale=sv`). First-start warning review must
+therefore qualify the actual official Swedish dialog, preserving that preference;
+an English-only fixture cannot authorize its acknowledgement. The exact official
+Swedish catalogues and pinned source translations have been inspected. Actual
+English and Swedish startup dialogs now pass separate native qualification,
+including reviewed pixels, one acknowledgement, preserved locale and normal
+exit: [qualified warning evidence](evidence/beta2-stock-warning-2b2c2c.json).
+The boat capture refused an inconsistent window/foreground observation. It
+published no image and sent no acknowledgement; bounded diagnostics are being
+used to identify the mismatch before proceeding. The configured N2K serial port is
+currently absent from read-only port inventory; no current N2K reception is
+inferred. A closed-copy navigation-database integrity/content baseline is also
+recorded privately using the [byte-preserving audit](installer/navigation-preservation-audit.md).
 
 The actual shared profile's `opencpn.ini` was already zero-filled at first
 inspection (21,380 bytes; last written 2026-09-20). A same-sized nonzero temporary
@@ -45,9 +100,11 @@ Private chart/profile content remains on the boat PC or in ignored local
 inspection evidence, never in the repository.
 
 The normal profile includes an output-capable NMEA 2000 connection and enabled
-pilot plugins. No real-profile launch or physical command has been attempted.
-A read-only commissioning policy must address third-party plugin outputs as
-well as OpenNav's own control switch. Saved user diagnostics show prior live
+pilot plugins. The active temporary commissioning transaction makes that
+connection input-only and quarantines the four reviewed output-capable or
+unqualified plugin DLLs before the stock launch. No physical control command
+has been sent. Third-party outputs are addressed independently of OpenNav's
+own control switch. Saved user diagnostics show prior live
 GPS, heading, wind and depth; this is not current-session hardware acceptance.
 Reported desktop mode is 1920×1080 and the saved application DPI is 144;
 1280×800 physical-display acceptance remains outstanding.

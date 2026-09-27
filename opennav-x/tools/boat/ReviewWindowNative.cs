@@ -145,6 +145,8 @@ namespace OpenNavX {
         case "Advice":return new string[]{"SmartNav advisories"};case "PilotView":return new string[]{"Pilot"};
         case "Anchor":return new string[]{"Anchor watch"};case "Settings":return new string[]{"Settings"};
         case "Sources":return new string[]{"SENSORS"};case "Route":return new string[]{"Route"};
+        case "Display":return new string[]{"DISPLAY"};case "ToggleFullscreen":return new string[]{"Fullscreen / window"};
+        case "ToggleOrientation":return new string[]{"North","Course"};
         case "Energy":return new string[]{"Energy"};case "Diagnostics":return new string[]{"Diagnostics"};
         case "System":return new string[]{"System"};case "Alerts":return new string[]{"Alerts"};
         case "CyclePalette":return new string[]{"Day","Dusk","Night"};
@@ -153,7 +155,41 @@ namespace OpenNavX {
         default:throw new InvalidOperationException("Unsupported review pointer action.");
       }
     }
-    public static void Click(IntPtr frame,int pid,string action) {
+    public static string ActionContext(string action) {
+      ActionLabels(action); // Unknown actions have no context, even without a window.
+      switch(action) {
+        case "Display":return "OpenNav product page: Settings";
+        case "ToggleFullscreen":return "OpenNav product page: Display";
+        case "ToggleOrientation":return "Navigation chart tools";
+        case "CyclePalette":return "Navigation status bar";
+        default:return "Installed XNav shell";
+      }
+    }
+    private static bool ScopedButton(IntPtr frame,int pid,IntPtr button,string action) {
+      if(action=="CyclePalette") {
+        var parent=GetParent(button);int menus=0;
+        if(parent==IntPtr.Zero || GetParent(parent)!=frame)return false;
+        foreach(var h in Children(parent))if(GetParent(h)==parent && Owner(h)==(uint)pid && Class(h)!="Static" && Text(h)=="Menu")menus++;
+        return menus==1;
+      }
+      if(action=="Display" || action=="ToggleFullscreen") {
+        string page=ActionContext(action);var pages=new List<IntPtr>();
+        foreach(var h in Children(frame))if(Owner(h)==(uint)pid && Text(h)==page && IsWindowEnabled(h))pages.Add(h);
+        return pages.Count==1 && GetParent(button)==pages[0];
+      }
+      if(action=="ToggleOrientation") {
+        if(VisiblePageLabels(frame).Length!=0)return false;
+        var parent=GetParent(button);
+        if(parent==IntPtr.Zero || GetParent(parent)!=frame)return false;
+        foreach(var label in new string[]{"+","\u2212","Center"}) {
+          int count=0;
+          foreach(var h in Children(parent))if(GetParent(h)==parent && Owner(h)==(uint)pid && Class(h)!="Static" && Text(h)==label)count++;
+          if(count!=1)return false;
+        }
+      }
+      return true;
+    }
+    private static IntPtr ResolveButton(IntPtr frame,int pid,string action) {
       var labels=ActionLabels(action);var root=AssertFrame(frame,pid);var matches=new List<IntPtr>();
       foreach(var h in Children(frame)) {
         if(Array.IndexOf(labels,Text(h))<0 || Class(h)=="Static" || !IsWindowEnabled(h) || Owner(h)!=(uint)pid)continue;
@@ -161,12 +197,16 @@ namespace OpenNavX {
         bool visible=true;for(var parent=GetParent(h);parent!=IntPtr.Zero && parent!=frame;parent=GetParent(parent)) {
           Rect pr;if(!GetWindowRect(parent,out pr) || !Contains(pr,r))visible=false;
         }
-        if(visible)matches.Add(h);
+        if(visible && (action!="CyclePalette" || ScopedButton(frame,pid,h,action)))matches.Add(h);
       }
-      if(matches.Count!=1)throw new InvalidOperationException("Reviewed button must be unique, enabled and fully visible.");
-      ClickReviewedButton(frame,pid,matches[0]);
+      if(matches.Count!=1 || !ScopedButton(frame,pid,matches[0],action))throw new InvalidOperationException("Reviewed button must be unique, enabled, fully visible and in its exact source-reviewed page or chart rail.");
+      return matches[0];
     }
-    private static void ClickReviewedButton(IntPtr frame,int pid,IntPtr button) {
+    public static void Click(IntPtr frame,int pid,string action) {
+      var button=ResolveButton(frame,pid,action);
+      ClickReviewedButton(frame,pid,button,delegate{return ResolveButton(frame,pid,action);});
+    }
+    private static void ClickReviewedButton(IntPtr frame,int pid,IntPtr button,Func<IntPtr> resolve=null) {
       AssertFrame(frame,pid);
       if(!IsWindowVisible(button) || !IsWindowEnabled(button) || Owner(button)!=(uint)pid || !IsChild(frame,button))
         throw new InvalidOperationException("Reviewed button identity changed before press.");
@@ -174,12 +214,23 @@ namespace OpenNavX {
       if(!GetWindowRect(button,out screen) || !GetClientRect(button,out client) || client.Width<24 || client.Height<24)throw new InvalidOperationException("Reviewed button geometry unavailable.");
       var hit=WindowFromPoint(new Point{X=(screen.Left+screen.Right)/2,Y=(screen.Top+screen.Bottom)/2});
       if(hit!=button && !IsChild(button,hit))throw new InvalidOperationException("Reviewed button is obscured; no click sent.");
+      var parent=GetParent(button);var caption=Text(button);var kind=Class(button);var parentCaption=Text(parent);
       AssertFrame(frame,pid);
       var position=new IntPtr((client.Width/2)|((client.Height/2)<<16));UIntPtr result;
       // One target-local press/release. No global input or click retry.
       var down=SendMessageTimeoutW(button,0x201,new UIntPtr(1),position,0x2,1000,out result);
+      if(down==IntPtr.Zero)throw new InvalidOperationException("Reviewed press result uncertain; no release or retry to an unverified control.");
+      AssertFrame(frame,pid);Rect heldScreen,heldClient;
+      if(!IsWindowVisible(button) || !IsWindowEnabled(button) || Owner(button)!=(uint)pid || !IsChild(frame,button) ||
+          GetParent(button)!=parent || Text(button)!=caption || Class(button)!=kind || Text(parent)!=parentCaption ||
+          !GetWindowRect(button,out heldScreen) || !GetClientRect(button,out heldClient) ||
+          heldScreen.Left!=screen.Left || heldScreen.Top!=screen.Top || heldScreen.Right!=screen.Right || heldScreen.Bottom!=screen.Bottom ||
+          heldClient.Width!=client.Width || heldClient.Height!=client.Height || (resolve!=null && resolve()!=button))
+        throw new InvalidOperationException("Reviewed control changed during press; no release or retry.");
+      hit=WindowFromPoint(new Point{X=(screen.Left+screen.Right)/2,Y=(screen.Top+screen.Bottom)/2});
+      if(hit!=button && !IsChild(button,hit))throw new InvalidOperationException("Reviewed control became obscured during press; no release or retry.");
       var up=SendMessageTimeoutW(button,0x202,UIntPtr.Zero,position,0x2,1000,out result);
-      if(down==IntPtr.Zero || up==IntPtr.Zero)throw new InvalidOperationException("Reviewed button did not respond; no click retry.");
+      if(up==IntPtr.Zero)throw new InvalidOperationException("Reviewed button did not respond; no click retry.");
       Thread.Sleep(300);AssertFrame(frame,pid);
     }
     public static string SelectionPage(string action) {

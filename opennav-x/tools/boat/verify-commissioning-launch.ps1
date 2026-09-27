@@ -37,7 +37,7 @@ if (-not $recordPath.StartsWith($runs+$separator,[StringComparison]::OrdinalIgno
     [IO.Path]::GetFileName($recordPath) -cne 'prepared.json') { throw 'Launch must bind the private prepared commissioning record.' }
 $directory=[IO.Path]::GetDirectoryName($recordPath)
 $prepared=Read-LaunchRecord $recordPath $binding.recordSha256 $script:CommissioningOwner
-if ($prepared.status -cne 'prepared' -or $prepared.baselineSha256 -cne $script:CommissioningBaseline) { throw 'Commissioning baseline is not the exact recovered working profile.' }
+$baselineInfo=Get-PreparedCommissioningBaseline $prepared $directory $context.workspace
 Assert-CommissioningContext $prepared.context $context
 $active=Read-Record (Join-Path $context.workspace 'commissioning-active.json')
 if ($active.schema -ne 1 -or $active.owner -cne $script:CommissioningOwner -or
@@ -51,11 +51,11 @@ if ($applied.status -cne 'input-only-prepared' -or $applied.recordSha256 -cne $b
 $plan=Read-LaunchRecord (Join-Path $directory 'review-plan.json') $prepared.planSha256 'OpenNavX.ReadOnlyCommissioning.Plan.1'
 Assert-LaunchFreshReview $plan.reviewedUtc
 $inventory=Read-LaunchRecord (Join-Path $directory 'inventory.json') $prepared.inventorySha256 'OpenNavX.ReadOnlyCommissioning.Inventory.1'
-if ($plan.inventorySha256 -cne $prepared.inventorySha256 -or $inventory.profileSha256 -cne $script:CommissioningBaseline) { throw 'Source plan and cold inventory disagree.' }
+if ($plan.inventorySha256 -cne $prepared.inventorySha256 -or $inventory.profileSha256 -cne $baselineInfo.sha256) { throw 'Source plan and cold inventory disagree.' }
 Assert-CommissioningInventory $inventory $context
 $original=Join-Path $directory 'baseline.ini'
 $inputProfile=Join-Path $directory 'input-only.ini'
-if ((Get-Digest $original) -cne $script:CommissioningBaseline -or (Get-Digest $inputProfile) -cne $prepared.inputSha256 -or
+if ((Get-Digest $original) -cne $baselineInfo.sha256 -or (Get-Digest $inputProfile) -cne $prepared.inputSha256 -or
     (Get-CommissioningHash (Get-CommissioningInputBytes ([IO.File]::ReadAllBytes($original)))) -cne $prepared.inputSha256) { throw 'Prepared profile byte proof changed.' }
 # Read the parsed array property directly. Windows PowerShell 5 returns a JSON
 # array as one pipeline object, whereas PowerShell 7 enumerates its items; a

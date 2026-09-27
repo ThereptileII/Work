@@ -6,9 +6,13 @@ param(
   [string]$Plan,[string]$ExpectedPlanSha256,
   [string]$Record,[string]$ExpectedRecordSha256,
   [string]$Inspection,[string]$ExpectedInspectionSha256,
-  [string]$ReviewedCurrentIniSha256
+  [string]$ReviewedCurrentIniSha256,
+  [string]$BaselineRecord,[string]$ExpectedBaselineSha256,
+  [string]$AdoptionProposal,[string]$ExpectedAdoptionSha256
 )
 . (Join-Path $PSScriptRoot 'Commissioning.ps1')
+if(($BaselineRecord -or $ExpectedBaselineSha256) -and $Action -cnotin @('Inventory','Prepare')){throw 'Baseline selection belongs only to a new Inventory/Prepare.'}
+if(($AdoptionProposal -or $ExpectedAdoptionSha256) -and $Action -cnotin @('InspectRestore','Restore')){throw 'Adoption belongs only to explicit inspected restoration.'}
 $context=Get-CommissioningContext $Workspace
 $ini=Join-Path $context.profile 'opencpn.ini'
 $active=Join-Path $context.workspace 'commissioning-active.json'
@@ -33,7 +37,9 @@ function Assert-ClosedCommissioning {
 }
 if ($Action -cin @('Inventory','Prepare')) {
   if (Test-Path -LiteralPath $active) { throw 'An existing commissioning transaction must be inspected/restored first.' }
-  if ((Get-Digest $ini) -cne $script:CommissioningBaseline) { throw 'The separately recovered exact working INI is required before commissioning.' }
+  $baselineInfo=Read-CommissioningBaseline $context.workspace $BaselineRecord $ExpectedBaselineSha256
+  if($baselineInfo.record -and ($baselineInfo.sid -cne $context.sid -or $baselineInfo.profile -ine $context.profile)){throw 'Adopted baseline belongs to another actual account/profile.'}
+  if ((Get-Digest $ini) -cne $baselineInfo.sha256 -or (Get-Item -LiteralPath $ini).Length -ne $baselineInfo.bytes) { throw 'The exact recovered or explicitly adopted baseline is required before commissioning.' }
   $values=Read-ProfileForAudit $ini
   if ($values['Directories/pluginInstallDir']) { throw 'Custom plugin paths require a separate review.' }
 }
@@ -43,7 +49,7 @@ if ($Action -ceq 'Inventory') {
   $output=Join-Path $directory 'inventory.json'
   foreach ($tree in $trees) { Assert-PreparationTree $tree }
   Assert-ClosedCommissioning
-  Write-Record $output @{schema=1;owner='OpenNavX.ReadOnlyCommissioning.Inventory.1';createdUtc=[DateTime]::UtcNow.ToString('o');context=$context;profileSha256=(Get-Digest $ini);trees=$trees;plugins=@(Get-CommissioningCandidates $trees);privacy='Private local review; no upload.'}
+  Write-Record $output @{schema=1;owner='OpenNavX.ReadOnlyCommissioning.Inventory.1';createdUtc=[DateTime]::UtcNow.ToString('o');context=$context;profileSha256=(Get-Digest $ini);baselineReference=$(if($baselineInfo.record){@{record=$baselineInfo.record;recordSha256=$baselineInfo.recordSha256}}else{$null});trees=$trees;plugins=@(Get-CommissioningCandidates $trees);privacy='Private local review; no upload.'}
   [pscustomobject]@{status='inventory';record=$output;recordSha256=(Get-Digest $output);applicationLaunched=$false;profileModified=$false} | ConvertTo-Json
   return
 }
@@ -53,7 +59,10 @@ if ($Action -ceq 'Prepare') {
   if ($reviewed -gt [DateTime]::UtcNow -or ([DateTime]::UtcNow-$reviewed).TotalHours -gt 24) { throw 'Operator source review is missing or expired.' }
   $inventory=Read-PinnedCommissioningRecord $planData.inventoryPath $planData.inventorySha256 'OpenNavX.ReadOnlyCommissioning.Inventory.1'
   Assert-CommissioningInventory $inventory $context
-  if ($inventory.profileSha256 -cne $script:CommissioningBaseline) { throw 'Inventory did not cover the working recovered profile.' }
+  if ($inventory.profileSha256 -cne $baselineInfo.sha256) { throw 'Inventory did not cover this exact recovered/adopted profile.' }
+  $inventoryReference=if($inventory.PSObject.Properties['baselineReference']){$inventory.baselineReference}else{$null}
+  if(($baselineInfo.record -and (-not $inventoryReference -or $inventoryReference.record -ine $baselineInfo.record -or $inventoryReference.recordSha256 -cne $baselineInfo.recordSha256)) -or
+     (-not $baselineInfo.record -and $inventoryReference)){throw 'Inventory baseline lineage differs from explicit preparation choice.'}
   foreach ($tree in $inventory.trees) { Assert-PreparationTree $tree }
   $candidates=@(Get-CommissioningCandidates $inventory.trees)
   Assert-CommissioningReview $candidates $planData.plugins
@@ -64,7 +73,7 @@ if ($Action -ceq 'Prepare') {
   Assert-CommissioningQuarantine $quarantineDirectory $context.pluginRoots $context.launchEnvironment.path
   $null=New-Item -ItemType Directory -Path $quarantineDirectory
   $original=Join-Path $directory 'baseline.ini';$inputProfile=Join-Path $directory 'input-only.ini'
-  Copy-PreparationFile $ini $original $script:CommissioningBaseline 21380
+  Copy-PreparationFile $ini $original $baselineInfo.sha256 $baselineInfo.bytes
   Save-CommissioningBytes $inputProfile $inputBytes
   Assert-InputOnlyProfile (Read-ProfileForAudit $inputProfile)
   Copy-PreparationFile $Plan (Join-Path $directory 'review-plan.json') $ExpectedPlanSha256 (Get-Item -LiteralPath $Plan).Length
@@ -86,20 +95,20 @@ if ($Action -ceq 'Prepare') {
   foreach ($tree in $inventory.trees) { Assert-PreparationTree $tree }
   Assert-CommissioningContext $context (Get-CommissioningContext $Workspace)
   $prepared=Join-Path $directory 'prepared.json'
-  Write-Record $prepared @{schema=1;owner=$script:CommissioningOwner;status='prepared';createdUtc=[DateTime]::UtcNow.ToString('o');context=$context;planSha256=$ExpectedPlanSha256;inventorySha256=$planData.inventorySha256;evidence=$evidence.ToArray();baselineSha256=$script:CommissioningBaseline;inputSha256=(Get-Digest $inputProfile);profileBefore=$before;originalAcl=(Get-Acl -LiteralPath $ini).Sddl;quarantine=$moves.ToArray();gatewayManagementTraffic='OpenCPN serial driver management writes still occur; no actuator data commands authorized.';applicationLaunched=$false}
+  Write-Record $prepared @{schema=1;owner=$script:CommissioningOwner;status='prepared';createdUtc=[DateTime]::UtcNow.ToString('o');context=$context;planSha256=$ExpectedPlanSha256;inventorySha256=$planData.inventorySha256;evidence=$evidence.ToArray();baselineSha256=$baselineInfo.sha256;baselineReference=$inventoryReference;inputSha256=(Get-Digest $inputProfile);profileBefore=$before;originalAcl=(Get-Acl -LiteralPath $ini).Sddl;quarantine=$moves.ToArray();gatewayManagementTraffic='OpenCPN serial driver management writes still occur; no actuator data commands authorized.';applicationLaunched=$false}
   [pscustomobject]@{status='prepared';record=$prepared;recordSha256=(Get-Digest $prepared);quarantineCount=$moves.Count;profileModified=$false;applicationLaunched=$false} | ConvertTo-Json
   return
 }
 $recordPath=Assert-LocalPath $Record
 $directory=Assert-RecordDirectory $recordPath
 $prepared=Read-PinnedCommissioningRecord $recordPath $ExpectedRecordSha256 $script:CommissioningOwner
-if ($prepared.status -cne 'prepared' -or $prepared.baselineSha256 -cne $script:CommissioningBaseline) { throw 'Unrecognized prepared transaction.' }
+$baselineInfo=Get-PreparedCommissioningBaseline $prepared $directory $context.workspace
 Assert-CommissioningContext $prepared.context $context
 $planData=Read-PinnedCommissioningRecord (Join-Path $directory 'review-plan.json') $prepared.planSha256 'OpenNavX.ReadOnlyCommissioning.Plan.1'
 $inventory=Read-PinnedCommissioningRecord (Join-Path $directory 'inventory.json') $prepared.inventorySha256 'OpenNavX.ReadOnlyCommissioning.Inventory.1'
 Assert-CommissioningInventory $inventory $context
 $original=Join-Path $directory 'baseline.ini';$inputProfile=Join-Path $directory 'input-only.ini'
-if ((Get-Digest $original) -cne $script:CommissioningBaseline -or (Get-Digest $inputProfile) -cne $prepared.inputSha256 -or
+if ((Get-Digest $original) -cne $baselineInfo.sha256 -or (Get-Digest $inputProfile) -cne $prepared.inputSha256 -or
     (Get-CommissioningHash (Get-CommissioningInputBytes ([IO.File]::ReadAllBytes($original)))) -cne $prepared.inputSha256) { throw 'Prepared exact-byte profile copies changed.' }
 foreach ($item in @($prepared.evidence)) { if ((Get-Digest $item.path) -cne $item.sha256) { throw 'Saved source review evidence changed.' } }
 foreach ($item in @($prepared.quarantine)) {
@@ -137,9 +146,9 @@ if ($Action -ceq 'Apply') {
   Assert-CommissioningTrees $inventory.trees $prepared.quarantine -AllowMoved
   Assert-PreparationTree $prepared.profileBefore
   $apply=Join-Path $directory 'input-only-intent.json'
-  Write-Record $apply @{schema=1;owner=$script:CommissioningOwner;recordSha256=$ExpectedRecordSha256;beforeSha256=$script:CommissioningBaseline;afterSha256=$prepared.inputSha256}
+  Write-Record $apply @{schema=1;owner=$script:CommissioningOwner;recordSha256=$ExpectedRecordSha256;beforeSha256=$baselineInfo.sha256;afterSha256=$prepared.inputSha256}
   Assert-ClosedCommissioning
-  Publish-PreparedProfile $ini $inputProfile $script:CommissioningBaseline $prepared.inputSha256 21380 $apply
+  Publish-PreparedProfile $ini $inputProfile $baselineInfo.sha256 $prepared.inputSha256 $baselineInfo.bytes $apply
   Assert-InputOnlyProfile (Read-ProfileForAudit $ini)
   $remaining=@(Get-AuditPluginCandidates $context.pluginRoots)
   $retained=@($planData.plugins | Where-Object {$_.decision -ceq 'retain'})
@@ -153,12 +162,18 @@ $activeRecord=Read-Record $active
 if ($activeRecord.schema -ne 1 -or $activeRecord.owner -cne $script:CommissioningOwner -or $activeRecord.record -ine $recordPath -or $activeRecord.recordSha256 -cne $ExpectedRecordSha256) { throw 'Active transaction ownership mismatch.' }
 Assert-ClosedCommissioning
 Assert-CommissioningTrees $inventory.trees $prepared.quarantine -AllowMoved
+$adoption=$null;$restoreSource=$original;$restoreHash=$baselineInfo.sha256;$restoreBytes=$baselineInfo.bytes
+if($AdoptionProposal -or $ExpectedAdoptionSha256) {
+  $adoption=Read-CommissioningAdoptionProposal $context.workspace $AdoptionProposal $ExpectedAdoptionSha256 $recordPath $ExpectedRecordSha256
+  $restoreSource=$adoption.baseline;$restoreHash=$adoption.value.baselineSha256;$restoreBytes=$adoption.value.baselineBytes
+}
+Assert-CommissioningRestoreTarget $directory $ExpectedRecordSha256 $restoreHash $(if($adoption){$adoption.sha256}else{''})
 if ($Action -ceq 'InspectRestore') {
   $currentHash=Get-Digest $ini
   Assert-PreparationAcl $prepared.originalAcl (Get-Acl -LiteralPath $ini).Sddl -AllowDaclAutoInherited
   # A partial Apply may still have the untouched baseline. Otherwise all
   # reviewed input connections and chart directories must remain unchanged.
-  if ($currentHash -cne $script:CommissioningBaseline) { Assert-CommissioningRestoreIni $inputProfile $ini }
+  if ($currentHash -cne $restoreHash) { Assert-CommissioningRestoreIni $inputProfile $ini }
   $id=[guid]::NewGuid().ToString('N')
   $saved=Join-Path $directory ('post-session-'+$id+'.ini')
   Copy-PreparationFile $ini $saved $currentHash (Get-Item -LiteralPath $ini).Length
@@ -178,9 +193,10 @@ Assert-PreparationTree $inspected.profileBeforeRestore
 Assert-PreparationAcl $inspected.currentAcl (Get-Acl -LiteralPath $ini).Sddl
 Assert-PreparationAcl $prepared.originalAcl $inspected.currentAcl -AllowDaclAutoInherited
 $restore=Join-Path $directory ('restore-intent-'+[guid]::NewGuid().ToString('N')+'.json')
-Write-Record $restore @{schema=1;owner=$script:CommissioningOwner;recordSha256=$ExpectedRecordSha256;inspectionSha256=$ExpectedInspectionSha256;beforeSha256=$ReviewedCurrentIniSha256;afterSha256=$script:CommissioningBaseline;applicationLaunched=$false}
+if($adoption -and $ReviewedCurrentIniSha256 -cne $adoption.value.currentIniSha256 -and $ReviewedCurrentIniSha256 -cne $restoreHash){throw 'Only the exact migrated or already-published adopted bytes may resume adoption.'}
+Write-Record $restore @{schema=1;owner=$script:CommissioningOwner;recordSha256=$ExpectedRecordSha256;inspectionSha256=$ExpectedInspectionSha256;beforeSha256=$ReviewedCurrentIniSha256;afterSha256=$restoreHash;adoptionProposalSha256=$(if($adoption){$adoption.sha256}else{$null});applicationLaunched=$false}
 Assert-ClosedCommissioning
-if ($ReviewedCurrentIniSha256 -cne $script:CommissioningBaseline) { Publish-PreparedProfile $ini $original $ReviewedCurrentIniSha256 $script:CommissioningBaseline 21380 $restore }
+if ($ReviewedCurrentIniSha256 -cne $restoreHash) { Publish-PreparedProfile $ini $restoreSource $ReviewedCurrentIniSha256 $restoreHash $restoreBytes $restore }
 foreach ($item in @($prepared.quarantine)) {
   Assert-ClosedCommissioning
   Assert-CommissioningTrees $inventory.trees $prepared.quarantine -AllowMoved
@@ -193,16 +209,26 @@ foreach ($item in @($prepared.quarantine)) {
   }
 }
 Assert-CommissioningTrees $inventory.trees $prepared.quarantine
-if ((Get-Digest $ini) -cne $script:CommissioningBaseline) { throw 'Working baseline was not restored exactly.' }
+if ((Get-Digest $ini) -cne $restoreHash) { throw 'Selected exact working baseline was not restored.' }
 $expected=$inspected.profileBeforeRestore
 $iniEntry=@($expected.entries | Where-Object {$_.path -ceq 'opencpn.ini'})
 if ($iniEntry.Count -ne 1) { throw 'Ambiguous profile inventory.' }
-$iniEntry[0].sha256=$script:CommissioningBaseline;$iniEntry[0].bytes=21380
+$iniEntry[0].sha256=$restoreHash;$iniEntry[0].bytes=$restoreBytes
 Assert-PreparationTree $expected
 Assert-ClosedCommissioning
 $complete=Join-Path $directory ('restored-'+[guid]::NewGuid().ToString('N')+'.json')
-Write-Record $complete @{schema=1;owner=$script:CommissioningOwner;status='restored';recordSha256=$ExpectedRecordSha256;inspectionSha256=$ExpectedInspectionSha256;profileSha256=$script:CommissioningBaseline;pluginInventoryRestored=$true;otherProfileFilesPreserved=$true;applicationLaunched=$false;originalOutputConfigurationRestored=$true;doNotAutoLaunch=$true}
+Write-Record $complete @{schema=1;owner=$script:CommissioningOwner;status='restored';recordSha256=$ExpectedRecordSha256;inspectionSha256=$ExpectedInspectionSha256;profileSha256=$restoreHash;adoptionProposalSha256=$(if($adoption){$adoption.sha256}else{$null});pluginInventoryRestored=$true;otherProfileFilesPreserved=$true;applicationLaunched=$false;originalOutputConfigurationRestored=$true;doNotAutoLaunch=$true}
+$adoptedRecord=$null
+if($adoption) {
+  $adoptedRecord=Join-Path $adoption.directory 'adopted-baseline.json'
+  if(-not (Test-Path -LiteralPath $adoptedRecord)) {
+    Write-Record $adoptedRecord @{schema=1;owner=$script:CommissioningBaselineOwner;status='adopted';createdUtc=[datetime]::UtcNow.ToString('o');
+      parentPrepared=$recordPath;parentPreparedSha256=$ExpectedRecordSha256;proposalSha256=$adoption.sha256;baselineSha256=$restoreHash;baselineBytes=$restoreBytes;
+      restoreCompletion=$complete;restoreCompletionSha256=(Get-Digest $complete);sourceReviewStillRequired=$true;applicationLaunched=$false}
+  }
+  $null=Read-CommissioningBaseline $context.workspace $adoptedRecord (Get-Digest $adoptedRecord)
+}
 # Only remove our exact short-lived ownership marker after durable completion.
 if ((Read-Record $active).recordSha256 -cne $ExpectedRecordSha256) { throw 'Active ownership changed before completion.' }
 Remove-Item -LiteralPath $active
-[pscustomobject]@{status='restored';verification=$complete;verificationSha256=(Get-Digest $complete);applicationLaunched=$false;doNotAutoLaunch=$true} | ConvertTo-Json
+[pscustomobject]@{status='restored';verification=$complete;verificationSha256=(Get-Digest $complete);baselineRecord=$adoptedRecord;baselineRecordSha256=$(if($adoptedRecord){Get-Digest $adoptedRecord}else{$null});applicationLaunched=$false;doNotAutoLaunch=$true} | ConvertTo-Json

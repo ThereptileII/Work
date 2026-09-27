@@ -10,6 +10,17 @@
 #include <memory>
 
 namespace opennav::ui {
+namespace {
+// Native hover windows use the OS palette, not our painted marine palette.
+// Change only the owning XNav control: Legacy tooltips keep their normal state.
+void ApplyHint(wxWindow &window, LightMode mode, const wxString &hint) {
+  if (mode == LightMode::Day && !hint.empty()) {
+    if (window.GetToolTipText() != hint) window.SetToolTip(hint);
+  } else if (window.GetToolTip()) {
+    window.UnsetToolTip();
+  }
+}
+}  // namespace
 
 XNavScroll::XNavScroll(wxWindow *parent)
     : wxScrolledWindow(parent, wxID_ANY, wxDefaultPosition, wxDefaultSize,
@@ -136,7 +147,7 @@ XNavButton::XNavButton(wxWindow* parent, wxWindowID id, const wxString& label,
     : wxControl(parent, id, wxDefaultPosition, wxDefaultSize, wxBORDER_NONE) {
   SetLabel(label);
   SetName(accessible_name);
-  SetToolTip(accessible_name);
+  SetHint(accessible_name);
   SetMinSize(FromDIP(wxSize(spacing::touch, spacing::touch)));
   SetBackgroundStyle(wxBG_STYLE_PAINT);
   EnableTouchEvents(wxTOUCH_VERTICAL_PAN_GESTURE);
@@ -192,7 +203,16 @@ void XNavButton::SetLabel(const wxString &label) {
 }
 
 void XNavButton::SetLightMode(LightMode mode) {
-  if (mode_ != mode) { mode_ = mode; Refresh(); }
+  if (mode_ != mode) {
+    mode_ = mode;
+    ApplyHint(*this, mode_, hint_);
+    Refresh();
+  }
+}
+
+void XNavButton::SetHint(const wxString &hint) {
+  hint_ = hint;
+  ApplyHint(*this, mode_, hint_);
 }
 
 void XNavButton::Activate() {
@@ -271,7 +291,13 @@ XNavDataValue::XNavDataValue(wxWindow* parent, const wxString& label,
   Bind(wxEVT_PAINT, &XNavDataValue::Paint, this);
 }
 
-void XNavDataValue::SetLightMode(LightMode mode) { if(mode_ != mode) { mode_ = mode; Refresh(); } }
+void XNavDataValue::SetLightMode(LightMode mode) {
+  if (mode_ != mode) {
+    mode_ = mode;
+    ApplyHint(*this, mode_, hint_);
+    Refresh();
+  }
+}
 void XNavDataValue::SetCompact(bool compact) {
   compact_ = compact;
   SetMinSize(FromDIP(wxSize(120, compact ? 80 : 120)));
@@ -288,7 +314,8 @@ void XNavDataValue::SetReading(const vessel::Sample& sample, vessel::Time now) {
   const wxString source = sample.source.empty() ? "No source" : wxString::FromUTF8(sample.source);
   const wxString age = reading_.age
       ? wxString::Format("%.1f s old", reading_.age->count() / 1000.0) : "Age unavailable";
-  SetToolTip(source + "\n" + age);
+  hint_ = source + "\n" + age;
+  ApplyHint(*this, mode_, hint_);
   SetName(label_ + ": " + (reading_.value ? wxString::Format("%.*f", decimals_, *reading_.value) : "Unavailable")
           + " " + unit_ + " / " + wxString::FromUTF8(vessel::QualityName(reading_.quality)));
   if(changed) Refresh();

@@ -113,12 +113,12 @@ function Resolve-RestartTaskSid([string]$UserId) {
     return $account.Translate([Security.Principal.SecurityIdentifier]).Value
   } catch {throw 'Scheduled task account cannot be resolved to a verified SID.'}
 }
-function Assert-RestartTaskIdentity($Task,$Arm,[string]$Sid) {
+function Assert-RestartTaskIdentity($Task,$Arm,[string]$Sid,[ValidateSet('Ready','Running')][string]$ExpectedState='Ready') {
   $resolvedSid=Resolve-RestartTaskSid $Task.Principal.UserId
   # The native CIM provider reports no triggers as null, rather than an empty
   # array. An actual array containing a null/unknown trigger still refuses.
   $noTriggers=$null -eq $Task.Triggers -or @($Task.Triggers).Count -eq 0
-  if($Task.State.ToString() -cne 'Ready' -or @($Task.Actions).Count -ne 1 -or
+  if($Task.State.ToString() -cne $ExpectedState -or @($Task.Actions).Count -ne 1 -or
      $Task.Actions[0].Execute -cne $Arm.execute -or $Task.Actions[0].Arguments -cne $Arm.arguments -or $Task.Actions[0].WorkingDirectory -or
      $resolvedSid -cne $Sid -or $Task.Principal.RunLevel.ToString() -cnotin @('Limited','0') -or
      $Task.Principal.LogonType.ToString() -cnotin @('Interactive','3') -or -not $noTriggers){
@@ -126,7 +126,7 @@ function Assert-RestartTaskIdentity($Task,$Arm,[string]$Sid) {
       actions=@($Task.Actions|Select-Object Execute,Arguments,WorkingDirectory);
       principal=@{userId=$Task.Principal.UserId;resolvedSid=$resolvedSid;runLevel=$Task.Principal.RunLevel.ToString();logonType=$Task.Principal.LogonType.ToString()};
       triggerCount=@($Task.Triggers).Count;triggersNull=($null -eq $Task.Triggers);
-      expected=@{execute=$Arm.execute;arguments=$Arm.arguments;sid=$Sid}}
-    throw ('Broker task running or differs from the exact owned limited interactive action: '+($diagnostic|ConvertTo-Json -Depth 5 -Compress))
+      expected=@{execute=$Arm.execute;arguments=$Arm.arguments;sid=$Sid;state=$ExpectedState}}
+    throw ('Broker task state or exact owned limited interactive action differs: '+($diagnostic|ConvertTo-Json -Depth 5 -Compress))
   }
 }

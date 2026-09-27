@@ -232,7 +232,7 @@ Shell::Shell(wxFrame &frame, wxAuiManager &manager, ShellActions actions,
     if (entry.first == "STBY") {
       standby_ = b;
       b->SetName("Manual STANDBY / requires enabled control");
-      b->SetToolTip("Manual STANDBY / requires enabled control; physical STANDBY remains independent");
+      b->SetHint("Manual STANDBY / requires enabled control; physical STANDBY remains independent");
       b->Disable();
       b->SetRole(ButtonRole::Critical);
     }

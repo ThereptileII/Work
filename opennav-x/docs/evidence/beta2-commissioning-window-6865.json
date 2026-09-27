@@ -1,0 +1,159 @@
+{
+  "schema": 1,
+  "stage": "Beta 2 tooling qualification; not product or boat acceptance",
+  "status": "passed",
+  "publishedCommit": "6865c80c71d90acb322a9b7526162d5e15a2dd7e",
+  "equivalentLocalCommit": "476cf0970e8da6e65f92ab9391253181f67f8d07",
+  "publishedTree": "d9e6d285d31b111f894b8c1664f20701fa0cff05",
+  "sourceVerification": {
+    "mappedBlobCount": 572,
+    "allBlobHashesAndModesMatched": true,
+    "unrelatedMonorepoFilesPreserved": true,
+    "localPinnedUpstreamGitlinkExcludedAsInPriorPublications": true
+  },
+  "runUrl": "https://github.com/ThereptileII/Work/actions/runs/36284922855",
+  "nativeWindowsJobs": {
+    "maintenance": 108523737721,
+    "transport": 108523737817,
+    "window": 108523886785,
+    "broker": 108524012148
+  },
+  "results": {
+    "maintenance": {
+      "checks": 824,
+      "suites": 10,
+      "restartPolicyChecks": 278,
+      "windowPolicyAndChainChecks": 129
+    },
+    "protocolChecks": 886,
+    "nativeTransport": {
+      "checks": 359,
+      "cases": 24
+    },
+    "actualBrokerChecks": 49,
+    "actualPrepareArmCollectChecks": 46,
+    "actualNativeMarkerWindowCases": 9
+  },
+  "windowCases": [
+    {
+      "from": "--xnav",
+      "to": "--legacy",
+      "case": "normal",
+      "refused": false,
+      "callbacks": [
+        "Open Legacy OpenCPN"
+      ]
+    },
+    {
+      "from": "--xnav",
+      "to": "--xnav",
+      "case": "normal",
+      "refused": false,
+      "callbacks": [
+        "Restart XNav"
+      ]
+    },
+    {
+      "from": "--xnav",
+      "to": "--safe-mode",
+      "case": "normal",
+      "refused": false,
+      "callbacks": [
+        "Safe Mode"
+      ]
+    },
+    {
+      "from": "--legacy",
+      "to": "--xnav",
+      "case": "normal",
+      "refused": false,
+      "callbacks": [
+        "Switch to XNav"
+      ]
+    },
+    {
+      "from": "--safe-mode",
+      "to": "--xnav",
+      "case": "normal",
+      "refused": false,
+      "callbacks": [
+        "Switch to XNav"
+      ]
+    },
+    {
+      "from": "--xnav",
+      "to": "--legacy",
+      "case": "ambiguous",
+      "refused": true,
+      "callbacks": []
+    },
+    {
+      "from": "--xnav",
+      "to": "--legacy",
+      "case": "replace-on-down",
+      "refused": true,
+      "callbacks": []
+    },
+    {
+      "from": "--legacy",
+      "to": "--xnav",
+      "case": "hidden-menu",
+      "refused": true,
+      "callbacks": []
+    },
+    {
+      "from": "--xnav",
+      "to": "--legacy",
+      "case": "modal",
+      "refused": true,
+      "callbacks": []
+    }
+  ],
+  "testedNativeHelperSha256": "09fef966d68bd7b9e157af940d5a425740138f53f31945084509ff2488616386",
+  "testedWindowFixtureSha256": "34c1fed77d52c106258c3455e214cb8461566723929df6ea7226f91ed2dab3f6",
+  "nativeSourceHashExplanation": "Recorded native bytes include Git checkout CRLF; both hashes were independently matched to the equivalent local commit after its Windows checkout newline conversion.",
+  "artifacts": [
+    {
+      "id": 10920366527,
+      "name": "development-restart-window-6865c80c71d90acb322a9b7526162d5e15a2dd7e",
+      "bytes": 1225,
+      "sha256": "ad692ceaf1c7816f641d463e54f4f98786ad645326e6416736b0cc0c29ad22d1",
+      "digestMatchesGitHubApiAndUploadLog": true,
+      "downloadedArchiveCrcAndPathsVerified": true
+    },
+    {
+      "id": 10920286402,
+      "name": "development-commissioning-broker-6865c80c71d90acb322a9b7526162d5e15a2dd7e",
+      "bytes": 15770,
+      "sha256": "90b263973704763c63f95486d51b1fc2f981e9c99701fed82043c0fa832ce4a8",
+      "digestMatchesGitHubApiAndUploadLog": true,
+      "downloadedArchiveCrcAndPathsVerified": true
+    },
+    {
+      "id": 10919717637,
+      "name": "development-boat-tooling-6865c80c71d90acb322a9b7526162d5e15a2dd7e",
+      "bytes": 10690,
+      "sha256": "407fb3f0eb8e18c1f88c75555e3c4b62df571388ee389116668192a2a75e7c58",
+      "digestMatchesGitHubApiAndUploadLog": true,
+      "downloadedArchiveCrcAndPathsVerified": true
+    },
+    {
+      "id": 10919674457,
+      "name": "development-commissioning-restart-6865c80c71d90acb322a9b7526162d5e15a2dd7e",
+      "bytes": 6211,
+      "sha256": "070ebeeffb8ca686d53c92c804caf9b1d5ec9939055f252676c31e12159f4201",
+      "digestMatchesGitHubApiAndUploadLog": true,
+      "downloadedArchiveCrcAndPathsVerified": true
+    }
+  ],
+  "limits": [
+    "The nine native window cases use disposable WinForms controls, not the actual wxWidgets OpenCPN application.",
+    "The complete broker and actual Prepare/Arm/Collect suites use a marker-only executable and TEMP-confined identity adapters; the production entrypoint bodies remain unchanged.",
+    "These tooling counts are heterogeneous checks, not OpenNav product CTest totals.",
+    "No real boat profile, charts, plugins, vessel data or hardware were accessed.",
+    "Actual product mode handoff, exact packaged generation and boat display acceptance remain separate required gates."
+  ],
+  "physicalOutput": false,
+  "productAcceptance": false,
+  "boatAcceptance": false
+}

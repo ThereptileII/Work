@@ -1,11 +1,23 @@
+# Keep the inert root the same byte length as the fixed recovered-root contract.
+# No production baseline/lineage validation is substituted or relaxed.
+function New-BrokerFixtureProfileBytes {
+ $text="[Settings]`r`nPersistActiveRoute=0`r`n[Settings/NMEADataSource]`r`nDataConnections=0;0;;0;1;COM8;115200;0;1;0;;0;;0;0;1;0;1;Gateway;0;;0`r`n[Directories]`r`nChartDir=original`r`n[OpenNav]`r`nInterfaceMode=xnav`r`n"
+ $encoding=New-Object Text.UTF8Encoding($false,$true)
+ while($encoding.GetByteCount($text)+80 -le 21380){$text+='# '+('-'*76)+"`r`n"}
+ $remaining=21380-$encoding.GetByteCount($text)
+ if($remaining -lt 0){throw 'Synthetic broker profile exceeded fixed recovered-root size.'}
+ $text+=(' '*$remaining)
+ $bytes=$encoding.GetBytes($text)
+ if($bytes.Length -ne 21380){throw 'Synthetic root byte-size contract differs.'}
+ return ,$bytes
+}
 # Construction only; every file is synthetic and inside a caller-created TEMP
 # directory. The application/companion are the verified marker-only test build.
 function New-BrokerFixture([string]$Directory,[string]$Binaries,[string]$SourceTools,[string]$FixtureSources,[string]$Case,[switch]$WithoutRestartSession) {
  $null=New-Item -ItemType Directory -Path $Directory
  $scripts=Join-Path $Directory 'scripts';$null=New-Item -ItemType Directory -Path $scripts
- $names=@('Common.ps1','Preparation.ps1','Commissioning.ps1','verify-commissioning-launch.ps1','InteractiveJob.ps1','run-mode.ps1')
- $names+=@(Get-ChildItem -LiteralPath $SourceTools -Filter 'Restart*.ps1' | ForEach-Object {$_.Name})
- $names+='RestartCommissioningNative.cs'
+ # Copy the same dependency inventory that the unchanged session pins.
+ $names=@($script:RestartDependencies)
  foreach($name in @($names|Sort-Object -Unique)){Copy-Item -LiteralPath (Join-Path $SourceTools $name) -Destination (Join-Path $scripts $name)}
  Copy-Item -LiteralPath (Join-Path $FixtureSources 'broker-fixture-identity.ps1') -Destination (Join-Path $scripts 'BrokerFixtureIdentity.ps1')
  # These are the ONLY source substitutions: OS known folders/installation
@@ -41,8 +53,7 @@ function New-BrokerFixture([string]$Directory,[string]$Binaries,[string]$SourceT
  $environment=Get-CommissioningLaunchEnvironment $exe ([Environment]::GetFolderPath('Windows'))
  $context=[pscustomobject]@{workspace=$workspace;profile=$profile;managed=$managed;application=$stockApp;pluginRoots=$roots;installation=@{executable=$exe;commit=$commit};launchEnvironment=$environment;sid=$sid;session=$windowsSession}
  $baseline=Join-Path $preparedDir 'baseline.ini';$input=Join-Path $preparedDir 'input-only.ini';$ini=Join-Path $profile 'opencpn.ini'
- $text="[Settings]`r`nPersistActiveRoute=0`r`n[Settings/NMEADataSource]`r`nDataConnections=0;0;;0;1;COM8;115200;0;1;0;;0;;0;0;1;0;1;Gateway;0;;0`r`n[Directories]`r`nChartDir=original`r`n[OpenNav]`r`nInterfaceMode=xnav`r`n"
- $bytes=(New-Object Text.UTF8Encoding($false,$true)).GetBytes($text)
+ $bytes=New-BrokerFixtureProfileBytes
  [IO.File]::WriteAllBytes($baseline,$bytes);$baselineHash=Get-Digest $baseline
  [IO.File]::WriteAllBytes($input,(Get-CommissioningInputBytes $bytes));[IO.File]::Copy($input,$ini)
  $safe=Join-Path $managed 'dashboard_pi.dll';$unsafe=Join-Path $managed 'control_pi.dll';$library=Join-Path $managed 'inert-helper.dll'

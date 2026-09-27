@@ -16,6 +16,7 @@
 #include "model/routeman.h"
 #include "ocpn_frame.h"
 #include "undo.h"
+#include "ui/Controls.h"
 #include <algorithm>
 #include <cmath>
 #include <cstring>
@@ -25,6 +26,7 @@
 #include <thread>
 #include <wx/filefn.h>
 #include <wx/dialog.h>
+#include <wx/button.h>
 #include <wx/aui/aui.h>
 #include <wx/panel.h>
 #include <wx/jsonwriter.h>
@@ -109,6 +111,56 @@ application::Route RouteCopy() {
     if (r.id == test_route->GetGUID().ToStdString(wxConvUTF8))
       return r;
   throw std::runtime_error("Expected route missing");
+}
+void CheckPrimaryHints() {
+  // Actual wx controls on the application thread; never touch marine input,
+  // the user's pages, or global tooltip preferences.
+  wxFrame frame(nullptr, wxID_ANY, "Isolated primary hint checks");
+  auto *legacy = new wxButton(&frame, wxID_ANY, "Legacy control");
+  legacy->SetToolTip("Unchanged native help");
+  auto *legacy_tip = legacy->GetToolTip();
+  auto *button = new ui::XNavButton(&frame, wxID_ANY, "Menu", "Open navigation menu");
+  Check(button->GetToolTipText() == "Open navigation menu", "Day hint present");
+  button->SetLightMode(ui::LightMode::Night);
+  Check(!button->GetToolTip() && button->GetName() == "Open navigation menu" &&
+            button->GetHelpText() == "Open navigation menu",
+        "Night removes native hint while retaining accessible name and help");
+  button->SetHint("Updated control help");
+  Check(!button->GetToolTip() && button->GetHelpText() == "Updated control help",
+        "Updating a Night hint cannot recreate a native hover window");
+  button->SetLightMode(ui::LightMode::Dusk);
+  Check(!button->GetToolTip(), "Dusk keeps native hint absent");
+  button->SetLightMode(ui::LightMode::Day);
+  Check(button->GetToolTipText() == "Updated control help" &&
+            button->GetName() == "Open navigation menu",
+        "Returning to Day restores current help without changing accessible name");
+  button->SetHint("");
+  Check(!button->GetToolTip(), "Empty Day hint removes native tooltip");
+
+  auto *value = new ui::XNavDataValue(&frame, "SOG", "kn");
+  const auto now = Clock::now();
+  Sample sample{6.3, "First measured source", now, Validity::Measured};
+  value->SetReading(sample, now);
+  Check(value->GetToolTipText().Contains("First measured source"), "Day data hint present");
+  value->SetLightMode(ui::LightMode::Dusk);
+  sample.source = "Current measured source";
+  value->SetReading(sample, now + 200ms);
+  Check(!value->GetToolTip() && value->GetHelpText().Contains("Current measured source"),
+        "Dusk input update retains source help without native tooltip");
+  value->SetLightMode(ui::LightMode::Night);
+  sample.value = 6.7;
+  value->SetReading(sample, now + 400ms);
+  Check(!value->GetToolTip() && value->GetName().Contains(wxString::Format("%.1f", 6.7)) &&
+            value->GetHelpText().Contains(wxString::Format("%.1f s old", .4)),
+        "Night input update retains live accessible value and age without native tooltip");
+  value->SetLightMode(ui::LightMode::Day);
+  Check(value->GetToolTipText() == value->GetHelpText() &&
+            value->GetToolTipText().Contains("Current measured source"),
+        "Returning to Day restores latest data hint");
+  Check(legacy->GetToolTip() == legacy_tip &&
+            legacy->GetToolTipText() == "Unchanged native help",
+        "Primary hint palette changes never alter Legacy tooltips");
+  Record("Actual wx primary hints follow Day/Dusk/Night; input updates retain accessibility and Legacy hints");
 }
 void CheckWaypointContext(const Navigation &selected, const std::string &id) {
   const auto now = Clock::now();
@@ -430,6 +482,7 @@ void ObjectScenarioStep(const vessel::Navigation &selected) {
       // Give the actual application two completed navigation timer passes with
       // no input. Add through the same API used by the normal connection editor.
       if (++late_connection_ticks < 3) return;
+      CheckPrimaryHints();
       {
         // Same pane name is not ownership. A foreign manager must retain
         // ordinary wxAUI behavior while the real XNav shell is active.

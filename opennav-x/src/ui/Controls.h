@@ -54,6 +54,12 @@ class XNavButton : public wxControl {
   XNavButton(wxWindow* parent, wxWindowID id, const wxString& label,
              const wxString& accessible_name);
   void SetLightMode(LightMode mode);
+  void SetHint(const wxString &hint);
+#if wxUSE_HELP
+  wxString GetHelpTextAtPoint(const wxPoint &, wxHelpEvent::Origin) const override {
+    return hint_;
+  }
+#endif
   void SetLabel(const wxString &label) override;
   void SetRole(ButtonRole role) { role_ = role; Refresh(); }
   void SetSelected(bool selected) { if(selected_ != selected) { selected_ = selected; Refresh(); } }
@@ -63,6 +69,7 @@ class XNavButton : public wxControl {
   void Paint(wxPaintEvent& event);
   void Activate();
   LightMode mode_ = LightMode::Day;
+  wxString hint_;
   bool pressed_ = false;
   bool selected_ = false;
   ButtonRole role_ = ButtonRole::Normal;
@@ -85,11 +92,16 @@ class XNavDataValue final : public wxPanel {
   void SetLightMode(LightMode mode);
   void SetReading(const vessel::Sample& sample, vessel::Time now);
   void SetCompact(bool compact);
+#if wxUSE_HELP
+  wxString GetHelpTextAtPoint(const wxPoint &, wxHelpEvent::Origin) const override {
+    return hint_;
+  }
+#endif
 
  private:
   void Paint(wxPaintEvent& event);
   LightMode mode_ = LightMode::Day;
-  wxString label_, unit_;
+  wxString label_, unit_, hint_;
   int decimals_;
   vessel::Sample sample_;
   vessel::Assessment reading_;

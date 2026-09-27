@@ -73,7 +73,12 @@ jobs:
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
       - name: Portable maintenance refusal and recovery identity contracts
         if: runner.os == 'Linux'
-        run: pwsh -NoProfile -File opennav-x/tools/boat/test-boat-tools.ps1 -PortableContracts
+        run: |
+          pwsh -NoProfile -File opennav-x/tools/boat/test-boat-tools.ps1 -PortableContracts
+          pwsh -NoProfile -File opennav-x/tools/boat/test-startup-log.ps1
+          pwsh -NoProfile -File opennav-x/tools/boat/test-baseline-adoption.ps1 -PortableContracts
+          pwsh -NoProfile -File opennav-x/tools/boat/test-broker-fixture-contracts.ps1
+          python3 opennav-x/tools/boat/test-navigation-copy.py -v
       - name: Configure Linux contracts
         if: runner.os == 'Linux'
         run: cmake -S opennav-x -B opennav-x/build/contracts -DOPENNAV_ST4000_ORACLE="${{ github.workspace }}/opennav-x/build/st4000-firmware" -DOPENNAV_BOAT_ORACLE="${{ github.workspace }}/opennav-x/build/boat-firmware/Nissan_ev_to_NMEA_and_wifi"
@@ -94,11 +99,15 @@ jobs:
         run: |
           New-Item -ItemType Directory -Path opennav-x/evidence/local -Force | Out-Null
           $Failed = @()
-          foreach ($Suite in @('boat-tools', 'official-upgrade-policy', 'preparation', 'commissioning', 'commissioning-launch', 'review-window', 'source-checkout', 'restart-commissioning', 'restart-aui-persistence', 'stock-review')) {
+          foreach ($Suite in @('boat-tools', 'official-upgrade-policy', 'preparation', 'commissioning', 'commissioning-launch', 'review-window', 'source-checkout', 'restart-commissioning', 'restart-aui-persistence', 'stock-review', 'startup-log', 'baseline-adoption', 'broker-fixture-contracts', 'restart-window-review', 'stock-welcome', 'installed-welcome')) {
             & "$env:WINDIR/System32/WindowsPowerShell/v1.0/powershell.exe" -NoProfile -File "opennav-x/tools/boat/test-$Suite.ps1" 2>&1 | Tee-Object -FilePath "opennav-x/evidence/local/maintenance-$Suite.log"
             if ($LASTEXITCODE -ne 0) { $Failed += $Suite }
           }
           if ($Failed.Count -ne 0) { throw ('Required maintenance suites failed: ' + ($Failed -join ', ')) }
+      - name: Verify closed navigation copies without vessel data
+        run: |
+          python opennav-x/tools/boat/test-navigation-copy.py -v 2>&1 | Tee-Object -FilePath opennav-x/evidence/local/maintenance-navigation-copy.log
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         if: always()
         with:
@@ -128,6 +137,53 @@ jobs:
           name: commissioning-restart-${{ github.sha }}
           path: opennav-x/evidence/local/restart-transport
           if-no-files-found: warn
+  native-restart-window:
+    name: Fixed guarded mode UI actions on disposable native windows
+    needs: boat-maintenance
+    runs-on: windows-2022
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+      - name: Exercise actual helper against nine marker-only native window cases
+        run: |
+          New-Item -ItemType Directory -Path opennav-x/evidence/local/restart-window -Force | Out-Null
+          & "$env:WINDIR/System32/WindowsPowerShell/v1.0/powershell.exe" -NoProfile -ExecutionPolicy Bypass -File opennav-x/tools/test-restart-window-native.ps1 -Evidence opennav-x/evidence/local/restart-window 2>&1 | Tee-Object -FilePath opennav-x/evidence/local/restart-window/native-window-tests.log
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+      - name: Exercise fixed display controls against fifteen native marker-window cases
+        run: |
+          New-Item -ItemType Directory -Path opennav-x/evidence/local/display-window -Force | Out-Null
+          & "$env:WINDIR/System32/WindowsPowerShell/v1.0/powershell.exe" -NoProfile -ExecutionPolicy Bypass -File opennav-x/tools/test-display-window-native.ps1 -Evidence opennav-x/evidence/local/display-window 2>&1 | Tee-Object -FilePath opennav-x/evidence/local/display-window/native-display-tests.log
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: restart-window-${{ github.sha }}
+          path: |
+            opennav-x/evidence/local/restart-window
+            opennav-x/evidence/local/display-window
+          if-no-files-found: error
+  native-stock-welcome:
+    name: Actual official OpenCPN portable upgrade caution (${{ matrix.locale }})
+    strategy:
+      fail-fast: false
+      matrix:
+        locale: [en_US, sv]
+    needs: boat-maintenance
+    runs-on: windows-2022
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+      - name: Exercise exact official stock warning and hash-bound Agree in an empty portable profile
+        run: |
+          New-Item -ItemType Directory -Path opennav-x/evidence/local/stock-welcome -Force | Out-Null
+          & "$env:WINDIR/System32/WindowsPowerShell/v1.0/powershell.exe" -NoProfile -ExecutionPolicy Bypass -File opennav-x/tools/test-stock-welcome-windows.ps1 -Evidence opennav-x/evidence/local/stock-welcome -Locale ${{ matrix.locale }} 2>&1 | Tee-Object -FilePath opennav-x/evidence/local/stock-welcome/native-stock-warning.log
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: stock-welcome-${{ matrix.locale }}-${{ github.sha }}
+          path: opennav-x/evidence/local/stock-welcome
+          if-no-files-found: error
   native-restart-broker:
     name: Actual restart broker with disposable marker-only installation
     needs: [native-restart-transport, boat-maintenance]
@@ -301,7 +357,7 @@ jobs:
     permissions:
       contents: read
       actions: read
-    needs: contracts
+    needs: [contracts, native-restart-window, native-stock-welcome]
     runs-on: windows-2022
     timeout-minutes: 300
     steps:
@@ -456,7 +512,7 @@ jobs:
           }
   publish-beta:
     name: Publish Beta after both platform and installer gates
-    needs: [contracts, boat-maintenance, native-restart-transport, native-restart-broker, linux, linux-integration, windows-upstream-abi, windows-integration, application-abi, stock-prerequisite, boat-firmware]
+    needs: [contracts, boat-maintenance, native-restart-transport, native-restart-broker, native-restart-window, native-stock-welcome, linux, linux-integration, windows-upstream-abi, windows-integration, application-abi, stock-prerequisite, boat-firmware]
     runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262

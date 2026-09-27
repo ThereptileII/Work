@@ -15,7 +15,7 @@ $installed=[pscustomobject]@{executable=$exe;state=[pscustomobject]@{current=('b
 $build=[pscustomobject]@{test_fixtures=$false;build_purpose='INSTALLED PRODUCT';version='0.4.0-beta2';commit=('a'*40);executable_sha256=('c'*64)}
 $launch=[pscustomobject]@{status='passed';action='Launch';mode='--xnav';pid=42;utc=$now.AddMinutes(-1).ToString('o')}
 $request=[pscustomobject]@{action='Launch';mode='--xnav';executable=$exe;executableSha256=('c'*64);workspace='C:\XNav'}
-foreach($fileName in @('ReviewWindow.ps1','review-window.ps1')) {
+foreach($fileName in @('ReviewWindow.ps1','review-window.ps1','../test-display-window-native.ps1','../../tests/display-review/window-fixture.ps1')) {
   Pass "Parses $fileName without executing environment APIs" {
     $tokens=$null;$errors=$null;$null=[Management.Automation.Language.Parser]::ParseFile((Join-Path $PSScriptRoot $fileName),[ref]$tokens,[ref]$errors)
     if($errors.Count){throw ($errors | Out-String)}
@@ -58,11 +58,20 @@ foreach($field in @('Id','Path','SessionId','MainWindowHandle','HasExited','Star
 Pass 'All pointer labels resolve to actual current source controls' {
   $root=[IO.Path]::GetFullPath((Join-Path $PSScriptRoot '..\..').Replace('\',[IO.Path]::DirectorySeparatorChar))
   $source='';foreach($name in @('Shell.cpp','ProductPanel.cpp','ProductSettings.cpp','Theme.h')){$source+=[IO.File]::ReadAllText((Join-Path $root ('src/ui/'+$name)))}
+  $source+=[IO.File]::ReadAllText((Join-Path $root 'src/integration/OpenCPNIntegration.cpp'))
   foreach($action in Get-WindowReviewActions | Where-Object {$_ -cnotin @('Capture','Resize1280x800','Escape','SelectFirstVisibleWaypoint','SelectFirstVisibleAis')}) {
     foreach($label in [OpenNavX.ReviewWindowNative]::ActionLabels($action)) {
       if(-not $source.Contains('"'+$label+'"')){throw ('Reviewed label absent from source: '+$label)}
     }
   }
+}
+Pass 'Display controls retain exact source page scopes; orientation requires navigation chart tools' {
+  if([OpenNavX.ReviewWindowNative]::ActionContext('Display') -cne 'OpenNav product page: Settings' -or
+     [OpenNavX.ReviewWindowNative]::ActionContext('ToggleFullscreen') -cne 'OpenNav product page: Display' -or
+     [OpenNavX.ReviewWindowNative]::ActionContext('ToggleOrientation') -cne 'Navigation chart tools'){throw 'Display action scope changed.'}
+}
+foreach($action in @('Fullscreen','North','Course','SetOrientation','SetResolution','SetDpi','Brightness','EnableControl')) {
+  Refuse "No unreviewed display/system action: $action" {[OpenNavX.ReviewWindowNative]::ActionContext($action)}
 }
 foreach($action in @('STBY','AUTO','TRACK','WIND','Save','Click','Key','EnableControl','Escape')) {
   Refuse "Native pointer API cannot resolve unsafe/unrelated action: $action" {[OpenNavX.ReviewWindowNative]::ActionLabels($action)}

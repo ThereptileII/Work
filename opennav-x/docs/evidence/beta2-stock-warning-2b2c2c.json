@@ -1,0 +1,65 @@
+{
+  "schema": 1,
+  "scope": "Actual official OpenCPN 5.12.4 upgrade warning primitives on disposable native Windows, English and Swedish. Not boat or installed XNav acceptance.",
+  "sourceCommit": "2b2c2c63a2e4ee1657161611355c8ac5815cb7a7",
+  "localEquivalent": "f33ab8b48a3a21f71746a7b43b8e54d823d16a31",
+  "sourceTree": "e4892db68a46cf9ab4990d588275b575e09383e9",
+  "verifiedMappedBlobModes": 585,
+  "ciRun": "https://github.com/ThereptileII/Work/actions/runs/36286949649",
+  "officialSetupSha256": "e949f55de57611afe2fc0dad5a8ac33795c46ba488cb40ca07b65f639a07b8aa",
+  "officialExecutableSha256": "7c6547562cca7954671eaab72833ca9d788710fd9808b6a699b6dc823852ae0c",
+  "nativeHelperSha256": "6d28e8d35b932deb90845bdd0619bae03356af2777a63b7be0f94fba14171e9e",
+  "powershellHelperSha256": "910f5234931a3e53bc91a643a7112168ef5c8ac2e4f13d7c121a15b661d41433",
+  "helperHashesMatchCommittedWindowsCheckout": true,
+  "cases": [
+    {
+      "locale": "en_US",
+      "checksPassed": 38,
+      "artifactId": 10920653903,
+      "artifactSha256": "4a00554e0ef7533eef0a4292200774d5e28273397e1500be0def14fc569777d5",
+      "artifactBytes": 85413,
+      "apiUploadDownloadHashMatch": true,
+      "zipCrcPassed": true,
+      "title": "Welcome to OpenCPN",
+      "agree": "Agree",
+      "cancel": "Cancel",
+      "warningScreenshot": "actual-stock-welcome.png",
+      "warningScreenshotSha256": "7d49f816d92246eb4c2fbb3b72c15e4e6a0ac60542a49c14b4b54178f6d49211",
+      "afterScreenshot": "actual-stock-after-agree.png",
+      "afterScreenshotSha256": "4080b912c1c423c66eec651065af6d5e57657870b7c231ded348186071dad5c4",
+      "normalExitCode": 0
+    },
+    {
+      "locale": "sv",
+      "checksPassed": 40,
+      "artifactId": 10920935940,
+      "artifactSha256": "11e17419e8c15e729bc63f5aeb0eeea12af0adcd329ec5e8980d6819573ca114",
+      "artifactBytes": 85049,
+      "apiUploadDownloadHashMatch": true,
+      "zipCrcPassed": true,
+      "title": "Välkommen till OpenCPN",
+      "agree": "Acceptera",
+      "cancel": "Avbryt",
+      "warningScreenshot": "actual-stock-welcome.png",
+      "warningScreenshotSha256": "6ef72395b371256191a076e48e18e337aebea8317b233af52e198f90eb771f90",
+      "afterScreenshot": "actual-stock-after-agree.png",
+      "afterScreenshotSha256": "ed9abc784d429649a010f8f958eb9948928fe8d799824c5e1550233f85b7b953",
+      "normalExitCode": 0
+    }
+  ],
+  "verifiedBehavior": [
+    "Real upstream wx AlertDialog with exact title, button IDs5100/5101, class#32770 and wxWindowNR HTML child",
+    "Complete consistent English or Swedish tuple; mixed tuples and all captured-field changes refuse",
+    "Reviewed PNG hash and durable create-new intent before one Agree",
+    "Actual completed startup, visible stock basemap and normal exit0",
+    "Locale remains exactly en_US or sv; four bundled plugins remain disabled; empty marine connection list",
+    "Shared normal profile never created; executable unchanged"
+  ],
+  "screenshotReview": "Both actual warning HTML bodies and enabled stock basemap screenshots visually inspected from downloaded artifacts. No chart content or user profile from the boat is included.",
+  "limitations": [
+    "The primitive fixture does not substitute for real commissioning audit, plugin inventory or actual display review.",
+    "Human review of the new boat warning capture is still required before a separately hash-bound acknowledgement.",
+    "No physical hardware connected, commanded or accepted.",
+    "No production certification or autonomous steering."
+  ]
+}

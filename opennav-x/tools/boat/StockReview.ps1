@@ -1,6 +1,7 @@
 # Official stock OpenCPN coexistence review after uninstall. No XNav identity,
 # synthetic data, arbitrary arguments, navigation actions or equipment commands.
 . (Join-Path $PSScriptRoot 'Commissioning.ps1')
+. (Join-Path $PSScriptRoot 'StockWelcome.ps1')
 function Get-StockTarget([string]$Workspace) {
   $config=Get-Target $Workspace
   $local=Assert-LocalPath ([Environment]::GetFolderPath('LocalApplicationData'))
@@ -37,7 +38,7 @@ function Assert-StockRequest($Job) {
 }
 function Assert-StockReviewPolicy($Job,$Launch,$Request,[datetime]$Now) {
   Assert-StockRequest $Request
-  if ($Job.action -cne 'ReviewStock' -or $Job.reviewAction -cnotin @('Capture','Resize1280x800','Close') -or
+  if ($Job.action -cne 'ReviewStock' -or $Job.reviewAction -cnotin @('Capture','Resize1280x800','Close','InspectWelcome','AcknowledgeWelcome') -or
       $Launch.status -cne 'passed' -or $Launch.action -cne 'LaunchStock' -or $Launch.mode -cne 'StockLegacy' -or
       $Job.processId -le 0 -or $Launch.pid -ne $Job.processId -or $Job.executable -ine $Request.executable -or
       $Job.executableSha256 -cne $Request.executableSha256 -or $Job.workspace -ine $Request.workspace -or
@@ -75,6 +76,7 @@ function Read-StockReview($Job) {
   $active=Read-Record (Join-Path $Job.workspace 'commissioning-active.json')
   if ($active.owner -cne $script:CommissioningOwner -or $active.record -ine $binding.record -or $active.recordSha256 -cne $binding.recordSha256) { throw 'Stock commissioning transaction is no longer active.' }
   $cold=[IO.Path]::GetDirectoryName($binding.record)
+  $null=Get-PreparedCommissioningBaseline $prepared $cold $Job.workspace
   if (@(Get-ChildItem -LiteralPath $cold -Filter 'restore*.json' -Force).Count -or
       (Get-Digest (Join-Path $cold 'applied.json')) -cne $binding.appliedSha256) { throw 'Stock transaction restored, incomplete or changed.' }
   $roots=@((Join-Path ([Environment]::GetFolderPath('LocalApplicationData')) 'opencpn\plugins'),(Join-Path ([IO.Path]::GetDirectoryName($Job.executable)) 'plugins')) | Sort-Object -Unique
@@ -102,6 +104,17 @@ function Read-StockReview($Job) {
 function Initialize-StockReviewNative {
   if (-not ('OpenNavX.StockReviewNative' -as [type])) { Add-Type -Path (Join-Path $PSScriptRoot 'StockReviewNative.cs') }
 }
+function Assert-StockImageDirectory($Job,[string]$Sid) {
+  $directory=Assert-LocalPath $Job.evidenceDirectory
+  if ([IO.Path]::GetDirectoryName($directory) -ine (Join-Path (Assert-LocalPath $Job.workspace) 'runs') -or
+      [IO.Path]::GetFileName($directory) -cnotmatch '^\d{8}-\d{6}-stock-review-[a-f0-9]{8}$' -or @(Get-ChildItem -LiteralPath $directory -Force).Count) { throw 'New private stock review directory required.' }
+  $acl=Get-Acl -LiteralPath $directory
+  if (-not $acl.AreAccessRulesProtected) { throw 'Stock images must not inherit public access.' }
+  foreach ($rule in $acl.GetAccessRules($true,$true,[Security.Principal.SecurityIdentifier])) {
+    if ($rule.IdentityReference.Value -cnotin @($Sid,'S-1-5-18','S-1-5-32-544')) { throw 'Unexpected image-directory principal.' }
+  }
+  return $directory
+}
 function Invoke-StockReview($Job) {
   $review=Read-StockReview $Job
   $process=Get-Process -Id $Job.processId -ErrorAction Stop
@@ -112,6 +125,7 @@ function Invoke-StockReview($Job) {
     $oldDpi=[OpenNavX.StockReviewNative]::SetThreadDpiAwarenessContext([IntPtr](-4))
     if ($oldDpi -eq [IntPtr]::Zero) { throw 'Physical DPI context unavailable.' }
     try {
+      if ($Job.reviewAction -cin @('InspectWelcome','AcknowledgeWelcome')) { return Invoke-StockWelcomeReview $Job $review $process $sid $session }
       $frame=$process.MainWindowHandle
       [OpenNavX.StockReviewNative]::Foreground($frame,$process.Id)
       $null=Read-StockReview $Job;$process.Refresh();Assert-StockProcess $process $Job $review.launch $sid $session
@@ -124,14 +138,7 @@ function Invoke-StockReview($Job) {
         $result.exitCode=$process.ExitCode
       } else {
         if ($Job.reviewAction -ceq 'Resize1280x800') { [OpenNavX.StockReviewNative]::Resize1280x800($frame,$process.Id) }
-        $directory=Assert-LocalPath $Job.evidenceDirectory
-        if ([IO.Path]::GetDirectoryName($directory) -ine (Join-Path (Assert-LocalPath $Job.workspace) 'runs') -or
-            [IO.Path]::GetFileName($directory) -cnotmatch '^\d{8}-\d{6}-stock-review-[a-f0-9]{8}$' -or @(Get-ChildItem -LiteralPath $directory -Force).Count) { throw 'New private stock review directory required.' }
-        $acl=Get-Acl -LiteralPath $directory
-        if (-not $acl.AreAccessRulesProtected) { throw 'Stock images must not inherit public access.' }
-        foreach ($rule in $acl.GetAccessRules($true,$true,[Security.Principal.SecurityIdentifier])) {
-          if ($rule.IdentityReference.Value -cnotin @($sid,'S-1-5-18','S-1-5-32-544')) { throw 'Unexpected image-directory principal.' }
-        }
+        $directory=Assert-StockImageDirectory $Job $sid
         $info=[OpenNavX.StockReviewNative]::AssertFrame($frame,$process.Id)
         Add-Type -AssemblyName System.Drawing
         $bitmap=New-Object Drawing.Bitmap($info.Bounds.Width,$info.Bounds.Height);$graphics=[Drawing.Graphics]::FromImage($bitmap)
