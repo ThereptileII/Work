@@ -81,18 +81,53 @@ namespace OpenNavX {
       if(current.Bounds.Left!=expected.Bounds.Left || current.Bounds.Top!=expected.Bounds.Top ||
          current.Bounds.Right!=expected.Bounds.Right || current.Bounds.Bottom!=expected.Bounds.Bottom || current.Dpi!=expected.Dpi)
         throw new InvalidOperationException("Reviewed window moved or changed DPI during capture.");
-      bool obscured=false;Exception failure=null;
+      IntPtr obscurer=IntPtr.Zero;Exception failure=null;
       // Never let an exception escape a reverse-P/Invoke enumeration callback.
       // Any inaccessible/disappearing overlaid window invalidates the capture.
       EnumWindows(delegate(IntPtr h,IntPtr p){
         try {
           if(h==frame)return false;
-          if(IsWindowVisible(h) && !IsIconic(h) && Intersects(expected.Bounds,Bounds(h)))obscured=true;
+          if(IsWindowVisible(h) && !IsIconic(h) && Intersects(expected.Bounds,Bounds(h)) && obscurer==IntPtr.Zero)obscurer=h;
           return true;
         } catch(Exception error) {failure=error;return false;}
       },IntPtr.Zero);
       if(failure!=null)throw new InvalidOperationException("Window changed during capture visibility check.",failure);
-      if(obscured)throw new InvalidOperationException("Another visible window obscures the reviewed frame; no screenshot published.");
+      if(obscurer!=IntPtr.Zero)throw new InvalidOperationException("Another visible window obscures the reviewed frame; no screenshot published. obscuringWindow="+SafeObscurerDiagnostic(obscurer));
+    }
+    [DllImport("user32.dll",CharSet=CharSet.Unicode)] private static extern int GetClassNameW(IntPtr window,StringBuilder text,int maximum);
+    [DllImport("user32.dll")] private static extern IntPtr GetWindow(IntPtr window,uint relation);
+    [DllImport("dwmapi.dll")] private static extern int DwmGetWindowAttribute(IntPtr window,uint attribute,out uint value,uint bytes);
+    private static string DiagnosticString(string value) {
+      // Private refusal evidence only. Bound captions and escape control text;
+      // never reinterpret cloak/owner metadata as capture permission.
+      if(value==null)value="";if(value.Length>256)value=value.Substring(0,256);
+      var result=new StringBuilder("\"");
+      foreach(char c in value) {
+        if(c=='"' || c=='\\')result.Append('\\').Append(c);
+        else if(c<32 || Char.IsSurrogate(c))result.Append("\\u").Append(((int)c).ToString("x4",System.Globalization.CultureInfo.InvariantCulture));
+        else result.Append(c);
+      }
+      return result.Append('"').ToString();
+    }
+    private static string FormatObscurerDiagnostic(long hwnd,uint pid,long owner,string windowClass,string title,Rect bounds,int cloakResult,uint cloak) {
+      return "{\"hwnd\":"+hwnd.ToString(System.Globalization.CultureInfo.InvariantCulture)+
+        ",\"pid\":"+pid.ToString(System.Globalization.CultureInfo.InvariantCulture)+
+        ",\"owner\":"+owner.ToString(System.Globalization.CultureInfo.InvariantCulture)+
+        ",\"class\":"+DiagnosticString(windowClass)+",\"title\":"+DiagnosticString(title)+
+        ",\"bounds\":{\"left\":"+bounds.Left.ToString(System.Globalization.CultureInfo.InvariantCulture)+
+        ",\"top\":"+bounds.Top.ToString(System.Globalization.CultureInfo.InvariantCulture)+
+        ",\"right\":"+bounds.Right.ToString(System.Globalization.CultureInfo.InvariantCulture)+
+        ",\"bottom\":"+bounds.Bottom.ToString(System.Globalization.CultureInfo.InvariantCulture)+"}"+
+        ",\"cloakResult\":"+cloakResult.ToString(System.Globalization.CultureInfo.InvariantCulture)+
+        ",\"cloak\":"+(cloakResult==0?cloak.ToString(System.Globalization.CultureInfo.InvariantCulture):"null")+"}";
+    }
+    private static string SafeObscurerDiagnostic(IntPtr window) {
+      try {
+        var name=new StringBuilder(257);var caption=new StringBuilder(257);
+        GetClassNameW(window,name,name.Capacity);GetWindowTextW(window,caption,caption.Capacity);
+        uint cloak;int result=DwmGetWindowAttribute(window,14,out cloak,4);
+        return FormatObscurerDiagnostic(window.ToInt64(),Owner(window),GetWindow(window,4).ToInt64(),name.ToString(),caption.ToString(),Bounds(window),result,cloak);
+      } catch {return "{\"observationUnavailable\":true}";}
     }
     private static bool SameRect(Rect a,Rect b) {return a.Left==b.Left && a.Top==b.Top && a.Right==b.Right && a.Bottom==b.Bottom;}
     private static void ValidateResizeWorkArea(Rect work) {

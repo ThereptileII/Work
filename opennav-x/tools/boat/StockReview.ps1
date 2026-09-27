@@ -135,9 +135,8 @@ function Invoke-StockReview($Job) {
       $result=@{status='passed';action='ReviewStock';reviewAction=$Job.reviewAction;utc=[datetime]::UtcNow.ToString('o');processId=$process.Id;
         executableSha256=$Job.executableSha256;launchResultSha256=$Job.launchResultSha256;mode='StockLegacy';actuatorCommandsIssuedByTool=$false;physicalBusSilenceNotClaimed=$true}
       if ($Job.reviewAction -ceq 'Close') {
-        if (-not $process.CloseMainWindow() -or -not $process.WaitForExit(30000)) { throw 'Stock requires attention to close normally; no force termination.' }
-        if ($process.ExitCode -ne 0) { throw 'Stock application closed with an error.' }
-        $result.exitCode=$process.ExitCode
+        $result.close=Invoke-ReviewedNormalClose $process $Job.processId ([datetime]::Parse($review.launch.processStartedUtc).ToUniversalTime().Ticks)
+        $result.exitCode=$result.close.exitCode
       } else {
         $directory=Assert-StockImageDirectory $Job $sid
         if ($Job.reviewAction -ceq 'Resize1280x800') {

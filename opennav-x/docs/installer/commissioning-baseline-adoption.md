@@ -52,8 +52,8 @@ reviewed locale persistence, and the already reviewed AUI/Dashboard deltas.
 Locale is **never changed automatically** or converted to English for testing.
 Any locale delta needs its own exact per-key review. Missing/removal, unknown
 keys, source/connection changes, chart-path changes, plugin enablement and
-control configuration are refused, except for the one source-proven obsolete
-font removal described below. Normal defaults outside this policy require
+control configuration are refused, except for the exact source-discovery append
+and obsolete font removal described below. Normal defaults outside this policy require
 a separate source-specific implementation and tests before adoption.
 
 ### Observed official startup normalization
@@ -94,6 +94,50 @@ contains `5.12.4-0+37fd0cd` and `2025-09-12`; its permitted marker is exactly
 `Version 5.12.4+37fd0cd Build YYYY-MM-DD`, with a valid, nonfuture date. These
 forms follow the pinned CMake version generation; a version string alone does
 not authorize an executable or installation.
+
+### Observed variation-source discovery at normal close
+
+The private post-exit INI with SHA-256
+`5f5f9c4e2c09e9e45d74f78b3b338289e37d8168338f0d59a16c5dd3472bebe4`
+adds one entry to `Settings/CommPriority/PriorityVariation`. The prepared
+input-only INI (`8fa87a4550a645521f0833155371f497c4631577d354466d41808f7fea7fe0fe`)
+has five entries in this exact order: `nmea2000 COM8:105;127250`, then N2K
+addresses 243, 35, 33 and 49 for PGN 127250. All five entries, their spacing and
+their final separators remain unchanged. The only permitted addition is the
+exact sixth token `N2k device address: 204 ; PGN: 127250|`.
+
+Pinned `model/src/comm_bridge.cpp` explains this write:
+
+- `HandleN2K_127250` (line 675) calls `EvalPriority` for a successfully decoded,
+  non-unavailable variation value.
+- `GetPriorityKey` (line 1230) formats the N2K payload's source-address byte and
+  PGN using the observed spelling.
+- `EvalPriority` (line 1269) appends an unseen source at `map.size()` **before**
+  deciding whether its priority permits updating the active value.
+- `GetPriorityMap` (line 475) serializes priority order with `|` separators;
+  `gui/src/ocpn_frame.cpp` (line 1910) saves the maps during normal close.
+
+The reviewed action history contains only warning acknowledgement, resizing,
+capture and normal close, with no priority editor or plugin API action. This
+supports automatic source discovery as the explanation. The saved token does
+not prove the source became active, establish the device's identity, or validate
+its data. The priority editor and plugin API can also write priority maps, so
+the INI difference alone cannot prove how it arose. A new fallback source is
+navigation configuration, not a visual setting.
+
+Adoption therefore accepts only this exact five-to-six-entry transition and
+still requires the independent per-key review and whole-file hash bindings.
+Raw values are checked without whitespace normalization. Reordering, replacing
+or removing existing entries, another address/PGN, multiple appends, duplicate
+records and changed connection, route, plugin or other priority settings remain
+refused. Normal armed restart continues to reject this change; it cannot grant
+itself an adoption review. After explicit adoption, the preserved six-entry map
+can pass the existing unchanged-configuration checks.
+
+Restoration reverses only the temporary COM8 direction byte and preserves the
+reviewed discovery along with the other accepted core writes. These tests do
+not complete the boat transaction: all application/helper processes must be
+closed and the fresh whole-profile/plugin/ACL inspection must pass first.
 
 Prepare the private proposal using `prepare-baseline-adoption.ps1` with
 `-Workspace`, `-Record`, `-ExpectedRecordSha256`, `-Inspection`,

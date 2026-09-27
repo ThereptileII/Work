@@ -186,6 +186,33 @@ function Assert-StockAuditIdentity($Installation,[string]$ExecutableHash,$Audit)
       $Audit.launchKind -cne 'StockLegacy' -or $Audit.executableSha256 -cne $ExecutableHash -or
       $Audit.upstreamCommit -cne '37fd0cddb7334fe489e9f18aa163977a9c5c84f7') { throw 'Exact uninstalled official OpenCPN stock identity required.' }
 }
+function Invoke-ReviewedNormalClose([Diagnostics.Process]$Process,[int]$ExpectedProcessId,[long]$ExpectedStartedUtcTicks) {
+  $proof=[ordered]@{processId=$ExpectedProcessId;processStartedUtcTicks=$ExpectedStartedUtcTicks;handleRetained=$false;closeRequested=$false;waitCompleted=$false;exitCodeKnown=$false;exitCode=$null;failure=$null}
+  try {
+    if($Process.Id -ne $ExpectedProcessId -or $Process.HasExited -or $Process.StartTime.ToUniversalTime().Ticks -ne $ExpectedStartedUtcTicks){throw 'Reviewed process creation identity changed before close.'}
+    # .NET Framework Get-Process objects otherwise have no retained native
+    # handle: WaitForExit uses a temporary handle, and ExitCode then throws.
+    $handle=$Process.get_Handle()
+    if($handle -eq [IntPtr]::Zero -or $handle -eq [IntPtr](-1)){throw 'Could not retain the reviewed process handle.'}
+    $proof.handleRetained=$true
+    $Process.Refresh()
+    if($Process.Id -ne $ExpectedProcessId -or $Process.HasExited -or $Process.StartTime.ToUniversalTime().Ticks -ne $ExpectedStartedUtcTicks){throw 'Reviewed process changed while retaining its handle.'}
+    $proof.closeRequested=$Process.CloseMainWindow()
+    if(-not $proof.closeRequested){throw 'Normal close was not accepted; no retry or force termination.'}
+    $proof.waitCompleted=$Process.WaitForExit(30000)
+    if(-not $proof.waitCompleted){throw 'Normal close requires attention; no force termination.'}
+    # Explicit getter propagates failures instead of PowerShell adapting a
+    # throwing property to null and losing the distinction from a nonzero code.
+    $code=$Process.get_ExitCode()
+    if($code -isnot [int]){throw 'Exit code is unavailable; successful termination is not established.'}
+    $proof.exitCodeKnown=$true;$proof.exitCode=$code
+    if($code -ne 0){throw 'Application returned a measured nonzero exit code.'}
+    return [pscustomobject]$proof
+  } catch {
+    $proof.failure=$_.Exception.Message
+    throw ('Application normal close requires review; closeEvidence='+($proof|ConvertTo-Json -Depth 4 -Compress))
+  }
+}
 function Invoke-InteractiveJob([string]$Workspace,$Job,[int]$TimeoutSeconds=90) {
   $directory=New-RunDirectory $Workspace $Job.action.ToLowerInvariant()
   $request=Join-Path $directory 'request.json';$result=Join-Path $directory 'result.json'

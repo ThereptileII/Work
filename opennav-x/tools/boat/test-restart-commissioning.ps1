@@ -67,6 +67,18 @@ $change=$after.Clone();$change.Remove('Settings/Foo');Refuse {Assert-RestartIniD
 $change=[Collections.Generic.Dictionary[string,string]]::new([StringComparer]::Ordinal);foreach($key in $after.Keys){$change.Add($key,$after[$key])};$change.Remove('Settings/Foo')|Out-Null;$change.Add('settings/Foo','unchanged');Refuse {Assert-RestartIniDelta $before $change '--legacy'} 'key case replacement'
 Refuse {Assert-RestartIniDelta $before $after '--safe-mode'} 'Safe does not change persisted interface'
 $delta=@(Assert-RestartIniDelta $before $before '--safe-mode');Check ($delta.Count -eq 0) 'Safe unchanged mode accepted'
+$sourcePrefix='nmea2000 COM8:105;127250|N2k device address: 243 ; PGN: 127250|N2k device address: 35 ; PGN: 127250|N2k device address: 33 ; PGN: 127250|N2k device address: 49 ; PGN: 127250|'
+$sourceLearned=$sourcePrefix+'N2k device address: 204 ; PGN: 127250|'
+Assert-ReviewedVariationSourceAppend $sourcePrefix $sourceLearned;Check $true 'Exact observed append has an explicit-adoption-only policy'
+foreach($mode in @('--xnav','--legacy','--safe-mode')) {
+ $was=$before.Clone();$was['Settings/CommPriority/PriorityVariation']=$sourcePrefix
+ $is=$was.Clone();$is['Settings/CommPriority/PriorityVariation']=$sourceLearned
+ if($mode -cne '--safe-mode'){$is['OpenNav/InterfaceMode']=$mode.Substring(2)}
+ Refuse {Assert-RestartIniDelta $was $is $mode} 'Even the observed source discovery cannot bypass separate per-key baseline adoption during restart'
+ $was['Settings/CommPriority/PriorityVariation']=$sourceLearned
+ $delta=@(Assert-RestartIniDelta $was $is $mode)
+ Check ($delta.Count -eq $(if($mode -ceq '--legacy'){1}else{0})) 'An already adopted source remains unchanged through the requested restart'
+}
 Refuse {Assert-RestartIniDelta $before $before '--legacy'} 'target mode mismatch'
 foreach($value in @('"   57.1234,   16.4567"','"-90.0000,180.0000"')) {
  Assert-RestartScalar 'latlon' $value
