@@ -14,6 +14,7 @@ $sourceTools=Join-Path $PSScriptRoot 'boat';$fixtureSources=Join-Path (Split-Pat
 . (Join-Path $sourceTools 'RestartCommissioning.ps1')
 . (Join-Path $sourceTools 'Commissioning.ps1')
 . (Join-Path $fixtureSources 'New-BrokerFixture.ps1')
+. (Join-Path $fixtureSources 'BrokerMarkerCleanup.ps1')
 $Binaries=Assert-LocalPath ([IO.Path]::GetFullPath($Binaries));$Evidence=Assert-LocalPath ([IO.Path]::GetFullPath($Evidence))
 $marker=Join-Path $Binaries 'opencpn.exe';$helper=Join-Path $Binaries 'opennav-restart.exe'
 $signature='OpenNavX.NativeRestart.MarkerOnly.1'
@@ -29,6 +30,7 @@ $root=Join-Path ([IO.Path]::GetTempPath()) ('OpenNav broker fixture '+[guid]::Ne
 $null=New-Item -ItemType Directory -Path $root
 $null=New-Item -ItemType Directory -Path $Evidence -Force
 $checks=New-Object 'Collections.Generic.List[string]';$cases=New-Object 'Collections.Generic.List[object]'
+$cleanupErrors=New-Object 'Collections.Generic.List[string]'
 function Require($Condition,[string]$Label){if(-not $Condition){throw $Label};$checks.Add($Label)}
 function WaitMarker([string]$Path,[int]$Seconds=15){$until=[DateTime]::UtcNow.AddSeconds($Seconds);while(-not [IO.File]::Exists($Path)){if([DateTime]::UtcNow -ge $until){throw ('Missing fixture marker: '+[IO.Path]::GetFileName($Path))};Start-Sleep -Milliseconds 20}}
 $status='failed';$failure=$null;$taskName=$null
@@ -43,7 +45,7 @@ try {
   $start.EnvironmentVariables['APPDATA']=(Join-Path $fixture.root 'roaming')
   $start.EnvironmentVariables['OPENNAV_COMMISSIONING_RESTART_SESSION']=$fixture.session.session
   $start.EnvironmentVariables['OPENNAV_COMMISSIONING_RESTART_RECORD_SHA256']=$fixture.recordSha256
-  $parent=$null;$broker=$null;$companion=$null;$outTask=$null;$errTask=$null
+  $parent=$null;$broker=$null;$companion=$null;$outTask=$null;$errTask=$null;$caseCompleted=$false
   try {
    $parent=[Diagnostics.Process]::Start($start);$null=$parent.Handle
    $created=$parent.StartTime.ToUniversalTime().ToFileTimeUtc().ToString()
@@ -99,11 +101,15 @@ try {
    [IO.File]::WriteAllText((Join-Path $Evidence ($case+'-stdout.txt')),$stdout)
    [IO.File]::WriteAllText((Join-Path $Evidence ($case+'-stderr.txt')),$stderr)
    $cases.Add(@{name=$case;brokerExit=$broker.ExitCode;helperExit=$companion.ExitCode;markerChildren=$children.Count;realApplication=$false})
+   $caseCompleted=$true
   } finally {
    # Release only our marker protocol; never Stop-Process/Kill any application.
-   [IO.File]::WriteAllText((Join-Path $fixture.app 'parent-release.txt'),'fixture cleanup release')
-   [IO.File]::WriteAllText((Join-Path $fixture.app 'child-release.txt'),'fixture cleanup release')
-   foreach($process in @($parent,$companion,$broker)){if($process){$null=$process.WaitForExit(15000);$process.Dispose()}}
+   try {
+    [IO.File]::WriteAllText((Join-Path $fixture.app 'parent-release.txt'),'fixture cleanup release')
+    foreach($process in @($parent,$companion,$broker)){if($process){try{if(-not $process.WaitForExit(15000)){throw 'Owned fixture process still running; temporary tree retained.'}}finally{$process.Dispose()}}}
+    $closed=Wait-BrokerMarkerChildren $fixture.app $fixture.executable (Get-Digest $marker) $fixture.session.session $fixture.recordSha256
+    if($caseCompleted -and $children.Count -gt 0){Require ($closed -eq $children.Count) ($case+': exact held marker child exits normally before fixture removal')}
+   } catch {$cleanupErrors.Add($case+': '+$_.Exception.Message);if($caseCompleted){throw}}
    if($outTask -and $outTask.IsCompleted){[IO.File]::WriteAllText((Join-Path $Evidence ($case+'-stdout.txt')),$outTask.GetAwaiter().GetResult())}
    if($errTask -and $errTask.IsCompleted){[IO.File]::WriteAllText((Join-Path $Evidence ($case+'-stderr.txt')),$errTask.GetAwaiter().GetResult())}
   }
@@ -128,6 +134,8 @@ try {
 } catch {$failure=$_.Exception.Message;[IO.File]::WriteAllText((Join-Path $Evidence 'failure.txt'),($_|Out-String)+"`r`n"+$_.ScriptStackTrace);throw}
 finally {
  if($taskName){$owned=Get-ScheduledTask -TaskName $taskName -ErrorAction SilentlyContinue;if($owned -and $owned.State.ToString() -ceq 'Ready' -and $owned.Actions[0].Execute -ceq $execute -and $owned.Actions[0].Arguments -ceq $arguments){Unregister-ScheduledTask -TaskName $taskName -Confirm:$false}}
- @{status=$status;checks=$checks.Count;checkDetails=$checks.ToArray();cases=$cases.ToArray();failure=$failure;actualBroker=$true;identitySubstitutions='Copied dependencies only; synthetic TEMP installation/profile/known folders';realApplication=$false;boatAccess=$false;physicalOutput=$false;productAcceptance=$false}|ConvertTo-Json -Depth 8|Set-Content -LiteralPath (Join-Path $Evidence 'broker-result.json') -Encoding UTF8
- if($status -ceq 'passed'){Remove-Item -LiteralPath $root -Recurse -Force}
+ $cleanupFailure=$null
+ if($status -ceq 'passed'){try{Remove-Item -LiteralPath $root -Recurse -Force}catch{$status='failed';$failure=$_.Exception.Message;$cleanupErrors.Add('temporary tree: '+$failure);$cleanupFailure=$_}}
+ @{status=$status;checks=$checks.Count;checkDetails=$checks.ToArray();cases=$cases.ToArray();failure=$failure;cleanupErrors=$cleanupErrors.ToArray();actualBroker=$true;identitySubstitutions='Copied dependencies only; synthetic TEMP installation/profile/known folders';realApplication=$false;boatAccess=$false;physicalOutput=$false;productAcceptance=$false}|ConvertTo-Json -Depth 8|Set-Content -LiteralPath (Join-Path $Evidence 'broker-result.json') -Encoding UTF8
+ if($cleanupFailure){throw $cleanupFailure}
 }

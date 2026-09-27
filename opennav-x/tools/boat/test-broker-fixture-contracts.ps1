@@ -4,7 +4,20 @@ param()
 . (Join-Path $PSScriptRoot 'RestartCommissioning.ps1')
 . (Join-Path $PSScriptRoot 'Commissioning.ps1')
 . (Join-Path (Split-Path (Split-Path $PSScriptRoot -Parent) -Parent) 'tests/commissioning-restart/New-BrokerFixture.ps1')
+. (Join-Path (Split-Path (Split-Path $PSScriptRoot -Parent) -Parent) 'tests/commissioning-restart/BrokerMarkerCleanup.ps1')
 $checks=New-Object 'Collections.Generic.List[string]'
+$markerLines=@('42','134349496789080144','1',('a'*64),('b'*64),'fixed path','local','roaming','','')
+Assert-BrokerMarkerChildRecord $markerLines ('a'*64) ('b'*64)
+$checks.Add('Cleanup accepts only complete armed marker identity and exact session binding')
+foreach($change in @(@(0,'0'),@(0,'+42'),@(0,'4294967296'),@(1,'18446744073709551616'),@(1,'01'),@(2,'0'),@(3,('c'*64)),@(4,('c'*64)))) {
+ $copy=[string[]]$markerLines.Clone();$copy[$change[0]]=$change[1];$failed=$false
+ try{Assert-BrokerMarkerChildRecord $copy ('a'*64) ('b'*64)}catch{$failed=$true}
+ if(-not $failed){throw 'Malformed cleanup marker identity accepted'}
+ $checks.Add('Cleanup rejects malformed or replaced identity field '+$change[0])
+}
+$failed=$false;try{Assert-BrokerMarkerChildRecord $markerLines[0..8] ('a'*64) ('b'*64)}catch{$failed=$true}
+if(-not $failed){throw 'Truncated child record accepted'}
+$checks.Add('Cleanup rejects an incomplete marker write')
 $bytes=New-BrokerFixtureProfileBytes
 if($bytes.Length -ne 21380){throw 'Fixture root no longer exercises production byte-size contract'}
 $checks.Add('Synthetic root has fixed 21380 bytes without substituting production lineage validation')
