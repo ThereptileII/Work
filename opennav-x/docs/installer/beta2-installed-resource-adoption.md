@@ -36,3 +36,12 @@ unreviewed erasure, interrupted adoption after atomic publication, recovery, and
 new-baseline reuse. No test accesses the boat or sends marine commands.
 Native qualification and actual boat restoration are pending; a local policy
 pass is not permission to claim those gates have passed.
+
+The first tooling candidate `ef30481262c3def373b90501acdd39d426dd7d31`
+passed all 19 native maintenance suites, including 163 baseline-adoption checks
+(112 policy, 25 existing stock transactions, 26 installed-resource transactions),
+but its broker job failed: the copied dependency closure omitted the newly
+shared `InstalledResourceReview.ps1`. It is not fully qualified or deployed.
+The dependency is now explicitly hashed/copied, and a portable test imports the
+actual copied audit, including refusal when that transitive module is missing.
+Replacement native broker/Prepare/Arm qualification remains required.
