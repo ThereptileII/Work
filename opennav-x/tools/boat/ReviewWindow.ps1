@@ -21,7 +21,10 @@ function Convert-WindowReviewChart($Data,[string]$Commit,[datetime]$Written,[dat
 }
 function Invoke-WindowReviewPan([IntPtr]$Frame,[int]$ProcessId,[string]$Workspace,[string]$Commit) {
   $config=Get-Target $Workspace
-  $path=Assert-LocalPath (Join-Path $config.profileDirectory 'opennav-diagnostics.json')
+  # Installed Attach/Configure writes beneath the shared profile's opennav-logs
+  # directory. The profile-root path belongs to explicit --configdir tests and
+  # must not be used as a fallback for an installed boat review.
+  $path=Assert-LocalPath (Join-Path (Join-Path $config.profileDirectory 'opennav-logs') 'opennav-diagnostics.json')
   $written=(Get-Item -LiteralPath $path).LastWriteTimeUtc;$data=Read-Record $path
   $chart=Convert-WindowReviewChart $data $Commit $written ([datetime]::UtcNow)
   [OpenNavX.ReviewWindowNative]::PanRight($Frame,$ProcessId,$chart)

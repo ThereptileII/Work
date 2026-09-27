@@ -8,6 +8,12 @@ $root=[IO.Path]::GetFullPath((Join-Path $PSScriptRoot '..'))
 $fixture=Join-Path $root 'tests\display-review\window-fixture.ps1'
 . (Join-Path $PSScriptRoot 'boat\ReviewWindow.ps1')
 Initialize-WindowReviewNative
+# Only target discovery is substituted for these disposable windows. The actual
+# diagnostic file reader, freshness/identity checks and HWND pan path execute.
+function Get-Target([string]$Workspace) {
+ if($Workspace -cne $script:displayProfile){throw 'Unexpected fixture workspace.'}
+ return [pscustomobject]@{profileDirectory=$script:displayProfile}
+}
 $evidencePath=[IO.Path]::GetFullPath($Evidence);$null=New-Item -ItemType Directory -Path $evidencePath -Force
 $results=New-Object 'Collections.Generic.List[object]';$errorText=$null;$cleanupErrors=New-Object 'Collections.Generic.List[string]'
 $oldDpi=[OpenNavX.ReviewWindowNative]::SetThreadDpiAwarenessContext([IntPtr](-4))
@@ -20,9 +26,11 @@ try {
   @('ToggleOrientation','ambiguous',''),@('Display','replace-on-down',''),@('Display','rename-on-down',''),
   @('Display','move-on-down',''),@('Display','duplicate-on-down',''),@('ToggleFullscreen','modal',''),
   @('PanRight','normal','PAN_RIGHT_DOWN,PAN_RIGHT_UP'),@('PanRight','canvas-child','PAN_RIGHT_DOWN,PAN_RIGHT_UP'),
-  @('PanRight','wrong-page',''),@('PanRight','wrong-geometry',''),@('PanRight','modal',''))) {
+  @('PanRight','wrong-page',''),@('PanRight','wrong-geometry',''),@('PanRight','modal',''),
+  @('PanRight','missing-diagnostics',''),@('PanRight','stale-diagnostics',''),@('PanRight','wrong-commit',''))) {
   $directory=Join-Path ([IO.Path]::GetTempPath()) ('opennav-display-window-'+[guid]::NewGuid().ToString('N'));$null=New-Item -ItemType Directory -Path $directory
-  [IO.File]::WriteAllText((Join-Path $directory 'fixture.json'),(@{owner='OpenNavX.NativeDisplayWindow.Fixture.1';action=$spec[0];case=$spec[1]}|ConvertTo-Json -Compress))
+  $fixtureCase=if($spec[1] -cin @('missing-diagnostics','stale-diagnostics','wrong-commit')){'normal'}else{$spec[1]}
+  [IO.File]::WriteAllText((Join-Path $directory 'fixture.json'),(@{owner='OpenNavX.NativeDisplayWindow.Fixture.1';action=$spec[0];case=$fixtureCase}|ConvertTo-Json -Compress))
   $start=New-Object Diagnostics.ProcessStartInfo
   $start.FileName=Join-Path ([Environment]::GetFolderPath('System')) 'WindowsPowerShell\v1.0\powershell.exe'
   $start.Arguments='-NoProfile -STA -ExecutionPolicy Bypass -File "'+$fixture+'" -Directory "'+$directory+'"'
@@ -39,10 +47,22 @@ try {
     [OpenNavX.ReviewWindowNative]::Foreground([IntPtr]$ready.handle,$process.Id)
     $before=[OpenNavX.ReviewWindowNative]::AssertFrame([IntPtr]$ready.handle,$process.Id)
     if($spec[0] -ceq 'PanRight') {
-     $chart=New-Object OpenNavX.ReviewWindowNative+Rect
-     $chart.Left=$ready.chart.left;$chart.Top=$ready.chart.top;$chart.Right=$ready.chart.right;$chart.Bottom=$ready.chart.bottom
-     if($spec[1] -ceq 'wrong-geometry'){$chart.Left+=1}
-     [OpenNavX.ReviewWindowNative]::PanRight([IntPtr]$ready.handle,$process.Id,$chart)
+     $script:displayProfile=$directory
+     $commit='a'*40
+     $data=@{build_commit=$commit;build_purpose='INSTALLED PRODUCT';data_mode='OPENCPN selected navigation';ui_page='Navigation';
+       runtime=@{display=@{route_creation_active=$false;chart_region=@{x=[int]$ready.chart.left;y=[int]$ready.chart.top;
+         width=[int]($ready.chart.right-$ready.chart.left);height=[int]($ready.chart.bottom-$ready.chart.top)}}}}
+     # A fresh decoy at the former wrong path must never authorize input.
+     Write-Record (Join-Path $directory 'opennav-diagnostics.json') $data
+     $logs=Join-Path $directory 'opennav-logs';$null=New-Item -ItemType Directory -Path $logs
+     $diagnostic=Join-Path $logs 'opennav-diagnostics.json'
+     if($spec[1] -ceq 'wrong-geometry'){$data.runtime.display.chart_region.x+=1}
+     if($spec[1] -ceq 'wrong-commit'){$data.build_commit='b'*40}
+     if($spec[1] -cne 'missing-diagnostics') {
+      Write-Record $diagnostic $data
+      if($spec[1] -ceq 'stale-diagnostics'){[IO.File]::SetLastWriteTimeUtc($diagnostic,[datetime]::UtcNow.AddSeconds(-10))}
+     }
+     Invoke-WindowReviewPan ([IntPtr]$ready.handle) $process.Id $directory $commit
     } else {[OpenNavX.ReviewWindowNative]::Click([IntPtr]$ready.handle,$process.Id,$spec[0])}
     $after=[OpenNavX.ReviewWindowNative]::AssertFrame([IntPtr]$ready.handle,$process.Id)
    } catch {$refused=$true;$reason=$_.Exception.Message}

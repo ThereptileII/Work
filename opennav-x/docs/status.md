@@ -10,6 +10,34 @@ executables from the installed product, refines shared visual components and
 navigation workflows, and adds repeatable boat deployment and maintenance tools.
 The accepted Beta 1 results below remain historical evidence, not Beta 2 gates.
 
+### Current boat deployment — 09:36 UTC
+
+The independently downloaded `7827acb` development package was updated on the
+boat at 09:09 UTC. Setup SHA-256 is
+`7bfe4ba1c31a68304edd04f261ac8bee3f7c93a2612f3bbbb3c1da1b0b076e71`;
+installed executable SHA-256 is
+`56f435d08904ec5a0b8a840fe13625b9476353e7c97a8d2368f16c100b5672e5`.
+All 904 real profile files compare identically before/after the update, and the
+approved stock executable is unchanged. Full platform endurance remains open.
+
+A fresh read-only commissioning transaction and guarded-restart session preceded
+the 09:14 XNav launch. Its five quarantined plugin copies and input-only serial
+change remain active during this review and must be restored after normal close.
+Both queued Windows network prompts were cancelled without granting access.
+The exact native 1280×800 frame at 150% DPI now shows real chart content, clear
+Center, all four rail values and no floating Dashboard. Three zoom-out actions
+retain chart content. These observations are scoped visual checks, not complete
+boat acceptance. The actual monitor remains 1920×1080; physical 1280×800/touch
+acceptance must not be inferred.
+
+The new pan review found the tooling's diagnostic-path mismatch: the installed
+product writes under `opennav-logs`, while the helper looked at the profile root.
+The correction adds native wrapper cases for a decoy root file, missing/stale
+installed diagnostics and wrong commit. It is not yet deployed or native-qualified.
+The earlier main-window refusal was traced to a native hover tooltip after
+cancelling the network sheet; a bounded pointer-only move cleared it. No failed
+zoom/capture request sent input. Product/restart tools were not modified aboard.
+
 ### Current boat review tools
 
 `07da8e307f174646f4fd2722ec84bda511f4bcfd`,
@@ -31,13 +59,32 @@ No release or boat visual acceptance is claimed from the old screenshots.
 
 ### Current replacement validation
 
+`a5b290e52ebeb83bda75c1f7008879c398548dc3` is the newest full candidate in
+[CI 36307149573](https://github.com/ThereptileII/Work/actions/runs/36307149573).
+All **706** mapped blobs/modes match local
+`9e0d0c77b5ba2513cc7355da80f38e03ddf631b6`; the pin and eight unrelated blobs
+are unchanged. It merges the refined candidate history without rewriting either
+branch. Application/installer code is unchanged from `7827acb`; the installer
+harness now waits for actual relocated cleanup and preserves failed fixtures.
+Six timing/lifetime tests pass locally and both contract jobs pass natively.
+The verified earlier failure is documented in the
+[maintenance completion review](installer/beta2-maintenance-cancel-and-dpi-readiness.md).
+Both complete platform gates and replacement boat deployment remain pending.
+
 `7827acb7c8b0d708285bd26a4c48d545dd64d139` is running the complete gates in
 [CI 36304661282](https://github.com/ThereptileII/Work/actions/runs/36304661282).
 All **699** mapped blobs/modes match local
 `a883f3fb7c729773e323d9234d95dda1f62fcacf`; the pinned baseline and eight unrelated
 repository blobs are preserved. It includes the autopilot wording refinement,
 bounded chart-pan tools and the DPI harness correction below. No replacement
-product has been deployed.
+product had been deployed at the earlier checkpoint; see the current deployment above.
+
+The boat tooling checkout moved to `7827acb` at 08:36 UTC after its native tooling
+gates passed; no application changed or launched. At 08:48 UTC, cold checks still
+show the exact `8e780` executable, unchanged stock/INI/navigation database, no
+application/helper and no active commissioning. The remaining Beta 1 portable
+folder and its three download files match their expected hashes. Retirement is
+prepared but awaits the replacement's mode/recovery checks; no files were moved.
 
 `608756` remains historical diagnostic work. Its harness added an input-evidence
 dictionary which source review subsequently found shadowed the screenshot Path;

@@ -103,3 +103,27 @@ byte sizes and ZIP CRC agree. The window artifact is `10926273331`, SHA-256
 `e6483d051adae22f062e8efc116cdc2a00059436f0c66a896a26e52421506e0c`.
 Actual boat use remains pending; no marker result substitutes for OpenCPN chart
 behavior or physical touch dragging.
+
+## Installed diagnostic path correction — 2026-09-27
+
+The actual `7827acb` installed boat application writes its one-second diagnostic
+observation to the shared profile's `opennav-logs/opennav-diagnostics.json`, as
+defined by `OpenCPNIntegration.cpp::Configure` and the snapshot callback. The
+review helper incorrectly used the profile root (the explicit configdir test
+layout). No chart pan was sent using that missing observation.
+
+The helper now reads only the installed path. The native marker-window suite
+executes `Invoke-WindowReviewPan` itself, substituting only target discovery. It
+places a fresh decoy observation at the old root path and the real observation
+under `opennav-logs`. Missing, stale and wrong-commit real observations must
+refuse input even with that fresh decoy; normal and child-canvas cases still
+require the exact one DOWN/UP pair. Existing geometry, page and modal refusals
+remain. There are 23 native cases; qualification remains pending.
+
+A separate boat observation found Windows PowerShell's MainWindowHandle selecting
+the process's native `tooltips_class32` hover window after a firewall Cancel
+left the cursor on System. The fixed reviewer correctly refused before input.
+Private native enumeration identified the tooltip and its shadow. One bounded
+pointer-only move to the already reviewed title bar (no button/key/drag) cleared
+the hover state; the unchanged helper then completed the zoom actions. No
+window-identity check or screenshot-occlusion guard was removed.
