@@ -31,6 +31,27 @@ function Get-InstalledWelcomeEnvironment($Config,$Installed) {
   return [pscustomobject]@{local=$local;profile=(Assert-LocalPath (Join-Path ([Environment]::GetFolderPath('CommonApplicationData')) 'opencpn'));
     roots=@((Join-Path $local 'opencpn\plugins'),(Join-Path ([IO.Path]::GetDirectoryName($Config.stockExecutable)) 'plugins'),(Join-Path ([IO.Path]::GetDirectoryName($Installed.executable)) 'plugins'))}
 }
+function Get-InstalledCommissioningBasemap($Installed) {
+  # InstalledResources.cpp reads this managed marker and only supplies missing
+  # defaults from the original supported application. Never accept a generation
+  # resource path, another installation or a caller-provided replacement path.
+  $stock=Assert-LocalPath $Installed.state.stock.path
+  if ((Get-Digest $stock) -cne '7c6547562cca7954671eaab72833ca9d788710fd9808b6a699b6dc823852ae0c') { throw 'Installed resource default requires the exact supported stock executable.' }
+  $marker=Assert-LocalPath (Join-Path $Installed.generation 'app/OPENNAV_INSTALLED_STOCK')
+  $owned=@($Installed.ownership.managedFiles | Where-Object {$_.path -ceq 'app/OPENNAV_INSTALLED_STOCK'})
+  if ($owned.Count -ne 1 -or $owned[0].sha256 -cnotmatch '^[a-f0-9]{64}$' -or
+      (Get-Item -LiteralPath $marker).Length -gt 4096 -or (Get-Digest $marker) -cne $owned[0].sha256) { throw 'Exact owned stock resource locator required.' }
+  $encoding=New-Object Text.UTF8Encoding($false,$true)
+  if ($encoding.GetString([IO.File]::ReadAllBytes($marker)) -cne $stock) { throw 'Stock resource locator differs from the installation binding.' }
+  $parent=[IO.Path]::GetDirectoryName($stock)
+  foreach ($name in @('tcdata/harmonics-dwf-20210110-free.tcd','tcdata/HARMONICS_NO_US.IDX','tcdata/HARMONICS_NO_US','gshhs/poly-c-1.dat','basemap_shp/basemap_low.shp','sounds/2bells.wav')) {
+    $path=Assert-LocalPath (Join-Path $parent $name)
+    if (-not [IO.File]::Exists($path) -or (Get-Item -LiteralPath $path).Length -le 0) { throw 'Pinned installed resource selector prerequisites are missing.' }
+  }
+  # wxFileConfig escapes each Windows backslash on disk. Preserve exact bytes;
+  # no relaxed slash, case, traversal, quote or alternate-path comparison.
+  return (Join-Path $parent 'basemap_shp').Replace('\','\\')
+}
 function Assert-InstalledWelcomeRuntime($Config,$Installed,$Launch,[string]$Workspace) {
   # The accepted cold launch already checked the full source-plan semantics and
   # one-byte transform. Recheck all immutable proof bytes and live trees now;
@@ -76,7 +97,13 @@ function Assert-InstalledWelcomeRuntime($Config,$Installed,$Launch,[string]$Work
     if ($at -gt [datetime]::UtcNow -or ([datetime]::UtcNow-$at).TotalHours -gt 24) { throw 'Read-only source/profile review expired.' }
   }
   Assert-InputOnlyProfile (Read-ProfileForAudit (Join-Path $profile 'opencpn.ini'))
-  Assert-CommissioningRestoreIni (Join-Path $cold 'input-only.ini') (Join-Path $profile 'opencpn.ini')
+  $before=Read-ProfileForAudit (Join-Path $cold 'input-only.ini')
+  $after=Read-ProfileForAudit (Join-Path $profile 'opencpn.ini')
+  $default=''
+  if ($before['Directories/BaseShapefileDir'] -cne $after['Directories/BaseShapefileDir']) {
+    $default=Get-InstalledCommissioningBasemap $Installed
+  }
+  Assert-CommissioningProtectedValues $before $after $default
 }
 function Read-InstalledWelcome($Job) {
   if (@($Job.helperFiles).Count -ne $script:InstalledWelcomeFiles.Count) { throw 'Exact warning helper inventory required.' }

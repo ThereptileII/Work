@@ -894,3 +894,107 @@ index 4e43dafec..7367c1f73 100644
      if (GarminProtocolHandler::IsGarminPlugged()) {
        wxLogMessage(_T("EnumerateSerialPorts() Found Garmin USB Device."));
        preturn->Add(_T("Garmin-USB"));  // Add generic Garmin selectable device
+diff --git i/plugins/dashboard_pi/src/dashboard_pi.cpp w/plugins/dashboard_pi/src/dashboard_pi.cpp
+index b84f858bd..96076d51f 100644
+--- i/plugins/dashboard_pi/src/dashboard_pi.cpp
++++ w/plugins/dashboard_pi/src/dashboard_pi.cpp
+@@ -27,6 +27,9 @@
+  */
+ 
+ #include <wx/wxprec.h>
++#ifdef OPENNAV_DASHBOARD_PLUGIN
++#include "integration/DashboardPresentationApi.h"
++#endif
+ 
+ #ifndef WX_PRECOMP
+ #include <wx/wx.h>
+@@ -3268,6 +3271,9 @@ void dashboard_pi::SetPluginMessage(wxString &message_id,
+ int dashboard_pi::GetToolbarToolCount(void) { return 1; }
+ 
+ void dashboard_pi::ShowPreferencesDialog(wxWindow *parent) {
++#ifdef OPENNAV_DASHBOARD_PLUGIN
++  OpenNavDashboardLayoutScope opennav_layout;
++#endif
+   DashboardPreferencesDialog *dialog = new DashboardPreferencesDialog(
+       parent, wxID_ANY, m_ArrayOfDashboardWindow);
+ 
+@@ -3384,6 +3390,9 @@ void dashboard_pi::OnPaneClose(wxAuiManagerEvent &event) {
+ }
+ 
+ void dashboard_pi::OnToolbarToolCallback(int id) {
++#ifdef OPENNAV_DASHBOARD_PLUGIN
++  OpenNavDashboardLayoutScope opennav_layout;
++#endif
+   int cnt = GetDashboardWindowShownCount();
+ 
+   bool b_anyviz = false;
+@@ -3472,6 +3481,9 @@ void dashboard_pi::OnToolbarToolCallback(int id) {
+ }
+ 
+ void dashboard_pi::UpdateAuiStatus(void) {
++#ifdef OPENNAV_DASHBOARD_PLUGIN
++  OpenNavDashboardLayoutScope opennav_layout;
++#endif
+   //    This method is called after the PlugIn is initialized
+   //    and the frame has done its initial layout, possibly from a saved
+   //    wxAuiManager "Perspective" It is a chance for the PlugIn to syncronize
+@@ -3833,6 +3845,9 @@ void dashboard_pi::LoadFont(wxFont **target, wxString native_info) {
+ }
+ 
+ bool dashboard_pi::SaveConfig(void) {
++#ifdef OPENNAV_DASHBOARD_PLUGIN
++  OpenNavDashboardLayoutScope opennav_layout;
++#endif
+   wxFileConfig *pConf = (wxFileConfig *)m_pconfig;
+ 
+   if (pConf) {
+@@ -4026,6 +4041,9 @@ bool dashboard_pi::SaveConfig(void) {
+ }
+ 
+ void dashboard_pi::ApplyConfig(void) {
++#ifdef OPENNAV_DASHBOARD_PLUGIN
++  OpenNavDashboardLayoutScope opennav_layout;
++#endif
+   // Reverse order to handle deletes
+   for (size_t i = m_ArrayOfDashboardWindow.GetCount(); i > 0; i--) {
+     DashboardWindowContainer *cont = m_ArrayOfDashboardWindow.Item(i - 1);
+@@ -4072,6 +4090,9 @@ void dashboard_pi::ApplyConfig(void) {
+                             .Gripper(false);
+ 
+       m_pauimgr->AddPane(cont->m_pDashboardWindow, p);
++#ifdef OPENNAV_DASHBOARD_PLUGIN
++      OpenNavDashboardWindow(cont->m_pDashboardWindow, true);
++#endif
+       // wxAuiPaneInfo().Name( cont->m_sName ).Caption( cont->m_sCaption
+       // ).CaptionVisible( false ).TopDockable(
+       // !vertical ).BottomDockable( !vertical ).LeftDockable( vertical
+@@ -4137,6 +4158,9 @@ void dashboard_pi::PopulateContextMenu(wxMenu *menu) {
+ }
+ 
+ void dashboard_pi::ShowDashboard(size_t id, bool visible) {
++#ifdef OPENNAV_DASHBOARD_PLUGIN
++  OpenNavDashboardLayoutScope opennav_layout;
++#endif
+   if (id < m_ArrayOfDashboardWindow.GetCount()) {
+     DashboardWindowContainer *cont = m_ArrayOfDashboardWindow.Item(id);
+     m_pauimgr->GetPane(cont->m_pDashboardWindow).Show(visible);
+@@ -5449,6 +5473,9 @@ DashboardWindow::DashboardWindow(wxWindow *pparent, wxWindowID id,
+ }
+ 
+ DashboardWindow::~DashboardWindow() {
++#ifdef OPENNAV_DASHBOARD_PLUGIN
++  OpenNavDashboardWindow(this, false);
++#endif
+   for (size_t i = 0; i < m_ArrayOfInstrument.GetCount(); i++) {
+     DashboardInstrumentContainer *pdic = m_ArrayOfInstrument.Item(i);
+     delete pdic;
+@@ -5836,6 +5863,9 @@ void DashboardWindow::SetColorScheme(PI_ColorScheme cs) {
+ 
+ void DashboardWindow::ChangePaneOrientation(int orient, bool updateAUImgr,
+                                             int fpx, int fpy) {
++#ifdef OPENNAV_DASHBOARD_PLUGIN
++  OpenNavDashboardLayoutScope opennav_layout;
++#endif
+   m_pauimgr->DetachPane(this);
+   SetSizerOrientation(orient);
+   bool vertical = orient == wxVERTICAL;

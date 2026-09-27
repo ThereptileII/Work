@@ -12,7 +12,34 @@ The accepted Beta 1 results below remain historical evidence, not Beta 2 gates.
 
 ### Current candidate
 
-`a896fb5c5fa935b5daa757087ebedc4cd531c1d3` is the current full candidate,
+`edd8da0a4bd386fbb2dbd249289b9f09eeae8dc3` is the replacement full candidate,
+matching all 680 mapped blobs/modes at local
+`3e0b17dcbb353793a5c135c18774a1e91a6a3b02`, in
+[CI 36295867893](https://github.com/ThereptileII/Work/actions/runs/36295867893).
+It downloads both immutable historical installers before clearing the read-only
+Actions credential. The previous run is superseded after its native installer
+harness failure; its unfinished Linux endurance is not an accepted soak.
+The native integrated and fixture-free builds passed, as did chart/plugin checks.
+The installer exercised genuine historical update/rollback, then the maintenance
+Cancel test incorrectly required exit 0 instead of NSIS's documented user-cancel
+exit 1. The DPI harness read Diagnostics before its first paint established the
+scroll extent. Both failures and narrowly scoped test repairs are recorded in
+[the harness review](installer/beta2-maintenance-cancel-and-dpi-readiness.md).
+The complete Windows gate failed; no replacement release artifact is accepted.
+The same run's Linux elapsed-time trip remains in progress. Boat development
+continues using the retained functional package below; this replacement has not
+been deployed.
+
+The next local increment suppresses only registered bundled Dashboard panes in
+XNav, restoring their original workspace in Legacy. This follows the actual
+boat observation of large floating Legacy instruments obscuring the chart.
+Linux integrated build, **110/110** CTest cases, **27** wx object groups and both
+software/OpenGL chart cycles pass. Native replacement and boat review are pending.
+[Presentation contract and coverage](design/reviews/beta2-plugin-workspace.md).
+
+### Superseded credential-order candidate
+
+`a896fb5c5fa935b5daa757087ebedc4cd531c1d3` was the previous full candidate,
 matching all 664 mapped blobs/modes at local
 `5dd114c00cf07ceef8b32e7d6ec978e33d5d9e50`, in
 [CI 36292727131](https://github.com/ThereptileII/Work/actions/runs/36292727131).
@@ -55,9 +82,14 @@ palette action and verifies Day/Dusk/Night. This candidate has no accepted
 Windows endurance result. Its Linux elapsed-time run was cancelled with 327
 retained samples and has no accepted endurance result. The hash-verified setup has now completed its first boat installation with
 exit 0. Independent before/after inventories confirm the complete normal profile
-is identical, and stock OpenCPN retains its validated hash. Launch and screen
-review remain pending a new installed plugin/data audit; this development bundle
-is not a qualified release. [Initial installation](evidence/beta2-boat-first-install-8e780.json).
+is identical, and stock OpenCPN retains its validated hash. A fresh installed plugin/data audit preceded the read-only launch. The actual
+1280×800 frame now shows real licensed chart content, ownship and saved marks.
+Live N2K wind, depth, STW, water temperature and tanks are observed; battery and
+motor data remain unavailable and dependent energy estimates are suppressed.
+A saved floating Dashboard still obscures the left chart, so strict clear-overlay
+acceptance remains open. The Windows firewall prompt was cancelled, with visual
+confirmation; no Allow action was used. This development bundle is not a
+qualified release. [First boat review](evidence/beta2-boat-first-xnav-8e780.json). [Initial installation](evidence/beta2-boat-first-install-8e780.json).
 
 ### Previous candidate (not qualified)
 

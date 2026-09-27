@@ -67,6 +67,24 @@ try {
     $null=New-Item -ItemType Directory -Path $installed.root
     [IO.File]::WriteAllText((Join-Path $installed.root 'state.json'),'inert owned state')
     [IO.File]::WriteAllText((Join-Path $installed.generation 'ownership.json'),'inert ownership')
+    $resourceStock=$installed.state.stock.path
+    [IO.File]::WriteAllText($resourceStock,'inert resource-stock fixture; never launched')
+    $resourceStockDigest=Get-Digest $resourceStock
+    $resourceDigestFunction=${function:Get-Digest}
+    function Get-Digest([string]$Path) {
+      $hash=& $resourceDigestFunction $Path
+      if ($Path -ceq $resourceStock -and $hash -ceq $resourceStockDigest) { return '7c6547562cca7954671eaab72833ca9d788710fd9808b6a699b6dc823852ae0c' }
+      return $hash
+    }
+    $resourceMarker=Join-Path $installed.generation 'app/OPENNAV_INSTALLED_STOCK'
+    [IO.File]::WriteAllText($resourceMarker,$resourceStock,(New-Object Text.UTF8Encoding($false)))
+    $installed.ownership | Add-Member managedFiles @([pscustomobject]@{path='app/OPENNAV_INSTALLED_STOCK';sha256=(Get-Digest $resourceMarker)})
+    $resourceFiles=@('tcdata/harmonics-dwf-20210110-free.tcd','tcdata/HARMONICS_NO_US.IDX','tcdata/HARMONICS_NO_US','gshhs/poly-c-1.dat','basemap_shp/basemap_low.shp','sounds/2bells.wav')
+    foreach ($name in $resourceFiles) {
+      $path=Join-Path ([IO.Path]::GetDirectoryName($resourceStock)) $name
+      $null=New-Item -ItemType Directory -Force ([IO.Path]::GetDirectoryName($path))
+      [IO.File]::WriteAllText($path,'inert resource; never loaded')
+    }
     $fixtureContext.installation=[pscustomobject]@{root=$installed.root;generation=$installed.generation;executable=$exe;commit=$installed.ownership.commit;
       executableSha256=(Get-Digest $exe);stateSha256=(Get-Digest (Join-Path $installed.root 'state.json'));ownershipSha256=(Get-Digest (Join-Path $installed.generation 'ownership.json'))}
     $fixtureContext | Add-Member localAppData (Join-Path $testRoot 'local')
@@ -106,7 +124,7 @@ try {
   $input=Join-Path $directory 'input-only.ini'
   $ini=Join-Path $profile 'opencpn.ini'
   $encoding=New-Object Text.UTF8Encoding($false,$true)
-  $text="[Settings]`r`nPersistActiveRoute=0`r`n[Settings/NMEADataSource]`r`nDataConnections=0;0;;0;1;COM8;115200;0;1;0;;0;;0;0;1;0;1;Gateway;0;;0`r`n[Directories]`r`nChartDir=original`r`n"
+  $text="[Settings]`r`nPersistActiveRoute=0`r`n[Settings/NMEADataSource]`r`nDataConnections=0;0;;0;1;COM8;115200;0;1;0;;0;;0;0;1;0;1;Gateway;0;;0`r`n[Directories]`r`nChartDir=original`r`nBaseShapefileDir=`r`n"
   # The real recovered-root contract includes its exact byte length.
   $text+='#'+(' '*(21380-$encoding.GetByteCount($text)-3))+"`r`n"
   $bytes=$encoding.GetBytes($text)
@@ -177,6 +195,40 @@ try {
       try { $audit.$field=$false;Reject {& $verify @arguments} 'missing independent read-only approval' } finally {$audit.$field=$true}
     }
     $checks.Add('No read-only commissioning boolean is manufactured or inferred')
+    $originalBytes=[IO.File]::ReadAllBytes($ini)
+    try {
+      $default=Get-InstalledCommissioningBasemap $installed
+      $filled=$encoding.GetString($originalBytes).Replace("BaseShapefileDir=`r`n",("BaseShapefileDir="+$default+"`r`n"))
+      [IO.File]::WriteAllText($ini,$filled,$encoding)
+      $null=& $verify @arguments
+      $checks.Add('Running installed review accepts only the owned stock resource fallback for an existing empty preference')
+      Reject { Assert-CommissioningRestoreIni $input $ini } 'runtime fallback cannot silently authorize baseline restoration'
+      $checks.Add('Cold restoration retains its strict independent review boundary')
+      foreach ($path in @($resourceStock,$resourceMarker)) {
+        Change-And-Reject $path 'changed stock executable or owned resource marker'
+        $checks.Add('Changed exact resource binding refused: '+[IO.Path]::GetFileName($path))
+      }
+      foreach ($name in $resourceFiles) {
+        $path=Join-Path ([IO.Path]::GetDirectoryName($resourceStock)) $name
+        $savedBytes=[IO.File]::ReadAllBytes($path)
+        try { [IO.File]::WriteAllBytes($path,[byte[]]@());Reject {& $verify @arguments} 'empty stock resource prerequisite' }
+        finally {[IO.File]::WriteAllBytes($path,$savedBytes)}
+        $checks.Add('Missing selector prerequisite refused: '+$name)
+      }
+      foreach ($replacement in @('C:\other\basemap_shp',($default+'/'),($default+'/../basemap_shp'),('"'+$default+'"'))) {
+        [IO.File]::WriteAllText($ini,$filled.Replace($default,$replacement),$encoding)
+        Reject {& $verify @arguments} ('another path spelling or installation cannot be a default: '+$replacement)
+        $checks.Add('Changed resource path rejected without normalization')
+      }
+      $oldValues=Read-ProfileForAudit $input;$newValues=$oldValues.Clone()
+      $newValues['Directories/BaseShapefileDir']=$default
+      foreach ($prior in @('custom selection',$null)) {
+        $old=$oldValues.Clone()
+        if ($null -eq $prior) {$old.Remove('Directories/BaseShapefileDir')} else {$old['Directories/BaseShapefileDir']=$prior}
+        Reject {Assert-CommissioningProtectedValues $old $newValues $default} 'custom or missing baseline cannot be filled by this observed rule'
+        $checks.Add('Existing custom/missing resource preference remains protected')
+      }
+    } finally {[IO.File]::WriteAllBytes($ini,$originalBytes)}
   }
   foreach ($path in $(if($StockFixture){@($helper,$stockHelper)}else{@($helper,$stockHelper,$generationHelper)})) { Change-And-Reject $path 'changed helper/runtime in an actual loader root' }
   $checks.Add('Changed helpers and runtime dependencies in all applicable roots refuse launch despite unchanged plugin DLLs')

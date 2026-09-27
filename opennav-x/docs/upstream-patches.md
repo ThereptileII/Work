@@ -515,3 +515,20 @@ builds, matching the compile-time fixture separation. No runtime profile or
 environment setting can enable missing generators. The reviewed worktree check
 passes; exact-release native/boat validation is still required. See
 [Beta 2 integration inspection](beta2-integration-feedback.md).
+
+
+## Beta 2 bundled Dashboard presentation
+
+A private additive bridge in `DashboardPresentationApi.h` is enabled only for the
+source-pinned bundled Dashboard by `OPENNAV_DASHBOARD_PLUGIN`. The plugin registers
+actual pane windows after AddPane and unregisters at destruction. RAII scopes
+bracket preferences, toolbar visibility, UpdateAuiStatus, ApplyConfig, SaveConfig,
+ShowDashboard and orientation changes. Existing plugin API/vtables and unknown
+plugins are unchanged; a pristine upstream build does not enable these calls.
+
+Host-side application-thread weak references preserve complete original pane
+state while hiding these panes in XNav. Deferred initialization enables suppression
+after normal perspective loading; later owned-manager perspective loads use the
+same layout scope. Close restores state before the shell and upstream persistence.
+No sensor, route or hardware behavior changes. Legacy follows normal Dashboard
+behavior. [Rationale, test changes and pending Windows/boat gate](design/reviews/beta2-plugin-workspace.md).

@@ -308,7 +308,13 @@ try:
                            ('Export diagnostic bundle','Field diagnostic bundle')]:
             ui.click_text(pid,'System');ui.click_text(pid,label);data(lambda d:d['ui_page']==page)
             entry['night_surfaces'].append(chart.dark_surface(capture(f'dpi-{scale}-night-'+page.lower().replace(' ','-').replace('&','and')),page))
-        ui.click_text(pid,'System');ui.click_text(pid,'Diagnostics');data(lambda d:d['ui_page']=='Diagnostics')
+        ui.click_text(pid,'System');ui.click_text(pid,'Diagnostics')
+        # The page identity is published before its first native paint computes
+        # the scroll extent. Wait for that same page's settled geometry; the
+        # later touch assertions still require actual viewport movement.
+        data(lambda d:d['ui_page']=='Diagnostics' and
+             d['runtime']['display']['page_scroll_px']==0 and
+             d['runtime']['display']['can_scroll_down'])
         entry['night_surfaces'].append(chart.dark_surface(capture(f'dpi-{scale}-night-diagnostics'),'Diagnostics'))
         # The data-heavy diagnostics page must be navigable by actual touch.
         assert data()['runtime']['display']['can_scroll_down']
