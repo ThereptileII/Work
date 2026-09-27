@@ -114,3 +114,27 @@ The actual DPI visible-pixel image shows the GPS-free chart card after exactly
 one right-click, with foreground/hit evidence matching the chart. The subsequent
 failure is the already identified local dictionary/Path collision, corrected in
 `7827acb`. This verifies first-gesture delivery only, not the remaining DPI gate.
+
+## Direct cleanup completion — a5b290e
+
+The replacement run `36307149573` reached all 45 named lifecycle checks,
+including conventional uninstall, actual stock chart launch, reinstall and
+same-version update. Operation 40 (relocated uninstall) completed successfully
+after **150.406 seconds**, validating the earlier bounded report-wait repair.
+The final direct PowerShell engine Uninstall (operation 43) still had a separate
+120-second `subprocess.run` deadline and raised TimeoutExpired. Its failed
+disposable fixture is retained. This run is not accepted.
+
+Failure artifact `10928676941`, 572,436 bytes, SHA-256
+`c05930cd9ff44f3ec5370d69ce867a9bcbbef08552ebe081799b75af51cca6ab`,
+matches API metadata, independent download and ZIP integrity. Upload-log
+confirmation and final native evidence are pending. The complete earlier
+`7827acb` run remains independent and continues its endurance test.
+
+The direct uninstall now uses the same 600-second bound, records its actual
+completion time, and requires both exit code zero and a successful durable
+report. Other direct operations retain their existing 120-second limit. No
+retry or missing-report success is introduced. Twelve portable timing/lifetime
+cases pass, including delayed direct cleanup, nonzero exit, failed/missing
+report, bounded timeout without retry, retained failed fixture and unchanged
+diagnostic deadlines. Fresh native validation is still required.

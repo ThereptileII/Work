@@ -14,7 +14,7 @@ SOURCE = Path(__file__).with_name('smoke-installer-windows.py')
 TREE = ast.parse(SOURCE.read_text())
 FUNCTIONS = ast.Module(body=[node for node in TREE.body
                             if isinstance(node, ast.FunctionDef)
-                            and node.name in ('maintenance', 'installer_fixture')],
+                            and node.name in ('engine', 'maintenance', 'installer_fixture')],
                        type_ignores=[])
 
 
@@ -37,7 +37,7 @@ class Completion(unittest.TestCase):
         self.environment = dict(
             contextmanager=contextmanager, tempfile=tempfile, shutil=shutil,
             report=self.report, json=json, generation=lambda: self.root,
-            operation_report=operation_report,
+            operation_report=operation_report, PS=self.root / 'powershell.exe',
             subprocess=SimpleNamespace(list2cmdline=subprocess.list2cmdline,
                                        run=lambda *a, **kw: SimpleNamespace(returncode=0)),
             time=SimpleNamespace(monotonic=lambda: self.clock, sleep=sleep))
@@ -68,6 +68,60 @@ class Completion(unittest.TestCase):
         with self.assertRaisesRegex(AssertionError, '120 seconds'):
             self.environment['maintenance']('Diagnostics')
         self.assertLess(self.clock, 121)
+
+    def test_direct_cleanup_after_two_minutes_uses_the_same_bound(self):
+        calls=[]
+        def run(command, *, timeout, capture_output):
+            calls.append(timeout)
+            self.assertTrue(capture_output)
+            self.assertEqual(command[-4:-2], ['-Action', 'Uninstall'])
+            self.assertGreater(timeout, 153)
+            self.clock=153
+            self.result.write_text('{"status":"passed"}')
+            return SimpleNamespace(returncode=0)
+        self.environment['subprocess'].run=run
+        self.assertEqual(self.environment['engine']('Uninstall')['status'], 'passed')
+        self.assertEqual(calls, [600])
+        self.assertEqual(self.report['operations'][-1]['completion_seconds'], 153)
+
+    def test_direct_cleanup_timeout_stays_failure_without_retry(self):
+        calls=[]
+        def run(command, *, timeout, capture_output):
+            calls.append(timeout)
+            raise subprocess.TimeoutExpired(command, timeout)
+        self.environment['subprocess'].run=run
+        with self.assertRaises(subprocess.TimeoutExpired):
+            self.environment['engine']('Uninstall')
+        self.assertEqual(calls, [600])
+        self.assertNotIn('completion_seconds', self.report['operations'][-1])
+
+    def test_direct_successful_exit_with_failed_report_is_refused(self):
+        self.result.write_text('{"status":"failed"}')
+        with self.assertRaises(AssertionError):
+            self.environment['engine']('Uninstall')
+        self.assertNotIn('completion_seconds', self.report['operations'][-1])
+
+    def test_direct_missing_report_is_not_success(self):
+        with self.assertRaises(FileNotFoundError):
+            self.environment['engine']('Uninstall')
+        self.assertNotIn('completion_seconds', self.report['operations'][-1])
+
+    def test_direct_nonzero_exit_is_refused(self):
+        self.result.write_text('{"status":"passed"}')
+        self.environment['subprocess'].run=lambda *a, **kw: SimpleNamespace(returncode=1,stdout=b'',stderr=b'failed')
+        with self.assertRaises(AssertionError):
+            self.environment['engine']('Uninstall')
+        self.assertNotIn('completion_seconds', self.report['operations'][-1])
+
+    def test_other_direct_actions_keep_their_existing_deadline(self):
+        calls=[]
+        def run(command, *, timeout, capture_output):
+            calls.append(timeout)
+            self.result.write_text('{"status":"passed"}')
+            return SimpleNamespace(returncode=0)
+        self.environment['subprocess'].run=run
+        self.environment['engine']('Diagnostics')
+        self.assertEqual(calls, [120])
 
     def test_failure_preserves_fixture_for_relocated_child(self):
         directory = None

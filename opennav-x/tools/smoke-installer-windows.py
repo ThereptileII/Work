@@ -60,9 +60,15 @@ def engine(action,expected=0,shortcut_modes=''):
     out=operation_report(action)
     command=[str(PS),'-NoProfile','-NonInteractive','-ExecutionPolicy','Bypass','-File',str(script),'-Action',action,'-Report',str(out)]
     if shortcut_modes:command+=['-ShortcutModes',shortcut_modes]
-    r=subprocess.run(command,timeout=120,capture_output=True)
+    started=time.monotonic()
+    # Both direct and relocated uninstall scan every retained generation and
+    # verify owned files before removal. Keep their completion bounds aligned.
+    r=subprocess.run(command,timeout=600 if action=='Uninstall' else 120,capture_output=True)
     assert r.returncode==expected,(action,r.returncode,r.stdout.decode(errors='replace'),r.stderr.decode(errors='replace'))
-    return json.loads(out.read_text(encoding='utf-8-sig'))
+    result=json.loads(out.read_text(encoding='utf-8-sig'))
+    if action=='Uninstall' and expected==0:assert result['status']=='passed',result
+    report['operations'][-1]['completion_seconds']=round(time.monotonic()-started,3)
+    return result
 def maintenance(action):
     maintain=generation()/'Maintain.exe';out=operation_report('Maintain-'+action)
     command=subprocess.list2cmdline([str(maintain)])+' /S /ACTION='+action+' /REPORT="'+str(out)+'"'

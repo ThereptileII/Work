@@ -88,7 +88,11 @@ harness now waits for actual relocated cleanup and preserves failed fixtures.
 Six timing/lifetime tests pass locally and both contract jobs pass natively.
 The verified earlier failure is documented in the
 [maintenance completion review](installer/beta2-maintenance-cancel-and-dpi-readiness.md).
-Both complete platform gates and replacement boat deployment remain pending.
+The native installer reached 45 checks, but its final direct-engine uninstall
+hit a separate 120-second harness limit. Its prior relocated uninstall completed
+in 150.406 seconds. The final direct wait is being aligned with the same bounded
+600-second deadline; twelve timing/lifetime cases pass locally. This candidate
+is not accepted. Both complete platform gates and replacement deployment remain pending.
 
 `7827acb7c8b0d708285bd26a4c48d545dd64d139` is running the complete gates in
 [CI 36304661282](https://github.com/ThereptileII/Work/actions/runs/36304661282).
