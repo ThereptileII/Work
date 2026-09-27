@@ -180,11 +180,17 @@ function Assert-ReadOnlyAudit($Config,$Installed,[string]$Workspace) {
   # BOTH dispatch and the actual interactive launch boundary.
   & (Join-Path $PSScriptRoot 'verify-commissioning-launch.ps1') -Workspace $Workspace -Audit $audit -Installed $Installed
 }
+function Assert-StockAuditIdentity($Installation,[string]$ExecutableHash,$Audit) {
+  # Separate identity, never an invented Installed/ownership record.
+  if ($null -ne $Installation -or $ExecutableHash -cne '7c6547562cca7954671eaab72833ca9d788710fd9808b6a699b6dc823852ae0c' -or
+      $Audit.launchKind -cne 'StockLegacy' -or $Audit.executableSha256 -cne $ExecutableHash -or
+      $Audit.upstreamCommit -cne '37fd0cddb7334fe489e9f18aa163977a9c5c84f7') { throw 'Exact uninstalled official OpenCPN stock identity required.' }
+}
 function Invoke-InteractiveJob([string]$Workspace,$Job,[int]$TimeoutSeconds=90) {
   $directory=New-RunDirectory $Workspace $Job.action.ToLowerInvariant()
   $request=Join-Path $directory 'request.json';$result=Join-Path $directory 'result.json'
   $Job | Add-Member -NotePropertyName resultPath -NotePropertyValue $result
-  if ($Job.action -cin @('Launch','ReviewWindow','RequestGuardedMode','ReviewRestartChild')) { $Job | Add-Member -NotePropertyName workspace -NotePropertyValue (Assert-LocalPath $Workspace) }
+  if ($Job.action -cin @('Launch','ReviewWindow','LaunchStock','ReviewStock','RequestGuardedMode','ReviewRestartChild')) { $Job | Add-Member -NotePropertyName workspace -NotePropertyValue (Assert-LocalPath $Workspace) }
   Write-Record $request $Job
   $script=Assert-LocalPath (Join-Path $PSScriptRoot 'InteractiveJob.ps1')
   $sid=[Security.Principal.WindowsIdentity]::GetCurrent().User.Value

@@ -1,6 +1,6 @@
 # Isolated verification fixtures; never reads installed software or vessel data.
 [CmdletBinding()]
-param([switch]$PortableContracts,[switch]$IsolatedLocal)
+param([switch]$PortableContracts,[switch]$IsolatedLocal,[switch]$StockFixture)
 Set-StrictMode -Version Latest
 $ErrorActionPreference='Stop'
 $native=[Environment]::OSVersion.Platform -eq 'Win32NT'
@@ -56,6 +56,22 @@ try {
   [IO.File]::WriteAllText($exe,'not an executable; never launched')
   $installed=[pscustomobject]@{executable=$exe;ownership=[pscustomobject]@{commit=('7'*40)}}
   $fixtureContext=[pscustomobject]@{workspace=$workspace;profile=$profile;pluginRoots=@($managed,$stock,$generation);installation=[pscustomobject]@{executable=$exe;commit=$installed.ownership.commit};launchEnvironment=[pscustomobject]@{workingDirectory=[IO.Path]::GetDirectoryName($exe);path=$search}}
+  if ($StockFixture) {
+    $exe=Join-Path $testRoot 'stock/opencpn.exe'
+    [IO.File]::WriteAllText($exe,'inert stock executable identity fixture; never launched')
+    $actualFixtureHash=Get-Digest $exe
+    $digestFunction=${function:Get-Digest}
+    # Only this inert fixture's known bytes stand in for the official PE oracle.
+    # Production retains its hard-coded allowlist. Mutation falls back to real SHA.
+    function Get-Digest([string]$Path) {
+      $hash=& $digestFunction $Path
+      if ($Path -ceq $exe -and $hash -ceq $actualFixtureHash) { return '7c6547562cca7954671eaab72833ca9d788710fd9808b6a699b6dc823852ae0c' }
+      return $hash
+    }
+    $fixtureContext.installation=$null;$fixtureContext.pluginRoots=@($managed,$stock)
+    $fixtureContext | Add-Member -NotePropertyName executable -NotePropertyValue $exe
+    $fixtureContext.launchEnvironment.workingDirectory=[IO.Path]::GetDirectoryName($exe)
+  }
   function Get-CommissioningContext([string]$Workspace) {
     if ($Workspace -cne $fixtureContext.workspace) { throw 'Fixture identity context escaped.' }
     return $fixtureContext
@@ -108,11 +124,23 @@ try {
   Write-Record $applied @{schema=1;owner=$script:CommissioningOwner;status='input-only-prepared';recordSha256=$recordSha;profileSha256=(Get-Digest $input);remainingPluginCount=1}
   $audit=[pscustomobject]@{profileIniSha256=(Get-Digest $ini);buildCommit=$installed.ownership.commit;reviewedUtc=[DateTime]::UtcNow.ToString('o');commissioning=[pscustomobject]@{record=$record;recordSha256=$recordSha;appliedSha256=(Get-Digest $applied)}}
   $arguments=@{Workspace=$workspace;Audit=$audit;Installed=$installed}
+  if ($StockFixture) {
+    $audit | Add-Member -NotePropertyName launchKind -NotePropertyValue 'StockLegacy'
+    $audit | Add-Member -NotePropertyName executableSha256 -NotePropertyValue '7c6547562cca7954671eaab72833ca9d788710fd9808b6a699b6dc823852ae0c'
+    $audit | Add-Member -NotePropertyName upstreamCommit -NotePropertyValue '37fd0cddb7334fe489e9f18aa163977a9c5c84f7'
+    $arguments.Remove('Installed');$arguments.Stock=$true
+    Reject { & $verify -Workspace $workspace -Audit $audit -Installed $installed } 'installed parameter set cannot accept stock-only context'
+    $fixtureContext.installation=[pscustomobject]@{executable=$installed.executable;commit=$installed.ownership.commit}
+    Reject { & $verify @arguments } 'stock parameter set cannot reuse installed context'
+    $fixtureContext.installation=$null
+    Change-And-Reject $exe 'official stock executable identity changed'
+    $checks.Add('Stock and installed identities are separate; cross-kind or changed executable refused')
+  }
   $verifiedEnvironment=& $verify @arguments
   if ($verifiedEnvironment.workingDirectory -cne $fixtureContext.launchEnvironment.workingDirectory -or $verifiedEnvironment.path -cne $search) { throw 'Returned environment is not the pinned child launch environment.' }
-  $checks.Add('Exact applied transaction with complete stock/managed/generation trees and evidence verifies without launch')
-  foreach ($path in @($helper,$stockHelper,$generationHelper)) { Change-And-Reject $path 'changed helper/runtime in an actual loader root' }
-  $checks.Add('Changed helpers and runtime dependencies in all three roots refuse launch despite unchanged plugin DLLs')
+  $checks.Add('Exact applied transaction with complete current loader-root trees and evidence verifies without launch')
+  foreach ($path in $(if($StockFixture){@($helper,$stockHelper)}else{@($helper,$stockHelper,$generationHelper)})) { Change-And-Reject $path 'changed helper/runtime in an actual loader root' }
+  $checks.Add('Changed helpers and runtime dependencies in all applicable roots refuse launch despite unchanged plugin DLLs')
   Change-And-Reject $safe 'changed retained plugin'
   $new=Join-Path $managed 'new-helper.exe'
   try { [IO.File]::WriteAllText($new,'new helper');Reject {& $verify @arguments} 'added non-plugin executable' } finally { Remove-Item -LiteralPath $new }
@@ -149,17 +177,21 @@ try {
   $audit.reviewedUtc=[DateTime]::UtcNow.AddHours(1).ToString('o')
   Reject {& $verify @arguments} 'future audit'
   $audit.reviewedUtc=[DateTime]::UtcNow.ToString('o')
-  $audit.buildCommit='0'*40
-  Reject {& $verify @arguments} 'different build'
-  $audit.buildCommit=$installed.ownership.commit
-  $checks.Add('Expired/future review and a different installed build refuse launch')
+  if ($StockFixture) {
+    $audit.upstreamCommit='0'*40;Reject {& $verify @arguments} 'different stock upstream provenance'
+    $audit.upstreamCommit='37fd0cddb7334fe489e9f18aa163977a9c5c84f7'
+  } else {
+    $audit.buildCommit='0'*40;Reject {& $verify @arguments} 'different build'
+    $audit.buildCommit=$installed.ownership.commit
+  }
+  $checks.Add('Expired/future review and different executable provenance refuse launch')
   $savedContext=$fixtureContext
-  try { $fixtureContext=$fixtureContext | ConvertTo-Json -Depth 8 | ConvertFrom-Json;$fixtureContext.pluginRoots=@($managed,$stock);Reject {& $verify @arguments} 'actual installed root omitted/changed' }
+  try { $fixtureContext=$fixtureContext | ConvertTo-Json -Depth 8 | ConvertFrom-Json;$fixtureContext.pluginRoots=@($managed);Reject {& $verify @arguments} 'actual installed root omitted/changed' }
   finally { $fixtureContext=$savedContext }
   $checks.Add('Changing the actual root/context set invalidates the prepared source review')
   $null=& $verify @arguments
   $checks.Add('All rejected changes leave the original fixture transaction verifiable')
-  [pscustomobject]@{status='passed';environment=$(if($native){'native-windows-disposable-filesystem'}else{'linux-powershell-portable-contracts'});count=$checks.Count;checks=@($checks);boatAccess=$false;applicationLaunched=$false;hardwareCommands=$false;productOrBoatAcceptance=$false} | ConvertTo-Json -Depth 6
+  [pscustomobject]@{status='passed';identity=$(if($StockFixture){'stock-only'}else{'installed'});environment=$(if($native){'native-windows-disposable-filesystem'}else{'linux-powershell-portable-contracts'});count=$checks.Count;checks=@($checks);boatAccess=$false;applicationLaunched=$false;hardwareCommands=$false;productOrBoatAcceptance=$false} | ConvertTo-Json -Depth 6
 } finally {
   $env:PATH=$savedPath;$script:CommissioningBaseline=$savedBaseline
   Remove-Item -LiteralPath $testRoot -Recurse -Force

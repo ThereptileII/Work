@@ -35,7 +35,8 @@ the plugin root is therefore insufficient. Inventory includes all files below:
 
 An install/update/generation change invalidates preparation. XNav, Legacy and
 Safe use the same integrated executable and need the same live profile audit.
-Starting the separate stock executable requires its own launch audit.
+Starting the separate stock executable requires its own launch audit and a new
+stock-only transaction after uninstall; see [stock coexistence review](stock-coexistence-review.md).
 
 Only explicitly listed, hash-pinned `*_pi.dll` files move. Their original bytes
 are first copied to a private recovery directory; same-volume rename then moves

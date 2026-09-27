@@ -3,14 +3,14 @@
 [CmdletBinding()]
 param([string]$Workspace='C:\XNav',[ValidateRange(5,60)][int]$ObserveSeconds=15)
 . (Join-Path $PSScriptRoot 'Common.ps1')
+. (Join-Path $PSScriptRoot 'StartupLog.ps1')
 $config=Get-Target $Workspace;$installed=Get-Installed
 $null=Assert-ReadOnlyAudit $config $installed $Workspace
 $directory=New-RunDirectory $Workspace 'smoke'
 $record=@{status='running';commit=$installed.ownership.commit;startedUtc=[DateTime]::UtcNow.ToString('o');actuatorCommandsAttempted=0;syntheticInputs=0;chartReview='pending native screenshot review';closedCleanly=$false}
 $running=$null
 $log=Assert-LocalPath (Join-Path $config.profileDirectory 'opencpn.log')
-$beforeMarkers=0
-if ([IO.File]::Exists($log)) { $beforeMarkers=([regex]::Matches([IO.File]::ReadAllText($log),'OnInitTimer\.\.\.Finalize Canvases')).Count }
+$beforeLog=Read-StartupLogBytes $log
 try {
   $running=Invoke-InteractiveJob $Workspace ([pscustomobject]@{action='Launch';executable=$installed.executable;executableSha256=(Get-Digest $installed.executable);mode='--xnav'})
   Start-Sleep -Seconds $ObserveSeconds
@@ -22,8 +22,7 @@ try {
   $record.capture=Invoke-InteractiveJob $Workspace ([pscustomobject]@{action='Capture';executable=$installed.executable;executableSha256=(Get-Digest $installed.executable);processId=$running.pid;imagePath=(Join-Path $directory 'navigation.png')})
   if (-not [IO.File]::Exists($log)) {throw 'Expected normal-profile log was not created.'}
   # Match known lifecycle messages only, never return raw navigation log lines.
-  $text=[IO.File]::ReadAllText($log)
-  $record.startupMarkerPresent=([regex]::Matches($text,'OnInitTimer\.\.\.Finalize Canvases')).Count -gt $beforeMarkers
+  $record.startupMarkerPresent=Test-StartupInitializedSince $beforeLog (Read-StartupLogBytes $log)
   if (-not $record.startupMarkerPresent) {throw 'Chart startup completion marker missing.'}
   $record.status='captured-review-required'
 } catch {$record.status='failed';$record.error=$_.Exception.Message}
