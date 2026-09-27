@@ -71,3 +71,6 @@ No hardware result is inferred from simulator tests or earlier acceptance.
   but cannot be blamed for the earlier Beta 1 report. Live reception remains
   open; no receiver has been enabled by the
   [source/package audit](../installer/boat-rtl-sdr-review-boundary.md).
+  The 07:20 UTC read-only Windows PnP check also found no usual RTL2832/RTL2838
+  or AIS/SDR-labelled device. This is a bounded inventory observation, not proof
+  that every possible receiver is absent; actual reception remains unverified.

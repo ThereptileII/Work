@@ -49,5 +49,12 @@ retain the stricter unobstructed frame requirement.
 Mode dispatch separately requires the actual menu bar to be unobscured by any
 window, including a legitimate owned pane. Unexpected modals, unrelated windows,
 unowned windows from the same process and obscured menu commands remain refused.
-Native marker-window cases cover these distinctions; replacement native visual
-tool qualification is required before use on the boat.
+Native marker-window cases cover these distinctions. Tooling
+`3552a3ce2c2d78b8c46ec2a94639cd62d060bee6` passes all nine jobs in
+[run 36301703492](https://github.com/ThereptileII/Work/actions/runs/36301703492).
+All nine artifacts are downloaded/hash/size/CRC verified against the API and
+upload logs. Its 14 actual native mode-window cases include an owned Legacy pane
+and successful single mode callback; menu occlusion, same-process unowned panes,
+and owned panes in XNav/Safe all refuse with zero callbacks.
+[Exact tooling evidence](../evidence/beta2-legacy-window-review-3552a3.json).
+This does not yet establish an actual boat application transition.

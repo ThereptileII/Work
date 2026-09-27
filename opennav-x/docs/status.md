@@ -10,9 +10,18 @@ executables from the installed product, refines shared visual components and
 navigation workflows, and adds repeatable boat deployment and maintenance tools.
 The accepted Beta 1 results below remain historical evidence, not Beta 2 gates.
 
-### Current candidate
+### Replacement validation in preparation
 
-`9f59209914f57ff97af7e184b201752b8f422f0a` is running the complete gates in
+The current application candidate below is **not accepted**: its full Windows
+installer matrix passed, but the DPI gate timed out on its first physical chart
+context gesture. The bounded harness repair verifies the foreground process and
+actual chart HWND geometry before sending one click; no retry, scale or layout
+assertion is removed. [Failure and replacement scope](installer/beta2-maintenance-cancel-and-dpi-readiness.md).
+The boat remains unchanged while a new exact-commit run is prepared.
+
+### Previous full candidate (Windows DPI failed)
+
+`9f59209914f57ff97af7e184b201752b8f422f0a` ran the native gates in
 [CI 36299835767](https://github.com/ThereptileII/Work/actions/runs/36299835767).
 All 694 mapped blobs/modes match local `c72061459b8c532c0f6aaad5846c61a52231ea2f`.
 It includes the exact upstream manager type, Dashboard presentation, maintenance
@@ -24,8 +33,12 @@ The native integrated application build and both **71/71** contract suites now
 pass. Eleven prerequisite artifacts have been independently downloaded and
 checked against their API/upload hashes, byte sizes and ZIP integrity. Linux
 completed its functional/UI checks and entered the three-hour elapsed-time trip
-at 06:45:57 UTC. The Windows fixture-free build and subsequent packaging gates
-are still running. None of these partial results qualifies a release.
+at 06:45:57 UTC. Windows passed both **102/102** integrated/fixture-free CTest
+runs, all **45** installer lifecycle checks, seven production recovery groups,
+eight actual user-flow groups and software/OpenGL chart/plugin checks. The DPI
+failure withheld the development and release packages; native endurance did not
+start. Downloaded full native evidence matches API/upload SHA-256, size and ZIP
+CRC. The earlier Linux trip continues as historical evidence, not acceptance.
 
 Before the next boat launch, source inspection found that the restart tooling
 rejected separately reviewed stock and bundled DLLs sharing a basename. A
@@ -35,10 +48,23 @@ candidate `506a70f5c49cf6d9335be31891817bf88ebc120e` is in
 [native run 36301213829](https://github.com/ThereptileII/Work/actions/runs/36301213829),
 matching all 696 mapped blobs/modes at local `b7c916d90bcb4c0c086516e838696a53e9acf194`.
 It does not change the application candidate or cancel its endurance gate.
-This new tooling has not been deployed; the boat source checkout is the already
-qualified-tool subset of `9f592`, with no application change.
+That tooling passed all nine native jobs and was checked out on the boat without
+an application change. The subsequent owned-Legacy-window refinement is also
+qualified and is the current source checkout, described below.
 
-The separately qualified boat tooling is `1439b5b2dac669090b5de4ef956eaffa0f42c542`,
+The current boat tooling is `3552a3ce2c2d78b8c46ec2a94639cd62d060bee6`,
+[run 36301703492](https://github.com/ThereptileII/Work/actions/runs/36301703492).
+All nine native jobs and downloaded/hash-verified artifacts pass. Fourteen
+actual mode-window cases include the preserved floating Legacy instruments;
+obscured menus, foreign/unowned windows and unexpected XNav/Safe overlays remain
+refused. [Scoped evidence](evidence/beta2-legacy-window-review-3552a3.json).
+The boat application is still the closed `8e780` development build. Its current
+904-file profile inventory is recorded privately for independent update checks.
+The 07:16 UTC cold preflight independently rechecked the stock/application,
+INI, navigation database and chart-list hashes: unchanged, no running OpenCPN
+or commissioning transaction, and SSH/Tailscale/RustDesk still running.
+
+The earlier cold restoration used qualified tooling `1439b5b2dac669090b5de4ef956eaffa0f42c542`,
 [run 36299584290](https://github.com/ThereptileII/Work/actions/runs/36299584290).
 All nine jobs and all downloaded/hash-verified artifacts pass, including 163
 native baseline-adoption cases and actual broker/Prepare/Arm checks.

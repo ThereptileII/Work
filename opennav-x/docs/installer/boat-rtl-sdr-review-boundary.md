@@ -48,8 +48,14 @@ Windows DLL search path, it is not a proven historical load failure.
 
 The preserved 21,380-byte recovered INI has neither a `PlugIns/rtlsdr_pi.dll`
 section nor `Settings/rtlsdr`. The saved configuration therefore does not
-establish an enabled receiver or its intended arguments. Current USB receiver,
-driver, antenna and reception state remain unobserved.
+establish an enabled receiver or its intended arguments.
+
+A read-only Windows PnP query at **2026-09-27 07:20 UTC** found no device matching
+the usual RTL2832/RTL2838 USB identities (VID `0BDA`, PID `2832`/`2838`) or
+RTL-SDR/RTL283/AIS/SDR/Bulk-In names. The raw inventory is private; no helper was
+launched and no driver/device setting changed. This does not exclude a receiver
+with another identity or a network AIS source, and cannot establish antenna or
+reception health. A live target cannot be fabricated to close that remaining gate.
 
 ## Helper output and shutdown boundaries
 
