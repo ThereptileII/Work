@@ -172,4 +172,5 @@ function Assert-CommissioningRestoreIni([string]$InputOnly,[string]$Current) {
   $before=Read-ProfileForAudit $InputOnly;$after=Read-ProfileForAudit $Current
   Assert-CommissioningProtectedValues $before $after
 }
+. (Join-Path $PSScriptRoot 'InstalledResourceReview.ps1')
 . (Join-Path $PSScriptRoot 'CommissioningBaseline.ps1')

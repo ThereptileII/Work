@@ -12,6 +12,27 @@ The accepted Beta 1 results below remain historical evidence, not Beta 2 gates.
 
 ### Current candidate
 
+`ee475f0b5dbef6ea9a5ff5778f3238665f47d944` was tested in
+[CI 36298899492](https://github.com/ThereptileII/Work/actions/runs/36298899492).
+All 692 mapped blobs/modes match local `bd6d6511da3a6a3d843b9ef1c20d4eb847d0307e`;
+unrelated repository files and the pinned OpenCPN revision are unchanged.
+It includes the Dashboard presentation refinement and the two scoped harness
+repairs below. Its separate branch preserves the preceding Linux elapsed-time
+run while testing this exact new product. No replacement boat deployment yet.
+
+The native product link failed on the new Dashboard bridge’s incorrectly declared
+layout-manager type. It is corrected to the actual pinned `OCPN_AUIManager`;
+[failed evidence and correction](design/reviews/beta2-plugin-workspace.md).
+No failed build was deployed.
+
+The first installed boat session has closed normally with a retained native
+handle and measured exit **0**. No chart helper remained. The navigation database
+is byte-identical. Four final INI changes have been inspected; a narrow
+[installed resource adoption](installer/beta2-installed-resource-adoption.md)
+check is being qualified before restoring the commissioning transaction.
+
+### Previous full candidate (Windows failed)
+
 `edd8da0a4bd386fbb2dbd249289b9f09eeae8dc3` is the replacement full candidate,
 matching all 680 mapped blobs/modes at local
 `3e0b17dcbb353793a5c135c18774a1e91a6a3b02`, in

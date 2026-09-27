@@ -140,6 +140,33 @@ try {
     [IO.File]::WriteAllText($badIni,$unrelatedVariation[$kind],$encoding)
     Refuse "Observed append cannot authorize unrelated change: $kind" {Assert-CommissioningMigrationReview $variationBefore $badIni (Review $variationBefore $badIni)}
   }
+  # A source-reviewed default is a separate installed proof, never a chart-path wildcard.
+  $resourceContext=[pscustomobject]@{application=(Join-Path $testRoot 'stock');executable=(Join-Path $testRoot 'stock/opencpn.exe');installation=[pscustomobject]@{generation='owned';commit=('b'*40);ownershipSha256=('c'*64);stateSha256=('d'*64)}}
+  $resourceParent=[pscustomobject]@{context=$resourceContext}
+  $resourceProof=[pscustomobject]@{owner='OpenNavX.InstalledResourceReview.1';generation='owned';commit=('b'*40);ownershipSha256=('c'*64);stateSha256=('d'*64);
+    stockPath=$resourceContext.executable;stockExecutableSha256='7c6547562cca7954671eaab72833ca9d788710fd9808b6a699b6dc823852ae0c';
+    markerSha256=(Get-CommissioningHash ($encoding.GetBytes($resourceContext.executable)));basemapDefault=(Join-Path $resourceContext.application 'basemap_shp').Replace('\','\\')}
+  $resourceBefore=Join-Path $testRoot 'resource-before.ini';$resourceAfter=Join-Path $testRoot 'resource-after.ini'
+  $resourceText=$encoding.GetString([IO.File]::ReadAllBytes($inputFile)).Replace('ChartDir=original',"ChartDir=original`r`nBaseShapefileDir=")
+  [IO.File]::WriteAllText($resourceBefore,$resourceText,$encoding)
+  [IO.File]::WriteAllText($resourceAfter,$resourceText.Replace("BaseShapefileDir=`r`n",("BaseShapefileDir="+$resourceProof.basemapDefault+"`r`n")),$encoding)
+  $resourceReview=Review $resourceBefore $resourceAfter
+  Pass 'Empty basemap fills only from hash-bound historical installed stock resource evidence and per-key review' {
+    $default=Assert-CommissioningResourceProof $resourceParent $resourceProof
+    $null=Assert-CommissioningMigrationReview $resourceBefore $resourceAfter $resourceReview ([datetime]::UtcNow) $default
+  }
+  Refuse 'Ordinary cold restoration still refuses unreviewed installed path migration' {Assert-CommissioningRestoreIni $resourceBefore $resourceAfter}
+  Refuse 'Migration review alone cannot grant a protected directory change' {Assert-CommissioningMigrationReview $resourceBefore $resourceAfter $resourceReview}
+  Refuse 'Proven resource default still needs an explicit per-key review' {$v=Clone $resourceReview;$v.changes=@();Assert-CommissioningMigrationReview $resourceBefore $resourceAfter $v ([datetime]::UtcNow) $resourceProof.basemapDefault}
+  foreach($field in @('owner','generation','commit','ownershipSha256','stateSha256','stockPath','stockExecutableSha256','markerSha256','basemapDefault')) {
+    Refuse "Changed resource evidence $field" {$v=Clone $resourceProof;$v.$field+='changed';Assert-CommissioningResourceProof $resourceParent $v}
+  }
+  Refuse 'Stock-only parent cannot inherit installed resource identity' {$v=Clone $resourceParent;$v.context.installation=$null;Assert-CommissioningResourceProof $v $resourceProof}
+  foreach($kind in @('custom','other-chart','connection','missing-key')) {
+    $value=switch($kind){'custom'{$resourceText.Replace("BaseShapefileDir=`r`n","BaseShapefileDir=custom`r`n")};'other-chart'{$resourceText.Replace('ChartDir=original','ChartDir=changed')};'connection'{$resourceText.Replace('COM8','COM9')};'missing-key'{$resourceText.Replace("BaseShapefileDir=`r`n",'')}}
+    [IO.File]::WriteAllText($badIni,$value,$encoding)
+    Refuse "Default proof cannot override $kind configuration" {Assert-CommissioningMigrationReview $badIni $resourceAfter (Review $badIni $resourceAfter) ([datetime]::UtcNow) $resourceProof.basemapDefault}
+  }
   $context=[pscustomobject]@{sid='S-1-5-21-1';profile=(Join-Path $testRoot 'profile')}
   $prepared=[pscustomobject]@{owner=$script:CommissioningOwner;status='prepared';context=$context;baselineSha256=(Get-Digest $baseline);inputSha256=(Get-Digest $inputFile)}
   Refuse 'Synthetic root cannot replace fixed public recovery baseline' {Get-PreparedCommissioningBaseline $prepared $parent $workspace}
@@ -177,12 +204,16 @@ try {
   Refuse 'Omitting adoption on retry cannot reset migrated state' {Assert-CommissioningRestoreTarget $parent $recordHash (Get-Digest $baseline) ''}
   Refuse 'Another proposal with same final bytes cannot take over restoration' {Assert-CommissioningRestoreTarget $parent $recordHash (Get-Digest $output) ('f'*64)}
   Refuse 'Another transaction cannot reuse restoration intent' {Assert-CommissioningRestoreTarget $parent ('f'*64) (Get-Digest $output) (Get-Digest $proposal)}
-  foreach($fileName in @('CommissioningBaseline.ps1','prepare-baseline-adoption.ps1','commission-read-only.ps1')){Pass "Parses $fileName" {$tokens=$null;$errors=$null;$null=[Management.Automation.Language.Parser]::ParseFile((Join-Path $PSScriptRoot $fileName),[ref]$tokens,[ref]$errors);if($errors.Count){throw ($errors|Out-String)}}}
+  foreach($fileName in @('CommissioningBaseline.ps1','InstalledResourceReview.ps1','prepare-baseline-adoption.ps1','commission-read-only.ps1')){Pass "Parses $fileName" {$tokens=$null;$errors=$null;$null=[Management.Automation.Language.Parser]::ParseFile((Join-Path $PSScriptRoot $fileName),[ref]$tokens,[ref]$errors);if($errors.Count){throw ($errors|Out-String)}}}
   $nativeResult=$null
   if($native) {
     $nativeArgs=@{AdoptionFixture=$true};if($IsolatedLocal){$nativeArgs.IsolatedLocal=$true}
     $nativeResult=(& (Join-Path $PSScriptRoot 'test-commissioning.ps1') @nativeArgs)|ConvertFrom-Json
     if($nativeResult.status -cne 'passed'){throw 'Native adoption transaction suite failed'}
+    $nativeArgs.ResourceAdoptionFixture=$true
+    $resourceNative=(& (Join-Path $PSScriptRoot 'test-commissioning.ps1') @nativeArgs)|ConvertFrom-Json
+    if($resourceNative.status -cne 'passed'){throw 'Native installed resource adoption transaction failed'}
+    $nativeResult=[pscustomobject]@{status='passed';count=($nativeResult.count+$resourceNative.count);stock=$nativeResult;installedResources=$resourceNative}
   }
   [pscustomobject]@{status='passed';count=($checks.Count+$(if($nativeResult){$nativeResult.count}else{0}));checks=$checks.ToArray();nativeTransactions=$nativeResult;environment=$(if($native){'native-disposable-filesystem'}else{'portable-filesystem-policy'});applicationLaunched=$false;boatAccess=$false;physicalOutput=$false;nativeTransactionAcceptance=($null -ne $nativeResult)}|ConvertTo-Json -Depth 8
 }finally{$script:CommissioningBaseline=$savedBaseline;Remove-Item -LiteralPath $testRoot -Recurse -Force}

@@ -1,10 +1,11 @@
 #include "integration/DashboardPresentation.h"
 #include "integration/DashboardPresentationApi.h"
 #include "integration/OpenCPNIntegration.h"
+#include "OCPN_AUIManager.h"
 #include <algorithm>
 #include <memory>
 
-extern wxAuiManager* g_pauimgr;
+extern OCPN_AUIManager* g_pauimgr;
 namespace {
 std::unique_ptr<opennav::integration::DashboardPresentation> presentation;
 bool closed = false;

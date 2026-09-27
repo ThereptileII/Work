@@ -33,7 +33,17 @@ Assert-CommissioningTrees $inventory.trees $prepared.quarantine -AllowMoved
 if((Get-Digest $MigrationReview) -cne $ExpectedReviewSha256){throw 'Exact independent per-key migration review required.'}
 $review=Read-Record $MigrationReview
 if($review.parentPreparedSha256 -cne $ExpectedRecordSha256 -or $review.inspectionSha256 -cne $ExpectedInspectionSha256){throw 'Migration review belongs to another transaction/inspection.'}
-$changes=@(Assert-CommissioningMigrationReview (Join-Path $parentDir 'input-only.ini') $inspected.savedIni $review)
+$resourceProof=if($inspected.PSObject.Properties['resourceProof']){$inspected.resourceProof}else{$null}
+$default=Assert-CommissioningResourceProof $prepared $resourceProof
+if ($resourceProof) {
+  # Verify the current owned stock locator again before freezing its historical
+  # proof in this immutable adoption lineage. Later updates may retire a generation.
+  $currentProof=Get-CommissioningResourceProof $prepared
+  if (($currentProof | ConvertTo-Json -Compress) -cne ($resourceProof | ConvertTo-Json -Compress)) {
+    throw 'Installed resource evidence changed since cold inspection.'
+  }
+}
+$changes=@(Assert-CommissioningMigrationReview (Join-Path $parentDir 'input-only.ini') $inspected.savedIni $review ([datetime]::UtcNow) $default)
 $bytes=Get-CommissioningOutputBytes ([IO.File]::ReadAllBytes($inspected.savedIni))
 $directory=New-PreparationDirectory $context 'baseline-adoption'
 Copy-PreparationFile $inspected.savedIni (Join-Path $directory 'post-session.ini') $inspected.currentIniSha256 (Get-Item -LiteralPath $inspected.savedIni).Length

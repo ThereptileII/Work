@@ -55,3 +55,11 @@ has not been added to navigation data.
 The inventory records implementation, not final visual acceptance. Native
 100/125/150% and boat-PC review records must identify clipping, palette and
 interaction results for the exact candidate revision.
+
+## Bundled Dashboard presentation boundary
+
+`integration/DashboardPresentation` registers actual bundled plugin windows with
+weak lifetime references. XNav's rail and Instruments stay the primary visual
+components; the Dashboard continues acquiring data with its desktop panes hidden.
+Legacy restores the saved layout. This is an integration presentation boundary,
+not a replacement plugin API or independent instrument data model.

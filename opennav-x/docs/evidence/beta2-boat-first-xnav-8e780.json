@@ -367,11 +367,27 @@
   "safety": {
     "actuatorCommandsIssued": false,
     "remoteAccessChanged": false,
-    "coldCommissioningRestoration": "Pending normal close and independent migration review"
+    "coldCommissioningRestoration": "Application closed; explicit installed-resource adoption native qualification pending"
   },
   "limits": [
     "Acquisition observed; sensor accuracy and physical calibration unverified",
     "No active route or battery/motor observations in this capture",
     "Full release endurance, installed mode lifecycle and iterative screen review pending"
-  ]
+  ],
+  "close": {
+    "utc": "2026-09-27T06:02:21.8838981Z",
+    "handleRetained": true,
+    "exitCodeKnown": true,
+    "exitCode": 0,
+    "chartHelperRemaining": false,
+    "navigationDatabaseSha256": "8eada8eb11d17fc91e687307f713a7bdb90a38ade31e7d6f272198fff360ebbc",
+    "navigationDatabaseUnchanged": true,
+    "independentIntegrityAndStorageAuditPassed": true,
+    "changedIniKeys": [
+      "AUI/AUIPerspective",
+      "Canvas/CanvasConfig1/canvasSizeY",
+      "Directories/BaseShapefileDir",
+      "Settings/ConfigVersionString"
+    ]
+  }
 }

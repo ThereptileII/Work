@@ -74,3 +74,13 @@ Linux integrated build, 110/110 integrated CTest cases, 27 object groups and the
 two chart cycles pass against the installed local build. Reviewed Linux chart
 and Legacy Dashboard images have detailed chart content and normal plugin SOG.
 Windows DLL linkage, native visibility and a second real-boat review remain gates.
+
+### Native link correction
+
+Candidate `ee475f0b5dbef6ea9a5ff5778f3238665f47d944`, run 36298899492,
+failed MSVC linking before UI execution. The new translation unit declared
+`g_pauimgr` as `wxAuiManager*`; the pinned global is `OCPN_AUIManager*`. MSVC
+encodes this distinction, which Linux's symbol linkage did not detect. The
+bridge now includes the actual upstream manager header and declares the exact
+type. This candidate was not deployed or accepted. The same narrow hook and
+behavior tests remain; replacement native linking and UI gates are required.
