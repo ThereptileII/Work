@@ -1,0 +1,106 @@
+{
+  "schema": "OpenNavX.Beta2.BoatStockWarningReview.1",
+  "scope": "Actual stock first-start notice only; chart and Beta product acceptance remain pending",
+  "toolCommit": "db7a2fca319d827d9490a085344ec718d0405dbd",
+  "nativeQualificationRun": 36289266044,
+  "stockExecutableSha256": "7c6547562cca7954671eaab72833ca9d788710fd9808b6a699b6dc823852ae0c",
+  "launchResultSha256": "70cd27661d31878f429525c495c26eb76d57a3a628cdafd9f6b2c6c749ffe661",
+  "focus": {
+    "utc": "2026-09-27T02:45:17.9211898Z",
+    "status": "passed",
+    "action": "One exact warning title-bar click; no acknowledgement",
+    "nativeHelperSha256": "e903471fca3fb5f96b03e98572c1549ab7a7fb9d2e641af4deea291167ddf330",
+    "scriptSha256": "e6ed3a162df750c95e48e57a6625de5b9e24b50da2b444a5726883fab3f5b0ba"
+  },
+  "inspection": {
+    "utc": "2026-09-27T02:45:37.6068522Z",
+    "status": "passed",
+    "locale": "sv",
+    "dpi": 144,
+    "warningPhysicalPixels": [
+      526,
+      657
+    ],
+    "reviewSha256": "b0358f2159abd7b3e29d0d6f214541071e0ca1f688167ff327a25b5b4446c2e4",
+    "imageSha256": "0ca4eb3ee262cc52eb0fd3245d26b60ad89f486d15587b8786d052083c40daad",
+    "downloadHashesVerified": true,
+    "fullPixelsReviewed": true,
+    "observation": "Complete upstream GPL/no-warranty/paper-chart/navigation caution; Acceptera and Avbryt visible. No licensing, purchasing or unrelated permission dialog."
+  },
+  "acknowledgementAttempt": {
+    "utc": "2026-09-27T02:46:24.3851364Z",
+    "status": "failed-before-input",
+    "cause": "PowerShell 5.1 could not convert JSON-deserialized window bounds to native Rect because serialized Width is read-only.",
+    "sourceBoundary": "StockWelcome.ps1 typed NoticeInfo conversion before capture and durable Agree intent",
+    "agreeIntentExists": false,
+    "acknowledgementSent": false,
+    "next": "Explicitly reconstruct and validate saved native metadata; qualify a separate-process JSON round trip against actual English and Swedish warnings before a fresh inspection."
+  },
+  "serializationFollowup": {
+    "toolCommit": "e7a30e4b53b4d889015660ad7285e567c830d137",
+    "nativeQualificationRun": 36290030929,
+    "englishFreshProcessChecks": 48,
+    "swedishFreshProcessChecks": 50,
+    "scriptSha256": "28a52e6c89c9d331aa55b2128f7067c365d1a55a390e26238df09f1a745387e2",
+    "boatFreshInspectionUtc": "2026-09-27T03:00:38.3040261Z",
+    "boatFreshInspectionSha256": "ade1de9a5564af466b57a0947b52d9ca2d6ded7132d3a60603a29aeb8ff69f1f",
+    "imageUnchangedAndReviewedAgain": true,
+    "conversionErrorResolved": true,
+    "acknowledgement": "Refused before image capture and intent because the foreground window changed between the separate interactive jobs.",
+    "expectedForegroundProcessId": 24640,
+    "observedForegroundProcessId": 12344,
+    "observedForegroundProcessIdentity": "Process had exited before the separate read-only identity query; no name inferred.",
+    "agreeIntentExists": false,
+    "acknowledgementSent": false,
+    "next": "Qualify ordinary guarded activation in the acknowledgement process; retain the original reviewed identity and pixel comparison. No automatic caption click."
+  },
+  "physicalCommandsSent": false,
+  "desktopOrRemoteAccessChanged": false,
+  "chartCaptureAccepted": false,
+  "ordinaryFocusFollowup": {
+    "toolCommit": "4d7c6e9bfcb94c19896a670973c95960e42b7b31",
+    "nativeQualificationRun": 36290450010,
+    "englishChecks": 49,
+    "swedishChecks": 51,
+    "scriptSha256": "deceb65a5d74844252ab72834b942156424002fc3179daa735d19fdcaec506b7",
+    "boatFreshInspectionUtc": "2026-09-27T03:14:53.6684237Z",
+    "boatFreshInspectionSha256": "b90c7d7b40708ae5874a17c587a703fbc35c5f5f813ade4edad57ed30cc82760",
+    "reviewedImageSha256": "0ca4eb3ee262cc52eb0fd3245d26b60ad89f486d15587b8786d052083c40daad",
+    "beforeAgreeImageSha256": "9e21cad1526dd176ae0715cb5cd4dbbe040dcf77ff9f8c38174fa6ae0ccf28a7",
+    "downloadHashesVerified": true,
+    "savedIdentityAndForegroundPassed": true,
+    "pixelMismatchPhysicalBounds": [
+      11,
+      2,
+      504,
+      43
+    ],
+    "pixelMismatchScope": "Windows title bar only; complete warning body and buttons have identical RGB pixels. Asynchronous focus painting is inferred, not a changed warning body.",
+    "agreeIntentExists": false,
+    "acknowledgementSent": false,
+    "next": "Qualify bounded capture settling with full reviewed-image equality and unchanged identity before any acknowledgement intent."
+  },
+  "settlingFollowup": {
+    "toolCommit": "4fa62ef5252bcef37c4e77abb5522887769f53cf",
+    "nativeQualificationRun": 36291222900,
+    "englishChecks": 50,
+    "swedishChecks": 52,
+    "scriptSha256": "b3b97a5e94078c8f2cc54d5725a8470d027794c5be3c640756cec59330d6ca75",
+    "inspectionSha256": "78eef71fafdb3d485cdb315ec4fc9854995374e3519dfcf7b27c62ca3636cb38",
+    "acknowledgementUtc": "2026-09-27T03:25:48.5433580Z",
+    "status": "passed",
+    "acknowledgementSent": true,
+    "modalDismissalConfirmed": true,
+    "beforeImageSha256": "0ca4eb3ee262cc52eb0fd3245d26b60ad89f486d15587b8786d052083c40daad",
+    "afterImageSha256": "f2f7d61b7fd293db7b2758ede4ac5b00807073e3d307ef7b18bff220fcf81d70",
+    "downloadHashesVerified": true,
+    "afterPixelsReviewed": true,
+    "afterPhysicalWindow": [
+      1920,
+      1008
+    ],
+    "dpi": 144,
+    "chartAccepted": false,
+    "observation": "Startup completed. First view shows water at100m scale, unavailable SOG/COG and an overlapping Windows Update notification. No restart/update action taken; this image is not accepted chart evidence."
+  }
+}

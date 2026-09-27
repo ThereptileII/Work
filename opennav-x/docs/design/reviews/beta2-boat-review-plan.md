@@ -1,8 +1,8 @@
 # Beta 2 boat display review plan
 
 Planning record, not boat acceptance. Product candidate:
-`60cd054712c6a930147247970121a959d48e03bf`,
-[CI 36284246369](https://github.com/ThereptileII/Work/actions/runs/36284246369).
+`8e780edc34f68abd693a5d5f6aecdb3ba05a75c4`,
+[CI 36287991989](https://github.com/ThereptileII/Work/actions/runs/36287991989).
 Record the actual installed commit, executable hash, generation and tool hashes
 in every private review; this candidate's qualification is still pending.
 
@@ -25,7 +25,7 @@ $review = @{
   Workspace = $BoatWorkspace
   LaunchResult = $AuditedLaunchResult
   ExpectedLaunchSha256 = $AuditedLaunchSha256
-  ExpectedCommit = '60cd054712c6a930147247970121a959d48e03bf'
+  ExpectedCommit = '8e780edc34f68abd693a5d5f6aecdb3ba05a75c4'
 }
 & (Join-Path $ReviewedScriptDirectory 'review-window.ps1') @review -Action Capture
 & (Join-Path $ReviewedScriptDirectory 'review-window.ps1') @review -Action Navigation
@@ -65,7 +65,7 @@ this fixed helper; a different screen is not a substitute.
 | 9 | Autopilot | `PilotView`; `Capture` | Available **display only**. Control remains OFF; heading, rudder and connectivity may be unavailable. Inspect target sizes and disabled modes. Do not press STBY/STANDBY/AUTO/course/TRACK/WIND, enable control, discover identity or change configuration. Unexpected enabled control fails this review. |
 | 10 | Anchor | `Menu → Anchor`; `Capture` | Available page; actual watch is conditional on existing state. Inspect distance/radius/history/depth/wind as present. Do not set/clear a watch. An inactive page cannot close B1-05/06/07 watch-label/icon/removal checks. |
 | 11 | Alerts | `Menu → Alerts`; `Capture` | Available. Inspect actual conditions, severity and persistent top alert while opening other pages; all-clear is recorded as such. Do not manufacture sensor loss or acknowledge/clear an alarm. Critical-state layout and acknowledgement remain untested if not naturally present. Use Menu: the header is labelled `Alerts N`, which the fixed `Alerts` action intentionally does not target. |
-| 12 | Settings | `Menu → Settings`; `Capture` | Available. VESSEL/NAVIGATION/SENSORS/AUTOPILOT/RADAR/DISPLAY/SYSTEM hierarchy readable and unclipped. Only SENSORS has a dedicated next-step action in this helper; other categories/configuration edits are not covered. |
+| 12 | Settings | `Menu → Settings`; `Capture` | Available. VESSEL/NAVIGATION/SENSORS/AUTOPILOT/RADAR/DISPLAY/SYSTEM hierarchy readable and unclipped. SENSORS and DISPLAY have dedicated next-step actions; other categories/configuration edits are not covered. |
 | 13 | Data Sources | `Menu → Settings → Sources`; `Capture`; `PageDown` where available | Available. Friendly source health for GPS, heading, depth, wind, motor/battery/tanks and AIS; absent data never looks connected or zero. Individual source-row selection/connection editing is not supported. Use Diagnostics to inspect available ages/provenance. |
 | 14 | Diagnostics / System | `System → Diagnostics`; `Capture`; `PageDown` where available; `System → Capture` | Available. Correct Beta 2/version/commit, INSTALLED PRODUCT, no Demo/replay, actual OS/DPI, source validity/ages, route and energy reasons. System must not overlap or hide the alert/status region. Record missing fields rather than inferring them from package metadata. |
 | 15 | Legacy transition | **No `review-window.ps1` action** | Gap for an in-app transition. `run-mode.ps1 -Mode Legacy` plus `capture-ui.ps1 -ProcessId <returned PID>` can review a separately audited cold Legacy launch, but does not prove XNav → Legacy → XNav. Guarded restart needs the qualified one-use broker, reviewed plugin shutdown and exact new-child evidence; see below. |
@@ -76,17 +76,22 @@ this fixed helper; a different screen is not a substitute.
 1. Capture the untouched startup window and actual DPI/bounds. Try
    `Resize1280x800` only when the **monitor work area** accommodates it. A physical
    1280×800 panel with a visible taskbar can have less than 800 usable pixels;
-   the helper correctly refuses. It has no fullscreen operation. Preserve the
-   display/taskbar/remote-access configuration, record actual dimensions and
-   retain exact-size/fullscreen acceptance as outstanding when necessary.
+   the helper correctly refuses. The separately qualified `Menu → Settings →
+   Display → ToggleFullscreen` path changes only the application window.
+   Capture each result and return through the same visible control. Preserve
+   display/taskbar/remote-access configuration and record actual dimensions;
+   fullscreen on a larger monitor is not physical 1280×800-panel acceptance.
 2. Review the three navigation palettes, then pages 4–14 in Day and Night. Run
    `CyclePalette` on Navigation only: Display settings can contain additional
    Day/Dusk/Night controls and make the match ambiguous. Return using
    `Navigation`, or `Escape` on a normal page when focus is not editing text.
 3. On Navigation, `ZoomIn`, `ZoomOut`, `Capture` can check rendering at different
    scales. Use `Center` only with verified current position and inspect whether
-   the existing ownship/follow behavior is clear. No fixed pan, chart-selection,
-   orientation or fullscreen action exists here; these tests remain outstanding.
+   the existing ownship/follow behavior is clear. `ToggleOrientation` uses the
+   current North/Course control only; capture its actual label/chart result.
+   Pan and chart-selection gestures still require their own bounded review.
+   [Native display-tool qualification](../../installer/display-window-review.md)
+   is separate from actual application and boat acceptance.
 4. With a naturally occurring alert, repeat Navigation/System/Instruments and
    verify four rail cards and critical status stay visible. Do not unplug or
    reconfigure equipment to force a scenario. Use real source timestamps/ages
@@ -107,7 +112,8 @@ The [native broker qualification](../../installer/commissioning-restart-qualific
 proves marker-process/tooling boundaries, not this product's installed mode
 buttons or real plugin shutdown. Ordinary `review-window.ps1` requires an
 audited **XNav** Launch result and explicitly refuses mode restart. The newer
-RequestMode/ReviewChild tooling is not assumed qualified by this plan. Do not
+RequestMode/ReviewChild tooling has separate native marker-window qualification;
+this does not establish installed-app or boat execution. Do not
 substitute an old parent Launch result for a restarted child. Before transition
 review, require exact qualified tools plus current Arm/readiness/normal parent
 exit/full cold audit/consumed permit/child PID-and-creation-time evidence. Treat

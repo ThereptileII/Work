@@ -67,6 +67,7 @@ ProductPanel::ProductPanel(wxWindow *parent, ProductActions actions)
         t.first->SetLabel(t.second);
         t.first->Wrap(std::max(200, width - FromDIP(64)));
       }
+      RefreshLiveText();
       for (auto &g : action_grids_)
         g.sizer->SetCols(std::max(1, std::min(g.columns, width / FromDIP(g.minimum_width + 12))));
       Layout();
@@ -153,13 +154,36 @@ void ProductPanel::Text(const wxString &text, int size) {
 }
 void ProductPanel::LiveText(
     std::function<wxString(const ProductState &)> text) {
-  auto *label = new wxStaticText(this, wxID_ANY, text(state_));
+  const auto raw = text(state_);
+  const int width = std::max(200, GetClientSize().x - FromDIP(64));
+  auto *label = new wxStaticText(this, wxID_ANY, raw);
   EnableScrollGesture(*label);
   label->SetFont(UiFont(*this, 14));
-  label->Wrap(std::max(200, GetClientSize().x - FromDIP(64)));
+  label->Wrap(width);
   label->SetForegroundColour(Colour(Theme(mode_).secondary));
   body_->Add(label, 0, wxEXPAND | wxLEFT | wxRIGHT | wxBOTTOM, FromDIP(16));
-  text_.push_back({label, std::move(text)});
+  text_.push_back({label, std::move(text), raw, width, label->GetFont(), label->GetDPI()});
+}
+bool ProductPanel::RefreshLiveText() {
+  const int width = std::max(200, GetClientSize().x - FromDIP(64));
+  bool changed = false;
+  for (auto &entry : text_) {
+    const auto raw = entry.value(state_);
+    const auto font = entry.label->GetFont();
+    const auto dpi = entry.label->GetDPI();
+    // wxStaticText::Wrap inserts newlines into GetLabel(). Compare the source
+    // value, never the wrapped output, and reflow on width changes as well.
+    if (raw == entry.raw && width == entry.wrap_width &&
+        font == entry.font && dpi == entry.dpi) continue;
+    entry.raw = raw;
+    entry.wrap_width = width;
+    entry.font = font;
+    entry.dpi = dpi;
+    entry.label->SetLabel(raw);
+    entry.label->Wrap(width);
+    changed = true;
+  }
+  return changed;
 }
 XNavButton *ProductPanel::StatusAction(const wxString &title,
     std::function<wxString(const ProductState &)> status, std::function<void()> action) {
@@ -429,16 +453,7 @@ void ProductPanel::Update(const ProductState &state, LightMode mode) {
          state.pilot.feedback.mode == adapters::PilotMode::Auto);
     button.first->Enable(supported && command_ready && !state.vessel.replayed);
   }
-  bool changed = false;
-  for (auto &t : text_) {
-    auto value = t.second(state);
-    if (t.first->GetLabel() != value) {
-      t.first->SetLabel(value);
-      t.first->Wrap(std::max(200, GetClientSize().x - FromDIP(64)));
-      changed = true;
-    }
-  }
-  if (changed) {
+  if (RefreshLiveText()) {
     Layout();
     FitInside();
   }

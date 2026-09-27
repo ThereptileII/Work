@@ -1,0 +1,39 @@
+{
+  "schema": 1,
+  "status": "observed",
+  "reason": "CURRENT_LAUNCH_BOUND",
+  "provenance": "EXACT_APPENDED_PREFIX",
+  "startupFinalized": false,
+  "openGL": "CANVAS_CONTEXT_INITIALIZED_DURING_LAUNCH",
+  "capability": "PROBE_CAPABLE",
+  "contexts": [
+    {
+      "renderer": "Intel(R) UHD Graphics",
+      "version": "4.6.0 - Build 32.0.101.7088",
+      "glslVersion": "4.60 - Build 32.0.101.7088",
+      "lateSetupObserved": true
+    }
+  ],
+  "hardwareAccelerationVerified": false,
+  "currentRenderingBackendVerified": false,
+  "chartRenderingVerified": false,
+  "rawLogIncluded": false,
+  "unrelatedPathsIncluded": false,
+  "baselineLogSha256": "5fbff89549a797ba1e15a3c12cea0b95b484dc7e6b3d44af855ea85b92a54f78",
+  "baselineBytes": 582994,
+  "currentLogSha256": "bcc75fa2a219e38df0d59b7f0ece8df929367f01b811f272f58cd45809af9b7c",
+  "currentBytes": 589466,
+  "processStartedUtc": "2026-09-27T01:58:55.2939445Z",
+  "observedUtc": "2026-09-27T03:07:24.4051519Z",
+  "timeZoneId": "W. Europe Standard Time",
+  "startupUtc": "2026-09-27T01:59:10.4510000Z",
+  "startupLocal": "2026-09-27T03:59:10.451",
+  "processId": 24640,
+  "executableSha256": "7c6547562cca7954671eaab72833ca9d788710fd9808b6a699b6dc823852ae0c",
+  "launchResultSha256": "70cd27661d31878f429525c495c26eb76d57a3a628cdafd9f6b2c6c749ffe661",
+  "launchRequestSha256": "2e94c50ef36a27a25284def6104b245a87db47a58767ad6666a9bd7c10703e78",
+  "launchRequestHashExplicitlyPinned": true,
+  "toolCommit": "4d7c6e9bfcb94c19896a670973c95960e42b7b31",
+  "nativeQualificationRun": 36290450010,
+  "scope": "Stock launch log observation while first-start warning remains open; neither chart nor Beta2 product acceptance"
+}

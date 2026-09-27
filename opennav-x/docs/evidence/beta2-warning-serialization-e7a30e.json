@@ -1,0 +1,136 @@
+{
+  "schema": 1,
+  "purpose": "Native warning JSON reconstruction qualification; development tooling only",
+  "publishedCommit": "e7a30e4b53b4d889015660ad7285e567c830d137",
+  "equivalentLocalCommit": "913e80204d78d5c732c4d9babb2a2d8523778110",
+  "tree": "fd01a54f708a529696b2a5a81228e2bd05fbf228",
+  "verifiedMappedBlobs": 607,
+  "runUrl": "https://github.com/ThereptileII/Work/actions/runs/36290030929",
+  "jobsPassed": 9,
+  "jobsTotal": 9,
+  "artifacts": [
+    {
+      "id": 10922106198,
+      "name": "development-stock-welcome-en_US-e7a30e4b53b4d889015660ad7285e567c830d137",
+      "sha256": "0f4aa01d49b873f789d7afcdfecb368b63df093237ef59f4a9cf2c45e6197492",
+      "size": 98420,
+      "apiUploadAndDownloadMatched": true,
+      "zipCrcPassed": true
+    },
+    {
+      "id": 10921973405,
+      "name": "development-installer-shortcuts-x64-e7a30e4b53b4d889015660ad7285e567c830d137",
+      "sha256": "4de0d5387c7a7ef082296247435521d0cedc2cbae683a6cbbfea6a9ed730c9cb",
+      "size": 941,
+      "apiUploadAndDownloadMatched": true,
+      "zipCrcPassed": true
+    },
+    {
+      "id": 10921744668,
+      "name": "development-commissioning-broker-e7a30e4b53b4d889015660ad7285e567c830d137",
+      "sha256": "c33de7aba861e61a7fe42f2b8c142055b3dd8ec1da838def6172a605cf8267c3",
+      "size": 15807,
+      "apiUploadAndDownloadMatched": true,
+      "zipCrcPassed": true
+    },
+    {
+      "id": 10921744522,
+      "name": "development-commissioning-restart-e7a30e4b53b4d889015660ad7285e567c830d137",
+      "sha256": "4c86d7cda876982107c62e542408618d8fa571c26196a3aca1734e7b5680cd73",
+      "size": 6169,
+      "apiUploadAndDownloadMatched": true,
+      "zipCrcPassed": true
+    },
+    {
+      "id": 10921692942,
+      "name": "development-installer-shortcuts-x86-e7a30e4b53b4d889015660ad7285e567c830d137",
+      "sha256": "0eff4169565db844ab4e6d383d5a310db7974084aa66dde40eb5f67daf14c793",
+      "size": 941,
+      "apiUploadAndDownloadMatched": true,
+      "zipCrcPassed": true
+    },
+    {
+      "id": 10921654463,
+      "name": "development-desktop-diagnostics-e7a30e4b53b4d889015660ad7285e567c830d137",
+      "sha256": "40249cf53188f8c16d16e17017a92eb4a4812756e48138cac292765821d9ceea",
+      "size": 3068,
+      "apiUploadAndDownloadMatched": true,
+      "zipCrcPassed": true
+    },
+    {
+      "id": 10921644458,
+      "name": "development-restart-window-e7a30e4b53b4d889015660ad7285e567c830d137",
+      "sha256": "95a95324fa9b6b285234550bfaaa64aa6532b34ec5f2a824cb33d179fd7853fd",
+      "size": 2976,
+      "apiUploadAndDownloadMatched": true,
+      "zipCrcPassed": true
+    },
+    {
+      "id": 10921103555,
+      "name": "development-boat-tooling-e7a30e4b53b4d889015660ad7285e567c830d137",
+      "sha256": "2b64914f1c1035d552c464465c6ce287218299ebe408839f0010519dc46a689b",
+      "size": 20156,
+      "apiUploadAndDownloadMatched": true,
+      "zipCrcPassed": true
+    },
+    {
+      "id": 10921098533,
+      "name": "development-stock-welcome-sv-e7a30e4b53b4d889015660ad7285e567c830d137",
+      "sha256": "056d284376cc6aa268051346f3eee138f59bac8b127da13715877e5b8120f8bc",
+      "size": 103181,
+      "apiUploadAndDownloadMatched": true,
+      "zipCrcPassed": true
+    }
+  ],
+  "checks": {
+    "maintenanceTotal": 1261,
+    "maintenanceSuites": {
+      "maintenance-baseline-adoption": 73,
+      "maintenance-commissioning-launch": 11,
+      "maintenance-broker-fixture-contracts": 15,
+      "maintenance-boat-tools": 27,
+      "maintenance-commissioning": 21,
+      "maintenance-installed-welcome": 91,
+      "maintenance-official-upgrade-policy": 86,
+      "maintenance-preparation": 34,
+      "maintenance-restart-aui-persistence": 77,
+      "maintenance-restart-window-review": 132,
+      "maintenance-restart-commissioning": 278,
+      "maintenance-review-window": 159,
+      "maintenance-startup-log": 16,
+      "maintenance-stock-review": 83,
+      "maintenance-source-checkout": 16,
+      "maintenance-stock-welcome": 142
+    },
+    "navigationCopyPython": 11,
+    "warningPolicyAndInterop": 142,
+    "officialEnglishFreshPowerShell51": 48,
+    "officialSwedishFreshPowerShell51": 50,
+    "nativeComShortcutX86": 72,
+    "nativeComShortcutX64": 72,
+    "restartCodec": 886,
+    "restartTransport": 359,
+    "actualBroker": 51,
+    "actualPrepareArmCollect": 47,
+    "nativeModeWindow": 9,
+    "nativeDisplayWindow": 15
+  },
+  "windowsFileSha256": {
+    "StockWelcome.ps1": "28a52e6c89c9d331aa55b2128f7067c365d1a55a390e26238df09f1a745387e2",
+    "StockWelcomeNative.cs": "e903471fca3fb5f96b03e98572c1549ab7a7fb9d2e641af4deea291167ddf330"
+  },
+  "actualApplicationTest": {
+    "officialExecutableSha256": "7c6547562cca7954671eaab72833ca9d788710fd9808b6a699b6dc823852ae0c",
+    "profile": "new isolated portable, empty connections, all bundled plugins disabled",
+    "serializedCSharpReadOnlyDimensions": true,
+    "freshNativePowerShell51Agreement": true,
+    "normalClose": true,
+    "localePreserved": true
+  },
+  "limitations": [
+    "No boat, physical hardware, installed Beta2 UI or product acceptance is inferred.",
+    "Earlier db7 native fixtures used a live C# object; this run adds the saved-JSON and fresh PowerShell 5.1 boundary.",
+    "A later real boat acknowledgement reached conversion but refused before capture/intent because another window had foreground. This run did not deliberately give the fresh acknowledgement task its own foreground window; the subsequent ordinary-focus candidate adds that scenario.",
+    "No marine output or route/actuator command was exercised."
+  ]
+}

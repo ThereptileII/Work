@@ -17,6 +17,7 @@
 #include "ocpn_frame.h"
 #include "undo.h"
 #include "ui/Controls.h"
+#include "ui/ProductPanel.h"
 #include <algorithm>
 #include <cmath>
 #include <cstring>
@@ -161,6 +162,93 @@ void CheckPrimaryHints() {
             legacy->GetToolTipText() == "Unchanged native help",
         "Primary hint palette changes never alter Legacy tooltips");
   Record("Actual wx primary hints follow Day/Dusk/Night; input updates retain accessibility and Legacy hints");
+}
+void CheckLiveTextLayout() {
+  // Count actual wx sizer executions, without adding a production test API or
+  // replacing the real ProductPanel update, wrapping or resize paths.
+  class LayoutCounter final : public wxBoxSizer {
+  public:
+    LayoutCounter() : wxBoxSizer(wxVERTICAL) {}
+    unsigned layouts = 0;
+    void RepositionChildren(const wxSize &minimum) override {
+      ++layouts;
+      wxBoxSizer::RepositionChildren(minimum);
+    }
+  };
+  wxFrame frame(nullptr, wxID_ANY, "Isolated live text layout checks");
+  auto *panel = new ui::ProductPanel(&frame, {});
+  panel->SetSize(panel->FromDIP(wxSize(420, 700)));
+  ui::ProductState state;
+  state.now = Clock::now();
+  state.advice.reason = "LIVE TEXT CHECK / This unchanged advisory has enough words to wrap onto several lines at a narrow panel width. Its measured source remains unavailable until a fresh observation arrives.";
+  panel->Update(state, ui::LightMode::Day);
+  panel->ShowPage(ui::ProductPage::Advice, ui::LightMode::Day);
+  wxStaticText *label = nullptr;
+  for (auto *child : panel->GetChildren())
+    if (auto *text = dynamic_cast<wxStaticText *>(child);
+        text && text->GetLabel().StartsWith("LIVE TEXT CHECK")) label = text;
+  Check(label && label->GetLabel().Contains('\n'), "Actual live status wraps at narrow width");
+  auto *body = panel->GetSizer();
+  auto *counter = new LayoutCounter();
+  panel->SetSizer(counter, false);
+  counter->Add(body, 1, wxEXPAND);
+  panel->Layout();
+  const auto before = counter->layouts;
+  const auto wrapped = label->GetLabel();
+  for (int tick = 0; tick < 8; ++tick) {
+    state.now += 250ms;
+    panel->Update(state, ui::LightMode::Day);
+  }
+  report["live_text"]["unchanged_update_count"] = 8;
+  report["live_text"]["unchanged_layout_calls"] = static_cast<int>(counter->layouts - before);
+  Check(counter->layouts == before && label->GetLabel() == wrapped,
+        "Unchanged wrapped live status does not execute another layout across eight real updates");
+  state.advice.reason = "LIVE TEXT CHECK / A new observation arrived.";
+  panel->Update(state, ui::LightMode::Day);
+  Check(counter->layouts > before && label->GetLabel().Contains("new observation"),
+        "Changed live status still lays out and updates its visible text");
+  state.advice.reason = "LIVE TEXT CHECK / This unchanged advisory has enough words to wrap onto several lines at a narrow panel width. Its measured source remains unavailable until a fresh observation arrives.";
+  panel->Update(state, ui::LightMode::Day);
+  const auto narrow = label->GetLabel();
+  const auto before_resize = counter->layouts;
+  panel->SetSize(panel->FromDIP(wxSize(1000, 700)));
+  panel->SendSizeEvent();
+  report["live_text"]["wide_client_width"] = panel->GetClientSize().x;
+  report["live_text"]["resize_layout_calls"] = static_cast<int>(counter->layouts - before_resize);
+  report["live_text"]["narrow_label"] = narrow;
+  report["live_text"]["wide_label"] = label->GetLabel();
+  auto unfolded = label->GetLabel();
+  unfolded.Replace("\n", " ");
+  Check(counter->layouts > before_resize && label->GetLabel() != narrow &&
+        unfolded == wxString::FromUTF8(state.advice.reason),
+        "Wider panel rewraps unchanged raw live text immediately");
+  const auto wide = label->GetLabel();
+  const auto after_resize = counter->layouts;
+  panel->Update(state, ui::LightMode::Day);
+  Check(counter->layouts == after_resize && label->GetLabel() == wide,
+        "Unchanged wide live text settles without subsequent layout");
+  panel->SetSize(panel->FromDIP(wxSize(420, 700)));
+  panel->SendSizeEvent();
+  Check(label->GetLabel() == narrow, "Narrow resize restores wrapping from original text");
+  const auto before_font = counter->layouts;
+  label->SetFont(ui::UiFont(*label, 20));
+  panel->Update(state, ui::LightMode::Day);
+  Check(counter->layouts > before_font && label->GetLabel() != narrow,
+        "Font change at unchanged width rewraps original live text");
+  const auto after_font = counter->layouts;
+  panel->Update(state, ui::LightMode::Day);
+  Check(counter->layouts == after_font, "Unchanged text with the new font settles without layout");
+  label->SetFont(ui::UiFont(*label, 14));
+  panel->Update(state, ui::LightMode::Day);
+  Check(label->GetLabel() == narrow, "Restoring the font restores the original narrow wrapping");
+  state.advice.reason = "LIVE TEXT CHECK\nFresh source\nCurrent age";
+  panel->Update(state, ui::LightMode::Day);
+  Check(label->GetLabel() == wxString::FromUTF8(state.advice.reason),
+        "Explicit source line breaks remain intact");
+  state.advice.reason.clear();
+  panel->Update(state, ui::LightMode::Day);
+  Check(label->GetLabel().empty(), "An empty live status clears the previous text");
+  Record("Actual wx live text caches raw value and width; unchanged updates avoid layout and text/resize changes reflow");
 }
 void CheckWaypointContext(const Navigation &selected, const std::string &id) {
   const auto now = Clock::now();
@@ -483,6 +571,7 @@ void ObjectScenarioStep(const vessel::Navigation &selected) {
       // no input. Add through the same API used by the normal connection editor.
       if (++late_connection_ticks < 3) return;
       CheckPrimaryHints();
+      CheckLiveTextLayout();
       {
         // Same pane name is not ownership. A foreign manager must retain
         // ordinary wxAUI behavior while the real XNav shell is active.

@@ -13,6 +13,7 @@ $sourceTools=Join-Path $PSScriptRoot 'boat';$fixtureSources=Join-Path (Split-Pat
 . (Join-Path $sourceTools 'RestartCommissioning.ps1')
 . (Join-Path $sourceTools 'Commissioning.ps1')
 . (Join-Path $fixtureSources 'New-BrokerFixture.ps1')
+. (Join-Path $fixtureSources 'BrokerMarkerCleanup.ps1')
 . (Join-Path $fixtureSources 'Enable-ScheduledBrokerFixture.ps1')
 $Binaries=Assert-LocalPath ([IO.Path]::GetFullPath($Binaries));$Evidence=Assert-LocalPath ([IO.Path]::GetFullPath($Evidence))
 $marker=Join-Path $Binaries 'opencpn.exe';$signature='OpenNavX.NativeRestart.MarkerOnly.1'
@@ -133,8 +134,12 @@ try {
    $cases.Add(@{name=$case;actualPrepare=$true;actualArm=$true;actualCollect=$true;markerChildren=$children.Count;entrypointHashes=$proof;status='passed'})
    $caseCompleted=$true
   } finally {
-   [IO.File]::WriteAllText((Join-Path $fixture.app 'parent-release.txt'),'fixture cleanup release');[IO.File]::WriteAllText((Join-Path $fixture.app 'child-release.txt'),'fixture cleanup release')
-   foreach($process in @($parent,$companion)){if($process){$null=$process.WaitForExit(15000);$process.Dispose()}}
+   try {
+    [IO.File]::WriteAllText((Join-Path $fixture.app 'parent-release.txt'),'fixture cleanup release')
+    foreach($process in @($parent,$companion)){if($process){try{if(-not $process.WaitForExit(15000)){throw 'Owned fixture process still running; temporary tree retained.'}}finally{$process.Dispose()}}}
+    $closed=Wait-BrokerMarkerChildren $fixture.app $fixture.executable (Get-Digest $marker) $session.session $prepared.recordSha256
+    if($caseCompleted -and $children.Count -gt 0){Require ($closed -eq $children.Count) ($case+': exact held marker child exits normally before fixture removal')}
+   } catch {$cleanupErrors.Add($case+': '+$_.Exception.Message);if($caseCompleted){throw}}
    # Never stop/kill a live scheduled broker. Retain failed TEMP evidence and
    # owned task for inspection; its own fixed five-minute limit still applies.
    if($arm) {
@@ -153,6 +158,8 @@ try {
  $status='passed'
 } catch {$failure=$_.Exception.Message;[IO.File]::WriteAllText((Join-Path $Evidence 'failure.txt'),($_|Out-String)+"`r`n"+$_.ScriptStackTrace);throw}
 finally {
+ $cleanupFailure=$null
+ if($status -ceq 'passed'){try{Remove-Item -LiteralPath $root -Recurse -Force}catch{$status='failed';$failure=$_.Exception.Message;$cleanupErrors.Add('temporary tree: '+$failure);$cleanupFailure=$_}}
  @{status=$status;checks=$checks.Count;checkDetails=$checks.ToArray();cases=$cases.ToArray();failure=$failure;cleanupErrors=$cleanupErrors.ToArray();actualPrepare=$true;actualArmCollect=$true;identitySubstitutions='Copied TEMP known-folder/installation identity; fixed test-only adapter seal for native scheduler';coldLaunch='Synthetic marker parent journal, not product UI cold launch';realApplication=$false;boatAccess=$false;physicalOutput=$false;productAcceptance=$false}|ConvertTo-Json -Depth 10|Set-Content -LiteralPath (Join-Path $Evidence 'prepare-arm-result.json') -Encoding UTF8
- if($status -ceq 'passed'){Remove-Item -LiteralPath $root -Recurse -Force}
+ if($cleanupFailure){throw $cleanupFailure}
 }

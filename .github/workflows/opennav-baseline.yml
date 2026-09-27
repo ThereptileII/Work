@@ -76,6 +76,7 @@ jobs:
         run: |
           pwsh -NoProfile -File opennav-x/tools/boat/test-boat-tools.ps1 -PortableContracts
           pwsh -NoProfile -File opennav-x/tools/boat/test-startup-log.ps1
+          pwsh -NoProfile -File opennav-x/tools/boat/test-renderer-log.ps1
           pwsh -NoProfile -File opennav-x/tools/boat/test-baseline-adoption.ps1 -PortableContracts
           pwsh -NoProfile -File opennav-x/tools/boat/test-broker-fixture-contracts.ps1
           python3 opennav-x/tools/boat/test-navigation-copy.py -v
@@ -99,7 +100,7 @@ jobs:
         run: |
           New-Item -ItemType Directory -Path opennav-x/evidence/local -Force | Out-Null
           $Failed = @()
-          foreach ($Suite in @('boat-tools', 'official-upgrade-policy', 'preparation', 'commissioning', 'commissioning-launch', 'review-window', 'source-checkout', 'restart-commissioning', 'restart-aui-persistence', 'stock-review', 'startup-log', 'baseline-adoption', 'broker-fixture-contracts', 'restart-window-review', 'stock-welcome', 'installed-welcome')) {
+          foreach ($Suite in @('boat-tools', 'official-upgrade-policy', 'preparation', 'commissioning', 'commissioning-launch', 'review-window', 'source-checkout', 'restart-commissioning', 'restart-aui-persistence', 'stock-review', 'startup-log', 'renderer-log', 'baseline-adoption', 'broker-fixture-contracts', 'restart-window-review', 'stock-welcome', 'installed-welcome')) {
             & "$env:WINDIR/System32/WindowsPowerShell/v1.0/powershell.exe" -NoProfile -File "opennav-x/tools/boat/test-$Suite.ps1" 2>&1 | Tee-Object -FilePath "opennav-x/evidence/local/maintenance-$Suite.log"
             if ($LASTEXITCODE -ne 0) { $Failed += $Suite }
           }

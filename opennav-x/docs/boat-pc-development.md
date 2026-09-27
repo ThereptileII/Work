@@ -191,6 +191,36 @@ the supplied accepted-release SHA-256; it also journals the location before its
 same-volume move. Unrelated filenames/hashes are refused. External shortcuts
 require separately inspected ownership before removal.
 
+The separately inspected Beta 1 wrapper still contains the portable/source ZIPs
+and its setup executable. Once the replacement XNav, Legacy and Safe paths are
+known-good, close all OpenCPN modes normally and retire the identified portable
+leaf first. Its accepted `FILE_SHA256.json` is
+`cc20964137e65a45f75d908efb7e7f2cc05256a242efd92885b43d5ff2e2e619`.
+Retire each remaining release file from its exact inspected path with
+`retire-download.ps1 -File <path> -ExpectedSha256 <accepted hash>`:
+
+| Release file | Accepted SHA-256 | Additional option |
+| --- | --- | --- |
+| `OpenNavX-Beta1-Portable-win64.zip` | `ab84fd30b0b9969bc05ff2ff71934188e9dd0ade7f1987325df5e9ffd67e7e04` | none |
+| `OpenNavX-Beta1-source.zip` | `daf73f76e18ae935459f50228a92f4db33ab91a1f2075cc7b524913ad9c14d16` | none |
+| `OpenNavX-Beta1-Setup.exe` | `8e1b3432a5a44499ffb41b125f62df07e846b2cfe1ca0936409ed021d413e128` | `-Beta1Setup` |
+
+Executable retirement is an explicit exception for that one filename and hash;
+the default remains ZIP-only. It never executes setup, alters an installed
+generation or deletes profile data. The recovery file retains its `.exe`
+extension, with a durable planned locator and verified completion record.
+Existing destinations, redirected paths and sources inside the recovery
+workspace refuse the operation. Preserve the entire recovery tree and any
+unrelated wrapper contents; do not recursively delete the outer directory.
+The private follow-up inventory found no external Desktop/Start Menu shortcuts
+targeting this wrapper. Recheck that observation before final retirement.
+The extension passes the portable retirement policy checks and a Linux
+temporary-copy exercise using the actual accepted 43,967,980-byte setup file:
+hash, `.exe` extension, planned locator and completion record survived the move.
+That exercise did not run setup or qualify Windows path handling. New native
+entrypoint refusal/workspace/junction cases are part of `test-boat-tools.ps1`;
+their same-source Windows gate and actual boat retirement remain pending.
+
 ## Optional source/build operation
 
 `update-source.ps1` fetches an exact commit into the owned workspace, requiring a

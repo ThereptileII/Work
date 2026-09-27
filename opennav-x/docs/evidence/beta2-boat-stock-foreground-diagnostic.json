@@ -1,0 +1,62 @@
+{
+  "schema": 1,
+  "scope": "Read-only current stock startup foreground diagnosis; not chart or Beta qualification",
+  "toolCommit": "903bd62196cf0746d67e459a25ebc562992fc245",
+  "probeQualifiedRun": 36288285935,
+  "status": "failed",
+  "utc": "2026-09-27T02:23:34.7719680Z",
+  "officialExecutableSha256": "7c6547562cca7954671eaab72833ca9d788710fd9808b6a699b6dc823852ae0c",
+  "warningFieldsUnchanged": true,
+  "foregroundProcess": "ShellExperienceHost",
+  "desktop": {
+    "foreground": {
+      "hwnd": 132150,
+      "pid": 4428,
+      "threadId": 4080,
+      "unchangedDuringQuery": true,
+      "guiError": 0,
+      "flags": {
+        "raw": 0,
+        "menu": false,
+        "moveSize": false,
+        "systemMenu": false,
+        "popupMenu": false
+      }
+    },
+    "relation": "HELPER_DESKTOP_RECEIVES_INPUT",
+    "helperDesktop": {
+      "name": "Default",
+      "receivesInput": true,
+      "handleError": 0,
+      "nameError": 0,
+      "inputError": 0
+    },
+    "inputDesktop": {
+      "name": "Default",
+      "receivesInput": true,
+      "handleError": 0,
+      "nameError": 0,
+      "inputError": 0
+    },
+    "inputHandleClosed": true,
+    "closeError": 0,
+    "interpretation": "Metadata only; access denial does not establish a locked desktop."
+  },
+  "capturePublished": false,
+  "warningAcknowledged": false,
+  "physicalCommandsSent": false,
+  "desktopOrAccessChanged": false,
+  "next": "Qualify bounded ordinary activation rendezvous; preserve strict capture checks.",
+  "boundedActivationFollowup": {
+    "toolCommit": "e9feb40420eab3ebb5118dec247b60f209e443d1",
+    "nativePrimitiveRun": 36288489875,
+    "utc": "2026-09-27T02:30:11.6255982Z",
+    "wmNullRendezvousCompleted": true,
+    "focusRequestReturned": false,
+    "warningAcknowledged": false,
+    "capturePublished": false,
+    "desktopStillReceivesInput": true,
+    "foregroundUnchanged": true,
+    "next": "Qualify a separate exact-caption focus action; no automatic acknowledgement or desktop-setting change."
+  }
+}

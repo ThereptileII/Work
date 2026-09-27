@@ -61,5 +61,43 @@
     "Human review of the new boat warning capture is still required before a separately hash-bound acknowledgement.",
     "No physical hardware connected, commanded or accepted.",
     "No production certification or autonomous steering."
-  ]
+  ],
+  "supportingSameCommitGates": {
+    "allSixJobsPassed": true,
+    "nativeMaintenanceChecks": 993,
+    "nativeMaintenanceSuites": 13,
+    "actualBrokerChecks": 49,
+    "actualPrepareArmCollectChecks": 46,
+    "nativeModeWindowCases": 9,
+    "artifacts": [
+      {
+        "name": "development-commissioning-restart",
+        "id": 10920965937,
+        "sha256": "817affd4af617a10c19318ed096c761803a108941d41633a5750949bdc43fdbc",
+        "bytes": 6188,
+        "verified": true
+      },
+      {
+        "name": "development-commissioning-broker",
+        "id": 10920793042,
+        "sha256": "4b73c3a84a5f71762f0a57928faf1ab94c90053143054c58dd958ff5441a53af",
+        "bytes": 15772,
+        "verified": true
+      },
+      {
+        "name": "development-boat-tooling",
+        "id": 10920474520,
+        "sha256": "2472c0ba3c1bda566ee9ab16bb4d6d775cd8bee9e1e95ec8df2706a4aa055d0d",
+        "bytes": 13606,
+        "verified": true
+      },
+      {
+        "name": "development-restart-window",
+        "id": 10919919650,
+        "sha256": "74959b4a0944abfb23917f72ad270ef449b925f7910b0a1a7474bb34caf91b96",
+        "bytes": 1228,
+        "verified": true
+      }
+    ]
+  }
 }

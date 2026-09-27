@@ -155,3 +155,6 @@ class OpenNavLoaderContractFixture {
   if ($Junction -and (Test-Path -LiteralPath $Junction)) { [IO.Directory]::Delete($Junction) }
   Remove-Item -LiteralPath $Fixture -Recurse -Force
 }
+
+# Separate unique NTFS/registry fixture; actual COM shell and engine helpers.
+& (Join-Path $PSScriptRoot 'test-installer-shortcuts.ps1')

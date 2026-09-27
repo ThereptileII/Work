@@ -9,6 +9,7 @@ if ($native -and -not $IsolatedLocal -and $env:GITHUB_ACTIONS -ne 'true') {throw
 if ($IsolatedLocal -and @(Get-Process -Name opencpn -ErrorAction SilentlyContinue).Count) {throw 'Close OpenCPN/XNav normally before isolated local filesystem checks.'}
 $testEnvironment=if ($IsolatedLocal) {'native-windows-isolated-local-filesystem'} else {'native-windows-ci-filesystem'}
 . (Join-Path $PSScriptRoot 'Common.ps1')
+. (Join-Path $PSScriptRoot 'RetirementPolicy.ps1')
 $root=Join-Path ([IO.Path]::GetTempPath()) ('OpenNav boat tools '+[guid]::NewGuid().ToString('N'))
 $null=New-Item -ItemType Directory -Path $root
 if (-not $native) {
@@ -93,6 +94,22 @@ try {
     if ((Get-Digest $active) -cne $activeHash -or @(Get-ChildItem -LiteralPath $maintenanceWorkspace -Force).Count -ne 1) {throw 'Rejected maintenance created or modified workspace files.'}
     $checks.Add('All six mutating boat setup/maintenance entrypoints refuse active commissioning before target access, process launch or workspace writes')
   }
+  $beta1SetupHash='8e1b3432a5a44499ffb41b125f62df07e846b2cfe1ca0936409ed021d413e128'
+  if ((Get-DownloadRetirementKind 'OpenNavX-Beta1-Setup.exe' $beta1SetupHash $true) -cne 'beta1-setup' -or
+      (Get-DownloadRetirementKind 'OpenNavX-Beta1 (2).zip' ('a'*64) $false) -cne 'zip') { throw 'Closed release policy rejected supported names.' }
+  foreach ($case in @(
+    @('OpenNavX-Beta1-Setup.exe',$beta1SetupHash,$false),
+    @('OpenNavX-Beta1-Setup.exe',('a'*64),$true),
+    @('OpenNavX-Beta2-Setup.exe',$beta1SetupHash,$true),
+    @('OpenNavX-Beta1-Setup (1).exe',$beta1SetupHash,$true),
+    @('opencpn.exe',$beta1SetupHash,$true),
+    @('OpenNavX-Beta1.zip',$beta1SetupHash,$true),
+    @('personal.zip',('a'*64),$false),
+    @('OpenNavX-Beta1.zip','malformed',$false))) {
+    $rejected=$false;try {$null=Get-DownloadRetirementKind $case[0] $case[1] $case[2]} catch {$rejected=$true}
+    if (-not $rejected) { throw 'Download retirement broadened the executable/name/hash boundary.' }
+  }
+  $checks.Add('Default ZIP policy preserved; executable retirement requires explicit opt-in and exact accepted Beta1 setup name/hash')
   if (-not $native) {
     [pscustomobject]@{status='passed';environment='linux-portable-maintenance-contracts';scope='Unique temporary files only; no application, profile, registry or hardware access';checks=@($checks);count=$checks.Count} | ConvertTo-Json -Depth 5
     return
@@ -297,6 +314,28 @@ try {
   $rejected=$false;try {$null=& (Join-Path $PSScriptRoot 'retire-download.ps1') -Workspace $workspace -File $unrelated -ExpectedSha256 (Get-Digest $unrelated)} catch {$rejected=$true}
   if (-not $rejected -or -not [IO.File]::Exists($unrelated)) {throw 'Unrelated download was retired.'}
   $checks.Add('Obsolete download archive preserves exact bytes and durable locator; wrong hash and unrelated names cannot move')
+  $setup=Join-Path $root 'OpenNavX-Beta1-Setup.exe';[IO.File]::WriteAllText($setup,'foreign bytes under the accepted installer name; never executed')
+  $setupBytesHash=Get-Digest $setup;$recovery=Join-Path $workspace 'recovery'
+  $recoveryBefore=@(Get-ChildItem -LiteralPath $recovery -Force | Sort-Object Name | ForEach-Object {$_.Name}) -join '|'
+  foreach ($optIn in @($false,$true)) {
+    $rejected=$false
+    try {$null=& (Join-Path $PSScriptRoot 'retire-download.ps1') -Workspace $workspace -File $setup -ExpectedSha256 $beta1SetupHash -Beta1Setup:$optIn} catch {$rejected=$true}
+    if (-not $rejected -or (Get-Digest $setup) -cne $setupBytesHash) { throw 'Default or wrong-byte setup retirement changed its source.' }
+  }
+  $recoveryAfter=@(Get-ChildItem -LiteralPath $recovery -Force | Sort-Object Name | ForEach-Object {$_.Name}) -join '|'
+  if ($recoveryBefore -cne $recoveryAfter) { throw 'Rejected setup retirement wrote recovery evidence or moved files.' }
+  $checks.Add('Actual setup entrypoint refuses foreign bytes despite accepted name/hash and leaves source/recovery unchanged without launching')
+  $inside=Join-Path $workspace 'OpenNavX-Beta1.zip';[IO.File]::WriteAllText($inside,'existing workspace recovery')
+  $insideHash=Get-Digest $inside;$rejected=$false
+  try {$null=& (Join-Path $PSScriptRoot 'retire-download.ps1') -Workspace $workspace -File $inside -ExpectedSha256 $insideHash} catch {$rejected=$true}
+  if (-not $rejected -or (Get-Digest $inside) -cne $insideHash) { throw 'Existing workspace download was retired again.' }
+  $redirect=Join-Path $root 'redirected-old-download';$null=New-Item -ItemType Junction -Path $redirect -Target $workspace
+  try {
+    $rejected=$false
+    try {$null=& (Join-Path $PSScriptRoot 'retire-download.ps1') -Workspace $workspace -File (Join-Path $redirect 'OpenNavX-Beta1.zip') -ExpectedSha256 $insideHash} catch {$rejected=$true}
+    if (-not $rejected -or (Get-Digest $inside) -cne $insideHash) { throw 'Redirected source bypassed recovery/path preservation.' }
+  } finally {[IO.Directory]::Delete($redirect)}
+  $checks.Add('Retirement refuses workspace-owned and redirected source files without changing preserved bytes')
   # Load only filesystem guard functions, never the real maintenance entry point.
   $tokens=$null;$parseErrors=$null
   $ast=[Management.Automation.Language.Parser]::ParseFile((Join-Path $PSScriptRoot 'upgrade-stock.ps1'),[ref]$tokens,[ref]$parseErrors)

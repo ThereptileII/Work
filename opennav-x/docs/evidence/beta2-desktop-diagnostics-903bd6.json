@@ -1,0 +1,132 @@
+{
+  "schema": "OpenNavX.Beta2.ReadOnlyDesktopDiagnosticEvidence.1",
+  "status": "passed",
+  "scope": "Read-only desktop diagnostic qualification plus completed same-commit disposable native tooling gates; no boat or product acceptance",
+  "publishedCommit": "903bd62196cf0746d67e459a25ebc562992fc245",
+  "localCommit": "4285f82b58422faf519f21dad1d20939dd6be464",
+  "runUrl": "https://github.com/ThereptileII/Work/actions/runs/36288285935",
+  "jobId": 108533193822,
+  "nativeChecks": 90,
+  "artifact": {
+    "artifact": 10921566542,
+    "sha256": "12e7afca81d89098969939b170653fcc684b93b18677176af77f615c8b4c39fb",
+    "apiUploadDownloadCrc": true
+  },
+  "nativeCheckoutHashes": {
+    "StockWelcomeNative.cs": "7d1ce79328637eab5ed568e35836e25e062b37894f195b68f3ae339641730981",
+    "StockWelcome.ps1": "910f5234931a3e53bc91a643a7112168ef5c8ac2e4f13d7c121a15b661d41433",
+    "test-stock-welcome.ps1": "1909f6c83fa60aecb39cfbf45b2b578874ed7ed39c41721342f58bea94dc1902"
+  },
+  "probe": {
+    "relation": "HELPER_DESKTOP_RECEIVES_INPUT",
+    "inputHandleClosed": true,
+    "foregroundGuiError": 87,
+    "unavailableFlagsRemainUnknown": true
+  },
+  "applicationLaunched": false,
+  "boatAccess": false,
+  "hardwareCommands": false,
+  "acceptanceChanged": false,
+  "limits": [
+    "Diagnostic metadata does not establish the state of the boat desktop.",
+    "An unavailable GUI query remains unknown; ERROR87 is not evidence of inactive menus.",
+    "No focus permission, input, capture or warning-acknowledgement authority is added."
+  ],
+  "sameCommitFullRun": {
+    "status": "passed",
+    "jobs": [
+      {
+        "id": 108533193822,
+        "name": "Read-only native warning desktop diagnostics",
+        "conclusion": "success"
+      },
+      {
+        "id": 108533193933,
+        "name": "Native Win32 commissioning restart process boundary",
+        "conclusion": "success"
+      },
+      {
+        "id": 108533193949,
+        "name": "Disposable native Windows tooling checks",
+        "conclusion": "success"
+      },
+      {
+        "id": 108533487775,
+        "name": "Actual restart broker with disposable marker-only installation",
+        "conclusion": "success"
+      },
+      {
+        "id": 108533487814,
+        "name": "Fixed guarded mode UI actions on disposable native windows",
+        "conclusion": "success"
+      },
+      {
+        "id": 108533487834,
+        "name": "Actual official OpenCPN portable upgrade caution (sv)",
+        "conclusion": "success"
+      },
+      {
+        "id": 108533487860,
+        "name": "Actual official OpenCPN portable upgrade caution (en_US)",
+        "conclusion": "success"
+      }
+    ],
+    "maintenanceChecks": 1196,
+    "closedNavigationCopyPython": 11,
+    "actualBrokerChecks": 49,
+    "actualPrepareArmCollectChecks": 46,
+    "nativeTransportChecks": 359,
+    "portableCodecChecks": 886,
+    "transportCases": 24,
+    "nativeModeWindowCases": 9,
+    "nativeDisplayWindowCases": 15,
+    "actualOfficialWarning": {
+      "en_US": 38,
+      "sv": 40
+    },
+    "verifiedArtifacts": [
+      {
+        "artifact": 10921785653,
+        "sha256": "ad6256a541e803846ae9aa62d764c863c4b8b26c352af494a2aa5beb63624036",
+        "bytes": 6201,
+        "apiUploadDownloadCrcVerified": true
+      },
+      {
+        "artifact": 10921755736,
+        "sha256": "0a0bf69945eb92bb1b38da786647cd2e4f5822e95e887e84b39d44b6db24c727",
+        "bytes": 82343,
+        "apiUploadDownloadCrcVerified": true
+      },
+      {
+        "artifact": 10921711644,
+        "sha256": "ca113141a6d6a575263d6761ed3a1363cb7367a31a24a3f3ce583e4dc1ed8684",
+        "bytes": 84981,
+        "apiUploadDownloadCrcVerified": true
+      },
+      {
+        "artifact": 10921701616,
+        "sha256": "7ee898219b8f31ccd235acf2304325f9a94b5c536a41145f11f0c42838ad20b2",
+        "bytes": 19178,
+        "apiUploadDownloadCrcVerified": true
+      },
+      {
+        "artifact": 10921566542,
+        "sha256": "12e7afca81d89098969939b170653fcc684b93b18677176af77f615c8b4c39fb",
+        "bytes": 2272,
+        "apiUploadDownloadCrcVerified": true
+      },
+      {
+        "artifact": 10921237418,
+        "sha256": "3069d1ca2763964211f8455f67834d58baeb3f789bf49a91e4dee2dd4f3a190b",
+        "bytes": 15753,
+        "apiUploadDownloadCrcVerified": true
+      },
+      {
+        "artifact": 10920814217,
+        "sha256": "1ce47973a4e4dd9144d3a1c3057a8ec007e8ccc3965071505512fb953aebd586",
+        "bytes": 2962,
+        "apiUploadDownloadCrcVerified": true
+      }
+    ]
+  }
+}

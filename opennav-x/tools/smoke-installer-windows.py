@@ -25,6 +25,9 @@ INSTALL=Path(os.environ['LOCALAPPDATA'])/'OpenNavXAlpha1'
 STOCK_HASH='7c6547562cca7954671eaab72833ca9d788710fd9808b6a699b6dc823852ae0c'
 SETUP_HASH='e949f55de57611afe2fc0dad5a8ac33795c46ba488cb40ca07b65f639a07b8aa'
 PS=Path(os.environ['WINDIR'])/'System32/WindowsPowerShell/v1.0/powershell.exe'
+PROGRAMS=Path(os.environ['APPDATA'])/'Microsoft/Windows/Start Menu/Programs'
+SHORTCUTS=PROGRAMS/'OpenNav X'
+OLD_SHORTCUTS=PROGRAMS/'OpenNav X Alpha 1'
 owned=set();report={'status':'running','checks':[],'operations':[],'screenshots':[],'authority':'native disposable Windows / PowerShell 5.1 / NSIS'}
 def module(name):
     spec=importlib.util.spec_from_file_location(name,ROOT/'tools'/f'{name}.py')
@@ -60,6 +63,39 @@ def engine(action,expected=0,shortcut_modes=''):
     r=subprocess.run(command,timeout=120,capture_output=True)
     assert r.returncode==expected,(action,r.returncode,r.stdout.decode(errors='replace'),r.stderr.decode(errors='replace'))
     return json.loads(out.read_text(encoding='utf-8-sig'))
+def maintenance(action):
+    maintain=generation()/'Maintain.exe';out=operation_report('Maintain-'+action)
+    command=subprocess.list2cmdline([str(maintain)])+' /S /ACTION='+action+' /REPORT="'+str(out)+'"'
+    result=subprocess.run(command,timeout=120)
+    assert result.returncode==0
+    # NSIS relocates the uninstaller; the durable report proves completion.
+    deadline=time.monotonic()+120
+    while not out.exists() and time.monotonic()<deadline:time.sleep(.2)
+    assert out.exists(), 'Native maintenance did not publish its report'
+    result=json.loads(out.read_text(encoding='utf-8-sig'))
+    if action!='Diagnostics':assert result['status']=='passed',result
+    return result
+
+def maintenance_wizard():
+    maintain=generation()/'Maintain.exe';expected_hash=sha(maintain)
+    before=sha(INSTALL/'state.json')
+    wrapper=subprocess.Popen([str(maintain)])
+    frame,pid=ui.wait_window('OpenNav X Maintenance',timeout=45);owned.add(pid)
+    monitor=ui.monitor_process(pid)
+    query=ui.declare(ui.kernel,'QueryFullProcessImageNameW',ctypes.c_int,ctypes.c_void_p,ctypes.c_ulong,ctypes.c_wchar_p,ctypes.POINTER(ctypes.c_ulong))
+    buffer=ctypes.create_unicode_buffer(32768);length=ctypes.c_ulong(len(buffer))
+    assert query(monitor,0,buffer,ctypes.byref(length)) and sha(Path(buffer.value))==expected_hash,'Maintenance window is not the owned executable or its exact NSIS temporary copy'
+    labels=[ui.control_text(child) for child,_ in ui.children(frame)]
+    assert 'Maintain OpenNav X' in labels and 'Repair' in labels,labels
+    image=EVIDENCE/'installer-maintenance-title.png'
+    ui.capture(frame,image,resize=False,screen_pixels=True);report['screenshots'].append(image.name)
+    get_item=ui.declare(ui.user,'GetDlgItem',ctypes.c_void_p,ctypes.c_void_p,ctypes.c_int)
+    cancel=get_item(frame,2);assert cancel and ui.IsWindowEnabled(cancel)
+    ui.SendMessageW(cancel,0x00F5,0,0)
+    ui.wait_clean_exit(monitor);owned.discard(pid)
+    assert wrapper.wait(timeout=30)==0 and sha(INSTALL/'state.json')==before
+    check('Owned maintenance wizard has version-neutral title, Repair default and non-mutating Cancel')
+
 def package_engine(directory, stock, expected=1):
     out=operation_report('damaged-package')
     result=subprocess.run([str(PS),'-NoProfile','-NonInteractive','-ExecutionPolicy','Bypass',
@@ -264,6 +300,18 @@ try:
         setup('Install',bad/'opencpn.exe',expected=1)
         assert not INSTALL.exists();assert inventory(stock)==stock_before
         check('Unknown executable hash refused before creating install root or changing stock')
+        assert not SHORTCUTS.exists() and not OLD_SHORTCUTS.exists()
+        SHORTCUTS.mkdir();foreign_link=SHORTCUTS/'OpenNav X.lnk'
+        foreign_link.write_bytes(b'foreign shortcut content must not be claimed')
+        foreign_before=inventory(SHORTCUTS)
+        try:
+            failure=setup('Install',original,expected=1)
+            assert 'no verified OpenNav owner' in failure['error'],failure
+            assert inventory(SHORTCUTS)==foreign_before and not INSTALL.exists()
+            assert inventory(stock)==stock_before
+        finally:
+            foreign_link.unlink();SHORTCUTS.rmdir()
+        check('A foreign neutral Start-menu group is refused before root creation; its same-name shortcut and stock remain unchanged')
         INSTALL.mkdir();(INSTALL/'owner.json').write_text('{"owner":"foreign fixture"}')
         (INSTALL/'keep.txt').write_text('Do not claim or change this directory')
         unowned=inventory(INSTALL)
@@ -286,6 +334,7 @@ try:
         wizard(original,install=True)
         assert inventory(profile)==before and inventory(stock)==stock_before
         assert not state()['previous']
+        assert (SHORTCUTS/'OpenNav X.lnk').is_file() and not OLD_SHORTCUTS.exists()
         assert sha(generation()/'app/opencpn.exe')==sha(ROOT/'build/production-install/opencpn.exe')
         p,h,rgb=launch(generation()/'app/opencpn.exe',['--xnav'],'OpenNav X / OpenCPN',profile,'installer-00-clean-candidate')
         charts.reference(rgb);close(p,h);assert fixture_snapshot(profile)==expected
@@ -310,18 +359,20 @@ try:
         setup('Install',original,executable=prior)
         assert inventory(profile)==before and inventory(stock)==stock_before
         assert json.loads((generation()/'ownership.json').read_text())['version']=='0.3.0-beta1'
+        assert (OLD_SHORTCUTS/'Maintain OpenNav.lnk').is_file() and not SHORTCUTS.exists()
         old_exe=generation()/'app/opencpn.exe'
         assert sha(old_exe)!=sha(ROOT/'build/production-install/opencpn.exe')
         p,h,rgb=launch(old_exe,['--xnav'],'OpenNav X / OpenCPN',profile,'installer-00-prior-test-version',welcome_transition='candidate-to-beta1')
         charts.reference(rgb);close(p,h);assert fixture_snapshot(profile)==expected
         stable_resources(profile,stock,[custom_tide])
-        prior_generation=state()['current'];before=inventory(profile)
+        prior_generation=state()['current'];prior_owned=inventory(generation());before=inventory(profile)
         check('Accepted Beta 1 release installs and opens real coastline with shared fixtures')
         setup('Update',original)
         assert state()['previous']==prior_generation
         assert json.loads((generation()/'ownership.json').read_text())['version']=='0.4.0-beta2'
         assert sha(generation()/'app/opencpn.exe')==sha(ROOT/'build/production-install/opencpn.exe')
         assert inventory(profile)==before and inventory(stock)==stock_before
+        assert (SHORTCUTS/'OpenNav X.lnk').is_file() and not OLD_SHORTCUTS.exists()
         check('Accepted Beta 1 updates to the exact Beta 2 candidate executable; stock/profile unchanged')
         recoveries=list((INSTALL/'recovery').glob('*.json'))
         assert recoveries,'Missing durable before-state recovery set'
@@ -330,6 +381,28 @@ try:
         assert recovery['before']['current']==prior_generation
         assert recovery['stock']['sha256']==STOCK_HASH and recovery['nextVersion']=='0.4.0-beta2'
         check('Versioned recovery record identifies exact Beta 1 generation, stock hash and Beta 2 target before update')
+        # Exercise the genuine older immutable engine after rollback, not a
+        # same-version mock. Its original group must remain usable and its
+        # files byte-identical; then migrate forward again using current Setup.
+        engine('Rollback')
+        assert state()['current']==prior_generation and inventory(generation())==prior_owned
+        assert (OLD_SHORTCUTS/'Maintain OpenNav.lnk').is_file() and not SHORTCUTS.exists()
+        prior_diagnostics=maintenance('Diagnostics')
+        assert prior_diagnostics['stockVerified'] and prior_diagnostics['state']['current']==prior_generation
+        assert all(f['expected']==f['actual'] for f in prior_diagnostics['files'])
+        assert inventory(profile)==before and inventory(stock)==stock_before
+        check('Genuine Beta 1 rollback restores its historical group and unchanged original maintainer; native diagnostics work')
+        # Interrupt after publishing usable neutral links, before old cleanup.
+        setup('Update',original,expected=1,failure='after-shortcuts')
+        committed_migration=state()['current']
+        assert committed_migration!=prior_generation and (INSTALL/'transaction.json').exists()
+        assert (SHORTCUTS/'OpenNav X.lnk').is_file() and (OLD_SHORTCUTS/'OpenNav X.lnk').is_file()
+        setup('Repair',original)
+        assert state()['previous']==committed_migration and not (INSTALL/'transaction.json').exists()
+        assert (SHORTCUTS/'Maintain OpenNav.lnk').is_file() and not OLD_SHORTCUTS.exists()
+        assert inventory(profile)==before and inventory(stock)==stock_before
+        check('Genuine Beta 1 to Beta 2 interrupted group migration recovers from committed state and removes only old owned links')
+        maintenance_wizard()
         first=state()['current'];exe=generation()/'app/opencpn.exe'
         assert not (exe.parent/'OPENNAV_PORTABLE_PREVIEW').exists()
         p,h,rgb=launch(exe,['--xnav'],'OpenNav X / OpenCPN',profile,'installer-01-xnav',welcome_transition='beta1-to-candidate')
@@ -361,7 +434,8 @@ try:
         assert inventory(profile)==before
         check('Repair replaces corrupt owned resources in a new generation; original damaged backup and custom additions retained')
         engine('Repair',shortcut_modes='xnav')
-        shortcut_root=Path(os.environ['APPDATA'])/'Microsoft/Windows/Start Menu/Programs/OpenNav X Alpha 1'
+        shortcut_root=SHORTCUTS
+        assert not OLD_SHORTCUTS.exists()
         assert (shortcut_root/'OpenNav X.lnk').exists() and (shortcut_root/'Maintain OpenNav.lnk').exists()
         assert not (shortcut_root/'OpenCPN Legacy.lnk').exists() and not (shortcut_root/'OpenNav Safe Mode.lnk').exists()
         assert state()['shortcutModes']==['xnav']
@@ -493,15 +567,7 @@ try:
         assert all(f['expected']==f['actual'] for f in diagnostics['files'])
         check('Diagnostics verifies installed hashes without collecting navigation or raw sensor data')
         # Exercise the conventional uninstall executable as well as the engine.
-        maintain=generation()/'Maintain.exe';out=operation_report('Uninstall')
-        uninstall_command=subprocess.list2cmdline([str(maintain)])+' /S /ACTION=Uninstall /REPORT="'+str(out)+'"'
-        result=subprocess.run(uninstall_command,timeout=120)
-        assert result.returncode==0
-        # A normal NSIS uninstaller copies itself to a temporary process. The
-        # durable engine report, not the initial wrapper exit, is completion.
-        deadline=time.monotonic()+120
-        while not out.exists() and time.monotonic()<deadline:time.sleep(.2)
-        assert out.exists() and json.loads(out.read_text(encoding='utf-8-sig'))['status']=='passed'
+        maintenance('Uninstall')
         assert not (INSTALL/'state.json').exists()
         assert inventory(profile)==before and inventory(stock)==stock_before
         for record in (INSTALL/'generations').glob('*/ownership.json'):
@@ -527,6 +593,7 @@ try:
         check('Beta 2 same-version rebuild/update creates a rollback generation without changing user data')
         engine('Uninstall')
         assert inventory(profile)==before and inventory(stock)==stock_before
+        assert not SHORTCUTS.exists() and not OLD_SHORTCUTS.exists()
         report['stock_sha256']=sha(original);report['setup_sha256']=sha(SETUP)
         report['status']='passed'
 except Exception as e:

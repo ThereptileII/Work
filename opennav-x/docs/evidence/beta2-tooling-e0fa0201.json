@@ -1,0 +1,134 @@
+{
+  "schema": "OpenNavX.Beta2.NativeToolingEvidence.1",
+  "status": "passed",
+  "scope": "Disposable native Windows tooling qualification; not product, installed-environment or boat acceptance",
+  "source": {
+    "publishedCommit": "e0fa020173571153dea2e518cfad5d77898b71dc",
+    "localCommit": "e02f4b305e6256851a0dfe0ab58214c961abd93b",
+    "tree": "54f57c16fcb02353a4e89572e0c044ac88d96519",
+    "verifiedBlobIdentitiesAndModes": 603
+  },
+  "runUrl": "https://github.com/ThereptileII/Work/actions/runs/36287891384",
+  "jobs": [
+    {
+      "id": 108532038156,
+      "name": "Disposable native Windows tooling checks",
+      "conclusion": "success"
+    },
+    {
+      "id": 108532038263,
+      "name": "Native Win32 commissioning restart process boundary",
+      "conclusion": "success"
+    },
+    {
+      "id": 108532300504,
+      "name": "Fixed guarded mode UI actions on disposable native windows",
+      "conclusion": "success"
+    },
+    {
+      "id": 108532300539,
+      "name": "Actual official OpenCPN portable upgrade caution (en_US)",
+      "conclusion": "success"
+    },
+    {
+      "id": 108532300565,
+      "name": "Actual restart broker with disposable marker-only installation",
+      "conclusion": "success"
+    },
+    {
+      "id": 108532300583,
+      "name": "Actual official OpenCPN portable upgrade caution (sv)",
+      "conclusion": "success"
+    }
+  ],
+  "checks": {
+    "maintenance": {
+      "total": 1178,
+      "suites": {
+        "broker-fixture-contracts": 5,
+        "boat-tools": 27,
+        "baseline-adoption": 73,
+        "commissioning-launch": 11,
+        "commissioning": 21,
+        "installed-welcome": 89,
+        "official-upgrade-policy": 86,
+        "preparation": 34,
+        "restart-aui-persistence": 77,
+        "restart-commissioning": 278,
+        "restart-window-review": 132,
+        "review-window": 159,
+        "source-checkout": 16,
+        "startup-log": 16,
+        "stock-review": 82,
+        "stock-welcome": 72
+      }
+    },
+    "closedNavigationCopyPython": 11,
+    "transport": {
+      "portableCodec": 886,
+      "nativeChecks": 359,
+      "processCases": 24
+    },
+    "actualBroker": {
+      "checks": 49,
+      "cases": 6
+    },
+    "actualPrepareArmCollect": {
+      "checks": 46,
+      "entrypointCopiesHashIdentical": true,
+      "coldLaunch": "Synthetic marker parent journal; actual product cold launch not exercised"
+    },
+    "nativeModeWindows": 9,
+    "nativeDisplayWindows": 15,
+    "officialStockWarning": {
+      "en_US": 38,
+      "sv": 40,
+      "normalExit": 0,
+      "profile": "Disposable portable profile with empty connections and disabled bundled plugins"
+    }
+  },
+  "artifacts": [
+    {
+      "artifact": 10921685940,
+      "sha256": "e7f317023215136fc59ab31e4af1b50c6291e7d4575789a1b6b5962013b99aa9",
+      "bytes": 85162,
+      "apiUploadDownloadCrcVerified": true
+    },
+    {
+      "artifact": 10921655443,
+      "sha256": "6749a728842d634ca31641292218f59f353feab82e1aabb91090160ecdc3cc4f",
+      "bytes": 18460,
+      "apiUploadDownloadCrcVerified": true
+    },
+    {
+      "artifact": 10921376492,
+      "sha256": "1eb15da053efb0733467557b54d8a6c947a3e1f457d11882d3a2ae495a5940f9",
+      "bytes": 82362,
+      "apiUploadDownloadCrcVerified": true
+    },
+    {
+      "artifact": 10921346559,
+      "sha256": "d60bab120e4e038b5d8895774b8fb5bc1ec6973e0b7b9e7dc696a9179cbcc5c4",
+      "bytes": 15755,
+      "apiUploadDownloadCrcVerified": true
+    },
+    {
+      "artifact": 10921335684,
+      "sha256": "e96d1802b2ddd5e90c2fd9ea61ee9f6190976805ba7aadbf9e3b735d56364aad",
+      "bytes": 6188,
+      "apiUploadDownloadCrcVerified": true
+    },
+    {
+      "artifact": 10921330805,
+      "sha256": "51053c312846c8106121c244ce3c60ca624631dc0618b1e3d45431e4c9d765d0",
+      "bytes": 2953,
+      "apiUploadDownloadCrcVerified": true
+    }
+  ],
+  "limits": [
+    "No boat access or physical marine command.",
+    "Broker known-folder and installation identities are substituted only in sealed, marked temporary fixtures. Actual broker, Prepare, Arm and Collect bodies are unchanged.",
+    "Native marker windows do not establish actual wxWidgets product rendering or boat display acceptance.",
+    "Official stock warning tests exercise real pinned OpenCPN 5.12.4 and catalogue resources, but no real user profile, charts or hardware."
+  ]
+}

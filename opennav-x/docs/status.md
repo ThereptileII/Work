@@ -11,7 +11,27 @@ The accepted Beta 1 results below remain historical evidence, not Beta 2 gates.
 
 ### Current candidate
 
-`60cd054712c6a930147247970121a959d48e03bf` is running in
+`8e780edc34f68abd693a5d5f6aecdb3ba05a75c4` was exercised in
+[CI 36287991989](https://github.com/ThereptileII/Work/actions/runs/36287991989).
+All 630 tracked blobs/modes match local `81ec667e1d3740b36b99eaf6a1ed7526b7edd044`;
+CI fetches and verifies the unchanged pinned OpenCPN source. This replacement
+adds the exact-version installer caution flow, reviewed profile-migration
+preservation, complete broker fixtures and component-local dim-mode hover hints.
+The local contract suite passes **71/71**, integrated Linux CTest **110/110**,
+and actual wx object workflows **25 groups / 25 captures**. Native hover,
+installer, endurance and actual boat acceptance remain pending.
+The native functional suite, fixture-free recovery package, installer lifecycle,
+100/125/150% DPI/hover checks and chart/plugin gates passed. Their development
+review bundle and full native evidence have been downloaded and hash-verified.
+The Windows endurance harness then failed before its first sample because it
+still selected the removed Light caption. The next source uses the existing
+palette action and verifies Day/Dusk/Night. This candidate has no accepted
+Windows endurance result. Its Linux elapsed-time run remains incomplete and
+boat acceptance is pending; the development bundle is not a qualified release.
+
+### Previous candidate (not qualified)
+
+`60cd054712c6a930147247970121a959d48e03bf` was exercised in
 [CI 36284246369](https://github.com/ThereptileII/Work/actions/runs/36284246369).
 All 591 tracked source blobs and modes match local source
 `f123bf5c3d33d979409a8f32418653ac56c2d413`; the pinned upstream gitlink is unchanged.
@@ -32,8 +52,8 @@ the remaining lifecycle and native endurance steps are not accepted. The
 [narrow harness repair](installer/beta2-version-transition-notices.md) retains
 the actual captured warning and explicit Agree action, with exact owned-version
 checks. The expanded local portable suite passes **71/71**; a replacement native
-candidate is still required. Linux's three-hour
-elapsed-time trip began at 01:26 UTC and is not yet a completed endurance result.
+candidate is now running above. The superseded candidate's Linux three-hour
+elapsed-time trip began at 01:26 UTC; it is not an accepted endurance result.
 
 The separate exact-revision commissioning tooling has passed its native marker
 transport, full broker and actual Prepare/Arm/Collect gates; downloaded evidence
@@ -57,24 +77,27 @@ Show were unchecked, and OpenCPN was not launched. Tailscale, SSH and RustDesk
 remain running. [Upgrade evidence](evidence/beta2-boat-stock-5.12.4-upgrade.json).
 This closes the stock-version prerequisite; Beta 2 still requires its own gates.
 
-A fresh stock-only commissioning inventory matched all nine previously reviewed
-plugin DLLs and their source evidence. The journaled one-byte input-only change
-and four temporary DLL quarantines are now applied and independently verified.
-The exact official stock executable has now launched with empty arguments on
-the interactive desktop. It is still at its first-start navigation caution; no
-acknowledgement has been sent. This preparation is for a real-chart stock baseline,
-not an installed-XNav launch attestation or visual acceptance.
-[Read-only preparation evidence](evidence/beta2-boat-stock-readonly-preparation.json).
-The saved profile uses Swedish (`Locale=sv`). First-start warning review must
-therefore qualify the actual official Swedish dialog, preserving that preference;
-an English-only fixture cannot authorize its acknowledgement. The exact official
-Swedish catalogues and pinned source translations have been inspected. Actual
-English and Swedish startup dialogs now pass separate native qualification,
-including reviewed pixels, one acknowledgement, preserved locale and normal
-exit: [qualified warning evidence](evidence/beta2-stock-warning-2b2c2c.json).
-The boat capture refused an inconsistent window/foreground observation. It
-published no image and sent no acknowledgement; bounded diagnostics are being
-used to identify the mismatch before proceeding. The configured N2K serial port is
+A stock-only commissioning inventory matched all nine reviewed plugin DLLs
+and their source evidence. The journaled one-byte input-only change and four
+temporary DLL quarantines remain applied and verified. The exact official stock
+executable launched with empty arguments on the interactive desktop, preserving
+Swedish locale. Its complete first-start GPL/navigation caution was captured,
+downloaded, hash-verified and reviewed. The separately native-qualified warning
+tool acknowledged it once after two consecutive complete reviewed-image matches;
+modal dismissal and the current-launch startup-finalized marker are confirmed.
+[Read-only preparation](evidence/beta2-boat-stock-readonly-preparation.json),
+[actual warning review](evidence/beta2-boat-stock-warning-review.json), and
+[qualified settling tools](evidence/beta2-warning-settling-4fa62e.json).
+
+Chart acceptance remains open: the first view showed water at a close 100m scale
+and a Windows Update notification. No Windows restart or update action was taken.
+The later capture refused the overlapping notification. The fixed-size resize
+then exposed a partially offscreen saved normal window and refused before changing
+its size; the display helper is being repaired without weakening capture checks.
+The exact launch log records an Intel UHD OpenGL4.6 canvas context. This is not
+proof of chart rendering or hardware acceleration. No physical command has been
+sent. Profile migration and normal-close preservation still require review.
+The configured N2K serial port is
 currently absent from read-only port inventory; no current N2K reception is
 inferred. A closed-copy navigation-database integrity/content baseline is also
 recorded privately using the [byte-preserving audit](installer/navigation-preservation-audit.md).

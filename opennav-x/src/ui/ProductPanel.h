@@ -104,6 +104,7 @@ private:
   void Heading(const wxString &title, const wxString &subtitle);
   void Text(const wxString &text, int size = 14);
   void LiveText(std::function<wxString(const ProductState &)> text);
+  bool RefreshLiveText();
   XNavButton *StatusAction(const wxString &title,
                           std::function<wxString(const ProductState &)> status,
                           std::function<void()> action);
@@ -157,9 +158,15 @@ private:
   bool pilot_advanced_ = false;
   bool anchor_history_ = false;
   std::vector<std::pair<XNavButton *, adapters::PilotAction>> pilot_buttons_;
-  std::vector<
-      std::pair<wxStaticText *, std::function<wxString(const ProductState &)>>>
-      text_;
+  struct LiveTextEntry {
+    wxStaticText *label;
+    std::function<wxString(const ProductState &)> value;
+    wxString raw;
+    int wrap_width;
+    wxFont font;
+    wxSize dpi;
+  };
+  std::vector<LiveTextEntry> text_;
   std::vector<std::pair<XNavDataValue *,
                         std::function<vessel::Sample(const ProductState &)>>>
       values_;

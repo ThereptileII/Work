@@ -1,0 +1,191 @@
+{
+  "schema": "OpenNavX.Beta2.StockCaptionFocusEvidence.1",
+  "publishedCommit": "db7a2fca319d827d9490a085344ec718d0405dbd",
+  "localCommit": "2b9c636570ea96b2103e1190eecdfdd473057d30",
+  "runUrl": "https://github.com/ThereptileII/Work/actions/runs/36289266044",
+  "status": "passed-for-bounded-warning-primitive",
+  "wholeRunStatusAtRecord": "all nine jobs passed",
+  "scope": "Exact official stock English and Swedish warning; disposable empty portable profile only",
+  "actualChecks": {
+    "en_US": 46,
+    "sv": 48
+  },
+  "foregroundProof": "A separate non-overlapping inert native fixture window owned foreground before one fixed caption action; exact modal owned foreground afterwards.",
+  "refusals": [
+    "Wrong PID",
+    "Wrong creation time",
+    "Foreign overlapping window at caption, with cursor and foreign mouse event count unchanged"
+  ],
+  "separation": "Focus preserved exact modal and both Agree/Cancel handles. A separate Inspect/capture/hash-bound Agree operation followed.",
+  "screenshotsInspected": [
+    "actual-stock-focused-warning.png (English)",
+    "actual-stock-focused-warning.png (Swedish)"
+  ],
+  "normalClose": true,
+  "physicalOutput": false,
+  "boatAccess": false,
+  "artifacts": [
+    {
+      "artifact": 10921997071,
+      "name": "development-stock-welcome-en_US-db7a2fca319d827d9490a085344ec718d0405dbd",
+      "sha256": "4a5226fbcf9e6cd888e55da1f02c9e18039d48c332f5dbc2c0a98bccab2550db",
+      "bytes": 101276,
+      "apiUploadDownloadCrcVerified": true,
+      "locale": "en_US",
+      "checks": 46,
+      "nativeSha256": "e903471fca3fb5f96b03e98572c1549ab7a7fb9d2e641af4deea291167ddf330",
+      "psSha256": "e6ed3a162df750c95e48e57a6625de5b9e24b50da2b444a5726883fab3f5b0ba",
+      "focusImageSha256": "f1a04db3a653f21b178f9951c1d1d013c4a5466dcf1d5cb2e5a40e9a93114a16"
+    },
+    {
+      "artifact": 10921212658,
+      "name": "development-stock-welcome-sv-db7a2fca319d827d9490a085344ec718d0405dbd",
+      "sha256": "1838f0480fbbe3dbc02085c3900117c3b7b1829d26af27fded7e296f553a429e",
+      "bytes": 100755,
+      "apiUploadDownloadCrcVerified": true,
+      "locale": "sv",
+      "checks": 48,
+      "nativeSha256": "e903471fca3fb5f96b03e98572c1549ab7a7fb9d2e641af4deea291167ddf330",
+      "psSha256": "e6ed3a162df750c95e48e57a6625de5b9e24b50da2b444a5726883fab3f5b0ba",
+      "focusImageSha256": "6ef72395b371256191a076e48e18e337aebea8317b233af52e198f90eb771f90"
+    }
+  ],
+  "sameCommitToolingQualification": {
+    "status": "passed",
+    "tree": "309ab49c6b8ab87722c10a9433941aadd291e50d",
+    "verifiedBlobIdentitiesAndModes": 606,
+    "maintenanceChecks": 1245,
+    "maintenanceSuites": 16,
+    "closedNavigationCopyPython": 11,
+    "warningInteropAndReadOnlyDiagnosticChecks": 128,
+    "nativeComShortcutChecks": {
+      "x64": 72,
+      "x86": 72
+    },
+    "nativeTransportChecks": 359,
+    "portableCodecChecks": 886,
+    "nativeTransportCases": 24,
+    "actualBrokerChecks": 51,
+    "actualPrepareArmCollectChecks": 47,
+    "nativeModeWindowCases": 9,
+    "nativeDisplayWindowCases": 15,
+    "jobs": [
+      {
+        "id": 108536062956,
+        "name": "Native Win32 commissioning restart process boundary",
+        "conclusion": "success"
+      },
+      {
+        "id": 108536063048,
+        "name": "Read-only native warning desktop diagnostics",
+        "conclusion": "success"
+      },
+      {
+        "id": 108536063077,
+        "name": "Disposable native Windows tooling checks",
+        "conclusion": "success"
+      },
+      {
+        "id": 108536063093,
+        "name": "Actual COM shortcut migration (x64)",
+        "conclusion": "success"
+      },
+      {
+        "id": 108536063114,
+        "name": "Actual COM shortcut migration (x86)",
+        "conclusion": "success"
+      },
+      {
+        "id": 108536317061,
+        "name": "Fixed guarded mode UI actions on disposable native windows",
+        "conclusion": "success"
+      },
+      {
+        "id": 108536317075,
+        "name": "Actual official OpenCPN portable upgrade caution (sv)",
+        "conclusion": "success"
+      },
+      {
+        "id": 108536317084,
+        "name": "Actual restart broker with disposable marker-only installation",
+        "conclusion": "success"
+      },
+      {
+        "id": 108536317133,
+        "name": "Actual official OpenCPN portable upgrade caution (en_US)",
+        "conclusion": "success"
+      }
+    ],
+    "artifacts": [
+      {
+        "artifact": 10922090142,
+        "name": "development-boat-tooling-db7a2fca319d827d9490a085344ec718d0405dbd",
+        "sha256": "bb619113034de27ceca5ffa4f9f026163d20c62c72b545ce7c4a2bad44ce1a37",
+        "bytes": 19910,
+        "apiUploadDownloadCrcVerified": true
+      },
+      {
+        "artifact": 10921997071,
+        "name": "development-stock-welcome-en_US-db7a2fca319d827d9490a085344ec718d0405dbd",
+        "sha256": "4a5226fbcf9e6cd888e55da1f02c9e18039d48c332f5dbc2c0a98bccab2550db",
+        "bytes": 101276,
+        "apiUploadDownloadCrcVerified": true
+      },
+      {
+        "artifact": 10921952286,
+        "name": "development-desktop-diagnostics-db7a2fca319d827d9490a085344ec718d0405dbd",
+        "sha256": "0d422cd063a1b03d5cbeaef7c3d53e78333f602b55e346d162076b86d99fee9f",
+        "bytes": 2881,
+        "apiUploadDownloadCrcVerified": true
+      },
+      {
+        "artifact": 10921897465,
+        "name": "development-commissioning-restart-db7a2fca319d827d9490a085344ec718d0405dbd",
+        "sha256": "f70b58d91167bb30803938f4d36af36a3d2c9c609480eec139f2fa164354933f",
+        "bytes": 6179,
+        "apiUploadDownloadCrcVerified": true
+      },
+      {
+        "artifact": 10921842961,
+        "name": "development-restart-window-db7a2fca319d827d9490a085344ec718d0405dbd",
+        "sha256": "4b989822ebbc8b87ef449173715fa58f31f60909eb641a1d976f529055e80ccf",
+        "bytes": 2988,
+        "apiUploadDownloadCrcVerified": true
+      },
+      {
+        "artifact": 10921382269,
+        "name": "development-installer-shortcuts-x86-db7a2fca319d827d9490a085344ec718d0405dbd",
+        "sha256": "14f3656700b1debe23a4475134983c198cef7613ec0d870dd946f4599539dc4a",
+        "bytes": 941,
+        "apiUploadDownloadCrcVerified": true
+      },
+      {
+        "artifact": 10921212658,
+        "name": "development-stock-welcome-sv-db7a2fca319d827d9490a085344ec718d0405dbd",
+        "sha256": "1838f0480fbbe3dbc02085c3900117c3b7b1829d26af27fded7e296f553a429e",
+        "bytes": 100755,
+        "apiUploadDownloadCrcVerified": true
+      },
+      {
+        "artifact": 10921009740,
+        "name": "development-commissioning-broker-db7a2fca319d827d9490a085344ec718d0405dbd",
+        "sha256": "8763cb56ed2357c60809458a9d8a6893e2f6403e827cb4d42817968d6fe1ebdb",
+        "bytes": 15807,
+        "apiUploadDownloadCrcVerified": true
+      },
+      {
+        "artifact": 10920989555,
+        "name": "development-installer-shortcuts-x64-db7a2fca319d827d9490a085344ec718d0405dbd",
+        "sha256": "23001b5f6dad6f177f340f96ceafdb1a5f8a76064fb12a8ab9d6da4e77a9e46e",
+        "bytes": 941,
+        "apiUploadDownloadCrcVerified": true
+      }
+    ]
+  },
+  "limits": [
+    "No physical boat acceptance is inferred from these CI tests.",
+    "Native shortcut COM tests execute actual lifecycle helpers but do not replace the pending full NSIS wizard and genuine older-version installer lifecycle gate.",
+    "Broker identities are substituted only inside sealed disposable fixtures; actual entrypoint bodies match source hashes.",
+    "Marker mode/display windows do not establish actual product wxWidgets rendering."
+  ]
+}

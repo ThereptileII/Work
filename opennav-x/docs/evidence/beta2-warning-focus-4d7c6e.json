@@ -1,0 +1,141 @@
+{
+  "schema": 1,
+  "purpose": "Saved warning ordinary foreground restoration; read-only renderer observer and installed warning focus wrapper. Development tooling qualification only.",
+  "publishedCommit": "4d7c6e9bfcb94c19896a670973c95960e42b7b31",
+  "equivalentLocalCommit": "5bb92bf564054fdfddbad3a4444fa83584717e6b",
+  "tree": "5eca2019329d7e3ebcf9f66c946e98bceb660c65",
+  "verifiedMappedBlobs": 612,
+  "runUrl": "https://github.com/ThereptileII/Work/actions/runs/36290450010",
+  "jobsPassed": 9,
+  "jobsTotal": 9,
+  "artifacts": [
+    {
+      "id": 10922345468,
+      "name": "development-installer-shortcuts-x86-4d7c6e9bfcb94c19896a670973c95960e42b7b31",
+      "sha256": "ac884e6e6f5842d5481f07da97804522ecc97d8c1470b85d2a411c601e55772a",
+      "size": 940,
+      "apiUploadAndDownloadMatched": true,
+      "zipCrcPassed": true
+    },
+    {
+      "id": 10922270842,
+      "name": "development-restart-window-4d7c6e9bfcb94c19896a670973c95960e42b7b31",
+      "sha256": "ff0ebf96279abeb87481865b6848f788561c8f206297db94cbb7cdfba26681d9",
+      "size": 2978,
+      "apiUploadAndDownloadMatched": true,
+      "zipCrcPassed": true
+    },
+    {
+      "id": 10922216243,
+      "name": "development-installer-shortcuts-x64-4d7c6e9bfcb94c19896a670973c95960e42b7b31",
+      "sha256": "202377f5f3d96df6b1d3dadfd6e6ae2c5bffb307de40a4c7323e4aa8b1838acb",
+      "size": 941,
+      "apiUploadAndDownloadMatched": true,
+      "zipCrcPassed": true
+    },
+    {
+      "id": 10922086994,
+      "name": "development-stock-welcome-sv-4d7c6e9bfcb94c19896a670973c95960e42b7b31",
+      "sha256": "1caabb7c921897d5d062548eac9c4fb2823942d9e3ed64f21d913fe94a34184b",
+      "size": 102253,
+      "apiUploadAndDownloadMatched": true,
+      "zipCrcPassed": true
+    },
+    {
+      "id": 10922018631,
+      "name": "development-commissioning-restart-4d7c6e9bfcb94c19896a670973c95960e42b7b31",
+      "sha256": "4f77784e7849897ac332c985602338e4dc5cb6c983e94b79886ba3b2d17783eb",
+      "size": 6181,
+      "apiUploadAndDownloadMatched": true,
+      "zipCrcPassed": true
+    },
+    {
+      "id": 10921834762,
+      "name": "development-desktop-diagnostics-4d7c6e9bfcb94c19896a670973c95960e42b7b31",
+      "sha256": "c9c00b2e19dbc591a0544b90e67744b81912c81f7c180f78c1e9fb20eda5fde7",
+      "size": 3089,
+      "apiUploadAndDownloadMatched": true,
+      "zipCrcPassed": true
+    },
+    {
+      "id": 10921478534,
+      "name": "development-stock-welcome-en_US-4d7c6e9bfcb94c19896a670973c95960e42b7b31",
+      "sha256": "743829465b45bd717849a7f706e49b24616660bb89861d621c381f8581f36bdb",
+      "size": 102859,
+      "apiUploadAndDownloadMatched": true,
+      "zipCrcPassed": true
+    },
+    {
+      "id": 10921169075,
+      "name": "development-boat-tooling-4d7c6e9bfcb94c19896a670973c95960e42b7b31",
+      "sha256": "2e19fe56f568decd45a6a5e15bc22b5edf6be15b11b12767843b06bd433b0e0c",
+      "size": 20612,
+      "apiUploadAndDownloadMatched": true,
+      "zipCrcPassed": true
+    },
+    {
+      "id": 10922530129,
+      "name": "development-commissioning-broker-4d7c6e9bfcb94c19896a670973c95960e42b7b31",
+      "sha256": "732209379905df15fd9ad4a85d01c4317025c34a3745fb45f0e6863248ff7f98",
+      "size": 15811,
+      "apiUploadAndDownloadMatched": true,
+      "zipCrcPassed": true
+    }
+  ],
+  "checks": {
+    "maintenanceTotal": 1335,
+    "maintenanceSuites": {
+      "maintenance-baseline-adoption": 73,
+      "maintenance-boat-tools": 27,
+      "maintenance-broker-fixture-contracts": 15,
+      "maintenance-commissioning-launch": 11,
+      "maintenance-commissioning": 21,
+      "maintenance-installed-welcome": 98,
+      "maintenance-official-upgrade-policy": 86,
+      "maintenance-preparation": 34,
+      "maintenance-renderer-log": 66,
+      "maintenance-restart-aui-persistence": 77,
+      "maintenance-restart-commissioning": 278,
+      "maintenance-restart-window-review": 132,
+      "maintenance-review-window": 159,
+      "maintenance-source-checkout": 16,
+      "maintenance-startup-log": 16,
+      "maintenance-stock-review": 83,
+      "maintenance-stock-welcome": 143
+    },
+    "navigationCopyPython": 11,
+    "warningPolicyAndInterop": 143,
+    "officialEnglishFreshPowerShell51WithOwnForeground": 49,
+    "officialSwedishFreshPowerShell51WithOwnForeground": 51,
+    "nativeComShortcutX86": 72,
+    "nativeComShortcutX64": 72,
+    "restartCodec": 886,
+    "restartTransport": 359,
+    "actualBroker": 51,
+    "actualPrepareArmCollect": 47,
+    "nativeModeWindow": 9,
+    "nativeDisplayWindow": 15
+  },
+  "windowsFileSha256": {
+    "StockWelcome.ps1": "deceb65a5d74844252ab72834b942156424002fc3179daa735d19fdcaec506b7",
+    "StockWelcomeNative.cs": "e903471fca3fb5f96b03e98572c1549ab7a7fb9d2e641af4deea291167ddf330"
+  },
+  "actualApplicationTest": {
+    "officialExecutableSha256": "7c6547562cca7954671eaab72833ca9d788710fd9808b6a699b6dc823852ae0c",
+    "profile": "new isolated portable, empty connections, all bundled plugins disabled",
+    "freshNativePowerShell51Agreement": true,
+    "ownNonoverlappingForegroundMarkerBeforeAgreement": true,
+    "ordinaryActivationThenOriginalIdentityAndPixelProof": true,
+    "captionInputDuringAcknowledgement": false,
+    "oneDurableIntentBeforeAgree": true,
+    "normalClose": true,
+    "localePreserved": true,
+    "swedishWarningAndPostAgreementScreenshotsVisuallyReviewed": true
+  },
+  "limitations": [
+    "No boat or physical hardware acceptance is inferred.",
+    "Actual official stock windows qualify the shared warning primitive; installed generation wrapper has native policy/runtime-proof coverage, not an actual installed Beta2 warning in this run.",
+    "Renderer observer tests qualify bounded exact-log and launch-receipt interpretation, not actual boat GPU rendering.",
+    "Complete Beta2 product and installer acceptance remain separate."
+  ]
+}

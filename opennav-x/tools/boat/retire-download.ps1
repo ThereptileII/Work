@@ -3,14 +3,14 @@
 [CmdletBinding()]
 param([string]$Workspace='C:\XNav',
       [Parameter(Mandatory=$true)][string]$File,
-      [Parameter(Mandatory=$true)][ValidatePattern('^[a-f0-9]{64}$')][string]$ExpectedSha256)
+      [Parameter(Mandatory=$true)][ValidatePattern('^[a-f0-9]{64}$')][string]$ExpectedSha256,
+      [switch]$Beta1Setup)
 . (Join-Path $PSScriptRoot 'Common.ps1')
+. (Join-Path $PSScriptRoot 'RetirementPolicy.ps1')
 $source=Assert-LocalPath $File
 $root=Assert-LocalPath $Workspace
-if ([IO.Path]::GetExtension($source) -ine '.zip' -or
-    [IO.Path]::GetFileName($source) -cnotmatch '^OpenNavX-[A-Za-z0-9_-]+( \([0-9]+\))?\.zip$') {
-  throw 'Only an explicitly identified OpenNav ZIP download can be archived.'
-}
+$kind=Get-DownloadRetirementKind ([IO.Path]::GetFileName($source)) $ExpectedSha256 $Beta1Setup.IsPresent
+if (-not [IO.File]::Exists($source)) { throw 'Expected one existing regular release file.' }
 if ($source.StartsWith($root+'\',[StringComparison]::OrdinalIgnoreCase)) {
   throw 'Existing recovery files must not be retired again.'
 }
@@ -21,14 +21,19 @@ if ([IO.Path]::GetPathRoot($source) -ine [IO.Path]::GetPathRoot($recovery)) {
 }
 $null=New-Item -ItemType Directory -Path $recovery -Force
 $identity='retired-download-'+[DateTime]::UtcNow.ToString('yyyyMMdd-HHmmss')+'-'+[guid]::NewGuid().ToString('N').Substring(0,8)
-$target=Join-Path $recovery ($identity+'.zip')
+$extension=if ($kind -ceq 'beta1-setup') { '.exe' } else { '.zip' }
+$target=Assert-LocalPath (Join-Path $recovery ($identity+$extension))
 $journal=Join-Path $recovery ($identity+'.planned.json')
 $completion=Join-Path $recovery ($identity+'.json')
+foreach ($path in @($target,$journal,$completion)) {
+  if (Test-Path -LiteralPath $path) { throw 'Retirement destination already exists; source retained.' }
+}
 $record=@{status='planned';utc=[DateTime]::UtcNow.ToString('o');originalFile=$source;
-  recoveryFile=$target;sha256=$ExpectedSha256;bytes=(Get-Item -LiteralPath $source).Length;
-  userDataDeleted=$false;restore='Move this ZIP back to its recorded original path.'}
+  recoveryFile=$target;sha256=$ExpectedSha256;bytes=(Get-Item -LiteralPath $source).Length;kind=$kind;
+  userDataDeleted=$false;restore='Move this exact release file back to its recorded original path.'}
 Write-Record $journal $record
 if ((Get-Digest $source) -cne $ExpectedSha256) {throw 'Download changed during preparation; source retained.'}
+$null=Assert-LocalPath $target
 [IO.File]::Move($source,$target)
 $record.status='retired'
 try {

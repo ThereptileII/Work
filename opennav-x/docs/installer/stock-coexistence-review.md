@@ -137,3 +137,97 @@ pixel mismatch before intent, and durable-intent failure before native input.
 These checks invoke no Windows API and are not evidence of actual modal handling.
 The separate official 5.12.4 native warning fixture is pending; it must capture
 the real wx dialog and test the unchanged capture/acknowledgement helper.
+
+
+## Input-desktop diagnostics on refused warning capture
+
+A foreground refusal retains the exact stock launch/process and modal checks,
+then appends a bounded `desktopDiagnostic` JSON object to the error. It reads the
+interactive helper's desktop and the current input desktop using
+`GetThreadDesktop`, `OpenInputDesktop(0, false, DESKTOP_READOBJECTS)` and
+`GetUserObjectInformationW` (`UOI_NAME`, `UOI_IO`). Only the independently opened
+input handle is closed. No desktop is activated or switched; access rights,
+credentials and acknowledgement behavior are unchanged.
+
+The record contains desktop names, input-state observations, native error codes,
+handle-close outcome and numeric foreground HWND/PID. A read-only
+`GetGUIThreadInfo` call on that observed foreground thread reports distinct menu,
+popup-menu, system-menu and move/size flags, preserving unavailable values as
+unknown and recording whether the foreground HWND changed during the query. It does not enumerate
+unrelated window titles or capture another application's pixels. Access denied
+is reported as unavailable, not as proof that Windows is locked. A disconnected
+session can also affect the reported input desktop. Failure of the probe still
+refuses the original capture; it cannot change acceptance.
+
+The portable tests cover classification, missing data, escaping and the native
+ABI. On Windows the same suite additionally executes only the read-only desktop
+queries and checks handle cleanup. This is diagnostic qualification, not proof
+that a real boat desktop is unlocked. API contracts: [OpenInputDesktop](https://learn.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-openinputdesktop),
+[GetUserObjectInformationW](https://learn.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-getuserobjectinformationw),
+[GetThreadDesktop](https://learn.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-getthreaddesktop),
+[GetGUIThreadInfo](https://learn.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-getguithreadinfo).
+
+
+The warning focus request now uses `SetForegroundWindow` followed by a bounded
+five-second `SendMessageTimeout(WM_NULL)` rendezvous instead of a fixed 250 ms
+sleep. The existing exact-modal identity, foreground and occlusion checks still
+follow it. The request's boolean result is diagnostic on refusal; it is never
+proof of success. A timeout refuses before capture. This follows Microsoft's
+[asynchronous activation guidance](https://devblogs.microsoft.com/oldnewthing/20161118-00/?p=94745/)
+and adds no click, permission bypass or input-queue attachment. The native
+English/Swedish official-stock fixture must qualify this exact revision.
+
+
+## Separate fixed caption focus
+
+If `InspectWelcome` refuses solely because the verified warning is not the
+foreground window after its normal request/rendezvous, `-Action FocusWelcome`
+performs one ordinary title-bar click. It uses the same immutable stock launch,
+PID/creation tick/session, source/plugin/profile and helper-hash proof. It does
+not dismiss another program, hide the taskbar, attach input queues, change focus
+policy, switch/unlock desktops, or acknowledge the caution. The separate installed-product wrapper reuses this primitive with its own
+[installed generation and commissioning proof](installed-startup-review.md).
+
+The native helper accepts only PID and exact creation ticks; it does not accept
+coordinates, captions, HWNDs, messages or input selectors. It finds the complete
+pinned English/Swedish modal, derives the centre of its native title bar, requires
+`WindowFromPoint` to identify that same modal and `WM_NCHITTEST` to return
+`HTCAPTION`, and repeats all captured fields and geometry before input. Both
+helper and input desktops must be the active `Default` desktop. Held mouse
+buttons/modifiers, foreground or target mouse capture/menu/move loops, cloaked
+targets, covered windows, changed geometry, reused PIDs and ambiguous notices
+refuse. Other window titles are never collected. Refusals report bounded numeric
+HWND/PID, class, hit-test and DWM cloak observations; a cloak observation does not
+relax the existing strict overlap rule.
+
+An exclusive `focus-intent.json` precedes input. One `SendInput` call contains
+only absolute movement to that derived point, left-down and left-up. The batch
+is not an atomic HWND-targeted operation: a concurrent desktop change can still
+invalidate it, and subsequent verification must refuse. Partial delivery never
+repeats a press: a positive partial count permits at most one release-only
+cleanup, then reports an uncertain result even if cleanup was inserted. A
+failed release remains explicitly uncertain; the tool cannot claim a released
+button when Windows blocked input. No automatic retry occurs. Successful
+submission is followed by a bounded read-only wait for actual activation/release
+(sent messages can overtake queued input), the exact-modal rendezvous, PID/start recheck,
+unchanged notice, foreground/occlusion checks and released-button observation.
+
+An already foreground, fully verified warning requires no click.
+
+Only then can `focused-warning.png` be captured. Its result says
+`acknowledgementSent: false` and **cannot** serve as an acknowledgement inspection.
+Run the normal separate `InspectWelcome`, review its pixels and then use its
+hash-bound `AcknowledgeWelcome` if appropriate. No `Agree`/`Cancel` event is
+part of caption focus.
+
+Local verification now passes 127 warning policy/interop checks and 83 stock
+identity/full-transaction checks. These execute no pointer input and are not
+native or boat acceptance. The actual official 5.12.4 English/Swedish fixture
+must additionally prove the exact caption operation, wrong PID/start refusal,
+foreign-overlay refusal and modal retention before separate inspection/agreement.
+
+API boundaries: [GetTitleBarInfo](https://learn.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-gettitlebarinfo),
+[WM_NCHITTEST](https://learn.microsoft.com/en-us/windows/win32/inputdev/wm-nchittest),
+[SendInput](https://learn.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-sendinput),
+[MOUSEINPUT](https://learn.microsoft.com/en-us/windows/win32/api/winuser/ns-winuser-mouseinput),
+[DwmGetWindowAttribute](https://learn.microsoft.com/en-us/windows/win32/api/dwmapi/nf-dwmapi-dwmgetwindowattribute).

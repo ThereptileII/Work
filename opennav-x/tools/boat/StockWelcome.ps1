@@ -14,6 +14,32 @@ function Assert-StockWelcomeWindow($Info,[int]$ProcessId) {
     throw 'Captured warning is not the pinned English or Swedish navigation caution.'
   }
 }
+function Convert-StockWelcomeWindow($Info) {
+  # JSON includes C# Rect's read-only Width/Height. Rebuild only writable fields,
+  # and prove the serialized derived dimensions instead of discarding them.
+  Initialize-StockWelcomeNative
+  $names=@('Frame','Modal','Agree','Cancel','Html','ProcessId','AgreeId','CancelId','Dpi','Bounds','Title','ModalClass','HtmlClass','HtmlName','AgreeText','CancelText')
+  if ($null -eq $Info -or ((@($Info.PSObject.Properties.Name | Sort-Object) -join '|') -cne (($names | Sort-Object) -join '|'))) { throw 'Captured warning field schema differs.' }
+  $bounds=$Info.Bounds
+  if ($null -eq $bounds -or ((@($bounds.PSObject.Properties.Name | Sort-Object) -join '|') -cne 'Bottom|Height|Left|Right|Top|Width')) { throw 'Captured warning rectangle schema differs.' }
+  function Integer($Value,[long]$Minimum,[long]$Maximum) {
+    if (($Value -isnot [int] -and $Value -isnot [long] -and $Value -isnot [uint32]) -or $Value -lt $Minimum -or $Value -gt $Maximum) { throw 'Captured warning integer type or bounds differ.' }
+    return [long]$Value
+  }
+  $rectangle=New-Object OpenNavX.StockWelcomeNative+Rect
+  foreach($name in @('Left','Top','Right','Bottom')) { $rectangle.$name=[int](Integer $bounds.$name ([int]::MinValue) ([int]::MaxValue)) }
+  $width=Integer $bounds.Width 1 ([int]::MaxValue);$height=Integer $bounds.Height 1 ([int]::MaxValue)
+  if (([long]$rectangle.Right-$rectangle.Left) -ne $width -or ([long]$rectangle.Bottom-$rectangle.Top) -ne $height) { throw 'Captured warning derived width or height differs.' }
+  $result=New-Object OpenNavX.StockWelcomeNative+NoticeInfo
+  foreach($name in @('Frame','Modal','Agree','Cancel','Html')) { $result.$name=Integer $Info.$name 1 ([long]::MaxValue) }
+  foreach($name in @('ProcessId','AgreeId','CancelId')) { $result.$name=[int](Integer $Info.$name 1 ([int]::MaxValue)) }
+  $result.Dpi=[uint32](Integer $Info.Dpi 72 384);$result.Bounds=$rectangle
+  foreach($name in @('Title','ModalClass','HtmlClass','HtmlName','AgreeText','CancelText')) {
+    if ($Info.$name -isnot [string]) { throw 'Captured warning text type differs.' };$result.$name=$Info.$name
+  }
+  Assert-StockWelcomeWindow $result $result.ProcessId
+  return $result
+}
 function Assert-StockWelcomeInspection($Inspection,$Job,[datetime]$Now) {
   if ($Inspection.status -cne 'passed' -or $Inspection.action -cne 'ReviewStock' -or $Inspection.reviewAction -cne 'InspectWelcome' -or
       $Inspection.mode -cne 'StockLegacy' -or $Inspection.processId -ne $Job.processId -or
@@ -37,14 +63,49 @@ function Save-StockWelcomeCapture([int]$ProcessId,$Info,[string]$Path) {
   } finally { $graphics.Dispose();$bitmap.Dispose() }
   return Get-Digest $path
 }
+function Restore-StockWelcomeAgreementForeground([int]$ProcessId,$Info) {
+  # A separately scheduled acknowledgement can leave its own console foreground.
+  # Use only the existing ordinary activation/rendezvous; no caption input.
+  # Fresh discovery is never substituted for the saved reviewed observation.
+  $null=[OpenNavX.StockWelcomeNative]::Inspect($ProcessId)
+  [OpenNavX.StockWelcomeNative]::AssertUnchanged($ProcessId,$Info)
+}
+function Save-StockWelcomeSettledCapture([int]$ProcessId,$Info,[string]$ExpectedImageHash,[string]$BeforeImage) {
+  if ($ExpectedImageHash -cnotmatch '^[a-f0-9]{64}$' -or (Test-Path -LiteralPath $BeforeImage)) { throw 'New image path and exact reviewed hash required.' }
+  $watch=[Diagnostics.Stopwatch]::StartNew();$consecutive=0
+  # DWM can finish painting a newly active title bar after WM_NULL completes.
+  # Observe only: no focus/input retries, cropped pixels, or changed authority.
+  for($attempt=0;$attempt -lt 20 -and $watch.ElapsedMilliseconds -lt 5000;$attempt++) {
+    $candidate=$BeforeImage+'.settle-'+$attempt.ToString('00')+'.png'
+    $hash=Save-StockWelcomeCapture $ProcessId $Info $candidate
+    if ($watch.ElapsedMilliseconds -ge 5000) { break }
+    if ($hash -ceq $ExpectedImageHash) { $consecutive++ } else { $consecutive=0 }
+    if ($consecutive -eq 2) {
+      # Preserve every observation and publish only the exact reviewed image.
+      [IO.File]::Copy($candidate,$BeforeImage,$false)
+      if ((Get-Digest $BeforeImage) -cne $ExpectedImageHash) { throw 'Settled warning copy changed before acknowledgement.' }
+      return $ExpectedImageHash
+    }
+    if ($attempt -lt 19) { Start-Sleep -Milliseconds 150 }
+  }
+  throw 'Warning pixels did not settle to the exact reviewed image; no acknowledgement sent. Private full-image attempts retained.'
+}
 function Invoke-StockWelcomeAgreement([int]$ProcessId,$Info,[string]$ExpectedImageHash,[string]$BeforeImage,[string]$IntentPath) {
   if ($ExpectedImageHash -cnotmatch '^[a-f0-9]{64}$') { throw 'Reviewed warning image hash required.' }
-  $hash=Save-StockWelcomeCapture $ProcessId $Info $BeforeImage
+  $Info=Convert-StockWelcomeWindow $Info
+  if ($Info.ProcessId -ne $ProcessId) { throw 'Captured warning belongs to another process.' }
+  Restore-StockWelcomeAgreementForeground $ProcessId $Info
+  $hash=Save-StockWelcomeSettledCapture $ProcessId $Info $ExpectedImageHash $BeforeImage
   if ($hash -cne $ExpectedImageHash) { throw 'Warning pixels changed since inspection; no acknowledgement sent.' }
   # Durable exclusive one-use intent. Even uncertain delivery cannot be retried
   # using this inspection. Never confuse transmission with modal dismissal.
   Write-Record $IntentPath @{owner='OpenNavX.StockWelcome.1';status='agree-intent';utc=[datetime]::UtcNow.ToString('o');processId=$ProcessId;imageSha256=$ExpectedImageHash;nativeWindow=$Info}
   [OpenNavX.StockWelcomeNative]::Agree($ProcessId,$Info)
+}
+function Invoke-StockWelcomeFocus([int]$ProcessId,[long]$StartedUtcTicks,[string]$IntentPath) {
+  if ($ProcessId -le 0 -or $StartedUtcTicks -le 0) { throw 'Exact launched process/start identity required for caption focus.' }
+  Write-Record $IntentPath @{owner='OpenNavX.StockWelcome.Focus.1';status='focus-intent';utc=[datetime]::UtcNow.ToString('o');processId=$ProcessId;processStartedUtcTicks=$StartedUtcTicks;action='Fixed warning caption only';acknowledgementSent=$false}
+  return [OpenNavX.StockWelcomeNative]::FocusCaption($ProcessId,$StartedUtcTicks)
 }
 function Invoke-StockWelcomeReview($Job,$Review,$Process,[string]$Sid,[int]$Session) {
   foreach ($name in @('welcomeHelperSha256','welcomeNativeSha256')) { if ($Job.$name -cnotmatch '^[a-f0-9]{64}$') { throw 'Pinned warning helper hashes required.' } }
@@ -57,6 +118,17 @@ function Invoke-StockWelcomeReview($Job,$Review,$Process,[string]$Sid,[int]$Sess
     welcomeHelperSha256=$Job.welcomeHelperSha256;welcomeNativeSha256=$Job.welcomeNativeSha256;mode='StockLegacy';actuatorCommandsIssuedByTool=$false;
     physicalBusSilenceNotClaimed=$true;bodyTextAccessible=$false;source='OpenCPN 37fd0cddb7334fe489e9f18aa163977a9c5c84f7 ShowNavWarning -> AlertDialog';
     review='Pinned English/Swedish GPL/no-warranty/navigation caution only. HTML body is verified by human review of the captured pixels; no text-accessibility claim.'}
+  if ($Job.reviewAction -ceq 'FocusWelcome') {
+    $null=Read-StockReview $Job;$Process.Refresh();Assert-StockProcess $Process $Job $Review.launch $Sid $Session
+    $ticks=([datetime]::Parse($Review.launch.processStartedUtc).ToUniversalTime()).Ticks
+    $info=Invoke-StockWelcomeFocus $Process.Id $ticks (Join-Path $directory 'focus-intent.json')
+    $null=Read-StockReview $Job;$Process.Refresh();Assert-StockProcess $Process $Job $Review.launch $Sid $Session
+    $image=Join-Path $directory 'focused-warning.png'
+    $result.imageSha256=Save-StockWelcomeCapture $Process.Id $info $image
+    $result.image=$image;$result.nativeWindow=$info;$result.focusVerified=$true;$result.acknowledgementSent=$false
+    $result.review='Fixed warning caption focused; warning remains present. This is not an InspectWelcome record and cannot authorize acknowledgement.'
+    return $result
+  }
   if ($Job.reviewAction -ceq 'InspectWelcome') {
     $info=[OpenNavX.StockWelcomeNative]::Inspect($Process.Id)
     $null=Read-StockReview $Job;$Process.Refresh();Assert-StockProcess $Process $Job $Review.launch $Sid $Session
@@ -73,7 +145,7 @@ function Invoke-StockWelcomeReview($Job,$Review,$Process,[string]$Sid,[int]$Sess
   $inspection=Read-Record $inspectionPath
   Assert-StockWelcomeInspection $inspection $Job ([datetime]::UtcNow)
   if ($inspection.image -ine (Join-Path $inspectionDir 'welcome.png') -or (Get-Digest $inspection.image) -cne $inspection.imageSha256) { throw 'Reviewed warning capture changed.' }
-  $info=[OpenNavX.StockWelcomeNative+NoticeInfo]$inspection.nativeWindow
+  $info=$inspection.nativeWindow
   $intent=Join-Path $inspectionDir 'agree-intent.json'
   if (Test-Path -LiteralPath $intent) { throw 'This inspection already has an acknowledgement intent; inspect actual state, never retry it.' }
   $null=Read-StockReview $Job;$Process.Refresh();Assert-StockProcess $Process $Job $Review.launch $Sid $Session

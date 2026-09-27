@@ -61,3 +61,13 @@ No item is marked accepted on the boat yet. Current implementation/evidence:
 
 Every closure must identify the exact native candidate and actual boat evidence.
 No hardware result is inferred from simulator tests or earlier acceptance.
+
+- B1-10 receiver follow-up: the recorded legacy RTL-SDR DLL exactly matches its
+  maintainer's 1.3.1 package; all 25 helper-tree files match AIS-catcher 0.62.
+  The legacy DLL requires wx 3.1.2 dependencies absent from the recorded cold
+  application tree, and the recovered INI does not establish an enabled receiver.
+  Its bundled helper batch enables external sharing, so it is not used for
+  read-only commissioning. Current quarantine prevents this acquisition path,
+  but cannot be blamed for the earlier Beta 1 report. Live reception remains
+  open; no receiver has been enabled by the
+  [source/package audit](../installer/boat-rtl-sdr-review-boundary.md).
