@@ -1,0 +1,174 @@
+{
+  "schema": 1,
+  "kind": "OpenNavX.NativeToolQualification.1",
+  "scope": "Disposable Windows tooling qualification; no boat process or profile was used by these jobs.",
+  "source": {
+    "publishedCommit": "ddf81076d8f4235b66c889c492b36505085e2e9a",
+    "localCommit": "347476e7c6de8d11ea86b676e56224f1f999dd76",
+    "tree": "19d10fcd01e50df71d6042775a237181304ea039",
+    "mappedBlobs": 629,
+    "allBlobHashesAndModesVerified": true,
+    "branch": "opennav-x-boat-tools"
+  },
+  "run": {
+    "id": 36293762467,
+    "url": "https://github.com/ThereptileII/Work/actions/runs/36293762467",
+    "conclusion": "success",
+    "jobs": 9
+  },
+  "changes": {
+    "normalChartHelperShutdown": "One source-defined CMD_EXIT with exact hash/PID/creation/parent/session and connected pipe peer checks; actual vendor helper never executed in CI.",
+    "sharedNormalClose": "Stock and installed dispatcher retain the exact native process handle before normal close and report measured zero/nonzero distinctly from unavailable status.",
+    "captureRefusal": "Private bounded first-obscurer metadata only after unchanged strict occlusion refusal; no owned-window exception.",
+    "variationMigration": "Exact source-reviewed PriorityVariation discovery rule under explicit reviewed baseline adoption."
+  },
+  "results": {
+    "maintenance": {
+      "suites": 19,
+      "totalChecks": 1519,
+      "counts": {
+        "baseline-adoption": 118,
+        "broker-fixture-contracts": 15,
+        "boat-tools": 30,
+        "chart-helper-shutdown": 45,
+        "commissioning-launch": 11,
+        "commissioning": 21,
+        "installed-welcome": 98,
+        "official-upgrade-policy": 86,
+        "preparation": 34,
+        "renderer-log": 66,
+        "restart-aui-persistence": 77,
+        "restart-commissioning": 295,
+        "restart-window-review": 132,
+        "review-window": 159,
+        "startup-log": 16,
+        "source-checkout": 16,
+        "stock-chart": 61,
+        "stock-welcome": 149,
+        "stock-review": 90
+      },
+      "navigationCopyPythonTests": 11
+    },
+    "restartCodecChecks": 886,
+    "nativeRestartTransport": {
+      "checks": 359,
+      "cases": 24
+    },
+    "actualBrokerChecks": 51,
+    "actualPrepareArmCollectChecks": 47,
+    "guardedModeWindowCases": 9,
+    "displayWindowCases": 15,
+    "resizeCasesAndWorkAreaProbes": 9,
+    "sharedNormalClose": {
+      "checks": 28,
+      "cases": [
+        "SharedPrimitive exit0",
+        "SharedPrimitive exit17",
+        "actual InteractiveJob Close exit0",
+        "actual InteractiveJob Close exit17"
+      ],
+      "originalUnretainedGetterRefusedInAllCases": true,
+      "cleanupErrors": 0,
+      "installedGenerationQualificationNotImplied": true
+    },
+    "chartHelperShutdown": {
+      "checks": 45,
+      "nativeCases": 10,
+      "normalAndArbitraryThreeByteReplyBothRequireMeasuredExitZero": true,
+      "shortAndMissingReplyRefused": true,
+      "nonzero17Preserved": true,
+      "timeoutCancelledAndDrainedOwnIoWithoutRetry": true,
+      "wrongStartHashPathAndPipeServerPidNeverWrite": true,
+      "vendorHelperExecuted": false
+    },
+    "officialStock": {
+      "en_US": 61,
+      "sv": 63,
+      "freshPS5SerializedWarningAgreement": true,
+      "fixedResizeAndOneZoomOut": true,
+      "exactForeignOverlayRefusalMetadata": true,
+      "freshGetProcessNormalCloseMeasuredZeroBothLocales": true,
+      "persistedScaleBefore": 0.003,
+      "persistedScaleAfter": 0.0015,
+      "swedishCoastlineBeforeAfterVisuallyReviewed": true
+    },
+    "installerCOM": {
+      "x64": 132,
+      "x86": 132
+    }
+  },
+  "artifacts": [
+    {
+      "id": 10923730099,
+      "name": "development-commissioning-restart-ddf81076d8f4235b66c889c492b36505085e2e9a",
+      "sha256": "bdd7469e08d7e5ff4d915a1e5ec062026d8abd303ee1b8a9bde56251ae62b9d3",
+      "bytes": 6188,
+      "apiUploadHashSizeCrcVerified": true
+    },
+    {
+      "id": 10923505782,
+      "name": "development-installer-shortcuts-x64-ddf81076d8f4235b66c889c492b36505085e2e9a",
+      "sha256": "2f78de23ae622d68e5e8fdebd1014ee4fe9a3964b7e6c8b7bf91baf8178aeaf3",
+      "bytes": 1268,
+      "apiUploadHashSizeCrcVerified": true
+    },
+    {
+      "id": 10923216783,
+      "name": "development-stock-welcome-en_US-ddf81076d8f4235b66c889c492b36505085e2e9a",
+      "sha256": "f634d8993a2c1afbc02920886c566c560045cf27144a84e5d131f5da2b3ab0e1",
+      "bytes": 474066,
+      "apiUploadHashSizeCrcVerified": true
+    },
+    {
+      "id": 10923123426,
+      "name": "development-boat-tooling-ddf81076d8f4235b66c889c492b36505085e2e9a",
+      "sha256": "f1e76a85ed90d4158a2ea4ffbd61f743b6f44a526a7216ad37823babe96bde27",
+      "bytes": 24296,
+      "apiUploadHashSizeCrcVerified": true
+    },
+    {
+      "id": 10923102342,
+      "name": "development-restart-window-ddf81076d8f4235b66c889c492b36505085e2e9a",
+      "sha256": "bb3663a2d15ead93de60a63faf102d95564a3c9b0b268decbd9721fdd94b148b",
+      "bytes": 17538,
+      "apiUploadHashSizeCrcVerified": true
+    },
+    {
+      "id": 10923027566,
+      "name": "development-commissioning-broker-ddf81076d8f4235b66c889c492b36505085e2e9a",
+      "sha256": "818bb3ebb98a2fe7bbf71b3a7e6a5cab4fb34cc77560f4256a496e2e1ede579a",
+      "bytes": 15816,
+      "apiUploadHashSizeCrcVerified": true
+    },
+    {
+      "id": 10922967481,
+      "name": "development-desktop-diagnostics-ddf81076d8f4235b66c889c492b36505085e2e9a",
+      "sha256": "0c0f9ec7f72c216d03656729d737962008d0d25ccfb52fadee7d3d688d142847",
+      "bytes": 3270,
+      "apiUploadHashSizeCrcVerified": true
+    },
+    {
+      "id": 10922819175,
+      "name": "development-stock-welcome-sv-ddf81076d8f4235b66c889c492b36505085e2e9a",
+      "sha256": "671d53ad55bccb255cb6c19da8aeec51e0ab122b137ddae576b01ec696f17541",
+      "bytes": 501738,
+      "apiUploadHashSizeCrcVerified": true
+    },
+    {
+      "id": 10922523447,
+      "name": "development-installer-shortcuts-x86-ddf81076d8f4235b66c889c492b36505085e2e9a",
+      "sha256": "09ef0a5b8d60734e2bd770c19b9cf1268270f4c005bdb4d87d9835f73caa35c8",
+      "bytes": 1266,
+      "apiUploadHashSizeCrcVerified": true
+    }
+  ],
+  "limitations": [
+    "No real vessel acceptance is inferred.",
+    "The earlier boat Close exit code remains unknown; it is not retroactively inferred from shutdown logs.",
+    "Chart-helper fake-pipe tests do not prove vendor shutdown behavior or authorize any other payload/process.",
+    "Actual installation/profile/launch guards remain separate from inert Close dispatcher coverage.",
+    "No actual boat ZoomOut or strict capture acceptance is claimed.",
+    "Any baseline adoption still requires exact closed-profile inspection and all application/helper processes closed."
+  ],
+  "privateDataPublished": false
+}

@@ -50,3 +50,14 @@ the installer, full artifact and hashes. This successful gate does not qualify
 the later Start-menu migration, which was absent from 8e780edc, or the whole
 release: its later endurance harness failed before sampling. No boat action or
 production UI change was made for this notice-handling correction.
+
+## Prior-package download ordering
+
+Candidate `a896fb5c5fa935b5daa757087ebedc4cd531c1d3` passed native clean
+installation, chart startup and initial rollback, then the genuine early Beta 2
+rollback fixture refused to download because its read-only Actions credential
+had already been removed. The harness now fetches both exact hash-pinned prior
+packages before removing that credential in `finally`. Tested installers and
+applications still never inherit it. Neither package identity nor rollback
+assertions were weakened. Python compilation passes locally; the corrected
+full native lifecycle remains a replacement-candidate gate.

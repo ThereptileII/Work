@@ -41,3 +41,11 @@ These fixtures qualify this helper against the official binary. They do not
 establish the boat's chart coverage, chart suitability, receiver data or physical
 bus silence. At the original recovered boat camera, very close viewport scale
 can explain an all-water 100 m view; zoom alone is not proof that charts loaded.
+
+Native tooling revision `5013dba935631177d53056e8cb7b325172d6b241` passed
+[run 36292565415](https://github.com/ThereptileII/Work/actions/runs/36292565415).
+All nine artifact archives were checked against API and upload-log SHA-256,
+size and ZIP CRC. The nine resize cases passed; actual official stock English
+59 and Swedish 61 checks passed, including both coastline levels and persisted
+scale. See [the exact qualification record](../evidence/beta2-stock-chart-5013db.json).
+Actual boat observations remain separate.

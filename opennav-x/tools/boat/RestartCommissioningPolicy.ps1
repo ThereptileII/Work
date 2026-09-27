@@ -5,6 +5,17 @@ $ErrorActionPreference='Stop'
 . (Join-Path $PSScriptRoot 'RestartAuiPersistence.ps1')
 . (Join-Path $PSScriptRoot 'RestartDashboardPersistence.ps1')
 $script:RestartMagic='OpenNavX.CommissioningRestart.1'
+function Assert-ReviewedVariationSourceAppend([string]$Before,[string]$After) {
+  # Only explicit baseline adoption invokes this observed-source exception.
+  # Normal armed restart still refuses every CommPriority delta below.
+  # Pinned CommBridge::EvalPriority appends an unseen source at map.size()
+  # before deciding whether the message can replace the active source.
+  $original='nmea2000 COM8:105;127250|N2k device address: 243 ; PGN: 127250|N2k device address: 35 ; PGN: 127250|N2k device address: 33 ; PGN: 127250|N2k device address: 49 ; PGN: 127250|'
+  $observed='N2k device address: 204 ; PGN: 127250|'
+  if($Before -cne $original -or $After -cne ($original+$observed)) {
+    throw 'Only the exact reviewed five-to-six variation-source append may be adopted.'
+  }
+}
 function Get-RestartDisplayKeys {
   $keys=[Collections.Generic.Dictionary[string,string]]::new([StringComparer]::Ordinal)
   foreach($key in @('FrameWinX','FrameWinY','ClientSzX','ClientSzY')){$keys.Add('Settings/GlobalState/'+$key,'size')}

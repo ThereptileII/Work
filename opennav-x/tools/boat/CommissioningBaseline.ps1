@@ -85,6 +85,15 @@ function Assert-CommissioningMigrationReview([string]$Before,[string]$After,$Rev
       if($date -gt $At.Date){throw 'Future build marker is not accepted.'}
     } elseif($change.key -cin @('Settings/GPUTextureMemSize','Settings/MSWFonts/sv-00c6075a')) {
       Assert-CommissioningStockUpgradeDelta $change.key $beforeValues $afterValues
+    } elseif($change.key -ceq 'Settings/CommPriority/PriorityVariation') {
+      # The ordinary audit parser trims lines. This one observed append must
+      # also match the exact raw value, including spaces and final delimiter.
+      # A second same-named record anywhere is ambiguous and refuses.
+      $encoding=New-Object Text.UTF8Encoding($false,$true)
+      $rawBefore=@([IO.File]::ReadAllLines($Before,$encoding) | Where-Object {$_ -cmatch '^PriorityVariation='})
+      $rawAfter=@([IO.File]::ReadAllLines($After,$encoding) | Where-Object {$_ -cmatch '^PriorityVariation='})
+      if($rawBefore.Count -ne 1 -or $rawAfter.Count -ne 1){throw 'Exactly one literal observed variation-priority record is required.'}
+      Assert-ReviewedVariationSourceAppend $rawBefore[0].Substring(18) $rawAfter[0].Substring(18)
     } elseif($change.key -ceq 'Settings/NavMessageShown') {
       if($change.after -cne '1' -or ($null -ne $change.before -and $change.before -cnotin @('0','1'))){throw 'Only actual acknowledged startup notice persistence may be adopted.'}
     } elseif($change.key -cin @('Settings/Locale','Settings/LocaleOverride')) {

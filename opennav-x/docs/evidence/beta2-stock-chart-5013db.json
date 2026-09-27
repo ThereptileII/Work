@@ -1,0 +1,211 @@
+{
+  "schema": 1,
+  "classification": "Passed native tooling qualification; no boat or product release acceptance",
+  "source": {
+    "publishedCommit": "5013dba935631177d53056e8cb7b325172d6b241",
+    "localCommit": "3feca24f051190437400598eda25c24940ff5e7e",
+    "tree": "162c84deb1ad07ace398dd6607d3f2ef9c663611",
+    "mappedBlobsAndModesVerified": 620,
+    "stockNativeWindowsCrlfSha256": "25cd3d2e40977fad07c9118cab16fa10ec463988d5e311b4f8acebc622f51de8"
+  },
+  "workflow": {
+    "runId": 36292565415,
+    "url": "https://github.com/ThereptileII/Work/actions/runs/36292565415",
+    "conclusion": "success",
+    "jobs": [
+      {
+        "id": 108545328915,
+        "name": "Disposable native Windows tooling checks",
+        "conclusion": "success"
+      },
+      {
+        "id": 108545328934,
+        "name": "Read-only native warning desktop diagnostics",
+        "conclusion": "success"
+      },
+      {
+        "id": 108545328952,
+        "name": "Actual official OpenCPN portable upgrade caution (en_US)",
+        "conclusion": "success"
+      },
+      {
+        "id": 108545328977,
+        "name": "Native Win32 commissioning restart process boundary",
+        "conclusion": "success"
+      },
+      {
+        "id": 108545328998,
+        "name": "Actual official OpenCPN portable upgrade caution (sv)",
+        "conclusion": "success"
+      },
+      {
+        "id": 108545329021,
+        "name": "Actual COM shortcut migration (x64)",
+        "conclusion": "success"
+      },
+      {
+        "id": 108545329065,
+        "name": "Actual COM shortcut migration (x86)",
+        "conclusion": "success"
+      },
+      {
+        "id": 108545583034,
+        "name": "Fixed guarded mode UI actions on disposable native windows",
+        "conclusion": "success"
+      },
+      {
+        "id": 108545583046,
+        "name": "Actual restart broker with disposable marker-only installation",
+        "conclusion": "success"
+      }
+    ]
+  },
+  "nativeQualification": {
+    "maintenanceSuites": {
+      "broker-fixture-contracts": 15,
+      "baseline-adoption": 73,
+      "boat-tools": 30,
+      "commissioning-launch": 11,
+      "commissioning": 21,
+      "installed-welcome": 98,
+      "official-upgrade-policy": 86,
+      "preparation": 34,
+      "renderer-log": 66,
+      "restart-aui-persistence": 77,
+      "restart-commissioning": 278,
+      "restart-window-review": 132,
+      "review-window": 159,
+      "source-checkout": 16,
+      "startup-log": 16,
+      "stock-chart": 57,
+      "stock-review": 90,
+      "stock-welcome": 149
+    },
+    "maintenanceTotal": 1408,
+    "navigationCopyPythonTests": 11,
+    "warningActualEnglish": 59,
+    "warningActualSwedish": 61,
+    "resizeCases": 9,
+    "guardedModeWindowCases": 9,
+    "displayWindowCases": 15,
+    "nativeTransportCodec": 886,
+    "nativeTransportChecks": 359,
+    "nativeTransportCases": 24,
+    "brokerChecks": 51,
+    "actualPrepareArmChecks": 47,
+    "comShortcutsX64": 132,
+    "comShortcutsX86": 132
+  },
+  "resizeProof": {
+    "offscreenNormalRecovered": true,
+    "maximizedToOffscreenNormalRecovered": true,
+    "resultVisiblePixels": [
+      1280,
+      800
+    ],
+    "changedIdentityDisabledAndWrongPidRefused": true,
+    "insufficientWorkAreaRefused": true,
+    "allMarkersClosedNormally": true,
+    "cleanupErrors": []
+  },
+  "actualStockChart": {
+    "executableSha256": "7c6547562cca7954671eaab72833ca9d788710fd9808b6a699b6dc823852ae0c",
+    "profile": "New empty-connection portable fixture; all four bundled plugins disabled",
+    "fixedMenuCommandId": 2001,
+    "fullEnglishAndSwedishMenuTuplesVerified": true,
+    "scaleBefore": 0.003,
+    "persistedScaleAfter": 0.0015,
+    "normalClose": true,
+    "visualReview": "Both verified Swedish 1280x800 chart PNGs inspected: recognizable coastline persists and broadens, scale bar 10 to 20 NM; no data-reading claim."
+  },
+  "desktopSetup": {
+    "scope": "Disposable CI desktop only",
+    "before": [
+      1024,
+      768,
+      32
+    ],
+    "after": [
+      1440,
+      900,
+      32
+    ],
+    "workArea": [
+      0,
+      0,
+      1440,
+      860
+    ],
+    "productionHelperChangesDisplaySettings": false
+  },
+  "artifacts": [
+    {
+      "id": 10923295301,
+      "name": "development-stock-welcome-en_US-5013dba935631177d53056e8cb7b325172d6b241",
+      "sha256": "e69c0f0d0bf972c245d4124d6428b0304af59e40e6b15be3fbe9e43db4332950",
+      "bytes": 473559,
+      "apiUploadHashSizeCrcVerified": true
+    },
+    {
+      "id": 10923220552,
+      "name": "development-stock-welcome-sv-5013dba935631177d53056e8cb7b325172d6b241",
+      "sha256": "811e5af13183816f14e036bd465465ac1d9a741b89a0fcb079fc26b06f353da5",
+      "bytes": 501297,
+      "apiUploadHashSizeCrcVerified": true
+    },
+    {
+      "id": 10922766666,
+      "name": "development-commissioning-broker-5013dba935631177d53056e8cb7b325172d6b241",
+      "sha256": "7d69ecfa5d67972a3e3303e7f256fa9c7f128bdfde2da7d6b5e762d326c0027b",
+      "bytes": 15824,
+      "apiUploadHashSizeCrcVerified": true
+    },
+    {
+      "id": 10922661824,
+      "name": "development-restart-window-5013dba935631177d53056e8cb7b325172d6b241",
+      "sha256": "9a888f8f4c9d54afacbefdfe5fd94a9d9af1ac22bf5cf53df978410ce67c28f4",
+      "bytes": 16499,
+      "apiUploadHashSizeCrcVerified": true
+    },
+    {
+      "id": 10922637858,
+      "name": "development-installer-shortcuts-x64-5013dba935631177d53056e8cb7b325172d6b241",
+      "sha256": "fd61fbb5b4a7051be363eb53a4488e5c33cb6af23afcdcabaa9f7f8a21a65d76",
+      "bytes": 1267,
+      "apiUploadHashSizeCrcVerified": true
+    },
+    {
+      "id": 10922438478,
+      "name": "development-boat-tooling-5013dba935631177d53056e8cb7b325172d6b241",
+      "sha256": "90b2069cf6d5ff1f0ee14da3abe520b46b91d56068f3b9f9f3e2fbdd872c4b1b",
+      "bytes": 21665,
+      "apiUploadHashSizeCrcVerified": true
+    },
+    {
+      "id": 10922299037,
+      "name": "development-commissioning-restart-5013dba935631177d53056e8cb7b325172d6b241",
+      "sha256": "c1643745ccc1fb10e749f6cfebb0ae7428b31f132d59d5f21f859c2b8f3a7541",
+      "bytes": 6201,
+      "apiUploadHashSizeCrcVerified": true
+    },
+    {
+      "id": 10922259263,
+      "name": "development-installer-shortcuts-x86-5013dba935631177d53056e8cb7b325172d6b241",
+      "sha256": "7f75529295871cdaadb659b4cccc58c835e0764fdb2072edf4f39e3dc9c81bed",
+      "bytes": 1269,
+      "apiUploadHashSizeCrcVerified": true
+    },
+    {
+      "id": 10922239228,
+      "name": "development-desktop-diagnostics-5013dba935631177d53056e8cb7b325172d6b241",
+      "sha256": "409f8dedc9856af220dc6f24a831a98a403d5084123e228256ab51f0368e1f20",
+      "bytes": 3269,
+      "apiUploadHashSizeCrcVerified": true
+    }
+  ],
+  "limits": [
+    "Boat frame, chart coverage and real-profile acceptance remain separately observed by the operator.",
+    "This revision does not include subsequent observed-profile migration policy commit 5dd114c.",
+    "The CI desktop setup is never invoked by production boat helpers."
+  ]
+}

@@ -36,3 +36,11 @@ PID/title and disabled-window refusal. It also calls the same pre-mutation work
 area guard with insufficient dimensions without altering the desktop. These
 fixtures do not launch OpenCPN or establish boat/chart acceptance. Native
 qualification and a fresh actual boat resize/capture remain required.
+
+Native tooling revision `5013dba935631177d53056e8cb7b325172d6b241` passed
+[run 36292565415](https://github.com/ThereptileII/Work/actions/runs/36292565415).
+All nine artifact archives were checked against API and upload-log SHA-256,
+size and ZIP CRC. The nine resize cases passed; actual official stock English
+59 and Swedish 61 checks passed, including both coastline levels and persisted
+scale. See [the exact qualification record](../evidence/beta2-stock-chart-5013db.json).
+Actual boat observations remain separate.

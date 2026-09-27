@@ -7,7 +7,7 @@ Set-StrictMode -Version Latest;$ErrorActionPreference='Stop';$ProgressPreference
 if([Environment]::OSVersion.Platform -ne 'Win32NT' -or $env:GITHUB_ACTIONS -cne 'true'){throw 'This actual-application fixture is native disposable CI only.'}
 if(@(Get-Process -Name opencpn -ErrorAction SilentlyContinue).Count){throw 'Close every navigation application before the isolated fixture.'}
 . (Join-Path $PSScriptRoot 'boat\Common.ps1')
-. (Join-Path $PSScriptRoot 'boat\StockWelcome.ps1')
+. (Join-Path $PSScriptRoot 'boat\StockReview.ps1')
 . (Join-Path $PSScriptRoot 'boat\StartupLog.ps1')
 Initialize-StockWelcomeNative
 Add-Type -Path (Join-Path $PSScriptRoot 'boat\StockReviewNative.cs')
@@ -217,6 +217,19 @@ try {
  Refuse {[OpenNavX.StockWelcomeNative]::AssertUnchanged($process.Id,$notice)} 'Old dismissed warning cannot be acknowledged a second time'
  $report.resize=[OpenNavX.StockReviewNative]::Resize1280x800($frame,$process.Id)
  Check ($report.resize.After.Bounds.Width -eq 1280 -and $report.resize.After.Bounds.Height -eq 800) 'Actual official stock accepts the fixed fully contained physical resize'
+ # Exact private failure evidence for a genuinely foreign, overlapping window.
+ # The stock frame stays foreground; no acceptance exception is granted.
+ $overlay=New-Object Windows.Forms.Form;$overlay.Text='Owned diagnostic "overlay"';$overlay.TopMost=$true;$overlay.ShowInTaskbar=$false
+ $overlay.StartPosition=[Windows.Forms.FormStartPosition]::Manual;$overlay.Bounds=New-Object Drawing.Rectangle(400,250,180,100)
+ try {
+  $overlay.Show();[Windows.Forms.Application]::DoEvents();[OpenNavX.StockReviewNative]::Foreground($frame,$process.Id)
+  $current=[OpenNavX.StockReviewNative]::AssertFrame($frame,$process.Id);$obscured=$null
+  try {[OpenNavX.StockReviewNative]::AssertCapture($frame,$process.Id,$current)}catch{$obscured=$_.Exception.GetBaseException().Message}
+  Check ($obscured -and $obscured.Contains('obscuringWindow=')) 'Overlapping fixture still refuses capture and emits private diagnostic evidence'
+  $observation=($obscured.Substring($obscured.IndexOf('obscuringWindow=')+'obscuringWindow='.Length))|ConvertFrom-Json
+  Check ($observation.hwnd -eq $overlay.Handle.ToInt64() -and $observation.pid -eq $PID -and $observation.title -ceq $overlay.Text -and $observation.class.Length -gt 0 -and $observation.bounds.right -gt $observation.bounds.left -and $observation.cloakResult -eq 0 -and $observation.cloak -eq 0) 'Diagnostic identifies exact foreign overlay handle PID caption class bounds and cloak without relaxing the refusal'
+  $report.obscurerRefusal=$observation
+ } finally {$overlay.Close();$overlay.Dispose();[Windows.Forms.Application]::DoEvents()}
  Start-Sleep -Milliseconds 700
  $report.chartBefore=CaptureChart $frame 'actual-stock-coast-before-zoom.png'
  Refuse {[OpenNavX.StockReviewNative]::ZoomOut($frame,0)} 'Wrong process refuses stock zoom before dispatch'
@@ -227,8 +240,10 @@ try {
  Check ($report.chartBefore.imageSha256 -cne $report.chartAfter.imageSha256) 'Two actual bundled coastline views are visually distinct'
  Check ((@($report.chartBefore.colors|ForEach-Object {$_.argb}|Sort-Object) -join ',') -ceq (@($report.chartAfter.colors|ForEach-Object {$_.argb}|Sort-Object) -join ',')) 'Both zoom levels retain the same substantial land and water colors'
 
- Check ($process.CloseMainWindow() -and $process.WaitForExit(30000)) 'Actual official portable application closed normally without force termination'
- Check ($process.ExitCode -eq 0) 'Official stock normal close succeeded'
+ $closeObserver=Get-Process -Id $process.Id
+ try {$report.normalClose=Invoke-ReviewedNormalClose $closeObserver $process.Id $process.StartTime.ToUniversalTime().Ticks}finally{$closeObserver.Dispose()}
+ Check ($report.normalClose.closeRequested -and $report.normalClose.waitCompleted -and $report.normalClose.handleRetained) 'Actual official portable application closed normally through fresh Get-Process and retained handle'
+ Check ($report.normalClose.exitCodeKnown -and $report.normalClose.exitCode -eq 0 -and $process.ExitCode -eq 0) 'Official stock normal close has measured zero exit code from both process observers'
  Copy-Item -LiteralPath $ini -Destination (Join-Path $evidence 'portable-after.ini')
  $profile=Read-ProfileForAudit $ini
  Check ($profile['Settings/NMEADataSource/DataConnections'] -ceq '') 'Portable session retained empty marine connection list'

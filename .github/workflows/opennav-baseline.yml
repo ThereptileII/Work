@@ -157,6 +157,11 @@ jobs:
           New-Item -ItemType Directory -Path opennav-x/evidence/local/display-window -Force | Out-Null
           & "$env:WINDIR/System32/WindowsPowerShell/v1.0/powershell.exe" -NoProfile -ExecutionPolicy Bypass -File opennav-x/tools/test-display-window-native.ps1 -Evidence opennav-x/evidence/local/display-window 2>&1 | Tee-Object -FilePath opennav-x/evidence/local/display-window/native-display-tests.log
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+      - name: Verify fresh Get-Process normal close and measured exit status on inert windows
+        run: |
+          New-Item -ItemType Directory -Path opennav-x/evidence/local/stock-close -Force | Out-Null
+          & "$env:WINDIR/System32/WindowsPowerShell/v1.0/powershell.exe" -NoProfile -ExecutionPolicy Bypass -File opennav-x/tools/test-stock-close-windows.ps1 -Evidence opennav-x/evidence/local/stock-close 2>&1 | Tee-Object -FilePath opennav-x/evidence/local/stock-close/native-stock-close.log
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
       - name: Exercise fixed stock resize on offscreen native marker windows
         run: |
           New-Item -ItemType Directory -Path opennav-x/evidence/local/stock-resize -Force | Out-Null
@@ -170,6 +175,7 @@ jobs:
             opennav-x/evidence/local/restart-window
             opennav-x/evidence/local/display-window
             opennav-x/evidence/local/stock-resize
+            opennav-x/evidence/local/stock-close
           if-no-files-found: error
   native-stock-welcome:
     name: Actual official OpenCPN portable upgrade caution (${{ matrix.locale }})

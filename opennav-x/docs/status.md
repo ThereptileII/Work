@@ -1,6 +1,7 @@
 # OpenNav X status — 2026-09-27
 
-**Beta 2 development is in progress; it is not yet qualified or deployed.**
+**Beta 2 development is in progress; its first development package is installed
+on the boat, but it is not qualified for release.**
 
 The user's Desktop feedback has been read completely and recorded in
 [boat Beta 1 feedback](feedback/boat-beta1-feedback.md). The approved design
@@ -11,12 +12,25 @@ The accepted Beta 1 results below remain historical evidence, not Beta 2 gates.
 
 ### Current candidate
 
-`fa27637eb30150b472acd631cd28e6426d43b9fe` is running in
+`a896fb5c5fa935b5daa757087ebedc4cd531c1d3` is the current full candidate,
+matching all 664 mapped blobs/modes at local
+`5dd114c00cf07ceef8b32e7d6ec978e33d5d9e50`, in
+[CI 36292727131](https://github.com/ThereptileII/Work/actions/runs/36292727131).
+Native contract, maintenance, transport, broker, display, bilingual stock-tool,
+integrated/fixture-free builds, DPI and chart/plugin gates passed. The installer
+gate passed initial installation/rollback, then failed because the harness had
+already cleared its Actions credential before fetching the second pinned prior
+package. The download ordering is corrected locally; genuine early-package
+rollback and complete endurance remain replacement-candidate gates.
+It includes the explicit historical-layout rollback fix and narrow observed
+profile-migration rules.
+
+The superseded `fa27637eb30150b472acd631cd28e6426d43b9fe` ran in
 [CI 36291671816](https://github.com/ThereptileII/Work/actions/runs/36291671816).
 All 655 mapped blobs/modes match local
 `357d4fee21bc6a1c3211646f230b89feadb036a0`. It includes the corrected endurance
 palette action and unchanged-value layout caching. It is not accepted and will
-be superseded: subsequent source review found that an early 0.4 Beta 2 package
+not be released: subsequent source review found that an early 0.4 Beta 2 package
 still used the historical Start Menu layout. The new explicit layout marker
 preserves that package's immutable maintenance engine during rollback. Native
 x86/x64 COM tests pass; a complete genuine-package rollback test remains a gate
@@ -39,9 +53,11 @@ The Windows endurance harness then failed before its first sample because it
 still selected the removed Light caption. The next source uses the existing
 palette action and verifies Day/Dusk/Night. This candidate has no accepted
 Windows endurance result. Its Linux elapsed-time run was cancelled with 327
-retained samples and has no accepted endurance result. The hash-verified setup
-has been staged privately on the boat but has **not been executed**. Boat
-acceptance remains pending; the development bundle is not a qualified release.
+retained samples and has no accepted endurance result. The hash-verified setup has now completed its first boat installation with
+exit 0. Independent before/after inventories confirm the complete normal profile
+is identical, and stock OpenCPN retains its validated hash. Launch and screen
+review remain pending a new installed plugin/data audit; this development bundle
+is not a qualified release. [Initial installation](evidence/beta2-boat-first-install-8e780.json).
 
 ### Previous candidate (not qualified)
 
@@ -92,8 +108,9 @@ remain running. [Upgrade evidence](evidence/beta2-boat-stock-5.12.4-upgrade.json
 This closes the stock-version prerequisite; Beta 2 still requires its own gates.
 
 A stock-only commissioning inventory matched all nine reviewed plugin DLLs
-and their source evidence. The journaled one-byte input-only change and four
-temporary DLL quarantines remain applied and verified. The exact official stock
+and their source evidence. The stock session used a journaled one-byte input-only change and four
+temporary DLL quarantines. Both have now been restored after closed-session
+inspection, preserving the independently reviewed startup migrations. The exact official stock
 executable launched with empty arguments on the interactive desktop, preserving
 Swedish locale. Its complete first-start GPL/navigation caution was captured,
 downloaded, hash-verified and reviewed. The separately native-qualified warning
@@ -103,27 +120,40 @@ modal dismissal and the current-launch startup-finalized marker are confirmed.
 [actual warning review](evidence/beta2-boat-stock-warning-review.json), and
 [qualified settling tools](evidence/beta2-warning-settling-4fa62e.json).
 
-Chart acceptance remains open: the first view showed water at a close 100m scale
+The first view showed water at a close 100m scale
 and a Windows Update notification. No Windows restart or update action was taken.
 The later capture refused the overlapping notification. The fixed-size resize
 then exposed a partially offscreen saved normal window and refused before changing
-its size; the display helper is being repaired without weakening capture checks.
+its size. Native-qualified replacement tools have now recovered the boat window
+to an exact 1280×800 visible frame at DPI144 without changing display settings.
 The exact launch log records an Intel UHD OpenGL4.6 canvas context. This is not
 proof of chart rendering or hardware acceleration. No physical command has been
-sent. Profile migration and normal-close preservation still require review.
-The replacement display helper has deterministic policy tests. Its first native
-fixture run refused an undersized disposable CI desktop before chart zoom;
-that is not resize/zoom acceptance. The CI workspace preparation is being
-corrected without changing the boat display or weakening the production guard.
-[Scoped tooling results](evidence/beta2-stock-chart-048ba7.json).
+sent. A private diagnostic image now shows the **real detailed nautical chart**,
+ownship and saved marks. Its overlapping floating Dashboard pane still fails
+the strict clear-overlay capture rule; the diagnostic image is not substituted
+for that automated gate. [Native tool qualification](evidence/beta2-stock-chart-5013db.json)
+and [actual boat observations](evidence/beta2-boat-stock-first-chart.json).
 Both configured chart directories are currently accessible, and the chart
 database still matches its pre-upgrade hash. A preliminary live INI comparison
-found seven startup changes; each is being checked against pinned source.
-This live copy cannot authorize baseline adoption: a normal close, fresh
-inspection and exact per-key migration review remain required.
-The configured N2K serial port is
-currently absent from read-only port inventory; no current N2K reception is
-inferred. A closed-copy navigation-database integrity/content baseline is also
+found seven startup changes. After normal close was requested, the log records
+complete clean shutdown and OpenCPN is no longer running, but the close checker
+did not retain a native process handle and cannot establish its exit code.
+The chart plugin also restarted its local helper during the final redraw;
+cold restoration correctly refused while that helper remained. Native-qualified
+cleanup subsequently verified its exact pipe server/process identity and issued
+one source-defined local shutdown packet; its retained handle reported exit 0.
+This does not reconstruct the earlier parent application exit code. The post-application-exit navigation database
+is byte-identical to the baseline and passes integrity/raw-storage comparison.
+The final INI has 13 changed keys, including ordinary resized-window persistence
+and an appended source-priority observation. A complete cold inspection and independent exact per-key review now pass.
+Restoration reversed only the temporary connection byte, restored all four
+quarantined DLLs and published the verified adopted baseline. No application
+was automatically launched; the next installed session requires a fresh review.
+The configured N2K port was absent from the earlier inventory; at 04:06 UTC the
+read-only Windows inventory reports **Actisense NGT (COM8)** present and healthy,
+alongside USB Serial COM4. Port presence does not establish sensor freshness or
+accuracy. Tailscale, SSH and RustDesk remain running automatically. A
+closed-copy navigation-database integrity/content baseline is also
 recorded privately using the [byte-preserving audit](installer/navigation-preservation-audit.md).
 
 The actual shared profile's `opencpn.ini` was already zero-filled at first

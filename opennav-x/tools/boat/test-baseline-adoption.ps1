@@ -82,6 +82,64 @@ try {
   Refuse 'Other font deletion is not a generic permitted removal' {Assert-CommissioningMigrationReview $stockBefore $badIni (Review $stockBefore $badIni)}
   [IO.File]::WriteAllText($badIni,$stockMigrated.Replace("OpenGL=1`r`n",''),$encoding)
   Refuse 'Unrelated key removal remains forbidden' {Assert-CommissioningMigrationReview $stockBefore $badIni (Review $stockBefore $badIni)}
+  $variationKey='Settings/CommPriority/PriorityVariation'
+  $variationPrefix='nmea2000 COM8:105;127250|N2k device address: 243 ; PGN: 127250|N2k device address: 35 ; PGN: 127250|N2k device address: 33 ; PGN: 127250|N2k device address: 49 ; PGN: 127250|'
+  $variationAppend='N2k device address: 204 ; PGN: 127250|'
+  $variationBefore=Join-Path $testRoot 'variation-before.ini';$variationAfter=Join-Path $testRoot 'variation-after.ini'
+  $variationText=$stockText.Replace("OpenGL=1`r`n","OpenGL=1`r`nPersistActiveRoute=0`r`n")+"[Settings/CommPriority]`r`nPriorityVariation=$variationPrefix`r`nPriorityHeading=original-heading`r`nPriorityPosition=original-position`r`n[PlugIns/pilot]`r`nbEnabled=0`r`n"
+  $variationMigrated=$variationText.Replace("PriorityVariation=$variationPrefix`r`n","PriorityVariation=$variationPrefix$variationAppend`r`n")
+  [IO.File]::WriteAllText($variationBefore,$variationText,$encoding);[IO.File]::WriteAllText($variationAfter,$variationMigrated,$encoding)
+  $variationReview=Review $variationBefore $variationAfter
+  Pass 'Exact observed sixth variation source requires and accepts one hash-bound per-key review' {
+    $accepted=@(Assert-CommissioningMigrationReview $variationBefore $variationAfter $variationReview)
+    if($accepted.Count -ne 1 -or $accepted[0].key -cne $variationKey){throw 'Unexpected accepted delta'}
+  }
+  Pass 'Restored baseline preserves the learned source and reverses only the temporary connection byte' {
+    $preserved=Get-CommissioningOutputBytes ([IO.File]::ReadAllBytes($variationAfter))
+    if((Get-CommissioningHash (Get-CommissioningInputBytes $preserved)) -cne (Get-Digest $variationAfter) -or
+       -not $encoding.GetString($preserved).Contains("PriorityVariation=$variationPrefix$variationAppend`r`n")){throw 'Observed source was erased or another byte changed'}
+  }
+  Refuse 'Observed source discovery cannot approve itself without per-key review' {$v=Clone $variationReview;$v.changes=@();Assert-CommissioningMigrationReview $variationBefore $variationAfter $v}
+  foreach($field in @('beforeSha256','afterSha256')) {
+    Refuse "Variation review must retain exact $field" {$v=Clone $variationReview;$v.$field='0'*64;Assert-CommissioningMigrationReview $variationBefore $variationAfter $v}
+  }
+  $badVariation=@{
+    reordered=$variationPrefix.Replace('address: 243','address: TEMP').Replace('address: 35','address: 243').Replace('address: TEMP','address: 35')+$variationAppend
+    prepended=$variationAppend+$variationPrefix
+    inserted=$variationPrefix.Replace('address: 49',('address: 204 ; PGN: 127250|N2k device address: 49'))
+    deleted=$variationPrefix.Replace('N2k device address: 35 ; PGN: 127250|','')+$variationAppend
+    duplicate=$variationPrefix+'N2k device address: 49 ; PGN: 127250|'
+    multiple=$variationPrefix+$variationAppend+$variationAppend
+    changedprefix=$variationPrefix.Replace('COM8:105','COM8:106')+$variationAppend
+    otheraddress=$variationPrefix+$variationAppend.Replace('204','205')
+    otherpgn=$variationPrefix+$variationAppend.Replace('127250','127251')
+    truncated=($variationPrefix+$variationAppend).TrimEnd('|')
+    leading=' '+$variationPrefix+$variationAppend
+    trailing=$variationPrefix+$variationAppend+' '
+    quoted='"'+$variationPrefix+$variationAppend+'"'
+    missing=''
+  }
+  foreach($kind in $badVariation.Keys) {
+    [IO.File]::WriteAllText($badIni,$variationMigrated.Replace($variationPrefix+$variationAppend,$badVariation[$kind]),$encoding)
+    Refuse "Other variation priority change refused despite matching review: $kind" {Assert-CommissioningMigrationReview $variationBefore $badIni (Review $variationBefore $badIni)}
+  }
+  [IO.File]::WriteAllText($badIni,$variationText.Replace('PriorityVariation=','PriorityVariation= '),$encoding)
+  Refuse 'Original five-source prefix must be exact, not whitespace-normalized' {Assert-CommissioningMigrationReview $badIni $variationAfter (Review $badIni $variationAfter)}
+  $unrelatedVariation=@{
+    indented=$variationMigrated.Replace('PriorityVariation=',' PriorityVariation=')
+    keycase=$variationMigrated.Replace('PriorityVariation=','priorityvariation=')
+    ambiguous=$variationMigrated+"[Other]`r`nPriorityVariation=ambiguous`r`n"
+    heading=$variationMigrated.Replace('PriorityHeading=original-heading','PriorityHeading=changed')
+    position=$variationMigrated.Replace('PriorityPosition=original-position','PriorityPosition=changed')
+    output=$variationMigrated.Replace('COM8;115200;0;0','COM8;115200;0;1')
+    route=$variationMigrated.Replace('PersistActiveRoute=0','PersistActiveRoute=1')
+    plugin=$variationMigrated.Replace('bEnabled=0','bEnabled=1')
+    core=$variationMigrated.Replace('OpenGL=1','OpenGL=0')
+  }
+  foreach($kind in $unrelatedVariation.Keys) {
+    [IO.File]::WriteAllText($badIni,$unrelatedVariation[$kind],$encoding)
+    Refuse "Observed append cannot authorize unrelated change: $kind" {Assert-CommissioningMigrationReview $variationBefore $badIni (Review $variationBefore $badIni)}
+  }
   $context=[pscustomobject]@{sid='S-1-5-21-1';profile=(Join-Path $testRoot 'profile')}
   $prepared=[pscustomobject]@{owner=$script:CommissioningOwner;status='prepared';context=$context;baselineSha256=(Get-Digest $baseline);inputSha256=(Get-Digest $inputFile)}
   Refuse 'Synthetic root cannot replace fixed public recovery baseline' {Get-PreparedCommissioningBaseline $prepared $parent $workspace}

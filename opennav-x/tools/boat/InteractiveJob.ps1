@@ -80,10 +80,8 @@ try {
     try {
       if ((Assert-LocalPath $process.Path) -ine $exe -or -not $process.MainWindowHandle) { throw 'Process identity/window mismatch.' }
       if ($job.action -eq 'Close') {
-        if (-not $process.CloseMainWindow()) { throw 'Application did not accept normal window close.' }
-        if (-not $process.WaitForExit(30000)) { throw 'Application close needs attention; no process termination attempted.' }
-        $result.exitCode=$process.ExitCode
-        if ($process.ExitCode -ne 0) { throw 'Application exited with an error.' }
+        $result.close=Invoke-ReviewedNormalClose $process $job.processId $process.StartTime.ToUniversalTime().Ticks
+        $result.exitCode=$result.close.exitCode
       } else {
         Add-Type -AssemblyName System.Drawing
         Add-Type -TypeDefinition @'

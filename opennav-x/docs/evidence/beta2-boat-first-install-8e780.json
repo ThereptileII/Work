@@ -1,0 +1,44 @@
+{
+  "schema": 1,
+  "classification": "First installed Beta 2 development review; release and launch acceptance pending",
+  "installed": {
+    "version": "0.4.0-beta2",
+    "commit": "8e780edc34f68abd693a5d5f6aecdb3ba05a75c4",
+    "setupSha256": "0235a099e56a265a3dfe3f17de1f8dea1e66de2aa7a8c311bce0fd7a83d761ad",
+    "ciRun": "https://github.com/ThereptileII/Work/actions/runs/36287991989",
+    "fixtureFree": true,
+    "installerExitCode": 0,
+    "installerReportedPassed": true,
+    "launched": false
+  },
+  "preflight": {
+    "previousSidecar": "absent",
+    "ownedStartMenuAndRegistration": "absent",
+    "coldVerifiedBaseline": true
+  },
+  "preservation": {
+    "stockExecutableSha256": "7c6547562cca7954671eaab72833ca9d788710fd9808b6a699b6dc823852ae0c",
+    "wholeProfileBeforeAfterExactlyEqual": true,
+    "profileIniSha256": "3aad3dbd38ec509772b73a41f62dfd21cd4e00f118dfce977dec235c759cfb91",
+    "existingRecoverySetsRetained": true
+  },
+  "installedCommissioningInventory": {
+    "loaderRoots": 3,
+    "candidates": 14,
+    "plannedQuarantines": 5,
+    "newBundledDllsMatchedVerifiedPackage": 4,
+    "sourceComparedWithReviewedPinnedImplementation": true
+  },
+  "notAccepted": [
+    "Application launch and real chart rendering",
+    "Actual XNav screen and data review",
+    "Genuine installed update/rollback",
+    "Full same-commit endurance",
+    "Physical hardware control or navigation approval"
+  ],
+  "safety": {
+    "applicationLaunchedByInstaller": false,
+    "actuatorCommandsIssued": false,
+    "remoteAccessModified": false
+  }
+}
