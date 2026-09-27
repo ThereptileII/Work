@@ -1,7 +1,7 @@
 # One-use commissioning restart verifier
 
 Development implementation only. The portable policy/parser/journal suite passes
-265 checks, plus the separate 77-check AUI/Dashboard policy suite. Native process/pipe tests, full real-application shutdown tests, and
+269 portable checks, plus the separate 77-check AUI/Dashboard policy suite. Native process/pipe tests, full real-application shutdown tests, and
 boat acceptance remain separate gates. These scripts are not enabled in the
 currently published application and must not be used to qualify an older build.
 
@@ -215,3 +215,21 @@ This test does not qualify the product's interactive cold-launch screen, real
 installation or boat scheduler. The marker's optional scheduler hold is bounded
 at 25 seconds; the native helper's 30-second parent timeout is unchanged. The
 harness is implemented and parses; native results remain pending.
+
+Native scheduler identity is compared by resolved Windows SID. Windows may
+return an account name after registration by SID; an unresolvable name or a
+different SID is refused. A null CIM trigger property means no triggers. A
+nonempty trigger array, including an unknown null entry, is refused. The exact
+action, arguments, absent working-directory override, limited interactive
+principal and completed task state remain required.
+
+The exact `f357225f7c8040d46a74ae0dd843e4bd306c6dd8` tooling
+[run 36283191214](https://github.com/ThereptileII/Work/actions/runs/36283191214)
+passed all six full-broker cases (48 checks), then refused the inert task because
+the actual provider returned an account name and a null trigger property.
+The complete 8,580-byte artifact was downloaded and verified against both API
+and upload-log SHA-256:
+`21074c50e5bc12b232f18ff52b5c35134ff32833942a7acae98bb85f79e1745d`.
+The account-resolution/null-property correction and actual Prepare/Arm path
+require a new native run; the preceding fixture results are not product or boat
+acceptance.

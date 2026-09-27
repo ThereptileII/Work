@@ -104,6 +104,23 @@ $build.PSObject.Properties.Remove('commissioning_restart_protocol');Refuse {Asse
 $arm=[pscustomobject]@{execute='C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe';arguments='fixed verified arguments'}
 $task=[pscustomobject]@{State='Ready';Actions=@([pscustomobject]@{Execute=$arm.execute;Arguments=$arm.arguments;WorkingDirectory=$null});Principal=[pscustomobject]@{UserId='S-1-5-21-100';RunLevel='Limited';LogonType='Interactive'};Triggers=@()}
 Assert-RestartTaskIdentity $task $arm 'S-1-5-21-100';Check $true 'only completed owned limited task collectable'
+$task.Triggers=$null;Assert-RestartTaskIdentity $task $arm 'S-1-5-21-100';Check $true 'native null trigger property represents no trigger'
+$task.Triggers=@($null);Refuse {Assert-RestartTaskIdentity $task $arm 'S-1-5-21-100'} 'array containing unknown null trigger is not an empty provider property'
+$task.Triggers=@()
+Refuse {Resolve-RestartTaskSid ''} 'missing task principal refused'
+Refuse {Assert-RestartTaskIdentity $task $arm 'S-1-5-21-101'} 'different exact SID refused'
+if([Environment]::OSVersion.Platform -eq 'Win32NT') {
+ $current=[Security.Principal.WindowsIdentity]::GetCurrent()
+ try {
+  $task.Principal.UserId=$current.Name;$task.Triggers=$null
+  Assert-RestartTaskIdentity $task $arm $current.User.Value;Check $true 'actual Windows account name resolves to exact current SID'
+  $task.Principal.UserId=[Environment]::UserName
+  Assert-RestartTaskIdentity $task $arm $current.User.Value;Check $true 'native provider unqualified account name resolves to exact current SID'
+  Refuse {Assert-RestartTaskIdentity $task $arm 'S-1-5-18'} 'resolved current account cannot substitute SYSTEM SID'
+  $task.Principal.UserId='OpenNav-NoSuchAccount-'+[guid]::NewGuid().ToString('N')
+  Refuse {Assert-RestartTaskIdentity $task $arm $current.User.Value} 'unresolvable native account refused'
+ } finally {$current.Dispose();$task.Principal.UserId='S-1-5-21-100';$task.Triggers=@()}
+}
 $task.State='Running';Refuse {Assert-RestartTaskIdentity $task $arm 'S-1-5-21-100'} 'running broker cannot be collected';$task.State='Ready'
 foreach($field in @('Execute','Arguments','WorkingDirectory')) {$saved=$task.Actions[0].$field;$task.Actions[0].$field='changed';Refuse {Assert-RestartTaskIdentity $task $arm 'S-1-5-21-100'} ('changed task '+$field);$task.Actions[0].$field=$saved}
 foreach($field in @('UserId','RunLevel','LogonType')) {$saved=$task.Principal.$field;$task.Principal.$field='changed';Refuse {Assert-RestartTaskIdentity $task $arm 'S-1-5-21-100'} ('changed task principal '+$field);$task.Principal.$field=$saved}

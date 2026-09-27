@@ -101,7 +101,7 @@ try {
    $ready=$armed.stdout|ConvertFrom-Json;$armFile=Join-Path $directory ('arm-'+$parent.Id+'-'+$created+'.json');$arm=Read-Record $armFile
    Require ($ready.status -ceq 'listening-for-one-explicit-restart' -and $ready.taskName -ceq $arm.taskName -and -not $parent.HasExited) ($case+': scheduled broker ready before parent close')
    $task=Get-ScheduledTask -TaskName $arm.taskName
-   Require ($task.Principal.UserId -ceq $session.sid -and $task.Actions[0].Execute -ceq (Join-Path $env:WINDIR 'System32\WindowsPowerShell\v1.0\powershell.exe')) ($case+': real scheduled task uses actual SID and fixed native PowerShell')
+   Require ((Resolve-RestartTaskSid $task.Principal.UserId) -ceq $session.sid -and $task.Actions[0].Execute -ceq (Join-Path ([Environment]::GetFolderPath('Windows')) 'System32\WindowsPowerShell\v1.0\powershell.exe')) ($case+': real scheduled task resolves to actual SID and fixed native PowerShell')
    if($case -ceq 'success') {
     $armHash=Get-Digest $armFile
     $duplicate=Invoke-FixtureScript $fixture 'RestartCommissioningArm.ps1' $armArguments 'duplicate-arm'

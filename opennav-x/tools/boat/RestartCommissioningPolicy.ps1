@@ -101,14 +101,30 @@ function Assert-RestartRequest($Request,$Session,$Parent,[string]$Mode,[string]$
   if($Request['path'] -isnot [string] -or $Request['path'] -cne $Session.path){throw 'Inherited search path differs from the immutable cold environment.'}
   if($Request['arguments'] -isnot [string[]] -or $Request['arguments'].Length -ne 1 -or $Request['arguments'][0] -cne $Mode -or $Mode -cnotin @('--xnav','--legacy','--safe-mode')){throw 'Only the one explicitly armed mode is permitted.'}
 }
+function Resolve-RestartTaskSid([string]$UserId) {
+  if([string]::IsNullOrWhiteSpace($UserId)){throw 'Scheduled task principal is missing.'}
+  # Task Scheduler may return the resolved account name even when registration
+  # supplied an SID. Resolve through Windows, then compare the exact immutable
+  # SID; never accept a username merely because its spelling looks familiar.
+  if($UserId -cmatch '^S-1-(?:0|[1-9][0-9]*)(?:-(?:0|[1-9][0-9]*))+$'){return $UserId}
+  if([Environment]::OSVersion.Platform -ne 'Win32NT'){throw 'Account-name identity requires native Windows resolution.'}
+  try {
+    $account=New-Object Security.Principal.NTAccount($UserId)
+    return $account.Translate([Security.Principal.SecurityIdentifier]).Value
+  } catch {throw 'Scheduled task account cannot be resolved to a verified SID.'}
+}
 function Assert-RestartTaskIdentity($Task,$Arm,[string]$Sid) {
+  $resolvedSid=Resolve-RestartTaskSid $Task.Principal.UserId
+  # The native CIM provider reports no triggers as null, rather than an empty
+  # array. An actual array containing a null/unknown trigger still refuses.
+  $noTriggers=$null -eq $Task.Triggers -or @($Task.Triggers).Count -eq 0
   if($Task.State.ToString() -cne 'Ready' -or @($Task.Actions).Count -ne 1 -or
      $Task.Actions[0].Execute -cne $Arm.execute -or $Task.Actions[0].Arguments -cne $Arm.arguments -or $Task.Actions[0].WorkingDirectory -or
-     $Task.Principal.UserId -cne $Sid -or $Task.Principal.RunLevel.ToString() -cnotin @('Limited','0') -or
-     $Task.Principal.LogonType.ToString() -cnotin @('Interactive','3') -or @($Task.Triggers).Count -ne 0){
+     $resolvedSid -cne $Sid -or $Task.Principal.RunLevel.ToString() -cnotin @('Limited','0') -or
+     $Task.Principal.LogonType.ToString() -cnotin @('Interactive','3') -or -not $noTriggers){
     $diagnostic=@{state=$Task.State.ToString();actionCount=@($Task.Actions).Count;
       actions=@($Task.Actions|Select-Object Execute,Arguments,WorkingDirectory);
-      principal=@{userId=$Task.Principal.UserId;runLevel=$Task.Principal.RunLevel.ToString();logonType=$Task.Principal.LogonType.ToString()};
+      principal=@{userId=$Task.Principal.UserId;resolvedSid=$resolvedSid;runLevel=$Task.Principal.RunLevel.ToString();logonType=$Task.Principal.LogonType.ToString()};
       triggerCount=@($Task.Triggers).Count;triggersNull=($null -eq $Task.Triggers);
       expected=@{execute=$Arm.execute;arguments=$Arm.arguments;sid=$Sid}}
     throw ('Broker task running or differs from the exact owned limited interactive action: '+($diagnostic|ConvertTo-Json -Depth 5 -Compress))
