@@ -3,6 +3,17 @@
 function Initialize-StockWelcomeNative {
   if (-not ('OpenNavX.StockWelcomeNative' -as [type])) { Add-Type -Path (Join-Path $PSScriptRoot 'StockWelcomeNative.cs') }
 }
+# Exact tuples from the qualified official English/Swedish catalogues. Keep this
+# source ASCII for Windows PowerShell 5.1's BOM-less script decoding.
+function Assert-StockWelcomeWindow($Info,[int]$ProcessId) {
+  $english=$Info.Title -ceq 'Welcome to OpenCPN' -and $Info.AgreeText -ceq 'Agree' -and $Info.CancelText -ceq 'Cancel'
+  $swedish=$Info.Title -ceq ('V'+[char]0x00e4+'lkommen till OpenCPN') -and $Info.AgreeText -ceq 'Acceptera' -and $Info.CancelText -ceq 'Avbryt'
+  if ($ProcessId -le 0 -or $Info.ProcessId -ne $ProcessId -or (-not $english -and -not $swedish) -or
+      $Info.ModalClass -cne '#32770' -or $Info.AgreeId -ne 5100 -or $Info.CancelId -ne 5101 -or
+      $Info.HtmlClass -cne 'wxWindowNR' -or $Info.HtmlName -cne 'htmlWindow') {
+    throw 'Captured warning is not the pinned English or Swedish navigation caution.'
+  }
+}
 function Assert-StockWelcomeInspection($Inspection,$Job,[datetime]$Now) {
   if ($Inspection.status -cne 'passed' -or $Inspection.action -cne 'ReviewStock' -or $Inspection.reviewAction -cne 'InspectWelcome' -or
       $Inspection.mode -cne 'StockLegacy' -or $Inspection.processId -ne $Job.processId -or
@@ -11,10 +22,7 @@ function Assert-StockWelcomeInspection($Inspection,$Job,[datetime]$Now) {
       $Inspection.welcomeNativeSha256 -cne $Job.welcomeNativeSha256 -or $Inspection.imageSha256 -cnotmatch '^[a-f0-9]{64}$') { throw 'Inspect this exact stock warning before acknowledging it.' }
   $at=[datetime]::Parse($Inspection.utc).ToUniversalTime()
   if ($at -gt $Now -or ($Now-$at).TotalMinutes -gt 30) { throw 'Warning inspection expired; capture and review it again.' }
-  $info=$Inspection.nativeWindow
-  if ($info.ProcessId -ne $Job.processId -or $info.Title -cne 'Welcome to OpenCPN' -or $info.ModalClass -cne '#32770' -or
-      $info.AgreeText -cne 'Agree' -or $info.CancelText -cne 'Cancel' -or $info.AgreeId -ne 5100 -or $info.CancelId -ne 5101 -or
-      $info.HtmlClass -cne 'wxWindowNR' -or $info.HtmlName -cne 'htmlWindow') { throw 'Captured warning is not the pinned English navigation caution.' }
+  Assert-StockWelcomeWindow $Inspection.nativeWindow $Job.processId
 }
 function Save-StockWelcomeCapture([int]$ProcessId,$Info,[string]$Path) {
   $path=Assert-LocalPath $Path
@@ -48,7 +56,7 @@ function Invoke-StockWelcomeReview($Job,$Review,$Process,[string]$Sid,[int]$Sess
     executableSha256=$Job.executableSha256;launchResultSha256=$Job.launchResultSha256;launchRequestSha256=$Job.launchRequestSha256;
     welcomeHelperSha256=$Job.welcomeHelperSha256;welcomeNativeSha256=$Job.welcomeNativeSha256;mode='StockLegacy';actuatorCommandsIssuedByTool=$false;
     physicalBusSilenceNotClaimed=$true;bodyTextAccessible=$false;source='OpenCPN 37fd0cddb7334fe489e9f18aa163977a9c5c84f7 ShowNavWarning -> AlertDialog';
-    review='English GPL/no-warranty/navigation caution only. HTML body is verified by human review of the captured pixels; no text-accessibility claim.'}
+    review='Pinned English/Swedish GPL/no-warranty/navigation caution only. HTML body is verified by human review of the captured pixels; no text-accessibility claim.'}
   if ($Job.reviewAction -ceq 'InspectWelcome') {
     $info=[OpenNavX.StockWelcomeNative]::Inspect($Process.Id)
     $null=Read-StockReview $Job;$Process.Refresh();Assert-StockProcess $Process $Job $Review.launch $Sid $Session

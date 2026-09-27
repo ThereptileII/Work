@@ -72,7 +72,11 @@ jobs:
           path: opennav-x/evidence/local/restart-window
           if-no-files-found: error
   native-stock-welcome:
-    name: Actual official OpenCPN portable first-start caution
+    name: Actual official OpenCPN portable upgrade caution (${{ matrix.locale }})
+    strategy:
+      fail-fast: false
+      matrix:
+        locale: [en_US, sv]
     needs: native-maintenance
     runs-on: windows-2022
     timeout-minutes: 10
@@ -81,12 +85,12 @@ jobs:
       - name: Exercise exact official stock warning and hash-bound Agree in an empty portable profile
         run: |
           New-Item -ItemType Directory -Path opennav-x/evidence/local/stock-welcome -Force | Out-Null
-          & "$env:WINDIR/System32/WindowsPowerShell/v1.0/powershell.exe" -NoProfile -ExecutionPolicy Bypass -File opennav-x/tools/test-stock-welcome-windows.ps1 -Evidence opennav-x/evidence/local/stock-welcome 2>&1 | Tee-Object -FilePath opennav-x/evidence/local/stock-welcome/native-stock-warning.log
+          & "$env:WINDIR/System32/WindowsPowerShell/v1.0/powershell.exe" -NoProfile -ExecutionPolicy Bypass -File opennav-x/tools/test-stock-welcome-windows.ps1 -Evidence opennav-x/evidence/local/stock-welcome -Locale ${{ matrix.locale }} 2>&1 | Tee-Object -FilePath opennav-x/evidence/local/stock-welcome/native-stock-warning.log
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         if: always()
         with:
-          name: development-stock-welcome-${{ github.sha }}
+          name: development-stock-welcome-${{ matrix.locale }}-${{ github.sha }}
           path: opennav-x/evidence/local/stock-welcome
           if-no-files-found: error
   native-restart-broker:

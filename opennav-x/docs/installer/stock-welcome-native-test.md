@@ -15,7 +15,12 @@ and each remains disabled.
 
 The child starts with the explicit `--portable --no_opengl` arguments, an empty
 marine connection list, and private application-data directories. A generated
-5.12.2 version setting deliberately causes the normal first-start warning. The
+5.12.2 version setting with `NavMessageShown=1` deliberately causes the normal
+version-upgrade warning in separate English (`en_US`) and Swedish (`sv`) jobs.
+This matches the recovered boat profile. The version mismatch still requires
+the warning; it does not skip or accept it. Pinned `ocpn_app.cpp:1715` adds a
+portable chart directory only for first-install state, which the upgrade
+fixture correctly avoids. The
 fixture refuses if the disposable runner already has a normal OpenCPN profile.
 It never changes or substitutes the production stock launch/audit functions.
 
@@ -37,3 +42,25 @@ exact subsequent commit, run and downloaded artifact must pass and be reviewed.
 This qualifies only the fixed warning primitives against the official stock
 application. The real shared profile, commissioning transaction, source-reviewed
 plugins and physical display retain their independent boat validation gates.
+
+The shared selector admits exactly two complete title/Agree/Cancel tuples:
+`Welcome to OpenCPN` / `Agree` / `Cancel`, or `Välkommen till OpenCPN` /
+`Acceptera` / `Avbryt`. Mixed tuples and all other languages refuse. The Swedish
+fixture verifies the official `share/locale/sv/LC_MESSAGES/opencpn.mo` SHA-256
+`c57052ffd88fde07d379f2f27256eb77d77511fe34ff4d519cea898bc639dec4` and `wxstd.mo`
+`f3f490b0ac48373fb4ef3a54babd8957263024f9ddcd3df5756affa50851e09e` before launch.
+Source translations agree with pinned `po/opencpn_sv_SE.po`. Each captured text,
+class and control ID is rechecked along with handles, geometry and foreground.
+A changed language requires a new inspection and pixel review. No boat locale
+or configuration is translated by these tools.
+
+Run `36285947258` (source `0dd5fe8716763f32d65faced0b4a0a3a3e337eb9`) proved the
+actual English warning's source-derived selectors and one captured Agree action:
+18 checks passed before an unrelated first-install chart database dialog blocked
+startup. The full job failed and timed out; it is not a completed stock gate.
+The downloaded artifact SHA-256 is
+`3bbbb0a0a936b77f78dfe146d5f118fe5e91e2ac58f428dbf0ae4bc74d73256a` (51,598 bytes),
+verified against the API and upload log. Both corrected upgrade cases must still
+pass on their exact subsequent commit. Child output is explicitly redirected so
+a failed fixture does not keep the CI console pipe open; normal close is attempted
+only for its verified, enabled owned frame, never through an unknown modal.
