@@ -266,3 +266,9 @@ If connectivity fails, inspect the remote request/result journal and process
 identity after reconnection before retrying any action. An empty local response
 is not proof that the remote action did not execute. Preserve the active
 commissioning marker and recovery data while disconnected.
+
+Native staging qualification initially failed before filesystem staging because
+Windows PowerShell 5.1 did not resolve `ZipArchiveMode` after loading only
+`System.IO.Compression.FileSystem`. Both the helper and fixture now explicitly
+load `System.IO.Compression` too. That failed run (`36311040487`, `b26fbdc`)
+is retained, not accepted. No staging helper has run on the boat.

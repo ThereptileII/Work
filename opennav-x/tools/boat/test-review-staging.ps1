@@ -4,7 +4,7 @@ param([switch]$IsolatedLocal)
 Set-StrictMode -Version Latest;$ErrorActionPreference='Stop'
 if([Environment]::OSVersion.Platform -ne 'Win32NT' -or ($env:GITHUB_ACTIONS -cne 'true' -and -not $IsolatedLocal)){throw 'Native CI or explicit disposable Windows test required.'}
 . (Join-Path $PSScriptRoot 'Common.ps1')
-Add-Type -AssemblyName System.IO.Compression.FileSystem
+Add-Type -AssemblyName System.IO.Compression,System.IO.Compression.FileSystem
 $root=Join-Path ([IO.Path]::GetTempPath()) ('OpenNav review staging & '+[guid]::NewGuid().ToString('N'))
 $null=New-Item -ItemType Directory -Path $root
 $checks=New-Object 'Collections.Generic.List[string]'

@@ -23,7 +23,7 @@ $scripts=Assert-LocalPath (Join-Path $workspace 'scripts')
 if(-not [IO.Directory]::Exists($scripts)){throw 'Existing owned scripts directory required.'}
 $destination=Assert-LocalPath (Join-Path $scripts ('review-'+$Commit))
 if(Test-Path -LiteralPath $destination){throw 'Existing tool copy is preserved; inspect its completion record.'}
-Add-Type -AssemblyName System.IO.Compression.FileSystem
+Add-Type -AssemblyName System.IO.Compression,System.IO.Compression.FileSystem
 $zip=[IO.Compression.ZipFile]::OpenRead((Assert-LocalPath $Archive))
 try {
  if($zip.Entries.Count -ne $expected.Count){throw 'Archive/manifest entry count differs.'}
