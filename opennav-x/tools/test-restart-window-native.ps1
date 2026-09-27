@@ -16,6 +16,8 @@ try {
  foreach($spec in @(
   @('--xnav','--legacy','normal','Open Legacy OpenCPN'),@('--xnav','--xnav','normal','Restart XNav'),@('--xnav','--safe-mode','normal','Safe Mode'),
   @('--legacy','--xnav','normal','Switch to XNav'),@('--safe-mode','--xnav','normal','Switch to XNav'),
+  @('--legacy','--xnav','owned-pane','Switch to XNav'),@('--legacy','--xnav','owned-menu',''),
+  @('--legacy','--xnav','unowned-pane',''),@('--xnav','--legacy','owned-pane',''),@('--safe-mode','--xnav','owned-pane',''),
   @('--xnav','--legacy','ambiguous',''),@('--xnav','--legacy','replace-on-down',''),@('--legacy','--xnav','hidden-menu',''),@('--xnav','--legacy','modal',''))) {
   $directory=Join-Path ([IO.Path]::GetTempPath()) ('opennav-mode-window-'+[guid]::NewGuid().ToString('N'));$null=New-Item -ItemType Directory -Path $directory
   [IO.File]::WriteAllText((Join-Path $directory 'fixture.json'),(@{owner='OpenNavX.NativeModeWindow.Fixture.1';mode=$spec[0];case=$spec[2]}|ConvertTo-Json -Compress))
@@ -30,9 +32,11 @@ try {
    if(-not (Test-Path -LiteralPath $readyPath)){throw 'Native marker window did not become ready.'}
    $ready=Get-Content -LiteralPath $readyPath -Raw|ConvertFrom-Json
    if($ready.pid -ne $process.Id -or $ready.createdFiletime -cne $process.StartTime.ToUniversalTime().ToFileTimeUtc().ToString()){throw 'Fixture creation identity differs.'}
-   $refused=$false;$reason=$null;$command=$null
+   $refused=$false;$reason=$null;$command=$null;$capture=$null
    try {
     [OpenNavX.RestartWindowNative]::Foreground([IntPtr]$ready.handle,$process.Id,$spec[0])
+    $capture=[OpenNavX.RestartWindowNative]::AssertFrame([IntPtr]$ready.handle,$process.Id,$spec[0])
+    [OpenNavX.RestartWindowNative]::AssertCapture([IntPtr]$ready.handle,$process.Id,$capture)
     $command=[OpenNavX.RestartWindowNative]::InspectModeCommand([IntPtr]$ready.handle,$process.Id,$spec[0],$spec[1])
     [OpenNavX.RestartWindowNative]::RequestMode([IntPtr]$ready.handle,$process.Id,$command)
    } catch {$refused=$true;$reason=$_.Exception.Message}
@@ -40,7 +44,9 @@ try {
    if(Test-Path -LiteralPath $clickPath){$clicks=@(Get-Content -LiteralPath $clickPath)}
    if($spec[3]){if($refused -or @($clicks).Count -ne 1 -or $clicks[0] -cne $spec[3]){throw ('Actual native mode action failed: '+$reason)}}
    elseif(-not $refused -or @($clicks).Count){throw 'Unsafe/ambiguous native fixture received an action.'}
-   $results.Add(@{from=$spec[0];to=$spec[1];case=$spec[2];refused=$refused;refusal=$reason;clicks=@($clicks);command=$command;pid=$process.Id;createdFiletime=$ready.createdFiletime})
+   if($spec[2] -ceq 'owned-pane' -and $spec[0] -ceq '--legacy' -and $capture.OwnedLegacyWindowCount -ne 1){throw 'Expected the exact owned Legacy pane in capture metadata.'}
+   if($spec[2] -ceq 'owned-menu' -and $reason -notlike '*actual mode menu is obscured*'){throw 'Owned pane covering the menu must fail specifically before command dispatch.'}
+   $results.Add(@{from=$spec[0];to=$spec[1];case=$spec[2];refused=$refused;refusal=$reason;capture=$capture;clicks=@($clicks);command=$command;pid=$process.Id;createdFiletime=$ready.createdFiletime})
   } finally {
    [IO.File]::WriteAllText((Join-Path $directory 'release'),'release fixed marker window')
    if(-not $process.WaitForExit(30000)){throw 'Native marker did not exit within its bound; no force termination.'}

@@ -141,4 +141,8 @@ against [user flows](../user-flows.md), [components](../component-inventory.md)
 and [boat feedback](../../feedback/boat-beta1-feedback.md). The existing
 `test-review-window.ps1` passed **145 policy/source/compilation checks** locally.
 It executed no Win32 UI actions, accessed no boat, and sent no hardware commands.
-No product code or action allowlist was changed for this plan.
+The current `9f592` native maintenance gate passes **159** review policy/source
+checks, including the subsequently added display and palette boundaries. Its
+separate native marker-window gate passes 15 display-action cases. These qualify
+the review tool, not the actual boat screens. No product code or action allowlist
+was changed for this plan.

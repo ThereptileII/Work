@@ -20,6 +20,24 @@ Cancel/paint-readiness harness repairs and complete resource-review dependency
 closure. The corrected Linux build and all 27 object-workflow groups pass;
 replacement native UI and release gates remain open. It is not deployed.
 
+The native integrated application build and both **71/71** contract suites now
+pass. Eleven prerequisite artifacts have been independently downloaded and
+checked against their API/upload hashes, byte sizes and ZIP integrity. Linux
+completed its functional/UI checks and entered the three-hour elapsed-time trip
+at 06:45:57 UTC. The Windows fixture-free build and subsequent packaging gates
+are still running. None of these partial results qualifies a release.
+
+Before the next boat launch, source inspection found that the restart tooling
+rejected separately reviewed stock and bundled DLLs sharing a basename. A
+[per-copy shutdown identity](installer/restart-plugin-copy-identity.md) repair
+passes 309 portable policy checks and 17 copied-dependency checks. Tooling
+candidate `506a70f5c49cf6d9335be31891817bf88ebc120e` is in
+[native run 36301213829](https://github.com/ThereptileII/Work/actions/runs/36301213829),
+matching all 696 mapped blobs/modes at local `b7c916d90bcb4c0c086516e838696a53e9acf194`.
+It does not change the application candidate or cancel its endurance gate.
+This new tooling has not been deployed; the boat source checkout is the already
+qualified-tool subset of `9f592`, with no application change.
+
 The separately qualified boat tooling is `1439b5b2dac669090b5de4ef956eaffa0f42c542`,
 [run 36299584290](https://github.com/ThereptileII/Work/actions/runs/36299584290).
 All nine jobs and all downloaded/hash-verified artifacts pass, including 163
