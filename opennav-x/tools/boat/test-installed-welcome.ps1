@@ -27,12 +27,19 @@ Pass 'Exact native process creation tick/SID/session policy' {Assert-InstalledWe
 foreach($field in @('Id','Path','SessionId','MainWindowHandle','HasExited','StartTime')){Refuse "PID reuse or changed process $field" {$v=CopyValue $process;$v.$field=switch($field){'Id'{43};'Path'{'C:\other.exe'};'SessionId'{2};'MainWindowHandle'{0};'HasExited'{$true};'StartTime'{$process.StartTime.AddTicks(1)}};Assert-InstalledWelcomeProcess $v $job $launch 'S-1-5-21-1' 1}}
 Refuse 'Different SID refused' {Assert-InstalledWelcomeProcess $process $job $launch 'S-1-5-21-2' 1}
 $inspection=[pscustomobject]@{status='passed';action='ReviewInstalledWelcome';reviewAction='InspectWelcome';utc=$now.AddMinutes(-1).ToString('o');mode=$launch.mode;processId=42;buildCommit=$job.buildCommit;generation=$job.generation;executableSha256=$job.executableSha256;launchResultSha256=$job.launchResultSha256;launchRequestSha256=$job.launchRequestSha256;helperFiles=$job.helperFiles;imageSha256=('2'*64);
-  nativeWindow=[pscustomobject]@{ProcessId=42;Title='Welcome to OpenCPN';ModalClass='#32770';AgreeText='Agree';CancelText='Cancel';AgreeId=5100;CancelId=5101;HtmlClass='wxWindowNR';HtmlName='htmlWindow'}}
+  nativeWindow=[pscustomobject]@{Frame=123;Modal=456;Agree=789;Cancel=790;Html=791;Dpi=96;Bounds=[pscustomobject]@{Left=100;Top=100;Right=700;Bottom=500;Width=600;Height=400};ProcessId=42;Title='Welcome to OpenCPN';ModalClass='#32770';AgreeText='Agree';CancelText='Cancel';AgreeId=5100;CancelId=5101;HtmlClass='wxWindowNR';HtmlName='htmlWindow'}}
 Pass 'Inspection belongs to this exact installed launch and warning' {Assert-InstalledWelcomeInspection $inspection $job $launch $now}
 foreach($field in @('action','reviewAction','mode','buildCommit','generation','executableSha256','launchResultSha256','launchRequestSha256','imageSha256')){Refuse "Cross-stock/cross-build/changed captured proof $field" {$v=CopyValue $inspection;$v.$field='changed';Assert-InstalledWelcomeInspection $v $job $launch $now}}
 Refuse 'Changed helper after inspection' {$v=CopyValue $inspection;$v.helperFiles[0].sha256='3'*64;Assert-InstalledWelcomeInspection $v $job $launch $now}
 Refuse 'Old inspection refused' {$v=CopyValue $inspection;$v.utc=$now.AddMinutes(-31).ToString('o');Assert-InstalledWelcomeInspection $v $job $launch $now}
 foreach($field in @('Title','ModalClass','AgreeText','CancelText','HtmlClass','HtmlName')){Refuse "Different native caution $field" {$v=CopyValue $inspection;$v.nativeWindow.$field='changed';Assert-InstalledWelcomeInspection $v $job $launch $now}}
+Pass 'Installed inspection preserves actual C# serialized rectangle dimensions' {
+ $typed=Convert-StockWelcomeWindow $inspection.nativeWindow
+ $parsed=$typed | ConvertTo-Json -Depth 8 | ConvertFrom-Json
+ $restored=Convert-StockWelcomeWindow $parsed
+ if($parsed.Bounds.Width -ne 600 -or $restored.Bounds.Width -ne 600 -or $restored.Modal -ne 456){throw 'Installed warning JSON conversion differs'}
+}
+Refuse 'Installed warning cannot ignore inconsistent serialized derived bounds' {$v=CopyValue $inspection;$v.nativeWindow.Bounds.Width++;Convert-StockWelcomeWindow $v.nativeWindow}
 foreach($fileName in @('InstalledWelcome.ps1','review-installed-welcome.ps1','Common.ps1','InteractiveJob.ps1')){Pass "Parses $fileName" {$tokens=$null;$errors=$null;$null=[Management.Automation.Language.Parser]::ParseFile((Join-Path $PSScriptRoot $fileName),[ref]$tokens,[ref]$errors);if($errors.Count){throw ($errors|Out-String)}}}
 $arguments=@{InstalledWelcomeFixture=$true};if($PortableContracts){$arguments.PortableContracts=$true};if($IsolatedLocal){$arguments.IsolatedLocal=$true}
 $runtime=& (Join-Path $PSScriptRoot 'test-commissioning-launch.ps1') @arguments | ConvertFrom-Json

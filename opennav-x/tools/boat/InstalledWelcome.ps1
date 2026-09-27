@@ -143,7 +143,7 @@ function Invoke-InstalledWelcome($Job) {
           (Get-Digest $inspectionPath) -cne $Job.welcomeInspectionSha256) { throw 'Exact separately reviewed installed warning record required.' }
       $inspection=Read-Record $inspectionPath;Assert-InstalledWelcomeInspection $inspection $Job $proof.launch ([datetime]::UtcNow)
       if ($inspection.image -ine (Join-Path $inspectionDir 'welcome.png') -or (Get-Digest $inspection.image) -cne $inspection.imageSha256) { throw 'Inspected warning pixels changed.' }
-      $info=[OpenNavX.StockWelcomeNative+NoticeInfo]$inspection.nativeWindow;$intent=Join-Path $inspectionDir 'agree-intent.json'
+      $info=$inspection.nativeWindow;$intent=Join-Path $inspectionDir 'agree-intent.json'
       if (Test-Path -LiteralPath $intent) { throw 'Warning acknowledgement already consumed; no retry.' }
       $null=Read-InstalledWelcome $Job;$process.Refresh();Assert-InstalledWelcomeProcess $process $Job $proof.launch $sid $session
       $before=Join-Path $directory 'welcome-before-agree.png';Invoke-StockWelcomeAgreement $process.Id $info $inspection.imageSha256 $before $intent

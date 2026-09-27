@@ -78,3 +78,19 @@ If capture refuses, diagnostics distinguish captured-field changes from a
 foreground mismatch. They report changed field names or numeric HWND/PID values
 only, never an unrelated foreground window's title. The identity predicate and
 human inspection / one-use acknowledgement sequence remain unchanged.
+
+Saved inspection acknowledgement regression: the boat's separate acknowledgement
+process refused before capture, intent creation or input because PowerShell 5.1
+tried to set the serialized native rectangle's read-only `Width` and `Height`.
+The shared stock/installed acknowledgement primitive now explicitly reconstructs
+only writable native fields and requires both serialized derived dimensions to
+match the captured edges exactly. Unknown fields, malformed numeric types and
+inconsistent geometry refuse before capture.
+
+The actual English/Swedish fixture now writes the real C# observation to JSON and
+acknowledges it from a fresh Windows PowerShell 5.1 process. That process verifies
+the hash-bound packet, exact temporary portable executable/process/profile and
+captured pixels, then calls the same production primitive. Earlier native results
+qualified the live-object path; they did not qualify this process/JSON boundary.
+The converter's 141 portable warning checks and 91 installed policy/runtime checks
+pass locally; fresh native evidence is required before boat acknowledgement.

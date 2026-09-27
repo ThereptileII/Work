@@ -14,6 +14,32 @@ function Assert-StockWelcomeWindow($Info,[int]$ProcessId) {
     throw 'Captured warning is not the pinned English or Swedish navigation caution.'
   }
 }
+function Convert-StockWelcomeWindow($Info) {
+  # JSON includes C# Rect's read-only Width/Height. Rebuild only writable fields,
+  # and prove the serialized derived dimensions instead of discarding them.
+  Initialize-StockWelcomeNative
+  $names=@('Frame','Modal','Agree','Cancel','Html','ProcessId','AgreeId','CancelId','Dpi','Bounds','Title','ModalClass','HtmlClass','HtmlName','AgreeText','CancelText')
+  if ($null -eq $Info -or ((@($Info.PSObject.Properties.Name | Sort-Object) -join '|') -cne (($names | Sort-Object) -join '|'))) { throw 'Captured warning field schema differs.' }
+  $bounds=$Info.Bounds
+  if ($null -eq $bounds -or ((@($bounds.PSObject.Properties.Name | Sort-Object) -join '|') -cne 'Bottom|Height|Left|Right|Top|Width')) { throw 'Captured warning rectangle schema differs.' }
+  function Integer($Value,[long]$Minimum,[long]$Maximum) {
+    if (($Value -isnot [int] -and $Value -isnot [long] -and $Value -isnot [uint32]) -or $Value -lt $Minimum -or $Value -gt $Maximum) { throw 'Captured warning integer type or bounds differ.' }
+    return [long]$Value
+  }
+  $rectangle=New-Object OpenNavX.StockWelcomeNative+Rect
+  foreach($name in @('Left','Top','Right','Bottom')) { $rectangle.$name=[int](Integer $bounds.$name ([int]::MinValue) ([int]::MaxValue)) }
+  $width=Integer $bounds.Width 1 ([int]::MaxValue);$height=Integer $bounds.Height 1 ([int]::MaxValue)
+  if (([long]$rectangle.Right-$rectangle.Left) -ne $width -or ([long]$rectangle.Bottom-$rectangle.Top) -ne $height) { throw 'Captured warning derived width or height differs.' }
+  $result=New-Object OpenNavX.StockWelcomeNative+NoticeInfo
+  foreach($name in @('Frame','Modal','Agree','Cancel','Html')) { $result.$name=Integer $Info.$name 1 ([long]::MaxValue) }
+  foreach($name in @('ProcessId','AgreeId','CancelId')) { $result.$name=[int](Integer $Info.$name 1 ([int]::MaxValue)) }
+  $result.Dpi=[uint32](Integer $Info.Dpi 72 384);$result.Bounds=$rectangle
+  foreach($name in @('Title','ModalClass','HtmlClass','HtmlName','AgreeText','CancelText')) {
+    if ($Info.$name -isnot [string]) { throw 'Captured warning text type differs.' };$result.$name=$Info.$name
+  }
+  Assert-StockWelcomeWindow $result $result.ProcessId
+  return $result
+}
 function Assert-StockWelcomeInspection($Inspection,$Job,[datetime]$Now) {
   if ($Inspection.status -cne 'passed' -or $Inspection.action -cne 'ReviewStock' -or $Inspection.reviewAction -cne 'InspectWelcome' -or
       $Inspection.mode -cne 'StockLegacy' -or $Inspection.processId -ne $Job.processId -or
@@ -39,6 +65,8 @@ function Save-StockWelcomeCapture([int]$ProcessId,$Info,[string]$Path) {
 }
 function Invoke-StockWelcomeAgreement([int]$ProcessId,$Info,[string]$ExpectedImageHash,[string]$BeforeImage,[string]$IntentPath) {
   if ($ExpectedImageHash -cnotmatch '^[a-f0-9]{64}$') { throw 'Reviewed warning image hash required.' }
+  $Info=Convert-StockWelcomeWindow $Info
+  if ($Info.ProcessId -ne $ProcessId) { throw 'Captured warning belongs to another process.' }
   $hash=Save-StockWelcomeCapture $ProcessId $Info $BeforeImage
   if ($hash -cne $ExpectedImageHash) { throw 'Warning pixels changed since inspection; no acknowledgement sent.' }
   # Durable exclusive one-use intent. Even uncertain delivery cannot be retried
@@ -89,7 +117,7 @@ function Invoke-StockWelcomeReview($Job,$Review,$Process,[string]$Sid,[int]$Sess
   $inspection=Read-Record $inspectionPath
   Assert-StockWelcomeInspection $inspection $Job ([datetime]::UtcNow)
   if ($inspection.image -ine (Join-Path $inspectionDir 'welcome.png') -or (Get-Digest $inspection.image) -cne $inspection.imageSha256) { throw 'Reviewed warning capture changed.' }
-  $info=[OpenNavX.StockWelcomeNative+NoticeInfo]$inspection.nativeWindow
+  $info=$inspection.nativeWindow
   $intent=Join-Path $inspectionDir 'agree-intent.json'
   if (Test-Path -LiteralPath $intent) { throw 'This inspection already has an acknowledgement intent; inspect actual state, never retry it.' }
   $null=Read-StockReview $Job;$Process.Refresh();Assert-StockProcess $Process $Job $Review.launch $Sid $Session

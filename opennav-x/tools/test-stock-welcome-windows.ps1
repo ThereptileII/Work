@@ -157,7 +157,22 @@ try {
  Check (-not (Test-Path -LiteralPath (Join-Path $evidence 'wrong-hash-intent.json'))) 'Rejected image proof created no acknowledgement intent'
  [OpenNavX.StockWelcomeNative]::AssertUnchanged($process.Id,$notice)
  $intent=Join-Path $evidence 'agree-intent.json'
- Invoke-StockWelcomeAgreement $process.Id $notice $imageHash (Join-Path $evidence 'before-agree.png') $intent
+ $packet=Join-Path $evidence 'serialized-inspection.json'
+ Write-Record $packet @{fixtureRoot=$temporary;processId=$process.Id;processStartedUtcTicks=$process.StartTime.ToUniversalTime().Ticks;profileSha256=(Get-Digest $ini);imageSha256=$imageHash;nativeWindow=$notice}
+ $ackScript=[IO.Path]::GetFullPath((Join-Path $PSScriptRoot '../tests/stock-warning/acknowledge-fixture.ps1'))
+ $ackStart=New-Object Diagnostics.ProcessStartInfo;$ackStart.FileName=Join-Path $env:WINDIR 'System32/WindowsPowerShell/v1.0/powershell.exe'
+ $ackStart.Arguments='-NoProfile -NonInteractive -ExecutionPolicy Bypass -File "'+$ackScript+'" -Packet "'+$packet+'" -ExpectedHash '+(Get-Digest $packet)
+ $ackStart.UseShellExecute=$false;$ackStart.CreateNoWindow=$true;$ackStart.RedirectStandardOutput=$true;$ackStart.RedirectStandardError=$true
+ $ack=[Diagnostics.Process]::Start($ackStart);$ackOutput=$ack.StandardOutput.ReadToEndAsync();$ackError=$ack.StandardError.ReadToEndAsync()
+ try {
+  if(-not $ack.WaitForExit(30000)){throw 'Fresh serialized acknowledgement fixture timed out; no retry or force termination.'}
+  $ackText=$ackOutput.GetAwaiter().GetResult();$ackErrorText=$ackError.GetAwaiter().GetResult()
+  [IO.File]::WriteAllText((Join-Path $evidence 'fresh-ack-stdout.json'),$ackText);[IO.File]::WriteAllText((Join-Path $evidence 'fresh-ack-stderr.log'),$ackErrorText)
+  Check ($ack.ExitCode -eq 0) ('Fresh native acknowledgement process succeeds: '+$ackErrorText)
+  $ackResult=$ackText|ConvertFrom-Json
+  Check ($ackResult.status -ceq 'passed' -and $ackResult.freshProcessId -ne $PID -and $ackResult.powerShellEdition -ceq 'Desktop' -and $ackResult.powerShellMajor -eq 5 -and $ackResult.sharedProductionAgreement) 'Actual serialized NoticeInfo reaches shared acknowledgement in a fresh PowerShell 5.1 process'
+  $report.serializedAcknowledgement=$ackResult
+ } finally {$ack.Dispose()}
  $agreed=$true;Check (Test-Path -LiteralPath $intent) 'Same production primitive durably records one intent before Agree'
  $deadline=[datetime]::UtcNow.AddSeconds(45);$frame=[IntPtr]::Zero
  do {

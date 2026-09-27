@@ -128,7 +128,6 @@ jobs:
       fail-fast: false
       matrix:
         locale: [en_US, sv]
-    needs: native-maintenance
     runs-on: windows-2022
     timeout-minutes: 10
     steps:
