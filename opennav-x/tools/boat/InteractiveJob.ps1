@@ -5,10 +5,13 @@ param([Parameter(Mandatory=$true)][string]$Request)
 $job=Read-Record $Request
 $result=@{status='failed';action=$job.action;utc=[DateTime]::UtcNow.ToString('o')}
 try {
-  if ($job.action -notin @('Launch','LaunchPortableReview','Close','Capture','ReviewWindow')) { throw 'Unsupported interactive action.' }
+  if ($job.action -cnotin @('Launch','LaunchPortableReview','Close','Capture','ReviewWindow','RequestGuardedMode','ReviewRestartChild')) { throw 'Unsupported interactive action.' }
   $exe=Assert-LocalPath $job.executable
   if ((Get-Digest $exe) -cne $job.executableSha256) { throw 'Application changed between dispatch and interactive execution.' }
-  if ($job.action -in @('Launch','LaunchPortableReview')) {
+  if ($job.action -cin @('RequestGuardedMode','ReviewRestartChild')) {
+    . (Join-Path $PSScriptRoot 'RestartWindowReview.ps1')
+    $result=Invoke-RestartWindowReview $job
+  } elseif ($job.action -in @('Launch','LaunchPortableReview')) {
     # Repeat the complete guard inside the interactive session, immediately
     # before launch. A queued task is not a reusable safety approval.
     $restartBinding=$null

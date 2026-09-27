@@ -130,7 +130,8 @@ function Read-RestartIni([string]$Path) {
   if(-not $sections.Contains('Settings')){throw 'Missing OpenCPN settings.'}
   return ,$values
 }
-function Get-RestartBaseline($Session,[string]$Record,$Parent) {
+function Get-RestartBaseline($Session,[string]$Record,$Parent,[switch]$ReviewOnly,[string]$PendingDirectory='') {
+  if($PendingDirectory -and -not $ReviewOnly){throw 'Pending transition inspection is read-only only.'}
   $directory=[IO.Path]::GetDirectoryName($Record)
   $cold=Read-Record (Join-Path $directory 'cold-child.json')
   $launch=Join-Path $directory 'cold-launch-consumed.json'
@@ -141,10 +142,21 @@ function Get-RestartBaseline($Session,[string]$Record,$Parent) {
      $launchRecord.status -cne 'consumed-before-start' -or $launchRecord.mode -cnotin @('--xnav','--legacy','--safe-mode')){throw 'Cold launch journal identity differs.'}
   Assert-RestartDecimal $cold.pid 'cold child';Assert-RestartDecimal $cold.createdFiletime 'cold child creation'
   $baseline=$Session.beforeIni;$hash=$Session.beforeIniSha256;$expectedChild=$cold;$index=0
+  $mode=$launchRecord.mode;$completionPath=$null;$completionHash=$null;$pending=$false
   foreach($transition in @(Get-ChildItem -LiteralPath $directory -Directory -Filter 'transition-*' | Sort-Object Name)) {
     $index++
     if($index -gt 16 -or $transition.Name -cne ('transition-{0:d4}' -f $index)){throw 'Restart chain is ambiguous or exceeds the session bound.'}
     $path=Assert-LocalPath $transition.FullName
+    if($pending){throw 'An armed pending transition cannot precede another transition.'}
+    if($PendingDirectory -and $path -ceq (Assert-LocalPath $PendingDirectory)) {
+      if(Test-Path -LiteralPath (Join-Path $path 'completion.json')){throw 'Expected a listening transition, not a completed one.'}
+      if(@(Get-ChildItem -LiteralPath $path -Force | Where-Object {$_.Name -cnotin @('ready.json','ui-intent-consumed.json')}).Count){throw 'Pending transition already has an outcome or unexpected files.'}
+      $ready=Read-Record (Join-Path $path 'ready.json')
+      if($ready.owner -cne $script:RestartOwner -or $ready.session -cne $Session.session -or $ready.recordSha256 -cne $Session.recordSha256 -or
+         $ready.parent.pid -cne $expectedChild.pid -or $ready.parent.createdFiletime -cne $expectedChild.createdFiletime -or
+         $ready.beforeSha256 -cne $hash){throw 'Armed pending transition is not bound to the verified last child and baseline.'}
+      $pending=$true;continue
+    }
     $completion=Read-Record (Join-Path $path 'completion.json')
     $permitFile=Join-Path $path 'permit-consumed.json';$receiptFile=Join-Path $path 'receipt.json';$requestFile=Join-Path $path 'request.json'
     if($completion.owner -cne $script:RestartOwner -or $completion.status -cne 'child-identity-verified' -or $completion.session -cne $Session.session -or $completion.recordSha256 -cne $Session.recordSha256 -or
@@ -165,10 +177,14 @@ function Get-RestartBaseline($Session,[string]$Record,$Parent) {
     $null=Assert-RestartIniDelta (Read-RestartIni $baseline) (Read-RestartIni $next) $permit.mode
     $baseline=$next;$hash=$permit.profileSha256
     $expectedChild=[pscustomobject]@{pid=$receipt['childPid'];createdFiletime=$receipt['childCreatedFiletime']}
+    if($ReviewOnly -and ($completion.child.pid -cne $expectedChild.pid -or $completion.child.createdFiletime -cne $expectedChild.createdFiletime)){throw 'Completed child identity differs from the native receipt.'}
+    $mode=$permit.mode;$completionPath=Join-Path $path 'completion.json';$completionHash=Get-Digest $completionPath
   }
-  if($index -ge 16){throw 'Restart session transition limit reached; cold review required.'}
+  if($PendingDirectory -and -not $pending){throw 'Expected armed pending transition was not found.'}
+  if($index -ge 16 -and -not $ReviewOnly){throw 'Restart session transition limit reached; cold review required.'}
   if($expectedChild -and ($Parent.pid -cne $expectedChild.pid -or $Parent.createdFiletime -cne $expectedChild.createdFiletime)){throw 'Only the last verified child can continue this restart session.'}
-  return [pscustomobject]@{path=$baseline;sha256=$hash;nextDirectory=(Join-Path $directory ('transition-{0:d4}' -f ($index+1)))}
+  return [pscustomobject]@{path=$baseline;sha256=$hash;nextDirectory=(Join-Path $directory ('transition-{0:d4}' -f ($index+1)));
+    mode=$mode;child=$expectedChild;completionPath=$completionPath;completionSha256=$completionHash;completedTransitions=($index-[int]$pending)}
 }
 function Save-RestartWire([string]$Path,[byte[]]$Bytes) {
   $path=Assert-LocalPath $Path

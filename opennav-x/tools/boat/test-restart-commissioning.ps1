@@ -122,6 +122,11 @@ if([Environment]::OSVersion.Platform -eq 'Win32NT') {
  } finally {$current.Dispose();$task.Principal.UserId='S-1-5-21-100';$task.Triggers=@()}
 }
 $task.State='Running';Refuse {Assert-RestartTaskIdentity $task $arm 'S-1-5-21-100'} 'running broker cannot be collected';$task.State='Ready'
+Refuse {Assert-RestartTaskIdentity $task $arm 'S-1-5-21-100' 'Running'} 'completed task cannot be presented as a listening broker'
+$task.State='Running';Assert-RestartTaskIdentity $task $arm 'S-1-5-21-100' 'Running';Check $true 'explicit listening check requires the exact running owned task'
+Refuse {Assert-RestartTaskIdentity $task $arm 'S-1-5-21-101' 'Running'} 'listening check still rejects different principal'
+$task.Actions[0].Arguments='changed';Refuse {Assert-RestartTaskIdentity $task $arm 'S-1-5-21-100' 'Running'} 'listening check still rejects different action arguments';$task.Actions[0].Arguments=$arm.arguments
+$task.State='Ready';Refuse {Assert-RestartTaskIdentity $task $arm 'S-1-5-21-100' 'Disabled'} 'unsupported expected task state refused'
 foreach($field in @('Execute','Arguments','WorkingDirectory')) {$saved=$task.Actions[0].$field;$task.Actions[0].$field='changed';Refuse {Assert-RestartTaskIdentity $task $arm 'S-1-5-21-100'} ('changed task '+$field);$task.Actions[0].$field=$saved}
 foreach($field in @('UserId','RunLevel','LogonType')) {$saved=$task.Principal.$field;$task.Principal.$field='changed';Refuse {Assert-RestartTaskIdentity $task $arm 'S-1-5-21-100'} ('changed task principal '+$field);$task.Principal.$field=$saved}
 $task.Triggers=@([pscustomobject]@{Enabled=$true});Refuse {Assert-RestartTaskIdentity $task $arm 'S-1-5-21-100'} 'unexpected repeat trigger refused'
