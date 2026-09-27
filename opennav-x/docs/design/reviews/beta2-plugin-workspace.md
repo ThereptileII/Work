@@ -43,3 +43,34 @@ plugin window; this is not native Windows stacking acceptance.
 
 Native MSVC, actual Windows floating-window review, and the real boat plugin
 workspace remain unaccepted until the exact replacement passes those gates.
+
+## Boat-driven refinement — 2026-09-27 (native acceptance pending)
+
+The preceding visible-Dashboard screenshots describe the earlier candidate.
+Actual boat inspection showed two tall floating Legacy instruments covering
+XNav's chart and controls. The current requirement therefore changes presentation,
+not saved plugin configuration: the bundled Dashboard's explicitly registered
+windows are hidden while XNav presents its own instruments. Legacy restores the
+original visible/hidden state, position, size and dock information. Data reception
+continues. No caption or pane-name matching grants ownership; other plugins retain
+their normal behavior.
+
+The source-pinned Dashboard registers actual windows and brackets its layout and
+SaveConfig operations. Nested scopes temporarily expose the original AUI state
+to upstream code, then suppress it again. Weak window references handle deletion;
+normal close restores the layout before shell removal and upstream persistence.
+Existing plugin ABI/vtables are unchanged; only the bundled plugin opts in.
+
+The revised fixture has two nondefault panes: one originally visible, the other
+originally hidden. Both software and OpenGL cycles assert native XNav absence,
+exact retained geometry, Legacy visibility, data receipt and returned-XNav
+suppression. The 20 captures replace the earlier 22: the four XNav plugin
+captures are replaced by actual absence/state assertions and two Legacy plugin
+captures. No chart/persistence test is removed. The wx object suite expands to
+27 groups, covering nested layout, actual ownership, foreign managers, late and
+duplicate registration, deleted/recreated windows and exact restoration.
+
+Linux integrated build, 110/110 integrated CTest cases, 27 object groups and the
+two chart cycles pass against the installed local build. Reviewed Linux chart
+and Legacy Dashboard images have detailed chart content and normal plugin SOG.
+Windows DLL linkage, native visibility and a second real-boat review remain gates.

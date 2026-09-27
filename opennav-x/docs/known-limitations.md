@@ -1,28 +1,36 @@
 # OpenNav X — current Beta 2 limitations
 
 Beta 2 is under development. The last qualified downloadable baseline is Beta 1;
-see [status](status.md) for exact commits and acceptance evidence. The presence
-of a build or screenshot does not establish boat-PC acceptance.
+see [status](status.md) for exact commits and acceptance evidence.
 
-- The authorized stock upgrade is complete: the boat now has the exact
-  validated official OpenCPN 5.12.4 x86 executable on Windows x64. Beta 2
-  installation and real-chart acceptance remain pending their separate gates.
-- The originally zero-filled INI and its working temporary sibling are
-  preserved. The reviewed working INI has been recovered and verified; a
-  second cold backup covers stock 5.12.4 with this recovered configuration.
+- The authorized backed-up stock upgrade to official OpenCPN 5.12.4 x86 is
+  complete. The first fixture-free Beta 2 development package is installed.
+  It is not a qualified Beta 2 release: full replacement Windows gates,
+  endurance, installed mode lifecycle and iterative boat review remain open.
+- The originally zero-filled INI and its working temporary sibling remain
+  backed up. The reviewed working configuration was recovered; a second cold
+  backup covers stock 5.12.4 and this recovered profile.
+- The first installed read-only session shows real nautical charts and live
+  navigation, wind, depth, STW, water temperature and tank inputs. This proves
+  acquisition, not physical sensor calibration or navigation approval. Battery,
+  motor and rudder inputs were unavailable at observation; dependent estimates
+  remain unavailable. Heading was explicitly estimated.
 - Normal configuration includes output-capable connections and autopilot
-  plugins. Real-profile launches require a fresh read-only audit. No physical
-  control command is authorized or included in the remote test procedure.
-  The first stock launch is still at its unchanged navigation caution:
-  Windows denied the ordinary foreground request despite an active desktop.
-  No acknowledgement has been sent and no chart-startup success is inferred.
-- Boat Windows currently reports 1920×1080; saved Beta 1 diagnostics show 150%
-  scaling. The requested 1280×800 physical-display review remains outstanding.
-- New primary layouts, reduced rail and contextual workflows require iterative
-  native Windows and boat review. Implementation records are not visual signoff.
-- The older Developer Preview folder is archived with all user data preserved.
-  Six obsolete ZIP downloads are also archived after exact ownership/hash
-  checks. Beta 1 remains available until a known-good replacement is verified.
+  plugins. The current installed session uses an active, journaled input-only
+  commissioning transaction and temporary plugin quarantines. Cold restoration
+  requires inspection after a normal close. No physical actuator command is
+  authorized or included in remote testing.
+- The startup caution was acknowledged once. A Windows firewall prompt was
+  cancelled and its disappearance visually reviewed; no Allow action was used.
+  The saved floating Dashboard still obscures the chart. The local fix preserves
+  that layout for Legacy and suppresses its panes in XNav; native replacement
+  and a second boat-screen review are pending.
+- Boat Windows reports 1920×1080 at DPI144. An exact 1280×800 application frame
+  has been captured, but this is not acceptance of a physical 1280×800 display
+  or physical touch. CI covers additional scales independently.
+- The older Developer Preview folder and six obsolete ZIP downloads are archived
+  after ownership/hash checks, with user data preserved. Beta 1 remains available
+  until a known-good replacement with Legacy and Safe Mode is verified.
 
 The [distribution limitations](beta2/KNOWN_LIMITATIONS.md) describe hardware,
 chart-hazard, radar, physical touch and advisory energy boundaries retained from

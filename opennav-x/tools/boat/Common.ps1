@@ -237,7 +237,14 @@ function Invoke-InteractiveJob([string]$Workspace,$Job,[int]$TimeoutSeconds=90) 
     while (-not [IO.File]::Exists($result) -and [DateTime]::UtcNow -lt $deadline) { Start-Sleep -Milliseconds 250 }
     if (-not [IO.File]::Exists($result)) { throw 'Interactive job timed out. Inspect the desktop; no application was force-killed.' }
     $value=Read-Record $result
-    if ($value.status -cne 'passed') { throw ('Interactive job failed: '+$value.error) }
+    if ($value.status -cne 'passed') {
+      $detail=if ($value.PSObject.Properties['error']) {$value.error}
+        elseif ($value.PSObject.Properties['attention']) {$value.attention}
+        else {'Returned status '+$value.status}
+      # An acknowledgement may already have been sent when a later display
+      # check needs attention. Preserve the evidence path; never imply retry.
+      throw ('Interactive job did not pass: '+$detail+'; inspect '+$result+' before any further action.')
+    }
     return $value
   } finally {
     if ($task) { Unregister-ScheduledTask -TaskName $name -Confirm:$false }

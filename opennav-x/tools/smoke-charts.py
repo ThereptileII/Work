@@ -196,6 +196,16 @@ def capture_workspace(name):
   subprocess.run(['import','-window',plugin_window,str(path)],env=env,check=True)
  report['screenshots'].append(path.name)
  return {'screenshot':path.name,'native_window_present':True}
+def assert_workspace_hidden():
+ # Actual native visibility as well as copied AUI flags; no assumptions based
+ # only on the plugin's saved configuration or successful initialization.
+ if windows:
+  assert not any(title == workspace.CAPTION for _,_,title in ui.windows(pid)), 'Dashboard covers XNav'
+ else:
+  found=subprocess.run(['xdotool','search','--all','--onlyvisible','--pid',str(pid),
+                        '--name','^'+workspace.CAPTION+'$'],env=env,capture_output=True,text=True)
+  assert found.returncode != 0 or not found.stdout.strip(), 'Dashboard covers XNav'
+ return {'native_window_present':False,'plugin_loaded':True}
 def command(label,key):
  if windows:ui.click_text(pid,label)
  else:xdo('windowfocus',handle,'key',key);time.sleep(.5)
@@ -220,14 +230,14 @@ try:
   if windows:ui.size_window(handle)
   else:xdo('windowsize',handle,1280,800,'windowmove',handle,0,0)
   d=data(enc);entry={'requested_rendering':rendering,'runtime':d['runtime'],'startup_to_enc_seconds':round(time.monotonic()-start,3),'captures':[]}
-  entry['workspace_startup']=workspace.assert_restored(d['runtime']['test_workspace_perspective'])
+  entry['workspace_startup']=workspace.assert_restored(d['runtime']['test_workspace_perspective'],suppressed=True)
   assert all(row['visible'] for row in d['runtime']['display']['rail_regions']), 'Restoring plugin workspace hid XNav rail'
   if rendering=='software':assert not chart(d)['opengl_enabled']
   else:entry['gl_status']='enabled; inspect renderer log' if chart(d)['opengl_enabled'] else 'host rejected OpenGL; verified upstream software fallback; hardware GL gate remains open'
   for name in ['Dashboard','WMM','GRIB']:
    assert any(p['name'].lower()==name.lower() and p['enabled'] and p['initialized'] for p in d['runtime']['plugins']),(name,d['runtime']['plugins'])
   entry['captures'].append(capture('chart-'+rendering+'-01-loaded'))
-  entry['workspace_native_startup']=capture_workspace('chart-'+rendering+'-dashboard-startup')
+  entry['workspace_native_startup']=assert_workspace_hidden()
   if windows:
    # Native process accounting; no psutil dependency or host-wide samples.
    k=ctypes.WinDLL('kernel32',use_last_error=True);ps=ctypes.WinDLL('psapi',use_last_error=True)
@@ -360,6 +370,7 @@ try:
   assert app.wait(timeout=40)==0;owned.discard(pid);count+=1
   entry['workspace_after_xnav_close']=workspace.saved(profile)
   handle,pid=window('OpenCPN / Legacy');owned.add(pid);ready();entry['captures'].append(capture('chart-'+rendering+'-05-legacy'))
+  entry['workspace_native_legacy']=capture_workspace('chart-'+rendering+'-dashboard-legacy')
   if windows:
    p=ui.monitor_process(pid);ui.click_menu(handle,'Switch to XNav');ui.wait_clean_exit(p)
   else:
@@ -367,10 +378,10 @@ try:
    child,status=os.waitpid(pid,0);assert os.waitstatus_to_exitcode(status)==0
   entry['workspace_after_legacy_close']=workspace.saved(profile)
   owned.discard(pid);count+=1;handle,pid=window('OpenNav X / OpenCPN');owned.add(pid);ready();returned=data(enc)
-  entry['workspace_returned']=workspace.assert_restored(returned['runtime']['test_workspace_perspective'])
+  entry['workspace_returned']=workspace.assert_restored(returned['runtime']['test_workspace_perspective'],suppressed=True)
   assert all(row['visible'] for row in returned['runtime']['display']['rail_regions']), 'Mode cycle lost XNav rail'
   entry['captures'].append(capture('chart-'+rendering+'-06-returned'))
-  entry['workspace_native_returned']=capture_workspace('chart-'+rendering+'-dashboard-returned')
+  entry['workspace_native_returned']=assert_workspace_hidden()
   close();entry['workspace_final']=workspace.saved(profile);assert fixtures.snapshot(profile)==expected;assert not errors,errors
   report['phases'].append(entry)
  report['result']='passed; native screenshot review and physical GPU gate remain separate'

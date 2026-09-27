@@ -78,7 +78,7 @@ def maintenance(action):
 
 def maintenance_wizard():
     maintain=generation()/'Maintain.exe';expected_hash=sha(maintain)
-    before=sha(INSTALL/'state.json')
+    before=inventory(INSTALL)
     wrapper=subprocess.Popen([str(maintain)])
     frame,pid=ui.wait_window('OpenNav X Maintenance',timeout=45);owned.add(pid)
     monitor=ui.monitor_process(pid)
@@ -92,8 +92,14 @@ def maintenance_wizard():
     get_item=ui.declare(ui.user,'GetDlgItem',ctypes.c_void_p,ctypes.c_void_p,ctypes.c_int)
     cancel=get_item(frame,2);assert cancel and ui.IsWindowEnabled(cancel)
     ui.SendMessageW(cancel,0x00F5,0,0)
-    ui.wait_clean_exit(monitor);owned.discard(pid)
-    assert wrapper.wait(timeout=30)==0 and sha(INSTALL/'state.json')==before
+    # NSIS documents 1 for the explicit Cancel button before execution. This
+    # applies only to this identified maintenance page, never a completed
+    # installation/repair, application close or unobserved process exit.
+    # https://nsis.sourceforge.io/Docs/AppendixD.html#D.1
+    assert ui.wait_exit_code(monitor)==1, 'The reviewed maintenance Cancel must report user cancellation'
+    owned.discard(pid)
+    assert pid!=wrapper.pid and wrapper.wait(timeout=30)==0, 'NSIS relocation wrapper failed'
+    assert inventory(INSTALL)==before, 'Cancelling maintenance changed the installation'
     check('Owned maintenance wizard has version-neutral title, Repair default and non-mutating Cancel')
 
 def package_engine(directory, stock, expected=1):
@@ -435,6 +441,7 @@ try:
         assert inventory(profile)==before and inventory(stock)==stock_before
         check('Genuine Beta 1 to Beta 2 interrupted group migration recovers from committed state and removes only old owned links')
         maintenance_wizard()
+        assert inventory(profile)==before and inventory(stock)==stock_before
         first=state()['current'];exe=generation()/'app/opencpn.exe'
         assert not (exe.parent/'OPENNAV_PORTABLE_PREVIEW').exists()
         p,h,rgb=launch(exe,['--xnav'],'OpenNav X / OpenCPN',profile,'installer-01-xnav',welcome_transition='beta1-to-candidate')

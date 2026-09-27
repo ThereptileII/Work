@@ -1,0 +1,143 @@
+{
+  "schema": 1,
+  "kind": "OpenNavX.NativeToolQualification.1",
+  "scope": "Historical failed same-version GPU-budget qualification; no boat process/profile or policy mutation.",
+  "source": {
+    "publishedCommit": "ca3a0c7ad7f772c1db2c3fadeb918b57d3c2c317",
+    "localCommit": "836a5c66142ed2e349c0b31871bc957a6e6968b1",
+    "tree": "eb052d02a49f0997ff8e05c7082937dc75d12414",
+    "mappedBlobs": 631,
+    "allBlobHashesAndModesVerified": true,
+    "branch": "opennav-x-boat-tools",
+    "changeFromPassedDdf": "Only new actual stock GPU fixture, its source guide and fresh-runner workflow job."
+  },
+  "run": {
+    "id": 36294112587,
+    "url": "https://github.com/ThereptileII/Work/actions/runs/36294112587",
+    "conclusion": "failure",
+    "jobs": 10,
+    "passedJobs": 9,
+    "failedJobs": [
+      {
+        "id": 108549652298,
+        "name": "Actual official same-version texture budget persistence"
+      }
+    ]
+  },
+  "officialSource": {
+    "upstreamCommit": "37fd0cddb7334fe489e9f18aa163977a9c5c84f7",
+    "setupSha256": "e949f55de57611afe2fc0dad5a8ac33795c46ba488cb40ca07b65f639a07b8aa",
+    "executableSha256": "7c6547562cca7954671eaab72833ca9d788710fd9808b6a699b6dc823852ae0c"
+  },
+  "observed": {
+    "case": "expert-absent",
+    "startupFinalized": true,
+    "versionAndNoticeUnchanged": true,
+    "OpenGLExpertBefore": null,
+    "OpenGLExpertAfter": null,
+    "GPUTextureMemSizeBefore": 64,
+    "GPUTextureMemSizeAfter": 128,
+    "OpenGLBefore": 1,
+    "OpenGLAfter": 0,
+    "normalClose": {
+      "handleRetained": true,
+      "requestedOnce": true,
+      "waitCompleted": true,
+      "exitCodeKnown": true,
+      "exitCode": 0
+    },
+    "logEvidence": "Official OpenGL capability utility reported OpenGL not usable (OCPNPlatform.cpp:778).",
+    "beforeIniSha256": "8cc7cfdbc0a745b7b554c2d60b07de2f5d562d348da7dd199edc39b147ce495a",
+    "afterIniSha256": "5205ef246a68bf6561273f3a23b2bd54bc4e25db606f4508184129a158128e84"
+  },
+  "notExecuted": [
+    "expert-false",
+    "expert-true-control"
+  ],
+  "acceptance": {
+    "preservedOpenGLScopePassed": false,
+    "reverseBudgetPolicyAdded": false,
+    "hardwareAccelerationClaimed": false,
+    "boatAcceptanceClaimed": false,
+    "otherNineToolingJobsPassed": true
+  },
+  "artifacts": [
+    {
+      "id": 10923900170,
+      "name": "development-commissioning-broker-ca3a0c7ad7f772c1db2c3fadeb918b57d3c2c317",
+      "sha256": "89f9c8f90fe8dba9d166c7500c56fdc1889ca456547ed193649274a3d292cb34",
+      "bytes": 15825,
+      "apiUploadHashSizeCrcVerified": true
+    },
+    {
+      "id": 10923730628,
+      "name": "development-stock-welcome-en_US-ca3a0c7ad7f772c1db2c3fadeb918b57d3c2c317",
+      "sha256": "1bcce571a80e761cf6ab4e9d54c1510332894865aabe28ba4e31ad6870e8f49a",
+      "bytes": 474387,
+      "apiUploadHashSizeCrcVerified": true
+    },
+    {
+      "id": 10923551282,
+      "name": "development-installer-shortcuts-x86-ca3a0c7ad7f772c1db2c3fadeb918b57d3c2c317",
+      "sha256": "bb9a222c2c25e1409feb453bf23f85d6c6c256865e38a2bcd37f991df4f14a38",
+      "bytes": 1266,
+      "apiUploadHashSizeCrcVerified": true
+    },
+    {
+      "id": 10923417037,
+      "name": "development-desktop-diagnostics-ca3a0c7ad7f772c1db2c3fadeb918b57d3c2c317",
+      "sha256": "19864e4a6e6300adc2566e8662912f819ea6a6128910ea5599649c64a76aeda2",
+      "bytes": 3271,
+      "apiUploadHashSizeCrcVerified": true
+    },
+    {
+      "id": 10923367316,
+      "name": "development-installer-shortcuts-x64-ca3a0c7ad7f772c1db2c3fadeb918b57d3c2c317",
+      "sha256": "7646f31c063178bef161527a401cbb08b6d9b1c5fc11476c404d97fd1cd5aa49",
+      "bytes": 1268,
+      "apiUploadHashSizeCrcVerified": true
+    },
+    {
+      "id": 10923292883,
+      "name": "development-commissioning-restart-ca3a0c7ad7f772c1db2c3fadeb918b57d3c2c317",
+      "sha256": "3df82623abae7afd2e31a0746f8e09624ed710c79b3b28d33d74825ae5dddaa5",
+      "bytes": 6211,
+      "apiUploadHashSizeCrcVerified": true
+    },
+    {
+      "id": 10923273066,
+      "name": "development-stock-welcome-sv-ca3a0c7ad7f772c1db2c3fadeb918b57d3c2c317",
+      "sha256": "19e13bd0aee87dc44f5619a234aaec531810e69ad87113a9887c3925efec13dc",
+      "bytes": 501309,
+      "apiUploadHashSizeCrcVerified": true
+    },
+    {
+      "id": 10923082947,
+      "name": "development-restart-window-ca3a0c7ad7f772c1db2c3fadeb918b57d3c2c317",
+      "sha256": "c373d1c93310525829791da75b0027a9311e6cf434871799d6b42781b062d711",
+      "bytes": 17524,
+      "apiUploadHashSizeCrcVerified": true
+    },
+    {
+      "id": 10922927932,
+      "name": "development-stock-gpu-budget-ca3a0c7ad7f772c1db2c3fadeb918b57d3c2c317",
+      "sha256": "588f10b45ddab6dc20d4f858585361ecd8e55008b6545031aaafbad6f9054fff",
+      "bytes": 10124,
+      "apiUploadHashSizeCrcVerified": true
+    },
+    {
+      "id": 10922814781,
+      "name": "development-boat-tooling-ca3a0c7ad7f772c1db2c3fadeb918b57d3c2c317",
+      "sha256": "18bef560488a1b682e0432ce4a43932ae39b3cf8119fb2ae1d257ee91a273481",
+      "bytes": 24287,
+      "apiUploadHashSizeCrcVerified": true
+    }
+  ],
+  "limitations": [
+    "The measured 64 to128 result in this fixture does not establish preserved OpenGL1 behavior.",
+    "The runner changed configured OpenGL to0 after its capability utility reported OpenGL unusable.",
+    "The first failed guard prevented the two other controls from executing; their expected results remain unproven.",
+    "No later policy may be inferred approved by this failed run; exact closed-profile review remains required."
+  ],
+  "privateDataPublished": false
+}

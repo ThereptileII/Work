@@ -2,7 +2,7 @@
 # warning. This never accepts a stock, portable or restarted-child launch receipt.
 . (Join-Path $PSScriptRoot 'Commissioning.ps1')
 . (Join-Path $PSScriptRoot 'StockWelcome.ps1')
-$script:InstalledWelcomeFiles=@('InstalledWelcome.ps1','StockWelcome.ps1','StockWelcomeNative.cs','RestartWindowNative.cs')
+$script:InstalledWelcomeFiles=@('InstalledWelcome.ps1','InstalledResourceReview.ps1','StockWelcome.ps1','StockWelcomeNative.cs','RestartWindowNative.cs')
 function Assert-InstalledWelcomePolicy($Job,$Launch,$Request,$Installed,$Build,[datetime]$Now) {
   if ($Job.action -cne 'ReviewInstalledWelcome' -or $Job.reviewAction -cnotin @('InspectWelcome','FocusWelcome','AcknowledgeWelcome') -or
       $Job.processId -le 0 -or $Job.buildCommit -cnotmatch '^[a-f0-9]{40}$' -or $Job.generation -cnotmatch '^[a-f0-9]{32}$' -or
@@ -30,27 +30,6 @@ function Get-InstalledWelcomeEnvironment($Config,$Installed) {
   if (-not $env:LOCALAPPDATA -or (Assert-LocalPath $env:LOCALAPPDATA) -ine $local) { throw 'Interactive plugin account is ambiguous.' }
   return [pscustomobject]@{local=$local;profile=(Assert-LocalPath (Join-Path ([Environment]::GetFolderPath('CommonApplicationData')) 'opencpn'));
     roots=@((Join-Path $local 'opencpn\plugins'),(Join-Path ([IO.Path]::GetDirectoryName($Config.stockExecutable)) 'plugins'),(Join-Path ([IO.Path]::GetDirectoryName($Installed.executable)) 'plugins'))}
-}
-function Get-InstalledCommissioningBasemap($Installed) {
-  # InstalledResources.cpp reads this managed marker and only supplies missing
-  # defaults from the original supported application. Never accept a generation
-  # resource path, another installation or a caller-provided replacement path.
-  $stock=Assert-LocalPath $Installed.state.stock.path
-  if ((Get-Digest $stock) -cne '7c6547562cca7954671eaab72833ca9d788710fd9808b6a699b6dc823852ae0c') { throw 'Installed resource default requires the exact supported stock executable.' }
-  $marker=Assert-LocalPath (Join-Path $Installed.generation 'app/OPENNAV_INSTALLED_STOCK')
-  $owned=@($Installed.ownership.managedFiles | Where-Object {$_.path -ceq 'app/OPENNAV_INSTALLED_STOCK'})
-  if ($owned.Count -ne 1 -or $owned[0].sha256 -cnotmatch '^[a-f0-9]{64}$' -or
-      (Get-Item -LiteralPath $marker).Length -gt 4096 -or (Get-Digest $marker) -cne $owned[0].sha256) { throw 'Exact owned stock resource locator required.' }
-  $encoding=New-Object Text.UTF8Encoding($false,$true)
-  if ($encoding.GetString([IO.File]::ReadAllBytes($marker)) -cne $stock) { throw 'Stock resource locator differs from the installation binding.' }
-  $parent=[IO.Path]::GetDirectoryName($stock)
-  foreach ($name in @('tcdata/harmonics-dwf-20210110-free.tcd','tcdata/HARMONICS_NO_US.IDX','tcdata/HARMONICS_NO_US','gshhs/poly-c-1.dat','basemap_shp/basemap_low.shp','sounds/2bells.wav')) {
-    $path=Assert-LocalPath (Join-Path $parent $name)
-    if (-not [IO.File]::Exists($path) -or (Get-Item -LiteralPath $path).Length -le 0) { throw 'Pinned installed resource selector prerequisites are missing.' }
-  }
-  # wxFileConfig escapes each Windows backslash on disk. Preserve exact bytes;
-  # no relaxed slash, case, traversal, quote or alternate-path comparison.
-  return (Join-Path $parent 'basemap_shp').Replace('\','\\')
 }
 function Assert-InstalledWelcomeRuntime($Config,$Installed,$Launch,[string]$Workspace) {
   # The accepted cold launch already checked the full source-plan semantics and

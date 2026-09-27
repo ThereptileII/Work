@@ -1,0 +1,103 @@
+{
+  "schema": 1,
+  "scope": "Native tooling qualification for exact installed stock-resource fallback; no release or vessel acceptance inferred",
+  "source": {
+    "publishedCommit": "3bc275e88eb831fae0d11cc8dd6597cb28658808",
+    "localCommit": "4fee4865ba984ae1436b6741fca3ee30a9365797",
+    "tree": "2e1a2d7652cd5fae13d25ea93346554365a4d989",
+    "mappedBlobs": 681,
+    "allBlobsAndModesVerified": true
+  },
+  "ci": {
+    "run": 36296325100,
+    "url": "https://github.com/ThereptileII/Work/actions/runs/36296325100",
+    "jobsPassed": 9,
+    "jobsFailed": 0
+  },
+  "changedRuntimeSuite": {
+    "checksPassed": 114,
+    "policyChecks": 85,
+    "completeRuntimeChecks": 29,
+    "nativeWindowsPowerShell": true,
+    "portableLinuxAlsoPassed": true
+  },
+  "regressions": [
+    "All 19 native maintenance suites passed",
+    "11 navigation database Python tests passed",
+    "Both native official stock warning/normal-close locales passed",
+    "Win32 process transport and broker passed",
+    "x86 and x64 COM shortcut migration passed",
+    "Fixed native UI actions, retained-handle close, resize and display checks passed"
+  ],
+  "artifacts": [
+    {
+      "id": 10924265286,
+      "name": "development-installer-shortcuts-x64-3bc275e88eb831fae0d11cc8dd6597cb28658808",
+      "sha256": "241dc712efcf1537c2132218e6a3c017bd55c38b27ba6ae1c32478f78200c18b",
+      "bytes": 1266,
+      "apiDownloadSizeCrcVerified": true
+    },
+    {
+      "id": 10924250822,
+      "name": "development-stock-welcome-sv-3bc275e88eb831fae0d11cc8dd6597cb28658808",
+      "sha256": "74306120d60444ffd118d6008c28a9dd6484e6438e7221e5e4f85da6204f8530",
+      "bytes": 501795,
+      "apiDownloadSizeCrcVerified": true
+    },
+    {
+      "id": 10924055655,
+      "name": "development-commissioning-restart-3bc275e88eb831fae0d11cc8dd6597cb28658808",
+      "sha256": "f82ae8726800b6cf18ce3d2fccf40ce89dd21f6f686578d6e2e761db97894085",
+      "bytes": 6218,
+      "apiDownloadSizeCrcVerified": true
+    },
+    {
+      "id": 10923753749,
+      "name": "development-desktop-diagnostics-3bc275e88eb831fae0d11cc8dd6597cb28658808",
+      "sha256": "dfc611f69aa1b1ee3986fa6b2fbdc6e6d8e8a7330be73c51e864478dd0621c49",
+      "bytes": 3269,
+      "apiDownloadSizeCrcVerified": true
+    },
+    {
+      "id": 10923664250,
+      "name": "development-boat-tooling-3bc275e88eb831fae0d11cc8dd6597cb28658808",
+      "sha256": "fe95ea5fcb4eb36ced0a49878e442572f0b50f71decf864489074b48baf55f40",
+      "bytes": 24608,
+      "apiDownloadSizeCrcVerified": true
+    },
+    {
+      "id": 10923609284,
+      "name": "development-installer-shortcuts-x86-3bc275e88eb831fae0d11cc8dd6597cb28658808",
+      "sha256": "065c930fb53edda78f8e84d5856fe042cb1405798027f8d893c3d0de8821b524",
+      "bytes": 1266,
+      "apiDownloadSizeCrcVerified": true
+    },
+    {
+      "id": 10923484878,
+      "name": "development-stock-welcome-en_US-3bc275e88eb831fae0d11cc8dd6597cb28658808",
+      "sha256": "cb06ef80b633f82413d844f71fb53dc8d143a189bd154fff3b6cc6c01b9d4a03",
+      "bytes": 474351,
+      "apiDownloadSizeCrcVerified": true
+    },
+    {
+      "id": 10924520086,
+      "name": "development-commissioning-broker-3bc275e88eb831fae0d11cc8dd6597cb28658808",
+      "sha256": "2ee880e56963063d6ac31786823163c43fe5f42be21aa1065bcf153c6cb3d515",
+      "bytes": 15804,
+      "apiDownloadSizeCrcVerified": true
+    },
+    {
+      "id": 10924051584,
+      "name": "development-restart-window-3bc275e88eb831fae0d11cc8dd6597cb28658808",
+      "sha256": "07cf3c046b2e286052cbc62a0dd58c767df14067bedfc64067a7bd636ee57cb3",
+      "bytes": 17543,
+      "apiDownloadSizeCrcVerified": true
+    }
+  ],
+  "uploadLogDigestsAlsoMatch": true,
+  "limits": [
+    "The cold restore/adoption policy remains strict for resource directory changes.",
+    "No product binary or vessel profile is modified by this tooling qualification.",
+    "Actual installed warning, display, chart and sensor acceptance require separate boat evidence."
+  ]
+}

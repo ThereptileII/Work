@@ -36,3 +36,10 @@ preference, every missing selector prerequisite, changed marker/stock identity,
 alternative paths and protected custom selections. They also verify that cold
 restoration still rejects the same delta. Native execution and actual boat
 warning review are separate gates; no test starts equipment or vendor helpers.
+
+Native tooling `3bc275e88eb831fae0d11cc8dd6597cb28658808` passed all nine jobs
+in [run36296325100](https://github.com/ThereptileII/Work/actions/runs/36296325100).
+The installed suite passed114 checks, including29 complete runtime checks.
+All nine artifact API/upload/download hashes, sizes and ZIP CRCs match.
+[Qualification evidence](../evidence/beta2-installed-resource-3bc275.json).
+This validates the tooling, not the pending boat warning or product screens.

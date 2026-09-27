@@ -1,0 +1,377 @@
+{
+  "schema": 1,
+  "classification": "First boat development review; no release acceptance",
+  "commit": "8e780edc34f68abd693a5d5f6aecdb3ba05a75c4",
+  "version": "0.4.0-beta2",
+  "testFixtures": false,
+  "startup": {
+    "normalProfile": true,
+    "installedReadOnlyAudit": true,
+    "framePixels": [
+      1280,
+      800
+    ],
+    "desktopPixels": [
+      1920,
+      1080
+    ],
+    "dpi": 144,
+    "realChartContentHumanReviewed": true,
+    "strictClearOverlayGate": false,
+    "remainingOverlay": "Saved floating Legacy Dashboard",
+    "chartCoordinatesAndLicensedPixelsPublished": false
+  },
+  "firewall": {
+    "allowInvoked": false,
+    "normalProxyCloseWasInsufficient": true,
+    "oneReviewedCancelClick": true,
+    "sheetDisappearanceHumanReviewed": true,
+    "afterScreenshotSha256": "adf25f899691159a2f7cc075e55886493eb15f81e6ff0488a58e9ea70d84c870"
+  },
+  "observedData": [
+    {
+      "name": "Latitude",
+      "unit": "deg",
+      "quality": "LIVE",
+      "validity": "Measured",
+      "age_ms": 585
+    },
+    {
+      "name": "Longitude",
+      "unit": "deg",
+      "quality": "LIVE",
+      "validity": "Measured",
+      "age_ms": 585
+    },
+    {
+      "name": "Speed over ground",
+      "unit": "kn",
+      "quality": "LIVE",
+      "validity": "Measured",
+      "age_ms": 585
+    },
+    {
+      "name": "Course over ground",
+      "unit": "deg true",
+      "quality": "UNAVAILABLE",
+      "validity": "Invalid"
+    },
+    {
+      "name": "Heading",
+      "unit": "deg true",
+      "quality": "ESTIMATED",
+      "validity": "Estimated",
+      "age_ms": 290
+    },
+    {
+      "name": "Speed through water",
+      "unit": "kn",
+      "quality": "LIVE",
+      "validity": "Measured",
+      "age_ms": 77
+    },
+    {
+      "name": "Apparent wind speed",
+      "unit": "kn",
+      "quality": "LIVE",
+      "validity": "Measured",
+      "age_ms": 77
+    },
+    {
+      "name": "Apparent wind angle",
+      "unit": "deg",
+      "quality": "LIVE",
+      "validity": "Measured",
+      "age_ms": 77
+    },
+    {
+      "name": "True wind speed",
+      "unit": "kn",
+      "quality": "UNAVAILABLE",
+      "validity": "Invalid"
+    },
+    {
+      "name": "True wind angle",
+      "unit": "deg",
+      "quality": "UNAVAILABLE",
+      "validity": "Invalid"
+    },
+    {
+      "name": "Depth below transducer",
+      "unit": "m",
+      "quality": "LIVE",
+      "validity": "Measured",
+      "age_ms": 77
+    },
+    {
+      "name": "Water temperature",
+      "unit": "C",
+      "quality": "LIVE",
+      "validity": "Measured",
+      "age_ms": 390
+    },
+    {
+      "name": "Atmospheric pressure",
+      "unit": "hPa",
+      "quality": "UNAVAILABLE",
+      "validity": "Invalid"
+    },
+    {
+      "name": "Rudder",
+      "unit": "deg",
+      "quality": "UNAVAILABLE",
+      "validity": "Invalid"
+    },
+    {
+      "name": "Heel",
+      "unit": "deg",
+      "quality": "UNAVAILABLE",
+      "validity": "Invalid"
+    },
+    {
+      "name": "Motor electrical power",
+      "unit": "kW",
+      "quality": "UNAVAILABLE",
+      "validity": "Invalid"
+    },
+    {
+      "name": "Shaft power",
+      "unit": "kW",
+      "quality": "UNAVAILABLE",
+      "validity": "Invalid"
+    },
+    {
+      "name": "Motor speed",
+      "unit": "RPM",
+      "quality": "UNAVAILABLE",
+      "validity": "Invalid"
+    },
+    {
+      "name": "Transmission gear",
+      "unit": "0 forward / 1 neutral / 2 reverse",
+      "quality": "UNAVAILABLE",
+      "validity": "Invalid"
+    },
+    {
+      "name": "Regeneration setting",
+      "unit": "0 off / 1 one bar / 2 two bars",
+      "quality": "UNAVAILABLE",
+      "validity": "Invalid"
+    },
+    {
+      "name": "Motor temperature",
+      "unit": "C",
+      "quality": "UNAVAILABLE",
+      "validity": "Invalid"
+    },
+    {
+      "name": "Engine coolant temperature",
+      "unit": "C",
+      "quality": "UNAVAILABLE",
+      "validity": "Invalid"
+    },
+    {
+      "name": "Battery voltage",
+      "unit": "V",
+      "quality": "UNAVAILABLE",
+      "validity": "Invalid"
+    },
+    {
+      "name": "Battery current (+ discharge)",
+      "unit": "A",
+      "quality": "UNAVAILABLE",
+      "validity": "Invalid"
+    },
+    {
+      "name": "Battery current (source convention)",
+      "unit": "A",
+      "quality": "UNAVAILABLE",
+      "validity": "Invalid"
+    },
+    {
+      "name": "Battery SOC",
+      "unit": "%",
+      "quality": "UNAVAILABLE",
+      "validity": "Invalid"
+    },
+    {
+      "name": "Battery SOH",
+      "unit": "%",
+      "quality": "UNAVAILABLE",
+      "validity": "Invalid"
+    },
+    {
+      "name": "Usable pack capacity",
+      "unit": "kWh",
+      "quality": "UNAVAILABLE",
+      "validity": "Invalid"
+    },
+    {
+      "name": "Whole-pack net discharge",
+      "unit": "kW",
+      "quality": "UNAVAILABLE",
+      "validity": "Invalid"
+    },
+    {
+      "name": "Fresh water tank",
+      "unit": "%",
+      "quality": "LIVE",
+      "validity": "Measured",
+      "age_ms": 77
+    },
+    {
+      "name": "Fuel tank",
+      "unit": "%",
+      "quality": "UNAVAILABLE",
+      "validity": "Invalid"
+    },
+    {
+      "name": "Waste tank",
+      "unit": "%",
+      "quality": "LIVE",
+      "validity": "Measured",
+      "age_ms": 905
+    },
+    {
+      "name": "Other fluid tank",
+      "unit": "%",
+      "quality": "UNAVAILABLE",
+      "validity": "Invalid"
+    },
+    {
+      "name": "Input rate",
+      "unit": "msg/s",
+      "quality": "UNAVAILABLE",
+      "validity": "Invalid"
+    }
+  ],
+  "sourceState": [
+    {
+      "quantity": "heading",
+      "selected": false,
+      "priority": 10,
+      "frequency_hz": 11.67113695,
+      "quality": "UNAVAILABLE",
+      "validity": "Invalid",
+      "age_ms": 77
+    },
+    {
+      "quantity": "heading",
+      "selected": true,
+      "priority": 10,
+      "frequency_hz": 1.003637277,
+      "quality": "ESTIMATED",
+      "validity": "Estimated",
+      "age_ms": 290
+    },
+    {
+      "quantity": "stw",
+      "selected": true,
+      "priority": 10,
+      "frequency_hz": 0.9998061577,
+      "quality": "LIVE",
+      "validity": "Measured",
+      "age_ms": 77
+    },
+    {
+      "quantity": "aws",
+      "selected": true,
+      "priority": 10,
+      "frequency_hz": 11.97282505,
+      "quality": "LIVE",
+      "validity": "Measured",
+      "age_ms": 77
+    },
+    {
+      "quantity": "awa",
+      "selected": true,
+      "priority": 10,
+      "frequency_hz": 11.97282505,
+      "quality": "LIVE",
+      "validity": "Measured",
+      "age_ms": 77
+    },
+    {
+      "quantity": "depth",
+      "selected": true,
+      "priority": 10,
+      "frequency_hz": 0.9998057091,
+      "quality": "LIVE",
+      "validity": "Measured",
+      "age_ms": 77
+    },
+    {
+      "quantity": "water_temperature",
+      "selected": true,
+      "priority": 10,
+      "frequency_hz": 1.970320911,
+      "quality": "LIVE",
+      "validity": "Measured",
+      "age_ms": 390
+    },
+    {
+      "quantity": "pressure",
+      "selected": true,
+      "priority": 10,
+      "frequency_hz": 1.970320911,
+      "quality": "UNAVAILABLE",
+      "validity": "Invalid",
+      "age_ms": 390
+    },
+    {
+      "quantity": "fresh_water",
+      "selected": true,
+      "priority": 10,
+      "frequency_hz": 0.399669943,
+      "quality": "LIVE",
+      "validity": "Measured",
+      "age_ms": 77
+    },
+    {
+      "quantity": "waste",
+      "selected": true,
+      "priority": 10,
+      "frequency_hz": 0.40286434,
+      "quality": "LIVE",
+      "validity": "Measured",
+      "age_ms": 905
+    }
+  ],
+  "pilot": {
+    "enabled": false,
+    "fresh": false,
+    "command_state": "None",
+    "command_id": "0",
+    "control_capability": false
+  },
+  "energy": {
+    "range_quality": "UNAVAILABLE",
+    "arrival_quality": "UNAVAILABLE",
+    "arrival_validity": "Selected battery identity unavailable"
+  },
+  "rendering": {
+    "opengl_enabled": true,
+    "canvas_pixels": {
+      "height": 583,
+      "width": 986
+    }
+  },
+  "observedPgns": {
+    "127250": "Estimated heading",
+    "128259": "Live STW",
+    "130306": "Live apparent wind",
+    "128267": "Live depth below transducer",
+    "130310": "Live water temperature; pressure unavailable",
+    "127505": "Live fresh water and waste tanks"
+  },
+  "safety": {
+    "actuatorCommandsIssued": false,
+    "remoteAccessChanged": false,
+    "coldCommissioningRestoration": "Pending normal close and independent migration review"
+  },
+  "limits": [
+    "Acquisition observed; sensor accuracy and physical calibration unverified",
+    "No active route or battery/motor observations in this capture",
+    "Full release endurance, installed mode lifecycle and iterative screen review pending"
+  ]
+}

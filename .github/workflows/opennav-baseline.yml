@@ -1,7 +1,7 @@
 name: OpenNav X Beta 2
 on:
   push:
-    branches: [opennav-x]
+    branches: [opennav-x, opennav-x-beta2-ui]
     paths: ['opennav-x/**', '.github/workflows/opennav-baseline.yml']
   workflow_dispatch:
 permissions:
