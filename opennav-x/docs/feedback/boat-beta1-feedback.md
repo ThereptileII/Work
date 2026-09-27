@@ -36,10 +36,19 @@ Beta 2 design and real-installation refinement.
 
 ## Acceptance tracking
 
-No item is marked accepted on the boat yet. Current implementation/evidence:
+The complete feedback gate is still open. Narrow boat observations below refer
+to installed `7827acb`, not acceptance of the full stage:
 
-- B1-01/02/08: current palette caption, simplified Sensors and explicit Center
-  are implemented; native/boat interaction review is pending.
+- B1-01: actual Day → Dusk → Night changes and settled captions were inspected
+  on the boat's native 1280×800 window at 150% DPI. Both chart and XNav surfaces
+  dimmed. Return to Day and physical-display acceptance remain open.
+- B1-02: the actual Sensors page was reviewed on the boat; normal choices use
+  vessel quantities and show no Signal K option or protocol jargon. No real
+  connection was removed or edited; upstream Legacy compatibility remains.
+- B1-08: the Center icon and label are visible on the boat. Three zoom-out
+  actions preserve real chart content, but Center/follow operation and guarded
+  mode transitions remain open. Visual discoverability alone is not functional
+  acceptance.
 - B1-03/04: isolated input-only TCP added after startup acquires GPS and AIS
   without restarting. Normal settings-reconfiguration return retains measured
   coastline pixels. Sensor connection flow and real serial baud still need
@@ -61,6 +70,9 @@ No item is marked accepted on the boat yet. Current implementation/evidence:
 
 Every closure must identify the exact native candidate and actual boat evidence.
 No hardware result is inferred from simulator tests or earlier acceptance.
+The [partial boat display review](../design/reviews/beta2-boat-7827-review.md)
+records these observations and their limits. The boat went offline at 09:50 UTC
+before the remaining interaction, settings and maintenance checks.
 
 - B1-10 receiver follow-up: the recorded legacy RTL-SDR DLL exactly matches its
   maintainer's 1.3.1 package; all 25 helper-tree files match AIS-catcher 0.62.

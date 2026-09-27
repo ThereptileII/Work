@@ -1,0 +1,71 @@
+{
+  "schema": 1,
+  "scope": "Native staging/display/restart tools only; not application or boat acceptance",
+  "commit": "79a95c4f39063c20ca4d5a98c3147080d9813077",
+  "mappedLocalCommit": "3e3c628",
+  "run": "https://github.com/ThereptileII/Work/actions/runs/36311719759",
+  "attempt": 1,
+  "jobsPassed": 9,
+  "stagingCases": 12,
+  "displayCases": 23,
+  "modeCases": 14,
+  "allArtifactsDownloadedAndUploadApiSha256SizeZipVerified": true,
+  "artifacts": [
+    {
+      "id": 10929675039,
+      "name": "development-desktop-diagnostics-79a95c4f39063c20ca4d5a98c3147080d9813077",
+      "bytes": 3271,
+      "sha256": "05fe8f9443148bf5dec9d246466276110e06e31556e1f9aafd2db56bb5cd5e51"
+    },
+    {
+      "id": 10929655511,
+      "name": "development-commissioning-broker-79a95c4f39063c20ca4d5a98c3147080d9813077",
+      "bytes": 16730,
+      "sha256": "d5f72e24141f7f73b573ade75d85614c4995af1ade3499f5dc6a25b65c343324"
+    },
+    {
+      "id": 10929312021,
+      "name": "development-installer-shortcuts-x64-79a95c4f39063c20ca4d5a98c3147080d9813077",
+      "bytes": 1267,
+      "sha256": "fa7bfd74b430b493f80347d22969f1fba2ab794ab332b444d64f39797b9edc09"
+    },
+    {
+      "id": 10929257369,
+      "name": "development-restart-window-79a95c4f39063c20ca4d5a98c3147080d9813077",
+      "bytes": 18765,
+      "sha256": "9f2ee7da15d906449d51355b55421f87532afd5908f1a8bde7c5c19541b1bfc3"
+    },
+    {
+      "id": 10929178407,
+      "name": "development-commissioning-restart-79a95c4f39063c20ca4d5a98c3147080d9813077",
+      "bytes": 6193,
+      "sha256": "c0170a33d58ad7ef54170443e0f3eae5785233f771056be05cb9283b30d1b3a7"
+    },
+    {
+      "id": 10929088913,
+      "name": "development-boat-tooling-79a95c4f39063c20ca4d5a98c3147080d9813077",
+      "bytes": 25711,
+      "sha256": "a44efdeeee245e3864d710661fb2531430579bb184d71ac5cea5c1cf224d81af"
+    },
+    {
+      "id": 10928952683,
+      "name": "development-stock-welcome-sv-79a95c4f39063c20ca4d5a98c3147080d9813077",
+      "bytes": 501943,
+      "sha256": "dbc70ef82725c4fe8b1098d2ee60cc4cc102e4fa23ab73e63934ffaf5c984f8f"
+    },
+    {
+      "id": 10928902505,
+      "name": "development-installer-shortcuts-x86-79a95c4f39063c20ca4d5a98c3147080d9813077",
+      "bytes": 1264,
+      "sha256": "33e3b5914a3ed8a1a120e4db95aca845e3fc431dcdf0d8a61c66b2aff6ecfc58"
+    },
+    {
+      "id": 10928519822,
+      "name": "development-stock-welcome-en_US-79a95c4f39063c20ca4d5a98c3147080d9813077",
+      "bytes": 474443,
+      "sha256": "9a9301e464d1cabb68ca2505eb0a529c4a35dd4b4ec7305b32463252fe6a93a4"
+    }
+  ],
+  "boatDeployed": false,
+  "physicalCommands": 0
+}

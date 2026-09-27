@@ -78,8 +78,23 @@ No release or boat visual acceptance is claimed from the old screenshots.
 
 ### Current replacement validation
 
-`a5b290e52ebeb83bda75c1f7008879c398548dc3` is the newest full candidate in
-[CI 36307149573](https://github.com/ThereptileII/Work/actions/runs/36307149573).
+The current full replacement is `79a95c4f39063c20ca4d5a98c3147080d9813077`,
+[CI 36311718794](https://github.com/ThereptileII/Work/actions/runs/36311718794).
+All 710 mapped blobs/modes match local `3e3c628`; the pinned manifest and eight
+unrelated repository blobs are preserved. This includes the direct cleanup
+deadline repair and Windows PowerShell assembly load needed for isolated
+review-tool staging. Application and installer source still match `7827acb`.
+The separate native tool run is
+[36311719759](https://github.com/ThereptileII/Work/actions/runs/36311719759).
+The tool run completed successfully: nine native jobs, 12 staging cases, 23
+display cases and 14 mode-window cases. All nine artifact API/upload/download
+hashes, sizes and ZIP integrity agree. [Tool evidence](evidence/beta2-review-staging-tools-79a95c4.json).
+The full application run remains unfinished; no newer helper has been deployed
+during the boat connectivity interruption.
+
+The earlier `a5b290e52ebeb83bda75c1f7008879c398548dc3` candidate in
+[CI 36307149573](https://github.com/ThereptileII/Work/actions/runs/36307149573)
+failed Windows installer cleanup and cannot qualify the release.
 All **706** mapped blobs/modes match local
 `9e0d0c77b5ba2513cc7355da80f38e03ddf631b6`; the pin and eight unrelated blobs
 are unchanged. It merges the refined candidate history without rewriting either
@@ -92,7 +107,12 @@ The native installer reached 45 checks, but its final direct-engine uninstall
 hit a separate 120-second harness limit. Its prior relocated uninstall completed
 in 150.406 seconds. The final direct wait is being aligned with the same bounded
 600-second deadline; twelve timing/lifetime cases pass locally. This candidate
-is not accepted. Both complete platform gates and replacement deployment remain pending.
+is not accepted. Its subsequent native DPI tests passed at 100%, 125% and 150%.
+Eighteen verified original screenshots were individually reviewed, including
+alert/rail coexistence, System, night surfaces and mode chart content; see the
+[scoped DPI review](design/reviews/beta2-native-a5b290-review.md). High-DPI expanded
+pages still scroll; physical touch and the complete boat sequence remain open.
+Both complete replacement platform gates and boat validation remain pending.
 
 `7827acb7c8b0d708285bd26a4c48d545dd64d139` is running the complete gates in
 [CI 36304661282](https://github.com/ThereptileII/Work/actions/runs/36304661282).

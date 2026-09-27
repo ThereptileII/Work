@@ -272,3 +272,11 @@ Windows PowerShell 5.1 did not resolve `ZipArchiveMode` after loading only
 `System.IO.Compression.FileSystem`. Both the helper and fixture now explicitly
 load `System.IO.Compression` too. That failed run (`36311040487`, `b26fbdc`)
 is retained, not accepted. No staging helper has run on the boat.
+
+The corrected `79a95c4` helper passes the complete nine-job native tooling run
+[36311719759](https://github.com/ThereptileII/Work/actions/runs/36311719759),
+including all 12 actual ZIP/filesystem staging cases, 23 native display cases
+and 14 mode-window cases. All nine artifact uploads match API hashes, independent
+downloads, sizes and ZIP integrity. See [tool qualification](evidence/beta2-review-staging-tools-79a95c4.json).
+It remains undeployed while the boat is offline; native marker/temporary-file
+tests are not a substitute for the real chart or profile review.

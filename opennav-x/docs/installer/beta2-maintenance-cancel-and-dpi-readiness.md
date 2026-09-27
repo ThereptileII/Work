@@ -127,8 +127,12 @@ disposable fixture is retained. This run is not accepted.
 
 Failure artifact `10928676941`, 572,436 bytes, SHA-256
 `c05930cd9ff44f3ec5370d69ce867a9bcbbef08552ebe081799b75af51cca6ab`,
-matches API metadata, independent download and ZIP integrity. Upload-log
-confirmation and final native evidence are pending. The complete earlier
+matches API metadata, upload-log digest, independent download and ZIP integrity.
+The full native artifact `10929391865`, 27,761,183 bytes, SHA-256
+`fb36fd49b87efa502979ebdb4a38c4fef58d00c6936147a3b7f0ed8445b15aa2`,
+also passes all four identity/integrity checks. Its subsequent DPI gate passed
+100%, 125% and 150%; that does not change the installer failure or qualify the
+candidate. The complete earlier
 `7827acb` run remains independent and continues its endurance test.
 
 The direct uninstall now uses the same 600-second bound, records its actual
@@ -138,3 +142,10 @@ retry or missing-report success is introduced. Twelve portable timing/lifetime
 cases pass, including delayed direct cleanup, nonzero exit, failed/missing
 report, bounded timeout without retry, retained failed fixture and unchanged
 diagnostic deadlines. Fresh native validation is still required.
+
+The combined repair is in `79a95c4f39063c20ca4d5a98c3147080d9813077`,
+[run 36311718794](https://github.com/ThereptileII/Work/actions/runs/36311718794).
+Application/installer code remains unchanged from the boat's `7827acb` build.
+The extra staging-tool test first exposed an explicit .NET assembly dependency
+on Windows PowerShell 5.1; both compression assemblies are now loaded. The
+earlier staging run is failed evidence, not a boat-qualified helper.

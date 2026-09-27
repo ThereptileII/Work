@@ -1,0 +1,88 @@
+{
+  "schema": 1,
+  "status": "visual-review-only-not-release-accepted",
+  "commit": "a5b290e52ebeb83bda75c1f7008879c398548dc3",
+  "runId": 36307149573,
+  "artifactId": 10929391865,
+  "artifactSha256": "fb36fd49b87efa502979ebdb4a38c4fef58d00c6936147a3b7f0ed8445b15aa2",
+  "artifactBytes": 27761183,
+  "apiUploadDownloadCrcVerified": true,
+  "reviewedOriginals": [
+    {
+      "name": "dpi-100-01-navigation-day.png",
+      "sha256": "54a2064d23c39f0e6a637867720316a41f595581e768191eb4e53e0e52b3ce77"
+    },
+    {
+      "name": "dpi-125-01-navigation-day.png",
+      "sha256": "e371d4ab728ea6d51f407ac97a4f9b32d46b58e545ee6112a0f1432a33b06e56"
+    },
+    {
+      "name": "dpi-150-01-navigation-day.png",
+      "sha256": "9bd564ab667782805d806fe0f5ced03c62c2bfbe4f974d3fad2197cef520389b"
+    },
+    {
+      "name": "dpi-100-system-page.png",
+      "sha256": "975dfecf3de173730ddffba56b4203ba38d89dd97ca2697e7a3f312d95ec5ac8"
+    },
+    {
+      "name": "dpi-125-system-page.png",
+      "sha256": "48ee721a7fc93832b168e4927ce0bbde84720ced911c85889d642a08a1b4e40e"
+    },
+    {
+      "name": "dpi-150-system-page.png",
+      "sha256": "bee67ffba689a8ec66ae3f8585439da539fee841f31115b94ff20f891b953990"
+    },
+    {
+      "name": "dpi-150-night-menu-hover.png",
+      "sha256": "2b0a3ff24e2daa07cdb2ae87cba93c92bf6d538cdb89ac254e8841e417bb1b6a"
+    },
+    {
+      "name": "dpi-150-night-pilot.png",
+      "sha256": "bebc0e906c104b1de99790f4d67eaa8c7dbc02c50f2e88ce7f9ab6e79a9141c3"
+    },
+    {
+      "name": "dpi-150-night-energy.png",
+      "sha256": "776a14379d5a6ce72e2cfea4907f6e78b8575bc82be9a0bb24adccee07027e7a"
+    },
+    {
+      "name": "dpi-150-night-settings.png",
+      "sha256": "31b8de0728b3a2d846f60e3926f24a017fb63c603d8a4347d909d9a327f976eb"
+    },
+    {
+      "name": "dpi-150-night-sheet.png",
+      "sha256": "679446329e03da185a018f34ba096927b39bea39f8633f65c4ebd5bc1d1339ea"
+    },
+    {
+      "name": "dpi-150-chart-context.png",
+      "sha256": "cea18d87cb439ff56d059d556115d18312a7034441641740083f138c85d50805"
+    },
+    {
+      "name": "dpi-150-legacy.png",
+      "sha256": "5bcacd39ee87d5d6a88a3872555df8ce1335ea6fd700f3ff1f14cad3aa454399"
+    },
+    {
+      "name": "dpi-150-returned-xnav.png",
+      "sha256": "441e7a2f554fa92a67de0997f075e0b1656d8ac1e8a5ef29dceac7a2f9fe7a1e"
+    },
+    {
+      "name": "dpi-150-safe.png",
+      "sha256": "cf9a0aad87055040b027a90a9a7e676c8ff596752feaf4d64f4ea1e908d88772"
+    },
+    {
+      "name": "dpi-150-safe-to-xnav.png",
+      "sha256": "441e7a2f554fa92a67de0997f075e0b1656d8ac1e8a5ef29dceac7a2f9fe7a1e"
+    },
+    {
+      "name": "recovery-navigation-day.png",
+      "sha256": "e84853f6204d81ff30f6dfd23d10177025a3e69ca7dc71281a788d46049beca6"
+    },
+    {
+      "name": "recovery-diagnostics.png",
+      "sha256": "2d69ad142c547013634f2dafb0e2e573a6d07fa03660de2abc871c7ad3564784"
+    }
+  ],
+  "boatAcceptance": false,
+  "physicalTouchAcceptance": false,
+  "installerGate": "failed-final-direct-cleanup-timeout",
+  "reviewDocument": "docs/design/reviews/beta2-native-a5b290-review.md"
+}
