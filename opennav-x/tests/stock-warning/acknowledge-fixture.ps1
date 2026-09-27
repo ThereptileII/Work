@@ -20,7 +20,7 @@ $profile=Read-ProfileForAudit $ini
 if($profile['Settings/NMEADataSource/DataConnections'] -cne ''){throw 'The fixture must have no marine connections.'}
 foreach($name in @('chartdldr_pi.dll','dashboard_pi.dll','grib_pi.dll','wmm_pi.dll')){if($profile['PlugIns/'+$name+'/bEnabled'] -cne '0'){throw 'Fixture plugin is not disabled.'}}
 $process=Get-Process -Id $record.processId;$null=$process.Handle
-$oldDpi=[OpenNavX.StockReviewNative]::SetThreadDpiAwarenessContext([IntPtr](-4))
+$oldDpi=[OpenNavX.StockReviewNative]::SetThreadDpiAwarenessContext([IntPtr](-4));$cover=$null
 try {
  if($oldDpi -eq [IntPtr]::Zero -or $process.HasExited -or $process.Path -ine $exe -or
     $process.SessionId -ne [Diagnostics.Process]::GetCurrentProcess().SessionId -or
@@ -33,6 +33,27 @@ try {
  # Keep the deserialized Width/Height present. Production reconstructs the
  # writable C# fields and validates both derived dimensions before capture.
  if($null -eq $record.nativeWindow.Bounds.Width -or $null -eq $record.nativeWindow.Bounds.Height){throw 'Actual serialized read-only dimensions missing.'}
+ # Reproduce a separate review task taking foreground: only an owned inert,
+ # non-overlapping fixture form. The production primitive must ordinarily
+ # activate the unchanged warning itself before comparing the saved pixels.
+ Add-Type -AssemblyName System.Windows.Forms
+ Add-Type -TypeDefinition @'
+using System;
+using System.Runtime.InteropServices;
+public static class AckFixtureForeground {
+ [DllImport("user32.dll")] private static extern IntPtr GetForegroundWindow();
+ public static bool Is(IntPtr window){return GetForegroundWindow()==window;}
+}
+'@
+ $screen=[Windows.Forms.Screen]::PrimaryScreen.WorkingArea
+ $away=New-Object Drawing.Rectangle(($screen.Right-160),($screen.Bottom-100),160,100)
+ $b=$record.nativeWindow.Bounds;$warning=New-Object Drawing.Rectangle($b.Left,$b.Top,$b.Width,$b.Height)
+ if($away.IntersectsWith($warning)){throw 'No clear fixture foreground-window position.'}
+ $cover=New-Object Windows.Forms.Form;$cover.FormBorderStyle=[Windows.Forms.FormBorderStyle]::None
+ $cover.ShowInTaskbar=$false;$cover.StartPosition=[Windows.Forms.FormStartPosition]::Manual
+ $cover.Text='Disposable acknowledgement task foreground';$cover.Bounds=$away
+ $cover.Show();$cover.Activate();[Windows.Forms.Application]::DoEvents()
+ if(-not [AckFixtureForeground]::Is($cover.Handle)){throw 'Fresh acknowledgement fixture did not own foreground before the production call.'}
  Invoke-StockWelcomeAgreement $process.Id $record.nativeWindow $record.imageSha256 (Join-Path $directory 'before-agree.png') (Join-Path $directory 'agree-intent.json')
- [pscustomobject]@{status='passed';freshProcessId=$PID;powerShellEdition=$PSVersionTable.PSEdition;powerShellMajor=$PSVersionTable.PSVersion.Major;serializedWidth=$record.nativeWindow.Bounds.Width;serializedHeight=$record.nativeWindow.Bounds.Height;sharedProductionAgreement=$true} | ConvertTo-Json
-} finally {if($oldDpi -ne [IntPtr]::Zero){$null=[OpenNavX.StockReviewNative]::SetThreadDpiAwarenessContext($oldDpi)};$process.Dispose()}
+ [pscustomobject]@{status='passed';freshProcessId=$PID;powerShellEdition=$PSVersionTable.PSEdition;powerShellMajor=$PSVersionTable.PSVersion.Major;serializedWidth=$record.nativeWindow.Bounds.Width;serializedHeight=$record.nativeWindow.Bounds.Height;sharedProductionAgreement=$true;ownForegroundBeforeAgreement=$true;ordinaryActivationRestoredWarning=$true} | ConvertTo-Json
+} finally {if($null -ne $cover){$cover.Close();$cover.Dispose()};if($oldDpi -ne [IntPtr]::Zero){$null=[OpenNavX.StockReviewNative]::SetThreadDpiAwarenessContext($oldDpi)};$process.Dispose()}

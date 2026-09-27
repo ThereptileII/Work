@@ -63,10 +63,18 @@ function Save-StockWelcomeCapture([int]$ProcessId,$Info,[string]$Path) {
   } finally { $graphics.Dispose();$bitmap.Dispose() }
   return Get-Digest $path
 }
+function Restore-StockWelcomeAgreementForeground([int]$ProcessId,$Info) {
+  # A separately scheduled acknowledgement can leave its own console foreground.
+  # Use only the existing ordinary activation/rendezvous; no caption input.
+  # Fresh discovery is never substituted for the saved reviewed observation.
+  $null=[OpenNavX.StockWelcomeNative]::Inspect($ProcessId)
+  [OpenNavX.StockWelcomeNative]::AssertUnchanged($ProcessId,$Info)
+}
 function Invoke-StockWelcomeAgreement([int]$ProcessId,$Info,[string]$ExpectedImageHash,[string]$BeforeImage,[string]$IntentPath) {
   if ($ExpectedImageHash -cnotmatch '^[a-f0-9]{64}$') { throw 'Reviewed warning image hash required.' }
   $Info=Convert-StockWelcomeWindow $Info
   if ($Info.ProcessId -ne $ProcessId) { throw 'Captured warning belongs to another process.' }
+  Restore-StockWelcomeAgreementForeground $ProcessId $Info
   $hash=Save-StockWelcomeCapture $ProcessId $Info $BeforeImage
   if ($hash -cne $ExpectedImageHash) { throw 'Warning pixels changed since inspection; no acknowledgement sent.' }
   # Durable exclusive one-use intent. Even uncertain delivery cannot be retried

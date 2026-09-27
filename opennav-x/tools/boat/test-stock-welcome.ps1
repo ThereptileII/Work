@@ -211,11 +211,17 @@ Pass 'Request return value is diagnostic; successful exact-modal checks remain m
   $activation.Invoke($null,[object[]]@($false,$true,[OpenNavX.StockActivationFixture]::Success()))
   if([OpenNavX.StockActivationFixture]::Checks -ne 1){throw 'Actual verification skipped'}
 }
+function Restore-StockWelcomeAgreementForeground([int]$ProcessId,$Info) { if($script:rejectAgreementForeground){throw 'TEST ordinary foreground activation refused'} }
+$script:rejectAgreementForeground=$false
 $script:captured=0;$script:written=0
 function Save-StockWelcomeCapture([int]$ProcessId,$Info,[string]$Path){$script:captured++;return ('f'*64)}
 function Write-Record([string]$Path,$Record){$script:written++;throw 'TEST stop after durable-intent boundary; no native APIs invoked'}
 Refuse 'Malformed capture hash stops before capture or native APIs' {Invoke-StockWelcomeAgreement 42 $null 'bad' 'before.png' 'intent.json'}
 if($script:captured -ne 0 -or $script:written -ne 0){throw 'Malformed evidence reached capture/journal'}
+$script:rejectAgreementForeground=$true
+Refuse 'Blocked ordinary activation refuses before capture and intent' {Invoke-StockWelcomeAgreement 42 $inspection.nativeWindow ('f'*64) 'before.png' 'intent.json'}
+if($script:captured -ne 0 -or $script:written -ne 0){throw 'Blocked ordinary foreground activation reached capture/journal'}
+$script:rejectAgreementForeground=$false
 Refuse 'Changed live pixels refuse before journal and before native Agree' {Invoke-StockWelcomeAgreement 42 $inspection.nativeWindow ('e'*64) 'before.png' 'intent.json'}
 if($script:captured -ne 1 -or $script:written -ne 0){throw 'Pixel mismatch reached acknowledgement intent'}
 Refuse 'Durable intent failure prevents native Agree' {Invoke-StockWelcomeAgreement 42 $inspection.nativeWindow ('f'*64) 'before.png' 'intent.json'}

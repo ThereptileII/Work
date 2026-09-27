@@ -4,7 +4,7 @@ param(
   [Parameter(Mandatory=$true)][string]$LaunchResult,
   [Parameter(Mandatory=$true)][ValidatePattern('^[a-f0-9]{64}$')][string]$ExpectedLaunchSha256,
   [Parameter(Mandatory=$true)][ValidatePattern('^[a-f0-9]{40}$')][string]$ExpectedCommit,
-  [Parameter(Mandatory=$true)][ValidateSet('InspectWelcome','AcknowledgeWelcome')][string]$Action,
+  [Parameter(Mandatory=$true)][ValidateSet('InspectWelcome','FocusWelcome','AcknowledgeWelcome')][string]$Action,
   [string]$WelcomeInspection,
   [ValidatePattern('^[a-f0-9]{64}$')][string]$ExpectedWelcomeInspectionSha256
 )

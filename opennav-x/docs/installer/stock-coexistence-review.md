@@ -185,8 +185,8 @@ foreground window after its normal request/rendezvous, `-Action FocusWelcome`
 performs one ordinary title-bar click. It uses the same immutable stock launch,
 PID/creation tick/session, source/plugin/profile and helper-hash proof. It does
 not dismiss another program, hide the taskbar, attach input queues, change focus
-policy, switch/unlock desktops, or acknowledge the caution. The installed-product
-wrapper has not been extended to this action.
+policy, switch/unlock desktops, or acknowledge the caution. The separate installed-product wrapper reuses this primitive with its own
+[installed generation and commissioning proof](installed-startup-review.md).
 
 The native helper accepts only PID and exact creation ticks; it does not accept
 coordinates, captions, HWNDs, messages or input selectors. It finds the complete

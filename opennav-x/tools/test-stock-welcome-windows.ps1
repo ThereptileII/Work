@@ -171,6 +171,7 @@ try {
   Check ($ack.ExitCode -eq 0) ('Fresh native acknowledgement process succeeds: '+$ackErrorText)
   $ackResult=$ackText|ConvertFrom-Json
   Check ($ackResult.status -ceq 'passed' -and $ackResult.freshProcessId -ne $PID -and $ackResult.powerShellEdition -ceq 'Desktop' -and $ackResult.powerShellMajor -eq 5 -and $ackResult.sharedProductionAgreement) 'Actual serialized NoticeInfo reaches shared acknowledgement in a fresh PowerShell 5.1 process'
+  Check ($ackResult.ownForegroundBeforeAgreement -eq $true -and $ackResult.ordinaryActivationRestoredWarning -eq $true) 'Separate acknowledgement task foreground is restored by ordinary guarded activation before matching original pixels'
   $report.serializedAcknowledgement=$ackResult
  } finally {$ack.Dispose()}
  $agreed=$true;Check (Test-Path -LiteralPath $intent) 'Same production primitive durably records one intent before Agree'

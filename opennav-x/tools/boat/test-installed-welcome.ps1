@@ -13,7 +13,7 @@ $launch=[pscustomobject]@{status='passed';action='Launch';mode='--xnav';pid=42;e
 $installed=[pscustomobject]@{state=[pscustomobject]@{current=$job.generation};ownership=[pscustomobject]@{commit=$job.buildCommit;version='0.4.0-beta2'};executable=$job.executable}
 $build=[pscustomobject]@{test_fixtures=$false;build_purpose='INSTALLED PRODUCT';version='0.4.0-beta2';commit=$job.buildCommit;executable_sha256=$job.executableSha256}
 foreach($mode in @('--xnav','--legacy','--safe-mode')){Pass "Exact separately launched installed mode: $mode" {$r=CopyValue $request;$r.mode=$mode;$l=CopyValue $launch;$l.mode=$mode;Assert-InstalledWelcomePolicy $job $l $r $installed $build $now}}
-foreach($action in @('InspectWelcome','AcknowledgeWelcome')){Pass "Fixed warning action $action" {$v=CopyValue $job;$v.reviewAction=$action;Assert-InstalledWelcomePolicy $v $launch $request $installed $build $now}}
+foreach($action in @('InspectWelcome','FocusWelcome','AcknowledgeWelcome')){Pass "Fixed warning action $action" {$v=CopyValue $job;$v.reviewAction=$action;Assert-InstalledWelcomePolicy $v $launch $request $installed $build $now}}
 foreach($action in @('LaunchStock','LaunchPortableReview','ReviewRestartChild','Launch;Other')){Refuse 'Non-normal launch identity cannot authorize installed warning' {$v=CopyValue $launch;$v.action=$action;Assert-InstalledWelcomePolicy $job $v $request $installed $build $now}}
 foreach($field in @('action','mode','executable','executableSha256','workspace')){Refuse "Changed request $field" {$v=CopyValue $request;$v.$field='wrong';Assert-InstalledWelcomePolicy $job $launch $v $installed $build $now}}
 foreach($field in @('status','action','mode','executableSha256','generation','buildCommit','targetSha256','sid')){Refuse "Changed launch $field" {$v=CopyValue $launch;$v.$field='wrong';Assert-InstalledWelcomePolicy $job $v $request $installed $build $now}}
@@ -44,4 +44,47 @@ foreach($fileName in @('InstalledWelcome.ps1','review-installed-welcome.ps1','Co
 $arguments=@{InstalledWelcomeFixture=$true};if($PortableContracts){$arguments.PortableContracts=$true};if($IsolatedLocal){$arguments.IsolatedLocal=$true}
 $runtime=& (Join-Path $PSScriptRoot 'test-commissioning-launch.ps1') @arguments | ConvertFrom-Json
 if($runtime.status -cne 'passed' -or $runtime.identity -cne 'installed-warning-runtime'){throw 'Installed runtime proof fixture failed'}
+Refuse 'An installed FocusWelcome result is never acknowledgement evidence' {$v=CopyValue $inspection;$v.reviewAction='FocusWelcome';Assert-InstalledWelcomeInspection $v $job $launch $now}
+# Policy ordering with fake operations only. Full unmocked installed runtime
+# mutation/refusal fixture above remains mandatory and runs before this scope.
+& {
+  $focusJob=CopyValue $job;$focusJob.reviewAction='FocusWelcome'
+  $focusProof=[pscustomobject]@{launch=$launch}
+  $focusProcess=CopyValue $process
+  $focusProcess|Add-Member -MemberType ScriptMethod -Name Refresh -Value {if($script:reuseFocusPid){$this.StartTime=$this.StartTime.AddTicks(1)}}
+  function Read-InstalledWelcome($Unused){$script:focusAudits++;if($script:focusAudits -eq $script:rejectFocusAudit){throw 'TEST full installed proof rejected'};return $focusProof}
+  function Invoke-StockWelcomeFocus([int]$ProcessId,[long]$StartedUtcTicks,[string]$Intent){
+    $script:focusCalls++
+    if($ProcessId -ne 42 -or $StartedUtcTicks -ne $process.StartTime.ToUniversalTime().Ticks -or [IO.Path]::GetFileName($Intent) -cne 'focus-intent.json'){throw 'Bound fixed focus identity lost'}
+    if($script:uncertainFocus){throw 'TEST caption input uncertain'}
+    return [pscustomobject]@{ProcessId=$ProcessId;Modal=456}
+  }
+  function Save-StockWelcomeCapture([int]$ProcessId,$Info,[string]$Path){$script:focusCaptures++;return ('9'*64)}
+  function ResetFocus { $script:focusAudits=0;$script:focusCalls=0;$script:focusCaptures=0;$script:rejectFocusAudit=0;$script:reuseFocusPid=$false;$script:uncertainFocus=$false;$focusProcess.StartTime=$process.StartTime }
+  $directory=[IO.Path]::GetTempPath()
+  Pass 'Installed focus verifies complete proof before and after and retains no-ack result' {
+    ResetFocus;$value=Invoke-InstalledWelcomeFocus $focusJob $focusProof $focusProcess 'S-1-5-21-1' 1 $directory
+    if($focusAudits -ne 2 -or $focusCalls -ne 1 -or $focusCaptures -ne 1 -or $value.acknowledgementSent -ne $false -or $value.focusVerified -ne $true){throw 'Installed focus proof/result boundary differs'}
+  }
+  Pass 'Installed proof failure before input cannot reach caption primitive' {
+    ResetFocus;$script:rejectFocusAudit=1;$failed=$false
+    try{$null=Invoke-InstalledWelcomeFocus $focusJob $focusProof $focusProcess 'S-1-5-21-1' 1 $directory}catch{$failed=$true}
+    if(-not $failed -or $focusCalls -ne 0 -or $focusCaptures -ne 0){throw 'Proof rejection reached input or did not refuse'}
+  }
+  Pass 'Source/generation change after input refuses capture and success' {
+    ResetFocus;$script:rejectFocusAudit=2;$failed=$false
+    try{$null=Invoke-InstalledWelcomeFocus $focusJob $focusProof $focusProcess 'S-1-5-21-1' 1 $directory}catch{$failed=$true}
+    if(-not $failed -or $focusCalls -ne 1 -or $focusAudits -ne 2 -or $focusCaptures -ne 0){throw 'Changed proof became successful focus/capture'}
+  }
+  Pass 'PID reuse on refresh refuses before caption input' {
+    ResetFocus;$script:reuseFocusPid=$true;$failed=$false
+    try{$null=Invoke-InstalledWelcomeFocus $focusJob $focusProof $focusProcess 'S-1-5-21-1' 1 $directory}catch{$failed=$true}
+    if(-not $failed -or $focusCalls -ne 0 -or $focusCaptures -ne 0){throw 'Reused process reached focus'}
+  }
+  Pass 'Uncertain native focus never retries or proceeds to capture' {
+    ResetFocus;$script:uncertainFocus=$true;$failed=$false
+    try{$null=Invoke-InstalledWelcomeFocus $focusJob $focusProof $focusProcess 'S-1-5-21-1' 1 $directory}catch{$failed=$true}
+    if(-not $failed -or $focusCalls -ne 1 -or $focusAudits -ne 1 -or $focusCaptures -ne 0){throw 'Uncertain input was retried or claimed successful'}
+  }
+}
 [pscustomobject]@{status='passed';count=$checks.Count+$runtime.count;policyCount=$checks.Count;runtimeCount=$runtime.count;checks=@($checks);runtimeChecks=$runtime.checks;windowsApisInvoked=$false;applicationLaunched=$false;boatAccess=$false;hardwareCommands=$false;actualInstalledModalAcceptance=$false} | ConvertTo-Json -Depth 6

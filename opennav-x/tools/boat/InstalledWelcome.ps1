@@ -4,7 +4,7 @@
 . (Join-Path $PSScriptRoot 'StockWelcome.ps1')
 $script:InstalledWelcomeFiles=@('InstalledWelcome.ps1','StockWelcome.ps1','StockWelcomeNative.cs','RestartWindowNative.cs')
 function Assert-InstalledWelcomePolicy($Job,$Launch,$Request,$Installed,$Build,[datetime]$Now) {
-  if ($Job.action -cne 'ReviewInstalledWelcome' -or $Job.reviewAction -cnotin @('InspectWelcome','AcknowledgeWelcome') -or
+  if ($Job.action -cne 'ReviewInstalledWelcome' -or $Job.reviewAction -cnotin @('InspectWelcome','FocusWelcome','AcknowledgeWelcome') -or
       $Job.processId -le 0 -or $Job.buildCommit -cnotmatch '^[a-f0-9]{40}$' -or $Job.generation -cnotmatch '^[a-f0-9]{32}$' -or
       $Job.executableSha256 -cnotmatch '^[a-f0-9]{64}$') { throw 'Exact installed warning review required.' }
   if ($Launch.status -cne 'passed' -or $Launch.action -cne 'Launch' -or $Request.action -cne 'Launch' -or
@@ -109,6 +109,18 @@ function Assert-InstalledWelcomeInspection($Inspection,$Job,$Launch,[datetime]$N
   if ($at -gt $Now -or ($Now-$at).TotalMinutes -gt 30) { throw 'Installed warning inspection expired.' }
   Assert-StockWelcomeWindow $Inspection.nativeWindow $Job.processId
 }
+function Invoke-InstalledWelcomeFocus($Job,$Proof,$Process,[string]$Sid,[int]$Session,[string]$Directory) {
+  if ($Job.reviewAction -cne 'FocusWelcome') { throw 'This fixed operation only focuses the installed startup warning.' }
+  # Same complete generation/profile/source/quarantine proof as inspection,
+  # rechecked around the separately qualified fixed native caption primitive.
+  $null=Read-InstalledWelcome $Job;$Process.Refresh();Assert-InstalledWelcomeProcess $Process $Job $Proof.launch $Sid $Session
+  $ticks=([datetime]::Parse($Proof.launch.processStartedUtc).ToUniversalTime()).Ticks
+  $info=Invoke-StockWelcomeFocus $Process.Id $ticks (Join-Path $Directory 'focus-intent.json')
+  $null=Read-InstalledWelcome $Job;$Process.Refresh();Assert-InstalledWelcomeProcess $Process $Job $Proof.launch $Sid $Session
+  $image=Join-Path $Directory 'focused-warning.png'
+  $hash=Save-StockWelcomeCapture $Process.Id $info $image
+  return @{image=$image;imageSha256=$hash;nativeWindow=$info;focusVerified=$true;acknowledgementSent=$false}
+}
 function Invoke-InstalledWelcome($Job) {
   $proof=Read-InstalledWelcome $Job
   $sid=[Security.Principal.WindowsIdentity]::GetCurrent().User.Value;$session=[Diagnostics.Process]::GetCurrentProcess().SessionId
@@ -130,6 +142,12 @@ function Invoke-InstalledWelcome($Job) {
         launchResultSha256=$Job.launchResultSha256;launchRequestSha256=$Job.launchRequestSha256;helperFiles=$Job.helperFiles;
         bodyTextAccessible=$false;actuatorCommandsIssuedByTool=$false;physicalBusSilenceNotClaimed=$true;
         review='Pinned upstream navigation caution before OpenNav Attach; HTML body requires human review of captured pixels. No other dialog or runtime command is authorized.'}
+      if ($Job.reviewAction -ceq 'FocusWelcome') {
+        $focus=Invoke-InstalledWelcomeFocus $Job $proof $process $sid $session $directory
+        foreach($key in $focus.Keys) { $result[$key]=$focus[$key] }
+        $result.review='Fixed installed startup-warning caption focused. Warning remains present; this result cannot authorize acknowledgement. Inspect separately.'
+        return $result
+      }
       if ($Job.reviewAction -ceq 'InspectWelcome') {
         $info=[OpenNavX.StockWelcomeNative]::Inspect($process.Id)
         $null=Read-InstalledWelcome $Job;$process.Refresh();Assert-InstalledWelcomeProcess $process $Job $proof.launch $sid $session

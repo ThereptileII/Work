@@ -94,3 +94,14 @@ captured pixels, then calls the same production primitive. Earlier native result
 qualified the live-object path; they did not qualify this process/JSON boundary.
 The converter's 141 portable warning checks and 91 installed policy/runtime checks
 pass locally; fresh native evidence is required before boat acknowledgement.
+
+A separate real scheduled acknowledgement then exposed another guarded refusal:
+the warning identity was unchanged, but a different foreground window prevented
+capture. No intent or acknowledgement was produced. The agreement primitive now
+uses the existing ordinary `Inspect` activation and bounded WM_NULL rendezvous,
+discards its new observation, and rechecks the original saved identity before the
+original pixel comparison. It never invokes caption input as an acknowledgement
+fallback. The fresh native PowerShell fixture deliberately makes its own separate,
+non-overlapping window foreground before invoking this path; denied activation
+still stops before capture and intent. Native qualification of this additional
+foreground transition is separate from the already-passed JSON reconstruction.
