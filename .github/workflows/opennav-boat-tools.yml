@@ -104,6 +104,8 @@ jobs:
     timeout-minutes: 10
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+      - name: Prepare only the disposable CI desktop for a fully contained stock frame
+        run: python opennav-x/tools/prepare-stock-review-desktop.py
       - name: Exercise actual helper against nine marker-only native window cases
         run: |
           New-Item -ItemType Directory -Path opennav-x/evidence/local/restart-window -Force | Out-Null
@@ -138,6 +140,8 @@ jobs:
     timeout-minutes: 10
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+      - name: Prepare only the disposable CI desktop for a fully contained stock frame
+        run: python opennav-x/tools/prepare-stock-review-desktop.py
       - name: Exercise exact official stock warning and hash-bound Agree in an empty portable profile
         run: |
           New-Item -ItemType Directory -Path opennav-x/evidence/local/stock-welcome -Force | Out-Null

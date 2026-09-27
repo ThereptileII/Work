@@ -20,7 +20,7 @@ $destination=[IO.Path]::GetFullPath($Evidence);$null=New-Item -ItemType Director
 $results=New-Object 'Collections.Generic.List[object]';$cleanup=New-Object 'Collections.Generic.List[string]';$failure=$null
 $oldDpi=[OpenNavX.StockReviewNative]::SetThreadDpiAwarenessContext([IntPtr](-4));if($oldDpi -eq [IntPtr]::Zero){throw 'Physical DPI context unavailable.'}
 try {
- foreach($case in @('offscreen','maximized','rename-on-restore','wrong-title','disabled','wrong-pid')) {
+ foreach($case in @('offscreen','maximized','rename-on-restore','wrong-title','disabled','wrong-pid','reported-failure')) {
   $directory=Join-Path ([IO.Path]::GetTempPath()) ('opennav-stock-resize-'+[guid]::NewGuid().ToString('N'));$null=New-Item -ItemType Directory -Path $directory
   $variant=if($case -ceq 'wrong-pid'){'offscreen'}else{$case}
   [IO.File]::WriteAllText((Join-Path $directory 'fixture.json'),(@{owner='OpenNavX.StockResize.Fixture.1';case=$variant}|ConvertTo-Json -Compress))
@@ -28,8 +28,18 @@ try {
   $start.Arguments='-NoProfile -STA -ExecutionPolicy Bypass -File "'+$fixture+'" -Directory "'+$directory+'"';$start.UseShellExecute=$false;$start.CreateNoWindow=$true
   $process=[Diagnostics.Process]::Start($start);$null=$process.Handle
   try {
-   $readyPath=Join-Path $directory 'ready.json';$deadline=[datetime]::UtcNow.AddSeconds(10)
-   while(-not (Test-Path -LiteralPath $readyPath) -and -not $process.HasExited -and [datetime]::UtcNow -lt $deadline){Start-Sleep -Milliseconds 50}
+   $readyPath=Join-Path $directory 'ready.json';$failedPath=Join-Path $directory 'failure.json';$deadline=[datetime]::UtcNow.AddSeconds(10)
+   while(-not (Test-Path -LiteralPath $readyPath) -and -not (Test-Path -LiteralPath $failedPath) -and -not $process.HasExited -and [datetime]::UtcNow -lt $deadline){Start-Sleep -Milliseconds 50}
+   if(Test-Path -LiteralPath $failedPath) {
+    $failed=Get-Content -LiteralPath $failedPath -Raw|ConvertFrom-Json
+    if($failed.pid -ne $process.Id -or $failed.status -cne 'failed'){throw 'Unexpected fixture failure identity.'}
+    if($case -ceq 'reported-failure' -and $failed.error -ceq 'Expected disposable readiness failure.') {
+     $results.Add(@{case=$case;refused=$true;reason=$failed.error;nativeActionCalled=$false})
+     continue
+    }
+    throw ('Owned native resize fixture refused: '+$failed.error)
+   }
+   if($case -ceq 'reported-failure'){throw 'Expected callback error did not publish bounded failure metadata.'}
    if(-not (Test-Path -LiteralPath $readyPath)){throw 'Owned native resize fixture failed to become ready.'}
    $ready=Get-Content -LiteralPath $readyPath -Raw|ConvertFrom-Json
    if($ready.pid -ne $process.Id -or $ready.createdFiletime -cne $process.StartTime.ToUniversalTime().ToFileTimeUtc().ToString()){throw 'Fixture process creation identity changed.'}
