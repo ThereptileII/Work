@@ -164,6 +164,34 @@ if([Environment]::OSVersion.Platform -eq 'Win32NT') {
     if($desktopProbe.relation -cnotin @('HELPER_DESKTOP_RECEIVES_INPUT','HELPER_DESKTOP_NOT_INPUT_DESKTOP','INPUT_DESKTOP_UNAVAILABLE','INPUT_DESKTOP_CHANGED_OR_DISCONNECTED','DESKTOP_METADATA_INCOMPLETE')){throw 'Unknown diagnostic relation'}
   }
 }
+Add-Type -TypeDefinition @'
+using System;
+namespace OpenNavX {
+  public static class StockActivationFixture {
+    public static int Checks;
+    public static Action Failure(){return delegate{Checks++;throw new InvalidOperationException("Exact modal still not foreground");};}
+    public static Action Success(){return delegate{Checks++;};}
+  }
+}
+'@
+$activation=$desktopType.GetMethod('VerifyActivation',[Reflection.BindingFlags]'NonPublic,Static')
+Pass 'Accepted foreground request never substitutes for actual guarded verification' {
+  [OpenNavX.StockActivationFixture]::Checks=0
+  $errorText=$null
+  try{$activation.Invoke($null,[object[]]@($true,$true,[OpenNavX.StockActivationFixture]::Failure()))}catch{$errorText=$_.Exception.ToString()}
+  if([OpenNavX.StockActivationFixture]::Checks -ne 1 -or $errorText -notlike '*focusRequestReturned=true*' -or $errorText -notlike '*Exact modal still not foreground*'){throw 'Transmitted request was mistaken for verified foreground'}
+}
+Pass 'Rendezvous timeout stops before any capture verification' {
+  [OpenNavX.StockActivationFixture]::Checks=0
+  $errorText=$null
+  try{$activation.Invoke($null,[object[]]@($false,$false,[OpenNavX.StockActivationFixture]::Success()))}catch{$errorText=$_.Exception.ToString()}
+  if([OpenNavX.StockActivationFixture]::Checks -ne 0 -or $errorText -notlike '*focusRequestReturned=false*' -or $errorText -notlike '*WM_NULL activation rendezvous*'){throw 'Failed rendezvous reached verification'}
+}
+Pass 'Request return value is diagnostic; successful exact-modal checks remain mandatory' {
+  [OpenNavX.StockActivationFixture]::Checks=0
+  $activation.Invoke($null,[object[]]@($false,$true,[OpenNavX.StockActivationFixture]::Success()))
+  if([OpenNavX.StockActivationFixture]::Checks -ne 1){throw 'Actual verification skipped'}
+}
 $script:captured=0;$script:written=0
 function Save-StockWelcomeCapture([int]$ProcessId,$Info,[string]$Path){$script:captured++;return ('f'*64)}
 function Write-Record([string]$Path,$Record){$script:written++;throw 'TEST stop after durable-intent boundary; no native APIs invoked'}

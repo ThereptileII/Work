@@ -166,3 +166,13 @@ that a real boat desktop is unlocked. API contracts: [OpenInputDesktop](https://
 [GetUserObjectInformationW](https://learn.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-getuserobjectinformationw),
 [GetThreadDesktop](https://learn.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-getthreaddesktop),
 [GetGUIThreadInfo](https://learn.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-getguithreadinfo).
+
+
+The warning focus request now uses `SetForegroundWindow` followed by a bounded
+five-second `SendMessageTimeout(WM_NULL)` rendezvous instead of a fixed 250 ms
+sleep. The existing exact-modal identity, foreground and occlusion checks still
+follow it. The request's boolean result is diagnostic on refusal; it is never
+proof of success. A timeout refuses before capture. This follows Microsoft's
+[asynchronous activation guidance](https://devblogs.microsoft.com/oldnewthing/20161118-00/?p=94745/)
+and adds no click, permission bypass or input-queue attachment. The native
+English/Swedish official-stock fixture must qualify this exact revision.

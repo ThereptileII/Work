@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using System.Text;
-using System.Threading;
 
 namespace OpenNavX {
   // The pinned OpenCPN ShowNavWarning -> AlertDialog only. This is deliberately
@@ -212,8 +211,25 @@ namespace OpenNavX {
       var dpi=GetDpiForWindow(modal);if(dpi<72||dpi>384)throw new InvalidOperationException("Unexpected warning DPI.");
       return new NoticeInfo{Frame=frame.ToInt64(),Modal=modal.ToInt64(),Agree=agree.ToInt64(),Cancel=cancel.ToInt64(),Html=html.ToInt64(),ProcessId=pid,AgreeId=5100,CancelId=5101,Dpi=dpi,Bounds=bounds,Title=Text(modal),ModalClass=Class(modal),HtmlClass=Class(html),HtmlName=Text(html),AgreeText=Text(agree),CancelText=Text(cancel)};
     }
+    private static void VerifyActivation(bool requestReturned,bool rendezvousCompleted,Action verify){
+      string result="Warning focusRequestReturned="+JsonBool(requestReturned)+". ";
+      if(!rendezvousCompleted)throw new InvalidOperationException(result+"WM_NULL activation rendezvous failed or timed out; no capture or acknowledgement.");
+      try{verify();}
+      catch(InvalidOperationException error){throw new InvalidOperationException(result+error.Message,error);}
+    }
     public static NoticeInfo Inspect(int pid){
-      var info=Find(pid);SetForegroundWindow(new IntPtr(info.Modal));Thread.Sleep(250);AssertUnchanged(pid,info);return info;
+      var info=Find(pid);var modal=new IntPtr(info.Modal);
+      bool requested=SetForegroundWindow(modal);UIntPtr ignored;
+      // Cross-thread activation is asynchronous. Wait for this exact modal to
+      // process the nudge, without sharing input queues or assuming permission.
+      // Microsoft: devblogs.microsoft.com/oldnewthing/20161118-00/?p=94745
+      bool completed=SendMessageTimeoutW(modal,0x0000,IntPtr.Zero,IntPtr.Zero,0x0003,5000,out ignored)!=IntPtr.Zero;
+      try{VerifyActivation(requested,completed,delegate{AssertUnchanged(pid,info);});}
+      catch(InvalidOperationException error){
+        if(!completed)throw new InvalidOperationException(error.Message+" desktopDiagnostic="+SafeDesktopDiagnostic(),error);
+        throw;
+      }
+      return info;
     }
     public static void AssertUnchanged(int pid,NoticeInfo expected){
       if(expected==null)throw new InvalidOperationException("A captured warning is required.");
