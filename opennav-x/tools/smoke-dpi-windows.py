@@ -232,12 +232,12 @@ def chart_context_geometry(scale):
     expected=(chart_area['x'],chart_area['y'],chart_area['x']+chart_area['width'],
               chart_area['y']+chart_area['height'])
     observed=(rect.left,rect.top,rect.right,rect.bottom)
-    evidence={'percent':scale,'point':[point.x,point.y],
+    input_evidence={'percent':scale,'point':[point.x,point.y],
               'main_is_foreground':foreground()==handle,'target_pid':owner.value,
               'expected_pid':pid,'chart_bounds':expected,'native_hit_bounds':observed}
-    report.setdefault('chart_context_inputs',[]).append(evidence)
-    assert evidence['main_is_foreground'] and owner.value==pid and observed==expected, \
-        ('Native chart gesture is obscured or its geometry changed',evidence)
+    report.setdefault('chart_context_inputs',[]).append(input_evidence)
+    assert input_evidence['main_is_foreground'] and owner.value==pid and observed==expected, \
+        ('Native chart gesture is obscured or its geometry changed',input_evidence)
     ui.MouseEvent(8,0,0,0,0);time.sleep(.08);ui.MouseEvent(16,0,0,0,0)
     labels={'Go to','Waypoint','Measure','Info'}
     def controls(record):

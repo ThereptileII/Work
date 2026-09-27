@@ -69,3 +69,11 @@ Both match their API metadata, upload log, independent download and ZIP CRC.
 No failed candidate was deployed; its Windows endurance and product-publication
 steps were correctly withheld. The independent Linux elapsed-time run is retained
 without treating it as qualification for the replacement.
+
+A subsequent source review caught a harness-local naming collision before boat
+use: the new input-evidence dictionary shadowed the screenshot-directory Path.
+It is renamed `input_evidence`. An isolated execution of the actual function
+with mocked native boundaries reaches capture and touch-close checks at all
+three scales. This only checks Python control flow; real Windows mouse, touch,
+DPI and pixel acceptance still require the complete native gate. The earlier
+candidate remains unaccepted, regardless of how far its pending run proceeds.
