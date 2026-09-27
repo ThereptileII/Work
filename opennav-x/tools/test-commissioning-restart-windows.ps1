@@ -40,7 +40,7 @@ function HashBytes([byte[]]$Bytes){$h=[Security.Cryptography.SHA256]::Create();t
 function RandomHash{$b=New-Object byte[] 32;$r=[Security.Cryptography.RandomNumberGenerator]::Create();try{$r.GetBytes($b)}finally{$r.Dispose()};return ([BitConverter]::ToString($b)).Replace('-','').ToLowerInvariant()}
 function WriteText([string]$Path,[string]$Text){[IO.File]::WriteAllText($Path,$Text,(New-Object Text.UTF8Encoding($false)))}
 function WaitFile([string]$Path){$end=[DateTime]::UtcNow.AddSeconds(10);while(-not [IO.File]::Exists($Path)){if([DateTime]::UtcNow -ge $end){throw ('Marker absent: '+$Path)};Start-Sleep -Milliseconds 20}}
-$status='failed';$failure=$null
+$status='failed';$failure=$null;$case=$null;$helperExit=$null;$receipt=$null;$currentHelperPid=$null;$currentParentPid=$null
 try {
   $expired=[DateTime]::UtcNow.AddSeconds(-1)
   $memory=New-Object IO.MemoryStream
@@ -124,10 +124,11 @@ try {
     }
     $noBroker=$case -cin @('plain','partial','invalid','empty','both-empty','unsupported-mode','no-listener','parent-error')
     $allow=$case -cin @('success','safe','xnav','parent-fast-exit','startup-binding','startup-environment','chain-no-listener')
-    $pipe=$null;$parent=$null;$helper=$null;$receipt=$null;$helperCreated=$null;$helperExit=$null
+    $pipe=$null;$parent=$null;$helper=$null;$receipt=$null;$helperCreated=$null;$helperExit=$null;$currentHelperPid=$null;$currentParentPid=$null
     try {
       if(-not $noBroker){$pipe=[OpenNavX.RestartCommissioningNative]::NewPipe($session,$sid)}
       $parent=[Diagnostics.Process]::Start($start);$parentCreated=$parent.StartTime.ToUniversalTime().ToFileTimeUtc().ToString([Globalization.CultureInfo]::InvariantCulture)
+      $currentParentPid=$parent.Id
       WaitFile (Join-Path $directory 'parent-armed.txt')
       if($case -cne 'parent-fast-exit') {
         Require (-not $parent.HasExited) ($case+': parent remains alive while helper is armed')
@@ -145,6 +146,7 @@ try {
         Require ($companions.Count -eq $(if($expectHelper){1}else{0})) ($case+': exact fixture helper count')
         if($expectHelper) {
           $helper=Get-Process -Id $companions[0].ProcessId
+          $currentHelperPid=$helper.Id
           Require ($helper.Path -ieq $helperPath -and $helper.SessionId -eq [Diagnostics.Process]::GetCurrentProcess().SessionId) ($case+': helper identity is confined to fixture')
           $helperCreated=$helper.StartTime.ToUniversalTime().ToFileTimeUtc().ToString([Globalization.CultureInfo]::InvariantCulture)
           $null=$helper.Handle
@@ -163,6 +165,10 @@ try {
         $peer=[OpenNavX.RestartCommissioningNative]::ClientPid($pipe)
         Require ($request['helperPid'] -ceq $peer.ToString()) ($case+': OS peer PID matches helper request')
         $helper=Get-Process -Id $peer
+        # Get-Process opens process queries lazily. Keep its genuine handle
+        # before replying, while the helper is still waiting on our permit;
+        # otherwise .NET Framework can return null ExitCode after PID exit.
+        $null=$helper.Handle;$currentHelperPid=$helper.Id
         $helperCreated=$helper.StartTime.ToUniversalTime().ToFileTimeUtc().ToString([Globalization.CultureInfo]::InvariantCulture)
         Require ($helper.Path -ieq $helperPath -and $helper.SessionId -eq [Diagnostics.Process]::GetCurrentProcess().SessionId) ($case+': actual helper image and session')
         Require ($request['helperCreatedFiletime'] -ceq $helper.StartTime.ToUniversalTime().ToFileTimeUtc().ToString([Globalization.CultureInfo]::InvariantCulture)) ($case+': helper creation time')
@@ -192,14 +198,16 @@ try {
         $pipe.Dispose();$pipe=$null
         Require ($helper.WaitForExit(10000)) ($case+': bounded helper exit')
         $helperExit=$helper.ExitCode
-        Require ($(if($allow){$helperExit -eq 0}else{$helperExit -ne 0})) ($case+': helper exit reflects allow or refusal')
+        $expectedExit=if($allow){0}elseif($case -cin @('profile-changed','executable-changed')){32}else{31}
+        Require ($helperExit -is [int] -and $helperExit -eq $expectedExit) ($case+': retained native helper exit matches exact allow/refusal outcome')
       } else {
         Require ($parent.WaitForExit(10000)) ($case+': parent finishes normally')
         Require ($parent.ExitCode -eq $(if($case -ceq 'parent-error'){7}else{0})) ($case+': expected parent exit')
         if($helper) {
           Require ($helper.WaitForExit(35000)) ($case+': observed helper exits within guarded deadline')
           $helperExit=$helper.ExitCode
-          Require ($(if($case -ceq 'plain'){$helperExit -eq 0}else{$helperExit -ne 0})) ($case+': actual helper exit reflects ordinary restart or guarded refusal')
+          $expectedExit=if($case -ceq 'plain'){0}elseif($case -ceq 'parent-error'){24}else{29}
+          Require ($helperExit -is [int] -and $helperExit -eq $expectedExit) ($case+': actual helper exit reflects exact ordinary restart or guarded refusal')
         }
       }
       if($allow -or $case -ceq 'plain') {
@@ -233,7 +241,7 @@ try {
     }
   }
   $status='passed'
-} catch {$failure=@{message=$_.Exception.Message;stack=$_.ScriptStackTrace};throw}
+} catch {$failure=@{message=$_.Exception.Message;stack=$_.ScriptStackTrace;case=$case;parentPid=$currentParentPid;helperPid=$currentHelperPid;helperExitCode=$helperExit;receipt=$receipt};throw}
 finally {
   $null=New-Item -ItemType Directory -Force -Path $Evidence
   $report=@{status=$status;authority='Native Windows marker-only standalone process tests';noMarineCode=$true;checks=$checks.ToArray();cases=$cases.ToArray();failure=$failure;temporary=$temporary}
