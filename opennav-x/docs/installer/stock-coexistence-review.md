@@ -137,3 +137,32 @@ pixel mismatch before intent, and durable-intent failure before native input.
 These checks invoke no Windows API and are not evidence of actual modal handling.
 The separate official 5.12.4 native warning fixture is pending; it must capture
 the real wx dialog and test the unchanged capture/acknowledgement helper.
+
+
+## Input-desktop diagnostics on refused warning capture
+
+A foreground refusal retains the exact stock launch/process and modal checks,
+then appends a bounded `desktopDiagnostic` JSON object to the error. It reads the
+interactive helper's desktop and the current input desktop using
+`GetThreadDesktop`, `OpenInputDesktop(0, false, DESKTOP_READOBJECTS)` and
+`GetUserObjectInformationW` (`UOI_NAME`, `UOI_IO`). Only the independently opened
+input handle is closed. No desktop is activated or switched; access rights,
+credentials and acknowledgement behavior are unchanged.
+
+The record contains desktop names, input-state observations, native error codes,
+handle-close outcome and numeric foreground HWND/PID. A read-only
+`GetGUIThreadInfo` call on that observed foreground thread reports distinct menu,
+popup-menu, system-menu and move/size flags, preserving unavailable values as
+unknown and recording whether the foreground HWND changed during the query. It does not enumerate
+unrelated window titles or capture another application's pixels. Access denied
+is reported as unavailable, not as proof that Windows is locked. A disconnected
+session can also affect the reported input desktop. Failure of the probe still
+refuses the original capture; it cannot change acceptance.
+
+The portable tests cover classification, missing data, escaping and the native
+ABI. On Windows the same suite additionally executes only the read-only desktop
+queries and checks handle cleanup. This is diagnostic qualification, not proof
+that a real boat desktop is unlocked. API contracts: [OpenInputDesktop](https://learn.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-openinputdesktop),
+[GetUserObjectInformationW](https://learn.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-getuserobjectinformationw),
+[GetThreadDesktop](https://learn.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-getthreaddesktop),
+[GetGUIThreadInfo](https://learn.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-getguithreadinfo).

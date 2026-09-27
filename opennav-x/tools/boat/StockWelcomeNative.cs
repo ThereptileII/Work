@@ -40,6 +40,103 @@ namespace OpenNavX {
     [DllImport("user32.dll")] private static extern IntPtr MonitorFromWindow(IntPtr h,uint flags);
     [DllImport("user32.dll",CharSet=CharSet.Unicode)] private static extern bool GetMonitorInfoW(IntPtr h,ref MonitorInfo info);
     [DllImport("user32.dll",SetLastError=true)] private static extern IntPtr SendMessageTimeoutW(IntPtr h,uint message,IntPtr w,IntPtr l,uint flags,uint timeout,out UIntPtr result);
+    [DllImport("kernel32.dll")] private static extern uint GetCurrentThreadId();
+    [DllImport("user32.dll",SetLastError=true)] private static extern IntPtr GetThreadDesktop(uint thread);
+    [DllImport("user32.dll",SetLastError=true)] private static extern IntPtr OpenInputDesktop(uint flags,[MarshalAs(UnmanagedType.Bool)] bool inherit,uint access);
+    [DllImport("user32.dll",SetLastError=true)] private static extern bool CloseDesktop(IntPtr desktop);
+    [DllImport("user32.dll",SetLastError=true,CharSet=CharSet.Unicode,ExactSpelling=true)] private static extern bool GetUserObjectInformationW(IntPtr desktop,int index,IntPtr buffer,uint bytes,out uint needed);
+    [StructLayout(LayoutKind.Sequential)] private struct GuiThreadInfo {
+      public uint Size,Flags;
+      public IntPtr Active,Focus,Capture,MenuOwner,MoveSize,Caret;
+      public Rect CaretRect;
+    }
+    [DllImport("user32.dll",SetLastError=true)] private static extern bool GetGUIThreadInfo(uint thread,ref GuiThreadInfo info);
+    private static bool? GuiFlag(uint? flags,uint mask){return flags.HasValue?(bool?)((flags.Value&mask)!=0):null;}
+    private static string GuiFlagsJson(uint? flags){
+      return "{\"raw\":"+(flags.HasValue?flags.Value.ToString(System.Globalization.CultureInfo.InvariantCulture):"null")+
+        ",\"menu\":"+JsonBool(GuiFlag(flags,0x04))+",\"moveSize\":"+JsonBool(GuiFlag(flags,0x02))+
+        ",\"systemMenu\":"+JsonBool(GuiFlag(flags,0x08))+",\"popupMenu\":"+JsonBool(GuiFlag(flags,0x10))+"}";
+    }
+    private static string ForegroundDiagnostic(){
+      var window=GetForegroundWindow();uint process=0;uint thread=window==IntPtr.Zero?0:GetWindowThreadProcessId(window,out process);
+      uint? flags=null;int? error=null;
+      if(thread!=0){
+        var info=new GuiThreadInfo();info.Size=(uint)Marshal.SizeOf(typeof(GuiThreadInfo));
+        if(GetGUIThreadInfo(thread,ref info)){flags=info.Flags;error=0;}else error=Marshal.GetLastWin32Error();
+      }
+      bool stable=GetForegroundWindow()==window;
+      return "{\"hwnd\":"+Number(window.ToInt64())+",\"pid\":"+Number(process)+",\"threadId\":"+Number(thread)+
+        ",\"unchangedDuringQuery\":"+JsonBool(stable)+",\"guiError\":"+(error.HasValue?error.Value.ToString(System.Globalization.CultureInfo.InvariantCulture):"null")+
+        ",\"flags\":"+GuiFlagsJson(flags)+"}";
+    }
+    private sealed class DesktopState {
+      public string Name;
+      public bool? ReceivesInput;
+      public int HandleError,NameError,InputError;
+      public string Json(){return "{\"name\":"+JsonString(Name)+",\"receivesInput\":"+JsonBool(ReceivesInput)+",\"handleError\":"+Number(HandleError)+",\"nameError\":"+Number(NameError)+",\"inputError\":"+Number(InputError)+"}";}
+    }
+    private static string Number(long value){return value.ToString(System.Globalization.CultureInfo.InvariantCulture);}
+    private static string JsonString(string value){
+      if(value==null)return "null";
+      var text=new StringBuilder("\"");
+      foreach(char c in value){
+        if(c=='\\'||c=='\"'){text.Append('\\');text.Append(c);}
+        else if(c<32||c>126){text.Append("\\u");text.Append(((int)c).ToString("x4",System.Globalization.CultureInfo.InvariantCulture));}
+        else text.Append(c);
+      }
+      return text.Append('\"').ToString();
+    }
+    private static string JsonBool(bool? value){return value.HasValue?(value.Value?"true":"false"):"null";}
+    private static DesktopState ReadDesktopState(IntPtr desktop,int handleError){
+      var result=new DesktopState();
+      if(desktop==IntPtr.Zero){result.HandleError=handleError==0?-1:handleError;return result;}
+      // Fixed 1024-byte Unicode name buffer; no variable-size native allocation
+      // from an external length. UOI_IO is a Win32 BOOL, exactly four bytes.
+      IntPtr buffer=Marshal.AllocHGlobal(1024);
+      try{
+        uint needed;
+        if(GetUserObjectInformationW(desktop,2,buffer,1024,out needed)){
+          if(needed<2||needed>1024||(needed%2)!=0)result.NameError=-1;
+          else {
+            var name=Marshal.PtrToStringUni(buffer,(int)(needed/2));
+            if(name.Length==0||name[name.Length-1]!='\0'||name.IndexOf('\0')!=name.Length-1)result.NameError=-1;
+            else result.Name=name.Substring(0,name.Length-1);
+          }
+        }else result.NameError=Marshal.GetLastWin32Error();
+        if(GetUserObjectInformationW(desktop,6,buffer,4,out needed)){
+          int value=Marshal.ReadInt32(buffer);
+          if(needed!=4||(value!=0&&value!=1))result.InputError=-1;
+          else result.ReceivesInput=value!=0;
+        }else result.InputError=Marshal.GetLastWin32Error();
+      }finally{Marshal.FreeHGlobal(buffer);}
+      return result;
+    }
+    private static string DesktopRelation(string helperName,bool? helperInput,int helperError,string inputName,bool? input,int inputError){
+      if(inputError!=0)return "INPUT_DESKTOP_UNAVAILABLE";
+      if(helperError!=0||helperName==null||inputName==null||!helperInput.HasValue||!input.HasValue)return "DESKTOP_METADATA_INCOMPLETE";
+      if(!input.Value)return "INPUT_DESKTOP_CHANGED_OR_DISCONNECTED";
+      if(helperInput.Value&&String.Equals(helperName,inputName,StringComparison.OrdinalIgnoreCase))return "HELPER_DESKTOP_RECEIVES_INPUT";
+      return "HELPER_DESKTOP_NOT_INPUT_DESKTOP";
+    }
+    private static string DesktopDiagnostic(){
+      // This runs only on an already-refused, exact-process warning path.
+      // No desktop switch, activation, credential operation, hooks or access edits.
+      var helperHandle=GetThreadDesktop(GetCurrentThreadId());
+      var helper=ReadDesktopState(helperHandle,helperHandle==IntPtr.Zero?Marshal.GetLastWin32Error():0);
+      var inputHandle=OpenInputDesktop(0,false,0x0001); // DESKTOP_READOBJECTS only.
+      DesktopState input;bool? closed=null;int closeError=0;
+      try{input=ReadDesktopState(inputHandle,inputHandle==IntPtr.Zero?Marshal.GetLastWin32Error():0);}
+      finally{
+        // Never close the borrowed handle returned by GetThreadDesktop.
+        if(inputHandle!=IntPtr.Zero){closed=CloseDesktop(inputHandle);if(closed==false)closeError=Marshal.GetLastWin32Error();}
+      }
+      string relation=DesktopRelation(helper.Name,helper.ReceivesInput,helper.HandleError|helper.NameError|helper.InputError,input.Name,input.ReceivesInput,input.HandleError|input.NameError|input.InputError);
+      return "{\"foreground\":"+ForegroundDiagnostic()+",\"relation\":"+JsonString(relation)+",\"helperDesktop\":"+helper.Json()+",\"inputDesktop\":"+input.Json()+",\"inputHandleClosed\":"+JsonBool(closed)+",\"closeError\":"+Number(closeError)+",\"interpretation\":\"Metadata only; access denial does not establish a locked desktop.\"}";
+    }
+    private static string SafeDesktopDiagnostic(){
+      try{return DesktopDiagnostic();}
+      catch(Exception e){return "{\"probeError\":"+JsonString(e.GetType().Name)+"}";}
+    }
     private static uint Pid(IntPtr h){uint p;GetWindowThreadProcessId(h,out p);return p;}
     private static string Text(IntPtr h){var s=new StringBuilder(2048);GetWindowTextW(h,s,s.Capacity);return s.ToString();}
     private static string Class(IntPtr h){var s=new StringBuilder(256);GetClassNameW(h,s,s.Capacity);return s.ToString();}
@@ -123,7 +220,7 @@ namespace OpenNavX {
       var now=Find(pid);
       if(!SameNotice(now,expected))throw new InvalidOperationException("Warning captured fields changed: "+ChangedFields(now,expected)+".");
       var foreground=GetForegroundWindow();
-      if(foreground!=new IntPtr(now.Modal))throw new InvalidOperationException("Warning foreground differs: expected HWND "+now.Modal+" PID "+pid+"; observed HWND "+foreground.ToInt64()+" PID "+Pid(foreground)+". No capture or acknowledgement.");
+      if(foreground!=new IntPtr(now.Modal))throw new InvalidOperationException("Warning foreground differs: expected HWND "+now.Modal+" PID "+pid+"; observed HWND "+foreground.ToInt64()+" PID "+Pid(foreground)+". No capture or acknowledgement. desktopDiagnostic="+SafeDesktopDiagnostic());
       bool found=false;foreach(var h in Windows(IntPtr.Zero)){
         if(h==new IntPtr(now.Modal)){found=true;break;}
         if(IsWindowVisible(h)&&!IsIconic(h)&&Intersects(now.Bounds,Bounds(h)))throw new InvalidOperationException("Warning is obscured; no capture or acknowledgement.");

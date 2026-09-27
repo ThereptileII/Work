@@ -9,6 +9,24 @@ concurrency:
   group: opennav-boat-tools-${{ github.ref }}
   cancel-in-progress: true
 jobs:
+  native-desktop-diagnostics:
+    name: Read-only native warning desktop diagnostics
+    runs-on: windows-2022
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+      - name: Compile exact warning helper and probe read-only desktop APIs without launching an application
+        run: |
+          New-Item -ItemType Directory -Path opennav-x/evidence/local/desktop-diagnostics -Force | Out-Null
+          Get-FileHash opennav-x/tools/boat/StockWelcomeNative.cs, opennav-x/tools/boat/StockWelcome.ps1, opennav-x/tools/boat/test-stock-welcome.ps1 -Algorithm SHA256 | Select-Object Path, Hash | ConvertTo-Json | Set-Content -Encoding UTF8 opennav-x/evidence/local/desktop-diagnostics/helper-hashes.json
+          & "$env:WINDIR/System32/WindowsPowerShell/v1.0/powershell.exe" -NoProfile -File opennav-x/tools/boat/test-stock-welcome.ps1 2>&1 | Tee-Object -FilePath opennav-x/evidence/local/desktop-diagnostics/native-read-only-tests.log
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: development-desktop-diagnostics-${{ github.sha }}
+          path: opennav-x/evidence/local/desktop-diagnostics
+          if-no-files-found: error
   native-restart-transport:
     name: Native Win32 commissioning restart process boundary
     runs-on: windows-2022
