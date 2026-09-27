@@ -1,5 +1,7 @@
 #include "integration/OpenCPNIntegration.h"
 #include "integration/BuildFeatures.h"
+#include "integration/DashboardPresentation.h"
+#include "integration/DashboardPresentationApi.h"
 #include "adapters/Autopilot.h"
 #include "integration/OpenCPNPilot.h"
 #include "adapters/Radar.h"
@@ -701,6 +703,7 @@ void Attach(MyFrame& frame, wxAuiManager& manager, wxFileConfig& config) {
 }
 
 void AfterDeferredInitialization() {
+  integration::EnableDashboardPresentation();
   if (shell && host) {
     for (auto *window : host->GetChildren())
       if (auto *canvas = dynamic_cast<ChartCanvas *>(window))
@@ -742,8 +745,10 @@ bool IsTransientXNavPane(const wxWindow *window) {
 }
 
 bool LoadPersistentPerspective(wxAuiManager &manager, const wxString &perspective) {
-  if (shell && IsXNav() && shell->OwnsManager(manager))
+  if (shell && IsXNav() && shell->OwnsManager(manager)) {
+    OpenNavDashboardLayoutScope dashboard_layout;
     return shell->LoadPersistentPerspective(perspective);
+  }
   return manager.LoadPerspective(perspective, false);
 }
 
@@ -831,6 +836,7 @@ bool PrepareClose(wxFileConfig& config) {
   marine.reset();
   selected_navigation = {};
   route_progress.reset();
+  integration::FinishDashboardPresentation();
   shell.reset();
   commissioning.reset();
   settings.reset();

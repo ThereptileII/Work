@@ -17,7 +17,7 @@ namespace OpenNavX {
     [StructLayout(LayoutKind.Sequential)] private struct Point {public int X,Y;}
     [StructLayout(LayoutKind.Sequential)] private struct MonitorInfo {public uint Size;public Rect Monitor,Work;public uint Flags;}
     [StructLayout(LayoutKind.Sequential)] private struct MenuBarInfo {public uint Size;public Rect Bar;public IntPtr Menu,Window;public uint Focus;}
-    public sealed class WindowInfo {public long Handle;public int ProcessId;public uint Dpi;public Rect Bounds;public string Mode;}
+    public sealed class WindowInfo {public long Handle;public int ProcessId;public uint Dpi;public Rect Bounds;public string Mode;public int OwnedLegacyWindowCount;}
     public sealed class ModeCommand {public long Target;public uint MenuId;public string Caption,Method,FromMode,ToMode;}
     private delegate bool EnumCallback(IntPtr h,IntPtr p);
     [DllImport("user32.dll")] private static extern bool EnumWindows(EnumCallback callback,IntPtr parameter);
@@ -33,6 +33,7 @@ namespace OpenNavX {
     [DllImport("user32.dll")] private static extern bool IsZoomed(IntPtr h);
     [DllImport("user32.dll")] private static extern bool ShowWindow(IntPtr h,int command);
     [DllImport("user32.dll")] private static extern IntPtr GetParent(IntPtr h);
+    [DllImport("user32.dll")] private static extern IntPtr GetWindow(IntPtr h,uint relation);
     [DllImport("user32.dll")] private static extern bool IsChild(IntPtr parent,IntPtr child);
     [DllImport("user32.dll")] private static extern bool GetWindowRect(IntPtr h,out Rect rect);
     [DllImport("user32.dll")] private static extern bool GetClientRect(IntPtr h,out Rect rect);
@@ -76,12 +77,36 @@ namespace OpenNavX {
       return new WindowInfo{Handle=h.ToInt64(),ProcessId=pid,Dpi=dpi,Bounds=r,Mode=mode};
     }
     public static void Foreground(IntPtr h,int pid,string mode) {if(Owner(h)!=(uint)pid || Text(h)!=Title(mode) || IsIconic(h))throw new InvalidOperationException("Mode frame unavailable.");SetForegroundWindow(h);Thread.Sleep(250);AssertFrame(h,pid,mode);}
+    private static bool OwnedLegacyWindow(IntPtr frame,int pid,IntPtr other,string mode) {
+      // Floating plugin panes are part of the normal Legacy workspace. The
+      // process/owner chain, not a caption, establishes application ownership.
+      // Modal windows still fail AssertFrame's enabled/foreground checks.
+      if(mode!="--legacy" || Owner(other)!=(uint)pid)return false;
+      var seen=new HashSet<IntPtr>();
+      for(int depth=0;depth<8;depth++) {
+        if(!seen.Add(other))return false;
+        other=GetWindow(other,4); // GW_OWNER; parent/child membership is not ownership.
+        if(other==frame)return true;
+        if(other==IntPtr.Zero || Owner(other)!=(uint)pid)return false;
+      }
+      return false;
+    }
     public static void AssertCapture(IntPtr h,int pid,WindowInfo expected) {
       var current=AssertFrame(h,pid,expected.Mode);
       if(current.Bounds.Left!=expected.Bounds.Left || current.Bounds.Top!=expected.Bounds.Top || current.Bounds.Right!=expected.Bounds.Right || current.Bounds.Bottom!=expected.Bounds.Bottom || current.Dpi!=expected.Dpi)throw new InvalidOperationException("Capture geometry changed.");
-      bool obscured=false;Exception failure=null;
-      EnumWindows(delegate(IntPtr other,IntPtr p){try{if(other==h)return false;if(IsWindowVisible(other) && !IsIconic(other) && Intersects(expected.Bounds,Bounds(other)))obscured=true;return true;}catch(Exception e){failure=e;return false;}},IntPtr.Zero);
+      bool obscured=false;int owned=0;Exception failure=null;
+      EnumWindows(delegate(IntPtr other,IntPtr p){try{if(other==h)return false;if(IsWindowVisible(other) && !IsIconic(other) && Intersects(expected.Bounds,Bounds(other))) {
+        if(OwnedLegacyWindow(h,pid,other,expected.Mode))owned++;else obscured=true;
+      }return true;}catch(Exception e){failure=e;return false;}},IntPtr.Zero);
       if(failure!=null || obscured)throw new InvalidOperationException("Another window obscures the capture.",failure);
+      expected.OwnedLegacyWindowCount=owned;
+    }
+    private static void AssertMenuUnobscured(IntPtr frame,Rect bar) {
+      bool obscured=false;Exception failure=null;
+      EnumWindows(delegate(IntPtr other,IntPtr p){try{if(other==frame)return false;
+        if(IsWindowVisible(other) && !IsIconic(other) && Intersects(bar,Bounds(other)))obscured=true;
+        return true;}catch(Exception e){failure=e;return false;}},IntPtr.Zero);
+      if(failure!=null || obscured)throw new InvalidOperationException("The actual mode menu is obscured; no command sent.",failure);
     }
     public static void Resize1280x800(IntPtr h,int pid,string mode) {
       AssertFrame(h,pid,mode);var m=Monitor(h);if(m.Work.Width<1280 || m.Work.Height<800)throw new InvalidOperationException("Physical 1280x800 does not fit current work area; display is not changed.");
@@ -105,6 +130,7 @@ namespace OpenNavX {
       if(from!="--xnav") {
         var menu=GetMenu(frame);var bar=new MenuBarInfo();bar.Size=(uint)Marshal.SizeOf(typeof(MenuBarInfo));
         if(menu==IntPtr.Zero || !GetMenuBarInfo(frame,-3,0,ref bar) || bar.Menu!=menu || !Contains(root.Bounds,bar.Bar))throw new InvalidOperationException("Visible native mode menu required; no hidden command invocation.");
+        AssertMenuUnobscured(frame,bar.Bar);
         var ids=new List<uint>();FindMenu(menu,caption,ids,0);if(ids.Count!=1)throw new InvalidOperationException("Unique enabled source-reviewed mode menu required.");
         return new ModeCommand{Target=frame.ToInt64(),MenuId=ids[0],Caption=caption,FromMode=from,ToMode=to,Method="Exact current native menu caption resolved to its own command"};
       }

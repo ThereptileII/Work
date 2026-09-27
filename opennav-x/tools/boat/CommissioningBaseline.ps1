@@ -53,12 +53,12 @@ function Get-CommissioningOutputBytes([byte[]]$Bytes) {
   if((Get-CommissioningHash (Get-CommissioningInputBytes $result)) -cne (Get-CommissioningHash $Bytes)){throw 'Direction reversal did not preserve the entire migrated profile.'}
   return ,$result
 }
-function Assert-CommissioningMigrationReview([string]$Before,[string]$After,$Review,[datetime]$At=[datetime]::UtcNow) {
+function Assert-CommissioningMigrationReview([string]$Before,[string]$After,$Review,[datetime]$At=[datetime]::UtcNow,[string]$InstalledBasemapDefault='') {
   if($Review.schema -ne 1 -or $Review.owner -cne 'OpenNavX.ProfileMigrationReview.1' -or
      $Review.beforeSha256 -cne (Get-Digest $Before) -or $Review.afterSha256 -cne (Get-Digest $After)){throw 'Exact independently reviewed pre/post startup profiles required.'}
   $reviewed=[datetime]::Parse($Review.reviewedUtc).ToUniversalTime()
   if($reviewed -gt $At -or ($At-$reviewed).TotalHours -gt 24){throw 'Migration review expired at the exact adoption preparation time.'}
-  Assert-CommissioningRestoreIni $Before $After
+  Assert-CommissioningProtectedValues (Read-ProfileForAudit $Before) (Read-ProfileForAudit $After) $InstalledBasemapDefault
   $beforeValues=Read-ProfileForAudit $Before;$afterValues=Read-ProfileForAudit $After
   $changes=@(Get-CommissioningIniDiff $Before $After);$entries=@($Review.changes)
   if($changes.Count -gt 512 -or $entries.Count -ne $changes.Count){throw 'Every changed key requires one exact migration review.'}
@@ -75,6 +75,10 @@ function Assert-CommissioningMigrationReview([string]$Before,[string]$After,$Rev
     if($policy.ContainsKey($change.key)) {
       Assert-RestartScalar $policy[$change.key] $change.after
       if($null -ne $change.before){Assert-RestartScalar $policy[$change.key] $change.before}
+    } elseif($change.key -ceq 'Directories/BaseShapefileDir') {
+      if (-not $InstalledBasemapDefault -or $change.before -cne '' -or $change.after -cne $InstalledBasemapDefault) {
+        throw 'Only a separately proven installed stock default may fill the existing empty basemap preference.'
+      }
     } elseif($change.key -ceq 'Settings/ConfigVersionString') {
       # CMake OCPN_CI_BUILD: +<commit>, or -<release>+<commit>. The exact
       # official 7c6547 binary contains 5.12.4-0+37fd0cd / 2025-09-12;
@@ -163,7 +167,9 @@ function Read-CommissioningAdoptionProposal([string]$Workspace,[string]$Path,[st
      (Get-CommissioningHash (Get-CommissioningOutputBytes ([IO.File]::ReadAllBytes($saved)))) -cne $proposal.baselineSha256){throw 'Adoption bytes no longer match the reviewed exact one-byte reversal.'}
   $reviewData=Read-Record $review
   if($reviewData.parentPreparedSha256 -cne $ParentHash -or $reviewData.inspectionSha256 -cne $proposal.inspectionSha256){throw 'Migration approval belongs to another exact transaction or inspection.'}
-  $null=Assert-CommissioningMigrationReview (Join-Path $parentDir 'input-only.ini') $saved $reviewData ([datetime]::Parse($proposal.createdUtc).ToUniversalTime())
+  $resourceProof=if($inspection.PSObject.Properties['resourceProof']){$inspection.resourceProof}else{$null}
+  $default=Assert-CommissioningResourceProof $parent $resourceProof
+  $null=Assert-CommissioningMigrationReview (Join-Path $parentDir 'input-only.ini') $saved $reviewData ([datetime]::Parse($proposal.createdUtc).ToUniversalTime()) $default
   return [pscustomobject]@{value=$proposal;directory=$directory;baseline=$baseline;sha256=$Hash}
 }
 

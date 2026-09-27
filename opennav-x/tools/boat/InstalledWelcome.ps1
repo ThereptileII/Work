@@ -2,7 +2,7 @@
 # warning. This never accepts a stock, portable or restarted-child launch receipt.
 . (Join-Path $PSScriptRoot 'Commissioning.ps1')
 . (Join-Path $PSScriptRoot 'StockWelcome.ps1')
-$script:InstalledWelcomeFiles=@('InstalledWelcome.ps1','StockWelcome.ps1','StockWelcomeNative.cs','RestartWindowNative.cs')
+$script:InstalledWelcomeFiles=@('InstalledWelcome.ps1','InstalledResourceReview.ps1','StockWelcome.ps1','StockWelcomeNative.cs','RestartWindowNative.cs')
 function Assert-InstalledWelcomePolicy($Job,$Launch,$Request,$Installed,$Build,[datetime]$Now) {
   if ($Job.action -cne 'ReviewInstalledWelcome' -or $Job.reviewAction -cnotin @('InspectWelcome','FocusWelcome','AcknowledgeWelcome') -or
       $Job.processId -le 0 -or $Job.buildCommit -cnotmatch '^[a-f0-9]{40}$' -or $Job.generation -cnotmatch '^[a-f0-9]{32}$' -or
@@ -76,7 +76,13 @@ function Assert-InstalledWelcomeRuntime($Config,$Installed,$Launch,[string]$Work
     if ($at -gt [datetime]::UtcNow -or ([datetime]::UtcNow-$at).TotalHours -gt 24) { throw 'Read-only source/profile review expired.' }
   }
   Assert-InputOnlyProfile (Read-ProfileForAudit (Join-Path $profile 'opencpn.ini'))
-  Assert-CommissioningRestoreIni (Join-Path $cold 'input-only.ini') (Join-Path $profile 'opencpn.ini')
+  $before=Read-ProfileForAudit (Join-Path $cold 'input-only.ini')
+  $after=Read-ProfileForAudit (Join-Path $profile 'opencpn.ini')
+  $default=''
+  if ($before['Directories/BaseShapefileDir'] -cne $after['Directories/BaseShapefileDir']) {
+    $default=Get-InstalledCommissioningBasemap $Installed
+  }
+  Assert-CommissioningProtectedValues $before $after $default
 }
 function Read-InstalledWelcome($Job) {
   if (@($Job.helperFiles).Count -ne $script:InstalledWelcomeFiles.Count) { throw 'Exact warning helper inventory required.' }

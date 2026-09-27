@@ -1,0 +1,33 @@
+name: OpenNav X Beta 2 accepted test package
+on:
+  push:
+    branches: [opennav-x-beta2-handoff]
+    paths:
+      - opennav-x/release/beta2-acceptance.json
+      - opennav-x/tools/beta2_handoff.py
+      - opennav-x/tools/test-beta2-handoff.py
+      - .github/workflows/opennav-beta2-handoff.yml
+permissions:
+  contents: read
+  actions: read
+jobs:
+  handoff:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+      - name: Test immutable package and acceptance refusal boundaries
+        run: python3 opennav-x/tools/test-beta2-handoff.py -v
+      - name: Verify completed CI and recorded boat acceptance; retain exact tested bytes
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: >-
+          python3 opennav-x/tools/beta2_handoff.py
+          --acceptance opennav-x/release/beta2-acceptance.json
+          --output accepted-beta2
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: OpenNavX-Beta2-Windows
+          path: accepted-beta2
+          if-no-files-found: error
+          retention-days: 90

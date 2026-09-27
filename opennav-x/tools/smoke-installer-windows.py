@@ -68,17 +68,37 @@ def maintenance(action):
     command=subprocess.list2cmdline([str(maintain)])+' /S /ACTION='+action+' /REPORT="'+str(out)+'"'
     result=subprocess.run(command,timeout=120)
     assert result.returncode==0
-    # NSIS relocates the uninstaller; the durable report proves completion.
-    deadline=time.monotonic()+120
+    # The bootstrap exits before the relocated uninstaller. The full matrix
+    # retains many genuine generations; verified cleanup took 152 seconds on
+    # native CI. Keep a bounded wait for its actual durable result, not the
+    # bootstrap's exit. A timeout must never be reported as successful removal.
+    completion_started=time.monotonic()
+    completion_limit=600 if action=='Uninstall' else 120
+    deadline=completion_started+completion_limit
     while not out.exists() and time.monotonic()<deadline:time.sleep(.2)
-    assert out.exists(), 'Native maintenance did not publish its report'
+    assert out.exists(), 'Native maintenance did not publish its report within '+str(completion_limit)+' seconds'
     result=json.loads(out.read_text(encoding='utf-8-sig'))
     if action!='Diagnostics':assert result['status']=='passed',result
+    report['operations'][-1]['completion_seconds']=round(time.monotonic()-completion_started,3)
     return result
+
+@contextmanager
+def installer_fixture():
+    directory=tempfile.mkdtemp(prefix='OpenNav installer ')
+    try:
+        yield directory
+    except BaseException:
+        # A relocated maintenance child may still be running after a failed
+        # wait. Preserve its stock/profile inputs for evidence and completion;
+        # deleting them here manufactured a secondary missing-stock failure.
+        report['retained_failed_fixture']=directory
+        raise
+    else:
+        shutil.rmtree(directory,ignore_errors=True)
 
 def maintenance_wizard():
     maintain=generation()/'Maintain.exe';expected_hash=sha(maintain)
-    before=sha(INSTALL/'state.json')
+    before=inventory(INSTALL)
     wrapper=subprocess.Popen([str(maintain)])
     frame,pid=ui.wait_window('OpenNav X Maintenance',timeout=45);owned.add(pid)
     monitor=ui.monitor_process(pid)
@@ -92,8 +112,14 @@ def maintenance_wizard():
     get_item=ui.declare(ui.user,'GetDlgItem',ctypes.c_void_p,ctypes.c_void_p,ctypes.c_int)
     cancel=get_item(frame,2);assert cancel and ui.IsWindowEnabled(cancel)
     ui.SendMessageW(cancel,0x00F5,0,0)
-    ui.wait_clean_exit(monitor);owned.discard(pid)
-    assert wrapper.wait(timeout=30)==0 and sha(INSTALL/'state.json')==before
+    # NSIS documents 1 for the explicit Cancel button before execution. This
+    # applies only to this identified maintenance page, never a completed
+    # installation/repair, application close or unobserved process exit.
+    # https://nsis.sourceforge.io/Docs/AppendixD.html#D.1
+    assert ui.wait_exit_code(monitor)==1, 'The reviewed maintenance Cancel must report user cancellation'
+    owned.discard(pid)
+    assert pid!=wrapper.pid and wrapper.wait(timeout=30)==0, 'NSIS relocation wrapper failed'
+    assert inventory(INSTALL)==before, 'Cancelling maintenance changed the installation'
     check('Owned maintenance wizard has version-neutral title, Repair default and non-mutating Cancel')
 
 def package_engine(directory, stock, expected=1):
@@ -283,7 +309,7 @@ try:
         os.environ.pop('OPENNAV_ARTIFACT_TOKEN',None)  # Do not pass it to any tested application.
     # On failure a live executable can still lock the disposable stock tree.
     # Preserve the original test exception; owned processes are stopped below.
-    with tempfile.TemporaryDirectory(prefix='OpenNav installer ',ignore_cleanup_errors=True) as temp:
+    with installer_fixture() as temp:
         temporary=Path(temp);stock=temporary/'stock OpenCPN';stock.mkdir()
         official=temporary/'official-setup.exe'
         urllib.request.urlretrieve('https://github.com/OpenCPN/OpenCPN/releases/download/Release_5.12.4/opencpn_5.12.4-0%2B3720.37fd0cd_setup.exe',official)
@@ -435,6 +461,7 @@ try:
         assert inventory(profile)==before and inventory(stock)==stock_before
         check('Genuine Beta 1 to Beta 2 interrupted group migration recovers from committed state and removes only old owned links')
         maintenance_wizard()
+        assert inventory(profile)==before and inventory(stock)==stock_before
         first=state()['current'];exe=generation()/'app/opencpn.exe'
         assert not (exe.parent/'OPENNAV_PORTABLE_PREVIEW').exists()
         p,h,rgb=launch(exe,['--xnav'],'OpenNav X / OpenCPN',profile,'installer-01-xnav',welcome_transition='beta1-to-candidate')

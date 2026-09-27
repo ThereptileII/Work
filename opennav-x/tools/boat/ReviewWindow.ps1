@@ -1,7 +1,30 @@
 # Read-only vessel/UI review. No application launch or equipment commands.
 . (Join-Path $PSScriptRoot 'Common.ps1')
 function Get-WindowReviewActions {
-  return @('Capture','Resize1280x800','Menu','Navigation','Routes','Waypoints','AIS','Instruments','Advice','PilotView','Anchor','Settings','Sources','Display','ToggleFullscreen','ToggleOrientation','Route','Energy','Diagnostics','System','Alerts','Escape','CyclePalette','ZoomIn','ZoomOut','Center','PageUp','PageDown','SelectFirstVisibleWaypoint','SelectFirstVisibleAis')
+  return @('Capture','Resize1280x800','Menu','Navigation','Routes','Waypoints','AIS','Instruments','Advice','PilotView','Anchor','Settings','Sources','Display','ToggleFullscreen','ToggleOrientation','Route','Energy','Diagnostics','System','Alerts','Escape','CyclePalette','ZoomIn','ZoomOut','Center','PanRight','PageUp','PageDown','SelectFirstVisibleWaypoint','SelectFirstVisibleAis')
+}
+function Convert-WindowReviewChart($Data,[string]$Commit,[datetime]$Written,[datetime]$Now) {
+  if($Commit -cnotmatch '^[a-f0-9]{40}$' -or $Written -gt $Now -or ($Now-$Written).TotalSeconds -gt 5 -or $Data.build_commit -cne $Commit -or
+     $Data.build_purpose -cne 'INSTALLED PRODUCT' -or $Data.data_mode -cne 'OPENCPN selected navigation' -or
+     $Data.ui_page -cne 'Navigation' -or $Data.runtime.display.route_creation_active -isnot [bool] -or
+     $Data.runtime.display.route_creation_active -ne $false){throw 'Fresh installed Navigation observation without route creation required for pan.'}
+  $c=$Data.runtime.display.chart_region
+  foreach($name in @('x','y','width','height')) {
+    if($c.$name -isnot [int] -and $c.$name -isnot [long]){throw 'Chart geometry must use exact integer pixels.'}
+    if($c.$name -lt 0 -or $c.$name -gt 32768){throw 'Unexpected chart pixel bounds.'}
+  }
+  if($c.width -lt 100 -or $c.height -lt 100){throw 'Chart is not visible.'}
+  Initialize-WindowReviewNative
+  $rect=New-Object OpenNavX.ReviewWindowNative+Rect
+  $rect.Left=$c.x;$rect.Top=$c.y;$rect.Right=$c.x+$c.width;$rect.Bottom=$c.y+$c.height
+  return $rect
+}
+function Invoke-WindowReviewPan([IntPtr]$Frame,[int]$ProcessId,[string]$Workspace,[string]$Commit) {
+  $config=Get-Target $Workspace
+  $path=Assert-LocalPath (Join-Path $config.profileDirectory 'opennav-diagnostics.json')
+  $written=(Get-Item -LiteralPath $path).LastWriteTimeUtc;$data=Read-Record $path
+  $chart=Convert-WindowReviewChart $data $Commit $written ([datetime]::UtcNow)
+  [OpenNavX.ReviewWindowNative]::PanRight($Frame,$ProcessId,$chart)
 }
 function Assert-WindowReviewPolicy($Job,$Installed,$Build,$Launch,$Request,[datetime]$Now) {
   if($Job.action -cne 'ReviewWindow' -or $Job.reviewAction -cnotin (Get-WindowReviewActions)){throw 'Unsupported read-only window action.'}
@@ -94,6 +117,7 @@ function Invoke-WindowReview($Job) {
         'Capture' {}
         'Resize1280x800' {[OpenNavX.ReviewWindowNative]::Resize1280x800($frame,$process.Id)}
         'Escape' {[OpenNavX.ReviewWindowNative]::Escape($frame,$process.Id)}
+        'PanRight' {Invoke-WindowReviewPan $frame $process.Id $Job.workspace $Job.buildCommit}
         {$_ -cin @('SelectFirstVisibleWaypoint','SelectFirstVisibleAis')} {$selection=[OpenNavX.ReviewWindowNative]::SelectRow($frame,$process.Id,$Job.reviewAction)}
         default {[OpenNavX.ReviewWindowNative]::Click($frame,$process.Id,$Job.reviewAction)}
       }
@@ -102,7 +126,7 @@ function Invoke-WindowReview($Job) {
         buildCommit=$Job.buildCommit;generation=$Job.generation;executableSha256=$Job.executableSha256;launchResultSha256=$Job.launchResultSha256;
         reviewHelperSha256=$Job.reviewHelperSha256;nativeHelperSha256=$Job.nativeHelperSha256;
         before=$before;after=$after;nativeWindow=$after.window;selection=$selection;pages=@([OpenNavX.ReviewWindowNative]::VisiblePageLabels($frame));
-        inputMethod='Targeted reviewed HWND mouse messages or focused-HWND Escape; no global keyboard/mouse input';readOnly=$true;actionsSent=$(if($Job.reviewAction -ceq 'Capture'){0}else{1});review='Private native pixels require human per-step visual review; no feature acceptance inferred.'}
+        inputMethod='Targeted reviewed HWND mouse messages, focused-HWND Escape or exact-canvas Right arrow; no global input';readOnly=$true;actionsSent=$(if($Job.reviewAction -ceq 'Capture'){0}else{1});review='Private native pixels require human per-step visual review; no feature acceptance inferred.'}
     } finally {$null=[OpenNavX.ReviewWindowNative]::SetThreadDpiAwarenessContext($oldDpi)}
   } finally {$process.Dispose()}
 }

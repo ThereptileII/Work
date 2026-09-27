@@ -1,0 +1,40 @@
+{
+  "schema": 1,
+  "scope": "Historical Linux development result; not replacement or Windows acceptance",
+  "commit": "edd8da0a4bd386fbb2dbd249289b9f09eeae8dc3",
+  "run": "https://github.com/ThereptileII/Work/actions/runs/36295867893",
+  "jobId": 108554518303,
+  "artifact": {
+    "id": 10927406618,
+    "sha256": "3275d8648767fadd9ff681a59bbc27514542700371e0534679f612594eed8f11",
+    "bytes": 13631483,
+    "verification": "API metadata, upload log, independent download, ZIP CRC"
+  },
+  "integratedCtest": {
+    "passed": 110,
+    "failed": 0
+  },
+  "fixtureFreeCtest": {
+    "passed": 110,
+    "failed": 0
+  },
+  "trip": {
+    "status": "passed",
+    "requested_seconds": 10800,
+    "release_duration": true,
+    "authority": "Linux development",
+    "scope": "Actual process, DEMO vessel/route/AIS, software chart, repeated UI and dropout recovery; no hardware commands",
+    "samples": 1080,
+    "build_commit": "edd8da0a4bd386fbb2dbd249289b9f09eeae8dc3",
+    "startup_seconds": 4.123895984000001,
+    "elapsed_seconds": 10800.194592120999,
+    "cpu_percent_one_core": 2.2461977708739256,
+    "maximum_page_observation_seconds": 1.2522927460004212,
+    "ui_observation_limit_seconds": 8,
+    "route_progress_samples": 676
+  },
+  "tripRecordSha256": "4c5824665c90ab7b356aebfc1027c1c4c98a675acd501ac6359f6ce7e2b34c77",
+  "actions": 540,
+  "acceptedRelease": false,
+  "limitation": "Windows installer and DPI failed on this historical commit. Current 7827acb needs its own complete gates."
+}

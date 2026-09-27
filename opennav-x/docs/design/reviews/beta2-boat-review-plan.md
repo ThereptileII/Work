@@ -1,8 +1,8 @@
 # Beta 2 boat display review plan
 
 Planning record, not boat acceptance. Product candidate:
-`8e780edc34f68abd693a5d5f6aecdb3ba05a75c4`,
-[CI 36287991989](https://github.com/ThereptileII/Work/actions/runs/36287991989).
+`7827acb7c8b0d708285bd26a4c48d545dd64d139`,
+[CI 36304661282](https://github.com/ThereptileII/Work/actions/runs/36304661282).
 Record the actual installed commit, executable hash, generation and tool hashes
 in every private review; this candidate's qualification is still pending.
 
@@ -25,7 +25,7 @@ $review = @{
   Workspace = $BoatWorkspace
   LaunchResult = $AuditedLaunchResult
   ExpectedLaunchSha256 = $AuditedLaunchSha256
-  ExpectedCommit = '8e780edc34f68abd693a5d5f6aecdb3ba05a75c4'
+  ExpectedCommit = '7827acb7c8b0d708285bd26a4c48d545dd64d139'
 }
 & (Join-Path $ReviewedScriptDirectory 'review-window.ps1') @review -Action Capture
 & (Join-Path $ReviewedScriptDirectory 'review-window.ps1') @review -Action Navigation
@@ -89,7 +89,11 @@ this fixed helper; a different screen is not a substitute.
    scales. Use `Center` only with verified current position and inspect whether
    the existing ownship/follow behavior is clear. `ToggleOrientation` uses the
    current North/Course control only; capture its actual label/chart result.
-   Pan and chart-selection gestures still require their own bounded review.
+   `PanRight` is separately qualified in tooling `07da8e3`: require a fresh
+   installed Navigation record, then review movement and retained chart content
+   before using Center. It sends one native screen-right key pair, not a
+   geographic course or equipment command. Chart-selection gestures and physical
+   touch dragging remain separate gaps.
    [Native display-tool qualification](../../installer/display-window-review.md)
    is separate from actual application and boat acceptance.
 4. With a naturally occurring alert, repeat Navigation/System/Instruments and
@@ -141,4 +145,10 @@ against [user flows](../user-flows.md), [components](../component-inventory.md)
 and [boat feedback](../../feedback/boat-beta1-feedback.md). The existing
 `test-review-window.ps1` passed **145 policy/source/compilation checks** locally.
 It executed no Win32 UI actions, accessed no boat, and sent no hardware commands.
-No product code or action allowlist was changed for this plan.
+The current boat tools `07da8e3` passed all nine native jobs, 20 display
+cases and 14 mode cases. The local policy/compilation checks pass 178 window
+checks, 133 completed-restart window checks and 17 copied-dependency checks.
+All nine downloaded artifact identities and ZIP integrity were verified. These
+qualify the review tools, not the actual boat screens. The qualified guarded
+restart tools must use a newly prepared session and actual Arm/Collect receipts;
+the first 8e780 cold launch cannot be retroactively made into such a session.

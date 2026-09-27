@@ -6,6 +6,8 @@ SmartNav advice. All model changes and human commands pass through integration
 or adapter interfaces; no protocol parsing or navigation math belongs here.
 
 Theme tokens, `XNavButton`, `XNavDataValue`, `XNavScroll` and sheets are shared
-across primary workflows. Demo and replay remain explicit. Source loss never
-turns into a valid zero or renewed age. Operational alerts stay visible above
-center pages. See `docs/display-beta-contract.md` for night/touch boundaries.
+across primary workflows. The installed Beta 2 build excludes Demo and test
+fixtures; deterministic sources and replay remain in the separate test build.
+Source loss never turns into a valid zero or renewed age. Operational alerts stay
+visible above center pages. See `docs/display-beta-contract.md` for night/touch
+boundaries.

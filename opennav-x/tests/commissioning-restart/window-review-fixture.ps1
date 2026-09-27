@@ -7,7 +7,7 @@ if(-not $root.StartsWith([IO.Path]::GetTempPath(),[StringComparison]::OrdinalIgn
    [IO.Path]::GetFileName($root) -cnotmatch '^opennav-mode-window-[a-f0-9]{32}$'){throw 'Only a unique temporary native fixture is allowed.'}
 $record=Get-Content -LiteralPath (Join-Path $root 'fixture.json') -Raw|ConvertFrom-Json
 if($record.owner -cne 'OpenNavX.NativeModeWindow.Fixture.1' -or $record.mode -cnotin @('--xnav','--legacy','--safe-mode') -or
-   $record.case -cnotin @('normal','ambiguous','replace-on-down','hidden-menu','modal')){throw 'Unknown fixed fixture.'}
+   $record.case -cnotin @('normal','ambiguous','replace-on-down','hidden-menu','modal','owned-pane','owned-menu','unowned-pane')){throw 'Unknown fixed fixture.'}
 Add-Type -AssemblyName System.Windows.Forms
 Add-Type -TypeDefinition @'
 using System;
@@ -49,9 +49,17 @@ if($record.mode -ceq '--xnav') {
 }
 $started=[datetime]::UtcNow;$timer=New-Object Windows.Forms.Timer;$timer.Interval=100
 $timer.Add_Tick({if((Test-Path -LiteralPath (Join-Path $root 'release')) -or ([datetime]::UtcNow-$started).TotalSeconds -gt 25){$form.Close()}})
+$script:pane=$null
 $form.Add_Shown({
+ if($record.case -cin @('owned-pane','owned-menu','unowned-pane')) {
+  $script:pane=New-Object Windows.Forms.Form;$script:pane.Text='Inert instrument pane';$script:pane.FormBorderStyle='FixedToolWindow'
+  $script:pane.StartPosition='Manual';$script:pane.Size=New-Object Drawing.Size(240,160)
+  $script:pane.Location=New-Object Drawing.Point(($form.Left+60),($form.Top+$(if($record.case -ceq 'owned-menu'){25}else{160})))
+  if($record.case -ceq 'unowned-pane'){$script:pane.TopMost=$true;$script:pane.Show()}else{$script:pane.Show($form)}
+  $form.Activate()
+ }
  [IO.File]::WriteAllText((Join-Path $root 'ready.json'),(@{pid=$PID;handle=$form.Handle.ToInt64();createdFiletime=[Diagnostics.Process]::GetCurrentProcess().StartTime.ToUniversalTime().ToFileTimeUtc().ToString()}|ConvertTo-Json -Compress))
  $timer.Start()
  if($record.case -ceq 'modal'){$dialog=New-Object Windows.Forms.Form;$dialog.Text='Unexpected modal';$dialog.Size=New-Object Drawing.Size(300,200);$null=$dialog.ShowDialog($form);$dialog.Dispose()}
 })
-try{[Windows.Forms.Application]::Run($form)}finally{$timer.Dispose();$form.Dispose()}
+try{[Windows.Forms.Application]::Run($form)}finally{if($script:pane){$script:pane.Dispose()};$timer.Dispose();$form.Dispose()}

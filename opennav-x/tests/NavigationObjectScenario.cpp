@@ -3,6 +3,7 @@
 #include "integration/NavigationObjects.h"
 #include "integration/NavigationActions.h"
 #include "integration/OpenCPNIntegration.h"
+#include "integration/DashboardPresentation.h"
 #include "model/ais_decoder.h"
 #include "model/ais_target_data.h"
 #include "model/comm_drv_registry.h"
@@ -572,6 +573,57 @@ void ObjectScenarioStep(const vessel::Navigation &selected) {
       if (++late_connection_ticks < 3) return;
       CheckPrimaryHints();
       CheckLiveTextLayout();
+      {
+        auto* other = new wxFrame(nullptr, wxID_ANY, "Presentation lifetime check");
+        wxAuiManager manager(other);
+        auto* visible = new wxPanel(other);
+        auto* hidden = new wxPanel(other);
+        auto* docked = new wxPanel(other);
+        auto* foreign = new wxPanel(other);
+        manager.AddPane(visible, wxAuiPaneInfo().Name("localized-owner-1").Caption("user caption").Float().FloatingPosition(37, 81).FloatingSize(220, 180));
+        manager.AddPane(hidden, wxAuiPaneInfo().Name("localized-owner-2").Float().FloatingPosition(51, 93).Hide());
+        manager.AddPane(docked, wxAuiPaneInfo().Name("localized-owner-3").Right().Row(2).Position(3).BestSize(160, 220));
+        manager.AddPane(foreign, wxAuiPaneInfo().Name("Dashboard").Left());
+        manager.Update();
+        const auto saved = manager.SavePerspective();
+        DashboardPresentation presentation(manager);
+        presentation.Register(visible); presentation.Register(hidden); presentation.Register(docked);
+        presentation.Enable(true);
+        Check(!manager.GetPane(visible).IsShown() && !manager.GetPane(hidden).IsShown() &&
+              !manager.GetPane(docked).IsShown() && manager.GetPane(foreign).IsShown(),
+              "Only registered Dashboard windows are suppressed; names cannot grant ownership");
+        presentation.BeginLayout(); presentation.BeginLayout();
+        Check(manager.GetPane(visible).IsShown() && !manager.GetPane(hidden).IsShown() && manager.GetPane(docked).IsShown(),
+              "Plugin callbacks see original visible/hidden and docked state");
+        presentation.EndLayout();
+        Check(manager.GetPane(visible).IsShown(), "Nested callback cannot resuppress outer layout");
+        presentation.EndLayout();
+        Check(!manager.GetPane(visible).IsShown(), "Outer layout completion reapplies temporary presentation");
+        auto* late = new wxPanel(other);
+        manager.AddPane(late, wxAuiPaneInfo().Name("late pane").Float());
+        presentation.Register(late); presentation.Register(late);
+        presentation.BeginLayout();
+        Check(manager.GetPane(visible).IsShown() && manager.GetPane(late).IsShown(),
+              "Late registration and duplicate registration do not overwrite preserved state");
+        manager.GetPane(visible).FloatingPosition(65, 98);
+        presentation.EndLayout();
+        presentation.BeginLayout();
+        Check(manager.GetPane(visible).floating_pos == wxPoint(65, 98), "Explicit plugin layout change survives suppression");
+        manager.DetachPane(late); delete late;  // Weak ownership: no DeInit callback required.
+        manager.LoadPerspective(saved, false);
+        presentation.EndLayout();
+        presentation.Enable(false);
+        Check(manager.SavePerspective() == saved, "Exact original floating/docked workspace restored before persistence");
+        presentation.Enable(true);
+        manager.DetachPane(hidden); presentation.Unregister(hidden); delete hidden;
+        auto* recreated = new wxPanel(other);
+        manager.AddPane(recreated, wxAuiPaneInfo().Name("localized-owner-2").Float().Hide());
+        presentation.Register(recreated); presentation.Enable(false);
+        Check(!manager.GetPane(recreated).IsShown() && manager.GetPane(visible).IsShown(),
+              "Deleted/recreated pane keeps its own visibility instead of an old object's state");
+        manager.UnInit(); other->Destroy();
+        Record("Dashboard presentation preserves ownership, nesting, reload, geometry and deleted/recreated window lifetime");
+      }
       {
         // Same pane name is not ownership. A foreign manager must retain
         // ordinary wxAUI behavior while the real XNav shell is active.

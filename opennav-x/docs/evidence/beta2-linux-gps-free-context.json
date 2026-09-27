@@ -1,0 +1,55 @@
+{
+  "status": "passed",
+  "authority": "Linux development only",
+  "test": "GPS-free chart-center context opens after one physical mouse pair; unavailable Go To remains disabled; Escape closes; IPC exit zero",
+  "controls": [
+    {
+      "height": 52,
+      "y": 209,
+      "visible": true,
+      "width": 152,
+      "x": 807,
+      "label": "Go to",
+      "enabled": false
+    },
+    {
+      "height": 52,
+      "y": 209,
+      "visible": true,
+      "width": 152,
+      "x": 967,
+      "label": "Waypoint",
+      "enabled": true
+    },
+    {
+      "height": 52,
+      "y": 269,
+      "visible": true,
+      "width": 152,
+      "x": 807,
+      "label": "Measure",
+      "enabled": true
+    },
+    {
+      "height": 52,
+      "y": 269,
+      "visible": true,
+      "width": 152,
+      "x": 967,
+      "label": "Info",
+      "enabled": true
+    }
+  ],
+  "productCommit": "663a0b1e4683d1ac5bffb48b603d0548c56d6b11",
+  "executableSha256": "e33a0060346a18961df3708efee1b669d8a01566d79551d2da6fc6a7e8f89cc7",
+  "image": {
+    "localPath": "evidence/local/gps-free-context/context.png",
+    "sha256": "f0f5377a735bbd676e15ac1d41be659379d1c6057b902e5a27385534bf260bfb",
+    "pixels": [
+      1280,
+      800
+    ],
+    "review": "Chart coastline present, no input and all four rail states unavailable, compact card has disabled Go to and enabled Waypoint/Measure/Info; no Windows or boat acceptance."
+  },
+  "nativeWindowsRequired": true
+}

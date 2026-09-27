@@ -213,9 +213,31 @@ def system_geometry(scale):
     return checked
 
 def chart_context_geometry(scale):
-    display=data()['runtime']['display'];chart_area=display['chart_region']
-    assert ui.SetCursorPos(chart_area['x']+chart_area['width']//2,
-                           chart_area['y']+chart_area['height']//2)
+    display=current_layout_observation()['runtime']['display'];chart_area=display['chart_region']
+    # Native mouse input targets the foreground desktop, unlike PrintWindow
+    # and SendMessage-based controls. After installer maintenance, the first
+    # chart gesture must establish and verify its actual destination. Never
+    # retry a click to conceal a missing card or route input to another window.
+    foreground=ui.declare(ui.user,'GetForegroundWindow',ui.W.HWND)
+    ui.SetForegroundWindow(handle)
+    deadline=time.monotonic()+2
+    while foreground()!=handle and time.monotonic()<deadline:time.sleep(.05)
+    assert foreground()==handle,'Chart context requires the actual main foreground window'
+    point=ui.W.POINT(chart_area['x']+chart_area['width']//2,
+                     chart_area['y']+chart_area['height']//2)
+    assert ui.SetCursorPos(point.x,point.y)
+    time.sleep(.15)
+    hit=ui.WindowFromPoint(point);owner=ui.W.DWORD()
+    ui.GetWindowThreadProcessId(hit,C.byref(owner));rect=bounds(hit)
+    expected=(chart_area['x'],chart_area['y'],chart_area['x']+chart_area['width'],
+              chart_area['y']+chart_area['height'])
+    observed=(rect.left,rect.top,rect.right,rect.bottom)
+    input_evidence={'percent':scale,'point':[point.x,point.y],
+              'main_is_foreground':foreground()==handle,'target_pid':owner.value,
+              'expected_pid':pid,'chart_bounds':expected,'native_hit_bounds':observed}
+    report.setdefault('chart_context_inputs',[]).append(input_evidence)
+    assert input_evidence['main_is_foreground'] and owner.value==pid and observed==expected, \
+        ('Native chart gesture is obscured or its geometry changed',input_evidence)
     ui.MouseEvent(8,0,0,0,0);time.sleep(.08);ui.MouseEvent(16,0,0,0,0)
     labels={'Go to','Waypoint','Measure','Info'}
     def controls(record):
@@ -308,7 +330,13 @@ try:
                            ('Export diagnostic bundle','Field diagnostic bundle')]:
             ui.click_text(pid,'System');ui.click_text(pid,label);data(lambda d:d['ui_page']==page)
             entry['night_surfaces'].append(chart.dark_surface(capture(f'dpi-{scale}-night-'+page.lower().replace(' ','-').replace('&','and')),page))
-        ui.click_text(pid,'System');ui.click_text(pid,'Diagnostics');data(lambda d:d['ui_page']=='Diagnostics')
+        ui.click_text(pid,'System');ui.click_text(pid,'Diagnostics')
+        # The page identity is published before its first native paint computes
+        # the scroll extent. Wait for that same page's settled geometry; the
+        # later touch assertions still require actual viewport movement.
+        data(lambda d:d['ui_page']=='Diagnostics' and
+             d['runtime']['display']['page_scroll_px']==0 and
+             d['runtime']['display']['can_scroll_down'])
         entry['night_surfaces'].append(chart.dark_surface(capture(f'dpi-{scale}-night-diagnostics'),'Diagnostics'))
         # The data-heavy diagnostics page must be navigable by actual touch.
         assert data()['runtime']['display']['can_scroll_down']
@@ -388,7 +416,15 @@ try:
 except Exception as error:
     report['result']='failed';report['error']=repr(error)
     try:
+        foreground=ui.declare(ui.user,'GetForegroundWindow',ui.W.HWND)()
+        foreground_owner=ui.W.DWORD()
+        ui.GetWindowThreadProcessId(foreground,C.byref(foreground_owner))
+        report['failure_foreground']={'is_main':foreground==handle,
+            'pid':foreground_owner.value,'title':ui.text(foreground)}
         capture(f'dpi-{scale}-failure')
+        screen=evidence/f'dpi-{scale}-failure-visible.png'
+        ui.capture(handle,screen,resize=False,screen_pixels=True)
+        report['screenshots'].append(screen.name)
         report['failure_diagnostics']=data(timeout=2)
         geometry=[]
         for control,label in ui.children(handle):

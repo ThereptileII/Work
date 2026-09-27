@@ -41,7 +41,14 @@ to a new directory; upload that directory on success or failure. The script does
 not alter desktop resolution and a successful run proves configuration
 normalization only, not hardware acceleration, chart rendering or performance.
 
-Native results are pending. Only after exact artifact review should a separate
-narrow policy proposal be considered, based on observed values and unchanged
-version/expert/input/source controls. The boat's actual next closed-profile diff
-still requires inspection.
+The first isolated native run, tooling `ca3a0c7`, failed this environment gate:
+expert-absent startup and measured normal exit0 passed, and64→128 was observed,
+but the official capability utility disabled OpenGL. The expert-false/true
+controls were not executed after that failure. The artifact is hash/size/CRC
+verified; see [the scoped failed evidence](../evidence/beta2-stock-gpu-budget-ca3a0c.json).
+No reverse-budget policy or hardware-rendering acceptance follows from it.
+The nine previously qualified maintenance jobs remain in the standard tools
+workflow. This experimental preserved-OpenGL job is not a release gate and its
+failure remains outstanding; its fixture is retained for an appropriate GPU
+environment. No accepted functional test was removed. The boat's actual next
+closed-profile diff still requires inspection.

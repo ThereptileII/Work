@@ -1,0 +1,136 @@
+{
+  "schema": 1,
+  "scope": "Boat visual/restart tooling only; no product release or real boat mode-transition acceptance",
+  "commit": "3552a3ce2c2d78b8c46ec2a94639cd62d060bee6",
+  "localCommit": "b404e01281d4d2a108e091beef68f39ec997a3f4",
+  "mappedBlobsAndModes": 697,
+  "tree": "2e49d1c33a45ccce815bb26003d5f7d7877a9553",
+  "run": "https://github.com/ThereptileII/Work/actions/runs/36301703492",
+  "jobs": [
+    {
+      "id": 108570415938,
+      "name": "Disposable native Windows tooling checks",
+      "result": "success"
+    },
+    {
+      "id": 108570415995,
+      "name": "Actual official OpenCPN portable upgrade caution (sv)",
+      "result": "success"
+    },
+    {
+      "id": 108570416002,
+      "name": "Actual COM shortcut migration (x64)",
+      "result": "success"
+    },
+    {
+      "id": 108570416015,
+      "name": "Native Win32 commissioning restart process boundary",
+      "result": "success"
+    },
+    {
+      "id": 108570416017,
+      "name": "Actual official OpenCPN portable upgrade caution (en_US)",
+      "result": "success"
+    },
+    {
+      "id": 108570416024,
+      "name": "Actual COM shortcut migration (x86)",
+      "result": "success"
+    },
+    {
+      "id": 108570416117,
+      "name": "Read-only native warning desktop diagnostics",
+      "result": "success"
+    },
+    {
+      "id": 108570800645,
+      "name": "Actual restart broker with disposable marker-only installation",
+      "result": "success"
+    },
+    {
+      "id": 108570800647,
+      "name": "Fixed guarded mode UI actions on disposable native windows",
+      "result": "success"
+    }
+  ],
+  "nativeModeWindowCases": 14,
+  "legacyOwnedPaneResult": {
+    "captureAccepted": true,
+    "ownedPaneCount": 1,
+    "modeCallbacks": 1
+  },
+  "refusals": {
+    "ownedPaneOverMenu": 0,
+    "sameProcessUnownedPane": 0,
+    "ownedPaneInXNav": 0,
+    "ownedPaneInSafe": 0
+  },
+  "refusalMeaning": "Number of command callbacks; all four cases refused with zero commands.",
+  "artifacts": [
+    {
+      "id": 10926385725,
+      "name": "development-installer-shortcuts-x86-3552a3ce2c2d78b8c46ec2a94639cd62d060bee6",
+      "sha256": "c4ee93ae10bbc711ff4e740ddcb1e17bf987131b772fb47a32e0165f0a425a8c",
+      "bytes": 1268,
+      "apiUploadDownloadAndZipVerified": true
+    },
+    {
+      "id": 10926215851,
+      "name": "development-boat-tooling-3552a3ce2c2d78b8c46ec2a94639cd62d060bee6",
+      "sha256": "f1613da973f5c7f03b579d3894813b9a7cfe17f5e107b56cd4abe6fa26f0ccbf",
+      "bytes": 25219,
+      "apiUploadDownloadAndZipVerified": true
+    },
+    {
+      "id": 10926031245,
+      "name": "development-commissioning-broker-3552a3ce2c2d78b8c46ec2a94639cd62d060bee6",
+      "sha256": "1f7449f6a065251da964203b2db9ee9e5d0e8d9a34c088a3a3bd5263e0a12e8a",
+      "bytes": 16720,
+      "apiUploadDownloadAndZipVerified": true
+    },
+    {
+      "id": 10925797391,
+      "name": "development-restart-window-3552a3ce2c2d78b8c46ec2a94639cd62d060bee6",
+      "sha256": "7ead8f2ee24e9e95d3c772703fd355660ee94dcb6df4e869279e2105a3e241a1",
+      "bytes": 18120,
+      "apiUploadDownloadAndZipVerified": true
+    },
+    {
+      "id": 10925736351,
+      "name": "development-stock-welcome-en_US-3552a3ce2c2d78b8c46ec2a94639cd62d060bee6",
+      "sha256": "8645937058f81134e6470e1d34d7e72e2e0549262a7b594e197dca52609728e2",
+      "bytes": 474116,
+      "apiUploadDownloadAndZipVerified": true
+    },
+    {
+      "id": 10925547743,
+      "name": "development-commissioning-restart-3552a3ce2c2d78b8c46ec2a94639cd62d060bee6",
+      "sha256": "42365f2961f4d41f6df74a54e0e6eae1124fc5b8310266ce21f8020aced74207",
+      "bytes": 6204,
+      "apiUploadDownloadAndZipVerified": true
+    },
+    {
+      "id": 10925507895,
+      "name": "development-installer-shortcuts-x64-3552a3ce2c2d78b8c46ec2a94639cd62d060bee6",
+      "sha256": "6dece567e81b4e5118158a6239c61d68d89d0fcd38e8aef573ac9af7c53a1117",
+      "bytes": 1267,
+      "apiUploadDownloadAndZipVerified": true
+    },
+    {
+      "id": 10925453018,
+      "name": "development-stock-welcome-sv-3552a3ce2c2d78b8c46ec2a94639cd62d060bee6",
+      "sha256": "09aa8cc4d0cc0a3a936ec039947da30d40b30459f49ab7257bfb819c1b5fdc7e",
+      "bytes": 501705,
+      "apiUploadDownloadAndZipVerified": true
+    },
+    {
+      "id": 10925393286,
+      "name": "development-desktop-diagnostics-3552a3ce2c2d78b8c46ec2a94639cd62d060bee6",
+      "sha256": "ebc558a93bc845625f106ae1a069c23ed18be233d0c291cec27660a95d0ef3b6",
+      "bytes": 3272,
+      "apiUploadDownloadAndZipVerified": true
+    }
+  ],
+  "physicalCommands": 0,
+  "boatApplicationExecuted": false
+}

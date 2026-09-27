@@ -1,7 +1,7 @@
 name: OpenNav X Beta 2
 on:
   push:
-    branches: [opennav-x]
+    branches: [opennav-x, opennav-x-beta2-ui, opennav-x-beta2-dpi, opennav-x-beta2-refinement]
     paths: ['opennav-x/**', '.github/workflows/opennav-baseline.yml']
   workflow_dispatch:
 permissions:
@@ -60,6 +60,8 @@ jobs:
         run: python opennav-x/tools/verify-distribution-inputs.py
       - name: Verify corresponding-source archive structure and integrity
         run: python opennav-x/tools/test-source-package.py
+      - name: Verify relocated installer completion and failed fixture retention
+        run: python opennav-x/tools/test-installer-completion.py
       - name: Verify the exact boat translator parser for host interoperability tests
         run: python opennav-x/tools/fetch-st4000-oracle.py opennav-x/build/st4000-firmware
       - name: Prepare reviewed boat producer expiry and actual codec oracle
@@ -152,7 +154,7 @@ jobs:
           New-Item -ItemType Directory -Path opennav-x/evidence/local/restart-window -Force | Out-Null
           & "$env:WINDIR/System32/WindowsPowerShell/v1.0/powershell.exe" -NoProfile -ExecutionPolicy Bypass -File opennav-x/tools/test-restart-window-native.ps1 -Evidence opennav-x/evidence/local/restart-window 2>&1 | Tee-Object -FilePath opennav-x/evidence/local/restart-window/native-window-tests.log
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
-      - name: Exercise fixed display controls against fifteen native marker-window cases
+      - name: Exercise fixed display controls against native marker-window cases
         run: |
           New-Item -ItemType Directory -Path opennav-x/evidence/local/display-window -Force | Out-Null
           & "$env:WINDIR/System32/WindowsPowerShell/v1.0/powershell.exe" -NoProfile -ExecutionPolicy Bypass -File opennav-x/tools/test-display-window-native.ps1 -Evidence opennav-x/evidence/local/display-window 2>&1 | Tee-Object -FilePath opennav-x/evidence/local/display-window/native-display-tests.log

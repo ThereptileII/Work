@@ -3,7 +3,7 @@
 . (Join-Path $PSScriptRoot 'Preparation.ps1')
 . (Join-Path $PSScriptRoot 'RestartCommissioningPolicy.ps1')
 $script:RestartOwner='OpenNavX.ReadOnlyRestart.Session.1'
-$script:RestartDependencies=@('Common.ps1','InteractiveJob.ps1','run-mode.ps1','Preparation.ps1','Commissioning.ps1','CommissioningBaseline.ps1','verify-commissioning-launch.ps1','RestartCommissioningPolicy.ps1','RestartAuiPersistence.ps1','RestartDashboardPersistence.ps1','RestartCommissioning.ps1','RestartCommissioningNative.cs','RestartCommissioningPrepare.ps1','RestartCommissioningBroker.ps1','RestartCommissioningArm.ps1')
+$script:RestartDependencies=@('Common.ps1','InteractiveJob.ps1','run-mode.ps1','Preparation.ps1','Commissioning.ps1','InstalledResourceReview.ps1','CommissioningBaseline.ps1','verify-commissioning-launch.ps1','RestartCommissioningPolicy.ps1','RestartAuiPersistence.ps1','RestartDashboardPersistence.ps1','RestartCommissioning.ps1','RestartCommissioningNative.cs','RestartCommissioningPrepare.ps1','RestartCommissioningBroker.ps1','RestartCommissioningArm.ps1')
 function Initialize-RestartNative {
   if(-not ('OpenNavX.RestartCommissioningNative' -as [type])){Add-Type -Path (Join-Path $PSScriptRoot 'RestartCommissioningNative.cs')}
 }
@@ -192,18 +192,33 @@ function Save-RestartWire([string]$Path,[byte[]]$Bytes) {
   try{$stream.Write($Bytes,0,$Bytes.Length);$stream.Flush($true)}finally{$stream.Dispose()}
 }
 
+function Get-RestartPluginReviewKey([string]$Path) {
+  # Pure identity syntax only. The commissioning inventory separately verifies
+  # canonical local paths, redirects, file bytes and the complete directory tree.
+  if($Path -cnotmatch '^[A-Za-z]:\\(?:[^\\/:*?"<>|\x00-\x1f]+\\)*[^\\/:*?"<>|\x00-\x1f]+_pi\.dll$' -or
+     @($Path.Split('\') | Where-Object {$_ -ceq '.' -or $_ -ceq '..'}).Count){throw 'Exact local plugin review path required.'}
+  return $Path
+}
 function Assert-RestartShutdownReview($Review,$Retained) {
-  if($Review.schema -ne 1 -or $Review.physicalCommands -ne 0 -or @($Review.plugins).Count -ne @($Retained).Count){throw 'Shutdown review must cover every exact retained plugin.'}
+  if($Review.schema -ne 2 -or $Review.physicalCommands -ne 0 -or @($Review.plugins).Count -ne @($Retained).Count){throw 'Schema 2 shutdown review must cover every exact retained plugin path and hash.'}
   $when=[DateTime]::Parse($Review.reviewedUtc).ToUniversalTime()
   if($when -gt [DateTime]::UtcNow -or ([DateTime]::UtcNow-$when).TotalHours -gt 24){throw 'Shutdown source review expired.'}
-  $seen=New-Object 'Collections.Generic.HashSet[string]' ([StringComparer]::Ordinal)
+  $entries=New-Object 'Collections.Generic.Dictionary[string,object]' ([StringComparer]::OrdinalIgnoreCase)
+  foreach($entry in @($Review.plugins)) {
+    $key=Get-RestartPluginReviewKey $entry.path
+    if($entries.ContainsKey($key) -or $entry.sha256 -cnotmatch '^[a-f0-9]{64}$'){throw 'Duplicate or invalid shutdown DLL identity.'}
+    $entries.Add($key,$entry)
+  }
+  $seen=New-Object 'Collections.Generic.HashSet[string]' ([StringComparer]::OrdinalIgnoreCase)
   foreach($plugin in @($Retained)) {
-    $name=[IO.Path]::GetFileNameWithoutExtension($plugin.path)
-    if(-not $seen.Add($name)){throw 'Retained plugin basename is ambiguous.'}
-    $entry=@($Review.plugins | Where-Object {$_.plugin -ceq $name})
-    if($entry.Count -ne 1 -or $entry[0].revision -cne $plugin.sourceRevision -or $entry[0].revision -cnotmatch '^[a-f0-9]{40}$' -or
-       $entry[0].sourceSha256 -cnotmatch '^[a-f0-9]{64}$' -or -not $entry[0].shutdownBoundary){throw 'Retained shutdown source identity/review differs.'}
-    if($name -ceq 'o-charts_pi' -and (-not $entry[0].limitation -or $entry[0].streamSourceSha256 -cnotmatch '^[a-f0-9]{64}$')){throw 'The closed vendor/helper trust boundary must be retained explicitly.'}
+    $key=Get-RestartPluginReviewKey $plugin.path
+    $name=[IO.Path]::GetFileNameWithoutExtension($key.Replace('\','/'))
+    if(-not $seen.Add($key) -or -not $entries.ContainsKey($key)){throw 'Retained plugin path is duplicated or unreviewed.'}
+    $entry=$entries[$key]
+    if($entry.sha256 -cne $plugin.sha256 -or $entry.plugin -cne $name -or
+       $entry.revision -cne $plugin.sourceRevision -or $entry.revision -cnotmatch '^[a-f0-9]{40}$' -or
+       $entry.sourceSha256 -cnotmatch '^[a-f0-9]{64}$' -or -not $entry.shutdownBoundary){throw 'Retained shutdown DLL/source identity/review differs.'}
+    if($name -ceq 'o-charts_pi' -and (-not $entry.limitation -or $entry.streamSourceSha256 -cnotmatch '^[a-f0-9]{64}$')){throw 'The closed vendor/helper trust boundary must be retained explicitly.'}
   }
 }
 function Get-RestartLaunchBinding([string]$Record,[string]$Hash,$Installed,$Config,$Environment) {

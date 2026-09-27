@@ -1,0 +1,96 @@
+{
+  "schema": 1,
+  "classification": "Native boat restoration tooling qualification only; not a product release",
+  "commit": "1439b5b2dac669090b5de4ef956eaffa0f42c542",
+  "localCommit": "6f6701de3ebee1d5f2bc72363a535fef82647565",
+  "tree": "a5896eaf575d145205d06022c78ca2a0d487e804",
+  "mappedBlobsAndModes": 694,
+  "ciRun": "https://github.com/ThereptileII/Work/actions/runs/36299584290",
+  "jobsPassed": 9,
+  "linuxPortable": {
+    "baselineAdoption": 112,
+    "copiedDependencyClosure": 17,
+    "installedRuntime": 114
+  },
+  "native": {
+    "baselineAdoption": 163,
+    "installedRuntime": 114,
+    "copiedDependencyClosure": 17,
+    "actualBroker": 51,
+    "actualPrepareArm": 47,
+    "navigationDatabaseTests": 11
+  },
+  "artifacts": [
+    {
+      "id": 10925315626,
+      "name": "development-commissioning-restart-1439b5b2dac669090b5de4ef956eaffa0f42c542",
+      "sha256": "5d644ce9d94a60edd9cb556451629bd9d7f25d927499a1e5a83d9fc5c5fb990b",
+      "bytes": 6210,
+      "zipCrc": true
+    },
+    {
+      "id": 10924904106,
+      "name": "development-boat-tooling-1439b5b2dac669090b5de4ef956eaffa0f42c542",
+      "sha256": "79f2278919aeb68e24401d390eb64bb062eb7bc9b9ea1624aedbfdffb0a3ac05",
+      "bytes": 25221,
+      "zipCrc": true
+    },
+    {
+      "id": 10924804307,
+      "name": "development-desktop-diagnostics-1439b5b2dac669090b5de4ef956eaffa0f42c542",
+      "sha256": "3b69be84a519c4ef259f76f27a8c9e53d2857bed60f8c86e5f3a925e4050c68a",
+      "bytes": 3270,
+      "zipCrc": true
+    },
+    {
+      "id": 10924774471,
+      "name": "development-stock-welcome-en_US-1439b5b2dac669090b5de4ef956eaffa0f42c542",
+      "sha256": "85ec07f2a2fcb4a21b4dde7489e98f8d65ff74144c064003adaac01bb9cba926",
+      "bytes": 474209,
+      "zipCrc": true
+    },
+    {
+      "id": 10924719543,
+      "name": "development-stock-welcome-sv-1439b5b2dac669090b5de4ef956eaffa0f42c542",
+      "sha256": "b07a4a78331c6451049924085c5d94d8fa3b870ef1bbfc8edbf10e2e32fd6f96",
+      "bytes": 501903,
+      "zipCrc": true
+    },
+    {
+      "id": 10924699547,
+      "name": "development-installer-shortcuts-x64-1439b5b2dac669090b5de4ef956eaffa0f42c542",
+      "sha256": "10826853ecaec406c117e68473003bd6708351ce7e3da39a3cdf381b7b6fd790",
+      "bytes": 1265,
+      "zipCrc": true
+    },
+    {
+      "id": 10924393891,
+      "name": "development-commissioning-broker-1439b5b2dac669090b5de4ef956eaffa0f42c542",
+      "sha256": "50277905907572f8c376e685662d8dae65f8831a721c5e6b6936dc08c8224b9c",
+      "bytes": 15829,
+      "zipCrc": true
+    },
+    {
+      "id": 10924283939,
+      "name": "development-restart-window-1439b5b2dac669090b5de4ef956eaffa0f42c542",
+      "sha256": "d88a960a6250af5747a648184450e6cd2bb7be9c028901507f07034314836bd6",
+      "bytes": 17533,
+      "zipCrc": true
+    },
+    {
+      "id": 10924168873,
+      "name": "development-installer-shortcuts-x86-1439b5b2dac669090b5de4ef956eaffa0f42c542",
+      "sha256": "502792f64e4438ddd21cb263a28f262bb3f995c724f58d2610783075d211882e",
+      "bytes": 1267,
+      "zipCrc": true
+    }
+  ],
+  "verification": [
+    "API identity",
+    "upload digest and artifact ID",
+    "download digest and size",
+    "ZIP CRC and safe paths"
+  ],
+  "physicalOutput": false,
+  "boatAcceptance": false
+}

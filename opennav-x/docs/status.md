@@ -10,9 +10,157 @@ executables from the installed product, refines shared visual components and
 navigation workflows, and adds repeatable boat deployment and maintenance tools.
 The accepted Beta 1 results below remain historical evidence, not Beta 2 gates.
 
-### Current candidate
+### Current boat review tools
 
-`a896fb5c5fa935b5daa757087ebedc4cd531c1d3` is the current full candidate,
+`07da8e307f174646f4fd2722ec84bda511f4bcfd`,
+[run 36303832915](https://github.com/ThereptileII/Work/actions/runs/36303832915),
+passed all nine native jobs. Downloaded artifacts match upload/API SHA-256,
+sizes and ZIP integrity. Twenty display cases and fourteen mode cases pass;
+chart pan records one exact key pair or refuses without input. Source checkout
+on the boat passed at 07:51 UTC, with no application change or launch. Actual
+boat pan, touch and replacement visual acceptance remain open.
+
+### Native review refinement
+
+The retained native screenshots exposed an ambiguous autopilot subtitle. It now
+states “Manual commands require feedback confirmation”; this is a requirement,
+not a claim that feedback has arrived. [Twenty-screen review](design/reviews/beta2-native-9f592-review.md).
+The fixture-free Linux build/install passes. A separate complete CI candidate
+will qualify this refinement together with the bounded chart-pan tooling.
+No release or boat visual acceptance is claimed from the old screenshots.
+
+### Current replacement validation
+
+`7827acb7c8b0d708285bd26a4c48d545dd64d139` is running the complete gates in
+[CI 36304661282](https://github.com/ThereptileII/Work/actions/runs/36304661282).
+All **699** mapped blobs/modes match local
+`a883f3fb7c729773e323d9234d95dda1f62fcacf`; the pinned baseline and eight unrelated
+repository blobs are preserved. It includes the autopilot wording refinement,
+bounded chart-pan tools and the DPI harness correction below. No replacement
+product has been deployed.
+
+`608756` remains historical diagnostic work. Its harness added an input-evidence
+dictionary which source review subsequently found shadowed the screenshot Path;
+it cannot qualify the release. The corrected function reaches screenshot and
+touch-close checks at all scales with a mocked native boundary, but only the
+new native run can establish actual Windows behavior. The short-lived `7ac585`
+run was superseded by `7827acb` through normal same-branch CI cancellation.
+
+The preceding `9f592` application candidate is **not accepted**: its full Windows
+installer matrix passed, but the DPI gate timed out on its first physical chart
+context gesture. The bounded harness repair verifies the foreground process and
+actual chart HWND geometry before sending one click; no retry, scale or layout
+assertion is removed. [Failure and replacement scope](installer/beta2-maintenance-cancel-and-dpi-readiness.md).
+The boat remains unchanged while the new exact-commit run proceeds.
+
+### Previous full candidate (Windows DPI failed)
+
+`9f59209914f57ff97af7e184b201752b8f422f0a` ran the native gates in
+[CI 36299835767](https://github.com/ThereptileII/Work/actions/runs/36299835767).
+All 694 mapped blobs/modes match local `c72061459b8c532c0f6aaad5846c61a52231ea2f`.
+It includes the exact upstream manager type, Dashboard presentation, maintenance
+Cancel/paint-readiness harness repairs and complete resource-review dependency
+closure. The corrected Linux build and all 27 object-workflow groups pass;
+replacement native UI and release gates remain open. It is not deployed.
+
+The native integrated application build and both **71/71** contract suites now
+pass. Eleven prerequisite artifacts have been independently downloaded and
+checked against their API/upload hashes, byte sizes and ZIP integrity. Linux
+completed its functional/UI checks and entered the three-hour elapsed-time trip
+at 06:45:57 UTC. Windows passed both **102/102** integrated/fixture-free CTest
+runs, all **45** installer lifecycle checks, seven production recovery groups,
+eight actual user-flow groups and software/OpenGL chart/plugin checks. The DPI
+failure withheld the development and release packages; native endurance did not
+start. Downloaded full native evidence matches API/upload SHA-256, size and ZIP
+CRC. The earlier Linux trip continues as historical evidence, not acceptance.
+
+Before the next boat launch, source inspection found that the restart tooling
+rejected separately reviewed stock and bundled DLLs sharing a basename. A
+[per-copy shutdown identity](installer/restart-plugin-copy-identity.md) repair
+passes 309 portable policy checks and 17 copied-dependency checks. Tooling
+candidate `506a70f5c49cf6d9335be31891817bf88ebc120e` is in
+[native run 36301213829](https://github.com/ThereptileII/Work/actions/runs/36301213829),
+matching all 696 mapped blobs/modes at local `b7c916d90bcb4c0c086516e838696a53e9acf194`.
+It does not change the application candidate or cancel its endurance gate.
+That tooling passed all nine native jobs and was checked out on the boat without
+an application change. The subsequent owned-Legacy-window refinement is also
+qualified and is the current source checkout, described below.
+
+The preceding boat tooling was `3552a3ce2c2d78b8c46ec2a94639cd62d060bee6`,
+[run 36301703492](https://github.com/ThereptileII/Work/actions/runs/36301703492).
+All nine native jobs and downloaded/hash-verified artifacts pass. Fourteen
+actual mode-window cases include the preserved floating Legacy instruments;
+obscured menus, foreign/unowned windows and unexpected XNav/Safe overlays remain
+refused. [Scoped evidence](evidence/beta2-legacy-window-review-3552a3.json).
+The boat application is still the closed `8e780` development build. Its current
+904-file profile inventory is recorded privately for independent update checks.
+The 07:16 UTC cold preflight independently rechecked the stock/application,
+INI, navigation database and chart-list hashes: unchanged, no running OpenCPN
+or commissioning transaction, and SSH/Tailscale/RustDesk still running.
+
+The earlier cold restoration used qualified tooling `1439b5b2dac669090b5de4ef956eaffa0f42c542`,
+[run 36299584290](https://github.com/ThereptileII/Work/actions/runs/36299584290).
+All nine jobs and all downloaded/hash-verified artifacts pass, including 163
+native baseline-adoption cases and actual broker/Prepare/Arm checks.
+[Scoped tooling evidence](evidence/beta2-resource-adoption-1439b5.json).
+
+### Superseded Dashboard type candidate
+
+`ee475f0b5dbef6ea9a5ff5778f3238665f47d944` was tested in
+[CI 36298899492](https://github.com/ThereptileII/Work/actions/runs/36298899492).
+All 692 mapped blobs/modes match local `bd6d6511da3a6a3d843b9ef1c20d4eb847d0307e`;
+unrelated repository files and the pinned OpenCPN revision are unchanged.
+It includes the Dashboard presentation refinement and the two scoped harness
+repairs below. Its separate branch preserves the preceding Linux elapsed-time
+run while testing this exact new product. No replacement boat deployment yet.
+
+The native product link failed on the new Dashboard bridge’s incorrectly declared
+layout-manager type. It is corrected to the actual pinned `OCPN_AUIManager`;
+[failed evidence and correction](design/reviews/beta2-plugin-workspace.md).
+No failed build was deployed.
+
+The first installed boat session has closed normally with a retained native
+handle and measured exit **0**. No chart helper remained. The navigation database
+is byte-identical. Four final INI changes have been inspected; a narrow
+[installed resource adoption](installer/beta2-installed-resource-adoption.md)
+check has passed all native tooling gates. The closed transaction is now
+restored: all five quarantined DLLs and the original connection byte are back,
+the four independently reviewed migrations are preserved, and no application
+was launched. [Boat completion record](evidence/beta2-boat-first-xnav-8e780.json).
+
+### Previous full candidate (Windows failed)
+
+`edd8da0a4bd386fbb2dbd249289b9f09eeae8dc3` is the replacement full candidate,
+matching all 680 mapped blobs/modes at local
+`3e0b17dcbb353793a5c135c18774a1e91a6a3b02`, in
+[CI 36295867893](https://github.com/ThereptileII/Work/actions/runs/36295867893).
+It downloads both immutable historical installers before clearing the read-only
+Actions credential. The previous run is superseded after its native installer
+harness failure; its unfinished Linux endurance is not an accepted soak.
+The native integrated and fixture-free builds passed, as did chart/plugin checks.
+The installer exercised genuine historical update/rollback, then the maintenance
+Cancel test incorrectly required exit 0 instead of NSIS's documented user-cancel
+exit 1. The DPI harness read Diagnostics before its first paint established the
+scroll extent. Both failures and narrowly scoped test repairs are recorded in
+[the harness review](installer/beta2-maintenance-cancel-and-dpi-readiness.md).
+The complete Windows gate failed; no replacement release artifact is accepted.
+The same run's Linux gate completed successfully at 08:32 UTC: both 110/110
+CTest suites pass and the trip measured 10,800.19 seconds with 1,080 samples and
+540 UI/dropout actions. Its downloaded evidence matches API/upload SHA-256, size
+and ZIP integrity. [Historical Linux record](evidence/beta2-historical-linux-edd8da0.json).
+This does not qualify the failed Windows candidate or the newer replacement.
+The historical product has not been deployed.
+
+The next local increment suppresses only registered bundled Dashboard panes in
+XNav, restoring their original workspace in Legacy. This follows the actual
+boat observation of large floating Legacy instruments obscuring the chart.
+Linux integrated build, **110/110** CTest cases, **27** wx object groups and both
+software/OpenGL chart cycles pass. Native replacement and boat review are pending.
+[Presentation contract and coverage](design/reviews/beta2-plugin-workspace.md).
+
+### Superseded credential-order candidate
+
+`a896fb5c5fa935b5daa757087ebedc4cd531c1d3` was the previous full candidate,
 matching all 664 mapped blobs/modes at local
 `5dd114c00cf07ceef8b32e7d6ec978e33d5d9e50`, in
 [CI 36292727131](https://github.com/ThereptileII/Work/actions/runs/36292727131).
@@ -55,9 +203,14 @@ palette action and verifies Day/Dusk/Night. This candidate has no accepted
 Windows endurance result. Its Linux elapsed-time run was cancelled with 327
 retained samples and has no accepted endurance result. The hash-verified setup has now completed its first boat installation with
 exit 0. Independent before/after inventories confirm the complete normal profile
-is identical, and stock OpenCPN retains its validated hash. Launch and screen
-review remain pending a new installed plugin/data audit; this development bundle
-is not a qualified release. [Initial installation](evidence/beta2-boat-first-install-8e780.json).
+is identical, and stock OpenCPN retains its validated hash. A fresh installed plugin/data audit preceded the read-only launch. The actual
+1280×800 frame now shows real licensed chart content, ownship and saved marks.
+Live N2K wind, depth, STW, water temperature and tanks are observed; battery and
+motor data remain unavailable and dependent energy estimates are suppressed.
+A saved floating Dashboard still obscures the left chart, so strict clear-overlay
+acceptance remains open. The Windows firewall prompt was cancelled, with visual
+confirmation; no Allow action was used. This development bundle is not a
+qualified release. [First boat review](evidence/beta2-boat-first-xnav-8e780.json). [Initial installation](evidence/beta2-boat-first-install-8e780.json).
 
 ### Previous candidate (not qualified)
 

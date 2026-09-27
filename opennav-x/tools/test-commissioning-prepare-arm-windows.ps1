@@ -45,7 +45,7 @@ function Wait-FixtureFile([string]$Path,[int]$Seconds=20) {
  while(-not [IO.File]::Exists($Path)){if([DateTime]::UtcNow -ge $until){throw ('Missing fixture record: '+[IO.Path]::GetFileName($Path))};Start-Sleep -Milliseconds 50}
 }
 try {
- foreach($case in @('corrupt-capability','success','output-connection')) {
+ foreach($case in @('corrupt-capability','shutdown-copy-hash','success','output-connection')) {
   $fixture=New-BrokerFixture (Join-Path $root $case) $Binaries $sourceTools $fixtureSources $case -WithoutRestartSession
   $proof=Enable-ScheduledBrokerFixture $fixture $sourceTools
   Require ($proof.Count -eq 3) ($case+': Prepare/Arm/Collect/Broker entrypoints exactly match production bytes')
@@ -58,6 +58,13 @@ try {
    @($owner.managedFiles|Where-Object {$_.path -ceq 'docs/PRODUCT_BUILD.json'})[0].sha256=Get-Digest $fixture.productBuild
    [IO.File]::WriteAllText($ownerPath,($owner|ConvertTo-Json -Depth 8),(New-Object Text.UTF8Encoding($false)))
   }
+  if($case -ceq 'shutdown-copy-hash') {
+   $review=Read-Record $fixture.shutdown
+   Require ($review.plugins.Count -eq 3 -and @($review.plugins.sha256|Sort-Object -Unique).Count -eq 3) 'Distinct stock, managed and bundled copies are present in the actual preparation fixture'
+   $review.plugins[1].sha256=$review.plugins[0].sha256
+   [IO.File]::WriteAllText($fixture.shutdown,($review|ConvertTo-Json -Depth 8),(New-Object Text.UTF8Encoding($false)))
+   $fixture.shutdownSha256=Get-Digest $fixture.shutdown
+  }
   $prepareArgs='-Workspace "'+$fixture.workspace+'" -ShutdownReview "'+$fixture.shutdown+'" -ShutdownReviewSha256 '+$fixture.shutdownSha256
   $preparedRun=Invoke-FixtureScript $fixture 'RestartCommissioningPrepare.ps1' $prepareArgs ($case+'-prepare')
   Require ((Get-Digest $fixture.profile) -ceq $iniBefore -and (Get-Digest (Join-Path $fixture.workspace 'boat-target.json')) -ceq $targetBefore) ($case+': Prepare preserves profile and independent audit bytes')
@@ -67,8 +74,16 @@ try {
    Require (@(Get-Process -Name opencpn -ErrorAction SilentlyContinue).Count -eq 0) 'corrupt capability: no marker/application launched'
    $cases.Add(@{name=$case;actualPrepare=$true;status='refused-before-session'});continue
   }
+  if($case -ceq 'shutdown-copy-hash') {
+   Require ($preparedRun.exit -ne 0 -and $preparedRun.stderr.Contains('Retained shutdown DLL/source identity/review differs')) 'Actual Prepare refuses a review borrowing the other copy DLL hash'
+   Require (@(Get-ChildItem -LiteralPath (Join-Path $fixture.workspace 'runs') -Recurse -Filter 'session.json').Count -eq 0) 'Mismatched DLL review creates no accepted cold session'
+   Require (@(Get-Process -Name opencpn -ErrorAction SilentlyContinue).Count -eq 0) 'Mismatched DLL review launches no marker/application'
+   $cases.Add(@{name=$case;actualPrepare=$true;status='refused-before-session'});continue
+  }
   Require ($preparedRun.exit -eq 0) ($case+': actual Prepare succeeds: '+$preparedRun.stderr)
   $prepared=$preparedRun.stdout|ConvertFrom-Json;$session=Read-Record $prepared.record
+  $shutdownReview=Read-Record $session.shutdownReview
+  Require ($shutdownReview.schema -eq 2 -and $shutdownReview.plugins.Count -eq 3 -and @($shutdownReview.plugins.path|Sort-Object -Unique).Count -eq 3) ($case+': same-basename copies retain all three separate shutdown identities')
   $directory=[IO.Path]::GetDirectoryName($prepared.record);$transition=Join-Path $directory 'transition-0001'
   Require ($prepared.status -ceq 'prepared-only' -and -not $prepared.applicationLaunched -and -not $prepared.profileChanged -and (Get-Digest $prepared.record) -ceq $prepared.recordSha256) ($case+': actual private immutable session produced without application launch')
   Require ($session.sid -ceq [Security.Principal.WindowsIdentity]::GetCurrent().User.Value -and $session.windowsSessionId -ceq [Diagnostics.Process]::GetCurrentProcess().SessionId.ToString()) ($case+': actual OS account/session retained')

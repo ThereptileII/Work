@@ -18,7 +18,9 @@ try {
   @('ToggleOrientation','normal','North'),@('ToggleOrientation','course','Course'),@('CyclePalette','normal','Status Day'),
   @('Display','wrong-page',''),@('ToggleFullscreen','wrong-page',''),@('ToggleOrientation','wrong-page',''),
   @('ToggleOrientation','ambiguous',''),@('Display','replace-on-down',''),@('Display','rename-on-down',''),
-  @('Display','move-on-down',''),@('Display','duplicate-on-down',''),@('ToggleFullscreen','modal',''))) {
+  @('Display','move-on-down',''),@('Display','duplicate-on-down',''),@('ToggleFullscreen','modal',''),
+  @('PanRight','normal','PAN_RIGHT_DOWN,PAN_RIGHT_UP'),@('PanRight','canvas-child','PAN_RIGHT_DOWN,PAN_RIGHT_UP'),
+  @('PanRight','wrong-page',''),@('PanRight','wrong-geometry',''),@('PanRight','modal',''))) {
   $directory=Join-Path ([IO.Path]::GetTempPath()) ('opennav-display-window-'+[guid]::NewGuid().ToString('N'));$null=New-Item -ItemType Directory -Path $directory
   [IO.File]::WriteAllText((Join-Path $directory 'fixture.json'),(@{owner='OpenNavX.NativeDisplayWindow.Fixture.1';action=$spec[0];case=$spec[1]}|ConvertTo-Json -Compress))
   $start=New-Object Diagnostics.ProcessStartInfo
@@ -36,13 +38,18 @@ try {
    try {
     [OpenNavX.ReviewWindowNative]::Foreground([IntPtr]$ready.handle,$process.Id)
     $before=[OpenNavX.ReviewWindowNative]::AssertFrame([IntPtr]$ready.handle,$process.Id)
-    [OpenNavX.ReviewWindowNative]::Click([IntPtr]$ready.handle,$process.Id,$spec[0])
+    if($spec[0] -ceq 'PanRight') {
+     $chart=New-Object OpenNavX.ReviewWindowNative+Rect
+     $chart.Left=$ready.chart.left;$chart.Top=$ready.chart.top;$chart.Right=$ready.chart.right;$chart.Bottom=$ready.chart.bottom
+     if($spec[1] -ceq 'wrong-geometry'){$chart.Left+=1}
+     [OpenNavX.ReviewWindowNative]::PanRight([IntPtr]$ready.handle,$process.Id,$chart)
+    } else {[OpenNavX.ReviewWindowNative]::Click([IntPtr]$ready.handle,$process.Id,$spec[0])}
     $after=[OpenNavX.ReviewWindowNative]::AssertFrame([IntPtr]$ready.handle,$process.Id)
    } catch {$refused=$true;$reason=$_.Exception.Message}
    $clickPath=Join-Path $directory 'clicks.txt';[string[]]$clicks=@()
    if(Test-Path -LiteralPath $clickPath){$clicks=@(Get-Content -LiteralPath $clickPath)}
    if($spec[2]){
-    if($refused -or @($clicks).Count -ne 1 -or $clicks[0] -cne $spec[2]){throw ('Native display action failed: '+$spec[0]+'/'+$spec[1]+': '+$reason)}
+    if($refused -or (@($clicks) -join ',') -cne $spec[2]){throw ('Native display action failed: '+$spec[0]+'/'+$spec[1]+': '+$reason)}
     if($spec[0] -ceq 'Display' -and [OpenNavX.ReviewWindowNative]::VisiblePageLabels([IntPtr]$ready.handle) -cnotcontains 'OpenNav product page: Display'){throw 'Display action did not enter its page.'}
     if($spec[0] -ceq 'ToggleFullscreen' -and ($before.Maximized -eq $after.Maximized -or $after.Maximized -ne ($spec[1] -ceq 'normal'))){throw 'Fullscreen/window fixture did not change actual frame state.'}
    } elseif(-not $refused -or @($clicks).Count){throw 'Unsafe/ambiguous native display fixture received a callback.'}

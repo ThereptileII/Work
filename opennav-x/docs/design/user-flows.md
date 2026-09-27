@@ -65,3 +65,13 @@ interaction evidence, not a physical touch-panel acceptance claim.
 Capture before/after native screens and repeat these flows on the boat display
 after compatibility preflight succeeds. The presence of a flow in this document
 does not claim physical-device acceptance, touch acceptance or navigation approval.
+
+## Legacy plugin instruments
+
+From Navigation, System → Legacy (two actions) performs the controlled mode
+restart. The bundled Dashboard's original visible/hidden windows and layout are
+restored. Returning to XNav presents its own Instruments and four-value rail;
+Dashboard acquisition continues, but its desktop panes do not obscure the chart.
+This presentation choice does not rewrite the user's stored plugin workspace.
+Other plugin interfaces remain unchanged. A failed restart retains the existing
+recovery paths; no physical control command belongs to this flow.

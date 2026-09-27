@@ -442,13 +442,18 @@ def monitor_process(pid):
         raise C.WinError(C.get_last_error())
     return handle
 
-def wait_clean_exit(handle, timeout_ms=30000):
+def wait_exit_code(handle, timeout_ms=30000):
+    """Measure a retained process handle; the caller defines its exit contract."""
     try:
         if WaitForSingleObject(handle, timeout_ms) != 0:
             raise RuntimeError('Native process did not exit within the deadline')
         code = W.DWORD()
         if not GetExitCodeProcess(handle, C.byref(code)):
             raise C.WinError(C.get_last_error())
-        assert code.value == 0, f'Native process exited with code {code.value}'
+        return code.value
     finally:
         CloseHandle(handle)
+
+def wait_clean_exit(handle, timeout_ms=30000):
+    code = wait_exit_code(handle, timeout_ms)
+    assert code == 0, f'Native process exited with code {code}'

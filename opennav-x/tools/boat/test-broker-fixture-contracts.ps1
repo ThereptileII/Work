@@ -51,5 +51,18 @@ try {
  }
  if(-not[IO.File]::Exists((Join-Path $temporary 'CommissioningBaseline.ps1'))){throw 'New baseline module omitted from fixture closure'}
  $checks.Add('Every production-pinned dependency, including baseline lineage, copies with exact bytes')
+ # Import the copied production audit exactly as the broker's child does, not
+ # just the already-loaded source functions. A missing transitive module must
+ # fail before any launch or pipe operation.
+ . (Join-Path $temporary 'Commissioning.ps1')
+ $checks.Add('Copied broker dependency closure imports the actual commissioning audit and resource policy')
+ $resource=Join-Path $temporary 'InstalledResourceReview.ps1';$saved=$resource+'.saved'
+ Move-Item -LiteralPath $resource -Destination $saved
+ try {
+   $refused=$false;try{. (Join-Path $temporary 'Commissioning.ps1')}catch{$refused=$true}
+   if(-not $refused){throw 'Missing resource policy did not refuse the copied audit'}
+ } finally {Move-Item -LiteralPath $saved -Destination $resource}
+ $checks.Add('A missing transitive resource policy refuses copied audit import without any process or output')
+
 } finally {Remove-Item -LiteralPath $temporary -Recurse -Force}
 [pscustomobject]@{status='passed';count=$checks.Count;checks=$checks.ToArray();applicationLaunched=$false;boatAccess=$false} | ConvertTo-Json -Depth 5

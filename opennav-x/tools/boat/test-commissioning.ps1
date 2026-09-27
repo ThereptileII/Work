@@ -1,6 +1,6 @@
 # Disposable contracts only. Does not inspect actual boat/profile/plugin state.
 [CmdletBinding()]
-param([switch]$PortableContracts,[switch]$IsolatedLocal,[switch]$AdoptionFixture)
+param([switch]$PortableContracts,[switch]$IsolatedLocal,[switch]$AdoptionFixture,[switch]$ResourceAdoptionFixture)
 Set-StrictMode -Version Latest
 $ErrorActionPreference='Stop'
 $native=[Environment]::OSVersion.Platform -eq 'Win32NT'
@@ -237,10 +237,36 @@ try {
     }
     $checks.Add('Native recovery handles Restore interruption after baseline INI, first DLL return and durable completion before marker removal')
     if($AdoptionFixture) {
+      if($ResourceAdoptionFixture) {
+        # Actual transaction and locator readers with inert owned files only.
+        $fixtureInstalled=[pscustomobject]@{root=(Join-Path $testRoot 'owned');generation=(Join-Path $testRoot 'owned/generation');
+          executable=(Join-Path $testRoot 'owned/generation/app/opencpn.exe');ownership=[pscustomobject]@{commit=('b'*40)};state=[pscustomobject]@{stock=[pscustomobject]@{path=$fixtureContext.executable}}}
+        $null=New-Item -ItemType Directory -Force (Join-Path $fixtureInstalled.generation 'app')
+        foreach($path in @($fixtureInstalled.executable,$fixtureContext.executable,(Join-Path $fixtureInstalled.root 'state.json'),(Join-Path $fixtureInstalled.generation 'ownership.json'))) {[IO.File]::WriteAllText($path,'Inert resource fixture; never executed')}
+        $fixtureStockHash=Get-Digest $fixtureContext.executable;$originalDigestFunction=${function:Get-Digest}
+        function Get-Digest([string]$Path){$hash=& $originalDigestFunction $Path;if($Path -ceq $fixtureContext.executable -and $hash -ceq $fixtureStockHash){return '7c6547562cca7954671eaab72833ca9d788710fd9808b6a699b6dc823852ae0c'};return $hash}
+        $marker=Join-Path $fixtureInstalled.generation 'app/OPENNAV_INSTALLED_STOCK';[IO.File]::WriteAllText($marker,$fixtureContext.executable,$encoding)
+        $fixtureInstalled.ownership | Add-Member managedFiles @([pscustomobject]@{path='app/OPENNAV_INSTALLED_STOCK';sha256=(Get-Digest $marker)})
+        foreach($relative in @('tcdata/harmonics-dwf-20210110-free.tcd','tcdata/HARMONICS_NO_US.IDX','tcdata/HARMONICS_NO_US','gshhs/poly-c-1.dat','basemap_shp/basemap_low.shp','sounds/2bells.wav')) {
+          $path=Join-Path $app $relative;$null=New-Item -ItemType Directory -Force ([IO.Path]::GetDirectoryName($path));[IO.File]::WriteAllText($path,'Inert resource')
+        }
+        function Get-Installed {return $fixtureInstalled}
+        $fixtureContext.installation=[pscustomobject]@{root=$fixtureInstalled.root;generation=$fixtureInstalled.generation;executable=$fixtureInstalled.executable;commit=$fixtureInstalled.ownership.commit;
+          executableSha256=(Get-Digest $fixtureInstalled.executable);stateSha256=(Get-Digest (Join-Path $fixtureInstalled.root 'state.json'));ownershipSha256=(Get-Digest (Join-Path $fixtureInstalled.generation 'ownership.json'))}
+        $text=[IO.File]::ReadAllText($fixtureIni).Replace('[Directories]',"[Directories]`r`nBaseShapefileDir=")
+        [IO.File]::WriteAllText($fixtureIni,$text,$encoding);$script:CommissioningBaseline=Get-Digest $fixtureIni
+        # Keep production exact-byte backup size; fixture baseline must remain 21380.
+        $fixtureBytes=[IO.File]::ReadAllBytes($fixtureIni);$excess=$fixtureBytes.Length-21380
+        $text=$text.Replace(('#'+('x'*($padding-3))),('#'+('x'*($padding-3-$excess))))
+        [IO.File]::WriteAllText($fixtureIni,$text,$encoding);$script:CommissioningBaseline=Get-Digest $fixtureIni
+      }
       $arguments=New-FixtureTransaction;$null=& $invoke -Action Apply @arguments
       $beforeMigration=[IO.File]::ReadAllBytes($fixtureIni)
       $migrationText=$encoding.GetString($beforeMigration).Replace('PersistActiveRoute=0',"PersistActiveRoute=0`r`nConfigVersionString=Version 5.12.4-0+37fd0cd Build 2025-09-12`r`nNavMessageShown=1`r`nLocale=sv")
       $migrationText+="[Settings/GlobalState]`r`nFrameWinX=1280`r`nFrameWinY=800`r`n"
+      if($ResourceAdoptionFixture) {
+        $migrationText=$migrationText.Replace("BaseShapefileDir=`r`n",("BaseShapefileDir="+(Get-InstalledCommissioningBasemap $fixtureInstalled)+"`r`n"))
+      }
       [IO.File]::WriteAllText($fixtureIni,$migrationText,$encoding)
       $migrationBytes=[IO.File]::ReadAllBytes($fixtureIni)
       $inspection=(& $invoke -Action InspectRestore @arguments)|ConvertFrom-Json
@@ -251,6 +277,11 @@ try {
         beforeSha256=(Get-Digest (Join-Path $parentDir 'input-only.ini'));afterSha256=$inspection.currentIniSha256;reviewedUtc=[datetime]::UtcNow.ToString('o');changes=$entries}
       $adoptBody=[IO.File]::ReadAllText((Join-Path $PSScriptRoot 'prepare-baseline-adoption.ps1')).Replace(". (Join-Path `$PSScriptRoot 'Commissioning.ps1')",'')
       $prepareAdoption=[scriptblock]::Create($adoptBody)
+      if($ResourceAdoptionFixture) {
+        $withoutAdoption=@{Inspection=$inspection.inspection;ExpectedInspectionSha256=$inspection.inspectionSha256;ReviewedCurrentIniSha256=$inspection.currentIniSha256}
+        Reject {& $invoke -Action Restore @arguments @withoutAdoption} 'resource default may not be silently erased by baseline restoration'
+        $checks.Add('Native cold inspection proves owned resource locator and refuses restoration without per-key adoption')
+      }
       $proposal=(& $prepareAdoption @arguments -Inspection $inspection.inspection -ExpectedInspectionSha256 $inspection.inspectionSha256 -MigrationReview $reviewPath -ExpectedReviewSha256 (Get-Digest $reviewPath))|ConvertFrom-Json
       if((Get-Digest $fixtureIni) -cne $inspection.currentIniSha256 -or [IO.File]::Exists($unsafe)){throw 'Adoption Prepare changed profile or returned a quarantined plugin'}
       $checks.Add('Native adoption preparation pins exact post-close inspection and independent per-key review without changing any live bytes')
