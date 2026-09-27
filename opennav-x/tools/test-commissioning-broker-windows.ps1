@@ -127,6 +127,6 @@ try {
 } catch {$failure=$_.Exception.Message;[IO.File]::WriteAllText((Join-Path $Evidence 'failure.txt'),($_|Out-String)+"`r`n"+$_.ScriptStackTrace);throw}
 finally {
  if($taskName){$owned=Get-ScheduledTask -TaskName $taskName -ErrorAction SilentlyContinue;if($owned -and $owned.State.ToString() -ceq 'Ready' -and $owned.Actions[0].Execute -ceq $execute -and $owned.Actions[0].Arguments -ceq $arguments){Unregister-ScheduledTask -TaskName $taskName -Confirm:$false}}
- @{status=$status;checks=$checks.Count;checkDetails=@($checks);cases=@($cases);failure=$failure;actualBroker=$true;identitySubstitutions='Copied dependencies only; synthetic TEMP installation/profile/known folders';realApplication=$false;boatAccess=$false;physicalOutput=$false;productAcceptance=$false}|ConvertTo-Json -Depth 8|Set-Content -LiteralPath (Join-Path $Evidence 'broker-result.json') -Encoding UTF8
+ @{status=$status;checks=$checks.Count;checkDetails=$checks.ToArray();cases=$cases.ToArray();failure=$failure;actualBroker=$true;identitySubstitutions='Copied dependencies only; synthetic TEMP installation/profile/known folders';realApplication=$false;boatAccess=$false;physicalOutput=$false;productAcceptance=$false}|ConvertTo-Json -Depth 8|Set-Content -LiteralPath (Join-Path $Evidence 'broker-result.json') -Encoding UTF8
  if($status -ceq 'passed'){Remove-Item -LiteralPath $root -Recurse -Force}
 }

@@ -208,6 +208,8 @@ if(OPENNAV_BUILD_TESTS)
   add_executable(commissioning_restart_tests tests/commissioning_restart_tests.cpp)
   target_link_libraries(commissioning_restart_tests PRIVATE opennav_restart_protocol)
   add_test(NAME commissioning_restart_wire_contract COMMAND commissioning_restart_tests)
+  add_test(NAME commissioning_restart_package_capability COMMAND ${Python3_EXECUTABLE}
+    ${CMAKE_CURRENT_SOURCE_DIR}/tests/restart_capability_tests.py)
   add_executable(restart_probe tests/restart_probe.cpp)
   target_link_libraries(restart_probe PRIVATE opennav_platform)
   if(WIN32)

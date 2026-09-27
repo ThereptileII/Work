@@ -70,6 +70,23 @@ runner retains a genuinely exited marker-process handle and records both
 Win32/native query success, error codes and the opened file's NT path, including
 a negative comparison with the different helper executable.
 
+## Actual product capability
+
+The Windows application loader self-test calls the linked guard's
+`ProtocolCapability()` without initializing a profile or plugins. The staged
+helper separately answers `--commissioning-protocol-self-test`. Packaging
+executes both actual binaries with the same app-local/OS-only environment and
+requires matching integer protocol 1, successful reports and no declared side
+effects. Old, missing, Boolean/string/float, mismatched or malformed reports
+refuse packaging. Linux explicitly reports protocol 0.
+
+Only those executed reports authorize `PRODUCT_BUILD.json` to contain
+`commissioning_restart_protocol: 1`, alongside the exact application and helper
+SHA-256 values. No version string or unexecuted metadata grants this capability.
+Portable capability tests cover 30 acceptance/refusal cases in four groups;
+the actual integrated Windows loader, package and installed behavior still need
+their full native gates after merging this implementation.
+
 ## Wire format, version 1
 
 Every message has a four-byte little-endian unsigned payload byte count, in

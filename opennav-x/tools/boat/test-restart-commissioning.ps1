@@ -13,6 +13,10 @@ function Check([bool]$Okay,[string]$Name){if(-not $Okay){throw ('FAILED: '+$Name
 function Refuse([scriptblock]$Action,[string]$Name){$failed=$false;try{& $Action}catch{$failed=$true};Check $failed $Name}
 function Message($Object){return ,[OpenNavX.RestartCommissioningNative]::Message([Text.Encoding]::UTF8.GetBytes(($Object|ConvertTo-Json -Depth 5 -Compress)))}
 function Clone($Object){return Message $Object}
+Check (Test-RestartImagePath 'C:\WINDOWS\System32\WindowsPowerShell\v1.0\powershell.exe' 'C:\WINDOWS\system32\WindowsPowerShell\v1.0\powershell.exe') 'native Windows process path letter case is identity-equivalent'
+Check (-not (Test-RestartImagePath 'C:\other\powershell.exe' 'C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe')) 'different image directory remains refused'
+Check (-not (Test-RestartImagePath 'C:\Windows\SysWOW64\WindowsPowerShell\v1.0\powershell.exe' 'C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe')) 'redirected 32-bit PowerShell image remains refused'
+Check (-not (Test-RestartImagePath '' '')) 'missing image identity remains refused'
 $session=[pscustomobject]@{session=('a'*64);recordSha256=('b'*64);windowsSessionId='1';executable='C:\XNav\owned\app\opencpn.exe';executableSha256=('c'*64);helper='C:\XNav\owned\app\opennav-restart.exe';helperSha256=('d'*64);workingDirectory='C:\XNav\owned\app';path='C:\XNav\owned\app;C:\Windows\System32;C:\Windows'}
 $parent=[pscustomobject]@{pid='42';createdFiletime='133000000000000000'}
 $request=Message @{protocol=1;kind='request';session=$session.session;recordSha256=$session.recordSha256;nonce=('e'*64);parentPid=$parent.pid;parentCreatedFiletime=$parent.createdFiletime;parentExitCode='0';helperPid='43';helperCreatedFiletime='133000000001000000';windowsSessionId='1';executable=$session.executable;executableSha256=$session.executableSha256;helper=$session.helper;helperSha256=$session.helperSha256;workingDirectory=$session.workingDirectory;path=$session.path;arguments=@('--legacy')}

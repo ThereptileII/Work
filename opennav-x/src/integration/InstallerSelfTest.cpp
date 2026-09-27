@@ -8,6 +8,9 @@
 #include <wx/filename.h>
 #include <wx/jsonwriter.h>
 #include <wx/stdpaths.h>
+#ifdef __WXMSW__
+#include "platform/windows/CommissioningRestartNative.h"
+#endif
 namespace opennav::integration {
 namespace {
 wxString report_path;
@@ -49,6 +52,12 @@ int RunInstallerSelfTest() {
   report["profile_initialized"] = false;
   report["normal_config_directory"] = wxStandardPaths::Get().GetConfigDir();
   report["plugins_loaded"] = false;
+#ifdef __WXMSW__
+  report["commissioning_restart_protocol"] =
+      platform::commissioning::ProtocolCapability();
+#else
+  report["commissioning_restart_protocol"] = 0;
+#endif
   bool valid = true;
   for (const auto *relative :
        {"s57data/chartsymbols.xml", "s57data/s57objectclasses.csv",

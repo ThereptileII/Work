@@ -13,6 +13,7 @@ import re
 import shutil
 import subprocess
 import zipfile
+from restart_capability import verified_restart_protocol
 
 ROOT = Path(__file__).resolve().parents[1]
 parser = argparse.ArgumentParser()
@@ -107,6 +108,9 @@ try:
     checked = subprocess.run([str((app / 'opencpn.exe').resolve()), '--opennav-self-test',
                               str(selftest_path)], cwd=app, env=runtime_env,
                              capture_output=True, timeout=30)
+    helper_checked = subprocess.run(
+        [str((app / 'opennav-restart.exe').resolve()), '--commissioning-protocol-self-test'],
+        cwd=app, env=runtime_env, capture_output=True, timeout=10)
 finally:
     kernel.SetErrorMode(old_error_mode)
 if checked.returncode != 0 or not selftest_path.is_file():
@@ -117,6 +121,15 @@ if (actual.get('passed') is not True or actual.get('test_fixtures') is not False
         actual.get('version') != product_version or actual.get('profile_initialized') is not False or
         actual.get('plugins_loaded') is not False):
     raise SystemExit('Packaged executable is not the exact verified fixture-free product')
+if helper_checked.returncode != 0 or len(helper_checked.stdout) > 4096 or helper_checked.stderr:
+    raise SystemExit('Packaged restart helper capability query failed')
+try:
+    helper_capability = json.loads(helper_checked.stdout.decode('utf-8'))
+    restart_protocol = verified_restart_protocol(actual, helper_capability)
+except (ValueError, UnicodeError) as error:
+    raise SystemExit('Packaged restart guard capability mismatch: ' + str(error)) from error
+(args.output.resolve() / 'production-restart-selftest.json').write_text(
+    json.dumps(helper_capability, indent=2) + '\n', encoding='utf-8')
 for file in destination.rglob('*'):
     relative = file.relative_to(destination)
     if ('demo' in (part.casefold() for part in relative.parts) or
@@ -126,7 +139,9 @@ for file in destination.rglob('*'):
 (destination / 'docs/PRODUCT_BUILD.json').write_text(json.dumps({
     'version': product_version, 'commit': commit, 'test_fixtures': False,
     'build_purpose': 'INSTALLED PRODUCT',
-    'executable_sha256': hashlib.sha256((app / 'opencpn.exe').read_bytes()).hexdigest()
+    'executable_sha256': hashlib.sha256((app / 'opencpn.exe').read_bytes()).hexdigest(),
+    'restart_helper_sha256': hashlib.sha256((app / 'opennav-restart.exe').read_bytes()).hexdigest(),
+    'commissioning_restart_protocol': restart_protocol
 }, indent=2) + '\n')
 
 info = f'''# Build information

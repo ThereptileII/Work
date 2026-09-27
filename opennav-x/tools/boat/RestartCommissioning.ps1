@@ -60,14 +60,32 @@ function Read-RestartSession([string]$Record,[string]$ExpectedSha256) {
   $session | Add-Member -NotePropertyName recordSha256 -NotePropertyValue $ExpectedSha256
   return $session
 }
+function Test-RestartImagePath([string]$Observed,[string]$Expected) {
+  return (-not [string]::IsNullOrEmpty($Observed) -and -not [string]::IsNullOrEmpty($Expected) -and
+    [StringComparer]::OrdinalIgnoreCase.Equals($Observed,$Expected))
+}
 function Get-RestartProcess([uint32]$ProcessId,$Session,[string]$ExpectedImage) {
   $process=Get-Process -Id $ProcessId -ErrorAction Stop
   try {
     $native=@(Get-CimInstance Win32_Process -Filter ('ProcessId='+$ProcessId))
     if($native.Count -ne 1){throw 'Exact process disappeared.'}
     $owner=Invoke-CimMethod -InputObject $native[0] -MethodName GetOwnerSid
-    if($owner.ReturnValue -ne 0 -or $owner.Sid -cne $Session.sid -or $process.HasExited -or $process.Path -cne $ExpectedImage -or
-       $process.SessionId.ToString() -cne $Session.windowsSessionId){throw 'Process owner/image/session differs.'}
+    # Windows reports System32/system32 and WINDOWS/Windows inconsistently even
+    # for the same native PowerShell image. Only path letter case may vary;
+    # verify the bytes reached by both spellings as well. Identity/time/session
+    # fields retain their existing strict comparisons.
+    $imageMatches=Test-RestartImagePath $process.Path $ExpectedImage
+    $imageHashMatches=$false
+    if($imageMatches -and -not $process.HasExited){$imageHashMatches=(Get-Digest $process.Path) -ceq (Get-Digest $ExpectedImage)}
+    if($owner.ReturnValue -ne 0 -or $owner.Sid -cne $Session.sid -or $process.HasExited -or -not $imageMatches -or -not $imageHashMatches -or
+       $process.SessionId.ToString() -cne $Session.windowsSessionId){
+      # Private commissioning evidence records each exact disagreement. Do not
+      # normalize/relax an identity check based only on a platform hypothesis.
+      $diagnostic=@{pid=$ProcessId.ToString();ownerResult=$owner.ReturnValue;observedSid=$owner.Sid;expectedSid=$Session.sid;
+        hasExited=$process.HasExited;observedImage=$process.Path;expectedImage=$ExpectedImage;imageHashesMatch=$imageHashMatches;
+        observedSession=$process.SessionId.ToString();expectedSession=$Session.windowsSessionId}
+      throw ('Process owner/image/session differs: '+($diagnostic|ConvertTo-Json -Compress))
+    }
     return [pscustomobject]@{pid=$ProcessId.ToString();createdFiletime=$process.StartTime.ToUniversalTime().ToFileTimeUtc().ToString();image=$process.Path;session=$process.SessionId.ToString();commandLine=$native[0].CommandLine}
   } finally {$process.Dispose()}
 }
