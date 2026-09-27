@@ -50,6 +50,14 @@ launch/restart must still satisfy its independent profile audit.
   Successful cases require exactly one callback; refusal cases require none.
   No OpenCPN, profile, plugin or marine process is loaded. The marker has a fixed
   lifetime and exits normally; the runner never force-terminates it.
-- Native execution of this extension and actual installed boat-display
-  acceptance remain pending. Prior native mode-window results do not qualify
-  these new display controls.
+- Native Windows execution passed all 15 cases on tooling commit
+  `0c751177`, [run 36287451428](https://github.com/ThereptileII/Work/actions/runs/36287451428):
+  six successful paths, nine refusals, and no cleanup errors. The existing nine
+  mode-window cases also passed. Artifact `10921210420`, SHA-256
+  `a52e81489c8d64d0a735678b2f9901b5ff5aeab89c50f623ab0bdb6dceaaf68b`,
+  matches the API digest, upload log and downloaded bytes. The entire tooling
+  run failed in a separate temporary broker-fixture module import; this result
+  qualifies only the completed native window cases.
+- Actual installed wx behavior and boat-display acceptance remain separate
+  pending gates. Marker-window results do not establish physical fullscreen,
+  chart-orientation or touch acceptance.

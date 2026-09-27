@@ -11,6 +11,7 @@
 #include "integration/NavigationObjects.h"
 #include "integration/OpenCPNRouteReader.h"
 #include "integration/PreviewDiagnostics.h"
+#include "diagnostics/TestUiTrace.h"
 #include "integration/PreviewResources.h"
 #include "integration/RecoveryStore.h"
 #include "integration/RoutePassWatch.h"
@@ -543,7 +544,7 @@ void Attach(MyFrame& frame, wxAuiManager& manager, wxFileConfig& config) {
   actions.diagnostics_folder=[] {
     if(!diagnostic_directory.empty()) wxLaunchDefaultApplication(wxString::FromUTF8(diagnostic_directory));
   };
-  actions.diagnostic_snapshot = [&frame, last = vessel::Time{}](
+  actions.diagnostic_snapshot = [&frame, &manager, last = vessel::Time{}](
                                     const vessel::VesselState &state,
                                     const smartnav::EnergyPrediction &energy,
                                     const std::string &page) mutable {
@@ -551,10 +552,15 @@ void Attach(MyFrame& frame, wxAuiManager& manager, wxFileConfig& config) {
     if (diagnostic_directory.empty() || now - last < std::chrono::seconds(1))
       return;
     last=now;
+    XNAV_TEST_UI_TRACE("snapshot.begin");
     auto runtime =
         integration::ReadRuntimeDiagnostics(*frame.GetPrimaryCanvas());
     runtime["test_fixtures"] = integration::TestFixturesEnabled();
     runtime["build_purpose"] = wxString::FromUTF8(integration::BuildPurpose().data());
+#if XNAV_ENABLE_TEST_FIXTURES
+    // Copied wxAUI state for the isolated plugin-workspace regression.
+    runtime["test_workspace_perspective"] = manager.SavePerspective();
+#endif
     if (shell) {
       runtime["display"]["light"] = wxString::FromUTF8(shell->LightName());
       runtime["display"]["native_caption_themed"] = shell->NativeCaptionThemed();
@@ -656,6 +662,7 @@ void Attach(MyFrame& frame, wxAuiManager& manager, wxFileConfig& config) {
         pilot["mode_age_ms"] = static_cast<int>(std::min<long long>(2147483647,
             std::chrono::duration_cast<vessel::Duration>(now-view.feedback.observed_at).count()));
     }
+    XNAV_TEST_UI_TRACE("snapshot.write");
     integration::WritePreviewDiagnostics(
         diagnostic_directory + "/opennav-diagnostics.json", state,
         integration::PreviewBuildInfo(
@@ -666,6 +673,7 @@ void Attach(MyFrame& frame, wxAuiManager& manager, wxFileConfig& config) {
         state.replayed ? std::vector<vessel::SourceHealth>{}
                        : marine->Health(now),
         page, runtime);
+    XNAV_TEST_UI_TRACE("snapshot.end");
   };
 #if XNAV_ENABLE_TEST_FIXTURES
   actions.demo_chart=[] { if(g_bDeferredInitDone) JumpToPosition(59.08,18.5,0.003); };
@@ -727,6 +735,16 @@ void AfterSettingsReconfigured() {
   host->InvalidateAllGL();
   host->ReloadAllVP();
   host->RefreshAllCanvas(false);
+}
+
+bool IsTransientXNavPane(const wxWindow *window) {
+  return shell && IsXNav() && shell->OwnsPane(window);
+}
+
+bool LoadPersistentPerspective(wxAuiManager &manager, const wxString &perspective) {
+  if (shell && IsXNav() && shell->OwnsManager(manager))
+    return shell->LoadPersistentPerspective(perspective);
+  return manager.LoadPerspective(perspective, false);
 }
 
 void AfterAnchorWatch(){

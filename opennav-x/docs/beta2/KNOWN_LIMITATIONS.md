@@ -6,9 +6,9 @@ acceptance and actual boat-PC evidence are recorded in the repository status;
 building this ZIP alone does not establish acceptance.
 
 - Only the hash-validated OpenCPN 5.12.4 Windows x86 application is supported on
-  Windows x64. Other releases/builds are refused. The initially inspected boat
-  PC had unsupported 5.12.2; an authorized prerequisite decision is required
-  before deployment. Consult the current status for subsequent resolution.
+  Windows x64. Other releases/builds are refused. Upgrading an older OpenCPN
+  installation is a separate operation with its own verified recovery backup;
+  OpenNav Setup does not bypass the compatibility check.
 - The installer preserves the historical Alpha ownership/root/Start-menu identity
   to update existing installations safely. This is migration metadata, not a
   second installed application.

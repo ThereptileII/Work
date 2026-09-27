@@ -1,0 +1,217 @@
+{
+  "schema": 1,
+  "version": "0.4.0-beta2",
+  "commit": "faced2585c3eccafb8240fc80e75149a83895788",
+  "localSourceCommit": "5d0b5fb5a5157d93ad45f67f4f0fe7dc35f0298b",
+  "ciRun": "https://github.com/ThereptileII/Work/actions/runs/36283660475",
+  "status": "passed-tooling-only",
+  "scope": "Native marker-only restart transport and actual PowerShell commissioning Prepare/Arm/Collect/Broker; no installed OpenCPN or boat qualification",
+  "environment": {
+    "os": "Windows Server 2022, x64",
+    "compiler": "MSVC 19.44.35229.0",
+    "testProcessAbi": "Win32/x86",
+    "shell": "Native Windows PowerShell 5.1",
+    "marineCodeInMarker": false
+  },
+  "jobs": {
+    "transport": 108520199307,
+    "maintenance": 108520199393,
+    "brokerAndPrepareArm": 108520378170,
+    "allPassed": true
+  },
+  "artifacts": [
+    {
+      "name": "development-commissioning-restart-faced2585c3eccafb8240fc80e75149a83895788",
+      "id": 10920290109,
+      "url": "https://github.com/ThereptileII/Work/actions/runs/36283660475/artifacts/10920290109",
+      "bytes": 6201,
+      "sha256": "3937bee80688363e872c4f11186023c3b6a547ffa056a3d0f45d62d8728dd10f",
+      "decodedUtf8JobLogSha256": "ef0caeefafd679068d908f0df6edb3961e4e581f5875b2a66b9eca935c2eac80",
+      "completeZipDownloaded": true,
+      "apiAndUploadLogDigestMatched": true,
+      "zipCrcVerified": true
+    },
+    {
+      "name": "development-commissioning-broker-faced2585c3eccafb8240fc80e75149a83895788",
+      "id": 10919214598,
+      "url": "https://github.com/ThereptileII/Work/actions/runs/36283660475/artifacts/10919214598",
+      "bytes": 15735,
+      "sha256": "df9353ca537b9b6874ceecc6fbf185a21fb4f3967e5e2a86bd61cddc412271ca",
+      "decodedUtf8JobLogSha256": "30ba81dff96a5411d318b3d5900fdb634a4872232c022a733e761b3276103bf7",
+      "completeZipDownloaded": true,
+      "apiAndUploadLogDigestMatched": true,
+      "zipCrcVerified": true
+    },
+    {
+      "name": "development-boat-tooling-faced2585c3eccafb8240fc80e75149a83895788",
+      "id": 10919109811,
+      "url": "https://github.com/ThereptileII/Work/actions/runs/36283660475/artifacts/10919109811",
+      "bytes": 10409,
+      "sha256": "5038c195a1363cfb1caa462b97bcdcff46ae37142911ef402818d84e4df1425a",
+      "decodedUtf8JobLogSha256": "9aef5402cfa7e3d75c800823b6a466b7710b4f5ff267ae8a960b963f409df50e",
+      "completeZipDownloaded": true,
+      "apiAndUploadLogDigestMatched": true,
+      "zipCrcVerified": true
+    }
+  ],
+  "results": {
+    "protocolChecks": 886,
+    "nativeTransport": {
+      "checks": 359,
+      "cases": 24,
+      "status": "passed"
+    },
+    "maintenance": {
+      "checks": 690,
+      "suites": [
+        {
+          "suite": "Maintenance filesystem/ownership",
+          "checks": 27,
+          "status": "passed"
+        },
+        {
+          "suite": "Official stock upgrade policy",
+          "checks": 86,
+          "status": "passed"
+        },
+        {
+          "suite": "Profile preparation/ACL/atomic replacement",
+          "checks": 34,
+          "status": "passed"
+        },
+        {
+          "suite": "Commissioning transaction",
+          "checks": 21,
+          "status": "passed"
+        },
+        {
+          "suite": "Cold launch audit",
+          "checks": 11,
+          "status": "passed"
+        },
+        {
+          "suite": "Read-only window review policy",
+          "checks": 145,
+          "status": "passed"
+        },
+        {
+          "suite": "Managed source checkout",
+          "checks": 16,
+          "status": "passed"
+        },
+        {
+          "suite": "Restart session policy/framing/journal",
+          "checks": 273,
+          "status": "passed"
+        },
+        {
+          "suite": "AUI/Dashboard persistence policy",
+          "checks": 77,
+          "status": "passed"
+        }
+      ]
+    },
+    "broker": {
+      "checks": 49,
+      "status": "passed",
+      "cases": [
+        {
+          "name": "success",
+          "brokerExit": 0,
+          "helperExit": 0,
+          "markerChildren": 1
+        },
+        {
+          "name": "output-connection",
+          "brokerExit": 1,
+          "helperExit": 31,
+          "markerChildren": 0
+        },
+        {
+          "name": "plugin-bytes",
+          "brokerExit": 1,
+          "helperExit": 31,
+          "markerChildren": 0
+        },
+        {
+          "name": "expired",
+          "brokerExit": 1,
+          "helperExit": 29,
+          "markerChildren": 0
+        },
+        {
+          "name": "consumed",
+          "brokerExit": 1,
+          "helperExit": 29,
+          "markerChildren": 0
+        },
+        {
+          "name": "receipt-recording-failure",
+          "brokerExit": 1,
+          "helperExit": 0,
+          "markerChildren": 1
+        }
+      ],
+      "completedInertTaskIdentityValidated": true
+    },
+    "actualPrepareArmCollect": {
+      "checks": 46,
+      "status": "passed",
+      "cases": [
+        {
+          "name": "corrupt-capability",
+          "status": "refused-before-session",
+          "markerChildren": 0
+        },
+        {
+          "name": "success",
+          "status": "passed",
+          "markerChildren": 1
+        },
+        {
+          "name": "output-connection",
+          "status": "passed",
+          "markerChildren": 0
+        }
+      ],
+      "includes": [
+        "Owned incapable payload refused before session creation",
+        "Actual Prepare copies baseline/review, pins dependencies and enforces private ACL without profile changes",
+        "Wrong parent rejected before task registration",
+        "Actual limited interactive native PowerShell task creates broker",
+        "Duplicate Arm and Collect while Running refused",
+        "Output connection mutation refused without permit or child",
+        "Actual Collect removes only owned completed task and publishes durable evidence"
+      ],
+      "entrypointHashes": [
+        {
+          "name": "RestartCommissioningPrepare.ps1",
+          "sourceSha256": "bbc25e3933ef8e085484c7ff3203d452258ab6609504ae285eaa0875af8f31f9",
+          "copiedSha256": "bbc25e3933ef8e085484c7ff3203d452258ab6609504ae285eaa0875af8f31f9"
+        },
+        {
+          "name": "RestartCommissioningArm.ps1",
+          "sourceSha256": "7bf28fac37ed2eb18a78c9d26a4cdcdaf721f1de54fe88a944fd8a18693bf795",
+          "copiedSha256": "7bf28fac37ed2eb18a78c9d26a4cdcdaf721f1de54fe88a944fd8a18693bf795"
+        },
+        {
+          "name": "RestartCommissioningBroker.ps1",
+          "sourceSha256": "fa765c32ff48af981d3ab0f0fb0a259c52bdcf4dc34a0e49ed10d03156c07664",
+          "copiedSha256": "fa765c32ff48af981d3ab0f0fb0a259c52bdcf4dc34a0e49ed10d03156c07664"
+        }
+      ],
+      "hashProvenance": "Source and copied native checkout bytes match; independently cross-checked against exact source blobs with Windows CRLF checkout normalization"
+    }
+  },
+  "limits": [
+    "Marker-only application and inert plugin files, no real OpenCPN process or marine input/output",
+    "Copied temporary known-folder/installation identity adapters, not real vessel attestations",
+    "Synthetic marker cold-child journal remains a test input; actual product cold-launch UI is not qualified",
+    "No real retained plugin unload, chart rendering, in-app mode control, final packaged product or boat display tested",
+    "Future explicit Running task-state policy and RequestMode/child review changes are outside this commit and require new qualification"
+  ],
+  "boatAccess": false,
+  "physicalOutput": false,
+  "productAcceptance": false,
+  "navigationApproval": false
+}

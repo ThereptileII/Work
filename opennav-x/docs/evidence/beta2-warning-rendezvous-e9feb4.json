@@ -1,0 +1,87 @@
+{
+  "schema": "OpenNavX.Beta2.StockWarningRendezvousEvidence.1",
+  "publishedCommit": "e9feb40420eab3ebb5118dec247b60f209e443d1",
+  "localCommit": "1e94a36f348d141ec2730976fb944edd3ae23186",
+  "runUrl": "https://github.com/ThereptileII/Work/actions/runs/36288489875",
+  "overallRun": "failed",
+  "warningPrimitives": "passed",
+  "scope": "Actual pinned official stock warning only; not boat or installed-product acceptance",
+  "actualWarningChecks": {
+    "en_US": 38,
+    "sv": 40
+  },
+  "readOnlyDiagnosticNativeChecks": 93,
+  "officialExecutableSha256": "7c6547562cca7954671eaab72833ca9d788710fd9808b6a699b6dc823852ae0c",
+  "windowsCheckoutHelperSha256": "6fd2ad8f49eb6cdcec4f04f4f981641a22cba19a729b3830994b0bf592e80dca",
+  "windowsCheckoutPsSha256": "910f5234931a3e53bc91a643a7112168ef5c8ac2e4f13d7c121a15b661d41433",
+  "screenshotsInspected": [
+    "actual Swedish warning HTML and exact title/Acceptera/Avbryt",
+    "actual English warning HTML and exact title/Agree/Cancel",
+    "actual English stock basemap after acceptance"
+  ],
+  "normalStockExit": 0,
+  "localePreserved": true,
+  "marineConnectionsEmpty": true,
+  "sharedProfileUntouched": true,
+  "failure": {
+    "jobId": 108534023681,
+    "phase": "Disposable test cleanup after 49 broker assertions passed",
+    "cause": "Marker-only child released but not awaited; Windows refused deleting its still-running executable.",
+    "reportLimitation": "Original broker-result status was written before cleanup; job exit is authoritative and failed.",
+    "actualPrepareArmStep": "skipped",
+    "fix": "Separate fixture-only exact child identity and normal-exit wait; native rerun pending."
+  },
+  "artifacts": [
+    {
+      "artifact": 10921826735,
+      "name": "development-commissioning-broker-e9feb40420eab3ebb5118dec247b60f209e443d1",
+      "sha256": "6f5462dd5d23d681b1c4a2271a02bec7267c0a92e60de56bedb1a73a8078f70d",
+      "bytes": 7138,
+      "apiUploadDownloadCrcVerified": true
+    },
+    {
+      "artifact": 10921651953,
+      "name": "development-commissioning-restart-e9feb40420eab3ebb5118dec247b60f209e443d1",
+      "sha256": "057e5fcb33c8ec73037beefaec5148c1eb6dfa072f3aa64d180b5441f63256ec",
+      "bytes": 6194,
+      "apiUploadDownloadCrcVerified": true
+    },
+    {
+      "artifact": 10921466331,
+      "name": "development-boat-tooling-e9feb40420eab3ebb5118dec247b60f209e443d1",
+      "sha256": "5a32bdc013312c5f5c5e7948da792e0320f3b0025fd6409fa4af075f8d6526be",
+      "bytes": 19273,
+      "apiUploadDownloadCrcVerified": true
+    },
+    {
+      "artifact": 10921392329,
+      "name": "development-stock-welcome-sv-e9feb40420eab3ebb5118dec247b60f209e443d1",
+      "sha256": "e28c9f81f37d20c04ef0dc7ea961d3609781e98a3c03c09cad5703d7f82be4f8",
+      "bytes": 86185,
+      "apiUploadDownloadCrcVerified": true
+    },
+    {
+      "artifact": 10921232564,
+      "name": "development-desktop-diagnostics-e9feb40420eab3ebb5118dec247b60f209e443d1",
+      "sha256": "cd814f0f963723cbb3760846673da6fdbf8deba7fccac9db0df91e03214ef577",
+      "bytes": 2366,
+      "apiUploadDownloadCrcVerified": true
+    },
+    {
+      "artifact": 10920962270,
+      "name": "development-stock-welcome-en_US-e9feb40420eab3ebb5118dec247b60f209e443d1",
+      "sha256": "b7866ca5e6b3898a7d9ff79f55706ee647497ac9d5deea3f23e5ea8860bde919",
+      "bytes": 85497,
+      "apiUploadDownloadCrcVerified": true
+    },
+    {
+      "artifact": 10920928499,
+      "name": "development-restart-window-e9feb40420eab3ebb5118dec247b60f209e443d1",
+      "sha256": "b48f369dd7e014f1795ef42e8b93143c3110ed2b3136481d948144e89395102d",
+      "bytes": 2980,
+      "apiUploadDownloadCrcVerified": true
+    }
+  ],
+  "physicalOutput": false,
+  "boatAccess": false
+}

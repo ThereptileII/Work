@@ -1,0 +1,125 @@
+{
+  "schema": 1,
+  "classification": "Actual stock commissioning observations; not Beta 2 acceptance",
+  "stock": {
+    "version": "5.12.4",
+    "architecture": "x86",
+    "executableSha256": "7c6547562cca7954671eaab72833ca9d788710fd9808b6a699b6dc823852ae0c",
+    "processId": 24640,
+    "startedUtc": "2026-09-27T01:58:55.2939445Z",
+    "launchResultSha256": "70cd27661d31878f429525c495c26eb76d57a3a628cdafd9f6b2c6c749ffe661"
+  },
+  "resize": {
+    "toolCommit": "5013dba935631177d53056e8cb7b325172d6b241",
+    "nativeHelperSha256": "25cd3d2e40977fad07c9118cab16fa10ec463988d5e311b4f8acebc622f51de8",
+    "observedUtc": "2026-09-27T03:55:10.6738705Z",
+    "beforeVisibleBounds": [
+      -2,
+      -11,
+      1324,
+      685
+    ],
+    "afterVisibleBounds": [
+      0,
+      0,
+      1280,
+      800
+    ],
+    "dpi": 144,
+    "desktopPixels": [
+      1920,
+      1080
+    ],
+    "workAreaPixels": [
+      0,
+      0,
+      1920,
+      1008
+    ],
+    "geometryPassed": true,
+    "strictCapturePassed": false,
+    "strictCaptureFailure": "Another visible window intersects above the reviewed main frame",
+    "displaySettingsChanged": false
+  },
+  "privateDiagnosticImage": {
+    "observedUtc": "2026-09-27T03:58:15.4995703Z",
+    "sha256": "3289cec6cb58a2b203bf930ee2b46b214e2fcab859be507aff37352046771069",
+    "pixels": [
+      1280,
+      800
+    ],
+    "classification": "DIAGNOSTIC_ONLY_STRICT_OCCLUSION_FAILED",
+    "downloadHashVerified": true,
+    "humanReviewed": true,
+    "observed": [
+      "Detailed real nautical chart with recognizable land and water geometry",
+      "Chart annotations, ownship and existing saved marks",
+      "Floating retained Dashboard instrument pane overlaps the left side and extends beyond the frame",
+      "Green GPS indication and a current displayed SOG; COG unavailable"
+    ],
+    "privacy": "Image stays private; no chart content, positions or saved object identities published",
+    "automaticUnobscuredChartGatePassed": false,
+    "sensorAgeOrPhysicalAcceptanceClaimed": false,
+    "zoomActionPerformed": false
+  },
+  "close": {
+    "normalCloseRequested": true,
+    "forceTerminationUsed": false,
+    "applicationNoLongerRunning": true,
+    "normalShutdownLogMarkersPresent": true,
+    "finalCleanExitLogUtc": "2026-09-27T03:59:28.753Z",
+    "matchingWindowsApplicationCrashEventsObserved": 0,
+    "toolOutcome": "failed",
+    "exitCode": null,
+    "exitCodeMeaning": "Unavailable; not evidence of a nonzero application exit",
+    "reason": "Get-Process close path did not retain a process handle; explicit native exit-code regression being added",
+    "remainingChartHelper": false,
+    "remainingHelperStartedDuringFinalRedraw": true,
+    "coldRestoreInspectionPassed": true,
+    "normalHelperShutdownReviewPending": false
+  },
+  "preservation": {
+    "postApplicationExitNavigationDatabaseSha256": "8eada8eb11d17fc91e687307f713a7bdb90a38ade31e7d6f272198fff360ebbc",
+    "navigationDatabaseByteIdenticalToBaseline": true,
+    "navigationDatabaseIntegrityAndRawStorageComparisonPassed": true,
+    "postApplicationExitIniSha256": "5f5f9c4e2c09e9e45d74f78b3b338289e37d8168338f0d59a16c5dd3472bebe4",
+    "observedIniKeyChanges": 13,
+    "finalColdInspectionAndPerKeyAdoption": "passed",
+    "profileRestored": true,
+    "restorationSha256": "08380d0277a64c605121d28a5c244c204f19d93643207ad85912cf97d32f5aee",
+    "adoptedBaselineRecordSha256": "9cfedac57a210e2f07cd2e39c4ced2db5de1d7e92c07ca3e6ed7c1d770139b23",
+    "restoredIniSha256": "3aad3dbd38ec509772b73a41f62dfd21cd4e00f118dfce977dec235c759cfb91",
+    "onlyTemporaryConnectionByteReversed": true,
+    "quarantinedPluginFilesRestored": 4,
+    "activeCommissioningMarkerRemoved": true,
+    "applicationLaunchedByRestore": false
+  },
+  "postExitReadOnlyInventory": {
+    "observedUtc": "2026-09-27T04:06:35.7308754Z",
+    "actisenseNgtCom8Present": true,
+    "usbSerialCom4Present": true,
+    "tailscaleSshRustdeskRunningAutomatic": true,
+    "configurationChangedByInventory": false,
+    "note": "COM8 is now reported present, unlike the earlier inventory. Port presence alone does not establish sensor freshness or accuracy."
+  },
+  "limits": [
+    "This stock-session record does not qualify a Beta 2 application or its later installation.",
+    "No physical actuator command was issued.",
+    "The strict capture failure is retained; a diagnostic image does not override that gate.",
+    "Normal shutdown log markers do not reconstruct an unavailable native exit code.",
+    "The live display is reported as 1920x1080 at 150%; only the application frame was resized to 1280x800."
+  ],
+  "chartHelperCleanup": {
+    "toolCommit": "ddf81076d8f4235b66c889c492b36505085e2e9a",
+    "helperProcessId": 27228,
+    "helperSha256": "ec27c947fc9ba4ae09345961780b885deddc2e4fcf094805a14cdf19504e0adb",
+    "pipeServerPidVerified": true,
+    "fixedLocalShutdownRequests": 1,
+    "requestBytes": 1025,
+    "replyBytes": 3,
+    "replyMeaningAssumed": false,
+    "retainedProcessHandleExitCode": 0,
+    "forceTerminationUsed": false,
+    "applicationRelaunched": false
+  }
+}

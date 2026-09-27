@@ -10,7 +10,18 @@ if (-not $Runtime) { throw 'App-local x86 MSVC redistributable directory not fou
 $Output = Join-Path $Root 'build/developer-preview'
 python (Join-Path $PSScriptRoot 'package-preview.py') --install "$Root/build/production-install" `
     --build "$Root/build/production-windows" --runtime $Runtime.FullName --output $Output
-if ($LASTEXITCODE -ne 0) { throw 'Recovery assembly failed' }
+$AssemblyExit = $LASTEXITCODE
+$Evidence = Join-Path $Root 'evidence/local'
+$null = New-Item -ItemType Directory -Path $Evidence -Force
+foreach ($Name in @('production-package-selftest.json', 'production-restart-selftest.json')) {
+    $Report = Join-Path $Output $Name
+    if (Test-Path -LiteralPath $Report -PathType Leaf) {
+        Copy-Item -LiteralPath $Report -Destination (Join-Path $Evidence $Name)
+    } elseif ($AssemblyExit -eq 0) {
+        throw ('Successful assembly omitted executed capability evidence: ' + $Name)
+    }
+}
+if ($AssemblyExit -ne 0) { throw 'Recovery assembly failed' }
 python (Join-Path $PSScriptRoot 'verify-preview-pe.py') "$Output/OpenNavX-Beta2-Portable-Recovery/app" `
     --report "$Root/evidence/local/preview-dll-audit.json"
 if ($LASTEXITCODE -ne 0) { throw 'Recovery dependency closure failed' }

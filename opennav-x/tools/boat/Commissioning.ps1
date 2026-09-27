@@ -154,13 +154,22 @@ function Get-CommissioningIniDiff([string]$Before,[string]$After) {
     [pscustomobject]@{key=$_;before=$beforeValues[$_];after=$afterValues[$_]}
   })
 }
+function Assert-CommissioningProtectedValues($Before,$After,[string]$InstalledBasemapDefault='') {
+  Assert-InputOnlyProfile $After
+  foreach ($key in @(@($Before.Keys)+@($After.Keys) | Sort-Object -Unique)) {
+    if ($key -match '^(Settings/NMEADataSource/|Directories/|ChartDirectories/)' -and $Before[$key] -cne $After[$key]) {
+      # Only the installed resource selector may fill this existing empty
+      # preference from its hash-bound stock locator. Custom selections, chart
+      # directories and every connection remain exact. No path normalization.
+      if ($key -ceq 'Directories/BaseShapefileDir' -and $Before.ContainsKey($key) -and
+          $Before[$key] -ceq '' -and $InstalledBasemapDefault -and
+          $After[$key] -ceq $InstalledBasemapDefault) { continue }
+      throw 'Navigation, chart path or connection configuration changed; automatic baseline restore refused.'
+    }
+  }
+}
 function Assert-CommissioningRestoreIni([string]$InputOnly,[string]$Current) {
   $before=Read-ProfileForAudit $InputOnly;$after=Read-ProfileForAudit $Current
-  Assert-InputOnlyProfile $after
-  foreach ($key in @(@($before.Keys)+@($after.Keys) | Sort-Object -Unique)) {
-    # Normal view/plugin-enabled persistence is reviewable; navigation/source
-    # configuration changes need a separate recovery plan and are never erased.
-    if ($key -match '^(Settings/NMEADataSource/|Directories/|ChartDirectories/)' -and $before[$key] -cne $after[$key]) { throw 'Navigation, chart path or connection configuration changed; automatic baseline restore refused.' }
-  }
+  Assert-CommissioningProtectedValues $before $after
 }
 . (Join-Path $PSScriptRoot 'CommissioningBaseline.ps1')

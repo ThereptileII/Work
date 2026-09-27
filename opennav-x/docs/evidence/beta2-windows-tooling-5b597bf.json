@@ -1,0 +1,62 @@
+{
+  "schema": 1,
+  "scope": "Read-only boat window-review tooling, not product acceptance",
+  "commit": "5b597bff0df7295a0ab1f3edbc3d45217582b56d",
+  "applicationSourceUnchangedFrom": "6160d3e4bcd924853462f96a32f1b502a72a2884",
+  "ciRun": "https://github.com/ThereptileII/Work/actions/runs/36277973803",
+  "environment": "Native Windows Server 2022, Windows PowerShell 5.1",
+  "status": "passed",
+  "suites": [
+    {
+      "name": "maintenance-boat-tools",
+      "passed": 27,
+      "status": "passed"
+    },
+    {
+      "name": "maintenance-commissioning-launch",
+      "passed": 11,
+      "status": "passed"
+    },
+    {
+      "name": "maintenance-commissioning",
+      "passed": 21,
+      "status": "passed"
+    },
+    {
+      "name": "maintenance-official-upgrade-policy",
+      "passed": 86,
+      "status": "passed"
+    },
+    {
+      "name": "maintenance-preparation",
+      "passed": 34,
+      "status": "passed"
+    },
+    {
+      "name": "maintenance-review-window",
+      "passed": 145,
+      "status": "passed"
+    },
+    {
+      "name": "maintenance-source-checkout",
+      "passed": 16,
+      "status": "passed"
+    }
+  ],
+  "totalPassed": 340,
+  "failures": 0,
+  "sourceBlobsCompared": 537,
+  "sourceDifferences": 0,
+  "artifactId": 10917353552,
+  "artifactZipSha256": "931261984bb34d009836f75d520bc4e30a75aeb6bf448337735188af0a3fdaf7",
+  "downloadedAndVerified": true,
+  "normalizedJobLogSha256": "4992b3a1ccb109800ad62a499be64c34617e95697c2e49909328138e2cffab78",
+  "nativeUiActionsExecuted": false,
+  "hardwareCommands": 0,
+  "boatAcceptance": false,
+  "productReleaseAccepted": false,
+  "limitations": [
+    "Actual installed selection screenshots remain pending",
+    "Automatic in-app restart remains outside this independent cold-launch audit"
+  ]
+}

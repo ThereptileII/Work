@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.24)
-project(OpenNavX VERSION 0.3.0 LANGUAGES CXX)
+project(OpenNavX VERSION 0.4.0 LANGUAGES CXX)
 if(MSVC)
   # Labels and paths are UTF-8 regardless of the Windows runner's code page.
   add_compile_options(/utf-8)
@@ -205,11 +205,19 @@ if(OPENNAV_BUILD_TESTS)
     ${CMAKE_CURRENT_SOURCE_DIR}/tests/diagnostic_snapshot_tests.py)
   add_test(NAME navigation_chart_layout_geometry COMMAND ${Python3_EXECUTABLE}
     ${CMAKE_CURRENT_SOURCE_DIR}/tests/chart_layout_tests.py)
+  add_test(NAME windows_route_summary_layout_contract COMMAND ${Python3_EXECUTABLE}
+    ${CMAKE_CURRENT_SOURCE_DIR}/tests/windows_ui_layout_tests.py)
+  add_test(NAME native_diagnostic_geometry_observation COMMAND ${Python3_EXECUTABLE}
+    ${CMAKE_CURRENT_SOURCE_DIR}/tools/test-diagnostic-geometry.py)
   add_executable(commissioning_restart_tests tests/commissioning_restart_tests.cpp)
   target_link_libraries(commissioning_restart_tests PRIVATE opennav_restart_protocol)
   add_test(NAME commissioning_restart_wire_contract COMMAND commissioning_restart_tests)
   add_test(NAME commissioning_restart_package_capability COMMAND ${Python3_EXECUTABLE}
     ${CMAKE_CURRENT_SOURCE_DIR}/tests/restart_capability_tests.py)
+  add_test(NAME startup_log_rotation_contract COMMAND ${Python3_EXECUTABLE}
+    ${CMAKE_CURRENT_SOURCE_DIR}/tests/startup_log_tests.py)
+  add_test(NAME installer_expected_version_notice COMMAND ${Python3_EXECUTABLE}
+    ${CMAKE_CURRENT_SOURCE_DIR}/tests/installer_welcome_tests.py)
   add_executable(restart_probe tests/restart_probe.cpp)
   target_link_libraries(restart_probe PRIVATE opennav_platform)
   if(WIN32)

@@ -3,6 +3,7 @@ import ctypes as C
 from ctypes import wintypes as W
 import json
 from pathlib import Path
+import re
 import struct
 import time
 import zlib
@@ -317,14 +318,26 @@ def assert_product_page(handle, page):
     assert ChildWindowFromPointEx(handle,point,1)==child,'Another pane covers the XNav page'
 
 def assert_route_summary_layout(handle):
-    """A label hidden at narrow startup must rejoin its sizer when expanded."""
+    """The current destination summary must reflow between bottom controls."""
     labels = children(handle)
-    summary = [h for h, text in labels if text == 'Route unavailable' or text.endswith(' NM to destination')]
     demo = [h for h, text in labels if text == 'Demo']
-    assert len(summary) == len(demo) == 1, 'Route summary or Demo button missing'
-    a, b = W.RECT(), W.RECT()
-    assert GetWindowRect(summary[0], C.byref(a)) and GetWindowRect(demo[0], C.byref(b))
-    assert a.left >= b.right and b.top <= a.top < a.bottom <= b.bottom, 'Route summary overlaps bottom controls'
+    assert len(demo) == 1, 'Fixture Demo button missing or ambiguous'
+    bottom = GetParent(demo[0])
+    summary = [h for h, text in labels if GetParent(h) == bottom and
+               (text in ('Route unavailable', 'No active route') or
+                re.fullmatch(r'[0-9]+\.[0-9] NM  /  \S.*', text))]
+    system = [h for h, text in labels if text == 'System' and GetParent(h) == bottom]
+    assert len(summary) == len(system) == 1, 'Route summary or System button missing or ambiguous'
+    a, left, right, pane, frame = (W.RECT() for _ in range(5))
+    for window, rect in ((summary[0], a), (demo[0], left), (system[0], right),
+                         (bottom, pane), (handle, frame)):
+        assert GetWindowRect(window, C.byref(rect))
+    assert (frame.left <= pane.left <= a.left < a.right <= pane.right <= frame.right and
+            frame.top <= pane.top <= a.top < a.bottom <= pane.bottom <= frame.bottom), \
+        'Route summary is clipped or outside its bottom pane'
+    assert (left.right <= a.left < a.right <= right.left and
+            max(left.top, right.top) <= a.top < a.bottom <= min(left.bottom, right.bottom)), \
+        'Route summary overlaps bottom controls'
 
 def capture(handle, path, resize=True, screen_pixels=False):
     if resize:

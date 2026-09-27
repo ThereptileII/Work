@@ -1,0 +1,205 @@
+{
+  "schema": 1,
+  "version": "0.4.0-beta2",
+  "commit": "6160d3e4bcd924853462f96a32f1b502a72a2884",
+  "ciRun": "https://github.com/ThereptileII/Work/actions/runs/36277024981",
+  "status": "failed",
+  "scope": "Exact native Windows fixture-enabled integration candidate; partial evidence only",
+  "environment": {
+    "os": "Windows Server 2022, 64-bit",
+    "compiler": "MSVC 19.44.35229.0",
+    "applicationAbi": "Win32/x86",
+    "testFixtures": true
+  },
+  "upstream": {
+    "version": "5.12.4",
+    "commit": "37fd0cddb7334fe489e9f18aa163977a9c5c84f7"
+  },
+  "artifact": {
+    "name": "windows-integration-6160d3e4bcd924853462f96a32f1b502a72a2884",
+    "id": 10917762627,
+    "url": "https://github.com/ThereptileII/Work/actions/runs/36277024981/artifacts/10917762627",
+    "bytes": 16751342,
+    "sha256": "1bb7eda773c25cd0bbd19d475fd7486001156257c55772f5bb75fe0a714c49fa",
+    "downloadedAndHashVerifiedAgainstCiUpload": true,
+    "kind": "Failure evidence, not an installer or a distributable product"
+  },
+  "jobLogSha256": "2ef4a6281b9effc52cc9680884216e26909c1f6811e738268d6a9e8e2b1374c4",
+  "automatedResults": [
+    {
+      "suite": "Native integrated MSVC build",
+      "status": "passed"
+    },
+    {
+      "suite": "Native CTest",
+      "status": "passed",
+      "passed": 102,
+      "failed": 0
+    },
+    {
+      "suite": "Initial navigation-object/AIS integration scenario",
+      "status": "passed",
+      "checks": 21,
+      "evidence": "objects-input-profile/objects-fixture-results.json",
+      "includes": [
+        "late GPS/AIS acquisition",
+        "owned snapshots and worker-thread rejection",
+        "waypoint/route mutations and stale selection guards",
+        "selected Stop identity/revision",
+        "modal lifetime and external route changes",
+        "deleted-route detail",
+        "chart restoration after actual Options changes",
+        "deferred chart selection"
+      ]
+    },
+    {
+      "suite": "Remaining route progress",
+      "status": "passed",
+      "checks": 26,
+      "evidence": "route-progress-results.json"
+    },
+    {
+      "suite": "XNav/Legacy/Safe shared fixture persistence",
+      "status": "passed",
+      "evidence": "mode-cycle-results.json"
+    },
+    {
+      "suite": "Crash recovery repetitions",
+      "status": "passed",
+      "runs": 3,
+      "checksPerRun": 5,
+      "evidencePattern": "recovery-repeat-{0,1,2}/recovery-results.json"
+    },
+    {
+      "suite": "Navigation, route, instruments, N2K and boat-bridge loopback transports",
+      "status": "passed transport and lifecycle checks; full numeric screenshot review not asserted here",
+      "externalHardware": false
+    },
+    {
+      "suite": "Signal K loopback acquisition",
+      "status": "passed",
+      "framesSent": 20,
+      "evidence": "signalk-results.json"
+    },
+    {
+      "suite": "Recording/replay/calibration export and diagnostic bundle",
+      "status": "passed",
+      "checks": 6,
+      "evidence": "recording-results.json"
+    },
+    {
+      "suite": "Manual pilot adapter simulator",
+      "status": "passed",
+      "checks": 6,
+      "externalHardware": false,
+      "evidence": "pilot-results.json"
+    },
+    {
+      "suite": "Actual loader/resource self-test",
+      "status": "passed; disposable profile unchanged and output overwrite rejected",
+      "evidence": "native job log"
+    }
+  ],
+  "laterFailures": [
+    {
+      "suite": "Pointer user flows",
+      "evidence": "user-flows-results.json",
+      "trigger": "North orientation click; Course state not observed before timeout",
+      "finding": "Native diagnostic remained North. Cause unresolved in this candidate; requires instrumented pointer/handler/runtime observation. No dismissal as a timing-only failure."
+    },
+    {
+      "suite": "Fixture preview UI",
+      "evidence": "preview-results.json",
+      "trigger": "Route summary or Demo button missing",
+      "finding": "Native child inventory contains Demo and the new distance/destination summary. The old helper only recognizes the obsolete NM to destination caption. Native replacement run still required."
+    },
+    {
+      "suite": "DPI rail",
+      "evidence": "dpi-results.json",
+      "trigger": "150% old diagnostic x1129+width204 exceeded current 1280px frame",
+      "finding": "Current captured pixels, failure diagnostics and native HWND inventory agree on a fitting four-value rail. The 0.5-second native resize settle was shorter than the 1-second diagnostic publication interval. Observation-pairing fix must retain all containment and minimum-height assertions."
+    },
+    {
+      "suite": "Chart/plugin workflow",
+      "evidence": "charts-results.json",
+      "trigger": "OpenCPN plugins not found directly on grouped Settings page",
+      "finding": "Old flat-settings interaction path; software ENC rendering had executed before the failure. No completed chart phase was written and the OpenGL phase was not reached."
+    }
+  ],
+  "dpi": {
+    "completedScalesPercent": [
+      100,
+      125
+    ],
+    "observedDpi": [
+      96,
+      120,
+      144
+    ],
+    "failedScalePercent": 150,
+    "restoredDesktopScalePercent": 100,
+    "completedScaleCoverage": [
+      "four visible rail values before/after critical alert",
+      "night primary pages",
+      "native injected touch and diagnostic scrolling",
+      "fullscreen return",
+      "Legacy and Safe transitions"
+    ],
+    "physicalTouchAccepted": false,
+    "fullDpiGatePassed": false
+  },
+  "chartEvidence": {
+    "softwarePartialOnly": true,
+    "completedPhases": 0,
+    "openGlQualified": false,
+    "fixtures": [
+      {
+        "cell": "US5SEAFL",
+        "archiveSha256": "b027e029dc7b76595381d89e3718145eb5069e5a03917e78bada4f8ebe8c84e4"
+      },
+      {
+        "cell": "US5SEAFK",
+        "archiveSha256": "99c9b55d49828503666668e956f91444ee79b434db4bdf65f3104c3e42c32d51"
+      }
+    ],
+    "source": "Public NOAA ENC test downloads; no chart material added by this record"
+  },
+  "screenshotsActuallyInspected": [
+    {
+      "file": "dpi-150-failure.png",
+      "sha256": "bdbc86f55427f1a4fba4d40cac56335f1c900a69cc09d335ffdde45b966d34a7",
+      "scope": "150% native DPI / 1280x800",
+      "observed": "All four primary values and status labels are visible; coastlines render. Later same-frame diagnostics and native rectangles agree on x1065..1269, y129..704. The failing assertion used an older geometry observation."
+    },
+    {
+      "file": "chart-software-01-loaded.png",
+      "sha256": "5e6c2491f0cf38e12157d60e8f3dddc0dc395414d0f12c446e2330820f6c62c0",
+      "scope": "Software renderer / NOAA US5SEAFL",
+      "observed": "ENC coastline, named features, depths, navigation symbols and ownship are visible. Chart remains dominant; absent depth/wind/heading readings are explicitly unavailable. Large native Feet annotation and dense chart labels remain visually prominent."
+    },
+    {
+      "file": "chart-software-03a-adjacent-cell.png",
+      "sha256": "d99a79938635eacb39977b22e6125fea2232dca853c978b14cf9949614ab1b9d",
+      "scope": "Software renderer / adjacent NOAA US5SEAFK",
+      "observed": "Different geographic coverage, detailed soundings and traffic-lane/contour information are visible; this is chart content rather than an empty all-water canvas."
+    },
+    {
+      "file": "chart-software-overlay.png",
+      "sha256": "afd435e62a39cbe703165610f122830046fb9f2c0c7e3283f66b201099a8cd6c",
+      "scope": "XNav menu over the chart workflow",
+      "observed": "Grouped navigation actions are visible within the window. This full-page menu capture does not prove chart rendering while a menu covers it or qualify the final visual design."
+    }
+  ],
+  "physicalHardwareCommands": 0,
+  "boatAcceptance": false,
+  "productionFixtureOffQualifiedByThisRecord": false,
+  "installerQualifiedByThisRecord": false,
+  "releaseAccepted": false,
+  "limitations": [
+    "The four failed native gates remain blockers until an exact replacement commit passes.",
+    "Passed automated subtests are not summed into a release test total and do not override job failure.",
+    "Fixture-enabled UI screenshots intentionally contain Demo controls; they are not the installed product.",
+    "This public summary contains no user profile, connection details, private chart paths, license files or boat identity.",
+    "Only the four listed screenshots were visually reviewed for this record; other captures are not marked reviewed."
+  ]
+}

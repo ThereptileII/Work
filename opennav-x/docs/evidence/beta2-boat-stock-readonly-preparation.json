@@ -1,0 +1,42 @@
+{
+  "schema": 1,
+  "version": "0.4.0-beta2",
+  "toolCommit": "60cd054712c6a930147247970121a959d48e03bf",
+  "toolCiRun": "https://github.com/ThereptileII/Work/actions/runs/36284246369",
+  "status": "prepared-and-independently-verified-not-launched",
+  "purpose": "Read-only official-stock chart baseline before installed Beta 2 review",
+  "stockVersion": "5.12.4",
+  "stockArchitecture": "Win32/x86",
+  "stockExecutableSha256": "7c6547562cca7954671eaab72833ca9d788710fd9808b6a699b6dc823852ae0c",
+  "normalProfileBaselineSha256": "a2e416b7d35d6d2f82dcf6b3a97136a8fba5a133435c2047e07e09022426aef9",
+  "inputOnlyProfileSha256": "8fa87a4550a645521f0833155371f497c4631577d354466d41808f7fea7fe0fe",
+  "profileChange": "One previously inspected IOSelect byte, input/output to input-only; all other connection fields preserved",
+  "inventoryRecordSha256": "f1256d1789942e9c0691f9495069ae2ffc9d136ec2a64eb6c0833a34b6fb153b",
+  "reviewPlanSha256": "b48b4daa46e8c2d87fd1ffb2d216ba1be463b61a1fae9ed13a6a02f5b8ec8713",
+  "preparedRecordSha256": "08de08f71dada11ed87834a1768bf11b37a24ff5bb2534ab863fe652067e0823",
+  "appliedRecordSha256": "0d803d7344f3f08c1a90198736d5d1b49a15095a4d47c6b0281461c895042220",
+  "reviewedPluginDlls": 9,
+  "retainedPluginDlls": 5,
+  "quarantinedPluginDlls": [
+    "ais-vd_pi.dll",
+    "autopilot_route_pi.dll",
+    "AutoTrackRaymarine_pi.dll",
+    "rtlsdr_pi.dll"
+  ],
+  "allPluginAndSourceEvidenceHashesMatchedPreviousInspection": true,
+  "completeStockAndManagedHelperTreesVerified": true,
+  "quarantineCopiesAndRestorationJournalVerified": true,
+  "normalProfileFilesInventoried": 539,
+  "separateIndependentStockLaunchAuditPassedBeforeAndAfterPublication": true,
+  "applicationLaunched": false,
+  "beta2Installed": false,
+  "physicalActuatorCommandsIssued": false,
+  "remoteAccessServices": "SSH, Tailscale and RustDesk remain running and automatic",
+  "limits": [
+    "No chart or display acceptance; initial upstream navigation caution requires explicit visual review",
+    "Stock-only commissioning does not authorize an installed XNav generation",
+    "Serial gateway startup management traffic is distinct from actuator data output; electrical bus silence is not claimed",
+    "Original output/plugin configuration must be restored only after normal close and reviewed persistence; no automatic launch afterward"
+  ],
+  "privacy": "Private paths, account identifiers, chart content and navigation data omitted"
+}

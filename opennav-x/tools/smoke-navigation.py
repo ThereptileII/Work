@@ -422,10 +422,13 @@ try:
             return latest
         chart_colors = chartcheck.reference(capture('initial-no-input-chart'))
         assert all(min(c)>0 for c in chart_colors),'Black desktop is not a chart color'
-        phase[0]='rmc';deadline=time.monotonic()+110;seen=set()
+        phase[0]='rmc';deadline=time.monotonic()+150;seen=set()
         route_phases = ['route-card','route-detail-renamed','route-detail-active',
                         'route-detail-advanced','route-detail-completed',
                         'route-detail-delete-selected','route-detail-deleted']
+        waypoint_phases = ['waypoint-detail-selected','waypoint-detail-renamed',
+                           'waypoint-detail-protected','waypoint-detail-invalid',
+                           'waypoint-detail-ambiguous','waypoint-detail-deleted']
         def route_controls(sample,label):
             return [c for c in sample['runtime']['display'].get('product_controls',[])
                     if c['label']==label]
@@ -435,6 +438,25 @@ try:
             if path.exists():
                 result=read_json_snapshot(path);assert result['result']!='failed',result
                 current=result.get('phase','')
+                if current in waypoint_phases and current not in seen:
+                    if current=='waypoint-detail-selected':
+                        chart_bounded_context(['GO TO','Details','Edit waypoint','Remove'])
+                        click_object('Details')
+                    def waypoint_reconciled(s):
+                        if s['ui_page']!='Waypoint detail':return False
+                        controls={c['label']:c['enabled'] for c in s['runtime']['display']['product_controls']}
+                        if current in ('waypoint-detail-ambiguous','waypoint-detail-deleted'):
+                            return 'Back to waypoints' in controls and not any(
+                                name in controls for name in ('GO TO','Edit waypoint','Delete waypoint','View on chart'))
+                        protected=current in ('waypoint-detail-protected','waypoint-detail-invalid')
+                        return all(controls.get(name)==(not protected) for name in
+                                   ('GO TO','Edit waypoint','Delete waypoint')) and controls.get('View on chart')==(current!='waypoint-detail-invalid')
+                    ready=wait_object(waypoint_reconciled,'Selected waypoint follows '+current)
+                    capture(current)
+                    report.setdefault('waypoint_detail_lifecycle',[]).append({
+                        'phase':current,'controls':ready['runtime']['display']['product_controls']})
+                    (profile/(current+'-observed')).write_text('Current selected waypoint control state verified.\n')
+                    seen.add(current)
                 if current in route_phases+['settings-return','settings-return-navigation','waypoint-card','ais-card'] and current not in seen:
                     time.sleep(.6)
                     if current in route_phases:
@@ -498,6 +520,13 @@ try:
                         click_object('Details')
                         wait_object(lambda s:s['ui_page']=='Waypoint detail','Compact waypoint opens full Details')
                         capture('waypoint-details')
+                        phase[0]='none'
+                        wait_object(lambda s:route_controls(s,'GO TO') and not route_controls(s,'GO TO')[0]['enabled'],
+                                    'Stopped GPS disables detail Go To without reopening',timeout=10)
+                        capture('waypoint-detail-stale-position')
+                        phase[0]='rmc'
+                        wait_object(lambda s:route_controls(s,'GO TO') and route_controls(s,'GO TO')[0]['enabled'],
+                                    'Fresh GPS restores selected detail Go To')
                         click_object('View on chart')
                         wait_object(lambda s:s['ui_page']=='Navigation','Waypoint Details returns to chart')
                         (profile/'waypoint-context-observed').write_text('Compact, stale GPS guard, Details and chart return verified.\n')
@@ -515,7 +544,7 @@ try:
                         (profile/'ais-advice-observed').write_text('Observed actual shell diagnostic AIS event\n')
                 if result['result']=='passed':
                     assert report.get('live_ais_advice'),'No actual AIS advisory observed'
-                    assert len(seen)==11,seen
+                    assert len(seen)==17,seen
                     assert result.get('late_connection_added_after_deferred') and counts['ais'] >= 3,result
                     report['object_contract']=result;break
             time.sleep(.2)

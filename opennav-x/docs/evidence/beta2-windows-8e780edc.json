@@ -1,0 +1,159 @@
+{
+  "schema": 1,
+  "productVersion": "0.4.0-beta2",
+  "commit": "8e780edc34f68abd693a5d5f6aecdb3ba05a75c4",
+  "runId": 36287991989,
+  "runUrl": "https://github.com/ThereptileII/Work/actions/runs/36287991989",
+  "nativeJobId": 108532782547,
+  "nativeJobConclusion": "failure",
+  "qualification": "Functional Windows development evidence only; not Beta 2 release acceptance",
+  "artifacts": [
+    {
+      "id": 10922441496,
+      "purpose": "Early fixture-free installer/recovery/source bundle, pending endurance",
+      "sha256": "172fe7f9b9556374a448f33d78ef9760e9838e1b4b3a291de3dcb2feea3899a5",
+      "bytes": 174055511
+    },
+    {
+      "id": 10922292045,
+      "purpose": "Full native reports and screenshots including later failed soak",
+      "sha256": "6207f3dea6e20d2a4d64b0f20edbd05615bd6fc722a24b5c910748c5f4b4cc86",
+      "bytes": 27624361
+    },
+    {
+      "id": 10923065013,
+      "purpose": "Linux reports retained after cancellation during incomplete soak",
+      "sha256": "a7a459654fd1aa435e36d004e0a6168e07925856020c4d048b1cd050abe1a431",
+      "bytes": 13496415
+    }
+  ],
+  "artifactVerification": {
+    "apiUploadAndDownloadedSha256Match": true,
+    "zipCrcPassed": true,
+    "safePathsCheckedBeforeExtraction": true
+  },
+  "payloads": [
+    {
+      "name": "OpenNavX-Beta2-Portable-Recovery.zip",
+      "sha256": "be68c03aa650bba915e103ba3a0c626f0b129749b138957fbdd5db6b8dfe78bf",
+      "bytes": 49034943
+    },
+    {
+      "name": "OpenNavX-Beta2-source.zip",
+      "sha256": "49de336d9e351b7dd13b3e5fa2c4f292b40b3544cdd87f5ebb4d89dd0ab7eb1a",
+      "bytes": 82649438
+    },
+    {
+      "name": "OpenNavX-Beta2-Setup.exe",
+      "sha256": "0235a099e56a265a3dfe3f17de1f8dea1e66de2aa7a8c311bce0fd7a83d761ad",
+      "bytes": 44088071
+    },
+    {
+      "name": "OpenNavX-Beta2-Install-Guide.md",
+      "sha256": "0d4f25606fba27ecec325994713d1d7576ddb805af047ab0b398c9c23b330fef",
+      "bytes": 3839
+    },
+    {
+      "name": "OpenNavX-Beta2-Test-Guide.md",
+      "sha256": "5bf10fbda4aa007a9bbed8657cfdc34db8f76e83be34403e60101a1e2417e575",
+      "bytes": 4395
+    }
+  ],
+  "installedProduct": {
+    "version": "0.4.0-beta2",
+    "commit": "8e780edc34f68abd693a5d5f6aecdb3ba05a75c4",
+    "test_fixtures": false,
+    "build_purpose": "INSTALLED PRODUCT",
+    "executable_sha256": "b3f195b062e6cf737072b4deef5a025fc74f5c8b742751d53b6f35f3e0ac5b66",
+    "restart_helper_sha256": "daac4e71567a7888a3ae002023faeda0348b0fffa22285635c7515a023644f12",
+    "commissioning_restart_protocol": 1
+  },
+  "correspondingSource": {
+    "integrityManifest": "SOURCE_REFERENCE.json",
+    "sha256EntriesPassed": 5022,
+    "upstreamCommit": "37fd0cddb7334fe489e9f18aa163977a9c5c84f7",
+    "scope": "Exact archived checkout bytes, including Windows newline policy"
+  },
+  "nativeGates": {
+    "integratedTestsFixturesOn": {
+      "passed": 102,
+      "failed": 0
+    },
+    "integratedTestsFixturesOff": {
+      "passed": 102,
+      "failed": 0
+    },
+    "installer": {
+      "status": "passed",
+      "checks": 39,
+      "screenshotEntries": 19,
+      "expectedVersionNotices": 3,
+      "stockExecutableSha256": "7c6547562cca7954671eaab72833ca9d788710fd9808b6a699b6dc823852ae0c"
+    },
+    "dpi": {
+      "status": "passed",
+      "scalesPercent": [
+        100,
+        125,
+        150
+      ],
+      "screenshots": 99,
+      "primaryHintObservations": 12
+    },
+    "charts": {
+      "status": "passed",
+      "screenshots": 25,
+      "rendering": "Software; host rejected requested OpenGL"
+    },
+    "productionRecovery": {
+      "status": "passed",
+      "checks": 7,
+      "screenshots": 16
+    },
+    "preview": {
+      "status": "passed",
+      "checks": 19,
+      "screenshots": 50
+    },
+    "pointerWorkflows": {
+      "status": "passed",
+      "checks": 8,
+      "screenshots": 9
+    },
+    "objects": {
+      "status": "passed",
+      "contractGroups": 25
+    },
+    "endurance": {
+      "status": "failed",
+      "requestedSeconds": 10800,
+      "samples": 0,
+      "reason": "Obsolete harness Light caption; actual control reads Day/Dusk/Night",
+      "fixForLaterCandidate": "ce7cd3e"
+    }
+  },
+  "linuxIntegrated": {
+    "jobId": 108532383402,
+    "conclusion": "cancelled",
+    "soakReportStatus": "running",
+    "retainedSamples": 327,
+    "threeHourAcceptance": false
+  },
+  "pixelReview": [
+    "installer-00-prior-test-version-welcome.png",
+    "dpi-150-night-menu-hover.png",
+    "dpi-150-night-sog-hover.png"
+  ],
+  "limitations": [
+    "Windows endurance failed before sampling; Linux endurance was cancelled, not passed.",
+    "Demo screenshots belong to the separate fixture build; installed PRODUCT_BUILD declares test_fixtures=false.",
+    "Physical boat display, real marine inputs and hardware OpenGL are separate acceptance gates.",
+    "Later LiveText cache, neutral Start-menu migration and corrected soak selector are absent from this candidate.",
+    "Actual early0.4 historical Start-menu rollback requires the separately corrected explicit-layout migration; do not infer compatibility from version alone."
+  ],
+  "privateEvidenceRoots": [
+    "evidence/local/boat-beta2/boat-review-8e780",
+    "evidence/local/boat-beta2/windows-8e780",
+    "evidence/local/boat-beta2/linux-8e780"
+  ]
+}

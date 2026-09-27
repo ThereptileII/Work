@@ -1,6 +1,7 @@
 #include "NavigationObjectScenario.h"
 #include "chcanv.h"
 #include "integration/NavigationObjects.h"
+#include "integration/NavigationActions.h"
 #include "integration/OpenCPNIntegration.h"
 #include "model/ais_decoder.h"
 #include "model/ais_target_data.h"
@@ -15,6 +16,8 @@
 #include "model/routeman.h"
 #include "ocpn_frame.h"
 #include "undo.h"
+#include "ui/Controls.h"
+#include "ui/ProductPanel.h"
 #include <algorithm>
 #include <cmath>
 #include <cstring>
@@ -24,6 +27,9 @@
 #include <thread>
 #include <wx/filefn.h>
 #include <wx/dialog.h>
+#include <wx/button.h>
+#include <wx/aui/aui.h>
+#include <wx/panel.h>
 #include <wx/jsonwriter.h>
 #include <wx/thread.h>
 #include <wx/timer.h>
@@ -54,6 +60,9 @@ bool route_modal_changed = false;
 struct ArrivalPoint { double lat, lon, radius; };
 ArrivalPoint first_arrival{}, final_arrival{};
 Route *deleted_detail = nullptr;
+RoutePoint *waypoint_detail = nullptr;
+int waypoint_detail_stage = 0;
+wxString duplicate_original_id;
 std::time_t AisTicksNow() { return wxDateTime::Now().ToUTC().GetTicks(); }
 // Explicit decoder-state injection in the isolated no-output fixture. Keep
 // its synthetic reports current while Python exercises the actual target card.
@@ -104,6 +113,143 @@ application::Route RouteCopy() {
       return r;
   throw std::runtime_error("Expected route missing");
 }
+void CheckPrimaryHints() {
+  // Actual wx controls on the application thread; never touch marine input,
+  // the user's pages, or global tooltip preferences.
+  wxFrame frame(nullptr, wxID_ANY, "Isolated primary hint checks");
+  auto *legacy = new wxButton(&frame, wxID_ANY, "Legacy control");
+  legacy->SetToolTip("Unchanged native help");
+  auto *legacy_tip = legacy->GetToolTip();
+  auto *button = new ui::XNavButton(&frame, wxID_ANY, "Menu", "Open navigation menu");
+  Check(button->GetToolTipText() == "Open navigation menu", "Day hint present");
+  button->SetLightMode(ui::LightMode::Night);
+  Check(!button->GetToolTip() && button->GetName() == "Open navigation menu" &&
+            button->GetHelpText() == "Open navigation menu",
+        "Night removes native hint while retaining accessible name and help");
+  button->SetHint("Updated control help");
+  Check(!button->GetToolTip() && button->GetHelpText() == "Updated control help",
+        "Updating a Night hint cannot recreate a native hover window");
+  button->SetLightMode(ui::LightMode::Dusk);
+  Check(!button->GetToolTip(), "Dusk keeps native hint absent");
+  button->SetLightMode(ui::LightMode::Day);
+  Check(button->GetToolTipText() == "Updated control help" &&
+            button->GetName() == "Open navigation menu",
+        "Returning to Day restores current help without changing accessible name");
+  button->SetHint("");
+  Check(!button->GetToolTip(), "Empty Day hint removes native tooltip");
+
+  auto *value = new ui::XNavDataValue(&frame, "SOG", "kn");
+  const auto now = Clock::now();
+  Sample sample{6.3, "First measured source", now, Validity::Measured};
+  value->SetReading(sample, now);
+  Check(value->GetToolTipText().Contains("First measured source"), "Day data hint present");
+  value->SetLightMode(ui::LightMode::Dusk);
+  sample.source = "Current measured source";
+  value->SetReading(sample, now + 200ms);
+  Check(!value->GetToolTip() && value->GetHelpText().Contains("Current measured source"),
+        "Dusk input update retains source help without native tooltip");
+  value->SetLightMode(ui::LightMode::Night);
+  sample.value = 6.7;
+  value->SetReading(sample, now + 400ms);
+  Check(!value->GetToolTip() && value->GetName().Contains(wxString::Format("%.1f", 6.7)) &&
+            value->GetHelpText().Contains(wxString::Format("%.1f s old", .4)),
+        "Night input update retains live accessible value and age without native tooltip");
+  value->SetLightMode(ui::LightMode::Day);
+  Check(value->GetToolTipText() == value->GetHelpText() &&
+            value->GetToolTipText().Contains("Current measured source"),
+        "Returning to Day restores latest data hint");
+  Check(legacy->GetToolTip() == legacy_tip &&
+            legacy->GetToolTipText() == "Unchanged native help",
+        "Primary hint palette changes never alter Legacy tooltips");
+  Record("Actual wx primary hints follow Day/Dusk/Night; input updates retain accessibility and Legacy hints");
+}
+void CheckLiveTextLayout() {
+  // Count actual wx sizer executions, without adding a production test API or
+  // replacing the real ProductPanel update, wrapping or resize paths.
+  class LayoutCounter final : public wxBoxSizer {
+  public:
+    LayoutCounter() : wxBoxSizer(wxVERTICAL) {}
+    unsigned layouts = 0;
+    void RepositionChildren(const wxSize &minimum) override {
+      ++layouts;
+      wxBoxSizer::RepositionChildren(minimum);
+    }
+  };
+  wxFrame frame(nullptr, wxID_ANY, "Isolated live text layout checks");
+  auto *panel = new ui::ProductPanel(&frame, {});
+  panel->SetSize(panel->FromDIP(wxSize(420, 700)));
+  ui::ProductState state;
+  state.now = Clock::now();
+  state.advice.reason = "LIVE TEXT CHECK / This unchanged advisory has enough words to wrap onto several lines at a narrow panel width. Its measured source remains unavailable until a fresh observation arrives.";
+  panel->Update(state, ui::LightMode::Day);
+  panel->ShowPage(ui::ProductPage::Advice, ui::LightMode::Day);
+  wxStaticText *label = nullptr;
+  for (auto *child : panel->GetChildren())
+    if (auto *text = dynamic_cast<wxStaticText *>(child);
+        text && text->GetLabel().StartsWith("LIVE TEXT CHECK")) label = text;
+  Check(label && label->GetLabel().Contains('\n'), "Actual live status wraps at narrow width");
+  auto *body = panel->GetSizer();
+  auto *counter = new LayoutCounter();
+  panel->SetSizer(counter, false);
+  counter->Add(body, 1, wxEXPAND);
+  panel->Layout();
+  const auto before = counter->layouts;
+  const auto wrapped = label->GetLabel();
+  for (int tick = 0; tick < 8; ++tick) {
+    state.now += 250ms;
+    panel->Update(state, ui::LightMode::Day);
+  }
+  report["live_text"]["unchanged_update_count"] = 8;
+  report["live_text"]["unchanged_layout_calls"] = static_cast<int>(counter->layouts - before);
+  Check(counter->layouts == before && label->GetLabel() == wrapped,
+        "Unchanged wrapped live status does not execute another layout across eight real updates");
+  state.advice.reason = "LIVE TEXT CHECK / A new observation arrived.";
+  panel->Update(state, ui::LightMode::Day);
+  Check(counter->layouts > before && label->GetLabel().Contains("new observation"),
+        "Changed live status still lays out and updates its visible text");
+  state.advice.reason = "LIVE TEXT CHECK / This unchanged advisory has enough words to wrap onto several lines at a narrow panel width. Its measured source remains unavailable until a fresh observation arrives.";
+  panel->Update(state, ui::LightMode::Day);
+  const auto narrow = label->GetLabel();
+  const auto before_resize = counter->layouts;
+  panel->SetSize(panel->FromDIP(wxSize(1000, 700)));
+  panel->SendSizeEvent();
+  report["live_text"]["wide_client_width"] = panel->GetClientSize().x;
+  report["live_text"]["resize_layout_calls"] = static_cast<int>(counter->layouts - before_resize);
+  report["live_text"]["narrow_label"] = narrow;
+  report["live_text"]["wide_label"] = label->GetLabel();
+  auto unfolded = label->GetLabel();
+  unfolded.Replace("\n", " ");
+  Check(counter->layouts > before_resize && label->GetLabel() != narrow &&
+        unfolded == wxString::FromUTF8(state.advice.reason),
+        "Wider panel rewraps unchanged raw live text immediately");
+  const auto wide = label->GetLabel();
+  const auto after_resize = counter->layouts;
+  panel->Update(state, ui::LightMode::Day);
+  Check(counter->layouts == after_resize && label->GetLabel() == wide,
+        "Unchanged wide live text settles without subsequent layout");
+  panel->SetSize(panel->FromDIP(wxSize(420, 700)));
+  panel->SendSizeEvent();
+  Check(label->GetLabel() == narrow, "Narrow resize restores wrapping from original text");
+  const auto before_font = counter->layouts;
+  label->SetFont(ui::UiFont(*label, 20));
+  panel->Update(state, ui::LightMode::Day);
+  Check(counter->layouts > before_font && label->GetLabel() != narrow,
+        "Font change at unchanged width rewraps original live text");
+  const auto after_font = counter->layouts;
+  panel->Update(state, ui::LightMode::Day);
+  Check(counter->layouts == after_font, "Unchanged text with the new font settles without layout");
+  label->SetFont(ui::UiFont(*label, 14));
+  panel->Update(state, ui::LightMode::Day);
+  Check(label->GetLabel() == narrow, "Restoring the font restores the original narrow wrapping");
+  state.advice.reason = "LIVE TEXT CHECK\nFresh source\nCurrent age";
+  panel->Update(state, ui::LightMode::Day);
+  Check(label->GetLabel() == wxString::FromUTF8(state.advice.reason),
+        "Explicit source line breaks remain intact");
+  state.advice.reason.clear();
+  panel->Update(state, ui::LightMode::Day);
+  Check(label->GetLabel().empty(), "An empty live status clears the previous text");
+  Record("Actual wx live text caches raw value and width; unchanged updates avoid layout and text/resize changes reflow");
+}
 void CheckWaypointContext(const Navigation &selected, const std::string &id) {
   const auto now = Clock::now();
   const auto context = CopyWaypointContext(id, selected, now);
@@ -147,6 +293,14 @@ void CheckWaypointContext(const Navigation &selected, const std::string &id) {
     ~Restore() { point->m_lat = lat; point->m_lon = lon; gLat = own_lat; gLon = own_lon; }
   } restore{point, old_lat, old_lon, original_lat, original_lon};
   point->m_lat = std::numeric_limits<double>::quiet_NaN();
+  const auto view_actions = MakeNavigationActions(*gFrame, [selected] { return selected; }, {});
+  auto *canvas = gFrame->GetPrimaryCanvas();
+  const auto prior_view = canvas->GetVP();
+  Check(!view_actions.view_waypoint(id).ok &&
+            canvas->GetVP().clat == prior_view.clat && canvas->GetVP().clon == prior_view.clon,
+        "Invalid waypoint chart command rejects without changing viewport");
+  Check(!view_actions.view_waypoint("MISSING-IDENTITY").ok,
+        "Missing waypoint chart command rejects explicitly");
   Check(context.waypoint->latitude_deg == old_lat && context.range_nm.value == distance,
         "Retained waypoint context is independent of later native geometry changes");
   Check(!CopyWaypointContext(id, selected, now).range_nm.value,
@@ -229,6 +383,70 @@ bool HasActivationModal(wxWindow *window) {
       dialog && dialog->IsModal() && dialog->GetTitle() == "Activate route") return true;
   for (auto *child : window->GetChildren())
     if (HasActivationModal(child)) return true;
+  return false;
+}
+bool ObserveWaypointDetail(const Navigation &selected) {
+  const char *phases[]{"waypoint-detail-selected", "waypoint-detail-renamed",
+      "waypoint-detail-protected", "waypoint-detail-invalid", "waypoint-detail-ambiguous",
+      "waypoint-detail-deleted"};
+  if (!waypoint_detail && waypoint_detail_stage == 0) {
+    const auto created = CreateWaypoint({gLat + .2, gLon + .2}, "BETA TEST detail", "Detail lifetime test");
+    Check(created.ok, "Create temporary selected waypoint");
+    waypoint_detail = pWayPointMan->FindWaypointByGuid(created.identity);
+    Check(waypoint_detail, "Temporary selected waypoint registered");
+    gFrame->GetPrimaryCanvas()->ShowMarkPropertiesDialog(waypoint_detail);
+  }
+  if ((waypoint_detail_stage == 1 && !HasVisibleText(gFrame, "BETA TEST externally renamed mark")) ||
+      (waypoint_detail_stage == 3 && !HasVisibleText(gFrame, "Position unavailable"))) {
+    Write(); return false; // wait for the actual one-second detail refresh
+  }
+  report["phase"] = wxString::FromUTF8(phases[waypoint_detail_stage]);
+  Write();
+  if (!wxFileExists(wxString::FromUTF8(directory) + "/" +
+                   wxString::FromUTF8(phases[waypoint_detail_stage]) + "-observed")) return false;
+  if (waypoint_detail_stage == 0) {
+    Check(EditWaypoint(Mark(waypoint_detail->m_GUID.ToStdString(wxConvUTF8)),
+        "BETA TEST externally renamed mark", "Changed while detail remains open").ok,
+        "Rename selected waypoint externally");
+  } else if (waypoint_detail_stage == 1) {
+    Check(HasVisibleText(gFrame, "BETA TEST externally renamed mark"),
+          "Selected waypoint detail updates rendered name without reopening");
+    waypoint_detail->m_bIsInLayer = true;
+  } else if (waypoint_detail_stage == 2) {
+    waypoint_detail->m_bIsInLayer = false;
+    waypoint_detail->m_lat = std::numeric_limits<double>::quiet_NaN();
+  } else if (waypoint_detail_stage == 3) {
+    Check(HasVisibleText(gFrame, "Position unavailable"),
+          "Invalid selected waypoint displays no NaN coordinates");
+    waypoint_detail->m_lat = gLat + .2;
+    auto *other = pWayPointMan->FindWaypointByGuid(mark_id);
+    Check(other, "Original mark remains registered");
+    duplicate_original_id = other->m_GUID;
+    other->m_GUID = waypoint_detail->m_GUID;
+    const auto actions = MakeNavigationActions(*gFrame, [selected] { return selected; }, {});
+    const auto before = gFrame->GetPrimaryCanvas()->GetVP();
+    Check(!actions.view_waypoint(waypoint_detail->m_GUID.ToStdString(wxConvUTF8)).ok &&
+              gFrame->GetPrimaryCanvas()->GetVP().clat == before.clat &&
+              gFrame->GetPrimaryCanvas()->GetVP().clon == before.clon,
+          "Duplicate identity cannot center the chart on an arbitrary waypoint");
+  } else if (waypoint_detail_stage == 4) {
+    Check(HasVisibleText(gFrame, "Waypoint unavailable"),
+          "Ambiguous selected detail removes actions");
+    // The other test mark was not replaced or persisted under this temporary ID.
+    for (auto *n = pWayPointMan->GetWaypointList()->GetFirst(); n; n = n->GetNext())
+      if (n->GetData() != waypoint_detail && n->GetData()->m_GUID == waypoint_detail->m_GUID)
+        n->GetData()->m_GUID = duplicate_original_id;
+    Check(DeleteWaypoint(Mark(waypoint_detail->m_GUID.ToStdString(wxConvUTF8))).ok,
+          "Remove selected temporary mark through native database");
+    waypoint_detail = nullptr;
+  } else {
+    Check(HasVisibleText(gFrame, "Waypoint unavailable"),
+          "Deleted selected detail remains explicitly unavailable");
+    Record("Open waypoint detail refreshes rename/protection and refuses invalid, ambiguous and deleted selections");
+    Record("Chart centering rejects missing, nonfinite and duplicate waypoint identities without viewport mutation");
+    return true;
+  }
+  ++waypoint_detail_stage;
   return false;
 }
 bool ObserveRouteDetail(const Navigation &selected) {
@@ -345,13 +563,32 @@ void ObjectScenarioStep(const vessel::Navigation &selected) {
     return;
   try {
     Check(wxIsMainThread(), "Application thread required");
-    Check(++waited < 95, "Object scenario timed out");
+    Check(++waited < 130, "Object scenario timed out");
     if (!added_late_connection) {
       Check(TheConnectionParams().empty(), "Late-add fixture requires no initial connections");
       Check(!selected.latitude_deg.value, "No selected GPS may precede connection addition");
       // Give the actual application two completed navigation timer passes with
       // no input. Add through the same API used by the normal connection editor.
       if (++late_connection_ticks < 3) return;
+      CheckPrimaryHints();
+      CheckLiveTextLayout();
+      {
+        // Same pane name is not ownership. A foreign manager must retain
+        // ordinary wxAUI behavior while the real XNav shell is active.
+        auto *other = new wxFrame(nullptr, wxID_ANY, "Isolated workspace check");
+        wxAuiManager manager(other);
+        auto *pane = new wxPanel(other);
+        manager.AddPane(pane, wxAuiPaneInfo().Name("OpenNavTop").Left());
+        const auto saved = manager.SavePerspective();
+        manager.GetPane(pane).Right();
+        Check(!opennav::IsTransientXNavPane(pane), "Pane names do not establish XNav ownership");
+        Check(opennav::LoadPersistentPerspective(manager, saved) &&
+                  manager.GetPane(pane).dock_direction == wxAUI_DOCK_LEFT,
+              "Foreign AUI manager uses normal perspective loading");
+        manager.UnInit();
+        other->Destroy();
+        Record("XNav workspace restoration is bound to actual owned pane pointers and manager");
+      }
       std::ifstream in(directory + "/OPENNAV_OBJECT_INPUT_PORT");
       unsigned port = 0;
       Check(bool(in >> port) && port >= 1024 && port <= 65535,
@@ -678,15 +915,17 @@ void ObjectScenarioStep(const vessel::Navigation &selected) {
           pWayPointMan->FindWaypointByGuid(mark_id));
       report["phase"] = wxString("waypoint-card");
     } else if (step == 6 && !wxFileExists(wxString::FromUTF8(directory) + "/waypoint-context-observed")) {
-      Check(++context_waited < 20, "Waypoint compact context and Details interaction not observed");
+      Check(++context_waited < 35, "Waypoint compact context and Details interaction not observed");
       Write();
       return;
+    } else if (step == 7) {
+      if (!ObserveWaypointDetail(selected)) return;
     } else if (step == 8) {
       ShowAISTargetQueryDialog(gFrame->GetPrimaryCanvas(), target->MMSI);
       report["phase"] = wxString("ais-card");
     } else if (step == 9) {
       if (!wxFileExists(wxString::FromUTF8(directory) + "/ais-context-observed")) {
-        Check(++context_waited < 35, "AIS compact chart selection not observed");
+        Check(++context_waited < 50, "AIS compact chart selection not observed");
         Write();
         return;
       }

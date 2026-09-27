@@ -1,6 +1,7 @@
 # OpenNav X status — 2026-09-27
 
-**Beta 2 development is in progress; it is not yet qualified or deployed.**
+**Beta 2 development is in progress; its first development package is installed
+on the boat, but it is not qualified for release.**
 
 The user's Desktop feedback has been read completely and recorded in
 [boat Beta 1 feedback](feedback/boat-beta1-feedback.md). The approved design
@@ -8,6 +9,100 @@ reference is the Beta 2 baseline. Current work separates fixture-enabled CI
 executables from the installed product, refines shared visual components and
 navigation workflows, and adds repeatable boat deployment and maintenance tools.
 The accepted Beta 1 results below remain historical evidence, not Beta 2 gates.
+
+### Current candidate
+
+`edd8da0a4bd386fbb2dbd249289b9f09eeae8dc3` is the replacement full candidate,
+matching all 680 mapped blobs/modes at local
+`3e0b17dcbb353793a5c135c18774a1e91a6a3b02`, in
+[CI 36295867893](https://github.com/ThereptileII/Work/actions/runs/36295867893).
+It downloads both immutable historical installers before clearing the read-only
+Actions credential. The previous run is superseded after its native installer
+harness failure; its unfinished Linux endurance is not an accepted soak.
+Boat development continues using the separately qualified functional package
+below; this replacement has not been deployed.
+
+### Superseded credential-order candidate
+
+`a896fb5c5fa935b5daa757087ebedc4cd531c1d3` was the previous full candidate,
+matching all 664 mapped blobs/modes at local
+`5dd114c00cf07ceef8b32e7d6ec978e33d5d9e50`, in
+[CI 36292727131](https://github.com/ThereptileII/Work/actions/runs/36292727131).
+Native contract, maintenance, transport, broker, display, bilingual stock-tool,
+integrated/fixture-free builds, DPI and chart/plugin gates passed. The installer
+gate passed initial installation/rollback, then failed because the harness had
+already cleared its Actions credential before fetching the second pinned prior
+package. The download ordering is corrected locally; genuine early-package
+rollback and complete endurance remain replacement-candidate gates.
+It includes the explicit historical-layout rollback fix and narrow observed
+profile-migration rules.
+
+The superseded `fa27637eb30150b472acd631cd28e6426d43b9fe` ran in
+[CI 36291671816](https://github.com/ThereptileII/Work/actions/runs/36291671816).
+All 655 mapped blobs/modes match local
+`357d4fee21bc6a1c3211646f230b89feadb036a0`. It includes the corrected endurance
+palette action and unchanged-value layout caching. It is not accepted and will
+not be released: subsequent source review found that an early 0.4 Beta 2 package
+still used the historical Start Menu layout. The new explicit layout marker
+preserves that package's immutable maintenance engine during rollback. Native
+x86/x64 COM tests pass; a complete genuine-package rollback test remains a gate
+for the next product candidate.
+
+### Retained development review package (not qualified)
+
+`8e780edc34f68abd693a5d5f6aecdb3ba05a75c4` was exercised in
+[CI 36287991989](https://github.com/ThereptileII/Work/actions/runs/36287991989).
+All 630 tracked blobs/modes match local `81ec667e1d3740b36b99eaf6a1ed7526b7edd044`;
+CI fetches and verifies the unchanged pinned OpenCPN source. This replacement
+adds the exact-version installer caution flow, reviewed profile-migration
+preservation, complete broker fixtures and component-local dim-mode hover hints.
+The local contract suite passes **71/71**, integrated Linux CTest **110/110**,
+and actual wx object workflows **25 groups / 25 captures**.
+The native functional suite, fixture-free recovery package, installer lifecycle,
+100/125/150% DPI/hover checks and chart/plugin gates passed. Their development
+review bundle and full native evidence have been downloaded and hash-verified.
+The Windows endurance harness then failed before its first sample because it
+still selected the removed Light caption. The next source uses the existing
+palette action and verifies Day/Dusk/Night. This candidate has no accepted
+Windows endurance result. Its Linux elapsed-time run was cancelled with 327
+retained samples and has no accepted endurance result. The hash-verified setup has now completed its first boat installation with
+exit 0. Independent before/after inventories confirm the complete normal profile
+is identical, and stock OpenCPN retains its validated hash. Launch and screen
+review remain pending a new installed plugin/data audit; this development bundle
+is not a qualified release. [Initial installation](evidence/beta2-boat-first-install-8e780.json).
+
+### Previous candidate (not qualified)
+
+`60cd054712c6a930147247970121a959d48e03bf` was exercised in
+[CI 36284246369](https://github.com/ThereptileII/Work/actions/runs/36284246369).
+All 591 tracked source blobs and modes match local source
+`f123bf5c3d33d979409a8f32418653ac56c2d413`; the pinned upstream gitlink is unchanged.
+The local portable contract suite passes **70/70**, and the sequential integrated
+Linux regression suite passes **110/110**. This candidate includes the
+startup-log rotation fix, preserved plugin workspace, tighter instrument spacing,
+fresh waypoint selection/permissions, and truthful route Undo eligibility.
+The expanded Linux object workflow passes 24 groups with 25 captures, and the
+actual-pointer workflow passes eight groups with nine captures. These local
+results do not replace native package or boat acceptance.
+
+The same candidate's native fixture-enabled functional suite, fixture-free
+recovery-package launch/mode smoke, DPI and chart/plugin checks have passed.
+Its installer gate failed when the accepted Beta 1 executable displayed the
+expected version-change navigation caution during the real update sequence.
+Candidate clean install, chart startup and first-install rollback had passed;
+the remaining lifecycle and native endurance steps are not accepted. The
+[narrow harness repair](installer/beta2-version-transition-notices.md) retains
+the actual captured warning and explicit Agree action, with exact owned-version
+checks. The expanded local portable suite passes **71/71**; a replacement native
+candidate is now running above. The superseded candidate's Linux three-hour
+elapsed-time trip began at 01:26 UTC; it is not an accepted endurance result.
+
+The separate exact-revision commissioning tooling has passed its native marker
+transport, full broker and actual Prepare/Arm/Collect gates; downloaded evidence
+and upload hashes are verified. See [the scoped qualification](installer/commissioning-restart-qualification.md).
+Actual installed-app launch, plugin shutdown, in-app mode transitions and boat
+screen review remain outstanding. Later UI-driver tooling is qualified separately;
+it is not part of the current candidate's acceptance evidence.
 
 ### Boat prerequisite — official 5.12.4 upgrade verified
 
@@ -24,6 +119,55 @@ Show were unchecked, and OpenCPN was not launched. Tailscale, SSH and RustDesk
 remain running. [Upgrade evidence](evidence/beta2-boat-stock-5.12.4-upgrade.json).
 This closes the stock-version prerequisite; Beta 2 still requires its own gates.
 
+A stock-only commissioning inventory matched all nine reviewed plugin DLLs
+and their source evidence. The stock session used a journaled one-byte input-only change and four
+temporary DLL quarantines. Both have now been restored after closed-session
+inspection, preserving the independently reviewed startup migrations. The exact official stock
+executable launched with empty arguments on the interactive desktop, preserving
+Swedish locale. Its complete first-start GPL/navigation caution was captured,
+downloaded, hash-verified and reviewed. The separately native-qualified warning
+tool acknowledged it once after two consecutive complete reviewed-image matches;
+modal dismissal and the current-launch startup-finalized marker are confirmed.
+[Read-only preparation](evidence/beta2-boat-stock-readonly-preparation.json),
+[actual warning review](evidence/beta2-boat-stock-warning-review.json), and
+[qualified settling tools](evidence/beta2-warning-settling-4fa62e.json).
+
+The first view showed water at a close 100m scale
+and a Windows Update notification. No Windows restart or update action was taken.
+The later capture refused the overlapping notification. The fixed-size resize
+then exposed a partially offscreen saved normal window and refused before changing
+its size. Native-qualified replacement tools have now recovered the boat window
+to an exact 1280×800 visible frame at DPI144 without changing display settings.
+The exact launch log records an Intel UHD OpenGL4.6 canvas context. This is not
+proof of chart rendering or hardware acceleration. No physical command has been
+sent. A private diagnostic image now shows the **real detailed nautical chart**,
+ownship and saved marks. Its overlapping floating Dashboard pane still fails
+the strict clear-overlay capture rule; the diagnostic image is not substituted
+for that automated gate. [Native tool qualification](evidence/beta2-stock-chart-5013db.json)
+and [actual boat observations](evidence/beta2-boat-stock-first-chart.json).
+Both configured chart directories are currently accessible, and the chart
+database still matches its pre-upgrade hash. A preliminary live INI comparison
+found seven startup changes. After normal close was requested, the log records
+complete clean shutdown and OpenCPN is no longer running, but the close checker
+did not retain a native process handle and cannot establish its exit code.
+The chart plugin also restarted its local helper during the final redraw;
+cold restoration correctly refused while that helper remained. Native-qualified
+cleanup subsequently verified its exact pipe server/process identity and issued
+one source-defined local shutdown packet; its retained handle reported exit 0.
+This does not reconstruct the earlier parent application exit code. The post-application-exit navigation database
+is byte-identical to the baseline and passes integrity/raw-storage comparison.
+The final INI has 13 changed keys, including ordinary resized-window persistence
+and an appended source-priority observation. A complete cold inspection and independent exact per-key review now pass.
+Restoration reversed only the temporary connection byte, restored all four
+quarantined DLLs and published the verified adopted baseline. No application
+was automatically launched; the next installed session requires a fresh review.
+The configured N2K port was absent from the earlier inventory; at 04:06 UTC the
+read-only Windows inventory reports **Actisense NGT (COM8)** present and healthy,
+alongside USB Serial COM4. Port presence does not establish sensor freshness or
+accuracy. Tailscale, SSH and RustDesk remain running automatically. A
+closed-copy navigation-database integrity/content baseline is also
+recorded privately using the [byte-preserving audit](installer/navigation-preservation-audit.md).
+
 The actual shared profile's `opencpn.ini` was already zero-filled at first
 inspection (21,380 bytes; last written 2026-09-20). A same-sized nonzero temporary
 INI from the same write interval is preserved as a potential recovery source.
@@ -36,13 +180,20 @@ Connection values were not edited and no application was launched. A separate
 The original cold, hash-verified recovery set remains complete: 2,123 application files and
 539 profile files (1,318,897,252 bytes). The earlier incomplete attempt remains
 separate and is not an accepted backup.
+A second cold recovery set now preserves verified stock **5.12.4** plus the
+recovered working INI: 2,123 application files, 539 profile files and
+1,318,975,173 bytes. Every copy and final source inventory matched; independent
+executable/INI hashes also match. The original pre-upgrade set remains retained.
+[Working-state backup evidence](evidence/beta2-boat-stock-working-backup.json).
 Private chart/profile content remains on the boat PC or in ignored local
 inspection evidence, never in the repository.
 
 The normal profile includes an output-capable NMEA 2000 connection and enabled
-pilot plugins. No real-profile launch or physical command has been attempted.
-A read-only commissioning policy must address third-party plugin outputs as
-well as OpenNav's own control switch. Saved user diagnostics show prior live
+pilot plugins. The active temporary commissioning transaction makes that
+connection input-only and quarantines the four reviewed output-capable or
+unqualified plugin DLLs before the stock launch. No physical control command
+has been sent. Third-party outputs are addressed independently of OpenNav's
+own control switch. Saved user diagnostics show prior live
 GPS, heading, wind and depth; this is not current-session hardware acceptance.
 Reported desktop mode is 1920×1080 and the saved application DPI is 144;
 1280×800 physical-display acceptance remains outstanding.
@@ -79,8 +230,9 @@ No unrelated Desktop content is included in feedback documentation.
   integrated clock tests pass in UTC and UTC+2. Sensors now distinguishes no AIS
   reports, current reports and stale/lost reports using actual target timestamps;
   decoder existence alone does not imply reception. Boat reception remains pending.
-- Latest local portable contract suite passes **65/65**, including AIS reception
-  health and native-frame/chart-layout geometry. The integrated Linux build
+- Latest local portable contract suite passes **67/67**, including AIS reception
+  health, native-frame/chart-layout geometry, current route-summary selection
+  and pairing diagnostic layout observations with native window bounds. The integrated Linux build
   passes **110/110 individual CTest cases** under the prescribed sequential
   invocation (excluding the duplicate upstream aggregate). The separate
   fixture-free Linux product previously passed 110/110 and five loader/resource
@@ -194,6 +346,95 @@ No unrelated Desktop content is included in feedback documentation.
   match the published tree. [Tooling evidence](evidence/beta2-windows-tooling-6f9ee02.json).
   This is maintenance-tool qualification only: no application or hardware command
   was launched, and it does not qualify the current product or boat deployment.
+
+- Candidate `6160d3e4bcd924853462f96a32f1b502a72a2884`
+  ([CI 36277024981](https://github.com/ThereptileII/Work/actions/runs/36277024981))
+  passes native MSVC, **102/102 integrated CTest cases** and the expanded
+  21-group navigation-object suite. Later Windows checks fail and no product
+  package is accepted or deployed. Pointer diagnostics stop updating after a
+  North-to-Course interaction; the Linux reproduction continues updating.
+  Bounded, opt-in tracing is added only to the fixture build to distinguish a
+  stalled event loop from diagnostic publication failure on the native rerun.
+  No speculative navigation behavior change or timeout relaxation is made.
+  Separately, the preview helper expected the old destination caption; the
+  plugin/route chart checks expected the old flat Settings and route-save flow.
+  Those checks now follow the actual UI while retaining geometry, plugin paint,
+  route identity and persistence assertions. The 150% rail failure paired
+  pre-resize diagnostics with current HWND bounds; the saved native image and
+  subsequent independent bounds show all four values fitting. The new barrier
+  synchronizes observation times before the same containment/touch assertions.
+  [DPI investigation](design/reviews/beta2-dpi-observation-6160.md).
+  [Failed native evidence](evidence/beta2-windows-6160d3e4.json) and
+  [four-image review](design/reviews/beta2-native-6160.md) preserve the exact
+  downloaded artifact; none of these partial results implies acceptance.
+  All Linux functional CI steps passed; its three-hour endurance step was later
+  canceled by the superseding candidate and is not accepted. The separate fixture-free Linux product passes
+  110/110 integrated cases, five loader checks and seven synthetic-data exclusion
+  groups. These results do not replace the failed native or pending boat gates.
+- Tooling-only `5b597bff0df7295a0ab1f3edbc3d45217582b56d` passes **340 checks
+  across seven native Windows suites** in
+  [CI 36277973803](https://github.com/ThereptileII/Work/actions/runs/36277973803).
+  This extends fixed, read-only waypoint/AIS selection policy; no physical UI
+  action or hardware command was executed. Automatic in-app restart remains
+  outside the independently audited cold-launch procedure.
+  [Tooling evidence](evidence/beta2-windows-tooling-5b597bf.json).
+
+- Candidate `12100a74ff619b7268a6e20902bd9d0de3b53b39`
+  ([CI 36279275114](https://github.com/ThereptileII/Work/actions/runs/36279275114))
+  passes 67/67 portable contracts on each platform, native MSVC and 102/102
+  integrated CTest cases, 340 maintenance checks, all 100/125/150% DPI checks
+  and both chart phases. The OpenGL-requested phase used the verified upstream
+  software fallback; hardware OpenGL remains open. Rail/alert bounds and
+  Legacy/Safe return coastlines pass at each scale. Actual ENC chart switching,
+  route creation/editing and plugin-manager paint pass. Pointer Course-up still
+  stops periodic updates after the callback has returned; fixture autopilot
+  interaction also fails. Packaging, installer and native endurance were skipped.
+  This is a failed development candidate, never deployed.
+  [Evidence](evidence/beta2-windows-12100a74.json) and
+  [four-screen review](design/reviews/beta2-native-12100.md).
+
+- Replacement `b565553d284e91f9aea552b3993428206de5247d`
+  ([CI 36281109419](https://github.com/ThereptileII/Work/actions/runs/36281109419))
+  passes both 67-contract jobs, native integration, the Course-up pointer gate
+  and the complete fixture UI suite. Its fixture-free native build, 100/125/150%
+  DPI/touch checks and chart/plugin gates also pass. Software basemap rendering uses a
+  copied viewport instead of invalidating the live quilt during paint. Native
+  diagnostic JSON is read explicitly as UTF-8. Extracted portable testing fails
+  because its startup observer counts earlier initialization markers after
+  upstream log rotation; the actual Safe-to-XNav window has coastline content.
+  The corrected observer requires a fresh startup/finalization sequence and
+  retains chart/clean-exit checks. Installer and native endurance were skipped;
+  the candidate has not been deployed. [Failure evidence and repair](evidence/beta2-portable-b565-log-rotation.json).
+  The downloaded full native evidence archive matches the API and upload-log
+  SHA-256 `a548bac982aa8406b960584dd88b8a52071e04d546a5949da8ba2e0f78e78cb2`.
+- A separate plugin-workspace repair restores the normal upstream perspective
+  while preserving only XNav-owned temporary panes. It uses exact manager and
+  window identity. Local fixture and production builds pass, along with 110
+  integrated cases, 22 object groups and software/OpenGL chart checks including
+  actual floating Dashboard captures. The native and boat gates remain open.
+  [Workspace review](design/reviews/beta2-plugin-workspace.md).
+- The optional commissioning restart boundary passes 886 protocol checks and
+  359 native assertions across 24 marker-only process scenarios. This is a
+  deliberately armed, one-use recheck of the saved profile, plugin trees and
+  original process identity before launching a replacement. Normal unarmed
+  mode switching is unchanged. The full broker, actual Prepare/Arm procedure,
+  packaged application capability and boat transitions require separate gates;
+  these standalone results do not authorize an older helper or application.
+  [Native transport evidence](evidence/commissioning-restart-fe397.json).
+- Current local contracts pass **70/70**, including packaged guard capability
+  and startup-log rotation. Guard integration passes 110/110 in both fixture and
+  fixture-free Linux builds; the separate actual loader test preserves the
+  normal profile. Instrument whitespace refinement retains value fonts and
+  data-quality labels and passes the full Linux UI/scenario smoke.
+  [Instrument/energy viewport review](design/reviews/beta2-instrument-density.md).
+- Actual full restart-broker native tests now pass six marker-only cases and 48
+  assertions, including refused output/plugin changes and uncertain consumed
+  permits. The scheduled-task policy still needs a native replacement: observed
+  Task Scheduler uses an account name for its principal and null for no triggers.
+  Both representations must be verified without weakening exact SID/action
+  identity. Actual Prepare/Arm/Collect and real application transitions remain
+  pending. The separate stock-after-uninstall review tool has portable coverage
+  but has not launched stock OpenCPN on the boat.
 
 ## Accepted Beta 1 baseline
 

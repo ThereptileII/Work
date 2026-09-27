@@ -37,6 +37,27 @@ Readiness now uses the existing fresh-start/log-rotation observer for each launc
 and actual in-app restart, instead of counting markers across changing log files.
 Chart content, clean process exit, profile fixtures and installation hashes
 remain required. Five policy/regression groups and the existing three startup-log
-groups pass locally; full native lifecycle qualification of the revised harness
-is pending the next exact-commit product run. No boat action or production UI
-change was made for this correction.
+groups pass locally. Exact native candidate `8e780edc` subsequently passed
+39 installer checks with 19 screenshot entries in
+[run 36287991989](https://github.com/ThereptileII/Work/actions/runs/36287991989).
+All three real notices were observed and acknowledged: candidate to genuine
+Beta 1, Beta 1 to candidate, and candidate to exact official stock 5.12.4.
+The retained Beta 1 warning screenshot was inspected. Update, repair, rollback,
+uninstall and reinstall completed with stock/profile checks preserved.
+
+[The native evidence record](../evidence/beta2-windows-8e780edc.json) identifies
+the installer, full artifact and hashes. This successful gate does not qualify
+the later Start-menu migration, which was absent from 8e780edc, or the whole
+release: its later endurance harness failed before sampling. No boat action or
+production UI change was made for this notice-handling correction.
+
+## Prior-package download ordering
+
+Candidate `a896fb5c5fa935b5daa757087ebedc4cd531c1d3` passed native clean
+installation, chart startup and initial rollback, then the genuine early Beta 2
+rollback fixture refused to download because its read-only Actions credential
+had already been removed. The harness now fetches both exact hash-pinned prior
+packages before removing that credential in `finally`. Tested installers and
+applications still never inherit it. Neither package identity nor rollback
+assertions were weakened. Python compilation passes locally; the corrected
+full native lifecycle remains a replacement-candidate gate.

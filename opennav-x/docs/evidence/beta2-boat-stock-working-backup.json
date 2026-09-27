@@ -1,0 +1,25 @@
+{
+  "schema": 1,
+  "status": "verified cold recovery set; no application launched",
+  "utcDate": "2026-09-27",
+  "purpose": "Post-official-upgrade and post-INI-recovery state before first Beta 2 install",
+  "backupId": "pre-beta2-20260927-001501-5790bea6",
+  "applicationFiles": 2123,
+  "profileFiles": 539,
+  "bytes": 1318975173,
+  "recoveryRecordSha256": "79d552e0e169ff440700440ed9bfed1e24bd2f3170fd34a820da5d08779fea8c",
+  "stockVersion": "5.12.4",
+  "applicationAbi": "Win32/x86",
+  "executableSha256": "7c6547562cca7954671eaab72833ca9d788710fd9808b6a699b6dc823852ae0c",
+  "profileIniSha256": "a2e416b7d35d6d2f82dcf6b3a97136a8fba5a133435c2047e07e09022426aef9",
+  "verification": [
+    "Every copied file size/hash matched cold inventory",
+    "Source tree rescanned and matched after copy",
+    "Staging directory atomically renamed only after verification",
+    "Independent backed-up executable and INI hashes matched actual working files",
+    "No OpenCPN process existed after backup"
+  ],
+  "originalPreUpgradeBackup": "Retained separately with verified 5.12.2 files and original profile state",
+  "privateDataUploaded": false,
+  "physicalCommands": 0
+}

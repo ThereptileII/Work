@@ -1,0 +1,157 @@
+{
+  "schema": 1,
+  "purpose": "Bounded complete-window settling before acknowledgement; development tooling only",
+  "publishedCommit": "4fa62ef5252bcef37c4e77abb5522887769f53cf",
+  "equivalentLocalCommit": "47aa23e03b58d314521351904aec901bbadd713a",
+  "tree": "f23023e7e25829f8c8366d127af9b03e302647fd",
+  "verifiedMappedBlobs": 612,
+  "runUrl": "https://github.com/ThereptileII/Work/actions/runs/36291222900",
+  "jobsPassed": 9,
+  "jobsTotal": 9,
+  "artifacts": [
+    {
+      "id": 10922421511,
+      "name": "development-restart-window-4fa62ef5252bcef37c4e77abb5522887769f53cf",
+      "sha256": "55345f77638eb89d92b631a577feefc093d17dd3fbc989ba6babc9605702565d",
+      "size": 2982,
+      "apiUploadAndDownloadMatched": true,
+      "zipCrcPassed": true
+    },
+    {
+      "id": 10922386635,
+      "name": "development-commissioning-restart-4fa62ef5252bcef37c4e77abb5522887769f53cf",
+      "sha256": "6389cdfaba21e1270ccbcfa13666260b8dd6407751e9fc726f20d0342eb013c9",
+      "size": 6201,
+      "apiUploadAndDownloadMatched": true,
+      "zipCrcPassed": true
+    },
+    {
+      "id": 10922232253,
+      "name": "development-stock-welcome-sv-4fa62ef5252bcef37c4e77abb5522887769f53cf",
+      "sha256": "bc6596f953a536683c1e7c40a507fde1c7dbe4f761bfaf2695f88bc1f84696d2",
+      "size": 415648,
+      "apiUploadAndDownloadMatched": true,
+      "zipCrcPassed": true
+    },
+    {
+      "id": 10922127974,
+      "name": "development-installer-shortcuts-x64-4fa62ef5252bcef37c4e77abb5522887769f53cf",
+      "sha256": "aab2dd01b2e98f74c9fada776ea9b40eaabbcbbc2f37e4e7ff56a1cdf6d906bf",
+      "size": 941,
+      "apiUploadAndDownloadMatched": true,
+      "zipCrcPassed": true
+    },
+    {
+      "id": 10922063525,
+      "name": "development-boat-tooling-4fa62ef5252bcef37c4e77abb5522887769f53cf",
+      "sha256": "b14f84ba48d299a02aeb21ace62fc49542b0246c7afb1f30c60f4db3faf2db3f",
+      "size": 20791,
+      "apiUploadAndDownloadMatched": true,
+      "zipCrcPassed": true
+    },
+    {
+      "id": 10921469438,
+      "name": "development-installer-shortcuts-x86-4fa62ef5252bcef37c4e77abb5522887769f53cf",
+      "sha256": "3fb331bb4b1f22ae251c5012b8c2e2d5381d501a524994ce9e3bfe0590e5b590",
+      "size": 941,
+      "apiUploadAndDownloadMatched": true,
+      "zipCrcPassed": true
+    },
+    {
+      "id": 10921309771,
+      "name": "development-stock-welcome-en_US-4fa62ef5252bcef37c4e77abb5522887769f53cf",
+      "sha256": "2e8c67956ca43a8315748f8016f5bf86a479b67a1b64b3f69b648f9fe27c1379",
+      "size": 394550,
+      "apiUploadAndDownloadMatched": true,
+      "zipCrcPassed": true
+    },
+    {
+      "id": 10921169842,
+      "name": "development-desktop-diagnostics-4fa62ef5252bcef37c4e77abb5522887769f53cf",
+      "sha256": "3dacdd60ab55bea366cebbc14586cdcf9165fb30de0cbc3180ba2608b50746fa",
+      "size": 3270,
+      "apiUploadAndDownloadMatched": true,
+      "zipCrcPassed": true
+    },
+    {
+      "id": 10922556132,
+      "name": "development-commissioning-broker-4fa62ef5252bcef37c4e77abb5522887769f53cf",
+      "sha256": "2ec8f5e8dfd5e7bc1654a0ee3bbc291ecd3d37905fd540253ad4f603ba429472",
+      "size": 15827,
+      "apiUploadAndDownloadMatched": true,
+      "zipCrcPassed": true
+    }
+  ],
+  "checks": {
+    "maintenanceTotal": 1341,
+    "maintenanceSuites": {
+      "maintenance-baseline-adoption": 73,
+      "maintenance-broker-fixture-contracts": 15,
+      "maintenance-boat-tools": 27,
+      "maintenance-commissioning-launch": 11,
+      "maintenance-commissioning": 21,
+      "maintenance-installed-welcome": 98,
+      "maintenance-official-upgrade-policy": 86,
+      "maintenance-preparation": 34,
+      "maintenance-renderer-log": 66,
+      "maintenance-restart-aui-persistence": 77,
+      "maintenance-restart-commissioning": 278,
+      "maintenance-restart-window-review": 132,
+      "maintenance-review-window": 159,
+      "maintenance-source-checkout": 16,
+      "maintenance-startup-log": 16,
+      "maintenance-stock-review": 83,
+      "maintenance-stock-welcome": 149
+    },
+    "navigationCopyPython": 11,
+    "warningPolicyAndInterop": 149,
+    "officialEnglishFreshPowerShell51WithOwnForeground": 50,
+    "officialSwedishFreshPowerShell51WithOwnForeground": 52,
+    "nativeComShortcutX86": 72,
+    "nativeComShortcutX64": 72,
+    "restartCodec": 886,
+    "restartTransport": 359,
+    "actualBroker": 51,
+    "actualPrepareArmCollect": 47,
+    "nativeModeWindow": 9,
+    "nativeDisplayWindow": 15
+  },
+  "windowsFileSha256": {
+    "StockWelcome.ps1": "b3b97a5e94078c8f2cc54d5725a8470d027794c5be3c640756cec59330d6ca75",
+    "StockWelcomeNative.cs": "e903471fca3fb5f96b03e98572c1549ab7a7fb9d2e641af4deea291167ddf330"
+  },
+  "actualApplicationTest": {
+    "officialExecutableSha256": "7c6547562cca7954671eaab72833ca9d788710fd9808b6a699b6dc823852ae0c",
+    "profile": "new isolated portable, empty connections, all bundled plugins disabled",
+    "freshNativePowerShell51Agreement": true,
+    "ownNonoverlappingForegroundMarkerBeforeAgreement": true,
+    "ordinaryActivationThenOriginalIdentityAndPixelProof": true,
+    "captionInputDuringAcknowledgement": false,
+    "oneDurableIntentBeforeAgree": true,
+    "normalClose": true,
+    "localePreserved": true,
+    "twoConsecutiveCompleteReviewedImageHashes": true,
+    "actualSuccessCaptureCountPerLocale": 2,
+    "actualWrongHashCaptureCountPerLocale": 20,
+    "wrongHashProducedNoIntent": true,
+    "settlingGuardExceptionAbortsImmediately": true
+  },
+  "limitations": [
+    "No boat or physical hardware acceptance is inferred.",
+    "Actual official stock windows qualify the shared warning primitive; installed generation wrapper has native policy/runtime-proof coverage, not an actual installed Beta2 warning in this run.",
+    "Renderer observer tests qualify bounded exact-log and launch-receipt interpretation, not actual boat GPU rendering.",
+    "Complete Beta2 product and installer acceptance remain separate.",
+    "Deterministic capture-sequence tests exercise delayed paint and deadline refusal. The actual Windows success cases matched on both captures; they do not claim to force or observe a delayed DWM transition.",
+    "Inspection remains a single fully guarded capture. A transient reviewed image that does not recur will correctly refuse acknowledgement; this tool cannot silently substitute a later image."
+  ],
+  "settlingPolicy": {
+    "maximumMilliseconds": 5000,
+    "maximumCaptures": 20,
+    "intervalMilliseconds": 150,
+    "consecutiveExpectedHashes": 2,
+    "retainedCompleteImages": true,
+    "noPixelMaskOrCrop": true,
+    "noInputRetry": true,
+    "originalReviewedHashUnchanged": true
+  }
+}

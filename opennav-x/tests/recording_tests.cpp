@@ -344,6 +344,7 @@ void ControlBoundary() {
     actions.undo_route_point = actions.cancel_route = [&] {
       ++count; return application::CommandResult{true, "ok"};
     };
+    actions.can_undo_route_point = [] { return true; };
     actions.finish_route_named = [&](const auto &, const auto &) {
       ++count; return application::CommandResult{true, "ok"};
     };
@@ -355,14 +356,14 @@ void ControlBoundary() {
           "Replay blocks real navigation mutations");
     Check(!actions.go_to({}, "destination").ok &&
               !actions.go_to_waypoint({}).ok &&
-              !actions.undo_route_point().ok && !actions.cancel_route().ok &&
+              !actions.undo_route_point().ok && !actions.can_undo_route_point() && !actions.cancel_route().ok &&
               !actions.finish_route_named("route", "description").ok,
           "Replay blocks Go To and draft route mutation");
     actions.start_route();
     actions.legacy_settings();
     Check(count == 0, "Replay blocks advanced mutation entry");
     service.StopReplay();
-    Check(actions.activate({}).ok && count == 1,
+    Check(actions.activate({}).ok && count == 1 && actions.can_undo_route_point(),
           "Explicit replay exit restores normal human actions");
     diagnostics::Commissioning denied(
         root, [] { return "Output-capable connection active"; });

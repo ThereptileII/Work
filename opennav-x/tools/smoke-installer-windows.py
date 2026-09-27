@@ -275,6 +275,10 @@ try:
     report['display']=ui.ensure_desktop()
     try:
         subprocess.run([sys.executable,str(ROOT/'tools/build-installer-prior-fixture.py')],check=True)
+        # Fetch both immutable historical packages before deleting the Actions
+        # credential. No tested installer/application may inherit that token.
+        subprocess.run([sys.executable,str(ROOT/'tools/build-installer-prior-fixture.py'),
+                        '--early-beta2-layout'],check=True)
     finally:
         os.environ.pop('OPENNAV_ARTIFACT_TOKEN',None)  # Do not pass it to any tested application.
     # On failure a live executable can still lock the disposable stock tree.
@@ -348,8 +352,6 @@ try:
         # Early Beta 2 had the same 0.4 version but its immutable maintainer
         # only knew the historical Alpha 1 folder. Test the exact published
         # bytes; neither relabel a current package nor patch retained engines.
-        subprocess.run([sys.executable,str(ROOT/'tools/build-installer-prior-fixture.py'),
-                        '--early-beta2-layout'],check=True)
         early_lock=json.loads((ROOT/'tools/early-beta2-layout.lock.json').read_text())
         early_setup=ROOT/'build/prior-beta2-layout-fixture/setup'/early_lock['setupName']
         before=inventory(profile)

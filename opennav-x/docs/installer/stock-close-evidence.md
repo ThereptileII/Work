@@ -33,3 +33,12 @@ shutdown log markers, absent processes and absence of Windows crash events are
 separate observations; they do not turn an unavailable exit code into zero.
 Remaining chart helpers must still pass the existing cold-process guards before
 any profile restoration or maintenance.
+
+Native qualification at tooling commit `ddf81076` passed 28 checks across the
+shared primitive and actual installed Close dispatcher, each with inert exits 0
+and 17. Every unretained comparison observer reproduced the old getter failure.
+The actual official English and Swedish portable applications each then closed
+with a measured zero through a fresh `Get-Process` observer. The independently
+held starter agreed in both cases. See the [exact source and verified artifact
+record](../evidence/beta2-close-helper-ddf810.json); this does not reconstruct the
+historical boat exit code or qualify a later installed generation.

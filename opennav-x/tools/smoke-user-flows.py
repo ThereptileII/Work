@@ -89,11 +89,68 @@ def feed():
 thread = threading.Thread(target=feed, daemon=True)
 thread.start()
 env = dict(os.environ)
+env['OPENNAV_TEST_UI_TRACE'] = '1'  # Compiled out of the installed product.
+env['OPENNAV_TEST_UI_TRACE_FILE'] = str(profile / 'opennav-ui-trace.log')
 app = xserver = handle = ui = None
 report = {'authority': 'native Windows' if windows else 'Linux development',
           'profile': 'new disposable, input-only loopback GPS',
           'physical_output': 'No serial/CAN/device transport; output disabled',
           'checks': [], 'screenshots': []}
+observed_at = [0.0]
+
+
+def file_observation(path):
+    try:
+        stat = path.stat()
+        return {'bytes': stat.st_size, 'modified_ns': stat.st_mtime_ns}
+    except FileNotFoundError:
+        return {'exists': False}
+
+
+def observe_diagnostics(record):
+    at = time.monotonic()
+    if at - observed_at[0] < 1:
+        return
+    observed_at[0] = at
+    display = record.get('runtime', {}).get('display', {})
+    rows = report.setdefault('diagnostic_observations', [])
+    rows.append({'at': at, 'file': file_observation(profile / 'opennav-diagnostics.json'),
+                 'pending': file_observation(profile / 'opennav-diagnostics.json.pending'),
+                 'ui_update': record.get('runtime', {}).get('ui_update', {}),
+                 'orientation': [r['label'] for r in display.get('interaction_controls', [])
+                                 if r['label'] in ('North', 'Course', 'Heading')],
+                 'page': record.get('ui_page')})
+    del rows[:-128]
+
+
+def native_timeout_observation():
+    """Read native state after failure; WM_NULL cannot invoke a UI command."""
+    if not windows or not handle:
+        return
+    C, W = ui.C, ui.W
+    send = ui.declare(ui.user, 'SendMessageTimeoutW', C.c_ssize_t,
+                      W.HWND, W.UINT, W.WPARAM, W.LPARAM, W.UINT, W.UINT,
+                      C.POINTER(C.c_size_t))
+    foreground = ui.declare(ui.user, 'GetForegroundWindow', W.HWND)
+    result = C.c_size_t()
+    C.set_last_error(0)
+    response = send(handle, 0, 0, 0, 3, 500, C.byref(result))
+    observed = {'wm_null_responded': bool(response), 'win32_error': C.get_last_error(),
+                'main_is_foreground': foreground() == handle,
+                'native_orientation': [label for _, label in ui.children(handle)
+                                       if label in ('North', 'Course', 'Heading')]}
+    class GuiInfo(C.Structure):
+        _fields_ = [('size', W.DWORD), ('flags', W.DWORD), ('active', W.HWND),
+                    ('focus', W.HWND), ('capture', W.HWND), ('menu_owner', W.HWND),
+                    ('move_size', W.HWND), ('caret', W.HWND), ('caret_rect', W.RECT)]
+    info = GuiInfo()
+    info.size = C.sizeof(info)
+    query = ui.declare(ui.user, 'GetGUIThreadInfo', W.BOOL, W.DWORD, C.POINTER(GuiInfo))
+    thread_id = ui.GetWindowThreadProcessId(handle, None)
+    if query(thread_id, C.byref(info)):
+        observed['gui_thread'] = {key: getattr(info, key) for key in
+                                  ('flags', 'active', 'focus', 'capture', 'menu_owner', 'move_size')}
+    report['native_timeout'] = observed
 
 
 def xdo(*args):
@@ -109,6 +166,7 @@ def data(predicate=lambda d: True, timeout=20):
             assert app.poll() is None, 'Application exited during UI test'
         try:
             last = read_json_snapshot(profile / 'opennav-diagnostics.json')
+            observe_diagnostics(last)
             if predicate(last):
                 return last
         except (FileNotFoundError, ValueError, PermissionError):
@@ -118,11 +176,11 @@ def data(predicate=lambda d: True, timeout=20):
                           last.get('runtime', {}).get('display', {})))
 
 
-def control(label):
+def control(label, enabled=True):
     selected = []
     def ready(record):
         selected[:] = [row for row in record.get('runtime', {}).get('display', {}).get('interaction_controls', [])
-                       if row['label'] == label and row['visible'] and row['enabled']]
+                       if row['label'] == label and row['visible'] and row['enabled']==enabled]
         # The owned modal is traversed after its underlying page. A confirmed
         # action can intentionally share its caption with that page action.
         return len(selected) == 1 or (len(selected) > 1 and any(
@@ -138,6 +196,11 @@ def physical_click(x, y, right=False):
     if windows:
         assert ui.SetCursorPos(int(x), int(y))
         time.sleep(.2)
+        hit = ui.WindowFromPoint(ui.W.POINT(int(x), int(y)))
+        owner = ui.W.DWORD()
+        ui.GetWindowThreadProcessId(hit, ui.C.byref(owner))
+        assert owner.value == app.pid, ('Native pointer is obscured by another process',
+                                        int(x), int(y), int(hit or 0), owner.value)
         ui.MouseEvent(0x0008 if right else 0x0002, 0, 0, 0, 0)
         time.sleep(.08)
         ui.MouseEvent(0x0010 if right else 0x0004, 0, 0, 0, 0)
@@ -214,7 +277,9 @@ try:
         spec = importlib.util.spec_from_file_location('ui', root / 'tools/windows-ui.py')
         ui = importlib.util.module_from_spec(spec)
         spec.loader.exec_module(ui)
-        report['display'] = ui.ensure_desktop()
+        # Keep the actual 1280x800 test frame above an unobscured desktop work
+        # area. No taskbar hiding/topmost window or target-local click bypass.
+        report['display'] = ui.ensure_desktop(1920, 1080)
         exe = root / 'build/xnav-install/opencpn.exe'
     else:
         number = 131
@@ -235,15 +300,32 @@ try:
         assert app.poll() is None and time.monotonic() < deadline, 'Deferred initialization did not finish'
         time.sleep(.2)
     data(lambda d: any(v['name'] == 'Latitude' and v['quality'] == 'LIVE' for v in d['data']), 45)
+    trace = profile / 'opennav-ui-trace.log'
+    assert trace.exists() and 'tick.end' in trace.read_text(), 'Test-only native trace is unavailable'
     if windows:
         handle, _ = ui.wait_window('OpenNav X / OpenCPN', app.pid)
         ui.size_window(handle)
+        frame = ui.W.RECT()
+        assert ui.GetWindowRect(handle, ui.C.byref(frame))
+        report['frame_pixels'] = [frame.right - frame.left, frame.bottom - frame.top]
+        assert report['frame_pixels'] == [1280, 800]
     else:
         handle = xdo('search', '--onlyvisible', '--pid', app.pid, '--name', '^OpenNav X / OpenCPN$').splitlines()[0]
         xdo('windowsize', handle, 1280, 800, 'windowmove', handle, 0, 0, 'windowfocus', handle)
     time.sleep(2)
     click('North')
     control('Course')
+    course_before = data()
+    course_tick = int(course_before['runtime']['ui_update']['ticks'])
+    position_at = next(int(v['observed_monotonic_ms']) for v in course_before['data']
+                       if v['name'] == 'Latitude' and v['quality'] == 'LIVE')
+    course_after = data(lambda d: int(d['runtime']['ui_update']['ticks']) >= course_tick + 4 and
+                        any(v['name'] == 'Latitude' and v['quality'] == 'LIVE' and
+                            int(v['observed_monotonic_ms']) > position_at for v in d['data']))
+    report['course_up_updates'] = {'before_tick': course_tick,
+                                   'after_tick': int(course_after['runtime']['ui_update']['ticks']),
+                                   'fresh_position_advanced': True}
+    capture('00-course-up')
     click('Course')
     control('North')
     report['checks'].append('Touch chart orientation toggles upstream North/Course state and restores North')
@@ -289,15 +371,22 @@ try:
     catalog('Routes')
     click('Create route on chart')
     data(lambda d: d['runtime']['display']['route_creation_active'])
-    draft_controls = {name: control(name) for name in ('Cancel', 'Undo', 'Done')}
+    draft_controls = {name: control(name, enabled=name!='Undo') for name in ('Cancel', 'Undo', 'Done')}
     assert all(bounds['width'] >= 88 and bounds['height'] >= 48 for bounds in draft_controls.values())
     draft_chart = data()['runtime']['display']['chart_region']
     assert draft_chart == initial_chart, (initial_chart, draft_chart)
     report['draft_controls'] = draft_controls
     report['checks'].append('Draft actions have full-width touch labels without changing chart or data-rail viewport')
-    for coordinate in [(.22, .62), (.45, .42), (.68, .64)]:
-        chart_click(*coordinate)
+    chart_click(.22, .62)
+    control('Undo', enabled=False)
+    chart_click(.45, .42)
+    control('Undo')
     click('Undo')
+    control('Undo', enabled=False)
+    chart_click(.45, .42)
+    chart_click(.68, .64)
+    click('Undo')
+    control('Undo')
     data(lambda d: d['runtime']['display']['route_creation_active'])
     click('Done')
     control('Save route')
@@ -310,6 +399,7 @@ try:
     data(lambda d: d['ui_page'] == 'Route detail' and not d['runtime']['display']['route_creation_active'])
     capture('06-saved-route')
     report['checks'].append('Three chart taps, Undo, naming Cancel retaining draft, and named Save open the real route detail')
+    report['checks'].append('Native draft Undo disabled with zero/one point, enabled with two, disabled after undo to one, and usable again after another point')
     catalog('Routes')
     click('Create route on chart')
     chart_click(.30, .75)
@@ -343,6 +433,13 @@ try:
     report['checks'].append('Read-only navobj.db audit proves two-point saved route, no cancelled draft, original waypoint identity and clicked position preserved')
     assert not failures, failures
     report['result'] = 'passed; native screenshots require review'
+except Exception as error:
+    report['failure'] = repr(error)
+    try:
+        native_timeout_observation()
+    except Exception as probe_error:
+        report['native_timeout_error'] = repr(probe_error)
+    raise
 finally:
     if app and app.poll() is None and handle and 'result' not in report:
         try:
@@ -364,6 +461,7 @@ finally:
         xserver.wait(timeout=10)
     report['gps_batches'] = batches[0]
     report['transport_errors'] = failures
+    report['test_ui_trace'] = file_observation(profile / 'opennav-ui-trace.log')
     shutil.copytree(profile, evidence / 'user-flows-profile', dirs_exist_ok=True,
                     ignore=shutil.ignore_patterns('opencpn-ipc', '*.pem'))
     (evidence / 'user-flows-results.json').write_text(json.dumps(report, indent=2) + '\n')

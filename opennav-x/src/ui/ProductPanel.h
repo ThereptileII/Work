@@ -94,6 +94,7 @@ public:
 private:
   void Build();
   bool RefreshRoute();
+  bool RefreshWaypoint();
   void BeginActions(int columns, int minimum_width = 200);
   void Back();
   void Visual(const wxString &name, int height,
@@ -103,6 +104,7 @@ private:
   void Heading(const wxString &title, const wxString &subtitle);
   void Text(const wxString &text, int size = 14);
   void LiveText(std::function<wxString(const ProductState &)> text);
+  bool RefreshLiveText();
   XNavButton *StatusAction(const wxString &title,
                           std::function<wxString(const ProductState &)> status,
                           std::function<void()> action);
@@ -137,6 +139,8 @@ private:
   bool rebuild_pending_ = false;
   std::chrono::steady_clock::time_point route_refreshed_at_{};
   application::Waypoint point_;
+  bool point_available_ = false, point_position_valid_ = false, point_can_go_ = false;
+  std::chrono::steady_clock::time_point point_refreshed_at_{};
   int mmsi_ = 0;
   vessel::Quantity source_quantity_ = vessel::Quantity::Depth;
   wxBoxSizer *body_ = nullptr;
@@ -154,9 +158,15 @@ private:
   bool pilot_advanced_ = false;
   bool anchor_history_ = false;
   std::vector<std::pair<XNavButton *, adapters::PilotAction>> pilot_buttons_;
-  std::vector<
-      std::pair<wxStaticText *, std::function<wxString(const ProductState &)>>>
-      text_;
+  struct LiveTextEntry {
+    wxStaticText *label;
+    std::function<wxString(const ProductState &)> value;
+    wxString raw;
+    int wrap_width;
+    wxFont font;
+    wxSize dpi;
+  };
+  std::vector<LiveTextEntry> text_;
   std::vector<std::pair<XNavDataValue *,
                         std::function<vessel::Sample(const ProductState &)>>>
       values_;

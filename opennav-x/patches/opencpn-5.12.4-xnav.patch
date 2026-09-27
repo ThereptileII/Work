@@ -39,7 +39,7 @@ index b65126b6c..0cceb4c8d 100644
  
  #ifdef __ANDROID__
 diff --git a/gui/src/chcanv.cpp b/gui/src/chcanv.cpp
-index 258ae04bc..af4793fa6 100644
+index 258ae04bc..c0e46923b 100644
 --- a/gui/src/chcanv.cpp
 +++ b/gui/src/chcanv.cpp
 @@ -24,6 +24,9 @@
@@ -121,7 +121,29 @@ index 258ae04bc..af4793fa6 100644
    m_canvasMenu = new CanvasMenuHandler(this, m_pSelectedRoute, m_pSelectedTrack,
                                         m_pFoundRoutePoint, m_FoundAIS_MMSI,
                                         m_pIDXCandidate, m_nmea_log);
-@@ -13448,6 +13485,9 @@ wxString ChartCanvas::FindValidUploadPort() {
+@@ -11813,13 +11850,14 @@ void ChartCanvas::OnPaint(wxPaintEvent &event) {
+       delete clip_region;
+ 
+       ocpnDC bgdc(temp_dc);
+-      double r = VPoint.rotation;
+-      SetVPRotation(VPoint.skew);
+-
+-      // pWorldBackgroundChart->RenderViewOnDC(bgdc, VPoint);
+-      gShapeBasemap.RenderViewOnDC(bgdc, VPoint);
+-
+-      SetVPRotation(r);
++      // Rendering must not change the canvas viewport. SetVPRotation() here
++      // recomposes a rotated quilt and invalidates the window on every paint,
++      // starving Windows timer messages. Keep the same background geometry
++      // (physical size, projection and skew) on a private viewport instead.
++      ViewPort background_vp = VPoint;
++      background_vp.SetRotationAngle(VPoint.skew);
++      background_vp.SetBoxes();
++      gShapeBasemap.RenderViewOnDC(bgdc, background_vp);
+     }
+   }  // temp_dc.IsOk();
+ 
+@@ -13448,6 +13486,9 @@ wxString ChartCanvas::FindValidUploadPort() {
  
  void ShowAISTargetQueryDialog(wxWindow *win, int mmsi) {
    if (!win) return;
@@ -306,7 +328,7 @@ index a7670a674..59f245cdf 100644
    return TRUE;
  }
 diff --git a/gui/src/ocpn_frame.cpp b/gui/src/ocpn_frame.cpp
-index 8b7a14403..1d1e278d1 100644
+index 8b7a14403..74b928d44 100644
 --- a/gui/src/ocpn_frame.cpp
 +++ b/gui/src/ocpn_frame.cpp
 @@ -22,6 +22,9 @@
@@ -376,7 +398,32 @@ index 8b7a14403..1d1e278d1 100644
      UpdateGlobalMenuItems();  // update the state of the menu items (checkmarks
                                // etc.)
    } else {
-@@ -5051,6 +5074,9 @@ void MyFrame::OnInitTimer(wxTimerEvent &event) {
+@@ -4868,6 +4891,9 @@ void MyFrame::OnInitTimer(wxTimerEvent &event) {
+       wxAuiPaneInfoArray pane_array_val = g_pauimgr->GetAllPanes();
+       for (unsigned int i = 0; i < pane_array_val.GetCount(); i++) {
+         wxAuiPaneInfo pane = pane_array_val.Item(i);
++#ifdef OPENNAV_X
++        if (opennav::IsTransientXNavPane(pane.window)) continue;
++#endif
+ 
+         // If we find a pane that is not in the perspective,
+         //  then we should not load the perspective at all
+@@ -4877,7 +4903,13 @@ void MyFrame::OnInitTimer(wxTimerEvent &event) {
+         }
+       }
+ 
+-      if (!bno_load) g_pauimgr->LoadPerspective(perspective, false);
++      if (!bno_load) {
++#ifdef OPENNAV_X
++        opennav::LoadPersistentPerspective(*g_pauimgr, perspective);
++#else
++        g_pauimgr->LoadPerspective(perspective, false);
++#endif
++      }
+ 
+ #if 0
+             // Undefine the canvas sizes as expressed by the loaded perspective
+@@ -5051,6 +5083,9 @@ void MyFrame::OnInitTimer(wxTimerEvent &event) {
  
    RefreshAllCanvas(true);
    wxGetApp().m_usb_watcher.Start();
@@ -386,7 +433,7 @@ index 8b7a14403..1d1e278d1 100644
  }
  
  wxDEFINE_EVENT(EVT_BASIC_NAV_DATA, ObservedEvt);
-@@ -5808,6 +5834,10 @@ void MyFrame::OnFrameTimer1(wxTimerEvent &event) {
+@@ -5808,6 +5843,10 @@ void MyFrame::OnFrameTimer1(wxTimerEvent &event) {
    ProcessUnitTest();
    g_tick++;
    ProcessQuitFlag();
@@ -397,7 +444,7 @@ index 8b7a14403..1d1e278d1 100644
  
    if (bDBUpdateInProgress) return;
  
-@@ -5817,6 +5847,9 @@ void MyFrame::OnFrameTimer1(wxTimerEvent &event) {
+@@ -5817,6 +5856,9 @@ void MyFrame::OnFrameTimer1(wxTimerEvent &event) {
    ProcessDeferredTrackOn();
    SendFixToPlugins();
    ProcessAnchorWatch();
@@ -407,7 +454,7 @@ index 8b7a14403..1d1e278d1 100644
    ProcessLogAndBells();
  
    if (ShouldRestartTrack()) TrackDailyRestart();
-@@ -5850,7 +5883,13 @@ void MyFrame::OnFrameTimer1(wxTimerEvent &event) {
+@@ -5850,7 +5892,13 @@ void MyFrame::OnFrameTimer1(wxTimerEvent &event) {
    nBlinkerTick++;
  
    // This call sends autopilot output strings to output ports.
@@ -421,6 +468,30 @@ index 8b7a14403..1d1e278d1 100644
  
    // For each canvas....
    for (unsigned int i = 0; i < g_canvasArray.GetCount(); i++) {
+@@ -7961,13 +8009,22 @@ void ApplyLocale() {
+ 
+   for (unsigned int i = 0; i < pane_array_val.GetCount(); i++) {
+     wxAuiPaneInfo pane = pane_array_val[i];
++#ifdef OPENNAV_X
++    if (opennav::IsTransientXNavPane(pane.window)) continue;
++#endif
+     if (perspective.Find(pane.name) == wxNOT_FOUND) {
+       bno_load = true;
+       break;
+     }
+   }
+ 
+-  if (!bno_load) g_pauimgr->LoadPerspective(perspective, false);
++  if (!bno_load) {
++#ifdef OPENNAV_X
++    opennav::LoadPersistentPerspective(*g_pauimgr, perspective);
++#else
++    g_pauimgr->LoadPerspective(perspective, false);
++#endif
++  }
+ 
+   g_pauimgr->Update();
+ 
 diff --git a/gui/src/pluginmanager.cpp b/gui/src/pluginmanager.cpp
 index ef2314764..7475af772 100644
 --- a/gui/src/pluginmanager.cpp

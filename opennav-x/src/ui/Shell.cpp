@@ -3,6 +3,7 @@
 #include "smartnav/Advisories.h"
 #include "vessel/DisplayItems.h"
 #include "ui/Sheet.h"
+#include "diagnostics/TestUiTrace.h"
 #include <wx/accel.h>
 #include <wx/datetime.h>
 #include <wx/popupwin.h>
@@ -157,8 +158,11 @@ Shell::Shell(wxFrame &frame, wxAuiManager &manager, ShellActions actions,
   center->SetIcon(XNavIcon::Ownship);center->SetMinSize(frame_.FromDIP(wxSize(48,64)));
   tools->Add(center,0,wxALL,frame_.FromDIP(4));
   orientation_button_ = Button(left, "North", "Change chart orientation", [this] {
+    XNAV_TEST_UI_TRACE("orientation.begin", metrics_.ticks);
     if (actions_.navigation.orientation) actions_.navigation.orientation();
+    XNAV_TEST_UI_TRACE("orientation.upstream-return", metrics_.ticks);
     Tick();
+    XNAV_TEST_UI_TRACE("orientation.end", metrics_.ticks);
   });
   orientation_button_->SetIcon(XNavIcon::Compass);
   orientation_button_->SetRole(ButtonRole::Quiet);
@@ -189,7 +193,14 @@ Shell::Shell(wxFrame &frame, wxAuiManager &manager, ShellActions actions,
     if(result.ok) { Tick(); ShowObject(result.identity,true); }
     else ConfirmSheet(frame_,mode_,"Route not saved",wxString::FromUTF8(result.message),"Back");
   });
-  undo_route_=Button(bottom,"Undo","Undo last route point",[this]{if(actions_.navigation.undo_route_point)actions_.navigation.undo_route_point();});
+  undo_route_=Button(bottom,"Undo","Undo last route point",[this]{
+    if (!actions_.navigation.undo_route_point) return;
+    const auto result = actions_.navigation.undo_route_point();
+    if (!result.ok)
+      ConfirmSheet(frame_, mode_, "Cannot undo route point", wxString::FromUTF8(result.message), "Back");
+    Tick();
+  });
+  undo_route_->Enable(false);
   cancel_route_=Button(bottom,"Cancel","Cancel route creation",[this]{
     if(actions_.navigation.cancel_route && ConfirmSheet(frame_,mode_,"Cancel route?","Discard this unfinished route? Existing routes are preserved.","Discard route"))actions_.navigation.cancel_route();
   });
@@ -221,7 +232,7 @@ Shell::Shell(wxFrame &frame, wxAuiManager &manager, ShellActions actions,
     if (entry.first == "STBY") {
       standby_ = b;
       b->SetName("Manual STANDBY / requires enabled control");
-      b->SetToolTip("Manual STANDBY / requires enabled control; physical STANDBY remains independent");
+      b->SetHint("Manual STANDBY / requires enabled control; physical STANDBY remains independent");
       b->Disable();
       b->SetRole(ButtonRole::Critical);
     }
@@ -382,6 +393,34 @@ Shell::~Shell() {
   manager_.Update();
 }
 
+bool Shell::OwnsPane(const wxWindow *window) const {
+  return window && (window == page_ || window == product_ ||
+      std::find(panes_.begin(), panes_.end(), window) != panes_.end());
+}
+
+bool Shell::LoadPersistentPerspective(const wxString &perspective) {
+  // wxAUI hides/docks every managed pane before loading a saved perspective.
+  // Our temporary panes deliberately never enter OpenCPN's saved workspace.
+  // Preserve only those owned objects; upstream still restores every chart and
+  // plugin pane using its original parser and normal configuration semantics.
+  std::vector<wxAuiPaneInfo> transient;
+  const auto &panes = manager_.GetAllPanes();
+  for (std::size_t i = 0; i < panes.GetCount(); ++i)
+    if (OwnsPane(panes[i].window)) transient.push_back(panes[i]);
+  const bool loaded = manager_.LoadPerspective(perspective, false);
+  for (const auto &saved : transient) {
+    auto &pane = manager_.GetPane(saved.window);
+    if (pane.IsOk()) pane.SafeSet(saved);
+  }
+  // A settings/locale reload can happen while a product page covers the chart.
+  // Restore the current page's chart visibility, not stale saved visibility.
+  for (const auto &saved : navigation_visibility_) {
+    auto &pane = manager_.GetPane(saved.first);
+    if (pane.IsOk()) pane.Hide();
+  }
+  return loaded;  // The existing upstream Update/Notify follows this call.
+}
+
 std::vector<ProductGeometry> Shell::RailRegions() const {
   std::vector<ProductGeometry> result;
   if (!rail_scroll_ || !rail_scroll_->IsShownOnScreen()) return result;
@@ -513,6 +552,7 @@ void Shell::UpdateAlerts() {
   }
 }
 void Shell::Tick() {
+  XNAV_TEST_UI_TRACE("tick.begin", metrics_.ticks, timer_.IsRunning());
   const auto begin = std::chrono::steady_clock::now();
   const auto wall_now = vessel::Clock::now();
   if (actions_.chart_orientation) {
@@ -536,6 +576,7 @@ void Shell::Tick() {
     if (actions_.route)
       state_.navigation.route = actions_.route();
   }
+  XNAV_TEST_UI_TRACE("tick.input", metrics_.ticks);
   const auto config = replay ? actions_.commissioning->ReplayAssumptions()
                       : actions_.settings ? actions_.settings()
                                           : application::Settings{};
@@ -552,7 +593,11 @@ void Shell::Tick() {
   #endif
   if (actions_.commissioning && !replay)
     actions_.commissioning->Capture(state_, wall_now);
+  XNAV_TEST_UI_TRACE("tick.energy-recording", metrics_.ticks);
   const bool creating = actions_.route_creating && actions_.route_creating();
+  undo_route_->Enable(creating && !state_.simulated && !state_.replayed &&
+      actions_.navigation.undo_route_point && actions_.navigation.can_undo_route_point &&
+      actions_.navigation.can_undo_route_point());
   if (finish_route_->IsShown() != creating) {
     finish_route_->Show(creating);
     undo_route_->Show(creating);cancel_route_->Show(creating);
@@ -613,8 +658,10 @@ void Shell::Tick() {
     }
     field_snapshot_.alerts = p.alerts;
     field_journal_.Observe(field_snapshot_, wall_now);
+    XNAV_TEST_UI_TRACE("tick.services", metrics_.ticks);
     product_->Update(p, mode_);
   }
+  XNAV_TEST_UI_TRACE("tick.product", metrics_.ticks);
   UpdateRail(config.data_rail, now);
   UpdateContext(wall_now);
   clock_->SetLabel(simulation_ ? "10:42" : wxDateTime::Now().Format("%H:%M"));
@@ -673,14 +720,17 @@ void Shell::Tick() {
                   actions_.build_info ? actions_.build_info()
                                       : std::vector<std::string>{}, field_snapshot_.advice);
   UpdateScrollControls();
+  XNAV_TEST_UI_TRACE("tick.before-publication", metrics_.ticks);
   if (actions_.diagnostic_snapshot)
     actions_.diagnostic_snapshot(state_, energy, PageTitle());
+  XNAV_TEST_UI_TRACE("tick.published", metrics_.ticks);
   metrics_.last_ms = std::chrono::duration<double, std::milli>(
                          std::chrono::steady_clock::now() - begin)
                          .count();
   ++metrics_.ticks;
   metrics_.mean_ms += (metrics_.last_ms - metrics_.mean_ms) / metrics_.ticks;
   metrics_.maximum_ms = std::max(metrics_.maximum_ms, metrics_.last_ms);
+  XNAV_TEST_UI_TRACE("tick.end", metrics_.ticks);
 }
 
 XNavScroll *Shell::CurrentScroll() const {

@@ -13,6 +13,7 @@ import sys
 import tempfile
 import time
 import zipfile
+from diagnostic_snapshot import read_json_snapshot
 
 root=Path(__file__).resolve().parents[1]
 parser=argparse.ArgumentParser();parser.add_argument('--install',type=Path);parser.add_argument('--runtime',type=Path)
@@ -117,7 +118,7 @@ def data(predicate=lambda d:True,timeout=12):
     deadline=time.monotonic()+timeout
     while time.monotonic()<deadline:
         try:
-            d=json.loads((logs/'opennav-diagnostics.json').read_text())
+            d=read_json_snapshot(logs/'opennav-diagnostics.json')
             if predicate(d):return d
         except (FileNotFoundError,json.JSONDecodeError,PermissionError):pass
         time.sleep(.2)
@@ -231,8 +232,8 @@ try:
         assert 'Using portable plugin dir:' in native_log
         assert any('PluginLoader: Loading PlugIn:' in line and line.endswith('\\profile\\plugins\\dashboard_pi.dll')
                    for line in native_log.splitlines()), 'Bundled Dashboard was not discovered by the portable loader'
-        # Exercise the label's hidden-to-visible transition, not just a wide
-        # first launch. This exposed an overlap in the live navigation captures.
+        # Exercise bottom-pane reflow after a narrow viewport, not just a wide
+        # first launch. Keep the destination summary clear of adjacent controls.
         assert ui.SetWindowPos(handle,None,0,0,960,800,4)
         time.sleep(.6)
         ui.size_window(handle)

@@ -57,7 +57,7 @@ NavigationAdvice Advise(const vessel::VesselState &s,
                         const vessel::AisState &ais, vessel::Time now) {
   NavigationAdvice advice;
   advice.calculated_at = now;
-  advice.reason = "No coherent active route";
+  advice.reason = "Route guidance unavailable. Check the active route and GPS.";
   const auto &r = s.navigation.route;
   if (r && PositionSupportsRoute(s.navigation, *r, now) && vessel::AssessRoute(*r, now).remaining_distance_nm &&
       StepsValid(*r)) {
@@ -71,8 +71,8 @@ NavigationAdvice Advise(const vessel::VesselState &s,
     const bool course =
         Fresh(s.navigation.cog_deg, now) && Course(s.navigation.cog_deg.value);
     advice.reason =
-        moving ? "Estimated at constant present SOG; human review required"
-               : "Timing unavailable: fresh underway speed required";
+        moving ? "Times are estimates at your current speed; advisory only"
+               : "Timing needs a current speed reading while underway";
     double distance = 0;
     for (std::size_t i = 0;
          i < r->remaining_steps.size() && advice.events.size() < 128; ++i) {
@@ -82,7 +82,10 @@ NavigationAdvice Advise(const vessel::VesselState &s,
       event.identity = step.waypoint_id;
       event.kind = i + 1 == r->remaining_steps.size() ? EventKind::Destination
                                                       : EventKind::Waypoint;
-      event.title = step.name.empty() ? step.waypoint_id : step.name;
+      event.title = step.name.empty()
+                        ? (event.kind == EventKind::Destination ? "Destination"
+                                                               : "Unnamed waypoint")
+                        : step.name;
       event.detail =
           event.kind == EventKind::Destination ? "Destination" : "Waypoint";
       event.distance_nm = distance;
@@ -106,8 +109,8 @@ NavigationAdvice Advise(const vessel::VesselState &s,
           event.course_change_deg = Turn(*event.course_true_deg, *incoming);
           event.detail =
               i == 0
-                  ? "Relative to present COG; advisory only"
-                  : "Between stored OpenCPN route-leg courses; advisory only";
+                  ? "From your current course over ground; advisory only"
+                  : "Between planned route courses; advisory only";
           if (std::abs(*event.course_change_deg) >= 1.0)
             advice.events.push_back(std::move(event));
         }

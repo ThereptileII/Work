@@ -181,7 +181,11 @@ try:
                 # Chart input uses actual controls, with net-zero zoom change.
                 if windows:
                     ui.click_text(app.pid, '+'); ui.click_text(app.pid, '−')
-                    ui.click_text(app.pid, 'Light')
+                    before_light = data()['runtime']['display']['light']
+                    expected_light = {'Day': 'Dusk', 'Dusk': 'Night', 'Night': 'Day'}[before_light]
+                    ui.cycle_light(app.pid)
+                    data(lambda d: d['runtime']['display']['light'] == expected_light)
+                    action['palette'] = expected_light
                 else:
                     xdo('mousemove', 27, 140, 'click', 1); xdo('mousemove', 27, 196, 'click', 1)
                     xdo('mousemove', 1240, 28, 'click', 1)

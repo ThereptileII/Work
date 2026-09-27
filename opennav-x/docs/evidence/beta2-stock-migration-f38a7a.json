@@ -1,0 +1,170 @@
+{
+  "schema": 1,
+  "classification": "Native observed-stock migration policy qualification; no real profile adoption performed",
+  "source": {
+    "publishedCommit": "f38a7afd6b0f5e1fd9490a6e6f57e5484dece8f6",
+    "localCommit": "a5888aded80e5d1527dd8619a83c0ece10c4fbbc",
+    "tree": "fac23000a3800422a89827f3b2dd47c16a3169fe",
+    "mappedBlobsAndModesVerified": 620,
+    "mainPolicyCommit": "5dd114c"
+  },
+  "workflow": {
+    "runId": 36292810803,
+    "url": "https://github.com/ThereptileII/Work/actions/runs/36292810803",
+    "conclusion": "success",
+    "jobs": [
+      {
+        "id": 108546004526,
+        "name": "Disposable native Windows tooling checks",
+        "conclusion": "success"
+      },
+      {
+        "id": 108546004565,
+        "name": "Actual official OpenCPN portable upgrade caution (en_US)",
+        "conclusion": "success"
+      },
+      {
+        "id": 108546004583,
+        "name": "Actual COM shortcut migration (x64)",
+        "conclusion": "success"
+      },
+      {
+        "id": 108546004654,
+        "name": "Actual COM shortcut migration (x86)",
+        "conclusion": "success"
+      },
+      {
+        "id": 108546004660,
+        "name": "Native Win32 commissioning restart process boundary",
+        "conclusion": "success"
+      },
+      {
+        "id": 108546004664,
+        "name": "Read-only native warning desktop diagnostics",
+        "conclusion": "success"
+      },
+      {
+        "id": 108546004681,
+        "name": "Actual official OpenCPN portable upgrade caution (sv)",
+        "conclusion": "success"
+      },
+      {
+        "id": 108546293458,
+        "name": "Actual restart broker with disposable marker-only installation",
+        "conclusion": "success"
+      },
+      {
+        "id": 108546293478,
+        "name": "Fixed guarded mode UI actions on disposable native windows",
+        "conclusion": "success"
+      }
+    ]
+  },
+  "checks": {
+    "maintenanceSuites": {
+      "baseline-adoption": 89,
+      "boat-tools": 30,
+      "broker-fixture-contracts": 15,
+      "commissioning-launch": 11,
+      "commissioning": 21,
+      "installed-welcome": 98,
+      "official-upgrade-policy": 86,
+      "preparation": 34,
+      "renderer-log": 66,
+      "restart-aui-persistence": 77,
+      "restart-commissioning": 288,
+      "restart-window-review": 132,
+      "review-window": 159,
+      "source-checkout": 16,
+      "startup-log": 16,
+      "stock-chart": 57,
+      "stock-review": 90,
+      "stock-welcome": 149
+    },
+    "maintenanceTotal": 1434,
+    "navigationCopyPython": 11,
+    "actualStockEnglish": 59,
+    "actualStockSwedish": 61,
+    "nativeResize": 9,
+    "nativeModeWindow": 9,
+    "nativeDisplayWindow": 15,
+    "codec": 886,
+    "nativeTransport": 359,
+    "transportCases": 24,
+    "broker": 51,
+    "prepareArm": 47,
+    "shortcutX64": 132,
+    "shortcutX86": 132
+  },
+  "artifacts": [
+    {
+      "id": 10923271141,
+      "name": "development-restart-window-f38a7afd6b0f5e1fd9490a6e6f57e5484dece8f6",
+      "sha256": "d27c9e27b6f2372a6be5d33d40e51bcada154a28d866bef04370dbdb863a57d8",
+      "bytes": 16502,
+      "apiUploadHashSizeCrcVerified": true
+    },
+    {
+      "id": 10923266007,
+      "name": "development-commissioning-restart-f38a7afd6b0f5e1fd9490a6e6f57e5484dece8f6",
+      "sha256": "b3a1c99a743888d0f9737184492caf6d72877d3b9b17eacd33a63f2e8230cbae",
+      "bytes": 6201,
+      "apiUploadHashSizeCrcVerified": true
+    },
+    {
+      "id": 10923121924,
+      "name": "development-desktop-diagnostics-f38a7afd6b0f5e1fd9490a6e6f57e5484dece8f6",
+      "sha256": "1930dc379d349c2462f50c9510fc2b64f729ae4fe6372c4e4cf615341ee72fb5",
+      "bytes": 3269,
+      "apiUploadHashSizeCrcVerified": true
+    },
+    {
+      "id": 10922881717,
+      "name": "development-boat-tooling-f38a7afd6b0f5e1fd9490a6e6f57e5484dece8f6",
+      "sha256": "d7f40a094f912a28d4094dd5eb07fb0d6239fb256ee7f711d3c3613b1ec8694d",
+      "bytes": 21953,
+      "apiUploadHashSizeCrcVerified": true
+    },
+    {
+      "id": 10922762984,
+      "name": "development-stock-welcome-en_US-f38a7afd6b0f5e1fd9490a6e6f57e5484dece8f6",
+      "sha256": "7023d9665b24f193ab792ea504b2a40629643022168a682b3d3d11420d63905c",
+      "bytes": 473973,
+      "apiUploadHashSizeCrcVerified": true
+    },
+    {
+      "id": 10922677927,
+      "name": "development-installer-shortcuts-x86-f38a7afd6b0f5e1fd9490a6e6f57e5484dece8f6",
+      "sha256": "4256dd6ee8841268a225878533e576e309d6923a4f6f6841efb15dc4c2c29bbd",
+      "bytes": 1266,
+      "apiUploadHashSizeCrcVerified": true
+    },
+    {
+      "id": 10922593501,
+      "name": "development-stock-welcome-sv-f38a7afd6b0f5e1fd9490a6e6f57e5484dece8f6",
+      "sha256": "afdf3aba890aaa78c1092bc5d51215e2c9aa211b7ed225f632b53ff1b0abe2cc",
+      "bytes": 500962,
+      "apiUploadHashSizeCrcVerified": true
+    },
+    {
+      "id": 10922578407,
+      "name": "development-installer-shortcuts-x64-f38a7afd6b0f5e1fd9490a6e6f57e5484dece8f6",
+      "sha256": "3ecb0fe7f3f6be4348de7354b4534b95464c306e5803e6707dddf3a9fb2db48b",
+      "bytes": 1267,
+      "apiUploadHashSizeCrcVerified": true
+    },
+    {
+      "id": 10922409244,
+      "name": "development-commissioning-broker-f38a7afd6b0f5e1fd9490a6e6f57e5484dece8f6",
+      "sha256": "b7d6dd5a86d6b80ae2f53d56826f3ab79b5fe00d97a8149c979e63b25c8b1a71",
+      "bytes": 15817,
+      "apiUploadHashSizeCrcVerified": true
+    }
+  ],
+  "limits": [
+    "Exact post-close INI inspection, explicit reviewed adoption choice and all-helpers-closed checks remain required on the boat.",
+    "Passed migration fixture does not authorize restoration while an orphan chart helper remains.",
+    "This source does not contain the later exit-status observer or failure-only obscurer diagnostics.",
+    "Historical unavailable process exit code is not reclassified as zero."
+  ]
+}

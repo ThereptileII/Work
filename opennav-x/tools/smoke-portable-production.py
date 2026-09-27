@@ -17,6 +17,7 @@ import sys
 import tempfile
 import time
 import zipfile
+from restart_capability import verified_restart_protocol
 
 ROOT = Path(__file__).resolve().parents[1]
 parser = argparse.ArgumentParser()
@@ -37,6 +38,7 @@ def module(name):
 
 ui = module('windows-ui')
 charts = module('chart-render-check')
+startup_log = module('startup-log')
 report['display'] = ui.ensure_desktop()
 normal_locations = []
 for key in ('APPDATA', 'LOCALAPPDATA', 'PROGRAMDATA'):
@@ -64,7 +66,7 @@ exe = package / 'app/opencpn.exe'
 process = None
 handle = None
 pid = None
-starts = 0
+startup_before = b''
 owned = set()
 env = dict(os.environ)
 env['PATH'] = os.environ['SystemRoot'] + '\\System32;' + os.environ['SystemRoot']
@@ -77,13 +79,23 @@ def check(text):
     report['checks'].append(text)
     print(text, flush=True)
 
+def prepare_startup_observation():
+    global startup_before
+    try:
+        startup_before = (profile / 'opencpn.log').read_bytes()
+    except FileNotFoundError:
+        startup_before = b''
+
+
 def ready():
-    global starts
-    starts += 1
     deadline = time.monotonic() + 60
     while time.monotonic() < deadline:
         log = profile / 'opencpn.log'
-        if log.exists() and log.read_text(errors='replace').count('OnInitTimer...Finalize Canvases') >= starts:
+        try:
+            observed = log.read_bytes()
+        except (FileNotFoundError, PermissionError):
+            observed = b''
+        if startup_log.initialized_since(startup_before, observed):
             time.sleep(1.5)
             assert ui.IsWindowEnabled(handle), 'Application blocked by a modal dialog'
             return
@@ -127,6 +139,7 @@ def preserved():
 
 def launch(launcher, title):
     global process, handle, pid
+    prepare_startup_observation()
     process = subprocess.Popen([os.environ['COMSPEC'], '/d', '/c', str(package / launcher)],
                                cwd=temp, env=env, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
     handle, pid = ui.wait_window(title)
@@ -151,6 +164,7 @@ def restart_xnav_from_legacy(name):
     global handle, pid
     previous = pid
     monitor = ui.monitor_process(pid)
+    prepare_startup_observation()
     ui.click_menu(handle, 'Switch to XNav')
     ui.wait_clean_exit(monitor)
     owned.discard(previous)
@@ -180,6 +194,8 @@ try:
     build = json.loads((package / 'docs/PRODUCT_BUILD.json').read_text())
     assert build['test_fixtures'] is False and build['build_purpose'] == 'INSTALLED PRODUCT'
     assert build['executable_sha256'] == sha(exe)
+    helper = package / 'app/opennav-restart.exe'
+    assert build['restart_helper_sha256'] == sha(helper)
     selftest = temp / 'product-loader.json'
     tested = subprocess.run([str(exe), '--opennav-self-test', str(selftest)], env=env,
                             capture_output=True, timeout=30)
@@ -188,10 +204,19 @@ try:
     assert identity['test_fixtures'] is False and identity['build_purpose'] == 'INSTALLED PRODUCT'
     assert identity['version'] == '0.4.0-beta2' and identity['commit'] == os.environ['GITHUB_SHA']
     assert not identity['profile_initialized'] and not identity['plugins_loaded']
+    helper_probe = subprocess.run([str(helper), '--commissioning-protocol-self-test'],
+                                  cwd=helper.parent, env=env, capture_output=True, timeout=10)
+    assert helper_probe.returncode == 0 and len(helper_probe.stdout) <= 4096 and not helper_probe.stderr
+    helper_identity = json.loads(helper_probe.stdout.decode('utf-8'))
+    protocol = verified_restart_protocol(identity, helper_identity)
+    assert type(build['commissioning_restart_protocol']) is int and build['commissioning_restart_protocol'] == protocol
+    report['restart_capability'] = {'protocol': protocol, 'helper': helper_identity,
+                                    'helper_sha256': sha(helper)}
     report['build'] = build
     report['package_sha256'] = sha(args.package)
     report['files_verified'] = len(manifest)
     check('Exact extracted package inventory/hash and actual fixture-free executable identity verified')
+    check('Extracted app/helper execute matching guarded-restart capability probes without profile initialization')
 
     launch('Run-XNav.cmd', 'OpenNav X / OpenCPN')
     live = data()
@@ -240,6 +265,7 @@ try:
     monitor = ui.monitor_process(pid)
     previous = pid
     ui.click_text(pid, 'System')
+    prepare_startup_observation()
     ui.click_text(pid, 'Open Legacy OpenCPN')
     ui.wait_clean_exit(monitor)
     owned.discard(previous)

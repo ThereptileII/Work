@@ -20,6 +20,7 @@ import threading
 import time
 import urllib.request
 import zipfile
+from diagnostic_snapshot import read_json_snapshot
 root=Path(__file__).resolve().parents[1];windows=sys.platform=='win32'
 evidence=root/'evidence/local';evidence.mkdir(parents=True,exist_ok=True)
 url='https://www.charts.noaa.gov/ENCs/US5SEAFL.zip'
@@ -28,6 +29,7 @@ report={'chart_origin':url,'chart_sha256':digest,'agreement':'https://charts.noa
 def module(name):
  s=importlib.util.spec_from_file_location(name,root/'tools'/f'{name}.py');m=importlib.util.module_from_spec(s);s.loader.exec_module(m);return m
 ui=module('windows-ui') if windows else None;fixtures=module('profile-fixtures')
+workspace=module('workspace-fixtures')
 cache=root/'build/chart-fixtures';cache.mkdir(parents=True,exist_ok=True)
 archive=cache/'US5SEAFL.zip'
 if not archive.exists():
@@ -63,6 +65,7 @@ tmp=tempfile.TemporaryDirectory(prefix='opennav charts ',dir=None if windows els
 variant='xnav-windows' if windows else 'xnav-linux'
 subprocess.run([sys.executable,str(root/'tools/prepare-test-profile.py'),'--build',str(root/'build'/variant),'--profile',str(profile)],check=True)
 fixtures.seed(profile);expected=fixtures.snapshot(profile)
+workspace.seed(profile)
 server=socket.socket();server.bind(('127.0.0.1',0));server.listen(1);server.settimeout(.2)
 stop=threading.Event();errors=[]
 position=(47.6,-122.36)
@@ -125,7 +128,7 @@ def data(predicate=lambda d:True):
  end=time.monotonic()+30
  while time.monotonic()<end:
   try:
-   d=json.loads((profile/'opennav-diagnostics.json').read_text())
+   d=read_json_snapshot(profile/'opennav-diagnostics.json')
    if predicate(d):return d
   except (OSError,json.JSONDecodeError,KeyError):pass
   time.sleep(.15)
@@ -149,6 +152,50 @@ def capture(name,check=True):
  detail=sum(v for _,v in colors.most_common()[3:])/sum(colors.values())
  if check:assert len(colors)>20 and detail>.005,(name,len(colors),detail,'ENC detail absent')
  return {'screenshot':p.name,'interior_colors':len(colors),'non_background_fraction':detail}
+def capture_workspace(name):
+ # A persisted AUI "shown" flag alone does not prove a native plugin window.
+ path=evidence/(name+('.png' if windows else '-linux.png'))
+ if windows:
+  plugin_window,_=ui.wait_window(workspace.CAPTION,pid)
+  ui.SetForegroundWindow(plugin_window)
+  ui.capture(plugin_window,path,resize=False,screen_pixels=True)
+ else:
+  end=time.monotonic()+15
+  while time.monotonic()<end:
+   found=subprocess.run(['xdotool','search','--all','--onlyvisible','--pid',str(pid),
+                         '--name','^'+workspace.CAPTION+'$'],env=env,capture_output=True,text=True)
+   if found.returncode==0 and found.stdout.strip():break
+   time.sleep(.2)
+  else:raise AssertionError('Restored Dashboard has no visible native window')
+  # Require the actual floating top-level, not a named internal client widget.
+  top_levels=[];xlib=ctypes.CDLL('libX11.so.6')
+  xlib.XOpenDisplay.argtypes=[ctypes.c_char_p];xlib.XOpenDisplay.restype=ctypes.c_void_p
+  xlib.XQueryTree.argtypes=[ctypes.c_void_p,ctypes.c_ulong,ctypes.POINTER(ctypes.c_ulong),ctypes.POINTER(ctypes.c_ulong),ctypes.POINTER(ctypes.POINTER(ctypes.c_ulong)),ctypes.POINTER(ctypes.c_uint)]
+  xlib.XFree.argtypes=[ctypes.c_void_p];xlib.XCloseDisplay.argtypes=[ctypes.c_void_p]
+  display=xlib.XOpenDisplay(env['DISPLAY'].encode());assert display
+  try:
+   for candidate in found.stdout.splitlines():
+    root_id=ctypes.c_ulong();parent_id=ctypes.c_ulong();children=ctypes.POINTER(ctypes.c_ulong)();count=ctypes.c_uint()
+    assert xlib.XQueryTree(display,int(candidate),ctypes.byref(root_id),ctypes.byref(parent_id),ctypes.byref(children),ctypes.byref(count))
+    if children:xlib.XFree(children)
+    if root_id.value==parent_id.value:top_levels.append(candidate)
+  finally:xlib.XCloseDisplay(display)
+  if len(top_levels)!=1:
+   details=[]
+   for candidate in top_levels:
+    candidate_path=evidence/(name+'-candidate-'+candidate+'.png')
+    xdo('windowraise',candidate);time.sleep(.2)
+    subprocess.run(['import','-window',candidate,str(candidate_path)],env=env,check=True)
+    details.append({'window':candidate,'geometry':xdo('getwindowgeometry','--shell',candidate),'image':candidate_path.name})
+   report['workspace_native_candidates']=details
+   raise AssertionError(('Ambiguous plugin top-level',details))
+  plugin_window=top_levels[0]
+  # Bare Xvfb has no WM to keep owned floating windows above the frame's
+  # deferred Raise. Raise only this verified fixture window for its capture.
+  xdo('windowraise',plugin_window);time.sleep(.3)
+  subprocess.run(['import','-window',plugin_window,str(path)],env=env,check=True)
+ report['screenshots'].append(path.name)
+ return {'screenshot':path.name,'native_window_present':True}
 def command(label,key):
  if windows:ui.click_text(pid,label)
  else:xdo('windowfocus',handle,'key',key);time.sleep(.5)
@@ -173,11 +220,14 @@ try:
   if windows:ui.size_window(handle)
   else:xdo('windowsize',handle,1280,800,'windowmove',handle,0,0)
   d=data(enc);entry={'requested_rendering':rendering,'runtime':d['runtime'],'startup_to_enc_seconds':round(time.monotonic()-start,3),'captures':[]}
+  entry['workspace_startup']=workspace.assert_restored(d['runtime']['test_workspace_perspective'])
+  assert all(row['visible'] for row in d['runtime']['display']['rail_regions']), 'Restoring plugin workspace hid XNav rail'
   if rendering=='software':assert not chart(d)['opengl_enabled']
   else:entry['gl_status']='enabled; inspect renderer log' if chart(d)['opengl_enabled'] else 'host rejected OpenGL; verified upstream software fallback; hardware GL gate remains open'
   for name in ['Dashboard','WMM','GRIB']:
    assert any(p['name'].lower()==name.lower() and p['enabled'] and p['initialized'] for p in d['runtime']['plugins']),(name,d['runtime']['plugins'])
   entry['captures'].append(capture('chart-'+rendering+'-01-loaded'))
+  entry['workspace_native_startup']=capture_workspace('chart-'+rendering+'-dashboard-startup')
   if windows:
    # Native process accounting; no psutil dependency or host-wide samples.
    k=ctypes.WinDLL('kernel32',use_last_error=True);ps=ctypes.WinDLL('psapi',use_last_error=True)
@@ -226,7 +276,9 @@ try:
   if rendering=='software':
    command('Menu','ctrl+shift+g')
    if windows:
-    ui.click_text(pid,'Settings');ui.click_text(pid,'OpenCPN plugins')
+    # The Alpha flat settings page became Beta's grouped settings. The Radar
+    # integration page retains the working entry into OpenCPN's plugin manager.
+    ui.click_text(pid,'Settings');ui.click_text(pid,'RADAR');ui.click_text(pid,'OpenCPN plugins')
     options,_=ui.wait_window('Options',pid)
     end=time.monotonic()+10
     while time.monotonic()<end:
@@ -266,16 +318,29 @@ try:
     pass
    command('Navigation','ctrl+shift+n')
    if windows:
-    ui.click_text(pid,'Menu');ui.click_text(pid,'Routes');ui.click_text(pid,'Create route on chart');ui.click_text(pid,'Create route')
-    data(lambda d:d['ui_page']=='Navigation')
+    ui.click_text(pid,'Menu');ui.click_text(pid,'Routes');ui.click_text(pid,'Create route on chart')
+    data(lambda d:d['ui_page']=='Navigation' and d['runtime']['display']['route_creation_active'])
     ui.SetForegroundWindow(handle)
     for x,y in [(430,300),(580,300),(720,360)]:
      ui.user.SetCursorPos(x,y);ui.user.mouse_event(2,0,0,0,0);ui.user.mouse_event(4,0,0,0,0);time.sleep(.4)
+    draft=data(lambda d:d['runtime']['display']['route_creation_active'])
     ui.click_text(pid,'Done')
+    route_name='SIMULATED ENC route gesture'
+    ui.set_dialog_fields(pid,'Save route',[route_name,'Disposable native chart editing test'])
+    ui.click_text(pid,'Save route')
+    data(lambda d:d['ui_page']=='Route detail' and not d['runtime']['display']['route_creation_active'])
     def created_points():
      with closing(sqlite3.connect((profile/'navobj.db').resolve().as_uri()+'?mode=ro',uri=True)) as db:
-      return db.execute("SELECT r.guid,p.guid,p.lat,p.lon FROM routes r JOIN routepoints_link l ON r.guid=l.route_guid JOIN routepoints p ON p.guid=l.point_guid WHERE r.name NOT LIKE 'SIMULATED persistence%' OR r.name IS NULL ORDER BY l.point_order").fetchall()
+      return db.execute("SELECT r.guid,p.guid,p.lat,p.lon FROM routes r JOIN routepoints_link l ON r.guid=l.route_guid JOIN routepoints p ON p.guid=l.point_guid WHERE r.name=? ORDER BY l.point_order",(route_name,)).fetchall()
     points=created_points();assert len(points)==3,points
+    # Save opens the real detail page. Return through the visible Navigation
+    # action without zooming to the route, preserving the original point pixels.
+    ui.click_text(pid,'Navigation')
+    restored=data(lambda d:d['ui_page']=='Navigation' and enc(d) and not d['runtime']['display']['route_creation_active'])
+    assert restored['runtime']['display']['chart_region']==draft['runtime']['display']['chart_region'], 'Saving the route changed its chart viewport'
+    for key in ('latitude','longitude','scale_ppm'):
+     assert abs(chart(restored)[key]-chart(draft)[key])<=1e-10, (key,chart(draft)[key],chart(restored)[key],'Route save changed point pixel locations')
+    assert chart(restored)['canvas_pixels']==chart(draft)['canvas_pixels']
     entry['captures'].append(capture('chart-created-route-before-edit'))
     # In upstream desktop mode LeftDown selects the point and starts editing.
     # A separate selection click then another down within 300 ms is a Windows
@@ -287,21 +352,26 @@ try:
     if not (len(changed)==3 and changed[0][:2]==points[0][:2] and changed[0][2:]!=points[0][2:]):
      capture('chart-route-edit-failed',False)
      raise AssertionError((points,changed,ui.windows(pid)))
-    entry['route_geometry']='Native chart gestures created a three-point route and persisted a point move with unchanged identities'
+    entry['route_geometry']='Native chart gestures created and named a three-point route; Save opened its detail page; Navigation restored the same viewport; point move persisted with unchanged identities'
     entry['captures'].append(capture('chart-created-and-edited-route'))
    entry['plugin_manager']='native manager opened and listed Dashboard/WMM' if windows else 'native Windows interaction is authoritative; loader records checked here'
   if windows:ui.click_text(pid,'System');ui.click_text(pid,'Open Legacy OpenCPN')
   else:xdo('key','ctrl+shift+l')
   assert app.wait(timeout=40)==0;owned.discard(pid);count+=1
+  entry['workspace_after_xnav_close']=workspace.saved(profile)
   handle,pid=window('OpenCPN / Legacy');owned.add(pid);ready();entry['captures'].append(capture('chart-'+rendering+'-05-legacy'))
   if windows:
    p=ui.monitor_process(pid);ui.click_menu(handle,'Switch to XNav');ui.wait_clean_exit(p)
   else:
    xdo('windowfocus',handle,'mousemove',600,400,'click',3);time.sleep(.3);xdo('key','End','Return')
    child,status=os.waitpid(pid,0);assert os.waitstatus_to_exitcode(status)==0
-  owned.discard(pid);count+=1;handle,pid=window('OpenNav X / OpenCPN');owned.add(pid);ready();data(enc)
+  entry['workspace_after_legacy_close']=workspace.saved(profile)
+  owned.discard(pid);count+=1;handle,pid=window('OpenNav X / OpenCPN');owned.add(pid);ready();returned=data(enc)
+  entry['workspace_returned']=workspace.assert_restored(returned['runtime']['test_workspace_perspective'])
+  assert all(row['visible'] for row in returned['runtime']['display']['rail_regions']), 'Mode cycle lost XNav rail'
   entry['captures'].append(capture('chart-'+rendering+'-06-returned'))
-  close();assert fixtures.snapshot(profile)==expected;assert not errors,errors
+  entry['workspace_native_returned']=capture_workspace('chart-'+rendering+'-dashboard-returned')
+  close();entry['workspace_final']=workspace.saved(profile);assert fixtures.snapshot(profile)==expected;assert not errors,errors
   report['phases'].append(entry)
  report['result']='passed; native screenshot review and physical GPU gate remain separate'
 finally:
