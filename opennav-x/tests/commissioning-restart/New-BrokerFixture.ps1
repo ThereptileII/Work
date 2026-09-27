@@ -58,13 +58,16 @@ function New-BrokerFixture([string]$Directory,[string]$Binaries,[string]$SourceT
  [IO.File]::WriteAllBytes($input,(Get-CommissioningInputBytes $bytes));[IO.File]::Copy($input,$ini)
  $safe=Join-Path $managed 'dashboard_pi.dll';$unsafe=Join-Path $managed 'control_pi.dll';$library=Join-Path $managed 'inert-helper.dll'
  foreach($file in @($safe,$unsafe,$library)){[IO.File]::WriteAllText($file,'inert synthetic plugin file; never loaded')}
+ $stockSafe=Join-Path $stockApp 'plugins/dashboard_pi.dll';$bundledSafe=Join-Path $app 'plugins/dashboard_pi.dll'
+ [IO.File]::WriteAllText($stockSafe,'Distinct inert stock plugin bytes; never loaded')
+ [IO.File]::WriteAllText($bundledSafe,'Distinct inert bundled plugin bytes; never loaded')
  $trees=@(Get-CommissioningTrees $roots);$candidates=@(Get-CommissioningCandidates $trees)
  $inventory=Join-Path $preparedDir 'inventory.json'
  Write-Record $inventory @{schema=1;owner='OpenNavX.ReadOnlyCommissioning.Inventory.1';context=$context;profileSha256=$baselineHash;trees=$trees;plugins=$candidates}
  $decisions=@();$evidence=@();$moves=@();$index=0
  foreach($candidate in $candidates) {
   $index++;$review=Join-Path $preparedDir ('review-'+$index+'.txt');[IO.File]::WriteAllText($review,'TEST ONLY inert source review, not a boat attestation.')
-  $retain=$candidate.path -ceq $safe
+  $retain=$candidate.path -cin @($safe,$stockSafe,$bundledSafe)
   $decisions+=@{path=$candidate.path;sha256=$candidate.sha256;decision=$(if($retain){'retain'}else{'quarantine'});sourceRevision=$(if($retain){'1'*40}else{$null});startupAndIdleReadOnly=$retain;reason='Inert test only';sourceBoundary='No loaded DLL';evidencePath=$review;evidenceSha256=(Get-Digest $review)}
   $evidence+=@{path=$review;sha256=(Get-Digest $review)}
   if(-not $retain){$backup=Join-Path $preparedDir ('plugin-backup-'+$index+'.bin');[IO.File]::Copy($candidate.path,$backup);$moves+=@{path=$candidate.path;sha256=$candidate.sha256;backup=$backup;destination=(Join-Path $quarantine ('plugin-'+$index+'.bin'))}}
@@ -75,19 +78,20 @@ function New-BrokerFixture([string]$Directory,[string]$Binaries,[string]$SourceT
  Write-Record $prepared @{schema=1;owner=$script:CommissioningOwner;status='prepared';context=$context;baselineSha256=$baselineHash;inputSha256=(Get-Digest $input);planSha256=(Get-Digest $plan);inventorySha256=(Get-Digest $inventory);evidence=$evidence;quarantine=$moves}
  Write-Record (Join-Path $workspace 'commissioning-active.json') @{schema=1;owner=$script:CommissioningOwner;record=$prepared;recordSha256=(Get-Digest $prepared)}
  foreach($move in $moves){[IO.File]::Move($move.path,$move.destination)}
- $applied=Join-Path $preparedDir 'applied.json';Write-Record $applied @{schema=1;owner=$script:CommissioningOwner;status='input-only-prepared';recordSha256=(Get-Digest $prepared);profileSha256=(Get-Digest $input);remainingPluginCount=1}
- $audit=@{profileIniSha256=(Get-Digest $ini);buildCommit=$commit;reviewedUtc=[DateTime]::UtcNow.ToString('o');connectionsOutputDisabled=$true;pluginOutputsReviewed=$true;noActiveRouteOutput=$true;pluginFiles=@($decisions|Where-Object {$_.decision -ceq 'retain'});commissioning=@{record=$prepared;recordSha256=(Get-Digest $prepared);appliedSha256=(Get-Digest $applied)}}
+ $applied=Join-Path $preparedDir 'applied.json';Write-Record $applied @{schema=1;owner=$script:CommissioningOwner;status='input-only-prepared';recordSha256=(Get-Digest $prepared);profileSha256=(Get-Digest $input);remainingPluginCount=3}
+ $audit=@{profileIniSha256=(Get-Digest $ini);buildCommit=$commit;reviewedUtc=[DateTime]::UtcNow.ToString('o');connectionsOutputDisabled=$true;pluginOutputsReviewed=$true;noActiveRouteOutput=$true;pluginFiles=@($decisions|Where-Object {$_.decision -ceq 'retain' -and $_.path -cne $stockSafe});commissioning=@{record=$prepared;recordSha256=(Get-Digest $prepared);appliedSha256=(Get-Digest $applied)}}
  $target=Join-Path $workspace 'boat-target.json';Write-Record $target @{schema=1;owner='OpenNavX.BoatTarget.1';profileDirectory=$profile;stockExecutable=$stockExe;readOnlyAudit=$audit}
  $fixture=@{owner='OpenNavX.TestOnly.BrokerFixture.1';noMarineCode=$true;root=$Directory;workspace=$workspace;commonData=(Split-Path $profile -Parent);localData=$local;installedRoot=$installedRoot;stockExecutable=$stockExe;stockSha256=(Get-Digest $stockExe);context=$context;baselineSha256=$baselineHash}
  $fixtureFile=Join-Path $scripts 'fixture.identity.json';Write-Record $fixtureFile $fixture
+ $shutdownRecord=@{schema=2;physicalCommands=0;reviewedUtc=[DateTime]::UtcNow.ToString('o');plugins=@($decisions|Where-Object {$_.decision -ceq 'retain'}|ForEach-Object {@{path=$_.path;sha256=$_.sha256;plugin='dashboard_pi';revision=$_.sourceRevision;sourceSha256=('2'*64);shutdownBoundary='INERT TEST ONLY'}})}
  if($WithoutRestartSession) {
   $shutdown=Join-Path $Directory 'reviewed-shutdown.json'
-  Write-Record $shutdown @{schema=1;physicalCommands=0;reviewedUtc=[DateTime]::UtcNow.ToString('o');plugins=@(@{plugin='dashboard_pi';revision=('1'*40);sourceSha256=('2'*64);shutdownBoundary='INERT TEST ONLY'})}
+  Write-Record $shutdown $shutdownRecord
   return [pscustomobject]@{root=$Directory;scripts=$scripts;workspace=$workspace;app=$app;executable=$exe;helper=$helper;profile=$ini;plugin=$safe;identityHash=(Get-Digest $fixtureFile);shutdown=$shutdown;shutdownSha256=(Get-Digest $shutdown);productBuild=$build;generation=$generation}
  }
  $sessionDir=New-PreparationDirectory ([pscustomobject]@{workspace=$workspace;sid=$sid}) 'restart-session'
  $before=Join-Path $sessionDir 'before.ini';[IO.File]::Copy($ini,$before)
- $shutdown=Join-Path $sessionDir 'shutdown-review.json';Write-Record $shutdown @{schema=1;physicalCommands=0;reviewedUtc=[DateTime]::UtcNow.ToString('o');plugins=@(@{plugin='dashboard_pi';revision=('1'*40);sourceSha256=('2'*64);shutdownBoundary='INERT TEST ONLY'})}
+ $shutdown=Join-Path $sessionDir 'shutdown-review.json';Write-Record $shutdown $shutdownRecord
  $deps=@($script:RestartDependencies)+@('BrokerFixtureIdentity.ps1');$pins=@($deps|ForEach-Object {@{name=$_;sha256=(Get-Digest (Join-Path $scripts $_))}})
  $record=Join-Path $sessionDir 'session.json';$now=[DateTime]::UtcNow
  $session=@{schema=1;owner=$script:RestartOwner;session=(New-RestartToken);createdUtc=$now.ToString('o');expiresUtc=$now.AddHours(1).ToString('o');sid=$sid;windowsSessionId=$windowsSession.ToString();workspace=$workspace;generation=$generationId;buildCommit=$commit;executable=$exe;executableSha256=(Get-Digest $exe);helper=$helper;helperSha256=(Get-Digest $helper);productBuild=$build;productBuildSha256=(Get-Digest $build);profile=$ini;beforeIni=$before;beforeIniSha256=(Get-Digest $before);audit=$audit;targetSha256=(Get-Digest $target);workingDirectory=$app;path=$environment.path;toolDirectory=$scripts;scripts=$pins;shutdownReview=$shutdown;shutdownReviewSha256=(Get-Digest $shutdown)}

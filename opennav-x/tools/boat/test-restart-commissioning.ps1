@@ -146,12 +146,30 @@ $task.State='Ready';Refuse {Assert-RestartTaskIdentity $task $arm 'S-1-5-21-100'
 foreach($field in @('Execute','Arguments','WorkingDirectory')) {$saved=$task.Actions[0].$field;$task.Actions[0].$field='changed';Refuse {Assert-RestartTaskIdentity $task $arm 'S-1-5-21-100'} ('changed task '+$field);$task.Actions[0].$field=$saved}
 foreach($field in @('UserId','RunLevel','LogonType')) {$saved=$task.Principal.$field;$task.Principal.$field='changed';Refuse {Assert-RestartTaskIdentity $task $arm 'S-1-5-21-100'} ('changed task principal '+$field);$task.Principal.$field=$saved}
 $task.Triggers=@([pscustomobject]@{Enabled=$true});Refuse {Assert-RestartTaskIdentity $task $arm 'S-1-5-21-100'} 'unexpected repeat trigger refused'
-$retained=@([pscustomobject]@{path='dashboard_pi.dll';sourceRevision=('1'*40)})
-$shutdown=[pscustomobject]@{schema=1;physicalCommands=0;reviewedUtc=[DateTime]::UtcNow.ToString('o');plugins=@([pscustomobject]@{plugin='dashboard_pi';revision=('1'*40);sourceSha256=('2'*64);shutdownBoundary='Source-reviewed local settings only'})}
+$retained=@([pscustomobject]@{path='C:\Stock\plugins\dashboard_pi.dll';sha256=('a'*64);sourceRevision=('1'*40)})
+$shutdown=[pscustomobject]@{schema=2;physicalCommands=0;reviewedUtc=[DateTime]::UtcNow.ToString('o');plugins=@([pscustomobject]@{path=$retained[0].path;sha256=$retained[0].sha256;plugin='dashboard_pi';revision=('1'*40);sourceSha256=('2'*64);shutdownBoundary='Source-reviewed local settings only'})}
 Assert-RestartShutdownReview $shutdown $retained;Check $true 'retained shutdown source binding'
 $shutdown.plugins[0].revision='3'*40;Refuse {Assert-RestartShutdownReview $shutdown $retained} 'wrong retained shutdown source revision'
 $shutdown.plugins[0].revision='1'*40;$shutdown.plugins[0].plugin='unknown_pi';Refuse {Assert-RestartShutdownReview $shutdown $retained} 'unknown retained plugin refused'
 $shutdown.plugins[0].plugin='dashboard_pi';$shutdown.reviewedUtc=[DateTime]::UtcNow.AddHours(-25).ToString('o');Refuse {Assert-RestartShutdownReview $shutdown $retained} 'expired shutdown review'
+$shutdown.reviewedUtc=[DateTime]::UtcNow.ToString('o')
+$retained+=@([pscustomobject]@{path='C:\XNav\generations\current\app\plugins\dashboard_pi.dll';sha256=('b'*64);sourceRevision=('3'*40)})
+$shutdown.plugins+=@([pscustomobject]@{path=$retained[1].path;sha256=$retained[1].sha256;plugin='dashboard_pi';revision=('3'*40);sourceSha256=('4'*64);shutdownBoundary='Separately reviewed bundled presentation and shutdown'})
+Assert-RestartShutdownReview $shutdown $retained;Check $true 'Stock and bundled plugin copies each bind their own path, DLL hash and source revision'
+$shutdown.plugins[0].path='c:\stock\plugins\dashboard_pi.dll'
+Assert-RestartShutdownReview $shutdown $retained;Check $true 'Windows path case does not change an exact DLL identity'
+foreach($field in @('path','sha256','revision','sourceSha256','plugin','shutdownBoundary')) {
+ $saved=$shutdown.plugins[1].$field
+ $shutdown.plugins[1].$field=if($field -ceq 'path'){$retained[0].path}elseif($field -ceq 'sha256'){$retained[0].sha256}elseif($field -ceq 'revision'){$retained[0].sourceRevision}else{''}
+ Refuse {Assert-RestartShutdownReview $shutdown $retained} ('One plugin copy cannot inherit another review or omit '+$field)
+ $shutdown.plugins[1].$field=$saved
+}
+$saved=$retained[1].path;$retained[1].path='c:\stock\plugins\dashboard_pi.dll'
+Refuse {Assert-RestartShutdownReview $shutdown $retained} 'Case-variant duplicate retained path refused';$retained[1].path=$saved
+$shutdown.schema=1;Refuse {Assert-RestartShutdownReview $shutdown $retained} 'Historical basename-only schema never auto-authorizes a restart';$shutdown.schema=2
+foreach($path in @('dashboard_pi.dll','C:dashboard_pi.dll','\\server\share\dashboard_pi.dll','C:\plugins\..\dashboard_pi.dll','C:\plugins\.\dashboard_pi.dll','C:\plugins\\dashboard_pi.dll','C:\plugins\dashboard_pi.dll:stream','C:/plugins/dashboard_pi.dll')) {
+ Refuse {Get-RestartPluginReviewKey $path} 'Ambiguous or noncanonical shutdown review path refused'
+}
 # Journal tests are confined to a fresh random temp directory. Test-only path
 # override cannot reach the real Windows profile, registry, workspace or app.
 $script:temporary=Join-Path ([IO.Path]::GetTempPath()) ('OpenNav-Restart-Policy-'+[guid]::NewGuid().ToString('N'))

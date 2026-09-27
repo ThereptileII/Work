@@ -1,8 +1,8 @@
 # Beta 2 boat display review plan
 
 Planning record, not boat acceptance. Product candidate:
-`8e780edc34f68abd693a5d5f6aecdb3ba05a75c4`,
-[CI 36287991989](https://github.com/ThereptileII/Work/actions/runs/36287991989).
+`9f59209914f57ff97af7e184b201752b8f422f0a`,
+[CI 36299835767](https://github.com/ThereptileII/Work/actions/runs/36299835767).
 Record the actual installed commit, executable hash, generation and tool hashes
 in every private review; this candidate's qualification is still pending.
 
@@ -25,7 +25,7 @@ $review = @{
   Workspace = $BoatWorkspace
   LaunchResult = $AuditedLaunchResult
   ExpectedLaunchSha256 = $AuditedLaunchSha256
-  ExpectedCommit = '8e780edc34f68abd693a5d5f6aecdb3ba05a75c4'
+  ExpectedCommit = '9f59209914f57ff97af7e184b201752b8f422f0a'
 }
 & (Join-Path $ReviewedScriptDirectory 'review-window.ps1') @review -Action Capture
 & (Join-Path $ReviewedScriptDirectory 'review-window.ps1') @review -Action Navigation

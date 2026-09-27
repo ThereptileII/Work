@@ -19,7 +19,14 @@
     "realChartContentHumanReviewed": true,
     "strictClearOverlayGate": false,
     "remainingOverlay": "Saved floating Legacy Dashboard",
-    "chartCoordinatesAndLicensedPixelsPublished": false
+    "chartCoordinatesAndLicensedPixelsPublished": false,
+    "coarseDayChartPixelReference": {
+      "landRgb": "c8b87a",
+      "waterRgb": "73b5ee",
+      "landFraction": 0.4739985693848355,
+      "waterFraction": 0.2680257510729614,
+      "scope": "Reviewed same-view regression reference; Dashboard obstruction still fails full visual gate"
+    }
   },
   "firewall": {
     "allowInvoked": false,
@@ -367,7 +374,7 @@
   "safety": {
     "actuatorCommandsIssued": false,
     "remoteAccessChanged": false,
-    "coldCommissioningRestoration": "Application closed; explicit installed-resource adoption native qualification pending"
+    "coldCommissioningRestoration": "Complete; no automatic application launch"
   },
   "limits": [
     "Acquisition observed; sensor accuracy and physical calibration unverified",
@@ -389,5 +396,26 @@
       "Directories/BaseShapefileDir",
       "Settings/ConfigVersionString"
     ]
+  },
+  "restoration": {
+    "toolingCommit": "1439b5b2dac669090b5de4ef956eaffa0f42c542",
+    "inspectionSha256": "9ba5f27c823b115c4384cad61999d868e3fc484cd6b94c89ec6cec5c5c060c22",
+    "reviewedClosedIniSha256": "0dd1ab59c60dac575a7a7a48f69de3f64de43a5f9a4fbe82660d9cca9c284f54",
+    "adoptionProposalSha256": "c0dcd2fe0fdf0dc9938e5671006ffacec170a7441bf343180b9e89f720deba19",
+    "adoptedBaselineSha256": "24caca9e47c0468d6fef9fa29f9e64f1fb9a03d49b1c41bbda73bf79ae37e63d",
+    "baselineRecordSha256": "b5414ce39cd5625fdc8b70675cc61938711346121be1970f6c196f616c5499f8",
+    "restorationRecordSha256": "a732fa7cfb7d9abe3ef2b851f10fe94c40044b713cbd4eddac6912f428ea5b71",
+    "pluginsRestored": 5,
+    "originalConnectionDirectionRestored": true,
+    "independentByteComparison": "Only COM8 input-only byte reversed; all four reviewed migrations preserved",
+    "applicationLaunched": false,
+    "independentPostcheck": {
+      "profileMatchesAdoptedBaseline": true,
+      "navigationDatabaseUnchanged": true,
+      "chartDatabaseSha256": "1440c8d8ab0a907fb688d19e9d66579eaa84c6eb3318c3a5cdcdc637d11a191b",
+      "activeCommissioningMarkerAbsent": true,
+      "applicationAndChartHelperProcesses": 0,
+      "sshTailscaleRustDesk": "Running; automatic startup"
+    }
   }
 }

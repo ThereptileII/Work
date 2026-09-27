@@ -12,7 +12,23 @@ The accepted Beta 1 results below remain historical evidence, not Beta 2 gates.
 
 ### Current candidate
 
-`ee475f0b5dbef6ea9a5ff5778f3238665f47d944` is running the complete gates in
+`9f59209914f57ff97af7e184b201752b8f422f0a` is running the complete gates in
+[CI 36299835767](https://github.com/ThereptileII/Work/actions/runs/36299835767).
+All 694 mapped blobs/modes match local `c72061459b8c532c0f6aaad5846c61a52231ea2f`.
+It includes the exact upstream manager type, Dashboard presentation, maintenance
+Cancel/paint-readiness harness repairs and complete resource-review dependency
+closure. The corrected Linux build and all 27 object-workflow groups pass;
+replacement native UI and release gates remain open. It is not deployed.
+
+The separately qualified boat tooling is `1439b5b2dac669090b5de4ef956eaffa0f42c542`,
+[run 36299584290](https://github.com/ThereptileII/Work/actions/runs/36299584290).
+All nine jobs and all downloaded/hash-verified artifacts pass, including 163
+native baseline-adoption cases and actual broker/Prepare/Arm checks.
+[Scoped tooling evidence](evidence/beta2-resource-adoption-1439b5.json).
+
+### Superseded Dashboard type candidate
+
+`ee475f0b5dbef6ea9a5ff5778f3238665f47d944` was tested in
 [CI 36298899492](https://github.com/ThereptileII/Work/actions/runs/36298899492).
 All 692 mapped blobs/modes match local `bd6d6511da3a6a3d843b9ef1c20d4eb847d0307e`;
 unrelated repository files and the pinned OpenCPN revision are unchanged.
@@ -20,11 +36,19 @@ It includes the Dashboard presentation refinement and the two scoped harness
 repairs below. Its separate branch preserves the preceding Linux elapsed-time
 run while testing this exact new product. No replacement boat deployment yet.
 
+The native product link failed on the new Dashboard bridge’s incorrectly declared
+layout-manager type. It is corrected to the actual pinned `OCPN_AUIManager`;
+[failed evidence and correction](design/reviews/beta2-plugin-workspace.md).
+No failed build was deployed.
+
 The first installed boat session has closed normally with a retained native
 handle and measured exit **0**. No chart helper remained. The navigation database
 is byte-identical. Four final INI changes have been inspected; a narrow
 [installed resource adoption](installer/beta2-installed-resource-adoption.md)
-check is being qualified before restoring the commissioning transaction.
+check has passed all native tooling gates. The closed transaction is now
+restored: all five quarantined DLLs and the original connection byte are back,
+the four independently reviewed migrations are preserved, and no application
+was launched. [Boat completion record](evidence/beta2-boat-first-xnav-8e780.json).
 
 ### Previous full candidate (Windows failed)
 

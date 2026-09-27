@@ -16,9 +16,11 @@ see [status](status.md) for exact commits and acceptance evidence.
   motor and rudder inputs were unavailable at observation; dependent estimates
   remain unavailable. Heading was explicitly estimated.
 - Normal configuration includes output-capable connections and autopilot
-  plugins. The current installed session uses an active, journaled input-only
-  commissioning transaction and temporary plugin quarantines. Cold restoration
-  requires inspection after a normal close. No physical actuator command is
+  plugins. The first installed session used a journaled input-only
+  commissioning transaction and temporary plugin quarantines. After measured
+  normal exit, all temporary changes were restored, preserving the reviewed
+  startup migrations. The application is closed; another remote launch needs
+  a fresh audit. No physical actuator command is
   authorized or included in remote testing.
 - The startup caution was acknowledged once. A Windows firewall prompt was
   cancelled and its disappearance visually reviewed; no Allow action was used.

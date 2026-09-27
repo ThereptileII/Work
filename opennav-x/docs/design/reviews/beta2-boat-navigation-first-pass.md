@@ -27,3 +27,11 @@ and raw diagnostics stay in private local evidence and on the boat PC.
 Next pass: replace only after native gates and a fresh installed plugin audit;
 review the unobstructed Navigation surface, all primary screens, mode restarts,
 chart detail and source-health behavior. This first pass does not close those gates.
+
+The private reviewed Day image also establishes a deterministic same-view pixel
+reference using the existing `tools/chart-render-check.py`: land `c8b87a` is
+47.4% and water `73b5ee` is 26.8% of its fixed interior samples. Both must remain
+present after a same-palette/view restart; all-water/blank captures fail. This
+coarse check complements human review and does not override the separately
+observed Dashboard obstruction or prove chart correctness. Night/changed-view
+comparisons require their own reviewed reference; no color-model substitution.
