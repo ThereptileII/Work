@@ -36,7 +36,7 @@ public static class StockWarningFixtureInventory {
   }catch(Exception e){error=e;return false;}},IntPtr.Zero);if(error!=null)throw error;return found.ToArray();}
 }
 '@
-$evidence=Assert-LocalPath $Evidence;$null=New-Item -ItemType Directory -Path $evidence -Force
+$evidence=Assert-LocalPath ([IO.Path]::GetFullPath($Evidence));$null=New-Item -ItemType Directory -Path $evidence -Force
 $runner=Assert-LocalPath $env:RUNNER_TEMP
 $temporary=Join-Path $runner ('OpenNav stock warning '+[guid]::NewGuid().ToString('N'))
 $null=New-Item -ItemType Directory -Path $temporary
