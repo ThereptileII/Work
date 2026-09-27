@@ -7,6 +7,7 @@ using System.IO.Pipes;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 using Microsoft.Win32.SafeHandles;
 
 namespace OpenNavX {
@@ -18,6 +19,7 @@ namespace OpenNavX {
     [DllImport("kernel32.dll",CharSet=CharSet.Unicode,SetLastError=true)] static extern SafePipeHandle CreateNamedPipeW(string name,uint openMode,uint pipeMode,uint instances,uint output,uint input,uint timeout,ref SecurityAttributes security);
     [DllImport("kernel32.dll")] static extern IntPtr LocalFree(IntPtr value);
     [DllImport("kernel32.dll",SetLastError=true)] static extern bool GetNamedPipeClientProcessId(SafePipeHandle pipe,out uint pid);
+    [DllImport("kernel32.dll",SetLastError=true)] static extern bool CancelIoEx(SafePipeHandle pipe,IntPtr overlapped);
     public static NamedPipeServerStream NewPipe(string session,string sid) {
       if(!Regex.IsMatch(session,"^[a-f0-9]{64}$") || !Regex.IsMatch(sid,"^S-1-5-[0-9-]+$"))throw new ArgumentException("Invalid local pipe identity.");
       IntPtr descriptor;uint size;
@@ -32,16 +34,39 @@ namespace OpenNavX {
       } finally {LocalFree(descriptor);}
     }
     static int Remaining(DateTime deadline) {var ms=(deadline-DateTime.UtcNow).TotalMilliseconds;if(ms<=0)throw new TimeoutException("Restart audit deadline expired.");return (int)Math.Min(ms,Int32.MaxValue);}
+    static void Finish(Task operation,Stream stream,DateTime deadline) {
+      try {
+        if(!operation.Wait(Remaining(deadline)))throw new TimeoutException("Restart peer I/O timed out.");
+        operation.GetAwaiter().GetResult();
+        Remaining(deadline);
+      } catch(TimeoutException) {
+        // FromAsync owns End* and its internal event. Never dispose the APM
+        // event before End* (required by native .NET Framework pipe methods).
+        var pipe=stream as PipeStream;
+        if(pipe!=null && !pipe.SafePipeHandle.IsClosed)CancelIoEx(pipe.SafePipeHandle,IntPtr.Zero);
+        try{operation.Wait(5000);}catch(AggregateException){}
+        // A delayed cancellation must not create an unobserved fault. Caller
+        // still closes the one-use stream in finally; no navigation process is
+        // killed and no restart is retried.
+        operation.ContinueWith(t=>{var ignored=t.Exception;},TaskContinuationOptions.OnlyOnFaulted);
+        throw;
+      } catch(AggregateException) {operation.GetAwaiter().GetResult();throw;}
+    }
     public static void Connect(NamedPipeServerStream pipe,DateTime deadline) {
       Remaining(deadline);
-      var result=pipe.BeginWaitForConnection(null,null);
-      using(var wait=result.AsyncWaitHandle){if(!wait.WaitOne(Remaining(deadline)))throw new TimeoutException("No explicit restart connected.");}
-      pipe.EndWaitForConnection(result);
+      var operation=Task.Factory.FromAsync(pipe.BeginWaitForConnection,pipe.EndWaitForConnection,null);
+      Finish(operation,pipe,deadline);
     }
     public static uint ClientPid(NamedPipeServerStream pipe) {uint pid;if(!GetNamedPipeClientProcessId(pipe.SafePipeHandle,out pid)||pid==0)throw new Win32Exception();return pid;}
     static byte[] ReadExactly(Stream stream,int size,DateTime deadline) {
       var bytes=new byte[size];int offset=0;
-      while(offset<size){Remaining(deadline);var result=stream.BeginRead(bytes,offset,size-offset,null,null);using(var wait=result.AsyncWaitHandle){if(!wait.WaitOne(Remaining(deadline)))throw new TimeoutException("Restart peer read timed out.");}int count=stream.EndRead(result);if(count<=0)throw new EndOfStreamException();offset+=count;}
+      while(offset<size) {
+        Remaining(deadline);
+        var operation=Task<int>.Factory.FromAsync((callback,state)=>stream.BeginRead(bytes,offset,size-offset,callback,state),stream.EndRead,null);
+        Finish(operation,stream,deadline);
+        int count=operation.GetAwaiter().GetResult();
+        if(count<=0)throw new EndOfStreamException();offset+=count;
+      }
       return bytes;
     }
     public static byte[] ReadFrame(Stream stream,DateTime deadline) {
@@ -52,7 +77,8 @@ namespace OpenNavX {
       if(payload==null||payload.Length==0||payload.Length>Maximum)throw new InvalidDataException("Restart frame outside bound.");
       var bytes=new byte[payload.Length+4];int n=payload.Length;for(int i=0;i<4;i++)bytes[i]=(byte)(n>>(8*i));Buffer.BlockCopy(payload,0,bytes,4,n);
       Remaining(deadline);
-      var result=stream.BeginWrite(bytes,0,bytes.Length,null,null);using(var wait=result.AsyncWaitHandle){if(!wait.WaitOne(Remaining(deadline)))throw new TimeoutException("Restart peer write timed out.");}stream.EndWrite(result);
+      var operation=Task.Factory.FromAsync((callback,state)=>stream.BeginWrite(bytes,0,bytes.Length,callback,state),stream.EndWrite,null);
+      Finish(operation,stream,deadline);
     }
     public static byte[] Reply(string[] fields) {
       if(fields==null||(fields.Length!=2&&fields.Length!=17))throw new InvalidDataException("Fixed restart reply required.");

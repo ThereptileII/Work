@@ -13,6 +13,22 @@ foreach($name in @('opencpn.exe','opennav-restart.exe','commissioning_restart_te
 }
 $root=Split-Path $PSScriptRoot -Parent
 Add-Type -Path (Join-Path $PSScriptRoot 'boat\RestartCommissioningNative.cs')
+Add-Type -TypeDefinition @'
+using System;
+using System.Threading;
+using System.Threading.Tasks;
+public static class OpenNavRestartAsyncTest {
+  static int faults;
+  static void Fault(object sender,UnobservedTaskExceptionEventArgs args) {
+    Interlocked.Increment(ref faults);args.SetObserved();
+  }
+  public static void Begin() {faults=0;TaskScheduler.UnobservedTaskException+=Fault;}
+  public static int Finish() {
+    GC.Collect();GC.WaitForPendingFinalizers();GC.Collect();
+    TaskScheduler.UnobservedTaskException-=Fault;return faults;
+  }
+}
+'@
 $sid=[Security.Principal.WindowsIdentity]::GetCurrent().User.Value
 $temporary=Join-Path ([IO.Path]::GetTempPath()) ('OpenNav guarded restart & '+[guid]::NewGuid().ToString('N'))
 $null=New-Item -ItemType Directory -Path $temporary
@@ -37,6 +53,39 @@ try {
     $refused=$false;try{[OpenNavX.RestartCommissioningNative]::ReadFrame($memory,$expired)}catch{$refused=$true}
     Require ($refused -and $memory.Position -eq 0) 'Expired native verifier read consumes no bytes'
   } finally {$memory.Dispose()}
+  # Native .NET Framework APM lifetime regression: exercise operations which
+  # are genuinely pending, then cancel them. No marker/OpenCPN process or
+  # external endpoint is involved; both pipe ends belong to this test process.
+  [OpenNavRestartAsyncTest]::Begin()
+  try {
+    foreach($pending in @('connect','read')) {
+      $token=RandomHash;$server=[OpenNavX.RestartCommissioningNative]::NewPipe($token,$sid)
+      $serverHandle=$server.SafePipeHandle;$client=$null;$clientHandle=$null;$connected=$null
+      try {
+        if($pending -ceq 'read') {
+          $client=[IO.Pipes.NamedPipeClientStream]::new('.',('OpenNavX-CommissioningRestart-'+$token),[IO.Pipes.PipeDirection]::InOut,[IO.Pipes.PipeOptions]::Asynchronous)
+          $connected=$client.ConnectAsync(3000)
+          [OpenNavX.RestartCommissioningNative]::Connect($server,[DateTime]::UtcNow.AddSeconds(3))
+          Require ($connected.Wait(3000) -and $server.IsConnected -and $client.IsConnected) 'Pending-read fixture owns both connected local endpoints'
+          $clientHandle=$client.SafePipeHandle
+        }
+        $watch=[Diagnostics.Stopwatch]::StartNew();$timedOut=$false
+        try {
+          if($pending -ceq 'connect'){[OpenNavX.RestartCommissioningNative]::Connect($server,[DateTime]::UtcNow.AddMilliseconds(250))}
+          else{[OpenNavX.RestartCommissioningNative]::ReadFrame($server,[DateTime]::UtcNow.AddMilliseconds(250))}
+        } catch {
+          $timedOut=$_.Exception.GetBaseException() -is [TimeoutException]
+          if(-not $timedOut){throw}
+        } finally {$watch.Stop()}
+        Require ($timedOut -and $watch.ElapsedMilliseconds -ge 150 -and $watch.ElapsedMilliseconds -lt 7500) ('Native pending '+$pending+' cancels within bounded deadline without closed-event failure')
+      } finally {
+        $server.Dispose();if($client){$client.Dispose()}
+      }
+      Require ($serverHandle.IsClosed -and ($null -eq $clientHandle -or $clientHandle.IsClosed)) ('Native pending '+$pending+' closes every owned pipe handle')
+      $server=$null;$client=$null;$connected=$null
+    }
+  } finally {$unobserved=[OpenNavRestartAsyncTest]::Finish()}
+  Require ($unobserved -eq 0) 'Pending native cancellation leaves no unobserved asynchronous fault'
   $capability=& (Join-Path $Binaries 'opennav-restart.exe') --commissioning-protocol-self-test
   Require ($LASTEXITCODE -eq 0) 'Actual helper capability probe exits without launching a process'
   $capability=$capability|ConvertFrom-Json
