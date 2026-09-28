@@ -33,7 +33,9 @@ class XNavPainter {
 };
 
 enum class ButtonRole { Normal, Quiet, Primary, Critical };
-enum class XNavIcon { None, Plus, Minus, Ownship, Menu, Back, Close, Route, Compass, Settings };
+enum class XNavIcon { None, Plus, Minus, Ownship, Menu, Back, Close, Route, Compass, Settings,
+  Chart, Traffic, Energy, Instruments, Anchor, Radar, Sun, Dusk, Moon, Bell,
+  Search, Layers, Ruler, Pin, Sliders, Chevron };
 
 // Shared touch/wheel scrolling with no bright native scrollbar. Persistent
 // XNav navigation buttons are supplied outside the scrolling content.
@@ -65,6 +67,9 @@ class XNavButton : public wxControl {
   void SetRole(ButtonRole role) { role_ = role; Refresh(); }
   void SetSelected(bool selected) { if(selected_ != selected) { selected_ = selected; Refresh(); } }
   void SetIcon(XNavIcon icon) { icon_ = icon; Refresh(); }
+  void SetNavigationItem(bool value = true) { navigation_item_ = value; Refresh(); }
+  void SetIconOnly(bool value = true) { icon_only_ = value; Refresh(); }
+  void SetFloating(bool value = true) { floating_ = value; Refresh(); }
 
  private:
   void Paint(wxPaintEvent& event);
@@ -73,6 +78,7 @@ class XNavButton : public wxControl {
   wxString hint_;
   bool pressed_ = false;
   bool selected_ = false;
+  bool hovered_ = false, navigation_item_ = false, icon_only_ = false, floating_ = false;
   ButtonRole role_ = ButtonRole::Normal;
   XNavIcon icon_ = XNavIcon::None;
 };

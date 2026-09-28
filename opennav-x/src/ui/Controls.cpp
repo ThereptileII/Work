@@ -1,8 +1,10 @@
 #include "ui/Controls.h"
+#include "ui/PrototypeIcons.h"
 
 #include <wx/dcbuffer.h>
 #include <wx/graphics.h>
 #include <wx/fontenum.h>
+#include <wx/bmpbndl.h>
 #include <wx/sizer.h>
 #ifdef __WXMSW__
 #include <wx/msw/wrapwin.h>
@@ -123,9 +125,18 @@ wxFont UiFontWeight(wxWindow& window, int pixels, int weight) {
   static const wxString face = [] {
     for (const auto *candidate : {"Segoe UI Variable Display", "Segoe UI", "Arial"})
       if (wxFontEnumerator::IsValidFacename(candidate)) return wxString(candidate);
-    return wxString("Sans");  // Linux development fallback, not visual acceptance.
+    return wxString("Arial"); // Same fontconfig fallback request as Chromium.
   }();
+#ifdef __WXMSW__
+  // wxMSW uses negative LOGFONT character height (the CSS em), scaled once.
   wxFont font(wxFontInfo(wxSize(0, window.FromDIP(pixels))).FaceName(face));
+#else
+  // wxGTK SetPixelSize fits the *line cell*, making every glyph too small.
+  // Pango's point-size constructor expresses the em: 96 CSS px = 72 pt.
+  // Pango applies the display resolution itself; do not scale it twice.
+  (void)window;
+  wxFont font(wxFontInfo(pixels * 72.0 / 96.0).FaceName(face));
+#endif
   font.SetNumericWeight(weight);
   return font;
 }
@@ -168,6 +179,8 @@ XNavButton::XNavButton(wxWindow* parent, wxWindowID id, const wxString& label,
     e.Skip();
   });
   Bind(wxEVT_PAINT, &XNavButton::Paint, this);
+  Bind(wxEVT_ENTER_WINDOW, [this](wxMouseEvent &e) { hovered_ = true; Refresh(); e.Skip(); });
+  Bind(wxEVT_LEAVE_WINDOW, [this](wxMouseEvent &e) { hovered_ = false; Refresh(); e.Skip(); });
   Bind(wxEVT_SET_FOCUS, [this](wxFocusEvent& e) { Refresh(); e.Skip(); });
   Bind(wxEVT_KILL_FOCUS, [this](wxFocusEvent& e) { pressed_ = false; Refresh(); e.Skip(); });
   Bind(wxEVT_LEFT_DOWN, [this](wxMouseEvent&) {
@@ -233,54 +246,74 @@ void XNavButton::Activate() {
 
 void XNavButton::Paint(wxPaintEvent&) {
   wxAutoBufferedPaintDC dc(this);
-  const auto colors = Theme(mode_);
-  dc.SetBackground(wxBrush(Colour(colors.surface)));
-  dc.Clear();
+  auto colors = Theme(mode_);
+  if (floating_) {
+    const auto floating = FloatingTheme(mode_);
+    colors.background = colors.surface = colors.selected = floating.surface;
+    colors.primary = colors.secondary = floating.primary;
+    colors.muted = floating.secondary;
+  }
   const auto size = GetClientSize();
+  const auto background = GetParent()->GetBackgroundColour().IsOk()
+      ? GetParent()->GetBackgroundColour() : Colour(colors.background);
+  dc.SetBackground(wxBrush(background));
+  dc.Clear();
+  const auto blend = [](wxColour foreground, wxColour back, double alpha) {
+    return wxColour(static_cast<unsigned char>(foreground.Red()*alpha+back.Red()*(1-alpha)),
+                    static_cast<unsigned char>(foreground.Green()*alpha+back.Green()*(1-alpha)),
+                    static_cast<unsigned char>(foreground.Blue()*alpha+back.Blue()*(1-alpha)));
+  };
+  const auto opacity = [&](wxColour color) { return IsEnabled() ? color : blend(color, background, .38); };
   const auto semantic = role_ == ButtonRole::Critical ? colors.alarm : colors.accent;
-  const auto edge = Colour(HasFocus() || selected_ ? semantic : colors.border);
-  dc.SetPen(wxPen(edge, FromDIP(HasFocus() ? 2 : 1)));
-  if (role_ == ButtonRole::Quiet && !HasFocus() && !selected_)
-    dc.SetPen(*wxTRANSPARENT_PEN);
-  dc.SetBrush(wxBrush(Colour(pressed_ || selected_ ? colors.selected : colors.surface)));
-  dc.DrawRoundedRectangle(1, 1, size.x - 2, size.y - 2, FromDIP(spacing::control_radius));
-  dc.SetFont(UiFont(*this, 14, false));
-  const auto text_color = Colour(!IsEnabled() ? colors.muted
-      : role_ == ButtonRole::Primary || role_ == ButtonRole::Critical || selected_
-        ? semantic : colors.primary);
-  dc.SetTextForeground(text_color);
-  if (icon_ != XNavIcon::None) {
-    const int cx = size.x / 2, cy = GetLabel().empty() ? size.y / 2 : size.y / 2 - FromDIP(7);
-    const int r = FromDIP(9);
-    dc.SetPen(wxPen(text_color, FromDIP(2)));
+  wxColour fill = navigation_item_ ? background : Colour(colors.surface);
+  wxColour edge = Colour(colors.border);
+  wxColour ink = Colour(colors.primary);
+  if (navigation_item_) {
+    fill = selected_ ? blend(Colour(colors.accent), background, .05)
+                    : hovered_ || pressed_ ? Colour(colors.surface) : background;
+    ink = Colour(selected_ ? colors.accent : hovered_ ? colors.primary : colors.muted);
+  } else if (role_ == ButtonRole::Primary) {
+    fill = Colour(colors.accent); edge = fill; ink = Colour(colors.background);
+  } else if (role_ == ButtonRole::Critical) {
+    fill = blend(Colour(colors.alarm), background, .063);
+    edge = blend(Colour(colors.alarm), background, .25); ink = Colour(colors.alarm);
+  } else if (role_ == ButtonRole::Quiet) {
+    fill = hovered_ || pressed_ || selected_ ? Colour(colors.selected) : background;
+    ink = Colour(selected_ ? colors.accent : colors.secondary);
+  } else if (selected_ || pressed_) fill = Colour(colors.selected);
+  if (hovered_ && IsEnabled() && !navigation_item_) {
+    fill = wxColour(std::min(255, int(fill.Red()*1.08)),
+                    std::min(255, int(fill.Green()*1.08)), std::min(255, int(fill.Blue()*1.08)));
+  }
+  dc.SetPen(navigation_item_ || role_ == ButtonRole::Quiet ? *wxTRANSPARENT_PEN : wxPen(opacity(edge)));
+  dc.SetBrush(wxBrush(opacity(fill)));
+  dc.DrawRoundedRectangle(1, 1, size.x - 2, size.y - 2, FromDIP(navigation_item_ ? 10 : spacing::control_radius));
+  if (HasFocus()) {
     dc.SetBrush(*wxTRANSPARENT_BRUSH);
-    switch(icon_) {
-      case XNavIcon::Ownship: {
-        wxPoint p[] = {{cx,cy-r},{cx+r*2/3,cy+r},{cx,cy+r/2},{cx-r*2/3,cy+r}};
-        dc.DrawPolygon(4,p); dc.DrawCircle(cx,cy,FromDIP(13)); break;
-      }
-      case XNavIcon::Plus: dc.DrawLine(cx,cy-r,cx,cy+r); [[fallthrough]];
-      case XNavIcon::Minus: dc.DrawLine(cx-r,cy,cx+r,cy); break;
-      case XNavIcon::Menu: {
-        for(int y : {-r,0,r}) dc.DrawLine(cx-r,cy+y,cx+r,cy+y);
-        break;
-      }
-      case XNavIcon::Back:
-        dc.DrawLine(cx-r,cy,cx+r,cy); dc.DrawLine(cx-r,cy,cx,cy-r); dc.DrawLine(cx-r,cy,cx,cy+r); break;
-      case XNavIcon::Close:
-        dc.DrawLine(cx-r,cy-r,cx+r,cy+r); dc.DrawLine(cx-r,cy+r,cx+r,cy-r); break;
-      case XNavIcon::Route:
-        dc.DrawCircle(cx-r,cy+r,FromDIP(3));dc.DrawLine(cx-r+3,cy+r-3,cx+r-3,cy-r+3);dc.DrawCircle(cx+r,cy-r,FromDIP(3));break;
-      case XNavIcon::Compass:
-        dc.DrawCircle(cx,cy,r);dc.DrawLine(cx-r/2,cy+r/2,cx+r/2,cy-r/2);break;
-      case XNavIcon::Settings:
-        dc.DrawCircle(cx,cy,r);dc.DrawCircle(cx,cy,FromDIP(3));break;
-      default: break;
-    }
-    if (!GetLabel().empty()) {
-      dc.SetFont(UiFont(*this, 11));
+    dc.SetPen(wxPen(Colour(semantic), FromDIP(2)));
+    dc.DrawRoundedRectangle(FromDIP(2), FromDIP(2), size.x-FromDIP(4), size.y-FromDIP(4), FromDIP(8));
+  }
+  if (navigation_item_ && selected_) {
+    dc.SetPen(wxPen(Colour(colors.accent), FromDIP(2)));
+    dc.DrawLine(FromDIP(1), size.y/2-FromDIP(9), FromDIP(1), size.y/2+FromDIP(10));
+  }
+  const auto text_color = opacity(ink);
+  dc.SetTextForeground(text_color);
+  dc.SetFont(UiFontWeight(*this, 12, 500));
+  if (icon_ != XNavIcon::None) {
+    const int icon_size = FromDIP(22);
+    const bool caption = !icon_only_ && !GetLabel().empty();
+    const int y = caption ? (size.y - FromDIP(40))/2 : (size.y-icon_size)/2;
+    const auto svg = wxString::Format(
+        "<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"24\" height=\"24\" viewBox=\"0 0 24 24\">"
+        "<path d=\"%s\" fill=\"none\" stroke=\"#%02x%02x%02x\" stroke-width=\"1.65\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/></svg>",
+        wxString::FromUTF8(PrototypeIconPath(icon_)), text_color.Red(), text_color.Green(), text_color.Blue());
+    const auto bitmap = wxBitmapBundle::FromSVG(svg.utf8_str(), wxSize(icon_size, icon_size)).GetBitmap(wxSize(icon_size, icon_size));
+    if (bitmap.IsOk()) dc.DrawBitmap(bitmap, (size.x-icon_size)/2, y, true);
+    if (caption) {
+      dc.SetFont(UiFont(*this, navigation_item_ ? 10 : 11));
       const auto label=wxControl::Ellipsize(GetLabel(),dc,wxELLIPSIZE_END,std::max(1,size.x-FromDIP(8)));
-      dc.DrawText(label,(size.x-dc.GetTextExtent(label).x)/2,cy+FromDIP(15));
+      dc.DrawText(label,(size.x-dc.GetTextExtent(label).x)/2,y+FromDIP(29));
     }
     return;
   }
@@ -332,9 +365,9 @@ void XNavDataValue::SetReading(const vessel::Sample& sample, vessel::Time now) {
 void XNavDataValue::Paint(wxPaintEvent&) {
   wxAutoBufferedPaintDC dc(this);
   const auto colors = Theme(mode_);
-  dc.SetBackground(wxBrush(Colour(colors.surface)));
+  dc.SetBackground(wxBrush(Colour(compact_ ? colors.background : colors.surface)));
   dc.Clear();
-  const int x = FromDIP(12);
+  const int x = FromDIP(compact_ ? 18 : 12);
   if (compact_) {
     const int height = ToDIP(GetClientSize().y);
     const bool roomy = height >= 108;
@@ -342,14 +375,16 @@ void XNavDataValue::Paint(wxPaintEvent&) {
     const int available = GetClientSize().x - 2 * x;
     dc.SetPen(wxPen(Colour(colors.border)));
     dc.DrawLine(x, GetClientSize().y-1, GetClientSize().x-x, GetClientSize().y-1);
-    dc.SetFont(UiFont(*this,12)); dc.SetTextForeground(Colour(colors.secondary));
+    dc.SetFont(UiFont(*this,11)); dc.SetTextForeground(Colour(colors.secondary));
     auto title=label_;
-    if(title=="APPARENT WIND") title="WIND";
-    if(title=="SPEED OVER GROUND") title="SOG";
+    if(title=="APPARENT WIND") title="Apparent wind";
+    if(title=="TRUE WIND") title="True wind";
+    if(title=="SPEED OVER GROUND") title="Speed over ground";
+    if(title=="HEADING") title="Heading";
     dc.DrawText(wxControl::Ellipsize(title,dc,wxELLIPSIZE_END,available),x,FromDIP(label_y));
     const bool stale=reading_.quality==vessel::Quality::Stale;
     const auto value=reading_.value?wxString::Format("%.*f",decimals_,*reading_.value):wxString::FromUTF8("—");
-    int value_size = roomy ? 44 : 32;
+    int value_size = roomy ? 48 : 32;
     dc.SetFont(UiFont(*this,value_size));
     while(value_size > 24 && dc.GetTextExtent(value).x > available) {
       value_size -= 2; dc.SetFont(UiFont(*this,value_size));

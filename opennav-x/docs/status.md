@@ -15,18 +15,35 @@ Original ZIP/extracted/Git bytes were verified. See
 [interactions](design/prototype-interactions.md) and
 [chart inspection](design/xnav-chart-style.md).
 
-Sixty canonical Linux renders cover twenty actual states across Day/Dusk/Night,
-using pinned Playwright/Chromium, offline loading and a fixed clock. Computed
-styles, geometry, font resolution and image hashes are recorded. Linux resolves
-the supplied stack to Liberation Sans; Windows typography needs its own native
-reference. Initial native palette/font-stack migration compiles on Linux.
-This does not qualify screen conformance. Every screen remains Pending in
-[prototype conformance](design/prototype-conformance.md).
+Sixty canonical renders on each of Linux and native Windows cover twenty
+actual states across Day/Dusk/Night using pinned Chromium, offline loading and
+a fixed clock. Windows resolves Segoe UI; Linux resolves Liberation Sans.
+Both reference artifacts and all Windows PNG hashes were verified. See
+[evidence](evidence/prototype-reference-7925b160.json).
 
-Online AIS and XNav-owned S-52 presentation are under inspection; no live
-provider or chart-style completion is claimed. AISStream must not inherit the
-local Signal K client's disabled TLS validation. The prototype's newer vendor
-symbol snapshot cannot replace the pinned application's resources blindly.
+Native shell migration now follows the 68/80/186/132/34px composition. Two
+Linux capture/review passes exposed and corrected undersized GTK font ems,
+selected navigation state and energy-card composition. Eight lossless
+reference/current/diff sets retain visible mismatches without masks or broad
+similarity tolerances. The actual coastline canvas remains stock presentation.
+The integrated build at local `545feca` passed 110/110 tests; the first run
+conflicted with the simultaneous capture on upstream's fixed REST port, so the
+complete gate and captures were repeated serially. New native Windows product
+capture/build gates are being prepared. No screen is accepted; see
+[conformance](design/prototype-conformance.md) and the
+[review log](design/reviews/prototype-native-shell-in-progress.md).
+
+Online AIS now has owned target/cache/provider contracts, onboard precedence,
+aging, bounded viewport subscriptions and reconnect policy. The foundation
+passed native Win32 MSVC and Linux tests at `087318c`; downloaded JUnit artifacts
+verify ([evidence](evidence/prototype-ais-foundation-087318c.json)). Its pure JSON
+codec adds 100 deterministic checks; the portable suite now passes 73/73.
+Transport, credential storage, product wiring and live AIS acceptance remain
+pending. No service connection or target count is claimed.
+
+XNav-owned S-52 presentation remains under inspection. AISStream must not
+inherit the local Signal K client's disabled TLS validation. The prototype's
+newer vendor symbol snapshot cannot replace the pinned resources blindly.
 
 Boat SSH remains unreachable at the latest probe. The existing commissioning
 transaction described below must be inspected and restored after normal exit;

@@ -1,0 +1,40 @@
+{
+  "schema": 1,
+  "scope": "Immutable HTML references only; native product visual acceptance pending",
+  "commit": "7925b160d90ea7892118764f848c4be63612b80e",
+  "mappedLocal": "ecda71e",
+  "run": "https://github.com/ThereptileII/Work/actions/runs/36442741182",
+  "jobsPassed": 2,
+  "htmlSha256": "b04573b920b6bccd16afd22f54a909e48afcfd502ce9cd7c69fdf5b6dd895447",
+  "originalFilesVerified": 113,
+  "sourceBlobsVerified": 905,
+  "renderedStatesPerPlatform": 60,
+  "windowsFont": "Segoe UI",
+  "linuxFont": "Liberation Sans",
+  "browser": "145.0.7632.6",
+  "playwright": "1.58.0",
+  "artifacts": [
+    {
+      "id": 10979452449,
+      "name": "prototype-reference-Linux-7925b160d90ea7892118764f848c4be63612b80e",
+      "sha256": "4e5ed35cce4c9b3e8b60cc2e78b065360e2e5d308355809f0613750cc04a5d23",
+      "bytes": 17739644,
+      "zipCrc": true
+    },
+    {
+      "id": 10978573835,
+      "name": "prototype-reference-Windows-7925b160d90ea7892118764f848c4be63612b80e",
+      "sha256": "14b1adef062fbd71c5521984a3649e3e809eb167ed8c66ccf58f3623068064c6",
+      "bytes": 16109580,
+      "zipCrc": true
+    }
+  ],
+  "allWindowsPngHashesVerified": true,
+  "localRepeatByteIdentical": [
+    "navigation-day",
+    "energy-day",
+    "ais-target-day"
+  ],
+  "boatGatePassed": false,
+  "nativeProductConformant": false
+}

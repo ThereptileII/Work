@@ -1,0 +1,30 @@
+{
+  "schema": 1,
+  "scope": "Supplemental AIS foundation only; no WebSocket/product/boat acceptance",
+  "commit": "087318c44620e83be9efb086058a446e5f1494b1",
+  "mappedLocal": "35174b3",
+  "run": "https://github.com/ThereptileII/Work/actions/runs/36445297817",
+  "jobsPassed": 4,
+  "windowsArchitecture": "Win32",
+  "contractTestsPerPlatform": 3,
+  "localOnlineAisAssertions": 2074,
+  "localFullPortableTests": 72,
+  "artifacts": [
+    {
+      "id": 10980461611,
+      "name": "prototype-ais-foundation-Linux-087318c44620e83be9efb086058a446e5f1494b1",
+      "sha256": "723a01eef3af6092811db47cfd4da524c320ca3d3edca9fbf197e84fea0dcfcb",
+      "bytes": 523,
+      "zipCrc": true
+    },
+    {
+      "id": 10980007406,
+      "name": "prototype-ais-foundation-Windows-087318c44620e83be9efb086058a446e5f1494b1",
+      "sha256": "09f5e5c15ac724cefce2570666418fd8561f511b26f5194cd9c496031116b2c8",
+      "bytes": 526,
+      "zipCrc": true
+    }
+  ],
+  "liveConnectionTested": false,
+  "boatGatePassed": false
+}

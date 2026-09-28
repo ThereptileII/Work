@@ -9,6 +9,15 @@ struct Palette {
   std::uint32_t background, surface, selected, elevated, border;
   std::uint32_t primary, secondary, muted, accent, healthy, attention, alarm, ais;
 };
+struct FloatingPalette { std::uint32_t surface, primary, secondary; };
+constexpr FloatingPalette FloatingTheme(LightMode mode) {
+  switch(mode) {
+    case LightMode::Day: return {0xF7F8F0,0x233E3E,0x6B8380};
+    case LightMode::Dusk: return {0x243A40,0xE1E5D8,0xA6BCB7};
+    case LightMode::Night: return {0x152129,0xB6C3AF,0x869D91};
+  }
+  return FloatingTheme(LightMode::Night);
+}
 
 constexpr Palette Theme(LightMode mode) {
   // Supplied v8 HTML: :root and #app[data-theme], including inheritance.
@@ -35,11 +44,8 @@ namespace spacing {
 constexpr int base = 8;
 constexpr int compact = 4;
 constexpr int touch = 48;
-constexpr int action_height = 56;
-constexpr int panel_radius = 8;
-constexpr int control_radius = 8;
-constexpr int left_rail = 56;
-constexpr int right_rail = 136;
+constexpr int panel_radius = 14;
+constexpr int control_radius = 9;
 }  // namespace spacing
 
 }  // namespace opennav::ui

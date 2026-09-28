@@ -4,6 +4,7 @@
 #include "ui/PreviewPanel.h"
 #include "ui/ProductPanel.h"
 #include "ui/ContextCard.h"
+#include "ui/Horizon.h"
 #include "integration/BuildFeatures.h"
 #if XNAV_ENABLE_TEST_FIXTURES
 #include "vessel/DemoSource.h"
@@ -101,6 +102,7 @@ private:
   void UpdateRail(const std::vector<std::string> &keys, vessel::Time now);
   void Tick();
   void UpdateAlerts();
+  void PlaceChartControls();
   void CloseContext();
   void UpdateContext(vessel::Time now);
   XNavScroll *CurrentScroll() const;
@@ -157,6 +159,10 @@ private:
   std::vector<std::pair<int, std::function<void()>>> commands_;
   std::vector<wxStaticText *> labels_;
   wxPanel *rail_scroll_ = nullptr;
+  XNavHorizon *horizon_ = nullptr;
+  wxPanel *route_actions_ = nullptr;
+  wxPanel *chart_tools_ = nullptr, *chart_orientation_ = nullptr, *chart_follow_ = nullptr;
+  std::vector<wxWindow *> chart_overlays_;
   XNavButton *page_up_ = nullptr, *page_down_ = nullptr;
   XNavButton *rail_up_ = nullptr, *rail_down_ = nullptr;
   wxPanel *rail_actions_ = nullptr;

@@ -101,8 +101,13 @@ PreviewPanel::PreviewPanel(wxWindow *parent)
     : XNavScroll(parent) {
   SetBackgroundStyle(wxBG_STYLE_PAINT);
   SetScrollRate(0, FromDIP(24));
+  close_=new XNavButton(this,wxID_ANY,"Close","Close this page");
+  close_->SetRole(ButtonRole::Quiet);
+  close_->SetMinSize(FromDIP(wxSize(80,44)));
+  close_->Bind(wxEVT_BUTTON,[this](wxCommandEvent&){if(close_action_)close_action_();});
   Bind(wxEVT_PAINT, &PreviewPanel::Paint, this);
   Bind(wxEVT_SIZE, [this](wxSizeEvent &e) {
+    close_->SetSize(GetClientSize().x-FromDIP(112),FromDIP(28),FromDIP(80),FromDIP(44));
     Refresh();
     e.Skip();
   });
@@ -120,6 +125,8 @@ void PreviewPanel::Update(PreviewPage page, LightMode mode,
            : page == PreviewPage::Energy ? "OpenNav page: Energy"
                                          : "OpenNav page: Diagnostics");
   mode_ = mode;
+  SetBackgroundColour(Colour(Theme(mode).background));
+  close_->SetLightMode(mode);
   state_ = s;
   now_ = now;
   model_ = model;
@@ -144,7 +151,7 @@ void PreviewPanel::Paint(wxPaintEvent &) {
   const wxString title = page_ == PreviewPage::Energy  ? "Energy"
                          : page_ == PreviewPage::Route ? "Passage"
                                                        : "Diagnostics";
-  p.Text(title, margin, 20, 28, c.primary);
+  if(page_!=PreviewPage::Energy) p.Text(title, margin, 20, 28, c.primary);
   wxString subtitle = page_ == PreviewPage::Energy
                           ? "Battery, propulsion and estimated arrival"
                       : page_ == PreviewPage::Route
@@ -154,123 +161,128 @@ void PreviewPanel::Paint(wxPaintEvent &) {
 #if XNAV_ENABLE_TEST_FIXTURES
   else if (state_.simulated) subtitle = "DEMO / Synthetic test trip / No device output";
 #endif
-  p.Text(subtitle, margin, 60, 13,
+  if(page_!=PreviewPage::Energy) p.Text(subtitle, margin, 60, 13,
          state_.simulated || state_.replayed ? c.attention : c.secondary, false,
          width - 2 * margin);
   const auto *destination = Event(advice_, smartnav::EventKind::Destination);
   const auto *turn = Event(advice_, smartnav::EventKind::Turn);
   int bottom = 0;
   if (page_ == PreviewPage::Energy) {
-    const int columns = width >= 800 ? 3 : width >= 580 ? 2 : 1;
-    const int cw = (width - margin * 2 - gap * (columns - 1)) / columns;
-    const int card_height = 276;
-    const int bx = margin, by = 100;
-    p.Card(bx, by, cw, card_height, "BATTERY");
-    p.Value(state_.battery.soc_percent, bx + 24, by + 44, "% CHARGE", 0, 60, cw - 48);
-    const auto soc = vessel::Assess(state_.battery.soc_percent, now_);
-    dc.SetPen(*wxTRANSPARENT_PEN);
-    dc.SetBrush(wxBrush(Colour(c.border)));
-    dc.DrawRoundedRectangle(p.D(bx + 24), p.D(by + 154), p.D(cw - 48), p.D(4), p.D(2));
-    if (soc.value && soc.quality != vessel::Quality::Stale) {
-      const auto color = soc.quality == vessel::Quality::Uncertain ? c.attention
-                         : std::isfinite(model.reserve_soc_percent) &&
-                                   *soc.value <= model.reserve_soc_percent ? c.attention
-                                                                           : c.healthy;
-      dc.SetBrush(wxBrush(Colour(color)));
-      dc.DrawRoundedRectangle(p.D(bx + 24), p.D(by + 154),
-          p.D(static_cast<int>((cw - 48) * std::clamp(*soc.value, 0.0, 100.0) / 100)),
-          p.D(4), p.D(2));
+    // Exact v8 composition: two unequal main cards, then four compact values.
+    // Content comes only from assessed Vessel Data and the existing model.
+    const int inset=32, space=18, available=width-2*inset;
+    const bool wide=available>=720;
+    const int left=wide?static_cast<int>((available-space)*.524):available;
+    const int right=wide?available-space-left:available;
+    const int y=146, height=423, rx=wide?inset+left+space:inset;
+    const int ry=wide?y:y+height+space;
+    p.Text("ELECTRIC PASSAGE",inset,36,10,c.accent);
+    p.Text("More horizon. Less uncertainty.",inset,60,30,c.primary,false,available-95);
+    p.Text(state_.replayed ? "REPLAY / Historical data / Controls disabled" :
+      state_.simulated ? "DEMO / Synthetic test data" :
+      "Your energy picture, from this moment to your destination.",
+      inset,106,12,c.secondary,false,available);
+    p.Card(inset,y,left,height,"");
+    p.Card(rx,ry,right,height,"");
+    const auto usable=[](const vessel::Assessment &a){
+      return a.value && (a.quality==vessel::Quality::Live || a.quality==vessel::Quality::Aging ||
+                         a.quality==vessel::Quality::Estimated);
+    };
+    const auto soc=vessel::Assess(state_.battery.soc_percent,now_);
+    const auto capacity=vessel::Assess(state_.battery.usable_capacity_kwh,now_);
+    const bool valid_soc=usable(soc)&&*soc.value>=0&&*soc.value<=100;
+    p.Text("Energy on board",inset+24,y+24,12,c.secondary);
+    p.Text(valid_soc?wxString::Format("%.0f",*soc.value):Dash(),inset+24,y+64,60,
+           valid_soc?c.accent:c.muted,false,left-140);
+    p.Text("%",inset+90,y+106,12,c.secondary);
+    // No configured capacity is silently promoted into a measured input.
+    p.Text(valid_soc&&usable(capacity)?wxString::Format("%.1f kWh remaining",*soc.value * *capacity.value/100):
+           "Usable energy unavailable",inset+24,y+139,10,c.secondary,false,left-120);
+    p.Text(valid_soc?wxString(soc.quality==vessel::Quality::Aging?"AGING":"CURRENT"):
+           W(vessel::QualityName(soc.quality)),inset+24,y+169,9,
+           valid_soc?c.accent:c.muted,false,left-120);
+    dc.SetPen(wxPen(Colour(c.border)));dc.SetBrush(wxBrush(Colour(c.surface)));
+    dc.DrawRoundedRectangle(p.D(inset+left-90),p.D(y+64),p.D(66),p.D(114),p.D(11));
+    dc.SetPen(*wxTRANSPARENT_PEN);dc.SetBrush(wxBrush(Colour(c.border)));
+    dc.DrawRoundedRectangle(p.D(inset+left-68),p.D(y+59),p.D(22),p.D(6),p.D(2));
+    if(valid_soc) {
+      const int fill=static_cast<int>(100*std::clamp(*soc.value,0.,100.)/100.);
+      dc.SetBrush(wxBrush(Colour(c.accent)));
+      dc.DrawRoundedRectangle(p.D(inset+left-83),p.D(y+172-fill),p.D(52),p.D(fill),p.D(3));
     }
-    p.Value(state_.battery.voltage_v, bx + 24, by + 178, "VOLT", 0, 28, cw / 2 - 32);
-    p.Value(state_.battery.current_a, bx + cw / 2 + 8, by + 178, "AMPERE", 1, 28, cw / 2 - 32);
-    const auto net = vessel::Assess(state_.battery.net_discharge_kw, now_);
-    p.Text(net.value && net.quality != vessel::Quality::Stale
-               ? wxString::Format("Battery load  %.1f kW", *net.value)
-               : "Battery load unavailable",
-           bx + 24, by + 248, 12, c.secondary, false, cw - 48);
-    const int px = columns >= 2 ? margin + cw + gap : margin;
-    const int py = columns >= 2 ? by : by + card_height + gap;
-    p.Card(px, py, cw, card_height, "PROPULSION");
-    p.Value(state_.propulsion.electrical_power_kw, px + 24, py + 44,
-            "kW / MOTOR POWER", 1, 60, cw - 48);
-    p.Rule(px + 24, py + 154, cw - 48);
-    p.Value(state_.propulsion.motor_rpm, px + 24, py + 178, "RPM", 0, 28, cw / 2 - 32);
-    p.Value(state_.propulsion.motor_temperature_c, px + cw / 2 + 8, py + 178,
-            W("MOTOR / °C"), 0, 28, cw / 2 - 32);
-
-    const int full = width - 2 * margin;
-    int range_y = by + card_height + gap;
-    if (columns == 3) {
-      const int x = margin + 2 * (cw + gap);
-      p.Card(x, by, cw, card_height, "DESTINATION");
-      p.Text(DestinationName(state_), x + 24, by + 44, 20, c.primary, false, cw - 48);
-      p.Text(distance ? wxString::Format("%.1f NM", *distance) : "Distance unavailable",
-             x + 24, by + 76, 21, distance ? c.primary : c.muted, false, cw - 48);
-      p.Text(destination ? ApproxTime(destination->seconds_from_now) : "Time unavailable",
-             x + 24, by + 106, 14, c.secondary, false, cw - 48);
-      p.Rule(x + 24, by + 136, cw - 48);
-      p.Text("ESTIMATED ARRIVAL", x + 24, by + 152, 11, c.secondary);
-      p.Estimate(arrival ? arrival->soc_percent : std::nullopt, x + 24,
-                 by + 174, "% CHARGE", 0, 40, cw - 48);
-      wxString reserve = arrival && arrival->soc_percent && std::isfinite(model.reserve_soc_percent)
-                             ? wxString::Format("Reserve %+.0f%%", *arrival->soc_percent - model.reserve_soc_percent)
-                             : "Estimate unavailable";
-      if (arrival && arrival->energy_shortfall_kwh > 0) reserve = "Insufficient energy";
-      p.Text(reserve, x + 24, by + 244, 13,
-             arrival && arrival->below_reserve ? c.attention : c.secondary, false, cw - 48);
+    p.Text("ESTIMATED BATTERY OVER THIS PASSAGE",inset+24,y+209,10,c.secondary,false,left-48);
+    // The model returns endpoint energy, not a sampled voyage profile. Draw
+    // that honest steady-consumption segment, never the mock's curved history.
+    if(valid_soc&&arrival&&arrival->soc_percent) {
+      const int gx=inset+78,gy=y+247,gw=std::max(1,left-156),gh=88;
+      const auto ordinate=[&](double v){return gy+gh-static_cast<int>(gh*std::clamp(v,0.,100.)/100.);};
+      dc.SetPen(wxPen(Colour(c.border),1,wxPENSTYLE_DOT));
+      dc.DrawLine(p.D(gx),p.D(gy+gh),p.D(gx+gw),p.D(gy+gh));
+      if(std::isfinite(model.reserve_soc_percent)) {
+        dc.SetPen(wxPen(Colour(c.attention),1,wxPENSTYLE_DOT));
+        dc.DrawLine(p.D(gx),p.D(ordinate(model.reserve_soc_percent)),p.D(gx+gw),p.D(ordinate(model.reserve_soc_percent)));
+      }
+      dc.SetPen(wxPen(Colour(c.accent),p.D(2)));
+      dc.DrawLine(p.D(gx),p.D(ordinate(*soc.value)),p.D(gx+gw),p.D(ordinate(*arrival->soc_percent)));
+      p.Text("NOW",gx,gy+gh+6,9,c.muted);
+      p.Text("ESTIMATED ARRIVAL",gx+gw-105,gy+gh+6,9,c.muted);
+      p.Text("Steady consumption estimate",inset+24,y+377,10,c.secondary,false,left-48);
     } else {
-      const int y = py + card_height + gap;
-      const int destination_height = columns == 2 ? 244 : 408;
-      p.Card(margin, y, full, destination_height, "DESTINATION");
-      const int half = columns == 2 ? full / 2 : full;
-      p.Text(DestinationName(state_), margin + 24, y + 46, 24, c.primary, false, half - 48);
-      p.Text(distance ? wxString::Format("%.1f", *distance) : Dash(),
-             margin + 24, y + 84, 42, distance ? c.primary : c.muted, false, half - 48);
-      p.Text("NM REMAINING", margin + 24, y + 136, 12, c.secondary);
-      p.Text(destination ? ApproxTime(destination->seconds_from_now) : "Time unavailable",
-             margin + 24, y + 164, 20, c.primary, false, half - 48);
-      p.Text("At current speed / approximate", margin + 24, y + 198, 11, c.secondary, false, half - 48);
-      const int ax = columns == 2 ? margin + half + 24 : margin + 24;
-      const int ay = columns == 2 ? y + 46 : y + 230;
-      p.Text("ESTIMATED ARRIVAL", ax, ay, 12, c.secondary);
-      p.Estimate(arrival ? arrival->soc_percent : std::nullopt, ax, ay + 24,
-                 "% CHARGE", 0, 48, half - 48);
-      wxString reserve = EnergyMessage(energy.arrival);
-      if (arrival && arrival->soc_percent && std::isfinite(model.reserve_soc_percent))
-        reserve = wxString::Format("Reserve %+.0f%%", *arrival->soc_percent - model.reserve_soc_percent);
-      p.Text(reserve, ax, ay + 110, 14,
-             arrival && arrival->below_reserve ? c.attention : c.secondary,
-             false, half - 48);
-      p.Text(energy.arrival.quality == smartnav::EnergyQuality::Aging
-                 ? "Estimate uses aging data"
-             : energy.arrival.quality == smartnav::EnergyQuality::Modeled
-                 ? "Estimate uses modeled consumption"
-             : arrival ? "Advisory / current conditions" : "Estimate unavailable",
-             ax, ay + 140, 11, c.muted, false, half - 48);
-      range_y = y + destination_height + gap;
+      p.Text("Passage estimate unavailable",inset+24,y+270,16,c.muted,false,left-48);
+      p.Text(EnergyMessage(energy.arrival),inset+24,y+300,12,c.secondary,false,left-48);
     }
-    p.Card(margin, range_y, full, 152, "ESTIMATED RANGE ABOVE RESERVE");
-    p.Estimate(energy.range.estimate ? std::optional<double>{energy.range.estimate->range_nm}
-                                    : std::nullopt,
-               margin + 24, range_y + 44, "NM", 0, 40, full / 2 - 40);
-    const int sx = margin + full / 2;
-    const int sw = full / 2 - 24;
-    const auto gear = vessel::AssessText(state_.propulsion.gear, now_);
-    const auto regen = vessel::AssessText(state_.propulsion.regeneration, now_);
-    p.Text("DRIVE", sx, range_y + 24, 11, c.secondary);
-    p.Text(gear.value && gear.quality != vessel::Quality::Stale ? W(*gear.value) : "Unavailable",
-           sx, range_y + 46, 17, c.primary, false, sw);
-    p.Text("REGENERATION", sx, range_y + 82, 11, c.secondary);
-    p.Text(regen.value && regen.quality != vessel::Quality::Stale ? W(*regen.value) : "Unavailable",
-           sx, range_y + 104, 17, c.primary, false, sw);
-    p.Text(!arrival ? EnergyMessage(energy.arrival)
-           : energy.arrival.quality == smartnav::EnergyQuality::Aging
-               ? wxString("Limited estimate: aging inputs. Assumptions are in Settings.")
-           : energy.arrival.quality == smartnav::EnergyQuality::Modeled
-               ? wxString("Estimated consumption. Assumptions are in Settings.")
-               : wxString("Advisory estimates at current conditions. Assumptions are in Settings."),
-           margin, range_y + 168, 12, c.secondary, false, full);
-    bottom = range_y + 208;
+    p.Text("At "+DestinationName(state_),rx+24,ry+24,12,c.secondary,false,right-48);
+    p.Text(arrival&&arrival->soc_percent?wxString::Format("%.0f",*arrival->soc_percent):Dash(),
+           rx+24,ry+64,60,arrival?c.accent:c.muted,false,right-48);
+    p.Text("% estimated",rx+90,ry+106,12,c.secondary);
+    const bool reserve=arrival&&arrival->soc_percent&&std::isfinite(model.reserve_soc_percent);
+    p.Text(reserve?wxString::Format("%+.0f%% above your reserve",*arrival->soc_percent-model.reserve_soc_percent):
+           "Reserve estimate unavailable",rx+24,ry+139,10,c.secondary,false,right-48);
+    dc.SetPen(wxPen(Colour(c.border)));dc.SetBrush(wxBrush(Colour(c.selected)));
+    dc.DrawRoundedRectangle(p.D(rx+24),p.D(ry+171),p.D(right-48),p.D(72),p.D(8));
+    const auto advisory_color=arrival&&arrival->below_reserve?c.attention:c.accent;
+    dc.SetPen(wxPen(Colour(advisory_color),p.D(2)));
+    dc.DrawLine(p.D(rx+25),p.D(ry+171),p.D(rx+25),p.D(ry+243));
+    p.Text(arrival?(arrival->below_reserve?"Energy below your reserve":"Estimated energy margin"):
+           "Energy estimate unavailable",rx+40,ry+188,12,arrival?advisory_color:c.primary,false,right-80);
+    p.Text(arrival?"Advisory estimate; conditions can change.":EnergyMessage(energy.arrival),
+           rx+40,ry+213,12,c.secondary,false,right-80);
+    const wxString values[]={distance?wxString::Format("%.1f nm",*distance):Dash(),
+      energy.range.estimate?wxString::Format("%.1f nm",energy.range.estimate->range_nm):Dash(),
+      !arrival?"Unavailable":energy.arrival.quality==smartnav::EnergyQuality::Aging?"Aging inputs":
+      energy.arrival.quality==smartnav::EnergyQuality::Modeled?"Modeled consumption":"Current inputs"};
+    const char *labels[]={"Remaining passage","Estimated range","Forecast quality"};
+    for(int i=0;i<3;++i) {
+      const int line=ry+278+45*i;
+      p.Text(labels[i],rx+24,line,12,c.secondary,false,right/2-24);
+      p.Text(values[i],rx+right/2,line,12,c.primary,false,right/2-24);
+      p.Rule(rx+24,line+29,right-48);
+    }
+    const int compact_y=ry+height+space;
+    const int count=wide?4:2,cw=(available-10*(count-1))/count;
+    const vessel::Sample *samples[]={&state_.propulsion.electrical_power_kw,&state_.propulsion.motor_rpm,
+      &state_.battery.voltage_v,&state_.propulsion.motor_temperature_c};
+    const char *titles[]={"PROPULSION","MOTOR","HV BATTERY","MOTOR TEMPERATURE"};
+    const wxString units[]={"kW","RPM","V",W("°C")};
+    for(int i=0;i<4;++i) {
+      const int x=inset+(i%count)*(cw+10),cy=compact_y+(i/count)*85;
+      p.Card(x,cy,cw,75,"");p.Text(titles[i],x+14,cy+14,9,c.muted,false,cw-28);
+      const auto a=vessel::Assess(*samples[i],now_);
+      p.Text(usable(a)?wxString::Format(i==0?"%.1f":"%.0f",*a.value):Dash(),
+             x+14,cy+38,20,usable(a)?c.primary:c.muted,false,cw-75);
+      p.Text(usable(a)?units[i]:W(vessel::QualityName(a.quality)),x+cw/2,cy+45,9,c.secondary,false,cw/2-10);
+    }
+    const int detail_y=compact_y+(4/count)*85+8;
+    p.Card(inset,detail_y,available,118,"OPERATING STATE");
+    const auto current=vessel::Assess(state_.battery.current_a,now_);
+    const auto gear=vessel::AssessText(state_.propulsion.gear,now_);
+    const auto regen=vessel::AssessText(state_.propulsion.regeneration,now_);
+    p.Text(usable(current)?wxString::Format("Battery current %.1f A",*current.value):"Battery current unavailable",
+           inset+24,detail_y+45,13,c.secondary,false,available-48);
+    p.Text("Drive: "+(gear.value&&gear.quality!=vessel::Quality::Stale?W(*gear.value):"Unavailable")+
+           " / Regeneration: "+(regen.value&&regen.quality!=vessel::Quality::Stale?W(*regen.value):"Unavailable"),
+           inset+24,detail_y+75,13,c.secondary,false,available-48);
+    bottom=detail_y+142;
   } else if (page_ == PreviewPage::Route) {
     const int columns = width >= 660 ? 2 : 1;
     const int cw = (width - 2 * margin - gap * (columns - 1)) / columns;

@@ -3,9 +3,11 @@
 #include "smartnav/Advisories.h"
 #include "vessel/DisplayItems.h"
 #include "ui/Sheet.h"
+#include "ui/PrototypeGeometry.h"
 #include "diagnostics/TestUiTrace.h"
 #include <wx/accel.h>
 #include <wx/datetime.h>
+#include <wx/dcbuffer.h>
 #include <wx/popupwin.h>
 #include <wx/sizer.h>
 #include <wx/textctrl.h>
@@ -88,20 +90,41 @@ Shell::Shell(wxFrame &frame, wxAuiManager &manager, ShellActions actions,
       mode_(mode), simulation_(simulation && integration::TestFixturesEnabled()), timer_(this) {
   const int gap = frame_.FromDIP(spacing::base);
   auto *top = MakePane("OpenNavTop", wxAuiPaneInfo().Top().Layer(10).BestSize(
-                                         -1, frame_.FromDIP(56)));
+                                         -1, frame_.FromDIP(prototype::top)));
   auto *row = new wxBoxSizer(wxHORIZONTAL);
-  row->Add(Text(top, "OpenNav X", 18, false), 0,
-           wxALIGN_CENTER_VERTICAL | wxLEFT, gap * 2);
-  row->AddSpacer(gap * 2);
+  auto *brand = new wxPanel(top, wxID_ANY);
+  brand->SetMinSize(frame_.FromDIP(wxSize(180,68)));
+  brand->SetBackgroundStyle(wxBG_STYLE_PAINT);
+  brand->Bind(wxEVT_PAINT,[this,brand](wxPaintEvent &) {
+    wxAutoBufferedPaintDC dc(brand);
+    const auto c=Theme(mode_);
+    dc.SetBackground(wxBrush(Colour(c.background))); dc.Clear();
+    // Original 32-unit prototype brand path; a design mark, not ownship data.
+    const auto d=[brand](int x){return brand->FromDIP(x);};
+    const wxPoint hull[]={{d(25),d(43)},{d(35),d(23)},{d(45),d(43)},{d(35),d(37)}};
+    dc.SetBrush(wxBrush(Colour(c.accent)));dc.SetPen(*wxTRANSPARENT_PEN);dc.DrawPolygon(4,hull);
+    dc.SetPen(wxPen(Colour(c.background),d(2)));dc.DrawLine(d(35),d(23),d(35),d(37));dc.DrawLine(d(35),d(37),d(45),d(43));
+    dc.SetFont(UiFontWeight(*brand,23,650));dc.SetTextForeground(Colour(c.primary));
+    dc.DrawText("opennav",d(58),d(20));
+    const int x=d(58)+dc.GetTextExtent("opennav").x;
+    dc.SetFont(UiFontWeight(*brand,23,350));dc.SetTextForeground(Colour(c.accent));dc.DrawText("x",x,d(20));
+    dc.SetPen(wxPen(Colour(c.border)));dc.DrawLine(d(179),d(22),d(179),d(46));
+  });
+  brand->Bind(wxEVT_LEFT_UP,[this](wxMouseEvent&){ShowNavigation();});
+  row->Add(brand,0,wxEXPAND);
   clock_ = Text(top, "", 15);
   clock_->SetMinSize(frame_.FromDIP(wxSize(56, 24)));
-  row->Add(clock_, 0, wxALIGN_CENTER_VERTICAL);
+
   source_ = new wxStaticText(top, wxID_ANY, "No vessel input", wxDefaultPosition,
                              wxDefaultSize, wxST_ELLIPSIZE_END);
-  source_->SetFont(UiFont(*top, 13, true));
-  source_->SetMinSize(wxSize(0, -1));
+  source_->SetFont(UiFont(*top, 10));
+  source_->SetMinSize(frame_.FromDIP(wxSize(120,20)));
   labels_.push_back(source_);
-  row->Add(source_, 1, wxALIGN_CENTER_VERTICAL | wxLEFT | wxRIGHT, gap * 2);
+  route_summary_ = new wxStaticText(top,wxID_ANY,"No active route",wxDefaultPosition,wxDefaultSize,wxST_ELLIPSIZE_END);
+  route_summary_->SetFont(UiFont(*top,12)); route_summary_->SetMinSize(wxSize(0,-1)); labels_.push_back(route_summary_);
+  row->Add(route_summary_, 1, wxALIGN_CENTER_VERTICAL | wxLEFT | wxRIGHT, gap * 2);
+  row->Add(source_, 0, wxALIGN_CENTER_VERTICAL | wxLEFT | wxRIGHT, gap * 2);
+  row->Add(clock_, 0, wxALIGN_CENTER_VERTICAL | wxRIGHT, gap);
   page_up_ = Button(top, "Up", "Scroll page up", [this] {
     if (auto *s = CurrentScroll()) s->Step(-1);
     UpdateScrollControls();
@@ -121,7 +144,8 @@ Shell::Shell(wxFrame &frame, wxAuiManager &manager, ShellActions actions,
                  : mode_ == LightMode::Dusk ? LightMode::Night
                                             : LightMode::Day);
       });
-  theme_button_->SetMinSize(frame_.FromDIP(wxSize(72, 48)));
+  theme_button_->SetMinSize(frame_.FromDIP(wxSize(44, 44)));
+  theme_button_->SetIconOnly();
   theme_button_->SetRole(ButtonRole::Quiet);
   // Alerts occupy the existing status slot. They never steal chart/rail height.
   alert_pane_ = new wxPanel(top, wxID_ANY);
@@ -133,58 +157,109 @@ Shell::Shell(wxFrame &frame, wxAuiManager &manager, ShellActions actions,
   alert_label_->SetFont(UiFont(*alert_pane_, 15, true));
   alert_label_->SetMinSize(wxSize(0, -1));
   alert_row->Add(alert_label_, 1, wxALIGN_CENTER_VERTICAL | wxLEFT | wxRIGHT, gap * 2);
-  alert_button_ = Button(alert_pane_, "Alerts", "Inspect active alerts", [this] { ShowProduct(ProductPage::Alerts); });
-  alert_button_->SetMinSize(frame_.FromDIP(wxSize(88, 48)));
-  alert_row->Add(alert_button_, 0, wxALL, frame_.FromDIP(4));
+  alert_button_ = Button(top, "Alerts", "Inspect active alerts", [this] { ShowProduct(ProductPage::Alerts); });
+  alert_button_->SetMinSize(frame_.FromDIP(wxSize(44, 44)));
+  alert_button_->SetIcon(XNavIcon::Bell); alert_button_->SetIconOnly();
+
   alert_pane_->SetSizer(alert_row);
   row->Add(alert_pane_,1,wxEXPAND);
-  row->Add(theme_button_,0,wxALL,frame_.FromDIP(4));
-  auto *menu=Button(top,"Menu","Open navigation menu",[this]{ShowProduct(ProductPage::Home);});
-  menu->SetIcon(XNavIcon::Menu);menu->SetRole(ButtonRole::Quiet);
-  menu->SetMinSize(frame_.FromDIP(wxSize(64,48)));
-  row->Add(menu,0,wxALL,frame_.FromDIP(4));
+  row->Add(theme_button_,0,wxALIGN_CENTER_VERTICAL|wxLEFT|wxRIGHT,frame_.FromDIP(4));
+  row->Add(alert_button_,0,wxALIGN_CENTER_VERTICAL|wxLEFT|wxRIGHT,frame_.FromDIP(4));
   top->SetSizer(row);
 
-  auto *left =
-      MakePane("OpenNavTools", wxAuiPaneInfo().Left().Layer(1).BestSize(
-                                   frame_.FromDIP(spacing::left_rail), -1));
+  auto *left = MakePane("OpenNavTools", wxAuiPaneInfo().Left().Layer(5).BestSize(
+      frame_.FromDIP(prototype::navigation), -1));
   auto *tools = new wxBoxSizer(wxVERTICAL);
-  tools->Add(Button(left, "+", "Zoom chart in", actions_.zoom_in), 0, wxALL,
-             frame_.FromDIP(4));
-  tools->Add(Button(left, wxString::FromUTF8("−"), "Zoom chart out",
-                    actions_.zoom_out),
-             0, wxALL, frame_.FromDIP(4));
-  auto *center=Button(left,"Center","Center chart on boat and follow position",actions_.follow);
-  center->SetIcon(XNavIcon::Ownship);center->SetMinSize(frame_.FromDIP(wxSize(48,64)));
-  tools->Add(center,0,wxALL,frame_.FromDIP(4));
-  orientation_button_ = Button(left, "North", "Change chart orientation", [this] {
-    XNAV_TEST_UI_TRACE("orientation.begin", metrics_.ticks);
-    if (actions_.navigation.orientation) actions_.navigation.orientation();
-    XNAV_TEST_UI_TRACE("orientation.upstream-return", metrics_.ticks);
-    Tick();
-    XNAV_TEST_UI_TRACE("orientation.end", metrics_.ticks);
-  });
-  orientation_button_->SetIcon(XNavIcon::Compass);
-  orientation_button_->SetRole(ButtonRole::Quiet);
-  orientation_button_->SetMinSize(frame_.FromDIP(wxSize(48,56)));
-  tools->Add(orientation_button_, 0, wxALL, frame_.FromDIP(4));
+  tools->AddSpacer(frame_.FromDIP(14));
+  const auto nav = [&](const wxString &label, const wxString &name, XNavIcon icon, std::function<void()> action) {
+    auto *b = Button(left,label,name,std::move(action)); b->SetNavigationItem(); b->SetIcon(icon);
+    b->SetMinSize(frame_.FromDIP(wxSize(62,61)));
+    tools->Add(b,0,wxLEFT|wxRIGHT,frame_.FromDIP(9));
+    tools->AddSpacer(frame_.FromDIP(5));
+    navigation_page_buttons_.push_back(b);
+    return b;
+  };
+  nav("Chart", "Navigation", XNavIcon::Chart, [this]{ShowNavigation();});
+  nav("Passage", "Route", XNavIcon::Route, [this]{ShowPage(PreviewPage::Route);});
+  nav("Traffic", "AIS targets", XNavIcon::Traffic, [this]{ShowProduct(ProductPage::Ais);});
+  nav("Energy", "Energy", XNavIcon::Energy, [this]{ShowPage(PreviewPage::Energy);});
+  nav("Instruments", "Vessel instruments", XNavIcon::Instruments, [this]{ShowProduct(ProductPage::Instruments);});
+  nav("Anchor", "Anchor watch", XNavIcon::Anchor, [this]{ShowProduct(ProductPage::Anchor);});
+  nav("Radar", "Radar availability", XNavIcon::Radar, [this]{ShowProduct(ProductPage::Radar);});
   tools->AddStretchSpacer();
+  nav("Settings", "Open navigation menu", XNavIcon::Settings, [this]{ShowProduct(ProductPage::Home);});
   left->SetSizer(tools);
 
+  // Owned native siblings float over the existing canvas. They never reparent
+  // it, enter the saved AUI perspective or intercept chart input outside bounds.
+  const auto overlay = [this](const char *name) {
+    auto *p = new wxPanel(&frame_, wxID_ANY); p->SetName(name); p->Hide();
+    chart_overlays_.push_back(p); return p;
+  };
+  chart_tools_ = overlay("OpenNav chart tools");
+  auto *map_tools = new wxBoxSizer(wxHORIZONTAL);
+  const auto map_button = [&](XNavIcon icon,const wxString &label,const wxString &name,std::function<void()> action) {
+    auto *b=Button(chart_tools_,label,name,std::move(action)); b->SetIcon(icon); b->SetIconOnly(); b->SetFloating(); b->SetRole(ButtonRole::Quiet);
+    b->SetMinSize(frame_.FromDIP(wxSize(44,44))); map_tools->Add(b,0,wxALL,frame_.FromDIP(2));
+  };
+  map_button(XNavIcon::Ruler,"Measure","Measure chart distance",actions_.navigation.measure);
+  map_button(XNavIcon::Pin,"Waypoint","Waypoint at chart position",[this]{
+    if(actions_.navigation.chart_position) if(auto point=actions_.navigation.chart_position()) ShowChartContext(*point);
+  });
+  map_button(XNavIcon::Plus,"+","Zoom chart in",actions_.zoom_in);
+  map_button(XNavIcon::Minus,wxString::FromUTF8("−"),"Zoom chart out",actions_.zoom_out);
+  chart_tools_->SetSizerAndFit(map_tools);
+  chart_orientation_ = overlay("OpenNav chart orientation");
+  auto *orientation = new wxBoxSizer(wxVERTICAL);
+  orientation_button_ = Button(chart_orientation_, "North", "Change chart orientation", [this] {
+    if (actions_.navigation.orientation) actions_.navigation.orientation();
+    Tick();
+  });
+  orientation_button_->SetIcon(XNavIcon::Compass); orientation_button_->SetRole(ButtonRole::Quiet);
+  orientation_button_->SetFloating();
+  orientation_button_->SetMinSize(frame_.FromDIP(wxSize(68,90)));
+  orientation->Add(orientation_button_,1,wxEXPAND); chart_orientation_->SetSizerAndFit(orientation);
+  chart_follow_ = overlay("OpenNav follow boat");
+  auto *following=new wxBoxSizer(wxHORIZONTAL);
+  auto *center=Button(chart_follow_,"Follow boat","Center chart on boat and follow position",actions_.follow);
+  center->SetMinSize(frame_.FromDIP(wxSize(142,44)));center->SetRole(ButtonRole::Quiet);
+  center->SetFloating();
+  following->Add(center,1,wxEXPAND);chart_follow_->SetSizerAndFit(following);
+
   auto *right =
-      MakePane("OpenNavData", wxAuiPaneInfo().Right().Layer(1).BestSize(
-                                  frame_.FromDIP(spacing::right_rail), -1));
+      MakePane("OpenNavData", wxAuiPaneInfo().Right().Layer(5).BestSize(
+                                  frame_.FromDIP(prototype::rail), -1));
   rail_scroll_ = new wxPanel(right,wxID_ANY);
   rail_scroll_->SetSizer(new wxBoxSizer(wxVERTICAL));
   auto *rail_container = new wxBoxSizer(wxVERTICAL);
+  auto *rail_header=new wxPanel(right,wxID_ANY);
+  rail_header->SetMinSize(frame_.FromDIP(wxSize(186,42)));
+  auto *rail_heading=new wxBoxSizer(wxHORIZONTAL);
+  auto *rail_title=Text(rail_header,"AT A GLANCE",9);
+  rail_heading->Add(rail_title,1,wxALIGN_CENTER_VERTICAL|wxLEFT,frame_.FromDIP(18));
+  auto *configure_rail=Button(rail_header,"Configure instruments","Choose the four rail values",[this]{ShowProduct(ProductPage::RailLayout);});
+  configure_rail->SetIcon(XNavIcon::Sliders);configure_rail->SetIconOnly();configure_rail->SetRole(ButtonRole::Quiet);
+  configure_rail->SetMinSize(frame_.FromDIP(wxSize(40,40)));
+  rail_heading->Add(configure_rail,0,wxALIGN_CENTER_VERTICAL|wxRIGHT,frame_.FromDIP(6));rail_header->SetSizer(rail_heading);
+  rail_container->Add(rail_header,0,wxEXPAND);
   rail_container->Add(rail_scroll_, 1, wxEXPAND);
   right->SetSizer(rail_container);
 
-  auto *bottom = MakePane("OpenNavActions",
-                          wxAuiPaneInfo().Bottom().Layer(10).BestSize(
-                              -1, frame_.FromDIP(spacing::action_height)));
+  auto *bottom = MakePane("OpenNavActions", wxAuiPaneInfo().Bottom().Layer(10).BestSize(
+      -1,frame_.FromDIP(prototype::footer)));
+  auto *status = new wxBoxSizer(wxHORIZONTAL);
+  status->Add(Text(bottom,"OpenCPN navigation",9),0,wxALIGN_CENTER_VERTICAL|wxLEFT,frame_.FromDIP(20));
+  status->AddStretchSpacer();
+  auto *system=Button(bottom,"System","System and Open Legacy OpenCPN",[this]{ShowSystem();});
+  system->SetRole(ButtonRole::Quiet);system->SetMinSize(frame_.FromDIP(wxSize(90,32)));
+  status->Add(system,0,wxRIGHT,frame_.FromDIP(12));bottom->SetSizer(status);
+  auto *horizon_pane=MakePane("OpenNavHorizon",wxAuiPaneInfo().Bottom().Layer(1).BestSize(-1,frame_.FromDIP(prototype::horizon)));
+  auto *horizon_layout=new wxBoxSizer(wxVERTICAL);
+  horizon_=new XNavHorizon(horizon_pane);horizon_layout->Add(horizon_,1,wxEXPAND);
+  route_actions_=new wxPanel(horizon_pane,wxID_ANY);route_actions_->Hide();
   auto *actions_row = new wxBoxSizer(wxHORIZONTAL);
-  finish_route_ = Button(bottom, "Done", "Name and save this route", [this] {
+  auto *route_host=route_actions_;
+  finish_route_ = Button(route_host, "Done", "Name and save this route", [this] {
     const auto fields=EditSheet(frame_,mode_,"Save route",
       "Name this route. You can activate it after saving.",
       {{"Name","",128},{"Description","",2048}},"Save route");
@@ -193,7 +268,7 @@ Shell::Shell(wxFrame &frame, wxAuiManager &manager, ShellActions actions,
     if(result.ok) { Tick(); ShowObject(result.identity,true); }
     else ConfirmSheet(frame_,mode_,"Route not saved",wxString::FromUTF8(result.message),"Back");
   });
-  undo_route_=Button(bottom,"Undo","Undo last route point",[this]{
+  undo_route_=Button(route_host,"Undo","Undo last route point",[this]{
     if (!actions_.navigation.undo_route_point) return;
     const auto result = actions_.navigation.undo_route_point();
     if (!result.ok)
@@ -201,7 +276,7 @@ Shell::Shell(wxFrame &frame, wxAuiManager &manager, ShellActions actions,
     Tick();
   });
   undo_route_->Enable(false);
-  cancel_route_=Button(bottom,"Cancel","Cancel route creation",[this]{
+  cancel_route_=Button(route_host,"Cancel","Cancel route creation",[this]{
     if(actions_.navigation.cancel_route && ConfirmSheet(frame_,mode_,"Cancel route?","Discard this unfinished route? Existing routes are preserved.","Discard route"))actions_.navigation.cancel_route();
   });
   for (auto *button : {cancel_route_, undo_route_, finish_route_}) {
@@ -210,45 +285,19 @@ Shell::Shell(wxFrame &frame, wxAuiManager &manager, ShellActions actions,
     actions_row->Add(button, 0, wxALL, frame_.FromDIP(4));
     button->Hide();
   }
-  for (const auto &entry :
-       std::vector<std::pair<wxString, std::function<void()>>>{
-           {"Navigation", [this] { ShowNavigation(); }},
-           {"Route", [this] { ShowPage(PreviewPage::Route); }},
-           {"Energy", [this] { ShowPage(PreviewPage::Energy); }},
-           {"Pilot", [this] { ShowProduct(ProductPage::Pilot); }},
-           {"STBY", [this] {
-              if (actions_.pilot_command && !state_.replayed)
-                actions_.pilot_command(simulation_, adapters::PilotAction::Standby, 0);
-            }},
-#if XNAV_ENABLE_TEST_FIXTURES
-           {"Demo", [this] { ShowDemo(); }},
-#endif
-           }) {
-    auto *b = Button(bottom, entry.first, entry.first, entry.second);
-    if (entry.first == "Navigation" || entry.first == "Route" || entry.first == "Energy")
-      navigation_page_buttons_.push_back(b);
-    b->SetMinSize(
-        frame_.FromDIP(wxSize(entry.first == "Navigation" ? 112 : entry.first == "STBY" ? 64 : 88, 48)));
-    if (entry.first == "STBY") {
-      standby_ = b;
-      b->SetName("Manual STANDBY / requires enabled control");
-      b->SetHint("Manual STANDBY / requires enabled control; physical STANDBY remains independent");
-      b->Disable();
-      b->SetRole(ButtonRole::Critical);
-    }
-    else b->SetRole(ButtonRole::Quiet);
-    actions_row->Add(b, 0, wxALL, frame_.FromDIP(4));
-  }
-  route_summary_ = new wxStaticText(bottom,wxID_ANY,"No active route",wxDefaultPosition,wxDefaultSize,wxST_ELLIPSIZE_END);
-  route_summary_->SetFont(UiFont(*bottom,14));route_summary_->SetMinSize(wxSize(0,-1));labels_.push_back(route_summary_);
-  actions_row->Add(route_summary_, 1, wxALIGN_CENTER_VERTICAL | wxLEFT, gap);
-  auto *system = Button(bottom, "System", "System and Open Legacy OpenCPN",
-                        [this] { ShowSystem(); });
-  system->SetMinSize(frame_.FromDIP(wxSize(112, 48)));
-  system->SetRole(ButtonRole::Quiet);
-  actions_row->Add(system, 0, wxALL, frame_.FromDIP(4));
-  bottom->SetSizer(actions_row);
+  route_actions_->SetSizer(actions_row);horizon_layout->Add(route_actions_,0,wxEXPAND);
+  horizon_pane->SetSizer(horizon_layout);
+  auto *pilot = Button(right,"Autopilot","Open autopilot controls",[this]{ShowProduct(ProductPage::Pilot);});
+  pilot->SetMinSize(frame_.FromDIP(wxSize(148,64)));pilot->SetRole(ButtonRole::Quiet);
+  rail_container->Add(pilot,0,wxEXPAND|wxALL,frame_.FromDIP(12));
+  // The existing guarded standby action remains available in the pilot panel.
+  // Keep its state sink hidden until the expanded pilot workflow owns it.
+  standby_=Button(right,"STBY","Manual STANDBY / requires enabled control",[this]{
+    if(actions_.pilot_command&&!state_.replayed)actions_.pilot_command(simulation_,adapters::PilotAction::Standby,0);
+  });
+  standby_->Hide();standby_->Disable();
   page_ = new PreviewPanel(&frame_);
+  page_->SetCloseAction([this]{ShowNavigation();});
   // An unmanaged overlay is reordered behind ChartCanvas by the native AUI
   // resize path. Use the same layout manager for the alternate center page.
   manager_.AddPane(page_, wxAuiPaneInfo()
@@ -372,6 +421,8 @@ Shell::Shell(wxFrame &frame, wxAuiManager &manager, ShellActions actions,
 
 Shell::~Shell() {
   timer_.Stop();
+  for(auto *overlay : chart_overlays_) overlay->Destroy();
+  chart_overlays_.clear();
   context_lifetime_.reset();
   CloseContext();
   for (const auto &c : commands_)
@@ -473,11 +524,16 @@ void Shell::UpdateState(const vessel::VesselState &state) {
 void Shell::ApplyTheme() {
   const auto colors = Theme(mode_);
   caption_themed_ = ThemeWindowChrome(frame_, mode_);
-  rail_scroll_->SetBackgroundColour(Colour(colors.surface));
+  rail_scroll_->SetBackgroundColour(Colour(colors.background));
   alert_pane_->SetBackgroundColour(Colour(colors.surface));
   theme_button_->SetLabel(LightName());
+  theme_button_->SetIcon(mode_ == LightMode::Day ? XNavIcon::Sun : mode_ == LightMode::Dusk ? XNavIcon::Dusk : XNavIcon::Moon);
+  for (auto *overlay : chart_overlays_) overlay->SetBackgroundColour(Colour(FloatingTheme(mode_).surface));
   for (auto *pane : panes_) {
-    pane->SetBackgroundColour(Colour(colors.surface));
+    pane->SetBackgroundColour(Colour(colors.background));
+    for (auto *child : pane->GetChildren())
+      if (dynamic_cast<wxPanel *>(child))
+        child->SetBackgroundColour(Colour(colors.background));
     pane->Refresh();
   }
   for (auto *label : labels_)
@@ -601,7 +657,8 @@ void Shell::Tick() {
   if (finish_route_->IsShown() != creating) {
     finish_route_->Show(creating);
     undo_route_->Show(creating);cancel_route_->Show(creating);
-    for (auto *button : navigation_page_buttons_) button->Show(!creating);
+    route_actions_->Show(creating);
+    route_actions_->GetParent()->Layout();
     finish_route_->GetParent()->Layout();
   }
   if (product_) {
@@ -663,6 +720,8 @@ void Shell::Tick() {
   }
   XNAV_TEST_UI_TRACE("tick.product", metrics_.ticks);
   UpdateRail(config.data_rail, now);
+  horizon_->Update(state_,field_snapshot_.advice,now,mode_);
+  PlaceChartControls();
   UpdateContext(wall_now);
   clock_->SetLabel(simulation_ ? "10:42" : wxDateTime::Now().Format("%H:%M"));
   wxString label =
@@ -720,6 +779,19 @@ void Shell::Tick() {
                   actions_.build_info ? actions_.build_info()
                                       : std::vector<std::string>{}, field_snapshot_.advice);
   UpdateScrollControls();
+  const auto current_title=PageTitle();
+  for(auto *button:navigation_page_buttons_) {
+    const auto label=button->GetLabel();
+    const bool selected=(label=="Chart"&&current_title=="Navigation") ||
+      (label=="Passage"&&current_title=="Route") ||
+      (label=="Traffic"&&(current_title=="AIS targets"||current_title=="AIS target")) ||
+      (label=="Energy"&&current_title=="Energy") ||
+      (label=="Instruments"&&current_title=="Vessel instruments") ||
+      (label=="Anchor"&&current_title=="Anchor watch") ||
+      (label=="Radar"&&current_title=="Radar") ||
+      (label=="Settings"&&(current_title=="Settings"||current_title=="Menu"));
+    button->SetSelected(selected);
+  }
   XNAV_TEST_UI_TRACE("tick.before-publication", metrics_.ticks);
   if (actions_.diagnostic_snapshot)
     actions_.diagnostic_snapshot(state_, energy, PageTitle());
@@ -838,6 +910,7 @@ void Shell::ShowNavigation() {
       break;
     }
   }
+  PlaceChartControls();
   frame_.Refresh();
 }
 void Shell::ShowProduct(ProductPage page) {
@@ -950,8 +1023,7 @@ void Shell::ShowPage(PreviewPage page) {
     manager_.GetPane(product_).Hide();
   if (navigation_visibility_.empty()) {
     auto names = actions_.navigation_panes;
-    names.push_back("OpenNavTools");
-    names.push_back("OpenNavData");
+    names.push_back("OpenNavHorizon");
     for (const auto &name : names) {
       auto &pane = manager_.GetPane(name);
       if (pane.IsOk()) {
@@ -1036,6 +1108,30 @@ void Shell::ShowSystem() {
   // A normal center page keeps the alert/status slot and fixed manual controls
   // visible at every DPI; no transient popup can cover the Alerts action.
   ShowProduct(ProductPage::System);
+}
+
+void Shell::PlaceChartControls() {
+  wxRect chart;
+  if (!page_->IsShown() && !product_->IsShown())
+    for (const auto &name : actions_.navigation_panes) {
+      const auto &pane=manager_.GetPane(name);
+      if(pane.IsOk()&&pane.IsShown()&&pane.window) {
+        chart=wxRect(frame_.ScreenToClient(pane.window->GetScreenPosition()),pane.window->GetSize());break;
+      }
+    }
+  const bool available=chart.width>frame_.FromDIP(420)&&chart.height>frame_.FromDIP(240);
+  for(auto *overlay:chart_overlays_) {
+    if(!available){overlay->Hide();continue;}
+    const auto size=overlay->GetSize();
+    wxPoint position;
+    if(overlay==chart_tools_)position={chart.GetRight()-size.x-frame_.FromDIP(22),chart.GetBottom()-size.y-frame_.FromDIP(38)};
+    else if(overlay==chart_orientation_)position={chart.GetRight()-size.x-frame_.FromDIP(22),chart.y+frame_.FromDIP(22)};
+    else position={chart.x+frame_.FromDIP(28),chart.GetBottom()-size.y-frame_.FromDIP(38)};
+    const bool changed=overlay->GetPosition()!=position||!overlay->IsShown();
+    if(overlay->GetPosition()!=position)overlay->Move(position);
+    if(!overlay->IsShown())overlay->Show();
+    if(changed)overlay->Raise();
+  }
 }
 
 void Shell::AfterCanvasLayoutChanged() {

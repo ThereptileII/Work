@@ -55,8 +55,11 @@ The root eyebrow is 10 px / 650 / 0.13em tracking. Primary numeric rail values
 are light, not bold. The final CSS overrides earlier labels: navigation labels
 10 px; metric labels 11 px; timeline main 13 px, secondary and time 10 px;
 follow 11 px; footer 9 px. Context headings use their computed weight and size
-from `capture.json`, including active media rules. Do not convert CSS pixels
-to point sizes. Uppercase applies only where the reference uses it.
+from `capture.json`, including active media rules. Do not interpret CSS pixels
+as typographic points. At the native boundary Windows uses the scaled negative
+LOGFONT character height; GTK uses the equivalent fractional point em
+(`px × 72/96`), since GTK's pixel-size constructor fits the taller line cell.
+Uppercase applies only where the reference uses it.
 
 ## Geometry at 1280 × 800, scale factor 1
 
@@ -70,7 +73,7 @@ to point sizes. Uppercase applies only where the reference uses it.
 | Status footer | 0 | 766 | 1280 | 34 |
 
 Context drawer: 398 px; configuration drawer: 432 px; radius 18 px. Chart
-context cards use radius 14 px. Base buttons use radius 8 px, icon buttons
+context/dashboard cards use radius 14 px. Final base buttons use radius 9 px, icon buttons
 9 px (floating map buttons 12 px); selected navigation item radius 10 px.
 Final base button/list row minimum height is 48 px; map icon buttons 44×44;
 segments minimum height 40 px. Preserve the prototype's actual hit regions,

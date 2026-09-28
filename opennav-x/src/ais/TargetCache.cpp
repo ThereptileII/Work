@@ -59,6 +59,7 @@ bool TargetCache::Observe(const PositionReport &r, vessel::Time received) {
   if (!entry || (entry->has_position && r.observed_at <= entry->position_time)) return false;
   auto &target = entry->target;
   target.active = true; target.lost = false;
+  target.time_basis = r.receipt_time_only ? vessel::AisTimeBasis::OnlineReceipt : vessel::AisTimeBasis::OnlineService;
   target.latitude_deg = Sample(r.latitude, r.observed_at);
   target.longitude_deg = Sample(r.longitude, r.observed_at);
   target.sog_kn = Sample(r.sog, r.observed_at); target.cog_deg = Sample(r.cog, r.observed_at);

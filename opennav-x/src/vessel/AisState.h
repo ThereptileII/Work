@@ -4,6 +4,7 @@
 
 namespace opennav::vessel {
 enum class AisOrigin { LocalOpenCPN, AisStreamOnline };
+enum class AisTimeBasis { OpenCPNReport, OnlineService, OnlineReceipt };
 // Owned reports. Local metrics are copies of OpenCPN's result, not a second
 // CPA/TCPA calculator. Supplemental online reports never fabricate these metrics.
 struct AisTarget {
@@ -14,6 +15,9 @@ struct AisTarget {
   Sample range_nm, bearing_true_deg, cpa_nm, tcpa_minutes;
   Time observed_at{};
   AisOrigin origin = AisOrigin::LocalOpenCPN;
+  // Online timestamps are service ingestion/receipt, never proof of actual
+  // transponder observation time or Internet latency. Details must say so.
+  AisTimeBasis time_basis = AisTimeBasis::OpenCPNReport;
   TextSample callsign, destination;
   Sample ship_type, navigation_status, length_m, beam_m;
 };

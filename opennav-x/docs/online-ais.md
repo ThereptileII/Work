@@ -39,8 +39,9 @@ owned snapshots survive cache edits/removal. Online position thresholds:
 | 120–600 s | LOST, not current/selectable navigation |
 | ≥600 s | Expired, removed from display |
 
-Age denotes report receipt unless a validated upstream observation timestamp
-is available. It does not establish shore/satellite latency or guarantee current
+Age denotes local receipt unless a validated service `MetaData.time_utc`
+timestamp is available. `AisTimeBasis` distinguishes OpenCPN report, online
+service and online receipt clocks. It does not establish shore/satellite latency or guarantee current
 physical position. Details must identify Internet provenance and this uncertainty.
 Cached metadata coordinates cannot become a new position report. Cache capacity
 is 2,000; expired entries are reclaimed before allocation, otherwise new
@@ -78,6 +79,33 @@ Implemented: owned models/cache, age/validation, onboard-precedence aggregator,
 antimeridian viewport filtering with 15% margin, coalesced five-second
 subscription changes with a single confirmation in flight, bounded exponential
 reconnect/jitter and cooldown policy; 2,074 deterministic checks.
-Pending: decoder, bounded transport, credential storage, settings, chart/card wiring,
-MSVC and live boat gates. **The product does not yet connect to AISStream.**
+The bounded codec has 100 additional deterministic checks. The earlier
+foundation passed three native Win32 MSVC tests and three Linux tests at
+`087318c`, with verified downloaded JUnit artifacts; the newer codec native
+gate is pending.
+Pending: bounded transport, credential storage, settings, chart/card wiring,
+full native product regressions and live boat gates. **The product does not yet connect to AISStream.**
 No configured key, live target count or network acceptance is claimed.
+
+## JSON decoder and subscription serialization
+
+The pure codec uses the same RapidJSON 1.1.0 dependency as pinned OpenCPN.
+Integrated builds reuse `ocpn::rapidjson`; standalone contracts verify the
+upstream archive with SHA-256
+`bf7ced29704a1e696fbccf2a2b4ea068e7774fa37f6d7dd4039d0787f8bed98e`.
+The decoder bounds JSON to 64 KiB, nesting to 16, objects to 64 members and
+arrays to 256 entries. Duplicate keys, invalid UTF-8, nonfinite numbers,
+identity mismatch, invalid coordinates and oversized/control-character text
+are refused. It does not parse or expose arbitrary server error text.
+
+Class A, standard/extended Class B, voyage/static and both Class B static
+parts are normalized. AIS unavailable sentinels remain empty. Zero/partial
+hull dimensions remain unavailable. Only typed position coordinates are used;
+cached metadata coordinates cannot refresh position. Service UTC timestamps
+accept strict ISO UTC and Go's UTC representation; stale/future/malformed
+timestamps are refused. Missing service time is explicitly receipt-based.
+
+Complete subscription serialization includes required key/boxes and five useful
+message types, plus optional unique nine-digit MMSIs (maximum 200). The output
+contains a credential and must be sent/erased without logging. This codec is
+not a substitute for bounding the transport before allocation/decompression.

@@ -3,6 +3,7 @@
 #include "smartnav/Advisories.h"
 #include "ui/Controls.h"
 #include <vector>
+#include <functional>
 #include <wx/scrolwin.h>
 
 namespace opennav::ui {
@@ -10,6 +11,7 @@ enum class PreviewPage { Route, Energy, Diagnostics };
 class PreviewPanel final : public XNavScroll {
 public:
   explicit PreviewPanel(wxWindow *parent);
+  void SetCloseAction(std::function<void()> action) { close_action_ = std::move(action); }
   void Update(PreviewPage page, LightMode mode,
               const vessel::VesselState &state, vessel::Time now,
               const smartnav::EnergyModel &model,
@@ -19,6 +21,8 @@ public:
 
 private:
   void Paint(wxPaintEvent &);
+  XNavButton *close_ = nullptr;
+  std::function<void()> close_action_;
   PreviewPage page_ = PreviewPage::Route;
   LightMode mode_ = LightMode::Day;
   vessel::VesselState state_;

@@ -14,6 +14,7 @@ struct PositionReport {
   double latitude = 91, longitude = 181;
   std::optional<double> sog, cog, heading, navigation_status;
   vessel::Time observed_at{}; // receipt projected to monotonic observation clock
+  bool receipt_time_only = false;
 };
 struct StaticReport {
   int mmsi = 0;
