@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Derive bounded XNav palette resources from verified pinned OpenCPN bytes.
 
-Only eleven named colors in three color tables may change. Original resources
+Only twelve named colors in three color tables may change. Original resources
 are never modified. The original prototype is never written.
 """
 import argparse
@@ -12,7 +12,7 @@ import re
 import xml.etree.ElementTree as ET
 
 ROOT=Path(__file__).resolve().parents[1]
-ALLOWED={'LANDA','CSTLN','DEPDW','DEPMD','DEPMS','DEPVS','DEPIT','DEPCN','DEPSC','SNDG1','SNDG2'}
+ALLOWED={'LANDA','CSTLN','DEPDW','DEPMD','DEPMS','DEPVS','DEPIT','DEPCN','DEPSC','SNDG1','SNDG2','CHBLK'}
 
 def pinned_bytes(path, identity):
     content=path.read_bytes()

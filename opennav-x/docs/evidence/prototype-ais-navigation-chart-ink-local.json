@@ -1,0 +1,116 @@
+{
+  "accepted": false,
+  "source": "Working tree on 827e221; replacement exact-commit native and boat evidence required",
+  "linuxIntegrated": {
+    "tests": 120,
+    "failures": 0,
+    "command": "dbus-run-session -- ctest --test-dir build/production-linux/test -E ^tests$ --no-tests=error --output-on-failure",
+    "junitSha256": "c59ae0d5421d63b9616b789911c5ccd760ac80a0a4d92b0354379a1439909957"
+  },
+  "initialInvocationError": "An initial manual invocation included the duplicate upstream aggregate, unlike the established build-production-linux.sh command. Its stateful timezone test failed; all 120 individually discovered tests passed. Original negative log retained. No test or release command removed.",
+  "componentChecks": 71,
+  "resourceChecks": 377,
+  "objectFlow": {
+    "scenarioGroups": 27,
+    "screenshots": 26,
+    "actualPointerActions": 7,
+    "settingsReturnLayoutChecks": 2,
+    "coastlineChecks": 2,
+    "result": "pass / clean exit and navobj persistence"
+  },
+  "chartCaptures": [
+    {
+      "directory": "chart-ink-software",
+      "captureSha256": "123593ca33ddcc7cccf21ade8a3e257529221efced2f49dfff0c309a6b07b984",
+      "renderer": "software",
+      "captures": [
+        {
+          "file": "navigation-day.png",
+          "sha256": "39a2046f7a36d3598eb50a3c5086d3787b63b4d94ad8d108c1d863c2b53c9e3a"
+        },
+        {
+          "file": "navigation-dusk.png",
+          "sha256": "a02edf792349e7f23a80fff38a5882280e21e9b52be8aab4febcced93ca4de32"
+        },
+        {
+          "file": "navigation-night.png",
+          "sha256": "e21a2f56204b7a1475430a978df4ca4af2315492d760051da821e8420182caee"
+        },
+        {
+          "file": "navigation-return-day.png",
+          "sha256": "39a2046f7a36d3598eb50a3c5086d3787b63b4d94ad8d108c1d863c2b53c9e3a"
+        }
+      ],
+      "chartChecks": [
+        {
+          "file": "navigation-day.png",
+          "colors": 2257,
+          "detail_fraction": 0.18947619047619046
+        },
+        {
+          "file": "navigation-dusk.png",
+          "colors": 2185,
+          "detail_fraction": 0.18886904761904763
+        },
+        {
+          "file": "navigation-night.png",
+          "colors": 1807,
+          "detail_fraction": 0.18860714285714286
+        },
+        {
+          "file": "navigation-return-day.png",
+          "colors": 2257,
+          "detail_fraction": 0.18947619047619046
+        }
+      ],
+      "exitCode": 0
+    },
+    {
+      "directory": "chart-ink-opengl",
+      "captureSha256": "a8465d79c7f02910621ac4c995d3cfd63ef8e52b053ebe15c9bf09578f0e15e4",
+      "renderer": "opengl",
+      "captures": [
+        {
+          "file": "navigation-day.png",
+          "sha256": "1da8114203a6e1563ed4255d31c62e1f688d7288a5332e10430cb7848f30ee6f"
+        },
+        {
+          "file": "navigation-dusk.png",
+          "sha256": "cf22255f4a9d359f81b963e04dc5cface407c3e426df28b47752caa1daccb02a"
+        },
+        {
+          "file": "navigation-night.png",
+          "sha256": "8efcc10d5122ef24e6527df40dcb3384a285386254a82b7ad57be9cd05affe0e"
+        },
+        {
+          "file": "navigation-return-day.png",
+          "sha256": "9827afcbb57ca0661add34d7e1870439a77b0512a47f0129f2eb8216e3792b2d"
+        }
+      ],
+      "chartChecks": [
+        {
+          "file": "navigation-day.png",
+          "colors": 1544,
+          "detail_fraction": 0.1782857142857143
+        },
+        {
+          "file": "navigation-dusk.png",
+          "colors": 1482,
+          "detail_fraction": 0.17761904761904762
+        },
+        {
+          "file": "navigation-night.png",
+          "colors": 1236,
+          "detail_fraction": 0.17727380952380953
+        },
+        {
+          "file": "navigation-return-day.png",
+          "colors": 1544,
+          "detail_fraction": 0.1782857142857143
+        }
+      ],
+      "exitCode": 0
+    }
+  ],
+  "review": "Software Dusk and Night reviewed: general text is now visible. Unchanged baked dark raster symbols, urban fill and chart label density remain mismatches. GL is Linux llvmpipe, not boat GPU qualification."
+}

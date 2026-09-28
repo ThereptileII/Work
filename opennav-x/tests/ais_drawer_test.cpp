@@ -109,6 +109,7 @@ class DrawerTest final : public wxApp {
                 << bounds.width << ' ' << bounds.height << std::endl;
       Check(drawer_->GetScreenRect() == wxRect(682, 80, 398, 674), "canonical drawer bounds");
       Capture("traffic-day");
+      Check(drawer_->PageTitle() == "AIS targets", "list diagnostic identifies actual view");
       Check(Require<ui::XNavButton>("Sort AIS by closest approach")->IsEnabled(),
             "fresh upstream estimated CPA remains usable");
       Check(Require<ui::XNavButton>("Sort AIS by range")->IsEnabled(),
@@ -118,6 +119,7 @@ class DrawerTest final : public wxApp {
     });
     Add([this] {
       Check(!selected_.empty() && selected_.back() == local_id, "real list click selects copied MMSI");
+      Check(drawer_->PageTitle() == "AIS target", "target diagnostic identifies actual view");
       Check(Require<ui::XNavButton>("Show on chart")->IsEnabled(), "current onboard chart action enabled");
       Capture("ais-target-day");
       Command("Show on chart");

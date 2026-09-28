@@ -211,6 +211,8 @@ try:
         report['display'] = ui.ensure_desktop()
         exe = root / 'build/xnav-install/opencpn.exe'
     else:
+        env['GDK_BACKEND'] = 'x11'
+        env.pop('WAYLAND_DISPLAY', None)
         display = 101
         while Path(f'/tmp/.X{display}-lock').exists():
             display += 1
@@ -340,7 +342,7 @@ try:
             # desktop ownership explicitly; mouse down/up still hit the real
             # card controls. Native Windows receives no focus workaround.
             found=subprocess.run(['xdotool','search','--all','--onlyvisible','--pid',str(app.pid),
-                                  '--name','^OpenNav (AIS|waypoint) context$'],env=env,
+                                  '--name','^OpenNav ((AIS|waypoint) context|vessel traffic)$'],env=env,
                                  capture_output=True,text=True)
             cards=found.stdout.splitlines()
             assert len(cards)<=1,('Multiple compact contexts',cards)
@@ -420,6 +422,45 @@ try:
                             control['y']+control['height']<=rect['y']+rect['height']),control
             focus_context()
             return latest
+        def ais_drawer():
+            latest=wait_object(lambda s:s['ui_page']=='AIS target' and
+                               context_controls(s,'Back') and
+                               'drawer' in s['runtime']['display'],
+                               'Selected target opens the prototype AIS drawer')
+            drawer=latest['runtime']['display']['drawer']
+            chart=latest['runtime']['display']['chart_region']
+            expected={'x':chart['x']+chart['width']-14-398,'y':chart['y']+12,
+                      'width':398,'height':client['y']+client['height']-34-12-(chart['y']+12)}
+            assert all(abs(drawer[k]-v)<=1 for k,v in expected.items()),(drawer,expected)
+            report.setdefault('ais_drawer_geometry',[]).append(drawer)
+            focus_context()
+            return latest
+        def scroll_drawer_to(label):
+            # Native wheel input traverses the actual scroll viewport. Do not
+            # invoke a hidden callback or click an off-screen rectangle.
+            for _ in range(12):
+                latest=object_snapshot()
+                if any(c['enabled'] for c in context_controls(latest,label)):return
+                drawer=latest['runtime']['display']['drawer']
+                x,y=drawer['x']+drawer['width']//2,drawer['y']+drawer['height']-60
+                if windows:
+                    assert ui.SetCursorPos(x,y)
+                    ui.MouseEvent(0x0800,0,0,ui.C.c_uint32(-360).value,0)
+                else:
+                    focus_context()
+                    subprocess.run(['xdotool','mousemove','--sync',str(x),str(y),
+                                    'click','--repeat','3','--delay','50','5'],env=env,check=True)
+                # Diagnostics are sampled by the application timer, not by
+                # this reader. Wait for a post-wheel sample before deciding
+                # whether to scroll again; otherwise queued wheel input can
+                # move the button after we selected its previous rectangle.
+                geometry_file=profile/'opennav-diagnostics.json'
+                previous=geometry_file.stat().st_mtime_ns
+                expires=time.monotonic()+3
+                while geometry_file.stat().st_mtime_ns==previous:
+                    assert time.monotonic()<expires,'No post-scroll diagnostic update'
+                    time.sleep(.1)
+            raise AssertionError(('Native drawer scrolling did not reveal action',label))
         chart_colors = chartcheck.reference(capture('initial-no-input-chart'))
         assert all(min(c)>0 for c in chart_colors),'Black desktop is not a chart color'
         phase[0]='rmc';deadline=time.monotonic()+150;seen=set()
@@ -478,7 +519,7 @@ try:
                         report.setdefault('route_detail_lifecycle',[]).append({
                             'phase':current,'controls':ready['runtime']['display']['product_controls']})
                     if current=='waypoint-card':chart_bounded_context(['GO TO','Details','Edit waypoint','Remove'])
-                    if current=='ais-card':chart_bounded_context(['Show on chart','Details'])
+                    if current=='ais-card':ais_drawer()
                     rgb = capture(current)
                     if current=='route-detail-renamed':
                         click_object('Activate route')
@@ -505,6 +546,12 @@ try:
                     if current in route_phases:
                         (profile/(current+'-observed')).write_text('Open detail native actions and enabled state verified.\n')
                     if current in ('settings-return','settings-return-navigation'):
+                        # Reconfiguration must restore the entire prototype
+                        # frame, including the horizon hidden by an object
+                        # page. Land/water alone cannot prove correct layout.
+                        layout=object_snapshot()['runtime']['display']
+                        report.setdefault('settings_return_layout',[]).append(
+                            chartcheck.navigation_layout(layout,frame,client))
                         report.setdefault('chart_rendering', []).append(chartcheck.check(
                             rgb, chart_colors, 'Actual settings reconfiguration returns coastline without restart / '+current))
                         (profile / (current+'-observed')).write_text('Native chart land and water verified.\n')
@@ -531,12 +578,14 @@ try:
                         wait_object(lambda s:s['ui_page']=='Navigation','Waypoint Details returns to chart')
                         (profile/'waypoint-context-observed').write_text('Compact, stale GPS guard, Details and chart return verified.\n')
                     if current=='ais-card':
+                        scroll_drawer_to('Show on chart')
+                        capture('ais-target-action-visible')
                         click_object('Show on chart')
                         wait_object(lambda s:s['ui_page']=='Navigation' and
                                     s['runtime'].get('ais_selected_mmsi')==990000001,
-                                    'Compact AIS selects existing chart target')
+                                    'Prototype AIS drawer selects existing chart target')
                         capture('ais-context-selected-chart')
-                        (profile/'ais-context-observed').write_text('Compact AIS chart selection verified.\n')
+                        (profile/'ais-context-observed').write_text('Prototype AIS drawer, native scroll and chart selection verified.\n')
                 if current=='ais-advice' and not report.get('live_ais_advice'):
                     sample=read_json_snapshot(profile/'opennav-diagnostics.json')
                     if sample['runtime'].get('smartnav',{}).get('ais_event_count',0)>0:
@@ -553,14 +602,13 @@ try:
         deadline=time.monotonic()+8
         while time.monotonic()<deadline:
             ready=read_json_snapshot(profile/'opennav-diagnostics.json')
-            if context_controls(ready,'Details') and not ready['runtime'].get('alerts'):break
+            if ready['ui_page']=='AIS target' and context_controls(ready,'Back') and not ready['runtime'].get('alerts'):break
             time.sleep(.15)
         else:raise AssertionError('AIS fixture alarm did not resolve before card interaction')
-        chart_bounded_context(['Show on chart','Details'])
-        click_object('Details')
-        wait_object(lambda s:s['ui_page']=='AIS target','Compact AIS opens full Details')
+        ais_drawer()
         capture('ais-details')
-        click_object('Select target on chart')
+        scroll_drawer_to('Show on chart')
+        click_object('Show on chart')
         deadline=time.monotonic()+12
         while time.monotonic()<deadline:
             selected=read_json_snapshot(profile/'opennav-diagnostics.json')
@@ -570,7 +618,7 @@ try:
         capture('ais-selected-chart')
         report['ais_selection']='Actual target card to existing chart target/frame; copied selection identity reported'
         if windows:
-            ui.click_text(app.pid,'Menu');ui.click_text(app.pid,'Waypoints')
+            ui.click_text(app.pid,'System');ui.click_text(app.pid,'Waypoints')
             ui.click_text(app.pid,'ALPHA TEST edited / mark');ui.click_text(app.pid,'Edit waypoint')
             ui.set_text_in_dialog(app.pid,'Edit waypoint','ALPHA TEST edited','ALPHA TEST UI edited')
             ui.click_text(app.pid,'Save');time.sleep(.6)

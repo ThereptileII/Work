@@ -19,6 +19,27 @@ from source_package import create_source_archive, PINNED_UPSTREAM
 ROOT = Path(__file__).resolve().parents[1]
 
 
+def dependency_candidates(install, runtime):
+    """Use the licensed current MSVC CRT, as the main product packager does.
+
+    The supported OpenCPN dependency bundle includes older same-name CRTs.
+    Only this explicitly selected CRT directory may override those copies.
+    An ambiguous non-CRT dependency is still a hard failure.
+    """
+    if runtime.name != 'Microsoft.VC143.CRT' or not all(
+            (runtime / n).is_file() for n in ('msvcp140.dll', 'vcruntime140.dll')):
+        raise ValueError('Expected licensed MSVC x86 CRT directory')
+    candidates = {}
+    for folder in (install, runtime):
+        for file in folder.glob('*.dll'):
+            name = file.name.lower()
+            crt = folder == runtime and name.startswith(('msvcp', 'vcruntime', 'concrt', 'vcomp'))
+            if name in candidates and file.read_bytes() != candidates[name].read_bytes() and not crt:
+                raise ValueError('Ambiguous non-CRT dependency in the validated build')
+            candidates[name] = file
+    return candidates
+
+
 def main():
     p = argparse.ArgumentParser(description=__doc__)
     p.add_argument('--runtime', type=Path, required=True)
@@ -36,14 +57,7 @@ def main():
     spec = importlib.util.spec_from_file_location('pe', ROOT / 'tools/verify-preview-pe.py')
     pe = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(pe)
-    roots = [ROOT / 'build/production-install', a.runtime.resolve()]
-    candidates = {}
-    for folder in roots:
-        for file in folder.glob('*.dll'):
-            name = file.name.lower()
-            if name in candidates and file.read_bytes() != candidates[name].read_bytes():
-                raise ValueError('Ambiguous dependency in the validated build')
-            candidates[name] = file
+    candidates = dependency_candidates(ROOT / 'build/production-install', a.runtime.resolve())
     pending = [app / exe.name]
     copied = set()
     while pending:
@@ -69,6 +83,7 @@ def main():
     licenses = package / 'licenses'
     licenses.mkdir()
     shutil.copy2(ROOT / 'LICENSE', licenses / 'OpenNavX-COPYING.txt')
+    shutil.copytree(ROOT / 'docs/third-party/OpenSSL-3.0.5', licenses / 'OpenSSL-3.0.5')
     upstream = ROOT / 'build/integration-source'
     for file in upstream.rglob('*'):
         if file.is_file() and file.name.lower().startswith(('copying', 'license', 'copyright')):

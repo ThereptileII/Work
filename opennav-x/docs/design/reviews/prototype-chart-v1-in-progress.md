@@ -34,7 +34,7 @@ Observed, still unresolved:
 - Route, ownship, selected objects and local/online AIS restyling remain open.
 - The Linux GL path renders chart content but some floating control child
   glyphs are occluded. A diagnostic "visible" flag does not pass this visual
-  check; software/GL control rendering needs correction.
+check; software/GL control rendering needs correction.
 
 The subsequent corrected coastline-only palette capture passes exact prototype
 land/water pixel checks for Day/Dusk/Night/Day and exits normally. The Standard
@@ -61,3 +61,16 @@ diagnostic snapshot is read; ENC return-Day snapshots still say Night. Do not
 count these as passed theme cycles. Wait for the requested observed mode and
 verify actual control pixels before retaining replacement evidence. Fix the
 owned native surface stacking and compare again on both renderers.
+
+## Second general-ink pass
+
+The working tree on `827e221` passes 377 resource checks, 120 integrated tests,
+and four software plus four Linux GL public-ENC captures with clean shutdown.
+Software Dusk/Night review confirms readable general monochrome chart text.
+The unchanged baked dark raster symbols remain dim; they do not use the XML's
+CHBLK RGB values, so blind RGB replacement would be unjustified. Day's general
+ink remains pinned because prototype muted text loses shallow-area contrast.
+Urban fill, density/large labels, chart selector, route/ownship and full symbol
+review remain unfinished. Linux GL uses llvmpipe. Native/boat replacement is
+still required; [local evidence](../../evidence/prototype-ais-navigation-chart-ink-local.json)
+does not assert visual or navigation acceptance.

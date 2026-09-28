@@ -1,9 +1,13 @@
-param([ValidateSet('Win32', 'x64')][string]$Architecture = 'Win32', [switch]$Integration, [switch]$Production)
+param([ValidateSet('Win32', 'x64')][string]$Architecture = 'Win32', [switch]$Integration, [switch]$Production,
+      [switch]$PrototypeObjectFlow)
 $ErrorActionPreference = 'Stop'
 Set-StrictMode -Version Latest
 $Root = Split-Path $PSScriptRoot -Parent
 $Source = Join-Path $Root 'upstream/OpenCPN'
 if ($Production -and -not $Integration) { throw 'Production requires Integration' }
+if ($PrototypeObjectFlow -and (-not $Integration -or $Production -or $env:GITHUB_ACTIONS -ne 'true')) {
+    throw 'The prototype-only object flow is a disposable CI development gate, not a production/release gate'
+}
 $Variant = if ($Production) { 'production' } elseif ($Integration) { 'xnav' } else { 'pristine' }
 $Evidence = Join-Path $Root 'evidence/local'
 New-Item -ItemType Directory -Force $Evidence | Out-Null
@@ -74,6 +78,11 @@ try {
         Format-List | Out-File (Join-Path $Evidence "windows-$Variant-executable-sha256.txt")
     Run python @((Join-Path $PSScriptRoot 'verify-upstream.py'))
     if ($Integration -and -not $Production) {
+        if ($PrototypeObjectFlow) {
+            # Additional targeted development job. The default full integrated
+            # release workflow below remains mandatory and unchanged.
+            Run python @((Join-Path $PSScriptRoot 'smoke-navigation.py'), '--objects')
+        } else {
         Run python @((Join-Path $PSScriptRoot 'smoke-modes-windows.py'))
         Run python @((Join-Path $PSScriptRoot 'smoke-navigation.py'))
         Run python @((Join-Path $PSScriptRoot 'smoke-navigation.py'), '--route-fixture')
@@ -87,6 +96,7 @@ try {
         Run python @((Join-Path $PSScriptRoot 'smoke-recovery.py'))
         & (Join-Path $PSScriptRoot 'capture-pristine-windows.ps1') -Variant xnav -Mode legacy -Name '11-legacy-mode'
         & (Join-Path $PSScriptRoot 'capture-pristine-windows.ps1') -Variant xnav -Mode safe-mode -Name '12-safe-mode'
+        }
     } elseif (-not $Production) {
         & (Join-Path $PSScriptRoot 'capture-pristine-windows.ps1')
     }

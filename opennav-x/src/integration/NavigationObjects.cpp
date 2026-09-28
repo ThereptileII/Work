@@ -500,7 +500,6 @@ vessel::AisState CopyAisState(const vessel::Navigation &position,
     t.doubtful = p->b_positionDoubtful;
     t.upstream_alarm = p->n_alert_state != AIS_NO_ALERT;
     t.source = state.source;
-    t.observed_at = now;
     if (p->b_nameValid) {
       t.name = std::string(
           p->ShipName,
@@ -527,6 +526,9 @@ vessel::AisState CopyAisState(const vessel::Navigation &position,
     const auto previous = clocks.find(t.mmsi);
     if (previous != clocks.end() && previous->second.report == p->PositionReportTicks)
       at = previous->second.at;
+    // Target report age is the retained upstream observation, not this copy's
+    // UI-read time. The enclosing state retains the separate copy timestamp.
+    t.observed_at = at.value_or(vessel::Time{});
     // Convert a given upstream observation exactly once. Re-pairing wall and
     // monotonic clocks on every UI read introduces sub-millisecond backwards
     // jitter and incorrectly invalidates a retained target selection.

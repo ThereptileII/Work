@@ -126,6 +126,30 @@ Linux integrated build and 30 offline CLI/privacy checks pass, as do nine source
 archive tests. Native packaging/closure and live service evidence remain pending.
 Only credential-entry presence has been checked aboard; no successful connection
 or live target count is claimed yet.
+The first probe package attempt at `d79fac6` passed native build, 112 tests,
+24 offline probe checks, transport/provider and UI captures, then correctly
+failed on conflicting app-local MSVC CRT copies. No probe ZIP was uploaded.
+The correction explicitly chooses the licensed toolchain CRT (as the main
+packager does), still rejects other ambiguous dependencies, and passes four
+portable resolver tests. Added exact OpenSSL dependency notices and a bounded,
+hash-verifying boat invocation script. Replacement native packaging is pending.
+
+The actual-model object flow now validates retained AIS summary/report age,
+native drawer scrolling and return-to-chart selection. It also exposed and
+fixed the timeline being omitted when Advanced Settings rebuilt the chart.
+Linux passes all 27 object scenario groups, seven actual pointer actions,
+26 captures, both exact settings-return layouts, coastline and navobj storage.
+The obsolete compact-card Details hop was replaced by the prototype's direct
+target drawer; no underlying route/waypoint/AIS semantic check was removed.
+The dedicated widget suite now passes 71 checks and the established integrated
+command passes 120 tests. A separate native object-flow development job was
+added; the full existing release regression workflow remains mandatory.
+See [local evidence](evidence/prototype-ais-navigation-chart-ink-local.json).
+
+The second chart-ink pass preserves Day contrast and improves Dusk/Night text.
+Resource checks pass 377; actual public ENC software/llvmpipe captures retain
+content through all themes. Baked raster symbols still need contrast work,
+and no chart presentation is accepted yet.
 
 XNav-owned S-52 presentation is being implemented as separately packaged,
 hash-verified resources derived from the pinned baseline. Its resource tests

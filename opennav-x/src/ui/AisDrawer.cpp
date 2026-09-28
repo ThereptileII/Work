@@ -76,6 +76,10 @@ void XNavAisDrawer::Target(int mmsi) {
   view_ = View::Target;
   Build();
 }
+std::string XNavAisDrawer::PageTitle() const {
+  return view_ == View::Target ? "AIS target"
+       : view_ == View::Settings ? "Online AIS settings" : "AIS targets";
+}
 std::optional<vessel::AisTarget> XNavAisDrawer::Selected() const {
   if (!display_.available || display_.simulated || display_.targets.size() > 2000)
     return {};

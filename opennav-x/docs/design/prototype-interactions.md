@@ -13,7 +13,7 @@ to native behavior; it does not authorize mock hardware or installer actions.
 | Waypoint / edit / remove | Existing identity-based waypoint commands | Back to selected point; removal confirmation, shared persistence |
 | Create passage / undo / finish | Existing OpenCPN route-creation state | Undo one point; confirm discard; name before save |
 | Traffic / list / target | Owned aggregated AIS state; onboard CPA/TCPA retained | Target Back to list; source/age visible; lost target cannot appear current |
-| Chart target selection | Current target identity; separate online overlay | Compact card, Details expands; close clears transient selection |
+| Chart target selection | Current target identity; separate online overlay | Target drawer directly; Back to list; Show on chart closes drawer after a validated jump and retains highlight |
 | Energy | Existing advisory model and valid Vessel Data/route inputs | Root Close; stale required input suppresses dependent predictions |
 | Instruments / metric | Vessel Data assessment, configurable four rail slots | Close; editing a slot returns to rail configuration |
 | Anchor | Existing OpenCPN anchor-watch boundary | Explicit arm/disarm; no claim of advanced drag detection |

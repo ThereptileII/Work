@@ -176,6 +176,7 @@ for license_file in source.rglob('*'):
         target.parent.mkdir(parents=True, exist_ok=True)
         shutil.copy2(license_file, target)
 shutil.copytree(ROOT / 'docs/third-party/wxWidgets-3.2.8', destination / 'docs/licenses/wxWidgets-3.2.8')
+shutil.copytree(ROOT / 'docs/third-party/OpenSSL-3.0.5', destination / 'docs/licenses/OpenSSL-3.0.5')
 shutil.copy2(ROOT / 'LICENSE', destination / 'docs/licenses/OpenNavX-COPYING.txt')
 (destination / 'docs/SOURCE_AND_LICENSES.md').write_text(f'''# Source and third-party notices
 

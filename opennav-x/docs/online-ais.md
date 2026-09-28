@@ -3,6 +3,14 @@
 AISStream is supplemental traffic information; OpenCPN onboard AIS remains
 the navigation authority. Provider snapshots own their values and retain
 provenance. No socket, decoder or credential object crosses into Vessel Data.
+
+The onboard target summary uses the retained upstream report observation epoch,
+matching the copied position fields. The enclosing container's copy timestamp
+is not report freshness. The integrated actual-model scenario verifies 64
+repeated reads and a 70-second-old report without refreshing either timestamp.
+The prototype target drawer opens directly, scrolls to Show on chart, and closes
+only after a successful current-position action. Separate local and supplemental
+chart actions retain their existing ownership boundaries.
 # Supplemental Online AIS — contract and implementation status
 
 Online AIS is an optional Internet input for chart/list presentation. It never

@@ -881,7 +881,7 @@ void Shell::UpdateScrollControls() {
 }
 
 std::string Shell::PageTitle() const {
-  if (ais_drawer_ && ais_drawer_->IsShown()) return "AIS targets";
+  if (ais_drawer_ && ais_drawer_->IsShown()) return ais_drawer_->PageTitle();
   if (product_ && product_->IsShown())
     return product_->PageTitle();
   if (page_ && page_->IsShown())
@@ -1020,6 +1020,10 @@ void Shell::ShowTraffic(int mmsi) {
       if (!result.ok) {
         ais_selection_.Clear();
         ConfirmSheet(frame_, mode_, "Unable to select target", wxString::FromUTF8(result.message), "Back");
+      } else {
+        // Prototype showTarget returns to the chart after a successful jump.
+        // Keep the validated identity highlighted; a failed action stays here.
+        ShowNavigation();
       }
     });
     ais_drawer_->on_select = [this, lifetime](int id) {
@@ -1201,7 +1205,7 @@ void Shell::AfterCanvasLayoutChanged() {
     auto &pane=manager_.GetPane(name);
     if(pane.IsOk())pane.Show();
   }
-  for(const auto &name : {"OpenNavTools","OpenNavData"}) {
+  for(const auto &name : {"OpenNavTools","OpenNavData","OpenNavHorizon"}) {
     auto &pane=manager_.GetPane(name);if(pane.IsOk())pane.Show();
   }
   ShowNavigation();

@@ -20,6 +20,9 @@ def luminance(rgb):
     channels=[v/255 for v in rgb]
     linear=[v/12.92 if v<=.04045 else ((v+.055)/1.055)**2.4 for v in channels]
     return sum(v*w for v,w in zip(linear,[.2126,.7152,.0722]))
+def contrast(a,b):
+    bright,dark=sorted([luminance(a),luminance(b)],reverse=True)
+    return (bright+.05)/(dark+.05)
 with tempfile.TemporaryDirectory(prefix='xnav-chart-test-') as d:
     folder=Path(d)
     output=folder/'generated'
@@ -49,6 +52,14 @@ with tempfile.TemporaryDirectory(prefix='xnav-chart-test-') as d:
         check(colors['LANDA']!=colors['DEPDW'])
     for color in g.ALLOWED:
         check(luminance(data['palette']['NIGHT'][color])<luminance(data['palette']['DUSK'][color]))
+    # Guard the observed invisible dark ink on the new Night water. These
+    # numerical checks do not replace actual symbol/hazard review.
+    check(data['palette']['DAY_BRIGHT']['CHBLK']==(7,7,7))
+    for table in ('DUSK','NIGHT'):
+        colors=data['palette'][table]
+        check(contrast(colors['CHBLK'],colors['DEPDW'])>=4)
+        check(contrast(colors['CHBLK'],colors['DEPVS'])>=2)
+        check(contrast(colors['CHBLK'],colors['LANDA'])>=3)
     check(original=={p.name:hashlib.sha256(p.read_bytes()).hexdigest() for p in source.iterdir() if p.is_file()})
     damaged=folder/'damaged';damaged.mkdir()
     for name in data['files']:shutil.copyfile(source/name,damaged/name)

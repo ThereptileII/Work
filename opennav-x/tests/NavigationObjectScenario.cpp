@@ -896,10 +896,16 @@ void ObjectScenarioStep(const vessel::Navigation &selected) {
             "Out-of-range AIS status cannot index native status table");
       target->NavStatus = UNDERWAY_USING_ENGINE;
       auto retained = *it;
-      for (int read = 0; read < 64; ++read)
-        Check(CopyAisState(selected, Clock::now()).targets.front().latitude_deg.observed_at ==
+      Check(retained.observed_at == retained.latitude_deg.observed_at,
+            "Target report clock equals actual upstream position observation");
+      for (int read = 0; read < 64; ++read) {
+        const auto copy = CopyAisState(selected, Clock::now()).targets.front();
+        Check(copy.latitude_deg.observed_at ==
                   retained.latitude_deg.observed_at,
               "Repeated reads preserve exact AIS position observation epoch");
+        Check(copy.observed_at == retained.observed_at,
+              "Repeated reads cannot refresh target report age");
+      }
       target->b_lost = true;
       auto lost = CopyAisState(selected, Clock::now());
       Check(!lost.targets.front().cpa_nm.value,
@@ -911,6 +917,9 @@ void ObjectScenarioStep(const vessel::Navigation &selected) {
       target->SOG = 7;
       target->PositionReportTicks -= 70;
       auto stale = CopyAisState(selected, Clock::now());
+      Check(stale.targets.front().observed_at == stale.targets.front().latitude_deg.observed_at &&
+                Clock::now() - stale.targets.front().observed_at >= std::chrono::seconds(70),
+            "Stale target report age is retained independently of UI copy time");
       Check(Assess(stale.targets.front().range_nm, Clock::now()).quality ==
                 Quality::Stale,
             "Repeated copy preserves AIS age");

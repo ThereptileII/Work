@@ -69,7 +69,7 @@ No chart-presentation acceptance is claimed by this inspection document.
 ## Version 1 implementation (not yet visually accepted)
 
 `resources/chart-style/v1/definition.json` maps the HTML's land, shore, water,
-contour and text tokens to eleven S-52 palette entries. The HTML supplies no
+contour and text tokens to twelve S-52 palette entries. The HTML supplies no
 complete depth-area set; explicitly documented extra shades retain all five
 pinned deep/medium/shallow/very-shallow/intertidal categories. Safety contours
 and safety soundings remain distinct. This is a safety-required extension to
@@ -98,3 +98,11 @@ luminance, original-file preservation and refusal of changed upstream input.
 Real ENC appearance, hazards, OpenGL/software rendering, style/mode cycles and
 boat display remain pending. Route, ownship and AIS overlay restyling is a
 separate unfinished part of this workstream.
+
+The second ink pass adds CHBLK after actual native ENC review found monochrome
+text nearly invisible at Night. Day retains the pinned #070707 rather than
+substituting low-contrast muted text over shallow water. Dusk uses the existing
+prototype floating text token; Night uses its chart-text token. Numeric contrast
+checks cover deep water, very-shallow water and land independently. These checks
+do not qualify hazard visibility or recolor the unchanged raster symbol sheets.
+See the [contrast investigation](reviews/chart-ink-contrast-investigation.md).

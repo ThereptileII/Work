@@ -16,6 +16,20 @@ normal-progress observation and validity rules remain unchanged.
 
 ## Automated gates
 
+Prototype-stage development adds a separate native object-flow job. Its
+`-PrototypeObjectFlow` build option is confined to disposable CI and executes
+the actual fixture build's integrated tests and object interaction scenario.
+It does not replace or qualify the existing full release workflow. The updated
+object interaction follows the authoritative direct AIS drawer, uses native
+wheel and pointer input, verifies selected target/chart return, and retains all
+route/waypoint/reconfiguration and persistence checks. Both settings-return
+paths also verify the complete prototype layout including the horizon.
+
+The Linux integrated command remains the one in `build-production-linux.sh`:
+individually discovered cases, excluding the redundant upstream aggregate
+`tests` invocation. No individual case is removed. The duplicate aggregate
+retains a known cross-case wx timezone-state failure when run as one process.
+
 The workflow builds the pinned OpenCPN 5.12.4 commit
 `37fd0cddb7334fe489e9f18aa163977a9c5c84f7` in disposable source trees and verifies
 the approved Win32 ABI on an x64 Windows host. Linux and native MSVC integrated

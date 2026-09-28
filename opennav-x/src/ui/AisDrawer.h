@@ -13,6 +13,7 @@ public:
               LightMode light);
   void List();
   void Target(int mmsi);
+  std::string PageTitle() const;
   std::function<void(int)> on_select;
 
 private:

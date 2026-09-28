@@ -6,6 +6,25 @@ on:
 permissions:
   contents: read
 jobs:
+  native-object-flow:
+    name: Native prototype route waypoint AIS pointer regressions (not full release gate)
+    runs-on: windows-2022
+    timeout-minutes: 65
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+      - name: Fetch and verify pinned baseline
+        run: |
+          git clone --depth 1 --branch Release_5.12.4 https://github.com/OpenCPN/OpenCPN.git opennav-x/upstream/OpenCPN
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          python opennav-x/tools/verify-upstream.py
+      - name: Native fixture build and actual object workflow
+        run: ./opennav-x/tools/build-pristine-windows.ps1 -Architecture Win32 -Integration -PrototypeObjectFlow
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: prototype-object-flow-Windows-${{ github.sha }}
+          path: opennav-x/evidence/local
+          if-no-files-found: error
   native-composition:
     name: Native prototype composition development (not release qualification)
     runs-on: windows-2022
@@ -63,6 +82,8 @@ jobs:
         run: |
           python opennav-x/tools/test-source-package.py
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          python opennav-x/tools/test-ais-probe-package.py
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
           $Vswhere = "${env:ProgramFiles(x86)}\Microsoft Visual Studio\Installer\vswhere.exe"
           $VS = & $Vswhere -latest -products '*' -requires Microsoft.VisualStudio.Component.VC.Tools.x86.x64 -property installationPath
           if (-not $VS) { throw 'Licensed native toolchain missing' }
@@ -70,6 +91,17 @@ jobs:
           if (-not $Runtime) { throw 'Licensed x86 runtime missing' }
           python opennav-x/tools/package-ais-live-probe.py --runtime $Runtime.FullName --output opennav-x/build/ais-readonly-probe
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          # The fixture-free settings gate above explicitly established that
+          # this disposable account has no product key. This is a negative,
+          # offline commissioning test; it cannot connect without a key.
+          $Package = (Resolve-Path opennav-x/build/ais-readonly-probe/OpenNavX-AIS-ReadOnly-Probe).Path
+          $InfoHash = (Get-FileHash "$Package/BUILD_INFO.json" -Algorithm SHA256).Hash.ToLowerInvariant()
+          $Evidence = Join-Path $PWD 'opennav-x/evidence/local/probe-offline-launch'
+          & powershell -NoProfile -ExecutionPolicy Bypass -File opennav-x/tools/boat/probe-online-ais.ps1 -Package $Package -ExpectedCommit $env:GITHUB_SHA -ExpectedBuildInfoSha256 $InfoHash -Evidence $Evidence
+          if ($LASTEXITCODE -ne 4) { throw 'Expected offline missing-credential result from native commissioning script' }
+          $Result = Get-Content "$Evidence/summary.json" -Raw | ConvertFrom-Json
+          if ($Result.peakTargetCount -ne 0 -or $Result.subscriptionConfirmed -or -not $Result.disabledAndCleared) { throw 'Offline script result is invalid' }
+          $global:LASTEXITCODE = 0
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
           name: prototype-ais-read-only-probe-${{ github.sha }}

@@ -24,6 +24,16 @@ Do not leave undocumented direct OpenCPN modifications.
 
 ### Online AIS settings and native drawer boundary
 
+The prototype target drawer now reports its actual list/target/settings view
+and returns to the chart only after successful identity/freshness validation
+and the upstream chart-position action. The existing owned AIS copy preserves
+the upstream report observation time in its summary as well as each field;
+UI reads cannot refresh report age. Neither change adds an upstream hook.
+The existing settings-reconfiguration hook now restores OpenNavHorizon along
+with the two side panes; it had been omitted when the prototype introduced the
+timeline. The object regression checks exact navigation composition after both
+hidden-page and already-navigation reconfiguration, in addition to coastline.
+
 The application bridge reads the already-computed `ViewPort::GetBBox()` and
 `IsValid()` on its normal application-thread tick. Pinned `SetBoxes()` publishes
 ordered, possibly unwrapped longitudes; tested `AisViewport` normalization
