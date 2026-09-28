@@ -32,7 +32,7 @@ class XNavPainter {
   const Palette c;
 };
 
-enum class ButtonRole { Normal, Quiet, Primary, Critical };
+enum class ButtonRole { Normal, Quiet, Primary, Critical, Segment };
 enum class XNavIcon { None, Plus, Minus, Ownship, Menu, Back, Close, Route, Compass, Settings,
   Chart, Traffic, Energy, Instruments, Anchor, Radar, Sun, Dusk, Moon, Bell,
   Search, Layers, Ruler, Pin, Sliders, Chevron };
@@ -79,6 +79,7 @@ class XNavButton : public wxControl {
   LightMode mode_ = LightMode::Day;
   wxString hint_;
   bool pressed_ = false;
+  bool keyboard_focus_ = false;
   bool selected_ = false;
   bool hovered_ = false, navigation_item_ = false, icon_only_ = false, floating_ = false;
   bool inline_icon_ = false;

@@ -22,6 +22,18 @@ For each change record:
 
 Do not leave undocumented direct OpenCPN modifications.
 
+### Online AIS settings and native drawer boundary
+
+The application bridge reads the already-computed `ViewPort::GetBBox()` and
+`IsValid()` on its normal application-thread tick. Pinned `SetBoxes()` publishes
+ordered, possibly unwrapped longitudes; tested `AisViewport` normalization
+copies those values without refreshing OpenCPN navigation. Selecting an online
+position revalidates the owned aggregate before the existing
+`MyFrame::JumpToPosition` chart action. No target is inserted into the upstream
+AIS decoder, route model or CPA calculation. SmartNav/alarms retain onboard-only
+input. This settings/drawer increment adds no direct upstream patch; the
+separate online overlay remains pending.
+
 ### Beta 2 chart presentation boundary
 
 The integration bridge reads `ChartCanvas::GetUpMode()` for the XNav orientation

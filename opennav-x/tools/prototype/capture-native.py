@@ -68,6 +68,7 @@ def main():
     parser.add_argument("--renderer", choices=["software", "opengl"], default="software")
     parser.add_argument("--public-enc", action="store_true")
     parser.add_argument("--navigation-only", action="store_true")
+    parser.add_argument("--ais-settings", action="store_true", help="Exercise fixture-free AIS settings without a key")
     args = parser.parse_args()
     args.output.mkdir(parents=True, exist_ok=False)
     profile = args.output.resolve() / "profile"
@@ -160,6 +161,28 @@ def main():
         else:
             subprocess.run(["import", "-window", "root", str(path)], env=env, check=True)
         snapshot = data()
+        if name.startswith("traffic-") or name.startswith("online-ais-"):
+            drawer = snapshot["runtime"]["display"]["drawer"]
+            expected = dict(x=client_origin[0]+682, y=client_origin[1]+80, width=398, height=674)
+            assert all(abs(drawer[k]-v) <= 1 for k, v in expected.items()), "AIS drawer differs from prototype geometry"
+            from PIL import Image
+            theme = snapshot["runtime"]["display"]["light"].lower()
+            tokens = json.loads((ROOT / "docs/design/prototype-tokens.json").read_text())["themes"][theme]
+            background = tuple(bytes.fromhex(tokens["--bg"].removeprefix("#")))
+            def sheet_painted():
+                with Image.open(path) as image:
+                    image = image.convert("RGB")
+                    return all(max(abs(a-b) for a,b in zip(image.getpixel(point),background)) <= 3
+                               for point in [(686, 417), (1076, 417), (881, 84)])
+            paint_start = time.monotonic()
+            # Diagnose asynchronous native stacking/paint without relaxing a
+            # single pixel criterion. Record the latency; it is a UX finding.
+            while not sheet_painted() and not windows and time.monotonic()-paint_start < 3:
+                time.sleep(.1)
+                subprocess.run(["import", "-window", "root", str(path)], env=env, check=True)
+            record.setdefault("drawer_paint_wait_seconds", {})[name] = time.monotonic()-paint_start
+            assert sheet_painted(), "AIS sheet reports visible but is not painted above the chart"
+            record.setdefault("drawer_layout", []).append(dict(file=name, actual=drawer, expected=expected))
         if name.startswith("navigation-"):
             spec = importlib.util.spec_from_file_location("chart_layout", ROOT / "tools/chart-render-check.py")
             geometry = importlib.util.module_from_spec(spec)
@@ -220,7 +243,9 @@ def main():
             record.setdefault("chart_checks", []).append({"file": path.name, "colors": len(colors), "detail_fraction": detail})
         record["executable_build_commit"] = snapshot["build_commit"]
         (args.output / f"{name}.json").write_text(json.dumps(snapshot, indent=2) + "\n")
-        record["captures"].append({"file": path.name, "sha256": hashlib.sha256(path.read_bytes()).hexdigest()})
+        # Settings are a required new service flow, not a fabricated HTML state.
+        group = "additional_captures" if name.startswith("online-ais-") else "captures"
+        record.setdefault(group, []).append({"file": path.name, "sha256": hashlib.sha256(path.read_bytes()).hexdigest()})
 
     try:
         time.sleep(.6)
@@ -283,6 +308,35 @@ def main():
                             ("Instruments", "instruments"), ("Settings", "settings")]:
             click(label)
             capture(name + "-day")
+            if label == "Traffic" and args.ais_settings:
+                click("Online AIS settings")
+                capture("online-ais-settings-day")
+                # The isolated runner must have no product credential. Never
+                # enable a test against somebody's saved or environment key.
+                online = data()["runtime"]["online_ais"]
+                assert not online["credential_present"], "Settings test requires an empty product credential store"
+                assert not online["enabled"], "New isolated profile must default OFF"
+                click("Enabled")
+                deadline = time.monotonic()+5
+                while time.monotonic()<deadline:
+                    online = data()["runtime"]["online_ais"]
+                    if online["enabled"] and online["connection_state"] == 1:
+                        break  # CredentialMissing: no network connection attempted
+                    time.sleep(.1)
+                else:
+                    raise AssertionError("Missing key was not explicitly withheld")
+                capture("online-ais-key-needed-day")
+                click("Off")
+                assert not data()["runtime"]["online_ais"]["enabled"]
+                click("Day", "Dusk")
+                capture("online-ais-settings-dusk")
+                click("Dusk", "Night")
+                capture("online-ais-settings-night")
+                click("Night", "Day")
+                click("Back")
+                click("Close")
+                assert "drawer" not in data()["runtime"]["display"], "Close did not dismiss sheet"
+                record["online_ais_settings"] = "Default OFF; missing key withholds connection; OFF, themes and Close exercised"
         record["result"] = "captured; conformance not asserted"
     finally:
         shutdown_error = None

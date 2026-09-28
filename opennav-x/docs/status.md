@@ -45,6 +45,15 @@ The native capture job still fails: input/capture timing reads an older light-mo
 snapshot. Downloaded ENC images also expose absent floating controls and weak
 Night contrast. Neither a successful screenshot command nor `visible=true`
 qualifies these views. Replacement state-driven and painted-pixel checks are in progress.
+The replacement at remote `e51a7df` (local `37b36dc`) now passes all six
+development jobs: native build, 102 integrated tests, AIS contracts on both
+platforms, hostile TLS/provider tests and native composition/ENC capture.
+Downloaded artifact digests, sizes, CRC and each recorded PNG hash verify.
+Controls are visibly painted and real zoom input changes the upstream scale;
+observed Day/Dusk/Night/Day retains ENC content and exits cleanly. This closes
+the capture/control failure, not visual acceptance. Night hazard/text contrast,
+rail composition and primary sheets remain mismatches. See
+[replacement evidence](evidence/prototype-native-e51a7df.json).
 No screen is accepted; see
 [conformance](design/prototype-conformance.md) and the
 [review log](design/reviews/prototype-native-shell-in-progress.md).
@@ -60,8 +69,18 @@ The protected Windows credential adapter and Linux environment-only adapter
 are implemented; isolated native Credential Manager tests pass at `d92e187`.
 The opt-in bounded TLS/compressed WebSocket boundary passes 18 loopback
 adversarial scenarios on Linux and native Windows. The worker provider lifecycle
-passes on both platforms. Product wiring and live
+passes on both platforms. XNav-only product/provider wiring and native Traffic
+drawer are now in development validation; online chart overlay and live
 AIS acceptance remain pending. No service connection or target count is claimed.
+The application-thread Online AIS preference/credential boundary and copied
+viewport normalization add ten deterministic integrated cases. Linux passes
+120/120 with these additions. Opt-in, failed-save disable, replay isolation,
+credential separation, worker rejection and pinned LLBBox antimeridian/world
+bounds are covered. Fixture-free Linux captures exercise the native settings
+path: default OFF, missing-key withholding, OFF, theme changes, Back and Close.
+Two failed capture passes exposed native sheet stacking, followed by a correction
+and retained paint-latency checks. Windows replacement and populated-target
+interaction remain required. See the [AIS drawer review](design/reviews/prototype-ais-drawer-in-progress.md).
 
 XNav-owned S-52 presentation is being implemented as separately packaged,
 hash-verified resources derived from the pinned baseline. Its resource tests

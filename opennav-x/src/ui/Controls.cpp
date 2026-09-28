@@ -182,11 +182,14 @@ XNavButton::XNavButton(wxWindow* parent, wxWindowID id, const wxString& label,
   Bind(wxEVT_PAINT, &XNavButton::Paint, this);
   Bind(wxEVT_ENTER_WINDOW, [this](wxMouseEvent &e) { hovered_ = true; Refresh(); e.Skip(); });
   Bind(wxEVT_LEAVE_WINDOW, [this](wxMouseEvent &e) { hovered_ = false; Refresh(); e.Skip(); });
-  Bind(wxEVT_SET_FOCUS, [this](wxFocusEvent& e) { Refresh(); e.Skip(); });
+  Bind(wxEVT_SET_FOCUS, [this](wxFocusEvent& e) {
+    keyboard_focus_ = wxGetKeyState(WXK_TAB); Refresh(); e.Skip();
+  });
   Bind(wxEVT_KILL_FOCUS, [this](wxFocusEvent& e) { pressed_ = false; Refresh(); e.Skip(); });
   Bind(wxEVT_LEFT_DOWN, [this](wxMouseEvent&) {
     if (!IsEnabled()) return;
     SetFocus();
+    keyboard_focus_ = false;
     pressed_ = true;
     CaptureMouse();
     Refresh();
@@ -203,6 +206,7 @@ XNavButton::XNavButton(wxWindow* parent, wxWindowID id, const wxString& label,
     Refresh();
   });
   Bind(wxEVT_KEY_DOWN, [this](wxKeyEvent& e) {
+    keyboard_focus_ = true;
     if (e.GetKeyCode() == WXK_SPACE || e.GetKeyCode() == WXK_RETURN) {
       pressed_ = IsEnabled();
       Refresh();
@@ -281,15 +285,18 @@ void XNavButton::Paint(wxPaintEvent&) {
   } else if (role_ == ButtonRole::Quiet) {
     fill = hovered_ || pressed_ || selected_ ? Colour(colors.selected) : background;
     ink = Colour(selected_ ? colors.accent : colors.secondary);
+  } else if (role_ == ButtonRole::Segment) {
+    fill = selected_ || hovered_ || pressed_ ? Colour(colors.selected) : background;
+    ink = Colour(selected_ ? colors.primary : colors.muted);
   } else if (selected_ || pressed_) fill = Colour(colors.selected);
   if (hovered_ && IsEnabled() && !navigation_item_) {
     fill = wxColour(std::min(255, int(fill.Red()*1.08)),
                     std::min(255, int(fill.Green()*1.08)), std::min(255, int(fill.Blue()*1.08)));
   }
-  dc.SetPen(navigation_item_ || role_ == ButtonRole::Quiet ? *wxTRANSPARENT_PEN : wxPen(opacity(edge)));
+  dc.SetPen(navigation_item_ || role_ == ButtonRole::Quiet || role_ == ButtonRole::Segment ? *wxTRANSPARENT_PEN : wxPen(opacity(edge)));
   dc.SetBrush(wxBrush(opacity(fill)));
-  dc.DrawRoundedRectangle(1, 1, size.x - 2, size.y - 2, FromDIP(navigation_item_ ? 10 : spacing::control_radius));
-  if (HasFocus()) {
+  dc.DrawRoundedRectangle(1, 1, size.x - 2, size.y - 2, FromDIP(navigation_item_ ? 10 : role_ == ButtonRole::Segment ? 6 : spacing::control_radius));
+  if (HasFocus() && keyboard_focus_) {
     dc.SetBrush(*wxTRANSPARENT_BRUSH);
     dc.SetPen(wxPen(Colour(semantic), FromDIP(2)));
     dc.DrawRoundedRectangle(FromDIP(2), FromDIP(2), size.x-FromDIP(4), size.y-FromDIP(4), FromDIP(8));
@@ -300,7 +307,7 @@ void XNavButton::Paint(wxPaintEvent&) {
   }
   const auto text_color = opacity(ink);
   dc.SetTextForeground(text_color);
-  dc.SetFont(UiFontWeight(*this, 12, 500));
+  dc.SetFont(UiFontWeight(*this, role_ == ButtonRole::Segment ? 10 : 12, 500));
   if (floating_ && icon_ == XNavIcon::Compass) {
     const int center = size.x / 2;
     const auto label = GetLabel();

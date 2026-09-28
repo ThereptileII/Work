@@ -1,5 +1,14 @@
 # Native prototype shell migration — not accepted
 
+Replacement review, remote `e51a7df` / local `37b36dc`: downloaded native
+navigation Day and XNav/Standard public ENC Night images show the floating
+controls painted above the chart. Exact geometry and actual pointer zoom gates
+pass. Day/Dusk/Night/Day snapshots agree with the requested state and all main
+processes exit normally. The earlier absent-control and capture-timing defects
+are closed. Font/rail hierarchy, primary sheets, stock label density and weak
+Night hazard contrast remain visible differences; no screen gains acceptance.
+See [verified Windows evidence](../../evidence/prototype-native-e51a7df.json).
+
 Reference intent: exact 68px header, 80px left navigation, 186px persistent
 rail, 132px horizon and 34px footer. Existing OpenCPN canvas stays in its own
 parent/AUI pane. Navigation controls float on the chart; prototype SVG icon

@@ -92,9 +92,44 @@ tests pass on each platform and the native integrated suite passes 102 tests.
 The buffered TLS receive correction now passes all 18 adversarial transport
 scenarios and the actual provider lifecycle on Linux and native Windows at
 `ea869a9`. See [downloaded replacement evidence](evidence/prototype-native-ea869a9.json).
-Pending: settings, chart/card wiring,
-full native product regressions and live boat gates. **The product does not yet connect to AISStream.**
-No configured key, live target count or network acceptance is claimed.
+The fixture-free XNav product now constructs the client only behind the XNav
+startup gate. It copies the already-computed primary viewport on the normal
+application tick; opening a panel does not update target observation times.
+Legacy and Safe do not construct it. Replay/fixture operation stops it. Normal
+close destroys the panel, then stops/joins the worker before releasing settings.
+The native Traffic drawer presents the owned combined display, while SmartNav,
+alarms and onboard receiver health continue to consume onboard-only state.
+Online target positions are not inserted into OpenCPN's decoder or CPA model.
+
+Traffic → Online AIS settings provides explicit OFF/Enabled and, on Windows,
+masked key entry/removal. Only the enabled preference enters wxFileConfig;
+the key goes directly to the bounded credential adapter. Runtime diagnostics
+contain status enums, counters, confirmation and a presence flag, never secret
+text. Update/repair leave the per-user credential entry intact. Uninstall
+preserves it for reinstall; Remove key explicitly deletes it and stops online
+traffic. Linux development remains environment-only.
+
+Pending: online chart overlay/hit testing, full native product regressions and
+live boat gates. No configured product key, live target count or successful
+service connection is claimed. Local loopback transport tests are not a live
+AISStream acceptance result.
+
+The application-thread settings boundary now has ten integrated tests with fake
+credentials and a controllable provider. Construction/default settings do not
+connect. Saved opt-in still requires a valid copied current viewport and live
+(not replay/fixture) operation. Invalid areas cannot retain an old subscription.
+OFF stops networking even if saving the preference fails; the user receives an
+explicit persistence error. Credentials never enter wxFileConfig. Failed key
+removal leaves networking disabled; all preference/credential mutations reject
+worker-thread access. The existing marine/integration suite plus these tests
+passes 120/120 on Linux in development; native replacement evidence is pending.
+
+Pinned `ViewPort::SetBoxes` produces ordered LLBBox longitudes which can be
+unwrapped across ±180°. The bridge normalization retains that span (including
+the full-world case), then hands copied bounds to the existing antimeridian
+subscription policy. Tests use the pinned LLBBox implementation and reject
+invalid, nonfinite and overflow geometry. This is geographic filtering only;
+no route, bearing, range or collision calculation is introduced.
 
 The current [service documentation](https://aisstream.io/documentation) was
 rechecked on September 28: binary UTF-8 JSON, prompt full subscription,

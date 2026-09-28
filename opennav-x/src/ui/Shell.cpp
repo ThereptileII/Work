@@ -435,6 +435,7 @@ Shell::~Shell() {
   timer_.Stop();
   context_lifetime_.reset();
   CloseContext();
+  if (ais_drawer_) { ais_drawer_->Dismiss(); ais_drawer_->Destroy(); ais_drawer_ = nullptr; }
   for (const auto &c : commands_)
     frame_.Unbind(wxEVT_MENU, &Shell::OnCommand, this, c.first);
   frame_.SetAcceleratorTable(wxNullAcceleratorTable);
@@ -643,6 +644,11 @@ void Shell::Tick() {
                           ? actions_.commissioning->ReadReplay(wall_now)
                           : std::optional<diagnostics::ReplayView>{};
   const auto now = replay ? replay->now : wall_now;
+  // Observe bounds on the application thread. Reading or opening a sheet
+  // cannot rejuvenate the provider's retained target observations.
+  if (actions_.online_ais_tick) actions_.online_ais_tick(!replay && !simulation_);
+  online_ais_state_ = actions_.online_ais.read
+      ? actions_.online_ais.read(wall_now) : application::OnlineAisState{};
   if (replay)
     state_ = replay->state;
   #if XNAV_ENABLE_TEST_FIXTURES
@@ -721,9 +727,12 @@ void Shell::Tick() {
       p.sources = actions_.source_health();
     if (actions_.radar && !replay)
       p.radar = actions_.radar();
-    ais_state_ = p.ais;
+    // Online traffic is display-only. SmartNav, alarms and receiver health
+    // below continue to consume OpenCPN's original onboard state.
+    ais_state_ = !simulation_ && !replay
+        ? ais::Aggregate(p.ais, online_ais_state_.feed).display : p.ais;
     if (state_.simulated || state_.replayed) ais_selection_.Clear();
-    else ais_selection_.Observe(p.ais, now);
+    else ais_selection_.Observe(ais_state_, now);
     p.advice = smartnav::Advise(state_, energy, p.ais, now);
     alerts_.Observe({state_, p.ais, p.anchor, energy, p.pilot, now});
     p.alerts = alerts_.Current();
@@ -742,6 +751,10 @@ void Shell::Tick() {
     product_->Update(p, mode_);
   }
   XNAV_TEST_UI_TRACE("tick.product", metrics_.ticks);
+  if (ais_drawer_ && ais_drawer_->IsShown()) {
+    ais_drawer_->Update(ais_state_, online_ais_state_, now, mode_);
+    ais_drawer_->Present(DrawerWorkspace());
+  }
   UpdateRail(config.data_rail, now);
   horizon_->Update(state_,field_snapshot_.advice,now,mode_);
   PlaceChartControls();
@@ -868,6 +881,7 @@ void Shell::UpdateScrollControls() {
 }
 
 std::string Shell::PageTitle() const {
+  if (ais_drawer_ && ais_drawer_->IsShown()) return "AIS targets";
   if (product_ && product_->IsShown())
     return product_->PageTitle();
   if (page_ && page_->IsShown())
@@ -908,6 +922,7 @@ void Shell::SelectDemo(vessel::DemoScenario scenario) {
 #endif
 void Shell::ShowNavigation() {
   CloseContext();
+  if (ais_drawer_) ais_drawer_->Dismiss();
   // Re-entering the already-visible chart needs no pane layout. A needless
   // canvas resize schedules OpenCPN's delayed frame-focus recapture and also
   // redraws the chart below the newly opened context card.
@@ -937,6 +952,8 @@ void Shell::ShowNavigation() {
   frame_.Refresh();
 }
 void Shell::ShowProduct(ProductPage page) {
+  if (page == ProductPage::Ais) { ShowTraffic(); return; }
+  if (ais_drawer_) ais_drawer_->Dismiss();
   ShowPage(PreviewPage::Route);
   manager_.GetPane(page_).Hide();
   manager_.GetPane(product_).Show();
@@ -977,28 +994,39 @@ void Shell::ShowObject(const std::string &id, bool route) {
   if (context_) { context_->Show(); context_->Raise(); UpdateContext(vessel::Clock::now()); }
 }
 void Shell::ShowAis(int mmsi) {
+  ShowTraffic(mmsi);
+}
+wxRect Shell::DrawerWorkspace() const {
+  const auto size = frame_.GetClientSize();
+  const int left = frame_.FromDIP(prototype::navigation), top = frame_.FromDIP(prototype::top);
+  return {frame_.ClientToScreen({left, top}),
+      wxSize(size.x-left-frame_.FromDIP(prototype::rail), size.y-top-frame_.FromDIP(prototype::footer))};
+}
+void Shell::ShowTraffic(int mmsi) {
   ShowNavigation();
-  context_mmsi_ = mmsi;
-  const std::weak_ptr<int> lifetime = context_lifetime_;
-  context_ = new XNavContextCard(frame_, ContextKind::Ais,
-      [this, lifetime, mmsi](ContextAction action, std::optional<application::Waypoint>) {
-    if (lifetime.expired()) return;
-    if (action == ContextAction::Details) {
-      ShowProduct(ProductPage::Ais); product_->ShowAis(mmsi, mode_); Tick();
-    } else if (action == ContextAction::ShowAis) {
+  if (!ais_drawer_) {
+    const std::weak_ptr<int> lifetime = context_lifetime_;
+    ais_drawer_ = new XNavAisDrawer(frame_, actions_.online_ais, [this, lifetime](int id) {
+      if (lifetime.expired()) return;
       application::CommandResult result{false, "Target position unavailable or stale"};
-      if (!state_.simulated && !state_.replayed && actions_.navigation.view_ais &&
-          ais_selection_.Select(mmsi, ais_state_, vessel::Clock::now()))
-        result = actions_.navigation.view_ais(mmsi);
+      if (!state_.simulated && !state_.replayed &&
+          ais_selection_.Select(id, ais_state_, vessel::Clock::now())) {
+        for (const auto &target : ais_state_.targets) if (target.mmsi == id) {
+          const auto &action = target.origin == vessel::AisOrigin::AisStreamOnline
+              ? actions_.view_online_ais : actions_.navigation.view_ais;
+          if (action) result = action(id);
+        }
+      }
       if (!result.ok) {
         ais_selection_.Clear();
         ConfirmSheet(frame_, mode_, "Unable to select target", wxString::FromUTF8(result.message), "Back");
       }
-      ShowNavigation();
-    }
-  });
-  UpdateContext(vessel::Clock::now());
-  if (context_) { context_->Show(); context_->Raise(); UpdateContext(vessel::Clock::now()); }
+    });
+  }
+  ais_drawer_->Update(ais_state_, online_ais_state_, vessel::Clock::now(), mode_);
+  if (mmsi > 0) ais_drawer_->Target(mmsi); else ais_drawer_->List();
+  ais_drawer_->Present(DrawerWorkspace());
+  Tick();
 }
 void Shell::CloseContext() {
   if (context_) context_->Dismiss();
@@ -1042,6 +1070,7 @@ void Shell::UpdateContext(vessel::Time now) {
 }
 void Shell::ShowPage(PreviewPage page) {
   CloseContext();
+  if (ais_drawer_) ais_drawer_->Dismiss();
   if (product_)
     manager_.GetPane(product_).Hide();
   if (navigation_visibility_.empty()) {
@@ -1153,7 +1182,10 @@ void Shell::PlaceChartControls() {
     else position={chart.x+frame_.FromDIP(28),chart.y+chart.height-size.y-frame_.FromDIP(37)};
     // A separate owned surface remains above both software and GL child
     // canvases without repeatedly raising the entire chart/application.
-    static_cast<XNavFloatingSurface *>(overlay)->Present(frame_.ClientToScreen(position));
+    const auto screen = frame_.ClientToScreen(position);
+    if (ais_drawer_ && ais_drawer_->IsShown() && ais_drawer_->GetScreenRect().Intersects(wxRect(screen,size)))
+      overlay->Hide();
+    else static_cast<XNavFloatingSurface *>(overlay)->Present(screen);
   }
 }
 

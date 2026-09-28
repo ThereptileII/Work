@@ -6,6 +6,7 @@
 #include "ui/ContextCard.h"
 #include "ui/Horizon.h"
 #include "ui/FloatingSurface.h"
+#include "ui/AisDrawer.h"
 #include "integration/BuildFeatures.h"
 #if XNAV_ENABLE_TEST_FIXTURES
 #include "vessel/DemoSource.h"
@@ -34,6 +35,9 @@ struct ShellActions {
   std::function<std::string()> chart_orientation;
   std::function<double()> chart_rotation;
   application::NavigationActions navigation;
+  application::OnlineAisActions online_ais;
+  std::function<void(bool)> online_ais_tick;
+  std::function<application::CommandResult(int)> view_online_ais;
   std::function<bool()> route_creating;
   std::function<adapters::PilotView(bool, vessel::Time)> pilot_tick;
   std::function<std::vector<adapters::PilotCommand>(bool)> pilot_log;
@@ -86,6 +90,10 @@ public:
   std::vector<ProductGeometry> ProductControls() const { return product_ && product_->IsShown() ? product_->ControlGeometry() : std::vector<ProductGeometry>{}; }
   std::vector<ProductGeometry> ProductRegions() const { return product_ && product_->IsShown() ? product_->RegionGeometry() : std::vector<ProductGeometry>{}; }
   std::vector<ProductGeometry> RailRegions() const;
+  std::optional<wxRect> DrawerRegion() const {
+    return ais_drawer_ && ais_drawer_->IsShown()
+        ? std::make_optional(ais_drawer_->GetScreenRect()) : std::nullopt;
+  }
   std::vector<ProductGeometry> InteractionControls() const;
   bool RouteCreationActive() const { return actions_.route_creating && actions_.route_creating(); }
   const char *LightName() const;
@@ -118,6 +126,8 @@ private:
   void ShowDemo();
   void ShowPage(PreviewPage page);
   void ShowNavigation();
+  void ShowTraffic(int mmsi = 0);
+  wxRect DrawerWorkspace() const;
   void OnCommand(wxCommandEvent &event);
   void StartDemo();
 #if XNAV_ENABLE_TEST_FIXTURES
@@ -126,6 +136,8 @@ private:
   wxString InputSummary() const;
   vessel::AisSelection ais_selection_;
   vessel::AisState ais_state_;
+  application::OnlineAisState online_ais_state_;
+  XNavAisDrawer *ais_drawer_ = nullptr;
   application::AlertCenter alerts_;
   wxPanel *alert_pane_ = nullptr;
   wxStaticText *alert_label_ = nullptr;

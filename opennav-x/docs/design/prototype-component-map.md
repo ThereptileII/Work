@@ -11,11 +11,11 @@ in [prototype conformance](prototype-conformance.md).
 | `.icon`, `.icon-btn` | `XNavIconButton` | Supplied vector path vocabulary; 22px, 1.65px round strokes |
 | `.nav-btn` | Native navigation control | Icon over label, selected strip and subtle mint background |
 | `.dashboard-card`, `.floating` | `XNavPainter` / card component | Distinct panel vs chart-floating surface, correct radius/shadow |
-| `.drawer`, `.drawer-head`, `.drawer-body` | `XNavSheet` / context host | 398/432px, overlay, bounded body scroll, one contextual return |
+| `.drawer`, `.drawer-head`, `.drawer-body` | `XNavDrawer` / `XNavAisDrawer` first migration | 398px AIS sheet, overlay, bounded body scroll, one contextual return; remaining sheets pending |
 | `.metric`, `.metric-value` | `XNavDataValue` / data rail | Four values, light 48px numbers; actual provenance/freshness |
 | `.status-dot`, `.tag` | Status indicator | Meaningful state color and text; no inferred connectivity |
 | `.toggle`, `.segment` | Native toggle / segmented control | Explicit selected state, keyboard input, unavailable semantics |
-| `.list-card`, `.suite-link`, `.row` | Native list row | Shared alignment, separation, focused action |
+| `.list-card`, `.suite-link`, `.row` | `XNavListView` / remaining list migrations | AIS list paints visible rows only, identity-bound selection; shared alignment and separation |
 | `.next-turn` | Navigation summary | Valid upstream progress and advisory turn only |
 | `.timeline`, `.timeline-event` | Navigation horizon | Owned SmartNav events, unavailable dependent events withheld |
 | `.critical-banner`, alert drawer | Alert layer | Does not displace rail or hide behind sheets |

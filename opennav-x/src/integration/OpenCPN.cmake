@@ -6,6 +6,7 @@ set(OPENNAV_BUILD_UI_COMPONENTS ON CACHE BOOL "" FORCE)
 set(OPENNAV_BUILD_TESTS OFF CACHE BOOL "" FORCE)
 add_subdirectory("${OPENNAV_ROOT}" "${CMAKE_BINARY_DIR}/opennav")
 target_sources(${PACKAGE_NAME} PRIVATE "${OPENNAV_ROOT}/src/integration/OpenCPNIntegration.cpp")
+target_sources(${PACKAGE_NAME} PRIVATE "${OPENNAV_ROOT}/src/integration/OnlineAis.cpp")
 target_sources(${PACKAGE_NAME} PRIVATE "${OPENNAV_ROOT}/src/integration/DashboardPresentation.cpp")
 # Only the bundled, source-pinned Dashboard opts into transient XNav
 # presentation. No third-party plugin ABI or normal upstream build is changed.
@@ -92,12 +93,15 @@ function(opennav_attach_route_tests)
       "${OPENNAV_ROOT}/tests/marine_decoder_upstream_tests.cpp"
       "${OPENNAV_ROOT}/tests/ais_clock_upstream_tests.cpp"
       "${OPENNAV_ROOT}/tests/settings_store_upstream_tests.cpp"
+      "${OPENNAV_ROOT}/tests/online_ais_settings_upstream_tests.cpp"
+      "${OPENNAV_ROOT}/src/integration/OnlineAis.cpp"
       "${OPENNAV_ROOT}/tests/recovery_store_upstream_tests.cpp"
       "${OPENNAV_ROOT}/src/integration/RecoveryStore.cpp"
       "${OPENNAV_ROOT}/src/integration/SettingsStore.cpp"
       "${OPENNAV_ROOT}/src/integration/OpenCPNRouteReader.cpp")
     target_include_directories(tests PRIVATE "${OPENNAV_ROOT}/src")
     target_link_libraries(tests PRIVATE opennav_integration opennav_marine opennav_application)
+    target_link_libraries(tests PRIVATE opennav_ais opennav_ais_credentials)
     if(LINUX AND TARGET ocpn::libudev)
       target_sources(tests PRIVATE "${OPENNAV_ROOT}/tests/serial_discovery_upstream_tests.cpp")
       foreach(symbol udev_new udev_unref udev_enumerate_new udev_enumerate_unref
@@ -124,6 +128,7 @@ endif()
 add_library(opennav_ais_runtime "${OPENNAV_ROOT}/src/ais/AisStreamProvider.cpp")
 target_link_libraries(opennav_ais_runtime PUBLIC opennav_ais_codec opennav_ais_credentials PRIVATE ocpn::ixwebsocket)
 target_compile_features(opennav_ais_runtime PUBLIC cxx_std_17)
+target_link_libraries(${PACKAGE_NAME} PRIVATE opennav_ais_runtime)
 if(OCPN_BUILD_TEST)
   add_executable(ais_provider_test_client "${OPENNAV_ROOT}/tests/ais_transport/provider_client.cpp"
     "${OPENNAV_ROOT}/src/ais/AisStreamProvider.cpp")

@@ -5,17 +5,23 @@
 
 namespace opennav::ais {
 class IAisCredentials;
+class IOnlineAisProvider : public IAisProvider {
+public:
+  virtual void SetEnabled(bool enabled) = 0;
+  virtual bool ObserveViewport(Viewport viewport) = 0;
+  virtual void CredentialChanged() = 0;
+};
 // Optional supplemental provider; constructing it never enables networking.
 // All callbacks stay on its worker boundary. Reads return retained-safe values.
-class AisStreamProvider final : public IAisProvider {
+class AisStreamProvider final : public IOnlineAisProvider {
 public:
   AisStreamProvider();
   ~AisStreamProvider() override;
   AisStreamProvider(const AisStreamProvider &) = delete;
   AisStreamProvider &operator=(const AisStreamProvider &) = delete;
-  void SetEnabled(bool enabled);
-  bool ObserveViewport(Viewport viewport);
-  void CredentialChanged();
+  void SetEnabled(bool enabled) override;
+  bool ObserveViewport(Viewport viewport) override;
+  void CredentialChanged() override;
   ProviderSnapshot Read(vessel::Time now) const override;
 #ifdef OPENNAV_AIS_TEST_TRANSPORT
   // Compiled exclusively into a dedicated loopback integration test driver.

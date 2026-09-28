@@ -20,6 +20,8 @@
 #include "integration/RuntimeDiagnostics.h"
 #include "integration/SettingsStore.h"
 #include "integration/ChartPresentation.h"
+#include "integration/OnlineAis.h"
+#include "integration/AisViewport.h"
 #include "integration/StartupMode.h"
 #if XNAV_ENABLE_TEST_FIXTURES
 #include "adapters/SimulatedAutopilot.h"
@@ -91,6 +93,7 @@ bool demo = false;
 std::string route_test_profile,object_test_profile;
 #endif
 std::unique_ptr<ui::Shell> shell;
+std::unique_ptr<integration::OnlineAis> online_ais;
 std::shared_ptr<diagnostics::Commissioning> commissioning;
 std::unique_ptr<NavigationBridge> navigation;
 std::unique_ptr<integration::MarineBridge> marine;
@@ -397,6 +400,66 @@ void Attach(MyFrame& frame, wxAuiManager& manager, wxFileConfig& config) {
         return std::string{};
       });
   actions.commissioning = commissioning;
+  // Construct only after the XNav gate. Legacy and Safe never start this
+  // optional internet client. Its default and first-install preference are OFF.
+  online_ais = std::make_unique<integration::OnlineAis>(config,
+      ais::CreateAisCredentials(), std::make_unique<ais::AisStreamProvider>());
+  actions.online_ais.read = [](vessel::Time now) {
+    application::OnlineAisState value;
+    if (!online_ais) return value;
+    value.enabled = online_ais->Enabled();
+    value.credential_present = online_ais->CredentialPresent();
+#ifdef __WXMSW__
+    value.credential_writable = true;
+#endif
+    value.feed = online_ais->Read(now);
+    return value;
+  };
+  actions.online_ais.enable = [](bool enabled) {
+    return online_ais ? online_ais->Enable(enabled)
+        : application::CommandResult{false, "Online AIS unavailable during shutdown"};
+  };
+  actions.online_ais.store_key = [](const ais::Secret &key) {
+    return online_ais ? online_ais->StoreKey(key)
+        : application::CommandResult{false, "Credential storage unavailable during shutdown"};
+  };
+  actions.online_ais.remove_key = [] {
+    return online_ais ? online_ais->RemoveKey()
+        : application::CommandResult{false, "Credential storage unavailable during shutdown"};
+  };
+  actions.online_ais_tick = [&frame](bool live_allowed) {
+    if (!online_ais) return;
+    auto *canvas = frame.GetPrimaryCanvas();
+    std::optional<ais::Viewport> copied;
+    if (canvas) {
+      // ViewPort::SetBoxes already ran in normal OpenCPN processing. Read its
+      // ordered, possibly unwrapped bbox without invoking navigation getters.
+      auto &vp = canvas->GetVP();
+      const auto &box = vp.GetBBox();
+      copied = integration::AisViewport(vp.IsValid() && box.GetValid(),
+          box.GetMinLat(), box.GetMaxLat(), box.GetMinLon(), box.GetMaxLon());
+    }
+    online_ais->ObserveViewport(copied, live_allowed && !restart &&
+        (!commissioning || !commissioning->Replaying()));
+  };
+  actions.view_online_ais = [&frame](int mmsi) {
+    if (!online_ais || !host || restart || (commissioning && commissioning->Replaying()))
+      return application::CommandResult{false, "Live AIS chart selection unavailable"};
+    const auto now = vessel::Clock::now();
+    const auto feeds = ais::Aggregate(
+        integration::CopyAisState(selected_navigation.navigation, now), online_ais->Read(now));
+    vessel::AisSelection selection;
+    if (!selection.Select(mmsi, feeds.display, now))
+      return application::CommandResult{false, "Target position unavailable, ambiguous or stale"};
+    auto *canvas = frame.GetPrimaryCanvas();
+    if (canvas) for (const auto &t : feeds.display.targets)
+      if (t.mmsi == mmsi && t.origin == vessel::AisOrigin::AisStreamOnline) {
+        frame.JumpToPosition(canvas, *t.latitude_deg.value, *t.longitude_deg.value, canvas->GetVPScale());
+        frame.InvalidateAllGL(); frame.RefreshAllCanvas(false);
+        return application::CommandResult{true, "Selected supplemental internet position"};
+      }
+    return application::CommandResult{false, "Target or chart changed; select it again"};
+  };
   actions.settings = [] { return settings->Read(); };
   actions.settings_status = [] { return settings->Status(); };
   actions.chart_style_status = integration::ChartPresentationStatus;
@@ -571,6 +634,18 @@ void Attach(MyFrame& frame, wxAuiManager& manager, wxFileConfig& config) {
     runtime["chart_presentation"]["requested"] = wxString(integration::XNavChartRequested() ? "XNav" : "Standard");
     runtime["test_fixtures"] = integration::TestFixturesEnabled();
     runtime["build_purpose"] = wxString::FromUTF8(integration::BuildPurpose().data());
+    if (online_ais) {
+      const auto copy = online_ais->Read(now);
+      auto &health = runtime["online_ais"];
+      health["enabled"] = online_ais->Enabled();
+      health["credential_present"] = online_ais->CredentialPresent();
+      health["connection_state"] = static_cast<int>(copy.health.connection);
+      health["subscription_confirmed"] = copy.health.subscription_confirmed;
+      health["targets"] = static_cast<int>(copy.targets.targets.size());
+      health["accepted"] = wxString::Format("%llu", static_cast<unsigned long long>(copy.health.accepted));
+      health["rejected"] = wxString::Format("%llu", static_cast<unsigned long long>(copy.health.rejected));
+      health["reconnects"] = wxString::Format("%llu", static_cast<unsigned long long>(copy.health.reconnects));
+    }
 #if XNAV_ENABLE_TEST_FIXTURES
     // Copied wxAUI state for the isolated plugin-workspace regression.
     runtime["test_workspace_perspective"] = manager.SavePerspective();
@@ -595,6 +670,12 @@ void Attach(MyFrame& frame, wxAuiManager& manager, wxFileConfig& config) {
       runtime["display"]["product_regions"]=geometry(shell->ProductRegions());
       runtime["display"]["rail_regions"]=geometry(shell->RailRegions());
       runtime["display"]["interaction_controls"]=geometry(shell->InteractionControls());
+      if (const auto drawer = shell->DrawerRegion()) {
+        runtime["display"]["drawer"]["x"] = drawer->x;
+        runtime["display"]["drawer"]["y"] = drawer->y;
+        runtime["display"]["drawer"]["width"] = drawer->width;
+        runtime["display"]["drawer"]["height"] = drawer->height;
+      }
       runtime["display"]["route_creation_active"]=shell->RouteCreationActive();
       const auto chart_bounds=frame.GetPrimaryCanvas()->GetScreenRect();
       runtime["display"]["chart_region"]["x"]=chart_bounds.x;
@@ -850,6 +931,7 @@ bool PrepareClose(wxFileConfig& config) {
   route_progress.reset();
   integration::FinishDashboardPresentation();
   shell.reset();
+  online_ais.reset(); // Stop/join worker before configuration/host teardown.
   commissioning.reset();
   settings.reset();
   pilots.reset();anchor_state={};

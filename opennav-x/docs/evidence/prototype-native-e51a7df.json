@@ -1,0 +1,64 @@
+{
+  "stageAccepted": false,
+  "localCommit": "37b36dcc2c40216b6e8e2044b88aa05b8d49cf53",
+  "remoteCommit": "e51a7df073cc36de3758a7eddae47b0e1e0c0a7a",
+  "mappedSourceBlobsVerified": 1014,
+  "run": "https://github.com/ThereptileII/Work/actions/runs/36461056803",
+  "downloadedArtifacts": [
+    {
+      "id": 10988480226,
+      "name": "prototype-ais-foundation-Windows-e51a7df073cc36de3758a7eddae47b0e1e0c0a7a",
+      "sha256": "6577474e2e39d682297d87f212249c1fb00cd8445be8f8b07e11f29ba28fe296",
+      "bytes": 659,
+      "zipCrc": true
+    },
+    {
+      "id": 10988196142,
+      "name": "prototype-ais-foundation-Linux-e51a7df073cc36de3758a7eddae47b0e1e0c0a7a",
+      "sha256": "7333b91e48a9044446472403e2945d008b152f48b04e7e22c7363126ad76de74",
+      "bytes": 659,
+      "zipCrc": true
+    },
+    {
+      "id": 10988161406,
+      "name": "prototype-ais-network-Linux-e51a7df073cc36de3758a7eddae47b0e1e0c0a7a",
+      "sha256": "eee5f705551afb9723dd15a7528040ab0d51a263961b7bb83713321d51c49ed5",
+      "bytes": 735,
+      "zipCrc": true
+    },
+    {
+      "id": 10987478807,
+      "name": "prototype-native-Windows-e51a7df073cc36de3758a7eddae47b0e1e0c0a7a",
+      "sha256": "a154e98997e8d9352c845999c4c57d34b0924d174105cf69901347ac0cd1b82e",
+      "bytes": 10741947,
+      "zipCrc": true
+    }
+  ],
+  "junit": [
+    {
+      "file": "prototype-ais-foundation-Linux-e51a7df073cc36de3758a7eddae47b0e1e0c0a7a/ais-foundation.xml",
+      "tests": 6,
+      "failures": 0
+    },
+    {
+      "file": "prototype-ais-foundation-Windows-e51a7df073cc36de3758a7eddae47b0e1e0c0a7a/ais-foundation.xml",
+      "tests": 6,
+      "failures": 0
+    },
+    {
+      "file": "prototype-native-Windows-e51a7df073cc36de3758a7eddae47b0e1e0c0a7a/windows-production-tests.xml",
+      "tests": 102,
+      "failures": 0
+    }
+  ],
+  "captures": [],
+  "windowsBuild": "Native fixture-free Win32 MSVC passed",
+  "transport": "18 hostile TLS scenarios and actual provider lifecycle pass on Linux and Windows",
+  "resources": "369 integrity and semantic preservation checks pass",
+  "windowsCaptureResult": "Actual controls paint and pointer zoom changes upstream scale. Coastline and public ENC retain content through observed Day/Dusk/Night/Day. All three main processes exit normally.",
+  "visualReview": "Native navigation and XNav/Standard ENC Night images reviewed. Controls visible; old AIS full-page implementation, typography, rail composition, stock ENC label density and Night hazard contrast remain mismatches.",
+  "linuxDevelopment": "75 portable cases pass; exact 37b36 build and software/OpenGL captures pass. The intended exact-commit integrated ctest used the wrong root and discovered no tests; it is not credited. Subsequent controller working tree passes 120 at the correct /test path.",
+  "visualAcceptance": false,
+  "boatAcceptance": false,
+  "liveAISAcceptance": false
+}
