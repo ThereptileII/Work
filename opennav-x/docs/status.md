@@ -28,8 +28,10 @@ reference/current/diff sets retain visible mismatches without masks or broad
 similarity tolerances. The actual coastline canvas remains stock presentation.
 The integrated build at local `545feca` passed 110/110 tests; the first run
 conflicted with the simultaneous capture on upstream's fixed REST port, so the
-complete gate and captures were repeated serially. New native Windows product
-capture/build gates are being prepared. No screen is accepted; see
+complete gate and captures were repeated serially. Native Win32 MSVC compilation and 102/102 integrated unit regressions also
+pass at remote `8357239` (local `a6a9259`). Its eight captures exposed occluded
+chart controls; the capture job failed during secondary command-line quit.
+Follow-up z-order/shutdown fixes await replacement native evidence. No screen is accepted; see
 [conformance](design/prototype-conformance.md) and the
 [review log](design/reviews/prototype-native-shell-in-progress.md).
 
@@ -38,8 +40,11 @@ aging, bounded viewport subscriptions and reconnect policy. The foundation
 passed native Win32 MSVC and Linux tests at `087318c`; downloaded JUnit artifacts
 verify ([evidence](evidence/prototype-ais-foundation-087318c.json)). Its pure JSON
 codec adds 100 deterministic checks; the portable suite now passes 73/73.
-Transport, credential storage, product wiring and live AIS acceptance remain
-pending. No service connection or target count is claimed.
+The protected Windows credential adapter and Linux environment-only adapter
+are implemented; credential tests pass locally and await native qualification.
+The opt-in bounded TLS/compressed WebSocket boundary passes 17 Linux loopback
+adversarial scenarios; native qualification is pending. Provider runtime, product
+wiring and live AIS acceptance remain pending. No service connection or target count is claimed.
 
 XNav-owned S-52 presentation remains under inspection. AISStream must not
 inherit the local Signal K client's disabled TLS validation. The prototype's

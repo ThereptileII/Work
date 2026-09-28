@@ -532,3 +532,31 @@ after normal perspective loading; later owned-manager perspective loads use the
 same layout scope. Close restores state before the shell and upstream persistence.
 No sensor, route or hardware behavior changes. Legacy follows normal Dashboard
 behavior. [Rationale, test changes and pending Windows/boat gate](design/reviews/beta2-plugin-workspace.md).
+
+### Supplemental internet AIS: opt-in IXWebSocket receive limits
+
+`opencpn-5.12.4-ais-transport.patch` extends the pinned bundled IXWebSocket
+client with `setUntrustedClientLimits`. Existing callers retain zero/default
+limits and their existing behavior. The AIS internet client will opt into a
+64KiB wire/decompressed-message limit, 256-fragment bound, bounded receive
+buffer, 4KiB HTTP status line, 16KiB aggregate headers and redirect refusal.
+The inflater checks its output budget before appending. Large advertised frame
+sizes are rejected before allocation, including on the supported Win32 ABI.
+
+Files changed are exclusively in `libs/IXWebSocket/ixwebsocket`: WebSocket and
+Transport configuration, Handshake/HTTP headers/Socket line-reading limits,
+and PerMessageDeflate/Codec output bounds. No plugin API, OpenCPN marine-data
+processing, chart state or navigation behavior changes. The public pinned
+client had no receive-size API, bounded inflater or redirect policy; a JSON
+parser size check alone would run after these allocations. Reusing its existing
+TLS and compression implementation avoids a second network stack. This is a
+moderate library merge risk; preserve defaults and re-run the local raw-server
+suite after any upstream update.
+
+`tests/ais_transport/network_tests.py` uses only a disposable loopback TLS server
+and generated test certificate. Seventeen scenarios cover valid binary,
+compression, exact boundary, oversized messages, inflation bomb, fragmented
+reports, empty-fragment flood, 32/64-bit advertised overflow, continuous traffic,
+HTTP bounds, redirects, untrusted certificate and hostname mismatch. Linux
+passes all 17 against the patched pinned library; native Windows qualification
+is pending. The dedicated client executable is never installed.

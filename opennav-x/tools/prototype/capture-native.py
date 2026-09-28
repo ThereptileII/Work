@@ -54,6 +54,7 @@ def main():
     if windows:
         record["desktop"] = ui.ensure_desktop(1440, 900)
     app = None
+    window = None
     log = (args.output / "launch.log").open("w")
 
     def xdo(*command):
@@ -103,6 +104,7 @@ def main():
         else:
             subprocess.run(["import", "-window", "root", str(path)], env=env, check=True)
         snapshot = data()
+        record["executable_build_commit"] = snapshot["build_commit"]
         (args.output / f"{name}.json").write_text(json.dumps(snapshot, indent=2) + "\n")
         record["captures"].append({"file": path.name, "sha256": hashlib.sha256(path.read_bytes()).hexdigest()})
 
@@ -151,8 +153,13 @@ def main():
         record["result"] = "captured; conformance not asserted"
     finally:
         if app and app.poll() is None:
-            subprocess.run([str(args.app), "--configdir", str(profile), "--remote", "--quit"],
-                           env=env, stdout=log, stderr=log, timeout=15, check=True)
+            if windows:
+                if not window:
+                    window, _ = ui.wait_window("OpenNav X / OpenCPN", app.pid, timeout=5)
+                ui.close(window)  # normal WM_CLOSE; same path as the window close button
+            else:
+                subprocess.run([str(args.app), "--configdir", str(profile), "--remote", "--quit"],
+                               env=env, stdout=log, stderr=log, timeout=15, check=True)
             try:
                 app.wait(timeout=30)
             except subprocess.TimeoutExpired:
@@ -160,11 +167,15 @@ def main():
                 app.kill()
                 app.wait()
                 raise RuntimeError("Disposable native review application did not exit cleanly")
+        if app:
+            record["exit_code"] = app.returncode
         log.close()
         if xserver:
             xserver.terminate()
             xserver.wait(timeout=10)
         (args.output / "capture.json").write_text(json.dumps(record, indent=2) + "\n")
+        if app and app.returncode != 0:
+            raise RuntimeError(f"Native application exit was not clean: {app.returncode}")
 
 
 if __name__ == "__main__":

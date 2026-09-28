@@ -11,6 +11,9 @@
 #include <wx/popupwin.h>
 #include <wx/sizer.h>
 #include <wx/textctrl.h>
+#ifdef __WXMSW__
+#include <windows.h>
+#endif
 
 #include <algorithm>
 #include <utility>
@@ -421,8 +424,6 @@ Shell::Shell(wxFrame &frame, wxAuiManager &manager, ShellActions actions,
 
 Shell::~Shell() {
   timer_.Stop();
-  for(auto *overlay : chart_overlays_) overlay->Destroy();
-  chart_overlays_.clear();
   context_lifetime_.reset();
   CloseContext();
   for (const auto &c : commands_)
@@ -442,6 +443,11 @@ Shell::~Shell() {
     pane->Destroy();
   }
   manager_.Update();
+  // ShowNavigation above still updates orientation and chart placement. Keep
+  // overlay children alive until that restoration is finished (MSW destroys
+  // child windows immediately, unlike GTK deferred deletion).
+  for (auto *overlay : chart_overlays_) overlay->Destroy();
+  chart_overlays_.clear();
 }
 
 bool Shell::OwnsPane(const wxWindow *window) const {
@@ -1112,10 +1118,12 @@ void Shell::ShowSystem() {
 
 void Shell::PlaceChartControls() {
   wxRect chart;
+  wxWindow *chart_window = nullptr;
   if (!page_->IsShown() && !product_->IsShown())
     for (const auto &name : actions_.navigation_panes) {
       const auto &pane=manager_.GetPane(name);
       if(pane.IsOk()&&pane.IsShown()&&pane.window) {
+        chart_window = pane.window;
         chart=wxRect(frame_.ScreenToClient(pane.window->GetScreenPosition()),pane.window->GetSize());break;
       }
     }
@@ -1127,7 +1135,18 @@ void Shell::PlaceChartControls() {
     if(overlay==chart_tools_)position={chart.GetRight()-size.x-frame_.FromDIP(22),chart.GetBottom()-size.y-frame_.FromDIP(38)};
     else if(overlay==chart_orientation_)position={chart.GetRight()-size.x-frame_.FromDIP(22),chart.y+frame_.FromDIP(22)};
     else position={chart.x+frame_.FromDIP(28),chart.GetBottom()-size.y-frame_.FromDIP(38)};
-    const bool changed=overlay->GetPosition()!=position||!overlay->IsShown();
+    bool changed=overlay->GetPosition()!=position||!overlay->IsShown();
+#ifdef __WXMSW__
+    // Upstream deferred canvas initialization can raise the chart after the
+    // first overlay layout. Repair z-order only when that canvas is above us.
+    for (HWND above = ::GetWindow(static_cast<HWND>(overlay->GetHandle()), GW_HWNDPREV);
+         above; above = ::GetWindow(above, GW_HWNDPREV)) {
+      if (chart_window && above == static_cast<HWND>(chart_window->GetHandle())) {
+        changed = true;
+        break;
+      }
+    }
+#endif
     if(overlay->GetPosition()!=position)overlay->Move(position);
     if(!overlay->IsShown())overlay->Show();
     if(changed)overlay->Raise();

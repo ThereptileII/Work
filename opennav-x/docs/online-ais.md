@@ -1,3 +1,8 @@
+# Online AIS implementation and security
+
+AISStream is supplemental traffic information; OpenCPN onboard AIS remains
+the navigation authority. Provider snapshots own their values and retain
+provenance. No socket, decoder or credential object crosses into Vessel Data.
 # Supplemental Online AIS — contract and implementation status
 
 Online AIS is an optional Internet input for chart/list presentation. It never
@@ -109,3 +114,23 @@ Complete subscription serialization includes required key/boxes and five useful
 message types, plus optional unique nine-digit MMSIs (maximum 200). The output
 contains a credential and must be sent/erased without logging. This codec is
 not a substitute for bounding the transport before allocation/decompression.
+
+## Credential boundary (implementation under qualification)
+
+The Windows adapter uses a per-user Generic Credential Manager entry named
+`OpenNavX/AISStream/v1`, persisted on this computer only. Readback verifies writes;
+removal verifies absence. Credential errors are fixed enum states, never Windows
+or server text containing request payloads. A move-only bounded secret clears its
+owned storage when moved, replaced or destroyed. Linux development reads only
+`AISSTREAM_API_KEY`; it does not save a plaintext fallback.
+
+Update/repair must leave this per-user entry untouched. Uninstall preserves it
+for reinstallation; an explicit Remove Key action will be the user-facing removal
+path. That settings action and the live transport are still pending: the current
+credential adapter is not yet reachable from the product UI. Diagnostic exports
+must not enumerate credentials, environment variables or subscription payloads.
+Do not collect raw process memory in ordinary diagnostic bundles.
+
+Native automated credential tests address only a unique `OpenNavX/Tests/AISStream/`
+entry, verify absence before creating it, and remove their own entry. The test
+factory is excluded from the production library. No real service key is needed.

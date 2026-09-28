@@ -231,7 +231,7 @@ void PreviewPanel::Paint(wxPaintEvent &) {
       p.Text("Passage estimate unavailable",inset+24,y+270,16,c.muted,false,left-48);
       p.Text(EnergyMessage(energy.arrival),inset+24,y+300,12,c.secondary,false,left-48);
     }
-    p.Text("At "+DestinationName(state_),rx+24,ry+24,12,c.secondary,false,right-48);
+    p.Text(distance?"At "+DestinationName(state_):wxString("At destination"),rx+24,ry+24,12,c.secondary,false,right-48);
     p.Text(arrival&&arrival->soc_percent?wxString::Format("%.0f",*arrival->soc_percent):Dash(),
            rx+24,ry+64,60,arrival?c.accent:c.muted,false,right-48);
     p.Text("% estimated",rx+90,ry+106,12,c.secondary);
@@ -240,7 +240,7 @@ void PreviewPanel::Paint(wxPaintEvent &) {
            "Reserve estimate unavailable",rx+24,ry+139,10,c.secondary,false,right-48);
     dc.SetPen(wxPen(Colour(c.border)));dc.SetBrush(wxBrush(Colour(c.selected)));
     dc.DrawRoundedRectangle(p.D(rx+24),p.D(ry+171),p.D(right-48),p.D(72),p.D(8));
-    const auto advisory_color=arrival&&arrival->below_reserve?c.attention:c.accent;
+    const auto advisory_color=!arrival?c.muted:arrival->below_reserve?c.attention:c.accent;
     dc.SetPen(wxPen(Colour(advisory_color),p.D(2)));
     dc.DrawLine(p.D(rx+25),p.D(ry+171),p.D(rx+25),p.D(ry+243));
     p.Text(arrival?(arrival->below_reserve?"Energy below your reserve":"Estimated energy margin"):

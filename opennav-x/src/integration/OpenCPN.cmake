@@ -112,3 +112,11 @@ function(opennav_attach_route_tests)
   endif()
 endfunction()
 cmake_language(DEFER DIRECTORY "${CMAKE_SOURCE_DIR}" CALL opennav_attach_route_tests)
+
+# Local adversarial internet-client tests use the actual patched bundled library.
+# This driver is never installed or included in product packages.
+if(OCPN_BUILD_TEST)
+  add_executable(ais_transport_test_client "${OPENNAV_ROOT}/tests/ais_transport/client.cpp")
+  target_link_libraries(ais_transport_test_client PRIVATE ocpn::ixwebsocket)
+  target_compile_features(ais_transport_test_client PRIVATE cxx_std_17)
+endif()

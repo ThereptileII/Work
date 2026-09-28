@@ -1,0 +1,429 @@
+diff --git i/libs/IXWebSocket/ixwebsocket/IXSocket.cpp w/libs/IXWebSocket/ixwebsocket/IXSocket.cpp
+index af604fa5b..03ab0f586 100644
+--- i/libs/IXWebSocket/ixwebsocket/IXSocket.cpp
++++ w/libs/IXWebSocket/ixwebsocket/IXSocket.cpp
+@@ -376,7 +376,7 @@ namespace ix
+     }
+ 
+     std::pair<bool, std::string> Socket::readLine(
+-        const CancellationRequest& isCancellationRequested)
++        const CancellationRequest& isCancellationRequested, size_t maxBytes)
+     {
+         char c;
+         std::string line;
+@@ -390,6 +390,7 @@ namespace ix
+                 return std::make_pair(false, line);
+             }
+ 
++            if (maxBytes && line.size() >= maxBytes) return {false, std::string()};
+             line += c;
+         }
+ 
+diff --git i/libs/IXWebSocket/ixwebsocket/IXSocket.h w/libs/IXWebSocket/ixwebsocket/IXSocket.h
+index b4d02a2ce..1623779ec 100644
+--- i/libs/IXWebSocket/ixwebsocket/IXSocket.h
++++ w/libs/IXWebSocket/ixwebsocket/IXSocket.h
+@@ -71,7 +71,7 @@ namespace ix
+         bool readByte(void* buffer, const CancellationRequest& isCancellationRequested);
+         bool writeBytes(const std::string& str, const CancellationRequest& isCancellationRequested);
+ 
+-        std::pair<bool, std::string> readLine(const CancellationRequest& isCancellationRequested);
++        std::pair<bool, std::string> readLine(const CancellationRequest& isCancellationRequested, size_t maxBytes = 0);
+         std::pair<bool, std::string> readBytes(size_t length,
+                                                const OnProgressCallback& onProgressCallback,
+                                                const OnChunkCallback& onChunkCallback,
+diff --git i/libs/IXWebSocket/ixwebsocket/IXWebSocket.cpp w/libs/IXWebSocket/ixwebsocket/IXWebSocket.cpp
+index 1a879a780..5c1694d33 100644
+--- i/libs/IXWebSocket/ixwebsocket/IXWebSocket.cpp
++++ w/libs/IXWebSocket/ixwebsocket/IXWebSocket.cpp
+@@ -91,6 +91,12 @@ namespace ix
+         _perMessageDeflateOptions = perMessageDeflateOptions;
+     }
+ 
++    void WebSocket::setUntrustedClientLimits(size_t maxMessageBytes)
++    {
++        std::lock_guard<std::mutex> lock(_configMutex);
++        _untrustedClientLimit = maxMessageBytes;
++    }
++
+     void WebSocket::setTLSOptions(const SocketTLSOptions& socketTLSOptions)
+     {
+         std::lock_guard<std::mutex> lock(_configMutex);
+@@ -203,7 +209,8 @@ namespace ix
+         {
+             std::lock_guard<std::mutex> lock(_configMutex);
+             _ws.configure(
+-                _perMessageDeflateOptions, _socketTLSOptions, _enablePong, _pingIntervalSecs);
++                _perMessageDeflateOptions, _socketTLSOptions, _enablePong, _pingIntervalSecs,
++                _untrustedClientLimit);
+         }
+ 
+         WebSocketHttpHeaders headers(_extraHeaders);
+@@ -260,7 +267,8 @@ namespace ix
+         {
+             std::lock_guard<std::mutex> lock(_configMutex);
+             _ws.configure(
+-                _perMessageDeflateOptions, _socketTLSOptions, _enablePong, _pingIntervalSecs);
++                _perMessageDeflateOptions, _socketTLSOptions, _enablePong, _pingIntervalSecs,
++                _untrustedClientLimit);
+         }
+ 
+         WebSocketInitResult status =
+diff --git i/libs/IXWebSocket/ixwebsocket/IXWebSocket.h w/libs/IXWebSocket/ixwebsocket/IXWebSocket.h
+index 7adfe1662..c74158eae 100644
+--- i/libs/IXWebSocket/ixwebsocket/IXWebSocket.h
++++ w/libs/IXWebSocket/ixwebsocket/IXWebSocket.h
+@@ -54,6 +54,10 @@ namespace ix
+         void setPerMessageDeflateOptions(
+             const WebSocketPerMessageDeflateOptions& perMessageDeflateOptions);
+         void setTLSOptions(const SocketTLSOptions& socketTLSOptions);
++        // Opt-in internet-client boundary. Set before start(): max wire/inflated
++        // message, <=256 fragments, 16KiB headers, 4KiB status, no redirects.
++        // Zero preserves existing clients. This does not relax TLS verification.
++        void setUntrustedClientLimits(size_t maxMessageBytes);
+         void setPingMessage(const std::string& sendMessage,
+                             SendMessageKind pingType = SendMessageKind::Ping);
+         void setPingInterval(int pingIntervalSecs);
+@@ -140,6 +144,7 @@ namespace ix
+         std::string _url;
+         WebSocketHttpHeaders _extraHeaders;
+ 
++        size_t _untrustedClientLimit = 0;
+         WebSocketPerMessageDeflateOptions _perMessageDeflateOptions;
+ 
+         SocketTLSOptions _socketTLSOptions;
+diff --git i/libs/IXWebSocket/ixwebsocket/IXWebSocketHandshake.cpp w/libs/IXWebSocket/ixwebsocket/IXWebSocketHandshake.cpp
+index 206b07903..29f34d5bd 100644
+--- i/libs/IXWebSocket/ixwebsocket/IXWebSocketHandshake.cpp
++++ w/libs/IXWebSocket/ixwebsocket/IXWebSocketHandshake.cpp
+@@ -25,12 +25,13 @@ namespace ix
+         std::unique_ptr<Socket>& socket,
+         WebSocketPerMessageDeflatePtr& perMessageDeflate,
+         WebSocketPerMessageDeflateOptions& perMessageDeflateOptions,
+-        std::atomic<bool>& enablePerMessageDeflate)
++        std::atomic<bool>& enablePerMessageDeflate, bool boundedClient)
+         : _requestInitCancellation(requestInitCancellation)
+         , _socket(socket)
+         , _perMessageDeflate(perMessageDeflate)
+         , _perMessageDeflateOptions(perMessageDeflateOptions)
+         , _enablePerMessageDeflate(enablePerMessageDeflate)
++        , _boundedClient(boundedClient)
+     {
+     }
+ 
+@@ -151,7 +152,7 @@ namespace ix
+         }
+ 
+         // Read HTTP status line
+-        auto lineResult = _socket->readLine(isCancellationRequested);
++        auto lineResult = _socket->readLine(isCancellationRequested, _boundedClient ? 4096 : 0);
+         auto lineValid = lineResult.first;
+         auto line = lineResult.second;
+ 
+@@ -176,7 +177,7 @@ namespace ix
+             return WebSocketInitResult(false, status, ss.str());
+         }
+ 
+-        auto result = parseHttpHeaders(_socket, isCancellationRequested);
++        auto result = parseHttpHeaders(_socket, isCancellationRequested, _boundedClient ? 16384 : 0);
+         auto headersValid = result.first;
+         auto headers = result.second;
+ 
+diff --git i/libs/IXWebSocket/ixwebsocket/IXWebSocketHandshake.h w/libs/IXWebSocket/ixwebsocket/IXWebSocketHandshake.h
+index a6bf2a158..819f706d4 100644
+--- i/libs/IXWebSocket/ixwebsocket/IXWebSocketHandshake.h
++++ w/libs/IXWebSocket/ixwebsocket/IXWebSocketHandshake.h
+@@ -27,7 +27,8 @@ namespace ix
+                            std::unique_ptr<Socket>& _socket,
+                            WebSocketPerMessageDeflatePtr& perMessageDeflate,
+                            WebSocketPerMessageDeflateOptions& perMessageDeflateOptions,
+-                           std::atomic<bool>& enablePerMessageDeflate);
++                           std::atomic<bool>& enablePerMessageDeflate,
++                           bool boundedClient = false);
+ 
+         WebSocketInitResult clientHandshake(const std::string& url,
+                                             const WebSocketHttpHeaders& extraHeaders,
+@@ -54,5 +55,6 @@ namespace ix
+         WebSocketPerMessageDeflatePtr& _perMessageDeflate;
+         WebSocketPerMessageDeflateOptions& _perMessageDeflateOptions;
+         std::atomic<bool>& _enablePerMessageDeflate;
++        bool _boundedClient;
+     };
+ } // namespace ix
+diff --git i/libs/IXWebSocket/ixwebsocket/IXWebSocketHttpHeaders.cpp w/libs/IXWebSocket/ixwebsocket/IXWebSocketHttpHeaders.cpp
+index 556343018..391e1df2a 100644
+--- i/libs/IXWebSocket/ixwebsocket/IXWebSocketHttpHeaders.cpp
++++ w/libs/IXWebSocket/ixwebsocket/IXWebSocketHttpHeaders.cpp
+@@ -13,12 +13,14 @@
+ namespace ix
+ {
+     std::pair<bool, WebSocketHttpHeaders> parseHttpHeaders(
+-        std::unique_ptr<Socket>& socket, const CancellationRequest& isCancellationRequested)
++        std::unique_ptr<Socket>& socket, const CancellationRequest& isCancellationRequested,
++        size_t maxBytes)
+     {
+         WebSocketHttpHeaders headers;
+ 
+         char line[1024];
+         int i;
++        size_t total = 0;
+ 
+         while (true)
+         {
+@@ -26,6 +28,7 @@ namespace ix
+ 
+             for (i = 0; i < 2 || (i < 1023 && line[i - 2] != '\r' && line[i - 1] != '\n'); ++i)
+             {
++                if (maxBytes && ++total > maxBytes) return {false, {}};
+                 if (!socket->readByte(line + i, isCancellationRequested))
+                 {
+                     return std::make_pair(false, headers);
+@@ -36,6 +39,8 @@ namespace ix
+                     colon = i;
+                 }
+             }
++            if (maxBytes && (line[i - 2] != '\r' || line[i - 1] != '\n'))
++                return {false, {}};
+             if (line[0] == '\r' && line[1] == '\n')
+             {
+                 break;
+diff --git i/libs/IXWebSocket/ixwebsocket/IXWebSocketHttpHeaders.h w/libs/IXWebSocket/ixwebsocket/IXWebSocketHttpHeaders.h
+index 7ba8c4efb..7300a08ec 100644
+--- i/libs/IXWebSocket/ixwebsocket/IXWebSocketHttpHeaders.h
++++ w/libs/IXWebSocket/ixwebsocket/IXWebSocketHttpHeaders.h
+@@ -19,5 +19,6 @@ namespace ix
+     using WebSocketHttpHeaders = std::map<std::string, std::string, CaseInsensitiveLess>;
+ 
+     std::pair<bool, WebSocketHttpHeaders> parseHttpHeaders(
+-        std::unique_ptr<Socket>& socket, const CancellationRequest& isCancellationRequested);
++        std::unique_ptr<Socket>& socket, const CancellationRequest& isCancellationRequested,
++        size_t maxBytes = 0);
+ } // namespace ix
+diff --git i/libs/IXWebSocket/ixwebsocket/IXWebSocketPerMessageDeflate.cpp w/libs/IXWebSocket/ixwebsocket/IXWebSocketPerMessageDeflate.cpp
+index d255f4907..51477e724 100644
+--- i/libs/IXWebSocket/ixwebsocket/IXWebSocketPerMessageDeflate.cpp
++++ w/libs/IXWebSocket/ixwebsocket/IXWebSocketPerMessageDeflate.cpp
+@@ -90,9 +90,9 @@ namespace ix
+         return _compressor->compress(in, out);
+     }
+ 
+-    bool WebSocketPerMessageDeflate::decompress(const std::string& in, std::string& out)
++    bool WebSocketPerMessageDeflate::decompress(const std::string& in, std::string& out, size_t maxOutputBytes)
+     {
+-        return _decompressor->decompress(in, out);
++        return _decompressor->decompress(in, out, maxOutputBytes);
+     }
+ 
+ } // namespace ix
+diff --git i/libs/IXWebSocket/ixwebsocket/IXWebSocketPerMessageDeflate.h w/libs/IXWebSocket/ixwebsocket/IXWebSocketPerMessageDeflate.h
+index 5d4cc385c..89c65093c 100644
+--- i/libs/IXWebSocket/ixwebsocket/IXWebSocketPerMessageDeflate.h
++++ w/libs/IXWebSocket/ixwebsocket/IXWebSocketPerMessageDeflate.h
+@@ -53,7 +53,7 @@ namespace ix
+         bool init(const WebSocketPerMessageDeflateOptions& perMessageDeflateOptions);
+         bool compress(const IXWebSocketSendData& in, std::string& out);
+         bool compress(const std::string& in, std::string& out);
+-        bool decompress(const std::string& in, std::string& out);
++        bool decompress(const std::string& in, std::string& out, size_t maxOutputBytes = 0);
+ 
+     private:
+         std::unique_ptr<WebSocketPerMessageDeflateCompressor> _compressor;
+diff --git i/libs/IXWebSocket/ixwebsocket/IXWebSocketPerMessageDeflateCodec.cpp w/libs/IXWebSocket/ixwebsocket/IXWebSocketPerMessageDeflateCodec.cpp
+index 0a52d4d48..271389c9f 100644
+--- i/libs/IXWebSocket/ixwebsocket/IXWebSocketPerMessageDeflateCodec.cpp
++++ w/libs/IXWebSocket/ixwebsocket/IXWebSocketPerMessageDeflateCodec.cpp
+@@ -206,7 +206,7 @@ namespace ix
+ #endif
+     }
+ 
+-    bool WebSocketPerMessageDeflateDecompressor::decompress(const std::string& in, std::string& out)
++    bool WebSocketPerMessageDeflateDecompressor::decompress(const std::string& in, std::string& out, size_t maxOutputBytes)
+     {
+ #ifdef IXWEBSOCKET_USE_ZLIB
+         //
+@@ -240,6 +240,12 @@ namespace ix
+                 return false; // zlib error
+             }
+ 
++            const size_t produced = _compressBuffer.size() - _inflateState.avail_out;
++            if (maxOutputBytes && produced > maxOutputBytes - out.size())
++            {
++                out.clear();
++                return false;
++            }
+             out.append(reinterpret_cast<char*>(&_compressBuffer.front()),
+                        _compressBuffer.size() - _inflateState.avail_out);
+         } while (_inflateState.avail_out == 0);
+diff --git i/libs/IXWebSocket/ixwebsocket/IXWebSocketPerMessageDeflateCodec.h w/libs/IXWebSocket/ixwebsocket/IXWebSocketPerMessageDeflateCodec.h
+index f613e5a26..0346e856d 100644
+--- i/libs/IXWebSocket/ixwebsocket/IXWebSocketPerMessageDeflateCodec.h
++++ w/libs/IXWebSocket/ixwebsocket/IXWebSocketPerMessageDeflateCodec.h
+@@ -51,7 +51,7 @@ namespace ix
+         ~WebSocketPerMessageDeflateDecompressor();
+ 
+         bool init(uint8_t inflateBits, bool clientNoContextTakeOver);
+-        bool decompress(const std::string& in, std::string& out);
++        bool decompress(const std::string& in, std::string& out, size_t maxOutputBytes = 0);
+ 
+     private:
+         int _flush;
+diff --git i/libs/IXWebSocket/ixwebsocket/IXWebSocketTransport.cpp w/libs/IXWebSocket/ixwebsocket/IXWebSocketTransport.cpp
+index ec25465ec..bf4f372d3 100644
+--- i/libs/IXWebSocket/ixwebsocket/IXWebSocketTransport.cpp
++++ w/libs/IXWebSocket/ixwebsocket/IXWebSocketTransport.cpp
+@@ -41,6 +41,7 @@
+ #include "IXUtf8Validator.h"
+ #include "IXWebSocketHandshake.h"
+ #include "IXWebSocketHttpHeaders.h"
++#include <algorithm>
+ #include <chrono>
+ #include <cstdarg>
+ #include <cstdlib>
+@@ -91,13 +92,16 @@ namespace ix
+         const WebSocketPerMessageDeflateOptions& perMessageDeflateOptions,
+         const SocketTLSOptions& socketTLSOptions,
+         bool enablePong,
+-        int pingIntervalSecs)
++        int pingIntervalSecs, size_t untrustedClientLimit)
+     {
+         _perMessageDeflateOptions = perMessageDeflateOptions;
+         _enablePerMessageDeflate = _perMessageDeflateOptions.enabled();
+         _socketTLSOptions = socketTLSOptions;
+         _enablePong = enablePong;
+         _pingIntervalSecs = pingIntervalSecs;
++        // Clamp opt-in configuration so limit + frame overhead cannot overflow
++        // on the supported 32-bit ABI. Existing unbounded users stay unchanged.
++        _untrustedClientLimit = std::min(untrustedClientLimit, size_t(16 * 1024 * 1024));
+     }
+ 
+     // Client
+@@ -107,6 +111,7 @@ namespace ix
+     {
+         std::lock_guard<std::mutex> lock(_socketMutex);
+ 
++        if (_untrustedClientLimit) { _rxbuf.clear(); _chunks.clear(); }
+         std::string protocol, host, path, query;
+         int port;
+         std::string remoteUrl(url);
+@@ -137,13 +142,16 @@ namespace ix
+                                                   _socket,
+                                                   _perMessageDeflate,
+                                                   _perMessageDeflateOptions,
+-                                                  _enablePerMessageDeflate);
++                                                  _enablePerMessageDeflate,
++                                                  _untrustedClientLimit != 0);
+ 
+             result = webSocketHandshake.clientHandshake(
+                 remoteUrl, headers, protocol, host, path, port, timeoutSecs);
+ 
+             if (result.http_status >= 300 && result.http_status < 400)
+             {
++                if (_untrustedClientLimit)
++                    return WebSocketInitResult(false, result.http_status, "Redirect refused");
+                 auto it = result.headers.find("Location");
+                 if (it == result.headers.end())
+                 {
+@@ -532,6 +540,12 @@ namespace ix
+                 ws.masking_key[3] = 0;
+             }
+ 
++            if (_untrustedClientLimit && ws.N > _untrustedClientLimit)
++            {
++                rejectUntrustedMessage();
++                return;
++            }
++
+             // Prevent integer overflow in the next conditional
+             const uint64_t maxFrameSize(1ULL << 63);
+             if (ws.N > maxFrameSize)
+@@ -606,6 +620,16 @@ namespace ix
+                     // the internal buffer which is slow and can let the internal OS
+                     // receive buffer fill out.
+                     //
++                    if (_untrustedClientLimit)
++                    {
++                        size_t size = frameData.size();
++                        for (const auto& chunk : _chunks) size += chunk.size();
++                        if (_chunks.size() >= 256 || size > _untrustedClientLimit)
++                        {
++                            rejectUntrustedMessage();
++                            return;
++                        }
++                    }
+                     _chunks.emplace_back(frameData);
+ 
+                     if (ws.fin)
+@@ -730,6 +754,8 @@ namespace ix
+             }
+ 
+             // Erase the message that has been processed from the input/read buffer
++            // A decompression bound may have closed/cleared the connection.
++            if (_untrustedClientLimit && _readyState == ReadyState::CLOSED) return;
+             _rxbuf.erase(_rxbuf.begin(), _rxbuf.begin() + ws.header_size + (size_t) ws.N);
+         }
+ 
+@@ -786,7 +812,13 @@ namespace ix
+         // When the RSV1 bit is 1 it means the message is compressed
+         if (compressedMessage && messageKind != MessageKind::FRAGMENT)
+         {
+-            bool success = _perMessageDeflate->decompress(message, _decompressedMessage);
++            bool success = _perMessageDeflate->decompress(message, _decompressedMessage,
++                                                          _untrustedClientLimit);
++            if (_untrustedClientLimit && !success)
++            {
++                rejectUntrustedMessage();
++                return;
++            }
+ 
+             if (messageKind == MessageKind::MSG_TEXT && !validateUtf8(_decompressedMessage))
+             {
+@@ -1088,11 +1120,26 @@ namespace ix
+         return true;
+     }
+ 
++    void WebSocketTransport::rejectUntrustedMessage()
++    {
++        _rxbuf.clear();
++        _chunks.clear();
++        _decompressedMessage.clear();
++        closeSocketAndSwitchToClosedState(1009, "Receive limit exceeded", 0, false);
++    }
++
+     bool WebSocketTransport::receiveFromSocket()
+     {
+         while (true)
+         {
+-            ssize_t ret = _socket->recv((char*) &_readbuf[0], _readbuf.size());
++            size_t readSize = _readbuf.size();
++            if (_untrustedClientLimit)
++            {
++                const size_t cap = _untrustedClientLimit + 14; // largest frame header
++                if (_rxbuf.size() >= cap) break; // dispatch before reading more
++                readSize = std::min(readSize, cap - _rxbuf.size());
++            }
++            ssize_t ret = _socket->recv((char*) &_readbuf[0], readSize);
+ 
+             if (ret < 0 && Socket::isWaitNeeded())
+             {
+diff --git i/libs/IXWebSocket/ixwebsocket/IXWebSocketTransport.h w/libs/IXWebSocket/ixwebsocket/IXWebSocketTransport.h
+index 8473c55c9..14ac85a38 100644
+--- i/libs/IXWebSocket/ixwebsocket/IXWebSocketTransport.h
++++ w/libs/IXWebSocket/ixwebsocket/IXWebSocketTransport.h
+@@ -77,7 +77,7 @@ namespace ix
+         void configure(const WebSocketPerMessageDeflateOptions& perMessageDeflateOptions,
+                        const SocketTLSOptions& socketTLSOptions,
+                        bool enablePong,
+-                       int pingIntervalSecs);
++                       int pingIntervalSecs, size_t untrustedClientLimit = 0);
+ 
+         // Client
+         WebSocketInitResult connectToUrl(const std::string& url,
+@@ -157,6 +157,8 @@ namespace ix
+         // This could be a mix of control messages (Close, Ping, etc...) and
+         // data messages. That buffer is resized
+         std::vector<uint8_t> _rxbuf;
++        size_t _untrustedClientLimit = 0;
++        void rejectUntrustedMessage();
+ 
+         // Contains all messages that are waiting to be sent
+         std::vector<uint8_t> _txbuf;

@@ -45,3 +45,22 @@ energy graph uses only model-supported endpoint values with an explicit steady-
 consumption label; the illustrative curved forecast is not synthesized.
 The next correction removes grey child-control backgrounds exposed by capture.
 All visual acceptance fields remain Pending.
+
+### Native Windows pass at 8357239 / local a6a9259
+
+The fixture-free MSVC build and all 102 integrated Windows unit regressions
+passed. Eight actual 1280x800 client captures were downloaded and artifact-hash
+verified. They are not accepted: floating chart actions were occluded after
+upstream raised its canvas; the Up/Down page controls differ from the reference;
+stock coastline colors and older page components remain visibly different.
+The capture job failed during secondary `--remote --quit` process execution
+with access violation. No clean-exit or visual PASS is assigned to that run.
+
+Follow-up keeps overlay controls alive through shutdown's ShowNavigation call
+(MSW child destruction is immediate) and repairs z-order only when the actual
+canvas is above them. Windows capture uses the existing normal WM_CLOSE path,
+asserts clean application exit and records the executable's own build commit.
+This does not claim the secondary command-line quit failure is fixed. Another
+native run is required. The first Linux captures had build-commit metadata from
+the checkout rather than the executable; binary hashes and diagnostic build
+commits remain available and the collector now records both explicitly.
