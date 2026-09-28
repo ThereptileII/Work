@@ -603,3 +603,21 @@ OpenGL/software and native Windows/boat validation. Resource checks and the
 Linux integrated build/110 tests pass. Initial Linux software ENC captures
 retain actual upstream quilt identity and detail through all three palettes,
 but text/land/overlay mismatches remain. Rendering acceptance is pending.
+
+### Supplemental online AIS paint and selection
+
+The existing `xnav.patch` adds one guarded call at `gui/src/ais.cpp::AISDraw`
+before local decoder enumeration. Only XNav's owned supplemental overlay draws;
+Legacy/Safe and all original local AIS symbols/calculations retain their path.
+Both software `ChartCanvas::DrawOverlayObjects` / `UpdateAIS` and
+`glChartCanvas::DrawFloatingOverlayObjects` already use this upstream boundary.
+The overlay honors each canvas's existing AIS visibility and projection. It
+does not insert targets, calculate collisions, refresh observations or invoke
+OpenCPN navigation/output methods from paint.
+
+The existing XNav `ChartCanvas::InvokeCanvasMenu` hook adds an online hit test
+only within its unknown-object branch. Upstream AIS, route/waypoint selection,
+route editing and measurement precedence are preserved. OpenNav receives copied
+MMSI only after the event stack unwinds. The integration keeps no canvas pointer
+in the retained chart marks. New numerical/identity/aging/precedence tests are
+portable; native/software/GL/populated-target and boat capture gates remain open.

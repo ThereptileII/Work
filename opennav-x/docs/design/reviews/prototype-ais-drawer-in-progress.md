@@ -37,7 +37,17 @@ images. Exact drawer bounds, painted probes and settings interactions pass;
 Night contains no bright native primary surface. Eight prototype comparison
 sets retain reference/current/diff without masking missing real-world data.
 
-Outstanding: native Windows replacement, populated target/list interaction,
-online chart symbols and selection, exact font/spacing/shadow/motion review,
-and physical boat captures. Service settings are additional functional captures,
+Native Windows replacement `3db9704` passes 112 integrated tests and the twelve
+product captures, including settings interaction. Downloaded Traffic Day and
+Online AIS Night images were reviewed. The drawer paints immediately on Windows,
+but its heading exposed UTF-8 mojibake. The next correction explicitly decodes
+the heading/separator and adds service/receipt-age labels, callsign/destination,
+aging/lost labels and identity-based selection when the target sheet opens.
+Linux replacement builds, 120 integrated and 76 portable cases, repeated empty
+source captures and retained full-image comparisons pass; populated-target and
+replacement Windows evidence are still required.
+
+Outstanding: populated target/list interaction, online chart symbols and
+selection, exact font/spacing/shadow/motion review, and physical boat captures.
+Service settings are additional functional captures,
 not invented HTML reference states. No conformance PASS is claimed.

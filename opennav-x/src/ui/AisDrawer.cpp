@@ -1,5 +1,6 @@
 #include "ui/AisDrawer.h"
 #include "ui/Sheet.h"
+#include "ais/ChartTargets.h"
 #include "vessel/AisSelection.h"
 #include <algorithm>
 #include <cmath>
@@ -64,10 +65,12 @@ XNavAisDrawer::XNavAisDrawer(wxWindow &owner,
 void XNavAisDrawer::List() {
   view_ = View::List;
   mmsi_ = 0;
+  if (on_select) on_select(0);
   Build();
 }
 void XNavAisDrawer::Target(int mmsi) {
   mmsi_ = mmsi;
+  if (on_select) on_select(mmsi);
   view_ = View::Target;
   Build();
 }
@@ -191,7 +194,8 @@ void XNavAisDrawer::Build() {
       const auto target = Selected();
       p.Text(target ? W(target->status) : wxString("Target unavailable"), 0, 4,
              11, p.c.secondary, false, width);
-      p.Text(target && target->origin == vessel::AisOrigin::AisStreamOnline
+      p.Text(!target ? "Source unavailable"
+             : target->origin == vessel::AisOrigin::AisStreamOnline
                  ? "Internet AIS"
                  : "Onboard AIS",
              0, 22, 10, p.c.accent, false, width);
@@ -225,7 +229,7 @@ void XNavAisDrawer::Build() {
                  : "Position stale or unavailable",
              0, 53, 11, p.c.secondary, false, width);
     });
-    AddVisual(224, [this](XNavPainter &p, int width) {
+    AddVisual(356, [this](XNavPainter &p, int width) {
       const auto t = Selected();
       const auto empty = vessel::Sample{};
       const auto line = [&](int y, const char *label, const wxString &value) {
@@ -242,11 +246,27 @@ void XNavAisDrawer::Build() {
       line(88, "Length / beam",
            Number(t ? t->length_m : empty, now_, 0, " m") + " / " +
                Number(t ? t->beam_m : empty, now_, 0, " m"));
-      line(132, "Source",
-           t && t->origin == vessel::AisOrigin::AisStreamOnline
+      line(132, "Source", !t ? "Unavailable"
+           : t->origin == vessel::AisOrigin::AisStreamOnline
                ? "AISStream online"
                : "OpenCPN onboard AIS");
-      line(176, "Position age", t ? Age(*t, now_) : wxString("Unavailable"));
+      const char *time_label = !t || t->time_basis == vessel::AisTimeBasis::OpenCPNReport
+          ? "Report age" : t->time_basis == vessel::AisTimeBasis::OnlineService
+          ? "Service age" : "Receipt age";
+      line(176, time_label, t ? Age(*t, now_) : wxString("Unavailable"));
+      const auto text = [&](const vessel::TextSample &sample) {
+        const auto a = vessel::AssessText(sample, now_);
+        return a.value && (a.quality == vessel::Quality::Live ||
+                           a.quality == vessel::Quality::Aging)
+            ? W(*a.value) : W("—");
+      };
+      line(220, "Callsign", t ? text(t->callsign) : W("—"));
+      line(264, "Destination", t ? text(t->destination) : W("—"));
+      line(308, "Position state", !t ? wxString("Unavailable")
+          : t->origin == vessel::AisOrigin::AisStreamOnline
+          ? W(ais::OnlineAgeLabel(ais::Age(t->observed_at, now_)))
+          : t->lost ? wxString("Lost") : vessel::AisSelection::CurrentPosition(*t, now_)
+          ? wxString("Current") : wxString("Stale or unavailable"));
     });
     show_ = Button("Show on chart", [this] {
       const auto t = Selected();
@@ -314,7 +334,7 @@ void XNavAisDrawer::Build() {
 }
 void XNavAisDrawer::RefreshValues() {
   if (view_ == View::List) {
-    SetHeading(wxString::Format("AIS · %zu TARGETS", display_.targets.size()),
+    SetHeading(wxString::Format(W("AIS · %zu TARGETS"), display_.targets.size()),
                "Vessel traffic", false);
     auto targets = display_.targets;
     if (targets.size() > 2000)
@@ -346,9 +366,12 @@ void XNavAisDrawer::RefreshValues() {
     for (const auto &t : targets) {
       rows.push_back(
           {std::to_string(t.mmsi), Name(t),
-           Number(t.sog_kn, now_, 1, " kn") + " · " +
+           Number(t.sog_kn, now_, 1, " kn") + W(" · ") +
                (t.origin == vessel::AisOrigin::AisStreamOnline ? "Internet AIS"
-                                                               : "Onboard AIS"),
+                                                               : "Onboard AIS") +
+               (t.origin == vessel::AisOrigin::AisStreamOnline
+                 ? W(" · ") + W(ais::OnlineAgeLabel(ais::Age(t.observed_at, now_)))
+                 : t.lost ? W(" · Lost") : wxString{}),
            Number(sort_range_ ? t.range_nm : t.cpa_nm, now_, 2, " NM"),
            sort_range_ ? "Range" : "CPA", t.upstream_alarm,
            !vessel::AisSelection::CurrentPosition(t, now_)});

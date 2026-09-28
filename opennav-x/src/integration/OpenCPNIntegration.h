@@ -8,6 +8,9 @@ class wxAuiManager;
 class MyFrame;
 class wxWindow;
 class wxString;
+class ocpnDC;
+class ViewPort;
+class ChartCanvas;
 
 namespace opennav {
 namespace integration { struct ObservedRoutePass; }
@@ -17,6 +20,8 @@ void AfterRouteProgress(const RouteObservation& before);
 void AfterAnchorWatch();
 bool ShowAisCard(int mmsi);
 bool IsAisSelected(int mmsi);
+void DrawOnlineAis(ocpnDC &dc, ViewPort &vp, ChartCanvas *canvas);
+bool ShowOnlineAisAt(ChartCanvas &canvas, int x, int y);
 bool ShowNavigationObjectCard(const std::string& id,bool route);
 bool ShowChartContext(double latitude, double longitude);
 // Application-thread acquisition; returned immutable values may be retained.

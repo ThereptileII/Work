@@ -7,6 +7,7 @@ set(OPENNAV_BUILD_TESTS OFF CACHE BOOL "" FORCE)
 add_subdirectory("${OPENNAV_ROOT}" "${CMAKE_BINARY_DIR}/opennav")
 target_sources(${PACKAGE_NAME} PRIVATE "${OPENNAV_ROOT}/src/integration/OpenCPNIntegration.cpp")
 target_sources(${PACKAGE_NAME} PRIVATE "${OPENNAV_ROOT}/src/integration/OnlineAis.cpp")
+target_sources(${PACKAGE_NAME} PRIVATE "${OPENNAV_ROOT}/src/integration/OnlineAisOverlay.cpp")
 target_sources(${PACKAGE_NAME} PRIVATE "${OPENNAV_ROOT}/src/integration/DashboardPresentation.cpp")
 # Only the bundled, source-pinned Dashboard opts into transient XNav
 # presentation. No third-party plugin ABI or normal upstream build is changed.

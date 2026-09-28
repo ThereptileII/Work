@@ -10,6 +10,17 @@ struct Palette {
   std::uint32_t primary, secondary, muted, accent, healthy, attention, alarm, ais;
 };
 struct FloatingPalette { std::uint32_t surface, primary, secondary, compass_light; };
+struct OnlineChartPalette { std::uint32_t stroke, fill, selected, stale; };
+constexpr OnlineChartPalette OnlineChartTheme(LightMode mode) {
+  // .ais-ship stroke/selection are inherited in all three supplied HTML themes.
+  // Aging marks are a documented data-validity extension, using theme muted ink.
+  switch(mode) {
+  case LightMode::Day: return {0x916477,0xF7F8F0,0xCB9CB1,0x7E9699};
+  case LightMode::Dusk: return {0x916477,0x243A40,0xCB9CB1,0x819394};
+  case LightMode::Night: return {0x916477,0x152129,0xCB9CB1,0x747D77};
+  }
+  return OnlineChartTheme(LightMode::Night);
+}
 constexpr FloatingPalette FloatingTheme(LightMode mode) {
   switch(mode) {
     case LightMode::Day: return {0xF7F8F0,0x233E3E,0x6B8380,0xB0C3BC};

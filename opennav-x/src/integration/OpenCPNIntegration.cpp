@@ -21,6 +21,7 @@
 #include "integration/SettingsStore.h"
 #include "integration/ChartPresentation.h"
 #include "integration/OnlineAis.h"
+#include "integration/OnlineAisOverlay.h"
 #include "integration/AisViewport.h"
 #include "integration/StartupMode.h"
 #if XNAV_ENABLE_TEST_FIXTURES
@@ -94,6 +95,7 @@ std::string route_test_profile,object_test_profile;
 #endif
 std::unique_ptr<ui::Shell> shell;
 std::unique_ptr<integration::OnlineAis> online_ais;
+integration::OnlineAisOverlay online_chart;
 std::shared_ptr<diagnostics::Commissioning> commissioning;
 std::unique_ptr<NavigationBridge> navigation;
 std::unique_ptr<integration::MarineBridge> marine;
@@ -427,7 +429,7 @@ void Attach(MyFrame& frame, wxAuiManager& manager, wxFileConfig& config) {
     return online_ais ? online_ais->RemoveKey()
         : application::CommandResult{false, "Credential storage unavailable during shutdown"};
   };
-  actions.online_ais_tick = [&frame](bool live_allowed) {
+  actions.online_ais_tick = [&frame, last = std::chrono::steady_clock::time_point{}, previous_selection = 0](bool live_allowed) mutable {
     if (!online_ais) return;
     auto *canvas = frame.GetPrimaryCanvas();
     std::optional<ais::Viewport> copied;
@@ -441,6 +443,18 @@ void Attach(MyFrame& frame, wxAuiManager& manager, wxFileConfig& config) {
     }
     online_ais->ObserveViewport(copied, live_allowed && !restart &&
         (!commissioning || !commissioning->Replaying()));
+    const auto steady = std::chrono::steady_clock::now();
+    const int selected = shell ? shell->SelectedAis() : 0;
+    const bool permitted = live_allowed && online_ais->Enabled() && !restart &&
+        (!commissioning || !commissioning->Replaying());
+    if (!permitted || steady-last >= std::chrono::seconds(1) || selected != previous_selection) {
+      const auto now = vessel::Clock::now();
+      const auto display = permitted ? ais::Aggregate(
+          integration::CopyAisState(selected_navigation.navigation, now),
+          online_ais->Read(now)).display : vessel::AisState{};
+      if (online_chart.Update(display, now, selected)) frame.RefreshAllCanvas(false);
+      last = steady; previous_selection = selected;
+    }
   };
   actions.view_online_ais = [&frame](int mmsi) {
     if (!online_ais || !host || restart || (commissioning && commissioning->Replaying()))
@@ -692,6 +706,7 @@ void Attach(MyFrame& frame, wxAuiManager& manager, wxFileConfig& config) {
       for(const auto &event:shell->Advice().events) if(event.kind==smartnav::EventKind::AisEncounter) ++ais_events;
       runtime["smartnav"]["ais_event_count"] = ais_events;
       runtime["ais_selected_mmsi"] = shell->SelectedAis();
+      runtime["online_ais"]["chart_marks"] = static_cast<int>(online_chart.Size());
       runtime["alerts"] = wxJSONValue(wxJSONTYPE_ARRAY);
       for (const auto &a : shell->Alerts()) {
         wxJSONValue alert;
@@ -868,6 +883,15 @@ bool ShowChartContext(double latitude, double longitude) {
   return true;
 }
 bool IsAisSelected(int mmsi) { return IsXNav() && shell && mmsi > 0 && shell->SelectedAis() == mmsi; }
+void DrawOnlineAis(ocpnDC &dc, ViewPort &vp, ChartCanvas *canvas) {
+  if (IsXNav() && shell && canvas && !restart)
+    online_chart.Draw(dc, vp, *canvas);
+}
+bool ShowOnlineAisAt(ChartCanvas &canvas, int x, int y) {
+  if (!IsXNav() || !shell || restart) return false;
+  const int id=online_chart.HitTest(canvas.GetVP(), canvas, x, y);
+  return id>0 && ShowAisCard(id);
+}
 bool ShowAisCard(int mmsi){if(!IsXNav()||!shell||!host)return false;host->CallAfter([mmsi]{if(shell)shell->ShowAis(mmsi);});return true;}
 
 RouteObservation BeforeRouteProgress() {
@@ -931,6 +955,7 @@ bool PrepareClose(wxFileConfig& config) {
   route_progress.reset();
   integration::FinishDashboardPresentation();
   shell.reset();
+  online_chart.Clear();
   online_ais.reset(); // Stop/join worker before configuration/host teardown.
   commissioning.reset();
   settings.reset();

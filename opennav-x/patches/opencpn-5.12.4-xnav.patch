@@ -38,10 +38,10 @@ index b65126b6c..0cceb4c8d 100644
    parent->PopupMenu(menuFocus, x, y);
  
  #ifdef __ANDROID__
-diff --git a/gui/src/chcanv.cpp b/gui/src/chcanv.cpp
-index 258ae04bc..c0e46923b 100644
---- a/gui/src/chcanv.cpp
-+++ b/gui/src/chcanv.cpp
+diff --git i/gui/src/chcanv.cpp w/gui/src/chcanv.cpp
+index 258ae04bc..98938dfee 100644
+--- i/gui/src/chcanv.cpp
++++ w/gui/src/chcanv.cpp
 @@ -24,6 +24,9 @@
   **************************************************************************/
  
@@ -95,7 +95,7 @@ index 258ae04bc..c0e46923b 100644
    pRoutePropDialog = RoutePropDlgImpl::getInstance(this);
    pRoutePropDialog->SetRouteAndUpdate(selected);
    // pNew->UpdateProperties();
-@@ -10767,6 +10785,25 @@ void pupHandler_PasteTrack() {
+@@ -10767,6 +10785,26 @@ void pupHandler_PasteTrack() {
  }
  
  bool ChartCanvas::InvokeCanvasMenu(int x, int y, int seltype) {
@@ -112,6 +112,7 @@ index 258ae04bc..c0e46923b 100644
 +        opennav::ShowNavigationObjectCard(
 +            m_pSelectedRoute->GetGUID().ToStdString(wxConvUTF8), true)) return true;
 +    if (seltype == SELTYPE_UNKNOWN) {
++      if (opennav::ShowOnlineAisAt(*this, x, y)) return true;
 +      double latitude, longitude;
 +      GetCanvasPixPoint(x, y, latitude, longitude);
 +      if (opennav::ShowChartContext(latitude, longitude)) return true;
@@ -121,7 +122,7 @@ index 258ae04bc..c0e46923b 100644
    m_canvasMenu = new CanvasMenuHandler(this, m_pSelectedRoute, m_pSelectedTrack,
                                         m_pFoundRoutePoint, m_FoundAIS_MMSI,
                                         m_pIDXCandidate, m_nmea_log);
-@@ -11813,13 +11850,14 @@ void ChartCanvas::OnPaint(wxPaintEvent &event) {
+@@ -11813,13 +11851,14 @@ void ChartCanvas::OnPaint(wxPaintEvent &event) {
        delete clip_region;
  
        ocpnDC bgdc(temp_dc);
@@ -143,7 +144,7 @@ index 258ae04bc..c0e46923b 100644
      }
    }  // temp_dc.IsOk();
  
-@@ -13448,6 +13486,9 @@ wxString ChartCanvas::FindValidUploadPort() {
+@@ -13448,6 +13487,9 @@ wxString ChartCanvas::FindValidUploadPort() {
  
  void ShowAISTargetQueryDialog(wxWindow *win, int mmsi) {
    if (!win) return;
@@ -692,7 +693,7 @@ index 74e79f678..262dc46dd 100644
                                  GetNetPort().c_str()));
    m_stats_timer.Stop();
 diff --git i/gui/src/ais.cpp w/gui/src/ais.cpp
-index da348cd06..92b6a1230 100644
+index da348cd06..41d2f3ebd 100644
 --- i/gui/src/ais.cpp
 +++ w/gui/src/ais.cpp
 @@ -24,6 +24,10 @@
@@ -720,6 +721,16 @@ index da348cd06..92b6a1230 100644
    //       Render the COG line if the speed is greater than moored speed defined
    //       by ais options dialog
    if ((g_bShowCOG) && (target_sog > g_SOGminCOG_kts) && td->b_active) {
+@@ -1854,6 +1865,9 @@ static void AISDrawTarget(AisTargetData *td, ocpnDC &dc, ViewPort &vp,
+ }
+ 
+ void AISDraw(ocpnDC &dc, ViewPort &vp, ChartCanvas *cp) {
++#ifdef OPENNAV_X
++  opennav::DrawOnlineAis(dc, vp, cp);
++#endif
+   if (!g_pAIS) return;
+ 
+   // Toggling AIS display on and off
 diff --git a/model/src/comm_drv_signalk_net.cpp b/model/src/comm_drv_signalk_net.cpp
 index 995a3fe35..05add9dc9 100644
 --- a/model/src/comm_drv_signalk_net.cpp

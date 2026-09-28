@@ -97,8 +97,8 @@ jobs:
       - name: Configure native supported Win32 ABI
         if: runner.os == 'Windows'
         run: cmake -S opennav-x -B opennav-x/build/prototype-contracts -G "Visual Studio 17 2022" -A Win32
-      - run: cmake --build opennav-x/build/prototype-contracts --config Release --target online_ais_tests ais_selection_tests ais_health_tests aisstream_codec_tests ais_credentials_tests ais_session_tests
-      - run: ctest --test-dir opennav-x/build/prototype-contracts -C Release -R 'online_ais_cache_and_precedence|ais_selection_lifetime|ais_report_health|aisstream_untrusted_json_and_subscription|ais_credentials_protected_storage|aisstream_session_lifecycle' --no-tests=error --output-on-failure --output-junit ais-foundation.xml
+      - run: cmake --build opennav-x/build/prototype-contracts --config Release --target online_ais_tests online_ais_chart_tests ais_selection_tests ais_health_tests aisstream_codec_tests ais_credentials_tests ais_session_tests
+      - run: ctest --test-dir opennav-x/build/prototype-contracts -C Release -R 'online_ais_cache_and_precedence|online_ais_chart_presentation|ais_selection_lifetime|ais_report_health|aisstream_untrusted_json_and_subscription|ais_credentials_protected_storage|aisstream_session_lifecycle' --no-tests=error --output-on-failure --output-junit ais-foundation.xml
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         if: always()
         with:

@@ -81,6 +81,21 @@ path: default OFF, missing-key withholding, OFF, theme changes, Back and Close.
 Two failed capture passes exposed native sheet stacking, followed by a correction
 and retained paint-latency checks. Windows replacement and populated-target
 interaction remain required. See the [AIS drawer review](design/reviews/prototype-ais-drawer-in-progress.md).
+The replacement native run at `3db9704` (local `98f3646`) passes all six
+development jobs, 112 integrated Windows tests, six AIS contracts per platform,
+and twelve product captures including Online AIS settings. Downloaded digests,
+CRC and PNG hashes verify. Traffic and Night settings were visually reviewed;
+heading mojibake was identified and corrected in the next increment. See
+[native evidence](evidence/prototype-native-3db9704.json).
+
+Supplemental online chart marks now have an owned, bounded, independently tested
+presentation model and two narrow paint/context-selection hooks into OpenCPN.
+Thirty-nine new assertions cover identity/provenance, local precedence, position
+validity, directional withholding, retained-state aging/expiry and antimeridian
+coordinates. Portable tests pass 76/76 and Linux integrated tests 120/120.
+The fixture-free product/settings capture still passes with no synthetic data.
+New populated-target, actual symbol/software/GL, native Windows and live boat
+evidence remain pending; the compiled overlay is not declared accepted.
 
 XNav-owned S-52 presentation is being implemented as separately packaged,
 hash-verified resources derived from the pinned baseline. Its resource tests

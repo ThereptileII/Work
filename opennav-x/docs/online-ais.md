@@ -212,6 +212,40 @@ credential. Deterministic session tests separately exercise absent viewport/key,
 unconfirmed reports, malformed messages, stale/lost/expired positions,
 out-of-order callbacks, acknowledgement timeouts and repeated failures.
 
-Product settings, chart rendering, compact target/detail views and live boat
-acceptance remain pending; compiled provider tests alone do not establish those
-features as complete.
+Native Windows development run `36466500140` passes the fixture-free product
+build and 112 integrated tests. The downloaded, digest-verified captures cover
+Traffic and Online AIS settings, default OFF, missing-key withholding, disable,
+all themes and Back/Close. See `evidence/prototype-native-3db9704.json`. Populated
+target interaction, exact visual conformance and live boat acceptance are open.
+
+### Owned chart overlay (development)
+
+`ais/ChartTargets` derives bounded presentation marks from the aggregated owned
+display state. It rejects ambiguous identity, mismatched coordinate timestamps,
+invalid provenance/numbers and fixture data. A stale onboard identity still
+suppresses the matching online mark. No online record enters OpenCPN's decoder,
+local AIS health, CPA/TCPA calculations, alarms or SmartNav.
+
+`integration/OnlineAisOverlay` retains only these owned marks. The normal shell
+observation copies the upstream AIS model and online feed on the application
+thread at most once a second (selection/disable can update immediately).
+Only a changed mark set invalidates the canvas. Painting/hit testing rechecks
+the original timestamp, so a stopped producer cannot leave retained marks live.
+Both upstream renderer paths call the same `AISDraw` hook/`ocpnDC` implementation.
+The existing canvas projects coordinates, including raster georeferencing.
+Symbol orientation uses pinned OpenCPN `ll_gc_ll` for a short bearing solely
+for display; it creates no navigation position, route distance or CPA.
+
+The glyph path follows `.ais-ship` and its inherited palette. Missing valid
+heading/motion uses an unoriented ring, never an invented northbound vessel.
+Aging is dashed, stale is crossed, lost is double-crossed and ten-minute-old
+marks disappear. Online provenance uses a small dot; detail views identify
+AISStream and distinguish service/receipt age from transponder observation.
+There is no speculative course vector or risk classification.
+
+Right-click/long-press reaches online selection only after upstream local AIS,
+waypoint and route hit tests have declined the position, and outside route edit
+or measure modes. Equal-distance ambiguous marks select neither. Selection
+opens the native owned drawer; Show on chart revalidates current position.
+Direct tap, populated rendering, label decluttering, exact fractional stroke,
+real service traffic, software/GL and physical boat review remain required.

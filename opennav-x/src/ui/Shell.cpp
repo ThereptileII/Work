@@ -1022,6 +1022,12 @@ void Shell::ShowTraffic(int mmsi) {
         ConfirmSheet(frame_, mode_, "Unable to select target", wxString::FromUTF8(result.message), "Back");
       }
     });
+    ais_drawer_->on_select = [this, lifetime](int id) {
+      if (lifetime.expired()) return;
+      ais_selection_.Clear();
+      if (!state_.simulated && !state_.replayed && id > 0)
+        ais_selection_.Select(id, ais_state_, vessel::Clock::now());
+    };
   }
   ais_drawer_->Update(ais_state_, online_ais_state_, vessel::Clock::now(), mode_);
   if (mmsi > 0) ais_drawer_->Target(mmsi); else ais_drawer_->List();
