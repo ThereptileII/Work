@@ -39,8 +39,9 @@ function Get-CommissioningInputBytes([byte[]]$Bytes) {
   $result=[byte[]]$Bytes.Clone();$result[$byteOffset]=48
   return ,$result
 }
-function Get-CommissioningContext([string]$Workspace) {
-  $context=Get-PreparationContext $Workspace
+function Get-CommissioningIdentityContext([string]$Workspace) {
+  # Identity only; every mutating commissioning operation uses the closed wrapper.
+  $context=Get-PreparationIdentityContext $Workspace
   $roots=@($context.managed,(Join-Path $context.application 'plugins'))
   $state=Join-Path $context.localAppData 'OpenNavXAlpha1\state.json'
   $installation=$null
@@ -55,7 +56,11 @@ function Get-CommissioningContext([string]$Workspace) {
   $windowsDirectory=Assert-LocalPath ([Environment]::GetFolderPath('Windows'))
   if (-not $env:WINDIR -or (Assert-LocalPath $env:WINDIR) -ine $windowsDirectory) { throw 'Windows system-directory identity is ambiguous.' }
   $context | Add-Member -NotePropertyName launchEnvironment -NotePropertyValue (Get-CommissioningLaunchEnvironment $applicationExecutable $windowsDirectory)
-  Assert-PreparationClosed (@($context.application,$context.managed)+$roots)
+  return $context
+}
+function Get-CommissioningContext([string]$Workspace) {
+  $context=Get-CommissioningIdentityContext $Workspace
+  Assert-PreparationClosed (@($context.application,$context.managed)+$context.pluginRoots)
   return $context
 }
 function Get-CommissioningLaunchEnvironment([string]$Executable,[string]$WindowsDirectory) {

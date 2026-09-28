@@ -14,7 +14,8 @@ function Assert-PreparationSeparate([string]$Destination,[string[]]$Sources) {
         $source.StartsWith($destination+[IO.Path]::DirectorySeparatorChar,[StringComparison]::OrdinalIgnoreCase)) { throw 'Recovery workspace must be separate from every original tree.' }
   }
 }
-function Get-PreparationContext([string]$Workspace) {
+function Get-PreparationIdentityContext([string]$Workspace) {
+  # Identity/inventory only. This does NOT establish that an application is closed.
   if ([Environment]::OSVersion.Platform -ne 'Win32NT') { throw 'Native Windows preparation only.' }
   $sid=[Security.Principal.WindowsIdentity]::GetCurrent().User.Value
   $explorers=@(Get-CimInstance Win32_Process -Filter "Name='explorer.exe'" | ForEach-Object {
@@ -31,7 +32,11 @@ function Get-PreparationContext([string]$Workspace) {
   Assert-PreparationSeparate $workspace @($profile,$application,$managed)
   $context=[pscustomobject]@{sid=$sid;session=$explorers[0].session;localAppData=$local;profile=$profile;application=$application;managed=$managed;workspace=$workspace;executable=(Join-Path $application 'opencpn.exe')}
   Assert-PreparationStock $context
-  Assert-PreparationClosed @($application,$managed)
+  return $context
+}
+function Get-PreparationContext([string]$Workspace) {
+  $context=Get-PreparationIdentityContext $Workspace
+  Assert-PreparationClosed @($context.application,$context.managed)
   return $context
 }
 function Assert-PreparationStock($Context) {

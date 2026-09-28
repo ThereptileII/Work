@@ -98,9 +98,15 @@ AISStream must not
 inherit the local Signal K client's disabled TLS validation. The prototype's
 newer vendor symbol snapshot cannot replace the pinned resources blindly.
 
-Boat SSH remains unreachable at the latest probe. The existing commissioning
-transaction described below must be inspected and restored after normal exit;
-no expired restart receipt may be reused. The deployed application still uses
+Boat SSH returned on September 28 at 18:36 UTC. Stock executable, navigation
+database and chart database hashes remain unchanged. OpenCPN is closed; the log
+records a clean exit at 18:34 UTC, with its chart plugin starting a remaining
+decoder helper during shutdown. The existing cold-restore guard refused that
+live helper, so no profile/plugin restoration occurred. An exact-process,
+hash-pinned orphan-decoder normal-shutdown path is undergoing native tests;
+it cannot launch OpenCPN, restore a profile or send equipment commands. A fresh
+closed inspection and reviewed profile differences remain mandatory afterward.
+No expired restart receipt may be reused. The deployed application still uses
 the previous Beta UI. No physical actuator commands are authorized or sent.
 
 ## Prior Beta 2 development and deployment evidence
