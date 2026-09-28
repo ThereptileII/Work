@@ -193,6 +193,25 @@ def main():
             client = dict(x=client_origin[0], y=client_origin[1], width=1280, height=800)
             frame = dict(x=rect.left,y=rect.top,width=rect.right-rect.left,height=rect.bottom-rect.top) if windows else dict(client)
             record.setdefault("layout", []).append(geometry.navigation_layout(snapshot["runtime"]["display"], frame, client))
+            # Compare independently measured HTML metric geometry, allowing
+            # only integer raster rounding, not broad layout similarity.
+            reference = json.loads((ROOT / "docs/design/prototype/reference" /
+                                  ("windows" if windows else "linux") / "capture.json").read_text())
+            components = reference["states"]["navigation-day"]["components"]
+            actual_rows = snapshot["runtime"]["display"]["rail_regions"]
+            for actual, expected in zip(actual_rows, components[".metric"]):
+                content = dict(x=actual["x"]-client_origin[0]+19,
+                               y=actual["y"]-client_origin[1],
+                               width=actual["width"]-37,height=actual["height"])
+                assert all(abs(content[k]-expected["rect"][k]) <= 1 for k in content), "Rail row differs from canonical HTML geometry"
+            pilot = [c for c in snapshot["runtime"]["display"]["interaction_controls"]
+                     if c["label"] == "Autopilot" and c["visible"]]
+            assert len(pilot)==1
+            actual_pilot={k:pilot[0][k] for k in ("x","y","width","height")}
+            actual_pilot["x"]-=client_origin[0]; actual_pilot["y"]-=client_origin[1]
+            assert all(abs(actual_pilot[k]-components[".autopilot-summary"][0]["rect"][k]) <= 1
+                       for k in actual_pilot), "Pilot summary differs from canonical HTML geometry"
+            record.setdefault("prototype_rail_geometry", []).append(dict(file=name,pilot=actual_pilot))
             from PIL import Image
             theme = snapshot["runtime"]["display"]["light"].lower()
             tokens = json.loads((ROOT / "docs/design/prototype-tokens.json").read_text())["themes"][theme]

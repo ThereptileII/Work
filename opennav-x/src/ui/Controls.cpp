@@ -332,6 +332,13 @@ void XNavButton::Activate() {
   wxPostEvent(this, event);
 }
 
+void XNavButton::SetSummary(const wxString &value, const wxString &detail) {
+  if (summary_ && summary_value_ == value && summary_detail_ == detail) return;
+  summary_ = true; summary_value_ = value; summary_detail_ = detail;
+  SetName(GetLabel() + ": " + value + " / " + detail);
+  Refresh();
+}
+
 void XNavButton::Paint(wxPaintEvent&) {
   wxAutoBufferedPaintDC dc(this);
   auto colors = Theme(mode_);
@@ -378,7 +385,7 @@ void XNavButton::Paint(wxPaintEvent&) {
   }
   dc.SetPen(navigation_item_ || role_ == ButtonRole::Quiet || role_ == ButtonRole::Segment ? *wxTRANSPARENT_PEN : wxPen(opacity(edge)));
   dc.SetBrush(wxBrush(opacity(fill)));
-  dc.DrawRoundedRectangle(1, 1, size.x - 2, size.y - 2, FromDIP(navigation_item_ ? 10 : role_ == ButtonRole::Segment ? 6 : spacing::control_radius));
+  dc.DrawRoundedRectangle(1, 1, size.x - 2, size.y - 2, FromDIP(navigation_item_ || summary_ ? 10 : role_ == ButtonRole::Segment ? 6 : spacing::control_radius));
   if (HasFocus() && keyboard_focus_) {
     dc.SetBrush(*wxTRANSPARENT_BRUSH);
     dc.SetPen(wxPen(Colour(semantic), FromDIP(2)));
@@ -391,6 +398,17 @@ void XNavButton::Paint(wxPaintEvent&) {
   const auto text_color = opacity(ink);
   dc.SetTextForeground(text_color);
   dc.SetFont(UiFontWeight(*this, role_ == ButtonRole::Segment ? 10 : 12, 500));
+  if (summary_) {
+    XNavPainter p(*this, dc, mode_);
+    const int width = ToDIP(size.x);
+    p.TextWeight(GetLabel().Upper(),13,12,8,colors.secondary,650,width-34);
+    p.Text(summary_value_,13,31,20,colors.primary,false,width-26);
+    p.Text(summary_detail_,13,61,9,colors.muted,false,width-26);
+    dc.SetPen(wxPen(Colour(colors.muted),FromDIP(1)));
+    dc.DrawLine(FromDIP(width-20),FromDIP(15),FromDIP(width-17),FromDIP(18));
+    dc.DrawLine(FromDIP(width-17),FromDIP(18),FromDIP(width-20),FromDIP(21));
+    return;
+  }
   if (floating_ && icon_ == XNavIcon::Compass) {
     const int center = size.x / 2;
     const auto label = GetLabel();
@@ -454,6 +472,23 @@ XNavDataValue::XNavDataValue(wxWindow* parent, const wxString& label,
   Bind(wxEVT_PAINT, &XNavDataValue::Paint, this);
 }
 
+XNavDataRail::XNavDataRail(wxWindow *parent) : wxPanel(parent, wxID_ANY) {
+  SetSizer(new wxBoxSizer(wxVERTICAL));
+}
+bool XNavDataRail::Layout() {
+  const bool result=wxPanel::Layout();
+  const auto count=GetSizer()->GetItemCount();
+  if(!count) return result;
+  const auto size=GetClientSize();
+  for(std::size_t i=0;i<count;++i) {
+    const int top=int(std::lround(double(size.y)*i/count));
+    const int bottom=int(std::lround(double(size.y)*(i+1)/count));
+    if(auto *window=GetSizer()->GetItem(i)->GetWindow())
+      window->SetSize(0,top,size.x,bottom-top);
+  }
+  return result;
+}
+
 void XNavDataValue::SetLightMode(LightMode mode) {
   if (mode_ != mode) {
     mode_ = mode;
@@ -463,15 +498,15 @@ void XNavDataValue::SetLightMode(LightMode mode) {
 }
 void XNavDataValue::SetCompact(bool compact) {
   compact_ = compact;
-  SetMinSize(FromDIP(wxSize(120, compact ? 80 : 120)));
+  SetMinSize(FromDIP(wxSize(120, compact ? 72 : 120)));
   Refresh();
 }
 
 void XNavDataValue::SetReading(const vessel::Sample& sample, vessel::Time now) {
   const auto next = vessel::Assess(sample, now);
   const bool changed = reading_.value != next.value || reading_.quality != next.quality ||
-      (next.quality != vessel::Quality::Live &&
-       (!next.age || !reading_.age || next.age->count()/1000 != reading_.age->count()/1000));
+      sample.source != sample_.source ||
+      (!next.age || !reading_.age || next.age->count()/1000 != reading_.age->count()/1000);
   sample_ = sample;
   reading_ = next;
   const wxString source = sample.source.empty() ? "No source" : wxString::FromUTF8(sample.source);
@@ -489,16 +524,19 @@ void XNavDataValue::Paint(wxPaintEvent&) {
   const auto colors = Theme(mode_);
   dc.SetBackground(wxBrush(Colour(compact_ ? colors.background : colors.surface)));
   dc.Clear();
-  const int x = FromDIP(compact_ ? 18 : 12);
+  const int x = FromDIP(compact_ ? 19 : 12);
   if (compact_) {
     const int height = ToDIP(GetClientSize().y);
     const bool roomy = height >= 108;
-    const int label_y = std::max(8, (height - (roomy ? 96 : 72)) / 2);
-    const int available = GetClientSize().x - 2 * x;
+    const int label_y = roomy ? 10 : 5;
+    const int right = GetClientSize().x - FromDIP(18);
+    const int available = right - x;
     dc.SetPen(wxPen(Colour(colors.border)));
-    dc.DrawLine(x, GetClientSize().y-1, GetClientSize().x-x, GetClientSize().y-1);
+    dc.DrawLine(x, GetClientSize().y-1, right, GetClientSize().y-1);
     dc.SetFont(UiFont(*this,11)); dc.SetTextForeground(Colour(colors.secondary));
     auto title=label_;
+    if(title=="SOG") title="Speed over ground";
+    if(title=="DEPTH") title="Depth / transducer";
     if(title=="APPARENT WIND") title="Apparent wind";
     if(title=="TRUE WIND") title="True wind";
     if(title=="SPEED OVER GROUND") title="Speed over ground";
@@ -508,24 +546,33 @@ void XNavDataValue::Paint(wxPaintEvent&) {
     const auto value=reading_.value?wxString::Format("%.*f",decimals_,*reading_.value):wxString::FromUTF8("—");
     int value_size = roomy ? 48 : 32;
     dc.SetFont(UiFont(*this,value_size));
-    while(value_size > 24 && dc.GetTextExtent(value).x > available) {
+    const int tracking=FromDIP(roomy ? -3 : -2);
+    const auto tracked_width=[&]{return dc.GetTextExtent(value).x+tracking*(int(value.length())-1);};
+    while(value_size > 24 && tracked_width() > available) {
       value_size -= 2; dc.SetFont(UiFont(*this,value_size));
     }
     dc.SetTextForeground(Colour(stale?colors.muted:colors.primary));
-    dc.DrawText(value,x,FromDIP(label_y+20));
-    const int unit_x=x+dc.GetTextExtent(value).x+FromDIP(6);
+    const int value_y=FromDIP(label_y+(roomy?21:15));
+    wxArrayInt advances; dc.GetPartialTextExtents(value,advances);
+    for(std::size_t i=0;i<value.length();++i)
+      dc.DrawText(value.Mid(i,1),x+(i?advances[i-1]:0)+tracking*int(i),value_y);
+    const int unit_x=x+tracked_width()+FromDIP(6);
     dc.SetFont(UiFont(*this,11));dc.SetTextForeground(Colour(colors.secondary));
     auto unit=unit_;if(unit.StartsWith("m /"))unit="m";if(unit=="deg true")unit=wxString::FromUTF8("°T");
-    const bool inline_unit=unit_x+dc.GetTextExtent(unit).x<GetClientSize().x-FromDIP(8);
-    if(inline_unit)dc.DrawText(unit,unit_x,FromDIP(label_y+20+value_size-13));
-    wxString status = reading_.quality==vessel::Quality::Live ? "LIVE" : wxString::FromUTF8(vessel::QualityName(reading_.quality));
-    if(reading_.quality==vessel::Quality::Stale && reading_.age)status+=wxString::Format(" %.0fs",reading_.age->count()/1000.0);
-    dc.SetFont(UiFont(*this,10));dc.SetTextForeground(Colour(stale?colors.attention:colors.muted));
+    const bool inline_unit=unit_x+dc.GetTextExtent(unit).x<=right;
+    if(inline_unit)dc.DrawText(unit,unit_x,value_y+FromDIP(value_size-13));
+    wxString status = wxString::FromUTF8(vessel::QualityName(reading_.quality));
+    if(reading_.quality==vessel::Quality::Live && !sample_.source.empty())
+      status=wxString::FromUTF8(sample_.source);
+    dc.SetFont(UiFont(*this,8));dc.SetTextForeground(Colour(stale?colors.attention:colors.muted));
     // If a long numeric value fills the rail, retain its unit on the status
     // line. Never hide the unit or clip a valid heading at a narrower DPI.
     if(!inline_unit)status=unit+"  "+status;
-    dc.DrawText(wxControl::Ellipsize(status,dc,wxELLIPSIZE_END,available),x,
-                FromDIP(label_y+(roomy?78:56)));
+    const auto age=reading_.age ? wxString::Format("%.1f s",reading_.age->count()/1000.0) : wxString{};
+    const int age_width=dc.GetTextExtent(age).x;
+    const int detail_y=GetClientSize().y-FromDIP(18);
+    dc.DrawText(wxControl::Ellipsize(status,dc,wxELLIPSIZE_END,std::max(1,available-age_width-FromDIP(8))),x,detail_y);
+    dc.DrawText(age,right-age_width,detail_y);
     return;
   }
   dc.SetPen(wxPen(Colour(colors.border)));

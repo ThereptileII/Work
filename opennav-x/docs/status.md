@@ -20,6 +20,13 @@ retained. Replacement fixes use the current Settings → Waypoints entry and
 recognize that CRT family without relaxing unknown-library rejection. No probe
 package or live boat AIS result is accepted from that failed run.
 
+The main rail's corrective Linux pass now checks the four measured HTML row
+bounds and compact pilot-summary bounds at 1280×800. Typography uses the final
+48px/−3px numeric rule; observation age and source state remain actual data.
+The card cannot infer a pilot mode from missing feedback. Twelve fixture-free
+captures retain Day/Dusk/Night and AIS settings behavior. Populated sensor,
+native Windows and boat replacement gates remain outstanding.
+
 The user's September 28 instruction supersedes the older visual baseline:
 safety/navigation correctness → supplied v8 HTML → extracted prototype spec →
 older brief/image → current Beta. The native architecture and all existing

@@ -115,3 +115,20 @@ be relabeled "below surface" without an established offset. A pilot summary
 must show unavailable/stale when feedback is absent; opening it must never
 send a command. Any sparkline must use retained real observations, not the
 prototype's illustrative curve. This audit is not a visual PASS.
+
+
+Rail corrective implementation: `XNavDataRail` distributes native rows with
+cumulative rounding instead of truncating every row. The first capture exposed
+that cumulative displacement; the second verifies all four actual content
+rectangles and the 149×87 pilot card against canonical HTML (at most one native
+pixel rounding). Labels use the measured top inset, numbers use −3px tracking,
+and age/source state occupy the lower baseline. The pilot card uses fresh
+confirmed adapter state; missing/stale feedback cannot become Standby. It only
+opens the existing guarded panel. Depth explicitly remains transducer-relative.
+
+`evidence/local/prototype/rail-pass2` retains twelve fixture-free captures and
+settings flows. Day (first pass) and Night (corrective pass) were inspected;
+all PNG hashes verify. All 120 integrated tests passed before the rounding-only
+correction. Populated-data/interaction replacement, native Windows typography,
+physical boat, sparkline/relational detail, header and remaining sheets stay
+open. This is a geometry improvement, not full navigation conformance.

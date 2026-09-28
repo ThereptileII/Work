@@ -166,6 +166,7 @@ private:
   std::vector<XNavButton *> navigation_page_buttons_;
   XNavButton *finish_route_ = nullptr;
   XNavButton *standby_ = nullptr;
+  XNavButton *pilot_summary_ = nullptr;
   XNavButton *theme_button_ = nullptr;
   XNavButton *orientation_button_ = nullptr;
   XNavButton *undo_route_ = nullptr, *cancel_route_ = nullptr;

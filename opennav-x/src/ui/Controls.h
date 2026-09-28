@@ -79,12 +79,15 @@ class XNavButton : public wxControl {
   void SetFloating(bool value = true) { floating_ = value; Refresh(); }
   void SetInlineIcon(bool value = true) { inline_icon_ = value; Refresh(); }
   void SetCompassRotation(double radians) { if (compass_rotation_ != radians) { compass_rotation_ = radians; Refresh(); } }
+  void SetSummary(const wxString &value, const wxString &detail);
 
  private:
   void Paint(wxPaintEvent& event);
   void Activate();
   LightMode mode_ = LightMode::Day;
   wxString hint_;
+  wxString summary_value_, summary_detail_;
+  bool summary_ = false;
   bool pressed_ = false;
   bool keyboard_focus_ = false;
   bool selected_ = false;
@@ -125,6 +128,14 @@ class XNavDataValue final : public wxPanel {
   vessel::Sample sample_;
   vessel::Assessment reading_;
   bool compact_ = false;
+};
+
+// Equal CSS-style rows use cumulative rounding, avoiding per-row integer
+// truncation that displaces later readings at the 1280x800 target.
+class XNavDataRail final : public wxPanel {
+ public:
+  explicit XNavDataRail(wxWindow *parent);
+  bool Layout() override;
 };
 
 }  // namespace opennav::ui

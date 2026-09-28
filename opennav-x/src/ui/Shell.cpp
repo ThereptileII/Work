@@ -238,8 +238,7 @@ Shell::Shell(wxFrame &frame, wxAuiManager &manager, ShellActions actions,
   auto *right =
       MakePane("OpenNavData", wxAuiPaneInfo().Right().Layer(5).BestSize(
                                   frame_.FromDIP(prototype::rail), -1));
-  rail_scroll_ = new wxPanel(right,wxID_ANY);
-  rail_scroll_->SetSizer(new wxBoxSizer(wxVERTICAL));
+  rail_scroll_ = new XNavDataRail(right);
   auto *rail_container = new wxBoxSizer(wxVERTICAL);
   auto *rail_header=new wxPanel(right,wxID_ANY);
   rail_header->SetMinSize(frame_.FromDIP(wxSize(186,42)));
@@ -296,9 +295,16 @@ Shell::Shell(wxFrame &frame, wxAuiManager &manager, ShellActions actions,
   }
   route_actions_->SetSizer(actions_row);horizon_layout->Add(route_actions_,0,wxEXPAND);
   horizon_pane->SetSizer(horizon_layout);
-  auto *pilot = Button(right,"Autopilot","Open autopilot controls",[this]{ShowProduct(ProductPage::Pilot);});
-  pilot->SetMinSize(frame_.FromDIP(wxSize(148,64)));pilot->SetRole(ButtonRole::Quiet);
-  rail_container->Add(pilot,0,wxEXPAND|wxALL,frame_.FromDIP(12));
+  pilot_summary_ = Button(right,"Autopilot","Open autopilot controls",[this]{ShowProduct(ProductPage::Pilot);});
+  pilot_summary_->SetMinSize(frame_.FromDIP(wxSize(149,87)));
+  pilot_summary_->SetSummary("Unavailable","No current feedback");
+  auto *pilot_row = new wxBoxSizer(wxHORIZONTAL);
+  pilot_row->AddSpacer(frame_.FromDIP(19));
+  pilot_row->Add(pilot_summary_,1,wxEXPAND);
+  pilot_row->AddSpacer(frame_.FromDIP(18));
+  rail_container->AddSpacer(frame_.FromDIP(13));
+  rail_container->Add(pilot_row,0,wxEXPAND);
+  rail_container->AddSpacer(frame_.FromDIP(13));
   // The existing guarded standby action remains available in the pilot panel.
   // Keep its state sink hidden until the expanded pilot workflow owns it.
   standby_=Button(right,"STBY","Manual STANDBY / requires enabled control",[this]{
@@ -717,6 +723,16 @@ void Shell::Tick() {
       p.pilot.feedback.source = "Unavailable during REPLAY";
     }
     standby_->Enable(!replay && p.pilot.enabled && p.pilot.capabilities.standby);
+    wxString pilot_mode="Unavailable", pilot_detail="No current feedback";
+    if(p.pilot.fresh && p.pilot.feedback.mode!=adapters::PilotMode::Unavailable) {
+      pilot_mode=wxString::FromUTF8(adapters::PilotModeName(p.pilot.feedback.mode));
+      pilot_mode=pilot_mode.Left(1)+pilot_mode.Mid(1).Lower();
+      pilot_detail=p.pilot.feedback.mode==adapters::PilotMode::Standby
+          ? "You have the helm" : p.pilot.enabled ? "Manual control enabled" : "Display only";
+    } else if(p.pilot.feedback.observed_at!=vessel::Time{}) {
+      pilot_mode="Stale";pilot_detail="Check pilot connection";
+    }
+    pilot_summary_->SetSummary(pilot_mode,pilot_detail);
     p.settings = config;
     if (actions_.settings_status)
       p.settings_status = actions_.settings_status();
