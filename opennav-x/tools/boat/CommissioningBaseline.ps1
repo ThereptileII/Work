@@ -2,6 +2,21 @@
 # Imported after Commissioning primitives; no launch or transport operations.
 . (Join-Path $PSScriptRoot 'RestartCommissioningPolicy.ps1')
 $script:CommissioningBaselineOwner='OpenNavX.ReviewedCommissioningBaseline.1'
+function Assert-CommissioningTextureMinimum($Before,$After) {
+  # The observed second 5.12.4 launch loads the earlier upgrade's 64MB value.
+  # Pinned MyConfig::LoadMyConfig, after LoadMyConfigRaw, clamps non-expert GL
+  # texture memory to at least 128MB; UpdateSettings persists that result.
+  # This admits only this reviewed normalization, not arbitrary GPU settings.
+  $key='Settings/GPUTextureMemSize';$version='Version 5.12.4+37fd0cd Build 2026-09-27'
+  $expert='Settings/OpenGLExpert'
+  if($Before[$key] -cne '64' -or $After[$key] -cne '128' -or
+     $Before['Settings/OpenGL'] -cne '1' -or $After['Settings/OpenGL'] -cne '1' -or
+     $Before['Settings/ConfigVersionString'] -cne $version -or $After['Settings/ConfigVersionString'] -cne $version -or
+     $Before[$expert] -cne $After[$expert] -or
+     ($null -ne $Before[$expert] -and $Before[$expert] -cne '0')) {
+    throw 'Only the observed pinned non-expert 64-to-128MB startup normalization may be adopted.'
+  }
+}
 function Assert-CommissioningStockUpgradeDelta([string]$Key,$Before,$After) {
   if($Key -ceq 'Settings/GPUTextureMemSize') {
     # Pinned OCPNPlatform::Initialize_3 selects exactly64MB for the GL-capable
@@ -87,6 +102,8 @@ function Assert-CommissioningMigrationReview([string]$Before,[string]$After,$Rev
          $change.after -cnotmatch '^Version 5\.12\.4\+37fd0cd Build [0-9]{4}-[0-9]{2}-[0-9]{2}$'){throw 'Only the exact official or pinned Windows product build marker may be adopted.'}
       $date=[datetime]::ParseExact($change.after.Substring($change.after.Length-10),'yyyy-MM-dd',[Globalization.CultureInfo]::InvariantCulture)
       if($date -gt $At.Date){throw 'Future build marker is not accepted.'}
+    } elseif($change.key -ceq 'Settings/GPUTextureMemSize' -and $change.before -ceq '64' -and $change.after -ceq '128') {
+      Assert-CommissioningTextureMinimum $beforeValues $afterValues
     } elseif($change.key -cin @('Settings/GPUTextureMemSize','Settings/MSWFonts/sv-00c6075a')) {
       Assert-CommissioningStockUpgradeDelta $change.key $beforeValues $afterValues
     } elseif($change.key -ceq 'Settings/CommPriority/PriorityVariation') {

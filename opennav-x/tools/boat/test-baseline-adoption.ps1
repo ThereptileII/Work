@@ -44,6 +44,41 @@ try {
     [IO.File]::WriteAllText($badIni,$bad,$encoding);$badReview=Review $inputFile $badIni
     Refuse "Matching text approval cannot override source/connection/chart/value policy $case" {Assert-CommissioningMigrationReview $inputFile $badIni $badReview}
   }
+  $textureBefore=Join-Path $testRoot 'texture-before.ini';$textureAfter=Join-Path $testRoot 'texture-after.ini'
+  $textureText="[Settings]`r`nConfigVersionString=Version 5.12.4+37fd0cd Build 2026-09-27`r`nOpenGL=1`r`nGPUTextureMemSize=64`r`n[Settings/NMEADataSource]`r`nDataConnections=0;0;;0;1;COM8;115200;0;0;0;;0;;0;0;1;0;1;Gateway;0;;0`r`n"
+  [IO.File]::WriteAllText($textureBefore,$textureText,$encoding)
+  [IO.File]::WriteAllText($textureAfter,$textureText.Replace('GPUTextureMemSize=64','GPUTextureMemSize=128'),$encoding)
+  $textureReview=Review $textureBefore $textureAfter
+  Pass 'Pinned normal startup texture minimum preserves all other settings with explicit exact review' {
+    $accepted=@(Assert-CommissioningMigrationReview $textureBefore $textureAfter $textureReview)
+    if($accepted.Count -ne 1 -or $accepted[0].key -cne 'Settings/GPUTextureMemSize'){throw 'Unexpected texture delta'}
+    $bytes=Get-CommissioningOutputBytes ([IO.File]::ReadAllBytes($textureAfter))
+    if((Get-CommissioningHash (Get-CommissioningInputBytes $bytes)) -cne (Get-Digest $textureAfter)){throw 'Restoration altered normalized bytes'}
+  }
+  Refuse 'Texture normalization cannot approve itself' {$v=Clone $textureReview;$v.changes=@();Assert-CommissioningMigrationReview $textureBefore $textureAfter $v}
+  $textureOld=Read-ProfileForAudit $textureBefore;$textureNew=Read-ProfileForAudit $textureAfter
+  Pass 'Explicit unchanged expert-off value also follows the pinned minimum' {
+    $was=$textureOld.Clone();$is=$textureNew.Clone();$was['Settings/OpenGLExpert']='0';$is['Settings/OpenGLExpert']='0'
+    Assert-CommissioningTextureMinimum $was $is
+  }
+  foreach($kind in @('before-other','after-other','missing-budget','gl-disabled','gl-changed','expert-enabled','expert-changed','expert-malformed','version-unknown','version-changed')) {
+    Refuse "Texture normalization refuses $kind" {
+      $was=$textureOld.Clone();$is=$textureNew.Clone()
+      switch($kind) {
+        'before-other' {$was['Settings/GPUTextureMemSize']='32'}
+        'after-other' {$is['Settings/GPUTextureMemSize']='256'}
+        'missing-budget' {$was.Remove('Settings/GPUTextureMemSize')}
+        'gl-disabled' {$was['Settings/OpenGL']='0';$is['Settings/OpenGL']='0'}
+        'gl-changed' {$is['Settings/OpenGL']='0'}
+        'expert-enabled' {$was['Settings/OpenGLExpert']='1';$is['Settings/OpenGLExpert']='1'}
+        'expert-changed' {$is['Settings/OpenGLExpert']='0'}
+        'expert-malformed' {$was['Settings/OpenGLExpert']='false';$is['Settings/OpenGLExpert']='false'}
+        'version-unknown' {$was['Settings/ConfigVersionString']='Version other';$is['Settings/ConfigVersionString']='Version other'}
+        'version-changed' {$is['Settings/ConfigVersionString']='Version 5.12.4+37fd0cd Build 2026-09-28'}
+      }
+      Assert-CommissioningTextureMinimum $was $is
+    }
+  }
   $stockBefore=Join-Path $testRoot 'stock-before.ini';$stockAfter=Join-Path $testRoot 'stock-after.ini'
   $menu='Menu:1;10;-20;0;0;0;400;0;0;0;1;0;0;2;32;Segoe UI:rgb(0, 0, 0)'
   $swedish='Meny:1;9;-18;0;0;0;400;0;0;0;1;0;0;2;32;Segoe UI:rgb(0, 0, 0)'

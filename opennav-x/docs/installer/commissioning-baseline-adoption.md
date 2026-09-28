@@ -88,6 +88,25 @@ fonts, unrelated deletion and omission of the explicit removal approval.
 The removal review must contain an explicit JSON `null` for the new value;
 omitting that field or retaining the font key with an empty value is refused.
 
+### Subsequent pinned startup texture minimum
+
+After the boat's September 28 restart, the cold profile preserves navigation,
+charts, source configuration and plugin state. Its display changes include the
+reverse texture-budget transition, `64` to `128`. Pinned
+`navutil.cpp::MyConfig::LoadMyConfig` calls `LoadMyConfigRaw` and then applies
+`wxMax(128, m_iTextureMemorySize)` when GL expert mode is false (lines 554–560).
+`UpdateSettings` writes that value at line 2168. The earlier upgrade's 64MB
+selection is therefore not the persistent normal-start minimum.
+
+The adoption policy admits only the observed 64→128 value with unchanged
+`OpenGL=1`, unchanged false/default expert mode and unchanged pinned
+`Version 5.12.4+37fd0cd Build 2026-09-27` marker. It still requires an independently
+reviewed exact per-key record and closed-session hashes. Other budgets, expert
+mode changes, GL changes and different version markers are refused. Thirteen
+additional portable/native contract cases cover this boundary and preservation
+of the normalized profile through the one-byte connection restoration. This
+changes commissioning tools only; application and upstream code are unchanged.
+
 The official executable `7c6547562cca7954671eaab72833ca9d788710fd9808b6a699b6dc823852ae0c`
 contains `5.12.4-0+37fd0cd` and `2025-09-12`; its permitted marker is exactly
 `Version 5.12.4-0+37fd0cd Build 2025-09-12`. Pinned Windows product builds use
