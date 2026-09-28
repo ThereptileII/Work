@@ -5,8 +5,11 @@ see [status](status.md) for exact commits and acceptance evidence.
 
 - The authorized backed-up stock upgrade to official OpenCPN 5.12.4 x86 is
   complete. The first fixture-free Beta 2 development package is installed.
-  It is not a qualified Beta 2 release: full replacement Windows gates,
-  endurance, installed mode lifecycle and iterative boat review remain open.
+  Exact replacement `79a95c4` passes all sixteen CI jobs, 110 integrated Linux
+  tests, 102 Windows tests, 45 installer checks and both three-hour endurance
+  runs. It is installed with the complete real profile preserved. Installed
+  mode/maintenance lifecycle and iterative boat review still prevent Beta 2
+  release qualification.
 - The originally zero-filled INI and its working temporary sibling remain
   backed up. The reviewed working configuration was recovered; a second cold
   backup covers stock 5.12.4 and this recovered profile.
@@ -17,16 +20,21 @@ see [status](status.md) for exact commits and acceptance evidence.
   remain unavailable. Heading was explicitly estimated.
 - Normal configuration includes output-capable connections and autopilot
   plugins. The first installed session used a journaled input-only
-  commissioning transaction and temporary plugin quarantines. After measured
-  normal exit, all temporary changes were restored, preserving the reviewed
-  startup migrations. The application is closed; another remote launch needs
-  a fresh audit. No physical actuator command is
-  authorized or included in remote testing.
+  commissioning transaction and temporary plugin quarantines. Earlier
+  transactions were restored after measured normal exit and source-reviewed
+  profile adoption. A fresh transaction for `79a95c4` was applied before its
+  September 28 launch. The boat is offline at the latest check, so its current
+  process state is unknown and that transaction must be inspected/restored
+  after normal close. Never replay the expired launch/restart session. No
+  physical actuator command is authorized or included in remote testing.
 - The startup caution was acknowledged once. A Windows firewall prompt was
   cancelled and its disappearance visually reviewed; no Allow action was used.
-  The saved floating Dashboard still obscures the chart. The local fix preserves
-  that layout for Legacy and suppresses its panes in XNav; native replacement
-  and a second boat-screen review are pending.
+  The floating Dashboard regression is corrected in the replacement; native
+  round-trip evidence and the earlier `7827acb` boat screenshots show XNav
+  suppression while preserving Legacy layout. The `79a95c4` launch produced
+  another Windows network prompt; closing its proxy did not dismiss the
+  composited sheet. No network access was granted. Its final dismissal and
+  exact replacement boat review are pending.
 - Boat Windows reports 1920×1080 at DPI144. The 07:55 UTC read-only
   inventory confirms one active display and Intel graphics at 1920×1080/60 Hz;
   no display or remote-access settings were changed. An exact 1280×800 application frame
@@ -39,3 +47,10 @@ see [status](status.md) for exact commits and acceptance evidence.
 The [distribution limitations](beta2/KNOWN_LIMITATIONS.md) describe hardware,
 chart-hazard, radar, physical touch and advisory energy boundaries retained from
 Beta 1. Legacy/native plugin dialogs remain the advanced compatibility path.
+
+A fixed-size review-tool defect was found when Windows restored a maximized
+XNav frame to an oversized partly offscreen rectangle. The tool refused further
+input. The bounded resize repair has eight new disposable native cases; it does
+not change application code, display resolution, remote access or navigation
+configuration. The boat remains unavailable for the actual recovery at the
+latest September 28 check. See [current status](status.md).

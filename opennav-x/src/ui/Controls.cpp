@@ -2,6 +2,7 @@
 
 #include <wx/dcbuffer.h>
 #include <wx/graphics.h>
+#include <wx/fontenum.h>
 #include <wx/sizer.h>
 #ifdef __WXMSW__
 #include <wx/msw/wrapwin.h>
@@ -113,13 +114,20 @@ wxColour Colour(std::uint32_t rgb) {
 }
 
 wxFont UiFont(wxWindow& window, int pixels, bool bold) {
-#ifdef __WXMSW__
-  const wxString face = "Segoe UI";
-#else
-  const wxString face = "Sans";
-#endif
-  return wxFont(wxFontInfo(wxSize(0, window.FromDIP(pixels)))
-                    .FaceName(face).Weight(bold ? wxFONTWEIGHT_BOLD : wxFONTWEIGHT_NORMAL));
+  return UiFontWeight(window, pixels, bold ? 700 : 400);
+}
+
+wxFont UiFontWeight(wxWindow& window, int pixels, int weight) {
+  // Same ordered stack as the immutable HTML. Use installed fonts, never copy
+  // proprietary Windows font files into the package or the Linux environment.
+  static const wxString face = [] {
+    for (const auto *candidate : {"Segoe UI Variable Display", "Segoe UI", "Arial"})
+      if (wxFontEnumerator::IsValidFacename(candidate)) return wxString(candidate);
+    return wxString("Sans");  // Linux development fallback, not visual acceptance.
+  }();
+  wxFont font(wxFontInfo(wxSize(0, window.FromDIP(pixels))).FaceName(face));
+  font.SetNumericWeight(weight);
+  return font;
 }
 
 void XNavPainter::Text(wxString text, int x, int y, int size,

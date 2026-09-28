@@ -2,6 +2,15 @@
 
 **Revision 3 — Dual Interface + Visual Design + Linux/Windows Development Workflow**
 
+**Visual authority amendment — 2026-09-28:** The supplied immutable v8 HTML in
+`docs/design/prototype/index.html` now defines exact appearance and normal
+interaction. Apply safety/navigation correctness first, HTML second, extracted
+`docs/design/prototype-spec.md` third, then this older written design brief,
+older image mockups and the current Beta implementation. Preserve the native
+architecture and real-data contracts; illustrative prototype geography,
+sensors and hardware actions are not production behavior. Original file hashes
+are recorded in `docs/design/prototype-original.json`.
+
 > Modern Marine Navigation Interface for OpenCPN  
 > Target: Windows PC with existing OpenCPN installation  
 > Development: Codex primarily on Linux; native Windows x64 is the authoritative release-validation platform  

@@ -1,0 +1,30 @@
+// Fictional chart placements with original theme-aware vectors and source references.
+Object.assign(suite,{chartSymbols:true,chartSymbolLabels:false,chartSymbolId:'',symbolPlacementId:'',placedSymbolSerial:0,chartSymbolsData:structuredClone(demoChartSymbols)});
+function syncChartSymbolSelection(){$$('.charted-symbol').forEach(el=>el.classList.toggle('selected',state.panel==='chartSymbol'&&el.dataset.chartSymbol===suite.chartSymbolId));syncLightSectors();}
+function syncChartSymbols(){
+ const layer=$('#chartSymbolLayer');if(!layer)return;
+ layer.style.display=suite.chartSymbols?'':'none';
+ const renderKey=[state.theme,state.zoom,state.orientation,state.heading,suite.chartSymbolLabels,...suite.chartSymbolsData.map(s=>s.id)].join('|');
+ if(layer.dataset.renderKey===renderKey){syncChartSymbolSelection();return;}layer.dataset.renderKey=renderKey;
+ const mapAngle=[0,-43,-state.heading][state.orientation],k=1/state.zoom;
+ const point=(item,s)=>`<g transform="rotate(${-mapAngle}) scale(${k})"><circle class="chart-symbol-hit" r="19"/><circle class="chart-symbol-selection" r="21"/>${chartSymbolGraphic(s,s.code==='LIGHTS13'?25:27)}${item.landmark?`<text class="chart-symbol-label chart-landmark-label" x="0" y="-20" text-anchor="middle">${esc(item.sv||item.name)}</text>`:suite.chartSymbolLabels?`<text class="chart-symbol-label" x="20" y="4">${esc(item.sv||item.name)}</text>`:''}</g>`;
+ const repeated=(item,s)=>{
+  const line=s.kind==='line',graphic=chartSymbolGraphic(s,line?32:17);
+  return `<g transform="rotate(${item.angle||0})">${line?`<path class="chart-symbol-line-hit" d="M-58 0H58"/><path class="chart-symbol-line" d="M-58 0H58"/>${[-48,-24,0,24,48].map(x=>`<g transform="translate(${x} 0)">${graphic}</g>`).join('')}`:`<rect class="chart-symbol-area" x="-32" y="-23" width="64" height="46" rx="5"/>${[-20,0,20].flatMap(x=>[-12,12].map(y=>`<g transform="translate(${x} ${y})">${graphic}</g>`)).join('')}`}</g>${suite.chartSymbolLabels?`<g transform="rotate(${-mapAngle}) scale(${k})"><text class="chart-symbol-label" x="0" y="38" text-anchor="middle">${esc(item.sv||item.name)}</text></g>`:''}`;
+ };
+ const ordered=[...suite.chartSymbolsData].sort((a,b)=>(symbolById.get(a.symbol).kind==='point')-(symbolById.get(b.symbol).kind==='point'));
+ layer.innerHTML=ordered.map(item=>{const s=symbolById.get(item.symbol);return `<g class="charted-symbol ${suite.chartSymbolId===item.id&&state.panel==='chartSymbol'?'selected':''}" role="button" tabindex="0" aria-label="${esc(item.name)} · chart symbol" data-chart-symbol="${item.id}" transform="translate(${item.x} ${item.y})"><title>${esc(item.name)} · ${esc(item.sv||symbolTitle(s))}</title>${s.kind==='point'?point(item,s):repeated(item,s)}</g>`;}).join('');syncChartSymbolSelection();
+}
+function selectedChartSymbol(){return suite.chartSymbolsData.find(s=>s.id===suite.chartSymbolId);}
+function chartSymbolPanel(){const item=selectedChartSymbol();if(!item)return '<p class="note">This example has been removed.</p>';const s=symbolById.get(item.symbol),guide=seamarkGuide.find(g=>g.id===item.guide);return `<div class="charted-symbol-preview sample-${state.theme}">${chartSymbolPreview(s)}<span>${s.code}</span></div><p class="symbol-sw-name">${esc(item.sv||symbolCategoryName(s.category))}</p><p class="symbol-meaning">${esc(item.description||guide?.meaning||symbolTitle(s))}</p>${guide?row('Buoyage','IALA A · Swedish demo'):''}${item.landmark?`${row('Light',item.light+' · demo')}${row('Tower height',item.height)}${row('Nominal range',item.range)}`:''}${row('Chart position',coordinateText(item))}${row('Type',symbolCategoryName(s.category))}${row('Chart style',chartMarkerDesigned(s)?'OpenNav vector':'Reference pin · source glyph in atlas')}${row('Portrayal',s.kind==='point'?'Point symbol':s.kind==='line'?'Repeated line segment':'Repeated pattern tile')}${button('Open symbol reference','chartSymbolReference','primary full')}${item.custom?button('Remove this example','removeChartSymbol','full'):''}${note('Illustrative placement on the fictional demo chart. Positions and chart objects are not navigation data.')}`;}
+function currentAtlasSymbol(){const g=seamarkGuide.find(g=>g.id===suite.symbolGuide);return g?symbolById.get('point:'+guideVariant(g).code):symbolById.get(suite.symbolId);}
+function beginSymbolPlacement(){const s=currentAtlasSymbol();if(!s)return;suite.symbolPlacementId=s.id;suite.chartSymbols=true;setTool('symbol');$('#chartCanvas').classList.add('placing-symbol');$('#mapToolHint').innerHTML=`Place <b>${s.code}</b> · tap the chart <button data-action="cancelTool">Cancel</button>`;$('#mapToolHint button').focus({preventScroll:true});syncChartSymbols();}
+function placeChartSymbol(p){const s=symbolById.get(suite.symbolPlacementId);if(!s)return;if(p.x<0||p.x>1000||p.y<0||p.y>630)return toast('Choose a position inside the demo chart.');const item={id:'placed-'+(++suite.placedSymbolSerial),symbol:s.id,name:symbolTitle(s),x:Math.round(p.x),y:Math.round(p.y),custom:true};suite.chartSymbolsData.push(item);suite.chartSymbolId=item.id;setTool(null);syncChartSymbols();$(`[data-chart-symbol="${item.id}"]`)?.focus({preventScroll:true});toast(s.code+' placed on the demo chart');}
+function handleChartSymbolClick(b){if(!b.dataset.chartSymbol)return false;const item=suite.chartSymbolsData.find(item=>item.id===b.dataset.chartSymbol);if(item?.sectors){toggleLightSectors(item);return true;}clearLightSectors();suite.chartSymbolId=b.dataset.chartSymbol;openPanel('chartSymbol');syncChartSymbols();return true;}
+Object.assign(actions,{
+ toggleChartSymbols:()=>{suite.chartSymbols=!suite.chartSymbols;syncChartSymbols();renderPanel();},
+ toggleChartSymbolLabels:()=>{suite.chartSymbolLabels=!suite.chartSymbolLabels;syncChartSymbols();renderPanel();},
+ placeAtlasSymbol:beginSymbolPlacement,
+ chartSymbolReference:()=>{const item=selectedChartSymbol();suite.symbolId=item.symbol;suite.symbolGuide='';openPanel('symbolDetail');},
+ removeChartSymbol:()=>{suite.chartSymbolsData=suite.chartSymbolsData.filter(s=>s.id!==suite.chartSymbolId);goBack();syncChartSymbols();toast('Example removed from the demo chart');}
+});

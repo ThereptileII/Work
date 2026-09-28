@@ -1,0 +1,228 @@
+[
+  {
+    "id": "port",
+    "sv": "Babordsmärke",
+    "en": "Port-hand mark",
+    "family": "Lateral",
+    "codeA": "BOYLAT24",
+    "codeB": "BOYLAT23",
+    "shape": "can",
+    "colorsA": [
+      "red"
+    ],
+    "colorsB": [
+      "green"
+    ],
+    "top": "can",
+    "meaning": "Port edge of the channel in the conventional direction of buoyage.",
+    "lightA": "Red · rhythm other than Fl(2+1)",
+    "lightB": "Green · rhythm other than Fl(2+1)",
+    "dayA": "Red · can-shaped body or cylindrical topmark",
+    "dayB": "Green · can-shaped body or cylindrical topmark"
+  },
+  {
+    "id": "starboard",
+    "sv": "Styrbordsmärke",
+    "en": "Starboard-hand mark",
+    "family": "Lateral",
+    "codeA": "BOYLAT13",
+    "codeB": "BOYLAT14",
+    "shape": "cone",
+    "colorsA": [
+      "green"
+    ],
+    "colorsB": [
+      "red"
+    ],
+    "top": "cone",
+    "meaning": "Starboard edge of the channel in the conventional direction of buoyage.",
+    "lightA": "Green · rhythm other than Fl(2+1)",
+    "lightB": "Red · rhythm other than Fl(2+1)",
+    "dayA": "Green · conical body or cone pointing up",
+    "dayB": "Red · conical body or cone pointing up"
+  },
+  {
+    "id": "north",
+    "sv": "Nordmärke",
+    "en": "North cardinal",
+    "family": "Cardinal",
+    "code": "BOYCAR01",
+    "shape": "pillar",
+    "colors": [
+      "black",
+      "yellow"
+    ],
+    "top": "north",
+    "meaning": "Pass north of the mark.",
+    "day": "Black over yellow · two cones pointing up",
+    "light": "White · Q or VQ"
+  },
+  {
+    "id": "east",
+    "sv": "Ostmärke",
+    "en": "East cardinal",
+    "family": "Cardinal",
+    "code": "BOYCAR02",
+    "shape": "pillar",
+    "colors": [
+      "black",
+      "yellow",
+      "black"
+    ],
+    "top": "east",
+    "meaning": "Pass east of the mark.",
+    "day": "Black / yellow / black · cones base to base",
+    "light": "White · Q(3)10s or VQ(3)5s"
+  },
+  {
+    "id": "south",
+    "sv": "Sydmärke",
+    "en": "South cardinal",
+    "family": "Cardinal",
+    "code": "BOYCAR03",
+    "shape": "pillar",
+    "colors": [
+      "yellow",
+      "black"
+    ],
+    "top": "south",
+    "meaning": "Pass south of the mark.",
+    "day": "Yellow over black · two cones pointing down",
+    "light": "White · Q(6)+LFl15s or VQ(6)+LFl10s"
+  },
+  {
+    "id": "west",
+    "sv": "Västmärke",
+    "en": "West cardinal",
+    "family": "Cardinal",
+    "code": "BOYCAR04",
+    "shape": "pillar",
+    "colors": [
+      "yellow",
+      "black",
+      "yellow"
+    ],
+    "top": "west",
+    "meaning": "Pass west of the mark.",
+    "day": "Yellow / black / yellow · cones point to point",
+    "light": "White · Q(9)15s or VQ(9)10s"
+  },
+  {
+    "id": "isolated",
+    "sv": "Punktmärke",
+    "en": "Isolated danger",
+    "family": "Other marks",
+    "code": "BOYISD12",
+    "shape": "pillar",
+    "colors": [
+      "black",
+      "red",
+      "black"
+    ],
+    "top": "spheres",
+    "meaning": "An isolated hazard with navigable water around it.",
+    "day": "Black with red bands · two black spheres",
+    "light": "White · Fl(2)"
+  },
+  {
+    "id": "safe",
+    "sv": "Mittledsmärke",
+    "en": "Safe water",
+    "family": "Other marks",
+    "code": "BOYSAW12",
+    "shape": "pillar",
+    "colors": [
+      "red",
+      "white"
+    ],
+    "vertical": true,
+    "top": "sphere",
+    "meaning": "Navigable water on all sides; may mark a landfall or fairway centre.",
+    "day": "Red and white vertical stripes · one red sphere",
+    "light": "White · Iso, Oc, LFl10s or Mo(A)"
+  },
+  {
+    "id": "special",
+    "sv": "Specialmärke",
+    "en": "Special mark",
+    "family": "Other marks",
+    "code": "BOYSPP11",
+    "shape": "pillar",
+    "colors": [
+      "yellow"
+    ],
+    "top": "x",
+    "meaning": "A special area or feature; read the chart for its purpose.",
+    "day": "Yellow · yellow X topmark when fitted",
+    "light": "Yellow · distinct from cardinal, isolated-danger and safe-water rhythms"
+  },
+  {
+    "id": "preferred-starboard",
+    "sv": "Huvudled åt styrbord",
+    "en": "Preferred channel to starboard",
+    "family": "Lateral",
+    "codeA": "BOYCAN72",
+    "codeB": "BOYCAN73",
+    "shape": "can",
+    "colorsA": [
+      "red",
+      "green",
+      "red"
+    ],
+    "colorsB": [
+      "green",
+      "red",
+      "green"
+    ],
+    "top": "can",
+    "meaning": "At a junction, the preferred channel continues to starboard in the direction of buoyage.",
+    "lightA": "Red · Fl(2+1)",
+    "lightB": "Green · Fl(2+1)",
+    "dayA": "Red with one broad green band · can",
+    "dayB": "Green with one broad red band · can"
+  },
+  {
+    "id": "preferred-port",
+    "sv": "Huvudled åt babord",
+    "en": "Preferred channel to port",
+    "family": "Lateral",
+    "codeA": "BOYCON67",
+    "codeB": "BOYCON66",
+    "shape": "cone",
+    "colorsA": [
+      "green",
+      "red",
+      "green"
+    ],
+    "colorsB": [
+      "red",
+      "green",
+      "red"
+    ],
+    "top": "cone",
+    "meaning": "At a junction, the preferred channel continues to port in the direction of buoyage.",
+    "lightA": "Green · Fl(2+1)",
+    "lightB": "Red · Fl(2+1)",
+    "dayA": "Green with one broad red band · cone",
+    "dayB": "Red with one broad green band · cone"
+  },
+  {
+    "id": "emergency",
+    "sv": "Vrakutmärkning",
+    "en": "Emergency wreck marking",
+    "family": "Other marks",
+    "shape": "pillar",
+    "colors": [
+      "blue",
+      "yellow",
+      "blue",
+      "yellow"
+    ],
+    "vertical": true,
+    "top": "cross",
+    "meaning": "A newly discovered wreck; temporary marking until the danger is charted and addressed.",
+    "day": "Blue and yellow vertical stripes · upright yellow cross",
+    "light": "Alternating blue / yellow · Al Bu Y 3s",
+    "note": "Physical illustration only. This pinned OpenCPN library has no dedicated emergency-wreck glyph; production must use the chart provider’s supported portrayal."
+  }
+]

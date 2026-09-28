@@ -4,9 +4,12 @@ The authoritative product specification is:
 
 `OpenNavX_Codex_Project_Specification.md`
 
-The approved visual reference is:
+The authoritative visual reference is the unchanged supplied HTML prototype:
 
-`docs/design/OpenNavX_Design_Reference.png`
+`docs/design/prototype/index.html`
+
+Its original-file manifest is `docs/design/prototype-original.json`. Never edit
+those original files. Put instrumentation in tools or a separate derived copy.
 
 The project goal is:
 
@@ -53,11 +56,16 @@ The project goal is:
 
 Reference resolution: **1280×800**.
 
-Compare implemented XNav screens against:
+Compare implemented XNav screens against canonical renders of the HTML at
+1280×800, device scale factor 1. The user superseded the older image-based
+design policy on 2026-09-28: safety/navigation correctness, then HTML prototype,
+then extracted prototype specification, then written brief, older image, and
+current implementation. Match exact computed values and interactions; do not
+redesign the prototype. Its illustrative values/geography and simulated
+equipment behavior are not production data or navigation semantics.
 
-`docs/design/OpenNavX_Design_Reference.png`
-
-The reference is a visual target, not a literal pixel specification. The written style tokens, safety rules, data-state rules, and component behavior in the project specification take precedence.
+Native Windows and the boat display remain visual acceptance gates. Linux font
+fallback screenshots do not qualify Windows typography. Keep the UI native.
 
 Do not approximate XNav using visibly native desktop controls where the design specifies an XNav component.
 

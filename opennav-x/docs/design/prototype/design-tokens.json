@@ -1,0 +1,141 @@
+{
+  "name": "OpenNav X — A clearer course",
+  "version": "2026-09-28-v3",
+  "referenceViewport": {
+    "width": 1280,
+    "height": 800
+  },
+  "palettes": {
+    "day": {
+      "background": "#152326",
+      "surface": "#1d2d31",
+      "surfaceRaised": "#26393d",
+      "border": "#35464a",
+      "text": "#f3f5ee",
+      "secondary": "#aabdbd",
+      "muted": "#7e9699",
+      "active": "#b6efce",
+      "instrument": "#7bc8d7",
+      "advisory": "#ecc48c",
+      "critical": "#ec8f87",
+      "ais": "#cd8dac",
+      "water": "#d5e5e5",
+      "land": "#eeeee2",
+      "shore": "#afbfae",
+      "chartText": "#687b7a",
+      "contour": "#adcbce",
+      "route": "#267c76",
+      "chartSurface": "#f7f8f0"
+    },
+    "dusk": {
+      "background": "#1d282e",
+      "surface": "#25343b",
+      "surfaceRaised": "#30444b",
+      "border": "#405059",
+      "text": "#e2e5db",
+      "secondary": "#acb9b7",
+      "muted": "#819394",
+      "active": "#9bc5b1",
+      "instrument": "#82b0c1",
+      "advisory": "#cfac84",
+      "water": "#344f59",
+      "land": "#4e615d",
+      "shore": "#748779",
+      "chartText": "#adbbb1",
+      "contour": "#567880",
+      "route": "#b0dfc8",
+      "chartSurface": "#243a40"
+    },
+    "night": {
+      "background": "#0c1115",
+      "surface": "#141c21",
+      "surfaceRaised": "#1d282f",
+      "border": "#29353b",
+      "text": "#b8b5a7",
+      "secondary": "#91988e",
+      "muted": "#747d77",
+      "active": "#85a995",
+      "instrument": "#78989c",
+      "advisory": "#aa9170",
+      "critical": "#b77569",
+      "ais": "#a77f8a",
+      "water": "#121e24",
+      "land": "#25342f",
+      "shore": "#46574a",
+      "chartText": "#758579",
+      "contour": "#2a4149",
+      "route": "#91bca2",
+      "chartSurface": "#152129",
+      "chartBrightness": 0.78
+    }
+  },
+  "geometry": {
+    "spacingUnit": 4,
+    "topBar": 68,
+    "navigationWidth": 80,
+    "instrumentRailWidth": 186,
+    "timelineHeight": 132,
+    "footerHeight": 34,
+    "contextPanelWidth": 398,
+    "contextPanelRadius": 18,
+    "chartCardRadius": 14,
+    "controlRadius": 8,
+    "primaryActionHeight": 48,
+    "desktopIconTarget": 44,
+    "mobileBreakpoint": 760,
+    "mobileInstrumentHeight": 88,
+    "mobileNavigationHeight": 66,
+    "mobileTimelineHeight": 119,
+    "configurationPanelWidth": 432
+  },
+  "typography": {
+    "family": "Segoe UI Variable Display, Segoe UI, Arial, sans-serif",
+    "instrumentValue": 48,
+    "instrumentWeight": 400,
+    "pageTitle": 30,
+    "pageTitleWeight": 400,
+    "contextTitle": 26,
+    "contextTitleWeight": 450,
+    "turnInstruction": 20,
+    "timelineTitle": 13,
+    "controlText": 12,
+    "secondaryText": "9–11",
+    "eyebrowTracking": "0.13em",
+    "numericStyle": "tabular"
+  },
+  "motion": {
+    "transitionMs": 160,
+    "contextEnterMs": 200,
+    "mockAcknowledgementMs": 3000,
+    "radarSweepSeconds": 2.5,
+    "reducedMotionSupported": true
+  },
+  "states": {
+    "priority": [
+      "info",
+      "advisory",
+      "warning",
+      "critical"
+    ],
+    "source": [
+      "current",
+      "aging",
+      "stale",
+      "invalid",
+      "unavailable"
+    ],
+    "command": [
+      "disabled",
+      "enabled",
+      "pending",
+      "acknowledged",
+      "timeout"
+    ],
+    "smartNav": "advisory only"
+  },
+  "notes": [
+    "Small labels must be assessed on the physical helm display.",
+    "Night colours are a concept, not a validated marine luminance profile.",
+    "Real chart standards, signals and calculations belong to OpenCPN and validated adapters."
+  ]
+}

@@ -1,0 +1,1470 @@
+{
+  "date": "2026-09-28",
+  "scope": "Active context only; persistent main navigation is separate.",
+  "checks": [
+    {
+      "label": "Settings Navigation root",
+      "returns": [
+        {
+          "action": "back",
+          "label": "Close Settings",
+          "text": "Close"
+        }
+      ],
+      "title": "A helm of your own",
+      "width": 1280
+    },
+    {
+      "label": "Chart presentation child",
+      "returns": [
+        {
+          "action": "back",
+          "label": "Back to Settings · Navigation",
+          "text": "Back"
+        }
+      ],
+      "title": "Make it your chart",
+      "width": 1280
+    },
+    {
+      "label": "Charts library",
+      "returns": [
+        {
+          "action": "back",
+          "label": "Back to Settings · Navigation",
+          "text": "Back"
+        }
+      ],
+      "title": "Charts & coverage",
+      "width": 1280
+    },
+    {
+      "label": "Alarm thresholds",
+      "returns": [
+        {
+          "action": "back",
+          "label": "Back to Settings · Navigation",
+          "text": "Back"
+        }
+      ],
+      "title": "The right alert, in time.",
+      "width": 1280
+    },
+    {
+      "label": "Passage library",
+      "returns": [
+        {
+          "action": "back",
+          "label": "Back to Settings · Navigation",
+          "text": "Back"
+        }
+      ],
+      "title": "Your passages & places",
+      "width": 1280
+    },
+    {
+      "label": "Settings Sensors",
+      "returns": [
+        {
+          "action": "back",
+          "label": "Close Settings",
+          "text": "Close"
+        }
+      ],
+      "title": "A helm of your own",
+      "width": 1280
+    },
+    {
+      "label": "Sensor network",
+      "returns": [
+        {
+          "action": "back",
+          "label": "Back to Settings · Sensors",
+          "text": "Back"
+        }
+      ],
+      "title": "Your sensor network",
+      "width": 1280
+    },
+    {
+      "label": "Sensor detail",
+      "returns": [
+        {
+          "action": "back",
+          "label": "Back to Sensors",
+          "text": "Back"
+        }
+      ],
+      "title": "GPS source",
+      "width": 1280
+    },
+    {
+      "label": "sensorCalibration",
+      "returns": [
+        {
+          "action": "back",
+          "label": null,
+          "text": "Cancel"
+        }
+      ],
+      "title": "Calibrate gps",
+      "width": 1280
+    },
+    {
+      "label": "removeSensor",
+      "returns": [
+        {
+          "action": "back",
+          "label": null,
+          "text": "Keep sensor"
+        }
+      ],
+      "title": "Remove this source?",
+      "width": 1280
+    },
+    {
+      "label": "Sensor wizard Connection",
+      "returns": [
+        {
+          "action": "back",
+          "label": null,
+          "text": "Cancel"
+        }
+      ],
+      "title": "Add a sensor",
+      "width": 1280
+    },
+    {
+      "label": "Sensor wizard Discovery",
+      "returns": [
+        {
+          "action": "back",
+          "label": null,
+          "text": "Back"
+        }
+      ],
+      "title": "Add a sensor",
+      "width": 1280
+    },
+    {
+      "label": "Sensor wizard Assignment",
+      "returns": [
+        {
+          "action": "back",
+          "label": null,
+          "text": "Back"
+        }
+      ],
+      "title": "Add a sensor",
+      "width": 1280
+    },
+    {
+      "label": "Sensor wizard Verify",
+      "returns": [
+        {
+          "action": "back",
+          "label": null,
+          "text": "Back"
+        }
+      ],
+      "title": "Add a sensor",
+      "width": 1280
+    },
+    {
+      "label": "Sensor completion returns to network",
+      "returns": [
+        {
+          "action": "back",
+          "label": "Back to Settings · Sensors",
+          "text": "Back"
+        }
+      ],
+      "title": "Your sensor network",
+      "width": 1280
+    },
+    {
+      "label": "Settings Autopilot",
+      "returns": [
+        {
+          "action": "back",
+          "label": "Close Settings",
+          "text": "Close"
+        }
+      ],
+      "title": "A helm of your own",
+      "width": 1280
+    },
+    {
+      "label": "showAdapter",
+      "returns": [
+        {
+          "action": "back",
+          "label": "Back to Settings · Autopilot",
+          "text": "Back"
+        }
+      ],
+      "title": "Autopilot adapter",
+      "width": 1280
+    },
+    {
+      "label": "showAutopilot",
+      "returns": [
+        {
+          "action": "back",
+          "label": "Back to Settings · Autopilot",
+          "text": "Back"
+        }
+      ],
+      "title": "Autopilot",
+      "width": 1280
+    },
+    {
+      "label": "Settings Radar",
+      "returns": [
+        {
+          "action": "back",
+          "label": "Close Settings",
+          "text": "Close"
+        }
+      ],
+      "title": "A helm of your own",
+      "width": 1280
+    },
+    {
+      "label": "showRadarControl",
+      "returns": [
+        {
+          "action": "back",
+          "label": "Back to Settings · Radar",
+          "text": "Back"
+        }
+      ],
+      "title": "Radar echo overlay",
+      "width": 1280
+    },
+    {
+      "label": "showPlugins",
+      "returns": [
+        {
+          "action": "back",
+          "label": "Back to Settings · Radar",
+          "text": "Back"
+        }
+      ],
+      "title": "Connected capabilities",
+      "width": 1280
+    },
+    {
+      "label": "Settings Display",
+      "returns": [
+        {
+          "action": "back",
+          "label": "Close Settings",
+          "text": "Close"
+        }
+      ],
+      "title": "A helm of your own",
+      "width": 1280
+    },
+    {
+      "label": "showRail",
+      "returns": [
+        {
+          "action": "back",
+          "label": "Back to Settings · Display",
+          "text": "Back"
+        }
+      ],
+      "title": "Your four essentials",
+      "width": 1280
+    },
+    {
+      "label": "Settings System",
+      "returns": [
+        {
+          "action": "back",
+          "label": "Close Settings",
+          "text": "Close"
+        }
+      ],
+      "title": "A helm of your own",
+      "width": 1280
+    },
+    {
+      "label": "showInstallation",
+      "returns": [
+        {
+          "action": "back",
+          "label": "Back to Settings · System",
+          "text": "Back"
+        }
+      ],
+      "title": "Install. Maintain. Recover.",
+      "width": 1280
+    },
+    {
+      "label": "showBackups",
+      "returns": [
+        {
+          "action": "back",
+          "label": "Back to Settings · System",
+          "text": "Back"
+        }
+      ],
+      "title": "A way back, always.",
+      "width": 1280
+    },
+    {
+      "label": "showDiagnostics",
+      "returns": [
+        {
+          "action": "back",
+          "label": "Back to Settings · System",
+          "text": "Back"
+        }
+      ],
+      "title": "System diagnostics",
+      "width": 1280
+    },
+    {
+      "label": "showPlugins",
+      "returns": [
+        {
+          "action": "back",
+          "label": "Back to Settings · System",
+          "text": "Back"
+        }
+      ],
+      "title": "Connected capabilities",
+      "width": 1280
+    },
+    {
+      "label": "showHelp",
+      "returns": [
+        {
+          "action": "back",
+          "label": "Back to Settings · System",
+          "text": "Back"
+        }
+      ],
+      "title": "Help & guides",
+      "width": 1280
+    },
+    {
+      "label": "showAbout",
+      "returns": [
+        {
+          "action": "back",
+          "label": "Back to Settings · System",
+          "text": "Back"
+        }
+      ],
+      "title": "OpenNav X",
+      "width": 1280
+    },
+    {
+      "label": "Workspace chooser",
+      "returns": [
+        {
+          "action": "back",
+          "label": "Close dialog",
+          "text": "Close"
+        }
+      ],
+      "title": "Choose your workspace.",
+      "width": 1280
+    },
+    {
+      "label": "Safe mode nested confirmation",
+      "returns": [
+        {
+          "action": "back",
+          "label": null,
+          "text": "Back"
+        }
+      ],
+      "title": "Safe mode",
+      "width": 1280
+    },
+    {
+      "label": "Workspace chooser restored",
+      "returns": [
+        {
+          "action": "back",
+          "label": "Close dialog",
+          "text": "Close"
+        }
+      ],
+      "title": "Choose your workspace.",
+      "width": 1280
+    },
+    {
+      "label": "Installer Welcome",
+      "returns": [
+        {
+          "action": "back",
+          "label": null,
+          "text": "Cancel"
+        }
+      ],
+      "title": "Welcome to OpenNav X.",
+      "width": 1280
+    },
+    {
+      "label": "Installer Detect host",
+      "returns": [
+        {
+          "action": "back",
+          "label": null,
+          "text": "Back"
+        }
+      ],
+      "title": "Find your navigation foundation.",
+      "width": 1280
+    },
+    {
+      "label": "Installer Options",
+      "returns": [
+        {
+          "action": "back",
+          "label": null,
+          "text": "Back"
+        }
+      ],
+      "title": "Make room for a new perspective.",
+      "width": 1280
+    },
+    {
+      "label": "Installer Review",
+      "returns": [
+        {
+          "action": "back",
+          "label": null,
+          "text": "Back"
+        }
+      ],
+      "title": "Ready when you are.",
+      "width": 1280
+    },
+    {
+      "label": "Installer Running",
+      "returns": [
+        {
+          "action": "cancelInstallation",
+          "label": null,
+          "text": "Cancel installation"
+        }
+      ],
+      "title": "Preparing your new helm…",
+      "width": 1280
+    },
+    {
+      "label": "Installer cancel confirmation",
+      "returns": [
+        {
+          "action": "back",
+          "label": null,
+          "text": "Continue installation"
+        }
+      ],
+      "title": "Cancel this installation?",
+      "width": 1280
+    },
+    {
+      "label": "Cancelled installer returns to origin",
+      "returns": [
+        {
+          "action": "back",
+          "label": "Back to Settings · System",
+          "text": "Back"
+        }
+      ],
+      "title": "Install. Maintain. Recover.",
+      "width": 1280
+    },
+    {
+      "label": "repair review",
+      "returns": [
+        {
+          "action": "back",
+          "label": null,
+          "text": "Cancel"
+        }
+      ],
+      "title": "Repair OpenNav X.",
+      "width": 1280
+    },
+    {
+      "label": "rollback review",
+      "returns": [
+        {
+          "action": "back",
+          "label": null,
+          "text": "Cancel"
+        }
+      ],
+      "title": "Rollback OpenNav X.",
+      "width": 1280
+    },
+    {
+      "label": "uninstall review",
+      "returns": [
+        {
+          "action": "back",
+          "label": null,
+          "text": "Cancel"
+        }
+      ],
+      "title": "Uninstall OpenNav X.",
+      "width": 1280
+    },
+    {
+      "label": "Repair in progress",
+      "returns": [
+        {
+          "action": "back",
+          "label": null,
+          "text": "Cancel operation"
+        }
+      ],
+      "title": "Repair in progress…",
+      "width": 1280
+    },
+    {
+      "label": "Repair cancelled to origin",
+      "returns": [
+        {
+          "action": "back",
+          "label": "Back to Settings · System",
+          "text": "Back"
+        }
+      ],
+      "title": "Install. Maintain. Recover.",
+      "width": 1280
+    },
+    {
+      "label": "Recovery complete",
+      "returns": [
+        {
+          "action": "back",
+          "label": null,
+          "text": "Done"
+        }
+      ],
+      "title": "Rollback preview complete.",
+      "width": 1280
+    },
+    {
+      "label": "Recovery Done returns to origin",
+      "returns": [
+        {
+          "action": "back",
+          "label": "Back to Settings · System",
+          "text": "Back"
+        }
+      ],
+      "title": "Install. Maintain. Recover.",
+      "width": 1280
+    },
+    {
+      "label": "Installer verified",
+      "returns": [
+        {
+          "action": "back",
+          "label": null,
+          "text": "Done"
+        }
+      ],
+      "title": "Application files verified.",
+      "width": 1280
+    },
+    {
+      "label": "Installer Ready",
+      "returns": [
+        {
+          "action": "back",
+          "label": null,
+          "text": "Done"
+        }
+      ],
+      "title": "Your next passage starts here.",
+      "width": 1280
+    },
+    {
+      "label": "Installer Done returns to origin",
+      "returns": [
+        {
+          "action": "back",
+          "label": "Back to Settings · System",
+          "text": "Back"
+        }
+      ],
+      "title": "Install. Maintain. Recover.",
+      "width": 1280
+    },
+    {
+      "label": "Setup Vessel",
+      "returns": [
+        {
+          "action": "back",
+          "label": null,
+          "text": "Cancel"
+        }
+      ],
+      "title": "Let’s make this helm yours.",
+      "width": 1280
+    },
+    {
+      "label": "Final setup Vessel",
+      "returns": [
+        {
+          "action": "back",
+          "label": null,
+          "text": "Cancel"
+        }
+      ],
+      "title": "Let’s make this helm yours.",
+      "width": 1280
+    },
+    {
+      "label": "Setup Display",
+      "returns": [
+        {
+          "action": "back",
+          "label": null,
+          "text": "Back"
+        }
+      ],
+      "title": "Comfortable at every hour.",
+      "width": 1280
+    },
+    {
+      "label": "Setup Sources",
+      "returns": [
+        {
+          "action": "back",
+          "label": null,
+          "text": "Back"
+        }
+      ],
+      "title": "Bring your boat into view.",
+      "width": 1280
+    },
+    {
+      "label": "Sensor inventory from setup",
+      "returns": [
+        {
+          "action": "back",
+          "label": "Back to Vessel setup · Sources",
+          "text": "Back"
+        }
+      ],
+      "title": "Your sensor network",
+      "width": 1280
+    },
+    {
+      "label": "Sensor flow from setup",
+      "returns": [
+        {
+          "action": "back",
+          "label": null,
+          "text": "Cancel"
+        }
+      ],
+      "title": "Add a sensor",
+      "width": 1280
+    },
+    {
+      "label": "Cancel sensor returns to setup Sources",
+      "returns": [
+        {
+          "action": "back",
+          "label": null,
+          "text": "Back"
+        }
+      ],
+      "title": "Bring your boat into view.",
+      "width": 1280
+    },
+    {
+      "label": "Setup Energy",
+      "returns": [
+        {
+          "action": "back",
+          "label": null,
+          "text": "Back"
+        }
+      ],
+      "title": "A reserve for the unexpected.",
+      "width": 1280
+    },
+    {
+      "label": "Setup Helm",
+      "returns": [
+        {
+          "action": "back",
+          "label": null,
+          "text": "Back"
+        }
+      ],
+      "title": "You have the helm.",
+      "width": 1280
+    },
+    {
+      "label": "Setup Ready",
+      "returns": [
+        {
+          "action": "back",
+          "label": null,
+          "text": "Back"
+        }
+      ],
+      "title": "Welcome aboard, Reptil.",
+      "width": 1280
+    },
+    {
+      "label": "Setup Ready Back to Helm",
+      "returns": [
+        {
+          "action": "back",
+          "label": null,
+          "text": "Back"
+        }
+      ],
+      "title": "You have the helm.",
+      "width": 1280
+    },
+    {
+      "label": "Energy root view",
+      "returns": [
+        {
+          "action": "back",
+          "label": "Close Energy",
+          "text": "Close"
+        }
+      ],
+      "title": "More horizon. Less uncertainty.",
+      "width": 1280
+    },
+    {
+      "label": "Energy model information",
+      "returns": [
+        {
+          "action": "back",
+          "label": "Close dialog",
+          "text": "Close"
+        }
+      ],
+      "title": "A model you can refine.",
+      "width": 1280
+    },
+    {
+      "label": "Instruments root view",
+      "returns": [
+        {
+          "action": "back",
+          "label": "Close Instruments",
+          "text": "Close"
+        }
+      ],
+      "title": "Feel the passage. Read the details.",
+      "width": 1280
+    },
+    {
+      "label": "Radar root view",
+      "returns": [
+        {
+          "action": "back",
+          "label": "Close Radar",
+          "text": "Close"
+        }
+      ],
+      "title": "Read beyond the chart.",
+      "width": 1280
+    },
+    {
+      "label": "Passage root pane",
+      "returns": [
+        {
+          "action": "back",
+          "label": "Close Passage",
+          "text": "Close"
+        }
+      ],
+      "title": "Arkösund",
+      "width": 1280
+    },
+    {
+      "label": "Anchor root pane",
+      "returns": [
+        {
+          "action": "back",
+          "label": "Close panel",
+          "text": "Close"
+        }
+      ],
+      "title": "Anchor watch",
+      "width": 1280
+    },
+    {
+      "label": "Chart layers root pane",
+      "returns": [
+        {
+          "action": "back",
+          "label": "Close Chart presentation",
+          "text": "Close"
+        }
+      ],
+      "title": "Make it your chart",
+      "width": 1280
+    },
+    {
+      "label": "Search chart root pane",
+      "returns": [
+        {
+          "action": "back",
+          "label": "Close panel",
+          "text": "Close"
+        }
+      ],
+      "title": "Search the coast",
+      "width": 1280
+    },
+    {
+      "label": "Systems nominal root pane",
+      "returns": [
+        {
+          "action": "back",
+          "label": "Close Source health",
+          "text": "Close"
+        }
+      ],
+      "title": "Know what to trust",
+      "width": 1280
+    },
+    {
+      "label": "Alerts, 1 notifications root pane",
+      "returns": [
+        {
+          "action": "back",
+          "label": "Close panel",
+          "text": "Close"
+        }
+      ],
+      "title": "A watchful eye",
+      "width": 1280
+    },
+    {
+      "label": "Traffic root",
+      "returns": [
+        {
+          "action": "back",
+          "label": "Close Traffic",
+          "text": "Close"
+        }
+      ],
+      "title": "Around you",
+      "width": 1280
+    },
+    {
+      "label": "Traffic vessel details",
+      "returns": [
+        {
+          "action": "back",
+          "label": "Back to Traffic",
+          "text": "Back"
+        }
+      ],
+      "title": "Freja",
+      "width": 1280
+    },
+    {
+      "label": "Chart target inspection",
+      "returns": [
+        {
+          "action": "back",
+          "label": null,
+          "text": "Back to Vessel details"
+        }
+      ],
+      "title": "St. Anna archipelagoVECTOR",
+      "width": 1280
+    },
+    {
+      "label": "Target restored",
+      "returns": [
+        {
+          "action": "back",
+          "label": "Back to Traffic",
+          "text": "Back"
+        }
+      ],
+      "title": "Freja",
+      "width": 1280
+    },
+    {
+      "label": "Traffic list restored",
+      "returns": [
+        {
+          "action": "back",
+          "label": "Close Traffic",
+          "text": "Close"
+        }
+      ],
+      "title": "Around you",
+      "width": 1280
+    },
+    {
+      "label": "Edit waypoint",
+      "returns": [
+        {
+          "action": "back",
+          "label": "Close dialog",
+          "text": "Close"
+        }
+      ],
+      "title": "Edit waypoint",
+      "width": 1280
+    },
+    {
+      "label": "Delete waypoint confirmation",
+      "returns": [
+        {
+          "action": "back",
+          "label": null,
+          "text": "Keep waypoint"
+        }
+      ],
+      "title": "Delete this waypoint?",
+      "width": 1280
+    },
+    {
+      "label": "Escape from waypoint returns to passage",
+      "returns": [
+        {
+          "action": "back",
+          "label": "Close Passage",
+          "text": "Close"
+        }
+      ],
+      "title": "Arkösund",
+      "width": 1280
+    },
+    {
+      "label": "Add chart dialog",
+      "returns": [
+        {
+          "action": "back",
+          "label": null,
+          "text": "Cancel"
+        }
+      ],
+      "title": "Add chart coverage.",
+      "width": 1280
+    },
+    {
+      "label": "Chart package detail",
+      "returns": [
+        {
+          "action": "back",
+          "label": "Back to Chart library",
+          "text": "Back"
+        }
+      ],
+      "title": "Swedish east coast",
+      "width": 1280
+    },
+    {
+      "label": "Remove chart confirmation",
+      "returns": [
+        {
+          "action": "back",
+          "label": null,
+          "text": "Keep package"
+        }
+      ],
+      "title": "Remove this chart package?",
+      "width": 1280
+    },
+    {
+      "label": "GPX import",
+      "returns": [
+        {
+          "action": "back",
+          "label": "Close dialog",
+          "text": "Close"
+        }
+      ],
+      "title": "Import a passage",
+      "width": 1280
+    },
+    {
+      "label": "Settings Help",
+      "returns": [
+        {
+          "action": "back",
+          "label": "Close Settings",
+          "text": "Close"
+        }
+      ],
+      "title": "A helm of your own",
+      "width": 1280
+    },
+    {
+      "label": "Guide installation",
+      "returns": [
+        {
+          "action": "back",
+          "label": "Back to Settings · Help",
+          "text": "Back"
+        }
+      ],
+      "title": "Installation guide",
+      "width": 1280
+    },
+    {
+      "label": "Guide sensors",
+      "returns": [
+        {
+          "action": "back",
+          "label": "Back to Settings · Help",
+          "text": "Back"
+        }
+      ],
+      "title": "Connect a sensor",
+      "width": 1280
+    },
+    {
+      "label": "Guide navigation",
+      "returns": [
+        {
+          "action": "back",
+          "label": "Back to Settings · Help",
+          "text": "Back"
+        }
+      ],
+      "title": "Plan and navigate",
+      "width": 1280
+    },
+    {
+      "label": "Guide radar",
+      "returns": [
+        {
+          "action": "back",
+          "label": "Back to Settings · Help",
+          "text": "Back"
+        }
+      ],
+      "title": "Read the radar demo",
+      "width": 1280
+    },
+    {
+      "label": "Guide recovery",
+      "returns": [
+        {
+          "action": "back",
+          "label": "Back to Settings · Help",
+          "text": "Back"
+        }
+      ],
+      "title": "Back up and recover",
+      "width": 1280
+    },
+    {
+      "label": "Keyboard help dialog",
+      "returns": [
+        {
+          "action": "back",
+          "label": "Close dialog",
+          "text": "Close"
+        }
+      ],
+      "title": "A familiar way back.",
+      "width": 1280
+    },
+    {
+      "label": "Restore backup review",
+      "returns": [
+        {
+          "action": "back",
+          "label": null,
+          "text": "Cancel"
+        }
+      ],
+      "title": "Review before restoring.",
+      "width": 1280
+    },
+    {
+      "label": "Updates idle",
+      "returns": [
+        {
+          "action": "back",
+          "label": "Back to Settings · System",
+          "text": "Back"
+        }
+      ],
+      "title": "Software updates",
+      "width": 1280
+    },
+    {
+      "label": "Updates checking",
+      "returns": [
+        {
+          "action": "back",
+          "label": "Back to Settings · System",
+          "text": "Back"
+        }
+      ],
+      "title": "Software updates",
+      "width": 1280
+    },
+    {
+      "label": "Updates available",
+      "returns": [
+        {
+          "action": "back",
+          "label": "Back to Settings · System",
+          "text": "Back"
+        }
+      ],
+      "title": "Software updates",
+      "width": 1280
+    },
+    {
+      "label": "Updates downloading",
+      "returns": [
+        {
+          "action": "back",
+          "label": "Back to Settings · System",
+          "text": "Back"
+        }
+      ],
+      "title": "Software updates",
+      "width": 1280
+    },
+    {
+      "label": "Updates verified",
+      "returns": [
+        {
+          "action": "back",
+          "label": "Back to Settings · System",
+          "text": "Back"
+        }
+      ],
+      "title": "Software updates",
+      "width": 1280
+    },
+    {
+      "label": "Update install confirmation",
+      "returns": [
+        {
+          "action": "back",
+          "label": null,
+          "text": "Cancel"
+        }
+      ],
+      "title": "Install the verified update?",
+      "width": 1280
+    },
+    {
+      "label": "Updates installed",
+      "returns": [
+        {
+          "action": "back",
+          "label": "Back to Settings · System",
+          "text": "Back"
+        }
+      ],
+      "title": "Software updates",
+      "width": 1280
+    },
+    {
+      "label": "Update history dialog",
+      "returns": [
+        {
+          "action": "back",
+          "label": "Close dialog",
+          "text": "Close"
+        }
+      ],
+      "title": "Installation history",
+      "width": 1280
+    },
+    {
+      "label": "Installation guide inside installer",
+      "returns": [
+        {
+          "action": "back",
+          "label": "Back to Installation · Welcome",
+          "text": "Back"
+        }
+      ],
+      "title": "Installation guide",
+      "width": 1280
+    },
+    {
+      "label": "Look-ahead advisory",
+      "returns": [
+        {
+          "action": "back",
+          "label": "Close panel",
+          "text": "Close"
+        }
+      ],
+      "title": "The next 30 minutes",
+      "width": 1280
+    },
+    {
+      "label": "Search place dialog",
+      "returns": [
+        {
+          "action": "back",
+          "label": "Close dialog",
+          "text": "Close"
+        }
+      ],
+      "title": "Arkösund",
+      "width": 1280
+    },
+    {
+      "label": "Chart object",
+      "returns": [
+        {
+          "action": "back",
+          "label": "Close panel",
+          "text": "Close"
+        }
+      ],
+      "title": "Långholmen light",
+      "width": 1280
+    },
+    {
+      "label": "New waypoint dialog",
+      "returns": [
+        {
+          "action": "back",
+          "label": null,
+          "text": "Cancel"
+        }
+      ],
+      "title": "A place to return to.",
+      "width": 1280
+    },
+    {
+      "label": "Escape cancels plotting and restores passage",
+      "returns": [
+        {
+          "action": "back",
+          "label": "Close Passage",
+          "text": "Close"
+        }
+      ],
+      "title": "Arkösund",
+      "width": 1280
+    },
+    {
+      "label": "Enable helm confirmation",
+      "returns": [
+        {
+          "action": "back",
+          "label": null,
+          "text": "Keep control off"
+        }
+      ],
+      "title": "Your helm. Your decision.",
+      "width": 1280
+    },
+    {
+      "label": "Chart position",
+      "returns": [
+        {
+          "action": "back",
+          "label": "Close panel",
+          "text": "Close"
+        }
+      ],
+      "title": "A point on your passage",
+      "width": 1280
+    },
+    {
+      "label": "Name passage dialog",
+      "returns": [
+        {
+          "action": "back",
+          "label": null,
+          "text": "Keep plotting"
+        }
+      ],
+      "title": "Name your passage",
+      "width": 1280
+    },
+    {
+      "label": "Passage saved dialog",
+      "returns": [
+        {
+          "action": "back",
+          "label": null,
+          "text": "Done"
+        }
+      ],
+      "title": "Passage saved",
+      "width": 1280
+    },
+    {
+      "label": "Chart after saved passage",
+      "returns": [
+        {
+          "action": "back",
+          "label": null,
+          "text": "Back to Passage"
+        }
+      ],
+      "title": "St. Anna archipelagoVECTOR",
+      "width": 1280
+    },
+    {
+      "label": "Final root Settings",
+      "returns": [
+        {
+          "action": "back",
+          "label": "Close Settings",
+          "text": "Close"
+        }
+      ],
+      "title": "A helm of your own",
+      "width": 1280
+    },
+    {
+      "label": "Final nested Chart presentation",
+      "returns": [
+        {
+          "action": "back",
+          "label": "Back to Settings · Navigation",
+          "text": "Back"
+        }
+      ],
+      "title": "Make it your chart",
+      "width": 1280
+    },
+    {
+      "label": "Mobile Energy",
+      "returns": [
+        {
+          "action": "back",
+          "label": "Close Energy",
+          "text": "Close"
+        }
+      ],
+      "title": "More horizon. Less uncertainty.",
+      "width": 390
+    },
+    {
+      "label": "Mobile root Settings over Energy",
+      "returns": [
+        {
+          "action": "back",
+          "label": "Close Settings",
+          "text": "Close"
+        }
+      ],
+      "title": "A helm of your own",
+      "width": 390
+    },
+    {
+      "label": "Mobile nested presentation",
+      "returns": [
+        {
+          "action": "back",
+          "label": "Back to Settings · Navigation",
+          "text": "Back"
+        }
+      ],
+      "title": "Make it your chart",
+      "width": 390
+    },
+    {
+      "label": "Mobile Sensor wizard",
+      "returns": [
+        {
+          "action": "back",
+          "label": null,
+          "text": "Cancel"
+        }
+      ],
+      "title": "Add a sensor",
+      "width": 390
+    },
+    {
+      "label": "Mobile Installer Welcome",
+      "returns": [
+        {
+          "action": "back",
+          "label": null,
+          "text": "Cancel"
+        }
+      ],
+      "title": "Welcome to OpenNav X.",
+      "width": 390
+    },
+    {
+      "label": "Compact Installer Welcome",
+      "returns": [
+        {
+          "action": "back",
+          "label": null,
+          "text": "Cancel"
+        }
+      ],
+      "title": "Welcome to OpenNav X.",
+      "width": 854
+    },
+    {
+      "label": "Radar focus from settings",
+      "returns": [
+        {
+          "action": "back",
+          "label": "Back to Settings · Radar",
+          "text": "Back"
+        }
+      ],
+      "title": "Read beyond the chart.",
+      "width": 1280
+    },
+    {
+      "label": "Final compact Installer return",
+      "returns": [
+        {
+          "action": "back",
+          "label": null,
+          "text": "Cancel"
+        }
+      ],
+      "title": "Welcome to OpenNav X.",
+      "width": 854
+    },
+    {
+      "label": "Final cancellation reaches origin",
+      "returns": [
+        {
+          "action": "back",
+          "label": "Back to Settings · System",
+          "text": "Back"
+        }
+      ],
+      "title": "Install. Maintain. Recover.",
+      "width": 854
+    },
+    {
+      "label": "Final recovery completion after cancelled operation",
+      "returns": [
+        {
+          "action": "back",
+          "label": null,
+          "text": "Done"
+        }
+      ],
+      "title": "Rollback preview complete.",
+      "width": 1280
+    }
+  ]
+}

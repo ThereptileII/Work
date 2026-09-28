@@ -1,0 +1,14 @@
+{
+  "repository": "https://github.com/OpenCPN/OpenCPN",
+  "commit": "1bf728e17feaae05fddad3aad5be677e15c1e89c",
+  "retrieved": "2026-09-28",
+  "license": "GPL-2.0",
+  "sourcePath": "data/s57data",
+  "files": [
+    "chartsymbols.xml",
+    "rastersymbols-day.png",
+    "rastersymbols-dusk.png",
+    "rastersymbols-dark.png",
+    "COPYING"
+  ]
+}

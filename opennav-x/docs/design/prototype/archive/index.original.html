@@ -1,0 +1,468 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>OpenNav X — UI Reference Prototype</title>
+<style>
+  :root {
+    --void:#07141C;
+    --surface1:#0B1922;
+    --surface2:#10232E;
+    --surface3:#132B37;
+    --border:#284653;
+    --text:#F2F6F8;
+    --text2:#A9BAC3;
+    --muted:#708791;
+    --cyan:#00B8E6;
+    --green:#00E08A;
+    --amber:#F5B942;
+    --red:#FF4D5A;
+    --magenta:#F04F9B;
+    --night:#8d1f26;
+    --radius:8px;
+    --gap:8px;
+    --top:44px;
+    --bottom:60px;
+    --left:56px;
+    --rail:128px;
+    --shadow:0 18px 52px rgba(0,0,0,.34);
+    font-family:"Segoe UI Variable","Segoe UI",system-ui,sans-serif;
+  }
+  * { box-sizing:border-box; }
+  html,body { margin:0; width:100%; height:100%; background:#02070a; color:var(--text); overflow:hidden; }
+  button,input,select { font:inherit; }
+  button { color:inherit; }
+  body { display:grid; place-items:center; }
+  #app {
+    width:min(100vw, 1280px);
+    height:min(100vh, 800px);
+    min-width:900px;
+    min-height:560px;
+    background:var(--void);
+    position:relative;
+    overflow:hidden;
+    border:1px solid #172c36;
+    box-shadow:0 20px 80px #000;
+  }
+  #app.dusk { --void:#0b1217; --surface1:#111c22; --surface2:#18262c; --surface3:#203138; --text:#e7e2da; --text2:#baaFA3; --muted:#81776e; --cyan:#4aaec3; --green:#67b890; --amber:#c79a4b; --magenta:#bd6d93; }
+  #app.night { --void:#030304; --surface1:#0a0809; --surface2:#120b0c; --surface3:#1b0e10; --border:#3f2226; --text:#d7aeb0; --text2:#a47074; --muted:#6c4548; --cyan:#9b373d; --green:#8c413e; --amber:#a44b3a; --red:#d64147; --magenta:#9f3e54; }
+
+  .topbar {
+    height:var(--top); position:absolute; inset:0 0 auto 0; display:flex; align-items:center; gap:14px;
+    padding:0 10px 0 14px; background:rgba(7,20,28,.93); border-bottom:1px solid var(--border); z-index:30;
+    backdrop-filter:blur(14px);
+  }
+  .night .topbar { background:rgba(3,3,4,.96); }
+  .brand { font-weight:750; letter-spacing:.02em; font-size:16px; white-space:nowrap; }
+  .brand em { color:var(--cyan); font-style:normal; }
+  .top-divider { width:1px; height:20px; background:var(--border); }
+  .route-mini { display:flex; min-width:0; align-items:center; gap:9px; font-size:12px; color:var(--text2); }
+  .route-mini strong { color:var(--text); font-size:13px; font-weight:650; }
+  .spacer { flex:1; }
+  .health { display:flex; gap:12px; align-items:center; }
+  .health-item { display:flex; align-items:center; gap:5px; color:var(--text2); font-size:11px; white-space:nowrap; }
+  .dot { width:7px; height:7px; border-radius:50%; background:var(--muted); box-shadow:0 0 0 2px color-mix(in srgb,var(--muted) 12%,transparent); }
+  .dot.good { background:var(--green); box-shadow:0 0 12px color-mix(in srgb,var(--green) 40%,transparent); }
+  .dot.warn { background:var(--amber); }
+  .top-btn { min-width:44px; height:34px; border-radius:8px; border:1px solid transparent; background:transparent; display:grid; place-items:center; cursor:pointer; }
+  .top-btn:hover { background:var(--surface2); border-color:var(--border); }
+
+  .leftbar {
+    position:absolute; top:calc(var(--top) + 8px); bottom:calc(var(--bottom) + 8px); left:8px; width:var(--left);
+    border:1px solid var(--border); background:rgba(11,25,34,.86); border-radius:var(--radius); z-index:20;
+    padding:4px; display:flex; flex-direction:column; gap:4px; backdrop-filter:blur(12px);
+  }
+  .tool { width:46px; min-height:46px; border:0; background:transparent; border-radius:7px; cursor:pointer; display:grid; place-items:center; color:var(--text2); position:relative; }
+  .tool:hover { background:var(--surface2); color:var(--text); }
+  .tool.active { background:color-mix(in srgb,var(--cyan) 13%,var(--surface2)); color:var(--cyan); outline:1px solid color-mix(in srgb,var(--cyan) 55%,transparent); }
+  .tool.alert { color:var(--amber); }
+  .tool svg,.top-btn svg,.icon svg { width:22px; height:22px; stroke:currentColor; fill:none; stroke-width:1.8; stroke-linecap:round; stroke-linejoin:round; }
+  .tool .label { display:none; }
+  .left-sep { height:1px; background:var(--border); margin:3px 5px; }
+  .tool.end { margin-top:auto; }
+
+  .map-shell { position:absolute; top:var(--top); left:0; right:0; bottom:var(--bottom); overflow:hidden; }
+  .map { position:absolute; inset:0; background:#0b2028; transition:filter .2s, opacity .2s; }
+  .night .map { filter:brightness(.36) saturate(.5) sepia(.22) hue-rotate(300deg); }
+  .dusk .map { filter:brightness(.72) saturate(.72) sepia(.1); }
+  .map svg { width:100%; height:100%; display:block; }
+  .water-label { position:absolute; color:#6ba2b0; font-size:10px; letter-spacing:.08em; opacity:.55; pointer-events:none; }
+  .ownship { position:absolute; left:53%; top:52%; transform:translate(-50%,-50%); z-index:7; }
+  .ownship .boat { width:0; height:0; border-left:8px solid transparent; border-right:8px solid transparent; border-bottom:26px solid var(--cyan); filter:drop-shadow(0 0 8px color-mix(in srgb,var(--cyan) 55%,transparent)); transform:rotate(17deg); transform-origin:50% 70%; }
+  .ownship:after { content:""; position:absolute; width:68px; height:1px; background:linear-gradient(90deg,var(--cyan),transparent); transform:rotate(-73deg); left:9px; top:-11px; opacity:.65; }
+  .route-line { position:absolute; left:52.5%; top:51.6%; width:260px; height:3px; background:linear-gradient(90deg,var(--cyan),var(--cyan) 72%,transparent); transform:rotate(-29deg); transform-origin:left center; z-index:5; box-shadow:0 0 8px rgba(0,184,230,.28); }
+  .route-line:after { content:""; position:absolute; right:24px; top:-5px; width:10px; height:10px; border-radius:50%; background:var(--cyan); border:2px solid var(--text); }
+  .route-line:before { content:""; position:absolute; left:112px; top:-4px; width:8px; height:8px; border-radius:50%; background:var(--surface1); border:2px solid var(--cyan); }
+  .ais-target { position:absolute; z-index:9; width:26px; height:30px; background:transparent; border:0; color:var(--magenta); cursor:pointer; }
+  .ais-target svg { width:26px; height:30px; fill:color-mix(in srgb,var(--magenta) 17%,transparent); stroke:var(--magenta); stroke-width:1.7; }
+  .ais-target:hover { filter:drop-shadow(0 0 7px var(--magenta)); }
+  .ais1 { left:62%; top:29%; transform:rotate(129deg); }
+  .ais2 { left:39%; top:64%; transform:rotate(42deg); opacity:.72; }
+
+  .rail { position:absolute; top:calc(var(--top) + 8px); bottom:calc(var(--bottom) + 8px); right:8px; width:var(--rail); z-index:20; display:grid; grid-template-rows:repeat(4,1fr); gap:8px; }
+  .data-card { border:1px solid var(--border); background:rgba(11,25,34,.89); backdrop-filter:blur(12px); border-radius:var(--radius); padding:10px 9px; cursor:pointer; overflow:hidden; display:flex; flex-direction:column; justify-content:center; }
+  .data-card:hover { background:rgba(16,35,46,.96); border-color:#3c6574; }
+  .data-card .cap { color:var(--text2); font-size:10px; font-weight:700; letter-spacing:.12em; text-transform:uppercase; }
+  .data-card .val { font-size:29px; line-height:1; font-weight:720; margin-top:7px; letter-spacing:-.03em; font-variant-numeric:tabular-nums; }
+  .data-card .unit { color:var(--text2); font-size:11px; margin-left:3px; font-weight:500; }
+  .data-card .sub { font-size:10px; color:var(--muted); margin-top:6px; }
+  .data-card .mini { color:var(--green); }
+
+  .bottombar { position:absolute; bottom:0; left:0; right:0; min-height:var(--bottom); background:rgba(7,20,28,.96); border-top:1px solid var(--border); z-index:31; display:flex; align-items:center; gap:8px; padding:6px 10px; backdrop-filter:blur(14px); }
+  .bottom-group { display:flex; align-items:center; gap:6px; }
+  .bottom-btn { min-width:52px; height:46px; padding:0 14px; border-radius:8px; border:1px solid var(--border); background:var(--surface1); color:var(--text2); font-size:12px; font-weight:650; cursor:pointer; }
+  .bottom-btn:hover { background:var(--surface2); color:var(--text); }
+  .bottom-btn.primary { color:var(--cyan); border-color:color-mix(in srgb,var(--cyan) 55%,var(--border)); background:color-mix(in srgb,var(--cyan) 9%,var(--surface1)); }
+  .bottom-btn.standby { color:var(--amber); }
+  .ap-summary { margin-left:auto; border:1px solid var(--border); background:var(--surface1); height:46px; min-width:205px; border-radius:8px; display:flex; align-items:center; gap:12px; padding:0 12px; cursor:pointer; }
+  .ap-summary strong { font-size:21px; font-weight:720; font-variant-numeric:tabular-nums; }
+  .ap-summary span { color:var(--text2); font-size:11px; }
+  .ap-summary .mode { color:var(--green); font-weight:700; letter-spacing:.08em; }
+
+  .context-card { position:absolute; z-index:40; width:285px; border:1px solid #3b5b68; border-radius:10px; background:rgba(19,43,55,.97); box-shadow:var(--shadow); padding:14px; display:none; }
+  .context-card.show { display:block; animation:pop .15s ease-out; }
+  @keyframes pop { from { opacity:0; transform:translateY(6px) scale(.98);} to { opacity:1; transform:none;} }
+  .context-card .eyebrow { font-size:10px; letter-spacing:.12em; color:var(--text2); font-weight:700; }
+  .context-card h3 { margin:5px 0 4px; font-size:20px; }
+  .context-card .desc { color:var(--text2); font-size:12px; }
+  .stats2 { margin-top:12px; display:grid; grid-template-columns:1fr 1fr; gap:8px; }
+  .statbox { border-top:1px solid var(--border); padding-top:8px; }
+  .statbox label { display:block; color:var(--muted); font-size:10px; text-transform:uppercase; letter-spacing:.1em; }
+  .statbox strong { display:block; margin-top:3px; font-size:17px; }
+  .card-actions { display:flex; gap:8px; margin-top:14px; }
+  .action { flex:1; min-height:44px; border:1px solid var(--border); border-radius:8px; background:var(--surface1); cursor:pointer; font-size:11px; font-weight:700; color:var(--text2); }
+  .action.primary { color:var(--cyan); border-color:color-mix(in srgb,var(--cyan) 55%,var(--border)); }
+  .action:hover { background:var(--surface2); color:var(--text); }
+
+  .screen { position:absolute; top:var(--top); bottom:var(--bottom); left:0; right:0; background:var(--void); z-index:25; display:none; }
+  .screen.active { display:block; animation:fade .15s ease-out; }
+  @keyframes fade { from { opacity:0;} to { opacity:1;} }
+  .screen-head { height:56px; display:flex; align-items:center; padding:0 16px; border-bottom:1px solid var(--border); background:var(--surface1); gap:12px; }
+  .screen-head h2 { font-size:20px; margin:0; }
+  .screen-head p { color:var(--text2); font-size:12px; margin:2px 0 0; }
+  .back { width:44px; height:44px; border:1px solid var(--border); border-radius:8px; background:transparent; cursor:pointer; display:grid; place-items:center; color:var(--text2); }
+  .back:hover { color:var(--text); background:var(--surface2); }
+  .screen-body { height:calc(100% - 56px); padding:16px; overflow:auto; }
+  .grid2 { display:grid; grid-template-columns:1fr 1fr; gap:12px; }
+  .grid3 { display:grid; grid-template-columns:repeat(3,1fr); gap:12px; }
+  .panel { border:1px solid var(--border); border-radius:var(--radius); background:var(--surface1); padding:14px; }
+  .panel h3 { font-size:13px; letter-spacing:.08em; text-transform:uppercase; color:var(--text2); margin:0 0 10px; }
+  .hero-value { font-size:52px; line-height:1; font-weight:740; font-variant-numeric:tabular-nums; letter-spacing:-.045em; }
+  .hero-value small { font-size:14px; font-weight:500; color:var(--text2); letter-spacing:0; }
+  .kv { display:flex; justify-content:space-between; align-items:center; min-height:38px; gap:18px; border-top:1px solid color-mix(in srgb,var(--border) 55%,transparent); font-size:12px; }
+  .kv:first-of-type { border-top:0; }
+  .kv span { color:var(--text2); }
+  .kv strong { font-variant-numeric:tabular-nums; }
+  .quality { display:inline-flex; gap:6px; align-items:center; font-size:10px; color:var(--text2); margin-top:8px; }
+  .quality b { color:var(--green); font-weight:650; }
+
+  /* Instruments */
+  .wind-rose { height:250px; display:grid; place-items:center; position:relative; }
+  .wind-circle { width:190px; height:190px; border-radius:50%; border:1px solid var(--border); position:relative; display:grid; place-items:center; }
+  .wind-circle:before,.wind-circle:after { content:""; position:absolute; background:var(--border); opacity:.7; }
+  .wind-circle:before { width:1px; height:100%; }
+  .wind-circle:after { height:1px; width:100%; }
+  .wind-arrow { position:absolute; top:18px; left:50%; width:2px; height:64px; background:var(--cyan); transform-origin:bottom; transform:translateX(-50%) rotate(-72deg); box-shadow:0 0 8px rgba(0,184,230,.4); }
+  .wind-arrow:before { content:""; position:absolute; top:-2px; left:-5px; width:10px; height:10px; border-left:2px solid var(--cyan); border-top:2px solid var(--cyan); transform:rotate(45deg); }
+  .wind-center { z-index:2; text-align:center; background:var(--surface1); border-radius:50%; width:90px; height:90px; display:grid; place-items:center; border:1px solid var(--border); }
+  .wind-center strong { font-size:27px; }
+  .wind-center span { color:var(--text2); font-size:10px; }
+
+  /* autopilot overlay */
+  .ap-overlay { position:absolute; z-index:70; left:50%; bottom:72px; transform:translateX(-50%); width:630px; border:1px solid #345766; background:rgba(11,25,34,.98); border-radius:12px; box-shadow:var(--shadow); padding:14px; display:none; }
+  .ap-overlay.show { display:block; animation:pop .15s ease-out; }
+  .ap-heading { display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; }
+  .ap-heading .big { font-size:46px; font-weight:750; line-height:1; }
+  .ap-heading .mode-pill { color:var(--green); border:1px solid color-mix(in srgb,var(--green) 55%,var(--border)); background:color-mix(in srgb,var(--green) 8%,var(--surface1)); border-radius:999px; padding:7px 10px; font-size:11px; font-weight:700; }
+  .ap-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:8px; }
+  .ap-grid .bottom-btn { width:100%; }
+  .ap-modes { display:grid; grid-template-columns:repeat(4,1fr); gap:8px; margin-top:8px; }
+  .rudder { margin-top:12px; display:flex; align-items:center; gap:10px; color:var(--text2); font-size:11px; }
+  .rudder-track { height:4px; background:var(--border); flex:1; border-radius:99px; position:relative; }
+  .rudder-track:after { content:""; position:absolute; width:12px; height:12px; border-radius:50%; background:var(--cyan); left:56%; top:50%; transform:translate(-50%,-50%); }
+
+  /* settings */
+  .settings-layout { display:grid; grid-template-columns:230px 1fr; height:100%; }
+  .settings-nav { border-right:1px solid var(--border); padding:12px; background:var(--surface1); }
+  .settings-nav button { width:100%; min-height:44px; border:0; border-radius:7px; background:transparent; color:var(--text2); text-align:left; padding:0 12px; margin-bottom:4px; cursor:pointer; }
+  .settings-nav button.active { background:var(--surface2); color:var(--cyan); }
+  .settings-main { padding:18px; overflow:auto; }
+  .setting-row { display:grid; grid-template-columns:1fr auto; gap:14px; align-items:center; padding:12px 0; border-bottom:1px solid var(--border); }
+  .setting-row strong { display:block; font-size:13px; }
+  .setting-row span { color:var(--text2); font-size:11px; }
+  .toggle { width:48px; height:26px; border-radius:99px; background:#233a45; position:relative; border:1px solid var(--border); cursor:pointer; }
+  .toggle:after { content:""; position:absolute; width:20px; height:20px; border-radius:50%; background:var(--text2); left:3px; top:2px; transition:.15s; }
+  .toggle.on { background:color-mix(in srgb,var(--cyan) 35%,var(--surface2)); border-color:var(--cyan); }
+  .toggle.on:after { left:23px; background:var(--cyan); }
+
+  /* anchor */
+  .anchor-map { height:100%; position:relative; overflow:hidden; background:radial-gradient(circle at center, #0d2832 0 20%, #0b2028 55%, #08171e); }
+  .anchor-rings { position:absolute; left:45%; top:48%; transform:translate(-50%,-50%); width:390px; height:390px; border-radius:50%; border:1px dashed #4b6b78; }
+  .anchor-rings:before,.anchor-rings:after { content:""; position:absolute; border-radius:50%; border:1px solid #274653; inset:22%; }
+  .anchor-rings:after { inset:39%; }
+  .anchor-symbol { position:absolute; left:45%; top:48%; transform:translate(-50%,-50%); color:var(--cyan); font-size:25px; }
+  .anchor-boat { position:absolute; left:51%; top:41%; width:12px; height:27px; background:var(--text); clip-path:polygon(50% 0,100% 100%,50% 82%,0 100%); transform:rotate(17deg); }
+
+  /* Update popup */
+  .modal-scrim { position:absolute; inset:0; z-index:100; background:rgba(0,4,7,.72); backdrop-filter:blur(5px); display:none; place-items:center; }
+  .modal-scrim.show { display:grid; }
+  .update-modal { width:470px; border:1px solid #3f6370; background:var(--surface3); border-radius:12px; box-shadow:0 26px 80px rgba(0,0,0,.55); padding:20px; }
+  .update-modal .badge { display:inline-flex; align-items:center; gap:6px; padding:5px 8px; border-radius:99px; background:color-mix(in srgb,var(--cyan) 10%,var(--surface2)); color:var(--cyan); border:1px solid color-mix(in srgb,var(--cyan) 40%,var(--border)); font-size:10px; font-weight:700; letter-spacing:.08em; }
+  .update-modal h2 { margin:11px 0 3px; font-size:24px; }
+  .update-modal p { color:var(--text2); margin:0 0 14px; font-size:12px; line-height:1.45; }
+  .release-list { margin:12px 0 17px; padding:0; list-style:none; }
+  .release-list li { min-height:34px; display:flex; gap:9px; align-items:center; border-top:1px solid var(--border); color:var(--text2); font-size:12px; }
+  .release-list li:before { content:"✓"; color:var(--green); font-weight:750; }
+  .update-actions { display:flex; justify-content:flex-end; gap:8px; }
+
+  @media (max-width:1050px), (max-height:650px) {
+    :root { --rail:112px; --left:52px; }
+    .data-card .val { font-size:24px; }
+    .health-item:nth-child(3) { display:none; }
+  }
+</style>
+</head>
+<body>
+<div id="app">
+  <header class="topbar">
+    <div class="brand">OPENNAV <em>X</em></div>
+    <div class="top-divider"></div>
+    <div class="route-mini">
+      <span>ACTIVE ROUTE</span>
+      <strong>ARKÖSUND</strong>
+      <span>18.2 NM · ETA 14:42</span>
+    </div>
+    <div class="spacer"></div>
+    <div class="health">
+      <div class="health-item"><i class="dot good"></i> GPS</div>
+      <div class="health-item"><i class="dot good"></i> AIS</div>
+      <div class="health-item"><i class="dot good"></i> N2K</div>
+      <div class="health-item"><i class="dot warn"></i> AP</div>
+    </div>
+    <div class="top-divider"></div>
+    <button class="top-btn" id="updateBtn" title="Show update prototype" aria-label="Updates">
+      <svg viewBox="0 0 24 24"><path d="M20 12a8 8 0 1 1-2.3-5.7"/><path d="M20 4v6h-6"/></svg>
+    </button>
+    <button class="top-btn" id="themeBtn" title="Cycle Day / Dusk / Night" aria-label="Theme">
+      <svg viewBox="0 0 24 24"><path d="M12 3a9 9 0 1 0 9 9 7 7 0 0 1-9-9Z"/></svg>
+    </button>
+    <button class="top-btn" data-view="settings" title="Settings" aria-label="Settings">
+      <svg viewBox="0 0 24 24"><path d="M12 15.5a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7Z"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.9l.1.1-2.8 2.8-.1-.1a1.7 1.7 0 0 0-1.9-.3 1.7 1.7 0 0 0-1 1.6V21h-4v-.1a1.7 1.7 0 0 0-1-1.6 1.7 1.7 0 0 0-1.9.3l-.1.1L4.2 17l.1-.1a1.7 1.7 0 0 0 .3-1.9 1.7 1.7 0 0 0-1.6-1H3v-4h.1a1.7 1.7 0 0 0 1.6-1 1.7 1.7 0 0 0-.3-1.9L4.2 7 7 4.2l.1.1a1.7 1.7 0 0 0 1.9.3A1.7 1.7 0 0 0 10 3h4a1.7 1.7 0 0 0 1 1.6 1.7 1.7 0 0 0 1.9-.3l.1-.1L19.8 7l-.1.1a1.7 1.7 0 0 0-.3 1.9 1.7 1.7 0 0 0 1.6 1h.1v4H21a1.7 1.7 0 0 0-1.6 1Z"/></svg>
+    </button>
+  </header>
+
+  <div class="map-shell" id="mapShell">
+    <div class="map" id="map">
+      <svg viewBox="0 0 1280 696" preserveAspectRatio="none" aria-label="Abstract chart placeholder">
+        <defs>
+          <pattern id="grid" width="64" height="64" patternUnits="userSpaceOnUse"><path d="M64 0H0V64" fill="none" stroke="#315363" stroke-width=".55" opacity=".28"/></pattern>
+          <filter id="soft"><feGaussianBlur stdDeviation="1"/></filter>
+        </defs>
+        <rect width="1280" height="696" fill="#09212a"/>
+        <rect width="1280" height="696" fill="url(#grid)"/>
+        <g fill="none" stroke="#214b59" opacity=".4">
+          <path d="M0 172 C190 118 334 185 492 137 S835 106 1280 188"/>
+          <path d="M0 228 C220 176 358 233 530 189 S875 168 1280 246"/>
+          <path d="M0 540 C192 480 370 537 520 500 S890 470 1280 520"/>
+        </g>
+        <g fill="#243a35" stroke="#78907f" stroke-width="1.1">
+          <path d="M40 78 C92 46 154 52 201 78 C246 103 244 149 198 168 C147 190 93 180 58 155 C29 134 12 101 40 78Z"/>
+          <path d="M175 252 C213 230 257 237 286 263 C313 289 302 327 268 337 C229 350 190 330 176 302 C167 286 163 266 175 252Z"/>
+          <path d="M338 66 C379 44 424 58 442 86 C459 113 449 144 416 153 C377 164 346 145 334 118 C327 102 326 79 338 66Z"/>
+          <path d="M815 60 C878 35 946 50 989 89 C1025 122 1016 163 969 181 C911 203 852 177 820 143 C794 116 785 79 815 60Z"/>
+          <path d="M1046 256 C1099 216 1168 220 1211 257 C1254 293 1242 342 1190 365 C1136 389 1079 374 1044 341 C1014 313 1018 278 1046 256Z"/>
+          <path d="M844 448 C894 411 957 419 989 455 C1025 497 994 543 944 550 C891 557 843 529 829 492 C822 473 830 459 844 448Z"/>
+          <path d="M516 558 C557 528 604 538 628 567 C648 590 636 622 607 633 C570 648 531 631 514 606 C503 589 501 569 516 558Z"/>
+          <path d="M1098 532 C1131 507 1176 517 1198 547 C1218 576 1204 609 1171 622 C1133 637 1098 615 1085 590 C1075 570 1081 545 1098 532Z"/>
+        </g>
+        <g fill="#9ab7be" font-size="10" opacity=".58" font-family="Segoe UI, sans-serif">
+          <text x="280" y="110">12.4</text><text x="570" y="175">18.6</text><text x="725" y="112">9.8</text>
+          <text x="990" y="205">6.2</text><text x="690" y="445">14.1</text><text x="436" y="470">21.0</text>
+          <text x="288" y="568">7.8</text><text x="1000" y="490">11.3</text><text x="1115" y="420">5.6</text>
+        </g>
+        <g stroke="#7fa8b3" opacity=".42" fill="none" stroke-dasharray="3 6">
+          <circle cx="660" cy="359" r="70"/><circle cx="660" cy="359" r="140"/><circle cx="660" cy="359" r="210"/>
+        </g>
+      </svg>
+      <div class="water-label" style="left:42%;top:29%">BALTIC SEA · APPROACH</div>
+      <div class="route-line"></div>
+      <div class="ownship"><div class="boat"></div></div>
+      <button class="ais-target ais1" id="aisTarget" aria-label="AIS target"><svg viewBox="0 0 24 30"><path d="M12 2 20 26 12 21 4 26Z"/></svg></button>
+      <button class="ais-target ais2" aria-label="AIS target"><svg viewBox="0 0 24 30"><path d="M12 2 20 26 12 21 4 26Z"/></svg></button>
+    </div>
+  </div>
+
+  <nav class="leftbar">
+    <button class="tool active" data-view="home" title="Navigation"><svg viewBox="0 0 24 24"><path d="m4 12 16-7-7 16-2-7Z"/></svg></button>
+    <button class="tool" id="zoomIn" title="Zoom in"><svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg></button>
+    <button class="tool" id="zoomOut" title="Zoom out"><svg viewBox="0 0 24 24"><path d="M5 12h14"/></svg></button>
+    <button class="tool" title="Center boat"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><circle cx="12" cy="12" r="9"/><path d="M12 1v3M12 20v3M1 12h3M20 12h3"/></svg></button>
+    <div class="left-sep"></div>
+    <button class="tool" data-view="route" title="Route"><svg viewBox="0 0 24 24"><circle cx="5" cy="18" r="2"/><circle cx="19" cy="6" r="2"/><path d="M7 18c6 0 4-12 10-12"/></svg></button>
+    <button class="tool" id="aisTool" title="AIS"><svg viewBox="0 0 24 24"><path d="m12 2 7 20-7-4-7 4Z"/><path d="M3 6a12 12 0 0 1 18 0"/></svg></button>
+    <button class="tool" data-view="anchor" title="Anchor"><svg viewBox="0 0 24 24"><path d="M12 2v14M8 6h8M5 14c1 5 4 7 7 7s6-2 7-7M4 14h4M16 14h4"/></svg></button>
+    <button class="tool end" data-view="settings" title="System"><svg viewBox="0 0 24 24"><path d="M4 6h16M4 12h16M4 18h16"/></svg></button>
+  </nav>
+
+  <aside class="rail">
+    <div class="data-card" data-view="instruments"><div class="cap">SOG</div><div><span class="val">6.3</span><span class="unit">kn</span></div><div class="sub"><span class="mini">●</span> LIVE · GPS</div></div>
+    <div class="data-card" data-view="instruments"><div class="cap">Depth</div><div><span class="val">8.4</span><span class="unit">m</span></div><div class="sub"><span class="mini">●</span> LIVE · N2K</div></div>
+    <div class="data-card" data-view="instruments"><div class="cap">Wind</div><div><span class="val">14.3</span><span class="unit">kt</span></div><div class="sub">TWA 72° · PORT</div></div>
+    <div class="data-card" data-view="propulsion"><div class="cap">Battery</div><div><span class="val">68</span><span class="unit">%</span></div><div class="sub">ETA SOC <span class="mini">43%</span></div></div>
+  </aside>
+
+  <footer class="bottombar">
+    <div class="bottom-group">
+      <button class="bottom-btn">FOLLOW</button>
+      <button class="bottom-btn">COURSE ↑</button>
+      <button class="bottom-btn" data-view="route">ROUTE</button>
+    </div>
+    <div class="bottom-group" style="margin-left:14px;color:var(--text2);font-size:11px">
+      <span>BTW <strong style="color:var(--text)">146°</strong></span>
+      <span>DTW <strong style="color:var(--text)">4.2 NM</strong></span>
+      <span>XTE <strong style="color:var(--green)">0.02</strong></span>
+    </div>
+    <div class="ap-summary" id="apSummary"><div><span>AUTOPILOT</span><div class="mode">AUTO</div></div><strong>143°</strong><div style="margin-left:auto;color:var(--text2)">⌃</div></div>
+  </footer>
+
+  <div class="context-card" id="aisCard" style="left:61%;top:20%">
+    <div class="eyebrow">AIS TARGET · SELECTED</div>
+    <h3>M/S NORTHERN STAR</h3>
+    <div class="desc">Cargo vessel · MMSI 265123456</div>
+    <div class="stats2"><div class="statbox"><label>CPA</label><strong>0.42 NM</strong></div><div class="statbox"><label>TCPA</label><strong>08:24</strong></div><div class="statbox"><label>SOG</label><strong>12.4 kn</strong></div><div class="statbox"><label>COG</label><strong>134°</strong></div></div>
+    <div class="card-actions"><button class="action">DETAILS</button><button class="action primary">TRACK</button></div>
+  </div>
+
+  <div class="ap-overlay" id="apOverlay">
+    <div class="ap-heading"><div><div style="color:var(--text2);font-size:10px;letter-spacing:.12em;font-weight:700">AUTOPILOT</div><div class="big">143°</div></div><div class="mode-pill">AUTO · CONNECTED</div></div>
+    <div class="ap-grid"><button class="bottom-btn">−10°</button><button class="bottom-btn">−1°</button><button class="bottom-btn">+1°</button><button class="bottom-btn">+10°</button></div>
+    <div class="ap-modes"><button class="bottom-btn standby">STANDBY</button><button class="bottom-btn primary">AUTO</button><button class="bottom-btn">TRACK</button><button class="bottom-btn">WIND</button></div>
+    <div class="rudder"><span>RUDDER</span><div class="rudder-track"></div><strong style="color:var(--text)">+4°</strong></div>
+  </div>
+
+  <!-- Route screen -->
+  <section class="screen" id="screen-route">
+    <div class="screen-head"><button class="back" data-view="home">←</button><div><h2>Active route</h2><p>Arkösund · navigation summary</p></div></div>
+    <div class="screen-body">
+      <div class="grid3">
+        <div class="panel"><h3>Destination</h3><div class="hero-value">18.2 <small>NM</small></div><div class="kv"><span>ETA</span><strong>14:42</strong></div><div class="kv"><span>Est. arrival SOC</span><strong style="color:var(--green)">43%</strong></div></div>
+        <div class="panel"><h3>Next waypoint</h3><div style="font-size:25px;font-weight:720;margin:4px 0 13px">Kopparholmen</div><div class="kv"><span>Distance</span><strong>4.2 NM</strong></div><div class="kv"><span>Bearing</span><strong>146°</strong></div><div class="kv"><span>XTE</span><strong>0.02 NM</strong></div></div>
+        <div class="panel"><h3>Next maneuver</h3><div class="hero-value" style="color:var(--cyan)">+32°</div><div class="kv"><span>Approx.</span><strong>8 min</strong></div><div class="kv"><span>New course</span><strong>178°</strong></div><div class="quality"><i class="dot good"></i><b>GOOD</b> · advisory</div></div>
+      </div>
+      <div class="panel" style="margin-top:12px">
+        <h3>Navigation timeline</h3>
+        <div style="display:grid;grid-template-columns:110px 1fr;gap:0;margin-top:5px">
+          <div style="color:var(--cyan);font-weight:700">NOW</div><div style="border-left:1px solid var(--border);padding:0 0 18px 18px">On route · 6.3 kn</div>
+          <div style="color:var(--text2)">+8 min</div><div style="border-left:1px solid var(--border);padding:0 0 18px 18px"><strong>Turn +32°</strong> · new course 178°</div>
+          <div style="color:var(--text2)">+31 min</div><div style="border-left:1px solid var(--border);padding:0 0 18px 18px"><strong>Kopparholmen</strong> · waypoint</div>
+          <div style="color:var(--text2)">14:42</div><div style="border-left:1px solid var(--border);padding:0 0 0 18px"><strong>Arkösund</strong> · est. SOC 43%</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Instruments screen -->
+  <section class="screen" id="screen-instruments">
+    <div class="screen-head"><button class="back" data-view="home">←</button><div><h2>Instruments</h2><p>Navigation, wind and environment</p></div></div>
+    <div class="screen-body grid2">
+      <div class="panel"><h3>Wind</h3><div class="wind-rose"><div class="wind-circle"><div class="wind-arrow"></div><div class="wind-center"><div><strong>14.3</strong><div><span>kt TRUE</span></div></div></div></div></div><div class="grid2"><div class="kv"><span>TWA</span><strong>72°</strong></div><div class="kv"><span>TWS</span><strong>16.1 kn</strong></div><div class="kv"><span>AWA</span><strong>66°</strong></div><div class="kv"><span>AWS</span><strong>14.3 kn</strong></div></div></div>
+      <div style="display:grid;gap:12px;grid-template-rows:1fr 1fr"><div class="panel"><h3>Navigation</h3><div class="grid2"><div><div class="hero-value">6.3 <small>kn</small></div><div style="color:var(--text2);font-size:11px;margin-top:4px">SOG</div></div><div><div class="hero-value">147<small>°</small></div><div style="color:var(--text2);font-size:11px;margin-top:4px">COG</div></div></div><div class="grid2" style="margin-top:12px"><div class="kv"><span>STW</span><strong>5.9 kn</strong></div><div class="kv"><span>Heading</span><strong>143°</strong></div></div></div><div class="panel"><h3>Environment</h3><div class="grid3"><div><div class="hero-value" style="font-size:35px">8.4 <small>m</small></div><div style="color:var(--text2);font-size:10px">DEPTH</div></div><div><div class="hero-value" style="font-size:35px">15.4<small>°C</small></div><div style="color:var(--text2);font-size:10px">WATER</div></div><div><div class="hero-value" style="font-size:35px">1014 <small>hPa</small></div><div style="color:var(--text2);font-size:10px">PRESSURE</div></div></div></div></div>
+    </div>
+  </section>
+
+  <!-- Propulsion -->
+  <section class="screen" id="screen-propulsion">
+    <div class="screen-head"><button class="back" data-view="home">←</button><div><h2>Propulsion & energy</h2><p>Live vessel state · estimates clearly marked</p></div></div>
+    <div class="screen-body">
+      <div class="grid3">
+        <div class="panel"><h3>Battery</h3><div class="hero-value">68<small>% SOC</small></div><div class="kv"><span>Voltage</span><strong>343 V</strong></div><div class="kv"><span>Current</span><strong>21.0 A</strong></div><div class="kv"><span>Usable</span><strong>24.8 kWh</strong></div><div class="quality"><i class="dot good"></i><b>LIVE</b> · NMEA 2000</div></div>
+        <div class="panel"><h3>Propulsion</h3><div class="hero-value">7.2<small> kW</small></div><div class="kv"><span>Motor</span><strong>820 RPM</strong></div><div class="kv"><span>Temperature</span><strong>62 °C</strong></div><div class="kv"><span>State</span><strong>FORWARD</strong></div><div class="quality"><i class="dot good"></i><b>LIVE</b> · Engine PGN</div></div>
+        <div class="panel"><h3>Destination estimate</h3><div class="hero-value" style="color:var(--green)">43<small>% SOC</small></div><div class="kv"><span>Route remaining</span><strong>18.2 NM</strong></div><div class="kv"><span>Est. range</span><strong>28 NM</strong></div><div class="kv"><span>Reserve</span><strong style="color:var(--green)">+18%</strong></div><div class="quality"><span style="color:var(--cyan);font-weight:700">EST</span> · GOOD quality</div></div>
+      </div>
+      <div class="panel" style="margin-top:12px"><h3>At current propulsion model</h3><div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px"><div class="statbox"><label>4.0 kn</label><strong>44 NM</strong></div><div class="statbox"><label>5.0 kn</label><strong>35 NM</strong></div><div class="statbox"><label>6.0 kn</label><strong>26 NM</strong></div><div class="statbox"><label>7.0 kn</label><strong>17 NM</strong></div></div><div style="color:var(--muted);font-size:10px;margin-top:14px">Advisory prediction · based on configured usable capacity, reserve and calibrated speed/power curve.</div></div>
+    </div>
+  </section>
+
+  <!-- Anchor -->
+  <section class="screen" id="screen-anchor">
+    <div class="screen-head"><button class="back" data-view="home">←</button><div><h2>Anchor mode</h2><p>Position, swing and boat status</p></div></div>
+    <div class="screen-body" style="padding:0;display:grid;grid-template-columns:1fr 300px">
+      <div class="anchor-map"><div class="anchor-rings"></div><div class="anchor-symbol"><svg viewBox="0 0 24 24" style="width:30px;height:30px;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round"><path d="M12 2v14M8 6h8M5 14c1 5 4 7 7 7s6-2 7-7M4 14h4M16 14h4"/></svg></div><div class="anchor-boat"></div><div style="position:absolute;left:22px;bottom:20px;color:var(--text2);font-size:11px">TRACK HISTORY · 42 min</div></div>
+      <div style="padding:14px;border-left:1px solid var(--border);background:var(--surface1)"><div class="panel" style="background:var(--surface2)"><h3>Anchor watch</h3><div class="hero-value">18<small> m</small></div><div style="color:var(--text2);font-size:11px;margin:5px 0 14px">distance from anchor</div><div class="kv"><span>Alarm radius</span><strong>32 m</strong></div><div class="kv"><span>Depth</span><strong>5.8 m</strong></div><div class="kv"><span>Wind</span><strong>12 kt</strong></div><div class="kv"><span>Battery</span><strong>71%</strong></div></div><button class="bottom-btn standby" style="width:100%;margin-top:12px">STOP ANCHOR WATCH</button></div>
+    </div>
+  </section>
+
+  <!-- Settings -->
+  <section class="screen" id="screen-settings">
+    <div class="screen-head"><button class="back" data-view="home">←</button><div><h2>Settings</h2><p>Simple first, technical detail on demand</p></div></div>
+    <div class="settings-layout">
+      <nav class="settings-nav">
+        <button class="active">Vessel</button><button>Navigation</button><button>Sensors</button><button>Autopilot</button><button>Radar</button><button>Display</button><button>System</button><button style="margin-top:18px;color:var(--muted)">Advanced / Legacy</button>
+      </nav>
+      <div class="settings-main">
+        <h2 style="margin-top:0">Vessel</h2>
+        <div class="panel"><div class="setting-row"><div><strong>Vessel profile</strong><span>Reptil · sailing vessel</span></div><button class="bottom-btn">EDIT</button></div><div class="setting-row"><div><strong>Safety depth</strong><span>Used by chart advisories</span></div><strong>3.5 m</strong></div><div class="setting-row"><div><strong>Energy model</strong><span>Usable capacity, reserve and propulsion curve</span></div><button class="bottom-btn" data-view="propulsion">OPEN</button></div></div>
+        <h3 style="color:var(--text2);font-size:12px;letter-spacing:.1em;margin-top:18px">CONNECTED SYSTEMS</h3>
+        <div class="panel"><div class="setting-row"><div><strong>GPS</strong><span>Selected navigation source</span></div><div><i class="dot good" style="display:inline-block"></i> <strong style="font-size:11px">Connected</strong></div></div><div class="setting-row"><div><strong>Heading</strong><span>NMEA 2000</span></div><div><i class="dot good" style="display:inline-block"></i> <strong style="font-size:11px">Connected</strong></div></div><div class="setting-row"><div><strong>Depth</strong><span>NMEA 2000</span></div><div><i class="dot good" style="display:inline-block"></i> <strong style="font-size:11px">Connected</strong></div></div><div class="setting-row"><div><strong>Autopilot control</strong><span>Status available · control requires explicit enable</span></div><div class="toggle"></div></div></div>
+      </div>
+    </div>
+  </section>
+
+  <div class="modal-scrim" id="updateModal">
+    <div class="update-modal">
+      <div class="badge"><i class="dot good"></i> UPDATE AVAILABLE</div>
+      <h2>XNav 0.5.2</h2>
+      <p>A newer Beta release is available. Update before continuing, or start this session with your current version.</p>
+      <ul class="release-list"><li>Refined route and AIS interaction</li><li>Improved NMEA reconnect handling</li><li>Night-mode and touch refinements</li><li>Field reliability fixes</li></ul>
+      <div style="font-size:10px;color:var(--muted);margin-bottom:14px">Package verified before installation · rollback point created automatically.</div>
+      <div class="update-actions"><button class="bottom-btn" id="laterBtn">LATER</button><button class="bottom-btn primary" id="installBtn">UPDATE NOW</button></div>
+    </div>
+  </div>
+
+</div>
+<script>
+(() => {
+  const app = document.getElementById('app');
+  const mapShell = document.getElementById('mapShell');
+  const aisCard = document.getElementById('aisCard');
+  const apOverlay = document.getElementById('apOverlay');
+  const updateModal = document.getElementById('updateModal');
+  const screens = [...document.querySelectorAll('.screen')];
+  let theme = 0;
+
+  function showView(name) {
+    screens.forEach(s => s.classList.remove('active'));
+    document.querySelectorAll('.tool').forEach(t => t.classList.toggle('active', t.dataset.view === name));
+    if (name !== 'home') {
+      const s = document.getElementById('screen-' + name);
+      if (s) s.classList.add('active');
+    }
+    aisCard.classList.remove('show');
+    apOverlay.classList.remove('show');
+  }
+  document.querySelectorAll('[data-view]').forEach(el => el.addEventListener('click', () => showView(el.dataset.view)));
+  document.getElementById('aisTarget').addEventListener('click', e => { e.stopPropagation(); aisCard.classList.toggle('show'); apOverlay.classList.remove('show'); });
+  document.getElementById('aisTool').addEventListener('click', () => { showView('home'); aisCard.classList.add('show'); });
+  document.getElementById('apSummary').addEventListener('click', () => { apOverlay.classList.toggle('show'); aisCard.classList.remove('show'); });
+  document.getElementById('themeBtn').addEventListener('click', () => {
+    theme = (theme + 1) % 3;
+    app.classList.toggle('dusk', theme === 1);
+    app.classList.toggle('night', theme === 2);
+  });
+  document.getElementById('updateBtn').addEventListener('click', () => updateModal.classList.add('show'));
+  document.getElementById('laterBtn').addEventListener('click', () => updateModal.classList.remove('show'));
+  document.getElementById('installBtn').addEventListener('click', () => {
+    const m = document.querySelector('.update-modal');
+    m.innerHTML = '<div class="badge">VERIFIED UPDATE</div><h2>Installing 0.5.2</h2><p>XNav would now create a rollback point, close the application, run the updater and restart into the new version.</p><div style="height:8px;background:var(--surface1);border:1px solid var(--border);border-radius:99px;overflow:hidden"><div style="width:82%;height:100%;background:var(--cyan)"></div></div><div style="display:flex;justify-content:flex-end;margin-top:18px"><button class="bottom-btn" onclick="location.reload()">RESET PROTOTYPE</button></div>';
+  });
+  document.getElementById('mapShell').addEventListener('click', () => aisCard.classList.remove('show'));
+  document.getElementById('zoomIn').addEventListener('click', () => document.getElementById('map').style.transform = 'scale(1.08)');
+  document.getElementById('zoomOut').addEventListener('click', () => document.getElementById('map').style.transform = 'scale(1)');
+  document.querySelectorAll('.toggle').forEach(t => t.addEventListener('click', () => t.classList.toggle('on')));
+  document.querySelectorAll('.settings-nav button').forEach(b => b.addEventListener('click', () => { document.querySelectorAll('.settings-nav button').forEach(x => x.classList.remove('active')); b.classList.add('active'); }));
+  document.addEventListener('keydown', e => { if (e.key === 'Escape') { aisCard.classList.remove('show'); apOverlay.classList.remove('show'); updateModal.classList.remove('show'); showView('home'); } });
+})();
+</script>
+</body>
+</html>

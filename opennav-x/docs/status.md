@@ -1,11 +1,46 @@
 # OpenNav X status — 2026-09-28
 
-**Beta 2 development is in progress; its first development package is installed
+## Current stage: prototype design lock, chart presentation and Online AIS
+
+The user's September 28 instruction supersedes the older visual baseline:
+safety/navigation correctness → supplied v8 HTML → extracted prototype spec →
+older brief/image → current Beta. The native architecture and all existing
+data, control, installer and Legacy/Safe contracts remain in force.
+
+The supplied HTML and all 113 companion files are committed unchanged. HTML
+SHA-256: `b04573b920b6bccd16afd22f54a909e48afcfd502ce9cd7c69fdf5b6dd895447`.
+Original ZIP/extracted/Git bytes were verified. See
+[prototype specification](design/prototype-spec.md),
+[component map](design/prototype-component-map.md),
+[interactions](design/prototype-interactions.md) and
+[chart inspection](design/xnav-chart-style.md).
+
+Sixty canonical Linux renders cover twenty actual states across Day/Dusk/Night,
+using pinned Playwright/Chromium, offline loading and a fixed clock. Computed
+styles, geometry, font resolution and image hashes are recorded. Linux resolves
+the supplied stack to Liberation Sans; Windows typography needs its own native
+reference. Initial native palette/font-stack migration compiles on Linux.
+This does not qualify screen conformance. Every screen remains Pending in
+[prototype conformance](design/prototype-conformance.md).
+
+Online AIS and XNav-owned S-52 presentation are under inspection; no live
+provider or chart-style completion is claimed. AISStream must not inherit the
+local Signal K client's disabled TLS validation. The prototype's newer vendor
+symbol snapshot cannot replace the pinned application's resources blindly.
+
+Boat SSH remains unreachable at the latest probe. The existing commissioning
+transaction described below must be inspected and restored after normal exit;
+no expired restart receipt may be reused. The deployed application still uses
+the previous Beta UI. No physical actuator commands are authorized or sent.
+
+## Prior Beta 2 development and deployment evidence
+
+**Beta 2 development is in progress; its current development package is installed
 on the boat, but it is not qualified for release.**
 
 The user's Desktop feedback has been read completely and recorded in
 [boat Beta 1 feedback](feedback/boat-beta1-feedback.md). The approved design
-reference is the Beta 2 baseline. Current work separates fixture-enabled CI
+reference was the Beta 2 baseline before the new HTML design lock. Work separates fixture-enabled CI
 executables from the installed product, refines shared visual components and
 navigation workflows, and adds repeatable boat deployment and maintenance tools.
 The accepted Beta 1 results below remain historical evidence, not Beta 2 gates.
@@ -60,6 +95,30 @@ No chart/pilot action was sent. The repair applies the already tested stock-wind
 recovery policy to the distinct XNav identity, retains strict capture/input guards,
 and adds eight disposable native resize cases. Boat deployment awaits native
 qualification; the running product and restart-session dependencies are unchanged.
+
+### Reconnection required after the resumed session
+
+At 14:44 UTC, local Tailscale is Running but the boat peer is offline with
+last-seen 08:17:38 UTC. A fresh SSH probe times out. The `79a95c4` installation
+and pre-launch profile preservation are verified; the present process state
+is unknown. The last window action restored the maximized frame and refused
+before fixed placement. No action is replayed and remote services are unchanged.
+
+The four-hour session created at 07:11 UTC is expired. On reconnection, inspect
+the exact failed request/result, process/start identity, clean-exit log and
+active commissioning journal before normal close/restoration. Do not reuse
+its launch or mode receipts. Five DLL quarantines and the input-only connection
+setting remain part of the unclosed transaction; do not run maintenance first.
+
+Resize tool commit `9c3b7bb7b1518be306bd751788b01912ee1543dd` maps all 716
+local source blobs/modes exactly and preserves the pin plus eight unrelated
+repository blobs. [Native tool run 36438174776](https://github.com/ThereptileII/Work/actions/runs/36438174776)
+passed all nine jobs. All nine artifacts match API/upload/download digests,
+sizes and ZIP CRC. Thirty-one actual display cases pass, including eight new
+resize cases; fourteen mode cases remain passing. The repair is not deployed
+while the boat is offline. Local checks pass: 178 display-policy/compilation checks,
+133 restart-window checks and 13 handoff tests. No product rebuild or boat
+visual acceptance follows from these tooling tests.
 
 The following September 27 checkpoints are historical; the recovery above
 supersedes their offline/active-commissioning state.

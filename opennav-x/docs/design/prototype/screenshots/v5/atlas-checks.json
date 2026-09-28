@@ -1,0 +1,83 @@
+{
+  "date": "2026-09-28",
+  "kind": "Summary of observed UI checks; not an exhaustive automated run",
+  "viewports": [
+    [
+      1280,
+      800
+    ],
+    [
+      390,
+      844
+    ],
+    [
+      854,
+      533
+    ]
+  ],
+  "categoryResults": {
+    "all": 1107,
+    "seamarks": 424,
+    "lights": 34,
+    "hazards": 25,
+    "depths": 153,
+    "routes": 74,
+    "harbours": 51,
+    "infrastructure": 21,
+    "coast": 99,
+    "seabed": 14,
+    "water": 17,
+    "vessels": 40,
+    "inland": 125,
+    "other": 30
+  },
+  "guideDetails": [
+    "port",
+    "starboard",
+    "preferred-starboard",
+    "preferred-port",
+    "north",
+    "east",
+    "south",
+    "west",
+    "isolated",
+    "safe",
+    "special",
+    "emergency"
+  ],
+  "searches": [
+    "LIGHTS11",
+    "DRGARE01",
+    "Nordmärke",
+    "fyrar",
+    "zzzz-no-match"
+  ],
+  "palettes": [
+    "day",
+    "dusk",
+    "night"
+  ],
+  "lastPage": {
+    "page": 31,
+    "first": 1081,
+    "last": 1107,
+    "cards": 27,
+    "nextDisabled": true
+  },
+  "entryPoints": [
+    "Settings / Navigation",
+    "Chart presentation",
+    "Settings / Help"
+  ],
+  "singleReturn": true,
+  "restored": [
+    "search",
+    "category",
+    "palette",
+    "page",
+    "scroll"
+  ],
+  "consoleErrorsObserved": 0,
+  "downloadEventObserved": false,
+  "downloadFallback": "src/symbol-catalogue.json"
+}

@@ -1,0 +1,39 @@
+{
+  "referenceViewport": {"width": 1280, "height": 800},
+  "colors": {
+    "background": "#07141C",
+    "surface1": "#0B1922",
+    "surface2": "#10232E",
+    "surfaceElevated": "#132B37",
+    "border": "#284653",
+    "textPrimary": "#F2F6F8",
+    "textSecondary": "#A9BAC3",
+    "textMuted": "#708791",
+    "navigationCyan": "#00B8E6",
+    "activeGreen": "#00E08A",
+    "attentionAmber": "#F5B942",
+    "alarmRed": "#FF4D5A",
+    "aisMagenta": "#F04F9B"
+  },
+  "geometry": {
+    "baseSpacing": 8,
+    "compactSpacing": 4,
+    "panelRadius": 8,
+    "controlRadius": 6,
+    "minimumTouchTarget": 48,
+    "primaryActionHeight": 52,
+    "topBarHeight": 44,
+    "bottomBarHeight": 60,
+    "leftToolWidth": 56,
+    "rightRailWidth": 128
+  },
+  "typography": {
+    "font": "Segoe UI Variable, Segoe UI",
+    "pageTitlePx": "22-28",
+    "panelHeadingPx": "16-18",
+    "primaryValuePx": "28-40",
+    "standardUiPx": "14-16",
+    "labelPx": "11-12"
+  },
+  "motion": {"normalTransitionMs": "120-180", "easing": "ease-out"}
+}

@@ -12,6 +12,7 @@ namespace opennav::ui {
 
 wxColour Colour(std::uint32_t rgb);
 wxFont UiFont(wxWindow& window, int pixels, bool bold = false);
+wxFont UiFontWeight(wxWindow& window, int pixels, int weight);
 
 // Shared drawing primitives. All geometry is in logical DIP; semantic palette
 // roles, radii and typography remain identical across painted product pages.
