@@ -2,6 +2,42 @@
 
 ## Current stage: prototype design lock, chart presentation and Online AIS
 
+The next native Passage increment now follows the prototype drawer instead of
+replacing the chart with a full-page route summary. It copies accepted route and
+SmartNav values, matches the exact energy input publication and withholds values
+on GPS loss, stale data or revision mismatch. Route commands retain their
+existing OpenCPN identity/confirmation gates. Three successful component passes
+and two full-product passes retain 41 verified PNGs, including the corrective
+icon-background fix. All 121 integrated Linux tests pass after the corrections. Offline component
+checks: 26; new provenance assertions: 25. Full product checks include Passage Day/Dusk/Night and Close retaining the
+1014×566 chart viewport. Windows and boat gates remain pending. Saved-passage
+and waypoint flows still need prototype migration. See
+[review](design/reviews/prototype-passage-in-progress.md) and
+[local evidence](evidence/prototype-passage-local.json).
+
+Replacement `c86c6a7` / [run 36485693077](https://github.com/ThereptileII/Work/actions/runs/36485693077)
+passes all seven development jobs. All eight downloaded artifacts, their ZIP
+CRCs, 29 captured PNG hashes and the probe's 17 binaries were independently
+verified. The native PowerShell launcher now records the required negative
+exit code 4. An isolated read-only boat probe then ran and shut down cleanly:
+`credential_missing`, no subscription and zero targets. OpenCPN remained
+closed. This is a negative live-service result, not AIS or product acceptance;
+the SSH logon has no usable credential. No key or vessel identity was collected.
+See [native evidence](evidence/prototype-native-c86c6a7.json) and
+[boat probe evidence](evidence/boat-ais-probe-c86c6a7.json).
+
+At local `820cbf9410870554e93df9555296ef7a852e589d`, a fresh integrated
+configure/build/install and all **120/120 Linux tests** pass in 19.90 seconds,
+including the corrected scale legend backing. Native depth-label run
+`36486349316` and scale-placement run `36487339813` both pass all seven jobs.
+All eight artifacts per run and 41 recorded product/component PNG hashes per
+run verify. Native Feet/Day, Fathoms/Night and scale Day/Night were reviewed;
+unit semantics and scale placement work, while broader chart design remains
+open. See [depth native evidence](evidence/prototype-native-7b2a6fd.json) and
+[scale native evidence](evidence/prototype-native-ebe7010.json). None of these
+incremental gates qualifies the unchanged old boat installation as the new
+prototype product.
+
 Latest local chart increment replaces only XNav's large depth-unit emboss with
 the prototype metadata typography/placement, using OpenCPN's unchanged actual
 quilt/single-chart resolver. Twenty real-ENC captures cover software and

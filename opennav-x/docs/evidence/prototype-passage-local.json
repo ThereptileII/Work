@@ -1,0 +1,54 @@
+{
+  "accepted": false,
+  "scope": "Linux working tree on 384e14e; Windows and boat pending",
+  "componentChecks": 26,
+  "provenanceChecks": 25,
+  "captures": [
+    {
+      "directory": "evidence/local/prototype/passage-component-pass2",
+      "sha256": "2f0a9d28534fb27f055c356d3695373c5ff806ab6db6134357d225c671ae0216",
+      "imagesVerified": 5,
+      "executableSha256": "bfde3e9b83d540a28137a97e865da979150f88e2fcc43ca6f8fccdb2a599ebca"
+    },
+    {
+      "directory": "evidence/local/prototype/passage-component-pass3",
+      "sha256": "a56bc7412afb05ce403231082e4033e653cfaf26273348b56bfebe7d20245abe",
+      "imagesVerified": 5,
+      "executableSha256": "180a79c59ae7c1a9c4764aa263948c264b34bcceb3dd8645553f61002dddbdbb"
+    },
+    {
+      "directory": "evidence/local/prototype/passage-component-pass4",
+      "sha256": "ee979278fcfc0fc248f65cec2680a5ff068f951623eb21d6fe319f4f831f8125",
+      "imagesVerified": 5,
+      "executableSha256": "fd365c235191d3b1d3c2407ecf3953950fc0efcb183ed792e0ae1919dedf33ff"
+    },
+    {
+      "directory": "evidence/local/prototype/passage-product-pass1",
+      "sha256": "76958b5d8e63ebcfa7186b5ee0134acfad5c5cda09872be31d076ffb8d1ef337",
+      "imagesVerified": 12,
+      "executableSha256": "bb8739fd76cee3907fb864ac50dce9e02477e685b720e700cf73b36057865f34"
+    },
+    {
+      "directory": "evidence/local/prototype/passage-product-pass2",
+      "sha256": "49f5e8153523212cdf3a22d39b91d00674c7e5249cfa520c7bd9db6f01c915b5",
+      "imagesVerified": 14,
+      "executableSha256": "55f8a10006b53556327ae504557b77099b65d504fd6070e3328a3db82c6eb8b1"
+    }
+  ],
+  "negativePass": "passage-component-pass1 passed widget assertions but failed unchanged theme-pixel criteria; retained cached GTK ScreenDC images are not accepted",
+  "correction": "GDK root pixels; fixed parent theme for disabled edit icons; fixed offline clock; no change to acceptance tolerance",
+  "reviewed": [
+    "passage-component-pass1/passage-dusk.png",
+    "passage-component-pass2/passage-night.png",
+    "passage-component-pass3/passage-day.png",
+    "passage-component-pass4/passage-day.png",
+    "passage-product-pass1/passage-day.png",
+    "passage-product-pass2/passage-night.png"
+  ],
+  "remaining": "Native typography/tracking/shadow and reference row geometry; saved-route/waypoint workflows; physical boat capture; full installer/release gate.",
+  "integratedLinuxTests": {
+    "passed": 121,
+    "seconds": 17.0,
+    "sha256": "63cb024d7bf178889c24518e6b1ba6a5e0de4ee339e43801178d6df535bed4c3"
+  }
+}

@@ -30,3 +30,15 @@ read-only profile/plugin audit and preparation.
 A positive result qualifies only service/TLS/subscription/report acquisition.
 Actual product chart marks, viewport resubscription, selected cards, offline
 aging, reconnect and physical display remain separate acceptance gates.
+
+## First isolated boat probe: negative credential gate
+
+On 2026-09-28, the independently verified `c86c6a7` package from successful
+native run `36485693077` was staged in a new isolated run directory and executed
+through the SSH alias. It returned exit 4, `credential_missing`, no subscription,
+zero targets and `disabledAndCleared=true`. No probe or OpenCPN process remained.
+The installed application, profile, charts, plugins and output configuration
+were not opened or modified. This only establishes clean dependency loading,
+credential-unavailable handling and shutdown in that logon. It does not establish
+whether another interactive logon has a credential, nor any live service gate.
+See [aggregate evidence](evidence/boat-ais-probe-c86c6a7.json).

@@ -185,7 +185,7 @@ Shell::Shell(wxFrame &frame, wxAuiManager &manager, ShellActions actions,
     return b;
   };
   nav("Chart", "Navigation", XNavIcon::Chart, [this]{ShowNavigation();});
-  nav("Passage", "Route", XNavIcon::Route, [this]{ShowPage(PreviewPage::Route);});
+  nav("Passage", "Route", XNavIcon::Route, [this]{ShowPassage();});
   nav("Traffic", "AIS targets", XNavIcon::Traffic, [this]{ShowProduct(ProductPage::Ais);});
   nav("Energy", "Energy", XNavIcon::Energy, [this]{ShowPage(PreviewPage::Energy);});
   nav("Instruments", "Vessel instruments", XNavIcon::Instruments, [this]{ShowProduct(ProductPage::Instruments);});
@@ -349,7 +349,7 @@ Shell::Shell(wxFrame &frame, wxAuiManager &manager, ShellActions actions,
   product_actions.theme = [this](LightMode mode) { SetLight(mode); };
   product_actions.save_settings = actions_.save_settings;
   product_actions.chart = [this] { ShowNavigation(); };
-  product_actions.route_summary = [this] { ShowPage(PreviewPage::Route); };
+  product_actions.route_summary = [this] { ShowPassage(); };
   product_actions.energy = [this] { ShowPage(PreviewPage::Energy); };
   product_actions.diagnostics = [this] { ShowPage(PreviewPage::Diagnostics); };
   product_actions.legacy=actions_.legacy;
@@ -408,7 +408,7 @@ Shell::Shell(wxFrame &frame, wxAuiManager &manager, ShellActions actions,
 #endif
       {'L', actions_.legacy},
       {'N', [this] { ShowNavigation(); }},
-      {'R', [this] { ShowPage(PreviewPage::Route); }},
+      {'R', [this] { ShowPassage(); }},
       {'E', [this] { ShowPage(PreviewPage::Energy); }},
       {'I', [this] { ShowPage(PreviewPage::Diagnostics); }},
       {'S', [this] { ShowSystem(); }},
@@ -442,6 +442,7 @@ Shell::~Shell() {
   context_lifetime_.reset();
   CloseContext();
   if (ais_drawer_) { ais_drawer_->Dismiss(); ais_drawer_->Destroy(); ais_drawer_ = nullptr; }
+  if (passage_drawer_) { passage_drawer_->Dismiss(); passage_drawer_->Destroy(); passage_drawer_ = nullptr; }
   for (const auto &c : commands_)
     frame_.Unbind(wxEVT_MENU, &Shell::OnCommand, this, c.first);
   frame_.SetAcceleratorTable(wxNullAcceleratorTable);
@@ -771,6 +772,10 @@ void Shell::Tick() {
     ais_drawer_->Update(ais_state_, online_ais_state_, now, mode_);
     ais_drawer_->Present(DrawerWorkspace());
   }
+  if (passage_drawer_ && passage_drawer_->IsShown()) {
+    passage_drawer_->Update(state_, field_snapshot_.advice, energy, now, mode_);
+    passage_drawer_->Present(DrawerWorkspace());
+  }
   UpdateRail(config.data_rail, now);
   horizon_->Update(state_,field_snapshot_.advice,now,mode_);
   PlaceChartControls();
@@ -897,6 +902,7 @@ void Shell::UpdateScrollControls() {
 }
 
 std::string Shell::PageTitle() const {
+  if (passage_drawer_ && passage_drawer_->IsShown()) return "Route";
   if (ais_drawer_ && ais_drawer_->IsShown()) return ais_drawer_->PageTitle();
   if (product_ && product_->IsShown())
     return product_->PageTitle();
@@ -938,6 +944,7 @@ void Shell::SelectDemo(vessel::DemoScenario scenario) {
 #endif
 void Shell::ShowNavigation() {
   CloseContext();
+  if (passage_drawer_) passage_drawer_->Dismiss();
   if (ais_drawer_) ais_drawer_->Dismiss();
   // Re-entering the already-visible chart needs no pane layout. A needless
   // canvas resize schedules OpenCPN's delayed frame-focus recapture and also
@@ -1054,6 +1061,24 @@ void Shell::ShowTraffic(int mmsi) {
   ais_drawer_->Present(DrawerWorkspace());
   Tick();
 }
+void Shell::ShowPassage() {
+  ShowNavigation();
+  if (!passage_drawer_) {
+    passage_drawer_ = new XNavPassageDrawer(frame_, actions_.navigation);
+    passage_drawer_->on_library = [this] { ShowProduct(ProductPage::Routes); };
+    if (actions_.navigation.start_route)
+      passage_drawer_->on_plot = [this] {
+        if (state_.simulated || state_.replayed) return;
+        ShowNavigation();
+        actions_.navigation.start_route();
+        Tick();
+      };
+  }
+  passage_drawer_->Update(state_, field_snapshot_.advice, field_snapshot_.energy,
+                          field_snapshot_.now, mode_);
+  passage_drawer_->Present(DrawerWorkspace());
+  Tick();
+}
 void Shell::CloseContext() {
   if (context_) context_->Dismiss();
   context_ = nullptr;
@@ -1096,6 +1121,7 @@ void Shell::UpdateContext(vessel::Time now) {
 }
 void Shell::ShowPage(PreviewPage page) {
   CloseContext();
+  if (passage_drawer_) passage_drawer_->Dismiss();
   if (ais_drawer_) ais_drawer_->Dismiss();
   if (product_)
     manager_.GetPane(product_).Hide();
@@ -1209,7 +1235,8 @@ void Shell::PlaceChartControls() {
     // A separate owned surface remains above both software and GL child
     // canvases without repeatedly raising the entire chart/application.
     const auto screen = frame_.ClientToScreen(position);
-    if (ais_drawer_ && ais_drawer_->IsShown() && ais_drawer_->GetScreenRect().Intersects(wxRect(screen,size)))
+    const auto drawer = DrawerRegion();
+    if (drawer && drawer->Intersects(wxRect(screen,size)))
       overlay->Hide();
     else static_cast<XNavFloatingSurface *>(overlay)->Present(screen);
   }

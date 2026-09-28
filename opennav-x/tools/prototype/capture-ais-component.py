@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
-"""Capture the dedicated offline native AIS widget test, never the product.
+"""Capture dedicated offline native AIS/Passage widget tests, never the product.
 
 Synthetic data is confined to a non-installed executable. These images compare
-the drawer component only; they do not qualify chart composition or live AIS.
+the drawer component only; they do not qualify chart composition or live data.
 """
 import argparse
 import hashlib
@@ -21,6 +21,7 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--client", type=Path, required=True)
     parser.add_argument("--output", type=Path, required=True)
+    parser.add_argument("--component", choices=["ais", "passage"], default="ais")
     args = parser.parse_args()
     args.client = args.client.resolve()
     args.output = args.output.resolve()
@@ -63,8 +64,9 @@ def main():
         if result.returncode:
             raise RuntimeError(f"Component interactions failed ({result.returncode}); inspect interaction.log")
         record = json.loads((args.output / "result.json").read_text())
-        assert record["passed"] and record["checks"] >= 40
-        assert len(record["captures"]) == 9
+        minimum, images = (40, 9) if args.component == "ais" else (26, 5)
+        assert record["passed"] and record["checks"] >= minimum
+        assert len(record["captures"]) == images
         record["source_commit"] = subprocess.check_output(
             ["git", "rev-parse", "HEAD"], cwd=ROOT, text=True).strip()
         record["executable_sha256"] = hashlib.sha256(args.client.read_bytes()).hexdigest()
@@ -85,6 +87,9 @@ def main():
                               "night": (12, 17, 21)}[theme]
                 assert current.convert("RGB").getpixel((695, 230)) == background, \
                     f"{name}: drawer pixels absent or wrong theme"
+                if args.component == "passage" and name in {"passage-day", "passage-dusk", "passage-night"}:
+                    assert current.convert("RGB").getpixel((1030, 404)) == background, \
+                        f"{name}: disabled edit icon has a native grey backing"
                 assert len(current.crop((705, 140, 1057, 540)).getcolors(1000000)) > 8, \
                     f"{name}: content missing"
                 original = reference / f"{name}.png"
@@ -98,7 +103,7 @@ def main():
                     b.save(comparison / f"{name}-current.png")
                     ImageChops.difference(a, b).save(comparison / f"{name}-diff.png")
         (args.output / "capture.json").write_text(json.dumps(record, indent=2) + "\n")
-        print(f"PASS: {record['checks']} native component checks; 9 captures; visual conformance pending")
+        print(f"PASS: {record['checks']} native component checks; {images} captures; visual conformance pending")
     finally:
         if xserver is not None:
             xserver.terminate()

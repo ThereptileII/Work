@@ -1,0 +1,84 @@
+{
+  "accepted": false,
+  "developmentGatesPassed": true,
+  "remoteCommit": "ebe70100241f7eaf04284896276ece7c2b7378d8",
+  "localCommit": "820cbf9410870554e93df9555296ef7a852e589d",
+  "tree": "859f49b0bb5a09a801465ba02f95a31d0a24804b",
+  "verifiedSourceBlobs": 1061,
+  "ciRun": "https://github.com/ThereptileII/Work/actions/runs/36487339813",
+  "jobsPassed": 7,
+  "artifacts": [
+    {
+      "id": 11001485213,
+      "name": "prototype-native-Windows-ebe70100241f7eaf04284896276ece7c2b7378d8",
+      "sha256": "a32a5b9ad5cb4dbaa97b96861319d6d7c28a2db0ee7332b78470c6e1a209b4bd",
+      "bytes": 18965148,
+      "zipCrc": true
+    },
+    {
+      "id": 11001385228,
+      "name": "prototype-object-flow-Windows-ebe70100241f7eaf04284896276ece7c2b7378d8",
+      "sha256": "4f580a0af1dfa77f03882c83864ffd3542d7441ae5c3467b5d8feef27528171f",
+      "bytes": 1992689,
+      "zipCrc": true
+    },
+    {
+      "id": 11000935855,
+      "name": "prototype-ais-read-only-probe-ebe70100241f7eaf04284896276ece7c2b7378d8",
+      "sha256": "5ba6662090989def155b7075d630d816707e659e8f2138719f7557b6a3356283",
+      "bytes": 135308362,
+      "zipCrc": true
+    },
+    {
+      "id": 10999973195,
+      "name": "prototype-ais-network-Linux-ebe70100241f7eaf04284896276ece7c2b7378d8",
+      "sha256": "848a8f44f581e48bf219b2ccb51d6e8b3b6219483f753b555a6e54eda16484f1",
+      "bytes": 935,
+      "zipCrc": true
+    },
+    {
+      "id": 10999908065,
+      "name": "prototype-reference-Linux-ebe70100241f7eaf04284896276ece7c2b7378d8",
+      "sha256": "8e0d0b1102c065668b110612cb23fe1eb393508fd264fe5348bac1a1fd967778",
+      "bytes": 17739664,
+      "zipCrc": true
+    },
+    {
+      "id": 10999873146,
+      "name": "prototype-ais-foundation-Linux-ebe70100241f7eaf04284896276ece7c2b7378d8",
+      "sha256": "147f5fe1ea7d613248212b43419daa41d413471b77da8dcd3c3de4fdf33af362",
+      "bytes": 686,
+      "zipCrc": true
+    },
+    {
+      "id": 10999813185,
+      "name": "prototype-reference-Windows-ebe70100241f7eaf04284896276ece7c2b7378d8",
+      "sha256": "8b95b46c53ddc5e9465d0031b392259957ab87f3b9315312e9125a12678ff9a8",
+      "bytes": 16109580,
+      "zipCrc": true
+    },
+    {
+      "id": 10999498226,
+      "name": "prototype-ais-foundation-Windows-ebe70100241f7eaf04284896276ece7c2b7378d8",
+      "sha256": "226559decb7175f07868a0235fa2f2a9ed6e8192063ee84c4ebe14ea00c66038",
+      "bytes": 688,
+      "zipCrc": true
+    }
+  ],
+  "captureHashesVerified": {
+    "ais-component": 9,
+    "prototype-depth-fathoms": 4,
+    "prototype-depth-feet": 4,
+    "prototype-depth-meters": 4,
+    "prototype-enc-standard": 4,
+    "prototype-enc-xnav": 4,
+    "prototype-native": 12
+  },
+  "integratedWindowsTests": 112,
+  "qualificationScope": "Development only; boat, hardware GL, installer release and visual conformance remain pending.",
+  "reviewed": [
+    "prototype-enc-xnav/navigation-day.png",
+    "prototype-enc-xnav/navigation-night.png"
+  ],
+  "review": "Scale remains OpenCPN-computed and now clears Follow Boat; small neutral backing isolates its label from soundings. Day and Night actual ENC content remain visible. Stock chart selector, urban fill, density and broader prototype mismatch remain open."
+}

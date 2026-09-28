@@ -64,6 +64,8 @@ namespace prototype_ink {
 constexpr std::uint32_t warning = 0xECC48C;
 constexpr int warning_tag_alpha = 10, warning_callout_alpha = 9;
 constexpr int warning_border_alpha = 48;
+constexpr std::uint32_t active = 0xB6EFCE;
+constexpr int active_tag_alpha = 10, active_border_alpha = 35;
 } // namespace prototype_ink
 
 }  // namespace opennav::ui

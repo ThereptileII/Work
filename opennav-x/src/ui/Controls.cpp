@@ -191,17 +191,20 @@ wxColour Mix(std::uint32_t foreground, std::uint32_t background, int alpha) {
                   (f.Blue()*alpha + b.Blue()*(255-alpha) + 127)/255);
 }
 } // namespace
-int XNavPainter::Tag(const wxString &text, int x, int y, int maximum, bool attention) {
+int XNavPainter::Tag(const wxString &text, int x, int y, int maximum, bool attention,
+                     bool active) {
   dc_.SetFont(UiFont(window_, 9));
   const int width = (std::min)(maximum, window_.ToDIP(dc_.GetTextExtent(text).x) + 18);
   dc_.SetPen(wxPen(attention
       ? Mix(prototype_ink::warning, c.background, prototype_ink::warning_border_alpha)
+      : active ? Mix(prototype_ink::active, c.background, prototype_ink::active_border_alpha)
       : Colour(c.border)));
   dc_.SetBrush(wxBrush(attention
       ? Mix(prototype_ink::warning, c.background, prototype_ink::warning_tag_alpha)
+      : active ? Mix(prototype_ink::active, c.background, prototype_ink::active_tag_alpha)
       : Colour(c.selected)));
   dc_.DrawRoundedRectangle(D(x), D(y), D(width), D(26), D(5));
-  Text(text, x + 8, y + 6, 9, attention ? c.attention : c.secondary, false, width - 16);
+  Text(text, x + 8, y + 6, 9, attention ? c.attention : active ? c.accent : c.secondary, false, width - 16);
   return width;
 }
 void XNavPainter::Callout(const wxString &title, const wxString &body,
@@ -435,7 +438,7 @@ void XNavButton::Paint(wxPaintEvent&) {
     return;
   }
   if (icon_ != XNavIcon::None) {
-    const int icon_size = FromDIP(inline_icon_ ? 17 : 22);
+    const int icon_size = FromDIP(inline_icon_ ? 17 : icon_size_);
     const bool caption = !icon_only_ && !GetLabel().empty();
     const int y = caption && !inline_icon_ ? (size.y - FromDIP(40))/2 : (size.y-icon_size)/2;
     const auto svg = wxString::Format(

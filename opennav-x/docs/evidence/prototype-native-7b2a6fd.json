@@ -1,0 +1,83 @@
+{
+  "accepted": false,
+  "developmentGatesPassed": true,
+  "remoteCommit": "7b2a6fdc941c0d0dadf6a6bb8bb41c7252cde4ce",
+  "localCommit": "0f06db8c157b844899bb5b9980e33e0fc560e8b9",
+  "tree": "eeaf1d39a42caed259f880a25225ad2b191ba868",
+  "verifiedSourceBlobs": 1060,
+  "ciRun": "https://github.com/ThereptileII/Work/actions/runs/36486349316",
+  "jobsPassed": 7,
+  "artifacts": [
+    {
+      "id": 10999864075,
+      "name": "prototype-native-Windows-7b2a6fdc941c0d0dadf6a6bb8bb41c7252cde4ce",
+      "sha256": "f7968f30014d9610f8e5df1569f4e837f6ef89cd9f121d77e876ab196f671a99",
+      "bytes": 18967767,
+      "zipCrc": true
+    },
+    {
+      "id": 10999631763,
+      "name": "prototype-ais-foundation-Linux-7b2a6fdc941c0d0dadf6a6bb8bb41c7252cde4ce",
+      "sha256": "0d8c79a55d11c604d4b9579143b12cf31b859bc0ffabcac8f41fade5f977458b",
+      "bytes": 688,
+      "zipCrc": true
+    },
+    {
+      "id": 10999531838,
+      "name": "prototype-reference-Linux-7b2a6fdc941c0d0dadf6a6bb8bb41c7252cde4ce",
+      "sha256": "8d5094d97a33424112f08d10d0915204de65c49c5c5a4c9e7e16a2370ee47d5d",
+      "bytes": 17739664,
+      "zipCrc": true
+    },
+    {
+      "id": 10999329147,
+      "name": "prototype-object-flow-Windows-7b2a6fdc941c0d0dadf6a6bb8bb41c7252cde4ce",
+      "sha256": "ab72bd75672800a17eeb31280ec1c03f9c05ca86e620579a1f5e6ef1dfcf7d1d",
+      "bytes": 1990338,
+      "zipCrc": true
+    },
+    {
+      "id": 10999216934,
+      "name": "prototype-ais-foundation-Windows-7b2a6fdc941c0d0dadf6a6bb8bb41c7252cde4ce",
+      "sha256": "d79b33573132b2c44c281758430db160d4affd19f7755e859c523fab6cadb540",
+      "bytes": 692,
+      "zipCrc": true
+    },
+    {
+      "id": 10999179292,
+      "name": "prototype-ais-read-only-probe-7b2a6fdc941c0d0dadf6a6bb8bb41c7252cde4ce",
+      "sha256": "0aece65bbc29a071acdca04833cde79e47ef5a02d50dd136552c32f92bc65dcf",
+      "bytes": 135305100,
+      "zipCrc": true
+    },
+    {
+      "id": 10999012709,
+      "name": "prototype-reference-Windows-7b2a6fdc941c0d0dadf6a6bb8bb41c7252cde4ce",
+      "sha256": "3307f5639c7f3a9e11fe85f1241f7e9bc4dc2c1556707489d0165b8fec23eed2",
+      "bytes": 16109566,
+      "zipCrc": true
+    },
+    {
+      "id": 10998698028,
+      "name": "prototype-ais-network-Linux-7b2a6fdc941c0d0dadf6a6bb8bb41c7252cde4ce",
+      "sha256": "d2d71f8b9a49bc1b68ba60c5bb37b34d2e70bc44d378ecbf6137584941c465c8",
+      "bytes": 935,
+      "zipCrc": true
+    }
+  ],
+  "captureHashesVerified": {
+    "ais-component": 9,
+    "prototype-depth-fathoms": 4,
+    "prototype-depth-feet": 4,
+    "prototype-depth-meters": 4,
+    "prototype-enc-standard": 4,
+    "prototype-enc-xnav": 4,
+    "prototype-native": 12
+  },
+  "integratedWindowsTests": 112,
+  "reviewed": [
+    "prototype-depth-feet/navigation-day.png",
+    "prototype-depth-fathoms/navigation-night.png"
+  ],
+  "review": "Actual upstream depth units and changed sounding units visible. New label no longer overlaps compass. Chart content preserved; density, bright stock chart selector and built-up fill remain mismatches. No chart/UI/boat acceptance."
+}

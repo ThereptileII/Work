@@ -171,7 +171,7 @@ def main():
         else:
             subprocess.run(["import", "-window", "root", str(path)], env=env, check=True)
         snapshot = data()
-        if name.startswith("traffic-") or name.startswith("online-ais-"):
+        if name.startswith(("traffic-", "online-ais-", "passage-")):
             drawer = snapshot["runtime"]["display"]["drawer"]
             expected = dict(x=client_origin[0]+682, y=client_origin[1]+80, width=398, height=674)
             assert all(abs(drawer[k]-v) <= 1 for k, v in expected.items()), "AIS drawer differs from prototype geometry"
@@ -371,6 +371,17 @@ def main():
                             ("Instruments", "instruments"), ("Settings", "settings")]:
             click(label)
             capture(name + "-day")
+            if label == "Passage":
+                click("Day", "Dusk")
+                capture("passage-dusk")
+                click("Dusk", "Night")
+                capture("passage-night")
+                click("Night", "Day")
+                click("Close")
+                assert "drawer" not in data()["runtime"]["display"], "Passage close did not return to chart"
+                chart = data()["runtime"]["display"]["chart_region"]
+                assert chart["width"] == 1014 and chart["height"] == 566, "Passage changed upstream chart viewport"
+                record["passage_flow"] = "Current-route sheet; full theme cycle; Close retains original chart geometry"
             if label == "Traffic" and args.ais_settings:
                 click("Online AIS settings")
                 capture("online-ais-settings-day")

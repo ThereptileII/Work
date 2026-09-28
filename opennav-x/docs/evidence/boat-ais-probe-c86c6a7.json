@@ -1,0 +1,35 @@
+{
+  "acceptedLiveService": false,
+  "toolCommit": "c86c6a7558bfa028fcb6de36b11f6a2a875a22b7",
+  "ciRun": "https://github.com/ThereptileII/Work/actions/runs/36485693077",
+  "utc": "2026-09-28T21:41:11.6836230Z",
+  "zipSha256": "d7fc272761eb2a593d9bbc1f52145b6f4f61d1c67fef385e66137e1423dc364c",
+  "scriptSha256": "bdb36f5aba0b35b5dfaed95d2b9e834c76e239dc2f531e248993dc268a099a61",
+  "buildInfoSha256": "8a90d32b496972d9c43d061bbead18a51f89688d7de9a7af0e4a43eb1a6e273f",
+  "binaryCount": 17,
+  "sourceSha256": "a6852e292791d137f94d7efc4f6b0a98a6c6718321905f0d97d49bdd095775d5",
+  "connectionStates": [
+    "offline",
+    "credential_missing"
+  ],
+  "aggregateSha256": "0c601433779aa9c108a090f3555fc5b14da8ed96041242012ee309279d61bbec",
+  "result": {
+    "commit": "c86c6a7558bfa028fcb6de36b11f6a2a875a22b7",
+    "exitCode": 4,
+    "region": "stockholm",
+    "subscriptionConfirmed": false,
+    "peakTargetCount": 0,
+    "acceptedReports": 0,
+    "rejectedReports": 0,
+    "reconnects": 0,
+    "disabledAndCleared": true,
+    "chartOrUiAccepted": false
+  },
+  "closed": {
+    "stderrBytes": 0,
+    "probeProcesses": 0,
+    "openCpnProcesses": 0
+  },
+  "scope": "Explicit isolated diagnostic via SSH alias boat; no product/profile/plugin/actuator or network configuration change. No credential value read by orchestration or recorded.",
+  "limitation": "Provider cannot obtain a ready credential in this SSH logon. No service subscription, traffic or chart acceptance. User key-location clarification remains pending; do not infer other logon-session credential availability."
+}

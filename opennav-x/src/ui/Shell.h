@@ -7,6 +7,7 @@
 #include "ui/Horizon.h"
 #include "ui/FloatingSurface.h"
 #include "ui/AisDrawer.h"
+#include "ui/PassageDrawer.h"
 #include "integration/BuildFeatures.h"
 #if XNAV_ENABLE_TEST_FIXTURES
 #include "vessel/DemoSource.h"
@@ -91,6 +92,7 @@ public:
   std::vector<ProductGeometry> ProductRegions() const { return product_ && product_->IsShown() ? product_->RegionGeometry() : std::vector<ProductGeometry>{}; }
   std::vector<ProductGeometry> RailRegions() const;
   std::optional<wxRect> DrawerRegion() const {
+    if (passage_drawer_ && passage_drawer_->IsShown()) return passage_drawer_->GetScreenRect();
     return ais_drawer_ && ais_drawer_->IsShown()
         ? std::make_optional(ais_drawer_->GetScreenRect()) : std::nullopt;
   }
@@ -127,6 +129,7 @@ private:
   void ShowPage(PreviewPage page);
   void ShowNavigation();
   void ShowTraffic(int mmsi = 0);
+  void ShowPassage();
   wxRect DrawerWorkspace() const;
   void OnCommand(wxCommandEvent &event);
   void StartDemo();
@@ -138,6 +141,7 @@ private:
   vessel::AisState ais_state_;
   application::OnlineAisState online_ais_state_;
   XNavAisDrawer *ais_drawer_ = nullptr;
+  XNavPassageDrawer *passage_drawer_ = nullptr;
   application::AlertCenter alerts_;
   wxPanel *alert_pane_ = nullptr;
   wxStaticText *alert_label_ = nullptr;

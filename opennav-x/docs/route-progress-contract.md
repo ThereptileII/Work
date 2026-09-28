@@ -188,3 +188,22 @@ validity, provenance and times; the matching Linux run agrees on every state,
 route revision, active identity/index and distance. No invalid observation
 contains a distance value. These are synthetic-data development gates; hardware,
 installer, real-chart and broader DPI release acceptance remain open.
+
+## Prototype Passage consumer
+
+`application::PresentPassage` is an owned, read-only projection for the native
+Passage drawer. It never calculates geometry or invokes navigation processing.
+The current route assessment, selected-position validation and matching
+SmartNav route identity/revision/scope must agree in the same observation batch.
+Remaining distance is the accepted route value; per-waypoint cumulative
+distances and approximate times come from existing advisory events. Arrival SOC
+requires the energy wrapper's exact immutable `input_route` and current batch.
+Re-reading never advances any observation time. GUI wall time is used only to
+format an already valid approximate arrival duration.
+
+Missing/stale/current-source loss or mismatched predictions withhold dependent
+values, never zero them. The view remains safely owned after route deletion.
+Route commands still pass full copied identity/revision through the existing
+OpenCPN resolver; ending navigation freezes the reviewed object before its
+confirmation. Active/protected waypoint edits and route reversal remain blocked
+by established semantics. No new direct upstream hook is needed for this view.

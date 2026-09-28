@@ -27,6 +27,7 @@ inline const char *PrototypeIconPath(XNavIcon icon) {
     case XNavIcon::Search: return "M10 17a7 7 0 1 0 0-14 7 7 0 0 0 0 14Zm5-2 6 6";
     case XNavIcon::Layers: return "m12 3 10 5-10 5L2 8Zm-10 9 10 5 10-5M2 16l10 5 10-5";
     case XNavIcon::Ruler: return "m3 16 13-13 5 5L8 21Zm9-9 3 3M8 11l3 3m-7 1 3 3";
+    case XNavIcon::Edit: return "m4 15 12-12 5 5L9 20l-6 1Zm9-9 5 5";
     case XNavIcon::Pin: return "M18 9c0 5-6 12-6 12S6 14 6 9a6 6 0 1 1 12 0ZM14 9a2 2 0 1 0-4 0 2 2 0 0 0 4 0Z";
     case XNavIcon::Sliders: return "M4 6h7m4 0h5M4 12h2m4 0h10M4 18h10m4 0h2M11 3v6m-5 0v6m8 0v6";
     case XNavIcon::Chevron: return "m9 5 7 7-7 7";

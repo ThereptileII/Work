@@ -27,7 +27,8 @@ class XNavPainter {
                   int weight, int width = 0, bool right = false);
   void Stat(const wxString &label, const wxString &value, const wxString &unit,
             int x, int y, int width);
-  int Tag(const wxString &text, int x, int y, int maximum, bool attention = false);
+  int Tag(const wxString &text, int x, int y, int maximum, bool attention = false,
+          bool active = false);
   void Callout(const wxString &title, const wxString &body, int width, int height,
                bool attention = false);
   void Card(int x, int y, int width, int height, const wxString &title);
@@ -42,7 +43,7 @@ class XNavPainter {
 enum class ButtonRole { Normal, Quiet, Primary, Critical, Segment };
 enum class XNavIcon { None, Plus, Minus, Ownship, Menu, Back, Close, Route, Compass, Settings,
   Chart, Traffic, Energy, Instruments, Anchor, Radar, Sun, Dusk, Moon, Bell,
-  Search, Layers, Ruler, Pin, Sliders, Chevron };
+  Search, Layers, Ruler, Pin, Sliders, Chevron, Edit };
 
 // Shared touch/wheel scrolling with no bright native scrollbar. Persistent
 // XNav navigation buttons are supplied outside the scrolling content.
@@ -76,6 +77,7 @@ class XNavButton : public wxControl {
   void SetIcon(XNavIcon icon) { icon_ = icon; Refresh(); }
   void SetNavigationItem(bool value = true) { navigation_item_ = value; Refresh(); }
   void SetIconOnly(bool value = true) { icon_only_ = value; Refresh(); }
+  void SetIconSize(int pixels) { if (pixels >= 8 && pixels <= 32) { icon_size_ = pixels; Refresh(); } }
   void SetFloating(bool value = true) { floating_ = value; Refresh(); }
   void SetInlineIcon(bool value = true) { inline_icon_ = value; Refresh(); }
   void SetCompassRotation(double radians) { if (compass_rotation_ != radians) { compass_rotation_ = radians; Refresh(); } }
@@ -96,6 +98,7 @@ class XNavButton : public wxControl {
   double compass_rotation_ = 0;
   ButtonRole role_ = ButtonRole::Normal;
   XNavIcon icon_ = XNavIcon::None;
+  int icon_size_ = 22;
 };
 
 class XNavIconButton final : public XNavButton {

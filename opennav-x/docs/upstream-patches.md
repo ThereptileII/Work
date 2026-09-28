@@ -661,3 +661,11 @@ route editing and measurement precedence are preserved. OpenNav receives copied
 MMSI only after the event stack unwinds. The integration keeps no canvas pointer
 in the retained chart marks. New numerical/identity/aging/precedence tests are
 portable; native/software/GL/populated-target and boat capture gates remain open.
+
+### Native Passage drawer
+
+The prototype Passage migration adds no direct OpenCPN hook. It consumes the
+accepted route, advisory and energy publications and uses existing copied
+`NavigationActions` for explicit human actions. `OpenCPN.cmake` attaches a new
+provenance regression and a non-installed offline widget executable; neither
+introduces synthetic data into the fixture-free product.

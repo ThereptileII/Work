@@ -21,4 +21,7 @@ constexpr int rail_value = 48;
 constexpr int rail_label = 11;
 constexpr int page_title = 30;
 constexpr int context_title = 26;
+// Passage Windows reference: content origin (705,190), first point y403.
+constexpr int passage_points_y = 213;
+constexpr int passage_point_row = 77;
 }  // namespace opennav::ui::prototype

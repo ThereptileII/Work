@@ -47,7 +47,10 @@ SELECTORS = [".topbar", ".sidebar", "#workspace", "#chartView", ".data-rail",
              ".drawer", ".drawer-head", ".drawer-head h2", ".drawer-body",
              ".btn", ".segment button", ".toggle", ".list-card", ".row",
              ".dashboard-card", ".big-stat", ".view-header h1", ".tag",
-             ".chart-route", ".chart-land", ".chart-depth", ".ais-ship"]
+             ".chart-route", ".chart-land", ".chart-depth", ".ais-ship",
+             ".pill-row", ".stats-grid", ".section-label", ".route-waypoint",
+             ".waypoint-number", ".waypoint-info", ".waypoint-info b",
+             ".waypoint-info small", ".waypoint-info span", ".callout"]
 
 MEASURE = """selectors => {
  const app = document.querySelector('#app');

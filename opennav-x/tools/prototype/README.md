@@ -32,3 +32,9 @@ requires a disposable CI desktop on Windows and uses isolated Xvfb on Linux.
 Painted-content checks fail black/missing captures. Comparison crops the exact
 398×674 drawer for component review; it does not waive full-product comparisons
 or fabricate prototype references for supplemental online failure states.
+
+Use `capture-ais-component.py --component passage --client <passage_drawer_test>
+--output <new-directory>` for the separate populated Passage widget test. It
+verifies five real-screen captures and preserves component reference/current/
+diff images. Fixed fixture time is confined to that non-installed test process.
+The product capture also checks the Passage theme cycle and chart return.

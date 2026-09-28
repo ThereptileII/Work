@@ -1,0 +1,97 @@
+{
+  "accepted": false,
+  "developmentGatesPassed": true,
+  "remoteCommit": "c86c6a7558bfa028fcb6de36b11f6a2a875a22b7",
+  "localCommit": "7945484547d92d7a347643e5e29d566daae1e8a1",
+  "tree": "fa411ae13ce8ade3e2eefa583e06f3b5031f0544",
+  "verifiedSourceBlobs": 1058,
+  "ciRun": "https://github.com/ThereptileII/Work/actions/runs/36485693077",
+  "jobsPassed": 7,
+  "integratedWindowsTests": 112,
+  "nativeAisComponentChecks": 71,
+  "offlineProbeChecks": 24,
+  "hostileTlsScenarios": 18,
+  "providerLifecycle": "PASS / loopback only",
+  "actualObjectFlow": "PASS / native Windows model, pointer, edit, persistence and restoration",
+  "captureHashesVerified": {
+    "ais-component": 9,
+    "prototype-enc-standard": 4,
+    "prototype-enc-xnav": 4,
+    "prototype-native": 12
+  },
+  "artifacts": [
+    {
+      "id": 11000090623,
+      "name": "prototype-ais-network-Linux-c86c6a7558bfa028fcb6de36b11f6a2a875a22b7",
+      "sha256": "a7eeea40e40f4326347c6564fd474c8bd4e471d46b9ad7e7c09546e68fba5660",
+      "bytes": 935,
+      "zipCrc": true
+    },
+    {
+      "id": 10999190864,
+      "name": "prototype-ais-foundation-Windows-c86c6a7558bfa028fcb6de36b11f6a2a875a22b7",
+      "sha256": "ffa887c6c7b63f0645b2e7273af1eeb2c3afbdc70ba7b195cf4786b6b6733a73",
+      "bytes": 691,
+      "zipCrc": true
+    },
+    {
+      "id": 10999031752,
+      "name": "prototype-ais-foundation-Linux-c86c6a7558bfa028fcb6de36b11f6a2a875a22b7",
+      "sha256": "9496f62ae551980406e16888a07dc791ad4da691fae196a3a584d5fd3326a27d",
+      "bytes": 685,
+      "zipCrc": true
+    },
+    {
+      "id": 10998757211,
+      "name": "prototype-reference-Windows-c86c6a7558bfa028fcb6de36b11f6a2a875a22b7",
+      "sha256": "eb2acd6e1ac4cd6c49001b7bb43d119df8f85ce31c8f6127f5c8312d44fe2f7e",
+      "bytes": 16109566,
+      "zipCrc": true
+    },
+    {
+      "id": 10998669101,
+      "name": "prototype-native-Windows-c86c6a7558bfa028fcb6de36b11f6a2a875a22b7",
+      "sha256": "40417ffa2b1e4f6a01d0f52812485038e9574804b5094613cf053ba41cd9262b",
+      "bytes": 11927620,
+      "zipCrc": true
+    },
+    {
+      "id": 10998662152,
+      "name": "prototype-reference-Linux-c86c6a7558bfa028fcb6de36b11f6a2a875a22b7",
+      "sha256": "d906176e3dc4aa7b825c4c718e20967be0181db6f4aab572c21f71eaf1a6e00f",
+      "bytes": 17740378,
+      "zipCrc": true
+    },
+    {
+      "id": 10998614014,
+      "name": "prototype-ais-read-only-probe-c86c6a7558bfa028fcb6de36b11f6a2a875a22b7",
+      "sha256": "9575062222921321f40fb1e5cb9b2b74f9cc260b4022f062837f230fa2003e59",
+      "bytes": 135299015,
+      "zipCrc": true
+    },
+    {
+      "id": 10998574138,
+      "name": "prototype-object-flow-Windows-c86c6a7558bfa028fcb6de36b11f6a2a875a22b7",
+      "sha256": "916723b7ca4ec4564b1fe242e065e0ee2e1e837bf2965e1d74f127944fd4f652",
+      "bytes": 1992388,
+      "zipCrc": true
+    }
+  ],
+  "probe": {
+    "commit": "c86c6a7558bfa028fcb6de36b11f6a2a875a22b7",
+    "zipSha256": "d7fc272761eb2a593d9bbc1f52145b6f4f61d1c67fef385e66137e1423dc364c",
+    "buildInfoSha256": "8a90d32b496972d9c43d061bbead18a51f89688d7de9a7af0e4a43eb1a6e273f",
+    "scriptSha256": "bdb36f5aba0b35b5dfaed95d2b9e834c76e239dc2f531e248993dc268a099a61",
+    "binaries": 17,
+    "sourceSha256": "a6852e292791d137f94d7efc4f6b0a98a6c6718321905f0d97d49bdd095775d5",
+    "zipBytes": 2427231
+  },
+  "nativePowerShellProbe": {
+    "expectedExitCode": 4,
+    "observedExitCode": 4,
+    "subscriptionConfirmed": false,
+    "peakTargetCount": 0,
+    "disabledAndCleared": true
+  },
+  "qualificationScope": "Explicit read-only commissioning probe may be staged after independent verification. These development jobs do not replace full installer/release, live service, primary-screen conformance or physical boat gates."
+}
