@@ -70,7 +70,15 @@ text remains truthful; the illustrative crossing advice is never generated.
 Fresh upstream CPA/range estimates exposed a validity-filter bug, now fixed;
 their own stale threshold still suppresses them independently of target position.
 
-Outstanding: replacement Windows populated interaction/rendering, online chart symbols and
+Replacement native `079ec95` passes all six jobs, 112 integrated tests and
+69 component checks. All six artifact digests/lengths/CRC and the nine component
+PNG hashes were verified after download. Windows Day and Night target cards
+were compared with the canonical Windows HTML. The number/unit hierarchy and
+two-column placement are closer; font metrics/tracking, borders and shadows
+still differ. The component's plain test background is not chart acceptance.
+See [evidence](../../evidence/prototype-native-079ec95.json).
+
+Outstanding: actual product pointer/scroll interaction, online chart symbols and
 selection, exact font/spacing/shadow/motion review, and physical boat captures.
 Service settings are additional functional captures,
 not invented HTML reference states. No conformance PASS is claimed.

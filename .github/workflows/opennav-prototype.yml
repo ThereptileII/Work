@@ -38,6 +38,11 @@ jobs:
           $env:PATH = (Resolve-Path opennav-x/build/production-install).Path + ";" + $env:PATH
           python opennav-x/tools/prototype/capture-ais-component.py --client opennav-x/build/production-windows/Release/ais_drawer_test.exe --output opennav-x/evidence/local/ais-component
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+      - name: Offline commissioning probe CLI and secret-output guards
+        run: |
+          $env:PATH = (Resolve-Path opennav-x/build/production-install).Path + ";" + $env:PATH
+          python opennav-x/tools/test-aisstream-live-probe.py --client opennav-x/build/production-windows/Release/aisstream_live_probe.exe
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
       - name: Capture actual application after tests release their REST port
         id: native_capture
         if: ${{ !cancelled() && steps.native_build.outcome == 'success' }}
@@ -54,6 +59,24 @@ jobs:
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
           python opennav-x/tools/prototype/capture-native.py --output opennav-x/evidence/local/prototype-enc-standard --public-enc --navigation-only --chart-style Standard
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+      - name: Package explicit read-only AIS commissioning tool after native gates
+        run: |
+          python opennav-x/tools/test-source-package.py
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          $Vswhere = "${env:ProgramFiles(x86)}\Microsoft Visual Studio\Installer\vswhere.exe"
+          $VS = & $Vswhere -latest -products '*' -requires Microsoft.VisualStudio.Component.VC.Tools.x86.x64 -property installationPath
+          if (-not $VS) { throw 'Licensed native toolchain missing' }
+          $Runtime = Get-ChildItem "$VS\VC\Redist\MSVC\*\x86\Microsoft.VC143.CRT" -Directory | Sort-Object FullName -Descending | Select-Object -First 1
+          if (-not $Runtime) { throw 'Licensed x86 runtime missing' }
+          python opennav-x/tools/package-ais-live-probe.py --runtime $Runtime.FullName --output opennav-x/build/ais-readonly-probe
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: prototype-ais-read-only-probe-${{ github.sha }}
+          path: |
+            opennav-x/build/ais-readonly-probe/*.zip
+            opennav-x/build/ais-readonly-probe/SHA256SUMS.txt
+          if-no-files-found: error
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         if: always()
         with:
@@ -74,13 +97,14 @@ jobs:
       - name: Build actual library and dedicated test drivers
         run: |
           cmake -S opennav-x/tests/ais_transport -B opennav-x/build/ais-transport-tests -DCMAKE_BUILD_TYPE=Release -DCMAKE_POLICY_VERSION_MINIMUM=3.5 -DOPENNAV_PINNED_SOURCE="$PWD/opennav-x/build/integration-source"
-          cmake --build opennav-x/build/ais-transport-tests --parallel 2 --target ais_transport_test_client ais_provider_test_client
+          cmake --build opennav-x/build/ais-transport-tests --parallel 2 --target ais_transport_test_client ais_provider_test_client aisstream_live_probe
       - name: Verify hostile frames and real provider lifecycle
         run: |
           set -o pipefail
           mkdir -p opennav-x/evidence/local/ais-transport
           python opennav-x/tests/ais_transport/network_tests.py --client opennav-x/build/ais-transport-tests/ais_transport_test_client | tee opennav-x/evidence/local/ais-transport/network.log
           python opennav-x/tests/ais_transport/provider_tests.py --client opennav-x/build/ais-transport-tests/ais_provider_test_client | tee opennav-x/evidence/local/ais-transport/provider.log
+          python opennav-x/tools/test-aisstream-live-probe.py --client opennav-x/build/ais-transport-tests/aisstream_live_probe | tee opennav-x/evidence/local/ais-transport/probe-offline.log
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         if: always()
         with:

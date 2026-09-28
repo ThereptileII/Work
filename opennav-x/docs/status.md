@@ -114,6 +114,18 @@ remain unavailable. Replacement native Windows and boat review are still gates.
 The completed local correction passes 120 integrated tests, 69 component checks
 and all three immutable-design checks. Nine painted component captures and
 exact drawer reference/current/diff sets are retained as development evidence.
+Replacement native `079ec95` now passes all six jobs, 112 integrated tests and
+69 populated component checks. Six downloaded artifacts and nine component
+image hashes verify; Day/Night were reviewed. Typography/border/shadow mismatches
+remain. See [evidence](evidence/prototype-native-079ec95.json).
+
+A separate non-installed read-only AIS commissioning probe links the production
+TLS/provider/credential boundary. It never loads OpenCPN, profiles or plugins;
+its bounded run reports only aggregate counts and fixed connection-state labels.
+Linux integrated build and 30 offline CLI/privacy checks pass, as do nine source
+archive tests. Native packaging/closure and live service evidence remain pending.
+Only credential-entry presence has been checked aboard; no successful connection
+or live target count is claimed yet.
 
 XNav-owned S-52 presentation is being implemented as separately packaged,
 hash-verified resources derived from the pinned baseline. Its resource tests

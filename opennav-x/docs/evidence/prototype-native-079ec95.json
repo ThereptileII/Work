@@ -1,0 +1,123 @@
+{
+  "stageAccepted": false,
+  "localCommit": "42c293d190e42f2c11571cdf67df7cfea3241df1",
+  "remoteCommit": "079ec95ec2d7f7d5a2178c01348cd8795d81edd0",
+  "mappedSourceBlobsVerified": 1041,
+  "run": "https://github.com/ThereptileII/Work/actions/runs/36473752665",
+  "jobsPassed": 6,
+  "downloadedArtifacts": [
+    {
+      "id": 10993396703,
+      "name": "prototype-native-Windows-079ec95ec2d7f7d5a2178c01348cd8795d81edd0",
+      "sha256": "29738c9933ba7f1ee5a60aec53058dab08d1ca9536858e7d3159c4ff21b9822d",
+      "bytes": 11796386,
+      "zipCrc": true
+    },
+    {
+      "id": 10991989275,
+      "name": "prototype-reference-Windows-079ec95ec2d7f7d5a2178c01348cd8795d81edd0",
+      "sha256": "c5f4c612f6c0dc9e6e2d741edf03d3ab07a27962ecfef6793a643fe44a43f49a",
+      "bytes": 16109439,
+      "zipCrc": true
+    },
+    {
+      "id": 10991824873,
+      "name": "prototype-ais-foundation-Windows-079ec95ec2d7f7d5a2178c01348cd8795d81edd0",
+      "sha256": "b1455cd941cf022e85893ada89f137fab176165254fe998c941f79c2f976ceee",
+      "bytes": 691,
+      "zipCrc": true
+    },
+    {
+      "id": 10991624883,
+      "name": "prototype-reference-Linux-079ec95ec2d7f7d5a2178c01348cd8795d81edd0",
+      "sha256": "211598174c951755590fa6f2dc45cd32ad9b6692a8c5de8f04dae4e752b0ba52",
+      "bytes": 17739551,
+      "zipCrc": true
+    },
+    {
+      "id": 10991529908,
+      "name": "prototype-ais-network-Linux-079ec95ec2d7f7d5a2178c01348cd8795d81edd0",
+      "sha256": "13e9396404e5f36e61a2acdb308a57869caca28d122f358054d8496fb61b5495",
+      "bytes": 735,
+      "zipCrc": true
+    },
+    {
+      "id": 10991514718,
+      "name": "prototype-ais-foundation-Linux-079ec95ec2d7f7d5a2178c01348cd8795d81edd0",
+      "sha256": "5544510219d6e8712802f1bf0fbc3456052aaba73d9df29b050c705d3d5a707d",
+      "bytes": 684,
+      "zipCrc": true
+    }
+  ],
+  "junit": [
+    {
+      "file": "prototype-ais-foundation-Windows-079ec95ec2d7f7d5a2178c01348cd8795d81edd0/ais-foundation.xml",
+      "tests": 7,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "file": "prototype-native-Windows-079ec95ec2d7f7d5a2178c01348cd8795d81edd0/windows-production-tests.xml",
+      "tests": 112,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "file": "prototype-ais-foundation-Linux-079ec95ec2d7f7d5a2178c01348cd8795d81edd0/ais-foundation.xml",
+      "tests": 7,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    }
+  ],
+  "component": {
+    "scope": "offline native component only; no chart or live traffic",
+    "checks": 69,
+    "passed": true,
+    "captures": [
+      "traffic-day",
+      "ais-target-day",
+      "ais-target-dusk",
+      "ais-target-night",
+      "traffic-night",
+      "online-target-day",
+      "online-stale-day",
+      "online-lost-day",
+      "target-expired-day"
+    ],
+    "source_commit": "079ec95ec2d7f7d5a2178c01348cd8795d81edd0",
+    "executable_sha256": "8aefc42d90f47bbbac46d10ee96ca1dcb36f9ba05bfda06e81513724e6959bf7",
+    "platform": "win32",
+    "conformance": "PENDING: inspect reference/current/diff; no similarity waiver",
+    "screenshots": {
+      "traffic-day": "77d3484b6d2695b0609cedfcaade83bc8bccc3872a534ce31c62f1ef82a7e014",
+      "ais-target-day": "58fa34fe75250c6a5b91f8c6bfb7134502d4c68f00b1c90bf3e0831e721b75cb",
+      "ais-target-dusk": "226816f63e107fbf12c768902f070486e22cd42b09367219d7d0f530a3c491cb",
+      "ais-target-night": "7e021b2d64eb8ff576c7a19f2b400b3a9045d37e8e72e6068f10f5ac8727927d",
+      "traffic-night": "5445173c1beb0300dd1119b64e1071753b9254c56cd3882f152d792680b2e980",
+      "online-target-day": "ad288c7c9b3d45e42994dcb983e6a9790c25285ee0df7f23994c64eb62e98a08",
+      "online-stale-day": "13dc0863b43c817eacf14b275ca4f5688915dc68f6a38f70aa42715883eaad64",
+      "online-lost-day": "6d9cc969b81512161650f2060c765dfd8b9ee445478172809951ee9516978743",
+      "target-expired-day": "26776ca248ce63ceeef5de659f3f7c5092e62d9fd7a6cc85b8e9226655902ebc"
+    }
+  },
+  "reviewed": [
+    "ais-target-day",
+    "ais-target-night",
+    "Windows HTML ais-target-day"
+  ],
+  "findings": [
+    "Value/unit hierarchy and two-column placement closer to HTML",
+    "Font metrics, text tracking, border and shadow differences remain",
+    "Truthful upstream advisory replaces fictional crossing text",
+    "Component test background is not chart or full product acceptance"
+  ],
+  "remainingGates": [
+    "Actual product pointer selection and scroll",
+    "Online chart symbols",
+    "Boat display and service",
+    "All primary screen conformance"
+  ]
+}

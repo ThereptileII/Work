@@ -141,6 +141,10 @@ target_link_libraries(opennav_ais_runtime PUBLIC opennav_ais_codec opennav_ais_c
 target_compile_features(opennav_ais_runtime PUBLIC cxx_std_17)
 target_link_libraries(${PACKAGE_NAME} PRIVATE opennav_ais_runtime)
 if(OCPN_BUILD_TEST)
+  # Explicit read-only internet commissioning. No chart, profile, plugins or
+  # marine output; never installed or launched by the product.
+  add_executable(aisstream_live_probe "${OPENNAV_ROOT}/tools/aisstream-live-probe.cpp")
+  target_link_libraries(aisstream_live_probe PRIVATE opennav_ais_runtime)
   add_executable(ais_provider_test_client "${OPENNAV_ROOT}/tests/ais_transport/provider_client.cpp"
     "${OPENNAV_ROOT}/src/ais/AisStreamProvider.cpp")
   target_compile_definitions(ais_provider_test_client PRIVATE OPENNAV_AIS_TEST_TRANSPORT=1)

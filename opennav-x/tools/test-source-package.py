@@ -21,10 +21,13 @@ class SourceDistributionTests(unittest.TestCase):
         self.workflow = self.repository / '.github/workflows/opennav-baseline.yml'
         self.workflow.parent.mkdir(parents=True)
         self.workflow.write_text('name: exact committed workflow\n')
+        self.prototype = self.workflow.with_name('opennav-prototype.yml')
+        self.prototype.write_text('name: exact prototype build workflow\n')
         (self.root / '.gitignore').write_text('build/\n')
         (self.root / 'source.cpp').write_text('int main() {}\n')
         (self.root / 'patches').mkdir()
-        for name in ('opencpn-5.12.4-xnav.patch', 'opencpn-5.12.4-regression-tests.patch'):
+        for name in ('opencpn-5.12.4-xnav.patch', 'opencpn-5.12.4-regression-tests.patch',
+                     'opencpn-5.12.4-ais-transport.patch', 'opencpn-5.12.4-chart-presentation.patch'):
             (self.root / 'patches' / name).write_text('fixture patch\n')
         self.init(self.repository)
         # A Git symlink need not be creatable on a restricted Windows runner.
@@ -65,6 +68,9 @@ class SourceDistributionTests(unittest.TestCase):
         with zipfile.ZipFile(archive) as source:
             self.assertIsNone(source.testzip())
             self.assertEqual(source.read('.github/workflows/opennav-baseline.yml'), self.workflow.read_bytes())
+            self.assertEqual(source.read('.github/workflows/opennav-prototype.yml'), self.prototype.read_bytes())
+            self.assertEqual(len(references['integrationPatches']), 4)
+            self.assertIn('.github/workflows/opennav-prototype.yml', references['workflows'])
             self.assertEqual(source.read('opennav-x/source-link'), b'source.cpp')
             self.assertEqual(source.getinfo('opennav-x/source-link').external_attr >> 16 & 0o170000, 0o120000)
             # Preserve the exact checkout bytes, including the native Windows
@@ -99,6 +105,16 @@ class SourceDistributionTests(unittest.TestCase):
 
     def test_changed_top_level_workflow_refused(self):
         self.workflow.write_text('uncommitted workflow\n')
+        with self.assertRaises(ValueError):
+            source_package.source_inventory(self.root, self.commit)
+
+    def test_changed_prototype_workflow_refused(self):
+        self.prototype.write_text('uncommitted prototype workflow\n')
+        with self.assertRaises(ValueError):
+            source_package.source_inventory(self.root, self.commit)
+
+    def test_missing_committed_prototype_workflow_refused(self):
+        self.prototype.unlink()
         with self.assertRaises(ValueError):
             source_package.source_inventory(self.root, self.commit)
 

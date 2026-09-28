@@ -50,17 +50,22 @@ def source_inventory(root, commit):
                 contents = path.read_bytes()
             entries[target] = (contents, mode)
     repository = Path(git(root, 'rev-parse', '--show-toplevel').decode().strip())
-    workflow = repository / '.github/workflows/opennav-baseline.yml'
-    if not workflow.is_file():
+    workflows = [name for name in git(repository, 'ls-tree', '-r', '--name-only', commit,
+                                     '--', '.github/workflows').decode().splitlines()
+                 if name.startswith('.github/workflows/opennav-') and name.endswith('.yml')]
+    if '.github/workflows/opennav-baseline.yml' not in workflows:
         raise ValueError('Exact root GitHub Actions workflow is missing from source package')
-    git(repository, 'cat-file', '-e', commit + ':.github/workflows/opennav-baseline.yml')
     # Git applies the checkout's text/EOL policy; CRLF on native Windows is not
     # an uncommitted recipe. The archive still records the exact checkout bytes.
-    comparison = subprocess.run(['git', '-C', str(repository), 'diff', '--exit-code', '--quiet',
-                                 commit, '--', '.github/workflows/opennav-baseline.yml'])
-    if comparison.returncode:
-        raise ValueError('CI recipe differs from the packaged commit')
-    entries['.github/workflows/opennav-baseline.yml'] = (workflow.read_bytes(), '100644')
+    for name in workflows:
+        workflow = repository / name
+        if not workflow.is_file() or workflow.is_symlink():
+            raise ValueError('Exact root CI recipe missing or not a regular file')
+        comparison = subprocess.run(['git', '-C', str(repository), 'diff', '--exit-code', '--quiet',
+                                     commit, '--', name])
+        if comparison.returncode:
+            raise ValueError('CI recipe differs from the packaged commit')
+        entries[name] = (workflow.read_bytes(), '100644')
     references = {
         'schema': 1, 'productCommit': commit,
         'productSource': 'https://github.com/ThereptileII/Work/tree/' + commit + '/opennav-x',
@@ -70,8 +75,11 @@ def source_inventory(root, commit):
             {'path': 'opennav-x/' + name,
              'sha256': hashlib.sha256((root / name).read_bytes()).hexdigest()}
             for name in ('patches/opencpn-5.12.4-xnav.patch',
-                         'patches/opencpn-5.12.4-regression-tests.patch')],
+                         'patches/opencpn-5.12.4-regression-tests.patch',
+                         'patches/opencpn-5.12.4-ais-transport.patch',
+                         'patches/opencpn-5.12.4-chart-presentation.patch')],
         'workflow': '.github/workflows/opennav-baseline.yml',
+        'workflows': workflows,
         'gitlinkReferences': submodules,
         'files': {name: {'sha256': hashlib.sha256(content).hexdigest(), 'gitMode': mode}
                   for name, (content, mode) in sorted(entries.items())},

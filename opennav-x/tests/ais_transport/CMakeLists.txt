@@ -17,3 +17,9 @@ add_executable(ais_provider_test_client provider_client.cpp ../../src/ais/AisStr
 target_compile_definitions(ais_provider_test_client PRIVATE OPENNAV_AIS_TEST_TRANSPORT=1)
 target_link_libraries(ais_provider_test_client PRIVATE opennav_ais_codec opennav_ais_credentials ocpn::ixwebsocket)
 target_compile_features(ais_provider_test_client PRIVATE cxx_std_17)
+
+# Explicit commissioning binary uses the production endpoint/credential factory.
+# It is not installed and is never executed against the live service by CI.
+add_executable(aisstream_live_probe ../../tools/aisstream-live-probe.cpp ../../src/ais/AisStreamProvider.cpp)
+target_link_libraries(aisstream_live_probe PRIVATE opennav_ais_codec opennav_ais_credentials ocpn::ixwebsocket)
+target_compile_features(aisstream_live_probe PRIVATE cxx_std_17)
