@@ -32,6 +32,12 @@ jobs:
           $env:PATH = (Resolve-Path opennav-x/build/production-install).Path + ";" + $env:PATH
           python opennav-x/tests/ais_transport/provider_tests.py --client opennav-x/build/production-windows/Release/ais_provider_test_client.exe
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+      - name: Offline populated native AIS component interactions and comparisons
+        run: |
+          python -m pip install Pillow==11.3.0
+          $env:PATH = (Resolve-Path opennav-x/build/production-install).Path + ";" + $env:PATH
+          python opennav-x/tools/prototype/capture-ais-component.py --client opennav-x/build/production-windows/Release/ais_drawer_test.exe --output opennav-x/evidence/local/ais-component
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
       - name: Capture actual application after tests release their REST port
         id: native_capture
         if: ${{ !cancelled() && steps.native_build.outcome == 'success' }}

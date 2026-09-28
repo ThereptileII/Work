@@ -87,6 +87,9 @@ def main():
     while Path(f"/tmp/.X{number}-lock").exists():
         number += 1
     env = dict(os.environ, DISPLAY=f":{number}")
+    if not windows:
+        env["GDK_BACKEND"] = "x11"
+        env.pop("WAYLAND_DISPLAY", None)
     record = {"authority": "Native Windows development" if windows else "Linux development only", "size": [1280, 800],
               "renderer": args.renderer, "chart_style": args.chart_style,
               "chart": chart_provenance if args.public_enc else "OpenCPN coastline reference",

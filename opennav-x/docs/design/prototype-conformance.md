@@ -24,7 +24,9 @@ resolved fonts, interaction results, a corrective second capture and a boat
 review. No averaging across views or broad image tolerance. Physical rendering,
 touch, ENC, OpenGL/software and 100/125/150% remain separate gates.
 
-The boat was unreachable at the September 28 stage transition. Its existing
-read-only commissioning transaction must be closed/restored under the existing
-recovery procedure before new deployment. Do not infer physical acceptance from
-Linux reference generation or the previous Windows suite.
+The boat was unreachable at the September 28 stage transition. It reconnected
+and its interrupted read-only commissioning transaction was subsequently
+[closed and independently verified](../evidence/boat-prototype-reconnect-20260928.md).
+The earlier Beta remains installed and closed. New deployment/capture requires
+a fresh read-only audit against the adopted baseline. Do not infer physical
+acceptance from Linux reference generation or the previous Windows suite.

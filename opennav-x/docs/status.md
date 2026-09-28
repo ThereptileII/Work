@@ -94,8 +94,26 @@ Thirty-nine new assertions cover identity/provenance, local precedence, position
 validity, directional withholding, retained-state aging/expiry and antimeridian
 coordinates. Portable tests pass 76/76 and Linux integrated tests 120/120.
 The fixture-free product/settings capture still passes with no synthetic data.
-New populated-target, actual symbol/software/GL, native Windows and live boat
-evidence remain pending; the compiled overlay is not declared accepted.
+Replacement native [run 36471022893](https://github.com/ThereptileII/Work/actions/runs/36471022893)
+at `ad4913f` (complete local `97665f5` mapping) passes all six jobs, 112 integrated
+tests and seven AIS suites on each platform. All six downloaded artifacts verify
+their API digests, lengths and ZIP CRC. Twenty product/ENC captures verify their
+PNG hashes; Traffic Day and settings Night were reviewed, confirming the UTF-8
+heading fix. See [native evidence](evidence/prototype-native-ad4913.json).
+Populated-target, actual symbol/software/GL and live boat evidence remain
+pending; the compiled overlay is not declared accepted.
+
+A separate, non-installed native component executable now exercises populated
+AIS list/card interactions without placing fixtures in the product. The first
+pass exposed unsupported wxGTK Tab-state querying; input-modality event tracking
+replaces that query. Actual painted captures then drove a second pass matching
+the prototype's status pills, small units, 16px statistic gutter, callout and
+right-aligned detail rows. Fresh OpenCPN estimated CPA/range values are accepted
+as estimates and withheld after their own dependency expiry; online CPA/TCPA
+remain unavailable. Replacement native Windows and boat review are still gates.
+The completed local correction passes 120 integrated tests, 69 component checks
+and all three immutable-design checks. Nine painted component captures and
+exact drawer reference/current/diff sets are retained as development evidence.
 
 XNav-owned S-52 presentation is being implemented as separately packaged,
 hash-verified resources derived from the pinned baseline. Its resource tests
@@ -113,16 +131,20 @@ AISStream must not
 inherit the local Signal K client's disabled TLS validation. The prototype's
 newer vendor symbol snapshot cannot replace the pinned resources blindly.
 
-Boat SSH returned on September 28 at 18:36 UTC. Stock executable, navigation
-database and chart database hashes remain unchanged. OpenCPN is closed; the log
-records a clean exit at 18:34 UTC, with its chart plugin starting a remaining
-decoder helper during shutdown. The existing cold-restore guard refused that
-live helper, so no profile/plugin restoration occurred. An exact-process,
-hash-pinned orphan-decoder normal-shutdown path is undergoing native tests;
-it cannot launch OpenCPN, restore a profile or send equipment commands. A fresh
-closed inspection and reviewed profile differences remain mandatory afterward.
-No expired restart receipt may be reused. The deployed application still uses
-the previous Beta UI. No physical actuator commands are authorized or sent.
+Boat SSH returned on September 28 at 18:36 UTC. The interrupted commissioning
+transaction is now closed: normal shutdown of the exact orphan chart decoder,
+fresh cold inspection, narrow adoption of reviewed stock-return preferences,
+and restoration all passed. All five quarantined plugin DLLs have their original
+hashes again; stock executable, navigation database and chart database remain
+unchanged. No application/helper process or active commissioning marker remains.
+The original connection direction is restored, without launching the application.
+Recovery tooling replacement [run 36469956631](https://github.com/ThereptileII/Work/actions/runs/36469956631)
+passes all nine jobs, including 178 native adoption checks. See the
+[recovery evidence](evidence/boat-prototype-reconnect-20260928.md).
+Any next application launch requires a fresh read-only audit/preparation against
+the newly adopted baseline; expired launch/restart receipts cannot be reused.
+The deployed application still uses the previous Beta UI. No physical actuator
+commands are authorized or sent.
 
 ## Prior Beta 2 development and deployment evidence
 

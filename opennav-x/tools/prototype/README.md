@@ -22,3 +22,13 @@ with the same installed font environment used by native XNav.
 The prototype contains intentionally illustrative data. These files are design
 and CI resources only, not installed product resources or a new Demo mode.
 Do not execute `prototype/build.mjs` in the immutable evidence directory.
+
+`capture-ais-component.py --client <ais_drawer_test> --output <new-directory>`
+runs the dedicated non-installed widget executable, retaining real screen pixels,
+interaction results, exact executable hash and drawer reference/current/diff.
+The entire test desktop is labelled as an offline synthetic component fixture;
+there is no chart/network/hardware integration in this executable. The wrapper
+requires a disposable CI desktop on Windows and uses isolated Xvfb on Linux.
+Painted-content checks fail black/missing captures. Comparison crops the exact
+398×674 drawer for component review; it does not waive full-product comparisons
+or fabricate prototype references for supplemental online failure states.

@@ -23,6 +23,13 @@ class XNavPainter {
   int D(int value) const { return window_.FromDIP(value); }
   void Text(wxString text, int x, int y, int size, std::uint32_t color,
             bool bold = false, int width = 0);
+  void TextWeight(wxString text, int x, int y, int size, std::uint32_t color,
+                  int weight, int width = 0, bool right = false);
+  void Stat(const wxString &label, const wxString &value, const wxString &unit,
+            int x, int y, int width);
+  int Tag(const wxString &text, int x, int y, int maximum, bool attention = false);
+  void Callout(const wxString &title, const wxString &body, int width, int height,
+               bool attention = false);
   void Card(int x, int y, int width, int height, const wxString &title);
   void Rule(int x, int y, int width);
  private:

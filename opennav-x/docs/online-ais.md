@@ -249,3 +249,16 @@ or measure modes. Equal-distance ambiguous marks select neither. Selection
 opens the native owned drawer; Show on chart revalidates current position.
 Direct tap, populated rendering, label decluttering, exact fractional stroke,
 real service traffic, software/GL and physical boat review remain required.
+
+The native drawer distinguishes measured vessel motion from upstream estimated
+CPA/TCPA/range/bearing. Fresh upstream estimates remain displayable and sortable;
+each estimate's own freshness (including selected own-position dependency) is
+honoured. A stale relative estimate cannot become current merely because target
+position is still fresh. The card labels CPA/TCPA as OpenCPN estimates. Online
+targets have no such values. Unavailable/fixture containers and duplicate target
+identities cannot enable a retained chart action.
+
+The non-installed `ais_drawer_test` process exercises real widgets against owned
+cache/aggregator fixtures. It cannot access the OpenCPN profile, marine equipment,
+network client or credential store. Its prominently labelled component captures
+are not product, live-traffic, chart-symbol or boat-acceptance evidence.

@@ -22,7 +22,7 @@ private:
   void AddText(const wxString &text, int size = 12);
   XNavButton *Button(const wxString &, std::function<void()>,
                      bool enabled = true);
-  void AddVisual(int height, std::function<void(XNavPainter &, int)>);
+  void AddVisual(int height, std::function<void(XNavPainter &, int)>, int after = 16);
   std::optional<vessel::AisTarget> Selected() const;
   void StoreKey();
   View view_ = View::List;

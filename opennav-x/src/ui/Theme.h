@@ -59,4 +59,11 @@ constexpr int panel_radius = 14;
 constexpr int control_radius = 9;
 }  // namespace spacing
 
+namespace prototype_ink {
+// Literal alpha colors in the supplied CSS, not theme-semantic replacements.
+constexpr std::uint32_t warning = 0xECC48C;
+constexpr int warning_tag_alpha = 10, warning_callout_alpha = 9;
+constexpr int warning_border_alpha = 48;
+} // namespace prototype_ink
+
 }  // namespace opennav::ui

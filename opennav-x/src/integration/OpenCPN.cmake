@@ -89,6 +89,16 @@ endif()
 # Defer attaching model-bound tests; test sources stay outside upstream.
 function(opennav_attach_route_tests)
   if(TARGET tests)
+    # Dedicated component process; never installed, linked into OpenCPN, or
+    # enabled by a product flag. It cannot access charts, profiles or hardware.
+    add_executable(ais_drawer_test "${OPENNAV_ROOT}/tests/ais_drawer_test.cpp")
+    target_link_libraries(ais_drawer_test PRIVATE opennav_ui)
+    target_compile_features(ais_drawer_test PRIVATE cxx_std_17)
+    if(LINUX)
+      find_package(PkgConfig REQUIRED)
+      pkg_check_modules(OPENNAV_UI_TEST_GTK REQUIRED IMPORTED_TARGET gtk+-3.0)
+      target_link_libraries(ais_drawer_test PRIVATE PkgConfig::OPENNAV_UI_TEST_GTK)
+    endif()
     target_sources(tests PRIVATE
       "${OPENNAV_ROOT}/tests/route_progress_upstream_tests.cpp"
       "${OPENNAV_ROOT}/tests/marine_decoder_upstream_tests.cpp"

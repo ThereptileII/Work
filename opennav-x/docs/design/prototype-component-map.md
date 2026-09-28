@@ -23,6 +23,9 @@ in [prototype conformance](prototype-conformance.md).
 | `.map-tools`, `.compass`, `.follow-btn` | Chart overlay controls | Existing upstream actions, proper chart hit testing |
 | `.statusbar` | Native footer | Live source/position context, missing values explicit |
 | `.ais-ship`, target card | AIS presentation | Online provenance, local precedence; no fabricated CPA |
+| `.stats-grid` | `XNavPainter::Stat` | 23px numeric value and separate 10px unit; 16px column gap |
+| `.tag` / `.tag.neutral` / `.tag.warning` | `XNavPainter::Tag` | 26px source/status pills, actual availability |
+| `.callout` / `.callout.warning` | `XNavPainter::Callout` | Shared wrapped advice surface, exact source alpha colors |
 
 All geometry is measured from the final CSS cascade at the target viewport;
 earlier CSS declarations are sometimes superseded. The capture manifest records

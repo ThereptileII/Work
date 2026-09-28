@@ -4,8 +4,8 @@ At 18:36 UTC SSH became reachable. Read-only inspection found no OpenCPN
 process, the original stock executable SHA-256
 `7c6547562cca7954671eaab72833ca9d788710fd9808b6a699b6dc823852ae0c`, and unchanged
 navigation/chart database bytes relative to the prior closed checkpoint.
-The input-only commissioning transaction is still active. The current INI
-differs and must be inspected before restoration, preserving user changes.
+At that inspection the input-only commissioning transaction was still active.
+The INI differed and required review before restoration, preserving user changes.
 
 The local log records clean frame/application exit at 18:34 UTC. The retained
 o-charts decoder was started during plugin teardown. Its reviewed executable
@@ -56,6 +56,35 @@ marker sets upgrade flag), `OCPNPlatform.cpp:634-643` (GL-capable upgrade defaul
 and `navutil.cpp:2168` (persistence). The narrow policy now additionally accepts
 the exact observed September 27 Beta build marker returning to the exact stock
 September 12 2025 marker. Other builds/budgets/GL changes remain refused.
-Replacement native adoption validation and actual profile/plugin restoration
-remain pending. Private logs, user paths and navigation data remain outside
-committed evidence.
+Replacement native [run 36469956631](https://github.com/ThereptileII/Work/actions/runs/36469956631)
+passes all nine jobs at source `b17813aa5379886df0a51e61c74ad7521b1a8878`
+(complete local `c17ee89a90add6510bba968566a3ca4dff34cf9d` mapping). All 23
+maintenance suites pass, including 178 native baseline-adoption checks. Its
+downloaded artifact 10991372580 verifies 26,445 bytes, ZIP CRC and SHA-256
+`bcba39801cf23817f5b1dbdb4302b6e7ae5ed9b288c781d0e50af0925c3da653`.
+
+Following a clean source-only update, actual adoption and restoration succeeded.
+An independent post-restore inspection verified:
+
+- No OpenCPN/helper process and no active commissioning marker.
+- All five quarantined plugin DLLs restored with original hashes; quarantine
+  copies absent.
+- Original connection direction restored, preserving the eight reviewed
+  preferences and all other profile files. No application was launched.
+- Stock executable hash remains the value above.
+- INI SHA-256 `f6db33a9f7722e2df2758f932e76b2d598017ef859d9074caa09dc76c4a42300`.
+- Unchanged navigation database SHA-256
+  `8eada8eb11d17fc91e687307f713a7bdb90a38ade31e7d6f272198fff360ebbc`.
+- Unchanged chart database SHA-256
+  `1440c8d8ab0a907fb688d19e9d66579eaa84c6eb3318c3a5cdcdc637d11a191b`.
+- Durable restore record SHA-256
+  `82977eb3be61ee45ce9c5765857c49fe512cde82626cd48d318582cc3d7b8b2c`.
+- New adopted-baseline record SHA-256
+  `13c03fd622d6105f353db364ef5777dce87054f26fa788e3f4574dad301266f5`.
+
+The deployed Beta executable remains unchanged; no prototype build is deployed.
+Because output-capable plugins and original connection settings are restored,
+any next application launch requires fresh Inventory/source review/Prepare/Apply
+using this new baseline. Old restart receipts are expired. This closes recovery,
+not the new prototype UI or boat-display acceptance gate. Private logs, user
+paths and navigation data remain outside committed evidence.

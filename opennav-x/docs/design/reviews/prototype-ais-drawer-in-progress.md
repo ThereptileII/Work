@@ -47,7 +47,30 @@ Linux replacement builds, 120 integrated and 76 portable cases, repeated empty
 source captures and retained full-image comparisons pass; populated-target and
 replacement Windows evidence are still required.
 
-Outstanding: populated target/list interaction, online chart symbols and
+Replacement native `ad4913f` passes all six jobs, 112 integrated tests and seven
+AIS suites per platform. The downloaded Traffic Day heading is now correctly
+encoded. Product captures still contain no target fixture and do not qualify
+populated symbols or details.
+
+The dedicated `ais_drawer_test` executable links the real reusable widgets but
+no OpenCPN model, network client or hardware. It is not installed. Nine captures
+cover local Day/Dusk/Night, online current/stale/lost/expired and target lists.
+Input uses the real list press/release and button handlers; row replacement
+during a press cancels selection, Back/Escape preserves navigation, and stale
+or unavailable targets cannot request Show on chart, including queued events.
+Painted-pixel checks reject blank captures. Early capture failures are retained;
+the wrapper explicitly isolates GTK on Xvfb even on a Wayland development host.
+
+First populated review: oversized units, absent pills/callout and incorrect row
+alignment were visible against the HTML. Second implementation uses shared
+native Stat/Tag/Callout primitives, prototype 16px column gutter, 23px numbers,
+10px units, 26px pills, 112px advisory area and 45px detail rows. Linux replacement
+images show the intended hierarchy and aligned first four rows. Source/status
+text remains truthful; the illustrative crossing advice is never generated.
+Fresh upstream CPA/range estimates exposed a validity-filter bug, now fixed;
+their own stale threshold still suppresses them independently of target position.
+
+Outstanding: replacement Windows populated interaction/rendering, online chart symbols and
 selection, exact font/spacing/shadow/motion review, and physical boat captures.
 Service settings are additional functional captures,
 not invented HTML reference states. No conformance PASS is claimed.

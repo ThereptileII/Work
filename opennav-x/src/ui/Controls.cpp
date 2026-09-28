@@ -5,7 +5,9 @@
 #include <wx/graphics.h>
 #include <wx/fontenum.h>
 #include <wx/bmpbndl.h>
+#include <wx/eventfilter.h>
 #include <wx/sizer.h>
+#include <wx/tokenzr.h>
 #ifdef __WXMSW__
 #include <wx/msw/wrapwin.h>
 #endif
@@ -15,6 +17,24 @@
 
 namespace opennav::ui {
 namespace {
+// Track input modality from events. wxGTK only supports modifier keys in
+// wxGetKeyState; querying Tab asserts there. This observer never consumes input.
+class FocusInput final : public wxEventFilter {
+ public:
+  FocusInput() { wxEvtHandler::AddFilter(this); }
+  ~FocusInput() override { wxEvtHandler::RemoveFilter(this); }
+  int FilterEvent(wxEvent &event) override {
+    const auto type = event.GetEventType();
+    if (type == wxEVT_KEY_DOWN || type == wxEVT_CHAR_HOOK)
+      keyboard = true;
+    else if (type == wxEVT_LEFT_DOWN || type == wxEVT_RIGHT_DOWN ||
+             type == wxEVT_GESTURE_PAN)
+      keyboard = false;
+    return Event_Skip;
+  }
+  bool keyboard = false;
+};
+FocusInput &FocusModality() { static FocusInput input; return input; }
 // Native hover windows use the OS palette, not our painted marine palette.
 // Change only the owning XNav control: Legacy tooltips keep their normal state.
 void ApplyHint(wxWindow &window, LightMode mode, const wxString &hint) {
@@ -144,11 +164,73 @@ wxFont UiFontWeight(wxWindow& window, int pixels, int weight) {
 
 void XNavPainter::Text(wxString text, int x, int y, int size,
                        std::uint32_t color, bool bold, int width) {
-  dc_.SetFont(UiFont(window_, size, bold));
+  TextWeight(text, x, y, size, color, bold ? 700 : 400, width);
+}
+void XNavPainter::TextWeight(wxString text, int x, int y, int size,
+                             std::uint32_t color, int weight, int width,
+                             bool right) {
+  dc_.SetFont(UiFontWeight(window_, size, weight));
   dc_.SetTextForeground(Colour(color));
   if (width > 0)
     text = wxControl::Ellipsize(text, dc_, wxELLIPSIZE_END, D(width));
-  dc_.DrawText(text, D(x), D(y));
+  dc_.DrawText(text, D(x) + (right ? D(width) - dc_.GetTextExtent(text).x : 0), D(y));
+}
+void XNavPainter::Stat(const wxString &label, const wxString &value,
+                       const wxString &unit, int x, int y, int width) {
+  Text(label, x, y, 9, c.muted, false, width);
+  TextWeight(value, x, y + 20, 23, c.primary, 450, width);
+  const int extent = window_.ToDIP(dc_.GetTextExtent(value).x);
+  if (extent + 4 < width)
+    Text(unit, x + extent + 4, y + 32, 10, c.muted, false, width - extent - 4);
+}
+namespace {
+wxColour Mix(std::uint32_t foreground, std::uint32_t background, int alpha) {
+  const auto f = Colour(foreground), b = Colour(background);
+  return wxColour((f.Red()*alpha + b.Red()*(255-alpha) + 127)/255,
+                  (f.Green()*alpha + b.Green()*(255-alpha) + 127)/255,
+                  (f.Blue()*alpha + b.Blue()*(255-alpha) + 127)/255);
+}
+} // namespace
+int XNavPainter::Tag(const wxString &text, int x, int y, int maximum, bool attention) {
+  dc_.SetFont(UiFont(window_, 9));
+  const int width = (std::min)(maximum, window_.ToDIP(dc_.GetTextExtent(text).x) + 18);
+  dc_.SetPen(wxPen(attention
+      ? Mix(prototype_ink::warning, c.background, prototype_ink::warning_border_alpha)
+      : Colour(c.border)));
+  dc_.SetBrush(wxBrush(attention
+      ? Mix(prototype_ink::warning, c.background, prototype_ink::warning_tag_alpha)
+      : Colour(c.selected)));
+  dc_.DrawRoundedRectangle(D(x), D(y), D(width), D(26), D(5));
+  Text(text, x + 8, y + 6, 9, attention ? c.attention : c.secondary, false, width - 16);
+  return width;
+}
+void XNavPainter::Callout(const wxString &title, const wxString &body,
+                          int width, int height, bool attention) {
+  const auto edge = attention
+      ? Mix(prototype_ink::warning, c.background, prototype_ink::warning_border_alpha)
+      : Colour(c.accent);
+  dc_.SetPen(wxPen(edge));
+  dc_.SetBrush(wxBrush(attention
+      ? Mix(prototype_ink::warning, c.background, prototype_ink::warning_callout_alpha)
+      : Colour(c.selected)));
+  dc_.DrawRoundedRectangle(0, 0, D(width) - 1, D(height) - 1, D(8));
+  dc_.SetPen(wxPen(edge, D(2)));
+  dc_.DrawLine(D(1), 0, D(1), D(height));
+  TextWeight(title, 17, 14, 12, attention ? c.attention : c.primary, 550, width - 34);
+  dc_.SetFont(UiFont(window_, 12));
+  wxStringTokenizer words(body, " ");
+  wxString line;
+  int y = 38;
+  while (words.HasMoreTokens()) {
+    const auto word = words.GetNextToken();
+    const auto candidate = line.empty() ? word : line + " " + word;
+    if (!line.empty() && dc_.GetTextExtent(candidate).x > D(width - 34)) {
+      Text(line, 17, y, 12, c.secondary, false, width - 34);
+      y += 20; line = word;
+      if (y + 18 > height) return;
+    } else line = candidate;
+  }
+  if (!line.empty()) Text(line, 17, y, 12, c.secondary, false, width - 34);
 }
 void XNavPainter::Card(int x, int y, int width, int height,
                        const wxString &title) {
@@ -165,6 +247,7 @@ void XNavPainter::Rule(int x, int y, int width) {
 XNavButton::XNavButton(wxWindow* parent, wxWindowID id, const wxString& label,
                        const wxString& accessible_name)
     : wxControl(parent, id, wxDefaultPosition, wxDefaultSize, wxBORDER_NONE) {
+  (void)FocusModality();
   SetLabel(label);
   SetName(accessible_name);
   SetHint(accessible_name);
@@ -183,7 +266,7 @@ XNavButton::XNavButton(wxWindow* parent, wxWindowID id, const wxString& label,
   Bind(wxEVT_ENTER_WINDOW, [this](wxMouseEvent &e) { hovered_ = true; Refresh(); e.Skip(); });
   Bind(wxEVT_LEAVE_WINDOW, [this](wxMouseEvent &e) { hovered_ = false; Refresh(); e.Skip(); });
   Bind(wxEVT_SET_FOCUS, [this](wxFocusEvent& e) {
-    keyboard_focus_ = wxGetKeyState(WXK_TAB); Refresh(); e.Skip();
+    keyboard_focus_ = FocusModality().keyboard; Refresh(); e.Skip();
   });
   Bind(wxEVT_KILL_FOCUS, [this](wxFocusEvent& e) { pressed_ = false; Refresh(); e.Skip(); });
   Bind(wxEVT_LEFT_DOWN, [this](wxMouseEvent&) {

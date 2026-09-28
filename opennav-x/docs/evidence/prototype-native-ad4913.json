@@ -1,0 +1,193 @@
+{
+  "stageAccepted": false,
+  "localCommit": "97665f599dc8f9932cb3ec2e7de9b26d629de299",
+  "remoteCommit": "ad4913f25899e845a57ed3774ecdd2f966e99dc5",
+  "mappedSourceBlobsVerified": 1038,
+  "run": "https://github.com/ThereptileII/Work/actions/runs/36471022893",
+  "downloadedArtifacts": [
+    {
+      "id": 10992800695,
+      "name": "prototype-native-Windows-ad4913f25899e845a57ed3774ecdd2f966e99dc5",
+      "sha256": "543c0167953bce4638e94ad9cb7035296de2f136cd8cc3c04fedd1e86ac03d41",
+      "bytes": 11246747,
+      "zipCrc": true
+    },
+    {
+      "id": 10991805764,
+      "name": "prototype-ais-foundation-Linux-ad4913f25899e845a57ed3774ecdd2f966e99dc5",
+      "sha256": "499920b6a35e001f99ef2185d0d8a19f10d7b29e69bf62efb7406baa3296cbd3",
+      "bytes": 686,
+      "zipCrc": true
+    },
+    {
+      "id": 10991756007,
+      "name": "prototype-reference-Windows-ad4913f25899e845a57ed3774ecdd2f966e99dc5",
+      "sha256": "dc0e4c63b47ddaa8d9b603c2a7459db6bf08c168b8889d5ef7c118c82aa6206b",
+      "bytes": 16109566,
+      "zipCrc": true
+    },
+    {
+      "id": 10991690962,
+      "name": "prototype-ais-foundation-Windows-ad4913f25899e845a57ed3774ecdd2f966e99dc5",
+      "sha256": "ec06507d2cf6b5fae760ece3dd5352b1fe24dcf252110132ed7d03fc2321b884",
+      "bytes": 689,
+      "zipCrc": true
+    },
+    {
+      "id": 10991641029,
+      "name": "prototype-ais-network-Linux-ad4913f25899e845a57ed3774ecdd2f966e99dc5",
+      "sha256": "81ac69c5d450e15ac6bf05790f4335baf15a411ccb9c58bc02a3e50a49e06396",
+      "bytes": 735,
+      "zipCrc": true
+    },
+    {
+      "id": 10991406324,
+      "name": "prototype-reference-Linux-ad4913f25899e845a57ed3774ecdd2f966e99dc5",
+      "sha256": "22a333e22d68b21e14647a2615d251a79a4159207339ad06d9f1571d2cdba652",
+      "bytes": 17739664,
+      "zipCrc": true
+    }
+  ],
+  "junit": [
+    {
+      "file": "prototype-ais-foundation-Linux-ad4913f25899e845a57ed3774ecdd2f966e99dc5/ais-foundation.xml",
+      "tests": 7,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "file": "prototype-ais-foundation-Windows-ad4913f25899e845a57ed3774ecdd2f966e99dc5/ais-foundation.xml",
+      "tests": 7,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "file": "prototype-native-Windows-ad4913f25899e845a57ed3774ecdd2f966e99dc5/windows-production-tests.xml",
+      "tests": 112,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    }
+  ],
+  "captures": [
+    {
+      "directory": "prototype-enc-standard",
+      "captureSha256": "08a812c5b452170b04c379966455726bb8cbcd91ff298a21630f7fce08390662",
+      "executableSha256": "6f3a286ec919ab5a0fc0dfa2e88babed2a082b292489f38faf8a98061d17db68",
+      "buildCommit": "ad4913f25899e845a57ed3774ecdd2f966e99dc5",
+      "exitCode": 0,
+      "captures": [
+        {
+          "file": "navigation-day.png",
+          "sha256": "2052b175482f1db2732856db569363aabe578d21faab9ae2dcda626551825479"
+        },
+        {
+          "file": "navigation-dusk.png",
+          "sha256": "eb402fbd74caf4f7d860773f739c30828bdb893418e1b7cab0eb49f223fc8ca4"
+        },
+        {
+          "file": "navigation-night.png",
+          "sha256": "08e871f19a7f3b86f8b9be1f0c54afe0d892654d87183105c6826c2dca246caf"
+        },
+        {
+          "file": "navigation-return-day.png",
+          "sha256": "2052b175482f1db2732856db569363aabe578d21faab9ae2dcda626551825479"
+        }
+      ],
+      "settings": null
+    },
+    {
+      "directory": "prototype-enc-xnav",
+      "captureSha256": "03b19309bd48496bacbce7322665ca33890e6a37320b761b8dfc2bb620e0879b",
+      "executableSha256": "6f3a286ec919ab5a0fc0dfa2e88babed2a082b292489f38faf8a98061d17db68",
+      "buildCommit": "ad4913f25899e845a57ed3774ecdd2f966e99dc5",
+      "exitCode": 0,
+      "captures": [
+        {
+          "file": "navigation-day.png",
+          "sha256": "8eb6b5bbbfa5501e6371a203acc5d5ba3f8597a5a9320a20d40df0f09d91b43b"
+        },
+        {
+          "file": "navigation-dusk.png",
+          "sha256": "8c126fb3e05f8bc754b5ed464039ab127d338976d7262af4af07c9d2aed12c3a"
+        },
+        {
+          "file": "navigation-night.png",
+          "sha256": "b3b97c845e45bb63c091e55541130c33e4a027575e0d447b9ba9c86e9f6a39f3"
+        },
+        {
+          "file": "navigation-return-day.png",
+          "sha256": "8eb6b5bbbfa5501e6371a203acc5d5ba3f8597a5a9320a20d40df0f09d91b43b"
+        }
+      ],
+      "settings": null
+    },
+    {
+      "directory": "prototype-native",
+      "captureSha256": "adc5950b2fc61b1b3966b135e89170d52d8cf243e601b6ffb5b8994326ea9dff",
+      "executableSha256": "6f3a286ec919ab5a0fc0dfa2e88babed2a082b292489f38faf8a98061d17db68",
+      "buildCommit": "ad4913f25899e845a57ed3774ecdd2f966e99dc5",
+      "exitCode": 0,
+      "captures": [
+        {
+          "file": "navigation-day.png",
+          "sha256": "1e1755ac699d586b43cee74d8dc5478d4b1b01d2b0e8ec533ecec49f8201b467"
+        },
+        {
+          "file": "navigation-dusk.png",
+          "sha256": "cecdcec609cf543333baefc90dd1af635246f2ff805ffb434988a97c509b2f97"
+        },
+        {
+          "file": "navigation-night.png",
+          "sha256": "81630160626326013b7bd30e248c043c61265bbfec696596e335cc8bb42ca076"
+        },
+        {
+          "file": "passage-day.png",
+          "sha256": "93adefd6d419d652ae24e9fe8770e5bbaf75482ab8c31fe2e57d9c4611ec3e6e"
+        },
+        {
+          "file": "traffic-day.png",
+          "sha256": "b2d76f29bea50906d357878590fd40ffd35dc025afe9941c35b8abc658ae0c7d"
+        },
+        {
+          "file": "energy-day.png",
+          "sha256": "1584fed7f158a9bb579c8424e31a9fd5c5d67d60744fc06f52c838d9fc2f0e00"
+        },
+        {
+          "file": "instruments-day.png",
+          "sha256": "6eb639251f8a73ce127828b57fc87a7770f6eea0ee409c6497d275634fb6a1ae"
+        },
+        {
+          "file": "settings-day.png",
+          "sha256": "f823729e2e76891547c45f5bc1262838a9ef2269d89fcd1a763db90689899f09"
+        },
+        {
+          "file": "online-ais-settings-day.png",
+          "sha256": "e1d0d3e946fb784c846a843647c1589d68377cd0c75a3e613314a6f994dd9067"
+        },
+        {
+          "file": "online-ais-key-needed-day.png",
+          "sha256": "7480fc9b834101f586b21feed0457a7b4da07987d19223cde0b9839cd5ae7d4f"
+        },
+        {
+          "file": "online-ais-settings-dusk.png",
+          "sha256": "f8248bc2d9f6ecd4ebcc22537b0a95ad9356e5b85f67909d29f32c96178c8d48"
+        },
+        {
+          "file": "online-ais-settings-night.png",
+          "sha256": "6df8f9cb15962255bc9fcfc328a1490c6d06e5af6087235b41cacdd13185e1b2"
+        }
+      ],
+      "settings": "Default OFF; missing key withholds connection; OFF, themes and Close exercised"
+    }
+  ],
+  "windowsBuild": "Native fixture-free Win32 MSVC passed; all six jobs pass",
+  "transport": "18 hostile TLS scenarios and actual provider lifecycle pass on both platforms",
+  "resources": "369 preservation and integrity checks pass",
+  "visualReview": "Traffic Day and Online AIS Settings Night inspected. UTF-8 heading fixed; current Autopilot and Follow boat labels. Drawer geometry and painted settings pass. Empty traffic does not exercise chart glyphs; dedicated populated component testing is next. Other primary pages, rail typography and ENC Night contrast remain mismatches.",
+  "linuxDevelopment": "120 integrated and 76 portable cases passed during this increment; final provider-disabled clear condition additionally compiled.",
+  "boatAcceptance": false,
+  "liveAISAcceptance": false
+}
