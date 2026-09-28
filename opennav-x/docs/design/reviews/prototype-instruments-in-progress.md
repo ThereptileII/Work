@@ -77,3 +77,14 @@ the earlier negatives remain recorded and their cause is not claimed proven.
 Remaining: native Windows font/geometry comparison, physical boat capture,
 DPI/installed lifecycle gates, and removal of older top-bar Up/Down chrome in
 favor of the prototype's scrolling flow. No screen-level PASS is recorded.
+
+Windows run `36494702427` passed the MSVC build, 114/114 integrated tests,
+actual-product Instruments capture/theme/Close flow and public ENC theme cycles.
+The offline widget's strict pixel check **failed**: its parent host retained the
+Windows default size and clipped the child despite correct reported child
+coordinates. The downloaded blank image is retained as negative evidence. The
+fixture now gives the host an explicit frame sizer and checks full ancestor
+containment on every capture (41 checks). Linux corrective pass6 passes all 41
+checks/five images with the unchanged strict pixel checks. Replacement native
+validation is required. See [failed-run evidence](../../evidence/prototype-native-1a175e3-failed.json).
+The exact preceding source also passes 122/122 Linux tests in 19.58 seconds.

@@ -22,6 +22,10 @@ namespace OpenNavX {
     }
     public sealed class WindowInfo {
       public long Handle;public int ProcessId;public uint Dpi;public Rect Bounds;public bool Maximized;
+      public string Shell;public SurfaceInfo[] Surfaces;
+    }
+    public sealed class SurfaceInfo {
+      public long Handle;public string Title,Signature;public uint Dpi;public Rect Bounds;
     }
     public sealed class ResizeInfo {
       public WindowInfo Before,Restored,After;public Rect MonitorBounds,WorkArea;public bool RestoreRequested;
@@ -48,6 +52,8 @@ namespace OpenNavX {
     [DllImport("user32.dll")] private static extern IntPtr WindowFromPoint(Point point);
     [DllImport("user32.dll")] private static extern bool IsChild(IntPtr parent,IntPtr child);
     [DllImport("user32.dll")] private static extern IntPtr GetParent(IntPtr child);
+    [DllImport("user32.dll")] private static extern IntPtr GetWindow(IntPtr window,uint command);
+    [DllImport("user32.dll")] private static extern bool ClientToScreen(IntPtr window,ref Point point);
     [DllImport("user32.dll")] private static extern IntPtr MonitorFromWindow(IntPtr window,uint flags);
     [DllImport("user32.dll",CharSet=CharSet.Unicode)] private static extern bool GetMonitorInfoW(IntPtr monitor,ref MonitorInfo info);
     [DllImport("user32.dll",SetLastError=true)] private static extern bool SetWindowPos(IntPtr window,IntPtr after,int x,int y,int width,int height,uint flags);
@@ -78,12 +84,75 @@ namespace OpenNavX {
       EnumChildWindows(frame,delegate(IntPtr h,IntPtr p){if(IsWindowVisible(h))result.Add(h);return true;},IntPtr.Zero);
       return result;
     }
+    public static bool IsPrototypeNavigation(string[] labels) {
+      if(labels==null || labels.Length!=8)return false;
+      var expected=new HashSet<string>(new string[]{"Chart","Passage","Traffic","Energy","Instruments","Anchor","Radar","Settings"},StringComparer.Ordinal);
+      foreach(var label in labels)if(!expected.Remove(label))return false;
+      return expected.Count==0;
+    }
+    private static bool SameLabels(string[] actual,params string[] expected) {
+      if(actual==null || actual.Length!=expected.Length)return false;
+      var remaining=new HashSet<string>(expected,StringComparer.Ordinal);
+      foreach(var label in actual)if(!remaining.Remove(label))return false;
+      return remaining.Count==0;
+    }
+    // Signatures authorize capture only. They never authorize clicking a sheet
+    // control (in particular key storage, route changes or hardware commands).
+    public static bool IsPrototypeSurface(string title,string[] directLabels,string[] headingLabels) {
+      switch(title) {
+        case "OpenNav chart tools":return SameLabels(directLabels,"Measure","Waypoint","+","\u2212");
+        case "OpenNav chart orientation":return SameLabels(directLabels,"North") || SameLabels(directLabels,"Course");
+        case "OpenNav follow boat":return SameLabels(directLabels,"Follow boat");
+        case "OpenNav passage":return SameLabels(directLabels) && SameLabels(headingLabels,"Close");
+        case "OpenNav vessel traffic":return SameLabels(directLabels) && (SameLabels(headingLabels,"Close") || SameLabels(headingLabels,"Back"));
+        default:return false;
+      }
+    }
+    private static string[] DirectLabels(IntPtr parent,int pid) {
+      var labels=new List<string>();
+      foreach(var h in Children(parent))if(GetParent(h)==parent && Owner(h)==(uint)pid && Class(h)!="Static" && Text(h).Length>0)labels.Add(Text(h));
+      return labels.ToArray();
+    }
+    private static IntPtr PrototypeNavigation(IntPtr frame,int pid) {
+      var result=IntPtr.Zero;
+      foreach(var h in Children(frame))if(GetParent(h)==frame && Owner(h)==(uint)pid && IsPrototypeNavigation(DirectLabels(h,pid))) {
+        if(result!=IntPtr.Zero)throw new InvalidOperationException("Ambiguous prototype navigation rail.");
+        result=h;
+      }
+      return result;
+    }
+    private static SurfaceInfo[] PrototypeSurfaces(IntPtr frame,int pid,uint dpi) {
+      Rect client;var origin=new Point();
+      if(!GetClientRect(frame,out client) || !ClientToScreen(frame,ref origin))throw new InvalidOperationException("Frame client geometry unavailable.");
+      client.Left+=origin.X;client.Right+=origin.X;client.Top+=origin.Y;client.Bottom+=origin.Y;
+      var result=new List<SurfaceInfo>();var names=new HashSet<string>(StringComparer.Ordinal);Exception failure=null;int drawers=0;
+      EnumWindows(delegate(IntPtr h,IntPtr ignored) {
+        try {
+          if(!IsWindowVisible(h) || IsIconic(h) || GetWindow(h,4)!=frame || Owner(h)!=(uint)pid || IsChild(frame,h))return true;
+          var title=Text(h);
+          if(title!="OpenNav chart tools" && title!="OpenNav chart orientation" && title!="OpenNav follow boat" && title!="OpenNav passage" && title!="OpenNav vessel traffic")return true;
+          var direct=DirectLabels(h,pid);var heading=new List<string>();
+          foreach(var child in Children(h))if(GetParent(child)==h && Owner(child)==(uint)pid)
+            foreach(var label in DirectLabels(child,pid))if(label=="Close" || label=="Back")heading.Add(label);
+          var rect=Bounds(h);
+          if(!names.Add(title) || !IsWindowEnabled(h) || GetDpiForWindow(h)!=dpi || rect.Width<24 || rect.Height<24 || !Contains(client,rect) ||
+             !IsPrototypeSurface(title,direct,heading.ToArray()))throw new InvalidOperationException("Owned prototype surface identity or containment changed.");
+          if((title=="OpenNav passage" || title=="OpenNav vessel traffic") && ++drawers>1)throw new InvalidOperationException("More than one prototype sheet is visible.");
+          Array.Sort(direct,StringComparer.Ordinal);heading.Sort(StringComparer.Ordinal);
+          result.Add(new SurfaceInfo{Handle=h.ToInt64(),Title=title,Signature=String.Join("|",direct)+"/"+String.Join("|",heading.ToArray()),Dpi=dpi,Bounds=rect});
+          return true;
+        } catch(Exception error){failure=error;return false;}
+      },IntPtr.Zero);
+      if(failure!=null)throw new InvalidOperationException("Prototype owned-window verification failed.",failure);
+      result.Sort(delegate(SurfaceInfo a,SurfaceInfo b){return a.Handle.CompareTo(b.Handle);});
+      return result.ToArray();
+    }
     public static void Foreground(IntPtr frame,int pid) {
       if(Owner(frame)!=(uint)pid || IsIconic(frame) || !IsWindowVisible(frame))throw new InvalidOperationException("Reviewed frame unavailable or minimized.");
       SetForegroundWindow(frame);Thread.Sleep(250);AssertFrame(frame,pid);
     }
     private static WindowInfo FrameIdentity(IntPtr frame,int pid,bool requireForeground) {
-      if(frame==IntPtr.Zero || Owner(frame)!=(uint)pid || (requireForeground && GetForegroundWindow()!=frame) || GetParent(frame)!=IntPtr.Zero ||
+      if(frame==IntPtr.Zero || Owner(frame)!=(uint)pid || GetParent(frame)!=IntPtr.Zero ||
          IsIconic(frame) || !IsWindowVisible(frame) || !IsWindowEnabled(frame))throw new InvalidOperationException("Exact reviewed XNav frame must be foreground and enabled; dismiss other windows manually.");
       int menu=0,navigation=0;
       foreach(var child in Children(frame)) {
@@ -92,12 +161,17 @@ namespace OpenNavX {
         if(text=="Menu" && Class(child)!="Static")menu++;
         if(text=="Navigation" && Class(child)!="Static")navigation++;
       }
-      if(menu!=1 || navigation!=1)throw new InvalidOperationException("Normal installed XNav shell was not uniquely identified.");
+      bool prototype=PrototypeNavigation(frame,pid)!=IntPtr.Zero;
+      if((prototype && (menu!=0 || navigation!=0)) || (!prototype && (menu!=1 || navigation!=1)))throw new InvalidOperationException("Normal installed XNav shell was not uniquely identified.");
       var rect=Bounds(frame);
       if(rect.Width<100 || rect.Height<100 || rect.Width>7680 || rect.Height>4320)throw new InvalidOperationException("Reviewed frame dimensions are outside bounded display geometry.");
       var dpi=GetDpiForWindow(frame);
       if(dpi<72 || dpi>384)throw new InvalidOperationException("Unexpected application DPI.");
-      return new WindowInfo {Handle=frame.ToInt64(),ProcessId=pid,Dpi=dpi,Bounds=rect,Maximized=IsZoomed(frame)};
+      var surfaces=prototype?PrototypeSurfaces(frame,pid,dpi):new SurfaceInfo[0];
+      var foreground=GetForegroundWindow();bool knownFocus=foreground==frame;
+      foreach(var surface in surfaces)if(foreground.ToInt64()==surface.Handle)knownFocus=true;
+      if(requireForeground && !knownFocus)throw new InvalidOperationException("Exact reviewed frame or verified owned prototype surface must be foreground.");
+      return new WindowInfo {Handle=frame.ToInt64(),ProcessId=pid,Dpi=dpi,Bounds=rect,Maximized=IsZoomed(frame),Shell=prototype?"prototype":"legacy-xnav",Surfaces=surfaces};
     }
     public static WindowInfo AssertFrame(IntPtr frame,int pid) {
       var info=FrameIdentity(frame,pid,true);
@@ -106,16 +180,26 @@ namespace OpenNavX {
     }
     public static void AssertCapture(IntPtr frame,int pid,WindowInfo expected) {
       var current=AssertFrame(frame,pid);
-      if(current.Bounds.Left!=expected.Bounds.Left || current.Bounds.Top!=expected.Bounds.Top ||
+      if(expected==null || current.Handle!=expected.Handle || current.ProcessId!=expected.ProcessId || current.Shell!=expected.Shell ||
+         current.Bounds.Left!=expected.Bounds.Left || current.Bounds.Top!=expected.Bounds.Top ||
          current.Bounds.Right!=expected.Bounds.Right || current.Bounds.Bottom!=expected.Bounds.Bottom || current.Dpi!=expected.Dpi)
         throw new InvalidOperationException("Reviewed window moved or changed DPI during capture.");
+      if(expected.Surfaces==null || current.Surfaces.Length!=expected.Surfaces.Length)throw new InvalidOperationException("Owned prototype surfaces changed during capture.");
+      for(int i=0;i<current.Surfaces.Length;i++) {
+        var a=current.Surfaces[i];var b=expected.Surfaces[i];
+        if(b==null || a.Handle!=b.Handle || a.Title!=b.Title || a.Signature!=b.Signature || a.Dpi!=b.Dpi || !SameRect(a.Bounds,b.Bounds))
+          throw new InvalidOperationException("Owned prototype surface changed during capture.");
+      }
       bool obscured=false;Exception failure=null;
       // Never let an exception escape a reverse-P/Invoke enumeration callback.
       // Any inaccessible/disappearing overlaid window invalidates the capture.
       EnumWindows(delegate(IntPtr h,IntPtr p){
         try {
           if(h==frame)return false;
-          if(IsWindowVisible(h) && !IsIconic(h) && Intersects(expected.Bounds,Bounds(h)))obscured=true;
+          if(IsWindowVisible(h) && !IsIconic(h) && Intersects(expected.Bounds,Bounds(h))) {
+            bool known=false;foreach(var surface in current.Surfaces)if(surface.Handle==h.ToInt64())known=true;
+            if(!known)obscured=true;
+          }
           return true;
         } catch(Exception error) {failure=error;return false;}
       },IntPtr.Zero);
@@ -265,7 +349,8 @@ namespace OpenNavX {
       if(action=="CyclePalette") {
         var parent=GetParent(button);int menus=0;
         if(parent==IntPtr.Zero || GetParent(parent)!=frame)return false;
-        foreach(var h in Children(parent))if(GetParent(h)==parent && Owner(h)==(uint)pid && Class(h)!="Static" && Text(h)=="Menu")menus++;
+        var sibling=PrototypeNavigation(frame,pid)==IntPtr.Zero?"Menu":"Alerts";
+        foreach(var h in Children(parent))if(GetParent(h)==parent && Owner(h)==(uint)pid && Class(h)!="Static" && Text(h)==sibling)menus++;
         return menus==1;
       }
       if(action=="Display" || action=="ToggleFullscreen") {
@@ -285,10 +370,27 @@ namespace OpenNavX {
       }
       return true;
     }
+    public static string PrototypeRailLabel(string action) {
+      ActionLabels(action); // Same fixed read-only action allowlist.
+      switch(action) {
+        case "Menu":case "Settings":return "Settings";
+        case "Navigation":return "Chart";
+        case "Route":return "Passage";
+        case "AIS":return "Traffic";
+        case "Energy":return "Energy";
+        case "Instruments":return "Instruments";
+        case "Anchor":return "Anchor";
+        default:return null;
+      }
+    }
     private static IntPtr ResolveButton(IntPtr frame,int pid,string action) {
       var labels=ActionLabels(action);var root=AssertFrame(frame,pid);var matches=new List<IntPtr>();
+      var rail=root.Shell=="prototype"?PrototypeNavigation(frame,pid):IntPtr.Zero;
+      var railLabel=rail==IntPtr.Zero?null:PrototypeRailLabel(action);
+      if(railLabel!=null)labels=new string[]{railLabel};
       foreach(var h in Children(frame)) {
         if(Array.IndexOf(labels,Text(h))<0 || Class(h)=="Static" || !IsWindowEnabled(h) || Owner(h)!=(uint)pid)continue;
+        if(railLabel!=null && GetParent(h)!=rail)continue;
         Rect r;if(!GetWindowRect(h,out r) || !Contains(root.Bounds,r))continue;
         bool visible=true;for(var parent=GetParent(h);parent!=IntPtr.Zero && parent!=frame;parent=GetParent(parent)) {
           Rect pr;if(!GetWindowRect(parent,out pr) || !Contains(pr,r))visible=false;

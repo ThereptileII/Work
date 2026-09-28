@@ -34,6 +34,23 @@ displaced compass text and unavailable-line collision are corrected and tested.
 navigation-meaning differences, earlier negative runs and pending Windows/boat
 gates. Remaining older Up/Down chrome is an explicit prototype mismatch.
 
+The Instruments Windows increment `1a175e3` / run `36494702427` is **not
+accepted**: 114 integrated tests, object interactions and actual-product/ENC
+captures pass, but the isolated Instruments widget capture was blank because
+its parent panel was not explicitly sized on Windows. An explicit host sizer
+and ancestor-containment assertion correct the fixture; unchanged strict pixels
+pass on Linux (41 checks/five images). Replacement Windows evidence is pending.
+All seven downloaded artifacts were hash/CRC verified; 38 successful captures
+and five negative widget images are retained. See
+[failed native evidence](evidence/prototype-native-1a175e3-failed.json).
+
+The boat display-review guard is being qualified for the prototype rail and
+known owned surfaces. It retains exact installed executable/session/launch
+identity and rejects unrelated or changed windows. Linux policy suites pass;
+native marker-window and actual-product capture qualification remain pending.
+No new prototype product has been launched aboard, and no actuator action was
+added. See [guard review](design/reviews/prototype-boat-capture-guard.md).
+
 Replacement `c86c6a7` / [run 36485693077](https://github.com/ThereptileII/Work/actions/runs/36485693077)
 passes all seven development jobs. All eight downloaded artifacts, their ZIP
 CRCs, 29 captured PNG hashes and the probe's 17 binaries were independently

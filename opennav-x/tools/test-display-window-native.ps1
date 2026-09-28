@@ -31,7 +31,16 @@ try {
   @('Resize1280x800','normal','RESIZED'),@('Resize1280x800','maximized-offscreen','RESIZED'),
   @('Resize1280x800','partial-offscreen','RESIZED'),@('Resize1280x800','entirely-offscreen',''),
   @('Resize1280x800','minimized',''),@('Resize1280x800','demo',''),
-  @('Resize1280x800','wrong-pid',''),@('Resize1280x800','modal',''))) {
+  @('Resize1280x800','wrong-pid',''),@('Resize1280x800','modal',''),
+  @('Capture','prototype-normal','CAPTURE'),@('Capture','prototype-passage','CAPTURE'),
+  @('Capture','prototype-traffic','CAPTURE'),@('Capture','prototype-back','CAPTURE'),
+  @('Capture','prototype-unknown',''),@('Capture','prototype-wrong-owner',''),
+  @('Capture','prototype-duplicate',''),@('Capture','prototype-clipped',''),
+  @('Capture','prototype-signature',''),@('Capture','prototype-moved',''),
+  @('Capture','prototype-rail-duplicate',''),@('Capture','prototype-modal',''),
+  @('Navigation','prototype-normal','Chart'),@('Route','prototype-normal','Passage'),
+  @('AIS','prototype-normal','Traffic'),@('Instruments','prototype-normal','Instruments'),
+  @('CyclePalette','prototype-normal','Status Day'))) {
   $directory=Join-Path ([IO.Path]::GetTempPath()) ('opennav-display-window-'+[guid]::NewGuid().ToString('N'));$null=New-Item -ItemType Directory -Path $directory
   $fixtureCase=if($spec[1] -cin @('missing-diagnostics','stale-diagnostics','wrong-commit')){'normal'}else{$spec[1]}
   [IO.File]::WriteAllText((Join-Path $directory 'fixture.json'),(@{owner='OpenNavX.NativeDisplayWindow.Fixture.1';action=$spec[0];case=$fixtureCase}|ConvertTo-Json -Compress))
@@ -56,7 +65,15 @@ try {
     } else {
     [OpenNavX.ReviewWindowNative]::Foreground([IntPtr]$ready.handle,$process.Id)
     $before=[OpenNavX.ReviewWindowNative]::AssertFrame([IntPtr]$ready.handle,$process.Id)
-    if($spec[0] -ceq 'PanRight') {
+    if($spec[0] -ceq 'Capture') {
+     if($spec[1] -ceq 'prototype-moved') {
+      [IO.File]::WriteAllText((Join-Path $directory 'mutate'),'move fixed owned surface')
+      $deadline=[datetime]::UtcNow.AddSeconds(3)
+      while(-not (Test-Path -LiteralPath (Join-Path $directory 'mutated')) -and [datetime]::UtcNow -lt $deadline){Start-Sleep -Milliseconds 50}
+      if(-not (Test-Path -LiteralPath (Join-Path $directory 'mutated'))){throw 'Capture mutation was not performed.'}
+     }
+     [OpenNavX.ReviewWindowNative]::AssertCapture([IntPtr]$ready.handle,$process.Id,$before)
+    } elseif($spec[0] -ceq 'PanRight') {
      $script:displayProfile=$directory
      $commit='a'*40
      $data=@{build_commit=$commit;build_purpose='INSTALLED PRODUCT';data_mode='OPENCPN selected navigation';ui_page='Navigation';
@@ -79,7 +96,9 @@ try {
    } catch {$refused=$true;$reason=$_.Exception.Message}
    $clickPath=Join-Path $directory 'clicks.txt';[string[]]$clicks=@()
    if(Test-Path -LiteralPath $clickPath){$clicks=@(Get-Content -LiteralPath $clickPath)}
-   if($spec[2] -ceq 'RESIZED'){
+   if($spec[2] -ceq 'CAPTURE') {
+    if($refused -or @($clicks).Count -or $before.Shell -cne 'prototype' -or $before.Surfaces.Count -lt 3){throw ('Native prototype capture failed: '+$spec[1]+': '+$reason)}
+   } elseif($spec[2] -ceq 'RESIZED'){
     if($refused -or @($clicks).Count -or $after.Maximized -or $after.Bounds.Width -ne 1280 -or $after.Bounds.Height -ne 800){throw ('Native fixed resize failed: '+$spec[1]+': '+$reason)}
     if($spec[1] -ceq 'maximized-offscreen' -and (-not $resize.RestoreRequested -or -not $before.Maximized)){throw 'Oversized restore fixture did not actually maximize first.'}
    } elseif($spec[2]){

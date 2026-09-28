@@ -7,8 +7,8 @@ if(-not $root.StartsWith([IO.Path]::GetTempPath(),[StringComparison]::OrdinalIgn
    [IO.Path]::GetFileName($root) -cnotmatch '^opennav-display-window-[a-f0-9]{32}$'){throw 'Unique temporary display fixture required.'}
 $record=Get-Content -LiteralPath (Join-Path $root 'fixture.json') -Raw|ConvertFrom-Json
 if($record.owner -cne 'OpenNavX.NativeDisplayWindow.Fixture.1' -or
-   $record.action -cnotin @('Display','ToggleFullscreen','ToggleOrientation','CyclePalette','PanRight','Resize1280x800') -or
-   $record.case -cnotin @('normal','return','course','wrong-page','wrong-geometry','canvas-child','ambiguous','replace-on-down','rename-on-down','move-on-down','duplicate-on-down','modal','maximized-offscreen','partial-offscreen','entirely-offscreen','minimized','demo','wrong-pid')){throw 'Unknown fixed fixture.'}
+   $record.action -cnotin @('Display','ToggleFullscreen','ToggleOrientation','CyclePalette','PanRight','Resize1280x800','Capture','Navigation','Route','AIS','Instruments') -or
+   $record.case -cnotin @('normal','return','course','wrong-page','wrong-geometry','canvas-child','ambiguous','replace-on-down','rename-on-down','move-on-down','duplicate-on-down','modal','maximized-offscreen','partial-offscreen','entirely-offscreen','minimized','demo','wrong-pid','prototype-normal','prototype-passage','prototype-traffic','prototype-back','prototype-unknown','prototype-wrong-owner','prototype-duplicate','prototype-clipped','prototype-signature','prototype-moved','prototype-rail-duplicate','prototype-modal')){throw 'Unknown fixed fixture.'}
 Add-Type -AssemblyName System.Windows.Forms
 Add-Type -TypeDefinition @'
 using System;
@@ -105,8 +105,34 @@ if($record.case -cin @('replace-on-down','rename-on-down','move-on-down','duplic
   }
  })
 }
+$script:surfaces=New-Object 'Collections.Generic.List[Windows.Forms.Form]'
+$prototype=$record.case.StartsWith('prototype-',[StringComparison]::Ordinal)
+if($prototype) {
+ $top.Controls[0].Dispose();$bottom.Dispose()
+ $null=Button $top 'Alerts' 250 4 100
+ $rail=New-Object Windows.Forms.Panel;$rail.Location=New-Object Drawing.Point(0,64);$rail.Size=New-Object Drawing.Size(90,520);$form.Controls.Add($rail);$rail.BringToFront()
+ $index=0
+ foreach($label in @('Chart','Passage','Traffic','Energy','Instruments','Anchor','Radar','Settings')) {
+  $item=Button $rail $label 0 ($index*60) 88;$item.Add_Click({param($sender,$event) SaveClick $sender.Text});$index++
+ }
+ if($record.case -ceq 'prototype-rail-duplicate'){$null=Button $rail 'Chart' 0 480 88}
+}
+function Surface([string]$Title,[int]$X,[int]$Y,[int]$Width,[int]$Height,[string[]]$Labels,[switch]$Heading,[switch]$Unowned) {
+ $surface=New-Object Windows.Forms.Form;$surface.Text=$Title;$surface.FormBorderStyle='None';$surface.ShowInTaskbar=$false
+ $surface.StartPosition='Manual';$surface.Location=New-Object Drawing.Point($X,$Y);$surface.Size=New-Object Drawing.Size($Width,$Height)
+ $surface.BackColor=[Drawing.Color]::FromArgb(20,35,45)
+ $parent=$surface
+ if($Heading){$parent=New-Object Windows.Forms.Panel;$parent.Location=New-Object Drawing.Point(0,0);$parent.Size=New-Object Drawing.Size($Width,89);$surface.Controls.Add($parent)}
+ $offset=0;foreach($label in $Labels){$null=Button $parent $label $offset 0 44;$offset+=44}
+ if($Unowned){$surface.TopMost=$true;$surface.Show()}else{$surface.Show($form)}
+ $script:surfaces.Add($surface)
+}
 $started=[datetime]::UtcNow;$timer=New-Object Windows.Forms.Timer;$timer.Interval=100
-$timer.Add_Tick({if((Test-Path -LiteralPath (Join-Path $root 'release')) -or ([datetime]::UtcNow-$started).TotalSeconds -gt 25){$form.Close()}})
+$timer.Add_Tick({
+ if($record.case -ceq 'prototype-moved' -and (Test-Path -LiteralPath (Join-Path $root 'mutate')) -and -not (Test-Path -LiteralPath (Join-Path $root 'mutated'))) {
+  $script:surfaces[0].Left+=10;[IO.File]::WriteAllText((Join-Path $root 'mutated'),'surface moved')
+ }
+ if((Test-Path -LiteralPath (Join-Path $root 'release')) -or ([datetime]::UtcNow-$started).TotalSeconds -gt 25){$form.Close()}})
 $form.Add_Shown({
  if($record.case -cin @('maximized-offscreen','partial-offscreen')) {
   $form.Location=New-Object Drawing.Point(-200,-100);$form.Size=New-Object Drawing.Size(1600,1000)
@@ -115,9 +141,21 @@ $form.Add_Shown({
  if($record.case -ceq 'entirely-offscreen'){$form.Location=New-Object Drawing.Point(-4000,-3000)}
  if($record.case -ceq 'minimized'){$form.WindowState='Minimized'}
  if($record.case -ceq 'return'){$form.FormBorderStyle='None';$form.WindowState='Maximized';$script:full=$true}
+ if($prototype) {
+  $last=if($record.case -ceq 'prototype-signature'){'AUTO'}else{[string][char]0x2212}
+  Surface 'OpenNav chart tools' 150 100 190 64 @('Measure','Waypoint','+',$last)
+  Surface 'OpenNav chart orientation' 150 180 68 90 @('North')
+  Surface 'OpenNav follow boat' 150 290 142 56 @('Follow boat')
+  if($record.case -ceq 'prototype-passage'){Surface 'OpenNav passage' 390 100 398 460 @('Close') -Heading}
+  if($record.case -cin @('prototype-traffic','prototype-back')){Surface 'OpenNav vessel traffic' 390 100 398 460 @($(if($record.case -ceq 'prototype-back'){'Back'}else{'Close'})) -Heading}
+  if($record.case -ceq 'prototype-unknown'){Surface 'Unknown plugin popup' 390 100 240 200 @('Close')}
+  if($record.case -ceq 'prototype-wrong-owner'){Surface 'OpenNav passage' 390 100 398 460 @('Close') -Heading -Unowned}
+  if($record.case -ceq 'prototype-duplicate'){Surface 'OpenNav chart tools' 390 100 190 64 @('Measure','Waypoint','+',[string][char]0x2212)}
+  if($record.case -ceq 'prototype-clipped'){$script:surfaces[0].Left=$form.Right-20}
+ }
  $chart=$panel.RectangleToScreen($panel.ClientRectangle)
  [IO.File]::WriteAllText((Join-Path $root 'ready.json'),(@{pid=$PID;handle=$form.Handle.ToInt64();createdFiletime=[Diagnostics.Process]::GetCurrentProcess().StartTime.ToUniversalTime().ToFileTimeUtc().ToString();chart=@{left=$chart.Left;top=$chart.Top;right=$chart.Right;bottom=$chart.Bottom}}|ConvertTo-Json -Depth 4 -Compress))
  $timer.Start()
- if($record.case -ceq 'modal'){$dialog=New-Object Windows.Forms.Form;$dialog.Text='Unexpected modal';$dialog.Size=New-Object Drawing.Size(300,200);$null=$dialog.ShowDialog($form);$dialog.Dispose()}
+ if($record.case -cin @('modal','prototype-modal')){$dialog=New-Object Windows.Forms.Form;$dialog.Text='Unexpected modal';$dialog.Size=New-Object Drawing.Size(300,200);$null=$dialog.ShowDialog($form);$dialog.Dispose()}
 })
-try{[Windows.Forms.Application]::Run($form)}finally{$timer.Dispose();$form.Dispose()}
+try{[Windows.Forms.Application]::Run($form)}finally{$timer.Dispose();foreach($surface in $script:surfaces){$surface.Dispose()};$form.Dispose()}

@@ -1,0 +1,100 @@
+{
+  "accepted": false,
+  "developmentGatesPassed": false,
+  "remoteCommit": "1a175e303c1fab8aad147abde4e41feeefaf26e4",
+  "localCommit": "96b70672593e81e8b8cac9a73de28e026395d5f8",
+  "tree": "e866a867f1a4a93ee2f59afa373ccadbfe1aa5ac",
+  "verifiedSourceBlobs": 1082,
+  "ciRun": "https://github.com/ThereptileII/Work/actions/runs/36494702427",
+  "jobsPassed": 6,
+  "jobsFailed": 1,
+  "artifacts": [
+    {
+      "id": 11003576538,
+      "name": "prototype-native-Windows-1a175e303c1fab8aad147abde4e41feeefaf26e4",
+      "sha256": "0e6b724a5fd822019b2e3aa338238b575e4c0e40511ac7397b541fa98364bbf9",
+      "bytes": 14812719,
+      "zipCrc": true
+    },
+    {
+      "id": 11003160285,
+      "name": "prototype-reference-Linux-1a175e303c1fab8aad147abde4e41feeefaf26e4",
+      "sha256": "8613d1a80dc77e8734ccbeece43b57aa1a897506f3992c7d414539653ad5de04",
+      "bytes": 17761549,
+      "zipCrc": true
+    },
+    {
+      "id": 11003112195,
+      "name": "prototype-object-flow-Windows-1a175e303c1fab8aad147abde4e41feeefaf26e4",
+      "sha256": "171d3bf41980eb75ce9a0707e80e8382e359608c650bd0a89b0e22fba7df3946",
+      "bytes": 1991679,
+      "zipCrc": true
+    },
+    {
+      "id": 11002829416,
+      "name": "prototype-reference-Windows-1a175e303c1fab8aad147abde4e41feeefaf26e4",
+      "sha256": "62bedb8d6a270a660edf1fe2d091f93345bc64574ed3c03ccb0fed69326ca129",
+      "bytes": 16131867,
+      "zipCrc": true
+    },
+    {
+      "id": 11002753625,
+      "name": "prototype-ais-foundation-Windows-1a175e303c1fab8aad147abde4e41feeefaf26e4",
+      "sha256": "446e331c1827cdb1901cd0faf863f4bcc0833990844220ad2c09b967defea591",
+      "bytes": 691,
+      "zipCrc": true
+    },
+    {
+      "id": 11002653412,
+      "name": "prototype-ais-foundation-Linux-1a175e303c1fab8aad147abde4e41feeefaf26e4",
+      "sha256": "8c547a1732623a385e73a2efd76656a4faa8f677be74bd50547678b70236d313",
+      "bytes": 690,
+      "zipCrc": true
+    },
+    {
+      "id": 11001953928,
+      "name": "prototype-ais-network-Linux-1a175e303c1fab8aad147abde4e41feeefaf26e4",
+      "sha256": "73a143cf145c15451f81702b7dab4561d4e092b23cef94dbb720bb47f67d9b76",
+      "bytes": 935,
+      "zipCrc": true
+    }
+  ],
+  "verifiedNativeScreenshotCounts": {
+    "ais-component": 9,
+    "passage-component": 5,
+    "prototype-enc-standard": 4,
+    "prototype-enc-xnav": 4,
+    "prototype-native": 16
+  },
+  "integratedWindowsTests": 114,
+  "componentChecks": {
+    "ais": 71,
+    "passage": 26,
+    "instruments": 36
+  },
+  "failure": {
+    "stage": "Offline Instruments screenshot pixels",
+    "assertion": "instruments-day: component pixels absent or wrong theme",
+    "observation": "Downloaded image is almost entirely default gray. Offline host panel is not explicitly laid out on Windows; child rectangles alone passed while ancestors clipped painting. Actual product Instruments captures passed.",
+    "images": {
+      "instruments-day.png": "a63c9a8e037ae5e0d8fe18a126d7c4e91d62050f7adcb4516c3120633102e3e3",
+      "instruments-heading-unavailable-day.png": "a63c9a8e037ae5e0d8fe18a126d7c4e91d62050f7adcb4516c3120633102e3e3",
+      "instruments-dusk.png": "34d4dc1d59f323719eba9b0deef41b42d5e95911c74dec0b3c70859f4f633d8e",
+      "instruments-night.png": "640775a09c3ad6b63943ec962d12522b8f777c1514572a770159486ebbfbea15",
+      "instruments-stale-day.png": "a63c9a8e037ae5e0d8fe18a126d7c4e91d62050f7adcb4516c3120633102e3e3"
+    },
+    "correction": "Add explicit wxFrame sizer for offline host and assert full ancestor containment for every capture. Strict pixel assertions remain unchanged. Replacement Windows gate pending."
+  },
+  "linux": {
+    "tests": 122,
+    "failures": 0,
+    "wallSeconds": 19.58,
+    "junitSha256": "9d103053b5e51ef27109a273e1204257b256a47a7fab111b99870fb5062071ff"
+  },
+  "reviewed": [
+    "instruments-component/instruments-day.png",
+    "prototype-native/instruments-day.png"
+  ],
+  "review": "Actual product retains exact dashboard and horizon geometry. Missing readings are explicit. Old Up/Down header controls and remaining typography/shadow differences are unresolved. Blank standalone component is a failed gate, not a rendering waiver.",
+  "qualificationScope": "No boat launch, installed lifecycle, physical GPU or live AIS acceptance. No probe package produced by this failed run."
+}

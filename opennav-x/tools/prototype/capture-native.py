@@ -71,6 +71,8 @@ def main():
                         help="Set the upstream ENC display unit in this disposable profile")
     parser.add_argument("--navigation-only", action="store_true")
     parser.add_argument("--ais-settings", action="store_true", help="Exercise fixture-free AIS settings without a key")
+    parser.add_argument("--review-window-guard", action="store_true",
+                        help="Windows CI: qualify guarded boat capture against actual native owned windows")
     args = parser.parse_args()
     args.output.mkdir(parents=True, exist_ok=False)
     profile = args.output.resolve() / "profile"
@@ -164,7 +166,16 @@ def main():
             from PIL import Image
             assert ui.IsWindowEnabled(window), "Unexpected modal dialog"
             outer = path.with_name(name + "-outer.png")
-            ui.capture(window, outer, resize=False, screen_pixels=True)
+            if args.review_window_guard:
+                subprocess.run([
+                    "powershell.exe", "-NoProfile", "-ExecutionPolicy", "Bypass", "-File",
+                    str(ROOT / "tools/prototype/capture-reviewed-native.ps1"),
+                    "-ProcessId", str(app.pid), "-Handle", str(window), "-Output", str(outer.resolve())],
+                    check=True, creationflags=subprocess.CREATE_NO_WINDOW, timeout=15)
+                guarded = json.loads(Path(str(outer) + ".json").read_text(encoding="utf-8-sig"))
+                record.setdefault("guarded_windows", {})[name] = guarded
+            else:
+                ui.capture(window, outer, resize=False, screen_pixels=True)
             origin = ui.W.POINT(0, 0)
             client_to_screen = ui.declare(ui.user, "ClientToScreen", ui.W.BOOL, ui.W.HWND, ui.C.POINTER(ui.W.POINT))
             assert client_to_screen(window, ui.C.byref(origin))
@@ -172,6 +183,8 @@ def main():
             rect = ui.W.RECT()
             assert ui.GetWindowRect(window, ui.C.byref(rect))
             x, y = origin.x-rect.left, origin.y-rect.top
+            if args.review_window_guard:
+                x, y = origin.x-guarded["Bounds"]["Left"], origin.y-guarded["Bounds"]["Top"]
             with Image.open(outer) as image:
                 image.crop((x, y, x+1280, y+800)).save(path)
         else:

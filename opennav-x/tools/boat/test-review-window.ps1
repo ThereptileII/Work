@@ -15,13 +15,50 @@ $installed=[pscustomobject]@{executable=$exe;state=[pscustomobject]@{current=('b
 $build=[pscustomobject]@{test_fixtures=$false;build_purpose='INSTALLED PRODUCT';version='0.4.0-beta2';commit=('a'*40);executable_sha256=('c'*64)}
 $launch=[pscustomobject]@{status='passed';action='Launch';mode='--xnav';pid=42;utc=$now.AddMinutes(-1).ToString('o')}
 $request=[pscustomobject]@{action='Launch';mode='--xnav';executable=$exe;executableSha256=('c'*64);workspace='C:\XNav'}
-foreach($fileName in @('ReviewWindow.ps1','review-window.ps1','../test-display-window-native.ps1','../../tests/display-review/window-fixture.ps1')) {
+foreach($fileName in @('ReviewWindow.ps1','review-window.ps1','../test-display-window-native.ps1','../prototype/capture-reviewed-native.ps1','../../tests/display-review/window-fixture.ps1')) {
   Pass "Parses $fileName without executing environment APIs" {
     $tokens=$null;$errors=$null;$null=[Management.Automation.Language.Parser]::ParseFile((Join-Path $PSScriptRoot $fileName),[ref]$tokens,[ref]$errors)
     if($errors.Count){throw ($errors | Out-String)}
   }
 }
 Pass 'Native helper compiles without executing Win32 APIs' {Initialize-WindowReviewNative}
+$rail=@('Chart','Passage','Traffic','Energy','Instruments','Anchor','Radar','Settings')
+Pass 'Prototype shell requires all eight exact sibling controls' {
+ if(-not [OpenNavX.ReviewWindowNative]::IsPrototypeNavigation($rail)){throw 'Prototype rail rejected.'}
+}
+foreach($labels in @(@('Chart','Passage'),($rail+@('AUTO')),(@('Chart')+$rail[0..6]),@('chart','Passage','Traffic','Energy','Instruments','Anchor','Radar','Settings'))) {
+ Pass 'Incomplete duplicate extended or case-changed rails do not identify a shell' {
+  if([OpenNavX.ReviewWindowNative]::IsPrototypeNavigation($labels)){throw 'Ambiguous shell accepted.'}
+ }
+}
+foreach($spec in @(
+ @('OpenNav chart tools',@('Measure','Waypoint','+',[string][char]0x2212),@(),$true),
+ @('OpenNav chart orientation',@('North'),@(),$true),
+ @('OpenNav chart orientation',@('Course'),@(),$true),
+ @('OpenNav follow boat',@('Follow boat'),@(),$true),
+ @('OpenNav passage',@(),@('Close'),$true),
+ @('OpenNav vessel traffic',@(),@('Back'),$true),
+ @('OpenNav vessel traffic',@(),@('Close'),$true),
+ @('Unexpected modal',@(),@('Close'),$false),
+ @('OpenNav passage',@('AUTO'),@('Close'),$false),
+ @('OpenNav passage',@(),@('Close','Close'),$false),
+ @('OpenNav passage',@(),@('Back'),$false),
+ @('OpenNav vessel traffic',@(),@('Close','Back'),$false),
+ @('OpenNav chart tools',@('Measure','Waypoint','+','+'),@(),$false),
+ @('OpenNav chart orientation',@('North','Course'),@(),$false),
+ @('OpenNav follow boat',@('Follow boat','STBY'),@(),$false))) {
+ Pass ('Fixed owned capture signature '+$spec[0]+' / '+$spec[3]) {
+  if([OpenNavX.ReviewWindowNative]::IsPrototypeSurface($spec[0],$spec[1],$spec[2]) -ne $spec[3]){throw 'Capture signature mismatch.'}
+ }
+}
+foreach($spec in @(@('Navigation','Chart'),@('Route','Passage'),@('AIS','Traffic'),@('Instruments','Instruments'),@('Menu','Settings'))) {
+ Pass ('Fixed prototype rail mapping '+$spec[0]) {
+  if([OpenNavX.ReviewWindowNative]::PrototypeRailLabel($spec[0]) -cne $spec[1]){throw 'Prototype action mapping changed.'}
+ }
+}
+foreach($action in @('AUTO','STBY','TRACK','WIND','Set AISStream key','Enabled','End navigation','Plot new passage')) {
+ Refuse ('No prototype actuator or mutation action '+$action) {[OpenNavX.ReviewWindowNative]::PrototypeRailLabel($action)}
+}
 foreach($action in Get-WindowReviewActions) {
   Pass "Allows one fixed display action: $action" {$value=CopyValue $job;$value.reviewAction=$action;Assert-WindowReviewPolicy $value $installed $build $launch $request $now}
 }

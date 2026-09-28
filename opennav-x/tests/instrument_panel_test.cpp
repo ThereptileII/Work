@@ -39,6 +39,13 @@ public:
                          {1280, 800}, wxBORDER_NONE);
     frame_->SetClientSize(1280, 800);
     auto *host = new wxPanel(frame_, wxID_ANY);
+    // wxFrame's implicit single-child sizing differs by backend. Give the
+    // offline host an explicit layout so children cannot paint outside a tiny
+    // default native panel while still reporting the expected screen origin.
+    auto *frame_sizer = new wxBoxSizer(wxVERTICAL);
+    frame_sizer->Add(host, 1, wxEXPAND);
+    frame_->SetSizer(frame_sizer);
+    frame_->Layout();
     host->SetBackgroundStyle(wxBG_STYLE_PAINT);
     host->Bind(wxEVT_PAINT, [this, host](wxPaintEvent &) {
       wxAutoBufferedPaintDC dc(host);
@@ -104,6 +111,9 @@ private:
           "full-view preserves horizon space");
     Check(frame_->GetClientSize() == wxSize(1280, 800),
           "canonical capture size");
+    Check(scroll_->GetParent()->GetClientSize() == frame_->GetClientSize() &&
+              scroll_->GetParent()->GetScreenRect().Contains(scroll_->GetScreenRect()),
+          "offline host fully contains the actual painted viewport");
     const auto origin = frame_->ClientToScreen({0, 0});
 #ifdef __WXGTK__
     auto *pixels = gdk_pixbuf_get_from_window(gdk_get_default_root_window(),

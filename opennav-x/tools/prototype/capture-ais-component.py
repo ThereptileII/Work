@@ -64,7 +64,7 @@ def main():
         if result.returncode:
             raise RuntimeError(f"Component interactions failed ({result.returncode}); inspect interaction.log")
         record = json.loads((args.output / "result.json").read_text())
-        minimum, images = {"ais": (40, 9), "passage": (26, 5), "instruments": (36, 5)}[args.component]
+        minimum, images = {"ais": (40, 9), "passage": (26, 5), "instruments": (41, 5)}[args.component]
         assert record["passed"] and record["checks"] >= minimum
         assert len(record["captures"]) == images
         record["source_commit"] = subprocess.check_output(
