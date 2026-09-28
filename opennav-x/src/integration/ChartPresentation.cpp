@@ -1,8 +1,12 @@
 #include "integration/ChartPresentation.h"
+#include "ui/Controls.h" // Before GL/X11 headers which define None.
 #include "XNavChartResources.h"
 #include "model/base_platform.h"
 #include "picosha2.h"
 #include "s52plib.h"
+#include "chcanv.h"
+#include "chartbase.h"
+#include "ocpndc.h"
 #include <algorithm>
 #include <array>
 #include <wx/ffile.h>
@@ -118,6 +122,38 @@ bool ChartBackground(ColorScheme scheme, wxColour &land, wxColour &water) {
   return true;
 }
 bool XNavChartRequested() { return requested; }
+bool DrawChartDepthUnit(ocpnDC &dc, ChartCanvas &canvas) {
+  if (!wxIsMainThread() || !xnav_mode || !active || !canvas.GetShowDepthUnits())
+    return false;
+  wxString unit;
+  switch (canvas.GetChartDepthUnit()) {
+    case DEPTH_UNIT_FEET: unit = _("Feet"); break;
+    case DEPTH_UNIT_METERS: unit = _("Meters"); break;
+    case DEPTH_UNIT_FATHOMS: unit = _("Fathoms"); break;
+    default: return false; // Mixed/unknown units are never guessed.
+  }
+  const auto mode = canvas.GetColorScheme() == GLOBAL_COLOR_SCHEME_NIGHT
+      ? ui::LightMode::Night : canvas.GetColorScheme() == GLOBAL_COLOR_SCHEME_DUSK
+      ? ui::LightMode::Dusk : ui::LightMode::Day;
+  const auto font = dc.GetFont();
+  const auto ink = dc.GetTextForeground();
+  dc.SetFont(ui::UiFont(canvas, 8)); // Final .map-disclaimer rule in the HTML.
+  dc.SetTextForeground(ui::Colour(ui::FloatingTheme(mode).secondary));
+  const wxString label = _("Chart depths") + ": " + unit;
+  wxCoord width = 0, height = 0;
+  dc.GetTextExtent(label, &width, &height);
+  const auto size = canvas.GetClientSize();
+  const int x = size.x - canvas.FromDIP(22) - width;
+  // Keep the actual chart selector accessible until its workflow is redesigned.
+  const int inset = (std::max)(canvas.FromDIP(15),
+                               canvas.GetPianoHeight() + canvas.FromDIP(4));
+  const int y = size.y - inset - height;
+  const bool fits = x >= 0 && y >= 0 && width > 0 && height > 0;
+  if (fits) dc.DrawText(label, x, y);
+  dc.SetFont(font);
+  dc.SetTextForeground(ink);
+  return fits;
+}
 std::string ChartPresentationStatus() { return status; }
 application::CommandResult SetXNavChartRequested(bool enabled) {
   if (!wxIsMainThread() || !preferences || !xnav_mode)

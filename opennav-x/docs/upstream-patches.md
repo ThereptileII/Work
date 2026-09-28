@@ -606,6 +606,19 @@ Safe retain the false default; the special-character/rotated texture path is
 unchanged. Actual software/GL Night captures exposed this pinned branch
 difference. Pixel review and native/boat GL gates remain necessary.
 
+The chart depth-unit presentation now has two narrow paint hooks at the existing
+software and GL emboss sites. `ChartCanvas::GetChartDepthUnit` extracts the
+original quilt/single-chart resolution body unchanged; `EmbossDepthScale` calls
+the same read-only method. XNav's verified style can draw the actual unit using
+the prototype metadata font/ink. Unknown/mixed units are not guessed and the
+upstream visibility preference remains effective. Standard/Legacy/Safe use the
+stock emboss path. Overzoom indication is unchanged. A const text-color getter
+on `ocpnDC` lets the integration restore drawing state after either renderer.
+This getter adds no data member, plugin ABI or input/output behavior. The
+diagnostic snapshot reports the actual upstream enum and visibility preference;
+the public ENC capture can explicitly test Feet, Meters and Fathoms. Native and
+boat replacement rendering gates are still required.
+
 Two small GUI hooks let `GSHHSChart::SetColorScheme` and the `LANDBACK`/`BLUEBACK`
 background colors use XNav's verified palette. They return normal upstream
 behavior in Legacy/Safe/Standard. No chart objects or sensor state are changed.

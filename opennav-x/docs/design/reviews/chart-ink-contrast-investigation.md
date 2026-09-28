@@ -71,3 +71,14 @@ in force; the next guarded application capture must measure client pixels,
 interactive monitor bounds and DPI rather than infer them from this inventory.
 No display setting, application installation, network or equipment state was
 changed by the inventory.
+
+The next bounded presentation pass extracts the original upstream quilt/single
+chart depth-unit resolver unchanged. Its actual unit is shown in the prototype's
+metadata role; unknown units are not inferred and Standard retains the stock
+emboss. The local working tree passes 120 integrated tests and twenty captures:
+software/llvmpipe Meters, software Feet/Fathoms and Standard Meters, each through
+Day/Dusk/Night/Day with actual zoom input. Software Day, GL Night, Fathoms Day
+and Standard Night were inspected. Two compiler failures (private declaration,
+then X11 include order) were corrected and retained before the passing build.
+The chart scale still overlaps Follow Boat; density, built-up fill and complete
+hazard review remain open. No visual acceptance is inferred from unit correctness.

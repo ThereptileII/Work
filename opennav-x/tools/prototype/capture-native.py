@@ -67,6 +67,8 @@ def main():
     parser.add_argument("--chart-style", choices=["XNav", "Standard"], default="XNav")
     parser.add_argument("--renderer", choices=["software", "opengl"], default="software")
     parser.add_argument("--public-enc", action="store_true")
+    parser.add_argument("--depth-unit", choices=["feet", "meters", "fathoms"],
+                        help="Set the upstream ENC display unit in this disposable profile")
     parser.add_argument("--navigation-only", action="store_true")
     parser.add_argument("--ais-settings", action="store_true", help="Exercise fixture-free AIS settings without a key")
     args = parser.parse_args()
@@ -83,6 +85,11 @@ def main():
                          "[Settings/GlobalState]\nVPLatLon=47.6000,-122.3600\nVPScale=0.15\n")
         else:
             stream.write("[Settings/GlobalState]\nVPLatLon=59.0800,18.5000\nVPScale=0.001\n")
+        if args.depth_unit:
+            if not args.public_enc:
+                raise SystemExit("Depth-unit checks require the actual public ENC")
+            stream.write("[Settings/GlobalState]\nS52_DEPTH_UNIT_SHOW=" +
+                         str(["feet", "meters", "fathoms"].index(args.depth_unit)) + "\n")
     number = 171
     while Path(f"/tmp/.X{number}-lock").exists():
         number += 1
@@ -257,6 +264,11 @@ def main():
             from collections import Counter
             from PIL import Image
             assert any(c["file"] == "US5SEAFL.000" for c in snapshot["runtime"]["chart"].get("quilt_members", [])), "Expected actual ENC in upstream quilt"
+            if args.depth_unit:
+                unit = snapshot["runtime"]["chart"]
+                assert unit["depth_units_visible"], "Actual chart depth-unit indication was disabled"
+                assert unit["depth_unit_type"] == ["feet", "meters", "fathoms"].index(args.depth_unit) + 1, "Upstream quilt unit differs from the explicitly configured ENC display unit"
+                record["resolved_depth_unit"] = args.depth_unit
             with Image.open(path) as img:
                 pixels = img.convert("RGB")
                 colors = Counter(pixels.getpixel((x, y)) for y in range(180, 600, 2) for x in range(150, 950, 2))

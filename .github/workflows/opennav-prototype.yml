@@ -78,7 +78,16 @@ jobs:
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
           python opennav-x/tools/prototype/capture-native.py --output opennav-x/evidence/local/prototype-enc-standard --public-enc --navigation-only --chart-style Standard
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
-      - name: Package explicit read-only AIS commissioning tool after native gates
+      - name: Verify actual Feet Meters and Fathoms ENC indications
+        # Capture every supported upstream depth-unit choice on real ENC first.
+        # These are separate profiles; no normal user setting is touched.
+        # The reference map's illustrative metre labels are not expected values.
+        run: |
+          foreach ($Unit in @('feet','meters','fathoms')) {
+            python opennav-x/tools/prototype/capture-native.py --output "opennav-x/evidence/local/prototype-depth-$Unit" --public-enc --navigation-only --chart-style XNav --depth-unit $Unit
+            if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          }
+      - name: Package explicit read-only AIS commissioning tool after all native gates
         run: |
           python opennav-x/tools/test-source-package.py
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }

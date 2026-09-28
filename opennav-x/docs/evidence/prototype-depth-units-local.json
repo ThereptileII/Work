@@ -1,0 +1,61 @@
+{
+  "accepted": false,
+  "scope": "Linux development working tree on 7945484; native Windows and boat remain required",
+  "integratedTests": 120,
+  "testTimeSeconds": 19.43,
+  "testReportSha256": "9d20057042994493a3a5f163faea5b22d5b64cd84f4ef84105a95ce116584e13",
+  "chartPatchSha256": "eac637a74f333b97044769007c6479f2866b264c80698eb68b0e575f4df60ced",
+  "captures": [
+    {
+      "directory": "evidence/local/prototype/depth-unit-pass1-software",
+      "manifestSha256": "41a9d4e6cc4f052a0c8756d3f2e2dcaa0738275aa897de79cc418a05a9b66688",
+      "unit": "meters",
+      "renderer": "software",
+      "chartStyle": "XNav",
+      "images": 4,
+      "executableSha256": "0eb7c6fce4786760c8c0919e0c147b152498903bd39d5daa183ee42bbc1cda34"
+    },
+    {
+      "directory": "evidence/local/prototype/depth-unit-pass1-opengl",
+      "manifestSha256": "4dfa0b69247bb83f13e1499855fde5c0f72d0507eadf6746130a13449c83627e",
+      "unit": "meters",
+      "renderer": "opengl",
+      "chartStyle": "XNav",
+      "images": 4,
+      "executableSha256": "0eb7c6fce4786760c8c0919e0c147b152498903bd39d5daa183ee42bbc1cda34"
+    },
+    {
+      "directory": "evidence/local/prototype/depth-unit-feet-software",
+      "manifestSha256": "ba908cd0077944bb41c25fdce1ebbfd755a7f751f7e44f9711afcd7e67c3f32c",
+      "unit": "feet",
+      "renderer": "software",
+      "chartStyle": "XNav",
+      "images": 4,
+      "executableSha256": "0eb7c6fce4786760c8c0919e0c147b152498903bd39d5daa183ee42bbc1cda34"
+    },
+    {
+      "directory": "evidence/local/prototype/depth-unit-fathoms-software",
+      "manifestSha256": "b5288e44a99c273249f5e46d75cae0b006f13c7b97e772598b4f943c20013813",
+      "unit": "fathoms",
+      "renderer": "software",
+      "chartStyle": "XNav",
+      "images": 4,
+      "executableSha256": "0eb7c6fce4786760c8c0919e0c147b152498903bd39d5daa183ee42bbc1cda34"
+    },
+    {
+      "directory": "evidence/local/prototype/depth-unit-standard",
+      "manifestSha256": "5f6f696e2280713e9d2fc8ff7410e67bc2a12a11b4487740a2ed63bea78d56ee",
+      "unit": "meters",
+      "renderer": "software",
+      "chartStyle": "Standard",
+      "images": 4,
+      "executableSha256": "0eb7c6fce4786760c8c0919e0c147b152498903bd39d5daa183ee42bbc1cda34"
+    }
+  ],
+  "review": "Actual ENC depth units follow explicit Feet/Meters/Fathoms settings. XNav software Day and GL Night labels reviewed, plus Fathoms Day and Standard Night. Stock emboss remains in Standard. Unit visibility is retained; mixed/unknown units are not inferred. Scale overlap, built-up fill, density and full hazard review remain open.",
+  "negativeEvidence": [
+    "depth-unit-build.log: getter initially declared private",
+    "depth-unit-build-retry.log: X11 None macro from include order; corrected before final build"
+  ],
+  "hardware": "OpenGL is Linux Mesa llvmpipe, not boat GPU"
+}

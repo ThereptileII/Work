@@ -2,6 +2,14 @@
 
 ## Current stage: prototype design lock, chart presentation and Online AIS
 
+Latest local chart increment replaces only XNav's large depth-unit emboss with
+the prototype metadata typography/placement, using OpenCPN's unchanged actual
+quilt/single-chart resolver. Twenty real-ENC captures cover software and
+llvmpipe Day/Dusk/Night, all three supported depth units and Standard fallback;
+all PNG hashes verify and 120 integrated Linux tests pass. Standard retains its
+original emboss. These are development results, not native/boat acceptance.
+See [depth-unit evidence](evidence/prototype-depth-units-local.json).
+
 Current local chart review: the final HTML cascade now supplies all marker
 tokens, including eight roles omitted by extraction from its earlier stylesheet.
 The immutable HTML is unchanged; 4 design-contract tests pass. A bounded neutral

@@ -15,6 +15,16 @@ application's pinned S-52 resources.
 | Contour / depth detail | #adcbce | #567880 | #2a4149 |
 | Active route | #267c76 | #b0dfc8 | #91bca2 |
 
+Chart depth units are an actual navigation label, not the prototype's fictional
+location/depth metadata. The native presentation uses the final `.map-disclaimer`
+8px typography, 22px right inset and floating muted ink. It states `Chart depths`
+and OpenCPN's resolved Feet/Meters/Fathoms; this is separate from measured depth
+at the transducer in the vessel rail. Stock chart-selector space is respected
+while its redesign remains pending. No quilt unit, sounding or user preference
+is converted by this label. Mixed/unknown units fall through to stock behavior.
+The large emboss stays in Standard, Legacy and Safe Mode. This is an in-progress
+presentation correction, not accepted chart conformance.
+
 Final HTML marker variables (from the appended stylesheet, not the earlier
 `src/style.css` fragment):
 

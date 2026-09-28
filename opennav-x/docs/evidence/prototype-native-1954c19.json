@@ -1,0 +1,103 @@
+{
+  "accepted": false,
+  "remoteCommit": "1954c19c2ece59e8c167f2ac2daffabd10cd3064",
+  "localCommit": "b0d2c2c3d73b9fe8bd18f2d6c370bb6de612a933",
+  "tree": "f12715e1e7da4fecfef6aec713e15d74386d16e0",
+  "verifiedSourceBlobs": 1056,
+  "ciRun": "https://github.com/ThereptileII/Work/actions/runs/36483619726",
+  "result": "FAILED overall: Windows PowerShell 5 wrapper loses fast child exit status",
+  "integratedWindowsTests": 112,
+  "nativeAisComponentChecks": 71,
+  "offlineProbeChecks": 24,
+  "hostileTlsScenarios": 18,
+  "providerLifecycle": "PASS / loopback only",
+  "actualObjectFlow": "PASS: 27 scenario groups, actual pointer/wheel interactions, native edit, persistence, chart restoration",
+  "captureHashesVerified": {
+    "ais-component": 9,
+    "prototype-enc-standard": 4,
+    "prototype-enc-xnav": 4,
+    "prototype-native": 12
+  },
+  "failure": "17 binaries/import closure, isolated-PATH capabilities, source and ZIP pass. Final negative commissioning invocation records exitCode:null instead of required 4. No probe artifact is published or deployed.",
+  "artifacts": [
+    {
+      "id": 10998681548,
+      "name": "prototype-native-Windows-1954c19c2ece59e8c167f2ac2daffabd10cd3064",
+      "sha256": "65d4d22af37d6339364811ce4e0e80981e0a47c056ead9fca718861240b4cc41",
+      "bytes": 11923547,
+      "zipCrc": true
+    },
+    {
+      "id": 10998386046,
+      "name": "prototype-ais-foundation-Windows-1954c19c2ece59e8c167f2ac2daffabd10cd3064",
+      "sha256": "0091783963143847c31bc23fe5ad63ef7156719a25efac1b4234216f4d7ed5d5",
+      "bytes": 691,
+      "zipCrc": true
+    },
+    {
+      "id": 10998338357,
+      "name": "prototype-object-flow-Windows-1954c19c2ece59e8c167f2ac2daffabd10cd3064",
+      "sha256": "9a335c3e526752a8e3f50afb49887694853bce58458de80c77874075a577ca10",
+      "bytes": 1991954,
+      "zipCrc": true
+    },
+    {
+      "id": 10997886641,
+      "name": "prototype-reference-Linux-1954c19c2ece59e8c167f2ac2daffabd10cd3064",
+      "sha256": "1ec1bcaa96862a153c8b18949a835b651c2b6d1191925b37213e5cabe14bdbd9",
+      "bytes": 17739664,
+      "zipCrc": true
+    },
+    {
+      "id": 10997691710,
+      "name": "prototype-ais-foundation-Linux-1954c19c2ece59e8c167f2ac2daffabd10cd3064",
+      "sha256": "35b41b2f8f85d9c161fa5af93edfe4ee2a541f01f70aa90f2171500c50b41341",
+      "bytes": 690,
+      "zipCrc": true
+    },
+    {
+      "id": 10997602101,
+      "name": "prototype-ais-network-Linux-1954c19c2ece59e8c167f2ac2daffabd10cd3064",
+      "sha256": "2c02363ee003bdf33b769ac499c72bbafdc3a24fcae832ae6160f26540c070eb",
+      "bytes": 935,
+      "zipCrc": true
+    },
+    {
+      "id": 10997556914,
+      "name": "prototype-reference-Windows-1954c19c2ece59e8c167f2ac2daffabd10cd3064",
+      "sha256": "dc68ecafa085a684b9a2062a801904ca90a5a8931edb5fb99bf1ad8ecc74c615",
+      "bytes": 16109933,
+      "zipCrc": true
+    }
+  ],
+  "review": "Same rail geometry and rendering implementation as reviewed b5f30d2. All recorded image hashes independently verified. No additional visual acceptance. Replacement process-handle fix requires native qualification.",
+  "prototypeRailGeometry": [
+    {
+      "file": "navigation-day",
+      "pilot": {
+        "x": 1113,
+        "y": 665,
+        "width": 149,
+        "height": 87
+      }
+    },
+    {
+      "file": "navigation-dusk",
+      "pilot": {
+        "x": 1113,
+        "y": 665,
+        "width": 149,
+        "height": 87
+      }
+    },
+    {
+      "file": "navigation-night",
+      "pilot": {
+        "x": 1113,
+        "y": 665,
+        "width": 149,
+        "height": 87
+      }
+    }
+  ]
+}

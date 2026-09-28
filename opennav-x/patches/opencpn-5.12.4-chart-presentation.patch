@@ -186,3 +186,101 @@ index e830babf2..455f0c0eb 100755
    bool S52_flush_Plib();
  
    void PLIB_LoadS57Config();
+diff --git a/gui/include/gui/chcanv.h b/gui/include/gui/chcanv.h
+--- a/gui/include/gui/chcanv.h
++++ b/gui/include/gui/chcanv.h
+@@ -559,6 +559,8 @@
+   void ShowGlobalToolbar();
+ 
+   bool GetShowDepthUnits() { return m_bShowDepthUnits; }
++  // Read-only upstream quilt/single-chart depth-unit resolution.
++  int GetChartDepthUnit();
+   void SetShowDepthUnits(bool show) { m_bShowDepthUnits = show; }
+   bool GetShowGrid() { return m_bDisplayGrid; }
+   void SetShowGrid(bool show) { m_bDisplayGrid = show; }
+diff --git a/gui/src/chcanv.cpp b/gui/src/chcanv.cpp
+--- a/gui/src/chcanv.cpp
++++ b/gui/src/chcanv.cpp
+@@ -72,6 +72,9 @@
+ #include "chartdb.h"
+ #include "chartimg.h"
+ #include "chcanv.h"
++#ifdef OPENNAV_X
++#include "integration/ChartPresentation.h"
++#endif
+ #include "ChInfoWin.h"
+ #include "cm93.h"  // for chart outline draw
+ #include "compass.h"
+@@ -12500,7 +12503,10 @@
+                                                 OVERLAY_OVER_SHIPS);
+   }
+ 
+-  DrawEmboss(dc, EmbossDepthScale());
++#ifdef OPENNAV_X
++  if (!opennav::integration::DrawChartDepthUnit(dc, *this))
++#endif
++    DrawEmboss(dc, EmbossDepthScale());
+   DrawEmboss(dc, EmbossOverzoomIndicator(dc));
+   if (g_pi_manager) {
+     g_pi_manager->RenderAllCanvasOverlayPlugIns(dc, GetVP(), m_canvasIndex,
+@@ -12566,9 +12572,7 @@
+   }
+ }
+ 
+-emboss_data *ChartCanvas::EmbossDepthScale() {
+-  if (!m_bShowDepthUnits) return NULL;
+-
++int ChartCanvas::GetChartDepthUnit() {
+   int depth_unit_type = DEPTH_UNIT_UNKNOWN;
+ 
+   if (GetQuiltMode()) {
+@@ -12595,6 +12599,12 @@
+     }
+   }
+ 
++  return depth_unit_type;
++}
++
++emboss_data *ChartCanvas::EmbossDepthScale() {
++  if (!m_bShowDepthUnits) return NULL;
++  const int depth_unit_type = GetChartDepthUnit();
+   emboss_data *ped = NULL;
+   switch (depth_unit_type) {
+     case DEPTH_UNIT_FEET:
+diff --git a/gui/src/glChartCanvas.cpp b/gui/src/glChartCanvas.cpp
+--- a/gui/src/glChartCanvas.cpp
++++ b/gui/src/glChartCanvas.cpp
+@@ -69,6 +69,9 @@
+ #include "chartdb.h"
+ #include "chartimg.h"
+ #include "chcanv.h"
++#ifdef OPENNAV_X
++#include "integration/ChartPresentation.h"
++#endif
+ #include "ChInfoWin.h"
+ #include "cm93.h"  // for chart outline draw
+ #include "color_handler.h"
+@@ -4530,7 +4533,10 @@
+   }
+ #endif
+ 
+-  DrawEmboss(m_gldc, m_pParentCanvas->EmbossDepthScale());
++#ifdef OPENNAV_X
++  if (!opennav::integration::DrawChartDepthUnit(m_gldc, *m_pParentCanvas))
++#endif
++    DrawEmboss(m_gldc, m_pParentCanvas->EmbossDepthScale());
+   DrawEmboss(m_gldc, m_pParentCanvas->EmbossOverzoomIndicator(gldc));
+ 
+   if (g_pi_manager) {
+diff --git a/gui/include/gui/ocpndc.h b/gui/include/gui/ocpndc.h
+--- a/gui/include/gui/ocpndc.h
++++ b/gui/include/gui/ocpndc.h
+@@ -84,5 +84,8 @@
+   const wxPen &GetPen() const;
+   const wxBrush &GetBrush() const;
+   const wxFont &GetFont() const;
++  wxColour GetTextForeground() const {
++    return dc ? dc->GetTextForeground() : m_textforegroundcolour;
++  }
+ 
+   void GetSize(wxCoord *width, wxCoord *height) const;
