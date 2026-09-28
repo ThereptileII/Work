@@ -185,7 +185,11 @@ def instrument_geometry():
         for _ in range(30):
             if any(r['visible'] for r in regions[1:]):break
             assert display['can_scroll_down'],'Instrument readings inaccessible'
-            previous=display['page_scroll_px'];ui.click_text(pid,'Down')
+            previous=display['page_scroll_px']
+            # Prototype Instruments has no permanent scroll toolbar. Exercise
+            # the real vertical touch gesture on its painted content instead.
+            ui.SetForegroundWindow(handle)
+            assert dpi('--pan',650,500,650,250)['touch_injected']
             display=data(lambda d:d['runtime']['display']['page_scroll_px']>previous)['runtime']['display']
             regions=display['product_regions']
         assert any(r['visible'] for r in regions[1:]),'No readable instrument tile reached'

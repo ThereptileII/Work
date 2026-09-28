@@ -1,0 +1,233 @@
+{
+  "accepted": false,
+  "developmentGatesPassed": false,
+  "remoteCommit": "299c72811791dc9122bcb20844bb8a3459d0016c",
+  "localCommit": "07e958ad274939409861ec8928dc39022fecbd8e",
+  "tree": "5bcdf1fb01cdc2093bfc2a4fe63ad38bac15b135",
+  "verifiedSourceBlobs": 1085,
+  "ciRun": "https://github.com/ThereptileII/Work/actions/runs/36496486152",
+  "jobsPassed": 7,
+  "jobsFailed": 1,
+  "artifacts": [
+    {
+      "id": 11003876053,
+      "name": "prototype-reference-Windows-299c72811791dc9122bcb20844bb8a3459d0016c",
+      "sha256": "cd80197e392df48dc3bd0c80fc6b9335f23c9cf82f881784f793be2bace66b27",
+      "bytes": 16131881,
+      "zipCrc": true
+    },
+    {
+      "id": 11003876039,
+      "name": "prototype-ais-network-Linux-299c72811791dc9122bcb20844bb8a3459d0016c",
+      "sha256": "d08b2fb4bd9e975c639ba4b404a58aa2d60d69f1958ab31c373b96527a16b7e5",
+      "bytes": 935,
+      "zipCrc": true
+    },
+    {
+      "id": 11003831086,
+      "name": "prototype-ais-foundation-Windows-299c72811791dc9122bcb20844bb8a3459d0016c",
+      "sha256": "ec59fe0f38c48bdcc51b564fbe90fbc54cee292bbb050595962936d6051512ca",
+      "bytes": 689,
+      "zipCrc": true
+    },
+    {
+      "id": 11003584066,
+      "name": "prototype-object-flow-Windows-299c72811791dc9122bcb20844bb8a3459d0016c",
+      "sha256": "c966e4f18e05f9e94b60290f6d10b9a213a49c04ef43b592b1b0614836a556c3",
+      "bytes": 1992327,
+      "zipCrc": true
+    },
+    {
+      "id": 11003409927,
+      "name": "prototype-native-Windows-299c72811791dc9122bcb20844bb8a3459d0016c",
+      "sha256": "8263d2e707fa9004774fdf2152fd82c1f438fa1e35436c4e375ca071576b1df4",
+      "bytes": 7055401,
+      "zipCrc": true
+    },
+    {
+      "id": 11003058611,
+      "name": "prototype-ais-foundation-Linux-299c72811791dc9122bcb20844bb8a3459d0016c",
+      "sha256": "13bc581939a210f9a138e0e56a3676919ddda96320002e45d0289bfe5c5036d6",
+      "bytes": 690,
+      "zipCrc": true
+    },
+    {
+      "id": 11003043676,
+      "name": "prototype-reference-Linux-299c72811791dc9122bcb20844bb8a3459d0016c",
+      "sha256": "069e57682c03aec619638cf432fa080f3bce78d2bfcf19e01272a1df6e32fa32",
+      "bytes": 17761716,
+      "zipCrc": true
+    },
+    {
+      "id": 11003018909,
+      "name": "prototype-review-guard-Windows-299c72811791dc9122bcb20844bb8a3459d0016c",
+      "sha256": "56a191c6cd233123741acd9253ce7fdb990df8c79440b0a69ced0151f2fe1aea",
+      "bytes": 8506,
+      "zipCrc": true
+    }
+  ],
+  "windows": {
+    "unitTestsPassed": 114,
+    "nativeMarkerCasesPassed": 48,
+    "pureGuardChecksPassed": 212,
+    "aisComponentChecks": 71,
+    "passageComponentChecks": 26,
+    "instrumentsComponentChecks": 41,
+    "actualProductCapture": "navigation Day/Dusk/Night guarded capture passed; Passage guard subprocess refused before screenshot",
+    "failureReason": "Original CREATE_NO_WINDOW child did not retain stderr. Bounded diagnostic capture added; refusal not bypassed.",
+    "packageProduced": false
+  },
+  "verifiedCompleteCapturePngs": [
+    {
+      "file": "prototype-native-Windows-299c72811791dc9122bcb20844bb8a3459d0016c/ais-component/traffic-day.png",
+      "sha256": "77d3484b6d2695b0609cedfcaade83bc8bccc3872a534ce31c62f1ef82a7e014"
+    },
+    {
+      "file": "prototype-native-Windows-299c72811791dc9122bcb20844bb8a3459d0016c/ais-component/ais-target-day.png",
+      "sha256": "58fa34fe75250c6a5b91f8c6bfb7134502d4c68f00b1c90bf3e0831e721b75cb"
+    },
+    {
+      "file": "prototype-native-Windows-299c72811791dc9122bcb20844bb8a3459d0016c/ais-component/ais-target-dusk.png",
+      "sha256": "226816f63e107fbf12c768902f070486e22cd42b09367219d7d0f530a3c491cb"
+    },
+    {
+      "file": "prototype-native-Windows-299c72811791dc9122bcb20844bb8a3459d0016c/ais-component/ais-target-night.png",
+      "sha256": "7e021b2d64eb8ff576c7a19f2b400b3a9045d37e8e72e6068f10f5ac8727927d"
+    },
+    {
+      "file": "prototype-native-Windows-299c72811791dc9122bcb20844bb8a3459d0016c/ais-component/traffic-night.png",
+      "sha256": "5445173c1beb0300dd1119b64e1071753b9254c56cd3882f152d792680b2e980"
+    },
+    {
+      "file": "prototype-native-Windows-299c72811791dc9122bcb20844bb8a3459d0016c/ais-component/online-target-day.png",
+      "sha256": "ad288c7c9b3d45e42994dcb983e6a9790c25285ee0df7f23994c64eb62e98a08"
+    },
+    {
+      "file": "prototype-native-Windows-299c72811791dc9122bcb20844bb8a3459d0016c/ais-component/online-stale-day.png",
+      "sha256": "13dc0863b43c817eacf14b275ca4f5688915dc68f6a38f70aa42715883eaad64"
+    },
+    {
+      "file": "prototype-native-Windows-299c72811791dc9122bcb20844bb8a3459d0016c/ais-component/online-lost-day.png",
+      "sha256": "6d9cc969b81512161650f2060c765dfd8b9ee445478172809951ee9516978743"
+    },
+    {
+      "file": "prototype-native-Windows-299c72811791dc9122bcb20844bb8a3459d0016c/ais-component/target-expired-day.png",
+      "sha256": "26776ca248ce63ceeef5de659f3f7c5092e62d9fd7a6cc85b8e9226655902ebc"
+    },
+    {
+      "file": "prototype-native-Windows-299c72811791dc9122bcb20844bb8a3459d0016c/instruments-component/instruments-day.png",
+      "sha256": "e1ae4c2d57790b53705464276b8341794694e3be79d80d5cd3e0b3cf8deaa33b"
+    },
+    {
+      "file": "prototype-native-Windows-299c72811791dc9122bcb20844bb8a3459d0016c/instruments-component/instruments-dusk.png",
+      "sha256": "6f2d78e143bb7e3750219bcb84d296a5803cb780a438b58a5241ce61eeb9ba23"
+    },
+    {
+      "file": "prototype-native-Windows-299c72811791dc9122bcb20844bb8a3459d0016c/instruments-component/instruments-night.png",
+      "sha256": "957d1f61c9a1291f3967c21c04f2ddde185eee6b6e313ac1d38d44413d68407b"
+    },
+    {
+      "file": "prototype-native-Windows-299c72811791dc9122bcb20844bb8a3459d0016c/instruments-component/instruments-stale-day.png",
+      "sha256": "094625da762ab8b93016a69b59d24e481f991e4464a8daf08896a51cae5cbd31"
+    },
+    {
+      "file": "prototype-native-Windows-299c72811791dc9122bcb20844bb8a3459d0016c/instruments-component/instruments-heading-unavailable-day.png",
+      "sha256": "1741bfb8dcec1350188cee8ad322519b61340705fbce8f10cc792c432d42877d"
+    },
+    {
+      "file": "prototype-native-Windows-299c72811791dc9122bcb20844bb8a3459d0016c/passage-component/passage-day.png",
+      "sha256": "b821cf342b32ba00dafd67a356f585187938f03e7e2c6385652862850596e6d6"
+    },
+    {
+      "file": "prototype-native-Windows-299c72811791dc9122bcb20844bb8a3459d0016c/passage-component/passage-dusk.png",
+      "sha256": "43afa4fef67e2fa9d3547bbd3651e028fe2096a2dd52cba567ea1931321df72e"
+    },
+    {
+      "file": "prototype-native-Windows-299c72811791dc9122bcb20844bb8a3459d0016c/passage-component/passage-night.png",
+      "sha256": "787ecfdd4078e7ce7b44c5c99daa768ab7037986f645c65eecdbae378702af66"
+    },
+    {
+      "file": "prototype-native-Windows-299c72811791dc9122bcb20844bb8a3459d0016c/passage-component/passage-stale-day.png",
+      "sha256": "4b8af53f0d30d755ac05417488abd49cc1d201a1a2c37548430b0c29e184335d"
+    },
+    {
+      "file": "prototype-native-Windows-299c72811791dc9122bcb20844bb8a3459d0016c/passage-component/passage-inactive-day.png",
+      "sha256": "4c931643fcb011808c1ccc2fb228af99ff59281bd5f9b739476146a02e016e8f"
+    },
+    {
+      "file": "prototype-native-Windows-299c72811791dc9122bcb20844bb8a3459d0016c/prototype-enc-standard/navigation-day.png",
+      "sha256": "0172af68e6af7a2a14051e936eaa22acc5449a3496ecee6c42df0c3677ffdc73"
+    },
+    {
+      "file": "prototype-native-Windows-299c72811791dc9122bcb20844bb8a3459d0016c/prototype-enc-standard/navigation-dusk.png",
+      "sha256": "d35801cf0640c774de149dcb4eae091e4a9fc1c993271756890a37b54c899b6a"
+    },
+    {
+      "file": "prototype-native-Windows-299c72811791dc9122bcb20844bb8a3459d0016c/prototype-enc-standard/navigation-night.png",
+      "sha256": "3e0b35ad5fc57c624b1896c7252ff0a581e1e89596192958a901458a201a898c"
+    },
+    {
+      "file": "prototype-native-Windows-299c72811791dc9122bcb20844bb8a3459d0016c/prototype-enc-standard/navigation-return-day.png",
+      "sha256": "0172af68e6af7a2a14051e936eaa22acc5449a3496ecee6c42df0c3677ffdc73"
+    },
+    {
+      "file": "prototype-native-Windows-299c72811791dc9122bcb20844bb8a3459d0016c/prototype-enc-xnav/navigation-day.png",
+      "sha256": "c0f2eb1e133873208f6d5f7c266ada57e749ef0bbd0472c194ecf0b89b43b563"
+    },
+    {
+      "file": "prototype-native-Windows-299c72811791dc9122bcb20844bb8a3459d0016c/prototype-enc-xnav/navigation-dusk.png",
+      "sha256": "32604857ea8a2efb39a5d82912b5ac70491224f8c81f791687ecdaba9d0bf674"
+    },
+    {
+      "file": "prototype-native-Windows-299c72811791dc9122bcb20844bb8a3459d0016c/prototype-enc-xnav/navigation-night.png",
+      "sha256": "ac19ff6e3ca54ed9ba877ad5204490191b9da4e191753ddd3953c3a99e77eb02"
+    },
+    {
+      "file": "prototype-native-Windows-299c72811791dc9122bcb20844bb8a3459d0016c/prototype-enc-xnav/navigation-return-day.png",
+      "sha256": "c0f2eb1e133873208f6d5f7c266ada57e749ef0bbd0472c194ecf0b89b43b563"
+    },
+    {
+      "file": "prototype-native-Windows-299c72811791dc9122bcb20844bb8a3459d0016c/prototype-native/navigation-day.png",
+      "sha256": "9d24d63841b9a62df01d091630e206496f91a469d9fde749c8bf5558304e2ade"
+    },
+    {
+      "file": "prototype-native-Windows-299c72811791dc9122bcb20844bb8a3459d0016c/prototype-native/navigation-dusk.png",
+      "sha256": "1247c27df3665816794eea7c0dd878cc3daafcdede25236aa985012787c1dcea"
+    },
+    {
+      "file": "prototype-native-Windows-299c72811791dc9122bcb20844bb8a3459d0016c/prototype-native/navigation-night.png",
+      "sha256": "556c91eb315959782323156e846ae8fec95f7ad2cac676f093ac78d32c2b730b"
+    }
+  ],
+  "partialProductPngs": [
+    {
+      "file": "prototype-native-Windows-299c72811791dc9122bcb20844bb8a3459d0016c/prototype-native/navigation-day-outer.png",
+      "sha256": "9dea4bab654c9da508ab23654c04770c7b029b8c9f20d2ce55a56bb4f7d7a396"
+    },
+    {
+      "file": "prototype-native-Windows-299c72811791dc9122bcb20844bb8a3459d0016c/prototype-native/navigation-day.png",
+      "sha256": "9d24d63841b9a62df01d091630e206496f91a469d9fde749c8bf5558304e2ade"
+    },
+    {
+      "file": "prototype-native-Windows-299c72811791dc9122bcb20844bb8a3459d0016c/prototype-native/navigation-dusk-outer.png",
+      "sha256": "41114265c70c181d6e5f21b4dbab0e0ccf81af10270367b39b75fc258e94cf54"
+    },
+    {
+      "file": "prototype-native-Windows-299c72811791dc9122bcb20844bb8a3459d0016c/prototype-native/navigation-dusk.png",
+      "sha256": "1247c27df3665816794eea7c0dd878cc3daafcdede25236aa985012787c1dcea"
+    },
+    {
+      "file": "prototype-native-Windows-299c72811791dc9122bcb20844bb8a3459d0016c/prototype-native/navigation-night-outer.png",
+      "sha256": "9e881d82ba3a8af462b0b9189f2b3e184877afa5e5d582ade7cd1898dec96dc6"
+    },
+    {
+      "file": "prototype-native-Windows-299c72811791dc9122bcb20844bb8a3459d0016c/prototype-native/navigation-night.png",
+      "sha256": "556c91eb315959782323156e846ae8fec95f7ad2cac676f093ac78d32c2b730b"
+    }
+  ],
+  "reviewed": [
+    "instruments-component/instruments-day.png"
+  ],
+  "review": "Corrected Windows host renders wind, directional status and data tiles. Component still requires full conformance review; no boat or live data acceptance.",
+  "boat": "No launch, installation or physical command in this increment."
+}

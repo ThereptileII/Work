@@ -39,5 +39,13 @@ application screenshots run the same capture guard in disposable CI, retaining
 its exact HWND/geometry proof alongside the screenshot. The CI-only wrapper
 cannot authorize a boat launch or installed-profile action.
 
-Both native paths are pending. This record does not authorize deployment or
+Native run36496486152 passes all48 marker cases and212 pure checks. Actual
+product navigation Day/Dusk/Night passes; Passage refuses capture. The first
+launcher did not retain the child error stream, so its refusal cannot yet be
+attributed to a specific guard. The corrected CI wrapper explicitly saves the
+stream and the isolated application's state on failure. Bounded guard reasons
+include only allowlisted surface titles and boolean results; they never print
+arbitrary child text or typed credentials. No rejection predicate was relaxed.
+
+Actual-product qualification remains pending. This record does not authorize deployment or
 claim physical display acceptance. No upstream hook changes are involved.

@@ -88,3 +88,14 @@ containment on every capture (41 checks). Linux corrective pass6 passes all 41
 checks/five images with the unchanged strict pixel checks. Replacement native
 validation is required. See [failed-run evidence](../../evidence/prototype-native-1a175e3-failed.json).
 The exact preceding source also passes 122/122 Linux tests in 19.58 seconds.
+
+The next corrective composition removes the old Up/Down toolbar from
+Instruments only; unmigrated pages retain their explicit scroll controls. Real
+pointer-wheel input now must reach the lower water-temperature tile and return
+to the heading before Close. The capture compares all seven main rail buttons
+against measured HTML coordinates, including its missing 20px group separator
+and exact61px widths. Linux passes all122 tests plus16 full-product captures;
+the inspected Instruments image now has the intended uncluttered header and
+main rail alignment. Windows, non-default DPI and boat checks remain pending.
+The lower vessel-profile rail group has not yet been migrated. See
+[corrective evidence](../../evidence/prototype-rail-scroll-local.json).

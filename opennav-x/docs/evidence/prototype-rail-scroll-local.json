@@ -1,0 +1,137 @@
+{
+  "accepted": false,
+  "scope": "Linux corrective working-tree capture; Windows and boat pending",
+  "baseCommit": "07e958a",
+  "sourceSha256": {
+    "src/ui/Shell.cpp": "57be42733eb148d430c0f0b23ab2b5f41e74c4bed4885fb6b4414482af821762",
+    "tools/prototype/capture-native.py": "4832b3c5ba8d94d588a0c5cefd5ef3f4203577eb67af70f1ab40cdb162ba2af1",
+    "tools/smoke-dpi-windows.py": "5d6ab341c245f6fb64937d66a1aaa6b8a71d3bd3c7add98723c4377a6a1804e7"
+  },
+  "integratedLinuxTests": 122,
+  "failures": 0,
+  "wallSeconds": 19.33,
+  "junitSha256": "dcfd72ee71c8319dc431b8b5aa4b4f3497bdcdeb0d2455e1e5879caf0e5dbd7e",
+  "captures": [
+    {
+      "file": "navigation-day.png",
+      "sha256": "37b879d7e748b39651a5e93b45147f0e83d8d34ef04e833f2cfe061fb485e14a"
+    },
+    {
+      "file": "navigation-dusk.png",
+      "sha256": "1397b5b64cbe64349720f4a8ee773721d4f978f4e56e8e6c2c68f177e4beb2c5"
+    },
+    {
+      "file": "navigation-night.png",
+      "sha256": "023c228888a092a86ed46fb3063d2fcfb6babbcdf4b2215e57a14580ba14be2b"
+    },
+    {
+      "file": "passage-day.png",
+      "sha256": "d6867c5e9454bd9b9ba6113c7610443b4aad42253cfe904464d45d06649a6ec2"
+    },
+    {
+      "file": "passage-dusk.png",
+      "sha256": "544d88d33c7fadf387c390f3a42246326c7942a2a915315bd57969a0f9cfc97c"
+    },
+    {
+      "file": "passage-night.png",
+      "sha256": "59d63a5ade4f3d9bfb689bee5b6e584cc2c8e251d6528712194e45324355a1af"
+    },
+    {
+      "file": "traffic-day.png",
+      "sha256": "9a9b9cc772b252c3f563cfc1d25dc4ebc530d368f780685e0368d4b525189989"
+    },
+    {
+      "file": "energy-day.png",
+      "sha256": "dd1fdd1d5ec7bee3656aa613d9c36d9d251bb0572e289c47078daf7f38bb027f"
+    },
+    {
+      "file": "instruments-day.png",
+      "sha256": "ae89146ac887839f923da69739f69e100bca11e9e07466b4855451580480be2e"
+    },
+    {
+      "file": "instruments-dusk.png",
+      "sha256": "1c6fff5463d6697612d23322827513edc14f178980c795413c940b94cb36c290"
+    },
+    {
+      "file": "instruments-night.png",
+      "sha256": "d2489d4f50142d90b84e3d24496c45a4ceb932160a02f3d270754224a052802e"
+    },
+    {
+      "file": "settings-day.png",
+      "sha256": "8931442d0c6bdf807e25b62cfc6a5e72e287c2d7fe7e1f281ba85686044c3e27"
+    },
+    {
+      "file": "online-ais-settings-day.png",
+      "sha256": "de814830a330dae6de4ba5e7cac6a6fe3c9c2c28b08ca3a8ef544302060ad6f1"
+    },
+    {
+      "file": "online-ais-key-needed-day.png",
+      "sha256": "3535e7d040d64e1af66212670db83e375867e81243c4044f977b7f3f5339466d"
+    },
+    {
+      "file": "online-ais-settings-dusk.png",
+      "sha256": "344971ce778fb5ee5991fad59252aaab7fc7de9ace1d3404abccec7913b9cad0"
+    },
+    {
+      "file": "online-ais-settings-night.png",
+      "sha256": "8a8ff524c96b6e68a83910f3028b268ac2fd97dae8be1a991aebbb7dcbc31625"
+    }
+  ],
+  "captureManifestSha256": "fbb6323f18947e07a6827b3acab5ebed241de3956c08e431fad63132e53ad61f",
+  "reviewed": [
+    "instruments-day.png"
+  ],
+  "actualLeftRail": [
+    {
+      "x": 9,
+      "y": 82,
+      "width": 61,
+      "height": 61
+    },
+    {
+      "x": 9,
+      "y": 148,
+      "width": 61,
+      "height": 61
+    },
+    {
+      "x": 9,
+      "y": 214,
+      "width": 61,
+      "height": 61
+    },
+    {
+      "x": 9,
+      "y": 300,
+      "width": 61,
+      "height": 61
+    },
+    {
+      "x": 9,
+      "y": 366,
+      "width": 61,
+      "height": 61
+    },
+    {
+      "x": 9,
+      "y": 432,
+      "width": 61,
+      "height": 61
+    },
+    {
+      "x": 9,
+      "y": 498,
+      "width": 61,
+      "height": 61
+    }
+  ],
+  "scroll": "Real pointer wheel reaches lower readings and returns to top without permanent toolbar",
+  "corrected": "Missing 20px navigation group separation, 62px vs61px buttons, and obsolete Instruments Up/Down toolbar",
+  "pending": [
+    "Windows typography and real wheel validation",
+    "Lower vessel-profile rail group",
+    "Other primary screen migration",
+    "Non-default DPI and installed lifecycle",
+    "Physical boat screenshots"
+  ]
+}

@@ -167,11 +167,20 @@ def main():
             assert ui.IsWindowEnabled(window), "Unexpected modal dialog"
             outer = path.with_name(name + "-outer.png")
             if args.review_window_guard:
-                subprocess.run([
+                reviewed = subprocess.run([
                     "powershell.exe", "-NoProfile", "-ExecutionPolicy", "Bypass", "-File",
                     str(ROOT / "tools/prototype/capture-reviewed-native.ps1"),
                     "-ProcessId", str(app.pid), "-Handle", str(window), "-Output", str(outer.resolve())],
-                    check=True, creationflags=subprocess.CREATE_NO_WINDOW, timeout=15)
+                    capture_output=True, text=True, errors="replace",
+                    creationflags=subprocess.CREATE_NO_WINDOW, timeout=15)
+                # CREATE_NO_WINDOW does not reliably inherit the CI console's
+                # stderr. Retain the actual refusal instead of only Python's
+                # exit-code traceback. This runner uses a disposable profile
+                # without credentials or live sources, never the boat profile.
+                path.with_suffix(".guard.log").write_text(reviewed.stdout + reviewed.stderr, encoding="utf-8")
+                if reviewed.returncode:
+                    path.with_suffix(".rejected.json").write_text(json.dumps(data(), indent=2), encoding="utf-8")
+                    raise AssertionError("Native capture guard refused " + name + ": " + reviewed.stderr.strip())
                 guarded = json.loads(Path(str(outer) + ".json").read_text(encoding="utf-8-sig"))
                 record.setdefault("guarded_windows", {})[name] = guarded
             else:
@@ -190,6 +199,21 @@ def main():
         else:
             subprocess.run(["import", "-window", "root", str(path)], env=env, check=True)
         snapshot = data()
+        # Actual native controls, compared with independently rendered HTML.
+        # Settings' lower vessel-profile group is still a pending migration.
+        reference = json.loads((ROOT / "docs/design/prototype/reference" /
+                                ("windows" if windows else "linux") / "capture.json").read_text())
+        rail_reference = reference["states"]["navigation-day"]["components"][".nav-btn"][:7]
+        rail_actual = []
+        for label, expected in zip(("Chart", "Passage", "Traffic", "Energy", "Instruments", "Anchor", "Radar"), rail_reference):
+            controls = [c for c in snapshot["runtime"]["display"]["interaction_controls"]
+                        if c["label"] == label and c["visible"]]
+            assert len(controls) == 1, f"Prototype rail {label} absent/ambiguous"
+            c = controls[0]
+            actual = dict(x=c["x"]-client_origin[0], y=c["y"]-client_origin[1], width=c["width"], height=c["height"])
+            assert all(abs(actual[k]-v) <= 1 for k,v in expected["rect"].items()), f"{label} rail geometry differs: {actual}"
+            rail_actual.append(actual)
+        record.setdefault("left_rail_layout", {})[name] = rail_actual
         if name.startswith(("traffic-", "online-ais-", "passage-")):
             drawer = snapshot["runtime"]["display"]["drawer"]
             expected = dict(x=client_origin[0]+682, y=client_origin[1]+80, width=398, height=674)
@@ -403,6 +427,7 @@ def main():
                 record["passage_flow"] = "Current-route sheet; full theme cycle; Close retains original chart geometry"
             if label == "Instruments":
                 display = data()["runtime"]["display"]
+                assert not any(c["visible"] and c["label"] in ("Up", "Down") for c in display["interaction_controls"]), "Old scroll toolbar remains"
                 regions = display["product_regions"]
                 wind = next(r for r in regions if r["label"] == "Wind and heading")
                 sog = next(r for r in regions if r["label"] == "SPEED OVER GROUND")
@@ -414,6 +439,39 @@ def main():
                 click("Dusk", "Night")
                 capture("instruments-night")
                 click("Night", "Day")
+                def wheel(direction):
+                    before = data()["runtime"]["display"]["page_scroll_px"]
+                    if windows:
+                        origin = ui.W.POINT(0, 0)
+                        client_to_screen = ui.declare(ui.user, "ClientToScreen", ui.W.BOOL, ui.W.HWND, ui.C.POINTER(ui.W.POINT))
+                        assert client_to_screen(window, ui.C.byref(origin))
+                        ui.SetCursorPos(origin.x+800, origin.y+330)
+                        ui.MouseEvent(0x0800, 0, 0, (-120*direction) & 0xffffffff, 0)
+                    else:
+                        xdo("mousemove", 800, 330)
+                        xdo("click", 5 if direction > 0 else 4)
+                    deadline = time.monotonic()+5
+                    while time.monotonic() < deadline:
+                        value = data()["runtime"]["display"]["page_scroll_px"]
+                        if (value-before)*direction > 0:
+                            return value
+                        time.sleep(.1)
+                    raise AssertionError("Actual pointer wheel did not scroll Instruments")
+                for _ in range(10):
+                    if any(r["label"] == "WATER TEMPERATURE" and r["visible"] for r in data()["runtime"]["display"]["product_regions"]):
+                        break
+                    wheel(1)
+                else:
+                    raise AssertionError("Lower Instruments readings remain inaccessible")
+                for _ in range(10):
+                    if data()["runtime"]["display"]["page_scroll_px"] == 0:
+                        break
+                    wheel(-1)
+                else:
+                    raise AssertionError("Instruments cannot return to its heading")
+                if windows: ui.SetCursorPos(0, 0)
+                else: xdo("mousemove", 0, 0)
+                record["instrument_wheel"] = "Real pointer wheel reaches lower readings and returns to top without permanent toolbar"
                 click("Close")
                 chart = data()["runtime"]["display"]["chart_region"]
                 assert chart["width"] == 1014 and chart["height"] == 566

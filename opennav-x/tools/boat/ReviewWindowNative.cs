@@ -135,8 +135,13 @@ namespace OpenNavX {
           foreach(var child in Children(h))if(GetParent(child)==h && Owner(child)==(uint)pid)
             foreach(var label in DirectLabels(child,pid))if(label=="Close" || label=="Back")heading.Add(label);
           var rect=Bounds(h);
-          if(!names.Add(title) || !IsWindowEnabled(h) || GetDpiForWindow(h)!=dpi || rect.Width<24 || rect.Height<24 || !Contains(client,rect) ||
-             !IsPrototypeSurface(title,direct,heading.ToArray()))throw new InvalidOperationException("Owned prototype surface identity or containment changed.");
+          // Bounded reasons contain only allowlisted surface titles and booleans,
+          // never arbitrary child text (which could be a typed credential).
+          bool unique=names.Add(title),enabled=IsWindowEnabled(h),sameDpi=GetDpiForWindow(h)==dpi,
+               size=rect.Width>=24 && rect.Height>=24,contained=Contains(client,rect),
+               signature=IsPrototypeSurface(title,direct,heading.ToArray());
+          if(!unique || !enabled || !sameDpi || !size || !contained || !signature)
+            throw new InvalidOperationException(String.Format("Owned prototype surface {0} refused: unique={1}, enabled={2}, dpi={3}, size={4}, contained={5}, signature={6}.",title,unique,enabled,sameDpi,size,contained,signature));
           if((title=="OpenNav passage" || title=="OpenNav vessel traffic") && ++drawers>1)throw new InvalidOperationException("More than one prototype sheet is visible.");
           Array.Sort(direct,StringComparer.Ordinal);heading.Sort(StringComparer.Ordinal);
           result.Add(new SurfaceInfo{Handle=h.ToInt64(),Title=title,Signature=String.Join("|",direct)+"/"+String.Join("|",heading.ToArray()),Dpi=dpi,Bounds=rect});

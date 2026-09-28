@@ -2,6 +2,21 @@
 
 ## Current stage: prototype design lock, chart presentation and Online AIS
 
+Replacement `299c728` / run `36496486152` passes the corrected Windows
+Instruments rendering check (41 checks/five captures), all114 integrated tests,
+48 native marker-window cases and212 pure guard checks. Seven of eight jobs
+pass. The actual-product capture guard refuses Passage after three successful
+navigation theme captures; its child stderr was not retained by the original
+CI launcher. The replacement retains that refusal explicitly; no guard has
+been bypassed. All eight artifacts and30 complete capture PNGs verify, with
+six partial navigation PNGs retained separately. See
+[negative native evidence](evidence/prototype-native-299c728-failed.json).
+No package or boat acceptance is claimed from this run.
+
+The committed rail/scroll correction `da17dab` has a fresh integrated Linux
+configure/build/install and122/122 passing tests (20.59s). Its Windows
+qualification remains pending.
+
 The next native Passage increment now follows the prototype drawer instead of
 replacing the chart with a full-page route summary. It copies accepted route and
 SmartNav values, matches the exact energy input publication and withholds values
@@ -50,6 +65,13 @@ identity and rejects unrelated or changed windows. Linux policy suites pass;
 native marker-window and actual-product capture qualification remain pending.
 No new prototype product has been launched aboard, and no actuator action was
 added. See [guard review](design/reviews/prototype-boat-capture-guard.md).
+
+A further Instruments correction removes its old permanent scroll toolbar and
+restores the exact main-rail button widths/group separation. All122 Linux tests
+pass (19.33s);16 captures pass exact rail measurements and actual pointer-wheel
+access to lower readings/back to top. Windows and boat gates remain pending;
+the lower vessel-profile group is still an explicit mismatch. See
+[corrective evidence](evidence/prototype-rail-scroll-local.json).
 
 Replacement `c86c6a7` / [run 36485693077](https://github.com/ThereptileII/Work/actions/runs/36485693077)
 passes all seven development jobs. All eight downloaded artifacts, their ZIP

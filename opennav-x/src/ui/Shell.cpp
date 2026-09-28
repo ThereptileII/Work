@@ -178,7 +178,7 @@ Shell::Shell(wxFrame &frame, wxAuiManager &manager, ShellActions actions,
   tools->AddSpacer(frame_.FromDIP(14));
   const auto nav = [&](const wxString &label, const wxString &name, XNavIcon icon, std::function<void()> action) {
     auto *b = Button(left,label,name,std::move(action)); b->SetNavigationItem(); b->SetIcon(icon);
-    b->SetMinSize(frame_.FromDIP(wxSize(62,61)));
+    b->SetMinSize(frame_.FromDIP(wxSize(61,61)));
     tools->Add(b,0,wxLEFT|wxRIGHT,frame_.FromDIP(9));
     tools->AddSpacer(frame_.FromDIP(5));
     navigation_page_buttons_.push_back(b);
@@ -187,6 +187,19 @@ Shell::Shell(wxFrame &frame, wxAuiManager &manager, ShellActions actions,
   nav("Chart", "Navigation", XNavIcon::Chart, [this]{ShowNavigation();});
   nav("Passage", "Route", XNavIcon::Route, [this]{ShowPassage();});
   nav("Traffic", "AIS targets", XNavIcon::Traffic, [this]{ShowProduct(ProductPage::Ais);});
+  // The prototype separates passage/traffic from vessel views: 5px gap,
+  // 7px margin, a 1px rule, 7px margin and another 5px gap.
+  tools->AddSpacer(frame_.FromDIP(7));
+  auto *nav_divider = new wxPanel(left, wxID_ANY);
+  nav_divider->SetMinSize(frame_.FromDIP(wxSize(37, 1)));
+  nav_divider->SetBackgroundStyle(wxBG_STYLE_PAINT);
+  nav_divider->Bind(wxEVT_PAINT, [this, nav_divider](wxPaintEvent &) {
+    wxAutoBufferedPaintDC dc(nav_divider);
+    dc.SetBackground(wxBrush(Colour(Theme(mode_).border)));
+    dc.Clear();
+  });
+  tools->Add(nav_divider, 0, wxLEFT, frame_.FromDIP(21));
+  tools->AddSpacer(frame_.FromDIP(12));
   nav("Energy", "Energy", XNavIcon::Energy, [this]{ShowPage(PreviewPage::Energy);});
   nav("Instruments", "Vessel instruments", XNavIcon::Instruments, [this]{ShowProduct(ProductPage::Instruments);});
   nav("Anchor", "Anchor watch", XNavIcon::Anchor, [this]{ShowProduct(ProductPage::Anchor);});
@@ -890,7 +903,12 @@ const char *Shell::LightName() const {
   return mode_ == LightMode::Day ? "Day" : mode_ == LightMode::Dusk ? "Dusk" : "Night";
 }
 void Shell::UpdateScrollControls() {
-  const bool scroll = CanScrollPage(-1) || CanScrollPage(1);
+  // The prototype Instruments view scrolls directly by wheel/touch. Keep the
+  // earlier explicit buttons for pages which have not yet been migrated.
+  const bool prototype_instruments = product_ && product_->IsShown() &&
+      product_->PageTitle() == "Vessel instruments";
+  const bool scroll = !prototype_instruments &&
+      (CanScrollPage(-1) || CanScrollPage(1));
   auto *focus = wxWindow::FindFocus();
   if ((focus == page_up_ && !CanScrollPage(-1)) ||
       (focus == page_down_ && !CanScrollPage(1))) {
