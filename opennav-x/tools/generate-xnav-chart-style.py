@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """Derive bounded XNav palette resources from verified pinned OpenCPN bytes.
 
-Only twelve named colors in three color tables may change. Original resources
-are never modified. The original prototype is never written.
+Only thirteen palette roles and a proven matching neutral sprite-ink mask may
+change. Original resources and the original prototype are never modified.
 """
 import argparse
 import hashlib
@@ -10,9 +10,10 @@ import json
 from pathlib import Path
 import re
 import xml.etree.ElementTree as ET
+from chart_raster_ink import decode, derive
 
 ROOT=Path(__file__).resolve().parents[1]
-ALLOWED={'LANDA','CSTLN','DEPDW','DEPMD','DEPMS','DEPVS','DEPIT','DEPCN','DEPSC','SNDG1','SNDG2','CHBLK'}
+ALLOWED={'LANDA','CSTLN','DEPDW','DEPMD','DEPMS','DEPVS','DEPIT','DEPCN','DEPSC','SNDG1','SNDG2','CHBLK','CHGRD'}
 
 def pinned_bytes(path, identity):
     content=path.read_bytes()
@@ -64,12 +65,24 @@ def generate(source, output):
                 color.attrib=next(c for c in source_table.findall('color') if c.attrib['name']==color.attrib['name']).attrib.copy()
     assert ET.tostring(before)==ET.tostring(after), 'Presentation semantics changed'
     result=dict(original);result['chartsymbols.xml']=xml.encode('utf-8')
+    # Pinned Day ink identifies neutral CHBLK/CHGRD pixels. Theme sheets use
+    # different baked neutral RGBs than the XML table. Change only matching
+    # same-coordinate/alpha pixels, never a chromatic pixel or symbol shape.
+    _, day_pixels = decode(original['rastersymbols-day.png'])
+    raster_ink = {}
+    for table, name, source_rgb in [('DUSK','rastersymbols-dusk.png',(54,54,54)),
+                                   ('NIGHT','rastersymbols-dark.png',(27,27,27))]:
+        assert colors[table]['CHBLK'] == colors[table]['CHGRD']
+        result[name], count = derive(day_pixels, original[name], source_rgb, colors[table]['CHBLK'])
+        raster_ink[name] = {'sourceRgb':source_rgb, 'targetRgb':colors[table]['CHBLK'],
+                            'changedPixels':count, 'alphaAndGeometryPreserved':True}
     output.mkdir(parents=True,exist_ok=True)
     def write(path,content):
         if not path.exists() or path.read_bytes()!=content:path.write_bytes(content)
     for name,content in result.items():write(output/name,content)
     metadata={'version':definition['version'],'upstreamCommit':lock['upstreamCommit'],
               'prototypeSha256':definition['prototypeSha256'],'palette':colors,
+              'neutralRasterInk':raster_ink,
               'files':{n:{'sha256':hashlib.sha256(c).hexdigest(),'bytes':len(c)} for n,c in result.items()}}
     write(output/'manifest.json',(json.dumps(metadata,indent=2)+'\n').encode())
     header=['#pragma once','#include <cstdint>','namespace opennav::chart_style::generated {',

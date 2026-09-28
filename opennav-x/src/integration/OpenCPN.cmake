@@ -167,6 +167,8 @@ set_property(DIRECTORY APPEND PROPERTY CMAKE_CONFIGURE_DEPENDS
   "${OPENNAV_ROOT}/resources/chart-style/v1/source-lock.json"
   "${OPENNAV_ROOT}/docs/design/prototype-tokens.json"
   "${OPENNAV_ROOT}/tools/generate-xnav-chart-style.py")
+set_property(DIRECTORY APPEND PROPERTY CMAKE_CONFIGURE_DEPENDS
+  "${OPENNAV_ROOT}/tools/chart_raster_ink.py")
 target_sources(${PACKAGE_NAME} PRIVATE "${OPENNAV_ROOT}/src/integration/ChartPresentation.cpp")
 target_include_directories(${PACKAGE_NAME} PRIVATE "${xnav_chart_style}")
 install(FILES "${xnav_chart_style}/chartsymbols.xml" "${xnav_chart_style}/S52RAZDS.RLE"

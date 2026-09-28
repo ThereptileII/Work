@@ -97,3 +97,21 @@ the original metric when the shell is destroyed. Corrective software and Mesa
 llvmpipe captures retain the controls through the theme cycle. Windows, physical
 GPU and boat replacement evidence remain mandatory; corners/shadows and the
 larger screen set are still not visually accepted.
+
+
+### Rail audit against the final HTML cascade
+
+At 1280×800 the four prototype metrics occupy x=1113, width=149 and
+135.75px each, starting at y=110. Labels start 10px into each row; values
+start 31px in, use 48px regular tabular text with −3px tracking and 50.88px
+line height. The pilot summary is x=1113, y=666, 149×87, radius10, padding
+11×12, with a 13px preceding gap and 13px bottom inset.
+
+The current native capture still has 142px rows, vertically centered content,
+no source/age baseline and a plain 64px pilot button. These are open geometric
+and information-hierarchy defects. Correcting them must preserve the user's
+four selected quantities and actual measurement datum. A depth sample cannot
+be relabeled "below surface" without an established offset. A pilot summary
+must show unavailable/stale when feedback is absent; opening it must never
+send a command. Any sparkline must use retained real observations, not the
+prototype's illustrative curve. This audit is not a visual PASS.

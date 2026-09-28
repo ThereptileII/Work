@@ -13,6 +13,12 @@ values. The renderer records computed styles, bounds, visible interactions,
 actual platform fonts and screenshot hashes for each state. These measurements
 are the exact implementation target; an old Beta screenshot is not a baseline.
 
+`tools/prototype/extract-tokens.py --check` verifies the final computed variables
+against every canonical state on both platforms. The supplied HTML appends a
+marker stylesheet absent from `src/style.css`; extracting that source fragment
+alone misses eight final marker roles. The corrected token file includes these
+roles and hashes of both canonical measurements. Original HTML remains unchanged.
+
 ## Palette
 
 | Role / CSS variable | Day | Dusk | Night |

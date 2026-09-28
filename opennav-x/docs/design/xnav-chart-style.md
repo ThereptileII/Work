@@ -15,6 +15,24 @@ application's pinned S-52 resources.
 | Contour / depth detail | #adcbce | #567880 | #2a4149 |
 | Active route | #267c76 | #b0dfc8 | #91bca2 |
 
+Final HTML marker variables (from the appended stylesheet, not the earlier
+`src/style.css` fragment):
+
+| Marker role | Day | Dusk | Night |
+|---|---|---|---|
+| Red | #b66e6c | #d3948c | #ae7870 |
+| Green | #508d78 | #8fbaa2 | #789d84 |
+| Yellow | #ac8d4c | #cbb17a | #a89061 |
+| Black | #53645f | #c3cec2 | #89988c |
+| White | #f6f7ef | #d7decf | #a4afa0 |
+| Blue | #648b9d | #8eaebe | #6d8f9e |
+| Service | #7c858a | #a8bbb7 | #7e948a |
+| Area | #9c8696 | #b8a0b1 | #917f8d |
+
+These are design targets, not an accepted recoloring of navigation marks.
+The current bounded ink pass retains pinned chromatic pixels and uses the
+reviewed general-ink contrast roles below for neutral symbols.
+
 The final SVG route stroke is 2.6 CSS px with round joins. Prototype AIS paths
 use #916477 stroke, 1.6px; selected fill #cb9cb1; vector line 1px dashed 4/4;
 labels #835d70 9px. These literal styles and theme overrides must be assessed
@@ -69,15 +87,21 @@ No chart-presentation acceptance is claimed by this inspection document.
 ## Version 1 implementation (not yet visually accepted)
 
 `resources/chart-style/v1/definition.json` maps the HTML's land, shore, water,
-contour and text tokens to twelve S-52 palette entries. The HTML supplies no
+contour and text tokens to thirteen S-52 palette entries. The HTML supplies no
 complete depth-area set; explicitly documented extra shades retain all five
 pinned deep/medium/shallow/very-shallow/intertidal categories. Safety contours
 and safety soundings remain distinct. This is a safety-required extension to
 an illustrative map, not a claim that the prototype defines those extra colors.
 
 Generation verifies every stock input hash against `source-lock.json`, changes
-only RGB attributes in DAY_BRIGHT/DUSK/NIGHT, preserves every symbol, lookup,
-line style, pattern and raster symbol sheet, and emits a resource hash header.
+only the allowed RGB attributes in DAY_BRIGHT/DUSK/NIGHT, preserves every symbol,
+lookup, line style and pattern definition, and emits a resource hash header.
+Day sprites and the RLE resource remain byte-identical. Dusk/Night sprites now
+derive only neutral pixels matching the Day neutral RGB, the pinned theme's
+neutral RGB and identical nonzero alpha: 42,100 pixels per sheet. Every other
+pixel, all alpha values and PNG metadata remain unchanged. This preserves
+symbol shape and chromatic navigation distinctions; it does not establish
+hazard visibility without native ENC review.
 The result installs in the separate shared-data `opennav/chart-style/v1`
 directory. Original `s57data` stays untouched. The runtime verifies all five
 resource hashes before constructing a library. Missing/corrupt resources use
@@ -93,7 +117,7 @@ the verified XNav land/water palette; those basemaps remain coastline references
 not a substitute for a nautical ENC. No synthetic chart objects are introduced.
 
 Resource tests verify deterministic generation, exact prototype identity,
-unchanged navigation sections/sprites, depth-role separation, Night vs Dusk
+unchanged navigation sections, exact neutral-pixel masks, depth-role separation, Night vs Dusk
 luminance, original-file preservation and refusal of changed upstream input.
 Real ENC appearance, hazards, OpenGL/software rendering, style/mode cycles and
 boat display remain pending. Route, ownship and AIS overlay restyling is a
@@ -104,5 +128,12 @@ text nearly invisible at Night. Day retains the pinned #070707 rather than
 substituting low-contrast muted text over shallow water. Dusk uses the existing
 prototype floating text token; Night uses its chart-text token. Numeric contrast
 checks cover deep water, very-shallow water and land independently. These checks
-do not qualify hazard visibility or recolor the unchanged raster symbol sheets.
+do not qualify hazard visibility. The third pass keeps CHGRD aligned with CHBLK
+and changes only the bounded neutral raster pixels described above. Independent
+Pillow-decoded golden pixel hashes test the stdlib PNG implementation. The 388
+resource checks pass. Local software and llvmpipe GL each retain real ENC through
+four theme captures, but GL general text still exposes a pinned renderer-color
+difference. This is a known defect, not accepted parity. The large embossed
+"Feet" overlay is OpenCPN's real chart depth unit, not a place label; it must
+remain semantically visible if its presentation is changed.
 See the [contrast investigation](reviews/chart-ink-contrast-investigation.md).

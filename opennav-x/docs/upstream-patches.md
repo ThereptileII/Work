@@ -598,6 +598,14 @@ verified resources or explicit Standard fallback. `LoadS57` delegates only its
 initial construction to the integration boundary. CSV registrars, safety-depth
 selection, lookups, conditional symbols and chart ownership remain upstream.
 
+The same constructor has `useS52DefaultTextColor=false`, enabled only after
+XNav's resource verification succeeds. In `RenderText`'s cached GL glyph branch,
+it applies the existing software branch's default-black-to-S52-LUP-color rule.
+Explicit user chart-text colors remain honored. Standard, fallback, Legacy and
+Safe retain the false default; the special-character/rotated texture path is
+unchanged. Actual software/GL Night captures exposed this pinned branch
+difference. Pixel review and native/boat GL gates remain necessary.
+
 Two small GUI hooks let `GSHHSChart::SetColorScheme` and the `LANDBACK`/`BLUEBACK`
 background colors use XNav's verified palette. They return normal upstream
 behavior in Legacy/Safe/Standard. No chart objects or sensor state are changed.

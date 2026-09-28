@@ -32,3 +32,26 @@ The bounded second pass now keeps Day #070707, uses Dusk --float-text and Night
 very-shallow and land contrast. Actual public ENC software/GL captures, native
 Windows comparison and boat display review remain required before acceptance.
 Other chart text scale/density and built-up-area differences remain open.
+
+Third local pass: narrowly derived Dusk/Night neutral raster ink, with all alpha,
+geometry and colored pixels unchanged (42,100 pixels each). The 388 resource
+checks pass, including independently decoded golden RGBA hashes. Night captures
+under `evidence/local/prototype/raster-ink-{software,opengl}` were inspected.
+Small monochrome marks are now visible, but the GL cached-text path remains
+black while software text uses S-52 ink. Pinned `s52plib::RenderText` confirms
+that the GL cached-glyph branch omits software's default-black-to-LUP fallback.
+A scoped replacement and further captures are required. Large "Feet" comes
+from `ChartCanvas::EmbossDepthScale`, preserving actual quilt depth units.
+Built-up areas, density, depth-unit presentation and full hazard review remain
+open. Neither renderer is visually accepted.
+
+
+Fourth local pass scopes the cached GL default-color fallback to the verified
+XNav library only. The Night general text is visibly restored; Standard/Legacy
+keep their original constructor default and explicit chart-text preferences
+remain honored. All 120 integrated Linux tests pass. An initial capture failed
+its first zoom assertion; the collector now waits for a post-resize diagnostic
+epoch and exact target canvas size. Three subsequent independent captures each
+pass real pointer zoom and Day/Dusk/Night/Day with clean exit. Negative evidence
+is retained. This is Linux llvmpipe evidence, not a physical GPU or Windows gate.
+See [local evidence](../../evidence/prototype-chart-gl-ink-local.json).

@@ -1,0 +1,82 @@
+{
+  "accepted": false,
+  "remoteCommit": "335b14e8e87df48ae2d2c3f61469a7a9b33e632d",
+  "localCommit": "bf47479494f25930c7dab3bc873419c86f15dc3c",
+  "tree": "1b6e61052a03f68feaea2db94d3407eaee0d0427",
+  "verifiedSourceBlobs": 1052,
+  "ciRun": "https://github.com/ThereptileII/Work/actions/runs/36478655922",
+  "result": "FAILED: retain successful sub-gates and both negative results; replacement required",
+  "integratedWindowsTests": 112,
+  "nativeAisComponentChecks": 71,
+  "offlineProbeChecks": 24,
+  "hostileTlsScenarios": 18,
+  "providerLifecycle": "PASS / loopback only",
+  "captureHashesVerified": {
+    "prototype-native": 12,
+    "prototype-enc-xnav": 4,
+    "prototype-enc-standard": 4,
+    "ais-component": 9
+  },
+  "failures": [
+    {
+      "gate": "Native actual-object flow",
+      "detail": "All 17 scenario phases completed; final waypoint editing used obsolete System then Waypoints entry. Current Settings entry opens the catalog."
+    },
+    {
+      "gate": "Read-only probe packaging",
+      "detail": "Pinned bundle old vccorlib140.dll conflicts with explicit licensed current CRT. No probe archive accepted or deployed."
+    }
+  ],
+  "artifacts": [
+    {
+      "id": 10996696305,
+      "name": "prototype-object-flow-Windows-335b14e8e87df48ae2d2c3f61469a7a9b33e632d",
+      "sha256": "493a8a4970af475aa08c721a30f9ff32f2cb7e44d360bb5b7d908aa65dcb2150",
+      "bytes": 1883138,
+      "zipCrc": true
+    },
+    {
+      "id": 10996052694,
+      "name": "prototype-native-Windows-335b14e8e87df48ae2d2c3f61469a7a9b33e632d",
+      "sha256": "3cffd14f0224a261a5ded808f26677b082505deed54188df9e9309701900d263",
+      "bytes": 11805452,
+      "zipCrc": true
+    },
+    {
+      "id": 10994980651,
+      "name": "prototype-ais-foundation-Windows-335b14e8e87df48ae2d2c3f61469a7a9b33e632d",
+      "sha256": "cf7a91c2c43c4edd09c8e184c4a2689d1ab0cc5bac7f02bb4c2a6542ddb81f0c",
+      "bytes": 691,
+      "zipCrc": true
+    },
+    {
+      "id": 10994871269,
+      "name": "prototype-ais-foundation-Linux-335b14e8e87df48ae2d2c3f61469a7a9b33e632d",
+      "sha256": "1d68e11c350364e088eeaaf64d49d701977f9a84f4586358aeae10897ae8c00d",
+      "bytes": 687,
+      "zipCrc": true
+    },
+    {
+      "id": 10994526833,
+      "name": "prototype-reference-Windows-335b14e8e87df48ae2d2c3f61469a7a9b33e632d",
+      "sha256": "c0409ccadc2c0384bf725697dd4237b56e6bd7a5023ae3e9a236e0f7fdb914b0",
+      "bytes": 16109836,
+      "zipCrc": true
+    },
+    {
+      "id": 10994242521,
+      "name": "prototype-reference-Linux-335b14e8e87df48ae2d2c3f61469a7a9b33e632d",
+      "sha256": "2623106c7a8304d8d8d0a1df4d07bac7b9d799bbd213dd01c720a8577dddaf9c",
+      "bytes": 17739664,
+      "zipCrc": true
+    },
+    {
+      "id": 10994139907,
+      "name": "prototype-ais-network-Linux-335b14e8e87df48ae2d2c3f61469a7a9b33e632d",
+      "sha256": "9348baae18dfc28f3d8391413c5ece30f14dc048632fcf3c1278bd187e962431",
+      "bytes": 935,
+      "zipCrc": true
+    }
+  ],
+  "review": "Windows software ENC Night inspected: labels readable, baked neutral symbols still dim in this revision. Chart selector and embossed actual depth unit still visually differ. No visual acceptance or boat deployment."
+}

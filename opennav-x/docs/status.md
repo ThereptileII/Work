@@ -2,6 +2,24 @@
 
 ## Current stage: prototype design lock, chart presentation and Online AIS
 
+Current local chart review: the final HTML cascade now supplies all marker
+tokens, including eight roles omitted by extraction from its earlier stylesheet.
+The immutable HTML is unchanged; 4 design-contract tests pass. A bounded neutral
+Dusk/Night sprite derivation passes 388 resource checks and eight real-ENC
+software/llvmpipe captures. Review exposed black cached text in the GL path;
+renderer parity and visual acceptance remain open. See the
+[ink investigation](design/reviews/chart-ink-contrast-investigation.md).
+
+Native development run `36478655922` at remote `335b14e` (local `bf47479`)
+passes 112 integrated tests, 71 AIS component checks, transport/provider tests
+and twenty product/ENC captures, but **fails overall**. The new actual-object
+Windows flow reached the final waypoint edit with an obsolete System menu path;
+the probe package separately refused the pinned bundle's old `vccorlib140.dll`
+against the explicitly selected licensed CRT. Both negative logs/artifacts are
+retained. Replacement fixes use the current Settings → Waypoints entry and
+recognize that CRT family without relaxing unknown-library rejection. No probe
+package or live boat AIS result is accepted from that failed run.
+
 The user's September 28 instruction supersedes the older visual baseline:
 safety/navigation correctness → supplied v8 HTML → extracted prototype spec →
 older brief/image → current Beta. The native architecture and all existing

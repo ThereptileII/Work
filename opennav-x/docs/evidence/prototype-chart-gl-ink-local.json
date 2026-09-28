@@ -1,0 +1,92 @@
+{
+  "accepted": false,
+  "source": "Working tree on bd0b42f83c52565faec04756794d55b8bdbf56e2; exact committed native/boat replacement required",
+  "patchSha256": "c80a5cdd3ab62ae8be9628205aecc14699c6dd9851ce0919d919cf9f76182730",
+  "linuxIntegrated": {
+    "tests": 120,
+    "failures": 0,
+    "junitSha256": "2f9265183b495529b7a0a2e15064b9dba6bc0e2fe326023ec134f4dcb871759e"
+  },
+  "chartResourceChecks": 388,
+  "prototypeContractTests": 4,
+  "renderer": "Linux Mesa llvmpipe / not Windows or physical GPU acceptance",
+  "captures": [
+    {
+      "directory": "gl-text-settled-1",
+      "captureSha256": "14b7e705a56a57acdd1f76dba91d151399e4c9e11e64e1c37ed706a2493bf59b",
+      "executableSha256": "76ae0eee0a01545380ae0f2edc95312c54bd668345fd0e2ba51fd188aeeeb2a1",
+      "captures": [
+        {
+          "file": "navigation-day.png",
+          "sha256": "31e5b9e307fe3c8897b5e9883ddcb630286bf32c0d4ba7114463deae98717c78"
+        },
+        {
+          "file": "navigation-dusk.png",
+          "sha256": "0258b30880eebaefe3c0ac5040bae8a0d630200b137f6e39374d94bff4ae95e7"
+        },
+        {
+          "file": "navigation-night.png",
+          "sha256": "ab33262bed05a2c3d5e0d5339e3d1de24359df9b7667d201ba88b8e69d34cda8"
+        },
+        {
+          "file": "navigation-return-day.png",
+          "sha256": "8b4017fb4e87db80e1df5a2ebf2e29b68439e43b8df1a1e49f92890cc015f526"
+        }
+      ],
+      "exitCode": 0,
+      "resizeSettleSeconds": 0.30355930695077404
+    },
+    {
+      "directory": "gl-text-settled-2",
+      "captureSha256": "160873e0a5a0d31120cac36a280924f500aba5f3f54c1e271c1a84c0757abdda",
+      "executableSha256": "76ae0eee0a01545380ae0f2edc95312c54bd668345fd0e2ba51fd188aeeeb2a1",
+      "captures": [
+        {
+          "file": "navigation-day.png",
+          "sha256": "31e5b9e307fe3c8897b5e9883ddcb630286bf32c0d4ba7114463deae98717c78"
+        },
+        {
+          "file": "navigation-dusk.png",
+          "sha256": "0258b30880eebaefe3c0ac5040bae8a0d630200b137f6e39374d94bff4ae95e7"
+        },
+        {
+          "file": "navigation-night.png",
+          "sha256": "ab33262bed05a2c3d5e0d5339e3d1de24359df9b7667d201ba88b8e69d34cda8"
+        },
+        {
+          "file": "navigation-return-day.png",
+          "sha256": "8b4017fb4e87db80e1df5a2ebf2e29b68439e43b8df1a1e49f92890cc015f526"
+        }
+      ],
+      "exitCode": 0,
+      "resizeSettleSeconds": 0.30357217200798914
+    },
+    {
+      "directory": "gl-text-settled-3",
+      "captureSha256": "a8946cf51caa9549925714904b84b297b30fdd786a4980c35bd6f94f8322a00b",
+      "executableSha256": "76ae0eee0a01545380ae0f2edc95312c54bd668345fd0e2ba51fd188aeeeb2a1",
+      "captures": [
+        {
+          "file": "navigation-day.png",
+          "sha256": "31e5b9e307fe3c8897b5e9883ddcb630286bf32c0d4ba7114463deae98717c78"
+        },
+        {
+          "file": "navigation-dusk.png",
+          "sha256": "0258b30880eebaefe3c0ac5040bae8a0d630200b137f6e39374d94bff4ae95e7"
+        },
+        {
+          "file": "navigation-night.png",
+          "sha256": "ab33262bed05a2c3d5e0d5339e3d1de24359df9b7667d201ba88b8e69d34cda8"
+        },
+        {
+          "file": "navigation-return-day.png",
+          "sha256": "8b4017fb4e87db80e1df5a2ebf2e29b68439e43b8df1a1e49f92890cc015f526"
+        }
+      ],
+      "exitCode": 0,
+      "resizeSettleSeconds": 1.0117959239869379
+    }
+  ],
+  "negativeRetained": "Initial gl-text-opengl capture failed first zoom assertion. Identical repeat passed; post-resize collector now requires fresh target-size diagnostic epoch before using overlay coordinates. Three corrective runs retain the same real zoom assertions and each pass four theme captures. No claim of broad stress acceptance.",
+  "review": "Night cached GL chart labels now visibly use S52 ink. Selected Seattle label pixel probe changes 265 exact-black pixels to zero; 259 pixels match ink within one channel unit. Symbol hazards, urban fills, density, embossed actual chart units and boat GPU remain open."
+}

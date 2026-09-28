@@ -5,9 +5,11 @@ import json
 from pathlib import Path
 import shutil
 import tempfile
+import sys
 import xml.etree.ElementTree as ET
 
 ROOT=Path(__file__).resolve().parents[1]
+sys.path.insert(0,str(ROOT/'tools'))
 spec=importlib.util.spec_from_file_location('generate',ROOT/'tools/generate-xnav-chart-style.py')
 g=importlib.util.module_from_spec(spec);spec.loader.exec_module(g)
 source=ROOT/'upstream/OpenCPN/data/s57data'
@@ -35,7 +37,21 @@ with tempfile.TemporaryDirectory(prefix='xnav-chart-test-') as d:
     check(first=={p.name:p.read_bytes() for p in output.iterdir()})
     for name,identity in data['files'].items():
         check(hashlib.sha256((output/name).read_bytes()).hexdigest()==identity['sha256'])
-        if name!='chartsymbols.xml':check((output/name).read_bytes()==g.pinned_bytes(source/name,identity))
+        if name in {'S52RAZDS.RLE','rastersymbols-day.png'}:
+            check((output/name).read_bytes()==g.pinned_bytes(source/name,identity))
+    _,day=g.decode((source/'rastersymbols-day.png').read_bytes())
+    for name,ink in data['neutralRasterInk'].items():
+        before_chunks,before=g.decode((source/name).read_bytes())
+        after_chunks,after=g.decode((output/name).read_bytes())
+        check([(k,v) for k,v in before_chunks if k!=b'IDAT']==[(k,v) for k,v in after_chunks if k!=b'IDAT'])
+        check(before[3::4]==after[3::4])
+        changed=[i for i in range(0,len(before),4) if before[i:i+4]!=after[i:i+4]]
+        check(len(changed)==ink['changedPixels']==42100)
+        check(all(day[i:i+3]==b'\x07\x07\x07' and day[i+3]==before[i+3] and before[i+3]>0 for i in changed))
+        check(all(before[i:i+3]==bytes(ink['sourceRgb']) and after[i:i+3]==bytes(ink['targetRgb']) for i in changed))
+        check(hashlib.sha256(after).hexdigest()=={
+            'rastersymbols-dusk.png':'2513060ab2decd060ae8cd80919d1922f85f0a4282b99dee51b826d860ba9a5e',
+            'rastersymbols-dark.png':'36a37bf3fe9257893adfb82e3d737ae62e98f631b4ed4bffe645e42d1697e8c9'}[name])
     a,b=ET.parse(source/'chartsymbols.xml').getroot(),ET.parse(output/'chartsymbols.xml').getroot()
     for section in ['lookups','line-styles','patterns','symbols']:
         check(ET.tostring(a.find(section))==ET.tostring(b.find(section)))

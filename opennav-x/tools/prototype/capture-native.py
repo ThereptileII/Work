@@ -266,6 +266,8 @@ def main():
             time.sleep(.2)
         else:
             raise RuntimeError("Application did not finish initialization")
+        resize_ticks = int(data()["runtime"]["ui_update"]["ticks"])
+        resize_started = time.time_ns()
         if windows:
             window, pid = ui.wait_window("OpenNav X / OpenCPN", app.pid)
             assert ui.GetDpiForWindow(window) == 96, "Primary reference requires 96 DPI"
@@ -286,7 +288,20 @@ def main():
             window = matches[0]
             xdo("windowsize", window, 1280, 800)
             xdo("windowmove", window, 0, 0)
-        time.sleep(1)
+        # Coordinates are copied by the application tick. A fixed delay can
+        # still leave the pre-resize overlay coordinates in diagnostics while
+        # a fresh ENC/SENC or GL canvas finishes work. Never click that snapshot.
+        settle = time.monotonic()
+        while time.monotonic() - settle < 10:
+            observed = data()
+            if ((profile / "opennav-diagnostics.json").stat().st_mtime_ns > resize_started
+                    and int(observed["runtime"]["ui_update"]["ticks"]) >= resize_ticks + 3
+                    and observed["runtime"]["chart"]["canvas_pixels"] == {"width":1014,"height":566}):
+                break
+            time.sleep(.1)
+        else:
+            raise AssertionError("Current target-size canvas did not settle after resize")
+        record["post_resize_settle_seconds"] = time.monotonic() - settle
         # Real input must reach the floating window's action, not the canvas
         # beneath it. Check the existing OpenCPN scale, never an independent
         # navigation calculation or a UI-only selected flag.

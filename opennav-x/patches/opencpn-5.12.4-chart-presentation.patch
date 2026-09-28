@@ -110,19 +110,21 @@ index f6261063a..96a02812b 100755
    void InitializeTables(void);
    void DeleteGlobals(void);
 diff --git i/libs/s52plib/src/s52plib.cpp w/libs/s52plib/src/s52plib.cpp
-index 03dda4915..1d13b5b2b 100755
+index 03dda4915..93d7df531 100755
 --- i/libs/s52plib/src/s52plib.cpp
 +++ w/libs/s52plib/src/s52plib.cpp
-@@ -278,7 +278,7 @@ LUPHashIndex *LUPArrayContainer::GetArrayIndexHelper(const char *objectName) {
+@@ -278,7 +278,9 @@ LUPHashIndex *LUPArrayContainer::GetArrayIndexHelper(const char *objectName) {
  //-----------------------------------------------------------------------------
  //      s52plib implementation
  //-----------------------------------------------------------------------------
 -s52plib::s52plib(const wxString &PLib, bool b_forceLegacy) {
-+s52plib::s52plib(const wxString &PLib, bool b_forceLegacy, bool allowCwdOverride) {
++s52plib::s52plib(const wxString &PLib, bool b_forceLegacy, bool allowCwdOverride,
++               bool useS52DefaultTextColor) {
++  m_useS52DefaultTextColor = useS52DefaultTextColor;
    m_plib_file = PLib;
  
    pOBJLArray = new wxArrayPtrVoid;
-@@ -294,7 +294,7 @@ s52plib::s52plib(const wxString &PLib, bool b_forceLegacy) {
+@@ -294,7 +296,7 @@ s52plib::s52plib(const wxString &PLib, bool b_forceLegacy) {
    m_chartSymbols.SetTextureFormat(GL_TEXTURE_2D);
    InitializeNatsurHash();
  
@@ -131,7 +133,7 @@ index 03dda4915..1d13b5b2b 100755
  
    m_bShowS57Text = false;
    m_bShowS57ImportantTextOnly = false;
-@@ -1130,7 +1130,7 @@ int s52plib::_LUP2rules(LUPrec *LUP, S57Obj *pObj) {
+@@ -1130,7 +1132,7 @@ int s52plib::_LUP2rules(LUPrec *LUP, S57Obj *pObj) {
      return 0;
  }
  
@@ -140,7 +142,7 @@ index 03dda4915..1d13b5b2b 100755
    pAlloc = new wxArrayPtrVoid;
  
    //   Create the Rule Lookup Hash Tables
-@@ -1153,7 +1153,7 @@ int s52plib::S52_load_Plib(const wxString &PLib, bool b_forceLegacy) {
+@@ -1153,7 +1155,7 @@ int s52plib::S52_load_Plib(const wxString &PLib, bool b_forceLegacy) {
    m_unused_color.B = 2;
    m_unused_wxColor.Set(2, 2, 2);
  
@@ -149,24 +151,37 @@ index 03dda4915..1d13b5b2b 100755
      wxString msg(_T("Could not load XML PLib symbol file: "));
      msg += PLib;
      wxLogMessage(msg);
+@@ -2181,6 +2183,10 @@ bool s52plib::RenderText(wxDC *pdc, S52_TextC *ptext, int x, int y,
+         glEnable(GL_TEXTURE_2D);
+ 
+         wxColour wcolor = GetFontColour_PlugIn(_("ChartTexts"));
++        // XNav's verified presentation follows the software renderer's S-52
++        // default ink. Preserve explicit user colors and stock GL behavior.
++        if (m_useS52DefaultTextColor && wcolor == *wxBLACK)
++          wcolor = wxColour(ptext->pcol->R, ptext->pcol->G, ptext->pcol->B);
+         f_cache->SetColor(wcolor);
+ 
+         /* undo previous rotation to make text level */
 diff --git i/libs/s52plib/src/s52plib.h w/libs/s52plib/src/s52plib.h
-index e830babf2..e8eb727d0 100755
+index e830babf2..455f0c0eb 100755
 --- i/libs/s52plib/src/s52plib.h
 +++ w/libs/s52plib/src/s52plib.h
-@@ -182,7 +182,7 @@ typedef struct {
+@@ -182,7 +182,8 @@ typedef struct {
  
  class s52plib {
  public:
 -  s52plib(const wxString &PLib, bool b_forceLegacy = false);
-+  s52plib(const wxString &PLib, bool b_forceLegacy = false, bool allowCwdOverride = true);
++  s52plib(const wxString &PLib, bool b_forceLegacy = false, bool allowCwdOverride = true,
++          bool useS52DefaultTextColor = false);
    ~s52plib();
  
    // TODO: SetPPM, SetDisplayWidth etc. should be combined to be set together by pointing them to info about current monitor
-@@ -405,7 +405,7 @@ public:
+@@ -405,7 +406,8 @@ public:
    void SetReducedBBox(LLBBox box){ reducedBBox = box;}
  
  private:
 -  int S52_load_Plib(const wxString &PLib, bool b_forceLegacy);
++  bool m_useS52DefaultTextColor = false;
 +  int S52_load_Plib(const wxString &PLib, bool b_forceLegacy, bool allowCwdOverride = true);
    bool S52_flush_Plib();
  

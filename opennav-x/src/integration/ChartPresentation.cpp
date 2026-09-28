@@ -87,7 +87,7 @@ s52plib *CreateChartPresentation(const wxString &stock_path,
     const auto directory = ResourceDirectory();
     if (Verify(directory)) {
       auto *library = new s52plib(
-          wxFileName(directory, "S52RAZDS.RLE").GetFullPath(), false, false);
+          wxFileName(directory, "S52RAZDS.RLE").GetFullPath(), false, false, true);
       if (library->m_bOK) {
         active = true;
         status = "XNav presentation v1 / pinned symbols";

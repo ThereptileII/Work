@@ -618,7 +618,7 @@ try:
         capture('ais-selected-chart')
         report['ais_selection']='Actual target card to existing chart target/frame; copied selection identity reported'
         if windows:
-            ui.click_text(app.pid,'System');ui.click_text(app.pid,'Waypoints')
+            ui.click_text(app.pid,'Settings');ui.click_text(app.pid,'Waypoints')
             ui.click_text(app.pid,'ALPHA TEST edited / mark');ui.click_text(app.pid,'Edit waypoint')
             ui.set_text_in_dialog(app.pid,'Edit waypoint','ALPHA TEST edited','ALPHA TEST UI edited')
             ui.click_text(app.pid,'Save');time.sleep(.6)

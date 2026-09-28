@@ -17,7 +17,7 @@ class DependencySelection(unittest.TestCase):
         self.install = base / 'install'
         self.runtime = base / 'Microsoft.VC143.CRT'
         self.install.mkdir(); self.runtime.mkdir()
-        for n in ['msvcp140.dll', 'vcruntime140.dll']:
+        for n in ['msvcp140.dll', 'vcruntime140.dll', 'vccorlib140.dll']:
             (self.runtime / n).write_bytes(b'licensed-current')
             (self.install / n).write_bytes(b'upstream-older')
         (self.install / 'libssl-3.dll').write_bytes(b'pinned-tls')
@@ -26,6 +26,7 @@ class DependencySelection(unittest.TestCase):
         result = m.dependency_candidates(self.install, self.runtime)
         self.assertEqual(result['msvcp140.dll'], self.runtime / 'msvcp140.dll')
         self.assertEqual(result['vcruntime140.dll'], self.runtime / 'vcruntime140.dll')
+        self.assertEqual(result['vccorlib140.dll'], self.runtime / 'vccorlib140.dll')
         self.assertEqual(result['libssl-3.dll'], self.install / 'libssl-3.dll')
 
     def test_unknown_conflicting_non_crt_is_refused(self):

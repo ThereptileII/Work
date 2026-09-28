@@ -33,9 +33,9 @@ def dependency_candidates(install, runtime):
     for folder in (install, runtime):
         for file in folder.glob('*.dll'):
             name = file.name.lower()
-            crt = folder == runtime and name.startswith(('msvcp', 'vcruntime', 'concrt', 'vcomp'))
+            crt = folder == runtime and name.startswith(('msvcp', 'vcruntime', 'vccorlib', 'concrt', 'vcomp'))
             if name in candidates and file.read_bytes() != candidates[name].read_bytes() and not crt:
-                raise ValueError('Ambiguous non-CRT dependency in the validated build')
+                raise ValueError('Ambiguous non-CRT dependency in the validated build: ' + name)
             candidates[name] = file
     return candidates
 

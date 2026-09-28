@@ -14,6 +14,9 @@ ROOT = HERE.parents[1]
 spec = importlib.util.spec_from_file_location("prototype_render", HERE / "render.py")
 render = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(render)
+spec = importlib.util.spec_from_file_location("prototype_extract", HERE / "extract-tokens.py")
+extractor = importlib.util.module_from_spec(spec)
+spec.loader.exec_module(extractor)
 
 
 class PrototypeContract(unittest.TestCase):
@@ -36,24 +39,28 @@ class PrototypeContract(unittest.TestCase):
                     render.verify_original()
 
     def test_native_palette_matches_actual_css_cascade(self):
-        # Read the authoritative source, not a second manually maintained oracle.
-        css = (render.ORIGINAL / "src/style.css").read_text(encoding="utf-8")
+        # Measure the final HTML cascade, including appended style blocks.
+        # The supplied source fragment alone omits later chart-symbol tokens.
         native = (ROOT / "src/ui/Theme.h").read_text(encoding="utf-8")
         native = native[native.index("constexpr Palette Theme"):]
         extracted = json.loads((ROOT / "docs/design/prototype-tokens.json").read_text())
-        root = dict(re.findall(r"(--[\w-]+):([^;}]+)", re.search(r":root\{([^}]+)\}", css)[1]))
+        self.assertEqual(extracted, extractor.extract())
         roles = ["bg", "surface", "surface2", "surface2", "line", "text",
                  "secondary", "muted", "mint", "mint", "amber", "red", "magenta"]
         for mode in ["Day", "Dusk", "Night"]:
-            values = dict(root)
-            if mode != "Day":
-                selector = f"#app[data-theme={mode.lower()}]"
-                values.update(dict(re.findall(r"(--[\w-]+):([^;}]+)",
-                    re.search(re.escape(selector) + r"\{([^}]+)\}", css)[1])))
-            self.assertEqual(extracted["themes"][mode.lower()], values)
+            values = extracted['themes'][mode.lower()]
             body = re.search(r"case LightMode::" + mode + r":\s*return \{([^}]+)\}", native)[1]
             actual = [int(x, 16) for x in re.findall(r"0x[0-9A-Fa-f]+", body)]
             self.assertEqual(actual, [int(values["--"+r][1:], 16) for r in roles])
+
+    def test_appended_chart_symbol_tokens_are_not_lost(self):
+        tokens = extractor.extract()['themes']
+        self.assertEqual(tokens['day']['--mark-black'], '#53645f')
+        self.assertEqual(tokens['dusk']['--mark-black'], '#c3cec2')
+        self.assertEqual(tokens['night']['--mark-black'], '#89988c')
+        for theme in tokens.values():
+            self.assertTrue(all('--mark-'+role in theme for role in
+                ('red','green','yellow','black','white','blue','service','area')))
 
 
 if __name__ == "__main__":
