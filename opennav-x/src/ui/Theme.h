@@ -11,6 +11,11 @@ struct Palette {
 };
 struct FloatingPalette { std::uint32_t surface, primary, secondary, compass_light; };
 struct OnlineChartPalette { std::uint32_t stroke, fill, selected, stale; };
+constexpr std::uint32_t NavigationContextInk(LightMode mode) {
+  // --cyan, distinct from --mint (selection/confirmation).
+  return mode == LightMode::Day ? 0x7BC8D7
+       : mode == LightMode::Dusk ? 0x82B0C1 : 0x78989C;
+}
 constexpr OnlineChartPalette OnlineChartTheme(LightMode mode) {
   // .ais-ship stroke/selection are inherited in all three supplied HTML themes.
   // Aging marks are a documented data-validity extension, using theme muted ink.

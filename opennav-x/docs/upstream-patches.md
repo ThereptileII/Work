@@ -22,6 +22,17 @@ For each change record:
 
 Do not leave undocumented direct OpenCPN modifications.
 
+### Prototype Instruments presentation
+
+The Instruments increment adds no OpenCPN source hook. Its native page copies
+the existing VesselState through `application::PresentInstruments`, retains
+the XNav horizon and delegates configuration to existing Settings actions.
+The north-up wind drawing requires true heading plus a coherent signed
+relative angle; it does not publish a new vessel quantity or alter upstream
+navigation. The integration CMake attachment adds the independent provenance
+test and non-installed widget capture executable. Legacy/Safe and chart
+parentage/storage are unchanged.
+
 ### Online AIS settings and native drawer boundary
 
 The prototype target drawer now reports its actual list/target/settings view

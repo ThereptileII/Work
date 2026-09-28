@@ -38,3 +38,11 @@ Use `capture-ais-component.py --component passage --client <passage_drawer_test>
 verifies five real-screen captures and preserves component reference/current/
 diff images. Fixed fixture time is confined to that non-installed test process.
 The product capture also checks the Passage theme cycle and chart return.
+
+Use `--component instruments --client <instrument_panel_test>` for the native
+wind/heading and instrument grid. It retains five captures, including loss of
+heading and stale sensors. Component comparison uses the exact 1014×566 full
+view; the original horizon space is reserved. It checks painted heading ink
+as well as geometry, so a misplaced drawing transform cannot pass on bounds
+alone. Production captures exercise all three themes and Close with real
+pointer input; unavailable vessel input stays unavailable.

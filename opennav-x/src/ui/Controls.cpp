@@ -175,6 +175,26 @@ void XNavPainter::TextWeight(wxString text, int x, int y, int size,
     text = wxControl::Ellipsize(text, dc_, wxELLIPSIZE_END, D(width));
   dc_.DrawText(text, D(x) + (right ? D(width) - dc_.GetTextExtent(text).x : 0), D(y));
 }
+void XNavPainter::TextTracked(wxString text, int x, int y, int size,
+                              std::uint32_t color, int weight,
+                              double tracking, int width) {
+  dc_.SetFont(UiFontWeight(window_, size, weight));
+  dc_.SetTextForeground(Colour(color));
+  const double step = tracking * D(100) / 100.;
+  const auto extent = [&](const wxString &s) {
+    return dc_.GetTextExtent(s).x + step * std::max(0, static_cast<int>(s.length()) - 1);
+  };
+  if (width > 0 && extent(text) > D(width)) {
+    const wxString ellipsis = wxString::FromUTF8("…");
+    while (!text.empty() && extent(text + ellipsis) > D(width)) text.RemoveLast();
+    text += ellipsis;
+  }
+  wxArrayInt advances;
+  dc_.GetPartialTextExtents(text, advances);
+  for (std::size_t i = 0; i < text.length(); ++i)
+    dc_.DrawText(text.Mid(i, 1), D(x) + (i ? advances[i - 1] : 0) +
+                 static_cast<int>(std::lround(step * i)), D(y));
+}
 void XNavPainter::Stat(const wxString &label, const wxString &value,
                        const wxString &unit, int x, int y, int width) {
   Text(label, x, y, 9, c.muted, false, width);

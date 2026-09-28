@@ -1,6 +1,7 @@
 #include "ui/ProductPanel.h"
 #include "ui/Sheet.h"
 #include "ui/ContextCard.h"
+#include "ui/PrototypeGeometry.h"
 #include "integration/BuildFeatures.h"
 #include <wx/dcbuffer.h>
 #include <wx/dialog.h>
@@ -89,6 +90,7 @@ ProductPanel::ProductPanel(wxWindow *parent, ProductActions actions)
 void ProductPanel::Back() {
   ProductPage parent = ProductPage::Home;
   switch (page_) {
+  case ProductPage::Instruments:
   case ProductPage::Home: if (actions_.chart) actions_.chart(); return;
   case ProductPage::RouteDetail: parent = ProductPage::Routes; break;
   case ProductPage::WaypointDetail: parent = ProductPage::Waypoints; break;
@@ -314,12 +316,13 @@ void ProductPanel::ShowPage(ProductPage page, LightMode mode) {
   page_ = page;
   mode_ = mode;
   rebuild_pending_ = false;
+  if (actions_.page_changed) actions_.page_changed(page);
   Scroll(0, 0);
   Build();
   if (IsShownOnScreen()) SetFocus();
 }
 int ProductPanel::MinimumValueHeight() const {
-  int minimum = 0;
+  int minimum = instruments_ ? prototype::instrument_tile_height : 0;
   for (const auto &v : values_) {
     const int height = ToDIP(v.first->GetClientSize().y);
     if (!minimum || height < minimum) minimum = height;
@@ -332,6 +335,12 @@ int ProductPanel::MinimumValueHeight() const {
 }
 std::vector<ProductGeometry> ProductPanel::ControlGeometry() const {
   std::vector<ProductGeometry> out;
+  if (instruments_)
+    for (auto *child : instruments_->Controls()) {
+      const auto r = child->GetScreenRect();
+      out.push_back({child->GetLabel().ToStdString(wxConvUTF8), r, child->IsEnabled(),
+          IsShownOnScreen() && child->IsShownOnScreen() && GetScreenRect().Contains(r)});
+    }
   for (auto *child : GetChildren()) {
     if (!dynamic_cast<XNavButton *>(child)) continue;
     const auto rectangle = child->GetScreenRect();
@@ -343,6 +352,13 @@ std::vector<ProductGeometry> ProductPanel::ControlGeometry() const {
 }
 std::vector<ProductGeometry> ProductPanel::RegionGeometry() const {
   std::vector<ProductGeometry> out;
+  if (instruments_)
+    for (const auto &region : instruments_->Regions()) {
+      const auto r = wxRect(instruments_->ClientToScreen(FromDIP(region.second.GetPosition())),
+                            FromDIP(region.second.GetSize()));
+      out.push_back({region.first.ToStdString(wxConvUTF8), r, true,
+          IsShownOnScreen() && GetScreenRect().Contains(r)});
+    }
   for (auto *panel : visuals_) {
     const auto rectangle = panel->GetScreenRect();
     out.push_back({panel->GetName().ToStdString(wxConvUTF8), rectangle, true,
@@ -435,6 +451,11 @@ void ProductPanel::Update(const ProductState &state, LightMode mode) {
     if((restore_focus || mode_changed) && IsShownOnScreen())SetFocus();
   }
   for (auto &button : button_text_) button.first->SetLabel(button.second(state));
+  if (instruments_) {
+    const auto size = instruments_->GetMinSize();
+    instruments_->Update(state.vessel, state.settings.instruments, state.now, mode);
+    if (size != instruments_->GetMinSize()) { Layout(); FitInside(); }
+  }
   for (auto *visual : visuals_) visual->Refresh(false);
   for (auto &v : values_)
     v.first->SetReading(v.second(state), state.now);
@@ -701,55 +722,14 @@ void ProductPanel::PointActions() {
       live && point_.removable && static_cast<bool>(actions_.navigation.delete_waypoint));
 }
 void ProductPanel::Instruments() {
-  Heading("Vessel instruments", state_.vessel.replayed
-      ? "REPLAY / Historical vessel readings" : "Navigation, wind and conditions");
+  instruments_ = new XNavInstrumentPanel(this);
+  instruments_->on_close = actions_.chart;
+  instruments_->on_rail = [this] { ShowPage(ProductPage::RailLayout, mode_); };
+  instruments_->on_health = [this] { ShowPage(ProductPage::Sources, mode_); };
+  instruments_->on_configure = [this] { ShowPage(ProductPage::InstrumentLayout, mode_); };
   const auto config = actions_.settings ? actions_.settings() : state_.settings;
-  const std::vector<std::pair<wxString, std::vector<std::string>>> groups{
-      {"NAVIGATION", {"sog", "cog", "heading", "stw"}},
-      {"WIND", {"aws", "awa", "tws", "twa"}},
-      {"CONDITIONS", {"depth", "water_temp", "pressure", "rudder", "heel"}},
-      {"ENERGY", {"soc", "voltage", "current", "pack_power", "motor_power", "rpm", "motor_temp"}},
-      {"TANKS", {"fresh_water", "fuel", "waste"}}};
-  for (const auto &group : groups) {
-    std::vector<std::string> chosen;
-    for (const auto &key : group.second)
-      if (std::find(config.instruments.begin(), config.instruments.end(), key) != config.instruments.end())
-        chosen.push_back(key);
-    if (chosen.empty()) continue;
-    // Keep values, units and quality together without excessive card whitespace.
-    // More than four configured values in a family occupy a second grouped row.
-    for (std::size_t start = 0; start < chosen.size(); start += 4) {
-      const std::vector<std::string> row(chosen.begin() + start,
-          chosen.begin() + std::min(chosen.size(), start + 4));
-      Visual("Instruments " + group.first, 168,
-          [this, row, title = group.first](XNavPainter &p, wxDC &dc, int width) {
-        p.Card(0, 0, width, 164, title);
-        const int cell = (width - 48) / static_cast<int>(row.size());
-        const auto items = vessel::DisplayItems(state_.vessel);
-        for (std::size_t i = 0; i < row.size(); ++i)
-          for (const auto &item : items)
-            if (row[i] == item.key) {
-              const int decimals = row[i] == "cog" || row[i] == "heading" || row[i] == "awa" || row[i] == "twa" ? 0 : 1;
-              Metric(p, *item.sample, state_.now, 24 + static_cast<int>(i) * cell,
-                     52, cell - 16, W(item.title), W(item.unit), decimals);
-            }
-        if (title == "WIND") {
-          const auto angle = vessel::Assess(state_.vessel.wind.apparent_angle_deg, state_.now);
-          if (angle.value && (angle.quality == vessel::Quality::Live || angle.quality == vessel::Quality::Aging)) {
-            const double radians = *angle.value * 3.14159265358979323846 / 180.0;
-            const int cx = width - 42, cy = 26;
-            const int dx = static_cast<int>(std::sin(radians) * 14);
-            const int dy = static_cast<int>(-std::cos(radians) * 14);
-            dc.SetPen(wxPen(Colour(p.c.accent), p.D(2)));
-            dc.DrawLine(p.D(cx - dx), p.D(cy - dy), p.D(cx + dx), p.D(cy + dy));
-            dc.SetBrush(wxBrush(Colour(p.c.accent)));
-            dc.DrawCircle(p.D(cx + dx), p.D(cy + dy), p.D(3));
-          }
-        }
-      });
-    }
-  }
-  Action("Configure instruments", [this] { ShowPage(ProductPage::InstrumentLayout, mode_); });
+  instruments_->Update(state_.vessel, config.instruments, state_.now, mode_);
+  body_->Add(instruments_, 0, wxEXPAND);
 }
 void ProductPanel::PilotActions() {
   Heading("Manual autopilot", state_.vessel.replayed
@@ -841,6 +821,7 @@ void ProductPanel::Build() {
   action_grids_.clear();
   pilot_buttons_.clear();
   values_.clear();
+  instruments_ = nullptr;
   grid_ = nullptr;
   actions_grid_ = nullptr;
   DestroyChildren();
@@ -849,7 +830,7 @@ void ProductPanel::Build() {
   body_ = new wxBoxSizer(wxVERTICAL);
   SetSizer(body_);
   SetBackgroundColour(Colour(Theme(mode_).background));
-  body_->AddSpacer(FromDIP(20));
+  if (page_ != ProductPage::Instruments) body_->AddSpacer(FromDIP(20));
   notice_ = new wxStaticText(this, wxID_ANY, "");
   notice_->SetFont(UiFont(*this, 14, true));
   body_->Add(notice_, 0, wxEXPAND | wxALL, FromDIP(12));
@@ -1225,7 +1206,7 @@ void ProductPanel::Build() {
     });
     Action("Chart / alarm settings", actions_.navigation.legacy_settings);
   }
-  body_->AddSpacer(FromDIP(24));
+  if (page_ != ProductPage::Instruments) body_->AddSpacer(FromDIP(24));
   Layout();
   FitInside();
   Thaw();

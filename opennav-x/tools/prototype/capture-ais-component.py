@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Capture dedicated offline native AIS/Passage widget tests, never the product.
+"""Capture dedicated offline native AIS/Passage/Instruments tests, never the product.
 
 Synthetic data is confined to a non-installed executable. These images compare
 the drawer component only; they do not qualify chart composition or live data.
@@ -21,7 +21,7 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--client", type=Path, required=True)
     parser.add_argument("--output", type=Path, required=True)
-    parser.add_argument("--component", choices=["ais", "passage"], default="ais")
+    parser.add_argument("--component", choices=["ais", "passage", "instruments"], default="ais")
     args = parser.parse_args()
     args.client = args.client.resolve()
     args.output = args.output.resolve()
@@ -64,7 +64,7 @@ def main():
         if result.returncode:
             raise RuntimeError(f"Component interactions failed ({result.returncode}); inspect interaction.log")
         record = json.loads((args.output / "result.json").read_text())
-        minimum, images = (40, 9) if args.component == "ais" else (26, 5)
+        minimum, images = {"ais": (40, 9), "passage": (26, 5), "instruments": (36, 5)}[args.component]
         assert record["passed"] and record["checks"] >= minimum
         assert len(record["captures"]) == images
         record["source_commit"] = subprocess.check_output(
@@ -85,8 +85,18 @@ def main():
                 theme = name.rsplit("-", 1)[-1]
                 background = {"day": (21, 35, 38), "dusk": (29, 40, 46),
                               "night": (12, 17, 21)}[theme]
-                assert current.convert("RGB").getpixel((695, 230)) == background, \
-                    f"{name}: drawer pixels absent or wrong theme"
+                sample = (95, 230) if args.component == "instruments" else (695, 230)
+                assert current.convert("RGB").getpixel(sample) == background, \
+                    f"{name}: component pixels absent or wrong theme"
+                if args.component == "instruments":
+                    surface = {"day": (29,45,49), "dusk": (37,52,59), "night": (20,28,33)}[theme]
+                    assert current.convert("RGB").getpixel((125,300)) == surface, f"{name}: wind card missing/wrong theme"
+                    assert current.convert("RGB").getpixel((626,250)) == surface, f"{name}: numeric tile missing/wrong theme"
+                    if name in {"instruments-day", "instruments-dusk", "instruments-night"}:
+                        primary = {"day": (243,245,238), "dusk": (226,229,219), "night": (184,181,167)}[theme]
+                        heading = current.convert("RGB").crop((332,438,383,462))
+                        ink = sum(max(abs(a-b) for a,b in zip(pixel,primary)) < 20 for pixel in heading.getdata())
+                        assert ink > 20, f"{name}: heading labels displaced by wind-rose transform"
                 if args.component == "passage" and name in {"passage-day", "passage-dusk", "passage-night"}:
                     assert current.convert("RGB").getpixel((1030, 404)) == background, \
                         f"{name}: disabled edit icon has a native grey backing"
@@ -97,7 +107,7 @@ def main():
                     continue  # Do not invent prototype online/failure-state references.
                 with Image.open(original) as ref:
                     # Exact component viewport, not a layout-tolerance mask.
-                    bounds = (682, 80, 1080, 754)
+                    bounds = (80, 68, 1094, 634) if args.component == "instruments" else (682, 80, 1080, 754)
                     a, b = ref.convert("RGB").crop(bounds), current.convert("RGB").crop(bounds)
                     a.save(comparison / f"{name}-reference.png")
                     b.save(comparison / f"{name}-current.png")

@@ -24,4 +24,10 @@ constexpr int context_title = 26;
 // Passage Windows reference: content origin (705,190), first point y403.
 constexpr int passage_points_y = 213;
 constexpr int passage_point_row = 77;
+constexpr int page_inset = 32;
+constexpr int dashboard_y = 146;
+constexpr int dashboard_gap = 18;
+constexpr int instrument_tile_height = 126;
+constexpr int instrument_tile_gap = 12;
+constexpr int wind_card_height = 540;
 }  // namespace opennav::ui::prototype

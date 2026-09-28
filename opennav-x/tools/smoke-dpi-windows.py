@@ -177,7 +177,20 @@ def critical_alert_accessible(scale):
 def instrument_geometry():
     display=data()['runtime']['display'];regions=display['product_regions']
     frame=bounds(handle);top,bottom=chrome_bounds()
-    assert regions and regions[0]['visible'],'First instrument group must be fully visible'
+    assert regions,'Instrument regions missing'
+    if regions[0]['label']=='Wind and heading':
+        # At higher DPI the actual prototype layout stacks its columns. Verify
+        # scrolling reaches a fully visible reading; a clipped wind card is
+        # intentional in the reference, not permission to hide numeric tiles.
+        for _ in range(30):
+            if any(r['visible'] for r in regions[1:]):break
+            assert display['can_scroll_down'],'Instrument readings inaccessible'
+            previous=display['page_scroll_px'];ui.click_text(pid,'Down')
+            display=data(lambda d:d['runtime']['display']['page_scroll_px']>previous)['runtime']['display']
+            regions=display['product_regions']
+        assert any(r['visible'] for r in regions[1:]),'No readable instrument tile reached'
+    else:
+        assert regions[0]['visible'],'First instrument group must be fully visible'
     for region in regions:
         x,y,w,h=(region[k] for k in ('x','y','width','height'))
         assert frame.left<=x<x+w<=frame.right and w>0 and h>0,region

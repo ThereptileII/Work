@@ -349,6 +349,13 @@ Shell::Shell(wxFrame &frame, wxAuiManager &manager, ShellActions actions,
   product_actions.theme = [this](LightMode mode) { SetLight(mode); };
   product_actions.save_settings = actions_.save_settings;
   product_actions.chart = [this] { ShowNavigation(); };
+  product_actions.page_changed = [this](ProductPage page) {
+    auto &pane = manager_.GetPane("OpenNavHorizon");
+    if (pane.IsOk()) {
+      pane.Show(page == ProductPage::Instruments);
+      manager_.Update();
+    }
+  };
   product_actions.route_summary = [this] { ShowPassage(); };
   product_actions.energy = [this] { ShowPage(PreviewPage::Energy); };
   product_actions.diagnostics = [this] { ShowPage(PreviewPage::Diagnostics); };
@@ -1137,6 +1144,7 @@ void Shell::ShowPage(PreviewPage page) {
     }
   }
   current_page_ = page;
+  manager_.GetPane("OpenNavHorizon").Hide();
   manager_.GetPane(page_).Show();
   manager_.Update();
   page_->SetFocus();

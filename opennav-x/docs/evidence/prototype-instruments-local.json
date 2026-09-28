@@ -1,0 +1,136 @@
+{
+  "accepted": false,
+  "scope": "Linux working tree on d205baf9b42dcc4a619e32751ce3b7d71513f288; native Windows and boat pending",
+  "sourceFilesSha256": {
+    "src/application/InstrumentView.cpp": "8ffc9639311cf8b25393d12edde8dd162611597b9a576aeb08edbe7fe040404d",
+    "src/application/InstrumentView.h": "23c8e01f8e3801dea010763f009713a38e7024f8732438dbba8ef940efce2049",
+    "src/ui/InstrumentPanel.cpp": "7d3c5fcef6f29e36f7f65cde49e2d17501478ec5f5fd413feea4bba78c2dc4e3",
+    "src/ui/InstrumentPanel.h": "1d1751ace00a536401a05f94c1ff036c7f5c2398eb7dd6f8de0eda468cad02af",
+    "src/ui/Controls.cpp": "5932cf6d05958f0c53ea38a43bdce336393922baeddf563833124f69e23ff224",
+    "src/ui/Controls.h": "f5a523346b27b4d3df6ff95ea77b6661d613e8343527e1bf7ecab99a7c1117db",
+    "src/ui/ProductPanel.cpp": "cc15c7de018a0e710bc53f3241fe658744b974cde30e39c477b16e8c1ee6e971",
+    "src/ui/ProductPanel.h": "1219cf4b20a703b70506e3d7c0763e46abd5c44acbe895f56e5cd5614c674ff1",
+    "src/ui/Shell.cpp": "e68069d501bf1c0fbefdd6f5a24905c900f2d3a2b9bc643e6e0909358796a98c",
+    "src/ui/PrototypeGeometry.h": "a52a38b723c9798f96091b95c0760eeb496697d0375163470760942bedc79a65",
+    "src/ui/Theme.h": "18dd1dcaf56fe39fe92576ccc0745b4cbc3b502574bbd1e2c4717cfbe268a92c",
+    "tests/instrument_view_tests.cpp": "a006073106577940778503832aba1464fcde86eef9cda40a8cae9c2197ca7cc3",
+    "tests/instrument_panel_test.cpp": "36b9747114bb68bccd30bdd06c5199b563b92c0cc35babef4827da79c7298289",
+    "tools/prototype/capture-native.py": "163a185086d5c257ed8d883de381b71d97fac936ce7502d297936cc2a573645e",
+    "tools/prototype/capture-ais-component.py": "0eb6b0e976fce17a277802f119ac171fe7612e2e5d9069c8ff9b1fd0a91a7a91"
+  },
+  "linuxTests": {
+    "passed": 122,
+    "failures": 0,
+    "wallSeconds": 19.27,
+    "junitSha256": "e8f0bb50287ff17f01c46882f62feff7449292be696b6570cf29d89671b8d5bb"
+  },
+  "newInstrumentProvenanceChecks": 26,
+  "offlineWidgetChecks": 36,
+  "captures": [
+    {
+      "directory": "evidence/local/prototype/instruments-component-pass3",
+      "captureManifestSha256": "f3750c6eb8ecfb96a7fb67c6cdc3cd661ab212a8742a09bcb6540e4abecbe844",
+      "images": {
+        "instruments-day.png": "4cbfe95211bdd15e3beef3da32b29abd47130a3acfe36ce0e82e66f366337e8f",
+        "instruments-dusk.png": "80bd661bb1c0ea4a0c7fb8d7f8bf45bb83efefdbf33d0fb3374117c4e7750f7c",
+        "instruments-night.png": "ed18085a93f4a33c28d3ca725f58e23a959a84680347b8e2dcb8a872652f6f11",
+        "instruments-stale-day.png": "7f93008071847a071024f7cb5574b068306fedaa5beed0972bea915a05ff4432",
+        "instruments-heading-unavailable-day.png": "2809207e997e5313685d4f4f1de8d82552f96bec2f4ca0a2635b83cf0e2b9e93"
+      },
+      "componentChecks": 36,
+      "instrumentFlow": null,
+      "aisSettingsFlow": null
+    },
+    {
+      "directory": "evidence/local/prototype/instruments-component-pass4",
+      "captureManifestSha256": "10726e2408a7a370adc1495d0c7579d326877e0b838e174029b82ba8de65f0e4",
+      "images": {
+        "instruments-day.png": "4cbfe95211bdd15e3beef3da32b29abd47130a3acfe36ce0e82e66f366337e8f",
+        "instruments-dusk.png": "80bd661bb1c0ea4a0c7fb8d7f8bf45bb83efefdbf33d0fb3374117c4e7750f7c",
+        "instruments-night.png": "ed18085a93f4a33c28d3ca725f58e23a959a84680347b8e2dcb8a872652f6f11",
+        "instruments-stale-day.png": "c1d2b2e87f03642044e84ad89fdbf6024260bf797b046a1c9e3d4f0f1c74178a",
+        "instruments-heading-unavailable-day.png": "f410fb65236db81cd363493337d8ba48a751315253d04dcd5dc18a402d9cc2ac"
+      },
+      "componentChecks": 36,
+      "instrumentFlow": null,
+      "aisSettingsFlow": null
+    },
+    {
+      "directory": "evidence/local/prototype/instruments-product-pass4",
+      "captureManifestSha256": "4acd34763b6b1015422af9f3416f0929596b9dbc4d76d2586ea5a365d9d75a76",
+      "images": {
+        "navigation-day.png": "178c7635f218b8b85d6176ec9983965d735af13c0ed0792b9a133e20b6da6d45",
+        "navigation-dusk.png": "b87a0f89fbbdca60d8bf39fc8aeaa5d09474dc53441bfc2b0e659da0b6deadb7",
+        "navigation-night.png": "231978f5a5811150a01511a02918d2856f5092cce7b77a910c38b803b5db5c07",
+        "passage-day.png": "23886a1d9269601e8d75cfc276ff06e58530acf19c1c7f5da4587049f42aa0bd",
+        "passage-dusk.png": "43a7cf2d29b29687c33b49e41119944907b26a4dc72c907f2653467c819cbe27",
+        "passage-night.png": "762b0b372ec0b484c590ae14554a2ffd6c8d17b7d24a942a6dab26b656a873a6",
+        "traffic-day.png": "61bf09c8e5262d389c50afc0967d25347a34c7932ccd3a308b46c2387d510e15",
+        "energy-day.png": "7f129b097a304147f032d3cdeabd3a636f9d7639e6869700f92e339922343589",
+        "instruments-day.png": "9d9a9c8015d341ecddbb11c1073ea00f97814eb058de83f81446e3a6bba770cd",
+        "instruments-dusk.png": "794126151f67b1e9c8e057f609ad4d4103c51f1ef708b63266c73e7ea03238e2",
+        "instruments-night.png": "94c13459a3682ebd704d1416dcaea4c912360258febcd4af4d9a1353a40aaece",
+        "settings-day.png": "741a4cdf9c3b1bd4c7c166da0f2382a7a9f4c8e0fe141bd23d7d302d7aee9fcc",
+        "online-ais-settings-day.png": "f3b960061fa2c9487c1a0713456b5d5c5535359191d73ccaf8b29985868aa890",
+        "online-ais-key-needed-day.png": "7c3900c4b90b7908ceb668162071c2ee1578eb3a3c71e88173f4b94c07a0d5e4",
+        "online-ais-settings-dusk.png": "5d9a944a7353402fde8c81fb3ac08ea3833bcd92742406097e2c56ab5daab3de",
+        "online-ais-settings-night.png": "ceca831a0cf31e752d7e73bb6aa114afee138f9f90f217e1442a4fbb9180dee9"
+      },
+      "componentChecks": null,
+      "instrumentFlow": "Prototype wind/tile geometry; three themes; Close restores chart and horizon",
+      "aisSettingsFlow": "Default OFF; missing key withholds connection; OFF, themes and Close exercised"
+    },
+    {
+      "directory": "evidence/local/prototype/instruments-product-pass5",
+      "captureManifestSha256": "9499ddd0ff14090b2f6fda79022d2bae5b5629db2261ebb672c9031df05dd4dd",
+      "images": {
+        "navigation-day.png": "0b78a4bfebefc07a41017ce206fbdd5a74d2ce2d828f5945067e0487641132ff",
+        "navigation-dusk.png": "c1d6fa4a2d0103bf5ce05d81f51aaff2eb2a7bd1f8646b7fbcda68be3e1c8529",
+        "navigation-night.png": "f4dd12d430050e55aaf39a36d79d4fbf522e02657d9295821231bd7df9c6a7f0",
+        "passage-day.png": "a70293a4d5f5c7b2d63d715b0164401bf7b6accc3cd5ba84961f2f3da563caf7",
+        "passage-dusk.png": "be712f0b5e1a38f6b2f7ad0219bd8514d55a5d24c20ba7c8376d5d8a652a8301",
+        "passage-night.png": "68e8ec6c44a6fb44bad3659eff329cb7d07e0725c5b06feab73c9b2e1cdf1114",
+        "traffic-day.png": "fdf2fdacd996b6d84856ec487358784c76a649b5e072e410cee1524eb6e6c383",
+        "energy-day.png": "789145da44c7074121a7d9a047132f32bef068462e9a8e1da8d9fd9c0491243d",
+        "instruments-day.png": "192487ed5d044960f7d66f598d2d23fa70ed34bcd8f9f395007fd3826e38216e",
+        "instruments-dusk.png": "3d46f8d1d4e36a2615c43f3943775b01d7786e3c0ba336e94bd65b9f7f8621ad",
+        "instruments-night.png": "0c18ce05c2daec9d0e17ab56f0b4a1e168858ca11d5afc472ce84511282a4b6a",
+        "settings-day.png": "c78263bcc19b050eb7388b94a106f6218d07a2d3602ffe2ea66cbcfbd6737b63",
+        "online-ais-settings-day.png": "a48d06f27c776a00ec5ca028498bad8778f4b5ab34ceacddb3c2833204093bd8",
+        "online-ais-key-needed-day.png": "214f3d50278f985e191da3b2e83bfe013771081ed482b79574cbf7050d2b154b",
+        "online-ais-settings-dusk.png": "3ce24ecb3e6e6ed5d6a0b1dfe37953ffe19e52875c2ee5790ccf8801299b7a6b",
+        "online-ais-settings-night.png": "a70623cf21ef75d3ab75cd36d6c5f3ac9215e9840a366a77a64cb6bc682e9155"
+      },
+      "componentChecks": null,
+      "instrumentFlow": "Prototype wind/tile geometry; three themes; Close restores chart and horizon",
+      "aisSettingsFlow": "Default OFF; missing key withholds connection; OFF, themes and Close exercised"
+    }
+  ],
+  "comparisonDirectory": "evidence/local/prototype/instruments-comparison-pass5",
+  "reviewed": [
+    "instruments-component-pass3/instruments-day.png",
+    "instruments-component-pass4/instruments-heading-unavailable-day.png",
+    "instruments-product-pass5/instruments-night.png"
+  ],
+  "corrections": [
+    "Explicit fixture host prevents wxFrame stretching the component",
+    "Restore graphics-context state before heading/cardinal labels; heading-ink regression added",
+    "Prototype heading tracking and wind-card border",
+    "Single bounded unavailable-direction line prevents collision with wind stats"
+  ],
+  "negativeEvidence": [
+    "instruments-build.log: generic DC graphics overload corrected",
+    "instruments-widget-build.log: missing wx/frame.h in isolated test corrected",
+    "instruments-component-pass1: host size assertion failed",
+    "instruments-component-pass2: geometry checks passed but review found displaced heading labels",
+    "instruments-product-pass1: AIS Back input did not complete",
+    "instruments-product-pass2: Passage Close input did not complete"
+  ],
+  "pointerValidation": "Later full runs keep the physical pointer on target until native dispatch settles. No retry click or direct command substitute; Back/Close validated by actual state. Earlier failures retained; cause not asserted proven.",
+  "limitations": [
+    "Windows typography and boat comparison unaccepted",
+    "Legacy Up/Down chrome still differs from prototype full view",
+    "DPI and installed lifecycle suite not qualified by these captures",
+    "No physical device output or successful live AIS connection"
+  ]
+}

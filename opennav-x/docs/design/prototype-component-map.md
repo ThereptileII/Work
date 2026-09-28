@@ -26,6 +26,7 @@ in [prototype conformance](prototype-conformance.md).
 | `.stats-grid` | `XNavPainter::Stat` | 23px numeric value and separate 10px unit; 16px column gap |
 | `.tag` / `.tag.neutral` / `.tag.warning` | `XNavPainter::Tag` | 26px source/status pills, actual availability |
 | `.callout` / `.callout.warning` | `XNavPainter::Callout` | Shared wrapped advice surface, exact source alpha colors |
+| `.wind-rose`, `.instrument-grid`, `.instrument-tile` | `XNavInstrumentPanel` | Native SVG-equivalent paths and paired tiles; assessed owned readings, true-heading/relative-wind validity |
 
 All geometry is measured from the final CSS cascade at the target viewport;
 earlier CSS declarations are sometimes superseded. The capture manifest records
@@ -38,3 +39,10 @@ observation batch. Its displayed leg distances/times are copied from SmartNav,
 not recomputed from coordinates. Existing route commands remain guarded owned
 value callbacks; saved-route workflows currently retain the earlier product
 page and are not claimed prototype-conformant.
+
+Instruments uses `application::PresentInstruments`, independently testable with
+no GUI/OpenCPN dependencies. The supplied compass mock has inconsistent fixed
+heading geometry; [the review](reviews/prototype-instruments-in-progress.md)
+documents the navigation-correct rotation and required quality annotations.
+The full page retains the horizon; existing configurable fields remain
+available below the prototype's primary eight tiles.

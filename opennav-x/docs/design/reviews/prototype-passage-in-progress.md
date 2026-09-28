@@ -40,9 +40,21 @@ use the real local clock. A further capture exposed grey native backgrounds
 behind disabled edit icons; the summary panel now exposes its actual theme
 background to child controls, with a strict pixel regression check.
 
+## Native Windows development check
+
+Remote `6a75c056e8cfb74c25361726682a539eac8183e1` has the independently
+verified tree of local `d205baf9b42dcc4a619e32751ce3b7d71513f288`.
+Run 36491018722 passes all seven jobs: 113 integrated native test cases,
+26 Passage component checks and the existing actual-object workflow. All eight
+artifact hashes/CRCs and 48 recorded native screenshot hashes verify. The
+populated Day drawer and product Night unavailable state were reviewed against
+the Windows HTML. Stats and 77px rows align; missing route data stays explicit;
+Close retains the 1014×566 chart. The source commit also passes all 121 Linux
+tests (19.52 seconds). See [native evidence](../../evidence/prototype-native-6a75c05.json).
+
 ## Still open
 
-Native Windows comparison, first and corrective boat captures, exact font
+Further native Windows refinement, first and corrective boat captures, exact font
 tracking/line heights/shadow, contextual waypoint sheet, saved-passage library
 migration and full route-creation/editor conformance remain open. No screen is
 accepted. Active navigation cannot be reversed or edited through mock HTML

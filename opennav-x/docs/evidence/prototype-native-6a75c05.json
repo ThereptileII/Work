@@ -1,0 +1,95 @@
+{
+  "accepted": false,
+  "developmentGatesPassed": true,
+  "remoteCommit": "6a75c056e8cfb74c25361726682a539eac8183e1",
+  "localCommit": "d205baf9b42dcc4a619e32751ce3b7d71513f288",
+  "tree": "480a2250bf24cd699032fa918988d631404f77ff",
+  "verifiedSourceBlobs": 1073,
+  "ciRun": "https://github.com/ThereptileII/Work/actions/runs/36491018722",
+  "jobsPassed": 7,
+  "artifacts": [
+    {
+      "id": 11002700451,
+      "name": "prototype-object-flow-Windows-6a75c056e8cfb74c25361726682a539eac8183e1",
+      "sha256": "f80a9d2f4dbc81d5a7c181484e765404b63667d4df8ed78b61ed260d46400ece",
+      "bytes": 1992047,
+      "zipCrc": true
+    },
+    {
+      "id": 11002575255,
+      "name": "prototype-native-Windows-6a75c056e8cfb74c25361726682a539eac8183e1",
+      "sha256": "9c8e629e793a79c98871cc3cf3ef120ac191fdab8f89ba5a13687cc5dea1f813",
+      "bytes": 20932618,
+      "zipCrc": true
+    },
+    {
+      "id": 11002405360,
+      "name": "prototype-ais-read-only-probe-6a75c056e8cfb74c25361726682a539eac8183e1",
+      "sha256": "da8287db942e0978f8537a36e9c5d5e712f3c08e2c9d82ac93abb955e145fe0b",
+      "bytes": 135331285,
+      "zipCrc": true
+    },
+    {
+      "id": 11001413524,
+      "name": "prototype-ais-foundation-Linux-6a75c056e8cfb74c25361726682a539eac8183e1",
+      "sha256": "f726e00f3ccbab6c21ab209e600ad0c5ef7030aca96ea890dbd4e5d6203ca3a1",
+      "bytes": 686,
+      "zipCrc": true
+    },
+    {
+      "id": 11001358623,
+      "name": "prototype-reference-Windows-6a75c056e8cfb74c25361726682a539eac8183e1",
+      "sha256": "e42ac523a806ef574f9fb0cfbd87a47e9addf2d78701983be799ed9db0f83b39",
+      "bytes": 16121680,
+      "zipCrc": true
+    },
+    {
+      "id": 11001128974,
+      "name": "prototype-ais-foundation-Windows-6a75c056e8cfb74c25361726682a539eac8183e1",
+      "sha256": "799c252ea10c4f5333f7876ca18d49547ebee58a2711062892d0ff892974ba28",
+      "bytes": 689,
+      "zipCrc": true
+    },
+    {
+      "id": 11000744154,
+      "name": "prototype-ais-network-Linux-6a75c056e8cfb74c25361726682a539eac8183e1",
+      "sha256": "aceb964fc09a6d643d5482fc5f0bb7d7e013b9de508d80528807fede3fef63c6",
+      "bytes": 935,
+      "zipCrc": true
+    },
+    {
+      "id": 11000448836,
+      "name": "prototype-reference-Linux-6a75c056e8cfb74c25361726682a539eac8183e1",
+      "sha256": "756e53541e4c49ec3ee80421c1030cf8c7aba135a3bdf2a46d600e0ba2d2e1cd",
+      "bytes": 17751366,
+      "zipCrc": true
+    }
+  ],
+  "verifiedNativeScreenshotCounts": {
+    "ais-component": 9,
+    "passage-component": 5,
+    "prototype-depth-fathoms": 4,
+    "prototype-depth-feet": 4,
+    "prototype-depth-meters": 4,
+    "prototype-enc-standard": 4,
+    "prototype-enc-xnav": 4,
+    "prototype-native": 14
+  },
+  "componentChecks": {
+    "ais-component": 71,
+    "passage-component": 26
+  },
+  "integratedWindowsTests": 113,
+  "linux": {
+    "tests": 121,
+    "failures": 0,
+    "wallSeconds": 19.52,
+    "junitSha256": "4dc0e2bfb33deead5c6081cbfeedcfcc6edd014bd00a6bdf48402fad980161ca"
+  },
+  "reviewed": [
+    "passage-component/passage-day.png",
+    "prototype-native/passage-night.png"
+  ],
+  "review": "Populated Windows Passage aligns the four stats and 77px route rows with the HTML. Product Night empty-route state is explicit, original chart and horizon remain visible. Exact heading tracking/line heights, sheet shadow and corner painting still require refinement; no visual acceptance.",
+  "qualificationScope": "Development only. No boat product launch, physical GPU, installed lifecycle or live AIS acceptance."
+}

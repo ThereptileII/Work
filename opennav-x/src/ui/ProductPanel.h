@@ -8,6 +8,7 @@
 #include "diagnostics/FieldReport.h"
 #include "smartnav/Advisories.h"
 #include "ui/Controls.h"
+#include "ui/InstrumentPanel.h"
 #include <wx/scrolwin.h>
 #include <wx/sizer.h>
 #include <wx/stattext.h>
@@ -65,6 +66,7 @@ struct ProductActions {
   std::shared_ptr<diagnostics::Commissioning> commissioning;
   application::NavigationActions navigation;
   std::function<void()> chart, route_summary, energy, diagnostics;
+  std::function<void(ProductPage)> page_changed;
   std::function<void()> legacy, restart_xnav, safe, diagnostics_folder;
   std::function<void(LightMode)> theme;
   std::function<void(adapters::PilotAction, double)> pilot_command;
@@ -134,6 +136,7 @@ private:
   void InstrumentSelection(bool rail);
   void SaveSettings(application::Settings settings);
   ProductActions actions_;
+  XNavInstrumentPanel *instruments_ = nullptr;
   ProductState state_;
   ProductPage page_ = ProductPage::Home;
   LightMode mode_ = LightMode::Day;

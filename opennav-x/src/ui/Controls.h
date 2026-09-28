@@ -25,6 +25,8 @@ class XNavPainter {
             bool bold = false, int width = 0);
   void TextWeight(wxString text, int x, int y, int size, std::uint32_t color,
                   int weight, int width = 0, bool right = false);
+  void TextTracked(wxString text, int x, int y, int size, std::uint32_t color,
+                   int weight, double tracking, int width = 0);
   void Stat(const wxString &label, const wxString &value, const wxString &unit,
             int x, int y, int width);
   int Tag(const wxString &text, int x, int y, int maximum, bool attention = false,

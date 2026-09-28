@@ -1,4 +1,4 @@
-# OpenNav X status — 2026-09-28
+# OpenNav X status — 2026-09-29
 
 ## Current stage: prototype design lock, chart presentation and Online AIS
 
@@ -10,10 +10,29 @@ existing OpenCPN identity/confirmation gates. Three successful component passes
 and two full-product passes retain 41 verified PNGs, including the corrective
 icon-background fix. All 121 integrated Linux tests pass after the corrections. Offline component
 checks: 26; new provenance assertions: 25. Full product checks include Passage Day/Dusk/Night and Close retaining the
-1014×566 chart viewport. Windows and boat gates remain pending. Saved-passage
+1014×566 chart viewport. Windows development run `36491018722` now passes all
+seven jobs (113 integrated tests, 26 Passage component checks); all eight
+downloaded artifact hashes/CRCs and 48 captured PNG hashes verify. The exact
+local source commit passes 121/121 Linux tests in 19.52 seconds. See
+[native evidence](evidence/prototype-native-6a75c05.json). Boat and visual
+acceptance remain pending. Saved-passage
 and waypoint flows still need prototype migration. See
 [review](design/reviews/prototype-passage-in-progress.md) and
 [local evidence](evidence/prototype-passage-local.json).
+
+The next Instruments migration is in progress: native prototype wind/heading
+and tile composition, retained horizon, copied assessed readings and preserved
+instrument selection. Directional graphics require real coherent heading/wind;
+COG cannot stand in for heading. All **122/122 Linux tests** pass after the
+corrections (19.27 seconds), including 26 new presentation assertions. The
+non-installed widget passes 36 checks/five captures; two corrective full-product
+runs pass the complete theme/Close cycle and existing AIS settings flow. There
+are 42 verified PNGs across the retained corrective runs. The first review's
+displaced compass text and unavailable-line collision are corrected and tested.
+[Design review](design/reviews/prototype-instruments-in-progress.md) and
+[evidence](evidence/prototype-instruments-local.json) record the required
+navigation-meaning differences, earlier negative runs and pending Windows/boat
+gates. Remaining older Up/Down chrome is an explicit prototype mismatch.
 
 Replacement `c86c6a7` / [run 36485693077](https://github.com/ThereptileII/Work/actions/runs/36485693077)
 passes all seven development jobs. All eight downloaded artifacts, their ZIP

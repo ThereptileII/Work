@@ -136,10 +136,11 @@ def main():
             ui.SetCursorPos(x, y)
             ui.MouseEvent(2, 0, 0, 0, 0)
             ui.MouseEvent(4, 0, 0, 0, 0)
-            ui.SetCursorPos(0, 0)
         else:
-            xdo("mousemove", x, y, "click", "1")
-            xdo("mousemove", 0, 0)
+            xdo("mousemove", x, y)
+            hit = xdo("getmouselocation", "--shell")
+            record.setdefault("pointer_hits", []).append(dict(label=label, x=x, y=y, x11=hit))
+            xdo("click", "1")
         deadline = time.monotonic() + 5
         while time.monotonic() < deadline:
             current = data()
@@ -149,6 +150,11 @@ def main():
             time.sleep(.1)
         else:
             raise AssertionError(f"{label}: application did not settle in the requested state {expected_light or ''}")
+        # Keep the pointer on the target until its native input event has been
+        # consumed. Moving it away immediately can cancel a GTK release before
+        # dispatch. Do not retry a click or substitute a command event.
+        if windows: ui.SetCursorPos(0, 0)
+        else: xdo("mousemove", 0, 0)
         time.sleep(.3)  # allow the invalidated native surfaces to finish painting
 
     def capture(name):
@@ -382,6 +388,23 @@ def main():
                 chart = data()["runtime"]["display"]["chart_region"]
                 assert chart["width"] == 1014 and chart["height"] == 566, "Passage changed upstream chart viewport"
                 record["passage_flow"] = "Current-route sheet; full theme cycle; Close retains original chart geometry"
+            if label == "Instruments":
+                display = data()["runtime"]["display"]
+                regions = display["product_regions"]
+                wind = next(r for r in regions if r["label"] == "Wind and heading")
+                sog = next(r for r in regions if r["label"] == "SPEED OVER GROUND")
+                assert abs(wind["width"] - 488) <= 1 and wind["height"] == 540
+                assert abs(sog["x"] - wind["x"] - 506) <= 1 and sog["y"] == wind["y"]
+                assert sog["height"] == 126 and sog["visible"], "Primary instrument tile clipped"
+                click("Day", "Dusk")
+                capture("instruments-dusk")
+                click("Dusk", "Night")
+                capture("instruments-night")
+                click("Night", "Day")
+                click("Close")
+                chart = data()["runtime"]["display"]["chart_region"]
+                assert chart["width"] == 1014 and chart["height"] == 566
+                record["instrument_flow"] = "Prototype wind/tile geometry; three themes; Close restores chart and horizon"
             if label == "Traffic" and args.ais_settings:
                 click("Online AIS settings")
                 capture("online-ais-settings-day")
