@@ -1,0 +1,63 @@
+{
+  "stageAccepted": false,
+  "localCommit": "f6d0cb276978d0d5c6dd7607e6d36eceb0cbf75a",
+  "remoteCommit": "d92e18733d88d3343b409394e7d0cdf92820a4e8",
+  "mappedSourceBlobsVerified": 1002,
+  "run": "https://github.com/ThereptileII/Work/actions/runs/36453634369",
+  "downloadedArtifacts": [
+    {
+      "id": 10985005653,
+      "name": "prototype-ais-network-Linux-d92e18733d88d3343b409394e7d0cdf92820a4e8",
+      "sha256": "39e73f5025f810afaa1a0ad12979168249bde257b00fb1e9a76da37f186a486f",
+      "bytes": 711,
+      "zipCrc": true
+    },
+    {
+      "id": 10984433671,
+      "name": "prototype-native-Windows-d92e18733d88d3343b409394e7d0cdf92820a4e8",
+      "sha256": "2fe979ea78df9e560d543dae7ddbbb89fb64aa13d148adc2433b5b7905c4fd7a",
+      "bytes": 100145,
+      "zipCrc": true
+    },
+    {
+      "id": 10984231817,
+      "name": "prototype-ais-foundation-Linux-d92e18733d88d3343b409394e7d0cdf92820a4e8",
+      "sha256": "ed869037364656575d7aa8aa31f04c0eefdbacb7d18b10b798c9b78d1df46363",
+      "bytes": 655,
+      "zipCrc": true
+    },
+    {
+      "id": 10984134211,
+      "name": "prototype-ais-foundation-Windows-d92e18733d88d3343b409394e7d0cdf92820a4e8",
+      "sha256": "93f55ba248d87495ca03405a17141c660ab83fdb6bd01cd69ca08d1639e0de20",
+      "bytes": 660,
+      "zipCrc": true
+    }
+  ],
+  "junit": [
+    {
+      "artifact": "prototype-ais-foundation-Linux-d92e18733d88d3343b409394e7d0cdf92820a4e8",
+      "file": "ais-foundation.xml",
+      "tests": 6,
+      "failures": 0
+    },
+    {
+      "artifact": "prototype-native-Windows-d92e18733d88d3343b409394e7d0cdf92820a4e8",
+      "file": "windows-production-tests.xml",
+      "tests": 102,
+      "failures": 0
+    },
+    {
+      "artifact": "prototype-ais-foundation-Windows-d92e18733d88d3343b409394e7d0cdf92820a4e8",
+      "file": "ais-foundation.xml",
+      "tests": 6,
+      "failures": 0
+    }
+  ],
+  "linuxActualTLS": "17 hostile transport scenarios and actual provider prompt subscription, viewport update, reconnect, resubscription, lifetime and disable passed",
+  "windowsBuild": "Native Win32 MSVC fixture-free build passed",
+  "windowsFailure": "Fragment overflow produced no message, but stalled instead of terminating with close 1009. Native UI capture skipped by failed transport gate. Fix pending replacement evidence.",
+  "visualAcceptance": false,
+  "boatAcceptance": false,
+  "liveAISAcceptance": false
+}

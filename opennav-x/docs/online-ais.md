@@ -87,10 +87,20 @@ reconnect/jitter and cooldown policy; 2,074 deterministic checks.
 The bounded codec has 100 additional deterministic checks. The earlier
 foundation passed three native Win32 MSVC tests and three Linux tests at
 `087318c`, with verified downloaded JUnit artifacts; the newer codec native
-gate is pending.
-Pending: bounded transport, credential storage, settings, chart/card wiring,
+codec, session and protected credential gates pass at `d92e187`; six portable
+tests pass on each platform and the native integrated suite passes 102 tests.
+The new native fragmented-overflow transport test failed on buffered TLS
+receive progress; a bounded resume-before-poll correction awaits replacement
+Windows evidence. See [downloaded evidence](evidence/prototype-native-d92e187.json).
+Pending: final bounded transport qualification, settings, chart/card wiring,
 full native product regressions and live boat gates. **The product does not yet connect to AISStream.**
 No configured key, live target count or network acceptance is claimed.
+
+The current [service documentation](https://aisstream.io/documentation) was
+rechecked on September 28: binary UTF-8 JSON, prompt full subscription,
+compression confirmation and replacement-subscription acknowledgement agree
+with the tested client boundary. Desktop native code does not expose a browser
+connection or embed the key in HTML.
 
 ## JSON decoder and subscription serialization
 

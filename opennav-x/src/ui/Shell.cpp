@@ -331,6 +331,9 @@ Shell::Shell(wxFrame &frame, wxAuiManager &manager, ShellActions actions,
     return result;
   };
   product_actions.settings = actions_.settings;
+  product_actions.chart_style_status = actions_.chart_style_status;
+  product_actions.chart_style_requested = actions_.chart_style_requested;
+  product_actions.set_chart_style = actions_.set_chart_style;
   product_actions.theme = [this](LightMode mode) { SetLight(mode); };
   product_actions.save_settings = actions_.save_settings;
   product_actions.chart = [this] { ShowNavigation(); };

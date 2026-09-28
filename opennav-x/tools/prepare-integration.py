@@ -24,7 +24,8 @@ if head != lock['commit']:
     raise SystemExit('Refusing to patch a worktree with a different OpenCPN revision')
 patches = [root / 'patches/opencpn-5.12.4-xnav.patch',
            root / 'patches/opencpn-5.12.4-regression-tests.patch',
-           root / 'patches/opencpn-5.12.4-ais-transport.patch']
+           root / 'patches/opencpn-5.12.4-ais-transport.patch',
+           root / 'patches/opencpn-5.12.4-chart-presentation.patch']
 def apply(patch, *options, env=None):
     # The identical LF byte stream must be used for check, mutation and index
     # verification, including Windows checkouts with core.autocrlf enabled.

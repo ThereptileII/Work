@@ -1,0 +1,25 @@
+{
+  "upstreamCommit": "37fd0cddb7334fe489e9f18aa163977a9c5c84f7",
+  "files": {
+    "chartsymbols.xml": {
+      "sha256": "84f93522576ed5872b24865cf6161872ed0b4b634f77c64ca697a04d3568e886",
+      "bytes": 2231495
+    },
+    "S52RAZDS.RLE": {
+      "sha256": "560e1a1df493d7ae4c8506da814ad936adb13ef93c6f1e2abc93f2819860ff26",
+      "bytes": 1305627
+    },
+    "rastersymbols-day.png": {
+      "sha256": "ee1020a8b94b312faba8c146974e49147d280e5ef3cc13f3cd688bbfd54dde0c",
+      "bytes": 250509
+    },
+    "rastersymbols-dusk.png": {
+      "sha256": "56d6191b954978d0a85484b490228aab467610bfbf646c814af003428a766c2d",
+      "bytes": 169019
+    },
+    "rastersymbols-dark.png": {
+      "sha256": "179cb516fd1a7795e8ab9ecbb8d4d5d88bf15cf42e5528c2f4e3ea2340320c33",
+      "bytes": 163832
+    }
+  }
+}

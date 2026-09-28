@@ -39,6 +39,9 @@ def main():
         ('inflate-bomb', frame(compressed(b'x'*(4*1024*1024)), compressed=True), 0, 1009),
         ('fragmented', frame(b'a'*32000, fin=False)+frame(b'b'*32000, opcode=0), 1, 0),
         ('fragment-overflow', frame(b'a'*40000, fin=False)+frame(b'b'*40000, opcode=0), 0, 1009),
+        # Both valid reports must arrive even when bounded dispatch leaves
+        # decrypted bytes in OpenSSL and the peer sends no more network data.
+        ('two-reports-across-receive-cap', frame(b'a'*40000)+frame(b'b'*40000), 2, 0),
         ('empty-fragment-flood', frame(fin=False)+frame(opcode=0,fin=False)*256, 0, 1009),
         ('advertised-32bit-overflow', b'\x82\x7f'+struct.pack('!Q', 1<<32), 0, 1009),
         ('advertised-64bit-overflow', b'\x82\x7f'+struct.pack('!Q', (1<<64)-1), 0, 1009),

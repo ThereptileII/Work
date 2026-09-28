@@ -65,3 +65,36 @@ Legacy round trips; software and OpenGL; real boat charts without distributing
 their files. Existing blank-chart regression checks remain mandatory. UI/route/
 ownship/AIS overlays need separate comparisons and valid source vectors only.
 No chart-presentation acceptance is claimed by this inspection document.
+
+## Version 1 implementation (not yet visually accepted)
+
+`resources/chart-style/v1/definition.json` maps the HTML's land, shore, water,
+contour and text tokens to eleven S-52 palette entries. The HTML supplies no
+complete depth-area set; explicitly documented extra shades retain all five
+pinned deep/medium/shallow/very-shallow/intertidal categories. Safety contours
+and safety soundings remain distinct. This is a safety-required extension to
+an illustrative map, not a claim that the prototype defines those extra colors.
+
+Generation verifies every stock input hash against `source-lock.json`, changes
+only RGB attributes in DAY_BRIGHT/DUSK/NIGHT, preserves every symbol, lookup,
+line style, pattern and raster symbol sheet, and emits a resource hash header.
+The result installs in the separate shared-data `opennav/chart-style/v1`
+directory. Original `s57data` stays untouched. The runtime verifies all five
+resource hashes before constructing a library. Missing/corrupt resources use
+Standard with an explicit diagnostic reason. Display settings select XNav or
+Standard with an ordinary controlled XNav restart; existing chart lookup
+pointers are never invalidated in a running library.
+
+A narrow loader option prevents the current working directory from shadowing
+the chosen presentation. XNav Standard also uses the explicit stock path.
+Legacy/Safe retain the original loader's default behavior and ignore the XNav
+style preference. The existing GSHHS and shapefile background mechanisms share
+the verified XNav land/water palette; those basemaps remain coastline references,
+not a substitute for a nautical ENC. No synthetic chart objects are introduced.
+
+Resource tests verify deterministic generation, exact prototype identity,
+unchanged navigation sections/sprites, depth-role separation, Night vs Dusk
+luminance, original-file preservation and refusal of changed upstream input.
+Real ENC appearance, hazards, OpenGL/software rendering, style/mode cycles and
+boat display remain pending. Route, ownship and AIS overlay restyling is a
+separate unfinished part of this workstream.

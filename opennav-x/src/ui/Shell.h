@@ -42,6 +42,9 @@ struct ShellActions {
   std::function<void()> restart_xnav, safe, diagnostics_folder;
   std::function<vessel::RouteProgress()> route;
   std::function<vessel::VesselState()> live_state;
+  std::function<std::string()> chart_style_status;
+  std::function<bool()> chart_style_requested;
+  std::function<application::CommandResult(bool)> set_chart_style;
   std::function<application::Settings()> settings;
   std::function<std::string()> settings_status;
   std::function<std::string()> boat_bridge_status;

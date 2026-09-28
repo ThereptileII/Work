@@ -14,10 +14,41 @@ from pathlib import Path
 import subprocess
 import sys
 import time
+import io
+import urllib.request
+import zipfile
 
 ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT / "tools"))
 from diagnostic_snapshot import read_json_snapshot
+
+
+def public_enc():
+    """Reuse the inspected, public NOAA fixture; never use a user's charts."""
+    cache = ROOT / "build/chart-fixtures"
+    cache.mkdir(parents=True, exist_ok=True)
+    path = cache / "US5SEAFL.zip"
+    url = "https://www.charts.noaa.gov/ENCs/US5SEAFL.zip"
+    digest = "b027e029dc7b76595381d89e3718145eb5069e5a03917e78bada4f8ebe8c84e4"
+    if not path.exists():
+        with urllib.request.urlopen(url, timeout=45) as response:
+            content = response.read(64 * 1024 * 1024 + 1)
+        assert len(content) <= 64 * 1024 * 1024
+        assert hashlib.sha256(content).hexdigest() == digest, "NOAA fixture changed; review before repinning"
+        path.write_bytes(content)
+    content = path.read_bytes()
+    assert hashlib.sha256(content).hexdigest() == digest
+    with zipfile.ZipFile(io.BytesIO(content)) as archive:
+        assert sum(f.file_size for f in archive.infolist()) < 256 * 1024 * 1024
+        for f in archive.infolist():
+            name = Path(f.filename)
+            assert not name.is_absolute() and ".." not in name.parts and "\\" not in f.filename and ":" not in f.filename
+            assert (f.external_attr >> 16) & 0o170000 != 0o120000
+        archive.extractall(cache)
+    charts = cache / "ENC_ROOT"
+    assert (charts / "US5SEAFL/US5SEAFL.000").is_file()
+    return charts, {"url": url, "sha256": digest,
+                    "scope": "Public rendering fixture, not redistributed as a navigation product"}
 
 
 def main():
@@ -33,20 +64,32 @@ def main():
     parser.add_argument("--build", type=Path, default=ROOT / ("build/production-windows" if windows else "build/production-linux"))
     parser.add_argument("--app", type=Path, default=ROOT / ("build/production-install/opencpn.exe" if windows else "build/production-install/bin/opencpn"))
     parser.add_argument("--output", type=Path, required=True)
+    parser.add_argument("--chart-style", choices=["XNav", "Standard"], default="XNav")
+    parser.add_argument("--renderer", choices=["software", "opengl"], default="software")
+    parser.add_argument("--public-enc", action="store_true")
+    parser.add_argument("--navigation-only", action="store_true")
     args = parser.parse_args()
     args.output.mkdir(parents=True, exist_ok=False)
     profile = args.output.resolve() / "profile"
     subprocess.run([sys.executable, str(ROOT / "tools/prepare-test-profile.py"),
                     "--build", str(args.build), "--profile", str(profile)], check=True)
     with (profile / "opencpn.conf").open("a") as stream:
-        stream.write("\n[Settings]\nOpenGL=0\n[Settings/GlobalState]\n"
-                     "VPLatLon=59.0800,18.5000\nVPScale=0.001\n")
+        stream.write(f"\n[Settings]\nOpenGL={int(args.renderer == 'opengl')}\n"
+                     f"[OpenNav]\nChartPresentationV1={args.chart_style}\n")
+        if args.public_enc:
+            charts, chart_provenance = public_enc()
+            stream.write(f"\n[ChartDirectories]\nChartDir1={charts.as_posix()}\n"
+                         "[Settings/GlobalState]\nVPLatLon=47.6000,-122.3600\nVPScale=0.15\n")
+        else:
+            stream.write("[Settings/GlobalState]\nVPLatLon=59.0800,18.5000\nVPScale=0.001\n")
     number = 171
     while Path(f"/tmp/.X{number}-lock").exists():
         number += 1
     env = dict(os.environ, DISPLAY=f":{number}")
     record = {"authority": "Native Windows development" if windows else "Linux development only", "size": [1280, 800],
-              "renderer": "software", "input": "none; isolated disposable profile",
+              "renderer": args.renderer, "chart_style": args.chart_style,
+              "chart": chart_provenance if args.public_enc else "OpenCPN coastline reference",
+              "input": "none; isolated disposable profile",
               "source_commit": subprocess.check_output(["git", "rev-parse", "HEAD"], cwd=ROOT, text=True).strip(),
               "executable_sha256": hashlib.sha256(args.app.read_bytes()).hexdigest(), "captures": []}
     xserver = None if windows else subprocess.Popen(["Xvfb", env["DISPLAY"], "-screen", "0", "1280x800x24", "-nolisten", "tcp"],
@@ -104,13 +147,40 @@ def main():
         else:
             subprocess.run(["import", "-window", "root", str(path)], env=env, check=True)
         snapshot = data()
+        style = snapshot["runtime"]["chart_presentation"]
+        assert style["requested"] == args.chart_style, "Requested chart style was not retained"
+        assert style["status"].startswith(args.chart_style + " "), "Requested chart style was not active"
+        assert snapshot["runtime"]["chart"]["opengl_enabled"] == (args.renderer == "opengl"), "Requested renderer was not active"
+        if args.navigation_only and not args.public_enc and args.chart_style == "XNav":
+            from collections import Counter
+            from PIL import Image
+            theme = snapshot["runtime"]["display"]["light"].lower()
+            tokens = json.loads((ROOT / "docs/design/prototype-tokens.json").read_text())["themes"][theme]
+            with Image.open(path) as img:
+                pixels = img.convert("RGB")
+                colors = Counter(pixels.getpixel((x, y)) for x in range(120, 1050, 4) for y in range(150, 630, 4))
+            for key in ("--land", "--water"):
+                color = tuple(bytes.fromhex(tokens[key].removeprefix("#")))
+                assert colors[color] / sum(colors.values()) > .02, f"{name}: {key} is absent or not prototype-colored"
+        if args.public_enc:
+            from collections import Counter
+            from PIL import Image
+            assert any(c["file"] == "US5SEAFL.000" for c in snapshot["runtime"]["chart"].get("quilt_members", [])), "Expected actual ENC in upstream quilt"
+            with Image.open(path) as img:
+                pixels = img.convert("RGB")
+                colors = Counter(pixels.getpixel((x, y)) for y in range(180, 600, 2) for x in range(150, 950, 2))
+            detail = sum(v for _, v in colors.most_common()[3:]) / sum(colors.values())
+            assert len(colors) > 20 and detail > .005, "ENC details are absent"
+            record.setdefault("chart_checks", []).append({"file": path.name, "colors": len(colors), "detail_fraction": detail})
         record["executable_build_commit"] = snapshot["build_commit"]
         (args.output / f"{name}.json").write_text(json.dumps(snapshot, indent=2) + "\n")
         record["captures"].append({"file": path.name, "sha256": hashlib.sha256(path.read_bytes()).hexdigest()})
 
     try:
         time.sleep(.6)
-        app = subprocess.Popen([str(args.app), "--configdir", str(profile), "--no_opengl", "--xnav"],
+        app = subprocess.Popen([str(args.app), "--configdir", str(profile), "--xnav"] +
+                               (["--rebuild_chart_db"] if args.public_enc else []) +
+                               (["--no_opengl"] if args.renderer == "software" else []),
                                env=env, stdout=log, stderr=log)
         deadline = time.monotonic() + 75
         while time.monotonic() < deadline:
@@ -146,27 +216,32 @@ def main():
         click("Dusk")
         capture("navigation-night")
         click("Night")
+        if args.navigation_only:
+            capture("navigation-return-day")
+            record["result"] = "chart cycle captured; semantic and visual review required"
+            return
         for label, name in [("Passage", "passage"), ("Traffic", "traffic"), ("Energy", "energy"),
                             ("Instruments", "instruments"), ("Settings", "settings")]:
             click(label)
             capture(name + "-day")
         record["result"] = "captured; conformance not asserted"
     finally:
+        shutdown_error = None
         if app and app.poll() is None:
-            if windows:
-                if not window:
-                    window, _ = ui.wait_window("OpenNav X / OpenCPN", app.pid, timeout=5)
-                ui.close(window)  # normal WM_CLOSE; same path as the window close button
-            else:
-                subprocess.run([str(args.app), "--configdir", str(profile), "--remote", "--quit"],
-                               env=env, stdout=log, stderr=log, timeout=15, check=True)
             try:
+                if windows:
+                    if not window:
+                        window, _ = ui.wait_window("OpenNav X / OpenCPN", app.pid, timeout=5)
+                    ui.close(window)  # normal WM_CLOSE; same path as the window close button
+                else:
+                    subprocess.run([str(args.app), "--configdir", str(profile), "--remote", "--quit"],
+                                   env=env, stdout=log, stderr=log, timeout=15, check=True)
                 app.wait(timeout=30)
-            except subprocess.TimeoutExpired:
+            except (subprocess.TimeoutExpired, subprocess.CalledProcessError, AssertionError, RuntimeError) as error:
                 # Only this tool's disconnected disposable child is eligible.
                 app.kill()
                 app.wait()
-                raise RuntimeError("Disposable native review application did not exit cleanly")
+                shutdown_error = type(error).__name__
         if app:
             record["exit_code"] = app.returncode
         log.close()
@@ -174,6 +249,8 @@ def main():
             xserver.terminate()
             xserver.wait(timeout=10)
         (args.output / "capture.json").write_text(json.dumps(record, indent=2) + "\n")
+        if shutdown_error:
+            raise RuntimeError(f"Disposable native review shutdown failed: {shutdown_error}")
         if app and app.returncode != 0:
             raise RuntimeError(f"Native application exit was not clean: {app.returncode}")
 

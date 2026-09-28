@@ -19,6 +19,7 @@
 #include "integration/RoutePassWatch.h"
 #include "integration/RuntimeDiagnostics.h"
 #include "integration/SettingsStore.h"
+#include "integration/ChartPresentation.h"
 #include "integration/StartupMode.h"
 #if XNAV_ENABLE_TEST_FIXTURES
 #include "adapters/SimulatedAutopilot.h"
@@ -343,6 +344,7 @@ void SelectMode(wxFileConfig& config, bool upstream_safe) {
     else
       wxLogWarning("OpenNav diagnostic directory unavailable: %s", folder);
   }
+  integration::ConfigureChartPresentation(config, IsXNav());
   executable = wxStandardPaths::Get().GetExecutablePath().ToStdString(wxConvUTF8);
   wxLogMessage("OpenNav startup: %s", selected == StartupMode::Safe ? "safe" : IsXNav() ? "xnav" : "legacy");
 }
@@ -396,6 +398,9 @@ void Attach(MyFrame& frame, wxAuiManager& manager, wxFileConfig& config) {
   actions.commissioning = commissioning;
   actions.settings = [] { return settings->Read(); };
   actions.settings_status = [] { return settings->Status(); };
+  actions.chart_style_status = integration::ChartPresentationStatus;
+  actions.chart_style_requested = integration::XNavChartRequested;
+  actions.set_chart_style = integration::SetXNavChartRequested;
   actions.boat_bridge_status = [] { return marine->BoatBridgeStatus(vessel::Clock::now()); };
   actions.save_settings = [configure_sources](const auto &s) {
     if (commissioning && commissioning->Replaying())
@@ -557,6 +562,8 @@ void Attach(MyFrame& frame, wxAuiManager& manager, wxFileConfig& config) {
     XNAV_TEST_UI_TRACE("snapshot.begin");
     auto runtime =
         integration::ReadRuntimeDiagnostics(*frame.GetPrimaryCanvas());
+    runtime["chart_presentation"]["status"] = wxString::FromUTF8(integration::ChartPresentationStatus());
+    runtime["chart_presentation"]["requested"] = wxString(integration::XNavChartRequested() ? "XNav" : "Standard");
     runtime["test_fixtures"] = integration::TestFixturesEnabled();
     runtime["build_purpose"] = wxString::FromUTF8(integration::BuildPurpose().data());
 #if XNAV_ENABLE_TEST_FIXTURES

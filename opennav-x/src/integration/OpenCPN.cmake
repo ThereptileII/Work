@@ -131,3 +131,25 @@ if(OCPN_BUILD_TEST)
   target_link_libraries(ais_provider_test_client PRIVATE opennav_ais_codec opennav_ais_credentials ocpn::ixwebsocket)
   target_compile_features(ais_provider_test_client PRIVATE cxx_std_17)
 endif()
+
+# Separately owned, deterministically derived presentation resources. Verify
+# source bytes before generation; never overwrite the stock s57data directory.
+find_package(Python3 REQUIRED COMPONENTS Interpreter)
+set(xnav_chart_style "${CMAKE_BINARY_DIR}/opennav-chart-style/v1")
+execute_process(COMMAND "${Python3_EXECUTABLE}" "${OPENNAV_ROOT}/tools/generate-xnav-chart-style.py"
+  --source "${CMAKE_SOURCE_DIR}/data/s57data" --output "${xnav_chart_style}"
+  RESULT_VARIABLE xnav_style_result)
+if(NOT xnav_style_result EQUAL 0)
+  message(FATAL_ERROR "XNav presentation resource verification/generation failed")
+endif()
+set_property(DIRECTORY APPEND PROPERTY CMAKE_CONFIGURE_DEPENDS
+  "${OPENNAV_ROOT}/resources/chart-style/v1/definition.json"
+  "${OPENNAV_ROOT}/resources/chart-style/v1/source-lock.json"
+  "${OPENNAV_ROOT}/docs/design/prototype-tokens.json"
+  "${OPENNAV_ROOT}/tools/generate-xnav-chart-style.py")
+target_sources(${PACKAGE_NAME} PRIVATE "${OPENNAV_ROOT}/src/integration/ChartPresentation.cpp")
+target_include_directories(${PACKAGE_NAME} PRIVATE "${xnav_chart_style}")
+install(FILES "${xnav_chart_style}/chartsymbols.xml" "${xnav_chart_style}/S52RAZDS.RLE"
+  "${xnav_chart_style}/rastersymbols-day.png" "${xnav_chart_style}/rastersymbols-dusk.png"
+  "${xnav_chart_style}/rastersymbols-dark.png" "${xnav_chart_style}/manifest.json"
+  DESTINATION "${PREFIX_PKGDATA}/opennav/chart-style/v1")

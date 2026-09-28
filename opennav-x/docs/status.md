@@ -33,8 +33,14 @@ pass at remote `8357239` (local `a6a9259`). Its eight captures exposed occluded
 chart controls; the capture job failed during secondary command-line quit.
 Follow-up z-order/shutdown fixes await replacement native evidence. The next
 run at `83569f0` hit a Windows `max` macro collision in the new transport test
-driver; that compile error is corrected, with another native run required.
-Its separate Linux/Win32 portable AIS and credential jobs passed. No screen is accepted; see
+driver. The correction builds at `d92e187`; 102/102 integrated native tests and
+6/6 portable AIS tests on each platform pass, including protected credential
+storage. The new native fragmented-overflow transport test then failed: bounded
+reading stalled while OpenSSL retained decrypted bytes. A resume-before-poll
+fix passes the Linux hostile-frame and actual-provider loopback tests and awaits
+replacement Windows evidence. Downloaded artifact hashes, sizes and ZIP CRC
+were verified; see [run evidence](evidence/prototype-native-d92e187.json).
+No screen is accepted; see
 [conformance](design/prototype-conformance.md) and the
 [review log](design/reviews/prototype-native-shell-in-progress.md).
 
@@ -46,12 +52,24 @@ codec adds 100 deterministic checks and the session adds 116. The portable
 suite now passes 75/75. The actual provider passes a local TLS lifecycle test
 covering prompt subscription, viewport replacement, reconnect and resubscription.
 The protected Windows credential adapter and Linux environment-only adapter
-are implemented; credential tests pass locally and await native qualification.
+are implemented; isolated native Credential Manager tests pass at `d92e187`.
 The opt-in bounded TLS/compressed WebSocket boundary passes 17 Linux loopback
 adversarial scenarios; native qualification is pending. The worker provider is implemented and locally tested. Product wiring and live
 AIS acceptance remain pending. No service connection or target count is claimed.
 
-XNav-owned S-52 presentation remains under inspection. AISStream must not
+XNav-owned S-52 presentation is being implemented as separately packaged,
+hash-verified resources derived from the pinned baseline. Its resource tests
+preserve all symbols, lookups and conditional navigation semantics while
+checking deterministic palettes and depth-role distinctions. The integrated
+build, actual ENC palette review, Standard fallback and renderer/mode cycles
+remain gates. Linux now passes the integrated build and 110/110 tests, 369
+resource checks, 18 adversarial TLS scenarios and the actual provider lifecycle.
+Corrected coastline palette captures and public ENC XNav/Standard captures
+retain content through Day/Dusk/Night/Day with clean exits. The Linux OpenGL
+capture uses Mesa llvmpipe, not a hardware-GPU acceptance result. The review
+records remaining chart-text/night-contrast and overlay differences; see
+[chart review](design/reviews/prototype-chart-v1-in-progress.md).
+AISStream must not
 inherit the local Signal K client's disabled TLS validation. The prototype's
 newer vendor symbol snapshot cannot replace the pinned resources blindly.
 

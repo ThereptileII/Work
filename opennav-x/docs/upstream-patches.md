@@ -554,9 +554,40 @@ moderate library merge risk; preserve defaults and re-run the local raw-server
 suite after any upstream update.
 
 `tests/ais_transport/network_tests.py` uses only a disposable loopback TLS server
-and generated test certificate. Seventeen scenarios cover valid binary,
+and generated test certificate. Eighteen scenarios cover valid binary,
 compression, exact boundary, oversized messages, inflation bomb, fragmented
 reports, empty-fragment flood, 32/64-bit advertised overflow, continuous traffic,
 HTTP bounds, redirects, untrusted certificate and hostname mismatch. Linux
-passes all 17 against the patched pinned library; native Windows qualification
-is pending. The dedicated client executable is never installed.
+passes all 18 against the patched pinned library; native Windows qualification
+is pending. Native `d92e187` caught a fragmented receive stall: stopping at the
+bounded dispatch buffer can leave plaintext inside OpenSSL after the OS socket
+empties. A bounded client now resumes nonblocking receive after dispatch before
+polling the socket again. Valid back-to-back reports across that boundary are
+also tested. The unbounded default still follows the original poll path. The
+dedicated client executable is never installed.
+
+### XNav S-52 and basemap presentation selection
+
+`opencpn-5.12.4-chart-presentation.patch` adds an optional
+`allowCwdOverride=true` argument through `s52plib` construction/load and
+`ChartSymbols::LoadConfigFile`. The unchanged default preserves existing
+callers. XNav opts out to prevent a working-directory XML from shadowing its
+verified resources or explicit Standard fallback. `LoadS57` delegates only its
+initial construction to the integration boundary. CSV registrars, safety-depth
+selection, lookups, conditional symbols and chart ownership remain upstream.
+
+Two small GUI hooks let `GSHHSChart::SetColorScheme` and the `LANDBACK`/`BLUEBACK`
+background colors use XNav's verified palette. They return normal upstream
+behavior in Legacy/Safe/Standard. No chart objects or sensor state are changed.
+The existing palette setters were inspected: GSHHS otherwise hard-codes a
+separate olive/blue palette while shapefile/GL paths use global background
+colors. The constructor hook is necessary because replacing the library after
+charts retain lookup pointers would be unsafe. Merge risk is localized to these
+initialization/color boundaries and the loader's new defaulted argument.
+
+Tests: deterministic resource generation and protected source hashes; integrated
+build/tests; real ENC XNav/Standard Day/Dusk/Night and mode-cycle content capture;
+OpenGL/software and native Windows/boat validation. Resource checks and the
+Linux integrated build/110 tests pass. Initial Linux software ENC captures
+retain actual upstream quilt identity and detail through all three palettes,
+but text/land/overlay mismatches remain. Rendering acceptance is pending.

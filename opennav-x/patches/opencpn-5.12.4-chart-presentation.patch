@@ -1,0 +1,173 @@
+diff --git i/gui/src/color_handler.cpp w/gui/src/color_handler.cpp
+index dcf8535da..76ad6118b 100644
+--- i/gui/src/color_handler.cpp
++++ w/gui/src/color_handler.cpp
+@@ -1,4 +1,7 @@
+ #include <wx/log.h>
++#ifdef OPENNAV_X
++#include "integration/ChartPresentation.h"
++#endif
+ 
+ #include "color_handler.h"
+ #include "s52plib.h"
+@@ -9,6 +12,13 @@ extern wxColorHashMap* pcurrent_user_color_hash;
+ 
+ wxColour GetGlobalColor(wxString colorName) {
+   wxColour ret_color;
++#ifdef OPENNAV_X
++  extern ColorScheme global_color_scheme;
++  wxColour land, water;
++  if ((colorName == "LANDBACK" || colorName == "BLUEBACK") &&
++      opennav::integration::ChartBackground(global_color_scheme, land, water))
++    return colorName == "LANDBACK" ? land : water;
++#endif
+ 
+   //    Use the S52 Presentation library if present
+   if (ps52plib) ret_color = ps52plib->getwxColour(colorName);
+diff --git i/gui/src/gshhs.cpp w/gui/src/gshhs.cpp
+index 71c4ebd0d..a9b7e6cf6 100644
+--- i/gui/src/gshhs.cpp
++++ w/gui/src/gshhs.cpp
+@@ -57,6 +57,9 @@
+ #endif
+ 
+ #include "gshhs.h"
++#ifdef OPENNAV_X
++#include "integration/ChartPresentation.h"
++#endif
+ #include "chartbase.h"  // for projections
+ #ifdef ocpnUSE_GL
+ #include "shaders.h"
+@@ -122,6 +125,9 @@ GSHHSChart::~GSHHSChart() {
+ }
+ 
+ void GSHHSChart::SetColorScheme(ColorScheme scheme) {
++#ifdef OPENNAV_X
++  if (opennav::integration::ChartBackground(scheme, land, water)) return;
++#endif
+   land = wxColor(170, 175, 80);
+   water = wxColor(170, 195, 240);
+ 
+diff --git i/gui/src/ocpn_frame.cpp w/gui/src/ocpn_frame.cpp
+index 8b7a14403..06c00d515 100644
+--- i/gui/src/ocpn_frame.cpp
++++ w/gui/src/ocpn_frame.cpp
+@@ -101,6 +101,9 @@
+ #include "TCWin.h"
+ #include "cm93.h"
+ #include "color_handler.h"
++#ifdef OPENNAV_X
++#include "integration/ChartPresentation.h"
++#endif
+ #include "compass.h"
+ #include "concanv.h"
+ #include "connections_dlg.h"
+@@ -8035,7 +8038,11 @@ void LoadS57() {
+     b_force_legacy = true;
+   }
+ 
++#ifdef OPENNAV_X
++  ps52plib = opennav::integration::CreateChartPresentation(plib_data, b_force_legacy);
++#else
+   ps52plib = new s52plib(plib_data, b_force_legacy);
++#endif
+ 
+   //  If the library load failed, try looking for the s57 data elsewhere
+ 
+diff --git i/libs/s52plib/src/chartsymbols.cpp w/libs/s52plib/src/chartsymbols.cpp
+index b5a6ec34e..910bda24e 100644
+--- i/libs/s52plib/src/chartsymbols.cpp
++++ w/libs/s52plib/src/chartsymbols.cpp
+@@ -668,7 +668,7 @@ void ChartSymbols::BuildSymbol(ChartSymbol &symbol) {
+ }
+ 
+ bool ChartSymbols::LoadConfigFile(s52plib *plibArg,
+-                                  const wxString &s52ilePath) {
++                                  const wxString &s52ilePath, bool allowCwdOverride) {
+   plib = plibArg;
+ 
+   // Expect to find library data XML file in same folder as other S52 data.
+@@ -681,7 +681,7 @@ bool ChartSymbols::LoadConfigFile(s52plib *plibArg,
+   wxString fullFilePath =
+       configFileDirectory + wxFileName::GetPathSeparator() + xmlFileName;
+ 
+-  if (wxFileName::FileExists(xmlFileName)) {
++  if (allowCwdOverride && wxFileName::FileExists(xmlFileName)) {
+     fullFilePath = xmlFileName;
+     configFileDirectory = _T(".");
+   }
+diff --git i/libs/s52plib/src/chartsymbols.h w/libs/s52plib/src/chartsymbols.h
+index f6261063a..96a02812b 100755
+--- i/libs/s52plib/src/chartsymbols.h
++++ w/libs/s52plib/src/chartsymbols.h
+@@ -154,7 +154,7 @@ class ChartSymbols {
+ public:
+   ChartSymbols(void);
+   ~ChartSymbols(void);
+-  bool LoadConfigFile(s52plib *plibArg, const wxString &path);
++  bool LoadConfigFile(s52plib *plibArg, const wxString &path, bool allowCwdOverride = true);
+ 
+   void InitializeTables(void);
+   void DeleteGlobals(void);
+diff --git i/libs/s52plib/src/s52plib.cpp w/libs/s52plib/src/s52plib.cpp
+index 03dda4915..1d13b5b2b 100755
+--- i/libs/s52plib/src/s52plib.cpp
++++ w/libs/s52plib/src/s52plib.cpp
+@@ -278,7 +278,7 @@ LUPHashIndex *LUPArrayContainer::GetArrayIndexHelper(const char *objectName) {
+ //-----------------------------------------------------------------------------
+ //      s52plib implementation
+ //-----------------------------------------------------------------------------
+-s52plib::s52plib(const wxString &PLib, bool b_forceLegacy) {
++s52plib::s52plib(const wxString &PLib, bool b_forceLegacy, bool allowCwdOverride) {
+   m_plib_file = PLib;
+ 
+   pOBJLArray = new wxArrayPtrVoid;
+@@ -294,7 +294,7 @@ s52plib::s52plib(const wxString &PLib, bool b_forceLegacy) {
+   m_chartSymbols.SetTextureFormat(GL_TEXTURE_2D);
+   InitializeNatsurHash();
+ 
+-  m_bOK = !(S52_load_Plib(PLib, b_forceLegacy) == 0);
++  m_bOK = !(S52_load_Plib(PLib, b_forceLegacy, allowCwdOverride) == 0);
+ 
+   m_bShowS57Text = false;
+   m_bShowS57ImportantTextOnly = false;
+@@ -1130,7 +1130,7 @@ int s52plib::_LUP2rules(LUPrec *LUP, S57Obj *pObj) {
+     return 0;
+ }
+ 
+-int s52plib::S52_load_Plib(const wxString &PLib, bool b_forceLegacy) {
++int s52plib::S52_load_Plib(const wxString &PLib, bool b_forceLegacy, bool allowCwdOverride) {
+   pAlloc = new wxArrayPtrVoid;
+ 
+   //   Create the Rule Lookup Hash Tables
+@@ -1153,7 +1153,7 @@ int s52plib::S52_load_Plib(const wxString &PLib, bool b_forceLegacy) {
+   m_unused_color.B = 2;
+   m_unused_wxColor.Set(2, 2, 2);
+ 
+-  if (!m_chartSymbols.LoadConfigFile(this, PLib)) {
++  if (!m_chartSymbols.LoadConfigFile(this, PLib, allowCwdOverride)) {
+     wxString msg(_T("Could not load XML PLib symbol file: "));
+     msg += PLib;
+     wxLogMessage(msg);
+diff --git i/libs/s52plib/src/s52plib.h w/libs/s52plib/src/s52plib.h
+index e830babf2..e8eb727d0 100755
+--- i/libs/s52plib/src/s52plib.h
++++ w/libs/s52plib/src/s52plib.h
+@@ -182,7 +182,7 @@ typedef struct {
+ 
+ class s52plib {
+ public:
+-  s52plib(const wxString &PLib, bool b_forceLegacy = false);
++  s52plib(const wxString &PLib, bool b_forceLegacy = false, bool allowCwdOverride = true);
+   ~s52plib();
+ 
+   // TODO: SetPPM, SetDisplayWidth etc. should be combined to be set together by pointing them to info about current monitor
+@@ -405,7 +405,7 @@ public:
+   void SetReducedBBox(LLBBox box){ reducedBBox = box;}
+ 
+ private:
+-  int S52_load_Plib(const wxString &PLib, bool b_forceLegacy);
++  int S52_load_Plib(const wxString &PLib, bool b_forceLegacy, bool allowCwdOverride = true);
+   bool S52_flush_Plib();
+ 
+   void PLIB_LoadS57Config();

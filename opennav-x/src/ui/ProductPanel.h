@@ -70,6 +70,9 @@ struct ProductActions {
   std::function<void(adapters::PilotAction, double)> pilot_command;
   std::function<void(bool)> pilot_enable;
   std::function<application::CommandResult()> pilot_identity;
+  std::function<std::string()> chart_style_status;
+  std::function<bool()> chart_style_requested;
+  std::function<application::CommandResult(bool)> set_chart_style;
   std::function<application::Settings()> settings;
   std::function<application::CommandResult(const application::Settings &)>
       save_settings;
