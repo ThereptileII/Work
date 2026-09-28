@@ -26,6 +26,16 @@ Probe packaging verifies 17 x86 binaries and imports, then fails before launch
 because a copied Python environment dictionary looks up mixed-case SystemRoot.
 The replacement normalizes Windows environment keys and explicitly removes the
 development credential; six portable packaging tests cover this boundary.
+Run `36483619726` / `1954c19` verifies all 17 binaries, clean-PATH launch and
+source/ZIP construction. Its final Windows PowerShell 5 negative probe check
+fails because Start-Process loses the fast child's exit code (null). No failed
+package is deployed. The replacement owns the .NET process handle through exit,
+drains both streams asynchronously, preserves the deadline and rejects unknown
+exit status; CI also asserts the recorded exit code explicitly. The boat is
+reachable with OpenCPN closed. A new SSH presence check did not list the saved
+AIS credential; this differs from the earlier presence check and is not yet a
+credential-read or service result.
+
 Live AIS remains unverified. The local rail revision `00ff457` passes 120
 integrated Linux cases plus actual object and synthetic navigation input flows.
 

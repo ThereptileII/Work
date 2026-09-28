@@ -46,19 +46,39 @@ try {
         $Capabilities.maximum_observation_seconds -ne 45) { throw 'Probe capability mismatch' }
     $Out = Join-Path $Evidence 'aggregate-ais.jsonl'
     $Err = Join-Path $Evidence 'probe-stderr.txt'
-    $Process = Start-Process -FilePath $Exe -ArgumentList @('--read-only-live-ais',$Region) -WorkingDirectory $App `
-        -PassThru -NoNewWindow -RedirectStandardOutput $Out -RedirectStandardError $Err
-    if (-not $Process.WaitForExit(65000)) {
-        $Process.Kill() # Only this script's bounded, internet-only child.
+    # Own the process handle from Start through ExitCode. Windows PowerShell 5
+    # Start-Process -PassThru can return an object whose exit code is null after
+    # a short-lived child exits; null must never be accepted as success.
+    $Process = New-Object System.Diagnostics.Process
+    $Process.StartInfo.FileName = $Exe
+    $Process.StartInfo.Arguments = '--read-only-live-ais ' + $Region
+    $Process.StartInfo.WorkingDirectory = $App
+    $Process.StartInfo.UseShellExecute = $false
+    $Process.StartInfo.CreateNoWindow = $true
+    $Process.StartInfo.RedirectStandardOutput = $true
+    $Process.StartInfo.RedirectStandardError = $true
+    try {
+        if (-not $Process.Start()) { throw 'Read-only AIS probe could not start' }
+        $OutputTask = $Process.StandardOutput.ReadToEndAsync()
+        $ErrorTask = $Process.StandardError.ReadToEndAsync()
+        if (-not $Process.WaitForExit(65000)) {
+            $Process.Kill() # Only this script's bounded, internet-only child.
+            $Process.WaitForExit()
+            throw 'Read-only AIS probe exceeded its commissioning deadline'
+        }
         $Process.WaitForExit()
-        throw 'Read-only AIS probe exceeded its commissioning deadline'
+        $ExitCode = $Process.ExitCode
+        if ($null -eq $ExitCode) { throw 'Read-only AIS probe exit status is unavailable' }
+        [IO.File]::WriteAllText($Out, $OutputTask.GetAwaiter().GetResult())
+        [IO.File]::WriteAllText($Err, $ErrorTask.GetAwaiter().GetResult())
+    } finally {
+        $Process.Dispose()
     }
-    $Process.Refresh()
     $Rows = @(Get-Content -LiteralPath $Out | ForEach-Object { $_ | ConvertFrom-Json })
     $Result = @($Rows | Where-Object { $_.event -eq 'result' })
     if ($Result.Count -ne 1) { throw 'Probe did not produce a complete aggregate result' }
     # Only trusted fixed-schema fields leave this private evidence directory.
-    $Summary = [ordered]@{commit=$ExpectedCommit;exitCode=$Process.ExitCode;region=$Region;
+    $Summary = [ordered]@{commit=$ExpectedCommit;exitCode=$ExitCode;region=$Region;
         subscriptionConfirmed=[bool]$Result[0].subscription_confirmed;
         peakTargetCount=[int]$Result[0].peak_target_count;
         acceptedReports=[int]$Result[0].accepted_reports;rejectedReports=[int]$Result[0].rejected_reports;
@@ -66,5 +86,5 @@ try {
         chartOrUiAccepted=$false}
     $Summary | ConvertTo-Json | Set-Content -LiteralPath (Join-Path $Evidence 'summary.json') -Encoding UTF8
     $Summary | ConvertTo-Json -Compress
-    if ($Process.ExitCode -ne 0) { exit $Process.ExitCode }
+    if ($ExitCode -ne 0) { exit $ExitCode }
 } finally { $env:PATH = $OldPath }

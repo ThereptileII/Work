@@ -100,7 +100,7 @@ jobs:
           & powershell -NoProfile -ExecutionPolicy Bypass -File opennav-x/tools/boat/probe-online-ais.ps1 -Package $Package -ExpectedCommit $env:GITHUB_SHA -ExpectedBuildInfoSha256 $InfoHash -Evidence $Evidence
           if ($LASTEXITCODE -ne 4) { throw 'Expected offline missing-credential result from native commissioning script' }
           $Result = Get-Content "$Evidence/summary.json" -Raw | ConvertFrom-Json
-          if ($Result.peakTargetCount -ne 0 -or $Result.subscriptionConfirmed -or -not $Result.disabledAndCleared) { throw 'Offline script result is invalid' }
+          if ($Result.exitCode -ne 4 -or $Result.peakTargetCount -ne 0 -or $Result.subscriptionConfirmed -or -not $Result.disabledAndCleared) { throw 'Offline script result is invalid' }
           $global:LASTEXITCODE = 0
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:

@@ -132,3 +132,13 @@ all PNG hashes verify. All 120 integrated tests passed before the rounding-only
 correction. Populated-data/interaction replacement, native Windows typography,
 physical boat, sparkline/relational detail, header and remaining sheets stay
 open. This is a geometry improvement, not full navigation conformance.
+
+The populated Linux replacement also passes all 120 integrated cases, actual
+object interaction and selected-navigation input flows. The live and stale rail
+captures were reviewed: speed ages visibly, and missing depth/wind/heading stay
+unavailable. Native Windows `b5f30d2` adds measured rail/pilot geometry and a
+reviewed 1280×800 Day capture with the same unavailable-state behavior. Its
+twenty product/ENC and nine component PNG hashes verify. The run still fails
+overall on the separate package environment bug; it does not qualify a boat
+deployment. See [native evidence](../../evidence/prototype-native-b5f30d2.json).
+Chart scale overlaps Follow Boat and primary-sheet/typography differences remain.

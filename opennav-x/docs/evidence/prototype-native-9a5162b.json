@@ -1,0 +1,75 @@
+{
+  "accepted": false,
+  "remoteCommit": "9a5162b1dabfad33cb92b7228f1b986d1ad353a5",
+  "localCommit": "7ecced9cf7caa36b816fad25346340244838e08b",
+  "tree": "42207ee7487e31b02072022d6e2e036f9be01553",
+  "verifiedSourceBlobs": 1056,
+  "ciRun": "https://github.com/ThereptileII/Work/actions/runs/36481625379",
+  "result": "FAILED overall at probe package launch environment; successful sub-gates retained",
+  "integratedWindowsTests": 112,
+  "nativeAisComponentChecks": 71,
+  "offlineProbeChecks": 24,
+  "hostileTlsScenarios": 18,
+  "providerLifecycle": "PASS / loopback only",
+  "actualObjectFlow": "PASS: 27 scenario groups, actual pointer/wheel interactions, native edit, persistence, chart restoration",
+  "captureHashesVerified": {
+    "ais-component": 9,
+    "prototype-enc-standard": 4,
+    "prototype-enc-xnav": 4,
+    "prototype-native": 8,
+    "prototype-native-additional": 4
+  },
+  "failure": "Probe closure verifies 17 x86 binaries; package smoke stops at mixed-case SystemRoot dictionary lookup before launch",
+  "artifacts": [
+    {
+      "id": 10997271731,
+      "name": "prototype-native-Windows-9a5162b1dabfad33cb92b7228f1b986d1ad353a5",
+      "sha256": "0e3aed04ff5eafd6d11cd80ccc8d0434fed753afe46336df8ebd1d75809c7f53",
+      "bytes": 11799680,
+      "zipCrc": true
+    },
+    {
+      "id": 10997131342,
+      "name": "prototype-object-flow-Windows-9a5162b1dabfad33cb92b7228f1b986d1ad353a5",
+      "sha256": "295537a71b22dceebd27168482f8e68e85b0afbb12fb8f6b6d58ffad02bbe006",
+      "bytes": 1876028,
+      "zipCrc": true
+    },
+    {
+      "id": 10996928302,
+      "name": "prototype-ais-network-Linux-9a5162b1dabfad33cb92b7228f1b986d1ad353a5",
+      "sha256": "018834cba6cb74a3c44e95b909e493cbfeece6e99ce7b627e3edb5d0da1d9559",
+      "bytes": 935,
+      "zipCrc": true
+    },
+    {
+      "id": 10996728529,
+      "name": "prototype-ais-foundation-Windows-9a5162b1dabfad33cb92b7228f1b986d1ad353a5",
+      "sha256": "2e4078239825766b334b1c66bac040edd6d31e292a126a6c92ad22b0fdcc1da1",
+      "bytes": 692,
+      "zipCrc": true
+    },
+    {
+      "id": 10996678238,
+      "name": "prototype-ais-foundation-Linux-9a5162b1dabfad33cb92b7228f1b986d1ad353a5",
+      "sha256": "e06c812c06b19129290205fceed5834e3a7456586d635d0c4414338d9baad601",
+      "bytes": 688,
+      "zipCrc": true
+    },
+    {
+      "id": 10996313645,
+      "name": "prototype-reference-Windows-9a5162b1dabfad33cb92b7228f1b986d1ad353a5",
+      "sha256": "bfba8fe0361c3106f4f3dc271f57ea54d453d94a2e693dff870f070be6bf4e66",
+      "bytes": 16109502,
+      "zipCrc": true
+    },
+    {
+      "id": 10995864594,
+      "name": "prototype-reference-Linux-9a5162b1dabfad33cb92b7228f1b986d1ad353a5",
+      "sha256": "f1334f4e1dcc6c7839fec5168b95ef6d1aece41383876c48d0f38d0730dd74af",
+      "bytes": 17739663,
+      "zipCrc": true
+    }
+  ],
+  "review": "Windows Night ENC and actual AIS details reviewed. S-52 text and marks visible; large depth-unit emboss, density, chart selector and overlay differences remain. Object-flow capture is an outer Windows frame, not 1280x800 client typography acceptance. No boat deployment, live AIS or visual acceptance."
+}

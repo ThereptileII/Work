@@ -1,0 +1,103 @@
+{
+  "accepted": false,
+  "remoteCommit": "b5f30d242c1be00ee450c2f2b82dbe758a8e6842",
+  "localCommit": "00ff45740ba7d2a7571e4cc9c15464993cf93462",
+  "tree": "011adfcbd5b7efbcbcf35fd92ab787ba257e1edc",
+  "verifiedSourceBlobs": 1056,
+  "ciRun": "https://github.com/ThereptileII/Work/actions/runs/36482708063",
+  "result": "FAILED overall at probe package launch environment; successful sub-gates retained",
+  "integratedWindowsTests": 112,
+  "nativeAisComponentChecks": 71,
+  "offlineProbeChecks": 24,
+  "hostileTlsScenarios": 18,
+  "providerLifecycle": "PASS / loopback only",
+  "actualObjectFlow": "PASS: 27 scenario groups, actual pointer/wheel interactions, native edit, persistence, chart restoration",
+  "captureHashesVerified": {
+    "prototype-native": 12,
+    "prototype-enc-xnav": 4,
+    "prototype-enc-standard": 4,
+    "ais-component": 9
+  },
+  "failure": "Probe closure verifies 17 x86 binaries; package smoke stops at mixed-case SystemRoot dictionary lookup before launch",
+  "artifacts": [
+    {
+      "id": 10998210002,
+      "name": "prototype-reference-Windows-b5f30d242c1be00ee450c2f2b82dbe758a8e6842",
+      "sha256": "613a64a4dab3452a62568f10aec939f4fcf4f72977c8b633eee76bb0ec36f3ce",
+      "bytes": 16109566,
+      "zipCrc": true
+    },
+    {
+      "id": 10998127140,
+      "name": "prototype-native-Windows-b5f30d242c1be00ee450c2f2b82dbe758a8e6842",
+      "sha256": "1a64c92cbcc6152dfffc3b06763fb133fd6e60c86796d978cc14e817e9195e6b",
+      "bytes": 11920223,
+      "zipCrc": true
+    },
+    {
+      "id": 10998105099,
+      "name": "prototype-reference-Linux-b5f30d242c1be00ee450c2f2b82dbe758a8e6842",
+      "sha256": "2f976382f20360d9bc9b159bf4f07ec04ebdb56229481e93477c6b240b476255",
+      "bytes": 17740316,
+      "zipCrc": true
+    },
+    {
+      "id": 10997940355,
+      "name": "prototype-ais-network-Linux-b5f30d242c1be00ee450c2f2b82dbe758a8e6842",
+      "sha256": "47df50ea0177dcfb8ae7fe47c66ca2d7df6131990c035d37107bb0f99689b54f",
+      "bytes": 935,
+      "zipCrc": true
+    },
+    {
+      "id": 10997757187,
+      "name": "prototype-object-flow-Windows-b5f30d242c1be00ee450c2f2b82dbe758a8e6842",
+      "sha256": "542bead2d2385b1912713d5433255bb68beaa4631b6e547ed128e510b4a1e857",
+      "bytes": 1991573,
+      "zipCrc": true
+    },
+    {
+      "id": 10997156023,
+      "name": "prototype-ais-foundation-Linux-b5f30d242c1be00ee450c2f2b82dbe758a8e6842",
+      "sha256": "2beb1299d030dc423dda0d40b496661cdad68a2ffd73f7c7b18111cd8f87e9c7",
+      "bytes": 689,
+      "zipCrc": true
+    },
+    {
+      "id": 10996469950,
+      "name": "prototype-ais-foundation-Windows-b5f30d242c1be00ee450c2f2b82dbe758a8e6842",
+      "sha256": "16cdf69515dca1d35088dcc4b101aef73beef4a2927acfa36885aa9ad33f0a82",
+      "bytes": 690,
+      "zipCrc": true
+    }
+  ],
+  "review": "Native Windows 1280x800 navigation Day reviewed. Four rail rows and compact pilot summary stay visible, geometry checks pass within one native pixel of canonical HTML. Missing feedback shows Unavailable. Typography, chart scale overlap, all primary sheets and boat conformance remain open. Packaging fails at the already-corrected SystemRoot lookup; no failed package is deployed.",
+  "prototypeRailGeometry": [
+    {
+      "file": "navigation-day",
+      "pilot": {
+        "x": 1113,
+        "y": 665,
+        "width": 149,
+        "height": 87
+      }
+    },
+    {
+      "file": "navigation-dusk",
+      "pilot": {
+        "x": 1113,
+        "y": 665,
+        "width": 149,
+        "height": 87
+      }
+    },
+    {
+      "file": "navigation-night",
+      "pilot": {
+        "x": 1113,
+        "y": 665,
+        "width": 149,
+        "height": 87
+      }
+    }
+  ]
+}
