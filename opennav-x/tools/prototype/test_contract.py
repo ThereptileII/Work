@@ -39,6 +39,7 @@ class PrototypeContract(unittest.TestCase):
         # Read the authoritative source, not a second manually maintained oracle.
         css = (render.ORIGINAL / "src/style.css").read_text(encoding="utf-8")
         native = (ROOT / "src/ui/Theme.h").read_text(encoding="utf-8")
+        native = native[native.index("constexpr Palette Theme"):]
         extracted = json.loads((ROOT / "docs/design/prototype-tokens.json").read_text())
         root = dict(re.findall(r"(--[\w-]+):([^;}]+)", re.search(r":root\{([^}]+)\}", css)[1]))
         roles = ["bg", "surface", "surface2", "surface2", "line", "text",

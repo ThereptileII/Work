@@ -3,7 +3,9 @@
 #include <vector>
 
 namespace opennav::vessel {
-// Copies of OpenCPN's AIS result, not a second CPA/TCPA calculator.
+enum class AisOrigin { LocalOpenCPN, AisStreamOnline };
+// Owned reports. Local metrics are copies of OpenCPN's result, not a second
+// CPA/TCPA calculator. Supplemental online reports never fabricate these metrics.
 struct AisTarget {
   int mmsi = 0;
   std::string name, status, source;
@@ -11,6 +13,9 @@ struct AisTarget {
   Sample latitude_deg, longitude_deg, sog_kn, cog_deg, heading_true_deg;
   Sample range_nm, bearing_true_deg, cpa_nm, tcpa_minutes;
   Time observed_at{};
+  AisOrigin origin = AisOrigin::LocalOpenCPN;
+  TextSample callsign, destination;
+  Sample ship_type, navigation_status, length_m, beam_m;
 };
 struct AisState {
   std::vector<AisTarget> targets;

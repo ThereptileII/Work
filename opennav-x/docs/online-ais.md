@@ -1,0 +1,83 @@
+# Supplemental Online AIS — contract and implementation status
+
+Online AIS is an optional Internet input for chart/list presentation. It never
+becomes vessel position, an autopilot input or a source of invented CPA/TCPA or
+alarms. OpenCPN local AIS decoding and calculations stay intact.
+
+## Owned provider and aggregation boundary
+
+`ais/IAisProvider` returns an owned `ProviderSnapshot`: targets plus transport
+health. `AisFeeds` retains **onboard**, **online**, and **display** separately.
+Receiver health and upstream safety calculations consume onboard, never infer
+receiver connectivity from the combined display list. No socket or OpenCPN
+target pointer crosses this interface.
+
+For duplicate MMSI retain the complete onboard target, including its position
+timestamp, stale/lost state, range/CPA and alarm. A newer online report cannot
+hide an onboard dropout. Online-only display becomes eligible after OpenCPN
+removes that MMSI. Optional static enrichment is absent in this first slice.
+Ambiguous online identities are withheld; ambiguous local identities remain
+duplicates so the existing selection contract rejects them. Display is bounded
+to 2,000 targets.
+
+Online provenance is `AISSTREAM_ONLINE` and typed `AisOrigin`. Supplemental
+targets have no upstream alarm or range/bearing/CPA/TCPA even if an untrusted
+provider tries to supply them. Missing fields remain empty.
+
+## Cache and time
+
+Position and static reports have independent monotonic observation clocks.
+Static updates never refresh position. Out-of-order/duplicate positions and
+future/missing timestamps are rejected. Reading does not refresh observations;
+owned snapshots survive cache edits/removal. Online position thresholds:
+
+| Age | State |
+|---|---|
+| <15 s | LIVE |
+| 15–60 s | AGING |
+| 60–120 s | STALE |
+| 120–600 s | LOST, not current/selectable navigation |
+| ≥600 s | Expired, removed from display |
+
+Age denotes report receipt unless a validated upstream observation timestamp
+is available. It does not establish shore/satellite latency or guarantee current
+physical position. Details must identify Internet provenance and this uncertainty.
+Cached metadata coordinates cannot become a new position report. Cache capacity
+is 2,000; expired entries are reclaimed before allocation, otherwise new
+identities are refused. Numeric bounds, AIS sentinels, strings, extreme clocks
+and retained-copy behavior have deterministic coverage.
+
+## Inspected transport boundaries — 2026-09-28
+
+[Official documentation](https://aisstream.io/documentation) specifies
+`wss://stream.aisstream.io/v0/stream`, a complete subscription within three
+seconds, replacement subscriptions with confirmation, binary UTF-8 JSON frames,
+and at most one subscription update per second. Use focused geographic filters
+and bounded exponential reconnect with jitter. Confirmation establishes a
+subscription, not receipt of a vessel report.
+
+Pinned OpenCPN's Signal K IXWebSocket client disables hostname/certificate
+validation. Do not inherit those local-network settings for AISStream. The
+vendored transport also accepts frames up to `1ULL << 63`; rejecting JSON only
+after receipt would not bound transport allocation. The Internet transport needs
+verified TLS, bounded frames/decompression, cancellation and generic errors.
+
+Useful reports: Class A position, standard/extended Class B, ship static/voyage,
+Class B static. Envelope/payload identities must agree. Strict UTF-8 JSON,
+frame/string/depth bounds and nonfinite/sentinel rejection are mandatory.
+Confirmation is a separate envelope. CI uses sanitized fixtures without a key.
+
+## Credentials and outstanding integration
+
+Development uses `AISSTREAM_API_KEY`; installed Windows uses per-user Credential
+Manager, separate from plaintext settings/backups. Never export keys,
+subscriptions, server echoes or raw errors. Update/repair preserve credentials;
+explicit uninstall removal policy is still to be implemented.
+
+Implemented: owned models/cache, age/validation, onboard-precedence aggregator,
+antimeridian viewport filtering with 15% margin, coalesced five-second
+subscription changes with a single confirmation in flight, bounded exponential
+reconnect/jitter and cooldown policy; 2,074 deterministic checks.
+Pending: decoder, bounded transport, credential storage, settings, chart/card wiring,
+MSVC and live boat gates. **The product does not yet connect to AISStream.**
+No configured key, live target count or network acceptance is claimed.
