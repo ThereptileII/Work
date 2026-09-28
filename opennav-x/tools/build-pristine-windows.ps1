@@ -82,10 +82,17 @@ try {
             # Additional targeted development job. The default full integrated
             # release workflow below remains mandatory and unchanged.
             Run python @((Join-Path $PSScriptRoot 'smoke-navigation.py'), '--objects')
+            # Actual upstream route projection/paint, not a separate geometry
+            # model. Every variant also keeps the complete progress lifecycle.
+            foreach ($theme in @('Day', 'Dusk', 'Night')) {
+                Run python @((Join-Path $PSScriptRoot 'smoke-navigation.py'), '--route-fixture', '--theme', $theme)
+            }
+            Run python @((Join-Path $PSScriptRoot 'smoke-navigation.py'), '--route-fixture-standard')
         } else {
         Run python @((Join-Path $PSScriptRoot 'smoke-modes-windows.py'))
         Run python @((Join-Path $PSScriptRoot 'smoke-navigation.py'))
         Run python @((Join-Path $PSScriptRoot 'smoke-navigation.py'), '--route-fixture')
+        Run python @((Join-Path $PSScriptRoot 'smoke-navigation.py'), '--route-fixture-standard')
         Run python @((Join-Path $PSScriptRoot 'smoke-navigation.py'), '--instruments')
         Run python @((Join-Path $PSScriptRoot 'smoke-navigation.py'), '--n2k')
         Run python @((Join-Path $PSScriptRoot 'smoke-navigation.py'), '--boat')

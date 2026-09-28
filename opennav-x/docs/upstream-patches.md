@@ -648,6 +648,24 @@ colors. The constructor hook is necessary because replacing the library after
 charts retain lookup pointers would be unsafe. Merge risk is localized to these
 initialization/color boundaries and the loader's new defaulted argument.
 
+The active-route ink increment adds three paint-only calls in
+`gui/src/route_gui.cpp`: `RouteGui::Draw`, incremental `DrawSegment`, and
+`DrawGLRouteLines`. `ChartActiveRouteInk` returns a copied prototype color only
+on the application thread, in XNav, after presentation resources verify. The
+upstream pen/brush is copied locally; no global route pen, saved property or
+route/waypoint state is changed. Selected routes remain in the existing
+selection path. Inactive/custom routes, width/style, arrows, clipping,
+antimeridian geometry and route progress remain upstream. Standard, failed
+resource verification, Legacy and Safe do not apply this override.
+
+Rendering qualification uses the existing isolated `RouteProgressScenario`:
+it copies pixel positions from `ChartCanvas::GetCanvasPointPix` and the real
+upstream active pen into the test report. The external capture checks actual
+stroke pixels against the independent HTML token, or the copied stock pen for
+Standard. Theme and actual renderer must match the requested fixture. This
+does not compute navigation geometry independently or expose pointers outside
+the integration test. Exact native/boat qualification remains pending.
+
 Tests: deterministic resource generation and protected source hashes; integrated
 build/tests; real ENC XNav/Standard Day/Dusk/Night and mode-cycle content capture;
 OpenGL/software and native Windows/boat validation. Resource checks and the

@@ -7,6 +7,8 @@
 #include "model/own_ship.h"
 #include "model/comm_drv_registry.h"
 #include "ocpn_plugin.h"
+#include "ocpn_frame.h"
+#include "chcanv.h"
 #include <wx/jsonwriter.h>
 #include <wx/filename.h>
 #include <wx/filefn.h>
@@ -18,6 +20,7 @@
 
 extern bool g_bDeferredInitDone;
 extern APConsole* console;
+extern MyFrame* gFrame;
 namespace opennav::test {
 using namespace vessel;
 using namespace std::chrono_literals;
@@ -50,6 +53,25 @@ void Record(const char* label,const RouteProgress& s) {
   entry["observed_steady_ms"]=wxString::Format("%lld",static_cast<long long>(std::chrono::duration_cast<Duration>(s->observed_at.time_since_epoch()).count()));
   if(s->position_observed_at) entry["position_steady_ms"]=wxString::Format("%lld",static_cast<long long>(std::chrono::duration_cast<Duration>(s->position_observed_at->time_since_epoch()).count()));
   entry["source"]=wxString::FromUTF8(s->source);entry["position_source"]=wxString::FromUTF8(s->position_source);
+  // Actual upstream pixel projection for isolated rendered-line checks. These
+  // test-only copies are never a replacement route or progress calculation.
+  if (route && gFrame && gFrame->GetPrimaryCanvas() &&
+      g_pRouteMan->GetpActiveRoute() == route) {
+    auto *canvas = gFrame->GetPrimaryCanvas();
+    for (int i = 1; i <= route->GetnPoints(); ++i) {
+      auto *point = route->GetPoint(i);
+      wxPoint pixel;
+      canvas->GetCanvasPointPix(point->m_lat, point->m_lon, &pixel);
+      pixel = canvas->ClientToScreen(pixel);
+      wxJSONValue item;
+      item["x"] = pixel.x; item["y"] = pixel.y;
+      entry["route_pixels"].Append(item);
+    }
+    const auto stock = g_pRouteMan->GetActiveRoutePen()->GetColour();
+    entry["stock_active_ink"].Append(stock.Red());
+    entry["stock_active_ink"].Append(stock.Green());
+    entry["stock_active_ink"].Append(stock.Blue());
+  }
   report["checks"].Append(entry);
 }
 void Invalid(const RouteProgress& s,const char* label) {

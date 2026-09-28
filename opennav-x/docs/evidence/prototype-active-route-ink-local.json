@@ -1,0 +1,669 @@
+{
+  "accepted": false,
+  "scope": "Linux development active-route ink; native Windows and boat pending",
+  "baseCommit": "b21e6685f45c5d822fc9e9615db71dd8e2f8fb67",
+  "sourceSha256": {
+    "src/ui/Theme.h": "8c2faf45110ff47df98491714d3f53ea9c73733ad217034632dfb4b24c5efac1",
+    "src/integration/ChartPresentation.h": "83576f737ac9b4d6e298c467bd4fa97ead51c8e85a9ca4af944c29caee2c6140",
+    "src/integration/ChartPresentation.cpp": "71c0c427dd24d0987626c3cfbdf3df5cd78b557b8e37f9b9be124af84bcfdd2c",
+    "patches/opencpn-5.12.4-chart-presentation.patch": "53c590427ad94ad9562931b5645846646e198eb5e90890d457aa394a9afb63d5",
+    "tests/RouteProgressScenario.cpp": "b136fd3f94f4b9a2bfd0d2243d21d26915ea149ba7120532488bc1f2d1b72df6",
+    "tools/smoke-navigation.py": "8ab4eb719f513a8981c3247d3395342fd7c5b5da088962ab74df90782e4e9635",
+    "tools/prototype/test_contract.py": "bc04c64ecbf170bb994914cac4a1ec8b6701f218e09dc74a46697b41223ce9be"
+  },
+  "integratedLinuxTests": 122,
+  "failures": 0,
+  "wallSeconds": 19.81,
+  "junitSha256": "31d295f0a9c88f39d302a108076ae4b46f54288a66fee67afe6a1081a28818a4",
+  "cases": [
+    {
+      "case": "route",
+      "reportSha256": "0ad32f49506a1e3e3e6e6696f7998feb108488e0a8d326352255f01e5bf9d811",
+      "routeProgressChecks": 26,
+      "paint": {
+        "style": "XNav",
+        "ink": [
+          38,
+          124,
+          118
+        ],
+        "theme": "Day",
+        "renderer": "software",
+        "projection": "pinned ChartCanvas::GetCanvasPointPix",
+        "samples": [
+          {
+            "x": 507,
+            "y": 497,
+            "exact_ink_pixels": 5
+          },
+          {
+            "x": 522,
+            "y": 470,
+            "exact_ink_pixels": 6
+          },
+          {
+            "x": 537,
+            "y": 442,
+            "exact_ink_pixels": 5
+          },
+          {
+            "x": 552,
+            "y": 415,
+            "exact_ink_pixels": 7
+          },
+          {
+            "x": 567,
+            "y": 388,
+            "exact_ink_pixels": 5
+          },
+          {
+            "x": 607,
+            "y": 314,
+            "exact_ink_pixels": 6
+          },
+          {
+            "x": 622,
+            "y": 287,
+            "exact_ink_pixels": 5
+          },
+          {
+            "x": 637,
+            "y": 259,
+            "exact_ink_pixels": 7
+          },
+          {
+            "x": 652,
+            "y": 231,
+            "exact_ink_pixels": 5
+          },
+          {
+            "x": 667,
+            "y": 204,
+            "exact_ink_pixels": 5
+          }
+        ]
+      },
+      "captures": [
+        {
+          "file": "route-01-active-route.png",
+          "sha256": "2064911e6c9aa666c9d9bedda1a385b7abcb4f58b6c4a3b230a768b9153ed484"
+        },
+        {
+          "file": "route-02-stale-position.png",
+          "sha256": "f8f07178ad56ee6085e0d2e9846e50f06dea2e6482b363599e07c7116f919741"
+        }
+      ]
+    },
+    {
+      "case": "route-dusk",
+      "reportSha256": "08ca466ad3d6f85a23f84a02f032725fa299eb656bf3d1b46d1454def8291624",
+      "routeProgressChecks": 26,
+      "paint": {
+        "style": "XNav",
+        "ink": [
+          176,
+          223,
+          200
+        ],
+        "theme": "Dusk",
+        "renderer": "software",
+        "projection": "pinned ChartCanvas::GetCanvasPointPix",
+        "samples": [
+          {
+            "x": 507,
+            "y": 497,
+            "exact_ink_pixels": 5
+          },
+          {
+            "x": 522,
+            "y": 470,
+            "exact_ink_pixels": 6
+          },
+          {
+            "x": 537,
+            "y": 442,
+            "exact_ink_pixels": 5
+          },
+          {
+            "x": 552,
+            "y": 415,
+            "exact_ink_pixels": 7
+          },
+          {
+            "x": 567,
+            "y": 388,
+            "exact_ink_pixels": 5
+          },
+          {
+            "x": 607,
+            "y": 314,
+            "exact_ink_pixels": 6
+          },
+          {
+            "x": 622,
+            "y": 287,
+            "exact_ink_pixels": 5
+          },
+          {
+            "x": 637,
+            "y": 259,
+            "exact_ink_pixels": 7
+          },
+          {
+            "x": 652,
+            "y": 231,
+            "exact_ink_pixels": 5
+          },
+          {
+            "x": 667,
+            "y": 204,
+            "exact_ink_pixels": 5
+          }
+        ]
+      },
+      "captures": [
+        {
+          "file": "route-dusk-01-active-route.png",
+          "sha256": "eb90c2bb169096d0d4cf00f76bc1382de9dbf388e1a05fa09e3401162abfa33e"
+        },
+        {
+          "file": "route-dusk-02-stale-position.png",
+          "sha256": "7fe5b8e18e450623a8a007e37d7dbfb9d840a543e71e16bb1a1ece46859bce18"
+        }
+      ]
+    },
+    {
+      "case": "route-night",
+      "reportSha256": "836837ad98d84e359a3cac293f542fbc843ad25d9876edda5d7fa3fee0f8feef",
+      "routeProgressChecks": 26,
+      "paint": {
+        "style": "XNav",
+        "ink": [
+          145,
+          188,
+          162
+        ],
+        "theme": "Night",
+        "renderer": "software",
+        "projection": "pinned ChartCanvas::GetCanvasPointPix",
+        "samples": [
+          {
+            "x": 507,
+            "y": 497,
+            "exact_ink_pixels": 5
+          },
+          {
+            "x": 522,
+            "y": 470,
+            "exact_ink_pixels": 6
+          },
+          {
+            "x": 537,
+            "y": 442,
+            "exact_ink_pixels": 5
+          },
+          {
+            "x": 552,
+            "y": 415,
+            "exact_ink_pixels": 7
+          },
+          {
+            "x": 567,
+            "y": 388,
+            "exact_ink_pixels": 5
+          },
+          {
+            "x": 607,
+            "y": 314,
+            "exact_ink_pixels": 6
+          },
+          {
+            "x": 622,
+            "y": 287,
+            "exact_ink_pixels": 5
+          },
+          {
+            "x": 637,
+            "y": 259,
+            "exact_ink_pixels": 7
+          },
+          {
+            "x": 652,
+            "y": 231,
+            "exact_ink_pixels": 5
+          },
+          {
+            "x": 667,
+            "y": 204,
+            "exact_ink_pixels": 5
+          }
+        ]
+      },
+      "captures": [
+        {
+          "file": "route-night-01-active-route.png",
+          "sha256": "c248cd88a11e0115250f25a01fccae0278f2b6066060c87835c59ea61586f768"
+        },
+        {
+          "file": "route-night-02-stale-position.png",
+          "sha256": "08ce7ada7f0311b64bc399d7dc10a77349c141280d54265ee6ddaffd0537a052"
+        }
+      ]
+    },
+    {
+      "case": "route-standard",
+      "reportSha256": "fa564a914a99a63b7e0ec325fed1f2afedb2f66d1e3a341ab800a4ec0c7f7988",
+      "routeProgressChecks": 26,
+      "paint": {
+        "style": "Standard",
+        "ink": [
+          200,
+          0,
+          0
+        ],
+        "theme": "Day",
+        "renderer": "software",
+        "projection": "pinned ChartCanvas::GetCanvasPointPix",
+        "samples": [
+          {
+            "x": 507,
+            "y": 497,
+            "exact_ink_pixels": 5
+          },
+          {
+            "x": 522,
+            "y": 470,
+            "exact_ink_pixels": 6
+          },
+          {
+            "x": 537,
+            "y": 442,
+            "exact_ink_pixels": 5
+          },
+          {
+            "x": 552,
+            "y": 415,
+            "exact_ink_pixels": 7
+          },
+          {
+            "x": 567,
+            "y": 388,
+            "exact_ink_pixels": 5
+          },
+          {
+            "x": 607,
+            "y": 314,
+            "exact_ink_pixels": 6
+          },
+          {
+            "x": 622,
+            "y": 287,
+            "exact_ink_pixels": 5
+          },
+          {
+            "x": 637,
+            "y": 259,
+            "exact_ink_pixels": 7
+          },
+          {
+            "x": 652,
+            "y": 231,
+            "exact_ink_pixels": 5
+          },
+          {
+            "x": 667,
+            "y": 204,
+            "exact_ink_pixels": 5
+          }
+        ]
+      },
+      "captures": [
+        {
+          "file": "route-standard-01-active-route.png",
+          "sha256": "d278c12fdf67796d6ff9e4240351523738d0576ea67b1690907bec9f9b6464bc"
+        },
+        {
+          "file": "route-standard-02-stale-position.png",
+          "sha256": "9063228d28c693e1f23863f5a510a4333062c3138ffefa2d9d9b913838e47713"
+        }
+      ]
+    },
+    {
+      "case": "route-opengl",
+      "reportSha256": "33375dcdc630d9d879acc61457e0488a95e40280fa2553e0af0c5add6bf18b6e",
+      "routeProgressChecks": 26,
+      "paint": {
+        "style": "XNav",
+        "ink": [
+          38,
+          124,
+          118
+        ],
+        "theme": "Day",
+        "renderer": "opengl",
+        "projection": "pinned ChartCanvas::GetCanvasPointPix",
+        "samples": [
+          {
+            "x": 507,
+            "y": 497,
+            "exact_ink_pixels": 7
+          },
+          {
+            "x": 522,
+            "y": 470,
+            "exact_ink_pixels": 8
+          },
+          {
+            "x": 537,
+            "y": 442,
+            "exact_ink_pixels": 7
+          },
+          {
+            "x": 552,
+            "y": 415,
+            "exact_ink_pixels": 8
+          },
+          {
+            "x": 567,
+            "y": 388,
+            "exact_ink_pixels": 6
+          },
+          {
+            "x": 607,
+            "y": 314,
+            "exact_ink_pixels": 8
+          },
+          {
+            "x": 622,
+            "y": 287,
+            "exact_ink_pixels": 8
+          },
+          {
+            "x": 637,
+            "y": 259,
+            "exact_ink_pixels": 9
+          },
+          {
+            "x": 652,
+            "y": 231,
+            "exact_ink_pixels": 9
+          },
+          {
+            "x": 667,
+            "y": 204,
+            "exact_ink_pixels": 8
+          }
+        ]
+      },
+      "captures": [
+        {
+          "file": "route-opengl-01-active-route.png",
+          "sha256": "aa30290bb544527ec6f08bf6a2387a7d256f462a7bf05799ddb34ab13449fe03"
+        },
+        {
+          "file": "route-opengl-02-stale-position.png",
+          "sha256": "e376aba3229b4d08868fbf44e97de378e28c1579574ff56980262a15914088dd"
+        }
+      ]
+    },
+    {
+      "case": "route-dusk-opengl",
+      "reportSha256": "a98da52ea9d5b7eb7c015e0e1d1c0c92c60973bda0346717bbcc29c14810d5e6",
+      "routeProgressChecks": 26,
+      "paint": {
+        "style": "XNav",
+        "requested_ink": [
+          176,
+          223,
+          200
+        ],
+        "ink": [
+          175,
+          222,
+          199
+        ],
+        "theme": "Dusk",
+        "renderer": "opengl",
+        "projection": "pinned ChartCanvas::GetCanvasPointPix",
+        "samples": [
+          {
+            "x": 507,
+            "y": 497,
+            "exact_ink_pixels": 7
+          },
+          {
+            "x": 522,
+            "y": 470,
+            "exact_ink_pixels": 8
+          },
+          {
+            "x": 537,
+            "y": 442,
+            "exact_ink_pixels": 7
+          },
+          {
+            "x": 552,
+            "y": 415,
+            "exact_ink_pixels": 8
+          },
+          {
+            "x": 567,
+            "y": 388,
+            "exact_ink_pixels": 6
+          },
+          {
+            "x": 607,
+            "y": 314,
+            "exact_ink_pixels": 8
+          },
+          {
+            "x": 622,
+            "y": 287,
+            "exact_ink_pixels": 8
+          },
+          {
+            "x": 637,
+            "y": 259,
+            "exact_ink_pixels": 9
+          },
+          {
+            "x": 652,
+            "y": 231,
+            "exact_ink_pixels": 9
+          },
+          {
+            "x": 667,
+            "y": 204,
+            "exact_ink_pixels": 8
+          }
+        ]
+      },
+      "captures": [
+        {
+          "file": "route-dusk-opengl-01-active-route.png",
+          "sha256": "4d6cfca21419d2963ee8ce3baf68d6cd2df235a8b7e0562e92e79273d3b859d6"
+        },
+        {
+          "file": "route-dusk-opengl-02-stale-position.png",
+          "sha256": "9c0247f3992fd64e94f811fcc970eaf2f30eea5c24002f3c78d2257f81c56491"
+        }
+      ]
+    },
+    {
+      "case": "route-night-opengl",
+      "reportSha256": "731bea590fca1cc06c80f2fd02df19cf708b5f2df98a117ea585980d6a46a204",
+      "routeProgressChecks": 26,
+      "paint": {
+        "style": "XNav",
+        "requested_ink": [
+          145,
+          188,
+          162
+        ],
+        "ink": [
+          144,
+          187,
+          161
+        ],
+        "theme": "Night",
+        "renderer": "opengl",
+        "projection": "pinned ChartCanvas::GetCanvasPointPix",
+        "samples": [
+          {
+            "x": 507,
+            "y": 497,
+            "exact_ink_pixels": 7
+          },
+          {
+            "x": 522,
+            "y": 470,
+            "exact_ink_pixels": 8
+          },
+          {
+            "x": 537,
+            "y": 442,
+            "exact_ink_pixels": 7
+          },
+          {
+            "x": 552,
+            "y": 415,
+            "exact_ink_pixels": 8
+          },
+          {
+            "x": 567,
+            "y": 388,
+            "exact_ink_pixels": 6
+          },
+          {
+            "x": 607,
+            "y": 314,
+            "exact_ink_pixels": 8
+          },
+          {
+            "x": 622,
+            "y": 287,
+            "exact_ink_pixels": 8
+          },
+          {
+            "x": 637,
+            "y": 259,
+            "exact_ink_pixels": 9
+          },
+          {
+            "x": 652,
+            "y": 231,
+            "exact_ink_pixels": 9
+          },
+          {
+            "x": 667,
+            "y": 204,
+            "exact_ink_pixels": 8
+          }
+        ]
+      },
+      "captures": [
+        {
+          "file": "route-night-opengl-01-active-route.png",
+          "sha256": "250a969724a0f8b89953bebda34660ccfc8ad2ee5ee735d2ab1aef013ab178bb"
+        },
+        {
+          "file": "route-night-opengl-02-stale-position.png",
+          "sha256": "abfcce59d5c6708e68e0185ba86646c90c88c1f552ab79bb49a12940984594f9"
+        }
+      ]
+    },
+    {
+      "case": "route-standard-opengl",
+      "reportSha256": "62e9c5363a4f65e1ce56fd1e95b2acfba02a3f67c81e72d19be0152e63d907f4",
+      "routeProgressChecks": 26,
+      "paint": {
+        "style": "Standard",
+        "requested_ink": [
+          200,
+          0,
+          0
+        ],
+        "ink": [
+          199,
+          0,
+          0
+        ],
+        "theme": "Day",
+        "renderer": "opengl",
+        "projection": "pinned ChartCanvas::GetCanvasPointPix",
+        "samples": [
+          {
+            "x": 507,
+            "y": 497,
+            "exact_ink_pixels": 7
+          },
+          {
+            "x": 522,
+            "y": 470,
+            "exact_ink_pixels": 8
+          },
+          {
+            "x": 537,
+            "y": 442,
+            "exact_ink_pixels": 7
+          },
+          {
+            "x": 552,
+            "y": 415,
+            "exact_ink_pixels": 8
+          },
+          {
+            "x": 567,
+            "y": 388,
+            "exact_ink_pixels": 6
+          },
+          {
+            "x": 607,
+            "y": 314,
+            "exact_ink_pixels": 8
+          },
+          {
+            "x": 622,
+            "y": 287,
+            "exact_ink_pixels": 8
+          },
+          {
+            "x": 637,
+            "y": 259,
+            "exact_ink_pixels": 9
+          },
+          {
+            "x": 652,
+            "y": 231,
+            "exact_ink_pixels": 9
+          },
+          {
+            "x": 667,
+            "y": 204,
+            "exact_ink_pixels": 8
+          }
+        ]
+      },
+      "captures": [
+        {
+          "file": "route-standard-opengl-01-active-route.png",
+          "sha256": "ed90ecb5d237b5f319a1f1538a14506c96e1d5be1c6f015e1763eb32ea6a315b"
+        },
+        {
+          "file": "route-standard-opengl-02-stale-position.png",
+          "sha256": "9ec394228c0692201af035fbd2ad1afb2082e5dd7e4667f35b3f52d54bf288cf"
+        }
+      ]
+    }
+  ],
+  "negativeEvidence": {
+    "firstDayCapture": "Retained camera at .015; corrected to .009 and all projected points now strictly contained",
+    "firstNightGL": "Retained exact RGB failure; pinned ocpndc.cpp shader normalizes by 256. Replacement tests exact 255 framebuffer quantization, not similarity tolerance."
+  },
+  "limitations": [
+    "Software and llvmpipe only; physical GPU and Windows pending",
+    "Fixture route is explicit test data over GSHHS, not ENC navigation acceptance",
+    "Only active unselected ink; upstream width, symbols and geometry preserved",
+    "Night stock waypoint labels remain an open presentation issue"
+  ]
+}

@@ -16,8 +16,10 @@ XNavDrawer::XNavDrawer(wxWindow &owner, const wxString &name)
   SetName(name);
   SetBackgroundStyle(wxBG_STYLE_PAINT);
   heading_ = new wxPanel(this, wxID_ANY);
+  heading_->SetLabel(wxEmptyString);
   heading_->SetBackgroundStyle(wxBG_STYLE_PAINT);
   body_ = new XNavScroll(this);
+  body_->SetLabel(wxEmptyString);
   content_ = new wxBoxSizer(wxVERTICAL);
   auto *padding = new wxBoxSizer(wxVERTICAL);
   padding->AddSpacer(FromDIP(20));

@@ -191,6 +191,9 @@ Shell::Shell(wxFrame &frame, wxAuiManager &manager, ShellActions actions,
   // 7px margin, a 1px rule, 7px margin and another 5px gap.
   tools->AddSpacer(frame_.FromDIP(7));
   auto *nav_divider = new wxPanel(left, wxID_ANY);
+  // wxMSW otherwise exposes its default "panel" name as native window text.
+  // A decorative separator has no label; keep the rail's action identity exact.
+  nav_divider->SetLabel(wxEmptyString);
   nav_divider->SetMinSize(frame_.FromDIP(wxSize(37, 1)));
   nav_divider->SetBackgroundStyle(wxBG_STYLE_PAINT);
   nav_divider->Bind(wxEVT_PAINT, [this, nav_divider](wxPaintEvent &) {

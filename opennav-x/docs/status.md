@@ -2,19 +2,39 @@
 
 ## Current stage: prototype design lock, chart presentation and Online AIS
 
+The current active-route presentation increment copies the immutable prototype's
+Day/Dusk/Night route ink into OpenCPN's existing software/GL route rendering.
+Standard, selected routes, geometry and progress semantics remain upstream-owned.
+Eight Linux render cases pass 26 route-progress checks and ten exact projected
+stroke checks each; 16 captures are retained. The rebuilt integrated suite passes
+122/122 (19.81s), plus five prototype contract tests and 212 capture-guard checks.
+OpenGL uses the pinned renderer's exact RGB/256 conversion. Windows and boat
+qualification are pending; broader overlay conformance is not claimed. See
+[route-ink evidence](evidence/prototype-active-route-ink-local.json).
+
+Latest Windows development run `36498559587` / remote `42255ef` passes seven of
+eight jobs: 114 integrated tests, all component suites and independent ENC captures.
+The strict actual-product capture refuses the new rail's unexpected structural
+caption. Source inspection of the pinned wxWidgets 3.2.8 confirms default panel
+names become native captions. The correction explicitly clears labels only on
+the decorative rail divider and drawer containers; capture predicates remain
+unchanged. All eight negative-run artifacts and 27 manifest PNGs verify. See
+[negative evidence](evidence/prototype-native-42255ef-failed.json). Replacement
+Windows capture and boat deployment remain pending.
+
 Replacement `299c728` / run `36496486152` passes the corrected Windows
-Instruments rendering check (41 checks/five captures), all114 integrated tests,
-48 native marker-window cases and212 pure guard checks. Seven of eight jobs
+Instruments rendering check (41 checks/five captures), all 114 integrated tests,
+48 native marker-window cases and 212 pure guard checks. Seven of eight jobs
 pass. The actual-product capture guard refuses Passage after three successful
 navigation theme captures; its child stderr was not retained by the original
 CI launcher. The replacement retains that refusal explicitly; no guard has
-been bypassed. All eight artifacts and30 complete capture PNGs verify, with
+been bypassed. All eight artifacts and 30 manifest-listed PNGs verify, with
 six partial navigation PNGs retained separately. See
 [negative native evidence](evidence/prototype-native-299c728-failed.json).
 No package or boat acceptance is claimed from this run.
 
 The committed rail/scroll correction `da17dab` has a fresh integrated Linux
-configure/build/install and122/122 passing tests (20.59s). Its Windows
+configure/build/install and 122/122 passing tests (20.59s). Its Windows
 qualification remains pending.
 
 The next native Passage increment now follows the prototype drawer instead of
@@ -47,7 +67,7 @@ displaced compass text and unavailable-line collision are corrected and tested.
 [Design review](design/reviews/prototype-instruments-in-progress.md) and
 [evidence](evidence/prototype-instruments-local.json) record the required
 navigation-meaning differences, earlier negative runs and pending Windows/boat
-gates. Remaining older Up/Down chrome is an explicit prototype mismatch.
+gates. The later rail/scroll correction below removes its older Up/Down chrome.
 
 The Instruments Windows increment `1a175e3` / run `36494702427` is **not
 accepted**: 114 integrated tests, object interactions and actual-product/ENC
@@ -67,8 +87,8 @@ No new prototype product has been launched aboard, and no actuator action was
 added. See [guard review](design/reviews/prototype-boat-capture-guard.md).
 
 A further Instruments correction removes its old permanent scroll toolbar and
-restores the exact main-rail button widths/group separation. All122 Linux tests
-pass (19.33s);16 captures pass exact rail measurements and actual pointer-wheel
+restores the exact main-rail button widths/group separation. All 122 Linux tests
+pass (19.33s); 16 captures pass exact rail measurements and actual pointer-wheel
 access to lower readings/back to top. Windows and boat gates remain pending;
 the lower vessel-profile group is still an explicit mismatch. See
 [corrective evidence](evidence/prototype-rail-scroll-local.json).

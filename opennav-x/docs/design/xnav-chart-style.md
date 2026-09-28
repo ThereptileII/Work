@@ -61,6 +61,36 @@ labels #835d70 9px. These literal styles and theme overrides must be assessed
 together: normal, alarm, stale/lost and online provenance need semantically
 distinct states even where the illustrative target set has no example.
 
+### Active-route ink increment (qualification pending)
+
+The native active route now has a bounded prototype-palette hook for its
+software, incremental-segment and OpenGL drawing paths. It uses the exact
+`--route` values above only with verified XNav presentation. Standard uses the
+upstream active pen. This changes local paint state, never a stored route color
+or the route model. Upstream selection remains visible using its existing
+appearance; selected/inactive routes, waypoints, ownship, tracks, MOB, anchor
+radius and the complete route-state visual hierarchy remain unfinished.
+
+The prototype's 2.6px stroke and joins are not yet reproduced: this first
+increment preserves configured upstream width/style and needs a separate
+default-presentation decision that does not overwrite user preferences. Do not
+claim overall route conformance from matching the three ink values.
+
+The test-only route driver returns upstream-projected screen positions. Tests
+sample multiple interior points of both actual route legs, require exact ink
+pixels, retain images and also run Standard. Day/Dusk/Night and actual renderer
+are checked explicitly. The existing arrival, skip, reversal, editing,
+deletion, freshness and immutable-retention scenario remains in the same run.
+Physical chart/symbol review and native replacement evidence remain required.
+
+The first Night GL pixel check failed by exactly one RGB level. Inspection of
+the pinned `ocpnDC` shader path shows its existing RGB/256 normalization before
+8-bit framebuffer quantization. Tests now require exactly
+`round(prototype_channel * 255 / 256)` for that path and retain the requested
+prototype color separately. Software requires the original exact RGB. No image
+similarity tolerance or renderer-wide recoloring is introduced. The negative
+capture is retained; waypoint text/icons remain visibly unrefined at Night.
+
 ## Pinned source boundaries inspected
 
 - `libs/s52plib/src/chartsymbols.cpp`, `ChartSymbols::LoadConfigFile`: loads

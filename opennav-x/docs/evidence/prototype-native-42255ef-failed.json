@@ -1,0 +1,193 @@
+{
+  "accepted": false,
+  "developmentGatesPassed": false,
+  "localCommit": "b21e6685f45c5d822fc9e9615db71dd8e2f8fb67",
+  "remoteCommit": "42255ef8e9760acbf7a418e14d44c44ef8165f40",
+  "tree": "f571d32808b949f72a16b2ceec5b84af34872c22",
+  "verifiedSourceBlobs": 1087,
+  "ciRun": "https://github.com/ThereptileII/Work/actions/runs/36498559587",
+  "jobsPassed": 7,
+  "jobsFailed": 1,
+  "artifacts": [
+    {
+      "id": 11005225086,
+      "name": "prototype-native-Windows-42255ef8e9760acbf7a418e14d44c44ef8165f40",
+      "sha256": "b3df08d5978efad881a1f83317d9c07245d931d37dd81ca7ff7ea7f56c05ecb3",
+      "bytes": 6753442,
+      "zipCrc": true
+    },
+    {
+      "id": 11004815918,
+      "name": "prototype-ais-foundation-Windows-42255ef8e9760acbf7a418e14d44c44ef8165f40",
+      "sha256": "7aaef4484c8998073752a278d7b1c13b6e540d4c55213b1276cee0047d840bec",
+      "bytes": 692,
+      "zipCrc": true
+    },
+    {
+      "id": 11004795929,
+      "name": "prototype-ais-network-Linux-42255ef8e9760acbf7a418e14d44c44ef8165f40",
+      "sha256": "8bb7f32037d9a47dee20d98dab0bcb7629d84d194cc695ed1bd457d2fa31a51e",
+      "bytes": 935,
+      "zipCrc": true
+    },
+    {
+      "id": 11004372107,
+      "name": "prototype-ais-foundation-Linux-42255ef8e9760acbf7a418e14d44c44ef8165f40",
+      "sha256": "951bb4a013ba4431a330a33c53930c189749c7becfd99bd41b51dbc78686e7cc",
+      "bytes": 688,
+      "zipCrc": true
+    },
+    {
+      "id": 11004344329,
+      "name": "prototype-object-flow-Windows-42255ef8e9760acbf7a418e14d44c44ef8165f40",
+      "sha256": "315345eafe92169e95d37634db1bc492888d281544293218e76c1ffb9c941b14",
+      "bytes": 1993822,
+      "zipCrc": true
+    },
+    {
+      "id": 11003983598,
+      "name": "prototype-reference-Windows-42255ef8e9760acbf7a418e14d44c44ef8165f40",
+      "sha256": "6f2486f87e35e545040b2f914ff12415ef7eb2e4f62ac2ca5c7ccd16bf494a72",
+      "bytes": 16131829,
+      "zipCrc": true
+    },
+    {
+      "id": 11003888666,
+      "name": "prototype-review-guard-Windows-42255ef8e9760acbf7a418e14d44c44ef8165f40",
+      "sha256": "9147ee4cd9804804562549054f6d8a8c1b9f138907c2cfe036ca01193bb4d4cb",
+      "bytes": 8542,
+      "zipCrc": true
+    },
+    {
+      "id": 11003673837,
+      "name": "prototype-reference-Linux-42255ef8e9760acbf7a418e14d44c44ef8165f40",
+      "sha256": "82c446809db59991fda45624b26ad3ac63735f530cf08dba73ad3e27136a5a93",
+      "bytes": 17761754,
+      "zipCrc": true
+    }
+  ],
+  "windows": {
+    "unitTestsPassed": 114,
+    "nativeMarkerCasesPassed": 48,
+    "pureGuardChecksPassed": 212,
+    "aisWidgetChecks": 71,
+    "passageWidgetChecks": 26,
+    "instrumentsWidgetChecks": 41,
+    "actualProductCapture": "Refused at navigation-day: Normal installed XNav shell was not uniquely identified.",
+    "packageProduced": false,
+    "unitSeconds": 22.47
+  },
+  "verifiedPngs": [
+    {
+      "file": "prototype-native-Windows-42255ef8e9760acbf7a418e14d44c44ef8165f40/ais-component/traffic-day.png",
+      "sha256": "77d3484b6d2695b0609cedfcaade83bc8bccc3872a534ce31c62f1ef82a7e014"
+    },
+    {
+      "file": "prototype-native-Windows-42255ef8e9760acbf7a418e14d44c44ef8165f40/ais-component/ais-target-day.png",
+      "sha256": "58fa34fe75250c6a5b91f8c6bfb7134502d4c68f00b1c90bf3e0831e721b75cb"
+    },
+    {
+      "file": "prototype-native-Windows-42255ef8e9760acbf7a418e14d44c44ef8165f40/ais-component/ais-target-dusk.png",
+      "sha256": "226816f63e107fbf12c768902f070486e22cd42b09367219d7d0f530a3c491cb"
+    },
+    {
+      "file": "prototype-native-Windows-42255ef8e9760acbf7a418e14d44c44ef8165f40/ais-component/ais-target-night.png",
+      "sha256": "7e021b2d64eb8ff576c7a19f2b400b3a9045d37e8e72e6068f10f5ac8727927d"
+    },
+    {
+      "file": "prototype-native-Windows-42255ef8e9760acbf7a418e14d44c44ef8165f40/ais-component/traffic-night.png",
+      "sha256": "5445173c1beb0300dd1119b64e1071753b9254c56cd3882f152d792680b2e980"
+    },
+    {
+      "file": "prototype-native-Windows-42255ef8e9760acbf7a418e14d44c44ef8165f40/ais-component/online-target-day.png",
+      "sha256": "ad288c7c9b3d45e42994dcb983e6a9790c25285ee0df7f23994c64eb62e98a08"
+    },
+    {
+      "file": "prototype-native-Windows-42255ef8e9760acbf7a418e14d44c44ef8165f40/ais-component/online-stale-day.png",
+      "sha256": "13dc0863b43c817eacf14b275ca4f5688915dc68f6a38f70aa42715883eaad64"
+    },
+    {
+      "file": "prototype-native-Windows-42255ef8e9760acbf7a418e14d44c44ef8165f40/ais-component/online-lost-day.png",
+      "sha256": "6d9cc969b81512161650f2060c765dfd8b9ee445478172809951ee9516978743"
+    },
+    {
+      "file": "prototype-native-Windows-42255ef8e9760acbf7a418e14d44c44ef8165f40/ais-component/target-expired-day.png",
+      "sha256": "26776ca248ce63ceeef5de659f3f7c5092e62d9fd7a6cc85b8e9226655902ebc"
+    },
+    {
+      "file": "prototype-native-Windows-42255ef8e9760acbf7a418e14d44c44ef8165f40/instruments-component/instruments-day.png",
+      "sha256": "e1ae4c2d57790b53705464276b8341794694e3be79d80d5cd3e0b3cf8deaa33b"
+    },
+    {
+      "file": "prototype-native-Windows-42255ef8e9760acbf7a418e14d44c44ef8165f40/instruments-component/instruments-dusk.png",
+      "sha256": "6f2d78e143bb7e3750219bcb84d296a5803cb780a438b58a5241ce61eeb9ba23"
+    },
+    {
+      "file": "prototype-native-Windows-42255ef8e9760acbf7a418e14d44c44ef8165f40/instruments-component/instruments-night.png",
+      "sha256": "957d1f61c9a1291f3967c21c04f2ddde185eee6b6e313ac1d38d44413d68407b"
+    },
+    {
+      "file": "prototype-native-Windows-42255ef8e9760acbf7a418e14d44c44ef8165f40/instruments-component/instruments-stale-day.png",
+      "sha256": "094625da762ab8b93016a69b59d24e481f991e4464a8daf08896a51cae5cbd31"
+    },
+    {
+      "file": "prototype-native-Windows-42255ef8e9760acbf7a418e14d44c44ef8165f40/instruments-component/instruments-heading-unavailable-day.png",
+      "sha256": "1741bfb8dcec1350188cee8ad322519b61340705fbce8f10cc792c432d42877d"
+    },
+    {
+      "file": "prototype-native-Windows-42255ef8e9760acbf7a418e14d44c44ef8165f40/passage-component/passage-day.png",
+      "sha256": "b821cf342b32ba00dafd67a356f585187938f03e7e2c6385652862850596e6d6"
+    },
+    {
+      "file": "prototype-native-Windows-42255ef8e9760acbf7a418e14d44c44ef8165f40/passage-component/passage-dusk.png",
+      "sha256": "43afa4fef67e2fa9d3547bbd3651e028fe2096a2dd52cba567ea1931321df72e"
+    },
+    {
+      "file": "prototype-native-Windows-42255ef8e9760acbf7a418e14d44c44ef8165f40/passage-component/passage-night.png",
+      "sha256": "787ecfdd4078e7ce7b44c5c99daa768ab7037986f645c65eecdbae378702af66"
+    },
+    {
+      "file": "prototype-native-Windows-42255ef8e9760acbf7a418e14d44c44ef8165f40/passage-component/passage-stale-day.png",
+      "sha256": "4b8af53f0d30d755ac05417488abd49cc1d201a1a2c37548430b0c29e184335d"
+    },
+    {
+      "file": "prototype-native-Windows-42255ef8e9760acbf7a418e14d44c44ef8165f40/passage-component/passage-inactive-day.png",
+      "sha256": "4c931643fcb011808c1ccc2fb228af99ff59281bd5f9b739476146a02e016e8f"
+    },
+    {
+      "file": "prototype-native-Windows-42255ef8e9760acbf7a418e14d44c44ef8165f40/prototype-enc-standard/navigation-day.png",
+      "sha256": "270c74f707981592d13cd4021bd36eacac2f5e28cb9f6003f1e607062ff2d6f8"
+    },
+    {
+      "file": "prototype-native-Windows-42255ef8e9760acbf7a418e14d44c44ef8165f40/prototype-enc-standard/navigation-dusk.png",
+      "sha256": "99cf0c6086afa630ff095877687cc80aa2386208d09c490a70975a332515b5c2"
+    },
+    {
+      "file": "prototype-native-Windows-42255ef8e9760acbf7a418e14d44c44ef8165f40/prototype-enc-standard/navigation-night.png",
+      "sha256": "3a6dbb207cfd6ded6cb350a99be872c67e9ae3662b295e85fa5b6780ea472201"
+    },
+    {
+      "file": "prototype-native-Windows-42255ef8e9760acbf7a418e14d44c44ef8165f40/prototype-enc-standard/navigation-return-day.png",
+      "sha256": "270c74f707981592d13cd4021bd36eacac2f5e28cb9f6003f1e607062ff2d6f8"
+    },
+    {
+      "file": "prototype-native-Windows-42255ef8e9760acbf7a418e14d44c44ef8165f40/prototype-enc-xnav/navigation-day.png",
+      "sha256": "ddcb49d784f0fc131e3ca4d3f4989ece4e8bae6b3e22b3fc7b6a404eaa3da5fe"
+    },
+    {
+      "file": "prototype-native-Windows-42255ef8e9760acbf7a418e14d44c44ef8165f40/prototype-enc-xnav/navigation-dusk.png",
+      "sha256": "0f8a4833c1165ef65e6ba18fa1bc96faca1ea7dca674aece81227170ecc61f40"
+    },
+    {
+      "file": "prototype-native-Windows-42255ef8e9760acbf7a418e14d44c44ef8165f40/prototype-enc-xnav/navigation-night.png",
+      "sha256": "6536f65016da2e796fbe2f2724fac064b664f05ac148845ee372306d81bdf0e7"
+    },
+    {
+      "file": "prototype-native-Windows-42255ef8e9760acbf7a418e14d44c44ef8165f40/prototype-enc-xnav/navigation-return-day.png",
+      "sha256": "ddcb49d784f0fc131e3ca4d3f4989ece4e8bae6b3e22b3fc7b6a404eaa3da5fe"
+    }
+  ],
+  "investigation": "Pinned wxWidgets3.2.8 wxWindowMSW::MSWCreate uses the default window name when title is null. The decorative rail panel therefore exposes an extra native caption, and drawer heading/body also have default captions. The proposed correction explicitly clears labels on these three structural containers; no capture guard rejection is relaxed. Actual native replacement pending.",
+  "sourceBoundary": "https://github.com/wxWidgets/wxWidgets/blob/v3.2.8/src/msw/window.cpp#L3745",
+  "boat": "Read-only SSH presence check: reachable, OpenCPN closed. No launch, installation, hardware command or access-service changes."
+}

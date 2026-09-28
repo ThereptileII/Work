@@ -11,6 +11,12 @@ struct Palette {
 };
 struct FloatingPalette { std::uint32_t surface, primary, secondary, compass_light; };
 struct OnlineChartPalette { std::uint32_t stroke, fill, selected, stale; };
+constexpr std::uint32_t ActiveRouteInk(LightMode mode) {
+  // Final prototype --route. Route selection and explicit stored properties
+  // remain OpenCPN concerns, outside this presentation-only palette.
+  return mode == LightMode::Day ? 0x267C76
+       : mode == LightMode::Dusk ? 0xB0DFC8 : 0x91BCA2;
+}
 constexpr std::uint32_t NavigationContextInk(LightMode mode) {
   // --cyan, distinct from --mint (selection/confirmation).
   return mode == LightMode::Day ? 0x7BC8D7

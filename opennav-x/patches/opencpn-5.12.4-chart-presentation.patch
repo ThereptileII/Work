@@ -313,3 +313,60 @@ diff --git a/gui/src/chcanv.cpp b/gui/src/chcanv.cpp
  
      m_scaleBarRect = wxRect(x_origin, y_origin - 12, l1,
                              12);  // Store this for later reference
+diff --git a/gui/src/route_gui.cpp b/gui/src/route_gui.cpp
+--- a/gui/src/route_gui.cpp
++++ b/gui/src/route_gui.cpp
+@@ -45,6 +45,9 @@
+ #include "model/own_ship.h"
+ #include "model/routeman.h"
+ #include "route_gui.h"
++#ifdef OPENNAV_X
++#include "integration/ChartPresentation.h"
++#endif
+ #include "route_point_gui.h"
+ #include "glChartCanvas.h"
+ #include "line_clip.h"
+@@ -121,6 +124,15 @@
+     spen.SetWidth(width);
+     dc.SetPen(spen);
+     dc.SetBrush(*g_pRouteMan->GetActiveRouteBrush());
++#ifdef OPENNAV_X
++    wxColour xnav_ink;
++    if (!m_route.m_bRtIsSelected &&
++        opennav::integration::ChartActiveRouteInk(*canvas, xnav_ink)) {
++      spen.SetColour(xnav_ink);
++      dc.SetPen(spen);
++      dc.SetBrush(wxBrush(xnav_ink));
++    }
++#endif
+   }
+ 
+   wxPoint rpt1, rpt2;
+@@ -364,6 +376,16 @@
+   else
+     dc.SetPen(*g_pRouteMan->GetRoutePen());
+ 
++#ifdef OPENNAV_X
++  wxColour xnav_ink;
++  if (m_route.m_bRtIsActive && !m_route.m_bRtIsSelected &&
++      opennav::integration::ChartActiveRouteInk(*canvas, xnav_ink)) {
++    auto pen = dc.GetPen();
++    pen.SetColour(xnav_ink);
++    dc.SetPen(pen);
++    dc.SetBrush(wxBrush(xnav_ink));
++  }
++#endif
+   RenderSegment(dc, rp1->x, rp1->y, rp2->x, rp2->y, vp, bdraw_arrow);
+ }
+ 
+@@ -430,6 +452,10 @@
+     }
+   }
+ 
++#ifdef OPENNAV_X
++  if (m_route.m_bRtIsActive && !m_route.m_bRtIsSelected)
++    opennav::integration::ChartActiveRouteInk(*canvas, col);
++#endif
+   wxPenStyle style = wxPENSTYLE_SOLID;
+   if (m_route.m_style != wxPENSTYLE_INVALID) style = m_route.m_style;
+   wxPen p = *wxThePenList->FindOrCreatePen(col, width, style);

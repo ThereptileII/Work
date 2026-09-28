@@ -28,6 +28,11 @@ try {
  [OpenNavX.ReviewWindowNative]::AssertCapture([IntPtr]$Handle,$ProcessId,$info)
  $bitmap.Save($path,[Drawing.Imaging.ImageFormat]::Png)
  [IO.File]::WriteAllText(($path+'.json'),($info|ConvertTo-Json -Depth 8))
+} catch {
+ # Preserve nested bounded guard reasons in the disposable CI log. The guard
+ # never includes arbitrary window text or credential content in its errors.
+ [Console]::Error.WriteLine($_.Exception.ToString())
+ throw
 } finally {
  if($graphics){$graphics.Dispose()};if($bitmap){$bitmap.Dispose()}
  $null=[OpenNavX.ReviewWindowNative]::SetThreadDpiAwarenessContext($oldDpi)

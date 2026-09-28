@@ -49,3 +49,14 @@ arbitrary child text or typed credentials. No rejection predicate was relaxed.
 
 Actual-product qualification remains pending. This record does not authorize deployment or
 claim physical display acceptance. No upstream hook changes are involved.
+
+Run `36498559587` at `42255ef` retains the actual refusal: the first navigation
+capture cannot identify a unique shell. Its newly added decorative rail panel
+adds the wxMSW default native caption. Source inspection of
+[wxWidgets 3.2.8 MSWCreate](https://github.com/wxWidgets/wxWidgets/blob/v3.2.8/src/msw/window.cpp#L3745)
+confirms that a null title becomes the window name. This also explains the
+earlier drawer's structural heading/body captions. The production correction
+explicitly clears only those three structural labels. Action labels, hierarchy,
+ownership and all guard predicates remain unchanged. Marker forms already use
+empty structural captions; actual native replacement captures must qualify the
+correction. All eight failed-run artifacts and27 PNG hashes verify.

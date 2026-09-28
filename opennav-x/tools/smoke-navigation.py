@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 """Loopback-only synthetic NMEA through OpenCPN's real input and XNav bridge."""
+import argparse
 import datetime
 import importlib.util
 import json
@@ -14,14 +15,22 @@ import threading
 import time
 from diagnostic_snapshot import read_json_snapshot
 
-route_fixture = sys.argv[1:] == ['--route-fixture']
-instruments = sys.argv[1:] == ['--instruments']
-objects = sys.argv[1:] == ['--objects']
-boat = sys.argv[1:] == ['--boat']
-n2k = sys.argv[1:] == ['--n2k'] or boat
-if sys.argv[1:] and not (route_fixture or instruments or objects or n2k):
-    raise SystemExit('Usage: smoke-navigation.py [--route-fixture|--instruments|--objects|--n2k|--boat]')
-prefix = 'boat' if boat else 'n2k' if n2k else 'objects' if objects else 'route' if route_fixture else 'instruments' if instruments else 'navigation'
+parser = argparse.ArgumentParser(description=__doc__)
+mode = parser.add_mutually_exclusive_group()
+for flag in ('route-fixture', 'route-fixture-standard', 'instruments', 'objects', 'n2k', 'boat'):
+    mode.add_argument('--'+flag, action='store_true')
+parser.add_argument('--theme', choices=('Day', 'Dusk', 'Night'), default='Day')
+parser.add_argument('--renderer', choices=('software', 'opengl'), default='software')
+args = parser.parse_args()
+route_standard = args.route_fixture_standard
+route_fixture = args.route_fixture or route_standard
+instruments, objects, boat = args.instruments, args.objects, args.boat
+n2k = args.n2k or boat
+if not route_fixture and (args.theme != 'Day' or args.renderer != 'software'):
+    parser.error('Theme/renderer variants are restricted to the isolated route fixture')
+prefix = 'boat' if boat else 'n2k' if n2k else 'objects' if objects else 'route-standard' if route_standard else 'route' if route_fixture else 'instruments' if instruments else 'navigation'
+if args.theme != 'Day': prefix += '-'+args.theme.lower()
+if args.renderer != 'software': prefix += '-'+args.renderer
 root = Path(__file__).resolve().parents[1]
 windows = sys.platform == 'win32'
 evidence = root / 'evidence/local'
@@ -41,6 +50,13 @@ server.listen(1)
 server.settimeout(.5)
 port = server.getsockname()[1]
 with (profile / 'opencpn.conf').open('a') as stream:
+    if route_fixture:
+        # Fixed viewport contains the actual upstream-created route around the
+        # loopback vessel. No private chart material or independent geometry.
+        stream.write('\n[Settings]\nOpenGL=' + str(int(args.renderer == 'opengl')) + '\n'
+                     '[Settings/GlobalState]\nVPLatLon=56.9000,12.8000\nVPScale=0.009\n'
+                     'nColorScheme=' + str(('Day','Dusk','Night').index(args.theme)+1) + '\n'
+                     '[OpenNav]\nChartPresentationV1=' + ('Standard' if route_standard else 'XNav') + '\n')
     # TCP client, checksums required, input only, enabled, loopback peer only.
     if objects:
         # The marked scenario adds this real input connection AFTER startup,
@@ -222,7 +238,7 @@ try:
         time.sleep(1)
         exe = root / 'build/xnav-install/bin/opencpn'
     with (evidence / f'{prefix}-input-launch.log').open('w') as output:
-        app = subprocess.Popen([str(exe), '--configdir', str(profile), '--no_opengl', '--xnav'] + (['--xnav-route-fixture'] if route_fixture else ['--xnav-object-fixture'] if objects else []),
+        app = subprocess.Popen([str(exe), '--configdir', str(profile), '--xnav'] + (['--no_opengl'] if args.renderer == 'software' else []) + (['--xnav-route-fixture'] if route_fixture else ['--xnav-object-fixture'] if objects else []),
                                env=env, stdout=output, stderr=output)
     deadline = time.monotonic() + 60
     while True:
@@ -247,7 +263,7 @@ try:
     def capture(name):
         path = evidence / f'{prefix}-{name}.png'
         if windows:
-            rgb = ui.capture(handle, path, resize=not objects, screen_pixels=objects)
+            rgb = ui.capture(handle, path, resize=not (objects or route_fixture), screen_pixels=objects or route_fixture)
         else:
             subprocess.run(['import', '-window', 'root', str(path)], env=env, check=True)
             rgb = subprocess.check_output(['convert', str(path), '-depth', '8', 'rgb:-'], env=env)
@@ -776,7 +792,46 @@ try:
                 assert result['result'] != 'failed', result
                 checks = result.get('checks', [])
                 if any(x['check'] == 'middle point real upstream progress' for x in checks) and not seen_live:
-                    capture('01-active-route')
+                    rgb = capture('01-active-route')
+                    entry = next(x for x in checks if x['check'] == 'middle point real upstream progress')
+                    points = entry['route_pixels']
+                    live_display = read_json_snapshot(profile/'opennav-diagnostics.json')['runtime']
+                    chart_region = live_display['display']['chart_region']
+                    assert all(chart_region['x']+16 < p['x'] < chart_region['x']+chart_region['width']-16 and
+                               chart_region['y']+16 < p['y'] < chart_region['y']+chart_region['height']-16
+                               for p in points), 'All test waypoints must fit the actual chart viewport'
+                    assert live_display['display']['light'] == args.theme
+                    assert live_display['chart']['opengl_enabled'] == (args.renderer == 'opengl')
+                    assert len(points) == 3, 'Upstream route projection missing'
+                    if route_standard:
+                        ink = tuple(entry['stock_active_ink'])
+                    else:
+                        tokens = json.loads((root/'docs/design/prototype-tokens.json').read_text())
+                        ink = tuple(bytes.fromhex(tokens['themes'][args.theme.lower()]['--route'].lstrip('#')))
+                    requested_ink = ink
+                    if args.renderer == 'opengl':
+                        # Pinned ocpnDC shader uniforms divide RGB by 256,
+                        # then the normalized framebuffer quantizes to 255.
+                        # Model that inspected conversion exactly, not an
+                        # image tolerance that could hide a different palette.
+                        ink = tuple(round(v*255/256) for v in requested_ink)
+                    left = top = 0
+                    if windows:
+                        outer=ui.W.RECT();assert ui.GetWindowRect(handle,ui.C.byref(outer))
+                        left,top=outer.left,outer.top
+                    assert len(rgb) == 1280*800*3
+                    samples=[]
+                    for a,b in zip(points,points[1:]):
+                        for fraction in (.2,.35,.5,.65,.8):
+                            x=round(a['x']+(b['x']-a['x'])*fraction)-left
+                            y=round(a['y']+(b['y']-a['y'])*fraction)-top
+                            assert 4<=x<1276 and 4<=y<796, 'Projected route sample offscreen'
+                            hits=sum(tuple(rgb[(py*1280+px)*3:(py*1280+px)*3+3]) == ink
+                                     for py in range(y-3,y+4) for px in range(x-3,x+4))
+                            assert hits>=2, ('Actual upstream route stroke has wrong/missing ink',x,y,ink,hits)
+                            samples.append(dict(x=x,y=y,exact_ink_pixels=hits))
+                    report['active_route_paint'] = dict(style='Standard' if route_standard else 'XNav',
+                                                       requested_ink=requested_ink,ink=ink,theme=args.theme,renderer=args.renderer,projection='pinned ChartCanvas::GetCanvasPointPix',samples=samples)
                     seen_live = True
                 if result.get('phase') == 'stop-input':
                     phase[0] = 'none'
@@ -793,7 +848,7 @@ try:
                 if result['result'] == 'passed':
                     assert seen_live and seen_stale, 'Missing route scenario captures'
                     report['route_contract'] = result
-                    (evidence / 'route-progress-results.json').write_text(json.dumps(result, indent=2))
+                    (evidence / f'{prefix}-progress-results.json').write_text(json.dumps(result, indent=2))
                     break
             time.sleep(.2)
         else:

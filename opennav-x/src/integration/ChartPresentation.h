@@ -17,6 +17,9 @@ namespace opennav::integration {
 void ConfigureChartPresentation(wxFileConfig &config, bool xnav);
 s52plib *CreateChartPresentation(const wxString &stock_path, bool force_legacy);
 bool ChartBackground(ColorScheme scheme, wxColour &land, wxColour &water);
+// Paint-time only; caller retains upstream active/selected route semantics.
+// Does not modify pens in RouteManager, route properties or navigation state.
+bool ChartActiveRouteInk(ChartCanvas &canvas, wxColour &ink);
 // Returns true only after drawing the upstream-resolved chart depth unit.
 // False preserves the stock emboss path, including Standard/Legacy/Safe.
 bool DrawChartDepthUnit(ocpnDC &dc, ChartCanvas &canvas);

@@ -78,6 +78,16 @@ Remaining: native Windows font/geometry comparison, physical boat capture,
 DPI/installed lifecycle gates, and removal of older top-bar Up/Down chrome in
 favor of the prototype's scrolling flow. No screen-level PASS is recorded.
 
+Replacement run `36496486152` renders the isolated Windows widget correctly:
+41 checks/five captures pass and the Day image was compared directly with its
+same-run Chromium reference. The main header/card composition is close; small
+value/compass text-baseline differences remain visible. The real heading/wind
+orientation, explicit true-heading label and transducer-depth label are the
+documented safety differences above. These must not be hidden by a loose image
+tolerance. The complete actual-product sequence still stops at the unrelated
+Passage capture guard; no boat or screen-level acceptance follows from this
+component pass.
+
 Windows run `36494702427` passed the MSVC build, 114/114 integrated tests,
 actual-product Instruments capture/theme/Close flow and public ENC theme cycles.
 The offline widget's strict pixel check **failed**: its parent host retained the

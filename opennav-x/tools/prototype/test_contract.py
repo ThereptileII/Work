@@ -62,6 +62,13 @@ class PrototypeContract(unittest.TestCase):
             self.assertTrue(all('--mark-'+role in theme for role in
                 ('red','green','yellow','black','white','blue','service','area')))
 
+    def test_active_route_palette_matches_final_css(self):
+        native = (ROOT / "src/ui/Theme.h").read_text(encoding="utf-8")
+        body = native.split("constexpr std::uint32_t ActiveRouteInk", 1)[1].split("}", 1)[0]
+        actual = [int(x, 16) for x in re.findall(r"0x[0-9A-Fa-f]+", body)]
+        tokens = extractor.extract()['themes']
+        self.assertEqual(actual, [int(tokens[t]['--route'][1:], 16) for t in ('day','dusk','night')])
+
 
 if __name__ == "__main__":
     unittest.main()

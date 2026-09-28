@@ -122,6 +122,14 @@ bool ChartBackground(ColorScheme scheme, wxColour &land, wxColour &water) {
   return true;
 }
 bool XNavChartRequested() { return requested; }
+bool ChartActiveRouteInk(ChartCanvas &canvas, wxColour &ink) {
+  if (!wxIsMainThread() || !xnav_mode || !active) return false;
+  const auto mode = canvas.GetColorScheme() == GLOBAL_COLOR_SCHEME_NIGHT
+      ? ui::LightMode::Night : canvas.GetColorScheme() == GLOBAL_COLOR_SCHEME_DUSK
+      ? ui::LightMode::Dusk : ui::LightMode::Day;
+  ink = ui::Colour(ui::ActiveRouteInk(mode));
+  return true;
+}
 bool DrawChartDepthUnit(ocpnDC &dc, ChartCanvas &canvas) {
   if (!wxIsMainThread() || !xnav_mode || !active || !canvas.GetShowDepthUnits())
     return false;
