@@ -111,7 +111,7 @@ def file_dialog(title,path,accept):
         if accept=='Save':ui.capture(dialog,evidence/'recording-calibration-file-dialog.png',resize=False)
         ui.dismiss_native_dialog(dialog,accept)
     else:
-        dialog=xdo('search','--onlyvisible','--pid',app.pid,'--name','^'+title+'$').splitlines()[-1]
+        dialog=xdo('search','--all','--onlyvisible','--pid',app.pid,'--name','^'+title+'$').splitlines()[-1]
         xdo('windowraise',dialog);xdo('windowfocus',dialog)
         if accept=='Save':xdo('key','alt+n','ctrl+a')
         else:xdo('key','ctrl+l')
@@ -150,7 +150,7 @@ try:
         handle,_=ui.wait_window('OpenNav X / OpenCPN',app.pid)
         ui.size_window(handle)
     else:
-        handle=xdo('search','--onlyvisible','--pid',app.pid,'--name','^OpenNav X / OpenCPN$').splitlines()[0]
+        handle=xdo('search','--all','--onlyvisible','--pid',app.pid,'--name','^OpenNav X / OpenCPN$').splitlines()[0]
         xdo('windowsize',handle,1280,800);xdo('windowmove',handle,0,0);xdo('windowfocus',handle)
     # Wait for the application layout, not merely the asynchronous native size
     # request. Otherwise a cached small-window button rectangle can be clicked

@@ -310,7 +310,7 @@ try:
         report['frame_pixels'] = [frame.right - frame.left, frame.bottom - frame.top]
         assert report['frame_pixels'] == [1280, 800]
     else:
-        handle = xdo('search', '--onlyvisible', '--pid', app.pid, '--name', '^OpenNav X / OpenCPN$').splitlines()[0]
+        handle = xdo('search', '--all', '--onlyvisible', '--pid', app.pid, '--name', '^OpenNav X / OpenCPN$').splitlines()[0]
         xdo('windowsize', handle, 1280, 800, 'windowmove', handle, 0, 0, 'windowfocus', handle)
     time.sleep(2)
     click('North')

@@ -25,7 +25,7 @@ app_pid=$!
 window=''
 for ((attempt=0; attempt<60; attempt++)); do
   kill -0 "$app_pid"
-  window=$(xdotool search --onlyvisible --pid "$app_pid" --name '^OpenCPN' | head -1 || true)
+  window=$(xdotool search --all --onlyvisible --pid "$app_pid" --name '^OpenCPN' | head -1 || true)
   if [[ -n "$window" ]]; then break; fi
   sleep 1
 done

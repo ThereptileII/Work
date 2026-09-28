@@ -70,6 +70,8 @@ class XNavButton : public wxControl {
   void SetNavigationItem(bool value = true) { navigation_item_ = value; Refresh(); }
   void SetIconOnly(bool value = true) { icon_only_ = value; Refresh(); }
   void SetFloating(bool value = true) { floating_ = value; Refresh(); }
+  void SetInlineIcon(bool value = true) { inline_icon_ = value; Refresh(); }
+  void SetCompassRotation(double radians) { if (compass_rotation_ != radians) { compass_rotation_ = radians; Refresh(); } }
 
  private:
   void Paint(wxPaintEvent& event);
@@ -79,6 +81,8 @@ class XNavButton : public wxControl {
   bool pressed_ = false;
   bool selected_ = false;
   bool hovered_ = false, navigation_item_ = false, icon_only_ = false, floating_ = false;
+  bool inline_icon_ = false;
+  double compass_rotation_ = 0;
   ButtonRole role_ = ButtonRole::Normal;
   XNavIcon icon_ = XNavIcon::None;
 };

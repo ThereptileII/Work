@@ -17,22 +17,28 @@ def rect(x, y, width, height, label=None):
 
 frame = rect(0, 0, 1280, 800)
 client = rect(8, 31, 1264, 761)
-native = {
-    'chart_region': rect(65, 88, 1070, 647),
-    'rail_regions': [rect(1136, 87 + i * 162, 136, 162, name)
-                     for i, name in enumerate(('sog', 'depth', 'aws', 'heading'))],
-    'interaction_controls': [rect(12, 740, 112, 48, 'Navigation'),
-                             rect(1155, 740, 112, 48, 'System'),
-                             rect(1203, 35, 64, 48, 'Menu')],
-}
+def composition(client):
+    x,y,w,h = [client[k] for k in ('x','y','width','height')]
+    right,bottom = x+w-186,y+h-166
+    tx,ty = right-211,bottom-89
+    return {
+        'chart_region': rect(x+80,y+68,w-266,h-234),
+        'rail_regions': [rect(right,y+110+i*120,186,120,name)
+                         for i,name in enumerate(('sog','depth','aws','heading'))],
+        'interaction_controls': [rect(x+9,y+82,62,61,'Chart'),
+             rect(x+w-102,y+h-34,90,32,'System'),
+             rect(tx+4,ty+4,44,44,'Measure'),rect(tx+48,ty+4,44,44,'Waypoint'),
+             rect(tx+97,ty+4,44,44,'+'),rect(tx+141,ty+4,44,44,'−'),
+             rect(right-90,y+90,68,90,'North'),
+             rect(x+108,bottom-81,142,44,'Follow boat')],
+    }
+
+native = composition(client)
 assert chartcheck.navigation_layout(native, frame, client)['primary_rail_values_visible'] == 4
-linux = copy.deepcopy(native)
-linux['chart_region'] = rect(57, 57, 1086, 686)
-linux['rail_regions'] = [rect(1144, 56 + i * 172, 136, 172, name)
-                         for i, name in enumerate(('sog', 'depth', 'aws', 'heading'))]
-linux['interaction_controls'] = [rect(4, 748, 112, 48, 'Navigation'),
-                                 rect(1164, 748, 112, 48, 'System')]
+linux = composition(frame)
 chartcheck.navigation_layout(linux, frame, frame)
+primary_client = rect(8,31,1280,800)
+chartcheck.navigation_layout(composition(primary_client),rect(0,0,1296,839),primary_client)
 
 
 def reject(display, outer=frame, inner=client):
@@ -49,15 +55,25 @@ small = copy.deepcopy(native)
 small['chart_region'] = rect(65, 88, 686, 379)
 reject(small)  # An outer resize alone is insufficient; wx layout must catch up.
 for change in ('chart-outside', 'rail-hidden', 'rail-clipped', 'rail-overlap',
-               'rail-missing', 'control-chart', 'control-clipped', 'system-missing'):
+               'rail-missing', 'control-chart', 'control-clipped', 'system-missing',
+               'float-missing', 'float-duplicate', 'float-moved', 'float-oversize',
+               'rail-duplicate', 'rail-outside-strip', 'orientation-missing', 'old-layout'):
     bad = copy.deepcopy(native)
     if change == 'chart-outside': bad['chart_region']['x'] = 300
     if change == 'rail-hidden': bad['rail_regions'][3]['visible'] = False
     if change == 'rail-clipped': bad['rail_regions'][3]['y'] = 750
     if change == 'rail-overlap': bad['rail_regions'][3]['y'] = bad['rail_regions'][2]['y']
     if change == 'rail-missing': bad['rail_regions'].pop()
-    if change == 'control-chart': bad['interaction_controls'][0]['y'] = 300
+    if change == 'control-chart': bad['interaction_controls'][0]['x'] = 300
     if change == 'control-clipped': bad['interaction_controls'][1]['x'] = 1250
     if change == 'system-missing': bad['interaction_controls'].pop(1)
+    if change == 'float-missing': bad['interaction_controls'].pop(2)
+    if change == 'float-duplicate': bad['interaction_controls'].append(copy.deepcopy(bad['interaction_controls'][2]))
+    if change == 'float-moved': bad['interaction_controls'][2]['x'] -= 10
+    if change == 'float-oversize': bad['interaction_controls'][2]['width'] += 10
+    if change == 'rail-duplicate': bad['rail_regions'][3]['label'] = 'sog'
+    if change == 'rail-outside-strip': bad['rail_regions'][3]['x'] -= 10
+    if change == 'orientation-missing': bad['interaction_controls'].pop(6)
+    if change == 'old-layout': bad['chart_region'] = rect(65,88,1070,647)
     reject(bad)
-print('Native 647px and Linux chart geometry pass; small/unsettled/clipped/overlapping layouts fail')
+print('Prototype native-client/outer and Linux composition pass; 18 small/unsettled/clipped/overlapping/obsolete layouts rejected')

@@ -143,7 +143,7 @@ try:
     else:
         deadline = time.monotonic()+60
         while time.monotonic() < deadline:
-            found = subprocess.run(['xdotool', 'search', '--onlyvisible', '--pid', str(app.pid), '--name', '^OpenNav X / OpenCPN$'],
+            found = subprocess.run(['xdotool', 'search', '--all', '--onlyvisible', '--pid', str(app.pid), '--name', '^OpenNav X / OpenCPN$'],
                                    env=env, capture_output=True, text=True)
             if found.returncode == 0 and found.stdout.strip():
                 handle = found.stdout.splitlines()[0]; break

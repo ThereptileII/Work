@@ -238,7 +238,7 @@ try:
         # its first capture. Establish the native size before inspecting it.
         ui.size_window(handle)
     else:
-        handle = subprocess.check_output(['xdotool', 'search', '--onlyvisible', '--pid', str(app.pid),
+        handle = subprocess.check_output(['xdotool', 'search', '--all', '--onlyvisible', '--pid', str(app.pid),
                     '--name', '^OpenNav X / OpenCPN$'], env=env, text=True).splitlines()[0]
         subprocess.run(['xdotool', 'windowsize', handle, '1280', '800', 'windowmove', handle, '0', '0'], env=env, check=True)
 

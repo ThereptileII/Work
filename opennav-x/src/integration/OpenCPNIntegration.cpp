@@ -57,6 +57,7 @@
 #include <algorithm>
 #include <cmath>
 #include <iostream>
+#include <limits>
 #include <memory>
 #include <optional>
 #include <vector>
@@ -430,6 +431,10 @@ void Attach(MyFrame& frame, wxAuiManager& manager, wxFileConfig& config) {
     if (!canvas) return std::string("Unavailable");
     return std::string(canvas->GetUpMode() == COURSE_UP_MODE ? "Course"
                       : canvas->GetUpMode() == HEAD_UP_MODE ? "Head" : "North");
+  };
+  actions.chart_rotation = [&frame] {
+    auto *canvas = frame.GetPrimaryCanvas();
+    return canvas ? canvas->GetVP().rotation : std::numeric_limits<double>::quiet_NaN();
   };
   // XNav supplies orientation and data health itself. This per-canvas flag
   // does not change the persisted global Legacy compass preference.

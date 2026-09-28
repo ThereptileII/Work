@@ -1,0 +1,65 @@
+{
+  "stageAccepted": false,
+  "localCommit": "2a3c528fe5983ace6a084cf615095fbac0465087",
+  "remoteCommit": "ea869a99aa5dd9c3fe27ea1604cf5fc0c9b04765",
+  "mappedSourceBlobsVerified": 1011,
+  "run": "https://github.com/ThereptileII/Work/actions/runs/36457772000",
+  "downloadedArtifacts": [
+    {
+      "id": 10986243587,
+      "name": "prototype-native-Windows-ea869a99aa5dd9c3fe27ea1604cf5fc0c9b04765",
+      "sha256": "5b79f9d62e12ebcdf4050958cc956aff6faedf9447b99e948d4c049aba32a0f4",
+      "bytes": 5291434,
+      "zipCrc": true
+    },
+    {
+      "id": 10987055653,
+      "name": "prototype-ais-network-Linux-ea869a99aa5dd9c3fe27ea1604cf5fc0c9b04765",
+      "sha256": "0332c7799c174a8b19289b81b65edc0792f634051066e32d94fd888d8f857462",
+      "bytes": 735,
+      "zipCrc": true
+    },
+    {
+      "id": 10986296996,
+      "name": "prototype-ais-foundation-Linux-ea869a99aa5dd9c3fe27ea1604cf5fc0c9b04765",
+      "sha256": "a6715795f0040089c80c7b3a1613687441e4ff1716251ccd3ee8f8de6d91e07d",
+      "bytes": 655,
+      "zipCrc": true
+    },
+    {
+      "id": 10985892447,
+      "name": "prototype-ais-foundation-Windows-ea869a99aa5dd9c3fe27ea1604cf5fc0c9b04765",
+      "sha256": "0c388f6764e04eab7815fdd4fcceac509018c72fed9980096b146bac23f8bc94",
+      "bytes": 660,
+      "zipCrc": true
+    }
+  ],
+  "junit": [
+    {
+      "file": "prototype-native-Windows-ea869a99aa5dd9c3fe27ea1604cf5fc0c9b04765/windows-production-tests.xml",
+      "tests": 102,
+      "failures": 0
+    },
+    {
+      "file": "prototype-ais-foundation-Windows-ea869a99aa5dd9c3fe27ea1604cf5fc0c9b04765/ais-foundation.xml",
+      "tests": 6,
+      "failures": 0
+    },
+    {
+      "file": "prototype-ais-foundation-Linux-ea869a99aa5dd9c3fe27ea1604cf5fc0c9b04765/ais-foundation.xml",
+      "tests": 6,
+      "failures": 0
+    }
+  ],
+  "windowsBuild": "Native Win32 MSVC fixture-free build passed",
+  "transport": "18 hostile TLS scenarios and actual provider lifecycle passed on Linux and native Windows. Replaces fragmented-overflow failure at d92e187.",
+  "resources": "369 resource integrity and semantic preservation checks passed",
+  "windowsExecutableSha256": "d86aee8ba3acfd175bc07e380ad9a21d38bd1014519f0705aad9fc23a03faa36",
+  "windowsCaptureFailure": "Coastline capture click read an older Day snapshot before requesting Dusk; main process closed normally. Public ENC captures completed but return-Day JSON still says Night; no cycle acceptance. Replacement waits for observed mode required.",
+  "review": "Actual public NOAA ENC renders in XNav and Standard. Night contrast and hidden floating controls remain failed visual gates. Screens not conformant.",
+  "linuxIntegratedTests": 110,
+  "linuxPortableTests": 75,
+  "visualAcceptance": false,
+  "boatAcceptance": false,
+  "liveAISAcceptance": false
+}

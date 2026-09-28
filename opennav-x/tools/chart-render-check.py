@@ -10,9 +10,9 @@ from collections import Counter
 def navigation_layout(display, frame, client):
     """Verify chart-first geometry against actual native frame/client bounds.
 
-    Windows decorations reduce the chart's height relative to bare Xvfb. An
-    exact outer size plus contained, dominant chart/rail/control regions is the
-    cross-platform contract; a Linux-specific chart-height constant is not.
+    The immutable prototype supersedes the old 75%-height rule: its 132px
+    horizon is outside the chart. Enforce the exact composition, not a looser
+    chart-area percentage. OS decorations are measured separately.
     """
     def valid(rect):
         return all(isinstance(rect.get(k), int) for k in ('x', 'y', 'width', 'height')) and rect['width'] > 0 and rect['height'] > 0
@@ -26,29 +26,59 @@ def navigation_layout(display, frame, client):
         return (a['x'] < b['x'] + b['width'] and b['x'] < a['x'] + a['width'] and
                 a['y'] < b['y'] + b['height'] and b['y'] < a['y'] + a['height'])
 
-    assert valid(frame) and (frame['width'], frame['height']) == (1280, 800), 'Native frame must be exactly 1280x800'
+    assert valid(frame) and valid(client)
+    assert (frame['width'], frame['height']) == (1280, 800) or (client['width'], client['height']) == (1280, 800), 'Native frame or primary client must be exactly 1280x800'
     assert valid(client) and contains(frame, client), 'Actual client must fit its native frame'
     chart = display.get('chart_region', {})
     assert valid(chart) and contains(client, chart), 'Chart must fit the actual client'
-    assert chart['width'] >= client['width'] * .75 and chart['height'] >= client['height'] * .75, 'Chart must dominate both client dimensions'
-    assert chart['width'] * chart['height'] >= client['width'] * client['height'] * .60, 'Chart must occupy most client area'
+    expected = dict(x=client['x']+80, y=client['y']+68,
+                    width=client['width']-80-186,
+                    height=client['height']-68-132-34)
+    assert all(abs(chart[k]-expected[k]) <= 1 for k in expected), 'Chart must match the 68/80/186/132/34 prototype composition'
+    rail_bounds = dict(x=client['x']+client['width']-186, y=client['y']+68,
+                       width=186, height=client['height']-68-34)
     rail = display.get('rail_regions', [])
     assert len(rail) == 4 and len({r['label'] for r in rail}) == 4, 'Four distinct primary rail values required'
     for i, region in enumerate(rail):
-        assert valid(region) and region.get('visible') and contains(client, region), 'Every primary rail value must be fully visible'
+        assert valid(region) and region.get('visible') and contains(rail_bounds, region), 'Every primary rail value must fit the 186px rail'
         assert region['height'] >= 48 and region['width'] >= 48, 'Primary rail values must remain readable'
         assert not overlaps(chart, region) and all(not overlaps(region, other) for other in rail[:i]), 'Chart and rail values must not overlap'
     controls = [c for c in display.get('interaction_controls', []) if c.get('visible')]
+    # The prototype specifies these six bounded floating controls, not a
+    # general permission to cover the chart with permanent toolbars.
+    right, bottom = chart['x']+chart['width'], chart['y']+chart['height']
+    tools_x, tools_y = right-22-189, bottom-37-52
+    floating = {
+        'Measure': (tools_x+4, tools_y+4, 44, 44),
+        'Waypoint': (tools_x+48, tools_y+4, 44, 44),
+        '+': (tools_x+97, tools_y+4, 44, 44),
+        '−': (tools_x+141, tools_y+4, 44, 44),
+        'Follow boat': (chart['x']+28, bottom-37-44, 142, 44),
+    }
+    orientation = [c for c in controls if c['label'] in ('North', 'Course', 'Head')]
+    assert len(orientation) == 1, 'One chart orientation control required'
+    floating[orientation[0]['label']] = (right-22-68, chart['y']+22, 68, 90)
+    for label, bounds in floating.items():
+        found = [c for c in controls if c['label'] == label]
+        assert len(found) == 1, 'Each floating chart control must be unique and visible'
+        assert all(abs(found[0][k]-v) <= 1 for k,v in zip(('x','y','width','height'),bounds)), 'Floating control differs from prototype geometry'
     for control in controls:
         assert valid(control) and contains(client, control), 'Visible control must fit the actual client'
-        assert not overlaps(chart, control), 'Permanent controls must not cover the chart'
-    for label in ('Navigation', 'System'):
+        if control['label'] in floating:
+            assert contains(chart, control), 'Floating controls must fit the chart'
+        else:
+            assert not overlaps(chart, control), 'Unspecified permanent controls must not cover the chart'
+    for label in ('Chart', 'System'):
         required = [c for c in controls if c['label'] == label]
-        assert len(required) == 1 and required[0].get('enabled'), 'Bottom navigation controls must be uniquely visible and enabled'
-        assert required[0]['y'] >= chart['y'] + chart['height'], 'Bottom controls must remain below the chart'
+        assert len(required) == 1 and required[0].get('enabled'), 'Navigation and System controls must be uniquely visible and enabled'
+        if label == 'System':
+            assert required[0]['y'] >= client['y']+client['height']-34, 'System must fit the footer'
+        else:
+            assert required[0]['x']+required[0]['width'] <= chart['x'], 'Chart entry must fit the navigation strip'
     return {'frame': frame, 'client': client, 'chart': chart,
             'chart_client_area_fraction': chart['width'] * chart['height'] / (client['width'] * client['height']),
-            'primary_rail_values_visible': 4, 'controls_do_not_cover_chart': True}
+            'primary_rail_values_visible': 4, 'prototype_floating_controls': 6,
+            'unspecified_controls_do_not_cover_chart': True}
 
 
 def interior(rgb):

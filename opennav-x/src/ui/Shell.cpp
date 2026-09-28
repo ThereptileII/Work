@@ -91,6 +91,8 @@ Shell::Shell(wxFrame &frame, wxAuiManager &manager, ShellActions actions,
              LightMode mode, bool simulation)
     : frame_(frame), manager_(manager), actions_(std::move(actions)),
       mode_(mode), simulation_(simulation && integration::TestFixturesEnabled()), timer_(this) {
+  original_pane_border_ = manager_.GetArtProvider()->GetMetric(wxAUI_DOCKART_PANE_BORDER_SIZE);
+  manager_.GetArtProvider()->SetMetric(wxAUI_DOCKART_PANE_BORDER_SIZE, 0);
   const int gap = frame_.FromDIP(spacing::base);
   auto *top = MakePane("OpenNavTop", wxAuiPaneInfo().Top().Layer(10).BestSize(
                                          -1, frame_.FromDIP(prototype::top)));
@@ -193,24 +195,27 @@ Shell::Shell(wxFrame &frame, wxAuiManager &manager, ShellActions actions,
   nav("Settings", "Open navigation menu", XNavIcon::Settings, [this]{ShowProduct(ProductPage::Home);});
   left->SetSizer(tools);
 
-  // Owned native siblings float over the existing canvas. They never reparent
+  // Owned native surfaces float over the existing canvas. They never reparent
   // it, enter the saved AUI perspective or intercept chart input outside bounds.
   const auto overlay = [this](const char *name) {
-    auto *p = new wxPanel(&frame_, wxID_ANY); p->SetName(name); p->Hide();
+    auto *p = new XNavFloatingSurface(frame_, name);
     chart_overlays_.push_back(p); return p;
   };
   chart_tools_ = overlay("OpenNav chart tools");
   auto *map_tools = new wxBoxSizer(wxHORIZONTAL);
+  map_tools->AddSpacer(frame_.FromDIP(4));
   const auto map_button = [&](XNavIcon icon,const wxString &label,const wxString &name,std::function<void()> action) {
     auto *b=Button(chart_tools_,label,name,std::move(action)); b->SetIcon(icon); b->SetIconOnly(); b->SetFloating(); b->SetRole(ButtonRole::Quiet);
-    b->SetMinSize(frame_.FromDIP(wxSize(44,44))); map_tools->Add(b,0,wxALL,frame_.FromDIP(2));
+    b->SetMinSize(frame_.FromDIP(wxSize(44,44))); map_tools->Add(b,0,wxTOP|wxBOTTOM,frame_.FromDIP(4));
   };
   map_button(XNavIcon::Ruler,"Measure","Measure chart distance",actions_.navigation.measure);
   map_button(XNavIcon::Pin,"Waypoint","Waypoint at chart position",[this]{
     if(actions_.navigation.chart_position) if(auto point=actions_.navigation.chart_position()) ShowChartContext(*point);
   });
+  map_tools->AddSpacer(frame_.FromDIP(5));
   map_button(XNavIcon::Plus,"+","Zoom chart in",actions_.zoom_in);
   map_button(XNavIcon::Minus,wxString::FromUTF8("−"),"Zoom chart out",actions_.zoom_out);
+  map_tools->AddSpacer(frame_.FromDIP(4));
   chart_tools_->SetSizerAndFit(map_tools);
   chart_orientation_ = overlay("OpenNav chart orientation");
   auto *orientation = new wxBoxSizer(wxVERTICAL);
@@ -227,6 +232,7 @@ Shell::Shell(wxFrame &frame, wxAuiManager &manager, ShellActions actions,
   auto *center=Button(chart_follow_,"Follow boat","Center chart on boat and follow position",actions_.follow);
   center->SetMinSize(frame_.FromDIP(wxSize(142,44)));center->SetRole(ButtonRole::Quiet);
   center->SetFloating();
+  center->SetIcon(XNavIcon::Ownship);center->SetInlineIcon();
   following->Add(center,1,wxEXPAND);chart_follow_->SetSizerAndFit(following);
 
   auto *right =
@@ -445,6 +451,7 @@ Shell::~Shell() {
     manager_.DetachPane(pane);
     pane->Destroy();
   }
+  manager_.GetArtProvider()->SetMetric(wxAUI_DOCKART_PANE_BORDER_SIZE, original_pane_border_);
   manager_.Update();
   // ShowNavigation above still updates orientation and chart placement. Keep
   // overlay children alive until that restoration is finished (MSW destroys
@@ -559,7 +566,13 @@ void Shell::SetLight(LightMode mode) {
   mode_ = mode;
   if (actions_.theme)
     actions_.theme(mode);
+  // The pinned SetAndApplyColorScheme resets the AUI border metric. Keep this
+  // transient XNav presentation after each scheme change; destruction restores
+  // the original metric before Legacy's perspective is saved/restored.
+  manager_.GetArtProvider()->SetMetric(wxAUI_DOCKART_PANE_BORDER_SIZE, 0);
+  manager_.Update();
   ApplyTheme();
+  PlaceChartControls();
 }
 void Shell::UpdateRail(const std::vector<std::string> &keys, vessel::Time now) {
   const auto items = vessel::DisplayItems(state_);
@@ -624,6 +637,7 @@ void Shell::Tick() {
     const auto orientation = wxString::FromUTF8(actions_.chart_orientation());
     orientation_button_->SetLabel(orientation);
     orientation_button_->SetName("Chart orientation: " + orientation + " up");
+    if (actions_.chart_rotation) orientation_button_->SetCompassRotation(actions_.chart_rotation());
   }
   const auto replay = actions_.commissioning
                           ? actions_.commissioning->ReadReplay(wall_now)
@@ -1121,38 +1135,25 @@ void Shell::ShowSystem() {
 
 void Shell::PlaceChartControls() {
   wxRect chart;
-  wxWindow *chart_window = nullptr;
   if (!page_->IsShown() && !product_->IsShown())
     for (const auto &name : actions_.navigation_panes) {
       const auto &pane=manager_.GetPane(name);
       if(pane.IsOk()&&pane.IsShown()&&pane.window) {
-        chart_window = pane.window;
         chart=wxRect(frame_.ScreenToClient(pane.window->GetScreenPosition()),pane.window->GetSize());break;
       }
     }
-  const bool available=chart.width>frame_.FromDIP(420)&&chart.height>frame_.FromDIP(240);
+  const bool available=frame_.IsShownOnScreen()&&!frame_.IsIconized()&&frame_.IsEnabled()&&
+      chart.width>frame_.FromDIP(420)&&chart.height>frame_.FromDIP(240);
   for(auto *overlay:chart_overlays_) {
     if(!available){overlay->Hide();continue;}
     const auto size=overlay->GetSize();
     wxPoint position;
-    if(overlay==chart_tools_)position={chart.GetRight()-size.x-frame_.FromDIP(22),chart.GetBottom()-size.y-frame_.FromDIP(38)};
-    else if(overlay==chart_orientation_)position={chart.GetRight()-size.x-frame_.FromDIP(22),chart.y+frame_.FromDIP(22)};
-    else position={chart.x+frame_.FromDIP(28),chart.GetBottom()-size.y-frame_.FromDIP(38)};
-    bool changed=overlay->GetPosition()!=position||!overlay->IsShown();
-#ifdef __WXMSW__
-    // Upstream deferred canvas initialization can raise the chart after the
-    // first overlay layout. Repair z-order only when that canvas is above us.
-    for (HWND above = ::GetWindow(static_cast<HWND>(overlay->GetHandle()), GW_HWNDPREV);
-         above; above = ::GetWindow(above, GW_HWNDPREV)) {
-      if (chart_window && above == static_cast<HWND>(chart_window->GetHandle())) {
-        changed = true;
-        break;
-      }
-    }
-#endif
-    if(overlay->GetPosition()!=position)overlay->Move(position);
-    if(!overlay->IsShown())overlay->Show();
-    if(changed)overlay->Raise();
+    if(overlay==chart_tools_)position={chart.x+chart.width-size.x-frame_.FromDIP(22),chart.y+chart.height-size.y-frame_.FromDIP(37)};
+    else if(overlay==chart_orientation_)position={chart.x+chart.width-size.x-frame_.FromDIP(22),chart.y+frame_.FromDIP(22)};
+    else position={chart.x+frame_.FromDIP(28),chart.y+chart.height-size.y-frame_.FromDIP(37)};
+    // A separate owned surface remains above both software and GL child
+    // canvases without repeatedly raising the entire chart/application.
+    static_cast<XNavFloatingSurface *>(overlay)->Present(frame_.ClientToScreen(position));
   }
 }
 

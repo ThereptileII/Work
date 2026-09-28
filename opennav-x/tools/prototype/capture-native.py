@@ -106,8 +106,10 @@ def main():
     def data():
         return read_json_snapshot(profile / "opennav-diagnostics.json")
 
-    def click(label):
-        controls = [c for c in data()["runtime"]["display"]["interaction_controls"]
+    def click(label, expected_light=None):
+        before = data()
+        ticks = int(before["runtime"]["ui_update"]["ticks"])
+        controls = [c for c in before["runtime"]["display"]["interaction_controls"]
                     if c["label"] == label and c["visible"] and c["enabled"]]
         if len(controls) != 1:
             raise RuntimeError(f"Expected one visible enabled {label!r}; got {len(controls)}")
@@ -127,10 +129,20 @@ def main():
         else:
             xdo("mousemove", x, y, "click", "1")
             xdo("mousemove", 0, 0)
-        time.sleep(.6)
+        deadline = time.monotonic() + 5
+        while time.monotonic() < deadline:
+            current = data()
+            current_light = current["runtime"]["display"]["light"]
+            if int(current["runtime"]["ui_update"]["ticks"]) >= ticks+3 and (not expected_light or current_light == expected_light):
+                break
+            time.sleep(.1)
+        else:
+            raise AssertionError(f"{label}: application did not settle in the requested state {expected_light or ''}")
+        time.sleep(.3)  # allow the invalidated native surfaces to finish painting
 
     def capture(name):
         path = args.output / f"{name}.png"
+        client_origin = (0, 0)
         if windows:
             from PIL import Image
             assert ui.IsWindowEnabled(window), "Unexpected modal dialog"
@@ -139,6 +151,7 @@ def main():
             origin = ui.W.POINT(0, 0)
             client_to_screen = ui.declare(ui.user, "ClientToScreen", ui.W.BOOL, ui.W.HWND, ui.C.POINTER(ui.W.POINT))
             assert client_to_screen(window, ui.C.byref(origin))
+            client_origin = (origin.x, origin.y)
             rect = ui.W.RECT()
             assert ui.GetWindowRect(window, ui.C.byref(rect))
             x, y = origin.x-rect.left, origin.y-rect.top
@@ -147,6 +160,39 @@ def main():
         else:
             subprocess.run(["import", "-window", "root", str(path)], env=env, check=True)
         snapshot = data()
+        if name.startswith("navigation-"):
+            spec = importlib.util.spec_from_file_location("chart_layout", ROOT / "tools/chart-render-check.py")
+            geometry = importlib.util.module_from_spec(spec)
+            spec.loader.exec_module(geometry)
+            client = dict(x=client_origin[0], y=client_origin[1], width=1280, height=800)
+            frame = dict(x=rect.left,y=rect.top,width=rect.right-rect.left,height=rect.bottom-rect.top) if windows else dict(client)
+            record.setdefault("layout", []).append(geometry.navigation_layout(snapshot["runtime"]["display"], frame, client))
+            from PIL import Image
+            theme = snapshot["runtime"]["display"]["light"].lower()
+            tokens = json.loads((ROOT / "docs/design/prototype-tokens.json").read_text())["themes"][theme]
+            ink = tuple(bytes.fromhex(tokens["--float-text"].removeprefix("#")))
+            surface = tuple(bytes.fromhex(tokens["--floating"].removeprefix("#")))
+            with Image.open(path) as img:
+                pixels = img.convert("RGB")
+                for label in ("Measure", "Waypoint", "+", "−", "North", "Follow boat"):
+                    found = [c for c in snapshot["runtime"]["display"]["interaction_controls"]
+                             if c["label"] == label and c["visible"]]
+                    assert len(found) == 1, f"Floating control {label} missing/ambiguous"
+                    control = found[0]
+                    left, top = control["x"]-client_origin[0]+6, control["y"]-client_origin[1]+6
+                    right, bottom = left+control["width"]-12, top+control["height"]-12
+                    assert 0 <= left < right <= 1280 and 0 <= top < bottom <= 800
+                    sample = [pixels.getpixel((x, y)) for x in range(left, right) for y in range(top, bottom)]
+                    close = lambda color, target: max(abs(a-b) for a, b in zip(color, target)) <= 3
+                    assert sum(close(c, surface) for c in sample) > len(sample)*.5, f"Floating {label} surface occluded"
+                    # Thin SVG strokes can be entirely antialiased. Require
+                    # at least half-coverage ink, never merely a changed pixel.
+                    ink_distance = sum((a-b)**2 for a, b in zip(surface, ink))
+                    def ink_coverage(color):
+                        projection = sum((a-b)*(a-c) for a,b,c in zip(surface,color,ink)) / ink_distance
+                        return projection >= .5 and all(min(a,b)-3 <= c <= max(a,b)+3 for a,b,c in zip(surface,ink,color))
+                    assert sum(ink_coverage(c) for c in sample) >= 5, f"Floating {label} glyph/text absent (visible flag alone is insufficient)"
+            record.setdefault("painted_controls", []).append(name)
         style = snapshot["runtime"]["chart_presentation"]
         assert style["requested"] == args.chart_style, "Requested chart style was not retained"
         assert style["status"].startswith(args.chart_style + " "), "Requested chart style was not active"
@@ -206,16 +252,29 @@ def main():
             assert (client.right, client.bottom) == (1280, 800)
             record["captureScope"] = "1280x800 native client crop; full outer capture retained; boat fullscreen pending"
         else:
-            window = xdo("search", "--onlyvisible", "--pid", app.pid, "--name", "^OpenNav X / OpenCPN$").splitlines()[0]
+            matches = xdo("search", "--all", "--onlyvisible", "--pid", app.pid, "--name", "^OpenNav X / OpenCPN$").splitlines()
+            record["matched_windows"] = [{"id": item, "name": xdo("getwindowname", item), "geometry": xdo("getwindowgeometry", item)} for item in matches]
+            assert len(matches) == 1, "The capture must resize the main frame, not an owned floating surface"
+            window = matches[0]
             xdo("windowsize", window, 1280, 800)
             xdo("windowmove", window, 0, 0)
         time.sleep(1)
+        # Real input must reach the floating window's action, not the canvas
+        # beneath it. Check the existing OpenCPN scale, never an independent
+        # navigation calculation or a UI-only selected flag.
+        scale = data()["runtime"]["chart"]["scale_ppm"]
+        click("+")
+        zoomed = data()["runtime"]["chart"]["scale_ppm"]
+        assert zoomed > scale, "Floating zoom-in action did not reach OpenCPN"
+        click("−")
+        assert data()["runtime"]["chart"]["scale_ppm"] < zoomed, "Floating zoom-out action did not reach OpenCPN"
+        record["floating_zoom_input"] = "Actual pointer input changes the upstream viewport scale in both directions"
         capture("navigation-day")
-        click("Day")
+        click("Day", "Dusk")
         capture("navigation-dusk")
-        click("Dusk")
+        click("Dusk", "Night")
         capture("navigation-night")
-        click("Night")
+        click("Night", "Day")
         if args.navigation_only:
             capture("navigation-return-day")
             record["result"] = "chart cycle captured; semantic and visual review required"

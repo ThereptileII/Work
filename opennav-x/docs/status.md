@@ -37,9 +37,14 @@ driver. The correction builds at `d92e187`; 102/102 integrated native tests and
 6/6 portable AIS tests on each platform pass, including protected credential
 storage. The new native fragmented-overflow transport test then failed: bounded
 reading stalled while OpenSSL retained decrypted bytes. A resume-before-poll
-fix passes the Linux hostile-frame and actual-provider loopback tests and awaits
-replacement Windows evidence. Downloaded artifact hashes, sizes and ZIP CRC
-were verified; see [run evidence](evidence/prototype-native-d92e187.json).
+fix now passes 18 hostile-frame scenarios and the actual-provider lifecycle on
+Linux and native Windows at remote `ea869a9` (local `2a3c52`). Its native MSVC
+build and 102 integrated tests also pass. Downloaded artifact hashes, sizes and ZIP CRC
+were verified; see [replacement run evidence](evidence/prototype-native-ea869a9.json).
+The native capture job still fails: input/capture timing reads an older light-mode
+snapshot. Downloaded ENC images also expose absent floating controls and weak
+Night contrast. Neither a successful screenshot command nor `visible=true`
+qualifies these views. Replacement state-driven and painted-pixel checks are in progress.
 No screen is accepted; see
 [conformance](design/prototype-conformance.md) and the
 [review log](design/reviews/prototype-native-shell-in-progress.md).
@@ -53,8 +58,9 @@ suite now passes 75/75. The actual provider passes a local TLS lifecycle test
 covering prompt subscription, viewport replacement, reconnect and resubscription.
 The protected Windows credential adapter and Linux environment-only adapter
 are implemented; isolated native Credential Manager tests pass at `d92e187`.
-The opt-in bounded TLS/compressed WebSocket boundary passes 17 Linux loopback
-adversarial scenarios; native qualification is pending. The worker provider is implemented and locally tested. Product wiring and live
+The opt-in bounded TLS/compressed WebSocket boundary passes 18 loopback
+adversarial scenarios on Linux and native Windows. The worker provider lifecycle
+passes on both platforms. Product wiring and live
 AIS acceptance remain pending. No service connection or target count is claimed.
 
 XNav-owned S-52 presentation is being implemented as separately packaged,

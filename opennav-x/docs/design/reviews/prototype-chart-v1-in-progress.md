@@ -44,3 +44,20 @@ its successful content checks are not physical GPU evidence.
 Next evidence: exact-commit XNav/Standard comparison, software/OpenGL, native
 Windows, resource-failure fallback, style and Legacy/Safe restart cycles, and
 physical boat review. No PASS is entered in the conformance record.
+
+## Native pass at ea869a9 (local 2a3c52)
+
+Downloaded artifact SHA-256
+`5b79f9d62e12ebcdf4050958cc956aff6faedf9447b99e948d4c049aba32a0f4`
+and ZIP CRC/size verify; executable SHA-256
+`d86aee8ba3acfd175bc07e380ad9a21d38bd1014519f0705aad9fc23a03faa36`.
+The 102 integrated tests, 369 resource checks, 18 adversarial TLS cases and
+actual-provider lifecycle pass. This is development evidence, not acceptance.
+
+Reviewing the native public-ENC Night image confirms the dark chart-label/hazard
+contrast concern. The floating chart controls are absent in the image despite
+visible diagnostic flags. The coastline sequence fails after an older Day
+diagnostic snapshot is read; ENC return-Day snapshots still say Night. Do not
+count these as passed theme cycles. Wait for the requested observed mode and
+verify actual control pixels before retaining replacement evidence. Fix the
+owned native surface stacking and compare again on both renderers.

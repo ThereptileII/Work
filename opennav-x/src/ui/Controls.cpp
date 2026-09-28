@@ -11,6 +11,7 @@
 #endif
 
 #include <memory>
+#include <cmath>
 
 namespace opennav::ui {
 namespace {
@@ -300,17 +301,48 @@ void XNavButton::Paint(wxPaintEvent&) {
   const auto text_color = opacity(ink);
   dc.SetTextForeground(text_color);
   dc.SetFont(UiFontWeight(*this, 12, 500));
+  if (floating_ && icon_ == XNavIcon::Compass) {
+    const int center = size.x / 2;
+    const auto label = GetLabel();
+    dc.SetFont(UiFontWeight(*this, 10, 600));
+    const auto letter = label.Left(1);
+    dc.DrawText(letter, center-dc.GetTextExtent(letter).x/2, FromDIP(12));
+    if (std::isfinite(compass_rotation_)) {
+      // Same two-tone 24x29 north arrow as the reference. Its rotation is a
+      // copied canvas orientation, never a guessed vessel heading.
+      const auto point = [&](double x, double y) {
+        const double co=std::cos(compass_rotation_), si=std::sin(compass_rotation_);
+        const double scale=FromDIP(1000)/1000.0;
+        return wxPoint(center+int(std::lround(scale*(x*co-y*si))),
+                       FromDIP(46)+int(std::lround(scale*(x*si+y*co))));
+      };
+      wxPoint left[]={point(0,-14.5),point(-10.8,14.5),point(0,7.54)};
+      wxPoint right[]={point(0,-14.5),point(10.8,14.5),point(0,7.54)};
+      dc.SetPen(*wxTRANSPARENT_PEN);dc.SetBrush(wxBrush(text_color));dc.DrawPolygon(3,left);
+      dc.SetBrush(wxBrush(opacity(Colour(FloatingTheme(mode_).compass_light))));dc.DrawPolygon(3,right);
+    }
+    dc.SetFont(UiFont(*this,8));
+    const auto caption=label+" up";
+    dc.DrawText(caption,center-dc.GetTextExtent(caption).x/2,FromDIP(72));
+    return;
+  }
   if (icon_ != XNavIcon::None) {
-    const int icon_size = FromDIP(22);
+    const int icon_size = FromDIP(inline_icon_ ? 17 : 22);
     const bool caption = !icon_only_ && !GetLabel().empty();
-    const int y = caption ? (size.y - FromDIP(40))/2 : (size.y-icon_size)/2;
+    const int y = caption && !inline_icon_ ? (size.y - FromDIP(40))/2 : (size.y-icon_size)/2;
     const auto svg = wxString::Format(
         "<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"24\" height=\"24\" viewBox=\"0 0 24 24\">"
         "<path d=\"%s\" fill=\"none\" stroke=\"#%02x%02x%02x\" stroke-width=\"1.65\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/></svg>",
         wxString::FromUTF8(PrototypeIconPath(icon_)), text_color.Red(), text_color.Green(), text_color.Blue());
     const auto bitmap = wxBitmapBundle::FromSVG(svg.utf8_str(), wxSize(icon_size, icon_size)).GetBitmap(wxSize(icon_size, icon_size));
-    if (bitmap.IsOk()) dc.DrawBitmap(bitmap, (size.x-icon_size)/2, y, true);
+    if (bitmap.IsOk()) dc.DrawBitmap(bitmap, inline_icon_ ? FromDIP(14) : (size.x-icon_size)/2, y, true);
     if (caption) {
+      if (inline_icon_) {
+        dc.SetFont(UiFont(*this,11));
+        const auto label=wxControl::Ellipsize(GetLabel(),dc,wxELLIPSIZE_END,std::max(1,size.x-FromDIP(52)));
+        dc.DrawText(label,FromDIP(40),(size.y-dc.GetTextExtent(label).y)/2);
+        return;
+      }
       dc.SetFont(UiFont(*this, navigation_item_ ? 10 : 11));
       const auto label=wxControl::Ellipsize(GetLabel(),dc,wxELLIPSIZE_END,std::max(1,size.x-FromDIP(8)));
       dc.DrawText(label,(size.x-dc.GetTextExtent(label).x)/2,y+FromDIP(29));

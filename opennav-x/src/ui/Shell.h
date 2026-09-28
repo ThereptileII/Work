@@ -5,6 +5,7 @@
 #include "ui/ProductPanel.h"
 #include "ui/ContextCard.h"
 #include "ui/Horizon.h"
+#include "ui/FloatingSurface.h"
 #include "integration/BuildFeatures.h"
 #if XNAV_ENABLE_TEST_FIXTURES
 #include "vessel/DemoSource.h"
@@ -31,6 +32,7 @@ struct ShellActions {
   std::vector<wxString> navigation_panes;
   std::function<void()> zoom_in, zoom_out, follow, legacy;
   std::function<std::string()> chart_orientation;
+  std::function<double()> chart_rotation;
   application::NavigationActions navigation;
   std::function<bool()> route_creating;
   std::function<adapters::PilotView(bool, vessel::Time)> pilot_tick;
@@ -133,6 +135,7 @@ private:
   diagnostics::FieldJournal field_journal_;
   wxFrame &frame_;
   wxAuiManager &manager_;
+  int original_pane_border_ = 0;
   ShellActions actions_;
   LightMode mode_;
   vessel::VesselState state_;
@@ -164,7 +167,7 @@ private:
   wxPanel *rail_scroll_ = nullptr;
   XNavHorizon *horizon_ = nullptr;
   wxPanel *route_actions_ = nullptr;
-  wxPanel *chart_tools_ = nullptr, *chart_orientation_ = nullptr, *chart_follow_ = nullptr;
+  XNavFloatingSurface *chart_tools_ = nullptr, *chart_orientation_ = nullptr, *chart_follow_ = nullptr;
   std::vector<wxWindow *> chart_overlays_;
   XNavButton *page_up_ = nullptr, *page_down_ = nullptr;
   XNavButton *rail_up_ = nullptr, *rail_down_ = nullptr;

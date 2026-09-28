@@ -18,10 +18,12 @@ and overlays. The new horizon does not invent missing destination/CPA events.
 Measured depth retains its actual datum; prototype "below surface" wording
 cannot replace a below-transducer measurement without a valid offset.
 
-The old geometry test requires ≥60% chart area and all permanent controls below/
+The old geometry test required ≥60% chart area and all permanent controls below/
 outside the chart. The HTML explicitly defines a 1014×566 canvas (56.05% of the
-1280×800 view) and bounded floating map controls. Replace that obsolete layout
-expectation with exact prototype geometry and explicit overlay bounds; preserve
+1280×800 view) and bounded floating map controls. The replacement asserts the
+exact 68/80/186/132/34 composition and each of six bounded overlay controls;
+it rejects 18 small, unsettled, clipped, overlapping or obsolete arrangements.
+Only the explicit six controls may cover the chart. This preserves
 coastline-content, clipping, input, mode and persistence tests. Do not loosen
 pixel tolerances or accept a blank chart to accommodate the new design.
 
@@ -64,3 +66,25 @@ This does not claim the secondary command-line quit failure is fixed. Another
 native run is required. The first Linux captures had build-commit metadata from
 the checkout rather than the executable; binary hashes and diagnostic build
 commits remain available and the collector now records both explicitly.
+
+### Owned floating surfaces — corrective Linux passes
+
+Child controls remain vulnerable to upstream software/GL canvas raising. They
+now live in three owned borderless native tool surfaces, outside the persisted
+AUI perspective. They are not global always-on-top windows. GTK restacks each
+directly above its owner without activation; this also supports the isolated
+Xvfb display with no window manager. Windows uses native owner ordering.
+
+The first capture exposed an unrelated selector bug: xdotool's default OR
+combination selected the first floating frame by PID instead of the named main
+frame. Searches with both PID and name now explicitly require both. The next
+capture checks actual surface and antialiased glyph pixels; `visible=true`
+alone cannot pass. Real zoom clicks must change OpenCPN's viewport scale.
+
+The native/GTK light-mode collectors now wait for observed mode and subsequent
+application ticks. Upstream's theme switch resets the AUI border metric, so XNav
+restores its transient zero-border presentation after every switch and restores
+the original metric when the shell is destroyed. Corrective software and Mesa
+llvmpipe captures retain the controls through the theme cycle. Windows, physical
+GPU and boat replacement evidence remain mandatory; corners/shadows and the
+larger screen set are still not visually accepted.

@@ -142,7 +142,7 @@ def confirm(label):
         # The common sheet is centred at 1280x800; two footer actions.
         time.sleep(.2)
         title='Enable physical pilot control?' if label=='Enable manual control' else label
-        dialogs=xdo('search','--onlyvisible','--pid',app.pid,'--name',title.replace('?','[?]')).splitlines()
+        dialogs=xdo('search','--all','--onlyvisible','--pid',app.pid,'--name',title.replace('?','[?]')).splitlines()
         # Modal sheets are separate X11 windows; click relative to their own
         # dimensions instead of assuming their centering within the frame.
         modal=next((w for w in dialogs if w!=handle and
@@ -180,7 +180,7 @@ try:
     assert connected.wait(10),'No loopback driver connection'
     if windows:handle,_=ui.wait_window('OpenNav X / OpenCPN',app.pid)
     else:
-        handle=xdo('search','--onlyvisible','--pid',app.pid,'--name','^OpenNav X / OpenCPN$').splitlines()[0]
+        handle=xdo('search','--all','--onlyvisible','--pid',app.pid,'--name','^OpenNav X / OpenCPN$').splitlines()[0]
         xdo('windowsize',handle,1280,800);xdo('windowmove',handle,0,0);xdo('windowfocus',handle)
     state=pilot(lambda p:p.get('fresh') and p.get('mode')=='STANDBY')
     assert not state['enabled'] and not sent,'Permission cannot auto-enable or emit controls'
