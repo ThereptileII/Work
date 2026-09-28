@@ -20,6 +20,15 @@ retained. Replacement fixes use the current Settings → Waypoints entry and
 recognize that CRT family without relaxing unknown-library rejection. No probe
 package or live boat AIS result is accepted from that failed run.
 
+Replacement `9a5162b` / run `36481625379` closes the Windows object-flow failure
+and passes its 112 integrated tests, 71 component checks and product/ENC captures.
+Probe packaging verifies 17 x86 binaries and imports, then fails before launch
+because a copied Python environment dictionary looks up mixed-case SystemRoot.
+The replacement normalizes Windows environment keys and explicitly removes the
+development credential; six portable packaging tests cover this boundary.
+Live AIS remains unverified. The local rail revision `00ff457` passes 120
+integrated Linux cases plus actual object and synthetic navigation input flows.
+
 The main rail's corrective Linux pass now checks the four measured HTML row
 bounds and compact pilot-summary bounds at 1280×800. Typography uses the final
 48px/−3px numeric rule; observation age and source state remain actual data.

@@ -19,6 +19,15 @@ from source_package import create_source_archive, PINNED_UPSTREAM
 ROOT = Path(__file__).resolve().parents[1]
 
 
+def isolated_environment(environment):
+    # os.environ is case-insensitive on Windows; a copied dict is not. Python
+    # commonly exposes SYSTEMROOT even if its spelling at creation differed.
+    env = {key.upper(): value for key, value in environment.items()}
+    env['PATH'] = str(Path(env['SYSTEMROOT']) / 'System32')
+    env.pop('AISSTREAM_API_KEY', None)
+    return env
+
+
 def dependency_candidates(install, runtime):
     """Use the licensed current MSVC CRT, as the main product packager does.
 
@@ -69,9 +78,7 @@ def main():
                 pending.append(path)
     subprocess.run([sys.executable, str(ROOT / 'tools/verify-preview-pe.py'), str(app),
                     '--report', str(package / 'dependency-audit.json')], check=True)
-    env = dict(os.environ)
-    env['PATH'] = str(Path(env['SystemRoot']) / 'System32')
-    env.pop('AISSTREAM_API_KEY', None)
+    env = isolated_environment(os.environ)
     result = subprocess.run([str(app / exe.name), '--describe'], cwd=app, env=env,
                             capture_output=True, text=True, timeout=15, check=True)
     description = json.loads(result.stdout)

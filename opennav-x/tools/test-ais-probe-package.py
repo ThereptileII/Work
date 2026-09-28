@@ -40,5 +40,18 @@ class DependencySelection(unittest.TestCase):
     def test_unidentified_runtime_directory_is_refused(self):
         with self.assertRaises(ValueError): m.dependency_candidates(self.install, self.install)
 
+    def test_windows_environment_case_does_not_break_clean_path(self):
+        for spelling in ('SystemRoot', 'SYSTEMROOT', 'systemroot'):
+            env={spelling:'C:/Windows','Path':'untrusted search path',
+                 'AisStream_Api_Key':'TEST_ONLY_SENTINEL','TEMP':'scratch'}
+            result=m.isolated_environment(env)
+            self.assertEqual(Path(result['PATH']),Path('C:/Windows/System32'))
+            self.assertNotIn('AISSTREAM_API_KEY',result)
+            self.assertEqual(result['TEMP'],'scratch')
+            self.assertEqual(env['Path'],'untrusted search path')
+
+    def test_missing_system_directory_does_not_guess(self):
+        with self.assertRaises(KeyError):m.isolated_environment({'PATH':'untrusted'})
+
 
 if __name__ == '__main__': unittest.main()

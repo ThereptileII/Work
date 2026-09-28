@@ -55,3 +55,19 @@ epoch and exact target canvas size. Three subsequent independent captures each
 pass real pointer zoom and Day/Dusk/Night/Day with clean exit. Negative evidence
 is retained. This is Linux llvmpipe evidence, not a physical GPU or Windows gate.
 See [local evidence](../../evidence/prototype-chart-gl-ink-local.json).
+
+
+Further source inspection identifies the gold/brown built-up fill as CHBRN,
+not LANDA. CHBRN is also used by causeways, dams, hulks, mooring facilities and
+offshore platforms; LANDF appears in their boundaries and other land features.
+No blanket replacement is accepted from that diagnosis. A future bounded
+palette pass must retain distinguishable object borders and review these
+objects on real ENC. The pinned lookup and symbol definitions remain unchanged.
+
+Read-only boat GPU inventory at 2026-09-28 20:59 UTC reports Intel UHD Graphics,
+driver 32.0.101.7088, and a current 1920×1080 desktop. This is not an interactive
+screen capture or physical-panel measurement. The 1280×800 design target stays
+in force; the next guarded application capture must measure client pixels,
+interactive monitor bounds and DPI rather than infer them from this inventory.
+No display setting, application installation, network or equipment state was
+changed by the inventory.
