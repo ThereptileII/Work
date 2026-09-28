@@ -249,7 +249,7 @@ DecodedMessage DecodeAisStream(const std::string &json, vessel::Time received,
   return result;
 }
 std::optional<std::string>
-AisStreamSubscription(const std::string &key,
+AisStreamSubscription(std::string_view key,
                       const std::vector<BoundingBox> &boxes,
                       const std::vector<int> &mmsis) {
   if (key.empty() || key.size() > 512 || boxes.empty() || boxes.size() > 2 ||
@@ -303,6 +303,10 @@ AisStreamSubscription(const std::string &key,
     w.String(type);
   w.EndArray();
   w.EndObject();
-  return std::string(buffer.GetString(), buffer.GetSize());
+  std::string result(buffer.GetString(), buffer.GetSize());
+  volatile char *secret_buffer = const_cast<char *>(buffer.GetString());
+  for (std::size_t i = 0; i < buffer.GetSize(); ++i)
+    secret_buffer[i] = 0;
+  return result;
 }
 } // namespace opennav::ais

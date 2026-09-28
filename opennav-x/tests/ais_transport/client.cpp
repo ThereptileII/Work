@@ -36,7 +36,7 @@ int main(int argc, char **argv) {
     if (msg->type == ix::WebSocketMessageType::Open) ++opened;
     if (msg->type == ix::WebSocketMessageType::Message) {
       ++messages;
-      maximum = std::max(maximum, msg->str.size());
+      maximum = (std::max)(maximum, msg->str.size());
       if (messages >= expected && expected > 0) ended = true;
     }
     if (msg->type == ix::WebSocketMessageType::Error) { ++errors; ended = true; }

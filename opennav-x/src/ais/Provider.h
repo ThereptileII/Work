@@ -10,6 +10,8 @@ struct ProviderHealth {
   vessel::Time state_since{}, last_position{};
   std::uint64_t accepted = 0, rejected = 0, reconnects = 0;
   bool subscription_confirmed = false;
+  bool compression_enabled = false;
+  vessel::Time retry_at{};
   // Diagnostics are enums/counters; no server text, subscription JSON or key.
 };
 struct ProviderSnapshot {

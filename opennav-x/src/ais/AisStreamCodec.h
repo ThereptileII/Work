@@ -3,6 +3,7 @@
 #include "ais/TargetCache.h"
 #include <chrono>
 #include <string>
+#include <string_view>
 
 namespace opennav::ais {
 enum class DecodeKind { Invalid, Ignored, Confirmation, Reports, ServiceError };
@@ -18,7 +19,7 @@ DecodedMessage DecodeAisStream(const std::string &json, vessel::Time received,
                                std::chrono::system_clock::time_point wall_now);
 // The returned string contains a secret: send promptly, erase, never log it.
 std::optional<std::string>
-AisStreamSubscription(const std::string &key,
+AisStreamSubscription(std::string_view key,
                       const std::vector<BoundingBox> &boxes,
                       const std::vector<int> &mmsis = {});
 } // namespace opennav::ais

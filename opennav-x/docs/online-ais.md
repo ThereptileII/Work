@@ -134,3 +134,39 @@ Do not collect raw process memory in ordinary diagnostic bundles.
 Native automated credential tests address only a unique `OpenNavX/Tests/AISStream/`
 entry, verify absence before creating it, and remove their own entry. The test
 factory is excluded from the production library. No real service key is needed.
+
+## Runtime session and transport
+
+`AisStreamSession` is an independently tested state machine. A valid viewport,
+explicit enable and readable credential are prerequisites. A socket opening is
+not reported as Connected: a complete subscription must be sent and confirmed.
+One replacement may be in flight; panning is coalesced at five seconds. Failure,
+missing confirmation or stalled connection enters bounded exponential backoff
+with jitter and a cooldown. Reconnection always sends the complete latest area.
+A successful confirmation resets failure backoff. Static reports and reads never
+refresh a position. Disable removes online targets; network loss retains their
+original observations so they age out. Old callbacks cannot revive a disabled
+or superseded connection.
+
+`AisStreamProvider` owns a controller thread and the bundled socket's receive
+thread. Its public methods copy values under a mutex; no window pointer or
+OpenCPN model pointer enters either worker. Socket stop/join occurs outside the
+state mutex. The production endpoint is fixed WSS, certificates and hostname
+are verified, compression is negotiated, redirects/downgrades are refused and
+wire/inflated buffers are bounded before JSON parsing. Library peer errors are
+reduced to state changes, never logged verbatim. The small subscription buffer
+is erased after sending. Optional MMSI filters exist at the codec boundary;
+normal viewport operation has no MMSI filter.
+
+CI uses a separate loopback-only factory compiled exclusively into a test
+executable. It verifies the actual TLS/provider/subscription/parser/cache path,
+initial subscription within three seconds, five-second viewport replacement,
+connection loss, bounded reconnect, full resubscription, retained snapshot
+lifetime and explicit disable. It never connects to AISStream or reads a real
+credential. Deterministic session tests separately exercise absent viewport/key,
+unconfirmed reports, malformed messages, stale/lost/expired positions,
+out-of-order callbacks, acknowledgement timeouts and repeated failures.
+
+Product settings, chart rendering, compact target/detail views and live boat
+acceptance remain pending; compiled provider tests alone do not establish those
+features as complete.
