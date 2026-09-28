@@ -1,0 +1,53 @@
+{
+  "accepted": false,
+  "scope": "Linux working tree on 0f06db8; native Windows and boat remain required",
+  "integratedTestsBeforeBackingOnlyCorrection": 120,
+  "testTimeSeconds": 20.51,
+  "testReportSha256": "b401f061ff61132105582dd8ddde69b05dbef239bfb788560ebde36bcbc8807b",
+  "chartPatchSha256": "7bd87984df7c0ab46376f158510e61f80a5911400bcb574ed81450adb9a32f27",
+  "captures": [
+    {
+      "directory": "evidence/local/prototype/scale-pass1-software",
+      "manifestSha256": "193ed59d58c8144b3ad8df0c970aa4209bfece33fdf7d0d46072ff52b45bfb04",
+      "renderer": "software",
+      "chartStyle": "XNav",
+      "images": 4,
+      "executableSha256": "442ed13100cc1f7e5c3a317e7fe9cb84bff60a469caa3db1d1fb38d93ecc8f10"
+    },
+    {
+      "directory": "evidence/local/prototype/scale-pass1-opengl",
+      "manifestSha256": "27ab44d444e95a7ef32f55ad0c974c3fd1833d6e48d058b85dae65cb628b5acd",
+      "renderer": "opengl",
+      "chartStyle": "XNav",
+      "images": 4,
+      "executableSha256": "442ed13100cc1f7e5c3a317e7fe9cb84bff60a469caa3db1d1fb38d93ecc8f10"
+    },
+    {
+      "directory": "evidence/local/prototype/scale-pass2-software",
+      "manifestSha256": "b3416049df9c43f5dc2772aa124bb334c76c5bf2fb313baf13172fd8a9062146",
+      "renderer": "software",
+      "chartStyle": "XNav",
+      "images": 4,
+      "executableSha256": "fadc84caa20b0def77829087e2c08be57be4b35c7c95b7e81f54d200dc23f4cb"
+    },
+    {
+      "directory": "evidence/local/prototype/scale-pass2-opengl",
+      "manifestSha256": "1ac925c76e63fa0c4c3c143f6f8ddaf1346d1821678d2e677cdd36c780db9611",
+      "renderer": "opengl",
+      "chartStyle": "XNav",
+      "images": 4,
+      "executableSha256": "fadc84caa20b0def77829087e2c08be57be4b35c7c95b7e81f54d200dc23f4cb"
+    },
+    {
+      "directory": "evidence/local/prototype/scale-pass2-coast",
+      "manifestSha256": "937759b5649c7eb046aa1769ad5addf3c7990d6cf7b46b29ed38b240e40eca18",
+      "renderer": "software",
+      "chartStyle": "XNav",
+      "images": 4,
+      "executableSha256": "fadc84caa20b0def77829087e2c08be57be4b35c7c95b7e81f54d200dc23f4cb"
+    }
+  ],
+  "review": "First software Day revealed sounding behind scale text; corrective software Day and GL Night inspected with 4px neutral backing. Twenty PNG hashes verified. Corrective captures assert actual painted bounds, prototype content gap, real zoom and full theme cycle. No independent distance or unit calculation. Native and boat remain pending.",
+  "exception": "Real ENC sounding overlap requires a small neutral legend backing absent from the illustrative HTML. Follow boat native width remains a separate typography/geometry issue.",
+  "remaining": "Chart selector, built-up fill, density, route/ownship/local AIS overlays and full hazard review remain open."
+}

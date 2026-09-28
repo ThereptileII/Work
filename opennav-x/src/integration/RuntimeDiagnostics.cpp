@@ -20,6 +20,11 @@ wxJSONValue ReadRuntimeDiagnostics(ChartCanvas &canvas) {
   r["chart"]["opengl_enabled"] = g_bopengl;
   r["chart"]["depth_unit_type"] = canvas.GetChartDepthUnit();
   r["chart"]["depth_units_visible"] = canvas.GetShowDepthUnits();
+  const auto scale_bar = canvas.GetScaleBarRect();
+  r["chart"]["scale_bar"]["x"] = scale_bar.x;
+  r["chart"]["scale_bar"]["y"] = scale_bar.y;
+  r["chart"]["scale_bar"]["width"] = scale_bar.width;
+  r["chart"]["scale_bar"]["height"] = scale_bar.height;
   r["chart"]["canvas_pixels"]["width"] = canvas.GetClientSize().x;
   r["chart"]["canvas_pixels"]["height"] = canvas.GetClientSize().y;
   if (ChartData && ChartData->IsValid() && !ChartData->IsBusy()) {

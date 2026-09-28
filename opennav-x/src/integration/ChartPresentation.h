@@ -9,6 +9,7 @@ class s52plib;
 class wxFileConfig;
 class ChartCanvas;
 class ocpnDC;
+class wxRect;
 namespace opennav::integration {
 // Application-thread only. The library is selected once before charts retain
 // lookup pointers; changing a preference requires the ordinary controlled
@@ -19,6 +20,9 @@ bool ChartBackground(ColorScheme scheme, wxColour &land, wxColour &water);
 // Returns true only after drawing the upstream-resolved chart depth unit.
 // False preserves the stock emboss path, including Standard/Legacy/Safe.
 bool DrawChartDepthUnit(ocpnDC &dc, ChartCanvas &canvas);
+bool ChartScaleGeometry(ChartCanvas &canvas, int &x, int &y, int &reference_width);
+bool DrawChartScale(ocpnDC &dc, ChartCanvas &canvas, const wxString &label,
+                    int x, int y, int length, wxRect &bounds);
 bool XNavChartRequested();
 std::string ChartPresentationStatus();
 application::CommandResult SetXNavChartRequested(bool enabled);

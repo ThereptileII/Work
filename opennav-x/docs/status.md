@@ -10,6 +10,16 @@ all PNG hashes verify and 120 integrated Linux tests pass. Standard retains its
 original emboss. These are development results, not native/boat acceptance.
 See [depth-unit evidence](evidence/prototype-depth-units-local.json).
 
+The next local scale-bar pass preserves OpenCPN's distance/unit computation and
+moves its legend beside Follow Boat. All 120 integrated tests pass before the
+backing-only visual correction; twenty software/llvmpipe/coastline captures
+retain their hashes. The first pass exposed an ENC sounding behind the legend;
+a small neutral backing corrects that ambiguity. The recorded HTML content gap
+and actual painted bounds now pass without overlap. This safety-legibility
+exception, native Follow Boat width, chart selector, density and full chart
+review remain documented; native/boat acceptance is pending. See
+[scale evidence](evidence/prototype-chart-scale-local.json).
+
 Current local chart review: the final HTML cascade now supplies all marker
 tokens, including eight roles omitted by extraction from its earlier stylesheet.
 The immutable HTML is unchanged; 4 design-contract tests pass. A bounded neutral

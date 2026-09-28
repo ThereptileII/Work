@@ -219,6 +219,20 @@ def main():
             assert all(abs(actual_pilot[k]-components[".autopilot-summary"][0]["rect"][k]) <= 1
                        for k in actual_pilot), "Pilot summary differs from canonical HTML geometry"
             record.setdefault("prototype_rail_geometry", []).append(dict(file=name,pilot=actual_pilot))
+            if args.chart_style == "XNav":
+                chart = snapshot["runtime"]["display"]["chart_region"]
+                scale = dict(snapshot["runtime"]["chart"]["scale_bar"])
+                scale["x"] += chart["x"]; scale["y"] += chart["y"]
+                follow = [c for c in snapshot["runtime"]["display"]["interaction_controls"]
+                          if c["label"] == "Follow boat" and c["visible"]][0]
+                assert scale["width"] > 0 and scale["height"] > 0, "Actual chart scale has no painted bounds"
+                # Four pixels of backing keep real ENC soundings from reading
+                # as scale text. The content retains the HTML's 25px gap.
+                assert abs(scale["x"] + 4 - (follow["x"] + follow["width"]) - 25) <= 1, "Chart scale overlaps Follow boat or loses the prototype content gap"
+                assert chart["x"] <= scale["x"] and chart["y"] <= scale["y"]
+                assert scale["x"] + scale["width"] <= chart["x"] + chart["width"]
+                assert scale["y"] + scale["height"] <= chart["y"] + chart["height"]
+                record.setdefault("scale_layout", []).append(dict(file=name,actual=scale,follow=follow))
             from PIL import Image
             theme = snapshot["runtime"]["display"]["light"].lower()
             tokens = json.loads((ROOT / "docs/design/prototype-tokens.json").read_text())["themes"][theme]

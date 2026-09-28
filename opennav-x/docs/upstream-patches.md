@@ -619,6 +619,15 @@ diagnostic snapshot reports the actual upstream enum and visibility preference;
 the public ENC capture can explicitly test Feet, Meters and Fathoms. Native and
 boat replacement rendering gates are still required.
 
+`ChartCanvas::ScaleBarDraw` keeps its existing geographic conversion, user unit
+selection, nice-distance rounding and projected length. For verified XNav only,
+a hook moves its origin beside Follow Boat and provides a smaller reference
+span before that same computation. A second hook paints the resulting upstream
+label/length and updates the existing scale bounds. Standard/Legacy/Safe return
+to the original span and paint. There is no independent scale calculation.
+Diagnostics copy the existing `GetScaleBarRect` result; capture tests ensure
+the legend is inside the chart and cannot overlap Follow Boat.
+
 Two small GUI hooks let `GSHHSChart::SetColorScheme` and the `LANDBACK`/`BLUEBACK`
 background colors use XNav's verified palette. They return normal upstream
 behavior in Legacy/Safe/Standard. No chart objects or sensor state are changed.

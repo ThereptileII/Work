@@ -25,6 +25,18 @@ is converted by this label. Mixed/unknown units fall through to stock behavior.
 The large emboss stays in Standard, Legacy and Safe Mode. This is an in-progress
 presentation correction, not accepted chart conformance.
 
+The chart scale retains OpenCPN's geographic projection, selected distance units
+and nice-distance rounding. XNav places its content 25px after Follow Boat,
+37px above the chart bottom, with 8px type, 5px arms/gap and 1px floating-muted
+lines. A 130px reference span feeds upstream's existing halving calculation;
+the painted bar length is the resulting real distance, never a hard-coded
+65px with an invented label. Standard keeps its original scale presentation.
+The first real-ENC pass exposed a sounding directly behind the small scale,
+which could be mistaken for its distance. A 4px neutral floating-surface backing
+(3px radius) is a documented navigation-legibility exception to the fictional
+HTML map. It changes no sounding or scale value. Corrective software/GL/native
+and boat reviews are required; the exception does not imply visual acceptance.
+
 Final HTML marker variables (from the appended stylesheet, not the earlier
 `src/style.css` fragment):
 

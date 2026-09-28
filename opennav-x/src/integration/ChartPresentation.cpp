@@ -155,6 +155,55 @@ bool DrawChartDepthUnit(ocpnDC &dc, ChartCanvas &canvas) {
   return fits;
 }
 std::string ChartPresentationStatus() { return status; }
+bool ChartScaleGeometry(ChartCanvas &canvas, int &x, int &y,
+                        int &reference_width) {
+  if (!wxIsMainThread() || !xnav_mode || !active ||
+      canvas.GetClientSize().x < canvas.FromDIP(480)) return false;
+  // .map-bottom-left: 28px inset, native Follow boat width 142px, 25px gap.
+  x = canvas.FromDIP(28 + 142 + 25);
+  y = canvas.GetClientSize().y - canvas.FromDIP(37);
+  // Upstream halves this span, selects a nice distance in the user's units,
+  // then projects that actual distance back to pixels. Never draw a fixed
+  // 65px bar with an independently guessed distance label.
+  reference_width = canvas.FromDIP(65 * 2);
+  return true;
+}
+bool DrawChartScale(ocpnDC &dc, ChartCanvas &canvas, const wxString &label,
+                    int x, int y, int length, wxRect &bounds) {
+  if (!wxIsMainThread() || !xnav_mode || !active || length <= 0 ||
+      x < 0 || y < 0 || length > canvas.GetClientSize().x - x) return false;
+  const auto mode = canvas.GetColorScheme() == GLOBAL_COLOR_SCHEME_NIGHT
+      ? ui::LightMode::Night : canvas.GetColorScheme() == GLOBAL_COLOR_SCHEME_DUSK
+      ? ui::LightMode::Dusk : ui::LightMode::Day;
+  const auto ink = ui::Colour(ui::FloatingTheme(mode).secondary);
+  const auto old_font = dc.GetFont(); const auto old_ink = dc.GetTextForeground();
+  const auto old_pen = dc.GetPen(); const auto old_brush = dc.GetBrush();
+  dc.SetFont(ui::UiFont(canvas, 8)); dc.SetTextForeground(ink);
+  int width = 0, height = 0; dc.GetTextExtent(label, &width, &height);
+  const int arm = canvas.FromDIP(5), gap = canvas.FromDIP(5);
+  const int top = y - arm - gap - height;
+  if (top >= 0) {
+    // A real ENC can have a sounding directly behind this legend. Give the
+    // scale a small neutral backing so charted depth cannot read as scale text.
+    // The illustrative HTML never exercises this overlap; distance is still
+    // the exact upstream result, and the legend's content geometry is unchanged.
+    const int pad = canvas.FromDIP(4);
+    dc.SetPen(*wxTRANSPARENT_PEN);
+    dc.SetBrush(wxBrush(ui::Colour(ui::FloatingTheme(mode).surface)));
+    dc.DrawRoundedRectangle(x - pad, top - pad,
+        (std::max)(length, width) + 2 * pad, y - top + 1 + 2 * pad,
+        canvas.FromDIP(3));
+    dc.SetPen(wxPen(ink, canvas.FromDIP(1)));
+    dc.DrawText(label, x, top);
+    dc.DrawLine(x, y - arm, x, y);
+    dc.DrawLine(x, y, x + length, y);
+    dc.DrawLine(x + length, y, x + length, y - arm);
+    bounds = wxRect(x - pad, top - pad, (std::max)(length, width) + 2 * pad,
+                    y - top + 1 + 2 * pad);
+  }
+  dc.SetBrush(old_brush); dc.SetPen(old_pen); dc.SetFont(old_font); dc.SetTextForeground(old_ink);
+  return top >= 0;
+}
 application::CommandResult SetXNavChartRequested(bool enabled) {
   if (!wxIsMainThread() || !preferences || !xnav_mode)
     return {false, "Chart style is unavailable in this interface"};

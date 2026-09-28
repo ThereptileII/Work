@@ -284,3 +284,32 @@ diff --git a/gui/include/gui/ocpndc.h b/gui/include/gui/ocpndc.h
 +  }
  
    void GetSize(wxCoord *width, wxCoord *height) const;
+diff --git a/gui/src/chcanv.cpp b/gui/src/chcanv.cpp
+--- a/gui/src/chcanv.cpp
++++ b/gui/src/chcanv.cpp
+@@ -6702,8 +6702,13 @@
+           m_canvas_height / GetContentScaleFactor() - chartbar_height - 5;
+ #endif
+ 
++    int scale_reference_width = m_canvas_width;
++#ifdef OPENNAV_X
++    const bool xnav_scale = opennav::integration::ChartScaleGeometry(
++        *this, x_origin, y_origin, scale_reference_width);
++#endif
+     GetCanvasPixPoint(x_origin, y_origin, blat, blon);
+-    GetCanvasPixPoint(x_origin + m_canvas_width, y_origin, tlat, tlon);
++    GetCanvasPixPoint(x_origin + scale_reference_width, y_origin, tlat, tlon);
+ 
+     double d;
+     ll_gc_ll_reverse(blat, blon, tlat, tlon, 0, &d);
+@@ -6733,6 +6738,10 @@
+     wxPoint r;
+     GetCanvasPointPix(tlat, tlon, &r);
+     int l1 = r.x - x_origin;
++#ifdef OPENNAV_X
++    if (xnav_scale && opennav::integration::DrawChartScale(
++            dc, *this, s, x_origin, y_origin, l1, m_scaleBarRect)) return;
++#endif
+ 
+     m_scaleBarRect = wxRect(x_origin, y_origin - 12, l1,
+                             12);  // Store this for later reference
