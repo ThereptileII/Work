@@ -1,0 +1,173 @@
+{
+  "stageAccepted": false,
+  "localCommit": "98f3646d2d1e9ea71ecaacedd4d64403d8699555",
+  "remoteCommit": "3db9704d7403d6ec3df356551a2395bdc7e29a3a",
+  "mappedSourceBlobsVerified": 1028,
+  "run": "https://github.com/ThereptileII/Work/actions/runs/36466500140",
+  "downloadedArtifacts": [
+    {
+      "id": 10990051404,
+      "name": "prototype-native-Windows-3db9704d7403d6ec3df356551a2395bdc7e29a3a",
+      "sha256": "d945076899308713eff4d1ab7fb866370ba13f0d55736225a393c9e7f579aa63",
+      "bytes": 11245488,
+      "zipCrc": true
+    },
+    {
+      "id": 10989768103,
+      "name": "prototype-ais-network-Linux-3db9704d7403d6ec3df356551a2395bdc7e29a3a",
+      "sha256": "24df2cd58a6ba83f3ba8638c34a9dd97d57c1787d8b0490b78afd3842227120f",
+      "bytes": 735,
+      "zipCrc": true
+    },
+    {
+      "id": 10989663999,
+      "name": "prototype-ais-foundation-Linux-3db9704d7403d6ec3df356551a2395bdc7e29a3a",
+      "sha256": "6dad2e05d0f7f244139d7d15fd2d7f9b27d43df495b856b57ff487acf0b23ca7",
+      "bytes": 654,
+      "zipCrc": true
+    },
+    {
+      "id": 10988719375,
+      "name": "prototype-ais-foundation-Windows-3db9704d7403d6ec3df356551a2395bdc7e29a3a",
+      "sha256": "a78221cf82709c6978616f8b21661b4ba0047bba61d90eefdf8046152a9b9499",
+      "bytes": 658,
+      "zipCrc": true
+    }
+  ],
+  "junit": [
+    {
+      "file": "prototype-ais-foundation-Linux-3db9704d7403d6ec3df356551a2395bdc7e29a3a/ais-foundation.xml",
+      "tests": 6,
+      "failures": 0
+    },
+    {
+      "file": "prototype-ais-foundation-Windows-3db9704d7403d6ec3df356551a2395bdc7e29a3a/ais-foundation.xml",
+      "tests": 6,
+      "failures": 0
+    },
+    {
+      "file": "prototype-native-Windows-3db9704d7403d6ec3df356551a2395bdc7e29a3a/windows-production-tests.xml",
+      "tests": 112,
+      "failures": 0
+    }
+  ],
+  "captures": [
+    {
+      "directory": "prototype-enc-standard",
+      "captureSha256": "72328e77db77c95f240d58c4395e42ef6e42713391c97869d7a5fb1c475f379d",
+      "executableSha256": "0fd7da3d71c6d3a4e68af0d85104d2bcbca724fb19231240beebe2995ba279e4",
+      "buildCommit": "3db9704d7403d6ec3df356551a2395bdc7e29a3a",
+      "exitCode": 0,
+      "captures": [
+        {
+          "file": "navigation-day.png",
+          "sha256": "73eb340607598d565b2b3016f892adfd65bdf2dbf1126b20ae1e2fa90707f4ca"
+        },
+        {
+          "file": "navigation-dusk.png",
+          "sha256": "db2e759ee0d2a322c404b6e33ae455232a56997036b648ff3ff466418c9158c4"
+        },
+        {
+          "file": "navigation-night.png",
+          "sha256": "1ab63cba903b50b6f673678c573feb37d3bd7a7c74ebd37fbfa4c00e7cc1be33"
+        },
+        {
+          "file": "navigation-return-day.png",
+          "sha256": "73eb340607598d565b2b3016f892adfd65bdf2dbf1126b20ae1e2fa90707f4ca"
+        }
+      ],
+      "settings": null
+    },
+    {
+      "directory": "prototype-enc-xnav",
+      "captureSha256": "5dfabaede04040e177373581202663f898e00fddde8d43e5f603cf42139fc28e",
+      "executableSha256": "0fd7da3d71c6d3a4e68af0d85104d2bcbca724fb19231240beebe2995ba279e4",
+      "buildCommit": "3db9704d7403d6ec3df356551a2395bdc7e29a3a",
+      "exitCode": 0,
+      "captures": [
+        {
+          "file": "navigation-day.png",
+          "sha256": "2132cb3d54042fa4d0e8b550dff424e836f460fe38fb669e1a8f4ff8c1721ae9"
+        },
+        {
+          "file": "navigation-dusk.png",
+          "sha256": "82667cea2dea741fa554d52b102fbb141605299498ca7ac83b3aeffa1e477fff"
+        },
+        {
+          "file": "navigation-night.png",
+          "sha256": "e7cb329a3717322c5d5e226a37a878799f777b34c38ba5181310273beda94f6d"
+        },
+        {
+          "file": "navigation-return-day.png",
+          "sha256": "2132cb3d54042fa4d0e8b550dff424e836f460fe38fb669e1a8f4ff8c1721ae9"
+        }
+      ],
+      "settings": null
+    },
+    {
+      "directory": "prototype-native",
+      "captureSha256": "21ea8fd35e74a7f0894a45b21ad57021b46eaa6c35c2f86d609fc09bd069ae82",
+      "executableSha256": "0fd7da3d71c6d3a4e68af0d85104d2bcbca724fb19231240beebe2995ba279e4",
+      "buildCommit": "3db9704d7403d6ec3df356551a2395bdc7e29a3a",
+      "exitCode": 0,
+      "captures": [
+        {
+          "file": "navigation-day.png",
+          "sha256": "4499ffc75ae44e0b9c56324d5aca8ed796fe47ebdd3d5b8fb55e60586326bf0f"
+        },
+        {
+          "file": "navigation-dusk.png",
+          "sha256": "dca14c3693557d6006f6b514afe05af36145b45d8d056ba2ba4cd4a4fc707a0b"
+        },
+        {
+          "file": "navigation-night.png",
+          "sha256": "2eac4d4f7281527f6c3f705ef6a0c637968a447183b50486aa9b2095f17e6a07"
+        },
+        {
+          "file": "passage-day.png",
+          "sha256": "dac7d9eb57e62c66910a4cb180bdd53f77620c17e4a8e0ed13d6d6da3c6bf7c6"
+        },
+        {
+          "file": "traffic-day.png",
+          "sha256": "51180b6c49cf8252f7abedbcc6f39887fd984f31f9e336fe638ca9e5ccb7e6df"
+        },
+        {
+          "file": "energy-day.png",
+          "sha256": "73ec92993b59ba8e172cf79f8b66d9e5eb040717d6935fe72488de09ae2a5196"
+        },
+        {
+          "file": "instruments-day.png",
+          "sha256": "977206b04d09177f57f905d7c8d505b1d74d8932b860d19a4bd77b0d3ceb52e0"
+        },
+        {
+          "file": "settings-day.png",
+          "sha256": "2005875e4f117d7aecd6d40f5de8de6c74ed34ae756d36606d96527bfad8dfb4"
+        },
+        {
+          "file": "online-ais-settings-day.png",
+          "sha256": "456402934ad761dd1b22e67a189bf0625585896ab501dd0423dbbf3a3c277775"
+        },
+        {
+          "file": "online-ais-key-needed-day.png",
+          "sha256": "d88db22827ceb913859801507a7863c1ddd3845b63b14723bb42879b9c609120"
+        },
+        {
+          "file": "online-ais-settings-dusk.png",
+          "sha256": "e830984ad8f0d33c6b4a1df2bdf5223346595098378da3a9b2a5264aa5fe2c92"
+        },
+        {
+          "file": "online-ais-settings-night.png",
+          "sha256": "a588ffc442b1cf50c187e00df5a57d792a0074d3b528b2428324c9a07db43efd"
+        }
+      ],
+      "settings": "Default OFF; missing key withholds connection; OFF, themes and Close exercised"
+    }
+  ],
+  "windowsBuild": "Native fixture-free Win32 MSVC passed",
+  "transport": "18 hostile TLS scenarios and actual provider lifecycle pass on both platforms",
+  "resources": "369 preservation and integrity checks pass",
+  "visualReview": "Traffic Day and Online AIS Settings Night inspected. Correct drawer bounds and real settings interaction; visible mojibake in Traffic heading needs correction. Other primary pages, rail typography and ENC Night contrast remain mismatches. No target fixtures in product captures.",
+  "linuxDevelopment": "120 integrated and 75 portable tests passed in preceding development working tree; final shutdown null guards additionally compiled.",
+  "boatAcceptance": false,
+  "liveAISAcceptance": false
+}

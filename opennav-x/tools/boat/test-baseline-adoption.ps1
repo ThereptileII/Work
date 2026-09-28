@@ -95,6 +95,14 @@ try {
   [IO.File]::WriteAllText($badIni,$stockMigrated.Replace('[Settings/MSWFonts]',"[Settings/MSWFonts]`r`nsv-00c6075a="),$encoding)
   Refuse 'Retaining the obsolete font with an empty value is not its permitted removal' {Assert-CommissioningMigrationReview $stockBefore $badIni (Review $stockBefore $badIni)}
   $oldValues=Read-ProfileForAudit $stockBefore;$newValues=Read-ProfileForAudit $stockAfter
+  Pass 'Exact reviewed Beta-to-stock build marker also enters pinned GL upgrade defaults' {
+    $was=$oldValues.Clone();$was['Settings/ConfigVersionString']='Version 5.12.4+37fd0cd Build 2026-09-27'
+    Assert-CommissioningStockUpgradeDelta 'Settings/GPUTextureMemSize' $was $newValues
+  }
+  Refuse 'Another Beta build marker is not an open-ended GL migration exception' {
+    $was=$oldValues.Clone();$was['Settings/ConfigVersionString']='Version 5.12.4+37fd0cd Build 2026-09-28'
+    Assert-CommissioningStockUpgradeDelta 'Settings/GPUTextureMemSize' $was $newValues
+  }
   foreach($kind in @('budget-other','budget-missing','already-current','gl-disabled','old-version-unknown','menu-changed','locale-changed','translated-changed','translated-removed','wrong-font-key')) {
     Refuse "Observed startup exception cannot authorize other changes: $kind" {
       $was=$oldValues.Clone();$is=$newValues.Clone();$key='Settings/GPUTextureMemSize'

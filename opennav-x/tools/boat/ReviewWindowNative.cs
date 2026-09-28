@@ -238,7 +238,7 @@ namespace OpenNavX {
         case "Menu":return new string[]{"Menu"};case "Navigation":return new string[]{"Navigation"};
         case "Routes":return new string[]{"Routes"};case "Waypoints":return new string[]{"Waypoints"};
         case "AIS":return new string[]{"AIS targets"};case "Instruments":return new string[]{"Vessel instruments"};
-        case "Advice":return new string[]{"SmartNav advisories"};case "PilotView":return new string[]{"Pilot"};
+        case "Advice":return new string[]{"SmartNav advisories"};case "PilotView":return new string[]{"Autopilot"};
         case "Anchor":return new string[]{"Anchor watch"};case "Settings":return new string[]{"Settings"};
         case "Sources":return new string[]{"SENSORS"};case "Route":return new string[]{"Route"};
         case "Display":return new string[]{"DISPLAY"};case "ToggleFullscreen":return new string[]{"Fullscreen / window"};
@@ -247,7 +247,7 @@ namespace OpenNavX {
         case "System":return new string[]{"System"};case "Alerts":return new string[]{"Alerts"};
         case "CyclePalette":return new string[]{"Day","Dusk","Night"};
         case "ZoomIn":return new string[]{"+"};case "ZoomOut":return new string[]{"\u2212"};
-        case "Center":return new string[]{"Center"};case "PageUp":return new string[]{"Up"};case "PageDown":return new string[]{"Down"};
+        case "Center":return new string[]{"Follow boat"};case "PageUp":return new string[]{"Up"};case "PageDown":return new string[]{"Down"};
         default:throw new InvalidOperationException("Unsupported review pointer action.");
       }
     }

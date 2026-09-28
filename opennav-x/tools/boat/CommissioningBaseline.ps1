@@ -20,10 +20,12 @@ function Assert-CommissioningTextureMinimum($Before,$After) {
 function Assert-CommissioningStockUpgradeDelta([string]$Key,$Before,$After) {
   if($Key -ceq 'Settings/GPUTextureMemSize') {
     # Pinned OCPNPlatform::Initialize_3 selects exactly64MB for the GL-capable
-    # upgrade path. This is the observed official5.12.2->5.12.4 migration only.
+    # upgrade path. The same source path runs when the stored version/build
+    # string changes from the exact reviewed Beta executable back to stock.
+    # These are two observed transitions, not a general version/GL exception.
     if($Before[$Key] -cne '128' -or $After[$Key] -cne '64' -or
        $Before['Settings/OpenGL'] -cne '1' -or $After['Settings/OpenGL'] -cne '1' -or
-       $Before['Settings/ConfigVersionString'] -cne 'Version 5.12.2-0+b69f44c Build 2025-08-01' -or
+       $Before['Settings/ConfigVersionString'] -cnotin @('Version 5.12.2-0+b69f44c Build 2025-08-01','Version 5.12.4+37fd0cd Build 2026-09-27') -or
        $After['Settings/ConfigVersionString'] -cne 'Version 5.12.4-0+37fd0cd Build 2025-09-12') {throw 'Only the observed exact official GL-upgrade texture budget reset may be adopted.'}
     return
   }
