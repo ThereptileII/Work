@@ -7,8 +7,8 @@ if(-not $root.StartsWith([IO.Path]::GetTempPath(),[StringComparison]::OrdinalIgn
    [IO.Path]::GetFileName($root) -cnotmatch '^opennav-display-window-[a-f0-9]{32}$'){throw 'Unique temporary display fixture required.'}
 $record=Get-Content -LiteralPath (Join-Path $root 'fixture.json') -Raw|ConvertFrom-Json
 if($record.owner -cne 'OpenNavX.NativeDisplayWindow.Fixture.1' -or
-   $record.action -cnotin @('Display','ToggleFullscreen','ToggleOrientation','CyclePalette','PanRight') -or
-   $record.case -cnotin @('normal','return','course','wrong-page','wrong-geometry','canvas-child','ambiguous','replace-on-down','rename-on-down','move-on-down','duplicate-on-down','modal')){throw 'Unknown fixed fixture.'}
+   $record.action -cnotin @('Display','ToggleFullscreen','ToggleOrientation','CyclePalette','PanRight','Resize1280x800') -or
+   $record.case -cnotin @('normal','return','course','wrong-page','wrong-geometry','canvas-child','ambiguous','replace-on-down','rename-on-down','move-on-down','duplicate-on-down','modal','maximized-offscreen','partial-offscreen','entirely-offscreen','minimized','demo','wrong-pid')){throw 'Unknown fixed fixture.'}
 Add-Type -AssemblyName System.Windows.Forms
 Add-Type -TypeDefinition @'
 using System;
@@ -40,7 +40,7 @@ function Button($Parent,[string]$Label,[int]$X,[int]$Y,[int]$Width=180) {
 }
 function SaveClick([string]$Caption){[IO.File]::AppendAllText((Join-Path $root 'clicks.txt'),$Caption+"`n")}
 $top=New-Object Windows.Forms.Panel;$top.Location=New-Object Drawing.Point(0,0);$top.Size=New-Object Drawing.Size(860,64);$form.Controls.Add($top)
-$null=Button $top 'Menu' 10 4 100
+$null=Button $top $(if($record.case -ceq 'demo'){'Demo'}else{'Menu'}) 10 4 100
 $palette=Button $top 'Day' 130 4 100
 $palette.Add_Click({param($sender,$event) SaveClick ('Status '+$sender.Text);$sender.Text=switch($sender.Text){'Day'{'Dusk'};'Dusk'{'Night'};default{'Day'}}})
 $bottom=New-Object Windows.Forms.Panel;$bottom.Location=New-Object Drawing.Point(0,520);$bottom.Size=New-Object Drawing.Size(860,64);$form.Controls.Add($bottom)
@@ -108,6 +108,12 @@ if($record.case -cin @('replace-on-down','rename-on-down','move-on-down','duplic
 $started=[datetime]::UtcNow;$timer=New-Object Windows.Forms.Timer;$timer.Interval=100
 $timer.Add_Tick({if((Test-Path -LiteralPath (Join-Path $root 'release')) -or ([datetime]::UtcNow-$started).TotalSeconds -gt 25){$form.Close()}})
 $form.Add_Shown({
+ if($record.case -cin @('maximized-offscreen','partial-offscreen')) {
+  $form.Location=New-Object Drawing.Point(-200,-100);$form.Size=New-Object Drawing.Size(1600,1000)
+  if($record.case -ceq 'maximized-offscreen'){$form.WindowState='Maximized'}
+ }
+ if($record.case -ceq 'entirely-offscreen'){$form.Location=New-Object Drawing.Point(-4000,-3000)}
+ if($record.case -ceq 'minimized'){$form.WindowState='Minimized'}
  if($record.case -ceq 'return'){$form.FormBorderStyle='None';$form.WindowState='Maximized';$script:full=$true}
  $chart=$panel.RectangleToScreen($panel.ClientRectangle)
  [IO.File]::WriteAllText((Join-Path $root 'ready.json'),(@{pid=$PID;handle=$form.Handle.ToInt64();createdFiletime=[Diagnostics.Process]::GetCurrentProcess().StartTime.ToUniversalTime().ToFileTimeUtc().ToString();chart=@{left=$chart.Left;top=$chart.Top;right=$chart.Right;bottom=$chart.Bottom}}|ConvertTo-Json -Depth 4 -Compress))

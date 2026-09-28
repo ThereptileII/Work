@@ -1,0 +1,82 @@
+{
+  "schema": 1,
+  "scope": "Native read-only boat tooling, not Beta 2 product acceptance",
+  "commit": "ad08061eb46d63401a5565ae561bb8f780cfae88",
+  "mappedLocalCommit": "2175ac1",
+  "run": "https://github.com/ThereptileII/Work/actions/runs/36388235873",
+  "attempt": 1,
+  "jobsPassed": 9,
+  "baselineAdoptionCases": 125,
+  "displayCases": 23,
+  "modeCases": 14,
+  "stagingCases": 12,
+  "allArtifactsDownloadedAndUploadApiSha256SizeZipVerified": true,
+  "artifacts": [
+    {
+      "id": 10955740412,
+      "name": "development-commissioning-broker-ad08061eb46d63401a5565ae561bb8f780cfae88",
+      "sha256": "555672ff4c997c0a94db23712bd8e412fb88becd5c56546cfa79af9bafd70802",
+      "bytes": 16715,
+      "zipCrc": true
+    },
+    {
+      "id": 10955555440,
+      "name": "development-stock-welcome-sv-ad08061eb46d63401a5565ae561bb8f780cfae88",
+      "sha256": "41e8c9fc3fa5ea41105bbe281f05546af36a669b8f185c9e304b309ac5ebf912",
+      "bytes": 501704,
+      "zipCrc": true
+    },
+    {
+      "id": 10955321575,
+      "name": "development-boat-tooling-ad08061eb46d63401a5565ae561bb8f780cfae88",
+      "sha256": "6920e398c1acef9d1b58cbae65049809c0a9984600dfa670a00f882dc0eb30ab",
+      "bytes": 25843,
+      "zipCrc": true
+    },
+    {
+      "id": 10955133254,
+      "name": "development-stock-welcome-en_US-ad08061eb46d63401a5565ae561bb8f780cfae88",
+      "sha256": "cdd3066ac1b69d0fc2bf70b9acd9d0be2d049fa4113a0a4f7f8a903bdf827692",
+      "bytes": 474157,
+      "zipCrc": true
+    },
+    {
+      "id": 10954678846,
+      "name": "development-desktop-diagnostics-ad08061eb46d63401a5565ae561bb8f780cfae88",
+      "sha256": "727b8b4fa92814776bf690e9fba9dce2c706830496244bf99395e3f21a0abb64",
+      "bytes": 3270,
+      "zipCrc": true
+    },
+    {
+      "id": 10954673823,
+      "name": "development-commissioning-restart-ad08061eb46d63401a5565ae561bb8f780cfae88",
+      "sha256": "0c9e6b15fb20b437d95afbb16c38ef210f2fc588479ad43a4baefc4e055d1cbb",
+      "bytes": 6225,
+      "zipCrc": true
+    },
+    {
+      "id": 10954544043,
+      "name": "development-installer-shortcuts-x86-ad08061eb46d63401a5565ae561bb8f780cfae88",
+      "sha256": "a7c34a02a56e86dd2d25e6350edf1afa9d882280a286f7b3ac41013d91bcd718",
+      "bytes": 1266,
+      "zipCrc": true
+    },
+    {
+      "id": 10954519033,
+      "name": "development-installer-shortcuts-x64-ad08061eb46d63401a5565ae561bb8f780cfae88",
+      "sha256": "6490250fb382908aab9fac0f3fe83508589b40030fcaca80a2e20ad5eb8856f6",
+      "bytes": 1266,
+      "zipCrc": true
+    },
+    {
+      "id": 10954409849,
+      "name": "development-restart-window-ad08061eb46d63401a5565ae561bb8f780cfae88",
+      "sha256": "dfcf82a4a1634c6694b36869105c91dbe6c313bab44d33fac53b4b82d8e1ff11",
+      "bytes": 18774,
+      "zipCrc": true
+    }
+  ],
+  "boatDeployed": true,
+  "physicalCommands": 0,
+  "change": "Narrow source-reviewed non-expert OpenGL texture minimum adoption: only 64 to 128 for unchanged pinned version, enabled OpenGL and non-expert mode. Original connection direction and every other saved profile byte preserved."
+}

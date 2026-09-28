@@ -1,0 +1,109 @@
+{
+  "schema": 1,
+  "commit": "79a95c4f39063c20ca4d5a98c3147080d9813077",
+  "run": "https://github.com/ThereptileII/Work/actions/runs/36311718794",
+  "attempt": 1,
+  "jobsPassed": 16,
+  "linuxIntegratedTests": 110,
+  "windowsIntegratedTests": 102,
+  "fixtureFreeAndFixtureEnabledIntegratedSuitesPassed": true,
+  "windowsInstallerLifecycleChecks": 45,
+  "linuxAndWindowsActualThreeHourEndurancePassed": true,
+  "scope": "CI qualification and reviewed screenshots, not full boat or Beta 2 release acceptance",
+  "artifacts": [
+    {
+      "id": 10934345557,
+      "name": "beta-candidate-79a95c4f39063c20ca4d5a98c3147080d9813077",
+      "sha256": "f2770552ae440aa0ce964235d6d249304053d993bb566ecff63e2dcfb7fea58f",
+      "bytes": 174313678,
+      "zipCrc": true
+    },
+    {
+      "id": 10933814442,
+      "name": "windows-integration-79a95c4f39063c20ca4d5a98c3147080d9813077",
+      "sha256": "4ebdfcb691240c85fae74a3682c58cfaee4ed70b5c8a4abdda4b2ba1fe691c92",
+      "bytes": 27846376,
+      "zipCrc": true
+    },
+    {
+      "id": 10932937734,
+      "name": "linux-integration-79a95c4f39063c20ca4d5a98c3147080d9813077",
+      "sha256": "5f3b4ce5b23da0f803b78dd4ebc5bc5d51f80d7384a3a485dc530e2807bbcc7f",
+      "bytes": 13653782,
+      "zipCrc": true
+    }
+  ],
+  "reviewedImages": [
+    {
+      "file": "recovery-navigation-day.png",
+      "sha256": "8b1513e2c20ca8ef156f1e5f9952bd4359144a5cdebfd899510506bd7cfe47a8"
+    },
+    {
+      "file": "recovery-navigation-night.png",
+      "sha256": "eae1ec3719075b08d241959aaee3dd25c069887331f0a2d7174bbf6e25fad768"
+    },
+    {
+      "file": "recovery-diagnostics.png",
+      "sha256": "ec368b035d9d5facaf7a18d04b46c469d14351d8583ed2a1d333f21608b20620"
+    },
+    {
+      "file": "dpi-150-system-page.png",
+      "sha256": "18915035afc04446454be9300c27889c8910575c16c175077b9cd0337fa5c67a"
+    },
+    {
+      "file": "dpi-150-night-menu-hover.png",
+      "sha256": "07f4f60d0c8cdbfa12505b942552be6d1f54c694d12388bed2f7ce17d536a114"
+    },
+    {
+      "file": "dpi-150-chart-context.png",
+      "sha256": "bc2470a52f18a869d5391714bb9043a7fa088e8c05fd3f790f2b7da717cf8c0d"
+    },
+    {
+      "file": "chart-opengl-06-returned.png",
+      "sha256": "3dd237490dc91aa4ab1b0352e9251ac9624fec2b4fe257d441f023c642650270"
+    },
+    {
+      "file": "dpi-100-01-navigation-day.png",
+      "sha256": "54a2064d23c39f0e6a637867720316a41f595581e768191eb4e53e0e52b3ce77"
+    },
+    {
+      "file": "dpi-125-01-navigation-day.png",
+      "sha256": "e371d4ab728ea6d51f407ac97a4f9b32d46b58e545ee6112a0f1432a33b06e56"
+    },
+    {
+      "file": "dpi-150-01-navigation-day.png",
+      "sha256": "9bd564ab667782805d806fe0f5ced03c62c2bfbe4f974d3fad2197cef520389b"
+    },
+    {
+      "file": "dpi-150-night-pilot.png",
+      "sha256": "9a797cdace6ba62b005e0da5dc3846f24bf49e79e5c0e9a80d8462105ba472c1"
+    },
+    {
+      "file": "dpi-100-02-navigation-night.png",
+      "sha256": "dfe302882d8a53fa0f95b2601ea128159c1d88b0ceca0757c1d05873908bbaf3"
+    },
+    {
+      "file": "dpi-100-chart-context.png",
+      "sha256": "998cbf7bf9b1e30cccf55f06a63421483a24b94117f588308cd167b2f57589ae"
+    },
+    {
+      "file": "dpi-150-night-energy.png",
+      "sha256": "9771a24b23b33bd853696149beb3949c9adbc6af3d89a09de49f9fbf194ab2b5"
+    },
+    {
+      "file": "dpi-150-night-settings.png",
+      "sha256": "a8b529be01d3fc3a5fc20b9c69b6469e433fb5bab4871ae897702042e627de6b"
+    },
+    {
+      "file": "objects-ais-card.png",
+      "sha256": "f95c8e2e155003f5c292e4deb3d5c1052e5573cc77dd7c29ec9c7fc453af2d25"
+    }
+  ],
+  "imageLimitations": [
+    "One initial 100-percent Day frame partially occludes the left toolbar. Later 100-percent context/night frames show it correctly; cause not established.",
+    "At 150 percent expanded pages intentionally scroll; the permanent rail keeps four values visible.",
+    "Native Day hover tooltip and some CI captures expose the Windows desktop/taskbar. Do not call all captures clipping-free.",
+    "Fixture-enabled CI pictures contain Demo markers; separately reviewed fixture-free recovery pictures contain no Demo UI."
+  ],
+  "boatAcceptancePending": true
+}

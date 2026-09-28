@@ -1,4 +1,4 @@
-# OpenNav X status — 2026-09-27
+# OpenNav X status — 2026-09-28
 
 **Beta 2 development is in progress; its first development package is installed
 on the boat, but it is not qualified for release.**
@@ -9,6 +9,60 @@ reference is the Beta 2 baseline. Current work separates fixture-enabled CI
 executables from the installed product, refines shared visual components and
 navigation workflows, and adds repeatable boat deployment and maintenance tools.
 The accepted Beta 1 results below remain historical evidence, not Beta 2 gates.
+
+### Boat reconnected and interrupted session recovered — September 28
+
+SSH/Tailscale/RustDesk are available again. Windows booted at 06:35 UTC;
+OpenCPN's log records a clean application exit before that restart. The last
+unacknowledged Menu/staging requests left no corresponding run records. No
+action was blindly replayed. Stock OpenCPN, the installed `7827acb` executable,
+navigation database and chart database retain their exact recorded hashes.
+
+The closed-session review found eleven persisted display/position/GL changes
+relative to the prepared input-only profile. Pinned `LoadMyConfig` explains
+the non-expert texture minimum of 128MB after loading the earlier upgrade's
+64MB setting. The narrow adoption extension passed 125 portable cases and the
+nine-job native [tool run 36388235873](https://github.com/ThereptileII/Work/actions/runs/36388235873)
+at `ad08061eb46d63401a5565ae561bb8f780cfae88`; all nine artifact API/upload/
+download hashes, sizes and ZIP CRC agree. A separately staged qualified copy
+preserved the interrupted session's source dependencies during restoration.
+
+All five quarantined DLLs and the original connection direction are restored.
+Independent byte comparison confirms the adopted INI retains every other
+post-session byte. Its SHA-256 is
+`9dfc3fb94a5de45047f785aa0d922ea3c990b8d58522a61d9ec5047ed7d328f3`.
+The active commissioning marker was removed only after verified completion.
+No application or physical command was launched. The source checkout then moved
+to qualified tool commit `ad08061e`. A new deployment/commissioning session is
+required; the previous four-hour restart session is expired.
+
+Both complete application runs (`7827acb` and `79a95c4`) finished all sixteen jobs
+successfully. The latest `79a95c4` candidate has 110 integrated Linux tests,
+102 integrated Windows tests, 45 installer lifecycle checks, all three DPI
+scales and actual three-hour endurance passes on both platforms. Its final
+package, native and Linux evidence match API/upload/download digests and ZIP
+integrity. All 999 portable files and 5,101 corresponding-source files verify.
+The product is fixture-free and retains the approved Win32 plugin ABI.
+
+Setup SHA-256 `b281362f6bf6d51410aba1491e16049d4c7bf243f6602a2bd7a3d0342ab09c4d`
+has been verified on the boat. Update passed: all 1,269 files in the 1,292-entry
+cold profile inventory remain byte-identical, including both navigation and chart
+databases. The installed executable matches the exact package (`aee52bd2…`),
+and stock OpenCPN is unchanged. Boat mode/maintenance/screen acceptance and remaining
+Beta 1 retirement are still open; CI success alone is not Beta 2 acceptance.
+
+The exact `79a95c4` product launched with a fresh read-only audit. A Windows
+network prompt was inspected and its proxy closed without granting access;
+the composited sheet remained visible. The subsequent fixed-size review exposed
+a tooling bug: restoring the maximized frame first selected a normal rectangle
+partly outside the monitor, and the containment guard stopped before repositioning.
+No chart/pilot action was sent. The repair applies the already tested stock-window
+recovery policy to the distinct XNav identity, retains strict capture/input guards,
+and adds eight disposable native resize cases. Boat deployment awaits native
+qualification; the running product and restart-session dependencies are unchanged.
+
+The following September 27 checkpoints are historical; the recovery above
+supersedes their offline/active-commissioning state.
 
 ### Current boat deployment — 09:36 UTC
 

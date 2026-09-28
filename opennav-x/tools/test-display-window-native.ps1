@@ -27,7 +27,11 @@ try {
   @('Display','move-on-down',''),@('Display','duplicate-on-down',''),@('ToggleFullscreen','modal',''),
   @('PanRight','normal','PAN_RIGHT_DOWN,PAN_RIGHT_UP'),@('PanRight','canvas-child','PAN_RIGHT_DOWN,PAN_RIGHT_UP'),
   @('PanRight','wrong-page',''),@('PanRight','wrong-geometry',''),@('PanRight','modal',''),
-  @('PanRight','missing-diagnostics',''),@('PanRight','stale-diagnostics',''),@('PanRight','wrong-commit',''))) {
+  @('PanRight','missing-diagnostics',''),@('PanRight','stale-diagnostics',''),@('PanRight','wrong-commit',''),
+  @('Resize1280x800','normal','RESIZED'),@('Resize1280x800','maximized-offscreen','RESIZED'),
+  @('Resize1280x800','partial-offscreen','RESIZED'),@('Resize1280x800','entirely-offscreen',''),
+  @('Resize1280x800','minimized',''),@('Resize1280x800','demo',''),
+  @('Resize1280x800','wrong-pid',''),@('Resize1280x800','modal',''))) {
   $directory=Join-Path ([IO.Path]::GetTempPath()) ('opennav-display-window-'+[guid]::NewGuid().ToString('N'));$null=New-Item -ItemType Directory -Path $directory
   $fixtureCase=if($spec[1] -cin @('missing-diagnostics','stale-diagnostics','wrong-commit')){'normal'}else{$spec[1]}
   [IO.File]::WriteAllText((Join-Path $directory 'fixture.json'),(@{owner='OpenNavX.NativeDisplayWindow.Fixture.1';action=$spec[0];case=$fixtureCase}|ConvertTo-Json -Compress))
@@ -44,6 +48,12 @@ try {
    if($ready.pid -ne $process.Id -or $ready.createdFiletime -cne $process.StartTime.ToUniversalTime().ToFileTimeUtc().ToString()){throw 'Fixture creation identity differs.'}
    $refused=$false;$reason=$null;$before=$null;$after=$null
    try {
+    if($spec[0] -ceq 'Resize1280x800') {
+     $reviewPid=if($spec[1] -ceq 'wrong-pid'){$PID}else{$process.Id}
+     $resize=[OpenNavX.ReviewWindowNative]::Resize1280x800([IntPtr]$ready.handle,$reviewPid)
+     $before=$resize.Before;$after=$resize.After
+     [OpenNavX.ReviewWindowNative]::AssertCapture([IntPtr]$ready.handle,$process.Id,$after)
+    } else {
     [OpenNavX.ReviewWindowNative]::Foreground([IntPtr]$ready.handle,$process.Id)
     $before=[OpenNavX.ReviewWindowNative]::AssertFrame([IntPtr]$ready.handle,$process.Id)
     if($spec[0] -ceq 'PanRight') {
@@ -65,10 +75,14 @@ try {
      Invoke-WindowReviewPan ([IntPtr]$ready.handle) $process.Id $directory $commit
     } else {[OpenNavX.ReviewWindowNative]::Click([IntPtr]$ready.handle,$process.Id,$spec[0])}
     $after=[OpenNavX.ReviewWindowNative]::AssertFrame([IntPtr]$ready.handle,$process.Id)
+    }
    } catch {$refused=$true;$reason=$_.Exception.Message}
    $clickPath=Join-Path $directory 'clicks.txt';[string[]]$clicks=@()
    if(Test-Path -LiteralPath $clickPath){$clicks=@(Get-Content -LiteralPath $clickPath)}
-   if($spec[2]){
+   if($spec[2] -ceq 'RESIZED'){
+    if($refused -or @($clicks).Count -or $after.Maximized -or $after.Bounds.Width -ne 1280 -or $after.Bounds.Height -ne 800){throw ('Native fixed resize failed: '+$spec[1]+': '+$reason)}
+    if($spec[1] -ceq 'maximized-offscreen' -and (-not $resize.RestoreRequested -or -not $before.Maximized)){throw 'Oversized restore fixture did not actually maximize first.'}
+   } elseif($spec[2]){
     if($refused -or (@($clicks) -join ',') -cne $spec[2]){throw ('Native display action failed: '+$spec[0]+'/'+$spec[1]+': '+$reason)}
     if($spec[0] -ceq 'Display' -and [OpenNavX.ReviewWindowNative]::VisiblePageLabels([IntPtr]$ready.handle) -cnotcontains 'OpenNav product page: Display'){throw 'Display action did not enter its page.'}
     if($spec[0] -ceq 'ToggleFullscreen' -and ($before.Maximized -eq $after.Maximized -or $after.Maximized -ne ($spec[1] -ceq 'normal'))){throw 'Fullscreen/window fixture did not change actual frame state.'}

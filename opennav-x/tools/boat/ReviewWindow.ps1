@@ -109,8 +109,15 @@ function Invoke-WindowReview($Job) {
     if($oldDpi -eq [IntPtr]::Zero){throw 'Physical pixel DPI context unavailable.'}
     try {
       $frame=$process.MainWindowHandle
-      [OpenNavX.ReviewWindowNative]::Foreground($frame,$process.Id)
-      $before=Save-WindowReviewImage $frame $process.Id (Join-Path $directory 'before.png')
+      $before=$null;$resize=$null
+      if($Job.reviewAction -cne 'Resize1280x800') {
+        [OpenNavX.ReviewWindowNative]::Foreground($frame,$process.Id)
+        $before=Save-WindowReviewImage $frame $process.Id (Join-Path $directory 'before.png')
+      }
+      # Fixed resize may recover the normal rectangle left partly offscreen by
+      # Windows restore. Record native before/restored/after geometry instead of
+      # publishing a misleading clipped before screenshot. Other actions keep
+      # the strict complete-frame capture guard.
       # Repeat identity and evidence binding immediately before a single action.
       $null=Read-WindowReview $Job;$process.Refresh()
       Assert-WindowReviewProcess $process $Job $review.launch ([Diagnostics.Process]::GetCurrentProcess().SessionId)
@@ -118,7 +125,7 @@ function Invoke-WindowReview($Job) {
       $selection=$null
       switch($Job.reviewAction) {
         'Capture' {}
-        'Resize1280x800' {[OpenNavX.ReviewWindowNative]::Resize1280x800($frame,$process.Id)}
+        'Resize1280x800' {$resize=[OpenNavX.ReviewWindowNative]::Resize1280x800($frame,$process.Id)}
         'Escape' {[OpenNavX.ReviewWindowNative]::Escape($frame,$process.Id)}
         'PanRight' {Invoke-WindowReviewPan $frame $process.Id $Job.workspace $Job.buildCommit}
         {$_ -cin @('SelectFirstVisibleWaypoint','SelectFirstVisibleAis')} {$selection=[OpenNavX.ReviewWindowNative]::SelectRow($frame,$process.Id,$Job.reviewAction)}
@@ -128,7 +135,7 @@ function Invoke-WindowReview($Job) {
       return @{status='passed';action='ReviewWindow';reviewAction=$Job.reviewAction;utc=[datetime]::UtcNow.ToString('o');processId=$process.Id;
         buildCommit=$Job.buildCommit;generation=$Job.generation;executableSha256=$Job.executableSha256;launchResultSha256=$Job.launchResultSha256;
         reviewHelperSha256=$Job.reviewHelperSha256;nativeHelperSha256=$Job.nativeHelperSha256;
-        before=$before;after=$after;nativeWindow=$after.window;selection=$selection;pages=@([OpenNavX.ReviewWindowNative]::VisiblePageLabels($frame));
+        before=$before;after=$after;resize=$resize;nativeWindow=$after.window;selection=$selection;pages=@([OpenNavX.ReviewWindowNative]::VisiblePageLabels($frame));
         inputMethod='Targeted reviewed HWND mouse messages, focused-HWND Escape or exact-canvas Right arrow; no global input';readOnly=$true;actionsSent=$(if($Job.reviewAction -ceq 'Capture'){0}else{1});review='Private native pixels require human per-step visual review; no feature acceptance inferred.'}
     } finally {$null=[OpenNavX.ReviewWindowNative]::SetThreadDpiAwarenessContext($oldDpi)}
   } finally {$process.Dispose()}

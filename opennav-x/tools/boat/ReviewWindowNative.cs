@@ -23,6 +23,9 @@ namespace OpenNavX {
     public sealed class WindowInfo {
       public long Handle;public int ProcessId;public uint Dpi;public Rect Bounds;public bool Maximized;
     }
+    public sealed class ResizeInfo {
+      public WindowInfo Before,Restored,After;public Rect MonitorBounds,WorkArea;public bool RestoreRequested;
+    }
     public sealed class SelectionRow {
       public long Handle;public string Label;public int Top,Left;
       public bool Enabled,Visible,DirectChild;
@@ -79,8 +82,8 @@ namespace OpenNavX {
       if(Owner(frame)!=(uint)pid || IsIconic(frame) || !IsWindowVisible(frame))throw new InvalidOperationException("Reviewed frame unavailable or minimized.");
       SetForegroundWindow(frame);Thread.Sleep(250);AssertFrame(frame,pid);
     }
-    public static WindowInfo AssertFrame(IntPtr frame,int pid) {
-      if(frame==IntPtr.Zero || Owner(frame)!=(uint)pid || GetForegroundWindow()!=frame ||
+    private static WindowInfo FrameIdentity(IntPtr frame,int pid,bool requireForeground) {
+      if(frame==IntPtr.Zero || Owner(frame)!=(uint)pid || (requireForeground && GetForegroundWindow()!=frame) || GetParent(frame)!=IntPtr.Zero ||
          IsIconic(frame) || !IsWindowVisible(frame) || !IsWindowEnabled(frame))throw new InvalidOperationException("Exact reviewed XNav frame must be foreground and enabled; dismiss other windows manually.");
       int menu=0,navigation=0;
       foreach(var child in Children(frame)) {
@@ -91,10 +94,15 @@ namespace OpenNavX {
       }
       if(menu!=1 || navigation!=1)throw new InvalidOperationException("Normal installed XNav shell was not uniquely identified.");
       var rect=Bounds(frame);
-      if(rect.Width<100 || rect.Height<100 || rect.Width>7680 || rect.Height>4320 || !Contains(Monitor(frame).Monitor,rect))throw new InvalidOperationException("Complete reviewed frame must fit on its current monitor.");
+      if(rect.Width<100 || rect.Height<100 || rect.Width>7680 || rect.Height>4320)throw new InvalidOperationException("Reviewed frame dimensions are outside bounded display geometry.");
       var dpi=GetDpiForWindow(frame);
       if(dpi<72 || dpi>384)throw new InvalidOperationException("Unexpected application DPI.");
       return new WindowInfo {Handle=frame.ToInt64(),ProcessId=pid,Dpi=dpi,Bounds=rect,Maximized=IsZoomed(frame)};
+    }
+    public static WindowInfo AssertFrame(IntPtr frame,int pid) {
+      var info=FrameIdentity(frame,pid,true);
+      if(!Contains(Monitor(frame).Monitor,info.Bounds))throw new InvalidOperationException("Complete reviewed frame must fit on its current monitor.");
+      return info;
     }
     public static void AssertCapture(IntPtr frame,int pid,WindowInfo expected) {
       var current=AssertFrame(frame,pid);
@@ -114,16 +122,62 @@ namespace OpenNavX {
       if(failure!=null)throw new InvalidOperationException("Window changed during capture visibility check.",failure);
       if(obscured)throw new InvalidOperationException("Another visible window obscures the reviewed frame; no screenshot published.");
     }
-    public static void Resize1280x800(IntPtr frame,int pid) {
-      AssertFrame(frame,pid);var monitor=Monitor(frame);
-      if(monitor.Work.Width<1280 || monitor.Work.Height<800)throw new InvalidOperationException("1280x800 does not fit the current monitor work area. Display/DPI and taskbar are not changed.");
-      if(IsZoomed(frame)){ShowWindow(frame,9);Thread.Sleep(150);AssertFrame(frame,pid);}
-      Rect outer;if(!GetWindowRect(frame,out outer))throw new InvalidOperationException("Outer frame bounds unavailable.");
-      var visible=Bounds(frame);int dx=visible.Left-outer.Left,dy=visible.Top-outer.Top;
-      int width=1280+outer.Width-visible.Width,height=800+outer.Height-visible.Height;
-      if(!SetWindowPos(frame,IntPtr.Zero,monitor.Work.Left-dx,monitor.Work.Top-dy,width,height,0x14))throw new Win32Exception(Marshal.GetLastWin32Error(),"Window resize failed.");
-      Thread.Sleep(300);var after=AssertFrame(frame,pid);
-      if(after.Bounds.Width!=1280 || after.Bounds.Height!=800)throw new InvalidOperationException("Application did not accept exactly 1280x800 physical pixels; no resize retry.");
+    private static bool SameRect(Rect a,Rect b) {return a.Left==b.Left && a.Top==b.Top && a.Right==b.Right && a.Bottom==b.Bottom;}
+    private static void ValidateResizeWorkArea(Rect work) {
+      if(work.Width<1280 || work.Height<800)throw new InvalidOperationException("1280x800 does not fit the current monitor work area. Display/DPI and taskbar are not changed.");
+    }
+    private static void AssertResizeMonitor(IntPtr handle,MonitorInfo expected) {
+      var current=new MonitorInfo();current.Size=(uint)Marshal.SizeOf(typeof(MonitorInfo));
+      if(!GetMonitorInfoW(handle,ref current) || !SameRect(current.Monitor,expected.Monitor) || !SameRect(current.Work,expected.Work))
+        throw new InvalidOperationException("Monitor or work area changed during the fixed resize.");
+    }
+    private static string Geometry(WindowInfo value) {
+      if(value==null)return "unavailable";
+      var r=value.Bounds;
+      return String.Format(System.Globalization.CultureInfo.InvariantCulture,"{0},{1},{2},{3};dpi={4};max={5}",r.Left,r.Top,r.Right,r.Bottom,value.Dpi,value.Maximized);
+    }
+    private static string CurrentGeometry(IntPtr frame,int pid) {
+      try {
+        if(frame==IntPtr.Zero || Owner(frame)!=(uint)pid || GetParent(frame)!=IntPtr.Zero)return "identity-unavailable";
+        return Geometry(new WindowInfo {Bounds=Bounds(frame),Dpi=GetDpiForWindow(frame),Maximized=IsZoomed(frame)});
+      } catch {return "unavailable";}
+    }
+    public static ResizeInfo Resize1280x800(IntPtr frame,int pid) {
+      var result=new ResizeInfo();string stage="identity";
+      try {
+        // This one fixed operation may recover an offscreen normal rectangle.
+        // Capture/Close/ordinary Foreground retain their full-containment guard.
+        result.Before=FrameIdentity(frame,pid,false);
+        var monitorHandle=MonitorFromWindow(frame,2);var monitor=Monitor(frame);
+        result.MonitorBounds=monitor.Monitor;result.WorkArea=monitor.Work;
+        stage="work-area";ValidateResizeWorkArea(monitor.Work);
+        if(!Intersects(monitor.Monitor,result.Before.Bounds))throw new InvalidOperationException("Reviewed frame does not intersect its selected monitor.");
+        stage="foreground";SetForegroundWindow(frame);Thread.Sleep(250);FrameIdentity(frame,pid,true);
+        AssertResizeMonitor(monitorHandle,monitor);
+        result.RestoreRequested=IsZoomed(frame);
+        if(result.RestoreRequested){stage="restore";ShowWindow(frame,9);Thread.Sleep(150);}
+        result.Restored=FrameIdentity(frame,pid,true);
+        if(result.Restored.Maximized)throw new InvalidOperationException("Reviewed frame did not restore; no resize sent.");
+        stage="fixed-placement";AssertResizeMonitor(monitorHandle,monitor);
+        Rect outer;if(!GetWindowRect(frame,out outer))throw new InvalidOperationException("Outer frame bounds unavailable.");
+        var visible=result.Restored.Bounds;
+        // Only DWM's bounded invisible resize border may expand the outer rect.
+        int left=visible.Left-outer.Left,top=visible.Top-outer.Top;
+        int right=outer.Right-visible.Right,bottom=outer.Bottom-visible.Bottom;
+        if(left<0 || top<0 || right<0 || bottom<0 || left>128 || top>128 || right>128 || bottom>128)
+          throw new InvalidOperationException("Unexpected outer/visible frame border; no resize sent.");
+        var stable=FrameIdentity(frame,pid,true);
+        if(!SameRect(stable.Bounds,result.Restored.Bounds) || stable.Dpi!=result.Restored.Dpi)
+          throw new InvalidOperationException("Restored frame geometry changed before fixed placement.");
+        if(!SetWindowPos(frame,IntPtr.Zero,monitor.Work.Left-left,monitor.Work.Top-top,1280+left+right,800+top+bottom,0x14))
+          throw new Win32Exception(Marshal.GetLastWin32Error(),"Window resize failed.");
+        stage="verify";Thread.Sleep(300);AssertResizeMonitor(monitorHandle,monitor);result.After=AssertFrame(frame,pid);
+        if(result.After.Maximized || result.After.Bounds.Width!=1280 || result.After.Bounds.Height!=800 || !Contains(monitor.Work,result.After.Bounds))
+          throw new InvalidOperationException("Application did not accept exactly 1280x800 physical pixels in the pinned work area; no resize retry.");
+        return result;
+      } catch(Exception error) {
+        throw new InvalidOperationException("Fixed XNav resize refused at "+stage+"; before="+Geometry(result.Before)+"; restored="+Geometry(result.Restored)+"; after="+Geometry(result.After)+"; current="+CurrentGeometry(frame,pid)+". "+error.Message,error);
+      }
     }
     public static void Escape(IntPtr frame,int pid) {
       AssertFrame(frame,pid);uint owner;var thread=GetWindowThreadProcessId(frame,out owner);
