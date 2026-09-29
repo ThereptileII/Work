@@ -21,7 +21,9 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--client", type=Path, required=True)
     parser.add_argument("--output", type=Path, required=True)
-    parser.add_argument("--component", choices=["ais", "passage", "instruments", "energy", "settings", "anchor", "autopilot", "alerts", "radar"], default="ais")
+    parser.add_argument("--component", choices=["ais", "passage", "instruments", "energy", "settings", "anchor", "autopilot", "alerts", "radar", "health"], default="ais")
+    parser.add_argument("--reference", type=Path,
+                        help="Additional same-platform render of unchanged prototype states")
     args = parser.parse_args()
     args.client = args.client.resolve()
     args.output = args.output.resolve()
@@ -70,7 +72,7 @@ def main():
             marker = b"TEST-ONLY-NOT-A-SERVICE-KEY"
             assert marker not in result.stdout + result.stderr
             assert marker not in (args.output / "result.json").read_bytes()
-        minimum, images = {"ais": (151, 12), "passage": (26, 5), "instruments": (41, 5), "energy": (44, 7), "settings": (90, 12), "anchor": (30, 5), "autopilot": (77, 7), "alerts": (50, 7), "radar": (64, 6)}[args.component]
+        minimum, images = {"ais": (151, 12), "passage": (26, 5), "instruments": (41, 5), "energy": (44, 7), "settings": (90, 12), "anchor": (30, 5), "autopilot": (77, 7), "alerts": (50, 7), "radar": (64, 6), "health": (49, 6)}[args.component]
         assert record["passed"] and record["checks"] >= minimum
         assert len(record["captures"]) == images
         record["source_commit"] = subprocess.check_output(
@@ -81,6 +83,12 @@ def main():
         record["screenshots"] = {}
         from PIL import Image, ImageChops
         reference = ROOT / "docs/design/prototype/reference" / ("windows" if windows else "linux")
+        if args.reference:
+            canonical = json.loads((reference / "capture.json").read_text())
+            extra = json.loads((args.reference / "capture.json").read_text())
+            for key in ("htmlSha256", "platform", "viewport", "deviceScaleFactor"):
+                assert canonical[key] == extra[key], "Mismatched component reference " + key
+            reference = args.reference
         comparison = args.output / "comparison"
         comparison.mkdir()
         radar_scope = None

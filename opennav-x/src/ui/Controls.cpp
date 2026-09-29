@@ -431,6 +431,12 @@ void XNavButton::SetSummary(const wxString &value, const wxString &detail) {
   SetName(GetLabel() + ": " + value + " / " + detail);
   Refresh();
 }
+void XNavButton::SetDisclosure(const wxString &status, std::uint32_t color, bool expanded) {
+  if (disclosure_ && disclosure_status_ == status && disclosure_color_ == color &&
+      disclosure_expanded_ == expanded) return;
+  disclosure_ = true; disclosure_status_ = status; disclosure_color_ = color;
+  disclosure_expanded_ = expanded; Refresh(false);
+}
 
 void XNavButton::Paint(wxPaintEvent&) {
   wxAutoBufferedPaintDC dc(this);
@@ -446,6 +452,31 @@ void XNavButton::Paint(wxPaintEvent&) {
       ? GetParent()->GetBackgroundColour() : Colour(colors.background);
   dc.SetBackground(wxBrush(background));
   dc.Clear();
+  if (disclosure_) {
+    const int width = ToDIP(size.x), center = ToDIP(size.y) / 2 + (disclosure_expanded_ ? 6 : 0);
+    dc.SetBrush(wxBrush(Colour(pressed_ ? colors.selected : colors.surface)));
+    dc.SetPen(HasFocus() && keyboard_focus_ ? wxPen(Colour(colors.accent)) : *wxTRANSPARENT_PEN);
+    dc.DrawRoundedRectangle(0, 0, size.x, size.y, FromDIP(8));
+    if(disclosure_expanded_)dc.DrawRectangle(0,size.y-FromDIP(8),size.x,FromDIP(8));
+    dc.SetPen(*wxTRANSPARENT_PEN); dc.SetBrush(wxBrush(Colour(colors.primary)));
+    wxPoint triangle[3];
+    if (disclosure_expanded_) {
+      triangle[0] = FromDIP(wxPoint(12, center-3));
+      triangle[1] = FromDIP(wxPoint(20, center-3));
+      triangle[2] = FromDIP(wxPoint(16, center+3));
+    } else {
+      triangle[0] = FromDIP(wxPoint(12, center-4));
+      triangle[1] = FromDIP(wxPoint(12, center+4));
+      triangle[2] = FromDIP(wxPoint(19, center));
+    }
+    dc.DrawPolygon(3, triangle);
+    dc.SetBrush(wxBrush(Colour(disclosure_color_)));
+    dc.DrawEllipse(FromDIP(25),FromDIP(center-3),FromDIP(7),FromDIP(7));
+    XNavPainter p(*this, dc, mode_);
+    p.Text(GetLabel(), 40, center-8, 12, hovered_ ? colors.accent : colors.primary, false, width/2-32);
+    p.TextWeight(disclosure_status_, width/2, center-7, 10, colors.secondary, 400, width/2-12, true);
+    return;
+  }
   if(vessel_profile_) {
     dc.SetBrush(wxBrush(Colour(colors.selected)));
     dc.SetPen(HasFocus()&&keyboard_focus_ ? wxPen(Colour(colors.accent),FromDIP(1)) : *wxTRANSPARENT_PEN);
@@ -543,7 +574,7 @@ void XNavButton::Paint(wxPaintEvent&) {
     dc.SetPen(wxPen(Colour(colors.accent), FromDIP(2)));
     dc.DrawLine(FromDIP(1), size.y/2-FromDIP(9), FromDIP(1), size.y/2+FromDIP(10));
   }
-  const auto text_color = opacity(ink);
+  const auto text_color = opacity(text_color_ ? Colour(*text_color_) : ink);
   dc.SetTextForeground(text_color);
   dc.SetFont(UiFontWeight(*this, settings_tab_ ? 11 : role_ == ButtonRole::Segment ? 10 : text_size_, settings_tab_ ? 400 : 500));
   if (settings_tab_) {

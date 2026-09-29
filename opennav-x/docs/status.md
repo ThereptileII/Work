@@ -2,6 +2,32 @@
 
 ## Current stage: prototype design lock, chart presentation and Online AIS
 
+Source Health now uses the prototype's disclosure sheet with separate onboard
+and Online AIS status, per-measurement quality and a direct path to the user's
+protected AISStream key settings. Incomplete GPS pairs and estimated readings
+no longer appear as healthy measured connections. Linux passes 133 product
+regressions, 133 fixture regressions and 49 component checks/six captures, with
+two actual-product captures and retained comparisons. The retained preview
+passes eight groups/44 captures and AIS own-key regressions pass 151 checks. Native replacement and
+boat review remain open. See [Source Health review](design/reviews/prototype-source-health-in-progress.md).
+
+Native `60a9e8b` / run `36532671500` finishes seven jobs passed and one
+failed. The product passes 124 MSVC tests, 151 own-key checks/twelve captures,
+29 product captures, software ENC/theme/unit checks and 100/125/150% development
+DPI probes. The fixture job passes chart gestures, shared-profile mode switching
+and all eight preview groups/44 captures, then fails the Preferences scroll
+stability check at 100%. No failure is waived. The replacement pairs native HWND
+bounds with a later diagnostic observation before the unchanged endpoint check;
+ten portable observation tests pass, native replacement is pending. All nine
+archives verify. Full run `36532672143` remains pending. Deployment is withheld.
+See [native development evidence](evidence/prototype-native-60a9e8b-development.json).
+
+The equivalent local `60a9e8b` tree passes 132 product tests, 132 fixture tests,
+151 AIS component checks/twelve captures, all route gestures, and eight preview
+checks/44 captures without extra X11 focus helpers. The corrected late-resize
+guard remains restricted to visible XNav transient surfaces. See
+[local corrective evidence](evidence/prototype-transient-raise-local.json).
+
 Native `d8316d8` / run `36530182434` passes the complete 29-state product
 capture, AIS own-key checks, software ENC unit/palette checks, and development
 100/125/150% probes. Seven jobs pass; the retained fixture test still selects

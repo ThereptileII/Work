@@ -14,6 +14,8 @@ from PIL import Image, ImageChops, ImageStat
 
 parser = argparse.ArgumentParser(description=__doc__)
 parser.add_argument("--reference", type=Path, required=True)
+parser.add_argument("--supplemental-reference", type=Path,
+                    help="Same-platform render of additional unchanged prototype states")
 parser.add_argument("--current", type=Path, required=True)
 parser.add_argument("--output", type=Path, required=True)
 args = parser.parse_args()
@@ -24,6 +26,13 @@ manifest = json.loads((args.current / "capture.json").read_text())
 for item in manifest["captures"]:
     name = item["file"]
     ref, current = args.reference / name, args.current / name
+    if args.supplemental_reference and (args.supplemental_reference / name).is_file():
+        original = json.loads((args.reference / "capture.json").read_text())
+        extra = json.loads((args.supplemental_reference / "capture.json").read_text())
+        for key in ("htmlSha256", "platform", "viewport", "deviceScaleFactor"):
+            if original[key] != extra[key]:
+                raise RuntimeError("Supplemental reference differs in " + key)
+        ref = args.supplemental_reference / name
     if not ref.is_file():
         raise RuntimeError(f"No supplied prototype state for {name}")
     if hashlib.sha256(current.read_bytes()).hexdigest() != item["sha256"]:

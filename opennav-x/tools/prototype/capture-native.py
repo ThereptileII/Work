@@ -70,8 +70,10 @@ def main():
     parser.add_argument("--depth-unit", choices=["feet", "meters", "fathoms"],
                         help="Set the upstream ENC display unit in this disposable profile")
     parser.add_argument("--navigation-only", action="store_true")
-    parser.add_argument("--view", choices=["passage", "traffic", "energy", "instruments", "autopilot", "alerts", "anchor", "radar", "settings"],
+    parser.add_argument("--view", choices=["passage", "traffic", "energy", "instruments", "autopilot", "alerts", "health", "anchor", "radar", "settings"],
                         help="Focused local correction; CI defaults to every view")
+    parser.add_argument("--health-reference", type=Path,
+                        help="Fresh same-platform Source Health render from the unchanged HTML")
     parser.add_argument("--ais-settings", action="store_true", help="Exercise fixture-free AIS settings without a key")
     parser.add_argument("--review-window-guard", action="store_true",
                         help="Windows CI: qualify guarded boat capture against actual native owned windows")
@@ -176,6 +178,8 @@ def main():
             # old drawer. Observe the semantic result; never retry the input.
             closed = label != "Close" or ("drawer" not in current["runtime"]["display"] and current["ui_page"] == "Navigation")
             expected_page = None if in_drawer else {"Chart":"Navigation", "Passage":"Route", "Traffic":"AIS targets", "Energy":"Energy", "Instruments":"Vessel instruments", "Autopilot":"Manual autopilot", "Anchor":"Anchor watch", "Settings":"Settings", "Alerts":"Alerts", "Radar":"Radar status"}.get(label)
+            if c["accessible_name"] == "Inspect source health":
+                expected_page = "Source health"
             if label == "Back" and before["ui_page"] == "Online AIS settings":
                 expected_page = "AIS targets"
             page_ready = not expected_page or current["ui_page"] == expected_page
@@ -239,6 +243,26 @@ def main():
         # Actual native controls, compared with independently rendered HTML.
         reference = json.loads((ROOT / "docs/design/prototype/reference" /
                                 ("windows" if windows else "linux") / "capture.json").read_text())
+        if name in ("health-day", "health-dusk", "health-night"):
+            health_reference = reference
+            if not windows:
+                health_reference = json.loads((ROOT / "docs/design/prototype/reference/linux/health-disclosures.json").read_text())
+            if args.health_reference:
+                health_reference = json.loads((args.health_reference / "capture.json").read_text())
+                for key in ("htmlSha256", "platform", "viewport", "deviceScaleFactor"):
+                    assert reference[key] == health_reference[key], "Mismatched health reference " + key
+            expected_rows = health_reference["states"][name]["components"][".sensor-details"]
+            rows = []
+            for index, source_id in enumerate(("gps", "heading", "depth", "wind", "motor", "battery")):
+                actual = [c for c in snapshot["runtime"]["display"]["interaction_controls"]
+                          if c["accessible_name"] == "Inspect source " + source_id and c["visible"]]
+                assert len(actual) == 1, "Unique visible Source Health disclosure required: " + source_id
+                rect = {k:actual[0][k] for k in ("x", "y", "width", "height")}
+                rect["x"] -= client_origin[0]; rect["y"] -= client_origin[1]
+                if windows:
+                    assert all(abs(rect[k]-v) <= 1 for k,v in expected_rows[index]["rect"].items()), (source_id, "disclosure differs from HTML", rect, expected_rows[index]["rect"])
+                rows.append(rect)
+            record.setdefault("source_health_layout", {})[name] = rows
         if windows and name in ("settings-day","settings-dusk","settings-night","sensors-day","display-day","system-day"):
             measured=json.loads((ROOT / "docs/design/prototype/reference/windows/settings-tabs.json").read_text())
             assert measured["htmlSha256"]==reference["htmlSha256"] and measured["platform"]=="Windows"
@@ -273,7 +297,7 @@ def main():
             assert all(abs(actual[k]-v) <= 1 for k,v in expected["rect"].items()), f"{label} rail geometry differs: {actual}"
             rail_actual.append(actual)
         record.setdefault("left_rail_layout", {})[name] = rail_actual
-        if name.startswith(("traffic-", "online-ais-", "passage-", "anchor-", "autopilot-", "alerts-", "settings-", "sensors-", "display-", "system-")):
+        if name.startswith(("traffic-", "online-ais-", "passage-", "anchor-", "autopilot-", "alerts-", "health-", "settings-", "sensors-", "display-", "system-")):
             drawer = snapshot["runtime"]["display"]["drawer"]
             wide = name.startswith(("settings-", "sensors-", "display-", "system-"))
             expected = dict(x=client_origin[0]+(648 if wide else 682), y=client_origin[1]+80, width=432 if wide else 398, height=674)
@@ -491,17 +515,29 @@ def main():
             record["result"] = "chart cycle captured; semantic and visual review required"
             return
         for label, name in [("Passage", "passage"), ("Traffic", "traffic"), ("Energy", "energy"),
-                            ("Instruments", "instruments"), ("Autopilot", "autopilot"), ("Alerts", "alerts"), ("Anchor", "anchor"), ("Radar", "radar"), ("Settings", "settings")]:
+                            ("Instruments", "instruments"), ("Autopilot", "autopilot"), ("Alerts", "alerts"), ("Inspect source health", "health"), ("Anchor", "anchor"), ("Radar", "radar"), ("Settings", "settings")]:
             if args.view and name != args.view:
                 continue
-            click(label)
+            if name == "health":
+                controls=[c for c in data()["runtime"]["display"]["interaction_controls"]
+                          if c["accessible_name"]=="Inspect source health" and c["visible"]]
+                assert len(controls)==1, "Unique source-health entry required"
+                click(controls[0]["label"])
+            else:
+                click(label)
             capture(name + "-day")
-            if label in {"Autopilot", "Alerts"}:
+            if label in {"Autopilot", "Alerts", "Inspect source health"}:
                 click("Day", "Dusk");capture(name+"-dusk")
                 click("Dusk", "Night");capture(name+"-night")
                 click("Night", "Day");click("Close")
                 assert "drawer" not in data()["runtime"]["display"], "Prototype sheet close did not restore chart"
                 record[name+"_flow"]="Owned real-state drawer; theme cycle; Close; no equipment command"
+            if name == "health":
+                controls=[c for c in data()["runtime"]["display"]["interaction_controls"]
+                          if c["accessible_name"]=="Inspect source health" and c["visible"]]
+                click(controls[0]["label"]);click("GPS",in_drawer=True)
+                capture("health-gps-day")
+                click("GPS",in_drawer=True);click("Close")
             if label == "Radar":
                 from PIL import Image
                 radar_interior=(260,280,620,600)

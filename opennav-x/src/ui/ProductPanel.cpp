@@ -264,6 +264,7 @@ std::string ProductPanel::PageTitle() const {
   case ProductPage::NavigationSettings: return "Navigation settings";
   case ProductPage::BoatMapping: return "Motor & battery setup";
   case ProductPage::SourcesAdvanced: return "Advanced source details";
+  case ProductPage::SourceHealth: return "Source health";
   case ProductPage::FieldReport:
     return "Field diagnostic bundle";
   case ProductPage::Home:

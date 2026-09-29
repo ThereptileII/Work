@@ -140,3 +140,16 @@ use a broad pixel tolerance to call a different native screen conformant.
 Prototype hardware/radar/sensor simulations, synthetic values, mock installer
 progress and optimistic corridor text are design evidence only. The product
 continues to withhold unsupported actions and unavailable/uncertain predictions.
+
+## Source-health disclosures
+
+The final `.sensor-details` cascade gives 12px card padding, 8px radius and an
+8px gap. At DPR1 the collapsed row measures 69.1875px; the summary is 45.1875px
+with 12px type, 19.2px line-height and 13px vertical padding. Cumulative rounding
+retains row positions rather than discarding every fractional height. The dot
+is 7px. Expanded technical rows measure 48.59375px (12px type/21.6px line-height,
+13px vertical padding), followed by a 48px action with 10px top margin. The
+canonical GPS-open card is 370.15625px high. Real provenance may differ from the
+prototype's invented network; mock-network and simulated-loss switches are not
+installed. `health` and `health-gps` references exercise actual original HTML
+controls; the HTML and original assets remain unchanged.

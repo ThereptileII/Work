@@ -43,7 +43,8 @@ enum class ProductPage {
   System,
   NavigationSettings,
   BoatMapping,
-  SourcesAdvanced
+  SourcesAdvanced,
+  SourceHealth
 };
 struct ProductState {
   std::vector<application::Alert> alerts;
@@ -67,6 +68,7 @@ struct ProductActions {
   application::NavigationActions navigation;
   std::function<void()> chart, route_summary, energy, diagnostics;
   std::function<void()> preferences, anchor_watch, pilot_controls, alerts;
+  std::function<void()> source_health;
   std::function<void(ProductPage)> page_changed;
   std::function<void()> legacy, restart_xnav, safe, diagnostics_folder;
   std::function<void(LightMode)> theme;
@@ -96,6 +98,9 @@ public:
   std::vector<ProductGeometry> RegionGeometry() const;
   void ShowAis(int mmsi, LightMode mode);
   void ShowObject(const std::string &id, bool route, LightMode mode);
+  void ShowSource(vessel::Quantity quantity, LightMode mode) {
+    source_quantity_ = quantity; ShowPage(ProductPage::SourceDetail, mode);
+  }
   void Update(const ProductState &state, LightMode mode);
 
 private:

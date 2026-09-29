@@ -31,6 +31,9 @@ constexpr int dashboard_gap = 18;
 constexpr int instrument_tile_height = 126;
 constexpr int instrument_tile_gap = 12;
 constexpr int wind_card_height = 540;
+constexpr double health_summary = 69.1875;
+constexpr double health_detail_row = 48.59375;
+constexpr int health_gap = 8;
 
 struct DesktopLayout {
   int top, navigation, rail, horizon, nav_height, nav_gap, nav_inset;

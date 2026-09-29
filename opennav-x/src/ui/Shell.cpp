@@ -123,11 +123,9 @@ Shell::Shell(wxFrame &frame, wxAuiManager &manager, ShellActions actions,
   clock_ = Text(top, "", 15);
   clock_->SetMinSize(frame_.FromDIP(wxSize(56, 24)));
 
-  source_ = new wxStaticText(top, wxID_ANY, "No vessel input", wxDefaultPosition,
-                             wxDefaultSize, wxST_ELLIPSIZE_END);
-  source_->SetFont(UiFont(*top, 10));
-  source_->SetMinSize(frame_.FromDIP(wxSize(120,20)));
-  labels_.push_back(source_);
+  source_ = Button(top,"No vessel input","Inspect source health",[this]{ShowHealth();});
+  source_->SetTextSize(10);source_->SetRole(ButtonRole::Quiet);
+  source_->SetMinSize(frame_.FromDIP(wxSize(120,44)));
   route_summary_ = new wxStaticText(top,wxID_ANY,"No active route",wxDefaultPosition,wxDefaultSize,wxST_ELLIPSIZE_END);
   route_summary_->SetFont(UiFont(*top,12)); route_summary_->SetMinSize(wxSize(0,-1)); labels_.push_back(route_summary_);
   row->Add(route_summary_, 1, wxALIGN_CENTER_VERTICAL | wxLEFT | wxRIGHT, gap * 2);
@@ -376,6 +374,7 @@ Shell::Shell(wxFrame &frame, wxAuiManager &manager, ShellActions actions,
   product_actions.save_settings = actions_.save_settings;
   product_actions.chart = [this] { ShowNavigation(); };
   product_actions.preferences = [this] { ShowSettings(); };
+  product_actions.source_health = [this] { ShowHealth(); };
   product_actions.page_changed = [this](ProductPage page) {
     auto &pane = manager_.GetPane("OpenNavHorizon");
     if (pane.IsOk()) {
@@ -486,6 +485,7 @@ Shell::~Shell() {
   if (settings_drawer_) { settings_drawer_->Dismiss(); settings_drawer_->Destroy(); settings_drawer_ = nullptr; }
   if (anchor_drawer_) { anchor_drawer_->Dismiss(); anchor_drawer_->Destroy(); anchor_drawer_ = nullptr; }
   if (alert_drawer_) { alert_drawer_->Dismiss(); alert_drawer_->Destroy(); alert_drawer_ = nullptr; }
+  if (health_drawer_) { health_drawer_->Dismiss(); health_drawer_->Destroy(); health_drawer_ = nullptr; }
   if (pilot_drawer_) { pilot_drawer_->Dismiss(); pilot_drawer_->Destroy(); pilot_drawer_ = nullptr; }
   for (const auto &c : commands_)
     frame_.Unbind(wxEVT_MENU, &Shell::OnCommand, this, c.first);
@@ -621,8 +621,7 @@ void Shell::ApplyTheme() {
     button->SetLightMode(mode_);
   for (const auto &value : rail_values_)
     value.second->SetLightMode(mode_);
-  source_->SetForegroundColour(
-      Colour(simulation_ ? colors.attention : colors.secondary));
+  source_->SetTextColor(simulation_ ? colors.attention : colors.secondary);
 }
 
 void Shell::SetLight(LightMode mode) {
@@ -882,6 +881,11 @@ void Shell::Tick() {
       settings_drawer_->Update(p, mode_);
       settings_drawer_->Present(DrawerWorkspace());
     }
+    if (health_drawer_ && health_drawer_->IsShown()) {
+      health_drawer_->Update(application::PresentSourceHealth(p.vessel,p.sources,p.ais,
+          online_ais_state_,p.pilot,now),mode_);
+      health_drawer_->Present(DrawerWorkspace());
+    }
     // Online traffic is display-only. SmartNav, alarms and receiver health
     // below continue to consume OpenCPN's original onboard state.
     ais_state_ = !simulation_ && !replay
@@ -944,10 +948,7 @@ void Shell::Tick() {
     if (!r.error.empty())
       label += " / RECORD ERROR";
   }
-  const auto source_color = Colour(
-      replay || simulation_ ? Theme(mode_).attention : Theme(mode_).secondary);
-  if (source_->GetForegroundColour() != source_color)
-    source_->SetForegroundColour(source_color);
+  source_->SetTextColor(replay || simulation_ ? Theme(mode_).attention : Theme(mode_).secondary);
   if (source_->GetLabel() != label) {
     source_->SetLabel(label);
     source_->GetParent()->Layout();
@@ -1049,6 +1050,7 @@ void Shell::UpdateScrollControls() {
 }
 
 std::string Shell::PageTitle() const {
+  if (health_drawer_ && health_drawer_->IsShown()) return "Source health";
   if (alert_drawer_ && alert_drawer_->IsShown()) return "Alerts";
   if (pilot_drawer_ && pilot_drawer_->IsShown()) return "Manual autopilot";
   if (anchor_drawer_ && anchor_drawer_->IsShown()) return "Anchor watch";
@@ -1095,6 +1097,7 @@ void Shell::SelectDemo(vessel::DemoScenario scenario) {
 #endif
 void Shell::ShowNavigation() {
   CloseContext();
+  if (health_drawer_) health_drawer_->Dismiss();
   if (alert_drawer_) alert_drawer_->Dismiss();
   if (pilot_drawer_) pilot_drawer_->Dismiss();
   if (anchor_drawer_) anchor_drawer_->Dismiss();
@@ -1130,6 +1133,7 @@ void Shell::ShowNavigation() {
   frame_.Refresh();
 }
 void Shell::ShowProduct(ProductPage page) {
+  if (page == ProductPage::SourceHealth) { ShowHealth(); return; }
   if (page == ProductPage::Home || page == ProductPage::Settings) { ShowSettings(); return; }
   if (page == ProductPage::Ais) { ShowTraffic(); return; }
   if (page == ProductPage::Anchor) { ShowAnchor(); return; }
@@ -1280,7 +1284,7 @@ void Shell::ShowAlerts() {
     };
     callbacks.inspect=[this](application::AlertArea area) {
       switch(area) {
-      case application::AlertArea::Sources: ShowProduct(ProductPage::Sources);break;
+      case application::AlertArea::Sources: ShowHealth();break;
       case application::AlertArea::Ais: ShowTraffic();break;
       case application::AlertArea::Anchor: ShowAnchor();break;
       case application::AlertArea::Energy: ShowPage(PreviewPage::Energy);break;
@@ -1297,6 +1301,25 @@ void Shell::CloseContext() {
   context_waypoint_.clear();
   context_mmsi_ = 0;
   context_position_.reset();
+}
+void Shell::ShowHealth() {
+  ShowNavigation();
+  if(!health_drawer_) {
+    HealthDrawerActions callbacks;
+    callbacks.manage=[this]{ShowProduct(ProductPage::Sources);};
+    callbacks.diagnostics=[this]{ShowProduct(ProductPage::FieldReport);};
+    callbacks.configure=[this](const application::HealthSignal &s){
+      if(s.id=="online") {ShowTraffic();ais_drawer_->ShowSettings();}
+      else if(s.id=="ais") ShowTraffic();
+      else if(s.id=="pilot") ShowProduct(ProductPage::PilotSettings);
+      else {
+        ShowProduct(ProductPage::Sources);
+        product_->ShowSource(s.quantity.value_or(vessel::Quantity::Count),mode_);
+      }
+    };
+    health_drawer_=new XNavHealthDrawer(frame_,std::move(callbacks));
+  }
+  health_drawer_->Present(DrawerWorkspace());Tick();
 }
 void Shell::UpdateContext(vessel::Time now) {
   if (!context_ || context_->IsBeingDeleted()) return;
@@ -1333,6 +1356,7 @@ void Shell::UpdateContext(vessel::Time now) {
 }
 void Shell::ShowPage(PreviewPage page) {
   CloseContext();
+  if (health_drawer_) health_drawer_->Dismiss();
   if (alert_drawer_) alert_drawer_->Dismiss();
   if (pilot_drawer_) pilot_drawer_->Dismiss();
   if (anchor_drawer_) anchor_drawer_->Dismiss();

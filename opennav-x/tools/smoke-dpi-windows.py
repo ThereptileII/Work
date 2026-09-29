@@ -154,6 +154,20 @@ def current_layout_observation():
     assert native_controls()==expected,'Native frame moved while pairing diagnostic geometry'
     return observed
 
+def preferences_observation():
+    # A pan can finish before the 1Hz diagnostic publication. Pair the actual
+    # row position even while clipped; never poll for visibility or good layout.
+    previous=int(data()['runtime']['ui_update']['ticks'])
+    popup,_=ui.wait_window('OpenNav preferences',pid)
+    matches=[h for h,t in ui.children(popup) if t=='Chart safety depth']
+    assert len(matches)==1, 'One native lower Preferences action required'
+    target=matches[0]
+    rect=bounds(target);expected={'Chart safety depth':(rect.left,rect.top,rect.right,rect.bottom)}
+    observed=data(lambda d:geometry_observation.matches_native_controls(d,expected,previous,require_visible=False))
+    actual=bounds(target)
+    assert (actual.left,actual.top,actual.right,actual.bottom)==expected['Chart safety depth'], 'Native Preferences moved while pairing its published geometry'
+    return observed,target
+
 def rail_geometry(scale):
     d=current_layout_observation()
     regions=d['runtime']['display']['rail_regions'];frame=bounds(handle)
@@ -332,7 +346,7 @@ try:
         ui.click_text(pid,'Settings');data(lambda d:d['ui_page']=='Settings')
         ui.click_text(pid,'Vessel')
         for _ in range(40):
-            current=data();display=current['runtime']['display'];drawer=display['drawer']
+            current,_=preferences_observation();display=current['runtime']['display'];drawer=display['drawer']
             last=[c for c in display['interaction_controls'] if c['label']=='Chart safety depth' and c['visible']]
             if len(last)==1:break
             popup,_=ui.wait_window('OpenNav preferences',pid);ui.SetForegroundWindow(popup)
@@ -341,7 +355,10 @@ try:
             time.sleep(.4)
         else:raise AssertionError('Lower Preferences action cannot be reached by touch')
         endpoint=last[0];time.sleep(1.2)
-        assert endpoint in data()['runtime']['display']['interaction_controls'],'Preferences jumped after its lower action became visible'
+        after,_=preferences_observation()
+        report.setdefault('preferences_endpoint_observations',[]).append({'scale':scale,'before':endpoint,
+            'after':[c for c in after['runtime']['display']['interaction_controls'] if c['label']=='Chart safety depth']})
+        assert endpoint in after['runtime']['display']['interaction_controls'],'Preferences jumped after its lower action became visible'
         capture(f'dpi-{scale}-preferences-bottom')
         entry['menu_endpoint']='Replacement Preferences lower action fully visible and stable after native touch scroll'
         # Review every main workflow at each scale in the actual night palette.

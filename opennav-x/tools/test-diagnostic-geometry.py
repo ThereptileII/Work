@@ -65,6 +65,20 @@ class LayoutObservation(unittest.TestCase):
     def test_empty_native_reference_cannot_pass_vacuously(self):
         self.assertFalse(geometry.matches_native_controls(self.record, {}, 8))
 
+    def test_scrolled_row_pairs_offscreen_bounds_without_asserting_visibility(self):
+        row=self.record['runtime']['display']['interaction_controls'][0]
+        row['visible']=False
+        self.assertFalse(geometry.matches_native_controls(self.record,self.expected,8))
+        self.assertTrue(geometry.matches_native_controls(self.record,self.expected,8,require_visible=False))
+        row['y']+=24
+        self.assertFalse(geometry.matches_native_controls(self.record,self.expected,8,require_visible=False))
+
+    def test_offscreen_observation_still_rejects_old_ticks_and_duplicate_rows(self):
+        self.assertFalse(geometry.matches_native_controls(self.record,self.expected,12,require_visible=False))
+        controls=self.record['runtime']['display']['interaction_controls']
+        controls.append(copy.deepcopy(controls[0]))
+        self.assertFalse(geometry.matches_native_controls(self.record,self.expected,8,require_visible=False))
+
     def test_real_rail_clipping_is_not_filtered_by_observation_barrier(self):
         # The exact rejected 6160 rail sample must reach the unchanged bounds
         # assertion if it recurs with CURRENT chrome. Do not poll until it fits.

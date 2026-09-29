@@ -3,6 +3,7 @@
 #include "integration/BuildFeatures.h"
 #include "vessel/DisplayItems.h"
 #include "vessel/AisHealth.h"
+#include "application/SourceHealthView.h"
 #include <algorithm>
 #include <cmath>
 #include <filesystem>
@@ -251,14 +252,10 @@ void ProductPanel::Sources() {
   Action("Motor & battery setup", [this] { ShowPage(ProductPage::BoatMapping, mode_); });
   EndActions();
   auto status = [](const vessel::Sample &sample, vessel::Time now) {
-    const auto a = vessel::Assess(sample, now);
-    if (a.quality == vessel::Quality::Stale) return wxString("Stale");
-    if (a.quality == vessel::Quality::Aging) return wxString("Aging");
-    if (a.quality == vessel::Quality::Uncertain) return wxString("Check source");
-    return wxString(a.value ? "Connected" : "No data");
+    return W(application::PresentSignalHealth(sample, now).status);
   };
   BeginActions(2);
-  StatusAction("GPS", [status](const auto &s) { return status(s.vessel.navigation.latitude_deg, s.now); },
+  StatusAction("GPS", [](const auto &s) { return W(application::PresentPositionHealth(s.vessel.navigation, s.now).status); },
                [this] { source_quantity_ = vessel::Quantity::Count; ShowPage(ProductPage::SourceDetail, mode_); });
   for (const auto &entry : std::vector<std::pair<wxString, vessel::Quantity>>{
       {"Heading", vessel::Quantity::Heading}, {"Depth", vessel::Quantity::Depth},
@@ -275,6 +272,7 @@ void ProductPanel::Sources() {
   EndActions();
   Text("Select a sensor for its value, source and last update. Connection changes apply without restarting XNav.");
   BeginActions(2);
+  Action("Source health", actions_.source_health);
   Action("Advanced source details", [this] { ShowPage(ProductPage::SourcesAdvanced, mode_); });
   Action("System diagnostics", actions_.diagnostics);
   Action("Commissioning & recordings", [this] { ShowPage(ProductPage::Commissioning, mode_); });
@@ -311,8 +309,8 @@ void ProductPanel::SourceDetail() {
   if (source_quantity_ == vessel::Quantity::Count) {
     Heading("GPS", "Position and speed selected by OpenCPN");
     LiveText([](const auto &s) {
-      const auto position = vessel::Assess(s.vessel.navigation.latitude_deg, s.now);
-      return W(vessel::QualityName(position.quality)) +
+      const auto position = application::PresentPositionHealth(s.vessel.navigation, s.now);
+      return W(position.status) +
              (position.age ? wxString::Format(" / Last update %.1f s ago", position.age->count() / 1000.) : wxString(" / No observation"));
     });
     Value("LATITUDE", W("°"), [](const auto &s) { return s.vessel.navigation.latitude_deg; }, 5);

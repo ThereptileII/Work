@@ -1,0 +1,4049 @@
+{
+  "schema": 1,
+  "htmlSha256": "b04573b920b6bccd16afd22f54a909e48afcfd502ce9cd7c69fdf5b6dd895447",
+  "platform": "Linux",
+  "playwright": "1.58.0",
+  "viewport": {
+    "width": 1280,
+    "height": 800
+  },
+  "deviceScaleFactor": 1,
+  "reducedMotion": true,
+  "clockUtc": "2026-09-28T11:49:00Z",
+  "states": {
+    "health-day": {
+      "theme": "day",
+      "components": {
+        ".drawer": [
+          {
+            "rect": {
+              "x": 682,
+              "y": 80,
+              "width": 398,
+              "height": 674
+            },
+            "style": {
+              "fontFamily": "\"Segoe UI Variable Display\", \"Segoe UI\", Arial, sans-serif",
+              "fontSize": "16px",
+              "fontWeight": "400",
+              "lineHeight": "normal",
+              "letterSpacing": "normal",
+              "color": "rgb(243, 245, 238)",
+              "backgroundColor": "rgb(21, 35, 38)",
+              "borderRadius": "18px",
+              "padding": "0px",
+              "gap": "normal"
+            }
+          }
+        ],
+        ".drawer-head": [
+          {
+            "rect": {
+              "x": 683,
+              "y": 81,
+              "width": 396,
+              "height": 86.109375
+            },
+            "style": {
+              "fontFamily": "\"Segoe UI Variable Display\", \"Segoe UI\", Arial, sans-serif",
+              "fontSize": "16px",
+              "fontWeight": "400",
+              "lineHeight": "normal",
+              "letterSpacing": "normal",
+              "color": "rgb(243, 245, 238)",
+              "backgroundColor": "rgba(0, 0, 0, 0)",
+              "borderRadius": "0px",
+              "padding": "12px 22px 20px",
+              "gap": "10px 16px"
+            }
+          }
+        ],
+        ".drawer-body": [
+          {
+            "rect": {
+              "x": 683,
+              "y": 167.109375,
+              "width": 396,
+              "height": 585.890625
+            },
+            "style": {
+              "fontFamily": "\"Segoe UI Variable Display\", \"Segoe UI\", Arial, sans-serif",
+              "fontSize": "16px",
+              "fontWeight": "400",
+              "lineHeight": "normal",
+              "letterSpacing": "normal",
+              "color": "rgb(243, 245, 238)",
+              "backgroundColor": "rgba(0, 0, 0, 0)",
+              "borderRadius": "0px",
+              "padding": "20px 22px 24px",
+              "gap": "normal"
+            }
+          }
+        ],
+        ".sensor-details": [
+          {
+            "rect": {
+              "x": 705,
+              "y": 233.25,
+              "width": 352,
+              "height": 69.1875
+            },
+            "style": {
+              "fontFamily": "\"Segoe UI Variable Display\", \"Segoe UI\", Arial, sans-serif",
+              "fontSize": "10px",
+              "fontWeight": "400",
+              "lineHeight": "18px",
+              "letterSpacing": "normal",
+              "color": "rgb(170, 189, 189)",
+              "backgroundColor": "rgb(29, 45, 49)",
+              "borderRadius": "8px",
+              "padding": "12px",
+              "gap": "normal"
+            }
+          },
+          {
+            "rect": {
+              "x": 705,
+              "y": 310.4375,
+              "width": 352,
+              "height": 69.1875
+            },
+            "style": {
+              "fontFamily": "\"Segoe UI Variable Display\", \"Segoe UI\", Arial, sans-serif",
+              "fontSize": "10px",
+              "fontWeight": "400",
+              "lineHeight": "18px",
+              "letterSpacing": "normal",
+              "color": "rgb(170, 189, 189)",
+              "backgroundColor": "rgb(29, 45, 49)",
+              "borderRadius": "8px",
+              "padding": "12px",
+              "gap": "normal"
+            }
+          },
+          {
+            "rect": {
+              "x": 705,
+              "y": 387.625,
+              "width": 352,
+              "height": 69.1875
+            },
+            "style": {
+              "fontFamily": "\"Segoe UI Variable Display\", \"Segoe UI\", Arial, sans-serif",
+              "fontSize": "10px",
+              "fontWeight": "400",
+              "lineHeight": "18px",
+              "letterSpacing": "normal",
+              "color": "rgb(170, 189, 189)",
+              "backgroundColor": "rgb(29, 45, 49)",
+              "borderRadius": "8px",
+              "padding": "12px",
+              "gap": "normal"
+            }
+          },
+          {
+            "rect": {
+              "x": 705,
+              "y": 464.8125,
+              "width": 352,
+              "height": 69.1875
+            },
+            "style": {
+              "fontFamily": "\"Segoe UI Variable Display\", \"Segoe UI\", Arial, sans-serif",
+              "fontSize": "10px",
+              "fontWeight": "400",
+              "lineHeight": "18px",
+              "letterSpacing": "normal",
+              "color": "rgb(170, 189, 189)",
+              "backgroundColor": "rgb(29, 45, 49)",
+              "borderRadius": "8px",
+              "padding": "12px",
+              "gap": "normal"
+            }
+          },
+          {
+            "rect": {
+              "x": 705,
+              "y": 542,
+              "width": 352,
+              "height": 69.1875
+            },
+            "style": {
+              "fontFamily": "\"Segoe UI Variable Display\", \"Segoe UI\", Arial, sans-serif",
+              "fontSize": "10px",
+              "fontWeight": "400",
+              "lineHeight": "18px",
+              "letterSpacing": "normal",
+              "color": "rgb(170, 189, 189)",
+              "backgroundColor": "rgb(29, 45, 49)",
+              "borderRadius": "8px",
+              "padding": "12px",
+              "gap": "normal"
+            }
+          },
+          {
+            "rect": {
+              "x": 705,
+              "y": 619.1875,
+              "width": 352,
+              "height": 69.1875
+            },
+            "style": {
+              "fontFamily": "\"Segoe UI Variable Display\", \"Segoe UI\", Arial, sans-serif",
+              "fontSize": "10px",
+              "fontWeight": "400",
+              "lineHeight": "18px",
+              "letterSpacing": "normal",
+              "color": "rgb(170, 189, 189)",
+              "backgroundColor": "rgb(29, 45, 49)",
+              "borderRadius": "8px",
+              "padding": "12px",
+              "gap": "normal"
+            }
+          },
+          {
+            "rect": {
+              "x": 705,
+              "y": 696.375,
+              "width": 352,
+              "height": 69.1875
+            },
+            "style": {
+              "fontFamily": "\"Segoe UI Variable Display\", \"Segoe UI\", Arial, sans-serif",
+              "fontSize": "10px",
+              "fontWeight": "400",
+              "lineHeight": "18px",
+              "letterSpacing": "normal",
+              "color": "rgb(170, 189, 189)",
+              "backgroundColor": "rgb(29, 45, 49)",
+              "borderRadius": "8px",
+              "padding": "12px",
+              "gap": "normal"
+            }
+          },
+          {
+            "rect": {
+              "x": 705,
+              "y": 773.5625,
+              "width": 352,
+              "height": 69.1875
+            },
+            "style": {
+              "fontFamily": "\"Segoe UI Variable Display\", \"Segoe UI\", Arial, sans-serif",
+              "fontSize": "10px",
+              "fontWeight": "400",
+              "lineHeight": "18px",
+              "letterSpacing": "normal",
+              "color": "rgb(170, 189, 189)",
+              "backgroundColor": "rgb(29, 45, 49)",
+              "borderRadius": "8px",
+              "padding": "12px",
+              "gap": "normal"
+            }
+          },
+          {
+            "rect": {
+              "x": 705,
+              "y": 850.75,
+              "width": 352,
+              "height": 69.1875
+            },
+            "style": {
+              "fontFamily": "\"Segoe UI Variable Display\", \"Segoe UI\", Arial, sans-serif",
+              "fontSize": "10px",
+              "fontWeight": "400",
+              "lineHeight": "18px",
+              "letterSpacing": "normal",
+              "color": "rgb(170, 189, 189)",
+              "backgroundColor": "rgb(29, 45, 49)",
+              "borderRadius": "8px",
+              "padding": "12px",
+              "gap": "normal"
+            }
+          },
+          {
+            "rect": {
+              "x": 705,
+              "y": 927.9375,
+              "width": 352,
+              "height": 69.1875
+            },
+            "style": {
+              "fontFamily": "\"Segoe UI Variable Display\", \"Segoe UI\", Arial, sans-serif",
+              "fontSize": "10px",
+              "fontWeight": "400",
+              "lineHeight": "18px",
+              "letterSpacing": "normal",
+              "color": "rgb(170, 189, 189)",
+              "backgroundColor": "rgb(29, 45, 49)",
+              "borderRadius": "8px",
+              "padding": "12px",
+              "gap": "normal"
+            }
+          }
+        ],
+        ".sensor-details summary": [
+          {
+            "rect": {
+              "x": 717,
+              "y": 245.25,
+              "width": 328,
+              "height": 45.1875
+            },
+            "style": {
+              "fontFamily": "\"Segoe UI Variable Display\", \"Segoe UI\", Arial, sans-serif",
+              "fontSize": "12px",
+              "fontWeight": "400",
+              "lineHeight": "19.2px",
+              "letterSpacing": "normal",
+              "color": "rgb(243, 245, 238)",
+              "backgroundColor": "rgba(0, 0, 0, 0)",
+              "borderRadius": "0px",
+              "padding": "13px 0px",
+              "gap": "normal"
+            }
+          },
+          {
+            "rect": {
+              "x": 717,
+              "y": 322.4375,
+              "width": 328,
+              "height": 45.1875
+            },
+            "style": {
+              "fontFamily": "\"Segoe UI Variable Display\", \"Segoe UI\", Arial, sans-serif",
+              "fontSize": "12px",
+              "fontWeight": "400",
+              "lineHeight": "19.2px",
+              "letterSpacing": "normal",
+              "color": "rgb(243, 245, 238)",
+              "backgroundColor": "rgba(0, 0, 0, 0)",
+              "borderRadius": "0px",
+              "padding": "13px 0px",
+              "gap": "normal"
+            }
+          },
+          {
+            "rect": {
+              "x": 717,
+              "y": 399.625,
+              "width": 328,
+              "height": 45.1875
+            },
+            "style": {
+              "fontFamily": "\"Segoe UI Variable Display\", \"Segoe UI\", Arial, sans-serif",
+              "fontSize": "12px",
+              "fontWeight": "400",
+              "lineHeight": "19.2px",
+              "letterSpacing": "normal",
+              "color": "rgb(243, 245, 238)",
+              "backgroundColor": "rgba(0, 0, 0, 0)",
+              "borderRadius": "0px",
+              "padding": "13px 0px",
+              "gap": "normal"
+            }
+          },
+          {
+            "rect": {
+              "x": 717,
+              "y": 476.8125,
+              "width": 328,
+              "height": 45.1875
+            },
+            "style": {
+              "fontFamily": "\"Segoe UI Variable Display\", \"Segoe UI\", Arial, sans-serif",
+              "fontSize": "12px",
+              "fontWeight": "400",
+              "lineHeight": "19.2px",
+              "letterSpacing": "normal",
+              "color": "rgb(243, 245, 238)",
+              "backgroundColor": "rgba(0, 0, 0, 0)",
+              "borderRadius": "0px",
+              "padding": "13px 0px",
+              "gap": "normal"
+            }
+          },
+          {
+            "rect": {
+              "x": 717,
+              "y": 554,
+              "width": 328,
+              "height": 45.1875
+            },
+            "style": {
+              "fontFamily": "\"Segoe UI Variable Display\", \"Segoe UI\", Arial, sans-serif",
+              "fontSize": "12px",
+              "fontWeight": "400",
+              "lineHeight": "19.2px",
+              "letterSpacing": "normal",
+              "color": "rgb(243, 245, 238)",
+              "backgroundColor": "rgba(0, 0, 0, 0)",
+              "borderRadius": "0px",
+              "padding": "13px 0px",
+              "gap": "normal"
+            }
+          },
+          {
+            "rect": {
+              "x": 717,
+              "y": 631.1875,
+              "width": 328,
+              "height": 45.1875
+            },
+            "style": {
+              "fontFamily": "\"Segoe UI Variable Display\", \"Segoe UI\", Arial, sans-serif",
+              "fontSize": "12px",
+              "fontWeight": "400",
+              "lineHeight": "19.2px",
+              "letterSpacing": "normal",
+              "color": "rgb(243, 245, 238)",
+              "backgroundColor": "rgba(0, 0, 0, 0)",
+              "borderRadius": "0px",
+              "padding": "13px 0px",
+              "gap": "normal"
+            }
+          },
+          {
+            "rect": {
+              "x": 717,
+              "y": 708.375,
+              "width": 328,
+              "height": 45.1875
+            },
+            "style": {
+              "fontFamily": "\"Segoe UI Variable Display\", \"Segoe UI\", Arial, sans-serif",
+              "fontSize": "12px",
+              "fontWeight": "400",
+              "lineHeight": "19.2px",
+              "letterSpacing": "normal",
+              "color": "rgb(243, 245, 238)",
+              "backgroundColor": "rgba(0, 0, 0, 0)",
+              "borderRadius": "0px",
+              "padding": "13px 0px",
+              "gap": "normal"
+            }
+          },
+          {
+            "rect": {
+              "x": 717,
+              "y": 785.5625,
+              "width": 328,
+              "height": 45.1875
+            },
+            "style": {
+              "fontFamily": "\"Segoe UI Variable Display\", \"Segoe UI\", Arial, sans-serif",
+              "fontSize": "12px",
+              "fontWeight": "400",
+              "lineHeight": "19.2px",
+              "letterSpacing": "normal",
+              "color": "rgb(243, 245, 238)",
+              "backgroundColor": "rgba(0, 0, 0, 0)",
+              "borderRadius": "0px",
+              "padding": "13px 0px",
+              "gap": "normal"
+            }
+          },
+          {
+            "rect": {
+              "x": 717,
+              "y": 862.75,
+              "width": 328,
+              "height": 45.1875
+            },
+            "style": {
+              "fontFamily": "\"Segoe UI Variable Display\", \"Segoe UI\", Arial, sans-serif",
+              "fontSize": "12px",
+              "fontWeight": "400",
+              "lineHeight": "19.2px",
+              "letterSpacing": "normal",
+              "color": "rgb(243, 245, 238)",
+              "backgroundColor": "rgba(0, 0, 0, 0)",
+              "borderRadius": "0px",
+              "padding": "13px 0px",
+              "gap": "normal"
+            }
+          },
+          {
+            "rect": {
+              "x": 717,
+              "y": 939.9375,
+              "width": 328,
+              "height": 45.1875
+            },
+            "style": {
+              "fontFamily": "\"Segoe UI Variable Display\", \"Segoe UI\", Arial, sans-serif",
+              "fontSize": "12px",
+              "fontWeight": "400",
+              "lineHeight": "19.2px",
+              "letterSpacing": "normal",
+              "color": "rgb(243, 245, 238)",
+              "backgroundColor": "rgba(0, 0, 0, 0)",
+              "borderRadius": "0px",
+              "padding": "13px 0px",
+              "gap": "normal"
+            }
+          }
+        ],
+        ".sensor-dot": [
+          {
+            "rect": {
+              "x": 729.703125,
+              "y": 264.25,
+              "width": 7,
+              "height": 7
+            },
+            "style": {
+              "fontFamily": "\"Segoe UI Variable Display\", \"Segoe UI\", Arial, sans-serif",
+              "fontSize": "12px",
+              "fontWeight": "400",
+              "lineHeight": "19.2px",
+              "letterSpacing": "normal",
+              "color": "rgb(243, 245, 238)",
+              "backgroundColor": "rgb(182, 239, 206)",
+              "borderRadius": "50%",
+              "padding": "0px",
+              "gap": "normal"
+            }
+          },
+          {
+            "rect": {
+              "x": 729.703125,
+              "y": 341.4375,
+              "width": 7,
+              "height": 7
+            },
+            "style": {
+              "fontFamily": "\"Segoe UI Variable Display\", \"Segoe UI\", Arial, sans-serif",
+              "fontSize": "12px",
+              "fontWeight": "400",
+              "lineHeight": "19.2px",
+              "letterSpacing": "normal",
+              "color": "rgb(243, 245, 238)",
+              "backgroundColor": "rgb(182, 239, 206)",
+              "borderRadius": "50%",
+              "padding": "0px",
+              "gap": "normal"
+            }
+          },
+          {
+            "rect": {
+              "x": 729.703125,
+              "y": 418.625,
+              "width": 7,
+              "height": 7
+            },
+            "style": {
+              "fontFamily": "\"Segoe UI Variable Display\", \"Segoe UI\", Arial, sans-serif",
+              "fontSize": "12px",
+              "fontWeight": "400",
+              "lineHeight": "19.2px",
+              "letterSpacing": "normal",
+              "color": "rgb(243, 245, 238)",
+              "backgroundColor": "rgb(182, 239, 206)",
+              "borderRadius": "50%",
+              "padding": "0px",
+              "gap": "normal"
+            }
+          },
+          {
+            "rect": {
+              "x": 729.703125,
+              "y": 495.8125,
+              "width": 7,
+              "height": 7
+            },
+            "style": {
+              "fontFamily": "\"Segoe UI Variable Display\", \"Segoe UI\", Arial, sans-serif",
+              "fontSize": "12px",
+              "fontWeight": "400",
+              "lineHeight": "19.2px",
+              "letterSpacing": "normal",
+              "color": "rgb(243, 245, 238)",
+              "backgroundColor": "rgb(182, 239, 206)",
+              "borderRadius": "50%",
+              "padding": "0px",
+              "gap": "normal"
+            }
+          },
+          {
+            "rect": {
+              "x": 729.703125,
+              "y": 573,
+              "width": 7,
+              "height": 7
+            },
+            "style": {
+              "fontFamily": "\"Segoe UI Variable Display\", \"Segoe UI\", Arial, sans-serif",
+              "fontSize": "12px",
+              "fontWeight": "400",
+              "lineHeight": "19.2px",
+              "letterSpacing": "normal",
+              "color": "rgb(243, 245, 238)",
+              "backgroundColor": "rgb(182, 239, 206)",
+              "borderRadius": "50%",
+              "padding": "0px",
+              "gap": "normal"
+            }
+          },
+          {
+            "rect": {
+              "x": 729.703125,
+              "y": 650.1875,
+              "width": 7,
+              "height": 7
+            },
+            "style": {
+              "fontFamily": "\"Segoe UI Variable Display\", \"Segoe UI\", Arial, sans-serif",
+              "fontSize": "12px",
+              "fontWeight": "400",
+              "lineHeight": "19.2px",
+              "letterSpacing": "normal",
+              "color": "rgb(243, 245, 238)",
+              "backgroundColor": "rgb(182, 239, 206)",
+              "borderRadius": "50%",
+              "padding": "0px",
+              "gap": "normal"
+            }
+          },
+          {
+            "rect": {
+              "x": 729.703125,
+              "y": 727.375,
+              "width": 7,
+              "height": 7
+            },
+            "style": {
+              "fontFamily": "\"Segoe UI Variable Display\", \"Segoe UI\", Arial, sans-serif",
+              "fontSize": "12px",
+              "fontWeight": "400",
+              "lineHeight": "19.2px",
+              "letterSpacing": "normal",
+              "color": "rgb(243, 245, 238)",
+              "backgroundColor": "rgb(182, 239, 206)",
+              "borderRadius": "50%",
+              "padding": "0px",
+              "gap": "normal"
+            }
+          },
+          {
+            "rect": {
+              "x": 729.703125,
+              "y": 804.5625,
+              "width": 7,
+              "height": 7
+            },
+            "style": {
+              "fontFamily": "\"Segoe UI Variable Display\", \"Segoe UI\", Arial, sans-serif",
+              "fontSize": "12px",
+              "fontWeight": "400",
+              "lineHeight": "19.2px",
+              "letterSpacing": "normal",
+              "color": "rgb(243, 245, 238)",
+              "backgroundColor": "rgb(182, 239, 206)",
+              "borderRadius": "50%",
+              "padding": "0px",
+              "gap": "normal"
+            }
+          }
+        ]
+      },
+      "platformFonts": {
+        ".brand": [
+          {
+            "familyName": "Liberation Sans",
+            "postScriptName": "LiberationSans-Bold",
+            "isCustomFont": false,
+            "glyphCount": 7
+          }
+        ],
+        ".metric-value": [
+          {
+            "familyName": "Liberation Sans",
+            "postScriptName": "LiberationSans",
+            "isCustomFont": false,
+            "glyphCount": 5
+          }
+        ],
+        ".metric-label": [
+          {
+            "familyName": "Liberation Sans",
+            "postScriptName": "LiberationSans",
+            "isCustomFont": false,
+            "glyphCount": 17
+          }
+        ],
+        ".drawer-head h2": [
+          {
+            "familyName": "Liberation Sans",
+            "postScriptName": "LiberationSans",
+            "isCustomFont": false,
+            "glyphCount": 18
+          }
+        ]
+      },
+      "screenshotSha256": "9d5c537683d73dba8a9842ad4016cde114999ce3719731428384ef8acb66bde2"
+    },
+    "health-gps-day": {
+      "theme": "day",
+      "components": {
+        ".drawer": [
+          {
+            "rect": {
+              "x": 682,
+              "y": 80,
+              "width": 398,
+              "height": 674
+            },
+            "style": {
+              "fontFamily": "\"Segoe UI Variable Display\", \"Segoe UI\", Arial, sans-serif",
+              "fontSize": "16px",
+              "fontWeight": "400",
+              "lineHeight": "normal",
+              "letterSpacing": "normal",
+              "color": "rgb(243, 245, 238)",
+              "backgroundColor": "rgb(21, 35, 38)",
+              "borderRadius": "18px",
+              "padding": "0px",
+              "gap": "normal"
+            }
+          }
+        ],
+        ".drawer-head": [
+          {
+            "rect": {
+              "x": 683,
+              "y": 81,
+              "width": 396,
+              "height": 86.109375
+            },
+            "style": {
+              "fontFamily": "\"Segoe UI Variable Display\", \"Segoe UI\", Arial, sans-serif",
+              "fontSize": "16px",
+              "fontWeight": "400",
+              "lineHeight": "normal",
+              "letterSpacing": "normal",
+              "color": "rgb(243, 245, 238)",
+              "backgroundColor": "rgba(0, 0, 0, 0)",
+              "borderRadius": "0px",
+              "padding": "12px 22px 20px",
+              "gap": "10px 16px"
+            }
+          }
+        ],
+        ".drawer-body": [
+          {
+            "rect": {
+              "x": 683,
+              "y": 167.109375,
+              "width": 396,
+              "height": 585.890625
+            },
+            "style": {
+              "fontFamily": "\"Segoe UI Variable Display\", \"Segoe UI\", Arial, sans-serif",
+              "fontSize": "16px",
+              "fontWeight": "400",
+              "lineHeight": "normal",
+              "letterSpacing": "normal",
+              "color": "rgb(243, 245, 238)",
+              "backgroundColor": "rgba(0, 0, 0, 0)",
+              "borderRadius": "0px",
+              "padding": "20px 22px 24px",
+              "gap": "normal"
+            }
+          }
+        ],
+        ".sensor-details": [
+          {
+            "rect": {
+              "x": 705,
+              "y": 233.25,
+              "width": 352,
+              "height": 370.15625
+            },
+            "style": {
+              "fontFamily": "\"Segoe UI Variable Display\", \"Segoe UI\", Arial, sans-serif",
+              "fontSize": "10px",
+              "fontWeight": "400",
+              "lineHeight": "18px",
+              "letterSpacing": "normal",
+              "color": "rgb(170, 189, 189)",
+              "backgroundColor": "rgb(29, 45, 49)",
+              "borderRadius": "8px",
+              "padding": "12px",
+              "gap": "normal"
+            }
+          },
+          {
+            "rect": {
+              "x": 705,
+              "y": 611.40625,
+              "width": 352,
+              "height": 69.1875
+            },
+            "style": {
+              "fontFamily": "\"Segoe UI Variable Display\", \"Segoe UI\", Arial, sans-serif",
+              "fontSize": "10px",
+              "fontWeight": "400",
+              "lineHeight": "18px",
+              "letterSpacing": "normal",
+              "color": "rgb(170, 189, 189)",
+              "backgroundColor": "rgb(29, 45, 49)",
+              "borderRadius": "8px",
+              "padding": "12px",
+              "gap": "normal"
+            }
+          },
+          {
+            "rect": {
+              "x": 705,
+              "y": 688.59375,
+              "width": 352,
+              "height": 69.1875
+            },
+            "style": {
+              "fontFamily": "\"Segoe UI Variable Display\", \"Segoe UI\", Arial, sans-serif",
+              "fontSize": "10px",
+              "fontWeight": "400",
+              "lineHeight": "18px",
+              "letterSpacing": "normal",
+              "color": "rgb(170, 189, 189)",
+              "backgroundColor": "rgb(29, 45, 49)",
+              "borderRadius": "8px",
+              "padding": "12px",
+              "gap": "normal"
+            }
+          },
+          {
+            "rect": {
+              "x": 705,
+              "y": 765.78125,
+              "width": 352,
+              "height": 69.1875
+            },
+            "style": {
+              "fontFamily": "\"Segoe UI Variable Display\", \"Segoe UI\", Arial, sans-serif",
+              "fontSize": "10px",
+              "fontWeight": "400",
+              "lineHeight": "18px",
+              "letterSpacing": "normal",
+              "color": "rgb(170, 189, 189)",
+              "backgroundColor": "rgb(29, 45, 49)",
+              "borderRadius": "8px",
+              "padding": "12px",
+              "gap": "normal"
+            }
+          },
+          {
+            "rect": {
+              "x": 705,
+              "y": 842.96875,
+              "width": 352,
+              "height": 69.1875
+            },
+            "style": {
+              "fontFamily": "\"Segoe UI Variable Display\", \"Segoe UI\", Arial, sans-serif",
+              "fontSize": "10px",
+              "fontWeight": "400",
+              "lineHeight": "18px",
+              "letterSpacing": "normal",
+              "color": "rgb(170, 189, 189)",
+              "backgroundColor": "rgb(29, 45, 49)",
+              "borderRadius": "8px",
+              "padding": "12px",
+              "gap": "normal"
+            }
+          },
+          {
+            "rect": {
+              "x": 705,
+              "y": 920.15625,
+              "width": 352,
+              "height": 69.1875
+            },
+            "style": {
+              "fontFamily": "\"Segoe UI Variable Display\", \"Segoe UI\", Arial, sans-serif",
+              "fontSize": "10px",
+              "fontWeight": "400",
+              "lineHeight": "18px",
+              "letterSpacing": "normal",
+              "color": "rgb(170, 189, 189)",
+              "backgroundColor": "rgb(29, 45, 49)",
+              "borderRadius": "8px",
+              "padding": "12px",
+              "gap": "normal"
+            }
+          },
+          {
+            "rect": {
+              "x": 705,
+              "y": 997.34375,
+              "width": 352,
+              "height": 69.1875
+            },
+            "style": {
+              "fontFamily": "\"Segoe UI Variable Display\", \"Segoe UI\", Arial, sans-serif",
+              "fontSize": "10px",
+              "fontWeight": "400",
+              "lineHeight": "18px",
+              "letterSpacing": "normal",
+              "color": "rgb(170, 189, 189)",
+              "backgroundColor": "rgb(29, 45, 49)",
+              "borderRadius": "8px",
+              "padding": "12px",
+              "gap": "normal"
+            }
+          },
+          {
+            "rect": {
+              "x": 705,
+              "y": 1074.53125,
+              "width": 352,
+              "height": 69.1875
+            },
+            "style": {
+              "fontFamily": "\"Segoe UI Variable Display\", \"Segoe UI\", Arial, sans-serif",
+              "fontSize": "10px",
+              "fontWeight": "400",
+              "lineHeight": "18px",
+              "letterSpacing": "normal",
+              "color": "rgb(170, 189, 189)",
+              "backgroundColor": "rgb(29, 45, 49)",
+              "borderRadius": "8px",
+              "padding": "12px",
+              "gap": "normal"
+            }
+          },
+          {
+            "rect": {
+              "x": 705,
+              "y": 1151.71875,
+              "width": 352,
+              "height": 69.1875
+            },
+            "style": {
+              "fontFamily": "\"Segoe UI Variable Display\", \"Segoe UI\", Arial, sans-serif",
+              "fontSize": "10px",
+              "fontWeight": "400",
+              "lineHeight": "18px",
+              "letterSpacing": "normal",
+              "color": "rgb(170, 189, 189)",
+              "backgroundColor": "rgb(29, 45, 49)",
+              "borderRadius": "8px",
+              "padding": "12px",
+              "gap": "normal"
+            }
+          },
+          {
+            "rect": {
+              "x": 705,
+              "y": 1228.90625,
+              "width": 352,
+              "height": 69.1875
+            },
+            "style": {
+              "fontFamily": "\"Segoe UI Variable Display\", \"Segoe UI\", Arial, sans-serif",
+              "fontSize": "10px",
+              "fontWeight": "400",
+              "lineHeight": "18px",
+              "letterSpacing": "normal",
+              "color": "rgb(170, 189, 189)",
+              "backgroundColor": "rgb(29, 45, 49)",
+              "borderRadius": "8px",
+              "padding": "12px",
+              "gap": "normal"
+            }
+          }
+        ],
+        ".sensor-details summary": [
+          {
+            "rect": {
+              "x": 717,
+              "y": 245.25,
+              "width": 328,
+              "height": 45.1875
+            },
+            "style": {
+              "fontFamily": "\"Segoe UI Variable Display\", \"Segoe UI\", Arial, sans-serif",
+              "fontSize": "12px",
+              "fontWeight": "400",
+              "lineHeight": "19.2px",
+              "letterSpacing": "normal",
+              "color": "rgb(243, 245, 238)",
+              "backgroundColor": "rgba(0, 0, 0, 0)",
+              "borderRadius": "0px",
+              "padding": "13px 0px",
+              "gap": "normal"
+            }
+          },
+          {
+            "rect": {
+              "x": 717,
+              "y": 623.40625,
+              "width": 328,
+              "height": 45.1875
+            },
+            "style": {
+              "fontFamily": "\"Segoe UI Variable Display\", \"Segoe UI\", Arial, sans-serif",
+              "fontSize": "12px",
+              "fontWeight": "400",
+              "lineHeight": "19.2px",
+              "letterSpacing": "normal",
+              "color": "rgb(243, 245, 238)",
+              "backgroundColor": "rgba(0, 0, 0, 0)",
+              "borderRadius": "0px",
+              "padding": "13px 0px",
+              "gap": "normal"
+            }
+          },
+          {
+            "rect": {
+              "x": 717,
+              "y": 700.59375,
+              "width": 328,
+              "height": 45.1875
+            },
+            "style": {
+              "fontFamily": "\"Segoe UI Variable Display\", \"Segoe UI\", Arial, sans-serif",
+              "fontSize": "12px",
+              "fontWeight": "400",
+              "lineHeight": "19.2px",
+              "letterSpacing": "normal",
+              "color": "rgb(243, 245, 238)",
+              "backgroundColor": "rgba(0, 0, 0, 0)",
+              "borderRadius": "0px",
+              "padding": "13px 0px",
+              "gap": "normal"
+            }
+          },
+          {
+            "rect": {
+              "x": 717,
+              "y": 777.78125,
+              "width": 328,
+              "height": 45.1875
+            },
+            "style": {
+              "fontFamily": "\"Segoe UI Variable Display\", \"Segoe UI\", Arial, sans-serif",
+              "fontSize": "12px",
+              "fontWeight": "400",
+              "lineHeight": "19.2px",
+              "letterSpacing": "normal",
+              "color": "rgb(243, 245, 238)",
+              "backgroundColor": "rgba(0, 0, 0, 0)",
+              "borderRadius": "0px",
+              "padding": "13px 0px",
+              "gap": "normal"
+            }
+          },
+          {
+            "rect": {
+              "x": 717,
+              "y": 854.96875,
+              "width": 328,
+              "height": 45.1875
+            },
+            "style": {
+              "fontFamily": "\"Segoe UI Variable Display\", \"Segoe UI\", Arial, sans-serif",
+              "fontSize": "12px",
+              "fontWeight": "400",
+              "lineHeight": "19.2px",
+              "letterSpacing": "normal",
+              "color": "rgb(243, 245, 238)",
+              "backgroundColor": "rgba(0, 0, 0, 0)",
+              "borderRadius": "0px",
+              "padding": "13px 0px",
+              "gap": "normal"
+            }
+          },
+          {
+            "rect": {
+              "x": 717,
+              "y": 932.15625,
+              "width": 328,
+              "height": 45.1875
+            },
+            "style": {
+              "fontFamily": "\"Segoe UI Variable Display\", \"Segoe UI\", Arial, sans-serif",
+              "fontSize": "12px",
+              "fontWeight": "400",
+              "lineHeight": "19.2px",
+              "letterSpacing": "normal",
+              "color": "rgb(243, 245, 238)",
+              "backgroundColor": "rgba(0, 0, 0, 0)",
+              "borderRadius": "0px",
+              "padding": "13px 0px",
+              "gap": "normal"
+            }
+          },
+          {
+            "rect": {
+              "x": 717,
+              "y": 1009.34375,
+              "width": 328,
+              "height": 45.1875
+            },
+            "style": {
+              "fontFamily": "\"Segoe UI Variable Display\", \"Segoe UI\", Arial, sans-serif",
+              "fontSize": "12px",
+              "fontWeight": "400",
+              "lineHeight": "19.2px",
+              "letterSpacing": "normal",
+              "color": "rgb(243, 245, 238)",
+              "backgroundColor": "rgba(0, 0, 0, 0)",
+              "borderRadius": "0px",
+              "padding": "13px 0px",
+              "gap": "normal"
+            }
+          },
+          {
+            "rect": {
+              "x": 717,
+              "y": 1086.53125,
+              "width": 328,
+              "height": 45.1875
+            },
+            "style": {
+              "fontFamily": "\"Segoe UI Variable Display\", \"Segoe UI\", Arial, sans-serif",
+              "fontSize": "12px",
+              "fontWeight": "400",
+              "lineHeight": "19.2px",
+              "letterSpacing": "normal",
+              "color": "rgb(243, 245, 238)",
+              "backgroundColor": "rgba(0, 0, 0, 0)",
+              "borderRadius": "0px",
+              "padding": "13px 0px",
+              "gap": "normal"
+            }
+          },
+          {
+            "rect": {
+              "x": 717,
+              "y": 1163.71875,
+              "width": 328,
+              "height": 45.1875
+            },
+            "style": {
+              "fontFamily": "\"Segoe UI Variable Display\", \"Segoe UI\", Arial, sans-serif",
+              "fontSize": "12px",
+              "fontWeight": "400",
+              "lineHeight": "19.2px",
+              "letterSpacing": "normal",
+              "color": "rgb(243, 245, 238)",
+              "backgroundColor": "rgba(0, 0, 0, 0)",
+              "borderRadius": "0px",
+              "padding": "13px 0px",
+              "gap": "normal"
+            }
+          },
+          {
+            "rect": {
+              "x": 717,
+              "y": 1240.90625,
+              "width": 328,
+              "height": 45.1875
+            },
+            "style": {
+              "fontFamily": "\"Segoe UI Variable Display\", \"Segoe UI\", Arial, sans-serif",
+              "fontSize": "12px",
+              "fontWeight": "400",
+              "lineHeight": "19.2px",
+              "letterSpacing": "normal",
+              "color": "rgb(243, 245, 238)",
+              "backgroundColor": "rgba(0, 0, 0, 0)",
+              "borderRadius": "0px",
+              "padding": "13px 0px",
+              "gap": "normal"
+            }
+          }
+        ],
+        ".sensor-dot": [
+          {
+            "rect": {
+              "x": 729.703125,
+              "y": 264.25,
+              "width": 7,
+              "height": 7
+            },
+            "style": {
+              "fontFamily": "\"Segoe UI Variable Display\", \"Segoe UI\", Arial, sans-serif",
+              "fontSize": "12px",
+              "fontWeight": "400",
+              "lineHeight": "19.2px",
+              "letterSpacing": "normal",
+              "color": "rgb(243, 245, 238)",
+              "backgroundColor": "rgb(182, 239, 206)",
+              "borderRadius": "50%",
+              "padding": "0px",
+              "gap": "normal"
+            }
+          },
+          {
+            "rect": {
+              "x": 729.703125,
+              "y": 642.40625,
+              "width": 7,
+              "height": 7
+            },
+            "style": {
+              "fontFamily": "\"Segoe UI Variable Display\", \"Segoe UI\", Arial, sans-serif",
+              "fontSize": "12px",
+              "fontWeight": "400",
+              "lineHeight": "19.2px",
+              "letterSpacing": "normal",
+              "color": "rgb(243, 245, 238)",
+              "backgroundColor": "rgb(182, 239, 206)",
+              "borderRadius": "50%",
+              "padding": "0px",
+              "gap": "normal"
+            }
+          },
+          {
+            "rect": {
+              "x": 729.703125,
+              "y": 719.59375,
+              "width": 7,
+              "height": 7
+            },
+            "style": {
+              "fontFamily": "\"Segoe UI Variable Display\", \"Segoe UI\", Arial, sans-serif",
+              "fontSize": "12px",
+              "fontWeight": "400",
+              "lineHeight": "19.2px",
+              "letterSpacing": "normal",
+              "color": "rgb(243, 245, 238)",
+              "backgroundColor": "rgb(182, 239, 206)",
+              "borderRadius": "50%",
+              "padding": "0px",
+              "gap": "normal"
+            }
+          },
+          {
+            "rect": {
+              "x": 729.703125,
+              "y": 796.78125,
+              "width": 7,
+              "height": 7
+            },
+            "style": {
+              "fontFamily": "\"Segoe UI Variable Display\", \"Segoe UI\", Arial, sans-serif",
+              "fontSize": "12px",
+              "fontWeight": "400",
+              "lineHeight": "19.2px",
+              "letterSpacing": "normal",
+              "color": "rgb(243, 245, 238)",
+              "backgroundColor": "rgb(182, 239, 206)",
+              "borderRadius": "50%",
+              "padding": "0px",
+              "gap": "normal"
+            }
+          },
+          {
+            "rect": {
+              "x": 729.703125,
+              "y": 873.96875,
+              "width": 7,
+              "height": 7
+            },
+            "style": {
+              "fontFamily": "\"Segoe UI Variable Display\", \"Segoe UI\", Arial, sans-serif",
+              "fontSize": "12px",
+              "fontWeight": "400",
+              "lineHeight": "19.2px",
+              "letterSpacing": "normal",
+              "color": "rgb(243, 245, 238)",
+              "backgroundColor": "rgb(182, 239, 206)",
+              "borderRadius": "50%",
+              "padding": "0px",
+              "gap": "normal"
+            }
+          },
+          {
+            "rect": {
+              "x": 729.703125,
+              "y": 951.15625,
+              "width": 7,
+              "height": 7
+            },
+            "style": {
+              "fontFamily": "\"Segoe UI Variable Display\", \"Segoe UI\", Arial, sans-serif",
+              "fontSize": "12px",
+              "fontWeight": "400",
+              "lineHeight": "19.2px",
+              "letterSpacing": "normal",
+              "color": "rgb(243, 245, 238)",
+              "backgroundColor": "rgb(182, 239, 206)",
+              "borderRadius": "50%",
+              "padding": "0px",
+              "gap": "normal"
+            }
+          },
+          {
+            "rect": {
+              "x": 729.703125,
+              "y": 1028.34375,
+              "width": 7,
+              "height": 7
+            },
+            "style": {
+              "fontFamily": "\"Segoe UI Variable Display\", \"Segoe UI\", Arial, sans-serif",
+              "fontSize": "12px",
+              "fontWeight": "400",
+              "lineHeight": "19.2px",
+              "letterSpacing": "normal",
+              "color": "rgb(243, 245, 238)",
+              "backgroundColor": "rgb(182, 239, 206)",
+              "borderRadius": "50%",
+              "padding": "0px",
+              "gap": "normal"
+            }
+          },
+          {
+            "rect": {
+              "x": 729.703125,
+              "y": 1105.53125,
+              "width": 7,
+              "height": 7
+            },
+            "style": {
+              "fontFamily": "\"Segoe UI Variable Display\", \"Segoe UI\", Arial, sans-serif",
+              "fontSize": "12px",
+              "fontWeight": "400",
+              "lineHeight": "19.2px",
+              "letterSpacing": "normal",
+              "color": "rgb(243, 245, 238)",
+              "backgroundColor": "rgb(182, 239, 206)",
+              "borderRadius": "50%",
+              "padding": "0px",
+              "gap": "normal"
+            }
+          }
+        ]
+      },
+      "platformFonts": {
+        ".brand": [
+          {
+            "familyName": "Liberation Sans",
+            "postScriptName": "LiberationSans-Bold",
+            "isCustomFont": false,
+            "glyphCount": 7
+          }
+        ],
+        ".metric-value": [
+          {
+            "familyName": "Liberation Sans",
+            "postScriptName": "LiberationSans",
+            "isCustomFont": false,
+            "glyphCount": 5
+          }
+        ],
+        ".metric-label": [
+          {
+            "familyName": "Liberation Sans",
+            "postScriptName": "LiberationSans",
+            "isCustomFont": false,
+            "glyphCount": 17
+          }
+        ],
+        ".drawer-head h2": [
+          {
+            "familyName": "Liberation Sans",
+            "postScriptName": "LiberationSans",
+            "isCustomFont": false,
+            "glyphCount": 18
+          }
+        ]
+      },
+      "screenshotSha256": "c49e80e98d9dc144ff3b4a927388a7afddcb86fc739be29fdda5266d9b5c54df"
+    },
+    "health-dusk": {
+      "theme": "dusk",
+      "components": {
+        ".drawer": [
+          {
+            "rect": {
+              "x": 682,
+              "y": 80,
+              "width": 398,
+              "height": 674
+            },
+            "style": {
+              "fontFamily": "\"Segoe UI Variable Display\", \"Segoe UI\", Arial, sans-serif",
+              "fontSize": "16px",
+              "fontWeight": "400",
+              "lineHeight": "normal",
+              "letterSpacing": "normal",
+              "color": "rgb(226, 229, 219)",
+              "backgroundColor": "rgb(29, 40, 46)",
+              "borderRadius": "18px",
+              "padding": "0px",
+              "gap": "normal"
+            }
+          }
+        ],
+        ".drawer-head": [
+          {
+            "rect": {
+              "x": 683,
+              "y": 81,
+              "width": 396,
+              "height": 86.109375
+            },
+            "style": {
+              "fontFamily": "\"Segoe UI Variable Display\", \"Segoe UI\", Arial, sans-serif",
+              "fontSize": "16px",
+              "fontWeight": "400",
+              "lineHeight": "normal",
+              "letterSpacing": "normal",
+              "color": "rgb(226, 229, 219)",
+              "backgroundColor": "rgba(0, 0, 0, 0)",
+              "borderRadius": "0px",
+              "padding": "12px 22px 20px",
+              "gap": "10px 16px"
+            }
+          }
+        ],
+        ".drawer-body": [
+          {
+            "rect": {
+              "x": 683,
+              "y": 167.109375,
+              "width": 396,
+              "height": 585.890625
+            },
+            "style": {
+              "fontFamily": "\"Segoe UI Variable Display\", \"Segoe UI\", Arial, sans-serif",
+              "fontSize": "16px",
+              "fontWeight": "400",
+              "lineHeight": "normal",
+              "letterSpacing": "normal",
+              "color": "rgb(226, 229, 219)",
+              "backgroundColor": "rgba(0, 0, 0, 0)",
+              "borderRadius": "0px",
+              "padding": "20px 22px 24px",
+              "gap": "normal"
+            }
+          }
+        ],
+        ".sensor-details": [
+          {
+            "rect": {
+              "x": 705,
+              "y": 233.25,
+              "width": 352,
+              "height": 69.1875
+            },
+            "style": {
+              "fontFamily": "\"Segoe UI Variable Display\", \"Segoe UI\", Arial, sans-serif",
+              "fontSize": "10px",
+              "fontWeight": "400",
+              "lineHeight": "18px",
+              "letterSpacing": "normal",
+              "color": "rgb(172, 185, 183)",
+              "backgroundColor": "rgb(37, 52, 59)",
+              "borderRadius": "8px",
+              "padding": "12px",
+              "gap": "normal"
+            }
+          },
+          {
+            "rect": {
+              "x": 705,
+              "y": 310.4375,
+              "width": 352,
+              "height": 69.1875
+            },
+            "style": {
+              "fontFamily": "\"Segoe UI Variable Display\", \"Segoe UI\", Arial, sans-serif",
+              "fontSize": "10px",
+              "fontWeight": "400",
+              "lineHeight": "18px",
+              "letterSpacing": "normal",
+              "color": "rgb(172, 185, 183)",
+              "backgroundColor": "rgb(37, 52, 59)",
+              "borderRadius": "8px",
+              "padding": "12px",
+              "gap": "normal"
+            }
+          },
+          {
+            "rect": {
+              "x": 705,
+              "y": 387.625,
+              "width": 352,
+              "height": 69.1875
+            },
+            "style": {
+              "fontFamily": "\"Segoe UI Variable Display\", \"Segoe UI\", Arial, sans-serif",
+              "fontSize": "10px",
+              "fontWeight": "400",
+              "lineHeight": "18px",
+              "letterSpacing": "normal",
+              "color": "rgb(172, 185, 183)",
+              "backgroundColor": "rgb(37, 52, 59)",
+              "borderRadius": "8px",
+              "padding": "12px",
+              "gap": "normal"
+            }
+          },
+          {
+            "rect": {
+              "x": 705,
+              "y": 464.8125,
+              "width": 352,
+              "height": 69.1875
+            },
+            "style": {
+              "fontFamily": "\"Segoe UI Variable Display\", \"Segoe UI\", Arial, sans-serif",
+              "fontSize": "10px",
+              "fontWeight": "400",
+              "lineHeight": "18px",
+              "letterSpacing": "normal",
+              "color": "rgb(172, 185, 183)",
+              "backgroundColor": "rgb(37, 52, 59)",
+              "borderRadius": "8px",
+              "padding": "12px",
+              "gap": "normal"
+            }
+          },
+          {
+            "rect": {
+              "x": 705,
+              "y": 542,
+              "width": 352,
+              "height": 69.1875
+            },
+            "style": {
+              "fontFamily": "\"Segoe UI Variable Display\", \"Segoe UI\", Arial, sans-serif",
+              "fontSize": "10px",
+              "fontWeight": "400",
+              "lineHeight": "18px",
+              "letterSpacing": "normal",
+              "color": "rgb(172, 185, 183)",
+              "backgroundColor": "rgb(37, 52, 59)",
+              "borderRadius": "8px",
+              "padding": "12px",
+              "gap": "normal"
+            }
+          },
+          {
+            "rect": {
+              "x": 705,
+              "y": 619.1875,
+              "width": 352,
+              "height": 69.1875
+            },
+            "style": {
+              "fontFamily": "\"Segoe UI Variable Display\", \"Segoe UI\", Arial, sans-serif",
+              "fontSize": "10px",
+              "fontWeight": "400",
+              "lineHeight": "18px",
+              "letterSpacing": "normal",
+              "color": "rgb(172, 185, 183)",
+              "backgroundColor": "rgb(37, 52, 59)",
+              "borderRadius": "8px",
+              "padding": "12px",
+              "gap": "normal"
+            }
+          },
+          {
+            "rect": {
+              "x": 705,
+              "y": 696.375,
+              "width": 352,
+              "height": 69.1875
+            },
+            "style": {
+              "fontFamily": "\"Segoe UI Variable Display\", \"Segoe UI\", Arial, sans-serif",
+              "fontSize": "10px",
+              "fontWeight": "400",
+              "lineHeight": "18px",
+              "letterSpacing": "normal",
+              "color": "rgb(172, 185, 183)",
+              "backgroundColor": "rgb(37, 52, 59)",
+              "borderRadius": "8px",
+              "padding": "12px",
+              "gap": "normal"
+            }
+          },
+          {
+            "rect": {
+              "x": 705,
+              "y": 773.5625,
+              "width": 352,
+              "height": 69.1875
+            },
+            "style": {
+              "fontFamily": "\"Segoe UI Variable Display\", \"Segoe UI\", Arial, sans-serif",
+              "fontSize": "10px",
+              "fontWeight": "400",
+              "lineHeight": "18px",
+              "letterSpacing": "normal",
+              "color": "rgb(172, 185, 183)",
+              "backgroundColor": "rgb(37, 52, 59)",
+              "borderRadius": "8px",
+              "padding": "12px",
+              "gap": "normal"
+            }
+          },
+          {
+            "rect": {
+              "x": 705,
+              "y": 850.75,
+              "width": 352,
+              "height": 69.1875
+            },
+            "style": {
+              "fontFamily": "\"Segoe UI Variable Display\", \"Segoe UI\", Arial, sans-serif",
+              "fontSize": "10px",
+              "fontWeight": "400",
+              "lineHeight": "18px",
+              "letterSpacing": "normal",
+              "color": "rgb(172, 185, 183)",
+              "backgroundColor": "rgb(37, 52, 59)",
+              "borderRadius": "8px",
+              "padding": "12px",
+              "gap": "normal"
+            }
+          },
+          {
+            "rect": {
+              "x": 705,
+              "y": 927.9375,
+              "width": 352,
+              "height": 69.1875
+            },
+            "style": {
+              "fontFamily": "\"Segoe UI Variable Display\", \"Segoe UI\", Arial, sans-serif",
+              "fontSize": "10px",
+              "fontWeight": "400",
+              "lineHeight": "18px",
+              "letterSpacing": "normal",
+              "color": "rgb(172, 185, 183)",
+              "backgroundColor": "rgb(37, 52, 59)",
+              "borderRadius": "8px",
+              "padding": "12px",
+              "gap": "normal"
+            }
+          }
+        ],
+        ".sensor-details summary": [
+          {
+            "rect": {
+              "x": 717,
+              "y": 245.25,
+              "width": 328,
+              "height": 45.1875
+            },
+            "style": {
+              "fontFamily": "\"Segoe UI Variable Display\", \"Segoe UI\", Arial, sans-serif",
+              "fontSize": "12px",
+              "fontWeight": "400",
+              "lineHeight": "19.2px",
+              "letterSpacing": "normal",
+              "color": "rgb(226, 229, 219)",
+              "backgroundColor": "rgba(0, 0, 0, 0)",
+              "borderRadius": "0px",
+              "padding": "13px 0px",
+              "gap": "normal"
+            }
+          },
+          {
+            "rect": {
+              "x": 717,
+              "y": 322.4375,
+              "width": 328,
+              "height": 45.1875
+            },
+            "style": {
+              "fontFamily": "\"Segoe UI Variable Display\", \"Segoe UI\", Arial, sans-serif",
+              "fontSize": "12px",
+              "fontWeight": "400",
+              "lineHeight": "19.2px",
+              "letterSpacing": "normal",
+              "color": "rgb(226, 229, 219)",
+              "backgroundColor": "rgba(0, 0, 0, 0)",
+              "borderRadius": "0px",
+              "padding": "13px 0px",
+              "gap": "normal"
+            }
+          },
+          {
+            "rect": {
+              "x": 717,
+              "y": 399.625,
+              "width": 328,
+              "height": 45.1875
+            },
+            "style": {
+              "fontFamily": "\"Segoe UI Variable Display\", \"Segoe UI\", Arial, sans-serif",
+              "fontSize": "12px",
+              "fontWeight": "400",
+              "lineHeight": "19.2px",
+              "letterSpacing": "normal",
+              "color": "rgb(226, 229, 219)",
+              "backgroundColor": "rgba(0, 0, 0, 0)",
+              "borderRadius": "0px",
+              "padding": "13px 0px",
+              "gap": "normal"
+            }
+          },
+          {
+            "rect": {
+              "x": 717,
+              "y": 476.8125,
+              "width": 328,
+              "height": 45.1875
+            },
+            "style": {
+              "fontFamily": "\"Segoe UI Variable Display\", \"Segoe UI\", Arial, sans-serif",
+              "fontSize": "12px",
+              "fontWeight": "400",
+              "lineHeight": "19.2px",
+              "letterSpacing": "normal",
+              "color": "rgb(226, 229, 219)",
+              "backgroundColor": "rgba(0, 0, 0, 0)",
+              "borderRadius": "0px",
+              "padding": "13px 0px",
+              "gap": "normal"
+            }
+          },
+          {
+            "rect": {
+              "x": 717,
+              "y": 554,
+              "width": 328,
+              "height": 45.1875
+            },
+            "style": {
+              "fontFamily": "\"Segoe UI Variable Display\", \"Segoe UI\", Arial, sans-serif",
+              "fontSize": "12px",
+              "fontWeight": "400",
+              "lineHeight": "19.2px",
+              "letterSpacing": "normal",
+              "color": "rgb(226, 229, 219)",
+              "backgroundColor": "rgba(0, 0, 0, 0)",
+              "borderRadius": "0px",
+              "padding": "13px 0px",
+              "gap": "normal"
+            }
+          },
+          {
+            "rect": {
+              "x": 717,
+              "y": 631.1875,
+              "width": 328,
+              "height": 45.1875
+            },
+            "style": {
+              "fontFamily": "\"Segoe UI Variable Display\", \"Segoe UI\", Arial, sans-serif",
+              "fontSize": "12px",
+              "fontWeight": "400",
+              "lineHeight": "19.2px",
+              "letterSpacing": "normal",
+              "color": "rgb(226, 229, 219)",
+              "backgroundColor": "rgba(0, 0, 0, 0)",
+              "borderRadius": "0px",
+              "padding": "13px 0px",
+              "gap": "normal"
+            }
+          },
+          {
+            "rect": {
+              "x": 717,
+              "y": 708.375,
+              "width": 328,
+              "height": 45.1875
+            },
+            "style": {
+              "fontFamily": "\"Segoe UI Variable Display\", \"Segoe UI\", Arial, sans-serif",
+              "fontSize": "12px",
+              "fontWeight": "400",
+              "lineHeight": "19.2px",
+              "letterSpacing": "normal",
+              "color": "rgb(226, 229, 219)",
+              "backgroundColor": "rgba(0, 0, 0, 0)",
+              "borderRadius": "0px",
+              "padding": "13px 0px",
+              "gap": "normal"
+            }
+          },
+          {
+            "rect": {
+              "x": 717,
+              "y": 785.5625,
+              "width": 328,
+              "height": 45.1875
+            },
+            "style": {
+              "fontFamily": "\"Segoe UI Variable Display\", \"Segoe UI\", Arial, sans-serif",
+              "fontSize": "12px",
+              "fontWeight": "400",
+              "lineHeight": "19.2px",
+              "letterSpacing": "normal",
+              "color": "rgb(226, 229, 219)",
+              "backgroundColor": "rgba(0, 0, 0, 0)",
+              "borderRadius": "0px",
+              "padding": "13px 0px",
+              "gap": "normal"
+            }
+          },
+          {
+            "rect": {
+              "x": 717,
+              "y": 862.75,
+              "width": 328,
+              "height": 45.1875
+            },
+            "style": {
+              "fontFamily": "\"Segoe UI Variable Display\", \"Segoe UI\", Arial, sans-serif",
+              "fontSize": "12px",
+              "fontWeight": "400",
+              "lineHeight": "19.2px",
+              "letterSpacing": "normal",
+              "color": "rgb(226, 229, 219)",
+              "backgroundColor": "rgba(0, 0, 0, 0)",
+              "borderRadius": "0px",
+              "padding": "13px 0px",
+              "gap": "normal"
+            }
+          },
+          {
+            "rect": {
+              "x": 717,
+              "y": 939.9375,
+              "width": 328,
+              "height": 45.1875
+            },
+            "style": {
+              "fontFamily": "\"Segoe UI Variable Display\", \"Segoe UI\", Arial, sans-serif",
+              "fontSize": "12px",
+              "fontWeight": "400",
+              "lineHeight": "19.2px",
+              "letterSpacing": "normal",
+              "color": "rgb(226, 229, 219)",
+              "backgroundColor": "rgba(0, 0, 0, 0)",
+              "borderRadius": "0px",
+              "padding": "13px 0px",
+              "gap": "normal"
+            }
+          }
+        ],
+        ".sensor-dot": [
+          {
+            "rect": {
+              "x": 729.703125,
+              "y": 264.25,
+              "width": 7,
+              "height": 7
+            },
+            "style": {
+              "fontFamily": "\"Segoe UI Variable Display\", \"Segoe UI\", Arial, sans-serif",
+              "fontSize": "12px",
+              "fontWeight": "400",
+              "lineHeight": "19.2px",
+              "letterSpacing": "normal",
+              "color": "rgb(226, 229, 219)",
+              "backgroundColor": "rgb(155, 197, 177)",
+              "borderRadius": "50%",
+              "padding": "0px",
+              "gap": "normal"
+            }
+          },
+          {
+            "rect": {
+              "x": 729.703125,
+              "y": 341.4375,
+              "width": 7,
+              "height": 7
+            },
+            "style": {
+              "fontFamily": "\"Segoe UI Variable Display\", \"Segoe UI\", Arial, sans-serif",
+              "fontSize": "12px",
+              "fontWeight": "400",
+              "lineHeight": "19.2px",
+              "letterSpacing": "normal",
+              "color": "rgb(226, 229, 219)",
+              "backgroundColor": "rgb(155, 197, 177)",
+              "borderRadius": "50%",
+              "padding": "0px",
+              "gap": "normal"
+            }
+          },
+          {
+            "rect": {
+              "x": 729.703125,
+              "y": 418.625,
+              "width": 7,
+              "height": 7
+            },
+            "style": {
+              "fontFamily": "\"Segoe UI Variable Display\", \"Segoe UI\", Arial, sans-serif",
+              "fontSize": "12px",
+              "fontWeight": "400",
+              "lineHeight": "19.2px",
+              "letterSpacing": "normal",
+              "color": "rgb(226, 229, 219)",
+              "backgroundColor": "rgb(155, 197, 177)",
+              "borderRadius": "50%",
+              "padding": "0px",
+              "gap": "normal"
+            }
+          },
+          {
+            "rect": {
+              "x": 729.703125,
+              "y": 495.8125,
+              "width": 7,
+              "height": 7
+            },
+            "style": {
+              "fontFamily": "\"Segoe UI Variable Display\", \"Segoe UI\", Arial, sans-serif",
+              "fontSize": "12px",
+              "fontWeight": "400",
+              "lineHeight": "19.2px",
+              "letterSpacing": "normal",
+              "color": "rgb(226, 229, 219)",
+              "backgroundColor": "rgb(155, 197, 177)",
+              "borderRadius": "50%",
+              "padding": "0px",
+              "gap": "normal"
+            }
+          },
+          {
+            "rect": {
+              "x": 729.703125,
+              "y": 573,
+              "width": 7,
+              "height": 7
+            },
+            "style": {
+              "fontFamily": "\"Segoe UI Variable Display\", \"Segoe UI\", Arial, sans-serif",
+              "fontSize": "12px",
+              "fontWeight": "400",
+              "lineHeight": "19.2px",
+              "letterSpacing": "normal",
+              "color": "rgb(226, 229, 219)",
+              "backgroundColor": "rgb(155, 197, 177)",
+              "borderRadius": "50%",
+              "padding": "0px",
+              "gap": "normal"
+            }
+          },
+          {
+            "rect": {
+              "x": 729.703125,
+              "y": 650.1875,
+              "width": 7,
+              "height": 7
+            },
+            "style": {
+              "fontFamily": "\"Segoe UI Variable Display\", \"Segoe UI\", Arial, sans-serif",
+              "fontSize": "12px",
+              "fontWeight": "400",
+              "lineHeight": "19.2px",
+              "letterSpacing": "normal",
+              "color": "rgb(226, 229, 219)",
+              "backgroundColor": "rgb(155, 197, 177)",
+              "borderRadius": "50%",
+              "padding": "0px",
+              "gap": "normal"
+            }
+          },
+          {
+            "rect": {
+              "x": 729.703125,
+              "y": 727.375,
+              "width": 7,
+              "height": 7
+            },
+            "style": {
+              "fontFamily": "\"Segoe UI Variable Display\", \"Segoe UI\", Arial, sans-serif",
+              "fontSize": "12px",
+              "fontWeight": "400",
+              "lineHeight": "19.2px",
+              "letterSpacing": "normal",
+              "color": "rgb(226, 229, 219)",
+              "backgroundColor": "rgb(155, 197, 177)",
+              "borderRadius": "50%",
+              "padding": "0px",
+              "gap": "normal"
+            }
+          },
+          {
+            "rect": {
+              "x": 729.703125,
+              "y": 804.5625,
+              "width": 7,
+              "height": 7
+            },
+            "style": {
+              "fontFamily": "\"Segoe UI Variable Display\", \"Segoe UI\", Arial, sans-serif",
+              "fontSize": "12px",
+              "fontWeight": "400",
+              "lineHeight": "19.2px",
+              "letterSpacing": "normal",
+              "color": "rgb(226, 229, 219)",
+              "backgroundColor": "rgb(155, 197, 177)",
+              "borderRadius": "50%",
+              "padding": "0px",
+              "gap": "normal"
+            }
+          }
+        ]
+      },
+      "platformFonts": {
+        ".brand": [
+          {
+            "familyName": "Liberation Sans",
+            "postScriptName": "LiberationSans-Bold",
+            "isCustomFont": false,
+            "glyphCount": 7
+          }
+        ],
+        ".metric-value": [
+          {
+            "familyName": "Liberation Sans",
+            "postScriptName": "LiberationSans",
+            "isCustomFont": false,
+            "glyphCount": 5
+          }
+        ],
+        ".metric-label": [
+          {
+            "familyName": "Liberation Sans",
+            "postScriptName": "LiberationSans",
+            "isCustomFont": false,
+            "glyphCount": 17
+          }
+        ],
+        ".drawer-head h2": [
+          {
+            "familyName": "Liberation Sans",
+            "postScriptName": "LiberationSans",
+            "isCustomFont": false,
+            "glyphCount": 18
+          }
+        ]
+      },
+      "screenshotSha256": "08e24776dc3013714ef6d37856d58f5069702962f329152ecf9a5b1215325a74"
+    },
+    "health-gps-dusk": {
+      "theme": "dusk",
+      "components": {
+        ".drawer": [
+          {
+            "rect": {
+              "x": 682,
+              "y": 80,
+              "width": 398,
+              "height": 674
+            },
+            "style": {
+              "fontFamily": "\"Segoe UI Variable Display\", \"Segoe UI\", Arial, sans-serif",
+              "fontSize": "16px",
+              "fontWeight": "400",
+              "lineHeight": "normal",
+              "letterSpacing": "normal",
+              "color": "rgb(226, 229, 219)",
+              "backgroundColor": "rgb(29, 40, 46)",
+              "borderRadius": "18px",
+              "padding": "0px",
+              "gap": "normal"
+            }
+          }
+        ],
+        ".drawer-head": [
+          {
+            "rect": {
+              "x": 683,
+              "y": 81,
+              "width": 396,
+              "height": 86.109375
+            },
+            "style": {
+              "fontFamily": "\"Segoe UI Variable Display\", \"Segoe UI\", Arial, sans-serif",
+              "fontSize": "16px",
+              "fontWeight": "400",
+              "lineHeight": "normal",
+              "letterSpacing": "normal",
+              "color": "rgb(226, 229, 219)",
+              "backgroundColor": "rgba(0, 0, 0, 0)",
+              "borderRadius": "0px",
+              "padding": "12px 22px 20px",
+              "gap": "10px 16px"
+            }
+          }
+        ],
+        ".drawer-body": [
+          {
+            "rect": {
+              "x": 683,
+              "y": 167.109375,
+              "width": 396,
+              "height": 585.890625
+            },
+            "style": {
+              "fontFamily": "\"Segoe UI Variable Display\", \"Segoe UI\", Arial, sans-serif",
+              "fontSize": "16px",
+              "fontWeight": "400",
+              "lineHeight": "normal",
+              "letterSpacing": "normal",
+              "color": "rgb(226, 229, 219)",
+              "backgroundColor": "rgba(0, 0, 0, 0)",
+              "borderRadius": "0px",
+              "padding": "20px 22px 24px",
+              "gap": "normal"
+            }
+          }
+        ],
+        ".sensor-details": [
+          {
+            "rect": {
+              "x": 705,
+              "y": 233.25,
+              "width": 352,
+              "height": 370.15625
+            },
+            "style": {
+              "fontFamily": "\"Segoe UI Variable Display\", \"Segoe UI\", Arial, sans-serif",
+              "fontSize": "10px",
+              "fontWeight": "400",
+              "lineHeight": "18px",
+              "letterSpacing": "normal",
+              "color": "rgb(172, 185, 183)",
+              "backgroundColor": "rgb(37, 52, 59)",
+              "borderRadius": "8px",
+              "padding": "12px",
+              "gap": "normal"
+            }
+          },
+          {
+            "rect": {
+              "x": 705,
+              "y": 611.40625,
+              "width": 352,
+              "height": 69.1875
+            },
+            "style": {
+              "fontFamily": "\"Segoe UI Variable Display\", \"Segoe UI\", Arial, sans-serif",
+              "fontSize": "10px",
+              "fontWeight": "400",
+              "lineHeight": "18px",
+              "letterSpacing": "normal",
+              "color": "rgb(172, 185, 183)",
+              "backgroundColor": "rgb(37, 52, 59)",
+              "borderRadius": "8px",
+              "padding": "12px",
+              "gap": "normal"
+            }
+          },
+          {
+            "rect": {
+              "x": 705,
+              "y": 688.59375,
+              "width": 352,
+              "height": 69.1875
+            },
+            "style": {
+              "fontFamily": "\"Segoe UI Variable Display\", \"Segoe UI\", Arial, sans-serif",
+              "fontSize": "10px",
+              "fontWeight": "400",
+              "lineHeight": "18px",
+              "letterSpacing": "normal",
+              "color": "rgb(172, 185, 183)",
+              "backgroundColor": "rgb(37, 52, 59)",
+              "borderRadius": "8px",
+              "padding": "12px",
+              "gap": "normal"
+            }
+          },
+          {
+            "rect": {
+              "x": 705,
+              "y": 765.78125,
+              "width": 352,
+              "height": 69.1875
+            },
+            "style": {
+              "fontFamily": "\"Segoe UI Variable Display\", \"Segoe UI\", Arial, sans-serif",
+              "fontSize": "10px",
+              "fontWeight": "400",
+              "lineHeight": "18px",
+              "letterSpacing": "normal",
+              "color": "rgb(172, 185, 183)",
+              "backgroundColor": "rgb(37, 52, 59)",
+              "borderRadius": "8px",
+              "padding": "12px",
+              "gap": "normal"
+            }
+          },
+          {
+            "rect": {
+              "x": 705,
+              "y": 842.96875,
+              "width": 352,
+              "height": 69.1875
+            },
+            "style": {
+              "fontFamily": "\"Segoe UI Variable Display\", \"Segoe UI\", Arial, sans-serif",
+              "fontSize": "10px",
+              "fontWeight": "400",
+              "lineHeight": "18px",
+              "letterSpacing": "normal",
+              "color": "rgb(172, 185, 183)",
+              "backgroundColor": "rgb(37, 52, 59)",
+              "borderRadius": "8px",
+              "padding": "12px",
+              "gap": "normal"
+            }
+          },
+          {
+            "rect": {
+              "x": 705,
+              "y": 920.15625,
+              "width": 352,
+              "height": 69.1875
+            },
+            "style": {
+              "fontFamily": "\"Segoe UI Variable Display\", \"Segoe UI\", Arial, sans-serif",
+              "fontSize": "10px",
+              "fontWeight": "400",
+              "lineHeight": "18px",
+              "letterSpacing": "normal",
+              "color": "rgb(172, 185, 183)",
+              "backgroundColor": "rgb(37, 52, 59)",
+              "borderRadius": "8px",
+              "padding": "12px",
+              "gap": "normal"
+            }
+          },
+          {
+            "rect": {
+              "x": 705,
+              "y": 997.34375,
+              "width": 352,
+              "height": 69.1875
+            },
+            "style": {
+              "fontFamily": "\"Segoe UI Variable Display\", \"Segoe UI\", Arial, sans-serif",
+              "fontSize": "10px",
+              "fontWeight": "400",
+              "lineHeight": "18px",
+              "letterSpacing": "normal",
+              "color": "rgb(172, 185, 183)",
+              "backgroundColor": "rgb(37, 52, 59)",
+              "borderRadius": "8px",
+              "padding": "12px",
+              "gap": "normal"
+            }
+          },
+          {
+            "rect": {
+              "x": 705,
+              "y": 1074.53125,
+              "width": 352,
+              "height": 69.1875
+            },
+            "style": {
+              "fontFamily": "\"Segoe UI Variable Display\", \"Segoe UI\", Arial, sans-serif",
+              "fontSize": "10px",
+              "fontWeight": "400",
+              "lineHeight": "18px",
+              "letterSpacing": "normal",
+              "color": "rgb(172, 185, 183)",
+              "backgroundColor": "rgb(37, 52, 59)",
+              "borderRadius": "8px",
+              "padding": "12px",
+              "gap": "normal"
+            }
+          },
+          {
+            "rect": {
+              "x": 705,
+              "y": 1151.71875,
+              "width": 352,
+              "height": 69.1875
+            },
+            "style": {
+              "fontFamily": "\"Segoe UI Variable Display\", \"Segoe UI\", Arial, sans-serif",
+              "fontSize": "10px",
+              "fontWeight": "400",
+              "lineHeight": "18px",
+              "letterSpacing": "normal",
+              "color": "rgb(172, 185, 183)",
+              "backgroundColor": "rgb(37, 52, 59)",
+              "borderRadius": "8px",
+              "padding": "12px",
+              "gap": "normal"
+            }
+          },
+          {
+            "rect": {
+              "x": 705,
+              "y": 1228.90625,
+              "width": 352,
+              "height": 69.1875
+            },
+            "style": {
+              "fontFamily": "\"Segoe UI Variable Display\", \"Segoe UI\", Arial, sans-serif",
+              "fontSize": "10px",
+              "fontWeight": "400",
+              "lineHeight": "18px",
+              "letterSpacing": "normal",
+              "color": "rgb(172, 185, 183)",
+              "backgroundColor": "rgb(37, 52, 59)",
+              "borderRadius": "8px",
+              "padding": "12px",
+              "gap": "normal"
+            }
+          }
+        ],
+        ".sensor-details summary": [
+          {
+            "rect": {
+              "x": 717,
+              "y": 245.25,
+              "width": 328,
+              "height": 45.1875
+            },
+            "style": {
+              "fontFamily": "\"Segoe UI Variable Display\", \"Segoe UI\", Arial, sans-serif",
+              "fontSize": "12px",
+              "fontWeight": "400",
+              "lineHeight": "19.2px",
+              "letterSpacing": "normal",
+              "color": "rgb(226, 229, 219)",
+              "backgroundColor": "rgba(0, 0, 0, 0)",
+              "borderRadius": "0px",
+              "padding": "13px 0px",
+              "gap": "normal"
+            }
+          },
+          {
+            "rect": {
+              "x": 717,
+              "y": 623.40625,
+              "width": 328,
+              "height": 45.1875
+            },
+            "style": {
+              "fontFamily": "\"Segoe UI Variable Display\", \"Segoe UI\", Arial, sans-serif",
+              "fontSize": "12px",
+              "fontWeight": "400",
+              "lineHeight": "19.2px",
+              "letterSpacing": "normal",
+              "color": "rgb(226, 229, 219)",
+              "backgroundColor": "rgba(0, 0, 0, 0)",
+              "borderRadius": "0px",
+              "padding": "13px 0px",
+              "gap": "normal"
+            }
+          },
+          {
+            "rect": {
+              "x": 717,
+              "y": 700.59375,
+              "width": 328,
+              "height": 45.1875
+            },
+            "style": {
+              "fontFamily": "\"Segoe UI Variable Display\", \"Segoe UI\", Arial, sans-serif",
+              "fontSize": "12px",
+              "fontWeight": "400",
+              "lineHeight": "19.2px",
+              "letterSpacing": "normal",
+              "color": "rgb(226, 229, 219)",
+              "backgroundColor": "rgba(0, 0, 0, 0)",
+              "borderRadius": "0px",
+              "padding": "13px 0px",
+              "gap": "normal"
+            }
+          },
+          {
+            "rect": {
+              "x": 717,
+              "y": 777.78125,
+              "width": 328,
+              "height": 45.1875
+            },
+            "style": {
+              "fontFamily": "\"Segoe UI Variable Display\", \"Segoe UI\", Arial, sans-serif",
+              "fontSize": "12px",
+              "fontWeight": "400",
+              "lineHeight": "19.2px",
+              "letterSpacing": "normal",
+              "color": "rgb(226, 229, 219)",
+              "backgroundColor": "rgba(0, 0, 0, 0)",
+              "borderRadius": "0px",
+              "padding": "13px 0px",
+              "gap": "normal"
+            }
+          },
+          {
+            "rect": {
+              "x": 717,
+              "y": 854.96875,
+              "width": 328,
+              "height": 45.1875
+            },
+            "style": {
+              "fontFamily": "\"Segoe UI Variable Display\", \"Segoe UI\", Arial, sans-serif",
+              "fontSize": "12px",
+              "fontWeight": "400",
+              "lineHeight": "19.2px",
+              "letterSpacing": "normal",
+              "color": "rgb(226, 229, 219)",
+              "backgroundColor": "rgba(0, 0, 0, 0)",
+              "borderRadius": "0px",
+              "padding": "13px 0px",
+              "gap": "normal"
+            }
+          },
+          {
+            "rect": {
+              "x": 717,
+              "y": 932.15625,
+              "width": 328,
+              "height": 45.1875
+            },
+            "style": {
+              "fontFamily": "\"Segoe UI Variable Display\", \"Segoe UI\", Arial, sans-serif",
+              "fontSize": "12px",
+              "fontWeight": "400",
+              "lineHeight": "19.2px",
+              "letterSpacing": "normal",
+              "color": "rgb(226, 229, 219)",
+              "backgroundColor": "rgba(0, 0, 0, 0)",
+              "borderRadius": "0px",
+              "padding": "13px 0px",
+              "gap": "normal"
+            }
+          },
+          {
+            "rect": {
+              "x": 717,
+              "y": 1009.34375,
+              "width": 328,
+              "height": 45.1875
+            },
+            "style": {
+              "fontFamily": "\"Segoe UI Variable Display\", \"Segoe UI\", Arial, sans-serif",
+              "fontSize": "12px",
+              "fontWeight": "400",
+              "lineHeight": "19.2px",
+              "letterSpacing": "normal",
+              "color": "rgb(226, 229, 219)",
+              "backgroundColor": "rgba(0, 0, 0, 0)",
+              "borderRadius": "0px",
+              "padding": "13px 0px",
+              "gap": "normal"
+            }
+          },
+          {
+            "rect": {
+              "x": 717,
+              "y": 1086.53125,
+              "width": 328,
+              "height": 45.1875
+            },
+            "style": {
+              "fontFamily": "\"Segoe UI Variable Display\", \"Segoe UI\", Arial, sans-serif",
+              "fontSize": "12px",
+              "fontWeight": "400",
+              "lineHeight": "19.2px",
+              "letterSpacing": "normal",
+              "color": "rgb(226, 229, 219)",
+              "backgroundColor": "rgba(0, 0, 0, 0)",
+              "borderRadius": "0px",
+              "padding": "13px 0px",
+              "gap": "normal"
+            }
+          },
+          {
+            "rect": {
+              "x": 717,
+              "y": 1163.71875,
+              "width": 328,
+              "height": 45.1875
+            },
+            "style": {
+              "fontFamily": "\"Segoe UI Variable Display\", \"Segoe UI\", Arial, sans-serif",
+              "fontSize": "12px",
+              "fontWeight": "400",
+              "lineHeight": "19.2px",
+              "letterSpacing": "normal",
+              "color": "rgb(226, 229, 219)",
+              "backgroundColor": "rgba(0, 0, 0, 0)",
+              "borderRadius": "0px",
+              "padding": "13px 0px",
+              "gap": "normal"
+            }
+          },
+          {
+            "rect": {
+              "x": 717,
+              "y": 1240.90625,
+              "width": 328,
+              "height": 45.1875
+            },
+            "style": {
+              "fontFamily": "\"Segoe UI Variable Display\", \"Segoe UI\", Arial, sans-serif",
+              "fontSize": "12px",
+              "fontWeight": "400",
+              "lineHeight": "19.2px",
+              "letterSpacing": "normal",
+              "color": "rgb(226, 229, 219)",
+              "backgroundColor": "rgba(0, 0, 0, 0)",
+              "borderRadius": "0px",
+              "padding": "13px 0px",
+              "gap": "normal"
+            }
+          }
+        ],
+        ".sensor-dot": [
+          {
+            "rect": {
+              "x": 729.703125,
+              "y": 264.25,
+              "width": 7,
+              "height": 7
+            },
+            "style": {
+              "fontFamily": "\"Segoe UI Variable Display\", \"Segoe UI\", Arial, sans-serif",
+              "fontSize": "12px",
+              "fontWeight": "400",
+              "lineHeight": "19.2px",
+              "letterSpacing": "normal",
+              "color": "rgb(226, 229, 219)",
+              "backgroundColor": "rgb(155, 197, 177)",
+              "borderRadius": "50%",
+              "padding": "0px",
+              "gap": "normal"
+            }
+          },
+          {
+            "rect": {
+              "x": 729.703125,
+              "y": 642.40625,
+              "width": 7,
+              "height": 7
+            },
+            "style": {
+              "fontFamily": "\"Segoe UI Variable Display\", \"Segoe UI\", Arial, sans-serif",
+              "fontSize": "12px",
+              "fontWeight": "400",
+              "lineHeight": "19.2px",
+              "letterSpacing": "normal",
+              "color": "rgb(226, 229, 219)",
+              "backgroundColor": "rgb(155, 197, 177)",
+              "borderRadius": "50%",
+              "padding": "0px",
+              "gap": "normal"
+            }
+          },
+          {
+            "rect": {
+              "x": 729.703125,
+              "y": 719.59375,
+              "width": 7,
+              "height": 7
+            },
+            "style": {
+              "fontFamily": "\"Segoe UI Variable Display\", \"Segoe UI\", Arial, sans-serif",
+              "fontSize": "12px",
+              "fontWeight": "400",
+              "lineHeight": "19.2px",
+              "letterSpacing": "normal",
+              "color": "rgb(226, 229, 219)",
+              "backgroundColor": "rgb(155, 197, 177)",
+              "borderRadius": "50%",
+              "padding": "0px",
+              "gap": "normal"
+            }
+          },
+          {
+            "rect": {
+              "x": 729.703125,
+              "y": 796.78125,
+              "width": 7,
+              "height": 7
+            },
+            "style": {
+              "fontFamily": "\"Segoe UI Variable Display\", \"Segoe UI\", Arial, sans-serif",
+              "fontSize": "12px",
+              "fontWeight": "400",
+              "lineHeight": "19.2px",
+              "letterSpacing": "normal",
+              "color": "rgb(226, 229, 219)",
+              "backgroundColor": "rgb(155, 197, 177)",
+              "borderRadius": "50%",
+              "padding": "0px",
+              "gap": "normal"
+            }
+          },
+          {
+            "rect": {
+              "x": 729.703125,
+              "y": 873.96875,
+              "width": 7,
+              "height": 7
+            },
+            "style": {
+              "fontFamily": "\"Segoe UI Variable Display\", \"Segoe UI\", Arial, sans-serif",
+              "fontSize": "12px",
+              "fontWeight": "400",
+              "lineHeight": "19.2px",
+              "letterSpacing": "normal",
+              "color": "rgb(226, 229, 219)",
+              "backgroundColor": "rgb(155, 197, 177)",
+              "borderRadius": "50%",
+              "padding": "0px",
+              "gap": "normal"
+            }
+          },
+          {
+            "rect": {
+              "x": 729.703125,
+              "y": 951.15625,
+              "width": 7,
+              "height": 7
+            },
+            "style": {
+              "fontFamily": "\"Segoe UI Variable Display\", \"Segoe UI\", Arial, sans-serif",
+              "fontSize": "12px",
+              "fontWeight": "400",
+              "lineHeight": "19.2px",
+              "letterSpacing": "normal",
+              "color": "rgb(226, 229, 219)",
+              "backgroundColor": "rgb(155, 197, 177)",
+              "borderRadius": "50%",
+              "padding": "0px",
+              "gap": "normal"
+            }
+          },
+          {
+            "rect": {
+              "x": 729.703125,
+              "y": 1028.34375,
+              "width": 7,
+              "height": 7
+            },
+            "style": {
+              "fontFamily": "\"Segoe UI Variable Display\", \"Segoe UI\", Arial, sans-serif",
+              "fontSize": "12px",
+              "fontWeight": "400",
+              "lineHeight": "19.2px",
+              "letterSpacing": "normal",
+              "color": "rgb(226, 229, 219)",
+              "backgroundColor": "rgb(155, 197, 177)",
+              "borderRadius": "50%",
+              "padding": "0px",
+              "gap": "normal"
+            }
+          },
+          {
+            "rect": {
+              "x": 729.703125,
+              "y": 1105.53125,
+              "width": 7,
+              "height": 7
+            },
+            "style": {
+              "fontFamily": "\"Segoe UI Variable Display\", \"Segoe UI\", Arial, sans-serif",
+              "fontSize": "12px",
+              "fontWeight": "400",
+              "lineHeight": "19.2px",
+              "letterSpacing": "normal",
+              "color": "rgb(226, 229, 219)",
+              "backgroundColor": "rgb(155, 197, 177)",
+              "borderRadius": "50%",
+              "padding": "0px",
+              "gap": "normal"
+            }
+          }
+        ]
+      },
+      "platformFonts": {
+        ".brand": [
+          {
+            "familyName": "Liberation Sans",
+            "postScriptName": "LiberationSans-Bold",
+            "isCustomFont": false,
+            "glyphCount": 7
+          }
+        ],
+        ".metric-value": [
+          {
+            "familyName": "Liberation Sans",
+            "postScriptName": "LiberationSans",
+            "isCustomFont": false,
+            "glyphCount": 5
+          }
+        ],
+        ".metric-label": [
+          {
+            "familyName": "Liberation Sans",
+            "postScriptName": "LiberationSans",
+            "isCustomFont": false,
+            "glyphCount": 17
+          }
+        ],
+        ".drawer-head h2": [
+          {
+            "familyName": "Liberation Sans",
+            "postScriptName": "LiberationSans",
+            "isCustomFont": false,
+            "glyphCount": 18
+          }
+        ]
+      },
+      "screenshotSha256": "a3e7252394f50c8d53e5578c90968e9fe1bfcc9b6a6e6279713d0151af47c55e"
+    },
+    "health-night": {
+      "theme": "night",
+      "components": {
+        ".drawer": [
+          {
+            "rect": {
+              "x": 682,
+              "y": 80,
+              "width": 398,
+              "height": 674
+            },
+            "style": {
+              "fontFamily": "\"Segoe UI Variable Display\", \"Segoe UI\", Arial, sans-serif",
+              "fontSize": "16px",
+              "fontWeight": "400",
+              "lineHeight": "normal",
+              "letterSpacing": "normal",
+              "color": "rgb(184, 181, 167)",
+              "backgroundColor": "rgb(12, 17, 21)",
+              "borderRadius": "18px",
+              "padding": "0px",
+              "gap": "normal"
+            }
+          }
+        ],
+        ".drawer-head": [
+          {
+            "rect": {
+              "x": 683,
+              "y": 81,
+              "width": 396,
+              "height": 86.109375
+            },
+            "style": {
+              "fontFamily": "\"Segoe UI Variable Display\", \"Segoe UI\", Arial, sans-serif",
+              "fontSize": "16px",
+              "fontWeight": "400",
+              "lineHeight": "normal",
+              "letterSpacing": "normal",
+              "color": "rgb(184, 181, 167)",
+              "backgroundColor": "rgba(0, 0, 0, 0)",
+              "borderRadius": "0px",
+              "padding": "12px 22px 20px",
+              "gap": "10px 16px"
+            }
+          }
+        ],
+        ".drawer-body": [
+          {
+            "rect": {
+              "x": 683,
+              "y": 167.109375,
+              "width": 396,
+              "height": 585.890625
+            },
+            "style": {
+              "fontFamily": "\"Segoe UI Variable Display\", \"Segoe UI\", Arial, sans-serif",
+              "fontSize": "16px",
+              "fontWeight": "400",
+              "lineHeight": "normal",
+              "letterSpacing": "normal",
+              "color": "rgb(184, 181, 167)",
+              "backgroundColor": "rgba(0, 0, 0, 0)",
+              "borderRadius": "0px",
+              "padding": "20px 22px 24px",
+              "gap": "normal"
+            }
+          }
+        ],
+        ".sensor-details": [
+          {
+            "rect": {
+              "x": 705,
+              "y": 233.25,
+              "width": 352,
+              "height": 69.1875
+            },
+            "style": {
+              "fontFamily": "\"Segoe UI Variable Display\", \"Segoe UI\", Arial, sans-serif",
+              "fontSize": "10px",
+              "fontWeight": "400",
+              "lineHeight": "18px",
+              "letterSpacing": "normal",
+              "color": "rgb(145, 152, 142)",
+              "backgroundColor": "rgb(20, 28, 33)",
+              "borderRadius": "8px",
+              "padding": "12px",
+              "gap": "normal"
+            }
+          },
+          {
+            "rect": {
+              "x": 705,
+              "y": 310.4375,
+              "width": 352,
+              "height": 69.1875
+            },
+            "style": {
+              "fontFamily": "\"Segoe UI Variable Display\", \"Segoe UI\", Arial, sans-serif",
+              "fontSize": "10px",
+              "fontWeight": "400",
+              "lineHeight": "18px",
+              "letterSpacing": "normal",
+              "color": "rgb(145, 152, 142)",
+              "backgroundColor": "rgb(20, 28, 33)",
+              "borderRadius": "8px",
+              "padding": "12px",
+              "gap": "normal"
+            }
+          },
+          {
+            "rect": {
+              "x": 705,
+              "y": 387.625,
+              "width": 352,
+              "height": 69.1875
+            },
+            "style": {
+              "fontFamily": "\"Segoe UI Variable Display\", \"Segoe UI\", Arial, sans-serif",
+              "fontSize": "10px",
+              "fontWeight": "400",
+              "lineHeight": "18px",
+              "letterSpacing": "normal",
+              "color": "rgb(145, 152, 142)",
+              "backgroundColor": "rgb(20, 28, 33)",
+              "borderRadius": "8px",
+              "padding": "12px",
+              "gap": "normal"
+            }
+          },
+          {
+            "rect": {
+              "x": 705,
+              "y": 464.8125,
+              "width": 352,
+              "height": 69.1875
+            },
+            "style": {
+              "fontFamily": "\"Segoe UI Variable Display\", \"Segoe UI\", Arial, sans-serif",
+              "fontSize": "10px",
+              "fontWeight": "400",
+              "lineHeight": "18px",
+              "letterSpacing": "normal",
+              "color": "rgb(145, 152, 142)",
+              "backgroundColor": "rgb(20, 28, 33)",
+              "borderRadius": "8px",
+              "padding": "12px",
+              "gap": "normal"
+            }
+          },
+          {
+            "rect": {
+              "x": 705,
+              "y": 542,
+              "width": 352,
+              "height": 69.1875
+            },
+            "style": {
+              "fontFamily": "\"Segoe UI Variable Display\", \"Segoe UI\", Arial, sans-serif",
+              "fontSize": "10px",
+              "fontWeight": "400",
+              "lineHeight": "18px",
+              "letterSpacing": "normal",
+              "color": "rgb(145, 152, 142)",
+              "backgroundColor": "rgb(20, 28, 33)",
+              "borderRadius": "8px",
+              "padding": "12px",
+              "gap": "normal"
+            }
+          },
+          {
+            "rect": {
+              "x": 705,
+              "y": 619.1875,
+              "width": 352,
+              "height": 69.1875
+            },
+            "style": {
+              "fontFamily": "\"Segoe UI Variable Display\", \"Segoe UI\", Arial, sans-serif",
+              "fontSize": "10px",
+              "fontWeight": "400",
+              "lineHeight": "18px",
+              "letterSpacing": "normal",
+              "color": "rgb(145, 152, 142)",
+              "backgroundColor": "rgb(20, 28, 33)",
+              "borderRadius": "8px",
+              "padding": "12px",
+              "gap": "normal"
+            }
+          },
+          {
+            "rect": {
+              "x": 705,
+              "y": 696.375,
+              "width": 352,
+              "height": 69.1875
+            },
+            "style": {
+              "fontFamily": "\"Segoe UI Variable Display\", \"Segoe UI\", Arial, sans-serif",
+              "fontSize": "10px",
+              "fontWeight": "400",
+              "lineHeight": "18px",
+              "letterSpacing": "normal",
+              "color": "rgb(145, 152, 142)",
+              "backgroundColor": "rgb(20, 28, 33)",
+              "borderRadius": "8px",
+              "padding": "12px",
+              "gap": "normal"
+            }
+          },
+          {
+            "rect": {
+              "x": 705,
+              "y": 773.5625,
+              "width": 352,
+              "height": 69.1875
+            },
+            "style": {
+              "fontFamily": "\"Segoe UI Variable Display\", \"Segoe UI\", Arial, sans-serif",
+              "fontSize": "10px",
+              "fontWeight": "400",
+              "lineHeight": "18px",
+              "letterSpacing": "normal",
+              "color": "rgb(145, 152, 142)",
+              "backgroundColor": "rgb(20, 28, 33)",
+              "borderRadius": "8px",
+              "padding": "12px",
+              "gap": "normal"
+            }
+          },
+          {
+            "rect": {
+              "x": 705,
+              "y": 850.75,
+              "width": 352,
+              "height": 69.1875
+            },
+            "style": {
+              "fontFamily": "\"Segoe UI Variable Display\", \"Segoe UI\", Arial, sans-serif",
+              "fontSize": "10px",
+              "fontWeight": "400",
+              "lineHeight": "18px",
+              "letterSpacing": "normal",
+              "color": "rgb(145, 152, 142)",
+              "backgroundColor": "rgb(20, 28, 33)",
+              "borderRadius": "8px",
+              "padding": "12px",
+              "gap": "normal"
+            }
+          },
+          {
+            "rect": {
+              "x": 705,
+              "y": 927.9375,
+              "width": 352,
+              "height": 69.1875
+            },
+            "style": {
+              "fontFamily": "\"Segoe UI Variable Display\", \"Segoe UI\", Arial, sans-serif",
+              "fontSize": "10px",
+              "fontWeight": "400",
+              "lineHeight": "18px",
+              "letterSpacing": "normal",
+              "color": "rgb(145, 152, 142)",
+              "backgroundColor": "rgb(20, 28, 33)",
+              "borderRadius": "8px",
+              "padding": "12px",
+              "gap": "normal"
+            }
+          }
+        ],
+        ".sensor-details summary": [
+          {
+            "rect": {
+              "x": 717,
+              "y": 245.25,
+              "width": 328,
+              "height": 45.1875
+            },
+            "style": {
+              "fontFamily": "\"Segoe UI Variable Display\", \"Segoe UI\", Arial, sans-serif",
+              "fontSize": "12px",
+              "fontWeight": "400",
+              "lineHeight": "19.2px",
+              "letterSpacing": "normal",
+              "color": "rgb(184, 181, 167)",
+              "backgroundColor": "rgba(0, 0, 0, 0)",
+              "borderRadius": "0px",
+              "padding": "13px 0px",
+              "gap": "normal"
+            }
+          },
+          {
+            "rect": {
+              "x": 717,
+              "y": 322.4375,
+              "width": 328,
+              "height": 45.1875
+            },
+            "style": {
+              "fontFamily": "\"Segoe UI Variable Display\", \"Segoe UI\", Arial, sans-serif",
+              "fontSize": "12px",
+              "fontWeight": "400",
+              "lineHeight": "19.2px",
+              "letterSpacing": "normal",
+              "color": "rgb(184, 181, 167)",
+              "backgroundColor": "rgba(0, 0, 0, 0)",
+              "borderRadius": "0px",
+              "padding": "13px 0px",
+              "gap": "normal"
+            }
+          },
+          {
+            "rect": {
+              "x": 717,
+              "y": 399.625,
+              "width": 328,
+              "height": 45.1875
+            },
+            "style": {
+              "fontFamily": "\"Segoe UI Variable Display\", \"Segoe UI\", Arial, sans-serif",
+              "fontSize": "12px",
+              "fontWeight": "400",
+              "lineHeight": "19.2px",
+              "letterSpacing": "normal",
+              "color": "rgb(184, 181, 167)",
+              "backgroundColor": "rgba(0, 0, 0, 0)",
+              "borderRadius": "0px",
+              "padding": "13px 0px",
+              "gap": "normal"
+            }
+          },
+          {
+            "rect": {
+              "x": 717,
+              "y": 476.8125,
+              "width": 328,
+              "height": 45.1875
+            },
+            "style": {
+              "fontFamily": "\"Segoe UI Variable Display\", \"Segoe UI\", Arial, sans-serif",
+              "fontSize": "12px",
+              "fontWeight": "400",
+              "lineHeight": "19.2px",
+              "letterSpacing": "normal",
+              "color": "rgb(184, 181, 167)",
+              "backgroundColor": "rgba(0, 0, 0, 0)",
+              "borderRadius": "0px",
+              "padding": "13px 0px",
+              "gap": "normal"
+            }
+          },
+          {
+            "rect": {
+              "x": 717,
+              "y": 554,
+              "width": 328,
+              "height": 45.1875
+            },
+            "style": {
+              "fontFamily": "\"Segoe UI Variable Display\", \"Segoe UI\", Arial, sans-serif",
+              "fontSize": "12px",
+              "fontWeight": "400",
+              "lineHeight": "19.2px",
+              "letterSpacing": "normal",
+              "color": "rgb(184, 181, 167)",
+              "backgroundColor": "rgba(0, 0, 0, 0)",
+              "borderRadius": "0px",
+              "padding": "13px 0px",
+              "gap": "normal"
+            }
+          },
+          {
+            "rect": {
+              "x": 717,
+              "y": 631.1875,
+              "width": 328,
+              "height": 45.1875
+            },
+            "style": {
+              "fontFamily": "\"Segoe UI Variable Display\", \"Segoe UI\", Arial, sans-serif",
+              "fontSize": "12px",
+              "fontWeight": "400",
+              "lineHeight": "19.2px",
+              "letterSpacing": "normal",
+              "color": "rgb(184, 181, 167)",
+              "backgroundColor": "rgba(0, 0, 0, 0)",
+              "borderRadius": "0px",
+              "padding": "13px 0px",
+              "gap": "normal"
+            }
+          },
+          {
+            "rect": {
+              "x": 717,
+              "y": 708.375,
+              "width": 328,
+              "height": 45.1875
+            },
+            "style": {
+              "fontFamily": "\"Segoe UI Variable Display\", \"Segoe UI\", Arial, sans-serif",
+              "fontSize": "12px",
+              "fontWeight": "400",
+              "lineHeight": "19.2px",
+              "letterSpacing": "normal",
+              "color": "rgb(184, 181, 167)",
+              "backgroundColor": "rgba(0, 0, 0, 0)",
+              "borderRadius": "0px",
+              "padding": "13px 0px",
+              "gap": "normal"
+            }
+          },
+          {
+            "rect": {
+              "x": 717,
+              "y": 785.5625,
+              "width": 328,
+              "height": 45.1875
+            },
+            "style": {
+              "fontFamily": "\"Segoe UI Variable Display\", \"Segoe UI\", Arial, sans-serif",
+              "fontSize": "12px",
+              "fontWeight": "400",
+              "lineHeight": "19.2px",
+              "letterSpacing": "normal",
+              "color": "rgb(184, 181, 167)",
+              "backgroundColor": "rgba(0, 0, 0, 0)",
+              "borderRadius": "0px",
+              "padding": "13px 0px",
+              "gap": "normal"
+            }
+          },
+          {
+            "rect": {
+              "x": 717,
+              "y": 862.75,
+              "width": 328,
+              "height": 45.1875
+            },
+            "style": {
+              "fontFamily": "\"Segoe UI Variable Display\", \"Segoe UI\", Arial, sans-serif",
+              "fontSize": "12px",
+              "fontWeight": "400",
+              "lineHeight": "19.2px",
+              "letterSpacing": "normal",
+              "color": "rgb(184, 181, 167)",
+              "backgroundColor": "rgba(0, 0, 0, 0)",
+              "borderRadius": "0px",
+              "padding": "13px 0px",
+              "gap": "normal"
+            }
+          },
+          {
+            "rect": {
+              "x": 717,
+              "y": 939.9375,
+              "width": 328,
+              "height": 45.1875
+            },
+            "style": {
+              "fontFamily": "\"Segoe UI Variable Display\", \"Segoe UI\", Arial, sans-serif",
+              "fontSize": "12px",
+              "fontWeight": "400",
+              "lineHeight": "19.2px",
+              "letterSpacing": "normal",
+              "color": "rgb(184, 181, 167)",
+              "backgroundColor": "rgba(0, 0, 0, 0)",
+              "borderRadius": "0px",
+              "padding": "13px 0px",
+              "gap": "normal"
+            }
+          }
+        ],
+        ".sensor-dot": [
+          {
+            "rect": {
+              "x": 729.703125,
+              "y": 264.25,
+              "width": 7,
+              "height": 7
+            },
+            "style": {
+              "fontFamily": "\"Segoe UI Variable Display\", \"Segoe UI\", Arial, sans-serif",
+              "fontSize": "12px",
+              "fontWeight": "400",
+              "lineHeight": "19.2px",
+              "letterSpacing": "normal",
+              "color": "rgb(184, 181, 167)",
+              "backgroundColor": "rgb(133, 169, 149)",
+              "borderRadius": "50%",
+              "padding": "0px",
+              "gap": "normal"
+            }
+          },
+          {
+            "rect": {
+              "x": 729.703125,
+              "y": 341.4375,
+              "width": 7,
+              "height": 7
+            },
+            "style": {
+              "fontFamily": "\"Segoe UI Variable Display\", \"Segoe UI\", Arial, sans-serif",
+              "fontSize": "12px",
+              "fontWeight": "400",
+              "lineHeight": "19.2px",
+              "letterSpacing": "normal",
+              "color": "rgb(184, 181, 167)",
+              "backgroundColor": "rgb(133, 169, 149)",
+              "borderRadius": "50%",
+              "padding": "0px",
+              "gap": "normal"
+            }
+          },
+          {
+            "rect": {
+              "x": 729.703125,
+              "y": 418.625,
+              "width": 7,
+              "height": 7
+            },
+            "style": {
+              "fontFamily": "\"Segoe UI Variable Display\", \"Segoe UI\", Arial, sans-serif",
+              "fontSize": "12px",
+              "fontWeight": "400",
+              "lineHeight": "19.2px",
+              "letterSpacing": "normal",
+              "color": "rgb(184, 181, 167)",
+              "backgroundColor": "rgb(133, 169, 149)",
+              "borderRadius": "50%",
+              "padding": "0px",
+              "gap": "normal"
+            }
+          },
+          {
+            "rect": {
+              "x": 729.703125,
+              "y": 495.8125,
+              "width": 7,
+              "height": 7
+            },
+            "style": {
+              "fontFamily": "\"Segoe UI Variable Display\", \"Segoe UI\", Arial, sans-serif",
+              "fontSize": "12px",
+              "fontWeight": "400",
+              "lineHeight": "19.2px",
+              "letterSpacing": "normal",
+              "color": "rgb(184, 181, 167)",
+              "backgroundColor": "rgb(133, 169, 149)",
+              "borderRadius": "50%",
+              "padding": "0px",
+              "gap": "normal"
+            }
+          },
+          {
+            "rect": {
+              "x": 729.703125,
+              "y": 573,
+              "width": 7,
+              "height": 7
+            },
+            "style": {
+              "fontFamily": "\"Segoe UI Variable Display\", \"Segoe UI\", Arial, sans-serif",
+              "fontSize": "12px",
+              "fontWeight": "400",
+              "lineHeight": "19.2px",
+              "letterSpacing": "normal",
+              "color": "rgb(184, 181, 167)",
+              "backgroundColor": "rgb(133, 169, 149)",
+              "borderRadius": "50%",
+              "padding": "0px",
+              "gap": "normal"
+            }
+          },
+          {
+            "rect": {
+              "x": 729.703125,
+              "y": 650.1875,
+              "width": 7,
+              "height": 7
+            },
+            "style": {
+              "fontFamily": "\"Segoe UI Variable Display\", \"Segoe UI\", Arial, sans-serif",
+              "fontSize": "12px",
+              "fontWeight": "400",
+              "lineHeight": "19.2px",
+              "letterSpacing": "normal",
+              "color": "rgb(184, 181, 167)",
+              "backgroundColor": "rgb(133, 169, 149)",
+              "borderRadius": "50%",
+              "padding": "0px",
+              "gap": "normal"
+            }
+          },
+          {
+            "rect": {
+              "x": 729.703125,
+              "y": 727.375,
+              "width": 7,
+              "height": 7
+            },
+            "style": {
+              "fontFamily": "\"Segoe UI Variable Display\", \"Segoe UI\", Arial, sans-serif",
+              "fontSize": "12px",
+              "fontWeight": "400",
+              "lineHeight": "19.2px",
+              "letterSpacing": "normal",
+              "color": "rgb(184, 181, 167)",
+              "backgroundColor": "rgb(133, 169, 149)",
+              "borderRadius": "50%",
+              "padding": "0px",
+              "gap": "normal"
+            }
+          },
+          {
+            "rect": {
+              "x": 729.703125,
+              "y": 804.5625,
+              "width": 7,
+              "height": 7
+            },
+            "style": {
+              "fontFamily": "\"Segoe UI Variable Display\", \"Segoe UI\", Arial, sans-serif",
+              "fontSize": "12px",
+              "fontWeight": "400",
+              "lineHeight": "19.2px",
+              "letterSpacing": "normal",
+              "color": "rgb(184, 181, 167)",
+              "backgroundColor": "rgb(133, 169, 149)",
+              "borderRadius": "50%",
+              "padding": "0px",
+              "gap": "normal"
+            }
+          }
+        ]
+      },
+      "platformFonts": {
+        ".brand": [
+          {
+            "familyName": "Liberation Sans",
+            "postScriptName": "LiberationSans-Bold",
+            "isCustomFont": false,
+            "glyphCount": 7
+          }
+        ],
+        ".metric-value": [
+          {
+            "familyName": "Liberation Sans",
+            "postScriptName": "LiberationSans",
+            "isCustomFont": false,
+            "glyphCount": 5
+          }
+        ],
+        ".metric-label": [
+          {
+            "familyName": "Liberation Sans",
+            "postScriptName": "LiberationSans",
+            "isCustomFont": false,
+            "glyphCount": 17
+          }
+        ],
+        ".drawer-head h2": [
+          {
+            "familyName": "Liberation Sans",
+            "postScriptName": "LiberationSans",
+            "isCustomFont": false,
+            "glyphCount": 18
+          }
+        ]
+      },
+      "screenshotSha256": "8da37610cef5cbe8123e11c0e6536f128b263f7b430bb6e70ff82a6827a13fc4"
+    },
+    "health-gps-night": {
+      "theme": "night",
+      "components": {
+        ".drawer": [
+          {
+            "rect": {
+              "x": 682,
+              "y": 80,
+              "width": 398,
+              "height": 674
+            },
+            "style": {
+              "fontFamily": "\"Segoe UI Variable Display\", \"Segoe UI\", Arial, sans-serif",
+              "fontSize": "16px",
+              "fontWeight": "400",
+              "lineHeight": "normal",
+              "letterSpacing": "normal",
+              "color": "rgb(184, 181, 167)",
+              "backgroundColor": "rgb(12, 17, 21)",
+              "borderRadius": "18px",
+              "padding": "0px",
+              "gap": "normal"
+            }
+          }
+        ],
+        ".drawer-head": [
+          {
+            "rect": {
+              "x": 683,
+              "y": 81,
+              "width": 396,
+              "height": 86.109375
+            },
+            "style": {
+              "fontFamily": "\"Segoe UI Variable Display\", \"Segoe UI\", Arial, sans-serif",
+              "fontSize": "16px",
+              "fontWeight": "400",
+              "lineHeight": "normal",
+              "letterSpacing": "normal",
+              "color": "rgb(184, 181, 167)",
+              "backgroundColor": "rgba(0, 0, 0, 0)",
+              "borderRadius": "0px",
+              "padding": "12px 22px 20px",
+              "gap": "10px 16px"
+            }
+          }
+        ],
+        ".drawer-body": [
+          {
+            "rect": {
+              "x": 683,
+              "y": 167.109375,
+              "width": 396,
+              "height": 585.890625
+            },
+            "style": {
+              "fontFamily": "\"Segoe UI Variable Display\", \"Segoe UI\", Arial, sans-serif",
+              "fontSize": "16px",
+              "fontWeight": "400",
+              "lineHeight": "normal",
+              "letterSpacing": "normal",
+              "color": "rgb(184, 181, 167)",
+              "backgroundColor": "rgba(0, 0, 0, 0)",
+              "borderRadius": "0px",
+              "padding": "20px 22px 24px",
+              "gap": "normal"
+            }
+          }
+        ],
+        ".sensor-details": [
+          {
+            "rect": {
+              "x": 705,
+              "y": 233.25,
+              "width": 352,
+              "height": 370.15625
+            },
+            "style": {
+              "fontFamily": "\"Segoe UI Variable Display\", \"Segoe UI\", Arial, sans-serif",
+              "fontSize": "10px",
+              "fontWeight": "400",
+              "lineHeight": "18px",
+              "letterSpacing": "normal",
+              "color": "rgb(145, 152, 142)",
+              "backgroundColor": "rgb(20, 28, 33)",
+              "borderRadius": "8px",
+              "padding": "12px",
+              "gap": "normal"
+            }
+          },
+          {
+            "rect": {
+              "x": 705,
+              "y": 611.40625,
+              "width": 352,
+              "height": 69.1875
+            },
+            "style": {
+              "fontFamily": "\"Segoe UI Variable Display\", \"Segoe UI\", Arial, sans-serif",
+              "fontSize": "10px",
+              "fontWeight": "400",
+              "lineHeight": "18px",
+              "letterSpacing": "normal",
+              "color": "rgb(145, 152, 142)",
+              "backgroundColor": "rgb(20, 28, 33)",
+              "borderRadius": "8px",
+              "padding": "12px",
+              "gap": "normal"
+            }
+          },
+          {
+            "rect": {
+              "x": 705,
+              "y": 688.59375,
+              "width": 352,
+              "height": 69.1875
+            },
+            "style": {
+              "fontFamily": "\"Segoe UI Variable Display\", \"Segoe UI\", Arial, sans-serif",
+              "fontSize": "10px",
+              "fontWeight": "400",
+              "lineHeight": "18px",
+              "letterSpacing": "normal",
+              "color": "rgb(145, 152, 142)",
+              "backgroundColor": "rgb(20, 28, 33)",
+              "borderRadius": "8px",
+              "padding": "12px",
+              "gap": "normal"
+            }
+          },
+          {
+            "rect": {
+              "x": 705,
+              "y": 765.78125,
+              "width": 352,
+              "height": 69.1875
+            },
+            "style": {
+              "fontFamily": "\"Segoe UI Variable Display\", \"Segoe UI\", Arial, sans-serif",
+              "fontSize": "10px",
+              "fontWeight": "400",
+              "lineHeight": "18px",
+              "letterSpacing": "normal",
+              "color": "rgb(145, 152, 142)",
+              "backgroundColor": "rgb(20, 28, 33)",
+              "borderRadius": "8px",
+              "padding": "12px",
+              "gap": "normal"
+            }
+          },
+          {
+            "rect": {
+              "x": 705,
+              "y": 842.96875,
+              "width": 352,
+              "height": 69.1875
+            },
+            "style": {
+              "fontFamily": "\"Segoe UI Variable Display\", \"Segoe UI\", Arial, sans-serif",
+              "fontSize": "10px",
+              "fontWeight": "400",
+              "lineHeight": "18px",
+              "letterSpacing": "normal",
+              "color": "rgb(145, 152, 142)",
+              "backgroundColor": "rgb(20, 28, 33)",
+              "borderRadius": "8px",
+              "padding": "12px",
+              "gap": "normal"
+            }
+          },
+          {
+            "rect": {
+              "x": 705,
+              "y": 920.15625,
+              "width": 352,
+              "height": 69.1875
+            },
+            "style": {
+              "fontFamily": "\"Segoe UI Variable Display\", \"Segoe UI\", Arial, sans-serif",
+              "fontSize": "10px",
+              "fontWeight": "400",
+              "lineHeight": "18px",
+              "letterSpacing": "normal",
+              "color": "rgb(145, 152, 142)",
+              "backgroundColor": "rgb(20, 28, 33)",
+              "borderRadius": "8px",
+              "padding": "12px",
+              "gap": "normal"
+            }
+          },
+          {
+            "rect": {
+              "x": 705,
+              "y": 997.34375,
+              "width": 352,
+              "height": 69.1875
+            },
+            "style": {
+              "fontFamily": "\"Segoe UI Variable Display\", \"Segoe UI\", Arial, sans-serif",
+              "fontSize": "10px",
+              "fontWeight": "400",
+              "lineHeight": "18px",
+              "letterSpacing": "normal",
+              "color": "rgb(145, 152, 142)",
+              "backgroundColor": "rgb(20, 28, 33)",
+              "borderRadius": "8px",
+              "padding": "12px",
+              "gap": "normal"
+            }
+          },
+          {
+            "rect": {
+              "x": 705,
+              "y": 1074.53125,
+              "width": 352,
+              "height": 69.1875
+            },
+            "style": {
+              "fontFamily": "\"Segoe UI Variable Display\", \"Segoe UI\", Arial, sans-serif",
+              "fontSize": "10px",
+              "fontWeight": "400",
+              "lineHeight": "18px",
+              "letterSpacing": "normal",
+              "color": "rgb(145, 152, 142)",
+              "backgroundColor": "rgb(20, 28, 33)",
+              "borderRadius": "8px",
+              "padding": "12px",
+              "gap": "normal"
+            }
+          },
+          {
+            "rect": {
+              "x": 705,
+              "y": 1151.71875,
+              "width": 352,
+              "height": 69.1875
+            },
+            "style": {
+              "fontFamily": "\"Segoe UI Variable Display\", \"Segoe UI\", Arial, sans-serif",
+              "fontSize": "10px",
+              "fontWeight": "400",
+              "lineHeight": "18px",
+              "letterSpacing": "normal",
+              "color": "rgb(145, 152, 142)",
+              "backgroundColor": "rgb(20, 28, 33)",
+              "borderRadius": "8px",
+              "padding": "12px",
+              "gap": "normal"
+            }
+          },
+          {
+            "rect": {
+              "x": 705,
+              "y": 1228.90625,
+              "width": 352,
+              "height": 69.1875
+            },
+            "style": {
+              "fontFamily": "\"Segoe UI Variable Display\", \"Segoe UI\", Arial, sans-serif",
+              "fontSize": "10px",
+              "fontWeight": "400",
+              "lineHeight": "18px",
+              "letterSpacing": "normal",
+              "color": "rgb(145, 152, 142)",
+              "backgroundColor": "rgb(20, 28, 33)",
+              "borderRadius": "8px",
+              "padding": "12px",
+              "gap": "normal"
+            }
+          }
+        ],
+        ".sensor-details summary": [
+          {
+            "rect": {
+              "x": 717,
+              "y": 245.25,
+              "width": 328,
+              "height": 45.1875
+            },
+            "style": {
+              "fontFamily": "\"Segoe UI Variable Display\", \"Segoe UI\", Arial, sans-serif",
+              "fontSize": "12px",
+              "fontWeight": "400",
+              "lineHeight": "19.2px",
+              "letterSpacing": "normal",
+              "color": "rgb(184, 181, 167)",
+              "backgroundColor": "rgba(0, 0, 0, 0)",
+              "borderRadius": "0px",
+              "padding": "13px 0px",
+              "gap": "normal"
+            }
+          },
+          {
+            "rect": {
+              "x": 717,
+              "y": 623.40625,
+              "width": 328,
+              "height": 45.1875
+            },
+            "style": {
+              "fontFamily": "\"Segoe UI Variable Display\", \"Segoe UI\", Arial, sans-serif",
+              "fontSize": "12px",
+              "fontWeight": "400",
+              "lineHeight": "19.2px",
+              "letterSpacing": "normal",
+              "color": "rgb(184, 181, 167)",
+              "backgroundColor": "rgba(0, 0, 0, 0)",
+              "borderRadius": "0px",
+              "padding": "13px 0px",
+              "gap": "normal"
+            }
+          },
+          {
+            "rect": {
+              "x": 717,
+              "y": 700.59375,
+              "width": 328,
+              "height": 45.1875
+            },
+            "style": {
+              "fontFamily": "\"Segoe UI Variable Display\", \"Segoe UI\", Arial, sans-serif",
+              "fontSize": "12px",
+              "fontWeight": "400",
+              "lineHeight": "19.2px",
+              "letterSpacing": "normal",
+              "color": "rgb(184, 181, 167)",
+              "backgroundColor": "rgba(0, 0, 0, 0)",
+              "borderRadius": "0px",
+              "padding": "13px 0px",
+              "gap": "normal"
+            }
+          },
+          {
+            "rect": {
+              "x": 717,
+              "y": 777.78125,
+              "width": 328,
+              "height": 45.1875
+            },
+            "style": {
+              "fontFamily": "\"Segoe UI Variable Display\", \"Segoe UI\", Arial, sans-serif",
+              "fontSize": "12px",
+              "fontWeight": "400",
+              "lineHeight": "19.2px",
+              "letterSpacing": "normal",
+              "color": "rgb(184, 181, 167)",
+              "backgroundColor": "rgba(0, 0, 0, 0)",
+              "borderRadius": "0px",
+              "padding": "13px 0px",
+              "gap": "normal"
+            }
+          },
+          {
+            "rect": {
+              "x": 717,
+              "y": 854.96875,
+              "width": 328,
+              "height": 45.1875
+            },
+            "style": {
+              "fontFamily": "\"Segoe UI Variable Display\", \"Segoe UI\", Arial, sans-serif",
+              "fontSize": "12px",
+              "fontWeight": "400",
+              "lineHeight": "19.2px",
+              "letterSpacing": "normal",
+              "color": "rgb(184, 181, 167)",
+              "backgroundColor": "rgba(0, 0, 0, 0)",
+              "borderRadius": "0px",
+              "padding": "13px 0px",
+              "gap": "normal"
+            }
+          },
+          {
+            "rect": {
+              "x": 717,
+              "y": 932.15625,
+              "width": 328,
+              "height": 45.1875
+            },
+            "style": {
+              "fontFamily": "\"Segoe UI Variable Display\", \"Segoe UI\", Arial, sans-serif",
+              "fontSize": "12px",
+              "fontWeight": "400",
+              "lineHeight": "19.2px",
+              "letterSpacing": "normal",
+              "color": "rgb(184, 181, 167)",
+              "backgroundColor": "rgba(0, 0, 0, 0)",
+              "borderRadius": "0px",
+              "padding": "13px 0px",
+              "gap": "normal"
+            }
+          },
+          {
+            "rect": {
+              "x": 717,
+              "y": 1009.34375,
+              "width": 328,
+              "height": 45.1875
+            },
+            "style": {
+              "fontFamily": "\"Segoe UI Variable Display\", \"Segoe UI\", Arial, sans-serif",
+              "fontSize": "12px",
+              "fontWeight": "400",
+              "lineHeight": "19.2px",
+              "letterSpacing": "normal",
+              "color": "rgb(184, 181, 167)",
+              "backgroundColor": "rgba(0, 0, 0, 0)",
+              "borderRadius": "0px",
+              "padding": "13px 0px",
+              "gap": "normal"
+            }
+          },
+          {
+            "rect": {
+              "x": 717,
+              "y": 1086.53125,
+              "width": 328,
+              "height": 45.1875
+            },
+            "style": {
+              "fontFamily": "\"Segoe UI Variable Display\", \"Segoe UI\", Arial, sans-serif",
+              "fontSize": "12px",
+              "fontWeight": "400",
+              "lineHeight": "19.2px",
+              "letterSpacing": "normal",
+              "color": "rgb(184, 181, 167)",
+              "backgroundColor": "rgba(0, 0, 0, 0)",
+              "borderRadius": "0px",
+              "padding": "13px 0px",
+              "gap": "normal"
+            }
+          },
+          {
+            "rect": {
+              "x": 717,
+              "y": 1163.71875,
+              "width": 328,
+              "height": 45.1875
+            },
+            "style": {
+              "fontFamily": "\"Segoe UI Variable Display\", \"Segoe UI\", Arial, sans-serif",
+              "fontSize": "12px",
+              "fontWeight": "400",
+              "lineHeight": "19.2px",
+              "letterSpacing": "normal",
+              "color": "rgb(184, 181, 167)",
+              "backgroundColor": "rgba(0, 0, 0, 0)",
+              "borderRadius": "0px",
+              "padding": "13px 0px",
+              "gap": "normal"
+            }
+          },
+          {
+            "rect": {
+              "x": 717,
+              "y": 1240.90625,
+              "width": 328,
+              "height": 45.1875
+            },
+            "style": {
+              "fontFamily": "\"Segoe UI Variable Display\", \"Segoe UI\", Arial, sans-serif",
+              "fontSize": "12px",
+              "fontWeight": "400",
+              "lineHeight": "19.2px",
+              "letterSpacing": "normal",
+              "color": "rgb(184, 181, 167)",
+              "backgroundColor": "rgba(0, 0, 0, 0)",
+              "borderRadius": "0px",
+              "padding": "13px 0px",
+              "gap": "normal"
+            }
+          }
+        ],
+        ".sensor-dot": [
+          {
+            "rect": {
+              "x": 729.703125,
+              "y": 264.25,
+              "width": 7,
+              "height": 7
+            },
+            "style": {
+              "fontFamily": "\"Segoe UI Variable Display\", \"Segoe UI\", Arial, sans-serif",
+              "fontSize": "12px",
+              "fontWeight": "400",
+              "lineHeight": "19.2px",
+              "letterSpacing": "normal",
+              "color": "rgb(184, 181, 167)",
+              "backgroundColor": "rgb(133, 169, 149)",
+              "borderRadius": "50%",
+              "padding": "0px",
+              "gap": "normal"
+            }
+          },
+          {
+            "rect": {
+              "x": 729.703125,
+              "y": 642.40625,
+              "width": 7,
+              "height": 7
+            },
+            "style": {
+              "fontFamily": "\"Segoe UI Variable Display\", \"Segoe UI\", Arial, sans-serif",
+              "fontSize": "12px",
+              "fontWeight": "400",
+              "lineHeight": "19.2px",
+              "letterSpacing": "normal",
+              "color": "rgb(184, 181, 167)",
+              "backgroundColor": "rgb(133, 169, 149)",
+              "borderRadius": "50%",
+              "padding": "0px",
+              "gap": "normal"
+            }
+          },
+          {
+            "rect": {
+              "x": 729.703125,
+              "y": 719.59375,
+              "width": 7,
+              "height": 7
+            },
+            "style": {
+              "fontFamily": "\"Segoe UI Variable Display\", \"Segoe UI\", Arial, sans-serif",
+              "fontSize": "12px",
+              "fontWeight": "400",
+              "lineHeight": "19.2px",
+              "letterSpacing": "normal",
+              "color": "rgb(184, 181, 167)",
+              "backgroundColor": "rgb(133, 169, 149)",
+              "borderRadius": "50%",
+              "padding": "0px",
+              "gap": "normal"
+            }
+          },
+          {
+            "rect": {
+              "x": 729.703125,
+              "y": 796.78125,
+              "width": 7,
+              "height": 7
+            },
+            "style": {
+              "fontFamily": "\"Segoe UI Variable Display\", \"Segoe UI\", Arial, sans-serif",
+              "fontSize": "12px",
+              "fontWeight": "400",
+              "lineHeight": "19.2px",
+              "letterSpacing": "normal",
+              "color": "rgb(184, 181, 167)",
+              "backgroundColor": "rgb(133, 169, 149)",
+              "borderRadius": "50%",
+              "padding": "0px",
+              "gap": "normal"
+            }
+          },
+          {
+            "rect": {
+              "x": 729.703125,
+              "y": 873.96875,
+              "width": 7,
+              "height": 7
+            },
+            "style": {
+              "fontFamily": "\"Segoe UI Variable Display\", \"Segoe UI\", Arial, sans-serif",
+              "fontSize": "12px",
+              "fontWeight": "400",
+              "lineHeight": "19.2px",
+              "letterSpacing": "normal",
+              "color": "rgb(184, 181, 167)",
+              "backgroundColor": "rgb(133, 169, 149)",
+              "borderRadius": "50%",
+              "padding": "0px",
+              "gap": "normal"
+            }
+          },
+          {
+            "rect": {
+              "x": 729.703125,
+              "y": 951.15625,
+              "width": 7,
+              "height": 7
+            },
+            "style": {
+              "fontFamily": "\"Segoe UI Variable Display\", \"Segoe UI\", Arial, sans-serif",
+              "fontSize": "12px",
+              "fontWeight": "400",
+              "lineHeight": "19.2px",
+              "letterSpacing": "normal",
+              "color": "rgb(184, 181, 167)",
+              "backgroundColor": "rgb(133, 169, 149)",
+              "borderRadius": "50%",
+              "padding": "0px",
+              "gap": "normal"
+            }
+          },
+          {
+            "rect": {
+              "x": 729.703125,
+              "y": 1028.34375,
+              "width": 7,
+              "height": 7
+            },
+            "style": {
+              "fontFamily": "\"Segoe UI Variable Display\", \"Segoe UI\", Arial, sans-serif",
+              "fontSize": "12px",
+              "fontWeight": "400",
+              "lineHeight": "19.2px",
+              "letterSpacing": "normal",
+              "color": "rgb(184, 181, 167)",
+              "backgroundColor": "rgb(133, 169, 149)",
+              "borderRadius": "50%",
+              "padding": "0px",
+              "gap": "normal"
+            }
+          },
+          {
+            "rect": {
+              "x": 729.703125,
+              "y": 1105.53125,
+              "width": 7,
+              "height": 7
+            },
+            "style": {
+              "fontFamily": "\"Segoe UI Variable Display\", \"Segoe UI\", Arial, sans-serif",
+              "fontSize": "12px",
+              "fontWeight": "400",
+              "lineHeight": "19.2px",
+              "letterSpacing": "normal",
+              "color": "rgb(184, 181, 167)",
+              "backgroundColor": "rgb(133, 169, 149)",
+              "borderRadius": "50%",
+              "padding": "0px",
+              "gap": "normal"
+            }
+          }
+        ]
+      },
+      "platformFonts": {
+        ".brand": [
+          {
+            "familyName": "Liberation Sans",
+            "postScriptName": "LiberationSans-Bold",
+            "isCustomFont": false,
+            "glyphCount": 7
+          }
+        ],
+        ".metric-value": [
+          {
+            "familyName": "Liberation Sans",
+            "postScriptName": "LiberationSans",
+            "isCustomFont": false,
+            "glyphCount": 5
+          }
+        ],
+        ".metric-label": [
+          {
+            "familyName": "Liberation Sans",
+            "postScriptName": "LiberationSans",
+            "isCustomFont": false,
+            "glyphCount": 17
+          }
+        ],
+        ".drawer-head h2": [
+          {
+            "familyName": "Liberation Sans",
+            "postScriptName": "LiberationSans",
+            "isCustomFont": false,
+            "glyphCount": 18
+          }
+        ]
+      },
+      "screenshotSha256": "019a9b5097f2d5fe24e2c66e191ed9f6975421de972ee6c62700f07bd1aa0c5b"
+    }
+  },
+  "browser": "145.0.7632.6",
+  "measurementScope": "Only Source Health disclosure and containing-sheet selectors; complete immutable-HTML render retained in CI evidence"
+}

@@ -21,7 +21,11 @@
   "result": "passed; native screenshots require review",
   "integratedFixtureTests": 132,
   "productionBuild": "passed",
-  "productionTests": "pending after interaction processes close",
+  "productionTests": {
+    "passed": 132,
+    "failed": 0,
+    "seconds": 20.71
+  },
   "nativeWindows": "pending",
   "boat": "not deployed",
   "sources": {
@@ -30,5 +34,21 @@
     "src/ui/Shell.h": "77b8bd27c0960cf4e8ef1dddbe218e96eab27d35390f9aa335418fd7e57e5038",
     "src/integration/OpenCPNIntegration.cpp": "b523c8e11cd4495d7ed2b292eb39399917c282fe26184036b3a332a944c6b830",
     "src/integration/OpenCPNIntegration.h": "726a6731bc68801a8faa7f9bdbe7d973920b01c4b270c97b57f1f13ec6289ff3"
-  }
+  },
+  "verifiedLocalCommit": "8bcb7a76b7e8f6f3b5704ee4fb32c0b90660b04f",
+  "publishedEquivalentCommit": "60a9e8bd8dc0d23294ee5ed47a5af782fc763023",
+  "aisComponent": {
+    "checks": 151,
+    "captures": 12,
+    "result": "passed"
+  },
+  "preview": {
+    "checks": 8,
+    "captures": 44,
+    "result": "passed without extra X11 focus helpers"
+  },
+  "replacementRuns": [
+    "https://github.com/ThereptileII/Work/actions/runs/36532671500",
+    "https://github.com/ThereptileII/Work/actions/runs/36532672143"
+  ]
 }

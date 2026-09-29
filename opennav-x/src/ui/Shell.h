@@ -12,6 +12,7 @@
 #include "ui/AnchorDrawer.h"
 #include "ui/PilotDrawer.h"
 #include "ui/AlertDrawer.h"
+#include "ui/HealthDrawer.h"
 #include "integration/BuildFeatures.h"
 #if XNAV_ENABLE_TEST_FIXTURES
 #include "vessel/DemoSource.h"
@@ -96,6 +97,7 @@ public:
   std::vector<ProductGeometry> ProductRegions() const { return product_ && product_->IsShown() ? product_->RegionGeometry() : std::vector<ProductGeometry>{}; }
   std::vector<ProductGeometry> RailRegions() const;
   std::optional<wxRect> DrawerRegion() const {
+    if (health_drawer_ && health_drawer_->IsShown()) return health_drawer_->GetScreenRect();
     if (alert_drawer_ && alert_drawer_->IsShown()) return alert_drawer_->GetScreenRect();
     if (pilot_drawer_ && pilot_drawer_->IsShown()) return pilot_drawer_->GetScreenRect();
     if (anchor_drawer_ && anchor_drawer_->IsShown()) return anchor_drawer_->GetScreenRect();
@@ -144,6 +146,7 @@ private:
   void ShowAnchor();
   void ShowPilot();
   void ShowAlerts();
+  void ShowHealth();
   wxRect DrawerWorkspace() const;
   void OnCommand(wxCommandEvent &event);
   void StartDemo();
@@ -160,6 +163,7 @@ private:
   XNavAnchorDrawer *anchor_drawer_ = nullptr;
   XNavPilotDrawer *pilot_drawer_ = nullptr;
   XNavAlertDrawer *alert_drawer_ = nullptr;
+  XNavHealthDrawer *health_drawer_ = nullptr;
   PilotDrawerActions pilot_actions_;
   application::AlertCenter alerts_;
   wxPanel *alert_pane_ = nullptr;
@@ -215,7 +219,8 @@ private:
   bool caption_themed_ = false;
   std::vector<std::string> rail_keys_;
   std::vector<std::pair<std::string, XNavDataValue *>> rail_values_;
-  wxStaticText *clock_, *source_, *route_summary_;
+  wxStaticText *clock_, *route_summary_;
+  XNavButton *source_;
 };
 
 } // namespace opennav::ui

@@ -32,6 +32,7 @@ STATES = {
     "display": ['.nav-btn[data-panel="settings"]', '[data-settings-tab="Display"]'],
     "system": ['.nav-btn[data-panel="settings"]', '[data-settings-tab="System"]'],
     "health": ['.health-button'],
+    "health-gps": ['.health-button', '.sensor-details summary'],
     "alerts": ['.alert-button'],
     "layers": ['.map-top-controls [data-panel="layers"]'],
     "rail": ['.rail-title button'],
@@ -69,7 +70,8 @@ SELECTORS = [".topbar", ".sidebar", "#workspace", "#chartView", ".data-rail",
              ".radar-scope", ".radar-crosshair", ".radar-north", ".radar-scope-caption",
              ".radar-scope-caption b", ".radar-scope-caption span", ".radar-legend",
              ".radar-control-panel", ".radar-mode-label", ".range-field", ".range-field input",
-             ".radar-layout .row", ".radar-layout .field", ".radar-layout select"]
+             ".radar-layout .row", ".radar-layout .field", ".radar-layout select",
+             ".health-button", ".sensor-details", ".sensor-details summary", ".sensor-dot"]
 
 MEASURE = """selectors => {
  const app = document.querySelector('#app');

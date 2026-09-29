@@ -90,12 +90,17 @@ class XNavButton : public wxControl {
   void SetInlineIcon(bool value = true) { inline_icon_ = value; Refresh(); }
   void SetCompassRotation(double radians) { if (compass_rotation_ != radians) { compass_rotation_ = radians; Refresh(); } }
   void SetSummary(const wxString &value, const wxString &detail);
+  // Prototype sensor-details summary. Input semantics remain those of a button.
+  void SetDisclosure(const wxString &status, std::uint32_t color, bool expanded);
   void SetSettingsTab(bool value = true) { settings_tab_ = value; Refresh(); }
   void SetVesselProfile() { vessel_profile_ = true; Refresh(); }
   // Prototype 42x25 toggle inside its extended 48x49 touch target. State is
   // supplied by the owner; activation never optimistically changes it.
   void SetToggle() { toggle_ = true; SetMinSize(FromDIP(wxSize(48,49))); Refresh(); }
   void SetTextSize(int value) { if(value>=9&&value<=24) { text_size_=value; Refresh(); } }
+  void SetTextColor(std::uint32_t value) {
+    if (text_color_ != value) { text_color_ = value; Refresh(false); }
+  }
   void SetSuiteLink(const wxString &detail, XNavIcon icon) {
     suite_link_ = true; suite_detail_ = detail; icon_ = icon; Refresh();
   }
@@ -107,6 +112,9 @@ class XNavButton : public wxControl {
   wxString hint_;
   wxString summary_value_, summary_detail_;
   bool summary_ = false;
+  bool disclosure_ = false, disclosure_expanded_ = false;
+  wxString disclosure_status_;
+  std::uint32_t disclosure_color_ = 0;
   bool pressed_ = false;
   bool keyboard_focus_ = false;
   bool selected_ = false;
@@ -115,6 +123,7 @@ class XNavButton : public wxControl {
   bool settings_tab_ = false, suite_link_ = false, vessel_profile_ = false;
   bool toggle_ = false;
   int text_size_ = 12;
+  std::optional<std::uint32_t> text_color_;
   wxString suite_detail_;
   double compass_rotation_ = 0;
   ButtonRole role_ = ButtonRole::Normal;

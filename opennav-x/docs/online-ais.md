@@ -133,8 +133,10 @@ successful Save without enablement, empty replacement input, failed storage,
 Escape, cancelled removal and confirmed removal. It never loads a real key or
 connects to the service. Native Windows credential adapter tests separately use
 only a unique test namespace. The initial Linux UI run caught Escape navigating
-behind a modal; drawers now defer to an open modal. The final corrected Linux run passes 151
-checks with twelve captures; exact native Windows validation remains pending.
+behind a modal; drawers now defer to an open modal. The corrected Linux and native Windows runs each pass 151 checks with twelve
+captures, including Day/Night entry. Native evidence is retained at `28b5e9c`
+and `d8316d8`; broader replacement qualification and boat UI review remain
+open. See [native own-key evidence](evidence/ais-own-key-native-28b5e9c.json).
 
 Chart overlay/hit testing is implemented below; full native product regressions
 and live chart/boat UI gates remain open. On September 29 the user's authorized

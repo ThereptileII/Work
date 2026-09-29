@@ -1,0 +1,102 @@
+{
+  "scope": "Native development evidence; fixture DPI failure remains a qualification blocker",
+  "commit": "60a9e8bd8dc0d23294ee5ed47a5af782fc763023",
+  "run": "https://github.com/ThereptileII/Work/actions/runs/36532671500",
+  "jobs": {
+    "passed": 7,
+    "failed": 1
+  },
+  "nativeProductTests": 124,
+  "nativeProductionExecutableSha256": "e7b5879d93269eaed878312e442b727cf09e5cae92395a74527cc0050d67f479",
+  "ownKeyChecks": 151,
+  "ownKeyCaptures": 12,
+  "nativeProtectedImportChecks": 17,
+  "primaryCaptures": 29,
+  "additionalOnlineAisCaptures": 4,
+  "productionDpiProbes": [
+    100,
+    125,
+    150
+  ],
+  "productionChartChecks": "software ENC XNav/Standard and Day/Dusk/Night; separate feet/meters/fathoms checks pass",
+  "fixtureChecks": {
+    "chartGestures": "passed",
+    "sharedProfileModes": "passed",
+    "previewGroups": 8,
+    "previewCaptures": 44,
+    "dpi": "failed at 100%: Preferences jumped after its lower action became visible"
+  },
+  "fixtureFailureAnalysis": "Failure evidence has only the final endpoint. The replacement pairs each actual HWND rectangle with a later diagnostic tick before retaining the unchanged stability assertion. This does not establish whether the original failure was an actual scroll movement or an older diagnostic observation; native replacement evidence is required.",
+  "replacementHarnessChecks": 10,
+  "verifiedArtifacts": [
+    {
+      "id": 11017965312,
+      "name": "prototype-reference-Windows-60a9e8bd8dc0d23294ee5ed47a5af782fc763023",
+      "sha256": "1a677e0f9a333a7d4a7ac864a0335b18a4b56820e37d843ae057fd904cc41b18",
+      "bytes": 18803153,
+      "zipCrc": true
+    },
+    {
+      "id": 11017686163,
+      "name": "prototype-ais-foundation-Linux-60a9e8bd8dc0d23294ee5ed47a5af782fc763023",
+      "sha256": "a2978ae9942b0b0ac85a4fd34a2ccc3573713c75db705e9a5a037e92d1ab7e75",
+      "bytes": 686,
+      "zipCrc": true
+    },
+    {
+      "id": 11017203364,
+      "name": "prototype-ais-read-only-probe-60a9e8bd8dc0d23294ee5ed47a5af782fc763023",
+      "sha256": "db2ebffb9046aa982993e1cae5ad96c7b026ae506f150c8e4691259954a644a1",
+      "bytes": 135698520,
+      "zipCrc": true
+    },
+    {
+      "id": 11017071496,
+      "name": "prototype-ais-network-Linux-60a9e8bd8dc0d23294ee5ed47a5af782fc763023",
+      "sha256": "3492303ffa280ae0387cacff59a5c9f0a748071886e0fe308ec80c56a6c42a81",
+      "bytes": 935,
+      "zipCrc": true
+    },
+    {
+      "id": 11017018523,
+      "name": "prototype-native-Windows-60a9e8bd8dc0d23294ee5ed47a5af782fc763023",
+      "sha256": "ffdcc56ec10e9f24880108d80e119913d7ee08b0fdfeb06de5636562ba1074c7",
+      "bytes": 42787453,
+      "zipCrc": true
+    },
+    {
+      "id": 11016826798,
+      "name": "prototype-review-guard-Windows-60a9e8bd8dc0d23294ee5ed47a5af782fc763023",
+      "sha256": "4aa1e732a133834f30bbbb369fa2b2285002b010ef4b338c6e5a9cac0975fe2d",
+      "bytes": 9667,
+      "zipCrc": true
+    },
+    {
+      "id": 11016769855,
+      "name": "prototype-ais-foundation-Windows-60a9e8bd8dc0d23294ee5ed47a5af782fc763023",
+      "sha256": "d512a22274fb8c6fae79029a1c7db6eada08fc06eddbad6ebbba851356803784",
+      "bytes": 691,
+      "zipCrc": true
+    },
+    {
+      "id": 11016759933,
+      "name": "prototype-reference-Linux-60a9e8bd8dc0d23294ee5ed47a5af782fc763023",
+      "sha256": "92f6a55432ca53d556c472152141713ed50e93b18bab8ef9024e0a099848c3e6",
+      "bytes": 20858820,
+      "zipCrc": true
+    },
+    {
+      "id": 11017993159,
+      "name": "prototype-object-flow-Windows-60a9e8bd8dc0d23294ee5ed47a5af782fc763023",
+      "sha256": "f365732667c29910fd86203514d0e144750a58eb8dd10fa365ff9a20c13e5273",
+      "bytes": 14076759,
+      "zipCrc": true
+    }
+  ],
+  "fullQualification": {
+    "run": "https://github.com/ThereptileII/Work/actions/runs/36532672143",
+    "status": "still running when this record was created; not accepted"
+  },
+  "visualConformance": "Not accepted; boat review still pending",
+  "deployment": "withheld"
+}

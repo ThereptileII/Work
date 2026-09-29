@@ -12,6 +12,7 @@ public:
               const application::OnlineAisState &online, vessel::Time now,
               LightMode light);
   void List();
+  void ShowSettings() { view_ = View::Settings; message_.clear(); Build(); }
   void Target(int mmsi);
   std::string PageTitle() const;
   std::function<void(int)> on_select;

@@ -14,6 +14,7 @@ in [prototype conformance](prototype-conformance.md).
 | `.dashboard-card`, `.floating` | `XNavPainter` / card component | Distinct panel vs chart-floating surface, correct radius/shadow |
 | `.drawer`, `.drawer-head`, `.drawer-body` | `XNavDrawer` / AIS, Passage and Settings drawers | 398px AIS/Passage; 432px Preferences, 410px at <=1100 logical width; current shell workspace, bounded body scroll, one contextual return; remaining sheets pending |
 | `.metric`, `.metric-value` | `XNavDataValue` / `XNavDataRail` | Four values, light 48px numbers; actual provenance/freshness |
+| `.sensor-details`, `.sensor-details summary` | `XNavHealthDrawer` / `XNavButton::SetDisclosure` | Independent signal disclosures; exact collapsed rows, owned quality/provenance, separate onboard and online AIS |
 | `.status-dot`, `.tag` | Status indicator | Meaningful state color and text; no inferred connectivity |
 | `.toggle`, `.segment` | Native toggle / segmented control | Explicit selected state, keyboard input, unavailable semantics |
 | `.list-card`, `.suite-link`, `.row` | `XNavListView` / remaining list migrations | AIS list paints visible rows only, identity-bound selection; shared alignment and separation |

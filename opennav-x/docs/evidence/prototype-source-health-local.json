@@ -1,0 +1,116 @@
+{
+  "scope": "Linux development; native Windows, real chart and boat conformance not accepted",
+  "baseCommit": "25316ec2d855e3878a9273b51a6187b7d6a26d96",
+  "productionTests": {
+    "passed": 133,
+    "seconds": 20.66
+  },
+  "fixtureTests": {
+    "passed": 133,
+    "seconds": 21.61
+  },
+  "healthComponent": {
+    "path": "evidence/local/prototype/source-health-component-corrected",
+    "reportSha256": "acd5f4a371f2af5bbc5f6951f4f9498b377300945eeb87e1e4097bebcb6db141",
+    "executableSha256": "919b2643bad2d8b3a142755389780717a74de2396a010330a903a24bfe10f0f3",
+    "images": {
+      "health-day.png": "88cdcf1a259a5a3a27f380a8d3b11a7469c55d14f4368329f6ee5a138d2822c7",
+      "health-dusk.png": "afdf04649dcca9e4ec712cf2a4894a23179db86a7f7a74eb398b98008d4442db",
+      "health-gps-day.png": "5ff48dfd1a4680eac6a01ba1bc1164825971fc37b6771551d5cafa630a273d7c",
+      "health-night.png": "78bd385959fbb3b5c616cf805d59484880d9a3509439f5a88df655ea9391f60a",
+      "health-replay-day.png": "bf1738042c518aed5a2d683465f3d6848b36812569ec0965f7db49e94bc7dc37",
+      "health-stale-day.png": "b64ca4cc0d95aa3621fdcc3e3aeee27ca9bc81841aca7b8688e3ea14d9336a3f"
+    },
+    "result": true,
+    "checks": 49
+  },
+  "firstProduct": {
+    "path": "evidence/local/prototype/source-health-product-first",
+    "reportSha256": "22fc6167f38baf1d6c015118c2b90aa29f60cf597e2bc00423dc7d6839c2db26",
+    "executableSha256": "8293579576b38014beaae083b97d15e00436f386f83f6699e434df8e3786f05b",
+    "images": {
+      "health-day.png": "cbbe9255a7290288cffc92804c410fce3bfecc0896a8eeb5d1f270b6c5b2de77",
+      "health-dusk.png": "d57ce31699ae1aaf90806855b9eb36093a0bbb92abe887ed3b26fb80d3057655",
+      "health-gps-day.png": "c254874cf786b0efd42ee3c40a13941f05f8300ee40bdf1a4c154b6f534f6e35",
+      "health-night.png": "9c06fac3a3ac9ff08f0b3132c604c52eb28be4fbb88d72ef8a6de595fc725401",
+      "navigation-day.png": "5ccc8444d339e497bc393e8f34f1f13a836df9a1d967eeca3adb7bffacf0daea",
+      "navigation-dusk.png": "e6a6aae280e2d44af88f8cf2acd1cad7a5290ce04555833f41a10dc5e7e6aa39",
+      "navigation-night.png": "c0d72a53c087e0cc18cce04e6886b0fded2f686d6b306f8a29bf93691ca1c5cb"
+    },
+    "result": "captured; conformance not asserted",
+    "checks": null
+  },
+  "correctedProduct": {
+    "path": "evidence/local/prototype/source-health-product-corrected",
+    "reportSha256": "45a51a1ac5edc2c0e496a4052392dc9bbe5dee833a24375d053923114b54eb01",
+    "executableSha256": "8293579576b38014beaae083b97d15e00436f386f83f6699e434df8e3786f05b",
+    "images": {
+      "health-day.png": "52b276f311b1c3083d7a29c61bd535de9c7c8a0f84ab7f4df2172674c9fcfb9f",
+      "health-dusk.png": "16ba547a6e123ebcd57e7a89bba9a09ea6cd1b59b7741d6524ef86e8de176585",
+      "health-gps-day.png": "9400b99ceb2fda9456dfc531158d6f109c6796485479fb60734be7790f7638f3",
+      "health-night.png": "c5f7ab9d3b3d91311918b1e1d7598285f5d946707d0ea5c015416e6664043503",
+      "navigation-day.png": "ad4bd7e7afe91ee0232feff2a810171f6bff3cd75112f4cf514badb82cb57831",
+      "navigation-dusk.png": "be80e541256a90c5f86fec5782192e69ab1af8632f2970c1beff7f6b43756c75",
+      "navigation-night.png": "e2320e6f04c0a59118cd9e40e3c2ba9dce5655b28731e4228935ba2c36cad060"
+    },
+    "result": "captured; conformance not asserted",
+    "checks": null
+  },
+  "reference": {
+    "htmlSha256": "b04573b920b6bccd16afd22f54a909e48afcfd502ce9cd7c69fdf5b6dd895447",
+    "newStates": [
+      "health-gps-day",
+      "health-gps-dusk",
+      "health-gps-night"
+    ],
+    "unchangedOriginals": 113
+  },
+  "negativeFirstAttempt": "Component test attempted an ordinary enabled click after historical disable. Corrected it to deliberately inject the queued event being tested; retained the normal enabled-input assertion. First row layout also failed to apply cumulative fractional heights until parent layout; replacement verifies independent canonical positions.",
+  "comparisons": [
+    "evidence/local/prototype/source-health-comparison-first",
+    "evidence/local/prototype/source-health-comparison-corrected"
+  ],
+  "knownVisualLimits": [
+    "Linux font fallback does not qualify Windows typography",
+    "Actual vessel data and OpenCPN coastline differ from illustrative HTML content",
+    "No physical boat review or overall visual PASS"
+  ],
+  "workingSourceSha256": {
+    "CMakeLists.txt": "e7c6fe4d2a10946e220f1a54deb9bfdd16c2b43b0a462ba1e9ba101cd8d8c1f0",
+    "src/integration/OpenCPN.cmake": "d21ca77fc128513438d18ea2603250aef2fb51649aeddbebb51604d3405e827b",
+    "src/ui/AisDrawer.h": "1e428d0b4e3fcf166bbed4bb9f897db0ce1cb0dac17deb654b929c6f620f4c07",
+    "src/ui/Controls.cpp": "6c236a19fad9619fef35d3f4e0f107569018903401c09021ab0986dc35d51c1a",
+    "src/ui/Controls.h": "0833caad5f4b0fa9c737df33e16bfa567dfb46b503efa7455ed67716f6d34d05",
+    "src/ui/ProductPanel.cpp": "f5e49835d615230da9ddb093bffc4f157f0de56e9f1a2462476952a1a68e9346",
+    "src/ui/ProductPanel.h": "e0f45b00d5101b35b3ad7a12fd5ce643c481f9443d131af5431ccb4e71d08937",
+    "src/ui/ProductSettings.cpp": "b162f9bba03b70ffe8bccc7d5a00cdb7251a2ac4e68be13788488683b2bb7abb",
+    "src/ui/PrototypeGeometry.h": "cf41e3b281a89de4f0c4c9161fae3c07a4f98efbe4d46059516643c32b5411de",
+    "src/ui/SettingsDrawer.cpp": "88d58ad98133e4f4e6a0833637b4b4feefa2629e725a10ca7ea4e41d1f651980",
+    "src/ui/Shell.cpp": "b5d1be532c5a32b4fec999b0943d33afe8eb1b310679096cccf2ba7dd20284a4",
+    "src/ui/Shell.h": "bb691cbdee4f3e7b98d44594bf95db5e338bb3a7157e7ba2e4254da25292d918",
+    "tools/boat/ReviewWindowNative.cs": "e167e9d6551ca90c63f9edef48c26c7f117dbaf9a37f6e6b81437c7b59f1a471",
+    "tools/boat/test-review-window.ps1": "7cd26a8c27b1d890bdcbd9fee4a2b90c67b620a35198bf1eb2679e1551e7d4ec",
+    "tools/prototype/capture-ais-component.py": "6ea362c2f361b954b4fb6de5745d3f0975fddedbd26b50b2deda879e8883b2dc",
+    "tools/prototype/capture-native.py": "e3f2d0cbe22894f118ea13d1d41740c83cfdfb3bcb62a95efbf3c84a46dbc30b",
+    "tools/prototype/compare.py": "d4de9f0b8862180e0635a1f1cfb5f3ba0a301ae7ba008b2883a7a6ee06471607",
+    "tools/prototype/render.py": "da5284efd74511979a9d5c2067acf0375f7d79884ae5ba3bbda58344e0796349",
+    "src/application/SourceHealthView.cpp": "c2c221044cc6f8d4fa0f928fc7ba66f90e33686c73632fc43006ee954c71736e",
+    "src/application/SourceHealthView.h": "501aa141194348150349fcdbd34b9f41976686a870c373f5539c4b2af5397900",
+    "src/ui/HealthDrawer.cpp": "f4796300eac1e081611153f325cfe856a5567bc5335d4f128507ff4f429c91e3",
+    "src/ui/HealthDrawer.h": "09d8fa9c01bcf74cfe46a5f0c2e4227743c66519a36b6b72c2131c5df0f2ae16",
+    "tests/health_drawer_test.cpp": "862efc20c56d158bc0e578f3dbd6be3b9eaf283b64884d9faacd8c5db9bf3f83",
+    "tests/source_health_view_tests.cpp": "b57c88feee0d1b2727892e2c3e6471dd5b771344855dc470f183158d01df1d85"
+  },
+  "testRunnerNote": "An initial preview launch overlapped the unit suite; it was interrupted and its log retained. The replacement preview is run after the unit suite to avoid shared test-port interference.",
+  "aisRegression": {
+    "checks": 151,
+    "captures": 12,
+    "passed": true
+  },
+  "preview": {
+    "checks": 8,
+    "captures": 44,
+    "result": "passed; screenshot review required",
+    "reportSha256": "aec2bc9c642bd6ac3dc6957a71e25ae6cd5438e45f74ce61a25330190128ecea"
+  }
+}
