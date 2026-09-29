@@ -1,0 +1,84 @@
+{
+  "accepted": false,
+  "sourceBase": "8b6eab70490707af444d5e9896c38dd334c090de",
+  "scope": "Preferences text measurement and capture correction; development only",
+  "build": "Integrated fixture-free Linux rebuild/install passed",
+  "unitSuite": {
+    "name": "(empty)",
+    "tests": "123",
+    "failures": "0",
+    "disabled": "0",
+    "skipped": "0",
+    "hostname": "",
+    "time": "19",
+    "timestamp": "2026-09-29T03:40:06"
+  },
+  "componentResult": {
+    "passed": true,
+    "checks": 102,
+    "captures": [
+      "settings-day",
+      "settings-dusk",
+      "settings-night",
+      "sensors-day",
+      "sensors-dusk",
+      "sensors-night",
+      "display-day",
+      "display-dusk",
+      "display-night",
+      "system-night",
+      "settings-radar-night",
+      "settings-autopilot-night"
+    ]
+  },
+  "captures": {
+    "preferences-text-component": {
+      "reportSha256": "2946ee715495cf00b7728fb42bdb711832f283970bd880f105db268e482bcf89",
+      "images": {
+        "settings-day.png": "1bee11f500d7136ce005a3e695e5ccca96e52c3230a45e0b90926f95e9c4feec",
+        "settings-dusk.png": "de011bf8d12c6e0ea9a13c1fd54bb099e221c03622c5aff3a494ee410af507cb",
+        "settings-night.png": "43b2f3f35bc38b118c861b44fe2acccfc141fe7b52c9423b6169e3e6e0fab30a",
+        "sensors-day.png": "b8310de09da4e5c515b91b7da9deb75aecf8162f79bc062189464d2438bcba0e",
+        "sensors-dusk.png": "3369d52cc9ad9bb9cc3ef3f744fd5a3c5d85ebf8b55c0a1c9d1c2df406150ff3",
+        "sensors-night.png": "350700f743cff2fd1ba405000cf2c7691604f96e85f7087c1ff34a559238a977",
+        "display-day.png": "c6d47cc7bd8b7bb87d2dde232669802c8a726fe6a34dd2a26c627844991b0df2",
+        "display-dusk.png": "98712e1ed69e6b36fded7d467c22833a32dcc83b51776c896a8baad921c891ff",
+        "display-night.png": "e7d3066554123dd39badd97cc0477f242cb83774e411deec5d5902f546c39376",
+        "system-night.png": "baf54d299fea91edc3b353a87716f7d36e1367f01538adbab97d8eed86b8f94f",
+        "settings-radar-night.png": "d24598cc86767761b53f068e7bc73bf05f6ca5257fc06f26525398421a7cfe7c",
+        "settings-autopilot-night.png": "e7d6d24d29851c11f341147dd268084fe38f23288e26026a3737b7a4642aa99e"
+      }
+    },
+    "preferences-text-product": {
+      "reportSha256": "6e42696a66ae2f212e4b38e873fab3e6a8a7403cbd082e327771e7e9782ad842",
+      "images": {
+        "navigation-day.png": "66d6a3b0f2959fa3ac0705fb9e1ce99b5c380f059bbbfea7fe55f4c675d4730f",
+        "navigation-dusk.png": "b2cb327e1a871d82cd60dfc06a147e0e1f827b6576bd47d68a458bd7ddc25ca8",
+        "navigation-night.png": "0591b8ebeb6f12cf408bc6ea68ac61972098697edf13f6f7311b4c250d290529",
+        "passage-day.png": "5b45239dc149bd2cd7662f48c803823fd7314a23084fd984686cc16ff068808a",
+        "passage-dusk.png": "812e283b8889aa9a3605cbee8d7248aa9fa32a6f148460fd68624eff1361f18e",
+        "passage-night.png": "659caf82e9f1de765d07587af9f883f3de7e376162b75395b560d50e0d8968ca",
+        "traffic-day.png": "ca199511dfd97cec7aa359801985939973e7fefc0b58ccaa20d9806598a914e2",
+        "energy-day.png": "18e23a18c68f55318708d6384d0476afa4d2fd8db933ada14cda3fdc2a23f6b5",
+        "instruments-day.png": "7067c56b2c3f03f5561954e67c98247a47fbc39c36d8a27a9ae9b555dc952c7f",
+        "instruments-dusk.png": "80614b0e4252cc5ee4e4357ff2d49a7c93f1f3dae7359c2313c4a5df308322c0",
+        "instruments-night.png": "9347e15d7a4bcc5876a12678e6345749e0f44cd36cb202fd0048164aaad4ec9e",
+        "settings-day.png": "0d2530c3a1f4ef9bf7d2564e001e7c2c6fb7bce227ccfb726ed0df8f1aaffff3",
+        "settings-dusk.png": "87008619e25eee55ecf1e9e9037bb1080cce0ca6bf01d261b32e21320cec01d0",
+        "settings-night.png": "1b750b63f8516e97824a66aedbe92be90f6a355caa947d4499493fc6a290fe0a",
+        "sensors-day.png": "0bfbdee25621c7ba70b37dc478c549b0f2b9ba1b10af2b7193b77b7c3f426d53",
+        "display-day.png": "95e68c0c41e2958fbe5abe3d408658083af5fc7a0f2a5ba59d366ea113f132d7",
+        "system-day.png": "f766bbbd9253efe9dda63f1ff6bd747f5263fc1b5cb62e00932a562b22acf9f9",
+        "online-ais-settings-day.png": "d85e78414906af819a41a48ea7f6926413fc38befc5734f3a8453ff49e9375a5",
+        "online-ais-key-needed-day.png": "0270907e6493e339fb44934ba895a4095b4084857330203fe5805c3a0433d28d",
+        "online-ais-settings-dusk.png": "57b3cca58078fbac0e81ac225593476a36c231084a8dc52dc217cebf91edf500",
+        "online-ais-settings-night.png": "3f41efa429cc7d74a74c43fbaa2cd079d9f09a21f6ee6c2a405360bf07e15914"
+      }
+    }
+  },
+  "limitations": [
+    "DirectWrite is native Windows code and remains unqualified until replacement MSVC tests and captures pass.",
+    "Linux font fallback does not establish Windows typography.",
+    "Compact Windows DPI, boat, full release installer/lifecycle and all-view conformance remain open."
+  ]
+}

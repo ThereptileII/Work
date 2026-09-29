@@ -13,6 +13,9 @@ namespace opennav::ui {
 wxColour Colour(std::uint32_t rgb);
 wxFont UiFont(wxWindow& window, int pixels, bool bold = false);
 wxFont UiFontWeight(wxWindow& window, int pixels, int weight);
+// Natural text advance in physical pixels. Windows uses fractional DirectWrite
+// metrics, avoiding cumulative GDI glyph rounding in wrapping component rows.
+double UiTextWidth(wxWindow& window, const wxString& text, int pixels, int weight = 400);
 
 // Shared drawing primitives. All geometry is in logical DIP; semantic palette
 // roles, radii and typography remain identical across painted product pages.

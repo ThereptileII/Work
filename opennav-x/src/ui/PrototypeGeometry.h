@@ -30,4 +30,26 @@ constexpr int dashboard_gap = 18;
 constexpr int instrument_tile_height = 126;
 constexpr int instrument_tile_gap = 12;
 constexpr int wind_card_height = 540;
+
+struct DesktopLayout {
+  int top, navigation, rail, horizon, nav_height, nav_gap, nav_inset;
+  int divider_before, divider_after, rail_header, pilot_height, pilot_gap;
+};
+constexpr DesktopLayout Desktop(int width, int height) {
+  // Final supplied desktop media cascade; CSS pixels, not physical pixels.
+  // Reference measurements: prototype-responsive-in-progress.md.
+  const bool narrow = width <= 1100;
+  const bool compact = width > 760 && height <= 740;
+  const bool short_helm = width > 760 && height <= 600;
+  return {short_helm ? 56 : compact ? 60 : 68,
+          narrow ? 70 : 80, narrow ? 156 : 186,
+          short_helm ? 98 : compact ? 112 : 132,
+          short_helm ? 43 : compact ? 51 : 61,
+          short_helm ? 0 : compact ? 1 : 5, compact ? 8 : 14,
+          short_helm ? 3 : compact ? 5 : 7,
+          short_helm ? 3 : compact ? 6 : 12,
+          short_helm ? 30 : compact ? 33 : 42,
+          short_helm ? 66 : compact ? 74 : 87,
+          short_helm ? 7 : compact ? 9 : 13};
+}
 }  // namespace opennav::ui::prototype

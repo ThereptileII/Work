@@ -2,13 +2,48 @@
 
 ## Current stage: prototype design lock, chart presentation and Online AIS
 
+Preferences text-layout correction is ready for native replacement validation:
+Windows uses fractional DirectWrite advance measurements to retain the HTML's
+six-tab first row; independent capture checks all eight exact rectangles. Linux
+rebuild/install passes 123/123 and the Settings component 102 checks; 12 component
+and 21 actual-product images are retained. No Windows font PASS is inferred from
+that Linux result. See [local evidence](evidence/prototype-preferences-text-local.json).
+
+Run `36506983264` / `8e73ed0` is retained as a negative development run (7/8
+jobs). Its new actual-DPI probe exposes the old rail losing Radar at 150%; the
+compact correction follows in `8b6eab7`. The 125% Settings target is also too
+small, so the replacement gate uses each measured prototype height rather than
+a shared lower bound. A separate Preferences Close capture failure remains
+unproven: the harness now verifies/activates the specific native input surface
+and retains failed-state evidence without retrying input. All eight artifacts
+and fourteen DPI images verify. See [negative evidence](evidence/prototype-native-8e73ed0-failed.json).
+
+The replacement Windows development run `36506092362` / `f13075a` passes all
+eight jobs: both integrated suites 115/115, five component suites including
+102 Preferences checks, 50 native capture-guard cases, actual product captures,
+object workflows and all four unchanged exact active-route ink cases. All nine
+artifact hashes/CRCs, 87 native PNGs (including route images) and 120 reference
+PNGs verify. This closes the fixture repaint and rail/catalog harness failures;
+it does not qualify the complete product or boat. Preferences tab wrapping still
+differs visibly from the Windows HTML. See [development evidence](evidence/prototype-native-f13075a.json)
+and [preceding negative run](evidence/prototype-native-466d1c6-failed.json).
+
+The compact-shell correction now follows measured HTML desktop breakpoints.
+Before correction Settings was compressed at 1024×640 and absent at 853×533.
+Both corrected Linux resize passes preserve the chart and all four rail values;
+the second also reaches lower Preferences actions by actual scrolling. Returning
+to 1280×800 restores primary geometry. There are 20 retained compact captures,
+21 canonical product captures and 123/123 passing tests (18.74s).
+Actual Windows DPI and boat acceptance remain pending. See
+[compact evidence](evidence/prototype-compact-layout-local.json).
+
 Additional responsive prototype references now measure the unchanged HTML at
 125/150% equivalents in twelve physical 1280×800 captures. A separate native
 Windows development probe will test actual DPI, visible rail controls/readings,
 chart content and touch-operated Preferences/theme/Close in the fixture-free
 application. The existing full release suite stays mandatory. Linux rebuild
 passes 123/123 in 20.17s and all five design-contract tests. Compact-shell
-migration, Windows execution and boat review remain pending. See
+migration is implemented locally; Windows execution and boat review remain pending. See
 [responsive review](design/reviews/prototype-responsive-in-progress.md) and
 [reference evidence](evidence/prototype-responsive-reference-local.json).
 

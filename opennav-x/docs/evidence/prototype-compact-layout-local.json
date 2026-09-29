@@ -1,0 +1,1145 @@
+{
+  "accepted": false,
+  "sourceBase": "7f83c5b50488fd72dcb25481114280c318d58288",
+  "scope": "Uncommitted compact-shell correction on sourceBase, Linux development only",
+  "unitSuite": {
+    "name": "(empty)",
+    "tests": "123",
+    "failures": "0",
+    "disabled": "0",
+    "skipped": "0",
+    "hostname": "",
+    "time": "18",
+    "timestamp": "2026-09-29T03:21:41"
+  },
+  "captures": [
+    {
+      "report": "evidence/local/prototype/compact-layout-pass1/result.json",
+      "sha256": "7c062998fabd62046ce3cf64fd15fdabed472af38a0e77f8e12d598b997583d7",
+      "result": {
+        "scope": "Linux logical layout only; not Windows DPI or physical display acceptance",
+        "executableSha256": "707056fe903199cbb442924b7fc5d0bf94ef58af8f373395fee5b2a81c3be5a0",
+        "cases": [
+          {
+            "width": 1280,
+            "height": 800,
+            "screenshots": [
+              {
+                "file": "0-1280x800-chart.png",
+                "sha256": "cf62df4576d6a02e247bf1012fe413954101cd1d9852fb496890d375c6db2898"
+              },
+              {
+                "file": "0-1280x800-settings.png",
+                "sha256": "0a4608c4258b5b1823e0aacac232824f6bb255b4463537d4541336cefdbb332b"
+              }
+            ],
+            "chart": {
+              "height": 566,
+              "y": 68,
+              "width": 1014,
+              "x": 80
+            },
+            "navigation": [
+              {
+                "height": 61,
+                "y": 82,
+                "visible": true,
+                "width": 61,
+                "x": 9,
+                "label": "Chart",
+                "enabled": true
+              },
+              {
+                "height": 61,
+                "y": 148,
+                "visible": true,
+                "width": 61,
+                "x": 9,
+                "label": "Passage",
+                "enabled": true
+              },
+              {
+                "height": 61,
+                "y": 214,
+                "visible": true,
+                "width": 61,
+                "x": 9,
+                "label": "Traffic",
+                "enabled": true
+              },
+              {
+                "height": 61,
+                "y": 300,
+                "visible": true,
+                "width": 61,
+                "x": 9,
+                "label": "Energy",
+                "enabled": true
+              },
+              {
+                "height": 61,
+                "y": 366,
+                "visible": true,
+                "width": 61,
+                "x": 9,
+                "label": "Instruments",
+                "enabled": true
+              },
+              {
+                "height": 61,
+                "y": 432,
+                "visible": true,
+                "width": 61,
+                "x": 9,
+                "label": "Anchor",
+                "enabled": true
+              },
+              {
+                "height": 61,
+                "y": 498,
+                "visible": true,
+                "width": 61,
+                "x": 9,
+                "label": "Radar",
+                "enabled": true
+              },
+              {
+                "height": 61,
+                "y": 699,
+                "visible": true,
+                "width": 61,
+                "x": 9,
+                "label": "Settings",
+                "enabled": true
+              }
+            ],
+            "readings": [
+              {
+                "height": 136,
+                "y": 110,
+                "visible": true,
+                "width": 186,
+                "x": 1094,
+                "label": "sog",
+                "enabled": true
+              },
+              {
+                "height": 135,
+                "y": 246,
+                "visible": true,
+                "width": 186,
+                "x": 1094,
+                "label": "depth",
+                "enabled": true
+              },
+              {
+                "height": 136,
+                "y": 381,
+                "visible": true,
+                "width": 186,
+                "x": 1094,
+                "label": "aws",
+                "enabled": true
+              },
+              {
+                "height": 135,
+                "y": 517,
+                "visible": true,
+                "width": 186,
+                "x": 1094,
+                "label": "heading",
+                "enabled": true
+              }
+            ]
+          },
+          {
+            "width": 1024,
+            "height": 640,
+            "screenshots": [
+              {
+                "file": "1-1024x640-chart.png",
+                "sha256": "5580620297009d8fdc9bcd9a8fbb6ef6ce52ab83d98c9dcc468eebbbd056a21c"
+              },
+              {
+                "file": "1-1024x640-settings.png",
+                "sha256": "702fc2de5c5ae55c11f87e9095dc9e3609e2a71baa0934493fbb7f70c717389a"
+              }
+            ],
+            "chart": {
+              "height": 434,
+              "y": 60,
+              "width": 798,
+              "x": 70
+            },
+            "navigation": [
+              {
+                "height": 51,
+                "y": 68,
+                "visible": true,
+                "width": 51,
+                "x": 9,
+                "label": "Chart",
+                "enabled": true
+              },
+              {
+                "height": 51,
+                "y": 120,
+                "visible": true,
+                "width": 51,
+                "x": 9,
+                "label": "Passage",
+                "enabled": true
+              },
+              {
+                "height": 51,
+                "y": 172,
+                "visible": true,
+                "width": 51,
+                "x": 9,
+                "label": "Traffic",
+                "enabled": true
+              },
+              {
+                "height": 51,
+                "y": 236,
+                "visible": true,
+                "width": 51,
+                "x": 9,
+                "label": "Energy",
+                "enabled": true
+              },
+              {
+                "height": 51,
+                "y": 288,
+                "visible": true,
+                "width": 51,
+                "x": 9,
+                "label": "Instruments",
+                "enabled": true
+              },
+              {
+                "height": 51,
+                "y": 340,
+                "visible": true,
+                "width": 51,
+                "x": 9,
+                "label": "Anchor",
+                "enabled": true
+              },
+              {
+                "height": 51,
+                "y": 392,
+                "visible": true,
+                "width": 51,
+                "x": 9,
+                "label": "Radar",
+                "enabled": true
+              },
+              {
+                "height": 51,
+                "y": 546,
+                "visible": true,
+                "width": 51,
+                "x": 9,
+                "label": "Settings",
+                "enabled": true
+              }
+            ],
+            "readings": [
+              {
+                "height": 104,
+                "y": 93,
+                "visible": true,
+                "width": 156,
+                "x": 868,
+                "label": "sog",
+                "enabled": true
+              },
+              {
+                "height": 104,
+                "y": 197,
+                "visible": true,
+                "width": 156,
+                "x": 868,
+                "label": "depth",
+                "enabled": true
+              },
+              {
+                "height": 104,
+                "y": 301,
+                "visible": true,
+                "width": 156,
+                "x": 868,
+                "label": "aws",
+                "enabled": true
+              },
+              {
+                "height": 104,
+                "y": 405,
+                "visible": true,
+                "width": 156,
+                "x": 868,
+                "label": "heading",
+                "enabled": true
+              }
+            ]
+          },
+          {
+            "width": 853,
+            "height": 533,
+            "screenshots": [
+              {
+                "file": "2-853x533-chart.png",
+                "sha256": "1f3f87b05bb81f695a610f79a41a96321803aa4de57647e774f348bf22b5bb60"
+              },
+              {
+                "file": "2-853x533-settings.png",
+                "sha256": "e8a0d80f9d489b9ddb9544aa8aa9624df5b585a8c01a07ad0970cc9737ddfdd3"
+              }
+            ],
+            "chart": {
+              "height": 345,
+              "y": 56,
+              "width": 627,
+              "x": 70
+            },
+            "navigation": [
+              {
+                "height": 43,
+                "y": 64,
+                "visible": true,
+                "width": 51,
+                "x": 9,
+                "label": "Chart",
+                "enabled": true
+              },
+              {
+                "height": 43,
+                "y": 107,
+                "visible": true,
+                "width": 51,
+                "x": 9,
+                "label": "Passage",
+                "enabled": true
+              },
+              {
+                "height": 43,
+                "y": 150,
+                "visible": true,
+                "width": 51,
+                "x": 9,
+                "label": "Traffic",
+                "enabled": true
+              },
+              {
+                "height": 43,
+                "y": 200,
+                "visible": true,
+                "width": 51,
+                "x": 9,
+                "label": "Energy",
+                "enabled": true
+              },
+              {
+                "height": 43,
+                "y": 243,
+                "visible": true,
+                "width": 51,
+                "x": 9,
+                "label": "Instruments",
+                "enabled": true
+              },
+              {
+                "height": 43,
+                "y": 286,
+                "visible": true,
+                "width": 51,
+                "x": 9,
+                "label": "Anchor",
+                "enabled": true
+              },
+              {
+                "height": 43,
+                "y": 329,
+                "visible": true,
+                "width": 51,
+                "x": 9,
+                "label": "Radar",
+                "enabled": true
+              },
+              {
+                "height": 43,
+                "y": 447,
+                "visible": true,
+                "width": 51,
+                "x": 9,
+                "label": "Settings",
+                "enabled": true
+              }
+            ],
+            "readings": [
+              {
+                "height": 82,
+                "y": 86,
+                "visible": true,
+                "width": 156,
+                "x": 697,
+                "label": "sog",
+                "enabled": true
+              },
+              {
+                "height": 81,
+                "y": 168,
+                "visible": true,
+                "width": 156,
+                "x": 697,
+                "label": "depth",
+                "enabled": true
+              },
+              {
+                "height": 82,
+                "y": 249,
+                "visible": true,
+                "width": 156,
+                "x": 697,
+                "label": "aws",
+                "enabled": true
+              },
+              {
+                "height": 81,
+                "y": 331,
+                "visible": true,
+                "width": 156,
+                "x": 697,
+                "label": "heading",
+                "enabled": true
+              }
+            ]
+          },
+          {
+            "width": 1280,
+            "height": 800,
+            "screenshots": [
+              {
+                "file": "3-1280x800-chart.png",
+                "sha256": "05f88fe617703db1a0f2e477f5c572e77d3e051ffa7a0ab4bdf0f94a5cbccf71"
+              },
+              {
+                "file": "3-1280x800-settings.png",
+                "sha256": "82a27a3083d2398ce9287474d13b714c18112d06fab80a23d428c34890b78a27"
+              }
+            ],
+            "chart": {
+              "height": 566,
+              "y": 68,
+              "width": 1014,
+              "x": 80
+            },
+            "navigation": [
+              {
+                "height": 61,
+                "y": 82,
+                "visible": true,
+                "width": 61,
+                "x": 9,
+                "label": "Chart",
+                "enabled": true
+              },
+              {
+                "height": 61,
+                "y": 148,
+                "visible": true,
+                "width": 61,
+                "x": 9,
+                "label": "Passage",
+                "enabled": true
+              },
+              {
+                "height": 61,
+                "y": 214,
+                "visible": true,
+                "width": 61,
+                "x": 9,
+                "label": "Traffic",
+                "enabled": true
+              },
+              {
+                "height": 61,
+                "y": 300,
+                "visible": true,
+                "width": 61,
+                "x": 9,
+                "label": "Energy",
+                "enabled": true
+              },
+              {
+                "height": 61,
+                "y": 366,
+                "visible": true,
+                "width": 61,
+                "x": 9,
+                "label": "Instruments",
+                "enabled": true
+              },
+              {
+                "height": 61,
+                "y": 432,
+                "visible": true,
+                "width": 61,
+                "x": 9,
+                "label": "Anchor",
+                "enabled": true
+              },
+              {
+                "height": 61,
+                "y": 498,
+                "visible": true,
+                "width": 61,
+                "x": 9,
+                "label": "Radar",
+                "enabled": true
+              },
+              {
+                "height": 61,
+                "y": 699,
+                "visible": true,
+                "width": 61,
+                "x": 9,
+                "label": "Settings",
+                "enabled": true
+              }
+            ],
+            "readings": [
+              {
+                "height": 136,
+                "y": 110,
+                "visible": true,
+                "width": 186,
+                "x": 1094,
+                "label": "sog",
+                "enabled": true
+              },
+              {
+                "height": 135,
+                "y": 246,
+                "visible": true,
+                "width": 186,
+                "x": 1094,
+                "label": "depth",
+                "enabled": true
+              },
+              {
+                "height": 136,
+                "y": 381,
+                "visible": true,
+                "width": 186,
+                "x": 1094,
+                "label": "aws",
+                "enabled": true
+              },
+              {
+                "height": 135,
+                "y": 517,
+                "visible": true,
+                "width": 186,
+                "x": 1094,
+                "label": "heading",
+                "enabled": true
+              }
+            ]
+          }
+        ],
+        "result": "passed; native Windows and boat review required",
+        "exitCode": 0
+      }
+    },
+    {
+      "report": "evidence/local/prototype/compact-layout-pass2/result.json",
+      "sha256": "6741300c8dc4a41012df911d6705cdc938a9cd0a3093948d234b60d0369b325b",
+      "result": {
+        "scope": "Linux logical layout only; not Windows DPI or physical display acceptance",
+        "executableSha256": "707056fe903199cbb442924b7fc5d0bf94ef58af8f373395fee5b2a81c3be5a0",
+        "cases": [
+          {
+            "width": 1280,
+            "height": 800,
+            "screenshots": [
+              {
+                "file": "0-1280x800-chart.png",
+                "sha256": "24a518a3b377b71fb405c6b6ccf75e8c5823c52d8a1b7fbd38339d895fe09202"
+              },
+              {
+                "file": "0-1280x800-settings.png",
+                "sha256": "ffc2a720afea22773aed6eb9dc26d8358b216ff9c3cbe90cb6c82f9096db829f"
+              },
+              {
+                "file": "0-1280x800-settings-scrolled.png",
+                "sha256": "0107881275990c364eaf9294fb7363134d2ab55e93185be4ddd100449dc2242d"
+              }
+            ],
+            "chart": {
+              "height": 566,
+              "y": 68,
+              "width": 1014,
+              "x": 80
+            },
+            "navigation": [
+              {
+                "height": 61,
+                "y": 82,
+                "visible": true,
+                "width": 61,
+                "x": 9,
+                "label": "Chart",
+                "enabled": true
+              },
+              {
+                "height": 61,
+                "y": 148,
+                "visible": true,
+                "width": 61,
+                "x": 9,
+                "label": "Passage",
+                "enabled": true
+              },
+              {
+                "height": 61,
+                "y": 214,
+                "visible": true,
+                "width": 61,
+                "x": 9,
+                "label": "Traffic",
+                "enabled": true
+              },
+              {
+                "height": 61,
+                "y": 300,
+                "visible": true,
+                "width": 61,
+                "x": 9,
+                "label": "Energy",
+                "enabled": true
+              },
+              {
+                "height": 61,
+                "y": 366,
+                "visible": true,
+                "width": 61,
+                "x": 9,
+                "label": "Instruments",
+                "enabled": true
+              },
+              {
+                "height": 61,
+                "y": 432,
+                "visible": true,
+                "width": 61,
+                "x": 9,
+                "label": "Anchor",
+                "enabled": true
+              },
+              {
+                "height": 61,
+                "y": 498,
+                "visible": true,
+                "width": 61,
+                "x": 9,
+                "label": "Radar",
+                "enabled": true
+              },
+              {
+                "height": 61,
+                "y": 699,
+                "visible": true,
+                "width": 61,
+                "x": 9,
+                "label": "Settings",
+                "enabled": true
+              }
+            ],
+            "readings": [
+              {
+                "height": 136,
+                "y": 110,
+                "visible": true,
+                "width": 186,
+                "x": 1094,
+                "label": "sog",
+                "enabled": true
+              },
+              {
+                "height": 135,
+                "y": 246,
+                "visible": true,
+                "width": 186,
+                "x": 1094,
+                "label": "depth",
+                "enabled": true
+              },
+              {
+                "height": 136,
+                "y": 381,
+                "visible": true,
+                "width": 186,
+                "x": 1094,
+                "label": "aws",
+                "enabled": true
+              },
+              {
+                "height": 135,
+                "y": 517,
+                "visible": true,
+                "width": 186,
+                "x": 1094,
+                "label": "heading",
+                "enabled": true
+              }
+            ]
+          },
+          {
+            "width": 1024,
+            "height": 640,
+            "screenshots": [
+              {
+                "file": "1-1024x640-chart.png",
+                "sha256": "f4b261d8f65af328dd28e7f2c2d6eaac852150721d63f541c8fb87670159a4c9"
+              },
+              {
+                "file": "1-1024x640-settings.png",
+                "sha256": "adca3c3235b705cd49c5c1ca8e7744d23826687c43a64b3107b35734b7cdf641"
+              },
+              {
+                "file": "1-1024x640-settings-scrolled.png",
+                "sha256": "5cc924a64a8e2d0dce2be16439372ee49100fba3efff58f0e7b74da135baa105"
+              }
+            ],
+            "chart": {
+              "height": 434,
+              "y": 60,
+              "width": 798,
+              "x": 70
+            },
+            "navigation": [
+              {
+                "height": 51,
+                "y": 68,
+                "visible": true,
+                "width": 51,
+                "x": 9,
+                "label": "Chart",
+                "enabled": true
+              },
+              {
+                "height": 51,
+                "y": 120,
+                "visible": true,
+                "width": 51,
+                "x": 9,
+                "label": "Passage",
+                "enabled": true
+              },
+              {
+                "height": 51,
+                "y": 172,
+                "visible": true,
+                "width": 51,
+                "x": 9,
+                "label": "Traffic",
+                "enabled": true
+              },
+              {
+                "height": 51,
+                "y": 236,
+                "visible": true,
+                "width": 51,
+                "x": 9,
+                "label": "Energy",
+                "enabled": true
+              },
+              {
+                "height": 51,
+                "y": 288,
+                "visible": true,
+                "width": 51,
+                "x": 9,
+                "label": "Instruments",
+                "enabled": true
+              },
+              {
+                "height": 51,
+                "y": 340,
+                "visible": true,
+                "width": 51,
+                "x": 9,
+                "label": "Anchor",
+                "enabled": true
+              },
+              {
+                "height": 51,
+                "y": 392,
+                "visible": true,
+                "width": 51,
+                "x": 9,
+                "label": "Radar",
+                "enabled": true
+              },
+              {
+                "height": 51,
+                "y": 546,
+                "visible": true,
+                "width": 51,
+                "x": 9,
+                "label": "Settings",
+                "enabled": true
+              }
+            ],
+            "readings": [
+              {
+                "height": 104,
+                "y": 93,
+                "visible": true,
+                "width": 156,
+                "x": 868,
+                "label": "sog",
+                "enabled": true
+              },
+              {
+                "height": 104,
+                "y": 197,
+                "visible": true,
+                "width": 156,
+                "x": 868,
+                "label": "depth",
+                "enabled": true
+              },
+              {
+                "height": 104,
+                "y": 301,
+                "visible": true,
+                "width": 156,
+                "x": 868,
+                "label": "aws",
+                "enabled": true
+              },
+              {
+                "height": 104,
+                "y": 405,
+                "visible": true,
+                "width": 156,
+                "x": 868,
+                "label": "heading",
+                "enabled": true
+              }
+            ]
+          },
+          {
+            "width": 853,
+            "height": 533,
+            "screenshots": [
+              {
+                "file": "2-853x533-chart.png",
+                "sha256": "242a938d952364d246e615558676e973fc29b9e10fa61ff26b8b292048369378"
+              },
+              {
+                "file": "2-853x533-settings.png",
+                "sha256": "2bd2ca08b71a7a19430d0267d9a9931128e715ad8de7bf9d5e0673327248bdbe"
+              },
+              {
+                "file": "2-853x533-settings-scrolled.png",
+                "sha256": "0b660804713b104cc77f03c4b08ec655c5b9432890f170d4af6d7772c0a2f502"
+              }
+            ],
+            "chart": {
+              "height": 345,
+              "y": 56,
+              "width": 627,
+              "x": 70
+            },
+            "navigation": [
+              {
+                "height": 43,
+                "y": 64,
+                "visible": true,
+                "width": 51,
+                "x": 9,
+                "label": "Chart",
+                "enabled": true
+              },
+              {
+                "height": 43,
+                "y": 107,
+                "visible": true,
+                "width": 51,
+                "x": 9,
+                "label": "Passage",
+                "enabled": true
+              },
+              {
+                "height": 43,
+                "y": 150,
+                "visible": true,
+                "width": 51,
+                "x": 9,
+                "label": "Traffic",
+                "enabled": true
+              },
+              {
+                "height": 43,
+                "y": 200,
+                "visible": true,
+                "width": 51,
+                "x": 9,
+                "label": "Energy",
+                "enabled": true
+              },
+              {
+                "height": 43,
+                "y": 243,
+                "visible": true,
+                "width": 51,
+                "x": 9,
+                "label": "Instruments",
+                "enabled": true
+              },
+              {
+                "height": 43,
+                "y": 286,
+                "visible": true,
+                "width": 51,
+                "x": 9,
+                "label": "Anchor",
+                "enabled": true
+              },
+              {
+                "height": 43,
+                "y": 329,
+                "visible": true,
+                "width": 51,
+                "x": 9,
+                "label": "Radar",
+                "enabled": true
+              },
+              {
+                "height": 43,
+                "y": 447,
+                "visible": true,
+                "width": 51,
+                "x": 9,
+                "label": "Settings",
+                "enabled": true
+              }
+            ],
+            "readings": [
+              {
+                "height": 82,
+                "y": 86,
+                "visible": true,
+                "width": 156,
+                "x": 697,
+                "label": "sog",
+                "enabled": true
+              },
+              {
+                "height": 81,
+                "y": 168,
+                "visible": true,
+                "width": 156,
+                "x": 697,
+                "label": "depth",
+                "enabled": true
+              },
+              {
+                "height": 82,
+                "y": 249,
+                "visible": true,
+                "width": 156,
+                "x": 697,
+                "label": "aws",
+                "enabled": true
+              },
+              {
+                "height": 81,
+                "y": 331,
+                "visible": true,
+                "width": 156,
+                "x": 697,
+                "label": "heading",
+                "enabled": true
+              }
+            ]
+          },
+          {
+            "width": 1280,
+            "height": 800,
+            "screenshots": [
+              {
+                "file": "3-1280x800-chart.png",
+                "sha256": "24a518a3b377b71fb405c6b6ccf75e8c5823c52d8a1b7fbd38339d895fe09202"
+              },
+              {
+                "file": "3-1280x800-settings.png",
+                "sha256": "0107881275990c364eaf9294fb7363134d2ab55e93185be4ddd100449dc2242d"
+              },
+              {
+                "file": "3-1280x800-settings-scrolled.png",
+                "sha256": "0107881275990c364eaf9294fb7363134d2ab55e93185be4ddd100449dc2242d"
+              }
+            ],
+            "chart": {
+              "height": 566,
+              "y": 68,
+              "width": 1014,
+              "x": 80
+            },
+            "navigation": [
+              {
+                "height": 61,
+                "y": 82,
+                "visible": true,
+                "width": 61,
+                "x": 9,
+                "label": "Chart",
+                "enabled": true
+              },
+              {
+                "height": 61,
+                "y": 148,
+                "visible": true,
+                "width": 61,
+                "x": 9,
+                "label": "Passage",
+                "enabled": true
+              },
+              {
+                "height": 61,
+                "y": 214,
+                "visible": true,
+                "width": 61,
+                "x": 9,
+                "label": "Traffic",
+                "enabled": true
+              },
+              {
+                "height": 61,
+                "y": 300,
+                "visible": true,
+                "width": 61,
+                "x": 9,
+                "label": "Energy",
+                "enabled": true
+              },
+              {
+                "height": 61,
+                "y": 366,
+                "visible": true,
+                "width": 61,
+                "x": 9,
+                "label": "Instruments",
+                "enabled": true
+              },
+              {
+                "height": 61,
+                "y": 432,
+                "visible": true,
+                "width": 61,
+                "x": 9,
+                "label": "Anchor",
+                "enabled": true
+              },
+              {
+                "height": 61,
+                "y": 498,
+                "visible": true,
+                "width": 61,
+                "x": 9,
+                "label": "Radar",
+                "enabled": true
+              },
+              {
+                "height": 61,
+                "y": 699,
+                "visible": true,
+                "width": 61,
+                "x": 9,
+                "label": "Settings",
+                "enabled": true
+              }
+            ],
+            "readings": [
+              {
+                "height": 136,
+                "y": 110,
+                "visible": true,
+                "width": 186,
+                "x": 1094,
+                "label": "sog",
+                "enabled": true
+              },
+              {
+                "height": 135,
+                "y": 246,
+                "visible": true,
+                "width": 186,
+                "x": 1094,
+                "label": "depth",
+                "enabled": true
+              },
+              {
+                "height": 136,
+                "y": 381,
+                "visible": true,
+                "width": 186,
+                "x": 1094,
+                "label": "aws",
+                "enabled": true
+              },
+              {
+                "height": 135,
+                "y": 517,
+                "visible": true,
+                "width": 186,
+                "x": 1094,
+                "label": "heading",
+                "enabled": true
+              }
+            ]
+          }
+        ],
+        "result": "passed; native Windows and boat review required",
+        "exitCode": 0
+      }
+    }
+  ],
+  "limitations": [
+    "Logical viewport resizing is not actual Windows DPI.",
+    "Lower vessel profile component and remaining Preferences content still differ from prototype.",
+    "Native Windows replacement and boat review pending."
+  ],
+  "canonicalProduct": {
+    "report": "evidence/local/prototype/compact-primary-pass1/capture.json",
+    "sha256": "fe902b5c8d4169a96ac307fded032c83523356a38833a87c13ae904028f96656",
+    "images": {
+      "navigation-day.png": "8a56c488bc040536785d307df9ae44a90b25e0b601eb93849eb53b4e149ccc26",
+      "navigation-dusk.png": "c3e3887e31b1796d1b949332b4af598c177189ef6bfd08e55ae958377feec11a",
+      "navigation-night.png": "c17b499397e924cef20ea81a0c425581cc56601f4ca8696781baf8d17af3991c",
+      "passage-day.png": "61df4cf2b3ab37cfae1502cfa20d371e0c756d8a51f37a0e949cb096a385608a",
+      "passage-dusk.png": "f29028d719174124ff5b00a5b1843919c2c224b8a117d071dfb6763cc2d20725",
+      "passage-night.png": "3810ba53f4d5036ffe5e93f4ebc434cb9cc471613f4f0ba8ea9b6960b0519ad8",
+      "traffic-day.png": "2e5dd3bb0ef20483e0417166b6a090df3d41a7db8a3391565e627b67fa473114",
+      "energy-day.png": "8f64cbc0863cffb4eaff5711121d541580eafda241cd88d63733f9b149674236",
+      "instruments-day.png": "3a11c7d11b904176121c4be0b0c65fa32e8ec52c4f3407bda6a154e14ecae132",
+      "instruments-dusk.png": "d4589a81c15baa43255baa9ad64f1ae47daf0e8707b06bb99654877f2e6009a2",
+      "instruments-night.png": "29508dc5f003167cad8d2cc66b8e294cd5f26beb5c32fe7a8d269e713281b772",
+      "settings-day.png": "07ee3513dd87ba7ca5d343cfdcc349ec3b24738689bc382181bd6e753209204f",
+      "settings-dusk.png": "7e955476a664d48d610e8bd0c202b598963688d3eefbe0abd9449fa1b87b9931",
+      "settings-night.png": "691cd3d555b3fa683f41ba1bfb0382270f602a6f9e55a4fa34c40d259eb7b7ef",
+      "sensors-day.png": "856c8db6ab020e034db9f29c1dacc9cc05c89a38b5ca6262aa5840c07cfd30d0",
+      "display-day.png": "87d6f250c44e7770b1164937c70b9ba34a9ec5277a5bffcb90845fdea7ecfa58",
+      "system-day.png": "8adffdcf586034c3e672d0268ccfb0f36e41755bc646817d4fa484bc28e62995",
+      "online-ais-settings-day.png": "3d139432939472dcf01480afd63601e0659562d7abb2d17b7a4dddc9a78eb6ba",
+      "online-ais-key-needed-day.png": "d9fe102e7ebf8ebeb88ef4c21d1e048e78defbf824e03d0d58f6fd943e9a9944",
+      "online-ais-settings-dusk.png": "987d370a2ffb8c7d4edb0ae9a461db267b701118bd2d9cf96d759d19ab8fd148",
+      "online-ais-settings-night.png": "5e7e100627e7adc7d7c5b4a85d0dee70f1c052cec181b133b93630fc5782a8fc"
+    }
+  }
+}

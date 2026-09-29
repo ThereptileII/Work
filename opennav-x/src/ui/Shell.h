@@ -118,6 +118,7 @@ private:
   void SetLight(LightMode mode);
   void UpdateRail(const std::vector<std::string> &keys, vessel::Time now);
   void Tick();
+  void ApplyResponsiveLayout();
   void UpdateAlerts();
   void PlaceChartControls();
   void CloseContext();
@@ -186,6 +187,9 @@ private:
   std::vector<std::pair<int, std::function<void()>>> commands_;
   std::vector<wxStaticText *> labels_;
   wxPanel *rail_scroll_ = nullptr;
+  wxPanel *brand_panel_ = nullptr, *navigation_divider_ = nullptr, *rail_header_ = nullptr;
+  XNavButton *rail_configure_ = nullptr;
+  int responsive_class_ = -1, responsive_dpi_ = -1;
   XNavHorizon *horizon_ = nullptr;
   wxPanel *route_actions_ = nullptr;
   XNavFloatingSurface *chart_tools_ = nullptr, *chart_orientation_ = nullptr, *chart_follow_ = nullptr;

@@ -96,7 +96,8 @@ def main():
             assert len(matches) == 1, (label, "unique sidebar action", matches)
             c = matches[0]
             assert contains((p.x, p.y, p.x+1280, p.y+800), c), (label, "clipped sidebar action", c)
-            assert c["height"] >= 43*scale/100, (label, "smaller than prototype compact target", c)
+            expected_height = {100:61,125:51,150:43}[scale]*scale/100
+            assert abs(c["height"]-expected_height)<=1, (label, "height differs from measured prototype", c)
             items.append(c)
         fields = d["runtime"]["display"]["rail_regions"]
         assert len(fields) == 4 and all(f["visible"] for f in fields), "Four primary readings must remain visible"

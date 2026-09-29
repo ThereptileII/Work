@@ -121,6 +121,13 @@ private:
           auto *b=Find(panel_,tab);Check(b && b->IsShownOnScreen(),"all eight sections visible");
           Check(panel_->GetScreenRect().Contains(b->GetScreenRect()),"section fits drawer");
         }
+#ifdef __WXMSW__
+        // Independently measured immutable Windows HTML: six tabs on row one.
+        Check(Find(panel_,"Display")->GetPosition().y==Find(panel_,"Vessel")->GetPosition().y,
+              "Windows Preferences retains six tabs on the first row");
+        Check(Find(panel_,"System")->GetPosition().y>Find(panel_,"Display")->GetPosition().y,
+              "System starts the second prototype row");
+#endif
         Capture("settings-day");light_=ui::LightMode::Dusk;Feed();break;
       case 2: Capture("settings-dusk");light_=ui::LightMode::Night;Feed();break;
       case 3: Capture("settings-night");light_=ui::LightMode::Day;Feed();Click("Sensors");break;

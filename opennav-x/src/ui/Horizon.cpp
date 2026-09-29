@@ -56,21 +56,25 @@ void XNavHorizon::Paint(wxPaintEvent &) {
   XNavPainter p(*this, dc, mode_);
   dc.SetBackground(wxBrush(Colour(p.c.background))); dc.Clear();
   const int width = ToDIP(GetClientSize().x);
+  const int height = ToDIP(GetClientSize().y);
+  const bool compact = height <= 112, short_helm = height <= 98;
+  const int inset = compact ? 20 : 25;
+  const int line_y = compact ? 40 : 47;
   p.Rule(0, 0, width);
-  p.Text("YOUR HORIZON", 25, 18, 9, p.c.accent);
-  p.Text(wxString::FromUTF8("SmartNav · advisory"), 151, 18, 9, p.c.muted);
-  p.Rule(29, 47, std::max(0, width - 64));
-  const int cell = std::max(1, (width - 50)/4);
+  p.Text("YOUR HORIZON", inset, compact?14:18, short_helm?8:9, p.c.accent);
+  p.Text(wxString::FromUTF8("SmartNav · advisory"), compact?140:151, compact?14:18, 9, p.c.muted);
+  p.Rule(inset+4, line_y, std::max(0, width - inset*2-14));
+  const int cell = std::max(1, (width - inset*2)/4);
   for (int i = 0; i < 4; ++i) {
     const auto &item = items_[i];
     if (item.title.empty()) continue;
-    const int x = 25 + cell*i;
+    const int x = inset + cell*i;
     dc.SetPen(wxPen(Colour(item.color), FromDIP(2)));
     dc.SetBrush(wxBrush(Colour(i ? p.c.background : item.color)));
-    dc.DrawCircle(FromDIP(x+4), FromDIP(47), FromDIP(3));
-    p.Text(item.time, x, 58, 10, p.c.secondary, false, cell-18);
-    p.Text(item.title, x, 74, 13, p.c.primary, false, cell-18);
-    p.Text(item.detail, x, 94, 10, p.c.muted, false, cell-18);
+    dc.DrawCircle(FromDIP(x+4), FromDIP(line_y), FromDIP(3));
+    p.Text(item.time, x, short_helm?49:compact?51:58, compact?8:10, p.c.secondary, false, cell-18);
+    p.Text(item.title, x, short_helm?61:compact?63:74, short_helm?11:compact?12:13, p.c.primary, false, cell-18);
+    p.Text(item.detail, x, short_helm?76:compact?80:94, short_helm?8:compact?9:10, p.c.muted, false, cell-18);
   }
 }
 } // namespace opennav::ui

@@ -78,12 +78,11 @@ void XNavSettingsDrawer::Build() {
     tabs_buttons_.push_back(b);
   }
   tabs_->Bind(wxEVT_SIZE,[this](wxSizeEvent &event){
-    wxClientDC dc(tabs_);dc.SetFont(UiFont(*tabs_,11));
-    int x=0,y=0;const int width=tabs_->GetClientSize().x,gap=FromDIP(5),height=FromDIP(37);
+    double x=0;int y=0;const int width=tabs_->GetClientSize().x,gap=FromDIP(5),height=FromDIP(37);
     for(auto *b:tabs_buttons_) {
-      const int w=dc.GetTextExtent(b->GetLabel()).x+FromDIP(22);
+      const double w=UiTextWidth(*tabs_,b->GetLabel(),11)+FromDIP(22);
       if(x && x+w>width){x=0;y+=height+gap;}
-      b->SetSize(x,y,w,height);x+=w+gap;
+      b->SetSize(std::lround(x),y,std::lround(x+w)-std::lround(x),height);x+=w+gap;
     }
     const int wanted=y+height;
     if(tabs_->GetMinSize().y!=wanted){tabs_->SetMinSize(wxSize(FromDIP(300),wanted));body_->Layout();body_->FitInside();}

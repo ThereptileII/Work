@@ -144,7 +144,7 @@ def main():
                 cdp.send("CSS.enable")
                 doc = cdp.send("DOM.getDocument")
                 data["platformFonts"] = {}
-                for font_selector in [".brand", ".metric-value", ".metric-label", ".drawer-head h2", ".view-header h1"]:
+                for font_selector in [".brand", ".metric-value", ".metric-label", ".drawer-head h2", ".view-header h1", ".settings-tabs button"]:
                     node = cdp.send("DOM.querySelector", {"nodeId": doc["root"]["nodeId"], "selector": font_selector})
                     if node["nodeId"]:
                         data["platformFonts"][font_selector] = cdp.send("CSS.getPlatformFontsForNode", {"nodeId": node["nodeId"]})["fonts"]
@@ -162,6 +162,7 @@ def main():
                 png = args.output / f"{stem}.png"
                 page.screenshot(path=str(png), animations="disabled")
                 data["screenshotSha256"] = hashlib.sha256(png.read_bytes()).hexdigest()
+                cdp.detach()
                 record["states"][stem] = data
                 print(stem, flush=True)
                 context.close()

@@ -98,12 +98,14 @@ Shell::Shell(wxFrame &frame, wxAuiManager &manager, ShellActions actions,
                                          -1, frame_.FromDIP(prototype::top)));
   auto *row = new wxBoxSizer(wxHORIZONTAL);
   auto *brand = new wxPanel(top, wxID_ANY);
+  brand_panel_ = brand;
   brand->SetMinSize(frame_.FromDIP(wxSize(180,68)));
   brand->SetBackgroundStyle(wxBG_STYLE_PAINT);
   brand->Bind(wxEVT_PAINT,[this,brand](wxPaintEvent &) {
     wxAutoBufferedPaintDC dc(brand);
     const auto c=Theme(mode_);
     dc.SetBackground(wxBrush(Colour(c.background))); dc.Clear();
+    dc.SetDeviceOrigin(0, (brand->GetClientSize().y-brand->FromDIP(68))/2);
     // Original 32-unit prototype brand path; a design mark, not ownship data.
     const auto d=[brand](int x){return brand->FromDIP(x);};
     const wxPoint hull[]={{d(25),d(43)},{d(35),d(23)},{d(45),d(43)},{d(35),d(37)}};
@@ -191,6 +193,7 @@ Shell::Shell(wxFrame &frame, wxAuiManager &manager, ShellActions actions,
   // 7px margin, a 1px rule, 7px margin and another 5px gap.
   tools->AddSpacer(frame_.FromDIP(7));
   auto *nav_divider = new wxPanel(left, wxID_ANY);
+  navigation_divider_ = nav_divider;
   // wxMSW otherwise exposes its default "panel" name as native window text.
   // A decorative separator has no label; keep the rail's action identity exact.
   nav_divider->SetLabel(wxEmptyString);
@@ -257,11 +260,13 @@ Shell::Shell(wxFrame &frame, wxAuiManager &manager, ShellActions actions,
   rail_scroll_ = new XNavDataRail(right);
   auto *rail_container = new wxBoxSizer(wxVERTICAL);
   auto *rail_header=new wxPanel(right,wxID_ANY);
+  rail_header_ = rail_header;
   rail_header->SetMinSize(frame_.FromDIP(wxSize(186,42)));
   auto *rail_heading=new wxBoxSizer(wxHORIZONTAL);
   auto *rail_title=Text(rail_header,"AT A GLANCE",9);
   rail_heading->Add(rail_title,1,wxALIGN_CENTER_VERTICAL|wxLEFT,frame_.FromDIP(18));
   auto *configure_rail=Button(rail_header,"Configure instruments","Choose the four rail values",[this]{ShowProduct(ProductPage::RailLayout);});
+  rail_configure_ = configure_rail;
   configure_rail->SetIcon(XNavIcon::Sliders);configure_rail->SetIconOnly();configure_rail->SetRole(ButtonRole::Quiet);
   configure_rail->SetMinSize(frame_.FromDIP(wxSize(40,40)));
   rail_heading->Add(configure_rail,0,wxALIGN_CENTER_VERTICAL|wxRIGHT,frame_.FromDIP(6));rail_header->SetSizer(rail_heading);
@@ -662,9 +667,71 @@ void Shell::UpdateAlerts() {
     alert_pane_->GetParent()->Layout();
   }
 }
+void Shell::ApplyResponsiveLayout() {
+  const auto size = frame_.ToDIP(frame_.GetClientSize());
+  const int layout_class = (size.x <= 1100 ? 1 : 0) |
+      (size.x > 760 && size.y <= 740 ? 2 : 0) |
+      (size.x > 760 && size.y <= 600 ? 4 : 0);
+  const int dpi = frame_.GetDPI().x;
+  if (layout_class == responsive_class_ && dpi == responsive_dpi_) return;
+  responsive_class_ = layout_class; responsive_dpi_ = dpi;
+  const auto layout = prototype::Desktop(size.x, size.y);
+  const auto dip = [this](int v) { return frame_.FromDIP(v); };
+  const auto pane_size = [&](const char *name, int width, int height) {
+    auto &pane = manager_.GetPane(name);
+    if (!pane.IsOk()) return;
+    const wxSize wanted(width < 0 ? -1 : dip(width), height < 0 ? -1 : dip(height));
+    pane.BestSize(wanted).MinSize(wanted);
+    pane.window->SetMinSize(wanted);
+  };
+  brand_panel_->SetMinSize(wxSize(dip(180), dip(layout.top)));
+  pane_size("OpenNavTop", -1, layout.top);
+  pane_size("OpenNavTools", layout.navigation, -1);
+  pane_size("OpenNavData", layout.rail, -1);
+  pane_size("OpenNavHorizon", -1, layout.horizon);
+  auto *left = navigation_divider_->GetParent();
+  auto *tools = left->GetSizer();
+  tools->Clear(false);
+  tools->AddSpacer(dip(layout.nav_inset));
+  navigation_divider_->SetMinSize(wxSize(dip(layout.navigation-43), dip(1)));
+  for (std::size_t i = 0; i < navigation_page_buttons_.size(); ++i) {
+    if (i == 7) tools->AddStretchSpacer();
+    auto *button = navigation_page_buttons_[i];
+    button->SetMinSize(wxSize(dip(layout.navigation-19), dip(layout.nav_height)));
+    tools->Add(button, 0, wxLEFT | wxRIGHT, dip(9));
+    tools->AddSpacer(dip(layout.nav_gap));
+    if (i == 2) {
+      tools->AddSpacer(dip(layout.divider_before));
+      tools->Add(navigation_divider_, 0, wxLEFT, dip(21));
+      tools->AddSpacer(dip(layout.divider_after));
+    }
+  }
+  // The lower vessel-profile component remains a separate design migration.
+  // Compact layouts still retain their real bottom inset and usable Settings.
+  if (layout.nav_inset == 8) tools->AddSpacer(dip(8-layout.nav_gap));
+  rail_header_->SetMinSize(wxSize(dip(layout.rail), dip(layout.rail_header)));
+  rail_configure_->SetMinSize(wxSize(dip(layout.rail == 156 ? 30 : 40),
+                                    dip(layout.rail == 156 ? 30 : 40)));
+  rail_header_->GetSizer()->GetItem(std::size_t(0))->SetBorder(dip(layout.rail == 156 ? 13 : 18));
+  auto *container = rail_header_->GetParent()->GetSizer();
+  container->GetItem(std::size_t(2))->AssignSpacer(0, dip(layout.pilot_gap));
+  auto *pilot_row = container->GetItem(std::size_t(3))->GetSizer();
+  const int inset = layout.rail == 156 ? 14 : 19;
+  pilot_row->GetItem(std::size_t(0))->AssignSpacer(dip(inset), 0);
+  pilot_row->GetItem(std::size_t(2))->AssignSpacer(dip(inset-1), 0);
+  pilot_summary_->SetMinSize(wxSize(dip(layout.rail-inset*2+1), dip(layout.pilot_height)));
+  left->Layout();rail_header_->GetParent()->Layout();
+  // wxAUI 3.2.8 resets DockFixed sizes from pane best/min sizes in LayoutAll.
+  // Only XNav-owned panes change. No detach, perspective rewrite, chart model
+  // mutation or navigation processing is needed for a display-size change.
+  manager_.Update();
+  brand_panel_->Refresh(false);
+}
+
 void Shell::Tick() {
   XNAV_TEST_UI_TRACE("tick.begin", metrics_.ticks, timer_.IsRunning());
   const auto begin = std::chrono::steady_clock::now();
+  ApplyResponsiveLayout();
   const auto wall_now = vessel::Clock::now();
   if (actions_.chart_orientation) {
     const auto orientation = wxString::FromUTF8(actions_.chart_orientation());

@@ -139,9 +139,22 @@ def main():
             owner = ui.W.DWORD()
             ui.GetWindowThreadProcessId(target, ui.C.byref(owner))
             assert owner.value == app.pid, "Capture input would land outside owned application"
-            ui.SetForegroundWindow(window)
+            assert ui.IsWindowEnabled(target) and ui.text(target) == label, "Native input target differs from requested action"
+            # Activate the target's own top-level surface. Activating the main
+            # frame after hit-testing an owned sheet can change its stacking.
+            ancestor = ui.declare(ui.user, "GetAncestor", ui.W.HWND, ui.W.HWND, ui.W.UINT)
+            foreground = ui.declare(ui.user, "GetForegroundWindow", ui.W.HWND)
+            surface = ancestor(target, 2)  # GA_ROOT: parents, not owner chain.
+            ui.SetForegroundWindow(surface)
+            deadline = time.monotonic()+3
+            while foreground() != surface and time.monotonic() < deadline:
+                time.sleep(.05)
+            assert foreground() == surface, "Input surface did not receive foreground activation"
             ui.SetCursorPos(x, y)
+            assert ui.WindowFromPoint(ui.W.POINT(x,y)) == target, "Activation obscured input target"
+            record.setdefault("pointer_hits", []).append(dict(label=label,x=x,y=y,window=int(target),surface=int(surface)))
             ui.MouseEvent(2, 0, 0, 0, 0)
+            time.sleep(.05)
             ui.MouseEvent(4, 0, 0, 0, 0)
         else:
             xdo("mousemove", x, y)
@@ -208,6 +221,17 @@ def main():
         # Settings' lower vessel-profile group is still a pending migration.
         reference = json.loads((ROOT / "docs/design/prototype/reference" /
                                 ("windows" if windows else "linux") / "capture.json").read_text())
+        if windows and name in ("settings-day","settings-dusk","settings-night","sensors-day","display-day","system-day"):
+            expected_tabs=reference["states"][name]["components"][".settings-tabs button"]
+            drawer=snapshot["runtime"]["display"]["drawer"]
+            for label, expected in zip(("Vessel","Navigation","Sensors","Autopilot","Radar","Display","System","Help"), expected_tabs):
+                actual=[c for c in snapshot["runtime"]["display"]["interaction_controls"]
+                        if c["label"]==label and c["visible"] and drawer["x"]<=c["x"]<drawer["x"]+drawer["width"]
+                        and drawer["y"]<=c["y"]<drawer["y"]+drawer["height"]]
+                assert len(actual)==1, (label,"unique Preferences section")
+                rect={k:actual[0][k] for k in ("x","y","width","height")}
+                rect["x"]-=client_origin[0];rect["y"]-=client_origin[1]
+                assert all(abs(rect[k]-expected["rect"][k])<=1 for k in rect), (label,"tab differs from HTML",rect,expected["rect"])
         rail_reference = reference["states"]["navigation-day"]["components"][".nav-btn"][:7]
         sidebar = reference["states"]["navigation-day"]["components"][".sidebar"][0]["rect"]
         rail_actual = []
@@ -534,6 +558,15 @@ def main():
                 assert "drawer" not in data()["runtime"]["display"], "Close did not dismiss sheet"
                 record["online_ais_settings"] = "Default OFF; missing key withholds connection; OFF, themes and Close exercised"
         record["result"] = "captured; conformance not asserted"
+    except Exception as error:
+        record["failure"] = repr(error)
+        if app and app.poll() is None:
+            try:
+                (args.output/"failure-state.json").write_text(json.dumps(data(),indent=2)+"\n")
+                capture("failure-state")
+            except Exception as evidence_error:
+                record["failureCaptureError"] = repr(evidence_error)
+        raise
     finally:
         shutdown_error = None
         if app and app.poll() is None:

@@ -52,3 +52,14 @@ the corrected harness scopes left-navigation identity to the independently
 measured sidebar, retaining exact rectangle checks. Day/Sensors/Night were
 reviewed again. These captures confirm composition, not full content fidelity.
 See [corrective evidence](../../evidence/prototype-settings-product-local.json).
+
+The next Windows review (`f13075a`) exposes a five-versus-six tab wrap difference.
+GDI integer advances exceed the browser's fractional widths cumulatively. The
+correction uses Windows [DirectWrite text-layout metrics](https://learn.microsoft.com/en-us/windows/win32/api/dwrite/nf-dwrite-idwritetextlayout-getmetrics)
+with the same chosen installed font, size and weight; it rounds control edges
+only after accumulating fractional advances. No font is bundled or substituted.
+This affects wrapping geometry, not OpenCPN chart text or navigation semantics.
+The native test now requires six tabs on row one, and product capture compares
+all eight rectangles to the independent Windows HTML within one raster pixel.
+The renderer records actual browser-resolved fonts, without modifying the HTML.
+Native execution and renewed screenshot review are still required.

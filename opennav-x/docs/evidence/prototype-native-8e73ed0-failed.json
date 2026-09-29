@@ -1,0 +1,650 @@
+{
+  "accepted": false,
+  "developmentGatesPassed": false,
+  "localCommit": "7f83c5b50488fd72dcb25481114280c318d58288",
+  "remoteCommit": "8e73ed0c8a818307afacd22a5a4bcd6680199289",
+  "tree": "89309887b8f42baf05fec424034d4323db3f47aa",
+  "ciRun": "https://github.com/ThereptileII/Work/actions/runs/36506983264",
+  "jobsPassed": 7,
+  "jobsFailed": 1,
+  "artifacts": [
+    {
+      "id": 11008171116,
+      "name": "prototype-native-Windows-8e73ed0c8a818307afacd22a5a4bcd6680199289",
+      "sha256": "45b2a87338aaaf6298656b4a58b6707cfcf165488016b89092a471d897398344",
+      "bytes": 13182797,
+      "zipCrc": true
+    },
+    {
+      "id": 11007990744,
+      "name": "prototype-ais-foundation-Windows-8e73ed0c8a818307afacd22a5a4bcd6680199289",
+      "sha256": "ffc7825738350a2c14ce970b6cd20a2c4439c179675e02f11f83c95fd4ae448f",
+      "bytes": 690,
+      "zipCrc": true
+    },
+    {
+      "id": 11007843184,
+      "name": "prototype-object-flow-Windows-8e73ed0c8a818307afacd22a5a4bcd6680199289",
+      "sha256": "64cae32d0878c4aa2276a57983699abe4530df022af85c09822a0db00a1cc260",
+      "bytes": 3984867,
+      "zipCrc": true
+    },
+    {
+      "id": 11007412566,
+      "name": "prototype-review-guard-Windows-8e73ed0c8a818307afacd22a5a4bcd6680199289",
+      "sha256": "7200719bef6cf4f0ca23789f782fd23f453f51187f10eb880fb3dd7f6d42a173",
+      "bytes": 8902,
+      "zipCrc": true
+    },
+    {
+      "id": 11007412534,
+      "name": "prototype-ais-network-Linux-8e73ed0c8a818307afacd22a5a4bcd6680199289",
+      "sha256": "1e4b6f2ef7ce4c37ea82ff05d3272b536b32e352130a4547ba65c58110477fce",
+      "bytes": 935,
+      "zipCrc": true
+    },
+    {
+      "id": 11007134081,
+      "name": "prototype-reference-Linux-8e73ed0c8a818307afacd22a5a4bcd6680199289",
+      "sha256": "2c6f2e395245267b28585694bdb51883c0f6a9e4db054e7b2267c57f89b09e80",
+      "bytes": 20830179,
+      "zipCrc": true
+    },
+    {
+      "id": 11006919499,
+      "name": "prototype-reference-Windows-8e73ed0c8a818307afacd22a5a4bcd6680199289",
+      "sha256": "61eccd555b97b61b2ebe156f92a6f46f92d338f8801ad58278626c2ff5811621",
+      "bytes": 18774211,
+      "zipCrc": true
+    },
+    {
+      "id": 11006849271,
+      "name": "prototype-ais-foundation-Linux-8e73ed0c8a818307afacd22a5a4bcd6680199289",
+      "sha256": "22adaf878a9e4dba7d1861ed6400b3c6c340402d215512b1781e113099512e88",
+      "bytes": 688,
+      "zipCrc": true
+    }
+  ],
+  "dpi": {
+    "authority": "Actual GetDpiForWindow and screen pixels; no rescaling",
+    "desktop": {
+      "before": [
+        1440,
+        900,
+        32
+      ],
+      "after": [
+        1920,
+        1080,
+        32
+      ]
+    },
+    "scales": [
+      {
+        "percent": 100,
+        "screenshots": [
+          {
+            "file": "100-navigation-day.png",
+            "sha256": "0e521b50717f680b1c5d2876c9597f771755447a6fc1135124f6b06bf8397f52"
+          },
+          {
+            "file": "100-settings-day.png",
+            "sha256": "37303a02863137273e8a204a0d29f8d81d1e82c879dcb4689fcf5918a3dd6f6b"
+          },
+          {
+            "file": "100-sensors-day.png",
+            "sha256": "bd3a2ad6e898b94c3e7dfce41deba60bf31131e912db13f7afc6dc69d47bc420"
+          },
+          {
+            "file": "100-display-night.png",
+            "sha256": "3d35a6ae995d757f5b243df813dd8f1752eede9ee88c5c1a5c1b3c883d7b01c3"
+          },
+          {
+            "file": "100-energy-night.png",
+            "sha256": "9f4d441d794cf01473fcda10836daa1a9e59e92e67e445a0e18eb87c7113f669"
+          },
+          {
+            "file": "100-instruments-night.png",
+            "sha256": "cd8112dc4606af3a922df1ae6669e0ac700449722170bee0c2220bcdba068734"
+          }
+        ],
+        "rail": {
+          "actions": [
+            {
+              "x": 17,
+              "height": 61,
+              "width": 61,
+              "label": "Chart",
+              "y": 113,
+              "visible": true,
+              "enabled": true
+            },
+            {
+              "x": 17,
+              "height": 61,
+              "width": 61,
+              "label": "Passage",
+              "y": 179,
+              "visible": true,
+              "enabled": true
+            },
+            {
+              "x": 17,
+              "height": 61,
+              "width": 61,
+              "label": "Traffic",
+              "y": 245,
+              "visible": true,
+              "enabled": true
+            },
+            {
+              "x": 17,
+              "height": 61,
+              "width": 61,
+              "label": "Energy",
+              "y": 331,
+              "visible": true,
+              "enabled": true
+            },
+            {
+              "x": 17,
+              "height": 61,
+              "width": 61,
+              "label": "Instruments",
+              "y": 397,
+              "visible": true,
+              "enabled": true
+            },
+            {
+              "x": 17,
+              "height": 61,
+              "width": 61,
+              "label": "Anchor",
+              "y": 463,
+              "visible": true,
+              "enabled": true
+            },
+            {
+              "x": 17,
+              "height": 61,
+              "width": 61,
+              "label": "Radar",
+              "y": 529,
+              "visible": true,
+              "enabled": true
+            },
+            {
+              "x": 17,
+              "height": 61,
+              "width": 61,
+              "label": "Settings",
+              "y": 730,
+              "visible": true,
+              "enabled": true
+            }
+          ],
+          "readings": [
+            {
+              "x": 1102,
+              "height": 136,
+              "width": 186,
+              "label": "sog",
+              "y": 141,
+              "visible": true,
+              "enabled": true
+            },
+            {
+              "x": 1102,
+              "height": 135,
+              "width": 186,
+              "label": "depth",
+              "y": 277,
+              "visible": true,
+              "enabled": true
+            },
+            {
+              "x": 1102,
+              "height": 136,
+              "width": 186,
+              "label": "aws",
+              "y": 412,
+              "visible": true,
+              "enabled": true
+            },
+            {
+              "x": 1102,
+              "height": 135,
+              "width": 186,
+              "label": "heading",
+              "y": 548,
+              "visible": true,
+              "enabled": true
+            }
+          ]
+        },
+        "railAfterClose": {
+          "actions": [
+            {
+              "x": 17,
+              "height": 61,
+              "width": 61,
+              "label": "Chart",
+              "y": 113,
+              "visible": true,
+              "enabled": true
+            },
+            {
+              "x": 17,
+              "height": 61,
+              "width": 61,
+              "label": "Passage",
+              "y": 179,
+              "visible": true,
+              "enabled": true
+            },
+            {
+              "x": 17,
+              "height": 61,
+              "width": 61,
+              "label": "Traffic",
+              "y": 245,
+              "visible": true,
+              "enabled": true
+            },
+            {
+              "x": 17,
+              "height": 61,
+              "width": 61,
+              "label": "Energy",
+              "y": 331,
+              "visible": true,
+              "enabled": true
+            },
+            {
+              "x": 17,
+              "height": 61,
+              "width": 61,
+              "label": "Instruments",
+              "y": 397,
+              "visible": true,
+              "enabled": true
+            },
+            {
+              "x": 17,
+              "height": 61,
+              "width": 61,
+              "label": "Anchor",
+              "y": 463,
+              "visible": true,
+              "enabled": true
+            },
+            {
+              "x": 17,
+              "height": 61,
+              "width": 61,
+              "label": "Radar",
+              "y": 529,
+              "visible": true,
+              "enabled": true
+            },
+            {
+              "x": 17,
+              "height": 61,
+              "width": 61,
+              "label": "Settings",
+              "y": 730,
+              "visible": true,
+              "enabled": true
+            }
+          ],
+          "readings": [
+            {
+              "x": 1102,
+              "height": 136,
+              "width": 186,
+              "label": "sog",
+              "y": 141,
+              "visible": true,
+              "enabled": true
+            },
+            {
+              "x": 1102,
+              "height": 135,
+              "width": 186,
+              "label": "depth",
+              "y": 277,
+              "visible": true,
+              "enabled": true
+            },
+            {
+              "x": 1102,
+              "height": 136,
+              "width": 186,
+              "label": "aws",
+              "y": 412,
+              "visible": true,
+              "enabled": true
+            },
+            {
+              "x": 1102,
+              "height": 135,
+              "width": 186,
+              "label": "heading",
+              "y": 548,
+              "visible": true,
+              "enabled": true
+            }
+          ]
+        },
+        "result": "passed; visual review and physical touch remain required"
+      },
+      {
+        "percent": 125,
+        "screenshots": [
+          {
+            "file": "125-navigation-day.png",
+            "sha256": "83c8a42f57aa309cf4aa67b81226c66ac9137861ad7e58a57bf6ccc7ebc39f9a"
+          },
+          {
+            "file": "125-settings-day.png",
+            "sha256": "27cf9a4049fc8f575261dcd5010fc241166bde43b5c89b11abb64b4104d4cc1d"
+          },
+          {
+            "file": "125-sensors-day.png",
+            "sha256": "dd8e0162eb80e206fcd80e9ec77cc361d186f9b022669df4ab363c342e846b63"
+          },
+          {
+            "file": "125-display-night.png",
+            "sha256": "74799b77afcde0adf997857c750c33cf310734e71470398dfa3635dacc6080b4"
+          },
+          {
+            "file": "125-energy-night.png",
+            "sha256": "62a2fade3257aad6d888235bbe9ce0f204bc53ccf322a2564a90b1feb9849319"
+          },
+          {
+            "file": "125-instruments-night.png",
+            "sha256": "c1e82d1c5d49237241dfe175cb93122e114dc58a7705266e210e625587d0a91c"
+          }
+        ],
+        "rail": {
+          "actions": [
+            {
+              "x": 20,
+              "height": 76,
+              "width": 76,
+              "label": "Chart",
+              "y": 141,
+              "visible": true,
+              "enabled": true
+            },
+            {
+              "x": 20,
+              "height": 76,
+              "width": 76,
+              "label": "Passage",
+              "y": 223,
+              "visible": true,
+              "enabled": true
+            },
+            {
+              "x": 20,
+              "height": 76,
+              "width": 76,
+              "label": "Traffic",
+              "y": 305,
+              "visible": true,
+              "enabled": true
+            },
+            {
+              "x": 20,
+              "height": 76,
+              "width": 76,
+              "label": "Energy",
+              "y": 412,
+              "visible": true,
+              "enabled": true
+            },
+            {
+              "x": 20,
+              "height": 76,
+              "width": 76,
+              "label": "Instruments",
+              "y": 494,
+              "visible": true,
+              "enabled": true
+            },
+            {
+              "x": 20,
+              "height": 76,
+              "width": 76,
+              "label": "Anchor",
+              "y": 576,
+              "visible": true,
+              "enabled": true
+            },
+            {
+              "x": 20,
+              "height": 76,
+              "width": 76,
+              "label": "Radar",
+              "y": 658,
+              "visible": true,
+              "enabled": true
+            },
+            {
+              "x": 20,
+              "height": 54,
+              "width": 76,
+              "label": "Settings",
+              "y": 740,
+              "visible": true,
+              "enabled": true
+            }
+          ],
+          "readings": [
+            {
+              "x": 1056,
+              "height": 119,
+              "width": 233,
+              "label": "sog",
+              "y": 176,
+              "visible": true,
+              "enabled": true
+            },
+            {
+              "x": 1056,
+              "height": 120,
+              "width": 233,
+              "label": "depth",
+              "y": 295,
+              "visible": true,
+              "enabled": true
+            },
+            {
+              "x": 1056,
+              "height": 119,
+              "width": 233,
+              "label": "aws",
+              "y": 415,
+              "visible": true,
+              "enabled": true
+            },
+            {
+              "x": 1056,
+              "height": 119,
+              "width": 233,
+              "label": "heading",
+              "y": 534,
+              "visible": true,
+              "enabled": true
+            }
+          ]
+        },
+        "railAfterClose": {
+          "actions": [
+            {
+              "x": 20,
+              "height": 76,
+              "width": 76,
+              "label": "Chart",
+              "y": 141,
+              "visible": true,
+              "enabled": true
+            },
+            {
+              "x": 20,
+              "height": 76,
+              "width": 76,
+              "label": "Passage",
+              "y": 223,
+              "visible": true,
+              "enabled": true
+            },
+            {
+              "x": 20,
+              "height": 76,
+              "width": 76,
+              "label": "Traffic",
+              "y": 305,
+              "visible": true,
+              "enabled": true
+            },
+            {
+              "x": 20,
+              "height": 76,
+              "width": 76,
+              "label": "Energy",
+              "y": 412,
+              "visible": true,
+              "enabled": true
+            },
+            {
+              "x": 20,
+              "height": 76,
+              "width": 76,
+              "label": "Instruments",
+              "y": 494,
+              "visible": true,
+              "enabled": true
+            },
+            {
+              "x": 20,
+              "height": 76,
+              "width": 76,
+              "label": "Anchor",
+              "y": 576,
+              "visible": true,
+              "enabled": true
+            },
+            {
+              "x": 20,
+              "height": 76,
+              "width": 76,
+              "label": "Radar",
+              "y": 658,
+              "visible": true,
+              "enabled": true
+            },
+            {
+              "x": 20,
+              "height": 54,
+              "width": 76,
+              "label": "Settings",
+              "y": 740,
+              "visible": true,
+              "enabled": true
+            }
+          ],
+          "readings": [
+            {
+              "x": 1056,
+              "height": 119,
+              "width": 233,
+              "label": "sog",
+              "y": 176,
+              "visible": true,
+              "enabled": true
+            },
+            {
+              "x": 1056,
+              "height": 120,
+              "width": 233,
+              "label": "depth",
+              "y": 295,
+              "visible": true,
+              "enabled": true
+            },
+            {
+              "x": 1056,
+              "height": 119,
+              "width": 233,
+              "label": "aws",
+              "y": 415,
+              "visible": true,
+              "enabled": true
+            },
+            {
+              "x": 1056,
+              "height": 119,
+              "width": 233,
+              "label": "heading",
+              "y": 534,
+              "visible": true,
+              "enabled": true
+            }
+          ]
+        },
+        "result": "passed; visual review and physical touch remain required"
+      },
+      {
+        "percent": 150,
+        "screenshots": [
+          {
+            "file": "150-navigation-day.png",
+            "sha256": "43f64a1e275dbc21afe500843443061a6af21c43cd14b3b0c833147afbe15f44"
+          },
+          {
+            "file": "150-failure.png",
+            "sha256": "43f64a1e275dbc21afe500843443061a6af21c43cd14b3b0c833147afbe15f44"
+          }
+        ]
+      }
+    ],
+    "executableSha256": "d916d51436f693187b54144e8f5e49cd78a9b5dbe6c3b07ff5c0d65f84c00d93",
+    "sourceCommit": "8e73ed0c8a818307afacd22a5a4bcd6680199289",
+    "scope": "Additional prototype development gate; no release or boat acceptance",
+    "result": "failed",
+    "error": "AssertionError(('Radar', 'unique sidebar action', []))",
+    "restoredDpi": {
+      "before_percent": 150,
+      "percent": 100,
+      "source_id": 0,
+      "minimum_relative": 0,
+      "maximum_relative": 3
+    }
+  },
+  "verifiedDpiImages": {
+    "prototype-native-Windows-8e73ed0c8a818307afacd22a5a4bcd6680199289/prototype-dpi/100-navigation-day.png": "0e521b50717f680b1c5d2876c9597f771755447a6fc1135124f6b06bf8397f52",
+    "prototype-native-Windows-8e73ed0c8a818307afacd22a5a4bcd6680199289/prototype-dpi/100-settings-day.png": "37303a02863137273e8a204a0d29f8d81d1e82c879dcb4689fcf5918a3dd6f6b",
+    "prototype-native-Windows-8e73ed0c8a818307afacd22a5a4bcd6680199289/prototype-dpi/100-sensors-day.png": "bd3a2ad6e898b94c3e7dfce41deba60bf31131e912db13f7afc6dc69d47bc420",
+    "prototype-native-Windows-8e73ed0c8a818307afacd22a5a4bcd6680199289/prototype-dpi/100-display-night.png": "3d35a6ae995d757f5b243df813dd8f1752eede9ee88c5c1a5c1b3c883d7b01c3",
+    "prototype-native-Windows-8e73ed0c8a818307afacd22a5a4bcd6680199289/prototype-dpi/100-energy-night.png": "9f4d441d794cf01473fcda10836daa1a9e59e92e67e445a0e18eb87c7113f669",
+    "prototype-native-Windows-8e73ed0c8a818307afacd22a5a4bcd6680199289/prototype-dpi/100-instruments-night.png": "cd8112dc4606af3a922df1ae6669e0ac700449722170bee0c2220bcdba068734",
+    "prototype-native-Windows-8e73ed0c8a818307afacd22a5a4bcd6680199289/prototype-dpi/125-navigation-day.png": "83c8a42f57aa309cf4aa67b81226c66ac9137861ad7e58a57bf6ccc7ebc39f9a",
+    "prototype-native-Windows-8e73ed0c8a818307afacd22a5a4bcd6680199289/prototype-dpi/125-settings-day.png": "27cf9a4049fc8f575261dcd5010fc241166bde43b5c89b11abb64b4104d4cc1d",
+    "prototype-native-Windows-8e73ed0c8a818307afacd22a5a4bcd6680199289/prototype-dpi/125-sensors-day.png": "dd8e0162eb80e206fcd80e9ec77cc361d186f9b022669df4ab363c342e846b63",
+    "prototype-native-Windows-8e73ed0c8a818307afacd22a5a4bcd6680199289/prototype-dpi/125-display-night.png": "74799b77afcde0adf997857c750c33cf310734e71470398dfa3635dacc6080b4",
+    "prototype-native-Windows-8e73ed0c8a818307afacd22a5a4bcd6680199289/prototype-dpi/125-energy-night.png": "62a2fade3257aad6d888235bbe9ce0f204bc53ccf322a2564a90b1feb9849319",
+    "prototype-native-Windows-8e73ed0c8a818307afacd22a5a4bcd6680199289/prototype-dpi/125-instruments-night.png": "c1e82d1c5d49237241dfe175cb93122e114dc58a7705266e210e625587d0a91c",
+    "prototype-native-Windows-8e73ed0c8a818307afacd22a5a4bcd6680199289/prototype-dpi/150-navigation-day.png": "43f64a1e275dbc21afe500843443061a6af21c43cd14b3b0c833147afbe15f44",
+    "prototype-native-Windows-8e73ed0c8a818307afacd22a5a4bcd6680199289/prototype-dpi/150-failure.png": "43f64a1e275dbc21afe500843443061a6af21c43cd14b3b0c833147afbe15f44"
+  },
+  "failures": [
+    "150%: Radar is not visible in the old fixed-size navigation rail. Replacement compact layout is source commit 8b6eab7; Windows gate pending.",
+    "Actual-product capture reported Preferences Close did not restore chart. Earlier f13075a passed; no failed-click screenshot was retained. Cause not proven. Replacement strengthens native input ownership/foreground checks and preserves failure captures, without retrying commands."
+  ],
+  "limitations": [
+    "100/125% input interactions passed, but the original probe minimum height was too broad: 125% Settings height 54 is below prototype 63.75px. Replacement requires exact measured height within one raster pixel at every scale.",
+    "No boat, full release, installer or prototype visual acceptance."
+  ]
+}
