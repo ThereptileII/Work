@@ -144,9 +144,10 @@ void XNavDrawer::PaintHeading(wxPaintEvent &) {
   dc.Clear();
   const int offset = has_back_ ? 50 : 0,
             width = ToDIP(heading_->GetClientSize().x);
-  p.Text(eyebrow_, 22, 20 + offset, 9, p.c.accent, true, width - 44);
-  p.Text(title_, 22, 39 + offset, 26, p.c.primary, false,
-         width - (has_back_ ? 44 : 110));
+  p.TextTracked(eyebrow_, 22, 20 + offset, 9, p.c.accent, 650, 1.17,
+                width - 44);
+  p.TextTracked(title_, 22, 39 + offset, 26, p.c.primary, 450, -1.0,
+                width - (has_back_ ? 44 : 110));
   p.Rule(0, ToDIP(heading_->GetClientSize().y) - 1, width);
 }
 int XNavDrawer::FilterEvent(wxEvent &event) {

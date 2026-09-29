@@ -55,7 +55,10 @@ SELECTORS = [".topbar", ".sidebar", "#workspace", "#chartView", ".data-rail",
              ".view-header p", ".dashboard-grid", ".dashboard-card h3",
              ".wind-rose", ".instrument-grid", ".instrument-tile",
              ".instrument-tile label", ".instrument-tile b",
-             ".instrument-tile>small", ".action-row"]
+             ".instrument-tile>small", ".action-row", ".energy-gauge",
+             ".battery-visual", ".battery-visual i", ".energy-chart",
+             ".energy-chart svg", ".stat-label", ".power-row", ".power-row>div",
+             ".power-row label", ".power-row b"]
 
 MEASURE = """selectors => {
  const app = document.querySelector('#app');

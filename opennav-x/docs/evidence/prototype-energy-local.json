@@ -1,0 +1,91 @@
+{
+  "accepted": false,
+  "scope": "Prototype Energy presentation correction; Windows and boat pending",
+  "baseCommit": "111fb9c0a67db9a978fba7191c713599eba6b759",
+  "sourceSha256": {
+    "src/application/EnergyView.h": "0b4e8398e921ae2a99ac7985189c3db3a66ae3150bbce46cf1c239a73a66fd2d",
+    "src/application/EnergyView.cpp": "43f01bdcd9291693d236d2f22c5cc31a73b6c94116ac6fca194456dfc2c9fe5f",
+    "src/ui/PreviewPanel.cpp": "1c49858c02b48b8f7b28c1c7d2035c65f782c18a13b2475427571100aab02eab",
+    "src/ui/PreviewPanel.h": "886ed891faa7ed9d470f34246c2843861c94cd5e80ef789eb71ff39aed167d51",
+    "src/ui/Controls.cpp": "75628df064852fcf8a7c8dc6dd9b7248223abb39d5f834f6245d65b1629b4bd9",
+    "tests/passage_view_tests.cpp": "ff7bed54ed083481a78f8ad64830fab37176947c57390e34ad1d4f44d7786269",
+    "tests/energy_panel_test.cpp": "747cc412e3bfaa7e10a00ca2805627cdd3f1597ac8597b97757e3f44213996b9",
+    "tools/prototype/capture-ais-component.py": "01a9fb6b562cbfda2fa122f4aa253dad32b78a2c2d27575011a5243ef1d675e4",
+    "tools/prototype/render.py": "5973af713f926d129bbcf9899e3d318395c683723dc2f97bca02a7d9a73e9cce",
+    ".github/workflows/opennav-prototype.yml": "e2cd70d134532afb594eabb73e36f9963bf31e01e9d9e480aea3fe0e0d965883"
+  },
+  "linuxJUnit": {
+    "sha256": "8f0c2218174ca3c03651f66fc8de05339fe47b7d694d0b0ec7a85e2f2af37de3",
+    "result": {
+      "name": "(empty)",
+      "tests": "123",
+      "failures": "0",
+      "disabled": "0",
+      "skipped": "0",
+      "hostname": "",
+      "time": "19",
+      "timestamp": "2026-09-29T02:17:45"
+    }
+  },
+  "newPresentationAssertions": 14,
+  "suites": [
+    {
+      "folder": "evidence/local/prototype/energy-component-pass1",
+      "executableSha256": "6fd143d4849f5b143ccbb0ed2ca7e25517680332e38a7ad72e32aec6522ab34c",
+      "checks": 44,
+      "captures": {
+        "energy-day.png": "885acbcfad396f3c60b8ddfd6fbdff40ead5ce9e0e164caa848c90854038535d",
+        "energy-dusk.png": "4c9160f45390b8378b5f4ffb78e0d325323a95ad9601be15f0717e72623823c8",
+        "energy-night.png": "de46c204285863733c884d35303b2e5567b703e4031926cf4db95d284bf31598",
+        "energy-stale-day.png": "981383279ec6bc8cdee7fc2777a24282cf280a68c11ebd1aec4f6c86c361a34b",
+        "energy-gps-unavailable-day.png": "783d0636ee6780fef8f35d14ca5275bd36efc0c28add81776dae6a11885b8a62",
+        "energy-shortfall-day.png": "539606992ccf3ccdc12934e420026b89d1d31e7c2b714813aa9d1d4766690622",
+        "energy-inactive-day.png": "783d0636ee6780fef8f35d14ca5275bd36efc0c28add81776dae6a11885b8a62"
+      },
+      "comparison": "Reference/current/diff retained in comparison/; no threshold-based acceptance"
+    },
+    {
+      "folder": "evidence/local/prototype/energy-component-pass2",
+      "executableSha256": "094b55ceb11348ddf51dc3cd23d4331a297ea4a0324abff2438ab6405af232ea",
+      "checks": 44,
+      "captures": {
+        "energy-day.png": "1aafcc51a5c76cddcd9b82d8b893295a26c80c9063d8f06cdef4d0efabffca65",
+        "energy-dusk.png": "46ff37f5b49c08fb346bbe9b241d8624537e8d2fbe1c4b9a8c2dcfea678353dc",
+        "energy-night.png": "6c9ddfaf6cb6cd36649d6d31566034c95baf5daa999bf9f674752f03bbfeaff6",
+        "energy-stale-day.png": "a9cd380577676e4c5342271ea23be208badd60d17fd68f89b17c3f8b999c1ca5",
+        "energy-gps-unavailable-day.png": "49cf92c11718cf60a4136c7ff9f133b7b3a066621187acb73dfb4fdee15e1802",
+        "energy-shortfall-day.png": "773a8901d79604e57799c43c1509720bdd4cf56908235cb348b5d65fe6056fdd",
+        "energy-inactive-day.png": "49cf92c11718cf60a4136c7ff9f133b7b3a066621187acb73dfb4fdee15e1802"
+      },
+      "comparison": "Reference/current/diff retained in comparison/; no threshold-based acceptance"
+    },
+    {
+      "folder": "evidence/local/prototype/text-metrics-instruments-pass2",
+      "executableSha256": "8003a5cb0198832df3ac6f5455a76cebf72976a01b330089cc70da8ac5753c19",
+      "checks": 41,
+      "captures": {
+        "instruments-day.png": "d82f4215b7b2954cfdaca331ca447a1900476020e3814fd80e17adddf82add13",
+        "instruments-dusk.png": "73c486f57dd971548eb573c1c9a5b3c10dee6fe5ef86efc9b2db3066e315e3de",
+        "instruments-night.png": "8aa40328e6784c7c4f0d83298805bab8c1defb81b1cd7cbbc881ff47d4bbe341",
+        "instruments-stale-day.png": "24f1e35301ebb5251baf2062118353fe0ead3fc2a34057874038d58bae5e13a0",
+        "instruments-heading-unavailable-day.png": "2a939055936f150a2e4a907ad1032673ed761a8069ca1e21a5ebccf0aa196205"
+      },
+      "comparison": "Reference/current/diff retained in comparison/; no threshold-based acceptance"
+    }
+  ],
+  "correctiveReview": [
+    "Pass1 compared against immutable Windows reference; missing dashboard-card border corrected.",
+    "Pass2 Day/Night/stale/shortfall reviewed; shared Instruments card regressions pass."
+  ],
+  "requiredNavigationMeaningDifferences": [
+    "Stored energy is explicitly estimated from current assessed SOC and configured capacity.",
+    "Only the existing model endpoint is forecast; constant-consumption line replaces decorative mock curve.",
+    "Source loss, no active route and infeasible arrival suppress dependent outputs; current independent readings continue.",
+    "Forecast quality and reserve reflect actual model, never hard-coded good quality or comfortable margin."
+  ],
+  "remaining": [
+    "Below-fold Explore pace/calibration workflow is not yet prototype-conformant.",
+    "Native Windows font, primary-product theme/Close and boat comparisons pending.",
+    "Full DPI, installer and lifecycle replacement gates pending."
+  ]
+}

@@ -82,6 +82,8 @@ jobs:
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
           python opennav-x/tools/prototype/capture-ais-component.py --component instruments --client opennav-x/build/production-windows/Release/instrument_panel_test.exe --output opennav-x/evidence/local/instruments-component
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          python opennav-x/tools/prototype/capture-ais-component.py --component energy --client opennav-x/build/production-windows/Release/energy_panel_test.exe --output opennav-x/evidence/local/energy-component
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
       - name: Offline commissioning probe CLI and secret-output guards
         run: |
           $env:PATH = (Resolve-Path opennav-x/build/production-install).Path + ";" + $env:PATH

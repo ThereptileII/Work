@@ -1,4 +1,5 @@
 #include "application/PassageView.h"
+#include "application/EnergyView.h"
 #include "integration/RouteProgressInput.h"
 #include "smartnav/VesselEnergy.h"
 #include <iostream>
@@ -139,10 +140,77 @@ int RunPassageChecks() {
     return 1;
   }
 }
+int RunEnergyViewChecks() {
+  try {
+    const auto before = checks;
+    auto state = Fixture();
+    const smartnav::EnergyModel model{20, 20, .5, "explicit test capacity"};
+    auto prediction = smartnav::PredictVesselEnergy(model, state, stamp);
+    auto advice = smartnav::Advise(state, prediction, {}, stamp);
+    auto view = application::PresentEnergy(state, model, prediction, advice, stamp);
+    Check(view.prediction.arrival.estimate && view.prediction.arrival.estimate->soc_percent == 70,
+          "energy screen retains the tested model's endpoint");
+    Check(view.prediction.range.estimate && view.remaining_kwh == 16,
+          "configured stored energy stays a labeled estimate");
+    Check(!view.current.value && !view.power.value && !view.voltage.value,
+          "missing live propulsion measurements remain missing");
+    for (auto when : {stamp - 1s, stamp + 1ms, stamp + 20s}) {
+      const auto stale = application::PresentEnergy(state, model, prediction, advice, when);
+      Check(!stale.prediction.range.estimate && !stale.prediction.arrival.estimate,
+            "retained or future forecast cannot become a current energy view");
+    }
+    auto other_route = std::make_shared<vessel::RouteProgressSnapshot>(*state.navigation.route);
+    prediction.input_route = other_route;
+    auto mismatched = application::PresentEnergy(state, model, prediction, advice, stamp);
+    Check(!mismatched.prediction.arrival.estimate && mismatched.prediction.range.estimate,
+          "different route publication suppresses arrival but not route-independent range");
+    prediction = smartnav::PredictVesselEnergy(model, state, stamp);
+    for (auto value : {std::optional<double>{}, std::optional<double>{101},
+                       std::optional<double>{std::numeric_limits<double>::infinity()}}) {
+      state.battery.soc_percent.value = value;
+      auto rejected = application::PresentEnergy(state, model, prediction, advice, stamp);
+      Check(!rejected.soc.value && !rejected.prediction.arrival.estimate &&
+                !rejected.prediction.range.estimate && !rejected.remaining_kwh,
+            "invalid battery cannot leave apparently current forecasts");
+    }
+    state = Fixture();
+    state.battery.soc_percent.observed_at -= 20s;
+    auto stale = application::PresentEnergy(state, model, prediction, advice, stamp);
+    Check(stale.soc.quality == vessel::Quality::Stale && !stale.soc.value &&
+              !stale.prediction.arrival.estimate && !stale.remaining_kwh,
+          "stale SOC remains explicitly stale and never displays as zero");
+    state = Fixture();
+    state.navigation.latitude_deg = {};
+    advice = smartnav::Advise(state, prediction, {}, stamp);
+    auto lost = application::PresentEnergy(state, model, prediction, advice, stamp);
+    Check(!lost.passage.distance_nm && !lost.prediction.arrival.estimate,
+          "GPS loss suppresses destination estimate even before route publication expires");
+    state = Fixture();
+    state.battery.soc_percent = Sample(5);
+    prediction = smartnav::PredictVesselEnergy(model, state, stamp);
+    advice = smartnav::Advise(state, prediction, {}, stamp);
+    auto shortfall = application::PresentEnergy(state, model, prediction, advice, stamp);
+    Check(shortfall.prediction.arrival.estimate &&
+              !shortfall.prediction.arrival.estimate->soc_percent &&
+              shortfall.prediction.arrival.estimate->energy_shortfall_kwh > 0,
+          "shortfall has no fabricated zero-percent successful arrival");
+    state.navigation.route.reset();
+    Check(view.passage.distance_nm == 6 && view.prediction.arrival.estimate->soc_percent == 70,
+          "copied energy view remains lifetime safe after route deletion");
+    std::cout << "PASS " << checks - before << " energy presentation provenance checks\n";
+    return 0;
+  } catch (const std::exception &e) {
+    std::cerr << e.what() << '\n';
+    return 1;
+  }
+}
 #ifdef OPENNAV_PASSAGE_GTEST
 TEST(OpenNavPassage, CurrentObservationProvenance) {
   EXPECT_EQ(RunPassageChecks(), 0);
 }
+TEST(OpenNavEnergyView, CurrentObservationProvenance) {
+  EXPECT_EQ(RunEnergyViewChecks(), 0);
+}
 #else
-int main() { return RunPassageChecks(); }
+int main() { return RunPassageChecks() || RunEnergyViewChecks(); }
 #endif

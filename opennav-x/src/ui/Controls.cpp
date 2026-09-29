@@ -257,7 +257,7 @@ void XNavPainter::Callout(const wxString &title, const wxString &body,
 }
 void XNavPainter::Card(int x, int y, int width, int height,
                        const wxString &title) {
-  dc_.SetPen(*wxTRANSPARENT_PEN);
+  dc_.SetPen(wxPen(Colour(c.border)));
   dc_.SetBrush(wxBrush(Colour(c.surface)));
   dc_.DrawRoundedRectangle(D(x), D(y), D(width), D(height), D(spacing::panel_radius));
   Text(title, x + 20, y + 16, 12, c.secondary, false, width - 40);

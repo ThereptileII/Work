@@ -2,6 +2,30 @@
 
 ## Current stage: prototype design lock, chart presentation and Online AIS
 
+The Energy screen's next prototype pass corrects primary card proportions,
+numeric hierarchy, battery graphic, forecast rows and power tiles. An owned
+presentation boundary withholds predictions from mismatched/stale observations
+without inventing sensor values. All 123 integrated Linux tests pass after the
+correction; two offline Energy passes each pass 44 checks/seven captures, and
+the shared-card Instruments regression passes 41 checks/five captures. Fourteen
+new presentation assertions cover provenance and failure states. Lower Explore
+pace/calibration UI and native/boat qualification remain open; no conformance
+PASS is claimed. See [review](design/reviews/prototype-energy-in-progress.md)
+and [evidence](evidence/prototype-energy-local.json).
+
+Windows development run `36500844253` / remote `3a90eff` closes the actual-product
+capture refusal: twelve primary and four additional guarded captures pass.
+Both native integrated suites pass 114/114; AIS/Passage/Instruments components
+pass 71/26/41 checks. Seven of eight jobs pass overall. The object-flow test
+reads a previous Route detail diagnostic publication immediately after Settings
+returns to Navigation; its screenshot shows the correctly restored chart and
+North control. The corrected harness waits for a later Navigation publication,
+then applies the same strict geometry/chart assertions. Its Linux object flow
+passes, including both settings-return cases and persisted navigation objects.
+All nine artifact hashes/CRCs, 55 captured PNGs and 120 reference PNGs verify.
+Native route-ink tests were not reached; replacement Windows and boat gates
+remain pending. See [evidence](evidence/prototype-native-3a90eff-failed.json).
+
 The current active-route presentation increment copies the immutable prototype's
 Day/Dusk/Night route ink into OpenCPN's existing software/GL route rendering.
 Standard, selected routes, geometry and progress semantics remain upstream-owned.

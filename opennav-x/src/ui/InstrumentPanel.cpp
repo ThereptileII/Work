@@ -154,7 +154,8 @@ void XNavInstrumentPanel::Reading(wxDC &dc, XNavPainter &p,
   p.Text(W(r.title), x, y, 9, p.c.muted, false, width);
   const auto value = Number(r);
   const int size = tile ? 29 : 22;
-  const int vy = y + (tile ? 27 : 24);
+  // Final CSS label/bold line boxes place the value 24px below the label.
+  const int vy = y + 24;
   p.Text(value, x, vy, size, r.value ? p.c.primary : p.c.muted);
   dc.SetFont(UiFont(*this, size));
   const int offset = ToDIP(dc.GetTextExtent(value).x);
@@ -225,25 +226,32 @@ void XNavInstrumentPanel::Wind(wxDC &dc, XNavPainter &p, int x, int y,
     gc->PopState();
   }
   gc.reset(); // Restore shared native DC transform before drawing labels.
-  const auto centered = [&](wxString text, int px, int py, int font,
-                            std::uint32_t ink) {
-    dc.SetFont(UiFont(*this, font));
+  const auto svg_text = [&](wxString text, int px, int baseline, int font,
+                            std::uint32_t ink, bool middle = true) {
+    // SVG text positions are baselines in the 280-unit viewBox. Use native
+    // ascent/descent rather than treating those coordinates as text tops.
+    dc.SetFont(UiFont(*this, std::max(1, static_cast<int>(
+        std::lround(font * size / 280.)))));
     text = wxControl::Ellipsize(text, dc, wxELLIPSIZE_END, p.D(size - 16));
-    const int tw = ToDIP(dc.GetTextExtent(text).x);
-    p.Text(text, sx + px * size / 280 - tw / 2, sy + py * size / 280, font,
-           ink);
+    int tw, th, descent;
+    dc.GetTextExtent(text, &tw, &th, &descent);
+    dc.SetTextForeground(Colour(ink));
+    dc.DrawText(text, p.D(sx) + static_cast<int>(std::lround(p.D(size) * px / 280.)) -
+                          (middle ? tw / 2 : 0),
+                p.D(sy) + static_cast<int>(std::lround(p.D(size) * baseline / 280.)) -
+                          th + descent);
   };
-  centered("N", 140, 48, 9, p.c.secondary);
-  centered("S", 140, 223, 9, p.c.secondary);
-  centered("W", 56, 134, 9, p.c.secondary);
-  centered("E", 226, 134, 9, p.c.secondary);
-  centered(Number(view_.heading) + W("°"), 140, 171, 23, p.c.primary);
-  centered("HEADING / TRUE", 140, 198, 8, p.c.secondary);
+  svg_text("N", 140, 57, 9, p.c.secondary);
+  svg_text("S", 140, 232, 9, p.c.secondary);
+  svg_text("W", 51, 143, 9, p.c.secondary, false);
+  svg_text("E", 223, 143, 9, p.c.secondary, false);
+  svg_text(Number(view_.heading) + W("°"), 140, 190, 23, p.c.primary);
+  svg_text("HEADING / TRUE", 140, 206, 8, p.c.secondary);
   // These provenance lines are required where the illustrative HTML is silent.
-  centered(Health(view_.heading) + (view_.wind_bearing_true_deg
+  svg_text(Health(view_.heading) + (view_.wind_bearing_true_deg
                                         ? wxString{}
                                         : W(" · wind direction unavailable")),
-           140, 277, 8, p.c.muted);
+           140, 285, 8, p.c.muted);
 }
 void XNavInstrumentPanel::Paint(wxPaintEvent &) {
   wxAutoBufferedPaintDC dc(this);

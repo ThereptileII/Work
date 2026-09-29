@@ -536,6 +536,17 @@ try:
                             'phase':current,'controls':ready['runtime']['display']['product_controls']})
                     if current=='waypoint-card':chart_bounded_context(['GO TO','Details','Edit waypoint','Remove'])
                     if current=='ais-card':ais_drawer()
+                    if current in ('settings-return','settings-return-navigation'):
+                        # The fixture publishes its phase immediately after
+                        # synchronous pane restoration. Diagnostics publish on
+                        # the next timer tick; a fixed .6s sleep can still read
+                        # the old hidden Route detail controls on Windows.
+                        # Wait for a new Navigation publication, not for good
+                        # geometry: missing/clipped controls must still fail.
+                        previous_tick=int(object_snapshot()['runtime']['ui_update']['ticks'])
+                        ready=wait_object(lambda s:s['ui_page']=='Navigation' and
+                            int(s['runtime']['ui_update']['ticks'])>previous_tick,
+                            'Fresh Navigation publication after settings restoration')
                     rgb = capture(current)
                     if current=='route-detail-renamed':
                         click_object('Activate route')
@@ -565,7 +576,7 @@ try:
                         # Reconfiguration must restore the entire prototype
                         # frame, including the horizon hidden by an object
                         # page. Land/water alone cannot prove correct layout.
-                        layout=object_snapshot()['runtime']['display']
+                        layout=ready['runtime']['display']
                         report.setdefault('settings_return_layout',[]).append(
                             chartcheck.navigation_layout(layout,frame,client))
                         report.setdefault('chart_rendering', []).append(chartcheck.check(

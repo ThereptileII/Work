@@ -103,6 +103,8 @@ PreviewPanel::PreviewPanel(wxWindow *parent)
   SetScrollRate(0, FromDIP(24));
   close_=new XNavButton(this,wxID_ANY,"Close","Close this page");
   close_->SetRole(ButtonRole::Quiet);
+  close_->SetIcon(XNavIcon::Close);
+  close_->SetInlineIcon();
   close_->SetMinSize(FromDIP(wxSize(80,44)));
   close_->Bind(wxEVT_BUTTON,[this](wxCommandEvent&){if(close_action_)close_action_();});
   Bind(wxEVT_PAINT, &PreviewPanel::Paint, this);
@@ -131,6 +133,7 @@ void PreviewPanel::Update(PreviewPage page, LightMode mode,
   now_ = now;
   model_ = model;
   energy_ = energy;
+  energy_view_ = application::PresentEnergy(s, model, energy, advice, now);
   info_ = info;
   advice_ = advice;
   Refresh();
@@ -145,8 +148,9 @@ void PreviewPanel::Paint(wxPaintEvent &) {
   const int width = std::max(320, ToDIP(GetClientSize().x)), margin = 24,
             gap = 16;
   const auto &model = model_;
-  const auto &energy = energy_;
-  const auto distance = Distance(state_, now_);
+  const auto &energy = page_ == PreviewPage::Energy ? energy_view_.prediction : energy_;
+  const auto distance = page_ == PreviewPage::Energy
+                            ? energy_view_.passage.distance_nm : Distance(state_, now_);
   const auto arrival = energy.arrival.estimate;
   const wxString title = page_ == PreviewPage::Energy  ? "Energy"
                          : page_ == PreviewPage::Route ? "Passage"
@@ -172,35 +176,43 @@ void PreviewPanel::Paint(wxPaintEvent &) {
     // Content comes only from assessed Vessel Data and the existing model.
     const int inset=32, space=18, available=width-2*inset;
     const bool wide=available>=720;
-    const int left=wide?static_cast<int>((available-space)*.524):available;
+    const int left=wide?static_cast<int>(std::lround((available-space)*1.1/2.1)):available;
     const int right=wide?available-space-left:available;
     const int y=146, height=423, rx=wide?inset+left+space:inset;
     const int ry=wide?y:y+height+space;
-    p.Text("ELECTRIC PASSAGE",inset,36,10,c.accent);
-    p.Text("More horizon. Less uncertainty.",inset,60,30,c.primary,false,available-95);
+    p.TextTracked("ELECTRIC PASSAGE",inset,36,9,c.accent,650,1.17);
+    p.TextTracked("More horizon. Less uncertainty.",inset,56,30,c.primary,400,-1.2,available-95);
     p.Text(state_.replayed ? "REPLAY / Historical data / Controls disabled" :
-      state_.simulated ? "DEMO / Synthetic test data" :
+      state_.simulated ? "TEST DATA / Not live" :
       "Your energy picture, from this moment to your destination.",
-      inset,106,12,c.secondary,false,available);
+      inset,104,12,c.muted,false,available);
     p.Card(inset,y,left,height,"");
     p.Card(rx,ry,right,height,"");
     const auto usable=[](const vessel::Assessment &a){
       return a.value && (a.quality==vessel::Quality::Live || a.quality==vessel::Quality::Aging ||
                          a.quality==vessel::Quality::Estimated);
     };
-    const auto soc=vessel::Assess(state_.battery.soc_percent,now_);
-    const auto capacity=vessel::Assess(state_.battery.usable_capacity_kwh,now_);
+    const auto &soc=energy_view_.soc;
     const bool valid_soc=usable(soc)&&*soc.value>=0&&*soc.value<=100;
-    p.Text("Energy on board",inset+24,y+24,12,c.secondary);
-    p.Text(valid_soc?wxString::Format("%.0f",*soc.value):Dash(),inset+24,y+64,60,
-           valid_soc?c.accent:c.muted,false,left-140);
-    p.Text("%",inset+90,y+106,12,c.secondary);
-    // No configured capacity is silently promoted into a measured input.
-    p.Text(valid_soc&&usable(capacity)?wxString::Format("%.1f kWh remaining",*soc.value * *capacity.value/100):
-           "Usable energy unavailable",inset+24,y+139,10,c.secondary,false,left-120);
-    p.Text(valid_soc?wxString(soc.quality==vessel::Quality::Aging?"AGING":"CURRENT"):
-           W(vessel::QualityName(soc.quality)),inset+24,y+169,9,
-           valid_soc?c.accent:c.muted,false,left-120);
+    const auto big = [&](std::optional<double> value, int bx, int by,
+                         const wxString &unit, std::uint32_t ink, int maximum) {
+      const auto text = value ? wxString::Format("%.0f", *value) : Dash();
+      dc.SetFont(UiFontWeight(*this,60,350));
+      const auto extent = dc.GetTextExtent(text);
+      const int top = by - (ToDIP(extent.y) - 72) / 2;
+      p.TextTracked(text,bx,top,60,ink,350,-2.0,maximum);
+      const int unit_x = bx + ToDIP(extent.x) - 2*(static_cast<int>(text.size())-1) + 6;
+      p.Text(unit,unit_x,by+43,14,c.secondary,false,std::max(1,maximum-unit_x+bx));
+    };
+    p.TextWeight("Energy on board",inset+25,y+25,12,c.secondary,500);
+    big(soc.value,inset+25,y+59,"%",valid_soc?c.accent:c.muted,left-140);
+    p.Text(energy_view_.remaining_kwh?wxString::Format("~%.1f kWh remaining",*energy_view_.remaining_kwh):
+           "Usable energy unavailable",inset+25,y+137,10,c.secondary,false,left-120);
+    wxString battery_health=valid_soc?wxString(soc.quality==vessel::Quality::Aging?"AGING":
+           soc.quality==vessel::Quality::Estimated?"ESTIMATED":"CURRENT"):
+           W(vessel::QualityName(soc.quality));
+    if(soc.age) battery_health+=wxString::Format(W(" · %.1f s"),soc.age->count()/1000.);
+    p.Tag(battery_health,inset+25,y+157,left-120,!valid_soc,valid_soc);
     dc.SetPen(wxPen(Colour(c.border)));dc.SetBrush(wxBrush(Colour(c.surface)));
     dc.DrawRoundedRectangle(p.D(inset+left-90),p.D(y+64),p.D(66),p.D(114),p.D(11));
     dc.SetPen(*wxTRANSPARENT_PEN);dc.SetBrush(wxBrush(Colour(c.border)));
@@ -210,20 +222,37 @@ void PreviewPanel::Paint(wxPaintEvent &) {
       dc.SetBrush(wxBrush(Colour(c.accent)));
       dc.DrawRoundedRectangle(p.D(inset+left-83),p.D(y+172-fill),p.D(52),p.D(fill),p.D(3));
     }
-    p.Text("ESTIMATED BATTERY OVER THIS PASSAGE",inset+24,y+209,10,c.secondary,false,left-48);
+    p.TextTracked("ESTIMATED BATTERY OVER THIS PASSAGE",inset+25,y+208,10,c.secondary,400,1.5,left-50);
     // The model returns endpoint energy, not a sampled voyage profile. Draw
     // that honest steady-consumption segment, never the mock's curved history.
     if(valid_soc&&arrival&&arrival->soc_percent) {
       const int gx=inset+78,gy=y+247,gw=std::max(1,left-156),gh=88;
       const auto ordinate=[&](double v){return gy+gh-static_cast<int>(gh*std::clamp(v,0.,100.)/100.);};
+      // Prototype's literal #b6efce0c area ink, with an honest linear forecast
+      // endpoint instead of the reference's illustrative curved history.
+      const auto fill=Colour(prototype_ink::active),back=Colour(c.surface);
+      dc.SetBrush(wxBrush(wxColour((fill.Red()*12+back.Red()*243+127)/255,
+           (fill.Green()*12+back.Green()*243+127)/255,
+           (fill.Blue()*12+back.Blue()*243+127)/255)));
+      dc.SetPen(*wxTRANSPARENT_PEN);
+      const wxPoint area[]={{p.D(gx),p.D(ordinate(*soc.value))},
+        {p.D(gx+gw),p.D(ordinate(*arrival->soc_percent))},
+        {p.D(gx+gw),p.D(gy+gh)},{p.D(gx),p.D(gy+gh)}};
+      dc.DrawPolygon(4,area);
       dc.SetPen(wxPen(Colour(c.border),1,wxPENSTYLE_DOT));
+      for(int percent:{25,50,75})
+        dc.DrawLine(p.D(gx),p.D(ordinate(percent)),p.D(gx+gw),p.D(ordinate(percent)));
       dc.DrawLine(p.D(gx),p.D(gy+gh),p.D(gx+gw),p.D(gy+gh));
       if(std::isfinite(model.reserve_soc_percent)) {
         dc.SetPen(wxPen(Colour(c.attention),1,wxPENSTYLE_DOT));
         dc.DrawLine(p.D(gx),p.D(ordinate(model.reserve_soc_percent)),p.D(gx+gw),p.D(ordinate(model.reserve_soc_percent)));
+        p.Text(wxString::Format("%.0f%% reserve",model.reserve_soc_percent),gx+gw-74,
+               ordinate(model.reserve_soc_percent)-14,8,c.muted);
       }
       dc.SetPen(wxPen(Colour(c.accent),p.D(2)));
       dc.DrawLine(p.D(gx),p.D(ordinate(*soc.value)),p.D(gx+gw),p.D(ordinate(*arrival->soc_percent)));
+      dc.SetBrush(wxBrush(Colour(c.accent)));dc.SetPen(*wxTRANSPARENT_PEN);
+      dc.DrawCircle(p.D(gx+gw),p.D(ordinate(*arrival->soc_percent)),p.D(3));
       p.Text("NOW",gx,gy+gh+6,9,c.muted);
       p.Text("ESTIMATED ARRIVAL",gx+gw-105,gy+gh+6,9,c.muted);
       p.Text("Steady consumption estimate",inset+24,y+377,10,c.secondary,false,left-48);
@@ -231,21 +260,22 @@ void PreviewPanel::Paint(wxPaintEvent &) {
       p.Text("Passage estimate unavailable",inset+24,y+270,16,c.muted,false,left-48);
       p.Text(EnergyMessage(energy.arrival),inset+24,y+300,12,c.secondary,false,left-48);
     }
-    p.Text(distance?"At "+DestinationName(state_):wxString("At destination"),rx+24,ry+24,12,c.secondary,false,right-48);
-    p.Text(arrival&&arrival->soc_percent?wxString::Format("%.0f",*arrival->soc_percent):Dash(),
-           rx+24,ry+64,60,arrival?c.accent:c.muted,false,right-48);
-    p.Text("% estimated",rx+90,ry+106,12,c.secondary);
+    p.TextWeight(distance?"At "+DestinationName(state_):wxString("At destination"),rx+25,ry+25,12,c.secondary,500,right-50);
+    big(arrival?arrival->soc_percent:std::nullopt,rx+25,ry+59,"% estimated",
+         !arrival?c.muted:arrival->below_reserve?c.attention:c.accent,right-50);
     const bool reserve=arrival&&arrival->soc_percent&&std::isfinite(model.reserve_soc_percent);
-    p.Text(reserve?wxString::Format("%+.0f%% above your reserve",*arrival->soc_percent-model.reserve_soc_percent):
-           "Reserve estimate unavailable",rx+24,ry+139,10,c.secondary,false,right-48);
+    p.Text(reserve?wxString::Format("%.0f%% ",std::abs(*arrival->soc_percent-model.reserve_soc_percent))+
+            (*arrival->soc_percent>=model.reserve_soc_percent?"above":"below")+" your reserve":
+           "Reserve estimate unavailable",rx+25,ry+137,10,c.secondary,false,right-50);
     dc.SetPen(wxPen(Colour(c.border)));dc.SetBrush(wxBrush(Colour(c.selected)));
     dc.DrawRoundedRectangle(p.D(rx+24),p.D(ry+171),p.D(right-48),p.D(72),p.D(8));
     const auto advisory_color=!arrival?c.muted:arrival->below_reserve?c.attention:c.accent;
     dc.SetPen(wxPen(Colour(advisory_color),p.D(2)));
     dc.DrawLine(p.D(rx+25),p.D(ry+171),p.D(rx+25),p.D(ry+243));
-    p.Text(arrival?(arrival->below_reserve?"Energy below your reserve":"Estimated energy margin"):
+    const bool shortfall=arrival&&arrival->energy_shortfall_kwh>0;
+    p.Text(arrival?(shortfall?"Insufficient passage energy":arrival->below_reserve?"Energy below your reserve":"Estimated energy margin"):
            "Energy estimate unavailable",rx+40,ry+188,12,arrival?advisory_color:c.primary,false,right-80);
-    p.Text(arrival?"Advisory estimate; conditions can change.":EnergyMessage(energy.arrival),
+    p.Text(arrival&&!shortfall?"Advisory estimate; conditions can change.":EnergyMessage(energy.arrival),
            rx+40,ry+213,12,c.secondary,false,right-80);
     const wxString values[]={distance?wxString::Format("%.1f nm",*distance):Dash(),
       energy.range.estimate?wxString::Format("%.1f nm",energy.range.estimate->range_nm):Dash(),
@@ -255,7 +285,7 @@ void PreviewPanel::Paint(wxPaintEvent &) {
     for(int i=0;i<3;++i) {
       const int line=ry+278+45*i;
       p.Text(labels[i],rx+24,line,12,c.secondary,false,right/2-24);
-      p.Text(values[i],rx+right/2,line,12,c.primary,false,right/2-24);
+      p.TextWeight(values[i],rx+right/2,line,12,c.primary,500,right/2-25,true);
       p.Rule(rx+24,line+29,right-48);
     }
     const int compact_y=ry+height+space;
@@ -266,11 +296,16 @@ void PreviewPanel::Paint(wxPaintEvent &) {
     const wxString units[]={"kW","RPM","V",W("°C")};
     for(int i=0;i<4;++i) {
       const int x=inset+(i%count)*(cw+10),cy=compact_y+(i/count)*85;
-      p.Card(x,cy,cw,75,"");p.Text(titles[i],x+14,cy+14,9,c.muted,false,cw-28);
+      dc.SetPen(wxPen(Colour(c.border)));dc.SetBrush(wxBrush(Colour(c.surface)));
+      dc.DrawRoundedRectangle(p.D(x),p.D(cy),p.D(cw),p.D(75),p.D(9));
+      p.Text(titles[i],x+14,cy+14,8,c.muted,false,cw-28);
       const auto a=vessel::Assess(*samples[i],now_);
       p.Text(usable(a)?wxString::Format(i==0?"%.1f":"%.0f",*a.value):Dash(),
-             x+14,cy+38,20,usable(a)?c.primary:c.muted,false,cw-75);
-      p.Text(usable(a)?units[i]:W(vessel::QualityName(a.quality)),x+cw/2,cy+45,9,c.secondary,false,cw/2-10);
+             x+14,cy+34,20,usable(a)?c.primary:c.muted,false,cw-75);
+      dc.SetFont(UiFont(*this,20));
+      const auto number=usable(a)?wxString::Format(i==0?"%.1f":"%.0f",*a.value):Dash();
+      const int unit_x=x+14+ToDIP(dc.GetTextExtent(number).x)+4;
+      p.Text(usable(a)?units[i]:W(vessel::QualityName(a.quality)),unit_x,cy+44,9,c.secondary,false,std::max(1,x+cw-unit_x-14));
     }
     const int detail_y=compact_y+(4/count)*85+8;
     p.Card(inset,detail_y,available,118,"OPERATING STATE");

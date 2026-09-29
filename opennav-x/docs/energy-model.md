@@ -1,5 +1,24 @@
 # Advisory energy model and calibrated input contract
 
+## Prototype presentation boundary
+
+`application::PresentEnergy` copies assessed readings and the existing numerical
+result into an owned view. It never computes route geometry or a new range model.
+The result must match the current producer observation time; arrival must also
+match the immutable current route publication verified by `PresentPassage`.
+Stale SOC removes range/arrival; stale GPS or absent route removes arrival while
+an independently valid range may remain. Existing model rejection reasons are
+retained. Fourteen deterministic presentation checks cover these boundaries,
+shortfall, invalid SOC and retained-view lifetime after route deletion.
+
+The primary Energy page uses the prototype card hierarchy with explicit estimate
+labels. Its simple forecast line represents only the tested constant-condition
+endpoint, not a weather/leg simulation. Stored kWh is SOC times explicitly
+configured/assessed usable capacity and is labelled estimated. The separate
+non-installed Energy widget covers seven Day/Dusk/Night and loss-of-data states;
+normal installed builds remain fixture-free. Visual work and remaining gates
+are recorded in the [review](design/reviews/prototype-energy-in-progress.md).
+
 ## Alpha calibrated input contract
 
 `EnergyConfiguration` adds a live-input wrapper around the tested numerical

@@ -1,6 +1,7 @@
 #pragma once
 #include "smartnav/VesselEnergy.h"
 #include "smartnav/Advisories.h"
+#include "application/EnergyView.h"
 #include "ui/Controls.h"
 #include <vector>
 #include <functional>
@@ -11,6 +12,7 @@ enum class PreviewPage { Route, Energy, Diagnostics };
 class PreviewPanel final : public XNavScroll {
 public:
   explicit PreviewPanel(wxWindow *parent);
+  const application::EnergyView &EnergyPresentation() const { return energy_view_; }
   void SetCloseAction(std::function<void()> action) { close_action_ = std::move(action); }
   void Update(PreviewPage page, LightMode mode,
               const vessel::VesselState &state, vessel::Time now,
@@ -29,6 +31,7 @@ private:
   vessel::Time now_{};
   smartnav::EnergyModel model_;
   smartnav::EnergyPrediction energy_;
+  application::EnergyView energy_view_;
   std::vector<std::string> info_;
   smartnav::NavigationAdvice advice_;
 };

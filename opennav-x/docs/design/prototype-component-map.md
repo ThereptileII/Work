@@ -27,6 +27,7 @@ in [prototype conformance](prototype-conformance.md).
 | `.tag` / `.tag.neutral` / `.tag.warning` | `XNavPainter::Tag` | 26px source/status pills, actual availability |
 | `.callout` / `.callout.warning` | `XNavPainter::Callout` | Shared wrapped advice surface, exact source alpha colors |
 | `.wind-rose`, `.instrument-grid`, `.instrument-tile` | `XNavInstrumentPanel` | Native SVG-equivalent paths and paired tiles; assessed owned readings, true-heading/relative-wind validity |
+| `.energy-grid`, `.energy-gauge`, `.battery-visual`, `.power-row` | `XNavPreviewPanel` Energy view / `XNavPainter` | Computed primary card geometry, native battery and tested model endpoint; lower Explore pace migration pending |
 
 All geometry is measured from the final CSS cascade at the target viewport;
 earlier CSS declarations are sometimes superseded. The capture manifest records
@@ -46,3 +47,8 @@ heading geometry; [the review](reviews/prototype-instruments-in-progress.md)
 documents the navigation-correct rotation and required quality annotations.
 The full page retains the horizon; existing configurable fields remain
 available below the prototype's primary eight tiles.
+
+Energy uses `application::PresentEnergy` to keep the view tied to current owned
+observations and the existing model. The illustrative HTML forecast curve and
+good-quality claim cannot override actual model assumptions or missing inputs.
+See the [corrective review](reviews/prototype-energy-in-progress.md).

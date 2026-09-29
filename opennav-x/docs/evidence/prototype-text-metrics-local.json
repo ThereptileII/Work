@@ -1,0 +1,50 @@
+{
+  "accepted": false,
+  "scope": "Native component typography correction; Linux development, Windows and boat pending",
+  "baseCommit": "2a8840389a1fe690705ad9c133c49f3d39f1144d",
+  "sourceSha256": {
+    "src/ui/InstrumentPanel.cpp": "94cf44c8e2c86c38b2e7ab992eebd6ccbcf48a2a01a0eae5a683df88b3d1385c",
+    "src/ui/Drawer.cpp": "5746745218942e6e624c42a362ce93110049a4eb0cc2fc4588ed1a4653bd9694"
+  },
+  "suites": [
+    {
+      "folder": "evidence/local/prototype/instrument-baseline-pass1",
+      "checks": 41,
+      "captures": {
+        "instruments-day.png": "d82f4215b7b2954cfdaca331ca447a1900476020e3814fd80e17adddf82add13",
+        "instruments-dusk.png": "73c486f57dd971548eb573c1c9a5b3c10dee6fe5ef86efc9b2db3066e315e3de",
+        "instruments-night.png": "8aa40328e6784c7c4f0d83298805bab8c1defb81b1cd7cbbc881ff47d4bbe341",
+        "instruments-stale-day.png": "24f1e35301ebb5251baf2062118353fe0ead3fc2a34057874038d58bae5e13a0",
+        "instruments-heading-unavailable-day.png": "2a939055936f150a2e4a907ad1032673ed761a8069ca1e21a5ebccf0aa196205"
+      }
+    },
+    {
+      "folder": "evidence/local/prototype/drawer-text-passage-pass1",
+      "checks": 26,
+      "captures": {
+        "passage-day.png": "f75eb8ea0030aec0a2ca31b21d84bc821a288edb50667a56f82fc2d5fe7b92c2",
+        "passage-dusk.png": "e67b6e6eb8f0c5d07a7975d752f22b35d80e481e5db778c93fe8a6b351e7f306",
+        "passage-night.png": "085ac987168bf1c38e447185e86311dee4cd13cba99f7dd440c12cf68a6e9dd0",
+        "passage-stale-day.png": "ef5feb62d848de8994200591e58f3a1650a8912aea008e9d38ac55b22275c004",
+        "passage-inactive-day.png": "8d713198a55a63958cae3bb7e0a35b8c206cedaea1af683ecdf7a3a053762166"
+      }
+    },
+    {
+      "folder": "evidence/local/prototype/drawer-text-ais-pass1",
+      "checks": 71,
+      "captures": {
+        "traffic-day.png": "7bff3b282cee7f44f70615ef1c410eded2dc6f42aa2528806eddd06d3c11273a",
+        "ais-target-day.png": "6da181fa4321b3130ffa38ecf16975fe92f44a98af36a146b4898a9de5004876",
+        "ais-target-dusk.png": "289c1d9a5d99d184f55b731bec3401cb6cc4e150ba409fccbd1d94d1a7461ee4",
+        "ais-target-night.png": "b35403a78e990105ec636d48af687c73909b4b6b9568f69c4ca85638a2c00884",
+        "traffic-night.png": "cc0b5490d2e2fdf10deea9d3a1bca5bf963b0e3c15f508b9e916207a5c6ef923",
+        "online-target-day.png": "a2e6ca18fd0a86750b389893e94daae33f1de18e6fd782b5eacedaeb77c96725",
+        "online-stale-day.png": "59cd3e7f427bd3bc567ce617463f2817f375ef8c370481e339a93ef5f8e92273",
+        "online-lost-day.png": "9ca44ae41fb3acb6c587ba5cf335e9a507801fcbe54b584d567449f7c8032632",
+        "target-expired-day.png": "3f0ea5b7709a8c9df09013b83eb8514cbb631b3ea8fa5911cfaabf6e8fe8bc42"
+      }
+    }
+  ],
+  "linuxJUnitSha256": "2d3a92db21715e57867f9ba17cba54e1edf491b59e5d74fb0a42943fa6618a7c",
+  "integratedLinuxTests": 122
+}

@@ -109,3 +109,13 @@ the inspected Instruments image now has the intended uncluttered header and
 main rail alignment. Windows, non-default DPI and boat checks remain pending.
 The lower vessel-profile rail group has not yet been migrated. See
 [corrective evidence](../../evidence/prototype-rail-scroll-local.json).
+
+The next comparison corrects tile-value offset from 27 to the computed 24px.
+Compass labels now use the actual SVG baseline coordinates and native ascent /
+descent instead of guessed text-top offsets; font size follows the 270/280
+viewBox scale. The source-based heading/wind safety distinction is unchanged.
+Linux captures pass all 41 checks/five states. Shared drawer titles now use the
+computed 450 weight / -1px tracking and 650 / 1.17px eyebrow, with Passage
+26 checks/five captures and AIS 71 checks/nine captures passing. Exact source
+hashes are in `../../evidence/prototype-text-metrics-local.json`. These remain
+corrective development results; native Windows and boat review are pending.
