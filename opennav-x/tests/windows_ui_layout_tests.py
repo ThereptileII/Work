@@ -113,14 +113,14 @@ page_passed = 0
 for scale in (1., 1.25, 1.5):
     for horizon in (False, True):
         for delta in (0, -8, 8):
-            labels = [(3, 'Chart'), (4, 'Alerts 1'), (5, 'System'),
+            labels = [(3, 'Chart'), (4, 'Alerts 1'), (12, 'OpenNav status footer'),
                       (6, 'Configure instruments')]
-            parents = {3: 10, 4: 11, 5: 12, 6: 13, 13: 14}
+            parents = {3: 10, 4: 11, 12: 1, 6: 13, 13: 14}
             # The real Display page contains its own Configure instruments
             # action. Also exercise repeated captions at different nesting
             # depths: none defines the surrounding application geometry.
             labels += [(20, 'Configure instruments'), (21, 'Chart'),
-                       (22, 'System'), (23, 'Alerts 1')]
+                       (22, 'OpenNav status footer'), (23, 'Alerts 1')]
             parents.update({20: 30, 30: 31, 31: 2, 21: 2, 22: 30, 23: 31})
             logical_height = 800/scale
             top = round((56 if logical_height<=600 else 60 if logical_height<=740 else 68)*scale)
@@ -156,6 +156,18 @@ else:
     raise AssertionError('Duplicated shell rail action was accepted')
 print('Nested page actions excluded; duplicated shell control rejected')
 
+labels = [entry for entry in labels if entry[0] != 24]
+for fault in ('missing-footer', 'duplicate-footer', 'old-system-button'):
+    original = list(labels)
+    if fault == 'missing-footer': labels = [entry for entry in labels if entry[0] != 12]
+    if fault == 'duplicate-footer': labels.append((25, 'OpenNav status footer'))
+    if fault == 'old-system-button': labels = [(h, 'System' if h == 12 else caption) for h, caption in labels]
+    try: page_check(1, 2, horizon=True)
+    except AssertionError: pass
+    else: raise AssertionError('Invalid footer boundary accepted: ' + fault)
+    labels = original
+print('Missing/duplicated status footer and obsolete System boundary rejected')
+
 # Exact independent canonical/client cases: captioned preview windows have a
 # smaller client, not a different drawer style or a broad height tolerance.
 node=next(n for n in tree.body if isinstance(n,ast.FunctionDef) and n.name=='prototype_drawer_bounds')
@@ -166,3 +178,60 @@ assert bounds_for(1264,761,origin=(8,31))==dict(x=674,y=111,width=398,height=635
 assert bounds_for(1280,800,1.25)==dict(x=569,y=90,width=498,height=652)
 assert bounds_for(1280,800,1.5)==dict(x=428,y=102,width=597,height=629)
 print('4 independent canonical/client/DPI drawer geometry checks passed')
+
+# Exercise real-pointer harness protections with fake native observations.
+# A direct HWND message would let all these clipped/covered actions pass.
+node = next(n for n in tree.body if isinstance(n, ast.FunctionDef) and n.name == 'pointer_text')
+pointer_namespace = dict(C=C, W=W)
+exec(compile(ast.Module(body=[node], type_ignores=[]), str(source), 'exec'), pointer_namespace)
+class Clock:
+    def __init__(self): self.now = 0
+    def monotonic(self): self.now += .1; return self.now
+    def sleep(self, seconds): self.now += seconds
+
+for fault in (None, 'clipped', 'covered', 'disabled', 'duplicate', 'missing', 'static',
+              'preferences-scroll', 'preferences-stuck', 'preferences-covered'):
+    clock = Clock(); wire = []; front = [1]
+    bounds = {1:(0,0,1280,800), 2:(680,180,1060,500), 3:(700,220,1040,292),
+              4:(700,220,1040,292)}
+    preferences = bool(fault and fault.startswith('preferences-'))
+    if fault == 'clipped' or preferences: bounds[3] = (700,170,1040,242)
+    parents = {3:2, 4:2, 2:1}
+    captions = [] if fault == 'missing' else [(3,'Interface & recovery')]
+    if fault == 'duplicate': captions.append((4,'Interface & recovery'))
+    def native_class(handle, buffer, capacity):
+        buffer.value = 'Static' if fault == 'static' else 'wxWindowNR'
+        return len(buffer.value)
+    def native_hit(point):
+        # Duplicate test returns the queried target for two visible duplicate
+        # controls; neither is an acceptable uniquely identified action.
+        if fault in ('covered','preferences-covered'): return 99
+        if preferences and point.y == 340: return 2
+        return queried[0]
+    queried = [3]
+    def native_rect(handle, output):
+        if handle in (3,4): queried[0] = handle
+        return get_rect(handle, output)
+    def native_mouse(event, *args):
+        wire.append(('mouse', event))
+        if event == 0x0800 and fault == 'preferences-scroll': bounds[3] = (700,220,1040,292)
+    pointer_namespace.update(
+        time=clock, windows=lambda pid:[(1,pid,'OpenNav X / OpenCPN')],
+        children=lambda root:captions, IsWindowEnabled=lambda h:fault!='disabled',
+        text=lambda h:'OpenNav preferences' if preferences else 'OpenNav X / OpenCPN',
+        GetClassNameW=native_class, GetWindowRect=native_rect,
+        GetParent=lambda h:parents.get(h), IsChild=is_child, WindowFromPoint=native_hit,
+        declare=lambda dll,name,*args: (lambda:front[0]) if name=='GetForegroundWindow' else (lambda h,flag:1),
+        user=None, SetForegroundWindow=lambda h:front.__setitem__(0,h),
+        SetCursorPos=lambda x,y:wire.append(('cursor',x,y)) or True,
+        MouseEvent=native_mouse)
+    try: pointer_namespace['pointer_text'](101,'Interface & recovery')
+    except AssertionError:
+        assert fault not in (None, 'preferences-scroll'), 'Visible recovery control rejected'
+        assert not any(event in wire for event in (('mouse',2),('mouse',4))), ('Rejected target still received click', fault, wire)
+        if fault != 'preferences-stuck': assert not wire, (fault,wire)
+    else:
+        assert fault in (None,'preferences-scroll'), ('Invalid recovery pointer target accepted', fault)
+        assert wire[-3:] == [('cursor',870,256),('mouse',2),('mouse',4)]
+        assert wire.count(('mouse',0x0800)) == int(preferences)
+print('10 pointer recovery visibility/occlusion/identity/scroll guards passed without HWND command injection')

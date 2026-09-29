@@ -105,6 +105,9 @@ class XNavButton : public wxControl {
     suite_link_ = true; suite_detail_ = detail; icon_ = icon; Refresh();
   }
 
+ protected:
+  bool HasKeyboardFocus() const { return HasFocus() && keyboard_focus_; }
+
  private:
   void Paint(wxPaintEvent& event);
   void Activate();

@@ -1,0 +1,115 @@
+{
+  "issue": "SCRUM-19",
+  "kind": "Linux development evidence; Windows replacement and boat qualification remain open",
+  "source_commit": "86fcc56f2c5a22ed9f14b6869cef5e6b06e9ca66",
+  "version": "0.4.0-beta2",
+  "policy": "status-only",
+  "executable_sha256": "f95821e7b61720b864ce22920d4a9f41844b9c7e916a4be3a925ef236b9c7f36",
+  "integrated_tests": {
+    "passed": 134,
+    "failed": 0
+  },
+  "actual_product_probe": {
+    "authority": "Linux development",
+    "hardware": "NONE; loopback simulated translator",
+    "checks": [
+      "Control OFF disables AUTO; physical click creates no request or output",
+      "Saved manual permission cannot enable product output",
+      "Every displayed command and enable action disabled despite fresh compatible feedback",
+      "Zero wire output including identity discovery across loss/reconnect",
+      "Passive observed pilot status survives reconnection"
+    ],
+    "screenshots": [
+      "pilot-01-status-only-linux.png",
+      "pilot-product-disabled-linux.png"
+    ],
+    "pilot_drawer": {
+      "height": 674,
+      "y": 80,
+      "width": 398,
+      "x": 682
+    },
+    "course_labels": [
+      "+10\u00b0",
+      "+1\u00b0",
+      "\u221210\u00b0",
+      "\u22121\u00b0"
+    ],
+    "result": "passed; screenshot review required",
+    "sent": [],
+    "wire_output": [],
+    "received_bytes": 0,
+    "transport_failures": []
+  },
+  "component": {
+    "checks": 94,
+    "captures": 9,
+    "synthetic_data": "Dedicated offline component executable only; never installed",
+    "reviewed": [
+      "autopilot-status-only-day",
+      "autopilot-status-only-night"
+    ]
+  },
+  "visual_review": {
+    "actual_product": "Visible STATUS ONLY, Equipment control unavailable, and physical-helm instruction. No enable promise. Measured passive heading remains visible; commands disabled.",
+    "scope": "Linux product and dedicated Day/Night component images; not Windows typography or boat acceptance."
+  },
+  "retained_execution_failures": [
+    {
+      "step": "Initial fixture invocation",
+      "result": "No rebuild: build-integration-linux.sh invoked without bash lacked execute permission; following probe rejected old executable lacking policy metadata. No fixture acceptance claimed."
+    },
+    {
+      "step": "Initial component capture wrapper",
+      "result": "All 94 component checks passed; system Python lacked Pillow during comparison. Repeated with project renderer environment into separate evidence directory; comparison completed."
+    }
+  ],
+  "artifacts": [
+    {
+      "path": "evidence/local/scrum19-policy/copy-correction-product.log",
+      "sha256": "655038cecea7e5cb0d0842bacff392c208e221d4fa331775bd86059cd4e7e07d",
+      "bytes": 134102
+    },
+    {
+      "path": "evidence/local/production-linux-tests.xml",
+      "sha256": "14218f09fbf6c15871613a51bd0ca4f71ded4930339ae45d9eedbb128dec59cc",
+      "bytes": 109978
+    },
+    {
+      "path": "evidence/local/pilot-status-only/pilot-results.json",
+      "sha256": "795a593b0b02456e0d8e900216c4f739f7a6fe0d468e9006bd89d29b3f0707e6",
+      "bytes": 900
+    },
+    {
+      "path": "evidence/local/pilot-status-only/pilot-opennav-diagnostics.json",
+      "sha256": "7a5a596e8b1aac2035df4ef9a1b54eaaa79d112b31f53c7f097a8fb77422d9f6",
+      "bytes": 31784
+    },
+    {
+      "path": "evidence/local/pilot-status-only/pilot-product-disabled-linux.png",
+      "sha256": "8b1ad7e07020eb48ffd88e9591ab62b719ef5e2c08c4bc687445d51ffb80c082",
+      "bytes": 79242
+    },
+    {
+      "path": "evidence/local/prototype/pilot-status-only-86fcc56-reviewed/capture.json",
+      "sha256": "f0caaf5a6ea4e6f1bed0c2fe6f1a4e9ec44eb8895d918754d328342092722974",
+      "bytes": 1439
+    },
+    {
+      "path": "evidence/local/prototype/pilot-status-only-86fcc56-reviewed/autopilot-status-only-day.png",
+      "sha256": "9a56c93684a4b324afd383ca9d23d7cafbd121005439f7b62af62975efe28fa8",
+      "bytes": 37253
+    },
+    {
+      "path": "evidence/local/prototype/pilot-status-only-86fcc56-reviewed/autopilot-status-only-night.png",
+      "sha256": "2f9e8fed466479a421d89ee1c0ef6266387cdf8bd7c2a452c9f3910b283590b5",
+      "bytes": 36724
+    }
+  ],
+  "remaining": [
+    "Exact published revision native MSVC/component/product negative probe",
+    "Fixture-only positive loopback regression on replacement",
+    "Independent stock OpenCPN/plugin output audit before boat launch",
+    "Boat display qualification; no physical output authorized"
+  ]
+}

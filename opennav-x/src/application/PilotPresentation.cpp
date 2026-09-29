@@ -18,6 +18,7 @@ PilotPresentation PresentPilot(const adapters::PilotView &pilot,
                                vessel::Time now, bool permit_control,
                                bool replayed) {
   PilotPresentation p;
+  p.output_unavailable = pilot.output_unavailable;
   const auto &f = pilot.feedback;
   const auto &caps = pilot.capabilities;
   const bool fresh = !replayed && pilot.fresh &&

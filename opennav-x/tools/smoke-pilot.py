@@ -232,7 +232,7 @@ try:
     if args.production:
         assert data()['xnav_hardware_output_policy']=='status-only'
         assert state['output_unavailable'] and not state['control_capability']
-        for label in ['Enable control','Standby','Auto','Track','Wind','−10°','−1°','+1°','+10°']:
+        for label in ['Control unavailable','Standby','Auto','Track','Wind','−10°','−1°','+1°','+10°']:
             click(label,enabled=False)
         time.sleep(1)
         assert pilot()['command_id']==previous and received_bytes[0]==0,'No product command, partial frame or identity request may reach the wire'

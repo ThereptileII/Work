@@ -23,14 +23,17 @@ def composition(client):
     tx,ty = right-211,bottom-89
     return {
         'chart_region': rect(x+80,y+68,w-266,h-234),
+        'footer_region': rect(x,y+h-34,w,34),
+        'footer_middle_visible': True,
         'rail_regions': [rect(right,y+110+i*120,186,120,name)
                          for i,name in enumerate(('sog','depth','aws','heading'))],
         'interaction_controls': [rect(x+9,y+82,62,61,'Chart'),
-             rect(x+w-102,y+h-34,90,32,'System'),
+             rect(x+9,y+h-34-61,62,61,'Settings'),
              rect(tx+4,ty+4,44,44,'Measure'),rect(tx+48,ty+4,44,44,'Waypoint'),
              rect(tx+97,ty+4,44,44,'+'),rect(tx+141,ty+4,44,44,'−'),
              rect(right-90,y+90,68,90,'North'),
-             rect(x+108,bottom-81,142,44,'Follow boat')],
+             rect(x+108,bottom-81,142,44,'Follow boat'),
+             rect(x+w-180,y+h-24,164,14,'Source health')],
     }
 
 native = composition(client)
@@ -55,9 +58,12 @@ small = copy.deepcopy(native)
 small['chart_region'] = rect(65, 88, 686, 379)
 reject(small)  # An outer resize alone is insufficient; wx layout must catch up.
 for change in ('chart-outside', 'rail-hidden', 'rail-clipped', 'rail-overlap',
-               'rail-missing', 'control-chart', 'control-clipped', 'system-missing',
+               'rail-missing', 'control-chart', 'control-clipped', 'settings-missing',
                'float-missing', 'float-duplicate', 'float-moved', 'float-oversize',
-               'rail-duplicate', 'rail-outside-strip', 'orientation-missing', 'old-layout'):
+               'rail-duplicate', 'rail-outside-strip', 'orientation-missing', 'old-layout',
+               'footer-missing', 'footer-clipped', 'footer-inset', 'footer-tall',
+               'footer-middle-hidden', 'health-missing', 'health-hidden', 'health-disabled',
+               'health-outside', 'health-duplicate', 'old-system'):
     bad = copy.deepcopy(native)
     if change == 'chart-outside': bad['chart_region']['x'] = 300
     if change == 'rail-hidden': bad['rail_regions'][3]['visible'] = False
@@ -66,7 +72,7 @@ for change in ('chart-outside', 'rail-hidden', 'rail-clipped', 'rail-overlap',
     if change == 'rail-missing': bad['rail_regions'].pop()
     if change == 'control-chart': bad['interaction_controls'][0]['x'] = 300
     if change == 'control-clipped': bad['interaction_controls'][1]['x'] = 1250
-    if change == 'system-missing': bad['interaction_controls'].pop(1)
+    if change == 'settings-missing': bad['interaction_controls'].pop(1)
     if change == 'float-missing': bad['interaction_controls'].pop(2)
     if change == 'float-duplicate': bad['interaction_controls'].append(copy.deepcopy(bad['interaction_controls'][2]))
     if change == 'float-moved': bad['interaction_controls'][2]['x'] -= 10
@@ -75,8 +81,19 @@ for change in ('chart-outside', 'rail-hidden', 'rail-clipped', 'rail-overlap',
     if change == 'rail-outside-strip': bad['rail_regions'][3]['x'] -= 10
     if change == 'orientation-missing': bad['interaction_controls'].pop(6)
     if change == 'old-layout': bad['chart_region'] = rect(65,88,1070,647)
+    if change == 'footer-missing': bad.pop('footer_region')
+    if change == 'footer-clipped': bad['footer_region']['y'] += 2
+    if change == 'footer-inset': bad['footer_region']['x'] += 2; bad['footer_region']['width'] -= 2
+    if change == 'footer-tall': bad['footer_region']['y'] -= 2; bad['footer_region']['height'] += 2
+    if change == 'footer-middle-hidden': bad['footer_middle_visible'] = False
+    if change == 'health-missing': bad['interaction_controls'].pop()
+    if change == 'health-hidden': bad['interaction_controls'][-1]['visible'] = False
+    if change == 'health-disabled': bad['interaction_controls'][-1]['enabled'] = False
+    if change == 'health-outside': bad['interaction_controls'][-1]['y'] -= 20
+    if change == 'health-duplicate': bad['interaction_controls'].append(copy.deepcopy(bad['interaction_controls'][-1]))
+    if change == 'old-system': bad['interaction_controls'].append(rect(1170,758,90,32,'System'))
     reject(bad)
-print('Prototype native-client/outer and Linux composition pass; 18 small/unsettled/clipped/overlapping/obsolete layouts rejected')
+print('Prototype native-client/outer and Linux composition pass; 29 small/unsettled/clipped/overlapping/obsolete layouts rejected')
 
 # Independent exact ink fixtures: failure must not relearn a water-only canvas
 # or accept a Standard palette while XNav is requested (or the reverse).

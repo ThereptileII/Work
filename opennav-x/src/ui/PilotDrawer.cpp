@@ -138,6 +138,11 @@ void XNavPilotDrawer::RefreshControls() {
                                           : ButtonRole::Normal);
   }
   enable_->Enable(view_.can_toggle && bool(actions_.enable));
+  const wxString enable_label = view_.output_unavailable
+                                    ? "Control unavailable" : "Enable control";
+  enable_->SetLabel(enable_label);
+  enable_->SetName(enable_label);
+  enable_->SetHint(enable_label);
   enable_->SetSelected(view_.enabled);
   enable_->SetLightMode(light_);
   settings_->Enable(bool(actions_.settings));
@@ -201,8 +206,10 @@ void XNavPilotDrawer::Paint(wxPaintEvent &) {
   dc.Clear();
   const int width = panel_->ToDIP(panel_->GetClientSize().x);
   const int tag = p.Tag(W(view_.state), 0, 0, width, view_.pending);
-  p.Tag(view_.enabled ? "CONTROL ENABLED" : "CONTROL OFF", tag + 8, 0,
-        width - tag - 8, !view_.enabled, view_.enabled);
+  p.Tag(view_.output_unavailable ? "STATUS ONLY"
+                                : view_.enabled ? "CONTROL ENABLED" : "CONTROL OFF",
+        tag + 8, 0, width - tag - 8,
+        !view_.enabled && !view_.output_unavailable, view_.enabled);
   {
     std::unique_ptr<wxGraphicsContext> gc(wxGraphicsContext::Create(dc));
     if (gc) {
@@ -253,9 +260,12 @@ void XNavPilotDrawer::Paint(wxPaintEvent &) {
                 -2.);
   center(view_.commanded ? "COMMANDED HEADING / M" : "CURRENT HEADING / M", 158,
          9, 400, p.c.muted);
-  p.Text("Enable control", 0, 420, 12, p.c.secondary);
+  p.Text(view_.output_unavailable ? "Equipment control unavailable" : "Enable control",
+         0, 420, 12, p.c.secondary);
   p.Wrapped(
-      "Explicit consent is required before heading controls become available.",
+      view_.output_unavailable
+          ? "Status display only. Use the physical helm."
+          : "Explicit consent is required before heading controls become available.",
       0, 442, 11, 16, width - 62, p.c.muted, 2);
   p.Rule(0, 486, width);
   p.Text("Adapter", 0, 500, 12, p.c.secondary);

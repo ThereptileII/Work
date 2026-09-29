@@ -69,7 +69,13 @@ def click(label):
     raise AssertionError(('Recording control unavailable',label,data()['ui_page'],choices))
 def page(label):
     if label!='Energy':
-        click('System')
+        if windows:
+            ui.open_system(app.pid)
+        else:
+            click('Settings')
+            data(lambda d:d['ui_page']=='Settings')
+            click('System')
+            click('Interface & recovery')
         data(lambda d:d['ui_page']=='System')
     click({'Field diagnostic bundle':'Export diagnostic bundle',
            'System diagnostics':'Diagnostics'}.get(label,label))
@@ -155,8 +161,16 @@ try:
     # Wait for the application layout, not merely the asynchronous native size
     # request. Otherwise a cached small-window button rectangle can be clicked
     # after the window has already expanded.
-    data(lambda d:any(c['label']=='System' and c['visible'] and c['x']>1100 and c['y']>700
-                      for c in d['runtime']['display'].get('interaction_controls',[])))
+    if windows:
+        footers=[h for h,label in ui.children(handle) if label=='OpenNav status footer']
+        assert len(footers)==1, 'One native status footer required'
+        r=ui.W.RECT();assert ui.GetWindowRect(footers[0],ctypes.byref(r))
+        footer=dict(x=r.left,y=r.top,width=r.right-r.left,height=r.bottom-r.top)
+        client=ui.W.RECT();assert ui.GetClientRect(handle,ctypes.byref(client))
+        assert footer['width']==client.right and footer['height']==34
+    else:
+        footer=dict(x=0,y=766,width=1280,height=34)
+    data(lambda d:d['runtime']['display'].get('footer_region')==footer)
     assert not data()['runtime']['recording']['active']
     page('Commissioning & recordings');capture('recording-01-commissioning')
     click('Record instruments only')

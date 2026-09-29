@@ -68,16 +68,23 @@ def navigation_layout(display, frame, client):
             assert contains(chart, control), 'Floating controls must fit the chart'
         else:
             assert not overlaps(chart, control), 'Unspecified permanent controls must not cover the chart'
-    for label in ('Chart', 'System'):
+    footer = display.get('footer_region', {})
+    expected_footer = dict(x=client['x'], y=client['y']+client['height']-34,
+                           width=client['width'], height=34)
+    assert valid(footer) and contains(client, footer), 'Status footer must fit the actual client'
+    assert all(abs(footer[k]-v) <= 1 for k,v in expected_footer.items()), 'Status footer must match the full-width 34px prototype region'
+    assert display.get('footer_middle_visible') is True, 'Primary 1280px layout must retain middle footer information'
+    assert not any(c['label'] == 'System' for c in controls), 'Obsolete footer System action must not replace navigation status'
+    health = [c for c in controls if c['label'] == 'Source health']
+    assert len(health) == 1 and health[0].get('enabled') and contains(footer, health[0]), 'Source health must remain visible and actionable within the footer'
+    for label in ('Chart', 'Settings'):
         required = [c for c in controls if c['label'] == label]
-        assert len(required) == 1 and required[0].get('enabled'), 'Navigation and System controls must be uniquely visible and enabled'
-        if label == 'System':
-            assert required[0]['y'] >= client['y']+client['height']-34, 'System must fit the footer'
-        else:
-            assert required[0]['x']+required[0]['width'] <= chart['x'], 'Chart entry must fit the navigation strip'
+        assert len(required) == 1 and required[0].get('enabled'), 'Navigation and Settings recovery access must be uniquely visible and enabled'
+        assert required[0]['x']+required[0]['width'] <= chart['x'], 'Chart and Settings entries must fit the navigation strip'
     return {'frame': frame, 'client': client, 'chart': chart,
             'chart_client_area_fraction': chart['width'] * chart['height'] / (client['width'] * client['height']),
             'primary_rail_values_visible': 4, 'prototype_floating_controls': 6,
+            'footer': footer, 'recovery_access': 'Settings', 'source_health_visible': True,
             'unspecified_controls_do_not_cover_chart': True}
 
 

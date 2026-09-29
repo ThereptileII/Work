@@ -86,7 +86,7 @@ try:
     ui.capture(handle, evidence / '05-xnav-stale.png')
     report['steps'].append({'step': 'theme / zoom / simulator start and pause', 'interaction': 'pass',
                             'visual_review': 'required; stale labels and fixture values must be checked'})
-    ui.click_text(pid, 'System')
+    ui.open_system(pid)
     ui.click_text(pid, 'Open Legacy OpenCPN')
     assert process.wait(timeout=40) == 0, 'XNav did not exit cleanly'
     handle, pid = ui.wait_window('OpenCPN / Legacy')

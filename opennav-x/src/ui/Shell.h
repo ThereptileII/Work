@@ -13,6 +13,7 @@
 #include "ui/PilotDrawer.h"
 #include "ui/AlertDrawer.h"
 #include "ui/HealthDrawer.h"
+#include "ui/StatusFooter.h"
 #include "integration/BuildFeatures.h"
 #if XNAV_ENABLE_TEST_FIXTURES
 #include "vessel/DemoSource.h"
@@ -96,6 +97,9 @@ public:
   std::vector<ProductGeometry> ProductControls() const { return product_ && product_->IsShown() ? product_->ControlGeometry() : std::vector<ProductGeometry>{}; }
   std::vector<ProductGeometry> ProductRegions() const { return product_ && product_->IsShown() ? product_->RegionGeometry() : std::vector<ProductGeometry>{}; }
   std::vector<ProductGeometry> RailRegions() const;
+  wxRect FooterRegion() const { return footer_->GetScreenRect(); }
+  bool FooterMiddleVisible() const { return footer_->MiddleVisible(); }
+  const application::FooterView &NavigationFooter() const { return footer_->View(); }
   std::optional<wxRect> DrawerRegion() const {
     if (health_drawer_ && health_drawer_->IsShown()) return health_drawer_->GetScreenRect();
     if (alert_drawer_ && alert_drawer_->IsShown()) return alert_drawer_->GetScreenRect();
@@ -210,6 +214,7 @@ private:
   XNavButton *rail_configure_ = nullptr;
   int responsive_class_ = -1, responsive_dpi_ = -1;
   XNavHorizon *horizon_ = nullptr;
+  XNavStatusFooter *footer_ = nullptr;
   wxPanel *route_actions_ = nullptr;
   XNavFloatingSurface *chart_tools_ = nullptr, *chart_orientation_ = nullptr, *chart_follow_ = nullptr;
   std::vector<wxWindow *> chart_overlays_;

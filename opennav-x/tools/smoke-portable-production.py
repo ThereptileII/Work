@@ -245,7 +245,7 @@ try:
     ui.assert_prototype_drawer(handle,'OpenNav preferences')
     capture('preferences', chart=False)
     no_demo_controls()
-    ui.click_text(pid, 'System')
+    ui.open_system(pid)
     capture('system', chart=False)
     no_demo_controls()
     ui.click_text(pid, 'Diagnostics')
@@ -269,7 +269,7 @@ try:
     capture('xnav-before-legacy')
     monitor = ui.monitor_process(pid)
     previous = pid
-    ui.click_text(pid, 'System')
+    ui.open_system(pid)
     prepare_startup_observation()
     ui.click_text(pid, 'Open Legacy OpenCPN')
     ui.wait_clean_exit(monitor)

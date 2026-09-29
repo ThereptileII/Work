@@ -206,12 +206,15 @@ def item(d,name):return next(i for i in d['data'] if i['name']==name)
 def command(label,shortcut):
     # Primary workflows exercise visible prototype controls on both platforms.
     direct={'n':'Chart','r':'Passage','e':'Energy','m':'Settings','g':'Settings',
-            'v':'Instruments','a':'Traffic','h':'Anchor','z':'Radar','s':'System'}
+            'v':'Instruments','a':'Traffic','h':'Anchor','z':'Radar'}
     if shortcut in direct:
         pages={'n':'Navigation','r':'Route','e':'Energy','m':'Settings','g':'Settings',
-               'v':'Vessel instruments','a':'AIS targets','h':'Anchor watch','z':'Radar status','s':'System'}
+               'v':'Vessel instruments','a':'AIS targets','h':'Anchor watch','z':'Radar status'}
         shell_click(direct[shortcut],outside_drawer=True,settled=lambda d:d.get('ui_page')==pages[shortcut])
-    elif shortcut=='i':shell_click('System',outside_drawer=True);product_click('Diagnostics')
+    elif shortcut=='s':
+        preferences_entry('System','Interface & recovery')
+        data(lambda d:d['ui_page']=='System')
+    elif shortcut=='i':preferences_entry('System','Diagnostics')
     else:accelerator(shortcut)
 def accelerator(key):
     if not windows:xdo('windowfocus',handle);xdo('key','ctrl+shift+'+key)
@@ -307,7 +310,7 @@ try:
         ui.assert_route_summary_layout(handle)
         report['checks'].append('Bottom route summary lays out after narrow-to-wide resize')
     if not windows:
-        xdo('key','ctrl+shift+s');time.sleep(.5)
+        command('System','s')
         data(lambda d:d['ui_page']=='System')
         capture('beta-system-page')
         xdo('key','Escape');time.sleep(.4)
@@ -530,7 +533,7 @@ try:
         ui.assert_preview_page(handle,'Route')
         report['checks'].append('Page resize/visibility and Navigation return with chart zoom passed')
     if windows:
-        ui.click_text(pid,'System');ui.click_text(pid,'Open Legacy OpenCPN')
+        ui.open_system(pid);ui.click_text(pid,'Open Legacy OpenCPN')
     else:xdo('key','ctrl+shift+l')
     assert app.wait(timeout=35)==0
     handle,pid=window('OpenCPN / Legacy');ready(2);preserved();chart_capture('preview-07-legacy','XNav to Legacy')
@@ -538,7 +541,7 @@ try:
     live=data(lambda d:d['data_mode']!='DEMO')
     assert 'arrival_soc' not in live['energy'];preserved()
     if windows:
-        old=ui.monitor_process(pid);ui.click_text(pid,'System');ui.click_text(pid,'Safe Mode');ui.wait_clean_exit(old)
+        old=ui.monitor_process(pid);ui.open_system(pid);ui.click_text(pid,'Safe Mode');ui.wait_clean_exit(old)
         handle,pid=window('OpenNav Safe Mode / OpenCPN');ready(4);chart_capture('preview-08-safe','XNav to Safe')
         switch_to_xnav(5,'Safe to XNav','preview-12-safe-to-xnav');close_current();preserved()
         count=5

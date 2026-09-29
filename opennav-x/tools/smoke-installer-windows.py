@@ -485,7 +485,7 @@ try:
         # Controlled return through both product interfaces, not only separate launches.
         p,h,rgb=launch(exe,['--xnav'],'OpenNav X / OpenCPN',profile,'installer-03-before-switch')
         chart_check(rgb,'XNav','Installed XNav before mode switch')
-        before=startup_baseline(profile);ui.click_text(p.pid,'System');ui.click_text(p.pid,'Open Legacy OpenCPN')
+        before=startup_baseline(profile);ui.open_system(p.pid);ui.click_text(p.pid,'Open Legacy OpenCPN')
         assert p.wait(timeout=35)==0;owned.discard(p.pid)
         h,pid=ui.wait_window('OpenCPN / Legacy');owned.add(pid);wait_ready(profile,before)
         rgb=ui.capture(h,EVIDENCE/'installer-03-switched-legacy.png');report['screenshots'].append('installer-03-switched-legacy.png')

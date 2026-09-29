@@ -695,6 +695,32 @@ void Attach(MyFrame& frame, wxAuiManager& manager, wxFileConfig& config) {
         runtime["display"]["drawer"]["width"] = drawer->width;
         runtime["display"]["drawer"]["height"] = drawer->height;
       }
+      const auto footer=shell->FooterRegion();
+      runtime["display"]["footer_region"]["x"]=footer.x;
+      runtime["display"]["footer_region"]["y"]=footer.y;
+      runtime["display"]["footer_region"]["width"]=footer.width;
+      runtime["display"]["footer_region"]["height"]=footer.height;
+      runtime["display"]["footer_middle_visible"]=shell->FooterMiddleVisible();
+      const auto &footer_view=shell->NavigationFooter();
+      runtime["navigation_footer"]["navigation_state"]=wxString::FromUTF8(footer_view.navigation_state);
+      runtime["navigation_footer"]["position"]=wxString::FromUTF8(footer_view.position);
+      runtime["navigation_footer"]["cog"]=wxString::FromUTF8(footer_view.cog);
+      runtime["navigation_footer"]["xte"]=wxString::FromUTF8(footer_view.xte);
+      runtime["navigation_footer"]["health_summary"]=wxString::FromUTF8(footer_view.health_summary);
+      runtime["navigation_footer"]["historical"]=footer_view.historical;
+      const auto signal_name=[](application::SignalState state) {
+        switch(state) {
+#define FOOTER_STATE(x) case application::SignalState::x: return #x
+          FOOTER_STATE(Current); FOOTER_STATE(Aging); FOOTER_STATE(Stale);
+          FOOTER_STATE(Estimated); FOOTER_STATE(Uncertain); FOOTER_STATE(Invalid); FOOTER_STATE(Unavailable);
+#undef FOOTER_STATE
+        }
+        return "Invalid";
+      };
+      runtime["navigation_footer"]["position_state"]=wxString::FromUTF8(signal_name(footer_view.position_state));
+      runtime["navigation_footer"]["cog_state"]=wxString::FromUTF8(signal_name(footer_view.cog_state));
+      runtime["navigation_footer"]["health_state"]=wxString::FromUTF8(signal_name(footer_view.health_state));
+      runtime["navigation_footer"]["health_source"]=wxString::FromUTF8(footer_view.health_source);
       runtime["display"]["route_creation_active"]=shell->RouteCreationActive();
       const auto chart_bounds=frame.GetPrimaryCanvas()->GetScreenRect();
       runtime["display"]["chart_region"]["x"]=chart_bounds.x;

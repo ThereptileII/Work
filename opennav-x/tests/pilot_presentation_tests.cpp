@@ -156,6 +156,7 @@ TEST(OpenNavPilotPresentation, ProductStatusOnlyOverridesOldPermission) {
   auto p = Live();
   p.output_unavailable = true;
   const auto v = View(p, stamp, true);
+  EXPECT_TRUE(v.output_unavailable);
   EXPECT_FALSE(v.enabled);
   EXPECT_FALSE(v.can_toggle);
   EXPECT_FALSE(v.standby);

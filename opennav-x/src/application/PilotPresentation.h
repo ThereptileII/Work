@@ -8,6 +8,7 @@ struct PilotPresentation {
   adapters::PilotMode mode = adapters::PilotMode::Unavailable;
   std::optional<double> heading_magnetic_deg, actual_heading_magnetic_deg;
   bool commanded = false, pending = false, enabled = false;
+  bool output_unavailable = false;
   bool standby = false, auto_mode = false, track = false, wind = false;
   bool alter_course = false, can_toggle = false;
   std::string state, connection, note;

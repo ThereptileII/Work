@@ -15,7 +15,13 @@ available. The separate non-installable command-test build is restricted to a
 verified local TCP peer. Package/install/update checks require an executed
 status-only declaration; exact historical rollback/repair remain recovery-only
 and explicitly unqualified. Portable denial checks and 27 actual installer
-policy checks pass; integrated Linux/native Windows replacement is pending.
+policy checks pass. Linux replacement passes 134 integrated tests, the actual
+product probe records zero outgoing bytes despite saved permission and fresh
+compatible feedback, and 94 component checks produce nine captures. Visual
+review found and corrected a misleading enable-control promise: the product
+now visibly says status-only / equipment control unavailable in Day and Night.
+See [local policy and presentation evidence](evidence/scrum-19-status-only-local.json).
+Native Windows replacement remains mandatory.
 Stock OpenCPN/plugin output remains independent and still requires the boat
 profile/plugin audit. See the [hardware boundary](st4000-beta-contract.md#public-beta-output-restriction--scrum-19).
 
@@ -25,6 +31,30 @@ SCRUM-98 tracks the native installer/chart and DPI gate repairs. SCRUM-97 has
 committed the Jira workflow and project-goal changes, but its required complete
 issue-to-acceptance cycle remains open. No issue is accepted from compilation
 or component checks alone.
+
+SCRUM-99 replaces the unrelated navigation footer with the native HTML status
+bar: exact three-group composition, owned position/course, navigation quality,
+and a source-health action. No cross-track distance is invented; XTE stays
+unavailable. Recovery remains visible through Settings → System → Interface
+& recovery, plus the existing Ctrl+Shift+S shortcut. Focused Linux validation
+passes 44 footer provenance assertions, 49 retained source-health assertions
+and 98 component/input checks with ten actual captures. The combined source
+passes all 83 portable suites. Exact reference/current/
+diff crops retain Linux font-metric differences; Windows and boat conformance
+remain pending. See the [footer review](design/reviews/scrum-99-status-footer.md).
+
+The `4b9d134` native replacement passes both 126-case MSVC suites and the
+fixture-free product's actual zero-output pilot probe. Its prototype DPI gate
+then finds two System captions: the footer action and the page heading. The
+retained 100% frame has all four rail values and eight recovery actions visible;
+it is not a completed DPI gate. SCRUM-99 now exposes and tests the distinct
+footer panel geometry instead of inferring it from that caption. Replacement
+native runs must still pass; no layout, chart, touch or persistence check is
+waived. See [retained exact native evidence](evidence/prototype-native-4b9d134-development.json).
+The current combined candidate also includes the status-only wording
+correction. The older local fixture rebuild was deliberately stopped before
+integration to avoid qualifying an intermediate revision; it is not counted as
+a passed build.
 
 Source Health now uses the prototype disclosure sheet with independent onboard
 and Online AIS status, per-measurement quality and protected AISStream key

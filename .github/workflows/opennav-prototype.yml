@@ -119,6 +119,15 @@ jobs:
           $env:PATH = (Resolve-Path opennav-x/build/production-install).Path + ";" + $env:PATH
           python opennav-x/tools/prototype/capture-ais-component.py --component health --reference opennav-x/evidence/local/health-reference --client opennav-x/build/production-windows/Release/health_drawer_test.exe --output opennav-x/evidence/local/health-component
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+      - name: Native status footer provenance geometry and actual input
+        run: |
+          python opennav-x/tools/prototype/render.py --output opennav-x/evidence/local/footer-reference --states navigation
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          cmake --build opennav-x/build/production-windows --config Release --target status_footer_test --parallel 2
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          $env:PATH = (Resolve-Path opennav-x/build/production-install).Path + ";" + $env:PATH
+          python opennav-x/tools/prototype/capture-footer-component.py --reference opennav-x/evidence/local/footer-reference --client opennav-x/build/production-windows/Release/status_footer_test.exe --output opennav-x/evidence/local/footer-component
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
       - name: Native unavailable radar presentation and disabled-control checks
         run: |
           $env:PATH = (Resolve-Path opennav-x/build/production-install).Path + ";" + $env:PATH

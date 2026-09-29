@@ -185,6 +185,96 @@ def click_text(pid, label):
     visible = [(title, children(h)) for h, _, title in windows(pid)]
     raise RuntimeError(f'Control not found: {label}: {visible}')
 
+def pointer_text(pid, label):
+    """Click a fully visible native control through the actual Windows pointer.
+
+    Unlike a direct HWND message, this cannot activate a covered or clipped
+    action. Used by the visible Preferences recovery path after footer removal.
+    """
+    deadline = time.monotonic() + 8
+    last_scroll = None
+    foreground = declare(user, 'GetForegroundWindow', W.HWND)
+    ancestor = declare(user, 'GetAncestor', W.HWND, W.HWND, W.UINT)
+    while time.monotonic() < deadline:
+        candidates = {}
+        scroll_candidates = {}
+        for root, _, _ in windows(pid):
+            for handle, caption in children(root):
+                if caption != label or not IsWindowEnabled(handle):
+                    continue
+                native_class = C.create_unicode_buffer(128)
+                GetClassNameW(handle, native_class, len(native_class))
+                if native_class.value.lower() == 'static':
+                    continue
+                rect = W.RECT()
+                assert GetWindowRect(handle, C.byref(rect))
+                if rect.right <= rect.left or rect.bottom <= rect.top:
+                    continue
+                # The whole target, not just its midpoint, must fit every
+                # containing pane, including a scrolled Preferences body.
+                parent = GetParent(handle)
+                surface = ancestor(handle, 2)
+                contained = True
+                while parent:
+                    area = W.RECT()
+                    assert GetWindowRect(parent, C.byref(area))
+                    if not (area.left <= rect.left < rect.right <= area.right and
+                            area.top <= rect.top < rect.bottom <= area.bottom):
+                        contained = False
+                        if (text(surface) == 'OpenNav preferences' and
+                                area.left <= rect.left < rect.right <= area.right):
+                            scroll_candidates[handle] = (surface, parent, area, rect)
+                        break
+                    if parent == surface:
+                        break
+                    parent = GetParent(parent)
+                point = W.POINT((rect.left + rect.right)//2, (rect.top + rect.bottom)//2)
+                if contained and WindowFromPoint(point) == handle:
+                    candidates[handle] = (surface, point)
+        if len(candidates) == 1:
+            handle, (surface, point) = next(iter(candidates.items()))
+            SetForegroundWindow(surface)
+            while foreground() != surface and time.monotonic() < deadline:
+                time.sleep(.05)
+            assert foreground() == surface, ('Recovery surface did not activate', label)
+            assert WindowFromPoint(point) == handle and IsWindowEnabled(handle), ('Recovery target moved or became covered', label)
+            assert SetCursorPos(point.x, point.y)
+            MouseEvent(2, 0, 0, 0, 0)
+            time.sleep(.05)
+            MouseEvent(4, 0, 0, 0, 0)
+            time.sleep(.4)
+            return
+        assert len(candidates) <= 1, ('Visible pointer action is ambiguous', label, list(candidates))
+        if len(scroll_candidates) == 1:
+            handle, (surface, viewport, area, rect) = next(iter(scroll_candidates.items()))
+            observed = (handle, rect.left, rect.top, rect.right, rect.bottom)
+            assert observed != last_scroll, ('Visible Preferences scroll did not move target', label)
+            last_scroll = observed
+            SetForegroundWindow(surface)
+            point = W.POINT((area.left + area.right)//2, (area.top + area.bottom)//2)
+            hit = WindowFromPoint(point)
+            assert foreground() == surface and (hit == viewport or IsChild(viewport, hit)), ('Preferences scrolling surface covered', label)
+            assert SetCursorPos(point.x, point.y)
+            wheel = 240 if rect.top < area.top else -240
+            MouseEvent(0x0800, 0, 0, wheel & 0xffffffff, 0)
+            time.sleep(.3)
+        time.sleep(.1)
+    raise AssertionError(('Fully visible pointer action not found', label,
+                          [(title, children(h)) for h, _, title in windows(pid)]))
+
+def open_system(pid):
+    """Reach recovery using the same three visible actions as the user."""
+    for label in ('Settings', 'System', 'Interface & recovery'):
+        pointer_text(pid, label)
+    deadline = time.monotonic() + 8
+    while time.monotonic() < deadline:
+        pages = [h for root, _, _ in windows(pid) for h, caption in children(root)
+                 if caption == 'OpenNav product page: System']
+        if len(pages) == 1:
+            return
+        time.sleep(.1)
+    raise AssertionError('Visible Settings / System / Interface & recovery did not open System')
+
 def control_text(handle):
     # GetWindowText reads another process's cached caption, not its EDIT buffer.
     # https://learn.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-getwindowtextw
@@ -286,22 +376,22 @@ def assert_page_geometry(handle, child, horizon=False):
     Alerts share the fixed status row; neither rail nor chart loses height.
     Native pane edges, minimum usable area and occlusion remain mandatory.
     """
-    # Advanced pages can legitimately contain another System/Configure
+    # Advanced pages can legitimately contain another Configure
     # instruments action. Only shell siblings define the page's outer bounds;
     # exclude every descendant, not just one assumed parent/grandparent level.
     labels = [(h,caption) for h,caption in children(handle) if not IsChild(child,h)]
     navigation = [h for h, caption in labels if caption == 'Chart']
     alerts = [h for h, caption in labels if re.fullmatch(r'Alerts(?: \d+)?',caption)]
-    system = [h for h, caption in labels if caption == 'System']
+    footer = [h for h, caption in labels if caption == 'OpenNav status footer']
     rail = [h for h, caption in labels if caption == 'Configure instruments']
-    assert len(navigation) == len(alerts) == len(system) == len(rail) == 1
+    assert len(navigation) == len(alerts) == len(footer) == len(rail) == 1
     def bounds(window):
         value = W.RECT()
         assert GetWindowRect(window, C.byref(value))
         return value
     frame, rect = bounds(handle), bounds(child)
     top = bounds(GetParent(alerts[0])).bottom
-    bottom = bounds(GetParent(system[0])).top
+    bottom = bounds(footer[0]).top
     if horizon:
         # The HTML Instruments full view retains the advisory timeline. Use
         # its exact responsive CSS height; no allowance for unexplained gaps.

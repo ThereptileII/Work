@@ -42,7 +42,7 @@ STATES = {
 }
 
 SELECTORS = [".topbar", ".sidebar", "#workspace", "#chartView", ".data-rail",
-             ".timeline", ".statusbar", ".nav-btn", ".icon-btn", ".metric",
+             ".timeline", ".statusbar", ".statusbar>span:first-child", ".footer-middle", ".statusbar>button", ".nav-btn", ".icon-btn", ".metric",
              ".metric-value", ".metric-label", ".next-turn", ".turn-main",
              ".turn-sub", ".map-tools", ".follow-btn", ".autopilot-summary",
              ".drawer", ".drawer-head", ".drawer-head h2", ".drawer-body",

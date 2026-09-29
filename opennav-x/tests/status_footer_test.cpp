@@ -1,0 +1,135 @@
+// Offline component process only. No live profile, navigation or equipment.
+#include "ui/StatusFooter.h"
+#include <wx/app.h>
+#include <wx/dcbuffer.h>
+#include <wx/dcscreen.h>
+#include <wx/frame.h>
+#include <wx/filename.h>
+#include <wx/log.h>
+#include <wx/timer.h>
+#include <wx/uiaction.h>
+#include <fstream>
+#include <iostream>
+#include <stdexcept>
+#include <vector>
+#ifdef __WXGTK__
+#include <gtk/gtk.h>
+#endif
+using namespace opennav;
+using namespace std::chrono_literals;
+namespace {
+class TestApp final:public wxApp {
+ public:
+  bool OnInit() override {
+    wxLog::SetActiveTarget(new wxLogStderr());
+    wxSetAssertHandler([](const wxString &,int,const wxString &,const wxString &s,const wxString &){std::cerr<<s<<std::endl;std::abort();});
+    if(argc!=2)return false;output_=argv[1];
+    if(!wxFileName::Mkdir(output_,wxS_DIR_DEFAULT,wxPATH_MKDIR_FULL))return false;
+    wxInitAllImageHandlers();
+    frame_=new wxFrame(nullptr,wxID_ANY,"TEST ONLY - Status footer",{0,0},{1280,800},wxBORDER_NONE);
+    frame_->SetClientSize(1280,800);frame_->SetBackgroundColour(ui::Colour(ui::Theme(light_).surface));
+    host_=new wxPanel(frame_,wxID_ANY);
+    footer_=new ui::XNavStatusFooter(host_,[this]{++opened_;});
+    footer_->SetSize(0,766,1280,34);
+    frame_->Show();frame_->Raise();
+    timer_.SetOwner(this);Bind(wxEVT_TIMER,&TestApp::Step,this);timer_.Start(300);
+    return true;
+  }
+  int OnRun() override {wxApp::OnRun();return failed_?1:0;}
+ private:
+  void Check(bool ok,const char *message){++checks_;if(!ok)throw std::runtime_error(message);}
+  void Feed(vessel::Time now=stamp_) {
+    footer_->Update(application::PresentFooter(state_,{},application::PresentSourceHealth(state_,{},{},{},{},now),now),light_);
+    host_->SetBackgroundColour(ui::Colour(ui::Theme(light_).surface));frame_->Refresh(false);
+  }
+  ui::XNavButton *Health(){return dynamic_cast<ui::XNavButton *>(wxWindow::FindWindowByName("Footer source health",footer_));}
+  void Geometry(int width,bool middle) {
+    Check(footer_->GetSize()==wxSize(width,34),"34px footer height at canonical scale");
+    Check(footer_->GetName()=="OpenNav status footer","stable native footer identity");
+    Check(footer_->MiddleVisible()==middle,"prototype 1100px middle breakpoint");
+    const auto left=footer_->LeftRegion(),mid=footer_->MiddleRegion();
+    const auto health=Health()->GetRect();
+    Check(left.x==20&&width-health.GetRight()-1==20,"prototype exact outer 20px padding");
+    Check(health.y>=0&&health.GetBottom()<34&&health.height>=10&&health.height<=20,"natural text-sized health link fits footer");
+    Check(left.GetRight()<health.x,"position/health never overlap at supported width");
+    Check(Health()->GetLabel()=="Source health"&&Health()->IsEnabled(),"stable real input target");
+    if(middle) {
+      Check(left.GetRight()<mid.x&&mid.GetRight()<health.x,"three groups do not overlap");
+      Check(std::abs((mid.x-left.GetRight()-1)-(health.x-mid.GetRight()-1))<=2,"CSS space-between uses equal free gaps");
+    } else Check(mid.width==0,"hidden middle contributes no visible region");
+  }
+  void Capture(const char *name) {
+    const auto size=frame_->GetClientSize();const auto origin=frame_->ClientToScreen({0,0});
+#ifdef __WXGTK__
+    auto *pixels=gdk_pixbuf_get_from_window(gdk_get_default_root_window(),origin.x,origin.y,size.x,size.y);
+    Check(pixels!=nullptr,"actual root-window capture");
+    const bool saved=gdk_pixbuf_save(pixels,(output_+"/"+name+".png").utf8_str(),"png",nullptr,nullptr);
+    g_object_unref(pixels);Check(saved,"capture saved");
+#else
+    wxScreenDC screen;wxBitmap image(size.x,size.y);wxMemoryDC memory(image);
+    Check(memory.Blit(0,0,size.x,size.y,&screen,origin.x,origin.y),"actual screen capture");memory.SelectObject(wxNullBitmap);
+    Check(image.SaveFile(output_+"/"+name+".png",wxBITMAP_TYPE_PNG),"capture saved");
+#endif
+    captures_.push_back(name);
+  }
+  void Prototype(ui::LightMode mode) {
+    // Literal illustrative HTML content, confined to this test process. The
+    // product model explicitly cannot produce this XTE or claim these sources.
+    frame_->SetClientSize(1280,800);footer_->SetSize(0,766,1280,34);
+    application::FooterView v;
+    v.navigation_state="UNDERWAY";v.position="58° 20.462′ N   016° 48.218′ E";
+    v.cog="043°";v.xte="0.02 nm";v.health_source="NMEA 2000";v.health_summary="9 of 10 sources";
+    v.position_state=v.cog_state=v.health_state=application::SignalState::Current;
+    light_=mode;footer_->Update(v,mode);frame_->SetFocus();
+    const auto outside=frame_->ClientToScreen({1279,799});
+    wxUIActionSimulator input;input.MouseMove(outside.x,outside.y);
+  }
+  void Step(wxTimerEvent &) {
+    try {
+      switch(step_++) {
+      case 0:Feed();break;
+      case 1:
+        Geometry(1280,true);Check(opened_==0,"observation never opens health");Capture("unavailable-day");
+        state_.navigation.latitude_deg={58.34103333333,"TEST ONLY GPS",stamp_,vessel::Validity::Measured};
+        state_.navigation.longitude_deg={16.80363333333,"TEST ONLY GPS",stamp_,vessel::Validity::Measured};
+        state_.navigation.cog_deg={43.,"TEST ONLY GPS",stamp_,vessel::Validity::Measured};Feed();break;
+      case 2:{
+        Geometry(1280,true);Capture("measured-day");
+        auto *button=Health();const auto rect=button->GetScreenRect();
+        Check(wxFindWindowAtPoint(rect.GetTopLeft()+wxPoint(rect.width/2,rect.height/2))==button,"pointer location hits actual footer button");
+        wxUIActionSimulator input;Check(input.MouseMove(rect.x+rect.width/2,rect.y+rect.height/2)&&input.MouseClick(),"native pointer input injected");break;
+      }
+      case 3:Check(opened_==1,"actual pointer click opens source health once");light_=ui::LightMode::Dusk;Feed();break;
+      case 4:Geometry(1280,true);Capture("measured-dusk");light_=ui::LightMode::Night;Feed();break;
+      case 5:Capture("measured-night");Feed(stamp_+5s);break;
+      case 6:
+        Check(footer_->View().position_state==application::SignalState::Stale&&footer_->View().cog=="STALE","same retained observation visibly expires");
+        Capture("stale-night");frame_->SetClientSize(1024,640);footer_->SetSize(0,606,1024,34);Feed();break;
+      case 7:Geometry(1024,false);Capture("responsive-125-equivalent");frame_->SetClientSize(853,533);footer_->SetSize(0,499,853,34);Feed();break;
+      case 8:Geometry(853,false);Capture("responsive-150-equivalent");frame_->SetClientSize(1100,640);footer_->SetSize(0,606,1100,34);Feed();break;
+      case 9:Geometry(1100,false);frame_->SetClientSize(1101,640);footer_->SetSize(0,606,1101,34);Feed();break;
+      case 10:Geometry(1101,true);Prototype(ui::LightMode::Day);break;
+      case 11:Geometry(1280,true);Capture("prototype-fixture-day");Prototype(ui::LightMode::Dusk);break;
+      case 12:Capture("prototype-fixture-dusk");Prototype(ui::LightMode::Night);break;
+      case 13:{Capture("prototype-fixture-night");Health()->SetFocus();wxUIActionSimulator input;Check(input.Char(WXK_RETURN),"native Enter input");break;}
+      case 14:{Check(opened_==2,"Enter opens health once");wxUIActionSimulator input;Check(input.Char(WXK_SPACE),"native Space input");break;}
+      case 15:Check(opened_==3,"Space opens health once");Finish();break;
+      }
+    }catch(const std::exception &e){failed_=true;std::cerr<<e.what()<<'\n';Finish();}
+  }
+  void Finish(){
+    timer_.Stop();std::ofstream out((output_+"/result.json").ToStdString());
+    out<<"{\"passed\":"<<(failed_?"false":"true")<<",\"checks\":"<<checks_<<",\"native_dpi_qualification\":false,\"captures\":[";
+    for(size_t i=0;i<captures_.size();++i)out<<(i?",":"")<<"\""<<captures_[i]<<"\"";
+    const auto left=footer_->LeftRegion(),middle=footer_->MiddleRegion(),health=Health()->GetRect();
+    out<<"],\"canonical_geometry\":{\"left\":["<<left.x<<","<<left.width<<"],\"middle\":["<<middle.x<<","<<middle.width<<"],\"health\":["<<health.x<<","<<health.y<<","<<health.width<<","<<health.height<<"]}}\n";
+    std::cout<<(failed_?"FAIL ":"PASS ")<<checks_<<" status footer component checks\n";frame_->Destroy();ExitMainLoop();
+  }
+  static inline const vessel::Time stamp_{100s};
+  wxString output_;wxFrame *frame_=nullptr;wxPanel *host_=nullptr;ui::XNavStatusFooter *footer_=nullptr;
+  vessel::VesselState state_;ui::LightMode light_=ui::LightMode::Day;
+  std::vector<std::string> captures_;
+  wxTimer timer_;int step_=0,opened_=0,checks_=0;bool failed_=false;
+};
+}
+wxIMPLEMENT_APP(TestApp);

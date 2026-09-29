@@ -1,0 +1,1040 @@
+{
+  "scope": "Exact-commit development evidence only. SCRUM-98 retains failed native DPI qualification; SCRUM-19 retains visible status-only pilot copy correction and replacement validation. Not accepted for deployment or release.",
+  "commit": "4b9d1340016193dd707ff78bf5e67eebaa52a54e",
+  "observedUtc": "2026-09-29T16:31:35.188858+00:00",
+  "accepted": false,
+  "run": "https://github.com/ThereptileII/Work/actions/runs/36594633724",
+  "prototypeRunStatus": {
+    "status": "completed",
+    "conclusion": "failure"
+  },
+  "jobs": {
+    "counts": {
+      "failure": 1,
+      "success": 7
+    },
+    "entries": [
+      {
+        "id": 109496246957,
+        "name": "Native prototype route waypoint AIS pointer regressions (not full release gate)",
+        "status": "completed",
+        "conclusion": "failure",
+        "activeStep": null,
+        "failedSteps": [
+          "Retained native DPI alarms touch and restart regressions"
+        ]
+      },
+      {
+        "id": 109496246991,
+        "name": "reference (windows-2022)",
+        "status": "completed",
+        "conclusion": "success",
+        "activeStep": null,
+        "failedSteps": []
+      },
+      {
+        "id": 109496247006,
+        "name": "Bounded AIS TLS and provider lifecycle (Linux loopback only)",
+        "status": "completed",
+        "conclusion": "success",
+        "activeStep": null,
+        "failedSteps": []
+      },
+      {
+        "id": 109496247024,
+        "name": "reference (ubuntu-24.04)",
+        "status": "completed",
+        "conclusion": "success",
+        "activeStep": null,
+        "failedSteps": []
+      },
+      {
+        "id": 109496247219,
+        "name": "Native prototype composition development (not release qualification)",
+        "status": "completed",
+        "conclusion": "success",
+        "activeStep": null,
+        "failedSteps": []
+      },
+      {
+        "id": 109496247250,
+        "name": "Supplemental AIS portable contracts (ubuntu-24.04)",
+        "status": "completed",
+        "conclusion": "success",
+        "activeStep": null,
+        "failedSteps": []
+      },
+      {
+        "id": 109496247267,
+        "name": "Supplemental AIS portable contracts (windows-2022)",
+        "status": "completed",
+        "conclusion": "success",
+        "activeStep": null,
+        "failedSteps": []
+      },
+      {
+        "id": 109496247269,
+        "name": "Prototype capture guard on disposable Windows surfaces",
+        "status": "completed",
+        "conclusion": "success",
+        "activeStep": null,
+        "failedSteps": []
+      }
+    ]
+  },
+  "nativeProductTests": {
+    "tests": 126,
+    "failures": 0,
+    "skipped": 0,
+    "disabled": 0
+  },
+  "nativeFixtureTests": {
+    "tests": 126,
+    "failures": 0,
+    "skipped": 0,
+    "disabled": 0
+  },
+  "nativeProductionExecutableSha256": "c268b296bdaa32180fc688dcf496956003d2f44de35a61dd91759b66be8f8065",
+  "nativeExecutableBuildCommit": "4b9d1340016193dd707ff78bf5e67eebaa52a54e",
+  "binaryIdentityScope": "Native product identity recorded by the actual executable/capture harness. The native product EXE is not distributed in this evidence archive. Other jobs build distinct binaries from the same source; hashes must not be transferred.",
+  "components": {
+    "ais-component": {
+      "checks": 151,
+      "captures": 12,
+      "sourceCommit": "4b9d1340016193dd707ff78bf5e67eebaa52a54e",
+      "executableSha256": "029af4e8bd5fb5f38f7c0f5e8f1593fcd72a83b00dadfe964dd0d766d6014e9c"
+    },
+    "alert-component": {
+      "checks": 53,
+      "captures": 7,
+      "sourceCommit": "4b9d1340016193dd707ff78bf5e67eebaa52a54e",
+      "executableSha256": "6eb5418e1b709242609fb26346a193f7958a7ea1b7b619c0dbae8107493bc628"
+    },
+    "anchor-component": {
+      "checks": 34,
+      "captures": 5,
+      "sourceCommit": "4b9d1340016193dd707ff78bf5e67eebaa52a54e",
+      "executableSha256": "aa8045f5d77941e28dab7094a8c4445867c85406bf6695b682de9d039ba4fce5"
+    },
+    "energy-component": {
+      "checks": 44,
+      "captures": 7,
+      "sourceCommit": "4b9d1340016193dd707ff78bf5e67eebaa52a54e",
+      "executableSha256": "55ca75abfeca608c3a2af45785ef1dd84f4904808458f3bb61787c3ca10b4f6b"
+    },
+    "health-component": {
+      "checks": 49,
+      "captures": 6,
+      "sourceCommit": "4b9d1340016193dd707ff78bf5e67eebaa52a54e",
+      "executableSha256": "055ed13207c8b2ba00b3027a8a3360be3dfc5bb5f4a55ce0e0dcafefec277e44"
+    },
+    "instruments-component": {
+      "checks": 41,
+      "captures": 5,
+      "sourceCommit": "4b9d1340016193dd707ff78bf5e67eebaa52a54e",
+      "executableSha256": "331e9f40e9b2b8cc8c429ff8b55137ebd93b7457e660775ae6a13fabe641d576"
+    },
+    "passage-component": {
+      "checks": 26,
+      "captures": 5,
+      "sourceCommit": "4b9d1340016193dd707ff78bf5e67eebaa52a54e",
+      "executableSha256": "0897c495cf402364711f426dd407c07c247911b39b0637e61ddd025f786b7532"
+    },
+    "pilot-component": {
+      "checks": 77,
+      "captures": 7,
+      "sourceCommit": "4b9d1340016193dd707ff78bf5e67eebaa52a54e",
+      "executableSha256": "bd1f6ffebc995c4ca353148c544d9abc1e620aa9ffec34e848e3c58e74c26ce1"
+    },
+    "radar-component": {
+      "checks": 64,
+      "captures": 6,
+      "sourceCommit": "4b9d1340016193dd707ff78bf5e67eebaa52a54e",
+      "executableSha256": "5cd6de1381f1d94490f63ebfa3842aaa193b829f9d608a464e5841bf3efef998"
+    },
+    "settings-component": {
+      "checks": 113,
+      "captures": 12,
+      "sourceCommit": "4b9d1340016193dd707ff78bf5e67eebaa52a54e",
+      "executableSha256": "dfdafb97d4cbdc7a71b2f41074855c12f174bfbe64f15260d56558b5771d0241"
+    }
+  },
+  "primaryCaptures": 33,
+  "additionalOnlineAisCaptures": 4,
+  "captureScope": "1280x800 native client crop; full outer capture retained; boat fullscreen pending",
+  "productionDpiProbes": {
+    "percentages": [
+      100,
+      125,
+      150
+    ],
+    "result": "passed; development DPI/interaction checks only",
+    "limits": "Separate product development geometry and injected-touch checks; not the failed complete fixture regression or physical touch acceptance."
+  },
+  "productionChartChecks": {
+    "renderer": "software",
+    "styles": [
+      "XNav",
+      "Standard"
+    ],
+    "light": [
+      "Day",
+      "Dusk",
+      "Night"
+    ],
+    "depthUnits": [
+      "feet",
+      "meters",
+      "fathoms"
+    ],
+    "records": {
+      "prototype-depth-fathoms": {
+        "result": "chart cycle captured; semantic and visual review required",
+        "captures": 4
+      },
+      "prototype-depth-feet": {
+        "result": "chart cycle captured; semantic and visual review required",
+        "captures": 4
+      },
+      "prototype-depth-meters": {
+        "result": "chart cycle captured; semantic and visual review required",
+        "captures": 4
+      },
+      "prototype-enc-standard": {
+        "result": "chart cycle captured; semantic and visual review required",
+        "captures": 4
+      },
+      "prototype-enc-xnav": {
+        "result": "chart cycle captured; semantic and visual review required",
+        "captures": 4
+      }
+    },
+    "result": "Automated capture/check steps passed; retained records require chart semantic and visual review. No boat GPU/OpenGL acceptance."
+  },
+  "productionPilotOutputPolicy": {
+    "result": "passed; screenshot review required",
+    "checks": [
+      "Control OFF disables AUTO; physical click creates no request or output",
+      "Saved manual permission cannot enable product output",
+      "Every displayed command and enable action disabled despite fresh compatible feedback",
+      "Zero wire output including identity discovery across loss/reconnect",
+      "Passive observed pilot status survives reconnection"
+    ],
+    "sent": [],
+    "wire_output": [],
+    "received_bytes": 0,
+    "hardware": "NONE; loopback simulated translator",
+    "transport_failures": [],
+    "scope": "Actual native production process with loopback translator; saved permission and fresh compatible feedback do not enable XNav output, including identity discovery; passive status retained across reconnect.",
+    "visibleCopyAcceptance": false,
+    "visibleCopyFinding": "Root separately identified misleading Enable control/consent copy in the same source revision on Linux. Follow-on correction needs replacement native evidence; zero-wire results do not qualify visible copy.",
+    "physicalQualification": false
+  },
+  "fixtureChecks": {
+    "objectModel": {
+      "live_text": {
+        "unchanged_layout_calls": 0,
+        "wide_client_width": 1000,
+        "unchanged_update_count": 8,
+        "wide_label": "LIVE TEXT CHECK / This unchanged advisory has enough words to wrap onto several lines at a narrow panel width. Its measured source remains\nunavailable until a fresh observation arrives.",
+        "resize_layout_calls": 8,
+        "narrow_label": "LIVE TEXT CHECK / This unchanged advisory has enough\nwords to wrap onto several lines at a narrow panel width.\nIts measured source remains unavailable until a fresh\nobservation arrives."
+      },
+      "result": "passed",
+      "fixture": "Explicit loopback-only object contract test; no device output",
+      "acquired_ais": {
+        "lost": false,
+        "copied": true,
+        "source_report_age_seconds": 0,
+        "has_position": true,
+        "doubtful": false,
+        "active": true
+      },
+      "phase": "done",
+      "checks": [
+        {
+          "check": "Actual wx primary hints follow Day/Dusk/Night; input updates retain accessibility and Legacy hints"
+        },
+        {
+          "check": "Actual wx live text caches raw value and width; unchanged updates avoid layout and text/resize changes reflow"
+        },
+        {
+          "check": "Dashboard presentation preserves ownership, nesting, reload, geometry and deleted/recreated window lifetime"
+        },
+        {
+          "check": "XNav workspace restoration is bound to actual owned pane pointers and manager"
+        },
+        {
+          "check": "No startup GPS; real input connection added after deferred initialization"
+        },
+        {
+          "check": "Late-added GPS and actual TCP AIVDM AIS acquire without process restart"
+        },
+        {
+          "check": "Thread boundary rejects worker access"
+        },
+        {
+          "check": "Waypoint context native range/bearing, antimeridian, freshness, missing/invalid and thread guards"
+        },
+        {
+          "check": "Waypoint create, edit and stale selection rejection"
+        },
+        {
+          "check": "Deletion uses OpenCPN undo; retained snapshot survives"
+        },
+        {
+          "check": "Go To native temporary route, GPS/identity guards and user-waypoint lifetime"
+        },
+        {
+          "check": "Route name edit, upstream reversal and immutable revision guard"
+        },
+        {
+          "check": "Repeated waypoint identity and layer protections"
+        },
+        {
+          "check": "Activation uses selected navigation; active route edits refused"
+        },
+        {
+          "check": "Selected Stop identity/revision, A-to-B, duplicate, missing, deleted and thread guards"
+        },
+        {
+          "check": "Stop navigation and explicit anchor-watch creation"
+        },
+        {
+          "check": "Anchor observation, whole-metre label, anchor icon and owned-mark removal"
+        },
+        {
+          "check": "Anchor ownership preserves repurposed user marks and recognizes Beta 1 watches"
+        },
+        {
+          "check": "AIS upstream CPA/TCPA, unavailable sentinel, loss, freshness and lifetime"
+        },
+        {
+          "check": "Actual modal defers detail rebuild and rejects a changed rendered activation selection"
+        },
+        {
+          "check": "Open route detail follows external rename, activation, normal waypoint advance and completion"
+        },
+        {
+          "check": "Open deleted-route detail removes activation/edit actions without reopening"
+        },
+        {
+          "check": "Options canvas reconfiguration from hidden XNav page restores chart"
+        },
+        {
+          "check": "Options reconfiguration while already on Navigation explicitly commits pane restoration"
+        },
+        {
+          "check": "Open waypoint detail refreshes rename/protection and refuses invalid, ambiguous and deleted selections"
+        },
+        {
+          "check": "Chart centering rejects missing, nonfinite and duplicate waypoint identities without viewport mutation"
+        },
+        {
+          "check": "Route, waypoint and AIS chart selection use owned deferred cards"
+        }
+      ],
+      "late_connection_added_after_deferred": true
+    },
+    "objectInteraction": {
+      "result": "loopback transport and lifecycle passed; numeric and stale screenshot review required",
+      "checks": 3,
+      "screenshots": 27
+    },
+    "routeProgress": {
+      "route-dusk-progress-results.json": {
+        "result": "passed",
+        "checks": 26
+      },
+      "route-night-progress-results.json": {
+        "result": "passed",
+        "checks": 26
+      },
+      "route-progress-results.json": {
+        "result": "passed",
+        "checks": 26
+      },
+      "route-standard-progress-results.json": {
+        "result": "passed",
+        "checks": 26
+      }
+    },
+    "sharedProfileModes": {
+      "steps": [
+        {
+          "step": "theme / zoom / simulator start and pause",
+          "interaction": "pass",
+          "visual_review": "required; stale labels and fixture values must be checked"
+        },
+        {
+          "step": "XNav to Legacy",
+          "persistence": "pass"
+        },
+        {
+          "step": "Legacy to XNav",
+          "persistence": "pass"
+        },
+        {
+          "step": "Final XNav close",
+          "persistence": "pass"
+        },
+        {
+          "step": "Safe override and close",
+          "persistence": "pass"
+        },
+        {
+          "step": "Persisted XNav after Safe Mode",
+          "persistence": "pass"
+        }
+      ],
+      "chart_rendering": [
+        {
+          "phase": "01-xnav-unavailable.png",
+          "reference_color_fractions": {
+            "eeeee2": 0.18601573676680974,
+            "d5e5e5": 0.8036480686695279
+          },
+          "coastline_visible": true,
+          "style": "XNav",
+          "light": "Day",
+          "source": "immutable HTML tokens"
+        },
+        {
+          "phase": "02-xnav-dusk.png",
+          "reference_color_fractions": {
+            "4e615d": 0.18601573676680974,
+            "344f59": 0.8036480686695279
+          },
+          "coastline_visible": true,
+          "style": "XNav",
+          "light": "Dusk",
+          "source": "immutable HTML tokens"
+        },
+        {
+          "phase": "03-xnav-night.png",
+          "reference_color_fractions": {
+            "25342f": 0.18601573676680974,
+            "121e24": 0.8036480686695279
+          },
+          "coastline_visible": true,
+          "style": "XNav",
+          "light": "Night",
+          "source": "immutable HTML tokens"
+        },
+        {
+          "phase": "11-legacy-after-xnav.png",
+          "reference_color_fractions": {
+            "aaaf50": 0.22296137339055794,
+            "aac3f0": 0.777038626609442
+          },
+          "coastline_visible": true,
+          "style": "Standard",
+          "light": "Day",
+          "source": "pinned software GSHHSChart::SetColorScheme"
+        },
+        {
+          "phase": "06-xnav-after-legacy.png",
+          "reference_color_fractions": {
+            "eeeee2": 0.18601573676680974,
+            "d5e5e5": 0.8036480686695279
+          },
+          "coastline_visible": true,
+          "style": "XNav",
+          "light": "Day",
+          "source": "immutable HTML tokens"
+        },
+        {
+          "phase": "12-safe-shared-profile.png",
+          "reference_color_fractions": {
+            "aaaf50": 0.22296137339055794,
+            "aac3f0": 0.777038626609442
+          },
+          "coastline_visible": true,
+          "style": "Standard",
+          "light": "Day",
+          "source": "pinned software GSHHSChart::SetColorScheme"
+        }
+      ],
+      "result": "interaction and fixture persistence passed; visual review required"
+    },
+    "previewGroups": 19,
+    "previewCaptures": 50,
+    "dpi": "FAILED at 100% in System geometry after fullscreen return; 125% and 150% not reached in this complete regression."
+  },
+  "fixtureFailureAnalysis": {
+    "job": "https://github.com/ThereptileII/Work/actions/runs/36594633724/job/109496246957",
+    "source": "tools/smoke-dpi-windows.py:492 -> system_geometry:282 -> chrome_bounds:135",
+    "assertion": "assert len(alerts)==len(system)==1",
+    "exactCause": "Unscoped native caption search finds two System labels: footer button and System page heading. There is one Alerts button.",
+    "systemMatches": [
+      {
+        "label": "System",
+        "rect": [
+          1169,
+          758,
+          1259,
+          790
+        ],
+        "enabled": true
+      },
+      {
+        "label": "System",
+        "rect": [
+          184,
+          123,
+          1070,
+          162
+        ],
+        "enabled": true
+      }
+    ],
+    "alertsMatches": [
+      {
+        "label": "Alerts 1",
+        "rect": [
+          1223,
+          43,
+          1267,
+          87
+        ],
+        "enabled": true
+      }
+    ],
+    "headerRegion": [
+      8,
+      31,
+      1271,
+      99
+    ],
+    "footerRegion": [
+      8,
+      758,
+      1271,
+      792
+    ],
+    "railRegions": [
+      {
+        "x": 1086,
+        "height": 126,
+        "width": 186,
+        "label": "sog",
+        "y": 141,
+        "visible": true,
+        "enabled": true
+      },
+      {
+        "x": 1086,
+        "height": 126,
+        "width": 186,
+        "label": "depth",
+        "y": 267,
+        "visible": true,
+        "enabled": true
+      },
+      {
+        "x": 1086,
+        "height": 125,
+        "width": 186,
+        "label": "aws",
+        "y": 393,
+        "visible": true,
+        "enabled": true
+      },
+      {
+        "x": 1086,
+        "height": 126,
+        "width": 186,
+        "label": "heading",
+        "y": 518,
+        "visible": true,
+        "enabled": true
+      }
+    ],
+    "systemActions": [
+      {
+        "x": 104,
+        "height": 48,
+        "width": 64,
+        "label": "Back",
+        "y": 119,
+        "visible": true,
+        "enabled": true
+      },
+      {
+        "x": 104,
+        "height": 52,
+        "width": 479,
+        "label": "Open Legacy OpenCPN",
+        "y": 233,
+        "visible": true,
+        "enabled": true
+      },
+      {
+        "x": 591,
+        "height": 52,
+        "width": 479,
+        "label": "Restart XNav",
+        "y": 233,
+        "visible": true,
+        "enabled": true
+      },
+      {
+        "x": 104,
+        "height": 52,
+        "width": 479,
+        "label": "Safe Mode",
+        "y": 293,
+        "visible": true,
+        "enabled": true
+      },
+      {
+        "x": 591,
+        "height": 52,
+        "width": 479,
+        "label": "Diagnostics",
+        "y": 293,
+        "visible": true,
+        "enabled": true
+      },
+      {
+        "x": 104,
+        "height": 52,
+        "width": 479,
+        "label": "Open diagnostics folder",
+        "y": 353,
+        "visible": true,
+        "enabled": true
+      },
+      {
+        "x": 591,
+        "height": 52,
+        "width": 479,
+        "label": "Commissioning & recordings",
+        "y": 353,
+        "visible": true,
+        "enabled": true
+      },
+      {
+        "x": 104,
+        "height": 52,
+        "width": 479,
+        "label": "Export diagnostic bundle",
+        "y": 413,
+        "visible": true,
+        "enabled": true
+      },
+      {
+        "x": 591,
+        "height": 52,
+        "width": 479,
+        "label": "Advanced / Legacy Settings",
+        "y": 413,
+        "visible": true,
+        "enabled": true
+      }
+    ],
+    "foreground": {
+      "is_main": true,
+      "pid": 7936,
+      "title": "OpenNav X / OpenCPN"
+    },
+    "completedScales": [],
+    "preferencesEndpointObservation": [
+      {
+        "scale": 100,
+        "before": {
+          "x": 663,
+          "height": 72,
+          "accessible_name": "Chart safety depth",
+          "width": 386,
+          "label": "Chart safety depth",
+          "y": 589,
+          "visible": true,
+          "enabled": true
+        },
+        "after": [
+          {
+            "x": 663,
+            "height": 72,
+            "accessible_name": "Chart safety depth",
+            "width": 386,
+            "label": "Chart safety depth",
+            "y": 589,
+            "visible": true,
+            "enabled": true
+          }
+        ]
+      }
+    ],
+    "retained100PercentVisualFinding": "Four rail values, footer and all eight System actions are visible without header/footer overlap in the failure capture. Does not pass subsequent DPI or alert geometry steps.",
+    "failureScreenshot": {
+      "path": "/tmp/xnav-ci-watch-4b9-prototype/prototype-object-flow-Windows-4b9d1340016193dd707ff78bf5e67eebaa52a54e/dpi-100-failure-visible.png",
+      "sha256": "c41f9e70312b98bec67ba87b594e6729135bb982689cb5f3ea577304e422b76a"
+    },
+    "failureMetadata": {
+      "path": "/tmp/xnav-ci-watch-4b9-prototype/prototype-object-flow-Windows-4b9d1340016193dd707ff78bf5e67eebaa52a54e/dpi-results.json",
+      "sha256": "7353ac6cfcc90d5dde8f3ae33e5693e44b95adc78de3d4e67039f64ea1478196"
+    },
+    "replacementNativeRunRequired": true,
+    "failureWaived": false
+  },
+  "verifiedArtifacts": [
+    {
+      "id": 11046250145,
+      "name": "prototype-review-guard-Windows-4b9d1340016193dd707ff78bf5e67eebaa52a54e",
+      "sha256": "98564cfe557f1d1615b9913d8138dc92e74f02936c8ee81b4075604b30a2a39e",
+      "bytes": 9653,
+      "zipCrc": true,
+      "safeArchivePaths": true,
+      "url": "https://github.com/ThereptileII/Work/actions/runs/36594633724/artifacts/11046250145"
+    },
+    {
+      "id": 11046135000,
+      "name": "prototype-ais-foundation-Windows-4b9d1340016193dd707ff78bf5e67eebaa52a54e",
+      "sha256": "c48ea38b80d34047a951a7e8e26df8f40b21046e6d1a42fe0073ac60f5a4d115",
+      "bytes": 689,
+      "zipCrc": true,
+      "safeArchivePaths": true,
+      "url": "https://github.com/ThereptileII/Work/actions/runs/36594633724/artifacts/11046135000"
+    },
+    {
+      "id": 11046105287,
+      "name": "prototype-reference-Windows-4b9d1340016193dd707ff78bf5e67eebaa52a54e",
+      "sha256": "16f634c64ff1728982ec9cce70a0a2917e41a0d00f64166930a7f375ed73e942",
+      "bytes": 19667699,
+      "zipCrc": true,
+      "safeArchivePaths": true,
+      "url": "https://github.com/ThereptileII/Work/actions/runs/36594633724/artifacts/11046105287"
+    },
+    {
+      "id": 11045995481,
+      "name": "prototype-reference-Linux-4b9d1340016193dd707ff78bf5e67eebaa52a54e",
+      "sha256": "e0da67338b2a7aaab5a500f0a5ac0a9d47f2dcb24c61a93dfdbade1f9b5bc1a1",
+      "bytes": 21804260,
+      "zipCrc": true,
+      "safeArchivePaths": true,
+      "url": "https://github.com/ThereptileII/Work/actions/runs/36594633724/artifacts/11045995481"
+    },
+    {
+      "id": 11045844505,
+      "name": "prototype-object-flow-Windows-4b9d1340016193dd707ff78bf5e67eebaa52a54e",
+      "sha256": "a57cf912c31db9b3e60157bda83f7bb986d5ac5e21049c498e559a487e650c89",
+      "bytes": 15080864,
+      "zipCrc": true,
+      "safeArchivePaths": true,
+      "url": "https://github.com/ThereptileII/Work/actions/runs/36594633724/artifacts/11045844505"
+    },
+    {
+      "id": 11045773363,
+      "name": "prototype-ais-read-only-probe-4b9d1340016193dd707ff78bf5e67eebaa52a54e",
+      "sha256": "24fb2a0f589f7d015122268e9786cb5ee56f78e51b12108b7271c4a1179b8d05",
+      "bytes": 136632201,
+      "zipCrc": true,
+      "safeArchivePaths": true,
+      "url": "https://github.com/ThereptileII/Work/actions/runs/36594633724/artifacts/11045773363"
+    },
+    {
+      "id": 11045598721,
+      "name": "prototype-native-Windows-4b9d1340016193dd707ff78bf5e67eebaa52a54e",
+      "sha256": "70dbd788b8199da1027dc6e1033b4eb74689a746be62222e294ca8c9d38adf0f",
+      "bytes": 47920858,
+      "zipCrc": true,
+      "safeArchivePaths": true,
+      "url": "https://github.com/ThereptileII/Work/actions/runs/36594633724/artifacts/11045598721"
+    },
+    {
+      "id": 11045451958,
+      "name": "prototype-ais-foundation-Linux-4b9d1340016193dd707ff78bf5e67eebaa52a54e",
+      "sha256": "5420c14d4321e1a73499107599b1da533efc77fdcb271315bcdc56b39089b947",
+      "bytes": 688,
+      "zipCrc": true,
+      "safeArchivePaths": true,
+      "url": "https://github.com/ThereptileII/Work/actions/runs/36594633724/artifacts/11045451958"
+    },
+    {
+      "id": 11044449377,
+      "name": "prototype-ais-network-Linux-4b9d1340016193dd707ff78bf5e67eebaa52a54e",
+      "sha256": "0a09c9350a59afbb8a90c71444540049c7259658101412d13adc338f529e59f9",
+      "bytes": 935,
+      "zipCrc": true,
+      "safeArchivePaths": true,
+      "url": "https://github.com/ThereptileII/Work/actions/runs/36594633724/artifacts/11044449377"
+    },
+    {
+      "id": 11046625366,
+      "name": "linux-pristine-4b9d1340016193dd707ff78bf5e67eebaa52a54e",
+      "sha256": "8b5bec3fc495bab139ea35dd02063e25996812fab357b45949448d2e1924ea10",
+      "bytes": 475701,
+      "zipCrc": true,
+      "safeArchivePaths": true,
+      "url": "https://github.com/ThereptileII/Work/actions/runs/36594637027/artifacts/11046625366"
+    },
+    {
+      "id": 11046265316,
+      "name": "boat-maintenance-4b9d1340016193dd707ff78bf5e67eebaa52a54e",
+      "sha256": "2c4d8fd538f573e6b1ca9b66c0d86ae61885eecf1f0a6a5dfaf20c594f09c5c9",
+      "bytes": 24741,
+      "zipCrc": true,
+      "safeArchivePaths": true,
+      "url": "https://github.com/ThereptileII/Work/actions/runs/36594637027/artifacts/11046265316"
+    },
+    {
+      "id": 11046021150,
+      "name": "restart-window-4b9d1340016193dd707ff78bf5e67eebaa52a54e",
+      "sha256": "72e32d8b296e3ad92d728ba802637cd77108864b4c5cfa73abee9150bcb50937",
+      "bytes": 23495,
+      "zipCrc": true,
+      "safeArchivePaths": true,
+      "url": "https://github.com/ThereptileII/Work/actions/runs/36594637027/artifacts/11046021150"
+    },
+    {
+      "id": 11045817655,
+      "name": "windows-pristine-4b9d1340016193dd707ff78bf5e67eebaa52a54e",
+      "sha256": "131699bd02444ca07f55c6cfd52d5dbcaa3c43550fe6e8041dfbefa8c386dc83",
+      "bytes": 496567,
+      "zipCrc": true,
+      "safeArchivePaths": true,
+      "url": "https://github.com/ThereptileII/Work/actions/runs/36594637027/artifacts/11045817655"
+    },
+    {
+      "id": 11045731166,
+      "name": "commissioning-broker-4b9d1340016193dd707ff78bf5e67eebaa52a54e",
+      "sha256": "e10feeb7e7a6eea3c2e64af65b416188cf5aed0f87d91e6c49387cf48189081d",
+      "bytes": 16730,
+      "zipCrc": true,
+      "safeArchivePaths": true,
+      "url": "https://github.com/ThereptileII/Work/actions/runs/36594637027/artifacts/11045731166"
+    },
+    {
+      "id": 11045620838,
+      "name": "commissioning-restart-4b9d1340016193dd707ff78bf5e67eebaa52a54e",
+      "sha256": "ffd0a132357033ccd97c276165063d995570d8e0fa7bca746d25dd5f2634afa9",
+      "bytes": 6213,
+      "zipCrc": true,
+      "safeArchivePaths": true,
+      "url": "https://github.com/ThereptileII/Work/actions/runs/36594637027/artifacts/11045620838"
+    },
+    {
+      "id": 11045551611,
+      "name": "official-prerequisite-4b9d1340016193dd707ff78bf5e67eebaa52a54e",
+      "sha256": "258c89d78526457b61d65a4b4832cef56cf7ea57c78716f96c5969aa596528d5",
+      "bytes": 221392,
+      "zipCrc": true,
+      "safeArchivePaths": true,
+      "url": "https://github.com/ThereptileII/Work/actions/runs/36594637027/artifacts/11045551611"
+    },
+    {
+      "id": 11045212869,
+      "name": "commissioning-restart-qualified-4b9d1340016193dd707ff78bf5e67eebaa52a54e",
+      "sha256": "add72d3f12cd557ca02a6bb7e165635af43c84e836978b891717d1862abad12f",
+      "bytes": 332,
+      "zipCrc": true,
+      "safeArchivePaths": true,
+      "url": "https://github.com/ThereptileII/Work/actions/runs/36594637027/artifacts/11045212869"
+    },
+    {
+      "id": 11045107815,
+      "name": "stock-welcome-en_US-4b9d1340016193dd707ff78bf5e67eebaa52a54e",
+      "sha256": "44c1fa190c7d19d29420a814627fde3509b2054661f4531c6da8d234755a77f4",
+      "bytes": 474154,
+      "zipCrc": true,
+      "safeArchivePaths": true,
+      "url": "https://github.com/ThereptileII/Work/actions/runs/36594637027/artifacts/11045107815"
+    },
+    {
+      "id": 11044904359,
+      "name": "boat-firmware-4b9d1340016193dd707ff78bf5e67eebaa52a54e",
+      "sha256": "0a8b2e6803da010af92945bc15c714ee745450b520d4634b2115eb92a411daf5",
+      "bytes": 2981,
+      "zipCrc": true,
+      "safeArchivePaths": true,
+      "url": "https://github.com/ThereptileII/Work/actions/runs/36594637027/artifacts/11044904359"
+    },
+    {
+      "id": 11044834767,
+      "name": "stock-welcome-sv-4b9d1340016193dd707ff78bf5e67eebaa52a54e",
+      "sha256": "fbe9b3b374e488975163a9f718823c687d6ba9014422b02935f27d7454fe703a",
+      "bytes": 501464,
+      "zipCrc": true,
+      "safeArchivePaths": true,
+      "url": "https://github.com/ThereptileII/Work/actions/runs/36594637027/artifacts/11044834767"
+    }
+  ],
+  "artifactVerification": "Nine prototype and eleven currently published full-run archives independently verified against GitHub API SHA-256 and byte count; ZIP CRC, traversal/absolute/drive/backslash path and symlink rejection passed before extraction. Full integration artifacts do not yet exist at this observation.",
+  "probePackage": {
+    "name": "OpenNavX-AIS-ReadOnly-Probe.zip",
+    "sha256": "02530091e31c18673960a22d8141a5e336120a367c85d3d37b4b6f2db1f67c80",
+    "commit": "4b9d1340016193dd707ff78bf5e67eebaa52a54e",
+    "upstreamCommit": "37fd0cddb7334fe489e9f18aa163977a9c5c84f7",
+    "architecture": "Win32 x86 on Windows x64",
+    "ciRun": "https://github.com/ThereptileII/Work/actions/runs/36594633724",
+    "sourceArchive": "OpenNavX-AIS-ReadOnly-Probe-source.zip",
+    "sourceSha256": "b62c9c9f4c5b2362384ddb67d977efbceeb2d46adf58e540e9b1413a7f6ec352",
+    "probeExecutableSha256": "54d2a8d3750fb123cb8af657ec1a6cfb4fe75021e67171522c9552a7ad610275",
+    "binaryManifestVerified": true,
+    "sourceHashVerified": true,
+    "offlineLaunch": {
+      "commit": "4b9d1340016193dd707ff78bf5e67eebaa52a54e",
+      "exitCode": 4,
+      "region": "stockholm",
+      "subscriptionConfirmed": false,
+      "peakTargetCount": 0,
+      "acceptedReports": 0,
+      "rejectedReports": 0,
+      "reconnects": 0,
+      "disabledAndCleared": true,
+      "chartOrUiAccepted": false
+    },
+    "scope": "Standalone read-only AIS probe; no live-service or product/chart UI acceptance."
+  },
+  "fullQualification": {
+    "run": "https://github.com/ThereptileII/Work/actions/runs/36594637027",
+    "headSha": "4b9d1340016193dd707ff78bf5e67eebaa52a54e",
+    "status": "in_progress",
+    "conclusion": null,
+    "jobs": {
+      "counts": {
+        "success": 13,
+        "in_progress": 2
+      },
+      "entries": [
+        {
+          "id": 109496259076,
+          "name": "Native boat recovery and commissioning contracts",
+          "status": "completed",
+          "conclusion": "success",
+          "activeStep": null,
+          "failedSteps": []
+        },
+        {
+          "id": 109496259316,
+          "name": "Linux integrated regression gate",
+          "status": "in_progress",
+          "conclusion": null,
+          "activeStep": "Actual elapsed-time trip and resource stability",
+          "failedSteps": []
+        },
+        {
+          "id": 109496259416,
+          "name": "Official OpenCPN installation prerequisite",
+          "status": "completed",
+          "conclusion": "success",
+          "activeStep": null,
+          "failedSteps": []
+        },
+        {
+          "id": 109496259492,
+          "name": "linux",
+          "status": "completed",
+          "conclusion": "success",
+          "activeStep": null,
+          "failedSteps": []
+        },
+        {
+          "id": 109496259494,
+          "name": "Boat C6 producer expiry compile (no flashing)",
+          "status": "completed",
+          "conclusion": "success",
+          "activeStep": null,
+          "failedSteps": []
+        },
+        {
+          "id": 109496259565,
+          "name": "Native MSVC upstream Win32 ABI on Windows x64",
+          "status": "completed",
+          "conclusion": "success",
+          "activeStep": null,
+          "failedSteps": []
+        },
+        {
+          "id": 109496259580,
+          "name": "Approved OpenCPN ABI on Windows x64",
+          "status": "completed",
+          "conclusion": "success",
+          "activeStep": null,
+          "failedSteps": []
+        },
+        {
+          "id": 109496259596,
+          "name": "Native Win32 commissioning restart process boundary",
+          "status": "completed",
+          "conclusion": "success",
+          "activeStep": null,
+          "failedSteps": []
+        },
+        {
+          "id": 109496259639,
+          "name": "contracts (windows-2022)",
+          "status": "completed",
+          "conclusion": "success",
+          "activeStep": null,
+          "failedSteps": []
+        },
+        {
+          "id": 109496259886,
+          "name": "contracts (ubuntu-24.04)",
+          "status": "completed",
+          "conclusion": "success",
+          "activeStep": null,
+          "failedSteps": []
+        },
+        {
+          "id": 109497432977,
+          "name": "Actual restart broker with disposable marker-only installation",
+          "status": "completed",
+          "conclusion": "success",
+          "activeStep": null,
+          "failedSteps": []
+        },
+        {
+          "id": 109497433044,
+          "name": "Actual official OpenCPN portable upgrade caution (en_US)",
+          "status": "completed",
+          "conclusion": "success",
+          "activeStep": null,
+          "failedSteps": []
+        },
+        {
+          "id": 109497433162,
+          "name": "Fixed guarded mode UI actions on disposable native windows",
+          "status": "completed",
+          "conclusion": "success",
+          "activeStep": null,
+          "failedSteps": []
+        },
+        {
+          "id": 109497433195,
+          "name": "Actual official OpenCPN portable upgrade caution (sv)",
+          "status": "completed",
+          "conclusion": "success",
+          "activeStep": null,
+          "failedSteps": []
+        },
+        {
+          "id": 109498265092,
+          "name": "Native MSVC XNav / Legacy / Safe slice",
+          "status": "in_progress",
+          "conclusion": null,
+          "activeStep": "Retain complete fixture UI and scenario regression suite",
+          "failedSteps": []
+        }
+      ]
+    },
+    "linux": "Integrated build and preceding regression steps passed; actual elapsed-time trip/resource endurance is running. No completed endurance result claimed.",
+    "windows": "Native integrated build/modes passed; retained fixture UI/scenario suite is running. Installer, complete DPI, endurance and final release artifacts are not yet accepted.",
+    "productArtifactDelivered": false,
+    "failureWaived": false
+  },
+  "visualConformance": "Not accepted. Comparisons explicitly report PENDING HUMAN REVIEW. No image tolerance or failure waiver applied.",
+  "boatValidation": "None for this revision in this audit. No boat launch, deployment or hardware command.",
+  "onlineAisLiveValidation": "Not performed; offline isolated probe is not live AIS UI validation.",
+  "deployment": "withheld",
+  "limitations": [
+    "Full qualification run remains active; this record is a timestamped observation, not a final release verdict.",
+    "Complete fixture DPI failure remains blocking even though separate product DPI development probes pass.",
+    "Pilot output policy is scoped to XNav-owned adapter sends, not stock OpenCPN or arbitrary plugin output.",
+    "Status-only pilot wording correction requires replacement native product capture.",
+    "No physical boat display, touchscreen, real data or GPU qualification.",
+    "All primary visual and navigational chart conformance still require human review."
+  ]
+}

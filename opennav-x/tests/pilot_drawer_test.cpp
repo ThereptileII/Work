@@ -285,6 +285,34 @@ private:
         Check(!drawer_->View().heading_magnetic_deg,
               "replay cannot masquerade as live pilot");
         Capture("autopilot-replay-day");
+        state_.replayed = false;
+        pilot_.output_unavailable = true;
+        Feed();
+        break;
+      case 18: {
+        Check(drawer_->View().output_unavailable && !drawer_->View().can_toggle,
+              "product output restriction is explicit in owned presentation");
+        Check(Button("Control unavailable") && !Button("Enable control"),
+              "unavailable control cannot promise an enable path");
+        Check(!Button("Control unavailable")->IsEnabled(),
+              "old enabled permission cannot activate product toggle");
+        Check(drawer_->View().heading_magnetic_deg == 146.,
+              "status-only product retains measured pilot heading");
+        for (const auto *label : {"Standby", "Auto", "Track", "Wind"})
+          Check(!Button(label)->IsEnabled(), "all product commands unavailable");
+        auto *toggle = Button("Control unavailable");
+        wxCommandEvent event(wxEVT_BUTTON, toggle->GetId());
+        event.SetEventObject(toggle);
+        toggle->GetEventHandler()->ProcessEvent(event);
+        Capture("autopilot-status-only-day");
+        light_ = ui::LightMode::Night;
+        Feed();
+        break;
+      }
+      case 19:
+        Check(enables_ == 1 && commands_ == 3,
+              "disabled product event cannot invoke an enable or command callback");
+        Capture("autopilot-status-only-night");
         drawer_->Dismiss();
         Check(!drawer_->IsShown(), "close restores owner");
         Finish();

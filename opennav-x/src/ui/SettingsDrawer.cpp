@@ -165,6 +165,7 @@ void XNavSettingsDrawer::Build() {
       break;
     }
     case SettingsSection::System:
+      Page("Interface & recovery","Legacy, Safe Mode, restart and diagnostics",XNavIcon::Shield,ProductPage::System);
       Link("Diagnostics","Versions, data quality and current source state",XNavIcon::Settings,actions_.diagnostics);
       Page("Recordings & commissioning","Read-only observation and field capture",XNavIcon::Instruments,ProductPage::Commissioning);
       Page("Export diagnostics","Choose the information to include",XNavIcon::Settings,ProductPage::FieldReport);

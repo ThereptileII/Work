@@ -299,6 +299,65 @@ try:
             time.sleep(.15)
         raise AssertionError(('Stopped navigation not visibly degraded',latest))
 
+    def footer_observation(position_state, cog_state):
+        """Check the painted footer's owned state against actual decoder input."""
+        deadline=time.monotonic()+8
+        while time.monotonic()<deadline:
+            record=read_json_snapshot(profile/'opennav-diagnostics.json')
+            footer=record['runtime'].get('navigation_footer',{})
+            if (footer.get('position_state')==position_state and
+                    footer.get('cog_state')==cog_state):
+                break
+            time.sleep(.15)
+        else:raise AssertionError(('Selected navigation did not reach footer',position_state,cog_state,footer))
+        assert not footer['historical'] and footer['health_source']=='Vessel data', footer
+        assert footer['xte']=='—', 'XTE has no owned observation contract; it must remain unavailable'
+        if position_state=='Current':
+            assert footer['navigation_state']=='EXPLORING', footer
+            assert footer['position']=='56° 42.000′ N   012° 36.000′ E', footer
+            assert footer['health_summary']=='1 live signal' and footer['health_state']=='Current', footer
+        else:
+            assert footer['navigation_state']=='NO POSITION', footer
+            assert footer['position']==('GPS POSITION STALE' if position_state=='Stale' else 'GPS POSITION UNAVAILABLE'), footer
+            assert footer['health_summary']==('0 live signals, 1 stale' if position_state=='Stale' else '0 live signals'), footer
+        assert footer['cog']=={'Current':'147°','Stale':'STALE','Unavailable':'—'}[cog_state], footer
+        report.setdefault('navigation_footer',[]).append(footer)
+        return record
+
+    def footer_health_action():
+        if windows:
+            ui.pointer_text(app.pid,'Source health')
+        else:
+            record=read_json_snapshot(profile/'opennav-diagnostics.json')
+            controls=[c for c in record['runtime']['display']['interaction_controls']
+                      if c['label']=='Source health' and c['visible'] and c['enabled']]
+            assert len(controls)==1, ('Source health footer action must be visible',controls)
+            target=controls[0]
+            subprocess.run(['xdotool','mousemove',str(target['x']+target['width']//2),
+                            str(target['y']+target['height']//2),'click','1'],env=env,check=True)
+        deadline=time.monotonic()+8
+        while time.monotonic()<deadline:
+            record=read_json_snapshot(profile/'opennav-diagnostics.json')
+            if record['ui_page']=='Source health':break
+            time.sleep(.15)
+        else:raise AssertionError('Visible footer action did not open Source health')
+        capture('02-live-footer-source-health')
+        if windows:
+            ui.pointer_text(app.pid,'Chart')
+        else:
+            controls=[c for c in record['runtime']['display']['interaction_controls']
+                      if c['label']=='Chart' and c['visible'] and c['enabled']]
+            assert len(controls)==1
+            target=controls[0]
+            subprocess.run(['xdotool','mousemove',str(target['x']+target['width']//2),
+                            str(target['y']+target['height']//2),'click','1'],env=env,check=True)
+        deadline=time.monotonic()+8
+        while time.monotonic()<deadline:
+            if read_json_snapshot(profile/'opennav-diagnostics.json')['ui_page']=='Navigation':break
+            time.sleep(.15)
+        else:raise AssertionError('Source health did not return to the chart')
+        report['footer_source_health_action']='Visible pointer opens actual Health drawer and returns to chart'
+
     if objects:
         spec = importlib.util.spec_from_file_location('chartcheck', root / 'tools/chart-render-check.py')
         chartcheck = importlib.util.module_from_spec(spec)
@@ -866,6 +925,7 @@ try:
             raise RuntimeError('Route fixture did not finish normal navigation passes')
         assert not failures, failures
     else:
+        footer_observation('Unavailable','Unavailable')
         capture('01-unavailable')
         phase[0] = 'rmc'
         time.sleep(3)
@@ -873,12 +933,16 @@ try:
         if windows:
             assert any(caption == 'OpenCPN navigation' for _, caption in ui.children(handle)), 'UI did not receive selected data'
         capture('02-live')
+        footer_observation('Current','Current')
+        footer_health_action()
         phase[0] = 'gga'
         time.sleep(6.2)
+        footer_observation('Current','Stale')
         capture('03-position-only-velocity-stale')
         phase[0] = 'none'
         time.sleep(6.2)
         assert_stale_navigation()
+        footer_observation('Stale','Stale')
         capture('04-all-stale')
         assert not failures, failures
     stop.set()

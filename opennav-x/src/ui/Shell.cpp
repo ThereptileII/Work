@@ -283,12 +283,9 @@ Shell::Shell(wxFrame &frame, wxAuiManager &manager, ShellActions actions,
 
   auto *bottom = MakePane("OpenNavActions", wxAuiPaneInfo().Bottom().Layer(10).BestSize(
       -1,frame_.FromDIP(prototype::footer)));
-  auto *status = new wxBoxSizer(wxHORIZONTAL);
-  status->Add(Text(bottom,"OpenCPN navigation",9),0,wxALIGN_CENTER_VERTICAL|wxLEFT,frame_.FromDIP(20));
-  status->AddStretchSpacer();
-  auto *system=Button(bottom,"System","System and Open Legacy OpenCPN",[this]{ShowSystem();});
-  system->SetRole(ButtonRole::Quiet);system->SetMinSize(frame_.FromDIP(wxSize(90,32)));
-  status->Add(system,0,wxRIGHT,frame_.FromDIP(12));bottom->SetSizer(status);
+  auto *status = new wxBoxSizer(wxVERTICAL);
+  footer_=new XNavStatusFooter(bottom,[this]{ShowHealth();});
+  status->Add(footer_,1,wxEXPAND);bottom->SetSizer(status);
   auto *horizon_pane=MakePane("OpenNavHorizon",wxAuiPaneInfo().Bottom().Layer(1).BestSize(-1,frame_.FromDIP(prototype::horizon)));
   auto *horizon_layout=new wxBoxSizer(wxVERTICAL);
   horizon_=new XNavHorizon(horizon_pane);horizon_layout->Add(horizon_,1,wxEXPAND);
@@ -622,6 +619,7 @@ void Shell::ApplyTheme() {
   for (const auto &value : rail_values_)
     value.second->SetLightMode(mode_);
   source_->SetTextColor(simulation_ ? colors.attention : colors.secondary);
+  footer_->Update(footer_->View(),mode_);
 }
 
 void Shell::SetLight(LightMode mode) {
@@ -881,9 +879,11 @@ void Shell::Tick() {
       settings_drawer_->Update(p, mode_);
       settings_drawer_->Present(DrawerWorkspace());
     }
+    const auto health=application::PresentSourceHealth(p.vessel,p.sources,p.ais,
+        online_ais_state_,p.pilot,now);
+    footer_->Update(application::PresentFooter(p.vessel,p.anchor,health,now),mode_);
     if (health_drawer_ && health_drawer_->IsShown()) {
-      health_drawer_->Update(application::PresentSourceHealth(p.vessel,p.sources,p.ais,
-          online_ais_state_,p.pilot,now),mode_);
+      health_drawer_->Update(health,mode_);
       health_drawer_->Present(DrawerWorkspace());
     }
     // Online traffic is display-only. SmartNav, alarms and receiver health

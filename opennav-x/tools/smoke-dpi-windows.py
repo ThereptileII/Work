@@ -67,7 +67,7 @@ def main_buttons(scale):
     nav=43 if logical_height<=600 else 51 if logical_height<=740 else 61
     pilot=66 if logical_height<=600 else 74 if logical_height<=740 else 87
     heights={label:nav for label in ('Chart','Passage','Traffic','Energy','Instruments','Anchor','Radar','Settings')}
-    heights.update({'Autopilot':pilot,'System':32,light:44,'+':44,'−':44,'Follow boat':44})
+    heights.update({'Autopilot':pilot,light:44,'+':44,'−':44,'Follow boat':44})
     for label,height in heights.items():
         found=[c for c in display['interaction_controls'] if c['label']==label and c['visible']]
         assert len(found)==1,(label,found)
@@ -75,6 +75,19 @@ def main_buttons(scale):
         assert abs(h-height*scale/100)<=1,(label,'exact prototype height',h,height)
         assert frame.left<=x<x+w<=frame.right and frame.top<=y<y+h<=frame.bottom,(label,'clipped control')
         sizes[label]=[w,h]
+    footer=display['footer_region']
+    footer_handles=[h for h,t in ui.children(handle) if t=='OpenNav status footer']
+    assert len(footer_handles)==1
+    native=bounds(footer_handles[0])
+    assert footer==dict(x=native.left,y=native.top,width=native.right-native.left,height=native.bottom-native.top)
+    assert abs(footer['height']-34*scale/100)<=1 and footer['width']==client.right, 'Exact full-width prototype footer required'
+    assert display['footer_middle_visible']==(client.right*100/scale>1100), 'Middle footer must follow exact prototype breakpoint'
+    health=[c for c in display['interaction_controls'] if c['label']=='Source health' and c['visible']]
+    assert len(health)==1 and health[0]['enabled']
+    h=health[0]
+    assert native.left<=h['x']<h['x']+h['width']<=native.right and native.top<=h['y']<h['y']+h['height']<=native.bottom, 'Footer source health must remain visible at this DPI'
+    assert not any(c['label']=='System' and c['visible'] for c in display['interaction_controls']), 'Obsolete footer System action remains'
+    sizes['footer']=[footer['width'],footer['height']]
     return sizes
 
 def bounds(window):
@@ -131,9 +144,9 @@ def primary_hint_hover(label, should_show, settle=1.5):
 def chrome_bounds():
     labels=ui.children(handle)
     alerts=[h for h,t in labels if t=='Alerts' or t.startswith('Alerts ')]
-    system=[h for h,t in labels if t=='System']
-    assert len(alerts)==len(system)==1
-    return bounds(ui.GetParent(alerts[0])).bottom,bounds(ui.GetParent(system[0])).top
+    footer=[h for h,t in labels if t=='OpenNav status footer']
+    assert len(alerts)==len(footer)==1
+    return bounds(ui.GetParent(alerts[0])).bottom,bounds(footer[0]).top
 
 def current_layout_observation():
     # Diagnostics publishes at 1 Hz; size_window's native 0.5 s settle can still
@@ -143,7 +156,7 @@ def current_layout_observation():
     previous=int(data()['runtime']['ui_update']['ticks'])
     def native_controls():
         children=ui.children(handle);result={}
-        for label in ('Settings','Chart','System'):
+        for label in ('Settings','Chart','Source health'):
             found=[control for control,text in children if text==label]
             assert len(found)==1,(label,found)
             rect=bounds(found[0])
@@ -422,15 +435,15 @@ try:
             data(lambda d:d['ui_page']==page)
             entry['night_surfaces'].append(chart.dark_surface(capture(f'dpi-{scale}-night-'+page.lower().replace(' ','-').replace('&','and')),page))
         # These actions belong to the prototype Preferences drawer. Re-enter
-        # it for each action: the destination page dismisses the drawer, so a
-        # bare second "System" click would enter the different recovery page.
+        # it for each action: the destination page dismisses the drawer, so
+        # a bare second "System" click has no visible Settings section target.
         # Visible captions changed; diagnostic destination identities did not.
         for label,page in [('Recordings & commissioning','Commissioning & recordings'),
                            ('Export diagnostics','Field diagnostic bundle')]:
             ui.click_text(pid,'Settings');data(lambda d:d['ui_page']=='Settings')
             ui.click_text(pid,'System');ui.click_text(pid,label);data(lambda d:d['ui_page']==page)
             entry['night_surfaces'].append(chart.dark_surface(capture(f'dpi-{scale}-night-'+page.lower().replace(' ','-').replace('&','and')),page))
-        ui.click_text(pid,'System');ui.click_text(pid,'Diagnostics')
+        ui.open_system(pid);ui.click_text(pid,'Diagnostics')
         # The page identity is published before its first native paint computes
         # the scroll extent. Wait for that same page's settled geometry; the
         # later touch assertions still require actual viewport movement.
@@ -487,7 +500,9 @@ try:
         entry['restored_rail']=rail_geometry(scale)
         assert entry['restored_rail']==entry['rail_with_critical_alert'],'Fullscreen return changed primary rail visibility'
         entry['fullscreen']='1920x1080 physical desktop; returned to 1280x800 with original DPI and controls'
-        ui.click_text(pid,'System')
+        ui.pointer_text(pid,'Settings');data(lambda d:d['ui_page']=='Settings')
+        ui.pointer_text(pid,'System')
+        entry['recovery_preferences_touch']=touch_preferences_action('Interface & recovery',scale)
         data(lambda d:d['ui_page']=='System');ui.assert_product_page(handle,'System')
         entry['system_controls']=system_geometry(scale)
         entry['system_critical_alert']=critical_alert_accessible(scale)
@@ -502,7 +517,7 @@ try:
         handle,pid=ui.wait_window('OpenNav X / OpenCPN');owned.add(pid);ready();ui.size_window(handle)
         assert ui.GetDpiForWindow(handle)==observed
         entry['chart_rendering'].append(chart.presentation(capture(f'dpi-{scale}-returned-xnav'),'XNav','Day',f'{scale}% returned XNav'))
-        old=ui.monitor_process(pid);ui.click_text(pid,'System');ui.click_text(pid,'Safe Mode')
+        old=ui.monitor_process(pid);ui.open_system(pid);ui.click_text(pid,'Safe Mode')
         ui.wait_clean_exit(old);owned.discard(pid);count+=1
         handle,pid=ui.wait_window('OpenNav Safe Mode / OpenCPN');owned.add(pid);ready();ui.size_window(handle)
         assert ui.GetDpiForWindow(handle)==observed

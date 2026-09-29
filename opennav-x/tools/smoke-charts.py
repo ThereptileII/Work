@@ -364,7 +364,7 @@ try:
     entry['route_geometry']='Native chart gestures created and named a three-point route; Save opened its detail page; Navigation restored the same viewport; point move persisted with unchanged identities'
     entry['captures'].append(capture('chart-created-and-edited-route'))
    entry['plugin_manager']='native manager opened and listed Dashboard/WMM' if windows else 'native Windows interaction is authoritative; loader records checked here'
-  if windows:ui.click_text(pid,'System');ui.click_text(pid,'Open Legacy OpenCPN')
+  if windows:ui.open_system(pid);ui.click_text(pid,'Open Legacy OpenCPN')
   else:xdo('key','ctrl+shift+l')
   assert app.wait(timeout=40)==0;owned.discard(pid);count+=1
   entry['workspace_after_xnav_close']=workspace.saved(profile)
