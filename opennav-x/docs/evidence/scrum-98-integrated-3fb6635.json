@@ -1,0 +1,135 @@
+{
+  "schema_version": 1,
+  "commit": "3fb6635a0940d952ec86013a0dc546612a448396",
+  "authority": "Linux development qualification; not release or boat acceptance",
+  "executable_sha256": "486b6ffbfcf745b245512961ad243272edede45e4557f25a0f19aa4a3d82f588",
+  "units": {
+    "passed": 136,
+    "failed": 0,
+    "seconds": 20.86
+  },
+  "integrated": [
+    {
+      "name": "modes",
+      "exit_code": 0,
+      "seconds": 47.61
+    },
+    {
+      "name": "navigation",
+      "exit_code": 0,
+      "seconds": 26.29
+    },
+    {
+      "name": "recording",
+      "exit_code": 0,
+      "seconds": 56.56
+    },
+    {
+      "name": "route-standard",
+      "exit_code": 0,
+      "seconds": 31.82
+    },
+    {
+      "name": "route",
+      "exit_code": 0,
+      "seconds": 31.89
+    },
+    {
+      "name": "charts",
+      "exit_code": 0,
+      "seconds": 85.1
+    },
+    {
+      "name": "preview",
+      "exit_code": 1,
+      "seconds": 190.36
+    }
+  ],
+  "qualification": "FAILED at portable preview Legacy-to-XNav replacement startup; stopped remaining gates",
+  "failure": {
+    "previous_legacy_exit_code": 0,
+    "replacement_exit_code": 255,
+    "replacement_observation": "owned descendant observed running, then zombie; waitid CLD_EXITED255 before timeout",
+    "no_third_startup_log": true,
+    "launch_stdout_bytes": 0,
+    "launch_stderr_bytes": 0,
+    "mechanism": "unresolved"
+  },
+  "diagnostic": {
+    "run": "one authorized separate traced invocation",
+    "same_executable": true,
+    "screenshots": 44,
+    "application_processes": 7,
+    "all_exit_zero": true,
+    "result": "diagnostic-only pass, does not supersede qualification failure",
+    "scope": "process syscalls and filename-only filesystem errors; no environment expansion or read/write/network contents",
+    "limitation": "Tracing changes timing; failing early-exit255 was not reproduced."
+  },
+  "not_run": [
+    "positive pilot fixture gate",
+    "fixture-free product build and negative physical-output gate",
+    "fixture-free native Full passage integration capture"
+  ],
+  "reviewed_screens": [
+    "navigation/navigation-02-live-horizon-follow.png",
+    "navigation/navigation-04-all-stale.png",
+    "modes/06-xnav-after-legacy-linux.png",
+    "modes/12-safe-shared-profile-linux.png"
+  ],
+  "visual_observations": [
+    "Actual footer1280x34 visible and truthful live/stale/health state; coastline survives mode transitions in passing gates.",
+    "NOW actual pointer toggles upstream follow and is disabled with stale position.",
+    "Hover tooltip overlaps footer in retained pointer-state screenshots; no full visual conformance claim."
+  ],
+  "limits": [
+    "Native Windows and boat-PC qualification remain separate mandatory gates.",
+    "No actuator, boat or normal user profile actions performed.",
+    "Original first-pass failure preserved; no test tolerance/timeouts changed."
+  ],
+  "artifacts": [
+    {
+      "path": "evidence/local/scrum98-3fb6635/fixture-tests.xml",
+      "sha256": "06a6958ecef2bfc96811a1d5872a9afb5376c8b3a3ae6b27f7fb74022342a71e"
+    },
+    {
+      "path": "evidence/local/scrum98-3fb6635/fixture-tests.log",
+      "sha256": "b1b5c144a49da05aaf1bfa0d941d136861953ba8979ae81a4e2b86173c9c98ab"
+    },
+    {
+      "path": "evidence/local/scrum98-3fb6635/fixture-build.log",
+      "sha256": "75c89b06f4f51b7b7832a21deb5e838e47e6573d010b48746e26708339006159"
+    },
+    {
+      "path": "evidence/local/scrum98-3fb6635/fixture-checks.json",
+      "sha256": "4be01582ba3d9ca5653cb9b38eb7130c7dbe0c40e9f1247de12700c6ff35a8c8"
+    },
+    {
+      "path": "evidence/local/scrum98-3fb6635/preview/preview-linux-results.json",
+      "sha256": "0b50c98222d1ae788e3157145b2d8a545fb77659160233f1fcc662e8bc753543"
+    },
+    {
+      "path": "evidence/local/scrum98-3fb6635/preview/preview-failure-inventory.json",
+      "sha256": "1ee4e831dddbdae936036efd9864f8ee75f17a10366ad59ef2d0b302a6af8740"
+    },
+    {
+      "path": "evidence/local/scrum98-3fb6635/preview/preview-failure-linux.png",
+      "sha256": "f3bdcc59f1a08b8f599bc2d653ce1bdeaafc2bfdc23eaa6d15fe20b7bd6f5101"
+    },
+    {
+      "path": "evidence/local/scrum98-3fb6635/visual-review.json",
+      "sha256": "2bb6f3d12b4c4e536eabb740ae456283ffb1855f0b92b1f4b0d4e5bd6403057f"
+    },
+    {
+      "path": "evidence/local/scrum98-preview-diagnostic-3fb6635-01/provenance.json",
+      "sha256": "b3cd9874348a8a103e72ff38d6eda9fb62fbca5fa145b08e327500b9961d8d59"
+    },
+    {
+      "path": "evidence/local/scrum98-preview-diagnostic-3fb6635-01/diagnostic-outcome.json",
+      "sha256": "1b58e857cc30cb116c6c3c0e85d2d251b770ec977f9615b85d5bc2c885d33a66"
+    },
+    {
+      "path": "evidence/local/scrum98-preview-diagnostic-3fb6635-01/application-process-lifecycle.strace",
+      "sha256": "6f809b0a9839e2d2fbafe2e2e3ad24d746566b2c575ab3e8f8d7259a7f21ac26"
+    }
+  ]
+}

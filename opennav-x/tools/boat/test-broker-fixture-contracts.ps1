@@ -6,6 +6,8 @@ param()
 . (Join-Path (Split-Path (Split-Path $PSScriptRoot -Parent) -Parent) 'tests/commissioning-restart/New-BrokerFixture.ps1')
 . (Join-Path (Split-Path (Split-Path $PSScriptRoot -Parent) -Parent) 'tests/commissioning-restart/BrokerMarkerCleanup.ps1')
 $checks=New-Object 'Collections.Generic.List[string]'
+. (Join-Path (Split-Path (Split-Path $PSScriptRoot -Parent) -Parent) 'tests/commissioning-restart/TestFixtureMarkerReader.ps1')
+foreach($check in (Invoke-FixtureMarkerReaderChecks)){$checks.Add($check)}
 $markerLines=@('42','134349496789080144','1',('a'*64),('b'*64),'fixed path','local','roaming','','')
 Assert-BrokerMarkerChildRecord $markerLines ('a'*64) ('b'*64)
 $checks.Add('Cleanup accepts only complete armed marker identity and exact session binding')

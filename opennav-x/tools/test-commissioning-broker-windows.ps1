@@ -50,7 +50,7 @@ try {
    $parent=[Diagnostics.Process]::Start($start);$null=$parent.Handle
    $created=$parent.StartTime.ToUniversalTime().ToFileTimeUtc().ToString()
    WaitMarker (Join-Path $fixture.app 'parent-armed.txt')
-   Require ([IO.File]::ReadAllLines((Join-Path $fixture.app 'parent-armed.txt'))[0] -ceq 'yes') ($case+': actual marker armed actual guarded helper')
+   Require ((Read-FixtureMarkerLines (Join-Path $fixture.app 'parent-armed.txt'))[0] -ceq 'yes') ($case+': actual marker armed actual guarded helper')
    $companions=@(Get-CimInstance Win32_Process -Filter ('ParentProcessId='+$parent.Id)|Where-Object {$_.ExecutablePath -and $_.ExecutablePath -ieq $fixture.helper})
    Require ($companions.Count -eq 1) ($case+': exactly one owned fixture helper')
    $companion=Get-Process -Id $companions[0].ProcessId;$null=$companion.Handle

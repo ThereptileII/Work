@@ -12,6 +12,7 @@ foreach($name in @('opencpn.exe','opennav-restart.exe','commissioning_restart_te
   if(-not [IO.File]::Exists((Join-Path $Binaries $name))){throw ('Missing standalone test binary '+$name)}
 }
 $root=Split-Path $PSScriptRoot -Parent
+. (Join-Path $root 'tests/commissioning-restart/TestFixtureMarkerReader.ps1')
 Add-Type -Path (Join-Path $PSScriptRoot 'boat\RestartCommissioningNative.cs')
 Add-Type -TypeDefinition @'
 using System;
@@ -68,6 +69,7 @@ function WriteText([string]$Path,[string]$Text){[IO.File]::WriteAllText($Path,$T
 function WaitFile([string]$Path){$end=[DateTime]::UtcNow.AddSeconds(10);while(-not [IO.File]::Exists($Path)){if([DateTime]::UtcNow -ge $end){throw ('Marker absent: '+$Path)};Start-Sleep -Milliseconds 20}}
 $status='failed';$failure=$null;$case=$null;$helperExit=$null;$receipt=$null;$currentHelperPid=$null;$currentParentPid=$null;$imageProbe=$null
 try {
+  foreach($check in (Invoke-FixtureMarkerReaderChecks)){Require $true $check}
   # Refuse an actual application passed as -Binaries before invoking anything.
   $marker=Join-Path $Binaries 'opencpn.exe';$signature='OpenNavX.NativeRestart.MarkerOnly.1'
   Require ([Text.Encoding]::ASCII.GetString([IO.File]::ReadAllBytes($marker)).Contains($signature)) 'Compiled application has inert marker-only identity'
@@ -188,7 +190,7 @@ try {
         Require (@(Get-ChildItem -LiteralPath $directory -Filter 'child*.txt').Count -eq 0) ($case+': replacement never overlaps parent')
       }
       if($noBroker) {
-        $armedLines=[IO.File]::ReadAllLines((Join-Path $directory 'parent-armed.txt'))
+        $armedLines=Read-FixtureMarkerLines (Join-Path $directory 'parent-armed.txt')
         Require ($armedLines.Count -eq 2 -and $armedLines[1] -ceq $parent.Id.ToString()) ($case+': complete published parent readiness and identity')
         $armed=$armedLines[0]
         $expectHelper=$case -cin @('plain','no-listener','parent-error')
@@ -267,7 +269,7 @@ try {
       }
       if($allow -or $case -ceq 'plain') {
         $marker=Join-Path $directory ('child'+$mode+'.txt');WaitFile $marker
-        $lines=[IO.File]::ReadAllLines($marker)
+        $lines=Read-FixtureMarkerLines $marker
         Require ($lines.Count -eq 10) ($case+': complete closed child marker published before readiness')
         if($allow){Require ($lines[2] -ceq '1' -and $lines[3] -ceq $session -and $lines[4] -ceq $record -and $lines[5] -ceq $cleanPath) ($case+': child retains armed binding and verified environment')}
         else{Require ($lines[2] -ceq '0') 'Ordinary unarmed restart remains unarmed'}

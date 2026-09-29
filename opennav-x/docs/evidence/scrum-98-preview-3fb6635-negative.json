@@ -1,0 +1,51 @@
+{
+  "commit": "3fb6635a0940d952ec86013a0dc546612a448396",
+  "executable_sha256": "486b6ffbfcf745b245512961ad243272edede45e4557f25a0f19aa4a3d82f588",
+  "result": "FAIL; qualification stopped without retry",
+  "failed_gate": "preview",
+  "phase": "XNav to Legacy to XNav",
+  "error": "RuntimeError('Window not found: OpenNav X / OpenCPN')",
+  "legacy_exit": {
+    "event": "waitpid-exit",
+    "phase": "XNav to Legacy to XNav",
+    "monotonic_ms": 461985068,
+    "pid": 2976378,
+    "start_ticks": 47835321,
+    "raw_wait_status": 0,
+    "exit_code": 0
+  },
+  "replacement_at_failure": [
+    {
+      "pid": 2976613,
+      "state": "Z",
+      "ppid": 2973549,
+      "start_ticks": 47835899,
+      "argv": [],
+      "argv_state": "retained before exit",
+      "unreaped_exit": {
+        "pid": 2976613,
+        "code": 1,
+        "status": 255
+      }
+    }
+  ],
+  "stdout_bytes": 0,
+  "stderr_bytes": 0,
+  "interpretation": "The replacement descendant was observed then exited normally with status255 before any visible XNav window. The previous Legacy process exited0. This is distinct from the original parent Popen status. The retained OpenCPN log contains only initial XNav and Legacy sessions, not a third startup. Source restart-helper failure statuses125/127 do not match observed255; the exact early startup failure mechanism is not established.",
+  "evidence_gaps": [
+    "No process syscall trace was requested for this qualifying invocation.",
+    "Replacement argv observation was empty; cannot use this report alone to identify where exec/startup failed."
+  ],
+  "not_run": [
+    "pilot-positive",
+    "production build/units/status-only negative probe",
+    "fixture-free Full passage integration capture"
+  ],
+  "cleanup": "No opencpn process remains after harness cleanup (pgrep -x opencpn exit1).",
+  "visual_limitations": [
+    "Earlier passing screenshot reviews do not supersede this lifecycle failure.",
+    "Linux Xvfb/llvmpipe checks are not native Windows or physical boat qualification."
+  ],
+  "source_record_sha256": "f1c1c43d4c0a8f79cf62c6e104170e2e075b974561754ef67834a3a29db63974",
+  "retained_evidence": "evidence/local/scrum98-3fb6635/preview/"
+}

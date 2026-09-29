@@ -56,6 +56,7 @@
 #include <wx/filefn.h>
 #include <wx/filename.h>
 #include <wx/utils.h>
+#include "diagnostics/TestEarlyStartupTrace.h"
 #include "ocpn_plugin.h"
 
 #include <algorithm>
@@ -191,8 +192,12 @@ bool ParseCommandLine(wxCmdLineParser& parser) {
   demo = parser.Found("xnav-demo");
 #endif
   try { (void)integration::ResolveStartup(flags); }
-  catch (const std::exception& error) { std::cerr << error.what() << '\n'; return false; }
+  catch (const std::exception& error) {
+    XNAV_EARLY_STARTUP_TRACE(ModeConflict, false);
+    std::cerr << error.what() << '\n'; return false;
+  }
   if (parser.Found("remote") && (flags.xnav || flags.legacy || flags.safe || demo)) {
+    XNAV_EARLY_STARTUP_TRACE(RemoteConflict, false);
     std::cerr << "OpenNav startup options cannot be combined with --remote\n";
     return false;
   }
@@ -212,7 +217,10 @@ bool ParseCommandLine(wxCmdLineParser& parser) {
         throw std::runtime_error("portable OpenNav does not send remote "
                                  "commands to another OpenCPN instance");
     } else if(!configdir.empty()) diagnostic_directory=configdir.ToStdString(wxConvUTF8);
-  } catch(const std::exception& e) {std::cerr<<e.what()<<'\n';return false;}
+  } catch(const std::exception& e) {
+    XNAV_EARLY_STARTUP_TRACE(PreviewPathFailure, false);
+    std::cerr<<e.what()<<'\n';return false;
+  }
   if (!configdir.empty()) {
     profile_arguments.push_back("--configdir");
     profile_arguments.push_back(configdir.ToStdString(wxConvUTF8));
@@ -220,6 +228,7 @@ bool ParseCommandLine(wxCmdLineParser& parser) {
 #ifdef OPENNAV_ROUTE_TESTS
   if(parser.Found("xnav-object-fixture")){
     if(!flags.xnav||flags.safe||flags.legacy||demo||configdir.empty()||parser.Found("xnav-route-fixture")||!wxFileExists(configdir+"/OPENNAV_OBJECT_FIXTURE")){
+      XNAV_EARLY_STARTUP_TRACE(FixturePolicyFailure, false);
       std::cerr<<"Object fixture requires explicit XNav and a marked disposable profile\n";return false;
     }
     object_test_profile=configdir.ToStdString(wxConvUTF8);
@@ -227,6 +236,7 @@ bool ParseCommandLine(wxCmdLineParser& parser) {
   if (parser.Found("xnav-route-fixture")) {
     if (!flags.xnav || flags.safe || flags.legacy || demo || configdir.empty() ||
         !wxFileExists(configdir + "/OPENNAV_ROUTE_FIXTURE")) {
+      XNAV_EARLY_STARTUP_TRACE(FixturePolicyFailure, false);
       std::cerr << "Route fixture requires explicit XNav and a marked disposable profile\n";
       return false;
     }
@@ -242,6 +252,7 @@ bool ParseCommandLine(wxCmdLineParser& parser) {
 #endif
     integration::ValidateTestStartup(requested, flags);
   } catch (const std::exception &error) {
+    XNAV_EARLY_STARTUP_TRACE(FixturePolicyFailure, false);
     std::cerr << error.what() << '\n';
     return false;
   }

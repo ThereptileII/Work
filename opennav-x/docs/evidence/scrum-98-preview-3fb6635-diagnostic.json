@@ -1,0 +1,90 @@
+{
+  "commit": "3fb6635a0940d952ec86013a0dc546612a448396",
+  "result": "Diagnostic-only PASS; original3fb qualifying failure remains unresolved",
+  "executable_sha256": "486b6ffbfcf745b245512961ad243272edede45e4557f25a0f19aa4a3d82f588",
+  "captures": 44,
+  "application_processes": [
+    2981384,
+    2984276,
+    2984554,
+    2984809,
+    2985092,
+    2985387,
+    2985658
+  ],
+  "application_exits": [
+    {
+      "event": "popen-exit",
+      "phase": "XNav to Legacy",
+      "monotonic_ms": 462402259,
+      "pid": 2981384,
+      "exit_code": 0
+    },
+    {
+      "event": "waitpid-exit",
+      "phase": "XNav to Legacy to XNav",
+      "monotonic_ms": 462411915,
+      "pid": 2984276,
+      "start_ticks": 47877613,
+      "raw_wait_status": 0,
+      "exit_code": 0
+    },
+    {
+      "event": "waitpid-exit",
+      "phase": "XNav to Legacy to XNav",
+      "monotonic_ms": 462421190,
+      "pid": 2984554,
+      "start_ticks": 47878584,
+      "raw_wait_status": 0,
+      "exit_code": 0
+    },
+    {
+      "event": "waitpid-exit",
+      "phase": "Safe to XNav",
+      "monotonic_ms": 462430977,
+      "pid": 2984809,
+      "start_ticks": 47879515,
+      "raw_wait_status": 0,
+      "exit_code": 0
+    },
+    {
+      "event": "waitpid-exit",
+      "phase": "Safe to XNav",
+      "monotonic_ms": 462440168,
+      "pid": 2985092,
+      "start_ticks": 47880488,
+      "raw_wait_status": 0,
+      "exit_code": 0
+    },
+    {
+      "event": "waitpid-exit",
+      "phase": "Direct Legacy to XNav",
+      "monotonic_ms": 462449553,
+      "pid": 2985387,
+      "start_ticks": 47881413,
+      "raw_wait_status": 0,
+      "exit_code": 0
+    },
+    {
+      "event": "waitpid-exit",
+      "phase": "Direct Legacy to XNav",
+      "monotonic_ms": 462459148,
+      "pid": 2985658,
+      "start_ticks": 47882347,
+      "raw_wait_status": 0,
+      "exit_code": 0
+    }
+  ],
+  "observed": "All7 OpenCPN processes exited0. Exact portable replacement executable/configdir and --portable --no_opengl --xnav argv observed in execve trace. No replacement status255 occurred under tracing.",
+  "limitations": [
+    "One authorized diagnostic run only; no acceptance rerun.",
+    "strace modifies timing and overhead.",
+    "Successful filesystem calls were discarded; process calls and file failures retained without file contents or environment values.",
+    "Original failure remains unqualified; pilot/product/Full passage gates unrun."
+  ],
+  "trace_counts": {
+    "lines": 449507,
+    "retained": 128651,
+    "discarded_successful_file_calls": 320856
+  }
+}

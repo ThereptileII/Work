@@ -1,4 +1,5 @@
 # Test-only marker protocol. Never terminates a process or touches a real app.
+. (Join-Path $PSScriptRoot 'ReadFixtureMarker.ps1')
 function Assert-BrokerMarkerChildRecord([string[]]$Lines,[string]$Session,[string]$RecordSha256) {
  if($Lines.Count -ne 10 -or $Lines[0] -cnotmatch '^[1-9][0-9]{0,9}$' -or
     $Lines[1] -cnotmatch '^[1-9][0-9]{0,19}$' -or $Lines[2] -cne '1' -or
@@ -13,7 +14,7 @@ function Wait-BrokerMarkerChildren([string]$Application,[string]$Executable,[str
  try {
   foreach($marker in $markers) {
    if($marker.Name -cnotin @('child--xnav.txt','child--legacy.txt','child--safe-mode.txt') -or $marker.Attributes -band [IO.FileAttributes]::ReparsePoint){throw 'Unexpected marker child record path.'}
-   $lines=[IO.File]::ReadAllLines($marker.FullName);Assert-BrokerMarkerChildRecord $lines $Session $RecordSha256
+   $lines=Read-FixtureMarkerLines $marker.FullName;Assert-BrokerMarkerChildRecord $lines $Session $RecordSha256
    $child=Get-Process -Id ([int]$lines[0]);$children.Add($child);$null=$child.Handle
    if($child.HasExited -or -not[StringComparer]::OrdinalIgnoreCase.Equals($child.Path,$Executable) -or
       $child.StartTime.ToUniversalTime().ToFileTimeUtc().ToString() -cne $lines[1] -or

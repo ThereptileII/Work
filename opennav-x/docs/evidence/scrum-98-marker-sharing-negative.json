@@ -1,0 +1,43 @@
+{
+  "accepted": false,
+  "commit": "ced99ac379e5622c21e48c83772b43aa7f2e8df6",
+  "run": 36607678109,
+  "job": 109540775843,
+  "url": "https://github.com/ThereptileII/Work/actions/runs/36607678109/job/109540775843",
+  "tests": {
+    "passed": 84,
+    "failed": 1,
+    "total": 85
+  },
+  "failure": {
+    "name": "fixture_marker_publication",
+    "message": "published marker cannot be opened",
+    "durationSeconds": 0.37,
+    "missingEvidence": [
+      "which Read caller/path/iteration",
+      "errno or GetLastError",
+      "lock holder"
+    ]
+  },
+  "separateSuccessfulInvocation": {
+    "job": 109540775702,
+    "markerChecks": 72,
+    "nativeRestartChecks": 376,
+    "nativeRestartCases": 24,
+    "artifact": 11050909542,
+    "sha256": "d28ef03a3c4d6c6cd37f9beb3c05299df147d872486c369a5fbdf0ca04f1d79f"
+  },
+  "sourceBoundaries": [
+    "tests/commissioning-restart/marker_publication_tests.cpp:Read uses std::ifstream and throws before returning content",
+    "tests/commissioning-restart/AtomicMarker.h:checked stream.close precedes filesystem rename"
+  ],
+  "limit": "No re-run performed; one successful execution does not overrule a failed independent execution of the same exact candidate.",
+  "observedUtc": "2026-09-29 17:55:11 UTC",
+  "primarySourceHypothesis": {
+    "url": "https://devblogs.microsoft.com/oldnewthing/20211022-00/?p=105822",
+    "title": "Renaming a file is a multi-step process, only one of which is changing the name of the file",
+    "published": "2021-10-22",
+    "finding": "A renamed final path can exist while the rename operation still holds a DELETE handle. A std::ifstream reader without FILE_SHARE_DELETE can then fail. Using compatible native sharing permits immediate access.",
+    "inference": "Consistent with concurrent readiness test; the recorded failure lacks path/stage and native error, so it does not prove this is the observed cause."
+  }
+}

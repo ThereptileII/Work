@@ -154,8 +154,34 @@ index 258ae04bc..98938dfee 100644
  
    if (NULL == g_pais_query_dialog_active) {
      int pos_x = g_ais_query_dialog_x;
+diff --git a/gui/include/gui/ocpn_app.h b/gui/include/gui/ocpn_app.h
+index 798a735d0..dfcd2809c 100644
+--- a/gui/include/gui/ocpn_app.h
++++ b/gui/include/gui/ocpn_app.h
+@@ -34,6 +34,10 @@
+ #include <wx/event.h>
+ #endif  // precompiled headers
+ 
++#ifdef OPENNAV_X
++#include "diagnostics/TestEarlyStartupTrace.h"
++#endif
++
+ #include "model/instance_check.h"
+ 
+ #include "model/comm_bridge.h"
+@@ -49,6 +53,10 @@ public:
+   MyApp();
+   ~MyApp() {};
+ 
++#if XNAV_TEST_EARLY_STARTUP
++  bool Initialize(int& argc, wxChar** argv) override;
++  bool OnCmdLineError(wxCmdLineParser& parser) override;
++#endif
+   bool OnInit() override;
+   int OnExit() override;
+ #ifndef __ANDROID__
 diff --git a/gui/src/ocpn_app.cpp b/gui/src/ocpn_app.cpp
-index a7670a674..59f245cdf 100644
+index a7670a674..1542f919c 100644
 --- a/gui/src/ocpn_app.cpp
 +++ b/gui/src/ocpn_app.cpp
 @@ -22,6 +22,10 @@
@@ -169,19 +195,45 @@ index a7670a674..59f245cdf 100644
  #include "config.h"
  
  #ifdef __MINGW32__
-@@ -843,6 +847,9 @@ bool MyApp::OpenFile(const std::string &path) {
+@@ -768,7 +772,18 @@ wxString newPrivateFileName(wxString, const char *name,
+ //------------------------------------------------------------------------------
+ // MyApp
+ //------------------------------------------------------------------------------
++#if XNAV_TEST_EARLY_STARTUP
++wxIMPLEMENT_APP_NO_MAIN(MyApp);
++int main(int argc, char** argv) {
++  wxDISABLE_DEBUG_SUPPORT();
++  using opennav::diagnostics::StartupStage;
++  return opennav::diagnostics::ObserveStartupCall(
++      StartupStage::Entry, StartupStage::EntryReturn,
++      [&] { return wxEntry(argc, argv); });
++}
++#else
+ IMPLEMENT_APP(MyApp)
++#endif
+ 
+ BEGIN_EVENT_TABLE(MyApp, wxApp)
+ EVT_ACTIVATE_APP(MyApp::OnActivateApp)
+@@ -843,6 +858,12 @@ bool MyApp::OpenFile(const std::string &path) {
  
  #ifndef __ANDROID__
  void MyApp::OnInitCmdLine(wxCmdLineParser &parser) {
++#if XNAV_TEST_EARLY_STARTUP
++  XNAV_EARLY_STARTUP_TRACE(ParserDefinition, 0);
++#endif
 +#ifdef OPENNAV_X
 +  opennav::AddCommandLine(parser);
 +#endif
    // Add OpenCPN specific command line options. Help message
    // is hardcoded in kUsage;
    parser.AddSwitch("h", "help", "", wxCMD_LINE_OPTION_HELP);
-@@ -895,18 +902,32 @@ static void ParseLoglevel(wxCmdLineParser &parser) {
+@@ -894,19 +915,45 @@ static void ParseLoglevel(wxCmdLineParser &parser) {
+ 
  #ifndef __ANDROID__
  bool MyApp::OnCmdLineHelp(wxCmdLineParser &parser) {
++#if XNAV_TEST_EARLY_STARTUP
++  XNAV_EARLY_STARTUP_TRACE(ParserHelp, 0);
++#endif
    std::cout << kUsage;
 +#ifdef OPENNAV_X
 +  std::cout << "  --xnav | --legacy | --safe-mode  OpenNav interface/recovery mode\n";
@@ -195,8 +247,17 @@ index a7670a674..59f245cdf 100644
  
  #ifndef __ANDROID__
  bool MyApp::OnCmdLineParsed(wxCmdLineParser &parser) {
++#if XNAV_TEST_EARLY_STARTUP
++  XNAV_EARLY_STARTUP_TRACE(ParserParsed, 0);
++#endif
 +#ifdef OPENNAV_X
++#if XNAV_TEST_EARLY_STARTUP
++  const bool parsed = opennav::ParseCommandLine(parser);
++  XNAV_EARLY_STARTUP_TRACE(OpenNavParserReturn, parsed);
++  if (!parsed) return false;
++#else
 +  if (!opennav::ParseCommandLine(parser)) return false;
++#endif
 +  if (opennav::integration::InstallerSelfTestRequested()) return true;
 +#endif
    long number;
@@ -212,7 +273,7 @@ index a7670a674..59f245cdf 100644
    g_start_fullscreen = parser.Found("fullscreen");
    g_bdisable_opengl = parser.Found("no_opengl");
    g_rebuild_gl_cache = parser.Found("rebuild_gl_raster_cache");
-@@ -917,7 +938,11 @@ bool MyApp::OnCmdLineParsed(wxCmdLineParser &parser) {
+@@ -917,20 +964,43 @@ bool MyApp::OnCmdLineParsed(wxCmdLineParser &parser) {
      g_unit_test_1 = static_cast<int>(number);
      if (g_unit_test_1 == 0) g_unit_test_1 = -1;
    }
@@ -224,8 +285,21 @@ index a7670a674..59f245cdf 100644
    ParseLoglevel(parser);
    wxString wxstr;
    if (parser.Found("configdir", &wxstr)) {
-@@ -929,8 +954,18 @@ bool MyApp::OnCmdLineParsed(wxCmdLineParser &parser) {
++#if XNAV_TEST_EARLY_STARTUP
++    XNAV_EARLY_STARTUP_TRACE(ConfigDirectory, 0);
++#endif
+     g_configdir = wxstr.ToStdString();
+     fs::path path(g_configdir);
+     if (!fs::exists(path) || !fs::is_directory(path)) {
++#if XNAV_TEST_EARLY_STARTUP
++      XNAV_EARLY_STARTUP_TRACE(ConfigDirectoryReturn, false);
++#endif
+       std::cerr << g_configdir << " is not an existing directory.\n";
+       return false;
      }
++#if XNAV_TEST_EARLY_STARTUP
++    XNAV_EARLY_STARTUP_TRACE(ConfigDirectoryReturn, true);
++#endif
    }
  
 +#ifdef OPENNAV_X
@@ -243,10 +317,32 @@ index a7670a674..59f245cdf 100644
        "unit_test_2",
        "p",
        "fullscreen",
-@@ -1026,6 +1061,12 @@ MyApp::MyApp()
+@@ -1024,8 +1094,34 @@ MyApp::MyApp()
+ #endif     // __linux__
+ }
  
++#if XNAV_TEST_EARLY_STARTUP
++bool MyApp::Initialize(int& argc, wxChar** argv) {
++  using opennav::diagnostics::StartupStage;
++  return opennav::diagnostics::ObserveStartupCall(
++      StartupStage::Initialize, StartupStage::InitializeReturn,
++      [&] { return wxApp::Initialize(argc, argv); });
++}
++bool MyApp::OnCmdLineError(wxCmdLineParser& parser) {
++  XNAV_EARLY_STARTUP_TRACE(ParserError, 0);
++  return wxApp::OnCmdLineError(parser);
++}
++#endif
++
  bool MyApp::OnInit() {
++#if XNAV_TEST_EARLY_STARTUP
++  using opennav::diagnostics::StartupStage;
++  if (!opennav::diagnostics::ObserveStartupCall(
++          StartupStage::OnInit, StartupStage::ParserReturn,
++          [&] { return wxApp::OnInit(); })) return false;
++#else
    if (!wxApp::OnInit()) return false;
++#endif
 +#ifdef OPENNAV_X
 +  if (opennav::integration::InstallerSelfTestRequested()) {
 +    m_exitcode = opennav::integration::RunInstallerSelfTest();
@@ -256,7 +352,7 @@ index a7670a674..59f245cdf 100644
  #ifdef __ANDROID__
    androidEnableBackButton(false);
    androidEnableOptionItems(false);
-@@ -1100,6 +1141,10 @@ bool MyApp::OnInit() {
+@@ -1100,6 +1196,10 @@ bool MyApp::OnInit() {
    }
  
  #ifndef __ANDROID__
@@ -267,7 +363,23 @@ index a7670a674..59f245cdf 100644
    // Check if last run failed, set up safe_mode.
    if (!safe_mode::get_mode()) {
      safe_mode::check_last_start();
-@@ -1314,6 +1359,9 @@ bool MyApp::OnInit() {
+@@ -1151,9 +1251,15 @@ bool MyApp::OnInit() {
+   noteman.ScrubNotificationDirectory(30);
+ 
+   //      Establish Log File location
++#if XNAV_TEST_EARLY_STARTUP
++  if (!opennav::diagnostics::ObserveStartupCall(
++          StartupStage::LogInitialize, StartupStage::LogInitializeReturn,
++          [&] { return g_Platform->InitializeLogFile(); })) return false;
++#else
+   if (!g_Platform->InitializeLogFile()) {
+     return false;
+   };
++#endif
+ 
+ #ifdef __WXMSW__
+ 
+@@ -1314,6 +1420,9 @@ bool MyApp::OnInit() {
    pConfig = g_Platform->GetConfigObject();
    InitBaseConfig(pConfig);
    pConfig->LoadMyConfig();
@@ -277,7 +389,7 @@ index a7670a674..59f245cdf 100644
  
    //  Override for some safe and nice default values if the config file was
    //  created from scratch
-@@ -1509,6 +1557,10 @@ bool MyApp::OnInit() {
+@@ -1509,6 +1618,10 @@ bool MyApp::OnInit() {
  
    InitRestListeners();
  
@@ -288,7 +400,7 @@ index a7670a674..59f245cdf 100644
    //      Establish the GSHHS Dataset location
    gDefaultWorldMapLocation = "gshhs";
    gDefaultWorldMapLocation.Prepend(g_Platform->GetSharedDataDir());
-@@ -1977,7 +2029,11 @@ bool MyApp::OnInit() {
+@@ -1977,7 +2090,11 @@ bool MyApp::OnInit() {
    std::vector<std::string> ipv4_addrs = get_local_ipv4_addresses();
  
    // If network connection is available, start the server and mDNS client
@@ -301,7 +413,7 @@ index a7670a674..59f245cdf 100644
      std::string ipAddr = ipv4_addrs[0];
  
      wxString data_dir = g_Platform->GetPrivateDataDir();
-@@ -1990,10 +2046,16 @@ bool MyApp::OnInit() {
+@@ -1990,10 +2107,16 @@ bool MyApp::OnInit() {
      StartMDNSService(g_hostname.ToStdString(), "opencpn-object-control-service",
                       8000);
    }
@@ -318,7 +430,7 @@ index a7670a674..59f245cdf 100644
    wxLogMessage(_T("opencpn::MyApp starting exit."));
    m_checker.OnExit();
    m_usb_watcher.Stop();
-@@ -2118,6 +2180,9 @@ int MyApp::OnExit() {
+@@ -2118,6 +2241,9 @@ int MyApp::OnExit() {
    g_Platform->OnExit_2();
    safe_mode::clear_check();
    delete g_Platform;

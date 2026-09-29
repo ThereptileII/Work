@@ -1,6 +1,7 @@
 // Dedicated offline component process. Literal HTML data cannot enter product.
 #include "ui/Horizon.h"
 #include <wx/app.h>
+#include <wx/dcmemory.h>
 #include <wx/dcscreen.h>
 #include <wx/frame.h>
 #include <wx/filename.h>

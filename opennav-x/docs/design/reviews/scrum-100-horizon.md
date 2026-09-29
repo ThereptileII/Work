@@ -88,3 +88,16 @@ Recorded component/control geometry differs by at most 0.44 physical px from
 the independently measured canonical DOM. Linux glyph rasterization/metrics
 still differ visibly; native Windows font review and boat capture are pending,
 and no visual-conformance PASS is claimed.
+
+## First native replacement failure
+
+Exact remote `ced99ac379e5622c21e48c83772b43aa7f2e8df6` (local `3fb6635`)
+fails both native prototype builds at the Windows screenshot branch in
+`tests/horizon_test.cpp`: MSVC reports undefined `wxMemoryDC`. The fixture
+relied on a transitive include that Linux supplied; its explicit
+`wx/dcmemory.h` dependency is now declared. Both downloaded native artifacts
+contain build logs and provenance only, with no screenshots. See
+[the retained compile failure](../../evidence/scrum-100-horizon-ced99ac-negative.json).
+The replacement build, all component captures, typography/DPI review and boat
+qualification are still required. This include correction changes no product
+behavior or rendering expectations.

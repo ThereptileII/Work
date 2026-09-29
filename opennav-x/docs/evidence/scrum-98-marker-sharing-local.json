@@ -1,0 +1,40 @@
+{
+  "schema": 1,
+  "base_commit": "3fb6635a0940d952ec86013a0dc546612a448396",
+  "dirty_development_tree": true,
+  "accepted": false,
+  "issue": "SCRUM-98",
+  "changes": "Test-only marker reader sharing; publisher and production helper unchanged.",
+  "portable_cpp": {
+    "command": "g++ -std=c++17 -Wall -Wextra -Werror -pthread tests/commissioning-restart/marker_publication_tests.cpp",
+    "checks": 73,
+    "result": "passed",
+    "log": "evidence/local/scrum98-marker-sharing/portable.log",
+    "sha256": "527fe223fe6f595cff4ed14575cf2c23f54176940750f86dadb84933b58b176f"
+  },
+  "powershell": {
+    "command": "pwsh -NoProfile -File tools/boat/test-broker-fixture-contracts.ps1",
+    "checks": 22,
+    "result": "passed on Linux PowerShell; native sharing cases excluded",
+    "syntax": "all commissioning fixture scripts and modified harnesses parsed without errors"
+  },
+  "native_windows": {
+    "result": "pending",
+    "required": [
+      "retained DELETE handle after actual rename",
+      "old reader reproduces sharing error 32",
+      "closed reader immediately reads complete bytes",
+      "unclosed WRITE handle refused",
+      "16 concurrent publication/read cases",
+      "exclusive closed staging proof",
+      "PowerShell sharing tests",
+      "complete restart and broker lifecycle"
+    ]
+  },
+  "review": "Root C++ review and independent PowerShell cross-review; no material outstanding code finding.",
+  "limitations": [
+    "No reproduction of the unidentified actual handle in failed ced99ac invocation.",
+    "No timing retries or removed assertions.",
+    "Neither Linux checks nor another successful native invocation supersede failed evidence."
+  ]
+}

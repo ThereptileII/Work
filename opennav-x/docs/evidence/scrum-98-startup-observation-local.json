@@ -1,0 +1,191 @@
+{
+  "schema_version": 1,
+  "issue": "SCRUM-98",
+  "result": "Diagnostic-only PASS; original exact3fb qualification failure remains unresolved",
+  "implemented_source_commit": "8326377f80e4d2310c7a9c25f2905b41520711fb",
+  "source_base_commit": "3fb6635a0940d952ec86013a0dc546612a448396",
+  "embedded_binary_commit": "3fb6635a0940d952ec86013a0dc546612a448396",
+  "metadata_explanation": "Build configured at base3fb before reviewed byte-identical source overlay was committed. Embedded commit metadata is recorded separately; this is diagnostic evidence, not a qualified release artifact.",
+  "executable_sha256": "f1c63dc6f2236eb10767a55e8b3f066193eccaabe43cd464595ce0cf6bcc6e1e",
+  "implementation_source_manifest": {
+    "CMakeLists.txt": "a38da7df2fc8b40fef01215420999b2e8a12b0626cbae843af66185f2350f5ea",
+    "patches/opencpn-5.12.4-xnav.patch": "8139e66b90324a186313343ea4cd6893a2cc7dec874afd7d7393407d7219ee95",
+    "src/integration/OpenCPNIntegration.cpp": "711920eda12c65d3f5102d9521d80715ee99dd932b9b720a4c8a18b9b6b128d6",
+    "src/diagnostics/TestEarlyStartupTrace.h": "ec5bdb3804c60113c297740c401a6d40bf0e225cddafb8eae64461eaa22f643b",
+    "tests/early_startup_trace_tests.cpp": "bd63d179bc04ff94912cdf6b2a23729ad0c4dddd24ee0f82c64d5df7bc662aa8"
+  },
+  "build": {
+    "actual_integrated_target": "opencpn",
+    "steps": 684,
+    "result": "PASS",
+    "compiler": "16.2.1",
+    "runtime": "wxGTK3.2.11 on isolated Linux Xvfb"
+  },
+  "focused_tests": {
+    "ctest_passed": 3,
+    "scenario_count_per_policy": 11,
+    "policies": [
+      "Linux fixture",
+      "product disabled",
+      "MSW compile-policy excluded on Linux; not native Windows proof"
+    ],
+    "timeout_seconds": 10,
+    "strict_patch_idempotency_passes": 2,
+    "unrelated_patch_sections_preserved": 15
+  },
+  "diagnostic": {
+    "invocations": 1,
+    "source_harness_commit": "3fb6635a0940d952ec86013a0dc546612a448396",
+    "assertions_and_timeouts": "unchanged",
+    "screenshot_count": 44,
+    "successful_stage_sequence": [
+      [
+        "entry",
+        0
+      ],
+      [
+        "initialize",
+        0
+      ],
+      [
+        "initialize.return",
+        1
+      ],
+      [
+        "on_init",
+        0
+      ],
+      [
+        "parser.definition",
+        0
+      ],
+      [
+        "parser.parsed",
+        0
+      ],
+      [
+        "opennav_parser.return",
+        1
+      ],
+      [
+        "config_directory",
+        0
+      ],
+      [
+        "config_directory.return",
+        1
+      ],
+      [
+        "parser.return",
+        1
+      ],
+      [
+        "log_initialize",
+        0
+      ],
+      [
+        "log_initialize.return",
+        1
+      ],
+      [
+        "entry.return",
+        0
+      ]
+    ],
+    "processes": [
+      {
+        "pid": 3011817,
+        "matches_sequence": true,
+        "os_exit_code": 0
+      },
+      {
+        "pid": 3014175,
+        "matches_sequence": true,
+        "os_exit_code": 0
+      },
+      {
+        "pid": 3014399,
+        "matches_sequence": true,
+        "os_exit_code": 0
+      },
+      {
+        "pid": 3014615,
+        "matches_sequence": true,
+        "os_exit_code": 0
+      },
+      {
+        "pid": 3014813,
+        "matches_sequence": true,
+        "os_exit_code": 0
+      },
+      {
+        "pid": 3015052,
+        "matches_sequence": true,
+        "os_exit_code": 0
+      },
+      {
+        "pid": 3015249,
+        "matches_sequence": true,
+        "os_exit_code": 0
+      }
+    ],
+    "trace_records": 91,
+    "xvfb_output_bytes": {
+      "stdout": 0,
+      "stderr": 13889
+    },
+    "xvfb_changes": "Only output files retained; no changed flags, reset policy, lifetime, client probes or sleeps"
+  },
+  "limits": [
+    "This diagnostic pass does not supersede the failed uninstrumented3fb preview gate.",
+    "No failing initialize.return0/entry.return-1 occurred, so root cause remains unresolved.",
+    "Private X-server reset remains a hypothesis; no reset-policy change was tested.",
+    "Original failed replacement exit255 remains recorded separately.",
+    "Diagnostic file writes can affect timing.",
+    "No source/behavior repair, native Windows qualification or boat acceptance claimed.",
+    "Pilot-positive, product build/status-only gate and Full passage capture remain unrun from the original stopped qualification."
+  ],
+  "artifacts": [
+    {
+      "path": "evidence/local/startup-observation/configure-integrated.log",
+      "sha256": "060656b89476822f8316b205cde936212d3d3391aa97b523d368713888a1f186"
+    },
+    {
+      "path": "evidence/local/startup-observation/build-integrated.log",
+      "sha256": "b5dd4deb80eea78a558a6e90db9e38b09d9b129821e8497226d8f61af9f16449"
+    },
+    {
+      "path": "evidence/local/startup-observation/early-startup-tests.xml",
+      "sha256": "abe8722c2b76d5922f9a3642910554d4a29253951fa4f33a11322d842c909e43"
+    },
+    {
+      "path": "evidence/local/startup-observation/diagnostic/source-manifest.json",
+      "sha256": "7e8ed79b8452ccf531f1a69aeaf5db6da0761552f04288f1b57c4a2be7f344d0"
+    },
+    {
+      "path": "evidence/local/startup-observation/diagnostic/instrumentation.diff",
+      "sha256": "7c6b61cde0849b4ae3bbc71d8f874ed032eb3b4ef2c496b43fe93feffd7033d5"
+    },
+    {
+      "path": "evidence/local/startup-observation/diagnostic/preview-linux-results.json",
+      "sha256": "32da131801cfb9ffae99f5c70370f40d86b0a605766334c434f79d139661e2e8"
+    },
+    {
+      "path": "evidence/local/startup-observation/diagnostic/preview-profile/opennav-startup-trace.log",
+      "sha256": "6d639bd39d9cfbdd83388cdac8e5397af3858966b673fc7975169d297b8c6fc3"
+    },
+    {
+      "path": "evidence/local/startup-observation/diagnostic/xvfb.stdout.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "evidence/local/startup-observation/diagnostic/xvfb.stderr.log",
+      "sha256": "c17663832aef9a19dad19ff93403911ab3abc9d657692d04d2838738e229cef1"
+    }
+  ],
+  "committed_trace": {
+    "path": "docs/evidence/scrum-98-startup-stage-trace.log",
+    "sha256": "6d639bd39d9cfbdd83388cdac8e5397af3858966b673fc7975169d297b8c6fc3"
+  },
+  "combined_source_commit": "4b1f301b5991087715177bfaec16d15dc128e0c6"
+}

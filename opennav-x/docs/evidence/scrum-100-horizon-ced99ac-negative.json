@@ -1,0 +1,85 @@
+{
+  "scope": "Exact-candidate native compile failure; no acceptance or screenshot claims",
+  "accepted": false,
+  "commit": "ced99ac379e5622c21e48c83772b43aa7f2e8df6",
+  "sourceEquivalentLocalCommit": "3fb6635a0940d952ec86013a0dc546612a448396",
+  "run": {
+    "id": 36607650680,
+    "url": "https://github.com/ThereptileII/Work/actions/runs/36607650680",
+    "status": "completed",
+    "conclusion": "failure",
+    "head": "ced99ac379e5622c21e48c83772b43aa7f2e8df6"
+  },
+  "jobs": [
+    {
+      "id": 109540677188,
+      "name": "Native prototype route waypoint AIS pointer regressions (not full release gate)",
+      "url": "https://github.com/ThereptileII/Work/actions/runs/36607650680/job/109540677188",
+      "status": "completed",
+      "conclusion": "failure"
+    },
+    {
+      "id": 109540677694,
+      "name": "Native prototype composition development (not release qualification)",
+      "url": "https://github.com/ThereptileII/Work/actions/runs/36607650680/job/109540677694",
+      "status": "completed",
+      "conclusion": "failure"
+    }
+  ],
+  "failure": {
+    "source": "tests/horizon_test.cpp",
+    "line": 128,
+    "column": 64,
+    "code": "C2079",
+    "message": "'memory' uses undefined class 'wxMemoryDC'",
+    "cause": "Windows-only capture branch instantiates wxMemoryDC without explicitly including wx/dcmemory.h; GTK branch does not compile this code.",
+    "logs": [
+      {
+        "job": 109540677188,
+        "line": "2026-09-29T17:56:52.3174564Z D:\\a\\Work\\Work\\opennav-x\\tests\\horizon_test.cpp(128,64): error C2079: 'memory' uses undefined class 'wxMemoryDC' [D:\\a\\Work\\Work\\opennav-x\\build\\xnav-windows\\opennav\\horizon_test.vcxproj]"
+      },
+      {
+        "job": 109540677188,
+        "line": "2026-09-29T18:00:13.2584432Z ##[error]Process completed with exit code 1."
+      },
+      {
+        "job": 109540677694,
+        "line": "2026-09-29T17:56:25.8489997Z D:\\a\\Work\\Work\\opennav-x\\tests\\horizon_test.cpp(128,64): error C2079: 'memory' uses undefined class 'wxMemoryDC' [D:\\a\\Work\\Work\\opennav-x\\build\\production-windows\\opennav\\horizon_test.vcxproj]"
+      },
+      {
+        "job": 109540677694,
+        "line": "2026-09-29T18:02:01.3732366Z ##[error]Process completed with exit code 1."
+      }
+    ]
+  },
+  "artifacts": [
+    {
+      "id": 11052880717,
+      "name": "prototype-object-flow-Windows-ced99ac379e5622c21e48c83772b43aa7f2e8df6",
+      "sha256": "139fce96deeb396dac169ee2e2c378437a894e7c9ce9e04ea6e418657e94d3e4",
+      "bytes": 76349,
+      "zipCrc": true,
+      "path": "/tmp/xnav-ci-watch-ced99ac-prototype/prototype-object-flow-Windows-ced99ac379e5622c21e48c83772b43aa7f2e8df6",
+      "url": "https://github.com/ThereptileII/Work/actions/runs/36607650680/artifacts/11052880717"
+    },
+    {
+      "id": 11051894786,
+      "name": "prototype-native-Windows-ced99ac379e5622c21e48c83772b43aa7f2e8df6",
+      "sha256": "87e882f4215c30632504bc650a7f14c03858f877f4f856feadf719574d3f65bb",
+      "bytes": 76844,
+      "zipCrc": true,
+      "path": "/tmp/xnav-ci-watch-ced99ac-prototype/prototype-native-Windows-ced99ac379e5622c21e48c83772b43aa7f2e8df6",
+      "url": "https://github.com/ThereptileII/Work/actions/runs/36607650680/artifacts/11051894786"
+    }
+  ],
+  "verification": "Downloaded archives match API SHA256/size and pass ZIP CRC/safe-path validation",
+  "unexecuted": [
+    "Native integrated unit tests in both prototype builds",
+    "Native footer and horizon component captures",
+    "Product screenshot comparisons and native DPI",
+    "Fixture object/preview/DPI workflows"
+  ],
+  "noReruns": true,
+  "noSourceChanges": true,
+  "observedUtc": "2026-09-29 18:03:33 UTC"
+}

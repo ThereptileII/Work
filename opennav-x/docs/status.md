@@ -9,6 +9,52 @@ release gates. The approved public identity is SKAGER / SKAGER App; domain
 control and legal clearance remain separate gates in SCRUM-89. Public payment
 and download access remain closed pending the final human GO/NO-GO review.
 
+The reviewed Windows marker-reader and horizon-header repairs are committed in
+`2345abe`, combined with Linux-only, opt-in startup observation in `4b1f301`.
+The actual isolated diagnostic application builds successfully; all three
+observation-policy suites pass eleven scenarios each. One marked-file preview
+run records 44 captures and seven successful process exits, with complete
+initialization/parser/log stages for every process. This verifies the diagnostic
+but does **not** close the original intermittent exit-255 failure. The source
+revision, precommit embedded build label and binary hash are recorded separately
+in [diagnostic evidence](evidence/scrum-98-startup-observation-local.json).
+The [trace contract](startup-observation.md) preserves normal product and native
+Windows entry behavior. Fresh native Windows reader, component, DPI and
+installer gates remain required; SCRUM-98 stays In Progress and SCRUM-100 stays
+Testing. Existing CI endurance runs are preserved on their own branches.
+
+The combined portable build caught a further test-reader compilation defect
+before publication: GCC 16 defaults to C++20, whose `u8string` element type
+cannot concatenate directly with `std::string`. The reader now preserves the
+UTF-8 bytes explicitly, with a non-ASCII path regression. Both explicit C++17
+and C++20 builds pass 74 marker checks, and all 88 configured portable suites
+pass. Native sharing semantics remain pending; no failed candidate ref was
+published. See [failure and repair evidence](evidence/scrum-98-marker-utf8-local.json).
+
+Exact replacement `ced99ac379e5622c21e48c83772b43aa7f2e8df6`
+(equivalent local `3fb6635`) is **not qualified**. Its Windows portable suite
+passes 84 of 85 tests, then fails the concurrent fixture-marker reader; a
+separate passing 376-check/24-case process invocation does not waive that
+failure. Test-only readers now allow Windows DELETE-handle sharing while
+continuing to deny open writers; native execution remains pending. The native horizon screenshot
+fixture also fails to compile because its Windows branch lacks the explicit
+`wx/dcmemory.h` include; that narrow correction requires a replacement build.
+See [retained marker evidence](evidence/scrum-98-marker-sharing-negative.json).
+
+The same local source passes all 136 integrated tests and its first mode cycle,
+selected-navigation interactions, recording, both route styles and public ENC
+checks ([exact local summary](evidence/scrum-98-integrated-3fb6635.json)).
+The portable preview then reproduces Legacy → XNav failure. The new
+pre-teardown evidence observes the replacement child exiting 255 before a third
+startup/window, after Legacy exits successfully. The cause remains under
+early-startup investigation. One bounded process trace passes with all seven
+application exits successful; that timing-altered diagnostic does not repair or
+supersede the [original failure](evidence/scrum-98-preview-3fb6635-negative.json).
+See the [limited diagnostic result](evidence/scrum-98-preview-3fb6635-diagnostic.json).
+Follow-on pilot, production and Full passage checks stopped at the first
+failure. The concrete failures remain retained; implementation status is
+recorded above without transferring acceptance across revisions.
+
 Replacement `701149f` (equivalent local `826a44f`) remains **unqualified**.
 The local integrated build passes 135 tests; recording now observes the exact
 1280×34 footer. Its mode cycle, selected navigation, both route styles and

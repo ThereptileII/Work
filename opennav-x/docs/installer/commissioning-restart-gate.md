@@ -198,7 +198,7 @@ for parent, child and chained readiness. It reserves a unique sibling staging
 directory, checks write/flush/close, then atomically renames the closed file to
 the final name. Failure does not publish readiness and removes staging. Marker
 paths have one producer; Windows rename refuses a pre-existing final marker.
-The reader's original bounded existence wait and single read remain unchanged;
+The reader retains its bounded existence wait and one immediate read;
 no retry hides sharing failures. The harness also requires complete two-line
 parent and ten-line child records before interpreting them.
 
@@ -215,6 +215,44 @@ CTest entry and PowerShell syntax parsing. Evidence is under
 `evidence/local/scrum98-marker/`. These do not qualify Win32 sharing or the full
 24-case process matrix. A fresh exact-commit native run is required; the failed
 candidate evidence remains relevant until replacement qualification passes.
+
+### Windows rename sharing (SCRUM-98)
+
+The next exact candidate `ced99ac379e5622c21e48c83772b43aa7f2e8df6`
+passes the 24-case native process gate and its 72 publication checks, but fails
+the independent Windows portable invocation: 84 of 85 tests pass, with
+`fixture_marker_publication` reporting that a published marker cannot be opened.
+The failed reader did not record its call site or native error. Its exact handle
+owner is therefore unknown; the other successful invocation does not waive it.
+See [the retained failure](../evidence/scrum-98-marker-sharing-negative.json).
+
+Inspection found an additional Windows sharing contract the first repair missed.
+A rename can expose the final filename before releasing its DELETE-only handle;
+`std::ifstream` and `ReadAllLines` do not share that access. Microsoft's
+[rename explanation](https://devblogs.microsoft.com/oldnewthing/20211022-00/?p=105822/)
+and [CreateFile sharing contract](https://learn.microsoft.com/en-us/windows/win32/api/fileapi/nf-fileapi-createfilew)
+describe this behavior. This establishes a real reader defect, without proving
+the unidentified lock holder in the retained failure.
+
+Fixture readers now open once with READ and DELETE sharing, deliberately without
+WRITE sharing. The publisher must still finish writing and close before rename;
+the existing exclusive closed-stage check remains. The marker-only native test,
+PowerShell process harness, and synthetic broker cleanup use this reader policy.
+The protocol/process/installation verifier and real restart helper do not change.
+Failures identify the path, read stage and native error. PowerShell additionally
+rejects oversized or invalid UTF-8 fixture records rather than reading without a
+bound. Every existing record-count, identity and readiness assertion remains.
+
+New deterministic Windows tests hold DELETE access while reading and independently
+hold WRITE access. The former must permit a complete first read; the latter must
+fail immediately. These checks complement the 16 concurrent publication cases,
+without timing sleeps, read retries or relaxing byte equality. Native Windows
+qualification is still required; portable Linux checks do not prove Windows
+handle-sharing behavior.
+
+The replacement passes 73 portable C++ checks and 22 Linux PowerShell fixture
+checks, with no material issue found in cross-review. The latter excludes its
+native held-handle cases. See [development evidence](../evidence/scrum-98-marker-sharing-local.json).
 
 ### Previously accepted protocol/process evidence
 

@@ -22,6 +22,37 @@ For each change record:
 
 Do not leave undocumented direct OpenCPN modifications.
 
+### Opt-in Linux fixture startup observation (SCRUM-98)
+
+The retained `3fb6635` preview failure observes a replacement process exiting
+255 before its first normal OpenCPN log record. A separate syscall-instrumented
+run passes; that run does not establish a repair. The new hook is diagnostic,
+not a change to recovery policy or an accepted fix.
+
+In `gui/include/gui/ocpn_app.h` and `gui/src/ocpn_app.cpp`, only a Linux/GTK
+fixture build adds stage observation around the original application entry,
+`wxApp::Initialize`, `wxApp::OnInit`, command-line parsing, config-directory
+validation and `OCPNPlatform::InitializeLogFile`. Each original operation runs
+exactly once, with its original arguments, result and exception behavior.
+The entry uses the same wx application initializer and single `wxEntry` call;
+it introduces no GTK initialization probe, delay, retry or alternate parser.
+The OpenNav parser records fixed rejection categories in the integration layer.
+
+Observation additionally requires explicit environment opt-in and a marked
+disposable file sink. Only PID, fixed stage and signed numeric result are
+written, with a per-process limit. The hook never records arguments, environment
+values, configuration contents or network input. Normal installed/product and
+native Windows builds retain the original entry and delegates. See the
+[trace contract](startup-observation.md) for the exact sink policy.
+
+The public/plugin APIs start too late to distinguish these pre-log failures.
+Merge risk is medium: re-inspect the wx entry macro and the pinned startup/parser
+order when updating upstream or wxWidgets. Tests cover exact-once delegation,
+signed/boolean return values, exceptions, errno, the fixed record format, record
+bound, opt-in/path refusals, and product/Windows compile exclusion. The latter
+is a Linux compile-policy test, not native Windows qualification. Integrated
+execution and replacement platform evidence remain separate gates.
+
 ### Prototype navigation horizon (SCRUM-100)
 
 This correction adds no direct upstream patch. The native horizon formats

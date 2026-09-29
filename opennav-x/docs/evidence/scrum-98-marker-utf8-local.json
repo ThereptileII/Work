@@ -1,0 +1,31 @@
+{
+  "schema_version": 1,
+  "issue": "SCRUM-98",
+  "base_commit": "03110f51dae89d7edde70aff4c69e1039b5d3938",
+  "original_failure": {
+    "stage": "portable CMake build; before CTest",
+    "compiler": "GCC16.2.1 default __cplusplus=202002L",
+    "reason": "CMake cxx_std_17 is a minimum; C++20 path.u8string returns char8_t elements, incompatible with std::string concatenation. Explicit -std=c++17 previously passed.",
+    "log": "evidence/local/scrum98-03110f5/portable-build.log",
+    "sha256": "989c1e4111c7f5ef4b730fec44bc2d8512fbe53acb888207d160ddf38d96f0c1",
+    "publication": "Stopped before remote commit or ref update; no failing candidate CI launch"
+  },
+  "repair": "Convert the already-encoded UTF-8 representation to diagnostic bytes in both standards; no locale conversion or sharing-policy change. Regression uses a Unicode path constructed from UTF-16 to avoid the Windows native narrow locale.",
+  "source_manifest": {
+    "tests/commissioning-restart/ReadClosedMarker.h": "195620a049a40705d141029fee8cd68663bac85fb2764aaa4593f41140268416",
+    "tests/commissioning-restart/marker_publication_tests.cpp": "6416092cd91f6722b08c05d5ad2776112c9d856b4e196b388ed1bc47ffbfbb79"
+  },
+  "checks": {
+    "explicit_cxx17": 74,
+    "explicit_cxx20": 74,
+    "compiler_flags": "-Wall -Wextra -Werror -pthread",
+    "configured_portable_ctest": 88,
+    "failures": 0,
+    "native_Windows": "Pending replacement CI; no local native claim"
+  },
+  "artifacts": {
+    "evidence/local/scrum98-marker-utf8/c++17.log": "ec989623b09e784874464b05b5b382dcd2a7c2317f761b36e8afde1f5ef4819d",
+    "evidence/local/scrum98-marker-utf8/c++20.log": "ec989623b09e784874464b05b5b382dcd2a7c2317f761b36e8afde1f5ef4819d",
+    "evidence/local/scrum98-marker-utf8/portable-tests.xml": "31462b37593a55d40c87a6e4b4ffbab4cbbdb34b0e13a26709ed19b2e90c167c"
+  }
+}
