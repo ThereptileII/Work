@@ -262,18 +262,18 @@ int XNavPainter::Tag(const wxString &text, int x, int y, int maximum, bool atten
   return width;
 }
 void XNavPainter::Callout(const wxString &title, const wxString &body,
-                          int width, int height, bool attention) {
+                          int width, int height, bool attention, bool critical) {
   const auto edge = attention
-      ? Mix(prototype_ink::warning, c.background, prototype_ink::warning_border_alpha)
+      ? Mix(critical ? c.alarm : prototype_ink::warning, c.background, prototype_ink::warning_border_alpha)
       : Colour(c.accent);
   dc_.SetPen(wxPen(edge));
   dc_.SetBrush(wxBrush(attention
-      ? Mix(prototype_ink::warning, c.background, prototype_ink::warning_callout_alpha)
+      ? Mix(critical ? c.alarm : prototype_ink::warning, c.background, prototype_ink::warning_callout_alpha)
       : Colour(c.selected)));
   dc_.DrawRoundedRectangle(0, 0, D(width) - 1, D(height) - 1, D(8));
   dc_.SetPen(wxPen(edge, D(2)));
   dc_.DrawLine(D(1), 0, D(1), D(height));
-  TextWeight(title, 17, 14, 12, attention ? c.attention : c.primary, 550, width - 34);
+  TextWeight(title, 17, 14, 12, critical ? c.alarm : attention ? c.attention : c.primary, 550, width - 34);
   dc_.SetFont(UiFont(window_, 12));
   wxStringTokenizer words(body, " ");
   wxString line;

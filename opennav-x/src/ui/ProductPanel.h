@@ -61,12 +61,11 @@ struct ProductState {
   vessel::Time now{};
 };
 struct ProductActions {
-  std::function<void(const std::string &, std::uint64_t)> acknowledge_alert;
   std::function<std::vector<diagnostics::BundleEntry>(const std::optional<std::string> &)> field_bundle;
   std::shared_ptr<diagnostics::Commissioning> commissioning;
   application::NavigationActions navigation;
   std::function<void()> chart, route_summary, energy, diagnostics;
-  std::function<void()> preferences, anchor_watch, pilot_controls;
+  std::function<void()> preferences, anchor_watch, pilot_controls, alerts;
   std::function<void(ProductPage)> page_changed;
   std::function<void()> legacy, restart_xnav, safe, diagnostics_folder;
   std::function<void(LightMode)> theme;
@@ -84,6 +83,7 @@ struct ProductGeometry {
   std::string label;
   wxRect screen;
   bool enabled = false, visible = false;
+  std::string accessible_name;
 };
 class ProductPanel final : public XNavScroll {
 public:
@@ -127,7 +127,6 @@ private:
   void EnergySettings();
   void CommissioningPanel();
   void FieldReportPanel();
-  void AlertsPanel();
   void ExportFieldReport(bool include_recording);
   void Sources();
   void BoatMapping();

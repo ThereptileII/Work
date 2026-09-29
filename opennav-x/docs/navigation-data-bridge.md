@@ -88,3 +88,11 @@ The shell now copies the current immutable route publication alongside selected
 navigation values on the application thread. The separate Demo source never
 modifies this live state or fills its missing inputs. Extended fields and
 diagnostics are described in the [preview contract](developer-preview-contract.md).
+
+Prototype notification diagnostics add `accessible_name` beside the painted
+`label` in interaction-control geometry. It copies a widget's readable name,
+not its text-field value, and is omitted when absent. This allows a short
+Acknowledge caption to retain a condition-specific accessible identity. It
+carries no command, acknowledgement token or OpenCPN object lifetime. Actual
+alert acknowledgement still requires the copied id/episode at the UI callback
+boundary and the existing AlertCenter check.

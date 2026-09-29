@@ -336,7 +336,7 @@ def assert_preview_page(handle, page):
     return {'page': page, 'native_pixels': dimensions, 'visible_and_uncovered': True}
 
 def assert_product_page(handle, page):
-    drawers={'Settings':'OpenNav preferences','AIS targets':'OpenNav vessel traffic','Anchor watch':'OpenNav anchor watch','Manual autopilot':'OpenNav autopilot'}
+    drawers={'Settings':'OpenNav preferences','AIS targets':'OpenNav vessel traffic','Anchor watch':'OpenNav anchor watch','Manual autopilot':'OpenNav autopilot','Alerts':'OpenNav alerts'}
     if page in drawers:
         return assert_prototype_drawer(handle,drawers[page])
     label='OpenNav product page: '+page
@@ -346,6 +346,19 @@ def assert_product_page(handle, page):
     point=W.POINT((rect.left+rect.right)//2,(rect.top+rect.bottom)//2)
     assert ScreenToClient(handle,C.byref(point))
     assert ChildWindowFromPointEx(handle,point,1)==child,'Another pane covers the XNav page'
+
+def prototype_drawer_bounds(width, height, scale=1, origin=(0,0), wide=False):
+    """Exact final HTML desktop drawer rules, in native client coordinates."""
+    assert scale>0 and width/scale>760 and height>0
+    dip=lambda value:int(value*scale+.5)
+    logical_width,logical_height=width/scale,height/scale
+    top=56 if logical_height<=600 else 60 if logical_height<=740 else 68
+    rail=156 if logical_width<=1100 else 186
+    drawer=(410 if logical_width<=1100 else 432) if wide else 398
+    w=dip(drawer)
+    return dict(x=origin[0]+width-dip(rail)-dip(14)-w,
+                y=origin[1]+dip(top)+dip(12),width=w,
+                height=height-dip(top)-dip(34)-2*dip(12))
 
 def assert_prototype_drawer(handle, name):
     """Owned prototype drawer stays in the chart workspace, above its canvas."""

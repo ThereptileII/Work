@@ -63,3 +63,8 @@ weak lifetime references. XNav's rail and Instruments stay the primary visual
 components; the Dashboard continues acquiring data with its desktop panes hidden.
 Legacy restores the saved layout. This is an integration presentation boundary,
 not a replacement plugin API or independent instrument data model.
+
+`XNavAlertDrawer` now owns the prototype notification-centre composition and
+copied alert episodes, sharing XNavDrawer, XNavButton, callout, rule and text
+primitives. Source inspection and acknowledgement remain separate callbacks;
+there is no equipment command callback in this component.

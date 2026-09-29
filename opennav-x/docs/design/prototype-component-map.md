@@ -72,3 +72,8 @@ configuration has no vessel-name field, so its initial and status dot remain
 unavailable instead of copying the prototype's fictional name/green state.
 Adding a persisted vessel identity and the remaining inline forms is separate
 migration work. The action does not alter navigation or issue equipment commands.
+
+Notification centre: `case 'alerts'` → `XNavAlertDrawer`; `.callout` → shared
+`XNavPainter::Callout` with critical semantic ink; `.action-row .btn` →
+`XNavButton`; `.row` / `.note` → shared painter. `AlertCenter` owns episode
+semantics. The drawer holds copies and no OpenCPN or adapter object.

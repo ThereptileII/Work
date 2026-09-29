@@ -718,3 +718,9 @@ and guarded manual callbacks. `PilotPresentation` withholds stale/invalid
 magnetic headings without deriving a replacement. Driver observers, identity
 binding, transport, command acknowledgement and rate limits are unchanged.
 See [presentation contract](pilot-presentation-contract.md).
+
+Prototype notification-centre migration changes no upstream hook. It consumes
+existing copied AlertCenter episodes; pinned OpenCPN AIS/anchor alarm semantics
+and pilot adapters are untouched. Existing interaction diagnostics also copy
+a readable control name beside its caption; no new upstream hook or input
+injection boundary is added. See `alert-presentation-contract.md`.

@@ -2,6 +2,28 @@
 
 ## Current stage: prototype design lock, chart presentation and Online AIS
 
+Alerts now uses the prototype notification drawer, retaining the real chart and
+existing episode-specific acknowledgement semantics. No illustrative encounter
+is fabricated. Linux passes 132 integrated tests and two 53-check component
+runs; the corrective run verifies removal of native grey button corners.
+The replacement application pass retains 26 primary and four AIS-settings
+captures. Fixture regressions pass all eight check groups and 44 captures,
+including readable GPS acknowledgement amid other critical conditions and
+mode/persistence restarts. Native Windows and boat conformance remain open. See the
+[alert review](design/reviews/prototype-alerts-in-progress.md) and
+[contract](alert-presentation-contract.md).
+
+Pilot replacement `0ce6835` / run `36518416053` finishes 7/8 jobs; both MSVC
+suites pass 124 tests. Actual native composition, software ENC/units and
+100/125/150% development interactions pass. All nine archives verify. The
+retained preview incorrectly assumes 800px client height in a captioned window;
+replacement checks apply the exact HTML rules to measured client geometry.
+Reviewed Pilot component images also expose incomplete repaint after modal
+confirmation despite green interaction checks. The replacement invalidates
+visible owned children after modal destruction and requires all labels in
+captures. No visual or boat PASS. See
+[negative native evidence](evidence/prototype-native-0ce6835-failed.json).
+
 Native `403a4e8` / run `36515856835` passes both MSVC 120-test suites and
 six component suites, including Anchor's 34 checks. Six of eight jobs pass.
 The capture guard rejects the new Anchor owned surface, and retained preview

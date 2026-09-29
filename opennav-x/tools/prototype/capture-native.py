@@ -160,7 +160,10 @@ def main():
             xdo("mousemove", x, y)
             hit = xdo("getmouselocation", "--shell")
             record.setdefault("pointer_hits", []).append(dict(label=label, x=x, y=y, x11=hit))
-            xdo("click", "1")
+            # Match the native Windows pointer press duration. An immediate
+            # X11 down/up pair can precede GTK activation of an owned surface.
+            # This is one held click, not a retry after an unobserved action.
+            xdo("mousedown", "1", "sleep", "0.05", "mouseup", "1")
         deadline = time.monotonic() + 5
         while time.monotonic() < deadline:
             current = data()
@@ -169,7 +172,9 @@ def main():
             # advance from a stale pre-click file while still describing the
             # old drawer. Observe the semantic result; never retry the input.
             closed = label != "Close" or ("drawer" not in current["runtime"]["display"] and current["ui_page"] == "Navigation")
-            expected_page = None if in_drawer else {"Chart":"Navigation", "Passage":"Route", "Traffic":"AIS targets", "Energy":"Energy", "Instruments":"Vessel instruments", "Autopilot":"Manual autopilot", "Anchor":"Anchor watch", "Settings":"Settings"}.get(label)
+            expected_page = None if in_drawer else {"Chart":"Navigation", "Passage":"Route", "Traffic":"AIS targets", "Energy":"Energy", "Instruments":"Vessel instruments", "Autopilot":"Manual autopilot", "Anchor":"Anchor watch", "Settings":"Settings", "Alerts":"Alerts"}.get(label)
+            if label == "Back" and before["ui_page"] == "Online AIS settings":
+                expected_page = "AIS targets"
             page_ready = not expected_page or current["ui_page"] == expected_page
             if int(current["runtime"]["ui_update"]["ticks"]) >= ticks+3 and (not expected_light or current_light == expected_light) and closed and page_ready:
                 break
@@ -260,7 +265,7 @@ def main():
             assert all(abs(actual[k]-v) <= 1 for k,v in expected["rect"].items()), f"{label} rail geometry differs: {actual}"
             rail_actual.append(actual)
         record.setdefault("left_rail_layout", {})[name] = rail_actual
-        if name.startswith(("traffic-", "online-ais-", "passage-", "anchor-", "autopilot-", "settings-", "sensors-", "display-", "system-")):
+        if name.startswith(("traffic-", "online-ais-", "passage-", "anchor-", "autopilot-", "alerts-", "settings-", "sensors-", "display-", "system-")):
             drawer = snapshot["runtime"]["display"]["drawer"]
             wide = name.startswith(("settings-", "sensors-", "display-", "system-"))
             expected = dict(x=client_origin[0]+(648 if wide else 682), y=client_origin[1]+80, width=432 if wide else 398, height=674)
@@ -478,15 +483,15 @@ def main():
             record["result"] = "chart cycle captured; semantic and visual review required"
             return
         for label, name in [("Passage", "passage"), ("Traffic", "traffic"), ("Energy", "energy"),
-                            ("Instruments", "instruments"), ("Autopilot", "autopilot"), ("Anchor", "anchor"), ("Settings", "settings")]:
+                            ("Instruments", "instruments"), ("Autopilot", "autopilot"), ("Alerts", "alerts"), ("Anchor", "anchor"), ("Settings", "settings")]:
             click(label)
             capture(name + "-day")
-            if label == "Autopilot":
-                click("Day", "Dusk");capture("autopilot-dusk")
-                click("Dusk", "Night");capture("autopilot-night")
+            if label in {"Autopilot", "Alerts"}:
+                click("Day", "Dusk");capture(name+"-dusk")
+                click("Dusk", "Night");capture(name+"-night")
                 click("Night", "Day");click("Close")
-                assert "drawer" not in data()["runtime"]["display"], "Pilot close did not restore chart"
-                record["pilot_flow"]="Measured feedback drawer; theme cycle; Close; no equipment command"
+                assert "drawer" not in data()["runtime"]["display"], "Prototype sheet close did not restore chart"
+                record[name+"_flow"]="Owned real-state drawer; theme cycle; Close; no equipment command"
             if label == "Anchor":
                 click("Day", "Dusk");capture("anchor-dusk")
                 click("Dusk", "Night");capture("anchor-night")

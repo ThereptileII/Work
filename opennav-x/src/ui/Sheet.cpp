@@ -4,6 +4,7 @@
 #include <wx/sizer.h>
 #include <wx/stattext.h>
 #include <wx/textctrl.h>
+#include <wx/weakref.h>
 namespace opennav::ui {
 std::optional<std::vector<std::string>>
 EditSheet(wxWindow &parent, LightMode mode, const wxString &title,
@@ -92,7 +93,20 @@ EditSheet(wxWindow &parent, LightMode mode, const wxString &title,
   dialog.Layout();
   if (!inputs.empty())
     inputs.front()->SetFocus();
-  if (dialog.ShowModal() != wxID_OK)
+  const int result_code=dialog.ShowModal();
+  // Owned shaped drawers can retain incompletely invalidated child surfaces
+  // after a native MSW modal closes. Invalidate the actual visible UI after
+  // this stack dialog is destroyed; never synthesize a capture or chart image.
+  parent.CallAfter([owner=wxWeakRef<wxWindow>(&parent)] {
+    if(!owner || !owner->IsShownOnScreen())return;
+    const auto repaint=[](const auto &self,wxWindow *window)->void {
+      if(!window->IsShownOnScreen())return;
+      window->Refresh(false);
+      for(auto *child:window->GetChildren())if(!child->IsTopLevel())self(self,child);
+    };
+    repaint(repaint,owner.get());
+  });
+  if (result_code != wxID_OK)
     return std::nullopt;
   std::vector<std::string> result;
   for (auto *input : inputs)

@@ -317,11 +317,20 @@ try:
             report.setdefault('grouped_regions',[]).append(interaction.grouped_regions(data))
         if name=='autopilot':
             drawer=data()['runtime']['display']['drawer']
-            assert drawer['width']==398 and drawer['height']==674, 'Pilot drawer differs from prototype'
+            if windows:
+                client=ui.W.RECT();assert ui.GetClientRect(handle,ui.C.byref(client))
+                origin=ui.W.POINT(0,0)
+                to_screen=ui.declare(ui.user,'ClientToScreen',ui.W.BOOL,ui.W.HWND,ui.C.POINTER(ui.W.POINT))
+                assert to_screen(handle,ui.C.byref(origin))
+                scale=ui.GetDpiForWindow(handle)/96
+                expected=ui.prototype_drawer_bounds(client.right,client.bottom,scale,(origin.x,origin.y))
+            else:
+                scale=1;expected=dict(x=682,y=80,width=398,height=674)
+            assert all(abs(drawer[k]-v)<=1 for k,v in expected.items()), ('Pilot drawer differs from actual client prototype',drawer,expected)
             controls=data()['runtime']['display']['interaction_controls']
             for label in ('−10°','−1°','+1°','+10°','Standby','Auto','Track','Wind'):
                 found=[c for c in controls if c['label']==label and c['visible']]
-                assert len(found)==1 and found[0]['height']==48, (label,'pilot touch control missing')
+                assert len(found)==1 and abs(found[0]['height']-48*scale)<=1, (label,'pilot touch control missing')
             report.setdefault('pilot_drawer',[]).append(dict(bounds=drawer,course_controls=8))
         capture('alpha-'+name)
         light('Dusk');light('Night')
@@ -367,11 +376,20 @@ try:
             report.setdefault('grouped_regions',[]).append(interaction.grouped_regions(data))
         if name=='autopilot':
             drawer=data()['runtime']['display']['drawer']
-            assert drawer['width']==398 and drawer['height']==674, 'Pilot drawer differs from prototype'
+            if windows:
+                client=ui.W.RECT();assert ui.GetClientRect(handle,ui.C.byref(client))
+                origin=ui.W.POINT(0,0)
+                to_screen=ui.declare(ui.user,'ClientToScreen',ui.W.BOOL,ui.W.HWND,ui.C.POINTER(ui.W.POINT))
+                assert to_screen(handle,ui.C.byref(origin))
+                scale=ui.GetDpiForWindow(handle)/96
+                expected=ui.prototype_drawer_bounds(client.right,client.bottom,scale,(origin.x,origin.y))
+            else:
+                scale=1;expected=dict(x=682,y=80,width=398,height=674)
+            assert all(abs(drawer[k]-v)<=1 for k,v in expected.items()), ('Pilot drawer differs from actual client prototype',drawer,expected)
             controls=data()['runtime']['display']['interaction_controls']
             for label in ('−10°','−1°','+1°','+10°','Standby','Auto','Track','Wind'):
                 found=[c for c in controls if c['label']==label and c['visible']]
-                assert len(found)==1 and found[0]['height']==48, (label,'pilot touch control missing')
+                assert len(found)==1 and abs(found[0]['height']-48*scale)<=1, (label,'pilot touch control missing')
             report.setdefault('pilot_drawer',[]).append(dict(bounds=drawer,course_controls=8))
         capture('alpha-'+name)
         light('Dusk');light('Night')
@@ -425,7 +443,21 @@ try:
     assert all('Acknowledge '+a['id'] not in labels for a in alert_data['runtime']['alerts']), 'Normal alert actions must not expose internal identifiers'
     previous_ack={(a['id'],a['episode']):a['acknowledged'] for a in alert_data['runtime']['alerts']}
     capture('beta-alerts-active')
-    product_click('Acknowledge Position unavailable or stale')
+    for attempt in range(20):
+        current=data(lambda d:d.get('ui_page')=='Alerts')
+        assert any(a['id']==gps['id'] and a['episode']==gps['episode'] for a in current['runtime']['alerts']), 'GPS episode changed before manual acknowledgement'
+        drawer=current['runtime']['display']['drawer']
+        matches=[c for c in current['runtime']['display']['interaction_controls']
+            if c['label']=='Acknowledge' and c.get('accessible_name')=='Acknowledge Position unavailable or stale' and c['enabled']]
+        assert len(matches)==1,'Exactly one readable GPS acknowledgement required'
+        if matches[0]['visible']:
+            pointer_click(matches[0]);break
+        x=drawer['x']+drawer['width']//2;y=drawer['y']+drawer['height']//2
+        if windows:
+            ui.SetCursorPos(x,y);ui.MouseEvent(0x0800,0,0,(-120)&0xffffffff,0)
+        else:xdo('mousemove',x,y,'click',5)
+        time.sleep(.5)
+    else:raise AssertionError('GPS acknowledgement could not be reached by scrolling the drawer')
     acknowledged=data(lambda d:any(a['id']==gps['id'] and a['episode']==gps['episode'] and a['acknowledged'] for a in d['runtime']['alerts']))
     for a in acknowledged['runtime']['alerts']:
         key=(a['id'],a['episode'])

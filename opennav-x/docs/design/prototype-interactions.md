@@ -53,3 +53,10 @@ controlled Legacy/Safe restart entry points. Display uses actual theme,
 fullscreen and rail preferences. Back from a remaining advanced product page
 returns to the last Preferences section. Vessel/Navigation inline forms are
 still pending, and existing validated editors stay reachable until migrated.
+
+Notification centre migration: Alerts opens a chart-side owned sheet. Inspect
+opens the corresponding live source, traffic, anchor, energy or pilot view.
+Acknowledge retains the exact displayed id/episode; a recovered/replaced episode
+is rejected by the existing backend. Active critical conditions stay visible
+in the drawer and status strip. Close/outside/Escape closes the sheet without
+acknowledgement. Replay actions are disabled. No fixture encounter is installed.

@@ -37,7 +37,7 @@ class XNavPainter {
   int Tag(const wxString &text, int x, int y, int maximum, bool attention = false,
           bool active = false);
   void Callout(const wxString &title, const wxString &body, int width, int height,
-               bool attention = false);
+               bool attention = false, bool critical = false);
   void Card(int x, int y, int width, int height, const wxString &title);
   void Rule(int x, int y, int width);
  private:

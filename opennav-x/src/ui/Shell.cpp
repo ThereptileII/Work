@@ -350,10 +350,6 @@ Shell::Shell(wxFrame &frame, wxAuiManager &manager, ShellActions actions,
                               .PaneBorder(false)
                               .Hide());
   ProductActions product_actions;
-  product_actions.acknowledge_alert = [this](const std::string &id, std::uint64_t episode) {
-    alerts_.Acknowledge(id, episode);
-    Tick();
-  };
   product_actions.field_bundle = [this](const std::optional<std::string> &recording) {
     return diagnostics::BuildFieldReport(field_snapshot_,
         actions_.field_environment ? actions_.field_environment() : diagnostics::FieldEnvironment{},
@@ -389,6 +385,7 @@ Shell::Shell(wxFrame &frame, wxAuiManager &manager, ShellActions actions,
   product_actions.route_summary = [this] { ShowPassage(); };
   product_actions.anchor_watch = [this] { ShowAnchor(); };
   product_actions.pilot_controls = [this] { ShowPilot(); };
+  product_actions.alerts = [this] { ShowAlerts(); };
   product_actions.energy = [this] { ShowPage(PreviewPage::Energy); };
   product_actions.diagnostics = [this] { ShowPage(PreviewPage::Diagnostics); };
   product_actions.legacy=actions_.legacy;
@@ -487,6 +484,7 @@ Shell::~Shell() {
   if (passage_drawer_) { passage_drawer_->Dismiss(); passage_drawer_->Destroy(); passage_drawer_ = nullptr; }
   if (settings_drawer_) { settings_drawer_->Dismiss(); settings_drawer_->Destroy(); settings_drawer_ = nullptr; }
   if (anchor_drawer_) { anchor_drawer_->Dismiss(); anchor_drawer_->Destroy(); anchor_drawer_ = nullptr; }
+  if (alert_drawer_) { alert_drawer_->Dismiss(); alert_drawer_->Destroy(); alert_drawer_ = nullptr; }
   if (pilot_drawer_) { pilot_drawer_->Dismiss(); pilot_drawer_->Destroy(); pilot_drawer_ = nullptr; }
   for (const auto &c : commands_)
     frame_.Unbind(wxEVT_MENU, &Shell::OnCommand, this, c.first);
@@ -571,7 +569,7 @@ std::vector<ProductGeometry> Shell::InteractionControls() const {
         visible = visible && parent->GetScreenRect().Contains(rectangle);
       const auto label = field ? "Field: " + window->GetName() : window->GetLabel();
       result.push_back({label.ToStdString(wxConvUTF8), rectangle,
-                        window->IsEnabled(), visible});
+                        window->IsEnabled(), visible, window->GetName().ToStdString(wxConvUTF8)});
     }
     for (auto *child : window->GetChildren()) self(self, child);
   };
@@ -676,6 +674,10 @@ void Shell::UpdateAlerts() {
     alert_label_->SetForegroundColour(Colour(a.level == application::AlertLevel::Critical ? colors.alarm : colors.attention));
     alert_button_->SetLabel(wxString::Format("Alerts %u", static_cast<unsigned>(alerts.size())));
     alert_button_->SetRole(a.level==application::AlertLevel::Critical?ButtonRole::Critical:ButtonRole::Primary);
+  }
+  if (!visible) {
+    alert_button_->SetLabel("Alerts");
+    alert_button_->SetRole(ButtonRole::Quiet);
   }
   if (alert_pane_->IsShown() != visible) {
     alert_pane_->Show(visible);source_->Show(!visible);
@@ -878,6 +880,10 @@ void Shell::Tick() {
     alerts_.Observe({state_, p.ais, p.anchor, energy, p.pilot, now});
     p.alerts = alerts_.Current();
     UpdateAlerts();
+    if(alert_drawer_ && alert_drawer_->IsShown()) {
+      alert_drawer_->Update(p.alerts,state_.replayed,mode_);
+      alert_drawer_->Present(DrawerWorkspace());
+    }
     field_snapshot_ = {state_, config,
         simulation_ || replay ? std::vector<vessel::SourceHealth>{} : p.sources,
         energy, p.advice, p.pilot, p.radar, false, false, now};
@@ -1031,6 +1037,7 @@ void Shell::UpdateScrollControls() {
 }
 
 std::string Shell::PageTitle() const {
+  if (alert_drawer_ && alert_drawer_->IsShown()) return "Alerts";
   if (pilot_drawer_ && pilot_drawer_->IsShown()) return "Manual autopilot";
   if (anchor_drawer_ && anchor_drawer_->IsShown()) return "Anchor watch";
   if (settings_drawer_ && settings_drawer_->IsShown()) return "Settings";
@@ -1076,6 +1083,7 @@ void Shell::SelectDemo(vessel::DemoScenario scenario) {
 #endif
 void Shell::ShowNavigation() {
   CloseContext();
+  if (alert_drawer_) alert_drawer_->Dismiss();
   if (pilot_drawer_) pilot_drawer_->Dismiss();
   if (anchor_drawer_) anchor_drawer_->Dismiss();
   if (settings_drawer_) settings_drawer_->Dismiss();
@@ -1114,6 +1122,7 @@ void Shell::ShowProduct(ProductPage page) {
   if (page == ProductPage::Ais) { ShowTraffic(); return; }
   if (page == ProductPage::Anchor) { ShowAnchor(); return; }
   if (page == ProductPage::Pilot) { ShowPilot(); return; }
+  if (page == ProductPage::Alerts) { ShowAlerts(); return; }
   if (ais_drawer_) ais_drawer_->Dismiss();
   ShowPage(PreviewPage::Route);
   manager_.GetPane(page_).Hide();
@@ -1250,6 +1259,26 @@ void Shell::ShowPilot() {
   pilot_drawer_->Present(DrawerWorkspace());
   Tick();
 }
+void Shell::ShowAlerts() {
+  ShowNavigation();
+  if(!alert_drawer_) {
+    AlertDrawerActions callbacks;
+    callbacks.acknowledge=[this](const std::string &id,std::uint64_t episode) {
+      alerts_.Acknowledge(id,episode);Tick();
+    };
+    callbacks.inspect=[this](application::AlertArea area) {
+      switch(area) {
+      case application::AlertArea::Sources: ShowProduct(ProductPage::Sources);break;
+      case application::AlertArea::Ais: ShowTraffic();break;
+      case application::AlertArea::Anchor: ShowAnchor();break;
+      case application::AlertArea::Energy: ShowPage(PreviewPage::Energy);break;
+      case application::AlertArea::Pilot: ShowPilot();break;
+      }
+    };
+    alert_drawer_=new XNavAlertDrawer(frame_,std::move(callbacks));
+  }
+  alert_drawer_->Present(DrawerWorkspace());Tick();
+}
 void Shell::CloseContext() {
   if (context_) context_->Dismiss();
   context_ = nullptr;
@@ -1292,6 +1321,7 @@ void Shell::UpdateContext(vessel::Time now) {
 }
 void Shell::ShowPage(PreviewPage page) {
   CloseContext();
+  if (alert_drawer_) alert_drawer_->Dismiss();
   if (pilot_drawer_) pilot_drawer_->Dismiss();
   if (anchor_drawer_) anchor_drawer_->Dismiss();
   if (settings_drawer_) settings_drawer_->Dismiss();

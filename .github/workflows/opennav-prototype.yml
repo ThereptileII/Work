@@ -105,6 +105,11 @@ jobs:
           $env:PATH = (Resolve-Path opennav-x/build/production-install).Path + ";" + $env:PATH
           python opennav-x/tools/prototype/capture-ais-component.py --component autopilot --client opennav-x/build/production-windows/Release/pilot_drawer_test.exe --output opennav-x/evidence/local/pilot-component
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+      - name: Native alert episode and acknowledgement interactions
+        run: |
+          $env:PATH = (Resolve-Path opennav-x/build/production-install).Path + ";" + $env:PATH
+          python opennav-x/tools/prototype/capture-ais-component.py --component alerts --client opennav-x/build/production-windows/Release/alert_drawer_test.exe --output opennav-x/evidence/local/alert-component
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
       - name: Offline commissioning probe CLI and secret-output guards
         run: |
           $env:PATH = (Resolve-Path opennav-x/build/production-install).Path + ";" + $env:PATH

@@ -49,3 +49,14 @@ No release or physical boat acceptance is inferred.
 The final fixture run passes all eight retained scenarios, 44 captures and
 shared-profile XNav/Legacy/Safe restarts, including the exact new drawer and
 48px control geometry. No accepted scenario or adapter test was removed.
+
+Downloaded Windows `0ce6835` passes 124 tests in both builds, 61 component
+interactions, actual-product three-theme captures and development DPI checks.
+Review nevertheless finds partially missing static content in pending/confirmed
+component images after a modal. The corrective shared sheet exit queues
+repainting of visible owned children after dialog destruction, guarded by weak
+lifetime. Screenshot gates now require the header and eight control labels.
+Linux retains all 61 checks/seven images with the stronger gate; native
+replacement remains required. The retained preview's captioned-window height
+assertion is corrected using actual client geometry, without weakening the
+separate canonical 1280×800 test.

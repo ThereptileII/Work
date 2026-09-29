@@ -21,7 +21,7 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--client", type=Path, required=True)
     parser.add_argument("--output", type=Path, required=True)
-    parser.add_argument("--component", choices=["ais", "passage", "instruments", "energy", "settings", "anchor", "autopilot"], default="ais")
+    parser.add_argument("--component", choices=["ais", "passage", "instruments", "energy", "settings", "anchor", "autopilot", "alerts"], default="ais")
     args = parser.parse_args()
     args.client = args.client.resolve()
     args.output = args.output.resolve()
@@ -64,7 +64,7 @@ def main():
         if result.returncode:
             raise RuntimeError(f"Component interactions failed ({result.returncode}); inspect interaction.log")
         record = json.loads((args.output / "result.json").read_text())
-        minimum, images = {"ais": (40, 9), "passage": (26, 5), "instruments": (41, 5), "energy": (44, 7), "settings": (90, 12), "anchor": (30, 5), "autopilot": (60, 7)}[args.component]
+        minimum, images = {"ais": (40, 9), "passage": (26, 5), "instruments": (41, 5), "energy": (44, 7), "settings": (90, 12), "anchor": (30, 5), "autopilot": (60, 7), "alerts": (50, 7)}[args.component]
         assert record["passed"] and record["checks"] >= minimum
         assert len(record["captures"]) == images
         record["source_commit"] = subprocess.check_output(
@@ -97,6 +97,22 @@ def main():
                         heading = current.convert("RGB").crop((332,438,383,462))
                         ink = sum(max(abs(a-b) for a,b in zip(pixel,primary)) < 20 for pixel in heading.getdata())
                         assert ink > 20, f"{name}: heading labels displaced by wind-rose transform"
+                if args.component == "autopilot":
+                    primary={"day":(243,245,238),"dusk":(226,229,219),"night":(184,181,167)}[theme]
+                    heading=current.convert("RGB").crop((705,130,904,154))
+                    assert sum(max(abs(a-b) for a,b in zip(pixel,primary))<20 for pixel in heading.getdata())>30, f"{name}: modal left drawer title unpainted"
+                    # All mode/course labels, including disabled ones, must
+                    # survive a modal. Crop away borders and filled backgrounds.
+                    for box in [(720,430,770,446),(811,430,856,446),(902,430,942,446),(988,430,1038,446),
+                                (748,498,831,516),(946,498,1000,516),(770,568,815,584),(946,568,1000,584)]:
+                        area=current.convert("RGB").crop(box)
+                        assert len(area.getcolors(1000000))>8, f"{name}: modal left a pilot label unpainted at {box}"
+                if args.component == "alerts" and name in {"alerts-day", "alerts-dusk", "alerts-night"}:
+                    critical={"day":(236,143,135),"dusk":(236,143,135),"night":(183,117,105)}[theme]
+                    backing=tuple((ink*9+base*246+127)//255 for ink,base in zip(critical,background))
+                    # Top-left corners of rounded action buttons must reveal
+                    # the actual callout, never native wxPanel grey.
+                    assert current.convert("RGB").getpixel((722,308))==backing, f"{name}: native button backing"
                 if args.component == "passage" and name in {"passage-day", "passage-dusk", "passage-night"}:
                     assert current.convert("RGB").getpixel((1030, 404)) == background, \
                         f"{name}: disabled edit icon has a native grey backing"

@@ -312,6 +312,7 @@ std::string ProductPanel::PageTitle() const {
   return "Unknown";
 }
 void ProductPanel::ShowPage(ProductPage page, LightMode mode) {
+  if(page==ProductPage::Alerts&&actions_.alerts){actions_.alerts();return;}
   if(page==ProductPage::Pilot&&actions_.pilot_controls){actions_.pilot_controls();return;}
   if(page==ProductPage::Anchor&&actions_.anchor_watch){actions_.anchor_watch();return;}
   if ((page == ProductPage::Home || page == ProductPage::Settings) && actions_.preferences) {
@@ -469,41 +470,6 @@ void ProductPanel::Update(const ProductState &state, LightMode mode) {
     Layout();
     FitInside();
   }
-}
-void ProductPanel::AlertsPanel() {
-  Heading("Alerts", state_.vessel.replayed ? "REPLAY / Historical conditions" : "Conditions needing your attention");
-  if (state_.alerts.empty()) Text("No current XNav alerts. Continue to monitor the chart, instruments and surroundings.");
-  for (const auto &a : state_.alerts) {
-    Visual("Alert " + W(a.title), 160, [this, id = a.id](XNavPainter &p, wxDC &dc, int width) {
-      for (const auto &alert : state_.alerts) if (alert.id == id) {
-        const auto color = alert.level == application::AlertLevel::Critical ? p.c.alarm
-                           : alert.level == application::AlertLevel::Warning ? p.c.attention
-                                                                            : p.c.accent;
-        p.Card(0, 0, width, 156, W(application::AlertLevelName(alert.level)));
-        dc.SetPen(*wxTRANSPARENT_PEN); dc.SetBrush(wxBrush(Colour(color)));
-        dc.DrawRoundedRectangle(p.D(0), p.D(12), p.D(4), p.D(132), p.D(2));
-        p.Text(W(alert.title), 24, 46, 23, p.c.primary, false, width - 48);
-        p.Text(W(alert.action), 24, 84, 14, p.c.secondary, false, width - 48);
-        p.Text(alert.acknowledged ? "Acknowledged / condition remains active" : "Needs attention",
-               24, 122, 11, color, false, width - 48);
-      }
-    });
-    BeginActions(2);
-    Action("Inspect condition", [this, area = a.area] {
-      switch (area) {
-      case application::AlertArea::Sources: ShowPage(ProductPage::Sources, mode_); break;
-      case application::AlertArea::Ais: ShowPage(ProductPage::Ais, mode_); break;
-      case application::AlertArea::Anchor: ShowPage(ProductPage::Anchor, mode_); break;
-      case application::AlertArea::Pilot: ShowPage(ProductPage::Pilot, mode_); break;
-      case application::AlertArea::Energy: if(actions_.energy) actions_.energy(); break;
-      }
-    });
-    Action("Acknowledge " + W(a.title), [this, id = a.id, episode = a.episode] {
-      if (actions_.acknowledge_alert) actions_.acknowledge_alert(id, episode);
-    }, !a.acknowledged);
-    EndActions();
-  }
-  Text("Acknowledgement does not clear an active condition or acknowledge alarms on other equipment.", 12);
 }
 void ProductPanel::CreateMark() {
   if (!actions_.navigation.chart_position)
@@ -748,7 +714,7 @@ void ProductPanel::Build() {
   SetName("OpenNav product page");
   SetLabel("OpenNav product page: " + W(PageTitle()));
   if (page_ == ProductPage::Alerts) {
-    AlertsPanel();
+    Heading("Alerts", "Open the notification centre from the status bar.");
   } else if (page_ == ProductPage::System) {
     Heading("System", "Interface, recovery and diagnostics");
     BeginActions(2);

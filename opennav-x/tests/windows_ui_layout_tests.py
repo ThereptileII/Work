@@ -123,3 +123,14 @@ for scale in (1., 1.25, 1.5):
                 assert delta==0, 'Unexplained page gap/overlap accepted'
             page_passed+=1
 print(f'{page_passed} exact page/timeline/DPI geometry checks passed')
+
+# Exact independent canonical/client cases: captioned preview windows have a
+# smaller client, not a different drawer style or a broad height tolerance.
+node=next(n for n in tree.body if isinstance(n,ast.FunctionDef) and n.name=='prototype_drawer_bounds')
+exec(compile(ast.Module(body=[node],type_ignores=[]),'drawer contract','exec'),namespace)
+bounds_for=namespace['prototype_drawer_bounds']
+assert bounds_for(1280,800)==dict(x=682,y=80,width=398,height=674)
+assert bounds_for(1264,761,origin=(8,31))==dict(x=674,y=111,width=398,height=635)
+assert bounds_for(1280,800,1.25)==dict(x=569,y=90,width=498,height=652)
+assert bounds_for(1280,800,1.5)==dict(x=428,y=102,width=597,height=629)
+print('4 independent canonical/client/DPI drawer geometry checks passed')

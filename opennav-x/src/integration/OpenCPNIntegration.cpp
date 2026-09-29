@@ -674,6 +674,7 @@ void Attach(MyFrame& frame, wxAuiManager& manager, wxFileConfig& config) {
         for(const auto &item:items) {
           wxJSONValue row;
           row["label"]=wxString::FromUTF8(item.label);
+          if(!item.accessible_name.empty()) row["accessible_name"]=wxString::FromUTF8(item.accessible_name);
           row["x"]=item.screen.x; row["y"]=item.screen.y;
           row["width"]=item.screen.width; row["height"]=item.screen.height;
           row["enabled"]=item.enabled; row["visible"]=item.visible;
