@@ -2,6 +2,40 @@
 
 ## Current stage: prototype design lock, chart presentation and Online AIS
 
+The user-supplied AISStream key workflow now has explicit own-key guidance, a
+masked 48px input, disabled empty/invalid Save, and no automatic enablement.
+Cancel/Escape never replace a saved key; confirmed removal disables Online AIS.
+An Escape defect in modal/drawer dispatch was found and fixed. Linux passes
+151 AIS component checks/twelve captures, 132 product and 132 fixture tests, and retained
+Pilot/Passage/Settings component regressions. All tests use fake credentials.
+Native Windows replacement gates are pending; no key is distributed with builds.
+See [credential UI contract](online-ais.md) and [corrective evidence](evidence/ais-own-key-ui-local.json).
+
+The first real AISStream service probe on the boat passes: subscription confirmed,
+41 peak targets, 54 accepted reports, zero rejected; clean disable/cache clear.
+The user-authorized credential is verified in the interactive user's Windows
+Credential Manager. A bounded local pipe crosses the SSH/desktop logon boundary
+without a plaintext key file, key argument, key log or remote-access change.
+Thirteen portable import checks and seventeen native checks pass. The isolated
+probe uses qualified `c86c6a7`; it does not launch OpenCPN or qualify the latest
+product UI. Live target selection, internet-loss/reconnect and physical display
+review remain open. See [live evidence](evidence/boat-ais-live-c86c6a7.json).
+
+Native `e83df7d` passes the nine component suites, including Radar's 64 checks
+and Pilot's 77. The product composition check stops because Radar's diagnostic
+screen coordinates were compared directly to client-relative HTML coordinates
+(8px frame / 31px caption offset). Reviewed native pixels retain the scope.
+The replacement normalizes by the measured client origin and retains the exact
+one-pixel geometry bound. Its Linux corrective capture passes; replacement
+Windows geometry and full qualification are still required. The completed full
+run also rejects stale user-flow selectors and a Safe chart check expecting
+XNav colors. Downloaded Safe pixels show stock coastline content; replacement
+uses the existing pinned stock palette oracle. The fixture Display check
+mistook a nested Configure instruments action for the shell action. All 21
+archives verify; no failure is waived and deployment remains withheld. See
+[exact negative evidence](evidence/prototype-native-e83df7d-in-progress.json).
+No conformance PASS.
+
 Radar now has a native prototype focus composition, with a fixed scope and an
 independently scrolling control column. It explicitly withholds returns,
 heading/range and scanner controls without a validated receive/control source.

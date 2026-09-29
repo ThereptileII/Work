@@ -1,0 +1,264 @@
+{
+  "scope": "Development failure; not a release or boat visual acceptance",
+  "publishedCommit": "e83df7db502b3ff1615355dcef5fe50f15ce8cb1",
+  "localEquivalent": "1681a1866ea1394a58eeacb2768c273d2ac78999",
+  "prototypeRun": "https://github.com/ThereptileII/Work/actions/runs/36524212963",
+  "qualificationRun": "https://github.com/ThereptileII/Work/actions/runs/36524215459",
+  "qualificationStatusAtRecord": "completed: 13 jobs passed, 2 failed, publication skipped",
+  "failure": {
+    "jobId": 109263531635,
+    "step": "Actual native prototype composition",
+    "actualRadarDisplayScreen": [
+      120,
+      243,
+      657,
+      508
+    ],
+    "expectedHtmlClient": [
+      112,
+      212,
+      657,
+      508
+    ],
+    "clientOrigin": [
+      8,
+      31
+    ],
+    "correction": "Subtract measured ClientToScreen(0,0) before comparing screen-space diagnostic rectangles; one-pixel tolerance retained"
+  },
+  "componentChecks": {
+    "ais-component": {
+      "checks": 71,
+      "passed": true,
+      "captures": 9
+    },
+    "alert-component": {
+      "checks": 53,
+      "passed": true,
+      "captures": 7
+    },
+    "anchor-component": {
+      "checks": 34,
+      "passed": true,
+      "captures": 5
+    },
+    "energy-component": {
+      "checks": 44,
+      "passed": true,
+      "captures": 7
+    },
+    "instruments-component": {
+      "checks": 41,
+      "passed": true,
+      "captures": 5
+    },
+    "passage-component": {
+      "checks": 26,
+      "passed": true,
+      "captures": 5
+    },
+    "pilot-component": {
+      "checks": 77,
+      "passed": true,
+      "captures": 7
+    },
+    "radar-component": {
+      "checks": 64,
+      "passed": true,
+      "captures": 6
+    },
+    "settings-component": {
+      "checks": 113,
+      "passed": true,
+      "captures": 12
+    }
+  },
+  "verifiedArchives": [
+    {
+      "id": 11014811959,
+      "name": "prototype-native-Windows-e83df7db502b3ff1615355dcef5fe50f15ce8cb1",
+      "sha256": "726a011d0b5c5edb3537a37974b51c7b026d6478571a400ce6ccc0f03c88c8d8",
+      "bytes": 17027574,
+      "zipCrc": true
+    },
+    {
+      "id": 11014800449,
+      "name": "prototype-ais-foundation-Linux-e83df7db502b3ff1615355dcef5fe50f15ce8cb1",
+      "sha256": "e1d6457d09789681182ecd39d2afb6ed7e696728e87cfe7d59c09448922028b5",
+      "bytes": 685,
+      "zipCrc": true
+    },
+    {
+      "id": 11014386540,
+      "name": "prototype-ais-foundation-Windows-e83df7db502b3ff1615355dcef5fe50f15ce8cb1",
+      "sha256": "0d53e1af33c406960649faa8bcedf5b180520caae475159fde06dd78bec13604",
+      "bytes": 688,
+      "zipCrc": true
+    },
+    {
+      "id": 11014330899,
+      "name": "prototype-review-guard-Windows-e83df7db502b3ff1615355dcef5fe50f15ce8cb1",
+      "sha256": "8ceda407e9a374a8855054fb15627d6b897f6c0203bb221f8eb036519e76b780",
+      "bytes": 9615,
+      "zipCrc": true
+    },
+    {
+      "id": 11014321710,
+      "name": "prototype-ais-network-Linux-e83df7db502b3ff1615355dcef5fe50f15ce8cb1",
+      "sha256": "0aca5fc73bc54f9598e544631dfca7cb7c046c09b9edefaa284f975835673c87",
+      "bytes": 935,
+      "zipCrc": true
+    },
+    {
+      "id": 11014181785,
+      "name": "prototype-reference-Linux-e83df7db502b3ff1615355dcef5fe50f15ce8cb1",
+      "sha256": "1da5c8745320faff2b73d2f3bb3239195464b7d2fb8f7702faf344cf3f04ea4b",
+      "bytes": 20858620,
+      "zipCrc": true
+    },
+    {
+      "id": 11013862067,
+      "name": "prototype-reference-Windows-e83df7db502b3ff1615355dcef5fe50f15ce8cb1",
+      "sha256": "aaced3bd9f05b07fdcac4bca3a7cd32548dfa986577dec662f7209a21f2ffccd",
+      "bytes": 18803140,
+      "zipCrc": true
+    },
+    {
+      "id": 11014835494,
+      "name": "stock-welcome-en_US-e83df7db502b3ff1615355dcef5fe50f15ce8cb1",
+      "sha256": "3fbe820b06385b6ee0e308cb52776891256ae573b4783402335329fba8efe8fb",
+      "bytes": 474255,
+      "zipCrc": true
+    },
+    {
+      "id": 11014820233,
+      "name": "official-prerequisite-e83df7db502b3ff1615355dcef5fe50f15ce8cb1",
+      "sha256": "87cbbe95716735f9b244d0827617858142248eb945c23cde7ac92165e169d135",
+      "bytes": 221247,
+      "zipCrc": true
+    },
+    {
+      "id": 11014800569,
+      "name": "commissioning-restart-e83df7db502b3ff1615355dcef5fe50f15ce8cb1",
+      "sha256": "7402ec4a1cbf8b2b09ddf831d6b9d1e05599dcaccf20af671ff351084cc9e3c1",
+      "bytes": 6199,
+      "zipCrc": true
+    },
+    {
+      "id": 11014241958,
+      "name": "commissioning-broker-e83df7db502b3ff1615355dcef5fe50f15ce8cb1",
+      "sha256": "ce806aab583dbc495d425dd4c870741d0bddf1d85e62dd5b0f6e990ef277d8cd",
+      "bytes": 16717,
+      "zipCrc": true
+    },
+    {
+      "id": 11014228172,
+      "name": "windows-pristine-e83df7db502b3ff1615355dcef5fe50f15ce8cb1",
+      "sha256": "9b0ab245a759293b274ca2cbc89b1e78f45a781a8d0d46c3c87000169cc1cc3e",
+      "bytes": 496564,
+      "zipCrc": true
+    },
+    {
+      "id": 11014166911,
+      "name": "boat-maintenance-e83df7db502b3ff1615355dcef5fe50f15ce8cb1",
+      "sha256": "3c7b463e54796ca453f5479390ac6f7952d4a52d6e97d40f4426310c19d7a04c",
+      "bytes": 24482,
+      "zipCrc": true
+    },
+    {
+      "id": 11014031231,
+      "name": "stock-welcome-sv-e83df7db502b3ff1615355dcef5fe50f15ce8cb1",
+      "sha256": "b7dc1eb56102a7369dc9f3a386b283d6b7a7921b2763865619264d6115b51058",
+      "bytes": 501637,
+      "zipCrc": true
+    },
+    {
+      "id": 11014021306,
+      "name": "restart-window-e83df7db502b3ff1615355dcef5fe50f15ce8cb1",
+      "sha256": "ae03a36882768ebad97f1393e4a7b7fd4f0122e18cfab6424e1c3df9c7ef57f8",
+      "bytes": 23425,
+      "zipCrc": true
+    },
+    {
+      "id": 11013922301,
+      "name": "commissioning-restart-qualified-e83df7db502b3ff1615355dcef5fe50f15ce8cb1",
+      "sha256": "81c9ffedbffbb914f159fe6147d0f4ef3ee13c59026d687164bddba3470a7208",
+      "bytes": 333,
+      "zipCrc": true
+    },
+    {
+      "id": 11013873556,
+      "name": "linux-pristine-e83df7db502b3ff1615355dcef5fe50f15ce8cb1",
+      "sha256": "32ea65e4c843f7e702b061208b682bc9348be1e2b9cb126ca022f19f431b799c",
+      "bytes": 475756,
+      "zipCrc": true
+    },
+    {
+      "id": 11013822217,
+      "name": "boat-firmware-e83df7db502b3ff1615355dcef5fe50f15ce8cb1",
+      "sha256": "9fc518f775eb14042c3eb57993af737293f57383b52885e59ff454b703fa8f4b",
+      "bytes": 2679,
+      "zipCrc": true
+    },
+    {
+      "id": 11014223931,
+      "name": "prototype-object-flow-Windows-e83df7db502b3ff1615355dcef5fe50f15ce8cb1",
+      "sha256": "481e2533585fb294a56177f71c108551635d6934a2b569d83f51792fb6fd21d9",
+      "bytes": 12196759,
+      "zipCrc": true
+    },
+    {
+      "id": 11014597378,
+      "name": "linux-integration-e83df7db502b3ff1615355dcef5fe50f15ce8cb1",
+      "sha256": "a5e3933207e1702509fc3015fdc43da8642cc05f978a6bf7f817456f64487044",
+      "bytes": 8194685,
+      "zipCrc": true
+    },
+    {
+      "id": 11013919920,
+      "name": "windows-integration-e83df7db502b3ff1615355dcef5fe50f15ce8cb1",
+      "sha256": "180d8837f7d30d81bf9264f58e917d079b70ba056519c522b01b31ba3c9149a0",
+      "bytes": 6703514,
+      "zipCrc": true
+    }
+  ],
+  "reviewedScreenshots": {
+    "prototype-native/radar-day.png": "990c2cf5d0c96b1f9c9c8c6346d3869535f9c32adbcb68bddd8cc7f534feda6e",
+    "immutable-windows-reference/radar-day.png": "31068e46f1dc71e8a99669a3d302f18233a392ecc75bca520269028d68c5af48",
+    "windows-integration/recovery-01-xnav.png": "555c6a142a68cfced4674bf4fb395882668f3521a9982cf63dbb16d270895d65",
+    "windows-integration/recovery-02-safe.png": "81af675a5b6d963894bab420a3f493593f5de61dbd5a247c555e8be7e1cd4a38"
+  },
+  "localCorrection": {
+    "captures": {
+      "navigation-day.png": "4a1fadbeb54f289671e676657fba74e76e5d8dcb14482c16046ff059d570e3bf",
+      "navigation-dusk.png": "df7fbf6be03dd95e4ae0bd60d75e641b62e4ed7885c1c2f9f16c18207815f516",
+      "navigation-night.png": "98b6c6c67e1dd7b7528d7ddf37aa5e253279c61f707b1a8dab3134918c8d58d9",
+      "radar-day.png": "40fbf410843eb22bcf4b464d40e85ca924905df7df5063362570c2ebb9118e90",
+      "radar-dusk.png": "f59829ae629cf73360ef26863fb54ade4cf4e7091006bc09bdcb1b34c71e489f",
+      "radar-night.png": "1730e94c00660521da5c4a1641b1bb0a32be432a7aa3c8c9eabdf3d6f8895694"
+    },
+    "passed": true
+  },
+  "chartUiBoatAccepted": false,
+  "additionalFailures": [
+    {
+      "jobId": 109263531460,
+      "step": "retained preview Display geometry",
+      "finding": "Two visible Configure instruments controls: shell rail action and nested Display page action. Existing grandparent-only test did not exclude page descendants.",
+      "correction": "Exclude all actual page descendants with IsChild before applying shell geometry checks; unique controls and existing exact bounds unchanged."
+    },
+    {
+      "jobId": 109263540504,
+      "step": "Linux chart user flows",
+      "finding": "Waypoint label matches both new floating chart control and contextual action. Old catalog entry expected removed Menu.",
+      "correction": "Bind contextual selection to its distinct accessible name. Browse via Passage library; retain route, pointer, persistence and safety assertions. Corrective Linux run passed."
+    },
+    {
+      "jobId": 109264486816,
+      "step": "Automatic Safe recovery chart content",
+      "finding": "Captured Safe coastline is present in stock colors; test incorrectly expected prior XNav colors.",
+      "correction": "Use existing independent exact presentation oracle: HTML palette for XNav; pinned GSHHSChart::SetColorScheme for Safe. Require both land and water at every phase."
+    }
+  ],
+  "deployment": "withheld; failed gates are not waived"
+}

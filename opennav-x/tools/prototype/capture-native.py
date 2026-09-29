@@ -506,8 +506,17 @@ def main():
                     radar_pixels=scope.tobytes()
                 display=data()["runtime"]["display"]
                 regions={r['label']:r for r in display['product_regions']}
+                # Diagnostics reports physical screen positions. HTML and the
+                # saved image use the 1280x800 client origin; Windows' ordinary
+                # caption/frame offsets are not part of prototype geometry.
+                origin=(0,0)
+                if windows:
+                    point=ui.W.POINT(0,0)
+                    to_screen=ui.declare(ui.user,"ClientToScreen",ui.W.BOOL,ui.W.HWND,ui.C.POINTER(ui.W.POINT))
+                    assert to_screen(window,ui.C.byref(point))
+                    origin=(point.x,point.y)
                 for title,rect in [('Radar display',(112,212,657,508)),('Radar controls',(797,212,265,508))]:
-                    actual=regions[title]
+                    actual=dict(regions[title]);actual['x']-=origin[0];actual['y']-=origin[1]
                     assert actual['visible'] and all(abs(actual[k]-v)<=1 for k,v in zip(('x','y','width','height'),rect)), (title,actual,rect)
                 for title in ['Radar active','Guard zone']:
                     found=[c for c in display['interaction_controls'] if c['label']==title]

@@ -13,6 +13,15 @@ hash and full profile/plugin preservation checks; see
 [the verified upgrade](evidence/beta2-boat-stock-5.12.4-upgrade.json).
 A version string cannot override the installer manifest.
 
+Online AIS now has a separate proven read-only commissioning path. The user's
+authorized key is in the interactive user's Windows Credential Manager, outside
+the OpenCPN profile, config backups and diagnostic exports. The September 29
+bounded probe received 41 real targets and closed cleanly with zero OpenCPN
+processes or temporary tasks remaining. See [credential/probe procedure](online-ais.md#authorized-remote-credential-commissioning)
+and [aggregate-only evidence](evidence/boat-ais-live-c86c6a7.json). This does not
+authorize a product launch without the profile/plugin audit below or imply
+live chart/UI acceptance.
+
 ## Repeatable sequence
 
 1. Read `inspect.ps1` output privately. Never commit raw Desktop listings, account

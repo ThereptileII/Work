@@ -76,7 +76,9 @@ try:
         handle,pid=window('OpenNav X / OpenCPN');ready(count)
         state=(profile/'opennav-startup.state').read_text()
         assert 'pending 1' in state and f'failures {count-1}' in state,state
-        if count==1:colors=chart.reference(capture('recovery-01-xnav'))
+        if count==1:
+            report['chart_rendering'].append(chart.presentation(
+                capture('recovery-01-xnav'),'XNav','Day','Initial XNav before crash'))
         app.kill();app.wait(timeout=15);owned.discard(app.pid)
         assert fixtures.snapshot(profile)==expected,'Abrupt stop lost navigation/configuration'
         report['checks'].append(f'Owned XNav process terminated before healthy startup {count}; navigation fixtures preserved')
@@ -95,7 +97,10 @@ try:
     assert 'Initializing PlugIn: Dashboard' not in safe, 'Safe Mode loaded Dashboard'
     state=(profile/'opennav-startup.state').read_text()
     assert 'failures 2' in state and 'pending 0' in state,state
-    report['chart_rendering'].append(chart.check(capture('recovery-02-safe'),colors,'Automatic Safe recovery'))
+    # Safe deliberately uses stock OpenCPN presentation. Require the pinned
+    # stock land AND water colors, never the XNav palette learned on startup.
+    report['chart_rendering'].append(chart.presentation(
+        capture('recovery-02-safe'),'Standard','Day','Automatic Safe recovery'))
     assert fixtures.snapshot(profile)==expected
     report['checks'].append('Third explicit XNav launch automatically starts Safe; recovery notice and disabled plugin verified')
     if windows:ui.click_menu(handle,'Switch to XNav')
@@ -109,7 +114,8 @@ try:
     state=(profile/'opennav-startup.state').read_text()
     assert 'failures 0' in state and 'pending 1' in state,state
     assert list(profile.glob('opennav-startup.state.retry-*')),'Retry evidence not retained'
-    report['chart_rendering'].append(chart.check(capture('recovery-03-retry'),colors,'Human-requested XNav retry'))
+    report['chart_rendering'].append(chart.presentation(
+        capture('recovery-03-retry'),'XNav','Day','Human-requested XNav retry'))
     if windows:
         process=ui.monitor_process(pid);ui.close(handle);ui.wait_clean_exit(process)
     else:

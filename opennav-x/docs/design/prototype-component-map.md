@@ -41,6 +41,13 @@ earlier CSS declarations are sometimes superseded. The capture manifest records
 those final styles. Existing Beta `ui/Theme.h` geometry and custom drawings are
 migration inputs, not a second design authority.
 
+The user-requested AISStream key input is a functional extension not defined by
+the illustrative HTML. It uses the same theme, typography and `XNavButton`
+actions, with a masked native text input (minimum 48px high). The field is never
+prefilled or serialized into UI diagnostics. `XNavDrawer` defers Escape/Back
+while a modal is active; only that modal handles cancellation. No invented HTML
+reference or prototype-conformance PASS is assigned to the credential form.
+
 Passage uses the same stat, tag, callout, button and drawer primitives. The
 read-only `application::PresentPassage` preserves the route/SmartNav/energy
 observation batch. Its displayed leg distances/times are copied from SmartNav,

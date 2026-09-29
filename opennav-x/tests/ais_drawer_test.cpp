@@ -4,9 +4,11 @@
 #include <wx/app.h>
 #include <wx/dcbuffer.h>
 #include <wx/dcscreen.h>
+#include <wx/dialog.h>
 #include <wx/filename.h>
 #include <wx/log.h>
 #include <wx/timer.h>
+#include <wx/textctrl.h>
 #include <fstream>
 #include <cstdlib>
 #include <iostream>
@@ -86,7 +88,24 @@ class DrawerTest final : public wxApp {
       p.Text("Synthetic fixtures / no chart / no network / no equipment", 80, 126,
              12, p.c.secondary);
     });
-    drawer_ = new ui::XNavAisDrawer(*frame_, {}, [this](int id) { shown_.push_back(id); });
+    application::OnlineAisActions actions;
+    actions.read = [this](vessel::Time) { return online_; };
+    actions.store_key = [this](const ais::Secret &key) {
+      ++stores_;
+      // Only an unmistakable dummy reaches this test boundary. Never read
+      // Credential Manager, environment credentials or a live service here.
+      Check(key.View() == "TEST-ONLY-NOT-A-SERVICE-KEY", "explicit dummy reaches owned secret boundary");
+      if (fail_store_)
+        return application::CommandResult{false, "Secure key storage unavailable", {}};
+      online_.credential_present = true;
+      return application::CommandResult{true, "Key stored securely", {}};
+    };
+    actions.remove_key = [this] {
+      ++removes_;
+      online_.credential_present = online_.enabled = false;
+      return application::CommandResult{true, "Key removed", {}};
+    };
+    drawer_ = new ui::XNavAisDrawer(*frame_, std::move(actions), [this](int id) { shown_.push_back(id); });
     drawer_->on_select = [this](int id) { selected_.push_back(id); };
     // Feed the real owned cache and aggregator, never shortcut UI state.
     ais::PositionReport p;
@@ -200,12 +219,104 @@ class DrawerTest final : public wxApp {
       wxKeyEvent key(wxEVT_CHAR_HOOK); key.m_keyCode = WXK_ESCAPE;
       drawer_->FilterEvent(key);
       Check(!drawer_->IsShown(), "Escape list dismisses drawer");
+      online_.enabled = false;
+      online_.feed.health.connection = ais::Connection::Disabled;
+      online_.credential_present = false;
+      online_.credential_writable = true; // Test capability, even on Linux.
+      drawer_->Update(display_, online_, stamp + 2s, light_);
+      drawer_->Present(Workspace());
+      Command("Online AIS settings");
+    });
+    Add([this] {
+      Check(drawer_->PageTitle() == "Online AIS settings", "user can reach own-key settings");
+      Check(!Require<ui::XNavButton>("Remove key")->IsEnabled(), "absent key cannot be removed");
+      Command("Set AISStream key");
+    });
+    Add([this] {
+      auto *entry = KeyEntry();
+      Check(entry->GetValue().empty(), "entry starts empty without reading a stored secret");
+      Check(!Find<ui::XNavButton>(entry->GetParent(), "Save key")->IsEnabled(), "empty save is disabled");
+      entry->SetValue("TEST-ONLY-NOT-A-SERVICE-KEY");
+    });
+    Add([this] { Capture("ais-key-entry-day"); ModalCommand("AISStream key", "Cancel"); });
+    Add([this] {
+      Check(stores_ == 0 && !online_.credential_present, "cancel never stores a key");
+      Command("Set AISStream key");
+    });
+    Add([this] {
+      auto *entry = KeyEntry();
+      Check(entry->GetValue().empty(), "cancelled input is not retained on reopening");
+      entry->SetValue("invalid key with spaces");
+      Check(!Find<ui::XNavButton>(entry->GetParent(), "Save key")->IsEnabled(), "invalid input cannot enable Save");
+      // Even an already-queued button event is validated at the secret boundary.
+      ModalCommand("AISStream key", "Save key", false);
+    });
+    Add([this] {
+      Check(stores_ == 0, "invalid queued save cannot reach storage");
+      Command("Set AISStream key");
+    });
+    Add([this] {
+      KeyEntry()->SetValue("TEST-ONLY-NOT-A-SERVICE-KEY");
+      ModalCommand("AISStream key", "Save key");
+    });
+    Add([this] {
+      Check(stores_ == 1 && online_.credential_present && !online_.enabled,
+            "successful save records key presence without enabling traffic");
+      Check(Require<ui::XNavButton>("Remove key")->IsEnabled(), "saved key removal is available");
+      Capture("ais-key-stored-day");
+      fail_store_ = true;
+      Command("Set AISStream key");
+    });
+    Add([this] {
+      Check(KeyEntry()->GetValue().empty(), "replacement never prefills the existing key");
+      KeyEntry()->SetValue("TEST-ONLY-NOT-A-SERVICE-KEY");
+      ModalCommand("AISStream key", "Save key");
+    });
+    Add([this] {
+      Check(stores_ == 2 && online_.credential_present && !online_.enabled,
+            "failed replacement preserves prior status without enabling traffic");
+      Check(wxWindow::FindWindowByLabel("Secure key storage unavailable", drawer_) != nullptr,
+            "storage failure is visible without secret contents");
+      light_ = ui::LightMode::Night;
+      drawer_->Update(display_, online_, stamp + 2s, light_);
+      frame_->Refresh(false);
+      Command("Set AISStream key");
+    });
+    Add([this] { KeyEntry()->SetValue("TEST-ONLY-NOT-A-SERVICE-KEY"); });
+    Add([this] {
+      Capture("ais-key-entry-night");
+      wxKeyEvent key(wxEVT_CHAR_HOOK); key.m_keyCode = WXK_ESCAPE;
+      KeyEntry()->GetParent()->GetEventHandler()->ProcessEvent(key);
+    });
+    Add([this] {
+      Check(stores_ == 2 && online_.credential_present, "Escape preserves the stored key");
+      Check(drawer_->PageTitle() == "Online AIS settings", "modal Escape cannot navigate the underlying drawer");
+      Command("Remove key");
+    });
+    Add([this] { ModalCommand("Remove AISStream key", "Cancel"); });
+    Add([this] {
+      Check(removes_ == 0 && online_.credential_present, "removal cancellation preserves key");
+      Command("Remove key");
+    });
+    Add([this] { ModalCommand("Remove AISStream key", "Remove key"); });
+    Add([this] {
+      Check(removes_ == 1 && !online_.credential_present && !online_.enabled,
+            "confirmed removal clears presence and disables online traffic");
+      Check(!Require<ui::XNavButton>("Remove key")->IsEnabled(), "removal updates the visible capability");
       Finish();
     });
     timer_.SetOwner(this);
     Bind(wxEVT_TIMER, [this](wxTimerEvent &) {
       try { if (step_ < steps_.size()) steps_[step_++](); }
-      catch (const std::exception &e) { failure_ = e.what(); result_ = 1; Finish(); }
+      catch (const std::exception &e) {
+        failure_ = e.what(); result_ = 1;
+        timer_.Stop();
+        // Unwind stack-owned modal loops before destroying their parent.
+        for (auto *window : wxTopLevelWindows)
+          if (auto *dialog = dynamic_cast<wxDialog *>(window); dialog && dialog->IsModal())
+            dialog->EndModal(wxID_CANCEL);
+        CallAfter([this] { Finish(); });
+      }
     });
     timer_.Start(400);
     return true;
@@ -224,6 +335,23 @@ class DrawerTest final : public wxApp {
   }
   void Command(const wxString &name) {
     auto *button = Require<ui::XNavButton>(name);
+    wxCommandEvent event(wxEVT_BUTTON, button->GetId());
+    event.SetEventObject(button); button->GetEventHandler()->ProcessEvent(event);
+  }
+  wxTextCtrl *KeyEntry() {
+    auto *dialog = dynamic_cast<wxDialog *>(wxWindow::FindWindowByName("AISStream key"));
+    Check(dialog && dialog->IsModal(), "key entry is an explicit user modal");
+    Check(frame_->GetScreenRect().Contains(dialog->GetScreenRect()), "key input remains inside the application");
+    auto *entry = Find<wxTextCtrl>(dialog, "Protected AISStream key");
+    Check(entry && entry->HasFlag(wxTE_PASSWORD), "own-key field is password masked");
+    Check(entry->GetClientSize().y >= entry->FromDIP(48), "key input has touch-sized height");
+    return entry;
+  }
+  void ModalCommand(const wxString &name, const wxString &action, bool enabled = true) {
+    auto *dialog = dynamic_cast<wxDialog *>(wxWindow::FindWindowByName(name));
+    Check(dialog && dialog->IsModal(), "expected user modal is open");
+    auto *button = Find<ui::XNavButton>(dialog, action);
+    Check(button && button->IsEnabled() == enabled, "modal action has expected availability");
     wxCommandEvent event(wxEVT_BUTTON, button->GetId());
     event.SetEventObject(button); button->GetEventHandler()->ProcessEvent(event);
   }
@@ -282,6 +410,8 @@ class DrawerTest final : public wxApp {
   std::vector<std::string> captures_;
   std::size_t step_ = 0, deferred_count_ = 0;
   int checks_ = 0, result_ = 0;
+  int stores_ = 0, removes_ = 0;
+  bool fail_store_ = false;
   std::string failure_;
 };
 } // namespace

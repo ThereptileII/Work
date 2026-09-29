@@ -402,19 +402,30 @@ void XNavAisDrawer::RefreshValues() {
     p->Refresh(false);
 }
 void XNavAisDrawer::StoreKey() {
+  if (!online_.credential_writable || !actions_.store_key)
+    return;
   // A masked entry never participates in ordinary settings serialization,
   // diagnostic text or field export. Only the bounded Secret crosses to
   // storage.
   wxDialog prompt(this, wxID_ANY, "AISStream key", wxDefaultPosition,
-                  FromDIP(wxSize(430, 210)), wxBORDER_NONE);
+                  wxDefaultSize, wxBORDER_NONE | wxTAB_TRAVERSAL);
+  prompt.SetName("AISStream key");
   prompt.SetBackgroundColour(Colour(Theme(light_).background));
   auto *layout = new wxBoxSizer(wxVERTICAL);
   auto *title = new wxStaticText(&prompt, wxID_ANY, "AISStream key");
   title->SetFont(UiFont(prompt, 22));
   title->SetForegroundColour(Colour(Theme(light_).primary));
   layout->Add(title, 0, wxALL, FromDIP(20));
+  auto *detail = new wxStaticText(&prompt, wxID_ANY,
+      "Enter your own AISStream API key. It is stored securely for this "
+      "Windows account. Saving a key does not enable Online AIS.");
+  detail->SetFont(UiFont(prompt, 12));
+  detail->SetForegroundColour(Colour(Theme(light_).secondary));
+  detail->Wrap(FromDIP(390));
+  layout->Add(detail, 0, wxEXPAND | wxLEFT | wxRIGHT | wxBOTTOM, FromDIP(20));
   auto *entry = new wxTextCtrl(&prompt, wxID_ANY, "", wxDefaultPosition,
-                               wxDefaultSize, wxTE_PASSWORD | wxBORDER_NONE);
+                               FromDIP(wxSize(390, 48)),
+                               wxTE_PASSWORD | wxBORDER_NONE);
   entry->SetName("Protected AISStream key");
   entry->SetMaxLength(512);
   entry->SetFont(UiFont(prompt, 18));
@@ -422,19 +433,37 @@ void XNavAisDrawer::StoreKey() {
   entry->SetForegroundColour(Colour(Theme(light_).primary));
   layout->Add(entry, 0, wxEXPAND | wxLEFT | wxRIGHT | wxBOTTOM, FromDIP(20));
   auto *row = new wxBoxSizer(wxHORIZONTAL);
+  XNavButton *save = nullptr;
   for (auto choice : {std::pair<wxString, int>{"Cancel", wxID_CANCEL},
                       {"Save key", wxID_OK}}) {
     auto *button =
         new XNavButton(&prompt, wxID_ANY, choice.first, choice.first);
     button->SetLightMode(light_);
+    button->SetRole(choice.second == wxID_OK ? ButtonRole::Primary
+                                             : ButtonRole::Quiet);
+    if (choice.second == wxID_OK) {
+      save = button;
+      save->Disable();
+    }
     button->Bind(wxEVT_BUTTON, [&prompt, id = choice.second](wxCommandEvent &) {
       prompt.EndModal(id);
     });
     row->Add(button, 1, wxALL, FromDIP(4));
   }
+  entry->Bind(wxEVT_TEXT, [entry, save](wxCommandEvent &) {
+    const auto value = entry->GetValue();
+    bool valid = !value.empty() && value.length() <= 512;
+    for (const auto ch : value)
+      valid = valid && ch >= 33 && ch <= 126;
+    save->Enable(valid);
+  });
   layout->Add(row, 0, wxEXPAND | wxALL, FromDIP(16));
   prompt.SetSizerAndFit(layout);
-  prompt.CentreOnParent();
+  auto *frame = wxGetTopLevelParent(this);
+  while (frame->GetParent()) frame = wxGetTopLevelParent(frame->GetParent());
+  const auto available = frame->GetClientSize(), size = prompt.GetSize();
+  prompt.Move(frame->ClientToScreen({(available.x - size.x) / 2,
+                                    (available.y - size.y) / 2}));
   prompt.Bind(wxEVT_CHAR_HOOK, [&prompt](wxKeyEvent &e) {
     if (e.GetKeyCode() == WXK_ESCAPE)
       prompt.EndModal(wxID_CANCEL);

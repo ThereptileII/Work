@@ -86,7 +86,7 @@ Confirmation is a separate envelope. CI uses sanitized fixtures without a key.
 Development uses `AISSTREAM_API_KEY`; installed Windows uses per-user Credential
 Manager, separate from plaintext settings/backups. Never export keys,
 subscriptions, server echoes or raw errors. Update/repair preserve credentials;
-explicit uninstall removal policy is still to be implemented.
+uninstall preserves the entry for reinstall. Explicit Remove key deletes it.
 
 Implemented: owned models/cache, age/validation, onboard-precedence aggregator,
 antimeridian viewport filtering with 15% margin, coalesced five-second
@@ -117,10 +117,31 @@ text. Update/repair leave the per-user credential entry intact. Uninstall
 preserves it for reinstall; Remove key explicitly deletes it and stops online
 traffic. Linux development remains environment-only.
 
-Pending: online chart overlay/hit testing, full native product regressions and
-live boat gates. No configured product key, live target count or successful
-service connection is claimed. Local loopback transport tests are not a live
-AISStream acceptance result.
+Each user supplies **their own AISStream API key** through **Traffic → Online AIS
+settings → Set AISStream key**. No shared service key is distributed. The input
+is password-masked, touch-sized and always starts empty, including replacement.
+Save writes only through the protected credential adapter; it does not enable
+Online AIS. Cancel/Escape leave the existing credential untouched. Empty or
+invalid input cannot be saved. A storage failure remains visible without
+claiming success. Explicit, confirmed Remove key stops Online AIS and removes
+the credential. The testing credential on the boat is local to that Windows
+account and is absent from source, installers and portable packages.
+
+The offline native component test now exercises this exact UI with an explicitly
+fake storage callback: missing key, masked input, Cancel, invalid/queued Save,
+successful Save without enablement, empty replacement input, failed storage,
+Escape, cancelled removal and confirmed removal. It never loads a real key or
+connects to the service. Native Windows credential adapter tests separately use
+only a unique test namespace. The initial Linux UI run caught Escape navigating
+behind a modal; drawers now defer to an open modal. The final corrected Linux run passes 151
+checks with twelve captures; exact native Windows validation remains pending.
+
+Chart overlay/hit testing is implemented below; full native product regressions
+and live chart/boat UI gates remain open. On September 29 the user's authorized
+key was placed in the interactive user's Credential Manager and the isolated
+native probe confirmed a real subscription: 41 peak targets, 54 accepted reports,
+zero rejected, then disabled/cleared. This is service-path evidence, not product
+chart acceptance. See [live probe evidence](evidence/boat-ais-live-c86c6a7.json).
 
 The application-thread settings boundary now has ten integrated tests with fake
 credentials and a controllable provider. Construction/default settings do not
@@ -270,3 +291,27 @@ The non-installed `ais_drawer_test` process exercises real widgets against owned
 cache/aggregator fixtures. It cannot access the OpenCPN profile, marine equipment,
 network client or credential store. Its prominently labelled component captures
 are not product, live-traffic, chart-symbol or boat-acceptance evidence.
+
+## Authorized remote credential commissioning
+
+`tools/boat/import-ais-desktop-credential.ps1` accepts only a bounded binary stdin
+frame (four-byte little-endian length, 1–512 printable ASCII bytes, EOF). It
+never accepts a key argument or writes a plaintext key file. SSH can have a
+different credential logon context from the interactive desktop. A local named
+pipe hands off to a temporary limited task in the one existing same-user
+desktop, without altering remote access. Its ACL denies network logons and
+admits only the current user/SYSTEM. The sender verifies the receiving process's
+desktop session and executable; the receiver checks the exact live sender PID.
+Only then does `CredWriteW` use the product's `OpenNavX/AISStream/v1` target with
+per-user local-machine persistence. Readback must match. A different existing
+key is preserved and the import refuses replacement. Managed/unmanaged transfer
+buffers are cleared. No key hash or byte sequence enters evidence.
+
+`-TestOnly` uses and removes an isolated random test credential, including native
+same-value/different-value tests. Thirteen portable framing/parser checks and
+seventeen native checks pass on the actual desktop; native CI retains its own
+disposable test gate. Initial SSH and cross-logon inspection failures are kept
+as negative evidence. `probe-online-ais-desktop.ps1` runs the existing pinned,
+dependency-verified, internet-only probe in that credential context. It does
+not launch OpenCPN, access its profile, or operate vessel hardware. Its 45-second
+result contains aggregate counters only. Temporary tasks are removed.

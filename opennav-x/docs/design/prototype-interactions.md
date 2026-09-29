@@ -13,6 +13,7 @@ to native behavior; it does not authorize mock hardware or installer actions.
 | Waypoint / edit / remove | Existing identity-based waypoint commands | Back to selected point; removal confirmation, shared persistence |
 | Create passage / undo / finish | Existing OpenCPN route-creation state | Undo one point; confirm discard; name before save |
 | Traffic / list / target | Owned aggregated AIS state; onboard CPA/TCPA retained | Target Back to list; source/age visible; lost target cannot appear current |
+| Traffic / Online AIS settings / Set AISStream key | User-requested production extension; password-masked native input and protected per-user credential adapter | Save does not enable; Cancel/Escape preserve existing key; replacement starts empty; removal requires confirmation |
 | Chart target selection | Current target identity; separate online overlay | Target drawer directly; Back to list; Show on chart closes drawer after a validated jump and retains highlight |
 | Energy | Existing advisory model and valid Vessel Data/route inputs | Root Close; stale required input suppresses dependent predictions |
 | Instruments / metric | Vessel Data assessment, configurable four rail slots | Close; editing a slot returns to rail configuration |

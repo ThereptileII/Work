@@ -1,0 +1,64 @@
+{
+  "scope": "Read-only live internet AIS probe only; no chart or UI acceptance",
+  "toolCommit": "c86c6a7558bfa028fcb6de36b11f6a2a875a22b7",
+  "ciRun": "https://github.com/ThereptileII/Work/actions/runs/36485693077",
+  "utc": "2026-09-29T05:19:24.6491551Z",
+  "result": {
+    "commit": "c86c6a7558bfa028fcb6de36b11f6a2a875a22b7",
+    "exitCode": 0,
+    "region": "oresund",
+    "subscriptionConfirmed": true,
+    "peakTargetCount": 41,
+    "acceptedReports": 54,
+    "rejectedReports": 0,
+    "reconnects": 0,
+    "disabledAndCleared": true,
+    "chartOrUiAccepted": false
+  },
+  "credential": {
+    "store": "Windows Credential Manager",
+    "target": "OpenNavX/AISStream/v1",
+    "scope": "interactive user, local machine, non-roaming",
+    "import": "User-authorized source file; bounded binary SSH stdin and ACL-restricted local named pipe; verified readback",
+    "keyInArgumentsEnvironmentFilesLogsOrEvidence": false,
+    "existingDifferentCredential": "preserved; import refused",
+    "temporaryFakeCredential": "removed"
+  },
+  "connectionStates": [
+    "offline",
+    "connecting",
+    "subscribing",
+    "connected"
+  ],
+  "connectedAfterMs": 647,
+  "aggregateSha256": "f50723532c1027089920f8b7d49c4b15ac148da21d64f2486419878ebded45ae",
+  "closed": {
+    "stderrBytes": 0,
+    "probeProcesses": 0,
+    "openCpnProcesses": 0,
+    "temporaryTasks": 0
+  },
+  "negativePreparation": [
+    "Initial SSH-only disposable credential test failed: SSH logon cannot access interactive Credential Manager. No production credential was read or written.",
+    "Initial fake-pipe handoff rejected sender session query across logon integrity levels. Exact live sender PID replaces that redundant query; receiving desktop process still verified by session and executable."
+  ],
+  "limitations": [
+    "Observed traffic was a 45-second bounded session in the Oresund test region. No traffic identity, position or secret retained in this evidence.",
+    "No live chart target selection, network-loss/reconnect or physical display conformance yet.",
+    "This approved isolated probe is from c86c6a7, not the latest incomplete product qualification."
+  ],
+  "productProfileChanged": false,
+  "marineHardwareCommands": 0,
+  "correctiveImportValidation": {
+    "portableChecks": 13,
+    "nativeChecks": 17,
+    "realDesktopHandoffPassed": true,
+    "productionCredentialAccessedByTests": false,
+    "sources": {
+      "AisCredentialImport.cs": "efd5ea06a9993a450096c94652a068fb1aee38512c602433216207649036f71c",
+      "AisCredentialPipe.cs": "94fedf74b01448cf24e96e834cddf8550ac6432dd62d57c6ab28b326f9d6e46e",
+      "import-ais-desktop-credential.ps1": "c4ef506d4a22bbdc5022292e9baf767030a397f683399b8c4133a12da41eb714",
+      "test-ais-credential-import.ps1": "a5201695145d79a041e0e3cc79360bd96885ed225179f5959634ec7e7f7c6a31"
+    }
+  }
+}

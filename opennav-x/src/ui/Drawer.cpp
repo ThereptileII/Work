@@ -1,6 +1,7 @@
 #include "ui/Drawer.h"
 #include "ui/PrototypeGeometry.h"
 #include <wx/dcbuffer.h>
+#include <wx/dialog.h>
 #include <wx/frame.h>
 #include <wx/graphics.h>
 #include <wx/sizer.h>
@@ -156,6 +157,13 @@ void XNavDrawer::PaintHeading(wxPaintEvent &) {
 int XNavDrawer::FilterEvent(wxEvent &event) {
   if (!IsShownOnScreen() || !IsEnabled())
     return Event_Skip;
+  // GTK may keep an owned drawer logically enabled while its modal child
+  // blocks input. Escape belongs to that modal; it must not navigate the
+  // underlying drawer or leave the password prompt orphaned.
+  for (auto *window : wxTopLevelWindows)
+    if (auto *dialog = dynamic_cast<wxDialog *>(window);
+        dialog && dialog->IsModal())
+      return Event_Skip;
   if (event.GetEventType() == wxEVT_CHAR_HOOK) {
     const auto *key = dynamic_cast<wxKeyEvent *>(&event);
     if (key && (key->GetKeyCode() == WXK_ESCAPE ||

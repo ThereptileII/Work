@@ -84,7 +84,8 @@ try {
         acceptedReports=[int]$Result[0].accepted_reports;rejectedReports=[int]$Result[0].rejected_reports;
         reconnects=[int]$Result[0].reconnects;disabledAndCleared=[bool]$Result[0].disabled_and_cleared;
         chartOrUiAccepted=$false}
-    $Summary | ConvertTo-Json | Set-Content -LiteralPath (Join-Path $Evidence 'summary.json') -Encoding UTF8
+    $Summary | ConvertTo-Json | Set-Content -LiteralPath (Join-Path $Evidence 'summary.json.tmp') -Encoding UTF8
+    [IO.File]::Move((Join-Path $Evidence 'summary.json.tmp'),(Join-Path $Evidence 'summary.json'))
     $Summary | ConvertTo-Json -Compress
     if ($ExitCode -ne 0) { exit $ExitCode }
 } finally { $env:PATH = $OldPath }

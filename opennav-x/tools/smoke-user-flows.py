@@ -176,11 +176,12 @@ def data(predicate=lambda d: True, timeout=20):
                           last.get('runtime', {}).get('display', {})))
 
 
-def control(label, enabled=True):
+def control(label, enabled=True, accessible_name=None):
     selected = []
     def ready(record):
         selected[:] = [row for row in record.get('runtime', {}).get('display', {}).get('interaction_controls', [])
-                       if row['label'] == label and row['visible'] and row['enabled']==enabled]
+                       if row['label'] == label and row['visible'] and row['enabled']==enabled
+                       and (accessible_name is None or row.get('accessible_name')==accessible_name)]
         # The owned modal is traversed after its underlying page. A confirmed
         # action can intentionally share its caption with that page action.
         return len(selected) == 1 or (len(selected) > 1 and any(
@@ -213,8 +214,8 @@ def physical_click(x, y, right=False):
     time.sleep(.65)
 
 
-def click(label):
-    rectangle = control(label)
+def click(label, accessible_name=None):
+    rectangle = control(label, accessible_name=accessible_name)
     report.setdefault('interactions', []).append({'action': label, 'bounds': rectangle})
     physical_click(rectangle['x'] + rectangle['width'] // 2,
                    rectangle['y'] + rectangle['height'] // 2)
@@ -239,7 +240,8 @@ def escape():
 
 
 def no_context(record):
-    return not any(r['label'] == 'Waypoint' and r['visible'] for r in record['runtime']['display']['interaction_controls'])
+    return not any(r['label'] == 'Waypoint' and r.get('accessible_name')=='Waypoint' and r['visible']
+                   for r in record['runtime']['display']['interaction_controls'])
 
 
 def type_name(title, value):
@@ -266,9 +268,24 @@ def capture(name):
 
 
 def catalog(page):
-    click('Menu')
-    data(lambda d: d['ui_page'] == 'Menu')
-    click(page)
+    click('Passage')
+    data(lambda d:d['ui_page']=='Route' and 'drawer' in d['runtime']['display'])
+    for _ in range(12):
+        current=data()['runtime']['display']
+        if any(c['label']=='Passage library' and c['visible'] and c['enabled'] for c in current['interaction_controls']):
+            break
+        drawer=current['drawer'];x=drawer['x']+drawer['width']//2;y=drawer['y']+drawer['height']//2
+        if windows:
+            assert ui.SetCursorPos(x,y)
+            target=ui.WindowFromPoint(ui.W.POINT(x,y));owner=ui.W.DWORD()
+            ui.GetWindowThreadProcessId(target,ui.C.byref(owner));assert owner.value==app.pid
+            ui.MouseEvent(0x0800,0,0,(-240)&0xffffffff,0)
+        else:xdo('mousemove',x,y,'click',5,'click',5)
+        time.sleep(.4)
+    else:raise AssertionError('Passage library cannot be reached by ordinary drawer scrolling')
+    click('Passage library')
+    data(lambda d:d['ui_page']=='Routes')
+    if page=='Waypoints':click('Waypoints')
     data(lambda d: d['ui_page'] == page)
 
 
@@ -332,18 +349,18 @@ try:
     capture('01-navigation')
     initial_chart = data()['runtime']['display']['chart_region']
     chart_click(.73, .22, right=True)
-    control('Waypoint')
+    control('Waypoint', accessible_name='Waypoint')
     chart_click(.72, .74)
     data(no_context)
     chart_click(.73, .22, right=True)
-    control('Waypoint')
+    control('Waypoint', accessible_name='Waypoint')
     escape()
     data(no_context)
     report['checks'].append('Chart card dismisses by outside pointer press and Escape without changing navigation')
     chart_click(.73, .22, right=True)
-    control('Waypoint')
+    control('Waypoint', accessible_name='Waypoint')
     capture('02-chart-context')
-    click('Waypoint')
+    click('Waypoint', accessible_name='Waypoint')
     capture('02b-waypoint-sheet')
     type_name('Create waypoint', 'UI passage destination')
     click('Save')

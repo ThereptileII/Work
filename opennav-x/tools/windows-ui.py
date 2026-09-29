@@ -31,6 +31,7 @@ MouseEvent = declare(user, 'mouse_event', None, W.DWORD, W.DWORD, W.DWORD, W.DWO
 GetWindowRect = declare(user, 'GetWindowRect', W.BOOL, W.HWND, C.POINTER(W.RECT))
 GetClientRect = declare(user, 'GetClientRect', W.BOOL, W.HWND, C.POINTER(W.RECT))
 GetParent = declare(user, 'GetParent', W.HWND, W.HWND)
+IsChild = declare(user, 'IsChild', W.BOOL, W.HWND, W.HWND)
 ScreenToClient = declare(user, 'ScreenToClient', W.BOOL, W.HWND, C.POINTER(W.POINT))
 ChildWindowFromPointEx = declare(user, 'ChildWindowFromPointEx', W.HWND, W.HWND, W.POINT, W.UINT)
 GetDpiForWindow = declare(user, 'GetDpiForWindow', W.UINT, W.HWND)
@@ -285,12 +286,14 @@ def assert_page_geometry(handle, child, horizon=False):
     Alerts share the fixed status row; neither rail nor chart loses height.
     Native pane edges, minimum usable area and occlusion remain mandatory.
     """
-    labels = children(handle)
+    # Advanced pages can legitimately contain another System/Configure
+    # instruments action. Only shell siblings define the page's outer bounds;
+    # exclude every descendant, not just one assumed parent/grandparent level.
+    labels = [(h,caption) for h,caption in children(handle) if not IsChild(child,h)]
     navigation = [h for h, caption in labels if caption == 'Chart']
     alerts = [h for h, caption in labels if re.fullmatch(r'Alerts(?: \d+)?',caption)]
     system = [h for h, caption in labels if caption == 'System']
-    rail = [h for h, caption in labels if caption == 'Configure instruments'
-            and GetParent(GetParent(h)) != child]
+    rail = [h for h, caption in labels if caption == 'Configure instruments']
     assert len(navigation) == len(alerts) == len(system) == len(rail) == 1
     def bounds(window):
         value = W.RECT()
