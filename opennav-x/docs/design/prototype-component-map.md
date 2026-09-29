@@ -31,6 +31,8 @@ in [prototype conformance](prototype-conformance.md).
 | `.energy-grid`, `.energy-gauge`, `.battery-visual`, `.power-row` | `XNavPreviewPanel` Energy view / `XNavPainter` | Computed primary card geometry, native battery and tested model endpoint; lower Explore pace migration pending |
 | `.settings-tabs` | `XNavSettingsDrawer` / `XNavButton::SetSettingsTab` | Eight native sections, exact 37px rows and five-pixel gaps; fractional DirectWrite layout and matching native paint on Windows; preserved selection |
 | `.settings-intro`, `.suite-link` | `XNavPainter::Wrapped` / `XNavButton::SetSuiteLink` | Bounded native text and actual clickable sensor/settings links; no mock connection counts |
+| `.anchor-graphic`, `.anchor-distance` | `XNavAnchorDrawer` / `AnchorView` | Copied upstream watch distance and projected observed history; no illustrative trail or invented heading |
+| `#anchorRadius` | `XNavRange` | Native stepped pointer/keyboard input; pending radius only; explicit confirmed watch commands |
 
 All geometry is measured from the final CSS cascade at the target viewport;
 earlier CSS declarations are sometimes superseded. The capture manifest records

@@ -329,8 +329,9 @@ def assert_preview_page(handle, page):
     return {'page': page, 'native_pixels': dimensions, 'visible_and_uncovered': True}
 
 def assert_product_page(handle, page):
-    if page in ('Settings', 'AIS targets'):
-        return assert_prototype_drawer(handle, 'OpenNav preferences' if page == 'Settings' else 'OpenNav vessel traffic')
+    drawers={'Settings':'OpenNav preferences','AIS targets':'OpenNav vessel traffic','Anchor watch':'OpenNav anchor watch'}
+    if page in drawers:
+        return assert_prototype_drawer(handle,drawers[page])
     label='OpenNav product page: '+page
     matches=[child for child,caption in children(handle) if caption==label]
     assert len(matches)==1,f'Visible XNav page not found: {label}'

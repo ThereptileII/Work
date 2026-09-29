@@ -1,0 +1,108 @@
+{
+  "scope": "Linux development only; Windows and boat acceptance pending",
+  "sourceBase": "b7c4b35bb545e064388916794b7d5fad28f872ab",
+  "modifications": "Anchor drawer, owned observation/history, and regression synchronization correction",
+  "productionIntegrated": {
+    "passed": 128,
+    "failed": 0,
+    "seconds": 31.17
+  },
+  "component": {
+    "passed": true,
+    "checks": 34,
+    "captures": [
+      "anchor-day",
+      "anchor-dusk",
+      "anchor-night",
+      "anchor-stale-day",
+      "anchor-inactive-day"
+    ],
+    "source_commit": "b7c4b35bb545e064388916794b7d5fad28f872ab",
+    "executable_sha256": "5c1fa1bf6009620c67f3a162b560a65995edac2f71bdf983d359de386e42d44c",
+    "platform": "linux",
+    "conformance": "PENDING: inspect reference/current/diff; no similarity waiver",
+    "screenshots": {
+      "anchor-day": "4c9be58fd40a26f3d65b696e02bfc477522d4008a108a51478be4aff0e88dcd1",
+      "anchor-dusk": "c63563f3ea14a4c4e10103c8d7a9b883fcc58bae7d7efcd7ac2dcdf5c7e33c30",
+      "anchor-night": "e026486d21328d893c7c64492145e7a27cbecddd9ce6fb3489b7611d71ffadb3",
+      "anchor-stale-day": "a082b742e6873323c3519f54c58f021fe2ab75ccf86241879f0ddd071f33f246",
+      "anchor-inactive-day": "242103b53ec647176e88669b1ec075ff26195abc78888a49da54bbdaac8ab9bd"
+    }
+  },
+  "product": {
+    "result": "captured; conformance not asserted",
+    "exit_code": 0,
+    "anchor_flow": "Owned watch sheet; theme cycle; Close restores unchanged chart viewport; no navigation commands",
+    "settings_flow": "Wide preferences sheet; eight sections; theme cycle; Sensors/Display/System; Close retains chart",
+    "executable_build_commit": "b7c4b35bb545e064388916794b7d5fad28f872ab"
+  },
+  "files": {
+    "src/application/NavigationObjects.h": "f729e890783650ff7ce477c37e1bfe5bf0495d5e6d8c6ceb75dbc70110a3a984",
+    "src/application/AnchorView.cpp": "fd74e47d36d98db20d13e9f54d7d5e620134f739dd57207941dd222e4f3ce810",
+    "src/application/AnchorView.h": "73c59786d757fcb9dda44a55b57736f49a0d73095822bde00c9b6bb839e5a5db",
+    "src/integration/AnchorGeometry.cpp": "f945150ef7a3d9eea4527c176b526cabb831835e70923edc8ef8b9b169d88f86",
+    "src/integration/AnchorGeometry.h": "15e7492a8fc1fe9a54032fc05c77b96d3347bd2f65b5f4a08a7f5c7f7559677e",
+    "src/integration/NavigationObjects.cpp": "02e5c142a49cc73cc8246c36d0a11868a1a3f0c8ec36b025fdf956e69e00738f",
+    "src/integration/OpenCPNIntegration.cpp": "23d1f48a8aee19417314e0ed8c489f022418fb648e5a5372e56768a2b8c602bc",
+    "src/ui/AnchorDrawer.cpp": "9a4e49b2c361f08973fa146e09efdee5fa61ab0465085b2526c0debf72e5e96f",
+    "src/ui/AnchorDrawer.h": "826050b311e30379cd0762a8ae7218154d5ed2c59bb99338329d5a320580e68e",
+    "src/ui/Range.cpp": "dfbefe9151cb5907854e4c0d7bc58fe9ae13455a015ebc9ed24f64d644c2820c",
+    "src/ui/Range.h": "c024cd2cbe0ae2d3509232af59ba74072c19bc920dc73e50c0ed4decdbbb1caa",
+    "tests/anchor_view_tests.cpp": "0e01d0a8b4dc09f330016dd353a4736f3b9f573af2b7703c4cf8ef109eb9a402",
+    "tests/anchor_geometry_upstream_tests.cpp": "356a3a140b7a7ac1677bfebf495f61874e70a7a796721524a463b1a1838369b4",
+    "tests/anchor_drawer_test.cpp": "c11bb5217f7e858370503496f30b3bab05306fa0b7223b9cd4e372abb27270a5",
+    "src/ui/ProductPanel.cpp": "f354f2383d18444f2bd6d7ea27abd4c57c083032ac653b8c7df0105d65a41479",
+    "src/ui/ProductPanel.h": "2a2fffc5ac009f6dbff01a8d848adb7542b5033a73c4d050c6664bb64dce2749",
+    "src/ui/Shell.cpp": "93233a0d5398f808b4cf5d56445a48e7c951595450e4088a0320fe33cbbaf92c",
+    "src/ui/Shell.h": "29bea39737fd4e3fbf1fb896472bf332b13daf990c662ba22d74a17ef00b00d5",
+    "tests/NavigationObjectScenario.cpp": "c124ddfdb145d7aae626ceb184783556964822d6d4bf2b9e03632698fb3d4c5d"
+  },
+  "screenshots": {
+    "anchor-component-correction/anchor-day.png": "4c9be58fd40a26f3d65b696e02bfc477522d4008a108a51478be4aff0e88dcd1",
+    "anchor-component-correction/anchor-dusk.png": "c63563f3ea14a4c4e10103c8d7a9b883fcc58bae7d7efcd7ac2dcdf5c7e33c30",
+    "anchor-component-correction/anchor-night.png": "e026486d21328d893c7c64492145e7a27cbecddd9ce6fb3489b7611d71ffadb3",
+    "anchor-component-correction/anchor-stale-day.png": "a082b742e6873323c3519f54c58f021fe2ab75ccf86241879f0ddd071f33f246",
+    "anchor-component-correction/anchor-inactive-day.png": "242103b53ec647176e88669b1ec075ff26195abc78888a49da54bbdaac8ab9bd",
+    "anchor-native-correction/navigation-day.png": "1b9119ce1645e7c637ab9bfea78f41e7d708b0b9ebbef66403b3cdc0a92406bd",
+    "anchor-native-correction/navigation-dusk.png": "8785125d1550eb1ba194bebbb61b8d467614c4320a646a8d3d12c2c9f4fff31f",
+    "anchor-native-correction/navigation-night.png": "97a8fab4969cc1c0e15931815dd476a26b3a5e22c9e454dc74f26b8e20c4e256",
+    "anchor-native-correction/passage-day.png": "3fa4e43fc44a522869b4c2901d9c71578c8fe79848e86073f69321f627af59f9",
+    "anchor-native-correction/passage-dusk.png": "69955de50f7706dc68d17f1c52afc3038003be6911c90cb07577fd74efa8a71f",
+    "anchor-native-correction/passage-night.png": "e11efdfe0c81f2ac513fded434769827cb114f7050bad251fc676b3c60914a4c",
+    "anchor-native-correction/traffic-day.png": "632e97fb6ba938e2b38cf3d24e146885eef4cf6173bd1530599d7ea5194ad1c4",
+    "anchor-native-correction/online-ais-settings-day.png": "331a42e83bd0e8ad08007f17abaa8a0f2d7385521b615ea91cf59028cbd6fdaf",
+    "anchor-native-correction/online-ais-key-needed-day.png": "52f62e84ffa86b72d27fd1a0c6b6d9257158f14d5d0ea7a04485e1cbb2dfb9b7",
+    "anchor-native-correction/online-ais-settings-dusk.png": "f52694380adc00a3d965d613aaab71032d7d087dbeca79500dc69acd657dec8c",
+    "anchor-native-correction/online-ais-settings-night.png": "3983bec171281556d85e726e3c7f203e8bfc163b8a2a9342bbf54d829b8be5f9",
+    "anchor-native-correction/energy-day.png": "a0be97b61ed93ccf8e5d4e8211a669cb0646b775967fdfdc4046217a7dc02436",
+    "anchor-native-correction/instruments-day.png": "28c1b5e44012983f5aebd38d7ccd12beb4fbc5e4f73da1dd1b05c0642489aa48",
+    "anchor-native-correction/instruments-dusk.png": "a75d9c05e5e6170600a8e19527f0751295a52e6ddaf990f51b6f2a24d626f1e6",
+    "anchor-native-correction/instruments-night.png": "de8e4e8e1f88a5cc4c25deaf7e1d3773714ef9dc0091200f56abfab7092a864e",
+    "anchor-native-correction/anchor-day.png": "0ee10626b51f90c806e61d302777b3d722bdd2d693e3cecd1c30e6d619dbe79c",
+    "anchor-native-correction/anchor-dusk.png": "2662210fe04aa90b69e6a544993c3f980bd71d90028e69a4daf9b794ceaedc90",
+    "anchor-native-correction/anchor-night.png": "7d06546c9442f42419171df8e6dc29696c345c342d4517af6cffb827fa37a9f8",
+    "anchor-native-correction/settings-day.png": "9436deb117db4b8a9b40047c233c1ffd97af72abf2c29942a3f885fee263f77a",
+    "anchor-native-correction/settings-dusk.png": "239cd8cdfbaccb571645de85abf19ca5a9fa71a2c487efd44b31bf00c5059993",
+    "anchor-native-correction/settings-night.png": "492055215a7fece7ea960f28055c59d3aab8b4c1c80d60c60ae8837650a04c11",
+    "anchor-native-correction/sensors-day.png": "e3306b609a11969df07003e29473274ee54d124cee666c278af503ea9369dca3",
+    "anchor-native-correction/display-day.png": "45e78330ca450d56e38518d722fead8916219b88afb6a78fddcc67169e283e56",
+    "anchor-native-correction/system-day.png": "eb656342626783471081b1d99f5d6814ad99440eb74784a9a373e7ad80b16c59"
+  },
+  "boatPresence": {
+    "reachable": true,
+    "openCpnProcesses": 0,
+    "actions": "Read-only reachability/process count; no launch, deployment or equipment commands",
+    "observedByUtc": "2026-09-29T02:58:42Z"
+  },
+  "previousPasses": {
+    "production": {
+      "passed": 128,
+      "seconds": 19.79
+    },
+    "component": {
+      "checks": 34,
+      "captures": 5
+    },
+    "productCaptures": 24
+  }
+}

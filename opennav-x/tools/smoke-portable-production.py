@@ -39,7 +39,7 @@ def module(name):
 ui = module('windows-ui')
 charts = module('chart-render-check')
 startup_log = module('startup-log')
-report['display'] = ui.ensure_desktop()
+report['display'] = ui.ensure_desktop(1440,900)
 normal_locations = []
 for key in ('APPDATA', 'LOCALAPPDATA', 'PROGRAMDATA'):
     if os.environ.get(key):

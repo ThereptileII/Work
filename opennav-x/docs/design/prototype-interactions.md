@@ -16,7 +16,7 @@ to native behavior; it does not authorize mock hardware or installer actions.
 | Chart target selection | Current target identity; separate online overlay | Target drawer directly; Back to list; Show on chart closes drawer after a validated jump and retains highlight |
 | Energy | Existing advisory model and valid Vessel Data/route inputs | Root Close; stale required input suppresses dependent predictions |
 | Instruments / metric | Vessel Data assessment, configurable four rail slots | Close; editing a slot returns to rail configuration |
-| Anchor | Existing OpenCPN anchor-watch boundary | Explicit arm/disarm; no claim of advanced drag detection |
+| Anchor / anchor alert | One `XNavAnchorDrawer`, owned OpenCPN watch/projection | Proposed radius does not arm; start/stop confirmed; GPS loss withholds current position/distance; Close/Escape restores chart |
 | Autopilot summary | Existing adapter state and manual command gate | Default output disabled; actual acknowledgement only; no remote physical commands |
 | Radar | Adapter availability/capabilities | Unavailable when absent; no synthetic sweep or transmitter command |
 | Health / Sensors | Existing source registry and diagnostics | Nested source Back, root Close; online AIS separate from onboard |

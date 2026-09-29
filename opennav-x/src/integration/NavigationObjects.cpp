@@ -1,4 +1,5 @@
 #include "integration/NavigationObjects.h"
+#include "integration/AnchorGeometry.h"
 #include "integration/AisObservationTime.h"
 #include "MarkInfo.h"
 #include "RoutePropDlgImpl.h"
@@ -605,10 +606,15 @@ application::AnchorState ObserveAnchor(const vessel::Navigation &position,
     double bearing, distance;
     DistanceBearingMercator(point->m_lat, point->m_lon, gLat, gLon, &bearing,
                             &distance);
-    if (std::isfinite(distance) && distance >= 0)
+    if (std::isfinite(distance * 1852) && distance >= 0) {
       s.distance_m = {distance * 1852, s.source,
                       position.latitude_deg.observed_at,
                       vessel::Validity::Measured};
+      s.distance_m.freshness = position.latitude_deg.freshness;
+      s.vessel_position = ProjectAnchorPosition(*s.anchor, {gLat,gLon},
+                                                position.latitude_deg.observed_at,
+                                                position.latitude_deg.source);
+    }
   } else
     s.state = "Position unavailable/stale; anchor watch needs attention";
   return s;

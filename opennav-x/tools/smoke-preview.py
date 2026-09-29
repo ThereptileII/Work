@@ -49,7 +49,10 @@ if windows:
     for key in ['ProgramFiles','ProgramFiles(x86)']:
         if os.environ.get(key): normal_locations.append(Path(os.environ[key])/'OpenCPN')
     normal_before=normal_snapshot()
-    ui=module('windows-ui');report['display']=ui.ensure_desktop()
+    # The application capture remains 1280x800. Leave room for its native
+    # caption/frame and the runner taskbar so real pointer input cannot hit
+    # Windows' clock over the application's footer.
+    ui=module('windows-ui');report['display']=ui.ensure_desktop(1440,900)
     package=temp/'OpenNavX-CI-Fixtures';profile=package/'profile';logs=package/'logs';exe=package/'app/opencpn.exe'
     shutil.copytree(args.install,package/'app')
     if not args.runtime or not args.runtime.is_dir():raise SystemExit('Native app-local runtime directory required')

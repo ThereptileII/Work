@@ -698,3 +698,14 @@ accepted route, advisory and energy publications and uses existing copied
 `NavigationActions` for explicit human actions. `OpenCPN.cmake` attaches a new
 provenance regression and a non-installed offline widget executable; neither
 introduces synthetic data into the fixture-free product.
+
+### Native Anchor drawer
+
+No additional direct upstream hook. The existing post-`ProcessAnchorWatch`
+observer copies bounded movement history using `integration/AnchorGeometry` and
+the pinned `DistanceBearingMercator`. Anchor move/deletion clears incompatible
+history. New `AnchorView` requires the current selected GPS source/time/coordinate
+to match before exposing retained distance. Neither the native range control nor
+paint invokes progress, alarm processing or navigation commands. Existing signed
+radius/alarm semantics and confirmed start/clear commands remain unchanged.
+See [owned anchor contract](anchor-presentation-contract.md).

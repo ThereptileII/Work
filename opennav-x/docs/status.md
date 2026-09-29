@@ -2,6 +2,28 @@
 
 ## Current stage: prototype design lock, chart presentation and Online AIS
 
+Native `314e0677` / run `36513102807` passes both 115-test MSVC suites,
+113 Preferences component checks and the exact 100/125/150% development drawer
+probe. Downloaded Windows pixels show complete tab labels. Six of eight jobs
+pass overall: composition stops on an old diagnostic publication after Close
+(the retained image shows the restored chart), and the broader fixture test
+hits Windows' taskbar over System. Replacement harnesses wait for the semantic
+close publication and leave desktop room around the unchanged 1280×800 capture.
+No assertion is waived. Eight artifact digests/CRCs and 108 capture hashes are
+retained in [negative evidence](evidence/prototype-native-314e067-failed.json).
+
+The prototype Anchor drawer is implemented locally using owned OpenCPN watch
+observations. New provenance/history and pinned-Mercator projection tests bring
+the production Linux suite to 128/128 (31.17s on the corrective pass); the isolated native component
+passes 34 checks and five captures, including confirmation cancellation and
+stale GPS. Two integrated passes each retain 24 product captures; the second
+confirms all three Anchor themes and Close restoring the chart. The fixture
+build passes and its full lifecycle/input regressions are running; native
+replacement captures remain required. See the
+[anchor review](design/reviews/prototype-anchor-in-progress.md) and
+[data contract](anchor-presentation-contract.md). The boat is reachable with
+OpenCPN closed; no prototype deployment, hardware output or visual acceptance.
+
 The compact Preferences correction passes exact drawer rectangles against the
 independent HTML at all four Linux resize checkpoints. Production and fixture
 suites pass 123/123 (19.74s and 19.25s); 45 local component/product/layout PNGs

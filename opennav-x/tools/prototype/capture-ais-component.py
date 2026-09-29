@@ -21,7 +21,7 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--client", type=Path, required=True)
     parser.add_argument("--output", type=Path, required=True)
-    parser.add_argument("--component", choices=["ais", "passage", "instruments", "energy", "settings"], default="ais")
+    parser.add_argument("--component", choices=["ais", "passage", "instruments", "energy", "settings", "anchor"], default="ais")
     args = parser.parse_args()
     args.client = args.client.resolve()
     args.output = args.output.resolve()
@@ -64,7 +64,7 @@ def main():
         if result.returncode:
             raise RuntimeError(f"Component interactions failed ({result.returncode}); inspect interaction.log")
         record = json.loads((args.output / "result.json").read_text())
-        minimum, images = {"ais": (40, 9), "passage": (26, 5), "instruments": (41, 5), "energy": (44, 7), "settings": (90, 12)}[args.component]
+        minimum, images = {"ais": (40, 9), "passage": (26, 5), "instruments": (41, 5), "energy": (44, 7), "settings": (90, 12), "anchor": (30, 5)}[args.component]
         assert record["passed"] and record["checks"] >= minimum
         assert len(record["captures"]) == images
         record["source_commit"] = subprocess.check_output(

@@ -1,4 +1,5 @@
 #include "integration/OpenCPNIntegration.h"
+#include "application/AnchorView.h"
 #include "integration/BuildFeatures.h"
 #include "integration/DashboardPresentation.h"
 #include "integration/DashboardPresentationApi.h"
@@ -865,11 +866,7 @@ void AfterAnchorWatch(){
     recovery->ObserveHealthy(g_bDeferredInitDone, vessel::Clock::now());
   if(!navigation)return;
   auto current=integration::ObserveAnchor(selected_navigation.navigation,vessel::Clock::now());
-  if(current.waypoint_id==anchor_state.waypoint_id)current.recent_positions=anchor_state.recent_positions;
-  if(current.distance_m.value && selected_navigation.navigation.latitude_deg.observed_at>anchor_state.distance_m.observed_at){
-    current.recent_positions.push_back({{*selected_navigation.navigation.latitude_deg.value,*selected_navigation.navigation.longitude_deg.value},selected_navigation.navigation.latitude_deg.observed_at});
-    if(current.recent_positions.size()>300)current.recent_positions.erase(current.recent_positions.begin());
-  }
+  application::RetainAnchorHistory(current,anchor_state);
   anchor_state=std::move(current);
 }
 bool ShowNavigationObjectCard(const std::string& id,bool route){if(!IsXNav()||!shell||!host)return false;host->CallAfter([id,route]{if(shell)shell->ShowObject(id,route);});return true;}

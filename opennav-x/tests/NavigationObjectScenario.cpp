@@ -827,6 +827,11 @@ void ObjectScenarioStep(const vessel::Navigation &selected) {
                 watch.radius_m == 50,
             "Normal upstream anchor result copied");
       Check(!watch.alarm, "At-anchor fixture not an alarm");
+      Check(watch.vessel_position && watch.vessel_position->east_m &&
+                watch.vessel_position->north_m &&
+                watch.vessel_position->observed_at == selected.latitude_deg.observed_at &&
+                watch.vessel_position->position_source == selected.latitude_deg.source,
+            "Anchor plot copies the selected GPS source/time through integration");
       Check(ClearAnchor(anchor_id).ok, "Clear upstream watch");
       Check(!ClearAnchor(anchor_id).ok, "Cleared watch cannot be reused");
       Check(!pWayPointMan->FindWaypointByGuid(anchor_id),

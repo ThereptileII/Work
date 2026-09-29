@@ -82,3 +82,14 @@ See [wxWidgets 3.2.8 text layout and paint](https://github.com/wxWidgets/wxWidge
 The complete caption remains readable through GDI fallback if the graphics
 context fails; fallback does not qualify typography. Replacement native pixels
 and the retained strict one-pixel bounds gate remain mandatory.
+# Native replacement `314e0677`
+
+Both native integrated suites pass 115/115; Preferences passes 113 checks,
+including independent fractional text advances. Reviewed downloaded pixels now
+show all eight labels in full. The 100/125/150% development probe passes exact
+drawer bounds. Full native acceptance remains blocked by the composition test's
+close-publication race and the retained preview test's Windows taskbar intercept.
+These are recorded in [negative evidence](../../evidence/prototype-native-314e067-failed.json),
+with replacement semantic waiting/desktop bounds required. The screenshot at the
+close failure shows the restored chart; a stale diagnostic publication still
+described the earlier drawer. No failed assertion has been waived.

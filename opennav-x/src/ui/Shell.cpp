@@ -387,6 +387,7 @@ Shell::Shell(wxFrame &frame, wxAuiManager &manager, ShellActions actions,
     }
   };
   product_actions.route_summary = [this] { ShowPassage(); };
+  product_actions.anchor_watch = [this] { ShowAnchor(); };
   product_actions.energy = [this] { ShowPage(PreviewPage::Energy); };
   product_actions.diagnostics = [this] { ShowPage(PreviewPage::Diagnostics); };
   product_actions.legacy=actions_.legacy;
@@ -481,6 +482,7 @@ Shell::~Shell() {
   if (ais_drawer_) { ais_drawer_->Dismiss(); ais_drawer_->Destroy(); ais_drawer_ = nullptr; }
   if (passage_drawer_) { passage_drawer_->Dismiss(); passage_drawer_->Destroy(); passage_drawer_ = nullptr; }
   if (settings_drawer_) { settings_drawer_->Dismiss(); settings_drawer_->Destroy(); settings_drawer_ = nullptr; }
+  if (anchor_drawer_) { anchor_drawer_->Dismiss(); anchor_drawer_->Destroy(); anchor_drawer_ = nullptr; }
   for (const auto &c : commands_)
     frame_.Unbind(wxEVT_MENU, &Shell::OnCommand, this, c.first);
   frame_.SetAcceleratorTable(wxNullAcceleratorTable);
@@ -556,7 +558,7 @@ std::vector<ProductGeometry> Shell::InteractionControls() const {
     if (std::find(visited.begin(), visited.end(), window) != visited.end()) return;
     visited.push_back(window);
     const bool field = dynamic_cast<wxTextCtrl *>(window) != nullptr && window->IsShownOnScreen();
-    if (dynamic_cast<XNavButton *>(window) || field) {
+    if (dynamic_cast<XNavButton *>(window) || dynamic_cast<XNavRange *>(window) || field) {
       const auto rectangle = window->GetScreenRect();
       bool visible = window->IsShownOnScreen();
       for (auto *parent = window->GetParent(); parent && !parent->IsTopLevel();
@@ -818,6 +820,10 @@ void Shell::Tick() {
       p.anchor = actions_.navigation.anchor();
     else
       p.anchor.state = "Historical data / anchor controls unavailable";
+    if(anchor_drawer_&&anchor_drawer_->IsShown()) {
+      anchor_drawer_->Update(p.anchor,p.vessel,now,mode_);
+      anchor_drawer_->Present(DrawerWorkspace());
+    }
     if (actions_.pilot_tick)
       p.pilot = actions_.pilot_tick(simulation_, wall_now);
     if (actions_.pilot_log && !replay)
@@ -1016,6 +1022,7 @@ void Shell::UpdateScrollControls() {
 }
 
 std::string Shell::PageTitle() const {
+  if (anchor_drawer_ && anchor_drawer_->IsShown()) return "Anchor watch";
   if (settings_drawer_ && settings_drawer_->IsShown()) return "Settings";
   if (passage_drawer_ && passage_drawer_->IsShown()) return "Route";
   if (ais_drawer_ && ais_drawer_->IsShown()) return ais_drawer_->PageTitle();
@@ -1059,6 +1066,7 @@ void Shell::SelectDemo(vessel::DemoScenario scenario) {
 #endif
 void Shell::ShowNavigation() {
   CloseContext();
+  if (anchor_drawer_) anchor_drawer_->Dismiss();
   if (settings_drawer_) settings_drawer_->Dismiss();
   if (passage_drawer_) passage_drawer_->Dismiss();
   if (ais_drawer_) ais_drawer_->Dismiss();
@@ -1093,6 +1101,7 @@ void Shell::ShowNavigation() {
 void Shell::ShowProduct(ProductPage page) {
   if (page == ProductPage::Home || page == ProductPage::Settings) { ShowSettings(); return; }
   if (page == ProductPage::Ais) { ShowTraffic(); return; }
+  if (page == ProductPage::Anchor) { ShowAnchor(); return; }
   if (ais_drawer_) ais_drawer_->Dismiss();
   ShowPage(PreviewPage::Route);
   manager_.GetPane(page_).Hide();
@@ -1217,6 +1226,12 @@ void Shell::ShowSettings() {
   settings_drawer_->Present(DrawerWorkspace());
   Tick();
 }
+void Shell::ShowAnchor() {
+  ShowNavigation();
+  if(!anchor_drawer_)anchor_drawer_=new XNavAnchorDrawer(frame_,actions_.navigation);
+  anchor_drawer_->Present(DrawerWorkspace());
+  Tick();
+}
 void Shell::CloseContext() {
   if (context_) context_->Dismiss();
   context_ = nullptr;
@@ -1259,6 +1274,7 @@ void Shell::UpdateContext(vessel::Time now) {
 }
 void Shell::ShowPage(PreviewPage page) {
   CloseContext();
+  if (anchor_drawer_) anchor_drawer_->Dismiss();
   if (settings_drawer_) settings_drawer_->Dismiss();
   if (passage_drawer_) passage_drawer_->Dismiss();
   if (ais_drawer_) ais_drawer_->Dismiss();

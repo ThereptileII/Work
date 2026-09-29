@@ -36,6 +36,10 @@ struct WaypointContext {
 struct AnchorFix {
   Coordinate position;
   vessel::Time observed_at{};
+  // Metres east/north from the watched mark, projected inside integration
+  // using pinned OpenCPN bearing/range. UI must not recompute geodesy.
+  std::optional<double> east_m, north_m;
+  std::string position_source;
 };
 struct AnchorState {
   std::string waypoint_id, source, state;
@@ -45,6 +49,7 @@ struct AnchorState {
   bool alarm = false;
   vessel::Time observed_at{};
   std::vector<AnchorFix> recent_positions;
+  std::optional<AnchorFix> vessel_position;
 };
 // UI receives owned values and explicit human-command callbacks. The service
 // implementation remains inside the OpenCPN integration boundary.

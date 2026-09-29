@@ -1,0 +1,1339 @@
+{
+  "scope": "Prototype development evidence; failed overall. No release, boat, or visual conformance acceptance.",
+  "localCommit": "b7c4b35bb545e064388916794b7d5fad28f872ab",
+  "publishedCommit": "314e0677b66e58f70f563f7a92f68dc244dc402b",
+  "publishedTree": "b58c82bcfbd6a3e54fa2c141ebfc44a47d5944e3",
+  "verifiedSourceBlobs": 1119,
+  "run": "https://github.com/ThereptileII/Work/actions/runs/36513102807",
+  "jobsPassed": 6,
+  "jobsTotal": 8,
+  "builds": {
+    "fixtureFree": {
+      "MSVC": "passed",
+      "integratedTestsPassed": 115
+    },
+    "fixtures": {
+      "MSVC": "passed",
+      "integratedTestsPassed": 115
+    }
+  },
+  "artifacts": [
+    {
+      "id": 11010411493,
+      "name": "prototype-ais-foundation-Windows-314e0677b66e58f70f563f7a92f68dc244dc402b",
+      "sha256": "095b363e19374130cd7020009d3e96552009a90eaf138ec340b931987e164d1c",
+      "bytes": 690,
+      "zipCrc": true
+    },
+    {
+      "id": 11010147968,
+      "name": "prototype-native-Windows-314e0677b66e58f70f563f7a92f68dc244dc402b",
+      "sha256": "1d0ea882a0a625643452a87b68c0ec94030ae3a225904cfa5a5dc7c7e746f331",
+      "bytes": 13546747,
+      "zipCrc": true
+    },
+    {
+      "id": 11010022717,
+      "name": "prototype-reference-Linux-314e0677b66e58f70f563f7a92f68dc244dc402b",
+      "sha256": "9ad4f70a9dbbdf8607e6d26e4f5bb40fecfd42694f9c6d903eb7064dcb575065",
+      "bytes": 20835309,
+      "zipCrc": true
+    },
+    {
+      "id": 11009992658,
+      "name": "prototype-ais-foundation-Linux-314e0677b66e58f70f563f7a92f68dc244dc402b",
+      "sha256": "fab3a34fe9461b040eebc61711f5e4602f4918eb3f6abd84485c7231956a1940",
+      "bytes": 689,
+      "zipCrc": true
+    },
+    {
+      "id": 11009884983,
+      "name": "prototype-object-flow-Windows-314e0677b66e58f70f563f7a92f68dc244dc402b",
+      "sha256": "39b4fca51095d9e382fdf71e9ae8faa7ae579a25442a70b4c63b1633dd6ee218",
+      "bytes": 10354272,
+      "zipCrc": true
+    },
+    {
+      "id": 11009752035,
+      "name": "prototype-ais-network-Linux-314e0677b66e58f70f563f7a92f68dc244dc402b",
+      "sha256": "c83a298c36f7d2e14bc39b309d14ff68b168a124b507a6ae04314f293ede6816",
+      "bytes": 935,
+      "zipCrc": true
+    },
+    {
+      "id": 11009726971,
+      "name": "prototype-reference-Windows-314e0677b66e58f70f563f7a92f68dc244dc402b",
+      "sha256": "07ecd173691c3f4ed05e8b8f7c8570b9fb6b5af0125583a0695df6406474a7f1",
+      "bytes": 18779379,
+      "zipCrc": true
+    },
+    {
+      "id": 11009708368,
+      "name": "prototype-review-guard-Windows-314e0677b66e58f70f563f7a92f68dc244dc402b",
+      "sha256": "36f23c96323f3c54dce5bf604ab22bb2d6bfaf986be42ad3b98155ba50b7f707",
+      "bytes": 8921,
+      "zipCrc": true
+    }
+  ],
+  "components": {
+    "ais": {
+      "checks": 71,
+      "passed": true,
+      "captures": [
+        "traffic-day",
+        "ais-target-day",
+        "ais-target-dusk",
+        "ais-target-night",
+        "traffic-night",
+        "online-target-day",
+        "online-stale-day",
+        "online-lost-day",
+        "target-expired-day"
+      ],
+      "captureSha256": "7211a6e38feebe2af2c012dc2d43fde05b4a3cbb8c6efc9fd5005e9a17b2a2f0"
+    },
+    "passage": {
+      "checks": 26,
+      "passed": true,
+      "captures": [
+        "passage-day",
+        "passage-dusk",
+        "passage-night",
+        "passage-stale-day",
+        "passage-inactive-day"
+      ],
+      "captureSha256": "05f7fcc75a5d65cf499bb59034f194f3490001ab40f09097b2d39b25db4efdad"
+    },
+    "instruments": {
+      "checks": 41,
+      "passed": true,
+      "captures": [
+        "instruments-day",
+        "instruments-dusk",
+        "instruments-night",
+        "instruments-stale-day",
+        "instruments-heading-unavailable-day"
+      ],
+      "captureSha256": "d62c566a4b6b066957998864847960107cef50549e839c6b95264238160c16ce"
+    },
+    "energy": {
+      "checks": 44,
+      "passed": true,
+      "captures": [
+        "energy-day",
+        "energy-dusk",
+        "energy-night",
+        "energy-stale-day",
+        "energy-gps-unavailable-day",
+        "energy-shortfall-day",
+        "energy-inactive-day"
+      ],
+      "captureSha256": "25e87c4f5cb1cffd7b786f977b78ba3358235da122c6faee788ab2e6d8cef103"
+    },
+    "settings": {
+      "checks": 113,
+      "passed": true,
+      "captures": [
+        "settings-day",
+        "settings-dusk",
+        "settings-night",
+        "sensors-day",
+        "sensors-dusk",
+        "sensors-night",
+        "display-day",
+        "display-dusk",
+        "display-night",
+        "system-night",
+        "settings-radar-night",
+        "settings-autopilot-night"
+      ],
+      "captureSha256": "492106857e144f910d7a122b6addc5391c4e9aa1f09ef50af10b67f2408dd090"
+    }
+  },
+  "screenshots": {
+    "prototype-native-Windows-314e0677b66e58f70f563f7a92f68dc244dc402b/prototype-native/display-day.png": "526b01e7b0ec3cfa2299f5c1a42319d6d38a5b368ffb37398c5cef94f808f155",
+    "prototype-native-Windows-314e0677b66e58f70f563f7a92f68dc244dc402b/prototype-native/energy-day.png": "8335ad402c20845a6935f8dc40ef47610b53608914e58b5a2e4bc5ff378936db",
+    "prototype-native-Windows-314e0677b66e58f70f563f7a92f68dc244dc402b/prototype-native/failure-state.png": "da05d2f85ceb5d21e9501187ad723f4e8b1c34e2bf24d40bda4bde0dd4af86d3",
+    "prototype-native-Windows-314e0677b66e58f70f563f7a92f68dc244dc402b/prototype-native/instruments-day.png": "6141daadb69fe1a40fb1125323c2eeca2ca45d3ded400198edfcfd1f9f07552f",
+    "prototype-native-Windows-314e0677b66e58f70f563f7a92f68dc244dc402b/prototype-native/instruments-dusk.png": "34b748a9ac1ae8b626256a87a5c95702c04100b3127764dbda0d6c7b6220f9af",
+    "prototype-native-Windows-314e0677b66e58f70f563f7a92f68dc244dc402b/prototype-native/instruments-night.png": "2c5639ff637356950a4455aa45583071746d2c9e34895efada28141c2669e2ef",
+    "prototype-native-Windows-314e0677b66e58f70f563f7a92f68dc244dc402b/prototype-native/navigation-day.png": "5ea8615dc7f03de9b69f8361665899d738a9d39ab41a2a20ad4956fd8179ede7",
+    "prototype-native-Windows-314e0677b66e58f70f563f7a92f68dc244dc402b/prototype-native/navigation-dusk.png": "6c6cbd2d5f212badf3b98f8d87cf870a6fbbba90fdca4271c06581fe2ee26a2e",
+    "prototype-native-Windows-314e0677b66e58f70f563f7a92f68dc244dc402b/prototype-native/navigation-night.png": "762082dc5847743447fb63d3f2799f8e0e142b37aa21e9d2f168d047021a194b",
+    "prototype-native-Windows-314e0677b66e58f70f563f7a92f68dc244dc402b/prototype-native/online-ais-key-needed-day.png": "d670c799d89de46edc93822b974f0fc48b9d0ab6512ec1d749c8006907cf3beb",
+    "prototype-native-Windows-314e0677b66e58f70f563f7a92f68dc244dc402b/prototype-native/online-ais-settings-day.png": "b1290e387f2aa202825a649303cec7d3554fbde6186b6dad7b747a7bb80ba2ae",
+    "prototype-native-Windows-314e0677b66e58f70f563f7a92f68dc244dc402b/prototype-native/online-ais-settings-dusk.png": "4b1603bc9e87aa277aa2e0ba35502e2b08d7546683665a7a5d37e2564504d00e",
+    "prototype-native-Windows-314e0677b66e58f70f563f7a92f68dc244dc402b/prototype-native/online-ais-settings-night.png": "e19b22c30c68bb644849b25e41e6db3bf65c7fd4507f249cf71c3f8b72548503",
+    "prototype-native-Windows-314e0677b66e58f70f563f7a92f68dc244dc402b/prototype-native/passage-day.png": "ef38560930ccce1c3ab4247fd78522bec52152140ab4983547eaa3a1f654df2f",
+    "prototype-native-Windows-314e0677b66e58f70f563f7a92f68dc244dc402b/prototype-native/passage-dusk.png": "628d98f7077a3cbd34e945565da137f64d96a7bd19c79e47d5edece141e6f6dc",
+    "prototype-native-Windows-314e0677b66e58f70f563f7a92f68dc244dc402b/prototype-native/passage-night.png": "6c033876950fee064a8a77704bd468902b52bd1f1d396e3b639e949d542c1e0a",
+    "prototype-native-Windows-314e0677b66e58f70f563f7a92f68dc244dc402b/prototype-native/sensors-day.png": "0bbc5f6fcee51881f251467f9d673daf82ccb15e70546261d1789b7ab0f70e2f",
+    "prototype-native-Windows-314e0677b66e58f70f563f7a92f68dc244dc402b/prototype-native/settings-day.png": "0d27bc8f6e156d9c9ed4166d8d1a8e08a166d5b43f28df7c841162384a66ee78",
+    "prototype-native-Windows-314e0677b66e58f70f563f7a92f68dc244dc402b/prototype-native/settings-dusk.png": "e654efedfac7936eeec698894bf036b5855736619e875a6bac4d5de7d49d324d",
+    "prototype-native-Windows-314e0677b66e58f70f563f7a92f68dc244dc402b/prototype-native/settings-night.png": "44b9e3939c582a2e8a46346097ecd57ecaa0411b99fb72c206143880bfef1b43",
+    "prototype-native-Windows-314e0677b66e58f70f563f7a92f68dc244dc402b/prototype-native/system-day.png": "93a0df84c69ef0eacb61b37f26240ebefcf40762a6cc130d0a796512d3091eb7",
+    "prototype-native-Windows-314e0677b66e58f70f563f7a92f68dc244dc402b/prototype-native/traffic-day.png": "37439cb76ca105f71be496a17aace4717884b8f7945debf6ba18bb378e35395e",
+    "prototype-native-Windows-314e0677b66e58f70f563f7a92f68dc244dc402b/prototype-dpi/100-display-night.png": "b4294957bb6b2031ce77641f28a1722e71ea69a6d8aeb143559d86ee83fe322e",
+    "prototype-native-Windows-314e0677b66e58f70f563f7a92f68dc244dc402b/prototype-dpi/100-energy-night.png": "c106c562935539fa01027722cc4f4e5f287c828ad8a33c08da299077a5276115",
+    "prototype-native-Windows-314e0677b66e58f70f563f7a92f68dc244dc402b/prototype-dpi/100-instruments-night.png": "d9d3583de45c746b6487ee39eebaff91e6e7f108a02d741fc344e02557de90ac",
+    "prototype-native-Windows-314e0677b66e58f70f563f7a92f68dc244dc402b/prototype-dpi/100-navigation-day.png": "b66f5e5491d79a5d447e17898ac19e0d238ebad83dc49ee814f0e233765413c6",
+    "prototype-native-Windows-314e0677b66e58f70f563f7a92f68dc244dc402b/prototype-dpi/100-sensors-day.png": "97883337f5bad779289c8246875cf45ac4d00c0e466fa04e4a85e1dcc322d00a",
+    "prototype-native-Windows-314e0677b66e58f70f563f7a92f68dc244dc402b/prototype-dpi/100-settings-day.png": "474d5a0dd0af6e612b9e12c8cd1ab5e30db2df4c93e87f06560189f61bf14699",
+    "prototype-native-Windows-314e0677b66e58f70f563f7a92f68dc244dc402b/prototype-dpi/125-display-night.png": "3ac1aa8b1663c16ad41a53738d3360b9d5d341c6e4700de192b7969d17897aaa",
+    "prototype-native-Windows-314e0677b66e58f70f563f7a92f68dc244dc402b/prototype-dpi/125-energy-night.png": "a086958c0593e6b67758ecfacf49957ef9b64e7a9083be8541281c46b8fb6284",
+    "prototype-native-Windows-314e0677b66e58f70f563f7a92f68dc244dc402b/prototype-dpi/125-instruments-night.png": "c4891e2ac31d20bbfbd99c91ee3deae40415d0b7d4b41891ba46edf14ae7a88d",
+    "prototype-native-Windows-314e0677b66e58f70f563f7a92f68dc244dc402b/prototype-dpi/125-navigation-day.png": "fa650e63fa77511910bda6a4d0744fac00d9780913f404ce41e14fabb20d9af8",
+    "prototype-native-Windows-314e0677b66e58f70f563f7a92f68dc244dc402b/prototype-dpi/125-sensors-day.png": "28b09e998b6b8308537da479c360edb4dd8b48d8c891342fada56a0151ce6a49",
+    "prototype-native-Windows-314e0677b66e58f70f563f7a92f68dc244dc402b/prototype-dpi/125-settings-day.png": "ca06da893d5497c48b0026a0f2ab2bdd4067b741d45aee597079aa2fe8a6cec5",
+    "prototype-native-Windows-314e0677b66e58f70f563f7a92f68dc244dc402b/prototype-dpi/150-display-night.png": "40349ba809fbb2080c9abc2c5e29dd0587045dd7eddd17aca74c0e07eb6e99bf",
+    "prototype-native-Windows-314e0677b66e58f70f563f7a92f68dc244dc402b/prototype-dpi/150-energy-night.png": "24203400d731bded2dc41c3a535c533dd9a2d52fb09d892b7737afc5c5311bfc",
+    "prototype-native-Windows-314e0677b66e58f70f563f7a92f68dc244dc402b/prototype-dpi/150-instruments-night.png": "c1e41c3109835f2a0fce8f80b5835d3bc69974f36d7374956d063fce3433d6e2",
+    "prototype-native-Windows-314e0677b66e58f70f563f7a92f68dc244dc402b/prototype-dpi/150-navigation-day.png": "bd8558b30fd9b49959243bb1a919f40175a6fc285a8ff8c9bbe4b17993c8ec0b",
+    "prototype-native-Windows-314e0677b66e58f70f563f7a92f68dc244dc402b/prototype-dpi/150-sensors-day.png": "a4602f848453944750a1a8e4b36b432e4e07327e9619eabd6ebf5ba3a64ba754",
+    "prototype-native-Windows-314e0677b66e58f70f563f7a92f68dc244dc402b/prototype-dpi/150-settings-day.png": "f2bb6184c19bc4bdee7d29464309d4ee970161fd7284588a9fbdd8205711e7e1",
+    "prototype-native-Windows-314e0677b66e58f70f563f7a92f68dc244dc402b/settings-component/display-day.png": "ab16f30dbb8ae07c7417971c4444f5a9513d0a646a7c59654a0cb408e78bb979",
+    "prototype-native-Windows-314e0677b66e58f70f563f7a92f68dc244dc402b/settings-component/display-dusk.png": "e558ab1f895466aea5b8200c8aa94267499b53a698cdf884d9e0f862afc35c1a",
+    "prototype-native-Windows-314e0677b66e58f70f563f7a92f68dc244dc402b/settings-component/display-night.png": "0b754da572e6f13970b66a74be55883404ecabb3e158df52218235e24320aec9",
+    "prototype-native-Windows-314e0677b66e58f70f563f7a92f68dc244dc402b/settings-component/sensors-day.png": "b803a712a962977508ee0d3847564b718b52646ce4993335fb69e115b7193db4",
+    "prototype-native-Windows-314e0677b66e58f70f563f7a92f68dc244dc402b/settings-component/sensors-dusk.png": "865965886a02532f10fa18fc8105e451a7928af997f03851a9374820a0eb45ac",
+    "prototype-native-Windows-314e0677b66e58f70f563f7a92f68dc244dc402b/settings-component/sensors-night.png": "56af3a50b8503a31ac88e8d15e33a9015d811fb6f1831fefb869dd83797de177",
+    "prototype-native-Windows-314e0677b66e58f70f563f7a92f68dc244dc402b/settings-component/settings-autopilot-night.png": "53346f04fcffb95e648ef5367f616ec2eed31ce414b4fb5a526f8f5cafaf4f05",
+    "prototype-native-Windows-314e0677b66e58f70f563f7a92f68dc244dc402b/settings-component/settings-day.png": "529423f8795548d07c16c4e5184bbc6b72d45dd998772ee0051573e867b63e02",
+    "prototype-native-Windows-314e0677b66e58f70f563f7a92f68dc244dc402b/settings-component/settings-night.png": "85d1c4b93e2e8f92b09771833f504debcdaf5477e0566b0e35e3a9c716dca4b6",
+    "prototype-native-Windows-314e0677b66e58f70f563f7a92f68dc244dc402b/settings-component/settings-dusk.png": "1bd49af7df3e6c49399528b0d7f1a6ea1b06d320b27196eed654e047405b28b8",
+    "prototype-native-Windows-314e0677b66e58f70f563f7a92f68dc244dc402b/settings-component/settings-radar-night.png": "f5dd8cb400facde2ece692da0a1b8f83f0f10546caccb3e7816d110120b17564",
+    "prototype-native-Windows-314e0677b66e58f70f563f7a92f68dc244dc402b/settings-component/system-night.png": "4626b814d8e67d2c52f1c0e9bba2bc1a9ddaee43d93b0c23780683604eb8bd20",
+    "prototype-native-Windows-314e0677b66e58f70f563f7a92f68dc244dc402b/prototype-enc-xnav/navigation-day.png": "155da641d69b0b59a2d2a40d9586f9eec0e8853b082fea30c6d4d37114656dd2",
+    "prototype-native-Windows-314e0677b66e58f70f563f7a92f68dc244dc402b/prototype-enc-xnav/navigation-dusk.png": "578286b727dafed191fb2f2f235a5c224ca181e3e6afa8c6531764a7426775bc",
+    "prototype-native-Windows-314e0677b66e58f70f563f7a92f68dc244dc402b/prototype-enc-xnav/navigation-night.png": "b9e9a74441caeb23d31d00af404740b822300d6a0386dd09bc99bf34d878d952",
+    "prototype-native-Windows-314e0677b66e58f70f563f7a92f68dc244dc402b/prototype-enc-xnav/navigation-return-day.png": "155da641d69b0b59a2d2a40d9586f9eec0e8853b082fea30c6d4d37114656dd2",
+    "prototype-native-Windows-314e0677b66e58f70f563f7a92f68dc244dc402b/prototype-enc-standard/navigation-day.png": "eb72a972264122604d40ce415df5d3ca4e78d3cfe10a4305e95896f4891069d7",
+    "prototype-native-Windows-314e0677b66e58f70f563f7a92f68dc244dc402b/prototype-enc-standard/navigation-dusk.png": "5ec3ef05cc1cb09e7e57b4e8b463d546ed181b38166ed07a41f58717cb6671b3",
+    "prototype-native-Windows-314e0677b66e58f70f563f7a92f68dc244dc402b/prototype-enc-standard/navigation-night.png": "63219a44d51b03f9545a6f5da6825511676f5abb1e6d956bcbb412acbccba1a6",
+    "prototype-native-Windows-314e0677b66e58f70f563f7a92f68dc244dc402b/prototype-enc-standard/navigation-return-day.png": "eb72a972264122604d40ce415df5d3ca4e78d3cfe10a4305e95896f4891069d7",
+    "prototype-object-flow-Windows-314e0677b66e58f70f563f7a92f68dc244dc402b/01-xnav-unavailable.png": "34e4fbb601d83c9e72fedca311bc8e3aa014674d50722be4796776e4d00e6fac",
+    "prototype-object-flow-Windows-314e0677b66e58f70f563f7a92f68dc244dc402b/02-xnav-dusk.png": "0d67c2c5653b6a732554348f153af685b3e1ff6c3c7c4d5bb4af14863ad5d86b",
+    "prototype-object-flow-Windows-314e0677b66e58f70f563f7a92f68dc244dc402b/03-xnav-night.png": "9c720b18d17a4def50876395757c0836d26cf8493882623c3104acb01692f077",
+    "prototype-object-flow-Windows-314e0677b66e58f70f563f7a92f68dc244dc402b/04-xnav-simulation.png": "31b572c69adcde172e15331ca3d6e86810346c385e59acc6d584403c0749d443",
+    "prototype-object-flow-Windows-314e0677b66e58f70f563f7a92f68dc244dc402b/05-xnav-stale.png": "7717549f2ead4ca702d45ad2330b8a4381ed891a4d4a623b4bee35daa39e8bb4",
+    "prototype-object-flow-Windows-314e0677b66e58f70f563f7a92f68dc244dc402b/06-xnav-after-legacy.png": "34e4fbb601d83c9e72fedca311bc8e3aa014674d50722be4796776e4d00e6fac",
+    "prototype-object-flow-Windows-314e0677b66e58f70f563f7a92f68dc244dc402b/11-legacy-after-xnav.png": "f2930c32da05daaf7663f0d8202af06c2a50cf77d127c2daca0f2f689cc6b5f6",
+    "prototype-object-flow-Windows-314e0677b66e58f70f563f7a92f68dc244dc402b/12-safe-shared-profile.png": "295dcd0a369b7e9921d2367da917ef905d2c5b411b02b6fbf7b0bd328c938448",
+    "prototype-object-flow-Windows-314e0677b66e58f70f563f7a92f68dc244dc402b/objects-ais-card.png": "2d770576231448143720769ce93240a4e989ccc61b6452d387b5ca28b6214d01",
+    "prototype-object-flow-Windows-314e0677b66e58f70f563f7a92f68dc244dc402b/objects-ais-context-selected-chart.png": "7e0fd8889b3770eec8f1e533fe918f7812d03ba347f803fa6e51120bed190b9f",
+    "prototype-object-flow-Windows-314e0677b66e58f70f563f7a92f68dc244dc402b/objects-ais-details.png": "c9206f5dfbd5d0900ddcb69e9b88bc878c102115189b657ecfe3aca1bd17e02c",
+    "prototype-object-flow-Windows-314e0677b66e58f70f563f7a92f68dc244dc402b/objects-ais-selected-chart.png": "dd9226ca9aff3b8d7f3fa4dd37af7948dc7be8366471cc3065dd9fc23d948e35",
+    "prototype-object-flow-Windows-314e0677b66e58f70f563f7a92f68dc244dc402b/objects-ais-target-action-visible.png": "fef76ffe3f49c46f95d51b7ce10aa9d514dbdefa819f6b2aeafada3e628ed690",
+    "prototype-object-flow-Windows-314e0677b66e58f70f563f7a92f68dc244dc402b/objects-initial-no-input-chart.png": "c9f38d0e6edd5e75351d182eead8bf5b8261ec788267de029c90c04d159eba27",
+    "prototype-object-flow-Windows-314e0677b66e58f70f563f7a92f68dc244dc402b/objects-route-card.png": "9e288352f63f4453d9f51bf97a933c0ab044b9cc25b3260818a442790dd53059",
+    "prototype-object-flow-Windows-314e0677b66e58f70f563f7a92f68dc244dc402b/objects-route-detail-active.png": "79b57f03455d457520fd55996eae4eef131c552e5c69b53ab6239409bba3347b",
+    "prototype-object-flow-Windows-314e0677b66e58f70f563f7a92f68dc244dc402b/objects-route-detail-advanced.png": "38118964836de1bc7717ed4c5863b83476cda4c81d6a9c66cee958a5d5c525fc",
+    "prototype-object-flow-Windows-314e0677b66e58f70f563f7a92f68dc244dc402b/objects-route-detail-completed.png": "10653230c9ce9bc01672508439bc2a536228d852e0947d7205b0eec1a50ac6c7",
+    "prototype-object-flow-Windows-314e0677b66e58f70f563f7a92f68dc244dc402b/objects-route-detail-delete-selected.png": "9d0e25962e9f3860665371ced88ad7f6310236ada2b10ba9066ac7e834ee6072",
+    "prototype-object-flow-Windows-314e0677b66e58f70f563f7a92f68dc244dc402b/objects-route-detail-deleted.png": "ba4c8de671883cd5e6baf97bcc56412273c18ccb1399e7289024dd33ed34dce3",
+    "prototype-object-flow-Windows-314e0677b66e58f70f563f7a92f68dc244dc402b/objects-route-detail-renamed.png": "c379bbf3c3fd48688304aca131dec97d53a449c0c5779ceb281d8ec7937d94ba",
+    "prototype-object-flow-Windows-314e0677b66e58f70f563f7a92f68dc244dc402b/objects-route-detail-stale-confirmation.png": "f0ac33d4c0a41b94c3f404b04be3c2e7e61b090721b357fb86cee0fc915eb762",
+    "prototype-object-flow-Windows-314e0677b66e58f70f563f7a92f68dc244dc402b/objects-settings-return-navigation.png": "b000d4c00b38b6bb2a30d2323b25d35176c8724ad59a0fe6117040ade86aab81",
+    "prototype-object-flow-Windows-314e0677b66e58f70f563f7a92f68dc244dc402b/objects-settings-return.png": "4751d133ef0fb5e94b8f32e80e69da3115f42e095fa423f02a03090e749c9230",
+    "prototype-object-flow-Windows-314e0677b66e58f70f563f7a92f68dc244dc402b/objects-waypoint-card.png": "7cfa2e03fabeb33d8d3019d8ef3bea449a52fe7b6ef4d3bf0fd35b81b304adf8",
+    "prototype-object-flow-Windows-314e0677b66e58f70f563f7a92f68dc244dc402b/objects-waypoint-detail-ambiguous.png": "90b3e80c31c55cf6ed543bd3a28fb7a6b264e485840492c3c8d57a58bd265a09",
+    "prototype-object-flow-Windows-314e0677b66e58f70f563f7a92f68dc244dc402b/objects-waypoint-detail-deleted.png": "90b3e80c31c55cf6ed543bd3a28fb7a6b264e485840492c3c8d57a58bd265a09",
+    "prototype-object-flow-Windows-314e0677b66e58f70f563f7a92f68dc244dc402b/objects-waypoint-detail-invalid.png": "987dfa0c640199e10a12c35267b46fb67179ec086d5a80f88f08178cf342d821",
+    "prototype-object-flow-Windows-314e0677b66e58f70f563f7a92f68dc244dc402b/objects-waypoint-detail-protected.png": "62e6c1d3e9853631f9b918e467234547f82e69964713af07449c4150544ebe39",
+    "prototype-object-flow-Windows-314e0677b66e58f70f563f7a92f68dc244dc402b/objects-waypoint-detail-renamed.png": "ca8cb7fda15103f285d06a03fc45f4b2b8d4082edeb6ca4c26f98bd209442f28",
+    "prototype-object-flow-Windows-314e0677b66e58f70f563f7a92f68dc244dc402b/objects-waypoint-detail-selected.png": "dc7e6291710ff8a033d0f04d6e8a8c220d150a9405f1d7bb4b629531372392a8",
+    "prototype-object-flow-Windows-314e0677b66e58f70f563f7a92f68dc244dc402b/objects-waypoint-detail-stale-position.png": "8ed5a35c92fd87c928287f18c13825c1ffd0425b5d8d559e95f971726abb0881",
+    "prototype-object-flow-Windows-314e0677b66e58f70f563f7a92f68dc244dc402b/objects-waypoint-details.png": "0f2c35f38254250558f1baeb9f619f7615af893c8020ef0d61854c1c9dda21e9",
+    "prototype-object-flow-Windows-314e0677b66e58f70f563f7a92f68dc244dc402b/objects-waypoint-edit-sheet-result.png": "403a3f309730dd51e0e9eb4a7d86eefbc214ad94ea6e5a44c54bf49a01e0a9c6",
+    "prototype-object-flow-Windows-314e0677b66e58f70f563f7a92f68dc244dc402b/objects-waypoint-stale-position.png": "31f2475451fc53abf915f1dde0f486f7dc2c2b5ea9c768e079a9cd2c61e3f6aa",
+    "prototype-object-flow-Windows-314e0677b66e58f70f563f7a92f68dc244dc402b/preview-01-navigation-day.png": "6e28c7e8ccb848c92a2480084287aa06b883423e6e7a8ee66609d4cdd2b33bdd",
+    "prototype-object-flow-Windows-314e0677b66e58f70f563f7a92f68dc244dc402b/preview-02-navigation-night.png": "428406c13cfe6aa9050c810f67aa1c3d35f8f43f84512c36eb750d4898ea0f91",
+    "prototype-object-flow-Windows-314e0677b66e58f70f563f7a92f68dc244dc402b/preview-03-route.png": "b804991b26bec2405c95f20fd4d784dc599bcc69f221ee88fe1cb4e1ec2a3288",
+    "prototype-object-flow-Windows-314e0677b66e58f70f563f7a92f68dc244dc402b/preview-04-energy.png": "7ec06d67e26f0bf8a98be60d0e2c720479e0ddff0e56ba947430ee342f3bcc08",
+    "prototype-object-flow-Windows-314e0677b66e58f70f563f7a92f68dc244dc402b/preview-11-startup-xnav.png": "6e28c7e8ccb848c92a2480084287aa06b883423e6e7a8ee66609d4cdd2b33bdd",
+    "prototype-object-flow-Windows-314e0677b66e58f70f563f7a92f68dc244dc402b/route-01-active-route.png": "4758657c8b9513002c310a089dd1eb2e8b1a138bda85395a431d22f27bfaab5c",
+    "prototype-object-flow-Windows-314e0677b66e58f70f563f7a92f68dc244dc402b/route-02-stale-position.png": "561ce58812a1cd90045f7972c2d8575b3ca469ddc6c9134aff65c9148d426898",
+    "prototype-object-flow-Windows-314e0677b66e58f70f563f7a92f68dc244dc402b/route-dusk-01-active-route.png": "83caa1a1aa4ad035726fffe23546195c156038e500df4915d7fc8ad9d169df1e",
+    "prototype-object-flow-Windows-314e0677b66e58f70f563f7a92f68dc244dc402b/route-dusk-02-stale-position.png": "417be564537c74fb0948d58dd8ae4cc668e79d223a5972810816606152bed9f1",
+    "prototype-object-flow-Windows-314e0677b66e58f70f563f7a92f68dc244dc402b/route-night-01-active-route.png": "3f094302a6153a9272aceae4c926243145761e9b088ef5675e8b95cb55d09645",
+    "prototype-object-flow-Windows-314e0677b66e58f70f563f7a92f68dc244dc402b/route-night-02-stale-position.png": "39769e9f3b6bc560cafe0be4fd191b4573ba1381a659c1072c7d7f306c8235ed",
+    "prototype-object-flow-Windows-314e0677b66e58f70f563f7a92f68dc244dc402b/route-standard-01-active-route.png": "da49c3b1797f42b8b1f06c09b0969da8e733055d1d19897ebcd83e69bc6c24c7",
+    "prototype-object-flow-Windows-314e0677b66e58f70f563f7a92f68dc244dc402b/route-standard-02-stale-position.png": "c0056140bb9034aa83b60752fec3f1c4e68d2a5973d2abb22a9b29eb11702d53"
+  },
+  "failures": [
+    {
+      "job": "Native composition",
+      "result": "Settings close did not restore chart assertion",
+      "observed": "Actual retained failure screenshot shows the drawer closed and chart restored; pre-capture diagnostic file still reports its old drawer. Once-per-second publication was not synchronized to semantic close. Replacement waits for closed drawer and Navigation publication after one physical click."
+    },
+    {
+      "job": "Retained preview regressions",
+      "result": "Real pointer target was Windows System Clock rather than OpenNav System button",
+      "observed": "1280x800 runner desktop allowed taskbar to cover footer. Replacement keeps 1280x800 app capture on at least 1440x900 desktop, retaining real WindowFromPoint ownership checks."
+    }
+  ],
+  "review": [
+    "Preferences labels Vessel / Navigation / Sensors / Autopilot / Radar / Display render completely in native Windows; measured natural advances and all eight rectangles pass. Previously observed ellipses removed.",
+    "Actual 100/125/150 DPI development probe passes with exact independently measured drawer bounds; full retained DPI suite was skipped after preview failure.",
+    "Public ENC XNav and Standard software theme captures pass; no hardware OpenGL or physical boat acceptance.",
+    "No tests removed or failures waived. Replacement required before qualification."
+  ],
+  "boat": "Earlier Beta remains installed; no prototype deployment or equipment commands.",
+  "dpi": {
+    "authority": "Actual GetDpiForWindow and screen pixels; no rescaling",
+    "desktop": {
+      "before": [
+        1440,
+        900,
+        32
+      ],
+      "after": [
+        1920,
+        1080,
+        32
+      ]
+    },
+    "scales": [
+      {
+        "percent": 100,
+        "screenshots": [
+          {
+            "file": "100-navigation-day.png",
+            "sha256": "b66f5e5491d79a5d447e17898ac19e0d238ebad83dc49ee814f0e233765413c6"
+          },
+          {
+            "file": "100-settings-day.png",
+            "sha256": "474d5a0dd0af6e612b9e12c8cd1ab5e30db2df4c93e87f06560189f61bf14699"
+          },
+          {
+            "file": "100-sensors-day.png",
+            "sha256": "97883337f5bad779289c8246875cf45ac4d00c0e466fa04e4a85e1dcc322d00a"
+          },
+          {
+            "file": "100-display-night.png",
+            "sha256": "b4294957bb6b2031ce77641f28a1722e71ea69a6d8aeb143559d86ee83fe322e"
+          },
+          {
+            "file": "100-energy-night.png",
+            "sha256": "c106c562935539fa01027722cc4f4e5f287c828ad8a33c08da299077a5276115"
+          },
+          {
+            "file": "100-instruments-night.png",
+            "sha256": "d9d3583de45c746b6487ee39eebaff91e6e7f108a02d741fc344e02557de90ac"
+          }
+        ],
+        "rail": {
+          "actions": [
+            {
+              "x": 17,
+              "height": 61,
+              "width": 61,
+              "label": "Chart",
+              "y": 113,
+              "visible": true,
+              "enabled": true
+            },
+            {
+              "x": 17,
+              "height": 61,
+              "width": 61,
+              "label": "Passage",
+              "y": 179,
+              "visible": true,
+              "enabled": true
+            },
+            {
+              "x": 17,
+              "height": 61,
+              "width": 61,
+              "label": "Traffic",
+              "y": 245,
+              "visible": true,
+              "enabled": true
+            },
+            {
+              "x": 17,
+              "height": 61,
+              "width": 61,
+              "label": "Energy",
+              "y": 331,
+              "visible": true,
+              "enabled": true
+            },
+            {
+              "x": 17,
+              "height": 61,
+              "width": 61,
+              "label": "Instruments",
+              "y": 397,
+              "visible": true,
+              "enabled": true
+            },
+            {
+              "x": 17,
+              "height": 61,
+              "width": 61,
+              "label": "Anchor",
+              "y": 463,
+              "visible": true,
+              "enabled": true
+            },
+            {
+              "x": 17,
+              "height": 61,
+              "width": 61,
+              "label": "Radar",
+              "y": 529,
+              "visible": true,
+              "enabled": true
+            },
+            {
+              "x": 17,
+              "height": 61,
+              "width": 61,
+              "label": "Settings",
+              "y": 676,
+              "visible": true,
+              "enabled": true
+            }
+          ],
+          "readings": [
+            {
+              "x": 1102,
+              "height": 136,
+              "width": 186,
+              "label": "sog",
+              "y": 141,
+              "visible": true,
+              "enabled": true
+            },
+            {
+              "x": 1102,
+              "height": 135,
+              "width": 186,
+              "label": "depth",
+              "y": 277,
+              "visible": true,
+              "enabled": true
+            },
+            {
+              "x": 1102,
+              "height": 136,
+              "width": 186,
+              "label": "aws",
+              "y": 412,
+              "visible": true,
+              "enabled": true
+            },
+            {
+              "x": 1102,
+              "height": 135,
+              "width": 186,
+              "label": "heading",
+              "y": 548,
+              "visible": true,
+              "enabled": true
+            }
+          ]
+        },
+        "prototypeDrawer": {
+          "actual": {
+            "x": 648,
+            "height": 674,
+            "width": 432,
+            "y": 80
+          },
+          "expectedCss": {
+            "x": 648,
+            "y": 80,
+            "width": 432,
+            "height": 674
+          }
+        },
+        "railAfterClose": {
+          "actions": [
+            {
+              "x": 17,
+              "height": 61,
+              "width": 61,
+              "label": "Chart",
+              "y": 113,
+              "visible": true,
+              "enabled": true
+            },
+            {
+              "x": 17,
+              "height": 61,
+              "width": 61,
+              "label": "Passage",
+              "y": 179,
+              "visible": true,
+              "enabled": true
+            },
+            {
+              "x": 17,
+              "height": 61,
+              "width": 61,
+              "label": "Traffic",
+              "y": 245,
+              "visible": true,
+              "enabled": true
+            },
+            {
+              "x": 17,
+              "height": 61,
+              "width": 61,
+              "label": "Energy",
+              "y": 331,
+              "visible": true,
+              "enabled": true
+            },
+            {
+              "x": 17,
+              "height": 61,
+              "width": 61,
+              "label": "Instruments",
+              "y": 397,
+              "visible": true,
+              "enabled": true
+            },
+            {
+              "x": 17,
+              "height": 61,
+              "width": 61,
+              "label": "Anchor",
+              "y": 463,
+              "visible": true,
+              "enabled": true
+            },
+            {
+              "x": 17,
+              "height": 61,
+              "width": 61,
+              "label": "Radar",
+              "y": 529,
+              "visible": true,
+              "enabled": true
+            },
+            {
+              "x": 17,
+              "height": 61,
+              "width": 61,
+              "label": "Settings",
+              "y": 676,
+              "visible": true,
+              "enabled": true
+            }
+          ],
+          "readings": [
+            {
+              "x": 1102,
+              "height": 136,
+              "width": 186,
+              "label": "sog",
+              "y": 141,
+              "visible": true,
+              "enabled": true
+            },
+            {
+              "x": 1102,
+              "height": 135,
+              "width": 186,
+              "label": "depth",
+              "y": 277,
+              "visible": true,
+              "enabled": true
+            },
+            {
+              "x": 1102,
+              "height": 136,
+              "width": 186,
+              "label": "aws",
+              "y": 412,
+              "visible": true,
+              "enabled": true
+            },
+            {
+              "x": 1102,
+              "height": 135,
+              "width": 186,
+              "label": "heading",
+              "y": 548,
+              "visible": true,
+              "enabled": true
+            }
+          ]
+        },
+        "result": "passed; visual review and physical touch remain required"
+      },
+      {
+        "percent": 125,
+        "screenshots": [
+          {
+            "file": "125-navigation-day.png",
+            "sha256": "fa650e63fa77511910bda6a4d0744fac00d9780913f404ce41e14fabb20d9af8"
+          },
+          {
+            "file": "125-settings-day.png",
+            "sha256": "ca06da893d5497c48b0026a0f2ab2bdd4067b741d45aee597079aa2fe8a6cec5"
+          },
+          {
+            "file": "125-sensors-day.png",
+            "sha256": "28b09e998b6b8308537da479c360edb4dd8b48d8c891342fada56a0151ce6a49"
+          },
+          {
+            "file": "125-display-night.png",
+            "sha256": "3ac1aa8b1663c16ad41a53738d3360b9d5d341c6e4700de192b7969d17897aaa"
+          },
+          {
+            "file": "125-energy-night.png",
+            "sha256": "a086958c0593e6b67758ecfacf49957ef9b64e7a9083be8541281c46b8fb6284"
+          },
+          {
+            "file": "125-instruments-night.png",
+            "sha256": "c4891e2ac31d20bbfbd99c91ee3deae40415d0b7d4b41891ba46edf14ae7a88d"
+          }
+        ],
+        "rail": {
+          "actions": [
+            {
+              "x": 20,
+              "height": 64,
+              "width": 64,
+              "label": "Chart",
+              "y": 123,
+              "visible": true,
+              "enabled": true
+            },
+            {
+              "x": 20,
+              "height": 64,
+              "width": 64,
+              "label": "Passage",
+              "y": 188,
+              "visible": true,
+              "enabled": true
+            },
+            {
+              "x": 20,
+              "height": 64,
+              "width": 64,
+              "label": "Traffic",
+              "y": 253,
+              "visible": true,
+              "enabled": true
+            },
+            {
+              "x": 20,
+              "height": 64,
+              "width": 64,
+              "label": "Energy",
+              "y": 333,
+              "visible": true,
+              "enabled": true
+            },
+            {
+              "x": 20,
+              "height": 64,
+              "width": 64,
+              "label": "Instruments",
+              "y": 398,
+              "visible": true,
+              "enabled": true
+            },
+            {
+              "x": 20,
+              "height": 64,
+              "width": 64,
+              "label": "Anchor",
+              "y": 463,
+              "visible": true,
+              "enabled": true
+            },
+            {
+              "x": 20,
+              "height": 64,
+              "width": 64,
+              "label": "Radar",
+              "y": 528,
+              "visible": true,
+              "enabled": true
+            },
+            {
+              "x": 20,
+              "height": 64,
+              "width": 64,
+              "label": "Settings",
+              "y": 669,
+              "visible": true,
+              "enabled": true
+            }
+          ],
+          "readings": [
+            {
+              "x": 1094,
+              "height": 130,
+              "width": 195,
+              "label": "sog",
+              "y": 154,
+              "visible": true,
+              "enabled": true
+            },
+            {
+              "x": 1094,
+              "height": 130,
+              "width": 195,
+              "label": "depth",
+              "y": 284,
+              "visible": true,
+              "enabled": true
+            },
+            {
+              "x": 1094,
+              "height": 130,
+              "width": 195,
+              "label": "aws",
+              "y": 414,
+              "visible": true,
+              "enabled": true
+            },
+            {
+              "x": 1094,
+              "height": 130,
+              "width": 195,
+              "label": "heading",
+              "y": 544,
+              "visible": true,
+              "enabled": true
+            }
+          ]
+        },
+        "prototypeDrawer": {
+          "actual": {
+            "x": 554,
+            "height": 652,
+            "width": 513,
+            "y": 90
+          },
+          "expectedCss": {
+            "x": 444,
+            "y": 72,
+            "width": 410,
+            "height": 522
+          }
+        },
+        "railAfterClose": {
+          "actions": [
+            {
+              "x": 20,
+              "height": 64,
+              "width": 64,
+              "label": "Chart",
+              "y": 123,
+              "visible": true,
+              "enabled": true
+            },
+            {
+              "x": 20,
+              "height": 64,
+              "width": 64,
+              "label": "Passage",
+              "y": 188,
+              "visible": true,
+              "enabled": true
+            },
+            {
+              "x": 20,
+              "height": 64,
+              "width": 64,
+              "label": "Traffic",
+              "y": 253,
+              "visible": true,
+              "enabled": true
+            },
+            {
+              "x": 20,
+              "height": 64,
+              "width": 64,
+              "label": "Energy",
+              "y": 333,
+              "visible": true,
+              "enabled": true
+            },
+            {
+              "x": 20,
+              "height": 64,
+              "width": 64,
+              "label": "Instruments",
+              "y": 398,
+              "visible": true,
+              "enabled": true
+            },
+            {
+              "x": 20,
+              "height": 64,
+              "width": 64,
+              "label": "Anchor",
+              "y": 463,
+              "visible": true,
+              "enabled": true
+            },
+            {
+              "x": 20,
+              "height": 64,
+              "width": 64,
+              "label": "Radar",
+              "y": 528,
+              "visible": true,
+              "enabled": true
+            },
+            {
+              "x": 20,
+              "height": 64,
+              "width": 64,
+              "label": "Settings",
+              "y": 669,
+              "visible": true,
+              "enabled": true
+            }
+          ],
+          "readings": [
+            {
+              "x": 1094,
+              "height": 130,
+              "width": 195,
+              "label": "sog",
+              "y": 154,
+              "visible": true,
+              "enabled": true
+            },
+            {
+              "x": 1094,
+              "height": 130,
+              "width": 195,
+              "label": "depth",
+              "y": 284,
+              "visible": true,
+              "enabled": true
+            },
+            {
+              "x": 1094,
+              "height": 130,
+              "width": 195,
+              "label": "aws",
+              "y": 414,
+              "visible": true,
+              "enabled": true
+            },
+            {
+              "x": 1094,
+              "height": 130,
+              "width": 195,
+              "label": "heading",
+              "y": 544,
+              "visible": true,
+              "enabled": true
+            }
+          ]
+        },
+        "result": "passed; visual review and physical touch remain required"
+      },
+      {
+        "percent": 150,
+        "screenshots": [
+          {
+            "file": "150-navigation-day.png",
+            "sha256": "bd8558b30fd9b49959243bb1a919f40175a6fc285a8ff8c9bbe4b17993c8ec0b"
+          },
+          {
+            "file": "150-settings-day.png",
+            "sha256": "f2bb6184c19bc4bdee7d29464309d4ee970161fd7284588a9fbdd8205711e7e1"
+          },
+          {
+            "file": "150-sensors-day.png",
+            "sha256": "a4602f848453944750a1a8e4b36b432e4e07327e9619eabd6ebf5ba3a64ba754"
+          },
+          {
+            "file": "150-display-night.png",
+            "sha256": "40349ba809fbb2080c9abc2c5e29dd0587045dd7eddd17aca74c0e07eb6e99bf"
+          },
+          {
+            "file": "150-energy-night.png",
+            "sha256": "24203400d731bded2dc41c3a535c533dd9a2d52fb09d892b7737afc5c5311bfc"
+          },
+          {
+            "file": "150-instruments-night.png",
+            "sha256": "c1e41c3109835f2a0fce8f80b5835d3bc69974f36d7374956d063fce3433d6e2"
+          }
+        ],
+        "rail": {
+          "actions": [
+            {
+              "x": 25,
+              "height": 65,
+              "width": 77,
+              "label": "Chart",
+              "y": 141,
+              "visible": true,
+              "enabled": true
+            },
+            {
+              "x": 25,
+              "height": 65,
+              "width": 77,
+              "label": "Passage",
+              "y": 206,
+              "visible": true,
+              "enabled": true
+            },
+            {
+              "x": 25,
+              "height": 65,
+              "width": 77,
+              "label": "Traffic",
+              "y": 271,
+              "visible": true,
+              "enabled": true
+            },
+            {
+              "x": 25,
+              "height": 65,
+              "width": 77,
+              "label": "Energy",
+              "y": 348,
+              "visible": true,
+              "enabled": true
+            },
+            {
+              "x": 25,
+              "height": 65,
+              "width": 77,
+              "label": "Instruments",
+              "y": 413,
+              "visible": true,
+              "enabled": true
+            },
+            {
+              "x": 25,
+              "height": 65,
+              "width": 77,
+              "label": "Anchor",
+              "y": 478,
+              "visible": true,
+              "enabled": true
+            },
+            {
+              "x": 25,
+              "height": 65,
+              "width": 77,
+              "label": "Radar",
+              "y": 543,
+              "visible": true,
+              "enabled": true
+            },
+            {
+              "x": 25,
+              "height": 65,
+              "width": 77,
+              "label": "Settings",
+              "y": 716,
+              "visible": true,
+              "enabled": true
+            }
+          ],
+          "readings": [
+            {
+              "x": 1057,
+              "height": 122,
+              "width": 234,
+              "label": "sog",
+              "y": 174,
+              "visible": true,
+              "enabled": true
+            },
+            {
+              "x": 1057,
+              "height": 123,
+              "width": 234,
+              "label": "depth",
+              "y": 296,
+              "visible": true,
+              "enabled": true
+            },
+            {
+              "x": 1057,
+              "height": 122,
+              "width": 234,
+              "label": "aws",
+              "y": 419,
+              "visible": true,
+              "enabled": true
+            },
+            {
+              "x": 1057,
+              "height": 122,
+              "width": 234,
+              "label": "heading",
+              "y": 541,
+              "visible": true,
+              "enabled": true
+            }
+          ]
+        },
+        "prototypeDrawer": {
+          "actual": {
+            "x": 410,
+            "height": 629,
+            "width": 615,
+            "y": 102
+          },
+          "expectedCss": {
+            "x": 273,
+            "y": 68,
+            "width": 410,
+            "height": 419
+          }
+        },
+        "railAfterClose": {
+          "actions": [
+            {
+              "x": 25,
+              "height": 65,
+              "width": 77,
+              "label": "Chart",
+              "y": 141,
+              "visible": true,
+              "enabled": true
+            },
+            {
+              "x": 25,
+              "height": 65,
+              "width": 77,
+              "label": "Passage",
+              "y": 206,
+              "visible": true,
+              "enabled": true
+            },
+            {
+              "x": 25,
+              "height": 65,
+              "width": 77,
+              "label": "Traffic",
+              "y": 271,
+              "visible": true,
+              "enabled": true
+            },
+            {
+              "x": 25,
+              "height": 65,
+              "width": 77,
+              "label": "Energy",
+              "y": 348,
+              "visible": true,
+              "enabled": true
+            },
+            {
+              "x": 25,
+              "height": 65,
+              "width": 77,
+              "label": "Instruments",
+              "y": 413,
+              "visible": true,
+              "enabled": true
+            },
+            {
+              "x": 25,
+              "height": 65,
+              "width": 77,
+              "label": "Anchor",
+              "y": 478,
+              "visible": true,
+              "enabled": true
+            },
+            {
+              "x": 25,
+              "height": 65,
+              "width": 77,
+              "label": "Radar",
+              "y": 543,
+              "visible": true,
+              "enabled": true
+            },
+            {
+              "x": 25,
+              "height": 65,
+              "width": 77,
+              "label": "Settings",
+              "y": 716,
+              "visible": true,
+              "enabled": true
+            }
+          ],
+          "readings": [
+            {
+              "x": 1057,
+              "height": 122,
+              "width": 234,
+              "label": "sog",
+              "y": 174,
+              "visible": true,
+              "enabled": true
+            },
+            {
+              "x": 1057,
+              "height": 123,
+              "width": 234,
+              "label": "depth",
+              "y": 296,
+              "visible": true,
+              "enabled": true
+            },
+            {
+              "x": 1057,
+              "height": 122,
+              "width": 234,
+              "label": "aws",
+              "y": 419,
+              "visible": true,
+              "enabled": true
+            },
+            {
+              "x": 1057,
+              "height": 122,
+              "width": 234,
+              "label": "heading",
+              "y": 541,
+              "visible": true,
+              "enabled": true
+            }
+          ]
+        },
+        "result": "passed; visual review and physical touch remain required"
+      }
+    ],
+    "executableSha256": "20fbeb03d867867d8550e026729d453673f8bba62d2e4b0d1f56cdd2b7959125",
+    "sourceCommit": "314e0677b66e58f70f563f7a92f68dc244dc402b",
+    "scope": "Additional prototype development gate; no release or boat acceptance",
+    "result": "passed; development DPI/interaction checks only",
+    "restoredDpi": {
+      "before_percent": 150,
+      "percent": 100,
+      "source_id": 0,
+      "minimum_relative": 0,
+      "maximum_relative": 3
+    }
+  },
+  "modeLifecycle": {
+    "display": {
+      "before": [
+        1280,
+        800,
+        32
+      ],
+      "after": [
+        1280,
+        800,
+        32
+      ]
+    },
+    "profile": "D:\\a\\Work\\Work\\opennav-x\\build\\profiles\\mode cycle aa6ffa39-616a-4395-b994-d22620fe93db",
+    "steps": [
+      {
+        "step": "theme / zoom / simulator start and pause",
+        "interaction": "pass",
+        "visual_review": "required; stale labels and fixture values must be checked"
+      },
+      {
+        "step": "XNav to Legacy",
+        "persistence": "pass"
+      },
+      {
+        "step": "Legacy to XNav",
+        "persistence": "pass"
+      },
+      {
+        "step": "Final XNav close",
+        "persistence": "pass"
+      },
+      {
+        "step": "Safe override and close",
+        "persistence": "pass"
+      },
+      {
+        "step": "Persisted XNav after Safe Mode",
+        "persistence": "pass"
+      }
+    ],
+    "expected": {
+      "wpt": [
+        {
+          "name": "SIMULATED persistence mark",
+          "guid": "ae43f488-caa5-445b-88e3-0112875a3471",
+          "points": [
+            [
+              56.7,
+              12.6,
+              "2026-01-01T11:00:00Z"
+            ]
+          ]
+        }
+      ],
+      "rte": [
+        {
+          "name": "SIMULATED persistence route",
+          "guid": "ae43f488-caa5-445b-88e3-0112875a3472",
+          "points": [
+            [
+              56.71,
+              12.61,
+              "2026-01-01T11:01:00Z"
+            ],
+            [
+              56.72,
+              12.63,
+              "2026-01-01T11:02:00Z"
+            ]
+          ]
+        }
+      ],
+      "trk": [
+        {
+          "name": "SIMULATED persistence track",
+          "guid": "ae43f488-caa5-445b-88e3-0112875a3475",
+          "points": [
+            [
+              56.68,
+              12.6,
+              "2026-01-01T12:00:00Z"
+            ],
+            [
+              56.69,
+              12.61,
+              "2026-01-01T12:01:00Z"
+            ]
+          ]
+        }
+      ],
+      "connection": [
+        "1",
+        "0",
+        "127.0.0.1",
+        "10110",
+        "0",
+        "",
+        "4800",
+        "1",
+        "0",
+        "0",
+        "",
+        "0",
+        "",
+        "0",
+        "0",
+        "0",
+        "0",
+        "0",
+        "SIMULATED disabled input",
+        "0",
+        "",
+        "0",
+        "1",
+        ""
+      ],
+      "ais_cpa_warn": true,
+      "ais_cpa_nm": 0.75,
+      "dashboard_enabled": true
+    },
+    "chart_rendering": [
+      {
+        "phase": "01-xnav-unavailable.png",
+        "reference_color_fractions": {
+          "eeeee2": 0.18601573676680974,
+          "d5e5e5": 0.8036480686695279
+        },
+        "coastline_visible": true,
+        "style": "XNav",
+        "light": "Day",
+        "source": "immutable HTML tokens"
+      },
+      {
+        "phase": "02-xnav-dusk.png",
+        "reference_color_fractions": {
+          "4e615d": 0.18601573676680974,
+          "344f59": 0.8036480686695279
+        },
+        "coastline_visible": true,
+        "style": "XNav",
+        "light": "Dusk",
+        "source": "immutable HTML tokens"
+      },
+      {
+        "phase": "03-xnav-night.png",
+        "reference_color_fractions": {
+          "25342f": 0.18601573676680974,
+          "121e24": 0.8036480686695279
+        },
+        "coastline_visible": true,
+        "style": "XNav",
+        "light": "Night",
+        "source": "immutable HTML tokens"
+      },
+      {
+        "phase": "11-legacy-after-xnav.png",
+        "reference_color_fractions": {
+          "aaaf50": 0.22296137339055794,
+          "aac3f0": 0.777038626609442
+        },
+        "coastline_visible": true,
+        "style": "Standard",
+        "light": "Day",
+        "source": "pinned software GSHHSChart::SetColorScheme"
+      },
+      {
+        "phase": "06-xnav-after-legacy.png",
+        "reference_color_fractions": {
+          "eeeee2": 0.18601573676680974,
+          "d5e5e5": 0.8036480686695279
+        },
+        "coastline_visible": true,
+        "style": "XNav",
+        "light": "Day",
+        "source": "immutable HTML tokens"
+      },
+      {
+        "phase": "12-safe-shared-profile.png",
+        "reference_color_fractions": {
+          "aaaf50": 0.22296137339055794,
+          "aac3f0": 0.777038626609442
+        },
+        "coastline_visible": true,
+        "style": "Standard",
+        "light": "Day",
+        "source": "pinned software GSHHSChart::SetColorScheme"
+      }
+    ],
+    "result": "interaction and fixture persistence passed; visual review required"
+  },
+  "routeInk": {
+    "route": {
+      "result": "loopback transport and lifecycle passed; numeric and stale screenshot review required",
+      "checks": 0,
+      "evidenceSha256": "5ff59740b91fa7d710b4f1e44135fb265d7ed584e4bf0d345141d792810d5aef"
+    },
+    "route-dusk": {
+      "result": "loopback transport and lifecycle passed; numeric and stale screenshot review required",
+      "checks": 0,
+      "evidenceSha256": "aef6e0e7e5c431ce22c751b16bc08fb4701c11d7282ecdecc2359eadf11d6186"
+    },
+    "route-night": {
+      "result": "loopback transport and lifecycle passed; numeric and stale screenshot review required",
+      "checks": 0,
+      "evidenceSha256": "9cea0e686babd0ce997928cacef891996d2a1e7f2c7eb69a8fce9675de3830c9"
+    },
+    "route-standard": {
+      "result": "loopback transport and lifecycle passed; numeric and stale screenshot review required",
+      "checks": 0,
+      "evidenceSha256": "84388ce5b92102340e4c78cfbf069cb93c1b76a8c822dcc841c2e31a82f07834"
+    }
+  }
+}

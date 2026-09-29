@@ -312,6 +312,7 @@ std::string ProductPanel::PageTitle() const {
   return "Unknown";
 }
 void ProductPanel::ShowPage(ProductPage page, LightMode mode) {
+  if(page==ProductPage::Anchor&&actions_.anchor_watch){actions_.anchor_watch();return;}
   if ((page == ProductPage::Home || page == ProductPage::Settings) && actions_.preferences) {
     actions_.preferences();
     return;
@@ -1026,78 +1027,7 @@ void ProductPanel::Build() {
   else if (page_ == ProductPage::Pilot)
     PilotActions();
   else if (page_ == ProductPage::Anchor) {
-    Heading("Anchor watch", "Distance, movement and watch radius");
-    Visual("Anchor watch", 224, [this](XNavPainter &p, wxDC &dc, int width) {
-      p.Card(0, 0, width, 220, "ANCHOR WATCH");
-      const auto &watch = state_.anchor;
-      const auto distance = vessel::Assess(watch.distance_m, state_.now);
-      const bool current = distance.value &&
-                           (distance.quality == vessel::Quality::Live ||
-                            distance.quality == vessel::Quality::Aging);
-      p.Text(watch.alarm ? "ANCHOR ALARM" : !watch.anchor ? "WATCH OFF" : current ? "WATCH ACTIVE" : "POSITION UNAVAILABLE",
-             24, 48, 20, watch.alarm ? p.c.alarm : current ? p.c.healthy : p.c.attention, false, width - 48);
-      const int half = (width - 48) / 2;
-      Metric(p, watch.distance_m, state_.now, 24, 86, half - 24, "DISTANCE FROM ANCHOR", "m", 0, 42);
-      p.Text("ALARM RADIUS", 24 + half, 86, 11, p.c.secondary);
-      p.Text(watch.radius_m ? wxString::Format("%.0f m", *watch.radius_m) : wxString::FromUTF8("—"),
-             24 + half, 110, 42, p.c.primary, false, half - 24);
-      if (current && watch.radius_m && std::abs(*watch.radius_m) > 0) {
-        dc.SetPen(*wxTRANSPARENT_PEN); dc.SetBrush(wxBrush(Colour(p.c.border)));
-        dc.DrawRoundedRectangle(p.D(24), p.D(200), p.D(width - 48), p.D(4), p.D(2));
-        dc.SetBrush(wxBrush(Colour(watch.alarm ? p.c.alarm : p.c.accent)));
-        dc.DrawRoundedRectangle(p.D(24), p.D(200),
-          p.D(static_cast<int>((width - 48) * std::clamp(*distance.value / std::abs(*watch.radius_m), 0.0, 1.0))), p.D(4), p.D(2));
-      }
-    });
-    BeginActions(2);
-    Action(
-        "Set anchor at vessel position",
-        [this] {
-          auto f =
-              EditSheet(*this, mode_, "Set anchor watch",
-                        "Requires fresh selected OpenCPN position. This "
-                        "creates a real anchor mark.",
-                        {{"Alarm radius / metres", "50", 8}}, "Set anchor");
-          if (f) {
-            double radius;
-            const auto text = W((*f)[0]);
-            if (!text.ToCDouble(&radius)) {
-              Result({false, "Invalid radius", {}});
-              return;
-            }
-            Result(actions_.navigation.start_anchor(radius));
-          }
-        },
-        !state_.vessel.simulated && !state_.vessel.replayed);
-    Action(
-        "Clear anchor watch",
-        [this] {
-          if (ConfirmSheet(*this, mode_, "Clear anchor watch",
-                           "Stops the anchor watch. A mark created only for this watch "
-                           "will be removed; your existing waypoints are preserved.",
-                           "Clear watch"))
-            Result(actions_.navigation.clear_anchor(state_.anchor.waypoint_id));
-        },
-        !state_.vessel.simulated && !state_.vessel.replayed);
-    EndActions();
-    Visual("Anchor conditions", 180, [this](XNavPainter &p, wxDC &, int width) {
-      p.Card(0, 0, width, 176, "CONDITIONS AT THE BOAT");
-      const int cell = (width - 48) / 3;
-      Metric(p, state_.vessel.environment.depth_below_transducer_m, state_.now, 24, 48, cell - 16, "DEPTH", "m / TRANSDUCER");
-      Metric(p, state_.vessel.wind.apparent_speed_kn, state_.now, 24 + cell, 48, cell - 16, "WIND", "kn APPARENT");
-      Metric(p, state_.vessel.battery.soc_percent, state_.now, 24 + cell * 2, 48, cell - 16, "BATTERY", "%", 0);
-    });
-    Action(anchor_history_ ? "Hide recorded positions" : "Recorded positions", [this] { anchor_history_ = !anchor_history_; Build(); });
-    if (anchor_history_) {
-      LiveText([](const auto &s) {
-        wxString text = s.anchor.anchor ? wxString::Format("Anchor %.5f, %.5f", s.anchor.anchor->latitude_deg, s.anchor.anchor->longitude_deg) : wxString("No anchor position");
-        const auto &history = s.anchor.recent_positions;
-        const auto first = history.size() > 8 ? history.size() - 8 : 0;
-        for (std::size_t i = first; i < history.size(); ++i)
-          text += wxString::Format("\n%.0f s ago  %.5f, %.5f", std::chrono::duration<double>(s.now - history[i].observed_at).count(), history[i].position.latitude_deg, history[i].position.longitude_deg);
-        return text;
-      });
-    }
+    Heading("Anchor watch", "Anchor watch is unavailable in this context");
   } else if (page_ == ProductPage::Settings) {
     Heading("Settings", "Your vessel, navigation and display");
     BeginActions(2);
