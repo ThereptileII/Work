@@ -37,6 +37,11 @@ welcome=module('installer-welcome');startup=module('startup-log')
 def sha(p):return hashlib.sha256(p.read_bytes()).hexdigest()
 def inventory(p):return {f.relative_to(p).as_posix():sha(f) for f in p.rglob('*') if f.is_file()}
 def check(name):report['checks'].append(name);print(name,flush=True)
+def chart_check(rgb,style,phase):
+    # This software-rendered fixture starts in Day. Legacy, Safe and untouched
+    # stock use pinned OpenCPN inks; only XNav uses the prototype palette.
+    # Never relearn a changed/blank chart as an acceptable mode baseline.
+    report.setdefault('chart_rendering',[]).append(charts.presentation(rgb,style,'Day',phase))
 def state():return json.loads((INSTALL/'state.json').read_text(encoding='utf-8-sig'))
 def generation():return INSTALL/'generations'/state()['current']
 def operation_report(action):
@@ -373,7 +378,7 @@ try:
         assert (SHORTCUTS/'OpenNav X.lnk').is_file() and not OLD_SHORTCUTS.exists()
         assert sha(generation()/'app/opencpn.exe')==sha(ROOT/'build/production-install/opencpn.exe')
         p,h,rgb=launch(generation()/'app/opencpn.exe',['--xnav'],'OpenNav X / OpenCPN',profile,'installer-00-clean-candidate')
-        charts.reference(rgb);close(p,h);assert fixture_snapshot(profile)==expected
+        chart_check(rgb,'XNav','Clean installed XNav');close(p,h);assert fixture_snapshot(profile)==expected
         stable_resources(profile,stock)
         before=inventory(profile)
         engine('Rollback')
@@ -471,21 +476,24 @@ try:
         first=state()['current'];exe=generation()/'app/opencpn.exe'
         assert not (exe.parent/'OPENNAV_PORTABLE_PREVIEW').exists()
         p,h,rgb=launch(exe,['--xnav'],'OpenNav X / OpenCPN',profile,'installer-01-xnav',welcome_transition='beta1-to-candidate')
-        colors=charts.reference(rgb);close(p,h);assert fixture_snapshot(profile)==expected
+        chart_check(rgb,'XNav','Installed XNav');close(p,h);assert fixture_snapshot(profile)==expected
         check('Installed XNav starts against normal wx profile; coastline and navigation fixtures preserved')
         for mode,title,name in [('--legacy','OpenCPN / Legacy','legacy'),('--safe-mode','OpenNav Safe Mode / OpenCPN','safe')]:
             p,h,rgb=launch(exe,[mode],title,profile,'installer-02-'+name)
-            charts.check(rgb,colors,'Installed '+name);close(p,h);assert fixture_snapshot(profile)==expected
+            chart_check(rgb,'Standard','Installed '+name);close(p,h);assert fixture_snapshot(profile)==expected
         check('Installed Legacy and Safe start with charts and shared navigation/config/plugin preferences')
         # Controlled return through both product interfaces, not only separate launches.
         p,h,rgb=launch(exe,['--xnav'],'OpenNav X / OpenCPN',profile,'installer-03-before-switch')
+        chart_check(rgb,'XNav','Installed XNav before mode switch')
         before=startup_baseline(profile);ui.click_text(p.pid,'System');ui.click_text(p.pid,'Open Legacy OpenCPN')
         assert p.wait(timeout=35)==0;owned.discard(p.pid)
         h,pid=ui.wait_window('OpenCPN / Legacy');owned.add(pid);wait_ready(profile,before)
+        rgb=ui.capture(h,EVIDENCE/'installer-03-switched-legacy.png');report['screenshots'].append('installer-03-switched-legacy.png')
+        chart_check(rgb,'Standard','Installed XNav to Legacy')
         before=startup_baseline(profile);monitor=ui.monitor_process(pid);ui.click_menu(h,'Switch to XNav');ui.wait_clean_exit(monitor);owned.discard(pid)
         h,pid=ui.wait_window('OpenNav X / OpenCPN');owned.add(pid);wait_ready(profile,before)
         rgb=ui.capture(h,EVIDENCE/'installer-04-returned-xnav.png');report['screenshots'].append('installer-04-returned-xnav.png')
-        charts.check(rgb,colors,'Installed XNav Legacy XNav')
+        chart_check(rgb,'XNav','Installed XNav Legacy XNav')
         monitor=ui.monitor_process(pid);ui.close(h);ui.wait_clean_exit(monitor);owned.discard(pid)
         assert fixture_snapshot(profile)==expected
         stable_resources(profile,stock,[custom_tide])
@@ -659,7 +667,7 @@ try:
         assert list((INSTALL/'generations').glob('*/app/plugins/alpha-user-preserved.txt')), 'Custom additions were removed'
         check('Conventional uninstaller removes verified owned app files; exact stock/profile unchanged; custom additions retained')
         p,h,rgb=launch(original,[],'OpenCPN 5.12.4-0',profile,'installer-05-restored-stock',welcome_transition='candidate-to-stock')
-        charts.check(rgb,colors,'Untouched stock after uninstall');close(p,h)
+        chart_check(rgb,'Standard','Untouched stock after uninstall');close(p,h)
         assert fixture_snapshot(profile)==expected
         stable_resources(profile,stock,[custom_tide])
         check('Stock resource defaults survive every generation and uninstall; explicit custom tide selection is preserved')

@@ -1,8 +1,10 @@
 #!/usr/bin/env python3
 """Portable regression for the native DPI test's layout-observation barrier."""
 import copy
+import ast
 import importlib.util
 from pathlib import Path
+from types import SimpleNamespace
 import unittest
 
 spec = importlib.util.spec_from_file_location('diagnostic_geometry', Path(__file__).with_name('diagnostic-geometry.py'))
@@ -87,6 +89,103 @@ class LayoutObservation(unittest.TestCase):
         self.assertTrue(geometry.matches_native_controls(self.record, self.expected, 8))
         with self.assertRaises(AssertionError):
             assert 0 <= region['x'] < region['x']+region['width'] <= 1280
+
+
+class PreferencesTouch(unittest.TestCase):
+    """Exercise the actual Windows harness function with native observations.
+
+    These fakes test the evidence gate, not Windows touch/render acceptance.
+    In particular, a clipped but WS_VISIBLE HWND must never receive a tap.
+    """
+    def setUp(self):
+        source=Path(__file__).with_name('smoke-dpi-windows.py')
+        tree=ast.parse(source.read_text())
+        function=next(n for n in tree.body if isinstance(n,ast.FunctionDef)
+                      and n.name=='touch_preferences_action')
+        self.rects=[(120,410,480,482),(120,220,480,292)]
+        self.index=0;self.pans=[];self.taps=[]
+        self.enabled=True;self.visible_override=None
+        self.covered=False;self.pan_overlay=False
+        def bounds(handle):
+            r=self.rects[self.index] if handle==22 else (100,100,500,400)
+            return SimpleNamespace(**dict(zip(('left','top','right','bottom'),r)))
+        def observation(label):
+            r=self.rects[self.index]
+            visible=100<=r[1]<r[3]<=400 if self.visible_override is None else self.visible_override
+            control=dict(label=label,x=r[0],y=r[1],width=r[2]-r[0],height=r[3]-r[1],
+                         visible=visible,enabled=self.enabled)
+            return {'runtime':{'ui_update':{'ticks':self.index+1},'display':{
+                'interaction_controls':[control]}}},22
+        def hit(point):
+            r=self.rects[self.index]
+            if r[0]<=point.x<r[2] and r[1]<=point.y<r[3]:
+                return 99 if self.covered else 22
+            return 99 if self.pan_overlay else 21
+        def inject(kind,*coordinates):
+            if kind=='--pan':
+                self.pans.append(coordinates)
+                self.index=min(self.index+1,len(self.rects)-1)
+            elif kind=='--tap':self.taps.append(coordinates)
+            else:raise AssertionError('Unexpected input')
+            return {'touch_injected':True}
+        ui=SimpleNamespace(wait_window=lambda *args:(20,7),user=None,
+            W=SimpleNamespace(HWND=int,POINT=lambda x,y:SimpleNamespace(x=x,y=y)),
+            declare=lambda *args:lambda:20,SetForegroundWindow=lambda _:True,
+            IsWindowEnabled=lambda _:self.enabled,GetParent=lambda h:{22:21,21:20}[h],
+            WindowFromPoint=hit,IsChild=lambda parent,child:parent==21 and child==22)
+        namespace=dict(ui=ui,pid=7,bounds=bounds,preferences_observation=observation,
+                       dpi=inject,time=SimpleNamespace(sleep=lambda _:None))
+        exec(compile(ast.Module(body=[function],type_ignores=[]),str(source),'exec'),namespace)
+        self.action=namespace['touch_preferences_action']
+
+    def reject(self):
+        with self.assertRaises(AssertionError):self.action('Battery & reserve',125)
+        self.assertEqual(self.taps,[],'Invalid/clipped action received a tap')
+
+    def test_clipped_action_is_scrolled_before_exact_native_tap(self):
+        result=self.action('Battery & reserve',125)
+        self.assertEqual(len(self.pans),1)
+        self.assertEqual(self.taps,[(300,256)])
+        self.assertEqual([r['visible'] for r in result['observations']],[False,True])
+        self.assertTrue(result['native_hit_target_verified'])
+
+    def test_visible_action_does_not_scroll(self):
+        self.rects=[(120,220,480,292)]
+        self.action('Battery & reserve',100)
+        self.assertEqual(self.pans,[])
+        self.assertEqual(self.taps,[(300,256)])
+
+    def test_no_scroll_progress_refuses(self):
+        self.rects=self.rects[:1]
+        self.reject()
+        self.assertEqual(len(self.pans),1)
+
+    def test_scroll_attempts_are_bounded(self):
+        self.rects=[(120,5000-i,480,5072-i) for i in range(41)]
+        self.reject()
+        self.assertEqual(len(self.pans),40)
+
+    def test_diagnostic_visible_flag_cannot_hide_native_clipping(self):
+        self.visible_override=True
+        self.reject()
+        self.assertEqual(self.pans,[])
+
+    def test_horizontal_clipping_refuses(self):
+        self.rects=[(90,220,480,292)]
+        self.reject()
+
+    def test_disabled_action_refuses(self):
+        self.enabled=False
+        self.reject()
+
+    def test_covering_surface_prevents_tap(self):
+        self.rects=[(120,220,480,292)];self.covered=True
+        self.reject()
+
+    def test_pan_cannot_target_another_surface(self):
+        self.pan_overlay=True
+        self.reject()
+        self.assertEqual(self.pans,[])
 
 
 if __name__ == '__main__':

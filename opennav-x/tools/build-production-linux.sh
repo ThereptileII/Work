@@ -10,6 +10,7 @@ args=(-G Ninja -DCMAKE_BUILD_TYPE=Release -DCMAKE_POLICY_VERSION_MINIMUM=3.5
   -DOCPN_BUILD_TEST=ON -DOCPN_BUNDLE_DOCS=OFF -DOCPN_BUNDLE_GSHHS=ON
   -DOCPN_BUNDLE_TCDATA=ON -DOPENNAV_ROOT="$root"
   -DOPENNAV_ENABLE_ROUTE_SCENARIO=OFF -DXNAV_ENABLE_TEST_FIXTURES=OFF
+  -DXNAV_ENABLE_PILOT_LOOPBACK_TESTS=OFF
   -DCMAKE_INSTALL_PREFIX="$root/build/production-install")
 if [[ -x .local/sysroot/usr/bin/wx-config ]]; then
   args+=(-DwxWidgets_CONFIG_EXECUTABLE="$root/tools/wx-config-local"
@@ -21,3 +22,4 @@ cmake --install build/production-linux 2>&1 | tee evidence/local/production-linu
 if [[ "${1:-}" == "--build-only" ]]; then exit 0; fi
 dbus-run-session -- ctest --test-dir build/production-linux/test --output-on-failure --no-tests=error -E '^tests$' --timeout 90 --output-junit "$root/evidence/local/production-linux-tests.xml" 2>&1 | tee evidence/local/production-linux-tests.log
 python3 tools/smoke-installer-selftest.py --app build/production-install/bin/opencpn
+python3 tools/smoke-pilot.py --production

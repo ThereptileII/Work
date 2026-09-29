@@ -193,6 +193,7 @@ try:
     forbidden = {'OPENNAV_TEST_PROFILE', 'OPENNAV_ROUTE_FIXTURE', 'OPENNAV_OBJECT_FIXTURE', 'scenarios.json'}
     assert not any(file.name in forbidden or 'demo' in (part.casefold() for part in file.relative_to(package).parts) for file in package.rglob('*'))
     build = json.loads((package / 'docs/PRODUCT_BUILD.json').read_text())
+    assert build.get('xnav_hardware_output_policy') == 'status-only'
     assert build['test_fixtures'] is False and build['build_purpose'] == 'INSTALLED PRODUCT'
     assert build['executable_sha256'] == sha(exe)
     helper = package / 'app/opennav-restart.exe'
@@ -202,6 +203,7 @@ try:
                             capture_output=True, timeout=30)
     assert tested.returncode == 0
     identity = json.loads(selftest.read_text())
+    assert identity.get('xnav_hardware_output_policy') == 'status-only'
     assert identity['test_fixtures'] is False and identity['build_purpose'] == 'INSTALLED PRODUCT'
     assert identity['version'] == '0.4.0-beta2' and identity['commit'] == os.environ['GITHUB_SHA']
     assert not identity['profile_initialized'] and not identity['plugins_loaded']

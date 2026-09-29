@@ -7,7 +7,7 @@ $Source = Join-Path $PSScriptRoot '../installer/windows/Lifecycle.ps1'
 $ParseErrors = $null
 $Ast = [System.Management.Automation.Language.Parser]::ParseFile($Source, [ref]$null, [ref]$ParseErrors)
 if ($ParseErrors) { throw ($ParseErrors | Out-String) }
-foreach ($Name in @('Log','Hash','PlainPath','RelativePath','ReadJson','AtomicJson','PeArchitecture','FileRecords','VerifyFiles','SelfTest','ExtractPayload','Failure')) {
+foreach ($Name in @('Log','Hash','PlainPath','RelativePath','ReadJson','Assert-StatusOnlyOutput','Resolve-OutputPolicy','AtomicJson','PeArchitecture','FileRecords','VerifyFiles','SelfTest','ExtractPayload','Failure')) {
   $Definitions = @($Ast.FindAll({ param($Node) $Node -is [System.Management.Automation.Language.FunctionDefinitionAst] -and $Node.Name -eq $Name }, $true))
   if ($Definitions.Count -ne 1) { throw "Expected one actual engine function: $Name" }
   . ([scriptblock]::Create($Definitions[0].Extent.Text))
@@ -123,7 +123,7 @@ class OpenNavLoaderContractFixture {
   static int Main(string[] args) {
     if (args.Length != 2 || args[0] != "--opennav-self-test") return 64;
     if ((GetErrorMode() & 0x8003) != 0x8003) return 65;
-    File.WriteAllText(args[1], "{\"passed\":true,\"commit\":\"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\",\"version\":\"loader-fixture\",\"profile_initialized\":false,\"plugins_loaded\":false}");
+    File.WriteAllText(args[1], "{\"passed\":true,\"commit\":\"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\",\"version\":\"loader-fixture\",\"profile_initialized\":false,\"plugins_loaded\":false,\"xnav_hardware_output_policy\":\"status-only\"}");
     return 0;
   }
 }

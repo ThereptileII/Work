@@ -4,6 +4,12 @@ The portable adapter library depends only on Vessel Data. SmartNav does not
 link it. UI manual actions are the only intended caller of `ManualAutopilot`.
 Safe and Legacy do not instantiate OpenNav control components.
 
+Public-beta policy supersedes the historical Alpha/Beta enablement descriptions
+below: XNav-owned physical output is unavailable in installed builds. Passive
+pilot feedback remains; only an explicitly compiled, non-installable local TCP
+test path may transmit. See the [SCRUM-19 policy](st4000-beta-contract.md#public-beta-output-restriction--scrum-19).
+This does not disable independently configured stock OpenCPN or plugin outputs.
+
 ## Autopilot
 
 `IAutopilot` separates capabilities, observed state, explicit polling and send.

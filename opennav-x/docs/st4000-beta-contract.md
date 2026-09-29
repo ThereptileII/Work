@@ -5,6 +5,54 @@ OpenCPN's existing N2K driver registry and application-thread subscriptions.
 Desktop loopback and native acceptance are separate from physical commissioning.
 No physical commands or firmware flashing occurred during this work.
 
+## Public-beta output restriction — SCRUM-19
+
+The normal installed/recovery product is now **status-only for XNav-owned
+equipment output**. The earlier live-adapter description below records the
+tested architecture, not public-beta physical command approval. Saved manual
+permission from previous builds is preserved as configuration but cannot enable
+output. Passive identity-bound pilot status/heading remain available. The pilot
+drawer and setup state that equipment commands are unavailable; configuration
+does not expose permission or ISO identity-request actions in the product.
+
+`XNAV_ENABLE_PILOT_LOOPBACK_TESTS` defaults OFF. Enabling it requires
+`XNAV_ENABLE_TEST_FIXTURES=ON` and produces a non-installable developer build.
+There is no physical-output build switch. In the integration, effective
+capabilities and the final transport sink independently enforce this policy.
+Even the test build requires enabled bidirectional Actisense TCP, literal
+configured address `127.0.0.1`, a connected socket whose actual peer is exactly
+`127.0.0.1`, and matching valid configured/peer ports. Interface labels, DNS,
+runtime settings and environment variables cannot grant capability. Production
+rejects both pilot commands and ISO address-claim requests. Poll/read/observe
+never transmits. Tests retain full protocol encoding and positive local
+OpenCPN serialization/feedback coverage without physical equipment.
+
+The executed loader report and runtime diagnostics expose
+`xnav_hardware_output_policy` as `status-only` or `test-loopback-only`.
+Packaging, new install/update validation and release artifact collection require
+the literal status-only value; missing, malformed or loopback capability is
+rejected. Historical rollback retains the existing exact owned-generation and
+file-hash checks. Historical repair additionally requires an exact match to the
+recorded package hash, source commit and version. These recovery paths may
+restore an older missing-attestation generation, explicitly labelled
+`historical-unqualified`, without qualifying it as a new public-beta candidate.
+An explicit disallowed capability is never accepted via this recovery exception.
+
+This is **not a promise that the entire OpenCPN process is receive-only**.
+Stock configured navigation output (`Routeman::UpdateAutopilot`), drivers and
+third-party plugins retain their upstream behavior. Legacy remains intact.
+Read-only boat testing still requires the separate audited profile/plugin
+[commissioning transaction](installer/read-only-commissioning.md).
+
+New portable tests exercise the actual final-sink policy with valid loopback,
+remote/spoofed/malformed endpoint and environment-override cases in both build
+branches. Presentation tests retain measured status while rejecting old enabled
+state. Package/actual installer-validator denial matrices and a production
+loopback smoke test verify that saved manual permission, fresh compatible
+feedback, physical button input and reconnect produce no command or discovery
+bytes. Fresh Linux/native Windows and boat evidence are required separately;
+implementation or old firmware dockside evidence is not release qualification.
+
 ## Inspected implementation
 
 The actual local translator is `a94b816b2d5d8238366c2e7c0fe8ef15f9dde4ee`.

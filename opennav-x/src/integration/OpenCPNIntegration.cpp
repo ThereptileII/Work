@@ -530,7 +530,7 @@ void Attach(MyFrame& frame, wxAuiManager& manager, wxFileConfig& config) {
       });
   actions.route_creating=[&frame]{return frame.GetPrimaryCanvas()->m_routeState>0;};
   pilots = std::make_unique<PilotServices>([] {
-    return pilots && !pilots->was_demo && !restart &&
+    return integration::PilotLoopbackTestsEnabled() && pilots && !pilots->was_demo && !restart &&
            (!commissioning || commissioning->AllowsHardwareControl());
   });
   pilots->was_demo = demo;
@@ -565,6 +565,7 @@ void Attach(MyFrame& frame, wxAuiManager& manager, wxFileConfig& config) {
     const auto before = p.GetState(now).command.state;
     p.Tick(now);
     auto view = p.GetState(now);
+    view.output_unavailable = !simulated && !integration::PilotLoopbackTestsEnabled();
     view.adapter_status = simulated ? "DEMO / simulated feedback" : pilots->hardware.Description();
     if (before != view.command.state)
       wxLogMessage("OpenNav manual pilot %llu: %s / %s",
@@ -586,6 +587,8 @@ void Attach(MyFrame& frame, wxAuiManager& manager, wxFileConfig& config) {
                  wxString::FromUTF8(c.detail));
   };
   actions.pilot_enable = [](bool simulated, bool enabled) {
+    if (enabled && !simulated && !pilots->hardware.Capabilities().manual_control)
+      return;
     if (enabled && commissioning && !commissioning->AllowsHardwareControl())
       return;
     pilots->Select(simulated).Enable(enabled, vessel::Clock::now());
@@ -752,6 +755,7 @@ void Attach(MyFrame& frame, wxAuiManager& manager, wxFileConfig& config) {
       auto &pilot = runtime["pilot"];
       pilot["simulated"] = state.simulated;
       pilot["enabled"] = view.enabled;
+      pilot["output_unavailable"] = !state.simulated && !integration::PilotLoopbackTestsEnabled();
       pilot["fresh"] = view.fresh;
       pilot["mode"] = wxString::FromUTF8(adapters::PilotModeName(view.feedback.mode));
       pilot["source"] = wxString::FromUTF8(view.feedback.source);

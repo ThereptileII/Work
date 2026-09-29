@@ -1,26 +1,67 @@
 # OpenNav X status — 2026-09-29
 
-## Current stage: prototype design lock, chart presentation and Online AIS
+## Current stage: Jira-driven paid public beta
 
-Source Health now uses the prototype's disclosure sheet with separate onboard
-and Online AIS status, per-measurement quality and a direct path to the user's
-protected AISStream key settings. Incomplete GPS pairs and estimated readings
-no longer appear as healthy measured connections. Linux passes 133 product
-regressions, 133 fixture regressions and 49 component checks/six captures, with
-two actual-product captures and retained comparisons. The retained preview
-passes eight groups/44 captures and AIS own-key regressions pass 151 checks. Native replacement and
-boat review remain open. See [Source Health review](design/reviews/prototype-source-health-in-progress.md).
+[Navigare / SCRUM](https://swedishcountrysideliving.atlassian.net/jira/software/projects/SCRUM/boards/1)
+is the sole backlog. The complete [public-beta contract](public-beta-contract.md)
+now governs the application, distribution, website, commerce, support and
+release gates. The approved public identity is SKAGER / SKAGER App; domain
+control and legal clearance remain separate gates in SCRUM-89. Public payment
+and download access remain closed pending the final human GO/NO-GO review.
 
-Native `60a9e8b` / run `36532671500` finishes seven jobs passed and one
-failed. The product passes 124 MSVC tests, 151 own-key checks/twelve captures,
-29 product captures, software ENC/theme/unit checks and 100/125/150% development
-DPI probes. The fixture job passes chart gestures, shared-profile mode switching
-and all eight preview groups/44 captures, then fails the Preferences scroll
-stability check at 100%. No failure is waived. The replacement pairs native HWND
-bounds with a later diagnostic observation before the unchanged endpoint check;
-ten portable observation tests pass, native replacement is pending. All nine
-archives verify. Full run `36532672143` remains pending. Deployment is withheld.
-See [native development evidence](evidence/prototype-native-60a9e8b-development.json).
+SCRUM-19 now enforces status-only XNav equipment output at the final transport
+boundary, independent of saved permissions. Passive pilot feedback remains
+available. The separate non-installable command-test build is restricted to a
+verified local TCP peer. Package/install/update checks require an executed
+status-only declaration; exact historical rollback/repair remain recovery-only
+and explicitly unqualified. Portable denial checks and 27 actual installer
+policy checks pass; integrated Linux/native Windows replacement is pending.
+Stock OpenCPN/plugin output remains independent and still requires the boat
+profile/plugin audit. See the [hardware boundary](st4000-beta-contract.md#public-beta-output-restriction--scrum-19).
+
+Prototype conformance, chart presentation and Online AIS remain in progress
+under SCRUM-14/15/16. SCRUM-19 addresses unqualified XNav physical output;
+SCRUM-98 tracks the native installer/chart and DPI gate repairs. SCRUM-97 has
+committed the Jira workflow and project-goal changes, but its required complete
+issue-to-acceptance cycle remains open. No issue is accepted from compilation
+or component checks alone.
+
+Source Health now uses the prototype disclosure sheet with independent onboard
+and Online AIS status, per-measurement quality and protected AISStream key
+settings. Incomplete GPS pairs and estimated readings do not appear as healthy
+measured connections. See the [Source Health review](design/reviews/prototype-source-health-in-progress.md).
+
+Native `f934f3b` / prototype run `36536723961` finishes seven jobs passed and
+one failed. The full run `36536897649` finishes fourteen passed, one failed and
+one skipped; publication is withheld. Linux product and fixture suites each
+pass 133 tests; their MSVC counterparts each pass 125. Native evidence includes
+151 own-key checks/twelve captures, 49 Source Health checks/six captures,
+33 primary product captures plus four Online AIS captures, and 19 retained
+preview groups/50 captures. Linux completes the actual three-hour endurance
+run. Windows endurance was not reached.
+
+The installer passes eighteen checks before applying XNav chart colors to
+Legacy. Retained pixels show real coastline in the pinned Standard palette;
+the independent exact Standard oracle passes. The replacement checks each
+mode against its own independently defined palette and adds the actual
+XNav-to-Legacy transition capture. Its portable suite increases to 54 exact
+palette checks, including blank, wrong-style and wrong-light rejection, while
+retaining eighteen geometry rejection checks. The DPI gate confirms the exact
+Preferences scroll endpoint at 100%, then encounters outdated action captions.
+The replacement uses the current drawer actions and reopens Settings for each
+destination. A further correction requires actual touch scrolling and a fully
+visible, exact native hit target for Battery & reserve; all nineteen observation
+and touch-helper regressions pass locally. Full native replacement at 100/125/150% and the installer lifecycle
+remain mandatory. No failure is waived and no boat deployment is accepted.
+Six downloaded archives are hash/size/CRC/path verified. See the
+[exact native development evidence](evidence/prototype-native-f934f3b-development.json).
+
+Earlier `60a9e8b` / prototype run `36532671500` finishes seven jobs passed and
+one failed; its full run `36532672143` is also terminally failed. The earlier
+Preferences observation failure and all retained negative evidence remain in
+[native development evidence](evidence/prototype-native-60a9e8b-development.json).
+The later `f934f3b` evidence above supersedes the pending-run status, without
+transferring acceptance across builds.
 
 The equivalent local `60a9e8b` tree passes 132 product tests, 132 fixture tests,
 151 AIS component checks/twelve captures, all route gestures, and eight preview

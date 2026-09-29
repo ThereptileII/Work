@@ -13,6 +13,7 @@ import re
 import shutil
 import subprocess
 import zipfile
+from hardware_output_policy import require_status_only
 from restart_capability import verified_restart_protocol
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -116,6 +117,7 @@ finally:
 if checked.returncode != 0 or not selftest_path.is_file():
     raise SystemExit('Packaged executable loader self-test failed')
 actual = json.loads(selftest_path.read_text(encoding='utf-8-sig'))
+require_status_only(actual)
 if (actual.get('passed') is not True or actual.get('test_fixtures') is not False or
         actual.get('build_purpose') != 'INSTALLED PRODUCT' or actual.get('commit') != commit or
         actual.get('version') != product_version or actual.get('profile_initialized') is not False or
@@ -139,6 +141,7 @@ for file in destination.rglob('*'):
 (destination / 'docs/PRODUCT_BUILD.json').write_text(json.dumps({
     'version': product_version, 'commit': commit, 'test_fixtures': False,
     'build_purpose': 'INSTALLED PRODUCT',
+    'xnav_hardware_output_policy': actual['xnav_hardware_output_policy'],
     'executable_sha256': hashlib.sha256((app / 'opencpn.exe').read_bytes()).hexdigest(),
     'restart_helper_sha256': hashlib.sha256((app / 'opennav-restart.exe').read_bytes()).hexdigest(),
     'commissioning_restart_protocol': restart_protocol

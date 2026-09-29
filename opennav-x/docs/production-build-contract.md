@@ -57,3 +57,13 @@ adapter contracts continue to link their dedicated fixtures.
 symbol tables with native MSVC or GNU tools. All six generators must be absent
 from live runtime archives and present in the separate test archive, which
 provides a positive control for the symbol reader.
+
+## XNav-owned equipment output — SCRUM-19
+
+Installed builds require `XNAV_ENABLE_PILOT_LOOPBACK_TESTS=OFF` and executed
+`xnav_hardware_output_policy=status-only` attestation. Old saved pilot permission
+cannot upgrade this capability. The explicit loopback flag requires fixture
+builds and restricts the actual configured address/socket peer to 127.0.0.1.
+Packaging and new installer candidates refuse missing/other policy. Exact
+historical recovery remains available without calling that payload qualified;
+see [hardware policy and recovery distinction](st4000-beta-contract.md#public-beta-output-restriction--scrum-19).

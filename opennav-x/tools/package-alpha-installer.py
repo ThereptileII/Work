@@ -9,6 +9,7 @@ from pathlib import Path
 import shutil
 import subprocess
 import zipfile
+from hardware_output_policy import require_status_only
 ROOT = Path(__file__).resolve().parents[1]
 p=argparse.ArgumentParser()
 p.add_argument('--preview',type=Path,required=True)
@@ -28,6 +29,7 @@ if a.candidate:
 if not manifest['supportedOpenCpn']: raise SystemExit('No accepted OpenCPN configuration; release installer refused')
 a.output.mkdir(parents=True)
 preview=a.preview.resolve()
+require_status_only(json.loads((preview/'docs/PRODUCT_BUILD.json').read_text()))
 with zipfile.ZipFile(a.output/'payload.zip','w',zipfile.ZIP_DEFLATED,compresslevel=6) as z:
     records=[]
     for directory in ('app','docs'):

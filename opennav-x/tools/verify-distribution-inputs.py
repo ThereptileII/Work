@@ -25,6 +25,7 @@ assert version == manifest['openNavVersion'] == '0.4.0-beta2'
 assert all(entry['integrationPackage'] == 'OpenNavX-Beta2-Setup.exe' for entry in manifest['supportedOpenCpn'])
 assert (root/'src/integration/BuildFeatures.h').is_file()
 assert 'option(XNAV_ENABLE_TEST_FIXTURES' in (root/'CMakeLists.txt').read_text()
+assert 'option(XNAV_ENABLE_PILOT_LOOPBACK_TESTS' in (root/'CMakeLists.txt').read_text()
 
 qualification = json.loads((root/'release/qualification.json').read_text())
 if qualification['publishNamedRelease'] and qualification['stage'].startswith('beta'):

@@ -1,4 +1,5 @@
 #include "integration/OpenCPNPilot.h"
+#include "integration/PilotOutputPolicy.h"
 #include "model/comm_drv_n2k_net.h"
 #include "model/comm_drv_registry.h"
 #include "model/comm_drv_stats.h"
@@ -18,6 +19,26 @@ CommDriverN2K *Driver(const std::string &iface) {
     if (d->bus == NavAddr::Bus::N2000 && d->iface == iface)
       return dynamic_cast<CommDriverN2K *>(d.get());
   return nullptr;
+}
+PilotOutputEndpoint Endpoint(CommDriverN2K *driver) {
+  PilotOutputEndpoint endpoint;
+  auto *network = dynamic_cast<CommDriverN2KNet *>(driver);
+  if (!network) return endpoint;
+  const auto params = network->GetParams();
+  auto *socket = network->GetSock();
+  endpoint.tcp = params.NetProtocol == TCP;
+  endpoint.bidirectional = params.IOSelect == DS_TYPE_INPUT_OUTPUT;
+  endpoint.enabled = params.bEnabled;
+  endpoint.connected = socket && socket->IsOk() && socket->IsConnected();
+  endpoint.actisense = network->GetN2kFormat() == N2KFormat_Actisense_N2K_ASCII;
+  endpoint.configured_address = params.NetworkAddress.ToStdString(wxConvUTF8);
+  endpoint.configured_port = params.NetworkPort;
+  wxIPV4address peer;
+  if (endpoint.connected && socket->GetPeer(peer)) {
+    endpoint.peer_address = peer.IPAddress().ToStdString(wxConvUTF8);
+    endpoint.peer_port = peer.Service();
+  }
+  return endpoint;
 }
 } // namespace
 OpenCPNPilot::OpenCPNPilot(std::function<bool()> allowed)
@@ -111,22 +132,25 @@ OpenCPNPilot::Status(const std::string &iface) const {
   status.writable = status.connected && params.NetProtocol == TCP &&
                     params.IOSelect == DS_TYPE_INPUT_OUTPUT &&
                     network->GetN2kFormat() == N2KFormat_Actisense_N2K_ASCII &&
-                    output_allowed_ && output_allowed_();
+                    output_allowed_ && output_allowed_() &&
+                    PilotOutputPermitted(Endpoint(driver));
   status.detail =
-      !status.connected           ? "OpenCPN network disconnected"
+      !PilotLoopbackTestsEnabled() ? "Status only; XNav equipment output unavailable in this product"
+      : !status.connected         ? "OpenCPN network disconnected"
       : params.NetProtocol != TCP ? "Status only; N2K UDP output is unsupported"
       : params.IOSelect != DS_TYPE_INPUT_OUTPUT
           ? "Status only; bidirectional OpenCPN connection required"
       : network->GetN2kFormat() != N2KFormat_Actisense_N2K_ASCII
           ? "Status only; qualified output requires Actisense complete-PGN "
             "ASCII"
-      : !status.writable ? "Output isolated during DEMO/REPLAY/transition"
-                         : "OpenCPN TCP / Actisense N2K ASCII / feedback "
+      : !status.writable ? "Test output withheld: local peer or session isolation"
+                         : "TEST LOOPBACK ONLY / OpenCPN TCP / Actisense N2K ASCII / feedback "
                            "confirmation required";
   return status;
 }
 adapters::PilotCapabilities OpenCPNPilot::Capabilities() const {
   MainThread();
+  if (!PilotLoopbackTestsEnabled()) return {};
   return pilot_.Capabilities();
 }
 bool OpenCPNPilot::Send(const adapters::PilotRequest &r) {
@@ -156,6 +180,8 @@ bool OpenCPNPilot::Send(const std::string &iface, std::uint8_t destination,
       std::make_shared<Nmea2000Msg>(pgn, data, destination_address, priority);
   // Driver serialization/transport remains OpenCPN-owned. Its true return does
   // NOT establish network delivery; only new physical status can confirm.
-  return driver->SendMessage(message, destination_address);
+  return DispatchPilotOutput(Endpoint(driver), [&] {
+    return driver->SendMessage(message, destination_address);
+  });
 }
 } // namespace opennav::integration

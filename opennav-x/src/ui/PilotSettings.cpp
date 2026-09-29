@@ -1,25 +1,28 @@
 #include "ui/ProductPanel.h"
 #include "ui/Sheet.h"
+#include "integration/BuildFeatures.h"
 
 namespace opennav::ui {
 namespace {
 wxString W(const std::string &s) { return wxString::FromUTF8(s); }
 } // namespace
 void ProductPanel::PilotSettings() {
-  Heading("Autopilot setup", "Display-only until deliberately enabled");
+  const bool test_output = integration::PilotLoopbackTestsEnabled();
+  Heading("Autopilot setup", test_output ? "Developer loopback test only" : "Pilot status / equipment control unavailable");
   const auto &b = state_.settings.pilot;
   LiveText([](const auto &s) {
-    return wxString(s.settings.pilot.permit_control ? "Manual control permitted" : "Autopilot control OFF") +
+    return wxString(!integration::PilotLoopbackTestsEnabled() ? "Status only / XNav cannot command equipment" : s.settings.pilot.permit_control ? "Loopback test permission configured" : "Autopilot control OFF") +
            (s.pilot.fresh ? " / Connected" : " / Waiting for pilot feedback");
   });
-  Text("Saving permission does not engage the pilot. Manual control must also be enabled each session. SmartNav never steers the vessel.");
+  Text(test_output ? "Loopback testing only. Manual control must also be enabled each session. SmartNav never steers the vessel."
+                  : "This product displays observed pilot status. Physical equipment commands are unavailable. Use the physical helm. Saved permissions from older builds cannot enable XNav control.");
   BeginActions(2);
   Action("Back to manual autopilot", [this] { ShowPage(ProductPage::Pilot, mode_); });
-  Action(b.permit_control ? "Return to display-only" : "Permit manual live control...", [this] {
+  if (test_output) Action(b.permit_control ? "Return to display-only" : "Permit loopback test control...", [this] {
     auto s = actions_.settings();
-    if (!s.pilot.permit_control && !ConfirmSheet(*this, mode_, "Permit physical pilot commands?",
-        "Verify the connected pilot, transport and secured-vessel commissioning checks first. Actual control stays OFF until you enable it for this session.",
-        "Save manual permission")) return;
+    if (!s.pilot.permit_control && !ConfirmSheet(*this, mode_, "Permit local pilot test commands?",
+        "Only the verified local TCP test peer can receive output. Actual test control stays OFF until you enable it for this session.",
+        "Save test permission")) return;
     s.pilot.permit_control = !s.pilot.permit_control;
     SaveSettings(s);
   }, !b.interface_id.empty() && !state_.vessel.replayed && !state_.vessel.simulated);
@@ -28,11 +31,12 @@ void ProductPanel::PilotSettings() {
   });
   EndActions();
   if (!pilot_advanced_) {
-    Text("STANDBY, AUTO and manual course changes are available only with a verified compatible pilot. TRACK and WIND remain unavailable.");
+    Text(test_output ? "STANDBY, AUTO and course changes are restricted to a verified local test peer. TRACK and WIND remain unavailable."
+                    : "STANDBY, AUTO, TRACK, WIND and course controls are unavailable. Advanced setup binds read-only feedback to the correct observed device.");
     return;
   }
   Heading("Connection & diagnostics", "Advanced / Exact device identity");
-  Text("The ST4000 translator publishes physical SeaTalk feedback through the NMEA 2000 adapter. Control requires an existing bidirectional TCP Actisense connection. Other transports are status-only.");
+  Text("The ST4000 translator publishes physical SeaTalk feedback through the NMEA 2000 adapter. Binding an observed identity enables status display only; it does not qualify an equipment control path.");
   Text("Interface: " + W(b.interface_id.empty() ? "Unconfigured" : b.interface_id) +
        "\nNAME: " + W(b.name.empty() ? "Unconfigured" : b.name));
   LiveText([](const auto &s) { return W(s.pilot.adapter_status); });
@@ -55,7 +59,7 @@ void ProductPanel::PilotSettings() {
         SaveSettings(s);
       },
       !state_.vessel.replayed);
-  Action(
+  if (test_output) Action(
       "Refresh device identity",
       [this] {
         if (actions_.pilot_identity)
@@ -83,8 +87,8 @@ void ProductPanel::PilotSettings() {
   LiveText([](const auto &s) {
     if (s.pilot_sources.empty())
       return wxString("No compatible translator claim observed. "
-                      "Verify the connection; refresh a configured identity or "
-                      "power-cycle the bridge during secured commissioning.");
+                      "Verify the receive connection and wait for an observed address claim. "
+                      "The installed product does not request identity on the bus.");
     wxString text;
     for (const auto &identity : s.pilot_sources)
       text += W(identity) + "\n";

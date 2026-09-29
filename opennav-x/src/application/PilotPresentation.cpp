@@ -35,8 +35,8 @@ PilotPresentation PresentPilot(const adapters::PilotView &pilot,
   p.pending = pilot.command.state == adapters::CommandState::Pending ||
               pilot.command.state == adapters::CommandState::Requested;
   const bool authorized =
-      !replayed && (caps.simulated || (permit_control && caps.manual_control));
-  p.enabled = !replayed && pilot.enabled;
+      !replayed && !pilot.output_unavailable && (caps.simulated || (permit_control && caps.manual_control));
+  p.enabled = !replayed && !pilot.output_unavailable && pilot.enabled;
   p.can_toggle = !replayed && (p.enabled || authorized);
   p.standby = p.enabled && authorized && caps.standby;
   p.auto_mode = p.enabled && authorized && fresh && !p.pending &&
@@ -84,6 +84,10 @@ PilotPresentation PresentPilot(const adapters::PilotView &pilot,
     p.pending = false;
     p.state = "CONTROL UNAVAILABLE";
     p.note = "Historical replay. Live equipment controls are disabled.";
+  }
+  if (pilot.output_unavailable && !replayed) {
+    p.pending = false;
+    p.note = "Status only. XNav equipment control is unavailable in this product. Use the physical helm.";
   }
   return p;
 }

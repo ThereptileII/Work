@@ -70,6 +70,24 @@ function ReadJson([string]$Path, [long]$Limit = 4194304) {
   if ($f.Length -gt $Limit -or $f.Length -eq 0) { throw "Invalid JSON record size: $Path" }
   return [IO.File]::ReadAllText($Path, $Utf8) | ConvertFrom-Json
 }
+function Assert-StatusOnlyOutput($Result) {
+  if (-not $Result -or -not $Result.PSObject.Properties['xnav_hardware_output_policy'] -or
+      $Result.xnav_hardware_output_policy -isnot [string] -or $Result.xnav_hardware_output_policy -cne 'status-only') {
+    throw 'Unqualified XNav equipment-output build refused. A status-only product is required.'
+  }
+}
+function Resolve-OutputPolicy($Result, [bool]$RecordedRecovery = $false) {
+  if ($RecordedRecovery -and $Result -and -not $Result.PSObject.Properties['xnav_hardware_output_policy']) {
+    return 'historical-unqualified'
+  }
+  Assert-StatusOnlyOutput $Result
+  return 'status-only'
+}
+function Test-ExactRepairPackage($Previous, $Package, [string]$ManifestHash) {
+  return $Previous -and $Package -and $ManifestHash -cmatch '^[a-f0-9]{64}$' -and
+    $Previous.packageSha256 -ceq $ManifestHash -and $Previous.commit -ceq $Package.commit -and
+    $Previous.version -ceq $Package.version
+}
 function AtomicJson([string]$Path, $Value) {
   $null = PlainPath $Path
   $temp = $Path + '.' + [guid]::NewGuid().ToString('N') + '.tmp'
@@ -184,7 +202,7 @@ function ReadGeneration([string]$Id) {
   $null = ShortcutGroup $manifest
   return $manifest
 }
-function SelfTest([string]$Directory, [string]$Commit, [string]$Version) {
+function SelfTest([string]$Directory, [string]$Commit, [string]$Version, [bool]$RecordedRecovery = $false) {
   $reportPath = Join-Path $Directory ('loader-' + [guid]::NewGuid().ToString('N') + '.json')
   $exe = Join-Path $Directory 'app\opencpn.exe'
   $null = PeArchitecture $exe
@@ -237,6 +255,12 @@ namespace OpenNav {
   } finally { if ($process) { $process.Dispose() } }
   $result = ReadJson $reportPath
   if (-not $result.passed -or $result.commit -cne $Commit -or $result.version -cne $Version -or $result.profile_initialized -or $result.plugins_loaded) { throw 'Executable identity/self-test report mismatch.' }
+  # Recovery is allowed only by explicit callers which verified a recorded
+  # generation/package. No version string qualifies a new install/update.
+  $outputPolicy = Resolve-OutputPolicy $result $RecordedRecovery
+  if ($outputPolicy -eq 'historical-unqualified') {
+    Log 'Historical recovery only: this generation has no qualified XNav equipment-output policy. It is not a public-beta candidate.'
+  }
   if ($Version -match '^0\.4\.') {
     if (-not $result.PSObject.Properties['test_fixtures'] -or $result.test_fixtures -ne $false -or
         -not $result.PSObject.Properties['build_purpose'] -or $result.build_purpose -cne 'INSTALLED PRODUCT') {
@@ -254,6 +278,7 @@ namespace OpenNav {
   }
   Remove-Item -LiteralPath $reportPath
   Log "Loader/resource self-test passed for $Commit"
+  return $outputPolicy
 }
 function ShellGroups {
   # The historical group belongs to immutable older maintenance engines,
@@ -537,6 +562,7 @@ try {
     if ($state) {
       $result.stockVerified = (Hash $state.stock.path) -ceq $state.stock.sha256
       $g = ReadGeneration $state.current
+      $result.xnavHardwareOutputPolicy = if ($g.PSObject.Properties['xnavHardwareOutputPolicy']) { $g.xnavHardwareOutputPolicy } else { 'historical-unqualified' }
       foreach ($f in $g.files) {
         $p = RelativePath (Generation $state.current) $f.path
         $result.files += @{path=$f.path; expected=$f.sha256; actual=$(if ([IO.File]::Exists($p)) { Hash $p } else { 'missing' })}
@@ -599,8 +625,9 @@ try {
         $null = PreserveAdditions (Generation $state.current) $stage $old.managedFiles
       }
       AssertInstalledContent $stage $package.version
-      SelfTest $stage $package.commit $package.version
-      AtomicJson (Join-Path $stage 'ownership.json') @{owner=$Owner; version=$package.version; commit=$package.commit; packageSha256=$ManifestSha256; shellLayout='OpenNavX.NeutralStartMenu.1'; shortcutModes=$modes; files=@(FileRecords $stage); managedFiles=@(FileRecords $maintenance | ForEach-Object { [pscustomobject]@{path=('maintenance/'+$_.path);sha256=$_.sha256} }) + @($package.files) + @([pscustomobject]@{path='Lifecycle.ps1';sha256=(Hash (Join-Path $stage 'Lifecycle.ps1'))}, [pscustomobject]@{path='Maintain.exe';sha256=(Hash (Join-Path $stage 'Maintain.exe'))}, [pscustomobject]@{path='app/OPENNAV_INSTALLED_STOCK';sha256=(Hash $locator)}); importedPlugins=$retained}
+      $recordedRepair = $Action -eq 'Repair' -and $state -and (Test-ExactRepairPackage (ReadGeneration $state.current) $package $ManifestSha256)
+      $outputPolicy = SelfTest $stage $package.commit $package.version $recordedRepair
+      AtomicJson (Join-Path $stage 'ownership.json') @{owner=$Owner; version=$package.version; commit=$package.commit; packageSha256=$ManifestSha256; xnavHardwareOutputPolicy=$outputPolicy; shellLayout='OpenNavX.NeutralStartMenu.1'; shortcutModes=$modes; files=@(FileRecords $stage); managedFiles=@(FileRecords $maintenance | ForEach-Object { [pscustomobject]@{path=('maintenance/'+$_.path);sha256=$_.sha256} }) + @($package.files) + @([pscustomobject]@{path='Lifecycle.ps1';sha256=(Hash (Join-Path $stage 'Lifecycle.ps1'))}, [pscustomobject]@{path='Maintain.exe';sha256=(Hash (Join-Path $stage 'Maintain.exe'))}, [pscustomobject]@{path='app/OPENNAV_INSTALLED_STOCK';sha256=(Hash $locator)}); importedPlugins=$retained}
       $previous = ''; if ($state) { $previous = $state.current }
       $next = @{owner=$Owner;schema=1;stock=$stock;current=$id;previous=$previous;shortcutModes=$modes}
       AtomicJson (Join-Path $Root 'transaction.json') @{owner=$Owner;action=$Action;before=$state;after=$next}
@@ -615,7 +642,7 @@ try {
       $old = ReadGeneration $state.previous
       VerifyFiles (Generation $state.previous) $old.files
       AssertInstalledContent (Generation $state.previous) $old.version
-      SelfTest (Generation $state.previous) $old.commit $old.version
+      $null = SelfTest (Generation $state.previous) $old.commit $old.version $true
       $next = @{owner=$Owner;schema=1;stock=$state.stock;current=$state.previous;previous='';shortcutModes=$(if ($old.PSObject.Properties['shortcutModes']) { @($old.shortcutModes) } else { @('xnav','legacy','safe') })}
       AssertShellOwnership
       AtomicJson (Join-Path $Root 'transaction.json') @{owner=$Owner;action=$Action;before=$state;after=$next}

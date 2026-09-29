@@ -152,3 +152,18 @@ TEST(OpenNavPilotPresentation, PermissionAndReplay) {
   EXPECT_FALSE(v.heading_magnetic_deg);
   EXPECT_EQ(v.mode, adapters::PilotMode::Unavailable);
 }
+TEST(OpenNavPilotPresentation, ProductStatusOnlyOverridesOldPermission) {
+  auto p = Live();
+  p.output_unavailable = true;
+  const auto v = View(p, stamp, true);
+  EXPECT_FALSE(v.enabled);
+  EXPECT_FALSE(v.can_toggle);
+  EXPECT_FALSE(v.standby);
+  EXPECT_FALSE(v.auto_mode);
+  EXPECT_FALSE(v.track);
+  EXPECT_FALSE(v.wind);
+  EXPECT_FALSE(v.alter_course);
+  EXPECT_TRUE(v.heading_magnetic_deg);
+  EXPECT_EQ(v.mode, adapters::PilotMode::Auto);
+  EXPECT_NE(v.note.find("Status only"), std::string::npos);
+}

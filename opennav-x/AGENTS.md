@@ -11,9 +11,53 @@ The authoritative visual reference is the unchanged supplied HTML prototype:
 Its original-file manifest is `docs/design/prototype-original.json`. Never edit
 those original files. Put instrumentation in tools or a separate derived copy.
 
-The project goal is:
+The current project goal is:
 
 `PROJECT_GOAL.md`
+
+## Jira-driven public-beta work
+
+[Navigare / SCRUM board](https://swedishcountrysideliving.atlassian.net/jira/software/projects/SCRUM/boards/1)
+is the sole development backlog. The public-beta requirements are captured in
+`docs/public-beta-contract.md`; that contract and technical evidence are not a
+second roadmap. Do not maintain a competing private TODO list.
+
+At the beginning of each substantial cycle:
+
+1. Read the board, its actual column/status mapping, In Progress and Testing
+   issues, and all unresolved `scope-public-beta` issues. Complete pagination.
+2. Read the selected issues' acceptance criteria, dependencies and material
+   comments. Never infer a decision from a label or an older comment alone.
+3. Prioritize safety/security/data-loss blockers, then public-beta launch
+   blockers at Highest, other public-beta Highest, High, Medium and Low.
+   Dependencies may change the eligible order. Post-beta/Future work waits.
+4. Record the selection in Jira before unrelated implementation. Create or
+   update an issue for additional required work; split distinct deliverables
+   into appropriate tasks/subtasks. Do not silently expand scope.
+5. Move work to In Progress when implementing; Testing when implementation is
+   ready but required verification remains; Done only after its acceptance
+   criteria and evidence pass. Preserve failed evidence and open blockers.
+6. Record exact commits, CI links, validation and remaining gates in Jira or
+   linked technical evidence. A passing build is not feature completion.
+
+The board's English columns currently map to Swedish Jira statuses:
+Idea → Idea, To Do → Att göra, In Progress → Pågående,
+Testing → Testning, Done → Klart. Read the current board mapping and available
+transitions rather than assuming status-category queries identify each column.
+
+`SCRUM-97` governs this workflow. `SCRUM-14`, `SCRUM-15` and `SCRUM-16` retain
+the existing prototype, chart-presentation and Online AIS acceptance gates.
+The approved public identity in `SCRUM-89` is **SKAGER / SKAGER App** with
+`skager.app` selected; domain control and legal clearance remain separate gates.
+Preserve internal XNav/OpenNav namespaces where renaming adds technical risk,
+and never modify the immutable original HTML to apply branding.
+
+Before public launch, qualify one exact release revision across product, native
+Windows, boat PC, installer/updater, source/licenses, website, commerce, portal,
+support, privacy/security and operations. OpenCPN remains a separately installed
+prerequisite. Unqualified XNav hardware output must be unavailable/default-off;
+SmartNav never steers. Keep public payment/download access closed until the
+full readiness report is reviewed and the user explicitly gives GO.
 
 ## Core rules
 

@@ -61,7 +61,7 @@ try {
     $OpenNavArgs = @()
     if ($Integration) {
         $Fixtures = if ($Production) { 'OFF' } else { 'ON' }
-        $OpenNavArgs = @("-DOPENNAV_ROOT=$Root", "-DOPENNAV_ENABLE_ROUTE_SCENARIO=$Fixtures", "-DXNAV_ENABLE_TEST_FIXTURES=$Fixtures")
+        $OpenNavArgs = @("-DOPENNAV_ROOT=$Root", "-DOPENNAV_ENABLE_ROUTE_SCENARIO=$Fixtures", "-DXNAV_ENABLE_TEST_FIXTURES=$Fixtures", "-DXNAV_ENABLE_PILOT_LOOPBACK_TESTS=$Fixtures")
     }
     Run cmake (@('-S', $Source, '-B', $Build, '-G', 'Visual Studio 17 2022',
         '-A', $Architecture, '-DCMAKE_POLICY_VERSION_MINIMUM=3.5', '-DCMAKE_BUILD_TYPE=Release',
@@ -104,7 +104,9 @@ try {
         & (Join-Path $PSScriptRoot 'capture-pristine-windows.ps1') -Variant xnav -Mode legacy -Name '11-legacy-mode'
         & (Join-Path $PSScriptRoot 'capture-pristine-windows.ps1') -Variant xnav -Mode safe-mode -Name '12-safe-mode'
         }
-    } elseif (-not $Production) {
+    } elseif ($Production) {
+        Run python @((Join-Path $PSScriptRoot 'smoke-pilot.py'), '--production')
+    } else {
         & (Join-Path $PSScriptRoot 'capture-pristine-windows.ps1')
     }
 } finally { Stop-Transcript }

@@ -1,35 +1,37 @@
-# OpenNav X `/goal`
+# SKAGER App — paid public beta objective
 
-Build OpenNav X into a polished, production-quality marine navigation interface on top of OpenCPN.
+Deliver a trustworthy, polished and supportable public beta that a customer can
+discover, purchase for USD 20, install over a separately installed supported
+OpenCPN, use, update, recover, obtain support for, and give feedback on. Preserve
+all applicable open-source rights and supply exact corresponding source.
 
-Treat `OpenNavX_Codex_Project_Specification.md` as the authoritative project specification and follow its architecture, visual design system, safety constraints, development workflow, testing requirements, and Definition of Done.
+The full user-provided objective is [the public-beta contract](docs/public-beta-contract.md).
+It includes the Windows application, installer/updater, release infrastructure,
+website, accounts, commerce, customer portal, support, legal/open-source
+compliance, privacy/security, operations and launch material. Completion means
+the entire customer journey is qualified, not merely that existing navigation
+features compile.
 
-The final product must:
+[Navigare / SCRUM](https://swedishcountrysideliving.atlassian.net/jira/software/projects/SCRUM/boards/1)
+is the authoritative and sole backlog. Select work, record dependencies and
+priorities, and track acceptance there according to [AGENTS.md](AGENTS.md) and
+[SCRUM-97](https://swedishcountrysideliving.atlassian.net/browse/SCRUM-97).
+Repository contracts and evidence explain implementation and validation; they
+do not replace Jira planning or maintain a competing TODO system.
 
-- Preserve OpenCPN's proven chart, route, waypoint, track, AIS, connection, navigation-data, and plugin functionality.
-- Provide a completely redesigned, modern, touch-first XNav interface matching the approved OpenNav X visual style and mockups.
-- Preserve the normal OpenCPN interface as Legacy Mode.
-- Provide XNav, Legacy, and Safe Mode startup options, all operating on the same underlying OpenCPN data and configuration.
-- Keep UI, Vessel Data, SmartNav, hardware adapters, and OpenCPN integration cleanly separated.
-- Provide unified vessel data for navigation, wind, depth, rudder, propulsion, batteries, tanks, connectivity, and future sensors.
-- Support electric propulsion data, including motor and battery information, and provide tested range and arrival-SOC calculations.
-- Introduce SmartNav incrementally for route events, turn prediction, navigation timeline, energy prediction, hazard look-ahead, AIS context, and later sailing/anchor intelligence.
-- Integrate autopilot and radar through isolated hardware-adapter interfaces rather than embedding device-specific logic in the UI.
-- Never fabricate missing sensor, chart, navigation, or device data. Explicitly represent stale, unavailable, estimated, and uncertain information.
-- Keep safety-critical control conservative. The initial product must not autonomously steer the vessel.
-- Be easy for a non-developer to install, update, repair, diagnose, roll back, and uninstall on Windows after OpenCPN has been installed.
-- Detect and verify supported OpenCPN versions before modifying anything and never patch an unknown or unsupported installation.
-- Preserve user charts, routes, tracks, waypoints, plugins, connections, and configuration through updates and rollback.
-- Be developed primarily in the existing Linux Codex environment while treating native Windows builds and tests as mandatory release gates.
-- Keep the project buildable and runnable throughout development.
-- Validate meaningful milestones with Linux tests, native Windows MSVC builds, simulator-driven data tests, interaction smoke tests, and 1280×800 Windows screenshots.
-- Treat Windows behavior as authoritative for UI rendering, fonts, DPI scaling, wxWidgets behavior, plugin/DLL loading, installer behavior, XNav/Legacy/Safe switching, and release acceptance.
-- Prefer small, maintainable integration hooks into OpenCPN over large invasive rewrites so future OpenCPN versions can be merged realistically.
+The product-owner decision in [SCRUM-89](https://swedishcountrysideliving.atlassian.net/browse/SCRUM-89)
+selects **SKAGER** as the brand, **SKAGER App** as the product and **skager.app**
+as the primary domain. Its comments contain the approved wordmark direction
+and remaining domain/trademark/legal gates. Do not restart naming research or
+claim domain control or legal clearance from the naming decision alone.
+XNav/OpenNav X remains an internal/historical identifier where appropriate.
 
-Work incrementally in vertical slices. Before implementing a major subsystem, inspect the relevant OpenCPN source and existing project code rather than assuming APIs or architecture.
+Continue from the accepted OpenCPN integration and engineering contracts. Keep
+the immutable HTML prototype as the visual authority, preserve Legacy/Safe,
+navigation data/configuration and supported Win32 plugin ABI on Windows x64,
+and verify Windows and actual boat-PC behavior. Never fabricate missing data,
+expose an unqualified physical-control path, or implement autonomous steering.
 
-Do not declare a feature complete merely because it compiles. A feature is complete only when its relevant automated, integration, visual, Windows, and regression checks pass.
-
-The finished result should feel like a cohesive commercial marine navigation product built on OpenCPN—not a skin, collection of plugins, or development prototype.
-
-Start by following `FIRST_TASK.md` and the “First Instructions to the Agent” section of `OpenNavX_Codex_Project_Specification.md`. Establish the pristine OpenCPN baseline and complete the first runnable XNav vertical slice before expanding into SmartNav or advanced hardware features.
+When every public-beta acceptance criterion has evidence, stop implementation
+and present the full **Public Beta Readiness Report** for a human GO/NO-GO.
+Do not open public payments or downloads without explicit user approval.

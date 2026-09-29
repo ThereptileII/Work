@@ -154,19 +154,68 @@ def current_layout_observation():
     assert native_controls()==expected,'Native frame moved while pairing diagnostic geometry'
     return observed
 
-def preferences_observation():
+def preferences_observation(label='Chart safety depth'):
     # A pan can finish before the 1Hz diagnostic publication. Pair the actual
     # row position even while clipped; never poll for visibility or good layout.
     previous=int(data()['runtime']['ui_update']['ticks'])
     popup,_=ui.wait_window('OpenNav preferences',pid)
-    matches=[h for h,t in ui.children(popup) if t=='Chart safety depth']
-    assert len(matches)==1, 'One native lower Preferences action required'
+    matches=[h for h,t in ui.children(popup) if t==label]
+    assert len(matches)==1, ('One native Preferences action required',label)
     target=matches[0]
-    rect=bounds(target);expected={'Chart safety depth':(rect.left,rect.top,rect.right,rect.bottom)}
+    rect=bounds(target);expected={label:(rect.left,rect.top,rect.right,rect.bottom)}
     observed=data(lambda d:geometry_observation.matches_native_controls(d,expected,previous,require_visible=False))
     actual=bounds(target)
-    assert (actual.left,actual.top,actual.right,actual.bottom)==expected['Chart safety depth'], 'Native Preferences moved while pairing its published geometry'
+    assert (actual.left,actual.top,actual.right,actual.bottom)==expected[label], 'Native Preferences moved while pairing its published geometry'
     return observed,target
+
+def touch_preferences_action(label,scale):
+    """Reach a real drawer action before tapping; never message a clipped HWND."""
+    popup,_=ui.wait_window('OpenNav preferences',pid)
+    foreground=ui.declare(ui.user,'GetForegroundWindow',ui.W.HWND)
+    ui.SetForegroundWindow(popup)
+    attempts=[];last_rect=None
+    for _ in range(40):
+        assert foreground()==popup,'Another window interrupted the Preferences gesture'
+        observed,target=preferences_observation(label)
+        controls=observed['runtime']['display']['interaction_controls']
+        found=[c for c in controls if c['label']==label]
+        assert len(found)==1,(label,'Missing or duplicate paired action')
+        control=found[0]
+        assert control['enabled'] and ui.IsWindowEnabled(target),(label,'Preferences action disabled')
+        rect=bounds(target);native=(rect.left,rect.top,rect.right,rect.bottom)
+        assert native==(control['x'],control['y'],control['x']+control['width'],control['y']+control['height']), 'Preferences moved after its observation'
+        body=ui.GetParent(target)
+        assert ui.GetParent(body)==popup,'Preferences target is not in this drawer body'
+        viewport=bounds(body)
+        assert viewport.left<=rect.left<rect.right<=viewport.right,(label,'Action horizontally clipped')
+        visible=viewport.top<=rect.top<rect.bottom<=viewport.bottom
+        attempts.append({'native_bounds':list(native),'visible':control['visible'],
+                         'tick':observed['runtime']['ui_update']['ticks']})
+        assert bool(control['visible'])==visible,(label,'Native and diagnostic visibility disagree')
+        if visible:break
+        assert native!=last_rect,(label,'Touch pan did not move the clipped action')
+        last_rect=native
+        padding=round(24*scale/100);distance=round(160*scale/100)
+        x=(viewport.left+viewport.right)//2
+        below=rect.bottom>viewport.bottom
+        start=viewport.bottom-padding if below else viewport.top+padding
+        end=max(viewport.top+padding,start-distance) if below else min(viewport.bottom-padding,start+distance)
+        assert start!=end,(label,'No usable Preferences pan area')
+        hit=ui.WindowFromPoint(ui.W.POINT(x,start))
+        assert hit==body or ui.IsChild(body,hit),'Preferences pan would touch another surface'
+        assert dpi('--pan',x,start,x,end)['touch_injected']
+        time.sleep(.4)
+    else:raise AssertionError(label+': Preferences action cannot be reached by bounded touch scroll')
+    assert foreground()==popup and ui.IsWindowEnabled(target)
+    current=bounds(target)
+    assert (current.left,current.top,current.right,current.bottom)==native,'Preferences moved before the tap'
+    point=ui.W.POINT((rect.left+rect.right)//2,(rect.top+rect.bottom)//2)
+    assert ui.WindowFromPoint(point)==target,'Another surface covers the Preferences action'
+    result=dpi('--tap',point.x,point.y)
+    assert result['touch_injected']
+    return {'label':label,'observations':attempts,'fully_visible':True,
+            'native_hit_target_verified':True,'tap':[point.x,point.y],
+            'touch_injected':True}
 
 def rail_geometry(scale):
     d=current_layout_observation()
@@ -372,8 +421,13 @@ try:
             else:ui.click_text(pid,label)
             data(lambda d:d['ui_page']==page)
             entry['night_surfaces'].append(chart.dark_surface(capture(f'dpi-{scale}-night-'+page.lower().replace(' ','-').replace('&','and')),page))
-        for label,page in [('Commissioning & recordings','Commissioning & recordings'),
-                           ('Export diagnostic bundle','Field diagnostic bundle')]:
+        # These actions belong to the prototype Preferences drawer. Re-enter
+        # it for each action: the destination page dismisses the drawer, so a
+        # bare second "System" click would enter the different recovery page.
+        # Visible captions changed; diagnostic destination identities did not.
+        for label,page in [('Recordings & commissioning','Commissioning & recordings'),
+                           ('Export diagnostics','Field diagnostic bundle')]:
+            ui.click_text(pid,'Settings');data(lambda d:d['ui_page']=='Settings')
             ui.click_text(pid,'System');ui.click_text(pid,label);data(lambda d:d['ui_page']==page)
             entry['night_surfaces'].append(chart.dark_surface(capture(f'dpi-{scale}-night-'+page.lower().replace(' ','-').replace('&','and')),page))
         ui.click_text(pid,'System');ui.click_text(pid,'Diagnostics')
@@ -402,7 +456,8 @@ try:
         for label,page in [('Passage','Route'),('Energy','Energy')]:
             ui.click_text(pid,label);data(lambda d:d['ui_page']==page);ui.assert_preview_page(handle,page);capture(f'dpi-{scale}-{page.lower()}')
         ui.click_text(pid,'Instruments');data(lambda d:d['ui_page']=='Vessel instruments' and d['runtime']['display']['minimum_value_height_dip']>=120);ui.assert_product_page(handle,'Vessel instruments');entry['instrument_groups']=instrument_geometry();capture(f'dpi-{scale}-instruments')
-        ui.click_text(pid,'Settings');ui.click_text(pid,'Vessel');ui.click_text(pid,'Battery & reserve')
+        ui.click_text(pid,'Settings');ui.click_text(pid,'Vessel')
+        entry['battery_preferences_touch']=touch_preferences_action('Battery & reserve',scale)
         data(lambda d:d['ui_page']=='Energy configuration');capture(f'dpi-{scale}-settings')
         ui.cycle_light(pid);ui.cycle_light(pid);data(lambda d:d['runtime']['display']['light']=='Night')
         ui.click_text(pid,'Configure battery & reserve');dialog,_=ui.wait_window('Battery assumptions',pid)

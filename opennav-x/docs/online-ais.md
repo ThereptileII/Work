@@ -200,12 +200,15 @@ or server text containing request payloads. A move-only bounded secret clears it
 owned storage when moved, replaced or destroyed. Linux development reads only
 `AISSTREAM_API_KEY`; it does not save a plaintext fallback.
 
-Update/repair must leave this per-user entry untouched. Uninstall preserves it
-for reinstallation; an explicit Remove Key action will be the user-facing removal
-path. That settings action and the live transport are still pending: the current
-credential adapter is not yet reachable from the product UI. Diagnostic exports
-must not enumerate credentials, environment variables or subscription payloads.
-Do not collect raw process memory in ordinary diagnostic bundles.
+Update/repair leave this per-user entry untouched. Uninstall preserves it for
+reinstallation. **Traffic → Online AIS settings → Remove key** is the
+explicit, confirmed removal path; it also disables Online AIS. **Set AISStream
+key** opens the masked own-key input, with saving and enabling kept separate.
+The native UI and transport are implemented and have deterministic platform
+evidence above; full replacement qualification and live chart interaction on
+the boat remain pending. Diagnostic exports must not enumerate credentials,
+environment variables or subscription payloads. Do not collect raw process
+memory in ordinary diagnostic bundles.
 
 Native automated credential tests address only a unique `OpenNavX/Tests/AISStream/`
 entry, verify absence before creating it, and remove their own entry. The test

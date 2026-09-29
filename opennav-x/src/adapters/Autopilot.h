@@ -59,6 +59,7 @@ struct PilotView {
   PilotCommand command;
   bool enabled = false, fresh = false;
   std::string adapter_status;
+  bool output_unavailable = false;
 };
 class ManualAutopilot {
 public:

@@ -19,6 +19,7 @@ std::vector<std::string> PreviewBuildInfo(int dpi, const std::string &profile) {
           "OpenCPN 5.12.4 / 37fd0cddb7334fe489e9f18aa163977a9c5c84f7",
           "Build: " OPENNAV_BUILD_COMMIT,
           "Build purpose: " + std::string(BuildPurpose()),
+          "XNav equipment output: " + std::string(HardwareOutputPolicy()),
           "Compiler: " OPENNAV_BUILD_COMPILER,
           "Built: " OPENNAV_BUILD_DATE " / CI: " OPENNAV_BUILD_RUN,
           "OS: " + wxGetOsDescription().ToStdString(wxConvUTF8) +
@@ -47,6 +48,7 @@ void WritePreviewDiagnostics(const std::string &path,
   report["build_commit"] = wxString(OPENNAV_BUILD_COMMIT);
   report["build_purpose"] = wxString::FromUTF8(BuildPurpose().data());
   report["test_fixtures"] = TestFixturesEnabled();
+  report["xnav_hardware_output_policy"] = wxString::FromUTF8(HardwareOutputPolicy().data());
   for (const auto &line : info)
     report["build_info"].Append(wxString::FromUTF8(line));
   for (const auto &item : vessel::DataItems(state)) {

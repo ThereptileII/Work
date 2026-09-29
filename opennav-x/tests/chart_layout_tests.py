@@ -94,7 +94,8 @@ for (style,light),(land,water) in palettes.items():
     image=row*800
     assert chartcheck.presentation(image,style,light,'unit fixture')['coastline_visible']
     color_checks+=1
-    for bad in (bytes.fromhex(water)*1280*800, bytes.fromhex(land)*1280*800,
+    for bad in (bytes(1280*800*3), b'\xff'*(1280*800*3),
+                bytes.fromhex(water)*1280*800, bytes.fromhex(land)*1280*800,
                 image.replace(bytes.fromhex(land),bytes.fromhex('ff00ff'))):
         try:chartcheck.presentation(bad,style,light,'invalid fixture')
         except AssertionError:pass
@@ -104,4 +105,9 @@ for (style,light),(land,water) in palettes.items():
     except AssertionError:pass
     else:raise AssertionError('Opposite chart style was accepted')
     color_checks+=1
+    for wrong_light in {'Day','Dusk','Night'}-{light}:
+        try:chartcheck.presentation(image,style,wrong_light,'wrong light')
+        except AssertionError:pass
+        else:raise AssertionError('Wrong Day/Dusk/Night chart palette was accepted')
+        color_checks+=1
 print(f'{color_checks} exact Day/Dusk/Night XNav/Standard coastline checks passed')

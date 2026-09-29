@@ -8,10 +8,13 @@ from pathlib import Path
 import shutil
 import subprocess
 import tempfile
+from hardware_output_policy import require_status_only
 
 ROOT = Path(__file__).resolve().parents[1]
 p = argparse.ArgumentParser()
 p.add_argument('--app', type=Path, required=True)
+p.add_argument('--expect-test-loopback', action='store_true',
+               help='Explicit non-installable fixture build loader regression')
 a = p.parse_args()
 with tempfile.TemporaryDirectory(prefix='opennav loader ') as temporary:
     root = Path(temporary)
@@ -26,6 +29,11 @@ with tempfile.TemporaryDirectory(prefix='opennav loader ') as temporary:
     r = subprocess.run(command, timeout=30, capture_output=True)
     assert r.returncode == 0, (r.returncode, r.stderr)
     d = json.loads(report.read_text())
+    if a.expect_test_loopback:
+        assert d.get('test_fixtures') is True and d.get('build_purpose') == 'DEVELOPER TEST BUILD'
+        assert d.get('xnav_hardware_output_policy') == 'test-loopback-only'
+    else:
+        require_status_only(d)
     assert d['passed'] and not d['profile_initialized'] and not d['plugins_loaded'], d
     assert d['upstream'] == '37fd0cddb7334fe489e9f18aa163977a9c5c84f7'
     original = report.read_bytes()

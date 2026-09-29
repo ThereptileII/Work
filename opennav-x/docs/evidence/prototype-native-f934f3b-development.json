@@ -1,0 +1,252 @@
+{
+  "scope": "Native development evidence; installer and fixture DPI failures remain qualification blockers. Jira SCRUM-98 tracks replacement validation.",
+  "commit": "f934f3b5ea8b8a92be46b7a567d96a9bf3b965c1",
+  "observedUtc": "2026-09-29T15:45:32.838153+00:00",
+  "run": "https://github.com/ThereptileII/Work/actions/runs/36536723961",
+  "jobs": {
+    "passed": 7,
+    "failed": 1
+  },
+  "nativeProductTests": 125,
+  "nativeFixtureTests": 125,
+  "nativeProductionExecutableSha256": "46de9cda2dde0e25567d7b8eab25430b99a8a55d8c5393fe89f2a7033bcc983b",
+  "ownKeyChecks": 151,
+  "ownKeyCaptures": [
+    "traffic-day",
+    "ais-target-day",
+    "ais-target-dusk",
+    "ais-target-night",
+    "traffic-night",
+    "online-target-day",
+    "online-stale-day",
+    "online-lost-day",
+    "target-expired-day",
+    "ais-key-entry-day",
+    "ais-key-stored-day",
+    "ais-key-entry-night"
+  ],
+  "sourceHealthChecks": 49,
+  "sourceHealthCaptures": [
+    "health-day",
+    "health-dusk",
+    "health-night",
+    "health-gps-day",
+    "health-stale-day",
+    "health-replay-day"
+  ],
+  "primaryCaptures": 33,
+  "additionalOnlineAisCaptures": 4,
+  "captureScope": "1280x800 native client crop; full outer capture retained; boat fullscreen pending",
+  "productionDpiProbes": {
+    "percentages": [
+      100,
+      125,
+      150
+    ],
+    "result": "Development geometry and injected-touch checks pass; physical touch and visual acceptance remain required"
+  },
+  "productionChartChecks": {
+    "renderer": "software",
+    "styles": [
+      "XNav",
+      "Standard"
+    ],
+    "light": [
+      "Day",
+      "Dusk",
+      "Night"
+    ],
+    "depthUnits": [
+      "feet",
+      "meters",
+      "fathoms"
+    ],
+    "result": "Automated capture/check steps pass. The retained capture records explicitly require semantic and visual review; no complete chart-style acceptance is inferred.",
+    "publicEnc": "NOAA US5SEAFL",
+    "fixtureSha256": "b027e029dc7b76595381d89e3718145eb5069e5a03917e78bada4f8ebe8c84e4"
+  },
+  "fixtureChecks": {
+    "chartGestures": "passed",
+    "sharedProfileModes": "passed",
+    "previewGroups": 19,
+    "previewCaptures": 50,
+    "dpi": "Failed at 100%: obsolete Commissioning & recordings button caption; actual prototype Preferences control is Recordings & commissioning. 125/150% fixture checks were not reached."
+  },
+  "fixtureFailureAnalysis": {
+    "job": "https://github.com/ThereptileII/Work/actions/runs/36536723961/job/109302360552",
+    "fullJob": "https://github.com/ThereptileII/Work/actions/runs/36536897649/job/109304221483",
+    "source": "tools/smoke-dpi-windows.py:375-377 at this commit",
+    "nextObsoleteCaption": "Export diagnostic bundle; current control is Export diagnostics. Page identities must remain independently verified.",
+    "preferencesObservation": {
+      "scalePercent": 100,
+      "before": {
+        "x": 663,
+        "height": 72,
+        "accessible_name": "Chart safety depth",
+        "width": 386,
+        "label": "Chart safety depth",
+        "y": 589,
+        "visible": true,
+        "enabled": true
+      },
+      "after": {
+        "x": 663,
+        "height": 72,
+        "accessible_name": "Chart safety depth",
+        "width": 386,
+        "label": "Chart safety depth",
+        "y": 589,
+        "visible": true,
+        "enabled": true
+      },
+      "result": "Exact stable endpoint confirmed at 100%; this resolves that observation in these runs, not the remaining DPI gate."
+    },
+    "replacementNativeRunRequired": true
+  },
+  "verifiedArtifacts": [
+    {
+      "id": 11021107516,
+      "name": "windows-dpi-failure-f934f3b5ea8b8a92be46b7a567d96a9bf3b965c1",
+      "sha256": "7285ec3f1ced99d4cde763c76baa479f00e9dbddac9d368d682b932fcef3901a",
+      "bytes": 1522268,
+      "zipCrc": true,
+      "safeArchivePaths": true,
+      "url": "https://github.com/ThereptileII/Work/actions/runs/36536897649/artifacts/11021107516"
+    },
+    {
+      "id": 11020133688,
+      "name": "windows-installer-failure-f934f3b5ea8b8a92be46b7a567d96a9bf3b965c1",
+      "sha256": "6e83bf9b12cd964e0befc68fe5362a7f2b41f89d19b717212b2ff376dfb140ef",
+      "bytes": 433139,
+      "zipCrc": true,
+      "safeArchivePaths": true,
+      "url": "https://github.com/ThereptileII/Work/actions/runs/36536897649/artifacts/11020133688"
+    },
+    {
+      "id": 11019517399,
+      "name": "prototype-object-flow-Windows-f934f3b5ea8b8a92be46b7a567d96a9bf3b965c1",
+      "sha256": "d860f8b62eb693b51092eadb0c1aa01e91f4875c9267bd015a6b487c14f3959a",
+      "bytes": 14613838,
+      "zipCrc": true,
+      "safeArchivePaths": true,
+      "url": "https://github.com/ThereptileII/Work/actions/runs/36536723961/artifacts/11019517399"
+    },
+    {
+      "id": 11019307045,
+      "name": "prototype-native-Windows-f934f3b5ea8b8a92be46b7a567d96a9bf3b965c1",
+      "sha256": "8b90a3d9071f83ccc0d36f8e5a5b23ff804e5b3374e25313d78139bda2749708",
+      "bytes": 47852305,
+      "zipCrc": true,
+      "safeArchivePaths": true,
+      "url": "https://github.com/ThereptileII/Work/actions/runs/36536723961/artifacts/11019307045"
+    },
+    {
+      "id": 11029117652,
+      "name": "linux-integration-f934f3b5ea8b8a92be46b7a567d96a9bf3b965c1",
+      "sha256": "c8a4e42b848d20ba194b4292c825f9089965b3551cdc8488230c2bab1c68c67a",
+      "bytes": 18276224,
+      "zipCrc": true,
+      "safeArchivePaths": true,
+      "url": "https://github.com/ThereptileII/Work/actions/runs/36536897649/artifacts/11029117652"
+    },
+    {
+      "id": 11021127338,
+      "name": "windows-integration-f934f3b5ea8b8a92be46b7a567d96a9bf3b965c1",
+      "sha256": "93deb1284c6e1c9af1b7b250f78272cece81176d9ce77fedfd7f760f737d4a5a",
+      "bytes": 28295099,
+      "zipCrc": true,
+      "safeArchivePaths": true,
+      "url": "https://github.com/ThereptileII/Work/actions/runs/36536897649/artifacts/11021127338"
+    }
+  ],
+  "artifactVerification": "Only these six archives were downloaded in this audit. API SHA-256 and byte count, ZIP CRC, path traversal/absolute path rejection and symlink rejection passed. Other run artifacts were enumerated but are not claimed verified here.",
+  "fullQualification": {
+    "run": "https://github.com/ThereptileII/Work/actions/runs/36536897649",
+    "jobs": {
+      "passed": 14,
+      "failed": 1,
+      "skipped": 1
+    },
+    "status": "failed; publication skipped",
+    "linuxFixtureTests": 133,
+    "linuxProductTests": 133,
+    "windowsFixtureTests": 125,
+    "windowsProductTests": 125,
+    "linuxEndurance": {
+      "status": "passed",
+      "build_commit": "f934f3b5ea8b8a92be46b7a567d96a9bf3b965c1",
+      "elapsed_seconds": 10800.180898771,
+      "startup_seconds": 3.9314060229999086,
+      "resource_growth": {
+        "resident_bytes": 2547712.0,
+        "handles": 0.0,
+        "threads": 0.0
+      },
+      "cpu_percent_one_core": 2.4240196235191913,
+      "maximum_page_observation_seconds": 1.3512033259994496
+    },
+    "linuxEnduranceScope": "Actual elapsed time in isolated deterministic test build; not physical vessel or Windows endurance.",
+    "windowsEndurance": "skipped after installer/DPI failure",
+    "fixtureFreeRecovery": {
+      "result": "passed",
+      "checks": 7,
+      "captures": 16
+    },
+    "installer": {
+      "result": "failed",
+      "passedChecksBeforeFailure": 18,
+      "error": "AssertionError(\"Installed legacy: coastline disappeared or chart canvas is covered: {'d5e5e5': 0.0, 'eeeee2': 0.0}\")",
+      "completedEvidence": "Clean candidate install/rollback, genuine Beta 1 update/rollback, interrupted shortcut migration repair and stock/profile preservation checks passed before the failure; downstream lifecycle checks are not accepted.",
+      "installedCandidateExecutableSha256": "24a734d08333927d06d86ea65ac748dd980f0a5edc952292d4cdacdf7bd0bb9a",
+      "failureAnalysis": "The assertion reuses XNav land/water colors for Legacy. Retained native pixels show coastline in the stock palette. The unchanged independent pinned Standard Day presentation oracle passes those pixels; a corrected full native run remains required.",
+      "reviewedScreenshots": [
+        "installer-01-xnav.png",
+        "installer-02-legacy.png"
+      ],
+      "independentPixelChecks": [
+        {
+          "file": "installer-01-xnav.png",
+          "style": "XNav",
+          "light": "Day",
+          "expectedSource": "immutable HTML tokens",
+          "fractions": {
+            "eeeee2": 0.33544349070100143,
+            "d5e5e5": 0.6544706723891274
+          },
+          "result": "passed existing greater-than-0.02 per-color threshold"
+        },
+        {
+          "file": "installer-02-legacy.png",
+          "style": "Standard",
+          "light": "Day",
+          "expectedSource": "pinned GSHHSChart::SetColorScheme",
+          "fractions": {
+            "aaaf50": 0.4363376251788269,
+            "aac3f0": 0.5636623748211731
+          },
+          "result": "passed existing greater-than-0.02 per-color threshold"
+        }
+      ]
+    },
+    "failureWaived": false,
+    "productArtifactDelivered": false
+  },
+  "sourceEvidence": {
+    "native": "prototype-native-Windows archive: windows-production-tests.xml, component capture.json files, prototype-native/capture.json, prototype-dpi/result.json and ENC/depth capture records",
+    "fixture": "prototype-object-flow-Windows archive: windows-xnav-tests.xml, preview-results.json, mode-cycle-results.json and dpi-results.json",
+    "full": "linux-integration and windows-integration archives: both test XML files, soak/results.json on Linux, production-recovery-results.json and dpi-results.json on Windows",
+    "installer": "windows-installer-failure archive: installer-lifecycle.json and the two reviewed chart captures",
+    "jobConclusions": "GitHub Actions jobs API for both exact-commit runs"
+  },
+  "visualConformance": "Not accepted. Component checks and automated captures do not constitute typography, chart semantics, all-screen comparison or boat-display approval.",
+  "boatValidation": "Not performed for this revision. No boat launch, deployment or hardware command occurred during this audit.",
+  "onlineAisLiveValidation": "Not performed for this revision; earlier isolated service-probe success is not transferred to this product revision.",
+  "deployment": "withheld",
+  "limitations": [
+    "No physical touchscreen, physical 1280x800 boat display or boat GPU acceptance.",
+    "No live vessel-data or AISStream UI acceptance for this revision.",
+    "Native fixture DPI and full installer lifecycle require a replacement exact-commit run.",
+    "Windows endurance and final release publication did not run.",
+    "Different CI jobs build separate executables from the same commit; each binary hash is scoped to its producing job, not treated as interchangeable."
+  ]
+}
