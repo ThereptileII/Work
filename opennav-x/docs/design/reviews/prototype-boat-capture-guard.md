@@ -67,5 +67,5 @@ test, so this is only capture qualification. The next Settings increment adds
 one exact owned Preferences signature with a single Close header. The same
 PID, immediate owner, DPI, containment, caption and before/after HWND checks
 apply. At most one of Preferences/Passage/Traffic may be visible. Pure checks
-increase to 216; native marker cases increase to 50 (replacement Windows
+increase to 217, including fixture-catalog reachability; native marker cases increase to 50 (replacement Windows
 execution pending). No new boat input or arbitrary-control action is authorized.

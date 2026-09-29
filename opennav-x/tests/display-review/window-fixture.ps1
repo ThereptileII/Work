@@ -8,7 +8,7 @@ if(-not $root.StartsWith([IO.Path]::GetTempPath(),[StringComparison]::OrdinalIgn
 $record=Get-Content -LiteralPath (Join-Path $root 'fixture.json') -Raw|ConvertFrom-Json
 if($record.owner -cne 'OpenNavX.NativeDisplayWindow.Fixture.1' -or
    $record.action -cnotin @('Display','ToggleFullscreen','ToggleOrientation','CyclePalette','PanRight','Resize1280x800','Capture','Navigation','Route','AIS','Instruments') -or
-   $record.case -cnotin @('normal','return','course','wrong-page','wrong-geometry','canvas-child','ambiguous','replace-on-down','rename-on-down','move-on-down','duplicate-on-down','modal','maximized-offscreen','partial-offscreen','entirely-offscreen','minimized','demo','wrong-pid','prototype-normal','prototype-passage','prototype-traffic','prototype-back','prototype-unknown','prototype-wrong-owner','prototype-duplicate','prototype-clipped','prototype-signature','prototype-moved','prototype-rail-duplicate','prototype-modal')){throw 'Unknown fixed fixture.'}
+   $record.case -cnotin @('normal','return','course','wrong-page','wrong-geometry','canvas-child','ambiguous','replace-on-down','rename-on-down','move-on-down','duplicate-on-down','modal','maximized-offscreen','partial-offscreen','entirely-offscreen','minimized','demo','wrong-pid','prototype-normal','prototype-preferences','prototype-two-sheets','prototype-passage','prototype-traffic','prototype-back','prototype-unknown','prototype-wrong-owner','prototype-duplicate','prototype-clipped','prototype-signature','prototype-moved','prototype-rail-duplicate','prototype-modal')){throw 'Unknown fixed fixture.'}
 Add-Type -AssemblyName System.Windows.Forms
 Add-Type -TypeDefinition @'
 using System;

@@ -43,3 +43,12 @@ the 1014×566 chart remains intact behind/after the sheet.
   lifecycle remain required. No conformance-table PASS is recorded.
 
 Evidence: [local record](../../evidence/prototype-settings-local.json).
+
+The fixture-free full product passes 123 tests and its loader self-test.
+Twenty-one captures now pass: Preferences theme cycle, Sensors/Display/System,
+Close preserving chart geometry and the existing AIS/Instruments flows.
+The first product capture correctly rejected two unscoped Radar captions;
+the corrected harness scopes left-navigation identity to the independently
+measured sidebar, retaining exact rectangle checks. Day/Sensors/Night were
+reviewed again. These captures confirm composition, not full content fidelity.
+See [corrective evidence](../../evidence/prototype-settings-product-local.json).

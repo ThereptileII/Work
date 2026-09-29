@@ -209,10 +209,18 @@ def main():
         reference = json.loads((ROOT / "docs/design/prototype/reference" /
                                 ("windows" if windows else "linux") / "capture.json").read_text())
         rail_reference = reference["states"]["navigation-day"]["components"][".nav-btn"][:7]
+        sidebar = reference["states"]["navigation-day"]["components"][".sidebar"][0]["rect"]
         rail_actual = []
         for label, expected in zip(("Chart", "Passage", "Traffic", "Energy", "Instruments", "Anchor", "Radar"), rail_reference):
+            # Preferences has its own Radar tab. Identify the navigation role
+            # by the independently rendered sidebar, then require exactly one
+            # item and the unchanged exact control rectangle within it.
             controls = [c for c in snapshot["runtime"]["display"]["interaction_controls"]
-                        if c["label"] == label and c["visible"]]
+                        if c["label"] == label and c["visible"]
+                        and sidebar["x"] <= c["x"]-client_origin[0]
+                        and c["x"]-client_origin[0]+c["width"] <= sidebar["x"]+sidebar["width"]
+                        and sidebar["y"] <= c["y"]-client_origin[1]
+                        and c["y"]-client_origin[1]+c["height"] <= sidebar["y"]+sidebar["height"]]
             assert len(controls) == 1, f"Prototype rail {label} absent/ambiguous"
             c = controls[0]
             actual = dict(x=c["x"]-client_origin[0], y=c["y"]-client_origin[1], width=c["width"], height=c["height"])

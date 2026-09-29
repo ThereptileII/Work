@@ -22,6 +22,20 @@ foreach($fileName in @('ReviewWindow.ps1','review-window.ps1','../test-display-w
   }
 }
 Pass 'Native helper compiles without executing Win32 APIs' {Initialize-WindowReviewNative}
+Pass 'New native Preferences cases are admitted by the disposable fixture catalog' {
+ $tokens=$null;$errors=$null
+ $ast=[Management.Automation.Language.Parser]::ParseFile((Join-Path $PSScriptRoot '../../tests/display-review/window-fixture.ps1'),[ref]$tokens,[ref]$errors)
+ $catalog=@($ast.FindAll({param($node)
+  $node -is [Management.Automation.Language.BinaryExpressionAst] -and
+  $node.Operator -eq [Management.Automation.Language.TokenKind]::Cnotin -and
+  $node.Left.Extent.Text -ceq '$record.case'
+ },$true))
+ if($catalog.Count -ne 1){throw 'Fixture case allowlist must be explicit and unique.'}
+ $names=@($catalog[0].Right.SafeGetValue())
+ foreach($name in @('prototype-preferences','prototype-two-sheets')) {
+  if($names -cnotcontains $name){throw ('Native fixture refuses its new test case: '+$name)}
+ }
+}
 $rail=@('Chart','Passage','Traffic','Energy','Instruments','Anchor','Radar','Settings')
 Pass 'Prototype shell requires all eight exact sibling controls' {
  if(-not [OpenNavX.ReviewWindowNative]::IsPrototypeNavigation($rail)){throw 'Prototype rail rejected.'}

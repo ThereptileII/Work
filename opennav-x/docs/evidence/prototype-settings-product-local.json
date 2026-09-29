@@ -1,0 +1,72 @@
+{
+  "accepted": false,
+  "baseCommit": "17860f1f1eaf46a3f0e22f3dc01bc3f978a3dc4c",
+  "scope": "Fixture-free Linux product review and narrow test-scope corrections; native replacement required",
+  "product": {
+    "executableSha256": "bfb172776ebb79d7d6e4d4c5e5550a173d501372217c7330c511f9c366f8c2b4",
+    "executableBuildCommit": "6c05137405f9da4502dcbefd129a918074e2e6e2",
+    "tests": {
+      "name": "(empty)",
+      "tests": "123",
+      "failures": "0",
+      "disabled": "0",
+      "skipped": "0",
+      "hostname": "",
+      "time": "19",
+      "timestamp": "2026-09-29T02:57:37"
+    },
+    "testsSha256": "f8b5122ef49ea3d1025cfc00594e697161ac9056b0e1fa089eb153b08be98a74",
+    "loaderCheck": "Passed actual loader/resource self-test; profile unchanged; overwrite refused",
+    "captures": {
+      "navigation-day.png": "56d6ee6dbfe3638907378afae0e7f77b571675d21bfd83e16e2827f491c31ef0",
+      "navigation-dusk.png": "2eea7a84ff49c2ebfc7de0d9d4d47c1c1a0a0293f48adc264f694d0eb1d87da0",
+      "navigation-night.png": "543b621ca5a10eb279d447eb884412d41c90877d302d8a9d5dd37c227bd442a7",
+      "passage-day.png": "94951d7b9f8a36e92124b017c35155994bdf22d3cb993c6af50a1cd1c8370eba",
+      "passage-dusk.png": "0f33268a942fba836c9527b2a4c99b1a0ab2c81001262d3700fdb7a587279374",
+      "passage-night.png": "7f4c85f2f4216d95769f3b05a07223816a2c9b597a18ebc33e376c75e35caabd",
+      "traffic-day.png": "0561a704a29b221da247c9d55f129e8d88df37f2044042541394c1c10b00d9df",
+      "energy-day.png": "8f9dc4360f13695b5a6c8583fd25520f673b759f9cc6d7da60e97a20d4a3536d",
+      "instruments-day.png": "18323387170000b5458d5b5f5a3801531e4a10bbf5a4dbafc5491b29bcbd2b6b",
+      "instruments-dusk.png": "06a11ba0e4e9a519d23932ae2917a91816de3a55cfb60a8908398f5787773035",
+      "instruments-night.png": "801b3ee81057f352040e88b83c07297a353a1b9992e1225cd7b6a8a06ddb9af5",
+      "settings-day.png": "75c141d445092de2bc46e0735e58442631d8cb1f30a50427013ccbaf819dd1a3",
+      "settings-dusk.png": "efd9b4fa9262fd40e1e17a4be669caf276616eca1b6d444c6b0438cbe74f5a40",
+      "settings-night.png": "1aed427d77ebbb7f004dff78174e6c6007325ce660d2037af98a502e9ad20650",
+      "sensors-day.png": "2d34aa6e203fb39adfd85cfb4786ba9e3f71d0a1195a3a6b9317691871bcdb1c",
+      "display-day.png": "7a19e7047bbffb28d2fc01f90522b6ea30fe64fe3fec88c3e32c6e471ad41081",
+      "system-day.png": "fab8c59bd9eddec8627543dcc3e300844b4cd6e9bf6caff9c969cc4fda8e6c58",
+      "online-ais-settings-day.png": "162154dee53a7d1f35f0fbb930bfdd2e6c4f44798792727cd1325ec13a04a7e4",
+      "online-ais-key-needed-day.png": "75bacaae00bdc5527ee9c2f8e98ca3ba8e65629d1699437491acb85eb8a67dcc",
+      "online-ais-settings-dusk.png": "c60d18263c738fc7f419e82d814ed3a5e70976e3503793321cd4c78b783f1313",
+      "online-ais-settings-night.png": "1f4950bcabe360f149f0d278c931d4891cb22bbf4d6713dad9c92f6ccb19335d"
+    },
+    "settingsFlow": "Wide preferences sheet; eight sections; theme cycle; Sensors/Display/System; Close retains chart",
+    "imagesReviewed": [
+      "settings-day.png",
+      "settings-night.png",
+      "sensors-day.png"
+    ]
+  },
+  "corrections": [
+    "Rail assertion scopes navigation identity to the independently rendered sidebar; Radar preferences tab no longer makes it ambiguous. Exact bounds and one-control checks are unchanged.",
+    "Two new disposable native fixture cases are added to the explicit accepted test-case catalog; capture guard itself unchanged. Pure AST check prevents catalog omission."
+  ],
+  "guard": {
+    "checks": 217,
+    "sha256": "19d4d4f43d63198716be0b8793f9694a1a6d9d85f2a10c5f3ca1fe9e63c81cad"
+  },
+  "sourceSha256": {
+    "tools/prototype/capture-native.py": "bbb57ac4a31ea05dd1c36f6513728a82f4a20c6fb8ece53e1df32da9f3f31682",
+    "tools/boat/test-review-window.ps1": "7d260134d0efa684967b9e1ba2b66d41d3f8ac38d1980c214ff59fd8aab6e6d7",
+    "tests/display-review/window-fixture.ps1": "2e6e6c148578eebd6f352d481c0c9e44943795cb2af038ce4405c71b9fbb80a8"
+  },
+  "negativeRuns": [
+    "Product pass1 had no local Xvfb PATH because the caller did not source local-env; repeated with established environment.",
+    "Product pass2 refused ambiguous Radar label; retained capture and diagnostics show one sidebar button and one preferences tab."
+  ],
+  "limitations": [
+    "Product was configured before the source commit; exact executable build identity is retained, not relabelled. Native CI builds the committed source cleanly.",
+    "No boat deployment, DPI or visual-conformance acceptance.",
+    "Preferences inline-form and section migrations remain open."
+  ]
+}

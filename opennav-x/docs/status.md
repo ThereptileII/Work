@@ -8,7 +8,12 @@ component passes retain 36 images (100/100/102 checks); the latest integrated
 Linux build passes 123/123 in 20.46s. The isolated route fixture now passes its
 26 progress and ten exact Day/software ink checks after the repaint request.
 Capture policy passes 216 checks; 50 native marker cases await Windows.
-Fixture-free product capture is in progress. Inline forms, remaining section
+The fixture-free product also passes 123/123 in 19.66s and its actual loader
+self-test. Twenty-one product captures pass after scoping the rail identity
+assertion to the prototype sidebar (Preferences has its own Radar tab). Two new
+marker cases now appear in the fixture's explicit catalog; 217 pure guard checks
+pass. See [corrective product evidence](evidence/prototype-settings-product-local.json).
+Inline forms, remaining section
 content, non-default DPI and boat review are still open; this is not Settings
 visual acceptance. See [review](design/reviews/prototype-settings-in-progress.md)
 and [local evidence](evidence/prototype-settings-local.json).
