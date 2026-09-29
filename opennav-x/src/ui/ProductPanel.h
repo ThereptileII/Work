@@ -9,6 +9,7 @@
 #include "smartnav/Advisories.h"
 #include "ui/Controls.h"
 #include "ui/InstrumentPanel.h"
+#include "ui/RadarPanel.h"
 #include <wx/scrolwin.h>
 #include <wx/sizer.h>
 #include <wx/stattext.h>
@@ -136,6 +137,7 @@ private:
   void SaveSettings(application::Settings settings);
   ProductActions actions_;
   XNavInstrumentPanel *instruments_ = nullptr;
+  XNavRadarPanel *radar_ = nullptr;
   ProductState state_;
   ProductPage page_ = ProductPage::Home;
   LightMode mode_ = LightMode::Day;

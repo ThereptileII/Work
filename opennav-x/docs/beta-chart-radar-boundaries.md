@@ -62,3 +62,10 @@ interface/transport, plugin and version, receive-image ownership/timing contract
 capability/status bridge and hardware validation. Beta cannot safely enable
 Overlay/Focus without these. Radar/AIS fusion and automatic collision avoidance
 remain excluded.
+
+Prototype presentation work adds a native Radar Focus composition while this
+integration boundary remains unavailable. The display explicitly says no radar
+image and does not draw returns, a made-up range or scanner settings. Copied
+capability flags cannot enable controls. No `IRadar::SetPresentation` or scanner
+command path is exposed by the panel; existing plugin management remains a
+separate user-initiated advanced interface. Replay cannot open that live path.

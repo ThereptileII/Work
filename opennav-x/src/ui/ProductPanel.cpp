@@ -348,6 +348,18 @@ std::vector<ProductGeometry> ProductPanel::ControlGeometry() const {
       out.push_back({child->GetLabel().ToStdString(wxConvUTF8), r, child->IsEnabled(),
           IsShownOnScreen() && child->IsShownOnScreen() && GetScreenRect().Contains(r)});
     }
+  if (radar_)
+    for (auto *child : radar_->Controls()) {
+      const auto r = child->GetScreenRect();
+      bool visible = IsShownOnScreen() && child->IsShownOnScreen();
+      for (auto *parent = child->GetParent(); parent && visible;
+           parent = parent->GetParent()) {
+        visible = parent->GetScreenRect().Contains(r);
+        if (parent == this) break;
+      }
+      out.push_back({child->GetLabel().ToStdString(wxConvUTF8), r,
+                     child->IsEnabled(), visible});
+    }
   for (auto *child : GetChildren()) {
     if (!dynamic_cast<XNavButton *>(child)) continue;
     const auto rectangle = child->GetScreenRect();
@@ -365,6 +377,11 @@ std::vector<ProductGeometry> ProductPanel::RegionGeometry() const {
                             FromDIP(region.second.GetSize()));
       out.push_back({region.first.ToStdString(wxConvUTF8), r, true,
           IsShownOnScreen() && GetScreenRect().Contains(r)});
+    }
+  if(radar_)
+    for(const auto &region:radar_->Regions()) {
+      const auto r=wxRect(radar_->ClientToScreen(FromDIP(region.second.GetPosition())),FromDIP(region.second.GetSize()));
+      out.push_back({region.first.ToStdString(wxConvUTF8),r,true,IsShownOnScreen()&&GetScreenRect().Contains(r)});
     }
   for (auto *panel : visuals_) {
     const auto rectangle = panel->GetScreenRect();
@@ -427,6 +444,7 @@ bool ProductPanel::RefreshWaypoint() {
   return changed;
 }
 void ProductPanel::Update(const ProductState &state, LightMode mode) {
+  const bool light_changed = mode != mode_;
   const bool mode_changed = state_.vessel.replayed != state.vessel.replayed ||
                             state_.vessel.simulated != state.vessel.simulated;
   bool alerts_changed = state_.alerts.size() != state.alerts.size();
@@ -435,9 +453,18 @@ void ProductPanel::Update(const ProductState &state, LightMode mode) {
       alerts_changed |= state_.alerts[i].episode != state.alerts[i].episode ||
                         state_.alerts[i].acknowledged != state.alerts[i].acknowledged;
   state_ = state;
-  rebuild_pending_ |= mode != mode_ || mode_changed ||
+  rebuild_pending_ |= (light_changed && !radar_) || mode_changed ||
       (page_ == ProductPage::Alerts && alerts_changed);
   mode_ = mode;
+  if (radar_) {
+    // This native component owns its complete theme transition. Keep its
+    // scroll/paint surfaces alive instead of destroying them mid-transition.
+    radar_->Update(state_.radar, state_.now, state_.vessel.replayed, mode_);
+    if (light_changed) {
+      SetBackgroundColour(Colour(Theme(mode_).background));
+      Refresh(false);
+    }
+  }
   // Sheets are stack-owned modal children. DestroyChildren during ShowModal
   // would destroy their lifetime; retain ALL pending rebuild causes instead.
   auto *frame = wxGetTopLevelParent(this);
@@ -698,6 +725,7 @@ void ProductPanel::Build() {
   action_grids_.clear();
   values_.clear();
   instruments_ = nullptr;
+  radar_ = nullptr;
   grid_ = nullptr;
   actions_grid_ = nullptr;
   DestroyChildren();
@@ -706,7 +734,7 @@ void ProductPanel::Build() {
   body_ = new wxBoxSizer(wxVERTICAL);
   SetSizer(body_);
   SetBackgroundColour(Colour(Theme(mode_).background));
-  if (page_ != ProductPage::Instruments) body_->AddSpacer(FromDIP(20));
+  if (page_ != ProductPage::Instruments && page_ != ProductPage::Radar) body_->AddSpacer(FromDIP(20));
   notice_ = new wxStaticText(this, wxID_ANY, "");
   notice_->SetFont(UiFont(*this, 14, true));
   body_->Add(notice_, 0, wxEXPAND | wxALL, FromDIP(12));
@@ -944,29 +972,11 @@ void ProductPanel::Build() {
   } else if (page_ == ProductPage::SourceDetail) {
     SourceDetail();
   } else if (page_ == ProductPage::Radar) {
-    Heading("Radar",
-            "Radar connection and presentation");
-    Action("Back to Settings",
-           [this] { ShowPage(ProductPage::Settings, mode_); });
-    LiveText([](const auto &s) { return W(s.radar.status); });
-    LiveText([](const auto &s) {
-      return "Source: " +
-             W(s.radar.source.empty() ? "Unavailable" : s.radar.source) +
-             " / " + (s.radar.available ? "AVAILABLE" : "NO DATA");
-    });
-    LiveText([](const auto &s) {
-      return wxString("Overlay: ") +
-             (s.radar.capabilities.overlay ? "supported" : "unavailable") +
-             " / Radar Focus: " +
-             (s.radar.capabilities.focus ? "supported" : "unavailable") +
-             " / Receive: " +
-             (s.radar.capabilities.receive ? "supported" : "unavailable");
-    });
-    Text("No validated radar display adapter is integrated in this Beta. "
-         "Presentation remains Off. Existing compatible plugin interfaces "
-         "remain accessible through Legacy; no synthetic radar is used in live "
-         "mode.");
-    Action("OpenCPN plugins", actions_.navigation.plugin_settings);
+    radar_=new XNavRadarPanel(this);
+    radar_->on_close=actions_.chart;
+    radar_->on_plugins=actions_.navigation.plugin_settings;
+    radar_->Update(state_.radar,state_.now,state_.vessel.replayed,mode_);
+    body_->Add(radar_,0,wxEXPAND);
   } else if (page_ == ProductPage::VesselSettings) {
     Heading("Vessel safety settings",
             "Dimensions and energy");
@@ -1011,7 +1021,7 @@ void ProductPanel::Build() {
     });
     Action("Chart / alarm settings", actions_.navigation.legacy_settings);
   }
-  if (page_ != ProductPage::Instruments) body_->AddSpacer(FromDIP(24));
+  if (page_ != ProductPage::Instruments && page_ != ProductPage::Radar) body_->AddSpacer(FromDIP(24));
   Layout();
   FitInside();
   Thaw();

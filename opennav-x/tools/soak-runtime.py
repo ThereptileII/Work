@@ -71,11 +71,11 @@ def data(predicate=lambda d: True, timeout=8):
         time.sleep(.1)
     raise AssertionError('Application diagnostic state did not advance')
 
-def page(label, shortcut, expected, menu=False):
+def page(label, shortcut, expected):
     start = time.monotonic()
     if windows:
-        if menu: ui.click_text(app.pid, 'Menu')
-        ui.click_text(app.pid, label)
+        if shortcut=='j':ui.accelerator(handle,shortcut)
+        else:ui.click_text(app.pid, label)
     else:
         xdo('windowfocus', handle); xdo('key', 'ctrl+shift+'+shortcut)
     data(lambda d: d['ui_page'] == expected)
@@ -83,7 +83,7 @@ def page(label, shortcut, expected, menu=False):
 
 def scenario(label, index, predicate):
     if windows:
-        ui.click_text(app.pid, 'Demo'); ui.click_text(app.pid, label)
+        ui.accelerator(handle,'F'+str(index+1))
     else:
         xdo('windowfocus', handle); xdo('key', 'ctrl+shift+F'+str(index+1))
     return data(predicate)
@@ -160,15 +160,16 @@ try:
     first = data(lambda d: d['data_mode'] == 'DEMO' and 'arrival_soc' in d['energy'])
     report['build_commit'] = first['build_commit']
     report['startup_seconds'] = time.monotonic()-launched
-    chart = module('chart-render-check'); colors = chart.reference(
+    chart = module('chart-render-check'); colors = chart.presentation(
         ui.capture(handle, args.evidence/'start.png') if windows else
-        subprocess.check_output(['import', '-window', 'root', '-depth', '8', 'rgb:-'], env=env))
+        subprocess.check_output(['import', '-window', 'root', '-depth', '8', 'rgb:-'], env=env),
+        'XNav', first['runtime']['display']['light'], 'Endurance startup')
     capture('start')
     start = time.monotonic(); next_action = start; next_sample = start
     sequence = 0; last_ticks = -1; last_distance = None; progress_changes = 0
-    pages = [('Navigation','n','Navigation',False), ('Route','r','Route',False),
-             ('Energy','e','Energy',False), ('Vessel instruments','v','Vessel instruments',True),
-             ('AIS targets','a','AIS targets',True), ('SmartNav advisories','j','SmartNav',True)]
+    pages = [('Chart','n','Navigation'), ('Passage','r','Route'),
+             ('Energy','e','Energy'), ('Instruments','v','Vessel instruments'),
+             ('Traffic','a','AIS targets'), ('SmartNav advisories','j','SmartNav')]
     while time.monotonic()-start < args.seconds:
         now = time.monotonic()
         if now >= next_action:
@@ -187,8 +188,12 @@ try:
                     data(lambda d: d['runtime']['display']['light'] == expected_light)
                     action['palette'] = expected_light
                 else:
-                    xdo('mousemove', 27, 140, 'click', 1); xdo('mousemove', 27, 196, 'click', 1)
-                    xdo('mousemove', 1240, 28, 'click', 1)
+                    controls=data()['runtime']['display']['interaction_controls']
+                    for label in ['+','−',data()['runtime']['display']['light']]:
+                        found=[c for c in controls if c['label']==label and c['visible'] and c['enabled']]
+                        assert len(found)==1,(label,'unique visible prototype action required')
+                        c=found[0];xdo('mousemove',c['x']+c['width']//2,c['y']+c['height']//2,'click',1)
+                        time.sleep(.5)
             elif slot == 4:
                 missing = (sequence//6) % 2
                 # Unavailable removes selected instruments/power, deliberately

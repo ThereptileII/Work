@@ -270,7 +270,7 @@ try:
    ui.user.mouse_event(4,0,0,0,0)
   else:xdo('mousemove',600,400,'mousedown',1,'mousemove',680,420,'sleep',.2,'mouseup',1)
   data(lambda d:abs(chart(d)['longitude']-before['longitude'])>.0001)
-  command('Center','F2');d=data(lambda d:chart(d)['follow'] and abs(chart(d)['latitude']-47.6)<.0001 and abs(chart(d)['longitude']+122.36)<.0001 and enc(d))
+  command('Follow boat','F2');d=data(lambda d:chart(d)['follow'] and abs(chart(d)['latitude']-47.6)<.0001 and abs(chart(d)['longitude']+122.36)<.0001 and enc(d))
   entry['captures'].append(capture('chart-'+rendering+'-03-follow'))
   position=(47.59,-122.447)
   switched=data(lambda d:chart(d)['follow'] and abs(chart(d)['longitude']-position[1])<.0001 and reference_cell(d,'US5SEAFK.000'))
@@ -280,15 +280,14 @@ try:
   restored=data(lambda d:abs(chart(d)['longitude']-position[1])<.0001 and reference_cell(d,'US5SEAFL.000'))
   entry['chart_switch']['returned']=chart(restored)
   entry['captures'].append(capture('chart-'+rendering+'-03b-returned-cell'))
-  command('Menu','ctrl+shift+m');data(lambda d:d['ui_page']=='Menu');capture('chart-'+rendering+'-overlay',False)
-  command('Navigation','ctrl+shift+n');data(lambda d:d['ui_page']=='Navigation' and enc(d))
+  command('Settings','ctrl+shift+g');data(lambda d:d['ui_page']=='Settings');capture('chart-'+rendering+'-overlay',False)
+  command('Chart','ctrl+shift+n');data(lambda d:d['ui_page']=='Navigation' and enc(d))
   entry['captures'].append(capture('chart-'+rendering+'-04-restored'))
   if rendering=='software':
-   command('Menu','ctrl+shift+g')
+   command('Settings','ctrl+shift+g')
    if windows:
-    # The Alpha flat settings page became Beta's grouped settings. The Radar
-    # integration page retains the working entry into OpenCPN's plugin manager.
-    ui.click_text(pid,'Settings');ui.click_text(pid,'RADAR');ui.click_text(pid,'OpenCPN plugins')
+    # The prototype Preferences sheet retains the real plugin manager entry.
+    ui.click_text(pid,'Radar');ui.click_text(pid,'Plugins & adapters')
     options,_=ui.wait_window('Options',pid)
     end=time.monotonic()+10
     while time.monotonic()<end:
@@ -326,9 +325,9 @@ try:
     # Public settings keyboard focus is not guessed; Linux validates loading.
     # Native gate above verifies the actual upstream manager interaction.
     pass
-   command('Navigation','ctrl+shift+n')
+   command('Chart','ctrl+shift+n')
    if windows:
-    ui.click_text(pid,'Menu');ui.click_text(pid,'Routes');ui.click_text(pid,'Create route on chart')
+    ui.click_text(pid,'Passage');ui.click_text(pid,'Passage library');ui.click_text(pid,'Create route on chart')
     data(lambda d:d['ui_page']=='Navigation' and d['runtime']['display']['route_creation_active'])
     ui.SetForegroundWindow(handle)
     for x,y in [(430,300),(580,300),(720,360)]:
@@ -345,7 +344,7 @@ try:
     points=created_points();assert len(points)==3,points
     # Save opens the real detail page. Return through the visible Navigation
     # action without zooming to the route, preserving the original point pixels.
-    ui.click_text(pid,'Navigation')
+    ui.click_text(pid,'Chart')
     restored=data(lambda d:d['ui_page']=='Navigation' and enc(d) and not d['runtime']['display']['route_creation_active'])
     assert restored['runtime']['display']['chart_region']==draft['runtime']['display']['chart_region'], 'Saving the route changed its chart viewport'
     for key in ('latitude','longitude','scale_ppm'):

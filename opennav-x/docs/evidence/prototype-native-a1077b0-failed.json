@@ -1,0 +1,206 @@
+{
+  "scope": "Development only; two platform qualification failures; not deployable or visually accepted",
+  "publishedCommit": "a1077b065ae4d7d1248b20d0f8ff8281cb31c53a",
+  "localEquivalent": "de2369af8e73761c2ee02b1d6fb0ab15017f711e",
+  "tree": "5805787c030f4dd9b7f624fedb922f10ae217033",
+  "prototypeRun": "https://github.com/ThereptileII/Work/actions/runs/36520947790",
+  "qualificationRun": "https://github.com/ThereptileII/Work/actions/runs/36520970749",
+  "prototypeJobs": {
+    "passed": 7,
+    "failed": 1
+  },
+  "qualificationJobs": {
+    "passed": 13,
+    "failed": 2,
+    "publication": "skipped"
+  },
+  "integratedTests": {
+    "Linux": 132,
+    "MSVC": 124
+  },
+  "failures": [
+    "Full Linux loopback pilot test expects removed full-page grouped regions.",
+    "Full Windows loopback pilot test expects removed Menu control.",
+    "Windows preview pointer foreground assertion before Preferences Vessel selection; exact reason not established by prior evidence."
+  ],
+  "replacement": [
+    "Retain complete loopback wire/acknowledgement/timeout/reconnect tests using native prototype drawer geometry.",
+    "Local reproduction exposes clipped confirmation text because dialog sized from narrow drawer; root-owner bounds and width wrapping corrected.",
+    "Pointer test checks real foreground ownership and exact hit target before physical click, without forced sheet activation; failed window capture/children retained before process teardown."
+  ],
+  "verifiedArchives": [
+    {
+      "id": 11013490275,
+      "name": "prototype-review-guard-Windows-a1077b065ae4d7d1248b20d0f8ff8281cb31c53a",
+      "sha256": "67bfe71b62c3ead257d86975d3b2c1de49617c099492738b5404e673a35e6deb",
+      "bytes": 9631,
+      "zipCrc": true
+    },
+    {
+      "id": 11013415601,
+      "name": "prototype-ais-network-Linux-a1077b065ae4d7d1248b20d0f8ff8281cb31c53a",
+      "sha256": "8569866bd0f4f0e6bae4798cbe47a5c78b3ea5927c963178f3961ab90d06657a",
+      "bytes": 935,
+      "zipCrc": true
+    },
+    {
+      "id": 11013310884,
+      "name": "prototype-ais-foundation-Windows-a1077b065ae4d7d1248b20d0f8ff8281cb31c53a",
+      "sha256": "701951b8cc458eda305fcaa9548c8aae35aa37b7d12ff7791a21e16fd63290a8",
+      "bytes": 690,
+      "zipCrc": true
+    },
+    {
+      "id": 11013246166,
+      "name": "prototype-reference-Windows-a1077b065ae4d7d1248b20d0f8ff8281cb31c53a",
+      "sha256": "a8dd0f0e3d459165720959a5ef599df194b59081ead0312c58d0cd339d19ada4",
+      "bytes": 18792327,
+      "zipCrc": true
+    },
+    {
+      "id": 11012988932,
+      "name": "prototype-object-flow-Windows-a1077b065ae4d7d1248b20d0f8ff8281cb31c53a",
+      "sha256": "823fb36a4b5be58690888d0d1e0f434379fe49a97c48f1ffde7e51be17d07203",
+      "bytes": 11494734,
+      "zipCrc": true
+    },
+    {
+      "id": 11012691862,
+      "name": "prototype-reference-Linux-a1077b065ae4d7d1248b20d0f8ff8281cb31c53a",
+      "sha256": "d2dd34cca0770b0dd941410409f4e929bfe28e401c13a7d90a237228168d6372",
+      "bytes": 20847675,
+      "zipCrc": true
+    },
+    {
+      "id": 11012516960,
+      "name": "prototype-ais-foundation-Linux-a1077b065ae4d7d1248b20d0f8ff8281cb31c53a",
+      "sha256": "1a05578aff17bf645f653e68e1f2eb700bf9746ef3cb2aa995af25ac8d17f828",
+      "bytes": 687,
+      "zipCrc": true
+    },
+    {
+      "id": 11013595224,
+      "name": "commissioning-restart-qualified-a1077b065ae4d7d1248b20d0f8ff8281cb31c53a",
+      "sha256": "2256d81276401e21a8c76aa715e9bf52524821e01bd29b3688c677ddad769db0",
+      "bytes": 337,
+      "zipCrc": true
+    },
+    {
+      "id": 11013510464,
+      "name": "boat-maintenance-a1077b065ae4d7d1248b20d0f8ff8281cb31c53a",
+      "sha256": "fd2205eb804cd622f7383099a765b285a74a650ec599e72216675b6a16b86ca8",
+      "bytes": 24486,
+      "zipCrc": true
+    },
+    {
+      "id": 11013307354,
+      "name": "windows-pristine-a1077b065ae4d7d1248b20d0f8ff8281cb31c53a",
+      "sha256": "68c90f8255a1c64cbf4a7c1087d23a5cbdc15aedd109040d5d4d2f09da930b53",
+      "bytes": 497070,
+      "zipCrc": true
+    },
+    {
+      "id": 11013231551,
+      "name": "restart-window-a1077b065ae4d7d1248b20d0f8ff8281cb31c53a",
+      "sha256": "c3cf24ff3bb5f2d6b46e1c8ccfd51422e152a39d07ebe0388ac69f712cde1dd7",
+      "bytes": 23421,
+      "zipCrc": true
+    },
+    {
+      "id": 11013196457,
+      "name": "stock-welcome-sv-a1077b065ae4d7d1248b20d0f8ff8281cb31c53a",
+      "sha256": "34dfcb8c5a9d4dfa573a19382ec9938d6590dcd79a9f16cec923b3571aa4f8f4",
+      "bytes": 501429,
+      "zipCrc": true
+    },
+    {
+      "id": 11013053785,
+      "name": "windows-integration-a1077b065ae4d7d1248b20d0f8ff8281cb31c53a",
+      "sha256": "ea9b43addfe922273c451365acf519e57aada4a7ba1029eb6e8df027c7257b9f",
+      "bytes": 4210401,
+      "zipCrc": true
+    },
+    {
+      "id": 11013031987,
+      "name": "stock-welcome-en_US-a1077b065ae4d7d1248b20d0f8ff8281cb31c53a",
+      "sha256": "5950ebfca9f82cca59f8c4e72ec0e51cb437a778daca867df134f511446dea4a",
+      "bytes": 474320,
+      "zipCrc": true
+    },
+    {
+      "id": 11012886491,
+      "name": "boat-firmware-a1077b065ae4d7d1248b20d0f8ff8281cb31c53a",
+      "sha256": "107b20f074a00720bfddc5c0d25c8d566301e239486d094f24e4c13a7c000b1d",
+      "bytes": 2684,
+      "zipCrc": true
+    },
+    {
+      "id": 11012882554,
+      "name": "linux-pristine-a1077b065ae4d7d1248b20d0f8ff8281cb31c53a",
+      "sha256": "49cb6d930365a605b8ae4658ffd787d7ea3b4a9cd8f5e42243db77cdd55628bc",
+      "bytes": 475717,
+      "zipCrc": true
+    },
+    {
+      "id": 11012847894,
+      "name": "linux-integration-a1077b065ae4d7d1248b20d0f8ff8281cb31c53a",
+      "sha256": "864c889cc89cae2b81089eb7e7c491e36c3b4622b39f5a803105b5481a97b1e6",
+      "bytes": 4945353,
+      "zipCrc": true
+    },
+    {
+      "id": 11012462242,
+      "name": "official-prerequisite-a1077b065ae4d7d1248b20d0f8ff8281cb31c53a",
+      "sha256": "f1d725160cababe15659d4e860755f8623ebb530906c3bf52a51b5f7ea0585ef",
+      "bytes": 220153,
+      "zipCrc": true
+    },
+    {
+      "id": 11012414259,
+      "name": "commissioning-broker-a1077b065ae4d7d1248b20d0f8ff8281cb31c53a",
+      "sha256": "e593273e4e7280c827a1195140a1cef2e432834f2ffb36838fff97d4b87ea2a2",
+      "bytes": 16723,
+      "zipCrc": true
+    },
+    {
+      "id": 11012379950,
+      "name": "commissioning-restart-a1077b065ae4d7d1248b20d0f8ff8281cb31c53a",
+      "sha256": "cba2acf35bfcb7489393ba577ffd22c84953cddbc4e0f9a3c26f0a5a327df93c",
+      "bytes": 6221,
+      "zipCrc": true
+    },
+    {
+      "id": 11013269247,
+      "name": "prototype-native-Windows-a1077b065ae4d7d1248b20d0f8ff8281cb31c53a",
+      "sha256": "9f1acba2588b33a6ac9575ecd48a6e66d13b97a7cb70dbf45143ecaec5ac3f28",
+      "bytes": 39405669,
+      "zipCrc": true
+    },
+    {
+      "id": 11013129528,
+      "name": "prototype-ais-read-only-probe-a1077b065ae4d7d1248b20d0f8ff8281cb31c53a",
+      "sha256": "a7080741a4e63e5aa837d0c051e20ea7c3bf166df91fec0a232d762306df3aee",
+      "bytes": 135638037,
+      "zipCrc": true
+    }
+  ],
+  "reviewedNativeImages": {
+    "pilot-component/autopilot-pending-day.png": "332a9e616eddb505c10c249a02fe83e899b85e899df3a087ea3acca3c80bd76c",
+    "pilot-component/autopilot-auto-day.png": "c074a8ca9dcd3648dcb24b6cb379ea79bf8f0b77f5f0442f8d89506af62cce67",
+    "alert-component/alerts-night.png": "60f93eb39b55b9116529daa141122c208b4a534ace3148061a1a4223d5eb73c2"
+  },
+  "review": "Pending/confirmed pilot title and all button labels paint completely, correcting the earlier modal repaint defect. Alert night button backing is consistent. This does not qualify all appearance or text fitting.",
+  "nativeComponentChecks": {
+    "ais-component": 71,
+    "passage-component": 26,
+    "instruments-component": 41,
+    "energy-component": 44,
+    "settings-component": 113,
+    "anchor-component": 34,
+    "pilot-component": 61,
+    "alert-component": 53
+  },
+  "actualNativePrimaryCaptures": 26,
+  "nativeDpi": "Development interactions passed at 100/125/150%; full release DPI job not reached",
+  "boat": "No deployment; physical conformance and live AISStream remain pending"
+}

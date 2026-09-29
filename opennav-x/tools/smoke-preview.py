@@ -141,13 +141,18 @@ def pointer_click(target):
         point=ui.W.POINT(x,y);hit=ui.WindowFromPoint(point);owner=ui.W.DWORD()
         ui.GetWindowThreadProcessId(hit,ui.C.byref(owner))
         assert owner.value==pid and ui.IsWindowEnabled(hit) and ui.text(hit)==target['label'],('Pointer target mismatch',target,ui.text(hit))
-        ancestor=ui.declare(ui.user,'GetAncestor',ui.W.HWND,ui.W.HWND,ui.W.UINT)
         foreground=ui.declare(ui.user,'GetForegroundWindow',ui.W.HWND)
-        surface=ancestor(hit,2);ui.SetForegroundWindow(surface)
-        deadline=time.monotonic()+3
-        while foreground()!=surface and time.monotonic()<deadline:time.sleep(.05)
-        assert foreground()==surface and ui.WindowFromPoint(point)==hit
-        ui.SetCursorPos(x,y);ui.MouseEvent(2,0,0,0,0);time.sleep(.05);ui.MouseEvent(4,0,0,0,0)
+        front=foreground();front_pid=ui.W.DWORD()
+        ui.GetWindowThreadProcessId(front,ui.C.byref(front_pid))
+        # Owned drawers intentionally open without activation. A real pointer
+        # click activates them; forcing SetForegroundWindow first can change
+        # stacking between the initial hit test and the click. Require the
+        # tested application to own both foreground and the exact hit target.
+        assert front_pid.value==pid, ('Foreign foreground before input',ui.text(front),front_pid.value)
+        assert ui.SetCursorPos(x,y)
+        actual=ui.WindowFromPoint(point)
+        assert actual==hit and ui.IsWindowEnabled(hit), ('Pointer target changed before input',target,ui.text(actual),ui.text(front))
+        ui.MouseEvent(2,0,0,0,0);time.sleep(.05);ui.MouseEvent(4,0,0,0,0)
     else:xdo('mousemove',x,y,'click',1)
     time.sleep(.4)
 def shell_click(label,outside_drawer=False,in_status=False,in_drawer=False):
@@ -563,11 +568,16 @@ finally:
             title=subprocess.run(['xdotool','getwindowname',window_id],env=env,capture_output=True,text=True)
             report['failure_windows'].append({'id':window_id,'title':title.stdout.strip()})
     if windows and 'result' not in report:
+        # Capture before teardown; enumerating later windows after terminating
+        # their process loses the very children needed to diagnose the failure.
+        if handle:
+            try:capture('preview-failure')
+            except Exception as capture_error:report['failure_capture_error']=str(capture_error)
         # Preserve the actual startup dialog instead of dismissing it. Terminate
         # only an executable belonging to this freshly extracted test package.
         query=ui.declare(ui.kernel,'QueryFullProcessImageNameW',ui.W.BOOL,ui.W.HANDLE,ui.W.DWORD,ui.W.LPWSTR,ui.C.POINTER(ui.W.DWORD))
         terminate=ui.declare(ui.kernel,'TerminateProcess',ui.W.BOOL,ui.W.HANDLE,ui.W.UINT)
-        seen=set();report['failure_windows']=[]
+        seen=set();report['failure_windows']=[];failed_processes=[]
         for h,process,title in ui.windows():
             ph=ui.OpenProcess(0x1000|1,False,process)
             if not ph:continue
@@ -575,8 +585,13 @@ finally:
                 size=ui.W.DWORD(32768);name=ui.C.create_unicode_buffer(size.value)
                 if query(ph,0,name,ui.C.byref(size)) and str(Path(name.value).resolve()).casefold()==str(exe.resolve()).casefold():
                     report['failure_windows'].append({'title':title,'children':[caption for _,caption in ui.children(h)]})
-                    if process not in seen:terminate(ph,1);seen.add(process)
+                    if process not in seen:failed_processes.append(process);seen.add(process)
             finally:ui.CloseHandle(ph)
+        for process in failed_processes:
+            ph=ui.OpenProcess(1,False,process)
+            if ph:
+                try:terminate(ph,1)
+                finally:ui.CloseHandle(ph)
         time.sleep(.5)
     if handle and windows:
         try:ui.close(handle)

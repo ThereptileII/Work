@@ -2,6 +2,34 @@
 
 ## Current stage: prototype design lock, chart presentation and Online AIS
 
+Radar now has a native prototype focus composition, with a fixed scope and an
+independently scrolling control column. It explicitly withholds returns,
+heading/range and scanner controls without a validated receive/control source.
+Linux corrective captures pass 64 component checks, both integrated suites
+pass 132 tests, and the actual product captures all three Radar themes. The
+first layout recursion and subsequent scope/gradient differences are retained
+and corrected. Review then exposed a blank Night scope during whole-page theme
+rebuilds. The persistent component now passes exact fixed-palette interior
+checks through the application theme cycle. See [Radar review](design/reviews/prototype-radar-in-progress.md)
+and [local evidence](evidence/prototype-radar-local.json). Windows/boat pending.
+
+Native `a1077b0` / prototype run `36520947790` passes 7/8 jobs, including
+124 MSVC tests, 53 Alert checks, corrected Pilot modal repaint, software ENC
+comparisons and development DPI. Full qualification `36520970749` passes
+13 jobs but stops in Linux/Windows loopback pilot tests still addressing the
+old full-page controls. A separate Windows preview input assertion also stops
+the retained fixture run. All 22 artifacts verify; deployment is withheld.
+See [negative qualification evidence](evidence/prototype-native-a1077b0-failed.json).
+
+Updating the loopback test exposed a real clipped safety-confirmation dialog.
+The correction sizes it from the application owner and wraps all text to its
+available width; 77 component checks cover consent/cancel/mode confirmation.
+The local actual OpenCPN TCP pilot loopback again passes all command/feedback,
+timeout, stale Standby and reconnect checks, with no physical hardware. Chart,
+plugin and endurance harnesses now target prototype entries, retaining their
+existing navigation, performance and resource assertions. Replacement native
+qualification remains mandatory; no screen or live AISStream gate is accepted.
+
 Alerts now uses the prototype notification drawer, retaining the real chart and
 existing episode-specific acknowledgement semantics. No illustrative encounter
 is fabricated. Linux passes 132 integrated tests and two 53-check component

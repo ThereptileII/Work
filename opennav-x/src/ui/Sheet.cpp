@@ -20,16 +20,26 @@ EditSheet(wxWindow &parent, LightMode mode, const wxString &title,
   const auto c = Theme(mode);
   dialog.SetBackgroundColour(Colour(c.elevated));
   const int gap = dialog.FromDIP(16);
+  // A prototype drawer is itself a top-level owned window. Use the containing
+  // application frame for modal bounds, not the drawer's narrow client area.
+  auto *frame = wxGetTopLevelParent(&parent);
+  while (frame->GetParent()) frame = wxGetTopLevelParent(frame->GetParent());
+  const auto available = frame->GetClientSize();
+  const int top = dialog.FromDIP(56), bottom = dialog.FromDIP(56);
+  const auto size = wxSize(
+      std::min(dialog.FromDIP(520), available.x - dialog.FromDIP(24)),
+      std::min(dialog.FromDIP(300 + 100 * static_cast<int>(fields.size())),
+               std::max(dialog.FromDIP(160), available.y - top - bottom - dialog.FromDIP(24))));
   auto *outer = new wxBoxSizer(wxVERTICAL);
   auto *content = new XNavScroll(&dialog);
   content->SetBackgroundColour(Colour(c.elevated));
   auto *body = new wxBoxSizer(wxVERTICAL);
-  auto label = [&](const wxString &text, int size, bool bold) {
+  auto label = [&](const wxString &text, int font_size, bool bold) {
     auto *t = new wxStaticText(content, wxID_ANY, text);
     EnableScrollGesture(*t);
-    t->SetFont(UiFont(dialog, size, bold));
+    t->SetFont(UiFont(dialog, font_size, bold));
     t->SetForegroundColour(Colour(c.primary));
-    t->Wrap(dialog.FromDIP(450));
+    t->Wrap(std::min(dialog.FromDIP(450), size.x - 2 * gap));
     body->Add(t, 0, wxEXPAND | wxALL, gap);
   };
   label(title, 24, true);
@@ -74,15 +84,8 @@ EditSheet(wxWindow &parent, LightMode mode, const wxString &title,
   }
   outer->Add(actions, 0, wxEXPAND);
   dialog.SetSizer(outer);
-  auto *frame = wxGetTopLevelParent(&parent);
-  const auto available = frame->GetClientSize();
   // Reserve both the status/alert layers and the fixed navigation/STBY row.
   // A newly arriving alert must not appear behind an already-open sheet.
-  const int top = dialog.FromDIP(56), bottom = dialog.FromDIP(56);
-  const auto size = wxSize(
-      std::min(dialog.FromDIP(520), available.x - dialog.FromDIP(24)),
-      std::min(dialog.FromDIP(300 + 100 * static_cast<int>(fields.size())),
-               std::max(dialog.FromDIP(160), available.y - top - bottom - dialog.FromDIP(24))));
   dialog.SetSize(size);
   dialog.Move(frame->ClientToScreen(wxPoint((available.x-size.x)/2,
                      top + (available.y-top-bottom-size.y)/2)));

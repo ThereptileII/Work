@@ -18,7 +18,7 @@ to native behavior; it does not authorize mock hardware or installer actions.
 | Instruments / metric | Vessel Data assessment, configurable four rail slots | Close; editing a slot returns to rail configuration |
 | Anchor / anchor alert | One `XNavAnchorDrawer`, owned OpenCPN watch/projection | Proposed radius does not arm; start/stop confirmed; GPS loss withholds current position/distance; Close/Escape restores chart |
 | Autopilot summary / pilot alert | `XNavPilotDrawer`, existing guarded manual adapter callbacks | Explicit enable and mode confirmation; pending feedback never becomes success; Standby remains accessible; replay/control-off block output |
-| Radar | Adapter availability/capabilities | Unavailable when absent; no synthetic sweep or transmitter command |
+| Radar | Native focus composition over copied adapter status | Independently scrolling controls; Close restores chart; all scanner controls unavailable until receive/control contracts exist; no synthetic sweep or transmitter command |
 | Health / Sensors | Existing source registry and diagnostics | Nested source Back, root Close; online AIS separate from onboard |
 | Alerts / banner | Existing episode/acknowledgement model | Acknowledgement never hides an unresolved critical cause |
 | Chart layers / orientation / follow | Existing OpenCPN presentation and chart actions | Retain shared chart model; XNav/Standard is a presentation preference |

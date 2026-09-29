@@ -21,7 +21,7 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--client", type=Path, required=True)
     parser.add_argument("--output", type=Path, required=True)
-    parser.add_argument("--component", choices=["ais", "passage", "instruments", "energy", "settings", "anchor", "autopilot", "alerts"], default="ais")
+    parser.add_argument("--component", choices=["ais", "passage", "instruments", "energy", "settings", "anchor", "autopilot", "alerts", "radar"], default="ais")
     args = parser.parse_args()
     args.client = args.client.resolve()
     args.output = args.output.resolve()
@@ -64,7 +64,7 @@ def main():
         if result.returncode:
             raise RuntimeError(f"Component interactions failed ({result.returncode}); inspect interaction.log")
         record = json.loads((args.output / "result.json").read_text())
-        minimum, images = {"ais": (40, 9), "passage": (26, 5), "instruments": (41, 5), "energy": (44, 7), "settings": (90, 12), "anchor": (30, 5), "autopilot": (60, 7), "alerts": (50, 7)}[args.component]
+        minimum, images = {"ais": (40, 9), "passage": (26, 5), "instruments": (41, 5), "energy": (44, 7), "settings": (90, 12), "anchor": (30, 5), "autopilot": (77, 7), "alerts": (50, 7), "radar": (64, 6)}[args.component]
         assert record["passed"] and record["checks"] >= minimum
         assert len(record["captures"]) == images
         record["source_commit"] = subprocess.check_output(
@@ -77,6 +77,7 @@ def main():
         reference = ROOT / "docs/design/prototype/reference" / ("windows" if windows else "linux")
         comparison = args.output / "comparison"
         comparison.mkdir()
+        radar_scope = None
         for name in record["captures"]:
             image_path = args.output / f"{name}.png"
             record["screenshots"][name] = hashlib.sha256(image_path.read_bytes()).hexdigest()
@@ -85,7 +86,7 @@ def main():
                 theme = name.rsplit("-", 1)[-1]
                 background = {"day": (21, 35, 38), "dusk": (29, 40, 46),
                               "night": (12, 17, 21)}[theme]
-                sample = (95, 230) if args.component in {"instruments", "energy"} else (695, 230)
+                sample = (95, 230) if args.component in {"instruments", "energy", "radar"} else (695, 230)
                 assert current.convert("RGB").getpixel(sample) == background, \
                     f"{name}: component pixels absent or wrong theme"
                 if args.component in {"instruments", "energy"}:
@@ -113,6 +114,14 @@ def main():
                     # Top-left corners of rounded action buttons must reveal
                     # the actual callout, never native wxPanel grey.
                     assert current.convert("RGB").getpixel((722,308))==backing, f"{name}: native button backing"
+                if args.component == "radar":
+                    # Capability/status, stale input and replay must never
+                    # paint echoes, a sweep, a heading or calibrated range.
+                    # The prototype's interior uses fixed ink in all themes.
+                    scope = current.convert("RGB").crop((140,240,740,690)).tobytes()
+                    if radar_scope is None:
+                        radar_scope = scope
+                    assert scope == radar_scope, f"{name}: status changed unavailable radar image"
                 if args.component == "passage" and name in {"passage-day", "passage-dusk", "passage-night"}:
                     assert current.convert("RGB").getpixel((1030, 404)) == background, \
                         f"{name}: disabled edit icon has a native grey backing"
@@ -124,7 +133,7 @@ def main():
                 with Image.open(original) as ref:
                     # Exact component viewport, not a layout-tolerance mask.
                     bounds = ((80, 68, 1094, 634) if args.component == "instruments"
-                              else (80, 68, 1094, 766) if args.component == "energy"
+                              else (80, 68, 1094, 766) if args.component in {"energy", "radar"}
                               else (648, 80, 1080, 754) if args.component == "settings"
                               else (682, 80, 1080, 754))
                     a, b = ref.convert("RGB").crop(bounds), current.convert("RGB").crop(bounds)

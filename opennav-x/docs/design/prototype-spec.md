@@ -43,6 +43,13 @@ Day shadow: `0 6px 30px #13383514`; Dusk: `0 8px 35px #06151b25`;
 Night: `0 8px 35px #0003`. Components retain individual transparency and
 selection rules; do not replace them with one opaque accent fill.
 
+Radar's fixed scope palette is separate from live/chart palette roles:
+surface `#0d1d20`, radial-gradient centre `#142e29` at 0, `#10241f` at 45%,
+`#0d1d20` at 69%; CSS farthest-corner radius. Scope edge `#6e9a7e30`,
+crosshair `#83b49b20`, canvas rings `rgba(144,210,181,.17)` at 0.7px;
+caption `#b5d8bf`, legend `#9ebcaf`. `RadarTheme` retains these values in
+all three modes. An unavailable receiver does not draw mock echoes or heading.
+
 ## Typography
 
 Exact stack: `"Segoe UI Variable Display", "Segoe UI", Arial, sans-serif`.

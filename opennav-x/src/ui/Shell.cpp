@@ -975,7 +975,7 @@ void Shell::Tick() {
       (label=="Energy"&&current_title=="Energy") ||
       (label=="Instruments"&&current_title=="Vessel instruments") ||
       (label=="Anchor"&&current_title=="Anchor watch") ||
-      (label=="Radar"&&current_title=="Radar") ||
+      (label=="Radar"&&current_title=="Radar status") ||
       (label=="Settings"&&(current_title=="Settings"||current_title=="Menu"));
     button->SetSelected(selected);
   }

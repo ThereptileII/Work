@@ -724,3 +724,10 @@ existing copied AlertCenter episodes; pinned OpenCPN AIS/anchor alarm semantics
 and pilot adapters are untouched. Existing interaction diagnostics also copy
 a readable control name beside its caption; no new upstream hook or input
 injection boundary is added. See `alert-presentation-contract.md`.
+
+Prototype Radar Focus inspects the pinned `ocpn_plugin.h` generic CPU/GL overlay
+callbacks, which provide no standardized owned radar-image/control contract.
+No direct hook is added. `XNavRadarPanel` consumes copied unavailable/status
+data and cannot call scanner commands. Shared confirmation-sheet sizing now
+follows the native ownership chain to the application frame; OpenCPN core,
+chart/model processing and hardware transports are unchanged.

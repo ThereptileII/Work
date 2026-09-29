@@ -65,7 +65,11 @@ SELECTORS = [".topbar", ".sidebar", "#workspace", "#chartView", ".data-rail",
              ".anchor-distance small", "#anchorRadius", ".field b", ".stats-grid",
              ".stats-grid label", ".stats-grid strong", ".note",
              ".heading-dial", ".heading-dial svg", ".dial-value", ".dial-value span",
-             ".dial-value small", ".heading-controls"]
+             ".dial-value small", ".heading-controls", ".radar-layout", ".radar-display",
+             ".radar-scope", ".radar-crosshair", ".radar-north", ".radar-scope-caption",
+             ".radar-scope-caption b", ".radar-scope-caption span", ".radar-legend",
+             ".radar-control-panel", ".radar-mode-label", ".range-field", ".range-field input",
+             ".radar-layout .row", ".radar-layout .field", ".radar-layout select"]
 
 MEASURE = """selectors => {
  const app = document.querySelector('#app');

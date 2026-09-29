@@ -11,6 +11,7 @@
 #include <wx/dialog.h>
 #include <wx/filename.h>
 #include <wx/log.h>
+#include <wx/stattext.h>
 #include <wx/timer.h>
 #ifdef __WXGTK__
 #include <gtk/gtk.h>
@@ -148,6 +149,19 @@ private:
   void Confirm(const wxString &name, bool accept) {
     auto *dialog = dynamic_cast<wxDialog *>(wxWindow::FindWindowByName(name));
     Check(dialog && dialog->IsModal(), "explicit confirmation shown");
+    Check(dialog->GetClientSize().x == dialog->FromDIP(520),
+          "safety confirmation uses application width, not the narrow drawer");
+    Check(frame_->GetScreenRect().Contains(dialog->GetScreenRect()),
+          "confirmation remains inside application bounds");
+    const auto check_text = [this](const auto &self, wxWindow *parent) -> void {
+      for (auto *child : parent->GetChildren()) {
+        if (auto *label = dynamic_cast<wxStaticText *>(child))
+          Check(label->GetBestSize().x <= parent->GetClientSize().x,
+                "full confirmation text wraps within available width");
+        self(self, child);
+      }
+    };
+    check_text(check_text, dialog);
     dialog->EndModal(accept ? wxID_OK : wxID_CANCEL);
   }
   void Step(wxTimerEvent &) {

@@ -62,6 +62,17 @@ constexpr Palette Theme(LightMode mode) {
   return Theme(LightMode::Night);
 }
 
+struct RadarPalette {
+  std::uint32_t surface, center, middle, border, rings, crosshair, caption, legend;
+  unsigned char border_alpha = 48, rings_alpha = 43, crosshair_alpha = 32;
+};
+constexpr RadarPalette RadarTheme() {
+  // Supplied radar display has fixed green/black ink in all three themes.
+  // CSS/Canvas alpha is preserved over the gradient; no synthetic echo palette.
+  return {0x0D1D20,0x142E29,0x10241F,0x6E9A7E,0x90D2B5,0x83B49B,
+          0xB5D8BF,0x9EBCAF};
+}
+
 namespace spacing {
 constexpr int base = 8;
 constexpr int compact = 4;

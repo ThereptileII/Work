@@ -60,3 +60,14 @@ Linux retains all 61 checks/seven images with the stronger gate; native
 replacement remains required. The retained preview's captioned-window height
 assertion is corrected using actual client geometry, without weakening the
 separate canonical 1280×800 test.
+
+Downloaded `a1077b0` Windows component images now retain complete pending and
+confirmed title/button painting. The broader loopback suite still addressed the
+old Beta full-page controls. Its replacement targets the exact owned drawer,
+Unicode course labels and consent toggle while preserving real loopback wire,
+feedback, timeout, stale Standby and reconnect assertions. This exposed a real
+dialog issue: `wxGetTopLevelParent` selected the narrow drawer, clipping safety
+text. The shared sheet now follows the ownership chain to the containing frame
+and wraps text to available width. The component adds 16 assertions covering
+four confirmation dialogs, for 77 checks. This correction still needs native
+replacement qualification; no physical commands have been sent.

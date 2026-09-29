@@ -70,6 +70,8 @@ def main():
     parser.add_argument("--depth-unit", choices=["feet", "meters", "fathoms"],
                         help="Set the upstream ENC display unit in this disposable profile")
     parser.add_argument("--navigation-only", action="store_true")
+    parser.add_argument("--view", choices=["passage", "traffic", "energy", "instruments", "autopilot", "alerts", "anchor", "radar", "settings"],
+                        help="Focused local correction; CI defaults to every view")
     parser.add_argument("--ais-settings", action="store_true", help="Exercise fixture-free AIS settings without a key")
     parser.add_argument("--review-window-guard", action="store_true",
                         help="Windows CI: qualify guarded boat capture against actual native owned windows")
@@ -100,6 +102,7 @@ def main():
         env["GDK_BACKEND"] = "x11"
         env.pop("WAYLAND_DISPLAY", None)
     record = {"authority": "Native Windows development" if windows else "Linux development only", "size": [1280, 800],
+              "selected_view": args.view,
               "renderer": args.renderer, "chart_style": args.chart_style,
               "chart": chart_provenance if args.public_enc else "OpenCPN coastline reference",
               "input": "none; isolated disposable profile",
@@ -172,7 +175,7 @@ def main():
             # advance from a stale pre-click file while still describing the
             # old drawer. Observe the semantic result; never retry the input.
             closed = label != "Close" or ("drawer" not in current["runtime"]["display"] and current["ui_page"] == "Navigation")
-            expected_page = None if in_drawer else {"Chart":"Navigation", "Passage":"Route", "Traffic":"AIS targets", "Energy":"Energy", "Instruments":"Vessel instruments", "Autopilot":"Manual autopilot", "Anchor":"Anchor watch", "Settings":"Settings", "Alerts":"Alerts"}.get(label)
+            expected_page = None if in_drawer else {"Chart":"Navigation", "Passage":"Route", "Traffic":"AIS targets", "Energy":"Energy", "Instruments":"Vessel instruments", "Autopilot":"Manual autopilot", "Anchor":"Anchor watch", "Settings":"Settings", "Alerts":"Alerts", "Radar":"Radar status"}.get(label)
             if label == "Back" and before["ui_page"] == "Online AIS settings":
                 expected_page = "AIS targets"
             page_ready = not expected_page or current["ui_page"] == expected_page
@@ -483,7 +486,9 @@ def main():
             record["result"] = "chart cycle captured; semantic and visual review required"
             return
         for label, name in [("Passage", "passage"), ("Traffic", "traffic"), ("Energy", "energy"),
-                            ("Instruments", "instruments"), ("Autopilot", "autopilot"), ("Alerts", "alerts"), ("Anchor", "anchor"), ("Settings", "settings")]:
+                            ("Instruments", "instruments"), ("Autopilot", "autopilot"), ("Alerts", "alerts"), ("Anchor", "anchor"), ("Radar", "radar"), ("Settings", "settings")]:
+            if args.view and name != args.view:
+                continue
             click(label)
             capture(name + "-day")
             if label in {"Autopilot", "Alerts"}:
@@ -492,6 +497,34 @@ def main():
                 click("Night", "Day");click("Close")
                 assert "drawer" not in data()["runtime"]["display"], "Prototype sheet close did not restore chart"
                 record[name+"_flow"]="Owned real-state drawer; theme cycle; Close; no equipment command"
+            if label == "Radar":
+                from PIL import Image
+                radar_interior=(260,280,620,600)
+                with Image.open(args.output/'radar-day.png') as first:
+                    scope=first.convert('RGB').crop(radar_interior)
+                    assert len(scope.getcolors(1000000))>20, 'Actual radar scope failed to paint'
+                    radar_pixels=scope.tobytes()
+                display=data()["runtime"]["display"]
+                regions={r['label']:r for r in display['product_regions']}
+                for title,rect in [('Radar display',(112,212,657,508)),('Radar controls',(797,212,265,508))]:
+                    actual=regions[title]
+                    assert actual['visible'] and all(abs(actual[k]-v)<=1 for k,v in zip(('x','y','width','height'),rect)), (title,actual,rect)
+                for title in ['Radar active','Guard zone']:
+                    found=[c for c in display['interaction_controls'] if c['label']==title]
+                    assert len(found)==1 and found[0]['visible'] and not found[0]['enabled'],(title,'unverified radar command exposed')
+                assert not any(c['visible'] and c['label'] in ('Up','Down') for c in display['interaction_controls']), 'Radar must scroll only its control column'
+                click("Day", "Dusk");capture("radar-dusk")
+                click("Dusk", "Night");capture("radar-night")
+                for state in ['dusk','night']:
+                    with Image.open(args.output/f'radar-{state}.png') as current:
+                        assert current.convert('RGB').crop(radar_interior).tobytes()==radar_pixels, f'Actual radar {state} scope is incomplete or changed its fixed prototype palette'
+                for state,accent in [('day',(182,239,206)),('dusk',(155,197,177)),('night',(133,169,149))]:
+                    with Image.open(args.output/f'radar-{state}.png') as current:
+                        selected=current.convert('RGB').crop((9,498,70,559))
+                        assert sum(pixel==accent for pixel in selected.getdata())>5, f'Radar navigation selection missing in {state}'
+                click("Night", "Day");click("Close")
+                assert data()["ui_page"]=="Navigation", "Radar close did not restore chart"
+                record["radar_flow"]="Unavailable owned-status presentation; no invented echoes or scanner controls; three themes and Close"
             if label == "Anchor":
                 click("Day", "Dusk");capture("anchor-dusk")
                 click("Dusk", "Night");capture("anchor-night")

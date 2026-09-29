@@ -77,3 +77,9 @@ Notification centre: `case 'alerts'` → `XNavAlertDrawer`; `.callout` → share
 `XNavPainter::Callout` with critical semantic ink; `.action-row .btn` →
 `XNavButton`; `.row` / `.note` → shared painter. `AlertCenter` owns episode
 semantics. The drawer holds copies and no OpenCPN or adapter object.
+
+Radar migration in progress: `.radar-layout` / `.radar-display` /
+`.radar-scope` → `XNavRadarPanel`; `.radar-control-panel` → independently
+scrolling `XNavScroll`; `.toggle` → disabled shared XNavButton toggle. Missing
+range/gain has no invented numeric value or thumb. The view owns copied status,
+not `IRadar`, a receive image or a scanner command callback.
