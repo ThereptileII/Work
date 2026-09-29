@@ -119,6 +119,12 @@ jobs:
             python opennav-x/tools/prototype/capture-native.py --output "opennav-x/evidence/local/prototype-depth-$Unit" --public-enc --navigation-only --chart-style XNav --depth-unit $Unit
             if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
           }
+      - name: Actual Windows DPI and injected touch for prototype composition
+        if: ${{ !cancelled() && steps.native_build.outcome == 'success' }}
+        run: |
+          $env:PATH = (Resolve-Path opennav-x/build/production-install).Path + ";" + $env:PATH
+          python opennav-x/tools/prototype/capture-dpi-windows.py --output opennav-x/evidence/local/prototype-dpi
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
       - name: Package explicit read-only AIS commissioning tool after all native gates
         run: |
           python opennav-x/tools/test-source-package.py
@@ -225,6 +231,10 @@ jobs:
         run: python opennav-x/tools/prototype/test_contract.py
       - name: Capture actual supplied states at 1280x800
         run: python opennav-x/tools/prototype/render.py --output opennav-x/evidence/local/prototype-reference
+      - name: Measure supplied responsive layouts at 125 and 150 percent
+        run: |
+          python opennav-x/tools/prototype/render.py --output opennav-x/evidence/local/prototype-reference/responsive-125 --scale 1.25 --states navigation settings instruments --themes day night
+          python opennav-x/tools/prototype/render.py --output opennav-x/evidence/local/prototype-reference/responsive-150 --scale 1.5 --states navigation settings instruments --themes day night
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         if: always()
         with:

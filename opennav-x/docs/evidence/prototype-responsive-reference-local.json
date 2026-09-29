@@ -1,0 +1,68 @@
+{
+  "accepted": false,
+  "scope": "Additional immutable responsive references and pending native DPI development probe",
+  "baseCommit": "77fc1ae52be0a622cdab7bb1a345ebeead2b0594",
+  "references": [
+    {
+      "directory": "evidence/local/prototype/responsive-125",
+      "viewport": {
+        "width": 1024,
+        "height": 640
+      },
+      "deviceScaleFactor": 1.25,
+      "htmlSha256": "b04573b920b6bccd16afd22f54a909e48afcfd502ce9cd7c69fdf5b6dd895447",
+      "images": {
+        "navigation-day.png": "e4f64bbaa4470ba737f7e5c907e98c25c8061bca5c27e62d46dba66976f5363d",
+        "settings-day.png": "053c08dbff6ceddb50db47f15e3f7fa8d91b9077266292cc73b4e6004f89a6b0",
+        "instruments-day.png": "bf33e1d286b5f420d6712e4dc43e9af024b31f50ad7e032b104a56aa9980a06c",
+        "navigation-night.png": "d7769407accaf2da302d022ee059dabf2da55330b2d378c813169600acf2cfcf",
+        "settings-night.png": "4021e397d6a9e9d9f0a09bc0b01194daa6ac057a0cfdaa64ae8ff038e07a52c6",
+        "instruments-night.png": "d166e702ef92d3f621ad1d9e96eb740f4fc35ab41cb4eeede426a9cd1efdf45b"
+      }
+    },
+    {
+      "directory": "evidence/local/prototype/responsive-150",
+      "viewport": {
+        "width": 853,
+        "height": 533
+      },
+      "deviceScaleFactor": 1.5,
+      "htmlSha256": "b04573b920b6bccd16afd22f54a909e48afcfd502ce9cd7c69fdf5b6dd895447",
+      "images": {
+        "navigation-day.png": "dde79db8b121157b783c3d5f0cf3ac1e4ac49aeefadf53c0d78b27c72c49c4b2",
+        "settings-day.png": "1869c5762e20c150dc874716b23b744d98502c57101967709225525129732716",
+        "instruments-day.png": "a8c99b6bfbf90c8ebe4e574793ac7ee39d2bf94c60e1f0333b888eb5130efced",
+        "navigation-night.png": "f016f4f12bce75dd4fc9e55e224f8f7f19be561c950137a82ff89ad75eea924e",
+        "settings-night.png": "8b3496b5d8d8505e4509e2667c0ee5d25f82139d4a3c48dc8db8e66bd752103d",
+        "instruments-night.png": "57d25e6b3c1675fc5b38047c36e0f486a31402439d64a92739c1bcd6a9f061cc"
+      }
+    }
+  ],
+  "linux": {
+    "tests": {
+      "name": "(empty)",
+      "tests": "123",
+      "failures": "0",
+      "disabled": "0",
+      "skipped": "0",
+      "hostname": "",
+      "time": "19",
+      "timestamp": "2026-09-29T03:12:19"
+    },
+    "junitSha256": "970dae6c5ada71dd0983c93609026554b8a7c2838ed99967c574cbc7590157c2",
+    "prototypeContractTests": 5
+  },
+  "sourceSha256": {
+    "tools/prototype/render.py": "623a3e40f6f7e878ba430135d0b356928814e7ef4c5d51360c21af752cbc0ce7",
+    "tools/prototype/capture-dpi-windows.py": "0f827f32f5ea500905e4bf1fda9c614fcd9e7d7ed798844cba4c9721a5fcc6c4",
+    "src/integration/OpenCPN.cmake": "7fbd989d64ab4e870569ef8de13bbceadb988d3c0ab9af8bf9648f117375295c",
+    ".github/workflows/opennav-prototype.yml": "a2d5d499f902b48a20c2a62ab2cd3425060ec9f82dea12a1e22acbd812294b9e"
+  },
+  "windows": "Pending native probe compile and actual 100/125/150 DPI execution",
+  "limitations": [
+    "Current shell compact layout migration remains pending.",
+    "No Windows DPI or physical touch acceptance from Linux references.",
+    "Existing full release tests remain unchanged and mandatory.",
+    "No boat or hardware operations."
+  ]
+}

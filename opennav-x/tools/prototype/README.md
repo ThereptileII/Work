@@ -46,3 +46,18 @@ view; the original horizon space is reserved. It checks painted heading ink
 as well as geometry, so a misplaced drawing transform cannot pass on bounds
 alone. Production captures exercise all three themes and Close with real
 pointer input; unavailable vessel input stays unavailable.
+
+Additional `render.py --scale 1.25` and `--scale 1.5` captures measure the
+original responsive CSS in a physical 1280×800 image. Their logical viewports
+are 1024×640 and 853×533, respectively. DPR1 remains the default canonical
+reference; no HTML or CSS is rewritten for these extra states.
+
+`capture-dpi-windows.py` is a separate development probe of the fixture-free
+application at actual 100/125/150% Windows scaling. It checks GetDpiForWindow,
+keeps a 1280×800 client, requires all eight navigation controls and four primary
+readings to fit, and exercises Settings/theme/Close with native injected touch.
+It captures failure evidence and restores the original disposable desktop DPI.
+It cannot run outside native GitHub CI and does not modify the boat's display.
+This adds coverage; it does not replace the existing full release DPI, alarm,
+mode lifecycle or physical touch gates. No scale is accepted just because
+Windows agreed to change its DPI setting.

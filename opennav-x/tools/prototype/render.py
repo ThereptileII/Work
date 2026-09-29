@@ -104,20 +104,22 @@ def main():
     parser.add_argument("--output", type=Path, required=True)
     parser.add_argument("--states", nargs="+", choices=list(STATES), default=list(STATES))
     parser.add_argument("--themes", nargs="+", choices=["day", "dusk", "night"], default=["day", "dusk", "night"])
+    parser.add_argument("--scale", type=float, choices=[1, 1.25, 1.5], default=1,
+                        help="Additional physical 1280x800 DPI reference; default remains canonical DPR1")
     args = parser.parse_args()
     manifest = verify_original()
     args.output.mkdir(parents=True, exist_ok=True)
     from playwright.sync_api import sync_playwright
     record = {"schema": 1, "htmlSha256": manifest["htmlSha256"],
               "platform": platform.system(), "playwright": importlib.metadata.version("playwright"),
-              "viewport": {"width": 1280, "height": 800}, "deviceScaleFactor": 1,
+              "viewport": {"width": round(1280 / args.scale), "height": round(800 / args.scale)}, "deviceScaleFactor": args.scale,
               "reducedMotion": True, "clockUtc": "2026-09-28T11:49:00Z", "states": {}}
     with sync_playwright() as pw:
         browser = pw.chromium.launch(headless=True)
         record["browser"] = browser.version
         for theme in args.themes:
             for name in args.states:
-                context = browser.new_context(viewport=record["viewport"], device_scale_factor=1,
+                context = browser.new_context(viewport=record["viewport"], device_scale_factor=args.scale,
                     reduced_motion="reduce", locale="en-GB", timezone_id="UTC", color_scheme="dark")
                 requests, errors = [], []
                 def reject(route):
@@ -135,7 +137,7 @@ def main():
                 for selector in STATES[name]:
                     page.locator(selector).filter(visible=True).first.click()
                 page.clock.run_for(3500)  # let prototype toasts finish through their own timer
-                page.mouse.move(1279, 799)
+                page.mouse.move(record["viewport"]["width"]-1, record["viewport"]["height"]-1)
                 data = page.evaluate(MEASURE, SELECTORS)
                 cdp = context.new_cdp_session(page)
                 cdp.send("DOM.enable")
@@ -148,7 +150,7 @@ def main():
                         data["platformFonts"][font_selector] = cdp.send("CSS.getPlatformFontsForNode", {"nodeId": node["nodeId"]})["fonts"]
                 if data["theme"] != theme or errors or requests:
                     raise RuntimeError(f"{name}/{theme}: wrong state or offline render failed: {errors}, {requests}")
-                if name == "navigation":
+                if name == "navigation" and args.scale == 1:
                     expected = {".topbar": (0, 0, 1280, 68), ".sidebar": (0, 68, 80, 698),
                                 ".data-rail": (1094, 68, 186, 698), ".statusbar": (0, 766, 1280, 34),
                                 "#chartView": (80, 68, 1014, 566)}

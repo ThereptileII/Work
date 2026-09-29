@@ -2,6 +2,16 @@
 
 ## Current stage: prototype design lock, chart presentation and Online AIS
 
+Additional responsive prototype references now measure the unchanged HTML at
+125/150% equivalents in twelve physical 1280×800 captures. A separate native
+Windows development probe will test actual DPI, visible rail controls/readings,
+chart content and touch-operated Preferences/theme/Close in the fixture-free
+application. The existing full release suite stays mandatory. Linux rebuild
+passes 123/123 in 20.17s and all five design-contract tests. Compact-shell
+migration, Windows execution and boat review remain pending. See
+[responsive review](design/reviews/prototype-responsive-in-progress.md) and
+[reference evidence](evidence/prototype-responsive-reference-local.json).
+
 The Preferences migration now preserves the chart behind the prototype's 432px
 drawer, with eight sections and shared native sensor links. Three corrective
 component passes retain 36 images (100/100/102 checks); the latest integrated
