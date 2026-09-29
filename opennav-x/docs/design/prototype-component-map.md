@@ -12,7 +12,7 @@ in [prototype conformance](prototype-conformance.md).
 | `.nav-btn` | Native navigation control | Icon over label, selected strip and subtle mint background |
 | `.profile-btn` | `XNavButton::SetVesselProfile` | 32px round vessel shortcut; exact bottom-group spacing; hidden below 600px desktop height |
 | `.dashboard-card`, `.floating` | `XNavPainter` / card component | Distinct panel vs chart-floating surface, correct radius/shadow |
-| `.drawer`, `.drawer-head`, `.drawer-body` | `XNavDrawer` / AIS, Passage and Settings drawers | 398px AIS/Passage and 432px Preferences sheets, overlay, bounded body scroll, one contextual return; remaining sheets pending |
+| `.drawer`, `.drawer-head`, `.drawer-body` | `XNavDrawer` / AIS, Passage and Settings drawers | 398px AIS/Passage; 432px Preferences, 410px at <=1100 logical width; current shell workspace, bounded body scroll, one contextual return; remaining sheets pending |
 | `.metric`, `.metric-value` | `XNavDataValue` / `XNavDataRail` | Four values, light 48px numbers; actual provenance/freshness |
 | `.status-dot`, `.tag` | Status indicator | Meaningful state color and text; no inferred connectivity |
 | `.toggle`, `.segment` | Native toggle / segmented control | Explicit selected state, keyboard input, unavailable semantics |
@@ -29,7 +29,7 @@ in [prototype conformance](prototype-conformance.md).
 | `.callout` / `.callout.warning` | `XNavPainter::Callout` | Shared wrapped advice surface, exact source alpha colors |
 | `.wind-rose`, `.instrument-grid`, `.instrument-tile` | `XNavInstrumentPanel` | Native SVG-equivalent paths and paired tiles; assessed owned readings, true-heading/relative-wind validity |
 | `.energy-grid`, `.energy-gauge`, `.battery-visual`, `.power-row` | `XNavPreviewPanel` Energy view / `XNavPainter` | Computed primary card geometry, native battery and tested model endpoint; lower Explore pace migration pending |
-| `.settings-tabs` | `XNavSettingsDrawer` / `XNavButton::SetSettingsTab` | Eight native sections, exact 37px rows and five-pixel gaps; preserved selection |
+| `.settings-tabs` | `XNavSettingsDrawer` / `XNavButton::SetSettingsTab` | Eight native sections, exact 37px rows and five-pixel gaps; fractional DirectWrite layout and matching native paint on Windows; preserved selection |
 | `.settings-intro`, `.suite-link` | `XNavPainter::Wrapped` / `XNavButton::SetSuiteLink` | Bounded native text and actual clickable sensor/settings links; no mock connection counts |
 
 All geometry is measured from the final CSS cascade at the target viewport;

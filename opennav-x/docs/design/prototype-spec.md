@@ -95,6 +95,11 @@ rather than rounding everything to the previous Beta spacing constants.
 
 Preferences uses the 432px drawer at (648,80), height 674px. Its final Windows
 header is 89.109375px high (the Linux fallback font yields 86.109375px).
+The final <=1100px-width rule changes the wide drawer to 410px. Independent
+responsive settings rectangles are (444,72,410,522) at 1024×640 and
+(273,68,410,419) at 853×533. Drawer workspace follows the compact shell's
+current top/nav/rail dimensions; the 14px horizontal and 12px vertical insets
+remain unchanged. These are CSS coordinates before native DPI conversion.
 Settings tabs are 37px high, 11px/400 text, 22px total horizontal inset,
 5px gap, 6px radius, wrapping into two rows with 23px bottom margin. Selected
 tabs use mint and background text; other tabs use surface and muted text.

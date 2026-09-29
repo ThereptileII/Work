@@ -104,6 +104,9 @@ def main():
             entry["screenshots"].append(capture(stem+"-settings"))
             drawer=d["runtime"]["display"]["drawer"]
             assert 0<=drawer["x"]<drawer["x"]+drawer["width"]<=width and 0<=drawer["y"]<drawer["y"]+drawer["height"]<=height
+            expected_drawer=json.loads(reference.read_text())["states"]["settings-day"]["components"][".drawer"][0]["rect"]
+            assert all(abs(drawer[k]-expected_drawer[k])<=1 for k in ("x","y","width","height")), ("Preferences differs from prototype",drawer,expected_drawer)
+            entry["prototypeDrawer"]=dict(actual=drawer,expected=expected_drawer)
             # The compact sheet intentionally scrolls; verify the lower real
             # action is reachable, rather than accepting clipped form content.
             before = int(d["runtime"]["ui_update"]["ticks"])

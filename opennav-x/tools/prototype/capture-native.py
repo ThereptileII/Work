@@ -221,16 +221,20 @@ def main():
         reference = json.loads((ROOT / "docs/design/prototype/reference" /
                                 ("windows" if windows else "linux") / "capture.json").read_text())
         if windows and name in ("settings-day","settings-dusk","settings-night","sensors-day","display-day","system-day"):
-            expected_tabs=reference["states"][name]["components"][".settings-tabs button"]
+            measured=json.loads((ROOT / "docs/design/prototype/reference/windows/settings-tabs.json").read_text())
+            assert measured["htmlSha256"]==reference["htmlSha256"] and measured["platform"]=="Windows"
+            assert measured["states"][name]["screenshotSha256"]==reference["states"][name]["screenshotSha256"]
+            expected_tabs=measured["states"][name]["tabs"]
+            assert len(expected_tabs)==8, "All independent section measurements required"
             drawer=snapshot["runtime"]["display"]["drawer"]
-            for label, expected in zip(("Vessel","Navigation","Sensors","Autopilot","Radar","Display","System","Help"), expected_tabs):
+            for label, expected in expected_tabs.items():
                 actual=[c for c in snapshot["runtime"]["display"]["interaction_controls"]
                         if c["label"]==label and c["visible"] and drawer["x"]<=c["x"]<drawer["x"]+drawer["width"]
                         and drawer["y"]<=c["y"]<drawer["y"]+drawer["height"]]
                 assert len(actual)==1, (label,"unique Preferences section")
                 rect={k:actual[0][k] for k in ("x","y","width","height")}
                 rect["x"]-=client_origin[0];rect["y"]-=client_origin[1]
-                assert all(abs(rect[k]-expected["rect"][k])<=1 for k in rect), (label,"tab differs from HTML",rect,expected["rect"])
+                assert all(abs(rect[k]-expected[k])<=1 for k in rect), (label,"tab differs from HTML",rect,expected)
         rail_reference = reference["states"]["navigation-day"]["components"][".nav-btn"][:8]
         sidebar = reference["states"]["navigation-day"]["components"][".sidebar"][0]["rect"]
         rail_actual = []

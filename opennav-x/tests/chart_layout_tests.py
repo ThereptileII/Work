@@ -77,3 +77,31 @@ for change in ('chart-outside', 'rail-hidden', 'rail-clipped', 'rail-overlap',
     if change == 'old-layout': bad['chart_region'] = rect(65,88,1070,647)
     reject(bad)
 print('Prototype native-client/outer and Linux composition pass; 18 small/unsettled/clipped/overlapping/obsolete layouts rejected')
+
+# Independent exact ink fixtures: failure must not relearn a water-only canvas
+# or accept a Standard palette while XNav is requested (or the reverse).
+palettes={
+    ('XNav','Day'):('eeeee2','d5e5e5'),
+    ('XNav','Dusk'):('4e615d','344f59'),
+    ('XNav','Night'):('25342f','121e24'),
+    ('Standard','Day'):('aaaf50','aac3f0'),
+    ('Standard','Dusk'):('555728','556178'),
+    ('Standard','Night'):('2a2b14','2a303c'),
+}
+color_checks=0
+for (style,light),(land,water) in palettes.items():
+    row=bytes.fromhex(land)*640+bytes.fromhex(water)*640
+    image=row*800
+    assert chartcheck.presentation(image,style,light,'unit fixture')['coastline_visible']
+    color_checks+=1
+    for bad in (bytes.fromhex(water)*1280*800, bytes.fromhex(land)*1280*800,
+                image.replace(bytes.fromhex(land),bytes.fromhex('ff00ff'))):
+        try:chartcheck.presentation(bad,style,light,'invalid fixture')
+        except AssertionError:pass
+        else:raise AssertionError('Missing coastline or incorrect ink was accepted')
+        color_checks+=1
+    try:chartcheck.presentation(image,'Standard' if style=='XNav' else 'XNav',light,'wrong style')
+    except AssertionError:pass
+    else:raise AssertionError('Opposite chart style was accepted')
+    color_checks+=1
+print(f'{color_checks} exact Day/Dusk/Night XNav/Standard coastline checks passed')

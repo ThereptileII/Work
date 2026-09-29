@@ -1,0 +1,76 @@
+{
+  "accepted": false,
+  "sourceBase": "e5fbea096879211c7608f54b10783233077efcd6",
+  "scope": "Prototype regression-harness migration; Linux development only",
+  "reports": {
+    "preview-linux-results.json": {
+      "result": "passed; screenshot review required",
+      "reportSha256": "35c0e6f3d47fa73d45e8770f9a55e414aeec150caca6c0a3497b1fe7dc21ce79",
+      "screenshots": 44,
+      "checks": 8
+    },
+    "linux-mode-cycle-results.json": {
+      "result": "interaction and persistence passed; screenshot review required",
+      "reportSha256": "4545e4a4e66150beb3eb760c7c3e3fb646b4dff772b154a069c18fce9a620321",
+      "screenshots": 0,
+      "checks": 0
+    },
+    "navigation-input-results.json": {
+      "result": "loopback transport and lifecycle passed; numeric and stale screenshot review required",
+      "reportSha256": "dcdba5867a7b0f624921b26392aef39d63e19e0c82c6d70194fe97617f0b285e",
+      "screenshots": 4,
+      "checks": 0
+    },
+    "route-progress-results.json": {
+      "result": "passed",
+      "reportSha256": "28adec2be7051ef3620bbc543a4e3f2deaf7007b285cafe5db21761c6bff184e",
+      "screenshots": 0,
+      "checks": 26
+    },
+    "objects-input-results.json": {
+      "result": "loopback transport and lifecycle passed; numeric and stale screenshot review required",
+      "reportSha256": "0ff413d0c38548e5ec755699acc3b3aa5b6589e64bf5a65613cf983db36f8b68",
+      "screenshots": 26,
+      "checks": 3
+    }
+  },
+  "unitSuite": {
+    "sha256": "20d632e095394aabec0d9fc3ac35f8aeb41e8839004d7f6a5e027895347be0cc",
+    "result": {
+      "name": "(empty)",
+      "tests": "123",
+      "failures": "0",
+      "disabled": "0",
+      "skipped": "0",
+      "hostname": "",
+      "time": "19",
+      "timestamp": "2026-09-29T04:14:32"
+    }
+  },
+  "exactInkChecks": 30,
+  "statusSummaryChecks": 23,
+  "prototypeContractTests": 5,
+  "retainedManifestSha256": "4902f01b08c968f26e88b56baac7607daa2a0de85af6419c3b79962300ea0622",
+  "settledModeManifestSha256": "c5f7def09cc69474db69408e3f2d5a5e0575878d5f6ab098fbb1a55382e1dcbe",
+  "reviewed": [
+    "preview-09-returned-xnav-linux.png",
+    "preview-08-safe-linux.png",
+    "settled-modes/06-xnav-after-legacy-linux.png"
+  ],
+  "preserved": [
+    "All eight deterministic failure scenarios, sensor freshness and suppression of invalid arrival SOC.",
+    "Critical alert acknowledgement, recovery and new episode recurrence.",
+    "Repeated XNav/Legacy/Safe normal exits and shared seeded route/track/waypoint/configuration hashes.",
+    "Exact XNav prototype and pinned Standard coastline ink; all-water or wrong-style images rejected."
+  ],
+  "changedAssertions": [
+    "Removed obsolete Beta bottom-toolbar/menu geometry; replaced by prototype status row, sidebar, owned Passage/AIS/Preferences drawers.",
+    "Native scenario selection uses the existing fixture-only frame accelerators; no Demo control restored to product.",
+    "Primary page actions use visible prototype controls; advanced keyboard paths retain coverage.",
+    "Linux mode capture waits for the pinned delayed startup focus/raise callback before sampling owned overlays."
+  ],
+  "pending": [
+    "All updated native Windows mode/fixture/recovery/DPI harnesses must run for the replacement commit.",
+    "Full installer, package, boat, OpenGL/GPU and live AISStream qualification remains open."
+  ]
+}

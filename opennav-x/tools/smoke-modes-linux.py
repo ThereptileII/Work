@@ -10,6 +10,7 @@ import subprocess
 import sys
 import tempfile
 import time
+from diagnostic_snapshot import read_json_snapshot
 
 root = Path(__file__).resolve().parents[1]
 spec = importlib.util.spec_from_file_location('fixtures', root / 'tools/profile-fixtures.py')
@@ -63,7 +64,10 @@ def ready(count):
     while time.monotonic() < deadline:
         p = profile / 'opencpn.log'
         if p.exists() and p.read_text(errors='replace').count('OnInitTimer...Finalize Canvases') >= count:
-            time.sleep(.5)
+            # Pinned deferred resize schedules the frame's focus/raise a second
+            # later. Capture after that startup callback, as the preview gate
+            # does, so owned chart surfaces are not sampled mid-initialization.
+            time.sleep(1.5)
             return
         time.sleep(.2)
     raise RuntimeError('Initialization did not finish')
@@ -75,6 +79,26 @@ def capture(name):
 def click(x, y, button=1):
     xdo('mousemove', x, y, 'click', button)
     time.sleep(.4)
+
+def observe(predicate=lambda d: True):
+    deadline=time.monotonic()+10
+    while time.monotonic()<deadline:
+        d=read_json_snapshot(profile/'opennav-diagnostics.json')
+        if predicate(d):return d
+        time.sleep(.1)
+    raise AssertionError('Current mode-cycle UI state did not arrive')
+
+def action(label, light=None, page=None):
+    before=observe();ticks=int(before['runtime']['ui_update']['ticks'])
+    matches=[c for c in before['runtime']['display']['interaction_controls']
+             if c['label']==label and c['visible'] and c['enabled']]
+    assert len(matches)==1,('Unique visible mode-cycle control required',label,matches)
+    c=matches[0]
+    assert 0<=c['x']<c['x']+c['width']<=1280 and 0<=c['y']<c['y']+c['height']<=800
+    click(c['x']+c['width']//2,c['y']+c['height']//2)
+    observe(lambda d:int(d['runtime']['ui_update']['ticks'])>=ticks+3
+            and (light is None or d['runtime']['display']['light']==light)
+            and (page is None or d['ui_page']==page))
 
 def saved(step):
     actual = fixtures.snapshot(profile)
@@ -101,16 +125,17 @@ try:
     handle, pid = window('OpenNav X / OpenCPN')
     ready(1)
     capture('01-xnav-unavailable')
-    click(1240, 28)
+    action('Day',light='Dusk')
     capture('02-xnav-dusk')
-    click(1240, 28)
+    action('Dusk',light='Night')
     capture('03-xnav-night')
-    click(1240, 28)
-    click(28, 84)
-    click(28, 140)
-    click(1220, 772)
+    action('Night',light='Day')
+    action('+')
+    action('−')
+    action('System',page='System')
     capture('07-system')
     xdo('key', 'Escape')
+    action('Chart',page='Navigation')
     xdo('windowfocus', handle)
     xdo('key', 'ctrl+shift+d')
     time.sleep(.5)

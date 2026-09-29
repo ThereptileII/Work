@@ -1138,9 +1138,11 @@ void Shell::ShowAis(int mmsi) {
 }
 wxRect Shell::DrawerWorkspace() const {
   const auto size = frame_.GetClientSize();
-  const int left = frame_.FromDIP(prototype::navigation), top = frame_.FromDIP(prototype::top);
+  const auto logical=frame_.ToDIP(size);
+  const auto layout=prototype::Desktop(logical.x,logical.y);
+  const int left = frame_.FromDIP(layout.navigation), top = frame_.FromDIP(layout.top);
   return {frame_.ClientToScreen({left, top}),
-      wxSize(size.x-left-frame_.FromDIP(prototype::rail), size.y-top-frame_.FromDIP(prototype::footer))};
+      wxSize(size.x-left-frame_.FromDIP(layout.rail), size.y-top-frame_.FromDIP(prototype::footer))};
 }
 void Shell::ShowTraffic(int mmsi) {
   ShowNavigation();

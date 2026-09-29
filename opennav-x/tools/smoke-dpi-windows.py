@@ -10,6 +10,7 @@ import subprocess
 import sys
 import tempfile
 import time
+from diagnostic_snapshot import read_json_snapshot
 assert sys.platform=='win32','Native Windows required'
 assert os.environ.get('GITHUB_ACTIONS')=='true','Disposable GitHub desktop only'
 root=Path(__file__).resolve().parents[1]
@@ -41,7 +42,7 @@ def data(predicate=lambda d:True,timeout=15):
     deadline=time.monotonic()+timeout
     while time.monotonic()<deadline:
         try:
-            d=json.loads((profile/'opennav-diagnostics.json').read_text())
+            d=read_json_snapshot(profile/'opennav-diagnostics.json')
             if predicate(d):return d
         except (OSError,json.JSONDecodeError):pass
         time.sleep(.15)
@@ -55,19 +56,25 @@ def ready():
         time.sleep(.2)
     raise RuntimeError('DPI startup did not finish')
 def capture(name,window=None):
-    path=evidence/(name+'.png');rgb=ui.capture(handle if window is None else window,path,resize=window is None)
+    path=evidence/(name+'.png');rgb=ui.capture(handle if window is None else window,path,resize=False,screen_pixels=True)
     report['screenshots'].append(path.name);return rgb
 
 def main_buttons(scale):
     frame=ui.W.RECT();ui.GetWindowRect(handle,C.byref(frame));sizes={}
-    light=data()['runtime']['display']['light']
-    for label in ['Navigation','Route','Energy','Pilot','STBY','Demo','Menu','System',light,'+','−','Center']:
-        found=[h for h,t in ui.children(handle) if t==label]
+    display=current_layout_observation()['runtime']['display'];light=display['light']
+    client=ui.W.RECT();assert ui.GetClientRect(handle,C.byref(client))
+    logical_height=client.bottom*100/scale
+    nav=43 if logical_height<=600 else 51 if logical_height<=740 else 61
+    pilot=66 if logical_height<=600 else 74 if logical_height<=740 else 87
+    heights={label:nav for label in ('Chart','Passage','Traffic','Energy','Instruments','Anchor','Radar','Settings')}
+    heights.update({'Autopilot':pilot,'System':32,light:44,'+':44,'−':44,'Follow boat':44})
+    for label,height in heights.items():
+        found=[c for c in display['interaction_controls'] if c['label']==label and c['visible']]
         assert len(found)==1,(label,found)
-        r=ui.W.RECT();assert ui.GetWindowRect(found[0],C.byref(r))
-        assert r.bottom-r.top>=48*scale/100,(label,'touch height',r.bottom-r.top)
-        assert frame.left<=r.left<r.right<=frame.right and frame.top<=r.top<r.bottom<=frame.bottom,(label,'clipped control')
-        sizes[label]=[r.right-r.left,r.bottom-r.top]
+        c=found[0];x,y,w,h=[c[k] for k in ('x','y','width','height')]
+        assert abs(h-height*scale/100)<=1,(label,'exact prototype height',h,height)
+        assert frame.left<=x<x+w<=frame.right and frame.top<=y<y+h<=frame.bottom,(label,'clipped control')
+        sizes[label]=[w,h]
     return sizes
 
 def bounds(window):
@@ -76,7 +83,7 @@ def bounds(window):
 def primary_hint_hover(label, should_show, settle=1.5):
     """Hover actual controls, observe native tooltip HWNDs and visible pixels."""
     d=data()
-    if label=='Menu':
+    if label=='Settings':
         found=[h for h,t in ui.children(handle) if t==label];assert len(found)==1
         r=bounds(found[0]);point=ui.W.POINT((r.left+r.right)//2,(r.top+r.bottom)//2)
     else:
@@ -94,7 +101,7 @@ def primary_hint_hover(label, should_show, settle=1.5):
     ancestor=hit
     while ancestor and ancestor!=handle:ancestor=ui.GetParent(ancestor)
     assert ancestor==handle,'Hover target belongs to another top-level window'
-    if label=='Menu':assert hit==found[0]
+    if label=='Settings':assert hit==found[0]
     assert ui.SetCursorPos(point.x,point.y)
     def native_hints():
         hints=[]
@@ -123,10 +130,10 @@ def primary_hint_hover(label, should_show, settle=1.5):
 
 def chrome_bounds():
     labels=ui.children(handle)
-    brand=[h for h,t in labels if t=='OpenNav X']
-    navigation=[h for h,t in labels if t=='Navigation']
-    assert len(brand)==len(navigation)==1
-    return bounds(ui.GetParent(brand[0])).bottom,bounds(ui.GetParent(navigation[0])).top
+    alerts=[h for h,t in labels if t=='Alerts' or t.startswith('Alerts ')]
+    system=[h for h,t in labels if t=='System']
+    assert len(alerts)==len(system)==1
+    return bounds(ui.GetParent(alerts[0])).bottom,bounds(ui.GetParent(system[0])).top
 
 def current_layout_observation():
     # Diagnostics publishes at 1 Hz; size_window's native 0.5 s settle can still
@@ -136,7 +143,7 @@ def current_layout_observation():
     previous=int(data()['runtime']['ui_update']['ticks'])
     def native_controls():
         children=ui.children(handle);result={}
-        for label in ('Menu','Navigation','System'):
+        for label in ('Settings','Chart','System'):
             found=[control for control,text in children if text==label]
             assert len(found)==1,(label,found)
             rect=bounds(found[0])
@@ -167,7 +174,7 @@ def critical_alert_accessible(scale):
     titles=[t for _,t in labels if t.startswith(('CRITICAL /','DEMO / CRITICAL /'))]
     assert len(alert)==1 and titles,('Critical alert and its action must remain visible',labels)
     area=bounds(alert[0]);top,_=chrome_bounds()
-    assert area.bottom<=top and area.bottom-area.top>=48*scale/100,'Alert action clipped'
+    assert area.bottom<=top and abs(area.bottom-area.top-44*scale/100)<=1,'Prototype alert action clipped'
     ui.SetForegroundWindow(handle)
     hit=ui.WindowFromPoint(ui.W.POINT((area.left+area.right)//2,(area.top+area.bottom)//2))
     while hit and hit!=alert[0]:hit=ui.GetParent(hit)
@@ -297,51 +304,55 @@ try:
         entry['rail_without_alert']=rail_geometry(scale)
         capture(f'dpi-{scale}-00-navigation-no-input')
         entry['chart_context']=chart_context_geometry(scale)
-        ui.click_text(pid,'Demo');ui.click_text(pid,'Cruising')
+        ui.accelerator(handle,'T');ui.click_text(pid,'Cruising')
         data(lambda d:d['data_mode']=='DEMO' and any(a['level']=='CRITICAL' for a in d['runtime']['alerts']))
         entry['rail_with_critical_alert']=rail_geometry(scale)
         assert entry['rail_without_alert']==entry['rail_with_critical_alert'],'Alert changed or hid a primary rail value'
         entry['critical_alert']=critical_alert_accessible(scale)
         rgb=capture(f'dpi-{scale}-01-navigation-day')
         if colors is None:colors=chart.reference(rgb)
-        entry['chart_rendering'].append(chart.check(rgb,colors,f'{scale}% Day'))
-        day_hint=primary_hint_hover('Menu',True)
+        entry['chart_rendering'].append(chart.presentation(rgb,'XNav','Day',f'{scale}% Day'))
+        day_hint=primary_hint_hover('Settings',True)
         hover_settle=max(1.5,day_hint['observed_seconds']+.5)
         entry['primary_hints']=[day_hint]
         ui.cycle_light(pid);data(lambda d:d['runtime']['display']['light']=='Dusk')
         capture(f'dpi-{scale}-navigation-dusk')
-        entry['primary_hints'].append(primary_hint_hover('Menu',False,hover_settle))
+        entry['primary_hints'].append(primary_hint_hover('Settings',False,hover_settle))
         ui.cycle_light(pid)
         data(lambda d:d['runtime']['display']['light']=='Night')
         night=capture(f'dpi-{scale}-02-navigation-night')
-        entry['chart_rendering'].append(chart.night(night,colors,f'{scale}% Night'))
+        entry['chart_rendering'].append(chart.presentation(night,'XNav','Night',f'{scale}% Night'))
         entry['night_surfaces']=[chart.dark_surface(night,f'{scale}% Night navigation')]
-        for hint_label in ('Menu','SOG'):
+        for hint_label in ('Settings','SOG'):
             entry['primary_hints'].append(primary_hint_hover(hint_label,False,hover_settle))
         entry['native_caption_themed']=data()['runtime']['display']['native_caption_themed']
-        # Reaching the endpoint must not focus a hidden first child and jump
-        # back up. Require the final menu action fully visible after settling.
-        ui.click_text(pid,'Menu');data(lambda d:d['ui_page']=='Menu')
+        # The old menu is now the prototype Preferences drawer. Preserve its
+        # settled endpoint/accessibility regression with the real lower action.
+        ui.click_text(pid,'Settings');data(lambda d:d['ui_page']=='Settings')
+        ui.click_text(pid,'Vessel')
         for _ in range(40):
-            if not data()['runtime']['display']['can_scroll_down']:break
-            ui.click_text(pid,'Down')
-        else:raise AssertionError('Menu cannot retain its bottom scroll endpoint')
-        bottom=data()['runtime']['display']['page_scroll_px'];time.sleep(1.2)
-        assert data()['runtime']['display']['page_scroll_px']==bottom,'Menu jumped after disabling Down'
-        last=[h for h,t in ui.children(handle) if t=='System & diagnostics'];assert len(last)==1
-        area=ui.W.RECT();item=ui.W.RECT()
-        ui.GetWindowRect(ui.GetParent(last[0]),C.byref(area));ui.GetWindowRect(last[0],C.byref(item))
-        assert area.top<=item.top<item.bottom<=area.bottom,'Final menu action clipped at scroll endpoint'
-        capture(f'dpi-{scale}-menu-bottom')
-        entry['menu_endpoint']='Last action fully visible; settled endpoint retained after Down disables'
+            current=data();display=current['runtime']['display'];drawer=display['drawer']
+            last=[c for c in display['interaction_controls'] if c['label']=='Chart safety depth' and c['visible']]
+            if len(last)==1:break
+            popup,_=ui.wait_window('OpenNav preferences',pid);ui.SetForegroundWindow(popup)
+            x=drawer['x']+drawer['width']//2;end=drawer['y']+drawer['height']-50
+            assert dpi('--pan',x,end,x,end-int(160*scale/100))['touch_injected']
+            time.sleep(.4)
+        else:raise AssertionError('Lower Preferences action cannot be reached by touch')
+        endpoint=last[0];time.sleep(1.2)
+        assert endpoint in data()['runtime']['display']['interaction_controls'],'Preferences jumped after its lower action became visible'
+        capture(f'dpi-{scale}-preferences-bottom')
+        entry['menu_endpoint']='Replacement Preferences lower action fully visible and stable after native touch scroll'
         # Review every main workflow at each scale in the actual night palette.
-        for label,page in [('Route','Route'),('Energy','Energy'),('Pilot','Manual autopilot')]:
+        for label,page in [('Passage','Route'),('Energy','Energy'),('Autopilot','Manual autopilot')]:
             ui.click_text(pid,label);data(lambda d:d['ui_page']==page)
             entry['night_surfaces'].append(chart.dark_surface(capture(f'dpi-{scale}-night-{label.lower()}'),page))
-        for label,page in [('Vessel instruments','Vessel instruments'),('AIS targets','AIS targets'),
-                           ('SmartNav advisories','SmartNav'),('Anchor watch','Anchor watch'),
+        for label,page in [('Instruments','Vessel instruments'),('Traffic','AIS targets'),
+                           ('SmartNav advisories','SmartNav'),('Anchor','Anchor watch'),
                            ('Settings','Settings')]:
-            ui.click_text(pid,'Menu');ui.click_text(pid,label);data(lambda d:d['ui_page']==page)
+            if page=='SmartNav':ui.accelerator(handle,'J')
+            else:ui.click_text(pid,label)
+            data(lambda d:d['ui_page']==page)
             entry['night_surfaces'].append(chart.dark_surface(capture(f'dpi-{scale}-night-'+page.lower().replace(' ','-').replace('&','and')),page))
         for label,page in [('Commissioning & recordings','Commissioning & recordings'),
                            ('Export diagnostic bundle','Field diagnostic bundle')]:
@@ -370,10 +381,10 @@ try:
         capture(f'dpi-{scale}-touch-scrolled-diagnostics')
         entry['touch_scroll']='Native touch Up/Down and vertical pan move the actual diagnostics viewport'
         ui.cycle_light(pid)
-        for label,page in [('Route','Route'),('Energy','Energy')]:
+        for label,page in [('Passage','Route'),('Energy','Energy')]:
             ui.click_text(pid,label);data(lambda d:d['ui_page']==page);ui.assert_preview_page(handle,page);capture(f'dpi-{scale}-{page.lower()}')
-        ui.click_text(pid,'Menu');ui.click_text(pid,'Vessel instruments');data(lambda d:d['ui_page']=='Vessel instruments' and d['runtime']['display']['minimum_value_height_dip']>=120);ui.assert_product_page(handle,'Vessel instruments');entry['instrument_groups']=instrument_geometry();capture(f'dpi-{scale}-instruments')
-        ui.click_text(pid,'Menu');ui.click_text(pid,'Settings');ui.click_text(pid,'VESSEL');ui.click_text(pid,'Energy configuration')
+        ui.click_text(pid,'Instruments');data(lambda d:d['ui_page']=='Vessel instruments' and d['runtime']['display']['minimum_value_height_dip']>=120);ui.assert_product_page(handle,'Vessel instruments');entry['instrument_groups']=instrument_geometry();capture(f'dpi-{scale}-instruments')
+        ui.click_text(pid,'Settings');ui.click_text(pid,'Vessel');ui.click_text(pid,'Battery & reserve')
         data(lambda d:d['ui_page']=='Energy configuration');capture(f'dpi-{scale}-settings')
         ui.cycle_light(pid);ui.cycle_light(pid);data(lambda d:d['runtime']['display']['light']=='Night')
         ui.click_text(pid,'Configure battery & reserve');dialog,_=ui.wait_window('Battery assumptions',pid)
@@ -382,23 +393,23 @@ try:
         top,bottom=chrome_bounds()
         assert r.top>=top and r.bottom<=bottom,'Sheet overlaps global alerts/navigation'
         capture(f'dpi-{scale}-night-sheet',dialog);ui.click_text(pid,'Cancel');ui.cycle_light(pid)
-        ui.click_text(pid,'Navigation');data(lambda d:d['ui_page']=='Navigation')
+        ui.click_text(pid,'Chart');data(lambda d:d['ui_page']=='Navigation')
         # A real Windows touch-injection sequence, checked through resulting UI state.
-        menu=[h for h,t in ui.children(handle) if t=='Menu'];assert len(menu)==1
+        menu=[h for h,t in ui.children(handle) if t=='Settings'];assert len(menu)==1
         rect=ui.W.RECT();ui.GetWindowRect(menu[0],C.byref(rect))
         ui.SetForegroundWindow(handle)
         touch=dpi('--tap',(rect.left+rect.right)//2,(rect.top+rect.bottom)//2)
-        assert touch['touch_injected'];data(lambda d:d['ui_page']=='Menu')
-        entry['touch']='Injected native down/up on Menu changed the page; physical touch remains untested'
-        ui.click_text(pid,'Settings');ui.click_text(pid,'DISPLAY')
-        ui.click_text(pid,'Fullscreen / window');time.sleep(.7)
+        assert touch['touch_injected'];data(lambda d:d['ui_page']=='Settings')
+        entry['touch']='Injected native down/up on Settings opened Preferences; physical touch remains untested'
+        ui.click_text(pid,'Display')
+        ui.click_text(pid,'Toggle fullscreen');time.sleep(.7)
         full=ui.W.RECT();ui.GetWindowRect(handle,C.byref(full))
         assert (full.left,full.top,full.right,full.bottom)==(0,0,1920,1080),'Fullscreen did not cover the disposable desktop'
         path=evidence/f'dpi-{scale}-fullscreen.png';ui.capture(handle,path,resize=False)
         report['screenshots'].append(path.name)
         assert ui.GetDpiForWindow(handle)==observed
-        ui.click_text(pid,'Fullscreen / window');time.sleep(.7);ui.size_window(handle)
-        ui.click_text(pid,'Navigation');data(lambda d:d['ui_page']=='Navigation')
+        ui.click_text(pid,'Toggle fullscreen');time.sleep(.7);ui.size_window(handle)
+        ui.click_text(pid,'Chart');data(lambda d:d['ui_page']=='Navigation')
         entry['restored_buttons']=main_buttons(scale)
         entry['restored_rail']=rail_geometry(scale)
         assert entry['restored_rail']==entry['rail_with_critical_alert'],'Fullscreen return changed primary rail visibility'
@@ -413,20 +424,20 @@ try:
         assert app.wait(timeout=30)==0;owned.discard(pid);count+=1
         handle,pid=ui.wait_window('OpenCPN / Legacy');owned.add(pid);ready();ui.size_window(handle)
         assert ui.GetDpiForWindow(handle)==observed
-        entry['chart_rendering'].append(chart.check(capture(f'dpi-{scale}-legacy'),colors,f'{scale}% Legacy'))
+        entry['chart_rendering'].append(chart.presentation(capture(f'dpi-{scale}-legacy'),'Standard','Day',f'{scale}% Legacy'))
         process=ui.monitor_process(pid);ui.click_menu(handle,'Switch to XNav');ui.wait_clean_exit(process);owned.discard(pid);count+=1
         handle,pid=ui.wait_window('OpenNav X / OpenCPN');owned.add(pid);ready();ui.size_window(handle)
         assert ui.GetDpiForWindow(handle)==observed
-        entry['chart_rendering'].append(chart.check(capture(f'dpi-{scale}-returned-xnav'),colors,f'{scale}% returned XNav'))
+        entry['chart_rendering'].append(chart.presentation(capture(f'dpi-{scale}-returned-xnav'),'XNav','Day',f'{scale}% returned XNav'))
         old=ui.monitor_process(pid);ui.click_text(pid,'System');ui.click_text(pid,'Safe Mode')
         ui.wait_clean_exit(old);owned.discard(pid);count+=1
         handle,pid=ui.wait_window('OpenNav Safe Mode / OpenCPN');owned.add(pid);ready();ui.size_window(handle)
         assert ui.GetDpiForWindow(handle)==observed
-        entry['chart_rendering'].append(chart.check(capture(f'dpi-{scale}-safe'),colors,f'{scale}% Safe'))
+        entry['chart_rendering'].append(chart.presentation(capture(f'dpi-{scale}-safe'),'Standard','Day',f'{scale}% Safe'))
         old=ui.monitor_process(pid);ui.click_menu(handle,'Switch to XNav');ui.wait_clean_exit(old);owned.discard(pid);count+=1
         handle,pid=ui.wait_window('OpenNav X / OpenCPN');owned.add(pid);ready();ui.size_window(handle)
         assert ui.GetDpiForWindow(handle)==observed
-        entry['chart_rendering'].append(chart.check(capture(f'dpi-{scale}-safe-to-xnav'),colors,f'{scale}% Safe to XNav'))
+        entry['chart_rendering'].append(chart.presentation(capture(f'dpi-{scale}-safe-to-xnav'),'XNav','Day',f'{scale}% Safe to XNav'))
         close_current();assert fixtures.snapshot(profile)==expected
         report['scales'].append(entry)
     report['result']='passed; native visual review required'

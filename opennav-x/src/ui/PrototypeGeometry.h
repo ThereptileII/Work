@@ -10,6 +10,7 @@ constexpr int footer = 34;
 constexpr int horizon = 132;
 constexpr int drawer = 398;
 constexpr int configuration_drawer = 432;
+constexpr int compact_configuration_drawer = 410; // final max-width:1100px
 constexpr int drawer_gap = 14;
 constexpr int drawer_top = 12;
 constexpr int drawer_radius = 18;

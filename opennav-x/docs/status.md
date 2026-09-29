@@ -2,6 +2,32 @@
 
 ## Current stage: prototype design lock, chart presentation and Online AIS
 
+The compact Preferences correction passes exact drawer rectangles against the
+independent HTML at all four Linux resize checkpoints. Production and fixture
+suites pass 123/123 (19.74s and 19.25s); 45 local component/product/layout PNGs
+are retained across the text and workspace corrections. Windows tab painting
+now uses the same natural DirectWrite metrics as its layout. Native replacement
+and boat review remain required. See [correction evidence](evidence/prototype-drawer-correction-local.json).
+
+The wider Linux fixture regression now passes with prototype navigation:
+44 screen captures, all eight failure scenarios, alert acknowledgement/recovery,
+and repeated XNav/Legacy/Safe restarts preserve seeded navigation/configuration.
+The integrated suite passes 123/123 (19.56s). Thirty exact chart-ink checks and
+23 status-summary contracts retain fail-closed coverage while replacing obsolete
+Beta menu/bottom-toolbar assumptions. Updated native mode, fixture, recovery and
+DPI harnesses remain pending execution; no test gate was removed. See
+[regression evidence](evidence/prototype-regression-harness-local.json).
+
+Native `e0b6a16` / run `36510429598` passes seven of eight jobs: both integrated
+suites 115/115, five component suites, four exact route-ink cases and the new
+100/125/150% development interaction probe. All eight artifacts, 88 native PNGs
+and 144 reference PNGs verify. The main capture fails because older canonical
+metadata lacks the newly checked tab selector. Reviewed pixels also show clipped
+tab labels and incorrect compact Preferences bounds. Replacement code paints tab
+text with matching DirectWrite metrics and uses measured compact drawer geometry;
+independent geometry assertions remain strict. This is not visual acceptance.
+See [negative native evidence](evidence/prototype-native-e0b6a16-failed.json).
+
 The lower vessel-profile group now completes the measured sidebar spacing:
 Settings matches all three reference positions within one raster pixel, the
 32px profile action opens Vessel settings, and the short desktop layout hides

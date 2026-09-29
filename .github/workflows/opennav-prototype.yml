@@ -30,7 +30,7 @@ jobs:
   native-object-flow:
     name: Native prototype route waypoint AIS pointer regressions (not full release gate)
     runs-on: windows-2022
-    timeout-minutes: 65
+    timeout-minutes: 90
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
       - name: Fetch and verify pinned baseline
@@ -40,6 +40,12 @@ jobs:
           python opennav-x/tools/verify-upstream.py
       - name: Native fixture build and actual object workflow
         run: ./opennav-x/tools/build-pristine-windows.ps1 -Architecture Win32 -Integration -PrototypeObjectFlow
+      - name: Prototype shared-profile mode regression
+        run: python opennav-x/tools/smoke-modes-windows.py
+      - name: Prototype screens and retained fixture failure-state regressions
+        run: ./opennav-x/tools/test-preview-windows.ps1
+      - name: Retained native DPI alarms touch and restart regressions
+        run: python opennav-x/tools/smoke-dpi-windows.py
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         if: always()
         with:

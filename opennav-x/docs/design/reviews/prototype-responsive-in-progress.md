@@ -48,12 +48,25 @@ native rounding pixel. The circle is hidden at the original <=600px desktop
 height breakpoint. Actual Linux pointer input opens Vessel settings and Close
 restores navigation. No fictional boat initial or live-status dot is copied.
 
-Remaining mismatches: Preferences native text
-widths wrap five tabs instead of the HTML's six on Windows. Content forms still
-need migration. These are visible defects, not accepted rasterization tolerance.
+At the initial compact implementation, Preferences native text
+widths wrapped five tabs instead of the HTML's six on Windows. Content forms still
+need migration. Visible defects are not accepted rasterization tolerance.
 The compact screenshot is a logical viewport on a Linux 1280×800 display, never
 a rescaled substitute for physical/native DPI evidence.
 
-Actual Windows compact-shell execution remains pending.
-No higher-DPI or physical touch PASS is claimed. No boat display, service,
-connection or actuator has been changed by this development probe.
+Those initial Linux records did not qualify actual Windows compact-shell or
+physical touch behavior. No boat display, service, connection or actuator was
+changed by the development probe.
+
+The replacement `e0b6a16` executes actual 100/125/150% Windows DPI and all three
+development interaction cases pass, with 18 captured images. Reviewed 150% Day
+shows all navigation actions and four rail values; reviewed 125% Display/Night
+retains dark surfaces. Physical touch and full release DPI gates remain open.
+
+Closer comparison finds a real drawer mismatch that visibility-only checks did
+not catch: `DrawerWorkspace` still used primary bar/rail dimensions, and wide
+Preferences stayed 432px below 1100px logical width. The immutable HTML requires
+current compact workspace dimensions and 410px. The correction shares the shell's
+existing breakpoint calculation and adds exact independent drawer rectangles to
+both logical Linux and actual Windows DPI probes. No screenshot is rescaled to
+qualify Windows behavior. Native replacement review is required.

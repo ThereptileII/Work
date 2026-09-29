@@ -111,10 +111,10 @@ def cycle_light(pid):
     matches=[]
     for root,_,_ in windows(pid):
         controls=children(root)
-        brands=[h for h,t in controls if t=='OpenNav X']
-        if len(brands)!=1:
+        alerts=[h for h,t in controls if re.fullmatch(r'Alerts(?: \d+)?',t)]
+        if len(alerts)!=1:
             continue
-        top=GetParent(brands[0])
+        top=GetParent(alerts[0])
         matches.extend((h,t) for h,t in controls
                        if t in ('Day','Dusk','Night') and GetParent(h)==top)
     assert len(matches)==1, ('Status-bar palette control must be unique', matches)
@@ -126,6 +126,20 @@ def cycle_light(pid):
     SendMessageW(handle,0x201,1,position)
     SendMessageW(handle,0x202,0,position)
     time.sleep(.4)
+
+def accelerator(handle,key):
+    """Exercise the actual frame keyboard path, including CI-only scenarios."""
+    assert IsWindowEnabled(handle) and IsWindowVisible(handle)
+    SetForegroundWindow(handle)
+    foreground=declare(user,'GetForegroundWindow',W.HWND)
+    deadline=time.monotonic()+3
+    while foreground()!=handle and time.monotonic()<deadline:time.sleep(.05)
+    assert foreground()==handle, 'Test frame did not receive keyboard focus'
+    code=111+int(key[1:]) if re.fullmatch(r'F(?:[1-9]|1[0-2])',key) else ord(key.upper())
+    keyboard=declare(user,'keybd_event',None,W.BYTE,W.BYTE,W.DWORD,C.c_size_t)
+    for vk in (0x11,0x10,code):keyboard(vk,0,0,0)
+    for vk in (code,0x10,0x11):keyboard(vk,0,2,0)
+    time.sleep(.5)
 
 def click_text(pid, label):
     deadline = time.monotonic() + 5
@@ -272,20 +286,24 @@ def assert_page_geometry(handle, child):
     Native pane edges, minimum usable area and occlusion remain mandatory.
     """
     labels = children(handle)
-    brand = [h for h, caption in labels if caption == 'OpenNav X']
-    navigation = [h for h, caption in labels if caption == 'Navigation']
-    alerts = [h for h, caption in labels if caption.startswith('Alerts / ')]
-    assert len(brand) == len(navigation) == 1 and len(alerts) <= 1
+    navigation = [h for h, caption in labels if caption == 'Chart']
+    alerts = [h for h, caption in labels if re.fullmatch(r'Alerts(?: \d+)?',caption)]
+    system = [h for h, caption in labels if caption == 'System']
+    rail = [h for h, caption in labels if caption == 'Configure instruments'
+            and GetParent(GetParent(h)) != child]
+    assert len(navigation) == len(alerts) == len(system) == len(rail) == 1
     def bounds(window):
         value = W.RECT()
         assert GetWindowRect(window, C.byref(value))
         return value
     frame, rect = bounds(handle), bounds(child)
-    top = max(bounds(GetParent(h)).bottom for h in brand + alerts)
-    bottom = bounds(GetParent(navigation[0])).top
-    tolerance = max(4, 8 * GetDpiForWindow(handle) // 96)
+    top = bounds(GetParent(alerts[0])).bottom
+    bottom = bounds(GetParent(system[0])).top
+    left = bounds(GetParent(navigation[0])).right
+    right = bounds(GetParent(GetParent(rail[0]))).left
+    tolerance = 1
     dimensions = [rect.right - rect.left, rect.bottom - rect.top]
-    assert dimensions[0] >= max(940, frame.right-frame.left-4*tolerance), dimensions
+    assert abs(rect.left-left)<=tolerance and abs(rect.right-right)<=tolerance, ('Page must fill space between prototype rails', rect.left, rect.right, left, right)
     assert dimensions[1] >= (frame.bottom-frame.top)//2, dimensions
     assert 0 <= rect.top-top <= tolerance, ('Page overlaps/leaves space below status/alerts', rect.top, top)
     assert 0 <= bottom-rect.bottom <= tolerance, ('Page overlaps/leaves space above navigation', rect.bottom, bottom)
@@ -298,6 +316,8 @@ def assert_preview_page(handle, page):
     Data assertions alone cannot detect a chart covering the selected page.
     This check is in addition to, not a substitute for, screenshot review.
     """
+    if page == 'Route':
+        return assert_prototype_drawer(handle, 'OpenNav passage')
     label = 'OpenNav page: ' + page
     matches = [child for child, caption in children(handle) if caption == label]
     assert len(matches) == 1, f'Visible page not found: {label}'
@@ -309,6 +329,8 @@ def assert_preview_page(handle, page):
     return {'page': page, 'native_pixels': dimensions, 'visible_and_uncovered': True}
 
 def assert_product_page(handle, page):
+    if page in ('Settings', 'AIS targets'):
+        return assert_prototype_drawer(handle, 'OpenNav preferences' if page == 'Settings' else 'OpenNav vessel traffic')
     label='OpenNav product page: '+page
     matches=[child for child,caption in children(handle) if caption==label]
     assert len(matches)==1,f'Visible XNav page not found: {label}'
@@ -317,27 +339,45 @@ def assert_product_page(handle, page):
     assert ScreenToClient(handle,C.byref(point))
     assert ChildWindowFromPointEx(handle,point,1)==child,'Another pane covers the XNav page'
 
+def assert_prototype_drawer(handle, name):
+    """Owned prototype drawer stays in the chart workspace, above its canvas."""
+    pid=W.DWORD();GetWindowThreadProcessId(handle,C.byref(pid))
+    matches=[h for h,_,title in windows(pid.value) if title==name]
+    assert len(matches)==1, ('Visible owned drawer required',name)
+    rect=W.RECT();frame=W.RECT()
+    assert GetWindowRect(matches[0],C.byref(rect)) and GetWindowRect(handle,C.byref(frame))
+    assert GetParent(matches[0])==handle, 'Drawer belongs to the tested frame'
+    scale=GetDpiForWindow(handle)/96
+    client=W.RECT();assert GetClientRect(handle,C.byref(client))
+    expected=(410 if client.right/scale<=1100 else 432) if name=='OpenNav preferences' else 398
+    assert abs(rect.right-rect.left-expected*scale)<=1, ('Prototype drawer width',name)
+    assert frame.left<rect.left<rect.right<frame.right and frame.top<rect.top<rect.bottom<frame.bottom
+    point=W.POINT((rect.left+rect.right)//2,rect.top+int(45*scale))
+    hit=WindowFromPoint(point)
+    ancestor=declare(user,'GetAncestor',W.HWND,W.HWND,W.UINT)
+    assert ancestor(hit,2)==matches[0], 'Another window covers the drawer'
+    return {'page':name,'native_pixels':[rect.right-rect.left,rect.bottom-rect.top], 'visible_and_uncovered':True}
+
 def assert_route_summary_layout(handle):
-    """The current destination summary must reflow between bottom controls."""
+    """Destination summary reflows in the prototype status row."""
     labels = children(handle)
-    demo = [h for h, text in labels if text == 'Demo']
-    assert len(demo) == 1, 'Fixture Demo button missing or ambiguous'
-    bottom = GetParent(demo[0])
-    summary = [h for h, text in labels if GetParent(h) == bottom and
+    alerts = [h for h,t in labels if re.fullmatch(r'Alerts(?: \d+)?',t)]
+    assert len(alerts)==1, 'Status row must have one alert action'
+    top = GetParent(alerts[0])
+    summary = [h for h, text in labels if GetParent(h) == top and
                (text in ('Route unavailable', 'No active route') or
                 re.fullmatch(r'[0-9]+\.[0-9] NM  /  \S.*', text))]
-    system = [h for h, text in labels if text == 'System' and GetParent(h) == bottom]
-    assert len(summary) == len(system) == 1, 'Route summary or System button missing or ambiguous'
-    a, left, right, pane, frame = (W.RECT() for _ in range(5))
-    for window, rect in ((summary[0], a), (demo[0], left), (system[0], right),
-                         (bottom, pane), (handle, frame)):
+    assert len(summary)==1, 'Route summary missing or ambiguous'
+    a,pane,frame=(W.RECT() for _ in range(3))
+    for window, rect in ((summary[0], a), (top, pane), (handle, frame)):
         assert GetWindowRect(window, C.byref(rect))
     assert (frame.left <= pane.left <= a.left < a.right <= pane.right <= frame.right and
             frame.top <= pane.top <= a.top < a.bottom <= pane.bottom <= frame.bottom), \
-        'Route summary is clipped or outside its bottom pane'
-    assert (left.right <= a.left < a.right <= right.left and
-            max(left.top, right.top) <= a.top < a.bottom <= min(left.bottom, right.bottom)), \
-        'Route summary overlaps bottom controls'
+        'Route summary is clipped or outside its status pane'
+    siblings=[h for h,_ in labels if GetParent(h)==top and h!=summary[0]]
+    for other in siblings:
+        b=W.RECT();assert GetWindowRect(other,C.byref(b))
+        assert not (a.left<b.right and b.left<a.right and a.top<b.bottom and b.top<a.bottom), 'Route summary overlaps a status control'
 
 def capture(handle, path, resize=True, screen_pixels=False):
     if resize:

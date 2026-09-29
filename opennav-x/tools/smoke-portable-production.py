@@ -120,10 +120,11 @@ def data(predicate=lambda value: True):
 
 def capture(name, chart=True):
     path = EVIDENCE / ('recovery-' + name + '.png')
-    rgb = ui.capture(handle, path)
+    rgb = ui.capture(handle, path, screen_pixels=True)
     report['screenshots'].append(path.name)
     if chart and 'colors' in globals():
-        report['chart_rendering'].append(charts.check(rgb, colors, name))
+        style='XNav' if ui.text(handle)=='OpenNav X / OpenCPN' else 'Standard'
+        report['chart_rendering'].append(charts.presentation(rgb,style,'Day',name))
     return rgb
 
 def no_demo_controls():
@@ -228,17 +229,19 @@ try:
     colors = charts.reference(capture('navigation-day', chart=False))
     for mode in ('Dusk', 'Night', 'Day'):
         previous = data()['runtime']['display']['light']
-        ui.click_text(pid, previous)
+        ui.cycle_light(pid)
         data(lambda value: value['runtime']['display']['light'] == mode)
         rgb = capture('navigation-' + ('day-restored' if mode == 'Day' else mode.lower()), chart=mode == 'Day')
         if mode == 'Night':
-            report['chart_rendering'].append(charts.night(rgb, colors, 'Product Night coastline'))
+            report['chart_rendering'].append(charts.presentation(rgb,'XNav','Night','Product Night coastline'))
     ui.click_text(pid, 'Energy')
     data(lambda value: value['ui_page'] == 'Energy')
     capture('energy-unavailable', chart=False)
     no_demo_controls()
-    ui.click_text(pid, 'Menu')
-    capture('menu', chart=False)
+    ui.click_text(pid, 'Settings')
+    data(lambda value: value['ui_page']=='Settings')
+    ui.assert_prototype_drawer(handle,'OpenNav preferences')
+    capture('preferences', chart=False)
     no_demo_controls()
     ui.click_text(pid, 'System')
     capture('system', chart=False)
@@ -248,7 +251,7 @@ try:
     capture('diagnostics', chart=False)
     no_demo_controls()
     assert not any('ALPHA 1 / NOT FOR NAVIGATION' in caption for _, caption in ui.children(handle))
-    ui.click_text(pid, 'Navigation')
+    ui.click_text(pid, 'Chart')
     data(lambda value: value['ui_page'] == 'Navigation')
     capture('navigation-return')
     close()

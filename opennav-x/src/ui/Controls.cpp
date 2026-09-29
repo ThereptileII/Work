@@ -512,6 +512,32 @@ void XNavButton::Paint(wxPaintEvent&) {
   const auto text_color = opacity(ink);
   dc.SetTextForeground(text_color);
   dc.SetFont(UiFontWeight(*this, settings_tab_ ? 11 : role_ == ButtonRole::Segment ? 10 : 12, settings_tab_ ? 400 : 500));
+  if (settings_tab_) {
+#if defined(__WXMSW__) && wxUSE_GRAPHICS_DIRECT2D
+    // Match natural DirectWrite advances used by the HTML and tab layout.
+    // GDI integer advances are wider and ellipsized three complete labels.
+    // This context targets the existing buffered paint DC, not the chart.
+    if (auto *renderer=wxGraphicsRenderer::GetDirect2DRenderer()) {
+      std::unique_ptr<wxGraphicsContext> graphics(renderer->CreateContextFromUnknownDC(dc));
+      if (graphics) {
+        const auto font=graphics->CreateFont(11.*FromDIP(1024)/1024.,
+            dc.GetFont().GetFaceName(),wxFONTFLAG_DEFAULT,text_color);
+        if (!font.IsNull()) {
+          graphics->SetFont(font);
+          double width=0,height=0;
+          graphics->GetTextExtent(GetLabel(),&width,&height);
+          graphics->DrawText(GetLabel(),(size.x-width)/2.,(size.y-height)/2.);
+          return;
+        }
+      }
+    }
+#endif
+    // The measured fixed section names fit. Keep them legible if a graphics
+    // device cannot initialize; the native visual gate still records fallback.
+    const auto extent=dc.GetTextExtent(GetLabel());
+    dc.DrawText(GetLabel(),(size.x-extent.x)/2,(size.y-extent.y)/2);
+    return;
+  }
   if (summary_) {
     XNavPainter p(*this, dc, mode_);
     const int width = ToDIP(size.x), height = ToDIP(size.y);

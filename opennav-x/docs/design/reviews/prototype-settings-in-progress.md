@@ -63,3 +63,22 @@ The native test now requires six tabs on row one, and product capture compares
 all eight rectangles to the independent Windows HTML within one raster pixel.
 The renderer records actual browser-resolved fonts, without modifying the HTML.
 Native execution and renewed screenshot review are still required.
+
+`e0b6a16` confirms the six-tab first row and 104 component checks on Windows.
+Its actual-product capture stops because the stored canonical metadata predates
+the tab selector. Fresh same-run HTML measurements are now retained separately
+in `reference/windows/settings-tabs.json`; the six associated canonical PNG
+hashes are unchanged. Extraction verifies original HTML identity and actual PNG
+hashes. This adds measured evidence without altering the prototype or baseline
+pixels.
+
+Screenshot review also finds clipped Navigation/Sensors/Autopilot captions:
+GDI painted wider advances than DirectWrite used to size them. The correction
+uses pinned wxWidgets' native Direct2D/DirectWrite paint path for these eight
+labels, preserving their installed font, 11px em and 400 weight. It draws into
+the existing buffered control DC; chart rendering is unaffected. The component
+gate compares paint advances against the independently measured Windows HTML.
+See [wxWidgets 3.2.8 text layout and paint](https://github.com/wxWidgets/wxWidgets/blob/v3.2.8/src/msw/graphicsd2d.cpp).
+The complete caption remains readable through GDI fallback if the graphics
+context fails; fallback does not qualify typography. Replacement native pixels
+and the retained strict one-pixel bounds gate remain mandatory.

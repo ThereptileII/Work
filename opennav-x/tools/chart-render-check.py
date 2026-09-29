@@ -110,6 +110,27 @@ def night(rgb, day_colors, phase):
     return check(rgb, colors, phase)
 
 
+def presentation(rgb, style, light, phase):
+    """Exact GSHHS ink; custom XNav and stock fallback are separate contracts.
+
+    XNav expectations come from the independently rendered immutable HTML.
+    Standard software colors and dimming are pinned GSHHSChart::SetColorScheme.
+    Neither a changed palette nor a blank chart is learned as a new baseline.
+    """
+    assert style in ('XNav','Standard') and light in ('Day','Dusk','Night')
+    if style=='XNav':
+        import json
+        from pathlib import Path
+        tokens=json.loads((Path(__file__).resolve().parents[1]/'docs/design/prototype-tokens.json').read_text())['themes'][light.lower()]
+        colors=[bytes.fromhex(tokens[key].lstrip('#')) for key in ('--land','--water')]
+    else:
+        dim={'Day':1,'Dusk':.5,'Night':.25}[light]
+        colors=[bytes(int(c*dim) for c in rgb) for rgb in ((170,175,80),(170,195,240))]
+    result=check(rgb,colors,phase)
+    result.update(style=style,light=light,source='immutable HTML tokens' if style=='XNav' else 'pinned software GSHHSChart::SetColorScheme')
+    return result
+
+
 def dark_surface(rgb, phase):
     """Primary client area only; native OS captions/file dialogs are separate."""
     assert len(rgb) == 1280 * 800 * 3

@@ -115,6 +115,7 @@ def ready(count):
         time.sleep(.2)
     raise RuntimeError('Initialization incomplete')
 def data(predicate=lambda d:True,timeout=12):
+    d={}
     deadline=time.monotonic()+timeout
     while time.monotonic()<deadline:
         try:
@@ -127,44 +128,76 @@ def light(expected):
     # Distinct single clicks. GTK coalesces rapid physical clicks into a
     # double-click event; that is not two independent button activations.
     time.sleep(.65)
-    if windows:ui.cycle_light(pid)
-    else:shell_click(data()['runtime']['display']['light'])
+    shell_click(data()['runtime']['display']['light'],in_status=True)
     data(lambda d:d['runtime']['display']['light']==expected)
 interaction=module('product-interaction')
-def shell_click(label):
-    record=data(lambda d:any(r['label']==label and r['visible'] and r['enabled'] for r in d['runtime']['display']['interaction_controls']))
-    target=next(r for r in record['runtime']['display']['interaction_controls'] if r['label']==label and r['visible'] and r['enabled'])
-    xdo('mousemove',target['x']+target['width']//2,target['y']+target['height']//2,'click',1)
+def pointer_click(target):
+    x=target['x']+target['width']//2;y=target['y']+target['height']//2
+    assert target['visible'] and target['enabled'],target
+    if windows:
+        point=ui.W.POINT(x,y);hit=ui.WindowFromPoint(point);owner=ui.W.DWORD()
+        ui.GetWindowThreadProcessId(hit,ui.C.byref(owner))
+        assert owner.value==pid and ui.IsWindowEnabled(hit) and ui.text(hit)==target['label'],('Pointer target mismatch',target,ui.text(hit))
+        ancestor=ui.declare(ui.user,'GetAncestor',ui.W.HWND,ui.W.HWND,ui.W.UINT)
+        foreground=ui.declare(ui.user,'GetForegroundWindow',ui.W.HWND)
+        surface=ancestor(hit,2);ui.SetForegroundWindow(surface)
+        deadline=time.monotonic()+3
+        while foreground()!=surface and time.monotonic()<deadline:time.sleep(.05)
+        assert foreground()==surface and ui.WindowFromPoint(point)==hit
+        ui.SetCursorPos(x,y);ui.MouseEvent(2,0,0,0,0);time.sleep(.05);ui.MouseEvent(4,0,0,0,0)
+    else:xdo('mousemove',x,y,'click',1)
     time.sleep(.4)
+def shell_click(label,outside_drawer=False,in_status=False,in_drawer=False):
+    record=data(lambda d:any(r['label']==label and r['visible'] and r['enabled'] for r in d['runtime']['display']['interaction_controls']))
+    display=record['runtime']['display'];bounds=display.get('drawer',{})
+    targets=[r for r in display['interaction_controls'] if r['label']==label and r['visible'] and r['enabled']]
+    if in_status:
+        alerts=[c for c in display['interaction_controls'] if (c['label']=='Alerts' or c['label'].startswith('Alerts ')) and c['visible']]
+        assert len(alerts)==1,('Unique status alert required',alerts)
+        targets=[r for r in targets if r['y']==alerts[0]['y'] and r['height']==alerts[0]['height']]
+    if outside_drawer and bounds:
+        targets=[r for r in targets if not (bounds['x']<=r['x']<bounds['x']+bounds['width'] and bounds['y']<=r['y']<bounds['y']+bounds['height'])]
+    if in_drawer:
+        assert bounds,'Expected an open prototype drawer'
+        targets=[r for r in targets if bounds['x']<=r['x'] and r['x']+r['width']<=bounds['x']+bounds['width'] and bounds['y']<=r['y'] and r['y']+r['height']<=bounds['y']+bounds['height']]
+    assert len(targets)==1,('Unique visible control required',label,targets)
+    ticks=int(record['runtime']['ui_update']['ticks']);pointer_click(targets[0])
+    data(lambda d:int(d['runtime']['ui_update']['ticks'])>=ticks+3)
 def product_scroll(direction):
     if windows:ui.click_text(pid,'Down' if direction>0 else 'Up')
     else:xdo('mousemove',700,430,'click',5 if direction>0 else 4)
     time.sleep(.4)
 def product_click(label,enabled=True):
     target=interaction.control(data,label,product_scroll,enabled=enabled)
-    if windows:ui.click_text(pid,label)
-    else:
-        xdo('windowfocus',handle)
-        xdo('mousemove',target['x']+target['width']//2,target['y']+target['height']//2,'click',1)
-        time.sleep(.4)
+    pointer_click(target)
     return target
 def item(d,name):return next(i for i in d['data'] if i['name']==name)
 def command(label,shortcut):
-    if windows:ui.click_text(pid,label)
-    else:xdo('key','ctrl+shift+'+shortcut);time.sleep(.5)
+    # Primary workflows exercise visible prototype controls on both platforms.
+    direct={'n':'Chart','r':'Passage','e':'Energy','m':'Settings','g':'Settings',
+            'v':'Instruments','a':'Traffic','h':'Anchor','z':'Radar','s':'System'}
+    if shortcut in direct:shell_click(direct[shortcut],outside_drawer=True)
+    elif shortcut=='i':shell_click('System',outside_drawer=True);product_click('Diagnostics')
+    else:accelerator(shortcut)
+def accelerator(key):
+    if not windows:xdo('windowfocus',handle);xdo('key','ctrl+shift+'+key)
+    else:ui.accelerator(handle,key)
+    time.sleep(.5)
 def scenario(label,index):
-    if windows:ui.click_text(pid,'Demo');ui.click_text(pid,label)
-    else:xdo('key','ctrl+shift+F'+str(index+1));time.sleep(.4)
+    # Fixture-only accelerators never exist in the installed product.
+    accelerator('F'+str(index+1))
 def capture(name):
     path=evidence/(name+('.png' if windows else '-linux.png'))
-    if windows:rgb=ui.capture(handle,path)
+    if windows:rgb=ui.capture(handle,path,resize=False,screen_pixels=True)
     else:
         time.sleep(.4);subprocess.run(['import','-window','root',str(path)],env=env,check=True)
         rgb=subprocess.check_output(['convert',str(path),'-depth','8','rgb:-'],env=env)
     report['screenshots'].append(path.name)
     return rgb
 def chart_capture(name,phase):
-    report.setdefault('chart_rendering',[]).append(chartcheck.check(capture(name),chart_colors,phase))
+    title=ui.text(handle) if windows else xdo('getwindowname',handle)
+    style='XNav' if title=='OpenNav X / OpenCPN' else 'Standard'
+    report.setdefault('chart_rendering',[]).append(chartcheck.presentation(capture(name),style,'Day',phase))
 def page_capture(name, page):
     capture(name)
     if windows:
@@ -244,7 +277,7 @@ try:
         data(lambda d:d['ui_page']=='System')
         capture('beta-system-page')
         xdo('key','Escape');time.sleep(.4)
-        data(lambda d:d['ui_page']=='Menu')
+        data(lambda d:d['ui_page']=='Settings')
         command('Navigation','n')
         data(lambda d:d['ui_page']=='Navigation')
     first=data(lambda d:d['data_mode']=='DEMO' and 'arrival_soc' in d['energy'])
@@ -252,12 +285,11 @@ try:
     chart_colors=chartcheck.reference(capture('preview-01-navigation-day'))
     chart_capture('preview-11-startup-xnav','Direct XNav startup')
     light('Dusk');light('Night')
-    report['chart_rendering'].append(chartcheck.night(capture('preview-02-navigation-night'),chart_colors,'Night world-chart land/water palette'))
+    report['chart_rendering'].append(chartcheck.presentation(capture('preview-02-navigation-night'),'XNav','Night','Night world-chart land/water palette'))
     light('Day')
     command('Route','r');page_capture('preview-03-route','Route')
     command('Energy','e');page_capture('preview-04-energy','Energy')
-    if windows:ui.click_text(pid,'System');ui.click_text(pid,'Diagnostics')
-    else:xdo('key','ctrl+shift+i');time.sleep(.5)
+    command('Diagnostics','i')
     page_capture('preview-05-diagnostics','Diagnostics')
     data(lambda d:d['runtime']['display']['can_scroll_down'])
     if windows:ui.click_text(pid,'Down')
@@ -274,9 +306,7 @@ try:
                            ('Manual autopilot','y','autopilot'),('Anchor watch','h','anchor'),
                            ('Settings','g','settings'),('Routes','b','routes'),
                            ('Waypoints','w','waypoints')]:
-        command('Menu','m')
-        if windows: ui.click_text(pid,title)
-        else: xdo('key','ctrl+shift+'+key);time.sleep(.6)
+        command(title,key)
         expected_page='SmartNav' if name=='smartnav' else title
         data(lambda d:d.get('ui_page')==expected_page)
         if name in ('instruments','autopilot'):
@@ -295,7 +325,7 @@ try:
             product_click('+1°')
             data(lambda d:d['runtime']['pilot']['command_state']=='Confirmed' and d['runtime']['pilot']['command_id']!=previous)
             capture('alpha-autopilot-confirmed')
-            ui.click_text(pid,'STBY')
+            product_click('STANDBY')
             data(lambda d:d['runtime']['pilot']['mode']=='STANDBY' and d['runtime']['pilot']['command_state']=='Confirmed')
             product_click('Enable / disable DEMO manual control')
             data(lambda d:not d['runtime']['pilot']['enabled'])
@@ -304,17 +334,20 @@ try:
 
         if windows:
             assert not any(caption.startswith('OpenNav page:') for _,caption in ui.children(handle)), 'Preview pane covers product page'
-    report['checks'].append('Alpha menu and eight product page interactions captured')
+    report['checks'].append('Prototype navigation and eight retained product views captured; advanced frame accelerators remain covered')
     for title,key,name in [('Energy configuration','k','energy-settings'),
                            ('Data Sources','o','sources'),
                            ('Vessel safety settings','q','vessel-settings'),
                            ('Radar status','z','radar-status'),
                            ('Display & layout','f','display')]:
         if windows:
-            command('Menu','m');ui.click_text(pid,'Settings')
+            command('Settings','g')
             if name=='energy-settings':
-                ui.click_text(pid,'VESSEL');product_click('Energy configuration')
-            else:ui.click_text(pid,{'sources':'SENSORS','vessel-settings':'VESSEL','radar-status':'RADAR','display':'DISPLAY'}[name])
+                shell_click('Vessel',in_drawer=True);shell_click('Battery & reserve',in_drawer=True)
+            else:
+                section,entry={'sources':('Sensors','Manage sensors'),'vessel-settings':('Vessel','Vessel dimensions'),
+                               'radar-status':('Radar','Radar status'),'display':('Display','Chart presentation')}[name]
+                shell_click(section,in_drawer=True);shell_click(entry,in_drawer=True)
         else:xdo('key','ctrl+shift+'+key);time.sleep(.6)
         expected_page='Display' if name=='display' else title
         data(lambda d:d.get('ui_page')==expected_page)
@@ -341,7 +374,7 @@ try:
             ui.click_text(pid,'Configure data rail');ui.click_text(pid,'Energy rail')
             data(lambda d:d['settings']['data_rail']==['soc','pack_power','sog','depth'])
             command('Navigation','n');capture('alpha-energy-rail')
-            command('Menu','m');ui.click_text(pid,'Settings');ui.click_text(pid,'DISPLAY')
+            command('Settings','g');shell_click('Display',in_drawer=True);shell_click('Chart presentation',in_drawer=True)
             ui.click_text(pid,'Configure data rail');ui.click_text(pid,'Navigation rail')
             data(lambda d:d['settings']['data_rail']==['sog','depth','aws','heading'])
             ui.click_text(pid,'Back to Display');ui.click_text(pid,'Configure instruments')
@@ -365,7 +398,7 @@ try:
     # the fault and recovery followed by another dropout creates a new episode.
     if windows:
         alert_caption=next(c for _,c in ui.children(handle) if c.startswith('Alerts '))
-        ui.click_text(pid,alert_caption)
+        shell_click(alert_caption)
     else:xdo('key','ctrl+shift+F9');time.sleep(.5)
     alert_data=data(lambda d:d.get('ui_page')=='Alerts')
     gps=next(a for a in alert_data['runtime']['alerts'] if a['id'].startswith('position-'))
@@ -405,12 +438,12 @@ try:
     scenario('Cruising',0)
     data(lambda d:not any(a['id'].startswith('position-') or a['id']=='energy-shortfall' for a in d['runtime'].get('alerts',[])))
     report['checks'].append('Global alerts persist across pages/acknowledgement, recover, and recur as new episodes')
-    report['checks'].append('All eight GUI-selected scenarios pass validity/shortfall assertions')
+    report['checks'].append('All eight fixture-accelerator scenarios pass validity/shortfall assertions')
     command('Navigation','n')
     if windows:
         assert not any(caption.startswith(('OpenNav page:', 'OpenNav product page:')) for _, caption in ui.children(handle))
         ui.click_text(pid,'+')
-        ui.click_text(pid,'Route')
+        shell_click('Passage')
         ui.assert_preview_page(handle,'Route')
         report['checks'].append('Page resize/visibility and Navigation return with chart zoom passed')
     if windows:

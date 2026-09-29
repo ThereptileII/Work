@@ -1,5 +1,25 @@
 # Immutable prototype tooling
 
+The broader mode/preview/recovery/DPI harnesses now target prototype controls
+and owned drawers. Their retained failure scenarios, sensor validity, alerts,
+shared navigation hashes, normal exits and plugin lifecycle checks remain
+mandatory. The extra prototype workflow runs native mode/preview/full-DPI tests
+after the existing object/route regressions; it still does not replace the
+installer/package/endurance release pipeline.
+
+`extract-settings-reference.py` retains fresh Windows tab measurements as a
+sidecar to the canonical images. It verifies immutable HTML identity, all six
+unchanged canonical PNG hashes and the actual responsive reference captures.
+`capture-native.py` requires every tab rectangle within one raster pixel;
+`capture-layout-linux.py` and `capture-dpi-windows.py` now also require the exact
+responsive Preferences rectangle. Visibility alone cannot qualify its position.
+
+The chart smoke helper explicitly distinguishes prototype XNav Day/Dusk/Night
+ink from the pinned Standard software GSHHS colors. Both land and water must
+remain present. Thirty negative/positive ink fixtures reject missing coastline,
+incorrect palettes and accepting the opposite style. This does not qualify ENC
+semantics, OpenGL or the physical boat GPU by itself.
+
 Install `requirements.txt` in a dedicated Python environment, then:
 
 ```

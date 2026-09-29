@@ -79,6 +79,10 @@ def main():
                 rect[1] <= item["y"] < item["y"]+item["height"] <= rect[3])
 
     def snapshot(name):
+        # Canonical state excludes accidental hover left by a previous run.
+        # Dedicated release hover tests still verify Day and dim-mode tooltips.
+        ui.SetCursorPos(0,0)
+        time.sleep(.15)
         path = output / (name + ".png")
         ui.capture(handle, path, resize=False, screen_pixels=True)
         entry["screenshots"].append(dict(file=path.name, sha256=hashlib.sha256(path.read_bytes()).hexdigest()))
@@ -179,7 +183,13 @@ def main():
             assert colors[(238, 238, 226)] > 1000 and colors[(213, 229, 229)] > 1000, "Chart land/water missing"
             click("Settings", touch=True)
             data(lambda d: d["ui_page"] == "Settings")
-            snapshot(f"{scale}-settings-day")
+            _,d=snapshot(f"{scale}-settings-day")
+            measured=json.loads((ROOT/"docs/design/prototype/reference/windows/settings-tabs.json").read_text())
+            expected=(measured["states"]["settings-day"] if scale==100 else measured["responsive"][str(scale)])["drawer"]
+            p=origin();actual=dict(d["runtime"]["display"]["drawer"])
+            actual["x"]-=p.x;actual["y"]-=p.y
+            assert all(abs(actual[k]-expected[k]*scale/100)<=1 for k in ("x","y","width","height")), ("Preferences differs from independent prototype",actual,expected)
+            entry["prototypeDrawer"]=dict(actual=actual,expectedCss=expected)
             click("Sensors", drawer=True)
             snapshot(f"{scale}-sensors-day")
             click("Display", drawer=True)

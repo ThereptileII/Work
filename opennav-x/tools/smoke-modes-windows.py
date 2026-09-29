@@ -7,6 +7,7 @@ import subprocess
 import sys
 import time
 import uuid
+from diagnostic_snapshot import read_json_snapshot
 
 def module(name):
     spec = importlib.util.spec_from_file_location(name, Path(__file__).with_name(name + '.py'))
@@ -17,6 +18,7 @@ def module(name):
 ui = module('windows-ui')
 display = ui.ensure_desktop()
 fixtures = module('profile-fixtures')
+charts = module('chart-render-check')
 root = Path(__file__).resolve().parents[1]
 profile = root / 'build/profiles' / ('mode cycle ' + str(uuid.uuid4()))
 evidence = root / 'evidence/local'
@@ -31,6 +33,18 @@ process = subprocess.Popen([str(exe), '--configdir', str(profile), '--no_opengl'
 pid = process.pid
 handle = None
 report = {'display': display, 'profile': str(profile), 'steps': [], 'expected': expected}
+
+def data(predicate=lambda d:True):
+    deadline=time.monotonic()+12
+    while time.monotonic()<deadline:
+        d=read_json_snapshot(profile/'opennav-diagnostics.json')
+        if predicate(d):return d
+        time.sleep(.15)
+    raise AssertionError('Mode-cycle diagnostic state did not arrive')
+
+def capture_chart(name,style='XNav',light='Day'):
+    rgb=ui.capture(handle,evidence/name)
+    report.setdefault('chart_rendering',[]).append(charts.presentation(rgb,style,light,name))
 
 def ready(expected_count):
     deadline = time.monotonic() + 60
@@ -50,20 +64,25 @@ def saved(step):
 try:
     handle, pid = ui.wait_window('OpenNav X / OpenCPN', pid)
     ready(1)
-    ui.capture(handle, evidence / '01-xnav-unavailable.png')
+    capture_chart('01-xnav-unavailable.png')
     ui.cycle_light(pid)
-    ui.capture(handle, evidence / '02-xnav-dusk.png')
+    data(lambda d:d['runtime']['display']['light']=='Dusk')
+    capture_chart('02-xnav-dusk.png',light='Dusk')
     ui.cycle_light(pid)
-    ui.capture(handle, evidence / '03-xnav-night.png')
+    data(lambda d:d['runtime']['display']['light']=='Night')
+    capture_chart('03-xnav-night.png',light='Night')
     ui.cycle_light(pid)
+    data(lambda d:d['runtime']['display']['light']=='Day')
     ui.click_text(pid, '+')
     ui.click_text(pid, '−')
-    ui.click_text(pid, 'Demo')
+    ui.accelerator(handle, 'T')
     ui.click_text(pid, 'Cruising')
+    data(lambda d:d['data_mode']=='DEMO' and d['route']['state']=='Valid')
     ui.capture(handle, evidence / '04-xnav-simulation.png')
-    ui.click_text(pid, 'Demo')
+    ui.accelerator(handle, 'T')
     ui.click_text(pid, 'Pause simulation')
     time.sleep(6)
+    data(lambda d:next(i for i in d['data'] if i['name']=='Speed over ground')['quality']=='STALE')
     ui.capture(handle, evidence / '05-xnav-stale.png')
     report['steps'].append({'step': 'theme / zoom / simulator start and pause', 'interaction': 'pass',
                             'visual_review': 'required; stale labels and fixture values must be checked'})
@@ -74,7 +93,7 @@ try:
     assert pid != process.pid, 'Mode change must use a new process'
     ready(2)
     saved('XNav to Legacy')
-    ui.capture(handle, evidence / '11-legacy-after-xnav.png')
+    capture_chart('11-legacy-after-xnav.png','Standard')
     old_process_handle = ui.monitor_process(pid)
     ui.click_menu(handle, 'Switch to XNav')
     ui.wait_clean_exit(old_process_handle)
@@ -83,7 +102,8 @@ try:
     handle, pid = next_handle, next_pid
     ready(3)
     saved('Legacy to XNav')
-    ui.capture(handle, evidence / '06-xnav-after-legacy.png')
+    data(lambda d:d['data_mode']!='DEMO')
+    capture_chart('06-xnav-after-legacy.png')
     last_process_handle = ui.monitor_process(pid)
     ui.close(handle)
     ui.wait_clean_exit(last_process_handle)
@@ -94,7 +114,7 @@ try:
                              '--xnav', '--legacy', '--safe-mode'])
     handle, pid = ui.wait_window('OpenNav Safe Mode / OpenCPN', safe.pid)
     ready(4)
-    ui.capture(handle, evidence / '12-safe-shared-profile.png')
+    capture_chart('12-safe-shared-profile.png','Standard')
     ui.close(handle)
     assert safe.wait(timeout=30) == 0
     saved('Safe override and close')

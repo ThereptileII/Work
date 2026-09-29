@@ -20,13 +20,13 @@ passed = 0
 
 
 def fixture(label='17.7 NM  /  Sheltered bay'):
-    # Captions follow the exact6160 Windows failure and current Shell format.
+    # The prototype moves the same destination summary into the status row.
     global labels, parents, bounds
-    labels = [(3, 'Navigation'), (4, 'Demo'), (5, label), (6, 'System')]
+    labels = [(3, ''), (4, 'Alerts 2'), (5, label), (6, 'No vessel input')]
     parents = {3: 2, 4: 2, 5: 2, 6: 2}
-    bounds = {1: (0, 0, 1280, 800), 2: (8, 735, 1272, 792),
-              3: (12, 739, 124, 787), 4: (512, 739, 600, 787),
-              5: (608, 752, 1148, 776), 6: (1156, 739, 1268, 787)}
+    bounds = {1: (0, 0, 1280, 800), 2: (0, 0, 1280, 68),
+              3: (0, 0, 180, 68), 4: (1232, 12, 1276, 56),
+              5: (196, 24, 926, 44), 6: (942, 24, 1062, 44)}
 
 
 def get_rect(handle, output):
@@ -65,11 +65,11 @@ for caption in ('17.7 NM to destination', '17.7 NM  /  ',
 
 fixture()
 labels.append((7, 'Route unavailable'))
-parents[7] = 99  # Unrelated page text is not the bottom summary.
+parents[7] = 99  # Unrelated page text is not the status summary.
 verify()
 
-for fault in ('missing', 'duplicate', 'wrong-pane', 'missing-demo', 'duplicate-demo',
-              'missing-system', 'left-overlap', 'right-overlap', 'zero-width',
+for fault in ('missing', 'duplicate', 'wrong-pane', 'missing-alerts', 'duplicate-alerts',
+              'invalid-alert-caption', 'left-overlap', 'right-overlap', 'zero-width',
               'vertical-overlap', 'pane-clipped', 'frame-clipped', 'failed-query'):
     fixture()
     if fault == 'missing': labels = [entry for entry in labels if entry[0] != 5]
@@ -77,15 +77,15 @@ for fault in ('missing', 'duplicate', 'wrong-pane', 'missing-demo', 'duplicate-d
         labels.append((7, 'No active route'))
         parents[7] = 2
     if fault == 'wrong-pane': parents[5] = 99
-    if fault == 'missing-demo': labels = [entry for entry in labels if entry[0] != 4]
-    if fault == 'duplicate-demo': labels.append((7, 'Demo'))
-    if fault == 'missing-system': labels = [entry for entry in labels if entry[0] != 6]
-    if fault == 'left-overlap': bounds[5] = (599, 752, 1148, 776)
-    if fault == 'right-overlap': bounds[5] = (608, 752, 1157, 776)
-    if fault == 'zero-width': bounds[5] = (608, 752, 608, 776)
-    if fault == 'vertical-overlap': bounds[5] = (608, 738, 1148, 776)
-    if fault == 'pane-clipped': bounds[2] = (8, 735, 1000, 792)
-    if fault == 'frame-clipped': bounds[2] = (8, 735, 1272, 805)
+    if fault == 'missing-alerts': labels = [entry for entry in labels if entry[0] != 4]
+    if fault == 'duplicate-alerts': labels.append((7, 'Alerts'))
+    if fault == 'invalid-alert-caption': labels[1] = (4,'Alerts NaN')
+    if fault == 'left-overlap': bounds[5] = (179, 24, 926, 44)
+    if fault == 'right-overlap': bounds[5] = (196, 24, 943, 44)
+    if fault == 'zero-width': bounds[5] = (196, 24, 196, 44)
+    if fault == 'vertical-overlap': bounds[5] = (196, -1, 926, 44)
+    if fault == 'pane-clipped': bounds[2] = (0, 0, 900, 68)
+    if fault == 'frame-clipped': bounds[2] = (-1, 0, 1280, 68)
     if fault == 'failed-query': del bounds[5]
     verify(reject=True)
 

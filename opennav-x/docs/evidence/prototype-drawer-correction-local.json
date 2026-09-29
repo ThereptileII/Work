@@ -1,0 +1,128 @@
+{
+  "accepted": false,
+  "sourceBase": "e5fbea096879211c7608f54b10783233077efcd6",
+  "scope": "Correct compact drawer workspace and Preferences text rendering; Linux development verification",
+  "unitSuites": [
+    {
+      "file": "tab-paint-tests.xml",
+      "sha256": "e09dd56f20af867cbbb3ca60bd3522611e752468a74e1ac104e3103421a87c01",
+      "result": {
+        "name": "(empty)",
+        "tests": "123",
+        "failures": "0",
+        "disabled": "0",
+        "skipped": "0",
+        "hostname": "",
+        "time": "19",
+        "timestamp": "2026-09-29T04:21:13"
+      }
+    },
+    {
+      "file": "drawer-workspace-tests.xml",
+      "sha256": "72e999b4a716cd885d66573055074c4158a264557547b873431389e5a5270ab1",
+      "result": {
+        "name": "(empty)",
+        "tests": "123",
+        "failures": "0",
+        "disabled": "0",
+        "skipped": "0",
+        "hostname": "",
+        "time": "19",
+        "timestamp": "2026-09-29T04:27:10"
+      }
+    },
+    {
+      "file": "drawer-workspace-fixture-tests.xml",
+      "sha256": "807560cb76177f16ada111288d9d81cc50a0ee2752d878cd407ad5853ae041ca",
+      "result": {
+        "name": "(empty)",
+        "tests": "123",
+        "failures": "0",
+        "disabled": "0",
+        "skipped": "0",
+        "hostname": "",
+        "time": "18",
+        "timestamp": "2026-09-29T04:28:55"
+      }
+    }
+  ],
+  "captures": {
+    "tab-paint-settings": {
+      "reportSha256": "5cc7217c8f8c9ed6adb652210736e6a7200adeb99b63464df18307f8dd2c1108",
+      "images": {
+        "settings-day.png": "1bee11f500d7136ce005a3e695e5ccca96e52c3230a45e0b90926f95e9c4feec",
+        "settings-dusk.png": "de011bf8d12c6e0ea9a13c1fd54bb099e221c03622c5aff3a494ee410af507cb",
+        "settings-night.png": "43b2f3f35bc38b118c861b44fe2acccfc141fe7b52c9423b6169e3e6e0fab30a",
+        "sensors-day.png": "b8310de09da4e5c515b91b7da9deb75aecf8162f79bc062189464d2438bcba0e",
+        "sensors-dusk.png": "3369d52cc9ad9bb9cc3ef3f744fd5a3c5d85ebf8b55c0a1c9d1c2df406150ff3",
+        "sensors-night.png": "350700f743cff2fd1ba405000cf2c7691604f96e85f7087c1ff34a559238a977",
+        "display-day.png": "c6d47cc7bd8b7bb87d2dde232669802c8a726fe6a34dd2a26c627844991b0df2",
+        "display-dusk.png": "98712e1ed69e6b36fded7d467c22833a32dcc83b51776c896a8baad921c891ff",
+        "display-night.png": "e7d3066554123dd39badd97cc0477f242cb83774e411deec5d5902f546c39376",
+        "system-night.png": "baf54d299fea91edc3b353a87716f7d36e1367f01538adbab97d8eed86b8f94f",
+        "settings-radar-night.png": "d24598cc86767761b53f068e7bc73bf05f6ca5257fc06f26525398421a7cfe7c",
+        "settings-autopilot-night.png": "e7d6d24d29851c11f341147dd268084fe38f23288e26026a3737b7a4642aa99e"
+      }
+    },
+    "tab-paint-primary": {
+      "reportSha256": "fd74b9e40c7828537cc02c8a4b54de04c79340170718f2cb192d720dcb287a45",
+      "images": {
+        "navigation-day.png": "32da9fbc1027f6ad159658a892d3a53a883b759d333d373322b43685ce10ef1b",
+        "navigation-dusk.png": "ba2f2b03696823962194c3bc28082929bafb8d4269295fb3ded359c0178c61d3",
+        "navigation-night.png": "1a9e827c9f7214959d845c9ce369f9e1d8d44e6ff07fb27b4563486f26a424a2",
+        "passage-day.png": "7cd54dcd95f162c6c2a81d1026449321d99058c621a86a19b20b97c0f810e285",
+        "passage-dusk.png": "34827c6b35463bcc74504606be0256d91b0dee10ec3a6bb1ffcf62ec97fd7482",
+        "passage-night.png": "7c20f16aad43b30768a003fefde0f8d543d2856fc563751c5ce4d2334ead67ed",
+        "traffic-day.png": "43e70fd5dbd4893d766ed4378656deee0f884f3087e9ed55b065393c69fbac1a",
+        "online-ais-settings-day.png": "5084ff0f1dd004cbf844ce4f5a3dcd899a91f40a54695433fc315e697ce98565",
+        "online-ais-key-needed-day.png": "84778a84923bdf03ce9c65b14f613e18b91c296ed8e6146ffe215f998afe567b",
+        "online-ais-settings-dusk.png": "2be768d132ee2699e9ccd5b15963a63ffd2a17a6333ebb29a067b76e620c6adc",
+        "online-ais-settings-night.png": "ae15889af484bc2bb32d0e0270714228653f0736a58110ed810e2f99ea1ab722",
+        "energy-day.png": "4e994a93cf73889ecb77618e67f85f4b91d051381f12f1918598a84b52174ba5",
+        "instruments-day.png": "817472c9e0aecd2ad25ff2acb80c3b83dbe7a33d6ca3e222aaca2b82913156b7",
+        "instruments-dusk.png": "8f9b3c0590af684dc57add5ab67be628614039c0df37dc1090c4f2c156b15481",
+        "instruments-night.png": "cd9d214fe219a616d550e0845a99cfdee79a8a442f75630f2885aefc7dfcc6e1",
+        "settings-day.png": "84d103e7ff1b4b73aa57907a95b5c19e2a61bdb1db18f7bdbffd8bb95cba12bb",
+        "settings-dusk.png": "48bbc1ca7cbfac2a3c9a0c3c284ff6b6f3d73e32eff1a3c1ee751664d504d440",
+        "settings-night.png": "56bb071e329f28a680f1f32c736cb522b1054df9b30dd8aa33a76482d7ac1dc4",
+        "sensors-day.png": "67247cf84e23e7ab5222214b39e42389586e1dd75764b928fb3acaf76e700cb4",
+        "display-day.png": "86d71e0f4e56f7c00314d9c69439e5389d39c5de4e529577373a1ffc71dcc711",
+        "system-day.png": "c2fc27cfbadbc89249992c4868aa63727fe7b6c3b68b47b6fafea1b1ec83a839"
+      }
+    },
+    "drawer-workspace-layout": {
+      "reportSha256": "f8d38f5ba5f6bcea8907456679553b6cd85f7d15b160d72edb9924760f27d61a",
+      "images": {
+        "0-1280x800-chart.png": "74bb10797f426a5a0a27dd2d4fbf555220a4eb227dcaed6c0fd7b8fe87dbe747",
+        "0-1280x800-settings.png": "a9e566d400edb3b929939178f7d1dfd22d975bad669df67c2105f7ff087357ee",
+        "0-1280x800-settings-scrolled.png": "da857fdf196fa2e08b9b42caa5415dbd64f6d932b28ade7865e18d9720290c47",
+        "1-1024x640-chart.png": "cb74dc0c73dbc2696a0cf4802d96e04e2fd8080037a62268f6a5410143a366fb",
+        "1-1024x640-settings.png": "345da5e232deec7aa59d4115d0a01d77fc9d01a90b98eb68b9d5a9fd64fb49fc",
+        "1-1024x640-settings-scrolled.png": "72955a6835c17de735f9695634c5292b34636fd63c4dc8c55f2efeb75e98b86d",
+        "2-853x533-chart.png": "ad78e1a630760f3f5acae62c66136266c1d16c706073ff0b18d6a57f2bce0a19",
+        "2-853x533-settings.png": "f5a8d9ab909f78dca3add2b377d7a4970384e160f3fd33c9bad5b677cf3599b1",
+        "2-853x533-settings-scrolled.png": "9becdb70253f37620e0f8ca458e75b855e9435b5afef4f6ba7d0067f183ae4d0",
+        "3-1280x800-chart.png": "74bb10797f426a5a0a27dd2d4fbf555220a4eb227dcaed6c0fd7b8fe87dbe747",
+        "3-1280x800-settings.png": "da857fdf196fa2e08b9b42caa5415dbd64f6d932b28ade7865e18d9720290c47",
+        "3-1280x800-settings-scrolled.png": "da857fdf196fa2e08b9b42caa5415dbd64f6d932b28ade7865e18d9720290c47"
+      }
+    }
+  },
+  "pending": [
+    "Native Direct2D tab painting and exact independent rectangle gate",
+    "Full native mode/fixture/portable/DPI regression migration",
+    "Remaining prototype content and boat display review"
+  ],
+  "executableSha256": {
+    "production": "45e3df8fde2eaaed3effc000ea9b318cbe9d0ee5d7ba65f4903209cad521dd23",
+    "fixtures": "a62f11d0356c08ac8417dc0e2a0d3449e7542f39e992cd5999dd22524afefbbd"
+  },
+  "reviewed": [
+    "drawer-workspace-layout/2-853x533-settings.png"
+  ],
+  "designMeasurements": {
+    "path": "docs/design/prototype/reference/windows/settings-tabs.json",
+    "sha256": "c7e209bc6df954d17edf69dd6a1a98aebeb8a1ac135f67abfd68a13d460b4224",
+    "provenance": "Independent Windows Chromium, e0b6a16 run 36510429598; same immutable HTML and six unchanged canonical Preferences PNGs"
+  }
+}

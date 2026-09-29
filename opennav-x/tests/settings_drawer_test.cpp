@@ -1,14 +1,17 @@
 // Non-installed offline widget driver. No OpenCPN profile, network or devices.
 #include "ui/SettingsDrawer.h"
 #include <cstdlib>
+#include <cmath>
 #include <fstream>
 #include <iostream>
+#include <memory>
 #include <stdexcept>
 #include <wx/app.h>
 #include <wx/dcbuffer.h>
 #include <wx/dcscreen.h>
 #include <wx/filename.h>
 #include <wx/frame.h>
+#include <wx/graphics.h>
 #include <wx/log.h>
 #include <wx/sizer.h>
 #include <wx/timer.h>
@@ -127,6 +130,23 @@ private:
               "Windows Preferences retains six tabs on the first row");
         Check(Find(panel_,"System")->GetPosition().y>Find(panel_,"Display")->GetPosition().y,
               "System starts the second prototype row");
+#if wxUSE_GRAPHICS_DIRECT2D
+        {
+          auto *renderer=wxGraphicsRenderer::GetDirect2DRenderer();
+          Check(renderer!=nullptr,"Native tab paint renderer is available");
+          std::unique_ptr<wxGraphicsContext> graphics(renderer->CreateMeasuringContext());
+          graphics->SetFont(graphics->CreateFont(11.,ui::UiFontWeight(*panel_,11,400).GetFaceName()));
+          const std::pair<const char *,double> text_widths[]={{"Vessel",29.640625},{"Navigation",52.90625},
+              {"Sensors",37.4375},{"Autopilot",45.46875},{"Radar",28.078125},{"Display",35.109375},
+              {"System",34.46875},{"Help",22.703125}};
+          for(const auto &expected:text_widths) {
+            double width=0,height=0;graphics->GetTextExtent(expected.first,&width,&height);
+            Check(std::abs(width-expected.second)<.05,"Painted tab advance matches independent Windows HTML");
+          }
+        }
+#else
+        Check(false,"Validated Windows build must provide DirectWrite tab painting");
+#endif
 #endif
         Capture("settings-day");light_=ui::LightMode::Dusk;Feed();break;
       case 2: Capture("settings-dusk");light_=ui::LightMode::Night;Feed();break;
