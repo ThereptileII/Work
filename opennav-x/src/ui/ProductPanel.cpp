@@ -312,6 +312,10 @@ std::string ProductPanel::PageTitle() const {
   return "Unknown";
 }
 void ProductPanel::ShowPage(ProductPage page, LightMode mode) {
+  if ((page == ProductPage::Home || page == ProductPage::Settings) && actions_.preferences) {
+    actions_.preferences();
+    return;
+  }
   if (page != page_) pilot_advanced_ = false;
   page_ = page;
   mode_ = mode;

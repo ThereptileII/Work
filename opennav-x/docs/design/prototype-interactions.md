@@ -44,3 +44,12 @@ reference states, recording visible labels/actions and computed dimensions in
 `capture.json`. Native equivalents must retain keyboard/accessibility names
 even where the visual control is an icon. The prototype's mock action code is
 not shipped or invoked by the native product.
+
+The Preferences migration preserves the real chart while switching among its
+eight sections. Sensors delegates to the existing source list, upstream
+connection editor and source-health diagnostics; it never manufactures a
+configured-sensor count. System retains diagnostics/export/plugins and existing
+controlled Legacy/Safe restart entry points. Display uses actual theme,
+fullscreen and rail preferences. Back from a remaining advanced product page
+returns to the last Preferences section. Vessel/Navigation inline forms are
+still pending, and existing validated editors stay reachable until migrated.

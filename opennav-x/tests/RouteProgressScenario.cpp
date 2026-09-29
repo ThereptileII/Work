@@ -102,6 +102,11 @@ void NewRoute() {
     p->SetWaypointArrivalRadius(-1);route->AddPoint(p,false);
   }
   pRouteList->Append(route);g_pRouteMan->ActivateRoute(route,route->GetPoint(1));
+  // RouteManagerDialog::OnRteActivateClick requests this repaint after its
+  // mutation. A fixture-created route must do the same: background navigation
+  // observations do not promise a canvas repaint on every platform. This only
+  // schedules painting; normal upstream processing still owns route progress.
+  gFrame->RefreshAllCanvas();
 }
 }  // namespace
 void EnableRouteScenario(const std::string& profile) {

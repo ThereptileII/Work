@@ -47,3 +47,12 @@ All component values are test-only in a separate, non-installed executable.
   separate work. No Energy PASS is recorded in the conformance table.
 
 Hashes, both passes and assertions: [evidence](../../evidence/prototype-energy-local.json).
+
+Native development run `36503170626` now passes all 44 Energy component checks
+and seven captures, alongside both 115-test integrated suites. Day was compared
+with the same-run HTML reference: primary numeric hierarchy, card widths and
+power-row composition are improved; the advisory model line remains deliberately
+straight for the documented navigation-meaning reason. This run fails a separate
+active-route painting assertion and is not stage acceptance. Non-default DPI,
+boat review and lower-page migration remain open. Artifact/image hashes are in
+[the native record](../../evidence/prototype-native-6091c23-failed.json).

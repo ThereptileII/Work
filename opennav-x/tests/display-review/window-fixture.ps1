@@ -146,6 +146,11 @@ $form.Add_Shown({
   Surface 'OpenNav chart tools' 150 100 190 64 @('Measure','Waypoint','+',$last)
   Surface 'OpenNav chart orientation' 150 180 68 90 @('North')
   Surface 'OpenNav follow boat' 150 290 142 56 @('Follow boat')
+  if($record.case -ceq 'prototype-two-sheets'){
+   Surface 'OpenNav preferences' 360 100 432 460 @('Close') -Heading
+   Surface 'OpenNav passage' 390 100 398 460 @('Close') -Heading
+  }
+  if($record.case -ceq 'prototype-preferences'){Surface 'OpenNav preferences' 360 100 432 460 @('Close') -Heading}
   if($record.case -ceq 'prototype-passage'){Surface 'OpenNav passage' 390 100 398 460 @('Close') -Heading}
   if($record.case -cin @('prototype-traffic','prototype-back')){Surface 'OpenNav vessel traffic' 390 100 398 460 @($(if($record.case -ceq 'prototype-back'){'Back'}else{'Close'})) -Heading}
   if($record.case -ceq 'prototype-unknown'){Surface 'Unknown plugin popup' 390 100 240 200 @('Close')}

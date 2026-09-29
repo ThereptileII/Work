@@ -84,6 +84,11 @@ jobs:
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
           python opennav-x/tools/prototype/capture-ais-component.py --component energy --client opennav-x/build/production-windows/Release/energy_panel_test.exe --output opennav-x/evidence/local/energy-component
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+      - name: Native preferences component and section interactions
+        run: |
+          $env:PATH = (Resolve-Path opennav-x/build/production-install).Path + ";" + $env:PATH
+          python opennav-x/tools/prototype/capture-ais-component.py --component settings --client opennav-x/build/production-windows/Release/settings_drawer_test.exe --output opennav-x/evidence/local/settings-component
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
       - name: Offline commissioning probe CLI and secret-output guards
         run: |
           $env:PATH = (Resolve-Path opennav-x/build/production-install).Path + ";" + $env:PATH

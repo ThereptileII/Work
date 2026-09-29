@@ -93,6 +93,17 @@ rather than rounding everything to the previous Beta spacing constants.
 
 ## Motion and input
 
+Preferences uses the 432px drawer at (648,80), height 674px. Its final Windows
+header is 89.109375px high (the Linux fallback font yields 86.109375px).
+Settings tabs are 37px high, 11px/400 text, 22px total horizontal inset,
+5px gap, 6px radius, wrapping into two rows with 23px bottom margin. Selected
+tabs use mint and background text; other tabs use surface and muted text.
+The sensor intro eyebrow is 10px/650 with 1.3px tracking and secondary color;
+its heading is 23px/700 with -0.6px tracking and 29.9px line height. Body text
+is 13px with 20.8px line height. Suite links are 72px high with 16px vertical
+padding, 12px icon/text gap, 35×38px icon plate, 19px icon, 13px/600 title and
+11px subtitle. Reference manifests retain platform-specific fractional metrics.
+
 Base button transitions: background, color and opacity, 0.16s with default
 CSS `ease`. Enabled hover uses `brightness(1.08)`; disabled opacity is .38.
 Focus ring is 2px mint with 4px offset. The map changes grab/grabbing/crosshair

@@ -119,11 +119,16 @@ def main():
     def data():
         return read_json_snapshot(profile / "opennav-diagnostics.json")
 
-    def click(label, expected_light=None):
+    def click(label, expected_light=None, in_drawer=False):
         before = data()
         ticks = int(before["runtime"]["ui_update"]["ticks"])
         controls = [c for c in before["runtime"]["display"]["interaction_controls"]
                     if c["label"] == label and c["visible"] and c["enabled"]]
+        if in_drawer:
+            bounds = before["runtime"]["display"]["drawer"]
+            controls = [c for c in controls if bounds["x"] <= c["x"] and bounds["y"] <= c["y"]
+                        and c["x"]+c["width"] <= bounds["x"]+bounds["width"]
+                        and c["y"]+c["height"] <= bounds["y"]+bounds["height"]]
         if len(controls) != 1:
             raise RuntimeError(f"Expected one visible enabled {label!r}; got {len(controls)}")
         c = controls[0]
@@ -214,10 +219,11 @@ def main():
             assert all(abs(actual[k]-v) <= 1 for k,v in expected["rect"].items()), f"{label} rail geometry differs: {actual}"
             rail_actual.append(actual)
         record.setdefault("left_rail_layout", {})[name] = rail_actual
-        if name.startswith(("traffic-", "online-ais-", "passage-")):
+        if name.startswith(("traffic-", "online-ais-", "passage-", "settings-", "sensors-", "display-", "system-")):
             drawer = snapshot["runtime"]["display"]["drawer"]
-            expected = dict(x=client_origin[0]+682, y=client_origin[1]+80, width=398, height=674)
-            assert all(abs(drawer[k]-v) <= 1 for k, v in expected.items()), "AIS drawer differs from prototype geometry"
+            wide = name.startswith(("settings-", "sensors-", "display-", "system-"))
+            expected = dict(x=client_origin[0]+(648 if wide else 682), y=client_origin[1]+80, width=432 if wide else 398, height=674)
+            assert all(abs(drawer[k]-v) <= 1 for k, v in expected.items()), "Drawer differs from prototype geometry"
             from PIL import Image
             theme = snapshot["runtime"]["display"]["light"].lower()
             tokens = json.loads((ROOT / "docs/design/prototype-tokens.json").read_text())["themes"][theme]
@@ -226,7 +232,7 @@ def main():
                 with Image.open(path) as image:
                     image = image.convert("RGB")
                     return all(max(abs(a-b) for a,b in zip(image.getpixel(point),background)) <= 3
-                               for point in [(686, 417), (1076, 417), (881, 84)])
+                               for point in [(652 if wide else 686, 417), (1076, 417), (864 if wide else 881, 84)])
             paint_start = time.monotonic()
             # Diagnose asynchronous native stacking/paint without relaxing a
             # single pixel criterion. Record the latency; it is a UX finding.
@@ -234,7 +240,7 @@ def main():
                 time.sleep(.1)
                 subprocess.run(["import", "-window", "root", str(path)], env=env, check=True)
             record.setdefault("drawer_paint_wait_seconds", {})[name] = time.monotonic()-paint_start
-            assert sheet_painted(), "AIS sheet reports visible but is not painted above the chart"
+            assert sheet_painted(), "Sheet reports visible but is not painted above the chart"
             record.setdefault("drawer_layout", []).append(dict(file=name, actual=drawer, expected=expected))
         if name.startswith("navigation-"):
             spec = importlib.util.spec_from_file_location("chart_layout", ROOT / "tools/chart-render-check.py")
@@ -476,6 +482,20 @@ def main():
                 chart = data()["runtime"]["display"]["chart_region"]
                 assert chart["width"] == 1014 and chart["height"] == 566
                 record["instrument_flow"] = "Prototype wind/tile geometry; three themes; Close restores chart and horizon"
+            if label == "Settings":
+                click("Day", "Dusk")
+                capture("settings-dusk")
+                click("Dusk", "Night")
+                capture("settings-night")
+                click("Night", "Day")
+                for tab, state_name in [("Sensors", "sensors"), ("Display", "display"), ("System", "system")]:
+                    click(tab, in_drawer=True)
+                    capture(state_name + "-day")
+                click("Close")
+                assert "drawer" not in data()["runtime"]["display"], "Settings close did not restore chart"
+                chart = data()["runtime"]["display"]["chart_region"]
+                assert chart["width"] == 1014 and chart["height"] == 566
+                record["settings_flow"] = "Wide preferences sheet; eight sections; theme cycle; Sensors/Display/System; Close retains chart"
             if label == "Traffic" and args.ais_settings:
                 click("Online AIS settings")
                 capture("online-ais-settings-day")

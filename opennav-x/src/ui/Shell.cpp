@@ -365,6 +365,7 @@ Shell::Shell(wxFrame &frame, wxAuiManager &manager, ShellActions actions,
   product_actions.theme = [this](LightMode mode) { SetLight(mode); };
   product_actions.save_settings = actions_.save_settings;
   product_actions.chart = [this] { ShowNavigation(); };
+  product_actions.preferences = [this] { ShowSettings(); };
   product_actions.page_changed = [this](ProductPage page) {
     auto &pane = manager_.GetPane("OpenNavHorizon");
     if (pane.IsOk()) {
@@ -466,6 +467,7 @@ Shell::~Shell() {
   CloseContext();
   if (ais_drawer_) { ais_drawer_->Dismiss(); ais_drawer_->Destroy(); ais_drawer_ = nullptr; }
   if (passage_drawer_) { passage_drawer_->Dismiss(); passage_drawer_->Destroy(); passage_drawer_ = nullptr; }
+  if (settings_drawer_) { settings_drawer_->Dismiss(); settings_drawer_->Destroy(); settings_drawer_ = nullptr; }
   for (const auto &c : commands_)
     frame_.Unbind(wxEVT_MENU, &Shell::OnCommand, this, c.first);
   frame_.SetAcceleratorTable(wxNullAcceleratorTable);
@@ -767,6 +769,10 @@ void Shell::Tick() {
       p.sources = actions_.source_health();
     if (actions_.radar && !replay)
       p.radar = actions_.radar();
+    if (settings_drawer_ && settings_drawer_->IsShown()) {
+      settings_drawer_->Update(p, mode_);
+      settings_drawer_->Present(DrawerWorkspace());
+    }
     // Online traffic is display-only. SmartNav, alarms and receiver health
     // below continue to consume OpenCPN's original onboard state.
     ais_state_ = !simulation_ && !replay
@@ -930,6 +936,7 @@ void Shell::UpdateScrollControls() {
 }
 
 std::string Shell::PageTitle() const {
+  if (settings_drawer_ && settings_drawer_->IsShown()) return "Settings";
   if (passage_drawer_ && passage_drawer_->IsShown()) return "Route";
   if (ais_drawer_ && ais_drawer_->IsShown()) return ais_drawer_->PageTitle();
   if (product_ && product_->IsShown())
@@ -972,6 +979,7 @@ void Shell::SelectDemo(vessel::DemoScenario scenario) {
 #endif
 void Shell::ShowNavigation() {
   CloseContext();
+  if (settings_drawer_) settings_drawer_->Dismiss();
   if (passage_drawer_) passage_drawer_->Dismiss();
   if (ais_drawer_) ais_drawer_->Dismiss();
   // Re-entering the already-visible chart needs no pane layout. A needless
@@ -1003,6 +1011,7 @@ void Shell::ShowNavigation() {
   frame_.Refresh();
 }
 void Shell::ShowProduct(ProductPage page) {
+  if (page == ProductPage::Home || page == ProductPage::Settings) { ShowSettings(); return; }
   if (page == ProductPage::Ais) { ShowTraffic(); return; }
   if (ais_drawer_) ais_drawer_->Dismiss();
   ShowPage(PreviewPage::Route);
@@ -1107,6 +1116,25 @@ void Shell::ShowPassage() {
   passage_drawer_->Present(DrawerWorkspace());
   Tick();
 }
+void Shell::ShowSettings() {
+  ShowNavigation();
+  if (!settings_drawer_) {
+    SettingsDrawerActions actions;
+    actions.page = [this](ProductPage page) { ShowProduct(page); };
+    if(actions_.navigation.legacy_settings)
+      actions.advanced = [this] { ShowNavigation(); actions_.navigation.legacy_settings(); };
+    if(actions_.navigation.plugin_settings)
+      actions.plugins = [this] { ShowNavigation(); actions_.navigation.plugin_settings(); };
+    actions.diagnostics = [this] { ShowPage(PreviewPage::Diagnostics); };
+    actions.fullscreen = [this] { frame_.ShowFullScreen(!frame_.IsFullScreen()); };
+    actions.theme = [this](LightMode mode) { SetLight(mode); };
+    actions.legacy = actions_.legacy;
+    actions.safe = actions_.safe;
+    settings_drawer_ = new XNavSettingsDrawer(frame_, std::move(actions));
+  }
+  settings_drawer_->Present(DrawerWorkspace());
+  Tick();
+}
 void Shell::CloseContext() {
   if (context_) context_->Dismiss();
   context_ = nullptr;
@@ -1149,6 +1177,7 @@ void Shell::UpdateContext(vessel::Time now) {
 }
 void Shell::ShowPage(PreviewPage page) {
   CloseContext();
+  if (settings_drawer_) settings_drawer_->Dismiss();
   if (passage_drawer_) passage_drawer_->Dismiss();
   if (ais_drawer_) ais_drawer_->Dismiss();
   if (product_)

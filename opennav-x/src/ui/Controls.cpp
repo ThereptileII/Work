@@ -262,6 +262,22 @@ void XNavPainter::Card(int x, int y, int width, int height,
   dc_.DrawRoundedRectangle(D(x), D(y), D(width), D(height), D(spacing::panel_radius));
   Text(title, x + 20, y + 16, 12, c.secondary, false, width - 40);
 }
+void XNavPainter::Wrapped(const wxString &text, int x, int y, int size,
+                          int line_height, int width, std::uint32_t color,
+                          int maximum_lines) {
+  if(width<=0 || maximum_lines<=0)return;
+  dc_.SetFont(UiFont(window_,size));
+  wxStringTokenizer words(text," ");wxString line;int row=0;
+  while(words.HasMoreTokens()) {
+    const auto word=words.GetNextToken();
+    const auto candidate=line.empty()?word:line+" "+word;
+    if(!line.empty() && dc_.GetTextExtent(candidate).x>D(width) && row+1<maximum_lines) {
+      Text(line,x,y+row*line_height,size,color,false,width);
+      ++row;line=word;
+    } else line=candidate;
+  }
+  if(!line.empty())Text(line,x,y+row*line_height,size,color,false,width);
+}
 void XNavPainter::Rule(int x, int y, int width) {
   dc_.SetPen(wxPen(Colour(c.border)));
   dc_.DrawLine(D(x), D(y), D(x + width), D(y));
@@ -383,10 +399,37 @@ void XNavButton::Paint(wxPaintEvent&) {
   };
   const auto opacity = [&](wxColour color) { return IsEnabled() ? color : blend(color, background, .38); };
   const auto semantic = role_ == ButtonRole::Critical ? colors.alarm : colors.accent;
+  if (suite_link_) {
+    XNavPainter p(*this, dc, mode_);
+    const int width = ToDIP(size.x), height = ToDIP(size.y);
+    const auto ink = IsEnabled() ? (hovered_ ? colors.accent : colors.primary) : colors.muted;
+    dc.SetPen(*wxTRANSPARENT_PEN);
+    dc.SetBrush(wxBrush(Colour(hovered_ && IsEnabled() ? colors.selected : colors.elevated)));
+    dc.DrawRoundedRectangle(0, FromDIP((height-38)/2), FromDIP(35), FromDIP(38), FromDIP(9));
+    const auto icon = wxString::Format(
+      "<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"24\" height=\"24\"><path d=\"%s\" fill=\"none\" stroke=\"#%06x\" stroke-width=\"1.65\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/></svg>",
+      wxString::FromUTF8(PrototypeIconPath(icon_)), IsEnabled()?colors.accent:colors.muted);
+    const auto bitmap = wxBitmapBundle::FromSVG(icon.utf8_str(), FromDIP(wxSize(19,19))).GetBitmap(FromDIP(wxSize(19,19)));
+    if(bitmap.IsOk())dc.DrawBitmap(bitmap,FromDIP(8),FromDIP((height-19)/2),true);
+    p.TextWeight(GetLabel(),47,16,13,ink,600,width-72);
+    p.Text(suite_detail_,47,38,11,IsEnabled()?colors.secondary:colors.muted,false,width-72);
+    p.Rule(0,height-1,width);
+    dc.SetPen(wxPen(Colour(colors.muted),FromDIP(1)));
+    dc.DrawLine(FromDIP(width-10),FromDIP(height/2-4),FromDIP(width-6),FromDIP(height/2));
+    dc.DrawLine(FromDIP(width-6),FromDIP(height/2),FromDIP(width-10),FromDIP(height/2+4));
+    if(HasFocus() && keyboard_focus_) {
+      dc.SetBrush(*wxTRANSPARENT_BRUSH);dc.SetPen(wxPen(Colour(colors.accent)));
+      dc.DrawRoundedRectangle(1,1,size.x-2,size.y-2,FromDIP(6));
+    }
+    return;
+  }
   wxColour fill = navigation_item_ ? background : Colour(colors.surface);
   wxColour edge = Colour(colors.border);
   wxColour ink = Colour(colors.primary);
-  if (navigation_item_) {
+  if (settings_tab_) {
+    fill = Colour(selected_ ? colors.accent : colors.surface);
+    ink = Colour(selected_ ? colors.background : colors.muted);
+  } else if (navigation_item_) {
     fill = selected_ ? blend(Colour(colors.accent), background, .05)
                     : hovered_ || pressed_ ? Colour(colors.surface) : background;
     ink = Colour(selected_ ? colors.accent : hovered_ ? colors.primary : colors.muted);
@@ -406,7 +449,7 @@ void XNavButton::Paint(wxPaintEvent&) {
     fill = wxColour(std::min(255, int(fill.Red()*1.08)),
                     std::min(255, int(fill.Green()*1.08)), std::min(255, int(fill.Blue()*1.08)));
   }
-  dc.SetPen(navigation_item_ || role_ == ButtonRole::Quiet || role_ == ButtonRole::Segment ? *wxTRANSPARENT_PEN : wxPen(opacity(edge)));
+  dc.SetPen(settings_tab_ || navigation_item_ || role_ == ButtonRole::Quiet || role_ == ButtonRole::Segment ? *wxTRANSPARENT_PEN : wxPen(opacity(edge)));
   dc.SetBrush(wxBrush(opacity(fill)));
   dc.DrawRoundedRectangle(1, 1, size.x - 2, size.y - 2, FromDIP(navigation_item_ || summary_ ? 10 : role_ == ButtonRole::Segment ? 6 : spacing::control_radius));
   if (HasFocus() && keyboard_focus_) {
@@ -420,7 +463,7 @@ void XNavButton::Paint(wxPaintEvent&) {
   }
   const auto text_color = opacity(ink);
   dc.SetTextForeground(text_color);
-  dc.SetFont(UiFontWeight(*this, role_ == ButtonRole::Segment ? 10 : 12, 500));
+  dc.SetFont(UiFontWeight(*this, settings_tab_ ? 11 : role_ == ButtonRole::Segment ? 10 : 12, settings_tab_ ? 400 : 500));
   if (summary_) {
     XNavPainter p(*this, dc, mode_);
     const int width = ToDIP(size.x);

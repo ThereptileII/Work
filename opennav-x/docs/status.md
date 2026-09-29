@@ -2,6 +2,28 @@
 
 ## Current stage: prototype design lock, chart presentation and Online AIS
 
+The Preferences migration now preserves the chart behind the prototype's 432px
+drawer, with eight sections and shared native sensor links. Three corrective
+component passes retain 36 images (100/100/102 checks); the latest integrated
+Linux build passes 123/123 in 20.46s. The isolated route fixture now passes its
+26 progress and ten exact Day/software ink checks after the repaint request.
+Capture policy passes 216 checks; 50 native marker cases await Windows.
+Fixture-free product capture is in progress. Inline forms, remaining section
+content, non-default DPI and boat review are still open; this is not Settings
+visual acceptance. See [review](design/reviews/prototype-settings-in-progress.md)
+and [local evidence](evidence/prototype-settings-local.json).
+
+Windows development run `36503170626` / remote `6091c23` passes seven of eight
+jobs. Both integrated suites pass 115/115; AIS/Passage/Instruments/Energy widget
+checks pass 71/26/41/44. Actual-product captures and the corrected object workflow
+pass. The new active-route ink check fails on its first Day/software image:
+the route is not painted despite valid copied upstream projections. The fixture
+omitted the explicit canvas repaint used by OpenCPN's normal route manager;
+the replacement schedules that same repaint without requesting navigation
+processing. Unchanged pixel assertions and replacement Windows results remain
+required. All nine artifacts, 62 native PNGs and 120 reference PNGs verify.
+See [negative evidence](evidence/prototype-native-6091c23-failed.json).
+
 The Energy screen's next prototype pass corrects primary card proportions,
 numeric hierarchy, battery graphic, forecast rows and power tiles. An owned
 presentation boundary withholds predictions from mismatched/stale observations

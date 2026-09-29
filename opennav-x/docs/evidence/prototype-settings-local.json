@@ -1,0 +1,196 @@
+{
+  "accepted": false,
+  "scope": "Native Preferences composition and source-boundary preservation; Windows/boat pending",
+  "baseCommit": "6c05137405f9da4502dcbefd129a918074e2e6e2",
+  "sourceSha256": {
+    ".github/workflows/opennav-prototype.yml": "039191b7e88a4b05387a4bce781a2922c8ce59958351f299b8b111ec4f2f776e",
+    "CMakeLists.txt": "8188d296d5125aaa906e09b238219c6423ab8d15b6aa8556b380a0279bcbe2dc",
+    "src/integration/OpenCPN.cmake": "510674776a9ef1d248d5b947b88679bfaeedafb9a20be7b4087b2b92740b1257",
+    "src/ui/Controls.cpp": "094d003aed592572a96c255f046dc6cb8e7ba0cf9446357bfe0c049585816dbf",
+    "src/ui/Controls.h": "95d5144fdb5737f9ea996185a4a27849629723c921a6637f50bd6963eddd33ba",
+    "src/ui/Drawer.cpp": "251aec7594af185669b57b801320d143dbd486878fcd2daa51a1321cae6dfeec",
+    "src/ui/Drawer.h": "c47d2e675f4b47ecdd16062c8b4b34b7ddecc90ea15c50dfb53a00786e69ddc3",
+    "src/ui/ProductPanel.cpp": "fe35339b2ddd317a826c3deb5b4a897ca56a88a243612200a49411a34f323a0c",
+    "src/ui/ProductPanel.h": "129193b6a76964771571b2b77408bcf338ca1a7a02aa857b0dc555a4722a7bad",
+    "src/ui/PrototypeIcons.h": "493c42549c04cc1260c24de39d84541651419a94ec2555b85480b3d304933a3d",
+    "src/ui/Shell.cpp": "5102de3edf666dc2e5abdbdeb8774acf5550c28c2e59d238db72b81b42444ee2",
+    "src/ui/Shell.h": "cd7d8d135048261756eafac209ea8db2d3b3623a95d046f6a4f59e52439a5778",
+    "tests/RouteProgressScenario.cpp": "a43b36b4ea05da81491c2d0c7489e2c00c7ac7006422e94b9a02798f3ba0f7da",
+    "tests/display-review/window-fixture.ps1": "e80f7ab9c190d72a2b43a70c8332f3558ed431a5045faf9ba49b77b990798a7b",
+    "tools/boat/ReviewWindowNative.cs": "96812a2c5b45a1a34b130e308eae48e6e5de65cc2baf3257ef269fb159f70bff",
+    "tools/boat/test-review-window.ps1": "f4a64531dafc810ad83048d733c4cafda0e14eee66fa7886ab7b38185f089520",
+    "tools/prototype/capture-ais-component.py": "1244a3f6a87ee1f9fe152f052c392d32b0c67142a9ec3b4ca5fdf6ca446cc533",
+    "tools/prototype/capture-native.py": "afcd3f67b7f0ca2ffb80e7f871df58f89575d94bb69e04470051a6517d6e8d26",
+    "tools/prototype/render.py": "2fe3b9a34813b421972151386fc413eb6431f662d49eea12a413ef665039e61f",
+    "tools/smoke-navigation.py": "87137788e270cc6243b15179010315ce6beb14da4571724981701b3dc9466886",
+    "tools/test-display-window-native.ps1": "bca57760bd19342f4edd68c912c97d3a83dbfa0f96dca4982ab208286a61f9b1",
+    "src/ui/SettingsDrawer.cpp": "fa004bb43e8cf579900f2ca61861b18ba4e3fad93c0a3d4c27344203295f85be",
+    "src/ui/SettingsDrawer.h": "8d58fd825161bbf80557ec7e92dc281b7d6488aa9d188ddb0ed5387e5479c45e",
+    "tests/settings_drawer_test.cpp": "4168d07374ee25bfcfe24d1819ceb6325cacf16adaaa5b9d89827c49b91b43da"
+  },
+  "linuxJUnit": {
+    "sha256": "915adb392d426f72023b55e5942401baf5294d1dd458a1ed411d490f59b3d3ad",
+    "result": {
+      "name": "(empty)",
+      "tests": "123",
+      "failures": "0",
+      "disabled": "0",
+      "skipped": "0",
+      "hostname": "",
+      "time": "19",
+      "timestamp": "2026-09-29T02:52:51"
+    }
+  },
+  "suites": [
+    {
+      "folder": "evidence/local/prototype/settings-component-pass1",
+      "checks": 100,
+      "executableSha256": "6e0371208ead1198634af9b90e58c505d02c4905c906c2b4f6f163d6be2ca4c3",
+      "captures": {
+        "settings-day": "1bee11f500d7136ce005a3e695e5ccca96e52c3230a45e0b90926f95e9c4feec",
+        "settings-dusk": "de011bf8d12c6e0ea9a13c1fd54bb099e221c03622c5aff3a494ee410af507cb",
+        "settings-night": "43b2f3f35bc38b118c861b44fe2acccfc141fe7b52c9423b6169e3e6e0fab30a",
+        "sensors-day": "03d264129069747080992877e34a5eaf3ddc91e58e30a11f9e29f80ad168db1f",
+        "sensors-dusk": "9268bb0127ed3c14dc6fb25df925426332db48feca0d3b09d94e4abaae6e3375",
+        "sensors-night": "2ff06179065759cb9ca03ead654b6cf203afddfaf7b707788cf165ff1a1b98cc",
+        "display-day": "c6d47cc7bd8b7bb87d2dde232669802c8a726fe6a34dd2a26c627844991b0df2",
+        "display-dusk": "98712e1ed69e6b36fded7d467c22833a32dcc83b51776c896a8baad921c891ff",
+        "display-night": "e7d3066554123dd39badd97cc0477f242cb83774e411deec5d5902f546c39376",
+        "system-night": "baf54d299fea91edc3b353a87716f7d36e1367f01538adbab97d8eed86b8f94f",
+        "settings-radar-night": "d24598cc86767761b53f068e7bc73bf05f6ca5257fc06f26525398421a7cfe7c",
+        "settings-autopilot-night": "e7d6d24d29851c11f341147dd268084fe38f23288e26026a3737b7a4642aa99e"
+      },
+      "comparison": "Reference/current/diff retained; no threshold acceptance"
+    },
+    {
+      "folder": "evidence/local/prototype/settings-component-pass2",
+      "checks": 100,
+      "executableSha256": "242bfbe58ff93901ae7b545954cadf8584ab6fbc422526a9dedc93dc1a205fe8",
+      "captures": {
+        "settings-day": "1bee11f500d7136ce005a3e695e5ccca96e52c3230a45e0b90926f95e9c4feec",
+        "settings-dusk": "de011bf8d12c6e0ea9a13c1fd54bb099e221c03622c5aff3a494ee410af507cb",
+        "settings-night": "43b2f3f35bc38b118c861b44fe2acccfc141fe7b52c9423b6169e3e6e0fab30a",
+        "sensors-day": "5a60337196f6244e452902c45b2d1613d3ef9a7a3a1566989a989e77ae76422f",
+        "sensors-dusk": "f80266bb1c07ccde0d3b22bfdf2fee802bb5a5313dec9a8086ff090ba95ca46c",
+        "sensors-night": "37d973bee82cc99783cc4f850e90daed63d3eb069dd7bf318d42b93815f72588",
+        "display-day": "c6d47cc7bd8b7bb87d2dde232669802c8a726fe6a34dd2a26c627844991b0df2",
+        "display-dusk": "98712e1ed69e6b36fded7d467c22833a32dcc83b51776c896a8baad921c891ff",
+        "display-night": "e7d3066554123dd39badd97cc0477f242cb83774e411deec5d5902f546c39376",
+        "system-night": "baf54d299fea91edc3b353a87716f7d36e1367f01538adbab97d8eed86b8f94f",
+        "settings-radar-night": "d24598cc86767761b53f068e7bc73bf05f6ca5257fc06f26525398421a7cfe7c",
+        "settings-autopilot-night": "e7d6d24d29851c11f341147dd268084fe38f23288e26026a3737b7a4642aa99e"
+      },
+      "comparison": "Reference/current/diff retained; no threshold acceptance"
+    },
+    {
+      "folder": "evidence/local/prototype/settings-component-pass3",
+      "checks": 102,
+      "executableSha256": "22ef668f9424beaaa2fbe13f5e2a5b2121e46b6d900d729ab6b691b20272c6b1",
+      "captures": {
+        "settings-day": "1bee11f500d7136ce005a3e695e5ccca96e52c3230a45e0b90926f95e9c4feec",
+        "settings-dusk": "de011bf8d12c6e0ea9a13c1fd54bb099e221c03622c5aff3a494ee410af507cb",
+        "settings-night": "43b2f3f35bc38b118c861b44fe2acccfc141fe7b52c9423b6169e3e6e0fab30a",
+        "sensors-day": "b8310de09da4e5c515b91b7da9deb75aecf8162f79bc062189464d2438bcba0e",
+        "sensors-dusk": "3369d52cc9ad9bb9cc3ef3f744fd5a3c5d85ebf8b55c0a1c9d1c2df406150ff3",
+        "sensors-night": "350700f743cff2fd1ba405000cf2c7691604f96e85f7087c1ff34a559238a977",
+        "display-day": "c6d47cc7bd8b7bb87d2dde232669802c8a726fe6a34dd2a26c627844991b0df2",
+        "display-dusk": "98712e1ed69e6b36fded7d467c22833a32dcc83b51776c896a8baad921c891ff",
+        "display-night": "e7d3066554123dd39badd97cc0477f242cb83774e411deec5d5902f546c39376",
+        "system-night": "baf54d299fea91edc3b353a87716f7d36e1367f01538adbab97d8eed86b8f94f",
+        "settings-radar-night": "d24598cc86767761b53f068e7bc73bf05f6ca5257fc06f26525398421a7cfe7c",
+        "settings-autopilot-night": "e7d6d24d29851c11f341147dd268084fe38f23288e26026a3737b7a4642aa99e"
+      },
+      "comparison": "Reference/current/diff retained; no threshold acceptance"
+    }
+  ],
+  "captureGuard": {
+    "checks": 216,
+    "sha256": "d8c9cc8dbdab9a61370847e71d75d272518ded4af3fcde077c4a25f28a010179",
+    "nativeExecution": "Pending replacement Windows run; 50 marker cases"
+  },
+  "prototypeContractTests": 5,
+  "routeRepaintRegression": {
+    "reportSha256": "78f936890472ed24bf445e584ed7737eb62adafd8740e62bbd37bee91bba6b38",
+    "result": "loopback transport and lifecycle passed; numeric and stale screenshot review required",
+    "activeRoutePaint": {
+      "style": "XNav",
+      "requested_ink": [
+        38,
+        124,
+        118
+      ],
+      "ink": [
+        38,
+        124,
+        118
+      ],
+      "theme": "Day",
+      "renderer": "software",
+      "projection": "pinned ChartCanvas::GetCanvasPointPix",
+      "samples": [
+        {
+          "x": 507,
+          "y": 497,
+          "exact_ink_pixels": 5
+        },
+        {
+          "x": 522,
+          "y": 470,
+          "exact_ink_pixels": 6
+        },
+        {
+          "x": 537,
+          "y": 442,
+          "exact_ink_pixels": 5
+        },
+        {
+          "x": 552,
+          "y": 415,
+          "exact_ink_pixels": 7
+        },
+        {
+          "x": 567,
+          "y": 388,
+          "exact_ink_pixels": 5
+        },
+        {
+          "x": 607,
+          "y": 314,
+          "exact_ink_pixels": 6
+        },
+        {
+          "x": 622,
+          "y": 287,
+          "exact_ink_pixels": 5
+        },
+        {
+          "x": 637,
+          "y": 259,
+          "exact_ink_pixels": 7
+        },
+        {
+          "x": 652,
+          "y": 231,
+          "exact_ink_pixels": 5
+        },
+        {
+          "x": 667,
+          "y": 204,
+          "exact_ink_pixels": 5
+        }
+      ]
+    },
+    "routeChecks": 26
+  },
+  "earlierNegativeChecks": [
+    "First build failed on ambiguous wxRect overload in new test; corrected with explicit wxSize before accepted builds.",
+    "Initial unittest discovery found zero tests; direct tools/prototype/test_contract.py runs all five successfully."
+  ],
+  "fixtureFreeProduct": "Build/capture in progress; not claimed by this record",
+  "limitations": [
+    "Inline Vessel and Navigation forms still use existing validated advanced flows.",
+    "No fake state, sensor count, hardware operation or installer action.",
+    "Reference typography requires native Windows; physical boat and non-default DPI remain pending.",
+    "No prototype conformance PASS."
+  ]
+}

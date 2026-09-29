@@ -103,6 +103,7 @@ namespace OpenNavX {
         case "OpenNav chart tools":return SameLabels(directLabels,"Measure","Waypoint","+","\u2212");
         case "OpenNav chart orientation":return SameLabels(directLabels,"North") || SameLabels(directLabels,"Course");
         case "OpenNav follow boat":return SameLabels(directLabels,"Follow boat");
+        case "OpenNav preferences":return SameLabels(directLabels) && SameLabels(headingLabels,"Close");
         case "OpenNav passage":return SameLabels(directLabels) && SameLabels(headingLabels,"Close");
         case "OpenNav vessel traffic":return SameLabels(directLabels) && (SameLabels(headingLabels,"Close") || SameLabels(headingLabels,"Back"));
         default:return false;
@@ -130,7 +131,7 @@ namespace OpenNavX {
         try {
           if(!IsWindowVisible(h) || IsIconic(h) || GetWindow(h,4)!=frame || Owner(h)!=(uint)pid || IsChild(frame,h))return true;
           var title=Text(h);
-          if(title!="OpenNav chart tools" && title!="OpenNav chart orientation" && title!="OpenNav follow boat" && title!="OpenNav passage" && title!="OpenNav vessel traffic")return true;
+          if(title!="OpenNav chart tools" && title!="OpenNav chart orientation" && title!="OpenNav follow boat" && title!="OpenNav passage" && title!="OpenNav vessel traffic" && title!="OpenNav preferences")return true;
           var direct=DirectLabels(h,pid);var heading=new List<string>();
           foreach(var child in Children(h))if(GetParent(child)==h && Owner(child)==(uint)pid)
             foreach(var label in DirectLabels(child,pid))if(label=="Close" || label=="Back")heading.Add(label);
@@ -142,7 +143,7 @@ namespace OpenNavX {
                signature=IsPrototypeSurface(title,direct,heading.ToArray());
           if(!unique || !enabled || !sameDpi || !size || !contained || !signature)
             throw new InvalidOperationException(String.Format("Owned prototype surface {0} refused: unique={1}, enabled={2}, dpi={3}, size={4}, contained={5}, signature={6}.",title,unique,enabled,sameDpi,size,contained,signature));
-          if((title=="OpenNav passage" || title=="OpenNav vessel traffic") && ++drawers>1)throw new InvalidOperationException("More than one prototype sheet is visible.");
+          if((title=="OpenNav passage" || title=="OpenNav vessel traffic" || title=="OpenNav preferences") && ++drawers>1)throw new InvalidOperationException("More than one prototype sheet is visible.");
           Array.Sort(direct,StringComparer.Ordinal);heading.Sort(StringComparer.Ordinal);
           result.Add(new SurfaceInfo{Handle=h.ToInt64(),Title=title,Signature=String.Join("|",direct)+"/"+String.Join("|",heading.ToArray()),Dpi=dpi,Bounds=rect});
           return true;

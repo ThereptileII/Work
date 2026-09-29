@@ -59,7 +59,8 @@ void XNavDrawer::Dismiss() {
 void XNavDrawer::Present(const wxRect &workspace) {
   auto area = workspace;
   area.Deflate(FromDIP(prototype::drawer_gap), FromDIP(prototype::drawer_top));
-  const int width = (std::min)(FromDIP(prototype::drawer), area.width);
+  const int width = (std::min)(FromDIP(wide_ ? prototype::configuration_drawer
+                                           : prototype::drawer), area.width);
   if (width < FromDIP(280) || area.height < FromDIP(260)) {
     Hide();
     return;

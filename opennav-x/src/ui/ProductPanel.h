@@ -66,6 +66,7 @@ struct ProductActions {
   std::shared_ptr<diagnostics::Commissioning> commissioning;
   application::NavigationActions navigation;
   std::function<void()> chart, route_summary, energy, diagnostics;
+  std::function<void()> preferences;
   std::function<void(ProductPage)> page_changed;
   std::function<void()> legacy, restart_xnav, safe, diagnostics_folder;
   std::function<void(LightMode)> theme;

@@ -27,6 +27,8 @@ class XNavPainter {
                   int weight, int width = 0, bool right = false);
   void TextTracked(wxString text, int x, int y, int size, std::uint32_t color,
                    int weight, double tracking, int width = 0);
+  void Wrapped(const wxString &text, int x, int y, int size, int line_height,
+               int width, std::uint32_t color, int maximum_lines = 3);
   void Stat(const wxString &label, const wxString &value, const wxString &unit,
             int x, int y, int width);
   int Tag(const wxString &text, int x, int y, int maximum, bool attention = false,
@@ -45,7 +47,7 @@ class XNavPainter {
 enum class ButtonRole { Normal, Quiet, Primary, Critical, Segment };
 enum class XNavIcon { None, Plus, Minus, Ownship, Menu, Back, Close, Route, Compass, Settings,
   Chart, Traffic, Energy, Instruments, Anchor, Radar, Sun, Dusk, Moon, Bell,
-  Search, Layers, Ruler, Pin, Sliders, Chevron, Edit };
+  Search, Layers, Ruler, Pin, Sliders, Chevron, Edit, Shield };
 
 // Shared touch/wheel scrolling with no bright native scrollbar. Persistent
 // XNav navigation buttons are supplied outside the scrolling content.
@@ -76,6 +78,7 @@ class XNavButton : public wxControl {
   void SetLabel(const wxString &label) override;
   void SetRole(ButtonRole role) { role_ = role; Refresh(); }
   void SetSelected(bool selected) { if(selected_ != selected) { selected_ = selected; Refresh(); } }
+  bool IsSelected() const { return selected_; }
   void SetIcon(XNavIcon icon) { icon_ = icon; Refresh(); }
   void SetNavigationItem(bool value = true) { navigation_item_ = value; Refresh(); }
   void SetIconOnly(bool value = true) { icon_only_ = value; Refresh(); }
@@ -84,6 +87,10 @@ class XNavButton : public wxControl {
   void SetInlineIcon(bool value = true) { inline_icon_ = value; Refresh(); }
   void SetCompassRotation(double radians) { if (compass_rotation_ != radians) { compass_rotation_ = radians; Refresh(); } }
   void SetSummary(const wxString &value, const wxString &detail);
+  void SetSettingsTab(bool value = true) { settings_tab_ = value; Refresh(); }
+  void SetSuiteLink(const wxString &detail, XNavIcon icon) {
+    suite_link_ = true; suite_detail_ = detail; icon_ = icon; Refresh();
+  }
 
  private:
   void Paint(wxPaintEvent& event);
@@ -97,6 +104,8 @@ class XNavButton : public wxControl {
   bool selected_ = false;
   bool hovered_ = false, navigation_item_ = false, icon_only_ = false, floating_ = false;
   bool inline_icon_ = false;
+  bool settings_tab_ = false, suite_link_ = false;
+  wxString suite_detail_;
   double compass_rotation_ = 0;
   ButtonRole role_ = ButtonRole::Normal;
   XNavIcon icon_ = XNavIcon::None;

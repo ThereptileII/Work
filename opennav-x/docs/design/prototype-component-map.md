@@ -11,7 +11,7 @@ in [prototype conformance](prototype-conformance.md).
 | `.icon`, `.icon-btn` | `XNavIconButton` | Supplied vector path vocabulary; 22px, 1.65px round strokes |
 | `.nav-btn` | Native navigation control | Icon over label, selected strip and subtle mint background |
 | `.dashboard-card`, `.floating` | `XNavPainter` / card component | Distinct panel vs chart-floating surface, correct radius/shadow |
-| `.drawer`, `.drawer-head`, `.drawer-body` | `XNavDrawer` / `XNavAisDrawer` / `XNavPassageDrawer` | 398px AIS/Passage sheets, overlay, bounded body scroll, one contextual return; remaining sheets pending |
+| `.drawer`, `.drawer-head`, `.drawer-body` | `XNavDrawer` / AIS, Passage and Settings drawers | 398px AIS/Passage and 432px Preferences sheets, overlay, bounded body scroll, one contextual return; remaining sheets pending |
 | `.metric`, `.metric-value` | `XNavDataValue` / `XNavDataRail` | Four values, light 48px numbers; actual provenance/freshness |
 | `.status-dot`, `.tag` | Status indicator | Meaningful state color and text; no inferred connectivity |
 | `.toggle`, `.segment` | Native toggle / segmented control | Explicit selected state, keyboard input, unavailable semantics |
@@ -28,6 +28,8 @@ in [prototype conformance](prototype-conformance.md).
 | `.callout` / `.callout.warning` | `XNavPainter::Callout` | Shared wrapped advice surface, exact source alpha colors |
 | `.wind-rose`, `.instrument-grid`, `.instrument-tile` | `XNavInstrumentPanel` | Native SVG-equivalent paths and paired tiles; assessed owned readings, true-heading/relative-wind validity |
 | `.energy-grid`, `.energy-gauge`, `.battery-visual`, `.power-row` | `XNavPreviewPanel` Energy view / `XNavPainter` | Computed primary card geometry, native battery and tested model endpoint; lower Explore pace migration pending |
+| `.settings-tabs` | `XNavSettingsDrawer` / `XNavButton::SetSettingsTab` | Eight native sections, exact 37px rows and five-pixel gaps; preserved selection |
+| `.settings-intro`, `.suite-link` | `XNavPainter::Wrapped` / `XNavButton::SetSuiteLink` | Bounded native text and actual clickable sensor/settings links; no mock connection counts |
 
 All geometry is measured from the final CSS cascade at the target viewport;
 earlier CSS declarations are sometimes superseded. The capture manifest records
@@ -52,3 +54,10 @@ Energy uses `application::PresentEnergy` to keep the view tied to current owned
 observations and the existing model. The illustrative HTML forecast curve and
 good-quality claim cannot override actual model assumptions or missing inputs.
 See the [corrective review](reviews/prototype-energy-in-progress.md).
+
+Settings now retains the real chart/horizon behind a native owned drawer.
+Existing validated editors remain reachable; Vessel and Navigation inline forms
+are still migration work, not conformant replacements. Theme segments follow
+external light changes as well as their own clicks. The drawer has no actuator
+methods; unavailable capabilities remain disabled or absent. See
+[Preferences review](reviews/prototype-settings-in-progress.md).
