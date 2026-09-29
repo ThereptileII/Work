@@ -99,11 +99,139 @@
   "reviewed": {
     "ais-key-entry-local/ais-key-entry-night.png": "2fe7238a0d8c3f8c6a9b232e271a10950b66151a0640a8efe67e6d4241ad1158",
     "ais-key-entry-corrected/ais-key-entry-day.png": "b398b71378b1a22333cf8026233ef925066322e8980722f5408f910435bc6d1b",
-    "ais-key-entry-corrected/ais-key-stored-day.png": "cff0806cf09cb17a4d7c6574002aa90b073e0d728741cffa42e8debfb10a1111"
+    "ais-key-entry-corrected/ais-key-stored-day.png": "cff0806cf09cb17a4d7c6574002aa90b073e0d728741cffa42e8debfb10a1111",
+    "ais-key-product-corrected/online-ais-settings-night.png": "b320bae424169f0f3c3cac9331b31418f505de16dbf73444dbb2259b730418b4",
+    "ais-key-product-corrected/radar-night.png": "f0a403d6a86385e59cf24a90cb8e0ee6c8096afb17121d928313134afbed8a5a"
   },
   "sourceSha256": {
     "src/ui/AisDrawer.cpp": "389f5acec861670774d312012bea1465f63857ac2f3f4807f0f93a501fd48834",
     "src/ui/Drawer.cpp": "b2e737ce234b2be4f4bad45c04ed6a77675c5b74286d766defccdbda94b76dd4",
     "tests/ais_drawer_test.cpp": "4566e88ebef558ca0bed6033678e619f8eb505421c85a4d95ccf1d3f8ec975fb"
-  }
+  },
+  "productCapture": {
+    "localCommit": "b13166b2dd5d71f2f77d839d8e2ad26de6ba6f57",
+    "publishedEquivalent": "28b5e9c9efaafee28d22391de3c0e2bedb4cc3ca",
+    "exeSha256": "920cd17951b745aff750bef3a8d10a0e382032c3fe9490a16974b0d6474c6369",
+    "authority": "Linux development only",
+    "captures": [
+      {
+        "file": "navigation-day.png",
+        "sha256": "e3f74edc12f623d61c402dc3805ca123cd83108cde2a07b03933bf2083d74241"
+      },
+      {
+        "file": "navigation-dusk.png",
+        "sha256": "91e5a34e8f48ec615669635e6e8cf4654b3315bc4913af8dbcd9c054308801c7"
+      },
+      {
+        "file": "navigation-night.png",
+        "sha256": "b6bcdbb21b71af0c7defb505e8c823d4484fb478ffd1dcb0bab107377dbdd822"
+      },
+      {
+        "file": "passage-day.png",
+        "sha256": "9704d872cba4b71a80eae89e5657b9f6da6ffc7aa0a09648e8713fe229ff8747"
+      },
+      {
+        "file": "passage-dusk.png",
+        "sha256": "b3f890db9d5962cecee20d887b2add6b73031192a09afff6163c74d1d52b251a"
+      },
+      {
+        "file": "passage-night.png",
+        "sha256": "e6db0df6783905d1e7aa839f55c9f0566b38f9304b17ffe5fbb793dbec878437"
+      },
+      {
+        "file": "traffic-day.png",
+        "sha256": "1a1b70067b22a96f442b5a863cfd3ba0371ab82dda5e720c554e74bc98eda9a4"
+      },
+      {
+        "file": "energy-day.png",
+        "sha256": "9cf6f798ab7c82268d69c60dc8b86fa29669cd99e86c7e9ab0c4eb231e65448f"
+      },
+      {
+        "file": "instruments-day.png",
+        "sha256": "093a8d47cea422f70b9cf6f264f2b449a54d00cebe5b1c7c55267e170330255e"
+      },
+      {
+        "file": "instruments-dusk.png",
+        "sha256": "52a56c0adfdc21b1f15bce521d1f9e30015d391c635415da5e1320586954c51b"
+      },
+      {
+        "file": "instruments-night.png",
+        "sha256": "f88849705d317392aa8b726e7f93eba3c5f8806a56913b284682d046db1cc102"
+      },
+      {
+        "file": "autopilot-day.png",
+        "sha256": "c80ac73d58b4c5cace0537c9964cda7d50ab780c3fcad11a7f5d52bd445709cb"
+      },
+      {
+        "file": "autopilot-dusk.png",
+        "sha256": "578cd9fcdd56d90d7f35a00860cd2c3a99581a2ac033f7d7aed4f2dd247be69a"
+      },
+      {
+        "file": "autopilot-night.png",
+        "sha256": "2a19cf8d8331d4ac5947f222b0d426296df9985fae0a49b02f9681d11221ee5f"
+      },
+      {
+        "file": "alerts-day.png",
+        "sha256": "e0a8ca4bb97fb88afb0f1fbdbc71e3cd357ae1e7e6ac81e0bb6350b07e3a9bf7"
+      },
+      {
+        "file": "alerts-dusk.png",
+        "sha256": "2a9edf229418c6e36c06e295012403136100c9a6294a9bfe3cae8a39f1302a5b"
+      },
+      {
+        "file": "alerts-night.png",
+        "sha256": "11a7763ab7c4b2f7451761f75b8e69e19db65b149c56c453dbf58fce09afbcac"
+      },
+      {
+        "file": "anchor-day.png",
+        "sha256": "d0ea7b6157adaabd2cf5952eb26a8bc1cd2f1a995471dad8ff6d4fbaac7b6586"
+      },
+      {
+        "file": "anchor-dusk.png",
+        "sha256": "f6d33116da179241c85d5687cf86ca3c54f3550009dba0ed0534badfc166a56f"
+      },
+      {
+        "file": "anchor-night.png",
+        "sha256": "ca7b84630a49b0a10c54086042f4f09e6fc03f49b6917653423f7854ceebd4fb"
+      },
+      {
+        "file": "radar-day.png",
+        "sha256": "bc9ddd87a21e26cb7b8ad67a48b7de6d95d4ef2803e4bbbde9f9d9057153f99c"
+      },
+      {
+        "file": "radar-dusk.png",
+        "sha256": "ac88fe3dbadfe4ba28d2ebe993dcea1a0a1a85f8eb6aa62feee414d897c17271"
+      },
+      {
+        "file": "radar-night.png",
+        "sha256": "f0a403d6a86385e59cf24a90cb8e0ee6c8096afb17121d928313134afbed8a5a"
+      },
+      {
+        "file": "settings-day.png",
+        "sha256": "b8a81119e5123b622520b3a4edbd279fc2e1fbde0534e8ba0c6bdf830fb80501"
+      },
+      {
+        "file": "settings-dusk.png",
+        "sha256": "fbc6136a06f1fa7937d487d91d5770125db3284ab216c0b8a21e3cae6d657d34"
+      },
+      {
+        "file": "settings-night.png",
+        "sha256": "1ab37d8124e5e7c66b43206b0d8dc48350ce7abff5dd90e2e7c58c9d79229824"
+      },
+      {
+        "file": "sensors-day.png",
+        "sha256": "e3f86cc9bdf61e7ffe53800f0cb4cf39cfbe6032e20dc576434137270afd68fc"
+      },
+      {
+        "file": "display-day.png",
+        "sha256": "786b5fa7d50ae48d15a9b341b45631e3ed409cc6c7feec22898fb33fcafbb41f"
+      },
+      {
+        "file": "system-day.png",
+        "sha256": "a714b4a415c1872fa26482c294c4397590cf5f8a39ec17b73a6893e4878c82d3"
+      }
+    ],
+    "uiAccepted": false
+  },
+  "portableContractsCorrective": 78
 }

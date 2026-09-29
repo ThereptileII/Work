@@ -2,6 +2,14 @@
 
 ## Current stage: prototype design lock, chart presentation and Online AIS
 
+Replacement `28b5e9c` runs `36527361912` / `36527363536` are in progress.
+The native isolated credential-import suite passes seventeen checks. Both
+portable suites reject the layout test's missing IsChild mock (77/78); the
+corrected transitive-parent fixture adds nested-caption and duplicate-shell
+coverage and passes all 78 locally. The actual Linux product retains 29 captures,
+including AIS settings and Radar through Day/Dusk/Night. No native failure is
+waived, and these results do not qualify deployment.
+
 The user-supplied AISStream key workflow now has explicit own-key guidance, a
 masked 48px input, disabled empty/invalid Save, and no automatic enablement.
 Cancel/Escape never replace a saved key; confirmed removal disables Online AIS.

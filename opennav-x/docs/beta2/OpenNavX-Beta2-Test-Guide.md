@@ -61,6 +61,30 @@ message. Observe existing SmartNav/anchor alerts only during the read-only boat
 pass; do not create alarms, change the anchor watch or acknowledge a real alarm
 merely to obtain screenshots.
 
+## Optional Online AIS key (prototype-stage builds)
+
+Use **Traffic → Online AIS settings**. Each tester uses their own AISStream key.
+Do not send the key with feedback, and do not show unmasked text in screenshots.
+
+1. Open **Set AISStream key**. Confirm a blank masked field; Cancel should leave
+   the previous stored key unchanged. Reopen it and verify it is still blank.
+2. Enter your key and **Save key**. Confirm **Stored securely**. If Online AIS
+   was Off, it should remain Off until you explicitly choose **Enabled**.
+3. Enable it with an internet connection and an appropriate chart area. Check
+   connection status and received traffic. Details must identify online targets;
+   onboard AIS health remains separate.
+4. Reopen the key field. It must not reveal or prefill your stored key. Escape
+   should return to Online AIS settings without replacing it.
+5. Check that an application restart and a normal update/repair retain the saved
+   key and enabled preference. No key should appear in exported diagnostics.
+6. If you want to delete the key, choose **Remove key**. Cancel first and verify
+   it is preserved. Confirm removal only when intended; Online AIS must stop and
+   the key status become **Not configured**. You can enter it again afterwards.
+
+Do not disconnect the boat PC's remote-access network to test an AIS outage.
+Use provider disable/re-enable or a disposable desktop network test instead.
+No online targets in a quiet area is not proof that the key or connection failed.
+
 ## Navigation edits
 
 On an isolated desktop recovery profile, right-click/long-press the chart and

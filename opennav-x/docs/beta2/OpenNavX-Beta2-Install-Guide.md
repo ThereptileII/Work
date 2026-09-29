@@ -56,6 +56,22 @@ settings. **Safe Mode** is the recovery path when normal startup or a plugin
 fails. All installed modes use the same existing profile. Keep hardware control
 disabled during remote/read-only testing.
 
+## Optional Online AIS (prototype-stage builds)
+
+Online AIS uses your own AISStream account key. Open **Traffic → Online AIS
+settings → Set AISStream key**, paste your key into the masked field, and choose
+**Save key**. Then choose **Enabled** when you want supplemental internet traffic
+for the current chart area. It is off by default; saving a key does not turn it on.
+
+The key is stored in Windows Credential Manager for your Windows account, not
+in the OpenCPN profile. Updates and repairs preserve it. To delete it, choose
+**Remove key** and confirm; Online AIS stops. Uninstall retains the key for
+reinstallation, so remove it first if you no longer want it saved.
+
+Internet traffic can be delayed or incomplete. It supplements onboard AIS and
+is not a substitute for an AIS receiver or keeping watch. Do not include your
+key in screenshots or support reports.
+
 ## Update
 
 Close all modes, run the newer Setup and use **Update**. You do not need to delete

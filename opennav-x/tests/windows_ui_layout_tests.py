@@ -40,6 +40,18 @@ def get_rect(handle, output):
 namespace.update(children=lambda _: labels, GetParent=lambda h: parents.get(h),
                  GetWindowRect=get_rect)
 
+def is_child(parent, window):
+    # Win32 IsChild includes all descendant levels, not the parent itself.
+    visited = set()
+    while window in parents and window not in visited:
+        visited.add(window)
+        window = parents[window]
+        if window == parent:
+            return True
+    return False
+
+namespace['IsChild'] = is_child
+
 
 def verify(reject=False):
     global passed
@@ -104,6 +116,12 @@ for scale in (1., 1.25, 1.5):
             labels = [(3, 'Chart'), (4, 'Alerts 1'), (5, 'System'),
                       (6, 'Configure instruments')]
             parents = {3: 10, 4: 11, 5: 12, 6: 13, 13: 14}
+            # The real Display page contains its own Configure instruments
+            # action. Also exercise repeated captions at different nesting
+            # depths: none defines the surrounding application geometry.
+            labels += [(20, 'Configure instruments'), (21, 'Chart'),
+                       (22, 'System'), (23, 'Alerts 1')]
+            parents.update({20: 30, 30: 31, 31: 2, 21: 2, 22: 30, 23: 31})
             logical_height = 800/scale
             top = round((56 if logical_height<=600 else 60 if logical_height<=740 else 68)*scale)
             footer = round(34*scale)
@@ -123,6 +141,18 @@ for scale in (1., 1.25, 1.5):
                 assert delta==0, 'Unexplained page gap/overlap accepted'
             page_passed+=1
 print(f'{page_passed} exact page/timeline/DPI geometry checks passed')
+
+# A second matching control outside the page still fails. The descendant
+# filter must never hide a duplicated real shell control.
+labels.append((24, 'Configure instruments'))
+parents[24] = 13
+try:
+    page_check(1, 2, horizon=True)
+except AssertionError:
+    pass
+else:
+    raise AssertionError('Duplicated shell rail action was accepted')
+print('Nested page actions excluded; duplicated shell control rejected')
 
 # Exact independent canonical/client cases: captioned preview windows have a
 # smaller client, not a different drawer style or a broad height tolerance.
