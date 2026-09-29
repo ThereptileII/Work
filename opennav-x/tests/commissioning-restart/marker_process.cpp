@@ -1,6 +1,7 @@
 // Standalone native process fixture. No OpenCPN, GUI, connection or marine code.
 #include "platform/PlatformIntegration.h"
 #include "platform/windows/CommissioningRestartNative.h"
+#include "AtomicMarker.h"
 #include <windows.h>
 #include <filesystem>
 #include <fstream>
@@ -9,6 +10,7 @@
 #include <chrono>
 #include <cwchar>
 #include <iostream>
+#include <sstream>
 
 namespace {
 std::string Utf8(const std::wstring& text) {
@@ -20,6 +22,11 @@ std::string Utf8(const std::wstring& text) {
 std::string Environment(const wchar_t* name) {
   const DWORD n=GetEnvironmentVariableW(name,nullptr,0);if(!n)return {};
   std::wstring text(n,L'\0');const DWORD used=GetEnvironmentVariableW(name,text.data(),n);text.resize(used);return Utf8(text);
+}
+bool Publish(const std::filesystem::path &path,const std::string &contents) {
+  std::string error;
+  if(opennav::tests::PublishMarker(path,contents,error))return true;
+  std::cerr<<"Fixture marker publication failed: "<<error<<'\n';return false;
 }
 }
 int wmain(int argc,wchar_t** argv) {
@@ -51,7 +58,7 @@ int wmain(int argc,wchar_t** argv) {
       std::filesystem::current_path(original/L"changed-working-directory");
     }
     const bool armed=opennav::platform::RestartAfterExit(exe,{requested});
-    std::ofstream(original/L"parent-armed.txt")<<(armed?"yes":"no")<<'\n'<<GetCurrentProcessId()<<'\n';
+    if(!Publish(original/L"parent-armed.txt",std::string(armed?"yes":"no")+'\n'+std::to_string(GetCurrentProcessId())+'\n'))return 75;
     if(!std::filesystem::exists(original/L"parent-fast-exit.txt")) {
       // Only the disposable scheduler harness requests extra setup time. This
       // remains below the actual helper's unchanged 30-second parent deadline.
@@ -67,14 +74,14 @@ int wmain(int argc,wchar_t** argv) {
   if(!opennav::platform::commissioning::IsMode(mode))return 73;
   const auto& binding=opennav::platform::commissioning::StartupBinding();
   FILETIME c,e,k,u;if(!GetProcessTimes(GetCurrentProcess(),&c,&e,&k,&u))return 74;
-  std::ofstream out(std::filesystem::path("child"+mode+".txt"),std::ios::binary);
+  std::ostringstream out;
   out<<GetCurrentProcessId()<<'\n'<<((std::uint64_t(c.dwHighDateTime)<<32)|c.dwLowDateTime)<<'\n'
      <<static_cast<int>(binding.state)<<'\n'<<binding.session<<'\n'<<binding.record_sha256<<'\n'
      <<Environment(L"PATH")<<'\n'
      <<Environment(L"LOCALAPPDATA")<<'\n'<<Environment(L"APPDATA")<<'\n'
      <<Environment(L"OPENNAV_TEST_RUNTIME_ADDITION")<<'\n'
      <<Environment(L"OPENNAV_TEST_COLD_ENVIRONMENT")<<'\n';
-  out.close();if(!out)return 75;
+  if(!out || !Publish(std::filesystem::path("child"+mode+".txt"),out.str()))return 75;
   if(std::filesystem::exists("hold-child.txt")) {
     const auto deadline=std::chrono::steady_clock::now()+std::chrono::seconds(60);
     while(!std::filesystem::exists("child-release.txt")) {
@@ -84,7 +91,7 @@ int wmain(int argc,wchar_t** argv) {
   }
   if(mode=="--legacy" && std::filesystem::exists("chain-without-listener.txt")) {
     std::this_thread::sleep_for(std::chrono::milliseconds(1000));
-    std::ofstream("chain-armed.txt")<<(opennav::platform::RestartAfterExit(exe,{"--xnav"})?"yes":"no");
+    if(!Publish("chain-armed.txt",opennav::platform::RestartAfterExit(exe,{"--xnav"})?"yes":"no"))return 75;
   }
   std::this_thread::sleep_for(std::chrono::milliseconds(1200));
   return 0;

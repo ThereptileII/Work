@@ -57,7 +57,7 @@ def main():
         if result.returncode:
             raise RuntimeError('Footer input/geometry failed; inspect interaction.log')
         record = json.loads((args.output / 'result.json').read_text())
-        assert record['passed'] and record['checks'] >= 98
+        assert record['passed'] and record['checks'] >= 153
         assert len(record['captures']) == 10
         record.update(source_commit=subprocess.check_output(['git', 'rev-parse', 'HEAD'], cwd=ROOT, text=True).strip(),
                       source_dirty=bool(subprocess.check_output(["git", "status", "--porcelain"], cwd=ROOT)),

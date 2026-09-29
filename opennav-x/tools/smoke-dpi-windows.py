@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """Actual native Windows DPI; no bitmap rescaling or fake DPI acceptance."""
 import ctypes as C
+import hashlib
 import importlib.util
 import json
 import os
@@ -234,12 +235,26 @@ def rail_geometry(scale):
     d=current_layout_observation()
     regions=d['runtime']['display']['rail_regions'];frame=bounds(handle)
     assert len(regions)==4,('Four primary rail values required',regions)
+    client=ui.W.RECT();assert ui.GetClientRect(handle,C.byref(client))
+    logical_width=client.right*100/scale;logical_height=client.bottom*100/scale
+    # The immutable prototype has an explicit compact desktop override:
+    # @media(max-height:600px) and (min-width:761px) .data-rail .metric
+    # min-height:72px. The former unconditional 80px oracle contradicted this
+    # at native150%, where a 72-DIP row is108 physical pixels. This is a measured
+    # CSS constraint, not a relaxed clipping or touch-target tolerance.
+    original=(root/'docs/design/prototype/index.html').read_bytes()
+    assert hashlib.sha256(original).hexdigest()=='b04573b920b6bccd16afd22f54a909e48afcfd502ce9cd7c69fdf5b6dd895447'
+    compact=logical_width>=761 and logical_height<=600
+    minimum=72 if compact else 80
+    report.setdefault('rail_oracle',[]).append(dict(percent=scale,
+        logical_client=[logical_width,logical_height],minimum_height_dip=minimum,
+        source='Immutable prototype compact desktop CSS' if compact else 'Retained normal-workspace minimum'))
     top,bottom=chrome_bounds();previous=top
     for region in regions:
         x,y,w,h=(region[k] for k in ('x','y','width','height'))
         assert region['visible'],('A primary rail value is clipped',region)
         assert frame.left<=x<x+w<=frame.right and previous<=y<y+h<=bottom,region
-        assert h>=80*scale/100,('Primary value too small',region)
+        assert h>=minimum*scale/100,('Primary value too small',region,minimum)
         previous=y+h
     return [{key:region[key] for key in ('label','x','y','width','height','visible')} for region in regions]
 

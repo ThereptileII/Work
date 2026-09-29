@@ -1,0 +1,84 @@
+{
+  "issue": "SCRUM-98",
+  "failure_commit": "701149fea50bdfd0ce5d58d9dd1fb377ab4575d0",
+  "run": "https://github.com/ThereptileII/Work/actions/runs/36603347656",
+  "artifact_id": 11050972106,
+  "artifact_sha256": "20935181d7e3677a7096e45f676f94b67cd9eb264e64d92668a7f2d80718cced",
+  "native_failure": {
+    "dpi": 144,
+    "scale_percent": 150,
+    "outer_pixels": [
+      1280,
+      800
+    ],
+    "actual_sog_pixels": {
+      "x": 1035,
+      "y": 174,
+      "width": 234,
+      "height": 108,
+      "visible": true
+    },
+    "old_minimum_physical": 120
+  },
+  "independent_reference": {
+    "html_sha256": "b04573b920b6bccd16afd22f54a909e48afcfd502ce9cd7c69fdf5b6dd895447",
+    "platform": "Linux",
+    "viewport": {
+      "width": 853,
+      "height": 533
+    },
+    "device_scale_factor": 1.5,
+    "metadata_sha256": "8ff6e4fa1d43c60fd8c865094020989411f9eae580d400ed2209613098344e7b",
+    "metric": {
+      "rect": {
+        "x": 711,
+        "y": 86,
+        "width": 129,
+        "height": 81.75
+      },
+      "style": {
+        "fontFamily": "\"Segoe UI Variable Display\", \"Segoe UI\", Arial, sans-serif",
+        "fontSize": "16px",
+        "fontWeight": "400",
+        "fontStyle": "normal",
+        "lineHeight": "normal",
+        "letterSpacing": "normal",
+        "fontVariantNumeric": "normal",
+        "textTransform": "none",
+        "color": "rgb(243, 245, 238)",
+        "backgroundColor": "rgba(0, 0, 0, 0)",
+        "borderRadius": "0px",
+        "borderWidth": "0px 0px 1px",
+        "borderColor": "rgb(243, 245, 238) rgb(243, 245, 238) rgb(53, 70, 74)",
+        "padding": "5px 0px",
+        "margin": "0px",
+        "gap": "normal",
+        "boxShadow": "none",
+        "opacity": "1",
+        "transition": "none",
+        "minHeight": "72px",
+        "minWidth": "auto",
+        "stroke": "none",
+        "strokeWidth": "1px",
+        "fill": "rgb(0, 0, 0)",
+        "display": "flex",
+        "alignItems": "normal",
+        "justifyContent": "normal",
+        "gridTemplateColumns": "none",
+        "rowGap": "normal",
+        "columnGap": "normal",
+        "paddingTop": "5px",
+        "paddingRight": "0px",
+        "paddingBottom": "5px",
+        "paddingLeft": "0px",
+        "borderLeftWidth": "0px",
+        "borderLeftColor": "rgb(243, 245, 238)",
+        "textAlign": "left",
+        "cursor": "pointer"
+      }
+    },
+    "css_condition": "max-height:600px and min-width:761px"
+  },
+  "change": "Use exact 72-DIP compact desktop minimum only at the authoritative breakpoint; retain 80-DIP normal-workspace guard, four values, clipping, order, touch and alarm checks",
+  "qualification": "CSS constraint established independently from immutable reference; replacement native150% remainder and physical boat qualification still pending"
+}

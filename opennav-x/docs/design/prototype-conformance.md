@@ -24,6 +24,12 @@ resolved fonts, interaction results, a corrective second capture and a boat
 review. No averaging across views or broad image tolerance. Physical rendering,
 touch, ENC, OpenGL/software and 100/125/150% remain separate gates.
 
+SCRUM-100's [horizon correction](reviews/scrum-100-horizon.md) now has exact
+Day/Dusk/Night component reference/current/diff evidence, owned-data freshness
+and action guards, and real pointer/keyboard checks. Local geometry passes;
+Linux text rasterization differs visibly. Native Windows and physical boat
+acceptance remain pending, so the Navigation row above remains Pending.
+
 The boat was unreachable at the September 28 stage transition. It reconnected
 and its interrupted read-only commissioning transaction was subsequently
 [closed and independently verified](../evidence/boat-prototype-reconnect-20260928.md).

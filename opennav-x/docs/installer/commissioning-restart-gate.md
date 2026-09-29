@@ -184,6 +184,40 @@ powershell -NoProfile -ExecutionPolicy Bypass -File tools/test-commissioning-res
 powershell -NoProfile -ExecutionPolicy Bypass -File tools/boat/test-restart-commissioning.ps1
 ```
 
+### Fixture readiness publication (SCRUM-98)
+
+Candidate `701149fea50bdfd0ce5d58d9dd1fb377ab4575d0`, native run
+[36603349213](https://github.com/ThereptileII/Work/actions/runs/36603349213),
+failed at the first `ReadAllLines(child--xnav.txt)` after file existence was
+observed. Windows reported a sharing `IOException`. The exact process holding
+the file was not identified. Source inspection did establish a fixture race:
+the final marker name existed before the fixture closed its output stream.
+
+The marker-only executable now uses `tests/commissioning-restart/AtomicMarker.h`
+for parent, child and chained readiness. It reserves a unique sibling staging
+directory, checks write/flush/close, then atomically renames the closed file to
+the final name. Failure does not publish readiness and removes staging. Marker
+paths have one producer; Windows rename refuses a pre-existing final marker.
+The reader's original bounded existence wait and single read remain unchanged;
+no retry hides sharing failures. The harness also requires complete two-line
+parent and ten-line child records before interpreting them.
+
+`marker_publication_tests` is test-only and runs in both the portable suite and
+the standalone native gate. It proves final-name absence while the stream is
+open, first-read completeness, preservation of existing destinations, cleanup
+after preparation failures, and 16 concurrent publication/read cases. Native
+Windows additionally opens the closed staged file with exclusive sharing to
+prove the writer handle is released before publication. Production restart
+guard, helper, protocol, deadlines and process-identity checks are unchanged.
+
+Local development passed **70 portable publication checks**, the corresponding
+CTest entry and PowerShell syntax parsing. Evidence is under
+`evidence/local/scrum98-marker/`. These do not qualify Win32 sharing or the full
+24-case process matrix. A fresh exact-commit native run is required; the failed
+candidate evidence remains relevant until replacement qualification passes.
+
+### Previously accepted protocol/process evidence
+
 Current local qualification: 886 portable codec/policy checks pass on Linux.
 Native run [36282089707](https://github.com/ThereptileII/Work/actions/runs/36282089707)
 at `fe397d85727dac015cea11615ae8b66f5caf788a` passed MSVC compilation,

@@ -6,6 +6,11 @@
 #include <wx/frame.h>
 #include <wx/filename.h>
 #include <wx/log.h>
+#include <wx/sizer.h>
+#include <cstdint>
+#ifdef __WXMSW__
+#include <windows.h>
+#endif
 #include <wx/timer.h>
 #include <wx/uiaction.h>
 #include <fstream>
@@ -27,8 +32,10 @@ class TestApp final:public wxApp {
     if(!wxFileName::Mkdir(output_,wxS_DIR_DEFAULT,wxPATH_MKDIR_FULL))return false;
     wxInitAllImageHandlers();
     frame_=new wxFrame(nullptr,wxID_ANY,"TEST ONLY - Status footer",{0,0},{1280,800},wxBORDER_NONE);
-    frame_->SetClientSize(1280,800);frame_->SetBackgroundColour(ui::Colour(ui::Theme(light_).surface));
+    Resize(1280,800);frame_->SetBackgroundColour(ui::Colour(ui::Theme(light_).surface));
     host_=new wxPanel(frame_,wxID_ANY);
+    auto *layout=new wxBoxSizer(wxVERTICAL);
+    layout->Add(host_,1,wxEXPAND);frame_->SetSizer(layout);frame_->Layout();
     footer_=new ui::XNavStatusFooter(host_,[this]{++opened_;});
     footer_->SetSize(0,766,1280,34);
     frame_->Show();frame_->Raise();
@@ -37,6 +44,41 @@ class TestApp final:public wxApp {
   }
   int OnRun() override {wxApp::OnRun();return failed_?1:0;}
  private:
+  void Resize(int width,int height) {
+    frame_->SetClientSize(width,height);frame_->Layout();
+  }
+  wxRect NativeRect(wxWindow *window) {
+#ifdef __WXMSW__
+    RECT r{};
+    Check(::GetWindowRect(static_cast<HWND>(window->GetHandle()),&r)!=0,"native HWND rectangle available");
+    return {static_cast<int>(r.left),static_cast<int>(r.top),
+            static_cast<int>(r.right-r.left),static_cast<int>(r.bottom-r.top)};
+#else
+    return window->GetScreenRect();
+#endif
+  }
+  void RecordLayout(const char *phase,wxWindow *target=nullptr) {
+    const auto client=wxRect(frame_->ClientToScreen({0,0}),frame_->GetClientSize());
+    const auto frame=NativeRect(frame_),host=NativeRect(host_),component=NativeRect(footer_);
+    std::ofstream out((output_+"/native-layout.jsonl").ToStdString(),std::ios::app);
+    const auto rect=[&](const wxRect &r){out<<'['<<r.x<<','<<r.y<<','<<r.width<<','<<r.height<<']';};
+    const auto window=[&](const char *name,wxWindow *w,const wxRect &r){
+      out<<",\""<<name<<"\":{\"native_handle\":"<<reinterpret_cast<std::uintptr_t>(w->GetHandle())
+         <<",\"shown\":"<<(w->IsShownOnScreen()?"true":"false")<<",\"screen\":";rect(r);out<<'}';};
+    out<<"{\"phase\":\""<<phase<<"\",\"step\":"<<step_<<",\"frame_client\":";rect(client);
+    window("frame",frame_,frame);window("host",host_,host);window("footer",footer_,component);
+    if(target) {
+      const auto bounds=NativeRect(target);window("target",target,bounds);
+      auto *hit=wxFindWindowAtPoint(bounds.GetTopLeft()+wxPoint(bounds.width/2,bounds.height/2));
+      out<<",\"pointer_hit_handle\":"<<(hit?reinterpret_cast<std::uintptr_t>(hit->GetHandle()):0);
+    }
+    out<<"}\n";out.close();
+    Check(frame_->IsShownOnScreen()&&host_->IsShownOnScreen()&&footer_->IsShownOnScreen(),"actual fixture parents and component are shown");
+    Check(host==client,"fixture host fills actual frame client");
+    Check(host.Contains(component),"actual component is contained by visible host");
+    Check(component==wxRect(host_->ClientToScreen(footer_->GetPosition()),footer_->GetSize()),"native component rectangle matches requested placement");
+    Check(component==wxRect(client.x,client.y+client.height-34,client.width,34),"native footer fills actual client bottom exactly");
+  }
   void Check(bool ok,const char *message){++checks_;if(!ok)throw std::runtime_error(message);}
   void Feed(vessel::Time now=stamp_) {
     footer_->Update(application::PresentFooter(state_,{},application::PresentSourceHealth(state_,{},{},{},{},now),now),light_);
@@ -59,6 +101,7 @@ class TestApp final:public wxApp {
     } else Check(mid.width==0,"hidden middle contributes no visible region");
   }
   void Capture(const char *name) {
+    RecordLayout(name);
     const auto size=frame_->GetClientSize();const auto origin=frame_->ClientToScreen({0,0});
 #ifdef __WXGTK__
     auto *pixels=gdk_pixbuf_get_from_window(gdk_get_default_root_window(),origin.x,origin.y,size.x,size.y);
@@ -75,7 +118,7 @@ class TestApp final:public wxApp {
   void Prototype(ui::LightMode mode) {
     // Literal illustrative HTML content, confined to this test process. The
     // product model explicitly cannot produce this XTE or claim these sources.
-    frame_->SetClientSize(1280,800);footer_->SetSize(0,766,1280,34);
+    Resize(1280,800);footer_->SetSize(0,766,1280,34);
     application::FooterView v;
     v.navigation_state="UNDERWAY";v.position="58° 20.462′ N   016° 48.218′ E";
     v.cog="043°";v.xte="0.02 nm";v.health_source="NMEA 2000";v.health_summary="9 of 10 sources";
@@ -95,7 +138,7 @@ class TestApp final:public wxApp {
         state_.navigation.cog_deg={43.,"TEST ONLY GPS",stamp_,vessel::Validity::Measured};Feed();break;
       case 2:{
         Geometry(1280,true);Capture("measured-day");
-        auto *button=Health();const auto rect=button->GetScreenRect();
+        auto *button=Health();RecordLayout("source-health-pointer",button);const auto rect=button->GetScreenRect();
         Check(wxFindWindowAtPoint(rect.GetTopLeft()+wxPoint(rect.width/2,rect.height/2))==button,"pointer location hits actual footer button");
         wxUIActionSimulator input;Check(input.MouseMove(rect.x+rect.width/2,rect.y+rect.height/2)&&input.MouseClick(),"native pointer input injected");break;
       }
@@ -104,10 +147,10 @@ class TestApp final:public wxApp {
       case 5:Capture("measured-night");Feed(stamp_+5s);break;
       case 6:
         Check(footer_->View().position_state==application::SignalState::Stale&&footer_->View().cog=="STALE","same retained observation visibly expires");
-        Capture("stale-night");frame_->SetClientSize(1024,640);footer_->SetSize(0,606,1024,34);Feed();break;
-      case 7:Geometry(1024,false);Capture("responsive-125-equivalent");frame_->SetClientSize(853,533);footer_->SetSize(0,499,853,34);Feed();break;
-      case 8:Geometry(853,false);Capture("responsive-150-equivalent");frame_->SetClientSize(1100,640);footer_->SetSize(0,606,1100,34);Feed();break;
-      case 9:Geometry(1100,false);frame_->SetClientSize(1101,640);footer_->SetSize(0,606,1101,34);Feed();break;
+        Capture("stale-night");Resize(1024,640);footer_->SetSize(0,606,1024,34);Feed();break;
+      case 7:Geometry(1024,false);Capture("responsive-125-equivalent");Resize(853,533);footer_->SetSize(0,499,853,34);Feed();break;
+      case 8:Geometry(853,false);Capture("responsive-150-equivalent");Resize(1100,640);footer_->SetSize(0,606,1100,34);Feed();break;
+      case 9:Geometry(1100,false);Resize(1101,640);footer_->SetSize(0,606,1101,34);Feed();break;
       case 10:Geometry(1101,true);Prototype(ui::LightMode::Day);break;
       case 11:Geometry(1280,true);Capture("prototype-fixture-day");Prototype(ui::LightMode::Dusk);break;
       case 12:Capture("prototype-fixture-dusk");Prototype(ui::LightMode::Night);break;

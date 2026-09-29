@@ -250,6 +250,7 @@ try:
             raise RuntimeError('Deferred initialization did not finish')
         time.sleep(.2)
     assert connected.wait(10), 'OpenCPN did not connect to loopback fixture'
+    resize_tick=int(read_json_snapshot(profile/'opennav-diagnostics.json')['runtime']['ui_update']['ticks'])
     if windows:
         handle, _ = ui.wait_window('OpenNav X / OpenCPN', app.pid)
         # capture() normally resizes, but the object-layout gate runs before
@@ -259,6 +260,21 @@ try:
         handle = subprocess.check_output(['xdotool', 'search', '--all', '--onlyvisible', '--pid', str(app.pid),
                     '--name', '^OpenNav X / OpenCPN$'], env=env, text=True).splitlines()[0]
         subprocess.run(['xdotool', 'windowsize', handle, '1280', '800', 'windowmove', handle, '0', '0'], env=env, check=True)
+
+    # Unavailable values already match before resize. Do not accept the old
+    # small-window geometry merely because the input state is still unchanged.
+    # This is a publication barrier, not a wait for geometry to pass its check.
+    resized_at=time.time_ns()
+    deadline=time.monotonic()+10
+    while time.monotonic()<deadline:
+        current=read_json_snapshot(profile/'opennav-diagnostics.json')
+        if ((profile/'opennav-diagnostics.json').stat().st_mtime_ns>resized_at and
+                int(current['runtime']['ui_update']['ticks'])>=resize_tick+3):break
+        time.sleep(.15)
+    else:raise AssertionError('Fresh navigation publication did not follow initial resize')
+    report['initial_resize_publication']={'before_ticks':resize_tick,
+        'after_ticks':int(current['runtime']['ui_update']['ticks']),
+        'footer':current['runtime']['display']['footer_region']}
 
     def capture(name):
         path = evidence / f'{prefix}-{name}.png'
@@ -327,6 +343,18 @@ try:
             bounds=ui.W.RECT()
             assert ui.GetWindowRect(native[0],ui.C.byref(bounds))
             measured=dict(x=bounds.left,y=bounds.top,width=bounds.right-bounds.left,height=bounds.bottom-bounds.top)
+            comparison={'position_state':position_state,'cog_state':cog_state,
+                'ticks':int(record['runtime']['ui_update']['ticks']),
+                'native':measured,'published':record['runtime']['display']['footer_region']}
+            report.setdefault('native_footer_geometry',[]).append(comparison)
+            (evidence/f'{prefix}-native-footer-geometry.json').write_text(json.dumps(report['native_footer_geometry'],indent=2))
+            if record['runtime']['display']['footer_region']!=measured:
+                failed=evidence/f'{prefix}-footer-geometry-failed.png'
+                try:
+                    ui.capture(handle,failed,resize=False,screen_pixels=True)
+                    report['screenshots'].append(failed.name)
+                except Exception as error:
+                    report['footer_failure_capture_error']=str(error)
             assert record['runtime']['display']['footer_region']==measured, 'Footer observation must match actual visible native surface'
             report.setdefault('native_footer_regions',[]).append(measured)
         report.setdefault('navigation_footer',[]).append(footer)
@@ -365,6 +393,45 @@ try:
             time.sleep(.15)
         else:raise AssertionError('Source health did not return to the chart')
         report['footer_source_health_action']='Visible pointer opens actual Health drawer and returns to chart'
+
+    def horizon_observation(follow_enabled):
+        deadline=time.monotonic()+8
+        while time.monotonic()<deadline:
+            record=read_json_snapshot(profile/'opennav-diagnostics.json')
+            display=record['runtime']['display']
+            controls=[c for c in display['interaction_controls']
+                      if c['label']=='Horizon now' and c['visible']]
+            if len(controls)==1 and controls[0]['enabled']==follow_enabled:break
+            time.sleep(.15)
+        else:raise AssertionError(('Horizon freshness did not follow selected navigation',follow_enabled,controls))
+        bounds=display['horizon_region'];control=controls[0]
+        assert bounds['x']<=control['x'] and bounds['y']<=control['y']
+        assert control['x']+control['width']<=bounds['x']+bounds['width']
+        assert control['y']+control['height']<=bounds['y']+bounds['height']
+        report.setdefault('horizon_navigation',[]).append(dict(now=control,follow=record['runtime']['chart']['follow']))
+        return record,control
+
+    def horizon_follow_action():
+        before,control=horizon_observation(True)
+        original=before['runtime']['chart']['follow']
+        # Both activations use the actual native control. Verify the existing
+        # upstream canvas flag, not a view-only selected state, then restore it.
+        for expected in (not original,original):
+            if windows:ui.pointer_text(app.pid,'Horizon now')
+            else:
+                subprocess.run(['xdotool','mousemove',str(control['x']+control['width']//2),
+                                str(control['y']+control['height']//2),'mousedown','1',
+                                'sleep','0.05','mouseup','1'],env=env,check=True)
+            deadline=time.monotonic()+8
+            while time.monotonic()<deadline:
+                record=read_json_snapshot(profile/'opennav-diagnostics.json')
+                if record['runtime']['chart']['follow']==expected:break
+                time.sleep(.15)
+            else:raise AssertionError(('Horizon NOW did not reach upstream follow',expected))
+            assert record['ui_page']=='Navigation'
+            time.sleep(.65)  # distinct presses, never a double-click retry
+        capture('02-live-horizon-follow')
+        report['horizon_follow_action']='Actual pointer input toggles upstream follow and restores it; no route or hardware command'
 
     if objects:
         spec = importlib.util.spec_from_file_location('chartcheck', root / 'tools/chart-render-check.py')
@@ -934,6 +1001,7 @@ try:
         assert not failures, failures
     else:
         footer_observation('Unavailable','Unavailable')
+        horizon_observation(False)
         capture('01-unavailable')
         phase[0] = 'rmc'
         time.sleep(3)
@@ -941,14 +1009,17 @@ try:
         footer_observation('Current','Current')
         capture('02-live')
         footer_health_action()
+        horizon_follow_action()
         phase[0] = 'gga'
         time.sleep(6.2)
         footer_observation('Current','Stale')
+        horizon_observation(True)  # Current position permits follow despite stale velocity.
         capture('03-position-only-velocity-stale')
         phase[0] = 'none'
         time.sleep(6.2)
         assert_stale_navigation()
         footer_observation('Stale','Stale')
+        horizon_observation(False)
         capture('04-all-stale')
         assert not failures, failures
     stop.set()

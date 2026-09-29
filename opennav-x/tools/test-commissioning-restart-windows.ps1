@@ -8,7 +8,7 @@ if($PSVersionTable.PSEdition -ne 'Desktop') {
   exit $LASTEXITCODE
 }
 $Binaries=[IO.Path]::GetFullPath($Binaries);$Evidence=[IO.Path]::GetFullPath($Evidence)
-foreach($name in @('opencpn.exe','opennav-restart.exe','commissioning_restart_tests.exe')) {
+foreach($name in @('opencpn.exe','opennav-restart.exe','commissioning_restart_tests.exe','marker_publication_tests.exe')) {
   if(-not [IO.File]::Exists((Join-Path $Binaries $name))){throw ('Missing standalone test binary '+$name)}
 }
 $root=Split-Path $PSScriptRoot -Parent
@@ -146,6 +146,8 @@ try {
     $capability.child_started -is [bool] -and -not $capability.child_started) 'Actual helper declares compiled guard capability without profile/child access'
   & (Join-Path $Binaries 'commissioning_restart_tests.exe')
   Require ($LASTEXITCODE -eq 0) 'Actual portable protocol executable passes under native MSVC'
+  & (Join-Path $Binaries 'marker_publication_tests.exe')
+  Require ($LASTEXITCODE -eq 0) 'Fixture readiness publication passes native closed-handle and first-read checks'
   foreach($case in @('plain','partial','invalid','empty','both-empty','unsupported-mode','no-listener','parent-error',
                      'deny','wrong-nonce','wrong-record','wrong-request-hash','expired','overlong','extra-field',
                      'profile-changed','executable-changed','success','safe','xnav','parent-fast-exit','startup-binding','startup-environment','chain-no-listener')) {
@@ -186,7 +188,9 @@ try {
         Require (@(Get-ChildItem -LiteralPath $directory -Filter 'child*.txt').Count -eq 0) ($case+': replacement never overlaps parent')
       }
       if($noBroker) {
-        $armed=[IO.File]::ReadAllLines((Join-Path $directory 'parent-armed.txt'))[0]
+        $armedLines=[IO.File]::ReadAllLines((Join-Path $directory 'parent-armed.txt'))
+        Require ($armedLines.Count -eq 2 -and $armedLines[1] -ceq $parent.Id.ToString()) ($case+': complete published parent readiness and identity')
+        $armed=$armedLines[0]
         $expectHelper=$case -cin @('plain','no-listener','parent-error')
         Require ($armed -ceq $(if($expectHelper){'yes'}else{'no'})) ($case+': arming result matches exact guard policy')
         # The parent is still alive here, so its normally waiting companion is
@@ -264,6 +268,7 @@ try {
       if($allow -or $case -ceq 'plain') {
         $marker=Join-Path $directory ('child'+$mode+'.txt');WaitFile $marker
         $lines=[IO.File]::ReadAllLines($marker)
+        Require ($lines.Count -eq 10) ($case+': complete closed child marker published before readiness')
         if($allow){Require ($lines[2] -ceq '1' -and $lines[3] -ceq $session -and $lines[4] -ceq $record -and $lines[5] -ceq $cleanPath) ($case+': child retains armed binding and verified environment')}
         else{Require ($lines[2] -ceq '0') 'Ordinary unarmed restart remains unarmed'}
         Require ($lines[6] -ceq (Join-Path $directory 'original-local') -and $lines[7] -ceq (Join-Path $directory 'original-roaming') -and

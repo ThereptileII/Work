@@ -8,7 +8,8 @@ to native behavior; it does not authorize mock hardware or installer actions.
 | Prototype entry | Actual native boundary | Return / error |
 |---|---|---|
 | Chart / brand | Existing ChartCanvas; show navigation | Close the transient context, keep chart position |
-| Passage / next-turn / horizon | OpenCPN route snapshots; existing route model operations | Root Close; selected leg Back; invalid progress unavailable |
+| Passage / next-turn / Full passage | OpenCPN route snapshots; existing Passage drawer | Root Close; selected leg Back; invalid progress unavailable; Full passage remains an inspection entry without activating navigation |
+| Horizon NOW / route event / AIS encounter | Owned `HorizonView` action identity; existing follow, Passage and target drawer | Revalidate fresh inputs and identity on activation; unavailable action disabled; advice never changes route or commands equipment |
 | Chart point / Go To | Geographic position copied on GUI thread; upstream temporary route | Focused confirmation; cancel leaves existing route untouched |
 | Waypoint / edit / remove | Existing identity-based waypoint commands | Back to selected point; removal confirmation, shared persistence |
 | Create passage / undo / finish | Existing OpenCPN route-creation state | Undo one point; confirm discard; name before save |
@@ -18,7 +19,7 @@ to native behavior; it does not authorize mock hardware or installer actions.
 | Energy | Existing advisory model and valid Vessel Data/route inputs | Root Close; stale required input suppresses dependent predictions |
 | Instruments / metric | Vessel Data assessment, configurable four rail slots | Close; editing a slot returns to rail configuration |
 | Anchor / anchor alert | One `XNavAnchorDrawer`, owned OpenCPN watch/projection | Proposed radius does not arm; start/stop confirmed; GPS loss withholds current position/distance; Close/Escape restores chart |
-| Autopilot summary / pilot alert | `XNavPilotDrawer`, existing guarded manual adapter callbacks | Explicit enable and mode confirmation; pending feedback never becomes success; Standby remains accessible; replay/control-off block output |
+| Autopilot summary / pilot alert | `XNavPilotDrawer`, passive confirmed feedback | Installed public-beta build is status-only: equipment controls and enablement unavailable; use the physical helm. Isolated loopback tests retain acknowledgement/timeout logic, never boat output |
 | Radar | Native focus composition over copied adapter status | Independently scrolling controls; Close restores chart; all scanner controls unavailable until receive/control contracts exist; no synthetic sweep or transmitter command |
 | Health / Sensors | `XNavHealthDrawer` over owned assessed measurements | Disclosure preserves age; root Close; per-sensor configuration opens existing validated settings; online AIS separate from onboard |
 | Alerts / banner | Existing episode/acknowledgement model | Acknowledgement never hides an unresolved critical cause |

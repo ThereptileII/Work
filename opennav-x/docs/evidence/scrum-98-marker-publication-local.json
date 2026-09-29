@@ -1,0 +1,13 @@
+{
+  "issue": "SCRUM-98",
+  "source_base": "70f7630228753e4485289fccf9f54ffa49858b00",
+  "source_dirty": true,
+  "portable_checks": 70,
+  "ctest_entries_passed": 1,
+  "powershell_ast": "passed; script not executed",
+  "native_windows": "pending",
+  "failed_native_commit": "701149fea50bdfd0ce5d58d9dd1fb377ab4575d0",
+  "failed_native_run": "https://github.com/ThereptileII/Work/actions/runs/36603349213",
+  "executable_sha256": "4a9fd5ac03c9a0c16eaff5250b1d403e807a7c47d65a1da72fce05cf25bb4741",
+  "production_restart_code_changed": false
+}

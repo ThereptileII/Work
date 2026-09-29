@@ -19,11 +19,11 @@ in [prototype conformance](prototype-conformance.md).
 | `.toggle`, `.segment` | Native toggle / segmented control | Explicit selected state, keyboard input, unavailable semantics |
 | `.list-card`, `.suite-link`, `.row` | `XNavListView` / remaining list migrations | AIS list paints visible rows only, identity-bound selection; shared alignment and separation |
 | `.next-turn` | Navigation summary | Valid upstream progress and advisory turn only |
-| `.timeline`, `.timeline-event` | Navigation horizon | Owned SmartNav events, unavailable dependent events withheld |
+| `.timeline`, `.timeline-heading`, `.timeline-events`, `.timeline-event` | `XNavHorizon` / owned `HorizonView` | Exact fractional grid, native text/event buttons, independent advice validity and contextual action availability; existing SmartNav event order/calculations |
 | `.critical-banner`, alert drawer | Alert layer | Does not displace rail or hide behind sheets |
-| `.autopilot-summary` | Pilot summary / expanded panel | Fresh confirmed state; existing enable/acknowledgement interlocks |
+| `.autopilot-summary` | Pilot summary / expanded panel | Fresh confirmed state; installed build status-only, with equipment enablement unavailable |
 | `.map-tools`, `.compass`, `.follow-btn` | Chart overlay controls | Existing upstream actions, proper chart hit testing |
-| `.statusbar` | Native footer | Live source/position context, missing values explicit |
+| `.statusbar` | `XNavStatusFooter` / owned `FooterView` | Three prototype groups, current position/COG and source health; XTE unavailable until a validated source exists |
 | `.ais-ship`, target card | AIS presentation | Online provenance, local precedence; no fabricated CPA |
 | `.stats-grid` | `XNavPainter::Stat` | 23px numeric value and separate 10px unit; 16px column gap |
 | `.tag` / `.tag.neutral` / `.tag.warning` | `XNavPainter::Tag` | 26px source/status pills, actual availability |

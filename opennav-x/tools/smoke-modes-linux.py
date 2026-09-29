@@ -192,7 +192,19 @@ try:
     action('System',page='Settings')
     action('Interface & recovery',page='System')
     capture('07-system')
+    system_ticks = int(observe(lambda d:d['ui_page']=='System')['runtime']['ui_update']['ticks'])
     xdo('key', 'Escape')
+    # Escape queues Back() to the Settings drawer. Observe that transition
+    # before sending another pointer action; a retained System publication
+    # does not mean its asynchronous navigation/focus work has completed.
+    returned = observe(lambda d:int(d['runtime']['ui_update']['ticks'])>=system_ticks+3
+                       and d['ui_page']=='Settings'
+                       and bool(d['runtime']['display'].get('drawer'))
+                       and sum(c['label']=='Interface & recovery' and c['visible'] and c['enabled']
+                               for c in d['runtime']['display']['interaction_controls'])==1)
+    report.setdefault('ui_transitions',[]).append({
+        'action':'System Escape to Settings', 'before_ticks':system_ticks,
+        'after_ticks':int(returned['runtime']['ui_update']['ticks']), 'result':'pass'})
     action('Chart',page='Navigation')
     xdo('windowfocus', handle)
     xdo('key', 'ctrl+shift+d')

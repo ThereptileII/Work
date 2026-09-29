@@ -98,6 +98,7 @@ public:
   std::vector<ProductGeometry> ProductRegions() const { return product_ && product_->IsShown() ? product_->RegionGeometry() : std::vector<ProductGeometry>{}; }
   std::vector<ProductGeometry> RailRegions() const;
   wxRect FooterRegion() const { return footer_->GetScreenRect(); }
+  HorizonGeometry HorizonRegions() const { return horizon_->Geometry(); }
   bool FooterMiddleVisible() const { return footer_->MiddleVisible(); }
   const application::FooterView &NavigationFooter() const { return footer_->View(); }
   std::optional<wxRect> DrawerRegion() const {
@@ -146,6 +147,7 @@ private:
   void ShowNavigation();
   void ShowTraffic(int mmsi = 0);
   void ShowPassage();
+  void ActivateHorizon(const application::HorizonAction &);
   void ShowSettings();
   void ShowAnchor();
   void ShowPilot();
@@ -160,6 +162,7 @@ private:
   wxString InputSummary() const;
   vessel::AisSelection ais_selection_;
   vessel::AisState ais_state_;
+  vessel::AisState horizon_ais_; // original onboard copy, never online aggregation
   application::OnlineAisState online_ais_state_;
   XNavAisDrawer *ais_drawer_ = nullptr;
   XNavPassageDrawer *passage_drawer_ = nullptr;

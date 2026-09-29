@@ -26,6 +26,79 @@ env=dict(os.environ);ui=None;xserver=None;app=None;handle=None;pid=None
 normal_locations=[];normal_before={}
 report={'authority':'native Windows fixture-enabled disposable test tree' if windows else 'Linux development',
         'checks':[],'screenshots':[],'higher_dpi':'Not exercised by this hosted desktop; manual validation remains open'}
+phase='initial setup';launches=[];observed_processes={};failure_processes=[]
+
+def event(kind,**details):
+    # Stage-bound observations only; never inspect environment or sensor input.
+    rows=report.setdefault('process_events',[])
+    if len(rows)<256:
+        row=dict(event=kind,phase=phase,monotonic_ms=int(time.monotonic()*1000));row.update(details);rows.append(row)
+
+def proc_stat(target):
+    fields=(Path('/proc')/str(target)/'stat').read_text().rsplit(')',1)[1].split()
+    return dict(pid=target,state=fields[0],ppid=int(fields[1]),start_ticks=int(fields[19]))
+
+def observe_processes():
+    """Snapshot only this subreaper's OpenCPN descendants, without reaping."""
+    if windows:return []
+    rows=[];pending=[os.getpid()];seen=set()
+    while pending and len(seen)<256:
+        parent=pending.pop()
+        if parent in seen:continue
+        seen.add(parent)
+        try:children=(Path('/proc')/str(parent)/'task'/str(parent)/'children').read_text().split()
+        except OSError:continue
+        for child in children[:256-len(seen)]:
+            target=int(child);pending.append(target)
+            try:
+                before=proc_stat(target);base=Path('/proc')/child
+                if (base/'comm').read_text().strip()!='opencpn':continue
+                # Birth identity is checked after every multi-file observation.
+                key=(target,before['start_ticks']);previous=observed_processes.get(key)
+                if before['state']=='Z':
+                    row=dict(before,argv=previous.get('argv',[]) if previous else [],
+                             argv_state='retained before exit' if previous else 'unavailable: exited before observation')
+                    if all(hasattr(os,name) for name in ('waitid','WNOWAIT','WEXITED','WNOHANG','P_PID')):
+                        try:
+                            status=os.waitid(os.P_PID,target,os.WEXITED|os.WNOHANG|os.WNOWAIT)
+                            if status:row['unreaped_exit']=dict(pid=status.si_pid,code=status.si_code,status=status.si_status)
+                        except (OSError,ChildProcessError) as error:row['exit_observation_error']=str(error)
+                    else:row['exit_observation_error']='waitid/WNOWAIT unavailable'
+                else:
+                    if (base/'exe').resolve()!=exe.resolve():continue
+                    with (base/'cmdline').open('rb') as stream:raw=stream.read(8192)
+                    row=dict(before,argv=[v.decode(errors='replace')[:2048] for v in raw.split(b'\0') if v][:32])
+                after=proc_stat(target)
+                if (after['pid'],after['start_ticks'])!=key:continue
+                observed_processes[key]=row;rows.append(row)
+            except (OSError,ValueError,IndexError):continue
+    return rows
+
+def process_stage(kind,**details):
+    try:event(kind,processes=observe_processes(),**details)
+    except Exception as error:event('observation-error',stage=kind,error=repr(error))
+
+def wait_launch(process,timeout):
+    try:code=process.wait(timeout=timeout)
+    except Exception as error:
+        event('popen-wait-error',pid=process.pid,error=repr(error));raise
+    event('popen-exit',pid=process.pid,exit_code=code)
+    return code
+
+def wait_pid(target,options):
+    child,status=os.waitpid(target,options)
+    if child:
+        birth=max((start for (number,start) in observed_processes if number==child),default=None)
+        event('waitpid-exit',pid=child,start_ticks=birth,raw_wait_status=status,exit_code=os.waitstatus_to_exitcode(status))
+    return child,status
+
+def wait_native(process_handle,target):
+    # The same helper deadline and zero-exit assertion, retaining its result.
+    try:code=ui.wait_exit_code(process_handle)
+    except Exception as error:
+        event('native-wait-error',pid=target,error=repr(error));raise
+    event('native-exit',pid=target,exit_code=code)
+    assert code==0,f'Native process exited with code {code}'
 
 def module(name):
     spec=importlib.util.spec_from_file_location(name,root/'tools'/f'{name}.py')
@@ -90,6 +163,7 @@ else:
     time.sleep(1)
 # Only this freshly extracted disposable test copy receives the fixture marker.
 # The downloadable profile remains a clean user preview, without test hooks.
+report['executable_sha256']=hashlib.sha256(exe.read_bytes()).hexdigest()
 (profile/'OPENNAV_TEST_PROFILE').write_text('CI disposable extracted preview only\n')
 if env.get('OPENNAV_TEST_UI_TRACE'):
     env['OPENNAV_TEST_UI_TRACE_FILE']=str(profile/'opennav-ui-trace.log')
@@ -99,14 +173,25 @@ chartcheck=module('chart-render-check')
 def xdo(*arguments):
     return subprocess.check_output(['xdotool',*map(str,arguments)],env=env,text=True,timeout=10).strip()
 def window(title,expected_pid=None):
-    if windows:return ui.wait_window(title,expected_pid)
+    process_stage('await-window',title=title,expected_pid=expected_pid)
+    if windows:
+        try:h,found_pid=ui.wait_window(title,expected_pid)
+        except Exception:
+            process_stage('window-timeout',title=title,expected_pid=expected_pid);raise
+        report['last_observed_window']=dict(handle=int(h),pid=found_pid,title=title,phase=phase)
+        event('window-found',**report['last_observed_window'])
+        return h,found_pid
     deadline=time.monotonic()+45
     while time.monotonic()<deadline:
         r=subprocess.run(['xdotool','search','--onlyvisible','--name','^'+title+'$'],env=env,capture_output=True,text=True)
         if r.returncode==0 and r.stdout.strip():
             h=r.stdout.splitlines()[0];xdo('windowsize',h,1280,800);xdo('windowmove',h,0,0);xdo('windowfocus',h)
-            return h,int(xdo('getwindowpid',h))
+            found_pid=int(xdo('getwindowpid',h))
+            report['last_observed_window']=dict(handle=h,pid=found_pid,title=title,phase=phase)
+            process_stage('window-found',handle=h,pid=found_pid,title=title)
+            return h,found_pid
         time.sleep(.1)
+    process_stage('window-timeout',title=title,expected_pid=expected_pid)
     raise RuntimeError('Window not found: '+title)
 def ready(count):
     deadline=time.monotonic()+60
@@ -240,8 +325,9 @@ def page_capture(name, page):
     if windows:
         report.setdefault('page_visibility', []).append(ui.assert_preview_page(handle, page))
 def close_current():
+    process_stage('close-request',pid=pid)
     if windows:
-        h=ui.monitor_process(pid);ui.close(handle);ui.wait_clean_exit(h)
+        h=ui.monitor_process(pid);ui.close(handle);wait_native(h,pid)
     else:
         # Portable previews intentionally refuse remote commands. Send the
         # ordinary window-manager close event to this test window instead.
@@ -261,7 +347,7 @@ def close_current():
         xlib.XSendEvent(display,int(handle),0,0,ctypes.byref(event));xlib.XFlush(display);xlib.XCloseDisplay(display)
         deadline=time.monotonic()+30
         while time.monotonic()<deadline:
-            child,status=os.waitpid(pid,os.WNOHANG)
+            child,status=wait_pid(pid,os.WNOHANG)
             if child:
                 assert os.waitstatus_to_exitcode(status)==0;return
             time.sleep(.1)
@@ -271,24 +357,78 @@ def preserved():
     if windows:
         assert (normal/'opencpn.ini').read_text()=='NORMAL PROFILE MUST NOT CHANGE\n'
         assert normal_snapshot()==normal_before,'Existing normal OpenCPN files changed'
-def switch_to_xnav(count, phase, name):
-    global handle, pid
+def switch_to_xnav(count, transition, name):
+    global handle, pid, phase
+    phase=transition
+    process_stage('switch-to-xnav-request',pid=pid)
     if windows:
-        old=ui.monitor_process(pid);ui.click_menu(handle,'Switch to XNav');ui.wait_clean_exit(old)
+        old=ui.monitor_process(pid);ui.click_menu(handle,'Switch to XNav');wait_native(old,pid)
     else:
         old=pid;xdo('mousemove',600,400,'click',3);time.sleep(.4);xdo('key','End','Return')
-        _,status=os.waitpid(old,0);assert os.waitstatus_to_exitcode(status)==0
+        _,status=wait_pid(old,0);assert os.waitstatus_to_exitcode(status)==0
     handle,pid=window('OpenNav X / OpenCPN');ready(count);preserved()
-    chart_capture(name,phase)
+    chart_capture(name,transition)
     if windows:
         saved=data(lambda d:d['settings']['capacity_kwh']=='24' and d['settings']['reserve_percent']=='20')
         assert saved['settings']['battery_device']=='', 'No battery identity may be fabricated'
         report['checks'].append('Explicit live energy configuration survived mode restart')
 def launch(mode,demo=False,launcher=None,direct=False):
-    if windows and launcher:
-        return subprocess.Popen([os.environ['COMSPEC'],'/d','/c',str(package/launcher)],cwd=temp,env=env,stdout=subprocess.DEVNULL,stderr=subprocess.DEVNULL)
-    with (evidence/'preview-launch.log').open('a') as out:
-        return subprocess.Popen([str(exe)]+([] if direct else ['--configdir',str(profile),'--no_opengl','--'+mode]+(['--xnav-demo'] if demo else [])),env=env,cwd=temp,stdout=out,stderr=out)
+    global phase
+    phase=f'launch {len(launches)+1}: '+(launcher or ('direct executable' if direct else mode+(' demo' if demo else '')))
+    number=len(launches)+1
+    stdout_name=f'preview-launch-{number:02d}.stdout.log';stderr_name=f'preview-launch-{number:02d}.stderr.log'
+    arguments=([os.environ['COMSPEC'],'/d','/c',str(package/launcher)] if windows and launcher else
+               [str(exe)]+([] if direct else ['--configdir',str(profile),'--no_opengl','--'+mode]+(['--xnav-demo'] if demo else [])))
+    # Children inherit these descriptors across controlled restarts. The
+    # launch PID identifies the original parent (cmd.exe on Windows), not an
+    # unseen replacement process that may fail before creating its window.
+    with (evidence/stdout_name).open('w') as stdout,(evidence/stderr_name).open('w') as stderr:
+        process=subprocess.Popen(arguments,env=env,cwd=temp,stdout=stdout,stderr=stderr)
+    record=dict(phase=phase,pid=process.pid,arguments=arguments,stdout=stdout_name,stderr=stderr_name)
+    launches.append((process,record));report.setdefault('launches',[]).append(record)
+    process_stage('direct-launch',pid=process.pid)
+    return process
+
+def failure_inventory(error):
+    # This precedes teardown and Popen.poll(): WNOWAIT must observe adopted
+    # zombie children while the original wait contracts still own reaping.
+    inventory=dict(error=repr(error),phase=phase,last_observed_window=report.get('last_observed_window'),
+                   processes=observe_processes(),windows=[])
+    report['failure_inventory']='preview-failure-inventory.json'
+    try:
+        if windows:
+            query=ui.declare(ui.kernel,'QueryFullProcessImageNameW',ui.W.BOOL,ui.W.HANDLE,ui.W.DWORD,ui.W.LPWSTR,ui.C.POINTER(ui.W.DWORD))
+            for h,process,title in ui.windows()[:64]:
+                ph=ui.OpenProcess(0x1000,False,process)
+                if not ph:continue
+                try:
+                    size=ui.W.DWORD(32768);name=ui.C.create_unicode_buffer(size.value)
+                    if query(ph,0,name,ui.C.byref(size)) and str(Path(name.value).resolve()).casefold()==str(exe.resolve()).casefold():
+                        rect=ui.W.RECT();ui.GetWindowRect(h,ui.C.byref(rect))
+                        inventory['windows'].append(dict(handle=int(h),pid=process,title=title,
+                            bounds=[rect.left,rect.top,rect.right-rect.left,rect.bottom-rect.top],
+                            children=[caption for _,caption in ui.children(h)[:128]]))
+                        if process not in failure_processes:failure_processes.append(process)
+                finally:ui.CloseHandle(ph)
+            desktop=ui.declare(ui.user,'GetDesktopWindow',ui.W.HWND)()
+            path=evidence/'preview-failure.png'
+            ui.capture(desktop,path,resize=False,screen_pixels=True)
+            inventory['screenshot']=path.name
+        else:
+            found=subprocess.run(['xdotool','search','--all','--onlyvisible','--name','.*'],env=env,capture_output=True,text=True,timeout=5)
+            inventory['window_search']=dict(return_code=found.returncode,stderr=found.stderr[:2048])
+            for window_id in found.stdout.splitlines()[:32]:
+                row=dict(handle=window_id)
+                for key,command in [('title','getwindowname'),('pid','getwindowpid'),('geometry','getwindowgeometry')]:
+                    result=subprocess.run(['xdotool',command,window_id],env=env,capture_output=True,text=True,timeout=3)
+                    row[key]=dict(return_code=result.returncode,stdout=result.stdout[:4096],stderr=result.stderr[:2048])
+                inventory['windows'].append(row)
+            path=evidence/'preview-failure-linux.png'
+            result=subprocess.run(['import','-window','root',str(path)],env=env,capture_output=True,text=True,timeout=10)
+            inventory['screenshot']=dict(path=path.name,return_code=result.returncode,stderr=result.stderr[:2048])
+    except Exception as observed_error:inventory['observation_error']=repr(observed_error)
+    finally:
+        (evidence/report['failure_inventory']).write_text(json.dumps(inventory,indent=2)+'\n')
 
 try:
     app=launch('xnav',True,'Run-XNav-Demo.cmd' if windows else None)
@@ -532,30 +672,34 @@ try:
         shell_click('Passage')
         ui.assert_preview_page(handle,'Route')
         report['checks'].append('Page resize/visibility and Navigation return with chart zoom passed')
+    phase='XNav to Legacy'
+    process_stage('switch-to-legacy-request',pid=pid)
     if windows:
         ui.open_system(pid);ui.click_text(pid,'Open Legacy OpenCPN')
     else:xdo('key','ctrl+shift+l')
-    assert app.wait(timeout=35)==0
+    assert wait_launch(app,35)==0
     handle,pid=window('OpenCPN / Legacy');ready(2);preserved();chart_capture('preview-07-legacy','XNav to Legacy')
     switch_to_xnav(3,'XNav to Legacy to XNav','preview-09-returned-xnav')
     live=data(lambda d:d['data_mode']!='DEMO')
     assert 'arrival_soc' not in live['energy'];preserved()
     if windows:
-        old=ui.monitor_process(pid);ui.open_system(pid);ui.click_text(pid,'Safe Mode');ui.wait_clean_exit(old)
+        phase='XNav to Safe'
+        process_stage('switch-to-safe-request',pid=pid)
+        old=ui.monitor_process(pid);ui.open_system(pid);ui.click_text(pid,'Safe Mode');wait_native(old,pid)
         handle,pid=window('OpenNav Safe Mode / OpenCPN');ready(4);chart_capture('preview-08-safe','XNav to Safe')
         switch_to_xnav(5,'Safe to XNav','preview-12-safe-to-xnav');close_current();preserved()
         count=5
         for launcher,title in [('Run-XNav.cmd','OpenNav X / OpenCPN'),('Run-Legacy.cmd','OpenCPN / Legacy'),('Run-Safe.cmd','OpenNav Safe Mode / OpenCPN')]:
             app=launch('',launcher=launcher);handle,pid=window(title);count+=1;ready(count)
             chart_capture('preview-13-'+launcher[4:-4].lower(),'Direct '+title+' launcher startup')
-            close_current();assert app.wait(timeout=15)==0;preserved()
+            close_current();assert wait_launch(app,15)==0;preserved()
         # Reproduce the persisted empty-path artifact from Preview 0.1. Direct
         # startup must repair it without importing or rewriting chart choices.
         with (profile/'opencpn.conf').open('a') as stream:
             stream.write('\n[Directories]\nBaseShapefileDir=./\n')
         app=launch('',direct=True);handle,pid=window('OpenNav X / OpenCPN');count+=1;ready(count)
         chart_capture('preview-10-repaired-basemap','Direct startup with old Preview 0.1 basemap setting')
-        close_current();assert app.wait(timeout=15)==0;preserved()
+        close_current();assert wait_launch(app,15)==0;preserved()
         refused=subprocess.run([str(exe),'--xnav','--configdir',str(normal)],env=env,capture_output=True,timeout=20)
         assert b'refuses a profile outside' in refused.stderr,refused.stderr
         assert (normal/'opencpn.ini').read_text()=='NORMAL PROFILE MUST NOT CHANGE\n'
@@ -589,48 +733,38 @@ try:
     report['checks'].append('XNav / Legacy / Safe clean lifecycle and shared navigation/config persistence passed; mode switch stops Demo')
     report['checks'].append('Real bundled coastline remains rendered after Legacy return and Safe restart')
     report['result']='passed; screenshot review required'
+except BaseException as error:
+    report['error']=repr(error)
+    try:failure_inventory(error)
+    except Exception as observed_error:report['failure_inventory_error']=repr(observed_error)
+    raise
 finally:
-    if not windows and 'result' not in report:
-        report['failure_process_exit']=app.poll() if app else None
-        found=subprocess.run(['xdotool','search','--onlyvisible','--name','.*'],env=env,capture_output=True,text=True)
-        report['failure_windows']=[]
-        for window_id in found.stdout.splitlines():
-            title=subprocess.run(['xdotool','getwindowname',window_id],env=env,capture_output=True,text=True)
-            report['failure_windows'].append({'id':window_id,'title':title.stdout.strip()})
+    # Record direct parents by their actual PID/launch phase; a previous
+    # parent's exit is never the status of the awaited replacement window.
+    for process,record in launches:
+        record['return_code_before_cleanup']=process.poll()
     if windows and 'result' not in report:
-        # Capture before teardown; enumerating later windows after terminating
-        # their process loses the very children needed to diagnose the failure.
-        if handle:
-            try:capture('preview-failure')
-            except Exception as capture_error:report['failure_capture_error']=str(capture_error)
-        # Preserve the actual startup dialog instead of dismissing it. Terminate
-        # only an executable belonging to this freshly extracted test package.
-        query=ui.declare(ui.kernel,'QueryFullProcessImageNameW',ui.W.BOOL,ui.W.HANDLE,ui.W.DWORD,ui.W.LPWSTR,ui.C.POINTER(ui.W.DWORD))
         terminate=ui.declare(ui.kernel,'TerminateProcess',ui.W.BOOL,ui.W.HANDLE,ui.W.UINT)
-        seen=set();report['failure_windows']=[];failed_processes=[]
-        for h,process,title in ui.windows():
-            ph=ui.OpenProcess(0x1000|1,False,process)
-            if not ph:continue
-            try:
-                size=ui.W.DWORD(32768);name=ui.C.create_unicode_buffer(size.value)
-                if query(ph,0,name,ui.C.byref(size)) and str(Path(name.value).resolve()).casefold()==str(exe.resolve()).casefold():
-                    report['failure_windows'].append({'title':title,'children':[caption for _,caption in ui.children(h)]})
-                    if process not in seen:failed_processes.append(process);seen.add(process)
-            finally:ui.CloseHandle(ph)
-        for process in failed_processes:
+        for process in failure_processes:
             ph=ui.OpenProcess(1,False,process)
             if ph:
-                try:terminate(ph,1)
+                try:
+                    event('failure-cleanup-terminate',pid=process)
+                    terminate(ph,1)
                 finally:ui.CloseHandle(ph)
         time.sleep(.5)
     if handle and windows:
         try:ui.close(handle)
         except Exception:pass
     if app and app.poll() is None:
+        event('cleanup-terminate',pid=app.pid)
         app.terminate()
-        try:app.wait(timeout=10)
-        except subprocess.TimeoutExpired:app.kill()
-    if xserver:xserver.terminate();xserver.wait(timeout=10)
+        try:wait_launch(app,10)
+        except subprocess.TimeoutExpired:
+            event('cleanup-kill',pid=app.pid);app.kill()
+    if xserver:
+        xserver.terminate();code=xserver.wait(timeout=10)
+        event('xserver-exit',pid=xserver.pid,exit_code=code)
     for folder,name in [(profile,'preview-profile'),(logs,'preview-logs')]:
         shutil.copytree(folder,evidence/name,dirs_exist_ok=True,ignore=shutil.ignore_patterns('*.pem','opencpn-ipc'))
     (evidence/('preview-results.json' if windows else 'preview-linux-results.json')).write_text(json.dumps(report,indent=2)+'\n')

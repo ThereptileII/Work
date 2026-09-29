@@ -1,0 +1,26 @@
+{
+  "scope": "Standalone fixture host layout only; no production component changed",
+  "native_failure": "Exact701 footer blank after24checks; original host bounds absent, so unsized parent is supported hypothesis awaiting replacement native test",
+  "linux": {
+    "footer": {
+      "checks": 153,
+      "captures": 10,
+      "executable_sha256": "94243a380a3832ddf6f7250ecf0a3aa960517f1664180ebf4de9af1443202d35"
+    },
+    "horizon": {
+      "checks": 208,
+      "captures": 14,
+      "executable_sha256": "243e1599d7ae190732e75167eb987af8f191d27cba9c463d56f3e3c949ddf113"
+    }
+  },
+  "reviewed": [
+    "footer/measured-day.png",
+    "horizon/owned-current-day.png",
+    "horizon/prototype-responsive-150.png"
+  ],
+  "qualification": "Linux host containment/pointer/pixel gates pass; native MSVC replacement mandatory; Linux fonts/scaling do not qualify Windows",
+  "source_files": {
+    "tests/status_footer_test.cpp": "62fb0d853c363885d5da455db060c38f4ca6d9f968b69d68ae658bdf9aaf5109",
+    "tests/horizon_test.cpp": "7352cf4123afae856ca1cbb6d39c693e1e745ad0fafc1f1290968c5b3b879579"
+  }
+}

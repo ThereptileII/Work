@@ -701,6 +701,13 @@ void Attach(MyFrame& frame, wxAuiManager& manager, wxFileConfig& config) {
       runtime["display"]["footer_region"]["width"]=footer.width;
       runtime["display"]["footer_region"]["height"]=footer.height;
       runtime["display"]["footer_middle_visible"]=shell->FooterMiddleVisible();
+      const auto horizon=shell->HorizonRegions();
+      const auto region=[](const wxRect &r){wxJSONValue v;v["x"]=r.x;v["y"]=r.y;v["width"]=r.width;v["height"]=r.height;return v;};
+      runtime["display"]["horizon_region"]=region(horizon.horizon);
+      runtime["display"]["horizon_heading"]=region(horizon.heading);
+      runtime["display"]["horizon_full_passage"]=region(horizon.full_passage);
+      runtime["display"]["horizon_events"]=wxJSONValue(wxJSONTYPE_ARRAY);
+      for(const auto &event:horizon.events)runtime["display"]["horizon_events"].Append(region(event));
       const auto &footer_view=shell->NavigationFooter();
       runtime["navigation_footer"]["navigation_state"]=wxString::FromUTF8(footer_view.navigation_state);
       runtime["navigation_footer"]["position"]=wxString::FromUTF8(footer_view.position);

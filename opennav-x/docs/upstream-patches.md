@@ -22,6 +22,18 @@ For each change record:
 
 Do not leave undocumented direct OpenCPN modifications.
 
+### Prototype navigation horizon (SCRUM-100)
+
+This correction adds no direct upstream patch. The native horizon formats
+copied Vessel Data and the existing ordered SmartNav advice. Full passage opens
+the existing drawer; NOW uses the existing `MyFrame::TogglebFollow` callback;
+route and AIS context actions use the existing owned navigation interfaces.
+Click-time checks re-read owned snapshots on the application thread and reject
+stale or changed identities. No route processing, sensor refresh, autopilot
+output or alternate navigation calculation is used as a getter. Geometry is
+copied into existing diagnostics. The integration test attachment adds the
+owned Horizon model suite. Legacy, Safe and OpenCPN storage are unchanged.
+
 ### Prototype owned surfaces and deferred frame raise
 
 The pinned `MyFrame::ProcessCanvasResize()` schedules `OnRecaptureTimer()` one

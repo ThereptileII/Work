@@ -1,0 +1,1177 @@
+{
+  "scope": "Exact-candidate terminal CI development evidence; failed qualification. No deployment, release, boat or full visual acceptance.",
+  "commit": "701149fea50bdfd0ce5d58d9dd1fb377ab4575d0",
+  "sourceEquivalentLocalCommit": "826a44f78b7fc3fea42d9b21e1e794c08f715bd8",
+  "observedUtc": "2026-09-29 17:39:26 UTC",
+  "accepted": false,
+  "prototypeQualification": {
+    "runId": 36603347656,
+    "url": "https://github.com/ThereptileII/Work/actions/runs/36603347656",
+    "headSha": "701149fea50bdfd0ce5d58d9dd1fb377ab4575d0",
+    "status": "completed",
+    "conclusion": "failure",
+    "updatedUtc": "2026-09-29T17:36:47Z",
+    "jobCounts": {
+      "failure": 2,
+      "success": 6
+    },
+    "jobs": [
+      {
+        "id": 109526012024,
+        "name": "Native prototype composition development (not release qualification)",
+        "status": "completed",
+        "conclusion": "failure",
+        "url": "https://github.com/ThereptileII/Work/actions/runs/36603347656/job/109526012024",
+        "startedUtc": "2026-09-29T17:12:57Z",
+        "completedUtc": "2026-09-29T17:32:51Z"
+      },
+      {
+        "id": 109526012087,
+        "name": "Supplemental AIS portable contracts (ubuntu-24.04)",
+        "status": "completed",
+        "conclusion": "success",
+        "url": "https://github.com/ThereptileII/Work/actions/runs/36603347656/job/109526012087",
+        "startedUtc": "2026-09-29T17:12:56Z",
+        "completedUtc": "2026-09-29T17:13:36Z"
+      },
+      {
+        "id": 109526012173,
+        "name": "Prototype capture guard on disposable Windows surfaces",
+        "status": "completed",
+        "conclusion": "success",
+        "url": "https://github.com/ThereptileII/Work/actions/runs/36603347656/job/109526012173",
+        "startedUtc": "2026-09-29T17:12:57Z",
+        "completedUtc": "2026-09-29T17:14:20Z"
+      },
+      {
+        "id": 109526012183,
+        "name": "Supplemental AIS portable contracts (windows-2022)",
+        "status": "completed",
+        "conclusion": "success",
+        "url": "https://github.com/ThereptileII/Work/actions/runs/36603347656/job/109526012183",
+        "startedUtc": "2026-09-29T17:12:56Z",
+        "completedUtc": "2026-09-29T17:13:58Z"
+      },
+      {
+        "id": 109526012191,
+        "name": "Bounded AIS TLS and provider lifecycle (Linux loopback only)",
+        "status": "completed",
+        "conclusion": "success",
+        "url": "https://github.com/ThereptileII/Work/actions/runs/36603347656/job/109526012191",
+        "startedUtc": "2026-09-29T17:12:56Z",
+        "completedUtc": "2026-09-29T17:14:47Z"
+      },
+      {
+        "id": 109526012273,
+        "name": "Native prototype route waypoint AIS pointer regressions (not full release gate)",
+        "status": "completed",
+        "conclusion": "failure",
+        "url": "https://github.com/ThereptileII/Work/actions/runs/36603347656/job/109526012273",
+        "startedUtc": "2026-09-29T17:12:57Z",
+        "completedUtc": "2026-09-29T17:36:46Z"
+      },
+      {
+        "id": 109526012360,
+        "name": "reference (windows-2022)",
+        "status": "completed",
+        "conclusion": "success",
+        "url": "https://github.com/ThereptileII/Work/actions/runs/36603347656/job/109526012360",
+        "startedUtc": "2026-09-29T17:12:56Z",
+        "completedUtc": "2026-09-29T17:14:29Z"
+      },
+      {
+        "id": 109526012413,
+        "name": "reference (ubuntu-24.04)",
+        "status": "completed",
+        "conclusion": "success",
+        "url": "https://github.com/ThereptileII/Work/actions/runs/36603347656/job/109526012413",
+        "startedUtc": "2026-09-29T17:12:57Z",
+        "completedUtc": "2026-09-29T17:13:57Z"
+      }
+    ]
+  },
+  "fullQualification": {
+    "runId": 36603349213,
+    "url": "https://github.com/ThereptileII/Work/actions/runs/36603349213",
+    "headSha": "701149fea50bdfd0ce5d58d9dd1fb377ab4575d0",
+    "status": "completed",
+    "conclusion": "failure",
+    "updatedUtc": "2026-09-29T17:28:26Z",
+    "jobCounts": {
+      "success": 11,
+      "failure": 3,
+      "skipped": 2
+    },
+    "jobs": [
+      {
+        "id": 109526018601,
+        "name": "Official OpenCPN installation prerequisite",
+        "status": "completed",
+        "conclusion": "success",
+        "url": "https://github.com/ThereptileII/Work/actions/runs/36603349213/job/109526018601",
+        "startedUtc": "2026-09-29T17:12:57Z",
+        "completedUtc": "2026-09-29T17:13:29Z"
+      },
+      {
+        "id": 109526018887,
+        "name": "Boat C6 producer expiry compile (no flashing)",
+        "status": "completed",
+        "conclusion": "success",
+        "url": "https://github.com/ThereptileII/Work/actions/runs/36603349213/job/109526018887",
+        "startedUtc": "2026-09-29T17:12:57Z",
+        "completedUtc": "2026-09-29T17:14:45Z"
+      },
+      {
+        "id": 109526018982,
+        "name": "contracts (ubuntu-24.04)",
+        "status": "completed",
+        "conclusion": "success",
+        "url": "https://github.com/ThereptileII/Work/actions/runs/36603349213/job/109526018982",
+        "startedUtc": "2026-09-29T17:12:58Z",
+        "completedUtc": "2026-09-29T17:14:42Z"
+      },
+      {
+        "id": 109526019042,
+        "name": "Approved OpenCPN ABI on Windows x64",
+        "status": "completed",
+        "conclusion": "success",
+        "url": "https://github.com/ThereptileII/Work/actions/runs/36603349213/job/109526019042",
+        "startedUtc": "2026-09-29T17:12:58Z",
+        "completedUtc": "2026-09-29T17:13:14Z"
+      },
+      {
+        "id": 109526019052,
+        "name": "linux",
+        "status": "completed",
+        "conclusion": "success",
+        "url": "https://github.com/ThereptileII/Work/actions/runs/36603349213/job/109526019052",
+        "startedUtc": "2026-09-29T17:12:58Z",
+        "completedUtc": "2026-09-29T17:25:48Z"
+      },
+      {
+        "id": 109526019055,
+        "name": "Native MSVC upstream Win32 ABI on Windows x64",
+        "status": "completed",
+        "conclusion": "success",
+        "url": "https://github.com/ThereptileII/Work/actions/runs/36603349213/job/109526019055",
+        "startedUtc": "2026-09-29T17:12:59Z",
+        "completedUtc": "2026-09-29T17:22:59Z"
+      },
+      {
+        "id": 109526019075,
+        "name": "contracts (windows-2022)",
+        "status": "completed",
+        "conclusion": "success",
+        "url": "https://github.com/ThereptileII/Work/actions/runs/36603349213/job/109526019075",
+        "startedUtc": "2026-09-29T17:12:59Z",
+        "completedUtc": "2026-09-29T17:16:59Z"
+      },
+      {
+        "id": 109526019083,
+        "name": "Native boat recovery and commissioning contracts",
+        "status": "completed",
+        "conclusion": "success",
+        "url": "https://github.com/ThereptileII/Work/actions/runs/36603349213/job/109526019083",
+        "startedUtc": "2026-09-29T17:12:57Z",
+        "completedUtc": "2026-09-29T17:15:05Z"
+      },
+      {
+        "id": 109526019095,
+        "name": "Linux integrated regression gate",
+        "status": "completed",
+        "conclusion": "failure",
+        "url": "https://github.com/ThereptileII/Work/actions/runs/36603349213/job/109526019095",
+        "startedUtc": "2026-09-29T17:12:57Z",
+        "completedUtc": "2026-09-29T17:27:39Z"
+      },
+      {
+        "id": 109526019106,
+        "name": "Native Win32 commissioning restart process boundary",
+        "status": "completed",
+        "conclusion": "failure",
+        "url": "https://github.com/ThereptileII/Work/actions/runs/36603349213/job/109526019106",
+        "startedUtc": "2026-09-29T17:12:57Z",
+        "completedUtc": "2026-09-29T17:14:17Z"
+      },
+      {
+        "id": 109526894382,
+        "name": "Fixed guarded mode UI actions on disposable native windows",
+        "status": "completed",
+        "conclusion": "success",
+        "url": "https://github.com/ThereptileII/Work/actions/runs/36603349213/job/109526894382",
+        "startedUtc": "2026-09-29T17:15:08Z",
+        "completedUtc": "2026-09-29T17:17:01Z"
+      },
+      {
+        "id": 109526894449,
+        "name": "Actual official OpenCPN portable upgrade caution (en_US)",
+        "status": "completed",
+        "conclusion": "success",
+        "url": "https://github.com/ThereptileII/Work/actions/runs/36603349213/job/109526894449",
+        "startedUtc": "2026-09-29T17:15:09Z",
+        "completedUtc": "2026-09-29T17:15:53Z"
+      },
+      {
+        "id": 109526894481,
+        "name": "Actual official OpenCPN portable upgrade caution (sv)",
+        "status": "completed",
+        "conclusion": "success",
+        "url": "https://github.com/ThereptileII/Work/actions/runs/36603349213/job/109526894481",
+        "startedUtc": "2026-09-29T17:15:08Z",
+        "completedUtc": "2026-09-29T17:15:50Z"
+      },
+      {
+        "id": 109526896160,
+        "name": "Actual restart broker with disposable marker-only installation",
+        "status": "completed",
+        "conclusion": "skipped",
+        "url": "https://github.com/ThereptileII/Work/actions/runs/36603349213/job/109526896160",
+        "startedUtc": "2026-09-29T17:15:06Z",
+        "completedUtc": "2026-09-29T17:15:05Z"
+      },
+      {
+        "id": 109527660816,
+        "name": "Native MSVC XNav / Legacy / Safe slice",
+        "status": "completed",
+        "conclusion": "failure",
+        "url": "https://github.com/ThereptileII/Work/actions/runs/36603349213/job/109527660816",
+        "startedUtc": "2026-09-29T17:17:04Z",
+        "completedUtc": "2026-09-29T17:28:25Z"
+      },
+      {
+        "id": 109532237460,
+        "name": "Publish Beta after both platform and installer gates",
+        "status": "completed",
+        "conclusion": "skipped",
+        "url": "https://github.com/ThereptileII/Work/actions/runs/36603349213/job/109532237460",
+        "startedUtc": "2026-09-29T17:28:26Z",
+        "completedUtc": "2026-09-29T17:28:26Z"
+      }
+    ]
+  },
+  "verifiedArtifacts": [
+    {
+      "id": 11051495895,
+      "name": "prototype-native-Windows-701149fea50bdfd0ce5d58d9dd1fb377ab4575d0",
+      "sha256": "cb5043a6053230856934043b76e8d2a0ec484cf15926dc34132623fb9c626481",
+      "bytes": 40847229,
+      "zipCrc": true,
+      "safeArchivePaths": true,
+      "url": "https://github.com/ThereptileII/Work/actions/runs/36603347656/artifacts/11051495895"
+    },
+    {
+      "id": 11050972106,
+      "name": "prototype-object-flow-Windows-701149fea50bdfd0ce5d58d9dd1fb377ab4575d0",
+      "sha256": "20935181d7e3677a7096e45f676f94b67cd9eb264e64d92668a7f2d80718cced",
+      "bytes": 18207865,
+      "zipCrc": true,
+      "safeArchivePaths": true,
+      "url": "https://github.com/ThereptileII/Work/actions/runs/36603347656/artifacts/11050972106"
+    },
+    {
+      "id": 11050102445,
+      "name": "prototype-ais-foundation-Windows-701149fea50bdfd0ce5d58d9dd1fb377ab4575d0",
+      "sha256": "ec06fcb3a4dcbd0f968c4d36ac8f97f7b7b2dece7afd1991bf44891c1d301efa",
+      "bytes": 690,
+      "zipCrc": true,
+      "safeArchivePaths": true,
+      "url": "https://github.com/ThereptileII/Work/actions/runs/36603347656/artifacts/11050102445"
+    },
+    {
+      "id": 11050032634,
+      "name": "prototype-review-guard-Windows-701149fea50bdfd0ce5d58d9dd1fb377ab4575d0",
+      "sha256": "9d2f73ddf09140ca1ba0e0a6f2a2a028ba58d528abad8f1cc3e2c3b8aad4c153",
+      "bytes": 9676,
+      "zipCrc": true,
+      "safeArchivePaths": true,
+      "url": "https://github.com/ThereptileII/Work/actions/runs/36603347656/artifacts/11050032634"
+    },
+    {
+      "id": 11049653512,
+      "name": "prototype-ais-network-Linux-701149fea50bdfd0ce5d58d9dd1fb377ab4575d0",
+      "sha256": "113f3d401d85f2ae02eabf0b8f3cbf3baa9a1344c280c7c9a6bd4eacb90a214f",
+      "bytes": 935,
+      "zipCrc": true,
+      "safeArchivePaths": true,
+      "url": "https://github.com/ThereptileII/Work/actions/runs/36603347656/artifacts/11049653512"
+    },
+    {
+      "id": 11049633556,
+      "name": "prototype-reference-Windows-701149fea50bdfd0ce5d58d9dd1fb377ab4575d0",
+      "sha256": "ff74306d4ad5e03a14827aa9b0c5fc0b0a1ced030c9fedef51fcc79e39e1e260",
+      "bytes": 19678323,
+      "zipCrc": true,
+      "safeArchivePaths": true,
+      "url": "https://github.com/ThereptileII/Work/actions/runs/36603347656/artifacts/11049633556"
+    },
+    {
+      "id": 11049568431,
+      "name": "prototype-reference-Linux-701149fea50bdfd0ce5d58d9dd1fb377ab4575d0",
+      "sha256": "609113802461ae1d71ab52b210e237f04b70bad0a2c1d78269afcd809827da4c",
+      "bytes": 21812996,
+      "zipCrc": true,
+      "safeArchivePaths": true,
+      "url": "https://github.com/ThereptileII/Work/actions/runs/36603347656/artifacts/11049568431"
+    },
+    {
+      "id": 11049378530,
+      "name": "prototype-ais-foundation-Linux-701149fea50bdfd0ce5d58d9dd1fb377ab4575d0",
+      "sha256": "1489233cf5b55f536b2ab43037596894062bb40a50a747cc3751d83f8994278a",
+      "bytes": 689,
+      "zipCrc": true,
+      "safeArchivePaths": true,
+      "url": "https://github.com/ThereptileII/Work/actions/runs/36603347656/artifacts/11049378530"
+    },
+    {
+      "id": 11050482190,
+      "name": "restart-window-701149fea50bdfd0ce5d58d9dd1fb377ab4575d0",
+      "sha256": "0de6e3bea6aab999cdec8cc2c09ebf3dfdd8cc7f3df0492b84df328ae991a660",
+      "bytes": 23480,
+      "zipCrc": true,
+      "safeArchivePaths": true,
+      "url": "https://github.com/ThereptileII/Work/actions/runs/36603349213/artifacts/11050482190"
+    },
+    {
+      "id": 11050473630,
+      "name": "linux-pristine-701149fea50bdfd0ce5d58d9dd1fb377ab4575d0",
+      "sha256": "7f82c53c4e0a09adaa1677c673076b64146b560a833bde3b67edab57c9a8f345",
+      "bytes": 475739,
+      "zipCrc": true,
+      "safeArchivePaths": true,
+      "url": "https://github.com/ThereptileII/Work/actions/runs/36603349213/artifacts/11050473630"
+    },
+    {
+      "id": 11050459460,
+      "name": "linux-integration-701149fea50bdfd0ce5d58d9dd1fb377ab4575d0",
+      "sha256": "d88eb36ac79f272528e12bf100440fb09e9c9422b6dcf02b7c63e3421e379de9",
+      "bytes": 723981,
+      "zipCrc": true,
+      "safeArchivePaths": true,
+      "url": "https://github.com/ThereptileII/Work/actions/runs/36603349213/artifacts/11050459460"
+    },
+    {
+      "id": 11050347022,
+      "name": "boat-maintenance-701149fea50bdfd0ce5d58d9dd1fb377ab4575d0",
+      "sha256": "64429b299c05c28f9b2d316a701d71875494a093620e86f3400a2783566fdea4",
+      "bytes": 24740,
+      "zipCrc": true,
+      "safeArchivePaths": true,
+      "url": "https://github.com/ThereptileII/Work/actions/runs/36603349213/artifacts/11050347022"
+    },
+    {
+      "id": 11050279091,
+      "name": "windows-integration-701149fea50bdfd0ce5d58d9dd1fb377ab4575d0",
+      "sha256": "2bd1d137bc112f31219f1bb5641e15b25352c71f43b83b377ed0371cac467b32",
+      "bytes": 1106632,
+      "zipCrc": true,
+      "safeArchivePaths": true,
+      "url": "https://github.com/ThereptileII/Work/actions/runs/36603349213/artifacts/11050279091"
+    },
+    {
+      "id": 11050246722,
+      "name": "official-prerequisite-701149fea50bdfd0ce5d58d9dd1fb377ab4575d0",
+      "sha256": "fa0442bea621c4084146fa61a530126881f4fab87aa66f442f7ada1094f85e86",
+      "bytes": 221575,
+      "zipCrc": true,
+      "safeArchivePaths": true,
+      "url": "https://github.com/ThereptileII/Work/actions/runs/36603349213/artifacts/11050246722"
+    },
+    {
+      "id": 11049912804,
+      "name": "boat-firmware-701149fea50bdfd0ce5d58d9dd1fb377ab4575d0",
+      "sha256": "8cb2426a0e024855222744ab714c6e024350efb91c18757bfd302a5002db69c5",
+      "bytes": 2660,
+      "zipCrc": true,
+      "safeArchivePaths": true,
+      "url": "https://github.com/ThereptileII/Work/actions/runs/36603349213/artifacts/11049912804"
+    },
+    {
+      "id": 11049787970,
+      "name": "commissioning-restart-701149fea50bdfd0ce5d58d9dd1fb377ab4575d0",
+      "sha256": "b8f161a2e8fa283e648fb6c9cad04f331a84bb97e9b989ed02150babb7bca3e8",
+      "bytes": 5218,
+      "zipCrc": true,
+      "safeArchivePaths": true,
+      "url": "https://github.com/ThereptileII/Work/actions/runs/36603349213/artifacts/11049787970"
+    },
+    {
+      "id": 11049769579,
+      "name": "windows-pristine-701149fea50bdfd0ce5d58d9dd1fb377ab4575d0",
+      "sha256": "be188534b792d4a45926545636a9d8448e6979f2ac070ae18b0d4d5e8a8e2cc6",
+      "bytes": 496781,
+      "zipCrc": true,
+      "safeArchivePaths": true,
+      "url": "https://github.com/ThereptileII/Work/actions/runs/36603349213/artifacts/11049769579"
+    },
+    {
+      "id": 11049768449,
+      "name": "stock-welcome-sv-701149fea50bdfd0ce5d58d9dd1fb377ab4575d0",
+      "sha256": "1bc89ba44a00c21e0b63ebfddfa972cc90e1a155509966bd90832d548c0d363d",
+      "bytes": 501815,
+      "zipCrc": true,
+      "safeArchivePaths": true,
+      "url": "https://github.com/ThereptileII/Work/actions/runs/36603349213/artifacts/11049768449"
+    },
+    {
+      "id": 11049478734,
+      "name": "stock-welcome-en_US-701149fea50bdfd0ce5d58d9dd1fb377ab4575d0",
+      "sha256": "a26a4bdfd97bffd5a14e7652051bd799dbefa1cd0b810ee415cc4c1fd12c951e",
+      "bytes": 474320,
+      "zipCrc": true,
+      "safeArchivePaths": true,
+      "url": "https://github.com/ThereptileII/Work/actions/runs/36603349213/artifacts/11049478734"
+    }
+  ],
+  "artifactVerification": "All19 candidate archives(8prototype,11full) matched fresh GitHub API SHA256 and byte count; ZIP CRC and safe paths verified before extraction. Binary hashes below are embedded exact-build evidence; executable archives are not supplied by these failing gates.",
+  "portableContracts": {
+    "linux": {
+      "passed": 83,
+      "failed": 0,
+      "jobId": 109526018982
+    },
+    "windows": {
+      "passed": 83,
+      "failed": 0,
+      "jobId": 109526019075
+    },
+    "separatePilotPolicyCTest": {
+      "linux": 1,
+      "windows": 1
+    },
+    "installerPolicyChecksPerProbe": 48,
+    "windowsFilesystemChecksPerArchitecture": 39,
+    "windowsShortcutMigrationChecksPerArchitecture": 132,
+    "countsAreNotSummedAcrossRepeatedBuilds": true
+  },
+  "integratedUnitTests": {
+    "linuxFixture": {
+      "passed": 135,
+      "failed": 0,
+      "xml": {
+        "path": "/tmp/xnav-ci-watch-701149-full/linux-integration-701149fea50bdfd0ce5d58d9dd1fb377ab4575d0/xnav-linux-tests.xml",
+        "sha256": "70e90c504b6033df7844276a3466c9931ab3ace1680a017a746d84a5f626da6c",
+        "bytes": 115402
+      }
+    },
+    "windowsFixtureFull": {
+      "passed": 127,
+      "failed": 0,
+      "xml": {
+        "path": "/tmp/xnav-ci-watch-701149-full/windows-integration-701149fea50bdfd0ce5d58d9dd1fb377ab4575d0/windows-xnav-tests.xml",
+        "sha256": "b75b6e524d91db341e1c3a80348deafd0e4a4b82b1643050ca70fd5a4aa2ca9c",
+        "bytes": 110670
+      }
+    },
+    "windowsFixturePrototype": {
+      "passed": 127,
+      "failed": 0,
+      "xml": {
+        "path": "/tmp/xnav-ci-watch-701149-prototype/prototype-object-flow-Windows-701149fea50bdfd0ce5d58d9dd1fb377ab4575d0/windows-xnav-tests.xml",
+        "sha256": "7a97e003a3d871fdc4217e954be09ee45f351177f5e7ce5e8a17524b1ae62b23",
+        "bytes": 110672
+      }
+    },
+    "windowsProductPrototype": {
+      "passed": 127,
+      "failed": 0,
+      "xml": {
+        "path": "/tmp/xnav-ci-watch-701149-prototype/prototype-native-Windows-701149fea50bdfd0ce5d58d9dd1fb377ab4575d0/windows-production-tests.xml",
+        "sha256": "a89863ef321fe77b5b052d8fb7835f3d5460c5889850d145d986399ba3978f55",
+        "bytes": 111405
+      }
+    }
+  },
+  "pristineBaseline": {
+    "linux": {
+      "ctest_entries": 66,
+      "observed_failures": [
+        "DriverRegistry.RegisterDriver",
+        "IpcServer.Commands"
+      ],
+      "known_upstream_failures": [
+        "DriverRegistry.RegisterDriver",
+        "IpcServer.Commands"
+      ],
+      "unexpected_failures": [],
+      "release_acceptance": false,
+      "note": "Pristine comparison only. Integrated regression tests must pass without exceptions."
+    },
+    "windows": {
+      "tests": 60,
+      "failed": 0
+    },
+    "limit": "Pristine Linux job success classifies two reproduced upstream failures, not all-tests-pass. Integrated tests permit no such exception."
+  },
+  "binaryIdentity": {
+    "prototypeProductSha256": "d209441c34b401ff3e3f04906991ae14fc071bfb442367f086163a3a74600b4c",
+    "prototypeFixtureRecordedSha256": "7cfdace8040eb1d54d54102f0d7c9f615bdeb5b3dba2c60aa6a37e3747e47216",
+    "linuxFixtureRecordedSha256": "ce5dc40df6bb87f5bd099b82a28367b654c2c6ecd853145afcdc83589dc99ab3",
+    "productBuildCommit": "701149fea50bdfd0ce5d58d9dd1fb377ab4575d0",
+    "compiler": "MSVC19.44.35229.0",
+    "architecture": "x86/Win32 application and plugin ABI on x64 Windows",
+    "productPolicy": "status-only",
+    "fixturePolicy": "test-loopback-only"
+  },
+  "nativeComponents": {
+    "passedComponents": 9,
+    "passedChecks": 605,
+    "passedCaptures": 68,
+    "results": [
+      {
+        "component": "ais-component",
+        "passed": true,
+        "checks": 151,
+        "captures": 12,
+        "result": {
+          "path": "/tmp/xnav-ci-watch-701149-prototype/prototype-native-Windows-701149fea50bdfd0ce5d58d9dd1fb377ab4575d0/ais-component/result.json",
+          "sha256": "538b5523d5a95f7089ad43e537a8c12604a379c3ecb19d3edc57cc94c46de023",
+          "bytes": 334
+        }
+      },
+      {
+        "component": "alert-component",
+        "passed": true,
+        "checks": 53,
+        "captures": 7,
+        "result": {
+          "path": "/tmp/xnav-ci-watch-701149-prototype/prototype-native-Windows-701149fea50bdfd0ce5d58d9dd1fb377ab4575d0/alert-component/result.json",
+          "sha256": "07458a25f19d80be8e2fe1188bd753b518186a495183ec3f28bfa201538680b0",
+          "bytes": 173
+        }
+      },
+      {
+        "component": "anchor-component",
+        "passed": true,
+        "checks": 34,
+        "captures": 5,
+        "result": {
+          "path": "/tmp/xnav-ci-watch-701149-prototype/prototype-native-Windows-701149fea50bdfd0ce5d58d9dd1fb377ab4575d0/anchor-component/result.json",
+          "sha256": "4164e65c0e52eafc9af4f7ce8a3efbf8d852da22ce667a80f6b9bba4cf4b2f41",
+          "bytes": 125
+        }
+      },
+      {
+        "component": "energy-component",
+        "passed": true,
+        "checks": 44,
+        "captures": 7,
+        "result": {
+          "path": "/tmp/xnav-ci-watch-701149-prototype/prototype-native-Windows-701149fea50bdfd0ce5d58d9dd1fb377ab4575d0/energy-component/result.json",
+          "sha256": "556b2fbdf84089989ff13c8e962020f68faaa38810a6b1b58fe1bfee03842dd7",
+          "bytes": 177
+        }
+      },
+      {
+        "component": "footer-component",
+        "passed": false,
+        "checks": 24,
+        "captures": 2,
+        "result": {
+          "path": "/tmp/xnav-ci-watch-701149-prototype/prototype-native-Windows-701149fea50bdfd0ce5d58d9dd1fb377ab4575d0/footer-component/result.json",
+          "sha256": "1855d4022b57f3d4666b43b9256212ff028cad8cf06690f5f11de11b8a172499",
+          "bytes": 193
+        }
+      },
+      {
+        "component": "health-component",
+        "passed": true,
+        "checks": 49,
+        "captures": 6,
+        "result": {
+          "path": "/tmp/xnav-ci-watch-701149-prototype/prototype-native-Windows-701149fea50bdfd0ce5d58d9dd1fb377ab4575d0/health-component/result.json",
+          "sha256": "20c85a1788e87a291fde4cc1082262246cab12d0fc34efdd6c65615338ca8251",
+          "bytes": 140
+        }
+      },
+      {
+        "component": "instruments-component",
+        "passed": true,
+        "checks": 41,
+        "captures": 5,
+        "result": {
+          "path": "/tmp/xnav-ci-watch-701149-prototype/prototype-native-Windows-701149fea50bdfd0ce5d58d9dd1fb377ab4575d0/instruments-component/result.json",
+          "sha256": "e0b26f1697132592c860b91a77182e2b8e246a0e40e28e13ed7551e86827724a",
+          "bytes": 161
+        }
+      },
+      {
+        "component": "passage-component",
+        "passed": true,
+        "checks": 26,
+        "captures": 5,
+        "result": {
+          "path": "/tmp/xnav-ci-watch-701149-prototype/prototype-native-Windows-701149fea50bdfd0ce5d58d9dd1fb377ab4575d0/passage-component/result.json",
+          "sha256": "ed39d3a2e27d30616e7bcb038075af0d940a3c804b03a54d07ab27e3cd742ca4",
+          "bytes": 130
+        }
+      },
+      {
+        "component": "pilot-component",
+        "passed": true,
+        "checks": 94,
+        "captures": 9,
+        "result": {
+          "path": "/tmp/xnav-ci-watch-701149-prototype/prototype-native-Windows-701149fea50bdfd0ce5d58d9dd1fb377ab4575d0/pilot-component/result.json",
+          "sha256": "913bf5bf151dd43c6facdf9cb2013fb21f446618eaa808051ceef7cc844511b3",
+          "bytes": 241
+        }
+      },
+      {
+        "component": "settings-component",
+        "passed": true,
+        "checks": 113,
+        "captures": 12,
+        "result": {
+          "path": "/tmp/xnav-ci-watch-701149-prototype/prototype-native-Windows-701149fea50bdfd0ce5d58d9dd1fb377ab4575d0/settings-component/result.json",
+          "sha256": "0ac0a661a512c0efa6de6f04434a5accc1c1cd1a46548833eab04f83f64b9914",
+          "bytes": 246
+        }
+      }
+    ]
+  },
+  "actualProduct": {
+    "primaryCaptures": 33,
+    "onlineAisSettingsCaptures": 4,
+    "captureManifest": {
+      "path": "/tmp/xnav-ci-watch-701149-prototype/prototype-native-Windows-701149fea50bdfd0ce5d58d9dd1fb377ab4575d0/prototype-native/capture.json",
+      "sha256": "bd847c139e7bc92410160ae8162b83dc6b15b39a101cb6e7ff971d68d3a8204e",
+      "bytes": 94911
+    },
+    "screenshotHashesIndependentlyVerified": 37,
+    "footerGeometryDayDuskNight": [
+      {
+        "frame": {
+          "x": 0,
+          "y": 0,
+          "width": 1296,
+          "height": 839
+        },
+        "client": {
+          "x": 8,
+          "y": 31,
+          "width": 1280,
+          "height": 800
+        },
+        "chart": {
+          "x": 88,
+          "height": 566,
+          "width": 1014,
+          "y": 99
+        },
+        "chart_client_area_fraction": 0.56047265625,
+        "primary_rail_values_visible": 4,
+        "prototype_floating_controls": 6,
+        "footer": {
+          "x": 8,
+          "height": 34,
+          "width": 1280,
+          "y": 797
+        },
+        "recovery_access": "Settings",
+        "source_health_visible": true,
+        "unspecified_controls_do_not_cover_chart": true
+      },
+      {
+        "frame": {
+          "x": 0,
+          "y": 0,
+          "width": 1296,
+          "height": 839
+        },
+        "client": {
+          "x": 8,
+          "y": 31,
+          "width": 1280,
+          "height": 800
+        },
+        "chart": {
+          "x": 88,
+          "height": 566,
+          "width": 1014,
+          "y": 99
+        },
+        "chart_client_area_fraction": 0.56047265625,
+        "primary_rail_values_visible": 4,
+        "prototype_floating_controls": 6,
+        "footer": {
+          "x": 8,
+          "height": 34,
+          "width": 1280,
+          "y": 797
+        },
+        "recovery_access": "Settings",
+        "source_health_visible": true,
+        "unspecified_controls_do_not_cover_chart": true
+      },
+      {
+        "frame": {
+          "x": 0,
+          "y": 0,
+          "width": 1296,
+          "height": 839
+        },
+        "client": {
+          "x": 8,
+          "y": 31,
+          "width": 1280,
+          "height": 800
+        },
+        "chart": {
+          "x": 88,
+          "height": 566,
+          "width": 1014,
+          "y": 99
+        },
+        "chart_client_area_fraction": 0.56047265625,
+        "primary_rail_values_visible": 4,
+        "prototype_floating_controls": 6,
+        "footer": {
+          "x": 8,
+          "height": 34,
+          "width": 1280,
+          "y": 797
+        },
+        "recovery_access": "Settings",
+        "source_health_visible": true,
+        "unspecified_controls_do_not_cover_chart": true
+      }
+    ],
+    "pilotComponentScreenshotHashesVerified": 9,
+    "pilotOutputPolicy": {
+      "authority": "native Windows",
+      "hardware": "NONE; loopback simulated translator",
+      "checks": [
+        "Control OFF disables AUTO; physical click creates no request or output",
+        "Saved manual permission cannot enable product output",
+        "Every displayed command and enable action disabled despite fresh compatible feedback",
+        "Zero wire output including identity discovery across loss/reconnect",
+        "Passive observed pilot status survives reconnection"
+      ],
+      "screenshots": [
+        "pilot-01-status-only.png",
+        "pilot-product-disabled.png"
+      ],
+      "display": {
+        "before": [
+          1024,
+          768,
+          32
+        ],
+        "after": [
+          1280,
+          800,
+          32
+        ]
+      },
+      "pilot_drawer": {
+        "x": 320,
+        "height": 379,
+        "width": 398,
+        "y": 99
+      },
+      "course_labels": [
+        "+10\u00b0",
+        "+1\u00b0",
+        "\u221210\u00b0",
+        "\u22121\u00b0"
+      ],
+      "result": "passed; screenshot review required",
+      "sent": [],
+      "wire_output": [],
+      "received_bytes": 0,
+      "transport_failures": []
+    },
+    "dpi": {
+      "result": "passed; development DPI/interaction checks only",
+      "percent": [
+        100,
+        125,
+        150
+      ],
+      "screenshots": 18,
+      "screenshotHashesIndependentlyVerified": 18,
+      "limit": "Additional prototype development DPI suite, distinct from retained full fixture suite."
+    },
+    "chartResourceChecks": 388,
+    "enc": [
+      {
+        "style": "xnav",
+        "result": "chart cycle captured; semantic and visual review required",
+        "captures": 4,
+        "renderer": "software"
+      },
+      {
+        "style": "standard",
+        "result": "chart cycle captured; semantic and visual review required",
+        "captures": 4,
+        "renderer": "software"
+      }
+    ]
+  },
+  "fixtureWorkflows": {
+    "modeCycle": {
+      "steps": 6,
+      "coastlineChecks": 6,
+      "result": "interaction and fixture persistence passed; visual review required"
+    },
+    "object": {
+      "result": "loopback transport and lifecycle passed; numeric and stale screenshot review required",
+      "upstreamContractChecks": 27,
+      "screenshots": 27,
+      "source": {
+        "path": "/tmp/xnav-ci-watch-701149-prototype/prototype-object-flow-Windows-701149fea50bdfd0ce5d58d9dd1fb377ab4575d0/objects-input-results.json",
+        "sha256": "a834176eff6d3f8b99d1a7607f0485b627629b17c98dd5a5fa4ee18c4c6256c8",
+        "bytes": 25904
+      }
+    },
+    "route": {
+      "themesAndStyles": [
+        "XNav Day",
+        "XNav Dusk",
+        "XNav Night",
+        "Standard Day"
+      ],
+      "checksPerRun": 26,
+      "totalScenarioExecutions": 104,
+      "screenshots": 8,
+      "result": "passed; visual and semantic acceptance not inferred"
+    },
+    "preview": {
+      "checks": 19,
+      "captures": 50,
+      "coastlineChecks": 10,
+      "result": "passed; screenshot review required"
+    },
+    "dpi": {
+      "passedPercent": [
+        100,
+        125
+      ],
+      "passedGetDpiForWindow": [
+        96,
+        120
+      ],
+      "nativeInjectedTouchAtPercent": [
+        100,
+        125
+      ],
+      "physicalTouchTested": false,
+      "screenshots": 68,
+      "result": "failed"
+    }
+  },
+  "failures": [
+    {
+      "area": "Commissioning marker readiness",
+      "jobId": 109526019106,
+      "details": {
+        "scope": "Exact-candidate negative evidence; not accepted",
+        "commit": "701149fea50bdfd0ce5d58d9dd1fb377ab4575d0",
+        "observedUtc": "2026-09-29T17:24:22.449651+00:00",
+        "run": "https://github.com/ThereptileII/Work/actions/runs/36603349213",
+        "job": "https://github.com/ThereptileII/Work/actions/runs/36603349213/job/109526019106",
+        "result": "failed",
+        "artifact": {
+          "id": 11049787970,
+          "name": "commissioning-restart-701149fea50bdfd0ce5d58d9dd1fb377ab4575d0",
+          "sha256": "b8f161a2e8fa283e648fb6c9cad04f331a84bb97e9b989ed02150babb7bca3e8",
+          "bytes": 5218,
+          "zipCrc": true
+        },
+        "apiSha256Verified": true,
+        "byteCountVerified": true,
+        "safeZipPathsVerified": true,
+        "nativeChecksPassedBeforeFailure": 280,
+        "completeCasesBeforeFailure": 19,
+        "protocolChecksPassed": 886,
+        "failedCase": "xnav",
+        "helperExitCode": 0,
+        "requestBoundReceiptObserved": true,
+        "error": "Exception calling \"ReadAllLines\" with \"1\" argument(s): \"The process cannot access the file 'C:\\Users\\runneradmin\\AppData\\Local\\Temp\\OpenNav guarded restart & 0672b47f7d2b43819a125728c651e4c7\\xnav\\child--xnav.txt' because it is being used by another process.\"",
+        "source": "tools/test-commissioning-restart-windows.ps1:266 reads final marker after WaitFile:68 checks only Exists; tests/commissioning-restart/marker_process.cpp:70-77 creates/writes/closes final filename.",
+        "diagnosis": "Readiness race permits observation before publication is complete. Actual sharing violation observed; OS lock-holder identity not captured, so attribution specifically to writer remains inference.",
+        "completedGate": false,
+        "brokerConsequence": "Dependent actual broker skipped. Other candidate builds/captures remain active and must be evaluated separately.",
+        "suggestedFixtureRepair": "Atomic temporary-file write/close then final rename; retain strict record/identity/content assertions and refusal cases, no broad retries.",
+        "noProductOrHardwareInvocation": true,
+        "metadataSha256": "ba58a531413f8fe050a909d8b910e85b7ccf967c8ea1987e8d4e892e9b7a867a",
+        "sourceEdited": false,
+        "runRetried": false
+      },
+      "limit": "Final marker file existence observed before complete shared-read readiness. Actual OS lock holder not recorded; do not blame pilot/output policy."
+    },
+    {
+      "area": "Linux initial mode-cycle Chart action",
+      "jobId": 109526019095,
+      "failure": "AssertionError('Current mode-cycle UI state did not arrive')",
+      "phase": "After System page Escape, action Chart expected Navigation and three newer ticks; no mode transitions completed",
+      "recordedPage": "Settings",
+      "recordedTicks": "92",
+      "recordedFooter": {
+        "height": 34,
+        "y": 766,
+        "width": 1280,
+        "x": 0
+      },
+      "ownedProcessAliveAtFailure": true,
+      "limit": "Screenshot shows chart with no drawer, while retained diagnostics reports Settings/drawer children. Asynchronous Back/Settings ordering suspected; no pointer trace or proven root cause in this archive.",
+      "screenshot": {
+        "path": "/tmp/xnav-ci-watch-701149-full/linux-integration-701149fea50bdfd0ce5d58d9dd1fb377ab4575d0/linux-mode-cycle-failure.png",
+        "sha256": "b0cd2f7655727b68499e8f3a4ca65af03254f3c71b642c5e9481413a61796783",
+        "bytes": 54087
+      }
+    },
+    {
+      "area": "Windows first unavailable footer observation",
+      "jobId": 109527660816,
+      "details": {
+        "assertion": "Footer observation must match actual visible native surface",
+        "phase": "First Unavailable/Unavailable footer observation before synthetic send or screenshot",
+        "persistedFooter": {
+          "x": 8,
+          "height": 34,
+          "width": 880,
+          "y": 490
+        },
+        "persistedChart": {
+          "x": 78,
+          "height": 305,
+          "width": 654,
+          "y": 87
+        },
+        "persistedUiUpdate": {
+          "last_ms": 0.2849,
+          "ticks": "4",
+          "scope": "Shell update callback including diagnostics; excludes asynchronous chart painting",
+          "mean_ms": 49.325625,
+          "timer_period_ms": 250,
+          "maximum_ms": 178.9613
+        },
+        "actualMeasuredHwndRect": null,
+        "limit": "Actual GetWindowRect result was not persisted; no screenshot captured. Pre-resize snapshot race is consistent with retained small geometry and source sequence but exact actual rectangle is unavailable."
+      },
+      "inputSent": {
+        "rmc": 0,
+        "gga": 0,
+        "ais": 0
+      },
+      "screenshotsTaken": 0
+    },
+    {
+      "area": "Standalone native footer component",
+      "jobId": 109526012024,
+      "details": {
+        "result": {
+          "passed": false,
+          "checks": 24,
+          "native_dpi_qualification": false,
+          "captures": [
+            "unavailable-day",
+            "measured-day"
+          ],
+          "canonical_geometry": {
+            "left": [
+              20,
+              197
+            ],
+            "middle": [
+              607,
+              105
+            ],
+            "health": [
+              1101,
+              10,
+              159,
+              14
+            ]
+          }
+        },
+        "log": "FAIL 24 status footer component checks\npointer location hits actual footer button\n",
+        "captures": {
+          "unavailable-day.png": {
+            "sha256": "3b190a0bdd46a56ac1d3b541ef42d657a84be7e6d3845ba24b9fdd6d26ced39c",
+            "size": [
+              1280,
+              800
+            ],
+            "uniqueColors": 1,
+            "colors": [
+              [
+                1024000,
+                [
+                  29,
+                  45,
+                  49
+                ]
+              ]
+            ]
+          },
+          "measured-day.png": {
+            "sha256": "3b190a0bdd46a56ac1d3b541ef42d657a84be7e6d3845ba24b9fdd6d26ced39c",
+            "size": [
+              1280,
+              800
+            ],
+            "uniqueColors": 1,
+            "colors": [
+              [
+                1024000,
+                [
+                  29,
+                  45,
+                  49
+                ]
+              ]
+            ]
+          }
+        },
+        "limit": "Standalone native footer point lookup failed before simulated click. Both screenshots are uniform host background; actual frame/host window rectangles were not saved. Missing explicit host size/sizer is suspected from source, not proven by recorded HWND geometry."
+      }
+    },
+    {
+      "area": "Retained native DPI150 rail minimum-size oracle",
+      "jobId": 109526012273,
+      "error": "AssertionError(('Primary value too small', {'x': 1035, 'height': 108, 'width': 234, 'label': 'sog', 'y': 174, 'visible': True, 'enabled': True}))",
+      "scalePercent": 150,
+      "GetDpiForWindow": 144,
+      "outerPixels": [
+        1280,
+        800
+      ],
+      "regions": [
+        {
+          "x": 1035,
+          "height": 108,
+          "width": 234,
+          "label": "sog",
+          "y": 174,
+          "visible": true,
+          "enabled": true
+        },
+        {
+          "x": 1035,
+          "height": 109,
+          "width": 234,
+          "label": "depth",
+          "y": 282,
+          "visible": true,
+          "enabled": true
+        },
+        {
+          "x": 1035,
+          "height": 108,
+          "width": 234,
+          "label": "aws",
+          "y": 391,
+          "visible": true,
+          "enabled": true
+        },
+        {
+          "x": 1035,
+          "height": 108,
+          "width": 234,
+          "label": "heading",
+          "y": 499,
+          "visible": true,
+          "enabled": true
+        }
+      ],
+      "footer": {
+        "x": 11,
+        "height": 51,
+        "width": 1258,
+        "y": 738
+      },
+      "assertion": "height>=80*scale/100;150percent minimum120physical pixels",
+      "prototypeRule": {
+        "path": "docs/design/prototype/index.html",
+        "line": 5,
+        "media": "max-height:600px and min-width:761px",
+        "metricMinHeightCssPx": 72,
+        "physicalAt150": 108
+      },
+      "interpretation": "Native108/109px rows agree with compact72CSS minimum; obsolete80CSS oracle is supported by source and actual geometry. No additional compact HTML renderer comparison executed by this auditor; do not silently lower the test threshold.",
+      "remaining150PercentTests": "not executed after first rail check",
+      "source": {
+        "path": "/tmp/xnav-ci-watch-701149-prototype/prototype-object-flow-Windows-701149fea50bdfd0ce5d58d9dd1fb377ab4575d0/dpi-results.json",
+        "sha256": "c4413d0c99eb0a9c816e819c5042511eb2de2357dc2232172346cc8f3f40ee0f",
+        "bytes": 72321
+      }
+    }
+  ],
+  "screenshotsReviewed": [
+    {
+      "path": "/tmp/xnav-ci-watch-701149-prototype/prototype-native-Windows-701149fea50bdfd0ce5d58d9dd1fb377ab4575d0/prototype-native/navigation-day.png",
+      "sha256": "43039f8f2a825e49959d544a4d9f79c19916bf32791c93144fa18d6308a2a6e2",
+      "bytes": 52839,
+      "review": "Native client crop: rendered coastline and full-width footer visible; missing navigation values stay unavailable.",
+      "visualConformanceAccepted": false
+    },
+    {
+      "path": "/tmp/xnav-ci-watch-701149-prototype/prototype-native-Windows-701149fea50bdfd0ce5d58d9dd1fb377ab4575d0/prototype-native/autopilot-day.png",
+      "sha256": "2445bb2843af9cff3ba027ef586706266dbd50ef494c785505a151463879f5ac",
+      "bytes": 64057,
+      "review": "Actual screen pixels: STATUS ONLY, equipment control unavailable, physical helm instruction; commands visibly disabled. Normal unavailable-input product view.",
+      "visualConformanceAccepted": false
+    },
+    {
+      "path": "/tmp/xnav-ci-watch-701149-prototype/prototype-native-Windows-701149fea50bdfd0ce5d58d9dd1fb377ab4575d0/pilot-status-only/pilot-product-disabled.png",
+      "sha256": "9f5ddcc5fa3b31c76e07a072fdfc6682558178044340d914cb7719a076e1e37b",
+      "bytes": 33452,
+      "review": "PrintWindow omits transient autopilot drawer; must not be used as evidence of drawer copy. Underlying passive pilot status is visible.",
+      "visualConformanceAccepted": false
+    },
+    {
+      "path": "/tmp/xnav-ci-watch-701149-prototype/prototype-native-Windows-701149fea50bdfd0ce5d58d9dd1fb377ab4575d0/footer-component/measured-day.png",
+      "sha256": "3b190a0bdd46a56ac1d3b541ef42d657a84be7e6d3845ba24b9fdd6d26ced39c",
+      "bytes": 4807,
+      "review": "Failed standalone fixture: all 1,024,000 pixels RGB29,45,49; no footer painted. Not a layout acceptance image.",
+      "visualConformanceAccepted": false
+    },
+    {
+      "path": "/tmp/xnav-ci-watch-701149-full/linux-integration-701149fea50bdfd0ce5d58d9dd1fb377ab4575d0/linux-mode-cycle-failure.png",
+      "sha256": "b0cd2f7655727b68499e8f3a4ca65af03254f3c71b642c5e9481413a61796783",
+      "bytes": 54087,
+      "review": "Current screenshot shows chart, no drawer, Settings remains selected. Retained diagnostics says Settings with drawer children visible; exact input ordering unproven.",
+      "visualConformanceAccepted": false
+    },
+    {
+      "path": "/tmp/xnav-ci-watch-701149-prototype/prototype-object-flow-Windows-701149fea50bdfd0ce5d58d9dd1fb377ab4575d0/dpi-150-failure-visible.png",
+      "sha256": "b058012a6a5e454798fa11fa9acacd768c9fa22f2db7f891c00267a581f30a61",
+      "bytes": 53202,
+      "review": "Actual144DPI,1280x800 outer capture: four rail values and coastlines visible. First rail minimum-size oracle fails; later150-percent checks did not run.",
+      "visualConformanceAccepted": false
+    }
+  ],
+  "retainedPriorRevision": {
+    "commit": "4b9d1340016193dd707ff78bf5e67eebaa52a54e",
+    "runId": 36594637027,
+    "url": "https://github.com/ThereptileII/Work/actions/runs/36594637027",
+    "observedUtc": "2026-09-29 17:39:26 UTC",
+    "jobCounts": {
+      "success": 13,
+      "in_progress": 1,
+      "failure": 1
+    },
+    "endurance": {
+      "jobId": 109496259316,
+      "status": "in_progress",
+      "activeStep": "Actual elapsed-time trip and resource stability",
+      "conclusion": null
+    },
+    "priorWindows": "Failed installer refusal-message oracle and duplicate System DPI selector; retained evidence in prototype-native-88b7bbc-final-development.json. No result transfers to701."
+  },
+  "visualConformance": "Not accepted. Some actual product captures reviewed; failed isolated footer component produced no valid comparison images. Complete per-screen/reference/boat review remains open.",
+  "boatValidation": "None in this audit; no access, process launch, deployment or equipment commands.",
+  "onlineAisLiveValidation": "None; deterministic offline/loopback CI only.",
+  "deployment": "withheld",
+  "releasePublication": "skipped by failed gates",
+  "limitations": [
+    "No candidate installer lifecycle or actual broker acceptance after early full-gate failures.",
+    "No701 endurance run reached; prior4b endurance remains separately live.",
+    "OpenGL and physical boat/touch acceptance not inferred from software captures or injected touch.",
+    "Failed checks remain recorded; no gate reruns, cancellation, source edits or tolerance relaxations performed by auditor.",
+    "Recorded binary SHA values establish build identity in verified evidence, not independently downloaded executable bytes."
+  ],
+  "assembledUtc": "2026-09-29T17:41:36.278558+00:00"
+}

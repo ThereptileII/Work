@@ -128,6 +128,13 @@ jobs:
           $env:PATH = (Resolve-Path opennav-x/build/production-install).Path + ";" + $env:PATH
           python opennav-x/tools/prototype/capture-footer-component.py --reference opennav-x/evidence/local/footer-reference --client opennav-x/build/production-windows/Release/status_footer_test.exe --output opennav-x/evidence/local/footer-component
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+      - name: Native horizon composition and real contextual actions
+        run: |
+          cmake --build opennav-x/build/production-windows --config Release --target horizon_test --parallel 2
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          $env:PATH = (Resolve-Path opennav-x/build/production-install).Path + ";" + $env:PATH
+          python opennav-x/tools/prototype/capture-horizon-component.py --reference opennav-x/evidence/local/footer-reference --client opennav-x/build/production-windows/Release/horizon_test.exe --output opennav-x/evidence/local/horizon-component
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
       - name: Native unavailable radar presentation and disabled-control checks
         run: |
           $env:PATH = (Resolve-Path opennav-x/build/production-install).Path + ";" + $env:PATH

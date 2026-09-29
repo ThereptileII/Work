@@ -177,7 +177,7 @@ def main():
             # advance from a stale pre-click file while still describing the
             # old drawer. Observe the semantic result; never retry the input.
             closed = label != "Close" or ("drawer" not in current["runtime"]["display"] and current["ui_page"] == "Navigation")
-            expected_page = None if in_drawer else {"Chart":"Navigation", "Passage":"Route", "Traffic":"AIS targets", "Energy":"Energy", "Instruments":"Vessel instruments", "Autopilot":"Manual autopilot", "Anchor":"Anchor watch", "Settings":"Settings", "Alerts":"Alerts", "Radar":"Radar status"}.get(label)
+            expected_page = None if in_drawer else {"Chart":"Navigation", "Passage":"Route", "Full passage":"Route", "Traffic":"AIS targets", "Energy":"Energy", "Instruments":"Vessel instruments", "Autopilot":"Manual autopilot", "Anchor":"Anchor watch", "Settings":"Settings", "Alerts":"Alerts", "Radar":"Radar status"}.get(label)
             if c["accessible_name"] == "Inspect source health":
                 expected_page = "Source health"
             if label == "Back" and before["ui_page"] == "Online AIS settings":
@@ -514,6 +514,26 @@ def main():
             capture("navigation-return-day")
             record["result"] = "chart cycle captured; semantic and visual review required"
             return
+        # The real installed product has no synthetic input here. The horizon
+        # must keep unavailable navigation actions disabled while its explicit
+        # passage-inspection entry remains usable with no active route.
+        snapshot = data()
+        horizon = snapshot["runtime"]["display"]["horizon_region"]
+        controls = snapshot["runtime"]["display"]["interaction_controls"]
+        for label, enabled in (("Full passage", True), ("Horizon now", False),
+                               ("Horizon event 1", False)):
+            found = [c for c in controls if c["label"] == label and c["visible"]]
+            assert len(found) == 1 and found[0]["enabled"] == enabled, (label, found)
+            c = found[0]
+            assert horizon["x"] <= c["x"] and horizon["y"] <= c["y"]
+            assert c["x"] + c["width"] <= horizon["x"] + horizon["width"]
+            assert c["y"] + c["height"] <= horizon["y"] + horizon["height"]
+        before_follow = snapshot["runtime"]["chart"]["follow"]
+        click("Full passage")
+        capture("horizon-full-passage")
+        click("Close")
+        assert data()["runtime"]["chart"]["follow"] == before_follow
+        record["horizon_unavailable_flow"] = "No invented navigation action; actual Full passage pointer opens existing Route drawer and Close restores chart without changing follow"
         for label, name in [("Passage", "passage"), ("Traffic", "traffic"), ("Energy", "energy"),
                             ("Instruments", "instruments"), ("Autopilot", "autopilot"), ("Alerts", "alerts"), ("Inspect source health", "health"), ("Anchor", "anchor"), ("Radar", "radar"), ("Settings", "settings")]:
             if args.view and name != args.view:

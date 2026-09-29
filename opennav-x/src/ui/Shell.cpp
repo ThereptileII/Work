@@ -294,7 +294,9 @@ Shell::Shell(wxFrame &frame, wxAuiManager &manager, ShellActions actions,
   status->Add(footer_,1,wxEXPAND);bottom->SetSizer(status);
   auto *horizon_pane=MakePane("OpenNavHorizon",wxAuiPaneInfo().Bottom().Layer(1).BestSize(-1,frame_.FromDIP(prototype::horizon)));
   auto *horizon_layout=new wxBoxSizer(wxVERTICAL);
-  horizon_=new XNavHorizon(horizon_pane);horizon_layout->Add(horizon_,1,wxEXPAND);
+  horizon_=new XNavHorizon(horizon_pane,[this]{ShowPassage();},
+      [this](const application::HorizonAction &action){ActivateHorizon(action);});
+  horizon_layout->Add(horizon_,1,wxEXPAND);
   route_actions_=new wxPanel(horizon_pane,wxID_ANY);route_actions_->Hide();
   auto *actions_row = new wxBoxSizer(wxHORIZONTAL);
   auto *route_host=route_actions_;
@@ -840,6 +842,7 @@ void Shell::Tick() {
     #endif
     else if (actions_.navigation.ais)
       p.ais = actions_.navigation.ais(now);
+    horizon_ais_=p.ais;
     if (!simulation_ && !replay && actions_.navigation.anchor)
       p.anchor = actions_.navigation.anchor();
     else
@@ -931,7 +934,7 @@ void Shell::Tick() {
     passage_drawer_->Present(DrawerWorkspace());
   }
   UpdateRail(config.data_rail, now);
-  horizon_->Update(state_,field_snapshot_.advice,now,mode_);
+  horizon_->Update(application::PresentHorizon(state_,field_snapshot_.advice,horizon_ais_,now),mode_);
   PlaceChartControls();
   UpdateContext(wall_now);
   clock_->SetLabel(simulation_ ? "10:42" : wxDateTime::Now().Format("%H:%M"));
@@ -1233,6 +1236,22 @@ void Shell::ShowTraffic(int mmsi) {
   if (mmsi > 0) ais_drawer_->Target(mmsi); else ais_drawer_->List();
   ais_drawer_->Present(DrawerWorkspace());
   Tick();
+}
+void Shell::ActivateHorizon(const application::HorizonAction &action) {
+  // A click can follow route edits, receiver loss, replay entry, or an AIS
+  // replacement since the last repaint. Observe owned state again on the app
+  // thread; never trigger upstream navigation processing to obtain it.
+  if(simulation_ || (actions_.commissioning && actions_.commissioning->Replaying()))return;
+  if(!actions_.live_state)return;
+  auto current=actions_.live_state();
+  if(actions_.route)current.navigation.route=actions_.route();
+  const auto now=vessel::Clock::now();
+  const auto onboard=actions_.navigation.ais ? actions_.navigation.ais(now) : vessel::AisState{};
+  if(!application::HorizonActionAllowed(action,current,onboard,now))return;
+  using Kind=application::HorizonActionKind;
+  if(action.kind==Kind::Follow){if(actions_.follow)actions_.follow();}
+  else if(action.kind==Kind::Passage)ShowPassage();
+  else if(action.kind==Kind::Ais){Tick();ShowAis(action.mmsi);}
 }
 void Shell::ShowPassage() {
   ShowNavigation();

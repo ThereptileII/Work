@@ -74,6 +74,20 @@ LOGFONT character height; GTK uses the equivalent fractional point em
 (`px × 72/96`), since GTK's pixel-size constructor fits the taller line cell.
 Uppercase applies only where the reference uses it.
 
+The horizon's final overrides are measured separately: heading 9 px / 650 /
+`.13em`, advisory 9 px, Full passage 11 px / 400; event time 10 px (NOW 8 px),
+title 13 px / 550, detail 10 px. At 1280×800 its heading is
+`(105,648,964,22)` and events begin at y=693 with 45 px height, 4 px vertical
+gaps and `.8fr 1.12fr 1.12fr 1fr` tracks. Its 25 px side insets and 1 px rules
+are part of the contract. The Full passage text includes its trailing inline
+space before the arrow's 7 px margin. The Spark heading icon is visible; the
+event-circle SVGs are hidden by the final CSS. At the 1024×640 equivalent
+workspace, side padding is 20 px, event gap 3 px, title/detail 12/9 px; at
+853×533 they are 11/8 px. These are responsive workspace observations, not
+proof of native 125/150% Windows font or touch behavior. See the
+[horizon review](reviews/scrum-100-horizon.md) and independently rendered DOM
+measurements for the complete geometry.
+
 ## Geometry at 1280 × 800, scale factor 1
 
 | Region | x | y | width | height |

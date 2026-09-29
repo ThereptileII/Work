@@ -9,6 +9,46 @@ release gates. The approved public identity is SKAGER / SKAGER App; domain
 control and legal clearance remain separate gates in SCRUM-89. Public payment
 and download access remain closed pending the final human GO/NO-GO review.
 
+Replacement `701149f` (equivalent local `826a44f`) remains **unqualified**.
+The local integrated build passes 135 tests; recording now observes the exact
+1280×34 footer. Its mode cycle, selected navigation, both route styles and
+public ENC software/OpenGL checks pass. The portable preview subsequently
+fails Legacy → XNav after 39 captures: Legacy saves the requested mode and
+exits, but no third startup is logged. The original failure remains retained;
+the restart child has not yet been conclusively diagnosed. Local OpenGL uses
+llvmpipe and does not qualify the boat GPU.
+
+The same exact native candidate passes its fixture-free MSVC build but exposes a separate
+Windows commissioning-fixture sharing failure while reading a child readiness
+file. The fixture made its final name visible before closing the writer. The
+replacement publishes checked, closed markers atomically and adds 70 portable
+checks plus native exclusive-handle assertions; production restart guard code
+is unchanged. The actual failed OS lock holder was not captured, and Windows
+replacement remains mandatory. CI Linux also fails a Chart transition in the
+mode harness; that evidence is being investigated separately. See the
+[marker development record](evidence/scrum-98-marker-publication-local.json).
+These failures are not waived by the passing component or local mode tests.
+
+The terminal `701149f` prototype run has six passing/two failing jobs; its full
+run has eleven passing/three failing/two skipped jobs. All 19 archives verify.
+Windows integrated suites pass 127 tests; the actual status-only product probe
+records zero outgoing bytes. The standalone footer fixture fails on an entirely
+blank image, while the actual product footer and coastline render. Both footer
+and horizon fixtures now explicitly size their parent host and record native
+parent/child/hit geometry before the original assertions; Linux passes
+153/208 checks. The retained 150% DPI test also used an 80-DIP rail minimum that
+conflicts with the immutable compact layout's 72-DIP rule. Its replacement uses
+that exact breakpoint; four-value visibility, clipping, touch and alarm checks
+remain. The rest of the 150% suite remains unexecuted. See
+[exact terminal evidence](evidence/prototype-native-701149-development.json),
+[host-fixture evidence](evidence/scrum-99-component-host-local.json) and the
+[compact-layout oracle](evidence/scrum-98-dpi-compact-oracle.json).
+
+One instrumented repeat of the portable preview passes all seven process exits
+and 44 captures; the original restart failure remains unresolved. The preview
+harness now retains per-launch output and pre-teardown process/window evidence.
+No retry is added and no successful repeat is presented as a product repair.
+
 Candidate `88b7bbc` fails qualification: both prototype MSVC jobs stop at the
 new footer component's missing console entry point, and Linux recording stops
 on a real 1279px footer inside a 1280px frame. Its 135 integrated Linux cases
@@ -18,7 +58,8 @@ passes 98 local checks/ten captures. Independent wxAUI probes reproduce the
 fixed-dock trailing spacer; the replacement makes only the footer proportional
 and scopes/restores XNav's zero sash metric through theme changes. The recording
 gate still requires the full 1280px width. Replacement native evidence remains
-mandatory. See [retained failure evidence](evidence/prototype-native-88b7bbc-development.json).
+mandatory. See [retained failure evidence](evidence/prototype-native-88b7bbc-development.json)
+and its [terminal archive record](evidence/prototype-native-88b7bbc-final-development.json).
 
 The same local binary passed XNav → Legacy → XNav and Safe startup, then failed
 its final normal startup once. One instrumented repeat passed; the original
@@ -30,10 +71,16 @@ remain mandatory; fixture identity is now checked first with strict boolean
 typing, and 48 actual PowerShell validator checks pass. Full installed lifecycle
 and replacement Linux/Windows gates remain open.
 
-SCRUM-100 is refining the prototype horizon in an isolated worktree: measured
-fractional event columns, Full passage and guarded contextual actions. Its
-reference instrumentation preserves identical Day/Dusk/Night image hashes.
-This work is not integrated or visually accepted yet.
+SCRUM-100 implements the prototype horizon's measured fractional columns,
+heading, separators, Full passage and guarded contextual actions. Its owned
+model passes 81 checks, native Linux component passes 132 checks/14 captures,
+and eight related regressions pass. Day/Dusk/Night reference/current/diff
+retain visible Linux text differences. Fresh/stale position controls NOW;
+route revision and local AIS identity are revalidated at activation. New
+integrated pointer checks remain pending with the combined source. Windows,
+DPI and boat conformance are open; no Navigation screen is accepted. See the
+[horizon review](design/reviews/scrum-100-horizon.md) and
+[development evidence](evidence/scrum-100-horizon-local.json).
 
 SCRUM-19 now enforces status-only XNav equipment output at the final transport
 boundary, independent of saved permissions. Passive pilot feedback remains

@@ -50,7 +50,7 @@ class XNavPainter {
 enum class ButtonRole { Normal, Quiet, Primary, Critical, Segment };
 enum class XNavIcon { None, Plus, Minus, Ownship, Menu, Back, Close, Route, Compass, Settings,
   Chart, Traffic, Energy, Instruments, Anchor, Radar, Sun, Dusk, Moon, Bell,
-  Search, Layers, Ruler, Pin, Sliders, Chevron, Edit, Shield };
+  Search, Layers, Ruler, Pin, Sliders, Chevron, Edit, Shield, Spark };
 
 // Shared touch/wheel scrolling with no bright native scrollbar. Persistent
 // XNav navigation buttons are supplied outside the scrolling content.
@@ -107,6 +107,7 @@ class XNavButton : public wxControl {
 
  protected:
   bool HasKeyboardFocus() const { return HasFocus() && keyboard_focus_; }
+  bool IsHovered() const { return hovered_; }
 
  private:
   void Paint(wxPaintEvent& event);

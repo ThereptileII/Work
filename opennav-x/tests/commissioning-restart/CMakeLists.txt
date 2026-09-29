@@ -21,5 +21,7 @@ add_executable(opencpn marker_process.cpp
 target_link_libraries(opencpn PRIVATE restart_guard)
 add_executable(commissioning_restart_tests ${OPENNAV_SOURCE}/tests/commissioning_restart_tests.cpp)
 target_link_libraries(commissioning_restart_tests PRIVATE restart_guard)
+add_executable(marker_publication_tests marker_publication_tests.cpp)
 enable_testing()
 add_test(NAME portable_wire_contract COMMAND commissioning_restart_tests)
+add_test(NAME fixture_marker_publication COMMAND marker_publication_tests)

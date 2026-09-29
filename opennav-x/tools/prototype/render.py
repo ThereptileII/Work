@@ -42,7 +42,11 @@ STATES = {
 }
 
 SELECTORS = [".topbar", ".sidebar", "#workspace", "#chartView", ".data-rail",
-             ".timeline", ".statusbar", ".statusbar>span:first-child", ".footer-middle", ".statusbar>button", ".nav-btn", ".icon-btn", ".metric",
+             ".timeline", ".timeline-heading", ".timeline-heading .eyebrow", ".timeline-heading .eyebrow svg",
+             ".timeline-heading .advisory-label", ".timeline-heading .text-button", ".timeline-heading .text-button span",
+             ".timeline-events", ".timeline-event", ".event-dot", ".event-dot svg", ".event-time", ".event-time span",
+             ".timeline-event>b", ".timeline-event>small", ".timeline-event>small span", ".timeline-event>small em",
+             ".statusbar", ".statusbar>span:first-child", ".footer-middle", ".statusbar>button", ".nav-btn", ".icon-btn", ".metric",
              ".metric-value", ".metric-label", ".next-turn", ".turn-main",
              ".turn-sub", ".map-tools", ".follow-btn", ".autopilot-summary",
              ".drawer", ".drawer-head", ".drawer-head h2", ".drawer-body",
@@ -82,7 +86,10 @@ MEASURE = """selectors => {
  const properties = ['fontFamily','fontSize','fontWeight','fontStyle','lineHeight',
    'letterSpacing','fontVariantNumeric','textTransform','color','backgroundColor',
    'borderRadius','borderWidth','borderColor','padding','margin','gap','boxShadow',
-   'opacity','transition','minHeight','minWidth','stroke','strokeWidth','fill'];
+   'opacity','transition','minHeight','minWidth','stroke','strokeWidth','fill',
+   'display','alignItems','justifyContent','gridTemplateColumns','rowGap','columnGap',
+   'paddingTop','paddingRight','paddingBottom','paddingLeft','borderLeftWidth',
+   'borderLeftColor','textAlign','cursor'];
  const components = {};
  for (const sel of selectors) {
    components[sel] = [...document.querySelectorAll(sel)].filter(e=>e.getClientRects().length)
@@ -154,7 +161,7 @@ def main():
                 cdp.send("CSS.enable")
                 doc = cdp.send("DOM.getDocument")
                 data["platformFonts"] = {}
-                for font_selector in [".brand", ".metric-value", ".metric-label", ".drawer-head h2", ".view-header h1", ".settings-tabs button"]:
+                for font_selector in [".brand", ".metric-value", ".metric-label", ".drawer-head h2", ".view-header h1", ".settings-tabs button", ".timeline-heading .eyebrow", ".timeline-heading .text-button", ".event-time", ".timeline-event>b", ".timeline-event>small"]:
                     node = cdp.send("DOM.querySelector", {"nodeId": doc["root"]["nodeId"], "selector": font_selector})
                     if node["nodeId"]:
                         data["platformFonts"][font_selector] = cdp.send("CSS.getPlatformFontsForNode", {"nodeId": node["nodeId"]})["fonts"]
