@@ -179,7 +179,12 @@ def main():
             if label == "Back" and before["ui_page"] == "Online AIS settings":
                 expected_page = "AIS targets"
             page_ready = not expected_page or current["ui_page"] == expected_page
-            if int(current["runtime"]["ui_update"]["ticks"]) >= ticks+3 and (not expected_light or current_light == expected_light) and closed and page_ready:
+            online_ready = True
+            if before["ui_page"] == "Online AIS settings" and label in ("Off", "Enabled"):
+                online_ready = current["runtime"]["online_ais"]["enabled"] == (label == "Enabled")
+                if label == "Off":
+                    online_ready = online_ready and current["runtime"]["online_ais"]["connection_state"] == 0
+            if int(current["runtime"]["ui_update"]["ticks"]) >= ticks+3 and (not expected_light or current_light == expected_light) and closed and page_ready and online_ready:
                 break
             time.sleep(.1)
         else:

@@ -144,18 +144,24 @@ def pointer_click(target):
         foreground=ui.declare(ui.user,'GetForegroundWindow',ui.W.HWND)
         front=foreground();front_pid=ui.W.DWORD()
         ui.GetWindowThreadProcessId(front,ui.C.byref(front_pid))
-        # Owned drawers intentionally open without activation. A real pointer
-        # click activates them; forcing SetForegroundWindow first can change
-        # stacking between the initial hit test and the click. Require the
-        # tested application to own both foreground and the exact hit target.
+        # Activate the target's own surface, never its owner frame. Reopening
+        # an owned drawer leaves the frame active; sending down/up across that
+        # activation transition can lose the first press. Match the production
+        # capture harness and recheck the exact HWND after activation.
         assert front_pid.value==pid, ('Foreign foreground before input',ui.text(front),front_pid.value)
+        ancestor=ui.declare(ui.user,'GetAncestor',ui.W.HWND,ui.W.HWND,ui.W.UINT)
+        surface=ancestor(hit,2)
+        ui.SetForegroundWindow(surface)
+        deadline=time.monotonic()+3
+        while foreground()!=surface and time.monotonic()<deadline:time.sleep(.05)
+        assert foreground()==surface, ('Input surface did not activate',target)
         assert ui.SetCursorPos(x,y)
         actual=ui.WindowFromPoint(point)
         assert actual==hit and ui.IsWindowEnabled(hit), ('Pointer target changed before input',target,ui.text(actual),ui.text(front))
         ui.MouseEvent(2,0,0,0,0);time.sleep(.05);ui.MouseEvent(4,0,0,0,0)
-    else:xdo('mousemove',x,y,'click',1)
+    else:xdo('mousemove',x,y,'mousedown',1,'sleep','0.05','mouseup',1)
     time.sleep(.4)
-def shell_click(label,outside_drawer=False,in_status=False,in_drawer=False):
+def shell_click(label,outside_drawer=False,in_status=False,in_drawer=False,settled=lambda d:True):
     record=data(lambda d:any(r['label']==label and r['visible'] and r['enabled'] for r in d['runtime']['display']['interaction_controls']))
     display=record['runtime']['display'];bounds=display.get('drawer',{})
     targets=[r for r in display['interaction_controls'] if r['label']==label and r['visible'] and r['enabled']]
@@ -169,12 +175,25 @@ def shell_click(label,outside_drawer=False,in_status=False,in_drawer=False):
         assert bounds,'Expected an open prototype drawer'
         targets=[r for r in targets if bounds['x']<=r['x'] and r['x']+r['width']<=bounds['x']+bounds['width'] and bounds['y']<=r['y'] and r['y']+r['height']<=bounds['y']+bounds['height']]
     assert len(targets)==1,('Unique visible control required',label,targets)
-    ticks=int(record['runtime']['ui_update']['ticks']);pointer_click(targets[0])
-    data(lambda d:int(d['runtime']['ui_update']['ticks'])>=ticks+3)
+    ticks=int(record['runtime']['ui_update']['ticks'])
+    report.setdefault('pointer_actions',[]).append(dict(label=label,page=record.get('ui_page'),target=targets[0]))
+    pointer_click(targets[0])
+    data(lambda d:int(d['runtime']['ui_update']['ticks'])>=ticks+3 and settled(d))
 def product_scroll(direction):
     if windows:ui.click_text(pid,'Down' if direction>0 else 'Up')
     else:xdo('mousemove',700,430,'click',5 if direction>0 else 4)
     time.sleep(.4)
+def preferences_entry(section,entry):
+    command('Settings','g')
+    def ready(d):
+        display=d['runtime']['display'];bounds=display.get('drawer',{})
+        return d.get('ui_page')=='Settings' and bool(bounds) and any(
+            r['label']==entry and r['visible'] and r['enabled'] and
+            bounds['x']<=r['x'] and r['x']+r['width']<=bounds['x']+bounds['width'] and
+            bounds['y']<=r['y'] and r['y']+r['height']<=bounds['y']+bounds['height']
+            for r in display['interaction_controls'])
+    shell_click(section,in_drawer=True,settled=ready)
+    shell_click(entry,in_drawer=True)
 def product_click(label,enabled=True):
     target=interaction.control(data,label,product_scroll,enabled=enabled)
     pointer_click(target)
@@ -184,7 +203,10 @@ def command(label,shortcut):
     # Primary workflows exercise visible prototype controls on both platforms.
     direct={'n':'Chart','r':'Passage','e':'Energy','m':'Settings','g':'Settings',
             'v':'Instruments','a':'Traffic','h':'Anchor','z':'Radar','s':'System'}
-    if shortcut in direct:shell_click(direct[shortcut],outside_drawer=True)
+    if shortcut in direct:
+        pages={'n':'Navigation','r':'Route','e':'Energy','m':'Settings','g':'Settings',
+               'v':'Vessel instruments','a':'AIS targets','h':'Anchor watch','z':'Radar status','s':'System'}
+        shell_click(direct[shortcut],outside_drawer=True,settled=lambda d:d.get('ui_page')==pages[shortcut])
     elif shortcut=='i':shell_click('System',outside_drawer=True);product_click('Diagnostics')
     else:accelerator(shortcut)
 def accelerator(key):
@@ -366,13 +388,12 @@ try:
                            ('Radar status','z','radar-status'),
                            ('Display & layout','f','display')]:
         if windows:
-            command('Settings','g')
             if name=='energy-settings':
-                shell_click('Vessel',in_drawer=True);shell_click('Battery & reserve',in_drawer=True)
+                preferences_entry('Vessel','Battery & reserve')
             else:
                 section,entry={'sources':('Sensors','Manage sensors'),'vessel-settings':('Vessel','Vessel dimensions'),
                                'radar-status':('Radar','Radar status'),'display':('Display','Chart presentation')}[name]
-                shell_click(section,in_drawer=True);shell_click(entry,in_drawer=True)
+                preferences_entry(section,entry)
         else:xdo('key','ctrl+shift+'+key);time.sleep(.6)
         expected_page='Display' if name=='display' else title
         data(lambda d:d.get('ui_page')==expected_page)
@@ -416,7 +437,7 @@ try:
             ui.click_text(pid,'Configure data rail');ui.click_text(pid,'Energy rail')
             data(lambda d:d['settings']['data_rail']==['soc','pack_power','sog','depth'])
             command('Navigation','n');capture('alpha-energy-rail')
-            command('Settings','g');shell_click('Display',in_drawer=True);shell_click('Chart presentation',in_drawer=True)
+            preferences_entry('Display','Chart presentation')
             ui.click_text(pid,'Configure data rail');ui.click_text(pid,'Navigation rail')
             data(lambda d:d['settings']['data_rail']==['sog','depth','aws','heading'])
             ui.click_text(pid,'Back to Display');ui.click_text(pid,'Configure instruments')

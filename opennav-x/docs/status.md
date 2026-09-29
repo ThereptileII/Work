@@ -2,13 +2,17 @@
 
 ## Current stage: prototype design lock, chart presentation and Online AIS
 
-Replacement `28b5e9c` runs `36527361912` / `36527363536` are in progress.
-The native isolated credential-import suite passes seventeen checks. Both
-portable suites reject the layout test's missing IsChild mock (77/78); the
-corrected transitive-parent fixture adds nested-caption and duplicate-shell
-coverage and passes all 78 locally. The actual Linux product retains 29 captures,
-including AIS settings and Radar through Day/Dusk/Night. No native failure is
-waived, and these results do not qualify deployment.
+Native `28b5e9c` passes 151 AIS component checks and all twelve captures,
+including own-key Day/Night, cancel, replacement, failure and removal. The
+separate protected import suite passes seventeen checks. All eight prototype
+archives verify; six jobs pass and two fail. The product Off screenshot confirms
+the action while its preceding diagnostic still says enabled. Replacement input
+checks await the semantic result. The fixture Preferences transition remains
+on Sensors; the replacement waits for the destination page and activates only
+the exact target-owned native surface before clicking. Neither failure is waived.
+The subsequent `7018c7f` full run passes both corrected 78-test portable suites;
+its integrated gates remain in progress. No deployment qualification or visual
+conformance PASS. See [native own-key evidence](evidence/ais-own-key-native-28b5e9c.json).
 
 The user-supplied AISStream key workflow now has explicit own-key guidance, a
 masked 48px input, disabled empty/invalid Save, and no automatic enablement.
@@ -16,7 +20,7 @@ Cancel/Escape never replace a saved key; confirmed removal disables Online AIS.
 An Escape defect in modal/drawer dispatch was found and fixed. Linux passes
 151 AIS component checks/twelve captures, 132 product and 132 fixture tests, and retained
 Pilot/Passage/Settings component regressions. All tests use fake credentials.
-Native Windows replacement gates are pending; no key is distributed with builds.
+Native key-entry checks pass; broader replacement gates remain open. No key is distributed with builds.
 See [credential UI contract](online-ais.md) and [corrective evidence](evidence/ais-own-key-ui-local.json).
 
 The first real AISStream service probe on the boat passes: subscription confirmed,

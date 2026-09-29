@@ -1,0 +1,128 @@
+{
+  "scope": "Native own-key UI acceptance and negative broader prototype run; no deployment or screen conformance PASS",
+  "commit": "28b5e9c9efaafee28d22391de3c0e2bedb4cc3ca",
+  "ciRun": "https://github.com/ThereptileII/Work/actions/runs/36527361912",
+  "jobs": {
+    "passed": 6,
+    "failed": 2
+  },
+  "artifactVerification": [
+    {
+      "id": 11015606539,
+      "name": "prototype-object-flow-Windows-28b5e9c9efaafee28d22391de3c0e2bedb4cc3ca",
+      "sha256": "201a6b716389833c3b850f39f5cebb04135d6e5311e970ef6c1ce6c3f2ea6dc1",
+      "bytes": 11841417,
+      "zipCrc": true
+    },
+    {
+      "id": 11015426269,
+      "name": "prototype-reference-Windows-28b5e9c9efaafee28d22391de3c0e2bedb4cc3ca",
+      "sha256": "5ce8eae92cc5292684909988316c92bd5afaf186b1b7f946dbe52197a66fd21a",
+      "bytes": 18803140,
+      "zipCrc": true
+    },
+    {
+      "id": 11015112266,
+      "name": "prototype-ais-foundation-Windows-28b5e9c9efaafee28d22391de3c0e2bedb4cc3ca",
+      "sha256": "77f35af853871110dbf3a284a333c5ddb4458eae527fc95c7ea4e9fd796f6efe",
+      "bytes": 690,
+      "zipCrc": true
+    },
+    {
+      "id": 11015027379,
+      "name": "prototype-ais-foundation-Linux-28b5e9c9efaafee28d22391de3c0e2bedb4cc3ca",
+      "sha256": "d6d2fc441d75d0d5f77224cf66784bdf3199a4c72858150cb9ff2983ec844223",
+      "bytes": 684,
+      "zipCrc": true
+    },
+    {
+      "id": 11014984514,
+      "name": "prototype-native-Windows-28b5e9c9efaafee28d22391de3c0e2bedb4cc3ca",
+      "sha256": "20cb563305f2795e6baaefa9cd9a23c14e8d32420fcf0ecb92c14b3772eb89a2",
+      "bytes": 14975561,
+      "zipCrc": true
+    },
+    {
+      "id": 11014309679,
+      "name": "prototype-reference-Linux-28b5e9c9efaafee28d22391de3c0e2bedb4cc3ca",
+      "sha256": "512c4934dc9685e979bf10f19d63c71e2a68e8a6872ed69bb6ff69b21d94efc0",
+      "bytes": 20858814,
+      "zipCrc": true
+    },
+    {
+      "id": 11014149767,
+      "name": "prototype-ais-network-Linux-28b5e9c9efaafee28d22391de3c0e2bedb4cc3ca",
+      "sha256": "03daa0714878fe295fb3b89d172392c76b48df6ab2cf920d19e16601645b09dd",
+      "bytes": 935,
+      "zipCrc": true
+    },
+    {
+      "id": 11014009869,
+      "name": "prototype-review-guard-Windows-28b5e9c9efaafee28d22391de3c0e2bedb4cc3ca",
+      "sha256": "130a9c0d34ef2e930d55e26eeb9119d047e07b97187564cf156072515e0af208",
+      "bytes": 9650,
+      "zipCrc": true
+    }
+  ],
+  "aisComponent": {
+    "scope": "offline native component only; no chart or live traffic",
+    "checks": 151,
+    "passed": true,
+    "captures": [
+      "traffic-day",
+      "ais-target-day",
+      "ais-target-dusk",
+      "ais-target-night",
+      "traffic-night",
+      "online-target-day",
+      "online-stale-day",
+      "online-lost-day",
+      "target-expired-day",
+      "ais-key-entry-day",
+      "ais-key-stored-day",
+      "ais-key-entry-night"
+    ]
+  },
+  "credentialImportChecks": 17,
+  "credentialScope": "Component callbacks use only a dummy marker; import checks use an isolated test target. No personal key is bundled, captured, or logged.",
+  "reviewed": {
+    "ais-component/ais-key-entry-day.png": "dcb91194ef31455ba41e1f68b643d232741731a13095ac30f61a1d737630971f",
+    "ais-component/ais-key-entry-night.png": "07e56c5a2079ca201484a31d382a305a556ee5eb41df8e3c5b257c080a6c04a0",
+    "ais-component/ais-key-stored-day.png": "d727fc2ed1db784c00289b0c5d5b930924ee31865deaf475cf6b52d3ab7c4f40",
+    "prototype-native/failure-state.png": "6c6eec38de79934d74ce8f0406d6fcd669bc34112c12ed77ce348177a1b5f076",
+    "fixture/preview-failure.png": "bac5fa5e505e37e19dd5ec5e7a0cbd3e145f21594041c7bda610a2d6f27eb6b5"
+  },
+  "failures": [
+    {
+      "gate": "Production capture",
+      "observation": "Diagnostic enabled=true was read immediately after Off; retained screenshot shows Off selected and Online AIS disabled. Input succeeded but diagnostic publication lagged.",
+      "correction": "Wait for enabled=false AND Disabled connection state without retrying input or weakening the assertion."
+    },
+    {
+      "gate": "Fixture workflow",
+      "observation": "After Data Sources, Preferences remains in Sensors instead of reaching Vessel dimensions. The failure image shows Sensors selected. No product crash.",
+      "correction": "Require semantic page publication before locating a control; activate only the exact target-owned native surface and recheck HWND; wait for the expected Preferences entry. Native replacement still required."
+    }
+  ],
+  "otherResults": {
+    "softwareEncXNav": "Day/Dusk/Night/Day captured; visual and semantic review remains required",
+    "softwareEncStandard": "Day/Dusk/Night/Day captured; visual and semantic review remains required",
+    "actualDpi": [
+      100,
+      125,
+      150
+    ],
+    "actualDpiScope": "Eighteen captures; automated development geometry and interactions pass, physical touch and boat acceptance remain open"
+  },
+  "deployment": "withheld",
+  "visualConformance": "PENDING",
+  "integratedNativeTests": {
+    "production": 124,
+    "fixtures": 124
+  },
+  "localReplacement": {
+    "offSemanticCapture": "evidence/local/prototype/ais-off-semantic-corrected-venv/capture.json",
+    "result": "passed; initial invocation without Pillow rejected and rerun with existing renderer environment",
+    "nativeReplacement": "pending"
+  }
+}

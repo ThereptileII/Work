@@ -144,6 +144,8 @@ print(f'{page_passed} exact page/timeline/DPI geometry checks passed')
 
 # A second matching control outside the page still fails. The descendant
 # filter must never hide a duplicated real shell control.
+bounds[2]=(left,top,right,bottom)
+page_check(1,2,horizon=True)
 labels.append((24, 'Configure instruments'))
 parents[24] = 13
 try:
