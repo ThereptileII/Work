@@ -132,4 +132,5 @@ class TestApp final:public wxApp {
   wxTimer timer_;int step_=0,opened_=0,checks_=0;bool failed_=false;
 };
 }
-wxIMPLEMENT_APP(TestApp);
+wxIMPLEMENT_APP_NO_MAIN(TestApp);
+int main(int argc, char **argv) { return wxEntry(argc, argv); }

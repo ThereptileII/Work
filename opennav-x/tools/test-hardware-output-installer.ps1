@@ -5,7 +5,7 @@ $root = Split-Path $PSScriptRoot -Parent
 $tokens=$null; $errors=$null
 $ast=[Management.Automation.Language.Parser]::ParseFile((Join-Path $root 'installer/windows/Lifecycle.ps1'),[ref]$tokens,[ref]$errors)
 if($errors.Count){throw 'Installer parser errors'}
-foreach($name in @('Assert-StatusOnlyOutput','Resolve-OutputPolicy','Test-ExactRepairPackage')) {
+foreach($name in @('Assert-StatusOnlyOutput','Assert-InstalledProduct','Resolve-OutputPolicy','Test-ExactRepairPackage')) {
   $functions=@($ast.FindAll({param($n) $n -is [Management.Automation.Language.FunctionDefinitionAst] -and $n.Name -eq $name},$true))
   if($functions.Count -ne 1){throw 'Missing unique actual output validator'}
   . ([scriptblock]::Create($functions[0].Extent.Text))
@@ -50,4 +50,30 @@ foreach($hash in @('',('A'*64),('a'*63))) {
   if(Test-ExactRepairPackage $previous $package $hash){throw 'Invalid recovery package identity'}
   $count++
 }
+Assert-InstalledProduct ([pscustomobject]@{test_fixtures=$false;build_purpose='INSTALLED PRODUCT'})
+$count++
+foreach($value in @($null,$true,0,1,'false','False',@(),@{})) {
+  $rejected=$false
+  try{Assert-InstalledProduct ([pscustomobject]@{test_fixtures=$value;build_purpose='INSTALLED PRODUCT';xnav_hardware_output_policy='status-only'})}catch{$rejected=$true}
+  if(-not $rejected){throw 'Installer accepted fixture identity or coerced a non-boolean fixture declaration'}
+  $count++
+}
+foreach($value in @($null,$true,0,'installed product','DEVELOPER TEST BUILD','INSTALLED PRODUCT ',@())) {
+  $rejected=$false
+  try{Assert-InstalledProduct ([pscustomobject]@{test_fixtures=$false;build_purpose=$value;xnav_hardware_output_policy='status-only'})}catch{$rejected=$true}
+  if(-not $rejected){throw 'Installer accepted a non-product build purpose'}
+  $count++
+}
+foreach($report in @($null,[pscustomobject]@{},[pscustomobject]@{test_fixtures=$false},[pscustomobject]@{build_purpose='INSTALLED PRODUCT'})) {
+  $rejected=$false
+  try{Assert-InstalledProduct $report}catch{$rejected=$true}
+  if(-not $rejected){throw 'Installer accepted incomplete product declaration'}
+  $count++
+}
+# A truthful product identity cannot bypass the separate hardware-output gate.
+$rejected=$false
+$unqualified=[pscustomobject]@{test_fixtures=$false;build_purpose='INSTALLED PRODUCT';xnav_hardware_output_policy='test-loopback-only'}
+try{Assert-InstalledProduct $unqualified;Assert-StatusOnlyOutput $unqualified}catch{$rejected=$true}
+if(-not $rejected){throw 'Valid product identity bypassed output restriction'}
+$count++
 Write-Output "$count actual installer output-policy checks passed; no installer operation invoked"

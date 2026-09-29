@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """Private X server interaction gate; native Windows remains visual authority."""
 import ctypes
+import hashlib
 import importlib.util
 import json
 import os
@@ -34,19 +35,77 @@ display_number = 98
 while Path(f'/tmp/.X{display_number}-lock').exists():
     display_number += 1
 env = dict(os.environ, DISPLAY=f':{display_number}')
-xserver = subprocess.Popen(['Xvfb', env['DISPLAY'], '-screen', '0', '1280x800x24', '-nolisten', 'tcp'],
-                           env=env, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+with (evidence / 'linux-mode-cycle-xvfb.stdout.log').open('w') as stdout, \
+     (evidence / 'linux-mode-cycle-xvfb.stderr.log').open('w') as stderr:
+    xserver = subprocess.Popen(['Xvfb', env['DISPLAY'], '-screen', '0', '1280x800x24', '-nolisten', 'tcp'],
+                               env=env, stdout=stdout, stderr=stderr)
 exe = root / 'build/xnav-install/bin/opencpn'
 app = None
 owned_pids = set()
-report = {'profile': str(profile), 'authority': 'Linux development only', 'steps': [], 'expected': expected}
+report = {'profile': str(profile), 'authority': 'Linux development only', 'steps': [], 'expected': expected,
+          'executable_sha256': hashlib.sha256(exe.read_bytes()).hexdigest(), 'launches': []}
+launched = []
+
+def launch(phase, *arguments):
+    # Direct launches have distinct output; controlled-restart children inherit
+    # their originating launch's descriptors and OpenCPN's shared profile log.
+    stdout_name = f'linux-mode-cycle-{phase}.stdout.log'
+    stderr_name = f'linux-mode-cycle-{phase}.stderr.log'
+    with (evidence / stdout_name).open('w') as stdout, (evidence / stderr_name).open('w') as stderr:
+        process = subprocess.Popen([str(exe), '--configdir', str(profile), *arguments],
+                                   env=env, stdout=stdout, stderr=stderr)
+    entry = {'phase': phase, 'pid': process.pid, 'stdout': stdout_name, 'stderr': stderr_name}
+    launched.append((process, entry)); report['launches'].append(entry)
+    owned_pids.add(process.pid)
+    return process
+
+def remote_quit(phase):
+    process = launch(phase, '--remote', '--quit')
+    code = process.wait(timeout=15)
+    owned_pids.discard(process.pid)
+    if code != 0:
+        raise subprocess.CalledProcessError(code, process.args)
+
+
+def failure_inventory(error):
+    # Read-only observations after failure; no retry, dialog dismissal or
+    # alternate click path is allowed to convert this gate into a pass.
+    inventory = {'error': repr(error), 'owned_pids': sorted(owned_pids), 'windows': []}
+    for process, entry in launched:
+        entry['return_code_at_failure'] = process.poll()
+    result = subprocess.run(['xdotool', 'search', '--all', '--onlyvisible', '--name', '.*'],
+                            env=env, text=True, capture_output=True, timeout=5)
+    inventory['window_search'] = {'return_code': result.returncode, 'stderr': result.stderr}
+    for handle in result.stdout.splitlines():
+        row = {'handle': handle}
+        for key, command in [('title', ['getwindowname']), ('pid', ['getwindowpid']),
+                             ('geometry', ['getwindowgeometry', '--shell'])]:
+            observed = subprocess.run(['xdotool', *command, handle], env=env,
+                                      text=True, capture_output=True, timeout=5)
+            row[key] = {'return_code': observed.returncode, 'stdout': observed.stdout, 'stderr': observed.stderr}
+        inventory['windows'].append(row)
+    if owned_pids:
+        observed = subprocess.run(['ps', '-p', ','.join(str(pid) for pid in sorted(owned_pids)),
+                                   '-o', 'pid,ppid,stat,etime,comm,args'],
+                                  text=True, capture_output=True, timeout=5)
+        inventory['processes'] = {'return_code': observed.returncode, 'stdout': observed.stdout, 'stderr': observed.stderr}
+    image = evidence / 'linux-mode-cycle-failure.png'
+    captured = subprocess.run(['import', '-window', 'root', str(image)], env=env,
+                              text=True, capture_output=True, timeout=10)
+    inventory['screenshot'] = {'path': image.name, 'return_code': captured.returncode, 'stderr': captured.stderr}
+    path = evidence / 'linux-mode-cycle-failure-inventory.json'
+    path.write_text(json.dumps(inventory, indent=2) + '\n')
+    report['failure_inventory'] = path.name
+
 
 def xdo(*args):
     return subprocess.check_output(['xdotool', *map(str, args)], env=env, text=True).strip()
 
-def window(title):
+def window(title, process=None):
     deadline = time.monotonic() + 45
     while time.monotonic() < deadline:
+        if process is not None and process.poll() is not None:
+            raise RuntimeError(f'Process {process.pid} exited with {process.returncode} before window {title!r}; see launch logs')
         r = subprocess.run(['xdotool', 'search', '--onlyvisible', '--name', '^' + title + '$'],
                            env=env, text=True, capture_output=True)
         if r.returncode == 0 and r.stdout.strip():
@@ -118,11 +177,8 @@ def wait_exit(pid):
 
 try:
     time.sleep(1)
-    with (evidence / 'linux-mode-cycle-launch.log').open('w') as output:
-        app = subprocess.Popen([str(exe), '--configdir', str(profile), '--no_opengl', '--xnav'],
-                               env=env, stdout=output, stderr=output)
-    owned_pids.add(app.pid)
-    handle, pid = window('OpenNav X / OpenCPN')
+    app = launch('01-xnav-and-controlled-restarts', '--no_opengl', '--xnav')
+    handle, pid = window('OpenNav X / OpenCPN', app)
     ready(1)
     capture('01-xnav-unavailable')
     action('Day',light='Dusk')
@@ -162,32 +218,41 @@ try:
     saved('Legacy to XNav')
     capture('06-xnav-after-legacy')
     assert (profile / 'opencpn-ipc').is_socket(), 'OpenCPN IPC socket was not created'
-    subprocess.run([str(exe), '--configdir', str(profile), '--remote', '--quit'], env=env, check=True, timeout=15)
+    remote_quit('02-xnav-quit')
     wait_exit(pid)
     saved('Final IPC close')
-    safe = subprocess.Popen([str(exe), '--configdir', str(profile), '--no_opengl',
-                             '--xnav', '--legacy', '--safe-mode'], env=env,
-                             stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
-    owned_pids.add(safe.pid)
-    handle, pid = window('OpenNav Safe Mode / OpenCPN')
+    safe = launch('03-safe', '--no_opengl', '--xnav', '--legacy', '--safe-mode')
+    handle, pid = window('OpenNav Safe Mode / OpenCPN', safe)
     ready(4)
     capture('12-safe-shared-profile')
-    subprocess.run([str(exe), '--configdir', str(profile), '--remote', '--quit'], env=env, check=True, timeout=15)
+    remote_quit('04-safe-quit')
     assert safe.wait(timeout=30) == 0
     owned_pids.discard(safe.pid)
     saved('Safe override and close')
-    normal = subprocess.Popen([str(exe), '--configdir', str(profile), '--no_opengl'], env=env,
-                               stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
-    owned_pids.add(normal.pid)
-    handle, pid = window('OpenNav X / OpenCPN')
+    normal = launch('05-normal-after-safe', '--no_opengl')
+    handle, pid = window('OpenNav X / OpenCPN', normal)
     ready(5)
-    subprocess.run([str(exe), '--configdir', str(profile), '--remote', '--quit'], env=env, check=True, timeout=15)
+    remote_quit('06-normal-quit')
     assert normal.wait(timeout=30) == 0
     owned_pids.discard(normal.pid)
     saved('Persisted XNav after Safe Mode')
     report['result'] = 'interaction and persistence passed; screenshot review required'
     print(report['result'])
+except BaseException as error:
+    report['error'] = repr(error)
+    report['result'] = 'FAILED; inspect per-launch logs and failure inventory'
+    try:
+        failure_inventory(error)
+    except Exception as diagnostic_error:
+        report['failure_inventory_error'] = repr(diagnostic_error)
+    raise
 finally:
+    for process, entry in launched:
+        entry['return_code_before_cleanup'] = process.poll()
+    try:
+        report['executable_build_commit'] = read_json_snapshot(profile / 'opennav-diagnostics.json').get('build_commit')
+    except (FileNotFoundError, ValueError, PermissionError):
+        pass
     for pid in owned_pids:
         try:
             os.kill(pid, 15)

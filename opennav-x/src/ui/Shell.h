@@ -179,6 +179,7 @@ private:
   wxFrame &frame_;
   wxAuiManager &manager_;
   int original_pane_border_ = 0;
+  int original_sash_size_ = 0;
   ShellActions actions_;
   LightMode mode_;
   vessel::VesselState state_;

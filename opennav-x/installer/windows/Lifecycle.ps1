@@ -76,6 +76,14 @@ function Assert-StatusOnlyOutput($Result) {
     throw 'Unqualified XNav equipment-output build refused. A status-only product is required.'
   }
 }
+function Assert-InstalledProduct($Result) {
+  if (-not $Result -or -not $Result.PSObject.Properties['test_fixtures'] -or
+      $Result.test_fixtures -isnot [bool] -or $Result.test_fixtures -ne $false -or
+      -not $Result.PSObject.Properties['build_purpose'] -or
+      $Result.build_purpose -isnot [string] -or $Result.build_purpose -cne 'INSTALLED PRODUCT') {
+    throw 'Developer/test-fixture executable refused in the installed Beta 2 product.'
+  }
+}
 function Resolve-OutputPolicy($Result, [bool]$RecordedRecovery = $false) {
   if ($RecordedRecovery -and $Result -and -not $Result.PSObject.Properties['xnav_hardware_output_policy']) {
     return 'historical-unqualified'
@@ -255,17 +263,15 @@ namespace OpenNav {
   } finally { if ($process) { $process.Dispose() } }
   $result = ReadJson $reportPath
   if (-not $result.passed -or $result.commit -cne $Commit -or $result.version -cne $Version -or $result.profile_initialized -or $result.plugins_loaded) { throw 'Executable identity/self-test report mismatch.' }
+  # Keep fixture rejection independently observable even when the same test
+  # executable also declares a disallowed loopback output policy. Both checks
+  # precede profile access and any generation publication.
+  if ($Version -match '^0\.4\.') { Assert-InstalledProduct $result }
   # Recovery is allowed only by explicit callers which verified a recorded
   # generation/package. No version string qualifies a new install/update.
   $outputPolicy = Resolve-OutputPolicy $result $RecordedRecovery
   if ($outputPolicy -eq 'historical-unqualified') {
     Log 'Historical recovery only: this generation has no qualified XNav equipment-output policy. It is not a public-beta candidate.'
-  }
-  if ($Version -match '^0\.4\.') {
-    if (-not $result.PSObject.Properties['test_fixtures'] -or $result.test_fixtures -ne $false -or
-        -not $result.PSObject.Properties['build_purpose'] -or $result.build_purpose -cne 'INSTALLED PRODUCT') {
-      throw 'Developer/test-fixture executable refused in the installed Beta 2 product.'
-    }
   }
   if ($result.PSObject.Properties['normal_config_directory']) {
     $profile = PlainPath $result.normal_config_directory

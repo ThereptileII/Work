@@ -156,3 +156,25 @@ claim of final prototype conformance or release qualification is made here.
 **Still pending:** full integrated regressions, exact-commit native MSVC run,
 Windows typography and 100/125/150% DPI, installed mode/recovery paths, and boat
 1280×800 review. Footer work does not waive any existing chart-content gate.
+
+## Exact integrated failure and correction
+
+Candidate `88b7bbc` reaches 135 Linux integrated cases, then its recording gate
+finds the footer is 1279px wide. A separate actual application capture verifies
+the containing frame is 1280×800 with no X border. This is a layout defect, not
+a serialization offset or a reason to relax the 1280px assertion.
+
+Independent wxGTK 3.2.11 experiments reproduce the fixed-dock trailing stretch
+spacer: 16 size/resize/hide-show observations distinguish 1279px fixed docking
+from a full 1280px proportional footer. Six further observations prove theme
+metric reset/reapplication and exact restoration of the original pane geometry
+and perspective. Pinned OpenCPN `MyFrame::SetAndApplyColorScheme` ends with a
+6px sash, despite setting it to zero earlier in the same function. XNav now
+saves, zeroes, reapplies and restores that metric alongside its border metric;
+only `OpenNavActions` changes to proportional docking. No upstream hook changes.
+
+Both native prototype builds also expose a test executable entry-point error.
+`status_footer_test` now follows the existing console component test pattern,
+retaining stdout and actual wx event processing. Its 98 Linux checks and ten
+captures pass after the change; the Windows replacement is still required.
+See [retained evidence](../../evidence/prototype-native-88b7bbc-development.json).

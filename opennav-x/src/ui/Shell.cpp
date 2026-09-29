@@ -93,7 +93,9 @@ Shell::Shell(wxFrame &frame, wxAuiManager &manager, ShellActions actions,
     : frame_(frame), manager_(manager), actions_(std::move(actions)),
       mode_(mode), simulation_(simulation && integration::TestFixturesEnabled()), timer_(this) {
   original_pane_border_ = manager_.GetArtProvider()->GetMetric(wxAUI_DOCKART_PANE_BORDER_SIZE);
+  original_sash_size_ = manager_.GetArtProvider()->GetMetric(wxAUI_DOCKART_SASH_SIZE);
   manager_.GetArtProvider()->SetMetric(wxAUI_DOCKART_PANE_BORDER_SIZE, 0);
+  manager_.GetArtProvider()->SetMetric(wxAUI_DOCKART_SASH_SIZE, 0);
   const int gap = frame_.FromDIP(spacing::base);
   auto *top = MakePane("OpenNavTop", wxAuiPaneInfo().Top().Layer(10).BestSize(
                                          -1, frame_.FromDIP(prototype::top)));
@@ -283,6 +285,10 @@ Shell::Shell(wxFrame &frame, wxAuiManager &manager, ShellActions actions,
 
   auto *bottom = MakePane("OpenNavActions", wxAuiPaneInfo().Bottom().Layer(10).BestSize(
       -1,frame_.FromDIP(prototype::footer)));
+  // A fixed AUI dock adds a stretchable trailing spacer. It takes one pixel
+  // from this otherwise full-width status bar. A proportional dock fills the
+  // width exactly; the XNav sash metric is zero and restored for Legacy.
+  manager_.GetPane(bottom).DockFixed(false);
   auto *status = new wxBoxSizer(wxVERTICAL);
   footer_=new XNavStatusFooter(bottom,[this]{ShowHealth();});
   status->Add(footer_,1,wxEXPAND);bottom->SetSizer(status);
@@ -501,6 +507,7 @@ Shell::~Shell() {
     pane->Destroy();
   }
   manager_.GetArtProvider()->SetMetric(wxAUI_DOCKART_PANE_BORDER_SIZE, original_pane_border_);
+  manager_.GetArtProvider()->SetMetric(wxAUI_DOCKART_SASH_SIZE, original_sash_size_);
   manager_.Update();
   // ShowNavigation above still updates orientation and chart placement. Keep
   // overlay children alive until that restoration is finished (MSW destroys
@@ -626,10 +633,11 @@ void Shell::SetLight(LightMode mode) {
   mode_ = mode;
   if (actions_.theme)
     actions_.theme(mode);
-  // The pinned SetAndApplyColorScheme resets the AUI border metric. Keep this
+  // The pinned SetAndApplyColorScheme resets the AUI border and sash metrics. Keep this
   // transient XNav presentation after each scheme change; destruction restores
   // the original metric before Legacy's perspective is saved/restored.
   manager_.GetArtProvider()->SetMetric(wxAUI_DOCKART_PANE_BORDER_SIZE, 0);
+  manager_.GetArtProvider()->SetMetric(wxAUI_DOCKART_SASH_SIZE, 0);
   manager_.Update();
   ApplyTheme();
   PlaceChartControls();

@@ -1,0 +1,409 @@
+{
+  "scope": "Development failure evidence; no release or visual acceptance.",
+  "commit": "88b7bbcdd3e290a6310c16efd7ae2ebd0b9d08dd",
+  "observedUtc": "2026-09-29 16:53:58 UTC",
+  "accepted": false,
+  "prototype": {
+    "run": "https://github.com/ThereptileII/Work/actions/runs/36598857345",
+    "jobs": [
+      {
+        "id": 109510706712,
+        "name": "Bounded AIS TLS and provider lifecycle (Linux loopback only)",
+        "status": "completed",
+        "conclusion": "success",
+        "failedSteps": []
+      },
+      {
+        "id": 109510706984,
+        "name": "Native prototype route waypoint AIS pointer regressions (not full release gate)",
+        "status": "completed",
+        "conclusion": "failure",
+        "failedSteps": [
+          "Native fixture build and actual object workflow"
+        ]
+      },
+      {
+        "id": 109510706996,
+        "name": "reference (ubuntu-24.04)",
+        "status": "completed",
+        "conclusion": "success",
+        "failedSteps": []
+      },
+      {
+        "id": 109510707017,
+        "name": "Prototype capture guard on disposable Windows surfaces",
+        "status": "completed",
+        "conclusion": "success",
+        "failedSteps": []
+      },
+      {
+        "id": 109510707171,
+        "name": "Native prototype composition development (not release qualification)",
+        "status": "completed",
+        "conclusion": "failure",
+        "failedSteps": [
+          "Native fixture-free Win32 MSVC build and integrated unit regressions"
+        ]
+      },
+      {
+        "id": 109510707175,
+        "name": "Supplemental AIS portable contracts (windows-2022)",
+        "status": "completed",
+        "conclusion": "success",
+        "failedSteps": []
+      },
+      {
+        "id": 109510707262,
+        "name": "Supplemental AIS portable contracts (ubuntu-24.04)",
+        "status": "completed",
+        "conclusion": "success",
+        "failedSteps": []
+      },
+      {
+        "id": 109510707289,
+        "name": "reference (windows-2022)",
+        "status": "completed",
+        "conclusion": "success",
+        "failedSteps": []
+      }
+    ],
+    "nativeIntegratedTests": "Not run; aggregate build failed on status_footer_test linkage before unit/capture gates.",
+    "footerComponentCaptures": "Not run",
+    "pilotComponentCaptures": "Not run",
+    "exactErrors": [
+      "MSVCRT.lib(exe_main.obj) : error LNK2019: unresolved external symbol _main referenced in __scrt_common_main_seh",
+      "status_footer_test.exe : fatal error LNK1120: 1 unresolved externals"
+    ],
+    "sourceBoundary": "CMakeLists.txt:146 console executable + tests/status_footer_test.cpp wxIMPLEMENT_APP(TestApp). Existing component tests instead use wxIMPLEMENT_APP_NO_MAIN and explicit main -> wxEntry."
+  },
+  "full": {
+    "run": "https://github.com/ThereptileII/Work/actions/runs/36598857974",
+    "jobs": [
+      {
+        "id": 109510706578,
+        "name": "contracts (ubuntu-24.04)",
+        "status": "completed",
+        "conclusion": "success",
+        "failedSteps": []
+      },
+      {
+        "id": 109510706813,
+        "name": "Native boat recovery and commissioning contracts",
+        "status": "completed",
+        "conclusion": "success",
+        "failedSteps": []
+      },
+      {
+        "id": 109510706848,
+        "name": "Native Win32 commissioning restart process boundary",
+        "status": "completed",
+        "conclusion": "success",
+        "failedSteps": []
+      },
+      {
+        "id": 109510706870,
+        "name": "Boat C6 producer expiry compile (no flashing)",
+        "status": "completed",
+        "conclusion": "success",
+        "failedSteps": []
+      },
+      {
+        "id": 109510706912,
+        "name": "linux",
+        "status": "completed",
+        "conclusion": "success",
+        "failedSteps": []
+      },
+      {
+        "id": 109510706966,
+        "name": "Linux integrated regression gate",
+        "status": "completed",
+        "conclusion": "failure",
+        "failedSteps": [
+          "Record and replay normalized vessel state through the real UI"
+        ]
+      },
+      {
+        "id": 109510706985,
+        "name": "contracts (windows-2022)",
+        "status": "completed",
+        "conclusion": "success",
+        "failedSteps": []
+      },
+      {
+        "id": 109510706994,
+        "name": "Approved OpenCPN ABI on Windows x64",
+        "status": "completed",
+        "conclusion": "success",
+        "failedSteps": []
+      },
+      {
+        "id": 109510707045,
+        "name": "Official OpenCPN installation prerequisite",
+        "status": "completed",
+        "conclusion": "success",
+        "failedSteps": []
+      },
+      {
+        "id": 109510707274,
+        "name": "Native MSVC upstream Win32 ABI on Windows x64",
+        "status": "completed",
+        "conclusion": "success",
+        "failedSteps": []
+      },
+      {
+        "id": 109511996062,
+        "name": "Actual official OpenCPN portable upgrade caution (sv)",
+        "status": "completed",
+        "conclusion": "success",
+        "failedSteps": []
+      },
+      {
+        "id": 109511996077,
+        "name": "Actual official OpenCPN portable upgrade caution (en_US)",
+        "status": "completed",
+        "conclusion": "success",
+        "failedSteps": []
+      },
+      {
+        "id": 109511996101,
+        "name": "Fixed guarded mode UI actions on disposable native windows",
+        "status": "completed",
+        "conclusion": "success",
+        "failedSteps": []
+      },
+      {
+        "id": 109511996139,
+        "name": "Actual restart broker with disposable marker-only installation",
+        "status": "completed",
+        "conclusion": "success",
+        "failedSteps": []
+      },
+      {
+        "id": 109512909548,
+        "name": "Native MSVC XNav / Legacy / Safe slice",
+        "status": "in_progress",
+        "conclusion": null,
+        "activeStep": "Build and exercise integrated modes",
+        "failedSteps": []
+      }
+    ],
+    "windowsPortableContractsPassed": 83,
+    "linuxIntegratedFixtureTestsPassed": 135,
+    "linuxProductTests": "Not reached",
+    "recordingFailure": {
+      "job": 109510706966,
+      "source": "tools/smoke-recording.py:173 -> data():34",
+      "error": "Recording diagnostic predicate timed out",
+      "expectedFooter": {
+        "x": 0,
+        "y": 766,
+        "width": 1280,
+        "height": 34
+      },
+      "observedFooter": {
+        "x": 0,
+        "y": 766,
+        "width": 1279,
+        "height": 34
+      },
+      "measurement": "Direct footer_->GetScreenRect() x/y/width/height; no normalization/subtraction in diagnostics. Exact GNU13.3 Linux build, DPI96.",
+      "repeated": "Same width1279 in recording, preceding navigation-input and mode-cycle diagnostics.",
+      "capture": {
+        "file": "recording-failure-linux.png",
+        "width": 1280,
+        "height": 800,
+        "sha256": "aa299280c1edf4f43e041729ee4d26964bacb52c82b97c06faf1a95ddc2dbfea"
+      },
+      "limits": "Underlying AUI child sizing cause not established by archive alone. No geometry tolerance widened and no rerun performed."
+    }
+  },
+  "retainedPrior": {
+    "commit": "4b9d1340016193dd707ff78bf5e67eebaa52a54e",
+    "run": "https://github.com/ThereptileII/Work/actions/runs/36594637027",
+    "linux": "Actual elapsed-time endurance running",
+    "windows": "Installer lifecycle running",
+    "accepted": false
+  },
+  "artifactLocations": {
+    "prototype": "verified.json",
+    "full": "verified.json",
+    "linuxFailure": "linux-integration-88b7bbcdd3e290a6310c16efd7ae2ebd0b9d08dd",
+    "nativeFailure": "prototype-native-Windows-88b7bbcdd3e290a6310c16efd7ae2ebd0b9d08dd",
+    "fixtureFailure": "prototype-object-flow-Windows-88b7bbcdd3e290a6310c16efd7ae2ebd0b9d08dd"
+  },
+  "artifactVerification": "Eight prototype plus twelve currently available full-run artifacts verified against API SHA256, byte count, ZIP CRC and safe archive paths before extraction. No native footer/pilot captures exist.",
+  "deployment": "withheld; no boat access, launch or commands in audit.",
+  "verifiedArtifacts": [
+    {
+      "id": 11049136102,
+      "name": "prototype-reference-Windows-88b7bbcdd3e290a6310c16efd7ae2ebd0b9d08dd",
+      "sha256": "66c0be3fd789dcdd2ff49726e74db5689bb6bd740ee5707a4c9b862274b4b42c",
+      "bytes": 19678583,
+      "zipCrc": true
+    },
+    {
+      "id": 11049107298,
+      "name": "prototype-object-flow-Windows-88b7bbcdd3e290a6310c16efd7ae2ebd0b9d08dd",
+      "sha256": "9bb114db6c8cdb94e83cb83167b011ef3849eacfbdf185f819bbe68fba0db4ff",
+      "bytes": 77751,
+      "zipCrc": true
+    },
+    {
+      "id": 11049011014,
+      "name": "prototype-review-guard-Windows-88b7bbcdd3e290a6310c16efd7ae2ebd0b9d08dd",
+      "sha256": "7f6072b36864aad8e94e4e0d94a0a88756158e5db3cca0dd4f77c92b12af2e2e",
+      "bytes": 9681,
+      "zipCrc": true
+    },
+    {
+      "id": 11048990753,
+      "name": "prototype-ais-network-Linux-88b7bbcdd3e290a6310c16efd7ae2ebd0b9d08dd",
+      "sha256": "2ad4fcbb06e7f4bd211f516ef2d21703b771ea3e4c2696db738842c4606b8a27",
+      "bytes": 935,
+      "zipCrc": true
+    },
+    {
+      "id": 11048612898,
+      "name": "prototype-native-Windows-88b7bbcdd3e290a6310c16efd7ae2ebd0b9d08dd",
+      "sha256": "88c1e38dce04a886e32c66203624000af8da6260945c003a2fa1df88adf2f015",
+      "bytes": 76604,
+      "zipCrc": true
+    },
+    {
+      "id": 11048471009,
+      "name": "prototype-ais-foundation-Linux-88b7bbcdd3e290a6310c16efd7ae2ebd0b9d08dd",
+      "sha256": "84d90a15e998c55e453368fa06ae3216e2b100be058ac03ac69664eb3a1e8718",
+      "bytes": 689,
+      "zipCrc": true
+    },
+    {
+      "id": 11047967179,
+      "name": "prototype-ais-foundation-Windows-88b7bbcdd3e290a6310c16efd7ae2ebd0b9d08dd",
+      "sha256": "1ff18e46e7dbf21283cd1ba403dc075d3bd0f465bdfb61cb88938208afe3a7fd",
+      "bytes": 690,
+      "zipCrc": true
+    },
+    {
+      "id": 11047627372,
+      "name": "prototype-reference-Linux-88b7bbcdd3e290a6310c16efd7ae2ebd0b9d08dd",
+      "sha256": "52f6a66863dc6d8fbd3768e48aab5d7bcd605404766d206d8f3b7ea9da734201",
+      "bytes": 21812996,
+      "zipCrc": true
+    },
+    {
+      "id": 11049265266,
+      "name": "boat-firmware-88b7bbcdd3e290a6310c16efd7ae2ebd0b9d08dd",
+      "sha256": "79c6dff903ee4e2b16e58162506e93486084593d66b2eab824c74282d50da9a6",
+      "bytes": 2641,
+      "zipCrc": true
+    },
+    {
+      "id": 11049217253,
+      "name": "windows-pristine-88b7bbcdd3e290a6310c16efd7ae2ebd0b9d08dd",
+      "sha256": "eb946dac1f9cf0ae28a7ce1e9bbf83239fd7de3a590fa26e014627748d770313",
+      "bytes": 496753,
+      "zipCrc": true
+    },
+    {
+      "id": 11049201304,
+      "name": "restart-window-88b7bbcdd3e290a6310c16efd7ae2ebd0b9d08dd",
+      "sha256": "8f797fb7b4a1a5ebcc6a7a74c0015299ae8656712c2c1720c8c6a772ae3ff298",
+      "bytes": 23438,
+      "zipCrc": true
+    },
+    {
+      "id": 11049126106,
+      "name": "boat-maintenance-88b7bbcdd3e290a6310c16efd7ae2ebd0b9d08dd",
+      "sha256": "6cfaa357f797818e754fb050e7c888d593a85e7f0252c6c7a0f75303446aecbf",
+      "bytes": 24737,
+      "zipCrc": true
+    },
+    {
+      "id": 11049026314,
+      "name": "commissioning-restart-qualified-88b7bbcdd3e290a6310c16efd7ae2ebd0b9d08dd",
+      "sha256": "c0df264896fd22b7f89e4189dd557c21bc195507b55784095ab57079def97f25",
+      "bytes": 338,
+      "zipCrc": true
+    },
+    {
+      "id": 11048921157,
+      "name": "stock-welcome-sv-88b7bbcdd3e290a6310c16efd7ae2ebd0b9d08dd",
+      "sha256": "fe861a06ee3d9aa9522b9bb7538503344f4cea49b478a9390fc062d2b3f61fd4",
+      "bytes": 501822,
+      "zipCrc": true
+    },
+    {
+      "id": 11048895820,
+      "name": "official-prerequisite-88b7bbcdd3e290a6310c16efd7ae2ebd0b9d08dd",
+      "sha256": "a4a72e12af00c30f9981da00c1a78c32c5a18adbf33ac067f2a05dcbee07f644",
+      "bytes": 220992,
+      "zipCrc": true
+    },
+    {
+      "id": 11048647641,
+      "name": "linux-integration-88b7bbcdd3e290a6310c16efd7ae2ebd0b9d08dd",
+      "sha256": "ad9cb1104a3aee5beafb34ed8a879ff8e3df012fe2c166ce4534f33c6f81e53e",
+      "bytes": 1884957,
+      "zipCrc": true
+    },
+    {
+      "id": 11048546346,
+      "name": "stock-welcome-en_US-88b7bbcdd3e290a6310c16efd7ae2ebd0b9d08dd",
+      "sha256": "4f9be0103959a9a066e2d2788fb41bcf5a06592274cf86d0e36a8e1465dfbe54",
+      "bytes": 474129,
+      "zipCrc": true
+    },
+    {
+      "id": 11048507968,
+      "name": "linux-pristine-88b7bbcdd3e290a6310c16efd7ae2ebd0b9d08dd",
+      "sha256": "3d6947e04462563fb5e8916850f1561c75f6c1472cd62e6787576a8ef3b0cfaf",
+      "bytes": 475703,
+      "zipCrc": true
+    },
+    {
+      "id": 11048346814,
+      "name": "commissioning-broker-88b7bbcdd3e290a6310c16efd7ae2ebd0b9d08dd",
+      "sha256": "aaf874f35a2e827137223d5da119008bed0e63ffef27f3f4b49c5580bc288311",
+      "bytes": 16730,
+      "zipCrc": true
+    },
+    {
+      "id": 11047927221,
+      "name": "commissioning-restart-88b7bbcdd3e290a6310c16efd7ae2ebd0b9d08dd",
+      "sha256": "04bb2d8bc882686aa36419f5520a1a7f0dcc51f9d3563c258c133a5d1fd7a8a4",
+      "bytes": 6197,
+      "zipCrc": true
+    }
+  ],
+  "local_source_commit": "34431feed3062bcf418a3cd5e932728d48e4c781",
+  "qualification": "FAIL: no release, deployment, hardware or visual acceptance",
+  "correction_in_progress": {
+    "footer_test_entry": "Match existing console component wxIMPLEMENT_APP_NO_MAIN and explicit main -> wxEntry. Linux98component checks/10 captures pass; native replacement required.",
+    "footer_layout": "Actual frame1280x800, footer1279x34. Independent wx3.2.11 probe reproduces DockFixed proportional trailing spacer. Scope/restore sash metric and remove DockFixed only from footer; unchanged1280 expectation retained.",
+    "lifecycle": "Original post-Safe launch failed with discarded stderr. One observational repeat on identical binary passes. Failure remains intermittent/unresolved; future gate retains every launcher exit/output and failure inventory.",
+    "installer": "Retained prior4b lifecycle rejects fixture build by newer output policy before fixture message. Separate strict typed fixture identity validation before output policy; both required;48 actual PowerShell validator checks pass."
+  },
+  "standalone_probe_artifacts": [
+    {
+      "name": "xnav-footer-aui-probe.cpp",
+      "sha256": "c225c88d798d4bd580f4ff63d391863bfada7c2120a14588ccc42e03214ba45a",
+      "bytes": 3709
+    },
+    {
+      "name": "xnav-footer-aui-probe.jsonl",
+      "sha256": "54bb01fab53d927d78d60fe50d827a7bf75c0f638d873cc719ae1472c42249cc",
+      "bytes": 2956
+    },
+    {
+      "name": "xnav-footer-aui-metric-probe.cpp",
+      "sha256": "f4c9f497cf3c185b2016b38ab8b43de5f9ec0fd49478e700bcf42ac38c022136",
+      "bytes": 5053
+    },
+    {
+      "name": "xnav-footer-aui-metric-probe.jsonl",
+      "sha256": "b41b9851c87b49ae17d986fbef096d8a5a6f49df965fdc087ab99d42facaa37e",
+      "bytes": 994
+    }
+  ]
+}

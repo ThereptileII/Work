@@ -9,6 +9,32 @@ release gates. The approved public identity is SKAGER / SKAGER App; domain
 control and legal clearance remain separate gates in SCRUM-89. Public payment
 and download access remain closed pending the final human GO/NO-GO review.
 
+Candidate `88b7bbc` fails qualification: both prototype MSVC jobs stop at the
+new footer component's missing console entry point, and Linux recording stops
+on a real 1279px footer inside a 1280px frame. Its 135 integrated Linux cases
+and 83 Windows portable suites pass; native component captures were not reached.
+The narrow entry-point repair follows the other component executables and
+passes 98 local checks/ten captures. Independent wxAUI probes reproduce the
+fixed-dock trailing spacer; the replacement makes only the footer proportional
+and scopes/restores XNav's zero sash metric through theme changes. The recording
+gate still requires the full 1280px width. Replacement native evidence remains
+mandatory. See [retained failure evidence](evidence/prototype-native-88b7bbc-development.json).
+
+The same local binary passed XNav → Legacy → XNav and Safe startup, then failed
+its final normal startup once. One instrumented repeat passed; the original
+failure remains unresolved/intermittent. Mode gates now retain every launch's
+stdout/stderr, early exits and failure window/process inventory. No recovery
+fix is inferred from the repeat. The retained prior installer also exposed
+fixture rejection being preempted by the output-policy rejection. Both guards
+remain mandatory; fixture identity is now checked first with strict boolean
+typing, and 48 actual PowerShell validator checks pass. Full installed lifecycle
+and replacement Linux/Windows gates remain open.
+
+SCRUM-100 is refining the prototype horizon in an isolated worktree: measured
+fractional event columns, Full passage and guarded contextual actions. Its
+reference instrumentation preserves identical Day/Dusk/Night image hashes.
+This work is not integrated or visually accepted yet.
+
 SCRUM-19 now enforces status-only XNav equipment output at the final transport
 boundary, independent of saved permissions. Passive pilot feedback remains
 available. The separate non-installable command-test build is restricted to a

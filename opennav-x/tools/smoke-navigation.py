@@ -321,6 +321,14 @@ try:
             assert footer['position']==('GPS POSITION STALE' if position_state=='Stale' else 'GPS POSITION UNAVAILABLE'), footer
             assert footer['health_summary']==('0 live signals, 1 stale' if position_state=='Stale' else '0 live signals'), footer
         assert footer['cog']=={'Current':'147°','Stale':'STALE','Unavailable':'—'}[cog_state], footer
+        if windows:
+            native=[h for h,caption in ui.children(handle) if caption=='OpenNav status footer']
+            assert len(native)==1 and ui.IsWindowVisible(native[0]), 'Current native footer must be visible'
+            bounds=ui.W.RECT()
+            assert ui.GetWindowRect(native[0],ui.C.byref(bounds))
+            measured=dict(x=bounds.left,y=bounds.top,width=bounds.right-bounds.left,height=bounds.bottom-bounds.top)
+            assert record['runtime']['display']['footer_region']==measured, 'Footer observation must match actual visible native surface'
+            report.setdefault('native_footer_regions',[]).append(measured)
         report.setdefault('navigation_footer',[]).append(footer)
         return record
 
@@ -930,10 +938,8 @@ try:
         phase[0] = 'rmc'
         time.sleep(3)
         assert counts['rmc'] >= 5 and not failures
-        if windows:
-            assert any(caption == 'OpenCPN navigation' for _, caption in ui.children(handle)), 'UI did not receive selected data'
-        capture('02-live')
         footer_observation('Current','Current')
+        capture('02-live')
         footer_health_action()
         phase[0] = 'gga'
         time.sleep(6.2)
