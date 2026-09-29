@@ -10,6 +10,7 @@ in [prototype conformance](prototype-conformance.md).
 | `.btn`, `.btn.primary`, `.btn.danger` | `XNavButton` | Computed font/weight, padding, border, focus, hover, disabled state |
 | `.icon`, `.icon-btn` | `XNavIconButton` | Supplied vector path vocabulary; 22px, 1.65px round strokes |
 | `.nav-btn` | Native navigation control | Icon over label, selected strip and subtle mint background |
+| `.profile-btn` | `XNavButton::SetVesselProfile` | 32px round vessel shortcut; exact bottom-group spacing; hidden below 600px desktop height |
 | `.dashboard-card`, `.floating` | `XNavPainter` / card component | Distinct panel vs chart-floating surface, correct radius/shadow |
 | `.drawer`, `.drawer-head`, `.drawer-body` | `XNavDrawer` / AIS, Passage and Settings drawers | 398px AIS/Passage and 432px Preferences sheets, overlay, bounded body scroll, one contextual return; remaining sheets pending |
 | `.metric`, `.metric-value` | `XNavDataValue` / `XNavDataRail` | Four values, light 48px numbers; actual provenance/freshness |
@@ -61,3 +62,9 @@ are still migration work, not conformant replacements. Theme segments follow
 external light changes as well as their own clicks. The drawer has no actuator
 methods; unavailable capabilities remain disabled or absent. See
 [Preferences review](reviews/prototype-settings-in-progress.md).
+
+The lower profile action opens the real Vessel settings section. Current
+configuration has no vessel-name field, so its initial and status dot remain
+unavailable instead of copying the prototype's fictional name/green state.
+Adding a persisted vessel identity and the remaining inline forms is separate
+migration work. The action does not alter navigation or issue equipment commands.

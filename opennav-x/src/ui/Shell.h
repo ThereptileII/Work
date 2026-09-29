@@ -188,6 +188,7 @@ private:
   std::vector<wxStaticText *> labels_;
   wxPanel *rail_scroll_ = nullptr;
   wxPanel *brand_panel_ = nullptr, *navigation_divider_ = nullptr, *rail_header_ = nullptr;
+  XNavButton *vessel_profile_ = nullptr;
   XNavButton *rail_configure_ = nullptr;
   int responsive_class_ = -1, responsive_dpi_ = -1;
   XNavHorizon *horizon_ = nullptr;

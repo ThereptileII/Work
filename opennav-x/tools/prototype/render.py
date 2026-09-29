@@ -61,7 +61,7 @@ SELECTORS = [".topbar", ".sidebar", "#workspace", "#chartView", ".data-rail",
              ".power-row label", ".power-row b", ".settings-tabs",
              ".settings-tabs button", ".settings-intro", ".settings-intro .eyebrow", ".settings-intro h3",
              ".settings-intro p", ".suite-link", ".suite-link b", ".suite-link small",
-             ".suite-link-icon", ".field", ".field input"]
+             ".suite-link-icon", ".field", ".field input", ".profile-btn"]
 
 MEASURE = """selectors => {
  const app = document.querySelector('#app');

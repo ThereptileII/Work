@@ -94,8 +94,7 @@ def main():
                 assert len(found)==1
                 c=found[0];assert c["visible"] and 0<=c["y"]<c["y"]+c["height"]<=height, ("Clipped action",c)
                 expected=ref[".nav-btn"][i]["rect"]
-                if i<7: assert all(abs(c[k]-v)<=1 for k,v in expected.items()), (label,c,expected)
-                else: assert c["height"]>=expected["height"], ("Settings compressed",c)
+                assert all(abs(c[k]-v)<=1 for k,v in expected.items()), (label,c,expected)
                 controls.append(c)
             fields=display["rail_regions"]
             assert len(fields)==4 and all(c["visible"] and c["y"]+c["height"]<=height for c in fields)
@@ -118,6 +117,19 @@ def main():
             close=[c for c in d["runtime"]["display"]["interaction_controls"] if c["label"]=="Close" and c["visible"]]
             assert len(close)==1;c=close[0];xd("mousemove",c["x"]+c["width"]//2,c["y"]+c["height"]//2,"click",1)
             data(lambda d:d["ui_page"]=="Navigation" and "drawer" not in d["runtime"]["display"])
+            d=data()
+            profiles=[c for c in d["runtime"]["display"]["interaction_controls"] if c["label"]=="Vessel profile" and c["visible"]]
+            assert len(profiles)==(1 if height>600 else 0), "Profile visibility differs from prototype media rule"
+            if profiles:
+                c=profiles[0]
+                assert c["width"]==32 and c["height"]==32 and c["y"]+32<=height
+                xd("mousemove",c["x"]+16,c["y"]+16,"click",1)
+                d=data(lambda d:d["ui_page"]=="Settings" and "drawer" in d["runtime"]["display"])
+                assert any(c["label"]=="Vessel dimensions" for c in d["runtime"]["display"]["interaction_controls"]), "Profile opened wrong section"
+                entry["profileFlow"]="Actual pointer opens vessel settings; no mutation or connection"
+                c=next(c for c in d["runtime"]["display"]["interaction_controls"] if c["label"]=="Close" and c["visible"])
+                xd("mousemove",c["x"]+c["width"]//2,c["y"]+c["height"]//2,"click",1)
+                data(lambda d:d["ui_page"]=="Navigation" and "drawer" not in d["runtime"]["display"])
         report["result"]="passed; native Windows and boat review required"
     except Exception as error:
         report["result"]="failed";report["error"]=repr(error);raise

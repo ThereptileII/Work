@@ -85,8 +85,9 @@ namespace OpenNavX {
       return result;
     }
     public static bool IsPrototypeNavigation(string[] labels) {
-      if(labels==null || labels.Length!=8)return false;
+      if(labels==null || (labels.Length!=8 && labels.Length!=9))return false;
       var expected=new HashSet<string>(new string[]{"Chart","Passage","Traffic","Energy","Instruments","Anchor","Radar","Settings"},StringComparer.Ordinal);
+      if(labels.Length==9)expected.Add("Vessel profile");
       foreach(var label in labels)if(!expected.Remove(label))return false;
       return expected.Count==0;
     }

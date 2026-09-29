@@ -1,0 +1,1243 @@
+{
+  "accepted": false,
+  "sourceBase": "ff5a1056a5ee9361b3112ba7e1d6ce1def4b37a9",
+  "scope": "Lower vessel-profile geometry and Windows macro correction; Linux development evidence",
+  "unitSuites": [
+    {
+      "file": "profile-rail-corrected-tests.xml",
+      "sha256": "873122e4fc1157cb377df2be57979498565455cc58cc9e0bcf1cd81b4c6fee0b",
+      "result": {
+        "name": "(empty)",
+        "tests": "123",
+        "failures": "0",
+        "disabled": "0",
+        "skipped": "0",
+        "hostname": "",
+        "time": "19",
+        "timestamp": "2026-09-29T03:54:16"
+      }
+    },
+    {
+      "file": "profile-rail-corrected-fixture-tests.xml",
+      "sha256": "616ab2bdf424a6a64115c713ee567e9130ece0300d776b7ff51b12640c7cb774",
+      "result": {
+        "name": "(empty)",
+        "tests": "123",
+        "failures": "0",
+        "disabled": "0",
+        "skipped": "0",
+        "hostname": "",
+        "time": "19",
+        "timestamp": "2026-09-29T03:54:43"
+      }
+    }
+  ],
+  "captures": {
+    "profile-rail-layout-pass1": {
+      "reportSha256": "e3570fc7862f94117810d85f724c9c9f9ac55b6d5f2d7bf80310c5d593b331be",
+      "images": {
+        "0-1280x800-chart.png": "0a4c640590fa84e72f47662c5654e2434a3af120b2acaf6f4f73d94b0a021b3f",
+        "0-1280x800-settings.png": "726b0348936f76a1026c468dc75218dd69a0dcdc31d49402d471fde8f0874f30",
+        "0-1280x800-settings-scrolled.png": "d6692e49664a81a4e73604e2f78e5a9eb25d4a6ae0e06c354ec347567c82de6d",
+        "1-1024x640-chart.png": "78d539b9450746e3c134dc1487a9c8ddca5a3eb0565657a2bd5c4e1979c6ebae",
+        "1-1024x640-settings.png": "ada66b97eb51087d8c790c244f648781cea998b476263a5ee662c905e11f03e5",
+        "1-1024x640-settings-scrolled.png": "d5d6b3b741ee000227167285248af922c8c2eec7c846eef3a0977d9182f7ac86",
+        "2-853x533-chart.png": "c8dfa42bc753effcff83455a254ebb4427be6ace5b3f29aeae6d1ca1804c7fc5",
+        "2-853x533-settings.png": "dbc2e363eb269aef84b20769a4371cdfc1193602b881d4196323a9c4fb1d366a",
+        "2-853x533-settings-scrolled.png": "8e24b36a433f4b48d25fa0a336f70344e05ebe496b1f92fdb60d66afeb1847dd",
+        "3-1280x800-chart.png": "0a4c640590fa84e72f47662c5654e2434a3af120b2acaf6f4f73d94b0a021b3f",
+        "3-1280x800-settings.png": "d6692e49664a81a4e73604e2f78e5a9eb25d4a6ae0e06c354ec347567c82de6d",
+        "3-1280x800-settings-scrolled.png": "d6692e49664a81a4e73604e2f78e5a9eb25d4a6ae0e06c354ec347567c82de6d"
+      }
+    },
+    "profile-rail-primary-pass1": {
+      "reportSha256": "84ecbf71bc5b2d9767e02eb6ff4c4beab523ccc8fbdd6cbc48694f70aa4d2993",
+      "images": {
+        "navigation-day.png": "5a16fcd8dc2b5ae9094dfd20a86883fd38c32910f753a55af38219cde614dc07",
+        "navigation-dusk.png": "1d6e4a8e9b6742da811ab50a6bf03840cd97ad3ef5618bab34ffe3601b417b97",
+        "navigation-night.png": "00fbde90939147cd8be95ec5755e3b7a9031e5821f64daed17d1a501e3369e43",
+        "passage-day.png": "1b2a094d676b10378fa9d65b308fa4587c5e5e8a66d33ba08b2ea0d83a78c091",
+        "passage-dusk.png": "68c9eb18c7f53b5ee390dce129998e71ac7d9080afd3d3485c5006cbd4441a1f",
+        "passage-night.png": "9a654b25050b90b6891a5ef4ee56d8d587154fe84ddf5460996f821387f5f1f0",
+        "traffic-day.png": "e7597414a4c9d0a308f445ab9c54740439ab63dd574d3c910200042792fe94fa",
+        "energy-day.png": "01747d0072d3e6643eb178b3efc02a89203981ae0153d1ed01e31b4423ef20d9",
+        "instruments-day.png": "15b79827bb44cf4e2bd371b84608113e2334be32646e5ddae841df9581025ae5",
+        "instruments-dusk.png": "ea0a2b57a2779d702aca7ca21c1aaa7cb55768eaaaa0b2ef5e64d9250e5d0019",
+        "instruments-night.png": "21ccb76e18b765a64c6d9803ec215b8fab5e326dc0250e3debc02273b412f870",
+        "settings-day.png": "0caa18700466d7718538247fbcf0e3f23a3b76205bb7b1b296c46ea929969982",
+        "settings-dusk.png": "4ba48bb40fb9d32ae06b7d8243874c4a22bd3e6dc40d925f26877d5a55df3c77",
+        "settings-night.png": "9356c3917086e0b876f8ae73523aded6250dede6bfa7a167972ed0dad740359d",
+        "sensors-day.png": "f4f5a85bc13f048e89ad3f9647f882a03dce384eeef47542b046ad0dd3530d8d",
+        "display-day.png": "46540f86b158c038cc8a21083a02555445fa63ef83b3f7c1dbc83b1bc32689e7",
+        "system-day.png": "ff7f6e941f3b9544e4ec11e16246e3dd0d41f50beb0eaefd2718e65bebbd5bfd",
+        "online-ais-settings-day.png": "9623c7d0bd6895a586fbf36541c8a784ad2f31922e3d3683cfe2570bc1635308",
+        "online-ais-key-needed-day.png": "61cb25a7dcd39d5e4f4ca1900b59850f505c0e352b07110a8f743313549f5805",
+        "online-ais-settings-dusk.png": "3f6f101e66f0e6ef8d8e6ce994904984e83df9046d3d84e73505f03eca087334",
+        "online-ais-settings-night.png": "07977e1845522414cc6c3be5372f6a587fb9c57fd9ebab5b7dcc7e5171ebc0e2"
+      }
+    },
+    "profile-rail-layout-pass2": {
+      "reportSha256": "2f16c686b34fd359555e889ca14737556466abf165a3e9072cde12c4b8e3dd28",
+      "images": {
+        "0-1280x800-chart.png": "4e917c00a9b61979f43b7a8712227d55cc1389ba5c182d170c6d213803f787f9",
+        "0-1280x800-settings.png": "7ce3636e2ac08ee4c170d43d40618e99c5a171014cdc473e0b07cf37c9dabddf",
+        "0-1280x800-settings-scrolled.png": "857fd37f71316a7ff4cbde26fe733b55aed7d290d6b2ee6b071d35f814ead8e5",
+        "1-1024x640-chart.png": "edea8e28c2fdfc7982f552c9c856659a8ac87a91e881167df560316546a944b8",
+        "1-1024x640-settings.png": "43ef0e8427ca885b60b31e9d9c43bd7124bfa06b93e932f39395407c57ebd839",
+        "1-1024x640-settings-scrolled.png": "529dbbff3a85676e19e41e7698a27c6d44d33bca502935c4af630b9217d96eca",
+        "2-853x533-chart.png": "2f8b6bba61efa56d4a142902260900898c658f99f83a42834947ff2bdb125138",
+        "2-853x533-settings.png": "9315f09873323371ae853f2d472b81035922a1fe27143af39ceeaf34a4274574",
+        "2-853x533-settings-scrolled.png": "f5e3b1a3704646c32c526ab84e08f42df44c5cd5a88edc0e7543068a14d6674e",
+        "3-1280x800-chart.png": "ad3b3d317f22434d30786f2ac22de368116ed790202a08adafef2ea966e515e7",
+        "3-1280x800-settings.png": "a93b82d65522e9f28e26ee16ff8c4cf2186c1141e8c0a3d72cf6ed0b2936068e",
+        "3-1280x800-settings-scrolled.png": "a93b82d65522e9f28e26ee16ff8c4cf2186c1141e8c0a3d72cf6ed0b2936068e"
+      }
+    },
+    "profile-rail-primary-pass2": {
+      "reportSha256": "271995246554ea36ee2b52953ccf69838ada83c380c2fd3166b41ae5718485da",
+      "images": {
+        "navigation-day.png": "84f791e99ee30b8c028bf2e2b1e78299adb1985ae4f29309f4f33fac4ac412ad",
+        "navigation-dusk.png": "65a2d5d272b9912a950faa37f59110d8e728565656cf5535ccbf2ad7f371167d",
+        "navigation-night.png": "b5f56e224755b840b0967004447008a31cfa9eaf9e6ecd5373dc5f643ddb662a",
+        "passage-day.png": "2bd8c31af3a4cc0478c821f1b6325dfe9df9e99edc64c34c831666167ff8657d",
+        "passage-dusk.png": "e7a4de333057fc75ef4347ec4535713c87fd7e3ae9f4fd5e408dce760d2dad93",
+        "passage-night.png": "e4cc446eaa3309165b1481676dc62f54c2c9a0e55b3018c2899ea935e7e6b766",
+        "traffic-day.png": "c6bd4fc0c2c37646c6e0ad933e46a1aab9ee7b7ae992b1f68d608c6ea239b628",
+        "energy-day.png": "3a38f6c317043d0558b74f9ea880aa49f317b0c1340e884ef0722616dfadd072",
+        "instruments-day.png": "ce0b8f88e8e77e4f1082b75fe4bb159a9b423721cf6713c0b0e32347aaa8ba16",
+        "instruments-dusk.png": "2852f23a95eedd32e5c2aab09d49acd2bf1e71a3917084a1230d1feb80b7ad46",
+        "instruments-night.png": "63b2d99bdefda896c18bca2b6397011186d17648864197a3fe805c3921716ad0",
+        "settings-day.png": "c80cb613ab9e6d55664d57d0622b847c946b5ad5caedd6608efc2741ae99affc",
+        "settings-dusk.png": "19849d3cd6c8f4f9d1ab63dbd379201388a33dd256efadab74f4a695f35227ac",
+        "settings-night.png": "ae20af9d091b5e45b671131ae5430005e1bc70c3c9b4ed6eb12ebb627ce3c58f",
+        "sensors-day.png": "a9e4ca68b4e87f1d5a93cb284883a3fe0eb0fb39e8ab5e5b63c5db7994595973",
+        "display-day.png": "8492ecc894f271996fe20a991fe5ae035bbedd42d4e701390bf640a959bdb483",
+        "system-day.png": "b7279e86b81dafb9769b2af1c0c6e38fc0eb6df87218abdeac71252506bc4dd7",
+        "online-ais-settings-day.png": "915b61a3267620899a60275558eed709dcc763babf131612d57378fb9fa913c6",
+        "online-ais-key-needed-day.png": "749f7b0c8846498fb9f49907ed1329087c525d665a539f9dbea7c01c16b648e7",
+        "online-ais-settings-dusk.png": "13f1697f331fcb8d31e77f09eb2f3aa77b12ce12f608c696ae8c72dac581837b",
+        "online-ais-settings-night.png": "a472d96c28bd5f53f46dcd5ab2d8c22bd1cbe4cf2b1fe4753ff824af6385d4b5"
+      }
+    }
+  },
+  "guardChecks": 218,
+  "prototypeContractTests": 5,
+  "layout": [
+    {
+      "scope": "Linux logical layout only; not Windows DPI or physical display acceptance",
+      "executableSha256": "e410cb219c4685a7a8089aff10d916b4fd8f36966fe6221d7f5cbcb995ce8279",
+      "cases": [
+        {
+          "width": 1280,
+          "height": 800,
+          "screenshots": [
+            {
+              "file": "0-1280x800-chart.png",
+              "sha256": "0a4c640590fa84e72f47662c5654e2434a3af120b2acaf6f4f73d94b0a021b3f"
+            },
+            {
+              "file": "0-1280x800-settings.png",
+              "sha256": "726b0348936f76a1026c468dc75218dd69a0dcdc31d49402d471fde8f0874f30"
+            },
+            {
+              "file": "0-1280x800-settings-scrolled.png",
+              "sha256": "d6692e49664a81a4e73604e2f78e5a9eb25d4a6ae0e06c354ec347567c82de6d"
+            }
+          ],
+          "chart": {
+            "height": 566,
+            "y": 68,
+            "width": 1014,
+            "x": 80
+          },
+          "navigation": [
+            {
+              "height": 61,
+              "y": 82,
+              "visible": true,
+              "width": 61,
+              "x": 9,
+              "label": "Chart",
+              "enabled": true
+            },
+            {
+              "height": 61,
+              "y": 148,
+              "visible": true,
+              "width": 61,
+              "x": 9,
+              "label": "Passage",
+              "enabled": true
+            },
+            {
+              "height": 61,
+              "y": 214,
+              "visible": true,
+              "width": 61,
+              "x": 9,
+              "label": "Traffic",
+              "enabled": true
+            },
+            {
+              "height": 61,
+              "y": 300,
+              "visible": true,
+              "width": 61,
+              "x": 9,
+              "label": "Energy",
+              "enabled": true
+            },
+            {
+              "height": 61,
+              "y": 366,
+              "visible": true,
+              "width": 61,
+              "x": 9,
+              "label": "Instruments",
+              "enabled": true
+            },
+            {
+              "height": 61,
+              "y": 432,
+              "visible": true,
+              "width": 61,
+              "x": 9,
+              "label": "Anchor",
+              "enabled": true
+            },
+            {
+              "height": 61,
+              "y": 498,
+              "visible": true,
+              "width": 61,
+              "x": 9,
+              "label": "Radar",
+              "enabled": true
+            },
+            {
+              "height": 61,
+              "y": 645,
+              "visible": true,
+              "width": 61,
+              "x": 9,
+              "label": "Settings",
+              "enabled": true
+            }
+          ],
+          "readings": [
+            {
+              "height": 136,
+              "y": 110,
+              "visible": true,
+              "width": 186,
+              "x": 1094,
+              "label": "sog",
+              "enabled": true
+            },
+            {
+              "height": 135,
+              "y": 246,
+              "visible": true,
+              "width": 186,
+              "x": 1094,
+              "label": "depth",
+              "enabled": true
+            },
+            {
+              "height": 136,
+              "y": 381,
+              "visible": true,
+              "width": 186,
+              "x": 1094,
+              "label": "aws",
+              "enabled": true
+            },
+            {
+              "height": 135,
+              "y": 517,
+              "visible": true,
+              "width": 186,
+              "x": 1094,
+              "label": "heading",
+              "enabled": true
+            }
+          ],
+          "profileFlow": "Actual pointer opens vessel settings; no mutation or connection"
+        },
+        {
+          "width": 1024,
+          "height": 640,
+          "screenshots": [
+            {
+              "file": "1-1024x640-chart.png",
+              "sha256": "78d539b9450746e3c134dc1487a9c8ddca5a3eb0565657a2bd5c4e1979c6ebae"
+            },
+            {
+              "file": "1-1024x640-settings.png",
+              "sha256": "ada66b97eb51087d8c790c244f648781cea998b476263a5ee662c905e11f03e5"
+            },
+            {
+              "file": "1-1024x640-settings-scrolled.png",
+              "sha256": "d5d6b3b741ee000227167285248af922c8c2eec7c846eef3a0977d9182f7ac86"
+            }
+          ],
+          "chart": {
+            "height": 434,
+            "y": 60,
+            "width": 798,
+            "x": 70
+          },
+          "navigation": [
+            {
+              "height": 51,
+              "y": 68,
+              "visible": true,
+              "width": 51,
+              "x": 9,
+              "label": "Chart",
+              "enabled": true
+            },
+            {
+              "height": 51,
+              "y": 120,
+              "visible": true,
+              "width": 51,
+              "x": 9,
+              "label": "Passage",
+              "enabled": true
+            },
+            {
+              "height": 51,
+              "y": 172,
+              "visible": true,
+              "width": 51,
+              "x": 9,
+              "label": "Traffic",
+              "enabled": true
+            },
+            {
+              "height": 51,
+              "y": 236,
+              "visible": true,
+              "width": 51,
+              "x": 9,
+              "label": "Energy",
+              "enabled": true
+            },
+            {
+              "height": 51,
+              "y": 288,
+              "visible": true,
+              "width": 51,
+              "x": 9,
+              "label": "Instruments",
+              "enabled": true
+            },
+            {
+              "height": 51,
+              "y": 340,
+              "visible": true,
+              "width": 51,
+              "x": 9,
+              "label": "Anchor",
+              "enabled": true
+            },
+            {
+              "height": 51,
+              "y": 392,
+              "visible": true,
+              "width": 51,
+              "x": 9,
+              "label": "Radar",
+              "enabled": true
+            },
+            {
+              "height": 51,
+              "y": 505,
+              "visible": true,
+              "width": 51,
+              "x": 9,
+              "label": "Settings",
+              "enabled": true
+            }
+          ],
+          "readings": [
+            {
+              "height": 104,
+              "y": 93,
+              "visible": true,
+              "width": 156,
+              "x": 868,
+              "label": "sog",
+              "enabled": true
+            },
+            {
+              "height": 104,
+              "y": 197,
+              "visible": true,
+              "width": 156,
+              "x": 868,
+              "label": "depth",
+              "enabled": true
+            },
+            {
+              "height": 104,
+              "y": 301,
+              "visible": true,
+              "width": 156,
+              "x": 868,
+              "label": "aws",
+              "enabled": true
+            },
+            {
+              "height": 104,
+              "y": 405,
+              "visible": true,
+              "width": 156,
+              "x": 868,
+              "label": "heading",
+              "enabled": true
+            }
+          ],
+          "profileFlow": "Actual pointer opens vessel settings; no mutation or connection"
+        },
+        {
+          "width": 853,
+          "height": 533,
+          "screenshots": [
+            {
+              "file": "2-853x533-chart.png",
+              "sha256": "c8dfa42bc753effcff83455a254ebb4427be6ace5b3f29aeae6d1ca1804c7fc5"
+            },
+            {
+              "file": "2-853x533-settings.png",
+              "sha256": "dbc2e363eb269aef84b20769a4371cdfc1193602b881d4196323a9c4fb1d366a"
+            },
+            {
+              "file": "2-853x533-settings-scrolled.png",
+              "sha256": "8e24b36a433f4b48d25fa0a336f70344e05ebe496b1f92fdb60d66afeb1847dd"
+            }
+          ],
+          "chart": {
+            "height": 345,
+            "y": 56,
+            "width": 627,
+            "x": 70
+          },
+          "navigation": [
+            {
+              "height": 43,
+              "y": 64,
+              "visible": true,
+              "width": 51,
+              "x": 9,
+              "label": "Chart",
+              "enabled": true
+            },
+            {
+              "height": 43,
+              "y": 107,
+              "visible": true,
+              "width": 51,
+              "x": 9,
+              "label": "Passage",
+              "enabled": true
+            },
+            {
+              "height": 43,
+              "y": 150,
+              "visible": true,
+              "width": 51,
+              "x": 9,
+              "label": "Traffic",
+              "enabled": true
+            },
+            {
+              "height": 43,
+              "y": 200,
+              "visible": true,
+              "width": 51,
+              "x": 9,
+              "label": "Energy",
+              "enabled": true
+            },
+            {
+              "height": 43,
+              "y": 243,
+              "visible": true,
+              "width": 51,
+              "x": 9,
+              "label": "Instruments",
+              "enabled": true
+            },
+            {
+              "height": 43,
+              "y": 286,
+              "visible": true,
+              "width": 51,
+              "x": 9,
+              "label": "Anchor",
+              "enabled": true
+            },
+            {
+              "height": 43,
+              "y": 329,
+              "visible": true,
+              "width": 51,
+              "x": 9,
+              "label": "Radar",
+              "enabled": true
+            },
+            {
+              "height": 43,
+              "y": 447,
+              "visible": true,
+              "width": 51,
+              "x": 9,
+              "label": "Settings",
+              "enabled": true
+            }
+          ],
+          "readings": [
+            {
+              "height": 82,
+              "y": 86,
+              "visible": true,
+              "width": 156,
+              "x": 697,
+              "label": "sog",
+              "enabled": true
+            },
+            {
+              "height": 81,
+              "y": 168,
+              "visible": true,
+              "width": 156,
+              "x": 697,
+              "label": "depth",
+              "enabled": true
+            },
+            {
+              "height": 82,
+              "y": 249,
+              "visible": true,
+              "width": 156,
+              "x": 697,
+              "label": "aws",
+              "enabled": true
+            },
+            {
+              "height": 81,
+              "y": 331,
+              "visible": true,
+              "width": 156,
+              "x": 697,
+              "label": "heading",
+              "enabled": true
+            }
+          ]
+        },
+        {
+          "width": 1280,
+          "height": 800,
+          "screenshots": [
+            {
+              "file": "3-1280x800-chart.png",
+              "sha256": "0a4c640590fa84e72f47662c5654e2434a3af120b2acaf6f4f73d94b0a021b3f"
+            },
+            {
+              "file": "3-1280x800-settings.png",
+              "sha256": "d6692e49664a81a4e73604e2f78e5a9eb25d4a6ae0e06c354ec347567c82de6d"
+            },
+            {
+              "file": "3-1280x800-settings-scrolled.png",
+              "sha256": "d6692e49664a81a4e73604e2f78e5a9eb25d4a6ae0e06c354ec347567c82de6d"
+            }
+          ],
+          "chart": {
+            "height": 566,
+            "y": 68,
+            "width": 1014,
+            "x": 80
+          },
+          "navigation": [
+            {
+              "height": 61,
+              "y": 82,
+              "visible": true,
+              "width": 61,
+              "x": 9,
+              "label": "Chart",
+              "enabled": true
+            },
+            {
+              "height": 61,
+              "y": 148,
+              "visible": true,
+              "width": 61,
+              "x": 9,
+              "label": "Passage",
+              "enabled": true
+            },
+            {
+              "height": 61,
+              "y": 214,
+              "visible": true,
+              "width": 61,
+              "x": 9,
+              "label": "Traffic",
+              "enabled": true
+            },
+            {
+              "height": 61,
+              "y": 300,
+              "visible": true,
+              "width": 61,
+              "x": 9,
+              "label": "Energy",
+              "enabled": true
+            },
+            {
+              "height": 61,
+              "y": 366,
+              "visible": true,
+              "width": 61,
+              "x": 9,
+              "label": "Instruments",
+              "enabled": true
+            },
+            {
+              "height": 61,
+              "y": 432,
+              "visible": true,
+              "width": 61,
+              "x": 9,
+              "label": "Anchor",
+              "enabled": true
+            },
+            {
+              "height": 61,
+              "y": 498,
+              "visible": true,
+              "width": 61,
+              "x": 9,
+              "label": "Radar",
+              "enabled": true
+            },
+            {
+              "height": 61,
+              "y": 645,
+              "visible": true,
+              "width": 61,
+              "x": 9,
+              "label": "Settings",
+              "enabled": true
+            }
+          ],
+          "readings": [
+            {
+              "height": 136,
+              "y": 110,
+              "visible": true,
+              "width": 186,
+              "x": 1094,
+              "label": "sog",
+              "enabled": true
+            },
+            {
+              "height": 135,
+              "y": 246,
+              "visible": true,
+              "width": 186,
+              "x": 1094,
+              "label": "depth",
+              "enabled": true
+            },
+            {
+              "height": 136,
+              "y": 381,
+              "visible": true,
+              "width": 186,
+              "x": 1094,
+              "label": "aws",
+              "enabled": true
+            },
+            {
+              "height": 135,
+              "y": 517,
+              "visible": true,
+              "width": 186,
+              "x": 1094,
+              "label": "heading",
+              "enabled": true
+            }
+          ],
+          "profileFlow": "Actual pointer opens vessel settings; no mutation or connection"
+        }
+      ],
+      "result": "passed; native Windows and boat review required",
+      "exitCode": 0
+    },
+    {
+      "scope": "Linux logical layout only; not Windows DPI or physical display acceptance",
+      "executableSha256": "e410cb219c4685a7a8089aff10d916b4fd8f36966fe6221d7f5cbcb995ce8279",
+      "cases": [
+        {
+          "width": 1280,
+          "height": 800,
+          "screenshots": [
+            {
+              "file": "0-1280x800-chart.png",
+              "sha256": "4e917c00a9b61979f43b7a8712227d55cc1389ba5c182d170c6d213803f787f9"
+            },
+            {
+              "file": "0-1280x800-settings.png",
+              "sha256": "7ce3636e2ac08ee4c170d43d40618e99c5a171014cdc473e0b07cf37c9dabddf"
+            },
+            {
+              "file": "0-1280x800-settings-scrolled.png",
+              "sha256": "857fd37f71316a7ff4cbde26fe733b55aed7d290d6b2ee6b071d35f814ead8e5"
+            }
+          ],
+          "chart": {
+            "height": 566,
+            "y": 68,
+            "width": 1014,
+            "x": 80
+          },
+          "navigation": [
+            {
+              "height": 61,
+              "y": 82,
+              "visible": true,
+              "width": 61,
+              "x": 9,
+              "label": "Chart",
+              "enabled": true
+            },
+            {
+              "height": 61,
+              "y": 148,
+              "visible": true,
+              "width": 61,
+              "x": 9,
+              "label": "Passage",
+              "enabled": true
+            },
+            {
+              "height": 61,
+              "y": 214,
+              "visible": true,
+              "width": 61,
+              "x": 9,
+              "label": "Traffic",
+              "enabled": true
+            },
+            {
+              "height": 61,
+              "y": 300,
+              "visible": true,
+              "width": 61,
+              "x": 9,
+              "label": "Energy",
+              "enabled": true
+            },
+            {
+              "height": 61,
+              "y": 366,
+              "visible": true,
+              "width": 61,
+              "x": 9,
+              "label": "Instruments",
+              "enabled": true
+            },
+            {
+              "height": 61,
+              "y": 432,
+              "visible": true,
+              "width": 61,
+              "x": 9,
+              "label": "Anchor",
+              "enabled": true
+            },
+            {
+              "height": 61,
+              "y": 498,
+              "visible": true,
+              "width": 61,
+              "x": 9,
+              "label": "Radar",
+              "enabled": true
+            },
+            {
+              "height": 61,
+              "y": 645,
+              "visible": true,
+              "width": 61,
+              "x": 9,
+              "label": "Settings",
+              "enabled": true
+            }
+          ],
+          "readings": [
+            {
+              "height": 136,
+              "y": 110,
+              "visible": true,
+              "width": 186,
+              "x": 1094,
+              "label": "sog",
+              "enabled": true
+            },
+            {
+              "height": 135,
+              "y": 246,
+              "visible": true,
+              "width": 186,
+              "x": 1094,
+              "label": "depth",
+              "enabled": true
+            },
+            {
+              "height": 136,
+              "y": 381,
+              "visible": true,
+              "width": 186,
+              "x": 1094,
+              "label": "aws",
+              "enabled": true
+            },
+            {
+              "height": 135,
+              "y": 517,
+              "visible": true,
+              "width": 186,
+              "x": 1094,
+              "label": "heading",
+              "enabled": true
+            }
+          ],
+          "profileFlow": "Actual pointer opens vessel settings; no mutation or connection"
+        },
+        {
+          "width": 1024,
+          "height": 640,
+          "screenshots": [
+            {
+              "file": "1-1024x640-chart.png",
+              "sha256": "edea8e28c2fdfc7982f552c9c856659a8ac87a91e881167df560316546a944b8"
+            },
+            {
+              "file": "1-1024x640-settings.png",
+              "sha256": "43ef0e8427ca885b60b31e9d9c43bd7124bfa06b93e932f39395407c57ebd839"
+            },
+            {
+              "file": "1-1024x640-settings-scrolled.png",
+              "sha256": "529dbbff3a85676e19e41e7698a27c6d44d33bca502935c4af630b9217d96eca"
+            }
+          ],
+          "chart": {
+            "height": 434,
+            "y": 60,
+            "width": 798,
+            "x": 70
+          },
+          "navigation": [
+            {
+              "height": 51,
+              "y": 68,
+              "visible": true,
+              "width": 51,
+              "x": 9,
+              "label": "Chart",
+              "enabled": true
+            },
+            {
+              "height": 51,
+              "y": 120,
+              "visible": true,
+              "width": 51,
+              "x": 9,
+              "label": "Passage",
+              "enabled": true
+            },
+            {
+              "height": 51,
+              "y": 172,
+              "visible": true,
+              "width": 51,
+              "x": 9,
+              "label": "Traffic",
+              "enabled": true
+            },
+            {
+              "height": 51,
+              "y": 236,
+              "visible": true,
+              "width": 51,
+              "x": 9,
+              "label": "Energy",
+              "enabled": true
+            },
+            {
+              "height": 51,
+              "y": 288,
+              "visible": true,
+              "width": 51,
+              "x": 9,
+              "label": "Instruments",
+              "enabled": true
+            },
+            {
+              "height": 51,
+              "y": 340,
+              "visible": true,
+              "width": 51,
+              "x": 9,
+              "label": "Anchor",
+              "enabled": true
+            },
+            {
+              "height": 51,
+              "y": 392,
+              "visible": true,
+              "width": 51,
+              "x": 9,
+              "label": "Radar",
+              "enabled": true
+            },
+            {
+              "height": 51,
+              "y": 505,
+              "visible": true,
+              "width": 51,
+              "x": 9,
+              "label": "Settings",
+              "enabled": true
+            }
+          ],
+          "readings": [
+            {
+              "height": 104,
+              "y": 93,
+              "visible": true,
+              "width": 156,
+              "x": 868,
+              "label": "sog",
+              "enabled": true
+            },
+            {
+              "height": 104,
+              "y": 197,
+              "visible": true,
+              "width": 156,
+              "x": 868,
+              "label": "depth",
+              "enabled": true
+            },
+            {
+              "height": 104,
+              "y": 301,
+              "visible": true,
+              "width": 156,
+              "x": 868,
+              "label": "aws",
+              "enabled": true
+            },
+            {
+              "height": 104,
+              "y": 405,
+              "visible": true,
+              "width": 156,
+              "x": 868,
+              "label": "heading",
+              "enabled": true
+            }
+          ],
+          "profileFlow": "Actual pointer opens vessel settings; no mutation or connection"
+        },
+        {
+          "width": 853,
+          "height": 533,
+          "screenshots": [
+            {
+              "file": "2-853x533-chart.png",
+              "sha256": "2f8b6bba61efa56d4a142902260900898c658f99f83a42834947ff2bdb125138"
+            },
+            {
+              "file": "2-853x533-settings.png",
+              "sha256": "9315f09873323371ae853f2d472b81035922a1fe27143af39ceeaf34a4274574"
+            },
+            {
+              "file": "2-853x533-settings-scrolled.png",
+              "sha256": "f5e3b1a3704646c32c526ab84e08f42df44c5cd5a88edc0e7543068a14d6674e"
+            }
+          ],
+          "chart": {
+            "height": 345,
+            "y": 56,
+            "width": 627,
+            "x": 70
+          },
+          "navigation": [
+            {
+              "height": 43,
+              "y": 64,
+              "visible": true,
+              "width": 51,
+              "x": 9,
+              "label": "Chart",
+              "enabled": true
+            },
+            {
+              "height": 43,
+              "y": 107,
+              "visible": true,
+              "width": 51,
+              "x": 9,
+              "label": "Passage",
+              "enabled": true
+            },
+            {
+              "height": 43,
+              "y": 150,
+              "visible": true,
+              "width": 51,
+              "x": 9,
+              "label": "Traffic",
+              "enabled": true
+            },
+            {
+              "height": 43,
+              "y": 200,
+              "visible": true,
+              "width": 51,
+              "x": 9,
+              "label": "Energy",
+              "enabled": true
+            },
+            {
+              "height": 43,
+              "y": 243,
+              "visible": true,
+              "width": 51,
+              "x": 9,
+              "label": "Instruments",
+              "enabled": true
+            },
+            {
+              "height": 43,
+              "y": 286,
+              "visible": true,
+              "width": 51,
+              "x": 9,
+              "label": "Anchor",
+              "enabled": true
+            },
+            {
+              "height": 43,
+              "y": 329,
+              "visible": true,
+              "width": 51,
+              "x": 9,
+              "label": "Radar",
+              "enabled": true
+            },
+            {
+              "height": 43,
+              "y": 447,
+              "visible": true,
+              "width": 51,
+              "x": 9,
+              "label": "Settings",
+              "enabled": true
+            }
+          ],
+          "readings": [
+            {
+              "height": 82,
+              "y": 86,
+              "visible": true,
+              "width": 156,
+              "x": 697,
+              "label": "sog",
+              "enabled": true
+            },
+            {
+              "height": 81,
+              "y": 168,
+              "visible": true,
+              "width": 156,
+              "x": 697,
+              "label": "depth",
+              "enabled": true
+            },
+            {
+              "height": 82,
+              "y": 249,
+              "visible": true,
+              "width": 156,
+              "x": 697,
+              "label": "aws",
+              "enabled": true
+            },
+            {
+              "height": 81,
+              "y": 331,
+              "visible": true,
+              "width": 156,
+              "x": 697,
+              "label": "heading",
+              "enabled": true
+            }
+          ]
+        },
+        {
+          "width": 1280,
+          "height": 800,
+          "screenshots": [
+            {
+              "file": "3-1280x800-chart.png",
+              "sha256": "ad3b3d317f22434d30786f2ac22de368116ed790202a08adafef2ea966e515e7"
+            },
+            {
+              "file": "3-1280x800-settings.png",
+              "sha256": "a93b82d65522e9f28e26ee16ff8c4cf2186c1141e8c0a3d72cf6ed0b2936068e"
+            },
+            {
+              "file": "3-1280x800-settings-scrolled.png",
+              "sha256": "a93b82d65522e9f28e26ee16ff8c4cf2186c1141e8c0a3d72cf6ed0b2936068e"
+            }
+          ],
+          "chart": {
+            "height": 566,
+            "y": 68,
+            "width": 1014,
+            "x": 80
+          },
+          "navigation": [
+            {
+              "height": 61,
+              "y": 82,
+              "visible": true,
+              "width": 61,
+              "x": 9,
+              "label": "Chart",
+              "enabled": true
+            },
+            {
+              "height": 61,
+              "y": 148,
+              "visible": true,
+              "width": 61,
+              "x": 9,
+              "label": "Passage",
+              "enabled": true
+            },
+            {
+              "height": 61,
+              "y": 214,
+              "visible": true,
+              "width": 61,
+              "x": 9,
+              "label": "Traffic",
+              "enabled": true
+            },
+            {
+              "height": 61,
+              "y": 300,
+              "visible": true,
+              "width": 61,
+              "x": 9,
+              "label": "Energy",
+              "enabled": true
+            },
+            {
+              "height": 61,
+              "y": 366,
+              "visible": true,
+              "width": 61,
+              "x": 9,
+              "label": "Instruments",
+              "enabled": true
+            },
+            {
+              "height": 61,
+              "y": 432,
+              "visible": true,
+              "width": 61,
+              "x": 9,
+              "label": "Anchor",
+              "enabled": true
+            },
+            {
+              "height": 61,
+              "y": 498,
+              "visible": true,
+              "width": 61,
+              "x": 9,
+              "label": "Radar",
+              "enabled": true
+            },
+            {
+              "height": 61,
+              "y": 645,
+              "visible": true,
+              "width": 61,
+              "x": 9,
+              "label": "Settings",
+              "enabled": true
+            }
+          ],
+          "readings": [
+            {
+              "height": 136,
+              "y": 110,
+              "visible": true,
+              "width": 186,
+              "x": 1094,
+              "label": "sog",
+              "enabled": true
+            },
+            {
+              "height": 135,
+              "y": 246,
+              "visible": true,
+              "width": 186,
+              "x": 1094,
+              "label": "depth",
+              "enabled": true
+            },
+            {
+              "height": 136,
+              "y": 381,
+              "visible": true,
+              "width": 186,
+              "x": 1094,
+              "label": "aws",
+              "enabled": true
+            },
+            {
+              "height": 135,
+              "y": 517,
+              "visible": true,
+              "width": 186,
+              "x": 1094,
+              "label": "heading",
+              "enabled": true
+            }
+          ],
+          "profileFlow": "Actual pointer opens vessel settings; no mutation or connection"
+        }
+      ],
+      "result": "passed; native Windows and boat review required",
+      "exitCode": 0
+    }
+  ],
+  "limitations": [
+    "No configured vessel name exists in the current contract: initial and status remain unavailable.",
+    "Profile target follows prototype 32px size; the primary navigation target stays 61px.",
+    "Windows replacement and boat review remain pending.",
+    "All-view conformance, installer, full lifecycle and live AISStream gate remain open."
+  ]
+}

@@ -218,7 +218,6 @@ def main():
             subprocess.run(["import", "-window", "root", str(path)], env=env, check=True)
         snapshot = data()
         # Actual native controls, compared with independently rendered HTML.
-        # Settings' lower vessel-profile group is still a pending migration.
         reference = json.loads((ROOT / "docs/design/prototype/reference" /
                                 ("windows" if windows else "linux") / "capture.json").read_text())
         if windows and name in ("settings-day","settings-dusk","settings-night","sensors-day","display-day","system-day"):
@@ -232,10 +231,10 @@ def main():
                 rect={k:actual[0][k] for k in ("x","y","width","height")}
                 rect["x"]-=client_origin[0];rect["y"]-=client_origin[1]
                 assert all(abs(rect[k]-expected["rect"][k])<=1 for k in rect), (label,"tab differs from HTML",rect,expected["rect"])
-        rail_reference = reference["states"]["navigation-day"]["components"][".nav-btn"][:7]
+        rail_reference = reference["states"]["navigation-day"]["components"][".nav-btn"][:8]
         sidebar = reference["states"]["navigation-day"]["components"][".sidebar"][0]["rect"]
         rail_actual = []
-        for label, expected in zip(("Chart", "Passage", "Traffic", "Energy", "Instruments", "Anchor", "Radar"), rail_reference):
+        for label, expected in zip(("Chart", "Passage", "Traffic", "Energy", "Instruments", "Anchor", "Radar", "Settings"), rail_reference):
             # Preferences has its own Radar tab. Identify the navigation role
             # by the independently rendered sidebar, then require exactly one
             # item and the unchanged exact control rectangle within it.

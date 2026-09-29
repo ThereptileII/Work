@@ -40,6 +40,12 @@ $rail=@('Chart','Passage','Traffic','Energy','Instruments','Anchor','Radar','Set
 Pass 'Prototype shell requires all eight exact sibling controls' {
  if(-not [OpenNavX.ReviewWindowNative]::IsPrototypeNavigation($rail)){throw 'Prototype rail rejected.'}
 }
+Pass 'Prototype profile button is the only supported ninth sibling' {
+ if(-not [OpenNavX.ReviewWindowNative]::IsPrototypeNavigation($rail+@('Vessel profile'))){throw 'Exact profile rail rejected.'}
+ foreach($labels in @(($rail+@('Vessel Profile')),($rail+@('Vessel profile','AUTO')),($rail+@('Vessel profile','Vessel profile')))) {
+  if([OpenNavX.ReviewWindowNative]::IsPrototypeNavigation($labels)){throw 'Ambiguous extended rail accepted.'}
+ }
+}
 foreach($labels in @(@('Chart','Passage'),($rail+@('AUTO')),(@('Chart')+$rail[0..6]),@('chart','Passage','Traffic','Energy','Instruments','Anchor','Radar','Settings'))) {
  Pass 'Incomplete duplicate extended or case-changed rails do not identify a shell' {
   if([OpenNavX.ReviewWindowNative]::IsPrototypeNavigation($labels)){throw 'Ambiguous shell accepted.'}

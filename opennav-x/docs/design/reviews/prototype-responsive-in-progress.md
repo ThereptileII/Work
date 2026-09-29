@@ -41,8 +41,14 @@ Preferences action at every size. Twenty-one canonical product captures and
 123/123 integrated tests also pass. Evidence is
 [recorded separately](../../evidence/prototype-compact-layout-local.json).
 
-Remaining mismatches: lower vessel-profile component is not implemented, so
-Settings' bottom position differs at primary/125% sizes. Preferences native text
+The subsequent lower-profile correction adds the prototype's 32px circle, 8px
+top margin and navigation gap, preserving the 14/8px sidebar bottom insets.
+Settings now matches the independent primary/125% reference position within one
+native rounding pixel. The circle is hidden at the original <=600px desktop
+height breakpoint. Actual Linux pointer input opens Vessel settings and Close
+restores navigation. No fictional boat initial or live-status dot is copied.
+
+Remaining mismatches: Preferences native text
 widths wrap five tabs instead of the HTML's six on Windows. Content forms still
 need migration. These are visible defects, not accepted rasterization tolerance.
 The compact screenshot is a logical viewport on a Linux 1280×800 display, never

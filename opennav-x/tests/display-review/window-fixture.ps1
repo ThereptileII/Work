@@ -116,6 +116,7 @@ if($prototype) {
   $item=Button $rail $label 0 ($index*60) 88;$item.Add_Click({param($sender,$event) SaveClick $sender.Text});$index++
  }
  if($record.case -ceq 'prototype-rail-duplicate'){$null=Button $rail 'Chart' 0 480 88}
+ if($record.case -ceq 'prototype-preferences'){$null=Button $rail 'Vessel profile' 0 480 88}
 }
 function Surface([string]$Title,[int]$X,[int]$Y,[int]$Width,[int]$Height,[string[]]$Labels,[switch]$Heading,[switch]$Unowned) {
  $surface=New-Object Windows.Forms.Form;$surface.Text=$Title;$surface.FormBorderStyle='None';$surface.ShowInTaskbar=$false

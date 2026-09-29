@@ -1,0 +1,75 @@
+{
+  "accepted": false,
+  "developmentGatesPassed": false,
+  "localCommit": "ff5a1056a5ee9361b3112ba7e1d6ce1def4b37a9",
+  "remoteCommit": "72df728fcf61e5e97da809acaa88d7f4f9be20b8",
+  "tree": "b620aaac4ad8e8895244af08455dfb4db5863e8a",
+  "verifiedSourceBlobs": 1112,
+  "ciRun": "https://github.com/ThereptileII/Work/actions/runs/36509226412",
+  "jobsPassed": 6,
+  "jobsFailed": 2,
+  "artifacts": [
+    {
+      "id": 11008950889,
+      "name": "prototype-review-guard-Windows-72df728fcf61e5e97da809acaa88d7f4f9be20b8",
+      "sha256": "e0eca495a0ccfc9b6d3041c0cae1f4cafc1bc7ea766458fe8e211e7477320473",
+      "bytes": 8911,
+      "zipCrc": true
+    },
+    {
+      "id": 11008940837,
+      "name": "prototype-ais-network-Linux-72df728fcf61e5e97da809acaa88d7f4f9be20b8",
+      "sha256": "7ebe0deb2217a287fb422bae58ee8caff9e1bcb397ebf3bf4c77f7307a0edc1b",
+      "bytes": 935,
+      "zipCrc": true
+    },
+    {
+      "id": 11008711329,
+      "name": "prototype-reference-Linux-72df728fcf61e5e97da809acaa88d7f4f9be20b8",
+      "sha256": "aa73521160aa823de95fbdac1f97e8a9553ffc14660f72db523a626b93488e79",
+      "bytes": 20830356,
+      "zipCrc": true
+    },
+    {
+      "id": 11008511727,
+      "name": "prototype-ais-foundation-Linux-72df728fcf61e5e97da809acaa88d7f4f9be20b8",
+      "sha256": "73df58e3524258c1da6170e6a8e419e7f2d6d7a096dd005f0172a6a373959666",
+      "bytes": 686,
+      "zipCrc": true
+    },
+    {
+      "id": 11008362922,
+      "name": "prototype-object-flow-Windows-72df728fcf61e5e97da809acaa88d7f4f9be20b8",
+      "sha256": "c9e0c3c1141c91efdb0adf064a324df6c1a86bbec4b7b92c795b3333e7ddfa01",
+      "bytes": 62236,
+      "zipCrc": true
+    },
+    {
+      "id": 11008317057,
+      "name": "prototype-ais-foundation-Windows-72df728fcf61e5e97da809acaa88d7f4f9be20b8",
+      "sha256": "2006ee23000dad8066a241389bf5f0c0e7b71d76dce755aa8313224c18db7d56",
+      "bytes": 689,
+      "zipCrc": true
+    },
+    {
+      "id": 11008247822,
+      "name": "prototype-native-Windows-72df728fcf61e5e97da809acaa88d7f4f9be20b8",
+      "sha256": "251437bc1a2d70948754dc61995874c00c34062f2234058275149be8743a26a9",
+      "bytes": 61804,
+      "zipCrc": true
+    },
+    {
+      "id": 11008014261,
+      "name": "prototype-reference-Windows-72df728fcf61e5e97da809acaa88d7f4f9be20b8",
+      "sha256": "8e19970b34a7ec465b3c90ec0bc81b1542f0d7e3038ece2dfd65d1ebca5704a5",
+      "bytes": 18774623,
+      "zipCrc": true
+    }
+  ],
+  "failure": "Both integrated native builds fail: Windows SDK small macro expands a compact-pilot local bool identifier to char after DirectWrite headers. MSVC C2632/C2513/C2143 in Controls.cpp.",
+  "correction": "Rename the local variable compact_pilot; do not undefine SDK macros or change window/data behavior.",
+  "limitations": [
+    "No native runtime, DPI, tab metrics, package or boat qualification from this failed run.",
+    "Reference, transport, portable AIS and native guard jobs still pass. Replacement integrated builds remain required."
+  ]
+}

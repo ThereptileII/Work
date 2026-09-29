@@ -426,6 +426,20 @@ void XNavButton::Paint(wxPaintEvent&) {
       ? GetParent()->GetBackgroundColour() : Colour(colors.background);
   dc.SetBackground(wxBrush(background));
   dc.Clear();
+  if(vessel_profile_) {
+    dc.SetBrush(wxBrush(Colour(colors.selected)));
+    dc.SetPen(HasFocus()&&keyboard_focus_ ? wxPen(Colour(colors.accent),FromDIP(1)) : *wxTRANSPARENT_PEN);
+    dc.DrawEllipse(0,0,size.x,size.y);
+    dc.SetFont(UiFont(*this,11));dc.SetTextForeground(Colour(colors.secondary));
+    // No configured vessel identity exists in the current contract. Never
+    // reproduce the reference's fictional boat initial or connected state.
+    const wxString unknown=wxString::FromUTF8("—");const auto extent=dc.GetTextExtent(unknown);
+    dc.DrawText(unknown,(size.x-extent.x)/2,(size.y-extent.y)/2);
+    dc.SetPen(wxPen(Colour(colors.background),FromDIP(2)));
+    dc.SetBrush(wxBrush(Colour(colors.muted)));
+    dc.DrawEllipse(size.x-FromDIP(7),size.y-FromDIP(7),FromDIP(7),FromDIP(7));
+    return;
+  }
   const auto blend = [](wxColour foreground, wxColour back, double alpha) {
     return wxColour(static_cast<unsigned char>(foreground.Red()*alpha+back.Red()*(1-alpha)),
                     static_cast<unsigned char>(foreground.Green()*alpha+back.Green()*(1-alpha)),
@@ -501,11 +515,11 @@ void XNavButton::Paint(wxPaintEvent&) {
   if (summary_) {
     XNavPainter p(*this, dc, mode_);
     const int width = ToDIP(size.x), height = ToDIP(size.y);
-    const bool small = height <= 74, short_helm = height <= 66;
-    const int inset = short_helm ? 9 : small ? 11 : 13;
-    p.TextWeight(GetLabel().Upper(),inset,small?8:12,8,colors.secondary,650,width-inset*2-8);
-    p.Text(summary_value_,inset,short_helm?25:small?26:31,short_helm?16:small?18:20,colors.primary,false,width-inset*2);
-    p.Text(summary_detail_,inset,short_helm?49:small?52:61,short_helm?8:9,colors.muted,false,width-inset*2);
+    const bool compact_pilot = height <= 74, short_helm = height <= 66;
+    const int inset = short_helm ? 9 : compact_pilot ? 11 : 13;
+    p.TextWeight(GetLabel().Upper(),inset,compact_pilot?8:12,8,colors.secondary,650,width-inset*2-8);
+    p.Text(summary_value_,inset,short_helm?25:compact_pilot?26:31,short_helm?16:compact_pilot?18:20,colors.primary,false,width-inset*2);
+    p.Text(summary_detail_,inset,short_helm?49:compact_pilot?52:61,short_helm?8:9,colors.muted,false,width-inset*2);
     dc.SetPen(wxPen(Colour(colors.muted),FromDIP(1)));
     dc.DrawLine(FromDIP(width-20),FromDIP(15),FromDIP(width-17),FromDIP(18));
     dc.DrawLine(FromDIP(width-17),FromDIP(18),FromDIP(width-20),FromDIP(21));

@@ -2,6 +2,22 @@
 
 ## Current stage: prototype design lock, chart presentation and Online AIS
 
+The lower vessel-profile group now completes the measured sidebar spacing:
+Settings matches all three reference positions within one raster pixel, the
+32px profile action opens Vessel settings, and the short desktop layout hides
+it as the HTML does. Missing vessel identity stays unavailable. Two corrective
+Linux passes retain 66 images; fixture-free and fixture-enabled builds each
+pass 123/123 after the SDK identifier correction. Capture policy now passes
+218 checks and admits only the exact optional profile action. Windows and boat
+review remain pending. See [local evidence](evidence/prototype-profile-rail-local.json).
+
+The native replacement `72df728` / run `36509226412` stops during both MSVC
+integrated builds: the SDK `small` macro collides with a compact-pilot local
+variable after DirectWrite headers are included. Six other jobs pass; all eight
+artifacts verify. The correction renames the variable without changing SDK
+definitions or UI/data behavior. No runtime/DPI/typography success is inferred.
+See [failed native build evidence](evidence/prototype-native-72df728-failed.json).
+
 Preferences text-layout correction is ready for native replacement validation:
 Windows uses fractional DirectWrite advance measurements to retain the HTML's
 six-tab first row; independent capture checks all eight exact rectangles. Linux

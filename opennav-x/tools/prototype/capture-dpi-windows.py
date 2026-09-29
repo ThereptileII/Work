@@ -190,6 +190,14 @@ def main():
             d = data(lambda d: d["ui_page"] == "Navigation" and "drawer" not in d["runtime"]["display"])
             entry["railAfterClose"] = rail(d)
             assert entry["rail"] == entry["railAfterClose"], "Drawer changed permanent rail geometry"
+            profiles=[c for c in d["runtime"]["display"]["interaction_controls"] if c["label"]=="Vessel profile" and c["visible"]]
+            assert len(profiles)==(0 if scale==150 else 1), "Profile visibility differs from prototype"
+            if profiles:
+                click("Vessel profile",touch=True)
+                d=data(lambda d:d["ui_page"]=="Settings")
+                assert any(c["label"]=="Vessel dimensions" for c in d["runtime"]["display"]["interaction_controls"]), "Profile did not open vessel settings"
+                click("Close",drawer=True,touch=True)
+                data(lambda d:d["ui_page"]=="Navigation")
             for label in ("Energy", "Instruments"):
                 click(label)
                 snapshot(f"{scale}-{label.lower()}-night")

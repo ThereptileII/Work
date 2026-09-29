@@ -212,6 +212,14 @@ Shell::Shell(wxFrame &frame, wxAuiManager &manager, ShellActions actions,
   nav("Radar", "Radar availability", XNavIcon::Radar, [this]{ShowProduct(ProductPage::Radar);});
   tools->AddStretchSpacer();
   nav("Settings", "Open navigation menu", XNavIcon::Settings, [this]{ShowProduct(ProductPage::Home);});
+  vessel_profile_ = Button(left,"Vessel profile","Vessel profile / name not configured",[this] {
+    ShowSettings();settings_drawer_->Select(SettingsSection::Vessel);
+  });
+  vessel_profile_->SetVesselProfile();
+  vessel_profile_->SetMinSize(frame_.FromDIP(wxSize(32,32)));
+  tools->AddSpacer(frame_.FromDIP(8));
+  tools->Add(vessel_profile_,0,wxALIGN_CENTER_HORIZONTAL);
+  tools->AddSpacer(frame_.FromDIP(14));
   left->SetSizer(tools);
 
   // Owned native surfaces float over the existing canvas. They never reparent
@@ -706,9 +714,14 @@ void Shell::ApplyResponsiveLayout() {
       tools->AddSpacer(dip(layout.divider_after));
     }
   }
-  // The lower vessel-profile component remains a separate design migration.
-  // Compact layouts still retain their real bottom inset and usable Settings.
-  if (layout.nav_inset == 8) tools->AddSpacer(dip(8-layout.nav_gap));
+  const bool show_profile=layout.nav_height!=43;
+  vessel_profile_->Show(show_profile);
+  if(show_profile) {
+    vessel_profile_->SetMinSize(wxSize(dip(32),dip(32)));
+    tools->AddSpacer(dip(8));
+    tools->Add(vessel_profile_,0,wxALIGN_CENTER_HORIZONTAL);
+    tools->AddSpacer(dip(layout.nav_inset));
+  } else tools->AddSpacer(dip(layout.nav_inset-layout.nav_gap));
   rail_header_->SetMinSize(wxSize(dip(layout.rail), dip(layout.rail_header)));
   rail_configure_->SetMinSize(wxSize(dip(layout.rail == 156 ? 30 : 40),
                                     dip(layout.rail == 156 ? 30 : 40)));

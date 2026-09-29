@@ -91,6 +91,7 @@ class XNavButton : public wxControl {
   void SetCompassRotation(double radians) { if (compass_rotation_ != radians) { compass_rotation_ = radians; Refresh(); } }
   void SetSummary(const wxString &value, const wxString &detail);
   void SetSettingsTab(bool value = true) { settings_tab_ = value; Refresh(); }
+  void SetVesselProfile() { vessel_profile_ = true; Refresh(); }
   void SetSuiteLink(const wxString &detail, XNavIcon icon) {
     suite_link_ = true; suite_detail_ = detail; icon_ = icon; Refresh();
   }
@@ -107,7 +108,7 @@ class XNavButton : public wxControl {
   bool selected_ = false;
   bool hovered_ = false, navigation_item_ = false, icon_only_ = false, floating_ = false;
   bool inline_icon_ = false;
-  bool settings_tab_ = false, suite_link_ = false;
+  bool settings_tab_ = false, suite_link_ = false, vessel_profile_ = false;
   wxString suite_detail_;
   double compass_rotation_ = 0;
   ButtonRole role_ = ButtonRole::Normal;
