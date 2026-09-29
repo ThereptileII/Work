@@ -44,6 +44,8 @@ void AfterDeferredInitialization();
 void AfterSettingsReconfigured();
 // Only actual XNav-owned temporary panes are excluded from saved workspaces.
 bool IsTransientXNavPane(const wxWindow *window);
+// Preserve an open XNav sheet/card during upstream's delayed resize raise.
+bool HasXNavTransientSurface();
 bool LoadPersistentPerspective(wxAuiManager &manager, const wxString &perspective);
 void AppendModeMenu(wxMenu& menu);
 bool PrepareClose(wxFileConfig& config);

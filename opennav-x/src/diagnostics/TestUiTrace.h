@@ -16,7 +16,7 @@ inline void TestUiTrace(const char *stage, std::uint64_t tick = 0,
   static const std::filesystem::path sink = [] {
     const auto *value = std::getenv("OPENNAV_TEST_UI_TRACE");
     const auto *file = std::getenv("OPENNAV_TEST_UI_TRACE_FILE");
-    if (value && std::strcmp(value, "1") == 0 && file) {
+    if (value && (std::strcmp(value, "1") == 0 || std::strcmp(value, "pointer") == 0) && file) {
       try {
         auto path = std::filesystem::u8path(file);
         if (path.is_absolute() && path.filename() == "opennav-ui-trace.log" &&
@@ -26,6 +26,11 @@ inline void TestUiTrace(const char *stage, std::uint64_t tick = 0,
     }
     return std::filesystem::path{};
   }();
+  static const bool pointer_only = [] {
+    const auto *value = std::getenv("OPENNAV_TEST_UI_TRACE");
+    return value && std::strcmp(value, "pointer") == 0;
+  }();
+  if (pointer_only && std::strncmp(stage, "pointer.", 8) != 0) return;
   static unsigned count = 0;
   if (sink.empty() || count >= 2048) return;
   ++count;

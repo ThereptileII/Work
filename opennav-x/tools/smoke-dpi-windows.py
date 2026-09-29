@@ -266,7 +266,8 @@ def chart_context_geometry(scale):
     labels={'Go to','Waypoint','Measure','Info'}
     def controls(record):
         return [c for c in record['runtime']['display'].get('interaction_controls',[])
-                if c['visible'] and c['label'] in labels]
+                if c['visible'] and c['label'] in labels
+                and c.get('accessible_name')==c['label']]
     record=data(lambda d:len(controls(d))==4)
     assert record['ui_page']=='Navigation','Context replaced the chart'
     checked=controls(record)

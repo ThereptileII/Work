@@ -1,0 +1,34 @@
+{
+  "scope": "Local correction for delayed OpenCPN frame raise; native replacement still required",
+  "baselineLocalCommit": "d65c4aedd2dfa6cb482f83f36322a0655dade7d7",
+  "baselinePublishedCommit": "d8316d8f4d29850a604ea3d2d2ffc21c4cbb98b0",
+  "change": "Skip only the deferred frame raise while XNav owns a visible drawer/card or frame-owned modal. Preserve all normal/Legacy/Safe raises.",
+  "causalEvidence": {
+    "upstream": "Pinned ocpn_frame.cpp: ProcessCanvasResize -> TriggerRecaptureTimer (1000 ms) -> OnRecaptureTimer -> Raise",
+    "before": "At about 1.028 seconds after opening Passage, a click on library bounds (705,687,352,48) reaches a non-button timeline at (80,634,1013,132). Per-tick restacking is too late. Longer presses and explicit X11 focus did not fix the route regression.",
+    "after": "Complete actual route gesture/storage suite passes with the guard and without extra X11 focus helpers."
+  },
+  "checks": [
+    "Touch chart orientation toggles upstream North/Course state and restores North",
+    "Chart card dismisses by outside pointer press and Escape without changing navigation",
+    "Chart context saves copied chart position; selected waypoint Go To uses real selected GPS and upstream route progress; stop deactivates",
+    "Draft actions have full-width touch labels without changing chart or data-rail viewport",
+    "Three chart taps, Undo, naming Cancel retaining draft, and named Save open the real route detail",
+    "Native draft Undo disabled with zero/one point, enabled with two, disabled after undo to one, and usable again after another point",
+    "Whole-route Cancel discards only the unfinished new route and resets native creation state",
+    "Read-only navobj.db audit proves two-point saved route, no cancelled draft, original waypoint identity and clicked position preserved"
+  ],
+  "result": "passed; native screenshots require review",
+  "integratedFixtureTests": 132,
+  "productionBuild": "passed",
+  "productionTests": "pending after interaction processes close",
+  "nativeWindows": "pending",
+  "boat": "not deployed",
+  "sources": {
+    "patches/opencpn-5.12.4-xnav.patch": "198befee6c438c516508de9a71bb30116f20b617032c7e7e33b3499f1ef34d21",
+    "src/ui/Shell.cpp": "9b94d40830bedd76154c6413e073b148dc103adfb30c487cb70d6dbe36ad9b62",
+    "src/ui/Shell.h": "77b8bd27c0960cf4e8ef1dddbe218e96eab27d35390f9aa335418fd7e57e5038",
+    "src/integration/OpenCPNIntegration.cpp": "b523c8e11cd4495d7ed2b292eb39399917c282fe26184036b3a332a944c6b830",
+    "src/integration/OpenCPNIntegration.h": "726a6731bc68801a8faa7f9bdbe7d973920b01c4b270c97b57f1f13ec6289ff3"
+  }
+}

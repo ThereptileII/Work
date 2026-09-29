@@ -154,7 +154,7 @@ def native_timeout_observation():
 
 
 def xdo(*args):
-    return subprocess.check_output(['xdotool', *map(str, args)], env=env, text=True).strip()
+    return subprocess.check_output(['xdotool', *map(str, args)], env=env, text=True, timeout=10).strip()
 
 
 def data(predicate=lambda d: True, timeout=20):

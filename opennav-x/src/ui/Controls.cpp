@@ -1,5 +1,6 @@
 #include "ui/Controls.h"
 #include "ui/PrototypeIcons.h"
+#include "diagnostics/TestUiTrace.h"
 
 #include <wx/dcbuffer.h>
 #include <wx/graphics.h>
@@ -26,6 +27,17 @@ class FocusInput final : public wxEventFilter {
   ~FocusInput() override { wxEvtHandler::RemoveFilter(this); }
   int FilterEvent(wxEvent &event) override {
     const auto type = event.GetEventType();
+    if(type==wxEVT_LEFT_DOWN || type==wxEVT_LEFT_UP) {
+      auto *window=dynamic_cast<wxWindow *>(event.GetEventObject());
+      XNAV_TEST_UI_TRACE(type==wxEVT_LEFT_DOWN?"pointer.raw-down":"pointer.raw-up",
+                        event.GetId(),window && dynamic_cast<XNavButton *>(window));
+      if(window && type==wxEVT_LEFT_DOWN) {
+        const auto position=window->GetScreenPosition();
+        XNAV_TEST_UI_TRACE(dynamic_cast<XNavScroll *>(window)?"pointer.raw-scroll":"pointer.raw-window",position.x,position.y);
+        const auto size=window->GetClientSize();
+        XNAV_TEST_UI_TRACE("pointer.raw-size",size.x,size.y);
+      }
+    }
     if (type == wxEVT_KEY_DOWN || type == wxEVT_CHAR_HOOK)
       keyboard = true;
     else if (type == wxEVT_LEFT_DOWN || type == wxEVT_RIGHT_DOWN ||
@@ -339,10 +351,15 @@ XNavButton::XNavButton(wxWindow* parent, wxWindowID id, const wxString& label,
   Bind(wxEVT_ENTER_WINDOW, [this](wxMouseEvent &e) { hovered_ = true; Refresh(); e.Skip(); });
   Bind(wxEVT_LEAVE_WINDOW, [this](wxMouseEvent &e) { hovered_ = false; Refresh(); e.Skip(); });
   Bind(wxEVT_SET_FOCUS, [this](wxFocusEvent& e) {
+    XNAV_TEST_UI_TRACE("pointer.focus", GetId(), pressed_);
     keyboard_focus_ = FocusModality().keyboard; Refresh(); e.Skip();
   });
-  Bind(wxEVT_KILL_FOCUS, [this](wxFocusEvent& e) { pressed_ = false; Refresh(); e.Skip(); });
+  Bind(wxEVT_KILL_FOCUS, [this](wxFocusEvent& e) {
+    XNAV_TEST_UI_TRACE("pointer.blur", GetId(), pressed_);
+    pressed_ = false; Refresh(); e.Skip();
+  });
   Bind(wxEVT_LEFT_DOWN, [this](wxMouseEvent&) {
+    XNAV_TEST_UI_TRACE("pointer.down", GetId(), IsEnabled());
     if (!IsEnabled()) return;
     SetFocus();
     keyboard_focus_ = false;
@@ -351,13 +368,16 @@ XNavButton::XNavButton(wxWindow* parent, wxWindowID id, const wxString& label,
     Refresh();
   });
   Bind(wxEVT_LEFT_UP, [this](wxMouseEvent& e) {
+    XNAV_TEST_UI_TRACE("pointer.up", GetId(), pressed_);
     const bool activate = pressed_ && GetClientRect().Contains(e.GetPosition());
+    XNAV_TEST_UI_TRACE("pointer.activate", GetId(), activate);
     pressed_ = false;
     if (HasCapture()) ReleaseMouse();
     Refresh();
     if (activate) Activate();
   });
   Bind(wxEVT_MOUSE_CAPTURE_LOST, [this](wxMouseCaptureLostEvent&) {
+    XNAV_TEST_UI_TRACE("pointer.capture-lost", GetId(), pressed_);
     pressed_ = false;
     Refresh();
   });

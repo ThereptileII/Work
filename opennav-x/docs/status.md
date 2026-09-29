@@ -2,6 +2,12 @@
 
 ## Current stage: prototype design lock, chart presentation and Online AIS
 
+Native `d8316d8` / run `36530182434` passes the complete 29-state product
+capture, AIS own-key checks, software ENC unit/palette checks, and development
+100/125/150% probes. Seven jobs pass; the retained fixture test still selects
+the duplicate Configure instruments action. All nine archives verify. No
+visual conformance or deployment acceptance. See [development evidence](evidence/prototype-native-d8316d8-development.json).
+
 Native `28b5e9c` passes 151 AIS component checks and all twelve captures,
 including own-key Day/Night, cancel, replacement, failure and removal. The
 separate protected import suite passes seventeen checks. All eight prototype
@@ -11,8 +17,20 @@ checks await the semantic result. The fixture Preferences transition remains
 on Sensors; the replacement waits for the destination page and activates only
 the exact target-owned native surface before clicking. Neither failure is waived.
 The subsequent `7018c7f` full run passes both corrected 78-test portable suites;
-its integrated gates remain in progress. No deployment qualification or visual
+its integrated gates finish with the failures below. No deployment qualification or visual
 conformance PASS. See [native own-key evidence](evidence/ais-own-key-native-28b5e9c.json).
+
+Full run `36528305413` / `7018c7f` passes 132 Linux and 124 MSVC unit
+regressions, but qualification remains negative. Windows chart gestures pass;
+the preview chooses the rail's repeated Configure instruments caption, and the
+DPI context check counts floating toolbar actions as context actions. Exact
+product-control and accessible-identity selectors replace those assumptions.
+The local fixture preview passes eight checks/44 captures after owned-surface
+focus settling. Pointer evidence traces the Linux Passage library failure to the underlying
+timeline during OpenCPN’s one-second deferred resize raise. A narrow transient-
+surface guard now passes the complete local route gestures; replacement
+qualification is still required. Legacy/Safe retain their original raise.
+See [retained negative evidence](evidence/prototype-native-7018c7f-negative.json).
 
 The user-supplied AISStream key workflow now has explicit own-key guidance, a
 masked 48px input, disabled empty/invalid Save, and no automatic enablement.

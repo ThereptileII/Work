@@ -1,0 +1,53 @@
+{
+  "scope": "Negative full qualification; no release or boat deployment",
+  "commit": "7018c7f6610e086e65ce4c7297caf64129ee7890",
+  "run": "https://github.com/ThereptileII/Work/actions/runs/36528305413",
+  "portableContractTests": {
+    "Linux": 78,
+    "Windows": 78
+  },
+  "integratedUnitTests": {
+    "Linux": 132,
+    "Windows": 124
+  },
+  "nativeMarineGestures": "passed",
+  "failures": [
+    {
+      "gate": "Linux route gestures",
+      "observation": "After route deactivation, Passage library click did not open the catalog. Actual pointer event was delivered to a non-button window. Root focus alone did not repair it; diagnosis remains open."
+    },
+    {
+      "gate": "Windows fixture preview",
+      "observation": "Generic Configure instruments selector opened Data rail layout via its repeated shell caption. Retained screenshot and diagnostic page agree. Replacement scopes to actual product controls and observes page changes."
+    },
+    {
+      "gate": "Windows DPI",
+      "observation": "Actual chart context card is visible; count also includes floating Measure and Waypoint controls. Replacement requires the context-specific accessible identities and retains all four exact target-size/containment checks."
+    }
+  ],
+  "verifiedIntegratedArchives": [
+    {
+      "id": 11016672202,
+      "name": "windows-integration-7018c7f6610e086e65ce4c7297caf64129ee7890",
+      "sha256": "e00c13a822757d41637e4c1309602540d4472a610c7a5d6dec5b8a99bb674223",
+      "bytes": 20082370,
+      "zipCrc": true
+    },
+    {
+      "id": 11016078018,
+      "name": "linux-integration-7018c7f6610e086e65ce4c7297caf64129ee7890",
+      "sha256": "74a5309aef0ece1185849464667b632a86d4363c7239a36f8f5b26e039a7efc3",
+      "bytes": 8480741,
+      "zipCrc": true
+    }
+  ],
+  "reviewed": {
+    "preview-failure.png": "1c9c47842c6ecb828d003d915f805d1abd0029dcc33d434606e8af0549338b42",
+    "dpi-100-failure-visible.png": "73b6e8cf61e62b9699541aa78686911cff801a10ec70d109778ab84adb1c0d2f"
+  },
+  "replacementLocal": {
+    "fixturePreview": "8 checks / 44 captures pass after exact surface focus; full qualification remains blocked by the separate route gesture failure",
+    "keyEntry": "151 native checks remain passed"
+  },
+  "release": "blocked by failed qualification, publication skipped"
+}

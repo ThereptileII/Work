@@ -8,6 +8,7 @@
 #include <wx/accel.h>
 #include <wx/datetime.h>
 #include <wx/dcbuffer.h>
+#include <wx/dialog.h>
 #include <wx/popupwin.h>
 #include <wx/sizer.h>
 #include <wx/textctrl.h>
@@ -580,6 +581,17 @@ std::vector<ProductGeometry> Shell::InteractionControls() const {
     }
   }
   return result;
+}
+
+bool Shell::HasTransientSurface() const {
+  if (DrawerRegion() || (context_ && context_->IsShownOnScreen())) return true;
+  for (auto *window : wxTopLevelWindows) {
+    auto *dialog = dynamic_cast<wxDialog *>(window);
+    if (!dialog || !dialog->IsModal()) continue;
+    for (auto *owner = dialog->GetParent(); owner; owner = owner->GetParent())
+      if (owner == &frame_) return true;
+  }
+  return false;
 }
 
 void Shell::UpdateState(const vessel::VesselState &state) {

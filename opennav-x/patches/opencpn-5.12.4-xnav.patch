@@ -352,7 +352,22 @@ index 8b7a14403..74b928d44 100644
    b_inCloseWindow = true;
  
    ::wxSetCursor(wxCURSOR_WAIT);
-@@ -3017,6 +3023,9 @@ void MyFrame::ScheduleReconfigAndSettingsReload(bool reload, bool new_dialog) {
+@@ -2090,7 +2096,13 @@
+       1000, wxTIMER_ONE_SHOT);  // One second seems enough, on average
+ }
+ 
+-void MyFrame::OnRecaptureTimer(wxTimerEvent &event) { Raise(); }
++void MyFrame::OnRecaptureTimer(wxTimerEvent &event) {
++#ifdef OPENNAV_X
++  // A late resize recapture must not cover an active owned sheet or card.
++  if (opennav::HasXNavTransientSurface()) return;
++#endif
++  Raise();
++}
+ 
+ void MyFrame::SetCanvasSizes(wxSize frameSize) {
+   if (!g_canvasArray.GetCount()) return;
+@@ -3017,6 +3029,9 @@ void MyFrame::ScheduleReconfigAndSettingsReload(bool reload, bool new_dialog) {
        if (index_hint != -1) cc->SetVPScale(restoreScale[i]);
      }
    }
@@ -362,7 +377,7 @@ index 8b7a14403..74b928d44 100644
  }
  
  ChartCanvas *MyFrame::GetFocusCanvas() {
-@@ -3636,7 +3645,11 @@ void MyFrame::ConfigureStatusBar() {
+@@ -3636,7 +3651,11 @@ void MyFrame::ConfigureStatusBar() {
    UseNativeStatusBar(false);  // better for MSW, undocumented in frame.cpp
  #endif
  
@@ -375,7 +390,7 @@ index 8b7a14403..74b928d44 100644
      if (!m_pStatusBar) {
        m_pStatusBar =
            CreateStatusBar(m_StatusBarFieldCount, 0);  // No wxST_SIZEGRIP needed
-@@ -3690,6 +3703,9 @@ void MyFrame::BuildMenuBar(void) {
+@@ -3690,6 +3709,9 @@ void MyFrame::BuildMenuBar(void) {
      showMenuBar = true;
  #endif
  
@@ -385,7 +400,7 @@ index 8b7a14403..74b928d44 100644
    if (showMenuBar) {
      //  Menu bar has some dependencies on S52 PLIB, so be sure it is loaded.
      LoadS57();
-@@ -3701,6 +3717,13 @@ void MyFrame::BuildMenuBar(void) {
+@@ -3701,6 +3723,13 @@ void MyFrame::BuildMenuBar(void) {
                                 // to populate the OS X App Menu correctly
      }
  
@@ -399,7 +414,7 @@ index 8b7a14403..74b928d44 100644
      UpdateGlobalMenuItems();  // update the state of the menu items (checkmarks
                                // etc.)
    } else {
-@@ -4868,6 +4891,9 @@ void MyFrame::OnInitTimer(wxTimerEvent &event) {
+@@ -4868,6 +4897,9 @@ void MyFrame::OnInitTimer(wxTimerEvent &event) {
        wxAuiPaneInfoArray pane_array_val = g_pauimgr->GetAllPanes();
        for (unsigned int i = 0; i < pane_array_val.GetCount(); i++) {
          wxAuiPaneInfo pane = pane_array_val.Item(i);
@@ -409,7 +424,7 @@ index 8b7a14403..74b928d44 100644
  
          // If we find a pane that is not in the perspective,
          //  then we should not load the perspective at all
-@@ -4877,7 +4903,13 @@ void MyFrame::OnInitTimer(wxTimerEvent &event) {
+@@ -4877,7 +4909,13 @@ void MyFrame::OnInitTimer(wxTimerEvent &event) {
          }
        }
  
@@ -424,7 +439,7 @@ index 8b7a14403..74b928d44 100644
  
  #if 0
              // Undefine the canvas sizes as expressed by the loaded perspective
-@@ -5051,6 +5083,9 @@ void MyFrame::OnInitTimer(wxTimerEvent &event) {
+@@ -5051,6 +5089,9 @@ void MyFrame::OnInitTimer(wxTimerEvent &event) {
  
    RefreshAllCanvas(true);
    wxGetApp().m_usb_watcher.Start();
@@ -434,7 +449,7 @@ index 8b7a14403..74b928d44 100644
  }
  
  wxDEFINE_EVENT(EVT_BASIC_NAV_DATA, ObservedEvt);
-@@ -5808,6 +5843,10 @@ void MyFrame::OnFrameTimer1(wxTimerEvent &event) {
+@@ -5808,6 +5849,10 @@ void MyFrame::OnFrameTimer1(wxTimerEvent &event) {
    ProcessUnitTest();
    g_tick++;
    ProcessQuitFlag();
@@ -445,7 +460,7 @@ index 8b7a14403..74b928d44 100644
  
    if (bDBUpdateInProgress) return;
  
-@@ -5817,6 +5856,9 @@ void MyFrame::OnFrameTimer1(wxTimerEvent &event) {
+@@ -5817,6 +5862,9 @@ void MyFrame::OnFrameTimer1(wxTimerEvent &event) {
    ProcessDeferredTrackOn();
    SendFixToPlugins();
    ProcessAnchorWatch();
@@ -455,7 +470,7 @@ index 8b7a14403..74b928d44 100644
    ProcessLogAndBells();
  
    if (ShouldRestartTrack()) TrackDailyRestart();
-@@ -5850,7 +5892,13 @@ void MyFrame::OnFrameTimer1(wxTimerEvent &event) {
+@@ -5850,7 +5898,13 @@ void MyFrame::OnFrameTimer1(wxTimerEvent &event) {
    nBlinkerTick++;
  
    // This call sends autopilot output strings to output ports.
@@ -469,7 +484,7 @@ index 8b7a14403..74b928d44 100644
  
    // For each canvas....
    for (unsigned int i = 0; i < g_canvasArray.GetCount(); i++) {
-@@ -7961,13 +8009,22 @@ void ApplyLocale() {
+@@ -7961,13 +8015,22 @@ void ApplyLocale() {
  
    for (unsigned int i = 0; i < pane_array_val.GetCount(); i++) {
      wxAuiPaneInfo pane = pane_array_val[i];

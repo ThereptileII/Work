@@ -105,6 +105,7 @@ public:
         ? std::make_optional(ais_drawer_->GetScreenRect()) : std::nullopt;
   }
   std::vector<ProductGeometry> InteractionControls() const;
+  bool HasTransientSurface() const;
   bool RouteCreationActive() const { return actions_.route_creating && actions_.route_creating(); }
   const char *LightName() const;
   void ShowObject(const std::string &id, bool route);

@@ -1,0 +1,86 @@
+{
+  "scope": "Native development capture, not full release acceptance",
+  "commit": "d8316d8f4d29850a604ea3d2d2ffc21c4cbb98b0",
+  "run": "https://github.com/ThereptileII/Work/actions/runs/36530182434",
+  "jobs": {
+    "passed": 7,
+    "failed": 1
+  },
+  "nativeProductionExecutableSha256": "c79e8955ce43e381a0754707217c16ce219abdd8ffafd050af85edc165069de3",
+  "nativeProductCapture": "captured; conformance not asserted",
+  "primaryCaptures": 29,
+  "ownKeyChecks": 151,
+  "actualDpi": [
+    100,
+    125,
+    150
+  ],
+  "verifiedArtifacts": [
+    {
+      "id": 11016733564,
+      "name": "prototype-native-Windows-d8316d8f4d29850a604ea3d2d2ffc21c4cbb98b0",
+      "sha256": "9b6933daad0c068b63a64f4216d2ab4f098310578713eafb1c80f21e0b7f904b",
+      "bytes": 42807892,
+      "zipCrc": true
+    },
+    {
+      "id": 11016653820,
+      "name": "prototype-ais-read-only-probe-d8316d8f4d29850a604ea3d2d2ffc21c4cbb98b0",
+      "sha256": "d70664d5b807a36a351aa47951847186532eeb0834e2cf21acb3baac2622ae30",
+      "bytes": 135692252,
+      "zipCrc": true
+    },
+    {
+      "id": 11016601289,
+      "name": "prototype-ais-network-Linux-d8316d8f4d29850a604ea3d2d2ffc21c4cbb98b0",
+      "sha256": "0aae5d6533cd8708f073f3ae423109dc36d781a5ed06c8c1f7738cb4daaf30fc",
+      "bytes": 935,
+      "zipCrc": true
+    },
+    {
+      "id": 11016386901,
+      "name": "prototype-reference-Windows-d8316d8f4d29850a604ea3d2d2ffc21c4cbb98b0",
+      "sha256": "8bdca68af5ebad2bbd3114a37521903a0d0ce44ab8d98c3c89b4dacb8daa5ca9",
+      "bytes": 18803048,
+      "zipCrc": true
+    },
+    {
+      "id": 11016302101,
+      "name": "prototype-review-guard-Windows-d8316d8f4d29850a604ea3d2d2ffc21c4cbb98b0",
+      "sha256": "00f7f3e286948df0cc146ca46182bbacd96e2223765b707f2f29a7d1e19b556b",
+      "bytes": 9632,
+      "zipCrc": true
+    },
+    {
+      "id": 11016262331,
+      "name": "prototype-reference-Linux-d8316d8f4d29850a604ea3d2d2ffc21c4cbb98b0",
+      "sha256": "50c7d3c18e96f72bd86e9305619c4da615d0c7dd72bf668f3214d592f7832db3",
+      "bytes": 20858873,
+      "zipCrc": true
+    },
+    {
+      "id": 11016244721,
+      "name": "prototype-object-flow-Windows-d8316d8f4d29850a604ea3d2d2ffc21c4cbb98b0",
+      "sha256": "6f7ea5bef908311dbd399af6fe5f14d79e5bc0304f74d83388348b8f59cdefb9",
+      "bytes": 11566841,
+      "zipCrc": true
+    },
+    {
+      "id": 11016087931,
+      "name": "prototype-ais-foundation-Windows-d8316d8f4d29850a604ea3d2d2ffc21c4cbb98b0",
+      "sha256": "07a0b1c06e98425dfeac452ad784b7b501f13b2f58d7357acf1debd0214cda18",
+      "bytes": 690,
+      "zipCrc": true
+    },
+    {
+      "id": 11015663285,
+      "name": "prototype-ais-foundation-Linux-d8316d8f4d29850a604ea3d2d2ffc21c4cbb98b0",
+      "sha256": "d81a6ab5a8b855ab2233163135c51a54f58a611091817a636f9e3c167b292fa4",
+      "bytes": 689,
+      "zipCrc": true
+    }
+  ],
+  "fixtureFailure": "Generic Configure instruments caption selects the shell rail layout instead of the product-page instrument selector. Scoped replacement pending native validation.",
+  "visualConformance": "No acceptance; reference/current/diff reviewed per view and physical boat review still required",
+  "deployment": "withheld"
+}

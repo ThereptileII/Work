@@ -854,6 +854,10 @@ bool IsTransientXNavPane(const wxWindow *window) {
   return shell && IsXNav() && shell->OwnsPane(window);
 }
 
+bool HasXNavTransientSurface() {
+  return shell && IsXNav() && shell->HasTransientSurface();
+}
+
 bool LoadPersistentPerspective(wxAuiManager &manager, const wxString &perspective) {
   if (shell && IsXNav() && shell->OwnsManager(manager)) {
     OpenNavDashboardLayoutScope dashboard_layout;

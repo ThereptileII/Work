@@ -22,6 +22,31 @@ For each change record:
 
 Do not leave undocumented direct OpenCPN modifications.
 
+### Prototype owned surfaces and deferred frame raise
+
+The pinned `MyFrame::ProcessCanvasResize()` schedules `OnRecaptureTimer()` one
+second later. That callback previously raised the main frame unconditionally.
+After leaving a full-page view for a Passage or Alerts sheet, Linux pointer
+evidence showed the underlying timeline receiving the click during this raise,
+even though the sheet returned above it on the following UI tick. Per-tick
+restacking and a longer mouse press did not close that input interval.
+
+The callback now asks `HasXNavTransientSurface()` before raising. Only the
+active XNav shell's visible drawer, context card, or frame-owned modal dialog
+suppresses that delayed raise. No surface is made globally topmost and no
+foreign window is activated. With no such surface, and in Legacy/Safe/pristine
+builds, the original `Raise()` remains. There is no chart reparenting, timer
+rescheduling, navigation update, sensor mutation, or hardware command.
+
+Source boundary: `gui/src/ocpn_frame.cpp`, `OnRecaptureTimer`, in the existing
+version-checked XNav patch. A public after-raise callback was not present in the
+pinned implementation; asynchronous restoration leaves the observed input gap.
+Merge risk is low: re-inspect the recapture/resize sequence on every upstream
+upgrade. Gates: actual route gestures after deactivation, readable alert
+acknowledgement, XNav/Legacy/Safe lifecycle, primary captures, and native Windows
+qualification. Replacement results are tracked in status; this is not a release
+acceptance claim.
+
 ### Prototype Instruments presentation
 
 The Instruments increment adds no OpenCPN source hook. Its native page copies

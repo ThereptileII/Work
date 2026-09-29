@@ -90,12 +90,14 @@ else:
     time.sleep(1)
 # Only this freshly extracted disposable test copy receives the fixture marker.
 # The downloadable profile remains a clean user preview, without test hooks.
-if windows: (profile/'OPENNAV_TEST_PROFILE').write_text('CI disposable extracted preview only\n')
+(profile/'OPENNAV_TEST_PROFILE').write_text('CI disposable extracted preview only\n')
+if env.get('OPENNAV_TEST_UI_TRACE'):
+    env['OPENNAV_TEST_UI_TRACE_FILE']=str(profile/'opennav-ui-trace.log')
 fixtures=module('profile-fixtures');fixtures.seed(profile);expected_profile=fixtures.snapshot(profile)
 chartcheck=module('chart-render-check')
 
 def xdo(*arguments):
-    return subprocess.check_output(['xdotool',*map(str,arguments)],env=env,text=True).strip()
+    return subprocess.check_output(['xdotool',*map(str,arguments)],env=env,text=True,timeout=10).strip()
 def window(title,expected_pid=None):
     if windows:return ui.wait_window(title,expected_pid)
     deadline=time.monotonic()+45
@@ -159,7 +161,9 @@ def pointer_click(target):
         actual=ui.WindowFromPoint(point)
         assert actual==hit and ui.IsWindowEnabled(hit), ('Pointer target changed before input',target,ui.text(actual),ui.text(front))
         ui.MouseEvent(2,0,0,0,0);time.sleep(.05);ui.MouseEvent(4,0,0,0,0)
-    else:xdo('mousemove',x,y,'mousedown',1,'sleep','0.05','mouseup',1)
+    else:
+        xdo('mousemove',x,y)
+        xdo('mousedown',1,'sleep','0.05','mouseup',1)
     time.sleep(.4)
 def shell_click(label,outside_drawer=False,in_status=False,in_drawer=False,settled=lambda d:True):
     record=data(lambda d:any(r['label']==label and r['visible'] and r['enabled'] for r in d['runtime']['display']['interaction_controls']))
@@ -431,16 +435,18 @@ try:
             capture('alpha-energy-settings-saved')
             report['checks'].append('Native battery assumption sheet saves explicit live configuration; DEMO remains separate')
         if windows and name=='display':
-            ui.click_text(pid,'Dusk');time.sleep(.5);capture('alpha-display-dusk')
-            ui.click_text(pid,'Night');time.sleep(.5);capture('alpha-display-night')
-            ui.click_text(pid,'Day');time.sleep(.5)
-            ui.click_text(pid,'Configure data rail');ui.click_text(pid,'Energy rail')
+            product_click('Dusk');data(lambda d:d['runtime']['display']['light']=='Dusk');capture('alpha-display-dusk')
+            product_click('Night');data(lambda d:d['runtime']['display']['light']=='Night');capture('alpha-display-night')
+            product_click('Day');data(lambda d:d['runtime']['display']['light']=='Day')
+            product_click('Configure data rail');product_click('Energy rail')
             data(lambda d:d['settings']['data_rail']==['soc','pack_power','sog','depth'])
             command('Navigation','n');capture('alpha-energy-rail')
             preferences_entry('Display','Chart presentation')
-            ui.click_text(pid,'Configure data rail');ui.click_text(pid,'Navigation rail')
+            product_click('Configure data rail');product_click('Navigation rail')
             data(lambda d:d['settings']['data_rail']==['sog','depth','aws','heading'])
-            ui.click_text(pid,'Back to Display');ui.click_text(pid,'Configure instruments')
+            product_click('Back to Display')
+            data(lambda d:d['ui_page']=='Display')
+            product_click('Configure instruments')
             product_click('Shown / PRESSURE')
             data(lambda d:'pressure' not in d['settings']['instruments'])
             product_click('Add / PRESSURE')
