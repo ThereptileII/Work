@@ -33,6 +33,8 @@ in [prototype conformance](prototype-conformance.md).
 | `.settings-intro`, `.suite-link` | `XNavPainter::Wrapped` / `XNavButton::SetSuiteLink` | Bounded native text and actual clickable sensor/settings links; no mock connection counts |
 | `.anchor-graphic`, `.anchor-distance` | `XNavAnchorDrawer` / `AnchorView` | Copied upstream watch distance and projected observed history; no illustrative trail or invented heading |
 | `#anchorRadius` | `XNavRange` | Native stepped pointer/keyboard input; pending radius only; explicit confirmed watch commands |
+| `.heading-dial`, `.heading-controls` | `XNavPilotDrawer` / `PilotPresentation` | Measured magnetic feedback; native manual controls; no optimistic heading or mode |
+| `.toggle` | `XNavButton::SetToggle` | 42×25 face inside 48×49 hit target, observed owner-supplied state; activation cannot imply success |
 
 All geometry is measured from the final CSS cascade at the target viewport;
 earlier CSS declarations are sometimes superseded. The capture manifest records

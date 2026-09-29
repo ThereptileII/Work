@@ -1,0 +1,1352 @@
+{
+  "scope": "Failed prototype development run. No release, physical boat or visual conformance acceptance.",
+  "localCommit": "b3807e8b64f2988d3431e2991f46e7b628b6278b",
+  "publishedCommit": "403a4e8f2be8b026913a9e9f560792ba36fd0016",
+  "publishedTree": "7825aa1781056e31f834ebc425e96887cfb98bda",
+  "verifiedSourceBlobs": 1134,
+  "run": "https://github.com/ThereptileII/Work/actions/runs/36515856835",
+  "jobsPassed": 6,
+  "jobsTotal": 8,
+  "builds": {
+    "fixtureFree": {
+      "MSVC": "passed",
+      "integratedTestsPassed": 120
+    },
+    "fixtures": {
+      "MSVC": "passed",
+      "integratedTestsPassed": 120
+    }
+  },
+  "artifacts": [
+    {
+      "id": 11011780087,
+      "name": "prototype-native-Windows-403a4e8f2be8b026913a9e9f560792ba36fd0016",
+      "sha256": "005d36d3a988c08c03952c563ede667505a069de2f2a5e3e6cd2aae6c38d3112",
+      "bytes": 13308502,
+      "zipCrc": true
+    },
+    {
+      "id": 11011615224,
+      "name": "prototype-reference-Linux-403a4e8f2be8b026913a9e9f560792ba36fd0016",
+      "sha256": "1094efc80fe39786c38fe44d433a087310b335a749e756fb3d4dd09c630d4d51",
+      "bytes": 20844338,
+      "zipCrc": true
+    },
+    {
+      "id": 11011330666,
+      "name": "prototype-review-guard-Windows-403a4e8f2be8b026913a9e9f560792ba36fd0016",
+      "sha256": "0a5c559008d6f57c9b47666509aaeabd6de3cd52602a78a86020100fdf06cb33",
+      "bytes": 8927,
+      "zipCrc": true
+    },
+    {
+      "id": 11011046571,
+      "name": "prototype-ais-foundation-Linux-403a4e8f2be8b026913a9e9f560792ba36fd0016",
+      "sha256": "0ca9f93e7b42c4d5a9bd91ae8f279c1ebf184547fb7e46e57a1d8203826fe74b",
+      "bytes": 688,
+      "zipCrc": true
+    },
+    {
+      "id": 11011023830,
+      "name": "prototype-object-flow-Windows-403a4e8f2be8b026913a9e9f560792ba36fd0016",
+      "sha256": "d668dc0ba2eef0bd19fec179c8cda38c778e49f2558b223c43f3a08ba716ef3e",
+      "bytes": 10542274,
+      "zipCrc": true
+    },
+    {
+      "id": 11010877383,
+      "name": "prototype-ais-network-Linux-403a4e8f2be8b026913a9e9f560792ba36fd0016",
+      "sha256": "d48df154145a2011d64a1875b3a81c24360a5f83d1b0c2ac081ebbed61ea4c9b",
+      "bytes": 935,
+      "zipCrc": true
+    },
+    {
+      "id": 11010667780,
+      "name": "prototype-ais-foundation-Windows-403a4e8f2be8b026913a9e9f560792ba36fd0016",
+      "sha256": "fa1209198eed2b7ebccf16518bd4eca00e8257a78563db9103aad4998dcef6c9",
+      "bytes": 689,
+      "zipCrc": true
+    },
+    {
+      "id": 11010473490,
+      "name": "prototype-reference-Windows-403a4e8f2be8b026913a9e9f560792ba36fd0016",
+      "sha256": "5678ffdec77a291c75861fe719643c98f0c8b274013bde3b70256ecf3e5ed98a",
+      "bytes": 18788648,
+      "zipCrc": true
+    }
+  ],
+  "components": {
+    "ais": {
+      "checks": 71,
+      "passed": true,
+      "captures": [
+        "traffic-day",
+        "ais-target-day",
+        "ais-target-dusk",
+        "ais-target-night",
+        "traffic-night",
+        "online-target-day",
+        "online-stale-day",
+        "online-lost-day",
+        "target-expired-day"
+      ],
+      "captureSha256": "dc0ca4ea3421a67d38509fba169b0dbbb9cfc5184f767999a58a394f26cbb977"
+    },
+    "passage": {
+      "checks": 26,
+      "passed": true,
+      "captures": [
+        "passage-day",
+        "passage-dusk",
+        "passage-night",
+        "passage-stale-day",
+        "passage-inactive-day"
+      ],
+      "captureSha256": "e9a15574cd9745a70ec5ec8d51fe755c33126e6da5d82624713b5b1d1ca0799d"
+    },
+    "instruments": {
+      "checks": 41,
+      "passed": true,
+      "captures": [
+        "instruments-day",
+        "instruments-dusk",
+        "instruments-night",
+        "instruments-stale-day",
+        "instruments-heading-unavailable-day"
+      ],
+      "captureSha256": "d8c282cd4b3baa9cb582946611995d1f513f05c50ed846032489a707d3b41607"
+    },
+    "energy": {
+      "checks": 44,
+      "passed": true,
+      "captures": [
+        "energy-day",
+        "energy-dusk",
+        "energy-night",
+        "energy-stale-day",
+        "energy-gps-unavailable-day",
+        "energy-shortfall-day",
+        "energy-inactive-day"
+      ],
+      "captureSha256": "39eb0639c5a078658368f2341130cbb84963bc8b65243ec317ae3a6c8fdc86b7"
+    },
+    "settings": {
+      "checks": 113,
+      "passed": true,
+      "captures": [
+        "settings-day",
+        "settings-dusk",
+        "settings-night",
+        "sensors-day",
+        "sensors-dusk",
+        "sensors-night",
+        "display-day",
+        "display-dusk",
+        "display-night",
+        "system-night",
+        "settings-radar-night",
+        "settings-autopilot-night"
+      ],
+      "captureSha256": "682adaa34592c24ee8841f88295a56a68738ac3b04f62df8789684a655dd40aa"
+    },
+    "anchor": {
+      "checks": 34,
+      "passed": true,
+      "captures": [
+        "anchor-day",
+        "anchor-dusk",
+        "anchor-night",
+        "anchor-stale-day",
+        "anchor-inactive-day"
+      ],
+      "captureSha256": "2ab4d09991c15d9c3832eb39641e565591e45d3a235cf91b315969030b1af757"
+    }
+  },
+  "screenshots": {
+    "prototype-native-Windows-403a4e8f2be8b026913a9e9f560792ba36fd0016/prototype-native/energy-day.png": "908419d00aad832d2eb8206220e4a3be29f632dbac342adee33ebbeee9671ec8",
+    "prototype-native-Windows-403a4e8f2be8b026913a9e9f560792ba36fd0016/prototype-native/instruments-day.png": "87741d1993b12f8eb5d6dd34c95374d52b19c7a99c21179615799ddd0f3093c6",
+    "prototype-native-Windows-403a4e8f2be8b026913a9e9f560792ba36fd0016/prototype-native/instruments-dusk.png": "f99672761cc4ee549e93a3589d942548369fdd4228882dd0cc67d73e54ddecf6",
+    "prototype-native-Windows-403a4e8f2be8b026913a9e9f560792ba36fd0016/prototype-native/instruments-night.png": "5ea301368119df5a541b9ac8c89ea8744944ab75f75aadc2fc48edb401072deb",
+    "prototype-native-Windows-403a4e8f2be8b026913a9e9f560792ba36fd0016/prototype-native/navigation-day.png": "811e1c6d0096268b324836319cee2d2891e6a9a09f01f8ac29793284fa137795",
+    "prototype-native-Windows-403a4e8f2be8b026913a9e9f560792ba36fd0016/prototype-native/navigation-dusk.png": "3e56bcdb684a2a6b391fe250963366807c5df4698336140451666cbc9de791ad",
+    "prototype-native-Windows-403a4e8f2be8b026913a9e9f560792ba36fd0016/prototype-native/navigation-night.png": "92ac02a9cc036e450cda8c298f915cc335221d7f07c11588e2f4fb27a21f2fa9",
+    "prototype-native-Windows-403a4e8f2be8b026913a9e9f560792ba36fd0016/prototype-native/online-ais-key-needed-day.png": "365c4a6568dfd87ca4200f25d7a364f0eabdb2e92953ae7a5418482028cd4c9b",
+    "prototype-native-Windows-403a4e8f2be8b026913a9e9f560792ba36fd0016/prototype-native/online-ais-settings-day.png": "c8060d6605cefcf1b43cbf015a94ded6433d64634cc75936d90f100123e5d123",
+    "prototype-native-Windows-403a4e8f2be8b026913a9e9f560792ba36fd0016/prototype-native/online-ais-settings-dusk.png": "89914cc83d40a89c89f81a7bc1fe77a248f448babc74075807d0eec1c6cbd61f",
+    "prototype-native-Windows-403a4e8f2be8b026913a9e9f560792ba36fd0016/prototype-native/online-ais-settings-night.png": "c8295b87a0a1d69a26807b3caa2f5ef839bd68c35f98cabffb2ef542a86c945e",
+    "prototype-native-Windows-403a4e8f2be8b026913a9e9f560792ba36fd0016/prototype-native/passage-day.png": "e632ee2c36fbe9eeb303183abb82cfbd4715ddd71c25a2a4b21720b9d7f6e7fc",
+    "prototype-native-Windows-403a4e8f2be8b026913a9e9f560792ba36fd0016/prototype-native/passage-dusk.png": "cec800b8e1daccec17742562dc1b92c3f5295d0e11309dd42ea7b57bc105d46c",
+    "prototype-native-Windows-403a4e8f2be8b026913a9e9f560792ba36fd0016/prototype-native/passage-night.png": "2dc89a4a40fc1fac1670c9043885707b098ce7ac84f71eb11e125a8740df8768",
+    "prototype-native-Windows-403a4e8f2be8b026913a9e9f560792ba36fd0016/prototype-native/traffic-day.png": "e61bc7440531a6998dd8b6d9ba59a950df9215f6586eef6c6f2f426d11392f88",
+    "prototype-native-Windows-403a4e8f2be8b026913a9e9f560792ba36fd0016/prototype-dpi/100-display-night.png": "4fa5a08cd274576a1558b30427d296dccb44ad29051b201ea4b12e2c2735c373",
+    "prototype-native-Windows-403a4e8f2be8b026913a9e9f560792ba36fd0016/prototype-dpi/100-energy-night.png": "c5b9b65c3974e5aa65d2a298f4f23d80c68cec46680f21f8f6aeab7de90698ca",
+    "prototype-native-Windows-403a4e8f2be8b026913a9e9f560792ba36fd0016/prototype-dpi/100-instruments-night.png": "e5bbcc0621653be7a950ae2ceb906a4eca3345b74bc88da7ecf0ef7c4c416a44",
+    "prototype-native-Windows-403a4e8f2be8b026913a9e9f560792ba36fd0016/prototype-dpi/100-navigation-day.png": "08e5a9166852bfd3ee7d33f66c9ea0d7a8f24f1f66da545b18395156d5c79a52",
+    "prototype-native-Windows-403a4e8f2be8b026913a9e9f560792ba36fd0016/prototype-dpi/100-sensors-day.png": "ba10c9a4ebefa69164931d21d444a94c56d1a91290152a5a6d22873b35e551ff",
+    "prototype-native-Windows-403a4e8f2be8b026913a9e9f560792ba36fd0016/prototype-dpi/100-settings-day.png": "974425d647bacc72bbefbd5695ded7c49168ffddcff22d3b5baada93c20719d7",
+    "prototype-native-Windows-403a4e8f2be8b026913a9e9f560792ba36fd0016/prototype-dpi/125-display-night.png": "f8d1965bf6e23383a6a849c2ac040f01cc63a4027f4bb8facf20c7dca12a3378",
+    "prototype-native-Windows-403a4e8f2be8b026913a9e9f560792ba36fd0016/prototype-dpi/125-energy-night.png": "29f53c177d028b05f9aa63e54fb49d62477553891adbe4a867dd2b1c54afddf3",
+    "prototype-native-Windows-403a4e8f2be8b026913a9e9f560792ba36fd0016/prototype-dpi/125-instruments-night.png": "d3807fe003ed7817de1aebc662c21edd4d5f06f0f0b9e752f7401cd48221b7be",
+    "prototype-native-Windows-403a4e8f2be8b026913a9e9f560792ba36fd0016/prototype-dpi/125-navigation-day.png": "9d309ed77feb79e89c57cf251380f1e30365b317c39938257c2df220d5cbc353",
+    "prototype-native-Windows-403a4e8f2be8b026913a9e9f560792ba36fd0016/prototype-dpi/125-sensors-day.png": "5d5af634f6f71277e519a47bcfefb536c25223fa5ba595581a57a3b040141ed8",
+    "prototype-native-Windows-403a4e8f2be8b026913a9e9f560792ba36fd0016/prototype-dpi/125-settings-day.png": "8631451b87156d5bdec7b2644be0ed792310776e87016ea2388660e0b7f48799",
+    "prototype-native-Windows-403a4e8f2be8b026913a9e9f560792ba36fd0016/prototype-dpi/150-display-night.png": "7d76ae289b0d603d54a779bd4062eaf90095320b0776a55a9a148f12f1b93a73",
+    "prototype-native-Windows-403a4e8f2be8b026913a9e9f560792ba36fd0016/prototype-dpi/150-energy-night.png": "52eb08feb1e2b3abdfa14a34e32f1274bd9d0b7f195f31110195c93f2569aa7b",
+    "prototype-native-Windows-403a4e8f2be8b026913a9e9f560792ba36fd0016/prototype-dpi/150-instruments-night.png": "7593b3582afabbe440a8967d4ebc1e874e4966eb57177f47c60965e1736ab72a",
+    "prototype-native-Windows-403a4e8f2be8b026913a9e9f560792ba36fd0016/prototype-dpi/150-navigation-day.png": "a84bf1d13d2c9ef82da94e1e8cacbff2ddce4390d529a7d701bca477a35ee74f",
+    "prototype-native-Windows-403a4e8f2be8b026913a9e9f560792ba36fd0016/prototype-dpi/150-sensors-day.png": "0f2efe0a57f44dd1ee0c9e3b8ffac0eea62e244d1f4cbf0eb135aba01cc4a1e0",
+    "prototype-native-Windows-403a4e8f2be8b026913a9e9f560792ba36fd0016/prototype-dpi/150-settings-day.png": "f024153b654d782892ad2d80654af82cec97a14797493f256222b13e045f32e5",
+    "prototype-native-Windows-403a4e8f2be8b026913a9e9f560792ba36fd0016/settings-component/display-day.png": "ab16f30dbb8ae07c7417971c4444f5a9513d0a646a7c59654a0cb408e78bb979",
+    "prototype-native-Windows-403a4e8f2be8b026913a9e9f560792ba36fd0016/settings-component/display-night.png": "0b754da572e6f13970b66a74be55883404ecabb3e158df52218235e24320aec9",
+    "prototype-native-Windows-403a4e8f2be8b026913a9e9f560792ba36fd0016/settings-component/display-dusk.png": "e558ab1f895466aea5b8200c8aa94267499b53a698cdf884d9e0f862afc35c1a",
+    "prototype-native-Windows-403a4e8f2be8b026913a9e9f560792ba36fd0016/settings-component/sensors-day.png": "b803a712a962977508ee0d3847564b718b52646ce4993335fb69e115b7193db4",
+    "prototype-native-Windows-403a4e8f2be8b026913a9e9f560792ba36fd0016/settings-component/sensors-dusk.png": "865965886a02532f10fa18fc8105e451a7928af997f03851a9374820a0eb45ac",
+    "prototype-native-Windows-403a4e8f2be8b026913a9e9f560792ba36fd0016/settings-component/sensors-night.png": "56af3a50b8503a31ac88e8d15e33a9015d811fb6f1831fefb869dd83797de177",
+    "prototype-native-Windows-403a4e8f2be8b026913a9e9f560792ba36fd0016/settings-component/settings-autopilot-night.png": "53346f04fcffb95e648ef5367f616ec2eed31ce414b4fb5a526f8f5cafaf4f05",
+    "prototype-native-Windows-403a4e8f2be8b026913a9e9f560792ba36fd0016/settings-component/settings-dusk.png": "1bd49af7df3e6c49399528b0d7f1a6ea1b06d320b27196eed654e047405b28b8",
+    "prototype-native-Windows-403a4e8f2be8b026913a9e9f560792ba36fd0016/settings-component/settings-day.png": "529423f8795548d07c16c4e5184bbc6b72d45dd998772ee0051573e867b63e02",
+    "prototype-native-Windows-403a4e8f2be8b026913a9e9f560792ba36fd0016/settings-component/settings-night.png": "85d1c4b93e2e8f92b09771833f504debcdaf5477e0566b0e35e3a9c716dca4b6",
+    "prototype-native-Windows-403a4e8f2be8b026913a9e9f560792ba36fd0016/settings-component/settings-radar-night.png": "f5dd8cb400facde2ece692da0a1b8f83f0f10546caccb3e7816d110120b17564",
+    "prototype-native-Windows-403a4e8f2be8b026913a9e9f560792ba36fd0016/settings-component/system-night.png": "4626b814d8e67d2c52f1c0e9bba2bc1a9ddaee43d93b0c23780683604eb8bd20",
+    "prototype-native-Windows-403a4e8f2be8b026913a9e9f560792ba36fd0016/anchor-component/anchor-day.png": "0efc1339e103ee243423e856539e57b004f95b3db40f7fb48286b42d3ab1bc1c",
+    "prototype-native-Windows-403a4e8f2be8b026913a9e9f560792ba36fd0016/anchor-component/anchor-dusk.png": "79b926dc6b0000f81da1755517996850bf4b12fb0522c2696f599d994bf714ba",
+    "prototype-native-Windows-403a4e8f2be8b026913a9e9f560792ba36fd0016/anchor-component/anchor-inactive-day.png": "010d4d2500ec5dc1cd74865e311f8f197cf7a03125035302300be61ef96e9119",
+    "prototype-native-Windows-403a4e8f2be8b026913a9e9f560792ba36fd0016/anchor-component/anchor-stale-day.png": "caac7f115059338c2e7896da1729082f75d4d0898f7f78acc680a72640d8d47e",
+    "prototype-native-Windows-403a4e8f2be8b026913a9e9f560792ba36fd0016/anchor-component/anchor-night.png": "d552698e30afeadd05b322563eaaa682ca9198068c9c46fa1c9e30f92b54c6c4",
+    "prototype-native-Windows-403a4e8f2be8b026913a9e9f560792ba36fd0016/prototype-enc-xnav/navigation-day.png": "4a16ff41191d571ad5bc603b92a8fbf1acbd45433bd32cdaf136321e24b7ac75",
+    "prototype-native-Windows-403a4e8f2be8b026913a9e9f560792ba36fd0016/prototype-enc-xnav/navigation-dusk.png": "d9101647626d13dbcc185a588edff00e64a8d9a723c9d89158effed1808f4a2b",
+    "prototype-native-Windows-403a4e8f2be8b026913a9e9f560792ba36fd0016/prototype-enc-xnav/navigation-night.png": "e31773ca96ba99076a587d84c43c101a8fe246a1420a9857c6c80efa21a1965d",
+    "prototype-native-Windows-403a4e8f2be8b026913a9e9f560792ba36fd0016/prototype-enc-xnav/navigation-return-day.png": "4a16ff41191d571ad5bc603b92a8fbf1acbd45433bd32cdaf136321e24b7ac75",
+    "prototype-native-Windows-403a4e8f2be8b026913a9e9f560792ba36fd0016/prototype-enc-standard/navigation-day.png": "407d0963483360ae7afaf5d4621400065a92a612115f0fde2961fe5eeefcfff0",
+    "prototype-native-Windows-403a4e8f2be8b026913a9e9f560792ba36fd0016/prototype-enc-standard/navigation-dusk.png": "2d18a5e58ecd16f0d53ee46ac27ec6294cc60d2654a6fa02a8724a9da60dfad9",
+    "prototype-native-Windows-403a4e8f2be8b026913a9e9f560792ba36fd0016/prototype-enc-standard/navigation-night.png": "e0ba0339b79e5a90e852451651d3467b767444410fe50dea344603394a06e31f",
+    "prototype-native-Windows-403a4e8f2be8b026913a9e9f560792ba36fd0016/prototype-enc-standard/navigation-return-day.png": "407d0963483360ae7afaf5d4621400065a92a612115f0fde2961fe5eeefcfff0",
+    "prototype-object-flow-Windows-403a4e8f2be8b026913a9e9f560792ba36fd0016/01-xnav-unavailable.png": "a8048dde48721602b3a7ef298f9cc9e0a832b932ad9522d079b284d3acdcbf1e",
+    "prototype-object-flow-Windows-403a4e8f2be8b026913a9e9f560792ba36fd0016/02-xnav-dusk.png": "bfe0a3922c876fa3b2658121706963989ec02cb2379353874d08f3ef2007658b",
+    "prototype-object-flow-Windows-403a4e8f2be8b026913a9e9f560792ba36fd0016/03-xnav-night.png": "e42551d4c1dc0e2c4cfb5e2162589081aae687b32a9b60e12864dba47b65def5",
+    "prototype-object-flow-Windows-403a4e8f2be8b026913a9e9f560792ba36fd0016/04-xnav-simulation.png": "31b572c69adcde172e15331ca3d6e86810346c385e59acc6d584403c0749d443",
+    "prototype-object-flow-Windows-403a4e8f2be8b026913a9e9f560792ba36fd0016/05-xnav-stale.png": "37f9b324d4bfa8dc45db03230d5b108be932d50192eb9eec9f8b2f5d9f165148",
+    "prototype-object-flow-Windows-403a4e8f2be8b026913a9e9f560792ba36fd0016/06-xnav-after-legacy.png": "a8048dde48721602b3a7ef298f9cc9e0a832b932ad9522d079b284d3acdcbf1e",
+    "prototype-object-flow-Windows-403a4e8f2be8b026913a9e9f560792ba36fd0016/11-legacy-after-xnav.png": "f2930c32da05daaf7663f0d8202af06c2a50cf77d127c2daca0f2f689cc6b5f6",
+    "prototype-object-flow-Windows-403a4e8f2be8b026913a9e9f560792ba36fd0016/12-safe-shared-profile.png": "295dcd0a369b7e9921d2367da917ef905d2c5b411b02b6fbf7b0bd328c938448",
+    "prototype-object-flow-Windows-403a4e8f2be8b026913a9e9f560792ba36fd0016/alpha-instruments.png": "4ff635293ef3e799d7820a4d2cd442d0143df5a0689b430c8564cf521bb9ffd1",
+    "prototype-object-flow-Windows-403a4e8f2be8b026913a9e9f560792ba36fd0016/beta-night-instruments.png": "57dd050040e81140177e24e0575c21907f38f2710efdb21a182ce3ca98d5410d",
+    "prototype-object-flow-Windows-403a4e8f2be8b026913a9e9f560792ba36fd0016/objects-ais-card.png": "a479dfba1f73483447d2bcb189368ce3f009536bdc7dc44cbe29b9371cb3d8df",
+    "prototype-object-flow-Windows-403a4e8f2be8b026913a9e9f560792ba36fd0016/objects-ais-context-selected-chart.png": "56eeda1a3b1e56194509a353bf034a0b783718d49d2d83198b7a5ed90542b0cb",
+    "prototype-object-flow-Windows-403a4e8f2be8b026913a9e9f560792ba36fd0016/objects-ais-details.png": "d334ad875c1118cf57a51aedf32c1222171dbfb97cc1b813ec53131f18331878",
+    "prototype-object-flow-Windows-403a4e8f2be8b026913a9e9f560792ba36fd0016/objects-ais-selected-chart.png": "05056247a91c1a356d2415f8d3f93a46d364aaa1bd188274f1acb9cf9296becc",
+    "prototype-object-flow-Windows-403a4e8f2be8b026913a9e9f560792ba36fd0016/objects-ais-target-action-visible.png": "766f6d1599c919a1e57d1cd0f29e46c917cdd70def333e0311507be0a1f610da",
+    "prototype-object-flow-Windows-403a4e8f2be8b026913a9e9f560792ba36fd0016/objects-initial-no-input-chart.png": "5e7d4e806b2fa9a79ec290b38d7543c191b9ae76427754cfd55b3a9e16e540af",
+    "prototype-object-flow-Windows-403a4e8f2be8b026913a9e9f560792ba36fd0016/objects-route-card.png": "930cf346a669999f7e20b8bbaab94690067a32b70dd9296b515d0d52666309c9",
+    "prototype-object-flow-Windows-403a4e8f2be8b026913a9e9f560792ba36fd0016/objects-route-detail-active.png": "374f869eac0e9567fcbe33fbf6d83c9ec8fc5e9372a868a95718d4526651c127",
+    "prototype-object-flow-Windows-403a4e8f2be8b026913a9e9f560792ba36fd0016/objects-route-detail-advanced.png": "57eb018aff351e2692339b337af95cd4a271f8320b0f1ef4e8c9e1f18cb23f67",
+    "prototype-object-flow-Windows-403a4e8f2be8b026913a9e9f560792ba36fd0016/objects-route-detail-completed.png": "03d9d21359d2c4b006738e51ca43e5ade46461428a596aa6f38e4cc3213077da",
+    "prototype-object-flow-Windows-403a4e8f2be8b026913a9e9f560792ba36fd0016/objects-route-detail-delete-selected.png": "7883e1dc722e56b7bd437a49249a6abc7c539a5ec3ce999864eed6d8ae641520",
+    "prototype-object-flow-Windows-403a4e8f2be8b026913a9e9f560792ba36fd0016/objects-route-detail-deleted.png": "fb8ddbaf2bdb026aa9ccde3efbe3ad351d44ad0e22313bec07a56da4a65013b9",
+    "prototype-object-flow-Windows-403a4e8f2be8b026913a9e9f560792ba36fd0016/objects-route-detail-renamed.png": "08e1e421c8b69afef8469861b36e60a39bb2b3c11ce8a9a98f36b82e907afea5",
+    "prototype-object-flow-Windows-403a4e8f2be8b026913a9e9f560792ba36fd0016/objects-route-detail-stale-confirmation.png": "024fc765f09494245b56bbe23dab778d040c60c911580c86bfa18dd78e6c1d79",
+    "prototype-object-flow-Windows-403a4e8f2be8b026913a9e9f560792ba36fd0016/objects-settings-return-navigation.png": "ad475539c12711d8988080a2e90a42e839c5c170c2d5861f37fba4580332a583",
+    "prototype-object-flow-Windows-403a4e8f2be8b026913a9e9f560792ba36fd0016/objects-settings-return.png": "91db0ac2505973bbaffedaaa95939b8e65e521a487edf101bf242ca1085ea052",
+    "prototype-object-flow-Windows-403a4e8f2be8b026913a9e9f560792ba36fd0016/objects-waypoint-card.png": "8768f95a643465fed0acf1d8e51218d54bfc71c248e08ab210f34ac8989199c0",
+    "prototype-object-flow-Windows-403a4e8f2be8b026913a9e9f560792ba36fd0016/objects-waypoint-detail-ambiguous.png": "dbc28c3a7faaf6798794afef7c51c13a95c4cb818fb0f585a37ee2bfaf3b4dd0",
+    "prototype-object-flow-Windows-403a4e8f2be8b026913a9e9f560792ba36fd0016/objects-waypoint-detail-deleted.png": "dbc28c3a7faaf6798794afef7c51c13a95c4cb818fb0f585a37ee2bfaf3b4dd0",
+    "prototype-object-flow-Windows-403a4e8f2be8b026913a9e9f560792ba36fd0016/objects-waypoint-detail-invalid.png": "366315cbc7dba5b4a6f5d9b440b7f400e74d0eae641b6bc8fc28e4f4dd5e7641",
+    "prototype-object-flow-Windows-403a4e8f2be8b026913a9e9f560792ba36fd0016/objects-waypoint-detail-protected.png": "ba8216ed0b1a4a357a7f550c3419940344971a9ad1cb98bffa1636df2c218819",
+    "prototype-object-flow-Windows-403a4e8f2be8b026913a9e9f560792ba36fd0016/objects-waypoint-detail-renamed.png": "a519098b4c6887c5881e5b69d209512324fb28da30aea394709166e4e4bc11c2",
+    "prototype-object-flow-Windows-403a4e8f2be8b026913a9e9f560792ba36fd0016/objects-waypoint-detail-stale-position.png": "7987847e69f0cceb1b418f6aa8f0f94bf4894982a03f9912c890a3e7da558040",
+    "prototype-object-flow-Windows-403a4e8f2be8b026913a9e9f560792ba36fd0016/objects-waypoint-detail-selected.png": "dfd9fb65355a87ddc15ddc4418014c7c2050d623fd9ab482f0b0a49b570b7e4d",
+    "prototype-object-flow-Windows-403a4e8f2be8b026913a9e9f560792ba36fd0016/objects-waypoint-details.png": "65fae02c8d590c732ada05bfc81646aa003057064dfbfe0d81f4393898b6b3fa",
+    "prototype-object-flow-Windows-403a4e8f2be8b026913a9e9f560792ba36fd0016/objects-waypoint-edit-sheet-result.png": "343281376af229cb7ff8777b6f48f913dccf980fa89acf51d270913fd06eb04d",
+    "prototype-object-flow-Windows-403a4e8f2be8b026913a9e9f560792ba36fd0016/objects-waypoint-stale-position.png": "88b5e153287c202d20916a132fa0c730f2bf18a568243498ceec235fd35235f3",
+    "prototype-object-flow-Windows-403a4e8f2be8b026913a9e9f560792ba36fd0016/preview-01-navigation-day.png": "000277fa5144abada1a150b01b40417d120edd7effdd3bea32b5e32690e455bc",
+    "prototype-object-flow-Windows-403a4e8f2be8b026913a9e9f560792ba36fd0016/preview-02-navigation-night.png": "d559000e42700587db20d752991ccb038408fa824b445ed1579914a9c253bcbd",
+    "prototype-object-flow-Windows-403a4e8f2be8b026913a9e9f560792ba36fd0016/preview-03-route.png": "d946c0375717178695d0eefefb2dc46984c8424436728c8a4463b7251e189095",
+    "prototype-object-flow-Windows-403a4e8f2be8b026913a9e9f560792ba36fd0016/preview-04-energy.png": "7ffbf5b3a2fc139ab6c072b0d0193b9a868b5910d678dbfba12ddf9d56b9eea0",
+    "prototype-object-flow-Windows-403a4e8f2be8b026913a9e9f560792ba36fd0016/preview-05-diagnostics.png": "adfd536612ca6226323401d64060236ced2ea7eee81e6b9898aafd4077614700",
+    "prototype-object-flow-Windows-403a4e8f2be8b026913a9e9f560792ba36fd0016/preview-11-startup-xnav.png": "000277fa5144abada1a150b01b40417d120edd7effdd3bea32b5e32690e455bc",
+    "prototype-object-flow-Windows-403a4e8f2be8b026913a9e9f560792ba36fd0016/route-01-active-route.png": "70aa42ba1ecbc3aee359f8a5aece5e9e7bf0b6edb6c9922b6f77d315899b0ae4",
+    "prototype-object-flow-Windows-403a4e8f2be8b026913a9e9f560792ba36fd0016/route-02-stale-position.png": "29aeb01db40a6b12666116b0ba8b3619e7b42381cafff821a56c2021f98c6150",
+    "prototype-object-flow-Windows-403a4e8f2be8b026913a9e9f560792ba36fd0016/route-dusk-01-active-route.png": "31d1a2eb58825b2d896ee718f9e351a7cd89a76ed40e6d8be15f4c449937069b",
+    "prototype-object-flow-Windows-403a4e8f2be8b026913a9e9f560792ba36fd0016/route-dusk-02-stale-position.png": "ea52f7f4f5ace1414052d8695c5d77d9725ded949ef51435183f0933d61b4555",
+    "prototype-object-flow-Windows-403a4e8f2be8b026913a9e9f560792ba36fd0016/route-night-01-active-route.png": "520b8524882ced4cbc928937b22c9d7fe4d50beada20007466da1f34bc32359f",
+    "prototype-object-flow-Windows-403a4e8f2be8b026913a9e9f560792ba36fd0016/route-night-02-stale-position.png": "b4c065fef25c905859f0ddf340b67a908af339b47d6ebdf7b8d1bfec78a67c74",
+    "prototype-object-flow-Windows-403a4e8f2be8b026913a9e9f560792ba36fd0016/route-standard-01-active-route.png": "a334a56cdcfd950e971ec5da59ecc35429b05b412535e372dd0e1e43b6f527af",
+    "prototype-object-flow-Windows-403a4e8f2be8b026913a9e9f560792ba36fd0016/route-standard-02-stale-position.png": "778747398b164038a3d110c7a75dd518aa4937b95fc4cd13d8ea596057aa480c"
+  },
+  "failures": [
+    {
+      "job": "Native composition",
+      "reason": "Capture guard refuses new Anchor owned window as unknown obscuring surface. No PNG published for refused capture.",
+      "replacement": "Exact title/owner/geometry/header signature added, with negative policy checks and disposable native fixture; no added input permission."
+    },
+    {
+      "job": "Retained preview",
+      "reason": "assert_page_geometry expects Instruments to extend to footer, while the HTML view retains a 132px horizon. Actual native night image shows correct timeline.",
+      "replacement": "Check exact prototype timeline height at 100/125/150% for Instruments only, preserving full-page bounds elsewhere and rejecting gaps/overlap."
+    }
+  ],
+  "review": [
+    "Reviewed Windows Anchor component Day; correct measured content, retained short history, and disabled existing-watch radius. Prototype typography and boat acceptance remain open.",
+    "Reviewed fixture Instruments Night: page ends at timeline; no bright content or unexpected blank gap. The viewport intentionally scrolls its deeper instrument content.",
+    "Development DPI probe passes at 100/125/150%; broader retained DPI job skipped after preview failure.",
+    "Public ENC software captures retained for both XNav and Standard. No physical GPU/OpenGL acceptance."
+  ],
+  "boat": "Earlier Beta remains installed. No prototype deployment or equipment commands.",
+  "dpi": {
+    "authority": "Actual GetDpiForWindow and screen pixels; no rescaling",
+    "desktop": {
+      "before": [
+        1440,
+        900,
+        32
+      ],
+      "after": [
+        1920,
+        1080,
+        32
+      ]
+    },
+    "scales": [
+      {
+        "percent": 100,
+        "screenshots": [
+          {
+            "file": "100-navigation-day.png",
+            "sha256": "08e5a9166852bfd3ee7d33f66c9ea0d7a8f24f1f66da545b18395156d5c79a52"
+          },
+          {
+            "file": "100-settings-day.png",
+            "sha256": "974425d647bacc72bbefbd5695ded7c49168ffddcff22d3b5baada93c20719d7"
+          },
+          {
+            "file": "100-sensors-day.png",
+            "sha256": "ba10c9a4ebefa69164931d21d444a94c56d1a91290152a5a6d22873b35e551ff"
+          },
+          {
+            "file": "100-display-night.png",
+            "sha256": "4fa5a08cd274576a1558b30427d296dccb44ad29051b201ea4b12e2c2735c373"
+          },
+          {
+            "file": "100-energy-night.png",
+            "sha256": "c5b9b65c3974e5aa65d2a298f4f23d80c68cec46680f21f8f6aeab7de90698ca"
+          },
+          {
+            "file": "100-instruments-night.png",
+            "sha256": "e5bbcc0621653be7a950ae2ceb906a4eca3345b74bc88da7ecf0ef7c4c416a44"
+          }
+        ],
+        "rail": {
+          "actions": [
+            {
+              "x": 17,
+              "height": 61,
+              "width": 61,
+              "label": "Chart",
+              "y": 113,
+              "visible": true,
+              "enabled": true
+            },
+            {
+              "x": 17,
+              "height": 61,
+              "width": 61,
+              "label": "Passage",
+              "y": 179,
+              "visible": true,
+              "enabled": true
+            },
+            {
+              "x": 17,
+              "height": 61,
+              "width": 61,
+              "label": "Traffic",
+              "y": 245,
+              "visible": true,
+              "enabled": true
+            },
+            {
+              "x": 17,
+              "height": 61,
+              "width": 61,
+              "label": "Energy",
+              "y": 331,
+              "visible": true,
+              "enabled": true
+            },
+            {
+              "x": 17,
+              "height": 61,
+              "width": 61,
+              "label": "Instruments",
+              "y": 397,
+              "visible": true,
+              "enabled": true
+            },
+            {
+              "x": 17,
+              "height": 61,
+              "width": 61,
+              "label": "Anchor",
+              "y": 463,
+              "visible": true,
+              "enabled": true
+            },
+            {
+              "x": 17,
+              "height": 61,
+              "width": 61,
+              "label": "Radar",
+              "y": 529,
+              "visible": true,
+              "enabled": true
+            },
+            {
+              "x": 17,
+              "height": 61,
+              "width": 61,
+              "label": "Settings",
+              "y": 676,
+              "visible": true,
+              "enabled": true
+            }
+          ],
+          "readings": [
+            {
+              "x": 1102,
+              "height": 136,
+              "width": 186,
+              "label": "sog",
+              "y": 141,
+              "visible": true,
+              "enabled": true
+            },
+            {
+              "x": 1102,
+              "height": 135,
+              "width": 186,
+              "label": "depth",
+              "y": 277,
+              "visible": true,
+              "enabled": true
+            },
+            {
+              "x": 1102,
+              "height": 136,
+              "width": 186,
+              "label": "aws",
+              "y": 412,
+              "visible": true,
+              "enabled": true
+            },
+            {
+              "x": 1102,
+              "height": 135,
+              "width": 186,
+              "label": "heading",
+              "y": 548,
+              "visible": true,
+              "enabled": true
+            }
+          ]
+        },
+        "prototypeDrawer": {
+          "actual": {
+            "x": 648,
+            "height": 674,
+            "width": 432,
+            "y": 80
+          },
+          "expectedCss": {
+            "x": 648,
+            "y": 80,
+            "width": 432,
+            "height": 674
+          }
+        },
+        "railAfterClose": {
+          "actions": [
+            {
+              "x": 17,
+              "height": 61,
+              "width": 61,
+              "label": "Chart",
+              "y": 113,
+              "visible": true,
+              "enabled": true
+            },
+            {
+              "x": 17,
+              "height": 61,
+              "width": 61,
+              "label": "Passage",
+              "y": 179,
+              "visible": true,
+              "enabled": true
+            },
+            {
+              "x": 17,
+              "height": 61,
+              "width": 61,
+              "label": "Traffic",
+              "y": 245,
+              "visible": true,
+              "enabled": true
+            },
+            {
+              "x": 17,
+              "height": 61,
+              "width": 61,
+              "label": "Energy",
+              "y": 331,
+              "visible": true,
+              "enabled": true
+            },
+            {
+              "x": 17,
+              "height": 61,
+              "width": 61,
+              "label": "Instruments",
+              "y": 397,
+              "visible": true,
+              "enabled": true
+            },
+            {
+              "x": 17,
+              "height": 61,
+              "width": 61,
+              "label": "Anchor",
+              "y": 463,
+              "visible": true,
+              "enabled": true
+            },
+            {
+              "x": 17,
+              "height": 61,
+              "width": 61,
+              "label": "Radar",
+              "y": 529,
+              "visible": true,
+              "enabled": true
+            },
+            {
+              "x": 17,
+              "height": 61,
+              "width": 61,
+              "label": "Settings",
+              "y": 676,
+              "visible": true,
+              "enabled": true
+            }
+          ],
+          "readings": [
+            {
+              "x": 1102,
+              "height": 136,
+              "width": 186,
+              "label": "sog",
+              "y": 141,
+              "visible": true,
+              "enabled": true
+            },
+            {
+              "x": 1102,
+              "height": 135,
+              "width": 186,
+              "label": "depth",
+              "y": 277,
+              "visible": true,
+              "enabled": true
+            },
+            {
+              "x": 1102,
+              "height": 136,
+              "width": 186,
+              "label": "aws",
+              "y": 412,
+              "visible": true,
+              "enabled": true
+            },
+            {
+              "x": 1102,
+              "height": 135,
+              "width": 186,
+              "label": "heading",
+              "y": 548,
+              "visible": true,
+              "enabled": true
+            }
+          ]
+        },
+        "result": "passed; visual review and physical touch remain required"
+      },
+      {
+        "percent": 125,
+        "screenshots": [
+          {
+            "file": "125-navigation-day.png",
+            "sha256": "9d309ed77feb79e89c57cf251380f1e30365b317c39938257c2df220d5cbc353"
+          },
+          {
+            "file": "125-settings-day.png",
+            "sha256": "8631451b87156d5bdec7b2644be0ed792310776e87016ea2388660e0b7f48799"
+          },
+          {
+            "file": "125-sensors-day.png",
+            "sha256": "5d5af634f6f71277e519a47bcfefb536c25223fa5ba595581a57a3b040141ed8"
+          },
+          {
+            "file": "125-display-night.png",
+            "sha256": "f8d1965bf6e23383a6a849c2ac040f01cc63a4027f4bb8facf20c7dca12a3378"
+          },
+          {
+            "file": "125-energy-night.png",
+            "sha256": "29f53c177d028b05f9aa63e54fb49d62477553891adbe4a867dd2b1c54afddf3"
+          },
+          {
+            "file": "125-instruments-night.png",
+            "sha256": "d3807fe003ed7817de1aebc662c21edd4d5f06f0f0b9e752f7401cd48221b7be"
+          }
+        ],
+        "rail": {
+          "actions": [
+            {
+              "x": 20,
+              "height": 64,
+              "width": 64,
+              "label": "Chart",
+              "y": 123,
+              "visible": true,
+              "enabled": true
+            },
+            {
+              "x": 20,
+              "height": 64,
+              "width": 64,
+              "label": "Passage",
+              "y": 188,
+              "visible": true,
+              "enabled": true
+            },
+            {
+              "x": 20,
+              "height": 64,
+              "width": 64,
+              "label": "Traffic",
+              "y": 253,
+              "visible": true,
+              "enabled": true
+            },
+            {
+              "x": 20,
+              "height": 64,
+              "width": 64,
+              "label": "Energy",
+              "y": 333,
+              "visible": true,
+              "enabled": true
+            },
+            {
+              "x": 20,
+              "height": 64,
+              "width": 64,
+              "label": "Instruments",
+              "y": 398,
+              "visible": true,
+              "enabled": true
+            },
+            {
+              "x": 20,
+              "height": 64,
+              "width": 64,
+              "label": "Anchor",
+              "y": 463,
+              "visible": true,
+              "enabled": true
+            },
+            {
+              "x": 20,
+              "height": 64,
+              "width": 64,
+              "label": "Radar",
+              "y": 528,
+              "visible": true,
+              "enabled": true
+            },
+            {
+              "x": 20,
+              "height": 64,
+              "width": 64,
+              "label": "Settings",
+              "y": 669,
+              "visible": true,
+              "enabled": true
+            }
+          ],
+          "readings": [
+            {
+              "x": 1094,
+              "height": 130,
+              "width": 195,
+              "label": "sog",
+              "y": 154,
+              "visible": true,
+              "enabled": true
+            },
+            {
+              "x": 1094,
+              "height": 130,
+              "width": 195,
+              "label": "depth",
+              "y": 284,
+              "visible": true,
+              "enabled": true
+            },
+            {
+              "x": 1094,
+              "height": 130,
+              "width": 195,
+              "label": "aws",
+              "y": 414,
+              "visible": true,
+              "enabled": true
+            },
+            {
+              "x": 1094,
+              "height": 130,
+              "width": 195,
+              "label": "heading",
+              "y": 544,
+              "visible": true,
+              "enabled": true
+            }
+          ]
+        },
+        "prototypeDrawer": {
+          "actual": {
+            "x": 554,
+            "height": 652,
+            "width": 513,
+            "y": 90
+          },
+          "expectedCss": {
+            "x": 444,
+            "y": 72,
+            "width": 410,
+            "height": 522
+          }
+        },
+        "railAfterClose": {
+          "actions": [
+            {
+              "x": 20,
+              "height": 64,
+              "width": 64,
+              "label": "Chart",
+              "y": 123,
+              "visible": true,
+              "enabled": true
+            },
+            {
+              "x": 20,
+              "height": 64,
+              "width": 64,
+              "label": "Passage",
+              "y": 188,
+              "visible": true,
+              "enabled": true
+            },
+            {
+              "x": 20,
+              "height": 64,
+              "width": 64,
+              "label": "Traffic",
+              "y": 253,
+              "visible": true,
+              "enabled": true
+            },
+            {
+              "x": 20,
+              "height": 64,
+              "width": 64,
+              "label": "Energy",
+              "y": 333,
+              "visible": true,
+              "enabled": true
+            },
+            {
+              "x": 20,
+              "height": 64,
+              "width": 64,
+              "label": "Instruments",
+              "y": 398,
+              "visible": true,
+              "enabled": true
+            },
+            {
+              "x": 20,
+              "height": 64,
+              "width": 64,
+              "label": "Anchor",
+              "y": 463,
+              "visible": true,
+              "enabled": true
+            },
+            {
+              "x": 20,
+              "height": 64,
+              "width": 64,
+              "label": "Radar",
+              "y": 528,
+              "visible": true,
+              "enabled": true
+            },
+            {
+              "x": 20,
+              "height": 64,
+              "width": 64,
+              "label": "Settings",
+              "y": 669,
+              "visible": true,
+              "enabled": true
+            }
+          ],
+          "readings": [
+            {
+              "x": 1094,
+              "height": 130,
+              "width": 195,
+              "label": "sog",
+              "y": 154,
+              "visible": true,
+              "enabled": true
+            },
+            {
+              "x": 1094,
+              "height": 130,
+              "width": 195,
+              "label": "depth",
+              "y": 284,
+              "visible": true,
+              "enabled": true
+            },
+            {
+              "x": 1094,
+              "height": 130,
+              "width": 195,
+              "label": "aws",
+              "y": 414,
+              "visible": true,
+              "enabled": true
+            },
+            {
+              "x": 1094,
+              "height": 130,
+              "width": 195,
+              "label": "heading",
+              "y": 544,
+              "visible": true,
+              "enabled": true
+            }
+          ]
+        },
+        "result": "passed; visual review and physical touch remain required"
+      },
+      {
+        "percent": 150,
+        "screenshots": [
+          {
+            "file": "150-navigation-day.png",
+            "sha256": "a84bf1d13d2c9ef82da94e1e8cacbff2ddce4390d529a7d701bca477a35ee74f"
+          },
+          {
+            "file": "150-settings-day.png",
+            "sha256": "f024153b654d782892ad2d80654af82cec97a14797493f256222b13e045f32e5"
+          },
+          {
+            "file": "150-sensors-day.png",
+            "sha256": "0f2efe0a57f44dd1ee0c9e3b8ffac0eea62e244d1f4cbf0eb135aba01cc4a1e0"
+          },
+          {
+            "file": "150-display-night.png",
+            "sha256": "7d76ae289b0d603d54a779bd4062eaf90095320b0776a55a9a148f12f1b93a73"
+          },
+          {
+            "file": "150-energy-night.png",
+            "sha256": "52eb08feb1e2b3abdfa14a34e32f1274bd9d0b7f195f31110195c93f2569aa7b"
+          },
+          {
+            "file": "150-instruments-night.png",
+            "sha256": "7593b3582afabbe440a8967d4ebc1e874e4966eb57177f47c60965e1736ab72a"
+          }
+        ],
+        "rail": {
+          "actions": [
+            {
+              "x": 25,
+              "height": 65,
+              "width": 77,
+              "label": "Chart",
+              "y": 141,
+              "visible": true,
+              "enabled": true
+            },
+            {
+              "x": 25,
+              "height": 65,
+              "width": 77,
+              "label": "Passage",
+              "y": 206,
+              "visible": true,
+              "enabled": true
+            },
+            {
+              "x": 25,
+              "height": 65,
+              "width": 77,
+              "label": "Traffic",
+              "y": 271,
+              "visible": true,
+              "enabled": true
+            },
+            {
+              "x": 25,
+              "height": 65,
+              "width": 77,
+              "label": "Energy",
+              "y": 348,
+              "visible": true,
+              "enabled": true
+            },
+            {
+              "x": 25,
+              "height": 65,
+              "width": 77,
+              "label": "Instruments",
+              "y": 413,
+              "visible": true,
+              "enabled": true
+            },
+            {
+              "x": 25,
+              "height": 65,
+              "width": 77,
+              "label": "Anchor",
+              "y": 478,
+              "visible": true,
+              "enabled": true
+            },
+            {
+              "x": 25,
+              "height": 65,
+              "width": 77,
+              "label": "Radar",
+              "y": 543,
+              "visible": true,
+              "enabled": true
+            },
+            {
+              "x": 25,
+              "height": 65,
+              "width": 77,
+              "label": "Settings",
+              "y": 716,
+              "visible": true,
+              "enabled": true
+            }
+          ],
+          "readings": [
+            {
+              "x": 1057,
+              "height": 122,
+              "width": 234,
+              "label": "sog",
+              "y": 174,
+              "visible": true,
+              "enabled": true
+            },
+            {
+              "x": 1057,
+              "height": 123,
+              "width": 234,
+              "label": "depth",
+              "y": 296,
+              "visible": true,
+              "enabled": true
+            },
+            {
+              "x": 1057,
+              "height": 122,
+              "width": 234,
+              "label": "aws",
+              "y": 419,
+              "visible": true,
+              "enabled": true
+            },
+            {
+              "x": 1057,
+              "height": 122,
+              "width": 234,
+              "label": "heading",
+              "y": 541,
+              "visible": true,
+              "enabled": true
+            }
+          ]
+        },
+        "prototypeDrawer": {
+          "actual": {
+            "x": 410,
+            "height": 629,
+            "width": 615,
+            "y": 102
+          },
+          "expectedCss": {
+            "x": 273,
+            "y": 68,
+            "width": 410,
+            "height": 419
+          }
+        },
+        "railAfterClose": {
+          "actions": [
+            {
+              "x": 25,
+              "height": 65,
+              "width": 77,
+              "label": "Chart",
+              "y": 141,
+              "visible": true,
+              "enabled": true
+            },
+            {
+              "x": 25,
+              "height": 65,
+              "width": 77,
+              "label": "Passage",
+              "y": 206,
+              "visible": true,
+              "enabled": true
+            },
+            {
+              "x": 25,
+              "height": 65,
+              "width": 77,
+              "label": "Traffic",
+              "y": 271,
+              "visible": true,
+              "enabled": true
+            },
+            {
+              "x": 25,
+              "height": 65,
+              "width": 77,
+              "label": "Energy",
+              "y": 348,
+              "visible": true,
+              "enabled": true
+            },
+            {
+              "x": 25,
+              "height": 65,
+              "width": 77,
+              "label": "Instruments",
+              "y": 413,
+              "visible": true,
+              "enabled": true
+            },
+            {
+              "x": 25,
+              "height": 65,
+              "width": 77,
+              "label": "Anchor",
+              "y": 478,
+              "visible": true,
+              "enabled": true
+            },
+            {
+              "x": 25,
+              "height": 65,
+              "width": 77,
+              "label": "Radar",
+              "y": 543,
+              "visible": true,
+              "enabled": true
+            },
+            {
+              "x": 25,
+              "height": 65,
+              "width": 77,
+              "label": "Settings",
+              "y": 716,
+              "visible": true,
+              "enabled": true
+            }
+          ],
+          "readings": [
+            {
+              "x": 1057,
+              "height": 122,
+              "width": 234,
+              "label": "sog",
+              "y": 174,
+              "visible": true,
+              "enabled": true
+            },
+            {
+              "x": 1057,
+              "height": 123,
+              "width": 234,
+              "label": "depth",
+              "y": 296,
+              "visible": true,
+              "enabled": true
+            },
+            {
+              "x": 1057,
+              "height": 122,
+              "width": 234,
+              "label": "aws",
+              "y": 419,
+              "visible": true,
+              "enabled": true
+            },
+            {
+              "x": 1057,
+              "height": 122,
+              "width": 234,
+              "label": "heading",
+              "y": 541,
+              "visible": true,
+              "enabled": true
+            }
+          ]
+        },
+        "result": "passed; visual review and physical touch remain required"
+      }
+    ],
+    "executableSha256": "26991f5d654751b5483d2913191ffadc8f160d52a9fb97857ffc595354976dae",
+    "sourceCommit": "403a4e8f2be8b026913a9e9f560792ba36fd0016",
+    "scope": "Additional prototype development gate; no release or boat acceptance",
+    "result": "passed; development DPI/interaction checks only",
+    "restoredDpi": {
+      "before_percent": 150,
+      "percent": 100,
+      "source_id": 0,
+      "minimum_relative": 0,
+      "maximum_relative": 3
+    }
+  },
+  "modeLifecycle": {
+    "display": {
+      "before": [
+        1280,
+        800,
+        32
+      ],
+      "after": [
+        1280,
+        800,
+        32
+      ]
+    },
+    "profile": "D:\\a\\Work\\Work\\opennav-x\\build\\profiles\\mode cycle 21f9f4f8-08ec-4fbb-a010-f65caef91c27",
+    "steps": [
+      {
+        "step": "theme / zoom / simulator start and pause",
+        "interaction": "pass",
+        "visual_review": "required; stale labels and fixture values must be checked"
+      },
+      {
+        "step": "XNav to Legacy",
+        "persistence": "pass"
+      },
+      {
+        "step": "Legacy to XNav",
+        "persistence": "pass"
+      },
+      {
+        "step": "Final XNav close",
+        "persistence": "pass"
+      },
+      {
+        "step": "Safe override and close",
+        "persistence": "pass"
+      },
+      {
+        "step": "Persisted XNav after Safe Mode",
+        "persistence": "pass"
+      }
+    ],
+    "expected": {
+      "wpt": [
+        {
+          "name": "SIMULATED persistence mark",
+          "guid": "ae43f488-caa5-445b-88e3-0112875a3471",
+          "points": [
+            [
+              56.7,
+              12.6,
+              "2026-01-01T11:00:00Z"
+            ]
+          ]
+        }
+      ],
+      "rte": [
+        {
+          "name": "SIMULATED persistence route",
+          "guid": "ae43f488-caa5-445b-88e3-0112875a3472",
+          "points": [
+            [
+              56.71,
+              12.61,
+              "2026-01-01T11:01:00Z"
+            ],
+            [
+              56.72,
+              12.63,
+              "2026-01-01T11:02:00Z"
+            ]
+          ]
+        }
+      ],
+      "trk": [
+        {
+          "name": "SIMULATED persistence track",
+          "guid": "ae43f488-caa5-445b-88e3-0112875a3475",
+          "points": [
+            [
+              56.68,
+              12.6,
+              "2026-01-01T12:00:00Z"
+            ],
+            [
+              56.69,
+              12.61,
+              "2026-01-01T12:01:00Z"
+            ]
+          ]
+        }
+      ],
+      "connection": [
+        "1",
+        "0",
+        "127.0.0.1",
+        "10110",
+        "0",
+        "",
+        "4800",
+        "1",
+        "0",
+        "0",
+        "",
+        "0",
+        "",
+        "0",
+        "0",
+        "0",
+        "0",
+        "0",
+        "SIMULATED disabled input",
+        "0",
+        "",
+        "0",
+        "1",
+        ""
+      ],
+      "ais_cpa_warn": true,
+      "ais_cpa_nm": 0.75,
+      "dashboard_enabled": true
+    },
+    "chart_rendering": [
+      {
+        "phase": "01-xnav-unavailable.png",
+        "reference_color_fractions": {
+          "eeeee2": 0.18601573676680974,
+          "d5e5e5": 0.8036480686695279
+        },
+        "coastline_visible": true,
+        "style": "XNav",
+        "light": "Day",
+        "source": "immutable HTML tokens"
+      },
+      {
+        "phase": "02-xnav-dusk.png",
+        "reference_color_fractions": {
+          "4e615d": 0.18601573676680974,
+          "344f59": 0.8036480686695279
+        },
+        "coastline_visible": true,
+        "style": "XNav",
+        "light": "Dusk",
+        "source": "immutable HTML tokens"
+      },
+      {
+        "phase": "03-xnav-night.png",
+        "reference_color_fractions": {
+          "25342f": 0.18601573676680974,
+          "121e24": 0.8036480686695279
+        },
+        "coastline_visible": true,
+        "style": "XNav",
+        "light": "Night",
+        "source": "immutable HTML tokens"
+      },
+      {
+        "phase": "11-legacy-after-xnav.png",
+        "reference_color_fractions": {
+          "aaaf50": 0.22296137339055794,
+          "aac3f0": 0.777038626609442
+        },
+        "coastline_visible": true,
+        "style": "Standard",
+        "light": "Day",
+        "source": "pinned software GSHHSChart::SetColorScheme"
+      },
+      {
+        "phase": "06-xnav-after-legacy.png",
+        "reference_color_fractions": {
+          "eeeee2": 0.18601573676680974,
+          "d5e5e5": 0.8036480686695279
+        },
+        "coastline_visible": true,
+        "style": "XNav",
+        "light": "Day",
+        "source": "immutable HTML tokens"
+      },
+      {
+        "phase": "12-safe-shared-profile.png",
+        "reference_color_fractions": {
+          "aaaf50": 0.22296137339055794,
+          "aac3f0": 0.777038626609442
+        },
+        "coastline_visible": true,
+        "style": "Standard",
+        "light": "Day",
+        "source": "pinned software GSHHSChart::SetColorScheme"
+      }
+    ],
+    "result": "interaction and fixture persistence passed; visual review required"
+  },
+  "routeInk": {
+    "route": {
+      "result": "loopback transport and lifecycle passed; numeric and stale screenshot review required",
+      "checks": 0,
+      "evidenceSha256": "8af5fe8f4f4b89990fa81473d19ff9b3ae13482401fdf03fc265bc9c36137576"
+    },
+    "route-dusk": {
+      "result": "loopback transport and lifecycle passed; numeric and stale screenshot review required",
+      "checks": 0,
+      "evidenceSha256": "ba41f31f1a93b2d29010c9915e68799bf8db0f2f92406b4fdca44c6e03b38a8d"
+    },
+    "route-night": {
+      "result": "loopback transport and lifecycle passed; numeric and stale screenshot review required",
+      "checks": 0,
+      "evidenceSha256": "e42171eefad87535036e03e745785eaecac1f4f34b59ef8a1d505da9403ae831"
+    },
+    "route-standard": {
+      "result": "loopback transport and lifecycle passed; numeric and stale screenshot review required",
+      "checks": 0,
+      "evidenceSha256": "7a494c36addca27fc947937914985389376d290fe640c404cc013e6ed638d98c"
+    }
+  }
+}

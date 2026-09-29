@@ -90,3 +90,36 @@ for fault in ('missing', 'duplicate', 'wrong-pane', 'missing-alerts', 'duplicate
     verify(reject=True)
 
 print(f'{passed} native summary caption/geometry contracts passed')
+
+# Instruments retains the actual prototype horizon; full workflow pages do
+# not. Require each exact boundary, rejecting unexplained blank regions.
+function = next(node for node in tree.body if isinstance(node, ast.FunctionDef)
+                and node.name == 'assert_page_geometry')
+exec(compile(ast.Module(body=[function], type_ignores=[]), str(source), 'exec'), namespace)
+page_check = namespace['assert_page_geometry']
+page_passed = 0
+for scale in (1., 1.25, 1.5):
+    for horizon in (False, True):
+        for delta in (0, -8, 8):
+            labels = [(3, 'Chart'), (4, 'Alerts 1'), (5, 'System'),
+                      (6, 'Configure instruments')]
+            parents = {3: 10, 4: 11, 5: 12, 6: 13, 13: 14}
+            logical_height = 800/scale
+            top = round((56 if logical_height<=600 else 60 if logical_height<=740 else 68)*scale)
+            footer = round(34*scale)
+            timeline = round((98 if logical_height<=600 else 112 if logical_height<=740 else 132)*scale)
+            left = round((80 if scale==1 else 70)*scale)
+            right = 1280-round((186 if scale==1 else 156)*scale)
+            bottom = 800-footer-(timeline if horizon else 0)
+            bounds = {1:(0,0,1280,800),2:(left,top,right,bottom+delta),
+                      10:(0,top,left,800-footer),11:(0,0,1280,top),
+                      12:(0,800-footer,1280,800),14:(right,top,1280,800-footer)}
+            namespace.update(GetDpiForWindow=lambda h:96*scale,
+                             GetClientRect=lambda h,out:get_rect(1,out))
+            try: page_check(1,2,horizon=horizon)
+            except AssertionError:
+                assert delta!=0, 'Valid Instruments or full-view geometry rejected'
+            else:
+                assert delta==0, 'Unexplained page gap/overlap accepted'
+            page_passed+=1
+print(f'{page_passed} exact page/timeline/DPI geometry checks passed')

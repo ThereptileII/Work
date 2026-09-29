@@ -32,7 +32,7 @@ try {
   @('Resize1280x800','partial-offscreen','RESIZED'),@('Resize1280x800','entirely-offscreen',''),
   @('Resize1280x800','minimized',''),@('Resize1280x800','demo',''),
   @('Resize1280x800','wrong-pid',''),@('Resize1280x800','modal',''),
-  @('Capture','prototype-normal','CAPTURE'),@('Capture','prototype-preferences','CAPTURE'),@('Capture','prototype-passage','CAPTURE'),
+  @('Capture','prototype-normal','CAPTURE'),@('Capture','prototype-anchor','CAPTURE'),@('Capture','prototype-pilot','CAPTURE'),@('Capture','prototype-preferences','CAPTURE'),@('Capture','prototype-passage','CAPTURE'),
   @('Capture','prototype-traffic','CAPTURE'),@('Capture','prototype-back','CAPTURE'),
   @('Capture','prototype-two-sheets',''),@('Capture','prototype-unknown',''),@('Capture','prototype-wrong-owner',''),
   @('Capture','prototype-duplicate',''),@('Capture','prototype-clipped',''),

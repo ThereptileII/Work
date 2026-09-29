@@ -92,6 +92,7 @@ endif()
 # Defer attaching model-bound tests; test sources stay outside upstream.
 function(opennav_attach_route_tests)
   if(TARGET tests)
+    target_sources(tests PRIVATE "${OPENNAV_ROOT}/tests/pilot_presentation_tests.cpp")
     target_sources(tests PRIVATE "${OPENNAV_ROOT}/tests/anchor_view_tests.cpp"
       "${OPENNAV_ROOT}/tests/anchor_geometry_upstream_tests.cpp"
       "${OPENNAV_ROOT}/src/integration/AnchorGeometry.cpp")
@@ -114,6 +115,9 @@ function(opennav_attach_route_tests)
     add_executable(anchor_drawer_test "${OPENNAV_ROOT}/tests/anchor_drawer_test.cpp")
     target_link_libraries(anchor_drawer_test PRIVATE opennav_ui)
     target_compile_features(anchor_drawer_test PRIVATE cxx_std_17)
+    add_executable(pilot_drawer_test "${OPENNAV_ROOT}/tests/pilot_drawer_test.cpp")
+    target_link_libraries(pilot_drawer_test PRIVATE opennav_ui)
+    target_compile_features(pilot_drawer_test PRIVATE cxx_std_17)
     # Dedicated component process; never installed, linked into OpenCPN, or
     # enabled by a product flag. It cannot access charts, profiles or hardware.
     add_executable(ais_drawer_test "${OPENNAV_ROOT}/tests/ais_drawer_test.cpp")
@@ -125,6 +129,7 @@ function(opennav_attach_route_tests)
       target_link_libraries(ais_drawer_test PRIVATE PkgConfig::OPENNAV_UI_TEST_GTK)
       target_link_libraries(passage_drawer_test PRIVATE PkgConfig::OPENNAV_UI_TEST_GTK)
       target_link_libraries(anchor_drawer_test PRIVATE PkgConfig::OPENNAV_UI_TEST_GTK)
+      target_link_libraries(pilot_drawer_test PRIVATE PkgConfig::OPENNAV_UI_TEST_GTK)
       target_link_libraries(instrument_panel_test PRIVATE PkgConfig::OPENNAV_UI_TEST_GTK)
       target_link_libraries(energy_panel_test PRIVATE PkgConfig::OPENNAV_UI_TEST_GTK)
       target_link_libraries(settings_drawer_test PRIVATE PkgConfig::OPENNAV_UI_TEST_GTK)

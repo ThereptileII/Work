@@ -32,7 +32,7 @@ Pass 'New native Preferences cases are admitted by the disposable fixture catalo
  },$true))
  if($catalog.Count -ne 1){throw 'Fixture case allowlist must be explicit and unique.'}
  $names=@($catalog[0].Right.SafeGetValue())
- foreach($name in @('prototype-preferences','prototype-two-sheets')) {
+ foreach($name in @('prototype-preferences','prototype-two-sheets','prototype-anchor','prototype-pilot')) {
   if($names -cnotcontains $name){throw ('Native fixture refuses its new test case: '+$name)}
  }
 }
@@ -58,6 +58,12 @@ foreach($spec in @(
  @('OpenNav follow boat',@('Follow boat'),@(),$true),
  @('OpenNav passage',@(),@('Close'),$true),
  @('OpenNav preferences',@(),@('Close'),$true),
+ @('OpenNav anchor watch',@(),@('Close'),$true),
+ @('OpenNav autopilot',@(),@('Close'),$true),
+ @('OpenNav anchor watch',@('Set anchor'),@('Close'),$false),
+ @('OpenNav autopilot',@('Auto'),@('Close'),$false),
+ @('OpenNav anchor watch',@(),@('Back'),$false),
+ @('OpenNav autopilot',@(),@('Close','Back'),$false),
  @('OpenNav preferences',@('AUTO'),@('Close'),$false),
  @('OpenNav preferences',@(),@('Back'),$false),
  @('OpenNav preferences',@(),@('Close','Back'),$false),

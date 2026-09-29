@@ -2,6 +2,32 @@
 
 ## Current stage: prototype design lock, chart presentation and Online AIS
 
+Native `403a4e8` / run `36515856835` passes both MSVC 120-test suites and
+six component suites, including Anchor's 34 checks. Six of eight jobs pass.
+The capture guard rejects the new Anchor owned surface, and retained preview
+expects Instruments to cover its intentionally retained timeline. Downloaded
+native evidence identifies both assertions; replacements recognize the exact
+owned header signature and exact responsive timeline boundary without relaxing
+occlusion or geometry. Eight archives and 109 PNG hashes verify. See
+[negative evidence](evidence/prototype-native-403a4e8-failed.json).
+
+The native prototype Autopilot drawer now replaces the old full-page controls.
+An owned presentation boundary requires measured magnetic pilot feedback and
+retains explicit enable/confirmation, pending/timeout and manual-Standby rules.
+Linux passes 132 integrated tests and two 61-check/seven-image component runs.
+The initial actual-product Day capture is incomplete; a corrected capture gate
+requires title and all eight labels and awaits semantic page publication. Its
+replacement retains a complete actual drawer in all three themes. Fixture
+regressions pass all eight scenarios, 44 captures and mode/persistence restarts.
+Exact native Windows replacement and boat review remain pending.
+See [pilot review](design/reviews/prototype-pilot-in-progress.md) and
+[control presentation](pilot-presentation-contract.md). No boat commands sent.
+
+Anchor's completed Linux fixture run passes 128 tests, five shared-profile mode
+phases, selected navigation input, 26 route checks, 26 object captures and all
+eight preview scenarios with 44 captures. See
+[retained regression evidence](evidence/prototype-anchor-regressions-local.json).
+
 Native `314e0677` / run `36513102807` passes both 115-test MSVC suites,
 113 Preferences component checks and the exact 100/125/150% development drawer
 probe. Downloaded Windows pixels show complete tab labels. Six of eight jobs
@@ -18,7 +44,7 @@ the production Linux suite to 128/128 (31.17s on the corrective pass); the isola
 passes 34 checks and five captures, including confirmation cancellation and
 stale GPS. Two integrated passes each retain 24 product captures; the second
 confirms all three Anchor themes and Close restoring the chart. The fixture
-build passes and its full lifecycle/input regressions are running; native
+build and full lifecycle/input regressions pass; native
 replacement captures remain required. See the
 [anchor review](design/reviews/prototype-anchor-in-progress.md) and
 [data contract](anchor-presentation-contract.md). The boat is reachable with

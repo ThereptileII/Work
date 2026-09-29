@@ -8,7 +8,7 @@ if(-not $root.StartsWith([IO.Path]::GetTempPath(),[StringComparison]::OrdinalIgn
 $record=Get-Content -LiteralPath (Join-Path $root 'fixture.json') -Raw|ConvertFrom-Json
 if($record.owner -cne 'OpenNavX.NativeDisplayWindow.Fixture.1' -or
    $record.action -cnotin @('Display','ToggleFullscreen','ToggleOrientation','CyclePalette','PanRight','Resize1280x800','Capture','Navigation','Route','AIS','Instruments') -or
-   $record.case -cnotin @('normal','return','course','wrong-page','wrong-geometry','canvas-child','ambiguous','replace-on-down','rename-on-down','move-on-down','duplicate-on-down','modal','maximized-offscreen','partial-offscreen','entirely-offscreen','minimized','demo','wrong-pid','prototype-normal','prototype-preferences','prototype-two-sheets','prototype-passage','prototype-traffic','prototype-back','prototype-unknown','prototype-wrong-owner','prototype-duplicate','prototype-clipped','prototype-signature','prototype-moved','prototype-rail-duplicate','prototype-modal')){throw 'Unknown fixed fixture.'}
+   $record.case -cnotin @('normal','return','course','wrong-page','wrong-geometry','canvas-child','ambiguous','replace-on-down','rename-on-down','move-on-down','duplicate-on-down','modal','maximized-offscreen','partial-offscreen','entirely-offscreen','minimized','demo','wrong-pid','prototype-normal','prototype-anchor','prototype-pilot','prototype-preferences','prototype-two-sheets','prototype-passage','prototype-traffic','prototype-back','prototype-unknown','prototype-wrong-owner','prototype-duplicate','prototype-clipped','prototype-signature','prototype-moved','prototype-rail-duplicate','prototype-modal')){throw 'Unknown fixed fixture.'}
 Add-Type -AssemblyName System.Windows.Forms
 Add-Type -TypeDefinition @'
 using System;
@@ -151,6 +151,8 @@ $form.Add_Shown({
    Surface 'OpenNav preferences' 360 100 432 460 @('Close') -Heading
    Surface 'OpenNav passage' 390 100 398 460 @('Close') -Heading
   }
+  if($record.case -ceq 'prototype-anchor'){Surface 'OpenNav anchor watch' 390 100 398 460 @('Close') -Heading}
+  if($record.case -ceq 'prototype-pilot'){Surface 'OpenNav autopilot' 390 100 398 460 @('Close') -Heading}
   if($record.case -ceq 'prototype-preferences'){Surface 'OpenNav preferences' 360 100 432 460 @('Close') -Heading}
   if($record.case -ceq 'prototype-passage'){Surface 'OpenNav passage' 390 100 398 460 @('Close') -Heading}
   if($record.case -cin @('prototype-traffic','prototype-back')){Surface 'OpenNav vessel traffic' 390 100 398 460 @($(if($record.case -ceq 'prototype-back'){'Back'}else{'Close'})) -Heading}

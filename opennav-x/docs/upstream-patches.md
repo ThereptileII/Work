@@ -709,3 +709,12 @@ to match before exposing retained distance. Neither the native range control nor
 paint invokes progress, alarm processing or navigation commands. Existing signed
 radius/alarm semantics and confirmed start/clear commands remain unchanged.
 See [owned anchor contract](anchor-presentation-contract.md).
+
+### Native manual pilot drawer
+
+No direct upstream change. `XNavPilotDrawer` replaces the legacy XNav full-page
+pilot presentation using the existing owned `PilotView`, configured permissions
+and guarded manual callbacks. `PilotPresentation` withholds stale/invalid
+magnetic headings without deriving a replacement. Driver observers, identity
+binding, transport, command acknowledgement and rate limits are unchanged.
+See [presentation contract](pilot-presentation-contract.md).

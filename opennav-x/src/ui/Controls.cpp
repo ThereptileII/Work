@@ -446,6 +446,20 @@ void XNavButton::Paint(wxPaintEvent&) {
                     static_cast<unsigned char>(foreground.Blue()*alpha+back.Blue()*(1-alpha)));
   };
   const auto opacity = [&](wxColour color) { return IsEnabled() ? color : blend(color, background, .38); };
+  if (toggle_) {
+    const int x=size.x-FromDIP(42),y=(size.y-FromDIP(25))/2;
+    dc.SetPen(wxPen(opacity(Colour(selected_?colors.accent:colors.border))));
+    dc.SetBrush(wxBrush(opacity(Colour(selected_?colors.accent:colors.selected))));
+    dc.DrawRoundedRectangle(x,y,FromDIP(42),FromDIP(25),FromDIP(13));
+    dc.SetPen(*wxTRANSPARENT_PEN);
+    dc.SetBrush(wxBrush(opacity(Colour(selected_?colors.background:colors.muted))));
+    dc.DrawEllipse(x+FromDIP(selected_?20:4),y+FromDIP(4),FromDIP(17),FromDIP(17));
+    if(HasFocus()&&keyboard_focus_) {
+      dc.SetBrush(*wxTRANSPARENT_BRUSH);dc.SetPen(wxPen(Colour(colors.accent)));
+      dc.DrawRoundedRectangle(1,1,size.x-2,size.y-2,FromDIP(8));
+    }
+    return;
+  }
   const auto semantic = role_ == ButtonRole::Critical ? colors.alarm : colors.accent;
   if (suite_link_) {
     XNavPainter p(*this, dc, mode_);
@@ -511,7 +525,7 @@ void XNavButton::Paint(wxPaintEvent&) {
   }
   const auto text_color = opacity(ink);
   dc.SetTextForeground(text_color);
-  dc.SetFont(UiFontWeight(*this, settings_tab_ ? 11 : role_ == ButtonRole::Segment ? 10 : 12, settings_tab_ ? 400 : 500));
+  dc.SetFont(UiFontWeight(*this, settings_tab_ ? 11 : role_ == ButtonRole::Segment ? 10 : text_size_, settings_tab_ ? 400 : 500));
   if (settings_tab_) {
 #if defined(__WXMSW__) && wxUSE_GRAPHICS_DIRECT2D
     // Match natural DirectWrite advances used by the HTML and tab layout.

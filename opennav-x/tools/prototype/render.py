@@ -63,7 +63,9 @@ SELECTORS = [".topbar", ".sidebar", "#workspace", "#chartView", ".data-rail",
              ".settings-intro p", ".suite-link", ".suite-link b", ".suite-link small",
              ".suite-link-icon", ".field", ".field input", ".profile-btn", ".pill-row", ".anchor-graphic", ".anchor-distance",
              ".anchor-distance small", "#anchorRadius", ".field b", ".stats-grid",
-             ".stats-grid label", ".stats-grid strong", ".note"]
+             ".stats-grid label", ".stats-grid strong", ".note",
+             ".heading-dial", ".heading-dial svg", ".dial-value", ".dial-value span",
+             ".dial-value small", ".heading-controls"]
 
 MEASURE = """selectors => {
  const app = document.querySelector('#app');

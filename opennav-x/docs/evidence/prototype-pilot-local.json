@@ -1,0 +1,232 @@
+{
+  "scope": "Linux development; neither Windows nor boat visual acceptance",
+  "baseCommit": "b3807e8b64f2988d3431e2991f46e7b628b6278b",
+  "runtimeBuildIdentity": "b3807e8 base with documented uncommitted pilot changes; source fingerprints below",
+  "tests": {
+    "production": 132,
+    "productionSeconds": 20.28,
+    "fixtures": 132,
+    "fixtureSeconds": 20.44,
+    "failures": 0,
+    "preview": {
+      "result": "passed; screenshot review required",
+      "checkGroups": 8,
+      "screenshots": 44,
+      "pilotDrawer": [
+        {
+          "bounds": {
+            "height": 674,
+            "y": 80,
+            "width": 398,
+            "x": 682
+          },
+          "course_controls": 8
+        }
+      ],
+      "sha256": "6cb1a1e6ede0e4ce8969a675d74ff11a7b02f3615479b1c3cfae4ebe01d3139f",
+      "images": {
+        "beta-system-page-linux.png": "2f687440b6b1838e19924186cf981563285513a64b709eb5e78faa3c6b8d4062",
+        "preview-01-navigation-day-linux.png": "6e7089181ab99ec116bbf2fe0bcb3092eae062686a15d43544607fc9834f53ca",
+        "preview-11-startup-xnav-linux.png": "41334598f9bcda70385069222702b612eec80951890b8f710d288256dad9f290",
+        "preview-02-navigation-night-linux.png": "88c99f7e5ca5dacb21f4ec5b691e7d5b1558aed0d2668d51a976dd7b29bc7632",
+        "preview-03-route-linux.png": "1182d5a8e16a04ac988700ca9bd83ec48e8af2d3fef24dfbb4e15ada1ce044f3",
+        "preview-04-energy-linux.png": "af88cd7f521633809712366c8c3dcdfd78afaa1f2f51decc89f8da90686c2792",
+        "preview-05-diagnostics-linux.png": "9c324155b2a00e0559e44c375b290bd3398d9f1cce1a9256c806bfe8a81a139c",
+        "alpha-instruments-linux.png": "9696e83c796be2818a035b1bbe2ab4713dc98c642df7656c37662a273d0aaf99",
+        "beta-night-instruments-linux.png": "52f295d68d4f523128d4c546edf7d0c35e72416629638e82a3c26f03a642a6c6",
+        "alpha-ais-linux.png": "cd97d9cf83443e2bf3fbedd111a1c5b720234a86e26a51b5e0effb31b1e77dd8",
+        "beta-night-ais-linux.png": "1758b367c5d9faa650a9b898e6c94b3e1e639a2b84ad1e850b409fb098af15fc",
+        "alpha-smartnav-linux.png": "d577262c7834cd64badaf7a964f0ba55498b27b6dfe7a08253efd202c3a653ab",
+        "beta-night-smartnav-linux.png": "9c2fd57d8f99edd97bac8e2542cfb718a58993f129869c9dc0e57e64d1d5f227",
+        "alpha-autopilot-linux.png": "5dc5a78e067cd5771c98fc35b584ea9ec963c5ebd1ea8790b55c1b42401e4bec",
+        "beta-night-autopilot-linux.png": "088faf387fd7ff37e375d492888689a5e5b1d9b4a28ddeb45720facf6086e6ae",
+        "alpha-anchor-linux.png": "ffa7df175f32ff1035848e6995dfaee9f41fc00e3dfcee8b33b344ecba99900c",
+        "beta-night-anchor-linux.png": "22e05264d04774b4bb89d341ec0f50ca7dca6e124083e5af2744a118c7d6a4dc",
+        "alpha-settings-linux.png": "1d7cd81b8eeedc3ee9eb4f0bde4df44bbae6b25c2bda98444051c9692a4e1699",
+        "beta-night-settings-linux.png": "fdb1d7fa597196e497279d2c3d6598c1e48c3b4ad2e84bd457f3e3032ccf82ee",
+        "alpha-routes-linux.png": "3f65ce4345e3434635802f60819c54ef101f4c7119c80e76167ad13910ef7484",
+        "beta-night-routes-linux.png": "4bb8306a90e99a5910ca1926b7372bddcf33dfa4aacf2c83d581d941f54a6ce0",
+        "alpha-waypoints-linux.png": "9b96cba7eb2f290ecf45bb6f3189ca425f04f46b854936da0b158daeef114e27",
+        "beta-night-waypoints-linux.png": "fe2a586c54c2032e573b45f5705cd59280f6e1caa21080889f70fa98802af046",
+        "alpha-energy-settings-linux.png": "4556b16c728aa53efcebafdf14d45d8e4864583ddfe6c381c94a99bfc45532fb",
+        "beta-night-energy-settings-linux.png": "a3e91a62f4cfd0832ead8a1c0966101c9b5593a3f7bd7106e4d98280177004e7",
+        "alpha-sources-linux.png": "654ff80cbf3980566f41b5ecad91dcf73d1cbd9d6ecf54daddacd8ec2205424a",
+        "beta-night-sources-linux.png": "90f372a0aa49c633315ca8e5da99c4ed4564aea93ad16447bad5829beacf3c8b",
+        "alpha-vessel-settings-linux.png": "e99c5861c1ac76a06dd99ecc0616b196d23235af2e30be6b6e977e21aa07968f",
+        "beta-night-vessel-settings-linux.png": "673bfcf29e8a2e2ad5bc588a71656995320b952ddad897ff3db2201ab5e2bd55",
+        "alpha-radar-status-linux.png": "090109516c8acf17342a21e90ef4f9488651623c3dda87d1b0c4c38a70734bf9",
+        "beta-night-radar-status-linux.png": "b951a161f155004921e03149554ac3ec4e9a24fa1351d3766863ee01cf88aca7",
+        "alpha-display-linux.png": "97e2a0bf845d05041ad3d9fb3b7965846237ebd549a78bc64f8745969b2f099e",
+        "beta-night-display-linux.png": "92261bb861c3d432c4c6cce6b07a624228fad7a26dc0225c17a67e8bee28ff58",
+        "preview-06-stale-linux.png": "b46ab2f1acbe19f3a703b6032f8e08eb36b32d5807f42444847e2680bb37d629",
+        "beta-alerts-active-linux.png": "a6b4e8ae402fa979dfea7f49528b949cdc8cc2a2dddabf38c2223b91da9700f7",
+        "beta-alerts-acknowledged-linux.png": "bfd3cb5d334c35581d7e211919d3a23b397083fe4892ceb176dcfb6164af7177",
+        "preview-06b-unavailable-linux.png": "c77c74559d3be1ca03145ba3b302f6bdc10f6c40518cbeceeba50dcb0b3ba81f",
+        "preview-06c-shortfall-linux.png": "c482d7122a8caffd7b4f64ad923c0d5e94b327c344b7eb5bac54e73526ccbc0a",
+        "preview-07-legacy-linux.png": "dd81ea6b0845213d09f64caddc374feb8421e0f335b4f82ea29ef306be86a17b",
+        "preview-09-returned-xnav-linux.png": "cfa18d5fcad2d84eaa42e49b91188b020c1fa48c8fb253660ec1b69014a3a716",
+        "preview-08-safe-linux.png": "dd81ea6b0845213d09f64caddc374feb8421e0f335b4f82ea29ef306be86a17b",
+        "preview-12-safe-to-xnav-linux.png": "cfa18d5fcad2d84eaa42e49b91188b020c1fa48c8fb253660ec1b69014a3a716",
+        "preview-13-legacy-linux.png": "dd81ea6b0845213d09f64caddc374feb8421e0f335b4f82ea29ef306be86a17b",
+        "preview-14-legacy-to-xnav-linux.png": "cfa18d5fcad2d84eaa42e49b91188b020c1fa48c8fb253660ec1b69014a3a716"
+      }
+    },
+    "formatOnlyRebuild": "passed; production suite repeated after formatter, 132/132"
+  },
+  "components": {
+    "pilot-component-local": {
+      "checks": 61,
+      "passed": true,
+      "executableSha256": "da079a13f32c6e6b9587e8fedc6e1ce650ce0ee5e01b24c740cfc575f2f8c1cc",
+      "images": {
+        "autopilot-day.png": "4c269e87fe6c6baa7b656cf1de6cb35d73369e6b355e0424cbc1ba494a8f1c19",
+        "autopilot-dusk.png": "d4ef5a236a3d1bf7fff8174b8d6d453655f22dcc62af43946e82ec701546b3ca",
+        "autopilot-night.png": "92ec9f9082c97ef07eac3743ce0724e48f20496c912a2ad1872a24348931c5fe",
+        "autopilot-pending-day.png": "ee47e0b7d42aea4f05214549672e050a2997f694af70c09433b519425d4559d6",
+        "autopilot-auto-day.png": "fb104d330b79ad3782f7e74e06dd5c380024a25b212b84ed188e8a6b80c272dd",
+        "autopilot-stale-day.png": "bdefb9b4a0e6a3070c643e6974fda6f349110353c9ba99c85986c6af5d8fa17e",
+        "autopilot-replay-day.png": "c4ea3e6b921463d2e6b2146708703bdc6ac1d205c69063ed0ea47e4d267e53ce"
+      },
+      "reportSha256": "af2adbae4e42480637d00e04993203d3b4ba5e9ab9141c4edbb7920e36d3c626"
+    },
+    "pilot-component-correction": {
+      "checks": 61,
+      "passed": true,
+      "executableSha256": "2922224b23bf24f8b607b1aa8e541170cb2a20c015fbe25cbb6a778a9d9dbf22",
+      "images": {
+        "autopilot-day.png": "524ed4d186b57398ba452395899f1ed3b3aa8c40a7921c80c1fba209119f4041",
+        "autopilot-dusk.png": "e9a47dd244b26ede0590081bc546bb48fbe46c54f255f380c99261de4ab5fc3c",
+        "autopilot-night.png": "4a556a7ed05fa19dd4f27c1fcd61156576fbe98682e4ab19ae737c595a71b568",
+        "autopilot-pending-day.png": "5edfd62625aed7a38902f50c84bb80e507c99c73b848eadebb992cfb067a1415",
+        "autopilot-auto-day.png": "468c8689fe7a6c6c315ac1f628b08d78fa782fcab7a5bb00d686235f528d5af2",
+        "autopilot-stale-day.png": "bdefb9b4a0e6a3070c643e6974fda6f349110353c9ba99c85986c6af5d8fa17e",
+        "autopilot-replay-day.png": "c4ea3e6b921463d2e6b2146708703bdc6ac1d205c69063ed0ea47e4d267e53ce"
+      },
+      "reportSha256": "3dc277087833600a2cc89c3f51a2b8293842e692d1a4583da6c9410646de2ad0"
+    }
+  },
+  "productPasses": {
+    "pilot-native-local": {
+      "result": "captured; conformance not asserted",
+      "images": {
+        "navigation-day.png": "88e945ca1349340a0fe7b49237a8be3abd5a557ce615bcd602bf8d51e8cb7787",
+        "navigation-dusk.png": "43c452ae811c3d85fa8aa66326d1b379c0ef25ec3e5fa82148b5ce026960e8a1",
+        "navigation-night.png": "6f5d4e399118f82cb6c6136234049f1a18c1eded822383608856e04d71c381bd",
+        "passage-day.png": "eeeff4832b9db4fe69f2adf128c4ccb1bddb4a92b05a56d0767b6e02f79dbd2d",
+        "passage-dusk.png": "8054d63ae1533cbf055ba97202ac5f38e5667e8295faba77511fc32a952ec185",
+        "passage-night.png": "78fc33aaf04b2da8380d86d40385a6094d256479868dcb636b097da0c0c6d978",
+        "traffic-day.png": "f02c4d9b7f985137592d9fc0d4dfda45e165ec55a996b0d854b5fae91185a7dc",
+        "energy-day.png": "b3fd56ac172f84ae36acee4172aee6a31d135ff3958818682f2bf4937e398da2",
+        "instruments-day.png": "3fb1d3960b385aab4fc3b0b292aa1652c21a75172f04505d5b6cc1f9437f97ba",
+        "instruments-dusk.png": "fc05d5ef71234ae09a5400e6674ce434d4ee29afba5ff5c10a65fefa670611c7",
+        "instruments-night.png": "b4dbcc9cd846edbe37bafbcb364968e7ba0975ece41f6ee370ed3c17df102ae0",
+        "autopilot-day.png": "fb548064193021e656302013a9b1c8904b32f7bf740675dd8ea0005fe35dcb30",
+        "autopilot-dusk.png": "a13a5bddb251cd79d401d1e788ef1d0ca3d5760829cd3954f697615f5af9a9e7",
+        "autopilot-night.png": "78c12b74db22186f854968c9ae390cc303dabb85175b7b30b1939fcb54b6ebea",
+        "anchor-day.png": "73da0aa98c2dc0b5e44f1953a5bf7d54ddacf16cd7f6ccc3412429661b79da87",
+        "anchor-dusk.png": "d16341f5aec0b477d6974d5c6f409bef91a2e28b6a5d016a3b7916afe42418ce",
+        "anchor-night.png": "21b1285c13b5386b35768d39b006704bf70b0314c158c7d8afdf9002be017969",
+        "settings-day.png": "47c135957a76c2bfe62502d7495a57a4427399f9748e61c7ba7e85a50f20ef91",
+        "settings-dusk.png": "ce2f8426354b7ea37074e2a98cda716def5bb1143a332fcdd554ce2a6c6f5ff4",
+        "settings-night.png": "e0d871382b5aab984abfb49e683692b09015a373a3f4d8265568938a6ff5fb49",
+        "sensors-day.png": "9e6bd158a365e187f2865185fd029c38c6e89a1fdb2030b708800d99ebef833f",
+        "display-day.png": "93a705116571c88b3821598fd5938a76821a62d97de7da9db4ac8a32e0a3b472",
+        "system-day.png": "f06dfa790400939f2ad1b0ba598743952527aee932ec7c342a414dc486697de8"
+      },
+      "reportSha256": "5cbd4b01d4d0bc554183ed4abcb1b269c5eb65cc66c7595bc868d8f6e09ab07b",
+      "pilotPaintWait": {
+        "autopilot-day": 0.014470159017946571,
+        "autopilot-dusk": 0.014666192000731826,
+        "autopilot-night": 0.01480159698985517
+      }
+    },
+    "pilot-native-correction": {
+      "result": "failed",
+      "images": {
+        "navigation-day.png": "d149ec85a1311831d5ac8642d6ba178a2f7a9190adad215d1d5863f085a29f89",
+        "navigation-dusk.png": "ba6b8b5ddf80cca8417678fd86e51bb12486a82f3ca05a35e250648abaf7289d",
+        "navigation-night.png": "b417d08abc9d87f2326ae8f1fec3b6a99cb606559c3207bae0ceccece48b4df6",
+        "passage-day.png": "5f4c66c82b6df3b8fe004c167bfffb80b8068650ff1b5d6cef1d3cf40fb92f10",
+        "passage-dusk.png": "31ab614ea0bda52a4a9158654c4d7130aada04c064019640777c25e271a8f6a2",
+        "passage-night.png": "c1794dabce0d45da868eb4194961cc943adc7d5a1ef36a946146c802d8a0401a",
+        "traffic-day.png": "f9d807ea7cfc23d22338392478157dfb315ab82d04ca3ea7dfd8d4e0b0bbd3ad",
+        "online-ais-settings-day.png": "d01618defb94a682637d96260c7746b8b3b384c84bc560ebd6ec2e293f7856ec",
+        "online-ais-key-needed-day.png": "f2fc1d23310a9877412d533615f21706b63f08b3063645add0c22f0c25716342",
+        "online-ais-settings-dusk.png": "6a2bd7c91bee2b76e71a7672eb9f0d43e4a8063b5a8efdfc7c34c2716a153d8f",
+        "online-ais-settings-night.png": "950ae01b35a799cac06e06f111a1615691f87dd4f20ee967c7bb416144cfb9e2",
+        "energy-day.png": "a642bead3bf3c8b2f98b4817f1d7edea2b5e08b2a0eb3ae987a1d07fbbc88198",
+        "instruments-day.png": "96ce40e5f8e7a2956539b680b2b2d2fcfd853e179fa878e6cd246826c23062bd",
+        "failure-state.png": "96ce40e5f8e7a2956539b680b2b2d2fcfd853e179fa878e6cd246826c23062bd"
+      },
+      "reportSha256": "c3bc32b0aecd7bfe3485ef1123d71a05b32db98f1a13e0db7369e8da10adcca8",
+      "pilotPaintWait": {}
+    },
+    "pilot-native-second-correction": {
+      "result": "captured; conformance not asserted",
+      "images": {
+        "navigation-day.png": "ad5bdca125c4809b6786a0c3f3700d275810957e253eddbb034c3b0ea391ceef",
+        "navigation-dusk.png": "932a402c894aee3e1356486e7cd6d577143f15379d51da3bbcc266405e08bd99",
+        "navigation-night.png": "3cd78c89a387ff79efcd9c73a0d1877112ba93235c698228bd85f2c25ae6c836",
+        "passage-day.png": "ad301d59378ac630c80662012c667cb395e47db0cb79bd4d9a7b7903ac7c23bc",
+        "passage-dusk.png": "30d977ccecf7b755ca6668ed8216f9d98b886ba59fbf3721f27d366e92dd24f6",
+        "passage-night.png": "d9ee2590aa7eb8e438ac87ef0499c76bfd4b30dcb04120bc43c2665652cd356d",
+        "traffic-day.png": "04ccfc0988f6d9883455e3c2e6ccdb935d5fe0f782df601f690dcc2c6b852bf6",
+        "online-ais-settings-day.png": "2887905e7350006b74a85b7a94b76a2fcb49c83f81f957affba753ae313dba4c",
+        "online-ais-key-needed-day.png": "7df68590ae697c9d82d3aa783041f60285371ff8c7e14842240560eb5fe39b6f",
+        "online-ais-settings-dusk.png": "8b3b9a18366a143dba32c3060c5ed7c9ff4dfe398633d308da42e9afca9f991d",
+        "online-ais-settings-night.png": "473c052f3c1d777150b7ab92b66dacfa90a7e50ecd0c2d97254cea091a02fec9",
+        "energy-day.png": "b78df1148eebc737fc08e96579355cc6fc07524168d8695e76762c2c13750a34",
+        "instruments-day.png": "18868d26b55e63d45a230615e5cc0012b28d16d54f9bb6fa1e541b23faf87716",
+        "instruments-dusk.png": "58c5189cd060478f4556afb3b379811df2c001a86ac3dabd0c2d1ec79da7b9e2",
+        "instruments-night.png": "4fd54303a8e3741ab51e469af0c3027898bed33a0df86453f91b15d5d1935a3b",
+        "autopilot-day.png": "b2a6c0ff1a2bb974ffb8de3ebfdee7c8541cfbbc80744e023adea676b6e881fb",
+        "autopilot-dusk.png": "49e13b50feaf26be3b328399b5688fa7cc251e5bb60ea4219d3617c0a576f0c5",
+        "autopilot-night.png": "c6b7932244c3f16b9590d15a0c564dac7286d0a1a531631d832409c62882a6e8",
+        "anchor-day.png": "7ae8ed3e65e62143f6d2d4821659218c2d26903236dcf998444748f1ebe4180f",
+        "anchor-dusk.png": "9bf45337a2da9ecdc697985589e10c23afc5f63e4444216de769f8ab5fdce80c",
+        "anchor-night.png": "32ff2310df7c15e58b0ca81ece709a48da6451e7f139febfb3acf8c016b809e5",
+        "settings-day.png": "53af734ca820fc16fcf3669935c6612a8710316b02e8cd68b8e0969f79433c3a",
+        "settings-dusk.png": "541d9e5aa8e7caffc5172fc9c2f9eb119e6d6082eb54f311a901475781d38411",
+        "settings-night.png": "78a20efb2ffd27343e2da9d0fdfb39437af625bfb6f8c41eb6bf06f686c1992e",
+        "sensors-day.png": "39c4f64e4a31e346d4c57eb8d28557803b92bd021bc3d06d5b9320761bf0759a",
+        "display-day.png": "85c55f0b0bf031addfd1562c443922ece0c41ef697432e59d69b818404ad2570",
+        "system-day.png": "5f86fdda0a697961e5cd7641ef1182b2883708a600368baa8d4f67fdaa2335d2"
+      },
+      "reportSha256": "dbce5ce3c2e11dd30407d3e323e1d30d0727fad31211168209d14934d2b74315",
+      "pilotPaintWait": {
+        "autopilot-day": 0.03991708601824939,
+        "autopilot-dusk": 0.03503248799825087,
+        "autopilot-night": 0.036047673027496785
+      }
+    }
+  },
+  "negativeEvidence": {
+    "initialProduct": "pilot-native-local/autopilot-day.png initially has partially painted children. File retained; no visual PASS.",
+    "secondProduct": "pilot-native-correction stopped because old diagnostics reported Route/scroll buttons after Instruments had opened. Semantic page publication now required.",
+    "firstBuild": "wxPanel has no FromDIP(wxRect) overload; correction scales origin and size separately."
+  },
+  "policy": {
+    "pureCaptureChecks": 224,
+    "nativeSignatureFixtures": "52 cases configured; execution pending Windows",
+    "statusSummaryTests": 23,
+    "strictPageGeometryCases": 18,
+    "chartLayoutNegativeCases": 18,
+    "chartInkChecks": 30,
+    "immutablePrototypeChecks": 5
+  },
+  "review": [
+    "Second component pass corrects numeric tracking to -2 CSS pixels.",
+    "Actual application replacement shows complete pilot title and all eight command labels in Day/Dusk/Night. Geometry equals 398x674 and chart is unchanged.",
+    "No local GUI or adapter test sends physical equipment commands. Native/boat qualification pending."
+  ],
+  "sourceFingerprints": {
+    "src/application/PilotPresentation.h": "cdb528130c483373fb69bebdaafbf2b6bab85980905d83e4ca45f2cd485c6b5a",
+    "src/application/PilotPresentation.cpp": "978c4b5185a5b06a7ac02d5aa2bd5b318fa089a333143545147f0dfbd8e42af8",
+    "src/ui/PilotDrawer.h": "0169406250352c60265fbde3fbbfb7f7b7fa33717f4c282a9d2e4dcb9605db82",
+    "src/ui/PilotDrawer.cpp": "6578ce500fcd013e4f2abf86042782bf659375cc0ec0b85da130eb0f09846891",
+    "src/ui/Shell.cpp": "9d379d01d9a2db4356e7b00f021f956997da5e943006e6255da9d5ae589af2a9",
+    "src/ui/Controls.cpp": "8fc8a2f13f60ddf0da4790c2f837de27d8657528b1145edc9726a37c261d615f",
+    "tests/pilot_drawer_test.cpp": "106fb8a9a5149c5f1ea99ef31e7a20abcc920f9df130c25b2acbd37c5009e195",
+    "tests/pilot_presentation_tests.cpp": "60da0539a0776f1e5b98f79f9e7f79b5d1731daa38906eb5f3313ad0a0b5aa6d"
+  }
+}

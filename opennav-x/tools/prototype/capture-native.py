@@ -169,7 +169,9 @@ def main():
             # advance from a stale pre-click file while still describing the
             # old drawer. Observe the semantic result; never retry the input.
             closed = label != "Close" or ("drawer" not in current["runtime"]["display"] and current["ui_page"] == "Navigation")
-            if int(current["runtime"]["ui_update"]["ticks"]) >= ticks+3 and (not expected_light or current_light == expected_light) and closed:
+            expected_page = None if in_drawer else {"Chart":"Navigation", "Passage":"Route", "Traffic":"AIS targets", "Energy":"Energy", "Instruments":"Vessel instruments", "Autopilot":"Manual autopilot", "Anchor":"Anchor watch", "Settings":"Settings"}.get(label)
+            page_ready = not expected_page or current["ui_page"] == expected_page
+            if int(current["runtime"]["ui_update"]["ticks"]) >= ticks+3 and (not expected_light or current_light == expected_light) and closed and page_ready:
                 break
             time.sleep(.1)
         else:
@@ -258,7 +260,7 @@ def main():
             assert all(abs(actual[k]-v) <= 1 for k,v in expected["rect"].items()), f"{label} rail geometry differs: {actual}"
             rail_actual.append(actual)
         record.setdefault("left_rail_layout", {})[name] = rail_actual
-        if name.startswith(("traffic-", "online-ais-", "passage-", "anchor-", "settings-", "sensors-", "display-", "system-")):
+        if name.startswith(("traffic-", "online-ais-", "passage-", "anchor-", "autopilot-", "settings-", "sensors-", "display-", "system-")):
             drawer = snapshot["runtime"]["display"]["drawer"]
             wide = name.startswith(("settings-", "sensors-", "display-", "system-"))
             expected = dict(x=client_origin[0]+(648 if wide else 682), y=client_origin[1]+80, width=432 if wide else 398, height=674)
@@ -267,11 +269,31 @@ def main():
             theme = snapshot["runtime"]["display"]["light"].lower()
             tokens = json.loads((ROOT / "docs/design/prototype-tokens.json").read_text())["themes"][theme]
             background = tuple(bytes.fromhex(tokens["--bg"].removeprefix("#")))
+            pilot_controls=[]
+            if name.startswith("autopilot-"):
+                expected_buttons=reference["states"]["autopilot-day"]["components"][".btn"][:8]
+                for label, expected_button in zip(("−10°","−1°","+1°","+10°","Standby","Auto","Track","Wind"),expected_buttons):
+                    found=[c for c in snapshot["runtime"]["display"]["interaction_controls"] if c["label"]==label and c["visible"]]
+                    assert len(found)==1,(label,"unique pilot control required")
+                    actual={k:found[0][k] for k in ("x","y","width","height")}
+                    actual["x"]-=client_origin[0];actual["y"]-=client_origin[1]
+                    # Windows is typography/geometry authority. Linux uses
+                    # these same Windows-derived integer positions even when
+                    # its fallback font changes the HTML's natural line box.
+                    if windows:
+                        assert all(abs(actual[k]-v)<=1 for k,v in expected_button["rect"].items()),(label,"pilot differs from HTML",actual,expected_button["rect"])
+                    pilot_controls.append(actual)
             def sheet_painted():
                 with Image.open(path) as image:
                     image = image.convert("RGB")
-                    return all(max(abs(a-b) for a,b in zip(image.getpixel(point),background)) <= 3
+                    background_painted=all(max(abs(a-b) for a,b in zip(image.getpixel(point),background)) <= 3
                                for point in [(652 if wide else 686, 417), (1076, 417), (864 if wide else 881, 84)])
+                    if not pilot_controls:return background_painted
+                    # A surface color alone can hide an incompletely painted
+                    # first frame. Require actual heading and all eight label
+                    # interiors; outlines cannot satisfy this criterion.
+                    regions=[(705,120,950,158)]+[(c["x"]+12,c["y"]+15,c["x"]+c["width"]-12,c["y"]+33) for c in pilot_controls]
+                    return background_painted and all(sum(max(abs(a-b) for a,b in zip(pixel,background))>12 for pixel in image.crop(region).getdata())>=10 for region in regions)
             paint_start = time.monotonic()
             # Diagnose asynchronous native stacking/paint without relaxing a
             # single pixel criterion. Record the latency; it is a UX finding.
@@ -456,9 +478,15 @@ def main():
             record["result"] = "chart cycle captured; semantic and visual review required"
             return
         for label, name in [("Passage", "passage"), ("Traffic", "traffic"), ("Energy", "energy"),
-                            ("Instruments", "instruments"), ("Anchor", "anchor"), ("Settings", "settings")]:
+                            ("Instruments", "instruments"), ("Autopilot", "autopilot"), ("Anchor", "anchor"), ("Settings", "settings")]:
             click(label)
             capture(name + "-day")
+            if label == "Autopilot":
+                click("Day", "Dusk");capture("autopilot-dusk")
+                click("Dusk", "Night");capture("autopilot-night")
+                click("Night", "Day");click("Close")
+                assert "drawer" not in data()["runtime"]["display"], "Pilot close did not restore chart"
+                record["pilot_flow"]="Measured feedback drawer; theme cycle; Close; no equipment command"
             if label == "Anchor":
                 click("Day", "Dusk");capture("anchor-dusk")
                 click("Dusk", "Night");capture("anchor-night")

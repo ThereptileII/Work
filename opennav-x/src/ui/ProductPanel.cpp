@@ -312,6 +312,7 @@ std::string ProductPanel::PageTitle() const {
   return "Unknown";
 }
 void ProductPanel::ShowPage(ProductPage page, LightMode mode) {
+  if(page==ProductPage::Pilot&&actions_.pilot_controls){actions_.pilot_controls();return;}
   if(page==ProductPage::Anchor&&actions_.anchor_watch){actions_.anchor_watch();return;}
   if ((page == ProductPage::Home || page == ProductPage::Settings) && actions_.preferences) {
     actions_.preferences();
@@ -464,21 +465,6 @@ void ProductPanel::Update(const ProductState &state, LightMode mode) {
   for (auto *visual : visuals_) visual->Refresh(false);
   for (auto &v : values_)
     v.first->SetReading(v.second(state), state.now);
-  const auto &caps = state.pilot.capabilities;
-  for (auto &button : pilot_buttons_) {
-    const auto action = button.second;
-    const bool supported =
-        action == adapters::PilotAction::Standby ? caps.standby
-        : action == adapters::PilotAction::Auto ? caps.auto_mode
-        : action == adapters::PilotAction::Track ? caps.track
-        : action == adapters::PilotAction::Wind ? caps.wind
-                                               : caps.alter_course;
-    const bool command_ready = state.pilot.enabled &&
-        (action == adapters::PilotAction::Standby || state.pilot.fresh) &&
-        (action != adapters::PilotAction::AlterCourse ||
-         state.pilot.feedback.mode == adapters::PilotMode::Auto);
-    button.first->Enable(supported && command_ready && !state.vessel.replayed);
-  }
   if (RefreshLiveText()) {
     Layout();
     FitInside();
@@ -736,86 +722,6 @@ void ProductPanel::Instruments() {
   instruments_->Update(state_.vessel, config.instruments, state_.now, mode_);
   body_->Add(instruments_, 0, wxEXPAND);
 }
-void ProductPanel::PilotActions() {
-  Heading("Manual autopilot", state_.vessel.replayed
-              ? "REPLAY / All hardware controls disabled" : "Manual commands require feedback confirmation");
-  Visual("Autopilot heading", 192, [this](XNavPainter &p, wxDC &, int width) {
-    p.Card(0, 0, width, 188, "AUTOPILOT");
-    const auto &pilot = state_.pilot;
-    p.Text(pilot.fresh ? W(adapters::PilotModeName(pilot.feedback.mode)) : wxString("STATUS UNAVAILABLE"),
-           width / 2, 20, 15, pilot.fresh ? p.c.healthy : p.c.attention, false, width / 2 - 24);
-    auto locked = pilot.fresh ? pilot.feedback.locked_heading_magnetic_deg : vessel::Sample{};
-    auto heading = pilot.fresh ? pilot.feedback.heading_magnetic_deg : vessel::Sample{};
-    const int cell = (width - 48) / 3;
-    Metric(p, locked, state_.now, 24, 54, cell - 16, "COMMANDED HEADING", W("° MAGNETIC"), 0, 48);
-    Metric(p, heading, state_.now, 24 + cell, 54, cell - 16, "ACTUAL HEADING", W("° MAGNETIC"), 0, 32);
-    Metric(p, state_.vessel.rudder.angle_deg, state_.now, 24 + cell * 2, 54,
-           cell - 16, "RUDDER", W("°"), 1, 32);
-  });
-  BeginActions(4, 96);
-  for (int delta : {-10, -1, 1, 10}) {
-    auto *button = Action(wxString::Format(W("%+d°"), delta), [this, delta] {
-      if (actions_.pilot_command)
-        actions_.pilot_command(adapters::PilotAction::AlterCourse, delta);
-    }, state_.pilot.enabled && state_.pilot.fresh &&
-       state_.pilot.capabilities.alter_course && state_.pilot.feedback.mode == adapters::PilotMode::Auto);
-    button->SetName(wxString::Format(W("%+d° magnetic course"), delta));
-    button->SetMinSize(FromDIP(wxSize(96, 56)));
-    pilot_buttons_.push_back({button, adapters::PilotAction::AlterCourse});
-  }
-  EndActions();
-  BeginActions(2, 144);
-  auto *standby = Action("STANDBY", [this] {
-    if (actions_.pilot_command) actions_.pilot_command(adapters::PilotAction::Standby, 0);
-  }, state_.pilot.enabled && state_.pilot.capabilities.standby);
-  standby->SetRole(ButtonRole::Critical);
-  standby->SetMinSize(FromDIP(wxSize(144, 56)));
-  pilot_buttons_.push_back({standby, adapters::PilotAction::Standby});
-  for (const auto &choice : std::vector<std::pair<adapters::PilotAction, wxString>>{
-           {adapters::PilotAction::Auto, "AUTO"},
-           {adapters::PilotAction::Track, "TRACK"},
-           {adapters::PilotAction::Wind, "WIND"}}) {
-    const auto &caps = state_.pilot.capabilities;
-    const bool supported = choice.first == adapters::PilotAction::Auto ? caps.auto_mode
-                         : choice.first == adapters::PilotAction::Track ? caps.track : caps.wind;
-    auto *button = Action(choice.second, [this, choice] {
-      if (ConfirmSheet(*this, mode_, "Request " + choice.second,
-            "The mode changes only after fresh pilot feedback confirms it.", "Request " + choice.second) &&
-          actions_.pilot_command)
-        actions_.pilot_command(choice.first, 0);
-    }, supported && state_.pilot.enabled && state_.pilot.fresh);
-    button->SetRole(choice.first == adapters::PilotAction::Auto ? ButtonRole::Primary : ButtonRole::Quiet);
-    pilot_buttons_.push_back({button, choice.first});
-  }
-  EndActions();
-  LiveText([](const auto &s) {
-    if (s.vessel.replayed) return wxString("Historical replay / control OFF");
-    if (!s.pilot.fresh) return wxString("Communication lost or unavailable. Check the pilot locally.");
-    if (s.pilot.command.state == adapters::CommandState::Pending ||
-        s.pilot.command.state == adapters::CommandState::Requested)
-      return wxString("Waiting for pilot confirmation");
-    if (s.pilot.command.state == adapters::CommandState::TimedOut)
-      return wxString("No confirmation received. Check the pilot locally; no command was retried.");
-    return wxString(s.pilot.enabled ? "Manual control enabled for this session" : "Control OFF / status only");
-  });
-  wxString enable_label = "Enable / disable manual control";
-#if XNAV_ENABLE_TEST_FIXTURES
-  if (state_.vessel.simulated) enable_label = "Enable / disable DEMO manual control";
-#endif
-  Action(enable_label, [this] {
-    const bool enable = !state_.pilot.enabled;
-    wxString title = "Enable physical pilot control?";
-    wxString detail = "Manual buttons can move the vessel's rudder. Confirm the correct pilot, a clear drive area and immediate physical STANDBY access. Enable lasts only for this session.";
-    wxString accept = "Enable manual control";
-#if XNAV_ENABLE_TEST_FIXTURES
-    if (state_.vessel.simulated) { title = "Enable manual simulator"; detail = "Commands affect only the labelled test simulator."; accept = "Enable DEMO"; }
-#endif
-    if ((!enable || ConfirmSheet(*this, mode_, title, detail, accept)) && actions_.pilot_enable)
-      actions_.pilot_enable(enable);
-  }, !state_.vessel.replayed && (state_.vessel.simulated || state_.settings.pilot.permit_control));
-  if (!state_.vessel.simulated && !state_.vessel.replayed)
-    Action("Autopilot setup & diagnostics", [this] { ShowPage(ProductPage::PilotSettings, mode_); });
-}
 void ProductPanel::Build() {
   Freeze();
   first_heading_ = true;
@@ -824,7 +730,6 @@ void ProductPanel::Build() {
   text_.clear();
   static_text_.clear();
   action_grids_.clear();
-  pilot_buttons_.clear();
   values_.clear();
   instruments_ = nullptr;
   grid_ = nullptr;
@@ -1025,7 +930,7 @@ void ProductPanel::Build() {
   } else if (page_ == ProductPage::PilotSettings)
     PilotSettings();
   else if (page_ == ProductPage::Pilot)
-    PilotActions();
+    Text("Autopilot controls are unavailable in this view.");
   else if (page_ == ProductPage::Anchor) {
     Heading("Anchor watch", "Anchor watch is unavailable in this context");
   } else if (page_ == ProductPage::Settings) {

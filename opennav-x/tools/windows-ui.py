@@ -279,7 +279,7 @@ def size_window(handle):
     GetWindowRect(handle, C.byref(rect))
     assert (rect.right - rect.left, rect.bottom - rect.top) == (1280, 800)
 
-def assert_page_geometry(handle, child):
+def assert_page_geometry(handle, child, horizon=False):
     """Require the page to fill the actual center, including a visible alert.
 
     Alerts share the fixed status row; neither rail nor chart loses height.
@@ -299,6 +299,13 @@ def assert_page_geometry(handle, child):
     frame, rect = bounds(handle), bounds(child)
     top = bounds(GetParent(alerts[0])).bottom
     bottom = bounds(GetParent(system[0])).top
+    if horizon:
+        # The HTML Instruments full view retains the advisory timeline. Use
+        # its exact responsive CSS height; no allowance for unexplained gaps.
+        client=W.RECT();assert GetClientRect(handle,C.byref(client))
+        scale=GetDpiForWindow(handle)/96
+        height=client.bottom/scale
+        bottom-=round((98 if height<=600 else 112 if height<=740 else 132)*scale)
     left = bounds(GetParent(navigation[0])).right
     right = bounds(GetParent(GetParent(rail[0]))).left
     tolerance = 1
@@ -329,13 +336,13 @@ def assert_preview_page(handle, page):
     return {'page': page, 'native_pixels': dimensions, 'visible_and_uncovered': True}
 
 def assert_product_page(handle, page):
-    drawers={'Settings':'OpenNav preferences','AIS targets':'OpenNav vessel traffic','Anchor watch':'OpenNav anchor watch'}
+    drawers={'Settings':'OpenNav preferences','AIS targets':'OpenNav vessel traffic','Anchor watch':'OpenNav anchor watch','Manual autopilot':'OpenNav autopilot'}
     if page in drawers:
         return assert_prototype_drawer(handle,drawers[page])
     label='OpenNav product page: '+page
     matches=[child for child,caption in children(handle) if caption==label]
     assert len(matches)==1,f'Visible XNav page not found: {label}'
-    child=matches[0];rect,_=assert_page_geometry(handle,child)
+    child=matches[0];rect,_=assert_page_geometry(handle,child,horizon=page=='Vessel instruments')
     point=W.POINT((rect.left+rect.right)//2,(rect.top+rect.bottom)//2)
     assert ScreenToClient(handle,C.byref(point))
     assert ChildWindowFromPointEx(handle,point,1)==child,'Another pane covers the XNav page'

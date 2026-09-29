@@ -312,27 +312,35 @@ try:
         command(title,key)
         expected_page='SmartNav' if name=='smartnav' else title
         data(lambda d:d.get('ui_page')==expected_page)
-        if name in ('instruments','autopilot'):
+        if name == 'instruments':
             data(lambda d:d['runtime']['display']['minimum_value_height_dip']>=120)
             report.setdefault('grouped_regions',[]).append(interaction.grouped_regions(data))
+        if name=='autopilot':
+            drawer=data()['runtime']['display']['drawer']
+            assert drawer['width']==398 and drawer['height']==674, 'Pilot drawer differs from prototype'
+            controls=data()['runtime']['display']['interaction_controls']
+            for label in ('−10°','−1°','+1°','+10°','Standby','Auto','Track','Wind'):
+                found=[c for c in controls if c['label']==label and c['visible']]
+                assert len(found)==1 and found[0]['height']==48, (label,'pilot touch control missing')
+            report.setdefault('pilot_drawer',[]).append(dict(bounds=drawer,course_controls=8))
         capture('alpha-'+name)
         light('Dusk');light('Night')
         report.setdefault('night_surfaces',[]).append(chartcheck.dark_surface(capture('beta-night-'+name),expected_page))
         light('Day')
         if windows:ui.assert_product_page(handle,expected_page)
         if windows and name=='autopilot':
-            product_click('Enable / disable DEMO manual control');ui.click_text(pid,'Enable DEMO')
-            product_click('AUTO');ui.click_text(pid,'Request AUTO')
+            shell_click('Enable control',in_drawer=True);ui.click_text(pid,'Enable DEMO')
+            shell_click('Auto',in_drawer=True);ui.click_text(pid,'Request AUTO')
             data(lambda d:d['runtime']['pilot']['mode']=='AUTO' and d['runtime']['pilot']['fresh'] and d['runtime']['pilot']['command_state']=='Confirmed')
             previous=data()['runtime']['pilot']['command_id']
-            product_click('+1°')
+            shell_click('+1°',in_drawer=True)
             data(lambda d:d['runtime']['pilot']['command_state']=='Confirmed' and d['runtime']['pilot']['command_id']!=previous)
             capture('alpha-autopilot-confirmed')
-            product_click('STANDBY')
+            shell_click('Standby',in_drawer=True)
             data(lambda d:d['runtime']['pilot']['mode']=='STANDBY' and d['runtime']['pilot']['command_state']=='Confirmed')
-            product_click('Enable / disable DEMO manual control')
+            shell_click('Enable control',in_drawer=True)
             data(lambda d:not d['runtime']['pilot']['enabled'])
-            interaction.control(data,'AUTO',product_scroll,enabled=False)
+            assert any(c['label']=='Auto' and not c['enabled'] for c in data()['runtime']['display']['interaction_controls'])
             report['checks'].append('Native manual test enable/AUTO/+1/STANDBY/disable with fresh feedback and disabled OFF controls')
 
         if windows:
@@ -354,9 +362,17 @@ try:
         else:xdo('key','ctrl+shift+'+key);time.sleep(.6)
         expected_page='Display' if name=='display' else title
         data(lambda d:d.get('ui_page')==expected_page)
-        if name in ('instruments','autopilot'):
+        if name == 'instruments':
             data(lambda d:d['runtime']['display']['minimum_value_height_dip']>=120)
             report.setdefault('grouped_regions',[]).append(interaction.grouped_regions(data))
+        if name=='autopilot':
+            drawer=data()['runtime']['display']['drawer']
+            assert drawer['width']==398 and drawer['height']==674, 'Pilot drawer differs from prototype'
+            controls=data()['runtime']['display']['interaction_controls']
+            for label in ('−10°','−1°','+1°','+10°','Standby','Auto','Track','Wind'):
+                found=[c for c in controls if c['label']==label and c['visible']]
+                assert len(found)==1 and found[0]['height']==48, (label,'pilot touch control missing')
+            report.setdefault('pilot_drawer',[]).append(dict(bounds=drawer,course_controls=8))
         capture('alpha-'+name)
         light('Dusk');light('Night')
         report.setdefault('night_surfaces',[]).append(chartcheck.dark_surface(capture('beta-night-'+name),expected_page))

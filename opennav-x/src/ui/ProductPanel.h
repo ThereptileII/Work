@@ -66,7 +66,7 @@ struct ProductActions {
   std::shared_ptr<diagnostics::Commissioning> commissioning;
   application::NavigationActions navigation;
   std::function<void()> chart, route_summary, energy, diagnostics;
-  std::function<void()> preferences, anchor_watch;
+  std::function<void()> preferences, anchor_watch, pilot_controls;
   std::function<void(ProductPage)> page_changed;
   std::function<void()> legacy, restart_xnav, safe, diagnostics_folder;
   std::function<void(LightMode)> theme;
@@ -123,7 +123,6 @@ private:
   void RouteActions();
   void PointActions();
   void CreateMark();
-  void PilotActions();
   void PilotSettings();
   void EnergySettings();
   void CommissioningPanel();
@@ -163,7 +162,6 @@ private:
   int action_width_ = 200;
   bool first_heading_ = true;
   bool pilot_advanced_ = false;
-  std::vector<std::pair<XNavButton *, adapters::PilotAction>> pilot_buttons_;
   struct LiveTextEntry {
     wxStaticText *label;
     std::function<wxString(const ProductState &)> value;

@@ -388,6 +388,7 @@ Shell::Shell(wxFrame &frame, wxAuiManager &manager, ShellActions actions,
   };
   product_actions.route_summary = [this] { ShowPassage(); };
   product_actions.anchor_watch = [this] { ShowAnchor(); };
+  product_actions.pilot_controls = [this] { ShowPilot(); };
   product_actions.energy = [this] { ShowPage(PreviewPage::Energy); };
   product_actions.diagnostics = [this] { ShowPage(PreviewPage::Diagnostics); };
   product_actions.legacy=actions_.legacy;
@@ -406,6 +407,9 @@ Shell::Shell(wxFrame &frame, wxAuiManager &manager, ShellActions actions,
          actions_.commissioning->AllowsHardwareControl()))
       actions_.pilot_enable(simulation_, enabled);
   };
+  pilot_actions_.command = product_actions.pilot_command;
+  pilot_actions_.enable = product_actions.pilot_enable;
+  pilot_actions_.settings = [this] { ShowProduct(ProductPage::PilotSettings); };
   product_actions.pilot_identity = [this] {
     if (simulation_ || !actions_.pilot_identity ||
         (actions_.commissioning && !actions_.commissioning->AllowsHardwareControl()))
@@ -483,6 +487,7 @@ Shell::~Shell() {
   if (passage_drawer_) { passage_drawer_->Dismiss(); passage_drawer_->Destroy(); passage_drawer_ = nullptr; }
   if (settings_drawer_) { settings_drawer_->Dismiss(); settings_drawer_->Destroy(); settings_drawer_ = nullptr; }
   if (anchor_drawer_) { anchor_drawer_->Dismiss(); anchor_drawer_->Destroy(); anchor_drawer_ = nullptr; }
+  if (pilot_drawer_) { pilot_drawer_->Dismiss(); pilot_drawer_->Destroy(); pilot_drawer_ = nullptr; }
   for (const auto &c : commands_)
     frame_.Unbind(wxEVT_MENU, &Shell::OnCommand, this, c.first);
   frame_.SetAcceleratorTable(wxNullAcceleratorTable);
@@ -846,6 +851,10 @@ void Shell::Tick() {
     }
     pilot_summary_->SetSummary(pilot_mode,pilot_detail);
     p.settings = config;
+    if (pilot_drawer_ && pilot_drawer_->IsShown()) {
+      pilot_drawer_->Update(p.pilot,wall_now,p.vessel,now,config.pilot.permit_control,mode_);
+      pilot_drawer_->Present(DrawerWorkspace());
+    }
     if (actions_.settings_status)
       p.settings_status = actions_.settings_status();
     if (actions_.boat_bridge_status && !simulation_ && !replay)
@@ -1022,6 +1031,7 @@ void Shell::UpdateScrollControls() {
 }
 
 std::string Shell::PageTitle() const {
+  if (pilot_drawer_ && pilot_drawer_->IsShown()) return "Manual autopilot";
   if (anchor_drawer_ && anchor_drawer_->IsShown()) return "Anchor watch";
   if (settings_drawer_ && settings_drawer_->IsShown()) return "Settings";
   if (passage_drawer_ && passage_drawer_->IsShown()) return "Route";
@@ -1066,6 +1076,7 @@ void Shell::SelectDemo(vessel::DemoScenario scenario) {
 #endif
 void Shell::ShowNavigation() {
   CloseContext();
+  if (pilot_drawer_) pilot_drawer_->Dismiss();
   if (anchor_drawer_) anchor_drawer_->Dismiss();
   if (settings_drawer_) settings_drawer_->Dismiss();
   if (passage_drawer_) passage_drawer_->Dismiss();
@@ -1102,6 +1113,7 @@ void Shell::ShowProduct(ProductPage page) {
   if (page == ProductPage::Home || page == ProductPage::Settings) { ShowSettings(); return; }
   if (page == ProductPage::Ais) { ShowTraffic(); return; }
   if (page == ProductPage::Anchor) { ShowAnchor(); return; }
+  if (page == ProductPage::Pilot) { ShowPilot(); return; }
   if (ais_drawer_) ais_drawer_->Dismiss();
   ShowPage(PreviewPage::Route);
   manager_.GetPane(page_).Hide();
@@ -1232,6 +1244,12 @@ void Shell::ShowAnchor() {
   anchor_drawer_->Present(DrawerWorkspace());
   Tick();
 }
+void Shell::ShowPilot() {
+  ShowNavigation();
+  if(!pilot_drawer_)pilot_drawer_=new XNavPilotDrawer(frame_,pilot_actions_);
+  pilot_drawer_->Present(DrawerWorkspace());
+  Tick();
+}
 void Shell::CloseContext() {
   if (context_) context_->Dismiss();
   context_ = nullptr;
@@ -1274,6 +1292,7 @@ void Shell::UpdateContext(vessel::Time now) {
 }
 void Shell::ShowPage(PreviewPage page) {
   CloseContext();
+  if (pilot_drawer_) pilot_drawer_->Dismiss();
   if (anchor_drawer_) anchor_drawer_->Dismiss();
   if (settings_drawer_) settings_drawer_->Dismiss();
   if (passage_drawer_) passage_drawer_->Dismiss();
