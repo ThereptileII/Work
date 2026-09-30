@@ -1,5 +1,36 @@
 # Direct OpenCPN Upstream Modifications
 
+## Windows OpenSSL build boundary (SCRUM-208) — 2026-09-30
+
+`3cbd7e5` adds an integration-only dependency override, without editing the
+pinned OpenCPN source or its pristine dependency reference. After upstream
+`buildwin/win_deps.bat`, `tools/build-openssl-windows.ps1` compiles the verified
+OpenSSL 3.5.9 archive with MSVC `VC-WIN32 shared`. It runs upstream `nmake test`
+before installation and copies headers, import libraries and major-version-3
+DLLs into the disposable integration tree's `cache/buildwin`, which the pinned
+Windows CMake files already consume. The app/plugin ABI remains x86/Win32.
+
+The source lock records SHA-256, archive size and the separately verified
+OpenSSL signing fingerprint. NASM 3.02 is a build-host tool; its isolated
+fallback comes from an official HTTPS ZIP with a pinned hash. NASM's vendor
+publishes no independent checksum/signature for that ZIP, so it is not described
+as signature-verified. Neither tool changes an installed OpenCPN or boat profile.
+
+The generated `openssl-build.json` binds source, build/test completion,
+toolchain log and produced hashes. The integration installer compares the
+installed DLLs with that manifest. `bb294f3` retains its referenced compiler
+and upstream-test output in `evidence/local/windows-openssl-native-output.log`.
+PowerShell parsing and the isolated NASM archive-entry checks pass locally;
+native MSVC, upstream OpenSSL tests, TLS, plugin imports and installer/recovery
+qualification are still pending. A successful source verification is not a
+successful native build.
+
+This boundary covers `libssl-3.dll` / `libcrypto-3.dll`. Retained stock
+`libcurl.dll` imports a separate `ssleay32.dll` / `libeay32.dll` pair identifying
+OpenSSL 1.0.2n. Their current integrated-package provenance and replacement are
+under separate investigation in SCRUM-208; they have not been deleted or
+silently relabelled. Full dependency security and license acceptance remain open.
+
 ## Baseline state — 2026-09-21
 
 No direct upstream modifications. OpenCPN is pinned at

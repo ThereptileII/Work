@@ -758,6 +758,8 @@ void XNavDataValue::Paint(wxPaintEvent&) {
     const int label_y = roomy ? 10 : medium ? 7 : 5;
     const int right = GetClientSize().x - FromDIP(narrow_rail ? 13 : 18);
     const int available = right - x;
+    const int detail_y = GetClientSize().y-FromDIP(18);
+    const int value_detail_gap = FromDIP(4);
     dc.SetPen(wxPen(Colour(colors.border)));
     dc.DrawLine(x, GetClientSize().y-1, right, GetClientSize().y-1);
     dc.SetFont(UiFont(*this,narrow_rail?9:11)); dc.SetTextForeground(Colour(colors.secondary));
@@ -772,20 +774,35 @@ void XNavDataValue::Paint(wxPaintEvent&) {
     const bool stale=reading_.quality==vessel::Quality::Stale;
     const auto value=reading_.value?wxString::Format("%.*f",decimals_,*reading_.value):wxString::FromUTF8("—");
     int value_size = roomy ? 48 : medium ? 40 : 33;
-    dc.SetFont(UiFont(*this,value_size));
     const int tracking=FromDIP(roomy ? -3 : -2);
-    const auto tracked_width=[&]{return dc.GetTextExtent(value).x+tracking*(int(value.length())-1);};
-    while(value_size > 24 && tracked_width() > available) {
-      value_size -= 2; dc.SetFont(UiFont(*this,value_size));
-    }
-    dc.SetTextForeground(Colour(stale?colors.muted:colors.primary));
     const int value_y=FromDIP(label_y+(roomy?21:16));
+    const auto unit=unit_.StartsWith("m /") ? wxString("m") :
+        unit_=="deg true" ? wxString::FromUTF8("°T") : unit_;
+    dc.SetFont(UiFont(*this,11));
+    const auto unit_extent=dc.GetTextExtent(unit);
+    const auto fits=[&](int size) {
+      dc.SetFont(UiFont(*this,size));
+      const auto value_extent=dc.GetTextExtent(value);
+      const int tracked_width=value_extent.x+tracking*(int(value.length())-1);
+      const int unit_x=x+tracked_width+FromDIP(6);
+      const bool inline_unit=unit_x+unit_extent.x<=right;
+      const int unit_y=FromDIP(label_y+(roomy?21:16)+size-13);
+      const int content_bottom=std::max(value_y + value_extent.y,
+          inline_unit ? unit_y + unit_extent.y : value_y + value_extent.y);
+      return tracked_width<=available && content_bottom+value_detail_gap<=detail_y;
+    };
+    // Compact rows can be shorter than the prototype's normal metric card at
+    // high DPI. Fit the measured glyph bounds before drawing the status line.
+    while(value_size > 16 && !fits(value_size))
+      value_size=std::max(16,value_size-2);
+    dc.SetFont(UiFont(*this,value_size));
+    const int tracked_width=dc.GetTextExtent(value).x+tracking*(int(value.length())-1);
+    dc.SetTextForeground(Colour(stale?colors.muted:colors.primary));
     wxArrayInt advances; dc.GetPartialTextExtents(value,advances);
     for(std::size_t i=0;i<value.length();++i)
       dc.DrawText(value.Mid(i,1),x+(i?advances[i-1]:0)+tracking*int(i),value_y);
-    const int unit_x=x+tracked_width()+FromDIP(6);
+    const int unit_x=x+tracked_width+FromDIP(6);
     dc.SetFont(UiFont(*this,11));dc.SetTextForeground(Colour(colors.secondary));
-    auto unit=unit_;if(unit.StartsWith("m /"))unit="m";if(unit=="deg true")unit=wxString::FromUTF8("°T");
     const bool inline_unit=unit_x+dc.GetTextExtent(unit).x<=right;
     if(inline_unit)dc.DrawText(unit,unit_x,value_y+FromDIP(value_size-13));
     wxString status = wxString::FromUTF8(vessel::QualityName(reading_.quality));
@@ -797,7 +814,6 @@ void XNavDataValue::Paint(wxPaintEvent&) {
     if(!inline_unit)status=unit+"  "+status;
     const auto age=reading_.age ? wxString::Format("%.1f s",reading_.age->count()/1000.0) : wxString{};
     const int age_width=dc.GetTextExtent(age).x;
-    const int detail_y=GetClientSize().y-FromDIP(18);
     dc.DrawText(wxControl::Ellipsize(status,dc,wxELLIPSIZE_END,std::max(1,available-age_width-FromDIP(8))),x,detail_y);
     dc.DrawText(age,right-age_width,detail_y);
     return;

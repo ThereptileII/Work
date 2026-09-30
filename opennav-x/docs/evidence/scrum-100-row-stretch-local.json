@@ -1,0 +1,91 @@
+{
+  "schemaVersion": 1,
+  "issue": "SCRUM-100",
+  "implementationCommit": "e29eae6316d7132c62fc9a88e1a1f7f9490f7115",
+  "mergedCommit": "fa9a595",
+  "platform": "Linux X11/Xvfb; not native Windows",
+  "result": {
+    "componentChecks": 232,
+    "componentPassed": true,
+    "nativeEventRect": [
+      105,
+      693,
+      191,
+      53
+    ],
+    "strictLocalHtmlComparison": "FAIL: local HTML height45 versus native53",
+    "windowsReferenceEventHeight": 53,
+    "nativeWindowsQualification": "PENDING"
+  },
+  "scope": "Correct native CSS stretched event hit rows and preserve Return action identity. No visual tolerance changes. Local component evidence only; no complete integrated or release acceptance.",
+  "files": [
+    {
+      "path": "evidence/local/scrum100-row-stretch/interaction.log",
+      "sha256": "44ac3979c33aabae6337a90bc342037690ebde7c29951e7225a1ae58724364b8"
+    },
+    {
+      "path": "evidence/local/scrum100-row-stretch/native-layout.jsonl",
+      "sha256": "f00e99346a2eb5b9bc875410357a9e22c0a1cef7612f2345f24f74865e84bef6"
+    },
+    {
+      "path": "evidence/local/scrum100-row-stretch/owned-aging-day.png",
+      "sha256": "3895efd12d5b6048ad9595bf2dca5465cb0685d621f5f33ba5a82de92e4da19c"
+    },
+    {
+      "path": "evidence/local/scrum100-row-stretch/owned-current-day.png",
+      "sha256": "39efa10d3df304bf9326911b1d7fc796f654edbb982d4fd8be297190df723ae2"
+    },
+    {
+      "path": "evidence/local/scrum100-row-stretch/owned-identity-day.png",
+      "sha256": "c5358a70e2600a4ede7887cc23e63b577e702bdb385731605b1ffaee30f39fed"
+    },
+    {
+      "path": "evidence/local/scrum100-row-stretch/owned-replay-day.png",
+      "sha256": "7ede6652ed428663d20491e1c840a5e82936d04a13e23234c88b7bf824986546"
+    },
+    {
+      "path": "evidence/local/scrum100-row-stretch/owned-severity-day.png",
+      "sha256": "c5358a70e2600a4ede7887cc23e63b577e702bdb385731605b1ffaee30f39fed"
+    },
+    {
+      "path": "evidence/local/scrum100-row-stretch/owned-stale-day.png",
+      "sha256": "08e6b35ab14ee922d760dd0ec2bf0e05d2eb63dfb2dd62ce743a4f95a86c8a85"
+    },
+    {
+      "path": "evidence/local/scrum100-row-stretch/owned-unavailable-day.png",
+      "sha256": "80dd5b19959306dc24a7495e1f06ab387951f0333de0d3e5fde5d67dc4511a78"
+    },
+    {
+      "path": "evidence/local/scrum100-row-stretch/prototype-fixture-day.png",
+      "sha256": "9128a91c68162f387a419352165b705059b9444f31e6fa54ca1e695991cae6e9"
+    },
+    {
+      "path": "evidence/local/scrum100-row-stretch/prototype-fixture-dusk.png",
+      "sha256": "f984b5ecf63f27a64860b3a6e5523471d3e8cd5a9b2c0adcbcdc9e3a273d6d12"
+    },
+    {
+      "path": "evidence/local/scrum100-row-stretch/prototype-fixture-night.png",
+      "sha256": "e740dc0b1be9a2d5ecebfccc8854a217273406dff02b079a6106ba941875176d"
+    },
+    {
+      "path": "evidence/local/scrum100-row-stretch/prototype-focus-day.png",
+      "sha256": "901bfeb12c01dd21b624b05551314ca96354e7c393552569c1a22f667088e153"
+    },
+    {
+      "path": "evidence/local/scrum100-row-stretch/prototype-hover-day.png",
+      "sha256": "49d42580a6fa376e0b22b54aca96940b771a1ddb441b7b163816f99b673528ea"
+    },
+    {
+      "path": "evidence/local/scrum100-row-stretch/prototype-responsive-125.png",
+      "sha256": "e2b0098d489e61ce636f11b8dddb9ead2b5d7b02a15470fa2868d46b032214bf"
+    },
+    {
+      "path": "evidence/local/scrum100-row-stretch/prototype-responsive-150.png",
+      "sha256": "c663a4156713e1931a96af0fe7b8a040a1a73576b25f7ce4f3fb91482cfa42b3"
+    },
+    {
+      "path": "evidence/local/scrum100-row-stretch/result.json",
+      "sha256": "da9d113548df887a45051381b20652a7e2f04ad25797b45a6b2a58484d1d341a"
+    }
+  ]
+}

@@ -7,7 +7,7 @@ on:
 permissions:
   contents: read
 concurrency:
-  group: opennav-beta-${{ github.ref }}
+  group: opennav-beta-${{ github.ref }}-${{ github.sha }}
   cancel-in-progress: true
 jobs:
   boat-firmware:
@@ -59,7 +59,9 @@ jobs:
       - name: Verify published distribution inputs before compilation
         run: python opennav-x/tools/verify-distribution-inputs.py
       - name: Verify corresponding-source archive structure and integrity
-        run: python opennav-x/tools/test-source-package.py
+        run: |
+          python opennav-x/tools/test-source-package.py
+          python opennav-x/tools/test-openssl-package.py
       - name: Verify relocated installer completion and failed fixture retention
         run: python opennav-x/tools/test-installer-completion.py
       - name: Installer rejects unqualified XNav output policies

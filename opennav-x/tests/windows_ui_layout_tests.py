@@ -262,3 +262,82 @@ for fault in (None, 'clipped', 'covered', 'no-hit', 'disabled', 'duplicate', 'mi
         assert wire[-3:] == [('cursor',870,256),('mouse',2),('mouse',4)]
         assert wire.count(('mouse',0x0800)) == int(preferences)
 print('12 pointer recovery visibility/occlusion/identity/scroll guards passed without HWND command injection')
+
+# Foreground activation is asynchronous across Win32 input queues. Exercise the
+# Preferences scroll branch with delayed activation and retain strict refusal
+# when activation is denied, an overlay appears, or the viewport moves.
+scroll_cases = ('delayed-activation', 'activation-denied', 'activation-overlay',
+                'activation-moved-viewport')
+for scroll_case in scroll_cases:
+    clock = Clock()
+    wire = []
+    front = [99]
+    activation_due = [None]
+    moved = [False]
+    bounds = {1:(0,0,1280,800), 2:(680,180,1060,500), 3:(700,170,1040,242)}
+    parents = {3:2, 2:1}
+    captions = [(3, 'Interface & recovery')]
+    queried = [3]
+
+    def native_class(handle, buffer, capacity):
+        buffer.value = 'wxWindowNR'
+        return len(buffer.value)
+
+    def native_hit(point):
+        if scroll_case == 'activation-overlay':
+            return 99
+        return 2 if point.y == 340 else 3
+
+    def native_rect(handle, output):
+        if handle == 2 and moved[0]:
+            value = (700, 180, 1060, 500)
+        else:
+            value = bounds.get(handle)
+        if value is None:
+            return False
+        output = C.cast(output, C.POINTER(W.RECT)).contents
+        output.left, output.top, output.right, output.bottom = value
+        return True
+
+    def current_front():
+        if activation_due[0] is not None and clock.now >= activation_due[0]:
+            front[0] = 1
+        return front[0]
+
+    def activate(handle):
+        if scroll_case == 'delayed-activation':
+            activation_due[0] = clock.now + .15
+        elif scroll_case == 'activation-moved-viewport':
+            front[0] = 1
+            moved[0] = True
+        elif scroll_case == 'activation-overlay':
+            front[0] = 1
+        # activation-denied deliberately leaves the unrelated foreground HWND.
+
+    def native_mouse(event, *args):
+        wire.append(('mouse', event))
+        if event == 0x0800:
+            bounds[3] = (700,220,1040,292)
+
+    pointer_namespace.update(
+        time=clock, windows=lambda pid:[(1,pid,'OpenNav X / OpenCPN')],
+        children=lambda root:captions, IsWindowEnabled=lambda h:True,
+        text=lambda h:'OpenNav preferences' if h == 1 else '',
+        GetClassNameW=native_class, GetWindowRect=native_rect,
+        GetParent=lambda h:parents.get(h), IsChild=is_child,
+        WindowFromPoint=native_hit,
+        declare=lambda dll,name,*args: current_front if name == 'GetForegroundWindow'
+        else (lambda h,flag: 1),
+        user=None, SetForegroundWindow=lambda h:activate(h),
+        SetCursorPos=lambda x,y:wire.append(('cursor',x,y)) or True,
+        MouseEvent=native_mouse)
+    try:
+        pointer_namespace['pointer_text'](101, 'Interface & recovery')
+    except AssertionError:
+        assert scroll_case != 'delayed-activation', scroll_case
+        assert not wire, (scroll_case, wire)
+    else:
+        assert scroll_case == 'delayed-activation', scroll_case
+        assert ('mouse', 0x0800) in wire
+        assert ('mouse', 2) in wire and ('mouse', 4) in wire
+print('4 delayed-foreground Preferences scroll activation guards passed without HWND command injection')

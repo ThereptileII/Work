@@ -1,0 +1,88 @@
+{
+  "issues": [
+    "SCRUM-98",
+    "SCRUM-100",
+    "SCRUM-14"
+  ],
+  "remote_commit": "19cf4f70dc4d74789a44b4abe2302241e193d72d",
+  "local_source_commit": "f2152da67f9e6525fd0d5dcc28d127266ccca879",
+  "prototype_run": "https://github.com/ThereptileII/Work/actions/runs/36742210448",
+  "overall": "not qualified",
+  "artifacts": [
+    {
+      "id": 11111244403,
+      "name": "prototype-native-Windows-19cf4f70dc4d74789a44b4abe2302241e193d72d",
+      "sha256": "425306833dd8d7ffa9e731316282d49694d3c81e9f38c39fa54dffd71de1f808",
+      "bytes": 42100834,
+      "zipCrc": true
+    },
+    {
+      "id": 11111523702,
+      "name": "prototype-object-flow-Windows-19cf4f70dc4d74789a44b4abe2302241e193d72d",
+      "sha256": "5d642eb5592012020fb8acfbf9cfc057c33edcb2bc1f823e81abd7d9901d0e91",
+      "bytes": 18605063,
+      "zipCrc": true
+    }
+  ],
+  "logs_sha256": {
+    "job-109979708358.log": "16e9b9db6806f396544f8973d917d55534ffbfb10912bdc6824e217f3aec4952",
+    "job-109979708539.log": "d7ebde25ecaa602b47573f2b96ad5ca93756943a085eaca2e714b0879186a811",
+    "job-109979206914.log": "6999dd3affbc108d176c4bccb205ce42050e7cec5621b1e58fc3ccc3fe1579bf",
+    "job-109979206742.log": "a5ebc5a230d80495ca2d96476da2d1d1b5df6fad3b8ff4c7dd4823dcc5d587fb"
+  },
+  "standalone_contracts": {
+    "Windows": {
+      "passed": 86,
+      "failed": 0
+    },
+    "Linux": {
+      "passed": 89,
+      "failed": 0
+    }
+  },
+  "native_fixture_free_upstream_units": {
+    "passed": 128,
+    "failed": 0
+  },
+  "footer_component": {
+    "passed": true,
+    "checks": 198,
+    "captures": 10,
+    "actual_keyboard_and_pointer": true
+  },
+  "horizon_component": {
+    "internal_checks_passed": 270,
+    "independent_HTML_geometry_passed": false,
+    "actual_event_0": [
+      105,
+      693,
+      191,
+      45
+    ],
+    "reference_event_0": [
+      105,
+      694,
+      190.890625,
+      53
+    ],
+    "cause": "Control height sums text line boxes instead of matching the stretched CSS grid row. Internal expected 45 mirrors implementation; independent strict comparison caught it.",
+    "header_review": "Original-resolution integrated PNG and independent review confirm header present. Initial scaled-preview observation was incorrect and withdrawn in Jira comment10119."
+  },
+  "retained_DPI": {
+    "completed_scales": [
+      100,
+      125
+    ],
+    "failed_scale": 150,
+    "failure": "Preferences scroll check observes main frame foreground immediately after requesting drawer activation; pointer hit is a viewport descendant.",
+    "selected_correction": "Bounded wait for actual activation inside existing deadline, then fresh geometry/hit checks. Native repair verification pending."
+  },
+  "visual_observation": "150 percent test-data rail metadata crowds numeric values; recorded in SCRUM-14 for correction.",
+  "review_scope": "Root reviewed integrated navigation and HTML reference at original resolution, horizon fixture and 150 percent failure screenshot. No broad screen acceptance.",
+  "remaining_gates": [
+    "horizon exact geometry",
+    "retained native DPI suite",
+    "remaining integrated/installer/endurance run",
+    "boat and overall release acceptance"
+  ]
+}

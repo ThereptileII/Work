@@ -283,12 +283,38 @@ def pointer_text(pid, label):
             assert observed != last_scroll, ('Visible Preferences scroll did not move target', label)
             last_scroll = observed
             SetForegroundWindow(surface)
+            while foreground() != surface and time.monotonic() < deadline:
+                time.sleep(.05)
+            current_foreground = foreground()
+            fresh_viewport = W.RECT()
+            fresh_target = W.RECT()
+            assert GetWindowRect(viewport, C.byref(fresh_viewport))
+            assert GetWindowRect(handle, C.byref(fresh_target))
+            initial_viewport_rect = [area.left, area.top, area.right, area.bottom]
+            initial_target_rect = [rect.left, rect.top, rect.right, rect.bottom]
+            fresh_viewport_rect = [fresh_viewport.left, fresh_viewport.top,
+                                   fresh_viewport.right, fresh_viewport.bottom]
+            fresh_target_rect = [fresh_target.left, fresh_target.top,
+                                 fresh_target.right, fresh_target.bottom]
+            geometry_identity = dict(
+                selected_target_handle=int(handle),
+                viewport_handle=int(viewport),
+                surface_handle=int(surface),
+                target_rect_unchanged=(fresh_target_rect == initial_target_rect),
+                viewport_rect_unchanged=(fresh_viewport_rect == initial_viewport_rect),
+                target_is_viewport_descendant=bool(
+                    handle and viewport and IsChild(viewport, handle)),
+            )
+            area = fresh_viewport
+            rect = fresh_target
             point = W.POINT((area.left + area.right)//2, (area.top + area.bottom)//2)
             hit = WindowFromPoint(point)
-            current_foreground = foreground()
             hit_is_viewport = bool(hit and hit == viewport)
             hit_is_viewport_descendant = bool(hit and viewport and IsChild(viewport, hit))
             if not (current_foreground == surface and
+                    geometry_identity['target_rect_unchanged'] and
+                    geometry_identity['viewport_rect_unchanged'] and
+                    geometry_identity['target_is_viewport_descendant'] and
                     (hit_is_viewport or hit_is_viewport_descendant)):
                 raise AssertionError((
                     'Preferences scrolling surface covered', label,
@@ -298,6 +324,7 @@ def pointer_text(pid, label):
                          current_foreground=pointer_evidence(current_foreground),
                          hit=pointer_evidence(hit),
                          wheel_point=[point.x, point.y],
+                         geometry_identity=geometry_identity,
                          descendant_relationship=dict(
                              hit_is_viewport=hit_is_viewport,
                              hit_is_viewport_descendant=hit_is_viewport_descendant,

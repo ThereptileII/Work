@@ -1,0 +1,26 @@
+{
+  "library": "OpenSSL 3.5.9",
+  "license": "Apache-2.0",
+  "licenseSource": "https://github.com/openssl/openssl/blob/openssl-3.5.9/LICENSE.txt",
+  "licenseSha256": "7d5450cb2d142651b8afa315b5f238efc805dad827d91ba367d8516bc9d49e7a",
+  "sourceArchive": "https://github.com/openssl/openssl/releases/download/openssl-3.5.9/openssl-3.5.9.tar.gz",
+  "sourceArchiveSha256": "603f5602e2eef00d77fbd429d34dcd5822bb301757a1bc9cdb24c670f1eb859a",
+  "sourceArchiveBytes": 53279637,
+  "sourceChecksum": "https://github.com/openssl/openssl/releases/download/openssl-3.5.9/openssl-3.5.9.tar.gz.sha256",
+  "sourceSignature": "https://github.com/openssl/openssl/releases/download/openssl-3.5.9/openssl-3.5.9.tar.gz.asc",
+  "authorityKeys": "https://openssl-library.org/source/pubkeys.asc",
+  "signatureVerification": {
+    "status": "verified",
+    "signer": "OpenSSL <openssl@openssl.org>",
+    "primaryFingerprint": "B146647E45A7B33947AB226B2A2C87D161692D40",
+    "signingSubkey": "C46ED3F2CBEFDA1FDAADA44264ED7B1DCCE71CB2"
+  },
+  "windowsBuildIntent": {
+    "target": "VC-WIN32",
+    "linkage": "shared",
+    "abi": "OpenSSL major version 3; product Win32/x86 compatibility remains to be qualified",
+    "instructions": "NOTES-WINDOWS.md and INSTALL.md from the verified 3.5.9 archive"
+  },
+  "securityAndReleaseStatus": "Source and license provenance only. Exact XNav production DLL hashes, PE imports, binary qualification, and release approval remain pending.",
+  "supersedes": "docs/third-party/OpenSSL-3.0.5/provenance.json"
+}

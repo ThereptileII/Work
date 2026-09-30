@@ -49,6 +49,13 @@ try {
     try {
         Run cmd @('/c', 'buildwin\win_deps.bat')
     } finally { Pop-Location }
+    if ($Integration) {
+        # Replace the stock dependency bundle only in the disposable integrated
+        # tree. Its Windows CMake files link and install these exact paths.
+        & (Join-Path $PSScriptRoot 'build-openssl-windows.ps1') -IntegrationSource $Source 2>&1 |
+            Tee-Object -FilePath (Join-Path $Evidence 'windows-openssl-native-output.log') -Append
+        if ($LASTEXITCODE -ne 0) { throw 'Pinned OpenSSL source build failed' }
+    }
     $Wx = Join-Path $Source 'cache/wxWidgets-3.2.8'
     $Build = Join-Path $Root "build/$Variant-windows"
     $Install = Join-Path $Root "build/$Variant-install"
@@ -72,6 +79,17 @@ try {
         '-DOCPN_BUNDLE_TCDATA=ON', "-DCMAKE_INSTALL_PREFIX=$Install") + $OpenNavArgs)
     Run cmake @('--build', $Build, '--config', 'Release', '--parallel', '2')
     Run cmake @('--install', $Build, '--config', 'Release')
+    if ($Integration) {
+        $OpenSslManifest = Get-Content (Join-Path $Source 'cache/buildwin/openssl-build.json') -Raw | ConvertFrom-Json
+        Copy-Item (Join-Path $Source 'cache/buildwin/openssl-build.json') (Join-Path $Install 'openssl-build.json') -Force
+        foreach ($Dll in @('libssl-3.dll','libcrypto-3.dll')) {
+            $InstalledHash = (Get-FileHash (Join-Path $Install $Dll) -Algorithm SHA256).Hash.ToLowerInvariant()
+            $Recorded = $OpenSslManifest.cacheBuildwin.PSObject.Properties[$Dll].Value.sha256
+            if ($InstalledHash -cne $Recorded) {
+                throw "Installed $Dll does not match the source-built OpenSSL manifest"
+            }
+        }
+    }
     Run ctest @('--test-dir', (Join-Path $Build 'test'), '-C', 'Release', '--output-on-failure', '--no-tests=error',
         '--timeout', '90', '--output-junit', (Join-Path $Evidence "windows-$Variant-tests.xml"))
     Get-FileHash (Join-Path $Build 'Release/opencpn.exe') -Algorithm SHA256 |

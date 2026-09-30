@@ -1,5 +1,85 @@
 # OpenNav X status — 2026-09-30
 
+## Next combined native candidate — 2026-09-30
+
+The compact rail now fits measured number/unit bounds above status metadata
+(`58ce8b2`, `3092417`), addressing the retained 150% overlap. The primary
+prototype sizes remain where they fit. Native screenshots are still required;
+local syntax validation does not qualify the design.
+
+The OpenSSL source-build boundary is merged (`3cbd7e5`, `bb294f3`). Package
+validation (`789cdbf`, `fbc991a`) now checks the actual Windows build manifest,
+installed and final packaged DLL hashes/architecture, source archive and
+notices. It includes the unchanged verified source tar in corresponding source.
+Focused checks pass: 8 OpenSSL package, 11 source archive and 6 AIS probe cases.
+The source-build compiler/upstream-test and native regression gates are pending.
+
+SCRUM-209 separately tracks the confirmed legacy curl closure: the current
+dependency bundle carries libcurl 7.58.0 importing OpenSSL 1.0.2n. Its maintained
+replacement, zlib and trust-policy qualification remain launch blockers.
+Updating the major-version-3 libraries alone does not close that issue.
+
+## Account session foundation — 2026-09-30
+
+SCRUM-40's Auth0 login/session foundation is merged at `99f6a71` / `745cc09`.
+Exact merged revision `4bd4c36dae43b9b2ab9e5039c687f531b6c605d5` passes
+31/31 tests on isolated PostgreSQL 18.6: 11 database-integrity and 20 account
+cases. The check includes concurrent one-time callbacks, signature and claim
+validation, redirect refusal, bounded responses, session rotation, CSRF logout,
+and fresh/reverse/reapplied migrations. The disposable database was stopped
+and removed. [Evidence](evidence/scrum-40-auth-local.json) records exact logs;
+the [session contract](architecture/auth0-session-foundation.md) records the
+boundary. CI now includes both suites, but publication/native and staging
+acceptance remain separate. Authentication stays disabled by default; real
+tenant, recovery/MFA, abuse controls, privacy/security review and deployment
+are not complete.
+
+## Native repairs and security dependency review — 2026-09-30
+
+The pointer-scroll activation repair is merged at `61cdd4c`: it waits for the
+actual foreground window within the existing deadline, then rechecks geometry,
+window identity and pointer obstruction. Focused delayed/denied activation,
+overlay and movement cases pass; native Windows verification remains open.
+The horizon row-stretch correction is merged at `fa9a595`. Its isolated Linux
+component passes 232 checks, including Return action-identity cancellation.
+The strict Linux HTML comparison still fails on platform-specific row height;
+the corrected 53-pixel native height matches the retained Windows reference,
+but only a fresh Windows comparison can qualify it. See
+[retained component evidence](evidence/scrum-100-row-stretch-local.json).
+
+SCRUM-208 is a Highest security launch blocker: retained Windows dependency
+DLLs identify as OpenSSL 3.0.5, with no reviewed backport evidence. Official
+OpenSSL 3.5.9 source has passed published checksum and isolated signature
+verification; a source-built Win32 integration replacement is in progress.
+No installed/boat DLLs have been changed. Native TLS, package/import, plugin,
+installer and exact-source qualification remain required. The existing stock
+OpenCPN compatibility allowlist has not been expanded.
+
+## Active native candidate and database foundation — 2026-09-30
+
+Local `f2152da67f9e6525fd0d5dcc28d127266ccca879` is published as
+`19cf4f70dc4d74789a44b4abe2302241e193d72d`. Its [full native/Linux run](https://github.com/ThereptileII/Work/actions/runs/36742212299)
+passes the standalone contract suites: 86/86 Windows and 89/89 Linux.
+The [prototype run](https://github.com/ThereptileII/Work/actions/runs/36742210448)
+passes the native footer component (198 checks), but its strict horizon
+comparison fails on 45-pixel event controls versus the HTML grid row's 53 pixels.
+The retained 150% DPI suite also fails on immediate foreground activation
+observation before scrolling; the pointer hit is inside the intended viewport.
+Both verified archives and [exact negative evidence](evidence/scrum-98-native-19cf-negative.json)
+are retained. Neither run has overall acceptance. The integrated Linux build previously passed 136/136
+upstream tests. Those counts describe different test suites, not a combined
+release result. The branch/commit concurrency correction `267c72d` is local and
+awaits publication; it does not undo the preceding run's automatic cancellation.
+
+The reviewed SCRUM-94 database schema and CI definition are merged through
+`d0105a1`. Its exact local PostgreSQL 18.6 loopback-TCP check passes all 11
+integrity cases, migration drift, fresh migration, reverse to 0001, and reapply
+through 0003. The disposable cluster was stopped and removed. See
+[exact schema evidence](evidence/scrum-94-schema-local.json) and
+[database contract](architecture/web-database-foundation.md). CI, backups,
+restore and staging gates remain open. SCRUM-40 now owns the bounded Auth0
+login/session implementation; no public service has been deployed.
+
 ## Next native verification candidate — 2026-09-30
 
 The selected fullscreen test correction is implemented in `882d497`; the
@@ -40,9 +120,14 @@ retain all three failures. Prototype run
 [36726644584](https://github.com/ThereptileII/Work/actions/runs/36726644584)
 finished with six successful and two failed jobs; full run
 [36726657879](https://github.com/ThereptileII/Work/actions/runs/36726657879)
-has passed Linux chart/preview checks and is still in its elapsed-time endurance
-gate at this observation. The original intermittent exit-255 failure remains
-open. No release or boat acceptance is claimed.
+had not completed its elapsed-time endurance gate when the later push for exact
+candidate `19cf4f70dc4d74789a44b4abe2302241e193d72d` reused the branch-only
+concurrency group and automatically cancelled that run's remaining endurance
+step. This workflow now scopes concurrency by branch and exact commit, while
+still cancelling duplicate runs of the same revision. Future validation must
+observe a separate candidate run through its terminal endurance result; the
+original intermittent exit-255 failure remains open. No release or boat
+acceptance is claimed.
 
 SCRUM-31's [web architecture decision](architecture/public-beta-web-commerce.md)
 is complete at `95d5a12`. SCRUM-94 now owns the next bounded database-schema

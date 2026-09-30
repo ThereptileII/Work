@@ -1,0 +1,19 @@
+{
+  "version": "3.5.9",
+  "configuration": "VC-WIN32 shared",
+  "archive": "openssl-3.5.9.tar.gz",
+  "url": "https://github.com/openssl/openssl/releases/download/openssl-3.5.9/openssl-3.5.9.tar.gz",
+  "sha256": "603f5602e2eef00d77fbd429d34dcd5822bb301757a1bc9cdb24c670f1eb859a",
+  "bytes": 53279637,
+  "signingPrimaryFingerprint": "B146647E45A7B33947AB226B2A2C87D161692D40",
+  "buildTools": {
+    "nasm": {
+      "version": "3.02",
+      "archive": "nasm-3.02-win64.zip",
+      "url": "https://www.nasm.us/pub/nasm/releasebuilds/3.02/win64/nasm-3.02-win64.zip",
+      "sha256": "161d0bfaff53c2f9e9f3e69fd0672323ebabafd1268976a5cec11be92a19aee7",
+      "bytes": 641314,
+      "provenance": "Official NASM HTTPS release; vendor publishes no independent checksum or signature"
+    }
+  }
+}

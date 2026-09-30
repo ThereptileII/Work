@@ -1,0 +1,39 @@
+{
+  "issue": "SCRUM-94",
+  "status": "partial implementation; not accepted",
+  "source_commit": "d0105a186c55694f673a48333c6fa985d4d6df9f",
+  "tested_at": "2026-09-30",
+  "database": "PostgreSQL 18.6; disposable loopback TCP with SCRAM authentication",
+  "cases_passed": 11,
+  "cases_failed": 0,
+  "checks": [
+    "Django system check",
+    "migration drift",
+    "fresh migration",
+    "reverse core to 0001",
+    "reapply through 0003",
+    "PostgreSQL integrity tests"
+  ],
+  "source_unchanged": true,
+  "database_cleanup": "cluster stopped; disposable data destroyed",
+  "evidence_directory": "evidence/local/scrum94-d0105a1",
+  "evidence_sha256": {
+    "metadata-before.txt": "ca650b9ac8c745d604fe7fddfab5a4b1df1c1eef97a4c80d1e85e78dd5548cde",
+    "metadata-after.txt": "9b22aa9ba7295cbabaece69674a1e64e6a25c607bc8936b7a4f5ded929158e7a",
+    "exit-codes.txt": "293d435dffad355ca239843f760a624ed3c19e0035153fc122a675b04b9874a7",
+    "check.log": "1e3e63f221bde88816c4a4ef7367691607b20cc1d194028a02ec9ae0586cf9b1",
+    "migration-drift.log": "a2bfa7b376c38062f77ce2b1e703876aaa04662f96355cdf5dc9d0d075302b05",
+    "migrate-forward.log": "014040181122603d16be9341db22903439f739a0870e1e9abc8ed15fc3d97452",
+    "migrate-reverse.log": "53c2fb83de9d38378e19e77e8c4ce1e23272ccfb933d12768bf60f46ea43dd6f",
+    "migrate-reapply.log": "03a2873634c78db285eab93caf54e6a7ae016c875e2f1ae35d7e28e7e2331aad",
+    "tests.log": "c4154802b26e50ae92aad23ff7fc63f57fe84204aeb62d66051a85b501608e14",
+    "pg-stop.log": "ca19178a35ab4153b75b494963b66ce8243e1b94c173107c87b44d09db23652d",
+    "workflow-path-check.txt": "4efa492837d77ace5595908d3c39ba4312ef5c0c96190cefdfc362016c6d3e37"
+  },
+  "open_gates": [
+    "actual GitHub workflow run",
+    "automated backups and timed restore rehearsal",
+    "staging-to-production process qualification",
+    "authentication/payment/entitlement/support service acceptance"
+  ]
+}

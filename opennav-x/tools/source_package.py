@@ -2,6 +2,8 @@
 import hashlib
 import json
 from pathlib import Path
+from pathlib import PurePosixPath
+import re
 import stat
 import subprocess
 import zipfile
@@ -87,11 +89,40 @@ def source_inventory(root, commit):
     return entries, references
 
 
-def create_source_archive(root, commit, archive):
+def create_source_archive(root, commit, archive, bundled_sources=()):
     archive = Path(archive)
     if archive.exists():
         raise ValueError('Refusing to overwrite a corresponding-source archive')
     entries, references = source_inventory(root, commit)
+    dependency_sources = []
+    for item in bundled_sources:
+        source = Path(item['archive'])
+        target_name = item['path']
+        portable = PurePosixPath(target_name)
+        if (not source.is_file() or source.is_symlink() or
+                '\\' in target_name or ':' in target_name or
+                not target_name.startswith('third-party-sources/') or
+                portable.as_posix() != target_name or '..' in portable.parts or
+                len(portable.parts) != 2 or
+                re.fullmatch(r'[A-Za-z0-9][A-Za-z0-9._+-]*', portable.name) is None or
+                target_name in entries):
+            raise ValueError('Bundled dependency source path is missing or unsafe')
+        source = source.resolve()
+        content = source.read_bytes()
+        digest = hashlib.sha256(content).hexdigest()
+        if digest != item['sha256']:
+            raise ValueError('Bundled dependency source digest changed before archiving')
+        entries[target_name] = (content, '100644')
+        dependency_sources.append({
+            'path': target_name, 'sha256': digest, 'bytes': len(content),
+            'reference': item['reference'],
+        })
+    if dependency_sources:
+        references['bundledDependencySources'] = dependency_sources
+        references['files'].update({
+            item['path']: {'sha256': item['sha256'], 'gitMode': '100644'}
+            for item in dependency_sources
+        })
     with zipfile.ZipFile(archive, 'w', zipfile.ZIP_DEFLATED) as target:
         for name, (content, mode) in sorted(entries.items()):
             info = zipfile.ZipInfo(name)

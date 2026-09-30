@@ -187,7 +187,7 @@ jobs:
           if (-not $VS) { throw 'Licensed native toolchain missing' }
           $Runtime = Get-ChildItem "$VS\VC\Redist\MSVC\*\x86\Microsoft.VC143.CRT" -Directory | Sort-Object FullName -Descending | Select-Object -First 1
           if (-not $Runtime) { throw 'Licensed x86 runtime missing' }
-          python opennav-x/tools/package-ais-live-probe.py --runtime $Runtime.FullName --output opennav-x/build/ais-readonly-probe
+          python opennav-x/tools/package-ais-live-probe.py --runtime $Runtime.FullName --output opennav-x/build/ais-readonly-probe --openssl-source-cache opennav-x/build/dependency-downloads/openssl-3.5.9.tar.gz
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
           # The fixture-free settings gate above explicitly established that
           # this disposable account has no product key. This is a negative,

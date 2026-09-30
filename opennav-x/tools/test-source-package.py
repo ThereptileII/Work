@@ -83,6 +83,40 @@ class SourceDistributionTests(unittest.TestCase):
         with self.assertRaises(ValueError):
             source_package.create_source_archive(self.root, self.commit, archive)
 
+    def test_verified_dependency_archive_is_inert_and_in_inventory(self):
+        dependency = self.repository / 'openssl-3.5.9.tar.gz'
+        contents = b'not extracted; exact archive bytes\n'
+        dependency.write_bytes(contents)
+        archive = self.repository / 'source-with-dependency.zip'
+        references = source_package.create_source_archive(self.root, self.commit, archive, [{
+            'archive': dependency,
+            'path': 'third-party-sources/openssl-3.5.9.tar.gz',
+            'sha256': hashlib.sha256(contents).hexdigest(),
+            'reference': {'library': 'OpenSSL', 'version': '3.5.9'},
+        }])
+        with zipfile.ZipFile(archive) as source:
+            name = 'third-party-sources/openssl-3.5.9.tar.gz'
+            self.assertEqual(source.read(name), contents)
+            self.assertEqual(references['bundledDependencySources'][0]['path'], name)
+            self.assertEqual(references['files'][name]['sha256'], hashlib.sha256(contents).hexdigest())
+
+    def test_unsafe_dependency_archive_path_is_refused(self):
+        dependency = self.repository / 'openssl.tar.gz'
+        dependency.write_bytes(b'inert')
+        with self.assertRaisesRegex(ValueError, 'unsafe'):
+            source_package.create_source_archive(self.root, self.commit,
+                self.repository / 'unsafe.zip', [{
+                    'archive': dependency, 'path': 'third-party-sources/../escape.tar.gz',
+                    'sha256': hashlib.sha256(b'inert').hexdigest(), 'reference': {},
+                }])
+        with self.assertRaisesRegex(ValueError, 'unsafe'):
+            source_package.create_source_archive(self.root, self.commit,
+                self.repository / 'windows-unsafe.zip', [{
+                    'archive': dependency,
+                    'path': 'third-party-sources/foo\\..\\escape.tar.gz',
+                    'sha256': hashlib.sha256(b'inert').hexdigest(), 'reference': {},
+                }])
+
     def test_uncommitted_product_refused(self):
         (self.root / 'source.cpp').write_text('uncommitted change\n')
         with self.assertRaises(subprocess.CalledProcessError):

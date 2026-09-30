@@ -1,0 +1,127 @@
+{
+  "commit": "4bd4c36dae43b9b2ab9e5039c687f531b6c605d5",
+  "postgresql": "18.6",
+  "transport": "loopback TCP SCRAM",
+  "steps": [
+    {
+      "step": "initdb",
+      "exitCode": 0
+    },
+    {
+      "step": "start",
+      "exitCode": 0
+    },
+    {
+      "step": "createdb",
+      "exitCode": 0
+    },
+    {
+      "step": "check",
+      "exitCode": 0
+    },
+    {
+      "step": "drift",
+      "exitCode": 0
+    },
+    {
+      "step": "migrate",
+      "exitCode": 0
+    },
+    {
+      "step": "reverse-core",
+      "exitCode": 0
+    },
+    {
+      "step": "reverse-accounts",
+      "exitCode": 0
+    },
+    {
+      "step": "reapply",
+      "exitCode": 0
+    },
+    {
+      "step": "tests",
+      "exitCode": 0
+    },
+    {
+      "step": "stop",
+      "exitCode": 0
+    }
+  ],
+  "clusterRemoved": true,
+  "trackedIndexBefore": "3ee249e851133c45f2aedee19e1a63a27e09443acfe4d38a032dbfb1f344c65b",
+  "trackedIndexAfter": "3ee249e851133c45f2aedee19e1a63a27e09443acfe4d38a032dbfb1f344c65b",
+  "headAfter": "4bd4c36dae43b9b2ab9e5039c687f531b6c605d5",
+  "schemaVersion": 1,
+  "issues": [
+    "SCRUM-40",
+    "SCRUM-94"
+  ],
+  "totalTests": 31,
+  "authTests": 20,
+  "integrityTests": 11,
+  "publicAuthenticationEnabled": false,
+  "remainingGates": [
+    "exact-commit hosted CI",
+    "real Auth0 tenant and staging login/recovery/MFA",
+    "key rotation and network-failure qualification",
+    "rate limits and monitoring",
+    "scheduled attempt cleanup",
+    "privacy and security review"
+  ],
+  "workingTreeCleanAfter": true,
+  "evidenceFiles": [
+    {
+      "path": "evidence/local/scrum40-4bd4c36/check.log",
+      "sha256": "1e3e63f221bde88816c4a4ef7367691607b20cc1d194028a02ec9ae0586cf9b1"
+    },
+    {
+      "path": "evidence/local/scrum40-4bd4c36/createdb.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "evidence/local/scrum40-4bd4c36/drift.log",
+      "sha256": "a2bfa7b376c38062f77ce2b1e703876aaa04662f96355cdf5dc9d0d075302b05"
+    },
+    {
+      "path": "evidence/local/scrum40-4bd4c36/initdb.log",
+      "sha256": "51f91ab15bda801e136f380cbe817912c110a7ddaf706a964ecb710fd12eb994"
+    },
+    {
+      "path": "evidence/local/scrum40-4bd4c36/migrate.log",
+      "sha256": "e3427fa2adfc1a821c599fbadb0ad20e05a209a4139a25adf728cecf4f0f4a53"
+    },
+    {
+      "path": "evidence/local/scrum40-4bd4c36/postgres.log",
+      "sha256": "1ff1332fb4129ae557499e3c32500cdcb28727e4e885b985fc121c090dc288ea"
+    },
+    {
+      "path": "evidence/local/scrum40-4bd4c36/reapply.log",
+      "sha256": "56e853e33dd8ca89a6871a8ad80ec61572a154439a5f08385ac483c9236dc531"
+    },
+    {
+      "path": "evidence/local/scrum40-4bd4c36/result.json",
+      "sha256": "aef05ed8c3ed77148c1f6b4c073795024ce37d5fb926ed8dda78c1826f4cddd1"
+    },
+    {
+      "path": "evidence/local/scrum40-4bd4c36/reverse-accounts.log",
+      "sha256": "40da448b9d8195d082d197afb02cb5dbb7e4ca70adcae48fa2c71a10c4b6b1c2"
+    },
+    {
+      "path": "evidence/local/scrum40-4bd4c36/reverse-core.log",
+      "sha256": "53c2fb83de9d38378e19e77e8c4ce1e23272ccfb933d12768bf60f46ea43dd6f"
+    },
+    {
+      "path": "evidence/local/scrum40-4bd4c36/start.log",
+      "sha256": "66afd0411ccc09366e99fdd99b85f21899c8d2d064f5835126859618802153ad"
+    },
+    {
+      "path": "evidence/local/scrum40-4bd4c36/stop.log",
+      "sha256": "ca19178a35ab4153b75b494963b66ce8243e1b94c173107c87b44d09db23652d"
+    },
+    {
+      "path": "evidence/local/scrum40-4bd4c36/tests.log",
+      "sha256": "bf54fbc9a7c1e624907f66ff4037d493262f316d18ce257f55ee2d562bfa2a06"
+    }
+  ]
+}

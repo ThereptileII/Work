@@ -48,6 +48,13 @@ class HorizonButton final:public XNavButton {
       :XNavButton(parent,wxID_ANY,label,label),full_(full) {
     SetMinSize({0,0});
     Bind(wxEVT_LEFT_DOWN,[this](wxMouseEvent &e){armed_=item_.action;e.Skip();});
+    // XNavButton handles Return in CHAR_HOOK on wxMSW, before dialog
+    // navigation can consume the key-down. Preserve the row identity at that
+    // same boundary so the later key-up cannot activate changed content.
+    Bind(wxEVT_CHAR_HOOK,[this](wxKeyEvent &e){
+      if(e.GetKeyCode()==WXK_RETURN&&!e.IsAutoRepeat())armed_=item_.action;
+      e.Skip();
+    });
     Bind(wxEVT_KEY_DOWN,[this](wxKeyEvent &e){if((e.GetKeyCode()==WXK_RETURN || e.GetKeyCode()==WXK_SPACE)&&!e.IsAutoRepeat())armed_=item_.action;e.Skip();});
     Bind(wxEVT_BUTTON,[this,action=std::move(action)](wxCommandEvent &){
       // A changed identity during press/release must not activate the new row.
@@ -137,7 +144,11 @@ bool XNavHorizon::Layout() {
   const int link_width=int(std::ceil(passage_->NaturalWidth()));
   passage_->SetSize(heading_.GetRight()+1-link_width,heading_.y,link_width,heading_height);
   event_y_=heading_.y+heading_height+FromDIP(margin);
-  const int event_height=FromDIP(LineHeight(10)+LineHeight(title_size_)+LineHeight(detail_size_)+2*gap_);
+  // CSS grid items stretch to the measured row bounds; their hit rectangles
+  // are not limited to the three painted text line boxes. These trailing
+  // insets come from the immutable 132/112/98 px desktop layouts.
+  const int event_bottom_inset=FromDIP(short_?11:20);
+  const int event_height=std::max(0,size.y-event_y_-event_bottom_inset);
   const double ratios[5]={0,.8,1.92,3.04,4.04};
   for(size_t i=0;i<events_.size();++i) {
     const double left=mobile_ ? double(i?i-1:0)/3 : ratios[i]/4.04;

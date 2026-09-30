@@ -107,14 +107,17 @@ class TestApp final:public wxApp {
     Check(wxFindWindowAtPoint(p)==button,"actual pointer hit resolves horizon control");
     wxUIActionSimulator input;Check(input.MouseMove(p.x,p.y)&&input.MouseClick(),"native pointer click injected");
   }
-  void Geometry(int width,int y,int height,int inset,int top,int event_top,int event_height) {
+  void Geometry(int width,int y,int height,int inset,int top,int event_top,int event_bottom) {
     const auto g=horizon_->Geometry();Check(g.horizon.width==width&&g.horizon.height==height,"prototype horizon dimensions");
     Check(g.heading.x==g.horizon.x+inset&&g.heading.y==y+top+1&&g.heading.height==22,"prototype heading placement and height");
     Check(g.full_passage.y==g.heading.y&&g.full_passage.GetRight()==g.heading.GetRight(),"Full passage aligned to header end");
+    const int event_height=event_bottom-event_top;
     const double edges[5]={0,.8,1.92,3.04,4.04};
     for(int i=0;i<4;++i)if(!view_.items[i].title.empty()) {
       Check(std::abs(g.events[i].x-(g.heading.x+std::lround(g.heading.width*edges[i]/4.04)))<=1,"fractional column left matches CSS");
-      Check(g.events[i].y==event_top&&g.events[i].height==event_height,"event top and line box height match CSS");
+      Check(g.events[i].y==event_top,"event top matches CSS");
+      if(g.events[i].height!=event_height)std::cerr<<"event row height actual "<<g.events[i].height<<" expected "<<event_height<<'\n';
+      Check(g.events[i].height==event_height,"event row stretch height matches CSS bounds");
       Check(g.horizon.Contains(g.events[i]),"event content stays within horizon");
     }
   }
@@ -144,8 +147,8 @@ class TestApp final:public wxApp {
   void Step(wxTimerEvent &) {
     try {switch(step_++) {
     case 0:Feed();break;
-    case 1:Geometry(1014,634,132,25,13,693,45);Check(!Button(0)->IsEnabled(),"unavailable NOW cannot activate follow");Capture("owned-unavailable-day");Current();break;
-    case 2:Geometry(1014,634,132,25,13,693,45);Capture("owned-current-day");Click(-1);break;
+    case 1:Geometry(1014,634,132,25,13,693,746);Check(!Button(0)->IsEnabled(),"unavailable NOW cannot activate follow");Capture("owned-unavailable-day");Current();break;
+    case 2:Geometry(1014,634,132,25,13,693,746);Capture("owned-current-day");Click(-1);break;
     case 3:Check(passage_==1,"Full passage invokes route context once");Click(0);break;
     case 4:Check(actions_==1&&last_.kind==application::HorizonActionKind::Follow,"NOW invokes existing follow context");Click(1);break;
     case 5:Check(actions_==2&&last_.mmsi==123456789,"AIS row selects copied current MMSI");Click(2);break;
@@ -165,16 +168,21 @@ class TestApp final:public wxApp {
       Check(application::HorizonActionAllowed(view_.items[1].action,state_,ais_,now_),"replacement target would otherwise be action-safe");
       horizon_->Update(view_,mode_);{wxUIActionSimulator input;Check(input.MouseUp(),"native release after identity change");break;}
     case 14:Check(actions_==4,"row identity change during press cancels activation");Prototype(ui::LightMode::Day);break;
-    case 15:Geometry(1014,634,132,25,13,693,45);Capture("prototype-fixture-day");Prototype(ui::LightMode::Dusk);break;
+    case 15:Geometry(1014,634,132,25,13,693,746);Capture("prototype-fixture-day");Prototype(ui::LightMode::Dusk);break;
     case 16:Capture("prototype-fixture-dusk");Prototype(ui::LightMode::Night);break;
     case 17:Capture("prototype-fixture-night");Resize(1024,640);horizon_->SetSize(70,494,798,112);Prototype(ui::LightMode::Day);break;
-    case 18:Geometry(798,494,112,20,9,545,41);Capture("prototype-responsive-125");Resize(853,533);horizon_->SetSize(70,401,627,98);Prototype(ui::LightMode::Day);break;
-    case 19:Geometry(627,401,98,20,9,450,38);Capture("prototype-responsive-150");Resize(1280,800);horizon_->SetSize(80,634,1014,132);Prototype(ui::LightMode::Day);{
+    case 18:Geometry(798,494,112,20,9,545,586);Capture("prototype-responsive-125");Resize(853,533);horizon_->SetSize(70,401,627,98);Prototype(ui::LightMode::Day);break;
+    case 19:Geometry(627,401,98,20,9,450,488);Capture("prototype-responsive-150");Resize(1280,800);horizon_->SetSize(80,634,1014,132);Prototype(ui::LightMode::Day);{
       const auto r=Button(-1)->GetScreenRect();wxUIActionSimulator input;input.MouseMove(r.x+r.width/2,r.y+r.height/2);break;}
     case 20:Capture("prototype-hover-day");Button(-1)->SetFocus();{wxUIActionSimulator input;Check(input.Char(WXK_RETURN),"real Enter input");break;}
     case 21:Check(passage_==2,"Enter invokes passage once");{wxUIActionSimulator input;input.MouseMove(1279,0);Check(input.Char(WXK_TAB),"real Tab focus navigation");break;}
     case 22:Capture("prototype-focus-day");Current();Button(0)->SetFocus();{wxUIActionSimulator input;Check(input.Char(WXK_SPACE),"real Space input");break;}
-    case 23:Check(actions_==5&&last_.kind==application::HorizonActionKind::Follow,"Space invokes follow once");Finish();break;
+    case 23:Check(actions_==5&&last_.kind==application::HorizonActionKind::Follow,"Space invokes follow once");Current();Button(1)->SetFocus();{wxUIActionSimulator input;Check(input.KeyDown(WXK_RETURN),"native row Enter down input");break;}
+    case 24:view_.items[1].action.mmsi=987654321;ais_.targets[0].mmsi=987654321;
+      Check(application::HorizonActionAllowed(view_.items[1].action,state_,ais_,now_),"keyboard replacement target would otherwise be action-safe");
+      horizon_->Update(view_,mode_);{wxUIActionSimulator input;Check(input.KeyUp(WXK_RETURN),"native row Enter release after identity change");break;}
+    case 25:Check(actions_==5,"row identity change during Enter cancels activation");Current();Button(1)->SetFocus();{wxUIActionSimulator input;Check(input.Char(WXK_RETURN),"real row Enter input");break;}
+    case 26:Check(actions_==6&&last_.mmsi==123456789,"Enter activates unchanged AIS identity once");Finish();break;
     }}catch(const std::exception &e){failed_=true;std::cerr<<e.what()<<'\n';Finish();}
   }
   void Finish() {

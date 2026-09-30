@@ -15,6 +15,7 @@ import subprocess
 import sys
 import zipfile
 from source_package import create_source_archive, PINNED_UPSTREAM
+from openssl_package import verify_openssl_package_inputs, verify_packaged_openssl
 
 ROOT = Path(__file__).resolve().parents[1]
 
@@ -53,11 +54,16 @@ def main():
     p = argparse.ArgumentParser(description=__doc__)
     p.add_argument('--runtime', type=Path, required=True)
     p.add_argument('--output', type=Path, required=True)
+    p.add_argument('--openssl-source-cache', type=Path, required=True,
+                   help='Preverified upstream source tar; packaging never downloads it')
     a = p.parse_args()
     if sys.platform != 'win32' or os.environ.get('GITHUB_ACTIONS') != 'true':
         raise SystemExit('Use the qualified disposable native Windows CI build')
     output = a.output.resolve()
     output.mkdir(parents=True, exist_ok=False)
+    openssl_source = verify_openssl_package_inputs(
+        ROOT / 'build/production-install', ROOT / 'tools/windows-openssl.lock.json',
+        a.openssl_source_cache, ROOT / 'docs/third-party/OpenSSL-3.5.9')
     package = output / 'OpenNavX-AIS-ReadOnly-Probe'
     app = package / 'app'
     app.mkdir(parents=True)
@@ -76,6 +82,7 @@ def main():
                 path = app / candidates[name].name
                 shutil.copy2(candidates[name], path)
                 pending.append(path)
+    verify_packaged_openssl(app, openssl_source['manifest'])
     subprocess.run([sys.executable, str(ROOT / 'tools/verify-preview-pe.py'), str(app),
                     '--report', str(package / 'dependency-audit.json')], check=True)
     env = isolated_environment(os.environ)
@@ -86,11 +93,11 @@ def main():
     (package / 'capabilities.json').write_text(json.dumps(description, indent=2) + '\n')
     commit = subprocess.check_output(['git', 'rev-parse', 'HEAD'], cwd=ROOT, text=True).strip()
     source = output / 'OpenNavX-AIS-ReadOnly-Probe-source.zip'
-    create_source_archive(ROOT, commit, source)
+    create_source_archive(ROOT, commit, source, [openssl_source['sourceBundle']])
     licenses = package / 'licenses'
     licenses.mkdir()
     shutil.copy2(ROOT / 'LICENSE', licenses / 'OpenNavX-COPYING.txt')
-    shutil.copytree(ROOT / 'docs/third-party/OpenSSL-3.0.5', licenses / 'OpenSSL-3.0.5')
+    shutil.copytree(ROOT / 'docs/third-party/OpenSSL-3.5.9', licenses / 'OpenSSL-3.5.9')
     upstream = ROOT / 'build/integration-source'
     for file in upstream.rglob('*'):
         if file.is_file() and file.name.lower().startswith(('copying', 'license', 'copyright')):
