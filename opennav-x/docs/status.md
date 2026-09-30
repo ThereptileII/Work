@@ -1,4 +1,12 @@
-# OpenNav X status — 2026-09-29
+# OpenNav X status — 2026-09-30
+
+## SCRUM-98 native negative evidence — 2026-09-30
+
+The exact local revision `8eaaba6a3268f61c5d7cd89bd8825f78464c6156` was published as remote revision `32174cfb716a77c75b03efa0ac368d3e04ce9231`. Full CI run [36615777880](https://github.com/ThereptileII/Work/actions/runs/36615777880) recorded 13 successful jobs, two failures and one skipped job. Linux job 109568284851 failed to compile `TestEarlyStartupTrace.h:100` because the fortified write triggered `warn_unused_result` under `-Werror`.
+
+Windows job 109570349159 built and passed all 128/128 unit tests, then `tools/smoke-navigation.py` failed in `footer_health_action` to find a fully visible `Source health` pointer target. The screenshot shows the target rendered; obstruction, parent geometry, and hit-test rejection are unknown, so the root cause is unproven. Release remained skipped and the original exit-255 failure remains open.
+
+The focused compile fix `84c7c13` covers 11 terminal-only scenarios per policy; no logs were retained and native verification remains pending, so it is not a broad pass. Native artifact evidence, including the 1,175,724-byte ZIP with SHA-256 `2d5e7336b669a243cc2f2dd176495ecc679b43d81dc2fad32a7f35b32b6f9027`, CRC/path verification, and scoped publication proof, is recorded in [SCRUM-98 native evidence](evidence/scrum-98-native-32174-negative.json). No accepted or Done claim is made.
 
 ## Current stage: Jira-driven paid public beta
 

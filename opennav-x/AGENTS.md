@@ -45,6 +45,24 @@ Idea → Idea, To Do → Att göra, In Progress → Pågående,
 Testing → Testning, Done → Klart. Read the current board mapping and available
 transitions rather than assuming status-category queries identify each column.
 
+## Development strategy and task sizing
+
+Use many small, bounded tasks when the work can be split cleanly: GPT-5.6-Luna
+handles straightforward tasks, GPT-5.6-Sol handles heavier tasks, and the root
+agent handles exceptional complexity and integration decisions. Tie every task
+to its Jira issue and record explicit ownership and acceptance criteria. Keep
+context limited and handoffs concise.
+
+For reversible, noncritical documentation, copy, layout, or function changes,
+run focused checks relevant to the change and a smoke or visual review. Avoid
+redundant broad reruns and tests that only mirror the implementation. Preserve
+all navigation, safety, data-loss, security, authentication, payment,
+installer, updater, recovery, exact-revision, native Windows, boat, release,
+and source-compliance gates. Do not remove or weaken existing failure
+assertions. Batch full suites at integration and release milestones instead of
+running them for every minor edit. Keep Jira as the sole backlog; do not create
+a TODO file.
+
 `SCRUM-97` governs this workflow. `SCRUM-14`, `SCRUM-15` and `SCRUM-16` retain
 the existing prototype, chart-presentation and Online AIS acceptance gates.
 The approved public identity in `SCRUM-89` is **SKAGER / SKAGER App** with

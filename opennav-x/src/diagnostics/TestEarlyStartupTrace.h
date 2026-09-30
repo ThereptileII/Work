@@ -96,8 +96,13 @@ inline void TestEarlyStartupTrace(StartupStage stage, int result = 0) noexcept {
             O_CLOEXEC | O_NOFOLLOW | O_NONBLOCK, 0600);
         if (fd >= 0) {
           struct stat status {};
-          if (::fstat(fd, &status) == 0 && S_ISREG(status.st_mode))
-            (void)::write(fd, record, static_cast<unsigned>(length));
+          if (::fstat(fd, &status) == 0 && S_ISREG(status.st_mode)) {
+            // Consume the fortified write result without retrying or surfacing
+            // observation errors; startup behavior remains unchanged.
+            const ssize_t write_result =
+                ::write(fd, record, static_cast<unsigned>(length));
+            (void)write_result;
+          }
           ::close(fd);
         }
       }

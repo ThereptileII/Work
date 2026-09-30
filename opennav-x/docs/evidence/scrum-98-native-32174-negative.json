@@ -1,0 +1,62 @@
+{
+  "schema_version": 1,
+  "issue": "SCRUM-98",
+  "accepted": false,
+  "local_commit": "8eaaba6a3268f61c5d7cd89bd8825f78464c6156",
+  "remote_commit": "32174cfb716a77c75b03efa0ac368d3e04ce9231",
+  "ci": {
+    "run": 36615777880,
+    "url": "https://github.com/ThereptileII/Work/actions/runs/36615777880",
+    "jobs": {
+      "success": 13,
+      "failure": 2,
+      "skipped": 1
+    },
+    "linux_failure": {
+      "job": 109568284851,
+      "location": "TestEarlyStartupTrace.h:100",
+      "message": "fortified write triggered warn_unused_result under -Werror"
+    },
+    "windows_failure": {
+      "job": 109570349159,
+      "unit_tests": {
+        "passed": 128,
+        "failed": 0,
+        "total": 128
+      },
+      "stage": "tools/smoke-navigation.py footer_health_action",
+      "message": "Test failed to find a fully visible Source health pointer target; the screenshot shows the target rendered, while obstruction, parent geometry, and hit-test rejection are unknown",
+      "root_cause": "unproven"
+    },
+    "release": "skipped"
+  },
+  "original_failure": "Original exit-255 failure remains open",
+  "focused_compile_fix": {
+    "commit": "84c7c13",
+    "scenarios_per_policy": 11,
+    "evidence_limit": "Terminal-only agent report; no focused-test logs were retained",
+    "native_status": "pending",
+    "qualification": "not a broad pass"
+  },
+  "artifact": {
+    "path": "evidence/local/scrum98-32174-native/windows-integration-32174.zip",
+    "bytes": 1175724,
+    "sha256": "2d5e7336b669a243cc2f2dd176495ecc679b43d81dc2fad32a7f35b32b6f9027",
+    "artifact_id": 11056366765,
+    "integrity": "CRC and paths verified",
+    "contents": "Native Windows integration evidence; private navigation/configuration files are retained locally and are not copied into Git"
+  },
+  "publication": {
+    "proof": "/tmp/xnav-publish-8eaaba6/final-tree-proof.json",
+    "scoped_exact": 1232,
+    "unrelated_preserved": 8,
+    "excluded_pinned_gitlink": "upstream/OpenCPN",
+    "observedUtc": "2026-09-29T18:51:25Z"
+  },
+  "limits": [
+    "A passing Windows unit suite does not waive the smoke-navigation failure.",
+    "The footer pointer failure does not establish its root cause.",
+    "Release remains skipped and no accepted or Done status is claimed."
+  ],
+  "observedUtc": "2026-09-30T13:57:04Z"
+}

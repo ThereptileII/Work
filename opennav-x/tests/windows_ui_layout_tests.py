@@ -189,7 +189,7 @@ class Clock:
     def monotonic(self): self.now += .1; return self.now
     def sleep(self, seconds): self.now += seconds
 
-for fault in (None, 'clipped', 'covered', 'disabled', 'duplicate', 'missing', 'static',
+for fault in (None, 'clipped', 'covered', 'no-hit', 'disabled', 'duplicate', 'missing', 'static',
               'preferences-scroll', 'preferences-stuck', 'preferences-covered'):
     clock = Clock(); wire = []; front = [1]
     bounds = {1:(0,0,1280,800), 2:(680,180,1060,500), 3:(700,220,1040,292),
@@ -205,6 +205,7 @@ for fault in (None, 'clipped', 'covered', 'disabled', 'duplicate', 'missing', 's
     def native_hit(point):
         # Duplicate test returns the queried target for two visible duplicate
         # controls; neither is an acceptable uniquely identified action.
+        if fault == 'no-hit': return None
         if fault in ('covered','preferences-covered'): return 99
         if preferences and point.y == 340: return 2
         return queried[0]
@@ -234,4 +235,4 @@ for fault in (None, 'clipped', 'covered', 'disabled', 'duplicate', 'missing', 's
         assert fault in (None,'preferences-scroll'), ('Invalid recovery pointer target accepted', fault)
         assert wire[-3:] == [('cursor',870,256),('mouse',2),('mouse',4)]
         assert wire.count(('mouse',0x0800)) == int(preferences)
-print('10 pointer recovery visibility/occlusion/identity/scroll guards passed without HWND command injection')
+print('11 pointer recovery visibility/occlusion/identity/scroll guards passed without HWND command injection')

@@ -193,8 +193,13 @@ def pointer_text(pid, label):
     """
     deadline = time.monotonic() + 8
     last_scroll = None
+    rejected = {}
     foreground = declare(user, 'GetForegroundWindow', W.HWND)
     ancestor = declare(user, 'GetAncestor', W.HWND, W.HWND, W.UINT)
+    def class_name(handle):
+        value = C.create_unicode_buffer(128)
+        GetClassNameW(handle, value, len(value))
+        return value.value
     while time.monotonic() < deadline:
         candidates = {}
         scroll_candidates = {}
@@ -202,9 +207,8 @@ def pointer_text(pid, label):
             for handle, caption in children(root):
                 if caption != label or not IsWindowEnabled(handle):
                     continue
-                native_class = C.create_unicode_buffer(128)
-                GetClassNameW(handle, native_class, len(native_class))
-                if native_class.value.lower() == 'static':
+                native_class = class_name(handle)
+                if native_class.lower() == 'static':
                     continue
                 rect = W.RECT()
                 assert GetWindowRect(handle, C.byref(rect))
@@ -215,12 +219,17 @@ def pointer_text(pid, label):
                 parent = GetParent(handle)
                 surface = ancestor(handle, 2)
                 contained = True
+                parent_chain = []
+                containment_rejection = None
                 while parent:
                     area = W.RECT()
                     assert GetWindowRect(parent, C.byref(area))
+                    parent_chain.append(dict(handle=int(parent), caption=text(parent),
+                                             rect=[area.left, area.top, area.right, area.bottom]))
                     if not (area.left <= rect.left < rect.right <= area.right and
                             area.top <= rect.top < rect.bottom <= area.bottom):
                         contained = False
+                        containment_rejection = int(parent)
                         if (text(surface) == 'OpenNav preferences' and
                                 area.left <= rect.left < rect.right <= area.right):
                             scroll_candidates[handle] = (surface, parent, area, rect)
@@ -229,8 +238,21 @@ def pointer_text(pid, label):
                         break
                     parent = GetParent(parent)
                 point = W.POINT((rect.left + rect.right)//2, (rect.top + rect.bottom)//2)
-                if contained and WindowFromPoint(point) == handle:
+                hit = WindowFromPoint(point)
+                if contained and hit == handle:
                     candidates[handle] = (surface, point)
+                    rejected.pop(handle, None)
+                else:
+                    rejected[handle] = dict(
+                        handle=int(handle), native_class=native_class,
+                        rect=[rect.left, rect.top, rect.right, rect.bottom],
+                        surface=int(surface or 0), parent_chain=parent_chain,
+                        containment_rejection=containment_rejection,
+                        midpoint=[point.x, point.y], hit_handle=int(hit or 0),
+                        hit_class=class_name(hit) if hit else '',
+                        hit_caption=text(hit) if hit else '',
+                        hit_is_descendant=bool(hit and IsChild(handle, hit)),
+                        target_is_descendant=bool(hit and IsChild(hit, handle)))
         if len(candidates) == 1:
             handle, (surface, point) = next(iter(candidates.items()))
             SetForegroundWindow(surface)
@@ -260,7 +282,8 @@ def pointer_text(pid, label):
             time.sleep(.3)
         time.sleep(.1)
     raise AssertionError(('Fully visible pointer action not found', label,
-                          [(title, children(h)) for h, _, title in windows(pid)]))
+                          [(title, children(h)) for h, _, title in windows(pid)],
+                          list(rejected.values())))
 
 def open_system(pid):
     """Reach recovery using the same three visible actions as the user."""
