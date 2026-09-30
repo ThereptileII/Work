@@ -1,0 +1,24 @@
+{
+  "issue": "SCRUM-100",
+  "accepted": false,
+  "native_source_commit": "11a97233fa7ad4d1b83e346642c9bc75dd0a30d9",
+  "comparison_tool_local_commit": "b7e768c",
+  "scope": "Recomparison of verified existing native captures, not a new native run",
+  "comparison_count": 34,
+  "comparison_result": "PENDING HUMAN REVIEW",
+  "full_passage": {
+    "name": "horizon-full-passage",
+    "meanAbsoluteChannelDifference": [
+      10.3308388671875,
+      9.0215673828125,
+      8.3819384765625
+    ],
+    "referenceName": "passage-day.png",
+    "referenceSha256": "f0ea8b368d15bcb1897c284c8d0be573f321a7079e9b30d908bdb773d544107b",
+    "currentSha256": "9103e8279f83a0639b1c76d488d377a85092f5cbe0544f2b1b2c333d34d17f86",
+    "accepted": false
+  },
+  "comparison_json_sha256": "44e1de53d234c3c2f127be61b8e97ba83bf0b165f25172cf581f798a9cbfcc39",
+  "local_evidence": "evidence/local/scrum100-11a-comparison-repaired",
+  "review": "Reference and current Full passage images inspected. Both use supplied Passage panel; native has real unavailable values and real OpenCPN coastline. Visual conformance not accepted."
+}

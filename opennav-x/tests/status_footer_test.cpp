@@ -3,6 +3,7 @@
 #include <wx/app.h>
 #include <wx/dcbuffer.h>
 #include <wx/dcscreen.h>
+#include <wx/eventfilter.h>
 #include <wx/frame.h>
 #include <wx/filename.h>
 #include <wx/log.h>
@@ -25,6 +26,19 @@ using namespace std::chrono_literals;
 namespace {
 class TestApp final:public wxApp {
  public:
+  class KeyEvidence final:public wxEventFilter {
+   public:
+    int FilterEvent(wxEvent &event) override {
+      if(event.GetEventObject()!=target)return Event_Skip;
+      auto *key=dynamic_cast<wxKeyEvent *>(&event);if(!key)return Event_Skip;
+      if(event.GetEventType()==wxEVT_CHAR_HOOK){++hooks;last_phase="char-hook";}
+      if(event.GetEventType()==wxEVT_KEY_DOWN){++downs;last_phase="key-down";}
+      if(event.GetEventType()==wxEVT_KEY_UP){++ups;last_phase="key-up";}
+      last_keycode=key->GetKeyCode();
+      return Event_Skip;
+    }
+    wxWindow *target=nullptr;const char *last_phase="none";int last_keycode=0,hooks=0,downs=0,ups=0;
+  };
   bool OnInit() override {
     wxLog::SetActiveTarget(new wxLogStderr());
     wxSetAssertHandler([](const wxString &,int,const wxString &,const wxString &s,const wxString &){std::cerr<<s<<std::endl;std::abort();});
@@ -33,10 +47,11 @@ class TestApp final:public wxApp {
     wxInitAllImageHandlers();
     frame_=new wxFrame(nullptr,wxID_ANY,"TEST ONLY - Status footer",{0,0},{1280,800},wxBORDER_NONE);
     Resize(1280,800);frame_->SetBackgroundColour(ui::Colour(ui::Theme(light_).surface));
-    host_=new wxPanel(frame_,wxID_ANY);
+    host_=new wxPanel(frame_,wxID_ANY,wxDefaultPosition,wxDefaultSize,wxTAB_TRAVERSAL);
     auto *layout=new wxBoxSizer(wxVERTICAL);
     layout->Add(host_,1,wxEXPAND);frame_->SetSizer(layout);frame_->Layout();
     footer_=new ui::XNavStatusFooter(host_,[this]{++opened_;});
+    keys_.target=Health();wxEvtHandler::AddFilter(&keys_);
     footer_->SetSize(0,766,1280,34);
     frame_->Show();frame_->Raise();
     timer_.SetOwner(this);Bind(wxEVT_TIMER,&TestApp::Step,this);timer_.Start(300);
@@ -154,25 +169,29 @@ class TestApp final:public wxApp {
       case 10:Geometry(1101,true);Prototype(ui::LightMode::Day);break;
       case 11:Geometry(1280,true);Capture("prototype-fixture-day");Prototype(ui::LightMode::Dusk);break;
       case 12:Capture("prototype-fixture-dusk");Prototype(ui::LightMode::Night);break;
-      case 13:{Capture("prototype-fixture-night");Health()->SetFocus();wxUIActionSimulator input;Check(input.Char(WXK_RETURN),"native Enter input");break;}
-      case 14:{Check(opened_==2,"Enter opens health once");wxUIActionSimulator input;Check(input.Char(WXK_SPACE),"native Space input");break;}
-      case 15:Check(opened_==3,"Space opens health once");Finish();break;
+      case 13:{Capture("prototype-fixture-night");Health()->SetFocus();auto *focus=wxWindow::FindFocus();Check(focus==Health(),"health owns native keyboard focus");focus_handle_=reinterpret_cast<std::uintptr_t>(focus->GetHandle());target_handle_=reinterpret_cast<std::uintptr_t>(Health()->GetHandle());wxUIActionSimulator input;Check(input.Char(WXK_RETURN),"native Enter char input");break;}
+      case 14:{Check(opened_==2,"normal Enter opens health exactly once");wxUIActionSimulator input;Check(input.KeyDown(WXK_RETURN),"native Enter down input");break;}
+      case 15:{Check(opened_==2,"Enter down does not activate before release");wxUIActionSimulator input;Check(input.KeyDown(WXK_RETURN)&&input.KeyUp(WXK_RETURN),"native held Enter repeat and up input");break;}
+      case 16:{Check(opened_==3,"held Enter opens health exactly once on release");wxUIActionSimulator input;Check(input.Char(WXK_SPACE),"native Space input");break;}
+      case 17:{Check(opened_==4,"Space opens health once");Health()->Disable();wxUIActionSimulator input;Check(input.Char(WXK_RETURN),"disabled native Enter input");break;}
+      case 18:{Check(opened_==4,"disabled Enter does not open health");Health()->Enable();tab_=new ui::XNavButton(host_,wxID_ANY,"Tab destination","Tab destination");tab_->SetSize(0,0,48,48);Health()->SetFocus();wxUIActionSimulator input;Check(input.Char(WXK_TAB),"native Tab input");break;}
+      case 19:Check(wxWindow::FindFocus()==tab_,"Tab reaches actual destination control");Check(opened_==4,"Tab does not open health");Check(keys_.hooks>=4&&keys_.downs>=1&&keys_.ups>=3,"actual hook/down/up keyboard evidence observed");Finish();break;
       }
     }catch(const std::exception &e){failed_=true;std::cerr<<e.what()<<'\n';Finish();}
   }
   void Finish(){
-    timer_.Stop();std::ofstream out((output_+"/result.json").ToStdString());
+    timer_.Stop();wxEvtHandler::RemoveFilter(&keys_);std::ofstream out((output_+"/result.json").ToStdString());
     out<<"{\"passed\":"<<(failed_?"false":"true")<<",\"checks\":"<<checks_<<",\"native_dpi_qualification\":false,\"captures\":[";
     for(size_t i=0;i<captures_.size();++i)out<<(i?",":"")<<"\""<<captures_[i]<<"\"";
     const auto left=footer_->LeftRegion(),middle=footer_->MiddleRegion(),health=Health()->GetRect();
-    out<<"],\"canonical_geometry\":{\"left\":["<<left.x<<","<<left.width<<"],\"middle\":["<<middle.x<<","<<middle.width<<"],\"health\":["<<health.x<<","<<health.y<<","<<health.width<<","<<health.height<<"]}}\n";
+    out<<"],\"keyboard\":{\"focused_handle_before_input\":"<<focus_handle_<<",\"target_handle\":"<<target_handle_<<",\"last_phase\":\""<<keys_.last_phase<<"\",\"last_keycode\":"<<keys_.last_keycode<<",\"char_hooks\":"<<keys_.hooks<<",\"key_downs\":"<<keys_.downs<<",\"key_ups\":"<<keys_.ups<<",\"activations\":"<<opened_<<",\"tab_destination_handle\":"<<(tab_?reinterpret_cast<std::uintptr_t>(tab_->GetHandle()):0)<<",\"tab_on_destination\":"<<(tab_&&wxWindow::FindFocus()==tab_?"true":"false")<<"},\"canonical_geometry\":{\"left\":["<<left.x<<","<<left.width<<"],\"middle\":["<<middle.x<<","<<middle.width<<"],\"health\":["<<health.x<<","<<health.y<<","<<health.width<<","<<health.height<<"]}}\n";
     std::cout<<(failed_?"FAIL ":"PASS ")<<checks_<<" status footer component checks\n";frame_->Destroy();ExitMainLoop();
   }
   static inline const vessel::Time stamp_{100s};
-  wxString output_;wxFrame *frame_=nullptr;wxPanel *host_=nullptr;ui::XNavStatusFooter *footer_=nullptr;
+  wxString output_;wxFrame *frame_=nullptr;wxPanel *host_=nullptr;ui::XNavStatusFooter *footer_=nullptr;ui::XNavButton *tab_=nullptr;
   vessel::VesselState state_;ui::LightMode light_=ui::LightMode::Day;
   std::vector<std::string> captures_;
-  wxTimer timer_;int step_=0,opened_=0,checks_=0;bool failed_=false;
+  wxTimer timer_;KeyEvidence keys_;std::uintptr_t focus_handle_=0,target_handle_=0;int step_=0,opened_=0,checks_=0;bool failed_=false;
 };
 }
 wxIMPLEMENT_APP_NO_MAIN(TestApp);

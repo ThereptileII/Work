@@ -200,6 +200,16 @@ def pointer_text(pid, label):
         value = C.create_unicode_buffer(128)
         GetClassNameW(handle, value, len(value))
         return value.value
+    def pointer_evidence(handle):
+        """Describe a native pointer target without dereferencing a NULL HWND."""
+        if not handle:
+            return dict(hwnd=0, native_class='', caption='', rect=None)
+        rect = W.RECT()
+        has_rect = bool(GetWindowRect(handle, C.byref(rect)))
+        return dict(hwnd=int(handle), native_class=class_name(handle),
+                    caption=text(handle),
+                    rect=[rect.left, rect.top, rect.right, rect.bottom]
+                    if has_rect else None)
     while time.monotonic() < deadline:
         candidates = {}
         scroll_candidates = {}
@@ -275,7 +285,26 @@ def pointer_text(pid, label):
             SetForegroundWindow(surface)
             point = W.POINT((area.left + area.right)//2, (area.top + area.bottom)//2)
             hit = WindowFromPoint(point)
-            assert foreground() == surface and (hit == viewport or IsChild(viewport, hit)), ('Preferences scrolling surface covered', label)
+            current_foreground = foreground()
+            hit_is_viewport = bool(hit and hit == viewport)
+            hit_is_viewport_descendant = bool(hit and viewport and IsChild(viewport, hit))
+            if not (current_foreground == surface and
+                    (hit_is_viewport or hit_is_viewport_descendant)):
+                raise AssertionError((
+                    'Preferences scrolling surface covered', label,
+                    dict(selected_target=pointer_evidence(handle),
+                         viewport=pointer_evidence(viewport),
+                         surface=pointer_evidence(surface),
+                         current_foreground=pointer_evidence(current_foreground),
+                         hit=pointer_evidence(hit),
+                         wheel_point=[point.x, point.y],
+                         descendant_relationship=dict(
+                             hit_is_viewport=hit_is_viewport,
+                             hit_is_viewport_descendant=hit_is_viewport_descendant,
+                             target_is_viewport_descendant=bool(
+                                 handle and viewport and IsChild(viewport, handle)),
+                             viewport_is_surface_descendant=bool(
+                                 viewport and surface and IsChild(surface, viewport))))))
             assert SetCursorPos(point.x, point.y)
             wheel = 240 if rect.top < area.top else -240
             MouseEvent(0x0800, 0, 0, wheel & 0xffffffff, 0)

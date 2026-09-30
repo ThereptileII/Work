@@ -190,7 +190,8 @@ class Clock:
     def sleep(self, seconds): self.now += seconds
 
 for fault in (None, 'clipped', 'covered', 'no-hit', 'disabled', 'duplicate', 'missing', 'static',
-              'preferences-scroll', 'preferences-stuck', 'preferences-covered'):
+              'preferences-scroll', 'preferences-stuck', 'preferences-covered',
+              'preferences-null'):
     clock = Clock(); wire = []; front = [1]
     bounds = {1:(0,0,1280,800), 2:(680,180,1060,500), 3:(700,220,1040,292),
               4:(700,220,1040,292)}
@@ -207,6 +208,7 @@ for fault in (None, 'clipped', 'covered', 'no-hit', 'disabled', 'duplicate', 'mi
         # controls; neither is an acceptable uniquely identified action.
         if fault == 'no-hit': return None
         if fault in ('covered','preferences-covered'): return 99
+        if fault == 'preferences-null': return None
         if preferences and point.y == 340: return 2
         return queried[0]
     queried = [3]
@@ -227,12 +229,36 @@ for fault in (None, 'clipped', 'covered', 'no-hit', 'disabled', 'duplicate', 'mi
         SetCursorPos=lambda x,y:wire.append(('cursor',x,y)) or True,
         MouseEvent=native_mouse)
     try: pointer_namespace['pointer_text'](101,'Interface & recovery')
-    except AssertionError:
+    except AssertionError as error:
         assert fault not in (None, 'preferences-scroll'), 'Visible recovery control rejected'
         assert not any(event in wire for event in (('mouse',2),('mouse',4))), ('Rejected target still received click', fault, wire)
         if fault != 'preferences-stuck': assert not wire, (fault,wire)
+        if fault in ('preferences-covered', 'preferences-null'):
+            message, rejected_label, evidence = error.args[0]
+            assert (message, rejected_label) == ('Preferences scrolling surface covered', 'Interface & recovery')
+            assert evidence['selected_target']['hwnd'] == 3
+            assert evidence['viewport']['hwnd'] == 2
+            assert evidence['surface']['hwnd'] == 1
+            assert evidence['selected_target']['rect'] == [700,170,1040,242]
+            assert evidence['viewport']['rect'] == [680,180,1060,500]
+            assert evidence['surface']['rect'] == [0,0,1280,800]
+            assert evidence['current_foreground']['hwnd'] == 1
+            assert evidence['current_foreground']['native_class'] == 'wxWindowNR'
+            assert evidence['current_foreground']['caption'] == 'OpenNav preferences'
+            assert evidence['wheel_point'] == [870,340]
+            assert evidence['descendant_relationship']['target_is_viewport_descendant'] is True
+            assert evidence['descendant_relationship']['viewport_is_surface_descendant'] is True
+            if fault == 'preferences-covered':
+                assert evidence['hit']['hwnd'] == 99
+                assert evidence['hit']['native_class'] == 'wxWindowNR'
+                assert evidence['hit']['caption'] == 'OpenNav preferences'
+                assert evidence['hit']['rect'] is None
+                assert evidence['descendant_relationship']['hit_is_viewport'] is False
+                assert evidence['descendant_relationship']['hit_is_viewport_descendant'] is False
+            else:
+                assert evidence['hit'] == {'hwnd': 0, 'native_class': '', 'caption': '', 'rect': None}
     else:
         assert fault in (None,'preferences-scroll'), ('Invalid recovery pointer target accepted', fault)
         assert wire[-3:] == [('cursor',870,256),('mouse',2),('mouse',4)]
         assert wire.count(('mouse',0x0800)) == int(preferences)
-print('11 pointer recovery visibility/occlusion/identity/scroll guards passed without HWND command injection')
+print('12 pointer recovery visibility/occlusion/identity/scroll guards passed without HWND command injection')

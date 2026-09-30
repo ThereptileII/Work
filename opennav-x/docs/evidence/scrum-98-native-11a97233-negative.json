@@ -1,0 +1,110 @@
+{
+  "schema_version": 1,
+  "issues": [
+    "SCRUM-98",
+    "SCRUM-100"
+  ],
+  "accepted": false,
+  "local_commit": "491c29b482bbd5c2b726320ed29f26ea9c0ee4ed",
+  "remote_commit": "11a97233fa7ad4d1b83e346642c9bc75dd0a30d9",
+  "observed_utc": "2026-09-30T15:56:38.759359+00:00",
+  "ci": {
+    "prototype": "https://github.com/ThereptileII/Work/actions/runs/36726644584",
+    "full": "https://github.com/ThereptileII/Work/actions/runs/36726657879",
+    "prototype_result": "6 successful jobs, 2 failed",
+    "full_result_at_observation": "13 successful jobs, 1 failed, Linux integrated endurance still running"
+  },
+  "local_integrated": {
+    "passed": 136,
+    "total": 136,
+    "binary_sha256": "7ac51cd313e2e0741e89c652a05c35eba9fc49c8545597821c5f293e87c0fa00",
+    "evidence": "evidence/local/scrum98-491c29b",
+    "scope": "configure/build/install and CTest only"
+  },
+  "native_navigation": {
+    "job": 109927154836,
+    "unit_tests_passed": 128,
+    "unit_tests_total": 128,
+    "failure": "Source health pointer blocked by Windows taskbar clock",
+    "parent_containment_passed": true,
+    "target_rect": [
+      1093,
+      768,
+      1252,
+      782
+    ],
+    "root_rect": [
+      0,
+      0,
+      1280,
+      800
+    ],
+    "midpoint": [
+      1172,
+      775
+    ],
+    "hit_class": "TrayClockWClass",
+    "hit_caption_kind": "System Clock",
+    "cause": "Harness forced a decorated 1280x800 outer frame across taskbar-reserved pixels on a 1280x800 desktop. Actual pointer rejection is correct.",
+    "selected_correction": "Use upstream-supported --fullscreen only for this exact desktop navigation smoke; preserve actual pointer, containment, capture and layout checks."
+  },
+  "native_fixture_dpi": {
+    "job": 109925116116,
+    "artifact_prefix": "prototype-object-flow-Windows",
+    "completed_scales": [
+      100,
+      125
+    ],
+    "failed_scale": 150,
+    "failure": "Preferences scrolling surface covered: System",
+    "cause": "unproven: hit window/ownership not retained at scroll assertion",
+    "failure_screenshot_reviewed": "dpi-150-failure-visible.png"
+  },
+  "native_composition": {
+    "job": 109925116152,
+    "artifact_prefix": "prototype-native-Windows",
+    "footer_checks_before_failure": 185,
+    "footer_failure": "Enter opens health once",
+    "footer_pointer_prior_check": "passed",
+    "footer_keyboard_cause": "unproven",
+    "comparison_failure": "No supplied prototype state for horizon-full-passage.png",
+    "additional_development_dpi": {
+      "scales_passed": [
+        100,
+        125,
+        150
+      ],
+      "scope": "separate prototype-dpi/result.json; does not override retained fixture DPI failure or qualify physical touch"
+    }
+  },
+  "artifacts": [
+    {
+      "id": 11103074935,
+      "name": "prototype-native-Windows-11a97233fa7ad4d1b83e346642c9bc75dd0a30d9",
+      "sha256": "76afef4c60c23da811b572f85ad91c4a69ec94ab3c6d2aa8501880906791ce69",
+      "bytes": 23358148,
+      "zipCrc": true
+    },
+    {
+      "id": 11103499578,
+      "name": "prototype-object-flow-Windows-11a97233fa7ad4d1b83e346642c9bc75dd0a30d9",
+      "sha256": "6b26bd31fc437fab6419d8e9f3a350a9c16b76136cd3fcd53e6b94767998270b",
+      "bytes": 19454668,
+      "zipCrc": true
+    },
+    {
+      "id": 11103723715,
+      "name": "windows-integration-11a97233fa7ad4d1b83e346642c9bc75dd0a30d9",
+      "sha256": "16c857f049e1f345e996cf6a7101161f96d228ecb3a13fc3e91cbfb6ec814d89",
+      "bytes": 1176259,
+      "zipCrc": true
+    }
+  ],
+  "evidence_root": "evidence/local/scrum98-11a-native",
+  "limits": [
+    "Original local Legacy to XNav child exit255 remains unresolved; later passing diagnostic/CI executions do not establish a repair.",
+    "No failed assertion removed, no native or boat acceptance, no artifact promoted to public release.",
+    "Local95d5a12 adds only the web architecture document; it is not the source identity of these binaries.",
+    "Private profiles and unrelated machine data are not copied into versioned evidence."
+  ]
+}

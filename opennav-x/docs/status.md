@@ -1,5 +1,55 @@
 # OpenNav X status — 2026-09-30
 
+## Next native verification candidate — 2026-09-30
+
+The selected fullscreen test correction is implemented in `882d497`; the
+unchanged real pointer checks now get additional scroll-occlusion evidence
+(`1634d5d`). Full passage maps only to the supplied Day Passage reference
+(`b7e768c`); reprocessing the verified native captures produces all 34 exact
+comparison sets, still pending visual acceptance.
+
+The shared custom button now handles Return before wxMSW dialog navigation
+without claiming Tab or arrow keys (`c270502`). Its isolated Linux component
+passes 164 checks including actual pointer, normal/held Enter, Space, disabled
+input and Tab to a real destination. Initial local failures were a Wayland/Xvfb
+environment mismatch, retained separately; the corrected diagnostic uses the
+same X11 environment as the existing harness. See [keyboard evidence](evidence/scrum-98-footer-keyboard-local.json).
+A new exact native Windows run is required. The 150% Preferences obstruction
+is instrumented, not yet diagnosed or repaired; no acceptance is inferred.
+
+## SCRUM-98 / SCRUM-100 replacement native evidence — 2026-09-30
+
+Exact local `491c29b` maps to remote `11a97233fa7ad4d1b83e346642c9bc75dd0a30d9`.
+The local integrated build/install and 136/136 tests pass. The native integrated
+build and 128/128 tests pass, then actual pointer input correctly rejects
+Source health: its midpoint hits the Windows taskbar clock. The harness forced
+a decorated 1280×800 frame over a 1280×800 desktop's reserved taskbar area.
+The selected repair uses OpenCPN's supported fullscreen startup for that exact
+test desktop, retaining real input, containment and chart/layout assertions.
+
+Two separate prototype failures remain: the footer component's Enter callback
+assertion (after 185 checks), and the retained DPI suite's covered Preferences
+scrolling surface at 150%. The latter completed 100/125%; the additional
+prototype-only DPI suite passed all three scales, which does not override the
+failed suite. Their causes are not inferred from the navigation taskbar result.
+The Full passage screenshot also needs its existing HTML Passage state mapped
+into comparison. Original HTML and comparison strictness remain unchanged.
+
+[Verified archives and exact negative evidence](evidence/scrum-98-native-11a97233-negative.json)
+retain all three failures. Prototype run
+[36726644584](https://github.com/ThereptileII/Work/actions/runs/36726644584)
+finished with six successful and two failed jobs; full run
+[36726657879](https://github.com/ThereptileII/Work/actions/runs/36726657879)
+has passed Linux chart/preview checks and is still in its elapsed-time endurance
+gate at this observation. The original intermittent exit-255 failure remains
+open. No release or boat acceptance is claimed.
+
+SCRUM-31's [web architecture decision](architecture/public-beta-web-commerce.md)
+is complete at `95d5a12`. SCRUM-94 now owns the next bounded database-schema
+increment; authentication, payment services, deployment, backups and staging
+remain separate implementation/acceptance work. Public access stays closed.
+
+
 ## SCRUM-98 native negative evidence — 2026-09-30
 
 The exact local revision `8eaaba6a3268f61c5d7cd89bd8825f78464c6156` was published as remote revision `32174cfb716a77c75b03efa0ac368d3e04ce9231`. Full CI run [36615777880](https://github.com/ThereptileII/Work/actions/runs/36615777880) recorded 13 successful jobs, two failures and one skipped job. Linux job 109568284851 failed to compile `TestEarlyStartupTrace.h:100` because the fortified write triggered `warn_unused_result` under `-Werror`.

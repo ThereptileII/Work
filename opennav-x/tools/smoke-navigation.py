@@ -15,6 +15,13 @@ import threading
 import time
 from diagnostic_snapshot import read_json_snapshot
 
+
+def exact_native_reference_desktop(display):
+    """Use product fullscreen only for the authoritative 1280x800 desktop."""
+    after = display.get('after', ())
+    return len(after) >= 2 and tuple(after[:2]) == (1280, 800)
+
+
 parser = argparse.ArgumentParser(description=__doc__)
 mode = parser.add_mutually_exclusive_group()
 for flag in ('route-fixture', 'route-fixture-standard', 'instruments', 'objects', 'n2k', 'boat'):
@@ -220,11 +227,13 @@ if instruments:
                           'water_temperature_c': 15.4}
 
 try:
+    native_reference_fullscreen = False
     if windows:
         spec = importlib.util.spec_from_file_location('ui', root / 'tools/windows-ui.py')
         ui = importlib.util.module_from_spec(spec)
         spec.loader.exec_module(ui)
         report['display'] = ui.ensure_desktop()
+        native_reference_fullscreen = exact_native_reference_desktop(report['display'])
         exe = root / 'build/xnav-install/opencpn.exe'
     else:
         env['GDK_BACKEND'] = 'x11'
@@ -237,8 +246,17 @@ try:
                                    env=env, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
         time.sleep(1)
         exe = root / 'build/xnav-install/bin/opencpn'
+    launch = [str(exe), '--configdir', str(profile), '--xnav']
+    if native_reference_fullscreen:
+        # A decorated 1280x800 outer window extends into the taskbar's reserved
+        # area on an exact 1280x800 desktop. Exercise OpenCPN's supported native
+        # fullscreen path so visible-pointer checks address the product surface.
+        launch.append('--fullscreen')
+    launch += (['--no_opengl'] if args.renderer == 'software' else [])
+    launch += (['--xnav-route-fixture'] if route_fixture else
+               ['--xnav-object-fixture'] if objects else [])
     with (evidence / f'{prefix}-input-launch.log').open('w') as output:
-        app = subprocess.Popen([str(exe), '--configdir', str(profile), '--xnav'] + (['--no_opengl'] if args.renderer == 'software' else []) + (['--xnav-route-fixture'] if route_fixture else ['--xnav-object-fixture'] if objects else []),
+        app = subprocess.Popen(launch,
                                env=env, stdout=output, stderr=output)
     deadline = time.monotonic() + 60
     while True:
@@ -253,9 +271,37 @@ try:
     resize_tick=int(read_json_snapshot(profile/'opennav-diagnostics.json')['runtime']['ui_update']['ticks'])
     if windows:
         handle, _ = ui.wait_window('OpenNav X / OpenCPN', app.pid)
-        # capture() normally resizes, but the object-layout gate runs before
-        # its first capture. Establish the native size before inspecting it.
-        ui.size_window(handle)
+        if native_reference_fullscreen:
+            deadline = time.monotonic() + 10
+            while time.monotonic() < deadline:
+                outer=ui.W.RECT();client=ui.W.RECT();origin=ui.W.POINT(0,0)
+                assert ui.GetWindowRect(handle,ui.C.byref(outer))
+                assert ui.GetClientRect(handle,ui.C.byref(client))
+                assert ui.ScreenToClient(handle,ui.C.byref(origin))
+                native_surface={
+                    'desktop_pixels':[1280,800],
+                    'outer':{'x':outer.left,'y':outer.top,
+                             'width':outer.right-outer.left,'height':outer.bottom-outer.top},
+                    'client':{'x':-origin.x,'y':-origin.y,
+                              'width':client.right-client.left,'height':client.bottom-client.top},
+                    'launch_fullscreen':True,
+                    'api':'OpenCPN --fullscreen -> MyFrame::ToggleFullScreen -> wxFrame::ShowFullScreen'}
+                outer_geometry=native_surface['outer'];client_geometry=native_surface['client']
+                client_contained=(client_geometry['width']>0 and client_geometry['height']>0 and
+                    outer_geometry['x']<=client_geometry['x'] and
+                    outer_geometry['y']<=client_geometry['y'] and
+                    client_geometry['x']+client_geometry['width']<=outer_geometry['x']+outer_geometry['width'] and
+                    client_geometry['y']+client_geometry['height']<=outer_geometry['y']+outer_geometry['height'])
+                if (outer_geometry=={'x':0,'y':0,'width':1280,'height':800} and client_contained):
+                    break
+                time.sleep(.1)
+            else:
+                raise AssertionError(('Native reference fullscreen did not cover the exact desktop',native_surface))
+            report['native_test_surface']=native_surface
+        else:
+            # capture() normally resizes, but the object-layout gate runs before
+            # its first capture. Establish the native size before inspecting it.
+            ui.size_window(handle)
     else:
         handle = subprocess.check_output(['xdotool', 'search', '--all', '--onlyvisible', '--pid', str(app.pid),
                     '--name', '^OpenNav X / OpenCPN$'], env=env, text=True).splitlines()[0]
@@ -279,7 +325,9 @@ try:
     def capture(name):
         path = evidence / f'{prefix}-{name}.png'
         if windows:
-            rgb = ui.capture(handle, path, resize=not (objects or route_fixture), screen_pixels=objects or route_fixture)
+            rgb = ui.capture(handle, path,
+                resize=not (native_reference_fullscreen or objects or route_fixture),
+                screen_pixels=objects or route_fixture)
         else:
             subprocess.run(['import', '-window', 'root', str(path)], env=env, check=True)
             rgb = subprocess.check_output(['convert', str(path), '-depth', '8', 'rgb:-'], env=env)

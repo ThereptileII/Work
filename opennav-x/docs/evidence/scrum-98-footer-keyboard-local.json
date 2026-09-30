@@ -1,0 +1,35 @@
+{
+  "issue": "SCRUM-98",
+  "base_revision": "68124167fdec857ef9c1294a00b6ff96b9c58765",
+  "status": "IMPLEMENTED_LOCALLY_NATIVE_WINDOWS_PENDING",
+  "retained_failure_revision": "11a97233fa7ad4d1b83e346642c9bc75dd0a30d9",
+  "retained_failure": "The native footer component accepted real pointer activation but did not activate Source health for wxUIActionSimulator Char(WXK_RETURN).",
+  "cause_basis": {
+    "wxwidgets_version": "3.2.8",
+    "pinned_sources": [
+      "https://github.com/wxWidgets/wxWidgets/blob/v3.2.8/src/msw/window.cpp#L2348-L2505",
+      "https://github.com/wxWidgets/wxWidgets/blob/v3.2.8/src/msw/window.cpp#L3002-L3017",
+      "https://github.com/wxWidgets/wxWidgets/blob/v3.2.8/src/common/uiactioncmn.cpp#L88-L120"
+    ],
+    "msw_behavior": "The custom window receives DLGC_WANTCHARS, while Return remains subject to dialog processing unless handled by the focused control. wxWANTS_CHARS would also request Tab and arrow keys and is therefore too broad for a reusable button.",
+    "implementation": "XNavButton handles only Return in wxEVT_CHAR_HOOK, arms once, and retains key-up activation. Tab and arrows continue through normal navigation; Space retains the existing key-down/key-up path."
+  },
+  "fixture_contract": [
+    "Persist the focused and target native handles before input",
+    "Normal real Char(Return) activates exactly once",
+    "Held/repeated Return activates exactly once on release",
+    "Space activates exactly once",
+    "Disabled Return does not activate",
+    "Tab reaches a distinct actual XNavButton on a wxTAB_TRAVERSAL fixture host",
+    "Persist bounded hook, down, up, activation, final focus and last-event evidence"
+  ],
+  "local_validation": {
+    "diff_check": "PASS",
+    "chart_layout_tests": "PASS",
+    "windows_ui_layout_tests": "PASS",
+    "component_build": "PASS with the repository-local toolchain; status_footer_test linked successfully against local wxWidgets 3.2.11",
+    "component_execution": "PASS: 164 checks on isolated Xvfb with GDK_BACKEND=x11 and WAYLAND_DISPLAY unset, matching capture-footer-component.py. Focus and target handles match before input; four activations cover pointer, normal Enter, held Enter and Space; disabled Enter adds none; Tab focuses the recorded destination. Binary SHA-256 87d1e294043edc56961e94e2f5a18edad89296cc67fb1cf20f1c640d9d196915.",
+    "diagnostic_note": "Two earlier local runs stopped before keyboard because the environment still exposed the Wayland compositor while XTest targeted Xvfb. Their UI traces lack pointer down/up. They are retained under evidence/local/footer-keyboard-linux-* and are environment-mismatch evidence, not product regressions."
+  },
+  "acceptance": "A fresh native Windows component execution is required; this local implementation does not transfer acceptance from another revision or platform."
+}

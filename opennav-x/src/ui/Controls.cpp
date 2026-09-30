@@ -382,6 +382,7 @@ XNavButton::XNavButton(wxWindow* parent, wxWindowID id, const wxString& label,
     Refresh();
   });
   Bind(wxEVT_KEY_DOWN, [this](wxKeyEvent& e) {
+    XNAV_TEST_UI_TRACE("keyboard.down", GetId(), e.GetKeyCode());
     keyboard_focus_ = true;
     if (e.GetKeyCode() == WXK_SPACE || e.GetKeyCode() == WXK_RETURN) {
       pressed_ = IsEnabled();
@@ -389,12 +390,23 @@ XNavButton::XNavButton(wxWindow* parent, wxWindowID id, const wxString& label,
     } else e.Skip();
   });
   Bind(wxEVT_KEY_UP, [this](wxKeyEvent& e) {
+    XNAV_TEST_UI_TRACE("keyboard.up", GetId(), e.GetKeyCode());
     if (e.GetKeyCode() == WXK_SPACE || e.GetKeyCode() == WXK_RETURN) {
       const bool activate = pressed_;
       pressed_ = false;
       Refresh();
       if (activate) Activate();
     } else e.Skip();
+  });
+  // wxMSW 3.2.8 offers Return to dialog navigation before a custom control's
+  // key-down handler. Catch only Return here, leaving Tab and arrows to normal
+  // navigation. Key-up still performs the single activation on every port.
+  Bind(wxEVT_CHAR_HOOK, [this](wxKeyEvent& e) {
+    XNAV_TEST_UI_TRACE("keyboard.hook", GetId(), e.GetKeyCode());
+    if (e.GetKeyCode() != WXK_RETURN) { e.Skip(); return; }
+    keyboard_focus_ = true;
+    if (!e.IsAutoRepeat()) pressed_ = IsEnabled();
+    Refresh();
   });
 }
 
@@ -418,6 +430,7 @@ void XNavButton::SetHint(const wxString &hint) {
 }
 
 void XNavButton::Activate() {
+  XNAV_TEST_UI_TRACE("button.activate", GetId(), IsEnabled());
   if (!IsEnabled()) return;
   wxCommandEvent event(wxEVT_BUTTON, GetId());
   event.SetEventObject(this);
