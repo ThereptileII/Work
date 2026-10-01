@@ -47,5 +47,16 @@
     "No passing application or deployable product claimed.",
     "Other exact-candidate live jobs not cancelled or restarted.",
     "Boat installation untouched."
-  ]
+  ],
+  "secondNativeFailure": {
+    "jobId": 110596574852,
+    "conclusion": "failure",
+    "artifactId": 11197655888,
+    "bytes": 384965,
+    "sha256": "7f2303dcf6f2f3d11af61f5a8f8d7d96775832e4e09e29e1beebc91314d4ccc1",
+    "zipMembers": 62,
+    "crc": "passed",
+    "curlLogSha256": "6f6b095c8a016deb5e85b7e40e23e90ce2a1ab89be5e5f9c03270af92d7eaff0",
+    "observation": "Same pinned OpenSSL 3.5.9, ./test-ca.prm lookup, and empty CA refusal."
+  }
 }

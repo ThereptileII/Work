@@ -1,0 +1,47 @@
+{
+  "schemaVersion": 1,
+  "issue": "SCRUM-224",
+  "scope": "Focused native path and test-host proof only",
+  "commit": "45b8a9d2809d0d34171010ad1c00f4a3cd056a09",
+  "localCommit": "9c4740f",
+  "run": {
+    "id": 36935540968,
+    "jobId": 110614801267,
+    "conclusion": "success",
+    "url": "https://github.com/ThereptileII/Work/actions/runs/36935540968"
+  },
+  "artifact": {
+    "id": 11198455752,
+    "bytes": 13484,
+    "sha256": "3b18e481469b75620166a0f3dac7b9ca79daa2d553acade869441c34e704ae4b",
+    "zipMembers": 20,
+    "crc": "passed"
+  },
+  "pathRegression": {
+    "slashLookup": "D:/a/Work/Work/opennav-x/evidence/local/curl-test-host-binding/path-fixture/certs/test-ca.prm",
+    "backslashExit": 1,
+    "backslashLookup": "./test-ca.prm",
+    "slashExit": 0
+  },
+  "existingChecks": [
+    "Actual upstream runner/launcher negative Strawberry and positive MSYS cases pass.",
+    "Actual patched generator, CA and host chain, and private-key parsing pass with native host OpenSSL 3.6.4.",
+    "Win32 CMake host binding, wrong-host refusal and cache tamper refusal pass."
+  ],
+  "localChecks": {
+    "package": 13,
+    "dependencyEvidence": 14,
+    "sameJobReuse": 9,
+    "powerShellParse": "passed"
+  },
+  "fullReplacementRuns": {
+    "integrated": 36935775514,
+    "prototype": 36935778459,
+    "boatTooling": 36935773834
+  },
+  "limitations": [
+    "Focused certificate tool is host OpenSSL 3.6.4; full pinned OpenSSL 3.5.9/curl/application qualification remains pending.",
+    "No Windows UI, installer or boat acceptance asserted.",
+    "Frozen product commit unchanged after dispatch."
+  ]
+}

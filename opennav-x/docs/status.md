@@ -1,5 +1,26 @@
 # OpenNav X status — 2026-10-01
 
+## Current replacement — native certificate path repair
+
+The application candidate is now frozen at
+`45b8a9d2809d0d34171010ad1c00f4a3cd056a09` (local `9c4740f`).
+The previous `37978e` composition and object-workflow builds failed before curl
+configure because a Windows-backslash script path made MSYS Perl look for
+certificate inputs in the output directory. The narrow caller repair uses the
+verified MSYS Perl explicitly and passes the same slash form as upstream CMake.
+
+[Focused native run 36935540968](https://github.com/ThereptileII/Work/actions/runs/36935540968)
+passes the new actual-script path regression and retained host/certificate/tool
+checks. Its downloaded artifact has verified length, SHA-256 and all 20 ZIP CRCs.
+See [the scoped proof](evidence/scrum-224-45b8-native-path-pass.json).
+Fresh [integrated](https://github.com/ThereptileII/Work/actions/runs/36935775514),
+[prototype](https://github.com/ThereptileII/Work/actions/runs/36935778459) and
+[native tooling](https://github.com/ThereptileII/Work/actions/runs/36935773834)
+runs target that exact commit; they are not yet accepted. No deployment or old
+installation cleanup has occurred. A read-only boat heartbeat at 22:24 UTC
+confirmed zero OpenCPN processes and all three remote-access services running.
+
+
 ## SCRUM-218 — complete native diagnostic log retained
 
 The separate read-only collector at `c42ff4c97ee71cfe84bab54873ee5dac18f15510`
@@ -11,9 +32,9 @@ hashes and lengths. No running product job was modified or restarted. This is
 diagnostic evidence, not application acceptance; see
 [the collection record](evidence/scrum-218-complete-native-log.json).
 
-## Replacement native qualification — 37978e
+## Previous candidate qualification — 37978e
 
-The current frozen candidate is `37978e26517af810092ec2bc554b199d36a705d2`
+The previous frozen candidate is `37978e26517af810092ec2bc554b199d36a705d2`
 (local `2a3c2c6b88945a50a7b552fd41c37658747ac5a4`). Its
 [integrated run](https://github.com/ThereptileII/Work/actions/runs/36929977632)
 passes 90 Linux and 87 native Windows portable CTest contracts, plus ten
@@ -29,7 +50,8 @@ has passed its supporting checks, but native composition job `110596574723`
 failed before curl configure: MSYS Perl received a backslash script path,
 and the certificate generator searched the output directory for source inputs.
 The producer correctly rejected the empty certificate. The separate object-flow
-job and integrated Windows job remain live; complete product gates are pending.
+job failed at the same preflight; its independently verified artifact confirms
+the same error. The integrated Windows job remains live; product gates are pending.
 See [the verified failure record](evidence/scrum-224-37978-certificate-path-failure.json).
 A minimal caller-path repair and focused native regression are under review;
 no existing generator or TLS assertions are weakened.
