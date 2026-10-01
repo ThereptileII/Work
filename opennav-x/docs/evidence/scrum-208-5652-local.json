@@ -1,0 +1,80 @@
+{
+  "issues": [
+    "SCRUM-208",
+    "SCRUM-40",
+    "SCRUM-98"
+  ],
+  "local_commit": "f752daeb0fc07e2abb878c0c43a4b64760f22101",
+  "remote_candidate": "5652c01aa7dc450cdfc081a981945b0cc6f6905d",
+  "auth_ci": {
+    "run": 36762862390,
+    "job": 110049568910,
+    "tests": 31,
+    "result": "passed",
+    "migrations": [
+      "fresh",
+      "reverse",
+      "reapplied"
+    ]
+  },
+  "local_integrated": {
+    "tests": 136,
+    "result": "passed",
+    "evidence": {
+      "integrated-tests-resumed.log": {
+        "path": "/home/standard/Projects/X-nav/evidence/local/scrum208-f752dae/integrated-tests-resumed.log",
+        "sha256": "956fc777a92b31a96cbe38877c06ef631cd6b6fc03e638f28b5717e85dad83b2"
+      },
+      "integrated-tests.xml": {
+        "path": "/home/standard/Projects/X-nav/evidence/local/scrum208-f752dae/integrated-tests.xml",
+        "sha256": "20508c4bff65c8b8b8f8bf8817193fb02df6713d33c682018fc4da4951b449bc"
+      },
+      "integrated-build-resumed.log": {
+        "path": "/home/standard/Projects/X-nav/evidence/local/scrum208-f752dae/integrated-build-resumed.log",
+        "sha256": "989d4d4f90314ea05772bc2d22ad83b717cc3eb4f73b6da303ba20874efa629b"
+      },
+      "integrated-build.log": {
+        "path": "/home/standard/Projects/X-nav/evidence/local/scrum208-f752dae/integrated-build.log",
+        "sha256": "9f2adcc9c5e735fdf2cb01a2e0c51231c2a2e42c710de74ad14c64a6f24e23ce"
+      },
+      "web-ci-110049568910.log": {
+        "path": "/home/standard/Projects/X-nav/evidence/local/scrum208-f752dae/web-ci-110049568910.log",
+        "sha256": "d479edfb38b2afdc1e21eaf02a72fcd141020110542d634b46f6a274b0ae40b4"
+      },
+      "prior-windows-job-status.json": {
+        "path": "/home/standard/Projects/X-nav/evidence/local/scrum208-f752dae/prior-windows-job-status.json",
+        "sha256": "aa90f57a3e52b1cd667b8d046192ef611077419eb16ade5da5c60f0a242409b1"
+      }
+    }
+  },
+  "prepublication_proof": {
+    "mapped_entries": 1289,
+    "unrelated_preserved": 8,
+    "sha256": "f3fe14b1c93a06d71096a1774bb2a9dd7f3ac21aebb5a1ca6d0fdc84614f897b"
+  },
+  "openssl_source": {
+    "version": "3.5.9",
+    "archive_sha256": "603f5602e2eef00d77fbd429d34dcd5822bb301757a1bc9cdb24c670f1eb859a",
+    "archive_bytes": 53279637,
+    "interop_fixture": "/tmp/scrum208-openssl-interop.w8avS8",
+    "interop_scope": "PowerShell/source/build fixture only; no installed or packaged DLL qualification"
+  },
+  "prior_remote": {
+    "commit": "19cf4f70dc4d74789a44b4abe2302241e193d72d",
+    "run": 36742212299,
+    "installer": "passed",
+    "dpi": "failed",
+    "native_endurance": "skipped",
+    "full_run_scale": "unconfirmed without artifact 11115071251"
+  },
+  "pending": {
+    "native_run": 36762862383,
+    "prototype_run": 36762860209,
+    "security_blockers": [
+      "SCRUM-208",
+      "SCRUM-209",
+      "SCRUM-211"
+    ]
+  },
+  "initial_sandbox_dbus_failure": "Local dbus-run-session socket bind failure was an environment distinction; the retained 136-test result is from the resumed evidence."
+}

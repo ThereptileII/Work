@@ -1,0 +1,100 @@
+{
+  "date": "2026-09-30",
+  "issues": [
+    "SCRUM-211",
+    "SCRUM-212"
+  ],
+  "scope": "Actual Linux wxCurlHTTP GET/HEAD plus exact-source peer allocation and buffer behavior; native Windows execution remains pending.",
+  "wxcurlCases": [
+    {
+      "case": "valid",
+      "accepted": true,
+      "getError": "No error",
+      "headError": "No error"
+    },
+    {
+      "case": "https_redirect",
+      "accepted": true,
+      "getError": "No error",
+      "headError": "No error"
+    },
+    {
+      "case": "http_downgrade",
+      "accepted": false,
+      "getError": "Unsupported protocol",
+      "headError": "Unsupported protocol"
+    },
+    {
+      "case": "local_file_redirect",
+      "accepted": false,
+      "getError": "Unsupported protocol",
+      "headError": "Unsupported protocol"
+    },
+    {
+      "case": "valid_different_cwd",
+      "accepted": true,
+      "getError": "No error",
+      "headError": "No error"
+    },
+    {
+      "case": "plain_http",
+      "accepted": true,
+      "getError": "No error",
+      "headError": "No error"
+    },
+    {
+      "case": "http_to_https",
+      "accepted": true,
+      "getError": "No error",
+      "headError": "No error"
+    },
+    {
+      "case": "ftp_configuration",
+      "accepted": true
+    },
+    {
+      "case": "telnet_configuration",
+      "accepted": true
+    },
+    {
+      "case": "wrong_host",
+      "accepted": false,
+      "getError": "SSL peer certificate or SSH remote key was not OK",
+      "headError": "SSL peer certificate or SSH remote key was not OK"
+    },
+    {
+      "case": "untrusted",
+      "accepted": false,
+      "getError": "SSL peer certificate or SSH remote key was not OK",
+      "headError": "SSL peer certificate or SSH remote key was not OK"
+    },
+    {
+      "case": "expired",
+      "accepted": false,
+      "getError": "SSL peer certificate or SSH remote key was not OK",
+      "headError": "SSL peer certificate or SSH remote key was not OK"
+    },
+    {
+      "case": "missing_trust",
+      "accepted": false,
+      "getError": "Problem with the SSL CA cert (path? access rights?)",
+      "headError": "Problem with the SSL CA cert (path? access rights?)"
+    }
+  ],
+  "peerBuffer": "Exact patched struct, callback and request initialization helper compiled with injectable allocation/curl-init failures; one CTest executable passed all assertions. Does not qualify peer authentication.",
+  "logs": {
+    "wxcurl": {
+      "sha256": "43cd5a3b77d73820016f0d423ae0127eb86b6aaf202464c27725b402307a0bc5",
+      "retainedLog": "/home/standard/Projects/X-nav/evidence/local/scrum211-final-transport/scrum211-wxcurl-reviewed.log"
+    },
+    "peerBuffer": {
+      "sha256": "a175ec67a8dd39081bbb97ca9597cb8b7c186149443da0ada9fdce197217fad0",
+      "retainedLog": "/home/standard/Projects/X-nav/evidence/local/scrum211-final-transport/scrum211-peer-reviewed.log"
+    }
+  },
+  "patches": {
+    "opencpn-5.12.4-wxcurl-trust.patch": "f3ad76fc07b80e6f2c01331894ce5e685f6aa4456a2a3c761e3115c8c21f3d6b",
+    "opencpn-5.12.4-peer-response-buffer.patch": "5f3fbc3dd63d905f173d31159c219e7059a6933dfa515b70734dad39369d266c"
+  },
+  "nativeGate": "Compiled actual production sources and installed maintained DLLs, owned temporary CurrentUser CA, no test-only CA definition; implemented, not yet run on Windows."
+}

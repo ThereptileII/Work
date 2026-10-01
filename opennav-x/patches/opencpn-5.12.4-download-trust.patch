@@ -1,0 +1,339 @@
+diff --git a/model/include/model/downloader.h b/model/include/model/downloader.h
+--- a/model/include/model/downloader.h
++++ b/model/include/model/downloader.h
+@@ -53,6 +53,9 @@
+   /** Called when given bytes has been transferred from remote. */
+   virtual void on_chunk(const char* buff, unsigned bytes);
+ 
++  /** Return false after the destination stream rejected transfer bytes. */
++  bool write_ok() const;
++
+ protected:
+   /** Try to get remote filesize, return 0 on failure. */
+   long get_filesize();
+@@ -61,6 +64,7 @@
+   std::ostream* stream;
+   std::string error_msg;
+   int errorcode;
++  bool stream_ok;
+ };
+ 
+ #endif  // DOWNLOADER_H__
+diff --git a/model/src/downloader.cpp b/model/src/downloader.cpp
+--- a/model/src/downloader.cpp
++++ b/model/src/downloader.cpp
+@@ -22,7 +22,10 @@
+  ***************************************************************************
+  */
+ 
++#include <cstdio>
++#include <cstdlib>
+ #include <fstream>
++#include <limits>
+ 
+ #include <curl/curl.h>
+ 
+@@ -35,14 +38,15 @@
+ static size_t throw_cb(void* ptr, size_t size, size_t nmemb, void* data) {
+   (void)ptr;
+   (void)data;
+-  return (size_t)(size * nmemb);
+-}
+-
+-static unsigned write_cb(char* in, unsigned size, unsigned nmemb, void* data);
++  if (size != 0 && nmemb > std::numeric_limits<size_t>::max() / size) return 0;
++  return size * nmemb;
++}
++
++static size_t write_cb(char* in, size_t size, size_t nmemb, void* data);
+ // Forward
+ 
+ Downloader::Downloader(std::string url_)
+-    : url(url_), stream(), error_msg(""), errorcode(0) {};
++    : url(url_), stream(), error_msg(""), errorcode(0), stream_ok(true) {};
+ 
+ int Downloader::last_errorcode() { return errorcode; }
+ 
+@@ -50,87 +54,214 @@
+ 
+ void Downloader::on_chunk(const char* buff, unsigned bytes) {
+   stream->write(buff, bytes);
++  stream_ok = stream->good();
++}
++
++bool Downloader::write_ok() const { return stream_ok; }
++
++template <typename T>
++static bool set_option(CURL* curl, CURLoption option, T value, int& errorcode,
++                       std::string& error_msg) {
++  const CURLcode code = curl_easy_setopt(curl, option, value);
++  if (code == CURLE_OK) return true;
++  errorcode = code;
++  error_msg = curl_easy_strerror(code);
++  return false;
++}
++
++static bool configure_public_https(CURL* curl, const std::string& url,
++                                   char* error_buffer, int& errorcode,
++                                   std::string& error_msg) {
++  if (url.size() < 8 || url.compare(0, 8, "https://") != 0) {
++    errorcode = CURLE_UNSUPPORTED_PROTOCOL;
++    error_msg = "Public download URL must use HTTPS";
++    return false;
++  }
++  if (!set_option(curl, CURLOPT_ERRORBUFFER, error_buffer, errorcode,
++                  error_msg) ||
++      !set_option(curl, CURLOPT_URL, url.c_str(), errorcode, error_msg) ||
++      !set_option(curl, CURLOPT_USERAGENT, "OpenCPN", errorcode, error_msg) ||
++      !set_option(curl, CURLOPT_SSL_VERIFYPEER, 1L, errorcode, error_msg) ||
++      !set_option(curl, CURLOPT_SSL_VERIFYHOST, 2L, errorcode, error_msg) ||
++      !set_option(curl, CURLOPT_PROTOCOLS_STR, "https", errorcode,
++                  error_msg) ||
++      !set_option(curl, CURLOPT_REDIR_PROTOCOLS_STR, "https", errorcode,
++                  error_msg) ||
++      !set_option(curl, CURLOPT_FOLLOWLOCATION, 1L, errorcode, error_msg) ||
++      !set_option(curl, CURLOPT_MAXREDIRS, 5L, errorcode, error_msg) ||
++      !set_option(curl, CURLOPT_FAILONERROR, 1L, errorcode, error_msg)) {
++    return false;
++  }
++#ifdef _WIN32
++  if (!set_option(curl, CURLOPT_SSL_OPTIONS, static_cast<long>(CURLSSLOPT_NATIVE_CA), errorcode,
++                  error_msg)) {
++    return false;
++  }
++#endif
++#ifdef OPENNAV_DOWNLOADER_TLS_TEST
++  const char* test_ca = std::getenv("OPENNAV_DOWNLOADER_TEST_CA_FILE");
++  if (test_ca == nullptr || test_ca[0] == '\0') {
++    errorcode = CURLE_SSL_CACERT_BADFILE;
++    error_msg = "Downloader TLS test CA is missing";
++    return false;
++  }
++  if (!set_option(curl, CURLOPT_CAINFO, test_ca, errorcode, error_msg)) {
++    return false;
++  }
++#endif
++  return true;
+ }
+ 
+ bool Downloader::download(std::ostream* stream) {
+-  CURL* curl;
+-  char curl_errbuf[CURL_ERROR_SIZE];
++  char curl_errbuf[CURL_ERROR_SIZE] = {0};
+ 
+   this->stream = stream;
+-  curl = curl_easy_init();
+-  curl_easy_setopt(curl, CURLOPT_URL, url.c_str());
+-  curl_easy_setopt(curl, CURLOPT_ERRORBUFFER, curl_errbuf);
+-  curl_easy_setopt(curl, CURLOPT_USERAGENT, "Mozilla/5.0");
+-  curl_easy_setopt(curl, CURLOPT_NOPROGRESS, 1L);
+-  curl_easy_setopt(curl, CURLOPT_VERBOSE, 0L);
+-  // FIXME -- Add correct certificates on host.
+-  curl_easy_setopt(curl, CURLOPT_SSL_VERIFYPEER, 0L);
+-  curl_easy_setopt(curl, CURLOPT_FOLLOWLOCATION, 1L);
+-  curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, write_cb);
+-  curl_easy_setopt(curl, CURLOPT_WRITEDATA, this);
+-  curl_easy_setopt(curl, CURLOPT_FAILONERROR, 1L);
+-  int code = curl_easy_perform(curl);
++  stream_ok = stream != nullptr && stream->good();
++  errorcode = CURLE_OK;
++  error_msg.clear();
++  if (!stream_ok) {
++    errorcode = CURLE_WRITE_ERROR;
++    error_msg = "Download destination stream is not writable";
++    return false;
++  }
++  CURL* curl = curl_easy_init();
++  if (!curl) {
++    errorcode = CURLE_FAILED_INIT;
++    error_msg = "Cannot initialize curl";
++    return false;
++  }
++  if (!configure_public_https(curl, url, curl_errbuf, errorcode, error_msg) ||
++      !set_option(curl, CURLOPT_NOPROGRESS, 1L, errorcode, error_msg) ||
++      !set_option(curl, CURLOPT_VERBOSE, 0L, errorcode, error_msg) ||
++      !set_option(curl, CURLOPT_WRITEFUNCTION, write_cb, errorcode,
++                  error_msg) ||
++      !set_option(curl, CURLOPT_WRITEDATA, this, errorcode, error_msg)) {
++    curl_easy_cleanup(curl);
++    return false;
++  }
++  const CURLcode code = curl_easy_perform(curl);
+   curl_easy_cleanup(curl);
+-  if (code != CURLE_OK) {
++  if (code != CURLE_OK || !stream_ok) {
+     wxLogWarning("Failed to get '%s' [%s]\n", url, curl_errbuf);
+-    errorcode = code;
+-    error_msg = std::string(curl_errbuf);
++    errorcode = code == CURLE_OK ? CURLE_WRITE_ERROR : code;
++    error_msg = curl_errbuf[0] ? std::string(curl_errbuf)
++                               : std::string(curl_easy_strerror(
++                                     static_cast<CURLcode>(errorcode)));
+     return false;
+   }
+   return true;
+ }
+ 
+ bool Downloader::download(std::string& path) {
++  const bool generated_path = path.empty();
+   if (path == "") {
+     path = wxFileName::CreateTempFileName("ocpn_dl").ToStdString();
++    if (path.empty()) {
++      errorcode = CURLE_WRITE_ERROR;
++      error_msg = "Cannot allocate temporary download path";
++      return false;
++    }
++  }
++  wxFileName destination(path);
++  const std::string prefix =
++      destination.GetPathWithSep().ToStdString() + ".ocpn-download-";
++  const std::string partial =
++      wxFileName::CreateTempFileName(prefix).ToStdString();
++  if (partial.empty()) {
++    if (generated_path) std::remove(path.c_str());
++    errorcode = CURLE_WRITE_ERROR;
++    error_msg = "Cannot allocate download staging file";
++    return false;
+   }
+   std::ofstream stream;
+-  stream.open(path.c_str(), std::ios::out | std::ios::binary | std::ios::trunc);
++  stream.open(partial.c_str(),
++              std::ios::out | std::ios::binary | std::ios::trunc);
+   if (!stream.is_open()) {
+-    errorcode = CURLE_WRITE_ERROR;
+-    error_msg = std::string("Cannot open temporary file ") + path;
++    std::remove(partial.c_str());
++    if (generated_path) std::remove(path.c_str());
++    errorcode = CURLE_WRITE_ERROR;
++    error_msg = std::string("Cannot open temporary download file");
+     return false;
+   }
+   bool ok = download(&stream);
+   stream.close();
+-  return ok;
++  if (!ok || !stream.good()) {
++    if (ok) {
++      errorcode = CURLE_WRITE_ERROR;
++      error_msg = "Cannot flush completed download";
++    }
++    std::remove(partial.c_str());
++    if (generated_path) std::remove(path.c_str());
++    return false;
++  }
++  if (!wxRenameFile(partial, path, true)) {
++    std::remove(partial.c_str());
++    if (generated_path) std::remove(path.c_str());
++    errorcode = CURLE_WRITE_ERROR;
++    error_msg = "Cannot publish completed download";
++    return false;
++  }
++  return true;
+ }
+ 
+ long Downloader::get_filesize() {
+-  CURL* curl;
+   char curl_errbuf[CURL_ERROR_SIZE] = {0};
+-  double filesize = 0.0;
+-
+-  curl = curl_easy_init();
+-  curl_easy_setopt(curl, CURLOPT_URL, url.c_str());
+-  curl_easy_setopt(curl, CURLOPT_NOBODY, 1L);
+-  curl_easy_setopt(curl, CURLOPT_FILETIME, 1L);
+-  curl_easy_setopt(curl, CURLOPT_HEADERFUNCTION, throw_cb);
+-  curl_easy_setopt(curl, CURLOPT_FOLLOWLOCATION, 1L);
+-  curl_easy_setopt(curl, CURLOPT_HEADER, 0L);
+-  // FIXME -- Add correct certificates on host.
+-  curl_easy_setopt(curl, CURLOPT_SSL_VERIFYPEER, 0L);
++  curl_off_t filesize = 0;
++
++  errorcode = CURLE_OK;
++  error_msg.clear();
++  CURL* curl = curl_easy_init();
++  if (!curl) {
++    errorcode = CURLE_FAILED_INIT;
++    error_msg = "Cannot initialize curl";
++    return 0;
++  }
++  if (!configure_public_https(curl, url, curl_errbuf, errorcode, error_msg) ||
++      !set_option(curl, CURLOPT_NOBODY, 1L, errorcode, error_msg) ||
++      !set_option(curl, CURLOPT_FILETIME, 1L, errorcode, error_msg) ||
++      !set_option(curl, CURLOPT_HEADERFUNCTION, throw_cb, errorcode,
++                  error_msg) ||
++      !set_option(curl, CURLOPT_HEADER, 0L, errorcode, error_msg)) {
++    curl_easy_cleanup(curl);
++    return 0;
++  }
+ 
+   int r = curl_easy_perform(curl);
+   if (r == CURLE_OK) {
+-    r = curl_easy_getinfo(curl, CURLINFO_CONTENT_LENGTH_DOWNLOAD, &filesize);
++    r = curl_easy_getinfo(curl, CURLINFO_CONTENT_LENGTH_DOWNLOAD_T, &filesize);
++    if (r == CURLE_OK &&
++        (filesize < 0 ||
++         filesize > static_cast<curl_off_t>(std::numeric_limits<long>::max()))) {
++      r = CURLE_FILESIZE_EXCEEDED;
++    }
+   }
+   curl_easy_cleanup(curl);
+-  wxLogMessage("filesize %s: %d bytes\n", url.c_str(), (int)filesize);
++  wxLogMessage("filesize %s: %lld bytes\n", url.c_str(),
++               static_cast<long long>(filesize));
+   if (r != CURLE_OK) {
+     errorcode = r;
+-    error_msg = std::string(curl_errbuf);
++    error_msg = curl_errbuf[0] ? std::string(curl_errbuf)
++                               : std::string(curl_easy_strerror(
++                                     static_cast<CURLcode>(errorcode)));
+     return 0;
+   }
+   return (long)filesize;
+ }
+ 
+ /** Curl callback on received data from remote. */
+-static unsigned write_cb(char* in, unsigned size, unsigned nmemb, void* data) {
++static size_t write_cb(char* in, size_t size, size_t nmemb, void* data) {
+   auto downloader = static_cast<Downloader*>(data);
+-  if (data == 0) {
+-    return 0;
+-  }
+-  downloader->on_chunk(in, size * nmemb);
+-  return in == NULL ? 0 : size * nmemb;
+-}
++  if (data == nullptr || in == nullptr ||
++      (size != 0 && nmemb > std::numeric_limits<size_t>::max() / size)) {
++    return 0;
++  }
++  const size_t bytes = size * nmemb;
++  if (bytes > std::numeric_limits<unsigned>::max()) return 0;
++  try {
++    downloader->on_chunk(in, static_cast<unsigned>(bytes));
++    return downloader->write_ok() ? bytes : 0;
++  } catch (...) {
++    // No C++ exception may escape through libcurl's C callback boundary.
++    return 0;
++  }
++}
+diff --git a/model/src/plugin_handler.cpp b/model/src/plugin_handler.cpp
+--- a/model/src/plugin_handler.cpp
++++ b/model/src/plugin_handler.cpp
+@@ -1236,11 +1236,17 @@
+     path = "";
+     return false;
+   }
+-  std::ofstream stream;
+-  stream.open(path.c_str(), std::ios::out | std::ios::binary | std::ios::trunc);
+   DEBUG_LOG << "Downloading: " << plugin.name << std::endl;
+   auto downloader = Downloader(plugin.tarball_url);
+-  downloader.download(&stream);
++  if (!downloader.download(path)) {
++    std::ostringstream os;
++    os << "Cannot download plugin: " << plugin.name << " ["
++       << downloader.last_error() << "]";
++    MESSAGE_LOG << os.str();
++    last_error_msg = os.str();
++    std::remove(path.c_str());
++    return false;
++  }
+ 
+   return InstallPlugin(plugin, path);
+ }

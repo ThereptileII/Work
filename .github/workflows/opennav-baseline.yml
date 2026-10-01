@@ -62,6 +62,9 @@ jobs:
         run: |
           python opennav-x/tools/test-source-package.py
           python opennav-x/tools/test-openssl-package.py
+          python opennav-x/tools/test-curl-package.py
+      - name: Preserve reviewed notice bytes through Windows Git checkout
+        run: python opennav-x/tools/test-third-party-notice-checkout.py
       - name: Verify relocated installer completion and failed fixture retention
         run: python opennav-x/tools/test-installer-completion.py
       - name: Installer rejects unqualified XNav output policies
@@ -314,6 +317,14 @@ jobs:
           sudo mk-build-deps --install --remove --tool='apt-get -y --no-install-recommends' opennav-x/upstream/OpenCPN/ci/control
           sudo locale-gen sv_SE.UTF-8 en_US.UTF-8
           mkdir -p "$HOME/.opencpn"
+      - name: Reject untrusted public downloads using actual pinned Downloader
+        run: |
+          mkdir -p opennav-x/evidence/local
+          python3 opennav-x/tools/test-downloader-trust.py > opennav-x/evidence/local/downloader-trust-linux.json
+      - name: Actual WXCURL trust and bounded peer-response regressions
+        run: |
+          python3 opennav-x/tools/test-wxcurl-trust.py > opennav-x/evidence/local/wxcurl-trust-linux.log 2>&1
+          python3 opennav-x/tools/test-peer-buffer.py > opennav-x/evidence/local/peer-buffer-linux.log 2>&1
       - name: Build integrated application and run regressions without exceptions
         run: bash opennav-x/tools/build-integration-linux.sh
       - name: Staged loader check without profile initialization
@@ -431,9 +442,17 @@ jobs:
       - name: Build native installed product without synthetic data
         id: production
         run: ./opennav-x/tools/build-pristine-windows.ps1 -Architecture Win32 -Integration -Production
+      - name: Native public Downloader Windows trust and rejection gate
+        id: downloader_trust
+        run: ./opennav-x/tools/test-downloader-trust-windows.ps1 -Install production-install
+      - name: Exact peer response buffer on native MSVC Win32
+        id: peer_buffer
+        run: |
+          python opennav-x/tools/test-peer-buffer.py > opennav-x/evidence/local/peer-buffer-windows.log 2>&1
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
       - name: Package and test the fixture-free recovery distribution
         id: portable
-        if: ${{ !cancelled() && steps.production.conclusion == 'success' }}
+        if: ${{ !cancelled() && steps.production.conclusion == 'success' && steps.downloader_trust.conclusion == 'success' && steps.peer_buffer.conclusion == 'success' }}
         run: ./opennav-x/tools/package-preview-windows.ps1
       - name: Preserve failed portable interaction evidence immediately
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02

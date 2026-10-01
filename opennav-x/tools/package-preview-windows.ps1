@@ -10,7 +10,8 @@ if (-not $Runtime) { throw 'App-local x86 MSVC redistributable directory not fou
 $Output = Join-Path $Root 'build/developer-preview'
 python (Join-Path $PSScriptRoot 'package-preview.py') --install "$Root/build/production-install" `
     --build "$Root/build/production-windows" --runtime $Runtime.FullName --output $Output `
-    --openssl-source-cache "$Root/build/dependency-downloads/openssl-3.5.9.tar.gz"
+    --openssl-source-cache "$Root/build/dependency-downloads/openssl-3.5.9.tar.gz" `
+    --dependency-source-cache "$Root/build/dependency-downloads"
 $AssemblyExit = $LASTEXITCODE
 $Evidence = Join-Path $Root 'evidence/local'
 $null = New-Item -ItemType Directory -Path $Evidence -Force

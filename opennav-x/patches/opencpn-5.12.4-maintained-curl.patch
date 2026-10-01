@@ -1,0 +1,15 @@
+diff --git a/model/cmake/Curl.cmake b/model/cmake/Curl.cmake
+index 2938b63ce..1abe981a1 100644
+--- a/model/cmake/Curl.cmake
++++ b/model/cmake/Curl.cmake
+@@ -37,9 +37,6 @@ if (CMAKE_HOST_WIN32)
+   set(CURL_FOUND 1)
+   install(
+     FILES
+-      "${CMAKE_SOURCE_DIR}/cache/buildwin/curl-ca-bundle.crt"
+-      "${CMAKE_SOURCE_DIR}/cache/buildwin/libeay32.dll"
+-      "${CMAKE_SOURCE_DIR}/cache/buildwin/ssleay32.dll"
+-	    "${CMAKE_SOURCE_DIR}/cache/buildwin/libcurl.dll"
++      "${CMAKE_SOURCE_DIR}/cache/buildwin/libcurl.dll"
+     DESTINATION "."
+   )

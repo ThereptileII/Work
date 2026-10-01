@@ -1,0 +1,135 @@
+diff --git i/libs/wxcurl/include/wx/curl/base.h w/libs/wxcurl/include/wx/curl/base.h
+index 2ba059599..3368788b0 100644
+--- i/libs/wxcurl/include/wx/curl/base.h
++++ w/libs/wxcurl/include/wx/curl/base.h
+@@ -558,8 +558,12 @@ protected:
+ 
+     // The internal pointer to the libCURL session.
+     CURL*                   m_pCURL;
+-	// Flag for terminating a possibly hung transfer
+-	bool                    m_bAbortHungTransfer;
++
++    // Flag for terminating a possibly hung transfer
++    bool                    m_bAbortHungTransfer;
++    // Set false on any failed option so Perform never runs a partially
++    // configured transfer.
++    bool                    m_bHandleReady;
+ 
+     // libCURL <-> wxString conversions helpers (see below)
+ 
+diff --git i/libs/wxcurl/src/base.cpp w/libs/wxcurl/src/base.cpp
+index 779ac3bce..a6c87b178 100644
+--- i/libs/wxcurl/src/base.cpp
++++ w/libs/wxcurl/src/base.cpp
+@@ -25,6 +25,7 @@
+ 
+ #include <stdio.h>
+ #include <stdarg.h>
++#include <stdlib.h>
+ 
+ #include <wx/curl/base.h>
+ #include <wx/filename.h>
+@@ -401,6 +402,7 @@ wxCurlBase::wxCurlBase(const wxString& szURL /*= wxEmptyString*/,
+                     int id /*= wxID_ANY*/,
+                     long flags /*=wxCURL_DEFAULT_FLAGS*/)
+  : m_pCURL(NULL),
+ m_bAbortHungTransfer(false),
++m_bHandleReady(false),
+ m_szCurrFullURL(wxCURL_STRING2BUF(szURL)),
+ m_szUsername(wxCURL_STRING2BUF(szUserName)),
+@@ -436,6 +438,9 @@ bool wxCurlBase::SetOpt(CURLoption option, ...)
+ {
+ #pragma clang diagnostic push
+ #pragma clang diagnostic ignored "-Wvarargs"
++    if (!m_bHandleReady)
++        return false;
++
+     va_list arg;
+ 
+     func_T param_func = (func_T)0;
+@@ -471,7 +476,11 @@ bool wxCurlBase::SetOpt(CURLoption option, ...)
+ 
+     va_end(arg);
+ 
+-    DumpErrorIfNeed(res);
++    if (res != CURLE_OK)
++    {
++        m_bHandleReady = false;
++        DumpErrorIfNeed(res);
++    }
+     return (res == CURLE_OK);
+ #pragma clang diagnostic pop
+ }
+@@ -513,6 +522,9 @@ bool wxCurlBase::GetInfo(CURLINFO info, ...) const
+ 
+ bool wxCurlBase::Perform()
+ {
++    if (!m_pCURL || !m_bHandleReady)
++        return false;
++
+     CURLcode res = CURLE_OK;
+ 
+     if((m_nFlags & wxCURL_SEND_BEGINEND_EVENTS) && m_pEvtHandler)
+@@ -550,7 +562,9 @@ bool wxCurlBase::InitHandle()
+ 
+     m_pCURL = curl_easy_init();
+ 
+-    return (m_pCURL != NULL);
++    m_bHandleReady = (m_pCURL != NULL);
++
++    return m_bHandleReady;
+ }
+ 
+ bool wxCurlBase::ReInitHandle()
+@@ -567,6 +581,8 @@ bool wxCurlBase::CleanupHandle()
+         m_pCURL = NULL;
+     }
+ 
++    m_bHandleReady = false;
++
+     return true;
+ }
+ 
+@@ -814,7 +830,8 @@ void wxCurlBase::SetCurlHandleToDefaults(const wxString& relativeURL)
+     if (!relativeURL.empty())
+         SetURL(relativeURL);        // update the m_szCurrFullURL string
+ 
+-    if(m_pCURL && ResetHandle())
++    m_bHandleReady = m_pCURL && ResetHandle();
++    if(m_bHandleReady)
+     {
+         ResetResponseVars();
+ 
+@@ -827,11 +844,29 @@ void wxCurlBase::SetCurlHandleToDefaults(const wxString& relativeURL)
+                     "Accept: */*\r\n" \
+                     "Connection: keep-alive"); //Pretend we are a normal browser
+         SetOpt(CURLOPT_FOLLOWLOCATION, 1L);
++        SetOpt(CURLOPT_MAXREDIRS, 5L);
++
++        wxString fullURL = wxCURL_BUF2STRING(m_szCurrFullURL).Lower();
++        const bool isHTTPS = fullURL.StartsWith(wxS("https://"));
++        if(isHTTPS)
++        {
++            // Keep FTP, Telnet and other supported initial protocols intact,
++            // while forbidding an HTTPS transfer from redirecting away from TLS.
++            SetOpt(CURLOPT_REDIR_PROTOCOLS, (long)CURLPROTO_HTTPS);
++        }
+ #ifdef __WXMSW__
+-        SetOpt(CURLOPT_CAINFO, "curl-ca-bundle.crt"); //Use our local certificate list on Windows
+-        //SetOpt(CURLOPT_SSL_VERIFYPEER, true);		// FIXME: Temporary until we get certificates working
++#if LIBCURL_VERSION_NUM < 0x074700
++#error Maintained Windows wxCurl requires libcurl headers with native CA support
++#endif
++        SetOpt(CURLOPT_SSL_OPTIONS, (long)CURLSSLOPT_NATIVE_CA);
++#endif
++        SetOpt(CURLOPT_SSL_VERIFYPEER, 1L);
++        SetOpt(CURLOPT_SSL_VERIFYHOST, 2L);
++#ifdef OPENNAV_WXCURL_TLS_TEST
++        const char* testCA = getenv("OPENNAV_WXCURL_TEST_CA_FILE");
++        if(testCA && testCA[0])
++            SetOpt(CURLOPT_CAINFO, testCA);
+ #endif
+-        SetOpt(CURLOPT_SSL_VERIFYPEER, false); //cURL does not support Authority Information Access (AIA) X.509 extension (https://github.com/curl/curl/issues/2793). Unfortunately as of 2021/07 at least LINZ does not provide full trust chain in their TLS certificate and depends on the client's ability to use AIA and download the missing certs which makes the site untrusted for us (And we have to ignore it here to be able to download the chart archives)
+         SetOpt(CURLOPT_ENCODING, "gzip,deflate"); //Save bandwidth by using compression
+ 
+         if(m_pEvtHandler && (m_nFlags & wxCURL_SEND_PROGRESS_EVENTS))

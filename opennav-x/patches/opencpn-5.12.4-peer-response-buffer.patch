@@ -1,0 +1,149 @@
+diff --git a/model/src/peer_client.cpp b/model/src/peer_client.cpp
+--- a/model/src/peer_client.cpp
++++ b/model/src/peer_client.cpp
+@@ -23,7 +23,10 @@
+  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
+  **************************************************************************/
+ 
++#include <cstdlib>
++#include <cstring>
+ #include <iostream>
++#include <limits>
+ #include <sstream>
+ #include <string>
+ #include <unordered_map>
+@@ -45,15 +48,35 @@
+ #include "model/semantic_vers.h"
+ #include "observable_confvar.h"
+ 
++// OPENNAV_PEER_BUFFER_STRUCT_BEGIN
++static constexpr size_t kMaxPeerResponseBytes = 64 * 1024;
++
+ struct MemoryStruct {
++  using Allocate = void* (*)(size_t);
++  using Reallocate = void* (*)(void*, size_t);
++  using Release = void (*)(void*);
++
+   char* memory;
+   size_t size;
+-  MemoryStruct() {
+-    memory = (char*)malloc(1);
+-    size = 0;
+-  }
+-  ~MemoryStruct() { free(memory); }
++  Reallocate reallocate;
++  Release release;
++
++  explicit MemoryStruct(Allocate allocate = std::malloc,
++                        Reallocate reallocate_ = std::realloc,
++                        Release release_ = std::free)
++      : memory(static_cast<char*>(allocate(1))),
++        size(0),
++        reallocate(reallocate_),
++        release(release_) {
++    if (memory) memory[0] = '\0';
++  }
++  ~MemoryStruct() {
++    if (memory) release(memory);
++  }
++  MemoryStruct(const MemoryStruct&) = delete;
++  MemoryStruct& operator=(const MemoryStruct&) = delete;
+ };
++// OPENNAV_PEER_BUFFER_STRUCT_END
+ 
+ using PeerDlgPair = std::pair<PeerDlgResult, std::string>;
+ 
+@@ -66,12 +89,23 @@
+ 
+ static size_t WriteMemoryCallback(void* contents, size_t size, size_t nmemb,
+                                   void* userp) {
+-  size_t realsize = size * nmemb;
+-  struct MemoryStruct* mem = (struct MemoryStruct*)userp;
+-
+-  char* ptr = (char*)realloc(mem->memory, mem->size + realsize + 1);
++  // OPENNAV_PEER_BUFFER_CALLBACK_BODY
++  if (!userp || (size != 0 && nmemb > std::numeric_limits<size_t>::max() / size))
++    return 0;
++  const size_t realsize = size * nmemb;
++  auto mem = static_cast<MemoryStruct*>(userp);
++  if (!mem->memory || (realsize != 0 && !contents) ||
++      realsize == std::numeric_limits<size_t>::max() ||
++      mem->size > std::numeric_limits<size_t>::max() - realsize - 1 ||
++      mem->size > kMaxPeerResponseBytes ||
++      realsize > kMaxPeerResponseBytes - mem->size) {
++    return 0;
++  }
++  if (realsize == 0) return 0;
++
++  char* ptr = static_cast<char*>(
++      mem->reallocate(mem->memory, mem->size + realsize + 1));
+   if (!ptr) {
+-    /* out of memory! */
+     std::cerr << "not enough memory (realloc returned NULL)\n";
+     return 0;
+   }
+@@ -83,6 +117,24 @@
+ 
+   return realsize;
+ }
++// OPENNAV_PEER_BUFFER_CALLBACK_END
++
++// OPENNAV_PEER_REQUEST_INIT_BEGIN
++static CURL* InitPeerRequest(const MemoryStruct* response, CURLcode& result) {
++  result = CURLE_OK;
++  if (!response) {
++    result = CURLE_BAD_FUNCTION_ARGUMENT;
++    return nullptr;
++  }
++  if (!response->memory) {
++    result = CURLE_OUT_OF_MEMORY;
++    return nullptr;
++  }
++  CURL* curl = curl_easy_init();
++  if (!curl) result = CURLE_FAILED_INIT;
++  return curl;
++}
++// OPENNAV_PEER_REQUEST_INIT_END
+ 
+ static int xfer_callback(void* clientp, [[maybe_unused]] curl_off_t dltotal,
+                          [[maybe_unused]] curl_off_t dlnow, curl_off_t ultotal,
+@@ -111,7 +163,9 @@
+   long response_code = -1;
+   peer_data.progress.Notify(0, "");
+ 
+-  CURL* c = curl_easy_init();
++  CURLcode result;
++  CURL* c = InitPeerRequest(response, result);
++  if (!c) return -static_cast<long>(result);
+   // No encoding, plain ASCII
+   curl_easy_setopt(c, CURLOPT_ENCODING, "identity");  // Plain ASCII
+   curl_easy_setopt(c, CURLOPT_URL, url.c_str());
+@@ -130,7 +184,7 @@
+   curl_easy_setopt(c, CURLOPT_VERBOSE,
+                    wxLog::GetLogLevel() >= wxLOG_Debug ? 1 : 0);
+ 
+-  CURLcode result = curl_easy_perform(c);
++  result = curl_easy_perform(c);
+   peer_data.progress.Notify(0, "");
+   if (result == CURLE_OK)
+     curl_easy_getinfo(c, CURLINFO_RESPONSE_CODE, &response_code);
+@@ -147,7 +201,9 @@
+                   int timeout = 0) {
+   long response_code = -1;
+ 
+-  CURL* c = curl_easy_init();
++  CURLcode result;
++  CURL* c = InitPeerRequest(chunk, result);
++  if (!c) return -static_cast<int>(result);
+   curl_easy_setopt(c, CURLOPT_ENCODING, "identity");  // Encoding: plain ASCII
+   curl_easy_setopt(c, CURLOPT_URL, url.c_str());
+   curl_easy_setopt(c, CURLOPT_SSL_VERIFYPEER, 0L);
+@@ -156,7 +212,7 @@
+   curl_easy_setopt(c, CURLOPT_WRITEDATA, (void*)chunk);
+   curl_easy_setopt(c, CURLOPT_NOPROGRESS, 1);
+   if (timeout != 0) curl_easy_setopt(c, CURLOPT_TIMEOUT, timeout);
+-  CURLcode result = curl_easy_perform(c);
++  result = curl_easy_perform(c);
+   if (result == CURLE_OK)
+     curl_easy_getinfo(c, CURLINFO_RESPONSE_CODE, &response_code);
+   curl_easy_cleanup(c);

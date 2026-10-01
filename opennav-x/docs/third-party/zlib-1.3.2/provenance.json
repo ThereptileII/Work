@@ -1,0 +1,36 @@
+{
+  "library": "zlib 1.3.2",
+  "license": "Zlib",
+  "licenseSourceWithinVerifiedArchive": "zlib-1.3.2/LICENSE",
+  "licenseSha256": "e32ff4e00d9d94930537635291da39e7e612703334bf6fde8c7f1686fe8a45a2",
+  "sourceArchive": "https://zlib.net/zlib-1.3.2.tar.gz",
+  "sourceArchiveSha256": "bb329a0a2cd0274d05519d61c667c062e06990d72e125ee2dfa8de64f0119d16",
+  "sourceArchiveBytes": 1502830,
+  "sourceSignature": "https://zlib.net/zlib-1.3.2.tar.gz.asc",
+  "signatureVerification": {
+    "verification": "GOOD signature / VALIDSIG",
+    "signer": "Mark Adler <madler@alumni.caltech.edu>",
+    "primary_fingerprint": "5ED4 6A67 21D3 6558 7791 E2AA 783F CD8E 58BC AFBA",
+    "primary_key_algorithm": "DSA 1024",
+    "signature_time": "2026-02-17T15:17:40+01:00",
+    "key_source_url": "https://madler.net/madler/pgp.html",
+    "basis": [
+      "Detached signature verified locally using the public key published on madler.net",
+      "GitHub madler/zlib v1.3.2 release identifies Mark Adler and key ID 783FCD8E58BCAFBA",
+      "The official zlib.net page publishes the archive, detached signature, and matching SHA-256"
+    ]
+  },
+  "provenanceLimitations": [
+    "GnuPG reports TRUST_UNDEFINED because the downloaded key has no local trust certification; the fingerprint was checked against the official madler.net/GitHub publications.",
+    "The signing key is an old 1024-bit DSA key. Signature validity proves the archive was signed by the corresponding key, subject to the key-publication trust boundary; it is not a modern cryptographic-strength assessment.",
+    "No source was compiled, configured, tested, or executed. Windows ABI, installer, and runtime behavior remain unverified until native Windows validation.",
+    "The source path is a temporary retained artifact and is not a repository dependency or main-tree edit."
+  ],
+  "windowsBuildIntent": {
+    "architecture": "Win32",
+    "abi": "x86",
+    "linkage": "shared",
+    "runtime": "MSVC dynamic /MD"
+  },
+  "qualification": "Source and license provenance only. Native binary/package/source closure, installer and security gates remain pending under SCRUM-209 and SCRUM-211."
+}

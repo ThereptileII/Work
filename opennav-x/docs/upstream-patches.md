@@ -1,5 +1,62 @@
 # Direct OpenCPN Upstream Modifications
 
+## Maintained Windows curl integration (SCRUM-209) — 2026-09-30
+
+`patches/opencpn-5.12.4-maintained-curl.patch` applies only to the disposable
+integration source. It keeps the pinned `WIN32_LIBCURL` and `WIN32_ZLIB1`
+imported targets and their cache paths unchanged. After the source builders
+verify curl's complete OpenSSL 3.5.9 and zlib 1.3.2 import closure, the patch
+removes the legacy CA bundle, `libeay32.dll` and `ssleay32.dll` from the
+integrated CMake install list and installs the verified maintained
+`libcurl.dll` there instead.
+
+The pristine source and build retain their stock dependency behavior. No user
+installation is mutated or cleaned by this patch. Merge risk is low and
+localized to `model/cmake/Curl.cmake`; native Windows application link/import,
+TLS, installer upgrade/rollback and runtime acceptance remain required. See
+`docs/architecture/windows-native-dependency-integration.md`.
+## Public Downloader TLS boundary (SCRUM-211) — 2026-09-30
+
+The reviewed integration patch
+`patches/opencpn-5.12.4-download-trust.patch` changes only the pinned
+Downloader GET/HEAD path and the network `PluginHandler::InstallPlugin`
+overload. It requires verified chain and hostname, permits only HTTPS initial
+and redirect protocols, checks curl setup failures and stages file downloads
+until the complete transfer succeeds. Windows selects curl's native CA support;
+Linux retains libcurl's configured system trust. Manual local plugin archive
+installation is unchanged.
+
+The actual patched Downloader passes the isolated loopback cases recorded in
+`docs/architecture/download-trust-inspection.md`. Native Windows trust, the
+maintained curl integration, full PluginHandler extraction, WXCURL and local
+peer identity remain separate gates. Merge risk is localized to the pinned
+Downloader and PluginHandler functions; the patch list applies it only to the
+disposable integration worktree.
+
+## WXCURL and bounded peer responses (SCRUM-211/212) — 2026-09-30
+
+`patches/opencpn-5.12.4-wxcurl-trust.patch` changes only the pinned
+`libs/wxcurl/include/wx/curl/base.h` and `libs/wxcurl/src/base.cpp`.
+It verifies chain/hostname, selects Windows native CA trust independently of
+initial protocol, prevents HTTPS redirects from downgrading, and refuses to
+perform a partially configured curl handle. Existing HTTP/FTP/Telnet entry
+points remain. The real Linux harness passes 13 transport/configuration cases;
+the native Windows harness is a required, still-pending gate. See
+[wxcurl trust](architecture/wxcurl-download-trust.md).
+
+`patches/opencpn-5.12.4-peer-response-buffer.patch` changes only
+`model/src/peer_client.cpp`: a NUL-initialized 64 KiB response buffer, checked
+allocation/overflow and request initialization. The exact patched code has
+portable failure-injection coverage. This does **not** resolve peer identity,
+pairing, credential logging or malformed JSON semantics. Those security gates
+remain open under SCRUM-212; see
+[peer inspection](architecture/local-peer-trust-inspection.md).
+
+Both patches are applied only to the disposable pinned integration tree and
+are included in the corresponding-source inventory. The eight-patch reviewed
+result is verified before building; native plugin, installer and boat acceptance
+remain separate from these local checks.
+
 ## Windows OpenSSL build boundary (SCRUM-208) — 2026-09-30
 
 `3cbd7e5` adds an integration-only dependency override, without editing the

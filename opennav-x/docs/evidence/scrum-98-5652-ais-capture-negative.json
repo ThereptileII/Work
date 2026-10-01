@@ -1,0 +1,65 @@
+{
+  "issue": "SCRUM-98",
+  "remoteCommit": "5652c01aa7dc450cdfc081a981945b0cc6f6905d",
+  "run": "https://github.com/ThereptileII/Work/actions/runs/36762860209",
+  "job": 110049561806,
+  "artifact": {
+    "id": 11123317836,
+    "sha256": "19ebfb3bbcaa94cd8e5ab702bf3c03b058d6c3fe5041affaa9d037578b2dbe1c",
+    "downloadedAndVerified": true
+  },
+  "observedFailure": "Enabled lookup=0; retained snapshot still describes AIS targets while the native screenshot shows the Online AIS settings page. Final published snapshot has fully visible enabled Off and Enabled controls.",
+  "snapshotEvidence": [
+    {
+      "phase": "capture snapshot",
+      "page": "AIS targets",
+      "ticks": "114",
+      "controls": [
+        {
+          "x": 713,
+          "height": 48,
+          "accessible_name": "Online AIS settings",
+          "width": 352,
+          "label": "Online AIS settings",
+          "y": 685,
+          "visible": true,
+          "enabled": true
+        }
+      ]
+    },
+    {
+      "phase": "final snapshot",
+      "page": "Online AIS settings",
+      "ticks": "118",
+      "controls": [
+        {
+          "x": 713,
+          "height": 48,
+          "accessible_name": "Off",
+          "width": 352,
+          "label": "Off",
+          "y": 396,
+          "visible": true,
+          "enabled": true
+        },
+        {
+          "x": 713,
+          "height": 48,
+          "accessible_name": "Enabled",
+          "width": 352,
+          "label": "Enabled",
+          "y": 456,
+          "visible": true,
+          "enabled": true
+        }
+      ]
+    }
+  ],
+  "nativeScreenshot": {
+    "path": "prototype-native/online-ais-settings-day.png",
+    "sha256": "5a5a61a842d57dd3eea8bfdde3f78eebad34c1f18dd6705806cd5a7b1f74f393",
+    "review": "1280x800 shows Online AIS settings and fully visible Enabled button, not clipping."
+  },
+  "correction": "Require ui_page Online AIS settings after its opener, within existing deadline; retain unique visible enabled control and real pointer assertions.",
+  "acceptance": "Fresh native replacement run required. No release acceptance."
+}

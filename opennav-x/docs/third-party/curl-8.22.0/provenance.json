@@ -1,0 +1,38 @@
+{
+  "library": "curl 8.22.0",
+  "license": "curl",
+  "licenseSourceWithinVerifiedArchive": "curl-8.22.0/COPYING",
+  "licenseSha256": "82f2f4427d6545ee5aaac4f0b80428da6cc8ba41c2cf5da3a03680ec327b9681",
+  "sourceArchive": "https://curl.se/download/curl-8.22.0.tar.xz",
+  "sourceArchiveSha256": "f7ef3ae8a22e521f289803fe93543eb64c329b58aa73a9e224dfd915a2a5f4f7",
+  "sourceArchiveBytes": 2953092,
+  "sourceSignature": "https://curl.se/download/curl-8.22.0.tar.xz.asc",
+  "signatureVerification": {
+    "local_signature_sha256": "ff9acdd6e48690d037b85337e42320b87aead3414ba83b75e77ec08d2eea908e",
+    "verification": "GOOD signature / VALIDSIG",
+    "signer": "Daniel Stenberg <daniel@haxx.se>",
+    "primary_fingerprint": "27ED EAF2 2F3A BCEB 50DB 9A12 5CC9 08FD B71E 12C2",
+    "signing_key_algorithm": "RSA 2048",
+    "signature_time": "2026-09-02T07:48:56+02:00",
+    "basis": [
+      "Local detached-signature verification with the supplied Daniel Stenberg public key",
+      "Fingerprint matches https://curl.se/docs/verify.html",
+      "Fingerprint and release-signing role match https://daniel.haxx.se/address.html",
+      "Daniel's page links the same fingerprint at https://keys.openpgp.org/vks/v1/by-fingerprint/27EDEAF22F3ABCEB50DB9A125CC908FDB71E12C2",
+      "The official curl download page publishes the 8.22.0 archive and its PGP signature"
+    ]
+  },
+  "provenanceLimitations": [
+    "GnuPG reported TRUST_UNDEFINED / an uncertified key; the fingerprint was checked against curl's official publications but no independent web-of-trust certification was established.",
+    "The official curl pages used here publish the archive and detached signature, but no source-archive SHA-256 value was located; the recorded SHA-256 is therefore an independently reproducible local digest, not an official checksum comparison.",
+    "No source was compiled, configured, or executed. curl's reproducible-release verification script was not run because this bounded check did not clone or execute source tooling.",
+    "This establishes archive identity and detached-signature provenance only; it does not qualify curl for product integration or establish absence of vulnerabilities."
+  ],
+  "windowsBuildIntent": {
+    "architecture": "Win32",
+    "abi": "x86",
+    "linkage": "shared",
+    "runtime": "MSVC dynamic /MD"
+  },
+  "qualification": "Source and license provenance only. Native binary/package/source closure, installer and security gates remain pending under SCRUM-209 and SCRUM-211."
+}

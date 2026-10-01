@@ -1,0 +1,105 @@
+{
+  "schemaVersion": 1,
+  "issue": "SCRUM-209",
+  "record": "bounded source-build and dependency-boundary evidence",
+  "recordedAt": "2026-09-30",
+  "commits": {
+    "zlibWorktree": "a1121903a7886e6e4f721e1412875942f691481e",
+    "zlibBuilderInitial": "1b07eba3a5f9a2b86c0906eb7586e1c745568950",
+    "zlibBuilderReviewFix": "0a18b8e5bd334915063e3f7588ff02d60774082f",
+    "curlWorktreeReadOnly": "cd07b8d0eaf4d76ad2924845a39e9c88811547a8"
+  },
+  "sourceProvenance": {
+    "zlib": {
+      "version": "1.3.2",
+      "releaseDate": "2026-02-17",
+      "url": "https://zlib.net/zlib-1.3.2.tar.gz",
+      "bytes": 1502830,
+      "sha256": "bb329a0a2cd0274d05519d61c667c062e06990d72e125ee2dfa8de64f0119d16",
+      "signature": "GOOD/VALIDSIG",
+      "signingPrimaryFingerprint": "5ED46A6721D365587791E2AA783FCD8E58BCAFBA",
+      "license": "zlib license in zlib.h; preserve origin, mark altered sources, retain notice"
+    },
+    "curl": {
+      "version": "8.22.0",
+      "releaseDate": "2026-09-02",
+      "url": "https://curl.se/download/curl-8.22.0.tar.xz",
+      "bytes": 2953092,
+      "sha256": "f7ef3ae8a22e521f289803fe93543eb64c329b58aa73a9e224dfd915a2a5f4f7",
+      "signature": "GOOD/VALIDSIG",
+      "signingPrimaryFingerprint": "27EDEAF22F3ABCEB50DB9A125CC908FDB71E12C2",
+      "license": "curl license in COPYING"
+    }
+  },
+  "checks": {
+    "zlibLinuxWrapper": {
+      "result": "passed",
+      "testsPassed": 14,
+      "testsDiscovered": 14,
+      "environment": "main repository local tool environment; CMake 4.4.3; Ninja",
+      "logs": {
+        "summary": "evidence/local/scrum209-boundaries/zlib-linux-tests.log",
+        "summarySha256": "17074ac262a534e887eab49ee094a4f3c42f0aa20c1589ed6968411e3dce74bd",
+        "transientConfigureSha256": "b91cf432cee755d68850b7079c7f566874c3fc48b3ad396e47afdae465614598",
+        "transientBuildSha256": "d8e6819e725840ade10066db05faf5917dc85e569c8d70537bd0a24e32b36386",
+        "transientCtestSha256": "66ff56a389b4ceb828d1e2c49ad294a165243d1b014389288500c2a020347f06"
+      }
+    },
+    "zlibSpecialPath": {
+      "result": "passed",
+      "pathClass": "spaces and ampersand",
+      "summary": "evidence/local/scrum209-boundaries/zlib-path-spaces-ampersand.log",
+      "summarySha256": "e2675eacf4249edc69e6392b7b6e080c9b111482956d0e5011ce373b2573aec3",
+      "configureSha256": "e73e7da93d084f1f3c8854502d4771b8168bc306467636364452799b3f9f827d",
+      "buildSha256": "9c55b55704f50d1e652e17a2826f1fd33221dc3e6ef923baadb4509515e0d933"
+    },
+    "powershellAst": {
+      "result": "passed",
+      "parser": "/home/standard/Projects/X-nav/.local/pwsh/pwsh",
+      "target": "tools/build-zlib-windows.ps1",
+      "log": "evidence/local/scrum209-boundaries/powershell-ast.log",
+      "logSha256": "e9ff4dfa4e3ed13e55404698b6914e7c5df206e25ba5c0705ae830bfa1c1be10"
+    },
+    "producerConsumer": {
+      "result": "passed",
+      "producer": "zlib production manifest block from a1121903a7886e6e4f721e1412875942f691481e",
+      "consumer": "curl validation statements from read-only cd07b8d0eaf4d76ad2924845a39e9c88811547a8",
+      "validUtf8BomManifest": "accepted",
+      "tamperCases": {
+        "damagedDll": "rejected",
+        "damagedHeader": "rejected",
+        "wrongSourceSha256": "rejected",
+        "wrongVersion": "rejected"
+      },
+      "harnessSha256": "63e7bf17dbf1adfb20b8742f5c95e33c286ea40e673dc865df2925fa5ee1973b",
+      "logSha256": "b09721de6d2866f4d3fa7e47a0a70085e062e2ad8a3577be586a3ed0a0739b36",
+      "retainedSummary": "evidence/local/scrum209-boundaries/producer-consumer-interop.log",
+      "retainedSummarySha256": "6227fc4f1f8fd364231f765b6df96e8ddd67f52f68f609b61a0a470eb83478c4",
+      "nativeBuildReached": false
+    },
+    "curlProducerPackage": {
+      "result": "passed",
+      "producerCommit": "cd07b8d0eaf4d76ad2924845a39e9c88811547a8",
+      "consumerCommit": "f70b5fd",
+      "actualPowerShellManifestBlock": true,
+      "generatedManifestAccepted": true,
+      "realPublicHeaderInventory": 12,
+      "realSourceArchivesRehashed": true,
+      "inertRuntimeBytesNotExecuted": true,
+      "evidenceDirectory": "evidence/local/scrum209-package-interop",
+      "sha256": {
+        "produce.ps1": "3da06179bddda664bd6b914e73c54797689af4cf6d2210d00deb71e0bacfc7f8",
+        "validation.json": "9bffeda295df19d7925d25f563f23666ebb47480837390527e1b44d0a564ca17",
+        "producer.log": "17e75faccba5eddbee0166535b31ecd97e2dcf498daac81692ed9fb3afba21fb"
+      }
+    }
+  },
+  "limitations": [
+    "No native Windows MSVC build, vswhere invocation, dumpbin run, installer test, or full curl dependency closure was performed.",
+    "The zlib and curl detached signatures were locally valid; GnuPG trust was not independently certified beyond the official published fingerprints.",
+    "The zlib signing key is an old 1024-bit DSA key.",
+    "The retained logs are sanitized summaries; full transient build logs remain under /tmp and are not release qualification artifacts."
+  ],
+  "retainedEvidenceDirectory": "/home/standard/Projects/X-nav/evidence/local/scrum209-boundaries",
+  "retainedProvenanceLogSha256": "bc840569f9664f56a07a20e89113f3d9278d5f78df62695af011f7d11529156a"
+}

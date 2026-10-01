@@ -1,4 +1,74 @@
-# OpenNav X status — 2026-09-30
+# OpenNav X status — 2026-10-01
+
+## Security integration in progress — 2026-09-30
+
+SCRUM-208/209/211 remain launch blockers. The maintained Windows dependency
+chain now has separate source builders for OpenSSL 3.5.9, zlib 1.3.2 and curl
+8.22.0, joined only in the disposable integration build. Source hashes, licenses,
+manifest consistency, installed DLL hashes and the absence of legacy OpenSSL
+runtimes are package gates. zlib's generated wrapper passed 14 upstream Linux
+tests; PowerShell manifest interoperability and tamper rejection passed. These
+checks do not qualify the native Windows binaries or installer lifecycle.
+
+The actual pinned Downloader accepted an untrusted owned test certificate.
+The integration patch now requires verified HTTPS for public catalog/plugin
+downloads, rejects insecure redirects, stages path downloads and propagates
+network failure before plugin extraction. Its real Linux transport harness
+passes 12 cases, including both GET/HEAD rejection and stream exceptions.
+The actual WXCURL harness now passes 13 Linux cases, and the native trust gate
+covers both download implementations. The peer response buffer and allocation
+guards pass exact-source tests. Peer authentication/credential remediation is
+tracked separately as SCRUM-212; no complete application TLS remediation is claimed. See the corresponding
+architecture and evidence records.
+
+The combined eight-patch integration at `3cb637b` passes its Linux build and
+136/136 integrated tests (19.66 seconds). The focused Online AIS pointer flow
+passes after the semantic capture wait correction `8bdb445`. These are local
+development results, not Windows qualification.
+
+The published f752dae→5652c01 candidate is unchanged. Its prototype capture
+failed looking up the Online AIS Enabled control. Downloaded, hash-verified
+evidence shows a stale pre-transition diagnostic snapshot; the actual button
+is fully visible. The bounded semantic wait correction retains all assertions.
+The full Linux run, including three-hour elapsed trip, passed. The full native
+run passed both 128-test suites, OpenSSL upstream tests, DPI/touch and charts,
+but recovery packaging failed its exact OpenSSL notice-hash check. Installer
+and native endurance were skipped. A disposable Git checkout reproduced the
+notice failure with `core.autocrlf=true`. Commit `ba30f9b` preserves third-party
+notice bytes using Git attributes; the regression check confirms the original
+OpenSSL/curl/zlib license hashes and retains a failing unprotected control.
+The package hash requirement remains unchanged. The changes above are a subsequent integration
+candidate and require their own exact-revision results. These results do not qualify a boat deployment or public release.
+
+## SCRUM-208 / SCRUM-40 / SCRUM-98 bounded candidate evidence — 2026-09-30
+
+Frozen local revision `f752daeb0fc07e2abb878c0c43a4b64760f22101` has a
+published candidate `5652c01aa7dc450cdfc081a981945b0cc6f6905d`. The local
+integrated suite passes 136/136, and the Auth0 PostgreSQL CI job
+`110049568910` in run [36762862390](https://github.com/ThereptileII/Work/actions/runs/36762862390)
+passes all 31 tests, including fresh, reverse and reapplied migrations. The
+full native run [36762862383](https://github.com/ThereptileII/Work/actions/runs/36762862383)
+and prototype run [36762860209](https://github.com/ThereptileII/Work/actions/runs/36762860209)
+are not accepted: prototype composition failed at the Enabled-control lookup,
+and the full native run failed its notice-hash packaging gate. The three-hour
+Linux run and native prototype object-flow job passed. No release or native
+acceptance is inferred.
+
+The source-publication proof maps all 1,289 prepublication entries and
+preserves eight unrelated entries (proof SHA-256
+`f3fe14b1c93a06d71096a1774bb2a9dd7f3ac21aebb5a1ca6d0fdc84614f897b`). The
+PowerShell interop directory is an inert fixture-only check and does not qualify
+installed or packaged DLLs. SCRUM-208 remains a Highest security launch blocker.
+SCRUM-209's legacy curl/OpenSSL closure remains open, and SCRUM-211's
+certificate-validation bypass finding is an additional open security blocker.
+
+The earlier remote run [36742212299](https://github.com/ThereptileII/Work/actions/runs/36742212299)
+on `19cf4f70dc4d74789a44b4abe2302241e193d72d` passed its installer step but
+failed the retained DPI step; native endurance was skipped. That run's own log
+does not print the active DPI scale, so its full-run scale remains unconfirmed
+without artifact `11115071251`; the separate retained prototype evidence must
+not be transferred to it. Its Linux integrated job subsequently passed, including
+the real three-hour elapsed trip; the native failure still blocks acceptance.
 
 ## Next combined native candidate — 2026-09-30
 

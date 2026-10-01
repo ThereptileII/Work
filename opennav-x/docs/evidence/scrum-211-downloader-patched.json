@@ -1,0 +1,93 @@
+{
+  "issue": "SCRUM-211",
+  "sourceCommit": "10ffc0b",
+  "upstreamCommit": "37fd0cddb7334fe489e9f18aa163977a9c5c84f7",
+  "actualDownloaderCompiled": true,
+  "platform": "Linux",
+  "checks": {
+    "status": "passed",
+    "cases": [
+      {
+        "case": "valid",
+        "accepted": true,
+        "downloadError": 0,
+        "headError": 0
+      },
+      {
+        "case": "https_redirect",
+        "accepted": true,
+        "downloadError": 0,
+        "headError": 0
+      },
+      {
+        "case": "http_downgrade",
+        "accepted": false,
+        "downloadError": 1,
+        "headError": 1
+      },
+      {
+        "case": "local_file_redirect",
+        "accepted": false,
+        "downloadError": 1,
+        "headError": 1
+      },
+      {
+        "case": "partial_transfer",
+        "accepted": false,
+        "downloadError": 56,
+        "headError": 0
+      },
+      {
+        "case": "wrong_host",
+        "accepted": false,
+        "downloadError": 60,
+        "headError": 60
+      },
+      {
+        "case": "untrusted",
+        "accepted": false,
+        "downloadError": 60,
+        "headError": 60
+      },
+      {
+        "case": "expired",
+        "accepted": false,
+        "downloadError": 60,
+        "headError": 60
+      },
+      {
+        "case": "write_exception",
+        "accepted": false,
+        "downloadError": 23,
+        "headError": 0
+      },
+      {
+        "case": "valid_different_cwd",
+        "accepted": true,
+        "downloadError": 0,
+        "headError": 0
+      },
+      {
+        "case": "initial_http",
+        "accepted": false,
+        "downloadError": 1,
+        "headError": 1
+      },
+      {
+        "case": "missing_trust",
+        "accepted": false,
+        "downloadError": 77,
+        "headError": 77
+      }
+    ]
+  },
+  "evidencePath": "evidence/local/scrum211-patched/downloader-trust-linux.json",
+  "sha256": "30800c7b24c38e906e75ea4d8a3a604d9be16b8f36f5e3102414c699b186090a",
+  "limitations": [
+    "Test-only isolated CA override; no global trust store changes",
+    "Native Windows CA-store path still requires maintained curl integration and qualification",
+    "Full PluginHandler extraction integration not yet exercised",
+    "wxCurl and local peer gaps remain open",
+    "No boat or release acceptance"
+  ]
+}

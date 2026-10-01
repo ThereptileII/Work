@@ -30,7 +30,8 @@ jobs:
   native-object-flow:
     name: Native prototype route waypoint AIS pointer regressions (not full release gate)
     runs-on: windows-2022
-    timeout-minutes: 90
+    # Maintained OpenSSL/curl/zlib are built and run their upstream tests first.
+    timeout-minutes: 180
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
       - name: Fetch and verify pinned baseline
@@ -55,7 +56,8 @@ jobs:
   native-composition:
     name: Native prototype composition development (not release qualification)
     runs-on: windows-2022
-    timeout-minutes: 70
+    # Include source dependency tests and native trust checks without skipping UI gates.
+    timeout-minutes: 180
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
       - name: Fetch and verify exact supported OpenCPN source
@@ -66,6 +68,8 @@ jobs:
       - name: Native fixture-free Win32 MSVC build and integrated unit regressions
         id: native_build
         run: ./opennav-x/tools/build-pristine-windows.ps1 -Architecture Win32 -Integration -Production
+      - name: Native public Downloader Windows trust and rejection gate
+        run: ./opennav-x/tools/test-downloader-trust-windows.ps1 -Install production-install
       - name: Verify chart palette provenance and unchanged navigation symbols
         run: python opennav-x/tests/chart_presentation_resources_tests.py
       - name: Adversarial TLS and bounded compressed WebSocket tests

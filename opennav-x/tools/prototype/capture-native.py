@@ -180,6 +180,8 @@ def main():
             expected_page = None if in_drawer else {"Chart":"Navigation", "Passage":"Route", "Full passage":"Route", "Traffic":"AIS targets", "Energy":"Energy", "Instruments":"Vessel instruments", "Autopilot":"Manual autopilot", "Anchor":"Anchor watch", "Settings":"Settings", "Alerts":"Alerts", "Radar":"Radar status"}.get(label)
             if c["accessible_name"] == "Inspect source health":
                 expected_page = "Source health"
+            if label == "Online AIS settings":
+                expected_page = "Online AIS settings"
             if label == "Back" and before["ui_page"] == "Online AIS settings":
                 expected_page = "AIS targets"
             page_ready = not expected_page or current["ui_page"] == expected_page

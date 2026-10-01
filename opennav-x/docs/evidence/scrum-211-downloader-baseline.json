@@ -1,0 +1,85 @@
+{
+  "issue": "SCRUM-211",
+  "purpose": "Read-only baseline reproduction of pinned OpenCPN Downloader trust behavior",
+  "observed_at": "2026-09-30T21:23:49+02:00",
+  "upstream": {
+    "repository": "OpenCPN/OpenCPN",
+    "revision": "37fd0cddb7334fe489e9f18aa163977a9c5c84f7",
+    "downloader_source": "model/src/downloader.cpp",
+    "downloader_source_sha256": "afbecc141ab9069d8d7ba119dde074323fbf6865d6935ca6bae74e87ebf4b058",
+    "downloader_header": "model/include/model/downloader.h",
+    "downloader_header_sha256": "901be18ef7d18d7551081695d1383520d4dd723c5de9f43029b78fcc897f3cd5"
+  },
+  "build": {
+    "result": "passed",
+    "compiler": "g++ -std=c++17 -O0 -g -Wall -Wextra with local wx-config and curl-config",
+    "warning": "Upstream CURLINFO_CONTENT_LENGTH_DOWNLOAD deprecation warning only",
+    "command_record": "evidence/local/scrum211-baseline/compiler-command.txt",
+    "compile_log": "evidence/local/scrum211-baseline/compile.log"
+  },
+  "fixture": {
+    "server": "owned Python HTTPS server bound to 127.0.0.1",
+    "url": "https://127.0.0.1:33843/payload.bin",
+    "certificate": {
+      "subject": "CN=localhost",
+      "issuer": "CN=localhost",
+      "sha256": "5a0a4c5126bbbaa4580776d8c278c948bff59563254a1fe5f0f75f016945dace",
+      "fingerprint_sha256": "DE:B8:D9:02:44:7E:4E:76:FF:0B:80:55:CE:B5:57:BC:48:D3:3A:D6:F5:FA:22:3B:BD:AA:2A:5D:4C:80:97:27",
+      "retained": false
+    },
+    "payload_sha256": "ece9121b1501855479a3f28267daa1c7b8868deb0dc8f3aa414a02aefd62abd7",
+    "payload_bytes": 36
+  },
+  "actual_downloader": {
+    "download": {
+      "result": "accepted",
+      "error_code": 0,
+      "bytes": 36
+    },
+    "head_get_filesize": {
+      "result": "accepted",
+      "error_code": 0,
+      "content_length": 36
+    },
+    "server_requests": ["GET /payload.bin", "HEAD /payload.bin"],
+    "conclusion": "Pinned baseline accepts the self-signed untrusted chain; downloader.cpp explicitly disables CURLOPT_SSL_VERIFYPEER."
+  },
+  "independent_controls": {
+    "python_urllib": {
+      "result": "rejected",
+      "exit_code": 1,
+      "error": "SSLCertVerificationError: self-signed certificate"
+    },
+    "normal_curl": {
+      "result": "rejected",
+      "exit_code": 60,
+      "error": "SSL certificate verify result: self-signed certificate (18)"
+    }
+  },
+  "evidence_directory": "evidence/local/scrum211-baseline",
+  "evidence_hashes": {
+    "compile.log": "c7c26f3818a3c6ff0e741faf6557e7dbf5201b9326d1f5ac54cd805d1aaf2814",
+    "compiler-command.txt": "d76055ccba67ed572074b9c4313aaa6e3b0dbd5e5c690b7ec13097cbcbe229ff",
+    "curl-status.log": "dbc6642c7f632d9ad29ba89e0c57792ddf9a22693ecea0f049f356d9cd9c4e24",
+    "curl.log": "28ceaa4d18300be88b6ddc0bf6658015930ba873a7d33c81916069d1a5db2f2b",
+    "downloader.log": "754a5de1854189d1380d6f365aba07f7bbeba17c33083cb91fd0a052f251c45a",
+    "expected-payload.sha256": "373a6a774c77817ff2befb8fc6cb1b843f166c21df31b65eac5dad1a6557907f",
+    "server.log": "97af8f7ca3e94aa3727bfa028e5ca55f8387fc88b224d45ed0128cd841590bd8",
+    "source-sha256.log": "55bf034f5e3abe352e99104d05596c3dd1e5188de1443333a046b4ee0d19588c",
+    "upstream-revision.txt": "d4d7770f5f998d3a0101c008f1a8b3452ba4029bc4d8bf6abfe32ea7c781472a",
+    "urllib-status.log": "12bacc4ea4873376da82a338d44ffa492825e858504eea0914723dfe332051f3",
+    "urllib.log": "82e122a0b1e392d3696c2427a544fbfb63cb7732159f7301e72c608125a7b1ee"
+  },
+  "sandbox": {
+    "initial_attempt": "Denied loopback socket creation with PermissionError [Errno 1] Operation not permitted.",
+    "retry": "Scoped escalation ran the same owned localhost fixture and probes successfully.",
+    "trust_store_changed": false,
+    "external_network_used": false
+  },
+  "scope": {
+    "exploit_claim": false,
+    "boat_or_plugin_action": false,
+    "native_windows_acceptance": false,
+    "remediation": false
+  }
+}

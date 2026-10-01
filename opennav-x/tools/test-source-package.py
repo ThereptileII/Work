@@ -27,7 +27,9 @@ class SourceDistributionTests(unittest.TestCase):
         (self.root / 'source.cpp').write_text('int main() {}\n')
         (self.root / 'patches').mkdir()
         for name in ('opencpn-5.12.4-xnav.patch', 'opencpn-5.12.4-regression-tests.patch',
-                     'opencpn-5.12.4-ais-transport.patch', 'opencpn-5.12.4-chart-presentation.patch'):
+                     'opencpn-5.12.4-ais-transport.patch', 'opencpn-5.12.4-chart-presentation.patch',
+                     'opencpn-5.12.4-maintained-curl.patch', 'opencpn-5.12.4-download-trust.patch',
+                     'opencpn-5.12.4-wxcurl-trust.patch', 'opencpn-5.12.4-peer-response-buffer.patch'):
             (self.root / 'patches' / name).write_text('fixture patch\n')
         self.init(self.repository)
         # A Git symlink need not be creatable on a restricted Windows runner.
@@ -69,7 +71,7 @@ class SourceDistributionTests(unittest.TestCase):
             self.assertIsNone(source.testzip())
             self.assertEqual(source.read('.github/workflows/opennav-baseline.yml'), self.workflow.read_bytes())
             self.assertEqual(source.read('.github/workflows/opennav-prototype.yml'), self.prototype.read_bytes())
-            self.assertEqual(len(references['integrationPatches']), 4)
+            self.assertEqual(len(references['integrationPatches']), 8)
             self.assertIn('.github/workflows/opennav-prototype.yml', references['workflows'])
             self.assertEqual(source.read('opennav-x/source-link'), b'source.cpp')
             self.assertEqual(source.getinfo('opennav-x/source-link').external_attr >> 16 & 0o170000, 0o120000)

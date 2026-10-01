@@ -1,0 +1,27 @@
+{
+  "date": "2026-10-01",
+  "buildCommit": "3cb637b",
+  "pinnedUpstream": "37fd0cddb7334fe489e9f18aa163977a9c5c84f7",
+  "reviewedPatchCount": 8,
+  "integratedBuild": "passed",
+  "tests": {
+    "passed": 136,
+    "failed": 0,
+    "elapsedSeconds": 19.66
+  },
+  "logHashes": {
+    "xnav-linux-configure.log": "a098ab0a09a9974bd4a2c925f620cee3b80cffd92f8b42d7dc753e20a72f3054",
+    "xnav-linux-build.log": "3581872464986c2ac6c0ada50d8384d61833fd46f31c308e9c9c5850f41e4cfc",
+    "xnav-linux-install.log": "dc5ff716c6f9fad9cc6e14ec318a4a427d41e1979f180fcb3c7c548d2941bfa2",
+    "xnav-linux-tests.log": "63ee586b6b4436a309802673dbe930b0a1db2865cc1a4283b7cdc83878d3ffc7",
+    "xnav-linux-tests.xml": "fc47139220514c0026345e629015914c1fe0a9e1426cb548ebbe545355b16b01"
+  },
+  "aisCapture": {
+    "scriptCommit": "8bdb445dfe73f1b9f3b8daad0e686b0e387730f0",
+    "executableSource": "3cb637b",
+    "result": "Focused actual Linux pointer flow passed; no credential: enabled with explicit missing-key state, Off, three themes, Back and Close.",
+    "authority": "Linux development only, not native Windows acceptance",
+    "captureSha256": "c4210c53618378c664b960c7f13ca117e58d0b0131b172e7feb7d4a434386292"
+  },
+  "nativeStatus": "New Windows security candidate not yet published; old5652 package and prototype failures preserved."
+}

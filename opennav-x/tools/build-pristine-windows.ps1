@@ -16,6 +16,17 @@ function Run([string]$Program, [string[]]$Arguments) {
     & $Program @Arguments 2>&1 | Tee-Object -FilePath (Join-Path $Evidence 'windows-native-output.log') -Append
     if ($LASTEXITCODE -ne 0) { throw "$Program failed with exit code $LASTEXITCODE" }
 }
+function Digest([string]$Path) {
+    if (-not (Test-Path -LiteralPath $Path -PathType Leaf)) { throw "Required file missing: $Path" }
+    (Get-FileHash -LiteralPath $Path -Algorithm SHA256).Hash.ToLowerInvariant()
+}
+function Assert-ManifestRecord([object]$Record, [string]$Path, [string]$Label) {
+    $Properties = @($Record.PSObject.Properties.Name | Sort-Object)
+    if (@(Compare-Object @('bytes','sha256') $Properties).Count -or
+        $Record.sha256 -cne (Digest $Path) -or $Record.bytes -ne (Get-Item -LiteralPath $Path).Length) {
+        throw "$Label differs from its producer manifest"
+    }
+}
 try {
     Run python @((Join-Path $PSScriptRoot 'verify-upstream.py'))
     if (-not [Environment]::Is64BitOperatingSystem) { throw 'Windows x64 host required' }
@@ -51,10 +62,57 @@ try {
     } finally { Pop-Location }
     if ($Integration) {
         # Replace the stock dependency bundle only in the disposable integrated
-        # tree. Its Windows CMake files link and install these exact paths.
+        # tree. Each consumer runs only after its producer manifest and output
+        # records have been verified.
         & (Join-Path $PSScriptRoot 'build-openssl-windows.ps1') -IntegrationSource $Source 2>&1 |
             Tee-Object -FilePath (Join-Path $Evidence 'windows-openssl-native-output.log') -Append
         if ($LASTEXITCODE -ne 0) { throw 'Pinned OpenSSL source build failed' }
+        & (Join-Path $PSScriptRoot 'build-zlib-windows.ps1') 2>&1 |
+            Tee-Object -FilePath (Join-Path $Evidence 'windows-zlib-native-output.log') -Append
+        if ($LASTEXITCODE -ne 0) { throw 'Pinned zlib source build failed' }
+
+        $ZlibPrefix = Join-Path $Root 'build/windows-zlib-1.3.2/install'
+        $ZlibManifestPath = Join-Path $ZlibPrefix 'zlib-build.json'
+        $ZlibManifest = Get-Content -LiteralPath $ZlibManifestPath -Raw | ConvertFrom-Json
+        $ZlibCache = Join-Path $Source 'cache/buildwin'
+        $ZlibMappings = [ordered]@{
+            'include/zlib.h' = 'include/zlib.h'
+            'include/zconf.h' = 'include/zconf.h'
+            'lib/zlib1.lib' = 'zlib1.lib'
+            'bin/zlib1.dll' = 'zlib1.dll'
+        }
+        foreach ($Mapping in $ZlibMappings.GetEnumerator()) {
+            $Produced = Join-Path $ZlibPrefix $Mapping.Key
+            Assert-ManifestRecord $ZlibManifest.outputs.($Mapping.Key) $Produced "zlib $($Mapping.Key)"
+            $Cached = Join-Path $ZlibCache $Mapping.Value
+            $null = New-Item -ItemType Directory -Force -Path (Split-Path $Cached -Parent)
+            Copy-Item -LiteralPath $Produced -Destination $Cached -Force
+            Assert-ManifestRecord $ZlibManifest.outputs.($Mapping.Key) $Cached "cached zlib $($Mapping.Value)"
+        }
+
+        $OpenSslPrefix = Join-Path $Root 'build/windows-openssl-3.5.9/install'
+        & (Join-Path $PSScriptRoot 'build-curl-windows.ps1') -IntegrationSource $Source `
+            -OpenSslPrefix $OpenSslPrefix -ZlibPrefix $ZlibPrefix -ZlibManifest $ZlibManifestPath 2>&1 |
+            Tee-Object -FilePath (Join-Path $Evidence 'windows-curl-orchestration.log') -Append
+        if ($LASTEXITCODE -ne 0) { throw 'Pinned curl source build failed' }
+        $CurlManifestPath = Join-Path $Source 'cache/buildwin/curl-build.json'
+        $CurlManifest = Get-Content -LiteralPath $CurlManifestPath -Raw | ConvertFrom-Json
+        if ($CurlManifest.library -cne 'curl' -or $CurlManifest.version -cne '8.22.0' -or
+            $CurlManifest.architecture -cne 'Win32' -or $CurlManifest.abi -cne 'x86' -or
+            $CurlManifest.buildSteps.configure -cne 'passed' -or
+            $CurlManifest.buildSteps.compile -cne 'passed' -or
+            $CurlManifest.buildSteps.test -cne 'passed' -or
+            $CurlManifest.buildSteps.install -cne 'passed' -or
+            $CurlManifest.importOutput -notmatch '(?im)^\s*libssl-3\.dll\s*$' -or
+            $CurlManifest.importOutput -notmatch '(?im)^\s*libcrypto-3\.dll\s*$' -or
+            $CurlManifest.importOutput -notmatch '(?im)^\s*zlib1\.dll\s*$' -or
+            $CurlManifest.importOutput -match '(?i)ssleay32\.dll|libeay32\.dll') {
+            throw 'Maintained curl manifest does not prove the reviewed dependency closure'
+        }
+        foreach ($CacheOutput in @('libcurl.dll','libcurl.lib')) {
+            Assert-ManifestRecord $CurlManifest.outputs.($(if ($CacheOutput -eq 'libcurl.dll') { 'bin/libcurl.dll' } else { 'lib/libcurl.lib' })) `
+                (Join-Path $Source "cache/buildwin/$CacheOutput") "cached $CacheOutput"
+        }
     }
     $Wx = Join-Path $Source 'cache/wxWidgets-3.2.8'
     $Build = Join-Path $Root "build/$Variant-windows"
@@ -81,12 +139,23 @@ try {
     Run cmake @('--install', $Build, '--config', 'Release')
     if ($Integration) {
         $OpenSslManifest = Get-Content (Join-Path $Source 'cache/buildwin/openssl-build.json') -Raw | ConvertFrom-Json
+        $ZlibManifest = Get-Content (Join-Path $Root 'build/windows-zlib-1.3.2/install/zlib-build.json') -Raw | ConvertFrom-Json
+        $CurlManifest = Get-Content (Join-Path $Source 'cache/buildwin/curl-build.json') -Raw | ConvertFrom-Json
         Copy-Item (Join-Path $Source 'cache/buildwin/openssl-build.json') (Join-Path $Install 'openssl-build.json') -Force
-        foreach ($Dll in @('libssl-3.dll','libcrypto-3.dll')) {
-            $InstalledHash = (Get-FileHash (Join-Path $Install $Dll) -Algorithm SHA256).Hash.ToLowerInvariant()
-            $Recorded = $OpenSslManifest.cacheBuildwin.PSObject.Properties[$Dll].Value.sha256
-            if ($InstalledHash -cne $Recorded) {
-                throw "Installed $Dll does not match the source-built OpenSSL manifest"
+        Copy-Item (Join-Path $Root 'build/windows-zlib-1.3.2/install/zlib-build.json') (Join-Path $Install 'zlib-build.json') -Force
+        Copy-Item (Join-Path $Source 'cache/buildwin/curl-build.json') (Join-Path $Install 'curl-build.json') -Force
+        $InstalledRecords = [ordered]@{
+            'libssl-3.dll' = $OpenSslManifest.outputs.'bin/libssl-3.dll'
+            'libcrypto-3.dll' = $OpenSslManifest.outputs.'bin/libcrypto-3.dll'
+            'zlib1.dll' = $ZlibManifest.outputs.'bin/zlib1.dll'
+            'libcurl.dll' = $CurlManifest.outputs.'bin/libcurl.dll'
+        }
+        foreach ($Item in $InstalledRecords.GetEnumerator()) {
+            Assert-ManifestRecord $Item.Value (Join-Path $Install $Item.Key) "installed $($Item.Key)"
+        }
+        foreach ($Legacy in @('libeay32.dll','ssleay32.dll')) {
+            if (Test-Path -LiteralPath (Join-Path $Install $Legacy)) {
+                throw "Disposable integration install retained legacy TLS runtime: $Legacy"
             }
         }
     }

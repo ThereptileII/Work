@@ -16,6 +16,7 @@ import zipfile
 from hardware_output_policy import require_status_only
 from restart_capability import verified_restart_protocol
 from openssl_package import verify_openssl_package_inputs, verify_packaged_openssl
+from curl_package import verify_curl_package_inputs, verify_packaged_curl
 
 ROOT = Path(__file__).resolve().parents[1]
 parser = argparse.ArgumentParser()
@@ -25,12 +26,16 @@ parser.add_argument('--runtime', type=Path, required=True)
 parser.add_argument('--output', type=Path, required=True)
 parser.add_argument('--openssl-source-cache', type=Path, required=True,
                     help='Preverified upstream source tar; packaging never downloads it')
+parser.add_argument('--dependency-source-cache', type=Path, required=True,
+                    help='Preverified curl and zlib source archives; no packaging downloads')
 args = parser.parse_args()
 if os.name != 'nt':
     raise SystemExit('Recovery packaging and executable verification require native Windows')
 openssl_source = verify_openssl_package_inputs(
     args.install, ROOT / 'tools/windows-openssl.lock.json', args.openssl_source_cache,
     ROOT / 'docs/third-party/OpenSSL-3.5.9')
+curl_sources = verify_curl_package_inputs(
+    args.install, args.dependency_source_cache, ROOT / 'docs/third-party')
 destination = args.output / 'OpenNavX-Beta2-Portable-Recovery'
 if destination.exists():
     raise SystemExit('Refusing to overwrite an existing recovery directory')
@@ -45,6 +50,7 @@ for required in ['msvcp140.dll', 'vcruntime140.dll']:
     if not (app / required).is_file():
         raise SystemExit('App-local MSVC runtime missing: ' + required)
 verify_packaged_openssl(app, openssl_source['manifest'])
+verify_packaged_curl(app, curl_sources['manifests'])
 (app / 'OPENNAV_PORTABLE_PREVIEW').write_text('OpenNav X portable Beta 2 recovery\n')
 for directory in ['profile', 'logs', 'docs/licenses']:
     (destination / directory).mkdir(parents=True)
@@ -187,6 +193,8 @@ for license_file in source.rglob('*'):
         shutil.copy2(license_file, target)
 shutil.copytree(ROOT / 'docs/third-party/wxWidgets-3.2.8', destination / 'docs/licenses/wxWidgets-3.2.8')
 shutil.copytree(ROOT / 'docs/third-party/OpenSSL-3.5.9', destination / 'docs/licenses/OpenSSL-3.5.9')
+for library in ('curl-8.22.0', 'zlib-1.3.2'):
+    shutil.copytree(ROOT / 'docs/third-party' / library, destination / 'docs/licenses' / library)
 shutil.copy2(ROOT / 'LICENSE', destination / 'docs/licenses/OpenNavX-COPYING.txt')
 (destination / 'docs/SOURCE_AND_LICENSES.md').write_text(f'''# Source and third-party notices
 
@@ -195,8 +203,8 @@ Full project source: https://github.com/ThereptileII/Work/tree/{commit}/opennav-
 Pinned OpenCPN source: https://github.com/OpenCPN/OpenCPN/tree/37fd0cddb7334fe489e9f18aa163977a9c5c84f7
 Build scripts, dependency locks and exact integration patches are in the project.
 The CI artifact also supplies a corresponding-source archive with the exact root
-CI workflow, reviewed integrated OpenCPN files, the verified inert OpenSSL source
-tar used by this build, and a per-file SOURCE_REFERENCE.json with its exact hash.
+CI workflow, reviewed integrated OpenCPN files, the verified inert OpenSSL, curl and zlib source
+archives used by this build, and a per-file SOURCE_REFERENCE.json with its exact hash.
 See `licenses/`
 for bundled OpenCPN/library notices and the installed application's license files.
 
@@ -219,5 +227,5 @@ with zipfile.ZipFile(archive, 'w', zipfile.ZIP_DEFLATED, compresslevel=6) as z:
 # Complete exact source plus root CI recipe, not an expiring download offer.
 from source_package import create_source_archive
 create_source_archive(ROOT, commit, args.output / 'OpenNavX-Beta2-source.zip',
-                      [openssl_source['sourceBundle']])
+                      [openssl_source['sourceBundle']] + curl_sources['sourceBundles'])
 print(archive)

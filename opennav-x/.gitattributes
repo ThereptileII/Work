@@ -4,3 +4,4 @@
 # Supplied prototype is immutable binary evidence, including original CRLF bytes.
 # Canonical generated renders and separate specifications live outside source files.
 docs/design/prototype/** -text
+docs/third-party/** -text
