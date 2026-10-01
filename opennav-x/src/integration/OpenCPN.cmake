@@ -92,6 +92,7 @@ endif()
 # Defer attaching model-bound tests; test sources stay outside upstream.
 function(opennav_attach_route_tests)
   if(TARGET tests)
+    target_sources(tests PRIVATE "${OPENNAV_ROOT}/tests/peer_unavailable_tests.cpp")
     target_sources(tests PRIVATE "${OPENNAV_ROOT}/tests/pilot_presentation_tests.cpp")
     target_sources(tests PRIVATE "${OPENNAV_ROOT}/tests/anchor_view_tests.cpp"
       "${OPENNAV_ROOT}/tests/anchor_geometry_upstream_tests.cpp"

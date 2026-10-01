@@ -8,6 +8,7 @@ import sys
 import time
 import uuid
 from diagnostic_snapshot import read_json_snapshot
+from peer_boundary import PeerBoundary
 
 def module(name):
     spec = importlib.util.spec_from_file_location(name, Path(__file__).with_name(name + '.py'))
@@ -26,6 +27,7 @@ evidence.mkdir(parents=True, exist_ok=True)
 subprocess.run([sys.executable, str(root / 'tools/prepare-test-profile.py'), '--build',
                 str(root / 'build/xnav-windows'), '--profile', str(profile)], check=True)
 fixtures.seed(profile)
+peer_boundary = PeerBoundary(profile)
 expected = fixtures.snapshot(profile)
 exe = root / 'build/xnav-install/opencpn.exe'
 logfile = profile / 'opencpn.log'
@@ -52,11 +54,13 @@ def ready(expected_count):
         log = logfile.read_text(errors='replace') if logfile.exists() else ''
         if log.count('OnInitTimer...Finalize Canvases') >= expected_count:
             time.sleep(1)
+            report.setdefault('peer_boundary', []).append(peer_boundary.observe(pid))
             return
         time.sleep(.2)
     raise RuntimeError('Deferred initialization did not finish')
 
 def saved(step):
+    peer_boundary.assert_preserved()
     actual = fixtures.snapshot(profile)
     assert actual == expected, f'{step}: persisted fixtures changed: {actual}'
     report['steps'].append({'step': step, 'persistence': 'pass'})

@@ -12,6 +12,7 @@ import sys
 import tempfile
 import time
 from diagnostic_snapshot import read_json_snapshot
+from peer_boundary import PeerBoundary
 
 root = Path(__file__).resolve().parents[1]
 spec = importlib.util.spec_from_file_location('fixtures', root / 'tools/profile-fixtures.py')
@@ -26,6 +27,7 @@ profile = Path(temporary.name) / 'profile with spaces'
 subprocess.run([sys.executable, str(root / 'tools/prepare-test-profile.py'), '--build',
                 str(root / 'build/xnav-linux'), '--profile', str(profile)], check=True)
 fixtures.seed(profile)
+peer_boundary = PeerBoundary(profile)
 expected = fixtures.snapshot(profile)
 # Adopt the restart helper, so every process exit can be checked, including
 # the children that outlive their original OpenCPN parent.
@@ -127,6 +129,7 @@ def ready(count):
             # later. Capture after that startup callback, as the preview gate
             # does, so owned chart surfaces are not sampled mid-initialization.
             time.sleep(1.5)
+            report.setdefault('peer_boundary', []).append(peer_boundary.observe(pid))
             return
         time.sleep(.2)
     raise RuntimeError('Initialization did not finish')
@@ -160,6 +163,7 @@ def action(label, light=None, page=None):
             and (page is None or d['ui_page']==page))
 
 def saved(step):
+    peer_boundary.assert_preserved()
     actual = fixtures.snapshot(profile)
     assert actual == expected, f'{step}: fixture data changed: {actual}'
     report['steps'].append({'step': step, 'persistence': 'pass'})

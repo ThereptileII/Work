@@ -7,7 +7,7 @@ $Source = Join-Path $PSScriptRoot '../installer/windows/Lifecycle.ps1'
 $ParseErrors = $null
 $Ast = [System.Management.Automation.Language.Parser]::ParseFile($Source, [ref]$null, [ref]$ParseErrors)
 if ($ParseErrors) { throw ($ParseErrors | Out-String) }
-foreach ($Name in @('Log','Hash','PlainPath','RelativePath','ReadJson','Assert-StatusOnlyOutput','Resolve-OutputPolicy','AtomicJson','PeArchitecture','FileRecords','VerifyFiles','SelfTest','ExtractPayload','Failure')) {
+foreach ($Name in @('Log','Hash','PlainPath','RelativePath','ReadJson','Assert-StatusOnlyOutput','Resolve-OutputPolicy','AtomicJson','PeArchitecture','FileRecords','VerifyFiles','SelfTest','ExtractPayload','PreserveAdditions','AssertInstalledContent','PeU16','PeU32','PeRvaOffset','PeImportName','GetPeImports','GetCandidateSystemX86','AssertCandidateTlsRuntime','Failure')) {
   $Definitions = @($Ast.FindAll({ param($Node) $Node -is [System.Management.Automation.Language.FunctionDefinitionAst] -and $Node.Name -eq $Name }, $true))
   if ($Definitions.Count -ne 1) { throw "Expected one actual engine function: $Name" }
   . ([scriptblock]::Create($Definitions[0].Extent.Text))
@@ -104,6 +104,29 @@ try {
   ExtractPayload $Zip $Extract $Files
   Check ((Hash (Join-Path $Extract 'file&name.txt')) -ceq $Files[0].sha256) 'Valid bounded extraction checks every content hash'
   Refuses { ExtractPayload $Zip (Join-Path $Fixture 'wrong-inventory') @() } 'ZIP inventory mismatch rejected before publication'
+  $CandidateSource = Join-Path $Fixture 'inherited plugins'; $CandidateStage = Join-Path $Fixture 'candidate'
+  $null = New-Item -ItemType Directory -Path (Join-Path $CandidateSource 'NestedPlugin') -Force
+  foreach ($LegacyName in @('LiBeAy32.DlL','SSLEAY32.dll')) {
+    Remove-Item -LiteralPath $CandidateSource -Recurse -Force
+    $null = New-Item -ItemType Directory -Path (Join-Path $CandidateSource 'NestedPlugin') -Force
+    $LegacyPath = Join-Path (Join-Path $CandidateSource 'NestedPlugin') $LegacyName
+    [IO.File]::WriteAllText($LegacyPath,'preserve this user file',$Utf8)
+    $BeforeLegacy = Hash $LegacyPath
+    Remove-Item -LiteralPath $CandidateStage -Recurse -Force -ErrorAction SilentlyContinue
+    $null = New-Item -ItemType Directory -Path (Join-Path $CandidateStage 'app') -Force
+    $null = PreserveAdditions $CandidateSource (Join-Path $CandidateStage 'app/plugins') @()
+    Refuses { AssertCandidateTlsRuntime $CandidateStage } ('Candidate rejects inherited legacy TLS '+$LegacyName)
+    Check ((Hash $LegacyPath) -ceq $BeforeLegacy) ('Candidate rejection retains source bytes for '+$LegacyName)
+  }
+  Remove-Item -LiteralPath $CandidateStage -Recurse -Force -ErrorAction SilentlyContinue
+  Remove-Item -LiteralPath $CandidateSource -Recurse -Force
+  $null = New-Item -ItemType Directory -Path (Join-Path $CandidateStage 'app/plugins/NestedPlugin') -Force
+  # A passing candidate must contain a real supported PE, not a text file
+  # with a DLL suffix. The fixture never loads or changes this copied OS DLL.
+  Copy-Item -LiteralPath (Join-Path (GetCandidateSystemX86) 'kernel32.dll') -Destination (Join-Path $CandidateStage 'app/plugins/NestedPlugin/maintained.dll')
+  AssertCandidateTlsRuntime $CandidateStage
+  Check $true 'Candidate allows ordinary maintained DLLs and only scans the active app tree'
+  Remove-Item -LiteralPath $CandidateStage -Recurse -Force
   $Dll = Join-Path ([Environment]::GetFolderPath('SystemX86')) 'kernel32.dll'
   Check ((PeArchitecture $Dll) -eq 'x86') 'Native PE i386 architecture'
   Refuses { PeArchitecture $Record } 'Non-PE data refused'

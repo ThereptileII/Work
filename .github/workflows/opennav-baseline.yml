@@ -63,12 +63,16 @@ jobs:
           python opennav-x/tools/test-source-package.py
           python opennav-x/tools/test-openssl-package.py
           python opennav-x/tools/test-curl-package.py
+      - name: Peer boundary monitor rejects tampering and filters listeners by process
+        run: python opennav-x/tools/test-peer-boundary.py
       - name: Preserve reviewed notice bytes through Windows Git checkout
         run: python opennav-x/tools/test-third-party-notice-checkout.py
       - name: Verify relocated installer completion and failed fixture retention
         run: python opennav-x/tools/test-installer-completion.py
       - name: Installer rejects unqualified XNav output policies
         run: pwsh -NoProfile -File opennav-x/tools/test-hardware-output-installer.ps1
+      - name: Staged installer normal and delay import closure fixtures
+        run: pwsh -NoProfile -File opennav-x/tools/test-installer-pe.ps1
       - name: Verify the exact boat translator parser for host interoperability tests
         run: python opennav-x/tools/fetch-st4000-oracle.py opennav-x/build/st4000-firmware
       - name: Prepare reviewed boat producer expiry and actual codec oracle
@@ -76,6 +80,10 @@ jobs:
       - name: Installer filesystem contracts in native Windows PowerShell 5.1
         if: runner.os == 'Windows'
         run: |
+          & "$env:WINDIR/System32/WindowsPowerShell/v1.0/powershell.exe" -NoProfile -File opennav-x/tools/test-installer-pe.ps1
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          & "$env:WINDIR/SysWOW64/WindowsPowerShell/v1.0/powershell.exe" -NoProfile -File opennav-x/tools/test-installer-pe.ps1
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
           & "$env:WINDIR/System32/WindowsPowerShell/v1.0/powershell.exe" -NoProfile -File opennav-x/tools/test-installer-filesystem.ps1
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
           & "$env:WINDIR/SysWOW64/WindowsPowerShell/v1.0/powershell.exe" -NoProfile -File opennav-x/tools/test-installer-filesystem.ps1
@@ -327,6 +335,8 @@ jobs:
           python3 opennav-x/tools/test-peer-buffer.py > opennav-x/evidence/local/peer-buffer-linux.log 2>&1
       - name: Build integrated application and run regressions without exceptions
         run: bash opennav-x/tools/build-integration-linux.sh
+      - name: Installed peer CLI refuses key changes in a disposable profile
+        run: python3 opennav-x/tools/test-peer-cli.py --cli opennav-x/build/xnav-install/bin/opencpn-cmd
       - name: Staged loader check without profile initialization
         run: python3 opennav-x/tools/smoke-installer-selftest.py --expect-test-loopback --app opennav-x/build/xnav-install/bin/opencpn
       - name: Retain real harmonic sources across installed generation changes
@@ -397,7 +407,8 @@ jobs:
       actions: read
     needs: [contracts, native-restart-window, native-stock-welcome]
     runs-on: windows-2022
-    timeout-minutes: 300
+    # Two source-built dependency passes plus the unchanged three-hour trip.
+    timeout-minutes: 360
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
       - name: Fetch pinned source
@@ -407,6 +418,8 @@ jobs:
       - name: Build and exercise integrated modes
         id: integrated
         run: ./opennav-x/tools/build-pristine-windows.ps1 -Architecture Win32 -Integration
+      - name: Installed native peer CLI refuses key changes on the disposable runner
+        run: python opennav-x/tools/test-peer-cli.py --cli opennav-x/build/xnav-install/opencpn-cmd.exe
       - name: Staged native loader check without profile initialization
         if: ${{ !cancelled() && steps.integrated.conclusion == 'success' }}
         run: python opennav-x/tools/smoke-installer-selftest.py --expect-test-loopback --app opennav-x/build/xnav-install/opencpn.exe

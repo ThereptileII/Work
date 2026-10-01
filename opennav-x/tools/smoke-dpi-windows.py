@@ -378,6 +378,49 @@ def chart_context_geometry(scale):
     data(lambda d:not controls(d))
     return {'controls':checked,'touch_close':'Native injected touch dismissed modeless card'}
 
+def fullscreen_1920_review(scale):
+    """Exercise the actual large desktop once, without repeating all DPI cycles."""
+    assert scale==100
+    frame=bounds(handle)
+    assert (frame.left,frame.top,frame.right,frame.bottom)==(0,0,1920,1080)
+    assert ui.GetDpiForWindow(handle)==96
+    ui.click_text(pid,'Chart');data(lambda d:d['ui_page']=='Navigation')
+    observed=current_layout_observation()['runtime']['display']
+    chart_area=observed['chart_region']
+    assert chart_area['width']>1000 and chart_area['height']>600,chart_area
+    point=ui.W.POINT(chart_area['x']+chart_area['width']//2,
+                     chart_area['y']+chart_area['height']//2)
+    hit=ui.WindowFromPoint(point);owner=ui.W.DWORD()
+    ui.GetWindowThreadProcessId(hit,C.byref(owner))
+    chart_rect=bounds(hit)
+    assert owner.value==pid and (chart_rect.left,chart_rect.top,chart_rect.right,chart_rect.bottom)==(
+        chart_area['x'],chart_area['y'],chart_area['x']+chart_area['width'],
+        chart_area['y']+chart_area['height']),'Large chart is obscured or its hit area differs'
+    buttons=main_buttons(scale);rail=rail_geometry(scale)
+    alert=critical_alert_accessible(scale)
+    assert len(capture('dpi-100-1920-navigation-day'))==1920*1080*3
+    panels=[]
+    for label,page in (('Passage','Route'),('Traffic','AIS targets'),('Settings','Settings')):
+        ui.click_text(pid,label);data(lambda d:d['ui_page']==page)
+        geometry=(ui.assert_preview_page(handle,page) if page=='Route'
+                  else ui.assert_product_page(handle,page))
+        capture('dpi-100-1920-'+label.lower())
+        panels.append({'page':page,'native_geometry':geometry})
+    alerts=[text for _,text in ui.children(handle)
+            if text.startswith('Alerts ') and not text.startswith('Alerts /')]
+    assert len(alerts)==1,alerts
+    ui.click_text(pid,alerts[0]);data(lambda d:d['ui_page']=='Alerts')
+    panels.append({'page':'Alerts','native_geometry':ui.assert_product_page(handle,'Alerts')})
+    capture('dpi-100-1920-alerts')
+    ui.click_text(pid,'Settings');data(lambda d:d['ui_page']=='Settings')
+    ui.click_text(pid,'Display')
+    return {'frame_pixels':[1920,1080],'window_dpi':96,'chart_region':chart_area,
+            'chart_hit_target_verified':True,'buttons':buttons,'rail':rail,
+            'critical_alert':alert,'panels':panels,
+            'screenshots':['dpi-100-1920-navigation-day.png','dpi-100-1920-passage.png',
+                           'dpi-100-1920-traffic.png','dpi-100-1920-settings.png',
+                           'dpi-100-1920-alerts.png']}
+
 def close_current():
     global app
     process=ui.monitor_process(pid);ui.close(handle);ui.wait_clean_exit(process);owned.discard(pid)
@@ -509,6 +552,7 @@ try:
         path=evidence/f'dpi-{scale}-fullscreen.png';ui.capture(handle,path,resize=False)
         report['screenshots'].append(path.name)
         assert ui.GetDpiForWindow(handle)==observed
+        if scale==100:entry['large_desktop']=fullscreen_1920_review(scale)
         ui.click_text(pid,'Toggle fullscreen');time.sleep(.7);ui.size_window(handle)
         ui.click_text(pid,'Chart');data(lambda d:d['ui_page']=='Navigation')
         entry['restored_buttons']=main_buttons(scale)

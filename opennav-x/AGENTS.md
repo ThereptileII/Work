@@ -118,6 +118,11 @@ full readiness report is reviewed and the user explicitly gives GO.
 
 Reference resolution: **1280×800**.
 
+Also qualify **1920×1080**, as requested by the user on 2026-10-01. Preserve
+the primary 1280×800 composition and existing DPI gates; the larger workspace
+must keep the chart, primary values, alerts and panels usable. Record native
+Windows and boat-display evidence before claiming the added resolution passes.
+
 Compare implemented XNav screens against canonical renders of the HTML at
 1280×800, device scale factor 1. The user superseded the older image-based
 design policy on 2026-09-28: safety/navigation correctness, then HTML prototype,

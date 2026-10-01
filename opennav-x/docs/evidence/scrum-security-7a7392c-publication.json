@@ -1,0 +1,54 @@
+{
+  "issueKeys": [
+    "SCRUM-208",
+    "SCRUM-209",
+    "SCRUM-211",
+    "SCRUM-98"
+  ],
+  "recordedAt": "2026-10-01",
+  "localSourceCommit": "b3ee47884b8455adee11f2915bfe95e85d7848db",
+  "publishedCommit": "7a7392cc6ef15594db6ccd6c330e615f2db33f5d",
+  "publishedTree": "1566df05a70539c555d829d8ab8ed3e835b872c3",
+  "parent": "5652c01aa7dc450cdfc081a981945b0cc6f6905d",
+  "prepublicationProof": {
+    "sha256": "1bd558aab3d72670281c15403bef9de3cf8b7b2e1ff5f3bbd9cbd640f685f47a",
+    "mappedEntries": 1337,
+    "preservedUnrelatedEntries": 8,
+    "allModesTypesAndBlobHashesMatch": true,
+    "preservedUnrelatedBranchRefs": 7
+  },
+  "ci": [
+    {
+      "url": "https://github.com/ThereptileII/Work/actions/runs/36818668852",
+      "scope": "full Linux/native Windows",
+      "qualification": "native dependency build failed; not accepted"
+    },
+    {
+      "url": "https://github.com/ThereptileII/Work/actions/runs/36818667685",
+      "scope": "prototype references and native captures",
+      "qualification": "native dependency build failed; not accepted"
+    }
+  ],
+  "priorLocalCodeEvidence": "scrum-security-3cb637b-linux.json",
+  "priorLinuxEvidenceScope": "136 integrated tests at 3cb637b; not an exact latest-commit acceptance claim",
+  "aisCaptureRepairCommit": "8bdb445dfe73f1b9f3b8daad0e686b0e387730f0",
+  "noticeRepairCommit": "ba30f9b9150c6acb3f2b92961968265a03f7f684",
+  "noticeTest": "Actual Git core.autocrlf=true checkout preserves reviewed OpenSSL/curl/zlib notice bytes; unprotected negative control changes LF to CRLF. Native Windows and Linux contract jobs passed this step. Full package gate remains pending.",
+  "releaseAccepted": false,
+  "boatDeployment": false,
+  "publicAccessOpened": false,
+  "nativeFailure": {
+    "job": 110230231559,
+    "step": "Build and exercise integrated modes",
+    "observed": "Windows file-sharing violation after zlib vcvars setup; exact locked file not identified",
+    "packagingInstallerAndEndurance": "not executed",
+    "repair": "Single output stream with named stage markers; exact native requalification required",
+    "retainedArtifact": {
+      "id": 11143213189,
+      "name": "windows-integration-7a7392cc6ef15594db6ccd6c330e615f2db33f5d",
+      "bytes": 275826,
+      "sha256": "4aef5dc34bfb058a62072e84721734540beeb59fa76ae9621ceaae69877c58a2",
+      "downloadMatchesGitHubDigest": true
+    }
+  }
+}

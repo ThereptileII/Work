@@ -1,6 +1,51 @@
 # OpenNav X status — 2026-10-01
 
+## Display coverage and current priority — 2026-10-01
+
+The user added **1920×1080** as a supported target alongside the primary
+**1280×800** prototype layout (SCRUM-213). The native DPI harness now exercises
+the large fullscreen chart, four primary rail values, alert accessibility and
+Passage/Traffic/Settings/Alerts panels, then verifies return to 1280×800.
+Existing 100/125/150% DPI checks remain. Source syntax checks pass; native
+captures and boat-display acceptance are still pending. See the
+[qualification record](design/reviews/1920x1080-qualification.md).
+
+Website development waits until the software is complete and tested on the
+boat PC, following the user's latest sequencing instruction. Jira remains the
+sole backlog. Read-only boat readiness confirmed connectivity and the supported
+stock executable; it is not acceptance of the current development candidate.
+
 ## Security integration in progress — 2026-09-30
+
+The integrated source was published as `7a7392cc6ef15594db6ccd6c330e615f2db33f5d`
+(local `b3ee47884b8455adee11f2915bfe95e85d7848db`). All 1,337 mapped
+entries were checked by blob hash, mode and type before publication; eight
+unrelated entries and seven unrelated branches were preserved. Native/Linux
+[run 36818668852](https://github.com/ThereptileII/Work/actions/runs/36818668852)
+and prototype [run 36818667685](https://github.com/ThereptileII/Work/actions/runs/36818667685)
+failed their native dependency build before application qualification:
+zlib build logging reported a Windows file-sharing violation after MSVC setup.
+The exact locked file was not identified by that log. The notice-byte regression
+gate passed on native Windows and Linux; application packaging/installer
+acceptance is not established. A follow-up removes repeated batch log opens
+and records each build stage, without retrying or suppressing failures. SCRUM-208/211 are Testing, not Done. SCRUM-209 is In Progress after
+review found that preserved plugin/addition files could restore legacy TLS DLLs
+into an otherwise maintained candidate. Candidate-only refusal now preserves
+those original files and the previous installation. It also audits normal and
+delay PE imports after preserving plugins, including transitive local modules.
+Linux PowerShell fixtures pass; native install/update/repair refusal and rollback
+tests have been added but require exact-candidate native execution.
+
+SCRUM-212 now implements an explicit unavailable local-peer boundary instead
+of inventing a new pairing protocol. Inbound application startup and outbound
+UI/model paths are being contained consistently across XNav, Legacy and Safe.
+Stock OpenCPN and its isolated server-model tests remain unchanged. This is a
+subsequent change requiring separate qualification; it has not been deployed.
+
+At local `f5efdb3`, the reviewed nine-patch Linux integration passes 140/140
+tests (22.93 seconds), all five mode-cycle startups and actual CLI peer-key
+refusal checks. Later installer/display test increments require their own
+candidate qualification; these results do not imply native or boat acceptance.
 
 SCRUM-208/209/211 remain launch blockers. The maintained Windows dependency
 chain now has separate source builders for OpenSSL 3.5.9, zlib 1.3.2 and curl
@@ -26,7 +71,7 @@ The combined eight-patch integration at `3cb637b` passes its Linux build and
 passes after the semantic capture wait correction `8bdb445`. These are local
 development results, not Windows qualification.
 
-The published f752dae→5652c01 candidate is unchanged. Its prototype capture
+The earlier published f752dae→5652c01 candidate remains retained negative evidence. Its prototype capture
 failed looking up the Online AIS Enabled control. Downloaded, hash-verified
 evidence shows a stale pre-transition diagnostic snapshot; the actual button
 is fully visible. The bounded semantic wait correction retains all assertions.

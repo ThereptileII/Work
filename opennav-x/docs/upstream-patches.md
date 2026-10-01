@@ -1,5 +1,28 @@
 # Direct OpenCPN Upstream Modifications
 
+## Local peer sharing unavailable in public-beta candidates (SCRUM-212) — 2026-10-01
+
+The ninth reviewed patch, `patches/opencpn-5.12.4-peer-unavailable.patch`,
+contains local peer transfer until authenticated peer identity and credential
+handling are qualified. The integrated application does not generate a peer
+certificate, start its REST listener or advertise its peer service. Outgoing
+discovery and transfer UI are unavailable, and model entrypoints reject forced
+calls before credential access or navigation-object serialization. The same
+policy applies to XNav, Legacy and Safe modes in the integrated product.
+The shipped CLI also refuses peer-key generation/storage before credential
+access, and the model key-check symbol rejects direct callers.
+
+Stock/pristine OpenCPN is unchanged. The server model remains available to
+upstream isolated tests; the audited application startup call site is the
+inbound containment boundary. This preserves the existing upstream REST tests
+without adding a runtime setting or insecure pairing fallback. Normal local
+route/track/waypoint storage, file export and Send-to-GPS remain intact.
+
+The source archive inventories all nine patches. Integrated model rejection
+tests and mode-cycle process-owned listener/credential-preservation checks
+are required; native Windows acceptance is still pending. See
+[peer unavailable boundary](architecture/peer-unavailable-boundary.md).
+
 ## Maintained Windows curl integration (SCRUM-209) — 2026-09-30
 
 `patches/opencpn-5.12.4-maintained-curl.patch` applies only to the disposable
@@ -53,7 +76,7 @@ remain open under SCRUM-212; see
 [peer inspection](architecture/local-peer-trust-inspection.md).
 
 Both patches are applied only to the disposable pinned integration tree and
-are included in the corresponding-source inventory. The eight-patch reviewed
+are included in the corresponding-source inventory. The reviewed patch
 result is verified before building; native plugin, installer and boat acceptance
 remain separate from these local checks.
 

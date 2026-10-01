@@ -1,0 +1,360 @@
+--- a/gui/src/ocpn_app.cpp
++++ b/gui/src/ocpn_app.cpp
+@@ -101,6 +101,7 @@
+ #include <wx/stdpaths.h>
+ #include <wx/tokenzr.h>
+ 
++#include "model/peer_policy.h"
+ #include "model/ais_decoder.h"
+ #include "model/ais_state_vars.h"
+ #include "model/certificates.h"
+@@ -2090,7 +2091,7 @@
+   std::vector<std::string> ipv4_addrs = get_local_ipv4_addresses();
+ 
+   // If network connection is available, start the server and mDNS client
+-  if (ipv4_addrs.size()
++  if (ocpn::PeerSharingAvailable() && ipv4_addrs.size()
+ #ifdef OPENNAV_X
+       && !opennav::IsPortablePreview()
+ #endif
+--- a/gui/src/canvasMenu.cpp
++++ b/gui/src/canvasMenu.cpp
+@@ -41,6 +41,7 @@
+ #include <wx/listimpl.cpp>
+ #include <wx/menu.h>
+ 
++#include "model/peer_policy.h"
+ #include "model/ais_decoder.h"
+ #include "model/ais_state_vars.h"
+ #include "model/ais_target_data.h"
+@@ -819,7 +820,8 @@
+       }
+       // #endif
+       wxString itemstp = SYMBOL_STP_TITLE;  // Send to Peer
+-      MenuAppend1(menuRoute, ID_RT_MENU_SENDTOPEER, itemstp);
++      if (ocpn::PeerSharingAvailable())
++        MenuAppend1(menuRoute, ID_RT_MENU_SENDTOPEER, itemstp);
+     }
+     // Eventually set this menu as the "focused context menu"
+     if (menuFocus != menuAIS) menuFocus = menuRoute;
+@@ -847,7 +849,8 @@
+     }
+ 
+     wxString itemstp = SYMBOL_STP_TITLE;  // Send to Peer
+-    MenuAppend1(menuTrack, ID_TK_MENU_SENDTOPEER, itemstp);
++    if (ocpn::PeerSharingAvailable())
++        MenuAppend1(menuTrack, ID_TK_MENU_SENDTOPEER, itemstp);
+ 
+     // Eventually set this menu as the "focused context menu"
+     if (menuFocus != menuAIS) menuFocus = menuTrack;
+@@ -918,7 +921,8 @@
+         MenuAppend1(menuWaypoint, ID_WPT_MENU_SENDTONEWGPS, item);
+       }
+ 
+-      MenuAppend1(menuWaypoint, ID_WPT_MENU_SENDTOPEER,
++      if (ocpn::PeerSharingAvailable())
++        MenuAppend1(menuWaypoint, ID_WPT_MENU_SENDTOPEER,
+                   SYMBOL_STP_TITLE);  // Send to Peer
+     }
+ 
+@@ -964,7 +968,8 @@
+       }
+       MenuAppend1(menuWaypoint, ID_WPT_MENU_SENDTOGPS, item);
+ 
+-      MenuAppend1(menuWaypoint, ID_WPT_MENU_SENDTOPEER,
++      if (ocpn::PeerSharingAvailable())
++        MenuAppend1(menuWaypoint, ID_WPT_MENU_SENDTOPEER,
+                   SYMBOL_STP_TITLE);  // Send to Peer
+       // #endif
+ 
+@@ -1781,6 +1786,7 @@
+       break;
+ 
+     case ID_WPT_MENU_SENDTOPEER:
++      if (!ocpn::PeerSharingAvailable()) break;
+       if (m_pFoundRoutePoint) {
+         SendToPeerDlg dlg;
+         dlg.SetWaypoint(m_pFoundRoutePoint);
+@@ -1826,6 +1832,7 @@
+       break;
+ 
+     case ID_RT_MENU_SENDTOPEER:
++      if (!ocpn::PeerSharingAvailable()) break;
+       if (m_pSelectedRoute) {
+         SendToPeerDlg dlg;
+         dlg.SetRoute(m_pSelectedRoute);
+@@ -1959,6 +1966,7 @@
+     }
+ 
+     case ID_TK_MENU_SENDTOPEER:
++      if (!ocpn::PeerSharingAvailable()) break;
+       if (m_pSelectedTrack) {
+         SendToPeerDlg dlg;
+         dlg.SetTrack(m_pSelectedTrack);
+--- a/gui/src/routemanagerdialog.cpp
++++ b/gui/src/routemanagerdialog.cpp
+@@ -41,6 +41,7 @@
+ #include <vector>
+ #include <algorithm>
+ 
++#include "model/peer_policy.h"
+ #include "model/ais_decoder.h"
+ #include "model/config_vars.h"
+ #include "model/georef.h"
+@@ -515,6 +516,9 @@
+       this);
+ 
+   btnRteSendToPeer = new wxButton(winr, -1, send_to_peer_label);
++  btnRteSendToPeer->Enable(ocpn::PeerSharingAvailable());
++  btnRteSendToPeer->SetToolTip(
++      wxGetTranslation(ocpn::PeerSharingUnavailableReason()));
+   bsRouteButtonsInner->Add(btnRteSendToPeer, 0, wxALL | wxEXPAND,
+                            DIALOG_MARGIN);
+   btnRteSendToPeer->Connect(
+@@ -666,6 +670,9 @@
+       this);
+ 
+   btnTrkSendToPeer = new wxButton(wint, -1, _("Send to &Peer"));
++  btnTrkSendToPeer->Enable(ocpn::PeerSharingAvailable());
++  btnTrkSendToPeer->SetToolTip(
++      wxGetTranslation(ocpn::PeerSharingUnavailableReason()));
+   bsTrkButtonsInner->Add(btnTrkSendToPeer, 0, wxALL | wxEXPAND, DIALOG_MARGIN);
+   btnTrkSendToPeer->Connect(
+       wxEVT_COMMAND_BUTTON_CLICKED,
+@@ -812,6 +819,9 @@
+       this);
+ 
+   btnWptSendToPeer = new wxButton(winw, -1, _("Send to &Peer"));
++  btnWptSendToPeer->Enable(ocpn::PeerSharingAvailable());
++  btnWptSendToPeer->SetToolTip(
++      wxGetTranslation(ocpn::PeerSharingUnavailableReason()));
+   bsWptButtonsInner->Add(btnWptSendToPeer, 0, wxALL | wxEXPAND, DIALOG_MARGIN);
+   btnWptSendToPeer->Connect(
+       wxEVT_COMMAND_BUTTON_CLICKED,
+@@ -1347,7 +1357,7 @@
+   btnRteResequence->Enable(enable1);
+   btnRteSendToGPS->Enable(enable1);
+   btnRteDeleteAll->Enable(m_pRouteListCtrl->GetItemCount() > 0);
+-  btnRteSendToPeer->Enable(enablemultiple);
++  btnRteSendToPeer->Enable(ocpn::PeerSharingAvailable() && enablemultiple);
+ 
+   // set activate button text
+   Route *route = NULL;
+@@ -1596,6 +1606,7 @@
+ }
+ 
+ void RouteManagerDialog::OnRteSendToPeerClick(wxCommandEvent &event) {
++  if (!ocpn::PeerSharingAvailable()) return;
+   std::vector<Route *> list;
+   long item = -1;
+   for (;;) {
+@@ -1629,6 +1640,7 @@
+ }
+ 
+ void RouteManagerDialog::OnWptSendToPeerClick(wxCommandEvent &event) {
++  if (!ocpn::PeerSharingAvailable()) return;
+   std::vector<RoutePoint *> list;
+   long item = -1;
+   for (;;) {
+@@ -1662,6 +1674,7 @@
+ }
+ 
+ void RouteManagerDialog::OnTrkSendToPeerClick(wxCommandEvent &event) {
++  if (!ocpn::PeerSharingAvailable()) return;
+   std::vector<Track *> list;
+   long item = -1;
+   for (;;) {
+@@ -2171,7 +2184,7 @@
+   btnTrkExport->Enable(items >= 1);
+   btnTrkRouteFromTrack->Enable(items == 1);
+   btnTrkDeleteAll->Enable(m_pTrkListCtrl->GetItemCount() > 0);
+-  btnTrkSendToPeer->Enable(items >= 1);
++  btnTrkSendToPeer->Enable(ocpn::PeerSharingAvailable() && items >= 1);
+ }
+ 
+ void RouteManagerDialog::OnTrkToggleVisibility(wxMouseEvent &event) {
+@@ -2565,7 +2578,7 @@
+   btnWptGoTo->Enable(enable1);
+   btnWptExport->Enable(enablemultiple);
+   btnWptSendToGPS->Enable(enable1);
+-  btnWptSendToPeer->Enable(enablemultiple);
++  btnWptSendToPeer->Enable(ocpn::PeerSharingAvailable() && enablemultiple);
+ }
+ 
+ void RouteManagerDialog::OnWptToggleVisibility(wxMouseEvent &event) {
+--- a/gui/src/SendToPeerDlg.cpp
++++ b/gui/src/SendToPeerDlg.cpp
+@@ -24,9 +24,11 @@
+ #include <memory>
+ 
+ #include <wx/statline.h>
++#include <wx/stattext.h>
+ 
+ #include <curl/curl.h>
+ 
++#include "model/peer_policy.h"
+ #include "model/cmdline.h"
+ #include "model/config_vars.h"
+ #include "model/mdns_cache.h"
+@@ -254,7 +256,7 @@
+ 
+   if (m_PeerListBox->GetCount()) m_PeerListBox->SetSelection(0);
+   m_PeerListBox->Bind(wxEVT_TEXT, [&](wxCommandEvent&) {
+-    m_SendButton->Enable(m_PeerListBox->GetValue() != "");
++    m_SendButton->Enable(ocpn::PeerSharingAvailable() && (m_PeerListBox->GetValue() != ""));
+   });
+   m_PeerListBox->Enable(!m_bScanOnCreate);
+   comm_box_sizer->Add(m_PeerListBox, 0, wxEXPAND | wxALL, 5);
+@@ -269,6 +271,12 @@
+   m_pgauge = new wxGauge(itemDialog1, -1, m_scanTime * 2, wxDefaultPosition,
+                          wxSize(-1, GetCharHeight()));
+   itemBoxSizer3->Add(m_pgauge, 0, wxEXPAND | wxALL, 20);
++  if (!ocpn::PeerSharingAvailable()) {
++    premtext = new wxStaticText(
++        this, wxID_ANY,
++        wxGetTranslation(ocpn::PeerSharingUnavailableReason()));
++    itemBoxSizer2->Add(premtext, 0, wxEXPAND | wxLEFT | wxRIGHT | wxBOTTOM, 10);
++  }
+ 
+   itemBoxSizer2->AddSpacer(30);
+   itemBoxSizer2->Add(new wxStaticLine(this), wxSizerFlags(0).Expand());
+@@ -290,7 +298,14 @@
+                               wxDefaultPosition, wxDefaultSize, 0);
+   itemBoxSizer16->Add(m_SendButton, 0, wxALIGN_CENTER_VERTICAL | wxALL, 5);
+   m_SendButton->SetDefault();
+-  m_SendButton->Enable(!m_PeerListBox->IsListEmpty());
++  m_SendButton->Enable(ocpn::PeerSharingAvailable() && (!m_PeerListBox->IsListEmpty()));
++  if (!ocpn::PeerSharingAvailable()) {
++    m_RescanButton->Disable();
++    m_PeerListBox->Disable();
++    SetMessage(wxGetTranslation(ocpn::PeerSharingUnavailableReason()));
++    m_SendButton->SetToolTip(
++        wxGetTranslation(ocpn::PeerSharingUnavailableReason()));
++  }
+ }
+ 
+ void SendToPeerDlg::SetMessage(wxString msg) {
+@@ -301,6 +316,7 @@
+ }
+ 
+ void SendToPeerDlg::OnSendClick(wxCommandEvent&) {
++  if (!ocpn::PeerSharingAvailable()) return;
+   if (m_RouteList.empty() && m_TrackList.empty() && m_RoutePointList.empty()) {
+     Close();
+     return;
+@@ -342,6 +358,7 @@
+ void SendToPeerDlg::OnTimerAutoscan(wxTimerEvent&) { DoScan(); }
+ 
+ void SendToPeerDlg::OnTimerScanTick(wxTimerEvent&) {
++  if (!ocpn::PeerSharingAvailable()) return;
+   m_tick--;
+   if (m_pgauge) {
+     int v = m_pgauge->GetValue();
+@@ -368,11 +385,12 @@
+       }
+     }
+     if (m_PeerListBox->GetCount()) m_PeerListBox->SetSelection(0);
+-    m_SendButton->Enable(m_PeerListBox->GetCount() > 0);
++    m_SendButton->Enable(ocpn::PeerSharingAvailable() && (m_PeerListBox->GetCount() > 0));
+   }
+ }
+ 
+ void SendToPeerDlg::DoScan() {
++  if (!ocpn::PeerSharingAvailable()) return;
+   m_RescanButton->Disable();
+   m_SendButton->Disable();
+   g_Platform->ShowBusySpinner();
+--- a/model/src/peer_client.cpp
++++ b/model/src/peer_client.cpp
+@@ -40,6 +40,7 @@
+ #include <wx/log.h>
+ #include <wx/string.h>
+ 
++#include "model/peer_policy.h"
+ #include "model/config_vars.h"
+ #include "model/nav_object_database.h"
+ #include "model/peer_client.h"
+@@ -280,6 +281,7 @@
+ }
+ 
+ bool CheckKey(const std::string& key, PeerData peer_data) {
++  if (!ocpn::PeerSharingAvailable()) return false;
+   std::stringstream url;
+   url << "https://" << peer_data.dest_ip_address << "/api/ping"
+       << "?source=" << g_hostname << "&apikey=" << key;
+@@ -294,6 +296,10 @@
+ }
+ 
+ void GetApiVersion(PeerData& peer_data) {
++  if (!ocpn::PeerSharingAvailable()) {
++    peer_data.api_version = SemanticVersion(0, 0);
++    return;
++  }
+   if (peer_data.api_version > SemanticVersion(5, 0)) return;
+   std::stringstream url;
+   url << "https://" << peer_data.dest_ip_address << "/api/get-version";
+@@ -497,6 +503,7 @@
+ }
+ 
+ bool SendNavobjects(PeerData& peer_data) {
++  if (!ocpn::PeerSharingAvailable()) return false;
+   if (peer_data.routes.empty() && peer_data.routepoints.empty() &&
+       peer_data.tracks.empty()) {
+     return true;
+@@ -514,6 +521,7 @@
+ }
+ 
+ bool CheckNavObjects(PeerData& peer_data) {
++  if (!ocpn::PeerSharingAvailable()) return false;
+   if (peer_data.routes.empty() && peer_data.routepoints.empty() &&
+       peer_data.tracks.empty()) {
+     return true;  // the server will not object to null transfers.
+--- /dev/null
++++ b/model/include/model/peer_policy.h
+@@ -0,0 +1,14 @@
++// SPDX-License-Identifier: GPL-2.0-or-later
++#ifndef OPENNAV_PEER_POLICY_H
++#define OPENNAV_PEER_POLICY_H
++
++namespace ocpn {
++// Public-beta containment: no runtime/configuration override. Applied only to
++// the reviewed integration source; stock OpenCPN remains unchanged.
++constexpr bool PeerSharingAvailable() { return false; }
++constexpr const char* PeerSharingUnavailableReason() {
++  return "Local peer sharing is unavailable until secure pairing is qualified.";
++}
++}  // namespace ocpn
++
++#endif
+--- a/cli/console.cpp
++++ b/cli/console.cpp
+@@ -70,6 +70,7 @@
+ #include "model/multiplexer.h"
+ #include "model/nmea_log.h"
+ #include "model/ocpn_utils.h"
++#include "model/peer_policy.h"
+ #include "model/pincode.h"
+ #include "model/plugin_handler.h"
+ #include "model/plugin_loader.h"
+@@ -315,6 +316,10 @@
+   };
+ 
+   void generate_key(const std::string& hostname) {
++    if (!ocpn::PeerSharingAvailable()) {
++      std::cerr << ocpn::PeerSharingUnavailableReason() << "\n";
++      exit(1);
++    }
+     TheBaseConfig()->SetPath("/Settings/RestServer");
+     wxString key_string;
+     TheBaseConfig()->Read("ServerKeys", &key_string);
+@@ -327,6 +332,10 @@
+   }
+ 
+   void store_key(const std::string& hostname, const std::string& key) {
++    if (!ocpn::PeerSharingAvailable()) {
++      std::cerr << ocpn::PeerSharingUnavailableReason() << "\n";
++      exit(1);
++    }
+     if (key == "") {
+       std::cerr << USAGE << "\n";
+       exit(1);

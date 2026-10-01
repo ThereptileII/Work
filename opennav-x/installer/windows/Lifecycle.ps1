@@ -505,6 +505,162 @@ function AssertInstalledContent([string]$Directory,[string]$Version) {
     }
   }
 }
+function PeU16([byte[]]$Bytes, [long]$At) {
+  if ($At -lt 0 -or $At -gt $Bytes.Length - 2) { throw 'Truncated PE uint16.' }
+  return [BitConverter]::ToUInt16($Bytes, [int]$At)
+}
+function PeU32([byte[]]$Bytes, [long]$At) {
+  if ($At -lt 0 -or $At -gt $Bytes.Length - 4) { throw 'Truncated PE uint32.' }
+  return [BitConverter]::ToUInt32($Bytes, [int]$At)
+}
+function PeRvaOffset([byte[]]$Bytes, $Sections, [long]$Rva, [long]$Length) {
+  if ($Rva -le 0 -or $Length -le 0 -or $Length -gt 1048576) { throw 'Invalid PE RVA range.' }
+  foreach ($section in $Sections) {
+    $span = [Math]::Max($section.virtualSize, $section.rawSize)
+    if ($Rva -ge $section.rva -and $Rva -lt ([long]$section.rva + $span)) {
+      $delta = $Rva - $section.rva
+      if ($delta -gt ([long]$section.rawSize - $Length)) { throw 'PE RVA points beyond raw section data.' }
+      $offset = [long]$section.raw + $delta
+      if ($offset -gt $Bytes.Length - $Length) { throw 'PE RVA points beyond file.' }
+      return [int]$offset
+    }
+  }
+  throw 'PE RVA does not map to a section.'
+}
+function PeImportName([byte[]]$Bytes, $Sections, [long]$Rva) {
+  $start = PeRvaOffset $Bytes $Sections $Rva 1
+  $end = $start
+  while ($end -lt $Bytes.Length -and $end -lt $start + 256 -and $Bytes[$end] -ne 0) { $end++ }
+  if ($end -eq $start -or $end -ge $Bytes.Length -or $end -ge $start + 256) { throw 'Invalid PE import name.' }
+  $null = PeRvaOffset $Bytes $Sections $Rva ($end - $start + 1)
+  $name = [Text.Encoding]::ASCII.GetString($Bytes, $start, $end - $start)
+  if ($name -cnotmatch '^[A-Za-z0-9_.+-]+$' -or $name.StartsWith('.') -or
+      $name.EndsWith('.') -or $name.Contains('..')) { throw "Invalid PE import module name: $name" }
+  return $name.ToLowerInvariant()
+}
+function GetPeImports([string]$Path) {
+  $file = Get-Item -LiteralPath $Path -ErrorAction Stop
+  # Cap one allocation to 128 MiB in the 32-bit installer host.
+  if ($file.Length -lt 256 -or $file.Length -gt 134217728) { throw "Invalid PE file size: $Path" }
+  [byte[]]$bytes = [IO.File]::ReadAllBytes($Path)
+  if ($bytes.Length -lt 256 -or $bytes.Length -gt 134217728) { throw "Invalid PE read size: $Path" }
+  if ((PeU16 $bytes 0) -ne 0x5a4d) { throw "Not a PE binary: $Path" }
+  $pe = [long](PeU32 $bytes 60)
+  if ($pe -gt $bytes.Length - 24 -or (PeU32 $bytes $pe) -ne 0x4550) { throw "Invalid PE header: $Path" }
+  if ((PeU16 $bytes ($pe + 4)) -ne 0x14c) { throw "Not the supported x86 PE ABI: $Path" }
+  $sectionCount = PeU16 $bytes ($pe + 6)
+  $optionalSize = PeU16 $bytes ($pe + 20)
+  $optional = $pe + 24
+  if ($sectionCount -lt 1 -or $sectionCount -gt 96 -or $optionalSize -lt 224 -or
+      $optional -gt $bytes.Length - $optionalSize -or (PeU16 $bytes $optional) -ne 0x10b -or
+      (PeU32 $bytes ($optional + 92)) -lt 14) {
+    throw "Invalid PE32 optional header: $Path"
+  }
+  $sectionStart = $optional + $optionalSize
+  if ($sectionStart -gt $bytes.Length - (40 * $sectionCount)) { throw "Truncated PE sections: $Path" }
+  $sections = @()
+  for ($i = 0; $i -lt $sectionCount; $i++) {
+    $at = $sectionStart + 40 * $i
+    $section = [pscustomobject]@{
+      virtualSize = [long](PeU32 $bytes ($at + 8))
+      rva = [long](PeU32 $bytes ($at + 12))
+      rawSize = [long](PeU32 $bytes ($at + 16))
+      raw = [long](PeU32 $bytes ($at + 20))
+    }
+    $span = [Math]::Max($section.virtualSize, $section.rawSize)
+    if (($section.rawSize -gt 0 -and $section.raw -gt $bytes.Length - $section.rawSize) -or
+        ([long]$section.rva + $span) -gt 4294967296) {
+      throw "Invalid PE section range: $Path"
+    }
+    foreach ($prior in $sections) {
+      $priorSpan = [Math]::Max($prior.virtualSize, $prior.rawSize)
+      if ($span -gt 0 -and $priorSpan -gt 0 -and
+          $section.rva -lt ([long]$prior.rva + $priorSpan) -and
+          $prior.rva -lt ([long]$section.rva + $span)) {
+        throw "Overlapping PE section RVAs: $Path"
+      }
+    }
+    $sections += $section
+  }
+  $imports = New-Object 'System.Collections.Generic.HashSet[string]' ([StringComparer]::OrdinalIgnoreCase)
+  foreach ($directory in @(@{index=1; size=20}, @{index=13; size=32})) {
+    $entry = $optional + 96 + 8 * $directory.index
+    $rva = [long](PeU32 $bytes $entry)
+    $size = [long](PeU32 $bytes ($entry + 4))
+    if ($rva -eq 0 -and $size -eq 0) { continue }
+    if ($rva -eq 0 -or $size -lt $directory.size -or $size -gt 1048576) { throw "Invalid PE import directory: $Path" }
+    $base = PeRvaOffset $bytes $sections $rva $size
+    $terminated = $false
+    for ($used = 0; $used -le $size - $directory.size; $used += $directory.size) {
+      $at = [long]$base + $used
+      $zero = $true
+      for ($j = 0; $j -lt $directory.size; $j++) {
+        if ($bytes[$at + $j] -ne 0) { $zero = $false; break }
+      }
+      if ($zero) { $terminated = $true; break }
+      if ($directory.index -eq 1) {
+        $nameRva = [long](PeU32 $bytes ($at + 12))
+      } else {
+        $attributes = PeU32 $bytes $at
+        if ($attributes -gt 1) { throw "Unsupported PE delay import attributes: $Path" }
+        $nameRva = [long](PeU32 $bytes ($at + 4))
+        if ($attributes -eq 0) { $nameRva -= [long](PeU32 $bytes ($optional + 28)) }
+      }
+      if ($nameRva -le 0) { throw "Invalid PE import name RVA: $Path" }
+      $null = $imports.Add((PeImportName $bytes $sections $nameRva))
+    }
+    if (-not $terminated) { throw "Unterminated PE import directory: $Path" }
+  }
+  return @($imports)
+}
+function GetCandidateSystemX86 {
+  # Use the OS-known x86 system directory, not a caller-controlled environment variable.
+  $path = [Environment]::GetFolderPath([Environment+SpecialFolder]::SystemX86)
+  if ([string]::IsNullOrWhiteSpace($path)) { throw 'Windows x86 system DLL directory is unavailable.' }
+  return $path
+}
+function AssertCandidateTlsRuntime([string]$Directory) {
+  $app = RelativePath $Directory 'app'
+  if (-not [IO.Directory]::Exists($app)) { throw 'Candidate app directory is missing.' }
+  $system = GetCandidateSystemX86
+  if (-not [IO.Directory]::Exists($system)) { throw 'Windows x86 system DLL directory is missing.' }
+  $binaries = New-Object 'System.Collections.Generic.Queue[string]'
+  $seen = New-Object 'System.Collections.Generic.HashSet[string]' ([StringComparer]::OrdinalIgnoreCase)
+  foreach ($file in Get-ChildItem -LiteralPath $app -Recurse -Force -File) {
+    if ($file.Extension -ieq '.dll' -or $file.Extension -ieq '.exe') {
+      $binaries.Enqueue($file.FullName)
+    }
+  }
+  foreach ($file in Get-ChildItem -LiteralPath $app -Recurse -Force -File) {
+    if ($file.Name -ieq 'libeay32.dll' -or $file.Name -ieq 'ssleay32.dll') {
+      throw "Unsupported legacy TLS runtime dependency in candidate: $($file.FullName)"
+    }
+  }
+  while ($binaries.Count -gt 0) {
+    $binary = $binaries.Dequeue()
+    if (-not $seen.Add($binary)) { continue }
+    foreach ($name in @(GetPeImports $binary)) {
+      if ($name -ieq 'libeay32.dll' -or $name -ieq 'ssleay32.dll') {
+        throw "Unsupported legacy TLS runtime dependency in candidate: import $name in $binary"
+      }
+      $local = @(Get-ChildItem -LiteralPath ([IO.Path]::GetDirectoryName($binary)) -File |
+        Where-Object { $_.Name -ieq $name })
+      if (-not $local.Count) {
+        $local = @(Get-ChildItem -LiteralPath $app -File |
+          Where-Object { $_.Name -ieq $name })
+      }
+      if ($local.Count) {
+        $binaries.Enqueue($local[0].FullName)
+        continue
+      }
+      $runtime = $name -ine 'msvcrt.dll' -and
+        $name -match '^(?i:msvcp|msvcr|vcruntime|vcomp|concrt|wx|lib|archive|zlib|glew)'
+      if (-not $runtime -and ($name -match '^(?i:api-ms-win-|ext-ms-win-)' -or
+          [IO.File]::Exists((Join-Path $system $name)))) { continue }
+      throw "Missing app-local PE import $name in $binary"
+    }
+  }
+}
 
 try {
   $Root = PlainPath $Root
@@ -631,6 +787,7 @@ try {
         $null = PreserveAdditions (Generation $state.current) $stage $old.managedFiles
       }
       AssertInstalledContent $stage $package.version
+      AssertCandidateTlsRuntime $stage
       $recordedRepair = $Action -eq 'Repair' -and $state -and (Test-ExactRepairPackage (ReadGeneration $state.current) $package $ManifestSha256)
       $outputPolicy = SelfTest $stage $package.commit $package.version $recordedRepair
       AtomicJson (Join-Path $stage 'ownership.json') @{owner=$Owner; version=$package.version; commit=$package.commit; packageSha256=$ManifestSha256; xnavHardwareOutputPolicy=$outputPolicy; shellLayout='OpenNavX.NeutralStartMenu.1'; shortcutModes=$modes; files=@(FileRecords $stage); managedFiles=@(FileRecords $maintenance | ForEach-Object { [pscustomobject]@{path=('maintenance/'+$_.path);sha256=$_.sha256} }) + @($package.files) + @([pscustomobject]@{path='Lifecycle.ps1';sha256=(Hash (Join-Path $stage 'Lifecycle.ps1'))}, [pscustomobject]@{path='Maintain.exe';sha256=(Hash (Join-Path $stage 'Maintain.exe'))}, [pscustomobject]@{path='app/OPENNAV_INSTALLED_STOCK';sha256=(Hash $locator)}); importedPlugins=$retained}

@@ -24,8 +24,25 @@ rule installs the maintained libcurl DLL.
 After installation, orchestration copies the three producer manifests into the
 install root and rehashes all four installed DLLs against their manifest
 records. It fails if either legacy TLS DLL appears. It never deletes legacy
-DLLs from a user installation; package upgrade, rollback and stale-file removal
-remain separate installer work.
+DLLs from a user installation. The installer now also scans the complete
+staged application after preserving existing plugins and other additions.
+Install/update/repair refuse a candidate containing either legacy TLS DLL,
+including nested or case-varied names, before self-test and state publication.
+Original plugins, user files and the prior active generation remain intact.
+Exact recorded rollback is a recovery operation and deliberately retains its
+original bytes; this does not qualify the older runtime for public release.
+The candidate gate also parses bounded x86 PE normal and delay imports for
+executables, plugins and their resolved local dependencies (including modules
+with non-DLL extensions). Missing application runtimes and legacy TLS imports
+are rejected even when the old DLL itself is absent. OS dependencies resolve
+through Windows' known x86 system directory, not a caller-supplied environment
+path. This is a static import check; it cannot qualify arbitrary plugin
+`LoadLibrary` behavior or replace native plugin/runtime acceptance.
+
+The actual installer functions pass deterministic PowerShell parser/closure
+fixtures on Linux. Native PowerShell 5.1 in both host bitnesses, retained-plugin
+install/update/repair refusal, exact rollback and real package qualification
+remain required.
 
 Source identities remain in `tools/windows-openssl.lock.json`,
 `tools/windows-zlib.lock.json` and `tools/windows-curl.lock.json`. Native output

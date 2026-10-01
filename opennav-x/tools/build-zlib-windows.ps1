@@ -109,16 +109,35 @@ Set-Content -LiteralPath $BuildLog -Value '' -Encoding UTF8
 $CommandLines = @(
     '@echo off',
     'setlocal DisableDelayedExpansion',
-    "call `"$VcVars`" x86 >> `"$BuildLog`" 2>&1 || exit /b 1",
-    "where cl >> `"$BuildLog`" 2>&1 || exit /b 1",
-    "where cmake >> `"$BuildLog`" 2>&1 || exit /b 1",
-    "cmake -S `"$Wrapper`" -B `"$CMakeBuild`" -G `"Visual Studio 17 2022`" -A Win32 -DCMAKE_MSVC_RUNTIME_LIBRARY=MultiThreadedDLL >> `"$BuildLog`" 2>&1 || exit /b 1",
-    "cmake --build `"$CMakeBuild`" --config Release -- /m >> `"$BuildLog`" 2>&1 || exit /b 1",
-    "ctest --test-dir `"$CMakeBuild`" -C Release --output-on-failure --no-tests=error >> `"$BuildLog`" 2>&1 || exit /b 1",
-    "cmake --install `"$CMakeBuild`" --config Release --prefix `"$Prefix`" >> `"$BuildLog`" 2>&1 || exit /b 1"
+    'echo === stage: initialize x86 MSVC environment ===',
+    "call `"$VcVars`" x86",
+    'if not "%errorlevel%"=="0" exit /b %errorlevel%',
+    'echo === stage: locate compiler ===',
+    'where cl',
+    'if not "%errorlevel%"=="0" exit /b %errorlevel%',
+    'echo === stage: locate CMake ===',
+    'where cmake',
+    'if not "%errorlevel%"=="0" exit /b %errorlevel%',
+    'echo === stage: configure zlib Win32 shared ===',
+    "cmake -S `"$Wrapper`" -B `"$CMakeBuild`" -G `"Visual Studio 17 2022`" -A Win32 -DCMAKE_MSVC_RUNTIME_LIBRARY=MultiThreadedDLL",
+    'if not "%errorlevel%"=="0" exit /b %errorlevel%',
+    'echo === stage: compile zlib ===',
+    "cmake --build `"$CMakeBuild`" --config Release -- /m",
+    'if not "%errorlevel%"=="0" exit /b %errorlevel%',
+    'echo === stage: test zlib ===',
+    "ctest --test-dir `"$CMakeBuild`" -C Release --output-on-failure --no-tests=error",
+    'if not "%errorlevel%"=="0" exit /b %errorlevel%',
+    'echo === stage: install zlib ===',
+    "cmake --install `"$CMakeBuild`" --config Release --prefix `"$Prefix`"",
+    'if not "%errorlevel%"=="0" exit /b %errorlevel%'
 )
 [IO.File]::WriteAllLines($BuildCmd,$CommandLines,(New-Object Text.UTF8Encoding($false)))
-Invoke-Checked cmd.exe @('/d','/s','/c',"`"$BuildCmd`"")
+# Keep one PowerShell-owned log handle for the whole child process. Reopening
+# the same file for each batch command is unnecessary. Stage markers identify
+# failures without guessing which command or file caused the previous lock.
+& cmd.exe @('/d','/s','/c',"`"$BuildCmd`"") 2>&1 | Tee-Object -FilePath $BuildLog
+$BuildExitCode = $LASTEXITCODE
+if ($BuildExitCode -ne 0) { throw "cmd.exe failed with exit code $BuildExitCode; see $BuildLog" }
 
 $Expected = [ordered]@{
     'include/zlib.h' = Join-Path $Prefix 'include/zlib.h'

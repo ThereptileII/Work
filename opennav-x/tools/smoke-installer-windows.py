@@ -372,6 +372,33 @@ try:
         with (profile/'opencpn.conf').open('a') as f:f.write('\n[Settings/GlobalState]\nVPLatLon=59.0800,18.5000\nVPScale=0.003\n')
         shutil.copy2(profile/'opencpn.conf',profile/'opencpn.ini')
         expected=fixtures.snapshot(profile);before=inventory(profile)
+        # Stock plugins are user-owned inputs. A legacy TLS DLL copied from
+        # there must refuse a fresh candidate without deleting the source.
+        stock_plugins=stock/'plugins';created_stock_plugins=not stock_plugins.exists()
+        stock_plugins.mkdir(exist_ok=True)
+        for name in ('libeay32.dll','ssleay32.dll'):
+            legacy=stock_plugins/name
+            assert not legacy.exists()
+            legacy.write_bytes(('unmanaged stock plugin '+name).encode())
+            stock_with_legacy=inventory(stock)
+            refused_cleanly=False
+            try:
+                failure=setup('Install',original,expected=1)
+                assert 'Unsupported legacy TLS runtime dependency in candidate' in failure['error'],failure
+                assert inventory(stock)==stock_with_legacy and legacy.is_file()
+                assert inventory(profile)==before and not (INSTALL/'state.json').exists()
+                assert not (INSTALL/'transaction.json').exists()
+                assert not SHORTCUTS.exists() and not OLD_SHORTCUTS.exists()
+                refused_cleanly=True
+            finally:
+                legacy.unlink()
+                # A rejected first install may leave only its disposable,
+                # unpublished owner/recovery/staging files behind.
+                if refused_cleanly and INSTALL.exists():
+                    shutil.rmtree(INSTALL)
+        if created_stock_plugins:stock_plugins.rmdir()
+        assert inventory(stock)==stock_before and not INSTALL.exists()
+        check('Fresh install refuses each unmanaged stock plugin legacy TLS DLL and preserves stock/profile without publication')
         wizard(original,install=True)
         assert inventory(profile)==before and inventory(stock)==stock_before
         assert not state()['previous']
@@ -555,13 +582,51 @@ try:
         finally:
             rollback_marker.unlink()
         check('Rollback refuses an unowned portable marker in the previous generation without altering either generation, state or user data')
-        engine('Rollback');assert state()['current']==repaired and inventory(profile)==before
-        check('Rollback restores exact prior generation without restoring older navigation data')
+        # Rollback is recovery of an existing generation, not acceptance of a
+        # newly staged candidate. An unowned DLL there must not block recovery.
+        rollback_legacy=previous/'app/plugins/ssleay32.dll'
+        assert not rollback_legacy.exists()
+        shutil.copy2(previous/'app/zlib1.dll',rollback_legacy)
+        rollback_legacy_hash=sha(rollback_legacy)
+        previous_files=inventory(previous)
+        try:
+            engine('Rollback')
+            assert state()['current']==repaired and inventory(generation())==previous_files
+            assert sha(rollback_legacy)==rollback_legacy_hash
+            assert inventory(profile)==before and inventory(stock)==stock_before
+        finally:
+            rollback_legacy.unlink()
+        check('Rollback restores exact prior generation with an unmanaged legacy TLS addition and leaves navigation data unchanged')
         active_hash=sha(generation()/'app/opencpn.exe'); state_hash=sha(INSTALL/'state.json')
+        shortcut_before=inventory(SHORTCUTS)
         def unchanged():
             assert state()['current']==repaired and sha(INSTALL/'state.json')==state_hash
             assert sha(generation()/'app/opencpn.exe')==active_hash
             assert inventory(profile)==before and inventory(stock)==stock_before
+        for source in ('stock','active'):
+            for name in ('libeay32.dll','ssleay32.dll'):
+                legacy=(stock/'plugins'/name) if source=='stock' else (generation()/'app/plugins'/name)
+                assert not legacy.exists()
+                legacy.parent.mkdir(parents=True,exist_ok=True)
+                legacy.write_bytes(('unmanaged '+source+' '+name).encode())
+                stock_with_legacy=inventory(stock);active_with_legacy=inventory(generation())
+                try:
+                    for action in ('Update','Repair'):
+                        failure=setup(action,original,expected=1)
+                        assert 'Unsupported legacy TLS runtime dependency in candidate' in failure['error'],failure
+                        assert name in failure['error'],failure
+                        assert inventory(profile)==before
+                        assert inventory(stock)==stock_with_legacy
+                        assert inventory(generation())==active_with_legacy
+                        assert legacy.is_file(), 'Refusal silently removed unmanaged TLS file'
+                        assert sha(INSTALL/'state.json')==state_hash
+                        assert inventory(SHORTCUTS)==shortcut_before
+                        assert not (INSTALL/'transaction.json').exists()
+                finally:
+                    legacy.unlink()
+        assert inventory(stock)==stock_before
+        unchanged()
+        check('Update/repair refuse each stock or active unmanaged legacy TLS DLL; current installation and source bytes survive')
         # Unknown user additions are normally preserved, but cannot turn an
         # installed generation back into a portable or developer distribution.
         for relative, action, error in (

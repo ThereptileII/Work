@@ -3,6 +3,13 @@
 Beta 2 is under development. The last qualified downloadable baseline is Beta 1;
 see [status](status.md) for exact commits and acceptance evidence.
 
+The SCRUM-212 candidate deliberately makes local OpenCPN peer sharing
+unavailable in integrated XNav, Legacy and Safe modes while secure pairing is
+unqualified. This means no Send-to-Peer transfers or inbound peer REST service;
+use ordinary file export/import for object exchange. It does not change stock
+OpenCPN or local navigation storage. The candidate still requires native Windows
+and installed/boat acceptance; this statement does not describe a deployment.
+
 - The authorized backed-up stock upgrade to official OpenCPN 5.12.4 x86 is
   complete. The first fixture-free Beta 2 development package is installed.
   Exact replacement `79a95c4` passes all sixteen CI jobs, 110 integrated Linux
