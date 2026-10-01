@@ -59,7 +59,9 @@ def _log(root: Path, relative: str) -> tuple[str, str]:
     if len(data) > MAX_LOG_BYTES:
         raise ValueError(f"oversized native test log: {relative}")
     encoding = "utf-16" if data.startswith((b"\xff\xfe", b"\xfe\xff")) else "utf-8-sig"
-    return data.decode(encoding), hashlib.sha256(data).hexdigest()
+    # Windows PowerShell and Python text files can retain CRLF. Parse line
+    # boundaries consistently while binding the receipt to the original bytes.
+    return data.decode(encoding).replace("\r\n", "\n"), hashlib.sha256(data).hexdigest()
 
 
 def _require_upstream_tests(root: Path, manifests: dict,

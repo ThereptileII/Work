@@ -347,6 +347,32 @@ class WindowsDependencyEvidenceTests(unittest.TestCase):
             self.assertEqual(result["manifests"][library],
                              digest((self.installed / f"{library}-build.json").read_bytes()))
 
+    def test_openssl_crlf_encodings_keep_raw_hash_and_strict_result_sequence(self):
+        path = self.root / "evidence/local/windows-openssl-native-output.log"
+        original = path.read_bytes()
+        summary = (
+            "All tests successful.\r\n"
+            "Files=347, Tests=4283, 1455 wallclock secs\r\n"
+            "Result: PASS\r\n"
+        )
+        cases = ((summary, True),
+                 (summary + "Result: FAIL\r\n", False),
+                 ("Result: FAIL\r\n" + summary, False))
+        for encoding, bom in (("utf-8", b""), ("utf-8", b"\xef\xbb\xbf"),
+                              ("utf-16-le", b"\xff\xfe"),
+                              ("utf-16-be", b"\xfe\xff")):
+            for contents, accepted in cases:
+                with self.subTest(encoding=encoding, bom=bool(bom), accepted=accepted,
+                                  fail_first=contents.startswith("Result: FAIL")):
+                    payload = bom + contents.encode(encoding)
+                    path.write_bytes(payload)
+                    if accepted:
+                        self.assertEqual(self.verify()["logs"]["openssl"], digest(payload))
+                    else:
+                        with self.assertRaisesRegex(ValueError, "OpenSSL retained log"):
+                            self.verify()
+        path.write_bytes(original)
+
     def test_preserved_first_success_record_survives_later_source_only_preflight(self):
         original, preserved = self._preserve_zlib_build_source()
         verified_hash = self.verify(evidence.FIRST_SUCCESS_ZLIB_SOURCE_VERIFICATION)["logs"]["zlibSource"]
