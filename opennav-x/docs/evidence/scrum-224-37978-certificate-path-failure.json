@@ -58,5 +58,16 @@
     "crc": "passed",
     "curlLogSha256": "6f6b095c8a016deb5e85b7e40e23e90ce2a1ab89be5e5f9c03270af92d7eaff0",
     "observation": "Same pinned OpenSSL 3.5.9, ./test-ca.prm lookup, and empty CA refusal."
+  },
+  "thirdNativeFailure": {
+    "runId": 36929977632,
+    "jobId": 110599000605,
+    "conclusion": "failure",
+    "artifactId": 11197956628,
+    "bytes": 385080,
+    "sha256": "f28557cba3b172cba68c3068a8f7d360b2bdb0b5a2847760fbd733e7f8ba82a7",
+    "zipMembers": 62,
+    "crc": "passed",
+    "observation": "Same pinned OpenSSL 3.5.9, ./test-ca.prm lookup, and empty CA refusal; UI and package gates skipped."
   }
 }

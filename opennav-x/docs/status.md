@@ -70,10 +70,12 @@ failed before curl configure: MSYS Perl received a backslash script path,
 and the certificate generator searched the output directory for source inputs.
 The producer correctly rejected the empty certificate. The separate object-flow
 job failed at the same preflight; its independently verified artifact confirms
-the same error. The integrated Windows job remains live; product gates are pending.
+the same error. The integrated Windows job also failed at the same preflight; all three
+native failure artifacts have verified hashes and ZIP integrity.
 See [the verified failure record](evidence/scrum-224-37978-certificate-path-failure.json).
-A minimal caller-path repair and focused native regression are under review;
-no existing generator or TLS assertions are weakened.
+The replacement caller-path repair has passed its focused native gate; its
+full qualification remains open as recorded above. No existing generator or
+TLS assertions were weakened.
 No artifact is approved for boat deployment. The previous b48 Linux job has
 completed successfully, including 146 fixture and 146 fixture-free test cases,
 the 10,800-second soak, loader checks and mode/navigation/chart fixtures. See

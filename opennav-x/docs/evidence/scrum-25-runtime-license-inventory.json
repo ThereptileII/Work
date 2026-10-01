@@ -1,0 +1,181 @@
+{
+  "title": "TUF verifier runtime dependency license inventory",
+  "status": "local read-only inventory; not shipping or legal approval",
+  "source": {
+    "worktree": "scrum25-update-trust",
+    "commit": "43dbecfe906dd6230fc4eb7523a7b7a88d97fbdc",
+    "modulePath": "tools/update-verifier",
+    "publishedCommit": "24bd013f4891638f0e59411836c67f271a66a645",
+    "goModSha256": "fd81c9c980c701e666c3a59c25f1e0b2a458d672b86b106240bd842574e96d31",
+    "goSumSha256": "66bc1ae7fcb8f87edc8ce36dc1b73406da1e869c4d061203e1992ffaa38ea603"
+  },
+  "toolchain": {
+    "go": "go1.27.1 linux/amd64"
+  },
+  "commands": [
+    "go list -deps -f '{{if not .Standard}}{{if .Module}}{{.Module.Path}} {{.Module.Version}} {{.Module.Dir}}{{end}}{{end}}' . | sort -u",
+    "GOOS=windows GOARCH=386 go list -deps -f '{{if not .Standard}}{{if .Module}}{{.Module.Path}} {{.Module.Version}} {{.Module.Dir}}{{end}}{{end}}' . | sort -u",
+    "go list -m all | wc -l"
+  ],
+  "scope": {
+    "platforms": [
+      "linux/amd64",
+      "windows/386"
+    ],
+    "runtimeThirdPartyModuleCount": 12,
+    "selectedModuleGraphCountIncludingMain": 83,
+    "licenseClassificationBasis": "top-level LICENSE text in exact cached module version; TUF NOTICE included when present"
+  },
+  "runtimeThirdPartyModules": [
+    {
+      "module": "github.com/cenkalti/backoff/v5",
+      "version": "v5.0.3",
+      "observedLicense": "MIT",
+      "licenseFiles": [
+        {
+          "path": "LICENSE",
+          "sha256": "5c0476add4c38b55d0ed5ac11b85e00c38f26e1caee20dfe3ab58190103d1fbc"
+        }
+      ]
+    },
+    {
+      "module": "github.com/google/go-containerregistry",
+      "version": "v0.20.7",
+      "observedLicense": "Apache-2.0",
+      "licenseFiles": [
+        {
+          "path": "LICENSE",
+          "sha256": "58d1e17ffe5109a7ae296caafcadfdbe6a7d176f0bc4ab01e12a689b0499d8bd"
+        }
+      ]
+    },
+    {
+      "module": "github.com/opencontainers/go-digest",
+      "version": "v1.0.0",
+      "observedLicense": "Apache-2.0",
+      "licenseFiles": [
+        {
+          "path": "LICENSE",
+          "sha256": "aceb55133c41c50c2e170c5918e301fe74f592d0f28724bf2f7a7bfdcff1fc5f"
+        }
+      ]
+    },
+    {
+      "module": "github.com/secure-systems-lab/go-securesystemslib",
+      "version": "v0.11.0",
+      "observedLicense": "MIT",
+      "licenseFiles": [
+        {
+          "path": "LICENSE",
+          "sha256": "cb64503e4772676abf9c5f67398c14426f7b1346a4d7aa851ad64ff49fbf41e4"
+        }
+      ]
+    },
+    {
+      "module": "github.com/sigstore/protobuf-specs",
+      "version": "v0.5.0",
+      "observedLicense": "Apache-2.0",
+      "licenseFiles": [
+        {
+          "path": "LICENSE",
+          "sha256": "cfc7749b96f63bd31c3c42b5c471bf756814053e847c10f3eb003417bc523d30"
+        }
+      ]
+    },
+    {
+      "module": "github.com/sigstore/sigstore",
+      "version": "v1.10.6",
+      "observedLicense": "Apache-2.0",
+      "licenseFiles": [
+        {
+          "path": "LICENSE",
+          "sha256": "cfc7749b96f63bd31c3c42b5c471bf756814053e847c10f3eb003417bc523d30"
+        }
+      ]
+    },
+    {
+      "module": "github.com/theupdateframework/go-tuf/v2",
+      "version": "v2.4.2",
+      "observedLicense": "Apache-2.0",
+      "licenseFiles": [
+        {
+          "path": "LICENSE",
+          "sha256": "e0122c8780558ada7b4ce0e1aa8596b3d95fda640cef42fca283991bf20306cf"
+        },
+        {
+          "path": "NOTICE",
+          "sha256": "86ce5e2bb72f603a8849e085524022bdac6668df4f0baca507033610237365f3"
+        }
+      ]
+    },
+    {
+      "module": "golang.org/x/crypto",
+      "version": "v0.50.0",
+      "observedLicense": "BSD-3-Clause",
+      "licenseFiles": [
+        {
+          "path": "LICENSE",
+          "sha256": "911f8f5782931320f5b8d1160a76365b83aea6447ee6c04fa6d5591467db9dad"
+        }
+      ]
+    },
+    {
+      "module": "golang.org/x/sys",
+      "version": "v0.43.0",
+      "observedLicense": "BSD-3-Clause",
+      "licenseFiles": [
+        {
+          "path": "LICENSE",
+          "sha256": "911f8f5782931320f5b8d1160a76365b83aea6447ee6c04fa6d5591467db9dad"
+        }
+      ]
+    },
+    {
+      "module": "golang.org/x/term",
+      "version": "v0.42.0",
+      "observedLicense": "BSD-3-Clause",
+      "licenseFiles": [
+        {
+          "path": "LICENSE",
+          "sha256": "911f8f5782931320f5b8d1160a76365b83aea6447ee6c04fa6d5591467db9dad"
+        }
+      ]
+    },
+    {
+      "module": "google.golang.org/genproto/googleapis/api",
+      "version": "v0.0.0-20250825161204-c5933d9347a5",
+      "observedLicense": "Apache-2.0",
+      "licenseFiles": [
+        {
+          "path": "LICENSE",
+          "sha256": "cfc7749b96f63bd31c3c42b5c471bf756814053e847c10f3eb003417bc523d30"
+        }
+      ]
+    },
+    {
+      "module": "google.golang.org/protobuf",
+      "version": "v1.36.11",
+      "observedLicense": "BSD-3-Clause",
+      "licenseFiles": [
+        {
+          "path": "LICENSE",
+          "sha256": "4835612df0098ca95f8e7d9e3bffcb02358d435dbb38057c844c99d7f725eb20"
+        }
+      ]
+    }
+  ],
+  "result": {
+    "licenseFamilies": {
+      "MIT": 2,
+      "Apache-2.0": 6,
+      "BSD-3-Clause": 4
+    },
+    "copyleftOrUnknownObserved": false,
+    "limitations": [
+      "Module-level inventory only; no legal determination.",
+      "Verify notices and attribution for the exact distributed artifact and review again if dependencies, platform tags, or integrations change.",
+      "Probe is not approved for product or shipping use.",
+      "Top-level license texts do not replace review of package-level third-party notices or distribution obligations."
+    ]
+  }
+}
