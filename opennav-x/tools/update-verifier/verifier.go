@@ -140,7 +140,7 @@ func verifyWithClient(req Request, deadline time.Time, injected *http.Client) (R
 	if err := json.Unmarshal(*target.Custom, &release); err != nil {
 		return empty, nil, fmt.Errorf("signed release identity: %w", err)
 	}
-	if release.Channel != req.Channel || release.Version == "" || len(release.Version) > 64 || !commitPattern.MatchString(release.Commit) {
+	if release.Channel != req.Channel || release.Version == "" || len(release.Version) > 128 || !commitPattern.MatchString(release.Commit) {
 		return empty, nil, errors.New("invalid signed release identity")
 	}
 	_, data, err := up.DownloadTarget(target, "", "")
