@@ -79,3 +79,53 @@ short/missing reply, nonzero exit, reply timeout, wrong creation/hash/path and a
 modulo-colliding wrong server PID. Fixtures receive only the exact fixed packet
 or zero bytes and end normally; no vendor helper, OpenCPN or hardware is used.
 Portable checks do not establish native pipe behavior or boat acceptance.
+
+## Independent cold cleanup of a bounded existing helper set (SCRUM-223)
+
+`recover-cold-chart-helpers.ps1` is a separate cold path for one to three
+already-running managed `oexserverd.exe` instances when no commissioning
+transaction or stock launch result exists. It never invents either record. A
+parent PID and its pipe suffix come from observed Windows process metadata;
+neither proves that the parent was a stock OpenCPN launch. The process owner,
+session, exact creation time, managed path, known SHA-256, source-shaped command
+line and absent parent PID are all checked again before each operation. A reused
+parent PID is refused. Every OpenCPN process and every other application/plugin
+helper must be absent. The complete initial candidate set is bounded to three
+and must remain unchanged except for each measured successful exit.
+
+`Capture` privately copies the entire existing normal profile and records its
+ACL, complete loader trees, installed-generation identity if present, and exact
+helper set. It does not weaken the normal closed-process guard used by cold
+profile capture and preparation. The operator reviews `capture.json`, then
+supplies a separate JSON review file with schema `1`, owner
+`OpenNavX.ColdChartHelperReview.1`, `captureSha256`, `reviewedUtc`, decision
+`approve-exact-cmd-exit-once`, a nonempty reason, and an exact `candidates`
+array copied from the reviewed capture. The tool checks the independent file's
+caller-supplied SHA-256; it cannot approve itself. Review expires after 24 hours.
+
+```powershell
+& .\tools\boat\recover-cold-chart-helpers.ps1 -Action Capture -Workspace C:\XNav
+# Review the private capture and prepare an independent exact-candidate JSON.
+& .\tools\boat\recover-cold-chart-helpers.ps1 -Action Close -Workspace C:\XNav `
+  -CaptureRecord '<exact capture.json>' -ExpectedCaptureSha256 '<verified hash>' `
+  -Review '<independent review.json>' -ExpectedReviewSha256 '<verified hash>'
+```
+
+Before each native request, `Close` rechecks the account, installation, profile,
+loader trees, private copy/ACL, active-transaction absence and complete remaining
+process set. It records a private intent, then atomically reserves the exact
+PID/creation identity in the workspace-level private
+`chart-helper-attempts` ledger. Existing active-session per-run locators are
+also checked. One normal `CMD_EXIT` uses the existing native transport and
+actual named-pipe server PID check; its three reply bytes have unknown meaning
+and success requires observed zero process exit. Each result, or partial failure,
+is retained. Any drift, uncertain delivery, short reply, timeout or nonzero exit
+stops the sequence with no retry, forced termination, reboot or replacement
+launch. The upstream three-byte reply read is in pinned `Osenc.cpp` around line
+800; it is not an acknowledgement definition.
+
+After successful closure, run a **new** normal cold profile capture and review.
+The helper closure record provides no profile adoption, plugin restore,
+commissioning launch or navigation permission. Portable policy checks and
+disposable native Windows fixture/ACL checks are required gates before any boat
+use; a CI pass is not boat acceptance.

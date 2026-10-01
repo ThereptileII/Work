@@ -14,8 +14,24 @@ short-lived launch audit. The implemented disposable Capture/Complete/reader sui
 groups; existing baseline, commissioning, restart-policy and broker suites pass
 127, 12, 309 and 22 checks respectively. Source hashes remained unchanged
 during the final batch; see the [portable evidence](evidence/scrum-222-cold-baseline-portable.json).
-Native ACL and full commissioning/restore coverage is implemented but awaits
-Windows execution. Native qualification and actual boat application remain outstanding. Prior b48 tooling evidence does not qualify changed tools.
+Native qualification now passes all ten jobs at exact tooling commit
+`034545be03295352a1c509d8979e4a3eb5bf64b6` in
+[run 36911321279](https://github.com/ThereptileII/Work/actions/runs/36911321279).
+Downloaded artifacts verify 40 native cold groups, including actual ACL refusal
+and normal commissioning/restore; see [native evidence](evidence/scrum-222-native-cold-baseline.json).
+Actual boat capture refused before backup publication because two known-hash
+chart decoders remain after OpenCPN closed. User profile and installed
+application remain unchanged. SCRUM-223 implements bounded normal local
+shutdown for those exact processes outside an active commissioning transaction,
+with explicit review and shared one-attempt records. Final portable suites pass
+21 identity/review, 30 Capture/Close workflow and 20 attempt-ledger groups;
+existing helper, orphan and cold-baseline suites pass 21, 21 and 36 respectively.
+These are separate suites, not a unique total. The complete batch used unchanged
+source files; see [portable recovery evidence](evidence/scrum-223-cold-helper-portable.json).
+Review fixed fractional-second timestamp loss before process dispatch and
+strengthened duplicate-set and one-attempt checks. Native qualification and
+actual cleanup are pending. Fresh cold capture/review and application
+qualification remain required; tooling results do not grant launch permission.
 
 The frozen full candidate is `b48bf4a8f12f98c459d79aa08805141ac49e0306`
 (local mapped commit `0053ed507b03c79877fd6bb96c0d761fb9f68ac9`). Its narrow

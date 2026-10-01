@@ -1,0 +1,80 @@
+{
+  "schemaVersion": 1,
+  "issue": "SCRUM-222",
+  "status": "passed",
+  "scope": "native Windows cold-profile preservation and bounded boat-maintenance tooling checks",
+  "sourceCommit": "034545be03295352a1c509d8979e4a3eb5bf64b6",
+  "localMappedCommit": "268b5cbdb67250ed7f373f81c63bcfcdbf38a425",
+  "workflowRun": {
+    "runId": "36911321279",
+    "url": "https://github.com/ThereptileII/Work/actions/runs/36911321279",
+    "nativeJobsPassed": 10,
+    "nativeJobsTotal": 10
+  },
+  "coldBaseline": {
+    "result": "passed",
+    "platform": "native-disposable",
+    "groups": 40,
+    "nativeAclExecuted": true,
+    "realProfileAccess": false,
+    "applicationLaunched": false,
+    "checks": [
+      "Captures and completes a hash-bound, preservation-only cold profile baseline without changing the live fixture profile.",
+      "Exercises native Get-Acl/Set-Acl behavior: a foreign Everyone read ACE is refused by the cold reader, and restoring the original ACL restores valid lineage.",
+      "Runs Inventory, Prepare, Apply, InspectRestore and Restore against disposable files and confirms captured profile bytes are restored without launch authority.",
+      "Refuses active transactions, live-process fixture state, context drift, profile races, changed review inputs and partial completion publication."
+    ],
+    "substitutedBoundaries": [
+      "machine/profile context identity",
+      "process enumeration",
+      "official-stock identity for one exact inert fixture executable"
+    ]
+  },
+  "supportingNativeEvidence": [
+    {
+      "artifactId": 11186822171,
+      "scope": "restart broker and Prepare/Arm native protocol fixtures",
+      "checks": {
+        "broker": 51,
+        "prepareArm": 56
+      },
+      "bytes": 16720,
+      "sha256": "37e6be61ccf49079c17617367b0bcf73bf4bec73ab21e777c0861dc19138c2ab",
+      "zipIntegrity": "passed"
+    },
+    {
+      "artifactId": 11187181957,
+      "scope": "native guarded window and display review",
+      "bytes": 23452,
+      "sha256": "4ade0114dff50a1b9e777bd461fd7983dbdafad426bffbd971ab06850d41cf46",
+      "zipIntegrity": "passed"
+    },
+    {
+      "artifactId": 11187670397,
+      "scope": "native commissioning restart transport and process fixtures",
+      "result": "passed",
+      "checks": "886 commissioning restart protocol checks; 87 marker publication checks; 384 checks across 24 native restart cases",
+      "bytes": 6659,
+      "sha256": "f197b2e74d63592de268133a53bd2ec59762d0714203f8848d41cd6f4bd47ece",
+      "zipIntegrity": "passed",
+      "noMarineCode": true
+    }
+  ],
+  "primaryArtifact": {
+    "artifactId": 11186503224,
+    "bytes": 28288,
+    "sha256": "6ec3c2843576adc3330903c245e0c546b742bfdaac9f03e6f3c091f94cb01ae5",
+    "zipIntegrity": "passed"
+  },
+  "limits": [
+    "Cold-baseline checks operate on disposable temporary files, not the boat PC or an actual user profile.",
+    "The checks do not accept a live cold capture, perform product acceptance, or establish boat, hardware, or marine-operation readiness.",
+    "The cold-baseline happy path uses empty plugin roots; nonempty plugin restoration is exercised by the accompanying native commissioning and baseline-adoption maintenance reports."
+  ],
+  "unmetGates": [
+    "Root-run live cold capture evidence and review on the intended boat PC.",
+    "Boat commissioning and physical/hardware acceptance.",
+    "Remaining product, installer/update, release, and public-beta acceptance gates."
+  ],
+  "maintenanceReportCount": 23
+}

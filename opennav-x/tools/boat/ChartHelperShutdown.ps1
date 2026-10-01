@@ -2,6 +2,52 @@
 # No installed-generation bypass, automatic launch, retry or forced termination.
 . (Join-Path $PSScriptRoot 'StockReview.ps1')
 $script:ChartHelperHash='ec27c947fc9ba4ae09345961780b885deddc2e4fcf094805a14cdf19504e0adb'
+function Ensure-ChartHelperGlobalLedger([string]$Ledger,[string]$Sid) {
+  $ledger=Assert-LocalPath $Ledger
+  if($Sid -cnotmatch '^S-1-5-[0-9-]+$'){throw 'Exact current account SID required for chart-helper ledger.'}
+  $allowed=@($Sid,'S-1-5-18','S-1-5-32-544')
+  if(-not (Test-Path -LiteralPath $ledger)){
+    $null=New-Item -ItemType Directory -Path $ledger
+    $acl=New-Object Security.AccessControl.DirectorySecurity
+    $acl.SetAccessRuleProtection($true,$false)
+    foreach($value in $allowed){
+      $identity=New-Object Security.Principal.SecurityIdentifier($value)
+      $acl.AddAccessRule((New-Object Security.AccessControl.FileSystemAccessRule($identity,'FullControl','ContainerInherit, ObjectInherit','None','Allow')))
+    }
+    Set-Acl -LiteralPath $ledger -AclObject $acl
+  }
+  $item=Get-Item -LiteralPath $ledger -Force
+  if(-not $item.PSIsContainer -or ($item.Attributes -band [IO.FileAttributes]::ReparsePoint)){throw 'Chart-helper ledger must be a local directory.'}
+  $acl=Get-Acl -LiteralPath $ledger
+  if(-not $acl.AreAccessRulesProtected -or $acl.GetOwner([Security.Principal.SecurityIdentifier]).Value -cnotin $allowed){throw 'Chart-helper ledger ACL/owner changed.'}
+  foreach($rule in $acl.GetAccessRules($true,$true,[Security.Principal.SecurityIdentifier])){
+    if($rule.IdentityReference.Value -cnotin $allowed -or $rule.AccessControlType -ne [Security.AccessControl.AccessControlType]::Allow){throw 'Chart-helper ledger has unreviewed access.'}
+  }
+}
+function New-ChartHelperGlobalLocator([string]$Workspace,[string]$Sid,[int]$HelperPid,[long]$StartedTicks,[string]$Intent,[string]$Owner) {
+  # A fresh cold capture or another active transaction cannot authorize a
+  # second attempt after delivery became uncertain. Old transaction locators
+  # are checked by exact basename without reading unrelated private evidence.
+  $workspace=Assert-LocalPath $Workspace
+  if($HelperPid -le 0 -or $StartedTicks -le 0 -or $Owner -cnotin @('OpenNavX.ChartHelperShutdown.1','OpenNavX.OrphanChartHelperShutdown.1','OpenNavX.ColdChartHelper.1')){
+    throw 'Invalid chart-helper identity or locator owner.'
+  }
+  $intent=Assert-LocalPath $Intent
+  if(-not $intent.StartsWith((Join-Path $workspace 'runs')+'\',[StringComparison]::OrdinalIgnoreCase)) {throw 'Intent must be private workspace evidence.'}
+  $name='chart-helper-shutdown-'+$HelperPid+'-'+$StartedTicks+'.json'
+  $runs=Assert-LocalPath (Join-Path $workspace 'runs')
+  $runItems=@(Get-ChildItem -LiteralPath $runs -Directory -Force -ErrorAction Stop)
+  if($runItems.Count -gt 10000){throw 'Run history exceeds chart-helper attempt scan bound.'}
+  foreach($run in $runItems){
+    if($run.Attributes -band [IO.FileAttributes]::ReparsePoint){throw 'Redirected run evidence refused.'}
+    if(Test-Path -LiteralPath (Join-Path $run.FullName $name)){throw 'Previous chart-helper shutdown attempt exists.'}
+  }
+  $ledger=Assert-LocalPath (Join-Path $workspace 'chart-helper-attempts')
+  Ensure-ChartHelperGlobalLedger $ledger $Sid
+  $locator=Join-Path $ledger $name
+  Write-Record $locator @{owner=$Owner;intent=$intent;intentSha256=(Get-Digest $intent)}
+  return $locator
+}
 function Assert-ChartHelperIdentity($Helper,$Launch,[int]$ExpectedPid,[long]$ExpectedStartedTicks,[string]$ExpectedPath,[string]$ActualHash) {
   $started=[datetime]::Parse($Helper.startedUtc).ToUniversalTime()
   if($ExpectedPid -le 0 -or $Helper.pid -ne $ExpectedPid -or $Helper.parentPid -ne $Launch.pid -or
