@@ -34,6 +34,15 @@ jobs:
           if (-not (Test-Path -LiteralPath $MsysPerl)) { throw 'Selected MSYS2 Perl absent' }
           python opennav-x/tools/test-curl-test-host.py --evidence opennav-x/evidence/local/curl-test-host --native-perl $env:SKAGER_NATIVE_PERL --msys-perl $MsysPerl
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+      - name: Verify MSYS certificate generation with the explicitly selected host OpenSSL
+        shell: pwsh
+        env:
+          SKAGER_MSYS_ROOT: ${{ steps.msys.outputs.msys2-location }}
+        run: |
+          $MsysPerl = Join-Path $env:SKAGER_MSYS_ROOT 'usr/bin/perl.exe'
+          $OpenSsl = (Get-Command openssl.exe -CommandType Application -ErrorAction Stop | Select-Object -First 1).Source
+          python opennav-x/tools/test-curl-msys-certificates.py --evidence opennav-x/evidence/local/curl-test-host --msys-perl $MsysPerl --openssl $OpenSsl
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         if: always()
         with:
