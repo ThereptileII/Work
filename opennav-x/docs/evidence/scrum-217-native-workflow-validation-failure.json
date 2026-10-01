@@ -1,0 +1,14 @@
+{
+  "schemaVersion": 1,
+  "status": "failed-before-jobs",
+  "sourceCommit": "94a58f817fd6bd4b9572917855ec453bba76ed6d",
+  "runId": 36897450541,
+  "runUrl": "https://github.com/ThereptileII/Work/actions/runs/36897450541",
+  "createdAt": "2026-10-01T17:10:37Z",
+  "updatedAt": "2026-10-01T17:10:37Z",
+  "jobs": 0,
+  "observation": "GitHub run API confirmed terminal failure and no jobs. The public run page annotation was inspected in the browser.",
+  "annotation": "(Line: 52, Col: 16): Unrecognized named-value: 'matrix'. Located at position 1 within expression: matrix.shell",
+  "correction": "Use separate conditionally selected steps with literal powershell and pwsh shell values; preserve both matrix entries and identical regression invocation.",
+  "scope": "No native tests ran. YAML and embedded Python parsing alone did not prove GitHub Actions expression-context validity."
+}
