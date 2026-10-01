@@ -1,0 +1,22 @@
+name: SKAGER native curl preparation diagnosis
+on:
+  push:
+    branches: [skager-curl-preparation]
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  preparation:
+    name: Diagnose pinned curl extraction on disposable native Windows
+    runs-on: windows-2022
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+      - name: Observe exact native source preparation with bounded child processes
+        run: ./opennav-x/tools/test-curl-preparation-windows.ps1 -Evidence opennav-x/evidence/local/curl-preparation
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: native-curl-preparation-${{ github.sha }}
+          path: opennav-x/evidence/local/curl-preparation
+          if-no-files-found: error

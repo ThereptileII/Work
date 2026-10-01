@@ -2,6 +2,19 @@
 
 ## Current qualification and boat cleanup — 2026-10-01
 
+The corrected frozen candidate `e9737d6bad9f3eb3db71877bce0816f59c62b0e7`
+has not qualified. Its [prototype run](https://github.com/ThereptileII/Work/actions/runs/36850600318)
+reached terminal cancellation in both native build jobs. The downloaded,
+hash-verified composition artifact shows OpenSSL completed 347 files / 4,283
+tests and zlib passed 13 tests, then curl preparation produced no configure
+output before the 180-minute job limit. This is a separate failure from the
+earlier zlib URL mismatch below. SCRUM-219 investigates the exact preparation
+boundary in a disposable native probe; no root cause or replacement acceptance
+is claimed. See [retained evidence](evidence/scrum-219-curl-preparation-stall.md).
+The full integrated candidate jobs remain separately under observation. No
+replacement was installed on the boat and obsolete copies remain intact until
+the new installation and recovery modes are known-good.
+
 The zlib source URL correction is published as
 `c85db9d308c4a0ae1bd527bb7634b559c0fdb8e6` (local
 `5957f14a26675b29950423556a9813a6faa36c10`). Its
