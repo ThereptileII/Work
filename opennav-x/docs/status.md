@@ -1,5 +1,16 @@
 # OpenNav X status — 2026-10-01
 
+## SCRUM-218 — complete native diagnostic log retained
+
+The separate read-only collector at `c42ff4c97ee71cfe84bab54873ee5dac18f15510`
+passes [run 36932209206](https://github.com/ThereptileII/Work/actions/runs/36932209206)
+and ten focused refusal/security tests. It retained all 1,738,273,051 bytes of
+the cancelled b48 prototype job's log within the explicit 2 GiB / eight-minute
+limits. The downloaded archive and uncompressed log have independently verified
+hashes and lengths. No running product job was modified or restarted. This is
+diagnostic evidence, not application acceptance; see
+[the collection record](evidence/scrum-218-complete-native-log.json).
+
 ## Replacement native qualification — 37978e
 
 The current frozen candidate is `37978e26517af810092ec2bc554b199d36a705d2`
@@ -17,8 +28,10 @@ The [prototype run](https://github.com/ThereptileII/Work/actions/runs/3692998019
 has passed its supporting checks; its two application builds remain live.
 The integrated application/security/installer gates also remain pending.
 No artifact is approved for boat deployment. The previous b48 Linux job has
-advanced past the real three-hour soak into its fixture-free build; that
-observation is not acceptance of this replacement revision. The boat remains
+completed successfully, including 146 fixture and 146 fixture-free test cases,
+the 10,800-second soak, loader checks and mode/navigation/chart fixtures. See
+[its bounded evidence review](evidence/scrum-224-b48-linux-complete.json).
+This older Linux result is not acceptance of this replacement revision. The boat remains
 unchanged and old installations are retained until a replacement is known-good.
 
 ## SCRUM-224 — native test-host producer binding verified; product gates remain open

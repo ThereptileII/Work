@@ -1,0 +1,163 @@
+{
+  "schemaVersion": 1,
+  "issue": "SCRUM-224",
+  "status": "passed",
+  "sourceCommit": "b48bf4a8f12f98c459d79aa08805141ac49e0306",
+  "upstreamCommit": "37fd0cddb7334fe489e9f18aa163977a9c5c84f7",
+  "scope": "Downloaded Linux integrated evidence for the exact older b48 candidate; development verification only",
+  "workflow": {
+    "runId": 36901026915,
+    "url": "https://github.com/ThereptileII/Work/actions/runs/36901026915",
+    "jobId": 110499931839,
+    "conclusion": "success",
+    "artifact": {
+      "localPath": "evidence/local/b48-linux-complete/artifact.zip",
+      "bytes": 19191755,
+      "sha256": "1544b051776c5a1006bfa8ea35b997be1809fb00eb7207c0e7cde40b0fecc731",
+      "zipVerified": true,
+      "id": 11197025285,
+      "zipEntriesVerified": 4245
+    }
+  },
+  "localEvidenceRoot": "evidence/local/b48-linux-complete/extracted",
+  "testReports": [
+    {
+      "file": "production-linux-tests.xml",
+      "tests": 146,
+      "failures": 0,
+      "disabled": 0,
+      "skipped": 0,
+      "seconds": 13,
+      "sha256": "c7b3278c2f4bb833578ec6ad80780b73dd7d83d40cdfa44fce7751c0f16e0152"
+    },
+    {
+      "file": "xnav-linux-tests.xml",
+      "tests": 146,
+      "failures": 0,
+      "disabled": 0,
+      "skipped": 0,
+      "seconds": 13,
+      "sha256": "34fcc0c309471b724ff7a735c72cb476025d21313311d008557ac8194a2f0358"
+    }
+  ],
+  "fixtureFreeLoader": {
+    "file": "installer-loader-selftest.json",
+    "status": "passed",
+    "checks": 5,
+    "pluginsLoaded": false,
+    "testFixtures": false,
+    "profileInitialized": false,
+    "normalConfigDirectory": "/etc",
+    "resourcesPresent": [
+      "gshhs/poly-c-1.dat",
+      "s57data/s57objectclasses.csv",
+      "uidata/styles.xml",
+      "s57data/chartsymbols.xml"
+    ],
+    "hardwareOutputPolicy": "status-only",
+    "sha256": "38a26b9a70a495807e5f9eed1916de292ec36321bc32ca9bc8eae11b3c109b0e"
+  },
+  "installedResourceRuntime": {
+    "file": "installed-resource-runtime/result.json",
+    "status": "passed",
+    "phases": {
+      "--xnav": {
+        "tides": 2,
+        "removedPriorGeneration": false
+      },
+      "--legacy": {
+        "tides": 2,
+        "removedPriorGeneration": true
+      },
+      "--safe-mode": {
+        "tides": 1,
+        "removedPriorGeneration": true
+      }
+    },
+    "sha256": "35baa7cd789e0da42e1f6b41dcbc00727ea3288d888d7bcc4a445edff488c3a9"
+  },
+  "modeCycle": {
+    "file": "linux-mode-cycle-results.json",
+    "result": "interaction and persistence passed; screenshot review required",
+    "persistenceStepsPassed": 5,
+    "cleanLaunches": 6,
+    "allLaunchReturnCodes": 0,
+    "sha256": "85e593015a1cdd21de0b75c3799b9ab5abd9fedd5a8e1059fff9ee7425de1bed"
+  },
+  "navigation": {
+    "file": "navigation-input-results.json",
+    "authority": "Linux development",
+    "fixture": "Synthetic NMEA over loopback; no external devices or production profile",
+    "result": "loopback transport and lifecycle passed; numeric and stale screenshot review required",
+    "sent": {
+      "rmc": 26,
+      "gga": 47,
+      "ais": 0
+    },
+    "transportErrors": [],
+    "statesExercised": [
+      "Unavailable",
+      "Current",
+      "Stale COG",
+      "Stale position"
+    ],
+    "sha256": "119ea34e6a78ceca7bf4daee9907fbe730b9e126b4118dc1d278c384694f65c2"
+  },
+  "routeProgress": {
+    "file": "route-progress-results.json",
+    "result": "passed",
+    "checks": 26,
+    "fixture": "Synthetic loopback position and test routes; no device output",
+    "sha256": "0aa42b6d50b741459aa198bcb7d9f068cfc9e5e74265534342722dddeba190e4"
+  },
+  "charts": {
+    "file": "charts-results.json",
+    "result": "passed; native screenshot review and physical GPU gate remain separate",
+    "authority": "Linux development",
+    "scope": "Disposable rendering fixture; not redistributed as a navigation product",
+    "renderingPhases": [
+      "software",
+      "OpenGL"
+    ],
+    "quiltEntries": 2,
+    "screenshots": 20,
+    "sha256": "bc6e8f09968a18860d91a87582ad5bc14630dee45fa8f1767491a8b2133a1cbd"
+  },
+  "soak": {
+    "file": "soak/results.json",
+    "status": "passed",
+    "requestedSeconds": 10800,
+    "elapsedSeconds": 10800.055435688999,
+    "samples": 1080,
+    "uiActions": 540,
+    "dropouts": {
+      "stale": 45,
+      "unavailable": 45
+    },
+    "recoveries": 90,
+    "routeProgressSamples": 765,
+    "maximumPageObservationSeconds": 1.355546968001363,
+    "uiObservationLimitSeconds": 8,
+    "cpuPercentOneCore": 3.4478574591433615,
+    "resourceGrowth": {
+      "residentBytes": -1492992,
+      "handles": 0,
+      "threads": 0
+    },
+    "scope": "Actual process, DEMO vessel/route/AIS, software chart; no hardware commands",
+    "sha256": "e7f8ce4d6d10ec8cbe4f979a0513b1409f7fe2526404530c7bfbfab57da823e9"
+  },
+  "userFlows": {
+    "file": "user-flows-results.json",
+    "checks": 8,
+    "result": "passed; native screenshots require review",
+    "sha256": "b8658784a5bc412b5a9256cab0c5f5b6438f9e1e6f88725047e85e5f2c09d73a"
+  },
+  "limitations": [
+    "Linux development evidence only; it does not establish Windows UI, DPI, installer or release acceptance.",
+    "Navigation and route tests use synthetic loopback; the soak uses DEMO data; no physical device output or underway acceptance is established.",
+    "Chart testing uses a disposable rendering fixture; native screenshot review and the physical GPU gate remain separate.",
+    "Several results explicitly require screenshot review; this record does not claim those visual reviews were completed.",
+    "All results apply only to source commit b48bf4a8f12f98c459d79aa08805141ac49e0306 and do not qualify or transfer to newer commit 37978e26517af810092ec2bc554b199d36a705d2."
+  ]
+}

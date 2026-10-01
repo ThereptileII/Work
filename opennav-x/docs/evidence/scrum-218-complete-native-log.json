@@ -1,0 +1,62 @@
+{
+  "schemaVersion": 1,
+  "issue": "SCRUM-218",
+  "collectorCommit": "c42ff4c97ee71cfe84bab54873ee5dac18f15510",
+  "localCommit": "6b14f997b8107e5972bac1bd8674284a986ff1e9",
+  "collectorRun": 36932209206,
+  "collectorJob": 110604055259,
+  "collectorConclusion": "success",
+  "artifact": {
+    "id": 11196546895,
+    "bytes": 121995726,
+    "sha256": "be0be24b8b40e56e07ab487dfad63bffc14bb454d1a811b5fe50dc4ae6f9c63f",
+    "zipEntriesVerified": 3
+  },
+  "collection": {
+    "bytesCollected": 1738273051,
+    "collected": 1,
+    "headSha": "b48bf4a8f12f98c459d79aa08805141ac49e0306",
+    "jobs": [
+      {
+        "headSha": "b48bf4a8f12f98c459d79aa08805141ac49e0306",
+        "jobCompletedAt": "2026-10-01T20:41:19Z",
+        "jobConclusion": "cancelled",
+        "jobId": 110499936978,
+        "log": {
+          "bytes": 1738273051,
+          "path": "job.log",
+          "sha256": "492e073a0bf144169e4dd08ce876f2286b5173d47939d94185f2eb6637749496"
+        },
+        "runAttempt": 1,
+        "runId": 36901029053,
+        "status": "collected"
+      }
+    ],
+    "maxBytes": 2147483648,
+    "repository": "ThereptileII/Work",
+    "schemaVersion": 1
+  },
+  "offlineTestsPassed": 10,
+  "verification": [
+    "Exact repository, run, job and head identity checked before download",
+    "Terminal source job required; source cancellation remains cancellation",
+    "2 GiB aggregate limit and 8-minute hard deadline",
+    "Complete Content-Length and independently verified raw-file SHA-256",
+    "Fresh download requests do not forward the GitHub API credential",
+    "One-byte credential and signed-query splits refuse; incomplete files are not uploaded",
+    "All archive entry CRCs and downloaded archive SHA-256 verified locally"
+  ],
+  "diagnosis": "Complete log includes the final cancelled-job cleanup and retained prior failure evidence; it does not convert the cancelled application job into a pass.",
+  "limitations": [
+    "Read-only diagnostics only, no product qualification",
+    "First live target is the completed b48 prototype job, not the currently running replacement candidate",
+    "No job cancelled or restarted; no boat access",
+    "Collector artifact retained for seven days; committed record retains hashes and run identity"
+  ],
+  "observedFailure": {
+    "line14326": "2026-10-01T18:22:38.0663916Z: exec is not recognized as an internal or external command",
+    "line14374": "2026-10-01T18:22:53.1137577Z: RUN failed to start the HTTP server",
+    "lastLogTimestamp": "2026-10-01T20:41:18.4831681Z",
+    "scope": "Confirms the already diagnosed SCRUM-224 Windows test-host failure; no new failure inferred."
+  }
+}
