@@ -1,0 +1,119 @@
+{
+  "scope": "Focused Linux development verification; not exact release or Windows/boat acceptance",
+  "implementationCommit": "8a938eccfe8ca05392d6ebe5e404ad1f702a76e5",
+  "testAndDocsCommit": "54ebb26340527e3b531999d8dfaa3a0b50544f52",
+  "upstreamCommit": "37fd0cddb7334fe489e9f18aa163977a9c5c84f7",
+  "upstreamNinePatchesVerified": true,
+  "buildSteps": 685,
+  "build": "passed",
+  "install": "passed",
+  "userFlowChecks": [
+    "Touch chart orientation toggles upstream North/Course state and restores North",
+    "Chart card dismisses by outside pointer press and Escape without changing navigation",
+    "Chart context saves copied chart position; selected waypoint Go To uses real selected GPS and upstream route progress; stop deactivates",
+    "Draft actions have full-width touch labels without changing chart or data-rail viewport",
+    "Three chart taps, Undo, naming Cancel retaining draft, and named Save open the real route detail",
+    "Native draft Undo disabled with zero/one point, enabled with two, disabled after undo to one, and usable again after another point",
+    "Whole-route Cancel discards only the unfinished new route and resets native creation state",
+    "Read-only navobj.db audit proves two-point saved route, no cancelled draft, original waypoint identity and clicked position preserved"
+  ],
+  "fieldBounds": [
+    {
+      "height": 48,
+      "y": 354,
+      "visible": true,
+      "width": 488,
+      "accessible_name": "Name",
+      "x": 396,
+      "label": "Field: Name",
+      "enabled": true
+    },
+    {
+      "height": 48,
+      "y": 304,
+      "visible": true,
+      "width": 488,
+      "accessible_name": "Name",
+      "x": 396,
+      "label": "Field: Name",
+      "enabled": true
+    }
+  ],
+  "database": {
+    "saved_routes": 1,
+    "saved_route_points": 2,
+    "original_waypoint_preserved": true,
+    "waypoint_is_clicked_position_not_view_center": true
+  },
+  "gpsBatches": 256,
+  "transportErrors": [],
+  "executable": {
+    "bytes": 25461560,
+    "sha256": "3e926787e9c345eed75ad8b01518db795d3657e0b0b3115e6adf3a4b20918800"
+  },
+  "evidence": {
+    "touch-integration/configure.log": {
+      "bytes": 7306,
+      "sha256": "6700c3e084fae15dae824b5981b950e1c677285b93e7d922a38e01a8a036b215"
+    },
+    "touch-integration/build.log": {
+      "bytes": 68513,
+      "sha256": "0fd1b4defce5657fdb8bb8625aaebe1bc4fdf6f027fc766c5ef11ee4fb11d4a8"
+    },
+    "touch-integration/install.log": {
+      "bytes": 123246,
+      "sha256": "50d5214086c8736a06d879cd946655f34913f06618ded076559d24bb7c740651"
+    },
+    "touch-integration/smoke.log": {
+      "bytes": 92,
+      "sha256": "8480b466416146cf8a4e4d3da0ec2b46155ea5942b6e9d4193af5d531c9d4d1c"
+    },
+    "user-flows-results.json": {
+      "bytes": 32151,
+      "sha256": "6f52d0a373a1c1a46c9778dd09e967932c9841c4baa4bbad08e8f7193b8313e9"
+    },
+    "flow-00-course-up-linux.png": {
+      "bytes": 73972,
+      "sha256": "e276f5c1608853f514882700a3ccf4e0cb149cf46e0bcf09a9e60df8ffee735a"
+    },
+    "flow-01-navigation-linux.png": {
+      "bytes": 95872,
+      "sha256": "8eb10a7076e7c8b5630a5b09fb5f69350ef0aa523216099369337204ae568d11"
+    },
+    "flow-02-chart-context-linux.png": {
+      "bytes": 89421,
+      "sha256": "f506bb6c34f04e5354f8972d64561178ed9f7da26a5f4b50d62edf1f9db2ceed"
+    },
+    "flow-02b-waypoint-sheet-linux.png": {
+      "bytes": 88740,
+      "sha256": "b032ad3e31107a6047d7e705c823bc476bb9ad87fe36799c25cd5a13a5921132"
+    },
+    "flow-03-waypoint-linux.png": {
+      "bytes": 55522,
+      "sha256": "9c35d9115a2a58a06c225e3ca463ea1bb3e4934ced5bbbb3e13257883008b599"
+    },
+    "flow-04-go-to-linux.png": {
+      "bytes": 82133,
+      "sha256": "e7e8c6b02cfcc90ea65a959b10d77942620a94afd87da8a68f5c69bdb9110792"
+    },
+    "flow-05-route-name-linux.png": {
+      "bytes": 90106,
+      "sha256": "df1db8bb2af10a1aff9ccdd8f76c802c269a676476bd534711069be72f1282cd"
+    },
+    "flow-06-saved-route-linux.png": {
+      "bytes": 71168,
+      "sha256": "a9e1afc25eed7874324b3d75006e096178953f343df8ef85e39d8fa8389b8431"
+    },
+    "flow-07-preserved-route-linux.png": {
+      "bytes": 71105,
+      "sha256": "e844ede97cf72b36d0c1d4f94d59bb5c17bf9e850b3b9afa0a7171115923ae6f"
+    }
+  },
+  "reviewedScreenshots": [
+    "flow-02b-waypoint-sheet-linux.png",
+    "flow-03-waypoint-linux.png",
+    "flow-05-route-name-linux.png",
+    "flow-06-saved-route-linux.png"
+  ],
+  "review": "Name input and Save/Cancel visible within 1280x800; coastline present under editor; saved waypoint and route detail render. Linux fonts and older branding do not establish prototype or Windows visual acceptance."
+}

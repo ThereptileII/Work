@@ -1,0 +1,80 @@
+{
+  "schemaVersion": 1,
+  "issue": "SCRUM-221",
+  "status": "passed",
+  "scope": "isolated native Windows curl certificate-generator probe",
+  "sourceCommit": "ded9bab3e4ae1600418846989e17ecddee337f2f",
+  "workflowRun": {
+    "runId": "36891804473",
+    "jobId": "110468992463",
+    "url": "https://github.com/ThereptileII/Work/actions/runs/36891804473"
+  },
+  "artifact": {
+    "localPath": "evidence/local/native-certificate-pass-36891804473/artifact.zip",
+    "bytes": 8543,
+    "sha256": "4ca753b281a1a302a652c9d53c564ab2444d2d68e95e0678be4ba614064bfedf",
+    "verified": true,
+    "id": 11177430404
+  },
+  "curlSource": {
+    "version": "8.22.0",
+    "bytes": 2953092,
+    "sha256": "f7ef3ae8a22e521f289803fe93543eb64c329b58aa73a9e224dfd915a2a5f4f7",
+    "originalGeneratorSha256": "d737cbe77e23e275b4fcfcec36e62d49d1d59d9d9fd0013a428b7143ee75c982",
+    "patchedGeneratorSha256": "4c176ec6a1556f519d6c0c02d17c40caadb9a542894fedc9f2055b7a48ce9ab3",
+    "patchHelperSha256": "499f27be5a3ed25a15d82d1cf9e3338257ae26dc7beb9f674dde6c13cffcc771"
+  },
+  "originalGenerator": {
+    "expectedLookupFailure": true,
+    "exitCode": 2,
+    "reason": "Windows PATH lookup requests openssl without the .exe suffix"
+  },
+  "patchedGenerator": {
+    "exitCode": 0,
+    "elapsedMs": 717,
+    "patchRegressionTests": {
+      "passed": 5,
+      "failed": 0
+    },
+    "generatedFiles": {
+      "test-ca.cacert": {
+        "bytes": 3289,
+        "sha256": "d0a57b7f21cdd5564de5e38444f98804f5bdafb4d12c0fea62a92ae49bab0ee6"
+      },
+      "test-ca.key": {
+        "bytes": 246,
+        "sha256": "b625501161239a4e8e85788f6f5a773feafebd2c05b2bb734fa602dc6ad5fe6e"
+      },
+      "test-localhost.crt": {
+        "bytes": 1038,
+        "sha256": "ff1d9add8fd76fd218ab4cbc9403e6789babfb17b57cdb5528bdbef1af1a3f55"
+      },
+      "test-localhost.key": {
+        "bytes": 246,
+        "sha256": "b15997c2f131f66715cfa9c706125e4d7c5009db08b9096485c0a8fd1738cc13"
+      }
+    },
+    "checks": {
+      "caCertificateParse": "passed",
+      "hostCertificateParse": "passed",
+      "hostPrivateKeyParse": "passed",
+      "certificateChainVerification": "passed"
+    }
+  },
+  "testTool": {
+    "path": "C:\\Program Files\\OpenSSL\\bin\\openssl.exe",
+    "version": "OpenSSL 3.6.4 25 Aug 2026",
+    "sha256": "670bf9086a4f553dac14646091713614fc5ec47b94f4725023b1cf6af7838fe0",
+    "pinnedProducerOpenSSL": false
+  },
+  "correspondingSourceReproduction": {
+    "status": "passed",
+    "test": "tools/test-curl-patch-source-package.py",
+    "curlArchiveSha256": "f7ef3ae8a22e521f289803fe93543eb64c329b58aa73a9e224dfd915a2a5f4f7"
+  },
+  "limits": [
+    "This probe uses host OpenSSL 3.6.4, not the pinned OpenSSL 3.5.9 producer binary.",
+    "It does not qualify the full curl build or complete upstream curl test suite.",
+    "It does not qualify application integration, packaging, or boat acceptance."
+  ]
+}

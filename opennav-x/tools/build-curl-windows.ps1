@@ -2,7 +2,8 @@ param(
     [Parameter(Mandatory=$true)][string]$IntegrationSource,
     [Parameter(Mandatory=$true)][string]$OpenSslPrefix,
     [Parameter(Mandatory=$true)][string]$ZlibPrefix,
-    [Parameter(Mandatory=$true)][string]$ZlibManifest
+    [Parameter(Mandatory=$true)][string]$ZlibManifest,
+    [switch]$VerifyToolFactsOnly
 )
 $ErrorActionPreference = 'Stop'
 Set-StrictMode -Version Latest
@@ -10,8 +11,10 @@ Set-StrictMode -Version Latest
 $Root = Split-Path $PSScriptRoot -Parent
 $Evidence = Join-Path $Root 'evidence/local'
 $NativeLog = Join-Path $Evidence 'windows-curl-native-output.log'
-$null = New-Item -ItemType Directory -Force -Path $Evidence
-Set-Content -LiteralPath $NativeLog -Value '' -Encoding UTF8
+if (-not $VerifyToolFactsOnly) {
+    $null = New-Item -ItemType Directory -Force -Path $Evidence
+    Set-Content -LiteralPath $NativeLog -Value '' -Encoding UTF8
+}
 $LockPath = Join-Path $PSScriptRoot 'windows-curl.lock.json'
 $Lock = Get-Content -LiteralPath $LockPath -Raw | ConvertFrom-Json
 if ($Lock.version -cne '8.22.0' -or $Lock.configuration -cne 'Win32 shared OpenSSL' -or
@@ -43,12 +46,12 @@ function Assert-Record([object]$Record,[string]$Path,[string]$Label) {
         throw "$Label differs from its verified manifest"
     }
 }
-function Assert-Win32Dll([string]$Path) {
+function Assert-Win32Image([string]$Path) {
     $Bytes = [IO.File]::ReadAllBytes($Path)
     if ($Bytes.Length -lt 64 -or $Bytes[0] -ne 0x4d -or $Bytes[1] -ne 0x5a) { throw "Not a PE DLL: $Path" }
     $Pe = [BitConverter]::ToInt32($Bytes,0x3c)
     if ($Pe -lt 0 -or $Pe + 6 -gt $Bytes.Length -or [BitConverter]::ToUInt32($Bytes,$Pe) -ne 0x00004550 -or
-        [BitConverter]::ToUInt16($Bytes,$Pe + 4) -ne 0x014c) { throw "curl DLL is not Win32/x86: $Path" }
+        [BitConverter]::ToUInt16($Bytes,$Pe + 4) -ne 0x014c) { throw "curl dependency image is not Win32/x86: $Path" }
 }
 function Invoke-Checked([string]$Program,[string[]]$Arguments) {
     & $Program @Arguments 2>&1 | Tee-Object -FilePath $NativeLog -Append
@@ -78,13 +81,25 @@ $OpenSslSslLib = Resolve-File (Join-Path $OpenSslPrefix 'lib/libssl.lib') 'OpenS
 $OpenSslCryptoLib = Resolve-File (Join-Path $OpenSslPrefix 'lib/libcrypto.lib') 'OpenSSL crypto import library'
 $OpenSslSslDll = Resolve-File (Join-Path $OpenSslPrefix 'bin/libssl-3.dll') 'OpenSSL SSL DLL'
 $OpenSslCryptoDll = Resolve-File (Join-Path $OpenSslPrefix 'bin/libcrypto-3.dll') 'OpenSSL crypto DLL'
+$OpenSslExe = Resolve-File (Join-Path $OpenSslPrefix 'bin/openssl.exe') 'OpenSSL certificate tool'
 Assert-Record $OpenSslManifest.outputs.'include/openssl/opensslv.h' $OpenSslHeader 'OpenSSL version header'
 Assert-Record $OpenSslManifest.outputs.'lib/libssl.lib' $OpenSslSslLib 'OpenSSL SSL import library'
 Assert-Record $OpenSslManifest.outputs.'lib/libcrypto.lib' $OpenSslCryptoLib 'OpenSSL crypto import library'
 Assert-Record $OpenSslManifest.outputs.'bin/libssl-3.dll' $OpenSslSslDll 'OpenSSL SSL DLL'
 Assert-Record $OpenSslManifest.outputs.'bin/libcrypto-3.dll' $OpenSslCryptoDll 'OpenSSL crypto DLL'
-Assert-Win32Dll $OpenSslSslDll
-Assert-Win32Dll $OpenSslCryptoDll
+Assert-Record $OpenSslManifest.outputs.'bin/openssl.exe' $OpenSslExe 'OpenSSL certificate tool'
+Assert-Win32Image $OpenSslSslDll
+Assert-Win32Image $OpenSslCryptoDll
+Assert-Win32Image $OpenSslExe
+$OpenSslToolVersion = & $OpenSslExe version -a 2>&1 | Out-String
+if ($LASTEXITCODE -ne 0 -or $OpenSslToolVersion -notmatch '(?m)^OpenSSL 3\.5\.9\b' -or
+    $OpenSslToolVersion.Trim() -cne $OpenSslManifest.versionOutput) {
+    throw 'Pinned OpenSSL certificate tool differs from the verified producer version output'
+}
+$OpenSslToolRecord = [ordered]@{
+    path=$OpenSslExe; sha256=Digest $OpenSslExe; bytes=(Get-Item -LiteralPath $OpenSslExe).Length
+    versionOutput=$OpenSslToolVersion.Trim()
+}
 
 $Zlib = Get-Content -LiteralPath $ZlibManifest -Raw | ConvertFrom-Json
 $ZlibKeys = @($Zlib.PSObject.Properties.Name | Sort-Object)
@@ -116,7 +131,7 @@ foreach ($Pair in ([ordered]@{
 if (@(Compare-Object @('bin/zlib1.dll','include/zconf.h','include/zlib.h','lib/zlib1.lib') @($Zlib.outputs.PSObject.Properties.Name | Sort-Object)).Count) {
     throw 'zlib output inventory has an unsupported path'
 }
-Assert-Win32Dll $ZlibDll
+Assert-Win32Image $ZlibDll
 
 $BuildRoot = Join-Path $Root "build/windows-curl-$($Lock.version)"
 $Downloads = Join-Path $Root 'build/dependency-downloads'
@@ -124,8 +139,11 @@ $Archive = Join-Path $Downloads $Lock.archive
 $Source = Join-Path $BuildRoot "curl-$($Lock.version)"
 $Build = Join-Path $BuildRoot 'build'
 $Prefix = Join-Path $BuildRoot 'install'
-$null = New-Item -ItemType Directory -Force -Path $Downloads,$BuildRoot,$Evidence
+if (-not $VerifyToolFactsOnly) {
+    $null = New-Item -ItemType Directory -Force -Path $Downloads,$BuildRoot,$Evidence
+}
 if (-not (Test-Path -LiteralPath $Archive -PathType Leaf) -or (Digest $Archive) -cne $Lock.sha256) {
+    if ($VerifyToolFactsOnly) { throw 'Verified curl archive unavailable for tool-facts reprobe' }
     Invoke-Checked curl.exe @('--fail','--location','--silent','--show-error','--retry','3','--retry-all-errors',
         '--connect-timeout','20','--max-time','300','--output',$Archive,$Lock.url)
 }
@@ -142,10 +160,23 @@ $DumpbinCandidates = @(Get-ChildItem -LiteralPath (Join-Path $VisualStudio 'VC/T
     Where-Object { Test-Path -LiteralPath $_ -PathType Leaf })
 if (-not $DumpbinCandidates.Count) { throw 'MSVC Win32 dumpbin missing' }
 $Dumpbin = $DumpbinCandidates[0]
+$ToolFacts = Resolve-File (Join-Path $PSScriptRoot 'windows-native-tool-facts.ps1') 'Native tool-facts helper'
+$CMakeFactsInclude = Resolve-File (Join-Path $PSScriptRoot 'windows-native-tool-facts.cmake') 'Native CMake tool-facts include'
+$Facts = Join-Path $Evidence 'windows-curl-parent-tool-facts.json'
 foreach ($Tool in @('cmake.exe','perl.exe')) {
     if (-not (Get-Command $Tool -CommandType Application -ErrorAction SilentlyContinue)) { throw "curl build prerequisite missing: $Tool" }
 }
 $CMake = (Get-Command cmake.exe -CommandType Application -ErrorAction Stop | Select-Object -First 1).Source
+if ($VerifyToolFactsOnly) {
+    # Normal curl capture occurs after configure with these dependency DLL
+    # directories prepended. Recreate that build PATH before live reprobe.
+    $env:PATH = "$(Join-Path $Build 'lib/Release');$(Join-Path $OpenSslPrefix 'bin');$(Join-Path $ZlibPrefix 'bin');$env:PATH"
+    & $ToolFacts -Mode Verify -Kind curl-parent -Output $Facts -ProducerScript $PSCommandPath `
+        -Vswhere $Vswhere -VisualStudio $VisualStudio -Dumpbin $Dumpbin `
+        -CMakeCache (Join-Path $Build 'CMakeCache.txt') -CMakeHookFacts (Join-Path $Build 'xnav-native-cmake-tools.txt')
+    Write-Output 'Reprobed captured curl build-environment tool facts'
+    return
+}
 $ZlibImports = & $Dumpbin /DEPENDENTS $ZlibDll 2>&1 | Tee-Object -FilePath $NativeLog -Append | Out-String
 if ($LASTEXITCODE -ne 0 -or $ZlibImports -notmatch '(?im)^\s*VCRUNTIME140[^\s]*\.dll\s*$' -or
     $ZlibImports -notmatch '(?im)^\s*(?:api-ms-win-crt-[^\s]+|ucrtbase)\.dll\s*$') {
@@ -160,9 +191,60 @@ Add-Content -LiteralPath $NativeLog -Value "curl source extraction passed: $([Da
 if (-not (Test-Path -LiteralPath (Join-Path $Source 'CMakeLists.txt') -PathType Leaf)) {
     throw 'Verified curl archive did not extract the expected source root'
 }
+$PatchHelper = Resolve-File (Join-Path $PSScriptRoot 'patch-curl-test-openssl.py') 'Reviewed curl certificate-tool patch'
+$GenServ = Resolve-File (Join-Path $Source 'tests/certs/genserv.pl') 'Locked curl certificate generator'
+$HostCertConfig = Resolve-File (Join-Path $Source 'tests/certs/test-localhost.prm') 'Locked curl localhost certificate config'
+$PatchEvidence = Join-Path $Evidence 'windows-curl-certificate-patch.json'
+Invoke-Checked python @($PatchHelper,'--source',$GenServ,'--evidence',$PatchEvidence)
+$Patch = Get-Content -LiteralPath $PatchEvidence -Raw | ConvertFrom-Json
+if ($Patch.source -cne 'tests/certs/genserv.pl' -or $Patch.state -cne 'patched' -or
+    $Patch.beforeSha256 -cne 'd737cbe77e23e275b4fcfcec36e62d49d1d59d9d9fd0013a428b7143ee75c982' -or
+    $Patch.afterSha256 -cne '4c176ec6a1556f519d6c0c02d17c40caadb9a542894fedc9f2055b7a48ce9ab3' -or
+    $Patch.lockedOriginalSha256 -cne $Patch.beforeSha256 -or
+    $Patch.reviewedPatchedSha256 -cne $Patch.afterSha256 -or
+    (Digest $GenServ) -cne $Patch.afterSha256) {
+    throw 'curl certificate-generator patch does not match reviewed source hashes'
+}
+$PatchRecord = [ordered]@{
+    source=$Patch.source; originalSha256=$Patch.beforeSha256
+    patchedSha256=$Patch.afterSha256; helperSha256=Digest $PatchHelper
+}
+
+# Probe actual upstream CA generation in a fresh directory before the costly
+# curl configure/build. The generator must select this verified openssl.exe,
+# and the normal upstream certificate target and TLS tests still run later.
+$ProbeDir = Join-Path $BuildRoot ("certificate-probe-$([guid]::NewGuid().ToString('N'))")
+$null = New-Item -ItemType Directory -Path $ProbeDir
+$OriginalPath = $env:PATH
+try {
+    $env:PATH = "$(Join-Path $OpenSslPrefix 'bin');$env:PATH"
+    $ResolvedTool = (Get-Command openssl.exe -CommandType Application -ErrorAction Stop | Select-Object -First 1).Source
+    if ($ResolvedTool -ine $OpenSslExe) { throw 'curl certificate probe resolved a different OpenSSL executable' }
+    Push-Location $ProbeDir
+    try {
+        Invoke-Checked perl.exe @($GenServ,'test',(Split-Path $HostCertConfig -Leaf))
+        $CaCert = Resolve-File (Join-Path $ProbeDir 'test-ca.cacert') 'Generated upstream curl CA certificate'
+        $CaKey = Resolve-File (Join-Path $ProbeDir 'test-ca.key') 'Generated upstream curl CA key'
+        $HostCert = Resolve-File (Join-Path $ProbeDir 'test-localhost.crt') 'Generated upstream curl host certificate'
+        $HostKey = Resolve-File (Join-Path $ProbeDir 'test-localhost.key') 'Generated upstream curl host key'
+        foreach ($Generated in @($CaCert,$CaKey,$HostCert,$HostKey)) {
+            if ((Get-Item -LiteralPath $Generated).Length -le 0) {
+                throw "Upstream curl certificate probe produced an empty output: $Generated"
+            }
+        }
+        Invoke-Checked $OpenSslExe @('x509','-in',$CaCert,'-noout','-subject')
+        Invoke-Checked $OpenSslExe @('verify','-CAfile',$CaCert,$HostCert)
+        Invoke-Checked $OpenSslExe @('pkey','-in',$HostKey,'-check','-noout')
+    } finally { Pop-Location }
+} finally {
+    $env:PATH = $OriginalPath
+    if (Test-Path -LiteralPath $ProbeDir) { Remove-Item -LiteralPath $ProbeDir -Recurse -Force }
+}
+Add-Content -LiteralPath $NativeLog -Value 'curl upstream certificate generation probe passed' -Encoding UTF8
 
 $Configure = @('-S',$Source,'-B',$Build,'-G','Visual Studio 17 2022','-A','Win32',
-    "-DCMAKE_INSTALL_PREFIX=$Prefix",'-DCMAKE_MSVC_RUNTIME_LIBRARY=MultiThreadedDLL',
+    "-DCMAKE_INSTALL_PREFIX=$Prefix","-DCMAKE_PROJECT_INCLUDE=$($CMakeFactsInclude.Replace('\','/'))",
+    '-DCMAKE_MSVC_RUNTIME_LIBRARY=MultiThreadedDLL',
     '-DBUILD_SHARED_LIBS=ON','-DBUILD_STATIC_LIBS=OFF','-DBUILD_CURL_EXE=ON','-DBUILD_TESTING=ON',
     '-DBUILD_EXAMPLES=OFF','-DBUILD_LIBCURL_DOCS=OFF','-DBUILD_MISC_DOCS=OFF',
     '-DCURL_USE_OPENSSL=ON','-DCURL_USE_SCHANNEL=OFF','-DCURL_STATIC_CRT=OFF','-DCURL_USE_CMAKECONFIG=OFF',
@@ -180,6 +262,9 @@ foreach ($RequiredPath in @((Join-Path $OpenSslPrefix 'include'),$OpenSslSslLib,
     if ($CacheText.Replace('\','/') -notlike "*$CmakePath*") { throw "CMake did not bind the explicit dependency path: $RequiredPath" }
 }
 $env:PATH = "$(Join-Path $Build 'lib/Release');$(Join-Path $OpenSslPrefix 'bin');$(Join-Path $ZlibPrefix 'bin');$env:PATH"
+& $ToolFacts -Mode Capture -Kind curl-parent -Output $Facts -ProducerScript $PSCommandPath `
+    -Vswhere $Vswhere -VisualStudio $VisualStudio -Dumpbin $Dumpbin `
+    -CMakeCache (Join-Path $Build 'CMakeCache.txt') -CMakeHookFacts (Join-Path $Build 'xnav-native-cmake-tools.txt')
 Invoke-Checked cmake.exe @('--build',$Build,'--config','Release','--parallel','2')
 Invoke-Checked cmake.exe @('--build',$Build,'--config','Release','--target','tests','--parallel','2')
 $NativeText = Get-Content -LiteralPath $NativeLog -Raw
@@ -192,11 +277,14 @@ if ($TestsReported -le 0 -or $TestsPassed -ne $TestsReported) {
     throw "curl upstream tests did not execute and pass a nonzero set: $TestsPassed/$TestsReported"
 }
 Invoke-Checked cmake.exe @('--install',$Build,'--config','Release')
+& $ToolFacts -Mode Verify -Kind curl-parent -Output $Facts -ProducerScript $PSCommandPath `
+    -Vswhere $Vswhere -VisualStudio $VisualStudio -Dumpbin $Dumpbin `
+    -CMakeCache (Join-Path $Build 'CMakeCache.txt') -CMakeHookFacts (Join-Path $Build 'xnav-native-cmake-tools.txt')
 
 $CurlDll = Resolve-File (Join-Path $Prefix 'bin/libcurl.dll') 'curl DLL'
 $CurlImport = Resolve-File (Join-Path $Prefix 'lib/libcurl.lib') 'curl import library'
 $CurlExe = Resolve-File (Join-Path $Prefix 'bin/curl.exe') 'curl version probe'
-Assert-Win32Dll $CurlDll
+Assert-Win32Image $CurlDll
 $Project = Resolve-File (Join-Path $Build 'lib/libcurl_shared.vcxproj') 'generated libcurl MSBuild project'
 $ProjectXml = [xml](Get-Content -LiteralPath $Project -Raw)
 $ReleaseGroups = @($ProjectXml.Project.ItemDefinitionGroup | Where-Object { $_.Condition -match "Release\|Win32" })
@@ -255,7 +343,7 @@ $Manifest = [ordered]@{
         openssl=[ordered]@{version=$OpenSslManifest.version; manifestSha256=Digest $OpenSslManifestPath; prefix=$OpenSslPrefix}
         zlib=[ordered]@{version=$Zlib.version; manifestSha256=Digest $ZlibManifest; prefix=$ZlibPrefix}
     }
-    options=$Configure; buildSteps=[ordered]@{configure='passed'; compile='passed'; test='passed'; install='passed'; testTarget='tests'; testsPassed=$TestsPassed; testsReported=$TestsReported; log='evidence/local/windows-curl-native-output.log'; logSha256=Digest $NativeLog}
+    options=$Configure; buildSteps=[ordered]@{configure='passed'; compile='passed'; test='passed'; install='passed'; testTarget='tests'; testsPassed=$TestsPassed; testsReported=$TestsReported; certificatePatch=$PatchRecord; certificateTool=$OpenSslToolRecord; certificateProbe='passed'; log='evidence/local/windows-curl-native-output.log'; logSha256=Digest $NativeLog}
     versionOutput=$VersionOutput.Trim(); importOutput=$Imports.Trim(); outputs=$Outputs; cacheBuildwin=$Mappings
 }
 $Json = $Manifest | ConvertTo-Json -Depth 10

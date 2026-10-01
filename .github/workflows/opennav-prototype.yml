@@ -139,6 +139,13 @@ jobs:
           $env:PATH = (Resolve-Path opennav-x/build/production-install).Path + ";" + $env:PATH
           python opennav-x/tools/prototype/capture-horizon-component.py --reference opennav-x/evidence/local/footer-reference --client opennav-x/build/production-windows/Release/horizon_test.exe --output opennav-x/evidence/local/horizon-component
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+      - name: Native waypoint sheet touch geometry at display scales
+        run: |
+          cmake --build opennav-x/build/production-windows --config Release --target sheet_field_size_test --parallel 2
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          $env:PATH = (Resolve-Path opennav-x/build/production-install).Path + ";" + $env:PATH
+          python -c "import subprocess; subprocess.run(['opennav-x/build/production-windows/Release/sheet_field_size_test.exe'], check=True, timeout=30)"
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
       - name: Native unavailable radar presentation and disabled-control checks
         run: |
           $env:PATH = (Resolve-Path opennav-x/build/production-install).Path + ";" + $env:PATH

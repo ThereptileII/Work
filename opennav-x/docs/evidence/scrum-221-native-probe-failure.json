@@ -1,0 +1,218 @@
+{
+  "sourceCommit": "d7000af44ba4da0bda6ca4bac58c82cc51d9452f",
+  "run": 36886471275,
+  "job": 110450954577,
+  "artifact": 11174852933,
+  "artifactBytes": 5495,
+  "artifactSha256": "b21c936333c5998a4a06c2f60faa1a93c6d8988485a1ea0fcbf101335d5355fd",
+  "result": "failed",
+  "observedFailure": "Owned genserv-patched output streams did not close within 10 seconds",
+  "hostTestOpenSsl": "OpenSSL 3.6.4 25 Aug 2026 (Library: OpenSSL 3.6.4 25 Aug 2026)",
+  "stages": [
+    {
+      "stage": "context",
+      "event": "begin",
+      "elapsedMs": null,
+      "exitCode": null
+    },
+    {
+      "stage": "tools",
+      "event": "selected",
+      "elapsedMs": null,
+      "exitCode": null
+    },
+    {
+      "stage": "host-openssl-version",
+      "event": "before-start",
+      "elapsedMs": null,
+      "exitCode": null
+    },
+    {
+      "stage": "host-openssl-version",
+      "event": "started",
+      "elapsedMs": null,
+      "exitCode": null
+    },
+    {
+      "stage": "host-openssl-version",
+      "event": "finished",
+      "elapsedMs": 2042,
+      "exitCode": 0
+    },
+    {
+      "stage": "curl-download",
+      "event": "before-start",
+      "elapsedMs": null,
+      "exitCode": null
+    },
+    {
+      "stage": "curl-download",
+      "event": "started",
+      "elapsedMs": null,
+      "exitCode": null
+    },
+    {
+      "stage": "curl-download",
+      "event": "finished",
+      "elapsedMs": 343,
+      "exitCode": 0
+    },
+    {
+      "stage": "archive",
+      "event": "verified",
+      "elapsedMs": null,
+      "exitCode": null
+    },
+    {
+      "stage": "cmake-extract",
+      "event": "before-start",
+      "elapsedMs": null,
+      "exitCode": null
+    },
+    {
+      "stage": "cmake-extract",
+      "event": "started",
+      "elapsedMs": null,
+      "exitCode": null
+    },
+    {
+      "stage": "cmake-extract",
+      "event": "finished",
+      "elapsedMs": 875,
+      "exitCode": 0
+    },
+    {
+      "stage": "genserv-original",
+      "event": "before-start",
+      "elapsedMs": null,
+      "exitCode": null
+    },
+    {
+      "stage": "genserv-original",
+      "event": "started",
+      "elapsedMs": null,
+      "exitCode": null
+    },
+    {
+      "stage": "genserv-original",
+      "event": "finished",
+      "elapsedMs": 1820,
+      "exitCode": 2
+    },
+    {
+      "stage": "original-generator",
+      "event": "expected-lookup-failure",
+      "elapsedMs": null,
+      "exitCode": 2
+    },
+    {
+      "stage": "patch-genserv",
+      "event": "before-start",
+      "elapsedMs": null,
+      "exitCode": null
+    },
+    {
+      "stage": "patch-genserv",
+      "event": "started",
+      "elapsedMs": null,
+      "exitCode": null
+    },
+    {
+      "stage": "patch-genserv",
+      "event": "finished",
+      "elapsedMs": 1328,
+      "exitCode": 0
+    },
+    {
+      "stage": "test-source",
+      "event": "patched",
+      "elapsedMs": null,
+      "exitCode": null
+    },
+    {
+      "stage": "genserv-patched",
+      "event": "before-start",
+      "elapsedMs": null,
+      "exitCode": null
+    },
+    {
+      "stage": "genserv-patched",
+      "event": "started",
+      "elapsedMs": null,
+      "exitCode": null
+    },
+    {
+      "stage": "genserv-patched",
+      "event": "deadline",
+      "elapsedMs": 179987,
+      "exitCode": null
+    },
+    {
+      "stage": "genserv-patched",
+      "event": "stream-drain-timeout",
+      "elapsedMs": 189993,
+      "exitCode": null
+    },
+    {
+      "stage": "probe",
+      "event": "failed",
+      "elapsedMs": null,
+      "exitCode": null
+    }
+  ],
+  "knownHarnessDefect": "Selected localhost without prefix; pinned Makefile.inc names test-localhost.prm. No inference that this explains the timeout.",
+  "files": {
+    "cmake-extract.stderr.txt": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "cmake-extract.stdout.txt": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "curl-download.stderr.txt": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "curl-download.stdout.txt": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "genserv-original.stderr.txt": {
+      "bytes": 348,
+      "sha256": "c632fe72ba1c482b613329a4b3a5c1a903dbfd0cfa3bb02a750f13f8bca126d4"
+    },
+    "genserv-original.stdout.txt": {
+      "bytes": 22,
+      "sha256": "4cd2a5538674504275e350e6d26be528bd3a6a8089b7d1e8d2dad85750f84151"
+    },
+    "genserv-patch.json": {
+      "bytes": 399,
+      "sha256": "dfdb80ca116e09f61fa536b7d09a73a08afa3051820aba6a4fff748729552a72"
+    },
+    "host-openssl-version.stderr.txt": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "host-openssl-version.stdout.txt": {
+      "bytes": 792,
+      "sha256": "f7871bae1f334dfe1cb6398783b1daa68e5a617f98986b916e3e4cba784916e3"
+    },
+    "patch-genserv.stderr.txt": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "patch-genserv.stdout.txt": {
+      "bytes": 399,
+      "sha256": "dfdb80ca116e09f61fa536b7d09a73a08afa3051820aba6a4fff748729552a72"
+    },
+    "stages.jsonl": {
+      "bytes": 6140,
+      "sha256": "9f11675234724fe9f49d63b9d2efa7ac3f215c3199832400de1f6c719a5c3697"
+    },
+    "summary.json": {
+      "bytes": 1610,
+      "sha256": "139b229bf1d4cc4f1b99b01a6e99b7f01e04304258fc840a84ef4d1df7975a0d"
+    }
+  }
+}

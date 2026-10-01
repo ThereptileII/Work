@@ -49,7 +49,8 @@ class OpenSslPackageTests(unittest.TestCase):
             path.parent.mkdir(parents=True, exist_ok=True)
             path.write_bytes(binary)
             outputs[relative] = {'sha256': digest(binary), 'bytes': len(binary)}
-        for relative in ('include/openssl/opensslv.h', 'lib/libssl.lib', 'lib/libcrypto.lib'):
+        for relative in ('include/openssl/opensslv.h', 'lib/libssl.lib', 'lib/libcrypto.lib',
+                         'bin/openssl.exe'):
             outputs[relative] = {'sha256': digest(relative.encode()), 'bytes': len(relative)}
         self.lock = {
             'version': '3.5.9', 'configuration': 'VC-WIN32 shared',
@@ -63,7 +64,7 @@ class OpenSslPackageTests(unittest.TestCase):
         source = {key: self.lock[key] for key in (
             'url', 'archive', 'sha256', 'bytes', 'signingPrimaryFingerprint')}
         cache = {openssl_package.OPENSSL_CACHE_PATHS[relative]: {'source': relative, **record}
-                 for relative, record in outputs.items()}
+                 for relative, record in outputs.items() if relative in openssl_package.OPENSSL_CACHE_PATHS}
         self.manifest = {
             'schemaVersion': 1, 'library': 'OpenSSL', 'version': self.lock['version'],
             'configuration': self.lock['configuration'], 'architecture': 'Win32', 'abi': 'x86',
@@ -103,6 +104,12 @@ class OpenSslPackageTests(unittest.TestCase):
     def test_tampered_dll_is_refused(self):
         (self.install / 'libssl-3.dll').write_bytes(pe() + b'tampered')
         with self.assertRaisesRegex(ValueError, 'differs from'):
+            self.verify()
+
+    def test_missing_certificate_tool_output_record_is_refused(self):
+        self.manifest['outputs'].pop('bin/openssl.exe')
+        self.write_json(self.install / 'openssl-build.json', self.manifest)
+        with self.assertRaisesRegex(ValueError, 'output inventory'):
             self.verify()
 
     def test_missing_dll_is_refused(self):

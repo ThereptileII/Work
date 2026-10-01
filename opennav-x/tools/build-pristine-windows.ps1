@@ -1,10 +1,14 @@
 param([ValidateSet('Win32', 'x64')][string]$Architecture = 'Win32', [switch]$Integration, [switch]$Production,
-      [switch]$PrototypeObjectFlow)
+      [switch]$PrototypeObjectFlow, [switch]$ReuseVerifiedDependencies)
 $ErrorActionPreference = 'Stop'
 Set-StrictMode -Version Latest
 $Root = Split-Path $PSScriptRoot -Parent
 $Source = Join-Path $Root 'upstream/OpenCPN'
 if ($Production -and -not $Integration) { throw 'Production requires Integration' }
+if ($ReuseVerifiedDependencies -and (-not $Production -or -not $Integration -or
+    $env:GITHUB_ACTIONS -cne 'true' -or $env:GITHUB_JOB -cne 'windows-integration')) {
+    throw 'Dependency reuse is only available to the explicit same-job CI production invocation'
+}
 if ($PrototypeObjectFlow -and (-not $Integration -or $Production -or $env:GITHUB_ACTIONS -ne 'true')) {
     throw 'The prototype-only object flow is a disposable CI development gate, not a production/release gate'
 }
@@ -71,37 +75,55 @@ try {
         # Replace the stock dependency bundle only in the disposable integrated
         # tree. Each consumer runs only after its producer manifest and output
         # records have been verified.
-        & (Join-Path $PSScriptRoot 'build-openssl-windows.ps1') -IntegrationSource $Source 2>&1 |
-            Tee-Object -FilePath (Join-Path $Evidence 'windows-openssl-native-output.log') -Append
-        if ($LASTEXITCODE -ne 0) { throw 'Pinned OpenSSL source build failed' }
-        & (Join-Path $PSScriptRoot 'build-zlib-windows.ps1') 2>&1 |
-            Tee-Object -FilePath (Join-Path $Evidence 'windows-zlib-native-output.log') -Append
-        if ($LASTEXITCODE -ne 0) { throw 'Pinned zlib source build failed' }
-
         $ZlibPrefix = Join-Path $Root 'build/windows-zlib-1.3.2/install'
         $ZlibManifestPath = Join-Path $ZlibPrefix 'zlib-build.json'
-        $ZlibManifest = Get-Content -LiteralPath $ZlibManifestPath -Raw | ConvertFrom-Json
-        $ZlibCache = Join-Path $Source 'cache/buildwin'
-        $ZlibMappings = [ordered]@{
-            'include/zlib.h' = 'include/zlib.h'
-            'include/zconf.h' = 'include/zconf.h'
-            'lib/zlib1.lib' = 'zlib1.lib'
-            'bin/zlib1.dll' = 'zlib1.dll'
-        }
-        foreach ($Mapping in $ZlibMappings.GetEnumerator()) {
-            $Produced = Join-Path $ZlibPrefix $Mapping.Key
-            Assert-ManifestRecord $ZlibManifest.outputs.($Mapping.Key) $Produced "zlib $($Mapping.Key)"
-            $Cached = Join-Path $ZlibCache $Mapping.Value
-            $null = New-Item -ItemType Directory -Force -Path (Split-Path $Cached -Parent)
-            Copy-Item -LiteralPath $Produced -Destination $Cached -Force
-            Assert-ManifestRecord $ZlibManifest.outputs.($Mapping.Key) $Cached "cached zlib $($Mapping.Value)"
-        }
-
         $OpenSslPrefix = Join-Path $Root 'build/windows-openssl-3.5.9/install'
-        & (Join-Path $PSScriptRoot 'build-curl-windows.ps1') -IntegrationSource $Source `
-            -OpenSslPrefix $OpenSslPrefix -ZlibPrefix $ZlibPrefix -ZlibManifest $ZlibManifestPath 2>&1 |
-            Tee-Object -FilePath (Join-Path $Evidence 'windows-curl-orchestration.log') -Append
-        if ($LASTEXITCODE -ne 0) { throw 'Pinned curl source build failed' }
+        if ($ReuseVerifiedDependencies) {
+            Write-Output "Same-job dependency reuse verification begin: $([DateTime]::UtcNow.ToString('o'))"
+            # The normal source/consumer and stock dependency preflights have
+            # already run. Verify immutable producer evidence before reading
+            # generated CMake tool records, then reprobe live tools in the
+            # same parent process and original producer order.
+            Run python @((Join-Path $PSScriptRoot 'windows_dependency_reuse.py'), 'verify', '--root', $Root)
+            & (Join-Path $PSScriptRoot 'build-openssl-windows.ps1') -IntegrationSource $Source -VerifyToolFactsOnly
+            & (Join-Path $PSScriptRoot 'build-zlib-windows.ps1') -VerifyToolFactsOnly
+            & (Join-Path $PSScriptRoot 'build-curl-windows.ps1') -IntegrationSource $Source `
+                -OpenSslPrefix $OpenSslPrefix -ZlibPrefix $ZlibPrefix -ZlibManifest $ZlibManifestPath `
+                -VerifyToolFactsOnly
+            # This helper rechecks the receipt/evidence and inventories every
+            # source prefix before replacing stock win_deps cache payloads.
+            Run python @((Join-Path $PSScriptRoot 'windows_dependency_stage.py'), '--root', $Root)
+            Write-Output "Same-job dependency cache restage passed: $([DateTime]::UtcNow.ToString('o'))"
+        } else {
+            & (Join-Path $PSScriptRoot 'build-openssl-windows.ps1') -IntegrationSource $Source 2>&1 |
+                Tee-Object -FilePath (Join-Path $Evidence 'windows-openssl-native-output.log') -Append
+            if ($LASTEXITCODE -ne 0) { throw 'Pinned OpenSSL source build failed' }
+            & (Join-Path $PSScriptRoot 'build-zlib-windows.ps1') 2>&1 |
+                Tee-Object -FilePath (Join-Path $Evidence 'windows-zlib-native-output.log') -Append
+            if ($LASTEXITCODE -ne 0) { throw 'Pinned zlib source build failed' }
+
+            $ZlibManifest = Get-Content -LiteralPath $ZlibManifestPath -Raw | ConvertFrom-Json
+            $ZlibCache = Join-Path $Source 'cache/buildwin'
+            $ZlibMappings = [ordered]@{
+                'include/zlib.h' = 'include/zlib.h'
+                'include/zconf.h' = 'include/zconf.h'
+                'lib/zlib1.lib' = 'zlib1.lib'
+                'bin/zlib1.dll' = 'zlib1.dll'
+            }
+            foreach ($Mapping in $ZlibMappings.GetEnumerator()) {
+                $Produced = Join-Path $ZlibPrefix $Mapping.Key
+                Assert-ManifestRecord $ZlibManifest.outputs.($Mapping.Key) $Produced "zlib $($Mapping.Key)"
+                $Cached = Join-Path $ZlibCache $Mapping.Value
+                $null = New-Item -ItemType Directory -Force -Path (Split-Path $Cached -Parent)
+                Copy-Item -LiteralPath $Produced -Destination $Cached -Force
+                Assert-ManifestRecord $ZlibManifest.outputs.($Mapping.Key) $Cached "cached zlib $($Mapping.Value)"
+            }
+
+            & (Join-Path $PSScriptRoot 'build-curl-windows.ps1') -IntegrationSource $Source `
+                -OpenSslPrefix $OpenSslPrefix -ZlibPrefix $ZlibPrefix -ZlibManifest $ZlibManifestPath 2>&1 |
+                Tee-Object -FilePath (Join-Path $Evidence 'windows-curl-orchestration.log') -Append
+            if ($LASTEXITCODE -ne 0) { throw 'Pinned curl source build failed' }
+        }
         $CurlManifestPath = Join-Path $Source 'cache/buildwin/curl-build.json'
         $CurlManifest = Get-Content -LiteralPath $CurlManifestPath -Raw | ConvertFrom-Json
         if ($CurlManifest.library -cne 'curl' -or $CurlManifest.version -cne '8.22.0' -or

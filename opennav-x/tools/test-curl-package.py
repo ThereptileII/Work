@@ -100,7 +100,15 @@ class CurlPackageBoundaryTests(unittest.TestCase):
             'outputs': zlib_outputs,
         }
         self._write_json(self.install / 'zlib-build.json', zlib_manifest)
-        self._write_json(self.install / 'openssl-build.json', {'fixture': 'openssl manifest'})
+        self.openssl_prefix = self.root / 'openssl-prefix'
+        (self.openssl_prefix / 'bin').mkdir(parents=True)
+        self.openssl_exe = self.openssl_prefix / 'bin/openssl.exe'
+        self.openssl_exe.write_bytes(self._pe(payload=b'openssl.exe'))
+        self.openssl_version = 'OpenSSL 3.5.9 fixture version'
+        self._write_json(self.install / 'openssl-build.json', {
+            'versionOutput': self.openssl_version,
+            'outputs': {'bin/openssl.exe': self._record(self.openssl_exe.read_bytes())},
+        })
         openssl_hash = curl_package._sha256(self.install / 'openssl-build.json')
         zlib_hash = curl_package._sha256(self.install / 'zlib-build.json')
         curl_manifest = {
@@ -113,10 +121,20 @@ class CurlPackageBoundaryTests(unittest.TestCase):
                 'testTarget': 'tests', 'testsReported': 11, 'testsPassed': 11,
                 'log': 'evidence/local/windows-curl-native-output.log',
                 'logSha256': 'a' * 64,
+                'certificatePatch': {
+                    **curl_package.CURL_CERTIFICATE_PATCH,
+                    'helperSha256': curl_package._sha256(Path(__file__).with_name('patch-curl-test-openssl.py')),
+                },
+                'certificateTool': {
+                    'path': str(self.openssl_exe), 'sha256': curl_package._sha256(self.openssl_exe),
+                    'bytes': self.openssl_exe.stat().st_size,
+                    'versionOutput': self.openssl_version,
+                },
+                'certificateProbe': 'passed',
             },
             'outputs': curl_outputs,
             'dependencies': {
-                'openssl': {'version': '3.5.9', 'manifestSha256': openssl_hash, 'prefix': 'openssl'},
+                'openssl': {'version': '3.5.9', 'manifestSha256': openssl_hash, 'prefix': str(self.openssl_prefix)},
                 'zlib': {'version': '1.3.2', 'manifestSha256': zlib_hash, 'prefix': 'zlib'},
             },
             'options': {}, 'versionOutput': 'curl test version', 'importOutput': 'libssl-3.dll',
@@ -235,6 +253,40 @@ class CurlPackageBoundaryTests(unittest.TestCase):
             self._write_json(path, manifest)
             with self.assertRaisesRegex(ValueError, 'Incomplete dependency build|successful upstream execution'):
                 self._verify()
+
+    def test_certificate_patch_tool_and_probe_tampering_are_rejected(self):
+        path = self.install / 'curl-build.json'
+        original = json.loads(path.read_text(encoding='utf-8-sig'))
+        for field, value in (
+            ('originalSha256', '0' * 64), ('patchedSha256', '0' * 64),
+            ('helperSha256', '0' * 64),
+        ):
+            with self.subTest(field=field):
+                changed = json.loads(json.dumps(original))
+                changed['buildSteps']['certificatePatch'][field] = value
+                self._write_json(path, changed)
+                with self.assertRaisesRegex(ValueError, 'patch or probe provenance'):
+                    self._verify()
+        for field, value in (('certificateProbe', 'failed'), ('certificatePatch', None)):
+            with self.subTest(field=field):
+                changed = json.loads(json.dumps(original))
+                changed['buildSteps'][field] = value
+                self._write_json(path, changed)
+                with self.assertRaisesRegex(ValueError, 'patch or probe provenance'):
+                    self._verify()
+        self._write_json(path, original)
+        self.openssl_exe.write_bytes(self.openssl_exe.read_bytes() + b'changed')
+        with self.assertRaisesRegex(ValueError, 'Missing or changed dependency file'):
+            self._verify()
+        self.openssl_exe.write_bytes(self._pe(payload=b'openssl.exe'))
+        openssl_path = self.install / 'openssl-build.json'
+        openssl_manifest = json.loads(openssl_path.read_text(encoding='utf-8-sig'))
+        openssl_manifest['outputs']['bin/openssl.exe']['sha256'] = '0' * 64
+        self._write_json(openssl_path, openssl_manifest)
+        original['dependencies']['openssl']['manifestSha256'] = curl_package._sha256(openssl_path)
+        self._write_json(path, original)
+        with self.assertRaisesRegex(ValueError, 'verified OpenSSL producer'):
+            self._verify()
 
     def test_post_copy_overwrite_is_rejected(self):
         result = self._verify()

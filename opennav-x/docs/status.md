@@ -2,14 +2,46 @@
 
 ## Current qualification and boat cleanup — 2026-10-01
 
-The next coherent candidate combines the focused native CMake extraction repair
-(SCRUM-219) with the reviewed Display preferences and 1920×1080 geometry
-(SCRUM-216/213). The seven Display implementation increments preserve the
-unchanged HTML reference and match the previously checked component source;
-the pure geometry CTest passes 1/1 in the integration worktree. Dependency
-reuse work remains isolated and disabled. Complete Linux, native Windows and
-boat gates must qualify this new revision before it is installed or old
-user-facing copies are retired. No website work or hardware output is included.
+The published candidate `f1e2cde8fcbf92826d648007b267cc0f5320aa55`
+([integrated run](https://github.com/ThereptileII/Work/actions/runs/36875827855))
+is not qualified: its Linux user-flow test stopped at the Create waypoint
+Name field, which measured 46 pixels against the unchanged 48-pixel touch
+minimum. The integrated build, 146 unit tests and preceding mode, navigation,
+route-progress, marine-input and object checks passed; later chart, endurance
+and fixture-free Linux gates did not run. All three native application jobs also failed at curl test certificate
+generation (SCRUM-221); their earlier tooling successes do not qualify the application.
+
+A later bounded Windows certificate probe passed at [run 36891804473](https://github.com/ThereptileII/Work/actions/runs/36891804473),
+job `110468992463`: the locked original reproduced the expected filename failure,
+the pipe-free helper passed 5/5 focused tests, and CA/host generation took
+717 ms. Certificate, key and chain checks also passed with host OpenSSL 3.6.4. The
+corresponding-source reproduction passed. This is not pinned OpenSSL 3.5.9,
+full curl/application qualification, or boat acceptance; the three application
+job failures remain part of the unqualified candidate history. See the
+[SCRUM-221 evidence](evidence/scrum-221-native-certificate-pass.json).
+
+SCRUM-220 fixes the shared editor minimum without changing the prototype
+Preferences token: single-line editor heights are 48/52/56 DIP at 100/125/150%
+interface scale. Local implementation `8a938eccfe8ca05392d6ebe5e404ad1f702a76e5`
+has passed a real wxGTK modal component probe and an integrated Linux build,
+install and unchanged eight-group waypoint/route interaction smoke. Both Name
+fields measure 488×48 and navigation-database persistence checks pass. Exact
+replacement full-suite Windows/boat evidence remains required. See the
+[regression review](design/reviews/scrum-220-waypoint-touch-regression.md).
+The boat still has no new SKAGER replacement installed; old versions and
+recovery backups remain intact pending a known-good installation.
+
+The replacement integration worktree retains the reviewed Display preferences,
+1920×1080 geometry and native CMake extraction repair (SCRUM-216/213/219), then
+adds the touch repair and explicit same-job dependency reuse (SCRUM-220/217).
+The reuse receipt, producer evidence, tamper refusal and staging suites pass
+41 focused cases locally; Linux and native Windows CI now invoke them. Reuse
+is restricted to a successful fixture build in the same job and never replaces
+downstream product/security/installer tests. The SCRUM-221 helper-level native
+certificate probe now passes; the pinned producer/full curl suite still needs
+integration validation.
+Complete replacement Linux, native Windows and boat gates remain required.
+No website work, boat installation or physical hardware output is included.
 
 The corrected frozen candidate `e9737d6bad9f3eb3db71877bce0816f59c62b0e7`
 has not qualified. Its [prototype run](https://github.com/ThereptileII/Work/actions/runs/36850600318)

@@ -63,6 +63,16 @@ jobs:
           python opennav-x/tools/test-source-package.py
           python opennav-x/tools/test-openssl-package.py
           python opennav-x/tools/test-curl-package.py
+      - name: Same-job dependency evidence, tamper refusal and cache staging contracts
+        shell: python
+        run: |
+          import subprocess, sys
+          for script in ("test-windows-dependency-receipt.py",
+                         "test-windows-dependency-evidence.py",
+                         "test-windows-dependency-reuse.py",
+                         "test-windows-dependency-stage.py"):
+              subprocess.run([sys.executable, "opennav-x/tools/" + script],
+                             check=True, timeout=120)
       - name: Peer boundary monitor rejects tampering and filters listeners by process
         run: python opennav-x/tools/test-peer-boundary.py
       - name: Preserve reviewed notice bytes through Windows Git checkout
@@ -407,7 +417,8 @@ jobs:
       actions: read
     needs: [contracts, native-restart-window, native-stock-welcome]
     runs-on: windows-2022
-    # Two source-built dependency passes plus the unchanged three-hour trip.
+    # The first source-built pass retains all upstream tests; the production
+    # pass may reuse only its verified closure in this same job.
     timeout-minutes: 360
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
@@ -418,6 +429,11 @@ jobs:
       - name: Build and exercise integrated modes
         id: integrated
         run: ./opennav-x/tools/build-pristine-windows.ps1 -Architecture Win32 -Integration
+      - name: Verify packaged source reproduces the curl certificate-tool patch
+        if: ${{ success() && steps.integrated.conclusion == 'success' }}
+        run: |
+          python opennav-x/tools/test-curl-patch-source-package.py --archive opennav-x/build/dependency-downloads/curl-8.22.0.tar.xz -v
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
       - name: Installed native peer CLI refuses key changes on the disposable runner
         run: python opennav-x/tools/test-peer-cli.py --cli opennav-x/build/xnav-install/opencpn-cmd.exe
       - name: Staged native loader check without profile initialization
@@ -452,9 +468,16 @@ jobs:
       - name: Retain complete fixture UI and scenario regression suite
         if: ${{ !cancelled() && steps.integrated.conclusion == 'success' }}
         run: ./opennav-x/tools/test-preview-windows.ps1
+      - name: Capture successful same-job Windows dependency closure
+        if: ${{ success() && steps.integrated.conclusion == 'success' }}
+        run: |
+          Write-Output "Dependency receipt capture begin: $([DateTime]::UtcNow.ToString('o'))"
+          python opennav-x/tools/windows_dependency_reuse.py capture --root opennav-x --fixture-success
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          Write-Output "Dependency receipt capture passed: $([DateTime]::UtcNow.ToString('o'))"
       - name: Build native installed product without synthetic data
         id: production
-        run: ./opennav-x/tools/build-pristine-windows.ps1 -Architecture Win32 -Integration -Production
+        run: ./opennav-x/tools/build-pristine-windows.ps1 -Architecture Win32 -Integration -Production -ReuseVerifiedDependencies
       - name: Native public Downloader Windows trust and rejection gate
         id: downloader_trust
         run: ./opennav-x/tools/test-downloader-trust-windows.ps1 -Install production-install

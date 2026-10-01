@@ -1,6 +1,7 @@
-param([switch]$VerifySourceOnly)
+param([switch]$VerifySourceOnly,[switch]$VerifyToolFactsOnly)
 $ErrorActionPreference = 'Stop'
 Set-StrictMode -Version Latest
+if ($VerifySourceOnly -and $VerifyToolFactsOnly) { throw 'Choose one zlib verification mode' }
 
 $Root = Split-Path $PSScriptRoot -Parent
 $LockPath = Join-Path $PSScriptRoot 'windows-zlib.lock.json'
@@ -20,7 +21,9 @@ $Evidence = Join-Path $Root 'evidence/local/windows-zlib-1.3.2'
 $Archive = Join-Path $Downloads $Lock.archive
 $ManifestPath = Join-Path $Prefix 'zlib-build.json'
 $SourceEvidence = Join-Path $Evidence 'source-verification.json'
-$null = New-Item -ItemType Directory -Force -Path $Downloads,$BuildRoot,$Evidence
+if (-not $VerifyToolFactsOnly) {
+    $null = New-Item -ItemType Directory -Force -Path $Downloads,$BuildRoot,$Evidence
+}
 
 function Invoke-Checked([string]$Program,[string[]]$Arguments) {
     & $Program @Arguments
@@ -72,7 +75,12 @@ function Assert-Win32Dll([string]$Path) {
     }
 }
 
-if (-not (Test-Path -LiteralPath $Archive -PathType Leaf) -or (Digest $Archive) -cne $Lock.sha256 -or
+if ($VerifyToolFactsOnly) {
+    if (-not (Test-Path -LiteralPath $Archive -PathType Leaf) -or (Digest $Archive) -cne $Lock.sha256 -or
+        (Get-Item -LiteralPath $Archive).Length -ne $Lock.bytes) {
+        throw 'Verified zlib archive unavailable for tool-facts reprobe'
+    }
+} elseif (-not (Test-Path -LiteralPath $Archive -PathType Leaf) -or (Digest $Archive) -cne $Lock.sha256 -or
     (Get-Item -LiteralPath $Archive).Length -ne $Lock.bytes) {
     try {
         Invoke-Checked curl.exe @('--fail','--location','--silent','--show-error','--retry','3','--retry-all-errors',
@@ -89,7 +97,9 @@ if (-not (Test-Path -LiteralPath $Archive -PathType Leaf) -or (Digest $Archive) 
     }
 }
 # The archive's identity and byte count are checked before any extraction is allowed.
-Assert-SourceArchive $Archive $Lock $SourceEvidence $(if ($VerifySourceOnly) { 'source-only' } else { 'build' })
+if (-not $VerifyToolFactsOnly) {
+    Assert-SourceArchive $Archive $Lock $SourceEvidence $(if ($VerifySourceOnly) { 'source-only' } else { 'build' })
+}
 if ($VerifySourceOnly) {
     Write-Output "Verified zlib 1.3.2 source archive before extraction; evidence=$SourceEvidence"
     return
@@ -101,6 +111,10 @@ $VisualStudio = & $Vswhere -latest -products '*' -requires Microsoft.VisualStudi
 if (-not $VisualStudio) { throw 'Licensed MSVC x86 toolchain missing' }
 $VcVars = Join-Path $VisualStudio 'VC/Auxiliary/Build/vcvarsall.bat'
 if (-not (Test-Path -LiteralPath $VcVars -PathType Leaf)) { throw 'MSVC vcvarsall.bat missing' }
+$ToolFacts = Join-Path $PSScriptRoot 'windows-native-tool-facts.ps1'
+$CMakeFactsInclude = Join-Path $PSScriptRoot 'windows-native-tool-facts.cmake'
+$ChildFacts = Join-Path $Evidence 'windows-zlib-child-tool-facts.json'
+$ParentFacts = Join-Path $Evidence 'windows-zlib-parent-tool-facts.json'
 $CMake = Get-Command cmake.exe -CommandType Application -ErrorAction SilentlyContinue
 if (-not $CMake) { throw 'CMake missing' }
 $Tar = Get-Command tar.exe -CommandType Application -ErrorAction SilentlyContinue
@@ -114,11 +128,41 @@ function Assert-SafeNativePath([string]$Path,[bool]$ForCMake = $false) {
         throw "Unsupported CMake expansion character in build path: $Path"
     }
 }
-foreach ($Path in @($VcVars,$Source,$Wrapper,$CMakeBuild,$Prefix,$Evidence,$BuildRoot)) {
+foreach ($Path in @($VcVars,$Source,$Wrapper,$CMakeBuild,$Prefix,$Evidence,$BuildRoot,
+        $ToolFacts,$CMakeFactsInclude,$ChildFacts,$Vswhere,$VisualStudio,$PSCommandPath)) {
     Assert-SafeNativePath $Path
 }
 foreach ($Path in @($Source,$Wrapper,$CMakeBuild,$Prefix)) {
     Assert-SafeNativePath $Path $true
+}
+Assert-SafeNativePath $CMakeFactsInclude $true
+
+if ($VerifyToolFactsOnly) {
+    # Check the captured x86 build context in a freshly initialized child.
+    # The generated CMake cache/hook and captured records must already exist.
+    $VerifyCmd = Join-Path ([IO.Path]::GetTempPath()) ("xnav-zlib-tool-facts-$([guid]::NewGuid().ToString('N')).cmd")
+    Assert-SafeNativePath $VerifyCmd
+    $VerifyLines = @(
+        '@echo off',
+        'setlocal DisableDelayedExpansion',
+        "call `"$VcVars`" x86 || exit /b 1",
+        'where cl || exit /b 1',
+        'where cmake || exit /b 1',
+        "powershell.exe -NoProfile -ExecutionPolicy Bypass -File `"$ToolFacts`" -Mode Verify -Kind zlib-child -Output `"$ChildFacts`" -ProducerScript `"$PSCommandPath`" -Vswhere `"$Vswhere`" -VisualStudio `"$VisualStudio`" -VcVars `"$VcVars`" -CMakeCache `"$(Join-Path $CMakeBuild 'CMakeCache.txt')`" -CMakeHookFacts `"$(Join-Path $CMakeBuild 'xnav-native-cmake-tools.txt')`" || exit /b 1"
+    )
+    try {
+        [IO.File]::WriteAllLines($VerifyCmd,$VerifyLines,(New-Object Text.UTF8Encoding($false)))
+        Invoke-Checked cmd.exe @('/d','/s','/c',"`"$VerifyCmd`"")
+    } finally {
+        if (Test-Path -LiteralPath $VerifyCmd) { Remove-Item -LiteralPath $VerifyCmd -Force }
+    }
+    $Dumpbin = Get-ChildItem -Path (Join-Path $VisualStudio 'VC/Tools/MSVC') -Filter dumpbin.exe -Recurse -File |
+        Where-Object { $_.FullName -match '\\Host(?:x64|x86)\\x86\\dumpbin\.exe$' } | Select-Object -First 1
+    if (-not $Dumpbin) { throw 'x86 dumpbin.exe missing' }
+    & $ToolFacts -Mode Verify -Kind zlib-parent -Output $ParentFacts -ProducerScript $PSCommandPath `
+        -Vswhere $Vswhere -VisualStudio $VisualStudio -Dumpbin $Dumpbin.FullName
+    Write-Output 'Reprobed captured zlib x86 child and parent tool facts'
+    return
 }
 
 foreach ($Path in @($Source,$Wrapper,$CMakeBuild,$Prefix)) {
@@ -162,7 +206,9 @@ $CommandLines = @(
     'where cmake',
     'if not "%errorlevel%"=="0" exit /b %errorlevel%',
     'echo === stage: configure zlib Win32 shared ===',
-    "cmake -S `"$Wrapper`" -B `"$CMakeBuild`" -G `"Visual Studio 17 2022`" -A Win32 -DCMAKE_MSVC_RUNTIME_LIBRARY=MultiThreadedDLL",
+    "cmake -S `"$Wrapper`" -B `"$CMakeBuild`" -G `"Visual Studio 17 2022`" -A Win32 -DCMAKE_MSVC_RUNTIME_LIBRARY=MultiThreadedDLL -DCMAKE_PROJECT_INCLUDE=`"$($CMakeFactsInclude.Replace('\','/'))`"",
+    'if not "%errorlevel%"=="0" exit /b %errorlevel%',
+    "powershell.exe -NoProfile -ExecutionPolicy Bypass -File `"$ToolFacts`" -Mode Capture -Kind zlib-child -Output `"$ChildFacts`" -ProducerScript `"$PSCommandPath`" -Vswhere `"$Vswhere`" -VisualStudio `"$VisualStudio`" -VcVars `"$VcVars`" -CMakeCache `"$(Join-Path $CMakeBuild 'CMakeCache.txt')`" -CMakeHookFacts `"$(Join-Path $CMakeBuild 'xnav-native-cmake-tools.txt')`"",
     'if not "%errorlevel%"=="0" exit /b %errorlevel%',
     'echo === stage: compile zlib ===',
     "cmake --build `"$CMakeBuild`" --config Release -- /m",
@@ -172,6 +218,8 @@ $CommandLines = @(
     'if not "%errorlevel%"=="0" exit /b %errorlevel%',
     'echo === stage: install zlib ===',
     "cmake --install `"$CMakeBuild`" --config Release --prefix `"$Prefix`"",
+    'if not "%errorlevel%"=="0" exit /b %errorlevel%',
+    "powershell.exe -NoProfile -ExecutionPolicy Bypass -File `"$ToolFacts`" -Mode Verify -Kind zlib-child -Output `"$ChildFacts`" -ProducerScript `"$PSCommandPath`" -Vswhere `"$Vswhere`" -VisualStudio `"$VisualStudio`" -VcVars `"$VcVars`" -CMakeCache `"$(Join-Path $CMakeBuild 'CMakeCache.txt')`" -CMakeHookFacts `"$(Join-Path $CMakeBuild 'xnav-native-cmake-tools.txt')`"",
     'if not "%errorlevel%"=="0" exit /b %errorlevel%'
 )
 [IO.File]::WriteAllLines($BuildCmd,$CommandLines,(New-Object Text.UTF8Encoding($false)))
@@ -219,6 +267,10 @@ Set-Content -LiteralPath (Join-Path $Evidence 'msbuild-runtime-library.txt') -Va
 $Dumpbin = Get-ChildItem -Path (Join-Path $VisualStudio 'VC/Tools/MSVC') -Filter dumpbin.exe -Recurse -File |
     Where-Object { $_.FullName -match '\\Host(?:x64|x86)\\x86\\dumpbin\.exe$' } | Select-Object -First 1
 if (-not $Dumpbin) { throw 'x86 dumpbin.exe missing' }
+& $ToolFacts -Mode Capture -Kind zlib-parent -Output $ParentFacts -ProducerScript $PSCommandPath `
+    -Vswhere $Vswhere -VisualStudio $VisualStudio -Dumpbin $Dumpbin.FullName
+& $ToolFacts -Mode Verify -Kind zlib-parent -Output $ParentFacts -ProducerScript $PSCommandPath `
+    -Vswhere $Vswhere -VisualStudio $VisualStudio -Dumpbin $Dumpbin.FullName
 $Imports = & $Dumpbin.FullName /DEPENDENTS $Expected['bin/zlib1.dll'] 2>&1 | Out-String
 if ($LASTEXITCODE -ne 0) { throw 'dumpbin import inspection failed' }
 if ($Imports -notmatch '(?im)^\s*VCRUNTIME140[^\r\n]*\.dll\s*$' -or

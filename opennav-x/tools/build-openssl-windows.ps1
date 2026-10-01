@@ -1,5 +1,6 @@
 param(
-    [Parameter(Mandatory=$true)][string]$IntegrationSource
+    [Parameter(Mandatory=$true)][string]$IntegrationSource,
+    [switch]$VerifyToolFactsOnly
 )
 $ErrorActionPreference = 'Stop'
 Set-StrictMode -Version Latest
@@ -17,7 +18,9 @@ $Archive = Join-Path $Downloads $Lock.archive
 $Source = Join-Path $BuildRoot "openssl-$($Lock.version)"
 $Prefix = Join-Path $BuildRoot 'install'
 $Evidence = Join-Path $Root 'evidence/local'
-$null = New-Item -ItemType Directory -Force -Path $Downloads,$BuildRoot,$Evidence
+if (-not $VerifyToolFactsOnly) {
+    $null = New-Item -ItemType Directory -Force -Path $Downloads,$BuildRoot,$Evidence
+}
 
 function Invoke-Checked([string]$Program,[string[]]$Arguments) {
     & $Program @Arguments
@@ -30,15 +33,16 @@ function FileRecord([string]$Path) {
     if (-not (Test-Path -LiteralPath $Path -PathType Leaf)) { throw "Required OpenSSL output missing: $Path" }
     [ordered]@{ sha256 = Digest $Path; bytes = (Get-Item -LiteralPath $Path).Length }
 }
-function Assert-Win32Dll([string]$Path) {
+function Assert-Win32Image([string]$Path) {
     $Bytes = [IO.File]::ReadAllBytes($Path)
     if ($Bytes.Length -lt 64 -or $Bytes[0] -ne 0x4d -or $Bytes[1] -ne 0x5a) { throw "Not a PE DLL: $Path" }
     $Pe = [BitConverter]::ToInt32($Bytes,0x3c)
     if ($Pe -lt 0 -or $Pe + 6 -gt $Bytes.Length -or [BitConverter]::ToUInt32($Bytes,$Pe) -ne 0x00004550 -or
-        [BitConverter]::ToUInt16($Bytes,$Pe + 4) -ne 0x014c) { throw "OpenSSL DLL is not the supported Win32 machine type: $Path" }
+        [BitConverter]::ToUInt16($Bytes,$Pe + 4) -ne 0x014c) { throw "OpenSSL image is not the supported Win32 machine type: $Path" }
 }
 
 if (-not (Test-Path -LiteralPath $Archive -PathType Leaf) -or (Digest $Archive) -cne $Lock.sha256) {
+    if ($VerifyToolFactsOnly) { throw 'Verified OpenSSL archive unavailable for tool-facts reprobe' }
     Invoke-Checked curl.exe @('--fail','--location','--silent','--show-error','--retry','3','--retry-all-errors',
         '--connect-timeout','20','--max-time','300','--output',$Archive,$Lock.url)
 }
@@ -52,6 +56,9 @@ $VisualStudio = & $Vswhere -latest -products '*' -requires Microsoft.VisualStudi
 if (-not $VisualStudio) { throw 'Licensed MSVC x86 toolchain missing' }
 $VcVars = Join-Path $VisualStudio 'VC/Auxiliary/Build/vcvarsall.bat'
 if (-not (Test-Path -LiteralPath $VcVars -PathType Leaf)) { throw 'MSVC vcvarsall.bat missing' }
+$ToolFacts = Join-Path $PSScriptRoot 'windows-native-tool-facts.ps1'
+$ParentFacts = Join-Path $Evidence 'windows-openssl-parent-tool-facts.json'
+$ChildFacts = Join-Path $Evidence 'windows-openssl-child-tool-facts.json'
 foreach ($Directory in @('C:\Program Files\NASM','C:\Strawberry\perl\bin')) {
     if (Test-Path -LiteralPath $Directory -PathType Container) { $env:PATH = "$Directory;$env:PATH" }
 }
@@ -60,6 +67,7 @@ if (-not (Get-Command nasm.exe -CommandType Application -ErrorAction SilentlyCon
     $NasmLock = $Lock.buildTools.nasm
     $NasmArchive = Join-Path $Downloads $NasmLock.archive
     if (-not (Test-Path -LiteralPath $NasmArchive -PathType Leaf) -or (Digest $NasmArchive) -cne $NasmLock.sha256) {
+        if ($VerifyToolFactsOnly) { throw 'Verified NASM archive unavailable for tool-facts reprobe' }
         Invoke-Checked curl.exe @('--fail','--location','--silent','--show-error','--retry','3','--retry-all-errors',
             '--connect-timeout','20','--max-time','180','--output',$NasmArchive,$NasmLock.url)
     }
@@ -72,9 +80,11 @@ if (-not (Get-Command nasm.exe -CommandType Application -ErrorAction SilentlyCon
     $ExpectedEntries = @('nasm-3.02/LICENSE','nasm-3.02/nasm.exe','nasm-3.02/ndisasm.exe')
     if (@(Compare-Object $ExpectedEntries $Entries).Count) { throw 'NASM archive has an unexpected entry or path' }
     $NasmRoot = Join-Path $Root 'build/dependency-tools/nasm-3.02'
-    if (Test-Path -LiteralPath $NasmRoot) { Remove-Item -LiteralPath $NasmRoot -Recurse -Force }
-    Expand-Archive -LiteralPath $NasmArchive -DestinationPath (Split-Path $NasmRoot -Parent) -Force
-    if (-not (Test-Path -LiteralPath (Join-Path $NasmRoot 'nasm.exe') -PathType Leaf)) { throw 'Pinned NASM executable missing after extraction' }
+    if (-not $VerifyToolFactsOnly) {
+        if (Test-Path -LiteralPath $NasmRoot) { Remove-Item -LiteralPath $NasmRoot -Recurse -Force }
+        Expand-Archive -LiteralPath $NasmArchive -DestinationPath (Split-Path $NasmRoot -Parent) -Force
+    }
+    if (-not (Test-Path -LiteralPath (Join-Path $NasmRoot 'nasm.exe') -PathType Leaf)) { throw 'Pinned NASM executable missing' }
     $env:PATH = "$NasmRoot;$env:PATH"
 }
 foreach ($Tool in @('perl.exe','nasm.exe','tar.exe','cmd.exe')) {
@@ -82,14 +92,47 @@ foreach ($Tool in @('perl.exe','nasm.exe','tar.exe','cmd.exe')) {
         throw "OpenSSL build prerequisite missing after pinned local-tool resolution: $Tool"
     }
 }
+if (-not $VerifyToolFactsOnly) {
+    & $ToolFacts -Mode Capture -Kind openssl-parent -Output $ParentFacts -ProducerScript $PSCommandPath `
+        -Vswhere $Vswhere -VisualStudio $VisualStudio
+}
+& $ToolFacts -Mode Verify -Kind openssl-parent -Output $ParentFacts -ProducerScript $PSCommandPath `
+    -Vswhere $Vswhere -VisualStudio $VisualStudio
 # These paths are embedded in an owned cmd file. Double quotes protect spaces
 # and command separators, and delayed expansion remains disabled for literal !.
 # Percent expansion and characters which break a quoted line are unsupported.
-foreach ($BatchPath in @($VcVars,$Source,$Prefix)) {
+foreach ($BatchPath in @($VcVars,$Source,$Prefix,$ToolFacts,$ChildFacts,$Vswhere,$VisualStudio,$PSCommandPath)) {
     if ($BatchPath.Contains('%') -or $BatchPath.Contains('"') -or
         $BatchPath.Contains([char]10) -or $BatchPath.Contains([char]13)) {
         throw "Unsupported character in OpenSSL build path: $BatchPath"
     }
+}
+if ($VerifyToolFactsOnly) {
+    # The original child captured facts only after vcvarsall initialized x86.
+    # Recreate that child environment without invoking any producer build step.
+    $VerifyCmd = Join-Path ([IO.Path]::GetTempPath()) ("xnav-openssl-tool-facts-$([guid]::NewGuid().ToString('N')).cmd")
+    if ($VerifyCmd.Contains('%') -or $VerifyCmd.Contains('"') -or
+        $VerifyCmd.Contains([char]10) -or $VerifyCmd.Contains([char]13)) {
+        throw 'Unsupported temporary tool-facts command path'
+    }
+    $VerifyLines = @(
+        '@echo off',
+        'setlocal DisableDelayedExpansion',
+        "call `"$VcVars`" x86 || exit /b 1",
+        'where cl || exit /b 1',
+        'where nmake || exit /b 1',
+        'where perl || exit /b 1',
+        'where nasm || exit /b 1',
+        "powershell.exe -NoProfile -ExecutionPolicy Bypass -File `"$ToolFacts`" -Mode Verify -Kind openssl-child -Output `"$ChildFacts`" -ProducerScript `"$PSCommandPath`" -Vswhere `"$Vswhere`" -VisualStudio `"$VisualStudio`" -VcVars `"$VcVars`" || exit /b 1"
+    )
+    try {
+        [IO.File]::WriteAllLines($VerifyCmd,$VerifyLines,(New-Object Text.UTF8Encoding($false)))
+        Invoke-Checked cmd.exe @('/d','/s','/c',"`"$VerifyCmd`"")
+    } finally {
+        if (Test-Path -LiteralPath $VerifyCmd) { Remove-Item -LiteralPath $VerifyCmd -Force }
+    }
+    Write-Output 'Reprobed captured OpenSSL parent and x86 child tool facts'
+    return
 }
 
 if (Test-Path -LiteralPath $Source) { Remove-Item -LiteralPath $Source -Recurse -Force }
@@ -108,6 +151,7 @@ $CommandLines = @(
     'where nmake || exit /b 1',
     'where perl || exit /b 1',
     'where nasm || exit /b 1',
+    "powershell.exe -NoProfile -ExecutionPolicy Bypass -File `"$ToolFacts`" -Mode Capture -Kind openssl-child -Output `"$ChildFacts`" -ProducerScript `"$PSCommandPath`" -Vswhere `"$Vswhere`" -VisualStudio `"$VisualStudio`" -VcVars `"$VcVars`" || exit /b 1",
     "cd /d `"$Source`" || exit /b 1",
     "perl Configure VC-WIN32 shared --libdir=lib --prefix=`"$Prefix`" --openssldir=`"$Prefix\ssl`" || exit /b 1",
     'nmake || exit /b 1',
@@ -116,7 +160,8 @@ $CommandLines = @(
     'cl /Bv 2>&1',
     'nmake /? 2>&1',
     'perl -V 2>&1',
-    'nasm -v 2>&1'
+    'nasm -v 2>&1',
+    "powershell.exe -NoProfile -ExecutionPolicy Bypass -File `"$ToolFacts`" -Mode Verify -Kind openssl-child -Output `"$ChildFacts`" -ProducerScript `"$PSCommandPath`" -Vswhere `"$Vswhere`" -VisualStudio `"$VisualStudio`" -VcVars `"$VcVars`" || exit /b 1"
 )
 [IO.File]::WriteAllLines($BuildCmd,$CommandLines,(New-Object Text.UTF8Encoding($false)))
 Invoke-Checked cmd.exe @('/d','/s','/c',"`"$BuildCmd`"")
@@ -127,18 +172,20 @@ $Expected = [ordered]@{
     'lib/libcrypto.lib' = Join-Path $Prefix 'lib/libcrypto.lib'
     'bin/libssl-3.dll' = Join-Path $Prefix 'bin/libssl-3.dll'
     'bin/libcrypto-3.dll' = Join-Path $Prefix 'bin/libcrypto-3.dll'
+    'bin/openssl.exe' = Join-Path $Prefix 'bin/openssl.exe'
 }
 $Outputs = [ordered]@{}
 foreach ($Name in $Expected.Keys) { $Outputs[$Name] = FileRecord $Expected[$Name] }
-Assert-Win32Dll $Expected['bin/libssl-3.dll']
-Assert-Win32Dll $Expected['bin/libcrypto-3.dll']
+Assert-Win32Image $Expected['bin/libssl-3.dll']
+Assert-Win32Image $Expected['bin/libcrypto-3.dll']
+Assert-Win32Image $Expected['bin/openssl.exe']
 $VersionHeader = Get-Content -LiteralPath $Expected['include/openssl/opensslv.h'] -Raw
 if ($VersionHeader -notmatch '#\s*define\s+OPENSSL_VERSION_MAJOR\s+3' -or
     $VersionHeader -notmatch '#\s*define\s+OPENSSL_VERSION_MINOR\s+5' -or
     $VersionHeader -notmatch '#\s*define\s+OPENSSL_VERSION_PATCH\s+9') {
     throw 'Installed OpenSSL headers do not identify version 3.5.9'
 }
-$VersionText = & (Join-Path $Prefix 'bin/openssl.exe') version -a 2>&1 | Out-String
+$VersionText = & $Expected['bin/openssl.exe'] version -a 2>&1 | Out-String
 if ($LASTEXITCODE -ne 0 -or $VersionText -notmatch 'OpenSSL 3\.5\.9') { throw 'Built OpenSSL executable has the wrong version' }
 
 $Cache = Join-Path $IntegrationSource 'cache/buildwin'

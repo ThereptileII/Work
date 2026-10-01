@@ -29,6 +29,11 @@ CURL_HEADERS = {'curl.h', 'curlver.h', 'easy.h', 'header.h', 'mprintf.h', 'multi
 CURL_OUTPUTS = {'bin/libcurl.dll', 'lib/libcurl.lib'} | {'include/curl/' + p for p in CURL_HEADERS}
 BASE_KEYS = {'schemaVersion', 'library', 'version', 'configuration', 'architecture',
              'abi', 'runtime', 'source', 'buildSteps', 'outputs'}
+CURL_CERTIFICATE_PATCH = {
+    'source': 'tests/certs/genserv.pl',
+    'originalSha256': 'd737cbe77e23e275b4fcfcec36e62d49d1d59d9d9fd0013a428b7143ee75c982',
+    'patchedSha256': '4c176ec6a1556f519d6c0c02d17c40caadb9a542894fedc9f2055b7a48ce9ab3',
+}
 
 
 def require_record(record, label):
@@ -92,6 +97,28 @@ def verify_manifest(install, library):
                     value['version'] != version or
                     value['manifestSha256'] != _sha256(install / (dep + '-build.json'))):
                 raise ValueError('curl linked dependency manifest differs: ' + dep)
+        patch = steps.get('certificatePatch')
+        helper = Path(__file__).with_name('patch-curl-test-openssl.py')
+        if (not isinstance(patch, dict) or set(patch) != set(CURL_CERTIFICATE_PATCH) | {'helperSha256'} or
+                any(patch.get(key) != value for key, value in CURL_CERTIFICATE_PATCH.items()) or
+                patch.get('helperSha256') != _sha256(helper) or
+                steps.get('certificateProbe') != 'passed'):
+            raise ValueError('curl certificate-generator patch or probe provenance differs')
+        tool = steps.get('certificateTool')
+        expected_tool = Path(dependencies['openssl']['prefix']) / 'bin/openssl.exe'
+        openssl_manifest = _read_json(install / 'openssl-build.json', 'OpenSSL build manifest')
+        openssl_outputs = openssl_manifest.get('outputs')
+        if (not isinstance(tool, dict) or set(tool) != {'path', 'sha256', 'bytes', 'versionOutput'} or
+                not isinstance(tool['path'], str) or Path(tool['path']) != expected_tool or
+                not isinstance(tool['versionOutput'], str) or
+                re.search(r'^OpenSSL 3\.5\.9\b', tool['versionOutput']) is None or
+                tool['versionOutput'] != openssl_manifest.get('versionOutput') or
+                not isinstance(openssl_outputs, dict) or
+                openssl_outputs.get('bin/openssl.exe') !=
+                {'sha256': tool['sha256'], 'bytes': tool['bytes']}):
+            raise ValueError('curl certificate tool differs from the verified OpenSSL producer')
+        verify_file(expected_tool, {'sha256': tool['sha256'], 'bytes': tool['bytes']})
+        _require_win32_pe(expected_tool)
     return manifest
 
 

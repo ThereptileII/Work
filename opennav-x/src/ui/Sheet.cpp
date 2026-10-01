@@ -8,6 +8,7 @@
 #include <wx/stattext.h>
 #include <wx/textctrl.h>
 #include <wx/weakref.h>
+#include <algorithm>
 namespace opennav::ui {
 namespace {
 int OwnerScale(wxWindow &parent,int requested) {
@@ -62,11 +63,13 @@ EditSheet(wxWindow &parent, LightMode mode, const wxString &title,
   for (const auto &f : fields) {
     label(f.label, 12, true);
     const bool multiline = f.maximum > 512;
+    const int field_height = multiline ? 96 : std::max(48, DisplayFieldHeight(scale_percent));
     auto *t =
         new wxTextCtrl(content, wxID_ANY, f.value, wxDefaultPosition,
-                       dialog.FromDIP(wxSize(
-                           400, multiline ? 96 : DisplayFieldHeight(scale_percent))),
+                       dialog.FromDIP(wxSize(400, field_height)),
                        wxBORDER_NONE | (multiline ? wxTE_MULTILINE : 0));
+    if (!multiline)
+      t->SetMinSize(wxSize(-1, dialog.FromDIP(field_height)));
     t->SetName(f.label);
     t->SetFont(
         UiFont(dialog, multiline ? 18 : DisplayFieldFont(scale_percent)));

@@ -6,7 +6,8 @@ from pathlib import Path
 import struct
 
 OPENSSL_FILES = ('bin/libssl-3.dll', 'bin/libcrypto-3.dll')
-OPENSSL_OUTPUTS = ('include/openssl/opensslv.h', 'lib/libssl.lib', 'lib/libcrypto.lib') + OPENSSL_FILES
+OPENSSL_OUTPUTS = ('include/openssl/opensslv.h', 'lib/libssl.lib', 'lib/libcrypto.lib',
+                   'bin/openssl.exe') + OPENSSL_FILES
 OPENSSL_CACHE_PATHS = {
     'include/openssl/opensslv.h': 'include/openssl/opensslv.h',
     'lib/libssl.lib': 'libssl.lib',
@@ -104,11 +105,12 @@ def verify_openssl_package_inputs(install, lock_path, source_archive, notice_dir
                 not isinstance(output_record['sha256'], str) or len(output_record['sha256']) != 64 or
                 not isinstance(output_record['bytes'], int) or output_record['bytes'] <= 0):
             raise ValueError('OpenSSL output record is invalid: ' + relative)
-        cache_record = cache[OPENSSL_CACHE_PATHS[relative]]
-        if (not isinstance(cache_record, dict) or set(cache_record) != {'source', 'sha256', 'bytes'} or
-                cache_record['source'] != relative or
-                {key: cache_record[key] for key in ('sha256', 'bytes')} != output_record):
-            raise ValueError('OpenSSL cache mapping differs from build output: ' + relative)
+        if relative in OPENSSL_CACHE_PATHS:
+            cache_record = cache[OPENSSL_CACHE_PATHS[relative]]
+            if (not isinstance(cache_record, dict) or set(cache_record) != {'source', 'sha256', 'bytes'} or
+                    cache_record['source'] != relative or
+                    {key: cache_record[key] for key in ('sha256', 'bytes')} != output_record):
+                raise ValueError('OpenSSL cache mapping differs from build output: ' + relative)
     archive_name = lock.get('archive')
     if (not isinstance(archive_name, str) or Path(archive_name).name != archive_name or
             archive_name in ('', '.', '..')):
