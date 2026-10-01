@@ -353,6 +353,8 @@ jobs:
         run: bash opennav-x/tools/build-integration-linux.sh
       - name: Installed peer CLI refuses key changes in a disposable profile
         run: python3 opennav-x/tools/test-peer-cli.py --cli opennav-x/build/xnav-install/bin/opencpn-cmd
+      - name: Two concurrent disposable profiles retain the peer boundary
+        run: python3 opennav-x/tools/smoke-peer-two-instances.py
       - name: Staged loader check without profile initialization
         run: python3 opennav-x/tools/smoke-installer-selftest.py --expect-test-loopback --app opennav-x/build/xnav-install/bin/opencpn
       - name: Retain real harmonic sources across installed generation changes
@@ -466,6 +468,8 @@ jobs:
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
       - name: Installed native peer CLI refuses key changes on the disposable runner
         run: python opennav-x/tools/test-peer-cli.py --cli opennav-x/build/xnav-install/opencpn-cmd.exe
+      - name: Two concurrent native disposable profiles retain the peer boundary
+        run: python opennav-x/tools/smoke-peer-two-instances.py
       - name: Staged native loader check without profile initialization
         if: ${{ !cancelled() && steps.integrated.conclusion == 'success' }}
         run: python opennav-x/tools/smoke-installer-selftest.py --expect-test-loopback --app opennav-x/build/xnav-install/opencpn.exe

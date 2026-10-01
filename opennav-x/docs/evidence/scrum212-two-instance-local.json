@@ -1,0 +1,102 @@
+{
+  "scope": "Linux development gate against two disposable, disconnected --configdir profiles; native Windows CI remains pending",
+  "pinned_opencpn_source": "37fd0cddb7334fe489e9f18aa163977a9c5c84f7",
+  "test_commit": "bdf5b6881ed60cb7d05914e012e4c33c02001423",
+  "test_script_sha256": "0fce57bf823bf98a4a1e385f8b9ddbd5978588baf1ab649e77ad037fd7544091",
+  "stale_binary_rejection": {
+    "binary_sha256": "e409e89fb3263c8d125ff5e45620d60195435d53ef1eb6b87918296478317907",
+    "reported_build_commit": "f752daeb0fc07e2abb878c0c43a4b64760f22101",
+    "result": "FAIL: both apps reached deferred startup; first profile certificate or key changed",
+    "qualification": "Older binary predates the peer-unavailable patch; this is a rejection check, not release qualification.",
+    "test_commit": "5182fd755df31872550272827619b9f73415cc75",
+    "test_script_sha256": "45a2c01c5c4f5ff1a3f2906b45bd36675b345f40b5f5bd87676875445b473da5",
+    "raw_report_sha256": "36e5c7c6fdfdd397b2fa2947f60d6f07e2d6f973d6443d34b80e9c7cf7c37a35",
+    "observed_report": {
+      "authority": "Linux development",
+      "test_source_commit": "5182fd755df31872550272827619b9f73415cc75",
+      "test_script_sha256": "45a2c01c5c4f5ff1a3f2906b45bd36675b345f40b5f5bd87676875445b473da5",
+      "executable_sha256": "e409e89fb3263c8d125ff5e45620d60195435d53ef1eb6b87918296478317907",
+      "profiles": [
+        {
+          "index": 1,
+          "pid": 252062,
+          "profile": "disposable-profile-1",
+          "build_commit": "f752daeb0fc07e2abb878c0c43a4b64760f22101"
+        },
+        {
+          "index": 2,
+          "pid": 252064,
+          "profile": "disposable-profile-2",
+          "build_commit": "f752daeb0fc07e2abb878c0c43a4b64760f22101"
+        }
+      ],
+      "observations": [
+        {
+          "startup_pid": 252062
+        },
+        {
+          "startup_pid": 252064
+        }
+      ],
+      "result": "FAILED",
+      "error": "PeerBoundaryError('profile certificate or key changed')"
+    }
+  },
+  "patched_binary_run": {
+    "binary_sha256": "fa971eeb7c5bfe59f388790cf2b524d189612a9efd1d15451bdc34b103556891",
+    "reported_build_commit": "a6798f818d7751efee3f213d66f7310baafc7385",
+    "result": "PASS",
+    "both_apps_concurrent_after_startup": true,
+    "both_process_owned_tcp_listener_ports": [
+      [],
+      []
+    ],
+    "both_certificates_and_keys_preserved": true,
+    "both_navigation_and_credential_sentinels_preserved": true,
+    "both_clean_exits": true,
+    "no_seeded_peer_secret_in_supported_outputs": true,
+    "test_commit": "bdf5b6881ed60cb7d05914e012e4c33c02001423",
+    "test_script_sha256": "0fce57bf823bf98a4a1e385f8b9ddbd5978588baf1ab649e77ad037fd7544091",
+    "raw_report_sha256": "16aaa6a6b4b1919133f450eebaded0c13d19ebbfa08142f5e380947cf638f66b",
+    "observed_report": {
+      "authority": "Linux development",
+      "test_source_commit": "bdf5b6881ed60cb7d05914e012e4c33c02001423",
+      "test_script_sha256": "0fce57bf823bf98a4a1e385f8b9ddbd5978588baf1ab649e77ad037fd7544091",
+      "executable_sha256": "fa971eeb7c5bfe59f388790cf2b524d189612a9efd1d15451bdc34b103556891",
+      "profiles": [
+        {
+          "index": 1,
+          "pid": 254798,
+          "profile": "disposable-profile-1",
+          "build_commit": "a6798f818d7751efee3f213d66f7310baafc7385",
+          "cert_preserved_at_exit": true,
+          "key_preserved_at_exit": true
+        },
+        {
+          "index": 2,
+          "pid": 254800,
+          "profile": "disposable-profile-2",
+          "build_commit": "a6798f818d7751efee3f213d66f7310baafc7385",
+          "cert_preserved_at_exit": true,
+          "key_preserved_at_exit": true
+        }
+      ],
+      "observations": [
+        {
+          "startup_pid": 254798,
+          "profile_preserved": true,
+          "pid": 254798,
+          "owned_tcp_listener_ports": []
+        },
+        {
+          "startup_pid": 254800,
+          "profile_preserved": true,
+          "pid": 254800,
+          "owned_tcp_listener_ports": []
+        }
+      ],
+      "result": "PASS"
+    }
+  },
+  "limits": "No native Windows result and no outbound packet capture or exhaustive mDNS observation."
+}
