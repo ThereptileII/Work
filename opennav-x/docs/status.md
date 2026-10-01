@@ -20,6 +20,15 @@ runs remain in progress; no full candidate acceptance is established. This focus
 the full dependency producers, dependency reuse, application, package or boat.
 See [native stream-pass evidence](evidence/scrum-217-native-stream-pass.json).
 
+Downloaded same-commit recovery evidence now verifies 21 native maintenance
+suite reports, 51 guarded-broker checks and 56 Prepare/Arm/Collect checks.
+These use disposable files and marker processes, not the boat or OpenCPN UI;
+see [recovery tooling evidence](evidence/scrum-17-b48-recovery-tooling.json).
+The pristine upstream Windows build passes 60/60 tests. The pristine Linux
+comparison builds but reproduces its two documented upstream failures (64/66);
+it is explicitly not an all-tests-pass result. Integrated application tests
+still must pass without exceptions. See [upstream baseline evidence](evidence/scrum-217-b48-upstream-baselines.json).
+
 An earlier frozen candidate, `141265ea2fa8796c9570065034f31575292ff49e`
 ([integrated run](https://github.com/ThereptileII/Work/actions/runs/36892709388),
 [prototype run](https://github.com/ThereptileII/Work/actions/runs/36892710519)),

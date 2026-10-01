@@ -1,0 +1,223 @@
+{
+  "schemaVersion": 1,
+  "status": "passed-scoped-native-tooling",
+  "sourceCommit": "b48bf4a8f12f98c459d79aa08805141ac49e0306",
+  "runId": 36901026915,
+  "runAttempt": 1,
+  "jobs": {
+    "maintenance": 110499931468,
+    "broker": 110501121253
+  },
+  "artifacts": [
+    {
+      "id": 11182300522,
+      "bytes": 336,
+      "sha256": "adc32fa65cd91cbeefb31d581f0adf236eac734785126752e03bbbb5bdd3424d"
+    },
+    {
+      "id": 11182450089,
+      "bytes": 24975,
+      "sha256": "b4f7aa75dfcad2c8248605a4db4c1376dc4a65d7f24b0960c0ebd231b1549694"
+    },
+    {
+      "id": 11182250660,
+      "bytes": 16719,
+      "sha256": "d969be7aa8db0da43f5927965be3be889e2c417990c6264a3a01c006a6d38a8a"
+    }
+  ],
+  "artifactVerification": [
+    "GitHub reported byte length and SHA-256 matched downloaded ZIP",
+    "CRC verified for every member",
+    "Absolute paths, parent traversal, backslashes and symlinks refused; expanded total bounded",
+    "Restart attestation matches exact commit, run and attempt",
+    "Copied restart entrypoints match native checkout byte hashes; native checkout differs from Git LF only by CRLF line endings"
+  ],
+  "restartSourceProofs": {
+    "RestartCommissioningPrepare.ps1": {
+      "gitLfSha256": "078657992c0075a17c9fb25079383f6a9d4046b5808d4a53d04b5da387c43d46",
+      "windowsCrlfSha256": "bbc25e3933ef8e085484c7ff3203d452258ab6609504ae285eaa0875af8f31f9",
+      "copiedBytesMatchWindowsSource": true
+    },
+    "RestartCommissioningArm.ps1": {
+      "gitLfSha256": "0b1eab3d100279aac2e992640e0fd64a027ed0f03bc675d3461eda7a7c8b459c",
+      "windowsCrlfSha256": "7bf28fac37ed2eb18a78c9d26a4cdcdaf721f1de54fe88a944fd8a18693bf795",
+      "copiedBytesMatchWindowsSource": true
+    },
+    "RestartCommissioningBroker.ps1": {
+      "gitLfSha256": "7c131395714179c49f48158ee2ccd34bf3ef1e382e98fecabb2aeebc60c7f190",
+      "windowsCrlfSha256": "fa765c32ff48af981d3ab0f0fb0a259c52bdcf4dc34a0e49ed10d03156c07664",
+      "copiedBytesMatchWindowsSource": true
+    }
+  },
+  "restartAttestation": {
+    "commit": "b48bf4a8f12f98c459d79aa08805141ac49e0306",
+    "maintenance": "success",
+    "transport": "success",
+    "owner": "OpenNavX.CI.RestartGates.1",
+    "prepareArm": "success",
+    "runId": "36901026915",
+    "schema": 1,
+    "actualBoat": false,
+    "broker": "success",
+    "runAttempt": "1"
+  },
+  "brokerReports": {
+    "restart-broker": {
+      "checksPassed": 51,
+      "caseNames": [
+        "success",
+        "output-connection",
+        "plugin-bytes",
+        "expired",
+        "consumed",
+        "receipt-recording-failure"
+      ],
+      "reportSha256": "dd20bd88dbbf3cc8096b1e0ae585d08d656e2216977e22c7ebbf7be66c369018",
+      "status": "passed",
+      "actualBoat": false,
+      "productAcceptance": false
+    },
+    "restart-prepare-arm": {
+      "checksPassed": 56,
+      "caseNames": [
+        "corrupt-capability",
+        "shutdown-copy-hash",
+        "success",
+        "output-connection"
+      ],
+      "reportSha256": "be4a89db19debb0f43e363ed1115bb70674bf2921caea8291d0674ef82825426",
+      "status": "passed",
+      "actualBoat": false,
+      "productAcceptance": false
+    }
+  },
+  "maintenanceSuites": [
+    {
+      "log": "maintenance-ais-credential-import.log",
+      "checksOrTestsPassed": 17,
+      "bytes": 80,
+      "sha256": "0dd263e27fc9fa7e684369300b8b07ae56d70ca700e637eeb350acd762967736"
+    },
+    {
+      "log": "maintenance-baseline-adoption.log",
+      "checksOrTestsPassed": 178,
+      "bytes": 21194,
+      "sha256": "aee03f83be5a611536a7d11ef401334847e2d30f982ff6c62040e43a4b2e8df3"
+    },
+    {
+      "log": "maintenance-boat-tools.log",
+      "checksOrTestsPassed": 30,
+      "bytes": 3949,
+      "sha256": "be755056ef63582fafcc0d6c34dcad1c869939c5c231586233dad4521ab49dcc"
+    },
+    {
+      "log": "maintenance-broker-fixture-contracts.log",
+      "checksOrTestsPassed": 25,
+      "bytes": 2440,
+      "sha256": "fd7f6a349ea5503bf97248f9419b93cfadb3b62b6c9dd5a23d3939a95e786d37"
+    },
+    {
+      "log": "maintenance-commissioning-launch.log",
+      "checksOrTestsPassed": 11,
+      "bytes": 1481,
+      "sha256": "47e2690ed75119964e24eb835d430001703147fd24c202013cd50ceecf260819"
+    },
+    {
+      "log": "maintenance-commissioning.log",
+      "checksOrTestsPassed": 21,
+      "bytes": 2755,
+      "sha256": "6ec421f2fe9a57c2d61d7b982a1776a2e5e1bec62b4550850f53e0567f974b74"
+    },
+    {
+      "log": "maintenance-installed-welcome.log",
+      "checksOrTestsPassed": 114,
+      "bytes": 8975,
+      "sha256": "0de2c9f4b9bc6c3c2b0d309a97e40cabd54aee1e22fe6b19643ba3b4288cd23b"
+    },
+    {
+      "log": "maintenance-navigation-copy.log",
+      "checksOrTestsPassed": 11,
+      "bytes": 1174,
+      "sha256": "99da3b0bce73a71f0ca88117ae27c284ba15190e008ba103180f168371605ed6"
+    },
+    {
+      "log": "maintenance-official-upgrade-policy.log",
+      "checksOrTestsPassed": 86,
+      "bytes": 5856,
+      "sha256": "8243df3ce4b5b38eb79319c9c27908e7a17e32f62c2ca1655ce0eefa9de3225b"
+    },
+    {
+      "log": "maintenance-preparation.log",
+      "checksOrTestsPassed": 34,
+      "bytes": 4412,
+      "sha256": "372f86f3ce96e7b2daf56b416ca7c9e8d6dc10ab5e2f40df64e353f85ee63dda"
+    },
+    {
+      "log": "maintenance-renderer-log.log",
+      "checksOrTestsPassed": 66,
+      "bytes": 221,
+      "sha256": "b8f6699545a7163269134b50b2236466888814bed3a3fbeb320e4c5935c2a378"
+    },
+    {
+      "log": "maintenance-restart-aui-persistence.log",
+      "checksOrTestsPassed": 77,
+      "bytes": 148,
+      "sha256": "4f7540a25975f42e930bf7471dc86d2cd1bc3b1cbc378bd9ba23717089024abf"
+    },
+    {
+      "log": "maintenance-restart-commissioning.log",
+      "checksOrTestsPassed": 313,
+      "bytes": 181,
+      "sha256": "d0d0d9826694178af235cd0bb92994cf60515def309eb025538f6dccb663bbb9"
+    },
+    {
+      "log": "maintenance-restart-window-review.log",
+      "checksOrTestsPassed": 133,
+      "bytes": 184,
+      "sha256": "f7a0dac16aee6160c6d2dcfd83063df9ce231d2145975190e01c4f9d280126c7"
+    },
+    {
+      "log": "maintenance-review-staging.log",
+      "checksOrTestsPassed": 12,
+      "bytes": 604,
+      "sha256": "a7aa78fffecb98147cd3913c7d476f7b84a0b1a2ee0d71720aea89345046fc02"
+    },
+    {
+      "log": "maintenance-review-window.log",
+      "checksOrTestsPassed": 230,
+      "bytes": 17943,
+      "sha256": "4461e329fbfab3082152e0166c252a150b66d86991742d8edb06dc5f4b2777ad"
+    },
+    {
+      "log": "maintenance-source-checkout.log",
+      "checksOrTestsPassed": 16,
+      "bytes": 2395,
+      "sha256": "0c76928637abbdaa11bf303efccd44d533dd502bd8648c0456723f86df599fe5"
+    },
+    {
+      "log": "maintenance-startup-log.log",
+      "checksOrTestsPassed": 16,
+      "bytes": 180,
+      "sha256": "b25d79bef7fcd830fcfb809b7f86747f8d56d5bb997dcfca7cc72a033b91a923"
+    },
+    {
+      "log": "maintenance-stock-chart.log",
+      "checksOrTestsPassed": 61,
+      "bytes": 5700,
+      "sha256": "7d4ad3aacddcd5ab6af82671599c43dcb26df99a0f53761e1bc33605e5739fb2"
+    },
+    {
+      "log": "maintenance-stock-review.log",
+      "checksOrTestsPassed": 90,
+      "bytes": 6706,
+      "sha256": "72b55d8bb1e97260d1572e01b560ea84d1a4104c7907359bb5d49848cc578809"
+    },
+    {
+      "log": "maintenance-stock-welcome.log",
+      "checksOrTestsPassed": 149,
+      "bytes": 14691,
+      "sha256": "089ed8ae9c0a2c4fac63b654c67dbeeabebce45119aabd581f02de1e9745aa86"
+    }
+  ],
+  "scope": "Native disposable filesystem, source checkout, profile preparation, commissioning and guarded restart tooling only. Counts are separate suites and may overlap; no aggregate unique-test count is claimed. Broker and Prepare/Arm/Collect use real Windows processes and scheduled tasks with marker-only synthetic installations. No OpenCPN application, real boat profile or physical hardware was exercised. Installer package, application mode transitions, plugin lifecycle and boat acceptance remain open."
+}
