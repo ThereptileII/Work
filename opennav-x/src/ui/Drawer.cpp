@@ -1,9 +1,12 @@
 #include "ui/Drawer.h"
 #include "ui/PrototypeGeometry.h"
+#include "ui/ChoiceField.h"
+#include "ui/DisplaySizing.h"
 #include <wx/dcbuffer.h>
 #include <wx/dialog.h>
 #include <wx/frame.h>
 #include <wx/graphics.h>
+#include <wx/popupwin.h>
 #include <wx/sizer.h>
 #ifdef __WXGTK__
 #include <gtk/gtk.h>
@@ -60,10 +63,12 @@ void XNavDrawer::Dismiss() {
 void XNavDrawer::Present(const wxRect &workspace) {
   auto area = workspace;
   area.Deflate(FromDIP(prototype::drawer_gap), FromDIP(prototype::drawer_top));
-  const int wide_width=GetParent()->ToDIP(GetParent()->GetClientSize().x)<=1100
-      ? prototype::compact_configuration_drawer : prototype::configuration_drawer;
-  const int width = (std::min)(FromDIP(wide_ ? wide_width
-                                           : prototype::drawer), area.width);
+  const auto viewport=GetParent()->ToDIP(GetParent()->GetClientSize());
+  const auto layout=prototype::Desktop(viewport.x,viewport.y);
+  const int scaled_wide = viewport.x<=760 ? 0 : interface_scale_ == 150 ? 480 :
+      interface_scale_ == 125 ? 460 : layout.wide_drawer_width;
+  const int logical_width=wide_?scaled_wide:layout.drawer_width;
+  const int width = logical_width ? (std::min)(FromDIP(logical_width),area.width) : area.width;
   if (width < FromDIP(280) || area.height < FromDIP(260)) {
     Hide();
     return;
@@ -107,6 +112,23 @@ void XNavDrawer::SetLight(LightMode mode) {
   close_->SetLightMode(mode);
   back_->SetLightMode(mode);
   Refresh();
+}
+void XNavDrawer::SetInterfaceScale(int percent) {
+  if (!ValidInterfaceScale(percent)) return;
+  if (interface_scale_ == percent) return;
+  interface_scale_ = percent;
+  // Only controls explicitly marked as prototype .btn equivalents resize;
+  // icon targets, tabs, segments and actuator controls retain their contracts.
+  const auto apply=[percent](const auto &self,wxWindow *window)->void {
+    for(auto *child:window->GetChildren()) {
+      if(auto *button=dynamic_cast<XNavButton *>(child))button->SetInterfaceScale(percent);
+      if(auto *field=dynamic_cast<XNavChoiceField *>(child))field->SetInterfaceScale(percent);
+      if(!child->IsTopLevel())self(self,child);
+    }
+  };
+  apply(apply,this);
+  body_->SetFont(UiFont(*body_,percent==125?15:14));
+  body_->Layout();body_->FitInside();
 }
 void XNavDrawer::ClearBody() {
   content_->Clear(true);
@@ -168,6 +190,16 @@ int XNavDrawer::FilterEvent(wxEvent &event) {
     const auto *key = dynamic_cast<wxKeyEvent *>(&event);
     if (key && (key->GetKeyCode() == WXK_ESCAPE ||
                 (key->AltDown() && key->GetKeyCode() == WXK_LEFT))) {
+      for (auto *target=dynamic_cast<wxWindow *>(event.GetEventObject());target;
+           target=target->GetParent())
+        if (dynamic_cast<wxPopupTransientWindow *>(target)) return Event_Skip;
+      // A choice popup owns Escape while open. Dismissing the underlying sheet
+      // would discard the user's draft and leave the transient surface orphaned.
+      for (auto *window : wxTopLevelWindows) {
+        if (!dynamic_cast<wxPopupTransientWindow *>(window) || !window->IsShown()) continue;
+        for (auto *parent=window->GetParent();parent;parent=parent->GetParent())
+          if (parent==this) return Event_Skip;
+      }
       if (has_back_ && on_back)
         CallAfter(on_back);
       else

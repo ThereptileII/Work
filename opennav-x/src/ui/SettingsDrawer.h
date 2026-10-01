@@ -1,6 +1,8 @@
 #pragma once
 #include "ui/Drawer.h"
 #include "ui/ProductPanel.h"
+#include "ui/ChoiceField.h"
+#include "application/DisplayPreferences.h"
 #include <array>
 #include <wx/stattext.h>
 #include <wx/textctrl.h>
@@ -11,6 +13,8 @@ struct SettingsDrawerActions {
   std::function<void(ProductPage)> page;
   std::function<void()> advanced, plugins, diagnostics, fullscreen, legacy, safe;
   std::function<void(LightMode)> theme;
+  std::function<application::DisplayPreferences()> display;
+  std::function<application::CommandResult(const application::DisplayPreferences &)> save_display;
   std::function<application::Settings()> settings;
   std::function<application::CommandResult(const application::Settings &,
                                            const std::string &, double)> save_vessel;
@@ -24,6 +28,7 @@ public:
   SettingsSection Section() const { return section_; }
   void Update(const ProductState &, LightMode);
   void ResetDraft();
+  void SetDisplayPreferences(const application::DisplayPreferences &value);
 private:
   void Build();
   void CopyBlock(int height, std::function<void(XNavPainter &,int)>);
@@ -32,6 +37,9 @@ private:
   void Button(const wxString &, std::function<void()>, ButtonRole = ButtonRole::Normal);
   void VesselForm();
   void SaveVessel();
+  void DisplayForm();
+  void SaveDisplay();
+  void ApplyScale();
   SettingsDrawerActions actions_;
   ProductState state_;
   SettingsSection section_ = SettingsSection::Vessel;
@@ -50,5 +58,11 @@ private:
   bool draft_dirty_ = false;
   bool loading_ = false;
   wxString feedback_;
+  application::DisplayPreferences display_draft_;
+  application::DisplayPreferences display_applied_;
+  bool display_dirty_ = false;
+  wxStaticText *display_message_ = nullptr;
+  XNavChoiceField *scale_field_ = nullptr;
+  XNavChoiceField *layout_field_ = nullptr;
 };
 } // namespace opennav::ui

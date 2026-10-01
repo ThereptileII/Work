@@ -98,6 +98,10 @@ class XNavButton : public wxControl {
   // supplied by the owner; activation never optimistically changes it.
   void SetToggle() { toggle_ = true; SetMinSize(FromDIP(wxSize(48,49))); Refresh(); }
   void SetTextSize(int value) { if(value>=9&&value<=24) { text_size_=value; Refresh(); } }
+  // Mark only prototype .btn-equivalent controls; tabs, icon targets, safety
+  // toggles and segmented choices keep their own geometry.
+  void SetDisplayAction(int base_height, int base_font = 12);
+  void SetInterfaceScale(int percent);
   void SetTextColor(std::uint32_t value) {
     if (text_color_ != value) { text_color_ = value; Refresh(false); }
   }
@@ -127,6 +131,9 @@ class XNavButton : public wxControl {
   bool settings_tab_ = false, suite_link_ = false, vessel_profile_ = false;
   bool toggle_ = false;
   int text_size_ = 12;
+  int action_base_height_ = 0;
+  int action_base_font_ = 12;
+  int interface_scale_ = 100;
   std::optional<std::uint32_t> text_color_;
   wxString suite_detail_;
   double compass_rotation_ = 0;
@@ -151,6 +158,9 @@ class XNavDataValue final : public wxPanel {
   void SetLightMode(LightMode mode);
   void SetReading(const vessel::Sample& sample, vessel::Time now);
   void SetCompact(bool compact);
+  void SetMetricFontSize(int pixels) { if(metric_font_size_!=pixels){metric_font_size_ = pixels; Refresh(false);} }
+  void SetMetricLabelSize(int pixels) { if(metric_label_size_!=pixels){metric_label_size_=pixels;Refresh(false);} }
+  void SetContentInset(int pixels) { if(content_inset_!=pixels){content_inset_=pixels;Refresh(false);} }
 #if wxUSE_HELP
   wxString GetHelpTextAtPoint(const wxPoint &, wxHelpEvent::Origin) const override {
     return hint_;
@@ -165,6 +175,9 @@ class XNavDataValue final : public wxPanel {
   vessel::Sample sample_;
   vessel::Assessment reading_;
   bool compact_ = false;
+  int metric_font_size_ = 0;
+  int metric_label_size_ = 0;
+  int content_inset_ = 0;
 };
 
 // Equal CSS-style rows use cumulative rounding, avoiding per-row integer

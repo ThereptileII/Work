@@ -122,6 +122,8 @@ void XNavHealthDrawer::Build() {
   manage_->Bind(wxEVT_BUTTON,[this](wxCommandEvent &){if(!view_.historical&&actions_.manage)CallAfter(actions_.manage);});
   content_->Add(manage_,0,wxEXPAND|wxTOP,FromDIP(12));
   diagnostics_=new XNavButton(body_,wxID_ANY,"Export diagnostics","Export diagnostics");
+  diagnostics_->SetDisplayAction(44);
+  diagnostics_->SetInterfaceScale(InterfaceScale());
   diagnostics_->Bind(wxEVT_BUTTON,[this](wxCommandEvent &){if(actions_.diagnostics)CallAfter(actions_.diagnostics);});
   content_->Add(diagnostics_,0,wxEXPAND|wxTOP,FromDIP(10));
   body_->Layout();body_->FitInside();

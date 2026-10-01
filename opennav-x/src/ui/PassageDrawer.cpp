@@ -95,6 +95,8 @@ void XNavPassageDrawer::Build() {
     auto *b = new XNavButton(body_, wxID_ANY, label, label);
     b->SetLightMode(light_);
     b->SetMinSize(FromDIP(wxSize(120, 48)));
+    b->SetDisplayAction(48);
+    b->SetInterfaceScale(InterfaceScale());
     b->Bind(wxEVT_BUTTON,
             [this, action](wxCommandEvent &) { CallAfter(action); });
     buttons_.push_back(b);

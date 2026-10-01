@@ -94,6 +94,8 @@ struct ProductGeometry {
 class ProductPanel final : public XNavScroll {
 public:
   ProductPanel(wxWindow *parent, ProductActions actions);
+  void SetInterfaceScale(int percent);
+  int InterfaceScale() const { return interface_scale_; }
   void ShowPage(ProductPage page, LightMode mode);
   std::string PageTitle() const;
   int MinimumValueHeight() const;
@@ -168,6 +170,8 @@ private:
   std::vector<ActionGrid> action_grids_;
   std::vector<wxPanel *> visuals_;
   std::vector<std::pair<XNavButton *, std::function<wxString(const ProductState &)>>> button_text_;
+  std::vector<XNavButton *> action_buttons_;
+  int interface_scale_ = 100;
   int action_width_ = 200;
   bool first_heading_ = true;
   bool pilot_advanced_ = false;

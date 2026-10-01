@@ -29,20 +29,20 @@ wxString Number(const vessel::Sample &sample, vessel::Time now, int decimals,
 std::optional<application::CommandResult> WaypointSheet(
     wxWindow &parent, LightMode mode, ContextAction action,
     const application::Waypoint &point,
-    const application::NavigationActions &navigation) {
+    const application::NavigationActions &navigation, int scale_percent) {
   if (action == ContextAction::GoTo && navigation.go_to_waypoint) {
     if (ConfirmSheet(parent, mode, "Go to " + Name(point),
-        "Start a passage to this waypoint? Check the chart and passage before starting.", "START"))
+        "Start a passage to this waypoint? Check the chart and passage before starting.", "START", scale_percent))
       return navigation.go_to_waypoint(point);
   } else if (action == ContextAction::Edit && navigation.edit_waypoint) {
     auto fields = EditSheet(parent, mode, "Edit waypoint",
         "Active-route, anchor-watch and protected points are read-only here.",
-        {{"Name", W(point.name), 128}, {"Description", W(point.description), 2048}});
+        {{"Name", W(point.name), 128}, {"Description", W(point.description), 2048}}, "Save", scale_percent);
     if (fields) return navigation.edit_waypoint(point, (*fields)[0], (*fields)[1]);
   } else if (action == ContextAction::Remove && navigation.delete_waypoint) {
     if (ConfirmSheet(parent, mode, "Delete waypoint",
         Name(point) + " will be removed from the shared OpenCPN database. Review before removing it.",
-        "Delete waypoint"))
+        "Delete waypoint", scale_percent))
       return navigation.delete_waypoint(point);
   }
   return {};

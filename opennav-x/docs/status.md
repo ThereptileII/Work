@@ -2,6 +2,15 @@
 
 ## Current qualification and boat cleanup — 2026-10-01
 
+The next coherent candidate combines the focused native CMake extraction repair
+(SCRUM-219) with the reviewed Display preferences and 1920×1080 geometry
+(SCRUM-216/213). The seven Display implementation increments preserve the
+unchanged HTML reference and match the previously checked component source;
+the pure geometry CTest passes 1/1 in the integration worktree. Dependency
+reuse work remains isolated and disabled. Complete Linux, native Windows and
+boat gates must qualify this new revision before it is installed or old
+user-facing copies are retired. No website work or hardware output is included.
+
 The corrected frozen candidate `e9737d6bad9f3eb3db71877bce0816f59c62b0e7`
 has not qualified. Its [prototype run](https://github.com/ThereptileII/Work/actions/runs/36850600318)
 reached terminal cancellation in both native build jobs. The downloaded,
@@ -13,9 +22,12 @@ boundary in a disposable native probe; no root cause or replacement acceptance
 is claimed. See [retained evidence](evidence/scrum-219-curl-preparation-stall.md).
 A short native probe now reproduces a stall in Windows system tar on the exact
 locked curl XZ archive; CMake extracts those same bytes in 936 ms. SCRUM-219
-is validating a narrow CMake-extraction correction and complete source-file
-equivalence. No full-product acceptance is inferred from that diagnostic.
-The full integrated candidate jobs remain separately under observation. No
+has now passed its corrected native extraction probe in 767 ms, with all
+4,406 source paths and SHA-256s identical to the locked archive. The focused
+repair is validated; full-product acceptance is not inferred from that result.
+The earlier e973 full integrated Linux job has passed, including its real
+three-hour endurance and fixture-free build. Its native job remains separately
+under observation; this is not acceptance of the new revision. No
 replacement was installed on the boat and obsolete copies remain intact until
 the new installation and recovery modes are known-good.
 

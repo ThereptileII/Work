@@ -12,7 +12,8 @@ struct SheetField {
 std::optional<std::vector<std::string>>
 EditSheet(wxWindow &parent, LightMode mode, const wxString &title,
           const wxString &detail, std::vector<SheetField> fields,
-          const wxString &accept = "Save");
+          const wxString &accept = "Save", int scale_percent = -1);
 bool ConfirmSheet(wxWindow &parent, LightMode mode, const wxString &title,
-                  const wxString &detail, const wxString &accept);
+                  const wxString &detail, const wxString &accept,
+                  int scale_percent = -1);
 } // namespace opennav::ui

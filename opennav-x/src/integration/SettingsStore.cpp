@@ -7,6 +7,7 @@ namespace {
 constexpr const char *key = "/OpenNav/AlphaSettings";
 constexpr const char *name_key = "/OpenNav/VesselName";
 constexpr const char *chart_key = "/Settings/GlobalState/S52_MAR_SAFETY_CONTOUR";
+constexpr const char *display_key = "/OpenNav/DisplayPreferencesV1";
 bool ValidName(const std::string &name) {
   if (name.empty()) return true;  // Unconfigured is a real profile state.
   if (name.size() > 128 ||
@@ -18,6 +19,15 @@ bool ValidName(const std::string &name) {
 SettingsStore::SettingsStore(wxFileConfig &config) : config_(config) {
   if (!wxIsMainThread())
     throw std::logic_error("Settings require the application thread");
+  wxString stored_display;
+  if (config_.Read(display_key, &stored_display)) {
+    try {
+      display_ = application::DecodeDisplayPreferences(
+          stored_display.ToStdString(wxConvUTF8));
+    } catch (const std::exception &) {
+      display_status_ = "Stored display preferences rejected; using 100% and Balanced";
+    }
+  }
   wxString stored_name;
   if (config_.Read(name_key, &stored_name)) {
     const auto candidate = stored_name.ToStdString(wxConvUTF8);
@@ -37,6 +47,25 @@ SettingsStore::SettingsStore(wxFileConfig &config) : config_(config) {
         std::string("Settings rejected; live model disabled: ") + e.what();
     wxLogWarning("OpenNav %s", wxString::FromUTF8(status_));
   }
+}
+application::CommandResult SettingsStore::SaveDisplay(
+    const application::DisplayPreferences &next) {
+  if (!wxIsMainThread()) return {false, "Settings require the application thread"};
+  try {
+    const auto encoded = application::EncodeDisplayPreferences(next);
+    wxString previous;
+    const bool existed = config_.Read(display_key, &previous);
+    if (!config_.Write(display_key, wxString::FromUTF8(encoded)) || !config_.Flush()) {
+      const bool restored = (existed ? config_.Write(display_key, previous)
+          : (!config_.HasEntry(display_key) || config_.DeleteEntry(display_key))) &&
+          config_.Flush();
+      return {false, restored ? "Display preferences could not be saved; previous values restored"
+                              : "Display save/restore failed; inspect storage before restarting"};
+    }
+    display_ = next;
+    display_status_ = "Display preferences saved in OpenCPN profile";
+    return {true, display_status_};
+  } catch (const std::exception &e) { return {false, e.what()}; }
 }
 application::CommandResult SettingsStore::SaveVessel(
     const application::Settings &next, const std::string &name,

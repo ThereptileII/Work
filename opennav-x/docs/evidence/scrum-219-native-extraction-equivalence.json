@@ -1,0 +1,15 @@
+{
+  "sourceCommit": "f1e9616738aaaf23d29e4d815f344404f94da659",
+  "artifactId": 11168459240,
+  "artifactSha256": "34b63bd41fc1331454eeadfdadf1e2081418c0cf39a64ef92b1eef04dd9b7c87",
+  "runId": 36874980766,
+  "sourceFilesCompared": 4406,
+  "allPathAndSha256Equal": true,
+  "extraction": {
+    "exitCode": 0,
+    "timedOut": false,
+    "elapsedMs": 767,
+    "pid": 8104
+  },
+  "productQualified": false
+}

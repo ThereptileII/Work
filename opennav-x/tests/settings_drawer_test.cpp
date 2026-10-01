@@ -14,8 +14,10 @@
 #include <wx/frame.h>
 #include <wx/graphics.h>
 #include <wx/log.h>
+#include <wx/popupwin.h>
 #include <wx/sizer.h>
 #include <wx/timer.h>
+#include <wx/uiaction.h>
 #ifdef __WXGTK__
 #include <gtk/gtk.h>
 #endif
@@ -62,6 +64,17 @@ public:
     actions.diagnostics=[this]{++diagnostics_;};
     actions.theme=[this](ui::LightMode mode){light_=mode;Feed();};
     actions.settings=[this]{return state_.settings;};
+    actions.display=[this]{return display_;};
+    actions.save_display=[this](const application::DisplayPreferences &next){
+      ++display_saves_;
+      Check(next.scale_percent==125 && next.layout==application::ChartLayout::ChartFocus,
+            "both display choices submitted together");
+      if(display_saves_==1)return application::CommandResult{false,"Synthetic display save failure"};
+      display_=next;
+      panel_->SetDisplayPreferences(next);
+      panel_->Present(wxRect(frame_->ClientToScreen({80,68}),wxSize(1014,698)));
+      return application::CommandResult{true,"Display preferences applied"};
+    };
     actions.save_vessel=[this](const application::Settings &settings,
                                const std::string &name,double chart_depth){
       ++saves_;
@@ -110,6 +123,25 @@ private:
     }
     return nullptr;
   }
+  ui::XNavChoiceField *FindChoice(const wxString &name) {
+    const auto find=[&](const auto &self,wxWindow *root)->ui::XNavChoiceField * {
+      for(auto *child:root->GetChildren()) {
+        if(auto *choice=dynamic_cast<ui::XNavChoiceField *>(child);
+           choice && choice->GetName()==name)return choice;
+        if(auto *nested=self(self,child))return nested;
+      }
+      return nullptr;
+    };
+    return find(find,panel_);
+  }
+  void Choose(const wxString &name,int index) {
+    auto *choice=FindChoice(name);
+    Check(choice && choice->IsShownOnScreen(),"visible owner-drawn choice field");
+    choice->SetSelection(index);
+    wxCommandEvent event(wxEVT_CHOICE,choice->GetId());
+    event.SetEventObject(choice);event.SetInt(index);
+    choice->GetEventHandler()->ProcessEvent(event);
+  }
   void Click(const wxString &label) {
     auto *b=Find(panel_,label);
     Check(b && b->IsShownOnScreen() && b->IsEnabled(),"visible enabled contextual action");
@@ -118,7 +150,9 @@ private:
   }
   void Capture(const char *name) {
     Check(frame_->GetClientSize()==wxSize(1280,800),"canonical native screen");
-    Check(panel_->GetScreenRect()==wxRect(frame_->ClientToScreen({648,80}),wxSize(432,674)),"wide preferences geometry preserves chart and rail");
+    const int width=display_.scale_percent==125?460:display_.scale_percent==150?480:432;
+    Check(panel_->GetScreenRect()==wxRect(frame_->ClientToScreen({1080-width,80}),wxSize(width,674)),
+          "wide preferences geometry follows applied interface scale");
     Check(panel_->GetParent()->GetScreenRect().Contains(panel_->GetScreenRect()),"host contains painted view");
     const auto origin=frame_->ClientToScreen({0,0});
 #ifdef __WXGTK__
@@ -157,6 +191,11 @@ private:
             first=false;
             const auto rect=FindText(panel_,wxString::FromUTF8(label))->GetParent()->GetScreenRect();
             const auto expected=reference[index++];
+            if (std::abs(rect.x-expected.x)>2 || std::abs(rect.y-expected.y)>2 ||
+                std::abs(rect.width-expected.width)>2 || rect.height!=expected.height)
+              std::cerr << label << " actual " << rect.x << ',' << rect.y << ','
+                        << rect.width << ',' << rect.height << " expected " <<
+                  expected.x << ',' << expected.y << ',' << expected.width << ',' << expected.height << '\n';
             Check(std::abs(rect.x-expected.x)<=2 && std::abs(rect.y-expected.y)<=2 &&
                   std::abs(rect.width-expected.width)<=2 && rect.height==expected.height,
                   "vessel input geometry follows independent Windows HTML");
@@ -237,20 +276,92 @@ private:
         Check(static_cast<ui::XNavButton *>(Find(panel_,"Day"))->IsSelected() &&
               !static_cast<ui::XNavButton *>(Find(panel_,"Night"))->IsSelected(),
               "external light return restores exclusive selection");
-        Capture("display-day");Click("Dusk");break;
-      case 10: Check(light_==ui::LightMode::Dusk,"light callback applied");Capture("display-dusk");Click("Night");break;
-      case 11: Check(light_==ui::LightMode::Night,"night callback applied");Capture("display-night");Click("Toggle fullscreen");break;
-      case 12: Check(fullscreen_==1,"fullscreen invokes one display callback");Click("Personalise instruments");break;
-      case 13: Check(navigations_==2 && last_page_==ui::ProductPage::RailLayout,"rail configuration preserved");
+        Check(FindChoice("Interface scale") && FindChoice("Chart layout"),
+              "both prototype select fields visible");
+        {
+          auto *choice=FindChoice("Interface scale");
+          wxUIActionSimulator input;
+          const auto rect=choice->GetScreenRect();
+          const wxPoint center(rect.x+rect.width/2,rect.y+rect.height/2);
+          Check(input.MouseMove(center) && input.MouseClick(),"activate Display choice with pointer");
+          wxTheApp->Yield(true);
+          auto popup=[choice]{for(auto *child:wxGetTopLevelParent(choice)->GetChildren())
+            if(dynamic_cast<wxPopupTransientWindow *>(child))return child;
+            return static_cast<wxWindow *>(nullptr);};
+          Check(popup()!=nullptr,"Display choice popup opens from field activation");
+          wxKeyEvent escape(wxEVT_CHAR_HOOK);escape.m_keyCode=WXK_ESCAPE;
+          escape.SetEventObject(popup());
+          popup()->ProcessWindowEvent(escape);
+          wxTheApp->Yield(true);
+          Check(panel_->IsShown(),"Escape closes choice popup without dismissing settings");
+          wxMilliSleep(400); // GTK otherwise coalesces the next activation as a double-click.
+          Check(input.MouseMove(center) && input.MouseClick(),"reopen Display choice with pointer");
+          wxTheApp->Yield(true);
+          Check(popup()!=nullptr,"Display choice popup reopens after Escape");
+          wxKeyEvent second_escape(wxEVT_CHAR_HOOK);second_escape.m_keyCode=WXK_ESCAPE;
+          second_escape.SetEventObject(popup());
+          popup()->ProcessWindowEvent(second_escape);
+          wxTheApp->Yield(true);
+          Check(popup()==nullptr && panel_->IsShown(),
+                "second Escape leaves a closed field and visible settings drawer");
+          wxMilliSleep(250);wxTheApp->Yield(true);
+        }
+        Capture("display-day");
+        Choose("Interface scale",1);Choose("Chart layout",1);
+        Check(display_saves_==0 && display_.scale_percent==100,
+              "select changes remain draft before Apply");
+        light_=ui::LightMode::Night;Feed();
+        Check(FindChoice("Interface scale")->GetSelection()==1 &&
+              FindChoice("Chart layout")->GetSelection()==1,
+              "timer and theme refresh preserve uncommitted selection");
+        Click("Apply display preferences");break;
+      case 10:
+        Check(display_saves_==1 && display_.scale_percent==100,
+              "failed display save leaves applied scale unchanged");
+        Check(panel_->GetScreenRect().width==432 &&
+              FindChoice("Interface scale")->GetSelection()==1,
+              "failed display save retains editable draft without resizing");
+        Click("Apply display preferences");break;
+      case 11:
+        Check(display_saves_==2 && display_.scale_percent==125 &&
+              display_.layout==application::ChartLayout::ChartFocus,
+              "successful Apply commits both choices");
+        Check(panel_->GetScreenRect().width==460,"successful Apply resizes wide drawer immediately");
+        {
+          auto *apply=dynamic_cast<ui::XNavButton *>(Find(panel_,"Apply display preferences"));
+          Check(apply && apply->GetMinSize().y==panel_->FromDIP(48),
+                "125 percent keeps the primary action's base height");
+          auto larger=display_;larger.scale_percent=150;
+          display_=larger;
+          panel_->SetDisplayPreferences(larger);
+          panel_->Present(wxRect(frame_->ClientToScreen({80,68}),wxSize(1014,698)));
+          Check(apply->GetMinSize().y==panel_->FromDIP(56),
+                "150 percent raises a marked primary action to 56 logical pixels");
+          Check(FindChoice("Interface scale")->GetMinSize().y==panel_->FromDIP(56),
+                "150 percent raises the owner-drawn field to 56 logical pixels");
+          wxTheApp->Yield(true);
+          Capture("display-150-chart-night");
+          display_.scale_percent=125;
+          panel_->SetDisplayPreferences(display_);
+          panel_->Present(wxRect(frame_->ClientToScreen({80,68}),wxSize(1014,698)));
+          wxTheApp->Yield(true);
+          Check(apply->GetMinSize().y==panel_->FromDIP(48),
+                "returning to 125 percent restores the action's base height");
+        }
+        Capture("display-applied-125-chart");Click("Dusk");break;
+      case 12: Check(light_==ui::LightMode::Dusk,"light callback applied");Capture("display-dusk");Click("Night");break;
+      case 13: Check(light_==ui::LightMode::Night,"night callback applied");Capture("display-night");Click("Toggle fullscreen");break;
+      case 14: Check(fullscreen_==1,"fullscreen invokes one display callback");Click("Personalise instruments");break;
+      case 15: Check(navigations_==2 && last_page_==ui::ProductPage::RailLayout,"rail configuration preserved");
         Click("System");break;
-      case 14:
+      case 16:
         Check(Find(panel_,"Legacy mode") && !Find(panel_,"Legacy mode")->IsEnabled(),"unavailable restart action disabled");
         Check(!Find(panel_,"AUTO") && !Find(panel_,"STBY"),"preferences cannot execute physical controls");
         Capture("system-night");Click("Diagnostics");break;
-      case 15: Check(diagnostics_==1,"diagnostics callback once");Click("Radar");break;
-      case 16: Capture("settings-radar-night");Click("Autopilot");break;
-      case 17: Capture("settings-autopilot-night");Click("Close");break;
-      case 18: Check(closed_==1 && !panel_->IsShown(),"close hides only preferences");Finish();break;
+      case 17: Check(diagnostics_==1,"diagnostics callback once");Click("Radar");break;
+      case 18: Capture("settings-radar-night");Click("Autopilot");break;
+      case 19: Capture("settings-autopilot-night");Click("Close");break;
+      case 20: Check(closed_==1 && !panel_->IsShown(),"close hides only preferences");Finish();break;
       }
     } catch(const std::exception &e) {
       failed_=true;std::cerr<<e.what()<<std::endl;Finish();
@@ -268,6 +379,8 @@ private:
   ui::XNavSettingsDrawer *panel_=nullptr;
   wxTimer timer_;
   int saves_=0;
+  int display_saves_=0;
+  application::DisplayPreferences display_;
   ui::ProductState state_;
   ui::ProductPage last_page_=ui::ProductPage::Home;
   int navigations_=0,advanced_=0,plugins_=0,fullscreen_=0,diagnostics_=0;

@@ -1,4 +1,7 @@
 #include "ui/Sheet.h"
+#include "ui/DisplaySizing.h"
+#include "ui/Drawer.h"
+#include "ui/ProductPanel.h"
 #include <wx/dialog.h>
 #include <wx/scrolwin.h>
 #include <wx/sizer.h>
@@ -6,10 +9,21 @@
 #include <wx/textctrl.h>
 #include <wx/weakref.h>
 namespace opennav::ui {
+namespace {
+int OwnerScale(wxWindow &parent,int requested) {
+  if(ValidInterfaceScale(requested))return requested;
+  for(auto *owner=&parent;owner;owner=owner->GetParent()) {
+    if(auto *product=dynamic_cast<ProductPanel *>(owner))return product->InterfaceScale();
+    if(auto *drawer=dynamic_cast<XNavDrawer *>(owner))return drawer->InterfaceScale();
+  }
+  return 100;
+}
+}
 std::optional<std::vector<std::string>>
 EditSheet(wxWindow &parent, LightMode mode, const wxString &title,
           const wxString &detail, std::vector<SheetField> fields,
-          const wxString &accept) {
+          const wxString &accept, int scale_percent) {
+  scale_percent=OwnerScale(parent,scale_percent);
   wxDialog dialog(&parent, wxID_ANY, title, wxDefaultPosition, wxDefaultSize,
                   wxBORDER_NONE | wxTAB_TRAVERSAL);
   dialog.SetName(title);
@@ -47,12 +61,15 @@ EditSheet(wxWindow &parent, LightMode mode, const wxString &title,
   std::vector<wxTextCtrl *> inputs;
   for (const auto &f : fields) {
     label(f.label, 12, true);
+    const bool multiline = f.maximum > 512;
     auto *t =
         new wxTextCtrl(content, wxID_ANY, f.value, wxDefaultPosition,
-                       dialog.FromDIP(wxSize(400, f.maximum > 512 ? 96 : 48)),
-                       wxBORDER_NONE | (f.maximum > 512 ? wxTE_MULTILINE : 0));
+                       dialog.FromDIP(wxSize(
+                           400, multiline ? 96 : DisplayFieldHeight(scale_percent))),
+                       wxBORDER_NONE | (multiline ? wxTE_MULTILINE : 0));
     t->SetName(f.label);
-    t->SetFont(UiFont(dialog, 18));
+    t->SetFont(
+        UiFont(dialog, multiline ? 18 : DisplayFieldFont(scale_percent)));
     t->SetBackgroundColour(Colour(c.background));
     t->SetForegroundColour(Colour(c.primary));
     t->SetMaxLength(f.maximum);
@@ -77,6 +94,11 @@ EditSheet(wxWindow &parent, LightMode mode, const wxString &title,
     auto *b = new XNavButton(&dialog, wxID_ANY, pair.first, pair.first);
     b->SetLightMode(mode);
     b->SetRole(pair.second==wxID_OK?ButtonRole::Primary:ButtonRole::Quiet);
+    if (scale_percent == 150) {
+      const int height = DisplayActionHeight(scale_percent, 48);
+      b->SetMinSize(dialog.FromDIP(wxSize(height, height)));
+      b->SetTextSize(DisplayActionFont(scale_percent, 12));
+    }
     b->Bind(wxEVT_BUTTON, [&dialog, id = pair.second](wxCommandEvent &) {
       dialog.EndModal(id);
     });
@@ -117,7 +139,8 @@ EditSheet(wxWindow &parent, LightMode mode, const wxString &title,
   return result;
 }
 bool ConfirmSheet(wxWindow &parent, LightMode mode, const wxString &title,
-                  const wxString &detail, const wxString &accept) {
-  return EditSheet(parent, mode, title, detail, {}, accept).has_value();
+                  const wxString &detail, const wxString &accept,
+                  int scale_percent) {
+  return EditSheet(parent, mode, title, detail, {}, accept, scale_percent).has_value();
 }
 } // namespace opennav::ui

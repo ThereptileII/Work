@@ -92,6 +92,7 @@ Shell::Shell(wxFrame &frame, wxAuiManager &manager, ShellActions actions,
              LightMode mode, bool simulation)
     : frame_(frame), manager_(manager), actions_(std::move(actions)),
       mode_(mode), simulation_(simulation && integration::TestFixturesEnabled()), timer_(this) {
+  if (actions_.display) display_=actions_.display();
   original_pane_border_ = manager_.GetArtProvider()->GetMetric(wxAUI_DOCKART_PANE_BORDER_SIZE);
   original_sash_size_ = manager_.GetArtProvider()->GetMetric(wxAUI_DOCKART_SASH_SIZE);
   manager_.GetArtProvider()->SetMetric(wxAUI_DOCKART_PANE_BORDER_SIZE, 0);
@@ -303,22 +304,22 @@ Shell::Shell(wxFrame &frame, wxAuiManager &manager, ShellActions actions,
   finish_route_ = Button(route_host, "Done", "Name and save this route", [this] {
     const auto fields=EditSheet(frame_,mode_,"Save route",
       "Name this route. You can activate it after saving.",
-      {{"Name","",128},{"Description","",2048}},"Save route");
+      {{"Name","",128},{"Description","",2048}},"Save route",display_.scale_percent);
     if(!fields || !actions_.navigation.finish_route_named) return;
     const auto result=actions_.navigation.finish_route_named((*fields)[0],(*fields)[1]);
     if(result.ok) { Tick(); ShowObject(result.identity,true); }
-    else ConfirmSheet(frame_,mode_,"Route not saved",wxString::FromUTF8(result.message),"Back");
+    else ConfirmSheet(frame_,mode_,"Route not saved",wxString::FromUTF8(result.message),"Back",display_.scale_percent);
   });
   undo_route_=Button(route_host,"Undo","Undo last route point",[this]{
     if (!actions_.navigation.undo_route_point) return;
     const auto result = actions_.navigation.undo_route_point();
     if (!result.ok)
-      ConfirmSheet(frame_, mode_, "Cannot undo route point", wxString::FromUTF8(result.message), "Back");
+      ConfirmSheet(frame_, mode_, "Cannot undo route point", wxString::FromUTF8(result.message), "Back", display_.scale_percent);
     Tick();
   });
   undo_route_->Enable(false);
   cancel_route_=Button(route_host,"Cancel","Cancel route creation",[this]{
-    if(actions_.navigation.cancel_route && ConfirmSheet(frame_,mode_,"Cancel route?","Discard this unfinished route? Existing routes are preserved.","Discard route"))actions_.navigation.cancel_route();
+    if(actions_.navigation.cancel_route && ConfirmSheet(frame_,mode_,"Cancel route?","Discard this unfinished route? Existing routes are preserved.","Discard route",display_.scale_percent))actions_.navigation.cancel_route();
   });
   for (auto *button : {cancel_route_, undo_route_, finish_route_}) {
     button->SetMinSize(frame_.FromDIP(wxSize(88, 48)));
@@ -419,6 +420,7 @@ Shell::Shell(wxFrame &frame, wxAuiManager &manager, ShellActions actions,
     return actions_.pilot_identity();
   };
   product_ = new ProductPanel(&frame_, std::move(product_actions));
+  product_->SetInterfaceScale(display_.scale_percent);
   manager_.AddPane(product_, wxAuiPaneInfo()
                                  .Name("OpenNavProduct")
                                  .CenterPane()
@@ -568,13 +570,14 @@ std::vector<ProductGeometry> Shell::InteractionControls() const {
     if (std::find(visited.begin(), visited.end(), window) != visited.end()) return;
     visited.push_back(window);
     const bool field = dynamic_cast<wxTextCtrl *>(window) != nullptr && window->IsShownOnScreen();
-    if (dynamic_cast<XNavButton *>(window) || dynamic_cast<XNavRange *>(window) || field) {
+    const bool choice = dynamic_cast<XNavChoiceField *>(window) != nullptr && window->IsShownOnScreen();
+    if (dynamic_cast<XNavButton *>(window) || dynamic_cast<XNavRange *>(window) || field || choice) {
       const auto rectangle = window->GetScreenRect();
       bool visible = window->IsShownOnScreen();
       for (auto *parent = window->GetParent(); parent && !parent->IsTopLevel();
            parent = parent->GetParent())
         visible = visible && parent->GetScreenRect().Contains(rectangle);
-      const auto label = field ? "Field: " + window->GetName() : window->GetLabel();
+      const auto label = field || choice ? "Field: " + window->GetName() : window->GetLabel();
       result.push_back({label.ToStdString(wxConvUTF8), rectangle,
                         window->IsEnabled(), visible, window->GetName().ToStdString(wxConvUTF8)});
     }
@@ -665,6 +668,12 @@ void Shell::UpdateRail(const std::vector<std::string> &keys, vessel::Time now) {
                                 wxString::FromUTF8(item.unit), decimals);
           value->SetLightMode(mode_);
           value->SetCompact(true);
+          const auto viewport=frame_.ToDIP(frame_.GetClientSize());
+          const auto layout=prototype::DisplayDesktop(viewport.x,viewport.y,display_.layout);
+          value->SetMetricFontSize(display_.layout==application::ChartLayout::InstrumentFocus
+              ? (viewport.x<=760?32:58) : layout.metric_value_font_size);
+          value->SetMetricLabelSize(prototype::MetricLabelSize(viewport.x,viewport.y));
+          value->SetContentInset(layout.data_rail_padding_x);
           rail_values_.push_back({key, value});
           rail_scroll_->GetSizer()->Add(value, 1, wxEXPAND);
         }
@@ -707,11 +716,14 @@ void Shell::ApplyResponsiveLayout() {
   const auto size = frame_.ToDIP(frame_.GetClientSize());
   const int layout_class = (size.x <= 1100 ? 1 : 0) |
       (size.x > 760 && size.y <= 740 ? 2 : 0) |
-      (size.x > 760 && size.y <= 600 ? 4 : 0);
+      (size.x > 760 && size.y <= 600 ? 4 : 0) |
+      (size.x >= 1500 ? 8 : 0) |
+      (size.x >= 1500 && size.y >= 900 ? 16 : 0) |
+      (size.x <= 760 ? 32 : 0);
   const int dpi = frame_.GetDPI().x;
   if (layout_class == responsive_class_ && dpi == responsive_dpi_) return;
   responsive_class_ = layout_class; responsive_dpi_ = dpi;
-  const auto layout = prototype::Desktop(size.x, size.y);
+  const auto layout = prototype::DisplayDesktop(size.x, size.y, display_.layout);
   const auto dip = [this](int v) { return frame_.FromDIP(v); };
   const auto pane_size = [&](const char *name, int width, int height) {
     auto &pane = manager_.GetPane(name);
@@ -725,6 +737,13 @@ void Shell::ApplyResponsiveLayout() {
   pane_size("OpenNavTools", layout.navigation, -1);
   pane_size("OpenNavData", layout.rail, -1);
   pane_size("OpenNavHorizon", -1, layout.horizon);
+  const int metric = display_.layout == application::ChartLayout::InstrumentFocus
+      ? (size.x <= 760 ? 32 : 58) : layout.metric_value_font_size;
+  for (const auto &value : rail_values_) {
+    value.second->SetMetricFontSize(metric);
+    value.second->SetMetricLabelSize(prototype::MetricLabelSize(size.x,size.y));
+    value.second->SetContentInset(layout.data_rail_padding_x);
+  }
   auto *left = navigation_divider_->GetParent();
   auto *tools = left->GetSizer();
   tools->Clear(false);
@@ -751,13 +770,13 @@ void Shell::ApplyResponsiveLayout() {
     tools->AddSpacer(dip(layout.nav_inset));
   } else tools->AddSpacer(dip(layout.nav_inset-layout.nav_gap));
   rail_header_->SetMinSize(wxSize(dip(layout.rail), dip(layout.rail_header)));
-  rail_configure_->SetMinSize(wxSize(dip(layout.rail == 156 ? 30 : 40),
-                                    dip(layout.rail == 156 ? 30 : 40)));
-  rail_header_->GetSizer()->GetItem(std::size_t(0))->SetBorder(dip(layout.rail == 156 ? 13 : 18));
+  rail_configure_->SetMinSize(wxSize(dip(size.x <= 1100 ? 30 : 40),
+                                    dip(size.x <= 1100 ? 30 : 40)));
+  rail_header_->GetSizer()->GetItem(std::size_t(0))->SetBorder(dip(layout.data_rail_padding_x));
   auto *container = rail_header_->GetParent()->GetSizer();
   container->GetItem(std::size_t(2))->AssignSpacer(0, dip(layout.pilot_gap));
   auto *pilot_row = container->GetItem(std::size_t(3))->GetSizer();
-  const int inset = layout.rail == 156 ? 14 : 19;
+  const int inset = size.x <= 1100 ? 14 : 19;
   pilot_row->GetItem(std::size_t(0))->AssignSpacer(dip(inset), 0);
   pilot_row->GetItem(std::size_t(2))->AssignSpacer(dip(inset-1), 0);
   pilot_summary_->SetMinSize(wxSize(dip(layout.rail-inset*2+1), dip(layout.pilot_height)));
@@ -767,6 +786,19 @@ void Shell::ApplyResponsiveLayout() {
   // mutation or navigation processing is needed for a display-size change.
   manager_.Update();
   brand_panel_->Refresh(false);
+}
+
+void Shell::ApplyOwnedScale() {
+  const int percent=display_.scale_percent;
+  if(product_)product_->SetInterfaceScale(percent);
+  for(auto *drawer:{static_cast<XNavDrawer *>(ais_drawer_),
+                    static_cast<XNavDrawer *>(passage_drawer_),
+                    static_cast<XNavDrawer *>(settings_drawer_),
+                    static_cast<XNavDrawer *>(anchor_drawer_),
+                    static_cast<XNavDrawer *>(pilot_drawer_),
+                    static_cast<XNavDrawer *>(alert_drawer_),
+                    static_cast<XNavDrawer *>(health_drawer_)})
+    if(drawer)drawer->SetInterfaceScale(percent);
 }
 
 void Shell::Tick() {
@@ -1182,9 +1214,9 @@ void Shell::ShowObject(const std::string &id, bool route) {
       return;
     }
     if (!point || state_.simulated || state_.replayed) return;
-    const auto result = WaypointSheet(frame_, mode_, action, *point, actions_.navigation);
+    const auto result = WaypointSheet(frame_, mode_, action, *point, actions_.navigation, display_.scale_percent);
     if (result && !result->ok)
-      ConfirmSheet(frame_, mode_, "Unable to continue", wxString::FromUTF8(result->message), "Back");
+      ConfirmSheet(frame_, mode_, "Unable to continue", wxString::FromUTF8(result->message), "Back", display_.scale_percent);
     if (result && result->ok && (action == ContextAction::Remove || action == ContextAction::GoTo))
       ShowNavigation();
     else ShowObject(id, false);
@@ -1198,7 +1230,7 @@ void Shell::ShowAis(int mmsi) {
 wxRect Shell::DrawerWorkspace() const {
   const auto size = frame_.GetClientSize();
   const auto logical=frame_.ToDIP(size);
-  const auto layout=prototype::Desktop(logical.x,logical.y);
+  const auto layout=prototype::DisplayDesktop(logical.x,logical.y,display_.layout);
   const int left = frame_.FromDIP(layout.navigation), top = frame_.FromDIP(layout.top);
   return {frame_.ClientToScreen({left, top}),
       wxSize(size.x-left-frame_.FromDIP(layout.rail), size.y-top-frame_.FromDIP(prototype::footer))};
@@ -1220,7 +1252,7 @@ void Shell::ShowTraffic(int mmsi) {
       }
       if (!result.ok) {
         ais_selection_.Clear();
-        ConfirmSheet(frame_, mode_, "Unable to select target", wxString::FromUTF8(result.message), "Back");
+        ConfirmSheet(frame_, mode_, "Unable to select target", wxString::FromUTF8(result.message), "Back", display_.scale_percent);
       } else {
         // Prototype showTarget returns to the chart after a successful jump.
         // Keep the validated identity highlighted; a failed action stays here.
@@ -1236,6 +1268,7 @@ void Shell::ShowTraffic(int mmsi) {
   }
   ais_drawer_->Update(ais_state_, online_ais_state_, vessel::Clock::now(), mode_);
   if (mmsi > 0) ais_drawer_->Target(mmsi); else ais_drawer_->List();
+  ais_drawer_->SetInterfaceScale(display_.scale_percent);
   ais_drawer_->Present(DrawerWorkspace());
   Tick();
 }
@@ -1270,6 +1303,7 @@ void Shell::ShowPassage() {
   }
   passage_drawer_->Update(state_, field_snapshot_.advice, field_snapshot_.energy,
                           field_snapshot_.now, mode_);
+  passage_drawer_->SetInterfaceScale(display_.scale_percent);
   passage_drawer_->Present(DrawerWorkspace());
   Tick();
 }
@@ -1286,24 +1320,47 @@ void Shell::ShowSettings() {
     actions.fullscreen = [this] { frame_.ShowFullScreen(!frame_.IsFullScreen()); };
     actions.theme = [this](LightMode mode) { SetLight(mode); };
     actions.settings = actions_.settings;
+    actions.display = actions_.display;
+    actions.save_display = [this](const application::DisplayPreferences &next) {
+      return ApplyDisplayPreferences(next);
+    };
     actions.save_vessel = actions_.save_vessel;
     actions.legacy = actions_.legacy;
     actions.safe = actions_.safe;
     settings_drawer_ = new XNavSettingsDrawer(frame_, std::move(actions));
     settings_drawer_->on_dismiss=[this]{if(settings_drawer_)settings_drawer_->ResetDraft();};
   }
+  settings_drawer_->SetInterfaceScale(display_.scale_percent);
   settings_drawer_->Present(DrawerWorkspace());
   Tick();
+}
+application::CommandResult Shell::ApplyDisplayPreferences(
+    const application::DisplayPreferences &next) {
+  if (!application::ValidDisplayPreferences(next))
+    return {false,"Choose a supported interface scale and chart layout"};
+  if (!actions_.save_display) return {false,"Display preferences unavailable"};
+  const auto result=actions_.save_display(next);
+  if (!result.ok) return result;
+  display_=next;
+  ApplyOwnedScale();
+  responsive_class_=-1;
+  ApplyResponsiveLayout();
+  if (settings_drawer_) settings_drawer_->SetDisplayPreferences(next);
+  if (settings_drawer_) settings_drawer_->Present(DrawerWorkspace());
+  Tick();
+  return result;
 }
 void Shell::ShowAnchor() {
   ShowNavigation();
   if(!anchor_drawer_)anchor_drawer_=new XNavAnchorDrawer(frame_,actions_.navigation);
+  anchor_drawer_->SetInterfaceScale(display_.scale_percent);
   anchor_drawer_->Present(DrawerWorkspace());
   Tick();
 }
 void Shell::ShowPilot() {
   ShowNavigation();
   if(!pilot_drawer_)pilot_drawer_=new XNavPilotDrawer(frame_,pilot_actions_);
+  pilot_drawer_->SetInterfaceScale(display_.scale_percent);
   pilot_drawer_->Present(DrawerWorkspace());
   Tick();
 }
@@ -1325,6 +1382,7 @@ void Shell::ShowAlerts() {
     };
     alert_drawer_=new XNavAlertDrawer(frame_,std::move(callbacks));
   }
+  alert_drawer_->SetInterfaceScale(display_.scale_percent);
   alert_drawer_->Present(DrawerWorkspace());Tick();
 }
 void Shell::CloseContext() {
@@ -1351,6 +1409,7 @@ void Shell::ShowHealth() {
     };
     health_drawer_=new XNavHealthDrawer(frame_,std::move(callbacks));
   }
+  health_drawer_->SetInterfaceScale(display_.scale_percent);
   health_drawer_->Present(DrawerWorkspace());Tick();
 }
 void Shell::UpdateContext(vessel::Time now) {
@@ -1541,19 +1600,19 @@ void Shell::ShowChartContext(application::Coordinate position) {
     const auto live = [this] { return !state_.simulated && !state_.replayed; };
     const auto result = [this](const application::CommandResult &value) {
       if (!value.ok)
-        ConfirmSheet(frame_, mode_, "Unable to continue", wxString::FromUTF8(value.message), "Back");
+        ConfirmSheet(frame_, mode_, "Unable to continue", wxString::FromUTF8(value.message), "Back", display_.scale_percent);
     };
     if (action == ContextAction::GoTo && actions_.navigation.go_to) {
       if (!live() || !CurrentMeasuredPosition(state_, vessel::Clock::now())) return;
       if (ConfirmSheet(frame_, mode_, "Go to this position",
           wxString::Format(wxString::FromUTF8("Destination %.5f° %.5f°. Check the chart before starting."),
-                           position.latitude_deg, position.longitude_deg), "Start") &&
+                           position.latitude_deg, position.longitude_deg), "Start", display_.scale_percent) &&
           live() && CurrentMeasuredPosition(state_, vessel::Clock::now()))
         result(actions_.navigation.go_to(position, "Go To"));
     } else if (action == ContextAction::CreateWaypoint && actions_.navigation.create_waypoint) {
       if (!live()) return;
       const auto fields = EditSheet(frame_, mode_, "Create waypoint", "Save this chart position.",
-                                    {{"Name", "Waypoint", 128}}, "Save");
+                                    {{"Name", "Waypoint", 128}}, "Save", display_.scale_percent);
       if (fields && live()) result(actions_.navigation.create_waypoint(position, (*fields)[0], ""));
     } else if (action == ContextAction::Measure && actions_.navigation.measure) {
       actions_.navigation.measure();

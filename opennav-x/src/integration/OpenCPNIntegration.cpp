@@ -493,6 +493,12 @@ void Attach(MyFrame& frame, wxAuiManager& manager, wxFileConfig& config) {
     return application::CommandResult{false, "Target or chart changed; select it again"};
   };
   actions.settings = [] { return settings->Read(); };
+  actions.display = [] { return settings->Display(); };
+  actions.save_display = [](const application::DisplayPreferences &value) {
+    if (commissioning && commissioning->Replaying())
+      return application::CommandResult{false,"Stop REPLAY before changing live settings"};
+    return settings->SaveDisplay(value);
+  };
   actions.vessel_name = [] { return settings->VesselName(); };
   actions.chart_safety_depth_m = [] {
     return S52_getMarinerParam(S52_MAR_SAFETY_CONTOUR);

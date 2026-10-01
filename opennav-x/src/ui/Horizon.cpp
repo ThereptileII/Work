@@ -1,5 +1,6 @@
 #include "ui/Horizon.h"
 #include "ui/PrototypeIcons.h"
+#include "ui/PrototypeGeometry.h"
 #include <wx/bmpbndl.h>
 #include <wx/dcbuffer.h>
 #include <wx/graphics.h>
@@ -131,14 +132,17 @@ void XNavHorizon::Update(application::HorizonView view,LightMode mode) {
 bool XNavHorizon::Layout() {
   const auto size=GetClientSize();const auto *top=wxGetTopLevelParent(this);
   const int viewport=ToDIP(top?top->GetClientSize().x:size.x);
-  const int height=ToDIP(size.y);
-  mobile_=viewport<=760;narrow_=viewport<=1100;short_=height<=98;
-  inset_=mobile_?17:narrow_?20:viewport>=1500?32:25;
-  const int top_padding=mobile_?12:height<=112?9:viewport>=1500?18:13;
-  const int margin=mobile_?24:short_?17:height<=112?19:viewport>=1500?29:23;
-  gap_=mobile_?5:height<=112?3:4;
-  title_size_=short_?11:mobile_?11:narrow_?12:13;
-  detail_size_=short_?8:mobile_?8:narrow_?9:10;
+  const int viewport_height=ToDIP(top?top->GetClientSize().y:size.y);
+  const auto layout=prototype::Desktop(viewport,viewport_height);
+  mobile_=viewport<=760;narrow_=viewport<=1100;
+  short_=viewport>760 && viewport_height<=600;
+  const bool compact=viewport>760 && viewport_height<=740;
+  inset_=layout.timeline_padding_x;
+  const int top_padding=layout.timeline_padding_top;
+  const int margin=layout.timeline_events_margin_top;
+  gap_=mobile_?5:compact?3:4;
+  title_size_=layout.timeline_event_title_size;
+  detail_size_=layout.timeline_event_small_size;
   const int heading_height=FromDIP(22);
   heading_={FromDIP(inset_),FromDIP(top_padding+1),size.x-FromDIP(2*inset_),heading_height};
   const int link_width=int(std::ceil(passage_->NaturalWidth()));

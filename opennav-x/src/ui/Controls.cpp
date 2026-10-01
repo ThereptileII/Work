@@ -1,4 +1,5 @@
 #include "ui/Controls.h"
+#include "ui/DisplaySizing.h"
 #include "ui/PrototypeIcons.h"
 #include "diagnostics/TestUiTrace.h"
 
@@ -409,6 +410,21 @@ XNavButton::XNavButton(wxWindow* parent, wxWindowID id, const wxString& label,
     Refresh();
   });
 }
+void XNavButton::SetDisplayAction(int base_height, int base_font) {
+  if (base_height < 44 || base_font < 9 || base_font > 24) return;
+  action_base_height_ = base_height;
+  action_base_font_ = base_font;
+  SetInterfaceScale(interface_scale_);
+}
+void XNavButton::SetInterfaceScale(int percent) {
+  if (!ValidInterfaceScale(percent)) return;
+  interface_scale_ = percent;
+  if (!action_base_height_) return;
+  const auto minimum = GetMinSize();
+  SetMinSize(wxSize(minimum.x,
+      FromDIP(DisplayActionHeight(percent,action_base_height_))));
+  SetTextSize(DisplayActionFont(percent,action_base_font_));
+}
 
 void XNavButton::SetLabel(const wxString &label) {
   if(GetLabel() == label) return;
@@ -750,19 +766,20 @@ void XNavDataValue::Paint(wxPaintEvent&) {
   dc.SetBackground(wxBrush(Colour(compact_ ? colors.background : colors.surface)));
   dc.Clear();
   const bool narrow_rail = compact_ && ToDIP(GetClientSize().x) <= 156;
-  const int x = FromDIP(compact_ ? (narrow_rail ? 14 : 19) : 12);
+  const int x = FromDIP(content_inset_ ? content_inset_ : compact_ ? (narrow_rail ? 14 : 19) : 12);
   if (compact_) {
     const int height = ToDIP(GetClientSize().y);
     const bool roomy = height >= 108;
     const bool medium = height >= 95;
     const int label_y = roomy ? 10 : medium ? 7 : 5;
-    const int right = GetClientSize().x - FromDIP(narrow_rail ? 13 : 18);
+    const int right = GetClientSize().x - FromDIP(content_inset_ ? content_inset_ : narrow_rail ? 13 : 18);
     const int available = right - x;
     const int detail_y = GetClientSize().y-FromDIP(18);
     const int value_detail_gap = FromDIP(4);
     dc.SetPen(wxPen(Colour(colors.border)));
     dc.DrawLine(x, GetClientSize().y-1, right, GetClientSize().y-1);
-    dc.SetFont(UiFont(*this,narrow_rail?9:11)); dc.SetTextForeground(Colour(colors.secondary));
+    dc.SetFont(UiFont(*this,metric_label_size_ ? metric_label_size_ : 11));
+    dc.SetTextForeground(Colour(colors.secondary));
     auto title=label_;
     if(title=="SOG") title="Speed over ground";
     if(title=="DEPTH") title="Depth / transducer";
@@ -773,7 +790,7 @@ void XNavDataValue::Paint(wxPaintEvent&) {
     dc.DrawText(wxControl::Ellipsize(title,dc,wxELLIPSIZE_END,available),x,FromDIP(label_y));
     const bool stale=reading_.quality==vessel::Quality::Stale;
     const auto value=reading_.value?wxString::Format("%.*f",decimals_,*reading_.value):wxString::FromUTF8("—");
-    int value_size = roomy ? 48 : medium ? 40 : 33;
+    int value_size = metric_font_size_ ? metric_font_size_ : roomy ? 48 : medium ? 40 : 33;
     const int tracking=FromDIP(roomy ? -3 : -2);
     const int value_y=FromDIP(label_y+(roomy?21:16));
     const auto unit=unit_.StartsWith("m /") ? wxString("m") :

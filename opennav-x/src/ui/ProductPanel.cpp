@@ -1,4 +1,5 @@
 #include "ui/ProductPanel.h"
+#include "ui/DisplaySizing.h"
 #include "ui/Sheet.h"
 #include "ui/ContextCard.h"
 #include "ui/PrototypeGeometry.h"
@@ -86,6 +87,13 @@ ProductPanel::ProductPanel(wxWindow *parent, ProductActions actions)
     }
     e.Skip();
   });
+}
+void ProductPanel::SetInterfaceScale(int percent) {
+  if (!ValidInterfaceScale(percent)) return;
+  if (interface_scale_ == percent) return;
+  interface_scale_=percent;
+  for (auto *button:action_buttons_) button->SetInterfaceScale(percent);
+  Layout();FitInside();
 }
 void ProductPanel::Back() {
   ProductPage parent = ProductPage::Home;
@@ -193,6 +201,8 @@ XNavButton *ProductPanel::StatusAction(const wxString &title,
   auto *button = Action(text(state_), std::move(action));
   button->SetRole(ButtonRole::Quiet);
   button->SetMinSize(FromDIP(wxSize(200, 64)));
+  button->SetDisplayAction(64);
+  button->SetInterfaceScale(interface_scale_);
   button_text_.push_back({button, std::move(text)});
   return button;
 }
@@ -200,6 +210,9 @@ XNavButton *ProductPanel::Action(const wxString &label,
                                  std::function<void()> action, bool enabled) {
   auto *button = new XNavButton(this, wxID_ANY, label, label);
   button->SetMinSize(FromDIP(wxSize(actions_grid_ ? action_width_ : 200, 52)));
+  button->SetDisplayAction(52);
+  button->SetInterfaceScale(interface_scale_);
+  action_buttons_.push_back(button);
   button->SetLightMode(mode_);
   button->Enable(enabled && static_cast<bool>(action));
   button->Bind(wxEVT_BUTTON,
@@ -721,6 +734,7 @@ void ProductPanel::Build() {
   first_heading_ = true;
   visuals_.clear();
   button_text_.clear();
+  action_buttons_.clear();
   text_.clear();
   static_text_.clear();
   action_grids_.clear();

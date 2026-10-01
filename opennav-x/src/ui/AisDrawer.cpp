@@ -1,4 +1,5 @@
 #include "ui/AisDrawer.h"
+#include "ui/DisplaySizing.h"
 #include "ui/Sheet.h"
 #include "ais/ChartTargets.h"
 #include "vessel/AisSelection.h"
@@ -117,6 +118,8 @@ XNavButton *XNavAisDrawer::Button(const wxString &label,
   auto *button = new XNavButton(body_, wxID_ANY, label, label);
   button->SetLightMode(light_);
   button->SetMinSize(FromDIP(wxSize(120, 48)));
+  button->SetDisplayAction(48);
+  button->SetInterfaceScale(InterfaceScale());
   button->Enable(enabled);
   button->Bind(wxEVT_BUTTON, [this, action = std::move(action)](
                                  wxCommandEvent &) { CallAfter(action); });
@@ -424,11 +427,12 @@ void XNavAisDrawer::StoreKey() {
   detail->Wrap(FromDIP(390));
   layout->Add(detail, 0, wxEXPAND | wxLEFT | wxRIGHT | wxBOTTOM, FromDIP(20));
   auto *entry = new wxTextCtrl(&prompt, wxID_ANY, "", wxDefaultPosition,
-                               FromDIP(wxSize(390, 48)),
+                               prompt.FromDIP(wxSize(
+                                   390, DisplayFieldHeight(InterfaceScale()))),
                                wxTE_PASSWORD | wxBORDER_NONE);
   entry->SetName("Protected AISStream key");
   entry->SetMaxLength(512);
-  entry->SetFont(UiFont(prompt, 18));
+  entry->SetFont(UiFont(prompt, DisplayFieldFont(InterfaceScale())));
   entry->SetBackgroundColour(Colour(Theme(light_).surface));
   entry->SetForegroundColour(Colour(Theme(light_).primary));
   layout->Add(entry, 0, wxEXPAND | wxLEFT | wxRIGHT | wxBOTTOM, FromDIP(20));
@@ -441,6 +445,11 @@ void XNavAisDrawer::StoreKey() {
     button->SetLightMode(light_);
     button->SetRole(choice.second == wxID_OK ? ButtonRole::Primary
                                              : ButtonRole::Quiet);
+    if (InterfaceScale() == 150) {
+      const int height = DisplayActionHeight(InterfaceScale(), 48);
+      button->SetMinSize(prompt.FromDIP(wxSize(height, height)));
+      button->SetTextSize(DisplayActionFont(InterfaceScale(), 12));
+    }
     if (choice.second == wxID_OK) {
       save = button;
       save->Disable();

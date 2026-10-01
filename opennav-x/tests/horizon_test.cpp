@@ -182,7 +182,9 @@ class TestApp final:public wxApp {
       Check(application::HorizonActionAllowed(view_.items[1].action,state_,ais_,now_),"keyboard replacement target would otherwise be action-safe");
       horizon_->Update(view_,mode_);{wxUIActionSimulator input;Check(input.KeyUp(WXK_RETURN),"native row Enter release after identity change");break;}
     case 25:Check(actions_==5,"row identity change during Enter cancels activation");Current();Button(1)->SetFocus();{wxUIActionSimulator input;Check(input.Char(WXK_RETURN),"real row Enter input");break;}
-    case 26:Check(actions_==6&&last_.mmsi==123456789,"Enter activates unchanged AIS identity once");Finish();break;
+    case 26:Check(actions_==6&&last_.mmsi==123456789,"Enter activates unchanged AIS identity once");
+      Resize(1920,1080);horizon_->SetSize(88,896,1612,150);Prototype(ui::LightMode::Day);break;
+    case 27:Geometry(1612,896,150,32,18,966,1026);Capture("prototype-large-desktop-1920");Finish();break;
     }}catch(const std::exception &e){failed_=true;std::cerr<<e.what()<<'\n';Finish();}
   }
   void Finish() {

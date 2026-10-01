@@ -40,6 +40,7 @@ XNavAnchorDrawer::XNavAnchorDrawer(wxWindow &owner,
   watch_ = new XNavButton(body_, wxID_ANY, "Set anchor & start watch",
                           "Set anchor & start watch");
   watch_->SetMinSize(FromDIP(wxSize(300, 48)));
+  watch_->SetDisplayAction(48);
   watch_->Bind(wxEVT_BUTTON,
                [this](wxCommandEvent &) { CallAfter([this] { Command(); }); });
   content_->Add(watch_, 0, wxEXPAND | wxBOTTOM, FromDIP(11));

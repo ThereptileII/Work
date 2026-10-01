@@ -59,6 +59,8 @@ struct ShellActions {
   std::function<bool()> chart_style_requested;
   std::function<application::CommandResult(bool)> set_chart_style;
   std::function<application::Settings()> settings;
+  std::function<application::DisplayPreferences()> display;
+  std::function<application::CommandResult(const application::DisplayPreferences &)> save_display;
   std::function<std::string()> vessel_name;
   std::function<double()> chart_safety_depth_m;
   std::function<application::CommandResult(const application::Settings &,
@@ -137,6 +139,8 @@ private:
   void UpdateRail(const std::vector<std::string> &keys, vessel::Time now);
   void Tick();
   void ApplyResponsiveLayout();
+  void ApplyOwnedScale();
+  application::CommandResult ApplyDisplayPreferences(const application::DisplayPreferences &);
   void UpdateAlerts();
   void PlaceChartControls();
   void CloseContext();
@@ -189,6 +193,7 @@ private:
   int original_sash_size_ = 0;
   ShellActions actions_;
   LightMode mode_;
+  application::DisplayPreferences display_;
   vessel::VesselState state_;
   bool simulation_ = false;
   bool simulation_paused_ = false;

@@ -45,5 +45,6 @@ private:
 std::optional<application::CommandResult> WaypointSheet(
     wxWindow &parent, LightMode mode, ContextAction action,
     const application::Waypoint &point,
-    const application::NavigationActions &navigation);
+    const application::NavigationActions &navigation,
+    int scale_percent = -1);
 } // namespace opennav::ui

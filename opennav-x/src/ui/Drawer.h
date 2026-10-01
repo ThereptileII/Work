@@ -17,6 +17,8 @@ public:
   void SetHeading(const wxString &eyebrow, const wxString &title, bool back);
   void SetLight(LightMode mode);
   void SetWide(bool wide) { wide_ = wide; }
+  void SetInterfaceScale(int percent);
+  int InterfaceScale() const { return interface_scale_; }
   void ClearBody();
   int FilterEvent(wxEvent &event) override;
   std::function<void()> on_back, on_dismiss;
@@ -35,5 +37,6 @@ private:
   wxString eyebrow_, title_;
   bool has_back_ = false;
   bool wide_ = false;
+  int interface_scale_ = 100;
 };
 } // namespace opennav::ui

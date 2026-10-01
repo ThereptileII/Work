@@ -1,4 +1,5 @@
 #include "ui/SettingsDrawer.h"
+#include "ui/DisplaySizing.h"
 #include <wx/dcbuffer.h>
 #include <wx/graphics.h>
 #include <wx/sizer.h>
@@ -17,12 +18,19 @@ wxString InputNumber(double v) {
 }
 XNavSettingsDrawer::XNavSettingsDrawer(wxWindow &owner, SettingsDrawerActions actions)
     : XNavDrawer(owner,"OpenNav preferences"), actions_(std::move(actions)) {
+  if (actions_.display) display_draft_=display_applied_=actions_.display();
   SetWide(true);
   SetHeading("PREFERENCES","A helm of your own",false);
   Build();
 }
 void XNavSettingsDrawer::Select(SettingsSection section) {
   if (static_cast<unsigned>(section)>=titles.size()) return;
+  // The prototype renders select values from the last applied preferences on
+  // every tab/theme rebuild. A pending choice is discarded on navigation.
+  if (display_dirty_) {
+    display_draft_ = actions_.display ? actions_.display() : display_applied_;
+    display_dirty_ = false;
+  }
   section_=section;
   Build();
 }
@@ -32,6 +40,8 @@ void XNavSettingsDrawer::Update(const ProductState &state,LightMode mode) {
   SetLight(mode);
   if(changed) {
     for(auto *b:buttons_)b->SetLightMode(mode);
+    if(scale_field_)scale_field_->SetLightMode(mode);
+    if(layout_field_)layout_field_->SetLightMode(mode);
     for(auto *b:tabs_buttons_)b->SetLightMode(mode);
     for(const auto &choice:light_buttons_)choice.first->SetSelected(choice.second==mode);
     tabs_->SetBackgroundColour(Colour(Theme(mode).background));
@@ -56,10 +66,95 @@ void XNavSettingsDrawer::Update(const ProductState &state,LightMode mode) {
       loading_=false;
     }
   }
+  if (!display_dirty_ && actions_.display) {
+    const auto current = actions_.display();
+    if (current.scale_percent != display_draft_.scale_percent ||
+        current.layout != display_draft_.layout) {
+      SetDisplayPreferences(current);
+    }
+  }
   for(auto *p:copies_)p->Refresh(false);
 }
 void XNavSettingsDrawer::ResetDraft(){
   draft_initialized_=false;draft_dirty_=false;touched_.fill(false);feedback_.clear();
+  display_dirty_=false;
+  if (actions_.display) SetDisplayPreferences(actions_.display());
+  if (display_message_) display_message_->SetLabel(wxEmptyString);
+}
+void XNavSettingsDrawer::SetDisplayPreferences(const application::DisplayPreferences &value) {
+  display_draft_=display_applied_=value;
+  if(scale_field_)scale_field_->SetSelection((value.scale_percent-100)/25);
+  if(layout_field_)layout_field_->SetSelection(static_cast<int>(value.layout));
+  ApplyScale();
+}
+void XNavSettingsDrawer::ApplyScale() {
+  const int scale=display_applied_.scale_percent;
+  const int field_height=DisplayFieldHeight(scale);
+  const int field_font=DisplayFieldFont(scale);
+  SetInterfaceScale(scale);
+  for (auto *frame:input_frames_)
+    frame->SetMinSize(FromDIP(wxSize(80,field_height)));
+  for (auto *field:fields_) if (field) field->SetFont(UiFont(*this,field_font));
+  if(scale_field_)scale_field_->SetInterfaceScale(scale);
+  if(layout_field_)layout_field_->SetInterfaceScale(scale);
+  if (body_) { body_->Layout();body_->FitInside(); }
+}
+void XNavSettingsDrawer::DisplayForm() {
+  auto choice_field=[this](const wxString &title,const std::vector<wxString> &labels) {
+    CopyBlock(25,[title](XNavPainter &p,int width){p.Text(title,0,3,12,p.c.secondary,false,width);});
+    auto *field=new XNavChoiceField(body_,wxID_ANY,labels,title);
+    field->SetLightMode(light_);
+    field->SetInterfaceScale(display_applied_.scale_percent);
+    field->Enable(bool(actions_.save_display));
+    content_->Add(field,0,wxEXPAND|wxBOTTOM,FromDIP(18));
+    return field;
+  };
+  scale_field_=choice_field("Interface scale",{"100%","125%","150%"});
+  scale_field_->SetSelection((display_draft_.scale_percent-100)/25);
+  scale_field_->Bind(wxEVT_CHOICE,[this](wxCommandEvent &event){
+    display_draft_.scale_percent=100+event.GetInt()*25;display_dirty_=true;
+  });
+  layout_field_=choice_field("Chart layout",{"Balanced","Chart focus","Instrument focus"});
+  layout_field_->SetSelection(static_cast<int>(display_draft_.layout));
+  layout_field_->Bind(wxEVT_CHOICE,[this](wxCommandEvent &event){
+    display_draft_.layout=static_cast<application::ChartLayout>(event.GetInt());display_dirty_=true;
+  });
+  CopyBlock(34,[](XNavPainter &p,int width){p.TextTracked("LIGHT FOR THE MOMENT",0,4,10,p.c.secondary,400,1.5,width);});
+  auto *row=new wxBoxSizer(wxHORIZONTAL);
+  for(const auto mode:{LightMode::Day,LightMode::Dusk,LightMode::Night}) {
+    const wxString name=mode==LightMode::Day?"Day":mode==LightMode::Dusk?"Dusk":"Night";
+    auto *b=new XNavButton(body_,wxID_ANY,name,"Display "+name);b->SetRole(ButtonRole::Segment);
+    b->SetSelected(mode==light_);b->SetLightMode(light_);b->SetMinSize(FromDIP(wxSize(48,40)));b->Enable(bool(actions_.theme));
+    b->Bind(wxEVT_BUTTON,[this,mode](wxCommandEvent &){CallAfter([this,mode]{
+      if(actions_.theme) actions_.theme(mode);
+      Select(SettingsSection::Display);
+    });});
+    row->Add(b,1);buttons_.push_back(b);light_buttons_.push_back({b,mode});
+  }
+  content_->Add(row,0,wxEXPAND|wxBOTTOM,FromDIP(30));
+  Button("Apply display preferences",[this]{SaveDisplay();},ButtonRole::Primary);
+  display_message_=new wxStaticText(body_,wxID_ANY,wxEmptyString);
+  display_message_->SetFont(UiFont(*this,11));
+  display_message_->SetForegroundColour(Colour(Theme(light_).secondary));
+  display_message_->Hide();
+  content_->Add(display_message_,0,wxEXPAND|wxBOTTOM,FromDIP(12));
+  Page("Personalise instruments","Choose the four primary values",XNavIcon::Sliders,ProductPage::RailLayout);
+  Button("Toggle fullscreen",actions_.fullscreen);
+}
+void XNavSettingsDrawer::SaveDisplay() {
+  if(!actions_.save_display)return;
+  auto result=actions_.save_display(display_draft_);
+  if(result.ok) {
+    display_dirty_=false;
+    display_applied_=display_draft_;
+    ApplyScale();
+  }
+  if(display_message_) {
+    display_message_->SetLabel(result.ok?wxString{}:wxString::FromUTF8(result.message));
+    display_message_->Show(!result.ok);
+    if(!result.ok)display_message_->Wrap(FromDIP(340));
+    body_->Layout();body_->FitInside();
+  }
 }
 void XNavSettingsDrawer::VesselForm(){
   auto add_field=[this](wxWindow *parent,wxBoxSizer *layout,const wxString &label,
@@ -177,11 +272,14 @@ void XNavSettingsDrawer::Page(const wxString &title,const wxString &detail,XNavI
 void XNavSettingsDrawer::Button(const wxString &label,std::function<void()> action,ButtonRole role) {
   auto *b=new XNavButton(body_,wxID_ANY,label,label);
   b->SetRole(role);b->SetLightMode(light_);b->SetMinSize(FromDIP(wxSize(300,48)));
+  b->SetDisplayAction(48);
+  b->SetInterfaceScale(display_applied_.scale_percent);
   b->Enable(bool(action));b->Bind(wxEVT_BUTTON,[this,action](wxCommandEvent &){if(action)CallAfter(action);});
   content_->Add(b,0,wxEXPAND|wxBOTTOM,FromDIP(10));buttons_.push_back(b);
 }
 void XNavSettingsDrawer::Build() {
   ClearBody();tabs_buttons_.clear();buttons_.clear();light_buttons_.clear();copies_.clear();
+  scale_field_=nullptr;layout_field_=nullptr;display_message_=nullptr;
   fields_.fill(nullptr);input_frames_.clear();field_containers_.clear();field_captions_.clear();message_=nullptr;
   tabs_=new wxPanel(body_,wxID_ANY);tabs_->SetLabel(wxEmptyString);
   tabs_->SetBackgroundColour(Colour(Theme(light_).background));
@@ -247,24 +345,7 @@ void XNavSettingsDrawer::Build() {
       Link("Plugins & adapters","OpenCPN integration components",XNavIcon::Layers,actions_.plugins);
       break;
     case SettingsSection::Display: {
-      CopyBlock(34,[](XNavPainter &p,int width){p.TextTracked("LIGHT FOR THE MOMENT",0,4,10,p.c.secondary,400,1.5,width);});
-      auto *row=new wxBoxSizer(wxHORIZONTAL);
-      for(const auto mode:{LightMode::Day,LightMode::Dusk,LightMode::Night}) {
-        const wxString name=mode==LightMode::Day?"Day":mode==LightMode::Dusk?"Dusk":"Night";
-        auto *b=new XNavButton(body_,wxID_ANY,name,"Display "+name);b->SetRole(ButtonRole::Segment);
-        b->SetSelected(mode==light_);b->SetLightMode(light_);b->SetMinSize(FromDIP(wxSize(48,40)));b->Enable(bool(actions_.theme));
-        b->Bind(wxEVT_BUTTON,[this,mode](wxCommandEvent &){CallAfter([this,mode]{
-          if(actions_.theme) actions_.theme(mode);
-          Select(SettingsSection::Display);
-        });});
-        row->Add(b,1);buttons_.push_back(b);light_buttons_.push_back({b,mode});
-      }
-      content_->Add(row,0,wxEXPAND|wxBOTTOM,FromDIP(20));
-      Page("Personalise instruments","Choose the four primary values",XNavIcon::Sliders,ProductPage::RailLayout);
-      Page("Chart presentation","XNav or Standard and display options",XNavIcon::Layers,ProductPage::Display);
-      Button("Toggle fullscreen",actions_.fullscreen);
-      CopyBlock(90,[](XNavPainter &p,int width){p.Text("Interface scale follows Windows display scaling.",0,18,11,p.c.secondary,false,width);
-        p.Text("Display brightness remains a hardware setting.",0,39,11,p.c.secondary,false,width);});
+      DisplayForm();
       break;
     }
     case SettingsSection::System:
@@ -286,6 +367,7 @@ void XNavSettingsDrawer::Build() {
       Link("Advanced OpenCPN settings","Existing charts, connections and preferences",XNavIcon::Settings,actions_.advanced);
       break;
   }
+  ApplyScale();
   body_->Layout();body_->FitInside();
 }
 } // namespace opennav::ui

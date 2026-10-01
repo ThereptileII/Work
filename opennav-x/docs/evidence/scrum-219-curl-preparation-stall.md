@@ -90,3 +90,21 @@ upstream tests and runtime verification remain unchanged.
 The probe timeout also receives a narrow robustness correction: terminate only
 the owned process tree and bound redirected-output draining. Parent exit alone
 must not allow a descendant holding a pipe to defeat the diagnostic deadline.
+
+## Corrected native extraction passed
+
+[Run 36874980766](https://github.com/ThereptileII/Work/actions/runs/36874980766)
+passed on published `f1e9616738aaaf23d29e4d815f344404f94da659`
+(local `f8ba5e9f82472ee5dad385db1fc78b42997f853c`). Verified artifact
+`11168459240`: 7,619,925 bytes, SHA-256
+`34b63bd41fc1331454eeadfdadf1e2081418c0cf39a64ef92b1eef04dd9b7c87`.
+The producer's exact resolved-CMake extraction invocation completed in 767 ms
+with exit 0. CMake version was 3.31.6. The retained in-run inventory contains
+all 4,406 regular source files, including dotfiles; independent comparison of
+every path and SHA-256 against the pinned archive passed with no omissions or
+mismatches. See `scrum-219-native-extraction-equivalence.json`.
+
+This qualifies the focused extraction repair only. The next coherent product
+candidate still requires complete native build/runtime/UI/package tests and
+boat acceptance. No dependency tests, source locks or runtime assertions were
+removed, and no application was installed on the boat during this investigation.
