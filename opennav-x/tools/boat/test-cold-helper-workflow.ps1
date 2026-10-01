@@ -51,8 +51,26 @@ $source=[IO.File]::ReadAllText((Join-Path $PSScriptRoot 'recover-cold-chart-help
 $source=$source.Replace(". (Join-Path `$PSScriptRoot 'ColdChartHelper.ps1')","`$script:ColdHelperOwner='OpenNavX.ColdChartHelper.1' # fixture uses loaded production policy")
 $source=$source.Replace("if([Environment]::OSVersion.Platform -ne 'Win32NT'){throw 'Native Windows is required.'}",'# isolated fixture platform')
 $source=$source.Replace("Add-Type -Path (Join-Path `$PSScriptRoot 'ChartHelperShutdownNative.cs')",'# isolated fixture transport')
-$source=[regex]::Replace($source,'(?m)^\s*\$result=\[OpenNavX\.ChartHelperShutdownNative\]::Shutdown\([^\r\n]*\)$','    $result=Invoke-TestShutdown $helper $ticks')
-if($source -match '\[OpenNavX\.ChartHelperShutdownNative\]::Shutdown'){throw 'Native call replacement failed; fixture refused.'}
+$shutdownPattern='(?m)^(?<indent>[ \t]*)\$result=\[OpenNavX\.ChartHelperShutdownNative\]::Shutdown\(\[int\]\$helper\.pid,\$ticks,\[int\]\$helper\.parentPid,\[int\]\$helper\.sessionId,\[string\]\$helper\.path\)(?<newline>\r?\n|$)'
+function Replace-NativeShutdownSource([string]$Text){
+  $matches=[regex]::Matches($Text,$shutdownPattern)
+  if($matches.Count -ne 1){throw 'Expected exactly one fixed native shutdown call in isolated source.'}
+  $match=$matches[0]
+  $replacement=$match.Groups['indent'].Value+'$result=Invoke-TestShutdown $helper $ticks'+$match.Groups['newline'].Value
+  $isolated=$Text.Substring(0,$match.Index)+$replacement+$Text.Substring($match.Index+$match.Length)
+  if($isolated -match '\[OpenNavX\.ChartHelperShutdownNative\]::Shutdown'){throw 'Native call replacement failed; fixture refused.'}
+  return $isolated
+}
+$lfSource=[regex]::Replace($source,'\r?\n',"`n")
+$crlfSource=[regex]::Replace($source,'\r?\n',"`r`n")
+$lfIsolated=Replace-NativeShutdownSource $lfSource
+$crlfIsolated=Replace-NativeShutdownSource $crlfSource
+$fixtureCall='$result=Invoke-TestShutdown $helper $ticks'
+Check ($lfIsolated.Contains($fixtureCall+"`n") -and $lfIsolated -notmatch "\r\n") 'Fixed native call substitution preserves LF source'
+Check ($crlfIsolated.Contains($fixtureCall+"`r`n") -and $crlfIsolated -notmatch "(?<!\r)\n") 'Fixed native call substitution preserves CRLF source'
+$dispatchLine=[regex]::Match($lfSource,$shutdownPattern).Value.TrimEnd("`n")
+Refuse {Replace-NativeShutdownSource ($lfSource+"`n"+$dispatchLine+"`n")} 'Rejects duplicate native source calls instead of weakening substitution'
+$source=$crlfIsolated
 $sandbox=Join-Path ([IO.Path]::GetTempPath()) ('cold-helper-workflow-'+[guid]::NewGuid().ToString('N'))
 $null=New-Item -ItemType Directory -Path $sandbox
 $fixtureScript=Join-Path $sandbox 'fixture-recovery.ps1'

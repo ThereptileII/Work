@@ -30,8 +30,14 @@ These are separate suites, not a unique total. The complete batch used unchanged
 source files; see [portable recovery evidence](evidence/scrum-223-cold-helper-portable.json).
 Review fixed fractional-second timestamp loss before process dispatch and
 strengthened duplicate-set and one-attempt checks. Native qualification and
-actual cleanup are pending. Fresh cold capture/review and application
-qualification remain required; tooling results do not grant launch permission.
+actual cleanup are pending. The first native run at `363fee0cc37a70b09d41799638b0ab7935041411`
+failed safely in the temporary test-source substitution because native checkout
+uses CRLF. Native identity, actual ledger ACL and unchanged pipe suites passed,
+but this is not native acceptance. The test-only correction explicitly covers LF
+and CRLF and passes 33 portable workflow groups; an exact native rerun is required.
+See [retained failure evidence](evidence/scrum-223-native-fixture-failure.json).
+Fresh cold capture/review and application qualification remain required; tooling
+results do not grant launch permission.
 
 The frozen full candidate is `b48bf4a8f12f98c459d79aa08805141ac49e0306`
 (local mapped commit `0053ed507b03c79877fd6bb96c0d761fb9f68ac9`). Its narrow

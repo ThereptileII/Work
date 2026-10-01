@@ -1,0 +1,40 @@
+{
+  "issue": "SCRUM-223",
+  "rejectedToolingCommit": "363fee0cc37a70b09d41799638b0ab7935041411",
+  "run": "https://github.com/ThereptileII/Work/actions/runs/36918252472",
+  "runConclusion": "failure",
+  "jobs": {
+    "passed": 7,
+    "failed": 1,
+    "skipped": 2
+  },
+  "artifact": {
+    "id": 11191166445,
+    "bytes": 29786,
+    "sha256": "cfda339d12ed51c942d35f39a9a4be07e55b3b8c97c41e54e536c8d07c54a7f0",
+    "crcVerified": true,
+    "logCount": 25
+  },
+  "failure": {
+    "suite": "cold-helper-workflow",
+    "message": "Native call replacement failed; fixture refused.",
+    "cause": "The temporary test-source substitution used an LF-only end-of-line match; native checkout uses CRLF. The fixture refused before any transport invocation."
+  },
+  "focusedNativeReports": {
+    "cold-helper-policy": 21,
+    "chart-helper-attempts": 23,
+    "chart-helper-shutdown": 45,
+    "orphan-chart-helper": 21,
+    "cold-baseline": 40
+  },
+  "correction": {
+    "scope": "Test harness only; no production change",
+    "checks": "Exact single fixed call substitution for LF and CRLF, terminator preserved, duplicate calls refused, entire portable workflow executed using derived CRLF source",
+    "portableWorkflowGroups": 33,
+    "testSourceSha256": "bb3aa243055f419fcd2eb499f178f6ccf584693949b271d0809b30295985579c",
+    "testSourceUnchangedDuringRun": true,
+    "nativeRerunRequired": true
+  },
+  "boatCleanupPerformed": false,
+  "nativeAcceptance": false
+}
