@@ -1,0 +1,66 @@
+{
+  "schemaVersion": 1,
+  "issue": "SCRUM-222",
+  "status": "actual-cold-preservation-passed",
+  "toolingCommit": "20765cf374da5a1ab47dff0b3b427cd24f595455",
+  "nativeRun": "https://github.com/ThereptileII/Work/actions/runs/36919418416",
+  "captureSha256": "705b10e2984accfd6fce5c7dd9eb18c84aa182bfeff855efa60bd06e3c4d994b",
+  "reviewSha256": "300332ba5fe4a2be25bc4197f86f08784cef0df1efed2234f7c9eea306331c32",
+  "completedRecordSha256": "543f63c4583140917208a54dac2419540bc418b43143e74a939c618da29d1470",
+  "completedUtc": "2026-10-01T20:33:24.5748502Z",
+  "verifiedUtc": "2026-10-01T20:33:44.7088209Z",
+  "predecessorRecordSha256": "13c03fd622d6105f353db364ef5777dce87054f26fa788e3f4574dad301266f5",
+  "currentProfileSha256": "d891d88c62657139e1b1c6ff7d9e8acdae726a4e116dbc844126992a39adbdb6",
+  "currentProfileBytes": 21492,
+  "profileEntries": 2031,
+  "changedKeys": 19,
+  "reviewedKeyNames": [
+    "AUI/AUIPerspective",
+    "Canvas/CanvasConfig1/canvasSizeY",
+    "Canvas/CanvasConfig1/canvasVPLatLon",
+    "Canvas/CanvasConfig1/canvasVPScale",
+    "OpenNav/InterfaceMode",
+    "PlugIns/Dashboard/Dashboard2/BestSizeX",
+    "PlugIns/Dashboard/Dashboard2/BestSizeY",
+    "PlugIns/Dashboard/Dashboard2/PersistSizeX",
+    "PlugIns/Dashboard/Dashboard2/PersistSizeY",
+    "PlugIns/Dashboard/Dashboard3/BestSizeX",
+    "PlugIns/Dashboard/Dashboard3/BestSizeY",
+    "PlugIns/Dashboard/Dashboard3/PersistSizeX",
+    "PlugIns/Dashboard/Dashboard3/PersistSizeY",
+    "PlugIns/Dashboard/SumLogNM",
+    "Settings/AutoTrackRaymarine/PosX",
+    "Settings/AutoTrackRaymarine/PosY",
+    "Settings/ConfigVersionString",
+    "Settings/GlobalState/OwnShipLatLon",
+    "Settings/MSWFonts/sv-00c6075a"
+  ],
+  "independentReview": "Root exact-key preservation review plus independent Luna private hash/diff/value/AUI review; native Complete revalidated all policy and inventory boundaries.",
+  "provenance": "pre-existing-current-user-state;origin-unverified",
+  "preservationOnly": true,
+  "launchPermission": false,
+  "profileChanged": false,
+  "applicationLaunched": false,
+  "openCpnProcessesAfter": 0,
+  "chartHelpersAfter": 0,
+  "remoteServices": [
+    {
+      "name": "RustDesk",
+      "status": "Running"
+    },
+    {
+      "name": "sshd",
+      "status": "Running"
+    },
+    {
+      "name": "Tailscale",
+      "status": "Running"
+    }
+  ],
+  "limits": [
+    "Private values, account identifiers, paths, chart data and sensor coordinates are excluded.",
+    "No historical cause is attributed to the preserved differences.",
+    "This preserves user state only; fresh plugin/source review and input-only commissioning plus application qualification remain required before remote launch.",
+    "No installation, old-copy retirement, chart rendering or physical hardware acceptance is claimed."
+  ]
+}

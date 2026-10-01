@@ -449,6 +449,9 @@ jobs:
           $TestPerl = Join-Path $env:SKAGER_MSYS_ROOT 'usr/bin/perl.exe'
           if (-not (Test-Path -LiteralPath $TestPerl -PathType Leaf)) { throw 'MSYS2 curl test Perl missing' }
           "SKAGER_CURL_TEST_PERL=$TestPerl" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+      - name: Verify native curl test-host binding before dependency compilation
+        shell: pwsh
+        run: ./opennav-x/tools/test-curl-test-host-binding.ps1 -TestPerl $env:SKAGER_CURL_TEST_PERL -NativePerl $env:SKAGER_NATIVE_PERL -Evidence opennav-x/evidence/local/curl-test-host-binding
       - name: Fetch pinned source
         run: |
           git clone --depth 1 --branch Release_5.12.4 https://github.com/OpenCPN/OpenCPN.git opennav-x/upstream/OpenCPN

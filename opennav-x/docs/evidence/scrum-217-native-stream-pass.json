@@ -1,0 +1,51 @@
+{
+  "schemaVersion": 1,
+  "status": "passed",
+  "sourceCommit": "b48bf4a8f12f98c459d79aa08805141ac49e0306",
+  "localMappedCommit": "0053ed507b03c79877fd6bb96c0d761fb9f68ac9",
+  "localEvidenceRoot": "/home/standard/Projects/X-nav-worktrees/scrum217-native-path-tests/evidence/local/native-stream-pass-36900544171",
+  "runId": 36900544171,
+  "jobs": {
+    "windowsPowerShell51": {
+      "jobId": 110498301146,
+      "conclusion": "success",
+      "artifactId": 11181696269,
+      "artifactPath": "powershell/artifact.zip",
+      "artifactBytes": 71066,
+      "artifactSha256": "4f9eefbe1edbb8909aaa4df481d62000874b83c0024a51fe8dd9ca04a2d80294",
+      "zipIntegrity": "passed",
+      "summarySha256": "e4ddaf0511bd329dce9a8c0467d87661dc289df366b903cde878bd747c50ffa0",
+      "stagesSha256": "b9840c5133d5fd5a7a5a0a8a67eaaa2f71d902246377d939541bbb20113c9fc4",
+      "probeVersionTestSha256": "7c305f36a2cc31f221edf2819f261784c2afa9a6c6b04f7599769a8ec4232bda",
+      "result": "passed"
+    },
+    "windowsPowerShell7": {
+      "jobId": 110498300440,
+      "conclusion": "success",
+      "artifactId": 11181896087,
+      "artifactPath": "pwsh/artifact.zip",
+      "artifactBytes": 70973,
+      "artifactSha256": "32a3973e6ed476592d7e3775cad0df3f6e8cd8fc6c01de697b13a63d85567318",
+      "zipIntegrity": "passed",
+      "summarySha256": "8a6084de3ee6479b04689b2ea5bd6d76df7b84f7927d3ba6e62252cc0675cfe0",
+      "stagesSha256": "c1768ab0f5f9ebfa7035d93d14eb1a708319d97637cec519405b1a76d4b45fbc",
+      "probeVersionTestSha256": "1ad54248baabb69ce7a54d71e72cc106d9886be4569ffa3f9096f4bac0bfb366",
+      "result": "passed"
+    }
+  },
+  "observedCoverage": [
+    "vcvarsall x86 initialization and generated Win32 CMake tool facts",
+    "zlib child and parent capture, unchanged verification, tamper refusal and restored verification",
+    "three stable OpenSSL child tool-facts observations under each interpreter",
+    "OpenSSL child capture and verification bind the expected interpreter and record selected Perl/NASM tool facts",
+    "nmake stdout and stderr changes are rejected, and modified records are rejected",
+    "restored OpenSSL child verification",
+    "real native version-probe stream, refusal and deadline regressions pass under both interpreters"
+  ],
+  "broaderCandidateRuns": [
+    {"kind": "integrated", "runId": 36901026915, "statusAtRecord": "in progress"},
+    {"kind": "prototype", "runId": 36901029053, "statusAtRecord": "in progress"},
+    {"kind": "tooling", "runId": 36901026982, "statusAtRecord": "in progress"}
+  ],
+  "scope": "This is a narrow native tool-facts and version-probe regression pass only. It does not establish full dependency-producer, same-job dependency-reuse, application, package, or boat acceptance."
+}

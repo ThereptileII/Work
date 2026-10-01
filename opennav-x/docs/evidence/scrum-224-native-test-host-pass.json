@@ -1,0 +1,128 @@
+{
+  "schemaVersion": 1,
+  "issue": "SCRUM-224",
+  "status": "passed",
+  "diagnosticScope": "Focused native Windows host-compatibility checks; not product acceptance",
+  "upstream": {
+    "project": "curl/curl",
+    "version": "8.22.0",
+    "workflowSource": "https://github.com/curl/curl/blob/01346829096c61b372692f6dc43ffa778c6caccd/.github/workflows/windows.yml",
+    "workflowObservation": "The pinned upstream Windows workflow selects MSYS2 shell and Perl for its native MSVC test job. SKAGER retains its separate Win32 application ABI.",
+    "diagnosticSourceSha256": "f7ef3ae8a22e521f289803fe93543eb64c329b58aa73a9e224dfd915a2a5f4f7",
+    "unmodifiedModules": {
+      "runner.pm": "ee27bd87fafdc66fb4cea0494c9469f042994de0a149844069f4f82509e7fee7",
+      "servers.pm": "4f60ca679191ac8d4bbcef52fd7bbbe7301e5f8d30453188c77c477a6905288c"
+    }
+  },
+  "hostProbe": {
+    "sourceCommit": "622157fed6f2a3a9c5aeb476e502941789790498",
+    "workflowRun": {
+      "runId": 36926615433,
+      "url": "https://github.com/ThereptileII/Work/actions/runs/36926615433",
+      "jobId": 110585408240,
+      "job": "host-probe",
+      "conclusion": "success"
+    },
+    "artifact": {
+      "id": 11194521477,
+      "name": "native-curl-test-host-622157fed6f2a3a9c5aeb476e502941789790498",
+      "bytes": 2052,
+      "sha256": "a4530b64b20197000fa54abd706893ade2b2ce1e6f7dbf0d9a430dec840f712f",
+      "zipCrc": "all 6 entries passed"
+    },
+    "cases": [
+      {
+        "host": "Strawberry Perl on native Windows (MSWin32)",
+        "operation": "runner readiness",
+        "result": "Readiness returns null despite a queued response; a direct read confirms the expected reply exists."
+      },
+      {
+        "host": "Strawberry Perl on native Windows (MSWin32)",
+        "operation": "server launcher",
+        "result": "Windows reports `exec` is not recognized; no child PID marker"
+      },
+      {
+        "host": "MSYS2 Perl (reports cygwin)",
+        "operation": "runner readiness",
+        "result": "runner becomes ready and consumes the expected response"
+      },
+      {
+        "host": "MSYS2 Perl (reports cygwin)",
+        "operation": "server launcher",
+        "result": "disposable marker process starts; recorded PID matches child PID"
+      }
+    ],
+    "runtimeIdentity": {
+      "strawberryPerlSha256": "4d61ebe19311dbf7b9710ac2c6c402e3cba3e23b63e8b82be88e471343bed52d",
+      "msysPerlSha256": "8679db320f05c37d004c70ee5196d0bf8e9029aea49b9abc2f5cab8e9da810c5",
+      "msysRuntimeDllSha256": "80817f159a33b8f641e6a15de73d1efcc9af3a7557a69121e4798c99930152f1"
+    },
+    "interpretation": "The comparison reproduces both Strawberry host defects and passes readiness plus real disposable process launch under MSYS2 using the same unchanged curl runner/server modules. It supports explicit POSIX-like test-host selection; it is not a full HTTP server test."
+  },
+  "certificateGeneratorProbe": {
+    "sourceCommit": "4e306264fdb72fee4d67f944112a07e4ef37128d",
+    "workflowRun": {
+      "runId": 36927000029,
+      "url": "https://github.com/ThereptileII/Work/actions/runs/36927000029",
+      "jobId": 110586682775,
+      "job": "host-probe",
+      "conclusion": "success"
+    },
+    "artifact": {
+      "id": 11194008603,
+      "name": "native-curl-test-host-4e306264fdb72fee4d67f944112a07e4ef37128d",
+      "bytes": 6408,
+      "sha256": "476158544394a8068397c0923a71267390e860b5048752857298528d81faf2c0",
+      "zipCrc": "all 16 entries passed"
+    },
+    "result": {
+      "host": "MSYS2 Perl (reports cygwin)",
+      "existingPatchedGenserv": "passes without an additional generator patch",
+      "selectedOpenSsl": "3.6.4",
+      "selectedOpenSslSha256": "670bf9086a4f553dac14646091713614fc5ec47b94f4725023b1cf6af7838fe0",
+      "generationMilliseconds": 609,
+      "caAndHostCertificatesVerified": true,
+      "caAndHostKeysVerified": true
+    },
+    "limits": [
+      "Uses explicitly selected host OpenSSL 3.6.4, not the pinned production OpenSSL 3.5.9 producer.",
+      "Does not exercise an HTTP or TLS transaction or the full curl test suite."
+    ]
+  },
+  "preservedNegativeRuns": [
+    {
+      "runId": 36926058432,
+      "sourceCommit": "d5ffccfe9117e49759fa6f90115d396245bf0c50",
+      "artifactId": 11194191486,
+      "artifactBytes": 525,
+      "artifactSha256": "713eabccf0808301968741dd9bea25cbdd114be36b080a33e6e443a6135e617d",
+      "failure": "Probe stopped before Perl cases because the command selector returned multiple Get-Command matches and joined both executable paths; diagnostic selector defect only."
+    },
+    {
+      "runId": 36926248958,
+      "sourceCommit": "3209dc28edcd182940b8dd8e0bc16afc30284729",
+      "artifactId": 11193478712,
+      "artifactBytes": 1774,
+      "artifactSha256": "e5996f9902b974bd6c36c2e30c007ad5d49b4aac82ddb1b8e636ceda702f93ba",
+      "zipCrc": "passed",
+      "failure": "The probe's narrow `$^O == 'msys'` assertion rejected the actual MSYS2 Perl host label `cygwin`; the MSYS server case had not run yet. Host-label assertion was corrected without changing the functional readiness or process-launch assertions."
+    }
+  ],
+  "frozenCandidateStatus": {
+    "sourceCommit": "b48bf4a8f12f98c459d79aa08805141ac49e0306",
+    "prototypeRunId": 36901029053,
+    "nativeCompositionJob": "cancelled before UI gates",
+    "nativeObjectFlowJob": "cancelled before UI gates",
+    "integratedRunId": 36901026915,
+    "integratedRunSnapshotUtc": "2026-10-01T21:14:07Z",
+    "inProgressJobs": [
+      "Linux integrated regression gate",
+      "Native MSVC XNav / Legacy / Safe slice"
+    ]
+  },
+  "qualificationLimits": [
+    "The four host cases use unmodified curl runner.pm and servers.pm, but do not provide full HTTP/TLS or upstream curl-suite acceptance.",
+    "The certificate probe does not qualify the pinned production OpenSSL 3.5.9 producer.",
+    "No full application, UI, installer, or boat acceptance is established."
+  ]
+}

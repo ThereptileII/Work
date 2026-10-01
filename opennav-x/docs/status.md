@@ -1,15 +1,131 @@
 # OpenNav X status — 2026-10-01
 
+## SCRUM-224 — native test-host producer binding verified; product gates remain open
+
+The focused producer binding run at exact commit `fcd5adfca9e4ffdda00eddd40a48b2d85b433587` completed successfully in [run 36929342744](https://github.com/ThereptileII/Work/actions/runs/36929342744), job 110594459325. Its 13,192-byte artifact (SHA-256 `5d17f69c19d7c4f763d4e7277565708318f5b5f54ce77b1dd73b502d8b729db0`) passes all 19 ZIP CRC checks. The native Win32 CMake cache binds curl tests to MSYS2 Perl; wrong-host and tampered-cache cases refuse, and restored facts pass. Local 13+14+9 checks pass. This qualifies the test-host binding diagnostic only, not the complete upstream curl/HTTP/TLS suite or application, UI, installer, or boat acceptance. See [SCRUM-224 native binding evidence](evidence/scrum-224-native-test-host-binding-pass.json).
+
+## SCRUM-224 — native curl test-host proof; frozen application gates remain open
+
+The frozen candidate `b48bf4a8f12f98c459d79aa08805141ac49e0306` still has two
+cancelled native prototype jobs in
+[run 36901029053](https://github.com/ThereptileII/Work/actions/runs/36901029053);
+their UI gates were skipped. Bounded retained logs show Strawberry Perl reaches
+a curl test-runner state where Windows cannot resolve `exec`, curl fails to
+start its HTTP server, and test 1 remains active.
+
+Four focused native cases on source commit
+`622157fed6f2a3a9c5aeb476e502941789790498` use unchanged curl 8.22.0
+`runner.pm` and `servers.pm`. Strawberry Perl reproduces readiness and server
+launch defects; MSYS2 Perl reports `cygwin`, passes readiness and starts a
+disposable marker process. This confirms the test-host choice is material to
+these modules. The [pinned Windows workflow](https://github.com/curl/curl/blob/01346829096c61b372692f6dc43ffa778c6caccd/.github/workflows/windows.yml)
+selects MSYS2 for curl tests while the product target remains native Win32 MSVC.
+See [host-probe run 36926615433](https://github.com/ThereptileII/Work/actions/runs/36926615433).
+
+The follow-up [run 36927000029](https://github.com/ThereptileII/Work/actions/runs/36927000029)
+also passes certificate generation and CA/host/key verification using the
+existing patched `genserv.pl` under MSYS2, with explicitly selected host OpenSSL
+3.6.4. No additional generator patch was needed; this does not qualify the
+pinned production OpenSSL 3.5.9. The earlier b48 composition artifact also
+shows the pinned OpenSSL 3.5.9 certificate setup generated local test material
+and verified `test-localhost.crt` before the runner failure. Neither focused
+probe is a full HTTP/TLS or curl-suite pass. Earlier failed selector and
+host-label checks remain preserved in the
+[SCRUM-224 evidence](evidence/scrum-224-native-test-host-pass.json).
+
+The separate [integrated run 36901026915](https://github.com/ThereptileII/Work/actions/runs/36901026915)
+still had Linux integrated and native MSVC XNav/Legacy/Safe jobs in progress at
+21:14:07Z. Full application, UI, installer and boat acceptance remain open.
+
 ## Current qualification and boat cleanup — 2026-10-01
 
-The latest frozen full candidate is `141265ea2fa8796c9570065034f31575292ff49e`
+SCRUM-222 cold-profile preservation tooling at
+`034545be03295352a1c509d8979e4a3eb5bf64b6` passes all ten native Windows
+tooling jobs in [run 36911321279](https://github.com/ThereptileII/Work/actions/runs/36911321279).
+Downloaded artifacts were independently size/hash/ZIP checked. The cold suite
+passes 40 native disposable groups, including actual private ACL refusal and
+restoration plus normal commissioning/restore; see
+[native preservation evidence](evidence/scrum-222-native-cold-baseline.json).
+This qualifies the exact tooling, not the frozen application or boat acceptance.
+
+The boat source checkout was updated to that exact tooling commit without
+changing the installed application. An earlier SCRUM-222 cold-profile capture
+refused before backup publication because two known-hash o-charts decoder
+helpers remained from September 29 despite OpenCPN being closed. The current
+user INI remained intact; at that point no launch or cleanup occurred. SCRUM-223
+tracks separately reviewed normal local shutdown for these exact orphan
+processes outside an active commissioning transaction. Existing closed-process
+checks remain mandatory.
+
+SCRUM-223's first native maintenance attempt at commit
+`363fee0cc37a70b09d41799638b0ab7935041411` is preserved as a failure: 24 of 25
+reports passed, while the isolated cold-helper workflow fixture rejected its
+CRLF source substitution before native fake transport. The corrected test-only
+source at `20765cf374da5a1ab47dff0b3b427cd24f595455` passes all 10 native jobs
+and all 26 reports in [run 36919418416](https://github.com/ThereptileII/Work/actions/runs/36919418416);
+the 30,731-byte artifact digest and ZIP integrity were verified. The 33-check
+workflow substitutes process, ACL, transport and ledger observations. Separate
+checks include 45 native pipe-suite checks (10 disposable fake-pipe cases) and
+23 native disposable-ledger ACL checks; none invokes the vendor helper or
+accesses the boat. See [SCRUM-223
+native evidence](evidence/scrum-223-native-cold-helper.json). On the boat, the
+reviewed capture covered two helpers, 2,031 profile entries and three plugin
+trees with 80, 40 and 80 entries. The two fixed one-shot local requests
+completed at 20:25:28Z; independent verification at 20:25:56Z confirmed both
+retained process identities and exact pipe peers, then measured exit code 0 for
+each. The post-close inventory found zero OpenCPN processes and zero chart
+helpers. The profile was unchanged at SHA-256
+`d891d88c62657139e1b1c6ff7d9e8acdae726a4e116dbc844126992a39adbdb6`, and the
+stock executable remained at its reviewed SHA-256. All three remote services
+were running. There was no application launch, profile change, plugin move,
+force termination, reboot or physical output. The required post-close SCRUM-222
+cold Capture succeeded and its exact record was downloaded and hash-checked.
+Independent exact-key review and native Complete now pass: all 19 changes are
+preserved, including the current display and saved-position state, without
+attributing their origin or treating saved coordinates as live data. The completed
+record is hash-bound to the unchanged 21,492-byte profile and predecessor; see
+[actual cold preservation evidence](evidence/scrum-222-boat-cold-preservation.json).
+Fresh source/plugin review and input-only commissioning remain mandatory before
+remote application launch. Installation, retirement of the old copy and boat
+acceptance remain pending.
+
+The frozen full candidate is `b48bf4a8f12f98c459d79aa08805141ac49e0306`
+(local mapped commit `0053ed507b03c79877fd6bb96c0d761fb9f68ac9`). Its narrow
+native tool-facts and version-probe regression passed under both Windows
+PowerShell 5.1 and PowerShell 7 in [run 36900544171](https://github.com/ThereptileII/Work/actions/runs/36900544171);
+both artifacts were independently verified. The probe covers real x86 tool
+facts, stream stability, refusals and restored verification. The same-commit
+Linux and Windows contract jobs now pass (90 and 87 CTest cases respectively,
+plus the separately recorded Python, native and repeated lifecycle checks).
+The [Windows tooling run](https://github.com/ThereptileII/Work/actions/runs/36901026982)
+passes all 10 jobs; verified actual COM shortcut reports pass 238 checks on
+each Windows host architecture. See the [contract evidence](evidence/scrum-217-b48-full-contracts.json)
+and [shortcut evidence](evidence/scrum-215-b48-native-shortcuts.json).
+The [integrated](https://github.com/ThereptileII/Work/actions/runs/36901026915)
+run remains in progress; two native Windows prototype jobs in [run
+36901029053](https://github.com/ThereptileII/Work/actions/runs/36901029053) were
+cancelled during build/regressions before downstream UI gates. No full candidate
+acceptance is established. This focused pass does not qualify the full dependency
+producers, dependency reuse, application, package or boat.
+See [native stream-pass evidence](evidence/scrum-217-native-stream-pass.json).
+
+Downloaded same-commit recovery evidence now verifies 21 native maintenance
+suite reports, 51 guarded-broker checks and 56 Prepare/Arm/Collect checks.
+These use disposable files and marker processes, not the boat or OpenCPN UI;
+see [recovery tooling evidence](evidence/scrum-17-b48-recovery-tooling.json).
+The pristine upstream Windows build passes 60/60 tests. The pristine Linux
+comparison builds but reproduces its two documented upstream failures (64/66);
+it is explicitly not an all-tests-pass result. Integrated application tests
+still must pass without exceptions. See [upstream baseline evidence](evidence/scrum-217-b48-upstream-baselines.json).
+
+An earlier frozen candidate, `141265ea2fa8796c9570065034f31575292ff49e`
 ([integrated run](https://github.com/ThereptileII/Work/actions/runs/36892709388),
-[prototype run](https://github.com/ThereptileII/Work/actions/runs/36892710519)).
-It is **not qualified**. Windows contracts failed on nonportable path fixtures;
+[prototype run](https://github.com/ThereptileII/Work/actions/runs/36892710519)),
+was **not qualified**. Windows contracts failed on nonportable path fixtures;
 the dependent integrated Windows application job was skipped. The prototype
 composition job separately failed before OpenSSL compilation because its child
-PowerShell could not resolve `Get-FileHash`. These are retained SCRUM-217
-integration failures, not acceptance of the certificate repair or the product.
+PowerShell could not resolve `Get-FileHash`. These remain historical SCRUM-217
+integration failures, not acceptance of the certificate repair or product.
 
 The isolated receipt-fixture correction at
 `899af50a1a4623a08f71d199d146a1cecd1959c2`
@@ -29,10 +145,13 @@ missing-module failure. Its diagnostic run at
 passes Windows PowerShell 5.1 but fails PowerShell 7: only NMAKE's merged
 stdout/stderr ordering changes the recorded first line and output hash. The
 retained captured/observed records have identical executable identities,
-environment and exit codes. Separate bounded stream capture is being repaired;
+environment and exit codes. Bounded separate-stream capture was subsequently
+implemented and passed its real-process regression under both interpreters;
 strict identity and output comparisons remain required. See the
-[stream-order failure evidence](evidence/scrum-217-native-stream-order-failure.json).
-Both interpreter gates must pass before another full candidate is frozen.
+[stream-order failure evidence](evidence/scrum-217-native-stream-order-failure.json)
+and [subsequent narrow pass](evidence/scrum-217-native-stream-pass.json).
+The narrow interpreter gates subsequently passed on the frozen b48 candidate;
+its broader native qualification is still in progress as noted above.
 No new boat deployment or removal of older installations has occurred.
 
 The published candidate `f1e2cde8fcbf92826d648007b267cc0f5320aa55`
