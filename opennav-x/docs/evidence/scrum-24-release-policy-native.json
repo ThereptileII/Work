@@ -1,0 +1,60 @@
+{
+  "schemaVersion": 1,
+  "commit": "a3a7bac04a3bdda8ddd485450a7dab8aedbd2c4d",
+  "localCommit": "7d30c63",
+  "runId": 36939227135,
+  "url": "https://github.com/ThereptileII/Work/actions/runs/36939227135",
+  "scope": "Read-only verified release policy and deterministic eligibility; no installed updater",
+  "jobs": [
+    {
+      "platform": "linux",
+      "jobId": 110626577110,
+      "artifactId": 11199302160,
+      "bytes": 3518,
+      "sha256": "64d29a51db4c6d880a543e4735df04980fa34d442c2311b691fcf9d54e7a708e",
+      "zipCrc": "passed",
+      "testJsonSha256": "709f341e51e1291a6b46e3211fc99cdf922c840cdc8c9964a43540e9f7f1fa77",
+      "packages": {
+        "example.com/opennav-update-verifier": {
+          "topLevelTests": 10,
+          "subtests": 15
+        },
+        "example.com/opennav-update-verifier/releasepolicy": {
+          "topLevelTests": 9,
+          "subtests": 15
+        }
+      },
+      "failures": 0,
+      "skips": 0,
+      "goVet": "passed"
+    },
+    {
+      "platform": "windows-386",
+      "jobId": 110626576901,
+      "artifactId": 11199122832,
+      "bytes": 2960,
+      "sha256": "cdb69defefba7f8c10645ea9893e0ead5d3bc029506e139940816b8b04adc2a9",
+      "zipCrc": "passed",
+      "testJsonSha256": "f85829d1dc8cff2c4c51244913a80baa38bd6487b216cb9d24ccace64b8c8129",
+      "packages": {
+        "example.com/opennav-update-verifier": {
+          "topLevelTests": 10,
+          "subtests": 15
+        },
+        "example.com/opennav-update-verifier/releasepolicy": {
+          "topLevelTests": 9,
+          "subtests": 15
+        }
+      },
+      "failures": 0,
+      "skips": 0,
+      "goVet": "passed"
+    }
+  ],
+  "limitations": [
+    "Production root/key/cache policy remains open.",
+    "No installer or startup integration; no executable package downloaded or run.",
+    "Application/boat candidate remains frozen independently at45b8a9d.",
+    "Policy parsing alone never authorizes installation; exact package verification and transactional recovery remain required."
+  ]
+}

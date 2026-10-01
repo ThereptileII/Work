@@ -1,0 +1,544 @@
+{
+  "schemaVersion": 1,
+  "commit": "45b8a9d2809d0d34171010ad1c00f4a3cd056a09",
+  "scope": "Completed early gates only; not application or boat qualification",
+  "observedAtUtc": "2026-10-01T23:03:54.998756+00:00",
+  "runs": [
+    {
+      "id": 36935775514,
+      "status": "in_progress",
+      "conclusion": null,
+      "attempt": 1,
+      "jobs": [
+        {
+          "id": 110615569069,
+          "name": "Native MSVC upstream Win32 ABI on Windows x64",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "id": 110615569280,
+          "name": "Native boat recovery and commissioning contracts",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "id": 110615569288,
+          "name": "linux",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "id": 110615569309,
+          "name": "Linux integrated regression gate",
+          "status": "in_progress",
+          "conclusion": null
+        },
+        {
+          "id": 110615569344,
+          "name": "Official OpenCPN installation prerequisite",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "id": 110615569353,
+          "name": "Approved OpenCPN ABI on Windows x64",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "id": 110615569354,
+          "name": "Boat C6 producer expiry compile (no flashing)",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "id": 110615569361,
+          "name": "Native Win32 commissioning restart process boundary",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "id": 110615569372,
+          "name": "contracts (ubuntu-24.04)",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "id": 110615569550,
+          "name": "contracts (windows-2022)",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "id": 110616963507,
+          "name": "Actual official OpenCPN portable upgrade caution (sv)",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "id": 110616963549,
+          "name": "Actual official OpenCPN portable upgrade caution (en_US)",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "id": 110616963771,
+          "name": "Fixed guarded mode UI actions on disposable native windows",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "id": 110616964410,
+          "name": "Actual restart broker with disposable marker-only installation",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "id": 110618188683,
+          "name": "Native MSVC XNav / Legacy / Safe slice",
+          "status": "in_progress",
+          "conclusion": null
+        }
+      ]
+    },
+    {
+      "id": 36935778459,
+      "status": "in_progress",
+      "conclusion": null,
+      "attempt": 1,
+      "jobs": [
+        {
+          "id": 110615578574,
+          "name": "Supplemental AIS portable contracts (ubuntu-24.04)",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "id": 110615578780,
+          "name": "reference (ubuntu-24.04)",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "id": 110615578803,
+          "name": "Prototype capture guard on disposable Windows surfaces",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "id": 110615578835,
+          "name": "Bounded AIS TLS and provider lifecycle (Linux loopback only)",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "id": 110615578879,
+          "name": "Supplemental AIS portable contracts (windows-2022)",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "id": 110615578909,
+          "name": "Native prototype route waypoint AIS pointer regressions (not full release gate)",
+          "status": "in_progress",
+          "conclusion": null
+        },
+        {
+          "id": 110615578942,
+          "name": "Native prototype composition development (not release qualification)",
+          "status": "in_progress",
+          "conclusion": null
+        },
+        {
+          "id": 110615578954,
+          "name": "reference (windows-2022)",
+          "status": "completed",
+          "conclusion": "success"
+        }
+      ]
+    },
+    {
+      "id": 36935773834,
+      "status": "completed",
+      "conclusion": "success",
+      "attempt": 1,
+      "jobs": [
+        {
+          "id": 110615562531,
+          "name": "Read-only native warning desktop diagnostics",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "id": 110615562813,
+          "name": "Actual COM shortcut migration (x86)",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "id": 110615562832,
+          "name": "Actual official OpenCPN portable upgrade caution (sv)",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "id": 110615562869,
+          "name": "Actual COM shortcut migration (x64)",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "id": 110615562892,
+          "name": "Actual official OpenCPN portable upgrade caution (en_US)",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "id": 110615562977,
+          "name": "Disposable native Windows tooling checks",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "id": 110615563061,
+          "name": "Pinned zlib source only (no native build)",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "id": 110615563074,
+          "name": "Native Win32 commissioning restart process boundary",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "id": 110616949281,
+          "name": "Actual restart broker with disposable marker-only installation",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "id": 110616949318,
+          "name": "Fixed guarded mode UI actions on disposable native windows",
+          "status": "completed",
+          "conclusion": "success"
+        }
+      ]
+    }
+  ],
+  "artifacts": [
+    {
+      "id": 11198392459,
+      "runId": 36935775514,
+      "name": "linux-pristine-45b8a9d2809d0d34171010ad1c00f4a3cd056a09",
+      "bytes": 475688,
+      "sha256": "1e4fd3acba6e4926591af5f250200b751053cb30b6afd1f5abb44265111a6da1",
+      "zipEntries": 375,
+      "crc": "passed"
+    },
+    {
+      "id": 11198372176,
+      "runId": 36935775514,
+      "name": "boat-maintenance-45b8a9d2809d0d34171010ad1c00f4a3cd056a09",
+      "bytes": 24975,
+      "sha256": "7012594b72cde1755c02aa30dc8fe016098fa0bc71e76ceca18498c0ccbd81f8",
+      "zipEntries": 21,
+      "crc": "passed"
+    },
+    {
+      "id": 11197967313,
+      "runId": 36935775514,
+      "name": "commissioning-broker-45b8a9d2809d0d34171010ad1c00f4a3cd056a09",
+      "bytes": 16730,
+      "sha256": "067b8c826189a749d75b07ef6dae518f5a1d464af747c9c2f5ad8620e0151805",
+      "zipEntries": 37,
+      "crc": "passed"
+    },
+    {
+      "id": 11197867304,
+      "runId": 36935775514,
+      "name": "stock-welcome-en_US-45b8a9d2809d0d34171010ad1c00f4a3cd056a09",
+      "bytes": 474209,
+      "sha256": "6f7ccdf40d3de817497fae200c58cb88f1d5e7325151d1998e9b42e6a22c8e1e",
+      "zipEntries": 42,
+      "crc": "passed"
+    },
+    {
+      "id": 11197862345,
+      "runId": 36935775514,
+      "name": "restart-window-45b8a9d2809d0d34171010ad1c00f4a3cd056a09",
+      "bytes": 23502,
+      "sha256": "1721ba877b964a80807bd8f99e0dd9bc1b00899172d472cd503a220c9c395c67",
+      "zipEntries": 6,
+      "crc": "passed"
+    },
+    {
+      "id": 11197826696,
+      "runId": 36935775514,
+      "name": "official-prerequisite-45b8a9d2809d0d34171010ad1c00f4a3cd056a09",
+      "bytes": 221058,
+      "sha256": "21c50d64b64c4adcd11beea26e056822da4d90ca488b71e798e50eb4a99ce3bf",
+      "zipEntries": 19,
+      "crc": "passed"
+    },
+    {
+      "id": 11197719230,
+      "runId": 36935775514,
+      "name": "windows-pristine-45b8a9d2809d0d34171010ad1c00f4a3cd056a09",
+      "bytes": 496689,
+      "sha256": "ea5abb76f3008228cd7226964533462727aeba8b6378eae58bad27cf14092a69",
+      "zipEntries": 371,
+      "crc": "passed"
+    },
+    {
+      "id": 11197707477,
+      "runId": 36935775514,
+      "name": "commissioning-restart-qualified-45b8a9d2809d0d34171010ad1c00f4a3cd056a09",
+      "bytes": 336,
+      "sha256": "1fd250c7975d28669bdb328576f07c99b44d0aeca93c01877a73ce19573be088",
+      "zipEntries": 1,
+      "crc": "passed"
+    },
+    {
+      "id": 11197542806,
+      "runId": 36935775514,
+      "name": "stock-welcome-sv-45b8a9d2809d0d34171010ad1c00f4a3cd056a09",
+      "bytes": 501665,
+      "sha256": "10797b60ea7919a056dfcebf927caab0a578ce4f90349f6cfd93bdc7da2c2b35",
+      "zipEntries": 42,
+      "crc": "passed"
+    },
+    {
+      "id": 11197494885,
+      "runId": 36935775514,
+      "name": "boat-firmware-45b8a9d2809d0d34171010ad1c00f4a3cd056a09",
+      "bytes": 2566,
+      "sha256": "8fe6b8156fe1365d5e8a66a2e13e5e7fdc6ce976e8a4d3e054402888c252bb61",
+      "zipEntries": 2,
+      "crc": "passed"
+    },
+    {
+      "id": 11197259907,
+      "runId": 36935775514,
+      "name": "commissioning-restart-45b8a9d2809d0d34171010ad1c00f4a3cd056a09",
+      "bytes": 6641,
+      "sha256": "f0e916be4da182c31feabd4cfe05b7082a7fa3abb530e061316fc13148967c33",
+      "zipEntries": 2,
+      "crc": "passed"
+    },
+    {
+      "id": 11198700128,
+      "runId": 36935778459,
+      "name": "prototype-ais-foundation-Windows-45b8a9d2809d0d34171010ad1c00f4a3cd056a09",
+      "bytes": 690,
+      "sha256": "63e26b3f51adf18fd1dac8c9b49690c6f797b9a26b84601ccb86d76bd23a0da6",
+      "zipEntries": 1,
+      "crc": "passed"
+    },
+    {
+      "id": 11198685076,
+      "runId": 36935778459,
+      "name": "prototype-review-guard-Windows-45b8a9d2809d0d34171010ad1c00f4a3cd056a09",
+      "bytes": 9661,
+      "sha256": "465f64129e6f493c9289ee95a8b5811484bc24d2e0c925f133e945d87c979d37",
+      "zipEntries": 2,
+      "crc": "passed"
+    },
+    {
+      "id": 11198570073,
+      "runId": 36935778459,
+      "name": "prototype-reference-Linux-45b8a9d2809d0d34171010ad1c00f4a3cd056a09",
+      "bytes": 22027903,
+      "sha256": "13e5d9af50b6121746b386d752679671a7ebd4568cdd9c72f4cec86ff44fae1d",
+      "zipEntries": 78,
+      "crc": "passed"
+    },
+    {
+      "id": 11198367038,
+      "runId": 36935778459,
+      "name": "prototype-reference-Windows-45b8a9d2809d0d34171010ad1c00f4a3cd056a09",
+      "bytes": 19899602,
+      "sha256": "91a076063294bea4b3e7ca174105408f700d8dd54db79f8ea7fe92ab588a8780",
+      "zipEntries": 78,
+      "crc": "passed"
+    },
+    {
+      "id": 11197524605,
+      "runId": 36935778459,
+      "name": "prototype-ais-network-Linux-45b8a9d2809d0d34171010ad1c00f4a3cd056a09",
+      "bytes": 935,
+      "sha256": "2f4aae7d4681faccfcf6fcfb40e63dbdaba4eca92961980995600530a91044b4",
+      "zipEntries": 3,
+      "crc": "passed"
+    },
+    {
+      "id": 11197194928,
+      "runId": 36935778459,
+      "name": "prototype-ais-foundation-Linux-45b8a9d2809d0d34171010ad1c00f4a3cd056a09",
+      "bytes": 686,
+      "sha256": "83cac4be3836418999b41727e05d1d05be780958e79b14d791d2c922e7014a6a",
+      "zipEntries": 1,
+      "crc": "passed"
+    },
+    {
+      "id": 11198630242,
+      "runId": 36935773834,
+      "name": "development-stock-welcome-en_US-45b8a9d2809d0d34171010ad1c00f4a3cd056a09",
+      "bytes": 474346,
+      "sha256": "ce93edf80ff33b8c4cdb516b54b61093cf6e33c6ad48f39ce7bd42f0f1fa6efd",
+      "zipEntries": 42,
+      "crc": "passed"
+    },
+    {
+      "id": 11198510158,
+      "runId": 36935773834,
+      "name": "development-desktop-diagnostics-45b8a9d2809d0d34171010ad1c00f4a3cd056a09",
+      "bytes": 3269,
+      "sha256": "e07f09a3d261e4f8c37f0c0c19031c6f9c9c00faf8e60b7f57443786b34274e9",
+      "zipEntries": 2,
+      "crc": "passed"
+    },
+    {
+      "id": 11198391398,
+      "runId": 36935773834,
+      "name": "development-commissioning-restart-45b8a9d2809d0d34171010ad1c00f4a3cd056a09",
+      "bytes": 6661,
+      "sha256": "709821f5b7cc6d64bb407675db5892d420516ef3a00b7f8880e3e0d705200211",
+      "zipEntries": 2,
+      "crc": "passed"
+    },
+    {
+      "id": 11198002368,
+      "runId": 36935773834,
+      "name": "development-commissioning-broker-45b8a9d2809d0d34171010ad1c00f4a3cd056a09",
+      "bytes": 16704,
+      "sha256": "533994de836bb7dffc314b437b34cb09cb3a8f5a58d1a7a0934dcee732181356",
+      "zipEntries": 37,
+      "crc": "passed"
+    },
+    {
+      "id": 11197807163,
+      "runId": 36935773834,
+      "name": "development-boat-tooling-45b8a9d2809d0d34171010ad1c00f4a3cd056a09",
+      "bytes": 27143,
+      "sha256": "2b477988af51f67d29ef8de107fd70e59b84dd7bb5b6dbe85698f6010484015d",
+      "zipEntries": 22,
+      "crc": "passed"
+    },
+    {
+      "id": 11197798046,
+      "runId": 36935773834,
+      "name": "development-restart-window-45b8a9d2809d0d34171010ad1c00f4a3cd056a09",
+      "bytes": 23427,
+      "sha256": "098153ffafe295d27f662b83200e350d52f55135956ecbd068d3942b5785e58e",
+      "zipEntries": 6,
+      "crc": "passed"
+    },
+    {
+      "id": 11197782722,
+      "runId": 36935773834,
+      "name": "native-zlib-source-45b8a9d2809d0d34171010ad1c00f4a3cd056a09",
+      "bytes": 370,
+      "sha256": "6c4d7bc0f70de497d699568b1907f670d7218e7950f5fb692073ed2fa6687be4",
+      "zipEntries": 1,
+      "crc": "passed"
+    },
+    {
+      "id": 11197747695,
+      "runId": 36935773834,
+      "name": "development-installer-shortcuts-x86-45b8a9d2809d0d34171010ad1c00f4a3cd056a09",
+      "bytes": 1941,
+      "sha256": "0d204482284f4ab5961615f334f9055a7df00a583bac52da6d0c57e74daeda01",
+      "zipEntries": 1,
+      "crc": "passed"
+    },
+    {
+      "id": 11197701936,
+      "runId": 36935773834,
+      "name": "development-stock-welcome-sv-45b8a9d2809d0d34171010ad1c00f4a3cd056a09",
+      "bytes": 501702,
+      "sha256": "8143a84b61e78bb207518c8e6a9f7a72a1a4e11de532d97243c9caf3ad9e3a09",
+      "zipEntries": 42,
+      "crc": "passed"
+    },
+    {
+      "id": 11197169887,
+      "runId": 36935773834,
+      "name": "development-installer-shortcuts-x64-45b8a9d2809d0d34171010ad1c00f4a3cd056a09",
+      "bytes": 1940,
+      "sha256": "20c7f9c7ca6d473a79d55408922019cdd1120cd83b11f39443081d56a6243526",
+      "zipEntries": 1,
+      "crc": "passed"
+    }
+  ],
+  "results": {
+    "pristine_linux": {
+      "junit": {
+        "tests": 66,
+        "failures": 2,
+        "skipped": 0
+      },
+      "classification": {
+        "ctest_entries": 66,
+        "observed_failures": [
+          "DriverRegistry.RegisterDriver",
+          "IpcServer.Commands"
+        ],
+        "known_upstream_failures": [
+          "DriverRegistry.RegisterDriver",
+          "IpcServer.Commands"
+        ],
+        "unexpected_failures": [],
+        "release_acceptance": false,
+        "note": "Pristine comparison only. Integrated regression tests must pass without exceptions."
+      }
+    },
+    "pristine_windows": {
+      "tests": 60,
+      "failures": 0,
+      "skipped": 0
+    },
+    "ais_foundation_linux": {
+      "tests": 7,
+      "failures": 0,
+      "skipped": 0
+    },
+    "ais_foundation_windows": {
+      "tests": 7,
+      "failures": 0,
+      "skipped": 0
+    },
+    "ais_network_linux_tail": {
+      "network.log": "18 TLS/transport scenarios passed",
+      "probe-offline.log": "PASS: 30 offline live-probe CLI/privacy checks; no live service acceptance",
+      "provider.log": "PASS server: complete prompt subscriptions, compression, 5s pan cadence, bounded reconnect, key never logged"
+    },
+    "native_prototype_review_guard": {
+      "status": "passed",
+      "cases": 53,
+      "error": null
+    },
+    "reference": {
+      "linux_states": 63,
+      "windows_states": 63,
+      "linux_html_sha256": "b04573b920b6bccd16afd22f54a909e48afcfd502ce9cd7c69fdf5b6dd895447",
+      "windows_html_sha256": "b04573b920b6bccd16afd22f54a909e48afcfd502ce9cd7c69fdf5b6dd895447",
+      "viewport": {
+        "width": 1280,
+        "height": 800
+      }
+    },
+    "zlib_source": {
+      "status": "verified",
+      "mode": "source-only"
+    }
+  },
+  "limitations": [
+    "These are completed early jobs and artifacts only. In-progress integrated Linux, native XNav slice, and native prototype jobs are not qualified by this report.",
+    "Pristine Linux has two classified known upstream failures; release_acceptance is false.",
+    "Reference captures are source/prototype evidence, not native application visual acceptance."
+  ],
+  "boatModified": false,
+  "nativeScreenshotsReviewed": false
+}

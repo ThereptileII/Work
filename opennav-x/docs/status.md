@@ -1,5 +1,21 @@
 # OpenNav X status — 2026-10-01
 
+## SCRUM-24/25 — signed release policy passes native tests
+
+The isolated update branch at `a3a7bac04a3bdda8ddd485450a7dab8aedbd2c4d`
+passes [Linux and native Windows/386](https://github.com/ThereptileII/Work/actions/runs/36939227135).
+Each platform passes 19 top-level tests and 30 subtests, without failures/skips,
+plus `go vet`; both downloaded artifacts have verified length, SHA-256 and CRC.
+The policy distinguishes upgrades, same release, downgrades, conflicting source
+identities and unsupported OpenCPN installations. Strict JSON and Windows path
+checks reject the case-alias and reserved-name defects found during review.
+The read-only composition binds policy identity to actual signed TUF metadata;
+no installer executes and no startup updater is enabled. See
+[exact native evidence](evidence/scrum-24-release-policy-native.json).
+Root/key/cache custody and transactional recovery remain open. The boat candidate
+is still separately frozen at `45b8a9d`.
+
+
 ## SCRUM-25 — isolated signed-update verifier passes native feasibility
 
 The separate verifier branch at `24bd013f4891638f0e59411836c67f271a66a645`
@@ -18,6 +34,19 @@ transactional installer handoff remain open; see
 SCRUM-24 now owns the deterministic release-policy prerequisite. Product
 qualification continues independently on frozen `45b8a9d`.
 
+
+## Current replacement — verified early gates
+
+All ten native boat-tooling jobs at exact `45b8a9d` pass. Twenty-seven
+available early artifacts have independently verified lengths, SHA-256 and
+all 1,237 ZIP entry CRCs. Supplemental AIS passes seven tests per platform;
+the Linux network fixture passes 18 TLS/transport scenarios and 30 offline
+checks. Prototype references capture 63 states per platform, without implying
+native application visual acceptance. Pristine Windows passes 60 tests;
+pristine Linux retains its two classified upstream failures out of 66 and is
+not release acceptance. Integrated Linux endurance and the three native product
+build jobs remain in progress at this observation; installation remains withheld.
+See [the exact early evidence](evidence/scrum-224-45b8-early-gates.json).
 
 ## Current replacement — native certificate path repair
 
