@@ -1,0 +1,154 @@
+{
+  "schemaVersion": 1,
+  "issue": "SCRUM-223",
+  "status": "native-and-actual-helper-cleanup-passed",
+  "scope": "native Windows validation of cold chart-helper recovery tooling",
+  "sourceCommit": "20765cf374da5a1ab47dff0b3b427cd24f595455",
+  "localMappedCommit": "7658f36c50140c35a44678b75675ad9b4e77e526",
+  "workflowRun": {
+    "runId": 36919418416,
+    "url": "https://github.com/ThereptileII/Work/actions/runs/36919418416",
+    "nativeJobsPassed": 10,
+    "nativeJobsTotal": 10,
+    "nativeMaintenanceJobId": 110561431484,
+    "nativeMaintenanceConclusion": "success"
+  },
+  "artifact": {
+    "id": 11191068356,
+    "name": "development-boat-tooling-20765cf374da5a1ab47dff0b3b427cd24f595455",
+    "bytes": 30731,
+    "sha256": "d031f870b1968247a44f2888a2cb21b74a0ba9d7867d449c14ae66c64359f684",
+    "githubDigest": "sha256:d031f870b1968247a44f2888a2cb21b74a0ba9d7867d449c14ae66c64359f684",
+    "zipIntegrity": "passed"
+  },
+  "reportAudit": {
+    "reports": 26,
+    "passed": 26,
+    "failed": 0,
+    "namedResults": {
+      "coldHelperWorkflow": {
+        "status": "passed",
+        "checks": 33,
+        "substituted": [
+          "process observations",
+          "ACL observations",
+          "native transport",
+          "ledger write"
+        ],
+        "actualNativeTransport": false,
+        "vendorHelperExecuted": false,
+        "boatAccess": false
+      },
+      "coldHelperPolicy": {
+        "status": "passed",
+        "checks": 21,
+        "realProcesses": false,
+        "vendorExecution": false,
+        "boatAccess": false,
+        "hardware": false
+      },
+      "chartHelperAttempts": {
+        "status": "passed",
+        "checks": 23,
+        "platform": "native-windows-disposable",
+        "nativeAclExecuted": true,
+        "nativeShutdownTransportExecuted": false,
+        "vendorHelperExecuted": false,
+        "boatAccess": false
+      },
+      "chartHelperShutdown": {
+        "status": "passed",
+        "checks": 45,
+        "nativePipeExecuted": true,
+        "fakePipeCases": 10,
+        "vendorHelperExecuted": false,
+        "boatAccess": false,
+        "physicalOutput": false
+      },
+      "orphanChartHelper": {
+        "status": "passed",
+        "checks": 21,
+        "boatAccess": false,
+        "physicalOutput": false
+      },
+      "coldBaseline": {
+        "status": "passed",
+        "groups": 40,
+        "platform": "native-disposable",
+        "nativeAclExecuted": true,
+        "realProfileAccess": false,
+        "applicationLaunched": false
+      },
+      "navigationCopy": {
+        "status": "passed",
+        "tests": 11
+      }
+    }
+  },
+  "priorNativeAttempt": {
+    "runId": 36918252472,
+    "url": "https://github.com/ThereptileII/Work/actions/runs/36918252472",
+    "sourceCommit": "363fee0cc37a70b09d41799638b0ab7935041411",
+    "nativeMaintenanceConclusion": "failure",
+    "reportsPassed": 24,
+    "reportsFailed": 1,
+    "failure": "Cold-helper workflow fixture refused source substitution because its regex did not match a CRLF-terminated native call; native fake transport was not invoked.",
+    "preserved": true
+  },
+  "actualBoat": {
+    "captureState": "completed-and-reviewed",
+    "captureSha256": "a803a1a437b3fd8ddd82e84d64c380de535d98e3921c9494a4986285576cce4c",
+    "profileEntries": 2031,
+    "pluginTreeCount": 3,
+    "pluginTreeEntryCounts": [
+      80,
+      40,
+      80
+    ],
+    "close": {
+      "helperCount": 2,
+      "oneShotRequests": 2,
+      "reviewSha256": "ae22553d89fe36e4bb726cf5ecb8c1cb5930cdfc50a562b023b7be3a979e0f75",
+      "completedUtc": "2026-10-01T20:25:28.6657529Z",
+      "independentlyVerifiedUtc": "2026-10-01T20:25:56.0302399Z",
+      "eachRequest": {
+        "retainedProcessIdentity": true,
+        "exactPipePeerVerified": true,
+        "writeCompleted": true,
+        "threeReplyBytesRead": true,
+        "replyMeaningValidated": false,
+        "measuredExitObserved": true,
+        "measuredExitCode": 0
+      },
+      "openCpnProcessesAfterClose": 0,
+      "chartHelpersAfterClose": 0
+    },
+    "profileChanged": false,
+    "profileSha256AfterClose": "d891d88c62657139e1b1c6ff7d9e8acdae726a4e116dbc844126992a39adbdb6",
+    "stockExecutableSha256AfterClose": "7c6547562cca7954671eaab72833ca9d788710fd9808b6a699b6dc823852ae0c",
+    "remoteServicesRunning": 3,
+    "applicationLaunched": false,
+    "pluginMoved": false,
+    "forceTermination": false,
+    "reboot": false,
+    "physicalOutput": false,
+    "postCloseColdCapture": "captured-review-required",
+    "postCloseColdCaptureProcessExitCode": 0,
+    "postCloseColdCaptureComplete": true,
+    "postCloseColdCaptureSha256": "705b10e2984accfd6fce5c7dd9eb18c84aa182bfeff855efa60bd06e3c4d994b",
+    "postCloseBaselineReviewComplete": true,
+    "postCloseBaselineRecordSha256": "543f63c4583140917208a54dac2419540bc418b43143e74a939c618da29d1470"
+  },
+  "limits": [
+    "The 33-check cold-helper workflow substitutes process observations, ACL observations, native transport and ledger writes; it is not a live helper shutdown.",
+    "The 45-check native pipe suite includes ten disposable fake-pipe cases and marker processes, not the vendor helper.",
+    "The 23-check chart-helper-attempts suite exercised native disposable ACL behavior; it did not execute native shutdown transport or access the boat.",
+    "Native disposable pipe fixtures are distinct from the actual two-helper close; the vendor helper itself was not executed by the suite.",
+    "Actual post-close SCRUM-222 cold Capture/Complete succeeded, preserving the exact existing profile with independent per-key review. These recovery results are not installation, old-copy retirement or boat acceptance."
+  ],
+  "unmetGates": [
+    "Complete any separately reviewed installation and old-copy retirement steps.",
+    "Boat commissioning and physical/hardware acceptance.",
+    "Remaining product, installer/update, release and public-beta acceptance gates."
+  ]
+}

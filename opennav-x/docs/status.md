@@ -12,13 +12,45 @@ restoration plus normal commissioning/restore; see
 This qualifies the exact tooling, not the frozen application or boat acceptance.
 
 The boat source checkout was updated to that exact tooling commit without
-changing the installed application. Actual cold capture then refused before
-backup publication because two known-hash o-charts decoder helpers remain from
-September 29 despite OpenCPN being closed. The current user INI remains intact;
-no launch or cleanup occurred. SCRUM-223 tracks separately reviewed normal
-local shutdown for these exact orphan processes outside an active commissioning
-transaction. Existing closed-process checks remain mandatory. Cold capture,
-review, replacement installation and old-copy retirement are still pending.
+changing the installed application. An earlier SCRUM-222 cold-profile capture
+refused before backup publication because two known-hash o-charts decoder
+helpers remained from September 29 despite OpenCPN being closed. The current
+user INI remained intact; at that point no launch or cleanup occurred. SCRUM-223
+tracks separately reviewed normal local shutdown for these exact orphan
+processes outside an active commissioning transaction. Existing closed-process
+checks remain mandatory.
+
+SCRUM-223's first native maintenance attempt at commit
+`363fee0cc37a70b09d41799638b0ab7935041411` is preserved as a failure: 24 of 25
+reports passed, while the isolated cold-helper workflow fixture rejected its
+CRLF source substitution before native fake transport. The corrected test-only
+source at `20765cf374da5a1ab47dff0b3b427cd24f595455` passes all 10 native jobs
+and all 26 reports in [run 36919418416](https://github.com/ThereptileII/Work/actions/runs/36919418416);
+the 30,731-byte artifact digest and ZIP integrity were verified. The 33-check
+workflow substitutes process, ACL, transport and ledger observations. Separate
+checks include 45 native pipe-suite checks (10 disposable fake-pipe cases) and
+23 native disposable-ledger ACL checks; none invokes the vendor helper or
+accesses the boat. See [SCRUM-223
+native evidence](evidence/scrum-223-native-cold-helper.json). On the boat, the
+reviewed capture covered two helpers, 2,031 profile entries and three plugin
+trees with 80, 40 and 80 entries. The two fixed one-shot local requests
+completed at 20:25:28Z; independent verification at 20:25:56Z confirmed both
+retained process identities and exact pipe peers, then measured exit code 0 for
+each. The post-close inventory found zero OpenCPN processes and zero chart
+helpers. The profile was unchanged at SHA-256
+`d891d88c62657139e1b1c6ff7d9e8acdae726a4e116dbc844126992a39adbdb6`, and the
+stock executable remained at its reviewed SHA-256. All three remote services
+were running. There was no application launch, profile change, plugin move,
+force termination, reboot or physical output. The required post-close SCRUM-222
+cold Capture succeeded and its exact record was downloaded and hash-checked.
+Independent exact-key review and native Complete now pass: all 19 changes are
+preserved, including the current display and saved-position state, without
+attributing their origin or treating saved coordinates as live data. The completed
+record is hash-bound to the unchanged 21,492-byte profile and predecessor; see
+[actual cold preservation evidence](evidence/scrum-222-boat-cold-preservation.json).
+Fresh source/plugin review and input-only commissioning remain mandatory before
+remote application launch. Installation, retirement of the old copy and boat
+acceptance remain pending.
 
 The frozen full candidate is `b48bf4a8f12f98c459d79aa08805141ac49e0306`
 (local mapped commit `0053ed507b03c79877fd6bb96c0d761fb9f68ac9`). Its narrow
