@@ -1,5 +1,24 @@
 # OpenNav X status — 2026-10-01
 
+## SCRUM-224 — frozen prototype native test-runner failures
+
+At exact candidate `b48bf4a8f12f98c459d79aa08805141ac49e0306`, the native
+Windows composition and object-flow jobs in [prototype run 36901029053](https://github.com/ThereptileII/Work/actions/runs/36901029053)
+ended cancelled in their build/regression steps; downstream UI gates were
+skipped. Both uploaded artifacts were independently size/SHA/ZIP-CRC checked.
+Their bounded curl logs show Windows could not resolve `exec`, followed by curl
+`runtests.pl` reporting failure to start its HTTP server and remaining on test
+1/state 3. Root's [source review at commit 01346829096c61b372692f6dc43ffa778c6caccd](https://github.com/curl/curl/blob/01346829096c61b372692f6dc43ffa778c6caccd/.github/workflows/windows.yml)
+notes that the Windows workflow selects MSYS Perl. A narrow POSIX-host
+assumption around the test server's `exec` invocation is plausible, but remains
+a hypothesis pending native verification. SCRUM-224 tracks the failure and fix. The pinned
+OpenSSL 3.5.9 certificate probe and curl compilation passed before this
+test-runner stage, which is not a full curl test or application pass. The
+separate [integrated run 36901026915](https://github.com/ThereptileII/Work/actions/runs/36901026915)
+still had its Linux integrated and native MSVC XNav/Legacy/Safe jobs in progress
+at 20:51:45Z. No full-candidate or UI acceptance is established. See
+[SCRUM-224 native evidence](evidence/scrum-224-native-curl-runner-failure.json).
+
 ## Current qualification and boat cleanup — 2026-10-01
 
 SCRUM-222 cold-profile preservation tooling at
@@ -64,10 +83,12 @@ The [Windows tooling run](https://github.com/ThereptileII/Work/actions/runs/3690
 passes all 10 jobs; verified actual COM shortcut reports pass 238 checks on
 each Windows host architecture. See the [contract evidence](evidence/scrum-217-b48-full-contracts.json)
 and [shortcut evidence](evidence/scrum-215-b48-native-shortcuts.json).
-The full [integrated](https://github.com/ThereptileII/Work/actions/runs/36901026915)
-and [prototype](https://github.com/ThereptileII/Work/actions/runs/36901029053)
-runs remain in progress; no full candidate acceptance is established. This focused pass does not qualify
-the full dependency producers, dependency reuse, application, package or boat.
+The [integrated](https://github.com/ThereptileII/Work/actions/runs/36901026915)
+run remains in progress; two native Windows prototype jobs in [run
+36901029053](https://github.com/ThereptileII/Work/actions/runs/36901029053) were
+cancelled during build/regressions before downstream UI gates. No full candidate
+acceptance is established. This focused pass does not qualify the full dependency
+producers, dependency reuse, application, package or boat.
 See [native stream-pass evidence](evidence/scrum-217-native-stream-pass.json).
 
 Downloaded same-commit recovery evidence now verifies 21 native maintenance

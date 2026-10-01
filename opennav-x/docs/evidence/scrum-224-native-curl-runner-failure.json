@@ -1,0 +1,103 @@
+{
+  "schemaVersion": 1,
+  "issue": "SCRUM-224",
+  "issueStatus": "In Progress",
+  "status": "failed",
+  "sourceCommit": "b48bf4a8f12f98c459d79aa08805141ac49e0306",
+  "repository": "ThereptileII/Work",
+  "snapshotUtc": "2026-10-01T20:51:46Z",
+  "runs": {
+    "prototype": {
+      "runId": 36901029053,
+      "url": "https://github.com/ThereptileII/Work/actions/runs/36901029053",
+      "headSha": "b48bf4a8f12f98c459d79aa08805141ac49e0306",
+      "jobs": [
+        {
+          "jobId": 110499936978,
+          "name": "Native prototype composition development (not release qualification)",
+          "conclusion": "cancelled",
+          "cancelledStep": "Native fixture-free Win32 MSVC build and integrated unit regressions",
+          "downstreamUiGates": "skipped",
+          "artifactUpload": "success",
+          "artifact": {
+            "id": 11192947172,
+            "name": "prototype-native-Windows-b48bf4a8f12f98c459d79aa08805141ac49e0306",
+            "bytes": 12299307,
+            "sha256": "2ed717302e0f97476b6120fa8dfd5268bb81a83934d31673724508e9a7223cae",
+            "zipCrc": "all 21 entries passed",
+            "expandedBytes": 2089681295
+          }
+        },
+        {
+          "jobId": 110499937260,
+          "name": "Native prototype route waypoint AIS pointer regressions (not full release gate)",
+          "conclusion": "cancelled",
+          "cancelledStep": "Native fixture build and actual object workflow",
+          "downstreamUiGates": "skipped",
+          "artifactUpload": "success",
+          "artifact": {
+            "id": 11193101868,
+            "name": "prototype-object-flow-Windows-b48bf4a8f12f98c459d79aa08805141ac49e0306",
+            "bytes": 12514231,
+            "sha256": "9b28325c985468551a2575e9ef308c288e804c286c395fa772ac46d6bced0175",
+            "zipCrc": "all 21 entries passed; streamed verification records CRC pass for each member",
+            "expandedBytes": 2203959971
+          }
+        }
+      ],
+      "otherJobs": "6 success; all 8 jobs terminal at snapshot"
+    },
+    "integrated": {
+      "runId": 36901026915,
+      "url": "https://github.com/ThereptileII/Work/actions/runs/36901026915",
+      "headSha": "b48bf4a8f12f98c459d79aa08805141ac49e0306",
+      "snapshotStatus": "in progress",
+      "inProgressJobs": [
+        {
+          "jobId": 110499931839,
+          "name": "Linux integrated regression gate"
+        },
+        {
+          "jobId": 110502647490,
+          "name": "Native MSVC XNav / Legacy / Safe slice"
+        }
+      ]
+    }
+  },
+  "producerEvidence": {
+    "pinnedOpenSsl": {
+      "version": "3.5.9",
+      "artifactBuildManifest": "windows-openssl-build.json reports Win32 configure, compile, test and install passed",
+      "curlCertificateProbe": "curl log identifies the pinned OpenSSL 3.5.9 executable, generates local test certificates and reports test-localhost.crt verification OK"
+    },
+    "curl": {
+      "version": "8.22.0",
+      "nativeBuild": "CMake configures against pinned OpenSSL 3.5.9 and zlib 1.3.2; build log shows libcurl.dll, curl.exe and curl test support targets produced before the integrated test runner failure"
+    },
+    "boundedLogEvidence": {
+      "composition": "Retained bounded head, tail and first-failure context; did not extract either approximately 1.04GB curl log whole",
+      "objectFlow": "Retained bounded heads and tails; streamed member size, SHA-256 and CRC verification; did not extract the approximately 1.10GB curl logs whole",
+      "observations": [
+        "The Windows output says: 'exec' is not recognized as an internal or external command, operable program or batch file.",
+        "curl runtests.pl then reports: RUN: failed to start the HTTP server.",
+        "The runner remains on test 1, state 3, with repeated warnings that runner id 'integrated' is compared numerically at runtests.pl line 273."
+      ]
+    }
+  },
+  "assessment": {
+    "confirmedStage": "Windows native curl integrated test runner inside each job's native fixture-free build/regression step",
+    "proximateFailure": "Windows could not resolve a command named exec; curl reports that its test HTTP server failed to start, and test 1 remains active",
+    "underlyingCause": "not proven; retained evidence does not identify which harness component constructs/invokes exec or why server startup fails",
+    "qualification": "No completed native prototype UI gates or full candidate acceptance. Artifact upload success is evidence retention only.",
+    "sourceHypothesis": "Root source review finds that the Windows workflow selects MSYS Perl; a narrow POSIX-host assumption around curl's test-server exec invocation is plausible, but not confirmed by native behavior.",
+    "nativeFix": "pending",
+    "sourceReview": {
+      "commit": "01346829096c61b372692f6dc43ffa778c6caccd",
+      "url": "https://github.com/curl/curl/blob/01346829096c61b372692f6dc43ffa778c6caccd/.github/workflows/windows.yml",
+      "observation": "Windows workflow identifies MSYS Perl",
+      "sha256": "aa23b35682e754db24003b3131af7162c0d4be14c19d55ac7573d6d44d9cb275",
+      "verification": "Root fetched the exact curl/curl commit raw workflow with HTTP 200, 59011 bytes and SHA-256 matching tag source."
+    }
+  },
+  "scope": "Downloaded artifact metadata and bounded log excerpts only; no full job-log fetch, source change, Jira write, CI rerun, or boat interaction."
+}
