@@ -1,6 +1,6 @@
 """Fail-closed maintained curl/zlib source and installed-output package boundary."""
 import re
-from pathlib import Path
+from pathlib import Path, PureWindowsPath
 
 from openssl_package import _read_json, _sha256, _require_win32_pe
 
@@ -82,6 +82,20 @@ def verify_manifest(install, library):
                 not isinstance(steps.get('logSha256'), str) or
                 re.fullmatch('[0-9a-f]{64}', steps['logSha256']) is None):
             raise ValueError('curl has no successful upstream execution evidence')
+        host = steps.get('testHost')
+        if (not isinstance(host, dict) or set(host) != {
+                'path', 'sha256', 'bytes', 'os', 'runtimePath', 'runtimeSha256', 'runtimeBytes'} or
+                not isinstance(host['os'], str) or host['os'] not in {'cygwin', 'msys'} or
+                not isinstance(host['path'], str) or
+                not PureWindowsPath(host['path']).is_absolute() or
+                PureWindowsPath(host['path']).name.lower() != 'perl.exe' or
+                not isinstance(host['runtimePath'], str) or
+                not PureWindowsPath(host['runtimePath']).is_absolute() or
+                PureWindowsPath(host['runtimePath']).name.lower() != 'msys-2.0.dll' or
+                PureWindowsPath(host['runtimePath']).parent != PureWindowsPath(host['path']).parent):
+            raise ValueError('curl lacks the reviewed MSYS2 test-host identity')
+        require_record({'sha256': host['sha256'], 'bytes': host['bytes']}, 'curl test Perl')
+        require_record({'sha256': host['runtimeSha256'], 'bytes': host['runtimeBytes']}, 'MSYS2 runtime')
         mappings = manifest['cacheBuildwin']
         expected_mapping = {Path(n).name if n.startswith(('bin/', 'lib/')) else n:
                             {'source': n, **r} for n, r in outputs.items()}

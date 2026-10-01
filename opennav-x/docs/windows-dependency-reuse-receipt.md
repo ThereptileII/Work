@@ -24,6 +24,16 @@ reprobe their recorded tools, and runs `windows_dependency_stage.py`. Staging
 rechecks the evidence and every source-prefix inventory before replacing the
 stock Win32 cache payloads. A failed identity, evidence, tool or inventory
 check stops the build; this path does not fall back to unverified cached files.
+
+The curl source test runner requires the MSYS2 Perl host used by upstream's
+Windows tests. The CI job records its native Perl before installing MSYS2,
+selects the MSYS2 `usr/bin/perl.exe` explicitly for curl CMake, and retains
+the selected Perl and sibling `msys-2.0.dll` identities in curl's producer
+manifest and live tool facts. Local integrated builds must set
+`SKAGER_NATIVE_PERL` to the native Perl executable and
+`SKAGER_CURL_TEST_PERL` to the MSYS2 executable. The source-built curl
+`tests` target still runs all enabled upstream tests; a failed or missing
+nonzero `TESTDONE` summary refuses the dependency.
 The normal product, package, installer and security checks remain in the
 workflow.
 

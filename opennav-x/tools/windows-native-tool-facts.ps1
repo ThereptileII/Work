@@ -8,7 +8,8 @@ param(
     [string]$VcVars,
     [string]$Dumpbin,
     [string]$CMakeCache,
-    [string]$CMakeHookFacts
+    [string]$CMakeHookFacts,
+    [string]$CurlTestPerl
 )
 $ErrorActionPreference = 'Stop'
 Set-StrictMode -Version Latest
@@ -135,7 +136,7 @@ function CacheFacts([string]$Path) {
     $Allowed=@('CMAKE_GENERATOR','CMAKE_GENERATOR_INSTANCE','CMAKE_GENERATOR_PLATFORM',
         'CMAKE_GENERATOR_TOOLSET','CMAKE_VS_WINDOWS_TARGET_PLATFORM_VERSION',
         'CMAKE_VS_PLATFORM_TOOLSET','CMAKE_MSVC_RUNTIME_LIBRARY','CMAKE_INSTALL_PREFIX',
-        'CMAKE_C_COMPILER','CMAKE_CXX_COMPILER','CMAKE_MAKE_PROGRAM')
+        'CMAKE_C_COMPILER','CMAKE_CXX_COMPILER','CMAKE_MAKE_PROGRAM','PERL_EXECUTABLE')
     $Values=[ordered]@{}
     foreach($Name in $Allowed){$Values[$Name]=$null}
     foreach($Line in [IO.File]::ReadAllLines($Path)) {
@@ -149,6 +150,11 @@ function CacheFacts([string]$Path) {
        $Values['CMAKE_GENERATOR_PLATFORM'] -cne 'Win32' -or
        -not $Values['CMAKE_GENERATOR_INSTANCE']) {
         throw 'Generated CMake cache lacks the reviewed Win32 generator instance'
+    }
+    if($Kind -eq 'curl-parent' -and
+       ((Resolve-Path -LiteralPath $Values['PERL_EXECUTABLE']).Path -ine
+        (Resolve-Path -LiteralPath $CurlTestPerl).Path)) {
+        throw 'Curl CMake cache selected a different test Perl'
     }
     $CompilerFacts=[ordered]@{}
     $Build=Split-Path $Path -Parent
@@ -260,6 +266,10 @@ $ToolSpecs=switch($Kind) {
 }
 $Tools=[ordered]@{}
 foreach($Name in $ToolSpecs.Keys){$Tools[$Name]=ToolFact $Name $ToolSpecs[$Name]}
+if($Kind -eq 'curl-parent') {
+    $Tools['curl-test-perl']=ToolFact 'curl-test-perl' @('-v') $CurlTestPerl
+    $Tools['curl-test-runtime']=FileFact (Join-Path (Split-Path $CurlTestPerl -Parent) 'msys-2.0.dll') 'MSYS2 curl test runtime'
+}
 if($Kind -eq 'zlib-parent' -or $Kind -eq 'curl-parent'){$Tools['dumpbin.exe']=ToolFact 'dumpbin.exe' @('/?') $Dumpbin}
 $Environment=[ordered]@{}
 foreach($Name in @('PROCESSOR_ARCHITECTURE','VSCMD_ARG_TGT_ARCH','VSCMD_ARG_HOST_ARCH',

@@ -43,6 +43,13 @@ jobs:
           $OpenSsl = (Get-Command openssl.exe -CommandType Application -ErrorAction Stop | Select-Object -First 1).Source
           python opennav-x/tools/test-curl-msys-certificates.py --evidence opennav-x/evidence/local/curl-test-host --msys-perl $MsysPerl --openssl $OpenSsl
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+      - name: Verify native CMake binding and actual producer tool facts
+        shell: pwsh
+        env:
+          SKAGER_MSYS_ROOT: ${{ steps.msys.outputs.msys2-location }}
+        run: |
+          $MsysPerl = Join-Path $env:SKAGER_MSYS_ROOT 'usr/bin/perl.exe'
+          ./opennav-x/tools/test-curl-test-host-binding.ps1 -TestPerl $MsysPerl -NativePerl $env:SKAGER_NATIVE_PERL -Evidence opennav-x/evidence/local/curl-test-host-binding
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         if: always()
         with:
@@ -50,4 +57,7 @@ jobs:
           path: |
             opennav-x/evidence/local/curl-test-host/*.json
             opennav-x/evidence/local/curl-test-host/*.txt
+            opennav-x/evidence/local/curl-test-host-binding/*.json
+            opennav-x/evidence/local/curl-test-host-binding/cmake-build/CMakeCache.txt
+            opennav-x/evidence/local/curl-test-host-binding/cmake-build/xnav-native-cmake-tools.txt
           if-no-files-found: error

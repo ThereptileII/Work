@@ -167,13 +167,35 @@ foreach ($Tool in @('cmake.exe','perl.exe')) {
     if (-not (Get-Command $Tool -CommandType Application -ErrorAction SilentlyContinue)) { throw "curl build prerequisite missing: $Tool" }
 }
 $CMake = (Get-Command cmake.exe -CommandType Application -ErrorAction Stop | Select-Object -First 1).Source
+$NativePerl = Resolve-File $env:SKAGER_NATIVE_PERL 'Native OpenSSL build Perl'
+$TestPerl = Resolve-File $env:SKAGER_CURL_TEST_PERL 'MSYS2 curl test Perl'
+$MsysRuntime = Resolve-File (Join-Path (Split-Path $TestPerl -Parent) 'msys-2.0.dll') 'MSYS2 curl test runtime'
+$TestPerlOs = & $TestPerl -e 'print $^O'
+if ($LASTEXITCODE -ne 0 -or $TestPerlOs -notin @('cygwin','msys') -or $TestPerl -ieq $NativePerl) {
+    throw 'Curl test Perl must be a separate MSYS2 POSIX host'
+}
+$TestPerlRecord = [ordered]@{
+    path=$TestPerl; sha256=Digest $TestPerl; bytes=(Get-Item -LiteralPath $TestPerl).Length
+    os=$TestPerlOs; runtimePath=$MsysRuntime; runtimeSha256=Digest $MsysRuntime
+    runtimeBytes=(Get-Item -LiteralPath $MsysRuntime).Length
+}
 if ($VerifyToolFactsOnly) {
+    $BuiltManifest = Get-Content -LiteralPath (Join-Path $Prefix 'curl-build.json') -Raw | ConvertFrom-Json
+    $BuiltHost = $BuiltManifest.buildSteps.testHost
+    if ($BuiltHost.path -ine $TestPerlRecord.path -or $BuiltHost.sha256 -cne $TestPerlRecord.sha256 -or
+        $BuiltHost.bytes -ne $TestPerlRecord.bytes -or $BuiltHost.os -cne $TestPerlRecord.os -or
+        $BuiltHost.runtimePath -ine $TestPerlRecord.runtimePath -or
+        $BuiltHost.runtimeSha256 -cne $TestPerlRecord.runtimeSha256 -or
+        $BuiltHost.runtimeBytes -ne $TestPerlRecord.runtimeBytes) {
+        throw 'Live curl test host differs from the successful producer manifest'
+    }
     # Normal curl capture occurs after configure with these dependency DLL
     # directories prepended. Recreate that build PATH before live reprobe.
     $env:PATH = "$(Join-Path $Build 'lib/Release');$(Join-Path $OpenSslPrefix 'bin');$(Join-Path $ZlibPrefix 'bin');$env:PATH"
     & $ToolFacts -Mode Verify -Kind curl-parent -Output $Facts -ProducerScript $PSCommandPath `
         -Vswhere $Vswhere -VisualStudio $VisualStudio -Dumpbin $Dumpbin `
-        -CMakeCache (Join-Path $Build 'CMakeCache.txt') -CMakeHookFacts (Join-Path $Build 'xnav-native-cmake-tools.txt')
+        -CMakeCache (Join-Path $Build 'CMakeCache.txt') -CMakeHookFacts (Join-Path $Build 'xnav-native-cmake-tools.txt') `
+        -CurlTestPerl $TestPerl
     Write-Output 'Reprobed captured curl build-environment tool facts'
     return
 }
@@ -244,6 +266,7 @@ Add-Content -LiteralPath $NativeLog -Value 'curl upstream certificate generation
 
 $Configure = @('-S',$Source,'-B',$Build,'-G','Visual Studio 17 2022','-A','Win32',
     "-DCMAKE_INSTALL_PREFIX=$Prefix","-DCMAKE_PROJECT_INCLUDE=$($CMakeFactsInclude.Replace('\','/'))",
+    "-DPERL_EXECUTABLE:FILEPATH=$TestPerl",
     '-DCMAKE_MSVC_RUNTIME_LIBRARY=MultiThreadedDLL',
     '-DBUILD_SHARED_LIBS=ON','-DBUILD_STATIC_LIBS=OFF','-DBUILD_CURL_EXE=ON','-DBUILD_TESTING=ON',
     '-DBUILD_EXAMPLES=OFF','-DBUILD_LIBCURL_DOCS=OFF','-DBUILD_MISC_DOCS=OFF',
@@ -257,6 +280,10 @@ $Configure = @('-S',$Source,'-B',$Build,'-G','Visual Studio 17 2022','-A','Win32
     '-DCURL_CA_BUNDLE=none','-DCURL_CA_PATH=none','-DCURL_CA_FALLBACK=OFF','-DCURL_DISABLE_CA_SEARCH=ON','-DCURL_CA_SEARCH_SAFE=OFF')
 Invoke-Checked cmake.exe $Configure
 $CacheText = Get-Content -LiteralPath (Join-Path $Build 'CMakeCache.txt') -Raw
+if ($CacheText -notmatch '(?m)^PERL_EXECUTABLE:FILEPATH=(.+)$' -or
+    (Resolve-Path -LiteralPath $Matches[1].Trim()).Path -ine $TestPerl) {
+    throw 'Curl CMake did not bind the selected MSYS2 Perl test host'
+}
 foreach ($RequiredPath in @((Join-Path $OpenSslPrefix 'include'),$OpenSslSslLib,$OpenSslCryptoLib,(Join-Path $ZlibPrefix 'include'),$ZlibImport)) {
     $CmakePath = $RequiredPath.Replace('\','/')
     if ($CacheText.Replace('\','/') -notlike "*$CmakePath*") { throw "CMake did not bind the explicit dependency path: $RequiredPath" }
@@ -264,13 +291,16 @@ foreach ($RequiredPath in @((Join-Path $OpenSslPrefix 'include'),$OpenSslSslLib,
 $env:PATH = "$(Join-Path $Build 'lib/Release');$(Join-Path $OpenSslPrefix 'bin');$(Join-Path $ZlibPrefix 'bin');$env:PATH"
 & $ToolFacts -Mode Capture -Kind curl-parent -Output $Facts -ProducerScript $PSCommandPath `
     -Vswhere $Vswhere -VisualStudio $VisualStudio -Dumpbin $Dumpbin `
-    -CMakeCache (Join-Path $Build 'CMakeCache.txt') -CMakeHookFacts (Join-Path $Build 'xnav-native-cmake-tools.txt')
+    -CMakeCache (Join-Path $Build 'CMakeCache.txt') -CMakeHookFacts (Join-Path $Build 'xnav-native-cmake-tools.txt') `
+    -CurlTestPerl $TestPerl
 Invoke-Checked cmake.exe @('--build',$Build,'--config','Release','--parallel','2')
 Invoke-Checked cmake.exe @('--build',$Build,'--config','Release','--target','tests','--parallel','2')
-$NativeText = Get-Content -LiteralPath $NativeLog -Raw
-$TestSummaries = @([regex]::Matches($NativeText,'(?m)^\s*(?:\d+>)?\s*TESTDONE: (\d+) tests out of (\d+) reported OK:'))
-if (-not $TestSummaries.Count) { throw 'curl upstream tests produced no retained execution summary' }
-$TestSummary = $TestSummaries[-1]
+$TestSummary = $null
+foreach ($Line in [IO.File]::ReadLines($NativeLog)) {
+    $Match = [regex]::Match($Line,'^\s*(?:\d+>)?\s*TESTDONE: (\d+) tests out of (\d+) reported OK:')
+    if ($Match.Success) { $TestSummary = $Match }
+}
+if (-not $TestSummary) { throw 'curl upstream tests produced no retained execution summary' }
 $TestsPassed = [int]$TestSummary.Groups[1].Value
 $TestsReported = [int]$TestSummary.Groups[2].Value
 if ($TestsReported -le 0 -or $TestsPassed -ne $TestsReported) {
@@ -279,7 +309,8 @@ if ($TestsReported -le 0 -or $TestsPassed -ne $TestsReported) {
 Invoke-Checked cmake.exe @('--install',$Build,'--config','Release')
 & $ToolFacts -Mode Verify -Kind curl-parent -Output $Facts -ProducerScript $PSCommandPath `
     -Vswhere $Vswhere -VisualStudio $VisualStudio -Dumpbin $Dumpbin `
-    -CMakeCache (Join-Path $Build 'CMakeCache.txt') -CMakeHookFacts (Join-Path $Build 'xnav-native-cmake-tools.txt')
+    -CMakeCache (Join-Path $Build 'CMakeCache.txt') -CMakeHookFacts (Join-Path $Build 'xnav-native-cmake-tools.txt') `
+    -CurlTestPerl $TestPerl
 
 $CurlDll = Resolve-File (Join-Path $Prefix 'bin/libcurl.dll') 'curl DLL'
 $CurlImport = Resolve-File (Join-Path $Prefix 'lib/libcurl.lib') 'curl import library'
@@ -343,7 +374,7 @@ $Manifest = [ordered]@{
         openssl=[ordered]@{version=$OpenSslManifest.version; manifestSha256=Digest $OpenSslManifestPath; prefix=$OpenSslPrefix}
         zlib=[ordered]@{version=$Zlib.version; manifestSha256=Digest $ZlibManifest; prefix=$ZlibPrefix}
     }
-    options=$Configure; buildSteps=[ordered]@{configure='passed'; compile='passed'; test='passed'; install='passed'; testTarget='tests'; testsPassed=$TestsPassed; testsReported=$TestsReported; certificatePatch=$PatchRecord; certificateTool=$OpenSslToolRecord; certificateProbe='passed'; log='evidence/local/windows-curl-native-output.log'; logSha256=Digest $NativeLog}
+    options=$Configure; buildSteps=[ordered]@{configure='passed'; compile='passed'; test='passed'; install='passed'; testTarget='tests'; testsPassed=$TestsPassed; testsReported=$TestsReported; testHost=$TestPerlRecord; certificatePatch=$PatchRecord; certificateTool=$OpenSslToolRecord; certificateProbe='passed'; log='evidence/local/windows-curl-native-output.log'; logSha256=Digest $NativeLog}
     versionOutput=$VersionOutput.Trim(); importOutput=$Imports.Trim(); outputs=$Outputs; cacheBuildwin=$Mappings
 }
 $Json = $Manifest | ConvertTo-Json -Depth 10

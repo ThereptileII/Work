@@ -257,6 +257,10 @@ class WindowsDependencyEvidenceTests(unittest.TestCase):
             "buildSteps": {
                 "configure": "passed", "compile": "passed", "test": "passed", "install": "passed",
                 "testTarget": "tests", "testsReported": 4, "testsPassed": 4,
+                "testHost": {"path": "C:/msys64/usr/bin/perl.exe", "sha256": "b" * 64,
+                             "bytes": 100, "os": "cygwin",
+                             "runtimePath": "C:/msys64/usr/bin/msys-2.0.dll",
+                             "runtimeSha256": "c" * 64, "runtimeBytes": 100},
                 "log": "evidence/local/windows-curl-native-output.log",
                 "logSha256": "0" * 64,
                 "certificatePatch": {

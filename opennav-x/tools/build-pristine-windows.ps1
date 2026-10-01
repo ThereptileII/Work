@@ -32,6 +32,19 @@ function Assert-ManifestRecord([object]$Record, [string]$Path, [string]$Label) {
     }
 }
 try {
+    if ($Integration) {
+        if (-not (Test-Path -LiteralPath $env:SKAGER_NATIVE_PERL -PathType Leaf)) {
+            throw 'The native OpenSSL build Perl was not selected before MSYS2 setup'
+        }
+        $NativePerl = (Resolve-Path -LiteralPath $env:SKAGER_NATIVE_PERL).Path
+        $env:PATH = "$(Split-Path $NativePerl -Parent);$env:PATH"
+        if ((Get-Command perl.exe -CommandType Application -ErrorAction Stop | Select-Object -First 1).Source -ine $NativePerl) {
+            throw 'OpenSSL build Perl differs from the preselected native tool'
+        }
+        if (-not (Test-Path -LiteralPath $env:SKAGER_CURL_TEST_PERL -PathType Leaf)) {
+            throw 'MSYS2 curl test Perl was not selected'
+        }
+    }
     Run python @((Join-Path $PSScriptRoot 'verify-upstream.py'))
     if (-not [Environment]::Is64BitOperatingSystem) { throw 'Windows x64 host required' }
     if ($Architecture -eq 'x64') {
@@ -87,9 +100,13 @@ try {
             Run python @((Join-Path $PSScriptRoot 'windows_dependency_reuse.py'), 'verify', '--root', $Root)
             & (Join-Path $PSScriptRoot 'build-openssl-windows.ps1') -IntegrationSource $Source -VerifyToolFactsOnly
             & (Join-Path $PSScriptRoot 'build-zlib-windows.ps1') -VerifyToolFactsOnly
-            & (Join-Path $PSScriptRoot 'build-curl-windows.ps1') -IntegrationSource $Source `
-                -OpenSslPrefix $OpenSslPrefix -ZlibPrefix $ZlibPrefix -ZlibManifest $ZlibManifestPath `
-                -VerifyToolFactsOnly
+            $BeforeCurlPath = $env:PATH
+            try {
+                $env:PATH = "$(Split-Path $env:SKAGER_CURL_TEST_PERL -Parent);$env:PATH"
+                & (Join-Path $PSScriptRoot 'build-curl-windows.ps1') -IntegrationSource $Source `
+                    -OpenSslPrefix $OpenSslPrefix -ZlibPrefix $ZlibPrefix -ZlibManifest $ZlibManifestPath `
+                    -VerifyToolFactsOnly
+            } finally { $env:PATH = $BeforeCurlPath }
             # This helper rechecks the receipt/evidence and inventories every
             # source prefix before replacing stock win_deps cache payloads.
             Run python @((Join-Path $PSScriptRoot 'windows_dependency_stage.py'), '--root', $Root)
@@ -119,10 +136,14 @@ try {
                 Assert-ManifestRecord $ZlibManifest.outputs.($Mapping.Key) $Cached "cached zlib $($Mapping.Value)"
             }
 
-            & (Join-Path $PSScriptRoot 'build-curl-windows.ps1') -IntegrationSource $Source `
-                -OpenSslPrefix $OpenSslPrefix -ZlibPrefix $ZlibPrefix -ZlibManifest $ZlibManifestPath 2>&1 |
-                Tee-Object -FilePath (Join-Path $Evidence 'windows-curl-orchestration.log') -Append
-            if ($LASTEXITCODE -ne 0) { throw 'Pinned curl source build failed' }
+            $BeforeCurlPath = $env:PATH
+            try {
+                $env:PATH = "$(Split-Path $env:SKAGER_CURL_TEST_PERL -Parent);$env:PATH"
+                & (Join-Path $PSScriptRoot 'build-curl-windows.ps1') -IntegrationSource $Source `
+                    -OpenSslPrefix $OpenSslPrefix -ZlibPrefix $ZlibPrefix -ZlibManifest $ZlibManifestPath 2>&1 |
+                    Tee-Object -FilePath (Join-Path $Evidence 'windows-curl-orchestration.log') -Append
+                if ($LASTEXITCODE -ne 0) { throw 'Pinned curl source build failed' }
+            } finally { $env:PATH = $BeforeCurlPath }
         }
         $CurlManifestPath = Join-Path $Source 'cache/buildwin/curl-build.json'
         $CurlManifest = Get-Content -LiteralPath $CurlManifestPath -Raw | ConvertFrom-Json

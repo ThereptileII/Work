@@ -119,6 +119,10 @@ class CurlPackageBoundaryTests(unittest.TestCase):
             'buildSteps': {
                 'configure': 'passed', 'compile': 'passed', 'test': 'passed', 'install': 'passed',
                 'testTarget': 'tests', 'testsReported': 11, 'testsPassed': 11,
+                'testHost': {'path': 'C:/msys64/usr/bin/perl.exe', 'sha256': 'b' * 64,
+                             'bytes': 100, 'os': 'cygwin',
+                             'runtimePath': 'C:/msys64/usr/bin/msys-2.0.dll',
+                             'runtimeSha256': 'c' * 64, 'runtimeBytes': 100},
                 'log': 'evidence/local/windows-curl-native-output.log',
                 'logSha256': 'a' * 64,
                 'certificatePatch': {
@@ -253,6 +257,27 @@ class CurlPackageBoundaryTests(unittest.TestCase):
             self._write_json(path, manifest)
             with self.assertRaisesRegex(ValueError, 'Incomplete dependency build|successful upstream execution'):
                 self._verify()
+
+    def test_curl_test_host_identity_is_required(self):
+        path = self.install / 'curl-build.json'
+        original = json.loads(path.read_text(encoding='utf-8-sig'))
+        for field, value in (
+            ('os', 'MSWin32'), ('os', []), ('os', {}),
+            ('path', 'usr/bin/perl.exe'),
+            ('runtimePath', 'C:/other/msys-2.0.dll'),
+            ('runtimeSha256', 'invalid'), ('bytes', 0),
+        ):
+            with self.subTest(field=field, value=value):
+                changed = json.loads(json.dumps(original))
+                changed['buildSteps']['testHost'][field] = value
+                self._write_json(path, changed)
+                with self.assertRaisesRegex(ValueError, 'test-host|output record'):
+                    self._verify()
+        changed = json.loads(json.dumps(original))
+        del changed['buildSteps']['testHost']
+        self._write_json(path, changed)
+        with self.assertRaisesRegex(ValueError, 'test-host'):
+            self._verify()
 
     def test_certificate_patch_tool_and_probe_tampering_are_rejected(self):
         path = self.install / 'curl-build.json'
