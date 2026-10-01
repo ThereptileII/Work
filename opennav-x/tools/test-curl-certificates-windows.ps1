@@ -45,14 +45,26 @@ function Quote([string]$Value) {
 function RunBounded([string]$Name,[string]$Program,[string[]]$Arguments,[int]$TimeoutSeconds,
                     [string]$WorkingDirectory='') {
     if ($TimeoutSeconds -lt 1 -or $TimeoutSeconds -gt 300) { throw 'Unsupported process deadline' }
+    # Let cmd redirect child handles directly to files. Buffered ReadToEndAsync
+    # loses all partial evidence when a descendant keeps a pipe open.
+    # Raw output is excluded by the workflow's top-level artifact globs.
+    $RawDirectory = Join-Path $Evidence 'raw-output'
+    $null = New-Item -ItemType Directory -Force -Path $RawDirectory
+    $StdoutPath = Join-Path $RawDirectory "$Name.stdout.txt"
+    $StderrPath = Join-Path $RawDirectory "$Name.stderr.txt"
+    $CommandPath = Join-Path $Evidence "$Name.cmd"
+    foreach ($Value in @($Program,$CommandPath,$StdoutPath,$StderrPath) + $Arguments) {
+        if ($Value -match '[%!?&|<>\r\n]') { throw 'Unsupported disposable command character' }
+    }
+    $Command = '@echo off' + "`r`n" + (Quote $Program) + ' ' + ($Arguments -join ' ') +
+        ' 1>' + (Quote $StdoutPath) + ' 2>' + (Quote $StderrPath) + "`r`nexit /b %errorlevel%`r`n"
+    [IO.File]::WriteAllText($CommandPath,$Command,$Encoding)
     $StartInfo = New-Object Diagnostics.ProcessStartInfo
-    $StartInfo.FileName = $Program
-    $StartInfo.Arguments = ($Arguments -join ' ')
+    $StartInfo.FileName = Join-Path $env:SystemRoot 'System32/cmd.exe'
+    $StartInfo.Arguments = '/d /s /c ""' + $CommandPath + '""'
     if ($WorkingDirectory) { $StartInfo.WorkingDirectory = $WorkingDirectory }
     $StartInfo.UseShellExecute = $false
     $StartInfo.CreateNoWindow = $true
-    $StartInfo.RedirectStandardOutput = $true
-    $StartInfo.RedirectStandardError = $true
     $Process = New-Object Diagnostics.Process
     $Process.StartInfo = $StartInfo
     Stage $Name 'before-start' @{program=$Program;arguments=$Arguments;deadlineSeconds=$TimeoutSeconds}
@@ -60,21 +72,39 @@ function RunBounded([string]$Name,[string]$Program,[string[]]$Arguments,[int]$Ti
     try {
         if (-not $Process.Start()) { throw "Could not start $Name" }
         Stage $Name 'started' @{pid=$Process.Id}
-        $StdoutTask = $Process.StandardOutput.ReadToEndAsync()
-        $StderrTask = $Process.StandardError.ReadToEndAsync()
         $TimedOut = -not $Process.WaitForExit($TimeoutSeconds * 1000)
         if ($TimedOut) {
             Stage $Name 'deadline' @{pid=$Process.Id;elapsedMs=$Clock.ElapsedMilliseconds}
+            # Capture only this disposable invocation and its descendants, never
+            # unrelated runner processes or environment/credentials.
+            try {
+                $All = @(Get-CimInstance Win32_Process -OperationTimeoutSec 5 -ErrorAction Stop)
+                $Owned = @([uint32]$Process.Id)
+                $Records = @()
+                for ($Depth = 0; $Depth -lt 16; $Depth++) {
+                    $Children = @($All | Where-Object {
+                        $_.ParentProcessId -in $Owned -and $_.ProcessId -notin $Owned
+                    })
+                    if (-not $Children.Count) { break }
+                    $Owned += @($Children | ForEach-Object { [uint32]$_.ProcessId })
+                    if ($Owned.Count -gt 128) { throw 'Owned process tree exceeds evidence bound' }
+                }
+                $Records = @($All | Where-Object { $_.ProcessId -in $Owned } |
+                    Select-Object ProcessId,ParentProcessId,Name,ExecutablePath,CommandLine)
+                Stage $Name 'owned-processes-at-deadline' @{processes=$Records}
+            } catch { Stage $Name 'process-snapshot-failed' @{reason=$_.Exception.Message} }
             $Process.Kill($true)
             if (-not $Process.WaitForExit(10000)) { throw "Owned $Name process did not exit after kill" }
         }
-        $Drain = [Threading.Tasks.Task]::WhenAll([Threading.Tasks.Task[]]@($StdoutTask,$StderrTask))
-        if (-not $Drain.Wait(10000)) {
-            Stage $Name 'stream-drain-timeout' @{pid=$Process.Id;elapsedMs=$Clock.ElapsedMilliseconds}
-            throw "Owned $Name output streams did not close within 10 seconds"
+        # File redirection has no parent pipe-drain dependency. Even on timeout
+        # the bytes already written remain available to the artifact uploader.
+        foreach ($OutputPath in @($StdoutPath,$StderrPath)) {
+            if ((Get-Item -LiteralPath $OutputPath).Length -gt 262144) {
+                throw "$Name output exceeds bounded evidence size"
+            }
         }
-        $Stdout = $StdoutTask.GetAwaiter().GetResult()
-        $Stderr = $StderrTask.GetAwaiter().GetResult()
+        $Stdout = [IO.File]::ReadAllText($StdoutPath)
+        $Stderr = [IO.File]::ReadAllText($StderrPath)
         if ($Stdout.Length -gt 262144 -or $Stderr.Length -gt 262144) {
             throw "$Name output exceeds bounded evidence size"
         }
@@ -90,6 +120,17 @@ function RunBounded([string]$Name,[string]$Program,[string[]]$Arguments,[int]$Ti
     } finally {
         $Clock.Stop()
         $Process.Dispose()
+        # Preserve bounded, sanitized partial output even when process cleanup
+        # itself fails. Never upload raw PATH output from the expected failure.
+        foreach ($StreamName in @('stdout','stderr')) {
+            $RawPath = Join-Path $RawDirectory "$Name.$StreamName.txt"
+            if ((Test-Path -LiteralPath $RawPath -PathType Leaf) -and
+                (Get-Item -LiteralPath $RawPath).Length -le 262144) {
+                $Retained = [regex]::Replace([IO.File]::ReadAllText($RawPath),
+                    '(?m)^PATH used: .*$', 'PATH used: [redacted]')
+                [IO.File]::WriteAllText((Join-Path $Evidence "$Name.$StreamName.txt"),$Retained,$Encoding)
+            }
+        }
     }
 }
 function RequireSuccess([object]$Result,[string]$Name) {
@@ -161,13 +202,16 @@ try {
     $Before = Join-Path $Work 'original-output'
     $After = Join-Path $Work 'patched-output'
     $null = New-Item -ItemType Directory -Force -Path $Before,$After
-    $Original = RunBounded 'genserv-original' $Perl.path @((Quote $Genserv),'test','localhost') 40 $Before
+    if (-not (Test-Path -LiteralPath (Join-Path $Source 'tests/certs/test-localhost.prm') -PathType Leaf)) {
+        throw 'Locked localhost certificate config is missing'
+    }
+    $Original = RunBounded 'genserv-original' $Perl.path @((Quote $Genserv),'test','test-localhost.prm') 40 $Before
     if ($Original.timedOut -or $Original.exitCode -eq 0 -or
         $Original.stdout -notmatch '(?m)^PATH used: ' -or
         $Original.stderr -notmatch "Missing or unsupported 'openssl' tool") {
         throw 'Original genserv did not reproduce the exact openssl filename lookup failure'
     }
-    foreach ($Name in @('test-ca.cacert','test-ca.key','localhost.crt','localhost.key')) {
+    foreach ($Name in @('test-ca.cacert','test-ca.key','test-localhost.crt','test-localhost.key')) {
         if (Test-Path -LiteralPath (Join-Path $Before $Name)) {
             throw 'Original genserv created a certificate despite the expected lookup failure'
         }
@@ -185,19 +229,19 @@ try {
         throw 'Curl test-source patch receipt differs from reviewed bytes'
     }
     Stage 'test-source' 'patched' @{beforeSha256=$PatchRecord.beforeSha256;afterSha256=$PatchRecord.afterSha256}
-    $Generated = RunBounded 'genserv-patched' $Perl.path @((Quote $Genserv),'test','localhost') 180 $After
+    $Generated = RunBounded 'genserv-patched' $Perl.path @((Quote $Genserv),'test','test-localhost.prm') 180 $After
     RequireSuccess $Generated 'patched curl certificate generation'
     if ($Generated.stdout -notmatch 'CA root generated: test' -or
         $Generated.stdout -notmatch 'Certificate generated: CA=test') {
         throw 'Patched genserv did not report CA and localhost generation'
     }
     $Results.generated = [ordered]@{}
-    foreach ($Name in @('test-ca.cacert','test-ca.key','localhost.crt','localhost.key')) {
+    foreach ($Name in @('test-ca.cacert','test-ca.key','test-localhost.crt','test-localhost.key')) {
         $Results.generated[$Name] = RecordFile (Join-Path $After $Name)
     }
     $Ca = Join-Path $After 'test-ca.cacert'
-    $Cert = Join-Path $After 'localhost.crt'
-    $Key = Join-Path $After 'localhost.key'
+    $Cert = Join-Path $After 'test-localhost.crt'
+    $Key = Join-Path $After 'test-localhost.key'
     foreach ($Check in @(
         @{name='ca-certificate';arguments=@('x509','-in',(Quote $Ca),'-noout','-subject')},
         @{name='localhost-certificate';arguments=@('x509','-in',(Quote $Cert),'-noout','-subject')},
