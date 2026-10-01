@@ -75,10 +75,11 @@ if ($Child) {
     $OriginalHook = [IO.File]::ReadAllBytes($HookFacts)
     try {
         $HookText = [IO.File]::ReadAllText($HookFacts)
-        if ($HookText -notmatch '(?m)^CMAKE_VS_PLATFORM_TOOLSET=v143$') {
+        $ToolsetPattern = '(?m)^CMAKE_VS_PLATFORM_TOOLSET=v143(?=\r?$)'
+        if ([regex]::Matches($HookText,$ToolsetPattern).Count -ne 1) {
             throw 'Observed v143 toolset fact missing'
         }
-        $Tampered = [regex]::Replace($HookText,'(?m)^CMAKE_VS_PLATFORM_TOOLSET=v143$',
+        $Tampered = [regex]::Replace($HookText,$ToolsetPattern,
             'CMAKE_VS_PLATFORM_TOOLSET=v999')
         [IO.File]::WriteAllText($HookFacts,$Tampered,$Encoding)
         RequireFailure {
