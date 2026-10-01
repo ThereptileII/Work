@@ -11,6 +11,10 @@ output before the 180-minute job limit. This is a separate failure from the
 earlier zlib URL mismatch below. SCRUM-219 investigates the exact preparation
 boundary in a disposable native probe; no root cause or replacement acceptance
 is claimed. See [retained evidence](evidence/scrum-219-curl-preparation-stall.md).
+A short native probe now reproduces a stall in Windows system tar on the exact
+locked curl XZ archive; CMake extracts those same bytes in 936 ms. SCRUM-219
+is validating a narrow CMake-extraction correction and complete source-file
+equivalence. No full-product acceptance is inferred from that diagnostic.
 The full integrated candidate jobs remain separately under observation. No
 replacement was installed on the boat and obsolete copies remain intact until
 the new installation and recovery modes are known-good.

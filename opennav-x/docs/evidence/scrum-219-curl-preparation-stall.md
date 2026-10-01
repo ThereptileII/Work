@@ -59,3 +59,34 @@ Its size/digest and bounded entries were also verified. Its curl log is likewise
 boundary in two disposable Windows jobs, not the underlying cause. The short
 probe tests archive preparation independently; success would rule out that
 reproduction only and would not qualify the original integrated build.
+
+## Native reproduction and proposed correction
+
+The diagnostic-only source `56a66a012da34c3e68afd8a9d5fc603b9a0d46ba`
+(local `736361b120d2a00264415bfb51f7d59294a54929`) ran in
+[36873257468](https://github.com/ThereptileII/Work/actions/runs/36873257468).
+Verified artifact `11168675603`: 7,447,656 bytes, SHA-256
+`24b711d798b6aad2ac7920027b42f0a1ff8c1d26cb2991a1471434e02b4a724a`.
+
+The native runner selected `C:\Windows\system32\tar.exe`, reporting
+`bsdtar 3.8.4 - libarchive 3.8.4 zlib/1.2.5.f-ipp cng/2.0 libb2/bundled`.
+Its SHA-256 was
+`dcc75eb2e0fce4779784ca0a00c6cda1182c7b3c95eb6dab0e0603651cdb6b52`.
+It emitted no extraction output and reached the owned process's 120-second
+deadline on the exact locked archive. The separate CMake extraction completed
+in 936 ms with exit 0. The CMake executable SHA-256 was
+`3fe22eb02e1c6184ec207366ed21a6f2f9c3828c1e9f3324546befadfb362be3`.
+This reproduces a native extractor failure; it does not establish its internal
+libarchive cause or prove the original uninstrumented pipeline's exact stop.
+
+All 4,399 uploaded extracted source files match their archive path and SHA-256.
+The seven omitted paths are dotfiles excluded by the artifact uploader's default
+policy (`.clang-tidy.yml`, `.editorconfig`, and five `.checksrc` files). Complete
+extraction equivalence remains pending a full in-run inventory, including those
+files. The next short probe records that inventory and runs the producer's
+proposed resolved-CMake extraction command. The source lock, build configuration,
+upstream tests and runtime verification remain unchanged.
+
+The probe timeout also receives a narrow robustness correction: terminate only
+the owned process tree and bound redirected-output draining. Parent exit alone
+must not allow a descendant holding a pipe to defeat the diagnostic deadline.

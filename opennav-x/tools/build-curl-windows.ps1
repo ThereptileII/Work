@@ -142,9 +142,10 @@ $DumpbinCandidates = @(Get-ChildItem -LiteralPath (Join-Path $VisualStudio 'VC/T
     Where-Object { Test-Path -LiteralPath $_ -PathType Leaf })
 if (-not $DumpbinCandidates.Count) { throw 'MSVC Win32 dumpbin missing' }
 $Dumpbin = $DumpbinCandidates[0]
-foreach ($Tool in @('cmake.exe','tar.exe','perl.exe')) {
+foreach ($Tool in @('cmake.exe','perl.exe')) {
     if (-not (Get-Command $Tool -CommandType Application -ErrorAction SilentlyContinue)) { throw "curl build prerequisite missing: $Tool" }
 }
+$CMake = (Get-Command cmake.exe -CommandType Application -ErrorAction Stop | Select-Object -First 1).Source
 $ZlibImports = & $Dumpbin /DEPENDENTS $ZlibDll 2>&1 | Tee-Object -FilePath $NativeLog -Append | Out-String
 if ($LASTEXITCODE -ne 0 -or $ZlibImports -notmatch '(?im)^\s*VCRUNTIME140[^\s]*\.dll\s*$' -or
     $ZlibImports -notmatch '(?im)^\s*(?:api-ms-win-crt-[^\s]+|ucrtbase)\.dll\s*$') {
@@ -153,7 +154,9 @@ if ($LASTEXITCODE -ne 0 -or $ZlibImports -notmatch '(?im)^\s*VCRUNTIME140[^\s]*\
 if (Test-Path -LiteralPath $Source) { Remove-Item -LiteralPath $Source -Recurse -Force }
 if (Test-Path -LiteralPath $Build) { Remove-Item -LiteralPath $Build -Recurse -Force }
 if (Test-Path -LiteralPath $Prefix) { Remove-Item -LiteralPath $Prefix -Recurse -Force }
-Invoke-Checked tar.exe @('-xf',$Archive,'-C',$BuildRoot)
+Add-Content -LiteralPath $NativeLog -Value "curl source extraction begin: $([DateTime]::UtcNow.ToString('o'))" -Encoding UTF8
+Invoke-Checked $CMake @('-E','chdir',$BuildRoot,$CMake,'-E','tar','xf',$Archive)
+Add-Content -LiteralPath $NativeLog -Value "curl source extraction passed: $([DateTime]::UtcNow.ToString('o'))" -Encoding UTF8
 if (-not (Test-Path -LiteralPath (Join-Path $Source 'CMakeLists.txt') -PathType Leaf)) {
     throw 'Verified curl archive did not extract the expected source root'
 }

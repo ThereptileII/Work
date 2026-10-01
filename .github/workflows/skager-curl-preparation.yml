@@ -13,7 +13,7 @@ jobs:
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
       - name: Observe exact native source preparation with bounded child processes
-        run: ./opennav-x/tools/test-curl-preparation-windows.ps1 -Evidence opennav-x/evidence/local/curl-preparation
+        run: ./opennav-x/tools/test-curl-preparation-windows.ps1 -Extractor CMake -Evidence opennav-x/evidence/local/curl-preparation
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         if: always()
         with:

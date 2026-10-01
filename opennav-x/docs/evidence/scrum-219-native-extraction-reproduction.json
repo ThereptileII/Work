@@ -1,0 +1,59 @@
+{
+  "schemaVersion": 1,
+  "status": "failed",
+  "failure": "Selected tar.exe did not extract the locked curl archive",
+  "sourceCommit": "56a66a012da34c3e68afd8a9d5fc603b9a0d46ba",
+  "results": {
+    "pathPrepend": [
+      "C:\\Strawberry\\perl\\bin"
+    ],
+    "tools": {
+      "tar": {
+        "path": "C:\\Windows\\system32\\tar.exe",
+        "sha256": "dcc75eb2e0fce4779784ca0a00c6cda1182c7b3c95eb6dab0e0603651cdb6b52",
+        "bytes": 77824
+      },
+      "curl": {
+        "path": "C:\\Windows\\system32\\curl.exe",
+        "sha256": "3345339164cf384eff527b6c3160fea8d849a4231ec6ca80513e3a739e505168",
+        "bytes": 711736
+      },
+      "cmake": {
+        "path": "C:\\Program Files\\CMake\\bin\\cmake.exe",
+        "sha256": "3fe22eb02e1c6184ec207366ed21a6f2f9c3828c1e9f3324546befadfb362be3",
+        "bytes": 12029392
+      }
+    },
+    "archive": {
+      "path": "D:\\a\\Work\\Work\\opennav-x\\build\\dependency-downloads\\curl-8.22.0.tar.xz",
+      "bytes": 2953092,
+      "sha256": "f7ef3ae8a22e521f289803fe93543eb64c329b58aa73a9e224dfd915a2a5f4f7"
+    },
+    "tarExtraction": {
+      "exitCode": -1,
+      "timedOut": true,
+      "elapsedMs": 120005,
+      "pid": 6536
+    },
+    "cmakeTarComparison": {
+      "exitCode": 0,
+      "timedOut": false,
+      "elapsedMs": 936,
+      "pid": 4508
+    }
+  },
+  "stages": "stages.jsonl",
+  "evidenceArtifact": {
+    "id": 11168675603,
+    "sha256": "24b711d798b6aad2ac7920027b42f0a1ff8c1d26cb2991a1471434e02b4a724a",
+    "bytes": 7447656,
+    "runId": 36873257468
+  },
+  "qualification": "Diagnostic reproduction only; application and boat not qualified",
+  "uploadedSourceComparison": {
+    "equalFiles": 4399,
+    "mismatchedFiles": 0,
+    "missingDotfiles": 7,
+    "completeSourceEquivalence": false
+  }
+}

@@ -1,5 +1,6 @@
 param(
-    [Parameter(Mandatory=$true)][string]$Evidence
+    [Parameter(Mandatory=$true)][string]$Evidence,
+    [ValidateSet('SystemTar','CMake')][string]$Extractor='SystemTar'
 )
 $ErrorActionPreference = 'Stop'
 Set-StrictMode -Version Latest
@@ -66,9 +67,14 @@ function RunBounded([string]$Name,[string]$Program,[string[]]$Arguments,[int]$Ti
         $TimedOut = -not $Process.WaitForExit($TimeoutSeconds * 1000)
         if ($TimedOut) {
             Stage $Name 'deadline' @{pid=$Process.Id;elapsedMs=$Clock.ElapsedMilliseconds}
-            # Kill only this disposable child; no machine-wide process cleanup.
-            $Process.Kill()
+            # Kill only the disposable process tree owned by this invocation.
+            $Process.Kill($true)
             if (-not $Process.WaitForExit(10000)) { throw "Owned $Name process did not exit after kill" }
+        }
+        $Drain = [Threading.Tasks.Task]::WhenAll([Threading.Tasks.Task[]]@($StdoutTask,$StderrTask))
+        if (-not $Drain.Wait(10000)) {
+            Stage $Name 'stream-drain-timeout' @{pid=$Process.Id;elapsedMs=$Clock.ElapsedMilliseconds}
+            throw "Owned $Name output streams did not close within 10 seconds"
         }
         $Stdout = $StdoutTask.GetAwaiter().GetResult()
         $Stderr = $StderrTask.GetAwaiter().GetResult()
@@ -92,6 +98,7 @@ $Failure = $null
 $Results = [ordered]@{}
 try {
     Stage 'context' 'begin' @{scriptSha256=Digest $PSCommandPath;lockSha256=Digest $LockPath;
+        extractor=$Extractor;
         osVersion=[Environment]::OSVersion.VersionString;processorArchitecture=$env:PROCESSOR_ARCHITECTURE}
     # In the integrated producer chain, OpenSSL ran earlier in this same
     # PowerShell process and prepended these existing host-tool directories.
@@ -105,13 +112,18 @@ try {
     }
     $Results.pathPrepend = $Prepended
     Stage 'path' 'producer-order' @{prepended=$Prepended}
-    $Tar = SelectedTool 'tar.exe'
     $Curl = SelectedTool 'curl.exe'
     $CMake = SelectedTool 'cmake.exe'
-    $Results.tools=[ordered]@{tar=$Tar;curl=$Curl;cmake=$CMake}
-    Stage 'tools' 'selected' @{tar=$Tar;curl=$Curl;cmake=$CMake}
-    $TarVersion = RunBounded 'tar-version' $Tar.path @('--version') 15
-    if ($TarVersion.timedOut -or $TarVersion.exitCode -ne 0) { throw 'Selected tar.exe version probe failed' }
+    $Results.tools=[ordered]@{curl=$Curl;cmake=$CMake}
+    if ($Extractor -eq 'SystemTar') {
+        $Tar = SelectedTool 'tar.exe'
+        $Results.tools.tar=$Tar
+    }
+    Stage 'tools' 'selected' $Results.tools
+    if ($Extractor -eq 'SystemTar') {
+        $TarVersion = RunBounded 'tar-version' $Tar.path @('--version') 15
+        if ($TarVersion.timedOut -or $TarVersion.exitCode -ne 0) { throw 'Selected tar.exe version probe failed' }
+    }
     $ArchiveDir = Join-Path $Root 'build/dependency-downloads'
     $null = New-Item -ItemType Directory -Force -Path $ArchiveDir
     $Archive = Join-Path $ArchiveDir $Lock.archive
@@ -133,25 +145,44 @@ try {
     $Extraction = Join-Path $Evidence 'tar-extraction'
     if (Test-Path -LiteralPath $Extraction) { Remove-Item -LiteralPath $Extraction -Recurse -Force }
     $null = New-Item -ItemType Directory -Force -Path $Extraction
-    $TarResult = RunBounded 'tar-extract' $Tar.path @('-xf',(Quote $Archive),'-C',(Quote $Extraction)) 120
-    $Results.tarExtraction=$TarResult
-    if ($TarResult.timedOut -or $TarResult.exitCode -ne 0) {
-        # A second, separate directory is diagnostic only. It cannot make the
-        # primary tar reproduction pass or alter the producer selection.
-        $Comparison = Join-Path $Evidence 'cmake-extraction'
-        if (Test-Path -LiteralPath $Comparison) { Remove-Item -LiteralPath $Comparison -Recurse -Force }
-        $null = New-Item -ItemType Directory -Force -Path $Comparison
-        $Results.cmakeTarComparison = RunBounded 'cmake-tar-comparison' $CMake.path @('-E','tar','xf',
-            (Quote $Archive)) 120 $Comparison
-        throw 'Selected tar.exe did not extract the locked curl archive'
+    if ($Extractor -eq 'CMake') {
+        $ExtractionResult = RunBounded 'cmake-extract' $CMake.path @('-E','chdir',
+            (Quote $Extraction),(Quote $CMake.path),'-E','tar','xf',(Quote $Archive)) 120
+        $Results.cmakeExtraction=$ExtractionResult
+        if ($ExtractionResult.timedOut -or $ExtractionResult.exitCode -ne 0) {
+            throw 'CMake did not extract the locked curl archive'
+        }
+    } else {
+        $TarResult = RunBounded 'tar-extract' $Tar.path @('-xf',(Quote $Archive),'-C',(Quote $Extraction)) 120
+        $Results.tarExtraction=$TarResult
+        if ($TarResult.timedOut -or $TarResult.exitCode -ne 0) {
+            # A second, separate directory is diagnostic only. It cannot make the
+            # primary tar reproduction pass or alter the producer selection.
+            $Comparison = Join-Path $Evidence 'cmake-extraction'
+            if (Test-Path -LiteralPath $Comparison) { Remove-Item -LiteralPath $Comparison -Recurse -Force }
+            $null = New-Item -ItemType Directory -Force -Path $Comparison
+            $Results.cmakeTarComparison = RunBounded 'cmake-tar-comparison' $CMake.path @('-E','tar','xf',
+                (Quote $Archive)) 120 $Comparison
+            throw 'Selected tar.exe did not extract the locked curl archive'
+        }
     }
     $Source = Join-Path $Extraction "curl-$($Lock.version)"
     $CMakeLists = Join-Path $Source 'CMakeLists.txt'
     if (-not (Test-Path -LiteralPath $CMakeLists -PathType Leaf)) {
-        throw 'Tar exited successfully without the expected curl source root'
+        throw 'Extraction exited successfully without the expected curl source root'
     }
+    $Entries = @(Get-ChildItem -LiteralPath $Source -Force -Recurse)
+    if (@($Entries | Where-Object { $_.Attributes -band [IO.FileAttributes]::ReparsePoint }).Count) {
+        throw 'Extracted curl source contains a reparse point'
+    }
+    $SourceFiles = @($Entries | Where-Object { -not $_.PSIsContainer } | ForEach-Object {
+        [ordered]@{path=$_.FullName.Substring($Source.Length + 1).Replace('\','/');sha256=Digest $_.FullName}
+    } | Sort-Object { $_['path'] })
+    if ($SourceFiles.Count -ne 4406) { throw "Extracted curl source file count differs: $($SourceFiles.Count)" }
+    $SourceManifest = Join-Path $Evidence 'source-files.json'
+    [IO.File]::WriteAllText($SourceManifest,($SourceFiles | ConvertTo-Json -Depth 3),$Encoding)
     Stage 'source' 'ready' @{cmakeListsSha256=Digest $CMakeLists;
-        sourceRoot=$Source;fileCount=@(Get-ChildItem -LiteralPath $Source -File -Recurse).Count}
+        sourceRoot=$Source;fileCount=$SourceFiles.Count;sourceFilesSha256=Digest $SourceManifest}
     $CMakeVersion = RunBounded 'cmake-version' $CMake.path @('--version') 15
     if ($CMakeVersion.timedOut -or $CMakeVersion.exitCode -ne 0) {
         throw 'CMake was unavailable after source preparation'
@@ -162,7 +193,7 @@ try {
     $Failure = $_.Exception.Message
     Stage 'reproduction' 'failed' @{reason=$Failure}
 } finally {
-    $Report = [ordered]@{schemaVersion=1;status=$Status;failure=$Failure;
+    $Report = [ordered]@{schemaVersion=1;status=$Status;failure=$Failure;extractor=$Extractor;
         sourceCommit=(git -C $Root rev-parse HEAD);results=$Results;
         stages='stages.jsonl'}
     [IO.File]::WriteAllText($Summary,($Report | ConvertTo-Json -Depth 10),$Encoding)
