@@ -2,6 +2,30 @@
 
 ## Current qualification and boat cleanup — 2026-10-01
 
+The latest frozen full candidate is `141265ea2fa8796c9570065034f31575292ff49e`
+([integrated run](https://github.com/ThereptileII/Work/actions/runs/36892709388),
+[prototype run](https://github.com/ThereptileII/Work/actions/runs/36892710519)).
+It is **not qualified**. Windows contracts failed on nonportable path fixtures;
+the dependent integrated Windows application job was skipped. The prototype
+composition job separately failed before OpenSSL compilation because its child
+PowerShell could not resolve `Get-FileHash`. These are retained SCRUM-217
+integration failures, not acceptance of the certificate repair or the product.
+
+The isolated receipt-fixture correction at
+`899af50a1a4623a08f71d199d146a1cecd1959c2`
+([focused run](https://github.com/ThereptileII/Work/actions/runs/36894286613))
+passes the 15 receipt, 9 reuse and 4 staging tests on native Windows. The
+13-test evidence suite failed at OpenSSL retained-log summary parsing;
+Linux passed all 41 focused tests. A subsequent CRLF parsing repair at
+`5a0015a2911a0b643c761df9657e6a3c6ab31e7c`
+([focused run](https://github.com/ThereptileII/Work/actions/runs/36895232260))
+passes all 42 tests on both native Windows and Linux: receipt 15, evidence 14,
+reuse 9 and staging 4. Downloaded artifacts were independently size/hash/ZIP
+checked. Original byte hashes and contradictory-failure rejection remain
+enforced. The separate PowerShell producer repair still requires native
+qualification before another full candidate is frozen. No new boat deployment
+or removal of older installations has occurred.
+
 The published candidate `f1e2cde8fcbf92826d648007b267cc0f5320aa55`
 ([integrated run](https://github.com/ThereptileII/Work/actions/runs/36875827855))
 is not qualified: its Linux user-flow test stopped at the Create waypoint

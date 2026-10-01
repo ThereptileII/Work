@@ -30,7 +30,10 @@ function Invoke-Checked([string]$Program,[string[]]$Arguments) {
     if ($LASTEXITCODE -ne 0) { throw "$Program failed with exit code $LASTEXITCODE" }
 }
 function Digest([string]$Path) {
-    (Get-FileHash -LiteralPath $Path -Algorithm SHA256).Hash.ToLowerInvariant()
+    $Stream = [IO.File]::Open($Path,[IO.FileMode]::Open,[IO.FileAccess]::Read,[IO.FileShare]::Read)
+    $Hasher = [Security.Cryptography.SHA256]::Create()
+    try { ([BitConverter]::ToString($Hasher.ComputeHash($Stream))).Replace('-','').ToLowerInvariant() }
+    finally { $Hasher.Dispose(); $Stream.Dispose() }
 }
 function SourceRecord([string]$Path) {
     if (-not (Test-Path -LiteralPath $Path -PathType Leaf)) {
@@ -112,6 +115,11 @@ if (-not $VisualStudio) { throw 'Licensed MSVC x86 toolchain missing' }
 $VcVars = Join-Path $VisualStudio 'VC/Auxiliary/Build/vcvarsall.bat'
 if (-not (Test-Path -LiteralPath $VcVars -PathType Leaf)) { throw 'MSVC vcvarsall.bat missing' }
 $ToolFacts = Join-Path $PSScriptRoot 'windows-native-tool-facts.ps1'
+$ChildPowerShell = [Diagnostics.Process]::GetCurrentProcess().MainModule.FileName
+if (-not (Test-Path -LiteralPath $ChildPowerShell -PathType Leaf) -or
+    [IO.Path]::GetFileName($ChildPowerShell) -notin @('powershell.exe','pwsh.exe')) {
+    throw 'Current PowerShell interpreter cannot be reproduced after vcvarsall'
+}
 $CMakeFactsInclude = Join-Path $PSScriptRoot 'windows-native-tool-facts.cmake'
 $ChildFacts = Join-Path $Evidence 'windows-zlib-child-tool-facts.json'
 $ParentFacts = Join-Path $Evidence 'windows-zlib-parent-tool-facts.json'
@@ -129,7 +137,7 @@ function Assert-SafeNativePath([string]$Path,[bool]$ForCMake = $false) {
     }
 }
 foreach ($Path in @($VcVars,$Source,$Wrapper,$CMakeBuild,$Prefix,$Evidence,$BuildRoot,
-        $ToolFacts,$CMakeFactsInclude,$ChildFacts,$Vswhere,$VisualStudio,$PSCommandPath)) {
+        $ToolFacts,$CMakeFactsInclude,$ChildFacts,$Vswhere,$VisualStudio,$PSCommandPath,$ChildPowerShell)) {
     Assert-SafeNativePath $Path
 }
 foreach ($Path in @($Source,$Wrapper,$CMakeBuild,$Prefix)) {
@@ -148,7 +156,7 @@ if ($VerifyToolFactsOnly) {
         "call `"$VcVars`" x86 || exit /b 1",
         'where cl || exit /b 1',
         'where cmake || exit /b 1',
-        "powershell.exe -NoProfile -ExecutionPolicy Bypass -File `"$ToolFacts`" -Mode Verify -Kind zlib-child -Output `"$ChildFacts`" -ProducerScript `"$PSCommandPath`" -Vswhere `"$Vswhere`" -VisualStudio `"$VisualStudio`" -VcVars `"$VcVars`" -CMakeCache `"$(Join-Path $CMakeBuild 'CMakeCache.txt')`" -CMakeHookFacts `"$(Join-Path $CMakeBuild 'xnav-native-cmake-tools.txt')`" || exit /b 1"
+        "`"$ChildPowerShell`" -NoProfile -ExecutionPolicy Bypass -File `"$ToolFacts`" -Mode Verify -Kind zlib-child -Output `"$ChildFacts`" -ProducerScript `"$PSCommandPath`" -Vswhere `"$Vswhere`" -VisualStudio `"$VisualStudio`" -VcVars `"$VcVars`" -CMakeCache `"$(Join-Path $CMakeBuild 'CMakeCache.txt')`" -CMakeHookFacts `"$(Join-Path $CMakeBuild 'xnav-native-cmake-tools.txt')`" || exit /b 1"
     )
     try {
         [IO.File]::WriteAllLines($VerifyCmd,$VerifyLines,(New-Object Text.UTF8Encoding($false)))
@@ -208,7 +216,7 @@ $CommandLines = @(
     'echo === stage: configure zlib Win32 shared ===',
     "cmake -S `"$Wrapper`" -B `"$CMakeBuild`" -G `"Visual Studio 17 2022`" -A Win32 -DCMAKE_MSVC_RUNTIME_LIBRARY=MultiThreadedDLL -DCMAKE_PROJECT_INCLUDE=`"$($CMakeFactsInclude.Replace('\','/'))`"",
     'if not "%errorlevel%"=="0" exit /b %errorlevel%',
-    "powershell.exe -NoProfile -ExecutionPolicy Bypass -File `"$ToolFacts`" -Mode Capture -Kind zlib-child -Output `"$ChildFacts`" -ProducerScript `"$PSCommandPath`" -Vswhere `"$Vswhere`" -VisualStudio `"$VisualStudio`" -VcVars `"$VcVars`" -CMakeCache `"$(Join-Path $CMakeBuild 'CMakeCache.txt')`" -CMakeHookFacts `"$(Join-Path $CMakeBuild 'xnav-native-cmake-tools.txt')`"",
+    "`"$ChildPowerShell`" -NoProfile -ExecutionPolicy Bypass -File `"$ToolFacts`" -Mode Capture -Kind zlib-child -Output `"$ChildFacts`" -ProducerScript `"$PSCommandPath`" -Vswhere `"$Vswhere`" -VisualStudio `"$VisualStudio`" -VcVars `"$VcVars`" -CMakeCache `"$(Join-Path $CMakeBuild 'CMakeCache.txt')`" -CMakeHookFacts `"$(Join-Path $CMakeBuild 'xnav-native-cmake-tools.txt')`"",
     'if not "%errorlevel%"=="0" exit /b %errorlevel%',
     'echo === stage: compile zlib ===',
     "cmake --build `"$CMakeBuild`" --config Release -- /m",
@@ -219,7 +227,7 @@ $CommandLines = @(
     'echo === stage: install zlib ===',
     "cmake --install `"$CMakeBuild`" --config Release --prefix `"$Prefix`"",
     'if not "%errorlevel%"=="0" exit /b %errorlevel%',
-    "powershell.exe -NoProfile -ExecutionPolicy Bypass -File `"$ToolFacts`" -Mode Verify -Kind zlib-child -Output `"$ChildFacts`" -ProducerScript `"$PSCommandPath`" -Vswhere `"$Vswhere`" -VisualStudio `"$VisualStudio`" -VcVars `"$VcVars`" -CMakeCache `"$(Join-Path $CMakeBuild 'CMakeCache.txt')`" -CMakeHookFacts `"$(Join-Path $CMakeBuild 'xnav-native-cmake-tools.txt')`"",
+    "`"$ChildPowerShell`" -NoProfile -ExecutionPolicy Bypass -File `"$ToolFacts`" -Mode Verify -Kind zlib-child -Output `"$ChildFacts`" -ProducerScript `"$PSCommandPath`" -Vswhere `"$Vswhere`" -VisualStudio `"$VisualStudio`" -VcVars `"$VcVars`" -CMakeCache `"$(Join-Path $CMakeBuild 'CMakeCache.txt')`" -CMakeHookFacts `"$(Join-Path $CMakeBuild 'xnav-native-cmake-tools.txt')`"",
     'if not "%errorlevel%"=="0" exit /b %errorlevel%'
 )
 [IO.File]::WriteAllLines($BuildCmd,$CommandLines,(New-Object Text.UTF8Encoding($false)))

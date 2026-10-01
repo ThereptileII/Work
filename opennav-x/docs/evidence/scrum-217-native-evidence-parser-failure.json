@@ -1,0 +1,47 @@
+{
+  "schemaVersion": 1,
+  "status": "failed",
+  "sourceCommit": "899af50a1a4623a08f71d199d146a1cecd1959c2",
+  "runId": 36894286613,
+  "jobId": 110477259102,
+  "artifactId": 11179665811,
+  "artifact": {
+    "path": "evidence/local/dependency-contracts-36894286613/artifact.zip",
+    "bytes": 2835,
+    "sha256": "7985db4e765cf1394c07b73a394f1b5a809ac1f887464b5d769aeaccda1aac76",
+    "zipIntegrity": "passed"
+  },
+  "suites": {
+    "receipt": {
+      "tests": 15,
+      "failures": 0,
+      "errors": 0,
+      "result": "passed",
+      "logSha256": "2f46a9ffee6db4f812683f07543e5e9c26fe53e319caa0c2c8052c0e77ec63fe"
+    },
+    "reuse": {
+      "tests": 9,
+      "failures": 0,
+      "errors": 0,
+      "result": "passed",
+      "logSha256": "5ec3ad234322240085f20f662c871a86e3f57ce3b7ffe65edea362edf330c5c4"
+    },
+    "stage": {
+      "tests": 4,
+      "failures": 0,
+      "errors": 0,
+      "result": "passed",
+      "logSha256": "37d21bd845fb7974e367c9f0487507aebaf6ecb491a92ce5b93916c5db1cf65f"
+    },
+    "dependencyEvidence": {
+      "tests": 13,
+      "failures": 6,
+      "errors": 4,
+      "result": "failed",
+      "logSha256": "e82826c7a423d7f566cd8699f7cdd015aaba8ea1f94f41ac0ca5952073cf18a8",
+      "observedFailure": "OpenSSL retained log lacks one successful nonzero upstream test summary"
+    }
+  },
+  "causeAssessment": "The retained test output establishes that evidence-parser tests failed after rejecting the OpenSSL retained log summary. The underlying reason the fixture or parser disagreed is unproven and awaits source review.",
+  "scope": "This artifact records contract-test results only; it is not a native dependency build or application qualification."
+}

@@ -14,7 +14,10 @@ $ErrorActionPreference = 'Stop'
 Set-StrictMode -Version Latest
 
 function Sha([string]$Path) {
-    (Get-FileHash -LiteralPath $Path -Algorithm SHA256).Hash.ToLowerInvariant()
+    $Stream=[IO.File]::Open($Path,[IO.FileMode]::Open,[IO.FileAccess]::Read,[IO.FileShare]::Read)
+    $Hasher=[Security.Cryptography.SHA256]::Create()
+    try { ([BitConverter]::ToString($Hasher.ComputeHash($Stream))).Replace('-','').ToLowerInvariant() }
+    finally { $Hasher.Dispose(); $Stream.Dispose() }
 }
 function RequiredFile([string]$Path,[string]$Label) {
     if (-not $Path -or -not (Test-Path -LiteralPath $Path -PathType Leaf)) { throw "$Label missing" }
@@ -207,6 +210,11 @@ foreach($Name in @('PATH','INCLUDE','LIB','LIBPATH')) {
 }
 $Facts=[ordered]@{
     schemaVersion=1; kind=$Kind; producer=$ProducerFact; helper=$HelperFact
+    powerShell=[ordered]@{
+        file=FileFact ([Diagnostics.Process]::GetCurrentProcess().MainModule.FileName) 'PowerShell interpreter'
+        version=$PSVersionTable.PSVersion.ToString()
+        edition=[string]$PSVersionTable.PSEdition
+    }
     vswhere=$VswhereFact; visualStudio=$VisualStudio; vcvarsall=$VcVarsFact
     tools=$Tools; environment=$Environment
     cmake=if($Kind -eq 'zlib-child' -or $Kind -eq 'curl-parent'){CacheFacts $CMakeCache}else{$null}

@@ -1,6 +1,9 @@
 param(
     [Parameter(Mandatory=$true)][string]$Evidence,
-    [switch]$Child
+    [switch]$Child,
+    [string]$ExpectedPowerShell,
+    [string]$ExpectedPowerShellVersion,
+    [string]$ExpectedPowerShellEdition
 )
 $ErrorActionPreference = 'Stop'
 Set-StrictMode -Version Latest
@@ -14,7 +17,11 @@ $Root = Split-Path $PSScriptRoot -Parent
 $Helper = Join-Path $PSScriptRoot 'windows-native-tool-facts.ps1'
 $Hook = Join-Path $PSScriptRoot 'windows-native-tool-facts.cmake'
 $Producer = Join-Path $PSScriptRoot 'build-zlib-windows.ps1'
+$OpenSslProducer = Join-Path $PSScriptRoot 'build-openssl-windows.ps1'
 $Vswhere = "${env:ProgramFiles(x86)}\Microsoft Visual Studio\Installer\vswhere.exe"
+$PowerShellExecutable = [Diagnostics.Process]::GetCurrentProcess().MainModule.FileName
+$PowerShellVersion = [string]$PSVersionTable.PSVersion
+$PowerShellEdition = [string]$PSVersionTable.PSEdition
 $Encoding = New-Object Text.UTF8Encoding($false)
 $Stages = Join-Path $Evidence 'stages.jsonl'
 function Stage([string]$Name,[string]$State,[object]$Details=@{}) {
@@ -40,11 +47,22 @@ if (-not (Test-Path -LiteralPath $VcVars -PathType Leaf)) { throw 'vcvarsall x86
 $Source = Join-Path $Evidence 'source'
 $Build = Join-Path $Evidence 'build'
 $Facts = Join-Path $Evidence 'zlib-child-tool-facts.json'
+$OpenSslFacts = Join-Path $Evidence 'openssl-child-tool-facts.json'
 $HookFacts = Join-Path $Build 'xnav-native-cmake-tools.txt'
 $Cache = Join-Path $Build 'CMakeCache.txt'
 
 if ($Child) {
     if ($env:VSCMD_ARG_TGT_ARCH -cne 'x86') { throw 'Contract child did not receive vcvarsall x86' }
+    if (-not $ExpectedPowerShell -or -not $ExpectedPowerShellVersion -or -not $ExpectedPowerShellEdition) {
+        throw 'Contract child is missing its parent PowerShell identity'
+    }
+    $ExpectedPowerShell = [IO.Path]::GetFullPath($ExpectedPowerShell)
+    if (-not [string]::Equals([IO.Path]::GetFullPath($PowerShellExecutable),$ExpectedPowerShell,
+            [StringComparison]::OrdinalIgnoreCase) -or
+        $PowerShellVersion -cne $ExpectedPowerShellVersion -or
+        $PowerShellEdition -cne $ExpectedPowerShellEdition) {
+        throw 'Contract child PowerShell differs from its parent interpreter'
+    }
     Stage 'child' 'begin' @{architecture=$env:VSCMD_ARG_TGT_ARCH}
     $CMake = (Get-Command cmake.exe -CommandType Application -ErrorAction Stop | Select-Object -First 1).Source
     & $CMake -S $Source -B $Build -G 'Visual Studio 17 2022' -A Win32 `
@@ -94,6 +112,58 @@ if ($Child) {
     Stage 'child-facts' 'restored-verify-passed'
     [IO.File]::WriteAllText((Join-Path $Evidence 'child-result.json'),
         (@{status='passed';kind='zlib-child';testOnly=$true} | ConvertTo-Json -Compress),$Encoding)
+
+    & $Helper -Mode Capture -Kind openssl-child -Output $OpenSslFacts -ProducerScript $OpenSslProducer `
+        -Vswhere $Vswhere -VisualStudio $VisualStudio -VcVars $VcVars
+    & $Helper -Mode Verify -Kind openssl-child -Output $OpenSslFacts -ProducerScript $OpenSslProducer `
+        -Vswhere $Vswhere -VisualStudio $VisualStudio -VcVars $VcVars
+    $OpenSslRecord = [IO.File]::ReadAllText($OpenSslFacts) | ConvertFrom-Json
+    $PerlPath = (Get-Command perl.exe -CommandType Application -ErrorAction Stop | Select-Object -First 1).Source
+    $NasmPath = (Get-Command nasm.exe -CommandType Application -ErrorAction Stop | Select-Object -First 1).Source
+    $NasmVersionText = (& $NasmPath -v 2>&1 | Out-String)
+    if (-not [string]::Equals([IO.Path]::GetFullPath($PerlPath),
+            [IO.Path]::GetFullPath([string]$OpenSslRecord.tools.'perl.exe'.file.path),
+            [StringComparison]::OrdinalIgnoreCase) -or
+        -not [string]::Equals([IO.Path]::GetFullPath($NasmPath),
+            [IO.Path]::GetFullPath([string]$OpenSslRecord.tools.'nasm.exe'.file.path),
+            [StringComparison]::OrdinalIgnoreCase) -or
+        [string]$OpenSslRecord.tools.'perl.exe'.file.sha256 -notmatch '^[0-9a-f]{64}$' -or
+        [string]$OpenSslRecord.tools.'nasm.exe'.file.sha256 -notmatch '^[0-9a-f]{64}$' -or
+        [string]::IsNullOrWhiteSpace([string]$OpenSslRecord.tools.'perl.exe'.version.versionLine) -or
+        [string]::IsNullOrWhiteSpace([string]$OpenSslRecord.tools.'nasm.exe'.version.versionLine) -or
+        $LASTEXITCODE -ne 0 -or -not $NasmVersionText.Trim()) {
+        throw 'OpenSSL child facts do not record the selected Perl and NASM executables'
+    }
+    if (-not [string]::Equals([IO.Path]::GetFullPath([string]$OpenSslRecord.powerShell.file.path),
+            $ExpectedPowerShell,[StringComparison]::OrdinalIgnoreCase) -or
+        [string]$OpenSslRecord.powerShell.version -cne $ExpectedPowerShellVersion -or
+        [string]$OpenSslRecord.powerShell.edition -cne $ExpectedPowerShellEdition) {
+        throw 'OpenSSL child facts do not bind the parent interpreter and producer-selected host tools'
+    }
+    Stage 'openssl-child-facts' 'capture-verify-passed' @{
+        executable=[IO.Path]::GetFullPath([string]$OpenSslRecord.powerShell.file.path)
+        version=[string]$OpenSslRecord.powerShell.version
+        edition=[string]$OpenSslRecord.powerShell.edition
+        perl=[IO.Path]::GetFullPath([string]$OpenSslRecord.tools.'perl.exe'.file.path)
+        nasm=[IO.Path]::GetFullPath([string]$OpenSslRecord.tools.'nasm.exe'.file.path)
+    }
+
+    $OriginalOpenSslFacts = [IO.File]::ReadAllBytes($OpenSslFacts)
+    try {
+        $OpenSslRecord.powerShell.edition = 'tampered'
+        [IO.File]::WriteAllText($OpenSslFacts,
+            ($OpenSslRecord | ConvertTo-Json -Depth 16 -Compress),$Encoding)
+        RequireFailure {
+            & $Helper -Mode Verify -Kind openssl-child -Output $OpenSslFacts -ProducerScript $OpenSslProducer `
+                -Vswhere $Vswhere -VisualStudio $VisualStudio -VcVars $VcVars
+        } 'Native tool facts changed: openssl-child' 'changed-openssl-child-record'
+    } finally { [IO.File]::WriteAllBytes($OpenSslFacts,$OriginalOpenSslFacts) }
+    & $Helper -Mode Verify -Kind openssl-child -Output $OpenSslFacts -ProducerScript $OpenSslProducer `
+        -Vswhere $Vswhere -VisualStudio $VisualStudio -VcVars $VcVars
+    Stage 'openssl-child-facts' 'restored-verify-passed'
+    [IO.File]::WriteAllText((Join-Path $Evidence 'openssl-child-result.json'),
+        (@{status='passed';kind='openssl-child';testOnly=$true;
+            powerShellVersion=$PowerShellVersion;powerShellEdition=$PowerShellEdition} | ConvertTo-Json -Compress),$Encoding)
     return
 }
 
@@ -103,12 +173,18 @@ try {
     Stage 'contract' 'begin' @{testOnly=$true;sourceCommit=(git -C $Root rev-parse HEAD)}
     $ChildResult = Join-Path $Evidence 'child-result.json'
     if (Test-Path -LiteralPath $ChildResult) { Remove-Item -LiteralPath $ChildResult -Force }
+    $OpenSslChildResult = Join-Path $Evidence 'openssl-child-result.json'
+    if (Test-Path -LiteralPath $OpenSslChildResult) { Remove-Item -LiteralPath $OpenSslChildResult -Force }
+    if (-not (Test-Path -LiteralPath $PowerShellExecutable -PathType Leaf) -or
+        [IO.Path]::GetFileName($PowerShellExecutable) -notin @('powershell.exe','pwsh.exe')) {
+        throw 'Current PowerShell executable cannot be used for the vcvarsall child'
+    }
     $null = New-Item -ItemType Directory -Path $Source -Force
     [IO.File]::WriteAllText((Join-Path $Source 'CMakeLists.txt'),
         "cmake_minimum_required(VERSION 3.20)`nproject(native-tool-facts-smoke LANGUAGES C)`nadd_library(zlib SHARED stub.c)`n",$Encoding)
     [IO.File]::WriteAllText((Join-Path $Source 'stub.c'),"int xnav_tool_facts_smoke(void) { return 1; }`n",$Encoding)
     $RunChild = Join-Path $Evidence 'run-child.cmd'
-    foreach ($Path in @($VcVars,$PSCommandPath,$Evidence)) {
+    foreach ($Path in @($VcVars,$PSCommandPath,$Evidence,$PowerShellExecutable,$Root)) {
         if ($Path.Contains('%') -or $Path.Contains('"') -or $Path.Contains([char]10) -or $Path.Contains([char]13)) {
             throw 'Unsupported character in disposable native contract path'
         }
@@ -116,12 +192,16 @@ try {
     [IO.File]::WriteAllLines($RunChild,@(
         '@echo off','setlocal DisableDelayedExpansion',
         "call `"$VcVars`" x86 || exit /b 1",
-        "powershell.exe -NoProfile -ExecutionPolicy Bypass -File `"$PSCommandPath`" -Evidence `"$Evidence`" -Child || exit /b 1"
+        'if exist "C:\Program Files\NASM\nasm.exe" set "PATH=C:\Program Files\NASM;%PATH%"',
+        'if exist "C:\Strawberry\perl\bin\perl.exe" set "PATH=C:\Strawberry\perl\bin;%PATH%"',
+        "if exist `"$Root\build\dependency-tools\nasm-3.02\nasm.exe`" set `"PATH=$Root\build\dependency-tools\nasm-3.02;%PATH%`"",
+        "`"$PowerShellExecutable`" -NoProfile -ExecutionPolicy Bypass -File `"$PSCommandPath`" -Evidence `"$Evidence`" -Child -ExpectedPowerShell `"$PowerShellExecutable`" -ExpectedPowerShellVersion `"$PowerShellVersion`" -ExpectedPowerShellEdition `"$PowerShellEdition`" || exit /b 1"
     ),$Encoding)
     Stage 'child' 'before-start' @{batch=$RunChild}
     & cmd.exe @('/d','/s','/c',"`"$RunChild`"") 2>&1 | Tee-Object -FilePath (Join-Path $Evidence 'child-output.log')
-    if ($LASTEXITCODE -ne 0 -or -not (Test-Path -LiteralPath (Join-Path $Evidence 'child-result.json') -PathType Leaf)) {
-        throw 'Disposable x86 child contract failed'
+    if ($LASTEXITCODE -ne 0 -or -not (Test-Path -LiteralPath (Join-Path $Evidence 'child-result.json') -PathType Leaf) -or
+        -not (Test-Path -LiteralPath $OpenSslChildResult -PathType Leaf)) {
+        throw 'Disposable x86 child tool-facts contract failed'
     }
     Stage 'child' 'passed'
 
@@ -153,6 +233,7 @@ try {
     [IO.File]::WriteAllText((Join-Path $Evidence 'summary.json'),
         ([ordered]@{schemaVersion=1;status=$Status;failure=$Failure;testOnly=$true;
             childKind='zlib-child';parentKind='zlib-parent';sourceCommit=(git -C $Root rev-parse HEAD);
+            opensslChildKind='openssl-child';
             stages='stages.jsonl'} | ConvertTo-Json -Depth 4),$Encoding)
 }
 if ($Status -ne 'passed') { throw "Native tool-facts contract failed; evidence=$Evidence; reason=$Failure" }

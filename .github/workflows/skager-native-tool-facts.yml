@@ -7,17 +7,53 @@ permissions:
   contents: read
 jobs:
   tool-facts:
-    name: Actual Win32 CMake and MSVC tool-fact contracts
+    name: Actual Win32 CMake and MSVC tool-fact contracts (${{ matrix.shell }})
     runs-on: windows-2022
     timeout-minutes: 15
+    strategy:
+      fail-fast: false
+      matrix:
+        shell: [powershell, pwsh]
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+      - name: Prepare only the locked OpenSSL host assembler for the probe
+        shell: python
+        run: |
+          import hashlib, io, json, pathlib, urllib.request, zipfile
+          root = pathlib.Path('opennav-x')
+          lock = json.loads((root / 'tools/windows-openssl.lock.json').read_text())['buildTools']['nasm']
+          if lock['version'] != '3.02' or not lock['url'].startswith('https://www.nasm.us/'):
+              raise SystemExit('Unexpected NASM host-tool lock')
+          request = urllib.request.Request(lock['url'], headers={'User-Agent': 'SKAGER-native-tool-facts'})
+          with urllib.request.urlopen(request, timeout=60) as response:
+              data = response.read(lock['bytes'] + 1)
+          digest = hashlib.sha256(data).hexdigest()
+          if len(data) != lock['bytes'] or digest != lock['sha256']:
+              raise SystemExit('NASM archive differs from the reviewed size or digest')
+          expected = ['nasm-3.02/LICENSE', 'nasm-3.02/nasm.exe', 'nasm-3.02/ndisasm.exe']
+          with zipfile.ZipFile(io.BytesIO(data)) as archive:
+              if sorted(archive.namelist()) != expected:
+                  raise SystemExit('Unexpected NASM archive entries')
+              for name in expected:
+                  info = archive.getinfo(name)
+                  if info.is_dir() or info.file_size > 10 * 1024 * 1024 or (info.external_attr >> 16) & 0o170000 == 0o120000:
+                      raise SystemExit('Unsafe NASM archive entry')
+                  target = root / 'build/dependency-tools' / name
+                  target.parent.mkdir(parents=True, exist_ok=True)
+                  target.write_bytes(archive.read(name))
+          evidence = root / 'evidence/local/native-tool-facts-contracts'
+          evidence.mkdir(parents=True, exist_ok=True)
+          (evidence / 'nasm-source.json').write_text(json.dumps({
+              'version': lock['version'], 'archive': lock['archive'],
+              'bytes': len(data), 'sha256': digest, 'status': 'verified',
+              'scope': 'host tool for a focused interpreter probe; not an OpenSSL build'
+          }, indent=2), encoding='utf-8')
       - name: Capture and reprobe actual tools in disposable test projects
-        shell: powershell
+        shell: ${{ matrix.shell }}
         run: ./opennav-x/tools/test-windows-native-tool-facts.ps1 -Evidence opennav-x/evidence/local/native-tool-facts-contracts
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         if: always()
         with:
-          name: native-tool-facts-${{ github.sha }}
+          name: native-tool-facts-${{ matrix.shell }}-${{ github.sha }}
           path: opennav-x/evidence/local/native-tool-facts-contracts
           if-no-files-found: error

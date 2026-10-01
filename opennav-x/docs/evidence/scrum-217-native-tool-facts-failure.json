@@ -1,0 +1,40 @@
+{
+  "schemaVersion": 1,
+  "status": "failed",
+  "sourceCommit": "141265ea2fa8796c9570065034f31575292ff49e",
+  "runId": 36892710519,
+  "jobId": 110472015774,
+  "artifactId": 11178375537,
+  "artifact": {
+    "path": "evidence/local/native-facts-failure-36892710519/artifact.zip",
+    "bytes": 16441,
+    "sha256": "4008c49e7e9832a86232c043ad866ec1faa55b685445668fe205b3999095619c",
+    "zipIntegrity": "passed"
+  },
+  "parentFacts": {
+    "kind": "openssl-parent",
+    "capture": "passed",
+    "unchangedVerification": "passed",
+    "factsPath": "evidence/local/native-facts-failure-36892710519/extracted/windows-openssl-parent-tool-facts.json",
+    "factsSha256": "47dd4e5078a282220af1b2b10b8cb46aee5b079f20697e944ef706401d7263cc"
+  },
+  "childEnvironment": {
+    "vcvars": "initialized for x86",
+    "observedTools": [
+      "Hostx86\\x86 cl.exe",
+      "Hostx86\\x86 nmake.exe",
+      "Strawberry Perl",
+      "Git Perl",
+      "NASM"
+    ]
+  },
+  "failure": {
+    "stage": "child tool-facts capture",
+    "exception": "CommandNotFoundException",
+    "message": "Get-FileHash was not recognized as a cmdlet, function, script file, or operable program",
+    "logPath": "evidence/local/native-facts-failure-36892710519/extracted/windows-openssl-native-output.log",
+    "logSha256": "893667e8d808c6ad8e551ed9ca801a940dae2bebe9e259b768ec970765a616ad"
+  },
+  "causeAssessment": "The retained log establishes the missing Get-FileHash command in the child invocation. The reason it was unavailable, including any PSModulePath issue, is unproven.",
+  "scope": "Native producer qualification did not complete; this artifact records a tool-facts failure, not a native build pass."
+}

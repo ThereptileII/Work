@@ -1,0 +1,37 @@
+{
+  "schemaVersion": 1,
+  "status": "passed",
+  "sourceCommit": "5a0015a2911a0b643c761df9657e6a3c6ab31e7c",
+  "runId": 36895232260,
+  "jobs": {
+    "windows": {
+      "jobId": 110480434290,
+      "conclusion": "success",
+      "artifactId": 11178403859,
+      "artifactPath": "evidence/local/dependency-contracts-pass-36895232260/windows/artifact.zip",
+      "artifactBytes": 2060,
+      "artifactSha256": "437ff119a29c84ca32cf00f9112d0265a94a24aa88cedfcdbafd3f89e449ed5f",
+      "suites": {
+        "receipt": {"tests": 15, "failures": 0, "errors": 0, "logSha256": "bb1c7aff0967ab5f3932213ef98fbba5ff463f5291d033be3e9bd5f5cc0be281"},
+        "evidence": {"tests": 14, "failures": 0, "errors": 0, "logSha256": "a16ed8cfd05dafa2b8b7c128500a8e8a021417ecb5a2675e7e831c6026fe343c"},
+        "reuse": {"tests": 9, "failures": 0, "errors": 0, "logSha256": "5244fd5f42883c774889ade33ad53baefdd204c8111058545e68d56ea8cfb592"},
+        "stage": {"tests": 4, "failures": 0, "errors": 0, "logSha256": "f5b45dea383bde73ad22fbbf336771b7be2ee78bdcd994dfc426778034c27ddd"}
+      }
+    },
+    "linux": {
+      "jobId": 110480433875,
+      "conclusion": "success",
+      "artifactId": 11178388816,
+      "artifactPath": "evidence/local/dependency-contracts-pass-36895232260/linux/artifact.zip",
+      "artifactBytes": 2036,
+      "artifactSha256": "3bd39376a2121856b239bddb547ee94e1572c6ac6d424d7c31937b62a9d6b9bd",
+      "suites": {
+        "receipt": {"tests": 15, "failures": 0, "errors": 0, "logSha256": "7f3447ec1c34133538ca37e8e918464bf73041a602a89c01f2d3acac3bb13bda"},
+        "evidence": {"tests": 14, "failures": 0, "errors": 0, "logSha256": "cd2666b78f5ea4519f93686df797bf9cf70e9e2b2277c492242ac5c7262c2f08"},
+        "reuse": {"tests": 9, "failures": 0, "errors": 0, "logSha256": "2c228f017b05ca17a3c19492fee79972a9a0965393417de7db0a77affdd06e7b"},
+        "stage": {"tests": 4, "failures": 0, "errors": 0, "logSha256": "1506132b90d89762da2f1ee840128329ddc17c5421d5a1475c6c7f6603f75cc3"}
+      }
+    }
+  },
+  "scope": "Both platform contract jobs passed the focused receipt, evidence, reuse and cache-staging suites (42 tests per job). This validates these contract checks only; it is not a full native producer build, successful same-job dependency reuse qualification, application/package acceptance, or boat acceptance."
+}

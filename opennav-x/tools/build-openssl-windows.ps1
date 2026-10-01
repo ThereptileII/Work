@@ -27,7 +27,10 @@ function Invoke-Checked([string]$Program,[string[]]$Arguments) {
     if ($LASTEXITCODE -ne 0) { throw "$Program failed with exit code $LASTEXITCODE" }
 }
 function Digest([string]$Path) {
-    (Get-FileHash -LiteralPath $Path -Algorithm SHA256).Hash.ToLowerInvariant()
+    $Stream = [IO.File]::Open($Path,[IO.FileMode]::Open,[IO.FileAccess]::Read,[IO.FileShare]::Read)
+    $Hasher = [Security.Cryptography.SHA256]::Create()
+    try { ([BitConverter]::ToString($Hasher.ComputeHash($Stream))).Replace('-','').ToLowerInvariant() }
+    finally { $Hasher.Dispose(); $Stream.Dispose() }
 }
 function FileRecord([string]$Path) {
     if (-not (Test-Path -LiteralPath $Path -PathType Leaf)) { throw "Required OpenSSL output missing: $Path" }
@@ -57,6 +60,11 @@ if (-not $VisualStudio) { throw 'Licensed MSVC x86 toolchain missing' }
 $VcVars = Join-Path $VisualStudio 'VC/Auxiliary/Build/vcvarsall.bat'
 if (-not (Test-Path -LiteralPath $VcVars -PathType Leaf)) { throw 'MSVC vcvarsall.bat missing' }
 $ToolFacts = Join-Path $PSScriptRoot 'windows-native-tool-facts.ps1'
+$ChildPowerShell = [Diagnostics.Process]::GetCurrentProcess().MainModule.FileName
+if (-not (Test-Path -LiteralPath $ChildPowerShell -PathType Leaf) -or
+    [IO.Path]::GetFileName($ChildPowerShell) -notin @('powershell.exe','pwsh.exe')) {
+    throw 'Current PowerShell interpreter cannot be reproduced after vcvarsall'
+}
 $ParentFacts = Join-Path $Evidence 'windows-openssl-parent-tool-facts.json'
 $ChildFacts = Join-Path $Evidence 'windows-openssl-child-tool-facts.json'
 foreach ($Directory in @('C:\Program Files\NASM','C:\Strawberry\perl\bin')) {
@@ -101,7 +109,7 @@ if (-not $VerifyToolFactsOnly) {
 # These paths are embedded in an owned cmd file. Double quotes protect spaces
 # and command separators, and delayed expansion remains disabled for literal !.
 # Percent expansion and characters which break a quoted line are unsupported.
-foreach ($BatchPath in @($VcVars,$Source,$Prefix,$ToolFacts,$ChildFacts,$Vswhere,$VisualStudio,$PSCommandPath)) {
+foreach ($BatchPath in @($VcVars,$Source,$Prefix,$ToolFacts,$ChildFacts,$Vswhere,$VisualStudio,$PSCommandPath,$ChildPowerShell)) {
     if ($BatchPath.Contains('%') -or $BatchPath.Contains('"') -or
         $BatchPath.Contains([char]10) -or $BatchPath.Contains([char]13)) {
         throw "Unsupported character in OpenSSL build path: $BatchPath"
@@ -123,7 +131,7 @@ if ($VerifyToolFactsOnly) {
         'where nmake || exit /b 1',
         'where perl || exit /b 1',
         'where nasm || exit /b 1',
-        "powershell.exe -NoProfile -ExecutionPolicy Bypass -File `"$ToolFacts`" -Mode Verify -Kind openssl-child -Output `"$ChildFacts`" -ProducerScript `"$PSCommandPath`" -Vswhere `"$Vswhere`" -VisualStudio `"$VisualStudio`" -VcVars `"$VcVars`" || exit /b 1"
+        "`"$ChildPowerShell`" -NoProfile -ExecutionPolicy Bypass -File `"$ToolFacts`" -Mode Verify -Kind openssl-child -Output `"$ChildFacts`" -ProducerScript `"$PSCommandPath`" -Vswhere `"$Vswhere`" -VisualStudio `"$VisualStudio`" -VcVars `"$VcVars`" || exit /b 1"
     )
     try {
         [IO.File]::WriteAllLines($VerifyCmd,$VerifyLines,(New-Object Text.UTF8Encoding($false)))
@@ -151,7 +159,7 @@ $CommandLines = @(
     'where nmake || exit /b 1',
     'where perl || exit /b 1',
     'where nasm || exit /b 1',
-    "powershell.exe -NoProfile -ExecutionPolicy Bypass -File `"$ToolFacts`" -Mode Capture -Kind openssl-child -Output `"$ChildFacts`" -ProducerScript `"$PSCommandPath`" -Vswhere `"$Vswhere`" -VisualStudio `"$VisualStudio`" -VcVars `"$VcVars`" || exit /b 1",
+    "`"$ChildPowerShell`" -NoProfile -ExecutionPolicy Bypass -File `"$ToolFacts`" -Mode Capture -Kind openssl-child -Output `"$ChildFacts`" -ProducerScript `"$PSCommandPath`" -Vswhere `"$Vswhere`" -VisualStudio `"$VisualStudio`" -VcVars `"$VcVars`" || exit /b 1",
     "cd /d `"$Source`" || exit /b 1",
     "perl Configure VC-WIN32 shared --libdir=lib --prefix=`"$Prefix`" --openssldir=`"$Prefix\ssl`" || exit /b 1",
     'nmake || exit /b 1',
@@ -161,7 +169,7 @@ $CommandLines = @(
     'nmake /? 2>&1',
     'perl -V 2>&1',
     'nasm -v 2>&1',
-    "powershell.exe -NoProfile -ExecutionPolicy Bypass -File `"$ToolFacts`" -Mode Verify -Kind openssl-child -Output `"$ChildFacts`" -ProducerScript `"$PSCommandPath`" -Vswhere `"$Vswhere`" -VisualStudio `"$VisualStudio`" -VcVars `"$VcVars`" || exit /b 1"
+    "`"$ChildPowerShell`" -NoProfile -ExecutionPolicy Bypass -File `"$ToolFacts`" -Mode Verify -Kind openssl-child -Output `"$ChildFacts`" -ProducerScript `"$PSCommandPath`" -Vswhere `"$Vswhere`" -VisualStudio `"$VisualStudio`" -VcVars `"$VcVars`" || exit /b 1"
 )
 [IO.File]::WriteAllLines($BuildCmd,$CommandLines,(New-Object Text.UTF8Encoding($false)))
 Invoke-Checked cmd.exe @('/d','/s','/c',"`"$BuildCmd`"")
