@@ -1,5 +1,24 @@
 # OpenNav X status — 2026-10-01
 
+## SCRUM-25 — isolated signed-update verifier passes native feasibility
+
+The separate verifier branch at `24bd013f4891638f0e59411836c67f271a66a645`
+passes [Linux and native Windows 386](https://github.com/ThereptileII/Work/actions/runs/36936782032).
+Both downloaded result artifacts have verified size, SHA-256 and ZIP CRC.
+Each platform passes six top-level tests and nine subtests without skips, plus
+`go vet`. The tests use real Ed25519-signed metadata generated only in temporary
+fixtures and reject altered signatures/content, expired or older metadata,
+wrong channels/identity, oversized data and cross-origin redirects.
+
+This is a feasibility result, not a shipping updater. It neither executes a
+package nor modifies the application or installer. Trusted-root deployment,
+cache protection, application release/downgrade policy, dependency licensing and
+transactional installer handoff remain open; see
+[the scoped evidence](evidence/scrum-25-verifier-feasibility.json).
+SCRUM-24 now owns the deterministic release-policy prerequisite. Product
+qualification continues independently on frozen `45b8a9d`.
+
+
 ## Current replacement — native certificate path repair
 
 The application candidate is now frozen at

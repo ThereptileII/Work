@@ -1,0 +1,86 @@
+{
+  "schemaVersion": 1,
+  "scope": "Isolated verify-only library feasibility, not installed updater acceptance",
+  "commit": "24bd013f4891638f0e59411836c67f271a66a645",
+  "localCommit": "43dbecf",
+  "runId": 36936782032,
+  "url": "https://github.com/ThereptileII/Work/actions/runs/36936782032",
+  "jobs": [
+    {
+      "platform": "linux",
+      "jobId": 110618784849,
+      "artifactId": 11198432985,
+      "artifactBytes": 1392,
+      "artifactSha256": "47d46035c58aaf2ed83b1ee34a872ed6eeb7b095d7126a7c93de86d5fc848539",
+      "zipCrc": "passed",
+      "testJsonSha256": "8b684311d834b232762bb88039e5b7a0afa3686b17c4c6fa4fa69693426220b6",
+      "topLevelTests": 6,
+      "subtests": 9,
+      "failed": 0,
+      "skipped": 0,
+      "tests": [
+        "TestSignedRepositoryAndTargetTamper",
+        "TestInvalidMetadataAndExpiry/signature",
+        "TestInvalidMetadataAndExpiry/malformed",
+        "TestInvalidMetadataAndExpiry/expired",
+        "TestInvalidMetadataAndExpiry",
+        "TestRollbackAndMissingChannel",
+        "TestUnsignedIdentityRejected",
+        "TestSignedIdentityAndSizePolicy/wrong-channel",
+        "TestSignedIdentityAndSizePolicy/invalid-commit",
+        "TestSignedIdentityAndSizePolicy/oversize-target",
+        "TestSignedIdentityAndSizePolicy",
+        "TestTransportDeadlineRedirectAndMetadataLimit/deadline",
+        "TestTransportDeadlineRedirectAndMetadataLimit/redirect",
+        "TestTransportDeadlineRedirectAndMetadataLimit/metadata-size",
+        "TestTransportDeadlineRedirectAndMetadataLimit"
+      ]
+    },
+    {
+      "platform": "windows",
+      "jobId": 110618784741,
+      "artifactId": 11198177859,
+      "artifactBytes": 1258,
+      "artifactSha256": "a7a6b2f9a729fbd24d26438276da42d9e7f13b60bab9e3308d994df7fae8bb44",
+      "zipCrc": "passed",
+      "testJsonSha256": "d6e82e2f919c5b39ce1c2cd76c957f4ac99a5d90e4e2f3d65a5a652ad5037da0",
+      "topLevelTests": 6,
+      "subtests": 9,
+      "failed": 0,
+      "skipped": 0,
+      "tests": [
+        "TestSignedRepositoryAndTargetTamper",
+        "TestInvalidMetadataAndExpiry/signature",
+        "TestInvalidMetadataAndExpiry/malformed",
+        "TestInvalidMetadataAndExpiry/expired",
+        "TestInvalidMetadataAndExpiry",
+        "TestRollbackAndMissingChannel",
+        "TestUnsignedIdentityRejected",
+        "TestSignedIdentityAndSizePolicy/wrong-channel",
+        "TestSignedIdentityAndSizePolicy/invalid-commit",
+        "TestSignedIdentityAndSizePolicy/oversize-target",
+        "TestSignedIdentityAndSizePolicy",
+        "TestTransportDeadlineRedirectAndMetadataLimit/deadline",
+        "TestTransportDeadlineRedirectAndMetadataLimit/redirect",
+        "TestTransportDeadlineRedirectAndMetadataLimit/metadata-size",
+        "TestTransportDeadlineRedirectAndMetadataLimit"
+      ]
+    }
+  ],
+  "library": {
+    "module": "github.com/theupdateframework/go-tuf/v2",
+    "version": "v2.4.2",
+    "upstreamCommit": "f5edbde31e5507f46db2069402dc38903fe6d9d4"
+  },
+  "unaccepted": [
+    "Production root provisioning/rotation and threshold policy",
+    "Persistent cache protection and recovery",
+    "Application release/compatibility policy (SCRUM-24)",
+    "Application-version downgrade protection",
+    "Transitive license and actual shipping size review",
+    "Installer execution and startup rollback handoff",
+    "Authenticode and operational key custody"
+  ],
+  "productModified": false,
+  "boatModified": false
+}
