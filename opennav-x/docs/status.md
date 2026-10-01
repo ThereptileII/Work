@@ -2,6 +2,24 @@
 
 ## Current qualification and boat cleanup — 2026-10-01
 
+SCRUM-222 cold-profile preservation tooling at
+`034545be03295352a1c509d8979e4a3eb5bf64b6` passes all ten native Windows
+tooling jobs in [run 36911321279](https://github.com/ThereptileII/Work/actions/runs/36911321279).
+Downloaded artifacts were independently size/hash/ZIP checked. The cold suite
+passes 40 native disposable groups, including actual private ACL refusal and
+restoration plus normal commissioning/restore; see
+[native preservation evidence](evidence/scrum-222-native-cold-baseline.json).
+This qualifies the exact tooling, not the frozen application or boat acceptance.
+
+The boat source checkout was updated to that exact tooling commit without
+changing the installed application. Actual cold capture then refused before
+backup publication because two known-hash o-charts decoder helpers remain from
+September 29 despite OpenCPN being closed. The current user INI remains intact;
+no launch or cleanup occurred. SCRUM-223 tracks separately reviewed normal
+local shutdown for these exact orphan processes outside an active commissioning
+transaction. Existing closed-process checks remain mandatory. Cold capture,
+review, replacement installation and old-copy retirement are still pending.
+
 The frozen full candidate is `b48bf4a8f12f98c459d79aa08805141ac49e0306`
 (local mapped commit `0053ed507b03c79877fd6bb96c0d761fb9f68ac9`). Its narrow
 native tool-facts and version-probe regression passed under both Windows
