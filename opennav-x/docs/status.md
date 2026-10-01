@@ -1,5 +1,30 @@
 # OpenNav X status — 2026-10-01
 
+## Replacement native qualification — 37978e
+
+The current frozen candidate is `37978e26517af810092ec2bc554b199d36a705d2`
+(local `2a3c2c6b88945a50a7b552fd41c37658747ac5a4`). Its
+[integrated run](https://github.com/ThereptileII/Work/actions/runs/36929977632)
+passes 90 Linux and 87 native Windows portable CTest contracts, plus ten
+repeated restart handoffs on each platform and the supporting policy suites.
+All ten [native tooling jobs](https://github.com/ThereptileII/Work/actions/runs/36929976171)
+pass. Fourteen downloaded early artifacts have verified size, SHA-256 and ZIP
+CRC records, including 238 actual COM shortcut migration checks on each host
+architecture, 22 maintenance reports, native broker/Prepare/Arm checks, and
+supplemental AIS tests. See [the exact-candidate early evidence](evidence/scrum-224-37978e-early-gates.json).
+
+The [prototype run](https://github.com/ThereptileII/Work/actions/runs/36929980191)
+has passed its supporting checks; its two application builds remain live.
+The integrated application/security/installer gates also remain pending.
+No artifact is approved for boat deployment. The previous b48 Linux job has
+advanced past the real three-hour soak into its fixture-free build; that
+observation is not acceptance of this replacement revision. The boat remains
+unchanged and old installations are retained until a replacement is known-good.
+
+## SCRUM-224 — native test-host producer binding verified; product gates remain open
+
+The focused producer binding run at exact commit `fcd5adfca9e4ffdda00eddd40a48b2d85b433587` completed successfully in [run 36929342744](https://github.com/ThereptileII/Work/actions/runs/36929342744), job 110594459325. Its 13,192-byte artifact (SHA-256 `5d17f69c19d7c4f763d4e7277565708318f5b5f54ce77b1dd73b502d8b729db0`) passes all 19 ZIP CRC checks. The native Win32 CMake cache binds curl tests to MSYS2 Perl; wrong-host and tampered-cache cases refuse, and restored facts pass. Local 13+14+9 checks pass. This qualifies the test-host binding diagnostic only, not the complete upstream curl/HTTP/TLS suite or application, UI, installer, or boat acceptance. See [SCRUM-224 native binding evidence](evidence/scrum-224-native-test-host-binding-pass.json).
+
 ## SCRUM-224 — native curl test-host proof; frozen application gates remain open
 
 The frozen candidate `b48bf4a8f12f98c459d79aa08805141ac49e0306` still has two

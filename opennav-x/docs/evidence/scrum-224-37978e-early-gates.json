@@ -1,0 +1,258 @@
+{
+  "schemaVersion": 1,
+  "sourceCommit": "37978e26517af810092ec2bc554b199d36a705d2",
+  "scope": "Supplemental AIS and native recovery tooling only; full application remains pending",
+  "runs": {
+    "prototype": 36929980191,
+    "tooling": 36929976171
+  },
+  "artifacts": [
+    {
+      "id": 11196076079,
+      "name": "prototype-review-guard-Windows-37978e26517af810092ec2bc554b199d36a705d2",
+      "bytes": 9674,
+      "sha256": "4412bed53b8bd8545883c1a449ca5c0cc7db98c51cf0a13824065f6533ad7cfd",
+      "zipEntriesVerified": 2
+    },
+    {
+      "id": 11195448067,
+      "name": "prototype-ais-network-Linux-37978e26517af810092ec2bc554b199d36a705d2",
+      "bytes": 935,
+      "sha256": "884c7f97ad2f5b5d0c93915c2a6f7885aceb63212d110f8ce9cfde7448aafe71",
+      "zipEntriesVerified": 3
+    },
+    {
+      "id": 11195412961,
+      "name": "prototype-ais-foundation-Linux-37978e26517af810092ec2bc554b199d36a705d2",
+      "bytes": 689,
+      "sha256": "2beb806cf0f2f082129007d8779ea1c11a268a603c0474ccf2a46ed36d0b4117",
+      "zipEntriesVerified": 1
+    },
+    {
+      "id": 11195363066,
+      "name": "prototype-ais-foundation-Windows-37978e26517af810092ec2bc554b199d36a705d2",
+      "bytes": 690,
+      "sha256": "734719e2c359eb69b27e69b9ba3147f581ca6c0a800e6423196d3194e7ea8706",
+      "zipEntriesVerified": 1
+    },
+    {
+      "id": 11195706701,
+      "name": "development-installer-shortcuts-x64-37978e26517af810092ec2bc554b199d36a705d2",
+      "bytes": 1938,
+      "sha256": "6c9eba8ec66d7941c506efad2d45a53add6a061c494aeb74f6911ef6bfa0b3d5",
+      "zipEntriesVerified": 1
+    },
+    {
+      "id": 11195666742,
+      "name": "development-installer-shortcuts-x86-37978e26517af810092ec2bc554b199d36a705d2",
+      "bytes": 1940,
+      "sha256": "0f321410130a694c7daad125ba9d5b6333e22b3af92f7dd65073a679ae2b4d80",
+      "zipEntriesVerified": 1
+    },
+    {
+      "id": 11195602626,
+      "name": "development-commissioning-restart-37978e26517af810092ec2bc554b199d36a705d2",
+      "bytes": 6652,
+      "sha256": "ab342828fb76f0032a20e52bcf5166bdd52b753e6f322250eb57213e52167b7a",
+      "zipEntriesVerified": 2
+    },
+    {
+      "id": 11195527709,
+      "name": "development-desktop-diagnostics-37978e26517af810092ec2bc554b199d36a705d2",
+      "bytes": 3267,
+      "sha256": "c1612708d75a50954090428b0ce7cf485d0c7b2e059e70a440072497564d1342",
+      "zipEntriesVerified": 2
+    },
+    {
+      "id": 11195452911,
+      "name": "native-zlib-source-37978e26517af810092ec2bc554b199d36a705d2",
+      "bytes": 370,
+      "sha256": "aa3c91d86f70ff1a9ae14941b0af6c0641231c7f3a1ffe5e7d756b27d130c636",
+      "zipEntriesVerified": 1
+    },
+    {
+      "id": 11195138482,
+      "name": "development-stock-welcome-sv-37978e26517af810092ec2bc554b199d36a705d2",
+      "bytes": 501819,
+      "sha256": "aa03380d16574e152e7ed07504c82289b95622b797a57034a85ba65696d443dc",
+      "zipEntriesVerified": 42
+    },
+    {
+      "id": 11195043899,
+      "name": "development-stock-welcome-en_US-37978e26517af810092ec2bc554b199d36a705d2",
+      "bytes": 474576,
+      "sha256": "7767cbca64d90b0d479712777c1676e7f8a6e402f950389928a9a0acea1e6d29",
+      "zipEntriesVerified": 42
+    },
+    {
+      "id": 11195023986,
+      "name": "development-boat-tooling-37978e26517af810092ec2bc554b199d36a705d2",
+      "bytes": 27138,
+      "sha256": "f30d282f83bd7f1a75dba8e2dcebab841731f3d3bc01ed7c8f10e1701eba66cb",
+      "zipEntriesVerified": 22
+    },
+    {
+      "id": 11195867095,
+      "name": "development-restart-window-37978e26517af810092ec2bc554b199d36a705d2",
+      "bytes": 23446,
+      "sha256": "f79ff3549a2b315c75664a1a58ea8399b8589191752e13e66ac54ef69a07b5a3",
+      "zipEntriesVerified": 6
+    },
+    {
+      "id": 11195747198,
+      "name": "development-commissioning-broker-37978e26517af810092ec2bc554b199d36a705d2",
+      "bytes": 16731,
+      "sha256": "43208748c3fd54baf34a2a0755c1157d66315bb2e21b84a577811fe32c6e4fac",
+      "zipEntriesVerified": 37
+    }
+  ],
+  "tests": {
+    "development-installer-shortcuts-x64": 238,
+    "development-installer-shortcuts-x86": 238,
+    "maintenanceReports": [
+      {
+        "name": "maintenance-baseline-adoption.log",
+        "status": "passed",
+        "checks": 178
+      },
+      {
+        "name": "maintenance-boat-tools.log",
+        "status": "passed",
+        "checks": 30
+      },
+      {
+        "name": "maintenance-broker-fixture-contracts.log",
+        "status": "passed",
+        "checks": 25
+      },
+      {
+        "name": "maintenance-chart-helper-shutdown.log",
+        "status": "passed",
+        "checks": 45
+      },
+      {
+        "name": "maintenance-commissioning-launch.log",
+        "status": "passed",
+        "checks": 11
+      },
+      {
+        "name": "maintenance-commissioning.log",
+        "status": "passed",
+        "checks": 21
+      },
+      {
+        "name": "maintenance-installed-welcome.log",
+        "status": "passed",
+        "checks": 114
+      },
+      {
+        "name": "maintenance-navigation-copy.log",
+        "status": "passed",
+        "tests": 11
+      },
+      {
+        "name": "maintenance-official-upgrade-policy.log",
+        "status": "passed",
+        "checks": 86
+      },
+      {
+        "name": "maintenance-orphan-chart-helper.log",
+        "status": "passed",
+        "checks": 21
+      },
+      {
+        "name": "maintenance-preparation.log",
+        "status": "passed",
+        "checks": 34
+      },
+      {
+        "name": "maintenance-renderer-log.log",
+        "status": "passed",
+        "checks": 66
+      },
+      {
+        "name": "maintenance-restart-aui-persistence.log",
+        "status": "passed",
+        "checks": 77
+      },
+      {
+        "name": "maintenance-restart-commissioning.log",
+        "status": "passed",
+        "checks": 313
+      },
+      {
+        "name": "maintenance-restart-window-review.log",
+        "status": "passed",
+        "checks": 133
+      },
+      {
+        "name": "maintenance-review-staging.log",
+        "status": "passed",
+        "checks": 12
+      },
+      {
+        "name": "maintenance-review-window.log",
+        "status": "passed",
+        "checks": 230
+      },
+      {
+        "name": "maintenance-source-checkout.log",
+        "status": "passed",
+        "checks": 16
+      },
+      {
+        "name": "maintenance-startup-log.log",
+        "status": "passed",
+        "checks": 16
+      },
+      {
+        "name": "maintenance-stock-chart.log",
+        "status": "passed",
+        "checks": 61
+      },
+      {
+        "name": "maintenance-stock-review.log",
+        "status": "passed",
+        "checks": 90
+      },
+      {
+        "name": "maintenance-stock-welcome.log",
+        "status": "passed",
+        "checks": 149
+      }
+    ],
+    "aisFoundationCtestLinux": 7,
+    "aisFoundationCtestWindows": 7,
+    "loopbackTlsTransportScenarios": 18,
+    "offlineProbePrivacyChecks": 30,
+    "providerLifecycle": "confirmed subscription, reports, viewport change, reconnect, resubscribe, lifetime and disable; loopback only",
+    "nativeBrokerChecks": 51,
+    "nativePrepareArmCollectChecks": 56,
+    "nativeStockCloseChecks": 28
+  },
+  "limitations": [
+    "No full product, installer lifecycle, live AISStream or boat acceptance is established.",
+    "Stock warning/coastline evidence uses exact official OpenCPN in disposable disconnected profiles, not SKAGER or proprietary charts.",
+    "Native screenshot guards use marker windows; prototype HTML references are not native XNav conformance.",
+    "Current application candidate remains frozen; these results do not qualify another revision."
+  ],
+  "nativeToolingJobConclusions": "All 10 jobs success in run36929976171; artifacts verified. Disposable tooling, not physical boat acceptance.",
+  "contractJobs": {
+    "runId": 36929977632,
+    "Linux": {
+      "jobId": 110596567284,
+      "ctestPassed": 90,
+      "ctestFailed": 0,
+      "restartUntilFailIterations": 10,
+      "conclusion": "success"
+    },
+    "Windows": {
+      "jobId": 110596567397,
+      "ctestPassed": 87,
+      "ctestFailed": 0,
+      "restartUntilFailIterations": 10,
+      "conclusion": "success"
+    },
+    "additionalTests": "Package/source/receipt/evidence/reuse/staging and native policy tests also ran; CTest totals above do not include them."
+  }
+}

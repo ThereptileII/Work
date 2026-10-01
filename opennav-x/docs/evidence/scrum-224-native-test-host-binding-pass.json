@@ -1,0 +1,49 @@
+{
+  "schemaVersion": 1,
+  "issue": "SCRUM-224",
+  "status": "passed",
+  "scope": "Focused native Windows test-host producer binding diagnostic",
+  "sourceCommit": "fcd5adfca9e4ffdda00eddd40a48b2d85b433587",
+  "workflowRun": {
+    "runId": 36929342744,
+    "url": "https://github.com/ThereptileII/Work/actions/runs/36929342744",
+    "jobId": 110594459325,
+    "job": "host-probe",
+    "conclusion": "success",
+    "steps": "all successful"
+  },
+  "artifact": {
+    "id": 11195930378,
+    "name": "native-curl-test-host-fcd5adfca9e4ffdda00eddd40a48b2d85b433587",
+    "bytes": 13192,
+    "sha256": "5d17f69c19d7c4f763d4e7277565708318f5b5f54ce77b1dd73b502d8b729db0",
+    "zipCrc": "all 19 entries passed"
+  },
+  "nativeBinding": {
+    "cmakeGenerator": "Visual Studio 17 2022",
+    "generatorPlatform": "Win32",
+    "compiler": "native MSVC x86",
+    "cmakePerlExecutable": "D:/a/_temp/msys64/usr/bin/perl.exe",
+    "perlSha256": "8679db320f05c37d004c70ee5196d0bf8e9029aea49b9abc2f5cab8e9da810c5",
+    "msysRuntimeSha256": "80817f159a33b8f641e6a15de73d1efcc9af3a7557a69121e4798c99930152f1",
+    "checks": {
+      "actualCMakeBindingSelectedMsysPerl": "passed",
+      "captureAndReprobe": "passed",
+      "wrongHostRefusal": "passed",
+      "tamperedCacheRefusal": "passed",
+      "restoredNativeToolFacts": "passed"
+    }
+  },
+  "localChecks": {
+    "groups": [13, 14, 9],
+    "result": "passed"
+  },
+  "relationToHostAndCertificateProofs": {
+    "fourCaseHostComparison": "pass; unchanged curl runner/server modules show Strawberry readiness and launcher defects and MSYS success; see scrum-224-native-test-host-pass.json",
+    "msysCertificateGeneration": "pass with the explicitly selected host OpenSSL 3.6.4; this is not the pinned production OpenSSL 3.5.9"
+  },
+  "qualificationLimits": [
+    "The producer-binding diagnostic is not a full upstream curl test-suite pass or an HTTP/TLS integration result.",
+    "No complete application, UI, installer, or boat acceptance is established."
+  ]
+}
