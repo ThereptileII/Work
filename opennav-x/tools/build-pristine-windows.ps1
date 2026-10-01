@@ -37,6 +37,8 @@ try {
         # Fail on a changed zlib source before the costly OpenSSL build. The
         # normal zlib build below repeats the same guard and upstream tests.
         & (Join-Path $PSScriptRoot 'build-zlib-windows.ps1') -VerifySourceOnly
+        # Also verify the producer/consumer lock contract before building dependencies.
+        & (Join-Path $PSScriptRoot 'test-zlib-source-verification.ps1')
     }
     if ($Integration) {
         Run python @((Join-Path $PSScriptRoot 'prepare-integration.py'))

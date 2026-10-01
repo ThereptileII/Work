@@ -138,6 +138,34 @@ class CurlPackageBoundaryTests(unittest.TestCase):
         self.assertEqual(set(result['manifests']), {'curl', 'zlib'})
         self.assertEqual([bundle['reference']['library'] for bundle in result['sourceBundles']], ['curl', 'zlib'])
 
+    def test_reviewed_zlib_lock_manifest_is_accepted_and_source_mutations_rejected(self):
+        lock = json.loads((Path(__file__).with_name('windows-zlib.lock.json')).read_text())
+        source = {key: lock[key] for key in curl_package.SOURCE_KEYS}
+        production_source = {key: self._old_sources['zlib'][key] for key in curl_package.SOURCE_KEYS}
+        self.assertEqual(production_source, source)
+        provenance = json.loads((Path(__file__).parents[1] / 'docs/third-party/zlib-1.3.2/provenance.json').read_text())
+        self.assertEqual(provenance['sourceArchive'], lock['url'])
+        self.assertEqual(provenance['sourceArchiveSha256'], lock['sha256'])
+        self.assertEqual(provenance['sourceArchiveBytes'], lock['bytes'])
+        manifest = {
+            'schemaVersion': 1, 'library': 'zlib', 'version': lock['version'],
+            'configuration': lock['configuration'], 'architecture': 'Win32', 'abi': 'x86',
+            'runtime': lock['runtime'], 'source': source,
+            'buildSteps': {'configure': 'passed', 'compile': 'passed', 'test': 'passed', 'install': 'passed'},
+            'outputs': {name: self._record(name.encode()) for name in curl_package.ZLIB_OUTPUTS},
+        }
+        manifest_path = self.install / 'zlib-build.json'
+        self._write_json(manifest_path, manifest)
+        with mock.patch.object(curl_package, 'SOURCES', self._old_sources):
+            self.assertEqual(curl_package.verify_manifest(self.install, 'zlib')['source'], source)
+            for key, value in (('url', 'https://example.invalid/other.tar.gz'),
+                               ('sha256', '0' * 64), ('bytes', lock['bytes'] + 1)):
+                changed = json.loads(json.dumps(manifest))
+                changed['source'][key] = value
+                self._write_json(manifest_path, changed)
+                with self.assertRaisesRegex(ValueError, 'Unsupported dependency build identity: zlib'):
+                    curl_package.verify_manifest(self.install, 'zlib')
+
     def test_changed_or_missing_output_dll_is_rejected(self):
         (self.install / 'libcurl.dll').write_bytes(self.libcurl + b'changed')
         with self.assertRaisesRegex(ValueError, 'Missing or changed dependency file'):

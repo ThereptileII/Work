@@ -3,7 +3,7 @@
   "license": "Zlib",
   "licenseSourceWithinVerifiedArchive": "zlib-1.3.2/LICENSE",
   "licenseSha256": "e32ff4e00d9d94930537635291da39e7e612703334bf6fde8c7f1686fe8a45a2",
-  "sourceArchive": "https://zlib.net/zlib-1.3.2.tar.gz",
+  "sourceArchive": "https://github.com/madler/zlib/releases/download/v1.3.2/zlib-1.3.2.tar.gz",
   "sourceArchiveSha256": "bb329a0a2cd0274d05519d61c667c062e06990d72e125ee2dfa8de64f0119d16",
   "sourceArchiveBytes": 1502830,
   "sourceSignature": "https://zlib.net/zlib-1.3.2.tar.gz.asc",

@@ -12,9 +12,24 @@ observed zlib archive are both 1,502,830 bytes with SHA-256
 `bb329a0a2cd0274d05519d61c667c062e06990d72e125ee2dfa8de64f0119d16`.
 The [combined native run](https://github.com/ThereptileII/Work/actions/runs/36843282070)
 and [prototype run](https://github.com/ThereptileII/Work/actions/runs/36843282641)
-are for that same exact commit and remain in progress at this status check.
-They do not yet establish a qualified fixture-free application/package,
-installer, boat or release result. The concise failure/pass record is in
+are for that same exact commit. The prototype run's native composition/object-flow
+jobs stopped at curl's zlib manifest identity guard; the verified failure artifact
+is from composition job `110307179535`, not the combined run. Its zlib producer
+recorded the reviewed GitHub release URL, while two curl consumers still
+required the earlier zlib.net URL. The downloaded native artifact was
+hash-checked before review; OpenSSL and zlib
+built, and zlib's 13 tests passed before this guard. The subsequent local
+consumer correction aligns the URL in the PowerShell builder, Python package
+verifier and notice provenance while retaining archive/hash/size/signature
+locks. A self-contained producer/consumer guard now runs before the costly
+native dependency build, while all later real build checks remain in place.
+Its actual producer-manifest, focused PowerShell 7 and Python checks pass; corrected
+native application/package qualification has not run. See the
+[consumer closure record](evidence/scrum-209-zlib-consumer-closure-20261001.json).
+The combined run also reached a terminal native-job failure; that separate
+failure is not attributed from the reviewed prototype artifact. These runs do
+not establish a qualified fixture-free application/package,
+installer, boat or release result. The earlier source failure/pass record is in
 [zlib source URL evidence](evidence/scrum-209-zlib-source-url-correction-20261001.json).
 
 The preceding prototype candidate

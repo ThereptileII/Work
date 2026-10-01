@@ -98,7 +98,7 @@ if (@(Compare-Object @('abi','architecture','buildSteps','configuration','librar
 }
 $ZlibSourceKeys = @($Zlib.source.PSObject.Properties.Name | Sort-Object)
 if (@(Compare-Object @('archive','bytes','sha256','signingPrimaryFingerprint','url') $ZlibSourceKeys).Count -or
-    $Zlib.source.url -cne 'https://zlib.net/zlib-1.3.2.tar.gz' -or
+    $Zlib.source.url -cne 'https://github.com/madler/zlib/releases/download/v1.3.2/zlib-1.3.2.tar.gz' -or
     $Zlib.source.archive -cne 'zlib-1.3.2.tar.gz' -or
     $Zlib.source.sha256 -cne 'bb329a0a2cd0274d05519d61c667c062e06990d72e125ee2dfa8de64f0119d16' -or
     $Zlib.source.bytes -ne 1502830 -or

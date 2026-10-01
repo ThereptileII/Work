@@ -15,7 +15,7 @@ SOURCES = {
     },
     'zlib': {
         'version': '1.3.2', 'configuration': 'Win32 shared',
-        'archive': 'zlib-1.3.2.tar.gz', 'url': 'https://zlib.net/zlib-1.3.2.tar.gz',
+        'archive': 'zlib-1.3.2.tar.gz', 'url': 'https://github.com/madler/zlib/releases/download/v1.3.2/zlib-1.3.2.tar.gz',
         'sha256': 'bb329a0a2cd0274d05519d61c667c062e06990d72e125ee2dfa8de64f0119d16',
         'bytes': 1502830,
         'signingPrimaryFingerprint': '5ED46A6721D365587791E2AA783FCD8E58BCAFBA',

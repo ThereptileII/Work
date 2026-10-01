@@ -1,3 +1,4 @@
+param([string]$ConsumerScript,[string]$ObservedNativeManifest)
 Set-StrictMode -Version Latest
 $ErrorActionPreference = 'Stop'
 $Script = Join-Path $PSScriptRoot 'build-zlib-windows.ps1'
@@ -11,6 +12,7 @@ if ($Lock.version -cne '1.3.2' -or $Lock.configuration -cne 'Win32 shared' -or
     $Lock.signingPrimaryFingerprint -cne '5ED46A6721D365587791E2AA783FCD8E58BCAFBA') {
     throw 'zlib source lock no longer matches the reviewed upstream release asset'
 }
+$ProducerLock = $Lock
 $Errors = $null
 $Ast = [Management.Automation.Language.Parser]::ParseFile($Script,[ref]$null,[ref]$Errors)
 if ($Errors) { throw ($Errors | Out-String) }
@@ -56,3 +58,55 @@ try {
 } finally {
     Remove-Item -LiteralPath $Fixture -Recurse -Force
 }
+
+# Execute the actual curl consumer's source-identity conditional, without
+# entering its dependency build or downloading anything. This catches a stale
+# consumer URL before a three-dependency native build reaches curl.
+$CurlScript = if ($ConsumerScript) { $ConsumerScript } else { Join-Path $PSScriptRoot 'build-curl-windows.ps1' }
+$CurlErrors = $null
+$CurlAst = [Management.Automation.Language.Parser]::ParseFile($CurlScript,[ref]$null,[ref]$CurlErrors)
+if ($CurlErrors) { throw ($CurlErrors | Out-String) }
+$Guards = @($CurlAst.FindAll({param($Node)
+    $Node -is [Management.Automation.Language.IfStatementAst] -and
+    $Node.Extent.Text.Contains("throw 'zlib manifest does not identify the reviewed zlib 1.3.2 source'")
+},$true))
+if ($Guards.Count -ne 1) { throw 'Expected one production curl zlib source-identity guard' }
+$CurlSourceGuard = [scriptblock]::Create($Guards[0].Extent.Text)
+$Source = [pscustomobject]@{
+    url=$ProducerLock.url; archive=$ProducerLock.archive; sha256=$ProducerLock.sha256
+    bytes=$ProducerLock.bytes; signingPrimaryFingerprint=$ProducerLock.signingPrimaryFingerprint
+}
+function Test-CurlSourceGuard([object]$Record,[bool]$ShouldAccept,[string]$Case) {
+    $Zlib = [pscustomobject]@{source=$Record}
+    $ZlibSourceKeys = @($Zlib.source.PSObject.Properties.Name | Sort-Object)
+    $Accepted = $true
+    try { & $CurlSourceGuard } catch { $Accepted = $false }
+    if ($Accepted -ne $ShouldAccept) { throw "Curl zlib source guard gave wrong result for $Case" }
+}
+Test-CurlSourceGuard $Source $true 'reviewed producer lock'
+if ($ObservedNativeManifest) {
+    $Zlib = Get-Content -LiteralPath $ObservedNativeManifest -Raw | ConvertFrom-Json
+    $ZlibKeys = @($Zlib.PSObject.Properties.Name | Sort-Object)
+    $ZlibSourceKeys = @($Zlib.source.PSObject.Properties.Name | Sort-Object)
+    $SchemaGuards = @($CurlAst.FindAll({param($Node)
+        $Node -is [Management.Automation.Language.IfStatementAst] -and
+        $Node.Extent.Text.Contains("throw 'zlib manifest does not satisfy the reviewed Win32 shared /MD schema'")
+    },$true))
+    if ($SchemaGuards.Count -ne 1) { throw 'Expected one production curl zlib manifest-schema guard' }
+    & ([scriptblock]::Create($SchemaGuards[0].Extent.Text))
+    & $CurlSourceGuard
+    Test-CurlSourceGuard $Zlib.source $true 'observed native manifest'
+    Write-Output 'Actual native zlib manifest satisfies the exact curl schema and source guards.'
+}
+foreach ($Case in @('url','sha256','bytes','extra','missing')) {
+    $Changed = $Source | ConvertTo-Json -Compress | ConvertFrom-Json
+    switch ($Case) {
+        'url' { $Changed.url = 'https://zlib.net/zlib-1.3.2.tar.gz' }
+        'sha256' { $Changed.sha256 = '0' * 64 }
+        'bytes' { $Changed.bytes = $Changed.bytes - 1 }
+        'extra' { $Changed | Add-Member -NotePropertyName unexpected -NotePropertyValue 'unreviewed' }
+        'missing' { $Changed.PSObject.Properties.Remove('url') }
+    }
+    Test-CurlSourceGuard $Changed $false $Case
+}
+Write-Output 'Actual curl zlib source guard accepts the producer lock and rejects changed URL, hash, bytes, and schema.'
