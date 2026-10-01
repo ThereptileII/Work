@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Apply the reviewed Windows executable-name fix to locked curl test source."""
+"""Apply reviewed Windows executable and subprocess fixes to locked curl test source."""
 
 from __future__ import annotations
 
@@ -13,9 +13,36 @@ from pathlib import Path
 
 
 ORIGINAL_SHA256 = "d737cbe77e23e275b4fcfcec36e62d49d1d59d9d9fd0013a428b7143ee75c982"
-PATCHED_SHA256 = "a9aac30978a5c6c670aef643a337a7d2922e9d324f49fb663a41df29e6c44e54"
+PATCHED_SHA256 = "4c176ec6a1556f519d6c0c02d17c40caadb9a542894fedc9f2055b7a48ce9ab3"
 OLD_SELECTION = b"my $OPENSSL = 'openssl';"
 NEW_SELECTION = b"my $OPENSSL = $^O eq 'MSWin32' ? 'openssl.exe' : 'openssl';"
+OLD_REDIR = b"""sub redir {
+    my $outfn = shift if($_[0] =~ /^>/);
+    my $hideerr = shift if($_[0] =~ /^2>/);
+    open(my $outfd, $outfn) or die if($outfn);
+    my $pid = open3(my $in, my $out, my $err = gensym, @_);
+    if(!$hideerr) { while(<$err>) { print STDERR $_; }; }
+    if($outfn) { while(<$out>) { print $outfd $_; }; close($outfd); }
+    else { while(<$out>) { print $_; }; }
+    waitpid($pid, 0);
+}
+"""
+NEW_REDIR = rb"""sub redir {
+    my $outfn = shift if($_[0] =~ /^>/);
+    my $hideerr = shift if($_[0] =~ /^2>/);
+    open(my $infd, '<', File::Spec->devnull()) or die;
+    my $outfd;
+    if($outfn) { open($outfd, '>', substr($outfn, 1)) or die; }
+    else { $outfd = \*STDOUT; }
+    my $errfd;
+    if($hideerr) { open($errfd, '>', File::Spec->devnull()) or die; }
+    else { $errfd = \*STDERR; }
+    my $pid = open3('<&' . fileno($infd), '>&' . fileno($outfd), '>&' . fileno($errfd), @_);
+    waitpid($pid, 0);
+    close($outfd) if($outfn);
+    close($errfd) if($hideerr);
+}
+"""
 SOURCE_RELATIVE_PATH = "tests/certs/genserv.pl"
 MAX_SOURCE_BYTES = 1_000_000
 
@@ -38,9 +65,9 @@ def patch_source(source: Path) -> dict[str, object]:
         state = "already-patched"
         patched = original
     elif before == ORIGINAL_SHA256:
-        if original.count(OLD_SELECTION) != 1:
-            raise ValueError("locked curl source does not contain one expected selection")
-        patched = original.replace(OLD_SELECTION, NEW_SELECTION, 1)
+        if original.count(OLD_SELECTION) != 1 or original.count(OLD_REDIR) != 1:
+            raise ValueError("locked curl source does not contain the expected selection and redirection")
+        patched = original.replace(OLD_SELECTION, NEW_SELECTION, 1).replace(OLD_REDIR, NEW_REDIR, 1)
         if _sha256(patched) != PATCHED_SHA256:
             raise ValueError("generated patch differs from the reviewed curl source result")
         mode = stat.S_IMODE(source.stat().st_mode)

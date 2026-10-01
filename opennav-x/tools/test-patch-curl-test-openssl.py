@@ -1,11 +1,12 @@
 #!/usr/bin/env python3
-"""Focused tests for the exact, hash-guarded curl Windows test-source patch."""
+"""Test the exact, hash-guarded curl executable and subprocess patch."""
 
 from __future__ import annotations
 
 import argparse
 import importlib.util
 import shutil
+import subprocess
 import sys
 import tempfile
 import unittest
@@ -48,6 +49,8 @@ class PatchCurlTestOpenSSLTests(unittest.TestCase):
         self.assertIn(patcher.NEW_SELECTION, data)
         self.assertNotIn(patcher.OLD_SELECTION, data)
         self.assertEqual(data.count(patcher.NEW_SELECTION), 1)
+        self.assertEqual(data.count(patcher.NEW_REDIR), 1)
+        self.assertNotIn(patcher.OLD_REDIR, data)
 
     def test_exact_expected_source_is_idempotent(self) -> None:
         first = patcher.patch_source(self.source)
@@ -71,6 +74,26 @@ class PatchCurlTestOpenSSLTests(unittest.TestCase):
         link.symlink_to(self.source)
         with self.assertRaisesRegex(ValueError, "regular, non-symlink"):
             patcher.patch_source(link)
+
+    @unittest.skipUnless(shutil.which("perl"), "Perl is needed for the subprocess regression")
+    def test_redir_closes_input_and_handles_large_output_without_pipes(self) -> None:
+        script = self.work / "redir-test.pl"
+        script.write_bytes(
+            b"use strict; use warnings; use File::Spec; use IPC::Open3;\n"
+            + patcher.NEW_REDIR
+            + b"redir('>output.bin', '2>', $^X, '-e', "
+              b"'binmode STDOUT; binmode STDERR; exit 7 if defined(<STDIN>); "
+              b"print STDOUT q(O) x 131072; print STDERR q(E) x 131072;');\n"
+            + b"redir($^X, '-e', 'print STDOUT q(out); print STDERR q(err);');\n"
+        )
+        result = subprocess.run(
+            ["perl", str(script)], cwd=self.work, capture_output=True,
+            timeout=10, check=False,
+        )
+        self.assertEqual(result.returncode, 0, result.stderr.decode(errors="replace"))
+        self.assertEqual((self.work / "output.bin").read_bytes(), b"O" * 131072)
+        self.assertEqual(result.stdout, b"out")
+        self.assertEqual(result.stderr, b"err")
 
 
 if __name__ == "__main__":

@@ -70,3 +70,42 @@ not substitute for release-package verification or legal review.
 
 No application, package, Windows or boat acceptance is claimed from the failed
 runs or local helper tests.
+
+## First native reproduction: rejected
+
+The isolated probe publication `d7000af44ba4da0bda6ca4bac58c82cc51d9452f`
+ran at [36886471275](https://github.com/ThereptileII/Work/actions/runs/36886471275).
+The original lookup failure and exact source patch were confirmed. Patched
+certificate generation hit its 180-second limit; output pipes then failed to
+close within 10 seconds, so partial generator output was not retained. This is
+not a certificate-generation pass. The host test tool was OpenSSL 3.6.4.
+The [verified failure inventory](scrum-221-native-probe-failure.json) records
+artifact identity and observed stages.
+
+Subsequent source review found a separate new probe/producer argument error:
+`Makefile.inc` lists `test-localhost.prm`; there is no `localhost.prm`. Both
+invocations must use the real configuration and `test-localhost.crt/key`
+outputs. That error is not yet established as the cause of the hang. Retain
+partial output and bounded child-process observations before retrying; do not
+increase timeouts or skip upstream certificate tests to obtain a pass.
+
+## Native child trace — 2026-10-01
+
+The corrected diagnostic commit `7897dd1aadbb1f299c226c1ceda01e9348f4665b`
+failed in [run 36889948495](https://github.com/ThereptileII/Work/actions/runs/36889948495),
+job `110462739693`. The downloaded artifact was verified at 5,907 bytes and
+SHA-256 `f2e4cac8278ff3d6ee313cdb716b3378f4da0db34618666999077dd76fd2b399`.
+See the [file inventory](scrum-221-native-pipe-failure.json).
+
+The owned process trace at the unchanged 180-second deadline identifies
+`openssl.exe x509 -in test-ca.raw-cacert -text -nameopt multiline`, called
+from the generator's `redir` at line 100. That routine waits for stderr EOF
+before reading stdout; Windows stdout-buffer saturation is therefore a concrete
+hypothesis to test. Other branches do not drain hidden stderr at all. The
+next repair uses direct duplicated file handles to preserve output semantics
+without those pipes. Its native success is not established by this failure.
+
+Output collection also hit a Windows sharing violation after killing the owned
+process tree. The diagnostic reader now permits existing writer handles and
+reads only a bounded snapshot. Raw output remains excluded from uploaded
+artifacts; retained copies redact the generator's PATH line.

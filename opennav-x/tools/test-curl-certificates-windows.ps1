@@ -42,6 +42,23 @@ function Quote([string]$Value) {
     }
     '"' + $Value + '"'
 }
+function ReadBoundedOutput([string]$Path) {
+    # A just-killed descendant may still hold its inherited output handle.
+    # Share read/write while copying only the bounded bytes already present.
+    $File = [IO.File]::Open($Path,[IO.FileMode]::Open,[IO.FileAccess]::Read,
+                           ([IO.FileShare]::ReadWrite -bor [IO.FileShare]::Delete))
+    try {
+        if ($File.Length -gt 262144) { throw 'Process output exceeds evidence bound' }
+        $Bytes = New-Object byte[] ([int]$File.Length)
+        $Count = 0
+        while ($Count -lt $Bytes.Length) {
+            $Read = $File.Read($Bytes,$Count,$Bytes.Length - $Count)
+            if ($Read -eq 0) { break }
+            $Count += $Read
+        }
+        return [Text.Encoding]::UTF8.GetString($Bytes,0,$Count)
+    } finally { $File.Dispose() }
+}
 function RunBounded([string]$Name,[string]$Program,[string[]]$Arguments,[int]$TimeoutSeconds,
                     [string]$WorkingDirectory='') {
     if ($TimeoutSeconds -lt 1 -or $TimeoutSeconds -gt 300) { throw 'Unsupported process deadline' }
@@ -103,8 +120,8 @@ function RunBounded([string]$Name,[string]$Program,[string[]]$Arguments,[int]$Ti
                 throw "$Name output exceeds bounded evidence size"
             }
         }
-        $Stdout = [IO.File]::ReadAllText($StdoutPath)
-        $Stderr = [IO.File]::ReadAllText($StderrPath)
+        $Stdout = (ReadBoundedOutput $StdoutPath)
+        $Stderr = (ReadBoundedOutput $StderrPath)
         if ($Stdout.Length -gt 262144 -or $Stderr.Length -gt 262144) {
             throw "$Name output exceeds bounded evidence size"
         }
@@ -126,7 +143,7 @@ function RunBounded([string]$Name,[string]$Program,[string[]]$Arguments,[int]$Ti
             $RawPath = Join-Path $RawDirectory "$Name.$StreamName.txt"
             if ((Test-Path -LiteralPath $RawPath -PathType Leaf) -and
                 (Get-Item -LiteralPath $RawPath).Length -le 262144) {
-                $Retained = [regex]::Replace([IO.File]::ReadAllText($RawPath),
+                $Retained = [regex]::Replace((ReadBoundedOutput $RawPath),
                     '(?m)^PATH used: .*$', 'PATH used: [redacted]')
                 [IO.File]::WriteAllText((Join-Path $Evidence "$Name.$StreamName.txt"),$Retained,$Encoding)
             }
@@ -218,13 +235,18 @@ try {
     }
     Stage 'original-generator' 'expected-lookup-failure' @{exitCode=$Original.exitCode}
 
+    $PatchTests = Join-Path $PSScriptRoot 'test-patch-curl-test-openssl.py'
+    $PatchTestsResult = RunBounded 'patch-regression-tests' $Python.path @((Quote $PatchTests),
+        '--source',(Quote $Genserv),'-v') 40
+    RequireSuccess $PatchTestsResult 'locked source patch and redirection regression tests'
+
     $PatchReceipt = Join-Path $Evidence 'genserv-patch.json'
     $Patched = RunBounded 'patch-genserv' $Python.path @((Quote $Patch),'--source',
         (Quote $Genserv),'--evidence',(Quote $PatchReceipt)) 20
     RequireSuccess $Patched 'exact curl test-source patch'
     $PatchRecord = Get-Content -LiteralPath $PatchReceipt -Raw | ConvertFrom-Json
     if ($PatchRecord.state -cne 'patched' -or $PatchRecord.beforeSha256 -cne $OriginalHash -or
-        $PatchRecord.afterSha256 -cne 'a9aac30978a5c6c670aef643a337a7d2922e9d324f49fb663a41df29e6c44e54' -or
+        $PatchRecord.afterSha256 -cne '4c176ec6a1556f519d6c0c02d17c40caadb9a542894fedc9f2055b7a48ce9ab3' -or
         (Digest $Genserv) -cne $PatchRecord.afterSha256) {
         throw 'Curl test-source patch receipt differs from reviewed bytes'
     }

@@ -1,0 +1,83 @@
+{
+  "schemaVersion": 1,
+  "status": "failed",
+  "sourceCommit": "7897dd1aadbb1f299c226c1ceda01e9348f4665b",
+  "runId": 36889948495,
+  "jobId": 110462739693,
+  "artifact": {
+    "id": 11176716402,
+    "bytes": 5907,
+    "sha256": "f2e4cac8278ff3d6ee313cdb716b3378f4da0db34618666999077dd76fd2b399",
+    "files": [
+      {
+        "path": "cmake-extract.stderr.txt",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "path": "cmake-extract.stdout.txt",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "path": "curl-download.stderr.txt",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "path": "curl-download.stdout.txt",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "path": "genserv-original.stderr.txt",
+        "bytes": 348,
+        "sha256": "b0dac7acf332da7bc087136f0838d1c45461e93b2c05fa29f65dbcc6311a644a"
+      },
+      {
+        "path": "genserv-original.stdout.txt",
+        "bytes": 22,
+        "sha256": "4cd2a5538674504275e350e6d26be528bd3a6a8089b7d1e8d2dad85750f84151"
+      },
+      {
+        "path": "genserv-patch.json",
+        "bytes": 399,
+        "sha256": "dfdb80ca116e09f61fa536b7d09a73a08afa3051820aba6a4fff748729552a72"
+      },
+      {
+        "path": "host-openssl-version.stderr.txt",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "path": "host-openssl-version.stdout.txt",
+        "bytes": 792,
+        "sha256": "d4eba9e1cff2ce7c921b74ba1251991e472dc2e886324f1db62224dc367392a1"
+      },
+      {
+        "path": "patch-genserv.stderr.txt",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "path": "patch-genserv.stdout.txt",
+        "bytes": 399,
+        "sha256": "dfdb80ca116e09f61fa536b7d09a73a08afa3051820aba6a4fff748729552a72"
+      },
+      {
+        "path": "stages.jsonl",
+        "bytes": 7374,
+        "sha256": "f62610a9a09cdde568124b07ed5d68e3599350c11d82248f10a573a746931beb"
+      },
+      {
+        "path": "summary.json",
+        "bytes": 1790,
+        "sha256": "5312c988f79148e9577bc59c16d82074fa801de769cb81779cabcfb657a99631"
+      }
+    ]
+  },
+  "observedBlockingCommand": "openssl.exe x509 -in test-ca.raw-cacert -text -nameopt multiline",
+  "deadlineSeconds": 180,
+  "captureFailure": "ReadAllText sharing violation after process-tree kill",
+  "qualification": "No certificate-generation or application pass"
+}
