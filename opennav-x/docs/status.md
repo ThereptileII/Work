@@ -2,14 +2,32 @@
 
 ## Current qualification and boat cleanup — 2026-10-01
 
-The latest frozen full candidate is `141265ea2fa8796c9570065034f31575292ff49e`
+The frozen full candidate is `b48bf4a8f12f98c459d79aa08805141ac49e0306`
+(local mapped commit `0053ed507b03c79877fd6bb96c0d761fb9f68ac9`). Its narrow
+native tool-facts and version-probe regression passed under both Windows
+PowerShell 5.1 and PowerShell 7 in [run 36900544171](https://github.com/ThereptileII/Work/actions/runs/36900544171);
+both artifacts were independently verified. The probe covers real x86 tool
+facts, stream stability, refusals and restored verification. The same-commit
+Linux and Windows contract jobs now pass (90 and 87 CTest cases respectively,
+plus the separately recorded Python, native and repeated lifecycle checks).
+The [Windows tooling run](https://github.com/ThereptileII/Work/actions/runs/36901026982)
+passes all 10 jobs; verified actual COM shortcut reports pass 238 checks on
+each Windows host architecture. See the [contract evidence](evidence/scrum-217-b48-full-contracts.json)
+and [shortcut evidence](evidence/scrum-215-b48-native-shortcuts.json).
+The full [integrated](https://github.com/ThereptileII/Work/actions/runs/36901026915)
+and [prototype](https://github.com/ThereptileII/Work/actions/runs/36901029053)
+runs remain in progress; no full candidate acceptance is established. This focused pass does not qualify
+the full dependency producers, dependency reuse, application, package or boat.
+See [native stream-pass evidence](evidence/scrum-217-native-stream-pass.json).
+
+An earlier frozen candidate, `141265ea2fa8796c9570065034f31575292ff49e`
 ([integrated run](https://github.com/ThereptileII/Work/actions/runs/36892709388),
-[prototype run](https://github.com/ThereptileII/Work/actions/runs/36892710519)).
-It is **not qualified**. Windows contracts failed on nonportable path fixtures;
+[prototype run](https://github.com/ThereptileII/Work/actions/runs/36892710519)),
+was **not qualified**. Windows contracts failed on nonportable path fixtures;
 the dependent integrated Windows application job was skipped. The prototype
 composition job separately failed before OpenSSL compilation because its child
-PowerShell could not resolve `Get-FileHash`. These are retained SCRUM-217
-integration failures, not acceptance of the certificate repair or the product.
+PowerShell could not resolve `Get-FileHash`. These remain historical SCRUM-217
+integration failures, not acceptance of the certificate repair or product.
 
 The isolated receipt-fixture correction at
 `899af50a1a4623a08f71d199d146a1cecd1959c2`
@@ -29,10 +47,13 @@ missing-module failure. Its diagnostic run at
 passes Windows PowerShell 5.1 but fails PowerShell 7: only NMAKE's merged
 stdout/stderr ordering changes the recorded first line and output hash. The
 retained captured/observed records have identical executable identities,
-environment and exit codes. Separate bounded stream capture is being repaired;
+environment and exit codes. Bounded separate-stream capture was subsequently
+implemented and passed its real-process regression under both interpreters;
 strict identity and output comparisons remain required. See the
-[stream-order failure evidence](evidence/scrum-217-native-stream-order-failure.json).
-Both interpreter gates must pass before another full candidate is frozen.
+[stream-order failure evidence](evidence/scrum-217-native-stream-order-failure.json)
+and [subsequent narrow pass](evidence/scrum-217-native-stream-pass.json).
+The narrow interpreter gates subsequently passed on the frozen b48 candidate;
+its broader native qualification is still in progress as noted above.
 No new boat deployment or removal of older installations has occurred.
 
 The published candidate `f1e2cde8fcbf92826d648007b267cc0f5320aa55`

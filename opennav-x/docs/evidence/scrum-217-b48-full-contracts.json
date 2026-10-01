@@ -1,0 +1,56 @@
+{
+  "schemaVersion": 1,
+  "status": "passed",
+  "sourceCommit": "b48bf4a8f12f98c459d79aa08805141ac49e0306",
+  "runId": 36901026915,
+  "evidenceType": "connector-decoded full job logs; hashes refer to saved decoded text, not original raw artifact bytes",
+  "localEvidenceRoot": "/home/standard/Projects/X-nav-worktrees/scrum217-stream-evidence/evidence/local/b48-contracts",
+  "jobs": {
+    "linuxContracts": {
+      "jobId": 110499931809,
+      "conclusion": "success",
+      "decodedLog": "linux.log",
+      "decodedLogBytes": 90216,
+      "decodedLogSha256": "61a6cdc10354ae4ab5fc4a4c03c5b4cdf5434f78bc680a6765358f8ee171aa33",
+      "pythonSuites": {
+        "sourcePackage": 11,
+        "opensslPackage": 9,
+        "curlPackage": 12,
+        "dependencyReceipt": 15,
+        "dependencyEvidence": 14,
+        "dependencyReuse": 9,
+        "dependencyStage": 4,
+        "peerBoundary": 7,
+        "installerCompletion": 12,
+        "navigationCopy": 11
+      },
+      "dependencyPythonTestsPassed": 42,
+      "nativeVersionProbe": "passed under pwsh",
+      "ctest": {"contractsPassed": 90, "contractsFailed": 0, "restartLifecycleOracleCases": 1, "restartLifecycleOracleRepeatsPassed": 10}
+    },
+    "windowsContracts": {
+      "jobId": 110499931514,
+      "conclusion": "success",
+      "decodedLog": "windows.log",
+      "decodedLogBytes": 124597,
+      "decodedLogSha256": "e22d5cfa55517036b14e650c5d30a8dde8b10f0cf76fcedf447e28d85c2f4b6e",
+      "pythonSuites": {
+        "sourcePackage": 11,
+        "opensslPackage": 9,
+        "curlPackage": 12,
+        "dependencyReceipt": 15,
+        "dependencyEvidence": 14,
+        "dependencyReuse": 9,
+        "dependencyStage": 4,
+        "peerBoundary": 7,
+        "installerCompletion": 12
+      },
+      "dependencyPythonTestsPassed": 42,
+      "nativeVersionProbe": "passed under pwsh and Windows PowerShell 5.1",
+      "nativeFilesystemChecks": {"host64Passed": 44, "host32Passed": 44},
+      "nativeShortcutMigrationChecks": {"host64Passed": 238, "host32Passed": 238},
+      "ctest": {"contractsPassed": 87, "contractsFailed": 0, "restartLifecycleOracleCases": 1, "restartLifecycleOracleRepeatsPassed": 10}
+    }
+  },
+  "scope": "Exact-commit Linux and Windows source, package-fixture, dependency-reuse unit, native version-probe, installer-fixture, and contract suites passed. These are separate suite counts, not one combined test total. Full integrated application, native dependency production and reuse, distributable package, and physical boat acceptance remain open; this record does not promote them."
+}
