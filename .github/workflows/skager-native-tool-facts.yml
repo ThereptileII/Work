@@ -51,11 +51,15 @@ jobs:
       - name: Capture and reprobe actual tools in Windows PowerShell
         if: matrix.shell == 'powershell'
         shell: powershell
-        run: ./opennav-x/tools/test-windows-native-tool-facts.ps1 -Evidence opennav-x/evidence/local/native-tool-facts-contracts
+        run: |
+          ./opennav-x/tools/test-windows-native-probe-version.ps1 | Tee-Object -FilePath opennav-x/evidence/local/native-tool-facts-contracts/probe-version-test.log
+          ./opennav-x/tools/test-windows-native-tool-facts.ps1 -Evidence opennav-x/evidence/local/native-tool-facts-contracts
       - name: Capture and reprobe actual tools in PowerShell 7
         if: matrix.shell == 'pwsh'
         shell: pwsh
-        run: ./opennav-x/tools/test-windows-native-tool-facts.ps1 -Evidence opennav-x/evidence/local/native-tool-facts-contracts
+        run: |
+          ./opennav-x/tools/test-windows-native-probe-version.ps1 | Tee-Object -FilePath opennav-x/evidence/local/native-tool-facts-contracts/probe-version-test.log
+          ./opennav-x/tools/test-windows-native-tool-facts.ps1 -Evidence opennav-x/evidence/local/native-tool-facts-contracts
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         if: always()
         with:

@@ -1,0 +1,53 @@
+{
+  "schemaVersion": 1,
+  "sourceCommit": "9e919aa18b628d96d3f17739cefac2687ab9d4d5",
+  "runId": 36897814058,
+  "jobs": {
+    "windowsPowershell51": {
+      "jobId": 110489143112,
+      "conclusion": "success",
+      "artifactIndependentlyDownloadedAndInspected": false
+    },
+    "windowsPwsh7": {
+      "jobId": 110489142545,
+      "conclusion": "failure",
+      "artifactId": 11179874915,
+      "artifact": {
+        "path": "evidence/local/native-pwsh-mismatch-36897814058/artifact.zip",
+        "bytes": 61503,
+        "sha256": "b385e479468a8375f8b18cc12fbb6375fc99aef7209fe2ac6c9c373acef271bc",
+        "zipIntegrity": "passed"
+      },
+      "summary": {
+        "path": "evidence/local/native-pwsh-mismatch-36897814058/extracted/summary.json",
+        "sha256": "d4537f0b886ceee96f1758f104709f31ff5ac59a807e080e0a1feacfc4971712",
+        "status": "failed",
+        "failure": "Disposable x86 child tool-facts contract failed"
+      },
+      "stages": {
+        "path": "evidence/local/native-pwsh-mismatch-36897814058/extracted/stages.jsonl",
+        "sha256": "933d592f2f6783be2c4772f2b66cf4b50b27d80c1e94bb0ca347ec84434da2ec",
+        "passed": [
+          "vcvarsall x86 initialization",
+          "zlib-child CMake generation",
+          "zlib-child capture and unchanged verification",
+          "changed x86 environment refusal",
+          "changed generated toolset refusal",
+          "restored zlib-child verification"
+        ],
+        "failureAfter": "OpenSSL-child capture succeeded, then immediate unchanged verification reported Native tool facts changed: openssl-child"
+      },
+      "capturedPowerShell": {
+        "path": "C:\\Program Files\\PowerShell\\7\\pwsh.exe",
+        "version": "7.6.6",
+        "edition": "Core"
+      },
+      "childOutput": {
+        "path": "evidence/local/native-pwsh-mismatch-36897814058/extracted/child-output.log",
+        "sha256": "e94232d659034332bb8996514700d9e333437a2eb92b31bd80847dbda469c2d1"
+      }
+    }
+  },
+  "causeAssessment": "The retained artifact establishes the OpenSSL-child capture followed by immediate verification mismatch under PowerShell 7. The exact differing field was not retained, so the cause is unproven. The PowerShell 5.1 success result is recorded from the job result but its artifact was not independently downloaded and inspected.",
+  "scope": "A focused native tool-facts regression only; this is not a dependency producer build, application build, or native dependency-reuse qualification."
+}

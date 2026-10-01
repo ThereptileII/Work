@@ -50,6 +50,17 @@ fact files and the producer entrypoints reprobe tools before staging. Exact
 selected-tool records and producer outputs remain subject to the native checks
 in those helpers.
 
+Native version probes retain each executable identity and actual exit code,
+including nonzero help/version exit codes. Standard output and standard error
+are captured and hashed separately as raw bytes, with their byte counts, a
+combined 1 MiB limit and a 30-second deadline. This avoids nondeterministic
+ordering from PowerShell's merged streams without ignoring either stream.
+The diagnostic first line comes from stdout, falling back to stderr. The helper
+and producer hashes bind this format into each same-job receipt, so an older
+capture cannot be silently accepted under a changed helper. Native qualification
+must pass in Windows PowerShell 5.1 and PowerShell 7; the focused test also
+requires repeated unchanged observations and refusal of each altered stream hash.
+
 The latest focused contract run, [36895232260](evidence/scrum-217-native-contracts-pass.json),
 passed on both Windows and Linux: receipt (15 tests), evidence (14), reuse (9)
 and stage (4) on each platform. This updates the earlier failed evidence-parser

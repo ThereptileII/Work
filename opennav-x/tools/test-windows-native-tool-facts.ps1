@@ -115,8 +115,13 @@ if ($Child) {
 
     & $Helper -Mode Capture -Kind openssl-child -Output $OpenSslFacts -ProducerScript $OpenSslProducer `
         -Vswhere $Vswhere -VisualStudio $VisualStudio -VcVars $VcVars
-    & $Helper -Mode Verify -Kind openssl-child -Output $OpenSslFacts -ProducerScript $OpenSslProducer `
-        -Vswhere $Vswhere -VisualStudio $VisualStudio -VcVars $VcVars
+    # Repeat unchanged observations to expose native stream-order instability.
+    # This is a stability assertion: the first mismatch fails, never retries.
+    for ($Observation = 1; $Observation -le 3; $Observation++) {
+        & $Helper -Mode Verify -Kind openssl-child -Output $OpenSslFacts -ProducerScript $OpenSslProducer `
+            -Vswhere $Vswhere -VisualStudio $VisualStudio -VcVars $VcVars
+        Stage 'openssl-child-stability' 'passed' @{observation=$Observation}
+    }
     $OpenSslRecord = [IO.File]::ReadAllText($OpenSslFacts) | ConvertFrom-Json
     $PerlPath = (Get-Command perl.exe -CommandType Application -ErrorAction Stop | Select-Object -First 1).Source
     $NasmPath = (Get-Command nasm.exe -CommandType Application -ErrorAction Stop | Select-Object -First 1).Source
@@ -149,6 +154,26 @@ if ($Child) {
     }
 
     $OriginalOpenSslFacts = [IO.File]::ReadAllBytes($OpenSslFacts)
+    foreach ($Stream in @('stdout','stderr')) {
+        $HashField = "$($Stream)Sha256"
+        $ByteField = "$($Stream)Bytes"
+        $StreamRecord = [IO.File]::ReadAllText($OpenSslFacts) | ConvertFrom-Json
+        $Version = $StreamRecord.tools.'nmake.exe'.version
+        if ([string]$Version.$HashField -notmatch '^[0-9a-f]{64}$' -or
+            [long]$Version.$ByteField -le 0) {
+            throw "NMAKE probe did not retain nonempty $Stream identity"
+        }
+        try {
+            # Change a valid digest without removing the field or breaking JSON.
+            $Version.$HashField = if ([string]$Version.$HashField -eq ('0' * 64)) { '1' * 64 } else { '0' * 64 }
+            [IO.File]::WriteAllText($OpenSslFacts,
+                ($StreamRecord | ConvertTo-Json -Depth 16 -Compress),$Encoding)
+            RequireFailure {
+                & $Helper -Mode Verify -Kind openssl-child -Output $OpenSslFacts -ProducerScript $OpenSslProducer `
+                    -Vswhere $Vswhere -VisualStudio $VisualStudio -VcVars $VcVars
+            } 'Native tool facts changed: openssl-child' "changed-nmake-$Stream"
+        } finally { [IO.File]::WriteAllBytes($OpenSslFacts,$OriginalOpenSslFacts) }
+    }
     try {
         $OpenSslRecord.powerShell.edition = 'tampered'
         [IO.File]::WriteAllText($OpenSslFacts,

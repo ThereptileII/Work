@@ -1,0 +1,57 @@
+{
+  "schemaVersion": 1,
+  "status": "failed",
+  "sourceCommit": "d6b05c8554c671e7504b797d15cc33404e226495",
+  "runId": 36898370390,
+  "jobs": {
+    "pwsh": {
+      "jobId": 110491012016,
+      "conclusion": "failure",
+      "artifactId": 11180313030,
+      "artifact": {
+        "path": "evidence/local/native-observed-36898370390/artifact.zip",
+        "bytes": 66668,
+        "sha256": "16be60861a4d2105c3719bceb081021e986c64299efdfbf9d83ead5f06fa8aa5",
+        "zipIntegrity": "passed"
+      },
+      "windowsPowerShell": {
+        "jobId": 110491012482,
+        "conclusion": "success",
+        "artifactIndependentlyDownloadedAndInspected": false
+      }
+    }
+  },
+  "opensslChildComparison": {
+    "originalPath": "evidence/local/native-observed-36898370390/extracted/openssl-child-tool-facts.json",
+    "originalSha256": "4cd63624e2d0a0c658549e3926936597d336a3eab07e26fff5f0853dd13cf9ec",
+    "observedPath": "evidence/local/native-observed-36898370390/extracted/openssl-child-tool-facts.json.observed.json",
+    "observedSha256": "c043be74cc13e7635eac1de9e137ce5140bfd0d2bf1b6359495a4d5b72bf6391",
+    "onlyDifferences": [
+      {
+        "field": "tools.nmake.exe.version.versionLine",
+        "captured": "Usage:  NMAKE @commandfile",
+        "observed": "Microsoft (R) Program Maintenance Utility Version 14.44.35229.0"
+      },
+      {
+        "field": "tools.nmake.exe.version.outputSha256",
+        "captured": "321212ad3f53b26cc7fff11f4d7133fc64c275dde5a99207c0e71b5878c0437d",
+        "observed": "a6c94f6fd0f7a592f2d8f9e6b86e66ae971b2fef6416a0fa63e2ebe1d74e7bff"
+      }
+    ],
+    "nmakeExitCodeUnchanged": 0,
+    "otherFields": "unchanged"
+  },
+  "zlibNegativeControl": {
+    "originalPath": "evidence/local/native-observed-36898370390/extracted/zlib-child-tool-facts.json",
+    "observedPath": "evidence/local/native-observed-36898370390/extracted/zlib-child-tool-facts.json.observed.json",
+    "onlyDifference": {
+      "field": "environment.INCLUDESha256",
+      "captured": "ce8111f2a4b8b2b0738719d9704e7a96a729b8cd5532912c2094c74e971d1bcb",
+      "observed": "15185ffb4b98c70fc8e128bb6b8e12df945064e4aaefa0648cb54f3abc0969b8"
+    },
+    "assessment": "Expected change from the test's intentional INCLUDE negative control; not the OpenSSL verification mismatch."
+  },
+  "observedFailure": "OpenSSL-child capture succeeded, then immediate verification reported Native tool facts changed: openssl-child.",
+  "streamOrderingAssessment": "The helper's version probe merges stderr into stdout and selects the first nonblank line. The retained original/observed nmake facts show that this first line and merged-output hash changed while the exit code and every other fact stayed stable. Separate-stream capture is pending; this evidence is limited to that observed ordering-sensitive mismatch.",
+  "scope": "Focused native tool-facts regression only; not a dependency producer build, application build, or same-job dependency-reuse qualification."
+}

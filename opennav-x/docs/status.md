@@ -22,9 +22,18 @@ Linux passed all 41 focused tests. A subsequent CRLF parsing repair at
 passes all 42 tests on both native Windows and Linux: receipt 15, evidence 14,
 reuse 9 and staging 4. Downloaded artifacts were independently size/hash/ZIP
 checked. Original byte hashes and contradictory-failure rejection remain
-enforced. The separate PowerShell producer repair still requires native
-qualification before another full candidate is frozen. No new boat deployment
-or removal of older installations has occurred.
+enforced. The separate PowerShell producer repair progresses past the original
+missing-module failure. Its diagnostic run at
+`d6b05c8554c671e7504b797d15cc33404e226495`
+([native run](https://github.com/ThereptileII/Work/actions/runs/36898370390))
+passes Windows PowerShell 5.1 but fails PowerShell 7: only NMAKE's merged
+stdout/stderr ordering changes the recorded first line and output hash. The
+retained captured/observed records have identical executable identities,
+environment and exit codes. Separate bounded stream capture is being repaired;
+strict identity and output comparisons remain required. See the
+[stream-order failure evidence](evidence/scrum-217-native-stream-order-failure.json).
+Both interpreter gates must pass before another full candidate is frozen.
+No new boat deployment or removal of older installations has occurred.
 
 The published candidate `f1e2cde8fcbf92826d648007b267cc0f5320aa55`
 ([integrated run](https://github.com/ThereptileII/Work/actions/runs/36875827855))

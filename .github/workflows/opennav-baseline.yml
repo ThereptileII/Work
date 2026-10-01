@@ -73,6 +73,12 @@ jobs:
                          "test-windows-dependency-stage.py"):
               subprocess.run([sys.executable, "opennav-x/tools/" + script],
                              check=True, timeout=120)
+      - name: Native version probe stream identity and bounded failure contracts
+        run: pwsh -NoProfile -File opennav-x/tools/test-windows-native-probe-version.ps1
+      - name: Native version probe contracts in Windows PowerShell 5.1
+        if: runner.os == 'Windows'
+        shell: powershell
+        run: ./opennav-x/tools/test-windows-native-probe-version.ps1
       - name: Peer boundary monitor rejects tampering and filters listeners by process
         run: python opennav-x/tools/test-peer-boundary.py
       - name: Preserve reviewed notice bytes through Windows Git checkout

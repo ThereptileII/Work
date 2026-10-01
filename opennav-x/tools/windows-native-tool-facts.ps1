@@ -40,27 +40,91 @@ function TextSha([string]$Value) {
     try { ([BitConverter]::ToString($Hasher.ComputeHash($Data))).Replace('-','').ToLowerInvariant() }
     finally { $Hasher.Dispose() }
 }
+function ByteSha([byte[]]$Value) {
+    $Hasher=[Security.Cryptography.SHA256]::Create()
+    try { ([BitConverter]::ToString($Hasher.ComputeHash($Value))).Replace('-','').ToLowerInvariant() }
+    finally { $Hasher.Dispose() }
+}
 function ResolvedTool([string]$Name) {
     $Command=Get-Command $Name -CommandType Application -ErrorAction Stop | Select-Object -First 1
     if (-not $Command) { throw "Native tool missing: $Name" }
     $Command.Source
 }
 function ProbeVersion([string]$Path,[string[]]$Arguments) {
-    # Native version/help switches may return nonzero (notably cl /Bv and
-    # nmake /?). Record that code, not a fabricated success state.
-    $Previous=$ErrorActionPreference
-    $ErrorActionPreference='Continue'
+    # Keep native stdout and stderr separate: PowerShell's 2>&1 pipeline can
+    # reorder their records, especially for NMAKE /? under PowerShell 7.
+    foreach($Argument in $Arguments) {
+        if($Argument -notmatch '^[A-Za-z0-9/?.:=_-]+$'){throw 'Unsupported native version argument'}
+    }
+    $Process=New-Object Diagnostics.Process
+    $Process.StartInfo.FileName=$Path
+    $Process.StartInfo.Arguments=($Arguments -join ' ')
+    $Process.StartInfo.UseShellExecute=$false
+    $Process.StartInfo.CreateNoWindow=$true
+    $Process.StartInfo.RedirectStandardInput=$true
+    $Process.StartInfo.RedirectStandardOutput=$true
+    $Process.StartInfo.RedirectStandardError=$true
+    $Out=New-Object IO.MemoryStream
+    $Err=New-Object IO.MemoryStream
+    $OutBuffer=New-Object byte[] 8192
+    $ErrBuffer=New-Object byte[] 8192
+    $Clock=[Diagnostics.Stopwatch]::StartNew()
+    $Started=$false
     try {
-        $OutputText=(& $Path @Arguments 2>&1 | Out-String)
-        $Code=$LASTEXITCODE
-    } finally { $ErrorActionPreference=$Previous }
-    if ($null -eq $Code) { throw 'Native version probe returned no exit status' }
-    if ($OutputText.Length -gt 1048576) { throw 'Native version output exceeds 1 MiB' }
-    $VersionLine=@($OutputText -split '\r?\n' | ForEach-Object { $_.Trim() } | Where-Object { $_ }) |
-        Select-Object -First 1
-    if($VersionLine -and $VersionLine.Length -gt 512){$VersionLine=$VersionLine.Substring(0,512)}
-    [ordered]@{ arguments=$Arguments; exitCode=[int]$Code; versionLine=[string]$VersionLine
-        outputSha256=TextSha $OutputText.Trim() }
+        try { $Launched=$Process.Start() }
+        catch { throw "Native version probe did not start: $($_.Exception.Message)" }
+        if(-not $Launched){throw 'Native version probe did not start'}
+        $Started=$true
+        $Process.StandardInput.Close()
+        $OutStream=$Process.StandardOutput.BaseStream
+        $ErrStream=$Process.StandardError.BaseStream
+        $OutTask=$OutStream.ReadAsync($OutBuffer,0,$OutBuffer.Length)
+        $ErrTask=$ErrStream.ReadAsync($ErrBuffer,0,$ErrBuffer.Length)
+        while($null -ne $OutTask -or $null -ne $ErrTask) {
+            $Pending=@()
+            if($null -ne $OutTask){$Pending+= $OutTask}
+            if($null -ne $ErrTask){$Pending+= $ErrTask}
+            $Remaining=30000-[int]$Clock.ElapsedMilliseconds
+            if($Remaining -le 0 -or [Threading.Tasks.Task]::WaitAny([Threading.Tasks.Task[]]$Pending,$Remaining) -lt 0) {
+                throw 'Native version probe timed out'
+            }
+            if($null -ne $OutTask -and $OutTask.IsCompleted) {
+                $Count=$OutTask.GetAwaiter().GetResult()
+                if($Count -eq 0){$OutTask=$null}
+                else {
+                    if($Out.Length+$Err.Length+$Count -gt 1048576){throw 'Native version output exceeds 1 MiB'}
+                    $Out.Write($OutBuffer,0,$Count)
+                    $OutTask=$OutStream.ReadAsync($OutBuffer,0,$OutBuffer.Length)
+                }
+            }
+            if($null -ne $ErrTask -and $ErrTask.IsCompleted) {
+                $Count=$ErrTask.GetAwaiter().GetResult()
+                if($Count -eq 0){$ErrTask=$null}
+                else {
+                    if($Out.Length+$Err.Length+$Count -gt 1048576){throw 'Native version output exceeds 1 MiB'}
+                    $Err.Write($ErrBuffer,0,$Count)
+                    $ErrTask=$ErrStream.ReadAsync($ErrBuffer,0,$ErrBuffer.Length)
+                }
+            }
+        }
+        $Remaining=30000-[int]$Clock.ElapsedMilliseconds
+        if($Remaining -le 0 -or -not $Process.WaitForExit($Remaining)){throw 'Native version probe timed out'}
+        $OutBytes=$Out.ToArray(); $ErrBytes=$Err.ToArray()
+        $OutText=[Text.Encoding]::UTF8.GetString($OutBytes)
+        $ErrText=[Text.Encoding]::UTF8.GetString($ErrBytes)
+        $VersionLine=@($OutText -split '\r?\n' | ForEach-Object { $_.Trim() } | Where-Object { $_ } | Select-Object -First 1)
+        if(-not $VersionLine){$VersionLine=@($ErrText -split '\r?\n' | ForEach-Object { $_.Trim() } | Where-Object { $_ } | Select-Object -First 1)}
+        $FirstLine=if($VersionLine){[string]$VersionLine[0]}else{''}
+        if($FirstLine.Length -gt 512){$FirstLine=$FirstLine.Substring(0,512)}
+        [ordered]@{ arguments=$Arguments; exitCode=[int]$Process.ExitCode; versionLine=$FirstLine
+            stdoutSha256=ByteSha $OutBytes; stdoutBytes=$OutBytes.Length
+            stderrSha256=ByteSha $ErrBytes; stderrBytes=$ErrBytes.Length }
+    } finally {
+        if($Started -and -not $Process.HasExited) {
+            try {$Process.Kill(); $null=$Process.WaitForExit(5000)} catch {}
+        }
+        $Out.Dispose(); $Err.Dispose(); $Process.Dispose()
+    }
 }
 function ToolFact([string]$Name,[string[]]$Arguments,[string]$ExplicitPath='') {
     $Path=if($ExplicitPath){$ExplicitPath}else{ResolvedTool $Name}
