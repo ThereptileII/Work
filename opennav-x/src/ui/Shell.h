@@ -59,6 +59,10 @@ struct ShellActions {
   std::function<bool()> chart_style_requested;
   std::function<application::CommandResult(bool)> set_chart_style;
   std::function<application::Settings()> settings;
+  std::function<std::string()> vessel_name;
+  std::function<double()> chart_safety_depth_m;
+  std::function<application::CommandResult(const application::Settings &,
+                                           const std::string &, double)> save_vessel;
   std::function<std::string()> settings_status;
   std::function<std::string()> boat_bridge_status;
   std::function<application::CommandResult(const application::Settings &)>

@@ -7,8 +7,22 @@ The frozen security/display candidate is published as
 `325ccd3596d368a6aaf0787bdf4b4e673b13e881`). Its
 [full native/Linux run](https://github.com/ThereptileII/Work/actions/runs/36832799208)
 and [prototype run](https://github.com/ThereptileII/Work/actions/runs/36832798681)
-remain in progress. Native portable contracts pass 86/86; the actual Windows
-PowerShell 5.1 filesystem and historical shortcut suites pass in both bitnesses.
+remain incomplete. The prototype object-flow job rejected its downloaded zlib
+archive before application testing because its digest or byte count differed
+from the reviewed lock. The retained artifact does not contain the rejected
+archive or its observed hash, so the cause is not yet established. A fresh local
+fetch matches the unchanged lock. A subsequent
+[short native source-only run](https://github.com/ThereptileII/Work/actions/runs/36840652960)
+passed: its downloaded zlib archive was 1,502,830 bytes with SHA-256
+`bb329a0a2cd0274d05519d61c667c062e06990d72e125ee2dfa8de64f0119d16`,
+matching the unchanged lock. Its verified artifact ZIP and job identity are in
+the [source evidence](evidence/scrum-209-zlib-native-source-20261001.json).
+The new source-only guard runs before costly dependency builds and records
+expected and observed identity on rejection. The original failing archive is
+unavailable, so this pass does not establish why that earlier fetch differed. The
+other native application jobs and Linux endurance job remain running. Native
+portable contracts pass 86/86; the actual Windows PowerShell 5.1 filesystem and
+historical shortcut suites pass in both bitnesses.
 These are partial results, not installer, boat or release acceptance. The earlier
 `322aecdf8cd51fd6ea951ae0caf6b0bde5cefaba` candidate failed because Windows
 translated a disposable peer marker to CRLF; the replacement writes canonical
@@ -20,12 +34,37 @@ confirmed the supported stock OpenCPN hash, the accepted Beta 1 installed
 generation, older owned generations and duplicate historical Start-menu groups.
 No application, profile, chart or recovery file has been removed. Replacement
 qualification and boat checks precede retirement; recovery material is retained.
+The [fresh cold backup](evidence/skager-boat-cleanup-readiness-20261001.json)
+verified 2,123 application and 2,008 profile files against the original bytes;
+it is readiness evidence, and no cleanup or software install has occurred.
 
 SCRUM-215 adds versioned SKAGER shortcuts and installer/maintenance captions in
 a separate subsequent increment. Both historical layouts remain supported for
-rollback. Fourteen local PowerShell layout-policy checks pass; native COM and
-installer lifecycle checks for this new increment remain required. It is not
-part of the frozen `99b0a58` candidate or its acceptance evidence.
+rollback. Its subsequent source is published as
+`010fe057dcbe4aa85d14f8734d2cd1113646cdd1` (local `6d640e1`), with every
+mapped blob/mode/type verified. All nine jobs in the
+[short native tooling run](https://github.com/ThereptileII/Work/actions/runs/36837038651)
+pass, including 238 actual COM/historical-lifecycle checks in each PowerShell
+bitness. The rollback handoff removes verified SKAGER links before exposing
+the old maintenance engine, preventing orphan links after an interrupted
+rollback. Full application packaging, NSIS lifecycle and boat checks remain
+required; SCRUM-215 is Testing. This is not part of the frozen `99b0a58`
+candidate and its tests do not qualify that different source.
+
+The subsequent SCRUM-214 Vessel Preferences form is integrated locally at
+`2174501` from `d534649`. Its five native fields save the vessel display name,
+explicit model assumptions and edited stock S-52 safety depth. Blank chart depth
+keeps the current chart value; missing model inputs stay unconfigured. Local
+focused results are 124 component checks with 12 captures, seven persistence
+checks and the actual OpenCPN integration syntax check. The Night capture was
+reviewed and an independent preservation review found no defect. Integrated
+Linux, native Windows and boat qualification remain open for this increment.
+
+A fresh read-only boat inspection at 08:49 UTC confirmed no OpenCPN process,
+the exact supported stock 5.12.4 x86 executable, and running SSH, Tailscale and
+RustDesk services. Windows currently reports 1920×1080. This is readiness
+inventory, not product, physical-touch or new-display acceptance. No old
+software or user navigation data has been removed.
 
 ## Display coverage and current priority — 2026-10-01
 

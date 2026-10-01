@@ -27,7 +27,7 @@ foreach ($key in @('HKLM:\Software\Microsoft\Windows\CurrentVersion\Uninstall',
   if (Test-Path $key) {
     $registrations += @(Get-ChildItem $key | ForEach-Object {
       $v = Get-ItemProperty $_.PSPath
-      if ($v.DisplayName -match 'OpenCPN|OpenNav|XNav') {
+      if ($v.DisplayName -match 'OpenCPN|OpenNav|XNav|Skager') {
         [ordered]@{name=$v.DisplayName;version=$v.DisplayVersion;location=$v.InstallLocation;
           uninstall=$v.UninstallString;key=$_.PSChildName}
       }
@@ -56,7 +56,7 @@ $oldCopies=@()
 foreach($folder in @($desktop,$downloads)) {
  if(Test-Path -LiteralPath $folder) {
   $oldCopies+=@(Get-ChildItem -LiteralPath $folder -Force |
-    Where-Object {$_.Name -match 'OpenNav|XNav|X-nav'} |
+    Where-Object {$_.Name -match 'OpenNav|XNav|X-nav|Skager'} |
     Select-Object FullName,Name,Length,PSIsContainer)
  }
 }

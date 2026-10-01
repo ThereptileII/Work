@@ -873,6 +873,8 @@ void Shell::Tick() {
     }
     pilot_summary_->SetSummary(pilot_mode,pilot_detail);
     p.settings = config;
+    if(actions_.vessel_name)p.vessel_name=actions_.vessel_name();
+    if(actions_.chart_safety_depth_m)p.chart_safety_depth_m=actions_.chart_safety_depth_m();
     if (pilot_drawer_ && pilot_drawer_->IsShown()) {
       pilot_drawer_->Update(p.pilot,wall_now,p.vessel,now,config.pilot.permit_control,mode_);
       pilot_drawer_->Present(DrawerWorkspace());
@@ -1283,9 +1285,12 @@ void Shell::ShowSettings() {
     actions.diagnostics = [this] { ShowPage(PreviewPage::Diagnostics); };
     actions.fullscreen = [this] { frame_.ShowFullScreen(!frame_.IsFullScreen()); };
     actions.theme = [this](LightMode mode) { SetLight(mode); };
+    actions.settings = actions_.settings;
+    actions.save_vessel = actions_.save_vessel;
     actions.legacy = actions_.legacy;
     actions.safe = actions_.safe;
     settings_drawer_ = new XNavSettingsDrawer(frame_, std::move(actions));
+    settings_drawer_->on_dismiss=[this]{if(settings_drawer_)settings_drawer_->ResetDraft();};
   }
   settings_drawer_->Present(DrawerWorkspace());
   Tick();

@@ -1,14 +1,18 @@
 #include "ui/SettingsDrawer.h"
 #include <wx/dcbuffer.h>
+#include <wx/graphics.h>
 #include <wx/sizer.h>
 #include <array>
 #include <cmath>
+#include <limits>
+#include <memory>
+#include <stdexcept>
 
 namespace opennav::ui {
 namespace {
 const std::array<const char *,8> titles{{"Vessel","Navigation","Sensors","Autopilot","Radar","Display","System","Help"}};
-wxString Number(double v, const wxString &unit) {
-  return std::isfinite(v) ? wxString::Format("%.3g ",v)+unit : "Not configured";
+wxString InputNumber(double v) {
+  return std::isfinite(v) ? wxString::FromUTF8(application::SettingNumber(v)) : wxString{};
 }
 }
 XNavSettingsDrawer::XNavSettingsDrawer(wxWindow &owner, SettingsDrawerActions actions)
@@ -31,8 +35,115 @@ void XNavSettingsDrawer::Update(const ProductState &state,LightMode mode) {
     for(auto *b:tabs_buttons_)b->SetLightMode(mode);
     for(const auto &choice:light_buttons_)choice.first->SetSelected(choice.second==mode);
     tabs_->SetBackgroundColour(Colour(Theme(mode).background));
+    for(auto *frame:input_frames_)frame->Refresh(false);
+    for(auto *panel:field_containers_)panel->SetBackgroundColour(Colour(Theme(mode).background));
+    for(auto *caption:field_captions_)caption->SetForegroundColour(Colour(Theme(mode).secondary));
+    for(auto *field:fields_)if(field){
+      field->SetBackgroundColour(Colour(Theme(mode).background));
+      field->SetForegroundColour(Colour(Theme(mode).primary));
+    }
+    if(message_)message_->SetForegroundColour(Colour(Theme(mode).secondary));
+  }
+  if(!draft_dirty_ && section_==SettingsSection::Vessel){
+    const std::array<wxString,5> current{{wxString::FromUTF8(state.vessel_name),
+      InputNumber(state.settings.hazard.draft_m),InputNumber(state.chart_safety_depth_m),
+      InputNumber(state.settings.energy.battery.capacity_kwh),
+      InputNumber(state.settings.energy.battery.reserve_soc_percent)}};
+    if(!draft_initialized_ || current!=draft_){
+      loading_=true;draft_=current;draft_initialized_=true;
+      for(std::size_t i=0;i<fields_.size();++i)if(fields_[i])fields_[i]->ChangeValue(draft_[i]);
+      loading_=false;
+    }
   }
   for(auto *p:copies_)p->Refresh(false);
+}
+void XNavSettingsDrawer::ResetDraft(){
+  draft_initialized_=false;draft_dirty_=false;touched_.fill(false);feedback_.clear();
+}
+void XNavSettingsDrawer::VesselForm(){
+  auto add_field=[this](wxWindow *parent,wxBoxSizer *layout,const wxString &label,
+                        std::size_t index,bool horizontal=false){
+    auto *outer=new wxPanel(parent,wxID_ANY);outer->SetBackgroundColour(Colour(Theme(light_).background));
+    field_containers_.push_back(outer);
+    auto *column=new wxBoxSizer(wxVERTICAL);
+    auto *caption=new wxStaticText(outer,wxID_ANY,label);
+    caption->SetFont(UiFont(*this,10));caption->SetForegroundColour(Colour(Theme(light_).secondary));
+    field_captions_.push_back(caption);
+    column->Add(caption,0,wxBOTTOM,FromDIP(7));
+    auto *frame=new wxPanel(outer,wxID_ANY);frame->SetBackgroundStyle(wxBG_STYLE_PAINT);
+    frame->SetMinSize(FromDIP(wxSize(80,46)));
+    frame->Bind(wxEVT_PAINT,[this,frame](wxPaintEvent &){
+      wxAutoBufferedPaintDC dc(frame);dc.SetBackground(wxBrush(Colour(Theme(light_).background)));dc.Clear();
+      std::unique_ptr<wxGraphicsContext> graphics(wxGraphicsContext::Create(dc));
+      if(graphics){graphics->SetBrush(wxBrush(Colour(Theme(light_).background)));
+        graphics->SetPen(wxPen(Colour(Theme(light_).border),1));
+        const auto size=frame->GetClientSize();
+        graphics->DrawRoundedRectangle(.5,.5,size.x-1.,size.y-1.,FromDIP(8));}
+    });
+    auto *inner=new wxBoxSizer(wxHORIZONTAL);
+    auto *input=new wxTextCtrl(frame,wxID_ANY,draft_[index],wxDefaultPosition,
+                               wxDefaultSize,wxBORDER_NONE);
+    input->SetName(label);input->SetFont(UiFont(*this,14));
+    input->SetBackgroundColour(Colour(Theme(light_).background));
+    input->SetForegroundColour(Colour(Theme(light_).primary));
+    input->SetMaxLength(index==0?120:64);
+    inner->Add(input,1,wxALIGN_CENTER_VERTICAL|wxLEFT|wxRIGHT,FromDIP(13));
+    frame->SetSizer(inner);column->Add(frame,0,wxEXPAND);
+    outer->SetSizer(column);
+    outer->SetMinSize(FromDIP(wxSize(80,66)));  // 13px caption + 7px gap + 46px control.
+    layout->Add(outer,horizontal?1:0,wxEXPAND|wxBOTTOM,FromDIP(15));
+    fields_[index]=input;input_frames_.push_back(frame);
+    input->Bind(wxEVT_TEXT,[this,index,input](wxCommandEvent &){
+      if(!loading_){draft_[index]=input->GetValue();draft_dirty_=true;touched_[index]=true;}
+    });
+  };
+  auto *single=new wxBoxSizer(wxVERTICAL);
+  add_field(body_,single,"Vessel name",0);content_->Add(single,0,wxEXPAND);
+  auto *pair=new wxBoxSizer(wxHORIZONTAL);
+  add_field(body_,pair,wxString::FromUTF8("Draft · metres"),1,true);pair->AddSpacer(FromDIP(12));
+  add_field(body_,pair,wxString::FromUTF8("Safety depth · metres"),2,true);content_->Add(pair,0,wxEXPAND);
+  single=new wxBoxSizer(wxVERTICAL);
+  add_field(body_,single,wxString::FromUTF8("Usable battery capacity · kWh"),3);
+  add_field(body_,single,wxString::FromUTF8("Minimum reserve · %"),4);content_->Add(single,0,wxEXPAND);
+  Button("Save vessel profile",[this]{SaveVessel();},ButtonRole::Primary);
+  message_=new wxStaticText(body_,wxID_ANY,feedback_);
+  message_->SetFont(UiFont(*this,11));
+  message_->SetForegroundColour(Colour(Theme(light_).secondary));
+  content_->Add(message_,0,wxEXPAND|wxBOTTOM,FromDIP(12));
+  Page("Advanced vessel model","Advisory corridor margin and vessel assumptions",XNavIcon::Ownship,ProductPage::VesselSettings);
+  Page("Advanced battery model","Measured consumption and battery source",XNavIcon::Energy,ProductPage::EnergySettings);
+}
+void XNavSettingsDrawer::SaveVessel(){
+  if(!actions_.save_vessel)return;
+  auto value=[this](std::size_t index){return application::ParseSettingNumber(draft_[index].ToStdString(wxConvUTF8));};
+  try {
+    auto next=actions_.settings?actions_.settings():state_.settings;
+    const auto draft=touched_[1]?value(1):next.hazard.draft_m;
+    const auto safety=touched_[2]?value(2):state_.chart_safety_depth_m;
+    const auto capacity=touched_[3]?value(3):next.energy.battery.capacity_kwh;
+    const auto reserve=touched_[4]?value(4):next.energy.battery.reserve_soc_percent;
+    auto edited_range=[this](std::size_t index,double number,double lower,double upper){
+      return !touched_[index] || std::isnan(number) ||
+             (std::isfinite(number)&&number>=lower&&number<=upper);
+    };
+    if(!edited_range(1,draft,.1,20)||!edited_range(2,safety,.1,30)||
+       !edited_range(3,capacity,1,500)||!edited_range(4,reserve,5,90)||
+       ((touched_[1]||touched_[2])&&std::isfinite(draft)&&std::isfinite(safety)&&safety<draft))
+      throw std::invalid_argument("Use draft 0.1–20 m, safety depth 0.1–30 m and ≥ draft, capacity 1–500 kWh, reserve 5–90%. Blank model fields stay unconfigured; blank safety depth keeps the current chart value.");
+    if(touched_[1])next.hazard.draft_m=draft;
+    if(touched_[3])next.energy.battery.capacity_kwh=capacity;
+    if(touched_[4])next.energy.battery.reserve_soc_percent=reserve;
+    if(touched_[3]||touched_[4])next.energy.battery.source=
+      "User-configured usable battery energy and reserve / OpenCPN profile";
+    auto name=draft_[0];name.Trim(true).Trim(false);
+    auto result=actions_.save_vessel(next,name.ToStdString(wxConvUTF8),
+                                      touched_[2]?safety:std::numeric_limits<double>::quiet_NaN());
+    feedback_=wxString::FromUTF8(result.message);
+    if(result.ok){state_.settings=next;state_.vessel_name=name.ToStdString(wxConvUTF8);
+      if(touched_[2]&&std::isfinite(safety))state_.chart_safety_depth_m=safety;
+      draft_dirty_=false;touched_.fill(false);}
+  } catch(const std::exception &error){feedback_=wxString::FromUTF8(error.what());}
+  if(message_){message_->SetLabel(feedback_);message_->Wrap(FromDIP(340));body_->Layout();body_->FitInside();}
 }
 void XNavSettingsDrawer::CopyBlock(int height,std::function<void(XNavPainter &,int)> draw) {
   auto *p=new wxPanel(body_,wxID_ANY);
@@ -66,6 +177,7 @@ void XNavSettingsDrawer::Button(const wxString &label,std::function<void()> acti
 }
 void XNavSettingsDrawer::Build() {
   ClearBody();tabs_buttons_.clear();buttons_.clear();light_buttons_.clear();copies_.clear();
+  fields_.fill(nullptr);input_frames_.clear();field_containers_.clear();field_captions_.clear();message_=nullptr;
   tabs_=new wxPanel(body_,wxID_ANY);tabs_->SetLabel(wxEmptyString);
   tabs_->SetBackgroundColour(Colour(Theme(light_).background));
   tabs_->SetMinSize(FromDIP(wxSize(300,79)));
@@ -91,21 +203,7 @@ void XNavSettingsDrawer::Build() {
   content_->Add(tabs_,0,wxEXPAND|wxBOTTOM,FromDIP(23));
   switch(section_) {
     case SettingsSection::Vessel:
-      CopyBlock(218,[this](XNavPainter &p,int width){
-        p.TextTracked("VESSEL ASSUMPTIONS",0,4,9,p.c.accent,650,1.17);
-        const wxString labels[]={"Draft","Safety margin","Usable battery capacity","Minimum reserve"};
-        const wxString values[]={Number(state_.settings.hazard.draft_m,"m"),Number(state_.settings.hazard.safety_margin_m,"m"),
-          Number(state_.settings.energy.battery.capacity_kwh,"kWh"),Number(state_.settings.energy.battery.reserve_soc_percent,"%")};
-        for(int i=0;i<4;++i){int y=32+i*44;p.Text(labels[i],0,y,12,p.c.secondary,false,width/2);
-          p.TextWeight(values[i],width/2,y,12,p.c.primary,500,width/2,true);p.Rule(0,y+28,width);}
-      });
-      Page("Vessel dimensions","Draft and advisory corridor margin",XNavIcon::Ownship,ProductPage::VesselSettings);
-      Page("Battery & reserve","Capacity, reserve and measured consumption",XNavIcon::Energy,ProductPage::EnergySettings);
-      Link("Chart safety depth","OpenCPN chart contours and depth alarms",XNavIcon::Layers,actions_.advanced);
-      CopyBlock(80,[](XNavPainter &p,int width){
-        p.Text("Draft and margin do not change chart safety contours.",0,16,11,p.c.secondary,false,width);
-        p.Text("Configure chart safety depth in OpenCPN settings.",0,38,11,p.c.secondary,false,width);
-      });
+      VesselForm();
       break;
     case SettingsSection::Navigation:
       Page("Navigation preferences","Units, chart orientation and navigation alarms",XNavIcon::Compass,ProductPage::NavigationSettings);

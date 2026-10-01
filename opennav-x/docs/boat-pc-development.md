@@ -228,7 +228,9 @@ temporary-copy exercise using the actual accepted 43,967,980-byte setup file:
 hash, `.exe` extension, planned locator and completion record survived the move.
 That exercise did not run setup or qualify Windows path handling. New native
 entrypoint refusal/workspace/junction cases are part of `test-boat-tools.ps1`;
-their same-source Windows gate and actual boat retirement remain pending.
+the native tooling run at published `010fe057dcbe4aa85d14f8734d2cd1113646cdd1`
+passed these checks. Actual boat retirement remains pending replacement
+qualification; no files have been retired on the boat.
 
 The 2026-10-01 read-only inventory also identified the old
 `OpenNavX-DeveloperPreview-win64.zip` by accepted release bytes, not its name:

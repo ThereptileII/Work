@@ -14,6 +14,7 @@
 #include <wx/sizer.h>
 #include <wx/stattext.h>
 #include <chrono>
+#include <limits>
 namespace opennav::ui {
 enum class ProductPage {
   Home,
@@ -56,6 +57,8 @@ struct ProductState {
   std::vector<std::string> pilot_sources;
   smartnav::NavigationAdvice advice;
   application::Settings settings;
+  std::string vessel_name;
+  double chart_safety_depth_m = std::numeric_limits<double>::quiet_NaN();
   std::string settings_status;
   std::string boat_bridge_status;
   std::vector<vessel::SourceHealth> sources;

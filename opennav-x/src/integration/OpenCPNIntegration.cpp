@@ -46,6 +46,12 @@
 #include "ocpn_frame.h"
 #include "toolbar.h"
 #include "viewport.h"
+#include "s52plib.h"
+#include "s52utils.h"
+#ifdef Status
+#undef Status  // GLX/X11 macro must not rewrite SettingsStore::Status().
+#endif
+extern s52plib *ps52plib;
 
 #include <wx/cmdline.h>
 #include <wx/fileconf.h>
@@ -487,6 +493,30 @@ void Attach(MyFrame& frame, wxAuiManager& manager, wxFileConfig& config) {
     return application::CommandResult{false, "Target or chart changed; select it again"};
   };
   actions.settings = [] { return settings->Read(); };
+  actions.vessel_name = [] { return settings->VesselName(); };
+  actions.chart_safety_depth_m = [] {
+    return S52_getMarinerParam(S52_MAR_SAFETY_CONTOUR);
+  };
+  actions.save_vessel = [&frame](const application::Settings &next,
+                                 const std::string &name,double safety_m) {
+    if (commissioning && commissioning->Replaying())
+      return application::CommandResult{false,"Stop REPLAY before changing live settings"};
+    auto result = settings->SaveVessel(next,name,safety_m);
+    if (!result.ok) return result;
+    if (std::isfinite(safety_m)) {
+      // The stock Options editor couples sounding depth and colour contour.
+      S52_setMarinerParam(S52_MAR_SAFETY_DEPTH,safety_m);
+      S52_setMarinerParam(S52_MAR_SAFETY_CONTOUR,safety_m);
+      if (ps52plib) {
+        ps52plib->UpdateMarinerParams();
+        ps52plib->GenerateStateHash();
+      }
+      if (auto *canvas=frame.GetPrimaryCanvas()) canvas->ZoomCanvasSimple(1.0001);
+      frame.InvalidateAllGL();
+      frame.RefreshAllCanvas(false);
+    }
+    return result;
+  };
   actions.settings_status = [] { return settings->Status(); };
   actions.chart_style_status = integration::ChartPresentationStatus;
   actions.chart_style_requested = integration::XNavChartRequested;

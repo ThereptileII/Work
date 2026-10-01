@@ -1,0 +1,23 @@
+{
+  "schema": 1,
+  "dateUtc": "2026-10-01",
+  "purpose": "SCRUM-209 native source-only verification before costly Windows dependency builds",
+  "sourceGuardCommit": "7aa94419238889cb0c9a30d0aa62cd941567f7ec",
+  "combinedCandidateCherryPick": "c4380ad06db790ade16e2dd78fca2ef5290bf8ae",
+  "githubRunId": 36840652960,
+  "githubJobId": 110298710128,
+  "artifactId": 11151507009,
+  "artifactZipSha256": "8b0bae5d8f7f46acb11171757e5c6a02c22c2ef72272e273542a42e13c20e55f",
+  "artifactVerification": "Downloaded artifact ZIP and its source-verification JSON were hash-verified by the integration owner.",
+  "result": "passed",
+  "source": {
+    "archive": "zlib-1.3.2.tar.gz",
+    "expectedBytes": 1502830,
+    "observedBytes": 1502830,
+    "expectedSha256": "bb329a0a2cd0274d05519d61c667c062e06990d72e125ee2dfa8de64f0119d16",
+    "observedSha256": "bb329a0a2cd0274d05519d61c667c062e06990d72e125ee2dfa8de64f0119d16",
+    "lockChanged": false
+  },
+  "scope": "Actual Windows source download and exact archive guard only; extraction, MSVC output, integrated application, installer and boat qualification remain separate.",
+  "publishedCommit": "47b8e159f83522e9013104164664a094f99d00c3"
+}

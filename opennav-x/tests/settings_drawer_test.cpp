@@ -60,6 +60,20 @@ public:
     actions.fullscreen=[this]{++fullscreen_;};
     actions.diagnostics=[this]{++diagnostics_;};
     actions.theme=[this](ui::LightMode mode){light_=mode;Feed();};
+    actions.settings=[this]{return state_.settings;};
+    actions.save_vessel=[this](const application::Settings &settings,
+                               const std::string &name,double chart_depth){
+      ++saves_;
+      Check(name=="TEST VESSEL","typed name passed unchanged to save");
+      Check(settings.energy.battery.capacity_kwh==42,
+            "untouched capacity uses latest settings, not stale form text");
+      Check(std::isnan(settings.energy.battery.reserve_soc_percent),
+            "unconfigured reserve remains unconfigured");
+      Check(std::isnan(chart_depth),"unchanged stock chart depth is not rewritten");
+      if(saves_==1)return application::CommandResult{false,"Synthetic save failure"};
+      state_.settings=settings;state_.vessel_name=name;
+      return application::CommandResult{true,"Synthetic save success"};
+    };
     // No process launch, network, credential, navigation mutation or actuator
     // path exists in this dedicated test executable.
     panel_ = new ui::XNavSettingsDrawer(*frame_,std::move(actions));
@@ -85,6 +99,13 @@ private:
     for(auto *child:root->GetChildren()) {
       if(dynamic_cast<ui::XNavButton *>(child) && child->GetLabel()==label)return child;
       if(auto *nested=Find(child,label))return nested;
+    }
+    return nullptr;
+  }
+  wxTextCtrl *FindText(wxWindow *root,const wxString &name) {
+    for(auto *child:root->GetChildren()) {
+      if(auto *text=dynamic_cast<wxTextCtrl *>(child);text&&text->GetName()==name)return text;
+      if(auto *nested=FindText(child,name))return nested;
     }
     return nullptr;
   }
@@ -148,9 +169,28 @@ private:
         Check(false,"Validated Windows build must provide DirectWrite tab painting");
 #endif
 #endif
-        Capture("settings-day");light_=ui::LightMode::Dusk;Feed();break;
-      case 2: Capture("settings-dusk");light_=ui::LightMode::Night;Feed();break;
-      case 3: Capture("settings-night");light_=ui::LightMode::Day;Feed();Click("Sensors");break;
+        Capture("settings-day");
+        for(const auto *label:{"Vessel name","Draft · metres","Safety depth · metres",
+                               "Usable battery capacity · kWh","Minimum reserve · %"})
+          Check(FindText(panel_,wxString::FromUTF8(label))!=nullptr,"all five vessel fields visible");
+        Check(saves_==0,"typing has no persistence side effect");
+        Check(FindText(panel_,"Vessel name")!=nullptr,"prototype vessel name is editable");
+        FindText(panel_,"Vessel name")->SetValue("TEST VESSEL");
+        state_.settings.energy.battery.capacity_kwh=42;
+        light_=ui::LightMode::Dusk;Feed();
+        Check(FindText(panel_,"Vessel name")->GetValue()=="TEST VESSEL",
+              "draft survives state and theme refresh");
+        Check(saves_==0,"refresh has no persistence side effect");
+        Click("Save vessel profile");break;
+      case 2:
+        Check(saves_==1,"first save was attempted");
+        Check(FindText(panel_,"Vessel name")->GetValue()=="TEST VESSEL",
+              "failed save retains editable draft");
+        Capture("settings-dusk");light_=ui::LightMode::Night;Feed();
+        Click("Save vessel profile");break;
+      case 3:
+        Check(saves_==2,"successful retry saved once");
+        Capture("settings-night");light_=ui::LightMode::Day;Feed();Click("Sensors");break;
       case 4: Check(panel_->Section()==ui::SettingsSection::Sensors,"tab switches after event dispatch");
         Capture("sensors-day");light_=ui::LightMode::Dusk;Feed();break;
       case 5: Capture("sensors-dusk");light_=ui::LightMode::Night;Feed();break;
@@ -198,6 +238,7 @@ private:
   wxFrame *frame_=nullptr;
   ui::XNavSettingsDrawer *panel_=nullptr;
   wxTimer timer_;
+  int saves_=0;
   ui::ProductState state_;
   ui::ProductPage last_page_=ui::ProductPage::Home;
   int navigations_=0,advanced_=0,plugins_=0,fullscreen_=0,diagnostics_=0;

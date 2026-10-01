@@ -32,9 +32,17 @@ the 1014×566 chart remains intact behind/after the sheet.
 
 - Sensors reports observed source quality, not the HTML's fictional connected
   count. Add sensor delegates to the real OpenCPN connection editor.
-- Vessel currently shows actual configured assumptions and links to validated
-  editors. Its inline name/draft/safety-depth/capacity/reserve form is pending.
-  Advisory hazard margin cannot be relabelled as OpenCPN chart safety depth.
+- Vessel now has the prototype's editable name, draft, chart safety depth,
+  usable capacity and reserve fields with an explicit Save action. Blank model
+  assumptions remain unconfigured; an untouched stock chart safety value is
+  preserved exactly. The display name uses a separate OpenCPN profile key so
+  older strict AlphaSettings readers can still decode their existing record.
+  A single profile flush saves the model, name and edited chart value, with
+  rollback of all three entries on failure. Chart depth follows stock Options:
+  depth and contour are coupled, while advisory hazard margin stays separate.
+  The isolated Linux component driver exercises typing across refresh/theme,
+  failed Save retention and retry; focused store tests cover persistence and
+  rollback. Native Windows and boat acceptance for this new form remain open.
 - Navigation, Autopilot, Radar, Display, System and Help still need their
   individual prototype content migration. Existing actions work, or are disabled
   when their boundary is unavailable. No mock installer, radar or pilot action

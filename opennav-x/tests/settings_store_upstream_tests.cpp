@@ -84,6 +84,75 @@ TEST(OpenNavSettings, FailedFlushRestoresPreviousValue) {
   EXPECT_EQ(config.Read("/OpenNav/AlphaSettings", "").ToStdString(wxConvUTF8),
             original);
 }
+TEST(OpenNavSettings, VesselProfileKeepsLegacyRecordAndUnconfiguredEnergy) {
+  wxInitializer init;
+  ASSERT_TRUE(init.IsOk());
+  wxStringInputStream input("");
+  wxFileConfig config(input);
+  config.Write("/Settings/GlobalState/S52_MAR_SAFETY_CONTOUR", 1.8288);
+  integration::SettingsStore store(config);
+  auto partial = store.Read();
+  partial.hazard.draft_m = 1.4;
+  ASSERT_TRUE(store.SaveVessel(partial, "REPTIL", std::nan("")).ok);
+  EXPECT_EQ(store.VesselName(), "REPTIL");
+  EXPECT_TRUE(std::isnan(store.Read().energy.battery.capacity_kwh));
+  EXPECT_TRUE(std::isnan(store.Read().energy.battery.reserve_soc_percent));
+  double depth = 0;
+  ASSERT_TRUE(config.Read("/Settings/GlobalState/S52_MAR_SAFETY_CONTOUR", &depth));
+  EXPECT_DOUBLE_EQ(depth, 1.8288); // Unedited stock value is not rounded/replaced.
+  const auto record = config.Read("/OpenNav/AlphaSettings", "").ToStdString(wxConvUTF8);
+  EXPECT_EQ(application::DecodeSettings(record).hazard.draft_m, 1.4);
+  EXPECT_EQ(record.find("VesselName"), std::string::npos); // Old strict decoder still works.
+  integration::SettingsStore reopened(config);
+  EXPECT_EQ(reopened.VesselName(), "REPTIL");
+  EXPECT_TRUE(std::isnan(reopened.Read().energy.battery.capacity_kwh));
+}
+TEST(OpenNavSettings, VesselSaveFailedFlushRestoresAllThreeEntries) {
+  wxInitializer init;
+  ASSERT_TRUE(init.IsOk());
+  struct FailingConfig : wxFileConfig {
+    explicit FailingConfig(wxInputStream &s) : wxFileConfig(s) {}
+    int calls = 0;
+    bool Flush(bool = false) override { return ++calls != 1; }
+  };
+  wxStringInputStream input("");
+  FailingConfig config(input);
+  const auto old = application::EncodeSettings(Config());
+  config.Write("/OpenNav/AlphaSettings", wxString::FromUTF8(old));
+  config.Write("/OpenNav/VesselName", "Old boat");
+  config.Write("/Settings/GlobalState/S52_MAR_SAFETY_CONTOUR", 2.75);
+  integration::SettingsStore store(config);
+  auto changed = store.Read();
+  changed.hazard.draft_m = 1.5;
+  EXPECT_FALSE(store.SaveVessel(changed, "New boat", 3.5).ok);
+  EXPECT_EQ(config.calls, 2);
+  EXPECT_EQ(store.VesselName(), "Old boat");
+  EXPECT_TRUE(std::isnan(store.Read().hazard.draft_m));
+  EXPECT_EQ(config.Read("/OpenNav/AlphaSettings", "").ToStdString(wxConvUTF8), old);
+  EXPECT_EQ(config.Read("/OpenNav/VesselName", ""), "Old boat");
+  double depth = 0;
+  ASSERT_TRUE(config.Read("/Settings/GlobalState/S52_MAR_SAFETY_CONTOUR", &depth));
+  EXPECT_DOUBLE_EQ(depth, 2.75);
+}
+TEST(OpenNavSettings, VesselSavePersistsEditedChartNameAndBattery) {
+  wxInitializer init;
+  ASSERT_TRUE(init.IsOk());
+  wxStringInputStream input("");
+  wxFileConfig config(input);
+  integration::SettingsStore store(config);
+  auto edited = store.Read();
+  edited.energy.battery.capacity_kwh = 72;
+  edited.energy.battery.reserve_soc_percent = 18;
+  edited.energy.battery.source = "User-configured usable battery energy and reserve / OpenCPN profile";
+  ASSERT_TRUE(store.SaveVessel(edited, "Current boat", 3.5).ok);
+  integration::SettingsStore reopened(config);
+  EXPECT_EQ(reopened.VesselName(), "Current boat");
+  EXPECT_DOUBLE_EQ(reopened.Read().energy.battery.capacity_kwh, 72);
+  EXPECT_DOUBLE_EQ(reopened.Read().energy.battery.reserve_soc_percent, 18);
+  double chart = 0;
+  ASSERT_TRUE(config.Read("/Settings/GlobalState/S52_MAR_SAFETY_CONTOUR", &chart));
+  EXPECT_DOUBLE_EQ(chart, 3.5);
+}
 TEST(OpenNavSettings, WorkerCannotWriteConfiguration) {
   wxInitializer init;
   ASSERT_TRUE(init.IsOk());

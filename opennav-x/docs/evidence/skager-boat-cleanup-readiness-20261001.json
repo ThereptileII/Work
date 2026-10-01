@@ -1,0 +1,23 @@
+{
+  "schema": 1,
+  "dateUtc": "2026-10-01",
+  "purpose": "SCRUM-17 authorized clean SKAGER installation readiness",
+  "localSource": "2174501",
+  "backupScriptSha256": "d16fadedd05091c6050688f3acb57e66f1e1a212caed99e11503b80dbb3735b9",
+  "coldBackup": {
+    "status": "verified",
+    "applicationFiles": 2123,
+    "profileFiles": 2008,
+    "bytes": 1320812090,
+    "originalExecutableSha256": "7c6547562cca7954671eaab72833ca9d788710fd9808b6a699b6dc823852ae0c",
+    "navigationDataUploaded": false
+  },
+  "backupLocation": "Boat-local versioned recovery directory; exact private path retained locally",
+  "verification": "Unchanged backup script verifies source and copied bytes/hashes per file, re-inventories original application/profile, and requires OpenCPN closed.",
+  "appLaunched": false,
+  "softwareInstalled": false,
+  "obsoleteCopiesRemoved": false,
+  "actuatorCommandsSent": false,
+  "remoteAccessModified": false,
+  "qualification": "Readiness only; native replacement and boat application acceptance remain open."
+}
