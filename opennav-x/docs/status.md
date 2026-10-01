@@ -1,23 +1,37 @@
 # OpenNav X status — 2026-10-01
 
-## SCRUM-224 — frozen prototype native test-runner failures
+## SCRUM-224 — native curl test-host proof; frozen application gates remain open
 
-At exact candidate `b48bf4a8f12f98c459d79aa08805141ac49e0306`, the native
-Windows composition and object-flow jobs in [prototype run 36901029053](https://github.com/ThereptileII/Work/actions/runs/36901029053)
-ended cancelled in their build/regression steps; downstream UI gates were
-skipped. Both uploaded artifacts were independently size/SHA/ZIP-CRC checked.
-Their bounded curl logs show Windows could not resolve `exec`, followed by curl
-`runtests.pl` reporting failure to start its HTTP server and remaining on test
-1/state 3. Root's [source review at commit 01346829096c61b372692f6dc43ffa778c6caccd](https://github.com/curl/curl/blob/01346829096c61b372692f6dc43ffa778c6caccd/.github/workflows/windows.yml)
-notes that the Windows workflow selects MSYS Perl. A narrow POSIX-host
-assumption around the test server's `exec` invocation is plausible, but remains
-a hypothesis pending native verification. SCRUM-224 tracks the failure and fix. The pinned
-OpenSSL 3.5.9 certificate probe and curl compilation passed before this
-test-runner stage, which is not a full curl test or application pass. The
-separate [integrated run 36901026915](https://github.com/ThereptileII/Work/actions/runs/36901026915)
-still had its Linux integrated and native MSVC XNav/Legacy/Safe jobs in progress
-at 20:51:45Z. No full-candidate or UI acceptance is established. See
-[SCRUM-224 native evidence](evidence/scrum-224-native-curl-runner-failure.json).
+The frozen candidate `b48bf4a8f12f98c459d79aa08805141ac49e0306` still has two
+cancelled native prototype jobs in
+[run 36901029053](https://github.com/ThereptileII/Work/actions/runs/36901029053);
+their UI gates were skipped. Bounded retained logs show Strawberry Perl reaches
+a curl test-runner state where Windows cannot resolve `exec`, curl fails to
+start its HTTP server, and test 1 remains active.
+
+Four focused native cases on source commit
+`622157fed6f2a3a9c5aeb476e502941789790498` use unchanged curl 8.22.0
+`runner.pm` and `servers.pm`. Strawberry Perl reproduces readiness and server
+launch defects; MSYS2 Perl reports `cygwin`, passes readiness and starts a
+disposable marker process. This confirms the test-host choice is material to
+these modules. The [pinned Windows workflow](https://github.com/curl/curl/blob/01346829096c61b372692f6dc43ffa778c6caccd/.github/workflows/windows.yml)
+selects MSYS2 for curl tests while the product target remains native Win32 MSVC.
+See [host-probe run 36926615433](https://github.com/ThereptileII/Work/actions/runs/36926615433).
+
+The follow-up [run 36927000029](https://github.com/ThereptileII/Work/actions/runs/36927000029)
+also passes certificate generation and CA/host/key verification using the
+existing patched `genserv.pl` under MSYS2, with explicitly selected host OpenSSL
+3.6.4. No additional generator patch was needed; this does not qualify the
+pinned production OpenSSL 3.5.9. The earlier b48 composition artifact also
+shows the pinned OpenSSL 3.5.9 certificate setup generated local test material
+and verified `test-localhost.crt` before the runner failure. Neither focused
+probe is a full HTTP/TLS or curl-suite pass. Earlier failed selector and
+host-label checks remain preserved in the
+[SCRUM-224 evidence](evidence/scrum-224-native-test-host-pass.json).
+
+The separate [integrated run 36901026915](https://github.com/ThereptileII/Work/actions/runs/36901026915)
+still had Linux integrated and native MSVC XNav/Legacy/Safe jobs in progress at
+21:14:07Z. Full application, UI, installer and boat acceptance remain open.
 
 ## Current qualification and boat cleanup — 2026-10-01
 
