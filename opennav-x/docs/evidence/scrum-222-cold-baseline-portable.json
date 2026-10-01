@@ -1,0 +1,89 @@
+{
+  "schema": 1,
+  "issue": "SCRUM-222",
+  "candidateBaseLocal": "0053ed507b03c79877fd6bb96c0d761fb9f68ac9",
+  "candidateBaseRemote": "b48bf4a8f12f98c459d79aa08805141ac49e0306",
+  "scope": "portable disposable contracts only",
+  "sourceUnchangedDuringTests": true,
+  "filesSha256": {
+    "tools/boat/ColdBaseline.ps1": "bad08971ecb2b42affd3027b0c2bcaf1faad2fd16da14230a734d40f847dcc6f",
+    "tools/boat/capture-cold-baseline.ps1": "b016a0d04ddcb12a8c0dcb612bd40a5408be38b364f120e7457a17b3887b4921",
+    "tools/boat/CommissioningBaseline.ps1": "10e67791b04fe16b151247eb6b2d975f0325b1170ddd30ae05e2152b9da633b7",
+    "tools/boat/RestartCommissioning.ps1": "4d7da7f4fddd2148aeb930ca0572b678266496a6d392da80eaa9889c71603e7e",
+    "tools/boat/test-cold-baseline.ps1": "edf3f77e2478bd43ed3606219c9beec58db44c1d6a223786930e17f927c53e7f"
+  },
+  "results": [
+    {
+      "suite": "cold-baseline",
+      "exit": 0,
+      "logSha256": "0c267d94aee43ec84a1e03169dedd722788f0e5392bac07d9a9b924ced33381d",
+      "status": "passed",
+      "platform": "portable",
+      "groups": 36,
+      "realProfileAccess": false,
+      "applicationLaunched": false,
+      "substitutedBoundaries": [
+        "machine/profile context identity",
+        "process enumeration",
+        "official-stock identity for one exact inert fixture executable",
+        "Windows ACL ownership/protection (portable marker and reparse checks only)"
+      ],
+      "nativeAclExecuted": false,
+      "checks": 36
+    },
+    {
+      "suite": "baseline-adoption",
+      "exit": 0,
+      "logSha256": "4e4d749e176989be57ca11a479c51d22f84359b8287064029f4205e8a25d3131",
+      "status": "passed",
+      "count": 127,
+      "nativeTransactions": null,
+      "environment": "portable-filesystem-policy",
+      "applicationLaunched": false,
+      "boatAccess": false,
+      "physicalOutput": false,
+      "nativeTransactionAcceptance": false,
+      "checks": 127
+    },
+    {
+      "suite": "commissioning",
+      "exit": 0,
+      "logSha256": "39aea3184b8ec76bce2d04adbf9796b6a25074137609f68818e4e0f1da400d98",
+      "status": "passed",
+      "environment": "linux-powershell-portable-contracts",
+      "count": 12,
+      "boatAccess": false,
+      "applicationLaunched": false,
+      "productOrBoatAcceptance": false,
+      "checks": 12
+    },
+    {
+      "suite": "restart-commissioning",
+      "exit": 0,
+      "logSha256": "ce3aa64b294d3ea62d4b3ae6b4aec8587903b4abf2587307c9d4435861659ba3",
+      "status": "passed",
+      "environment": "portable Linux",
+      "nativePipeExecuted": false,
+      "applicationLaunched": false,
+      "physicalOutput": false,
+      "checks": 309
+    },
+    {
+      "suite": "broker-fixture-contracts",
+      "exit": 0,
+      "logSha256": "bfcabb5ed5fe14bac3cb0ed363419abfa874470a3f7bfbe7821f93cb4f596ea1",
+      "status": "passed",
+      "count": 22,
+      "applicationLaunched": false,
+      "boatAccess": false,
+      "checks": 22
+    }
+  ],
+  "nativeWindowsAcceptance": false,
+  "boatAcceptance": false,
+  "limitations": [
+    "Native Windows ACL and full cold-baseline commissioning/restore tests are implemented but not yet executed.",
+    "Actual boat profile remains untouched.",
+    "These tools do not qualify the frozen application or grant launch permission."
+  ]
+}

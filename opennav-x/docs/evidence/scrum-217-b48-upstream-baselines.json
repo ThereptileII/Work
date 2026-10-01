@@ -1,0 +1,58 @@
+{
+  "source": {
+    "repository": "ThereptileII/Work",
+    "workflowRun": 36901026915,
+    "workflowUrl": "https://github.com/ThereptileII/Work/actions/runs/36901026915",
+    "headSha": "b48bf4a8f12f98c459d79aa08805141ac49e0306",
+    "branch": "opennav-x-beta2-ui",
+    "event": "push",
+    "runAttempt": 1
+  },
+  "logRepresentation": "GitHub decoded job-log text returned by the workflow job logs endpoint. Hashes below cover saved UTF-8 decoded log files, not raw artifact ZIP bytes.",
+  "jobs": [
+    {
+      "id": 110499931488,
+      "name": "linux",
+      "status": "completed",
+      "conclusion": "success",
+      "log": "linux.decoded.log",
+      "bytes": 546661,
+      "sha256": "eee82afb4b72cca7e844d0ff2bc8ee1570efe6908af1a1d49949b3c8eb569021",
+      "findings": {
+        "source": "OpenCPN Release_5.12.4 at 37fd0cddb7334fe489e9f18aa163977a9c5c84f7",
+        "build": "pristine Linux upstream build completed",
+        "ctest": {
+          "total": 66,
+          "passed": 64,
+          "knownUpstreamFailures": [
+            "DriverRegistry.RegisterDriver",
+            "IpcServer.Commands"
+          ],
+          "unexpectedFailures": 0
+        },
+        "releaseAcceptance": false,
+        "note": "CI explicitly reports pristine-comparison-only; integrated regression tests must pass without exceptions. vcan unavailable on hosted kernel."
+      }
+    },
+    {
+      "id": 110499931804,
+      "name": "Native MSVC upstream Win32 ABI on Windows x64",
+      "status": "completed",
+      "conclusion": "success",
+      "log": "upstream-win32.decoded.log",
+      "bytes": 1058318,
+      "sha256": "a165bd39586f0ae7b63a867e820407a67fc6a74708c91ba6b2fc635b07f7b171",
+      "findings": {
+        "source": "OpenCPN Release_5.12.4 at 37fd0cddb7334fe489e9f18aa163977a9c5c84f7",
+        "applicationAbi": "Win32 x86 on Windows x64 host",
+        "build": "native MSVC build completed",
+        "ctest": {
+          "total": 60,
+          "passed": 60,
+          "failed": 0
+        }
+      }
+    }
+  ],
+  "scope": "Pristine upstream baselines only. No broad application acceptance is implied."
+}

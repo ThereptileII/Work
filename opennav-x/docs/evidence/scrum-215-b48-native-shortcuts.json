@@ -1,0 +1,53 @@
+{
+  "schemaVersion": 1,
+  "sourceCommit": "b48bf4a8f12f98c459d79aa08805141ac49e0306",
+  "runId": 36901026982,
+  "runConclusion": "success",
+  "jobs": {
+    "x64": {
+      "jobId": 110499930479,
+      "conclusion": "success",
+      "artifactId": 11181921334,
+      "artifactBytes": 1938,
+      "artifactSha256": "8928bf6ef03886efe34c09e68ca946e0f5409962a912fa29da50677f64cab44b",
+      "zipValidation": "size, digest, flat safe path, no symlink, entry/expansion limits and CRC passed",
+      "reportPath": "evidence/local/b48-shortcuts/11181921334/extracted/native-shortcuts.log",
+      "reportBytes": 15275,
+      "reportSha256": "0800e123ff9a1b840601a1868efba79d1df8bdfa5da84289ac6b30ac402312b2",
+      "process": "PowerShell 5.1.20348.5622, 64-bit host"
+    },
+    "x86": {
+      "jobId": 110499930550,
+      "conclusion": "success",
+      "artifactId": 11181084805,
+      "artifactBytes": 1938,
+      "artifactSha256": "c2e0715a3de16810813296f9fb481065f4f329fd500406a9e175d105fc9a31a6",
+      "zipValidation": "size, digest, flat safe path, no symlink, entry/expansion limits and CRC passed",
+      "reportPath": "evidence/local/b48-shortcuts/11181084805/extracted/native-shortcuts.log",
+      "reportBytes": 15275,
+      "reportSha256": "f7985b72f0be006af6a96c1f4a39f0c6252437193fce063778f906449a5ecb8d",
+      "process": "PowerShell 5.1.20348.5622, 32-bit host"
+    }
+  },
+  "reportResultsPerArchitecture": {
+    "reportedChecksPassed": 238,
+    "failLines": 0,
+    "refusalRelatedPassAssertions": 67,
+    "assertionsExplicitlyCheckingFileLinkAndRegistrationPreservation": 36,
+    "rollbackAndRecoveryCoverage": [
+      "interrupted migrations leave complete old/new groups for recovery",
+      "early Beta 2 and SKAGER transactions recover only after the expected state is available",
+      "rollback refuses foreign targets, extra arguments, foreign directories, unknown generations and unsafe labels/entries",
+      "refused rollback/uninstall paths preserve files, links and registration",
+      "exact historical rollback restores the original group and does not orphan SKAGER shortcuts"
+    ],
+    "otherCoverage": [
+      "historical and SKAGER shortcut group names and contents",
+      "registry maintenance target matches the selected generation",
+      "unknown or redirected entries stop publication, rollback or uninstall without partial loss",
+      "crash-after-old-state-commit remains recoverable without exposing a partial group",
+      "pinned lifecycle source bytes match the tested historical commit"
+    ]
+  },
+  "scope": "Native COM shortcut migration and recovery checks for x64 and x86 only. This does not complete full package or application acceptance; boat testing remains pending. No Jira status change is made by this evidence record."
+}
