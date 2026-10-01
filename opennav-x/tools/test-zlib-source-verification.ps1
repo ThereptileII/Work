@@ -1,6 +1,16 @@
 Set-StrictMode -Version Latest
 $ErrorActionPreference = 'Stop'
 $Script = Join-Path $PSScriptRoot 'build-zlib-windows.ps1'
+$Lock = Get-Content -LiteralPath (Join-Path $PSScriptRoot 'windows-zlib.lock.json') -Raw | ConvertFrom-Json
+if ($Lock.version -cne '1.3.2' -or $Lock.configuration -cne 'Win32 shared' -or
+    $Lock.runtime -cne 'MultiThreadedDLL (/MD)' -or
+    $Lock.archive -cne 'zlib-1.3.2.tar.gz' -or
+    $Lock.url -cne 'https://github.com/madler/zlib/releases/download/v1.3.2/zlib-1.3.2.tar.gz' -or
+    $Lock.bytes -ne 1502830 -or
+    $Lock.sha256 -cne 'bb329a0a2cd0274d05519d61c667c062e06990d72e125ee2dfa8de64f0119d16' -or
+    $Lock.signingPrimaryFingerprint -cne '5ED46A6721D365587791E2AA783FCD8E58BCAFBA') {
+    throw 'zlib source lock no longer matches the reviewed upstream release asset'
+}
 $Errors = $null
 $Ast = [Management.Automation.Language.Parser]::ParseFile($Script,[ref]$null,[ref]$Errors)
 if ($Errors) { throw ($Errors | Out-String) }

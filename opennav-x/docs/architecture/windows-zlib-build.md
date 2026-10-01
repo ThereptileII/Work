@@ -5,10 +5,21 @@ maintained shared zlib prerequisite used by the Windows curl path. The
 integrated Windows build calls its `-VerifySourceOnly` mode before expensive
 native dependency builds, then runs the normal full builder and upstream tests.
 
-The builder is pinned by `tools/windows-zlib.lock.json` to zlib 1.3.2 from
-zlib.net. It checks the archive SHA-256 and byte count before extraction, then
-uses the detached signature provenance recorded in the lock. The lock's
-fingerprint is Mark Adler's published primary key fingerprint.
+The builder is pinned by `tools/windows-zlib.lock.json` to the zlib 1.3.2
+release asset published by the upstream Mark Adler repository at
+[`madler/zlib` v1.3.2](https://github.com/madler/zlib/releases/tag/v1.3.2).
+The release asset `zlib-1.3.2.tar.gz` is 1,502,830 bytes and has SHA-256
+`bb329a0a2cd0274d05519d61c667c062e06990d72e125ee2dfa8de64f0119d16`. The
+lock retains the reviewed signing fingerprint `5ED46A6721D365587791E2AA783FCD8E58BCAFBA`.
+
+The prior zlib.net URL returned an 11,975-byte object in native CI instead of
+the reviewed 1,502,830-byte archive (observed SHA-256
+`d5b43f44bbe15f74bae56414ae917f7b2ed13ab0df81bff0b845a100efda5681`). The
+response body was not characterized. A direct fetch of the upstream release
+asset was verified as 1,502,830 bytes with the locked SHA-256. The source lock
+test pins this exact release URL and identity; the native source-only job
+still downloads it and enforces the same byte-count and digest checks before
+any extraction or build.
 
 The source-only mode uses the same archive download and SHA-256/byte-count
 guard as the full build and exits before extraction, Visual Studio discovery,
