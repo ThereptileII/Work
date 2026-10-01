@@ -79,6 +79,11 @@ def main():
         script = Path(__file__).with_suffix(".pl").resolve()
         for host, perl in (("native", args.native_perl), ("msys", args.msys_perl)):
             perl = perl.resolve(strict=True)
+            runtime_sha = None
+            if host == "msys":
+                # MSYS2's packaged Perl reports cygwin in this runner image.
+                # Bind its actual MSYS runtime as well as the Perl executable.
+                runtime_sha = digest(perl.parent / "msys-2.0.dll")
             env = os.environ.copy()
             # A scoped host environment; it never affects later OpenSSL builds.
             env["PATH"] = str(perl.parent) + os.pathsep + env["PATH"]
@@ -93,13 +98,14 @@ def main():
                     if line.startswith("{"):
                         records.append(json.loads(line))
                 row = {"host": host, "operation": operation, "perl": str(perl),
-                       "perlSha256": digest(perl), "result": result, "records": records}
+                       "perlSha256": digest(perl), "msysRuntimeSha256": runtime_sha,
+                       "result": result, "records": records}
                 report["cases"].append(row)
                 if result["violation"] or result["exitCode"] or len(records) != 1:
                     raise RuntimeError("Diagnostic process failed: " + host + "/" + operation)
                 value = records[0]
-                expected_os = "MSWin32" if host == "native" else "msys"
-                if value["os"] != expected_os:
+                expected_os = ("MSWin32",) if host == "native" else ("msys", "cygwin")
+                if value["os"] not in expected_os:
                     raise RuntimeError("Unexpected Perl host: " + value["os"])
                 if operation == "readiness":
                     if value["sent"] != 0 or value["response"][:2] != ["integrated", 0]:
