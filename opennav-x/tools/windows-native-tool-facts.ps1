@@ -224,6 +224,11 @@ if($Mode -eq 'Capture') {
     [IO.File]::WriteAllText($Output,$Json,(New-Object Text.UTF8Encoding($false)))
 } else {
     $Existing=RequiredFile $Output 'Captured native tool facts'
-    if([IO.File]::ReadAllText($Existing) -cne $Json){throw "Native tool facts changed: $Kind"}
+    if([IO.File]::ReadAllText($Existing) -cne $Json){
+        # Preserve the original capture and the new bounded, allowlisted facts
+        # for diagnosis. This does not refresh or accept the captured identity.
+        [IO.File]::WriteAllText("$Existing.observed.json",$Json,(New-Object Text.UTF8Encoding($false)))
+        throw "Native tool facts changed: $Kind"
+    }
 }
 Write-Output "Native tool facts $($Mode.ToLowerInvariant())d: $Kind"
