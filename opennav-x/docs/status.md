@@ -25,8 +25,14 @@ architecture, 22 maintenance reports, native broker/Prepare/Arm checks, and
 supplemental AIS tests. See [the exact-candidate early evidence](evidence/scrum-224-37978e-early-gates.json).
 
 The [prototype run](https://github.com/ThereptileII/Work/actions/runs/36929980191)
-has passed its supporting checks; its two application builds remain live.
-The integrated application/security/installer gates also remain pending.
+has passed its supporting checks, but native composition job `110596574723`
+failed before curl configure: MSYS Perl received a backslash script path,
+and the certificate generator searched the output directory for source inputs.
+The producer correctly rejected the empty certificate. The separate object-flow
+job and integrated Windows job remain live; complete product gates are pending.
+See [the verified failure record](evidence/scrum-224-37978-certificate-path-failure.json).
+A minimal caller-path repair and focused native regression are under review;
+no existing generator or TLS assertions are weakened.
 No artifact is approved for boat deployment. The previous b48 Linux job has
 completed successfully, including 146 fixture and 146 fixture-free test cases,
 the 10,800-second soak, loader checks and mode/navigation/chart fixtures. See

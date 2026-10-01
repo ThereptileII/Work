@@ -1,0 +1,51 @@
+{
+  "schemaVersion": 1,
+  "issue": "SCRUM-224",
+  "state": "native-certificate-probe-failed",
+  "commit": "37978e26517af810092ec2bc554b199d36a705d2",
+  "run": {
+    "id": 36929980191,
+    "jobId": 110596574723,
+    "conclusion": "failure",
+    "url": "https://github.com/ThereptileII/Work/actions/runs/36929980191"
+  },
+  "artifact": {
+    "id": 11196679329,
+    "bytes": 384768,
+    "sha256": "3ce7873954c52f848e7586e9e5dae3d1f059ed6f3714c8df1c82b5dc39a062ad",
+    "zipMembers": 62,
+    "crc": "passed"
+  },
+  "logs": {
+    "windows-curl-native-output.log": {
+      "bytes": 2025,
+      "sha256": "d53a3568bd7fc71e00f4554c1ba0db335e554ba709763f57501ee078e94bc400"
+    },
+    "windows-production-Win32.log": {
+      "bytes": 5115698,
+      "sha256": "383c23df8b37ad4967df0a83d8f8765c46dcbbf92132a990479a316931c855e1"
+    },
+    "windows-curl-certificate-patch.json": {
+      "bytes": 399,
+      "sha256": "4b93e4040b89d67b0e1a0742d67e4a297d1e078b8fdfebafe5489dacfc36a3c4"
+    }
+  },
+  "observations": [
+    "MSYS Perl selected pinned native OpenSSL 3.5.9.",
+    "Generator sought ./test-ca.prm, which was absent from the isolated output directory.",
+    "Generator continued after OpenSSL errors; producer correctly rejected an empty test-ca.cacert.",
+    "Curl configure/full tests and application/UI gates were not reached."
+  ],
+  "sourceAnalysis": {
+    "producer": "tools/build-curl-windows.ps1 passes Windows-backslash GenServ path to MSYS Perl.",
+    "passingFocusedProbe": "tools/test-curl-msys-certificates.py passes genserv.as_posix().",
+    "upstream": "curl 8.22.0 tests/certs/genserv.pl computes source directory using File::Basename dirname(__FILE__).",
+    "localOracle": "POSIX Perl dirname returns dot for Windows-backslash path; drive path with forward slashes returns intended source directory.",
+    "nativeRepairAcceptance": "pending"
+  },
+  "limitations": [
+    "No passing application or deployable product claimed.",
+    "Other exact-candidate live jobs not cancelled or restarted.",
+    "Boat installation untouched."
+  ]
+}
