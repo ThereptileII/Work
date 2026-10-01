@@ -1,0 +1,31 @@
+name: SKAGER native curl certificate-tool probe
+on:
+  push:
+    branches: [skager-curl-certificates]
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  certificate-tool:
+    name: Check locked curl certificate generator on disposable Windows
+    runs-on: windows-2022
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+      - name: Reproduce and repair only the curl test-tool lookup
+        shell: pwsh
+        run: ./opennav-x/tools/test-curl-certificates-windows.ps1 -Evidence opennav-x/evidence/local/curl-certificates
+      - name: Verify packaged source reproduces the exact curl test repair
+        shell: pwsh
+        run: |
+          python opennav-x/tools/test-curl-patch-source-package.py --archive opennav-x/evidence/local/curl-certificates/curl-8.22.0.tar.xz -v
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: native-curl-certificates-${{ github.sha }}
+          path: |
+            opennav-x/evidence/local/curl-certificates/*.json
+            opennav-x/evidence/local/curl-certificates/*.jsonl
+            opennav-x/evidence/local/curl-certificates/*.txt
+          if-no-files-found: error
