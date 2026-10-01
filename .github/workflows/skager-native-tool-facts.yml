@@ -1,0 +1,23 @@
+name: SKAGER native dependency tool facts
+on:
+  push:
+    branches: [skager-native-tool-facts]
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  tool-facts:
+    name: Actual Win32 CMake and MSVC tool-fact contracts
+    runs-on: windows-2022
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+      - name: Capture and reprobe actual tools in disposable test projects
+        shell: powershell
+        run: ./opennav-x/tools/test-windows-native-tool-facts.ps1 -Evidence opennav-x/evidence/local/native-tool-facts-contracts
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: native-tool-facts-${{ github.sha }}
+          path: opennav-x/evidence/local/native-tool-facts-contracts
+          if-no-files-found: error
