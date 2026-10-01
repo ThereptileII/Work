@@ -244,7 +244,10 @@ try {
     if ($ResolvedTool -ine $OpenSslExe) { throw 'curl certificate probe resolved a different OpenSSL executable' }
     Push-Location $ProbeDir
     try {
-        Invoke-Checked perl.exe @($GenServ,'test',(Split-Path $HostCertConfig -Leaf))
+        # MSYS Perl treats backslashes in __FILE__ as ordinary characters.
+        # genserv.pl derives its certificate-config directory with dirname().
+        # Pass the same slash form used by curl's CMake custom command.
+        Invoke-Checked $TestPerl @($GenServ.Replace('\','/'),'test',(Split-Path $HostCertConfig -Leaf))
         $CaCert = Resolve-File (Join-Path $ProbeDir 'test-ca.cacert') 'Generated upstream curl CA certificate'
         $CaKey = Resolve-File (Join-Path $ProbeDir 'test-ca.key') 'Generated upstream curl CA key'
         $HostCert = Resolve-File (Join-Path $ProbeDir 'test-localhost.crt') 'Generated upstream curl host certificate'
