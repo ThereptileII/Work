@@ -13,7 +13,9 @@ version = re.search(r'#define VERSION_FULL "([^"]+)"', config).group(1)
 date = re.search(r'#define VERSION_DATE "([^"]+)"', config).group(1)
 # Refuse to overwrite a real profile or a previous run's data.
 args.profile.mkdir(parents=True, exist_ok=False)
-(args.profile / "OPENNAV_TEST_PROFILE").write_text("Disposable disconnected UI test.\n")
+(args.profile / "OPENNAV_TEST_PROFILE").write_bytes(
+    b"Disposable disconnected UI test.\n"
+)
 (args.profile / "opencpn.conf").write_text(
     "[Settings]\n"
     f"ConfigVersionString=Version {version} Build {date}\n"
