@@ -37,7 +37,8 @@ void XNavSettingsDrawer::Update(const ProductState &state,LightMode mode) {
     tabs_->SetBackgroundColour(Colour(Theme(mode).background));
     for(auto *frame:input_frames_)frame->Refresh(false);
     for(auto *panel:field_containers_)panel->SetBackgroundColour(Colour(Theme(mode).background));
-    for(auto *caption:field_captions_)caption->SetForegroundColour(Colour(Theme(mode).secondary));
+    for(std::size_t i=0;i<field_captions_.size();++i)
+      field_captions_[i]->SetForegroundColour(Colour(i==1||i==2?Theme(mode).muted:Theme(mode).secondary));
     for(auto *field:fields_)if(field){
       field->SetBackgroundColour(Colour(Theme(mode).background));
       field->SetForegroundColour(Colour(Theme(mode).primary));
@@ -62,14 +63,16 @@ void XNavSettingsDrawer::ResetDraft(){
 }
 void XNavSettingsDrawer::VesselForm(){
   auto add_field=[this](wxWindow *parent,wxBoxSizer *layout,const wxString &label,
-                        std::size_t index,bool horizontal=false){
+                        std::size_t index,int bottom,bool paired=false){
     auto *outer=new wxPanel(parent,wxID_ANY);outer->SetBackgroundColour(Colour(Theme(light_).background));
     field_containers_.push_back(outer);
     auto *column=new wxBoxSizer(wxVERTICAL);
     auto *caption=new wxStaticText(outer,wxID_ANY,label);
-    caption->SetFont(UiFont(*this,10));caption->SetForegroundColour(Colour(Theme(light_).secondary));
+    caption->SetFont(UiFont(*this,paired?9:12));
+    caption->SetForegroundColour(Colour(paired?Theme(light_).muted:Theme(light_).secondary));
+    caption->SetMinSize(wxSize(-1,FromDIP(paired?14:18)));
     field_captions_.push_back(caption);
-    column->Add(caption,0,wxBOTTOM,FromDIP(7));
+    column->Add(caption,0,wxBOTTOM,FromDIP(paired?0:8));
     auto *frame=new wxPanel(outer,wxID_ANY);frame->SetBackgroundStyle(wxBG_STYLE_PAINT);
     frame->SetMinSize(FromDIP(wxSize(80,46)));
     frame->Bind(wxEVT_PAINT,[this,frame](wxPaintEvent &){
@@ -90,21 +93,23 @@ void XNavSettingsDrawer::VesselForm(){
     inner->Add(input,1,wxALIGN_CENTER_VERTICAL|wxLEFT|wxRIGHT,FromDIP(13));
     frame->SetSizer(inner);column->Add(frame,0,wxEXPAND);
     outer->SetSizer(column);
-    outer->SetMinSize(FromDIP(wxSize(80,66)));  // 13px caption + 7px gap + 46px control.
-    layout->Add(outer,horizontal?1:0,wxEXPAND|wxBOTTOM,FromDIP(15));
+    outer->SetMinSize(FromDIP(wxSize(80,paired?60:72)));
+    layout->Add(outer,paired?1:0,wxEXPAND|wxBOTTOM,FromDIP(bottom));
     fields_[index]=input;input_frames_.push_back(frame);
     input->Bind(wxEVT_TEXT,[this,index,input](wxCommandEvent &){
       if(!loading_){draft_[index]=input->GetValue();draft_dirty_=true;touched_[index]=true;}
     });
   };
   auto *single=new wxBoxSizer(wxVERTICAL);
-  add_field(body_,single,"Vessel name",0);content_->Add(single,0,wxEXPAND);
+  // The immutable HTML's block margins collapse at the grid boundary. Its
+  // first field, paired grid, final two fields and Save are 36/27/16/26px apart.
+  add_field(body_,single,"Vessel name",0,36);content_->Add(single,0,wxEXPAND);
   auto *pair=new wxBoxSizer(wxHORIZONTAL);
-  add_field(body_,pair,wxString::FromUTF8("Draft · metres"),1,true);pair->AddSpacer(FromDIP(12));
-  add_field(body_,pair,wxString::FromUTF8("Safety depth · metres"),2,true);content_->Add(pair,0,wxEXPAND);
+  add_field(body_,pair,wxString::FromUTF8("Draft · metres"),1,27,true);pair->AddSpacer(FromDIP(16));
+  add_field(body_,pair,wxString::FromUTF8("Safety depth · metres"),2,27,true);content_->Add(pair,0,wxEXPAND);
   single=new wxBoxSizer(wxVERTICAL);
-  add_field(body_,single,wxString::FromUTF8("Usable battery capacity · kWh"),3);
-  add_field(body_,single,wxString::FromUTF8("Minimum reserve · %"),4);content_->Add(single,0,wxEXPAND);
+  add_field(body_,single,wxString::FromUTF8("Usable battery capacity · kWh"),3,16);
+  add_field(body_,single,wxString::FromUTF8("Minimum reserve · %"),4,26);content_->Add(single,0,wxEXPAND);
   Button("Save vessel profile",[this]{SaveVessel();},ButtonRole::Primary);
   message_=new wxStaticText(body_,wxID_ANY,feedback_);
   message_->SetFont(UiFont(*this,11));

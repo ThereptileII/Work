@@ -59,6 +59,16 @@ def main():
         (output/(name+".json")).write_text(json.dumps(data(), indent=2))
         return dict(file=path.name, sha256=hashlib.sha256(path.read_bytes()).hexdigest())
 
+    def vessel_form(record):
+        controls=record["runtime"]["display"]["interaction_controls"]
+        fields=["Field: Vessel name","Field: Draft · metres","Field: Safety depth · metres",
+                "Field: Usable battery capacity · kWh","Field: Minimum reserve · %"]
+        for label in fields:
+            assert sum(c["label"]==label for c in controls)==1, ("Missing or duplicate vessel field",label)
+        save=[c for c in controls if c["label"]=="Save vessel profile"]
+        assert len(save)==1 and save[0]["enabled"], "Vessel profile Save identity must remain available"
+        return dict(fields=fields,save=dict(label=save[0]["label"],enabled=save[0]["enabled"]))
+
     try:
         with (output/"launch.log").open("w") as log:
             app = subprocess.Popen([str(app_path), "--configdir", str(profile), "--xnav", "--no_opengl"],
@@ -104,6 +114,7 @@ def main():
             entry["screenshots"].append(capture(stem+"-settings"))
             drawer=d["runtime"]["display"]["drawer"]
             assert 0<=drawer["x"]<drawer["x"]+drawer["width"]<=width and 0<=drawer["y"]<drawer["y"]+drawer["height"]<=height
+            entry["vesselForm"]=vessel_form(d)
             expected_drawer=json.loads(reference.read_text())["states"]["settings-day"]["components"][".drawer"][0]["rect"]
             assert all(abs(drawer[k]-expected_drawer[k])<=1 for k in ("x","y","width","height")), ("Preferences differs from prototype",drawer,expected_drawer)
             entry["prototypeDrawer"]=dict(actual=drawer,expected=expected_drawer)
@@ -114,8 +125,11 @@ def main():
                drawer["y"]+drawer["height"]-35, "click", "--repeat", 12, "--delay", 50, 5)
             d=data(lambda d:int(d["runtime"]["ui_update"]["ticks"])>before+2)
             links=[c for c in d["runtime"]["display"]["interaction_controls"]
-                   if c["label"]=="Chart safety depth" and c["visible"]]
+                   if c["label"]=="Advanced battery model" and c["visible"]]
             assert len(links)==1 and links[0]["y"]+links[0]["height"]<=drawer["y"]+drawer["height"], "Lower settings action is unreachable"
+            save=[c for c in d["runtime"]["display"]["interaction_controls"]
+                  if c["label"]=="Save vessel profile" and c["visible"] and c["enabled"]]
+            assert len(save)==1, "Save action must be visible and reachable without activating it"
             entry["screenshots"].append(capture(stem+"-settings-scrolled"))
             close=[c for c in d["runtime"]["display"]["interaction_controls"] if c["label"]=="Close" and c["visible"]]
             assert len(close)==1;c=close[0];xd("mousemove",c["x"]+c["width"]//2,c["y"]+c["height"]//2,"click",1)
@@ -128,7 +142,7 @@ def main():
                 assert c["width"]==32 and c["height"]==32 and c["y"]+32<=height
                 xd("mousemove",c["x"]+16,c["y"]+16,"click",1)
                 d=data(lambda d:d["ui_page"]=="Settings" and "drawer" in d["runtime"]["display"])
-                assert any(c["label"]=="Vessel dimensions" for c in d["runtime"]["display"]["interaction_controls"]), "Profile opened wrong section"
+                entry["vesselFormProfileFlow"]=vessel_form(d)
                 entry["profileFlow"]="Actual pointer opens vessel settings; no mutation or connection"
                 c=next(c for c in d["runtime"]["display"]["interaction_controls"] if c["label"]=="Close" and c["visible"])
                 xd("mousemove",c["x"]+c["width"]//2,c["y"]+c["height"]//2,"click",1)

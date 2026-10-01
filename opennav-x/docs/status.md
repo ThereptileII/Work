@@ -2,28 +2,41 @@
 
 ## Current qualification and boat cleanup — 2026-10-01
 
-The frozen security/display candidate is published as
+The zlib source URL correction is published as
+`c85db9d308c4a0ae1bd527bb7634b559c0fdb8e6` (local
+`5957f14a26675b29950423556a9813a6faa36c10`). Its
+[native source-only run](https://github.com/ThereptileII/Work/actions/runs/36843124074),
+job `110306680157`, passed. The downloaded artifact was independently checked
+against GitHub's artifact digest; its source record confirms the expected and
+observed zlib archive are both 1,502,830 bytes with SHA-256
+`bb329a0a2cd0274d05519d61c667c062e06990d72e125ee2dfa8de64f0119d16`.
+The [combined native run](https://github.com/ThereptileII/Work/actions/runs/36843282070)
+and [prototype run](https://github.com/ThereptileII/Work/actions/runs/36843282641)
+are for that same exact commit and remain in progress at this status check.
+They do not yet establish a qualified fixture-free application/package,
+installer, boat or release result. The concise failure/pass record is in
+[zlib source URL evidence](evidence/scrum-209-zlib-source-url-correction-20261001.json).
+
+The preceding prototype candidate
+`7464a00d1071cd019c51821b7c858f5b1f989837` failed its native source guard in
+[run 36841633753](https://github.com/ThereptileII/Work/actions/runs/36841633753),
+job `110301869566`, before application testing. Its retained source report
+records expected size/hash 1,502,830 bytes / `bb329a0a2cd0274d05519d61c667c062e06990d72e125ee2dfa8de64f0119d16`
+and observed size/hash 11,975 bytes /
+`d5b43f44bbe15f74bae56414ae917f7b2ed13ab0df81bff0b845a100efda5681`.
+The response body was not retained or characterized. No cause beyond the
+observed identity mismatch is claimed.
+
+The earlier frozen security/display candidate
 `99b0a58b08c5742a7e31341071eabd0124530e4a` (local
-`325ccd3596d368a6aaf0787bdf4b4e673b13e881`). Its
+`325ccd3596d368a6aaf0787bdf4b4e673b13e881`) also had an incomplete
 [full native/Linux run](https://github.com/ThereptileII/Work/actions/runs/36832799208)
-and [prototype run](https://github.com/ThereptileII/Work/actions/runs/36832798681)
-remain incomplete. The prototype object-flow job rejected its downloaded zlib
-archive before application testing because its digest or byte count differed
-from the reviewed lock. The retained artifact does not contain the rejected
-archive or its observed hash, so the cause is not yet established. A fresh local
-fetch matches the unchanged lock. A subsequent
-[short native source-only run](https://github.com/ThereptileII/Work/actions/runs/36840652960)
-passed: its downloaded zlib archive was 1,502,830 bytes with SHA-256
-`bb329a0a2cd0274d05519d61c667c062e06990d72e125ee2dfa8de64f0119d16`,
-matching the unchanged lock. Its verified artifact ZIP and job identity are in
-the [source evidence](evidence/scrum-209-zlib-native-source-20261001.json).
-The new source-only guard runs before costly dependency builds and records
-expected and observed identity on rejection. The original failing archive is
-unavailable, so this pass does not establish why that earlier fetch differed. The
-other native application jobs and Linux endurance job remain running. Native
-portable contracts pass 86/86; the actual Windows PowerShell 5.1 filesystem and
-historical shortcut suites pass in both bitnesses.
-These are partial results, not installer, boat or release acceptance. The earlier
+and [prototype run](https://github.com/ThereptileII/Work/actions/runs/36832798681).
+Its prototype object-flow job failed the zlib archive lock check; that older
+artifact did not expose the observed size or hash. Keep this distinct from the
+later `7464a00` report above. The current corrected runs remain partial results.
+Native portable contracts pass 86/86; the actual Windows PowerShell 5.1
+filesystem and historical shortcut suites pass in both bitnesses. The earlier
 `322aecdf8cd51fd6ea951ae0caf6b0bde5cefaba` candidate failed because Windows
 translated a disposable peer marker to CRLF; the replacement writes canonical
 bytes and preserves the strict consumer check.
@@ -57,8 +70,28 @@ explicit model assumptions and edited stock S-52 safety depth. Blank chart depth
 keeps the current chart value; missing model inputs stay unconfigured. Local
 focused results are 124 component checks with 12 captures, seven persistence
 checks and the actual OpenCPN integration syntax check. The Night capture was
-reviewed and an independent preservation review found no defect. Integrated
-Linux, native Windows and boat qualification remain open for this increment.
+reviewed and an independent preservation review found no defect. A subsequent
+isolated Linux integration configured embedded source commit `ab485998` (while
+the worktree advanced to documentation-only `f7f5b9f`). Its pinned-source
+application, settings-driver and test targets built 720/720; the remaining
+install dependencies built 287/287. The integrated settings tests passed 7/7,
+peer-unavailable tests 4/4 and isolated 1280×800 component driver 124 checks.
+The installed developer build passed its loader/resource self-test and XNav,
+Legacy and Safe startup plus IPC quit. One concurrent Safe capture was killed
+under local memory pressure while Legacy launched; its sequential rerun passed.
+See the [local integration record](evidence/scrum-214-vessel-linux-integration-20261001.json).
+This is development evidence for the embedded source, not a new candidate,
+native Windows, boat or release qualification.
+
+The subsequent form-spacing refinement and capture-harness update pass a
+separate 130-check Linux component run with 12 captures. Its five input bounds
+and Save button match the independent prototype rectangles exactly in that
+component environment; screenshot review found the small paired captions
+visible and unclipped. The revised Linux capture harness passed four responsive
+cases against the earlier installed `ab485998` developer app, including lower
+Save visibility and vessel-profile entry. That run validates the harness flow,
+not the refined geometry in an integrated app. See the
+[refinement record](evidence/scrum-214-vessel-form-refinement-20261001.json).
 
 A fresh read-only boat inspection at 08:49 UTC confirmed no OpenCPN process,
 the exact supported stock 5.12.4 x86 executable, and running SSH, Tailscale and

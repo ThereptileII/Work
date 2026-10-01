@@ -1,0 +1,34 @@
+{
+  "schema": 1,
+  "issue": "SCRUM-214",
+  "checkedDate": "2026-10-01",
+  "scope": "focused local form geometry and Linux capture-harness development checks",
+  "sourceCommits": {
+    "geometryAndHarnessHead": "f504200df0a0596a8bfdbddaca69e5863c4e2bcc",
+    "geometrySource": "b1b8eecb596fbbdcf812c4141bd9a02e1aee2930",
+    "captureHarnessSource": "8d03722556136a6493a7a07159d54f635112cee3"
+  },
+  "component": {
+    "sourceWorktree": "/home/standard/Projects/X-nav-worktrees/skager-form-refinement",
+    "build": "standalone opennav_ui rebuilt after geometry cherry-pick; settings_drawer_test linked",
+    "result": "130 checks passed; 12 isolated 1280x800 Xvfb captures",
+    "geometry": {
+      "inputRectangles": [[671, 318, 386, 46], [671, 414, 185, 46], [872, 414, 185, 46], [671, 513, 386, 46], [671, 601, 386, 46]],
+      "saveRectangle": [671, 673, 386, 48],
+      "comparison": "exact component rectangle match to independent immutable prototype values"
+    },
+    "screenshotReview": "five captions visible and unclipped in Linux day capture; Windows typography not qualified",
+    "resultFiles": ["build/form-ui-captures/result.json", "build/form-ui-captures/vessel-geometry.json", "build/form-ui-captures/settings-day.png"]
+  },
+  "captureHarness": {
+    "script": "tools/prototype/capture-layout-linux.py",
+    "application": "/home/standard/Projects/X-nav-worktrees/skager-product-integration/build/xnav-install/bin/opencpn",
+    "applicationEmbeddedCommit": "ab485998d0a8fba9655a9f664e7365ee023c52df",
+    "applicationSha256": "407b746c476c05f7e106ee14365d4b31337d38b67bb9d25669c5fab0e8f7be34",
+    "result": "four responsive cases passed; three vessel-profile pointer entries; installed application exit code 0",
+    "assertions": "five field identities, Save enabled and visible after scroll, advanced lower action reachable, actual profile pointer flow; no value fill or Save activation",
+    "resultFile": "build/form-harness-out/result.json",
+    "sourceDistinction": "the harness ran against the prior installed developer app, so it does not verify refined geometry in the integrated application"
+  },
+  "limits": ["No native Windows acceptance", "No physical boat acceptance", "No new release candidate qualification"]
+}

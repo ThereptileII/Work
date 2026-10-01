@@ -138,6 +138,16 @@ def main():
             ui.MouseEvent(4, 0, 0, 0, 0)
         data(lambda d: int(d["runtime"]["ui_update"]["ticks"]) > before)
 
+    def vessel_form(record):
+        controls=record["runtime"]["display"]["interaction_controls"]
+        fields=["Field: Vessel name","Field: Draft · metres","Field: Safety depth · metres",
+                "Field: Usable battery capacity · kWh","Field: Minimum reserve · %"]
+        for label in fields:
+            assert sum(c["label"]==label for c in controls)==1, ("Missing or duplicate vessel field",label)
+        save=[c for c in controls if c["label"]=="Save vessel profile"]
+        assert len(save)==1 and save[0]["enabled"], "Vessel profile Save identity must remain available"
+        return dict(fields=fields,save=dict(label=save[0]["label"],enabled=save[0]["enabled"]))
+
     try:
         for scale in (100, 125, 150):
             assert dpi(scale)["percent"] == scale
@@ -205,7 +215,7 @@ def main():
             if profiles:
                 click("Vessel profile",touch=True)
                 d=data(lambda d:d["ui_page"]=="Settings")
-                assert any(c["label"]=="Vessel dimensions" for c in d["runtime"]["display"]["interaction_controls"]), "Profile did not open vessel settings"
+                entry["vesselForm"]=vessel_form(d)
                 click("Close",drawer=True,touch=True)
                 data(lambda d:d["ui_page"]=="Navigation")
             for label in ("Energy", "Instruments"):

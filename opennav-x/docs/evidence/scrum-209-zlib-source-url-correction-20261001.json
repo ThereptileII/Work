@@ -1,0 +1,55 @@
+{
+  "schema": 1,
+  "issue": "SCRUM-209",
+  "checkedUtc": "2026-10-01T09:37:41Z",
+  "sourceUrlCorrection": {
+    "localCommit": "5957f14a26675b29950423556a9813a6faa36c10",
+    "publishedCommit": "c85db9d308c4a0ae1bd527bb7634b559c0fdb8e6",
+    "lockIdentity": {
+      "archive": "zlib-1.3.2.tar.gz",
+      "expectedBytes": 1502830,
+      "expectedSha256": "bb329a0a2cd0274d05519d61c667c062e06990d72e125ee2dfa8de64f0119d16"
+    }
+  },
+  "precedingObservedFailure": {
+    "commit": "7464a00d1071cd019c51821b7c858f5b1f989837",
+    "runId": 36841633753,
+    "jobId": 110301869566,
+    "jobName": "Native prototype composition development (not release qualification)",
+    "conclusion": "failure",
+    "failureBoundary": "tools/build-zlib-windows.ps1 source archive lock check, before application testing",
+    "artifactId": 11150679011,
+    "artifactName": "prototype-native-Windows-7464a00d1071cd019c51821b7c858f5b1f989837",
+    "artifactZipSha256": "9e2b4652a043c6c9a975b300416bca89943c4dd11f0b7f2df7cf883f323af34a",
+    "expectedBytes": 1502830,
+    "expectedSha256": "bb329a0a2cd0274d05519d61c667c062e06990d72e125ee2dfa8de64f0119d16",
+    "observedBytes": 11975,
+    "observedSha256": "d5b43f44bbe15f74bae56414ae917f7b2ed13ab0df81bff0b845a100efda5681",
+    "responseBody": "not retained or characterized"
+  },
+  "correctedNativeSourceOnlyResult": {
+    "commit": "c85db9d308c4a0ae1bd527bb7634b559c0fdb8e6",
+    "runId": 36843124074,
+    "jobId": 110306680157,
+    "jobName": "Pinned zlib source only (no native build)",
+    "conclusion": "success",
+    "artifactId": 11151778542,
+    "artifactName": "native-zlib-source-c85db9d308c4a0ae1bd527bb7634b559c0fdb8e6",
+    "artifactZipBytes": 370,
+    "artifactZipSha256": "bc25f0077196729f1c13b0ca28cb71bbbdaf82d33675e9e3daa9285974e527dc",
+    "expectedBytes": 1502830,
+    "observedBytes": 1502830,
+    "expectedSha256": "bb329a0a2cd0274d05519d61c667c062e06990d72e125ee2dfa8de64f0119d16",
+    "observedSha256": "bb329a0a2cd0274d05519d61c667c062e06990d72e125ee2dfa8de64f0119d16",
+    "sourceStatus": "verified"
+  },
+  "currentSameCommitQualificationAtCheck": {
+    "commit": "c85db9d308c4a0ae1bd527bb7634b559c0fdb8e6",
+    "fullNativeRunId": 36843282070,
+    "fullNativeRunStatus": "in_progress",
+    "prototypeRunId": 36843282641,
+    "prototypeRunStatus": "in_progress",
+    "applicationOrPackageQualified": false,
+    "installerOrBoatAcceptanceClaimed": false
+  }
+}

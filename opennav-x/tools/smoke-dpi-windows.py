@@ -168,7 +168,7 @@ def current_layout_observation():
     assert native_controls()==expected,'Native frame moved while pairing diagnostic geometry'
     return observed
 
-def preferences_observation(label='Chart safety depth'):
+def preferences_observation(label='Advanced battery model'):
     # A pan can finish before the 1Hz diagnostic publication. Pair the actual
     # row position even while clipped; never poll for visibility or good layout.
     previous=int(data()['runtime']['ui_update']['ticks'])
@@ -181,6 +181,19 @@ def preferences_observation(label='Chart safety depth'):
     actual=bounds(target)
     assert (actual.left,actual.top,actual.right,actual.bottom)==expected[label], 'Native Preferences moved while pairing its published geometry'
     return observed,target
+
+def vessel_form_contract(record,require_save_visible=False):
+    controls=record['runtime']['display']['interaction_controls']
+    fields=['Field: Vessel name','Field: Draft · metres','Field: Safety depth · metres',
+            'Field: Usable battery capacity · kWh','Field: Minimum reserve · %']
+    observed=[c['label'] for c in controls if c['label'].startswith('Field: ')]
+    assert sorted(observed)==sorted(fields),('Vessel form fields changed',observed)
+    save=[c for c in controls if c['label']=='Save vessel profile']
+    assert len(save)==1 and save[0]['enabled'],'Vessel profile Save identity must remain available'
+    if require_save_visible:
+        assert save[0]['visible'],'Save action must be fully visible and reachable without activation'
+    return {'fields':fields,'save':{'label':save[0]['label'],'enabled':save[0]['enabled'],
+                                    'visible':save[0]['visible']}}
 
 def touch_preferences_action(label,scale):
     """Reach a real drawer action before tapping; never message a clipped HWND."""
@@ -467,7 +480,7 @@ try:
         ui.click_text(pid,'Vessel')
         for _ in range(40):
             current,_=preferences_observation();display=current['runtime']['display'];drawer=display['drawer']
-            last=[c for c in display['interaction_controls'] if c['label']=='Chart safety depth' and c['visible']]
+            last=[c for c in display['interaction_controls'] if c['label']=='Advanced battery model' and c['visible']]
             if len(last)==1:break
             popup,_=ui.wait_window('OpenNav preferences',pid);ui.SetForegroundWindow(popup)
             x=drawer['x']+drawer['width']//2;end=drawer['y']+drawer['height']-50
@@ -477,10 +490,11 @@ try:
         endpoint=last[0];time.sleep(1.2)
         after,_=preferences_observation()
         report.setdefault('preferences_endpoint_observations',[]).append({'scale':scale,'before':endpoint,
-            'after':[c for c in after['runtime']['display']['interaction_controls'] if c['label']=='Chart safety depth']})
+            'after':[c for c in after['runtime']['display']['interaction_controls'] if c['label']=='Advanced battery model']})
         assert endpoint in after['runtime']['display']['interaction_controls'],'Preferences jumped after its lower action became visible'
+        entry['vessel_form']=vessel_form_contract(after,require_save_visible=True)
         capture(f'dpi-{scale}-preferences-bottom')
-        entry['menu_endpoint']='Replacement Preferences lower action fully visible and stable after native touch scroll'
+        entry['menu_endpoint']='Advanced battery model is fully visible and stable after native touch scroll; Save identity checked but not activated'
         # Review every main workflow at each scale in the actual night palette.
         for label,page in [('Passage','Route'),('Energy','Energy'),('Autopilot','Manual autopilot')]:
             ui.click_text(pid,label);data(lambda d:d['ui_page']==page)
@@ -528,7 +542,10 @@ try:
             ui.click_text(pid,label);data(lambda d:d['ui_page']==page);ui.assert_preview_page(handle,page);capture(f'dpi-{scale}-{page.lower()}')
         ui.click_text(pid,'Instruments');data(lambda d:d['ui_page']=='Vessel instruments' and d['runtime']['display']['minimum_value_height_dip']>=120);ui.assert_product_page(handle,'Vessel instruments');entry['instrument_groups']=instrument_geometry();capture(f'dpi-{scale}-instruments')
         ui.click_text(pid,'Settings');ui.click_text(pid,'Vessel')
-        entry['battery_preferences_touch']=touch_preferences_action('Battery & reserve',scale)
+        form=data(lambda d:d['ui_page']=='Settings' and any(
+            c['label']=='Field: Vessel name' for c in d['runtime']['display']['interaction_controls']))
+        entry['vessel_form_initial']=vessel_form_contract(form)
+        entry['battery_preferences_touch']=touch_preferences_action('Advanced battery model',scale)
         data(lambda d:d['ui_page']=='Energy configuration');capture(f'dpi-{scale}-settings')
         ui.cycle_light(pid);ui.cycle_light(pid);data(lambda d:d['runtime']['display']['light']=='Night')
         ui.click_text(pid,'Configure battery & reserve');dialog,_=ui.wait_window('Battery assumptions',pid)

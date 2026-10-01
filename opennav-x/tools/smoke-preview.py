@@ -272,16 +272,70 @@ def product_scroll(direction):
     if windows:ui.click_text(pid,'Down' if direction>0 else 'Up')
     else:xdo('mousemove',700,430,'click',5 if direction>0 else 4)
     time.sleep(.4)
+
+VESSEL_FIELD_LABELS=['Field: Vessel name','Field: Draft · metres','Field: Safety depth · metres',
+                     'Field: Usable battery capacity · kWh','Field: Minimum reserve · %']
+def vessel_form_ready(record):
+    if record.get('ui_page')!='Settings' or not record['runtime']['display'].get('drawer'):
+        return False
+    controls=record['runtime']['display']['interaction_controls']
+    return (all(sum(c['label']==label for c in controls)==1 for label in VESSEL_FIELD_LABELS) and
+            sum(c['label']=='Save vessel profile' for c in controls)==1)
+def vessel_form_contract(record):
+    assert vessel_form_ready(record),'Vessel Preferences form did not settle with five fields and Save identity'
+    controls=record['runtime']['display']['interaction_controls']
+    save=next(c for c in controls if c['label']=='Save vessel profile')
+    assert save['enabled'],'Vessel profile Save identity must remain available'
+    return {'fields':VESSEL_FIELD_LABELS,'save':{'label':save['label'],'enabled':save['enabled']}}
+
 def preferences_entry(section,entry):
     command('Settings','g')
-    def ready(d):
-        display=d['runtime']['display'];bounds=display.get('drawer',{})
-        return d.get('ui_page')=='Settings' and bool(bounds) and any(
-            r['label']==entry and r['visible'] and r['enabled'] and
-            bounds['x']<=r['x'] and r['x']+r['width']<=bounds['x']+bounds['width'] and
-            bounds['y']<=r['y'] and r['y']+r['height']<=bounds['y']+bounds['height']
-            for r in display['interaction_controls'])
-    shell_click(section,in_drawer=True,settled=ready)
+    destinations={'Advanced vessel model':'Vessel safety settings',
+                  'Advanced battery model':'Energy configuration'}
+    if section=='Vessel':
+        section_ready=vessel_form_ready
+    elif entry in destinations:
+        raise AssertionError('Advanced model destinations must be reached from the Vessel section')
+    else:
+        def section_ready(d):
+            display=d['runtime']['display'];bounds=display.get('drawer',{})
+            return d.get('ui_page')=='Settings' and bool(bounds) and any(
+                r['label']==entry and r['visible'] and r['enabled'] and
+                bounds['x']<=r['x'] and r['x']+r['width']<=bounds['x']+bounds['width'] and
+                bounds['y']<=r['y'] and r['y']+r['height']<=bounds['y']+bounds['height']
+                for r in display['interaction_controls'])
+    shell_click(section,in_drawer=True,settled=section_ready)
+    if section=='Vessel':
+        form=vessel_form_contract(data())
+        report['vessel_preferences_form']=form
+        if not report.get('vessel_form_captured'):
+            capture('beta-vessel-preferences-form')
+            report['vessel_form_captured']=True
+    if entry in destinations:
+        if windows:
+            # windows-ui's native pointer path scrolls clipped drawer actions
+            # only after checking their actual HWND and containing viewport.
+            ui.pointer_text(pid,entry)
+        else:
+            last_y=None
+            for _ in range(32):
+                current=data();display=current['runtime']['display'];drawer=display.get('drawer',{})
+                targets=[r for r in display['interaction_controls'] if r['label']==entry]
+                assert len(targets)==1,(entry,'unique advanced vessel action',targets)
+                target=targets[0]
+                if target['visible'] and target['enabled']:
+                    shell_click(entry,in_drawer=True)
+                    break
+                assert current.get('ui_page')=='Settings' and drawer,(entry,'Preferences drawer closed during scroll')
+                assert target['y']!=last_y,(entry,'Preferences scroll did not move the advanced action')
+                last_y=target['y'];ticks=int(current['runtime']['ui_update']['ticks'])
+                x=drawer['x']+drawer['width']//2;y=drawer['y']+drawer['height']//2
+                xdo('mousemove',x,y,'click',5)
+                data(lambda d:int(d['runtime']['ui_update']['ticks'])>ticks)
+            else:raise AssertionError(entry+': bounded drawer scroll could not reach advanced action')
+        data(lambda d:d.get('ui_page')==destinations[entry])
+        return
+    # The section settle predicate above waits for the actual destination.
     shell_click(entry,in_drawer=True)
 def product_click(label,enabled=True):
     target=interaction.control(data,label,product_scroll,enabled=enabled)
@@ -536,9 +590,9 @@ try:
                            ('Display & layout','f','display')]:
         if windows:
             if name=='energy-settings':
-                preferences_entry('Vessel','Battery & reserve')
+                preferences_entry('Vessel','Advanced battery model')
             else:
-                section,entry={'sources':('Sensors','Manage sensors'),'vessel-settings':('Vessel','Vessel dimensions'),
+                section,entry={'sources':('Sensors','Manage sensors'),'vessel-settings':('Vessel','Advanced vessel model'),
                                'radar-status':('Radar','Radar status'),'display':('Display','Chart presentation')}[name]
                 preferences_entry(section,entry)
         else:xdo('key','ctrl+shift+'+key);time.sleep(.6)

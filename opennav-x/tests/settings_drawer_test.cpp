@@ -1,5 +1,6 @@
 // Non-installed offline widget driver. No OpenCPN profile, network or devices.
 #include "ui/SettingsDrawer.h"
+#include <array>
 #include <cstdlib>
 #include <cmath>
 #include <fstream>
@@ -141,6 +142,34 @@ private:
       switch(step_++) {
       case 0: Feed(); break;
       case 1:
+        {
+          std::ofstream geometry((output_+"/vessel-geometry.json").ToStdString());
+          geometry<<"{\"inputs\":[";
+          bool first=true;
+          // Rounded rectangles from the immutable HTML's Windows capture.json
+          // (settings-day, field inputs). Allow 2px for wx/GTK integer layout.
+          const std::array<wxRect,5> reference{{{671,318,386,46},{671,414,185,46},
+            {872,414,185,46},{671,513,386,46},{671,601,386,46}}};
+          std::size_t index=0;
+          for(const auto *label:{"Vessel name","Draft · metres","Safety depth · metres",
+                                 "Usable battery capacity · kWh","Minimum reserve · %"}) {
+            if(!first)geometry<<',';
+            first=false;
+            const auto rect=FindText(panel_,wxString::FromUTF8(label))->GetParent()->GetScreenRect();
+            const auto expected=reference[index++];
+            Check(std::abs(rect.x-expected.x)<=2 && std::abs(rect.y-expected.y)<=2 &&
+                  std::abs(rect.width-expected.width)<=2 && rect.height==expected.height,
+                  "vessel input geometry follows independent Windows HTML");
+            geometry<<"{\"x\":"<<rect.x<<",\"y\":"<<rect.y<<",\"width\":"<<rect.width
+                    <<",\"height\":"<<rect.height<<'}';
+          }
+          const auto save=Find(panel_,"Save vessel profile")->GetScreenRect();
+          Check(std::abs(save.x-671)<=2 && std::abs(save.y-673)<=2 &&
+                std::abs(save.width-386)<=2 && save.height==48,
+                "Save placement follows independent Windows HTML");
+          geometry<<"],\"save\":{\"x\":"<<save.x<<",\"y\":"<<save.y
+                  <<",\"width\":"<<save.width<<",\"height\":"<<save.height<<"}}\n";
+        }
         for(const auto *tab:{"Vessel","Navigation","Sensors","Autopilot","Radar","Display","System","Help"}) {
           auto *b=Find(panel_,tab);Check(b && b->IsShownOnScreen(),"all eight sections visible");
           Check(panel_->GetScreenRect().Contains(b->GetScreenRect()),"section fits drawer");

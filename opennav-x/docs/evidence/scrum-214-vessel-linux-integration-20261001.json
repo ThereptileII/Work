@@ -1,0 +1,38 @@
+{
+  "schema": 1,
+  "issue": "SCRUM-214",
+  "checkedDate": "2026-10-01",
+  "scope": "isolated Linux developer integration; no candidate or boat qualification",
+  "localWorktree": "/home/standard/Projects/X-nav-worktrees/skager-product-integration",
+  "configuredEmbeddedCommit": "ab485998d0a8fba9655a9f664e7365ee023c52df",
+  "documentationOnlyHeadAfterConfigure": "f7f5b9ffe016ef875403e298fbe68b46cd25686d",
+  "pinnedUpstreamCommit": "37fd0cddb7334fe489e9f18aa163977a9c5c84f7",
+  "build": {
+    "jobs": 2,
+    "targets": ["opencpn", "settings_drawer_test", "test/tests"],
+    "targetBuildSteps": "720/720",
+    "targetBuildExitCode": 0,
+    "remainingInstallDependencySteps": "287/287",
+    "remainingDependencyBuildExitCode": 0,
+    "localInstallExitCode": 0,
+    "installedApplicationSha256": "407b746c476c05f7e106ee14365d4b31337d38b67bb9d25669c5fab0e8f7be34",
+    "logs": ["build/xnav-linux/build-product.log", "build/xnav-linux/build-install-deps.log", "build/xnav-linux/install.log"]
+  },
+  "tests": {
+    "integratedOpenNavSettings": "7/7 passed",
+    "integratedOpenNavPeerUnavailable": "4/4 passed",
+    "settingsDrawer": "124 checks passed; 12 isolated 1280x800 Xvfb captures",
+    "installedLoader": "passed; resources loaded, test profile unchanged, report overwrite refused",
+    "xnavStartupAndIpcQuit": "passed",
+    "legacyStartupAndIpcQuit": "passed",
+    "safeModeStartupAndIpcQuit": "passed on sequential retry",
+    "logs": ["build/xnav-linux/settings-store-regression.log", "build/xnav-linux/peer-regression.log", "build/xnav-linux/settings-captures/result.json", "build/xnav-linux/loader-smoke.log", "build/xnav-linux/xnav-launch.log", "build/xnav-linux/legacy-launch.log", "build/xnav-linux/safe-mode-launch-retry.log"]
+  },
+  "retainedFailure": {
+    "observation": "Safe-mode capture process was killed while Legacy and Safe captures ran concurrently on the 7.6 GiB host",
+    "interpretation": "local memory pressure suspected, not independently established",
+    "log": "build/xnav-linux/safe-mode-launch.log",
+    "resolutionEvidence": "sequential Safe capture and IPC quit passed; see safe-mode-launch-retry.log and evidence/local/safe-mode-linux-profile/opencpn.log"
+  },
+  "limits": ["No native Windows build or screenshot acceptance", "No physical boat acceptance", "No installable release candidate claim"]
+}
