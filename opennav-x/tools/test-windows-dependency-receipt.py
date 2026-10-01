@@ -144,35 +144,69 @@ class DependencyReceiptTests(unittest.TestCase):
                     receipt.capture(self.root, self.receipt_path, self.context,
                                     sorted(unsafe_roots))
 
-        case_alias = self.root / "build" / "DEPENDENCY"
-        case_alias.mkdir()
+        # Root identity validation rejects case-only aliases before consulting
+        # the filesystem. Windows cannot materialize a second directory with
+        # different case, so this must stay a pure path-list assertion.
         with self.assertRaises(receipt.ReceiptError):
             receipt.capture(self.root, self.receipt_path, self.context,
                             ["build/DEPENDENCY", "build/dependency"])
 
         alias_dir = self.root / "case-folded-files"
         alias_dir.mkdir()
-        (alias_dir / "same.dll").write_bytes(b"first")
-        (alias_dir / "SAME.dll").write_bytes(b"different case alias")
-        with self.assertRaises(receipt.ReceiptError):
+        lower = alias_dir / "same.dll"
+        upper = alias_dir / "SAME.dll"
+        lower.write_bytes(b"first")
+        if not upper.exists():
+            upper.write_bytes(b"different case alias")
+        if lower.samefile(upper):
+            # A Windows filesystem aliases these spellings to one file. Supply
+            # both directory entries so _inventory's case-fold guard still
+            # sees the collision on that platform.
+            walker = mock.patch.object(
+                receipt.os, "walk",
+                return_value=iter([(str(alias_dir), [], ["same.dll", "SAME.dll"])]),
+            )
+        else:
+            walker = mock.patch.object(receipt.os, "walk", wraps=receipt.os.walk)
+        with walker, self.assertRaises(receipt.ReceiptError):
             receipt.capture(self.root, self.receipt_path, self.context,
                             ["case-folded-files"])
 
     def test_inventory_rejects_windows_stream_and_reserved_names(self):
-        unsafe_paths = ["build/dependency/stream:payload.dll",
-                        "build/dependency/trailing-dot.",
-                        "build/dependency/trailing-space ",
-                        "build/dependency/CON.dll",
-                        "build/dependency/NUL"]
-        for relative in unsafe_paths:
-            with self.subTest(path=relative):
-                path = self.root / relative
-                path.parent.mkdir(parents=True, exist_ok=True)
-                path.write_bytes(b"not a safe Windows filename")
-                with self.assertRaises(receipt.ReceiptError):
+        unsafe_names = ["stream:payload.dll", "trailing-dot.", "trailing-space ",
+                        "CON.dll", "NUL"]
+        for name in unsafe_names:
+            with self.subTest(name=name):
+                # These components are invalid on Windows and may be created
+                # as alternate streams, normalized names or devices instead
+                # of ordinary files. Inject only the directory listing; the
+                # real inventory calls _plain_path, whose guard must reject
+                # each raw name before any filesystem lookup.
+                walker = mock.patch.object(
+                    receipt.os, "walk",
+                    return_value=iter([(str(self.prefix), [], [name])]),
+                )
+                with walker, self.assertRaises(receipt.ReceiptError):
                     receipt.capture(self.root, self.receipt_path, self.context,
                                     self.roots)
-                path.unlink()
+
+        # Verification must independently reject unsafe raw JSON keys, even
+        # where the platform filesystem cannot represent those names.
+        for relative in (
+            "build/dependency/stream:payload.dll",
+            "build/dependency/trailing-dot.",
+            "build/dependency/trailing-space ",
+            "build/dependency/CON.dll",
+            "build/dependency/NUL",
+        ):
+            with self.subTest(receipt_path=relative):
+                self.capture()
+                document = json.loads(self.receipt_path.read_text())
+                record = document["files"].pop("build/dependency/one.lib")
+                document["files"][relative] = record
+                self.receipt_path.write_text(json.dumps(document), encoding="utf-8")
+                with self.assertRaises(receipt.ReceiptError):
+                    self.verify()
 
     def test_receipt_rejects_malformed_unknown_and_duplicate_json_fields(self):
         self.capture()

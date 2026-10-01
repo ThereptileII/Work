@@ -1,0 +1,21 @@
+{
+  "schemaVersion": 1,
+  "status": "failed",
+  "sourceCommit": "141265ea2fa8796c9570065034f31575292ff49e",
+  "runId": 36892709388,
+  "jobId": 110472011894,
+  "logSha256": "7c66beecf9e683539a6e9a8f34e4a574c91aa473a9e204ed98be108d8db3f6a3",
+  "logBytes": 22816,
+  "receiptSuite": {
+    "tests": 15,
+    "failures": 5,
+    "errors": 1
+  },
+  "precedingPackageTests": {
+    "source": 11,
+    "openssl": 9,
+    "curl": 12
+  },
+  "failure": "Fixture creates filenames Win32 normalizes or treats as streams/devices; duplicate-case mkdir fails on case-insensitive filesystem",
+  "scope": "No full Windows application qualification"
+}
