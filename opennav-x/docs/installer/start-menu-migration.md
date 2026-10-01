@@ -1,6 +1,36 @@
-# Version-neutral Start-menu group
+# Versioned Start-menu groups
 
-Beta 2 publishes `OpenNav X`, `OpenCPN Legacy`, `OpenNav Safe Mode` and
+## SKAGER successor layout (SCRUM-215)
+
+Newly staged generations record `shellLayout: OpenNavX.SkagerStartMenu.1` and
+publish **SKAGER** with `Skager`, `OpenCPN Legacy`, `Skager Safe Mode` and
+`Maintain Skager` shortcuts. The installed-app display name is SKAGER. The
+internal owner, root, registry key, command-line modes and immutable older
+generation records stay unchanged. The two layouts below remain recognized
+for exact rollback and historical maintenance.
+
+Publication verifies all three known groups before changing any of them.
+Forward publication creates and checks SKAGER before removing verified older
+shortcuts. For rollback to either older layout, the new engine removes verified
+SKAGER shortcuts after writing the durable transaction journal but before
+committing old state or creating an old maintenance link. Registry maintenance
+remains on the new engine until the old group is complete. A crash before
+commit recovers the SKAGER group; a crash afterward lets the exact retained old
+engine recover and manage its original group without orphaning SKAGER links.
+Names from one layout in another group, unknown files, modified invocations
+and redirected groups are refused and retained for inspection. Neither the
+stock OpenCPN installation nor the shared navigation profile is a cleanup
+target.
+
+The shortcut test loads unmodified, hash-pinned early Beta 2 lifecycle
+functions to exercise old-engine recovery and uninstall at the handoff. This
+successor layout has source-level and disposable test coverage; native COM,
+NSIS wizard and full installer-lifecycle results for its exact commit
+are required before boat deployment or shortcut retirement.
+
+## Historical neutral layout
+
+Earlier Beta 2 generations publish `OpenNav X`, `OpenCPN Legacy`, `OpenNav Safe Mode` and
 `Maintain OpenNav` in the **OpenNav X** Start-menu group. Optional Legacy/Safe
 choices remain persistent. Setup's Finish launcher uses that group. The
 maintenance window, progress and finish pages describe maintenance rather than
@@ -11,8 +41,8 @@ The internal `%LOCALAPPDATA%/OpenNavXAlpha1` root, HKCU uninstall key,
 not change. Neither stock OpenCPN nor the navigation profile is modified by
 this migration.
 
-The target generation's immutable ownership record selects the group. New
-generations record `shellLayout: OpenNavX.NeutralStartMenu.1` and use
+The target generation's immutable ownership record selects the group. Those
+Beta 2 generations record `shellLayout: OpenNavX.NeutralStartMenu.1` and use
 `OpenNav X`. An absent marker selects the historical `OpenNav X Alpha 1` group;
 an unknown, null or incorrectly typed marker refuses publication. Version alone
 does not select a layout: exact early Beta 2 `8e780edc` is already version
@@ -25,7 +55,7 @@ target refuses before the state or transaction journal is published. The
 disposable lifecycle gate corrupts only its fixture's previous marker, verifies
 that exact pre-commit refusal, then restores the saved fixture bytes.
 
-Before staging, publication, recovery or removal, both fixed groups must pass
+Before staging, publication, recovery or removal, all recognized groups must pass
 ownership inspection. Every entry must be one of the four exact shortcut names,
 be a real non-redirected file, and target a uniquely recorded owned generation
 file with exactly the expected arguments and working directory. A matching

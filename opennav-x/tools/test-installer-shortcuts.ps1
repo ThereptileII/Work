@@ -7,7 +7,7 @@ if (-not $PolicyOnly -and ($env:GITHUB_ACTIONS -ne 'true' -or $env:OS -ne 'Windo
 $parseErrors=$null
 $ast=[Management.Automation.Language.Parser]::ParseFile((Join-Path $PSScriptRoot '../installer/windows/Lifecycle.ps1'),[ref]$null,[ref]$parseErrors)
 if ($parseErrors) { throw ($parseErrors | Out-String) }
-foreach ($name in @('Log','Hash','PlainPath','RelativePath','ReadJson','AtomicJson','Generation','ReadState','ReadGeneration','ShellGroups','ShortcutGroup','ShortcutSpec','AssertShortcut','AssertShellOwnership','RemoveShortcutGroup','PublishShell','RemoveShell','Failure','Recover')) {
+foreach ($name in @('Log','Hash','PlainPath','RelativePath','ReadJson','AtomicJson','Generation','ReadState','ReadGeneration','ShellGroups','ShortcutGroup','ShortcutNames','ShortcutSpec','AssertShortcut','AssertShellOwnership','RemoveShortcutGroup','PublishShell','RemoveShell','Failure','Recover')) {
   $nodes=@($ast.FindAll({param($n) $n -is [Management.Automation.Language.FunctionDefinitionAst] -and $n.Name -eq $name},$true))
   if ($nodes.Count -ne 1) { throw "Expected one actual engine function: $name" }
   . ([scriptblock]::Create($nodes[0].Extent.Text))
@@ -36,13 +36,16 @@ foreach($version in @('0.2.0-alpha1','0.3.0-beta1','0.4.0-beta2')) {
   Check ((ShortcutGroup ([pscustomobject]@{version=$version})) -ceq (Join-Path $Programs 'OpenNav X Alpha 1')) ('Absent marker preserves historical layout independently of '+$version)
 }
 Check ((ShortcutGroup ([pscustomobject]@{version='0.4.0-beta2';shellLayout='OpenNavX.NeutralStartMenu.1'})) -ceq (Join-Path $Programs 'OpenNav X')) 'Exact layout marker selects neutral group'
-foreach($badLayout in @('', 'OpenNavX.NeutralStartMenu.2', 'opennavx.neutralstartmenu.1', 1, $true, $null)) {
+Check ((ShortcutGroup ([pscustomobject]@{version='0.4.0-beta2';shellLayout='OpenNavX.SkagerStartMenu.1'})) -ceq (Join-Path $Programs 'SKAGER')) 'New marker selects SKAGER group'
+Check (@(ShellGroups).Count -eq 3) 'Only the three versioned shortcut groups are recognized'
+Check ((@(ShortcutNames (Join-Path $Programs 'SKAGER')) -join ',') -ceq 'Skager.lnk,OpenCPN Legacy.lnk,Skager Safe Mode.lnk,Maintain Skager.lnk') 'SKAGER shortcut labels are exact'
+foreach($badLayout in @('', 'OpenNavX.NeutralStartMenu.2', 'opennavx.neutralstartmenu.1', 'opennavx.skagerstartmenu.1', 1, $true, $null)) {
   $refused=$false
   try { $null=ShortcutGroup ([pscustomobject]@{version='0.4.0-beta2';shellLayout=$badLayout}) } catch { $refused=$true }
   Check $refused 'Present invalid layout marker never falls back to a guessed group'
 }
 if($PolicyOnly){Write-Host "$Checks shell-layout policy checks passed; no COM, registry or filesystem mutation.";return}
-function FixtureGeneration([string]$id,[string]$version,[switch]$Neutral) {
+function FixtureGeneration([string]$id,[string]$version,[switch]$Neutral,[switch]$Skager) {
   $d=Generation $id;$null=[IO.Directory]::CreateDirectory((Join-Path $d 'app'))
   [IO.File]::WriteAllText((Join-Path $d 'app/opencpn.exe'),'inert target '+$id,$Utf8)
   [IO.File]::WriteAllText((Join-Path $d 'Maintain.exe'),'inert maintainer '+$id,$Utf8)
@@ -50,12 +53,13 @@ function FixtureGeneration([string]$id,[string]$version,[switch]$Neutral) {
     @{path='app/opencpn.exe';sha256=(Hash (Join-Path $d 'app/opencpn.exe'))},
     @{path='Maintain.exe';sha256=(Hash (Join-Path $d 'Maintain.exe'))})}
   if($Neutral){$record.shellLayout='OpenNavX.NeutralStartMenu.1'}
+  if($Skager){$record.shellLayout='OpenNavX.SkagerStartMenu.1'}
   AtomicJson (Join-Path $d 'ownership.json') $record
   return [pscustomobject]@{owner=$Owner;schema=1;current=$id;previous='';stock=@{path=(Join-Path $Fixture 'stock/opencpn.exe')};shortcutModes=@('xnav','legacy','safe')}
 }
 function CheckGroup($state,[string]$version) {
-  $group=ShortcutGroup (ReadGeneration $state.current);$other=@(ShellGroups | Where-Object {$_ -cne $group})[0]
-  Check ((Test-Path -LiteralPath $group) -and -not (Test-Path -LiteralPath $other)) ('Only expected group for '+$version)
+  $group=ShortcutGroup (ReadGeneration $state.current);$others=@(ShellGroups | Where-Object {$_ -cne $group})
+  Check ((Test-Path -LiteralPath $group) -and @($others | Where-Object {Test-Path -LiteralPath $_}).Count -eq 0) ('Only expected group for '+$version)
   $shell=New-Object -ComObject WScript.Shell
   $files=@(Get-ChildItem -LiteralPath $group -File)
   Check ($files.Count -eq (@($state.shortcutModes).Count+1)) 'Only requested shortcuts plus maintenance'
@@ -73,6 +77,7 @@ try {
   $old=FixtureGeneration ('a'*32) '0.3.0-beta1'
   $next=FixtureGeneration ('b'*32) '0.4.0-beta2' -Neutral
   $early=FixtureGeneration ('d'*32) '0.4.0-beta2'
+  $skager=FixtureGeneration ('e'*32) '0.4.0-beta2' -Skager
   PublishShell $next;CheckGroup $next '0.4.0-beta2'
   Check ((Get-ItemProperty -LiteralPath $Registry).DisplayName -ceq 'OpenNav X Beta 2') 'Beta 2 display name has no Alpha label'
   RemoveShell
@@ -160,7 +165,101 @@ try {
   Remove-Item -LiteralPath (Join-Path (Generation $next.current) 'app/opencpn.exe')
   AssertShellOwnership;Check $true 'Missing owned binary does not prevent repair of its exact shortcut'
   RemoveShell
-  Check (-not (Test-Path -LiteralPath $Registry) -and @(Get-ChildItem -LiteralPath $Programs -Force).Count -eq 0) 'Both owned groups and test registration are removed'
+  Check (-not (Test-Path -LiteralPath $Registry) -and @(Get-ChildItem -LiteralPath $Programs -Force).Count -eq 0) 'Both historical groups and test registration are removed'
+  [IO.File]::WriteAllText((Join-Path (Generation $next.current) 'app/opencpn.exe'), 'inert target '+$next.current, $Utf8)
+  $nextAppRecord=@((ReadGeneration $next.current).managedFiles | Where-Object {$_.path -ceq 'app/opencpn.exe'})
+  Check ($nextAppRecord.Count -eq 1 -and
+    (Hash (Join-Path (Generation $next.current) 'app/opencpn.exe')) -ceq $nextAppRecord[0].sha256) 'Neutral predecessor fixture is restored before SKAGER migration checks'
+  # New installs, updates and repairs publish only the SKAGER group. The
+  # historical generations are unmodified and rollback restores their own
+  # group before any SKAGER links disappear.
+  PublishShell $skager;CheckGroup $skager 'SKAGER clean install'
+  Check ((Get-ItemProperty -LiteralPath $Registry).DisplayName -ceq 'SKAGER') 'New installed-app label is SKAGER'
+  RemoveShell;Check (@(Get-ChildItem -LiteralPath $Programs -Force).Count -eq 0) 'SKAGER clean uninstall removes its verified group'
+  PublishShell $next;CheckGroup $next 'neutral predecessor'
+  AtomicJson (Join-Path $Root 'state.json') $skager
+  AtomicJson (Join-Path $Root 'transaction.json') @{owner=$Owner;action='Update';before=$next;after=$skager}
+  $FailurePoint='after-shortcuts';$failed=$false
+  try { PublishShell $skager } catch { $failed=$_.Exception.Message -eq 'Injected interruption at after-shortcuts' }
+  $FailurePoint=''
+  Check ($failed -and (Test-Path (ShortcutGroup (ReadGeneration $next.current))) -and
+    (Test-Path (ShortcutGroup (ReadGeneration $skager.current)))) 'Interrupted neutral to SKAGER migration keeps both complete groups'
+  Recover;CheckGroup $skager 'SKAGER recovered update'
+  Check (-not (Test-Path (Join-Path $Root 'transaction.json'))) 'SKAGER recovery clears journal after old group removal'
+  $skager.shortcutModes=@('xnav');PublishShell $skager;CheckGroup $skager 'SKAGER repair with optional links omitted'
+  Check (-not (Test-Path (Join-Path (ShortcutGroup (ReadGeneration $skager.current)) 'OpenCPN Legacy.lnk'))) 'SKAGER repair preserves shortcut selection'
+  $skager.shortcutModes=@('xnav','legacy','safe');PublishShell $skager;CheckGroup $skager 'SKAGER repair restores optional links'
+  AtomicJson (Join-Path $Root 'state.json') $early
+  AtomicJson (Join-Path $Root 'transaction.json') @{owner=$Owner;action='Rollback';before=$skager;after=$early}
+  $FailurePoint='after-shortcuts';$failed=$false
+  try { PublishShell $early } catch { $failed=$_.Exception.Message -eq 'Injected interruption at after-shortcuts' }
+  $FailurePoint=''
+  Check ($failed -and -not (Test-Path (ShortcutGroup (ReadGeneration $skager.current))) -and
+    (Test-Path (ShortcutGroup (ReadGeneration $early.current)))) 'Interrupted rollback removes SKAGER before exposing immutable historical maintenance'
+  Recover;CheckGroup $early 'historical rollback from SKAGER'
+  PublishShell $skager;CheckGroup $skager 'SKAGER after historical update'
+  AtomicJson (Join-Path $Root 'state.json') $next
+  AtomicJson (Join-Path $Root 'transaction.json') @{owner=$Owner;action='Rollback';before=$skager;after=$next}
+  $FailurePoint='after-shortcuts';$failed=$false
+  try { PublishShell $next } catch { $failed=$_.Exception.Message -eq 'Injected interruption at after-shortcuts' }
+  $FailurePoint=''
+  Check ($failed -and -not (Test-Path (ShortcutGroup (ReadGeneration $skager.current))) -and
+    (Test-Path (ShortcutGroup (ReadGeneration $next.current)))) 'Interrupted neutral rollback removes SKAGER before exposing neutral maintenance'
+  Recover;CheckGroup $next 'neutral rollback from SKAGER'
+  PublishShell $skager;CheckGroup $skager 'SKAGER after neutral update'
+  $skagerGroup=ShortcutGroup (ReadGeneration $skager.current)
+  $skagerLink=Join-Path $skagerGroup 'Skager.lnk';$savedSkager=[IO.File]::ReadAllBytes($skagerLink)
+  $shell=New-Object -ComObject WScript.Shell
+  foreach($mutation in @('foreign-target','extra-arguments','foreign-directory','unknown-generation')) {
+    $link=$shell.CreateShortcut($skagerLink)
+    switch($mutation) {
+      'foreign-target' {$link.TargetPath=Join-Path $Fixture 'foreign.exe'}
+      'extra-arguments' {$link.Arguments='--xnav --portable'}
+      'foreign-directory' {$link.WorkingDirectory=$Fixture}
+      'unknown-generation' {$link.TargetPath=Join-Path (Generation ('c'*32)) 'app/opencpn.exe'}
+    };$link.Save()
+    RefusesUnchanged {PublishShell $old} ('SKAGER rollback refuses '+$mutation)
+    RefusesUnchanged {RemoveShell} ('SKAGER uninstall refuses '+$mutation)
+    [IO.File]::WriteAllBytes($skagerLink,$savedSkager)
+  }
+  $wrongName=Join-Path $skagerGroup 'OpenNav X.lnk';Copy-Item -LiteralPath $skagerLink -Destination $wrongName
+  RefusesUnchanged {PublishShell $next} 'Old label in SKAGER group refused before rollback changes'
+  Remove-Item -LiteralPath $wrongName
+  $foreign=Join-Path $skagerGroup 'unrelated.txt';[IO.File]::WriteAllText($foreign,'preserve me',$Utf8)
+  RefusesUnchanged {PublishShell $old} 'Unknown SKAGER group entry refuses rollback without partial loss'
+  RefusesUnchanged {RemoveShell} 'Unknown SKAGER group entry refuses uninstall without partial loss'
+  Remove-Item -LiteralPath $foreign
+  $legacyGroup=ShortcutGroup (ReadGeneration $old.current)
+  $null=[IO.Directory]::CreateDirectory($legacyGroup)
+  $wrongName=Join-Path $legacyGroup 'Skager.lnk';Copy-Item -LiteralPath $skagerLink -Destination $wrongName
+  RefusesUnchanged {PublishShell $skager} 'SKAGER label in historical group refused before repair changes'
+  Remove-Item -LiteralPath $wrongName;Remove-Item -LiteralPath $legacyGroup
+  $junction=Join-Path $Programs 'OpenNav X';$null=New-Item -ItemType Junction -Path $junction -Value $skagerGroup
+  RefusesUnchanged {PublishShell $skager} 'Redirected neutral group refuses SKAGER publication'
+  [IO.Directory]::Delete($junction);$junction=$null
+  AtomicJson (Join-Path $Root 'transaction.json') @{owner=$Owner;action='Rollback';before=$skager;after=$early}
+  RemoveShortcutGroup $skagerGroup
+  AtomicJson (Join-Path $Root 'state.json') $early
+  Check (-not (Test-Path -LiteralPath $skagerGroup) -and -not (Test-Path -LiteralPath $legacyGroup)) 'Crash after old-state commit exposes neither SKAGER nor old maintenance before recovery'
+  # Execute the actual published early Beta 2 engine functions, not a
+  # reconstructed model. This fixture is the unmodified Lifecycle.ps1 from
+  # 8e780edc34f68abd693a5d5f6aecdb3ba05a75c4, pinned byte-for-byte.
+  $oldSource=Join-Path $PSScriptRoot 'fixtures/early-beta2-Lifecycle.ps1'
+  Check ((Get-FileHash -LiteralPath $oldSource -Algorithm SHA256).Hash.ToLowerInvariant() -ceq
+    'e22c17802a3d201c28c1007ecc12cb9bb980ae1aa49396e99b641d6157ae3b9f') 'Published historical lifecycle source is byte-identical to pinned commit'
+  $oldErrors=$null
+  $oldAst=[Management.Automation.Language.Parser]::ParseFile($oldSource,[ref]$null,[ref]$oldErrors)
+  if ($oldErrors) { throw ($oldErrors | Out-String) }
+  $Shortcuts=$legacyGroup
+  foreach ($name in @('PublishShell','RemoveShell','Recover')) {
+    $node=@($oldAst.FindAll({param($n) $n -is [Management.Automation.Language.FunctionDefinitionAst] -and $n.Name -eq $name},$true))
+    if ($node.Count -ne 1) { throw "Expected one exact old engine function: $name" }
+    . ([scriptblock]::Create($node[0].Extent.Text))
+  }
+  Recover;CheckGroup $early 'exact old engine recovers committed historical rollback'
+  Check (-not (Test-Path (Join-Path $Root 'transaction.json'))) 'Old engine clears recovered transaction after publishing its original group'
+  RemoveShell
+  Check (-not (Test-Path -LiteralPath $Registry) -and @(Get-ChildItem -LiteralPath $Programs -Force).Count -eq 0) 'Exact old engine uninstall cannot orphan SKAGER shortcuts'
   Write-Host "$Checks native shortcut migration checks passed in PowerShell $($PSVersionTable.PSVersion), $([IntPtr]::Size*8)-bit host."
 } finally {
   if($junction -and (Test-Path -LiteralPath $junction)){[IO.Directory]::Delete($junction)}

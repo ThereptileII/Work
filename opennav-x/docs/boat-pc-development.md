@@ -230,6 +230,20 @@ That exercise did not run setup or qualify Windows path handling. New native
 entrypoint refusal/workspace/junction cases are part of `test-boat-tools.ps1`;
 their same-source Windows gate and actual boat retirement remain pending.
 
+The 2026-10-01 read-only inventory also identified the old
+`OpenNavX-DeveloperPreview-win64.zip` by accepted release bytes, not its name:
+SHA-256 `cfa9e9e462aea63da6df5c8cce324d4fd8769e2799b0976d02931f03be0c8e58`,
+commit `b21bd05ce75f22c91ac12927207d264b8b3efde4`. Its internal manifest,
+portable marker and executable match
+[`preview-b21bd05-package.json`](evidence/preview-b21bd05-package.json).
+After replacement qualification it can use the existing hash-gated ZIP
+retirement path. A subsequent bounded read-only traversal found only that ZIP,
+its checksum sidecar and one empty same-name nested directory. It found no
+other files, reparse points, enumeration errors or user/chart/profile data;
+neither the depth-six nor 1,000-entry bound was reached. Recheck these conditions
+before retirement, preserve the checksum with its release, and remove wrapper
+directories only when empty. No retirement was performed by this inventory.
+
 ## Optional source/build operation
 
 `update-source.ps1` fetches an exact commit into the owned workspace, requiring a

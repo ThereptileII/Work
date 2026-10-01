@@ -5,14 +5,14 @@ Unicode true
 !include "FileFunc.nsh"
 !include "LogicLib.nsh"
 !include "x64.nsh"
-Name "OpenNav X Beta 2"
-UninstallCaption "OpenNav X Maintenance"
+Name "SKAGER Beta 2"
+UninstallCaption "SKAGER Maintenance"
 OutFile "${OUTPUT}"
 RequestExecutionLevel user
 SetCompressor /SOLID lzma
 VIProductVersion "0.4.0.0"
-VIAddVersionKey "ProductName" "OpenNav X Beta 2"
-VIAddVersionKey "FileDescription" "Version-gated OpenNav X Beta setup"
+VIAddVersionKey "ProductName" "SKAGER Beta 2"
+VIAddVersionKey "FileDescription" "Version-gated SKAGER Beta setup"
 VIAddVersionKey "FileVersion" "0.4.0-beta2"
 VIAddVersionKey "LegalCopyright" "OpenNav X contributors; GPL"
 Var StockPath
@@ -32,8 +32,8 @@ Var SafeShortcut
 Var LegacyControl
 Var SafeControl
 Var ShortcutModes
-!define MUI_WELCOMEPAGE_TITLE "Install OpenNav X"
-!define MUI_WELCOMEPAGE_TEXT "Modern navigation interface for OpenCPN.$\r$\n$\r$\nSetup checks your existing OpenCPN, creates a recovery record and installs OpenNav X beside it. XNav, Legacy and Safe Mode use your real charts and OpenCPN profile.$\r$\n$\r$\nClose OpenCPN before continuing. Beta 2 is for evaluation and is not approved for navigation."
+!define MUI_WELCOMEPAGE_TITLE "Install SKAGER"
+!define MUI_WELCOMEPAGE_TEXT "Modern navigation interface for OpenCPN.$\r$\n$\r$\nSetup checks your existing OpenCPN, creates a recovery record and installs SKAGER beside it. SKAGER, Legacy and Safe Mode use your real charts and OpenCPN profile.$\r$\n$\r$\nClose OpenCPN before continuing. Beta 2 is for evaluation and is not approved for navigation."
 !insertmacro MUI_PAGE_WELCOME
 Page custom SourcePage SourceLeave
 Page custom BackupPage
@@ -41,14 +41,14 @@ Page custom OptionsPage OptionsLeave
 Page custom ReadyPage
 !insertmacro MUI_PAGE_INSTFILES
 !define MUI_FINISHPAGE_RUN
-!define MUI_FINISHPAGE_RUN_TEXT "Launch OpenNav X Beta 2"
+!define MUI_FINISHPAGE_RUN_TEXT "Launch SKAGER Beta 2"
 !define MUI_FINISHPAGE_RUN_FUNCTION LaunchXNav
 !insertmacro MUI_PAGE_FINISH
 UninstPage custom un.MaintenancePage un.MaintenanceLeave
-!define MUI_PAGE_HEADER_TEXT "Applying OpenNav X maintenance"
+!define MUI_PAGE_HEADER_TEXT "Applying SKAGER maintenance"
 !define MUI_PAGE_HEADER_SUBTEXT "Original OpenCPN and navigation data are preserved."
 !insertmacro MUI_UNPAGE_INSTFILES
-!define MUI_FINISHPAGE_TITLE "OpenNav X maintenance complete"
+!define MUI_FINISHPAGE_TITLE "SKAGER maintenance complete"
 !define MUI_FINISHPAGE_TEXT "The selected maintenance action has completed.$\r$\n$\r$\nYour original OpenCPN and navigation data are preserved."
 !insertmacro MUI_UNPAGE_FINISH
 !insertmacro MUI_LANGUAGE "English"
@@ -124,7 +124,7 @@ Function SourcePage
   ${NSD_CB_AddString} $ActionControl "Update"
   ${NSD_CB_AddString} $ActionControl "Repair"
   ${NSD_CB_SelectString} $ActionControl "$Action"
-  ${NSD_CreateLabel} 0 145u 100% 25u "OpenNav X installs for this Windows user. Your original OpenCPN application stays available."
+  ${NSD_CreateLabel} 0 145u 100% 25u "SKAGER installs for this Windows user. Your original OpenCPN application stays available."
   Pop $0
   nsDialogs::Show
 FunctionEnd
@@ -149,7 +149,7 @@ Function BackupPage
   !insertmacro MUI_HEADER_TEXT "Your recovery backup" "Your navigation data stays in OpenCPN."
   nsDialogs::Create 1018
   Pop $0
-  ${NSD_CreateLabel} 0 0 100% 55u "Before installing, OpenNav X records the original program identity and the current integration version. Existing OpenNav application files are retained for rollback.$\r$\n$\r$\nThe original OpenCPN program is not replaced."
+  ${NSD_CreateLabel} 0 0 100% 55u "Before installing, SKAGER records the original program identity and the current integration version. Existing application files are retained for rollback.$\r$\n$\r$\nThe original OpenCPN program is not replaced."
   Pop $0
   ${NSD_CreateLabel} 0 65u 100% 45u "Your charts, routes, tracks, waypoints, connections and settings are preserved. Rollback changes application files only; it never restores older navigation data over your recent work."
   Pop $0
@@ -160,20 +160,20 @@ Function BackupPage
   nsDialogs::Show
 FunctionEnd
 Function OptionsPage
-  !insertmacro MUI_HEADER_TEXT "Start menu shortcuts" "Choose convenient ways to open OpenNav X."
+  !insertmacro MUI_HEADER_TEXT "Start menu shortcuts" "Choose convenient ways to open SKAGER."
   nsDialogs::Create 1018
   Pop $0
-  ${NSD_CreateCheckbox} 0 10u 100% 18u "OpenNav X"
+  ${NSD_CreateCheckbox} 0 10u 100% 18u "SKAGER"
   Pop $0
   ${NSD_Check} $0
   EnableWindow $0 0
   ${NSD_CreateCheckbox} 0 40u 100% 18u "Legacy OpenCPN"
   Pop $LegacyControl
   ${NSD_SetState} $LegacyControl $LegacyShortcut
-  ${NSD_CreateCheckbox} 0 70u 100% 18u "OpenNav Safe Mode"
+  ${NSD_CreateCheckbox} 0 70u 100% 18u "SKAGER Safe Mode"
   Pop $SafeControl
   ${NSD_SetState} $SafeControl $SafeShortcut
-  ${NSD_CreateLabel} 0 112u 100% 45u "Legacy and Safe Mode remain available from OpenNav X even if you omit their shortcuts. Maintenance is always available through Windows Installed Apps."
+  ${NSD_CreateLabel} 0 112u 100% 45u "Legacy and Safe Mode remain available from SKAGER even if you omit their shortcuts. Maintenance is always available through Windows Installed Apps."
   Pop $0
   nsDialogs::Show
 FunctionEnd
@@ -192,28 +192,28 @@ Function ReadyPage
   !insertmacro MUI_HEADER_TEXT "Ready to install" "Files and startup prerequisites will be checked automatically."
   nsDialogs::Create 1018
   Pop $0
-  ${NSD_CreateLabel} 0 0 100% 42u "Action: $Action OpenNav X Beta 2$\r$\nOpenCPN: $DetectedVersion$\r$\n$StockPath"
+  ${NSD_CreateLabel} 0 0 100% 42u "Action: $Action SKAGER Beta 2$\r$\nOpenCPN: $DetectedVersion$\r$\n$StockPath"
   Pop $0
   ${NSD_CreateLabel} 0 55u 100% 32u "Install location:$\r$\n$InstallRoot"
   Pop $0
   ${NSD_CreateLabel} 0 100u 100% 32u "Recovery location:$\r$\n$RecoveryRoot"
   Pop $0
-  ${NSD_CreateLabel} 0 145u 100% 30u "Setup verifies every OpenNav file, checks the executable loader and only then publishes the new version. Close all OpenCPN windows before continuing."
+  ${NSD_CreateLabel} 0 145u 100% 30u "Setup verifies every application file, checks the executable loader and only then publishes the new version. Close all OpenCPN windows before continuing."
   Pop $0
   nsDialogs::Show
 FunctionEnd
-Section "OpenNav X Beta integration"
+Section "SKAGER Beta integration"
   nsExec::ExecToLog '"$SYSDIR\WindowsPowerShell\v1.0\powershell.exe" -NoProfile -NonInteractive -ExecutionPolicy Bypass -File "$PLUGINSDIR\Lifecycle.ps1" -Action "$Action" -OpenCpn "$StockPath" -PackageDirectory "$PLUGINSDIR" -ManifestSha256 "${MANIFEST_SHA256}" -Report "$ReportPath" -FailurePoint "$FailurePoint" -ShortcutModes "$ShortcutModes"'
   Pop $Result
   ${If} $Result != 0
     SetErrorLevel 1
-    MessageBox MB_ICONSTOP "OpenNav setup did not complete. Existing application generations and navigation data are preserved. Inspect setup details and %LOCALAPPDATA%\OpenNavXAlpha1\logs, then rerun Setup." /SD IDOK
+    MessageBox MB_ICONSTOP "SKAGER setup did not complete. Existing application generations and navigation data are preserved. Inspect setup details and %LOCALAPPDATA%\OpenNavXAlpha1\logs, then rerun Setup." /SD IDOK
     Abort
   ${EndIf}
   SetErrorLevel 0
 SectionEnd
 Function LaunchXNav
-  ExecShell "open" "$SMPROGRAMS\OpenNav X\OpenNav X.lnk"
+  ExecShell "open" "$SMPROGRAMS\SKAGER\Skager.lnk"
 FunctionEnd
 Function un.onInit
   SetShellVarContext current
@@ -234,10 +234,10 @@ Function un.onInit
   ${EndIf}
 FunctionEnd
 Function un.MaintenancePage
-  !insertmacro MUI_HEADER_TEXT "Maintain OpenNav X" "Original OpenCPN and navigation data are preserved."
+  !insertmacro MUI_HEADER_TEXT "Maintain SKAGER" "Original OpenCPN and navigation data are preserved."
   nsDialogs::Create 1018
   Pop $0
-  ${NSD_CreateLabel} 0 0 100% 45u "Repair restores OpenNav-owned files from the retained package. Rollback restores the prior application generation, or removes the first installation. Uninstall removes verified OpenNav-owned files and registration; modified/custom additions and diagnostics remain."
+  ${NSD_CreateLabel} 0 0 100% 45u "Repair restores owned files from the retained package. Rollback restores the prior application generation, or removes the first installation. Uninstall removes verified owned files and registration; modified/custom additions and diagnostics remain."
   Pop $0
   ${NSD_CreateDropList} 0 55u 100% 70u ""
   Pop $ActionControl

@@ -26,7 +26,8 @@ STOCK_HASH='7c6547562cca7954671eaab72833ca9d788710fd9808b6a699b6dc823852ae0c'
 SETUP_HASH='e949f55de57611afe2fc0dad5a8ac33795c46ba488cb40ca07b65f639a07b8aa'
 PS=Path(os.environ['WINDIR'])/'System32/WindowsPowerShell/v1.0/powershell.exe'
 PROGRAMS=Path(os.environ['APPDATA'])/'Microsoft/Windows/Start Menu/Programs'
-SHORTCUTS=PROGRAMS/'OpenNav X'
+SHORTCUTS=PROGRAMS/'SKAGER'
+NEUTRAL_SHORTCUTS=PROGRAMS/'OpenNav X'
 OLD_SHORTCUTS=PROGRAMS/'OpenNav X Alpha 1'
 owned=set();report={'status':'running','checks':[],'operations':[],'screenshots':[],'authority':'native disposable Windows / PowerShell 5.1 / NSIS'}
 def module(name):
@@ -60,11 +61,12 @@ def setup(action,stock,expected=0,failure='',executable=SETUP):
     assert result.returncode==expected,(action,result.returncode,out.read_text() if out.exists() else 'No report')
     assert out.exists(),out
     return json.loads(out.read_text(encoding='utf-8-sig'))
-def engine(action,expected=0,shortcut_modes=''):
+def engine(action,expected=0,shortcut_modes='',failure=''):
     script=generation()/'Lifecycle.ps1'
     out=operation_report(action)
     command=[str(PS),'-NoProfile','-NonInteractive','-ExecutionPolicy','Bypass','-File',str(script),'-Action',action,'-Report',str(out)]
     if shortcut_modes:command+=['-ShortcutModes',shortcut_modes]
+    if failure:command+=['-FailurePoint',failure]
     started=time.monotonic()
     # Both direct and relocated uninstall scan every retained generation and
     # verify owned files before removal. Keep their completion bounds aligned.
@@ -111,13 +113,13 @@ def maintenance_wizard():
     maintain=generation()/'Maintain.exe';expected_hash=sha(maintain)
     before=inventory(INSTALL)
     wrapper=subprocess.Popen([str(maintain)])
-    frame,pid=ui.wait_window('OpenNav X Maintenance',timeout=45);owned.add(pid)
+    frame,pid=ui.wait_window('SKAGER Maintenance',timeout=45);owned.add(pid)
     monitor=ui.monitor_process(pid)
     query=ui.declare(ui.kernel,'QueryFullProcessImageNameW',ctypes.c_int,ctypes.c_void_p,ctypes.c_ulong,ctypes.c_wchar_p,ctypes.POINTER(ctypes.c_ulong))
     buffer=ctypes.create_unicode_buffer(32768);length=ctypes.c_ulong(len(buffer))
     assert query(monitor,0,buffer,ctypes.byref(length)) and sha(Path(buffer.value))==expected_hash,'Maintenance window is not the owned executable or its exact NSIS temporary copy'
     labels=[ui.control_text(child) for child,_ in ui.children(frame)]
-    assert 'Maintain OpenNav X' in labels and 'Repair' in labels,labels
+    assert 'Maintain SKAGER' in labels and 'Repair' in labels,labels
     image=EVIDENCE/'installer-maintenance-title.png'
     ui.capture(frame,image,resize=False,screen_pixels=True);report['screenshots'].append(image.name)
     get_item=ui.declare(ui.user,'GetDlgItem',ctypes.c_void_p,ctypes.c_void_p,ctypes.c_int)
@@ -247,7 +249,7 @@ def close(p,h):
     ui.close(h);assert p.wait(timeout=30)==0;owned.discard(p.pid)
 def wizard(stock,install=False):
     p=subprocess.Popen([str(SETUP)]);owned.add(p.pid)
-    title='OpenNav X Beta 2 Setup'
+    title='SKAGER Beta 2 Setup'
     h,_=ui.wait_window(title,p.pid,timeout=45)
     ui.capture(h,EVIDENCE/'installer-wizard-welcome.png',resize=False,screen_pixels=True)
     report['screenshots'].append('installer-wizard-welcome.png')
@@ -286,14 +288,14 @@ def wizard(stock,install=False):
             assert p.poll() is None,'Installer exited before its completion page'
             for notice,_,_ in ui.windows(p.pid):
                 captions=[ui.control_text(child) for child,_ in ui.children(notice)]
-                if any('OpenNav setup did not complete' in caption for caption in captions):
+                if any('SKAGER setup did not complete' in caption for caption in captions):
                     raise RuntimeError('Beta 2 wizard reported installation failure; retained engine logs contain the cause')
             if ui.control_text(get_item(h,1)).replace('&','')=='Finish' and ui.IsWindowEnabled(get_item(h,1)):
                 break
             time.sleep(.2)
         else:raise RuntimeError('Beta 2 wizard did not reach Finish')
         for child,caption in ui.children(h):
-            if caption.replace('&','')=='Launch OpenNav X Beta 2':
+            if caption.replace('&','')=='Launch SKAGER Beta 2':
                 ui.SendMessageW(child,0x00F1,0,0)
         time.sleep(.5)
         ui.capture(h,EVIDENCE/'installer-wizard-installed.png',resize=False,screen_pixels=True)
@@ -341,8 +343,8 @@ try:
         setup('Install',bad/'opencpn.exe',expected=1)
         assert not INSTALL.exists();assert inventory(stock)==stock_before
         check('Unknown executable hash refused before creating install root or changing stock')
-        assert not SHORTCUTS.exists() and not OLD_SHORTCUTS.exists()
-        SHORTCUTS.mkdir();foreign_link=SHORTCUTS/'OpenNav X.lnk'
+        assert not SHORTCUTS.exists() and not NEUTRAL_SHORTCUTS.exists() and not OLD_SHORTCUTS.exists()
+        SHORTCUTS.mkdir();foreign_link=SHORTCUTS/'Skager.lnk'
         foreign_link.write_bytes(b'foreign shortcut content must not be claimed')
         foreign_before=inventory(SHORTCUTS)
         try:
@@ -352,7 +354,7 @@ try:
             assert inventory(stock)==stock_before
         finally:
             foreign_link.unlink();SHORTCUTS.rmdir()
-        check('A foreign neutral Start-menu group is refused before root creation; its same-name shortcut and stock remain unchanged')
+        check('A foreign SKAGER Start-menu group is refused before root creation; its same-name shortcut and stock remain unchanged')
         INSTALL.mkdir();(INSTALL/'owner.json').write_text('{"owner":"foreign fixture"}')
         (INSTALL/'keep.txt').write_text('Do not claim or change this directory')
         unowned=inventory(INSTALL)
@@ -388,7 +390,7 @@ try:
                 assert inventory(stock)==stock_with_legacy and legacy.is_file()
                 assert inventory(profile)==before and not (INSTALL/'state.json').exists()
                 assert not (INSTALL/'transaction.json').exists()
-                assert not SHORTCUTS.exists() and not OLD_SHORTCUTS.exists()
+                assert not SHORTCUTS.exists() and not NEUTRAL_SHORTCUTS.exists() and not OLD_SHORTCUTS.exists()
                 refused_cleanly=True
             finally:
                 legacy.unlink()
@@ -402,7 +404,7 @@ try:
         wizard(original,install=True)
         assert inventory(profile)==before and inventory(stock)==stock_before
         assert not state()['previous']
-        assert (SHORTCUTS/'OpenNav X.lnk').is_file() and not OLD_SHORTCUTS.exists()
+        assert (SHORTCUTS/'Skager.lnk').is_file() and not NEUTRAL_SHORTCUTS.exists() and not OLD_SHORTCUTS.exists()
         assert sha(generation()/'app/opencpn.exe')==sha(ROOT/'build/production-install/opencpn.exe')
         p,h,rgb=launch(generation()/'app/opencpn.exe',['--xnav'],'OpenNav X / OpenCPN',profile,'installer-00-clean-candidate')
         chart_check(rgb,'XNav','Clean installed XNav');close(p,h);assert fixture_snapshot(profile)==expected
@@ -424,20 +426,23 @@ try:
         early_record=json.loads((generation()/'ownership.json').read_text())
         assert early_record['version']=='0.4.0-beta2' and early_record['commit']==early_lock['commit']
         assert 'shellLayout' not in early_record
-        assert (OLD_SHORTCUTS/'Maintain OpenNav.lnk').is_file() and not SHORTCUTS.exists()
+        assert (OLD_SHORTCUTS/'Maintain OpenNav.lnk').is_file() and not SHORTCUTS.exists() and not NEUTRAL_SHORTCUTS.exists()
         setup('Update',original)
         assert state()['previous']==early_generation
-        assert json.loads((generation()/'ownership.json').read_text())['shellLayout']=='OpenNavX.NeutralStartMenu.1'
-        assert (SHORTCUTS/'Maintain OpenNav.lnk').is_file() and not OLD_SHORTCUTS.exists()
+        assert json.loads((generation()/'ownership.json').read_text())['shellLayout']=='OpenNavX.SkagerStartMenu.1'
+        assert (SHORTCUTS/'Maintain Skager.lnk').is_file() and not OLD_SHORTCUTS.exists() and not NEUTRAL_SHORTCUTS.exists()
         assert inventory(profile)==before and inventory(stock)==stock_before
-        engine('Rollback')
+        engine('Rollback',expected=1,failure='after-commit')
         assert state()['current']==early_generation and inventory(generation())==early_owned
-        assert (OLD_SHORTCUTS/'Maintain OpenNav.lnk').is_file() and not SHORTCUTS.exists()
+        assert (INSTALL/'transaction.json').is_file()
+        assert not OLD_SHORTCUTS.exists() and not SHORTCUTS.exists() and not NEUTRAL_SHORTCUTS.exists()
         early_diagnostics=maintenance('Diagnostics')
+        assert (INSTALL/'transaction.json').is_file() and not OLD_SHORTCUTS.exists()
         assert early_diagnostics['stockVerified'] and early_diagnostics['state']['current']==early_generation
         assert all(f['expected']==f['actual'] for f in early_diagnostics['files'])
         maintenance('Uninstall')
-        assert not (INSTALL/'state.json').exists() and not SHORTCUTS.exists() and not OLD_SHORTCUTS.exists()
+        assert not (INSTALL/'transaction.json').exists()
+        assert not (INSTALL/'state.json').exists() and not SHORTCUTS.exists() and not NEUTRAL_SHORTCUTS.exists() and not OLD_SHORTCUTS.exists()
         assert inventory(profile)==before and inventory(stock)==stock_before
         check('Exact historical-layout Beta 2 updates and rolls back with byte-identical old engine; original Maintain diagnostics and uninstall leave neither group')
         # A real user-selected harmonic source must remain selected; defaults
@@ -454,7 +459,7 @@ try:
         setup('Install',original,executable=prior)
         assert inventory(profile)==before and inventory(stock)==stock_before
         assert json.loads((generation()/'ownership.json').read_text())['version']=='0.3.0-beta1'
-        assert (OLD_SHORTCUTS/'Maintain OpenNav.lnk').is_file() and not SHORTCUTS.exists()
+        assert (OLD_SHORTCUTS/'Maintain OpenNav.lnk').is_file() and not SHORTCUTS.exists() and not NEUTRAL_SHORTCUTS.exists()
         old_exe=generation()/'app/opencpn.exe'
         assert sha(old_exe)!=sha(ROOT/'build/production-install/opencpn.exe')
         p,h,rgb=launch(old_exe,['--xnav'],'OpenNav X / OpenCPN',profile,'installer-00-prior-test-version',welcome_transition='candidate-to-beta1')
@@ -465,10 +470,10 @@ try:
         setup('Update',original)
         assert state()['previous']==prior_generation
         assert json.loads((generation()/'ownership.json').read_text())['version']=='0.4.0-beta2'
-        assert json.loads((generation()/'ownership.json').read_text())['shellLayout']=='OpenNavX.NeutralStartMenu.1'
+        assert json.loads((generation()/'ownership.json').read_text())['shellLayout']=='OpenNavX.SkagerStartMenu.1'
         assert sha(generation()/'app/opencpn.exe')==sha(ROOT/'build/production-install/opencpn.exe')
         assert inventory(profile)==before and inventory(stock)==stock_before
-        assert (SHORTCUTS/'OpenNav X.lnk').is_file() and not OLD_SHORTCUTS.exists()
+        assert (SHORTCUTS/'Skager.lnk').is_file() and not OLD_SHORTCUTS.exists() and not NEUTRAL_SHORTCUTS.exists()
         check('Accepted Beta 1 updates to the exact Beta 2 candidate executable; stock/profile unchanged')
         recoveries=list((INSTALL/'recovery').glob('*.json'))
         assert recoveries,'Missing durable before-state recovery set'
@@ -482,7 +487,7 @@ try:
         # files byte-identical; then migrate forward again using current Setup.
         engine('Rollback')
         assert state()['current']==prior_generation and inventory(generation())==prior_owned
-        assert (OLD_SHORTCUTS/'Maintain OpenNav.lnk').is_file() and not SHORTCUTS.exists()
+        assert (OLD_SHORTCUTS/'Maintain OpenNav.lnk').is_file() and not SHORTCUTS.exists() and not NEUTRAL_SHORTCUTS.exists()
         prior_diagnostics=maintenance('Diagnostics')
         assert prior_diagnostics['stockVerified'] and prior_diagnostics['state']['current']==prior_generation
         assert all(f['expected']==f['actual'] for f in prior_diagnostics['files'])
@@ -492,10 +497,10 @@ try:
         setup('Update',original,expected=1,failure='after-shortcuts')
         committed_migration=state()['current']
         assert committed_migration!=prior_generation and (INSTALL/'transaction.json').exists()
-        assert (SHORTCUTS/'OpenNav X.lnk').is_file() and (OLD_SHORTCUTS/'OpenNav X.lnk').is_file()
+        assert (SHORTCUTS/'Skager.lnk').is_file() and (OLD_SHORTCUTS/'OpenNav X.lnk').is_file()
         setup('Repair',original)
         assert state()['previous']==committed_migration and not (INSTALL/'transaction.json').exists()
-        assert (SHORTCUTS/'Maintain OpenNav.lnk').is_file() and not OLD_SHORTCUTS.exists()
+        assert (SHORTCUTS/'Maintain Skager.lnk').is_file() and not OLD_SHORTCUTS.exists() and not NEUTRAL_SHORTCUTS.exists()
         assert inventory(profile)==before and inventory(stock)==stock_before
         check('Genuine Beta 1 to Beta 2 interrupted group migration recovers from committed state and removes only old owned links')
         maintenance_wizard()
@@ -535,15 +540,15 @@ try:
         check('Repair replaces corrupt owned resources in a new generation; original damaged backup and custom additions retained')
         engine('Repair',shortcut_modes='xnav')
         shortcut_root=SHORTCUTS
-        assert not OLD_SHORTCUTS.exists()
-        assert (shortcut_root/'OpenNav X.lnk').exists() and (shortcut_root/'Maintain OpenNav.lnk').exists()
-        assert not (shortcut_root/'OpenCPN Legacy.lnk').exists() and not (shortcut_root/'OpenNav Safe Mode.lnk').exists()
+        assert not OLD_SHORTCUTS.exists() and not NEUTRAL_SHORTCUTS.exists()
+        assert (shortcut_root/'Skager.lnk').exists() and (shortcut_root/'Maintain Skager.lnk').exists()
+        assert not (shortcut_root/'OpenCPN Legacy.lnk').exists() and not (shortcut_root/'Skager Safe Mode.lnk').exists()
         assert state()['shortcutModes']==['xnav']
         engine('Repair')
         assert state()['shortcutModes']==['xnav'] and not (shortcut_root/'OpenCPN Legacy.lnk').exists()
         check('Optional shortcuts respect explicit choices; retained-package repair preserves preferences')
         engine('Repair',shortcut_modes='xnav,legacy,safe')
-        assert (shortcut_root/'OpenCPN Legacy.lnk').exists() and (shortcut_root/'OpenNav Safe Mode.lnk').exists()
+        assert (shortcut_root/'OpenCPN Legacy.lnk').exists() and (shortcut_root/'Skager Safe Mode.lnk').exists()
         assert inventory(profile)==before
         check('Legacy and Safe shortcuts can be restored without altering shared navigation data')
         repaired=state()['current'];setup('Update',original)
@@ -740,7 +745,7 @@ try:
         before=inventory(profile)
         setup('Install',original)
         assert json.loads((generation()/'ownership.json').read_text())['version']=='0.4.0-beta2'
-        assert json.loads((generation()/'ownership.json').read_text())['shellLayout']=='OpenNavX.NeutralStartMenu.1'
+        assert json.loads((generation()/'ownership.json').read_text())['shellLayout']=='OpenNavX.SkagerStartMenu.1'
         assert inventory(profile)==before and inventory(stock)==stock_before
         check('Beta 2 reinstall after uninstall preserves original stock, shared profile and retained custom additions')
         setup('Update',original)
@@ -748,7 +753,7 @@ try:
         check('Beta 2 same-version rebuild/update creates a rollback generation without changing user data')
         engine('Uninstall')
         assert inventory(profile)==before and inventory(stock)==stock_before
-        assert not SHORTCUTS.exists() and not OLD_SHORTCUTS.exists()
+        assert not SHORTCUTS.exists() and not NEUTRAL_SHORTCUTS.exists() and not OLD_SHORTCUTS.exists()
         report['stock_sha256']=sha(original);report['setup_sha256']=sha(SETUP)
         report['status']='passed'
 except Exception as e:

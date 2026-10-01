@@ -1,7 +1,7 @@
 name: OpenNav boat tooling development checks
 on:
   push:
-    branches: [opennav-x-boat-tools, opennav-x-orphan-recovery]
+    branches: [opennav-x-boat-tools, opennav-x-orphan-recovery, skager-shell-migration]
   workflow_dispatch:
 permissions:
   contents: read

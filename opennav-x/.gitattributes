@@ -5,3 +5,7 @@
 # Canonical generated renders and separate specifications live outside source files.
 docs/design/prototype/** -text
 docs/third-party/** -text
+
+# Exact published historical lifecycle fixture; its pinned SHA256 is checked
+# by native shortcut regression tests before loading its original functions.
+tools/fixtures/early-beta2-Lifecycle.ps1 -text

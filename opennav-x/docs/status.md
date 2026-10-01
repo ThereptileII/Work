@@ -1,5 +1,32 @@
 # OpenNav X status — 2026-10-01
 
+## Current qualification and boat cleanup — 2026-10-01
+
+The frozen security/display candidate is published as
+`99b0a58b08c5742a7e31341071eabd0124530e4a` (local
+`325ccd3596d368a6aaf0787bdf4b4e673b13e881`). Its
+[full native/Linux run](https://github.com/ThereptileII/Work/actions/runs/36832799208)
+and [prototype run](https://github.com/ThereptileII/Work/actions/runs/36832798681)
+remain in progress. Native portable contracts pass 86/86; the actual Windows
+PowerShell 5.1 filesystem and historical shortcut suites pass in both bitnesses.
+These are partial results, not installer, boat or release acceptance. The earlier
+`322aecdf8cd51fd6ea951ae0caf6b0bde5cefaba` candidate failed because Windows
+translated a disposable peer marker to CRLF; the replacement writes canonical
+bytes and preserves the strict consumer check.
+
+The user authorized leaving the tested SKAGER build on the boat PC and retiring
+obsolete OpenNav X copies and shortcuts (SCRUM-17). A read-only inventory
+confirmed the supported stock OpenCPN hash, the accepted Beta 1 installed
+generation, older owned generations and duplicate historical Start-menu groups.
+No application, profile, chart or recovery file has been removed. Replacement
+qualification and boat checks precede retirement; recovery material is retained.
+
+SCRUM-215 adds versioned SKAGER shortcuts and installer/maintenance captions in
+a separate subsequent increment. Both historical layouts remain supported for
+rollback. Fourteen local PowerShell layout-policy checks pass; native COM and
+installer lifecycle checks for this new increment remain required. It is not
+part of the frozen `99b0a58` candidate or its acceptance evidence.
+
 ## Display coverage and current priority — 2026-10-01
 
 The user added **1920×1080** as a supported target alongside the primary
