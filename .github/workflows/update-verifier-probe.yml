@@ -1,0 +1,44 @@
+name: Update verifier probe
+
+on:
+  push:
+    branches: [skager-update-verifier]
+  pull_request:
+    paths:
+      - opennav-x/tools/update-verifier/**
+      - .github/workflows/update-verifier-probe.yml
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    timeout-minutes: 15
+    strategy:
+      matrix:
+        include:
+          - os: ubuntu-24.04
+            arch: amd64
+          - os: windows-2022
+            arch: '386'
+    runs-on: ${{ matrix.os }}
+    defaults:
+      run:
+        working-directory: opennav-x/tools/update-verifier
+    env:
+      GOARCH: ${{ matrix.arch }}
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+      - uses: actions/setup-go@924ae3a1cded613372ab5595356fb5720e22ba16
+        with:
+          go-version-file: opennav-x/tools/update-verifier/go.mod
+          cache-dependency-path: opennav-x/tools/update-verifier/go.sum
+      - run: go test -count=1 -json ./... > verifier-tests.json
+      - run: go vet ./...
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: update-verifier-${{ matrix.os }}-${{ matrix.arch }}-${{ github.sha }}
+          path: opennav-x/tools/update-verifier/verifier-tests.json
+          if-no-files-found: error
