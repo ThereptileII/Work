@@ -1,13 +1,23 @@
 # Maintained Win32 zlib source build
 
 `tools/build-zlib-windows.ps1` is a standalone source builder for the
-maintained shared zlib prerequisite used by the Windows curl path. It is
-deliberately unwired from the application and installer.
+maintained shared zlib prerequisite used by the Windows curl path. The
+integrated Windows build calls its `-VerifySourceOnly` mode before expensive
+native dependency builds, then runs the normal full builder and upstream tests.
 
 The builder is pinned by `tools/windows-zlib.lock.json` to zlib 1.3.2 from
 zlib.net. It checks the archive SHA-256 and byte count before extraction, then
 uses the detached signature provenance recorded in the lock. The lock's
 fingerprint is Mark Adler's published primary key fingerprint.
+
+The source-only mode uses the same archive download and SHA-256/byte-count
+guard as the full build and exits before extraction, Visual Studio discovery,
+or compilation. Both modes write
+`evidence/local/windows-zlib-1.3.2/source-verification.json` with the reviewed
+and observed hash and size. A changed, truncated, missing, or failed download
+remains a failure; its evidence contains identity metadata, never archive
+contents or credentials. The short native CI source job exercises the real
+download path and deterministic rejected bodies before any full build rerun.
 
 On a native Windows host with the licensed MSVC x86 tools, the script invokes
 `vcvarsall.bat x86`, configures CMake with the Visual Studio generator and

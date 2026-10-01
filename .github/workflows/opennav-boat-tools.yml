@@ -9,6 +9,26 @@ concurrency:
   group: opennav-boat-tools-${{ github.ref }}
   cancel-in-progress: true
 jobs:
+  native-zlib-source:
+    name: Pinned zlib source only (no native build)
+    runs-on: windows-2022
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+      - name: Exercise exact archive guard with deterministic corrupt fixtures
+        run: |
+          & "$env:WINDIR/System32/WindowsPowerShell/v1.0/powershell.exe" -NoProfile -File opennav-x/tools/test-zlib-source-verification.ps1
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+      - name: Download and verify reviewed zlib source without extracting or building
+        run: |
+          & "$env:WINDIR/System32/WindowsPowerShell/v1.0/powershell.exe" -NoProfile -File opennav-x/tools/build-zlib-windows.ps1 -VerifySourceOnly
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: native-zlib-source-${{ github.sha }}
+          path: opennav-x/evidence/local/windows-zlib-1.3.2/source-verification.json
+          if-no-files-found: error
   native-installer-shortcuts:
     name: Actual COM shortcut migration (${{ matrix.arch }})
     strategy:

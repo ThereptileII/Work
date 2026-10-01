@@ -34,6 +34,11 @@ try {
         throw 'OpenCPN 5.12.4 ships Win32 dependencies. An x64 dependency and plugin ABI port is not validated; refusing to mislabel Win32 as x64.'
     }
     if ($Integration) {
+        # Fail on a changed zlib source before the costly OpenSSL build. The
+        # normal zlib build below repeats the same guard and upstream tests.
+        & (Join-Path $PSScriptRoot 'build-zlib-windows.ps1') -VerifySourceOnly
+    }
+    if ($Integration) {
         Run python @((Join-Path $PSScriptRoot 'prepare-integration.py'))
         $Source = Join-Path $Root 'build/integration-source'
     }

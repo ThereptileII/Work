@@ -1,4 +1,4 @@
-param()
+param([switch]$VerifySourceOnly)
 $ErrorActionPreference = 'Stop'
 Set-StrictMode -Version Latest
 
@@ -19,6 +19,7 @@ $Prefix = Join-Path $BuildRoot 'install'
 $Evidence = Join-Path $Root 'evidence/local/windows-zlib-1.3.2'
 $Archive = Join-Path $Downloads $Lock.archive
 $ManifestPath = Join-Path $Prefix 'zlib-build.json'
+$SourceEvidence = Join-Path $Evidence 'source-verification.json'
 $null = New-Item -ItemType Directory -Force -Path $Downloads,$BuildRoot,$Evidence
 
 function Invoke-Checked([string]$Program,[string[]]$Arguments) {
@@ -27,6 +28,34 @@ function Invoke-Checked([string]$Program,[string[]]$Arguments) {
 }
 function Digest([string]$Path) {
     (Get-FileHash -LiteralPath $Path -Algorithm SHA256).Hash.ToLowerInvariant()
+}
+function SourceRecord([string]$Path) {
+    if (-not (Test-Path -LiteralPath $Path -PathType Leaf)) {
+        return [ordered]@{ exists=$false; bytes=$null; sha256=$null }
+    }
+    return [ordered]@{
+        exists=$true
+        bytes=(Get-Item -LiteralPath $Path).Length
+        sha256=(Digest $Path)
+    }
+}
+function Assert-SourceArchive([string]$Path, $ReviewedLock, [string]$ReportPath, [string]$Mode) {
+    $Observed = SourceRecord $Path
+    $Accepted = $Observed.exists -and $Observed.bytes -eq $ReviewedLock.bytes -and
+        $Observed.sha256 -ceq $ReviewedLock.sha256
+    $Record = [ordered]@{
+        schemaVersion=1
+        mode=$Mode
+        status=$(if ($Accepted) { 'verified' } else { 'rejected' })
+        archive=$ReviewedLock.archive
+        expected=[ordered]@{ bytes=$ReviewedLock.bytes; sha256=$ReviewedLock.sha256 }
+        observed=$Observed
+    }
+    [IO.File]::WriteAllText($ReportPath,($Record | ConvertTo-Json -Depth 5),
+        (New-Object Text.UTF8Encoding($false)))
+    if (-not $Accepted) {
+        throw "zlib source archive differs from reviewed lock: expected bytes=$($ReviewedLock.bytes) sha256=$($ReviewedLock.sha256); observed bytes=$($Observed.bytes) sha256=$($Observed.sha256); evidence=$ReportPath"
+    }
 }
 function FileRecord([string]$Path) {
     if (-not (Test-Path -LiteralPath $Path -PathType Leaf)) { throw "Required zlib output missing: $Path" }
@@ -43,13 +72,27 @@ function Assert-Win32Dll([string]$Path) {
     }
 }
 
-if (-not (Test-Path -LiteralPath $Archive -PathType Leaf) -or (Digest $Archive) -cne $Lock.sha256) {
-    Invoke-Checked curl.exe @('--fail','--location','--silent','--show-error','--retry','3','--retry-all-errors',
-        '--connect-timeout','20','--max-time','300','--output',$Archive,$Lock.url)
+if (-not (Test-Path -LiteralPath $Archive -PathType Leaf) -or (Digest $Archive) -cne $Lock.sha256 -or
+    (Get-Item -LiteralPath $Archive).Length -ne $Lock.bytes) {
+    try {
+        Invoke-Checked curl.exe @('--fail','--location','--silent','--show-error','--retry','3','--retry-all-errors',
+            '--connect-timeout','20','--max-time','300','--output',$Archive,$Lock.url)
+    } catch {
+        $Observed = SourceRecord $Archive
+        $Record = [ordered]@{
+            schemaVersion=1; mode=$(if ($VerifySourceOnly) { 'source-only' } else { 'build' }); status='download-failed'
+            archive=$Lock.archive; expected=[ordered]@{bytes=$Lock.bytes;sha256=$Lock.sha256}; observed=$Observed
+        }
+        [IO.File]::WriteAllText($SourceEvidence,($Record | ConvertTo-Json -Depth 5),
+            (New-Object Text.UTF8Encoding($false)))
+        throw
+    }
 }
 # The archive's identity and byte count are checked before any extraction is allowed.
-if ((Digest $Archive) -cne $Lock.sha256 -or (Get-Item -LiteralPath $Archive).Length -ne $Lock.bytes) {
-    throw 'zlib source archive digest or size differs from the reviewed lock'
+Assert-SourceArchive $Archive $Lock $SourceEvidence $(if ($VerifySourceOnly) { 'source-only' } else { 'build' })
+if ($VerifySourceOnly) {
+    Write-Output "Verified zlib 1.3.2 source archive before extraction; evidence=$SourceEvidence"
+    return
 }
 
 $Vswhere = "${env:ProgramFiles(x86)}\Microsoft Visual Studio\Installer\vswhere.exe"
