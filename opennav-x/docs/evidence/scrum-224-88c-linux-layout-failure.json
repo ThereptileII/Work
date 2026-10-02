@@ -1,0 +1,72 @@
+{
+  "schema": 1,
+  "commit": "88c141ba9fee5c28e12b5f4ac0f7e7550d1a8ca6",
+  "run": "https://github.com/ThereptileII/Work/actions/runs/37033702537",
+  "job": 110926582484,
+  "status": "failed",
+  "failedStep": "Navigation objects, AIS and anchor integration in a non-UTC timezone",
+  "artifact": {
+    "id": 11239641523,
+    "name": "linux-integration-88c141ba9fee5c28e12b5f4ac0f7e7550d1a8ca6",
+    "size_in_bytes": 6345329,
+    "digest": "sha256:c700f239ac11d1391a1eb6780aba40380519fd518b7224dcbe653f48466e106a"
+  },
+  "archiveVerification": {
+    "verifiedSha256": "c700f239ac11d1391a1eb6780aba40380519fd518b7224dcbe653f48466e106a",
+    "bytes": 6345329,
+    "entries": 2627,
+    "crcAndPathsVerified": true
+  },
+  "failure": "Unspecified permanent controls must not cover the chart",
+  "actualFrame": {
+    "x": 0,
+    "y": 0,
+    "width": 1280,
+    "height": 800
+  },
+  "actualClient": {
+    "x": 0,
+    "y": 0,
+    "width": 1280,
+    "height": 800
+  },
+  "actualChart": {
+    "height": 566,
+    "y": 68,
+    "width": 1014,
+    "x": 80
+  },
+  "actualLayers": [
+    {
+      "height": 44,
+      "y": 190,
+      "visible": true,
+      "width": 44,
+      "accessible_name": "Chart layers",
+      "x": 1016,
+      "label": "Layers",
+      "enabled": true
+    }
+  ],
+  "screenshot": {
+    "file": "scrum-224-88c-linux-layout-failure.png",
+    "sha256": "3fd26ce38682c68d5b8988f559add427381f7cce54711a9adc27771519988a46"
+  },
+  "diagnosis": "The shared chart layout oracle enumerates six pre-Layers controls, so it rejects the new prototype Layers button as unspecified. Actual44x44 position1016,190 matches immutable prototype and current Shell.",
+  "correction": {
+    "localCommit": "7670b87e28d7b76b6ebbe44669d013e4e7999184",
+    "productGeometryChanged": false,
+    "exactRequiredGeometry": "chart.right-78, chart.y+122,44,44",
+    "tolerancePixels": 1,
+    "oldActualCaptureReplay": "rejects",
+    "correctedActualCaptureReplay": "passes",
+    "newInvalidCasesRejected": 9,
+    "arbitraryOverlayRejectionPreserved": true
+  },
+  "limits": [
+    "Component Settings/Search/Chart proof remains passed at the same commit, but does not qualify the integrated run.",
+    "Full Windows job is still running; do not interrupt it or infer its outcome.",
+    "This failed run is ineligible for boat deployment or the candidate security probe.",
+    "No current whole-view, installer, physical boat or release acceptance."
+  ]
+}

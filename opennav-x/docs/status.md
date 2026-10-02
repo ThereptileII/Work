@@ -1,6 +1,6 @@
 # OpenNav X status — 2026-10-02
 
-## SCRUM-224 / SCRUM-213 — native focus repair proven; exact candidate in full qualification
+## SCRUM-224 / SCRUM-213 — native focus repair proven; integrated layout oracle correction required
 
 Published source `88c141ba9fee5c28e12b5f4ac0f7e7550d1a8ca6`
 (local equivalent `688bb713db885dbe78ca6db861382ce248c231f7`) passed the
@@ -28,8 +28,9 @@ other DPI/Back-header states and boat acceptance remain open.
 
 After this evidence passed, the **same commit** was promoted to
 [full Linux/Windows qualification run 37033702537](https://github.com/ThereptileII/Work/actions/runs/37033702537).
-The candidate is frozen while that run proceeds. Full product/dependency,
-installer/recovery, native DPI and boat gates are **not yet accepted**.
+The candidate remains frozen. Its integrated Linux job failed before navigation-object interactions because the strict chart-layout oracle still listed the six pre-Layers floating controls. The actual new44×44 Layers button matches the immutable prototype. [Verified failure evidence](evidence/scrum-224-88c-linux-layout-failure.json) retains the real screenshot and layout. The isolated correction requires the exact seventh control and preserves one-pixel geometry bounds and arbitrary-overlay rejection; captured negative/positive replay plus nine targeted rejections pass. No application geometry changed. Native Windows continues independently; **this run is not eligible for boat deployment or security-package probing**. Full product/dependency, installer/recovery, native DPI and boat gates remain unaccepted.
+
+The same commit's [native recovery subset](evidence/scrum-17-88c-recovery-tooling.json) has21 passing maintenance reports,384 marker-process checks,51 actual broker checks and56 Prepare/Arm/Collect checks, with downloaded bytes/source identities verified. These disposable tests do not imply real-profile or application acceptance.
 The older c95d failed native evidence remains preserved; its already-running
 Linux endurance continues independently. The boat installation and remote
 access were not modified; older-install retirement remains gated by a known-good
