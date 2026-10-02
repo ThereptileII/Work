@@ -20,12 +20,19 @@ previous appearance (only Shell clock pixels differ). The Energy header repair
 passes actual pointer-close/reentry after scrolling and resizing; both retained
 header screenshots show the action in its correct upper-right position.
 
-The full branch remains frozen at88c141b. Its Linux layout-oracle failure is
-retained below; native integrated execution remains in progress. No duplicate
-full build has been started, and no package or boat promotion follows from a
-component-only pass. Exact full-shell DPI, dependency/security, installer,
-recovery and physical-display gates remain open. Boat/profile/remote access and
-public payment/download access were unchanged.
+After the downloaded focused evidence passed, the exact same `ffe4ecf` commit
+was promoted once to [full qualification run37041103887](https://github.com/ThereptileII/Work/actions/runs/37041103887).
+It is frozen. The prior88 Linux layout-oracle failure remains retained below;
+its native job continues independently. Waiting for that already-disqualified
+candidate's terminal native result is no longer a prerequisite to starting the
+corrected candidate; no run was cancelled or restarted. No package or boat
+promotion follows from the component-only pass. Exact full-shell DPI,
+dependency/security, installer, recovery and physical-display gates remain open.
+
+The olderc95 Linux three-hour endurance step completed successfully from
+14:25:38 to17:25:44UTC on2026-10-02. Its fixture-free product build is still
+running; artifact review remains pending and this result does not qualifyffe.
+Boat/profile/remote access and public payment/download access were unchanged.
 
 ## SCRUM-224 / SCRUM-213 — native focus repair proven; integrated layout oracle correction required
 
