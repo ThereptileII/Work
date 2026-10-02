@@ -1,0 +1,47 @@
+name: SKAGER exact candidate two-instance probe
+on:
+  workflow_dispatch:
+    inputs:
+      candidate_run:
+        description: Integrated candidate run ID with successful native prerequisites
+        required: true
+        type: string
+      candidate_commit:
+        description: Full candidate commit SHA
+        required: true
+        type: string
+      candidate_artifact:
+        description: Final candidate or pending-endurance development artifact ID
+        required: true
+        type: string
+      artifact_sha256:
+        description: Reviewed artifact SHA256 matching GitHub API digest
+        required: true
+        type: string
+permissions:
+  contents: read
+  actions: read
+jobs:
+  native-peer:
+    runs-on: windows-2022
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+      - name: Bind and probe unchanged candidate package
+        shell: pwsh
+        env:
+          GH_TOKEN: ${{ github.token }}
+          CANDIDATE_RUN: ${{ inputs.candidate_run }}
+          CANDIDATE_COMMIT: ${{ inputs.candidate_commit }}
+          CANDIDATE_ARTIFACT: ${{ inputs.candidate_artifact }}
+          ARTIFACT_DIGEST: ${{ inputs.artifact_sha256 }}
+        run: |
+          $ErrorActionPreference = 'Stop'
+          python opennav-x/tools/probe-peer-candidate.py --run $env:CANDIDATE_RUN --commit $env:CANDIDATE_COMMIT --artifact $env:CANDIDATE_ARTIFACT --digest $env:ARTIFACT_DIGEST --seven 'C:\Program Files\7-Zip\7z.exe' --evidence opennav-x/evidence/local/peer-candidate
+          if ($LASTEXITCODE -ne 0) { throw 'Exact candidate two-instance probe failed' }
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: peer-candidate-${{ inputs.candidate_commit }}-test-${{ github.sha }}
+          path: opennav-x/evidence/local/peer-candidate
+          if-no-files-found: error
