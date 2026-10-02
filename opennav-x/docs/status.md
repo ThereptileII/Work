@@ -23,15 +23,27 @@ header screenshots show the action in its correct upper-right position.
 After the downloaded focused evidence passed, the exact same `ffe4ecf` commit
 was promoted once to [full qualification run37041103887](https://github.com/ThereptileII/Work/actions/runs/37041103887).
 It is frozen. The prior88 Linux layout-oracle failure remains retained below;
-its native job continues independently. Waiting for that already-disqualified
+its native job subsequently failed the same obsolete Layers oracle after successful compilation and138 tests. Waiting for that already-disqualified
 candidate's terminal native result is no longer a prerequisite to starting the
 corrected candidate; no run was cancelled or restarted. No package or boat
 promotion follows from the component-only pass. Exact full-shell DPI,
 dependency/security, installer, recovery and physical-display gates remain open.
 
-The olderc95 Linux three-hour endurance step completed successfully from
-14:25:38 to17:25:44UTC on2026-10-02. Its fixture-free product build is still
-running; artifact review remains pending and this result does not qualifyffe.
+The exact ffe Linux job then failed in the preview interaction check after the
+repaired Layers check, navigation/input, recording, recovery and user-flow
+checks passed. [Downloaded failure evidence](evidence/scrum-224-ffe-preview-selector-failure.json)
+shows a hidden previous Diagnostics control counted alongside the visible
+Preferences action. No crash was reported. A focused selector repair is being
+verified before any new candidate; the native job continues unchanged. This
+candidate is not eligible for boat deployment or package-security probing.
+
+The older c95 Linux job completed:146/146 fixture-integrated tests and the same
+146/146 fixture-free product tests passed. Its downloaded
+[three-hour evidence](evidence/scrum-224-c95-linux-final.json) contains1080 samples,
+zero sustained handle/thread growth, resident-memory median change−106496 bytes,
+and2.58% of one CPU core. The final soak image is all water after substantial
+viewport scale/longitude drift; it is explicitly **not chart-content acceptance**.
+Numeric endurance does not qualify ffe, native Windows, or the boat display.
 Boat/profile/remote access and public payment/download access were unchanged.
 
 ## SCRUM-224 / SCRUM-213 — native focus repair proven; integrated layout oracle correction required
