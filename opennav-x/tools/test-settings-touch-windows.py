@@ -97,7 +97,6 @@ def main():
         assert dpi('--pan',x,y,x,y-200)['touch_injected']
         time.sleep(.5);after,_=observe();report['negative']['after']=after;capture('preferences-125-old-target')
         assert after['body_scroll_px']==0,'Old field-targeted pan did not reproduce retained failure'
-        assert after['body_pan_messages']==before['body_pan_messages'],'Old field pan unexpectedly reached body'
         assert after['child_pan_messages']>before['child_pan_messages'] or after['child_mouse_downs']>before['child_mouse_downs'],'No native field input was observed'
         def fields(record):return {c['label']:c['value'] for c in record['runtime']['display']['interaction_controls'] if c['label'].startswith('Field: ')}
         assert fields(after)==fields(before),'Negative gesture modified vessel fields'

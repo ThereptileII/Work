@@ -85,7 +85,7 @@ tolerance is allowed. The host uses actual SettingsDrawer widgets and empty
 synthetic vessel fields, not a mirrored control implementation.
 
 The native sequence records a single old field-targeted pan, requiring actual
-Edit hit, native child input and zero body pan/displacement. A read-only native
+Edit hit, native child input and zero body displacement. A read-only native
 subclass observes WM_GESTURE and WM_LBUTTONDOWN and always delegates to the real
 widget. The corrected sequence uses the exact shared `preferences-touch.py`
 reach helper also called by `smoke-dpi-windows.py`; both endpoint hits must be
@@ -108,3 +108,37 @@ syntax, workflow YAML parsing and whitespace checks pass. Native compilation,
 negative/positive touch behavior and screenshots remain pending; no workflow
 was dispatched here. The full combined candidate still requires the complete
 100/125/150% native DPI run. Physical boat touch acceptance remains separate.
+
+## First native component result and observation correction
+
+[Run 37055218734](https://github.com/ThereptileII/Work/actions/runs/37055218734),
+job `110998128701`, source `e0e0e9ef71714932ab69d533d1f86cbcd48e33b3`
+(local equivalent `cf07197`), compiled and launched the native component.
+Retained artifact `11248396913` is 12,075,096 bytes, ZIP SHA256
+`90c99917abe86a615cc946696bcbb251cc8dc355474403a258a371ef954878c2`.
+Its `windows-changed-units/settings-touch/result.json` records failure at
+`Old field pan unexpectedly reached body`, before the positive body-gutter
+sequence. The exact frame/client/drawer/field assertions passed at native and
+wx DPI 120. The old point (801,683) hit the expected battery `Edit` HWND 66124.
+After real touch, scroll stayed zero and all recorded control geometry and
+field values remained unchanged. Counters increased from zero to 12 child and
+4 body pan messages. The inspected screenshot still shows the top Vessel
+fields. Host cleanup completed with zero actions and saves; original 100% DPI
+was restored. No full-application or boat result is implied.
+
+The zero-body-message assertion was an unsupported hypothesis about delivery.
+`tests/settings_touch_test.cpp` counts native message arrival before forwarding
+to `DefSubclassProc`; it does not measure successful scroll handling.
+[wxWidgets 3.2.8 WM_GESTURE dispatch](https://github.com/wxWidgets/wxWidgets/blob/v3.2.8/src/msw/window.cpp#L3167)
+converts arriving messages and closes their handles only when processed;
+[HandlePanGesture](https://github.com/wxWidgets/wxWidgets/blob/v3.2.8/src/msw/window.cpp#L5731)
+separately computes a delta and dispatches the wx event. Thus body message
+arrival cannot establish useful scroll displacement or exclusive field
+consumption. The evidence does not identify the complete per-message route.
+
+The follow-up removes only that assertion. All counters remain retained, as
+do the exact negative Edit hit, zero displacement, native child input,
+unchanged fields and every positive body-hit, displacement, stable endpoint,
+visible enabled Save and single-action assertion. Product behavior is unchanged.
+Only Python syntax and whitespace/diff checks were run for this correction;
+the positive native sequence remains pending a separate reviewed replay.
