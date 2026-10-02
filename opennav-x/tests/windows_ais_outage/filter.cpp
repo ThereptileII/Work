@@ -31,7 +31,7 @@ std::string Text(const GUID &guid) {
   RPC_CSTR text=nullptr;Check(UuidToStringA(&guid,&text),"format object GUID");
   std::string result(reinterpret_cast<char *>(text));RpcStringFreeA(&text);return result;
 }
-GUID Parse(wchar_t *text) {GUID guid{};Check(UuidFromStringW(text,&guid),"parse audit GUID");return guid;}
+GUID Parse(wchar_t *text) {GUID guid{};Check(UuidFromStringW(reinterpret_cast<RPC_WSTR>(text),&guid),"parse audit GUID");return guid;}
 bool Equal(const GUID &a,const GUID &b){return InlineIsEqualGUID(a,b)!=0;}
 std::string Hash(HANDLE file) {
   BCRYPT_ALG_HANDLE algorithm=nullptr;BCRYPT_HASH_HANDLE hash=nullptr;

@@ -93,6 +93,18 @@ runtime launch. Native MSVC compilation, loopback interception, both cleanup pat
 and control continuity remain **pending**. No Windows test or CI was dispatched
 from this implementation task.
 
+The first dedicated native attempt,
+[run 37044564784](https://github.com/ThereptileII/Work/actions/runs/37044564784),
+job `110962660696`, commit `a79d9184df09c30084632538dc3d30a1dfe115e9`,
+failed during helper compilation before filtering. MSVC 14.44 with Windows SDK
+10.0.26100 rejected `wchar_t*` as the `RPC_WSTR` (`unsigned short*`) argument to
+`UuidFromStringW` (C2664). The bounded correction explicitly casts the existing
+Windows wide-character buffer to the SDK's RPC pointer type; no filter behavior
+or guards change. Downloaded artifact `11243223347` is retained locally at
+`evidence/local/a79d-native/` (397423 bytes, SHA-256
+`4251e44033803582cbf7243bd736c8076ada0fd0648a6ef2e4efed833aa6d6c7`).
+Native compilation and behavioral proof remain pending after this correction.
+
 Even a passing disposable proof would not qualify actual AISStream connection
 loss/aging/reconnect, DNS-address changes, TLS transport, onboard AIS continuity,
 SSH/Tailscale/RustDesk continuity, boat operation or real-executable scoping. Those
