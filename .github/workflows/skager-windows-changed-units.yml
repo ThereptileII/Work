@@ -4,6 +4,10 @@ on:
     branches: [skager-windows-changed-units, skager-prototype-proof]
   workflow_dispatch:
     inputs:
+      floating_surface:
+        description: Run only the floating-surface console link and lifecycle proof
+        type: boolean
+        default: false
       preferences_touch:
         description: Run only the isolated native 125% Settings touch proof
         type: boolean
@@ -30,22 +34,28 @@ jobs:
   compile:
     runs-on: windows-2022
     timeout-minutes: 15
+    env:
+      FLOATING_SURFACE: ${{ inputs.floating_surface == true || contains(github.event.head_commit.message, '[floating-surface]') }}
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
       - name: Fetch supported OpenCPN source
+        if: env.FLOATING_SURFACE != 'true'
         run: |
           git clone --depth 1 --branch Release_5.12.4 https://github.com/OpenCPN/OpenCPN.git opennav-x/upstream/OpenCPN
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
       - name: Prove native peer CLI home precondition before GUI startup
-        if: ${{ github.ref != 'refs/heads/skager-prototype-proof' && inputs.prototype != true && inputs.preferences_touch != true && !contains(github.event.head_commit.message, '[preferences-touch]') }}
+        if: ${{ env.FLOATING_SURFACE != 'true' && github.ref != 'refs/heads/skager-prototype-proof' && inputs.prototype != true && inputs.preferences_touch != true && !contains(github.event.head_commit.message, '[preferences-touch]') }}
         run: python opennav-x/tools/test-peer-cli-precondition-windows.py --evidence opennav-x/evidence/local/peer-cli-precondition
       - name: Install capture dependency
+        if: env.FLOATING_SURFACE != 'true'
         run: python -m pip install Pillow==11.3.0
       - name: Verify component runtime staging guards
         run: python opennav-x/tests/windows_changed_units_runtime_tests.py
       - name: Verify strict native drawer geometry oracle
+        if: env.FLOATING_SURFACE != 'true'
         run: python opennav-x/tests/windows_ui_layout_tests.py
       - name: Verify strict chart layout and Layers oracle
+        if: env.FLOATING_SURFACE != 'true'
         run: python opennav-x/tests/chart_layout_tests.py
       - name: Run selected bounded native proof
         env:
@@ -54,6 +64,10 @@ jobs:
           CHART_COMPONENT: ${{ github.ref == 'refs/heads/skager-prototype-proof' || inputs.chart_presentation == true }}
           ENERGY_COMPONENT: ${{ inputs.energy_component == true || contains(github.event.head_commit.message, '[energy-component]') }}
         run: |
+          if ($env:FLOATING_SURFACE -eq 'true') {
+            python opennav-x/tools/test-windows-changed-units.py --floating-surface-only
+            exit $LASTEXITCODE
+          }
           if ($env:PREFERENCES_TOUCH -eq 'true') {
             python opennav-x/tests/dpi_preferences_pan_tests.py
             if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
