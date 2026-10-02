@@ -1,5 +1,30 @@
 # OpenNav X status — 2026-10-02
 
+## SCRUM-224 / SCRUM-228 / SCRUM-230 — clean GTK fix verified locally; stale snapshot blocks preview
+
+The coherent Linux build at `a3edcaef2904bf1450e306f3e086164479ec7f6f`
+contains the approved GTK floating-surface fix without temporary diagnostics.
+Its short viewport check passed actual zoom/palette button activation, stable
+chart center, correct painted positions and coastline/layout checks.
+[Exact build and failure evidence](evidence/scrum-224-a3edcae-local-preview.json)
+binds executable SHA-256
+`cb195d7356f5891aa2c4831b64f3bc8f33f0fe9e4fc4670c696200858b404985`.
+The prior747 and671 binaries and evidence remain preserved.
+
+The one traced full preview then failed the existing stale-data assertion.
+At5038ms, the exported snapshot marks samples stale and omits route distance,
+but still includes an aging arrival-SOC estimate. The retained
+[UI screenshot](evidence/scrum-230-a3edcae-stale-ui.png) already shows unavailable
+values and “Battery SOC stale”; this is an inconsistent snapshot observation,
+not proof that stale advice remains visible. SCRUM-230 is In Progress. No
+assertion was relaxed and no rerun was performed.
+
+Lifecycle checks were not reached. The original747 missing-window/SIGKILL
+uncertainty remains open; its observed descendant was not proven to be the
+restart child. Process tracing can alter timing and grants no waiver. This is
+not a full preview, native Windows or boat pass, and no new full candidate was
+dispatched by this local verification.
+
 ## SCRUM-224 / SCRUM-229 — ffe native build passes; preview and 125% touch gates fail
 
 The frozen [ffe run](https://github.com/ThereptileII/Work/actions/runs/37041103887)

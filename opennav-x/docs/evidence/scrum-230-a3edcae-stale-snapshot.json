@@ -1,0 +1,75 @@
+{
+  "scope": "Selective unchanged fields from the failed Linux development fixture snapshot; private settings/configuration and unrelated telemetry omitted",
+  "original_snapshot_sha256": "64b12a5d8943510485df36e74bae821cc055e03aa9066566608783a11d883194",
+  "build_commit": "a3edcaef2904bf1450e306f3e086164479ec7f6f",
+  "data_mode": "DEMO",
+  "ui_page": "Energy",
+  "test_fixtures": true,
+  "route": {
+    "waypoint": "DEMO-Harbour-mouth",
+    "revision": "1",
+    "active_waypoint_index": 0,
+    "quality": "STALE",
+    "id": "DEMO-coastal-passage",
+    "state": "StalePosition",
+    "observed_monotonic_ms": "23005468",
+    "waypoint_count": 3,
+    "revision_scope": "DEMO-v0.1",
+    "unit": "nautical miles",
+    "position_monotonic_ms": "23005468",
+    "position_source": "DEMO deterministic trip v0.1",
+    "source": "DEMO synthetic remaining-distance timeline v0.1 (NM), not OpenCPN live progress"
+  },
+  "energy": {
+    "model": "DEMO: 48 kWh usable, 15% reserve; constant speed and whole-pack discharge",
+    "arrival_input": "",
+    "arrival_validity": "Valid advisory estimate",
+    "arrival_soc": 32.25925926,
+    "range_input": "",
+    "shortfall_kwh": 0,
+    "range_nm": 25.06736842,
+    "range_quality": "LIMITED / AGING INPUTS",
+    "arrival_quality": "LIMITED / AGING INPUTS"
+  },
+  "data": [
+    {
+      "device_id": "",
+      "stale_after_ms": 5000,
+      "name": "Latitude",
+      "quality": "STALE",
+      "observed_monotonic_ms": "23005468",
+      "validity": "Measured",
+      "value": 59.08,
+      "aging_after_ms": 2000,
+      "unit": "deg",
+      "age_ms": 5038,
+      "source": "DEMO deterministic trip v0.1"
+    },
+    {
+      "device_id": "",
+      "stale_after_ms": 5000,
+      "name": "Speed over ground",
+      "quality": "STALE",
+      "observed_monotonic_ms": "23005468",
+      "validity": "Measured",
+      "value": 6.3,
+      "aging_after_ms": 2000,
+      "unit": "kn",
+      "age_ms": 5038,
+      "source": "DEMO deterministic trip v0.1"
+    },
+    {
+      "device_id": "DEMO / pack-1",
+      "stale_after_ms": 5000,
+      "name": "Battery SOC",
+      "quality": "STALE",
+      "observed_monotonic_ms": "23005468",
+      "validity": "Measured",
+      "value": 78,
+      "aging_after_ms": 2000,
+      "unit": "%",
+      "age_ms": 5038,
+      "source": "DEMO deterministic trip v0.1"
+    }
+  ]
+}
