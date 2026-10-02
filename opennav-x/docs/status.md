@@ -85,8 +85,12 @@ saturation repair and contain no online targets, so cannot qualify that repair.
 The same comparison still shows prominent text, dense soundings, stock hazard
 symbols and a red upstream course predictor. This is not prototype conformance.
 The [remaining presentation review](design/reviews/scrum15-chart-comparison-20261002.md)
-records the differences and source boundaries. SCRUM-234 corrects a separately
-confirmed GL-only online AIS stern-notch defect before the next candidate.
+records the differences and source boundaries. SCRUM-234 now corrects a
+separately confirmed GL-only online AIS stern-notch defect by changing only
+the polygon's cyclic starting vertex. The original fails two topology checks;
+the correction passes all three, including 1,326 interior comparisons and
+unchanged software path geometry. Its production object compiles. This is
+source/topology proof, not an actual OpenGL capture.
 Windows, actual GL, physical boat review and remaining chart-symbol/label/route
 refinements are still open. No replacement package is qualified yet.
 

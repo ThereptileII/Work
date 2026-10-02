@@ -83,7 +83,9 @@ void OnlineAisOverlay::Draw(ocpnDC &dc, ViewPort &vp, ChartCanvas &canvas) const
     const auto angle=Direction(canvas,vp,t,point);
     if(angle) {
       // Exact reference path M0-12 6 9 0 5-6 9Z, scaled only by Windows DPI.
-      wxPoint vertices[4];const int x[4]={0,6,0,-6},y[4]={-12,9,5,9};
+      // Start at starboard so pinned ocpnDC's 0,1,3,2 GL strip uses the
+      // notch-to-bow diagonal. This cyclic shift preserves the software path.
+      wxPoint vertices[4];const int x[4]={6,0,-6,0},y[4]={9,5,9,-12};
       for(int i=0;i<4;++i)vertices[i]={point.x+wxRound(scale*(x[i]*std::cos(*angle)-y[i]*std::sin(*angle))),
         point.y+wxRound(scale*(x[i]*std::sin(*angle)+y[i]*std::cos(*angle)))};
       dc.DrawPolygon(4,vertices);
