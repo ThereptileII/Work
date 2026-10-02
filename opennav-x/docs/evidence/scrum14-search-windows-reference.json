@@ -1,0 +1,15 @@
+{
+  "commit": "a18a197b6cb7e8468f8dc3d50b64f1b41844ff45",
+  "run": 37030134184,
+  "artifact": 11236538763,
+  "bytes": 866575,
+  "sha256": "f3b14b845084e8d9dc2a06db1f1ef42f234e48bcdb15ffad7f9647620d71206a",
+  "entries": 4,
+  "files": {
+    "search-dusk.png": "2be3c91e3fab62bd5e78eb0cb666b47f947d051422e9bbec1fe7d37f0142324e",
+    "search-day.png": "70bbeeb36f235960eb710e09bba5657cd1c5614bc6e6713e1448e34e3797e449",
+    "capture.json": "25b169090b076e0846cc127635e6727f043b23e4a000c5023823889684ee155e",
+    "search-night.png": "874766fb7163b07072b24ab28cd97a5e191a8f11db4169868bf7af6367c8f383"
+  },
+  "scope": "Supplemental unchanged HTML Search references only; no native product or boat acceptance"
+}

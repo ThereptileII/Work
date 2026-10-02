@@ -1,6 +1,7 @@
 #include "ui/ChartPresentationDrawer.h"
 #include <cmath>
 #include <wx/dcbuffer.h>
+#include <wx/tokenzr.h>
 
 namespace opennav::ui {
 namespace {
@@ -101,20 +102,12 @@ XNavChartPresentationDrawer::XNavChartPresentationDrawer(
   track_padding->Add(choices,1,wxEXPAND|wxALL,FromDIP(4));
   orientation_track_->SetSizer(track_padding);
   content_->Add(orientation_track_,0,wxEXPAND|wxBOTTOM,FromDIP(20));
-  CopyBlock(262,[this](XNavPainter &p,int width) {
-    const auto format=state_.format==ChartFormat::Vector?"Vector":
-        state_.format==ChartFormat::Raster?"Raster":"Unavailable";
-    p.Wrapped(wxString("Observed chart format: ")+format+". This is not a style switch.",
-              0,0,9,15,width,p.c.muted,2);
-    p.Wrapped(W(state_.format_reason),0,38,9,15,width,p.c.muted,3);
-    p.Wrapped("Chart symbols and depth contours remain under OpenCPN presentation and safety settings. "
-              "ENC controls do not alter text or soundings embedded in raster charts.",
-              0,91,9,15,width,p.c.muted,4);
-    p.Wrapped("Course up needs a current course; Head up needs current heading. Check source health.",
-              0,158,9,15,width,p.c.muted,3);
-    const wxString status=!feedback_.empty()?feedback_:
-        !state_.available?W(state_.reason):!state_.orientation?"Chart orientation unavailable":wxString{};
-    p.Wrapped(status,0,211,10,16,width,p.c.secondary,3);
+  notes_=CopyBlock(1,[this](XNavPainter &p,int width) {
+    for(const auto &line:note_lines_)
+      p.Text(line.first,0,line.second,11,p.c.secondary,false,width);
+  });
+  notes_->Bind(wxEVT_SIZE,[this](wxSizeEvent &event) {
+    ReflowNotes();event.Skip();
   });
   style_=new XNavButton(body_,wxID_ANY,"Chart palette preferences","Chart palette preferences");
   style_->SetMinSize(FromDIP(wxSize(1,48)));style_->SetDisplayAction(48);
@@ -156,6 +149,7 @@ void XNavChartPresentationDrawer::Update(const application::ChartPresentationSta
   const bool layout_changed=!rendered_ || style_available_!=style_available;
   rendered_=true;style_available_=style_available;
   state_=state;SetLight(mode);
+  ReflowNotes();
   rows_->SetBackgroundColour(Colour(Theme(mode).background));
   orientation_track_->SetBackgroundColour(Colour(Theme(mode).surface));
   const std::array<const application::ChartLayerState *,3> states{{&state_.enc_text,&state_.ais_vessels,&state_.depth_soundings}};
@@ -178,6 +172,55 @@ void XNavChartPresentationDrawer::Update(const application::ChartPresentationSta
   format_->Refresh(false);rows_->Refresh(false);orientation_track_->Refresh(false);
   for(auto *panel:copies_)panel->Refresh(false);
   if(layout_changed) {body_->Layout();body_->FitInside();}
+}
+
+void XNavChartPresentationDrawer::ReflowNotes() {
+  const int width=notes_->GetClientSize().x;
+  if(width<=0)return;
+  const auto format=state_.format==ChartFormat::Vector?"Vector":
+      state_.format==ChartFormat::Raster?"Raster":"Unavailable";
+  const wxString status=!feedback_.empty()?feedback_:
+      !state_.available?W(state_.reason):!state_.orientation?"Chart orientation unavailable":wxString{};
+  const std::array<wxString,5> paragraphs{{
+      wxString("Observed chart format: ")+format+". This is not a style switch.",
+      W(state_.format_reason),
+      "Chart symbols and depth contours remain under OpenCPN presentation and safety settings. "
+      "ENC controls do not alter text or soundings embedded in raster charts.",
+      "Course up needs a current course; Head up needs current heading. Check source health.",
+      status}};
+  wxClientDC dc(notes_);dc.SetFont(UiFont(*notes_,11));
+  note_lines_.clear();double y=0;
+  // Active .drawer-body .note: 11px / 1.65. Round each accumulated line
+  // position, rather than losing the fractional leading on every line.
+  const auto emit=[&](const wxString &line) {
+    note_lines_.emplace_back(line,std::lround(y));y+=11*1.65;
+  };
+  for(const auto &paragraph:paragraphs) {
+    if(paragraph.empty())continue;
+    wxStringTokenizer words(paragraph," ");wxString line;
+    while(words.HasMoreTokens()) {
+      auto word=words.GetNextToken();
+      const auto candidate=line.empty()?word:line+" "+word;
+      if(!line.empty() && dc.GetTextExtent(candidate).x>width) {
+        emit(line);line.clear();
+      }
+      // Keep even an unbroken provider message within the note surface.
+      while(dc.GetTextExtent(word).x>width && word.length()>1) {
+        std::size_t count=word.length()-1;
+        while(count>1 && dc.GetTextExtent(word.Left(count)).x>width)--count;
+        emit(word.Left(count));word=word.Mid(count);
+      }
+      line=line.empty()?word:line+" "+word;
+    }
+    if(!line.empty())emit(line);
+    y+=18;
+  }
+  const int height=notes_->FromDIP(static_cast<int>(std::ceil(y)));
+  if(notes_->GetMinSize().y!=height) {
+    notes_->SetMinSize(wxSize(1,height));
+    body_->Layout();body_->FitInside();
+  }
+  notes_->Refresh(false);
 }
 
 void XNavChartPresentationDrawer::ChangeLayer(unsigned index) {
@@ -230,7 +273,7 @@ void XNavChartPresentationDrawer::PaintRows(wxPaintEvent &) {
     else if(i==2)detail="Names, vectors and closest approach";
     const int label_y=detail.empty()?(height-18)/2:height<60?7:13;
     p.Text(labels[i],0,top+label_y,12,p.c.secondary,false,width-85);
-    if(!detail.empty())p.Text(detail,0,top+label_y+22,9,p.c.muted,false,width-65);
+    if(!detail.empty())p.Text(detail,0,top+label_y+22,11,p.c.muted,false,width-65);
     if(i==0 || i==4)p.TextWeight("Managed",width-74,top+(height-16)/2,10,p.c.muted,400,74,true);
     else if(i>=5 || !states[i]->visible)p.TextWeight("Unavailable",width-74,top+(height-16)/2,10,p.c.muted,400,74,true);
     p.Rule(0,std::lround(row_top[i]+row_height[i])-1,width);

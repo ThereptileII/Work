@@ -160,8 +160,15 @@ void XNavDrawer::Paint(wxPaintEvent &) {
   dc.SetBrush(*wxTRANSPARENT_BRUSH);
   dc.SetPen(wxPen(Colour(c.border)));
   const auto s = GetClientSize();
+#ifdef __WXMSW__
+  // GDI excludes the right/bottom extent. Keep those strokes in the outer
+  // pixel reserved by Arrange(), rather than underneath its child windows.
+  dc.DrawRoundedRectangle(0, 0, s.x, s.y,
+                          FromDIP(prototype::drawer_radius));
+#else
   dc.DrawRoundedRectangle(0, 0, s.x - 1, s.y - 1,
                           FromDIP(prototype::drawer_radius));
+#endif
 }
 void XNavDrawer::PaintHeading(wxPaintEvent &) {
   wxAutoBufferedPaintDC dc(heading_);
@@ -172,7 +179,14 @@ void XNavDrawer::PaintHeading(wxPaintEvent &) {
             width = ToDIP(heading_->GetClientSize().x);
   p.TextTracked(eyebrow_, 22, 20 + offset, 9, p.c.accent, 650, 1.17,
                 width - 44);
-  p.TextTracked(title_, 22, 39 + offset, 26, p.c.primary, 450, -1.0,
+#ifdef __WXMSW__
+  // Native29 title ink was 4px below the canonical Windows CSS line box.
+  // Correct only this GDI title placement; header/body geometry is unchanged.
+  constexpr int title_y = 35;
+#else
+  constexpr int title_y = 39;
+#endif
+  p.TextTracked(title_, 22, title_y + offset, 26, p.c.primary, 450, -1.0,
                 width - (has_back_ ? 44 : 110));
   p.Rule(0, ToDIP(heading_->GetClientSize().y) - 1, width);
 }

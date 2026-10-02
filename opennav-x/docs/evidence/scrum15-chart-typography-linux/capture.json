@@ -1,0 +1,28 @@
+{
+  "platform": "Linux / wxGTK / Xvfb",
+  "source_base": "632463c",
+  "scope": "SCRUM-15 comment 10494; local typography and fixture interaction only",
+  "test_modified": false,
+  "checks": 46,
+  "fixture_only": true,
+  "viewport": [
+    1280,
+    800
+  ],
+  "source_files": {
+    "src/ui/ChartPresentationDrawer.cpp": "faeaee12e26054299ae75063dcfb9b67f0ff8eff70a354ee4ca8439b917d42c4",
+    "src/ui/ChartPresentationDrawer.h": "b342c3c8b3444a3d2911e6f2918d8217966603e078de0af0d4e45a7bac6fa092",
+    "tests/chart_presentation_drawer_test.cpp": "2ac0c7bcf1d4fe4621cd4f9bb97cb89a2c4843133941f2ddb0be2d62d787f04c"
+  },
+  "files": {
+    "chart-day-bottom.png": "e22371408325c2ada732ef138335435d22e903ee9773524ac37fdbc0fef63c16",
+    "chart-day-top.png": "ce0d50d128cb9ff579f2d1d255c2f9b7fc31484decebb778d88bab43f688b32c",
+    "chart-dusk-raster.png": "d22e12fe2a03e662c622c83a6d40d5f2cb6b7c9fe7237596108e89fc951040e3",
+    "chart-night-unavailable.png": "89752d63885737fb5276f3d825922cc0cb8e93f8b8f8279127e0dc294d30c8eb",
+    "result.json": "47140d5badbdbb0124a3e3f3a6a7c74f82af0b814a8af2ea8730d2a82a91caba"
+  },
+  "pending": [
+    "native Windows exact-source visual review",
+    "boat display acceptance"
+  ]
+}

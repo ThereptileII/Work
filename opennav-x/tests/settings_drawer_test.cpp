@@ -434,20 +434,29 @@ private:
       case 15: Check(navigations_==2 && last_page_==ui::ProductPage::RailLayout,"rail configuration preserved");
         Click("System");break;
       case 16:
-        Check(Find(panel_,"Legacy mode") && !Find(panel_,"Legacy mode")->IsEnabled(),"unavailable restart action disabled");
+        {
+          auto *unavailable=new ui::XNavSettingsDrawer(*frame_,{});
+          unavailable->Select(ui::SettingsSection::System);
+          const auto *advanced=Find(unavailable,"Advanced / Legacy Settings");
+          Check(advanced && !advanced->IsEnabled(),"missing upstream settings callback disables direct action");
+          unavailable->Destroy();
+        }
         Check(!Find(panel_,"AUTO") && !Find(panel_,"STBY"),"preferences cannot execute physical controls");
-        Capture("system-night");Click("Diagnostics");break;
-      case 17: Check(diagnostics_==1,"diagnostics callback once");Click("Radar");break;
-      case 18: Capture("settings-radar-night");Click("Autopilot");break;
-      case 19: Capture("settings-autopilot-night");Click("Close");break;
-      case 20:
+        Capture("system-night");Click("Advanced / Legacy Settings");break;
+      case 17:
+        Check(advanced_==2 && navigations_==2,"Advanced settings delegates directly without opening XNav preferences");
+        Click("Diagnostics");break;
+      case 18: Check(diagnostics_==1,"diagnostics callback once");Click("Radar");break;
+      case 19: Capture("settings-radar-night");Click("Autopilot");break;
+      case 20: Capture("settings-autopilot-night");Click("Close");break;
+      case 21:
         Check(closed_==1 && !panel_->IsShown(),"close hides only preferences");
         display_.scale_percent=100;
         panel_->SetDisplayPreferences(display_);
         panel_->Select(ui::SettingsSection::Vessel);
         Feed();
         break;
-      case 21:
+      case 22:
         {
           // Reproduce the retained offset after reaching Advanced battery model.
           // Scroll the real component body; no fixture-only product hooks.
@@ -463,7 +472,7 @@ private:
           panel_->Open(wxRect(frame_->ClientToScreen({80,68}),wxSize(1014,698)));
         }
         break;
-      case 22:
+      case 23:
         {
           auto *body=ScrollBody();
           Check(body->GetViewStart()==wxPoint(0,0),"root Preferences reopening resets body scroll");
@@ -481,7 +490,7 @@ private:
                 "reopened Sensors section receives real pointer input");
         }
         break;
-      case 23:
+      case 24:
         Check(panel_->Section()==ui::SettingsSection::Sensors,"pointer reaches Sensors after root reopen");
         Check(saves_==2 && display_saves_==2,"reopening does not save settings");
 #ifdef __WXMSW__
@@ -490,12 +499,12 @@ private:
         panel_->Select(ui::SettingsSection::Vessel);Feed();
         ActivateSurface(panel_);
         break;
-      case 24:
+      case 25:
         ScrollBody()->Scroll(0,ScrollBody()->GetVirtualSize().y);
         activation_navigations_=navigations_;
         NativeClick(Find(panel_,"Advanced battery model"));
         break;
-      case 25:
+      case 26:
         Check(navigations_==activation_navigations_+1 && last_page_==ui::ProductPage::EnergySettings,
               "physical battery click reaches owner callback once");
         Check(!panel_->IsShown(),"owner page callback dismisses cached Preferences");
@@ -504,14 +513,14 @@ private:
         panel_->Open(wxRect(frame_->ClientToScreen({80,68}),wxSize(1014,698)));
         ActivationEvidence("reopened-before-owner-activation");
         break;
-      case 26:
+      case 27:
         // Present/Raise may foreground the drawer on Windows. Exercise the
         // actual owner-to-drawer transition explicitly instead of assuming
         // that ShowWithoutActivating kept the owner in the foreground.
         ActivateSurface(frame_);
         ActivationEvidence("owner-after-reopen");
         break;
-      case 27:
+      case 28:
         sensor_before_=Find(panel_,"Sensors")->GetScreenRect();
         ActivationEvidence("before-activation");
         Capture("activation/before-activation",false);
@@ -522,14 +531,14 @@ private:
         ActivateSurface(panel_);
         ActivationEvidence("after-activation-immediate");
         break;
-      case 28:
+      case 29:
         ActivationEvidence("after-activation-settled");
         Capture("activation/after-activation",false);
         Check(ScrollBody()->GetViewStart()==wxPoint(0,0),"drawer activation must preserve root Preferences scroll reset");
         Check(Find(panel_,"Sensors")->GetScreenRect()==sensor_before_,"Sensors must not move when reopened drawer activates");
         NativeClick(Find(panel_,"Sensors"));
         break;
-      case 29:
+      case 30:
         Check(panel_->Section()==ui::SettingsSection::Sensors,"physical Sensors click works after owner to drawer activation");
         Check(saves_==2 && display_saves_==2,"activation transition does not save settings");
         ActivationEvidence("sensors-selected");

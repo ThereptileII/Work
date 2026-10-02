@@ -22,6 +22,7 @@ private:
   void Accept(application::ChartPresentationResult);
   void PaintRows(wxPaintEvent &);
   void PaintFormat(wxPaintEvent &);
+  void ReflowNotes();
   wxPanel *CopyBlock(int, std::function<void(XNavPainter &, int)>);
   application::NavigationActions actions_;
   application::ChartPresentationState state_;
@@ -29,6 +30,8 @@ private:
   std::uint64_t command_generation_ = 0;
   bool rendered_ = false, style_available_ = false;
   wxPanel *format_ = nullptr, *rows_ = nullptr, *orientation_track_ = nullptr;
+  wxPanel *notes_ = nullptr;
+  std::vector<std::pair<wxString, int>> note_lines_;
   std::array<XNavButton *, 3> layers_{}, orientations_{};
   XNavButton *style_ = nullptr;
   std::vector<wxPanel *> copies_;

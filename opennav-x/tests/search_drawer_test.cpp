@@ -117,6 +117,12 @@ private:
         Check(drawer_->GetScreenRect()==wxRect(682,80,398,674),"reference drawer bounds");
         Check(Input()->HasFocus(),"opening focuses search input");
         Check(Row("TEST route: Saved route")!=nullptr,"saved route exposed");
+        Check(Input()->GetParent()->GetScreenRect()==wxRect(700,189,362,54),
+              "search focus outline reserves 5px outside the unchanged 352x44 field");
+        Check(Row(wxString::FromUTF8("TEST waypoint Å: Saved waypoint"))->GetScreenRect()==wxRect(705,253,352,71),
+              "first search result matches prototype 71px row");
+        Check(Row("TEST route: Saved route")->GetScreenRect()==wxRect(705,324,352,71),
+              "second search result retains exact row spacing");
         Capture("saved-objects-day");
         Click(wxString::FromUTF8("TEST waypoint Å: Saved waypoint"));catalog_.waypoints.clear();break;
       case 2:

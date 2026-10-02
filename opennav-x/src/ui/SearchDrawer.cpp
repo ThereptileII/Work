@@ -23,7 +23,7 @@ public:
   SearchRow(wxWindow *parent, const SearchMatch &match, LightMode light)
       : XNavButton(parent, wxID_ANY, match.name, match.name + ": " + match.detail),
         detail_(match.detail), icon_(match.route ? XNavIcon::Route : XNavIcon::Pin), light_(light) {
-    SetMinSize(FromDIP(wxSize(80, 66)));
+    SetMinSize(FromDIP(wxSize(80, 71)));
     SetLightMode(light);
     Bind(wxEVT_PAINT, [this](wxPaintEvent &) {
       wxAutoBufferedPaintDC dc(this);
@@ -39,11 +39,11 @@ public:
           "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\"><path d=\"%s\" fill=\"none\" stroke=\"#%06x\" stroke-width=\"1.65\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/></svg>",
           wxString::FromUTF8(PrototypeIconPath(item.first)), p.c.accent);
         const auto bitmap = wxBitmapBundle::FromSVG(svg.utf8_str(), FromDIP(wxSize(22,22))).GetBitmap(FromDIP(wxSize(22,22)));
-        if (bitmap.IsOk()) dc.DrawBitmap(bitmap, FromDIP(item.second), FromDIP(22), true);
+        if (bitmap.IsOk()) dc.DrawBitmap(bitmap, FromDIP(item.second), FromDIP(24), true);
       }
-      p.TextWeight(GetLabel(), 34, 19, 12, p.c.primary, 550, width-68);
-      p.Text(detail_, 34, 39, 9, p.c.muted, false, width-68);
-      p.Rule(0, 65, width);
+      p.TextWeight(GetLabel(), 34, 20, 12, p.c.primary, 550, width-68);
+      p.Text(detail_, 34, 42, 9, p.c.muted, false, width-68);
+      p.Rule(0, 70, width);
       if (HasKeyboardFocus()) {
         dc.SetBrush(*wxTRANSPARENT_BRUSH); dc.SetPen(wxPen(Colour(p.c.accent)));
         dc.DrawRoundedRectangle(1,1,GetClientSize().x-2,GetClientSize().y-2,FromDIP(6));
@@ -88,9 +88,13 @@ bool HasUniqueSearchObject(const application::Catalog &catalog, const SearchMatc
 XNavSearchDrawer::XNavSearchDrawer(wxWindow &owner, application::NavigationActions actions)
     : XNavDrawer(owner, "Chart search"), actions_(std::move(actions)) {
   SetHeading("FIND YOUR NEXT DESTINATION", "Search the coast", false);
+  // Reserve the CSS outline's 2px stroke + 3px offset outside the 44px
+  // editor. Keep the field, result and note origins at their prototype positions.
+  body_->GetSizer()->GetItem(content_)->SetBorder(FromDIP(17));
+  body_->GetSizer()->GetItem(std::size_t{0})->AssignSpacer(wxSize(0,FromDIP(19)));
   input_frame_ = new wxPanel(body_,wxID_ANY);
   input_frame_->SetName("Search field"); input_frame_->SetLabel(wxEmptyString);
-  input_frame_->SetMinSize(FromDIP(wxSize(80,44)));
+  input_frame_->SetMinSize(FromDIP(wxSize(90,54)));
   input_frame_->SetBackgroundStyle(wxBG_STYLE_PAINT);
   input_frame_->Bind(wxEVT_PAINT,[this](wxPaintEvent &){
     wxAutoBufferedPaintDC dc(input_frame_);
@@ -98,9 +102,16 @@ XNavSearchDrawer::XNavSearchDrawer(wxWindow &owner, application::NavigationActio
     std::unique_ptr<wxGraphicsContext> graphics(wxGraphicsContext::Create(dc));
     if (!graphics) return;
     const auto c=Theme(light_); const auto size=input_frame_->GetClientSize();
+    const int inset=FromDIP(5);
     graphics->SetBrush(wxBrush(Colour(c.surface)));
-    graphics->SetPen(wxPen(Colour(query_->HasFocus()?c.accent:c.border)));
-    graphics->DrawRoundedRectangle(.5,.5,size.x-1.,size.y-1.,FromDIP(8));
+    graphics->SetPen(wxPen(Colour(c.border)));
+    graphics->DrawRoundedRectangle(inset+.5,inset+.5,size.x-2*inset-1.,size.y-2*inset-1.,FromDIP(8));
+    if(query_->HasFocus()) {
+      const int stroke=FromDIP(2);
+      graphics->SetBrush(*wxTRANSPARENT_BRUSH);
+      graphics->SetPen(wxPen(Colour(c.accent),stroke));
+      graphics->DrawRoundedRectangle(stroke/2.,stroke/2.,size.x-stroke,size.y-stroke,FromDIP(12));
+    }
   });
   query_ = new wxTextCtrl(input_frame_,wxID_ANY,wxEmptyString,wxDefaultPosition,wxDefaultSize,wxBORDER_NONE);
   query_->SetName("Search saved routes and waypoints");
@@ -115,18 +126,18 @@ XNavSearchDrawer::XNavSearchDrawer(wxWindow &owner, application::NavigationActio
   g_object_unref(css);
 #endif
   auto *input_layout = new wxBoxSizer(wxHORIZONTAL);
-  input_layout->Add(query_,1,wxALIGN_CENTER_VERTICAL|wxLEFT|wxRIGHT,FromDIP(13));
+  input_layout->Add(query_,1,wxALIGN_CENTER_VERTICAL|wxLEFT|wxRIGHT,FromDIP(18));
   input_frame_->SetSizer(input_layout);
-  content_->AddSpacer(FromDIP(4));
-  content_->Add(input_frame_,0,wxEXPAND|wxBOTTOM,FromDIP(15));
+  content_->Add(input_frame_,0,wxEXPAND|wxBOTTOM,FromDIP(10));
   results_ = new wxPanel(body_,wxID_ANY); results_->SetLabel(wxEmptyString);
   rows_ = new wxBoxSizer(wxVERTICAL); results_->SetSizer(rows_);
-  content_->Add(results_,0,wxEXPAND);
+  content_->Add(results_,0,wxEXPAND|wxLEFT|wxRIGHT,FromDIP(5));
   note_ = new wxPanel(body_,wxID_ANY); note_->SetLabel(wxEmptyString);
   note_->SetBackgroundStyle(wxBG_STYLE_PAINT);
   note_->SetMinSize(FromDIP(wxSize(80,126)));
   note_->Bind(wxEVT_PAINT,&XNavSearchDrawer::PaintNote,this);
-  content_->Add(note_,0,wxEXPAND|wxTOP,FromDIP(11));
+  content_->AddSpacer(FromDIP(11));
+  content_->Add(note_,0,wxEXPAND|wxLEFT|wxRIGHT,FromDIP(5));
   query_->Bind(wxEVT_TEXT,[this](wxCommandEvent &){RefreshResults();});
   query_->Bind(wxEVT_SET_FOCUS,[this](wxFocusEvent &e){input_frame_->Refresh();e.Skip();});
   query_->Bind(wxEVT_KILL_FOCUS,[this](wxFocusEvent &e){input_frame_->Refresh();e.Skip();});

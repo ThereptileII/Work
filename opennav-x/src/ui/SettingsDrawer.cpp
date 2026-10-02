@@ -25,6 +25,14 @@ XNavSettingsDrawer::XNavSettingsDrawer(wxWindow &owner, SettingsDrawerActions ac
 }
 void XNavSettingsDrawer::Open(const wxRect &workspace) {
   Present(workspace);
+  if (!IsShown()) return;
+  // Root reopening must replace a remembered offscreen child before resetting
+  // scroll, or native activation restores that child and scrolls back to it.
+  const auto index = static_cast<std::size_t>(section_);
+  if (index < tabs_buttons_.size()) {
+    auto *tab = tabs_buttons_[index];
+    if (tab && tab->IsShown() && tab->IsEnabled()) tab->SetFocus();
+  }
   // Prototype openPanel('settings') starts the drawer body at the top.
   // Keep this separate from Present(), which also runs during live refresh.
   body_->Scroll(0, 0);
@@ -378,9 +386,9 @@ void XNavSettingsDrawer::Build() {
       Page("Recordings & commissioning","Read-only observation and field capture",XNavIcon::Instruments,ProductPage::Commissioning);
       Page("Export diagnostics","Choose the information to include",XNavIcon::Settings,ProductPage::FieldReport);
       Link("Plugins & adapters","Advanced OpenCPN plugin settings",XNavIcon::Layers,actions_.plugins);
-      Button("Legacy mode",actions_.legacy);
-      Button("Safe mode",actions_.safe);
-      Page("Advanced / Legacy Settings","Connections, charts and additional preferences",XNavIcon::Settings,ProductPage::NavigationSettings);
+      Link("Advanced / Legacy Settings",actions_.advanced
+          ? "Connections, charts and additional preferences" : "OpenCPN settings unavailable",
+          XNavIcon::Settings,actions_.advanced);
       break;
     case SettingsSection::Help:
       CopyBlock(145,[](XNavPainter &p,int width){p.TextTracked("OPENNAV X",0,4,9,p.c.accent,650,1.17);

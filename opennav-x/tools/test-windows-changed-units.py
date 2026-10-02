@@ -163,7 +163,7 @@ def prototype_component(build, wx, evidence, component='search'):
     else:
         text = (evidence / 'search-component.log').read_text(errors='replace')
         matches = re.findall(r'^(\d+) focused search checks passed; native Windows and boat remain pending$', text, re.M)
-        if len(matches) != 1 or int(matches[0]) < 82:
+        if len(matches) != 1 or int(matches[0]) < 85:
             raise ValueError('Search component did not finish its actual focused interaction checks')
         checks = int(matches[0])
     from PIL import Image
