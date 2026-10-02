@@ -21,11 +21,12 @@ function SnapshotEnvironment {
 }
 function AssertRestored($Before) {
     $After = SnapshotEnvironment
-    if ($After.Count -ne $Before.Count) { throw 'Wrapper changed the number of process environment variables' }
-    foreach ($Name in $Before.Keys) {
-        if (-not $After.ContainsKey($Name) -or $After[$Name] -cne $Before[$Name]) {
-            throw "Wrapper did not restore environment variable $Name"
-        }
+    $Added = @($After.Keys | Where-Object { -not $Before.ContainsKey($_) } | Sort-Object)
+    $Removed = @($Before.Keys | Where-Object { -not $After.ContainsKey($_) } | Sort-Object)
+    $Changed = @($Before.Keys | Where-Object { $After.ContainsKey($_) -and $After[$_] -cne $Before[$_] } | Sort-Object)
+    if ($After.Count -ne $Before.Count -or $Added.Count -or $Removed.Count -or $Changed.Count) {
+        # Variable names diagnose restoration; values may contain CI credentials.
+        throw "Wrapper environment mismatch: added=[$($Added -join ',')]; removed=[$($Removed -join ',')]; changed=[$($Changed -join ',')]"
     }
 }
 function CompilerEnvironmentIdentity {
@@ -85,7 +86,7 @@ try {
     $Report.error = $_.Exception.Message
     throw
 } finally {
-    Get-ChildItem Env: | Where-Object { -not $Original.ContainsKey($_.Name) } | ForEach-Object { [Environment]::SetEnvironmentVariable($_.Name, $null, 'Process') }
+    Get-ChildItem Env: | Where-Object { -not $Original.ContainsKey($_.Name) } | ForEach-Object { Remove-Item -LiteralPath "Env:$($_.Name)" -ErrorAction Stop }
     foreach ($Name in $Original.Keys) { [Environment]::SetEnvironmentVariable($Name, $Original[$Name], 'Process') }
     $Json = $Report | ConvertTo-Json -Depth 8
     $Json | Set-Content -LiteralPath (Join-Path $Evidence 'environment-wrapper.json') -Encoding UTF8

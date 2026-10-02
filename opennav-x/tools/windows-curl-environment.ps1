@@ -15,7 +15,12 @@ function Invoke-WindowsCurlEnvironment {
         'VCToolsVersion','VCToolsInstallDir','VCINSTALLDIR','VSINSTALLDIR',
         'UniversalCRTSdkDir','UCRTVersion','VisualStudioVersion','MSYS2_ARG_CONV_EXCL')
     $Saved = @{}
-    foreach ($Name in $Names) { $Saved[$Name] = [Environment]::GetEnvironmentVariable($Name, 'Process') }
+    foreach ($Name in $Names) {
+        $Saved[$Name] = @{
+            present = Test-Path -LiteralPath ("Env:" + $Name)
+            value = [Environment]::GetEnvironmentVariable($Name, 'Process')
+        }
+    }
     $EnvironmentCmd = Join-Path ([IO.Path]::GetTempPath()) ("xnav-curl-env-$([guid]::NewGuid().ToString('N')).cmd")
     foreach ($Path in @($EnvironmentCmd,$VcVars)) {
         if ($Path.Contains('%') -or $Path.Contains('"') -or $Path.Contains([char]10) -or $Path.Contains([char]13)) {
@@ -44,7 +49,15 @@ function Invoke-WindowsCurlEnvironment {
         if ($Selected -ine $TestPerl) { throw 'Curl environment selected a different Perl' }
         & $Action
     } finally {
-        foreach ($Name in $Names) { [Environment]::SetEnvironmentVariable($Name, $Saved[$Name], 'Process') }
+        foreach ($Name in $Names) {
+            if ($Saved[$Name].present) {
+                [Environment]::SetEnvironmentVariable($Name, $Saved[$Name].value, 'Process')
+            } else {
+                # PowerShell may bind $null to an empty string. Newer .NET keeps
+                # empty environment values, so absence requires explicit removal.
+                Remove-Item -LiteralPath ("Env:" + $Name) -ErrorAction SilentlyContinue
+            }
+        }
         if (Test-Path -LiteralPath $EnvironmentCmd) { Remove-Item -LiteralPath $EnvironmentCmd -Force }
     }
 }

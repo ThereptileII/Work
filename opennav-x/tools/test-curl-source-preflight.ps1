@@ -162,7 +162,7 @@ try {
         if ($Mode -eq 'production-helper' -and -not $ProductionOnly) {
             # Reinitialize from the same inherited producer environment, rather
             # than retaining the manually initialized negative-control case.
-            Get-ChildItem Env: | Where-Object { -not $InheritedEnvironment.ContainsKey($_.Name) } | ForEach-Object { [Environment]::SetEnvironmentVariable($_.Name, $null, 'Process') }
+            Get-ChildItem Env: | Where-Object { -not $InheritedEnvironment.ContainsKey($_.Name) } | ForEach-Object { Remove-Item -LiteralPath "Env:$($_.Name)" -ErrorAction Stop }
             foreach ($Name in $InheritedEnvironment.Keys) { [Environment]::SetEnvironmentVariable($Name, $InheritedEnvironment[$Name], 'Process') }
         }
         $CaseAction = {
@@ -222,7 +222,7 @@ try {
     throw
 } finally {
     $Report | ConvertTo-Json -Depth 12 | Set-Content -LiteralPath (Join-Path $Evidence 'source-preflight.json')
-    Get-ChildItem Env: | Where-Object { -not $SavedEnvironment.ContainsKey($_.Name) } | ForEach-Object { [Environment]::SetEnvironmentVariable($_.Name, $null, 'Process') }
+    Get-ChildItem Env: | Where-Object { -not $SavedEnvironment.ContainsKey($_.Name) } | ForEach-Object { Remove-Item -LiteralPath "Env:$($_.Name)" -ErrorAction Stop }
     foreach ($Name in $SavedEnvironment.Keys) { [Environment]::SetEnvironmentVariable($Name, $SavedEnvironment[$Name], 'Process') }
     # Keep a bounded, useful diagnosis in the job log even if artifact retrieval
     # is unavailable. Never print the environment files or vcvars 'set' output.
