@@ -1,0 +1,272 @@
+{
+  "schemaVersion": 1,
+  "issue": "SCRUM-224",
+  "status": "early-artifacts-verified",
+  "sourceCommit": "488fbbdf5161e986c986773187b1008a7f8684f5",
+  "workflowRun": {
+    "id": 36984898997,
+    "attempt": 1,
+    "url": "https://github.com/ThereptileII/Work/actions/runs/36984898997",
+    "statusAtApiSnapshot": "in_progress",
+    "conclusionAtApiSnapshot": null
+  },
+  "verification": {
+    "downloadedArtifacts": 11,
+    "downloadedBytes": 2244210,
+    "allApiSizesAndSha256Matched": true,
+    "allZipCrcChecksPassed": true,
+    "sameRunCommitAndAttemptReceiptVerified": true
+  },
+  "artifacts": [
+    {
+      "id": 11217810113,
+      "name": "boat-firmware-488fbbdf5161e986c986773187b1008a7f8684f5",
+      "bytes": 2939,
+      "sha256": "703c433924f9580333bd544226527370158a16c452d902f4f0a2cc738b3dd3ba",
+      "apiSizeAndDigestMatched": true,
+      "zipEntriesCrcPassed": 2,
+      "result": {
+        "scope": "Pinned ESP32-C6 firmware compile only; no flashing or physical validation",
+        "compiledBinarySha256": "b5a22a874579600b8f3e3cad3c1ca94d59b1a02169b54802bd7a9b087bfc6dda",
+        "physicalValidation": "NOT RUN; compile and host tests only"
+      }
+    },
+    {
+      "id": 11217800743,
+      "name": "commissioning-broker-488fbbdf5161e986c986773187b1008a7f8684f5",
+      "bytes": 16722,
+      "sha256": "f7b6acb922b97419348f28442978f73b3e8afdaaf9139b5454b82a0d0ded4afa",
+      "apiSizeAndDigestMatched": true,
+      "zipEntriesCrcPassed": 37,
+      "result": {
+        "scope": "Actual broker/Prepare/Arm/Collect with synthetic TEMP installation and marker processes; no real application or boat acceptance",
+        "reports": [
+          {
+            "report": "restart-broker/broker-result.json",
+            "status": "passed",
+            "checks": 51,
+            "cases": 6
+          },
+          {
+            "report": "restart-prepare-arm/prepare-arm-result.json",
+            "status": "passed",
+            "checks": 56,
+            "cases": 4
+          }
+        ],
+        "retainedNegative": "Receipt-recording failure leaves consumed permit and explicit uncertain completion; not counted as successful restart."
+      }
+    },
+    {
+      "id": 11217785694,
+      "name": "restart-window-488fbbdf5161e986c986773187b1008a7f8684f5",
+      "bytes": 23465,
+      "sha256": "ee9f4151b8d455fd0287e9f851ba8fd7c67fe75cdba1b2f4a994d8fc484e00c6",
+      "apiSizeAndDigestMatched": true,
+      "zipEntriesCrcPassed": 6,
+      "result": {
+        "scope": "Disposable native window fixtures; product not launched and no boat acceptance",
+        "reports": [
+          {
+            "report": "restart-window/native-window-results.json",
+            "status": "passed",
+            "cases": 14
+          },
+          {
+            "report": "display-window/native-display-results.json",
+            "status": "passed",
+            "cases": 53
+          },
+          {
+            "report": "stock-resize/native-stock-resize.json",
+            "status": "passed",
+            "cases": 9
+          },
+          {
+            "report": "stock-close/stock-close-result.json",
+            "status": "passed",
+            "cases": 4,
+            "checks": 28
+          }
+        ]
+      }
+    },
+    {
+      "id": 11217715824,
+      "name": "commissioning-restart-qualified-488fbbdf5161e986c986773187b1008a7f8684f5",
+      "bytes": 334,
+      "sha256": "069ffc5409d5ae191da788f13a8b03da60805880319fb63d9c8949d235010b9d",
+      "apiSizeAndDigestMatched": true,
+      "zipEntriesCrcPassed": 1,
+      "result": {
+        "scope": "Same-run restart prerequisite receipt; not actual boat or integrated product acceptance",
+        "receipt": {
+          "runId": "36984898997",
+          "schema": 1,
+          "transport": "success",
+          "maintenance": "success",
+          "broker": "success",
+          "prepareArm": "success",
+          "runAttempt": "1",
+          "actualBoat": false,
+          "commit": "488fbbdf5161e986c986773187b1008a7f8684f5",
+          "owner": "OpenNavX.CI.RestartGates.1"
+        }
+      }
+    },
+    {
+      "id": 11217556087,
+      "name": "stock-welcome-en_US-488fbbdf5161e986c986773187b1008a7f8684f5",
+      "bytes": 474123,
+      "sha256": "c482a7bc0ba5a04502aa9166450dbc5bed229485482eede4201ef7b316791493",
+      "apiSizeAndDigestMatched": true,
+      "zipEntriesCrcPassed": 42,
+      "result": {
+        "scope": "Actual official stock portable warning primitives only; production commissioning launch/audit and real boat acceptance are separate.",
+        "status": "passed",
+        "locale": "en_US",
+        "checks": 61
+      }
+    },
+    {
+      "id": 11217396101,
+      "name": "boat-maintenance-488fbbdf5161e986c986773187b1008a7f8684f5",
+      "bytes": 24975,
+      "sha256": "01ff76e210925b49a0eb7d957c63181df42b3ee17bb0dd47edb8f4c04061c4da",
+      "apiSizeAndDigestMatched": true,
+      "zipEntriesCrcPassed": 21,
+      "result": {
+        "scope": "Native CI disposable filesystem, policy and fixture contracts; no product or boat commissioning acceptance",
+        "note": "Counts are reported assertions, not a deduplicated application test suite. Baseline adoption 178 includes 127 outer plus 51 nested native transactions; installed welcome 114 includes 85 policy plus 29 runtime checks; stock review 90 includes 78 policy plus 12 transactions.",
+        "passedAssertionsByReport": {
+          "ais-credential-import": 17,
+          "baseline-adoption": 178,
+          "boat-tools": 30,
+          "broker-fixture-contracts": 25,
+          "commissioning-launch": 11,
+          "commissioning": 21,
+          "installed-welcome": 114,
+          "official-upgrade-policy": 86,
+          "preparation": 34,
+          "renderer-log": 66,
+          "restart-aui-persistence": 77,
+          "restart-commissioning": 313,
+          "restart-window-review": 133,
+          "review-staging": 12,
+          "review-window": 230,
+          "source-checkout": 16,
+          "startup-log": 16,
+          "stock-chart": 61,
+          "stock-review": 90,
+          "stock-welcome": 149
+        },
+        "navigationCopyPassedTests": 11,
+        "reportedAssertionTotal": 1679
+      }
+    },
+    {
+      "id": 11217341127,
+      "name": "windows-pristine-488fbbdf5161e986c986773187b1008a7f8684f5",
+      "bytes": 496753,
+      "sha256": "55296c0421a84c5130a0ce4980dc4eed266ef3fe22e3b6ab94f70225f07c8316",
+      "apiSizeAndDigestMatched": true,
+      "zipEntriesCrcPassed": 371,
+      "result": {
+        "scope": "Pristine upstream comparison, not integrated product acceptance",
+        "tests": 60,
+        "passed": 60,
+        "failed": 0,
+        "skipped": 0,
+        "failedTests": []
+      }
+    },
+    {
+      "id": 11217261548,
+      "name": "stock-welcome-sv-488fbbdf5161e986c986773187b1008a7f8684f5",
+      "bytes": 501887,
+      "sha256": "790af1c5401f1a493f033ce59195fdb0d44a0de9979b4e24cb98156179ed4c94",
+      "apiSizeAndDigestMatched": true,
+      "zipEntriesCrcPassed": 42,
+      "result": {
+        "scope": "Actual official stock portable warning primitives only; production commissioning launch/audit and real boat acceptance are separate.",
+        "status": "passed",
+        "locale": "sv",
+        "checks": 63
+      }
+    },
+    {
+      "id": 11216902344,
+      "name": "official-prerequisite-488fbbdf5161e986c986773187b1008a7f8684f5",
+      "bytes": 220653,
+      "sha256": "e1a36dade4a470dd3cef17b2e3bb6f4c1e32ae8f83cd5848f00cb782c92bce76",
+      "apiSizeAndDigestMatched": true,
+      "zipEntriesCrcPassed": 19,
+      "result": {
+        "scope": "Exact official stock installer prerequisite only",
+        "status": "passed",
+        "wizardPages": 9,
+        "officialExecutableSha256": "7c6547562cca7954671eaab72833ca9d788710fd9808b6a699b6dc823852ae0c",
+        "stockExitCode": 1223,
+        "exitCodeAnomaly": "Exact official package completed visibly and all hash/resource/registration postconditions passed despite 1223; Alpha lifecycle still requires zero.",
+        "rawReportSha256": "6f7c49bd2bdff2c82c9bba27e4c1c6e3e134adc05a0ea00cba24c692e19c87b8"
+      }
+    },
+    {
+      "id": 11216813648,
+      "name": "commissioning-restart-488fbbdf5161e986c986773187b1008a7f8684f5",
+      "bytes": 6638,
+      "sha256": "ed8c8e8e8f856c07fe121a318c8f56d307ab56f8a192c938d688195654f77efd",
+      "apiSizeAndDigestMatched": true,
+      "zipEntriesCrcPassed": 2,
+      "result": {
+        "scope": "Native Windows marker-only standalone process tests",
+        "status": "passed",
+        "checks": 384,
+        "cases": 24,
+        "noMarineCode": true
+      }
+    },
+    {
+      "id": 11217797161,
+      "name": "linux-pristine-488fbbdf5161e986c986773187b1008a7f8684f5",
+      "bytes": 475721,
+      "sha256": "0a6e8aa19dfe2db332d099fde469cd4ead8b67a2eaefdc6370324e39964752e8",
+      "apiSizeAndDigestMatched": true,
+      "zipEntriesCrcPassed": 375,
+      "jobId": 110767574829,
+      "jobConclusion": "success",
+      "result": {
+        "scope": "Pristine upstream comparison, not integrated product acceptance",
+        "tests": 66,
+        "passed": 64,
+        "failed": 2,
+        "skipped": 0,
+        "failedTests": [
+          "DriverRegistry.RegisterDriver",
+          "IpcServer.Commands"
+        ],
+        "failureClassification": "Explicitly retained known upstream failures; zero unexpected failures; release_acceptance=false"
+      },
+      "reports": {
+        "linux-tests.xml": {
+          "bytes": 49126,
+          "sha256": "d9e3d9c309532afa4206495e7db533afec614c092758cbd436310818d4f3c4a8"
+        },
+        "linux-tests.classification.json": {
+          "bytes": 372,
+          "sha256": "98e9bf7816c82f62f1b431a15b269492fc1e9d42b36db5e6093404bbb95e42b2"
+        }
+      }
+    }
+  ],
+  "qualificationLimits": [
+    "This record verifies only the eleven early artifacts, including the subsequently completed Linux pristine comparison; it does not assert final workflow success.",
+    "Integrated Linux and native Windows application jobs remained in progress at the snapshot. Their product, installer, UI, chart, security and endurance outcomes are not established here.",
+    "Pristine Linux retains its own two classified upstream failures; the successful comparison job does not make these tests pass.",
+    "Restart receipt qualifies same-run CI prerequisite chains using disposable fixtures, not an actual boat restart or product cold launch.",
+    "Stock installer exit code 1223 is retained with its documented postcondition-only exception; Alpha installer lifecycle still requires zero.",
+    "No physical hardware, AIS outage, vessel navigation, boat display, release publication or public access acceptance is established."
+  ],
+  "observedUtc": "2026-10-02T08:46:08Z",
+  "linuxPristineAddedAfterInitialSnapshot": true
+}

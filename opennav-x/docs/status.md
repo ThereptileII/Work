@@ -1,4 +1,90 @@
-# OpenNav X status — 2026-10-01
+# OpenNav X status — 2026-10-02
+
+## SCRUM-224 — compile repaired; three native qualification failures isolated
+
+Frozen `488fbbdf5161e986c986773187b1008a7f8684f5` has completed
+[run 36984898997](https://github.com/ThereptileII/Work/actions/runs/36984898997):
+14 jobs passed, native integration failed, publication was skipped. Application
+compilation/linking now pass. Windows passes 138/138 application tests, native
+chart/route pointer flows, repeated crash recovery and the public ENC/software
+and OpenGL chart gate. These are not complete Windows product acceptance.
+
+The native failures are now source-grounded: the peer CLI refusal test runs
+after GUI processing has created the normal profile directory; root Preferences
+reopening retains a scroll offset that hides its section tabs; and the 1920px
+DPI oracle expects 61px navigation although the immutable HTML and actual
+native rendering require 69px. Local repairs preserve the unknown-profile
+refusal and strict UI assertions. The Preferences component passes 179 checks
+and its no-reset negative control fails; 23 geometry tests distinguish the
+prototype width breakpoint and reject deliberately incorrect sizes. Native
+proof of the combined repairs is now running at published source
+`f2704c3036b3805236272cb60d39aea5b13c92ec`
+([focused run 37013831216](https://github.com/ThereptileII/Work/actions/runs/37013831216)).
+This remains an in-progress observation; artifact-bound proof and a new full
+candidate qualification are still pending.
+
+Linux integrated qualification passed: 146/146 tests in each fixture and
+fixture-free configuration, plus the actual three-hour trip. The latter records
+1,080 samples, 540 UI actions, about 1.1 MB resident growth, no measured
+handle/thread growth and 3.21% of one CPU core. This is Linux evidence, not a
+substitute for native endurance or boat acceptance. Both artifacts have verified
+size, SHA-256 and ZIP CRC. See the
+[terminal qualification record](evidence/scrum-224-488f-terminal-qualification.json).
+
+No fixture-free Windows package or installer was produced; those dependent
+stages were skipped. The boat is unchanged, old installations are retained,
+and prototype fanout remains held. On 2026-10-02 the user explicitly authorized
+publication of the reviewed source repairs and non-sensitive qualification
+evidence to `ThereptileII/Work`. Fresh native acceptance remains required.
+
+## SCRUM-224 — earlier focused compile proof and prerequisite results
+
+Frozen candidate `488fbbdf5161e986c986773187b1008a7f8684f5` (local `548a376`)
+passes [the focused native compile](https://github.com/ThereptileII/Work/actions/runs/36984238840).
+The verified artifact reproduces both original Windows macro failures, then
+compiles the four corrected networking units, production UI target and full
+SettingsStore. All 31 retained I386 objects match their recorded hashes; this
+covers 14 of the 15 changed XNav UI/integration source files. See
+[exact-source proof](evidence/scrum-224-native-changed-units-488fbbd.json).
+The first short probe stopped at a CMake path-escaping error before compilation;
+the corrected probe passed without rebuilding the maintained dependencies.
+
+The [integrated run](https://github.com/ThereptileII/Work/actions/runs/36984898997)
+subsequently verified full application compilation/linking, then failed the
+three later checks described above. The new early compile gate detects the
+original macro failure before expensive producer suites. No boat installation
+or retirement occurred.
+
+Eleven early artifacts from this run have verified API sizes, SHA-256 and ZIP
+CRC, including the same-run restart prerequisite receipt. Windows pristine
+passes 60/60; Linux pristine retains its two named upstream failures (64/66).
+These are prerequisites, not integrated product acceptance; see
+[early evidence](evidence/scrum-224-488f-early-gates.json). The earlier 09:02 UTC
+running observation is superseded by the terminal record above. Neither job
+was restarted or cancelled to collect it.
+
+The same candidate's completed contract logs confirm 90 Linux / 87 Windows
+CTest passes, 43 dependency contracts per platform and ten additional restart
+executions per platform, with no failures in those suites. See
+[contract evidence](evidence/scrum-224-488f-contracts.json). These results do not
+replace integrated application, installer, UI or boat qualification.
+
+## SCRUM-22/27 — installer preservation checks prepared in parallel
+
+The unsupported-build smoke assertion previously checked the supported sibling
+directory rather than the rejected installation. Test-only revision `0fc08f9`
+now snapshots the actual rejected tree and pre-existing seeded profile, verifies
+the exact rejection reason and checks that installation/shortcut folders remain
+absent. It records Setup, package-manifest and test-source hashes. Installer
+product code is unchanged. This correction is separate from frozen `488f`;
+native proof against its eventual verified package remains pending.
+
+[The recovery coverage audit](evidence/scrum-27-real-release-coverage-audit.json)
+confirms genuine accepted Beta 1 and genuine early Beta 2 installers are used
+by the existing update/rollback harness. Historical 45-check recovery evidence
+is retained separately from pending candidate acceptance. There is no need to
+rerun another complete application build for this audit or the test correction.
+Neither issue is Done and no boat retirement has occurred.
 
 ## SCRUM-24/25 — signed release policy passes native tests
 

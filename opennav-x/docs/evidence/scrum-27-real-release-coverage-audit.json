@@ -1,0 +1,195 @@
+{
+  "schema": "OpenNavX.InstallerCoverageAudit.1",
+  "issue": "SCRUM-27",
+  "selectionComment": "10452",
+  "dateUtc": "2026-10-02",
+  "status": "Coverage audit only; current candidate acceptance pending",
+  "criteria": "Repair, manual rollback and uninstall preserve charts, routes, waypoints, plugins, connections and relevant profile data; test against real previous XNav versions; stock OpenCPN works after removal.",
+  "reviewedCandidate": {
+    "localCommit": "548a37653d967d552ef68216184d0d6f3734664a",
+    "sourceCommit": "488fbbdf5161e986c986773187b1008a7f8684f5",
+    "runId": 36984898997,
+    "runUrl": "https://github.com/ThereptileII/Work/actions/runs/36984898997",
+    "installerAcceptance": "Pending at audit; this record neither polls nor promotes the ongoing run."
+  },
+  "priorPackages": [
+    {
+      "lock": "tools/accepted-beta1.lock.json",
+      "version": "0.3.0-beta1",
+      "commit": "a3e6e0812e01d2aee8f0b83807527b9a0c0fc79a",
+      "runId": 36137990012,
+      "artifactId": 10876531379,
+      "archiveSha256": "d69b6e9ac108168494300ad734ad7e40835967c06519e849012ef5947ad9a343",
+      "maximumArchiveBytes": 180000000,
+      "setupName": "OpenNavX-Beta1-Setup.exe",
+      "setupBytes": 43967980,
+      "setupSha256": "8e1b3432a5a44499ffb41b125f62df07e846b2cfe1ca0936409ed021d413e128",
+      "coverage": "Current harness: accepted Beta 1 Setup, installed and launched before update; exact old generation and original maintainer restored by rollback."
+    },
+    {
+      "lock": "tools/accepted-alpha.lock.json",
+      "version": "0.2.0-alpha1",
+      "commit": "08bc92fc778591a3978e594a54208d672ff9158f",
+      "runId": 36092747986,
+      "artifactId": 10847446708,
+      "archiveSha256": "ddf1ac1009edbc35b95a98731ea11184a9e20bfc86e3d9bead4bdf473005e6ff",
+      "maximumArchiveBytes": 180000000,
+      "setupName": "OpenNavX-Alpha1-Setup.exe",
+      "setupBytes": 43756308,
+      "setupSha256": "b2d2b0bce04461d97aadbe3ec8bbea6b843051ced072886127a8df1ce2e32aaa",
+      "coverage": "Historical accepted Beta 1 qualification: real Alpha 1 to Beta 1 upgrade. Not a direct Alpha 1 to current candidate result."
+    },
+    {
+      "lock": "tools/early-beta2-layout.lock.json",
+      "commit": "8e780edc34f68abd693a5d5f6aecdb3ba05a75c4",
+      "runId": 36287991989,
+      "artifactId": 10922441496,
+      "archiveSha256": "172fe7f9b9556374a448f33d78ef9760e9838e1b4b3a291de3dcb2feea3899a5",
+      "maximumArchiveBytes": 180000000,
+      "setupName": "OpenNavX-Beta2-Setup.exe",
+      "setupBytes": 44088071,
+      "setupSha256": "0235a099e56a265a3dfe3f17de1f8dea1e66de2aa7a8c311bce0fd7a83d761ad",
+      "purpose": "Exact early Beta 2 with historical Start-menu layout; lifecycle regression fixture only, not accepted release",
+      "coverage": "Current harness: genuine published development package and unchanged old maintainer; historical-layout regression fixture, not an accepted release."
+    }
+  ],
+  "sourceBoundaries": [
+    {
+      "path": "tools/build-installer-prior-fixture.py",
+      "sha256": "bb4a55e3d9f91298d0108467eeeb78687fc50571b70499d9feed63c772d1452b",
+      "lines": [
+        24,
+        76
+      ],
+      "scope": "Verify run/commit, API digest, archive SHA-256, Setup size and SHA-256 before executing genuine Beta 1 or early Beta 2. No source rewrite/version relabel."
+    },
+    {
+      "path": "tools/smoke-installer-windows.py",
+      "sha256": "5a1249e155b94f4b960577c2e49c8258fa642227b5685f079c0af82a878b816c",
+      "lines": [
+        417,
+        447
+      ],
+      "scope": "Actual early Beta 2 install, candidate update, interrupted rollback, unchanged old maintainer Diagnostics and Uninstall; full stock/profile inventories unchanged."
+    },
+    {
+      "path": "tools/smoke-installer-windows.py",
+      "sha256": "5a1249e155b94f4b960577c2e49c8258fa642227b5685f079c0af82a878b816c",
+      "lines": [
+        458,
+        504
+      ],
+      "scope": "Actual Beta 1 launch/update, exact-generation rollback, old maintainer Diagnostics and interrupted forward migration/repair; stock/profile unchanged."
+    },
+    {
+      "path": "tools/smoke-installer-windows.py",
+      "sha256": "5a1249e155b94f4b960577c2e49c8258fa642227b5685f079c0af82a878b816c",
+      "lines": [
+        533,
+        557
+      ],
+      "scope": "Repair corrupt owned resource into a new generation, retain damaged backup/custom plugin addition and shared profile; update retains additions."
+    },
+    {
+      "path": "tools/smoke-installer-windows.py",
+      "sha256": "5a1249e155b94f4b960577c2e49c8258fa642227b5685f079c0af82a878b816c",
+      "lines": [
+        728,
+        755
+      ],
+      "scope": "Conventional uninstall, owned-file removal/custom addition retention, exact stock/profile preservation; real stock launch/chart check, navigation snapshot, resource paths, reinstall and same-version update."
+    },
+    {
+      "path": "tools/profile-fixtures.py",
+      "sha256": "34637c622a8af0c8e26a7859647af3363c009679bc0133b7888bdb2450416337",
+      "lines": [
+        15,
+        71
+      ],
+      "scope": "Disconnected seeded navigation data; route/track/waypoint identity and coordinates, actual SQLite integrity, connection remains disabled, Dashboard/AIS preferences retained."
+    },
+    {
+      "path": "installer/windows/Lifecycle.ps1",
+      "sha256": "543d3abdf78e9fc8187e2f8e78872ec98df4cd5a129fdc53175423b2974e9143",
+      "lines": [
+        437,
+        458
+      ],
+      "scope": "Uninstall removes only unchanged hash-owned files; retains modified/imported/custom files and unpublished stages."
+    },
+    {
+      "path": "installer/windows/Lifecycle.ps1",
+      "sha256": "543d3abdf78e9fc8187e2f8e78872ec98df4cd5a129fdc53175423b2974e9143",
+      "lines": [
+        497,
+        512
+      ],
+      "scope": "Preserve unknown additions; reject conflicting destination bytes rather than overwrite."
+    },
+    {
+      "path": "installer/windows/Lifecycle.ps1",
+      "sha256": "543d3abdf78e9fc8187e2f8e78872ec98df4cd5a129fdc53175423b2974e9143",
+      "lines": [
+        772,
+        853
+      ],
+      "scope": "Durable before-state recovery, immutable app generations, preserved additions, verified rollback, no profile rollback; stock hash checked after transaction."
+    },
+    {
+      "path": ".github/workflows/opennav-baseline.yml",
+      "sha256": "06eb387405b34757ad7e04b99254de12f603d7343f4fa817c3fd8bdfc2339fe0",
+      "lines": [
+        532,
+        545
+      ],
+      "scope": "Existing candidate installer gate packages the actual production recovery payload and runs the complete native lifecycle harness."
+    }
+  ],
+  "historicalEvidence": [
+    {
+      "commit": "79a95c4f39063c20ca4d5a98c3147080d9813077",
+      "runId": 36311718794,
+      "runUrl": "https://github.com/ThereptileII/Work/actions/runs/36311718794",
+      "artifactName": "windows-integration-79a95c4f39063c20ca4d5a98c3147080d9813077",
+      "report": "installer-lifecycle.json",
+      "reportSha256": "7c3ecb53585629c9c4e7c8ec3f9315a0ef3d6de58627efa692e646faff91373c",
+      "status": "passed",
+      "checks": 45,
+      "setupSha256": "b281362f6bf6d51410aba1491e16049d4c7bf243f6602a2bd7a3d0342ab09c4d",
+      "stockSha256": "7c6547562cca7954671eaab72833ca9d788710fd9808b6a699b6dc823852ae0c",
+      "priorReceipts": [
+        {
+          "name": "installer-prior-release.json",
+          "sha256": "820b54ef26c71958c9eff17033875cc97c449f134d0299b57e5c64f08b1b92cd"
+        },
+        {
+          "name": "installer-prior-beta2-layout.json",
+          "sha256": "9bdbf1ffff5c3639d922e8a5fabeb2735bac0a784ca5c6a90607255762cf1c5d"
+        }
+      ],
+      "verificationScope": "Read retained report and both prior receipts; rehashed these files. No archive redownload or new outer-artifact verification in this audit. Historical 45-check pass does not qualify current candidate."
+    },
+    {
+      "commit": "a3e6e0812e01d2aee8f0b83807527b9a0c0fc79a",
+      "runId": 36137990012,
+      "evidence": "docs/evidence/beta1-a3e6e08-accepted.json",
+      "evidenceSha256": "44816d5be727430e91947b00cdc57434858e083f7830009fc254dbe72455395d",
+      "reportSha256": "9a7e56e29c2e8f1dd61ddebce4a2c9f9cad9b8c4363636847b92d5b9b378a77e",
+      "status": "passed",
+      "checks": 29,
+      "scope": "Accepted Beta 1 record includes genuine accepted Alpha 1 installation/upgrade and full lifecycle preservation. Do not infer direct current-candidate Alpha rollback."
+    }
+  ],
+  "limitations": [
+    "Alpha 1 original qualification used a distinct compiled prior test version; that predecessor was synthetic and is not real-release evidence.",
+    "Current harness covers accepted Beta 1 and genuine early Beta 2; direct Alpha 1 to 488f rollback is not established.",
+    "Navigation fixture data are synthetic and disconnected; installer and predecessor executables are genuine. No boat data or physical equipment acceptance is claimed.",
+    "Repair replaces owned application resources; rollback selects an exact retained application generation while keeping newer shared navigation data. Uninstall intentionally retains modified/custom files and diagnostic stages.",
+    "No new tests/builds, boat actions, Jira transitions or acceptance promotion were performed by this audit."
+  ],
+  "conclusion": {
+    "newImplementationRequired": false,
+    "reason": "Existing real-package native lifecycle coverage addresses the stated criteria; the issue does not explicitly require every historical release pair.",
+    "remainingEvidence": "Verify the ongoing exact-candidate installer-lifecycle result, both historical package receipts, candidate Setup identity and stock-after-uninstall screenshot before issue acceptance. Do not substitute the historical 45-check result."
+  }
+}
