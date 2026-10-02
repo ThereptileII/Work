@@ -259,4 +259,5 @@ private:
   bool failed_=false,last_route_=false,finished_=false;std::string last_;
 };
 }
-wxIMPLEMENT_APP(TestApp);
+wxIMPLEMENT_APP_NO_MAIN(TestApp);
+int main(int argc,char **argv) {return wxEntry(argc,argv);}

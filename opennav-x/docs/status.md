@@ -11,6 +11,13 @@ pinned source tree; retain strict checks for all 27 actual directories and all
 production headers/macros. Only this short proof is retried. No application
 crash, dependency qualification, Windows UI pass or boat acceptance is inferred.
 
+Retry `9b0766b` / [37025995465](https://github.com/ThereptileII/Work/actions/runs/37025995465)
+compiled both complete navigation-bridge units and the production UI library.
+It stopped linking the standalone Search test because its Windows console
+entrypoint was missing. Both new fixtures now use the established explicit
+`main` → `wxEntry` pattern. Their local checks still pass (82 + 46); only the
+short native proof is retried. Product sources and `c95d` remain unchanged.
+
 Separate from frozen candidate `c95d3a0`, the October 2 follow-up restores rail
 metric icons and the Display selector track, adds saved-route/waypoint Search,
 and connects the native Chart presentation drawer to floating Layers and

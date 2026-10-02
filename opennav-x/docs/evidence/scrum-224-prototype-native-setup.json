@@ -183,5 +183,25 @@
   "artifact_bytes": 2353084,
   "artifact_crc_path_valid_entries": 386,
   "stage": "CMake configuration; no application/component compiled or executed",
-  "correction": "Remove only obsolete include directory; expose bounded failure-log tail in CI output. Production code and frozen c95d remain unchanged."
+  "correction": "Remove only obsolete include directory; expose bounded failure-log tail in CI output. Production code and frozen c95d remain unchanged.",
+  "retry": {
+    "head": "9b0766b9a11130ce2fd3a8187e1ad9620f06c1d3",
+    "run_url": "https://github.com/ThereptileII/Work/actions/runs/37025995465",
+    "artifact_id": 11235358024,
+    "artifact_bytes": 8282428,
+    "artifact_sha256": "f64793ac037d53c9878174a1b6db9bdd9fb7045ccf608f2bcefcd9cb046ceac7",
+    "artifact_crc_path_valid_entries": 695,
+    "compiled": [
+      "complete NavigationActions.cpp",
+      "complete NavigationObjects.cpp",
+      "production opennav_ui library"
+    ],
+    "failure": "Standalone Search fixture link: LNK2019 missing main; no component/product ran",
+    "correction": "Both new non-installed test executables use existing wxIMPLEMENT_APP_NO_MAIN plus console main calling wxEntry, matching established component harnesses. Product sources unchanged.",
+    "local_after_correction": {
+      "search_checks": 82,
+      "chart_checks": 46
+    },
+    "native_after_correction": "pending"
+  }
 }

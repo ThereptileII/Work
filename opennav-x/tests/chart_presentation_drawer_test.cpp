@@ -70,4 +70,5 @@ class TestApp:public wxApp {
  case 14:{Check(orient==3,"queued orientation invalidated by dismissal even without Open");const auto offset=Body()->GetViewStart();Check(offset.y>0,"scrolled orientation viewport retained by Present");const int previous=paints;Refresh();wxTheApp->Yield(true);Check(paints==previous,"identical Update causes no paint");Check(Body()->GetViewStart()==offset,"identical Update preserves scroll");drawer->Open(wxRect(host->ClientToScreen({80,68}),wxSize(1014,698)),state,light);break;}
  case 15:Check(Body()->GetViewStart()==wxPoint(0,0),"explicit Open resets scroll");drawer->SetInterfaceScale(150);drawer->Present(wxRect(host->ClientToScreen({80,68}),wxSize(1014,698)));Check(host->GetScreenRect().Contains(drawer->GetScreenRect()),"scaled component remains contained");finished=true;timer.Stop();std::ofstream((out+"/result.json").ToStdString())<<"{\"passed\":true,\"checks\":"<<checks<<",\"fixture_only\":true,\"captures\":[\"chart-day-top\",\"chart-day-bottom\",\"chart-dusk-raster\",\"chart-night-unavailable\"]}";drawer->Destroy();host->Destroy();ExitMainLoop();break;
  }if(!finished)timer.StartOnce(200);}
-};wxIMPLEMENT_APP(TestApp);
+};wxIMPLEMENT_APP_NO_MAIN(TestApp);
+int main(int argc,char **argv) {return wxEntry(argc,argv);}
