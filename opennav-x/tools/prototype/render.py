@@ -34,6 +34,7 @@ STATES = {
     "health": ['.health-button'],
     "health-gps": ['.health-button', '.sensor-details summary'],
     "alerts": ['.alert-button'],
+    "search": ['.header-end [data-panel="search"]'],
     "layers": ['.map-top-controls [data-panel="layers"]'],
     "rail": ['.rail-title button'],
     "diagnostics": ['.nav-btn[data-panel="settings"]', '[data-settings-tab="System"]', '[data-action="showDiagnostics"]'],
@@ -51,6 +52,7 @@ SELECTORS = [".topbar", ".sidebar", "#workspace", "#chartView", ".data-rail",
              ".turn-sub", ".map-tools", ".follow-btn", ".autopilot-summary",
              ".drawer", ".drawer-head", ".drawer-head h2", ".drawer-body",
              ".btn", ".segment button", ".toggle", ".list-card", ".row",
+             '#chartSearch', '#searchResults .list-card b', '#searchResults .list-card small',
              ".dashboard-card", ".big-stat", ".view-header h1", ".tag",
              ".chart-route", ".chart-land", ".chart-depth", ".ais-ship",
              ".pill-row", ".stats-grid", ".section-label", ".route-waypoint",
@@ -161,7 +163,7 @@ def main():
                 cdp.send("CSS.enable")
                 doc = cdp.send("DOM.getDocument")
                 data["platformFonts"] = {}
-                for font_selector in [".brand", ".metric-value", ".metric-label", ".drawer-head h2", ".view-header h1", ".settings-tabs button", ".timeline-heading .eyebrow", ".timeline-heading .text-button", ".event-time", ".timeline-event>b", ".timeline-event>small"]:
+                for font_selector in [".brand", ".metric-value", ".metric-label", ".drawer-head h2", ".view-header h1", ".settings-tabs button", "#chartSearch", "#searchResults .list-card b", "#searchResults .list-card small", ".timeline-heading .eyebrow", ".timeline-heading .text-button", ".event-time", ".timeline-event>b", ".timeline-event>small"]:
                     node = cdp.send("DOM.querySelector", {"nodeId": doc["root"]["nodeId"], "selector": font_selector})
                     if node["nodeId"]:
                         data["platformFonts"][font_selector] = cdp.send("CSS.getPlatformFontsForNode", {"nodeId": node["nodeId"]})["fonts"]

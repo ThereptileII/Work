@@ -524,9 +524,10 @@ def prototype_drawer_bounds(width, height, scale=1, origin=(0,0), wide=False):
     assert scale>0 and width/scale>760 and height>0
     dip=lambda value:int(value*scale+.5)
     logical_width,logical_height=width/scale,height/scale
-    top=56 if logical_height<=600 else 60 if logical_height<=740 else 68
-    rail=156 if logical_width<=1100 else 186
-    drawer=(410 if logical_width<=1100 else 432) if wide else 398
+    large=logical_width>=1500
+    top=(60 if logical_height<=740 else 76) if large else (56 if logical_height<=600 else 60 if logical_height<=740 else 68)
+    rail=220 if large else 156 if logical_width<=1100 else 186
+    drawer=(460 if large else 410 if logical_width<=1100 else 432) if wide else 398
     w=dip(drawer)
     return dict(x=origin[0]+width-dip(rail)-dip(14)-w,
                 y=origin[1]+dip(top)+dip(12),width=w,
@@ -542,8 +543,11 @@ def assert_prototype_drawer(handle, name):
     assert GetParent(matches[0])==handle, 'Drawer belongs to the tested frame'
     scale=GetDpiForWindow(handle)/96
     client=W.RECT();assert GetClientRect(handle,C.byref(client))
-    expected=(410 if client.right/scale<=1100 else 432) if name=='OpenNav preferences' else 398
-    assert abs(rect.right-rect.left-expected*scale)<=1, ('Prototype drawer width',name)
+    logical_width=client.right/scale
+    expected=(460 if logical_width>=1500 else 410 if logical_width<=1100 else 432) if name=='OpenNav preferences' else 398
+    assert abs(rect.right-rect.left-expected*scale)<=1, ('Prototype drawer width',name,
+        {'actual_pixels':rect.right-rect.left,'expected_pixels':expected*scale,
+         'client_pixels':[client.right,client.bottom],'dpi':96*scale})
     assert frame.left<rect.left<rect.right<frame.right and frame.top<rect.top<rect.bottom<frame.bottom
     point=W.POINT((rect.left+rect.right)//2,rect.top+int(45*scale))
     hit=WindowFromPoint(point)

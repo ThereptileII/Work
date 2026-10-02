@@ -1,0 +1,48 @@
+{
+  "candidate": "29ea06a358ed24cc29eb2be74b67b234a3ecaa6e",
+  "run": 37026807977,
+  "artifact": 11235841232,
+  "artifact_bytes": 15052076,
+  "artifact_sha256": "3b8a26dbfd2f1eb81293260db6b125791c0d04ef13a5d7e8f0771ee9f1a88ad3",
+  "zip_entries_verified": 820,
+  "source_inputs": 247,
+  "exact_source_matches": 7,
+  "expected_windows_crlf_matches": 240,
+  "mismatches": [],
+  "retained_objects_rehashed": 31,
+  "components": {
+    "settings_drawer_test": {
+      "checks": 190,
+      "screenshots": 14,
+      "executable_sha256": "bf8ea7a2e397c57e6633007c9a284304d2b666166326c62bcd4b8a39533d7ebc"
+    },
+    "search_drawer_test": {
+      "checks": 82,
+      "screenshots": 5,
+      "executable_sha256": "d42f6afd369b2bf9b8a1de3846014d1fe0442ae4bc6191f4bf710aa9afb7b022"
+    },
+    "chart_presentation_drawer_test": {
+      "checks": 46,
+      "screenshots": 4,
+      "executable_sha256": "ddfe41382ab504b2e7938006b887cf38a9e44cf88a6d880bd3b3ec98b312bc56"
+    }
+  },
+  "checks": 318,
+  "scope": "Offline native component proof only; no installed application, dependency producer, package, real chart or boat qualification",
+  "run_url": "https://github.com/ThereptileII/Work/actions/runs/37026807977",
+  "local_source": "632463c71e68cba8cda3a1ff192eb1b8f77e0a5d",
+  "visual_review": {
+    "scope": "Display track only, native screenshots from exact29ea06a",
+    "supports": [
+      "Day track bounds x671..1056,y503..550",
+      "Track/selection colors Day #1d2d31/#26393d, Dusk #25343b/#30444b, Night #141c21/#1d282f",
+      "No obvious track-label typography mismatch"
+    ],
+    "limitations": [
+      "Dusk/Night current captures are125% Chart focus; canonical reference is100% Balanced, so fixed-crop displacement is not geometry evidence",
+      "Personalise instruments row remains approximately10px lower than reference",
+      "System duplicate Legacy/Safe and missing introduction remain in29ea06a; later local27e2d507 is not qualified by these images",
+      "No full Settings/Search/chart presentation or boat conformance pass"
+    ]
+  }
+}

@@ -1,0 +1,679 @@
+{
+  "schema": 1,
+  "htmlSha256": "b04573b920b6bccd16afd22f54a909e48afcfd502ce9cd7c69fdf5b6dd895447",
+  "platform": "Linux",
+  "playwright": "1.58.0",
+  "viewport": {
+    "width": 1280,
+    "height": 800
+  },
+  "deviceScaleFactor": 1,
+  "reducedMotion": true,
+  "clockUtc": "2026-09-28T11:49:00Z",
+  "browser": "145.0.7632.6",
+  "scope": "Original HTML Search only; Linux development reference, not native Windows acceptance",
+  "sourceBaseCommit": "632463c71e68cba8cda3a1ff192eb1b8f77e0a5d",
+  "rendererSha256": "10b6edd12485af719539213d6e5db785b5fd02cd05b1b708b67a5643fc5391b3",
+  "interaction": ".header-end [data-panel=\"search\"]",
+  "originalFilesVerified": 113,
+  "fullCaptureLocalPath": "evidence/local/search-reference/capture.json",
+  "fullCaptureSha256": "125178c0727077df5e0f9edef696e1a754e97efaac3496504360f33c63c1b6a2",
+  "visuallyInspected": [
+    "search-day",
+    "search-dusk",
+    "search-night"
+  ],
+  "states": {
+    "search-day": {
+      "theme": "day",
+      "screenshotSha256": "f4dd303e21784c46cf6f710c8b6a99bca823054a5afb9384f06a7bd96c875d34",
+      "screenshotBytes": 303779,
+      "platformFonts": {
+        ".drawer-head h2": [
+          {
+            "familyName": "Liberation Sans",
+            "postScriptName": "LiberationSans",
+            "isCustomFont": false,
+            "glyphCount": 16
+          }
+        ],
+        "#chartSearch": [
+          {
+            "familyName": "Liberation Sans",
+            "postScriptName": "LiberationSans",
+            "isCustomFont": false,
+            "glyphCount": 28
+          }
+        ],
+        "#searchResults .list-card b": [
+          {
+            "familyName": "Liberation Sans",
+            "postScriptName": "LiberationSans-Bold",
+            "isCustomFont": false,
+            "glyphCount": 8
+          }
+        ],
+        "#searchResults .list-card small": [
+          {
+            "familyName": "Liberation Sans",
+            "postScriptName": "LiberationSans",
+            "isCustomFont": false,
+            "glyphCount": 23
+          }
+        ]
+      },
+      "components": {
+        ".drawer": {
+          "count": 1,
+          "firstRect": {
+            "x": 682,
+            "y": 80,
+            "width": 398,
+            "height": 674
+          },
+          "firstStyle": {
+            "fontFamily": "\"Segoe UI Variable Display\", \"Segoe UI\", Arial, sans-serif",
+            "fontSize": "16px",
+            "fontWeight": "400",
+            "lineHeight": "normal",
+            "letterSpacing": "normal",
+            "color": "rgb(243, 245, 238)",
+            "backgroundColor": "rgb(21, 35, 38)",
+            "padding": "0px",
+            "margin": "0px",
+            "gap": "normal",
+            "borderRadius": "18px"
+          }
+        },
+        ".drawer-head": {
+          "count": 1,
+          "firstRect": {
+            "x": 683,
+            "y": 81,
+            "width": 396,
+            "height": 86.109375
+          },
+          "firstStyle": {
+            "fontFamily": "\"Segoe UI Variable Display\", \"Segoe UI\", Arial, sans-serif",
+            "fontSize": "16px",
+            "fontWeight": "400",
+            "lineHeight": "normal",
+            "letterSpacing": "normal",
+            "color": "rgb(243, 245, 238)",
+            "backgroundColor": "rgba(0, 0, 0, 0)",
+            "padding": "12px 22px 20px",
+            "margin": "0px",
+            "gap": "10px 16px",
+            "borderRadius": "0px"
+          }
+        },
+        ".drawer-head h2": {
+          "count": 1,
+          "firstRect": {
+            "x": 705,
+            "y": 117,
+            "width": 264.3125,
+            "height": 29.109375
+          },
+          "firstStyle": {
+            "fontFamily": "\"Segoe UI Variable Display\", \"Segoe UI\", Arial, sans-serif",
+            "fontSize": "26px",
+            "fontWeight": "450",
+            "lineHeight": "29.12px",
+            "letterSpacing": "-1px",
+            "color": "rgb(243, 245, 238)",
+            "backgroundColor": "rgba(0, 0, 0, 0)",
+            "padding": "0px",
+            "margin": "6px 0px 0px",
+            "gap": "normal",
+            "borderRadius": "0px"
+          }
+        },
+        "#chartSearch": {
+          "count": 1,
+          "firstRect": {
+            "x": 705,
+            "y": 191.109375,
+            "width": 352,
+            "height": 44
+          },
+          "firstStyle": {
+            "fontFamily": "\"Segoe UI Variable Display\", \"Segoe UI\", Arial, sans-serif",
+            "fontSize": "16px",
+            "fontWeight": "400",
+            "lineHeight": "normal",
+            "letterSpacing": "normal",
+            "color": "rgb(243, 245, 238)",
+            "backgroundColor": "rgb(29, 45, 49)",
+            "padding": "10px 12px",
+            "margin": "4px 0px 15px",
+            "gap": "normal",
+            "borderRadius": "8px"
+          }
+        },
+        ".list-card": {
+          "count": 5,
+          "firstRect": {
+            "x": 705,
+            "y": 250.109375,
+            "width": 352,
+            "height": 66
+          },
+          "firstStyle": {
+            "fontFamily": "\"Segoe UI Variable Display\", \"Segoe UI\", Arial, sans-serif",
+            "fontSize": "16px",
+            "fontWeight": "400",
+            "lineHeight": "normal",
+            "letterSpacing": "normal",
+            "color": "rgb(243, 245, 238)",
+            "backgroundColor": "rgba(0, 0, 0, 0)",
+            "padding": "16px 0px",
+            "margin": "0px",
+            "gap": "12px",
+            "borderRadius": "0px"
+          }
+        },
+        "#searchResults .list-card b": {
+          "count": 5,
+          "firstRect": {
+            "x": 739,
+            "y": 269.109375,
+            "width": 56.015625,
+            "height": 14
+          },
+          "firstStyle": {
+            "fontFamily": "\"Segoe UI Variable Display\", \"Segoe UI\", Arial, sans-serif",
+            "fontSize": "12px",
+            "fontWeight": "550",
+            "lineHeight": "normal",
+            "letterSpacing": "normal",
+            "color": "rgb(243, 245, 238)",
+            "backgroundColor": "rgba(0, 0, 0, 0)",
+            "padding": "0px",
+            "margin": "0px",
+            "gap": "normal",
+            "borderRadius": "0px"
+          }
+        },
+        "#searchResults .list-card small": {
+          "count": 5,
+          "firstRect": {
+            "x": 739,
+            "y": 289.109375,
+            "width": 284,
+            "height": 10
+          },
+          "firstStyle": {
+            "fontFamily": "\"Segoe UI Variable Display\", \"Segoe UI\", Arial, sans-serif",
+            "fontSize": "9px",
+            "fontWeight": "400",
+            "lineHeight": "normal",
+            "letterSpacing": "normal",
+            "color": "rgb(126, 150, 153)",
+            "backgroundColor": "rgba(0, 0, 0, 0)",
+            "padding": "0px",
+            "margin": "5px 0px 0px",
+            "gap": "normal",
+            "borderRadius": "0px"
+          }
+        },
+        ".note": {
+          "count": 1,
+          "firstRect": {
+            "x": 705,
+            "y": 591.109375,
+            "width": 352,
+            "height": 18.140625
+          },
+          "firstStyle": {
+            "fontFamily": "\"Segoe UI Variable Display\", \"Segoe UI\", Arial, sans-serif",
+            "fontSize": "11px",
+            "fontWeight": "400",
+            "lineHeight": "18.15px",
+            "letterSpacing": "normal",
+            "color": "rgb(170, 189, 189)",
+            "backgroundColor": "rgba(0, 0, 0, 0)",
+            "padding": "0px",
+            "margin": "11px 0px",
+            "gap": "normal",
+            "borderRadius": "0px"
+          }
+        }
+      }
+    },
+    "search-dusk": {
+      "theme": "dusk",
+      "screenshotSha256": "5f700874cc58ec2f7f3ee5b2b828814dcac0be7c8e4991435aa0c892d018b56d",
+      "screenshotBytes": 300997,
+      "platformFonts": {
+        ".drawer-head h2": [
+          {
+            "familyName": "Liberation Sans",
+            "postScriptName": "LiberationSans",
+            "isCustomFont": false,
+            "glyphCount": 16
+          }
+        ],
+        "#chartSearch": [
+          {
+            "familyName": "Liberation Sans",
+            "postScriptName": "LiberationSans",
+            "isCustomFont": false,
+            "glyphCount": 28
+          }
+        ],
+        "#searchResults .list-card b": [
+          {
+            "familyName": "Liberation Sans",
+            "postScriptName": "LiberationSans-Bold",
+            "isCustomFont": false,
+            "glyphCount": 8
+          }
+        ],
+        "#searchResults .list-card small": [
+          {
+            "familyName": "Liberation Sans",
+            "postScriptName": "LiberationSans",
+            "isCustomFont": false,
+            "glyphCount": 23
+          }
+        ]
+      },
+      "components": {
+        ".drawer": {
+          "count": 1,
+          "firstRect": {
+            "x": 682,
+            "y": 80,
+            "width": 398,
+            "height": 674
+          },
+          "firstStyle": {
+            "fontFamily": "\"Segoe UI Variable Display\", \"Segoe UI\", Arial, sans-serif",
+            "fontSize": "16px",
+            "fontWeight": "400",
+            "lineHeight": "normal",
+            "letterSpacing": "normal",
+            "color": "rgb(226, 229, 219)",
+            "backgroundColor": "rgb(29, 40, 46)",
+            "padding": "0px",
+            "margin": "0px",
+            "gap": "normal",
+            "borderRadius": "18px"
+          }
+        },
+        ".drawer-head": {
+          "count": 1,
+          "firstRect": {
+            "x": 683,
+            "y": 81,
+            "width": 396,
+            "height": 86.109375
+          },
+          "firstStyle": {
+            "fontFamily": "\"Segoe UI Variable Display\", \"Segoe UI\", Arial, sans-serif",
+            "fontSize": "16px",
+            "fontWeight": "400",
+            "lineHeight": "normal",
+            "letterSpacing": "normal",
+            "color": "rgb(226, 229, 219)",
+            "backgroundColor": "rgba(0, 0, 0, 0)",
+            "padding": "12px 22px 20px",
+            "margin": "0px",
+            "gap": "10px 16px",
+            "borderRadius": "0px"
+          }
+        },
+        ".drawer-head h2": {
+          "count": 1,
+          "firstRect": {
+            "x": 705,
+            "y": 117,
+            "width": 264.3125,
+            "height": 29.109375
+          },
+          "firstStyle": {
+            "fontFamily": "\"Segoe UI Variable Display\", \"Segoe UI\", Arial, sans-serif",
+            "fontSize": "26px",
+            "fontWeight": "450",
+            "lineHeight": "29.12px",
+            "letterSpacing": "-1px",
+            "color": "rgb(226, 229, 219)",
+            "backgroundColor": "rgba(0, 0, 0, 0)",
+            "padding": "0px",
+            "margin": "6px 0px 0px",
+            "gap": "normal",
+            "borderRadius": "0px"
+          }
+        },
+        "#chartSearch": {
+          "count": 1,
+          "firstRect": {
+            "x": 705,
+            "y": 191.109375,
+            "width": 352,
+            "height": 44
+          },
+          "firstStyle": {
+            "fontFamily": "\"Segoe UI Variable Display\", \"Segoe UI\", Arial, sans-serif",
+            "fontSize": "16px",
+            "fontWeight": "400",
+            "lineHeight": "normal",
+            "letterSpacing": "normal",
+            "color": "rgb(226, 229, 219)",
+            "backgroundColor": "rgb(37, 52, 59)",
+            "padding": "10px 12px",
+            "margin": "4px 0px 15px",
+            "gap": "normal",
+            "borderRadius": "8px"
+          }
+        },
+        ".list-card": {
+          "count": 5,
+          "firstRect": {
+            "x": 705,
+            "y": 250.109375,
+            "width": 352,
+            "height": 66
+          },
+          "firstStyle": {
+            "fontFamily": "\"Segoe UI Variable Display\", \"Segoe UI\", Arial, sans-serif",
+            "fontSize": "16px",
+            "fontWeight": "400",
+            "lineHeight": "normal",
+            "letterSpacing": "normal",
+            "color": "rgb(226, 229, 219)",
+            "backgroundColor": "rgba(0, 0, 0, 0)",
+            "padding": "16px 0px",
+            "margin": "0px",
+            "gap": "12px",
+            "borderRadius": "0px"
+          }
+        },
+        "#searchResults .list-card b": {
+          "count": 5,
+          "firstRect": {
+            "x": 739,
+            "y": 269.109375,
+            "width": 56.015625,
+            "height": 14
+          },
+          "firstStyle": {
+            "fontFamily": "\"Segoe UI Variable Display\", \"Segoe UI\", Arial, sans-serif",
+            "fontSize": "12px",
+            "fontWeight": "550",
+            "lineHeight": "normal",
+            "letterSpacing": "normal",
+            "color": "rgb(226, 229, 219)",
+            "backgroundColor": "rgba(0, 0, 0, 0)",
+            "padding": "0px",
+            "margin": "0px",
+            "gap": "normal",
+            "borderRadius": "0px"
+          }
+        },
+        "#searchResults .list-card small": {
+          "count": 5,
+          "firstRect": {
+            "x": 739,
+            "y": 289.109375,
+            "width": 284,
+            "height": 10
+          },
+          "firstStyle": {
+            "fontFamily": "\"Segoe UI Variable Display\", \"Segoe UI\", Arial, sans-serif",
+            "fontSize": "9px",
+            "fontWeight": "400",
+            "lineHeight": "normal",
+            "letterSpacing": "normal",
+            "color": "rgb(129, 147, 148)",
+            "backgroundColor": "rgba(0, 0, 0, 0)",
+            "padding": "0px",
+            "margin": "5px 0px 0px",
+            "gap": "normal",
+            "borderRadius": "0px"
+          }
+        },
+        ".note": {
+          "count": 1,
+          "firstRect": {
+            "x": 705,
+            "y": 591.109375,
+            "width": 352,
+            "height": 18.140625
+          },
+          "firstStyle": {
+            "fontFamily": "\"Segoe UI Variable Display\", \"Segoe UI\", Arial, sans-serif",
+            "fontSize": "11px",
+            "fontWeight": "400",
+            "lineHeight": "18.15px",
+            "letterSpacing": "normal",
+            "color": "rgb(172, 185, 183)",
+            "backgroundColor": "rgba(0, 0, 0, 0)",
+            "padding": "0px",
+            "margin": "11px 0px",
+            "gap": "normal",
+            "borderRadius": "0px"
+          }
+        }
+      }
+    },
+    "search-night": {
+      "theme": "night",
+      "screenshotSha256": "25360e0ab5df2fd24c57e28104521f36dce3d4a24fceab11c7356a0b86950cef",
+      "screenshotBytes": 282739,
+      "platformFonts": {
+        ".drawer-head h2": [
+          {
+            "familyName": "Liberation Sans",
+            "postScriptName": "LiberationSans",
+            "isCustomFont": false,
+            "glyphCount": 16
+          }
+        ],
+        "#chartSearch": [
+          {
+            "familyName": "Liberation Sans",
+            "postScriptName": "LiberationSans",
+            "isCustomFont": false,
+            "glyphCount": 28
+          }
+        ],
+        "#searchResults .list-card b": [
+          {
+            "familyName": "Liberation Sans",
+            "postScriptName": "LiberationSans-Bold",
+            "isCustomFont": false,
+            "glyphCount": 8
+          }
+        ],
+        "#searchResults .list-card small": [
+          {
+            "familyName": "Liberation Sans",
+            "postScriptName": "LiberationSans",
+            "isCustomFont": false,
+            "glyphCount": 23
+          }
+        ]
+      },
+      "components": {
+        ".drawer": {
+          "count": 1,
+          "firstRect": {
+            "x": 682,
+            "y": 80,
+            "width": 398,
+            "height": 674
+          },
+          "firstStyle": {
+            "fontFamily": "\"Segoe UI Variable Display\", \"Segoe UI\", Arial, sans-serif",
+            "fontSize": "16px",
+            "fontWeight": "400",
+            "lineHeight": "normal",
+            "letterSpacing": "normal",
+            "color": "rgb(184, 181, 167)",
+            "backgroundColor": "rgb(12, 17, 21)",
+            "padding": "0px",
+            "margin": "0px",
+            "gap": "normal",
+            "borderRadius": "18px"
+          }
+        },
+        ".drawer-head": {
+          "count": 1,
+          "firstRect": {
+            "x": 683,
+            "y": 81,
+            "width": 396,
+            "height": 86.109375
+          },
+          "firstStyle": {
+            "fontFamily": "\"Segoe UI Variable Display\", \"Segoe UI\", Arial, sans-serif",
+            "fontSize": "16px",
+            "fontWeight": "400",
+            "lineHeight": "normal",
+            "letterSpacing": "normal",
+            "color": "rgb(184, 181, 167)",
+            "backgroundColor": "rgba(0, 0, 0, 0)",
+            "padding": "12px 22px 20px",
+            "margin": "0px",
+            "gap": "10px 16px",
+            "borderRadius": "0px"
+          }
+        },
+        ".drawer-head h2": {
+          "count": 1,
+          "firstRect": {
+            "x": 705,
+            "y": 117,
+            "width": 264.3125,
+            "height": 29.109375
+          },
+          "firstStyle": {
+            "fontFamily": "\"Segoe UI Variable Display\", \"Segoe UI\", Arial, sans-serif",
+            "fontSize": "26px",
+            "fontWeight": "450",
+            "lineHeight": "29.12px",
+            "letterSpacing": "-1px",
+            "color": "rgb(184, 181, 167)",
+            "backgroundColor": "rgba(0, 0, 0, 0)",
+            "padding": "0px",
+            "margin": "6px 0px 0px",
+            "gap": "normal",
+            "borderRadius": "0px"
+          }
+        },
+        "#chartSearch": {
+          "count": 1,
+          "firstRect": {
+            "x": 705,
+            "y": 191.109375,
+            "width": 352,
+            "height": 44
+          },
+          "firstStyle": {
+            "fontFamily": "\"Segoe UI Variable Display\", \"Segoe UI\", Arial, sans-serif",
+            "fontSize": "16px",
+            "fontWeight": "400",
+            "lineHeight": "normal",
+            "letterSpacing": "normal",
+            "color": "rgb(184, 181, 167)",
+            "backgroundColor": "rgb(20, 28, 33)",
+            "padding": "10px 12px",
+            "margin": "4px 0px 15px",
+            "gap": "normal",
+            "borderRadius": "8px"
+          }
+        },
+        ".list-card": {
+          "count": 5,
+          "firstRect": {
+            "x": 705,
+            "y": 250.109375,
+            "width": 352,
+            "height": 66
+          },
+          "firstStyle": {
+            "fontFamily": "\"Segoe UI Variable Display\", \"Segoe UI\", Arial, sans-serif",
+            "fontSize": "16px",
+            "fontWeight": "400",
+            "lineHeight": "normal",
+            "letterSpacing": "normal",
+            "color": "rgb(184, 181, 167)",
+            "backgroundColor": "rgba(0, 0, 0, 0)",
+            "padding": "16px 0px",
+            "margin": "0px",
+            "gap": "12px",
+            "borderRadius": "0px"
+          }
+        },
+        "#searchResults .list-card b": {
+          "count": 5,
+          "firstRect": {
+            "x": 739,
+            "y": 269.109375,
+            "width": 56.015625,
+            "height": 14
+          },
+          "firstStyle": {
+            "fontFamily": "\"Segoe UI Variable Display\", \"Segoe UI\", Arial, sans-serif",
+            "fontSize": "12px",
+            "fontWeight": "550",
+            "lineHeight": "normal",
+            "letterSpacing": "normal",
+            "color": "rgb(184, 181, 167)",
+            "backgroundColor": "rgba(0, 0, 0, 0)",
+            "padding": "0px",
+            "margin": "0px",
+            "gap": "normal",
+            "borderRadius": "0px"
+          }
+        },
+        "#searchResults .list-card small": {
+          "count": 5,
+          "firstRect": {
+            "x": 739,
+            "y": 289.109375,
+            "width": 284,
+            "height": 10
+          },
+          "firstStyle": {
+            "fontFamily": "\"Segoe UI Variable Display\", \"Segoe UI\", Arial, sans-serif",
+            "fontSize": "9px",
+            "fontWeight": "400",
+            "lineHeight": "normal",
+            "letterSpacing": "normal",
+            "color": "rgb(116, 125, 119)",
+            "backgroundColor": "rgba(0, 0, 0, 0)",
+            "padding": "0px",
+            "margin": "5px 0px 0px",
+            "gap": "normal",
+            "borderRadius": "0px"
+          }
+        },
+        ".note": {
+          "count": 1,
+          "firstRect": {
+            "x": 705,
+            "y": 591.109375,
+            "width": 352,
+            "height": 18.140625
+          },
+          "firstStyle": {
+            "fontFamily": "\"Segoe UI Variable Display\", \"Segoe UI\", Arial, sans-serif",
+            "fontSize": "11px",
+            "fontWeight": "400",
+            "lineHeight": "18.15px",
+            "letterSpacing": "normal",
+            "color": "rgb(145, 152, 142)",
+            "backgroundColor": "rgba(0, 0, 0, 0)",
+            "padding": "0px",
+            "margin": "11px 0px",
+            "gap": "normal",
+            "borderRadius": "0px"
+          }
+        }
+      }
+    }
+  }
+}
