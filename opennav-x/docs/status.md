@@ -1,5 +1,32 @@
 # OpenNav X status — 2026-10-02
 
+## SCRUM-224 / SCRUM-14 / SCRUM-226 — combined focused Windows proof passes
+
+Published `ffe4ecf11f43a916098fefe8f17071c63867a838`
+(local `f220b31391815663c442d1f8dcbe98a54c03333c`) passed
+[native run37039246758](https://github.com/ThereptileII/Work/actions/runs/37039246758):
+**469 component checks** (Settings250, Search85, Chart46, Energy88). The strict
+Layers and drawer geometry checks and runtime staging guards also passed.
+[Downloaded proof](evidence/scrum-224-ffe-focused-native/verification.json)
+verifies exact artifact11241214936,259 unique source/patch/lock inputs,
+31 compiled objects,12 runtime files,four executables and30 canonical captures.
+The immutable Search reference job was intentionally skipped.
+
+Native review confirms the System intro/row order, truthful disabled states and
+visible recovery/Advanced links. Title/subtitle ink remains2px/4px above the
+canonical reference, and row font metrics remain unmatched; this is partial
+System refinement, not whole-view visual acceptance. Search/Chart retain their
+previous appearance (only Shell clock pixels differ). The Energy header repair
+passes actual pointer-close/reentry after scrolling and resizing; both retained
+header screenshots show the action in its correct upper-right position.
+
+The full branch remains frozen at88c141b. Its Linux layout-oracle failure is
+retained below; native integrated execution remains in progress. No duplicate
+full build has been started, and no package or boat promotion follows from a
+component-only pass. Exact full-shell DPI, dependency/security, installer,
+recovery and physical-display gates remain open. Boat/profile/remote access and
+public payment/download access were unchanged.
+
 ## SCRUM-224 / SCRUM-213 — native focus repair proven; integrated layout oracle correction required
 
 Published source `88c141ba9fee5c28e12b5f4ac0f7e7550d1a8ca6`

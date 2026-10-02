@@ -1,0 +1,227 @@
+{
+  "commit": "ffe4ecf11f43a916098fefe8f17071c63867a838",
+  "run": 37039246758,
+  "artifact": 11241214936,
+  "bytes": 16094060,
+  "sha256": "45e070cfe61fa1ecea59cb4698c95b225496dd57b195cfc86df940b2dd5f070d",
+  "entries": 866,
+  "source_inputs": {
+    "total": 259,
+    "exact": 16,
+    "windows_crlf": 243,
+    "mismatched": 0
+  },
+  "verified_objects": 31,
+  "verified_runtime_files": 12,
+  "verified_canonical_captures": 30,
+  "components": {
+    "settings-component": {
+      "checks": 250,
+      "executable": "37724c6af6c671dd5d6414f319fb7b0093cbd1e792ef9bcd8400d25f6c3a20c9",
+      "captures": 14
+    },
+    "search-component": {
+      "checks": 85,
+      "executable": "7f18f76fdd9a18f20674fe5393a32534317119c0151125c3e94e62a9414c513e",
+      "captures": 5
+    },
+    "chart-presentation-component": {
+      "checks": 46,
+      "executable": "6da7584cae30688100b69f24867fc6301b3c389c062d7357e0adb5defa099381",
+      "captures": 4
+    },
+    "energy-component": {
+      "checks": 88,
+      "executable": "0d8413e51c315a7fa507de5242182c2249f00c43ebb3417e5d1fa9b763c31c0a",
+      "captures": 7
+    }
+  },
+  "component_checks": 469,
+  "ui_build_policy": {
+    "testFixtures": false,
+    "pilotLoopback": false,
+    "runtimeTests": true
+  },
+  "scope": "Offline native component proof; full application, dependency, packaging, DPI and boat qualification remain pending",
+  "run_attempt": 1,
+  "repository_id": 864043804,
+  "run_url": "https://github.com/ThereptileII/Work/actions/runs/37039246758",
+  "job": 110944996671,
+  "job_conclusion": "success",
+  "reference_job": {
+    "id": 110944997570,
+    "conclusion": "skipped",
+    "reason": "Immutable Search reference inputs unchanged; opt-in capture not requested"
+  },
+  "local_equivalent": "f220b31391815663c442d1f8dcbe98a54c03333c",
+  "review": {
+    "system": "Complete one-line intro, original eight rows, truthful disabled capabilities, recovery and Advanced links contained. Remaining title/subtitle ink offsets2px/4px and row font metrics differ; no whole-view conformance claim.",
+    "energy": "Header Close at [982,96,80,44] after resize and Diagnostics/Route/Energy reentry; scrolls offscreen as prototype requires; real HWND/pointer actions and subsequent callbacks pass.",
+    "search_chart": "Both standalone Search and all four Chart PNGs identical to prior88. Three Shell PNGs differ only by148 clock pixels each.",
+    "limitations": [
+      "Full application, exact packaged DPI flow and physical boat validation pending",
+      "System installation/update/backup/setup capabilities remain partial and explicitly disabled",
+      "Energy full-page prototype differences remain separate from repaired header"
+    ]
+  },
+  "capture_manifests": {
+    "settingsComponent": {
+      "passed": true,
+      "checks": 250,
+      "captures": [
+        "settings-day",
+        "settings-dusk",
+        "settings-night",
+        "sensors-day",
+        "sensors-dusk",
+        "sensors-night",
+        "display-day",
+        "display-150-chart-night",
+        "display-applied-125-chart",
+        "display-dusk",
+        "display-night",
+        "system-night",
+        "settings-radar-night",
+        "settings-autopilot-night"
+      ],
+      "source_commit": "ffe4ecf11f43a916098fefe8f17071c63867a838",
+      "executable_sha256": "37724c6af6c671dd5d6414f319fb7b0093cbd1e792ef9bcd8400d25f6c3a20c9",
+      "platform": "win32",
+      "conformance": "PENDING: inspect reference/current/diff; no similarity waiver",
+      "screenshots": {
+        "settings-day": "cbdce769ee6fd23f6baa7b54fcdc06cf1163596efb45990186bc3528e4ec7194",
+        "settings-dusk": "5c0d8508a3df30588977f8aacf60b187f6e03334d005b7d08ab52faa589db6ff",
+        "settings-night": "2b26c984eb9fcd24ef090e5fac13e488e9e644345bd771ad82f4381359504316",
+        "sensors-day": "3899f1bcc49741e17a9281ee518d168d2357cf7ffac147ed8701646abe1a098d",
+        "sensors-dusk": "7534d5000c16c5e953d0ef4a71a0e1185732cf30ad1a707291cacb6dac92c4ef",
+        "sensors-night": "539523423b42295e7eab771844add104b403b4c3220330c901cd2082acdf56dc",
+        "display-day": "9fe9210bdd86b0d2ea93c82aedf2c8dac6ec39024369a1712cd53812aaacd828",
+        "display-150-chart-night": "8888e35166ab22706e2a8a75f286b711d8983539a98ba1f906a356226e7a129d",
+        "display-applied-125-chart": "9e92ca71a3fab579b96da96e8747465844e1b04c87ab42054ff65170334c8f0c",
+        "display-dusk": "ccc94329ccb53b7cde212658f8b0e626733dc5b054aeca0c02420dca743dd583",
+        "display-night": "cc5ee57a967495e961ee76c26eee5d0ac44a00b89b102f60ad046f321f1fe943",
+        "system-night": "6f6517ea76a4936dc542b0a21a1baa390b1d8374cf23e3c3fca3a33a197bfe75",
+        "settings-radar-night": "5eed8f1eba1d7d5b6260d1308dd8716d10b9da47c98e02d0fb904935b1419300",
+        "settings-autopilot-night": "837b6d13877bd21255d4d69a64c96941e0b8cee52cf5972c193e261f76e60975"
+      }
+    },
+    "searchComponent": {
+      "passed": true,
+      "checks": 85,
+      "platform": "win32",
+      "source_commit": "ffe4ecf11f43a916098fefe8f17071c63867a838",
+      "executable_sha256": "7f18f76fdd9a18f20674fe5393a32534317119c0151125c3e94e62a9414c513e",
+      "screenshots": {
+        "saved-objects-day": {
+          "size": [
+            1280,
+            800
+          ],
+          "bytes": 19950,
+          "sha256": "c981d5478e5b27744f644a9a12e38116d4af550e4e55cca76a894e6051b014d8"
+        },
+        "empty-night": {
+          "size": [
+            1280,
+            800
+          ],
+          "bytes": 15798,
+          "sha256": "dd5a410557173703201d34d22711f3df896a5fcb317821e3f97a9d02676c4112"
+        },
+        "shell-1280": {
+          "size": [
+            1280,
+            800
+          ],
+          "bytes": 43528,
+          "sha256": "4281752d756f7bf45f6cb74b88da585c10b321969e93b66d440dc8afe9195dc3"
+        },
+        "shell-853": {
+          "size": [
+            853,
+            600
+          ],
+          "bytes": 37696,
+          "sha256": "c833c55d4a50d73d4fbea85fbea0e83fedcde9d4350e515d3ce8005fd416eba8"
+        },
+        "shell-853-search": {
+          "size": [
+            853,
+            600
+          ],
+          "bytes": 45534,
+          "sha256": "9abf2e0b3ee24b636728cc883c517c0f43c317a58dc10944c1f53138eaa0b6e8"
+        }
+      },
+      "conformance": "PENDING native visual review and boat acceptance; offline component only"
+    },
+    "chartPresentationComponent": {
+      "passed": true,
+      "checks": 46,
+      "platform": "win32",
+      "source_commit": "ffe4ecf11f43a916098fefe8f17071c63867a838",
+      "executable_sha256": "6da7584cae30688100b69f24867fc6301b3c389c062d7357e0adb5defa099381",
+      "screenshots": {
+        "chart-day-top": {
+          "size": [
+            1280,
+            800
+          ],
+          "bytes": 28878,
+          "sha256": "6b2b8c8f4b9753c0572e7c61b258e5eb23b085d4a819eaedf4f629d1e861319b"
+        },
+        "chart-day-bottom": {
+          "size": [
+            1280,
+            800
+          ],
+          "bytes": 28059,
+          "sha256": "8de943feb38ab0bfeff1e9e6df758914b5dd645db911f3c372e30ac017defd43"
+        },
+        "chart-dusk-raster": {
+          "size": [
+            1280,
+            800
+          ],
+          "bytes": 28818,
+          "sha256": "62a8bcd547156f4b4b1917dc47c369d5a7aee9b9b8dcf2a20effd0001af2d223"
+        },
+        "chart-night-unavailable": {
+          "size": [
+            1280,
+            800
+          ],
+          "bytes": 27255,
+          "sha256": "60955223703ed2e3378dd6d4db77f09c008be680383a3bf843e8afa56a036563"
+        }
+      },
+      "conformance": "PENDING native visual review and boat acceptance; offline component only"
+    },
+    "energyComponent": {
+      "passed": true,
+      "checks": 88,
+      "captures": [
+        "energy-day",
+        "energy-dusk",
+        "energy-night",
+        "energy-stale-day",
+        "energy-gps-unavailable-day",
+        "energy-shortfall-day",
+        "energy-inactive-day"
+      ],
+      "source_commit": "ffe4ecf11f43a916098fefe8f17071c63867a838",
+      "executable_sha256": "0d8413e51c315a7fa507de5242182c2249f00c43ebb3417e5d1fa9b763c31c0a",
+      "platform": "win32",
+      "conformance": "PENDING: inspect reference/current/diff; no similarity waiver",
+      "screenshots": {
+        "energy-day": "bbd1dc0b21cc3c43b670808d888d5aac85e8847706ac0a100c25e3787d7dc1c5",
+        "energy-dusk": "b0ab9213b9ba8b9e47cdf4dfbca1bc6a3c4475f11a606c5d733adf0ed1838f5a",
+        "energy-night": "c7044ae167f890394fbedc087f0edb203f8c6f6666f72db9e8a9bfe42b0456de",
+        "energy-stale-day": "52325ac94c081cfcd447e17f88e23d49314ba7468f8afec81b07e97f3b535538",
+        "energy-gps-unavailable-day": "95b45d3a9f171b32215deda1673e646c84453e980df84d893daa68faaeca8e24",
+        "energy-shortfall-day": "79dcf140c8308a64915be8e1cba712192d6bc0e3f15b2f1622722969ad56390c",
+        "energy-inactive-day": "95b45d3a9f171b32215deda1673e646c84453e980df84d893daa68faaeca8e24"
+      }
+    }
+  }
+}
