@@ -16,7 +16,7 @@ jobs:
           git clone --depth 1 --branch Release_5.12.4 https://github.com/OpenCPN/OpenCPN.git opennav-x/upstream/OpenCPN
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
       - name: Compile complete changed units and reproduce legacy Windows macro failure
-        run: python opennav-x/tools/test-windows-changed-units.py --legacy-control
+        run: python opennav-x/tools/test-windows-changed-units.py --legacy-control --ui
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         if: always()
         with:

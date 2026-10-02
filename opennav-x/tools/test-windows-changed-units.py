@@ -20,6 +20,11 @@ import urllib.request
 ROOT = Path(__file__).resolve().parents[1]
 UNITS = ('model/src/downloader.cpp', 'model/src/peer_client.cpp',
          'libs/wxcurl/src/base.cpp', 'libs/wxcurl/src/http.cpp')
+UI_CHANGED = tuple('src/ui/' + name + '.cpp' for name in (
+    'AisDrawer', 'AnchorDrawer', 'ChoiceField', 'ContextCard', 'Controls',
+    'Drawer', 'HealthDrawer', 'Horizon', 'PassageDrawer', 'ProductPanel',
+    'SettingsDrawer', 'Sheet', 'Shell'))
+SETTINGS = 'src/integration/SettingsStore.cpp'
 
 
 def record(path):
@@ -73,6 +78,7 @@ def main():
     parser.add_argument('--upstream', type=Path, default=ROOT / 'upstream/OpenCPN')
     parser.add_argument('--evidence', type=Path, default=ROOT / 'evidence/local/windows-changed-units')
     parser.add_argument('--legacy-control', action='store_true')
+    parser.add_argument('--ui', action='store_true', help='also compile the real production UI static library and SettingsStore')
     args = parser.parse_args()
     if sys.platform != 'win32':
         raise SystemExit('Native Windows required; Linux compilation does not qualify this gate')
@@ -87,6 +93,14 @@ def main():
         report['gateInputs'] = {p: record(ROOT / p) for p in
                                ('tools/test-windows-changed-units.py', 'tools/prepare-integration.py',
                                 'tests/windows_changed_units/CMakeLists.txt', 'upstream.lock.json')}
+        if args.ui:
+            report['uiBuildPolicy'] = {'testFixtures': False, 'pilotLoopback': False, 'runtimeTests': False}
+            report['uiInputs'] = {p: record(ROOT / p) for p in
+                                  ('CMakeLists.txt', 'cmake/AisJson.cmake', *UI_CHANGED, SETTINGS)}
+            # Bind the complete local header/source tree consumed by the real UI
+            # target, including unchanged units and transitive build-policy code.
+            report['uiSourceTree'] = {str(p.relative_to(ROOT)): record(p)
+                                      for p in sorted((ROOT / 'src').rglob('*')) if p.is_file()}
         lock = json.loads((ROOT / 'upstream.lock.json').read_text())
         upstream = args.upstream.resolve()
         default = ROOT / 'upstream/OpenCPN'
@@ -131,8 +145,9 @@ def main():
         build = evidence / 'build'
         run(['cmake', '-S', ROOT / 'tests/windows_changed_units', '-B', build,
              '-G', 'Visual Studio 17 2022', '-A', 'Win32',
-             '-DOPENNAV_SOURCE_DIR=' + str(source), '-DCURL_INCLUDE=' + str(headers),
-             '-DwxWidgets_ROOT_DIR=' + str(wx), '-DwxWidgets_LIB_DIR=' + str(wx / 'lib/vc14x_dll'),
+             '-DOPENNAV_SOURCE_DIR:PATH=' + source.as_posix(), '-DCURL_INCLUDE:PATH=' + headers.as_posix(),
+             '-DOPENNAV_CHECK_UI=' + ('ON' if args.ui else 'OFF'),
+             '-DwxWidgets_ROOT_DIR:PATH=' + wx.as_posix(), '-DwxWidgets_LIB_DIR:PATH=' + (wx / 'lib/vc14x_dll').as_posix(),
              '-DwxWidgets_CONFIGURATION=mswu'], evidence / 'configure.log')
         report['generatedConfig'] = record(build / 'include/config.h')
         for project in build.glob('check_*.vcxproj'):
@@ -154,14 +169,26 @@ def main():
                     report['legacyControls'][relative] = {'exitCode': code, 'source': record(path)}
                 finally:
                     path.write_bytes(original)
-        run(['cmake', '--build', build, '--config', 'Release', '--parallel', '2', '--', '/verbosity:normal'],
+        targets = ['check_' + Path(p).stem for p in UNITS]
+        if args.ui:
+            targets += ['opennav_ui', 'check_SettingsStore']
+        run(['cmake', '--build', build, '--config', 'Release', '--target', *targets,
+             '--parallel', '2', '--', '/verbosity:normal'],
             evidence / 'compile.log', timeout=420)
         if any(record(source / p) != report['sources'][p] for p in UNITS):
             raise ValueError('Production source changed during compile')
         objects = sorted(build.glob('check_*.dir/Release/*.obj'))
-        if len(objects) != len(UNITS) or any(p.stat().st_size == 0 for p in objects):
+        if len(objects) != len(UNITS) + int(args.ui) or any(p.stat().st_size == 0 for p in objects):
             raise ValueError('Missing native translation-unit objects')
         report['objects'] = {str(p.relative_to(evidence)): record(p) for p in objects}
+        if args.ui:
+            ui_objects = sorted((build / 'opennav/opennav_ui.dir/Release').glob('*.obj'))
+            names = {p.stem for p in ui_objects if p.stat().st_size > 0}
+            if not {Path(p).stem for p in UI_CHANGED}.issubset(names):
+                raise ValueError('Actual UI target did not compile every changed UI translation unit')
+            report['uiObjects'] = {str(p.relative_to(evidence)): record(p) for p in ui_objects}
+            if any(record(ROOT / p) != rec for p, rec in report['uiSourceTree'].items()):
+                raise ValueError('UI source tree changed during compilation')
         report['status'] = 'passed'
     finally:
         (evidence / 'summary.json').write_text(json.dumps(report, indent=2) + '\n')

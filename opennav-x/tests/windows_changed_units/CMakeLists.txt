@@ -8,6 +8,7 @@ foreach(required OPENNAV_SOURCE_DIR CURL_INCLUDE)
     message(FATAL_ERROR "Missing ${required}")
   endif()
 endforeach()
+
 set(wxWidgets_USE_REL_AND_DBG OFF)
 find_package(wxWidgets REQUIRED COMPONENTS base core)
 include(${wxWidgets_USE_FILE})
@@ -61,3 +62,23 @@ foreach(unit IN LISTS units)
     "${OPENNAV_SOURCE_DIR}/libs/wxcurl/include"
     "${OPENNAV_SOURCE_DIR}/libs/IXWebSocket")
 endforeach()
+
+option(OPENNAV_CHECK_UI "Compile the real UI target and complete SettingsStore" OFF)
+if(OPENNAV_CHECK_UI)
+  get_filename_component(OPENNAV_ROOT "${CMAKE_CURRENT_LIST_DIR}/../.." ABSOLUTE)
+  # Reuse the production target and its source list, not a mirrored UI fixture.
+  # Static-library compilation performs no application link or runtime tests.
+  set(OPENNAV_BUILD_TESTS OFF CACHE BOOL "" FORCE)
+  set(OPENNAV_BUILD_UI_COMPONENTS ON CACHE BOOL "" FORCE)
+  set(XNAV_ENABLE_TEST_FIXTURES OFF CACHE BOOL "" FORCE)
+  set(XNAV_ENABLE_PILOT_LOOPBACK_TESTS OFF CACHE BOOL "" FORCE)
+  set(CMAKE_MSVC_RUNTIME_LIBRARY MultiThreadedDLL)
+  add_subdirectory("${OPENNAV_ROOT}" "${CMAKE_CURRENT_BINARY_DIR}/opennav")
+  add_library(check_SettingsStore OBJECT "${OPENNAV_ROOT}/src/integration/SettingsStore.cpp")
+  target_include_directories(check_SettingsStore PRIVATE "${OPENNAV_ROOT}/src" ${wxWidgets_INCLUDE_DIRS})
+  target_link_libraries(check_SettingsStore PRIVATE opennav_build_policy)
+  target_compile_features(check_SettingsStore PRIVATE cxx_std_17)
+  target_compile_options(check_SettingsStore PRIVATE /utf-8 /EHa /diagnostics:column)
+  target_compile_definitions(check_SettingsStore PRIVATE
+    WIN32 _WINDOWS __MSVC__ _HAS_STD_BYTE=0 _DISABLE_CONSTEXPR_MUTEX_CONSTRUCTOR)
+endif()

@@ -70,7 +70,7 @@ try {
             # Compile complete changed units with native Windows/wx headers
             # before spending time on maintained dependency producer suites.
             Run python @((Join-Path $PSScriptRoot 'test-windows-changed-units.py'),
-                '--evidence', (Join-Path $Evidence "windows-changed-units-$Variant"))
+                '--ui', '--evidence', (Join-Path $Evidence "windows-changed-units-$Variant"))
         }
     }
     # Upstream's batch file can continue after a failed wget/7z operation.
