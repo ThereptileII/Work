@@ -119,8 +119,8 @@ The diagnostic-only follow-up logs both families' complete expected/actual
 condition GUIDs, match types, value types and values, plus action, flags, layer,
 sublayer and count before the same strict decision. Byte blobs are hex encoded
 and bounded at 64KiB with explicit truncation; fixed address/mask values are also
-supported for diagnosis. No alternate address representation or added flag is
-accepted. The runner now surfaces helper exit/code/native error promptly instead
+supported for diagnosis. That diagnostic revision accepted neither alternate
+address representations nor added flags. The runner now surfaces helper exit/code/native error promptly instead
 of waiting for the generic preparation/activation deadline. Cleanup audit remains
 mandatory on this failure path.
 
@@ -130,6 +130,29 @@ This does not prove which, if any, canonicalization occurred in this run; the
 next native readback must establish the actual discrepancy before any matching
 policy changes. Local follow-up checks cover Python syntax and three bounded
 runner event/early-exit cases only; native diagnostic output remains pending.
+
+The diagnostic native attempt,
+[run 37046395691](https://github.com/ThereptileII/Work/actions/runs/37046395691),
+commit `ea561e4366341fe4809dcbab20a486833735a03a`, establishes the exact mismatch:
+both families returned identical condition fields/types/values/match types,
+action, layer, sublayer and count; the only compared difference was flags 0
+requested versus 64 returned. Assigned filter IDs and effective-weight metadata
+were already excluded from comparison. Artifact `11244286833` is 652913 bytes,
+SHA-256 `965778d700607fe0f0bfff88309c4a6d294481cd7d46c80cc4098e5f8b995b43`,
+retained under `evidence/local/ea561-native/`.
+
+Microsoft defines [FWPM_FILTER_FLAG_INDEXED](https://learn.microsoft.com/en-us/windows/win32/api/fwpmtypes/ns-fwpmtypes-fwpm_filter0)
+as a lookup optimization available from Windows 8/Server 2012; the
+[Microsoft SDK header](https://github.com/microsoft/win32metadata/blob/main/generation/WinSDK/RecompiledIdlHeaders/shared/fwpmtypes.h)
+defines its value as `0x00000040`. The correction explicitly requests that named
+flag on both filters and requires `actual.flags == expected.flags`. Unknown,
+missing or extra flags still fail; no blanket mask is introduced. The standalone
+proof's SDK target becomes Windows 8 (`_WIN32_WINNT=0x0602`), consistent with its
+disposable Windows 2022 runner. Product build targets do not change. Conditions,
+actions, dynamic-session lifetime and complete diagnostic logs are unchanged.
+Local validation inspected both retained readback records, checked Python syntax
+and reviewed the diff. Native behavior after this metadata correction remains
+pending; the observed metadata alone does not prove interruption or recovery.
 
 Even a passing disposable proof would not qualify actual AISStream connection
 loss/aging/reconnect, DNS-address changes, TLS transport, onboard AIS continuity,

@@ -163,7 +163,7 @@ void Filter(std::ostream &out,const FWPM_FILTER0 &filter) {
 bool Verify(HANDLE engine,const FWPM_FILTER0 &expected) {
   FWPM_FILTER0 *actual=nullptr;Check(FwpmFilterGetByKey0(engine,&expected.filterKey,&actual),"read back filter");
   bool same=Equal(actual->subLayerKey,expected.subLayerKey) && Equal(actual->layerKey,expected.layerKey) &&
-      actual->action.type==FWP_ACTION_BLOCK && actual->flags==0 && actual->numFilterConditions==expected.numFilterConditions;
+      actual->action.type==FWP_ACTION_BLOCK && actual->flags==expected.flags && actual->numFilterConditions==expected.numFilterConditions;
   // BFE may sort conditions; compare by field instead of relying on input order.
   for(unsigned i=0;i<expected.numFilterConditions;++i) {
     bool found=false;
@@ -227,6 +227,9 @@ int wmain(int argc,wchar_t **argv) {
     auto c4=Conditions(appid,port,false,loop6),c6=Conditions(appid,port,true,loop6);
     FWPM_FILTER0 f4{},f6{};
     f4.filterKey=key4;f4.subLayerKey=subkey;f4.layerKey=FWPM_LAYER_ALE_AUTH_CONNECT_V4;
+    // Request the documented lookup metadata observed from BFE; readback must
+    // match exactly, so unexpected flags still fail closed.
+    f4.flags=FWPM_FILTER_FLAG_INDEXED;
     f4.displayData.name=const_cast<wchar_t *>(L"Disposable loopback marker IPv4");
     f4.action.type=FWP_ACTION_BLOCK;f4.weight.type=FWP_EMPTY;f4.numFilterConditions=static_cast<UINT32>(c4.size());f4.filterCondition=c4.data();
     f6=f4;f6.filterKey=key6;f6.layerKey=FWPM_LAYER_ALE_AUTH_CONNECT_V6;

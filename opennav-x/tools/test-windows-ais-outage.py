@@ -369,7 +369,7 @@ def run(output, report):
         for role, source in (("marker", "marker.cpp"), ("control", "marker.cpp"), ("filter", "filter.cpp")):
             exe = folder / f"xnav-ais-outage-{role}.exe"
             command = [compiler, "/nologo", "/std:c++17", "/EHsc", "/W4", "/O2", "/MT", "/DUNICODE", "/D_UNICODE",
-                       "/D_WIN32_WINNT=0x0601", "/Fo" + str(folder / f"{role}.obj"), "/Fe" + str(exe)]
+                       "/D_WIN32_WINNT=0x0602", "/Fo" + str(folder / f"{role}.obj"), "/Fe" + str(exe)]
             if role == "control":
                 command.append("/DOUTAGE_CONTROL=1")
             command += [str(SOURCE / source), "/link", "ws2_32.lib"]
