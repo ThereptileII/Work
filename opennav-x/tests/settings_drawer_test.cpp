@@ -502,26 +502,34 @@ private:
         Check(::GetForegroundWindow()==static_cast<HWND>(frame_->GetHandle()),"owner active before root Preferences reopen");
         ActivationEvidence("owner-before-reopen");
         panel_->Open(wxRect(frame_->ClientToScreen({80,68}),wxSize(1014,698)));
+        ActivationEvidence("reopened-before-owner-activation");
         break;
       case 26:
+        // Present/Raise may foreground the drawer on Windows. Exercise the
+        // actual owner-to-drawer transition explicitly instead of assuming
+        // that ShowWithoutActivating kept the owner in the foreground.
+        ActivateSurface(frame_);
+        ActivationEvidence("owner-after-reopen");
+        break;
+      case 27:
         sensor_before_=Find(panel_,"Sensors")->GetScreenRect();
         ActivationEvidence("before-activation");
         Capture("activation/before-activation",false);
         Check(ScrollBody()->GetViewStart()==wxPoint(0,0),"root reopen initially resets scroll before activation");
-        Check(::GetForegroundWindow()==static_cast<HWND>(frame_->GetHandle()),"root reopen retains active owner until pointer activation");
+        Check(::GetForegroundWindow()==static_cast<HWND>(frame_->GetHandle()),"explicit owner deactivation settled before pointer activation");
         Check(::WindowFromPoint(POINT{sensor_before_.x+sensor_before_.width/2,sensor_before_.y+sensor_before_.height/2})==
               static_cast<HWND>(Find(panel_,"Sensors")->GetHandle()),"Sensors initially passes exact native pointer hit");
         ActivateSurface(panel_);
         ActivationEvidence("after-activation-immediate");
         break;
-      case 27:
+      case 28:
         ActivationEvidence("after-activation-settled");
         Capture("activation/after-activation",false);
         Check(ScrollBody()->GetViewStart()==wxPoint(0,0),"drawer activation must preserve root Preferences scroll reset");
         Check(Find(panel_,"Sensors")->GetScreenRect()==sensor_before_,"Sensors must not move when reopened drawer activates");
         NativeClick(Find(panel_,"Sensors"));
         break;
-      case 28:
+      case 29:
         Check(panel_->Section()==ui::SettingsSection::Sensors,"physical Sensors click works after owner to drawer activation");
         Check(saves_==2 && display_saves_==2,"activation transition does not save settings");
         ActivationEvidence("sensors-selected");

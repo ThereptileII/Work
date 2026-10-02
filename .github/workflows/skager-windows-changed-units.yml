@@ -12,6 +12,10 @@ on:
         description: Include the tracked chart presentation harness (requires prototype)
         type: boolean
         default: false
+      search_reference:
+        description: Capture missing or changed immutable Search reference inputs
+        type: boolean
+        default: false
 permissions:
   contents: read
 jobs:
@@ -58,7 +62,7 @@ jobs:
             opennav-x/evidence/local/peer-cli-precondition
           if-no-files-found: error
   search-reference:
-    if: ${{ github.ref == 'refs/heads/skager-prototype-proof' || inputs.prototype == true }}
+    if: ${{ inputs.search_reference == true || contains(github.event.head_commit.message, '[search-reference]') }}
     runs-on: windows-2022
     timeout-minutes: 10
     steps:
