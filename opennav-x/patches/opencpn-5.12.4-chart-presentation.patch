@@ -370,3 +370,99 @@ diff --git a/gui/src/route_gui.cpp b/gui/src/route_gui.cpp
    wxPenStyle style = wxPENSTYLE_SOLID;
    if (m_route.m_style != wxPENSTYLE_INVALID) style = m_route.m_style;
    wxPen p = *wxThePenList->FindOrCreatePen(col, width, style);
+diff --git a/gui/src/chcanv.cpp b/gui/src/chcanv.cpp
+--- a/gui/src/chcanv.cpp
++++ b/gui/src/chcanv.cpp
+@@ -6430,16 +6430,27 @@
+         int h = os_bm.GetHeight();
+         img_height = h;
+ 
+-        dc.DrawBitmap(os_bm, lShipMidPoint.m_x - w / 2,
+-                      lShipMidPoint.m_y - h / 2, true);
+-
+-        //      Reference point, where the GPS antenna is
+-        int circle_rad = 3;
+-        if (m_pos_image_user) circle_rad = 1;
+-
+-        dc.SetPen(wxPen(GetGlobalColor(_T ( "UBLCK" )), 1));
+-        dc.SetBrush(wxBrush(GetGlobalColor(_T ( "UIBCK" ))));
+-        dc.StrokeCircle(lShipMidPoint.m_x, lShipMidPoint.m_y, circle_rad);
++        bool xnav_ownship = false;
++#ifdef OPENNAV_X
++        if (g_OwnShipIconType == 0 && !m_pos_image_user &&
++            m_ownship_state == SHIP_NORMAL)
++          xnav_ownship = opennav::integration::DrawChartOwnship(
++              dc, *this, lShipMidPoint.m_x, lShipMidPoint.m_y,
++              icon_rad - PI / 2,
++              g_ShipScaleFactorExp > 1 ? log(g_ShipScaleFactorExp) + 1.0 : 1.0);
++#endif
++        if (!xnav_ownship) {
++          dc.DrawBitmap(os_bm, lShipMidPoint.m_x - w / 2,
++                        lShipMidPoint.m_y - h / 2, true);
++
++          //      Reference point, where the GPS antenna is
++          int circle_rad = 3;
++          if (m_pos_image_user) circle_rad = 1;
++
++          dc.SetPen(wxPen(GetGlobalColor(_T ( "UBLCK" )), 1));
++          dc.SetBrush(wxBrush(GetGlobalColor(_T ( "UIBCK" ))));
++          dc.StrokeCircle(lShipMidPoint.m_x, lShipMidPoint.m_y, circle_rad);
++        }
+ 
+         // Maintain dirty box,, missing in __WXMSW__ library
+         dc.CalcBoundingBox(lShipMidPoint.m_x - w / 2,
+diff --git a/gui/src/glChartCanvas.cpp b/gui/src/glChartCanvas.cpp
+--- a/gui/src/glChartCanvas.cpp
++++ b/gui/src/glChartCanvas.cpp
+@@ -2513,6 +2513,7 @@
+       // Set the size of the little circle showing the GPS reference position
+       // Set a default early, adjust later based on render type
+       float gps_circle_radius = 3.0;
++      bool xnav_ownship = false;
+ 
+       if (g_OwnShipIconType == 0) {  // Default Bitmap
+ 
+@@ -2575,9 +2576,21 @@
+         coords[6] = -w / 2;
+         coords[7] = h / 2;
+ 
+-        RenderSingleTexture(dc, coords, uv, m_pParentCanvas->GetpVP(),
+-                            lShipMidPoint.m_x, lShipMidPoint.m_y,
+-                            icon_rad - PI / 2);
++#ifdef OPENNAV_X
++        if (!m_pParentCanvas->m_pos_image_user &&
++            m_pParentCanvas->m_ownship_state == SHIP_NORMAL) {
++          glDisable(GL_TEXTURE_2D);
++          xnav_ownship = opennav::integration::DrawChartOwnship(
++              dc, *m_pParentCanvas, lShipMidPoint.m_x, lShipMidPoint.m_y,
++              icon_rad - PI / 2,
++              g_ShipScaleFactorExp > 1 ? log(g_ShipScaleFactorExp) + 1.0 : 1.0);
++          if (!xnav_ownship) glEnable(GL_TEXTURE_2D);
++        }
++#endif
++        if (!xnav_ownship)
++          RenderSingleTexture(dc, coords, uv, m_pParentCanvas->GetpVP(),
++                              lShipMidPoint.m_x, lShipMidPoint.m_y,
++                              icon_rad - PI / 2);
+         glDisable(GL_TEXTURE_2D);
+       } else if (g_OwnShipIconType == 1) {  // Scaled Bitmap
+ 
+@@ -2713,11 +2726,13 @@
+       //      Reference point, where the GPS antenna is
+       if (m_pParentCanvas->m_pos_image_user) gps_circle_radius = 1;
+ 
+-      wxPen ppPen1(GetGlobalColor(_T ( "UBLCK" )), 1, wxPENSTYLE_SOLID);
+-      dc.SetPen(ppPen1);
+-      dc.SetBrush(wxBrush(GetGlobalColor(_T ( "CHWHT" ))));
+-
+-      dc.StrokeCircle(lGPSPoint.m_x, lGPSPoint.m_y, gps_circle_radius);
++      if (!xnav_ownship) {
++        wxPen ppPen1(GetGlobalColor(_T ( "UBLCK" )), 1, wxPENSTYLE_SOLID);
++        dc.SetPen(ppPen1);
++        dc.SetBrush(wxBrush(GetGlobalColor(_T ( "CHWHT" ))));
++
++        dc.StrokeCircle(lGPSPoint.m_x, lGPSPoint.m_y, gps_circle_radius);
++      }
+     }
+ 
+     //        glDisableClientState(GL_VERTEX_ARRAY);

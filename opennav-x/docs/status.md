@@ -1,21 +1,79 @@
 # OpenNav X status — 2026-10-02
 
-## Current stabilization candidate — bounded checks before another full build
+## Current: chart refinements and corrected candidate preparation
 
-The combined source now includes the visible Preferences selector/menu repair,
-the verified GTK floating-control correction (SCRUM-228), body-targeted Windows
-touch scrolling (SCRUM-229), and coherent selected-data/energy diagnostic timing
-(SCRUM-230). Each original failure remains recorded below. The new diagnostic
-regression exercises the real writer at the unchanged freshness boundary;
-Windows touch uses actual production widgets in a separate disposable process.
+The previous stale-snapshot and touch failures below are retained historical
+evidence. The corrected source now has two verified development gates:
 
-The next validation runs in parallel: one clean incremental Linux application
-build/preview and one bounded native 125% Settings touch proof. This is not a
-qualified package. No new full Windows candidate is eligible until those
-focused checks pass. Remaining full integration, package security, installer,
-recovery, DPI, physical boat and visual-conformance gates remain mandatory.
-No boat installation, old-version removal, hardware output or public release
-follows from publishing this source.
+- [Exact Linux preview](evidence/scrum-224-cf07197-linux-preview/coherence-identity.json)
+  at local `cf0719749482e62d48daed02515f2b6c6d242b67`, published equivalent
+  `e0e0e9ef71714932ab69d533d1f86cbcd48e33b3`: the 129-check freshness regression
+  and one full preview pass. The preview took 213 seconds, retained 44 captures,
+  exercised 60 pointer actions and all eight scenarios, and observed seven
+  clean application exits through XNav, Legacy, Safe and direct Legacy return.
+  Real coastline remains visible in the reviewed final return. This run used
+  process/signal tracing; it does not retrospectively identify the older747
+  SIGKILL cause. The interrupted build wrapper, brief overlapping Ninja and
+  explicit object/cache recovery are recorded, not hidden.
+- [Downloaded native touch proof](evidence/scrum-229-cf44-native-touch/verification.json)
+  for `cf44e938a3539af6e97a03346542f04f3e7895a4` passes actual 125% Windows
+  input. The original Edit target gives zero scroll. Three native body-hit pans
+  move 480 px, leave Save and the lower action fully visible, and an exact tap
+  activates the action once without saving or changing fields. The initial
+  test's unsupported forwarded-message-count assumption was removed; native
+  hit, movement, settled geometry and state assertions remain strict. Artifact
+  hashes, 273 recorded input entries, 29 objects, 12 runtime DLLs and both test
+  executables were verified. This is a component proof, not full-app DPI or
+  physical touchscreen acceptance.
+
+After those checks, the exact `cf44e938` source was promoted once to
+[full run37057756273](https://github.com/ThereptileII/Work/actions/runs/37057756273).
+Its Linux and Windows portable contract jobs found a missing shared-helper
+binding in the older geometry test (91/92 and 88/89 CTest entries passed).
+This is a test-harness `NameError`, not an application crash. The downstream
+Windows integrated job was skipped; running upstream/Linux jobs remain intact.
+The two-file repair at local `3b944213` / published `16187f407754a3dbe137d03311518e27445b03d7`
+passes all 24 retained cases locally and in [native short run37058880373](https://github.com/ThereptileII/Work/actions/runs/37058880373)
+under Windows cp1252. No product or behavioral assertion was removed.
+Chart refinements are being batched separately before another full candidate.
+No replacement package or boat deployment is yet qualified.
+
+## SCRUM-15 / SCRUM-231 / SCRUM-232 — user chart feedback confirmed
+
+The user's screenshot concern is valid: the active XNav chart presentation
+still differs visibly from the immutable prototype. Functional chart tests do
+not qualify chart appearance. The retained FFE ENC view uses XNav resources,
+but its large mustard built-up areas retain stock CHBRN. Inspection of the
+hash-pinned public US5SEAFL cell identifies the Seattle and West Seattle
+BUAARE polygons. SCRUM-231 changes only their fill through a dedicated XNav
+paint role using the prototype shore neutral. CHBRN also colours hazards and
+light sectors and remains intact for those uses. [Matched local ENC evidence](evidence/scrum-231-built-area-local.json)
+now confirms the correction in all three themes and pixel-identical Standard
+chart regions. The strengthened resource guard passes 3,484 checks and leaves
+the captured generated resources byte-identical. Native Windows, OpenGL and
+boat acceptance remain open.
+
+SCRUM-232 separately tracks the stock red default ownship versus the prototype
+chevron, preserving OpenCPN position, heading, accuracy, user-icon and scaled
+ship semantics. Heavy labels and chart-symbol/route/waypoint/AIS styling remain
+open. Some illustrative prototype danger symbols omit required chart meaning;
+they cannot be copied indiscriminately. No primary chart view is visually
+accepted. The chart corrections are isolated from the frozen stability
+candidate. The combined refinement source now includes:
+
+- Dedicated built-area fill, with matched Day/Dusk/Night real-ENC captures
+  and byte-identical Standard chart regions (SCRUM-231).
+- Shared prototype ownship chevron at the existing OpenCPN position/rotation,
+  retaining stock custom, scaled and low-accuracy paths. The three changed
+  production units compile; 488 focused painter checks pass, including the
+  Windows max-macro hazard and shared software/GL DPI factor (SCRUM-232).
+- Available owned online AIS names, exact prototype baseline and theme ink,
+  bounded placement and stale/lost label removal. 58 core and 23 painter checks
+  pass, and the production overlay compiles (SCRUM-233).
+
+An integrated Linux link and short actual-chart check precede the next full
+native candidate. Windows, actual GL, physical boat review and remaining
+chart-symbol/label/route refinements are still open.
 
 ## SCRUM-224 / SCRUM-228 / SCRUM-230 — clean GTK fix verified locally; stale snapshot blocks preview
 

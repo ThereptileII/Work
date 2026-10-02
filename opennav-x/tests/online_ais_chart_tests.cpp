@@ -1,5 +1,6 @@
 #include "ais/ChartTargets.h"
 #include "ais/Provider.h"
+#include "ui/Theme.h"
 #include <iostream>
 #include <limits>
 #include <stdexcept>
@@ -80,6 +81,40 @@ int main() {
           "Paint-time read ages a retained symbol without refreshing it");
     Check(!ais::CurrentChartMark(*painted,at),"Clock reversal cannot rejuvenate stale cached marks");
     Check(!ais::CurrentChartMark(retained[0],at+600s),"Retained render snapshot expires even if producer has stopped");
+    ais::TargetCache named;
+    Check(named.Observe({265000002,58.1,16.4,4,90,90,0,at},at),"Named fixture has actual normalized position");
+    ais::StaticReport identity;identity.mmsi=265000002;identity.name="S/Y Liv";identity.observed_at=at;
+    Check(named.Observe(identity,at),"Validated static name accepted");
+    const auto first=ais::OnlineChartTargets(named.Read(at),at,265000002);
+    Check(first.size()==1&&first[0].name=="S/Y Liv","Available name copied into owned chart mark");
+    identity.name="Skärgård";identity.observed_at=at+1s;
+    Check(named.Observe(identity,at+1s),"Static identity update accepted");
+    const auto renamed=ais::OnlineChartTargets(named.Read(at+1s),at+1s,265000002);
+    Check(!(first==renamed)&&renamed[0].name=="Skärgård"&&renamed[0].observed_at==at,
+          "Name-only update invalidates rendering without renewing position");
+    named=ais::TargetCache{};
+    Check(first[0].name=="S/Y Liv","Owned name survives cache destruction and later rename");
+    Check(ais::CurrentChartMark(first[0],at+15s)->name=="S/Y Liv","Aging identity remains with existing aging mark");
+    Check(ais::CurrentChartMark(first[0],at+60s)->name.empty(),"Retained stale mark cannot keep live name label");
+    for(const auto &name:std::vector<std::string>{"","   ","bad\nname",std::string(129,'x')}) {
+      s=state;s.targets[0].name=name;
+      const auto marks=get(s,at);
+      Check(marks.size()==1&&marks[0].name.empty(),"Absent or invalid name omits label without losing target");
+    }
+    using B=ais::ChartLabelBounds;
+    const B viewport{0,0,100,80};
+    Check(ais::ChartLabelFits({14,4,30,10},viewport,{}),"Full label fits its fixed anchor");
+    Check(!ais::ChartLabelFits({90,4,30,10},viewport,{})&&
+          !ais::ChartLabelFits({14,-1,30,10},viewport,{})&&
+          !ais::ChartLabelFits({14,75,30,10},viewport,{}),"Clipped labels are omitted, never shifted");
+    Check(!ais::ChartLabelFits({14,4,30,10},viewport,{{20,0,10,20}}),"Label cannot obscure another target");
+    Check(!ais::ChartLabelFits({14,4,30,10},viewport,{{40,10,30,10}}),"Accepted label blocks overlapping next name");
+    Check(ais::ChartLabelFits({14,4,30,10},viewport,{{44,4,20,10}}),"Disjoint labels remain available");
+    Check(!ais::ChartLabelFits({14,4,0,10},viewport,{}),"Empty text metrics cannot reserve a label");
+    Check(ui::OnlineChartTheme(ui::LightMode::Day).label==0x835D70&&
+          ui::OnlineChartTheme(ui::LightMode::Dusk).label==0x835D70&&
+          ui::OnlineChartTheme(ui::LightMode::Night).label==0x664957,
+          "Final prototype label includes inherited Night brightness only");
     std::cout<<checks<<" online chart presentation checks passed\n";
   } catch(const std::exception &e) {std::cerr<<e.what()<<'\n';return 1;}
 }

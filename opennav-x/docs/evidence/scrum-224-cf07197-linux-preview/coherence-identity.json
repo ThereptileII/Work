@@ -1,0 +1,105 @@
+{
+  "authority": "Linux development; exact local source, not native Windows or boat qualification",
+  "source_commit": "cf0719749482e62d48daed02515f2b6c6d242b67",
+  "source_tree": "126f85fdf63c2765ea133a88def6054c1eee8285",
+  "published_equivalent_reported_by_root": "e0e0e9ef71714932ab69d533d1f86cbcd48e33b3",
+  "published_tree_reported_by_root": "d38e66a5b104a2fee4fcbdab9f4a042cd9811c90",
+  "published_mapping_independently_verified_here": false,
+  "binary_sha256": "1c262147de5c7830576e354139c351b105a5ca4b982329a679bd516f18c152c8",
+  "binary_bytes": 25721672,
+  "test_binary_sha256": "207ee3f776ea1993d054c2c84390120dabfa62a7d9989692ee6d99034799d3b5",
+  "filter": "OpenNavDiagnostics.FreshnessFrameCoherence",
+  "filter_result": "passed 1 GTest containing129 checks",
+  "filter_execution_count": 1,
+  "final_test_binary_identical_to_filtered_binary": true,
+  "all_nine_upstream_patches_verified": true,
+  "build_result": "passed after recorded overlap recovery; no source or dependency suppression",
+  "build_provenance_note": "Initial63-step build continued after wrapper143. Brief second Ninja touched2 test objects and possibly2 further jobs. Both ended;4 objects invalidated; Ninja recovered8 object dependency records. Damaged metadata preserved and recompact used; final11-step rebuild succeeded. No dirty C++ object remains; only preexisting libdnet phony/link work in dry run. See build-overlap-record.json and logs.",
+  "preserved_binaries": {
+    "incremental-preview": "233b0d8745c82a91dca7fe8c50ae879a16f1e3cb5475a421fdae322a54821b83",
+    "overlay-diagnostic": "6f43f9d5353c481acf53f187b98632551db7545caee448cb4241b9b1c138921a",
+    "overlay-clean": "cb195d7356f5891aa2c4831b64f3bc8f33f0fe9e4fc4670c696200858b404985"
+  },
+  "generated_build_header": "#pragma once\n#define OPENNAV_BUILD_COMMIT \"cf0719749482e62d48daed02515f2b6c6d242b67\"\n#define OPENNAV_BUILD_COMPILER \"GNU 16.2.1 / 8 byte pointers\"\n#define OPENNAV_BUILD_DATE \"2026-10-02T19:37:31Z\"\n#define OPENNAV_BUILD_RUN \"local development\"\n",
+  "full_preview": {
+    "result": "passed existing assertions; bounded screenshot review completed for stale-energy and final Legacy return only",
+    "raw_result": "passed; screenshot review required",
+    "exit_code": 0,
+    "elapsed_seconds": 212.698,
+    "process_signal_trace_enabled": true,
+    "timing_limitation": "Tracing can change scheduling. This run does not identify or waive the older747 failed descendant/SIGKILL cause.",
+    "executions": 1,
+    "check_groups": [
+      "Persistent page controls scroll diagnostics and return to top without native scrollbars",
+      "Prototype navigation and eight retained product views captured; advanced frame accelerators remain covered",
+      "Energy, source, vessel-safety and radar settings pages captured",
+      "Moving position, SOC, route distance and advisory destination SOC change",
+      "Global alerts persist across pages/acknowledgement, recover, and recur as new episodes",
+      "All eight fixture-accelerator scenarios pass validity/shortfall assertions",
+      "XNav / Legacy / Safe clean lifecycle and shared navigation/config persistence passed; mode switch stops Demo",
+      "Real bundled coastline remains rendered after Legacy return and Safe restart"
+    ],
+    "screenshot_count": 44,
+    "pointer_action_count": 60,
+    "process_exits": [
+      {
+        "event": "popen-exit",
+        "phase": "XNav to Legacy",
+        "pid": 8,
+        "exit_code": 0
+      },
+      {
+        "event": "waitpid-exit",
+        "phase": "XNav to Legacy to XNav",
+        "pid": 1154,
+        "exit_code": 0
+      },
+      {
+        "event": "waitpid-exit",
+        "phase": "XNav to Legacy to XNav",
+        "pid": 1328,
+        "exit_code": 0
+      },
+      {
+        "event": "waitpid-exit",
+        "phase": "Safe to XNav",
+        "pid": 1508,
+        "exit_code": 0
+      },
+      {
+        "event": "waitpid-exit",
+        "phase": "Safe to XNav",
+        "pid": 1675,
+        "exit_code": 0
+      },
+      {
+        "event": "waitpid-exit",
+        "phase": "Direct Legacy to XNav",
+        "pid": 1851,
+        "exit_code": 0
+      },
+      {
+        "event": "waitpid-exit",
+        "phase": "Direct Legacy to XNav",
+        "pid": 2019,
+        "exit_code": 0
+      }
+    ],
+    "results_sha256": "f6428d8fcce53d5fb1568be10a8fa129ef82c4bf1aef0b727252a4968cd91bdc",
+    "stdout_log_sha256": "6f811ac9a2bc3a2edacfc2ce801e722a3f1dc22d3557dac5a543b5a8d6145200",
+    "reviewed_images": {
+      "preview-06-stale-linux.png": "0488f18b799feb6338df52ad36a0d5b05584441c75310aa4b412a329565e0f70",
+      "preview-14-legacy-to-xnav-linux.png": "c431d02402c2e1affe397f321dd28953ef85bbac02bab63256a28c322cda72ee"
+    },
+    "visual_findings": [
+      "Stale Energy values/estimate unavailable; no displayed advisory estimate in inspected stale capture",
+      "Final Legacy return visibly restores real coastline and full-position floating chart controls"
+    ],
+    "not_qualified": [
+      "all-view canonical visual conformance",
+      "native Windows corrected Display path",
+      "full CTest/endurance",
+      "physical boat"
+    ]
+  }
+}

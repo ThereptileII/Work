@@ -1,0 +1,2698 @@
+{
+  "status": "passed",
+  "scope": "native production UI plus actual 125% Settings touch-only component; not full product acceptance",
+  "candidate": "cf44e938a3539af6e97a03346542f04f3e7895a4",
+  "gateInputs": {
+    "tools/test-windows-changed-units.py": {
+      "bytes": 28552,
+      "sha256": "a5d24519afb8f1e73f85be89a8a4bcd0d7f487c0bcdef58b6940db6a95f57257"
+    },
+    "tools/prepare-integration.py": {
+      "bytes": 2792,
+      "sha256": "d476bb32227f7a503592501051ddcde6c4da12bf4111bcd64fd65805ff7ff67b"
+    },
+    "tests/windows_changed_units/CMakeLists.txt": {
+      "bytes": 10661,
+      "sha256": "2a25529fefe48fb5cd741778808a67388ef051e36cfe900b3ade152a58f45d71"
+    },
+    "upstream.lock.json": {
+      "bytes": 470,
+      "sha256": "a6d7baa663d57ac3bc0f4ddc1cb80013422e2cec0577b71096b7c410ef919175"
+    }
+  },
+  "uiBuildPolicy": {
+    "testFixtures": false,
+    "pilotLoopback": false,
+    "runtimeTests": true
+  },
+  "uiInputs": {
+    "CMakeLists.txt": {
+      "bytes": 30086,
+      "sha256": "0786130258e384150e03341c3a114bc0add33239e6769dd86388724510ffa27c"
+    },
+    "cmake/AisJson.cmake": {
+      "bytes": 1918,
+      "sha256": "068377ef17eaafb544e6b0d98f1a7aaeb0bd33b04cb8bcc96a4540c4a4ca5ecf"
+    },
+    "src/ui/AisDrawer.cpp": {
+      "bytes": 21625,
+      "sha256": "77861681efb37338ab3fb58bee12cfc53ba707a1c24eafeb61a7feb86f5a7eae"
+    },
+    "src/ui/AnchorDrawer.cpp": {
+      "bytes": 10761,
+      "sha256": "1fd5b16e995e8ac494513f6b491d5254952a3a3fa6d96ab3b7a98cf52190e34a"
+    },
+    "src/ui/ChoiceField.cpp": {
+      "bytes": 12278,
+      "sha256": "8cb6d29dab194f600fb62f24dd15e763e9b0f1bb6c4d3d860bda36c43b90b4cb"
+    },
+    "src/ui/ContextCard.cpp": {
+      "bytes": 12570,
+      "sha256": "9fa15dadba4bc7aab47d80a87b34ab1a4b87f03981e6718e24d6177d5c5b9a29"
+    },
+    "src/ui/Controls.cpp": {
+      "bytes": 43472,
+      "sha256": "f453b7fa8bec5b543a92de7408aeacec70f4a9ecfa056712081d73b6b45f459a"
+    },
+    "src/ui/Drawer.cpp": {
+      "bytes": 8953,
+      "sha256": "fe06e4369120e00df20234b7ae5adfb3189baf0d9480d46e399c5a009a7b34ec"
+    },
+    "src/ui/HealthDrawer.cpp": {
+      "bytes": 7011,
+      "sha256": "50a0e5789539f73786d608e59dc340e45f3f07f667b3160d82057a2a6a07ee2b"
+    },
+    "src/ui/Horizon.cpp": {
+      "bytes": 13311,
+      "sha256": "ded4248432629883dd5528b31d250e45ed5b7295377d7bfb0673f93f7bbd0592"
+    },
+    "src/ui/PassageDrawer.cpp": {
+      "bytes": 11469,
+      "sha256": "8bcc56ac88ad3d9eefc4edb6b0a79efd94c29c0d6a611a132604a909bb6a8977"
+    },
+    "src/ui/ProductPanel.cpp": {
+      "bytes": 48685,
+      "sha256": "abfd345d739f1f3f252ff0be84c4ebfc2ec3490c9387080c473344d175da3992"
+    },
+    "src/ui/SettingsDrawer.cpp": {
+      "bytes": 25531,
+      "sha256": "b6c36ece98734846c8141e35fff82c4d6930fa6dc3caa54f8882cb89d3937a6b"
+    },
+    "src/ui/Sheet.cpp": {
+      "bytes": 6668,
+      "sha256": "280bbeea46dd6ae7c8df770bc15e9f84cc8fb8ecf099ccafbc437e9ce4bdc59b"
+    },
+    "src/ui/Shell.cpp": {
+      "bytes": 82654,
+      "sha256": "cfe2e7aeb15f096451e3260b7a57c41b7cde9ea1d39396727fc08d316b23fda5"
+    },
+    "src/integration/SettingsStore.cpp": {
+      "bytes": 6653,
+      "sha256": "6d3029c8ed05f1a9cdc7f58f338b2d99df279d212553a10b4dac123ee93b4cd9"
+    }
+  },
+  "uiSourceTree": {
+    "src\\adapters\\.gitkeep": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "src\\adapters\\Autopilot.cpp": {
+      "bytes": 8248,
+      "sha256": "6923e737a5623bbd9bc9f69b1a67e5b6a374f2f9689b70a7bb4d77fde55f0e7f"
+    },
+    "src\\adapters\\Autopilot.h": {
+      "bytes": 3170,
+      "sha256": "d5f393abc88b683fbfd357199060bad6adfc370fba3bf0661c8e77b8a47dcae0"
+    },
+    "src\\adapters\\BoatN2k.cpp": {
+      "bytes": 7025,
+      "sha256": "44e53219c75bf13bf154aede462681b863a9ad90c52949bb4cf77106b66de1cf"
+    },
+    "src\\adapters\\BoatN2k.h": {
+      "bytes": 1237,
+      "sha256": "8adaae11367144e972b95d86c1e0c8efac6f561865b979d3cab5678aa4998a20"
+    },
+    "src\\adapters\\Radar.h": {
+      "bytes": 973,
+      "sha256": "42886f9ea8d7eae305710697910ff83cee9c5c6de463f409d5f1cc105c6e37d4"
+    },
+    "src\\adapters\\RadarSimulator.h": {
+      "bytes": 1032,
+      "sha256": "48598e42f8ac884f6c545a60e06abf35f60d0023be3d1a0b5abf92e78dfef4bc"
+    },
+    "src\\adapters\\README.md": {
+      "bytes": 717,
+      "sha256": "f61f1c1cbcad0ac015b19b85c3ecb2367fa7573151b7ac310c31d27f0a6b110a"
+    },
+    "src\\adapters\\SimulatedAutopilot.h": {
+      "bytes": 755,
+      "sha256": "37813cb5881fa9cd01f72caf7a10a5650c62574f10d73ef14ef2de378d74e3ed"
+    },
+    "src\\adapters\\St4000Pilot.cpp": {
+      "bytes": 9864,
+      "sha256": "2d18ed8c1909dc2360db304d8f7d90e30e7c09ba7d37a0e19edc036271feed88"
+    },
+    "src\\adapters\\St4000Pilot.h": {
+      "bytes": 2939,
+      "sha256": "021cd738bf04e2b6fa119bae74cb8733375bf9402c3a1fb38e58be5a25c2e362"
+    },
+    "src\\ais\\AisStreamCodec.cpp": {
+      "bytes": 11449,
+      "sha256": "d714bf8bcd91815bcecd2f4f337f625c46dc9c727b1ec6a0614646bd484f49a7"
+    },
+    "src\\ais\\AisStreamCodec.h": {
+      "bytes": 1055,
+      "sha256": "e403f4396eaf1117ed086b61c97dec3321f06cffeea03d30f89cd389865300a4"
+    },
+    "src\\ais\\AisStreamProvider.cpp": {
+      "bytes": 7610,
+      "sha256": "70c73564640f05594f6d5b08b419ea03d2181bb31f8291141d267968c9583858"
+    },
+    "src\\ais\\AisStreamProvider.h": {
+      "bytes": 1441,
+      "sha256": "c270a7eb52a730657125393cc86ed0b668fb5d4d1c1d8cee50595af682a7867b"
+    },
+    "src\\ais\\AisStreamSession.cpp": {
+      "bytes": 6320,
+      "sha256": "a458cc57d3b756bddc299e9ecf87300e640181faf3d6b7a72a035ff29611c323"
+    },
+    "src\\ais\\AisStreamSession.h": {
+      "bytes": 1401,
+      "sha256": "734e9580726235281b6ba0af251ee0bd74d5c3290550057980ff260456a38419"
+    },
+    "src\\ais\\ChartTargets.cpp": {
+      "bytes": 3716,
+      "sha256": "716f768870753ec3970b3d5130977ad8b38447ee9e365514b9b101ad7ae53110"
+    },
+    "src\\ais\\ChartTargets.h": {
+      "bytes": 968,
+      "sha256": "2488d03e3d8dd07e1e26e9deba955d1945cfb3463e122c5f76a864b6e2f1dbc3"
+    },
+    "src\\ais\\Credentials.cpp": {
+      "bytes": 1070,
+      "sha256": "1bb74d3597e85fc72e70785a2b8dda4049d9469fcd68286d8d9b9d2be0418e32"
+    },
+    "src\\ais\\Credentials.h": {
+      "bytes": 1652,
+      "sha256": "713083a4dac1152a04b28c7f850be196b49b958dbe291abb89c6d2f8929b7556"
+    },
+    "src\\ais\\Provider.cpp": {
+      "bytes": 1996,
+      "sha256": "a3989c51c79bb145390c1045012d1d08004910da3e79aa9149fe2aed5fc4176c"
+    },
+    "src\\ais\\Provider.h": {
+      "bytes": 1256,
+      "sha256": "75c56c74f25c7102a32966dad45c8013ba32daa74ce7754ccda247790d872a97"
+    },
+    "src\\ais\\Subscription.cpp": {
+      "bytes": 3005,
+      "sha256": "970da6af5341719473c950285dc597c37c2146cfb34195dab5f7af3793ca7ff6"
+    },
+    "src\\ais\\Subscription.h": {
+      "bytes": 1290,
+      "sha256": "4e8e8c56144fb54a89ea5764b3d0ca7bba04ce71d8fa601fb12ff87c8bea851b"
+    },
+    "src\\ais\\TargetCache.cpp": {
+      "bytes": 5602,
+      "sha256": "99d5d03f3ef72598cb6beaed4ef9e7e65ed19b1285858fad8bc8b5123522c8c4"
+    },
+    "src\\ais\\TargetCache.h": {
+      "bytes": 1512,
+      "sha256": "1d989f1144362c987670b49ea6882549ae16226c806cbbb6f3fb1d6b1f497d08"
+    },
+    "src\\application\\Alerts.cpp": {
+      "bytes": 7843,
+      "sha256": "1bdb141594932b079ad710833566cdad503214e4d1498da26c61a22a0b92f52f"
+    },
+    "src\\application\\Alerts.h": {
+      "bytes": 1397,
+      "sha256": "37bac6ef4b600307926fa6be108dac7e03dace5bf9475d930155f688295ce3ae"
+    },
+    "src\\application\\AnchorView.cpp": {
+      "bytes": 4998,
+      "sha256": "2fcfe47ab25824367c78751faafb788ea8d2366c5d68bc2f93df478ed319e868"
+    },
+    "src\\application\\AnchorView.h": {
+      "bytes": 784,
+      "sha256": "fd0c3b328f381a7770980246d3517bd9b31b94b4ec333b6f5c160859bd99384b"
+    },
+    "src\\application\\DisplayPreferences.h": {
+      "bytes": 1531,
+      "sha256": "97c3c707ae93755861afd6f1966a99ed0a9978a0426559af94e2efc42caf73a4"
+    },
+    "src\\application\\EnergyView.cpp": {
+      "bytes": 3326,
+      "sha256": "82e95fdab76aa2d67e517cb656ec2381f358d488b539ee69479198d056c7139d"
+    },
+    "src\\application\\EnergyView.h": {
+      "bytes": 794,
+      "sha256": "d7d04994a0fd76aa9d781645cda2c19ac3d552347bacc9bac4b10902b3dc53a3"
+    },
+    "src\\application\\FooterView.cpp": {
+      "bytes": 4703,
+      "sha256": "f7c7304139e5c3b2fa7c342e973d31143cb177763b18ca7eb5505dc0fd1a6e35"
+    },
+    "src\\application\\FooterView.h": {
+      "bytes": 1063,
+      "sha256": "3edb2426b50ef661e898cc22b39f9dfadf2275ac39b710cdfe99d684cb9fc798"
+    },
+    "src\\application\\HorizonView.cpp": {
+      "bytes": 8350,
+      "sha256": "44c65481d8c79ae438ffbae9a39abc19953f0157da9a4845a760bbfb75108e28"
+    },
+    "src\\application\\HorizonView.h": {
+      "bytes": 2326,
+      "sha256": "b145ce8579436ec4469925382b4d27313c7d6611f2058a6f8193a2d2217bcc0f"
+    },
+    "src\\application\\InstrumentView.cpp": {
+      "bytes": 3932,
+      "sha256": "11cf3c5e13629b28a7c42d4770612ce10a68657ac949b267884d7306189e29d3"
+    },
+    "src\\application\\InstrumentView.h": {
+      "bytes": 1043,
+      "sha256": "22b4c9f8441e1b12c4fbc941a287dbd7a78aa8da8c064204a33ea5484b23d261"
+    },
+    "src\\application\\MarineMapping.cpp": {
+      "bytes": 4292,
+      "sha256": "1363efeac55a46aee33d01f64bba46e24fe7602c540ba31a47d4c6225bdaf27d"
+    },
+    "src\\application\\MarineMapping.h": {
+      "bytes": 633,
+      "sha256": "ba4f4b8f9e6a13a21f9bfa05c2bb997c57a772d43df3e27b5ba5d9a833648dad"
+    },
+    "src\\application\\NavigationControlGate.cpp": {
+      "bytes": 2375,
+      "sha256": "6f824d55e1a6204e2c8398e55ff9a2d1fedc7d79df9389771419c983290b9a73"
+    },
+    "src\\application\\NavigationObjects.h": {
+      "bytes": 5595,
+      "sha256": "de12a33b594f2358c7ad89626b5488ddb30c0ddea26aade9056c62906fd6fae9"
+    },
+    "src\\application\\OnlineAis.h": {
+      "bytes": 675,
+      "sha256": "fad3eff83e885552c5dc14ec4ed3a5291201192d1896213211eed359bbf66be3"
+    },
+    "src\\application\\PassageView.cpp": {
+      "bytes": 4108,
+      "sha256": "786c1f2113a0a8992017ce835e1823c60a378a31576d029b4a8b05b8a7a1d84e"
+    },
+    "src\\application\\PassageView.h": {
+      "bytes": 961,
+      "sha256": "69924da9d3e28daa5eb0ddd84514182b185639655a59040e226000a245d0eed9"
+    },
+    "src\\application\\PilotPresentation.cpp": {
+      "bytes": 4389,
+      "sha256": "f6b6227845717cb6e7fd371b4e86f6c02acc0ec845b23f3675ee84bc877e755b"
+    },
+    "src\\application\\PilotPresentation.h": {
+      "bytes": 845,
+      "sha256": "2bd5271a8b4748cb9e876205491127f9db605daa31030cc2401065d297064cc3"
+    },
+    "src\\application\\Settings.cpp": {
+      "bytes": 11792,
+      "sha256": "25308bdc388d999bfe1cbfe2fb7cce599d5c8aacced100b21cba0911d666c13c"
+    },
+    "src\\application\\Settings.h": {
+      "bytes": 1678,
+      "sha256": "fc669bc064446a0f79e41b01a8d299cc3974f79d5ceca5313b9f1c1e38f3c434"
+    },
+    "src\\application\\SourceHealthView.cpp": {
+      "bytes": 8167,
+      "sha256": "8e5aa1bc390415a6fb744e3a2e55adb1ff1fd3a685384662ac5a13cea3647eda"
+    },
+    "src\\application\\SourceHealthView.h": {
+      "bytes": 1247,
+      "sha256": "66f1560221cd0dbbf0340a4b2493d1a99196e665facb3f3e595422bd2c7dc445"
+    },
+    "src\\application\\Version.h": {
+      "bytes": 146,
+      "sha256": "65df3b593eb8542121a4bffa4770d38aaa0aacf9238501a6d9f141dc09d5780f"
+    },
+    "src\\diagnostics\\Calibration.cpp": {
+      "bytes": 4164,
+      "sha256": "63f9ae9905ff2da7ba5b8c41d4dda171ee36f842c4e52b8b7e993673f57294cf"
+    },
+    "src\\diagnostics\\Calibration.h": {
+      "bytes": 702,
+      "sha256": "9474a9575874ba77498e1d27c873aeff7f24a305386a2640b1c513a118f17094"
+    },
+    "src\\diagnostics\\Commissioning.cpp": {
+      "bytes": 2794,
+      "sha256": "0747b8acd1e8341cbe579543b32d8750de74561b10217834d5513567998b7f24"
+    },
+    "src\\diagnostics\\Commissioning.h": {
+      "bytes": 1883,
+      "sha256": "937282067f0f5d528958687f562771867cfd6a5d4323ed202286b2cd41399e30"
+    },
+    "src\\diagnostics\\FieldReport.cpp": {
+      "bytes": 11294,
+      "sha256": "712224397409945462d90dd3adb220fd62e17f3cfc7def71c4abb6380a854c11"
+    },
+    "src\\diagnostics\\FieldReport.h": {
+      "bytes": 1926,
+      "sha256": "e1f6678f3ecb4c39cfb2193ca10f8b3b3a98f7b6481a9e3043bdd243e2a934f8"
+    },
+    "src\\diagnostics\\Recorder.cpp": {
+      "bytes": 7190,
+      "sha256": "3dbc7837b5f8a75ade1ddc041ff57df8129a5897fa86ee20ec7a138dfc32778b"
+    },
+    "src\\diagnostics\\Recorder.h": {
+      "bytes": 1614,
+      "sha256": "ebffa0320b4c8923af98da1aa6157925377a0d8ca8fdfc9da68866bc36538c2f"
+    },
+    "src\\diagnostics\\Recording.cpp": {
+      "bytes": 24283,
+      "sha256": "ef64cf04336d2f668c18f5753f0179d73370a8b4562dc01895c53f5fbf94cf05"
+    },
+    "src\\diagnostics\\Recording.h": {
+      "bytes": 1419,
+      "sha256": "e92512571791cc23435701b1049ac2a9dd620676a14e6c29ac26db1c2f2b773d"
+    },
+    "src\\diagnostics\\Replay.cpp": {
+      "bytes": 2334,
+      "sha256": "d2ba36fa8b2457f7e0af5123b60c5c0d8d69d20bc05cc37f867ed97741282194"
+    },
+    "src\\diagnostics\\Replay.h": {
+      "bytes": 879,
+      "sha256": "c66025f56e6e1dc0740d422550fb8a122f02375eb699b89f06e76b7b4251cdbf"
+    },
+    "src\\diagnostics\\TestEarlyStartupTrace.h": {
+      "bytes": 5292,
+      "sha256": "573627d4408479af3f141ea527bbdb91a4fc560ff6719bcb37b756b9bb3570bd"
+    },
+    "src\\diagnostics\\TestUiTrace.h": {
+      "bytes": 2164,
+      "sha256": "f6faeb6c59a1f481200b46e8eb964414aefc6b6c75e43480d9dd4e8c993d60af"
+    },
+    "src\\integration\\.gitkeep": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "src\\integration\\AisObservationTime.h": {
+      "bytes": 1368,
+      "sha256": "8bfcd502ad97fd12d1bb1cfc70e5f219c2196669e1ab51f397bac20bfe575585"
+    },
+    "src\\integration\\AisViewport.cpp": {
+      "bytes": 975,
+      "sha256": "899729951fbec96ab61d45755c873eb20cb2cf9930fa7852c5149a41850f822f"
+    },
+    "src\\integration\\AisViewport.h": {
+      "bytes": 521,
+      "sha256": "7e175f53c8b456cd2041e645c3ddd92f897de2f4a6065bc07ce1b0aea7c09f4e"
+    },
+    "src\\integration\\AnchorGeometry.cpp": {
+      "bytes": 1423,
+      "sha256": "e8482963dfc4257a4a166698d95c869f0df81553cfdb0fe8109b455fd87d366f"
+    },
+    "src\\integration\\AnchorGeometry.h": {
+      "bytes": 449,
+      "sha256": "21be594f49aea5535550ee721960ace4f585bd37df3671f5aabe9d19f2512cdc"
+    },
+    "src\\integration\\BuildFeatures.h": {
+      "bytes": 1480,
+      "sha256": "e604b96d4cef358828562c0a6659fc669b2d4b6d463d1699f1904fdadd17b2e9"
+    },
+    "src\\integration\\ChartPresentation.cpp": {
+      "bytes": 10368,
+      "sha256": "86f04b335762bdd4233e25ff2fa06ee9d915adb4820546f3c292db0eaac90025"
+    },
+    "src\\integration\\ChartPresentation.h": {
+      "bytes": 1524,
+      "sha256": "a4782717025b5f511ca6f66535bf565e05126d2f6f067bedabd56b787893828d"
+    },
+    "src\\integration\\DashboardPresentation.cpp": {
+      "bytes": 3242,
+      "sha256": "23769e1ef0639599d5470b04800b4351465bbfdfc02fafdde392c9784758b748"
+    },
+    "src\\integration\\DashboardPresentation.h": {
+      "bytes": 1213,
+      "sha256": "9fe73e89c16faf2516388504c20be76dceacd14bedf85e17a77059ee2e6962d4"
+    },
+    "src\\integration\\DashboardPresentationApi.h": {
+      "bytes": 957,
+      "sha256": "171d9acd7fe95512f8066544af02c9b0bebbd675fc1e670dfa4c7a76f37464bb"
+    },
+    "src\\integration\\ExternalJson.h": {
+      "bytes": 1977,
+      "sha256": "e531b5383f5c5ef3437167ef057c20e305ba5458665fb85e861e4045f316b03b"
+    },
+    "src\\integration\\InstalledResources.cpp": {
+      "bytes": 2919,
+      "sha256": "1fd5abd4632f3c4694064dfb7ba575349d92f53fcb20793108fc259be9cb5461"
+    },
+    "src\\integration\\InstalledResources.h": {
+      "bytes": 747,
+      "sha256": "d5b362c08330545b82a3489fcc8d0ef6de28a98bb84a02e37308f7a74aa87301"
+    },
+    "src\\integration\\InstallerSelfTest.cpp": {
+      "bytes": 3046,
+      "sha256": "b8d93672ef9dfb0105b8a6e9bda522b46036c8208fb7d0ca893b0d28b1be04bd"
+    },
+    "src\\integration\\InstallerSelfTest.h": {
+      "bytes": 388,
+      "sha256": "3f1757ad3eed2925141797f39188cc0e665b0694954ecc54836e47359e475716"
+    },
+    "src\\integration\\MarineBridge.cpp": {
+      "bytes": 8068,
+      "sha256": "221d03f37d65b082e8893b912732b4e43726e0250aa9aa1a6117e2e8b722f3d4"
+    },
+    "src\\integration\\MarineBridge.h": {
+      "bytes": 2187,
+      "sha256": "b0262f54d6b146227fee2f113568b0c61c97cac54042010744e2e252644cae37"
+    },
+    "src\\integration\\MarineDecoder.h": {
+      "bytes": 1223,
+      "sha256": "1bc82ee5b52d8dd1ef642ca639ddbbf14024b107f02f63cc29f65d2c8bc078d2"
+    },
+    "src\\integration\\N2kInstruments.cpp": {
+      "bytes": 10169,
+      "sha256": "3d18225e92ff039254a71a06a6b686ad0f10cbfc882db756e25043f2cb39eb77"
+    },
+    "src\\integration\\N2kSourceIdentity.cpp": {
+      "bytes": 2555,
+      "sha256": "74826fcd180e46579a7027b164e7308307802fbfe96086fa76e50afdcb8048a7"
+    },
+    "src\\integration\\N2kSourceIdentity.h": {
+      "bytes": 1162,
+      "sha256": "132d43703c9680ed58d7b290a95cb6886db5cdd7b8a897291d406ff9087024df"
+    },
+    "src\\integration\\NavigationActions.cpp": {
+      "bytes": 12416,
+      "sha256": "f10d21b57efe6965489a794b406921ce96558f5d7cbe1fa6be425ab8d9661810"
+    },
+    "src\\integration\\NavigationActions.h": {
+      "bytes": 325,
+      "sha256": "477db7de4a269907a81bd61ccdea052389dc06de7e2fd8ac9f6c3d1b09a1f1b8"
+    },
+    "src\\integration\\NavigationBridge.cpp": {
+      "bytes": 2270,
+      "sha256": "58ebf12e2b83d6c6199896abceb26423f8ce04fa0da6110237fd360a94a2e27b"
+    },
+    "src\\integration\\NavigationBridge.h": {
+      "bytes": 667,
+      "sha256": "a62ebbfe6a8a72b89f408a2915d7e4c0dee29718af3f9cca8084e109dd260962"
+    },
+    "src\\integration\\NavigationObjects.cpp": {
+      "bytes": 36413,
+      "sha256": "3160fc734edfd37a82cd9709e2876c7c43c647d70f5b7a4c38f60693006a0b19"
+    },
+    "src\\integration\\NavigationObjects.h": {
+      "bytes": 2811,
+      "sha256": "261f00a3f7d3623a7ad15a7dc8733375815fc1cc6ca86a45b190dee7c44e0822"
+    },
+    "src\\integration\\NmeaInstruments.cpp": {
+      "bytes": 4800,
+      "sha256": "fbf047c7929d3eae7d40af9be986acade0c496045e3ec8397af0be778c875bd6"
+    },
+    "src\\integration\\OnlineAis.cpp": {
+      "bytes": 4369,
+      "sha256": "5c86e0429155ba97abffcc88215e2ec8ff2a6326e940c9a7d1297b754077e0b4"
+    },
+    "src\\integration\\OnlineAis.h": {
+      "bytes": 1234,
+      "sha256": "72b3b48bf8bb3db2950baf10a2448ba54616d850a5296d19be0c2b97c8394c7f"
+    },
+    "src\\integration\\OnlineAisOverlay.cpp": {
+      "bytes": 5567,
+      "sha256": "56d68af76e1308b9a56053253f1465ee24d4e18c768d8b56ea95d63b491dc159"
+    },
+    "src\\integration\\OnlineAisOverlay.h": {
+      "bytes": 706,
+      "sha256": "a3b9c1e73c093bd72b5d8c60f89bff9590c66fe0ae2a978004d180ff1af284f7"
+    },
+    "src\\integration\\OpenCPN.cmake": {
+      "bytes": 15950,
+      "sha256": "8fd0fc36f2c61baf4556ffba4d666e5f59a9da08e0637fd10334739dcacf80ab"
+    },
+    "src\\integration\\OpenCPNIntegration.cpp": {
+      "bytes": 51928,
+      "sha256": "30358d00b262e3d28b91c155cb5e11f30a5ead0cc6a378cc6e717fc4edd4bca7"
+    },
+    "src\\integration\\OpenCPNIntegration.h": {
+      "bytes": 2264,
+      "sha256": "3be63fe6107e03dbf0264d8c4cff9417be0176010e5d85be984f621d053656e8"
+    },
+    "src\\integration\\OpenCPNPilot.cpp": {
+      "bytes": 8058,
+      "sha256": "cfd874deaf3111881a2925c7b2d75f51022ef81f7caea9aab8dfdf3a07434668"
+    },
+    "src\\integration\\OpenCPNPilot.h": {
+      "bytes": 1361,
+      "sha256": "06439b06afea0f9a5b6ab9b64958b21a19ae6fc5cbc3bfaecca9270e4550779a"
+    },
+    "src\\integration\\OpenCPNRouteReader.cpp": {
+      "bytes": 2598,
+      "sha256": "238204e0ea758f32eaa8f4bc416b4db15aceb57959d014980e8c43b8dac57a55"
+    },
+    "src\\integration\\OpenCPNRouteReader.h": {
+      "bytes": 339,
+      "sha256": "e9f48e6a9071b8c3cb8b010dc28b8ed3f5d25769113e74e6770f8b0e020588e5"
+    },
+    "src\\integration\\OpenNavBuild.h.in": {
+      "bytes": 294,
+      "sha256": "9449aed10e1308d83657cc18527fd780a9031dcc893508816dcb8c12d4722e42"
+    },
+    "src\\integration\\PilotOutputPolicy.h": {
+      "bytes": 1266,
+      "sha256": "f67f2b90cb69122e570c0c473740a22a8f7945bfbe834e0b9c8736d31693c070"
+    },
+    "src\\integration\\PreviewDiagnostics.cpp": {
+      "bytes": 12413,
+      "sha256": "afefdd385e36dbc638aed950ec044b218cc30a74b9f065efb8bf72f72317f54f"
+    },
+    "src\\integration\\PreviewDiagnostics.h": {
+      "bytes": 1010,
+      "sha256": "ec04b753385caa35ef1eea810e0fca89c144dd1b2c265dbc3c5cd6394d610544"
+    },
+    "src\\integration\\PreviewResources.cpp": {
+      "bytes": 1252,
+      "sha256": "3f40eec9ec83386563b15f17a00654fd367dda9f55fe02a5f96b5358240a7f6d"
+    },
+    "src\\integration\\PreviewResources.h": {
+      "bytes": 506,
+      "sha256": "379157e1b0f2f263672a1bb2284c632b62f0aa6fcc33ea6b8d02a71fcb69d1a5"
+    },
+    "src\\integration\\RecoveryStore.cpp": {
+      "bytes": 4013,
+      "sha256": "79688dcd7e8bea52465599da68c12e9ec35962ccadd2ebfecc6b0f91202b35b9"
+    },
+    "src\\integration\\RecoveryStore.h": {
+      "bytes": 1085,
+      "sha256": "e97019769724018de9b006827ba47f1f549e9b33b09bb459d4b31aea71f6a0c3"
+    },
+    "src\\integration\\RoutePassWatch.h": {
+      "bytes": 979,
+      "sha256": "50314e94b84a2494c662746931bc049d51889d0c70277877bcbe80923c3f8014"
+    },
+    "src\\integration\\RouteProgressInput.cpp": {
+      "bytes": 8907,
+      "sha256": "ca874813c0230d34410cc49723f04a9d27e876ed9a621310e6457781f4564bf6"
+    },
+    "src\\integration\\RouteProgressInput.h": {
+      "bytes": 2072,
+      "sha256": "619d8da50a43471fcaeb4d39dc2fed9a5aecdba7eebbf935bde5c2356ac693b7"
+    },
+    "src\\integration\\RuntimeDiagnostics.cpp": {
+      "bytes": 2701,
+      "sha256": "31073c55575d87887fc4e0a22cebf68c9846c6982c7f80bfd3d4017c5a1bd078"
+    },
+    "src\\integration\\RuntimeDiagnostics.h": {
+      "bytes": 280,
+      "sha256": "efd8bee0389c1c37018ed6498002470c0bbe726da4480ec8d575285c79515877"
+    },
+    "src\\integration\\SettingsStore.cpp": {
+      "bytes": 6653,
+      "sha256": "6d3029c8ed05f1a9cdc7f58f338b2d99df279d212553a10b4dac123ee93b4cd9"
+    },
+    "src\\integration\\SettingsStore.h": {
+      "bytes": 1248,
+      "sha256": "094cdeb56ca8de492cee6589addf6fbb932c9a1d909225fd26836a07edcb2e2c"
+    },
+    "src\\integration\\SignalKInstruments.cpp": {
+      "bytes": 9298,
+      "sha256": "f9d89874a01d0ab59ca0bf69d19ae4b5a50d179bf1e521eeea89d302a442687c"
+    },
+    "src\\integration\\StartupMode.cpp": {
+      "bytes": 2326,
+      "sha256": "1763032b14f3867e6c07b1f2fbe3d179f54981c85c0c93dc84c7ce98f6a2c040"
+    },
+    "src\\integration\\StartupMode.h": {
+      "bytes": 1658,
+      "sha256": "537a56c92fdff93bb30e886663f22b5bca8693622e2fd35d5aa583f98c3aded6"
+    },
+    "src\\integration\\StartupRecovery.cpp": {
+      "bytes": 1430,
+      "sha256": "46239795b9e6a73aada71365b906fd74e8a429c68637d0728be108a0650e1ffa"
+    },
+    "src\\integration\\StartupRecovery.h": {
+      "bytes": 505,
+      "sha256": "8afcd5287771dc6d851c5077b6101708f6e6a774c1585d94c641b67ea2c66329"
+    },
+    "src\\platform\\linux\\.gitkeep": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "src\\platform\\linux\\AisCredentials.cpp": {
+      "bytes": 1047,
+      "sha256": "2bf67ec3bef15bcd92e14af1a06f8ba500565efa5963715b2465dbf6cbe00799"
+    },
+    "src\\platform\\linux\\LinuxPlatformIntegration.cpp": {
+      "bytes": 1248,
+      "sha256": "aa7e66b01bd37eb5cb81c96c479f5977bdf24aebcc2ca9341bbc3d07f97a7070"
+    },
+    "src\\platform\\PlatformIntegration.h": {
+      "bytes": 410,
+      "sha256": "9ffd392fcc3f9537f5466e847c113c5394c0a290965bb863286b528c07c70628"
+    },
+    "src\\platform\\PortableProfile.cpp": {
+      "bytes": 1443,
+      "sha256": "6fe17cf5743fbe81ffba3aedd50e13066e211e1afcac2bd60f760f405fd6eab2"
+    },
+    "src\\platform\\PortableProfile.h": {
+      "bytes": 901,
+      "sha256": "1c27cd3569783acfa54ece9fda044cc08e513038f11456ec8c594f91bd9bf02a"
+    },
+    "src\\platform\\README.md": {
+      "bytes": 542,
+      "sha256": "aaf06e96bc4b356d1ab8c2cc3b413194b93cb37730be92180cfa049744e56576"
+    },
+    "src\\platform\\windows\\.gitkeep": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "src\\platform\\windows\\AisCredentials.cpp": {
+      "bytes": 3400,
+      "sha256": "751a724073abc5b0c5e2000212e4d35f5cf8bbb18f39a00ce4bd8300a3b60038"
+    },
+    "src\\platform\\windows\\CommissioningRestartNative.cpp": {
+      "bytes": 19998,
+      "sha256": "295b7ac371b86ca892ac51eb0ffe9f8f3286b49661bc18b2182adf82b76bb3a1"
+    },
+    "src\\platform\\windows\\CommissioningRestartNative.h": {
+      "bytes": 628,
+      "sha256": "ce960ac8e4dc6a651d9d54b982cfc9d4a77799a76048fec4185d0ced9472c988"
+    },
+    "src\\platform\\windows\\CommissioningRestartProtocol.cpp": {
+      "bytes": 7494,
+      "sha256": "36987e7aaa4dfd1acd2e660088506b50b26b255f3cee1e4018e89d636160fbde"
+    },
+    "src\\platform\\windows\\CommissioningRestartProtocol.h": {
+      "bytes": 2197,
+      "sha256": "382838e4be0b9c76191e4b0274348f6d8a088f16b28f7b5e0627feab924a3a45"
+    },
+    "src\\platform\\windows\\RestartHelper.cpp": {
+      "bytes": 1864,
+      "sha256": "20d8b933f0fd548772d147eb830d3ad38cbc654656c5e18f16cb290d7f7233e5"
+    },
+    "src\\platform\\windows\\WindowsArguments.h": {
+      "bytes": 606,
+      "sha256": "00cc83e0616a343d795efc0512307494dbc16f295e32de8be282b45a51c4a356"
+    },
+    "src\\platform\\windows\\WindowsPlatformIntegration.cpp": {
+      "bytes": 1807,
+      "sha256": "65cb549f3f133d9c78baf786ef8694a396b99487f346aec8d31129d9c2e679d7"
+    },
+    "src\\README.md": {
+      "bytes": 520,
+      "sha256": "352bcfe968a7f20bc4e8f8bfc75aa83444f46d6a169a8342f576e95697494bc0"
+    },
+    "src\\smartnav\\.gitkeep": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "src\\smartnav\\Advisories.cpp": {
+      "bytes": 8937,
+      "sha256": "9d4a8523a0e95b447ff54654dca5aacd4c932ff9c0a598ec4e21c9386d15b334"
+    },
+    "src\\smartnav\\Advisories.h": {
+      "bytes": 1160,
+      "sha256": "856e64811bbd1ed7a7316876bad7921cabe44349d96fa59b017157e71aa3f6d0"
+    },
+    "src\\smartnav\\Energy.cpp": {
+      "bytes": 7251,
+      "sha256": "ec646abdcb5441f327faed6cd11e6c991aed132023237f68d4679ee81dc9b6fa"
+    },
+    "src\\smartnav\\Energy.h": {
+      "bytes": 2908,
+      "sha256": "430c0786dc58b08118af5be2a257cb84e7e5b3b093e67963b55f3dcd71ddafda"
+    },
+    "src\\smartnav\\EnergyConfiguration.cpp": {
+      "bytes": 8453,
+      "sha256": "16e3628800297dcf948f19a14191141128a390802d086ad4586497f95848425b"
+    },
+    "src\\smartnav\\EnergyConfiguration.h": {
+      "bytes": 1633,
+      "sha256": "613d12c7616c82735a7b83eae8991ffe87be52d28a354e0dd795a234d9110805"
+    },
+    "src\\smartnav\\HazardLookAhead.cpp": {
+      "bytes": 5727,
+      "sha256": "91d668ea6fcf9e4b1661200d6d291f2cda6be94be293fcadb755413e01995f15"
+    },
+    "src\\smartnav\\HazardLookAhead.h": {
+      "bytes": 2122,
+      "sha256": "a3104265132791a53efc4fd5195004c3d435c2c45ec259214b839a4c1980b2ef"
+    },
+    "src\\smartnav\\README.md": {
+      "bytes": 725,
+      "sha256": "3667b945f6b37427d74881bcae2ce39117b96c549685c95d22f45363b83ebb70"
+    },
+    "src\\smartnav\\VesselEnergy.cpp": {
+      "bytes": 3353,
+      "sha256": "02548e668dcdb76ef62cf1ffe874c72eae12d95cbd8a865475bffc3eee12bc42"
+    },
+    "src\\smartnav\\VesselEnergy.h": {
+      "bytes": 661,
+      "sha256": "9495730083ffd080804375f5772ed4b83eab18eca7562b2a42d60402c3f5158c"
+    },
+    "src\\ui\\.gitkeep": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "src\\ui\\AisDrawer.cpp": {
+      "bytes": 21625,
+      "sha256": "77861681efb37338ab3fb58bee12cfc53ba707a1c24eafeb61a7feb86f5a7eae"
+    },
+    "src\\ui\\AisDrawer.h": {
+      "bytes": 1577,
+      "sha256": "bd02ed86622c5980a13aa76490dd88b5ec6cd5f6b53f0bf5e3289b49a246d367"
+    },
+    "src\\ui\\AlertDrawer.cpp": {
+      "bytes": 8507,
+      "sha256": "ae842d3195aa91d2589471e37a6a50f9be613dc0e3f9aae03f176a333d1aff4f"
+    },
+    "src\\ui\\AlertDrawer.h": {
+      "bytes": 801,
+      "sha256": "bd22502d72e85af48c40be2fb8dfcade4b06a35378027f176cd98b02d959b5a3"
+    },
+    "src\\ui\\AnchorDrawer.cpp": {
+      "bytes": 10761,
+      "sha256": "1fd5b16e995e8ac494513f6b491d5254952a3a3fa6d96ab3b7a98cf52190e34a"
+    },
+    "src\\ui\\AnchorDrawer.h": {
+      "bytes": 729,
+      "sha256": "f895bf606b5d5252d32a9f23d894652fcd5b137c62051467058a47fd47af8e72"
+    },
+    "src\\ui\\ChartPresentationDrawer.cpp": {
+      "bytes": 14734,
+      "sha256": "9d2a0c238a10440e60b7429ea7ea1005c9692aa085796195fd6b82b7afd323b8"
+    },
+    "src\\ui\\ChartPresentationDrawer.h": {
+      "bytes": 1614,
+      "sha256": "423c2b8fd9c352d1948f0dfff3cd627425e0db0bb39c100245db1df6fe682d65"
+    },
+    "src\\ui\\ChoiceField.cpp": {
+      "bytes": 12278,
+      "sha256": "8cb6d29dab194f600fb62f24dd15e763e9b0f1bb6c4d3d860bda36c43b90b4cb"
+    },
+    "src\\ui\\ChoiceField.h": {
+      "bytes": 1261,
+      "sha256": "4d430575eb88ed993b4edbdd8816e33fe59fac51fa4272e9430463698bfb5bc2"
+    },
+    "src\\ui\\CommissioningPanel.cpp": {
+      "bytes": 9000,
+      "sha256": "634dd642d4e1b2721968decfc8554f4c58747429005e86ef4b8731ed7957d51b"
+    },
+    "src\\ui\\ContextCard.cpp": {
+      "bytes": 12570,
+      "sha256": "9fa15dadba4bc7aab47d80a87b34ab1a4b87f03981e6718e24d6177d5c5b9a29"
+    },
+    "src\\ui\\ContextCard.h": {
+      "bytes": 2201,
+      "sha256": "5db0df1dc0445a6e13c63e41c02e0046dc7b6c84445209c3996ecec5568344fd"
+    },
+    "src\\ui\\Controls.cpp": {
+      "bytes": 43472,
+      "sha256": "f453b7fa8bec5b543a92de7408aeacec70f4a9ecfa056712081d73b6b45f459a"
+    },
+    "src\\ui\\Controls.h": {
+      "bytes": 8870,
+      "sha256": "d4b51f651c5e8c783255b262ad39fa713a1e8de7a5a7031e2c3986b1a2e76443"
+    },
+    "src\\ui\\DisplaySizing.h": {
+      "bytes": 802,
+      "sha256": "7e793a2f65f32b4e3776f110f02096697ce3b079824b1a1295674594e815f665"
+    },
+    "src\\ui\\Drawer.cpp": {
+      "bytes": 8953,
+      "sha256": "fe06e4369120e00df20234b7ae5adfb3189baf0d9480d46e399c5a009a7b34ec"
+    },
+    "src\\ui\\Drawer.h": {
+      "bytes": 1345,
+      "sha256": "0fadde15dd3bf02988edb0957295e42a77f593b16d4341eb5c97d8818f2d9a6a"
+    },
+    "src\\ui\\FieldReportPanel.cpp": {
+      "bytes": 4429,
+      "sha256": "7581e56fba1bb14a3ceb94dec8c642075ce43905c12b6d0ba52c111cd4e4883b"
+    },
+    "src\\ui\\FloatingSurface.cpp": {
+      "bytes": 1807,
+      "sha256": "596d399bb797abc0a255a992391ba012172c4bf963658f7c9527534f88f830b9"
+    },
+    "src\\ui\\FloatingSurface.h": {
+      "bytes": 1469,
+      "sha256": "adde55b693f3283ae5299a2252f640cc326605f39f3d26461f85aeadaa35bf26"
+    },
+    "src\\ui\\HealthDrawer.cpp": {
+      "bytes": 7011,
+      "sha256": "50a0e5789539f73786d608e59dc340e45f3f07f667b3160d82057a2a6a07ee2b"
+    },
+    "src\\ui\\HealthDrawer.h": {
+      "bytes": 801,
+      "sha256": "43966ab5109b944a5d0e25be19124b15523a42c27198d6a4a4b3372f79e752c0"
+    },
+    "src\\ui\\Horizon.cpp": {
+      "bytes": 13311,
+      "sha256": "ded4248432629883dd5528b31d250e45ed5b7295377d7bfb0673f93f7bbd0592"
+    },
+    "src\\ui\\Horizon.h": {
+      "bytes": 1209,
+      "sha256": "fd7c7ba619fb3082a936ec6ed07ef5ddf134adfb523de52211866858a248166b"
+    },
+    "src\\ui\\InstrumentPanel.cpp": {
+      "bytes": 12397,
+      "sha256": "ea27dfe3b46204616a47fdff0eb42e50af41099619922eb3ec900478f73e772d"
+    },
+    "src\\ui\\InstrumentPanel.h": {
+      "bytes": 1211,
+      "sha256": "6376c6fbd735ed12db061811027a97d687c7820596333af6f0d86d659717cc88"
+    },
+    "src\\ui\\ListView.cpp": {
+      "bytes": 5259,
+      "sha256": "0ddb8d81361d4f38cdde1b6184f5211945fb8a622345a413e25b398a2777b5c6"
+    },
+    "src\\ui\\ListView.h": {
+      "bytes": 995,
+      "sha256": "a397ff2f4f2a88123a42eea21a9dc47985f6e45d8fb5bda4252ae301495cdf82"
+    },
+    "src\\ui\\PassageDrawer.cpp": {
+      "bytes": 11469,
+      "sha256": "8bcc56ac88ad3d9eefc4edb6b0a79efd94c29c0d6a611a132604a909bb6a8977"
+    },
+    "src\\ui\\PassageDrawer.h": {
+      "bytes": 1170,
+      "sha256": "f34d49f7c61eae6a3da4cb670157f28937ff9b77a0b7c39cc4af9af50eb6e87b"
+    },
+    "src\\ui\\PilotDrawer.cpp": {
+      "bytes": 11640,
+      "sha256": "374dace0ac595930e3a498601073b4e06914490e63ec5aa1b69b40c552453a3a"
+    },
+    "src\\ui\\PilotDrawer.h": {
+      "bytes": 1218,
+      "sha256": "6f8fdf3faa9eb74725e055170e4a875807bf383166f64a9b56a0ef10800e4f45"
+    },
+    "src\\ui\\PilotSettings.cpp": {
+      "bytes": 5468,
+      "sha256": "bcef527a4c274f7554c9c7452be2ef578553cdeabe19b6d43320bf155bdfb988"
+    },
+    "src\\ui\\PreviewPanel.cpp": {
+      "bytes": 26247,
+      "sha256": "cb72353d4c0e4b1b466d72d65435d001e079ec79aa2949732173b5cc471e875d"
+    },
+    "src\\ui\\PreviewPanel.h": {
+      "bytes": 1393,
+      "sha256": "5f2eef47ca6cf464bdc238548a3f24a1a46430ae9ec50936d2724377b98ce6b7"
+    },
+    "src\\ui\\ProductPanel.cpp": {
+      "bytes": 48685,
+      "sha256": "abfd345d739f1f3f252ff0be84c4ebfc2ec3490c9387080c473344d175da3992"
+    },
+    "src\\ui\\ProductPanel.h": {
+      "bytes": 6807,
+      "sha256": "3da91f7a2fe2d243979911b31fa84cd4e0ab67adf2defe75a451ae1633ff7b12"
+    },
+    "src\\ui\\ProductSettings.cpp": {
+      "bytes": 24907,
+      "sha256": "4ae903b9b2f1773ea167ad6693fd886e8abe5a509fd37e1e3c567b35d2f6604c"
+    },
+    "src\\ui\\PrototypeGeometry.h": {
+      "bytes": 4668,
+      "sha256": "66ff1725a0f035f0b2dd8ac7f47671cd4813a014eee12d35dc89d7fcdd5a4008"
+    },
+    "src\\ui\\PrototypeIcons.h": {
+      "bytes": 3553,
+      "sha256": "622e3b6d6b45048c2240c37e78e40dc28018e32c0ec4e58b930145630f09e452"
+    },
+    "src\\ui\\RadarPanel.cpp": {
+      "bytes": 11403,
+      "sha256": "355c82f2e8d747d538540f0b56050baad9425f5f4913c7e5be0a21aecbdda86d"
+    },
+    "src\\ui\\RadarPanel.h": {
+      "bytes": 1116,
+      "sha256": "609c2350bc59af5c62334b1409aa9582a22fe45b9c177b6f942b2b3389ad9116"
+    },
+    "src\\ui\\Range.cpp": {
+      "bytes": 3710,
+      "sha256": "29a291406fe665d1eb8b7d0597e7e76bc9873b592110ee916588575a3dfdda94"
+    },
+    "src\\ui\\Range.h": {
+      "bytes": 646,
+      "sha256": "f2c4d0fe6403d56d355be6545f7a7cb8eed28b918e4e3da639f36baa776f966b"
+    },
+    "src\\ui\\README.md": {
+      "bytes": 750,
+      "sha256": "7e190f4b32220f88a94bd93fa230b658d4c909f0f182b0ecee778feb96206bdc"
+    },
+    "src\\ui\\SearchDrawer.cpp": {
+      "bytes": 10997,
+      "sha256": "adcaf375bca44618dda7aa1ec9ef397bcb4476a3745ffe0f41fe6be7484b85cc"
+    },
+    "src\\ui\\SearchDrawer.h": {
+      "bytes": 1365,
+      "sha256": "e24976785a63018f075209a5cdc60f9b3d276a7aaa88038e074457ab53aab0ee"
+    },
+    "src\\ui\\SettingsDrawer.cpp": {
+      "bytes": 25531,
+      "sha256": "b6c36ece98734846c8141e35fff82c4d6930fa6dc3caa54f8882cb89d3937a6b"
+    },
+    "src\\ui\\SettingsDrawer.h": {
+      "bytes": 2967,
+      "sha256": "8ff2af660629fb1d1e993169648e5bccdf21c55a3119ada4859c5bf982d22b7e"
+    },
+    "src\\ui\\Sheet.cpp": {
+      "bytes": 6668,
+      "sha256": "280bbeea46dd6ae7c8df770bc15e9f84cc8fb8ecf099ccafbc437e9ce4bdc59b"
+    },
+    "src\\ui\\Sheet.h": {
+      "bytes": 783,
+      "sha256": "d9643fce8a83fdfc0d20879e3a4e53d31b96429a749ca9a6ae7d8d8f2e1f313e"
+    },
+    "src\\ui\\Shell.cpp": {
+      "bytes": 82654,
+      "sha256": "cfe2e7aeb15f096451e3260b7a57c41b7cde9ea1d39396727fc08d316b23fda5"
+    },
+    "src\\ui\\Shell.h": {
+      "bytes": 11504,
+      "sha256": "ed906bc58b88d78fea6b6378bd5998b5c8cedff1d882d83653ced52b8efaec05"
+    },
+    "src\\ui\\StatusFooter.cpp": {
+      "bytes": 8086,
+      "sha256": "fc8eb4d72f31c25a0ff9644455a83b266610d0142407c9634a48f92af5e2ce0d"
+    },
+    "src\\ui\\StatusFooter.h": {
+      "bytes": 983,
+      "sha256": "87349fe2d12f5ee7979784bfd250ca9369d666c0ab2d507cac604e98bc1db981"
+    },
+    "src\\ui\\Theme.h": {
+      "bytes": 3912,
+      "sha256": "480876e902228f39734b634a65b2b287b6e72001308ca470f36ca4ee9d2bcb70"
+    },
+    "src\\vessel\\.gitkeep": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "src\\vessel\\AisHealth.cpp": {
+      "bytes": 2154,
+      "sha256": "140e90c3794367a1ae951a1df00362dbb8bcb44193b211a0b25efc4d16813dd2"
+    },
+    "src\\vessel\\AisHealth.h": {
+      "bytes": 463,
+      "sha256": "025a4dcda9c99df1149d0ef39eec08883010a70a4517ddad7f659bdb3bfe2199"
+    },
+    "src\\vessel\\AisSelection.cpp": {
+      "bytes": 1565,
+      "sha256": "a1583b316aec1bb24b32061b213bcb56d6084a6c9323c0130ca062618d7bf3a1"
+    },
+    "src\\vessel\\AisSelection.h": {
+      "bytes": 509,
+      "sha256": "77d49846f2e25aeebeac3d72c390b6f5acca8f245eb10f0d2cd9590f8286c22a"
+    },
+    "src\\vessel\\AisState.h": {
+      "bytes": 1396,
+      "sha256": "c79c8399c874cce536b2b2c7d0c24bf3fd6ada3bfaa931172cb7144006364347"
+    },
+    "src\\vessel\\DataItems.h": {
+      "bytes": 3784,
+      "sha256": "a9e0d677dac56b690fcd4d6fe66b26231a59a67c56d5d447efdb8d83b8e8bcfc"
+    },
+    "src\\vessel\\DemoSource.cpp": {
+      "bytes": 8132,
+      "sha256": "526df8d7b2c65434c7c26d31de4d40cc1ee42e134d030110315befb11cda6637"
+    },
+    "src\\vessel\\DemoSource.h": {
+      "bytes": 1235,
+      "sha256": "cf2663ba46f46bce282a2ddbab8a8cf5b73d54edfa59b8593305071b3f758a4a"
+    },
+    "src\\vessel\\DisplayItems.h": {
+      "bytes": 2029,
+      "sha256": "c844eb6b9b865327794f18ea3fc151fe7c8097ee959e03dd9b184c935f975d42"
+    },
+    "src\\vessel\\NavigationInput.cpp": {
+      "bytes": 1710,
+      "sha256": "ce3c70f008057759b668e3285565f2f0bb333eee4b7dd4c25517e485beee143b"
+    },
+    "src\\vessel\\NavigationInput.h": {
+      "bytes": 725,
+      "sha256": "f782f89ea3baa7bb6ee43b9e5ea8a2cb389eb61d003671b4ec53595c14c6bb63"
+    },
+    "src\\vessel\\README.md": {
+      "bytes": 627,
+      "sha256": "f8f556acec61f0672fc2a7ad21fecf57c2fe42a37ab53e11078bc924b5a32eee"
+    },
+    "src\\vessel\\RouteProgress.cpp": {
+      "bytes": 3156,
+      "sha256": "206b435c92c56e6e1254a22a59a6acc969d4c5dd88652b0cd6f7f32510e46e0f"
+    },
+    "src\\vessel\\RouteProgress.h": {
+      "bytes": 2516,
+      "sha256": "89f2372d82eb044951ce0f366dce1eddf4c81e0f5c9d1a0f0fff723d36b4d1f0"
+    },
+    "src\\vessel\\SensorRegistry.cpp": {
+      "bytes": 14554,
+      "sha256": "eb8e93f679d27314efd9fb82b19f2e4e5170c0b329cdbcb9f520d3b90c4ed9bf"
+    },
+    "src\\vessel\\SensorRegistry.h": {
+      "bytes": 3437,
+      "sha256": "2d56e5f57cac1e88b79d931918cedc048a83a7aa4bb9480453b9b0ff4c26cab9"
+    },
+    "src\\vessel\\VesselState.cpp": {
+      "bytes": 2463,
+      "sha256": "054e34598b04b0c076c099356e22d81a1ae4b8764830906ff320140f5a5f7145"
+    },
+    "src\\vessel\\VesselState.h": {
+      "bytes": 4128,
+      "sha256": "75ce9ab1d972d034fd77d770dee34e9f50874de5d587ca5ce4c19d52d5966d24"
+    }
+  },
+  "touchInputs": {
+    "tests/settings_touch_test.cpp": {
+      "bytes": 8381,
+      "sha256": "33d3d0165fbf2f3bcd09e5a65c4e014d4c0ab935ed8d1af496e6c712f0d9fcb5"
+    },
+    "tests/WindowsDpi.cpp": {
+      "bytes": 7759,
+      "sha256": "3b800fc8699054f3cf21d51231fb8e93ab89c4c8fd9aa6766d9f0e8d4ac1e62c"
+    },
+    "tools/test-settings-touch-windows.py": {
+      "bytes": 10103,
+      "sha256": "b1bfb982af6da515bf300b8b91587b088fbc405fb2798dadf94a2fee8b7f63d1"
+    },
+    "tools/preferences-touch.py": {
+      "bytes": 6768,
+      "sha256": "ad0b309c1eaeb2936e04a72e0d63bb3e8fdb0967d05b91abca572cefff89abd4"
+    },
+    "tools/diagnostic-geometry.py": {
+      "bytes": 1862,
+      "sha256": "687703c27e99e2f65fe7b4e58eb9ff20e237c6f9919d9ad3e469ffd4c0a50f9b"
+    },
+    "tools/diagnostic_snapshot.py": {
+      "bytes": 526,
+      "sha256": "5f66a1e45a405bab35c6a5650532cd2efb4cd4912014c8301253437c13b2fef0"
+    },
+    "tools/windows-ui.py": {
+      "bytes": 37026,
+      "sha256": "6cc20abecd43b7ffaff569ac1ea4476a0c28ff43793d4ca31c43ecece5212b6a"
+    }
+  },
+  "upstream": "37fd0cddb7334fe489e9f18aa163977a9c5c84f7",
+  "patches": {
+    "opencpn-5.12.4-ais-transport.patch": {
+      "bytes": 20677,
+      "sha256": "d343a0a7a77817c55b16734516b7d686dbfc2eb3f4207b43b6099d7d98c9b2f6"
+    },
+    "opencpn-5.12.4-chart-presentation.patch": {
+      "bytes": 12674,
+      "sha256": "53c590427ad94ad9562931b5645846646e198eb5e90890d457aa394a9afb63d5"
+    },
+    "opencpn-5.12.4-download-trust.patch": {
+      "bytes": 12103,
+      "sha256": "04763cb038ad088a722e76d4f85bde7e356489b697a373458195336d4278412b"
+    },
+    "opencpn-5.12.4-maintained-curl.patch": {
+      "bytes": 551,
+      "sha256": "dafa1fec0a69e3a1195db726c2cb26ceeb7535b5e25476ac2e4658d910f44e48"
+    },
+    "opencpn-5.12.4-peer-response-buffer.patch": {
+      "bytes": 4915,
+      "sha256": "c335f361766a6982c3d096e93f7c149179deb33134668e110111ac4980064e15"
+    },
+    "opencpn-5.12.4-peer-unavailable.patch": {
+      "bytes": 11876,
+      "sha256": "5bf1c2ae4b09043ce18151f766aebd2b881b993f352000e34399de7e8b36b6d3"
+    },
+    "opencpn-5.12.4-regression-tests.patch": {
+      "bytes": 4003,
+      "sha256": "3ef13652b8f3717d836883d2fbb7a18f35dbd2ca1162ac991fe339e61392dff1"
+    },
+    "opencpn-5.12.4-wxcurl-trust.patch": {
+      "bytes": 4944,
+      "sha256": "f3ad76fc07b80e6f2c01331894ce5e685f6aa4456a2a3c761e3115c8c21f3d6b"
+    },
+    "opencpn-5.12.4-xnav.patch": {
+      "bytes": 40483,
+      "sha256": "8139e66b90324a186313343ea4cd6893a2cc7dec874afd7d7393407d7219ee95"
+    }
+  },
+  "sources": {},
+  "configTemplate": {
+    "bytes": 1862,
+    "sha256": "d48bec97c7512bfeb09480efdb62d9358ef4e758298f32d159b6409a7fa3e4e2"
+  },
+  "sdkLocks": {
+    "windows-wx.lock.json": {
+      "bytes": 1017,
+      "sha256": "2fb563c4de7819d4b10d7a567e59510cd033c3b9cb55ce4ebb654964da60267f"
+    },
+    "windows-curl.lock.json": {
+      "bytes": 409,
+      "sha256": "af38fa0c570b3ed01cda2fd4511e351c8af2bebedb254cfe9ff5fb6c6f13fe18"
+    }
+  },
+  "generatedConfig": {
+    "bytes": 1815,
+    "sha256": "2dada61f34bee4857e7e6ae5498ab056b0b0812f1ac678259b23ab1d8139dc84"
+  },
+  "objects": {
+    "build\\check_SettingsStore.dir\\Release\\SettingsStore.obj": {
+      "bytes": 171202,
+      "sha256": "f3460c0aee4f6634d372f92be8b25e026a05c03e17c4d6bd5b88cec006c2474a"
+    }
+  },
+  "uiObjects": {
+    "build\\opennav\\opennav_ui.dir\\Release\\AisDrawer.obj": {
+      "bytes": 337963,
+      "sha256": "2837d89f3dcf8f82d77be54fda4e51bb35136c734132df9672d46064c7a29c9e"
+    },
+    "build\\opennav\\opennav_ui.dir\\Release\\AlertDrawer.obj": {
+      "bytes": 145319,
+      "sha256": "7c5a2fdc64e0ed9d41babafe0a2f3d65fa49829111c216e64b3ffb918a99ccce"
+    },
+    "build\\opennav\\opennav_ui.dir\\Release\\AnchorDrawer.obj": {
+      "bytes": 137087,
+      "sha256": "97d0377e8464fe3b4bd994fb28b88938ddd73ecc0a57e38176be69f2e7cbe3d4"
+    },
+    "build\\opennav\\opennav_ui.dir\\Release\\ChartPresentationDrawer.obj": {
+      "bytes": 198669,
+      "sha256": "fa7751c58a2b6113bae3d0b6b65ebf4c47a490d1990fc88a3d313fe39e90952a"
+    },
+    "build\\opennav\\opennav_ui.dir\\Release\\ChoiceField.obj": {
+      "bytes": 147736,
+      "sha256": "47c4e08e10e25a05248a7c771877bfcfcf66f246728bafa782be445be005308c"
+    },
+    "build\\opennav\\opennav_ui.dir\\Release\\CommissioningPanel.obj": {
+      "bytes": 259609,
+      "sha256": "1752ed6a462772a5795fa8032731b95d40d4e92dcfb97fc33a1605322fc80c99"
+    },
+    "build\\opennav\\opennav_ui.dir\\Release\\ContextCard.obj": {
+      "bytes": 194098,
+      "sha256": "bdfd7d262fac1697d91ac9f04e8c302a35bf6d9a52c986fd5ae401f544d224d5"
+    },
+    "build\\opennav\\opennav_ui.dir\\Release\\Controls.obj": {
+      "bytes": 286778,
+      "sha256": "11b2f270c5ad0f8aa2e34a360505a83e7dbee1297e3cfb479482c6d6d082e89d"
+    },
+    "build\\opennav\\opennav_ui.dir\\Release\\Drawer.obj": {
+      "bytes": 104899,
+      "sha256": "b0ba4ed93f248eec6baf7d4733488443fc4cfd3cb9bb37c847bd17fd7ba76f93"
+    },
+    "build\\opennav\\opennav_ui.dir\\Release\\FieldReportPanel.obj": {
+      "bytes": 80287,
+      "sha256": "cea101734c9c1e65b3a7b750d85236ce6b20fe3cae49b54b02ef1e8cd84acaca"
+    },
+    "build\\opennav\\opennav_ui.dir\\Release\\FloatingSurface.obj": {
+      "bytes": 4452,
+      "sha256": "6324c9843a33f73eefb830564e3f79bc68dcb81ccd2c04348a33b96e36181bac"
+    },
+    "build\\opennav\\opennav_ui.dir\\Release\\HealthDrawer.obj": {
+      "bytes": 147034,
+      "sha256": "085c0f2bacc450cfde5e0aada1bea6a5a50695a6af97e413de6f8fa93fbe9c08"
+    },
+    "build\\opennav\\opennav_ui.dir\\Release\\Horizon.obj": {
+      "bytes": 171564,
+      "sha256": "25d9ed55aa43769a3b70aa3c1923a4d72a9b78c7f6a79276155dca349e279f99"
+    },
+    "build\\opennav\\opennav_ui.dir\\Release\\InstrumentPanel.obj": {
+      "bytes": 138369,
+      "sha256": "f91699948f9add0c3792cd02742fb8ef5a08b2cfe53b352a11b8fb7482a94c4f"
+    },
+    "build\\opennav\\opennav_ui.dir\\Release\\ListView.obj": {
+      "bytes": 108344,
+      "sha256": "35656f7945b6d422f37dfcdc64a3c9e854383f02ebdac90a8501bbc5be684ef2"
+    },
+    "build\\opennav\\opennav_ui.dir\\Release\\PassageDrawer.obj": {
+      "bytes": 192718,
+      "sha256": "a7e27fae097fceffb16a1bba8a0bbbfcff9d462f4a38bfc341ca0ac35e386340"
+    },
+    "build\\opennav\\opennav_ui.dir\\Release\\PilotDrawer.obj": {
+      "bytes": 144727,
+      "sha256": "a5d18a183a1b18aa56d94dda79651053885705ce0a24ce6f78f36db25c7e5254"
+    },
+    "build\\opennav\\opennav_ui.dir\\Release\\PilotSettings.obj": {
+      "bytes": 105553,
+      "sha256": "234aae38a28f4c5d7a2977f89cbd24fc33423e58498482f8d181f3b7c1f4ca4d"
+    },
+    "build\\opennav\\opennav_ui.dir\\Release\\PreviewPanel.obj": {
+      "bytes": 219494,
+      "sha256": "2b002e808f378a0f79bc31317ba70d10a1e060e0e00f89eae47418b117a080af"
+    },
+    "build\\opennav\\opennav_ui.dir\\Release\\ProductPanel.obj": {
+      "bytes": 721469,
+      "sha256": "a022da10d8f2f118950366433b55cf7058fb58f668623129bda2a6f695f98d5c"
+    },
+    "build\\opennav\\opennav_ui.dir\\Release\\ProductSettings.obj": {
+      "bytes": 506057,
+      "sha256": "e3e7f26f504a0568f38e205c180724b2f4050b6a42920f36efec5bc5fb61989c"
+    },
+    "build\\opennav\\opennav_ui.dir\\Release\\RadarPanel.obj": {
+      "bytes": 122797,
+      "sha256": "a91a267775c3a7f3703aa43a0c50a793cf806956810f2ae7e90a86d4c7f62e38"
+    },
+    "build\\opennav\\opennav_ui.dir\\Release\\Range.obj": {
+      "bytes": 70574,
+      "sha256": "7e1b456da6a09814a8830fc4a7529164d4de4b75e834a8ff68ab1bc9870f8fdc"
+    },
+    "build\\opennav\\opennav_ui.dir\\Release\\SearchDrawer.obj": {
+      "bytes": 211670,
+      "sha256": "e2602829367aede4b7248f982ecd527da8fcd952250b9aeaf9816a45f244a454"
+    },
+    "build\\opennav\\opennav_ui.dir\\Release\\SettingsDrawer.obj": {
+      "bytes": 444250,
+      "sha256": "4754bc184b9b4481fe1881feb63d09b7e9b01ef2dced7a21dda6055e746bb00b"
+    },
+    "build\\opennav\\opennav_ui.dir\\Release\\Sheet.obj": {
+      "bytes": 127710,
+      "sha256": "1b8aa521690f490f5aa3c1fc45d33b5792a010b0abfd5b79bce76dc07be0d7e4"
+    },
+    "build\\opennav\\opennav_ui.dir\\Release\\Shell.obj": {
+      "bytes": 1040772,
+      "sha256": "324598a7877d4d87f96ed6c9353c3783b578e602cc542878b078616d9f7cbdf4"
+    },
+    "build\\opennav\\opennav_ui.dir\\Release\\StatusFooter.obj": {
+      "bytes": 132280,
+      "sha256": "dd86243d5f066d1684165da575200af0ee61acc94b44cfed365077c54621bea9"
+    }
+  },
+  "touchRuntime": {
+    "wxbase32u_vc14x.dll": {
+      "source": "D:\\a\\Work\\Work\\opennav-x\\build\\windows-changed-unit-sdk\\wx\\lib\\vc14x_dll\\wxbase32u_vc14x.dll",
+      "bytes": 2523136,
+      "sha256": "0aa3800ac7981091f46a45342620e169d158790a6f55e96ca86e772ef567f338"
+    },
+    "wxmsw32u_core_vc14x.dll": {
+      "source": "D:\\a\\Work\\Work\\opennav-x\\build\\windows-changed-unit-sdk\\wx\\lib\\vc14x_dll\\wxmsw32u_core_vc14x.dll",
+      "bytes": 7467008,
+      "sha256": "beadbd9824a90d54e25f899afb9cf45611e7f74c9e0a0ceb6531e0bf6d21bdc3"
+    },
+    "wxmsw32u_aui_vc14x.dll": {
+      "source": "D:\\a\\Work\\Work\\opennav-x\\build\\windows-changed-unit-sdk\\wx\\lib\\vc14x_dll\\wxmsw32u_aui_vc14x.dll",
+      "bytes": 547328,
+      "sha256": "241b6c114c6408f61f426acf16bab81d755a9d428e4d45d0fe7fc306166c9759"
+    },
+    "concrt140.dll": {
+      "source": "C:\\Program Files\\Microsoft Visual Studio\\2022\\Enterprise\\VC\\Redist\\MSVC\\14.44.35112\\x86\\Microsoft.VC143.CRT\\concrt140.dll",
+      "bytes": 259688,
+      "sha256": "a2b04c69868b08a600518ebbad1661d38de4dd0e0a8e638c22d4641d410e50b1"
+    },
+    "msvcp140.dll": {
+      "source": "C:\\Program Files\\Microsoft Visual Studio\\2022\\Enterprise\\VC\\Redist\\MSVC\\14.44.35112\\x86\\Microsoft.VC143.CRT\\msvcp140.dll",
+      "bytes": 447616,
+      "sha256": "97e71a3c697fb1ab3af777db39009e4602525e8c3aff0837ecc7031cba188165"
+    },
+    "msvcp140_1.dll": {
+      "source": "C:\\Program Files\\Microsoft Visual Studio\\2022\\Enterprise\\VC\\Redist\\MSVC\\14.44.35112\\x86\\Microsoft.VC143.CRT\\msvcp140_1.dll",
+      "bytes": 33896,
+      "sha256": "01a58552686d0c6b9fd67a7ac81169fc0013aedf59a8efdc611f94907489a31c"
+    },
+    "msvcp140_2.dll": {
+      "source": "C:\\Program Files\\Microsoft Visual Studio\\2022\\Enterprise\\VC\\Redist\\MSVC\\14.44.35112\\x86\\Microsoft.VC143.CRT\\msvcp140_2.dll",
+      "bytes": 294992,
+      "sha256": "2a5365e03cc6e78b408dfca81537f3734bf3d7cf9cc13ae33204dfbc641dbe43"
+    },
+    "msvcp140_atomic_wait.dll": {
+      "source": "C:\\Program Files\\Microsoft Visual Studio\\2022\\Enterprise\\VC\\Redist\\MSVC\\14.44.35112\\x86\\Microsoft.VC143.CRT\\msvcp140_atomic_wait.dll",
+      "bytes": 47240,
+      "sha256": "c4a2bae74e008a5bb2445f9078c14df9dcb03267248dfa64e7d04cdc8af5208e"
+    },
+    "msvcp140_codecvt_ids.dll": {
+      "source": "C:\\Program Files\\Microsoft Visual Studio\\2022\\Enterprise\\VC\\Redist\\MSVC\\14.44.35112\\x86\\Microsoft.VC143.CRT\\msvcp140_codecvt_ids.dll",
+      "bytes": 30824,
+      "sha256": "a5cbecfd9b8892ec9a60e30fef7ef2158032c6d91efdfbaca87c082bcd48bfa9"
+    },
+    "vccorlib140.dll": {
+      "source": "C:\\Program Files\\Microsoft Visual Studio\\2022\\Enterprise\\VC\\Redist\\MSVC\\14.44.35112\\x86\\Microsoft.VC143.CRT\\vccorlib140.dll",
+      "bytes": 287360,
+      "sha256": "89ed5a6877a87ec3ec9fe4a0fb14dc950599f0b67318e746084a0c333a6c865f"
+    },
+    "vcruntime140.dll": {
+      "source": "C:\\Program Files\\Microsoft Visual Studio\\2022\\Enterprise\\VC\\Redist\\MSVC\\14.44.35112\\x86\\Microsoft.VC143.CRT\\vcruntime140.dll",
+      "bytes": 91216,
+      "sha256": "a9d7732a3c3de09f0601a7fa2555093dcb49f08e2fc62a86091461f0f38393ed"
+    },
+    "vcruntime140_threads.dll": {
+      "source": "C:\\Program Files\\Microsoft Visual Studio\\2022\\Enterprise\\VC\\Redist\\MSVC\\14.44.35112\\x86\\Microsoft.VC143.CRT\\vcruntime140_threads.dll",
+      "bytes": 36000,
+      "sha256": "bb2b1d16187562376fc888059e2cbbf26c5404f6a4bb7197d1d01b970f199667"
+    }
+  },
+  "settingsTouch": {
+    "passed": true,
+    "scope": "Actual SettingsDrawer component, synthetic state; no OpenCPN, profile or devices",
+    "source_commit": "cf44e938a3539af6e97a03346542f04f3e7895a4",
+    "github_sha": "cf44e938a3539af6e97a03346542f04f3e7895a4",
+    "executable_sha256": "a237796849a4cfe99a0e4a5b5a617758e0622f3b5c7d6a129dbcd20354ab1e5b",
+    "dpi_helper_sha256": "0d2e73f4e7401ea1d1a4f3eb0a54f713a16b4b066a8a4c9680bd213af2483f84",
+    "sources": {
+      "tests/settings_touch_test.cpp": "33d3d0165fbf2f3bcd09e5a65c4e014d4c0ab935ed8d1af496e6c712f0d9fcb5",
+      "tests/WindowsDpi.cpp": "3b800fc8699054f3cf21d51231fb8e93ab89c4c8fd9aa6766d9f0e8d4ac1e62c",
+      "tools/preferences-touch.py": "ad0b309c1eaeb2936e04a72e0d63bb3e8fdb0967d05b91abca572cefff89abd4",
+      "tools/test-settings-touch-windows.py": "b1bfb982af6da515bf300b8b91587b088fbc405fb2798dadf94a2fee8b7f63d1",
+      "tools/diagnostic-geometry.py": "687703c27e99e2f65fe7b4e58eb9ff20e237c6f9919d9ad3e469ffd4c0a50f9b",
+      "tools/windows-ui.py": "6cc20abecd43b7ffaff569ac1ea4476a0c28ff43793d4ca31c43ecece5212b6a"
+    },
+    "desktop": {
+      "before": [
+        1024,
+        768,
+        32
+      ],
+      "after": [
+        1440,
+        900,
+        32
+      ]
+    },
+    "original_dpi": {
+      "before_percent": 100,
+      "percent": 100,
+      "source_id": 0,
+      "minimum_relative": 0,
+      "maximum_relative": 2
+    },
+    "applied_dpi": {
+      "before_percent": 100,
+      "percent": 125,
+      "source_id": 0,
+      "minimum_relative": 0,
+      "maximum_relative": 2
+    },
+    "initial": {
+      "fixture_only": true,
+      "pid": 484,
+      "native_dpi": 120,
+      "wx_dpi": 120,
+      "saves": 0,
+      "actions": 0,
+      "battery_action": false,
+      "body_scroll_px": 0,
+      "body_pan_messages": 0,
+      "child_pan_messages": 0,
+      "child_mouse_downs": 0,
+      "focus_hwnd": 66158,
+      "runtime": {
+        "ui_update": {
+          "ticks": 2
+        },
+        "display": {
+          "drawer": {
+            "x": 545,
+            "y": 128,
+            "width": 513,
+            "height": 605
+          },
+          "interaction_controls": [
+            {
+              "x": 939,
+              "y": 152,
+              "width": 108,
+              "height": 55,
+              "label": "Close",
+              "accessible_name": "Close sheet",
+              "visible": true,
+              "enabled": true,
+              "hwnd": 131522
+            },
+            {
+              "x": 556,
+              "y": 139,
+              "width": 118,
+              "height": 55,
+              "label": "Back",
+              "accessible_name": "Back",
+              "visible": false,
+              "enabled": true,
+              "hwnd": 131508
+            },
+            {
+              "x": 574,
+              "y": 265,
+              "width": 65,
+              "height": 46,
+              "label": "Vessel",
+              "accessible_name": "Settings section: Vessel",
+              "visible": true,
+              "enabled": true,
+              "hwnd": 66158
+            },
+            {
+              "x": 645,
+              "y": 265,
+              "width": 94,
+              "height": 46,
+              "label": "Navigation",
+              "accessible_name": "Settings section: Navigation",
+              "visible": true,
+              "enabled": true,
+              "hwnd": 66160
+            },
+            {
+              "x": 745,
+              "y": 265,
+              "width": 75,
+              "height": 46,
+              "label": "Sensors",
+              "accessible_name": "Settings section: Sensors",
+              "visible": true,
+              "enabled": true,
+              "hwnd": 66162
+            },
+            {
+              "x": 826,
+              "y": 265,
+              "width": 85,
+              "height": 46,
+              "label": "Autopilot",
+              "accessible_name": "Settings section: Autopilot",
+              "visible": true,
+              "enabled": true,
+              "hwnd": 66164
+            },
+            {
+              "x": 917,
+              "y": 265,
+              "width": 63,
+              "height": 46,
+              "label": "Radar",
+              "accessible_name": "Settings section: Radar",
+              "visible": true,
+              "enabled": true,
+              "hwnd": 66166
+            },
+            {
+              "x": 574,
+              "y": 317,
+              "width": 72,
+              "height": 46,
+              "label": "Display",
+              "accessible_name": "Settings section: Display",
+              "visible": true,
+              "enabled": true,
+              "hwnd": 66168
+            },
+            {
+              "x": 652,
+              "y": 317,
+              "width": 71,
+              "height": 46,
+              "label": "System",
+              "accessible_name": "Settings section: System",
+              "visible": true,
+              "enabled": true,
+              "hwnd": 66170
+            },
+            {
+              "x": 729,
+              "y": 317,
+              "width": 56,
+              "height": 46,
+              "label": "Help",
+              "accessible_name": "Settings section: Help",
+              "visible": true,
+              "enabled": true,
+              "hwnd": 66172
+            },
+            {
+              "x": 590,
+              "y": 439,
+              "width": 422,
+              "height": 28,
+              "label": "Field: Vessel name",
+              "accessible_name": "Vessel name",
+              "visible": true,
+              "enabled": true,
+              "hwnd": 66180,
+              "value": ""
+            },
+            {
+              "x": 590,
+              "y": 559,
+              "width": 185,
+              "height": 28,
+              "label": "Field: Draft \u00b7 metres",
+              "accessible_name": "Draft \u00b7 metres",
+              "visible": true,
+              "enabled": true,
+              "hwnd": 66188,
+              "value": ""
+            },
+            {
+              "x": 827,
+              "y": 559,
+              "width": 185,
+              "height": 28,
+              "label": "Field: Safety depth \u00b7 metres",
+              "accessible_name": "Safety depth \u00b7 metres",
+              "visible": true,
+              "enabled": true,
+              "hwnd": 66196,
+              "value": "3"
+            },
+            {
+              "x": 590,
+              "y": 683,
+              "width": 422,
+              "height": 28,
+              "label": "Field: Usable battery capacity \u00b7 kWh",
+              "accessible_name": "Usable battery capacity \u00b7 kWh",
+              "visible": true,
+              "enabled": true,
+              "hwnd": 66204,
+              "value": ""
+            },
+            {
+              "x": 590,
+              "y": 793,
+              "width": 422,
+              "height": 28,
+              "label": "Field: Minimum reserve \u00b7 %",
+              "accessible_name": "Minimum reserve \u00b7 %",
+              "visible": false,
+              "enabled": true,
+              "hwnd": 66212,
+              "value": ""
+            },
+            {
+              "x": 574,
+              "y": 869,
+              "width": 454,
+              "height": 60,
+              "label": "Save vessel profile",
+              "accessible_name": "Save vessel profile",
+              "visible": false,
+              "enabled": true,
+              "hwnd": 66214
+            },
+            {
+              "x": 574,
+              "y": 977,
+              "width": 454,
+              "height": 90,
+              "label": "Advanced vessel model",
+              "accessible_name": "Advanced vessel model",
+              "visible": false,
+              "enabled": true,
+              "hwnd": 66218
+            },
+            {
+              "x": 574,
+              "y": 1067,
+              "width": 454,
+              "height": 90,
+              "label": "Advanced battery model",
+              "accessible_name": "Advanced battery model",
+              "visible": false,
+              "enabled": true,
+              "hwnd": 66220
+            }
+          ]
+        }
+      }
+    },
+    "frame_client_pixels": [
+      1262,
+      753
+    ],
+    "negative": {
+      "start": [
+        801,
+        683
+      ],
+      "end": [
+        801,
+        483
+      ],
+      "hit_hwnd": 66204,
+      "hit_class": "Edit",
+      "expected_field": {
+        "x": 590,
+        "y": 683,
+        "width": 422,
+        "height": 28,
+        "label": "Field: Usable battery capacity \u00b7 kWh",
+        "accessible_name": "Usable battery capacity \u00b7 kWh",
+        "visible": true,
+        "enabled": true,
+        "hwnd": 66204,
+        "value": ""
+      },
+      "after": {
+        "fixture_only": true,
+        "pid": 484,
+        "native_dpi": 120,
+        "wx_dpi": 120,
+        "saves": 0,
+        "actions": 0,
+        "battery_action": false,
+        "body_scroll_px": 0,
+        "body_pan_messages": 3,
+        "child_pan_messages": 9,
+        "child_mouse_downs": 0,
+        "focus_hwnd": 66158,
+        "runtime": {
+          "ui_update": {
+            "ticks": 4
+          },
+          "display": {
+            "drawer": {
+              "x": 545,
+              "y": 128,
+              "width": 513,
+              "height": 605
+            },
+            "interaction_controls": [
+              {
+                "x": 939,
+                "y": 152,
+                "width": 108,
+                "height": 55,
+                "label": "Close",
+                "accessible_name": "Close sheet",
+                "visible": true,
+                "enabled": true,
+                "hwnd": 131522
+              },
+              {
+                "x": 556,
+                "y": 139,
+                "width": 118,
+                "height": 55,
+                "label": "Back",
+                "accessible_name": "Back",
+                "visible": false,
+                "enabled": true,
+                "hwnd": 131508
+              },
+              {
+                "x": 574,
+                "y": 265,
+                "width": 65,
+                "height": 46,
+                "label": "Vessel",
+                "accessible_name": "Settings section: Vessel",
+                "visible": true,
+                "enabled": true,
+                "hwnd": 66158
+              },
+              {
+                "x": 645,
+                "y": 265,
+                "width": 94,
+                "height": 46,
+                "label": "Navigation",
+                "accessible_name": "Settings section: Navigation",
+                "visible": true,
+                "enabled": true,
+                "hwnd": 66160
+              },
+              {
+                "x": 745,
+                "y": 265,
+                "width": 75,
+                "height": 46,
+                "label": "Sensors",
+                "accessible_name": "Settings section: Sensors",
+                "visible": true,
+                "enabled": true,
+                "hwnd": 66162
+              },
+              {
+                "x": 826,
+                "y": 265,
+                "width": 85,
+                "height": 46,
+                "label": "Autopilot",
+                "accessible_name": "Settings section: Autopilot",
+                "visible": true,
+                "enabled": true,
+                "hwnd": 66164
+              },
+              {
+                "x": 917,
+                "y": 265,
+                "width": 63,
+                "height": 46,
+                "label": "Radar",
+                "accessible_name": "Settings section: Radar",
+                "visible": true,
+                "enabled": true,
+                "hwnd": 66166
+              },
+              {
+                "x": 574,
+                "y": 317,
+                "width": 72,
+                "height": 46,
+                "label": "Display",
+                "accessible_name": "Settings section: Display",
+                "visible": true,
+                "enabled": true,
+                "hwnd": 66168
+              },
+              {
+                "x": 652,
+                "y": 317,
+                "width": 71,
+                "height": 46,
+                "label": "System",
+                "accessible_name": "Settings section: System",
+                "visible": true,
+                "enabled": true,
+                "hwnd": 66170
+              },
+              {
+                "x": 729,
+                "y": 317,
+                "width": 56,
+                "height": 46,
+                "label": "Help",
+                "accessible_name": "Settings section: Help",
+                "visible": true,
+                "enabled": true,
+                "hwnd": 66172
+              },
+              {
+                "x": 590,
+                "y": 439,
+                "width": 422,
+                "height": 28,
+                "label": "Field: Vessel name",
+                "accessible_name": "Vessel name",
+                "visible": true,
+                "enabled": true,
+                "hwnd": 66180,
+                "value": ""
+              },
+              {
+                "x": 590,
+                "y": 559,
+                "width": 185,
+                "height": 28,
+                "label": "Field: Draft \u00b7 metres",
+                "accessible_name": "Draft \u00b7 metres",
+                "visible": true,
+                "enabled": true,
+                "hwnd": 66188,
+                "value": ""
+              },
+              {
+                "x": 827,
+                "y": 559,
+                "width": 185,
+                "height": 28,
+                "label": "Field: Safety depth \u00b7 metres",
+                "accessible_name": "Safety depth \u00b7 metres",
+                "visible": true,
+                "enabled": true,
+                "hwnd": 66196,
+                "value": "3"
+              },
+              {
+                "x": 590,
+                "y": 683,
+                "width": 422,
+                "height": 28,
+                "label": "Field: Usable battery capacity \u00b7 kWh",
+                "accessible_name": "Usable battery capacity \u00b7 kWh",
+                "visible": true,
+                "enabled": true,
+                "hwnd": 66204,
+                "value": ""
+              },
+              {
+                "x": 590,
+                "y": 793,
+                "width": 422,
+                "height": 28,
+                "label": "Field: Minimum reserve \u00b7 %",
+                "accessible_name": "Minimum reserve \u00b7 %",
+                "visible": false,
+                "enabled": true,
+                "hwnd": 66212,
+                "value": ""
+              },
+              {
+                "x": 574,
+                "y": 869,
+                "width": 454,
+                "height": 60,
+                "label": "Save vessel profile",
+                "accessible_name": "Save vessel profile",
+                "visible": false,
+                "enabled": true,
+                "hwnd": 66214
+              },
+              {
+                "x": 574,
+                "y": 977,
+                "width": 454,
+                "height": 90,
+                "label": "Advanced vessel model",
+                "accessible_name": "Advanced vessel model",
+                "visible": false,
+                "enabled": true,
+                "hwnd": 66218
+              },
+              {
+                "x": 574,
+                "y": 1067,
+                "width": 454,
+                "height": 90,
+                "label": "Advanced battery model",
+                "accessible_name": "Advanced battery model",
+                "visible": false,
+                "enabled": true,
+                "hwnd": 66220
+              }
+            ]
+          }
+        }
+      }
+    },
+    "preferences_scroll_attempts": [
+      {
+        "label": "Advanced battery model",
+        "scale": 125,
+        "attempts": [
+          {
+            "native_bounds": [
+              574,
+              1067,
+              1028,
+              1157
+            ],
+            "visible": false,
+            "tick": 5,
+            "pan_hit_tests": [
+              {
+                "point": [
+                  556,
+                  701
+                ],
+                "hwnd": 131518,
+                "class": "wxWindowNR",
+                "is_body": true
+              },
+              {
+                "point": [
+                  556,
+                  501
+                ],
+                "hwnd": 131518,
+                "class": "wxWindowNR",
+                "is_body": true
+              }
+            ],
+            "pan": {
+              "start": [
+                556,
+                701
+              ],
+              "end": [
+                556,
+                501
+              ],
+              "body_bounds": [
+                546,
+                240,
+                1056,
+                731
+              ],
+              "native_hit_hwnd": 131518,
+              "native_hit_class": "wxWindowNR",
+              "hit_is_body": true
+            }
+          },
+          {
+            "native_bounds": [
+              574,
+              857,
+              1028,
+              947
+            ],
+            "visible": false,
+            "tick": 10,
+            "pan_hit_tests": [
+              {
+                "point": [
+                  556,
+                  701
+                ],
+                "hwnd": 131518,
+                "class": "wxWindowNR",
+                "is_body": true
+              },
+              {
+                "point": [
+                  556,
+                  501
+                ],
+                "hwnd": 131518,
+                "class": "wxWindowNR",
+                "is_body": true
+              }
+            ],
+            "pan": {
+              "start": [
+                556,
+                701
+              ],
+              "end": [
+                556,
+                501
+              ],
+              "body_bounds": [
+                546,
+                240,
+                1056,
+                731
+              ],
+              "native_hit_hwnd": 131518,
+              "native_hit_class": "wxWindowNR",
+              "hit_is_body": true
+            }
+          },
+          {
+            "native_bounds": [
+              574,
+              647,
+              1028,
+              737
+            ],
+            "visible": false,
+            "tick": 15,
+            "pan_hit_tests": [
+              {
+                "point": [
+                  556,
+                  701
+                ],
+                "hwnd": 131518,
+                "class": "wxWindowNR",
+                "is_body": true
+              },
+              {
+                "point": [
+                  556,
+                  501
+                ],
+                "hwnd": 131518,
+                "class": "wxWindowNR",
+                "is_body": true
+              }
+            ],
+            "pan": {
+              "start": [
+                556,
+                701
+              ],
+              "end": [
+                556,
+                501
+              ],
+              "body_bounds": [
+                546,
+                240,
+                1056,
+                731
+              ],
+              "native_hit_hwnd": 131518,
+              "native_hit_class": "wxWindowNR",
+              "hit_is_body": true
+            }
+          },
+          {
+            "native_bounds": [
+              574,
+              587,
+              1028,
+              677
+            ],
+            "visible": true,
+            "tick": 20
+          }
+        ]
+      },
+      {
+        "label": "Advanced battery model",
+        "scale": 125,
+        "attempts": [
+          {
+            "native_bounds": [
+              574,
+              587,
+              1028,
+              677
+            ],
+            "visible": true,
+            "tick": 26
+          }
+        ]
+      }
+    ],
+    "vessel_form": {
+      "fields": [
+        "Field: Vessel name",
+        "Field: Draft \u00b7 metres",
+        "Field: Safety depth \u00b7 metres",
+        "Field: Usable battery capacity \u00b7 kWh",
+        "Field: Minimum reserve \u00b7 %"
+      ],
+      "save": {
+        "label": "Save vessel profile",
+        "enabled": true,
+        "visible": true
+      }
+    },
+    "positive": {
+      "reach": {
+        "label": "Advanced battery model",
+        "observations": [
+          {
+            "native_bounds": [
+              574,
+              1067,
+              1028,
+              1157
+            ],
+            "visible": false,
+            "tick": 5,
+            "pan_hit_tests": [
+              {
+                "point": [
+                  556,
+                  701
+                ],
+                "hwnd": 131518,
+                "class": "wxWindowNR",
+                "is_body": true
+              },
+              {
+                "point": [
+                  556,
+                  501
+                ],
+                "hwnd": 131518,
+                "class": "wxWindowNR",
+                "is_body": true
+              }
+            ],
+            "pan": {
+              "start": [
+                556,
+                701
+              ],
+              "end": [
+                556,
+                501
+              ],
+              "body_bounds": [
+                546,
+                240,
+                1056,
+                731
+              ],
+              "native_hit_hwnd": 131518,
+              "native_hit_class": "wxWindowNR",
+              "hit_is_body": true
+            }
+          },
+          {
+            "native_bounds": [
+              574,
+              857,
+              1028,
+              947
+            ],
+            "visible": false,
+            "tick": 10,
+            "pan_hit_tests": [
+              {
+                "point": [
+                  556,
+                  701
+                ],
+                "hwnd": 131518,
+                "class": "wxWindowNR",
+                "is_body": true
+              },
+              {
+                "point": [
+                  556,
+                  501
+                ],
+                "hwnd": 131518,
+                "class": "wxWindowNR",
+                "is_body": true
+              }
+            ],
+            "pan": {
+              "start": [
+                556,
+                701
+              ],
+              "end": [
+                556,
+                501
+              ],
+              "body_bounds": [
+                546,
+                240,
+                1056,
+                731
+              ],
+              "native_hit_hwnd": 131518,
+              "native_hit_class": "wxWindowNR",
+              "hit_is_body": true
+            }
+          },
+          {
+            "native_bounds": [
+              574,
+              647,
+              1028,
+              737
+            ],
+            "visible": false,
+            "tick": 15,
+            "pan_hit_tests": [
+              {
+                "point": [
+                  556,
+                  701
+                ],
+                "hwnd": 131518,
+                "class": "wxWindowNR",
+                "is_body": true
+              },
+              {
+                "point": [
+                  556,
+                  501
+                ],
+                "hwnd": 131518,
+                "class": "wxWindowNR",
+                "is_body": true
+              }
+            ],
+            "pan": {
+              "start": [
+                556,
+                701
+              ],
+              "end": [
+                556,
+                501
+              ],
+              "body_bounds": [
+                546,
+                240,
+                1056,
+                731
+              ],
+              "native_hit_hwnd": 131518,
+              "native_hit_class": "wxWindowNR",
+              "hit_is_body": true
+            }
+          },
+          {
+            "native_bounds": [
+              574,
+              587,
+              1028,
+              677
+            ],
+            "visible": true,
+            "tick": 20
+          }
+        ],
+        "fully_visible": true
+      },
+      "settled": {
+        "fixture_only": true,
+        "pid": 484,
+        "native_dpi": 120,
+        "wx_dpi": 120,
+        "saves": 0,
+        "actions": 0,
+        "battery_action": false,
+        "body_scroll_px": 480,
+        "body_pan_messages": 88,
+        "child_pan_messages": 30,
+        "child_mouse_downs": 0,
+        "focus_hwnd": 66158,
+        "runtime": {
+          "ui_update": {
+            "ticks": 25
+          },
+          "display": {
+            "drawer": {
+              "x": 545,
+              "y": 128,
+              "width": 513,
+              "height": 605
+            },
+            "interaction_controls": [
+              {
+                "x": 939,
+                "y": 152,
+                "width": 108,
+                "height": 55,
+                "label": "Close",
+                "accessible_name": "Close sheet",
+                "visible": true,
+                "enabled": true,
+                "hwnd": 131522
+              },
+              {
+                "x": 556,
+                "y": 139,
+                "width": 118,
+                "height": 55,
+                "label": "Back",
+                "accessible_name": "Back",
+                "visible": false,
+                "enabled": true,
+                "hwnd": 131508
+              },
+              {
+                "x": 574,
+                "y": -215,
+                "width": 65,
+                "height": 46,
+                "label": "Vessel",
+                "accessible_name": "Settings section: Vessel",
+                "visible": false,
+                "enabled": true,
+                "hwnd": 66158
+              },
+              {
+                "x": 645,
+                "y": -215,
+                "width": 94,
+                "height": 46,
+                "label": "Navigation",
+                "accessible_name": "Settings section: Navigation",
+                "visible": false,
+                "enabled": true,
+                "hwnd": 66160
+              },
+              {
+                "x": 745,
+                "y": -215,
+                "width": 75,
+                "height": 46,
+                "label": "Sensors",
+                "accessible_name": "Settings section: Sensors",
+                "visible": false,
+                "enabled": true,
+                "hwnd": 66162
+              },
+              {
+                "x": 826,
+                "y": -215,
+                "width": 85,
+                "height": 46,
+                "label": "Autopilot",
+                "accessible_name": "Settings section: Autopilot",
+                "visible": false,
+                "enabled": true,
+                "hwnd": 66164
+              },
+              {
+                "x": 917,
+                "y": -215,
+                "width": 63,
+                "height": 46,
+                "label": "Radar",
+                "accessible_name": "Settings section: Radar",
+                "visible": false,
+                "enabled": true,
+                "hwnd": 66166
+              },
+              {
+                "x": 574,
+                "y": -163,
+                "width": 72,
+                "height": 46,
+                "label": "Display",
+                "accessible_name": "Settings section: Display",
+                "visible": false,
+                "enabled": true,
+                "hwnd": 66168
+              },
+              {
+                "x": 652,
+                "y": -163,
+                "width": 71,
+                "height": 46,
+                "label": "System",
+                "accessible_name": "Settings section: System",
+                "visible": false,
+                "enabled": true,
+                "hwnd": 66170
+              },
+              {
+                "x": 729,
+                "y": -163,
+                "width": 56,
+                "height": 46,
+                "label": "Help",
+                "accessible_name": "Settings section: Help",
+                "visible": false,
+                "enabled": true,
+                "hwnd": 66172
+              },
+              {
+                "x": 590,
+                "y": -41,
+                "width": 422,
+                "height": 28,
+                "label": "Field: Vessel name",
+                "accessible_name": "Vessel name",
+                "visible": false,
+                "enabled": true,
+                "hwnd": 66180,
+                "value": ""
+              },
+              {
+                "x": 590,
+                "y": 79,
+                "width": 185,
+                "height": 28,
+                "label": "Field: Draft \u00b7 metres",
+                "accessible_name": "Draft \u00b7 metres",
+                "visible": false,
+                "enabled": true,
+                "hwnd": 66188,
+                "value": ""
+              },
+              {
+                "x": 827,
+                "y": 79,
+                "width": 185,
+                "height": 28,
+                "label": "Field: Safety depth \u00b7 metres",
+                "accessible_name": "Safety depth \u00b7 metres",
+                "visible": false,
+                "enabled": true,
+                "hwnd": 66196,
+                "value": "3"
+              },
+              {
+                "x": 590,
+                "y": 203,
+                "width": 422,
+                "height": 28,
+                "label": "Field: Usable battery capacity \u00b7 kWh",
+                "accessible_name": "Usable battery capacity \u00b7 kWh",
+                "visible": false,
+                "enabled": true,
+                "hwnd": 66204,
+                "value": ""
+              },
+              {
+                "x": 590,
+                "y": 313,
+                "width": 422,
+                "height": 28,
+                "label": "Field: Minimum reserve \u00b7 %",
+                "accessible_name": "Minimum reserve \u00b7 %",
+                "visible": true,
+                "enabled": true,
+                "hwnd": 66212,
+                "value": ""
+              },
+              {
+                "x": 574,
+                "y": 389,
+                "width": 454,
+                "height": 60,
+                "label": "Save vessel profile",
+                "accessible_name": "Save vessel profile",
+                "visible": true,
+                "enabled": true,
+                "hwnd": 66214
+              },
+              {
+                "x": 574,
+                "y": 497,
+                "width": 454,
+                "height": 90,
+                "label": "Advanced vessel model",
+                "accessible_name": "Advanced vessel model",
+                "visible": true,
+                "enabled": true,
+                "hwnd": 66218
+              },
+              {
+                "x": 574,
+                "y": 587,
+                "width": 454,
+                "height": 90,
+                "label": "Advanced battery model",
+                "accessible_name": "Advanced battery model",
+                "visible": true,
+                "enabled": true,
+                "hwnd": 66220
+              }
+            ]
+          }
+        }
+      }
+    },
+    "tap": {
+      "label": "Advanced battery model",
+      "observations": [
+        {
+          "native_bounds": [
+            574,
+            587,
+            1028,
+            677
+          ],
+          "visible": true,
+          "tick": 26
+        }
+      ],
+      "fully_visible": true,
+      "native_hit_target_verified": true,
+      "tap": [
+        801,
+        632
+      ],
+      "touch_injected": true
+    },
+    "activated": {
+      "fixture_only": true,
+      "pid": 484,
+      "native_dpi": 120,
+      "wx_dpi": 120,
+      "saves": 0,
+      "actions": 1,
+      "battery_action": true,
+      "body_scroll_px": 480,
+      "body_pan_messages": 88,
+      "child_pan_messages": 30,
+      "child_mouse_downs": 1,
+      "focus_hwnd": 66220,
+      "runtime": {
+        "ui_update": {
+          "ticks": 27
+        },
+        "display": {
+          "drawer": {
+            "x": 545,
+            "y": 128,
+            "width": 513,
+            "height": 605
+          },
+          "interaction_controls": [
+            {
+              "x": 939,
+              "y": 152,
+              "width": 108,
+              "height": 55,
+              "label": "Close",
+              "accessible_name": "Close sheet",
+              "visible": true,
+              "enabled": true,
+              "hwnd": 131522
+            },
+            {
+              "x": 556,
+              "y": 139,
+              "width": 118,
+              "height": 55,
+              "label": "Back",
+              "accessible_name": "Back",
+              "visible": false,
+              "enabled": true,
+              "hwnd": 131508
+            },
+            {
+              "x": 574,
+              "y": -215,
+              "width": 65,
+              "height": 46,
+              "label": "Vessel",
+              "accessible_name": "Settings section: Vessel",
+              "visible": false,
+              "enabled": true,
+              "hwnd": 66158
+            },
+            {
+              "x": 645,
+              "y": -215,
+              "width": 94,
+              "height": 46,
+              "label": "Navigation",
+              "accessible_name": "Settings section: Navigation",
+              "visible": false,
+              "enabled": true,
+              "hwnd": 66160
+            },
+            {
+              "x": 745,
+              "y": -215,
+              "width": 75,
+              "height": 46,
+              "label": "Sensors",
+              "accessible_name": "Settings section: Sensors",
+              "visible": false,
+              "enabled": true,
+              "hwnd": 66162
+            },
+            {
+              "x": 826,
+              "y": -215,
+              "width": 85,
+              "height": 46,
+              "label": "Autopilot",
+              "accessible_name": "Settings section: Autopilot",
+              "visible": false,
+              "enabled": true,
+              "hwnd": 66164
+            },
+            {
+              "x": 917,
+              "y": -215,
+              "width": 63,
+              "height": 46,
+              "label": "Radar",
+              "accessible_name": "Settings section: Radar",
+              "visible": false,
+              "enabled": true,
+              "hwnd": 66166
+            },
+            {
+              "x": 574,
+              "y": -163,
+              "width": 72,
+              "height": 46,
+              "label": "Display",
+              "accessible_name": "Settings section: Display",
+              "visible": false,
+              "enabled": true,
+              "hwnd": 66168
+            },
+            {
+              "x": 652,
+              "y": -163,
+              "width": 71,
+              "height": 46,
+              "label": "System",
+              "accessible_name": "Settings section: System",
+              "visible": false,
+              "enabled": true,
+              "hwnd": 66170
+            },
+            {
+              "x": 729,
+              "y": -163,
+              "width": 56,
+              "height": 46,
+              "label": "Help",
+              "accessible_name": "Settings section: Help",
+              "visible": false,
+              "enabled": true,
+              "hwnd": 66172
+            },
+            {
+              "x": 590,
+              "y": -41,
+              "width": 422,
+              "height": 28,
+              "label": "Field: Vessel name",
+              "accessible_name": "Vessel name",
+              "visible": false,
+              "enabled": true,
+              "hwnd": 66180,
+              "value": ""
+            },
+            {
+              "x": 590,
+              "y": 79,
+              "width": 185,
+              "height": 28,
+              "label": "Field: Draft \u00b7 metres",
+              "accessible_name": "Draft \u00b7 metres",
+              "visible": false,
+              "enabled": true,
+              "hwnd": 66188,
+              "value": ""
+            },
+            {
+              "x": 827,
+              "y": 79,
+              "width": 185,
+              "height": 28,
+              "label": "Field: Safety depth \u00b7 metres",
+              "accessible_name": "Safety depth \u00b7 metres",
+              "visible": false,
+              "enabled": true,
+              "hwnd": 66196,
+              "value": "3"
+            },
+            {
+              "x": 590,
+              "y": 203,
+              "width": 422,
+              "height": 28,
+              "label": "Field: Usable battery capacity \u00b7 kWh",
+              "accessible_name": "Usable battery capacity \u00b7 kWh",
+              "visible": false,
+              "enabled": true,
+              "hwnd": 66204,
+              "value": ""
+            },
+            {
+              "x": 590,
+              "y": 313,
+              "width": 422,
+              "height": 28,
+              "label": "Field: Minimum reserve \u00b7 %",
+              "accessible_name": "Minimum reserve \u00b7 %",
+              "visible": true,
+              "enabled": true,
+              "hwnd": 66212,
+              "value": ""
+            },
+            {
+              "x": 574,
+              "y": 389,
+              "width": 454,
+              "height": 60,
+              "label": "Save vessel profile",
+              "accessible_name": "Save vessel profile",
+              "visible": true,
+              "enabled": true,
+              "hwnd": 66214
+            },
+            {
+              "x": 574,
+              "y": 497,
+              "width": 454,
+              "height": 90,
+              "label": "Advanced vessel model",
+              "accessible_name": "Advanced vessel model",
+              "visible": true,
+              "enabled": true,
+              "hwnd": 66218
+            },
+            {
+              "x": 574,
+              "y": 587,
+              "width": 454,
+              "height": 90,
+              "label": "Advanced battery model",
+              "accessible_name": "Advanced battery model",
+              "visible": true,
+              "enabled": true,
+              "hwnd": 66220
+            }
+          ]
+        }
+      }
+    },
+    "host_result": {
+      "completed": true,
+      "saves": 0,
+      "actions": 1
+    },
+    "restored_dpi": {
+      "before_percent": 125,
+      "percent": 100,
+      "source_id": 0,
+      "minimum_relative": 0,
+      "maximum_relative": 2
+    }
+  }
+}

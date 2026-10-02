@@ -1,0 +1,16 @@
+{
+  "original_wrapper_exit": 143,
+  "original_children_continued": true,
+  "original_build_completed": "63/63 including both links",
+  "secondary_completed_objects": [
+    "tests/settings_store_upstream_tests.cpp.o",
+    "tests/online_ais_settings_upstream_tests.cpp.o"
+  ],
+  "secondary_possible_inflight_objects": [
+    "src/integration/OnlineAis.cpp.o",
+    "tests/recovery_store_upstream_tests.cpp.o"
+  ],
+  "secondary_duration_seconds": 11.645,
+  "both_processes_confirmed_ended_before_invalidation": true,
+  "recovery_scope": "Invalidate four test objects and relink tests; no source change or broad clean"
+}

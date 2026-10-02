@@ -1,0 +1,49 @@
+{
+  "failed_run": "https://github.com/ThereptileII/Work/actions/runs/37057756273",
+  "failed_source": "cf44e938a3539af6e97a03346542f04f3e7895a4",
+  "failure": "Retained AST wrapper test omitted preferences_touch module binding",
+  "windows_contract": "88/89",
+  "linux_contract": "91/92",
+  "unchanged_cases": 24,
+  "fix_source": "16187f407754a3dbe137d03311518e27445b03d7",
+  "fix_local": "3b9442132c0004b6ff9a7d2a848386ca91ca6fda",
+  "focused_run": "https://github.com/ThereptileII/Work/actions/runs/37058880373",
+  "native_summary": [
+    "2026-10-02T20:10:51.5462840Z Locale: cp1252\r",
+    "2026-10-02T20:10:53.0913097Z Ran 24 tests in 0.372s\r",
+    "2026-10-02T20:10:53.0913326Z OK\r"
+  ],
+  "failure_samples": {
+    "windows": [
+      "2026-10-02T20:05:17.3843211Z 53/89 Test #53: native_diagnostic_geometry_observation .........***Failed    0.34 sec\r",
+      "2026-10-02T20:05:17.3848991Z NameError: name 'preferences_touch' is not defined\r",
+      "2026-10-02T20:05:17.3856497Z NameError: name 'preferences_touch' is not defined\r",
+      "2026-10-02T20:05:17.3862249Z NameError: name 'preferences_touch' is not defined\r",
+      "2026-10-02T20:05:17.3865797Z NameError: name 'preferences_touch' is not defined\r",
+      "2026-10-02T20:05:17.3869544Z NameError: name 'preferences_touch' is not defined\r",
+      "2026-10-02T20:05:17.3874624Z NameError: name 'preferences_touch' is not defined\r",
+      "2026-10-02T20:05:17.3880603Z NameError: name 'preferences_touch' is not defined\r",
+      "2026-10-02T20:05:17.3887868Z NameError: name 'preferences_touch' is not defined\r",
+      "2026-10-02T20:05:17.3892014Z NameError: name 'preferences_touch' is not defined\r",
+      "2026-10-02T20:05:17.3899215Z NameError: name 'preferences_touch' is not defined\r",
+      "2026-10-02T20:05:19.7642838Z 99% tests passed, 1 tests failed out of 89\r",
+      "2026-10-02T20:05:19.7644709Z \t 53 - native_diagnostic_geometry_observation (Failed)\r"
+    ],
+    "linux": [
+      "2026-10-02T20:02:16.5455438Z 56/92 Test #56: native_diagnostic_geometry_observation .........***Failed    0.25 sec",
+      "2026-10-02T20:02:16.5462217Z NameError: name 'preferences_touch' is not defined",
+      "2026-10-02T20:02:16.5469977Z NameError: name 'preferences_touch' is not defined",
+      "2026-10-02T20:02:16.5477891Z NameError: name 'preferences_touch' is not defined",
+      "2026-10-02T20:02:16.5485591Z NameError: name 'preferences_touch' is not defined",
+      "2026-10-02T20:02:16.5611632Z NameError: name 'preferences_touch' is not defined",
+      "2026-10-02T20:02:16.5616062Z NameError: name 'preferences_touch' is not defined",
+      "2026-10-02T20:02:16.5620653Z NameError: name 'preferences_touch' is not defined",
+      "2026-10-02T20:02:16.5624922Z NameError: name 'preferences_touch' is not defined",
+      "2026-10-02T20:02:16.5628251Z NameError: name 'preferences_touch' is not defined",
+      "2026-10-02T20:02:16.5632826Z NameError: name 'preferences_touch' is not defined",
+      "2026-10-02T20:02:18.6662314Z 99% tests passed, 1 tests failed out of 92",
+      "2026-10-02T20:02:18.6665726Z \t 56 - native_diagnostic_geometry_observation (Failed)"
+    ]
+  },
+  "scope": "Python harness integration only; actual Windows touch proof retained separately. No application crash inference; no product code/assertions removed."
+}

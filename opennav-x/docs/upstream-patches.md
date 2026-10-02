@@ -923,3 +923,24 @@ No direct hook is added. `XNavRadarPanel` consumes copied unavailable/status
 data and cannot call scanner commands. Shared confirmation-sheet sizing now
 follows the native ownership chain to the application frame; OpenCPN core,
 chart/model processing and hardware transports are unchanged.
+
+### SCRUM-232 — default healthy ownship artwork
+
+The existing chart-presentation patch adds a guarded paint hook at the final
+fixed-bitmap sites in software `ChartCanvas::ShipDraw` and GL `ShipDraw`.
+Only verified XNav style, `SHIP_NORMAL`, default fixed icon and no user image
+receive the shared prototype chevron. Standard/fallback/Legacy/Safe, custom,
+invalid/low-accuracy, small-scale and true-scale/scaled symbols remain upstream.
+Both hooks retain projection, heading/rotation, stock predictor `img_height`,
+antenna offsets, existing bounding boxes and cleanup. The new painter adds its
+outline bounds and restores drawing state; it does not affect hardware output.
+
+The four-point GL polygon is cyclically ordered so the renderer's existing
+triangle strip preserves the concave stern notch. Both callers pass the same
+user factor and the painter applies one logical-pixel conversion; GL bitmap
+texture tint, extra size factor and content-scale are not used for this glyph.
+Palette is read per paint, with Night's prototype brightness applied only to the
+new artwork. Merge risk is limited to these pinned bitmap call sites and their
+retained cleanup/predictor context. See
+`docs/design/reviews/scrum232-ownship-chevron.md` for focused proof and explicit
+Windows/GL/DPI/boat gates.

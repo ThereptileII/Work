@@ -9,6 +9,8 @@
 #include "ocpndc.h"
 #include <algorithm>
 #include <array>
+#include <cmath>
+#include <limits>
 #include <wx/ffile.h>
 #include <wx/fileconf.h>
 #include <wx/filename.h>
@@ -128,6 +130,70 @@ bool ChartActiveRouteInk(ChartCanvas &canvas, wxColour &ink) {
       ? ui::LightMode::Night : canvas.GetColorScheme() == GLOBAL_COLOR_SCHEME_DUSK
       ? ui::LightMode::Dusk : ui::LightMode::Day;
   ink = ui::Colour(ui::ActiveRouteInk(mode));
+  return true;
+}
+bool DrawChartOwnship(ocpnDC &dc, ChartCanvas &canvas, double x, double y,
+                      double angle, double scale) {
+  if (!wxIsMainThread() || !xnav_mode || !active ||
+      !std::isfinite(x) || !std::isfinite(y) || !std::isfinite(angle) ||
+      !std::isfinite(scale) || scale <= 0)
+    return false;
+  // Immutable prototype index.html ownShipHeading: M0-19 11 16 0 10-11 16Z.
+  // These are logical chart SVG pixels, not vessel dimensions or meters.
+  // Measure a larger DIP span so fractional Windows DPI is not rounded to 1.
+  scale *= canvas.FromDIP(100) / 100.0;
+  // Reserve room for rotation, the miter and dirty bounds before narrowing to
+  // wx integer coordinates. Refuse unusable geometry and let upstream draw.
+  constexpr double safe_limit = (std::numeric_limits<int>::max)() / 2.0;
+  if (!std::isfinite(scale) || scale <= 0 ||
+      (std::max)(std::abs(x), std::abs(y)) + 64 * scale > safe_limit)
+    return false;
+  // Start at the right stern: ocpnDC's four-point GL strip then uses the
+  // notch-to-bow diagonal, inside this concave polygon. Starting at the bow
+  // would select the outside stern-to-stern diagonal and fill the notch.
+  const std::array<wxPoint, 4> outline{{{11, 16}, {0, 10}, {-11, 16}, {0, -19}}};
+  std::array<wxPoint, 4> points;
+  const double c = std::cos(angle), s = std::sin(angle);
+  int left = 0, right = 0, top = 0, bottom = 0;
+  for (std::size_t i = 0; i < outline.size(); ++i) {
+    const double px = outline[i].x * scale, py = outline[i].y * scale;
+    points[i] = wxPoint(std::lround(x + px * c - py * s),
+                        std::lround(y + px * s + py * c));
+    if (!i) {
+      left = right = points[i].x;
+      top = bottom = points[i].y;
+    } else {
+      left = (std::min)(left, points[i].x); right = (std::max)(right, points[i].x);
+      top = (std::min)(top, points[i].y); bottom = (std::max)(bottom, points[i].y);
+    }
+  }
+  const auto mode = canvas.GetColorScheme() == GLOBAL_COLOR_SCHEME_NIGHT
+      ? ui::LightMode::Night : canvas.GetColorScheme() == GLOBAL_COLOR_SCHEME_DUSK
+      ? ui::LightMode::Dusk : ui::LightMode::Day;
+  // The immutable Night chart ancestor applies brightness(.78). Apply it to
+  // this new artwork only; do not filter real chart content or route semantics.
+  const auto ink = [mode](std::uint32_t value) {
+    if (mode == ui::LightMode::Night) {
+      const auto dim = [](unsigned channel) {
+        return static_cast<unsigned>(std::lround(channel * .78));
+      };
+      value = (dim((value >> 16) & 255) << 16) |
+              (dim((value >> 8) & 255) << 8) | dim(value & 255);
+    }
+    return Color(value);
+  };
+  const auto old_pen = dc.GetPen(); const auto old_brush = dc.GetBrush();
+  wxPen pen(ink(ui::FloatingTheme(mode).surface),
+            (std::max)(1, static_cast<int>(std::lround(3 * scale))));
+  pen.SetJoin(wxJOIN_MITER);
+  dc.SetPen(pen); dc.SetBrush(wxBrush(ink(ui::ActiveRouteInk(mode))));
+  // The shared DC path is native in software and GL; no stock texture tint or
+  // ownship texture cache can retain a previous light-mode color.
+  dc.StrokePolygon(points.size(), points.data(), 0, 0);
+  const int margin = static_cast<int>(std::ceil(6 * scale)); // Miter + rounding.
+  dc.CalcBoundingBox(left - margin, top - margin);
+  dc.CalcBoundingBox(right + margin, bottom + margin);
+  dc.SetBrush(old_brush); dc.SetPen(old_pen);
   return true;
 }
 bool DrawChartDepthUnit(ocpnDC &dc, ChartCanvas &canvas) {

@@ -20,6 +20,11 @@ bool ChartBackground(ColorScheme scheme, wxColour &land, wxColour &water);
 // Paint-time only; caller retains upstream active/selected route semantics.
 // Does not modify pens in RouteManager, route properties or navigation state.
 bool ChartActiveRouteInk(ChartCanvas &canvas, wxColour &ink);
+// Default healthy ownship artwork only. Callers retain stock state/user-icon
+// selection, projection, rotation, sizing of predictors and scaled-ship paths.
+// Angle is the existing clockwise screen angle; scale is the stock user factor.
+bool DrawChartOwnship(ocpnDC &dc, ChartCanvas &canvas, double x, double y,
+                      double angle, double scale);
 // Returns true only after drawing the upstream-resolved chart depth unit.
 // False preserves the stock emboss path, including Standard/Legacy/Safe.
 bool DrawChartDepthUnit(ocpnDC &dc, ChartCanvas &canvas);

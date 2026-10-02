@@ -189,3 +189,24 @@ difference. This is a known defect, not accepted parity. The large embossed
 "Feet" overlay is OpenCPN's real chart depth unit, not a place label; it must
 remain semantically visible if its presentation is changed.
 See the [contrast investigation](reviews/chart-ink-contrast-investigation.md).
+
+## SCRUM-231 built-up areas (qualification pending)
+
+The hash-pinned US5SEAFL chart identifies Seattle and West Seattle as BUAARE
+polygons. Their stock CHBRN fill produced the large mustard regions in the
+retained native XNav capture even though LANDA was correctly themed.
+The separate XNBUA color now uses the exact prototype `--shore` neutral
+(Day #afbfae, Dusk #748779, Night #46574a). Only the fill token in pinned
+BUAARE Area lookups 16/32052 (Plain) and 356/32391 (Symbolized) changes.
+Their boundaries, text, classification, priorities and geometry remain intact.
+This narrowly enumerated exception supersedes the earlier blanket statement
+that every lookup is byte-identical. Point BUAARE symbols stay unchanged.
+
+CHBRN remains unchanged because the same stock role paints structures,
+above-water obstructions/wrecks and obscured light sectors. No conditional
+symbology, depth role, chromatic symbol, source chart or Standard resource is
+modified. The generator rejects any other rule change, including label changes
+inside the two allowed lookups. Runtime verification and controlled style
+restart retain their existing behavior. This increment does not qualify the
+remaining ownship, symbol, label-density or chart-presentation work.
+See [bounded review](reviews/scrum231-built-area-style.md).

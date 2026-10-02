@@ -1,0 +1,73 @@
+{
+  "scope": "Linux 96-DPI offline shared label painter and actual production object compile; no ENC/GL/native Windows/boat qualification",
+  "base": "cf07197",
+  "checks": {
+    "chart_target_layout_theme": 58,
+    "shared_wx_label_painter": 23
+  },
+  "fixture": {
+    "file": "labels-day-dusk-night.png",
+    "bytes": 13427,
+    "sha256": "da54eda5697c92fe937d059064ce105af42a34ddfb02f985bc55e8f9e75e0ba5"
+  },
+  "sources": {
+    "src/ais/ChartTargets.h": "9fcf8790b46ad9445a52d4dea5fa012ae30b8d74566e72ba30d45568e615ec93",
+    "src/ais/ChartTargets.cpp": "e34d835521e7963b8f87113c3c7a0c35d354a55b6aa6d0a06cf9d786a7463fb6",
+    "src/integration/OnlineAisOverlay.cpp": "563a42d2216d2e96154f3d5876effb6eb568d341f3be1b5aac9b2180bd1e12ff",
+    "src/integration/OnlineAisLabels.h": "f963df8bb286b36ec688a793c80f9f540d332eff3b5af48255cbf09dd1aa97f3",
+    "src/ui/Theme.h": "b28adb1f519ec5a1f9b7e2bfab6ec2ab1c7f06656bd129316e9e453ef1ec0776",
+    "tests/online_ais_chart_tests.cpp": "fcbff9eabd5b791ad2c1e4c218a47df6428c92327b6336da9a3a7b9fe232cb51",
+    "tests/online_ais_label_render_test.cpp": "9b14f8b6ffd846eb6d9759e40f4f75cf47f824dddff539ac347fad04ff90a3dd",
+    "src/ui/Controls.cpp": "af7939d53477998bc5d0c8403897b906f806dae3ddd2cfe99eeec5096e3979b1"
+  },
+  "binaries": {
+    "chart-target-tests": {
+      "bytes": 274192,
+      "sha256": "7d493a7d960b13a497c941e959777922c7769715b5aad65c554f6e0b71660d5f"
+    },
+    "label-render": {
+      "bytes": 175600,
+      "sha256": "ff631305984ca2dd5c0189f35f224ff48b5a85672f510a72be6ce8cd6fd8fc6f"
+    },
+    "OnlineAisOverlay.o": {
+      "bytes": 97352,
+      "sha256": "fd858c34caafdf7117155a3f419af78ad6e0f6d67ba6cc13a571bb977e475551"
+    }
+  },
+  "font_scope": "Linux installed fallback selected by production UiFont; not Windows typography",
+  "render_command": {
+    "command": [
+      "g++",
+      "-std=c++17",
+      "-ffunction-sections",
+      "-fdata-sections",
+      "-Isrc",
+      "-I/home/standard/Projects/X-nav/.local/sysroot/usr/lib/wx/include/gtk3-unicode-3.2",
+      "-I/home/standard/Projects/X-nav/.local/sysroot/usr/include/wx-3.2",
+      "-DWXUSINGDLL",
+      "-D__WXGTK3__",
+      "-D__WXGTK__",
+      "-D_FILE_OFFSET_BITS=64",
+      "tests/online_ais_label_render_test.cpp",
+      "src/ais/ChartTargets.cpp",
+      "src/ui/Controls.cpp",
+      "-Wl,--gc-sections",
+      "-L/home/standard/Projects/X-nav/.local/sysroot/usr/lib",
+      "-lwx_gtk3u_core-3.2",
+      "-lwx_baseu-3.2",
+      "-o",
+      "/home/standard/Projects/X-nav-worktrees/scrum233-ais-labels/evidence/local/ais-labels/label-render"
+    ],
+    "cwd": "/home/standard/Projects/X-nav-worktrees/scrum233-ais-labels",
+    "exit": 0
+  },
+  "render_run": {
+    "command": [
+      "/home/standard/Projects/X-nav-worktrees/scrum233-ais-labels/evidence/local/ais-labels/label-render",
+      "/home/standard/Projects/X-nav-worktrees/scrum233-ais-labels/evidence/local/ais-labels/labels-day-dusk-night.png"
+    ],
+    "display": ":0",
+    "exit": 0,
+    "executable_sha256": "ff631305984ca2dd5c0189f35f224ff48b5a85672f510a72be6ce8cd6fd8fc6f"
+  }
+}

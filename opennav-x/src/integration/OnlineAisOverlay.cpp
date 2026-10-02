@@ -1,4 +1,6 @@
 #include "integration/OnlineAisOverlay.h"
+#include "integration/ChartPresentation.h"
+#include "integration/OnlineAisLabels.h"
 #include "ui/Theme.h"
 #include "chcanv.h"
 #include "ocpndc.h"
@@ -58,10 +60,21 @@ void OnlineAisOverlay::Draw(ocpnDC &dc, ViewPort &vp, ChartCanvas &canvas) const
   const auto pen=dc.GetPen();const auto brush=dc.GetBrush();
   const double scale=canvas.FromDIP(100)/100.0;
   const auto now=vessel::Clock::now();
+  std::vector<OnlineAisLabelTarget> positioned;
   for(const auto &stored:targets_) {
     const auto current=ais::CurrentChartMark(stored,now);if(!current)continue;
-    const auto &t=*current;
-    wxPoint point;if(!Project(canvas,vp,t,point))continue;
+    wxPoint point;if(Project(canvas,vp,*current,point))positioned.push_back({*current,point});
+  }
+  // Labels are only part of verified XNav chart presentation. Standard keeps
+  // its existing supplemental symbols, with no new label styling.
+  wxColour land,water;
+  if(ChartBackground(canvas.GetColorScheme(),land,water)) {
+    DrawOnlineAisLabels(dc,canvas,mode,{vp.pix_width,vp.pix_height},positioned);
+  }
+  // Symbols, age/provenance marks and selection rings stay above their own
+  // optional labels. Labels never enlarge the existing native target hit area.
+  for(const auto &p:positioned) {
+    const auto &t=p.mark;const auto point=p.point;
     const bool old=t.age==ais::TargetAge::Stale||t.age==ais::TargetAge::Lost;
     const auto stroke=Color(old?colors.stale:colors.stroke);
     dc.SetPen(wxPen(stroke,canvas.FromDIP(2),

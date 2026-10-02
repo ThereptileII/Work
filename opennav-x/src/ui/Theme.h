@@ -10,7 +10,7 @@ struct Palette {
   std::uint32_t primary, secondary, muted, accent, healthy, attention, alarm, ais;
 };
 struct FloatingPalette { std::uint32_t surface, primary, secondary, compass_light; };
-struct OnlineChartPalette { std::uint32_t stroke, fill, selected, stale; };
+struct OnlineChartPalette { std::uint32_t stroke, fill, selected, stale, label; };
 constexpr std::uint32_t ActiveRouteInk(LightMode mode) {
   // Final prototype --route. Route selection and explicit stored properties
   // remain OpenCPN concerns, outside this presentation-only palette.
@@ -26,9 +26,11 @@ constexpr OnlineChartPalette OnlineChartTheme(LightMode mode) {
   // .ais-ship stroke/selection are inherited in all three supplied HTML themes.
   // Aging marks are a documented data-validity extension, using theme muted ink.
   switch(mode) {
-  case LightMode::Day: return {0x916477,0xF7F8F0,0xCB9CB1,0x7E9699};
-  case LightMode::Dusk: return {0x916477,0x243A40,0xCB9CB1,0x819394};
-  case LightMode::Night: return {0x916477,0x152129,0xCB9CB1,0x747D77};
+  // Label fill is #835d70; Night's ancestor brightness(.78) yields #664957.
+  // Apply that effect only to the new label, never to the real chart surface.
+  case LightMode::Day: return {0x916477,0xF7F8F0,0xCB9CB1,0x7E9699,0x835D70};
+  case LightMode::Dusk: return {0x916477,0x243A40,0xCB9CB1,0x819394,0x835D70};
+  case LightMode::Night: return {0x916477,0x152129,0xCB9CB1,0x747D77,0x664957};
   }
   return OnlineChartTheme(LightMode::Night);
 }

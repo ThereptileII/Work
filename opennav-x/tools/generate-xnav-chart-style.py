@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """Derive bounded XNav palette resources from verified pinned OpenCPN bytes.
 
-Only thirteen palette roles and a proven matching neutral sprite-ink mask may
-change. Original resources and the original prototype are never modified.
+Only the enumerated palette roles, two built-up-area fill tokens and a proven
+neutral sprite-ink mask may change. Original inputs are never modified.
 """
 import argparse
 import hashlib
@@ -14,6 +14,11 @@ from chart_raster_ink import decode, derive
 
 ROOT=Path(__file__).resolve().parents[1]
 ALLOWED={'LANDA','CSTLN','DEPDW','DEPMD','DEPMS','DEPVS','DEPIT','DEPCN','DEPSC','SNDG1','SNDG2','CHBLK','CHGRD'}
+# CHBRN is also used by above-water hazards and obscured light sectors. Keep it
+# intact: only these pinned BUAARE area lookups receive the separate paint role.
+BUILT_AREA_LOOKUPS={'16':('32052','Plain'),'356':('32391','Symbolized')}
+BUILT_AREA_INSTRUCTION="AC(CHBRN);TX(OBJNAM,1,2,3,'16120',0,0,CHBLK,26);LS(SOLD,1,LANDF)"
+BUILT_AREA_COLOR='XNBUA'
 
 def pinned_bytes(path, identity):
     content=path.read_bytes()
@@ -28,6 +33,36 @@ def pinned_bytes(path, identity):
     assert len(content)==identity['bytes'] and hashlib.sha256(content).hexdigest()==identity['sha256'], 'Pinned resource changed: '+path.name
     return content
 
+def validate_resource_changes(original, styled, colors):
+    # Only named paint changes may differ; all remaining rule trees must match.
+    before,after=ET.fromstring(original),ET.fromstring(styled)
+    for table in after.find('color-tables'):
+        source_table=next(t for t in before.find('color-tables') if t.attrib==table.attrib)
+        if table.attrib['name'] in colors:
+            added=table.findall("color[@name='XNBUA']")
+            assert len(added)==1, 'Missing or duplicated built-up-area color'
+        for color in table.findall('color'):
+            name=color.attrib['name']
+            if table.attrib['name'] in colors and name in ALLOWED|{BUILT_AREA_COLOR}:
+                rgb=colors[table.attrib['name']][name]
+                expected={'name':name,**dict(zip(('r','g','b'),map(str,rgb)))}
+                assert color.attrib==expected, 'Unexpected palette color attributes: '+name
+                assert len(color)==0 and not (color.text or '').strip(), 'Unexpected palette color content: '+name
+                if name==BUILT_AREA_COLOR:
+                    table.remove(color)
+                else:
+                    color.attrib=next(c for c in source_table.findall('color') if c.attrib['name']==name).attrib.copy()
+    for lookup in after.find('lookups'):
+        if lookup.get('id') in BUILT_AREA_LOOKUPS:
+            assert lookup.findtext('instruction')==BUILT_AREA_INSTRUCTION.replace('AC(CHBRN)','AC(XNBUA)'), 'Built-up-area rule changed beyond fill'
+            lookup.find('instruction').text=BUILT_AREA_INSTRUCTION
+    # Added nodes must not make whitespace significant in the identity check.
+    for tree in (before,after):
+        for node in tree.iter():
+            if node.text is not None and not node.text.strip():node.text=None
+            if node.tail is not None and not node.tail.strip():node.tail=None
+    assert ET.tostring(before)==ET.tostring(after), 'Presentation semantics changed'
+
 def generate(source, output):
     definition=json.loads((ROOT/'resources/chart-style/v1/definition.json').read_text())
     lock=json.loads((ROOT/'resources/chart-style/v1/source-lock.json').read_text())
@@ -40,7 +75,7 @@ def generate(source, output):
     xml=original['chartsymbols.xml'].decode('utf-8')
     colors={}
     for table,item in definition['themes'].items():
-        assert set(item['colors'])==ALLOWED
+        assert set(item['colors'])==ALLOWED|{BUILT_AREA_COLOR}
         colors[table]={}
         for name,value in item['colors'].items():
             value=tokens['themes'][item['theme']][value] if value.startswith('--') else value
@@ -51,19 +86,25 @@ def generate(source, output):
         def table_replace(match):
             body=match[2]
             for name,rgb in colors[table].items():
+                if name==BUILT_AREA_COLOR:
+                    assert 'name="'+name+'"' not in body
+                    body+='<color name="%s" r="%s" g="%s" b="%s"/>\n        '%((name,)+rgb)
+                    continue
                 color_pattern=r'(<color name="'+name+r'" r=")\d+(" g=")\d+(" b=")\d+("\s*/>)'
                 assert len(re.findall(color_pattern,body))==1
                 body=re.sub(color_pattern,lambda m:m[1]+str(rgb[0])+m[2]+str(rgb[1])+m[3]+str(rgb[2])+m[4],body)
             return match[1]+body+match[3]
         xml=re.sub(pattern,table_replace,xml,flags=re.S)
-    # Semantic identity after normalizing the explicit palette overrides.
-    before,after=ET.fromstring(original['chartsymbols.xml']),ET.fromstring(xml)
-    for table in after.find('color-tables'):
-        source_table=next(t for t in before.find('color-tables') if t.attrib==table.attrib)
-        for color in table.findall('color'):
-            if table.attrib['name'] in colors and color.attrib['name'] in ALLOWED:
-                color.attrib=next(c for c in source_table.findall('color') if c.attrib['name']==color.attrib['name']).attrib.copy()
-    assert ET.tostring(before)==ET.tostring(after), 'Presentation semantics changed'
+    for identity,(rcid,table) in BUILT_AREA_LOOKUPS.items():
+        pattern=r'(<lookup id="'+identity+r'" RCID="'+rcid+r'" name="BUAARE">)(.*?)(</lookup>)'
+        matches=list(re.finditer(pattern,xml,re.S))
+        assert len(matches)==1, 'Pinned built-up-area lookup missing'
+        body=matches[0][2]
+        assert '<type>Area</type>' in body and '<table-name>'+table+'</table-name>' in body
+        old='<instruction>'+BUILT_AREA_INSTRUCTION+'</instruction>'
+        assert body.count(old)==1, 'Pinned built-up-area paint changed'
+        xml=re.sub(pattern,lambda m:m[1]+m[2].replace(old,old.replace('AC(CHBRN)','AC(XNBUA)'))+m[3],xml,flags=re.S)
+    validate_resource_changes(original['chartsymbols.xml'],xml,colors)
     result=dict(original);result['chartsymbols.xml']=xml.encode('utf-8')
     # Pinned Day ink identifies neutral CHBLK/CHGRD pixels. Theme sheets use
     # different baked neutral RGBs than the XML table. Change only matching
@@ -100,4 +141,4 @@ def generate(source, output):
 if __name__=='__main__':
     p=argparse.ArgumentParser();p.add_argument('--source',type=Path,required=True);p.add_argument('--output',type=Path,required=True)
     a=p.parse_args();m=generate(a.source,a.output)
-    print('Verified pinned resources; generated three XNav palettes, unchanged symbols/lookups and resource hashes')
+    print('Verified pinned resources; generated three XNav palettes, two BUAARE fill tokens and resource hashes; other navigation rules unchanged')
