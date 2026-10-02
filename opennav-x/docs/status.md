@@ -1,5 +1,40 @@
 # OpenNav X status — 2026-10-02
 
+## SCRUM-224 / SCRUM-213 — native focus repair proven; exact candidate in full qualification
+
+Published source `88c141ba9fee5c28e12b5f4ac0f7e7550d1a8ca6`
+(local equivalent `688bb713db885dbe78ca6db861382ce248c231f7`) passed the
+[focused native run](https://github.com/ThereptileII/Work/actions/runs/37032588707):
+230 Settings + 85 Search/Shell + 46 Chart checks, plus the corrected strict
+large-desktop geometry oracle. Downloaded artifact `11238311244` was verified
+against its SHA-256, 247 source inputs, 31 objects, 12 runtime files, three
+executables and 23 canonical captures. Combined Linux Settings passed 181
+checks with 14 captures; this does not replace integrated Linux qualification.
+
+The retained `60929a5` negative control reproduces the actual failure:
+restoring focus to Advanced battery model scrolls Sensors out of its pointer
+target. Explicit Preferences reopening now focuses its current visible tab
+before resetting scroll. The unchanged native pointer checks and before/after
+trace prove stable geometry and real Sensors selection. The independent
+1920-width failure was an obsolete test expectation: the immutable prototype
+and native product require 460 DIP at the large-desktop breakpoint. No tolerance
+was widened and no release gate was removed.
+
+[Verified native evidence](evidence/scrum-224-88c-focused-native-proof.json) and
+[scoped visual review](design/reviews/native88-focused-review.md) cover the
+Search row/focus outline, shared Windows title/border, Chart supporting text
+and System flow corrections. Original HTML is unchanged. Whole-view conformance,
+other DPI/Back-header states and boat acceptance remain open.
+
+After this evidence passed, the **same commit** was promoted to
+[full Linux/Windows qualification run 37033702537](https://github.com/ThereptileII/Work/actions/runs/37033702537).
+The candidate is frozen while that run proceeds. Full product/dependency,
+installer/recovery, native DPI and boat gates are **not yet accepted**.
+The older c95d failed native evidence remains preserved; its already-running
+Linux endurance continues independently. The boat installation and remote
+access were not modified; older-install retirement remains gated by a known-good
+replacement. No public payment/download access was opened.
+
 ## SCRUM-224 — c95d native UI gates fail; short prototype proof passes
 
 The frozen `c95d3a0` [full run](https://github.com/ThereptileII/Work/actions/runs/37017351644)

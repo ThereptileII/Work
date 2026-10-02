@@ -1,0 +1,50 @@
+{
+  "commit": "88c141ba9fee5c28e12b5f4ac0f7e7550d1a8ca6",
+  "run": 37032588707,
+  "artifact": 11238311244,
+  "bytes": 15119277,
+  "sha256": "015945ceb20d8e3c1a959482c4ccc10296ccbed2d006a1c1f2bf253641f4857e",
+  "entries": 823,
+  "source_inputs": {
+    "total": 247,
+    "exact": 7,
+    "windows_crlf": 240,
+    "mismatched": 0
+  },
+  "verified_objects": 31,
+  "verified_runtime_files": 12,
+  "verified_canonical_captures": 23,
+  "components": {
+    "settings": {
+      "checks": 230,
+      "executable": "412d3349d325a930be5681a86f5aa4fa44857abaa4ddb16c3ea4d47c146daf57",
+      "captures": 14
+    },
+    "search": {
+      "checks": 85,
+      "executable": "654324d97a594946e24f1c44ad6e2867b3a4487f77787d9b81e5e84cc6e90530",
+      "captures": 5
+    },
+    "chart-presentation": {
+      "checks": 46,
+      "executable": "b8d64b852a847b8edb3ee9d3da433d2d789ae165c3b0b851015991910c234316",
+      "captures": 4
+    }
+  },
+  "component_checks": 361,
+  "activation": "unchanged scroll and target rectangle through activation; real Sensors click accepted",
+  "scope": "Offline component proof; full application, dependency, package, DPI and boat qualification remain pending",
+  "ui_build_policy": {
+    "testFixtures": false,
+    "pilotLoopback": false,
+    "runtimeTests": true
+  },
+  "local_equivalent": "688bb713db885dbe78ca6db861382ce248c231f7",
+  "full_run": "https://github.com/ThereptileII/Work/actions/runs/37033702537",
+  "full_run_state": "started; not accepted",
+  "focus_evidence": {
+    "before-activation.png": "2bce3cf05cb25c7bbba6a316f627e3f83b274929e698ba31cbc15feb7113b8ac",
+    "after-activation.png": "2bce3cf05cb25c7bbba6a316f627e3f83b274929e698ba31cbc15feb7113b8ac",
+    "evidence.jsonl": "87586c14468728aaefc3246c21d9374be5199ace49733663b4549be34ba30ec0"
+  }
+}
