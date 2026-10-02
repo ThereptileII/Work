@@ -235,6 +235,7 @@ try {
     if ($Integration) {
         # Offline painter processes; no chart/profile/input or hardware output.
         Run (Join-Path $Build 'Release/chart_name_text_test.exe') @((Join-Path $Evidence "chart-names-$Variant.png"))
+        Run (Join-Path $Build 'Release/chart_light_label_test.exe') @((Join-Path $Evidence "chart-lights-$Variant.png"))
         Run (Join-Path $Build 'Release/onboard_ais_body_test.exe') @((Join-Path $Evidence "onboard-ais-$Variant.png"))
     }
     Run ctest @('--test-dir', (Join-Path $Build 'test'), '-C', 'Release', '--output-on-failure', '--no-tests=error',

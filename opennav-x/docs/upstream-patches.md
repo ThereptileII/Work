@@ -1125,3 +1125,24 @@ supplies prototype font/tracking/ink/water halo only for factory-equivalent
 ChartTexts appearance. Runtime custom appearance and unsupported raster bounds
 restore stock presentation. Other labels, global CHBLK, symbols and Standard
 remain unchanged. See [scope and evidence](design/reviews/scrum248-light-description-typography.md).
+
+### SCRUM-250: final chart GL framebuffer size
+
+The chart-presentation patch adds a SKAGER-shell-only check before the existing
+FBO cache selection. It reconciles the child with its final parent client size,
+rebuilds an undersized existing cache and falls back to direct chart rendering
+if it still cannot cover the viewport. This corrects the measured1012×558 cache
+sampled across1014×566 after theme layout, without clamping or cropping chart
+content. Legacy/Safe, software, normal cache reuse and chart semantics remain
+unchanged. See `docs/design/reviews/scrum250-chart-framebuffer.md` for actual
+Mesa baseline traces, extracted-method checks, production GL object and open
+combined/native/boat acceptance gates.
+
+### SCRUM-251 submarine cable paint
+
+No C++ patch is added. The verified resource generator changes only CBLSUB06
+line-style RCID2012 color-ref ACHMGD to AXNCBL, adding three dedicated prototype
+area-hue colors (including Night brightness). A reverse-equality validator
+protects HPGL, all symbol geometry, global CHMGD and navigation lookups. The
+helper is included in CMake regeneration dependencies and Windows preflight
+input identity. See [real ENC evidence](design/reviews/scrum251-submarine-cable-paint.md).

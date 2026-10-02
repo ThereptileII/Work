@@ -27,7 +27,7 @@ inline bool IsGeneratedLightDescription(const char* feature, const char* rule,
 inline bool FactoryLightTextFont(const wxFont& font, const wxFont& system,
                                   wxColour ink) {
   return font.IsOk() && system.IsOk() && ink == *wxBLACK &&
-      font.GetPointSize()==system.GetPointSize() &&
+      font.GetFractionalPointSize()==system.GetFractionalPointSize() &&
       font.GetFaceName()==system.GetFaceName() &&
       font.GetStyle()==wxFONTSTYLE_NORMAL &&
       font.GetWeight()==wxFONTWEIGHT_NORMAL && !font.GetUnderlined() &&

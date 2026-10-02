@@ -301,3 +301,12 @@ raster requests retain stock presentation. The native raster approximates SVG
 stroke edges and rounds glyph placement. Small default-size readability,
 Windows/DPI, actual GL driver and boat review remain open. See
 [scope, guards and evidence](reviews/scrum248-light-description-typography.md).
+## SCRUM-251 submarine cable paint (qualification pending)
+
+Only pinned line-style RCID2012/CBLSUB06 selects new XNCBL ink instead of CHMGD:
+prototype area hue Day#9c8696, Dusk#b8a0b1, Night#71636e after its chart brightness.
+Its HPGL, widths, geographic geometry and lookups remain unchanged. Global
+magenta, cable-area restrictions, ferry lines, dumping-ground boundaries and
+information symbols retain their meanings and rendering. Reverse equality and
+negative resource tests constrain this one node. See
+[real-chart audit and scope](reviews/scrum251-submarine-cable-paint.md).

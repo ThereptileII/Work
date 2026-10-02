@@ -23,6 +23,8 @@ int main(int argc,char** argv) {
     wxFont system=*wxNORMAL_FONT,custom=system;
     check(FactoryLightTextFont(system,system,*wxBLACK),"Automatically saved factory appearance remains eligible");
     custom.SetPointSize(system.GetPointSize()+1);check(!FactoryLightTextFont(custom,system,*wxBLACK),"Custom size retained");
+    custom=system;custom.SetFractionalPointSize(system.GetFractionalPointSize()+.25);
+    check(custom.GetPointSize()==system.GetPointSize()&&!FactoryLightTextFont(custom,system,*wxBLACK),"Custom fractional size retained despite equal integer size");
     custom=system;custom.SetWeight(wxFONTWEIGHT_BOLD);check(!FactoryLightTextFont(custom,system,*wxBLACK),"Custom weight retained");
     custom=system;custom.SetStyle(wxFONTSTYLE_ITALIC);check(!FactoryLightTextFont(custom,system,*wxBLACK),"Custom style retained");
     custom=system;custom.SetUnderlined(true);check(!FactoryLightTextFont(custom,system,*wxBLACK),"Custom underline retained");

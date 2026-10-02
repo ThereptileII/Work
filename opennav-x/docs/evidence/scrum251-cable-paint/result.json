@@ -1,0 +1,39 @@
+{
+  "baseCommit": "195ad43",
+  "sourceCommit": "37fd0cddb7334fe489e9f18aa163977a9c5c84f7",
+  "modifiedNode": {
+    "section": "line-styles",
+    "RCID": "2012",
+    "name": "CBLSUB06",
+    "old": "ACHMGD",
+    "new": "AXNCBL"
+  },
+  "effectiveCableColors": {
+    "DAY_BRIGHT": "#9c8696",
+    "DUSK": "#b8a0b1",
+    "NIGHT": "#71636e"
+  },
+  "files": {
+    "tools/chart_cable_paint.py": "a993cb67f6113e0058dd554ac49039fbde7dd1960a00ba97a548b977e7bfad74",
+    "tools/generate-xnav-chart-style.py": "8bbdc55fa11823839ba09e939039cb07d9b4ef9b46844a372128bb18d103c240",
+    "resources/chart-style/v1/definition.json": "457ca8fa401f9a5a820081abeb13c22cad78a04c49f6c6586194f773b567153a",
+    "tests/chart_presentation_resources_tests.py": "3968a8b99595abbb24618b68c7035b10d864a808f583e0f782b74db31a3c04a7",
+    "src/integration/OpenCPN.cmake": "1e3bd558b3867c65fbb3aca567b456f0765d703b2a21231c59c8fee9c17d7e7f",
+    "tools/windows_chart_units.py": "6fd19a3967777aa10dec95a0cef462f40a8bd1589d8e3816e84f43e44c1ee08d"
+  },
+  "limits": [
+    "scaled vector color fixture; not native rendering",
+    "no CI/full application build or boat use",
+    "native Windows/DPI/real ENC SW/GL and boat readability remain open"
+  ],
+  "validation": {
+    "resourceChecksPassed": 8041,
+    "pythonSyntax": "passed",
+    "diffWhitespace": "passed",
+    "generatedManifestSha256": "fcf27186e16898662dddae4ebb22d397b73fc39510f29bd45dc18629e8612dc2",
+    "generatedChartsymbols": {
+      "sha256": "710f1ca83443ef20589400575a1f890f14969beb65ad3eea1e8c3db04968501f",
+      "bytes": 2232040
+    }
+  }
+}

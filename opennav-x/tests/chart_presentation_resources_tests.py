@@ -89,11 +89,16 @@ with tempfile.TemporaryDirectory(prefix='xnav-chart-test-') as d:
     styled=b.findall("symbols/symbol[name='ACHARE51']")[-1].find('bitmap')
     styled.attrib=stock.attrib.copy()
     for tag in ('pivot','graphics-location'):styled.find(tag).attrib=stock.find(tag).attrib.copy()
+    # Independently undo only the cable paint reference before whole-tree proof.
+    cables=b.findall("line-styles/line-style[name='CBLSUB06']")
+    check(len(cables)==1 and cables[0].attrib=={'RCID':'2012'})
+    check(cables[0].findtext('color-ref')=='AXNCBL')
+    cables[0].find('color-ref').text='ACHMGD'
     for section in ['lookups','line-styles','patterns','symbols']:
         check(ET.tostring(a.find(section))==ET.tostring(b.find(section)))
     for stock,styled in zip(a.find('color-tables'),b.find('color-tables')):
         check(stock.attrib==styled.attrib)
-        for name in ('XNBUA','XNGEO'):
+        for name in ('XNBUA','XNGEO','XNCBL'):
             added=styled.findall("color[@name='"+name+"']")
             check(len(added)==(1 if stock.get('name') in data['palette'] else 0))
             for entry in added:styled.remove(entry)
@@ -102,6 +107,15 @@ with tempfile.TemporaryDirectory(prefix='xnav-chart-test-') as d:
             if before.tag=='color' and stock.attrib['name'] in data['palette'] and before.attrib['name'] in g.ALLOWED:
                 check(before.attrib['name']==after.attrib['name'])
             else:check(ET.tostring(before)==ET.tostring(after))
+    html=(ROOT/'docs/design/prototype/index.html').read_text()
+    for table,selector in [('DAY_BRIGHT','#app'),('DUSK','#app[data-theme=dusk]'),('NIGHT','#app[data-theme=night]')]:
+        css=re.search(re.escape(selector)+r"\{--mark-red:[^}]+",html)[0]
+        hue=re.search(r"--mark-area:#([0-9a-f]{6})",css)[1]
+        rgb=tuple(int(hue[i:i+2],16) for i in (0,2,4))
+        if table=='NIGHT':
+            factor=float(re.search(r'\#app\[data-theme=night\] \.chart-canvas\{filter:brightness\(([^)]+)\)',html)[1])
+            rgb=tuple(round(channel*factor) for channel in rgb)
+        check(data['palette'][table]['XNCBL']==rgb)
     for table,colors in data['palette'].items():
         check(len({tuple(colors[n]) for n in ['DEPDW','DEPMD','DEPMS','DEPVS','DEPIT']})==5)
         check(colors['DEPSC']!=colors['DEPCN'])
@@ -133,7 +147,7 @@ with tempfile.TemporaryDirectory(prefix='xnav-chart-test-') as d:
     reject(lambda t:setattr(t.find("lookups/lookup[@id='1066']/instruction"),'text','AC(XNBUA)'))
     reject(lambda t:t.find('color-tables/color-table').remove(t.find("color-tables/color-table/color[@name='XNBUA']")))
     reject(lambda t:t.find('color-tables/color-table').append(ET.fromstring('<color name="XNBUA" r="175" g="191" b="174"/>')))
-    for name in ('LANDA','XNBUA','XNGEO'):
+    for name in ('LANDA','XNBUA','XNGEO','XNCBL'):
         path="color-tables/color-table/color[@name='"+name+"']"
         reject(lambda t:t.find(path).set('r','1'))
         reject(lambda t:t.find(path).set('a','0'))
@@ -146,6 +160,19 @@ with tempfile.TemporaryDirectory(prefix='xnav-chart-test-') as d:
     reject(lambda t:t.findall("symbols/symbol[name='ACHARE51']")[0].find('bitmap/pivot').set('x','11'))
     reject(lambda t:t.findall("symbols/symbol[name='ACHARE51']")[-1].find('bitmap/origin').set('x','1'))
     reject(lambda t:t.findall("symbols/symbol[name='ACHARE51']")[-1].find('bitmap').set('width','21'))
+    # The cable exception cannot widen into global magenta, widths, geometry,
+    # lookup semantics, other cable categories or duplicated/retargeted nodes.
+    reject(lambda t:t.find("color-tables/color-table/color[@name='CHMGD']").set('r','1'))
+    reject(lambda t:setattr(t.find("line-styles/line-style[name='CBLSUB06']/HPGL"),'text','SPA;SW2;PU0,0;PD1,1;'))
+    reject(lambda t:t.find("line-styles/line-style[name='CBLSUB06']/vector/pivot").set('x','449'))
+    reject(lambda t:t.find("line-styles/line-style[name='CBLSUB06']/vector").set('width','2294'))
+    reject(lambda t:t.find("line-styles/line-style[name='CBLSUB06']").set('RCID','2013'))
+    reject(lambda t:t.find("line-styles/line-style[name='CBLSUB06']/color-ref").set('unexpected','true'))
+    reject(lambda t:setattr(t.find("line-styles/line-style[name='FERYRT01']/color-ref"),'text','AXNCBL'))
+    reject(lambda t:setattr(t.find("lookups/lookup[@id='709']/instruction"),'text','LC(CBLSUB06)'))
+    reject(lambda t:t.find('line-styles').append(ET.fromstring(ET.tostring(t.find("line-styles/line-style[name='CBLSUB06']")))))
+    reject(lambda t:t.find('color-tables/color-table').remove(t.find("color-tables/color-table/color[@name='XNCBL']")))
+    reject(lambda t:t.find('color-tables/color-table').append(ET.fromstring('<color name="XNCBL" r="1" g="1" b="1"/>')))
     check(original=={p.name:hashlib.sha256(p.read_bytes()).hexdigest() for p in source.iterdir() if p.is_file()})
     damaged=folder/'damaged';damaged.mkdir()
     for name in data['files']:shutil.copyfile(source/name,damaged/name)

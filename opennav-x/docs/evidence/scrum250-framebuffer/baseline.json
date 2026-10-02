@@ -1,0 +1,136 @@
+{
+  "commit": "e14de49f444c56de28465416a83337838ad84413",
+  "binarySha256": "3b64b0958733accbe56cfa73512d984e3940bd916a7a9eab9ef9bf6df4b0e243",
+  "originalColorContentChecks": "passed",
+  "renderer": "opengl",
+  "scope": "Public real ENC with controlled simulated loopback RMC; no private boat profile, hardware, Demo or scenario activation",
+  "cleanExit": true,
+  "captures": [
+    {
+      "name": "SKAGER-Day",
+      "sha256": "10905f9f3da4631a3496fcce407498db2121584a2d179dac3862096371cdb90b",
+      "repeatedPixels": 111,
+      "comparisonPixels": 3232,
+      "chartRegion": {
+        "height": 566,
+        "y": 68,
+        "width": 1014,
+        "x": 80
+      }
+    },
+    {
+      "name": "SKAGER-Dusk",
+      "sha256": "f1429d73525b103766b57bf72586e87a734fc028effc91205c5ddaace9e9769b",
+      "repeatedPixels": 3232,
+      "comparisonPixels": 3232,
+      "chartRegion": {
+        "height": 566,
+        "y": 68,
+        "width": 1014,
+        "x": 80
+      }
+    },
+    {
+      "name": "SKAGER-Night",
+      "sha256": "cc583b69ebef5047d52038b37e3df9ea4bd16e478c19780979a0025585a46e67",
+      "repeatedPixels": 3232,
+      "comparisonPixels": 3232,
+      "chartRegion": {
+        "height": 566,
+        "y": 68,
+        "width": 1014,
+        "x": 80
+      }
+    },
+    {
+      "name": "Standard-Day",
+      "sha256": "7eb29169cb4a297583e729d15d38db2a4711e3112b6131c84bd6cdf6c2dc00a3",
+      "repeatedPixels": 242,
+      "comparisonPixels": 3232,
+      "chartRegion": {
+        "height": 566,
+        "y": 68,
+        "width": 1014,
+        "x": 80
+      }
+    },
+    {
+      "name": "Standard-Dusk",
+      "sha256": "d3026590dca7f941303abb1454c0f8d12e2914d95405d789fcb4656fc0c47f28",
+      "repeatedPixels": 3232,
+      "comparisonPixels": 3232,
+      "chartRegion": {
+        "height": 566,
+        "y": 68,
+        "width": 1014,
+        "x": 80
+      }
+    },
+    {
+      "name": "Standard-Night",
+      "sha256": "a2a0bfdfe480728513cf4f0978827306a6a7d45e1135752ceb64d0ab2050bd4e",
+      "repeatedPixels": 3232,
+      "comparisonPixels": 3232,
+      "chartRegion": {
+        "height": 566,
+        "y": 68,
+        "width": 1014,
+        "x": 80
+      }
+    }
+  ],
+  "baselineFailures": [
+    "Unbound relocated install initially loaded original compiled resource path and failed style verification; discarded",
+    "First isolated run lacked optional xwininfo utility; stopped and retained failure before rerunning without that probe"
+  ],
+  "observedMismatches": {
+    "SKAGER": [
+      {
+        "allocation": [
+          1012,
+          558
+        ],
+        "viewport": [
+          1014,
+          566
+        ],
+        "monotonicTime": "38073.491587497"
+      },
+      {
+        "allocation": [
+          1012,
+          558
+        ],
+        "viewport": [
+          1014,
+          566
+        ],
+        "monotonicTime": "38076.157472257"
+      }
+    ],
+    "Standard": [
+      {
+        "allocation": [
+          1012,
+          558
+        ],
+        "viewport": [
+          1014,
+          566
+        ],
+        "monotonicTime": "38092.259717171"
+      },
+      {
+        "allocation": [
+          1012,
+          558
+        ],
+        "viewport": [
+          1014,
+          566
+        ],
+        "monotonicTime": "38094.845227385"
+      }
+    ]
+  }
+}

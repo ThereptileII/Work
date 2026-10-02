@@ -1,0 +1,32 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="960" height="390" viewBox="0 0 960 390">
+<rect y="0" width="960" height="130" fill="#d5e5e5"/>
+<text x="16" y="22" font-family="sans-serif" font-size="13" fill="#687b7a">DAY · pinned CBLSUB06 HPGL · stock #c545c3 / mapped #9c8696</text>
+<polyline points="442.17,38.00 413.67,66.00 451.67,80.00 423.17,108.00" fill="none" stroke="#c545c3" stroke-width="1"/>
+<polyline points="148.62,67.82 177.31,53.54 233.93,82.10 263.38,67.82" fill="none" stroke="#c545c3" stroke-width="1"/>
+<polyline points="16.00,67.96 45.45,53.96 102.64,82.94 130.00,67.96" fill="none" stroke="#c545c3" stroke-width="1"/>
+<polyline points="278.96,65.86 307.84,51.86 364.65,80.28 394.86,65.86" fill="none" stroke="#c545c3" stroke-width="1"/>
+<polyline points="922.17,38.00 893.67,66.00 931.67,80.00 903.17,108.00" fill="none" stroke="#9c8696" stroke-width="1"/>
+<polyline points="628.62,67.82 657.31,53.54 713.93,82.10 743.38,67.82" fill="none" stroke="#9c8696" stroke-width="1"/>
+<polyline points="496.00,67.96 525.45,53.96 582.64,82.94 610.00,67.96" fill="none" stroke="#9c8696" stroke-width="1"/>
+<polyline points="758.96,65.86 787.84,51.86 844.65,80.28 874.86,65.86" fill="none" stroke="#9c8696" stroke-width="1"/>
+<rect y="130" width="960" height="130" fill="#344f59"/>
+<text x="16" y="152" font-family="sans-serif" font-size="13" fill="#adbbb1">DUSK · pinned CBLSUB06 HPGL · stock #4a3a51 / mapped #b8a0b1</text>
+<polyline points="442.17,168.00 413.67,196.00 451.67,210.00 423.17,238.00" fill="none" stroke="#4a3a51" stroke-width="1"/>
+<polyline points="148.62,197.82 177.31,183.54 233.93,212.10 263.38,197.82" fill="none" stroke="#4a3a51" stroke-width="1"/>
+<polyline points="16.00,197.96 45.45,183.96 102.64,212.94 130.00,197.96" fill="none" stroke="#4a3a51" stroke-width="1"/>
+<polyline points="278.96,195.86 307.84,181.86 364.65,210.28 394.86,195.86" fill="none" stroke="#4a3a51" stroke-width="1"/>
+<polyline points="922.17,168.00 893.67,196.00 931.67,210.00 903.17,238.00" fill="none" stroke="#b8a0b1" stroke-width="1"/>
+<polyline points="628.62,197.82 657.31,183.54 713.93,212.10 743.38,197.82" fill="none" stroke="#b8a0b1" stroke-width="1"/>
+<polyline points="496.00,197.96 525.45,183.96 582.64,212.94 610.00,197.96" fill="none" stroke="#b8a0b1" stroke-width="1"/>
+<polyline points="758.96,195.86 787.84,181.86 844.65,210.28 874.86,195.86" fill="none" stroke="#b8a0b1" stroke-width="1"/>
+<rect y="260" width="960" height="130" fill="#121e24"/>
+<text x="16" y="282" font-family="sans-serif" font-size="13" fill="#758579">NIGHT · pinned CBLSUB06 HPGL · stock #341234 / mapped #71636e</text>
+<polyline points="442.17,298.00 413.67,326.00 451.67,340.00 423.17,368.00" fill="none" stroke="#341234" stroke-width="1"/>
+<polyline points="148.62,327.82 177.31,313.54 233.93,342.10 263.38,327.82" fill="none" stroke="#341234" stroke-width="1"/>
+<polyline points="16.00,327.96 45.45,313.96 102.64,342.94 130.00,327.96" fill="none" stroke="#341234" stroke-width="1"/>
+<polyline points="278.96,325.86 307.84,311.86 364.65,340.28 394.86,325.86" fill="none" stroke="#341234" stroke-width="1"/>
+<polyline points="922.17,298.00 893.67,326.00 931.67,340.00 903.17,368.00" fill="none" stroke="#71636e" stroke-width="1"/>
+<polyline points="628.62,327.82 657.31,313.54 713.93,342.10 743.38,327.82" fill="none" stroke="#71636e" stroke-width="1"/>
+<polyline points="496.00,327.96 525.45,313.96 582.64,342.94 610.00,327.96" fill="none" stroke="#71636e" stroke-width="1"/>
+<polyline points="758.96,325.86 787.84,311.86 844.65,340.28 874.86,325.86" fill="none" stroke="#71636e" stroke-width="1"/>
+</svg>

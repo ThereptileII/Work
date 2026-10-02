@@ -39,7 +39,7 @@ function Assert-WindowReviewPolicy($Job,$Installed,$Build,$Launch,$Request,[date
       $Build.version -cne '0.4.0-beta2' -or $Build.commit -cne $Job.buildCommit -or $Build.executable_sha256 -cne $Job.executableSha256){throw 'Only the exact fixture-free installed product may be reviewed.'}
   if($Launch.status -cne 'passed' -or $Launch.action -cne 'Launch' -or $Launch.mode -cne '--xnav' -or $Launch.pid -ne $Job.processId -or
       $Request.action -cne 'Launch' -or $Request.mode -cne '--xnav' -or $Request.executable -ine $Job.executable -or
-      $Request.executableSha256 -cne $Job.executableSha256 -or $Request.workspace -ine $Job.workspace){throw 'Successful audited installed XNav launch is required.'}
+      $Request.executableSha256 -cne $Job.executableSha256 -or $Request.workspace -ine $Job.workspace){throw 'Successful audited installed SKAGER launch is required.'}
   $at=[datetime]::Parse($Launch.utc).ToUniversalTime()
   if($at -gt $Now -or ($Now-$at).TotalHours -gt 4){throw 'Window review requires a recent audited launch.'}
 }

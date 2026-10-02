@@ -34,7 +34,7 @@ function Inventory([string]$Directory) {
   return @($result | Sort-Object path)
 }
 function AssertClosed {
-  if (@(Get-Process -Name opencpn -ErrorAction SilentlyContinue).Count) { throw 'Close OpenCPN/XNav normally before making a cold recovery backup.' }
+  if (@(Get-Process -Name opencpn -ErrorAction SilentlyContinue).Count) { throw 'Close OpenCPN/SKAGER normally before making a cold recovery backup.' }
 }
 AssertClosed
 $Workspace=Plain $Workspace; $OpenCpnDirectory=Plain $OpenCpnDirectory; $ProfileDirectory=Plain $ProfileDirectory

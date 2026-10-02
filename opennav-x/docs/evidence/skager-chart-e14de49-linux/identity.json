@@ -1,0 +1,209 @@
+{
+  "schema": 1,
+  "sourceCommit": "e14de49f444c56de28465416a83337838ad84413",
+  "binarySha256": "3b64b0958733accbe56cfa73512d984e3940bd916a7a9eab9ef9bf6df4b0e243",
+  "scope": "Linux development evidence, not Windows or boat acceptance",
+  "renderer": "software and Mesa llvmpipe LLVM22.1.8 / Mesa26.2.2",
+  "captureCount": 12,
+  "cleanApplicationExits": 4,
+  "reviewedImages": "All12, both styles and all3 themes",
+  "observedImprovements": [
+    "Themed enabled COG endpoint",
+    "Geographic name tracking/opacity",
+    "Two vector-selector palette roles",
+    "SKAGER header from approved artwork"
+  ],
+  "openFindings": [
+    "SCRUM250: theme-time OpenGL edge wrap in both SKAGER and Standard; software unaffected",
+    "Light labels and sounding typography are old in these images; SCRUM248/249 integrated afterward",
+    "No active route or AIS targets captured, so those painters remain unqualified",
+    "Native Windows typography, package and boat acceptance remain required"
+  ],
+  "harnessCorrections": {
+    "softwareQuit": "First long-profile remote quit timed out. Concurrent IPC socket names share first107 bytes; truncation/collision is plausible, not syscall-proven. Separate unique /tmp profiles below100 socket-path bytes pass four clean exits. Old failure retained.",
+    "glColorOracle": "Pinned RenderToGLAC normalizes RGB channels by256; exact expected polygon fill becomes round(channel*255/256). No broad tolerance. Initial strict wrong oracle rejected a chart containing actual visible ENC; failure retained."
+  },
+  "safety": "Public NOAA chart; controlled loopback RMC clearly recorded. No private boat profile, Demo or hardware commands.",
+  "files": {
+    "capture-renderers.py": {
+      "sha256": "b2ab8b1bf556d9df73ae787678169be171503b069a87e0656051bebcc005ad41",
+      "bytes": 14235
+    },
+    "capture.py": {
+      "sha256": "546d2b6cd4607626477547fba8f9331ce22d2a32fbc7171690da687a48ae90b6",
+      "bytes": 13131
+    },
+    "failed-opengl/SKAGER-Day.png": {
+      "sha256": "6ab76debcf46860a7db5b346aa7f9a4d283a9cfdc3c9f4b08579c3a18ea5c470",
+      "bytes": 223247
+    },
+    "failed-opengl/controlled-input.json": {
+      "sha256": "e63f327762e360dec95fa5d4d658158f4ed1a25e7f3e65c373fc59ddc91f2dc4",
+      "bytes": 2686
+    },
+    "failed-opengl/loader-selftest.json": {
+      "sha256": "6c4afa8629fa4ccf9224a4707c8cde9213308d56bb73b068f3409e5490fd347b",
+      "bytes": 715
+    },
+    "failed-opengl/report.json": {
+      "sha256": "06deda0b6eb7a4c6630479b9afa6234fef1632e99edd05a0abb0e90601bf0c57",
+      "bytes": 4886
+    },
+    "failed-software/SKAGER-Day.json": {
+      "sha256": "ae88684a4b75fcf574741407336c05dd039ecd0eba6025aec278aec30f97ac50",
+      "bytes": 27776
+    },
+    "failed-software/SKAGER-Day.png": {
+      "sha256": "2f35cb6b8d0d739a389fc20b02201321ae1c8f3563b58d8af7e8c644934735a8",
+      "bytes": 263900
+    },
+    "failed-software/SKAGER-Dusk.json": {
+      "sha256": "3282746b6e09ec211d9402f0315a34a2ca4675f85f61c12d4561f51400358122",
+      "bytes": 30668
+    },
+    "failed-software/SKAGER-Dusk.png": {
+      "sha256": "8f4ace06311b02dd4b5e57aca1115a7aee0407472723f17417e1c895c0593346",
+      "bytes": 256372
+    },
+    "failed-software/SKAGER-Night.json": {
+      "sha256": "7bf716a691c123f1c3ffb7461991206c48ff6e507126364c933f52a4a8d0b67c",
+      "bytes": 30666
+    },
+    "failed-software/SKAGER-Night.png": {
+      "sha256": "1923c9648a6a1705e68248e06e94cecdb4e9d98786ba73b1fce231295e3fa046",
+      "bytes": 251330
+    },
+    "failed-software/controlled-input.json": {
+      "sha256": "7962890ca5003088f5fc89100efcb2d5ce92dc7f4b00858bcc1b5077f48da0df",
+      "bytes": 4453
+    },
+    "failed-software/loader-selftest.json": {
+      "sha256": "6c4afa8629fa4ccf9224a4707c8cde9213308d56bb73b068f3409e5490fd347b",
+      "bytes": 715
+    },
+    "failed-software/report.json": {
+      "sha256": "cb656a869d79f71e91004a59a666b789ca9ceb40d1920d5ccb0d30337299259c",
+      "bytes": 14058
+    },
+    "opengl/SKAGER-Day.json": {
+      "sha256": "d5f2c218e7757ecce6431cf03f46e6178af61d34a0eea0292345ab0569bf646a",
+      "bytes": 27680
+    },
+    "opengl/SKAGER-Day.png": {
+      "sha256": "b4577e5b348e6e4be5778fabc09cebca54ac26ae23734eeb395f909753f5fea5",
+      "bytes": 223421
+    },
+    "opengl/SKAGER-Dusk.json": {
+      "sha256": "7f3f2f524685c57f0ef51caf0900ea70f74203bc02be728ed0d0652c82685702",
+      "bytes": 30572
+    },
+    "opengl/SKAGER-Dusk.png": {
+      "sha256": "36661e0681eadf31ff7381b7569c3506a7c5771dd4a784962519acc3b6f8caef",
+      "bytes": 223201
+    },
+    "opengl/SKAGER-Night.json": {
+      "sha256": "8bbac64d72c94bd8d23652310f99cce8783579c2df1fab4b89749be9136d53a8",
+      "bytes": 30574
+    },
+    "opengl/SKAGER-Night.png": {
+      "sha256": "3a5e8fc7d9e3c739c5fbe503c04dd2e9c4a2b63abb44ff022b7e5040462157be",
+      "bytes": 218304
+    },
+    "opengl/Standard-Day.json": {
+      "sha256": "179c261d5d4ced65836037e9c53feb67f9d1f8c97d46b13c12d9d99dbc502db2",
+      "bytes": 27676
+    },
+    "opengl/Standard-Day.png": {
+      "sha256": "09d8d069613927e26805f8a32e554582514af4632947c1ba7e050cf8d87622cc",
+      "bytes": 227744
+    },
+    "opengl/Standard-Dusk.json": {
+      "sha256": "be40e9ae0b53fcb68ce8e033f11c860d49f7c10d3a5c2a7a83426500b0c7182b",
+      "bytes": 30567
+    },
+    "opengl/Standard-Dusk.png": {
+      "sha256": "a59b1629921376a7cb3532dd7f09ce7b3f04553c76434643e5a986735970c20b",
+      "bytes": 203862
+    },
+    "opengl/Standard-Night.json": {
+      "sha256": "a9b9d78dfb8937f97ee40190d87a997a687ed6d1028f53be322131177303560a",
+      "bytes": 30565
+    },
+    "opengl/Standard-Night.png": {
+      "sha256": "b5c20d9b5c6b53f604216836d59dc528ff8d88befa0d9039cb4ce80d3b08706c",
+      "bytes": 195550
+    },
+    "opengl/controlled-input.json": {
+      "sha256": "f5e998d00a083a4ec1a012087feeb31ff9623aeba1a8cad18722eb23917426c2",
+      "bytes": 8209
+    },
+    "opengl/loader-selftest.json": {
+      "sha256": "6c4afa8629fa4ccf9224a4707c8cde9213308d56bb73b068f3409e5490fd347b",
+      "bytes": 715
+    },
+    "opengl/report.json": {
+      "sha256": "61042b51624119180c13e3e66100a65774d95ea1c0d05cb0b9230e5ed814b8c6",
+      "bytes": 22973
+    },
+    "software/SKAGER-Day.json": {
+      "sha256": "ee25de62919651437c9b64b46f217527552f22f5d951598709445ff6e7b55f61",
+      "bytes": 27680
+    },
+    "software/SKAGER-Day.png": {
+      "sha256": "134218dcf453b154f748374680d7765618413f121b651587a8b57c96319ac694",
+      "bytes": 264057
+    },
+    "software/SKAGER-Dusk.json": {
+      "sha256": "d9446b0e719d36cecbf23f9bdd5a3a6a135f9468afe7a599d77f31bd3f56a6f6",
+      "bytes": 30572
+    },
+    "software/SKAGER-Dusk.png": {
+      "sha256": "cc0cbcb0dc5540839a5b6076f88a04a6e783366b119fa6bae304c773ae0b9152",
+      "bytes": 256476
+    },
+    "software/SKAGER-Night.json": {
+      "sha256": "53ebb505bef04a3e87f4f78f62f66a834d5f1029caa521f47ed8314ad8bf8f45",
+      "bytes": 30570
+    },
+    "software/SKAGER-Night.png": {
+      "sha256": "20663c7af2efe0c397993ac3c8ce90e435f43e66b22c0b7384ed4c3fa2e7aabf",
+      "bytes": 251461
+    },
+    "software/Standard-Day.json": {
+      "sha256": "f377b47c917c0b56d8476bdc919731fc490100bdc0040783040111fa4c0b5f2d",
+      "bytes": 27676
+    },
+    "software/Standard-Day.png": {
+      "sha256": "f554cfa5456c264c4181caae1522abc7c1855859f0b8818c9f1d6a3811863413",
+      "bytes": 271956
+    },
+    "software/Standard-Dusk.json": {
+      "sha256": "3791273584e66787c48532633c864440b11b5ca99cd9b2fb35938b0d31ddb06d",
+      "bytes": 30562
+    },
+    "software/Standard-Dusk.png": {
+      "sha256": "243273d65f16e41db84732fe2ecc7d9cecdd8b33a7f5b10e2d5c7ad9f7f9b097",
+      "bytes": 239980
+    },
+    "software/Standard-Night.json": {
+      "sha256": "129b08a9aa144b5b58d056e0a2a968f1623561ce446e29d85446ce94c68539fa",
+      "bytes": 30569
+    },
+    "software/Standard-Night.png": {
+      "sha256": "1c7f3b35a699b4d3db48b1f95c549b1289a92d2f863a08d1c0260b36c3c18268",
+      "bytes": 229082
+    },
+    "software/controlled-input.json": {
+      "sha256": "a2a67e698c85d507307c7cf57e03083fcdc851ba5aad5d948dd1ff2d86b4a071",
+      "bytes": 8482
+    },
+    "software/loader-selftest.json": {
+      "sha256": "6c4afa8629fa4ccf9224a4707c8cde9213308d56bb73b068f3409e5490fd347b",
+      "bytes": 715
+    },
+    "software/report.json": {
+      "sha256": "bd0ad9dc4b98cf3a6b69b3547ab04e1abf818c5fccb781fef6491010a5885fb1",
+      "bytes": 22979
+    }
+  }
+}

@@ -258,6 +258,7 @@ set_property(DIRECTORY APPEND PROPERTY CMAKE_CONFIGURE_DEPENDS
 set_property(DIRECTORY APPEND PROPERTY CMAKE_CONFIGURE_DEPENDS
   "${OPENNAV_ROOT}/tools/chart_raster_ink.py"
   "${OPENNAV_ROOT}/tools/chart_anchor_art.py"
+  "${OPENNAV_ROOT}/tools/chart_cable_paint.py"
   "${OPENNAV_ROOT}/resources/chart-style/v1/anchorage/ACHARE51.svg"
   "${OPENNAV_ROOT}/resources/chart-style/v1/anchorage/ACHARE51-alpha.json"
   "${OPENNAV_ROOT}/resources/chart-style/v1/anchorage/provenance.json"

@@ -251,7 +251,7 @@ jobs:
           # The fixture-free settings gate above explicitly established that
           # this disposable account has no product key. This is a negative,
           # offline commissioning test; it cannot connect without a key.
-          $Package = (Resolve-Path opennav-x/build/ais-readonly-probe/OpenNavX-AIS-ReadOnly-Probe).Path
+          $Package = (Resolve-Path opennav-x/build/ais-readonly-probe/SKAGER-AIS-ReadOnly-Probe).Path
           $InfoHash = (Get-FileHash "$Package/BUILD_INFO.json" -Algorithm SHA256).Hash.ToLowerInvariant()
           $Evidence = Join-Path $PWD 'opennav-x/evidence/local/probe-offline-launch'
           & powershell -NoProfile -ExecutionPolicy Bypass -File opennav-x/tools/boat/probe-online-ais.ps1 -Package $Package -ExpectedCommit $env:GITHUB_SHA -ExpectedBuildInfoSha256 $InfoHash -Evidence $Evidence

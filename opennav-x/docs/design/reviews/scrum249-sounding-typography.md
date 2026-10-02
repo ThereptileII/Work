@@ -64,3 +64,23 @@ build/integration-source --output <private-output> --wx-config <wx-config>
 --wx-prefix <prefix>` under a native display. Add `--negative-legacy-rounding`
 for the deliberately failing regression control. Evidence is in
 `docs/evidence/scrum249-sounding/`.
+
+## Invalid native font fallback follow-up
+
+The combined review found that a non-null resolver could return an invalid
+`wxFont`, which was then passed to native measurement and atlas APIs. The
+presentation branch now requires `IsOk()`. An invalid result takes the exact
+original stock font path; no sounding value, ink, pivot or draw instruction is
+changed. Each resolution attempt is cached by scale/content/DIP inputs, including
+failure, so stock atlas reuse survives subsequent digits. Explicit resolver
+installation clears that attempt and atlas, allowing a same-input retry.
+
+The fixture now extracts the actual resolver setter as well as the original
+painter and atlas methods. Valid-to-invalid transitions are exercised in software
+and recorded GL; the fallback atlas exactly matches an independent null-policy
+stock raster, is reused across ten digits, and no invalid font reaches a drawing
+API. Null policy and recovery with identical inputs also pass. The complete
+focused fixture passes 132542 assertions. Bypassing only the new validity guard
+then fails with a native wx invalid-font assertion. Positive and negative exact
+source/fixture hashes are retained in `docs/evidence/scrum249-sounding/font-validity`.
+This adds no driver/native-Windows/boat acceptance; GL250 remains separate.

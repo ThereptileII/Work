@@ -13,7 +13,7 @@ LOCAL_UNITS = tuple('src/integration/' + name + '.cpp' for name in (
     'ChartPresentation', 'ChartRouteWaypoint', 'ChartRouteUnderlay',
     'ChartRouteUnderlayGeometry', 'OnboardAisPresentation', 'OnlineAisOverlay'))
 UPSTREAM_UNITS = tuple('gui/src/' + name + '.cpp' for name in (
-    'chcanv', 'route_gui', 'route_point_gui', 'waypointman_gui', 'ais', 'piano')) + (
+    'chcanv', 'glChartCanvas', 'route_gui', 'route_point_gui', 'waypointman_gui', 'ais', 'piano')) + (
     'libs/s52plib/src/s52plib.cpp', 'libs/s52plib/src/chartsymbols.cpp',
     'libs/s52plib/src/DepthFont.cpp')
 
@@ -137,6 +137,7 @@ def compile_chart_units(args, evidence, api):
         'tools/windows-chart-headers.lock.json', 'tools/windows-prototype-headers.lock.json',
         'tools/windows-wx.lock.json', 'tools/windows-curl.lock.json',
         'tools/generate-xnav-chart-style.py', 'tools/chart_raster_ink.py', 'tools/chart_anchor_art.py',
+        'tools/chart_cable_paint.py',
         'docs/design/prototype-tokens.json', 'docs/design/prototype/src/chart-marker-art.js',
         'docs/design/prototype/src/chart-symbols.js', 'docs/design/prototype/src/chart-symbols.css',
         'docs/design/prototype/src/style.css'}
@@ -208,6 +209,7 @@ def compile_chart_units(args, evidence, api):
                 'XNAV_ENABLE_PILOT_LOOPBACK_TESTS=0', 'ocpnUSE_GL', 'OPENNAV_X=1')):
             raise ValueError('Chart project lacks production integration policy')
     report['generatedConfig'] = api.record(build / 'include/config.h')
+    report['generatedSoundConfig'] = api.record(build / 'include/snd_config.h')
     report['projects'] = {name: api.record(path) for name, path in projects.items()}
     save()
     api.run(['cmake', '--build', build, '--config', 'Release', '--target', *targets,

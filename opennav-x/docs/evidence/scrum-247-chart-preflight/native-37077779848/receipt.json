@@ -1,0 +1,11 @@
+{
+  "run": 37077779848,
+  "job": 111071405704,
+  "commit": "6f22f688cc1156c8c1e2395c854fff1a38398338",
+  "artifact": 11257650579,
+  "bytes": 1941354,
+  "sha256": "0612850e5ff2cfa5892aa646f8100cc3a12f7ddaab4c49cdf4581e574bf68120",
+  "crc": "PASS",
+  "outcome": "FAIL: chart helper omitted sound transitive headers",
+  "productAccepted": false
+}

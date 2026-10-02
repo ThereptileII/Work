@@ -1,5 +1,16 @@
 # Focused native chart compile preflight — SCRUM-247
 
+The second native run37077779848 passed exact patch preparation and compiled the
+six local production units, then rejected the helper's incomplete transitive
+include list at `OCPN_Sound.h`. This is a preflight configuration defect. Its
+downloaded failure artifact, SHA-256
+`0612850e5ff2cfa5892aa646f8100cc3a12f7ddaab4c49cdf4581e574bf68120`, is retained.
+The correction brings the pinned sound/manual/Garmin/texture/model include
+directories into the helper and uses the actual upstream SoundConfig generator
+and template with the Windows default backends. The include graph was compared
+with a real integrated chcanv command; no production header is replaced and no
+code is hidden with test macros. Native verification remains required.
+
 `tools/test-windows-changed-units.py --chart-units-only` is an isolated opt-in
 Win32/MSVC production-object preflight. The existing focused workflow accepts
 `chart_units=true` or `[chart-units]` on its eligible changed-unit branch.
@@ -7,12 +18,13 @@ It refuses combination with component/legacy proof modes, inherits the existing
 15-minute job bound and limits the object build to ten minutes. Root freezes and
 publishes the combined source before its single focused dispatch.
 
-The inventory is fifteen complete source files, not extracted functions:
+The inventory is sixteen complete source files, not extracted functions:
 
 - Local: `ChartPresentation`, `ChartRouteWaypoint`, `ChartRouteUnderlay`,
   `ChartRouteUnderlayGeometry`, `OnboardAisPresentation`, `OnlineAisOverlay`.
 - Patched OpenCPN: `chcanv`, `route_gui`, `route_point_gui`, `waypointman_gui`,
-  `ais`, `piano`, `s52plib`, `chartsymbols`, `DepthFont` (the sounding-digit atlas source).
+  `ais`, `piano`, `s52plib`, `chartsymbols`, `DepthFont` (the sounding-digit atlas source),
+  `glChartCanvas` (SCRUM-250's framebuffer/viewport reconciliation).
 
 The pinned upstream verifier and all nine reviewed integration patches run
 before preparation and again after compilation. Source and transitive header

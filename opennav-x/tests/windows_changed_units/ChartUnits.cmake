@@ -21,6 +21,15 @@ set(OCPN_USE_LZMA 1)
 set(USE_GARMINHOST 1)
 configure_file("${OPENNAV_SOURCE_DIR}/cmake/in-files/config.h.in"
   "${CMAKE_CURRENT_BINARY_DIR}/include/config.h")
+# chcanv includes SystemCmdSound even with Windows' native sound backend.
+# Reuse the pinned production generator with the Windows default backend flags;
+# do not supply a hand-written header or build sound dependencies for this gate.
+set(OCPN_ENABLE_PORTAUDIO OFF)
+set(OCPN_ENABLE_SNDFILE OFF)
+set(OCPN_ENABLE_SYSTEM_CMD_SOUND OFF)
+include("${OPENNAV_SOURCE_DIR}/libs/sound/cmake/SoundConfig.cmake")
+configure_file("${OPENNAV_SOURCE_DIR}/libs/sound/snd_config.h.in"
+  "${CMAKE_CURRENT_BINARY_DIR}/include/snd_config.h")
 # Derived from pinned root application include block, S52PLIB and transitive
 # gui/model/geoprim/gdal/s57/shapefile targets; no replacement headers or PCH.
 set(chart_includes
@@ -30,7 +39,11 @@ set(chart_includes
   libs/observable/include libs/pugixml libs/nmea0183/src libs/std_filesystem/include
   libs/wxJSON/include libs/wxcurl/include libs/IXWebSocket libs/tinyxml/include
   libs/libtess2/Include libs/SQLiteCpp/include libs/sqlite/include libs/serial/include
-  libs/gl_headers/windows libs/picosha2 libs/lz4/src)
+  libs/gl_headers/windows libs/picosha2 libs/lz4/src
+  libs/sound/include libs/manual/include libs/ssl_sha1/include
+  libs/garmin/jeeps libs/texcmp/squish libs/mipmap/include
+  libs/mdns/include libs/mdns/mdns-1.4.3 libs/mongoose/include
+  libs/N2KParser/include libs/wxservdisc)
 list(TRANSFORM chart_includes PREPEND "${OPENNAV_SOURCE_DIR}/")
 list(PREPEND chart_includes
   "${CMAKE_CURRENT_BINARY_DIR}/include" "${OPENNAV_ROOT}/src"

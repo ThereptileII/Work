@@ -1,0 +1,15 @@
+{
+  "repository": "https://github.com/OpenCPN/OpenCPN.git",
+  "tag": "Release_5.12.4",
+  "commit": "37fd0cddb7334fe489e9f18aa163977a9c5c84f7",
+  "pluginApi": "1.20",
+  "upstreamWindowsApplicationArchitecture": "x86",
+  "requiredWindowsHostArchitecture": "x64",
+  "specificationApplicationArchitecture": "x64",
+  "approvedApplicationArchitecture": "x86",
+  "architectureDecision": "Preserve supported OpenCPN ABI on 64-bit Windows; user approved 2026-09-21"
+}
+Preparing worktree (detached HEAD 37fd0cd)
+Updating files:  60% (2661/4395)Updating files:  61% (2681/4395)Updating files:  62% (2725/4395)Updating files:  63% (2769/4395)Updating files:  64% (2813/4395)Updating files:  65% (2857/4395)Updating files:  66% (2901/4395)Updating files:  67% (2945/4395)Updating files:  68% (2989/4395)Updating files:  69% (3033/4395)Updating files:  70% (3077/4395)Updating files:  71% (3121/4395)Updating files:  72% (3165/4395)Updating files:  73% (3209/4395)Updating files:  74% (3253/4395)Updating files:  75% (3297/4395)Updating files:  76% (3341/4395)Updating files:  77% (3385/4395)Updating files:  78% (3429/4395)Updating files:  79% (3473/4395)Updating files:  80% (3516/4395)Updating files:  81% (3560/4395)Updating files:  82% (3604/4395)Updating files:  83% (3648/4395)Updating files:  84% (3692/4395)Updating files:  85% (3736/4395)Updating files:  86% (3780/4395)Updating files:  87% (3824/4395)Updating files:  88% (3868/4395)Updating files:  89% (3912/4395)Updating files:  90% (3956/4395)Updating files:  91% (4000/4395)Updating files:  92% (4044/4395)Updating files:  93% (4088/4395)Updating files:  94% (4132/4395)Updating files:  95% (4176/4395)Updating files:  96% (4220/4395)Updating files:  97% (4264/4395)Updating files:  98% (4308/4395)Updating files:  99% (4352/4395)Updating files: 100% (4395/4395)Updating files: 100% (4395/4395), done.
+HEAD is now at 37fd0cd Merge branch 'v5.12.x' of github.com:OpenCPN/OpenCPN into v5.12.x
+D:\a\Work\Work\opennav-x\build\integration-source

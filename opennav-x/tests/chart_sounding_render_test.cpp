@@ -33,6 +33,7 @@ class s52plib {
   void GetPixPointSingle(double x,double y,double *lat,double *lon) {
     coordinates.emplace_back(std::lround(x),std::lround(y));*lat=y;*lon=x;
   }
+  void SetSoundingFontResolver(wxFont (*resolver)(double,double));
   bool RenderSoundingSymbol(ObjRazRules*,Rule*,wxPoint&,wxColor,float);
 };
 static double fontContentScale=1;
@@ -65,9 +66,17 @@ static int checks=0;
 static void Check(bool ok,const char *why){++checks;if(!ok)throw std::runtime_error(why);}
 static int resolverCalls=0;
 static wxFont Resolve(double scale,double content){++resolverCalls;return opennav::integration::ChartSoundingFont(scale,content);}
+static bool rejectNativeFont=false;
+static wxFont FallibleResolve(double scale,double content) {
+ ++resolverCalls;
+ return rejectNativeFont ? wxNullFont : opennav::integration::ChartSoundingFont(scale,content);
+}
 int main(int argc,char **argv){
  if(!wxEntryStart(argc,argv)||!wxTheApp->CallOnInit())return 2;
  int result=0;
+ wxSetAssertHandler([](const wxString&,int,const wxString&,const wxString&,const wxString&) {
+  throw std::runtime_error("Native wx assertion: invalid font must never reach a drawing API");
+ });
  try {
   const double prototypePointSize=std::stod(argv[1])*72./96.;
   wxInitAllImageHandlers();
@@ -130,6 +139,46 @@ int main(int argc,char **argv){
   stock.RenderSoundingSymbol(nullptr,&rule,anchor,*wxBLACK,0);
   Check(legacyFontCalls>before,"Uninstalled policy retains stock selection");
   Check(!stock.m_presentationSoundingFont.IsOk(),"Stock cannot acquire styled cache");
+  // A native font can become unavailable after an already-rendered valid
+  // presentation. Exercise the actual resolver setter, painter and atlas with
+  // the same owner, then prove failed attempts do not churn its stock cache.
+  for(bool software:{false,true}) {
+   s52plib fallback;fallback.m_pdc=software?&dc:nullptr;
+   rejectNativeFont=false;fallback.SetSoundingFontResolver(FallibleResolve);
+   fallback.RenderSoundingSymbol(nullptr,&rule,anchor,*wxBLACK,0);
+   Check(fallback.m_soundFont==&fallback.m_presentationSoundingFont,"Valid native font uses owned presentation cache");
+   rejectNativeFont=true;fallback.m_ContentScaleFactor=1.25;
+   const int attempts=resolverCalls,legacyBefore=legacyFontCalls,uploadsBefore=uploads,deletesBefore=deletes;
+   std::vector<unsigned char> stockPixels;
+   int fallbackLegacyCalls=0;
+   for(int digit=0;digit<10;++digit) {
+    rule.name.SYNM[7]='0'+digit;
+    fallback.RenderSoundingSymbol(nullptr,&rule,anchor,*wxBLACK,0);
+    Check(fallback.m_soundFont&&fallback.m_soundFont->IsOk(),"Invalid native font falls back to valid stock font");
+    Check(fallback.m_soundFont!=&fallback.m_presentationSoundingFont,"Invalid owned font never reaches drawing/atlas");
+    Check(!fallback.m_presentationSoundingFont.IsOk(),"Rejected font is not accepted as presentation");
+    Check(resolverCalls==attempts+1,"One failed native font attempt per input tuple");
+    Check(legacyFontCalls>legacyBefore,"Invalid resolver executes original stock font path");
+    if(!software) {
+     if(!digit) {stockPixels=uploaded;fallbackLegacyCalls=legacyFontCalls;}
+     Check(uploads==uploadsBefore+1,"Exactly one stock atlas replaces invalidated styled atlas");
+     Check(deletes==deletesBefore+1,"Previous styled atlas released exactly once");
+     Check(legacyFontCalls==fallbackLegacyCalls,"Stock atlas/font reused across remaining digits");
+    }
+   }
+   if(!software) {
+    s52plib reference;reference.m_ContentScaleFactor=fallback.m_ContentScaleFactor;
+    reference.RenderSoundingSymbol(nullptr,&rule,anchor,*wxBLACK,0);
+    Check(uploaded==stockPixels,"Fallback atlas exactly equals null-policy stock raster");
+   }
+   fallback.SetSoundingFontResolver(nullptr);const int nullAttempts=resolverCalls;
+   fallback.RenderSoundingSymbol(nullptr,&rule,anchor,*wxBLACK,0);
+   Check(resolverCalls==nullAttempts&&fallback.m_soundFont->IsOk(),"Null resolver retains valid stock font without native resolution");
+   rejectNativeFont=false;fallback.SetSoundingFontResolver(FallibleResolve);
+   fallback.RenderSoundingSymbol(nullptr,&rule,anchor,*wxBLACK,0);
+   Check(resolverCalls==nullAttempts+1&&fallback.m_presentationSoundingFont.IsOk(),"Explicit reinstall retries identical failed inputs");
+   Check(fallback.m_soundFont==&fallback.m_presentationSoundingFont,"Recovered native font replaces stock cache");
+  }
   // Review artifact: test digits only, painted by the actual production method.
   dc.SetBackground(*wxWHITE_BRUSH);dc.Clear();
   for(int row=0;row<5;++row) {

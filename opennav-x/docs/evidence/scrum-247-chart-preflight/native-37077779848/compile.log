@@ -1,0 +1,292 @@
+MSBuild version 17.14.60+43b635718 for .NET Framework
+Build started 10/2/2026 11:30:21 PM.
+
+     1>Project "D:\a\Work\Work\opennav-x\evidence\local\windows-changed-units\build\check_chart_ChartPresentation.vcxproj" on node 1 (default targets).
+     1>Project "D:\a\Work\Work\opennav-x\evidence\local\windows-changed-units\build\check_chart_ChartPresentation.vcxproj" (1) is building "D:\a\Work\Work\opennav-x\evidence\local\windows-changed-units\build\ZERO_CHECK.vcxproj" (2) on node 1 (default targets).
+     2>PrepareForBuild:
+         Creating directory "Win32\Release\ZERO_CHECK\".
+         Structured output is enabled. The formatting of compiler diagnostics will reflect the error hierarchy. See https://aka.ms/cpp/structured-output for more details.
+         Creating directory "D:\a\Work\Work\opennav-x\evidence\local\windows-changed-units\build\Release\".
+         Creating directory "Win32\Release\ZERO_CHECK\ZERO_CHECK.tlog\".
+       InitializeBuildStatus:
+         Creating "Win32\Release\ZERO_CHECK\ZERO_CHECK.tlog\unsuccessfulbuild" because "AlwaysCreate" was specified.
+         Touching "Win32\Release\ZERO_CHECK\ZERO_CHECK.tlog\unsuccessfulbuild".
+       CustomBuild:
+         1>Checking Build System
+       FinalizeBuildStatus:
+         Deleting file "Win32\Release\ZERO_CHECK\ZERO_CHECK.tlog\unsuccessfulbuild".
+         Touching "Win32\Release\ZERO_CHECK\ZERO_CHECK.tlog\ZERO_CHECK.lastbuildstate".
+     2>Done Building Project "D:\a\Work\Work\opennav-x\evidence\local\windows-changed-units\build\ZERO_CHECK.vcxproj" (default targets).
+     1>PrepareForBuild:
+         Creating directory "check_chart_ChartPresentation.dir\Release\".
+         Structured output is enabled. The formatting of compiler diagnostics will reflect the error hierarchy. See https://aka.ms/cpp/structured-output for more details.
+         Creating directory "check_chart_ChartPresentation.dir\Release\check_ch.B693498E.tlog\".
+       InitializeBuildStatus:
+         Creating "check_chart_ChartPresentation.dir\Release\check_ch.B693498E.tlog\unsuccessfulbuild" because "AlwaysCreate" was specified.
+         Touching "check_chart_ChartPresentation.dir\Release\check_ch.B693498E.tlog\unsuccessfulbuild".
+       CustomBuild:
+         Building Custom Rule D:/a/Work/Work/opennav-x/tests/windows_changed_units/CMakeLists.txt
+       ClCompile:
+         C:\Program Files\Microsoft Visual Studio\2022\Enterprise\VC\Tools\MSVC\14.44.35207\bin\HostX64\x86\CL.exe /c /I"D:\a\Work\Work\opennav-x\evidence\local\windows-changed-units\build\include" /I"D:\a\Work\Work\opennav-x\src" /I"D:\a\Work\Work\opennav-x\evidence\local\windows-changed-units\chart-resources" /I"D:\a\Work\Work\opennav-x\build\windows-chart-unit-sdk\glew" /I"D:\a\Work\Work\opennav-x\build\windows-chart-unit-sdk\shapelib" /I"D:\a\Work\Work\opennav-x\build\windows-chart-unit-sdk\rapidjson\include" /I"D:\a\Work\Work\opennav-x\build\windows-chart-unit-sdk\shapefile\lib\include" /I"D:\a\Work\Work\opennav-x\build\windows-chart-unit-sdk\curl" /I"D:\a\Work\Work\opennav-x\build\integration-source\gui\include\gui" /I"D:\a\Work\Work\opennav-x\build\integration-source\include" /I"D:\a\Work\Work\opennav-x\build\integration-source\resources" /I"D:\a\Work\Work\opennav-x\build\integration-source\gui\src\mbtiles" /I"D:\a\Work\Work\opennav-x\build\integration-source\model\include" /I"D:\a\Work\Work\opennav-x\build\integration-source\model\include\model" /I"D:\a\Work\Work\opennav-x\build\integration-source\buildwin" /I"D:\a\Work\Work\opennav-x\build\integration-source\libs\gui\include" /I"D:\a\Work\Work\opennav-x\build\integration-source\libs\geoprim\src" /I"D:\a\Work\Work\opennav-x\build\integration-source\libs\gdal\include" /I"D:\a\Work\Work\opennav-x\build\integration-source\libs\gdal\include\gdal" /I"D:\a\Work\Work\opennav-x\build\integration-source\libs\iso8211\include" /I"D:\a\Work\Work\opennav-x\build\integration-source\libs\s52plib\src" /I"D:\a\Work\Work\opennav-x\build\integration-source\libs\s57-charts\include" /I"D:\a\Work\Work\opennav-x\build\integration-source\libs\observable\include" /I"D:\a\Work\Work\opennav-x\build\integration-source\libs\pugixml" /I"D:\a\Work\Work\opennav-x\build\integration-source\libs\nmea0183\src" /I"D:\a\Work\Work\opennav-x\build\integration-source\libs\std_filesystem\include" /I"D:\a\Work\Work\opennav-x\build\integration-source\libs\wxJSON\include" /I"D:\a\Work\Work\opennav-x\build\integration-source\libs\wxcurl\include" /I"D:\a\Work\Work\opennav-x\build\integration-source\libs\IXWebSocket" /I"D:\a\Work\Work\opennav-x\build\integration-source\libs\tinyxml\include" /I"D:\a\Work\Work\opennav-x\build\integration-source\libs\libtess2\Include" /I"D:\a\Work\Work\opennav-x\build\integration-source\libs\SQLiteCpp\include" /I"D:\a\Work\Work\opennav-x\build\integration-source\libs\sqlite\include" /I"D:\a\Work\Work\opennav-x\build\integration-source\libs\serial\include" /I"D:\a\Work\Work\opennav-x\build\integration-source\libs\gl_headers\windows" /I"D:\a\Work\Work\opennav-x\build\integration-source\libs\picosha2" /I"D:\a\Work\Work\opennav-x\build\integration-source\libs\lz4\src" /nologo /W1 /WX- /diagnostics:column /O2 /Ob2 /Oy- /D _UNICODE /D UNICODE /D WIN32 /D _WINDOWS /D NDEBUG /D __MSVC__ /D _CRT_NONSTDC_NO_DEPRECATE /D _CRT_SECURE_NO_DEPRECATE /D _HAS_STD_BYTE=0 /D _DISABLE_CONSTEXPR_MUTEX_CONSTRUCTOR /D PSAPI_VERSION=1 /D _SILENCE_ALL_CXX17_DEPRECATION_WARNINGS=1 /D OPENNAV_X=1 /D HAVE_WX_GESTURE_EVENTS /D __OCPN_USE_GLEW__ /D ocpnUSE_GL /D ocpnUSE_GLSL /D ocpnUSE_SVG /D ocpnUSE_wxBitmapBundle /D RAPIDJSON_HAS_STDSTRING=1 /D TIXML_USE_STL /D IXWEBSOCKET_USE_TLS /D IXWEBSOCKET_USE_OPEN_SSL /D IXWEBSOCKET_USE_ZLIB /D XNAV_ENABLE_TEST_FIXTURES=0 /D XNAV_ENABLE_PILOT_LOOPBACK_TESTS=0 /D WXUSINGDLL /D UNICODE /D _UNICODE /D "CMAKE_INTDIR=\"Release\"" /EHa /MD /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /std:c++17 /Fo"check_chart_ChartPresentation.dir\Release\\" /Fd"check_chart_ChartPresentation.dir\Release\check_chart_ChartPresentation.pdb" /external:W0 /Gd /TP /analyze- /errorReport:queue  /external:I "D:/a/Work/Work/opennav-x/build/windows-chart-unit-sdk/wx/lib/vc14x_dll/mswu" /external:I "D:/a/Work/Work/opennav-x/build/windows-chart-unit-sdk/wx/include" /utf-8 "D:\a\Work\Work\opennav-x\src\integration\ChartPresentation.cpp"
+         ChartPresentation.cpp
+       Lib:
+         C:\Program Files\Microsoft Visual Studio\2022\Enterprise\VC\Tools\MSVC\14.44.35207\bin\HostX64\x86\Lib.exe /OUT:"check_chart_ChartPresentation.dir\Release\check_chart_ChartPresentation.lib" /NOLOGO /MACHINE:X86  /machine:X86 check_chart_ChartPresentation.dir\Release\ChartPresentation.obj
+         check_chart_ChartPresentation.vcxproj -> D:\a\Work\Work\opennav-x\evidence\local\windows-changed-units\build\check_chart_ChartPresentation.dir\Release\check_chart_ChartPresentation.lib
+       FinalizeBuildStatus:
+         Deleting file "check_chart_ChartPresentation.dir\Release\check_ch.B693498E.tlog\unsuccessfulbuild".
+         Touching "check_chart_ChartPresentation.dir\Release\check_ch.B693498E.tlog\check_chart_ChartPresentation.lastbuildstate".
+     1>Done Building Project "D:\a\Work\Work\opennav-x\evidence\local\windows-changed-units\build\check_chart_ChartPresentation.vcxproj" (default targets).
+
+Build succeeded.
+    0 Warning(s)
+    0 Error(s)
+
+Time Elapsed 00:00:08.17
+MSBuild version 17.14.60+43b635718 for .NET Framework
+Build started 10/2/2026 11:30:30 PM.
+
+     1>Project "D:\a\Work\Work\opennav-x\evidence\local\windows-changed-units\build\check_chart_ChartRouteWaypoint.vcxproj" on node 1 (default targets).
+     1>Project "D:\a\Work\Work\opennav-x\evidence\local\windows-changed-units\build\check_chart_ChartRouteWaypoint.vcxproj" (1) is building "D:\a\Work\Work\opennav-x\evidence\local\windows-changed-units\build\ZERO_CHECK.vcxproj" (2) on node 1 (default targets).
+     2>PrepareForBuild:
+         Structured output is enabled. The formatting of compiler diagnostics will reflect the error hierarchy. See https://aka.ms/cpp/structured-output for more details.
+       InitializeBuildStatus:
+         Creating "Win32\Release\ZERO_CHECK\ZERO_CHECK.tlog\unsuccessfulbuild" because "AlwaysCreate" was specified.
+         Touching "Win32\Release\ZERO_CHECK\ZERO_CHECK.tlog\unsuccessfulbuild".
+       CustomBuild:
+         All outputs are up-to-date.
+       FinalizeBuildStatus:
+         Deleting file "Win32\Release\ZERO_CHECK\ZERO_CHECK.tlog\unsuccessfulbuild".
+         Touching "Win32\Release\ZERO_CHECK\ZERO_CHECK.tlog\ZERO_CHECK.lastbuildstate".
+     2>Done Building Project "D:\a\Work\Work\opennav-x\evidence\local\windows-changed-units\build\ZERO_CHECK.vcxproj" (default targets).
+     1>PrepareForBuild:
+         Creating directory "check_chart_ChartRouteWaypoint.dir\Release\".
+         Structured output is enabled. The formatting of compiler diagnostics will reflect the error hierarchy. See https://aka.ms/cpp/structured-output for more details.
+         Creating directory "check_chart_ChartRouteWaypoint.dir\Release\check_ch.9872A83B.tlog\".
+       InitializeBuildStatus:
+         Creating "check_chart_ChartRouteWaypoint.dir\Release\check_ch.9872A83B.tlog\unsuccessfulbuild" because "AlwaysCreate" was specified.
+         Touching "check_chart_ChartRouteWaypoint.dir\Release\check_ch.9872A83B.tlog\unsuccessfulbuild".
+       CustomBuild:
+         Building Custom Rule D:/a/Work/Work/opennav-x/tests/windows_changed_units/CMakeLists.txt
+       ClCompile:
+         C:\Program Files\Microsoft Visual Studio\2022\Enterprise\VC\Tools\MSVC\14.44.35207\bin\HostX64\x86\CL.exe /c /I"D:\a\Work\Work\opennav-x\evidence\local\windows-changed-units\build\include" /I"D:\a\Work\Work\opennav-x\src" /I"D:\a\Work\Work\opennav-x\evidence\local\windows-changed-units\chart-resources" /I"D:\a\Work\Work\opennav-x\build\windows-chart-unit-sdk\glew" /I"D:\a\Work\Work\opennav-x\build\windows-chart-unit-sdk\shapelib" /I"D:\a\Work\Work\opennav-x\build\windows-chart-unit-sdk\rapidjson\include" /I"D:\a\Work\Work\opennav-x\build\windows-chart-unit-sdk\shapefile\lib\include" /I"D:\a\Work\Work\opennav-x\build\windows-chart-unit-sdk\curl" /I"D:\a\Work\Work\opennav-x\build\integration-source\gui\include\gui" /I"D:\a\Work\Work\opennav-x\build\integration-source\include" /I"D:\a\Work\Work\opennav-x\build\integration-source\resources" /I"D:\a\Work\Work\opennav-x\build\integration-source\gui\src\mbtiles" /I"D:\a\Work\Work\opennav-x\build\integration-source\model\include" /I"D:\a\Work\Work\opennav-x\build\integration-source\model\include\model" /I"D:\a\Work\Work\opennav-x\build\integration-source\buildwin" /I"D:\a\Work\Work\opennav-x\build\integration-source\libs\gui\include" /I"D:\a\Work\Work\opennav-x\build\integration-source\libs\geoprim\src" /I"D:\a\Work\Work\opennav-x\build\integration-source\libs\gdal\include" /I"D:\a\Work\Work\opennav-x\build\integration-source\libs\gdal\include\gdal" /I"D:\a\Work\Work\opennav-x\build\integration-source\libs\iso8211\include" /I"D:\a\Work\Work\opennav-x\build\integration-source\libs\s52plib\src" /I"D:\a\Work\Work\opennav-x\build\integration-source\libs\s57-charts\include" /I"D:\a\Work\Work\opennav-x\build\integration-source\libs\observable\include" /I"D:\a\Work\Work\opennav-x\build\integration-source\libs\pugixml" /I"D:\a\Work\Work\opennav-x\build\integration-source\libs\nmea0183\src" /I"D:\a\Work\Work\opennav-x\build\integration-source\libs\std_filesystem\include" /I"D:\a\Work\Work\opennav-x\build\integration-source\libs\wxJSON\include" /I"D:\a\Work\Work\opennav-x\build\integration-source\libs\wxcurl\include" /I"D:\a\Work\Work\opennav-x\build\integration-source\libs\IXWebSocket" /I"D:\a\Work\Work\opennav-x\build\integration-source\libs\tinyxml\include" /I"D:\a\Work\Work\opennav-x\build\integration-source\libs\libtess2\Include" /I"D:\a\Work\Work\opennav-x\build\integration-source\libs\SQLiteCpp\include" /I"D:\a\Work\Work\opennav-x\build\integration-source\libs\sqlite\include" /I"D:\a\Work\Work\opennav-x\build\integration-source\libs\serial\include" /I"D:\a\Work\Work\opennav-x\build\integration-source\libs\gl_headers\windows" /I"D:\a\Work\Work\opennav-x\build\integration-source\libs\picosha2" /I"D:\a\Work\Work\opennav-x\build\integration-source\libs\lz4\src" /nologo /W1 /WX- /diagnostics:column /O2 /Ob2 /Oy- /D _UNICODE /D UNICODE /D WIN32 /D _WINDOWS /D NDEBUG /D __MSVC__ /D _CRT_NONSTDC_NO_DEPRECATE /D _CRT_SECURE_NO_DEPRECATE /D _HAS_STD_BYTE=0 /D _DISABLE_CONSTEXPR_MUTEX_CONSTRUCTOR /D PSAPI_VERSION=1 /D _SILENCE_ALL_CXX17_DEPRECATION_WARNINGS=1 /D OPENNAV_X=1 /D HAVE_WX_GESTURE_EVENTS /D __OCPN_USE_GLEW__ /D ocpnUSE_GL /D ocpnUSE_GLSL /D ocpnUSE_SVG /D ocpnUSE_wxBitmapBundle /D RAPIDJSON_HAS_STDSTRING=1 /D TIXML_USE_STL /D IXWEBSOCKET_USE_TLS /D IXWEBSOCKET_USE_OPEN_SSL /D IXWEBSOCKET_USE_ZLIB /D XNAV_ENABLE_TEST_FIXTURES=0 /D XNAV_ENABLE_PILOT_LOOPBACK_TESTS=0 /D WXUSINGDLL /D UNICODE /D _UNICODE /D "CMAKE_INTDIR=\"Release\"" /EHa /MD /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /std:c++17 /Fo"check_chart_ChartRouteWaypoint.dir\Release\\" /Fd"check_chart_ChartRouteWaypoint.dir\Release\check_chart_ChartRouteWaypoint.pdb" /external:W0 /Gd /TP /analyze- /errorReport:queue  /external:I "D:/a/Work/Work/opennav-x/build/windows-chart-unit-sdk/wx/lib/vc14x_dll/mswu" /external:I "D:/a/Work/Work/opennav-x/build/windows-chart-unit-sdk/wx/include" /utf-8 "D:\a\Work\Work\opennav-x\src\integration\ChartRouteWaypoint.cpp"
+         ChartRouteWaypoint.cpp
+       Lib:
+         C:\Program Files\Microsoft Visual Studio\2022\Enterprise\VC\Tools\MSVC\14.44.35207\bin\HostX64\x86\Lib.exe /OUT:"check_chart_ChartRouteWaypoint.dir\Release\check_chart_ChartRouteWaypoint.lib" /NOLOGO /MACHINE:X86  /machine:X86 check_chart_ChartRouteWaypoint.dir\Release\ChartRouteWaypoint.obj
+         check_chart_ChartRouteWaypoint.vcxproj -> D:\a\Work\Work\opennav-x\evidence\local\windows-changed-units\build\check_chart_ChartRouteWaypoint.dir\Release\check_chart_ChartRouteWaypoint.lib
+       FinalizeBuildStatus:
+         Deleting file "check_chart_ChartRouteWaypoint.dir\Release\check_ch.9872A83B.tlog\unsuccessfulbuild".
+         Touching "check_chart_ChartRouteWaypoint.dir\Release\check_ch.9872A83B.tlog\check_chart_ChartRouteWaypoint.lastbuildstate".
+     1>Done Building Project "D:\a\Work\Work\opennav-x\evidence\local\windows-changed-units\build\check_chart_ChartRouteWaypoint.vcxproj" (default targets).
+
+Build succeeded.
+    0 Warning(s)
+    0 Error(s)
+
+Time Elapsed 00:00:03.13
+MSBuild version 17.14.60+43b635718 for .NET Framework
+Build started 10/2/2026 11:30:33 PM.
+
+     1>Project "D:\a\Work\Work\opennav-x\evidence\local\windows-changed-units\build\check_chart_ChartRouteUnderlay.vcxproj" on node 1 (default targets).
+     1>Project "D:\a\Work\Work\opennav-x\evidence\local\windows-changed-units\build\check_chart_ChartRouteUnderlay.vcxproj" (1) is building "D:\a\Work\Work\opennav-x\evidence\local\windows-changed-units\build\ZERO_CHECK.vcxproj" (2) on node 1 (default targets).
+     2>PrepareForBuild:
+         Structured output is enabled. The formatting of compiler diagnostics will reflect the error hierarchy. See https://aka.ms/cpp/structured-output for more details.
+       InitializeBuildStatus:
+         Creating "Win32\Release\ZERO_CHECK\ZERO_CHECK.tlog\unsuccessfulbuild" because "AlwaysCreate" was specified.
+         Touching "Win32\Release\ZERO_CHECK\ZERO_CHECK.tlog\unsuccessfulbuild".
+       CustomBuild:
+         All outputs are up-to-date.
+       FinalizeBuildStatus:
+         Deleting file "Win32\Release\ZERO_CHECK\ZERO_CHECK.tlog\unsuccessfulbuild".
+         Touching "Win32\Release\ZERO_CHECK\ZERO_CHECK.tlog\ZERO_CHECK.lastbuildstate".
+     2>Done Building Project "D:\a\Work\Work\opennav-x\evidence\local\windows-changed-units\build\ZERO_CHECK.vcxproj" (default targets).
+     1>PrepareForBuild:
+         Creating directory "check_chart_ChartRouteUnderlay.dir\Release\".
+         Structured output is enabled. The formatting of compiler diagnostics will reflect the error hierarchy. See https://aka.ms/cpp/structured-output for more details.
+         Creating directory "check_chart_ChartRouteUnderlay.dir\Release\check_ch.EFF2E01B.tlog\".
+       InitializeBuildStatus:
+         Creating "check_chart_ChartRouteUnderlay.dir\Release\check_ch.EFF2E01B.tlog\unsuccessfulbuild" because "AlwaysCreate" was specified.
+         Touching "check_chart_ChartRouteUnderlay.dir\Release\check_ch.EFF2E01B.tlog\unsuccessfulbuild".
+       CustomBuild:
+         Building Custom Rule D:/a/Work/Work/opennav-x/tests/windows_changed_units/CMakeLists.txt
+       ClCompile:
+         C:\Program Files\Microsoft Visual Studio\2022\Enterprise\VC\Tools\MSVC\14.44.35207\bin\HostX64\x86\CL.exe /c /I"D:\a\Work\Work\opennav-x\evidence\local\windows-changed-units\build\include" /I"D:\a\Work\Work\opennav-x\src" /I"D:\a\Work\Work\opennav-x\evidence\local\windows-changed-units\chart-resources" /I"D:\a\Work\Work\opennav-x\build\windows-chart-unit-sdk\glew" /I"D:\a\Work\Work\opennav-x\build\windows-chart-unit-sdk\shapelib" /I"D:\a\Work\Work\opennav-x\build\windows-chart-unit-sdk\rapidjson\include" /I"D:\a\Work\Work\opennav-x\build\windows-chart-unit-sdk\shapefile\lib\include" /I"D:\a\Work\Work\opennav-x\build\windows-chart-unit-sdk\curl" /I"D:\a\Work\Work\opennav-x\build\integration-source\gui\include\gui" /I"D:\a\Work\Work\opennav-x\build\integration-source\include" /I"D:\a\Work\Work\opennav-x\build\integration-source\resources" /I"D:\a\Work\Work\opennav-x\build\integration-source\gui\src\mbtiles" /I"D:\a\Work\Work\opennav-x\build\integration-source\model\include" /I"D:\a\Work\Work\opennav-x\build\integration-source\model\include\model" /I"D:\a\Work\Work\opennav-x\build\integration-source\buildwin" /I"D:\a\Work\Work\opennav-x\build\integration-source\libs\gui\include" /I"D:\a\Work\Work\opennav-x\build\integration-source\libs\geoprim\src" /I"D:\a\Work\Work\opennav-x\build\integration-source\libs\gdal\include" /I"D:\a\Work\Work\opennav-x\build\integration-source\libs\gdal\include\gdal" /I"D:\a\Work\Work\opennav-x\build\integration-source\libs\iso8211\include" /I"D:\a\Work\Work\opennav-x\build\integration-source\libs\s52plib\src" /I"D:\a\Work\Work\opennav-x\build\integration-source\libs\s57-charts\include" /I"D:\a\Work\Work\opennav-x\build\integration-source\libs\observable\include" /I"D:\a\Work\Work\opennav-x\build\integration-source\libs\pugixml" /I"D:\a\Work\Work\opennav-x\build\integration-source\libs\nmea0183\src" /I"D:\a\Work\Work\opennav-x\build\integration-source\libs\std_filesystem\include" /I"D:\a\Work\Work\opennav-x\build\integration-source\libs\wxJSON\include" /I"D:\a\Work\Work\opennav-x\build\integration-source\libs\wxcurl\include" /I"D:\a\Work\Work\opennav-x\build\integration-source\libs\IXWebSocket" /I"D:\a\Work\Work\opennav-x\build\integration-source\libs\tinyxml\include" /I"D:\a\Work\Work\opennav-x\build\integration-source\libs\libtess2\Include" /I"D:\a\Work\Work\opennav-x\build\integration-source\libs\SQLiteCpp\include" /I"D:\a\Work\Work\opennav-x\build\integration-source\libs\sqlite\include" /I"D:\a\Work\Work\opennav-x\build\integration-source\libs\serial\include" /I"D:\a\Work\Work\opennav-x\build\integration-source\libs\gl_headers\windows" /I"D:\a\Work\Work\opennav-x\build\integration-source\libs\picosha2" /I"D:\a\Work\Work\opennav-x\build\integration-source\libs\lz4\src" /nologo /W1 /WX- /diagnostics:column /O2 /Ob2 /Oy- /D _UNICODE /D UNICODE /D WIN32 /D _WINDOWS /D NDEBUG /D __MSVC__ /D _CRT_NONSTDC_NO_DEPRECATE /D _CRT_SECURE_NO_DEPRECATE /D _HAS_STD_BYTE=0 /D _DISABLE_CONSTEXPR_MUTEX_CONSTRUCTOR /D PSAPI_VERSION=1 /D _SILENCE_ALL_CXX17_DEPRECATION_WARNINGS=1 /D OPENNAV_X=1 /D HAVE_WX_GESTURE_EVENTS /D __OCPN_USE_GLEW__ /D ocpnUSE_GL /D ocpnUSE_GLSL /D ocpnUSE_SVG /D ocpnUSE_wxBitmapBundle /D RAPIDJSON_HAS_STDSTRING=1 /D TIXML_USE_STL /D IXWEBSOCKET_USE_TLS /D IXWEBSOCKET_USE_OPEN_SSL /D IXWEBSOCKET_USE_ZLIB /D XNAV_ENABLE_TEST_FIXTURES=0 /D XNAV_ENABLE_PILOT_LOOPBACK_TESTS=0 /D WXUSINGDLL /D UNICODE /D _UNICODE /D "CMAKE_INTDIR=\"Release\"" /EHa /MD /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /std:c++17 /Fo"check_chart_ChartRouteUnderlay.dir\Release\\" /Fd"check_chart_ChartRouteUnderlay.dir\Release\check_chart_ChartRouteUnderlay.pdb" /external:W0 /Gd /TP /analyze- /errorReport:queue  /external:I "D:/a/Work/Work/opennav-x/build/windows-chart-unit-sdk/wx/lib/vc14x_dll/mswu" /external:I "D:/a/Work/Work/opennav-x/build/windows-chart-unit-sdk/wx/include" /utf-8 "D:\a\Work\Work\opennav-x\src\integration\ChartRouteUnderlay.cpp"
+         ChartRouteUnderlay.cpp
+       Lib:
+         C:\Program Files\Microsoft Visual Studio\2022\Enterprise\VC\Tools\MSVC\14.44.35207\bin\HostX64\x86\Lib.exe /OUT:"check_chart_ChartRouteUnderlay.dir\Release\check_chart_ChartRouteUnderlay.lib" /NOLOGO /MACHINE:X86  /machine:X86 check_chart_ChartRouteUnderlay.dir\Release\ChartRouteUnderlay.obj
+         check_chart_ChartRouteUnderlay.vcxproj -> D:\a\Work\Work\opennav-x\evidence\local\windows-changed-units\build\check_chart_ChartRouteUnderlay.dir\Release\check_chart_ChartRouteUnderlay.lib
+       FinalizeBuildStatus:
+         Deleting file "check_chart_ChartRouteUnderlay.dir\Release\check_ch.EFF2E01B.tlog\unsuccessfulbuild".
+         Touching "check_chart_ChartRouteUnderlay.dir\Release\check_ch.EFF2E01B.tlog\check_chart_ChartRouteUnderlay.lastbuildstate".
+     1>Done Building Project "D:\a\Work\Work\opennav-x\evidence\local\windows-changed-units\build\check_chart_ChartRouteUnderlay.vcxproj" (default targets).
+
+Build succeeded.
+    0 Warning(s)
+    0 Error(s)
+
+Time Elapsed 00:00:02.78
+MSBuild version 17.14.60+43b635718 for .NET Framework
+Build started 10/2/2026 11:30:36 PM.
+
+     1>Project "D:\a\Work\Work\opennav-x\evidence\local\windows-changed-units\build\check_chart_ChartRouteUnderlayGeometry.vcxproj" on node 1 (default targets).
+     1>Project "D:\a\Work\Work\opennav-x\evidence\local\windows-changed-units\build\check_chart_ChartRouteUnderlayGeometry.vcxproj" (1) is building "D:\a\Work\Work\opennav-x\evidence\local\windows-changed-units\build\ZERO_CHECK.vcxproj" (2) on node 1 (default targets).
+     2>PrepareForBuild:
+         Structured output is enabled. The formatting of compiler diagnostics will reflect the error hierarchy. See https://aka.ms/cpp/structured-output for more details.
+       InitializeBuildStatus:
+         Creating "Win32\Release\ZERO_CHECK\ZERO_CHECK.tlog\unsuccessfulbuild" because "AlwaysCreate" was specified.
+         Touching "Win32\Release\ZERO_CHECK\ZERO_CHECK.tlog\unsuccessfulbuild".
+       CustomBuild:
+         All outputs are up-to-date.
+       FinalizeBuildStatus:
+         Deleting file "Win32\Release\ZERO_CHECK\ZERO_CHECK.tlog\unsuccessfulbuild".
+         Touching "Win32\Release\ZERO_CHECK\ZERO_CHECK.tlog\ZERO_CHECK.lastbuildstate".
+     2>Done Building Project "D:\a\Work\Work\opennav-x\evidence\local\windows-changed-units\build\ZERO_CHECK.vcxproj" (default targets).
+     1>PrepareForBuild:
+         Creating directory "check_chart_ChartRouteUnderlayGeometry.dir\Release\".
+         Structured output is enabled. The formatting of compiler diagnostics will reflect the error hierarchy. See https://aka.ms/cpp/structured-output for more details.
+         Creating directory "check_chart_ChartRouteUnderlayGeometry.dir\Release\check_ch.63F9B6C9.tlog\".
+       InitializeBuildStatus:
+         Creating "check_chart_ChartRouteUnderlayGeometry.dir\Release\check_ch.63F9B6C9.tlog\unsuccessfulbuild" because "AlwaysCreate" was specified.
+         Touching "check_chart_ChartRouteUnderlayGeometry.dir\Release\check_ch.63F9B6C9.tlog\unsuccessfulbuild".
+       CustomBuild:
+         Building Custom Rule D:/a/Work/Work/opennav-x/tests/windows_changed_units/CMakeLists.txt
+       ClCompile:
+         C:\Program Files\Microsoft Visual Studio\2022\Enterprise\VC\Tools\MSVC\14.44.35207\bin\HostX64\x86\CL.exe /c /I"D:\a\Work\Work\opennav-x\evidence\local\windows-changed-units\build\include" /I"D:\a\Work\Work\opennav-x\src" /I"D:\a\Work\Work\opennav-x\evidence\local\windows-changed-units\chart-resources" /I"D:\a\Work\Work\opennav-x\build\windows-chart-unit-sdk\glew" /I"D:\a\Work\Work\opennav-x\build\windows-chart-unit-sdk\shapelib" /I"D:\a\Work\Work\opennav-x\build\windows-chart-unit-sdk\rapidjson\include" /I"D:\a\Work\Work\opennav-x\build\windows-chart-unit-sdk\shapefile\lib\include" /I"D:\a\Work\Work\opennav-x\build\windows-chart-unit-sdk\curl" /I"D:\a\Work\Work\opennav-x\build\integration-source\gui\include\gui" /I"D:\a\Work\Work\opennav-x\build\integration-source\include" /I"D:\a\Work\Work\opennav-x\build\integration-source\resources" /I"D:\a\Work\Work\opennav-x\build\integration-source\gui\src\mbtiles" /I"D:\a\Work\Work\opennav-x\build\integration-source\model\include" /I"D:\a\Work\Work\opennav-x\build\integration-source\model\include\model" /I"D:\a\Work\Work\opennav-x\build\integration-source\buildwin" /I"D:\a\Work\Work\opennav-x\build\integration-source\libs\gui\include" /I"D:\a\Work\Work\opennav-x\build\integration-source\libs\geoprim\src" /I"D:\a\Work\Work\opennav-x\build\integration-source\libs\gdal\include" /I"D:\a\Work\Work\opennav-x\build\integration-source\libs\gdal\include\gdal" /I"D:\a\Work\Work\opennav-x\build\integration-source\libs\iso8211\include" /I"D:\a\Work\Work\opennav-x\build\integration-source\libs\s52plib\src" /I"D:\a\Work\Work\opennav-x\build\integration-source\libs\s57-charts\include" /I"D:\a\Work\Work\opennav-x\build\integration-source\libs\observable\include" /I"D:\a\Work\Work\opennav-x\build\integration-source\libs\pugixml" /I"D:\a\Work\Work\opennav-x\build\integration-source\libs\nmea0183\src" /I"D:\a\Work\Work\opennav-x\build\integration-source\libs\std_filesystem\include" /I"D:\a\Work\Work\opennav-x\build\integration-source\libs\wxJSON\include" /I"D:\a\Work\Work\opennav-x\build\integration-source\libs\wxcurl\include" /I"D:\a\Work\Work\opennav-x\build\integration-source\libs\IXWebSocket" /I"D:\a\Work\Work\opennav-x\build\integration-source\libs\tinyxml\include" /I"D:\a\Work\Work\opennav-x\build\integration-source\libs\libtess2\Include" /I"D:\a\Work\Work\opennav-x\build\integration-source\libs\SQLiteCpp\include" /I"D:\a\Work\Work\opennav-x\build\integration-source\libs\sqlite\include" /I"D:\a\Work\Work\opennav-x\build\integration-source\libs\serial\include" /I"D:\a\Work\Work\opennav-x\build\integration-source\libs\gl_headers\windows" /I"D:\a\Work\Work\opennav-x\build\integration-source\libs\picosha2" /I"D:\a\Work\Work\opennav-x\build\integration-source\libs\lz4\src" /nologo /W1 /WX- /diagnostics:column /O2 /Ob2 /Oy- /D _UNICODE /D UNICODE /D WIN32 /D _WINDOWS /D NDEBUG /D __MSVC__ /D _CRT_NONSTDC_NO_DEPRECATE /D _CRT_SECURE_NO_DEPRECATE /D _HAS_STD_BYTE=0 /D _DISABLE_CONSTEXPR_MUTEX_CONSTRUCTOR /D PSAPI_VERSION=1 /D _SILENCE_ALL_CXX17_DEPRECATION_WARNINGS=1 /D OPENNAV_X=1 /D HAVE_WX_GESTURE_EVENTS /D __OCPN_USE_GLEW__ /D ocpnUSE_GL /D ocpnUSE_GLSL /D ocpnUSE_SVG /D ocpnUSE_wxBitmapBundle /D RAPIDJSON_HAS_STDSTRING=1 /D TIXML_USE_STL /D IXWEBSOCKET_USE_TLS /D IXWEBSOCKET_USE_OPEN_SSL /D IXWEBSOCKET_USE_ZLIB /D XNAV_ENABLE_TEST_FIXTURES=0 /D XNAV_ENABLE_PILOT_LOOPBACK_TESTS=0 /D WXUSINGDLL /D UNICODE /D _UNICODE /D "CMAKE_INTDIR=\"Release\"" /EHa /MD /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /std:c++17 /Fo"check_chart_ChartRouteUnderlayGeometry.dir\Release\\" /Fd"check_chart_ChartRouteUnderlayGeometry.dir\Release\check_chart_ChartRouteUnderlayGeometry.pdb" /external:W0 /Gd /TP /analyze- /errorReport:queue  /external:I "D:/a/Work/Work/opennav-x/build/windows-chart-unit-sdk/wx/lib/vc14x_dll/mswu" /external:I "D:/a/Work/Work/opennav-x/build/windows-chart-unit-sdk/wx/include" /utf-8 "D:\a\Work\Work\opennav-x\src\integration\ChartRouteUnderlayGeometry.cpp"
+         ChartRouteUnderlayGeometry.cpp
+       Lib:
+         C:\Program Files\Microsoft Visual Studio\2022\Enterprise\VC\Tools\MSVC\14.44.35207\bin\HostX64\x86\Lib.exe /OUT:"check_chart_ChartRouteUnderlayGeometry.dir\Release\check_chart_ChartRouteUnderlayGeometry.lib" /NOLOGO /MACHINE:X86  /machine:X86 check_chart_ChartRouteUnderlayGeometry.dir\Release\ChartRouteUnderlayGeometry.obj
+         check_chart_ChartRouteUnderlayGeometry.vcxproj -> D:\a\Work\Work\opennav-x\evidence\local\windows-changed-units\build\check_chart_ChartRouteUnderlayGeometry.dir\Release\check_chart_ChartRouteUnderlayGeometry.lib
+       FinalizeBuildStatus:
+         Deleting file "check_chart_ChartRouteUnderlayGeometry.dir\Release\check_ch.63F9B6C9.tlog\unsuccessfulbuild".
+         Touching "check_chart_ChartRouteUnderlayGeometry.dir\Release\check_ch.63F9B6C9.tlog\check_chart_ChartRouteUnderlayGeometry.lastbuildstate".
+     1>Done Building Project "D:\a\Work\Work\opennav-x\evidence\local\windows-changed-units\build\check_chart_ChartRouteUnderlayGeometry.vcxproj" (default targets).
+
+Build succeeded.
+    0 Warning(s)
+    0 Error(s)
+
+Time Elapsed 00:00:00.95
+MSBuild version 17.14.60+43b635718 for .NET Framework
+Build started 10/2/2026 11:30:37 PM.
+
+     1>Project "D:\a\Work\Work\opennav-x\evidence\local\windows-changed-units\build\check_chart_OnboardAisPresentation.vcxproj" on node 1 (default targets).
+     1>Project "D:\a\Work\Work\opennav-x\evidence\local\windows-changed-units\build\check_chart_OnboardAisPresentation.vcxproj" (1) is building "D:\a\Work\Work\opennav-x\evidence\local\windows-changed-units\build\ZERO_CHECK.vcxproj" (2) on node 1 (default targets).
+     2>PrepareForBuild:
+         Structured output is enabled. The formatting of compiler diagnostics will reflect the error hierarchy. See https://aka.ms/cpp/structured-output for more details.
+       InitializeBuildStatus:
+         Creating "Win32\Release\ZERO_CHECK\ZERO_CHECK.tlog\unsuccessfulbuild" because "AlwaysCreate" was specified.
+         Touching "Win32\Release\ZERO_CHECK\ZERO_CHECK.tlog\unsuccessfulbuild".
+       CustomBuild:
+         All outputs are up-to-date.
+       FinalizeBuildStatus:
+         Deleting file "Win32\Release\ZERO_CHECK\ZERO_CHECK.tlog\unsuccessfulbuild".
+         Touching "Win32\Release\ZERO_CHECK\ZERO_CHECK.tlog\ZERO_CHECK.lastbuildstate".
+     2>Done Building Project "D:\a\Work\Work\opennav-x\evidence\local\windows-changed-units\build\ZERO_CHECK.vcxproj" (default targets).
+     1>PrepareForBuild:
+         Creating directory "check_chart_OnboardAisPresentation.dir\Release\".
+         Structured output is enabled. The formatting of compiler diagnostics will reflect the error hierarchy. See https://aka.ms/cpp/structured-output for more details.
+         Creating directory "check_chart_OnboardAisPresentation.dir\Release\check_ch.3853463C.tlog\".
+       InitializeBuildStatus:
+         Creating "check_chart_OnboardAisPresentation.dir\Release\check_ch.3853463C.tlog\unsuccessfulbuild" because "AlwaysCreate" was specified.
+         Touching "check_chart_OnboardAisPresentation.dir\Release\check_ch.3853463C.tlog\unsuccessfulbuild".
+       CustomBuild:
+         Building Custom Rule D:/a/Work/Work/opennav-x/tests/windows_changed_units/CMakeLists.txt
+       ClCompile:
+         C:\Program Files\Microsoft Visual Studio\2022\Enterprise\VC\Tools\MSVC\14.44.35207\bin\HostX64\x86\CL.exe /c /I"D:\a\Work\Work\opennav-x\evidence\local\windows-changed-units\build\include" /I"D:\a\Work\Work\opennav-x\src" /I"D:\a\Work\Work\opennav-x\evidence\local\windows-changed-units\chart-resources" /I"D:\a\Work\Work\opennav-x\build\windows-chart-unit-sdk\glew" /I"D:\a\Work\Work\opennav-x\build\windows-chart-unit-sdk\shapelib" /I"D:\a\Work\Work\opennav-x\build\windows-chart-unit-sdk\rapidjson\include" /I"D:\a\Work\Work\opennav-x\build\windows-chart-unit-sdk\shapefile\lib\include" /I"D:\a\Work\Work\opennav-x\build\windows-chart-unit-sdk\curl" /I"D:\a\Work\Work\opennav-x\build\integration-source\gui\include\gui" /I"D:\a\Work\Work\opennav-x\build\integration-source\include" /I"D:\a\Work\Work\opennav-x\build\integration-source\resources" /I"D:\a\Work\Work\opennav-x\build\integration-source\gui\src\mbtiles" /I"D:\a\Work\Work\opennav-x\build\integration-source\model\include" /I"D:\a\Work\Work\opennav-x\build\integration-source\model\include\model" /I"D:\a\Work\Work\opennav-x\build\integration-source\buildwin" /I"D:\a\Work\Work\opennav-x\build\integration-source\libs\gui\include" /I"D:\a\Work\Work\opennav-x\build\integration-source\libs\geoprim\src" /I"D:\a\Work\Work\opennav-x\build\integration-source\libs\gdal\include" /I"D:\a\Work\Work\opennav-x\build\integration-source\libs\gdal\include\gdal" /I"D:\a\Work\Work\opennav-x\build\integration-source\libs\iso8211\include" /I"D:\a\Work\Work\opennav-x\build\integration-source\libs\s52plib\src" /I"D:\a\Work\Work\opennav-x\build\integration-source\libs\s57-charts\include" /I"D:\a\Work\Work\opennav-x\build\integration-source\libs\observable\include" /I"D:\a\Work\Work\opennav-x\build\integration-source\libs\pugixml" /I"D:\a\Work\Work\opennav-x\build\integration-source\libs\nmea0183\src" /I"D:\a\Work\Work\opennav-x\build\integration-source\libs\std_filesystem\include" /I"D:\a\Work\Work\opennav-x\build\integration-source\libs\wxJSON\include" /I"D:\a\Work\Work\opennav-x\build\integration-source\libs\wxcurl\include" /I"D:\a\Work\Work\opennav-x\build\integration-source\libs\IXWebSocket" /I"D:\a\Work\Work\opennav-x\build\integration-source\libs\tinyxml\include" /I"D:\a\Work\Work\opennav-x\build\integration-source\libs\libtess2\Include" /I"D:\a\Work\Work\opennav-x\build\integration-source\libs\SQLiteCpp\include" /I"D:\a\Work\Work\opennav-x\build\integration-source\libs\sqlite\include" /I"D:\a\Work\Work\opennav-x\build\integration-source\libs\serial\include" /I"D:\a\Work\Work\opennav-x\build\integration-source\libs\gl_headers\windows" /I"D:\a\Work\Work\opennav-x\build\integration-source\libs\picosha2" /I"D:\a\Work\Work\opennav-x\build\integration-source\libs\lz4\src" /nologo /W1 /WX- /diagnostics:column /O2 /Ob2 /Oy- /D _UNICODE /D UNICODE /D WIN32 /D _WINDOWS /D NDEBUG /D __MSVC__ /D _CRT_NONSTDC_NO_DEPRECATE /D _CRT_SECURE_NO_DEPRECATE /D _HAS_STD_BYTE=0 /D _DISABLE_CONSTEXPR_MUTEX_CONSTRUCTOR /D PSAPI_VERSION=1 /D _SILENCE_ALL_CXX17_DEPRECATION_WARNINGS=1 /D OPENNAV_X=1 /D HAVE_WX_GESTURE_EVENTS /D __OCPN_USE_GLEW__ /D ocpnUSE_GL /D ocpnUSE_GLSL /D ocpnUSE_SVG /D ocpnUSE_wxBitmapBundle /D RAPIDJSON_HAS_STDSTRING=1 /D TIXML_USE_STL /D IXWEBSOCKET_USE_TLS /D IXWEBSOCKET_USE_OPEN_SSL /D IXWEBSOCKET_USE_ZLIB /D XNAV_ENABLE_TEST_FIXTURES=0 /D XNAV_ENABLE_PILOT_LOOPBACK_TESTS=0 /D WXUSINGDLL /D UNICODE /D _UNICODE /D "CMAKE_INTDIR=\"Release\"" /EHa /MD /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /std:c++17 /Fo"check_chart_OnboardAisPresentation.dir\Release\\" /Fd"check_chart_OnboardAisPresentation.dir\Release\check_chart_OnboardAisPresentation.pdb" /external:W0 /Gd /TP /analyze- /errorReport:queue  /external:I "D:/a/Work/Work/opennav-x/build/windows-chart-unit-sdk/wx/lib/vc14x_dll/mswu" /external:I "D:/a/Work/Work/opennav-x/build/windows-chart-unit-sdk/wx/include" /utf-8 "D:\a\Work\Work\opennav-x\src\integration\OnboardAisPresentation.cpp"
+         OnboardAisPresentation.cpp
+       Lib:
+         C:\Program Files\Microsoft Visual Studio\2022\Enterprise\VC\Tools\MSVC\14.44.35207\bin\HostX64\x86\Lib.exe /OUT:"check_chart_OnboardAisPresentation.dir\Release\check_chart_OnboardAisPresentation.lib" /NOLOGO /MACHINE:X86  /machine:X86 check_chart_OnboardAisPresentation.dir\Release\OnboardAisPresentation.obj
+         check_chart_OnboardAisPresentation.vcxproj -> D:\a\Work\Work\opennav-x\evidence\local\windows-changed-units\build\check_chart_OnboardAisPresentation.dir\Release\check_chart_OnboardAisPresentation.lib
+       FinalizeBuildStatus:
+         Deleting file "check_chart_OnboardAisPresentation.dir\Release\check_ch.3853463C.tlog\unsuccessfulbuild".
+         Touching "check_chart_OnboardAisPresentation.dir\Release\check_ch.3853463C.tlog\check_chart_OnboardAisPresentation.lastbuildstate".
+     1>Done Building Project "D:\a\Work\Work\opennav-x\evidence\local\windows-changed-units\build\check_chart_OnboardAisPresentation.vcxproj" (default targets).
+
+Build succeeded.
+    0 Warning(s)
+    0 Error(s)
+
+Time Elapsed 00:00:02.87
+MSBuild version 17.14.60+43b635718 for .NET Framework
+Build started 10/2/2026 11:30:40 PM.
+
+     1>Project "D:\a\Work\Work\opennav-x\evidence\local\windows-changed-units\build\check_chart_OnlineAisOverlay.vcxproj" on node 1 (default targets).
+     1>Project "D:\a\Work\Work\opennav-x\evidence\local\windows-changed-units\build\check_chart_OnlineAisOverlay.vcxproj" (1) is building "D:\a\Work\Work\opennav-x\evidence\local\windows-changed-units\build\ZERO_CHECK.vcxproj" (2) on node 1 (default targets).
+     2>PrepareForBuild:
+         Structured output is enabled. The formatting of compiler diagnostics will reflect the error hierarchy. See https://aka.ms/cpp/structured-output for more details.
+       InitializeBuildStatus:
+         Creating "Win32\Release\ZERO_CHECK\ZERO_CHECK.tlog\unsuccessfulbuild" because "AlwaysCreate" was specified.
+         Touching "Win32\Release\ZERO_CHECK\ZERO_CHECK.tlog\unsuccessfulbuild".
+       CustomBuild:
+         All outputs are up-to-date.
+       FinalizeBuildStatus:
+         Deleting file "Win32\Release\ZERO_CHECK\ZERO_CHECK.tlog\unsuccessfulbuild".
+         Touching "Win32\Release\ZERO_CHECK\ZERO_CHECK.tlog\ZERO_CHECK.lastbuildstate".
+     2>Done Building Project "D:\a\Work\Work\opennav-x\evidence\local\windows-changed-units\build\ZERO_CHECK.vcxproj" (default targets).
+     1>PrepareForBuild:
+         Creating directory "check_chart_OnlineAisOverlay.dir\Release\".
+         Structured output is enabled. The formatting of compiler diagnostics will reflect the error hierarchy. See https://aka.ms/cpp/structured-output for more details.
+         Creating directory "check_chart_OnlineAisOverlay.dir\Release\check_ch.24AF2403.tlog\".
+       InitializeBuildStatus:
+         Creating "check_chart_OnlineAisOverlay.dir\Release\check_ch.24AF2403.tlog\unsuccessfulbuild" because "AlwaysCreate" was specified.
+         Touching "check_chart_OnlineAisOverlay.dir\Release\check_ch.24AF2403.tlog\unsuccessfulbuild".
+       CustomBuild:
+         Building Custom Rule D:/a/Work/Work/opennav-x/tests/windows_changed_units/CMakeLists.txt
+       ClCompile:
+         C:\Program Files\Microsoft Visual Studio\2022\Enterprise\VC\Tools\MSVC\14.44.35207\bin\HostX64\x86\CL.exe /c /I"D:\a\Work\Work\opennav-x\evidence\local\windows-changed-units\build\include" /I"D:\a\Work\Work\opennav-x\src" /I"D:\a\Work\Work\opennav-x\evidence\local\windows-changed-units\chart-resources" /I"D:\a\Work\Work\opennav-x\build\windows-chart-unit-sdk\glew" /I"D:\a\Work\Work\opennav-x\build\windows-chart-unit-sdk\shapelib" /I"D:\a\Work\Work\opennav-x\build\windows-chart-unit-sdk\rapidjson\include" /I"D:\a\Work\Work\opennav-x\build\windows-chart-unit-sdk\shapefile\lib\include" /I"D:\a\Work\Work\opennav-x\build\windows-chart-unit-sdk\curl" /I"D:\a\Work\Work\opennav-x\build\integration-source\gui\include\gui" /I"D:\a\Work\Work\opennav-x\build\integration-source\include" /I"D:\a\Work\Work\opennav-x\build\integration-source\resources" /I"D:\a\Work\Work\opennav-x\build\integration-source\gui\src\mbtiles" /I"D:\a\Work\Work\opennav-x\build\integration-source\model\include" /I"D:\a\Work\Work\opennav-x\build\integration-source\model\include\model" /I"D:\a\Work\Work\opennav-x\build\integration-source\buildwin" /I"D:\a\Work\Work\opennav-x\build\integration-source\libs\gui\include" /I"D:\a\Work\Work\opennav-x\build\integration-source\libs\geoprim\src" /I"D:\a\Work\Work\opennav-x\build\integration-source\libs\gdal\include" /I"D:\a\Work\Work\opennav-x\build\integration-source\libs\gdal\include\gdal" /I"D:\a\Work\Work\opennav-x\build\integration-source\libs\iso8211\include" /I"D:\a\Work\Work\opennav-x\build\integration-source\libs\s52plib\src" /I"D:\a\Work\Work\opennav-x\build\integration-source\libs\s57-charts\include" /I"D:\a\Work\Work\opennav-x\build\integration-source\libs\observable\include" /I"D:\a\Work\Work\opennav-x\build\integration-source\libs\pugixml" /I"D:\a\Work\Work\opennav-x\build\integration-source\libs\nmea0183\src" /I"D:\a\Work\Work\opennav-x\build\integration-source\libs\std_filesystem\include" /I"D:\a\Work\Work\opennav-x\build\integration-source\libs\wxJSON\include" /I"D:\a\Work\Work\opennav-x\build\integration-source\libs\wxcurl\include" /I"D:\a\Work\Work\opennav-x\build\integration-source\libs\IXWebSocket" /I"D:\a\Work\Work\opennav-x\build\integration-source\libs\tinyxml\include" /I"D:\a\Work\Work\opennav-x\build\integration-source\libs\libtess2\Include" /I"D:\a\Work\Work\opennav-x\build\integration-source\libs\SQLiteCpp\include" /I"D:\a\Work\Work\opennav-x\build\integration-source\libs\sqlite\include" /I"D:\a\Work\Work\opennav-x\build\integration-source\libs\serial\include" /I"D:\a\Work\Work\opennav-x\build\integration-source\libs\gl_headers\windows" /I"D:\a\Work\Work\opennav-x\build\integration-source\libs\picosha2" /I"D:\a\Work\Work\opennav-x\build\integration-source\libs\lz4\src" /nologo /W1 /WX- /diagnostics:column /O2 /Ob2 /Oy- /D _UNICODE /D UNICODE /D WIN32 /D _WINDOWS /D NDEBUG /D __MSVC__ /D _CRT_NONSTDC_NO_DEPRECATE /D _CRT_SECURE_NO_DEPRECATE /D _HAS_STD_BYTE=0 /D _DISABLE_CONSTEXPR_MUTEX_CONSTRUCTOR /D PSAPI_VERSION=1 /D _SILENCE_ALL_CXX17_DEPRECATION_WARNINGS=1 /D OPENNAV_X=1 /D HAVE_WX_GESTURE_EVENTS /D __OCPN_USE_GLEW__ /D ocpnUSE_GL /D ocpnUSE_GLSL /D ocpnUSE_SVG /D ocpnUSE_wxBitmapBundle /D RAPIDJSON_HAS_STDSTRING=1 /D TIXML_USE_STL /D IXWEBSOCKET_USE_TLS /D IXWEBSOCKET_USE_OPEN_SSL /D IXWEBSOCKET_USE_ZLIB /D XNAV_ENABLE_TEST_FIXTURES=0 /D XNAV_ENABLE_PILOT_LOOPBACK_TESTS=0 /D WXUSINGDLL /D UNICODE /D _UNICODE /D "CMAKE_INTDIR=\"Release\"" /EHa /MD /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /std:c++17 /Fo"check_chart_OnlineAisOverlay.dir\Release\\" /Fd"check_chart_OnlineAisOverlay.dir\Release\check_chart_OnlineAisOverlay.pdb" /external:W0 /Gd /TP /analyze- /errorReport:queue  /external:I "D:/a/Work/Work/opennav-x/build/windows-chart-unit-sdk/wx/lib/vc14x_dll/mswu" /external:I "D:/a/Work/Work/opennav-x/build/windows-chart-unit-sdk/wx/include" /utf-8 "D:\a\Work\Work\opennav-x\src\integration\OnlineAisOverlay.cpp"
+         OnlineAisOverlay.cpp
+       Lib:
+         C:\Program Files\Microsoft Visual Studio\2022\Enterprise\VC\Tools\MSVC\14.44.35207\bin\HostX64\x86\Lib.exe /OUT:"check_chart_OnlineAisOverlay.dir\Release\check_chart_OnlineAisOverlay.lib" /NOLOGO /MACHINE:X86  /machine:X86 check_chart_OnlineAisOverlay.dir\Release\OnlineAisOverlay.obj
+         check_chart_OnlineAisOverlay.vcxproj -> D:\a\Work\Work\opennav-x\evidence\local\windows-changed-units\build\check_chart_OnlineAisOverlay.dir\Release\check_chart_OnlineAisOverlay.lib
+       FinalizeBuildStatus:
+         Deleting file "check_chart_OnlineAisOverlay.dir\Release\check_ch.24AF2403.tlog\unsuccessfulbuild".
+         Touching "check_chart_OnlineAisOverlay.dir\Release\check_ch.24AF2403.tlog\check_chart_OnlineAisOverlay.lastbuildstate".
+     1>Done Building Project "D:\a\Work\Work\opennav-x\evidence\local\windows-changed-units\build\check_chart_OnlineAisOverlay.vcxproj" (default targets).
+
+Build succeeded.
+    0 Warning(s)
+    0 Error(s)
+
+Time Elapsed 00:00:02.90
+MSBuild version 17.14.60+43b635718 for .NET Framework
+Build started 10/2/2026 11:30:43 PM.
+
+     1>Project "D:\a\Work\Work\opennav-x\evidence\local\windows-changed-units\build\check_chart_chcanv.vcxproj" on node 1 (default targets).
+     1>Project "D:\a\Work\Work\opennav-x\evidence\local\windows-changed-units\build\check_chart_chcanv.vcxproj" (1) is building "D:\a\Work\Work\opennav-x\evidence\local\windows-changed-units\build\ZERO_CHECK.vcxproj" (2) on node 1 (default targets).
+     2>PrepareForBuild:
+         Structured output is enabled. The formatting of compiler diagnostics will reflect the error hierarchy. See https://aka.ms/cpp/structured-output for more details.
+       InitializeBuildStatus:
+         Creating "Win32\Release\ZERO_CHECK\ZERO_CHECK.tlog\unsuccessfulbuild" because "AlwaysCreate" was specified.
+         Touching "Win32\Release\ZERO_CHECK\ZERO_CHECK.tlog\unsuccessfulbuild".
+       CustomBuild:
+         All outputs are up-to-date.
+       FinalizeBuildStatus:
+         Deleting file "Win32\Release\ZERO_CHECK\ZERO_CHECK.tlog\unsuccessfulbuild".
+         Touching "Win32\Release\ZERO_CHECK\ZERO_CHECK.tlog\ZERO_CHECK.lastbuildstate".
+     2>Done Building Project "D:\a\Work\Work\opennav-x\evidence\local\windows-changed-units\build\ZERO_CHECK.vcxproj" (default targets).
+     1>PrepareForBuild:
+         Creating directory "check_chart_chcanv.dir\Release\".
+         Structured output is enabled. The formatting of compiler diagnostics will reflect the error hierarchy. See https://aka.ms/cpp/structured-output for more details.
+         Creating directory "check_chart_chcanv.dir\Release\check_ch.8BDA860A.tlog\".
+       InitializeBuildStatus:
+         Creating "check_chart_chcanv.dir\Release\check_ch.8BDA860A.tlog\unsuccessfulbuild" because "AlwaysCreate" was specified.
+         Touching "check_chart_chcanv.dir\Release\check_ch.8BDA860A.tlog\unsuccessfulbuild".
+       CustomBuild:
+         Building Custom Rule D:/a/Work/Work/opennav-x/tests/windows_changed_units/CMakeLists.txt
+       ClCompile:
+         C:\Program Files\Microsoft Visual Studio\2022\Enterprise\VC\Tools\MSVC\14.44.35207\bin\HostX64\x86\CL.exe /c /I"D:\a\Work\Work\opennav-x\evidence\local\windows-changed-units\build\include" /I"D:\a\Work\Work\opennav-x\src" /I"D:\a\Work\Work\opennav-x\evidence\local\windows-changed-units\chart-resources" /I"D:\a\Work\Work\opennav-x\build\windows-chart-unit-sdk\glew" /I"D:\a\Work\Work\opennav-x\build\windows-chart-unit-sdk\shapelib" /I"D:\a\Work\Work\opennav-x\build\windows-chart-unit-sdk\rapidjson\include" /I"D:\a\Work\Work\opennav-x\build\windows-chart-unit-sdk\shapefile\lib\include" /I"D:\a\Work\Work\opennav-x\build\windows-chart-unit-sdk\curl" /I"D:\a\Work\Work\opennav-x\build\integration-source\gui\include\gui" /I"D:\a\Work\Work\opennav-x\build\integration-source\include" /I"D:\a\Work\Work\opennav-x\build\integration-source\resources" /I"D:\a\Work\Work\opennav-x\build\integration-source\gui\src\mbtiles" /I"D:\a\Work\Work\opennav-x\build\integration-source\model\include" /I"D:\a\Work\Work\opennav-x\build\integration-source\model\include\model" /I"D:\a\Work\Work\opennav-x\build\integration-source\buildwin" /I"D:\a\Work\Work\opennav-x\build\integration-source\libs\gui\include" /I"D:\a\Work\Work\opennav-x\build\integration-source\libs\geoprim\src" /I"D:\a\Work\Work\opennav-x\build\integration-source\libs\gdal\include" /I"D:\a\Work\Work\opennav-x\build\integration-source\libs\gdal\include\gdal" /I"D:\a\Work\Work\opennav-x\build\integration-source\libs\iso8211\include" /I"D:\a\Work\Work\opennav-x\build\integration-source\libs\s52plib\src" /I"D:\a\Work\Work\opennav-x\build\integration-source\libs\s57-charts\include" /I"D:\a\Work\Work\opennav-x\build\integration-source\libs\observable\include" /I"D:\a\Work\Work\opennav-x\build\integration-source\libs\pugixml" /I"D:\a\Work\Work\opennav-x\build\integration-source\libs\nmea0183\src" /I"D:\a\Work\Work\opennav-x\build\integration-source\libs\std_filesystem\include" /I"D:\a\Work\Work\opennav-x\build\integration-source\libs\wxJSON\include" /I"D:\a\Work\Work\opennav-x\build\integration-source\libs\wxcurl\include" /I"D:\a\Work\Work\opennav-x\build\integration-source\libs\IXWebSocket" /I"D:\a\Work\Work\opennav-x\build\integration-source\libs\tinyxml\include" /I"D:\a\Work\Work\opennav-x\build\integration-source\libs\libtess2\Include" /I"D:\a\Work\Work\opennav-x\build\integration-source\libs\SQLiteCpp\include" /I"D:\a\Work\Work\opennav-x\build\integration-source\libs\sqlite\include" /I"D:\a\Work\Work\opennav-x\build\integration-source\libs\serial\include" /I"D:\a\Work\Work\opennav-x\build\integration-source\libs\gl_headers\windows" /I"D:\a\Work\Work\opennav-x\build\integration-source\libs\picosha2" /I"D:\a\Work\Work\opennav-x\build\integration-source\libs\lz4\src" /nologo /W1 /WX- /diagnostics:column /O2 /Ob2 /Oy- /D _UNICODE /D UNICODE /D WIN32 /D _WINDOWS /D NDEBUG /D __MSVC__ /D _CRT_NONSTDC_NO_DEPRECATE /D _CRT_SECURE_NO_DEPRECATE /D _HAS_STD_BYTE=0 /D _DISABLE_CONSTEXPR_MUTEX_CONSTRUCTOR /D PSAPI_VERSION=1 /D _SILENCE_ALL_CXX17_DEPRECATION_WARNINGS=1 /D OPENNAV_X=1 /D HAVE_WX_GESTURE_EVENTS /D __OCPN_USE_GLEW__ /D ocpnUSE_GL /D ocpnUSE_GLSL /D ocpnUSE_SVG /D ocpnUSE_wxBitmapBundle /D RAPIDJSON_HAS_STDSTRING=1 /D TIXML_USE_STL /D IXWEBSOCKET_USE_TLS /D IXWEBSOCKET_USE_OPEN_SSL /D IXWEBSOCKET_USE_ZLIB /D XNAV_ENABLE_TEST_FIXTURES=0 /D XNAV_ENABLE_PILOT_LOOPBACK_TESTS=0 /D WXUSINGDLL /D UNICODE /D _UNICODE /D "CMAKE_INTDIR=\"Release\"" /EHa /MD /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /std:c++17 /Fo"check_chart_chcanv.dir\Release\\" /Fd"check_chart_chcanv.dir\Release\check_chart_chcanv.pdb" /external:W0 /Gd /TP /analyze- /errorReport:queue  /external:I "D:/a/Work/Work/opennav-x/build/windows-chart-unit-sdk/wx/lib/vc14x_dll/mswu" /external:I "D:/a/Work/Work/opennav-x/build/windows-chart-unit-sdk/wx/include" /utf-8 "D:\a\Work\Work\opennav-x\build\integration-source\gui\src\chcanv.cpp"
+         chcanv.cpp
+     1>D:\a\Work\Work\opennav-x\build\integration-source\gui\include\gui\ais.h(49,10): error C1083: Cannot open include file: 'OCPN_Sound.h': No such file or directory [D:\a\Work\Work\opennav-x\evidence\local\windows-changed-units\build\check_chart_chcanv.vcxproj]
+         (compiling source file '../../../../build/integration-source/gui/src/chcanv.cpp')
+         
+     1>Done Building Project "D:\a\Work\Work\opennav-x\evidence\local\windows-changed-units\build\check_chart_chcanv.vcxproj" (default targets) -- FAILED.
+
+Build FAILED.
+
+       "D:\a\Work\Work\opennav-x\evidence\local\windows-changed-units\build\check_chart_chcanv.vcxproj" (default target) (1) ->
+       (ClCompile target) -> 
+         D:\a\Work\Work\opennav-x\build\integration-source\gui\include\gui\ais.h(49,10): error C1083: Cannot open include file: 'OCPN_Sound.h': No such file or directory [D:\a\Work\Work\opennav-x\evidence\local\windows-changed-units\build\check_chart_chcanv.vcxproj]
+
+    0 Warning(s)
+    1 Error(s)
+
+Time Elapsed 00:00:04.41

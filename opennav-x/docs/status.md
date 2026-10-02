@@ -16,11 +16,18 @@ Further focused integration now includes onboard AIS bodies (SCRUM-240), the
 bounded route understroke (SCRUM-241), verified default waypoint markers
 (SCRUM-242), geographic tracking/opacity (SCRUM-243), and the effective
 prototype anchorage glyph (SCRUM-244). All nine combined upstream patches apply
-to the pinned source. These increments still need a combined capture and native
-qualification. Independent review of SCRUM-243 found inherited GL texture-path
-overlap and DPI-bounds problems; those are being corrected before the next
-integrated build. Earlier source/painter checks do not waive those findings.
-These newer changes are not qualified by the older Windows candidate.
+to the pinned source. The first combined source `e14de49f444c56de28465416a83337838ad84413`
+passed its Linux integrated link and twelve real-ENC software/Mesa-GL captures,
+with four clean exits. The [comparison record](design/reviews/skager-chart-e14de49-linux.md)
+retains exact identities and two initial collector failures. SCRUM-243's
+text-overlap/DPI-bound correction is included. Visual inspection nevertheless
+found a theme-transition OpenGL edge-wrap defect in both SKAGER and Standard;
+SCRUM-250 is repairing the confirmed framebuffer/viewport mismatch. These
+images therefore do not pass the OpenGL visual gate. They contain no active
+route or AIS targets and do not qualify those painters. Later integrated
+source includes light descriptions (248), sounding typography (249), and the
+selector's deferred-fallback correction (246). Native and boat qualification
+remain open; older Windows evidence does not qualify these newer changes.
 Internal configuration/protocol identities,
 existing user data, immutable prototype and required OpenCPN attribution remain
 intact. See [native identity](architecture/skager-native-branding.md),
@@ -54,16 +61,22 @@ Long-running qualification continues in the background while these isolated
 visual changes receive focused checks. No redundant full candidate was started
 for the individual branding or paint changes.
 
-Prototype conformance remains open. Geographic text tracking, route underlay,
-waypoint/onboard-AIS hierarchy, relevant chart-symbol refinements, actual GL,
-native Windows DPI and boat-display comparisons cannot be declared passed from
-source or focused painter tests. The bounded implementations retain explicit
-special-state and geometry fallbacks. The red COG endpoint,
-label density and stock chart-selector chrome remain visible differences.
-SCRUM-239's follow-up now themes the enabled course-marker fill without removing
-its configured navigation meaning. SCRUM-246 themes only local vector selector
-brushes, preserving all chart-selection behavior. Both are awaiting combined
-rendered evidence; the earlier screenshots remain accurate evidence of the gap.
+Prototype conformance remains open. The e14de49 captures show the corrected
+COG endpoint, geographic tracking and two vector-selector colors; labels and
+several chart-object states still differ. Route/waypoint/onboard-AIS appearance,
+native Windows DPI, actual boat GPU and boat-display comparisons remain gates.
+The bounded implementations retain explicit special-state and geometry fallbacks.
+
+The first focused native chart preflight [37076177181](https://github.com/ThereptileII/Work/actions/runs/37076177181)
+stopped before compilation: Git's repeated-section mode handling rejected
+`chcanv.cpp` under Windows file-mode configuration. The exact nine-patch failure
+was reproduced; private pinned-index application and independent final-tree
+verification fix it without changing the patch contents or tamper guards.
+Combined local `19c900afdfca4c3272715c0f998b8941ec45c8df`, published equivalent
+`6f22f688cc1156c8c1e2395c854fff1a38398338`, includes all nine verified patches and
+15 actual chart production units. The corrected [native preflight37077779848](https://github.com/ThereptileII/Work/actions/runs/37077779848)
+is pending. This short compile gate cannot substitute for a full application,
+fixture-free package, installer, Windows UI or boat acceptance.
 No physical
 actuator commands or boat-install retirement have been performed by this batch.
 

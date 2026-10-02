@@ -1,5 +1,16 @@
 # Prototype conformance — in progress
 
+The October3 integrated chart review now includes exact-source software
+captures after the LIGHTS and sounding-font changes at
+[`19c900a`](../evidence/skager-chart-19c900a-linux/receipt.json).
+Standard chart pixels remain identical to the prior e14de49 control in all
+three themes. SKAGER labels follow the prototype's smaller hierarchy, but 8px
+light descriptions remain difficult to read in this Linux capture, especially
+Night, and dense harbor overlaps persist. Native Windows/font/DPI and physical
+readability remain open; this is not an accepted conformance exception.
+SCRUM-250 separately repairs the confirmed GL theme-time framebuffer-size defect;
+the software captures cannot qualify that correction.
+
 Authority: [immutable v8 prototype](prototype/index.html), hash in
 [manifest](prototype-original.json). The Beta `79a95c4` deployed when this design
 lock was introduced predates it and was **not visually conformant**. Current

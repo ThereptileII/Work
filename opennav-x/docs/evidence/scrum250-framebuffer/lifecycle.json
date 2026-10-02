@@ -1,0 +1,32 @@
+{
+  "sourceSha256": "6bdc813db0fa12305d167d8390b3e76a9257e994219703e3515c4ee9c1518ad8",
+  "methodSha256": "66915bb70db03a10a34d35a2c9fe5993b55b4c40636ca3872b3185cd6f9eb2b5",
+  "compileCommand": [
+    "g++",
+    "-std=c++17",
+    "-Wall",
+    "-Wextra",
+    "-Werror",
+    "-I/home/standard/Projects/X-nav/.local/sysroot/usr/lib/wx/include/gtk3-unicode-3.2",
+    "-I/home/standard/Projects/X-nav/.local/sysroot/usr/include/wx-3.2",
+    "-DWXUSINGDLL",
+    "-D__WXGTK3__",
+    "-D__WXGTK__",
+    "-D_FILE_OFFSET_BITS=64",
+    "-I/home/standard/Projects/X-nav-worktrees/scrum15-gl-framebuffer-sync/.local/fbo-check",
+    "/home/standard/Projects/X-nav-worktrees/scrum15-gl-framebuffer-sync/tests/chart_framebuffer_size_test.cpp",
+    "-L/home/standard/Projects/X-nav/.local/sysroot/usr/lib",
+    "-lwx_baseu-3.2",
+    "-o",
+    "/home/standard/Projects/X-nav-worktrees/scrum15-gl-framebuffer-sync/.local/fbo-check/check"
+  ],
+  "exitCode": 0,
+  "output": "231 actual framebuffer lifecycle assertions passed\n",
+  "negativeNoRebuild": false,
+  "verifiedCallerGate": "SKAGER shell only, before FBO cache selection; Standard chart style included",
+  "limitations": [
+    "Resize/allocation outcomes modeled around verbatim actual method; no GL driver draw",
+    "Actual failing Mesa GL sizes independently recorded in baseline API trace",
+    "Final integrated GL/Windows/boat validation remains open"
+  ]
+}

@@ -21,6 +21,7 @@ def block(text, token):
 
 def main():
     p=argparse.ArgumentParser()
+    p.add_argument('--negative-invalid-font',action='store_true',help='Negative control: bypass native font validity fallback')
     p.add_argument('--negative-legacy-rounding',action='store_true',help='Negative control: restore stock atlas point rounding')
     p.add_argument('--source',type=Path,required=True)
     p.add_argument('--output',type=Path,required=True)
@@ -55,6 +56,13 @@ def main():
     extracted=''.join(block(depth.read_text(),m) for m in atlas_methods)+extracted
     if a.negative_legacy_rounding:
         extracted=extracted.replace('exact_font ? font :','false ? font :')
+    header=(source/'libs/s52plib/src/s52plib.h').read_text()
+    setter=block(header,'void SetSoundingFontResolver(').replace('void SetSoundingFontResolver(', 'void s52plib::SetSoundingFontResolver(',1)
+    extracted=setter+extracted
+    if a.negative_invalid_font:
+        guard='if (m_soundingFontResolver && m_presentationSoundingFont.IsOk())'
+        assert extracted.count(guard)==1
+        extracted=extracted.replace(guard,'if (m_soundingFontResolver)')
     (out/'sounding-methods.inc').write_text(extracted)
     config=[str(a.wx_config),'--prefix='+str(a.wx_prefix)]
     cflags=shlex.split(subprocess.check_output(config+['--cxxflags'],text=True))
@@ -72,6 +80,8 @@ def main():
     result=subprocess.run([str(out/'chart-sounding-test'),str(prototype_px),str(out/'digits.png')],env=env,text=True,capture_output=True)
     evidence={'actualSourceSha256':hashlib.sha256(file.read_bytes()).hexdigest(),
         'negativeLegacyRounding':a.negative_legacy_rounding,
+        'negativeInvalidFont':a.negative_invalid_font,
+        'actualSetter':'s52plib::SetSoundingFontResolver',
         'actualMethods':methods,'atlasSourceSha256':hashlib.sha256(depth.read_bytes()).hexdigest(),
         'atlasMethods':atlas_methods,
         'prototype':{'sizePx':prototype_px,'stack':prototype_stack},

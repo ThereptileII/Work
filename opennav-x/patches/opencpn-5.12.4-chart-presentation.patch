@@ -1632,13 +1632,14 @@ diff --git a/gui/include/gui/piano.h b/gui/include/gui/piano.h
 diff --git a/libs/s52plib/src/s52plib.h b/libs/s52plib/src/s52plib.h
 --- a/libs/s52plib/src/s52plib.h
 +++ b/libs/s52plib/src/s52plib.h
-@@ -191,6 +191,12 @@
+@@ -191,6 +191,13 @@
                                        double *, unsigned char *);
    void SetTextFontResolver(TextFontResolver resolver) { m_textFontResolver = resolver; }
  
 +  void SetSoundingFontResolver(wxFont (*resolver)(double, double)) {
 +    m_soundingFontResolver = resolver;
 +    m_presentationSoundingFont = wxNullFont;
++    m_presentationSoundingScale = -1;
 +    m_texSoundings.Delete();
 +  }
 +
@@ -1663,7 +1664,7 @@ diff --git a/libs/s52plib/src/s52plib.h b/libs/s52plib/src/s52plib.h
 diff --git a/libs/s52plib/src/s52plib.cpp b/libs/s52plib/src/s52plib.cpp
 --- a/libs/s52plib/src/s52plib.cpp
 +++ b/libs/s52plib/src/s52plib.cpp
-@@ -3483,6 +3483,37 @@
+@@ -3483,6 +3483,41 @@
      // scale_factor *= pix_factor;
    }
  
@@ -1674,8 +1675,9 @@ diff --git a/libs/s52plib/src/s52plib.cpp b/libs/s52plib/src/s52plib.cpp
 +    const double sounding_scale =
 +        m_SoundingsScaleFactor >= 0.5 && m_SoundingsScaleFactor <= 2.0
 +            ? m_SoundingsScaleFactor : 1.0;
-+    if (!m_presentationSoundingFont.IsOk() ||
-+        m_presentationSoundingScale != sounding_scale ||
++    // Cache the attempt by its inputs even on failure: stock digits must not
++    // rebuild their atlas or retry an unavailable native font for each glyph.
++    if (m_presentationSoundingScale != sounding_scale ||
 +        m_presentationSoundingContent != m_ContentScaleFactor ||
 +        m_presentationSoundingDip != m_dipfactor) {
 +      m_presentationSoundingFont =
@@ -1685,6 +1687,9 @@ diff --git a/libs/s52plib/src/s52plib.cpp b/libs/s52plib/src/s52plib.cpp
 +      m_presentationSoundingDip = m_dipfactor;
 +      m_texSoundings.Delete();
 +    }
++  }
++  if (m_soundingFontResolver && m_presentationSoundingFont.IsOk()) {
++    const double sounding_scale = m_presentationSoundingScale;
 +    m_soundFont = &m_presentationSoundingFont;
 +    wxScreenDC sdc;
 +    sdc.GetTextExtent(_T("0"), &charWidth, &charHeight, &charDescent,
@@ -1953,3 +1958,67 @@ diff --git a/libs/s52plib/src/s52s57.h b/libs/s52plib/src/s52s57.h
    double letter_spacing = 0;  // optional presentation, logical pixels
    unsigned char text_opacity = 255;
    double presentation_texture_scale = -1;
+diff --git a/gui/src/glChartCanvas.cpp b/gui/src/glChartCanvas.cpp
+--- a/gui/src/glChartCanvas.cpp
++++ b/gui/src/glChartCanvas.cpp
+@@ -71,6 +71,7 @@
+ #include "chcanv.h"
+ #ifdef OPENNAV_X
+ #include "integration/ChartPresentation.h"
++#include "integration/OpenCPNIntegration.h"
+ #endif
+ #include "ChInfoWin.h"
+ #include "cm93.h"  // for chart outline draw
+@@ -3905,6 +3906,22 @@
+ extern wxLongLong s_t0;
+ 
+ int n_render;
++#ifdef OPENNAV_X
++bool glChartCanvas::PrepareChartFramebuffer(int width, int height) {
++  if (width <= 0 || height <= 0) return false;
++  // Theme changes temporarily restore stock AUI borders/sashes. A resize
++  // event can build the FBO before the GL child receives the final size.
++  const wxSize final_size = m_pParentCanvas->GetClientSize();
++  if (GetSize() != final_size) SetSize(final_size);
++  if (m_b_BuiltFBO &&
++      (m_cache_tex_x < width || m_cache_tex_y < height))
++    BuildFBO();
++  // If allocation failed or still does not cover the viewport, render the
++  // charts directly. Sampling beyond an FBO repeats/clips real chart pixels.
++  return m_b_BuiltFBO && m_cache_tex_x >= width && m_cache_tex_y >= height;
++}
++#endif
++
+ void glChartCanvas::Render() {
+   if (!m_bsetup || !m_pParentCanvas->m_pQuilt ||
+       (m_pParentCanvas->VPoint.b_quilt && !m_pParentCanvas->m_pQuilt) ||
+@@ -4064,9 +4081,15 @@
+   int sx = gl_width;
+   int sy = gl_height;
+ 
++  bool presentation_fbo_ready = true;
++#ifdef OPENNAV_X
++  if (opennav::IsXNav())
++    presentation_fbo_ready = PrepareChartFramebuffer(gl_width, gl_height);
++#endif
++
+   // Try to use the framebuffer object's cache of the last frame
+   // to accelerate drawing this frame (if overlapping)
+-  if (m_b_BuiltFBO && !bpost_hilite
++  if (m_b_BuiltFBO && !bpost_hilite && presentation_fbo_ready
+       //&& VPoint.tilt == 0 // disabling fbo in tilt mode gives better quality
+       // but slower
+   ) {
+diff --git a/gui/include/gui/glChartCanvas.h b/gui/include/gui/glChartCanvas.h
+--- a/gui/include/gui/glChartCanvas.h
++++ b/gui/include/gui/glChartCanvas.h
+@@ -223,6 +223,9 @@
+   void DrawGLOverLayObjects(void);
+   void GridDraw();
+   void FlushFBO(void);
++#ifdef OPENNAV_X
++  bool PrepareChartFramebuffer(int width, int height);
++#endif
+ 
+   void DrawDynamicRoutesTracksAndWaypoints(ViewPort &vp);
+   void DrawStaticRoutesTracksAndWaypoints(ViewPort &vp);
