@@ -1,0 +1,283 @@
+{
+  "issue": "SCRUM-224",
+  "authority": "Linux development only",
+  "source_commit": "74761400862bc1d25102b2b741d14247dd343cdc",
+  "executable_sha256": "233b0d8745c82a91dca7fe8c50ae879a16f1e3cb5475a421fdae322a54821b83",
+  "full_preview_pass": false,
+  "review_source": "https://github.com/ThereptileII/Work/blob/a7dee12ec3b6d294f72925984101efaffe762546/opennav-x/docs/design/reviews/scrum-224-ffe-preview-selector.md",
+  "retained_result_sha256": "012f31f6aa3bcbf1ca2e5b06b3b39a9f3fa8d6d91ac6bc549d3105b88e242d1f",
+  "completed_checks": [
+    "Persistent page controls scroll diagnostics and return to top without native scrollbars",
+    "Prototype navigation and eight retained product views captured; advanced frame accelerators remain covered",
+    "Energy, source, vessel-safety and radar settings pages captured",
+    "Moving position, SOC, route distance and advisory destination SOC change",
+    "Global alerts persist across pages/acknowledgement, recover, and recur as new episodes",
+    "All eight fixture-accelerator scenarios pass validity/shortfall assertions"
+  ],
+  "screenshots": 39,
+  "pointer_actions": 60,
+  "chart_rendering": [
+    {
+      "phase": "Direct XNav startup",
+      "reference_color_fractions": {
+        "eeeee2": 0.3094420600858369,
+        "d5e5e5": 0.6339413447782547
+      },
+      "coastline_visible": true,
+      "style": "XNav",
+      "light": "Day",
+      "source": "immutable HTML tokens"
+    },
+    {
+      "phase": "Night world-chart land/water palette",
+      "reference_color_fractions": {
+        "25342f": 0.3090128755364807,
+        "121e24": 0.6335479256080114
+      },
+      "coastline_visible": true,
+      "style": "XNav",
+      "light": "Night",
+      "source": "immutable HTML tokens"
+    },
+    {
+      "phase": "XNav to Legacy",
+      "reference_color_fractions": {
+        "aaaf50": 0.41587982832618026,
+        "aac3f0": 0.5638054363376251
+      },
+      "coastline_visible": true,
+      "style": "Standard",
+      "light": "Day",
+      "source": "pinned software GSHHSChart::SetColorScheme"
+    }
+  ],
+  "error": "RuntimeError('Window not found: OpenNav X / OpenCPN')",
+  "process_events": [
+    {
+      "event": "direct-launch",
+      "phase": "launch 1: xnav demo",
+      "monotonic_ms": 20791300,
+      "processes": [
+        {
+          "pid": 6,
+          "state": "R",
+          "ppid": 2,
+          "start_ticks": 2079129,
+          "argv": [
+            "/tmp/OpenNav preview 8su6fq19/OpenNavX-Beta1-Portable/app/opencpn",
+            "--configdir",
+            "/tmp/OpenNav preview 8su6fq19/OpenNavX-Beta1-Portable/profile",
+            "--no_opengl",
+            "--xnav",
+            "--xnav-demo"
+          ]
+        }
+      ],
+      "pid": 6
+    },
+    {
+      "event": "await-window",
+      "phase": "launch 1: xnav demo",
+      "monotonic_ms": 20791300,
+      "processes": [
+        {
+          "pid": 6,
+          "state": "R",
+          "ppid": 2,
+          "start_ticks": 2079129,
+          "argv": [
+            "/tmp/OpenNav preview 8su6fq19/OpenNavX-Beta1-Portable/app/opencpn",
+            "--configdir",
+            "/tmp/OpenNav preview 8su6fq19/OpenNavX-Beta1-Portable/profile",
+            "--no_opengl",
+            "--xnav",
+            "--xnav-demo"
+          ]
+        }
+      ],
+      "title": "OpenNav X / OpenCPN",
+      "expected_pid": null
+    },
+    {
+      "event": "window-found",
+      "phase": "launch 1: xnav demo",
+      "monotonic_ms": 20792821,
+      "processes": [
+        {
+          "pid": 6,
+          "state": "R",
+          "ppid": 2,
+          "start_ticks": 2079129,
+          "argv": [
+            "/tmp/OpenNav preview 8su6fq19/OpenNavX-Beta1-Portable/app/opencpn",
+            "--configdir",
+            "/tmp/OpenNav preview 8su6fq19/OpenNavX-Beta1-Portable/profile",
+            "--no_opengl",
+            "--xnav",
+            "--xnav-demo"
+          ]
+        }
+      ],
+      "handle": "2097202",
+      "pid": 6,
+      "title": "OpenNav X / OpenCPN"
+    },
+    {
+      "event": "switch-to-legacy-request",
+      "phase": "XNav to Legacy",
+      "monotonic_ms": 20933800,
+      "processes": [
+        {
+          "pid": 6,
+          "state": "R",
+          "ppid": 2,
+          "start_ticks": 2079129,
+          "argv": [
+            "/tmp/OpenNav preview 8su6fq19/OpenNavX-Beta1-Portable/app/opencpn",
+            "--configdir",
+            "/tmp/OpenNav preview 8su6fq19/OpenNavX-Beta1-Portable/profile",
+            "--no_opengl",
+            "--xnav",
+            "--xnav-demo"
+          ]
+        }
+      ],
+      "pid": 6
+    },
+    {
+      "event": "popen-exit",
+      "phase": "XNav to Legacy",
+      "monotonic_ms": 20934110,
+      "pid": 6,
+      "exit_code": 0
+    },
+    {
+      "event": "await-window",
+      "phase": "XNav to Legacy",
+      "monotonic_ms": 20934112,
+      "processes": [
+        {
+          "pid": 1116,
+          "state": "R",
+          "ppid": 2,
+          "start_ticks": 2093404,
+          "argv": [
+            "/tmp/OpenNav preview 8su6fq19/OpenNavX-Beta1-Portable/app/opencpn",
+            "--configdir",
+            "/tmp/OpenNav preview 8su6fq19/OpenNavX-Beta1-Portable/profile",
+            "--portable",
+            "--no_opengl",
+            "--legacy"
+          ]
+        }
+      ],
+      "title": "OpenCPN / Legacy",
+      "expected_pid": null
+    },
+    {
+      "event": "window-found",
+      "phase": "XNav to Legacy",
+      "monotonic_ms": 20935334,
+      "processes": [
+        {
+          "pid": 1116,
+          "state": "R",
+          "ppid": 2,
+          "start_ticks": 2093404,
+          "argv": [
+            "/tmp/OpenNav preview 8su6fq19/OpenNavX-Beta1-Portable/app/opencpn",
+            "--configdir",
+            "/tmp/OpenNav preview 8su6fq19/OpenNavX-Beta1-Portable/profile",
+            "--portable",
+            "--no_opengl",
+            "--legacy"
+          ]
+        }
+      ],
+      "handle": "2097202",
+      "pid": 1116,
+      "title": "OpenCPN / Legacy"
+    },
+    {
+      "event": "switch-to-xnav-request",
+      "phase": "XNav to Legacy to XNav",
+      "monotonic_ms": 20939380,
+      "processes": [
+        {
+          "pid": 1116,
+          "state": "S",
+          "ppid": 2,
+          "start_ticks": 2093404,
+          "argv": [
+            "/tmp/OpenNav preview 8su6fq19/OpenNavX-Beta1-Portable/app/opencpn",
+            "--configdir",
+            "/tmp/OpenNav preview 8su6fq19/OpenNavX-Beta1-Portable/profile",
+            "--portable",
+            "--no_opengl",
+            "--legacy"
+          ]
+        }
+      ],
+      "pid": 1116
+    },
+    {
+      "event": "waitpid-exit",
+      "phase": "XNav to Legacy to XNav",
+      "monotonic_ms": 20940063,
+      "pid": 1116,
+      "start_ticks": 2093404,
+      "raw_wait_status": 0,
+      "exit_code": 0
+    },
+    {
+      "event": "await-window",
+      "phase": "XNav to Legacy to XNav",
+      "monotonic_ms": 20940066,
+      "processes": [
+        {
+          "pid": 1281,
+          "state": "R",
+          "ppid": 2,
+          "start_ticks": 2094002,
+          "argv": []
+        }
+      ],
+      "title": "OpenNav X / OpenCPN",
+      "expected_pid": null
+    },
+    {
+      "event": "window-timeout",
+      "phase": "XNav to Legacy to XNav",
+      "monotonic_ms": 20985175,
+      "processes": [
+        {
+          "pid": 1281,
+          "state": "Z",
+          "ppid": 2,
+          "start_ticks": 2094002,
+          "argv": [],
+          "argv_state": "retained before exit",
+          "unreaped_exit": {
+            "pid": 1281,
+            "code": 2,
+            "status": 9
+          }
+        }
+      ],
+      "title": "OpenNav X / OpenCPN",
+      "expected_pid": null
+    },
+    {
+      "event": "xserver-exit",
+      "phase": "XNav to Legacy to XNav",
+      "monotonic_ms": 20985518,
+      "pid": 4,
+      "exit_code": 0
+    }
+  ],
+  "limitations": [
+    "Earlier run SIGTERM143 retained separately; no full result.",
+    "Replacement descendant SIGKILL9 cause unproved.",
+    "Windows Display pointer path, native rendering and boat qualification remain open."
+  ]
+}

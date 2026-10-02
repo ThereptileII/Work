@@ -1,5 +1,25 @@
 # OpenNav X status — 2026-10-02
 
+## SCRUM-224 / SCRUM-228 — local preview repair verified; two bounded failures retained
+
+The coherent Linux build at `74761400862bc1d25102b2b741d14247dd343cdc`
+verifies the corrected visible Diagnostics selection, all eight data scenarios,
+60 pointer actions and XNav → Legacy with coastline content.
+[Retained preview evidence](evidence/scrum-224-747-local-preview.json) records
+the subsequent Legacy → XNav failure: the replacement descendant received
+SIGKILL before its window/startup log appeared. The sender/cause is under
+investigation; this is not a full preview or lifecycle pass. An earlier
+interrupted run remains separate. No new full candidate was dispatched.
+
+A separate three-input check of that same executable confirms an initial
+Linux floating-chart-control visibility/geometry inconsistency after startup
+resize. The chart receives the zoom-labelled inputs while controls are not
+painted; palette input still works. [Evidence and images](evidence/scrum-228-747-local-viewport.json)
+retain the actual input trace and unchanged scale. SCRUM-228 tracks the fix.
+This does not explain the older c95 scale drift or establish a Windows failure.
+The frozen ffe native build continues; package/boat promotion remains blocked
+by its Linux preview failure. Boat files, profiles and remote access are unchanged.
+
 ## SCRUM-224 / SCRUM-14 / SCRUM-226 — combined focused Windows proof passes
 
 Published `ffe4ecf11f43a916098fefe8f17071c63867a838`
