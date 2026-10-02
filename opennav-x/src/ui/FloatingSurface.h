@@ -28,8 +28,14 @@ public:
     });
   }
   void Present(const wxPoint &screen);
+#ifdef __WXGTK__
+  bool Show(bool show = true) override;
+#endif
 private:
   void Shape();
   int radius_;
+#ifdef __WXGTK__
+  bool show_requested_ = false;
+#endif
 };
 } // namespace opennav::ui

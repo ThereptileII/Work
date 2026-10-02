@@ -5,7 +5,26 @@
 #endif
 
 namespace opennav::ui {
+#ifdef __WXGTK__
+bool XNavFloatingSurface::Show(bool show) {
+  show_requested_ = show;
+  return wxFrame::Show(show);
+}
+#endif
+
 void XNavFloatingSurface::Present(const wxPoint &screen) {
+#ifdef __WXGTK__
+  // A queued GTK map event can set wx's shown flag after an explicit Hide(),
+  // although the native widget remains hidden. Reconcile that stale flag only
+  // after a hide request: a normal deferred first show must stay pending.
+  if (!show_requested_ && IsShown() && !gtk_widget_get_visible(GetHandle())) {
+    wxFrame::Show(false);
+    // GTK restores the old native origin on re-show; move to the fresh chart
+    // target below only after this nonactivating remap.
+    ShowWithoutActivating();
+    Shape();
+  }
+#endif
   if (GetPosition() != screen) Move(screen);
   if (!IsShown()) {
     ShowWithoutActivating();

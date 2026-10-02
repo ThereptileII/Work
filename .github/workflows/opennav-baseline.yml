@@ -351,6 +351,13 @@ jobs:
           python3 opennav-x/tools/test-peer-buffer.py > opennav-x/evidence/local/peer-buffer-linux.log 2>&1
       - name: Build integrated application and run regressions without exceptions
         run: bash opennav-x/tools/build-integration-linux.sh
+      - name: Restore GTK chart controls after startup hide and resize
+        shell: bash
+        env:
+          GDK_BACKEND: x11
+        run: |
+          mkdir -p opennav-x/evidence/local
+          timeout 30s xvfb-run -a -s '-screen 0 1280x800x24 -nolisten tcp' opennav-x/build/xnav-linux/floating_surface_test 2>&1 | tee opennav-x/evidence/local/floating-surface-linux.log
       - name: Installed peer CLI refuses key changes in a disposable profile
         run: python3 opennav-x/tools/test-peer-cli.py --cli opennav-x/build/xnav-install/bin/opencpn-cmd
       - name: Staged loader check without profile initialization
