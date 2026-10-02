@@ -1,0 +1,30 @@
+{
+  "source_base": "688bb713db885dbe78ca6db861382ce248c231f7",
+  "platform": "Linux / wxGTK / Xvfb",
+  "viewport": [
+    1280,
+    800
+  ],
+  "system_interface_scale": 100,
+  "fixture_only": true,
+  "checks": 201,
+  "reviewed_captures": [
+    "system-night.png",
+    "system-bottom-night.png"
+  ],
+  "files": {
+    "result.json": "b04ca5cf8c4efa476f56460274e8260ca8a054719fb3c90950460f1b1ab316fb",
+    "system-bottom-night.png": "0a79b047282d6fa75ce5b6242b72a0c1666dffbab9984f3b6f879436cfcd3c8b",
+    "system-night.png": "db8bfc04d0a8a0dc531434691aece762053dcf4f25ef72894f19a035e5c359d0"
+  },
+  "sources": {
+    "src/ui/SettingsDrawer.cpp": "3e6ef8a177a05d6791441d5c4fe19731e775bc43796a008775093cc49a50fe70",
+    "src/ui/Controls.h": "31523b62200d8797c8afb40685fc640171b10423d17e509cbf64d4d113d67a4a",
+    "src/ui/PrototypeIcons.h": "df0fbf72f5015d6446dbeb5986a32b6e5ef3aa4457f5ca797015ae4a82b74c3f",
+    "tests/settings_drawer_test.cpp": "5bdb38f5e1d6aa2d106df05788d974a54b0d842634723f5bf3b6346eae80cfe3"
+  },
+  "pending": [
+    "exact-source native Windows visuals and interactions",
+    "boat display acceptance"
+  ]
+}

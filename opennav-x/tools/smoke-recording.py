@@ -40,12 +40,16 @@ def click(label):
     # Use actual owner-drawn control bounds. Alerts now share the status row,
     # and replay/recording actions can move after state or viewport changes.
     deadline=time.monotonic()+20
+    last_preferences_y=None
     while time.monotonic()<deadline:
-        display=data()['runtime']['display']
+        current=data();display=current['runtime']['display']
+        drawer=display.get('drawer',{})
         controls=display.get('interaction_controls',display.get('product_controls',[]))
         choices={tuple(c[k] for k in ('x','y','width','height')):c
                  for c in controls if c['label']==label}
-        visible=[c for c in choices.values() if c['visible'] and c['enabled']]
+        visible=[c for c in choices.values() if c['visible'] and c['enabled'] and
+                 (not drawer or (drawer['x']<=c['x'] and c['x']+c['width']<=drawer['x']+drawer['width']
+                  and drawer['y']<=c['y'] and c['y']+c['height']<=drawer['y']+drawer['height']))]
         if visible:
             assert len(visible)==1,('Ambiguous control',label,visible)
             control=visible[0]
@@ -56,6 +60,16 @@ def click(label):
         # do not inject clicks into clipped/offscreen children.
         enabled=[c for c in choices.values() if c['enabled']]
         if len(enabled)==1:
+            if current['ui_page']=='Settings' and drawer:
+                # Preferences has a native scrolled body, not product-page
+                # Up/Down buttons. Wheel it until the real row is contained.
+                target=enabled[0]
+                assert target['y']!=last_preferences_y, ('Preferences scroll did not move the action',label)
+                last_preferences_y=target['y'];ticks=int(current['runtime']['ui_update']['ticks'])
+                xdo('mousemove',drawer['x']+drawer['width']//2,drawer['y']+drawer['height']//2)
+                xdo('click',5)
+                data(lambda d:int(d['runtime']['ui_update']['ticks'])>=ticks+3)
+                continue
             top=max((c['y']+c['height'] for c in controls
                      if c['label'] in ('Day','Dusk','Night','Menu') and c['visible']),default=56)
             direction='Up' if enabled[0]['y']<top else 'Down'

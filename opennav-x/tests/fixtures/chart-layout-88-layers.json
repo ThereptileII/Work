@@ -1,0 +1,392 @@
+{
+  "source": {
+    "commit": "88c141ba9fee5c28e12b5f4ac0f7e7550d1a8ca6",
+    "run": "37033702537",
+    "job": "110926582484",
+    "artifact": "11239641523",
+    "artifact_sha256": "c700f239ac11d1391a1eb6780aba40380519fd518b7224dcbe653f48466e106a",
+    "record": "objects-input-results.json:startup_layout_failure"
+  },
+  "frame": {
+    "x": 0,
+    "y": 0,
+    "width": 1280,
+    "height": 800
+  },
+  "client": {
+    "x": 0,
+    "y": 0,
+    "width": 1280,
+    "height": 800
+  },
+  "display": {
+    "chart_region": {
+      "height": 566,
+      "y": 68,
+      "width": 1014,
+      "x": 80
+    },
+    "rail_regions": [
+      {
+        "height": 136,
+        "y": 110,
+        "visible": true,
+        "width": 186,
+        "x": 1094,
+        "label": "sog",
+        "enabled": true
+      },
+      {
+        "height": 135,
+        "y": 246,
+        "visible": true,
+        "width": 186,
+        "x": 1094,
+        "label": "depth",
+        "enabled": true
+      },
+      {
+        "height": 136,
+        "y": 381,
+        "visible": true,
+        "width": 186,
+        "x": 1094,
+        "label": "aws",
+        "enabled": true
+      },
+      {
+        "height": 135,
+        "y": 517,
+        "visible": true,
+        "width": 186,
+        "x": 1094,
+        "label": "heading",
+        "enabled": true
+      }
+    ],
+    "footer_region": {
+      "height": 34,
+      "y": 766,
+      "width": 1280,
+      "x": 0
+    },
+    "footer_middle_visible": true,
+    "interaction_controls": [
+      {
+        "height": 44,
+        "y": 12,
+        "visible": true,
+        "width": 120,
+        "x": 923,
+        "label": "No vessel input",
+        "enabled": true
+      },
+      {
+        "height": 20,
+        "y": 0,
+        "visible": false,
+        "width": 20,
+        "x": 0,
+        "label": "Up",
+        "enabled": false
+      },
+      {
+        "height": 20,
+        "y": 0,
+        "visible": false,
+        "width": 20,
+        "x": 0,
+        "label": "Down",
+        "enabled": false
+      },
+      {
+        "height": 44,
+        "y": 12,
+        "visible": true,
+        "width": 44,
+        "x": 1127,
+        "label": "Search",
+        "enabled": true
+      },
+      {
+        "height": 44,
+        "y": 12,
+        "visible": true,
+        "width": 44,
+        "x": 1179,
+        "label": "Day",
+        "enabled": true
+      },
+      {
+        "height": 44,
+        "y": 12,
+        "visible": true,
+        "width": 44,
+        "x": 1231,
+        "label": "Alerts",
+        "enabled": true
+      },
+      {
+        "height": 61,
+        "y": 82,
+        "visible": true,
+        "width": 61,
+        "x": 9,
+        "label": "Chart",
+        "enabled": true
+      },
+      {
+        "height": 61,
+        "y": 148,
+        "visible": true,
+        "width": 61,
+        "x": 9,
+        "label": "Passage",
+        "enabled": true
+      },
+      {
+        "height": 61,
+        "y": 214,
+        "visible": true,
+        "width": 61,
+        "x": 9,
+        "label": "Traffic",
+        "enabled": true
+      },
+      {
+        "height": 61,
+        "y": 300,
+        "visible": true,
+        "width": 61,
+        "x": 9,
+        "label": "Energy",
+        "enabled": true
+      },
+      {
+        "height": 61,
+        "y": 366,
+        "visible": true,
+        "width": 61,
+        "x": 9,
+        "label": "Instruments",
+        "enabled": true
+      },
+      {
+        "height": 61,
+        "y": 432,
+        "visible": true,
+        "width": 61,
+        "x": 9,
+        "label": "Anchor",
+        "enabled": true
+      },
+      {
+        "height": 61,
+        "y": 498,
+        "visible": true,
+        "width": 61,
+        "x": 9,
+        "label": "Radar",
+        "enabled": true
+      },
+      {
+        "height": 61,
+        "y": 645,
+        "visible": true,
+        "width": 61,
+        "x": 9,
+        "label": "Settings",
+        "enabled": true
+      },
+      {
+        "height": 32,
+        "y": 719,
+        "visible": true,
+        "width": 32,
+        "x": 24,
+        "label": "Vessel profile",
+        "enabled": true
+      },
+      {
+        "height": 44,
+        "y": 549,
+        "visible": true,
+        "width": 44,
+        "x": 887,
+        "label": "Measure",
+        "enabled": true
+      },
+      {
+        "height": 44,
+        "y": 549,
+        "visible": true,
+        "width": 44,
+        "x": 931,
+        "label": "Waypoint",
+        "enabled": true
+      },
+      {
+        "height": 44,
+        "y": 549,
+        "visible": true,
+        "width": 44,
+        "x": 980,
+        "label": "+",
+        "enabled": true
+      },
+      {
+        "height": 44,
+        "y": 549,
+        "visible": true,
+        "width": 44,
+        "x": 1024,
+        "label": "\u2212",
+        "enabled": true
+      },
+      {
+        "height": 90,
+        "y": 90,
+        "visible": true,
+        "width": 68,
+        "x": 1004,
+        "label": "North",
+        "enabled": true
+      },
+      {
+        "height": 44,
+        "y": 190,
+        "visible": true,
+        "width": 44,
+        "x": 1016,
+        "label": "Layers",
+        "enabled": true
+      },
+      {
+        "height": 44,
+        "y": 553,
+        "visible": true,
+        "width": 142,
+        "x": 108,
+        "label": "Follow boat",
+        "enabled": true
+      },
+      {
+        "height": 40,
+        "y": 69,
+        "visible": true,
+        "width": 40,
+        "x": 1234,
+        "label": "Configure instruments",
+        "enabled": true
+      },
+      {
+        "height": 87,
+        "y": 665,
+        "visible": true,
+        "width": 149,
+        "x": 1113,
+        "label": "Autopilot",
+        "enabled": true
+      },
+      {
+        "height": 20,
+        "y": 68,
+        "visible": false,
+        "width": 20,
+        "x": 1094,
+        "label": "STBY",
+        "enabled": false
+      },
+      {
+        "height": 13,
+        "y": 776,
+        "visible": true,
+        "width": 170,
+        "x": 1090,
+        "label": "Source health",
+        "enabled": true
+      },
+      {
+        "height": 22,
+        "y": 648,
+        "visible": true,
+        "width": 80,
+        "x": 988,
+        "label": "Full passage",
+        "enabled": true
+      },
+      {
+        "height": 53,
+        "y": 693,
+        "visible": true,
+        "width": 191,
+        "x": 105,
+        "label": "Horizon now",
+        "enabled": false
+      },
+      {
+        "height": 53,
+        "y": 693,
+        "visible": true,
+        "width": 267,
+        "x": 296,
+        "label": "Horizon event 1",
+        "enabled": false
+      },
+      {
+        "height": 53,
+        "y": 693,
+        "visible": false,
+        "width": 267,
+        "x": 563,
+        "label": "Horizon event 2",
+        "enabled": true
+      },
+      {
+        "height": 53,
+        "y": 693,
+        "visible": false,
+        "width": 238,
+        "x": 830,
+        "label": "Horizon event 3",
+        "enabled": true
+      },
+      {
+        "height": 20,
+        "y": 634,
+        "visible": false,
+        "width": 20,
+        "x": 80,
+        "label": "Done",
+        "enabled": true
+      },
+      {
+        "height": 20,
+        "y": 634,
+        "visible": false,
+        "width": 20,
+        "x": 80,
+        "label": "Undo",
+        "enabled": false
+      },
+      {
+        "height": 20,
+        "y": 634,
+        "visible": false,
+        "width": 20,
+        "x": 80,
+        "label": "Cancel",
+        "enabled": true
+      },
+      {
+        "height": 20,
+        "y": 0,
+        "visible": false,
+        "width": 20,
+        "x": 0,
+        "label": "Close",
+        "enabled": true
+      }
+    ]
+  }
+}

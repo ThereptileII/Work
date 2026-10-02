@@ -16,6 +16,10 @@ on:
         description: Capture missing or changed immutable Search reference inputs
         type: boolean
         default: false
+      energy_component:
+        description: Include the existing offline Energy component and seven captures (requires prototype)
+        type: boolean
+        default: false
 permissions:
   contents: read
 jobs:
@@ -37,17 +41,24 @@ jobs:
         run: python opennav-x/tests/windows_changed_units_runtime_tests.py
       - name: Verify strict native drawer geometry oracle
         run: python opennav-x/tests/windows_ui_layout_tests.py
+      - name: Verify strict chart layout and Layers oracle
+        run: python opennav-x/tests/chart_layout_tests.py
       - name: Run selected bounded native proof
         env:
           PROTOTYPE_PROOF: ${{ github.ref == 'refs/heads/skager-prototype-proof' || inputs.prototype == true }}
           CHART_COMPONENT: ${{ github.ref == 'refs/heads/skager-prototype-proof' || inputs.chart_presentation == true }}
+          ENERGY_COMPONENT: ${{ inputs.energy_component == true || contains(github.event.head_commit.message, '[energy-component]') }}
         run: |
           if ($env:CHART_COMPONENT -eq 'true' -and $env:PROTOTYPE_PROOF -ne 'true') {
             throw 'Chart presentation requires prototype proof'
           }
+          if ($env:ENERGY_COMPONENT -eq 'true' -and $env:PROTOTYPE_PROOF -ne 'true') {
+            throw 'Energy component requires prototype proof'
+          }
           if ($env:PROTOTYPE_PROOF -eq 'true') {
             $proofArgs = @('--prototype-proof')
             if ($env:CHART_COMPONENT -eq 'true') { $proofArgs += '--chart-presentation-component' }
+            if ($env:ENERGY_COMPONENT -eq 'true') { $proofArgs += '--energy-component' }
             python opennav-x/tools/test-windows-changed-units.py @proofArgs
           } else {
             python opennav-x/tools/test-windows-changed-units.py --legacy-control --ui --settings-component

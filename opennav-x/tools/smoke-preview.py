@@ -300,9 +300,10 @@ def preferences_entry(section,entry):
         def section_ready(d):
             display=d['runtime']['display'];bounds=display.get('drawer',{})
             return d.get('ui_page')=='Settings' and bool(bounds) and any(
-                r['label']==entry and r['visible'] and r['enabled'] and
-                bounds['x']<=r['x'] and r['x']+r['width']<=bounds['x']+bounds['width'] and
-                bounds['y']<=r['y'] and r['y']+r['height']<=bounds['y']+bounds['height']
+                r['label']==entry and r['enabled'] and
+                (section=='System' or (r['visible'] and
+                 bounds['x']<=r['x'] and r['x']+r['width']<=bounds['x']+bounds['width'] and
+                 bounds['y']<=r['y'] and r['y']+r['height']<=bounds['y']+bounds['height']))
                 for r in display['interaction_controls'])
     shell_click(section,in_drawer=True,settled=section_ready)
     if section=='Vessel':
@@ -311,32 +312,39 @@ def preferences_entry(section,entry):
         if not report.get('vessel_form_captured'):
             capture('beta-vessel-preferences-form')
             report['vessel_form_captured']=True
-    if entry in destinations:
-        if windows:
-            # windows-ui's native pointer path scrolls clipped drawer actions
-            # only after checking their actual HWND and containing viewport.
-            ui.pointer_text(pid,entry)
-        else:
-            last_y=None
-            for _ in range(32):
-                current=data();display=current['runtime']['display'];drawer=display.get('drawer',{})
-                targets=[r for r in display['interaction_controls'] if r['label']==entry]
-                assert len(targets)==1,(entry,'unique advanced vessel action',targets)
-                target=targets[0]
-                if target['visible'] and target['enabled']:
-                    shell_click(entry,in_drawer=True)
-                    break
-                assert current.get('ui_page')=='Settings' and drawer,(entry,'Preferences drawer closed during scroll')
-                assert target['y']!=last_y,(entry,'Preferences scroll did not move the advanced action')
-                last_y=target['y'];ticks=int(current['runtime']['ui_update']['ticks'])
-                x=drawer['x']+drawer['width']//2;y=drawer['y']+drawer['height']//2
-                xdo('mousemove',x,y,'click',5)
-                data(lambda d:int(d['runtime']['ui_update']['ticks'])>ticks)
-            else:raise AssertionError(entry+': bounded drawer scroll could not reach advanced action')
-        data(lambda d:d.get('ui_page')==destinations[entry])
+    if entry not in destinations and section!='System':
+        shell_click(entry,in_drawer=True)
         return
-    # The section settle predicate above waits for the actual destination.
-    shell_click(entry,in_drawer=True)
+    # Section readiness means the controls exist; the destination can be
+    # below the viewport. Scroll before requiring a visible pointer target.
+    if windows:
+        # windows-ui's native pointer path scrolls clipped drawer actions
+        # only after checking their actual HWND and containing viewport.
+        ticks=int(data()['runtime']['ui_update']['ticks'])
+        ui.pointer_text(pid,entry)
+        data(lambda d:int(d['runtime']['ui_update']['ticks'])>=ticks+3)
+    else:
+        last_y=None
+        for _ in range(32):
+            current=data();display=current['runtime']['display'];drawer=display.get('drawer',{})
+            targets=[r for r in display['interaction_controls'] if r['label']==entry]
+            assert len(targets)==1,(entry,'unique Preferences action',targets)
+            target=targets[0]
+            contained=(bool(drawer) and drawer['x']<=target['x'] and
+                       target['x']+target['width']<=drawer['x']+drawer['width'] and
+                       drawer['y']<=target['y'] and target['y']+target['height']<=drawer['y']+drawer['height'])
+            if target['visible'] and target['enabled'] and contained:
+                shell_click(entry,in_drawer=True)
+                break
+            assert current.get('ui_page')=='Settings' and drawer,(entry,'Preferences drawer closed during scroll')
+            assert target['y']!=last_y,(entry,'Preferences scroll did not move the action')
+            last_y=target['y'];ticks=int(current['runtime']['ui_update']['ticks'])
+            x=drawer['x']+drawer['width']//2;y=drawer['y']+drawer['height']//2
+            xdo('mousemove',x,y,'click',5)
+            data(lambda d:int(d['runtime']['ui_update']['ticks'])>=ticks+3)
+        else:raise AssertionError(entry+': bounded drawer scroll could not reach action')
+    if entry in destinations:
+        data(lambda d:d.get('ui_page')==destinations[entry])
 def product_click(label,enabled=True):
     target=interaction.control(data,label,product_scroll,enabled=enabled)
     pointer_click(target)

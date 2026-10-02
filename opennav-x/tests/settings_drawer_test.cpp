@@ -432,6 +432,7 @@ private:
       case 13: Check(light_==ui::LightMode::Night,"night callback applied");Capture("display-night");Click("Toggle fullscreen");break;
       case 14: Check(fullscreen_==1,"fullscreen invokes one display callback");Click("Personalise instruments");break;
       case 15: Check(navigations_==2 && last_page_==ui::ProductPage::RailLayout,"rail configuration preserved");
+        display_.scale_percent=100;panel_->SetDisplayPreferences(display_);Feed();
         Click("System");break;
       case 16:
         {
@@ -442,15 +443,41 @@ private:
           unavailable->Destroy();
         }
         Check(!Find(panel_,"AUTO") && !Find(panel_,"STBY"),"preferences cannot execute physical controls");
-        Capture("system-night");Click("Advanced / Legacy Settings");break;
+        for(const auto *label:{"Installation & recovery","Updates","Backups","About & licenses","Run vessel setup"}) {
+          auto *unavailable=Find(panel_,label);
+          Check(unavailable && !unavailable->IsEnabled(),"unavailable System capability is disabled");
+          wxCommandEvent event(wxEVT_BUTTON,unavailable->GetId());event.SetEventObject(unavailable);
+          unavailable->GetEventHandler()->ProcessEvent(event);
+        }
+        wxTheApp->Yield(true);
+        Check(advanced_==1 && navigations_==2 && diagnostics_==0 && plugins_==0,
+              "unavailable System rows cannot delegate actions");
+        Capture("system-night");
+        ScrollBody()->Scroll(0,1000);wxTheApp->Yield(true);
+        Check(ScrollBody()->GetScreenRect().Contains(Find(panel_,"Advanced / Legacy Settings")->GetScreenRect()),
+              "direct Advanced action is reachable by scrolling");
+        Capture("system-bottom-night",false);
+        Click("Advanced / Legacy Settings");break;
       case 17:
         Check(advanced_==2 && navigations_==2,"Advanced settings delegates directly without opening XNav preferences");
+        Click("Interface & recovery");wxTheApp->Yield(true);
+        Check(navigations_==3 && last_page_==ui::ProductPage::System,"real interface recovery remains accessible");
+        Click("Help & guides");wxTheApp->Yield(true);
+        Check(panel_->Section()==ui::SettingsSection::Help,"limited Help row opens existing Help tab");
+        panel_->Select(ui::SettingsSection::System);wxTheApp->Yield(true);
+        for(const bool back:{false,true}) {
+          wxKeyEvent key(wxEVT_CHAR_HOOK);key.m_keyCode=back?WXK_LEFT:WXK_ESCAPE;key.m_altDown=back;
+          key.SetEventObject(panel_);panel_->ProcessWindowEvent(key);wxTheApp->Yield(true);
+          Check(!panel_->IsShown(),"System root respects Escape and Alt-Left dismissal");
+          panel_->Open(wxRect(frame_->ClientToScreen({80,68}),wxSize(1014,698)));wxTheApp->Yield(true);
+          Check(ScrollBody()->GetViewStart()==wxPoint(0,0),"System reopens at the root scroll position");
+        }
         Click("Diagnostics");break;
       case 18: Check(diagnostics_==1,"diagnostics callback once");Click("Radar");break;
       case 19: Capture("settings-radar-night");Click("Autopilot");break;
       case 20: Capture("settings-autopilot-night");Click("Close");break;
       case 21:
-        Check(closed_==1 && !panel_->IsShown(),"close hides only preferences");
+        Check(closed_==3 && !panel_->IsShown(),"close hides only preferences");
         display_.scale_percent=100;
         panel_->SetDisplayPreferences(display_);
         panel_->Select(ui::SettingsSection::Vessel);

@@ -4,7 +4,7 @@
 Compile-only by default. Optional Settings and prototype components provide
 isolated native interaction evidence, never product, package or dependency qualification.
 The opt-in prototype proof compiles the real navigation bridge and runs existing
-Settings/Search components, without rebuilding old macro-control units.
+Settings/Search components, with optional Energy, without rebuilding old macro-control units.
 The optional negative control restores exactly the seven legacy max calls in
 the two real source files; it must fail before the untouched fixed files pass.
 """
@@ -34,6 +34,10 @@ SEARCH_CAPTURES = {
     'saved-objects-day': (1280, 800), 'empty-night': (1280, 800),
     'shell-1280': (1280, 800), 'shell-853': (853, 600),
     'shell-853-search': (853, 600),
+}
+ENERGY_CAPTURES = {
+    'energy-day', 'energy-dusk', 'energy-night', 'energy-stale-day',
+    'energy-gps-unavailable-day', 'energy-shortfall-day', 'energy-inactive-day',
 }
 
 
@@ -116,20 +120,33 @@ def stage_native_runtime(client, wx, wx_dlls):
             for source in runtime}
 
 
-def settings_component(build, wx, evidence):
+def offline_component(build, wx, evidence, component):
     """Use the existing offline component and capture gate with app-local DLLs."""
-    client = build / 'Release/settings_drawer_test.exe'
+    clients = {'settings': 'settings_drawer_test.exe', 'energy': 'energy_panel_test.exe'}
+    client = build / 'Release' / clients[component]
+    identity = record(client)
     manifest = stage_native_runtime(client, wx,
         ('wxbase32u_vc14x.dll', 'wxmsw32u_core_vc14x.dll', 'wxmsw32u_aui_vc14x.dll'))
-    (evidence / 'settings-runtime.json').write_text(json.dumps(manifest, indent=2) + '\n')
-    output = evidence / 'settings-component'
+    (evidence / (component + '-runtime.json')).write_text(json.dumps(manifest, indent=2) + '\n')
+    output = evidence / (component + '-component')
     run([sys.executable, ROOT / 'tools/prototype/capture-ais-component.py',
-         '--component', 'settings', '--client', client, '--output', output],
-        evidence / 'settings-component.log', timeout=90)
+         '--component', component, '--client', client, '--output', output],
+        evidence / (component + '-component.log'), timeout=90)
     capture = json.loads((output / 'capture.json').read_text())
-    if capture['platform'] != 'win32' or capture['executable_sha256'] != record(client)['sha256']:
-        raise ValueError('Settings component capture does not identify the native tested executable')
-    return {'executable': record(client), 'runtime': manifest, 'capture': capture}
+    if capture['platform'] != 'win32' or capture['executable_sha256'] != identity['sha256']:
+        raise ValueError(component + ' component capture does not identify the native tested executable')
+    if component == 'energy' and set(capture['captures']) != ENERGY_CAPTURES:
+        raise ValueError('Missing/unexpected canonical Energy captures')
+    if record(client) != identity:
+        raise ValueError('Offline component executable changed during capture')
+    for name, item in manifest.items():
+        if record(client.parent / name)['sha256'] != item['sha256']:
+            raise ValueError('Offline component runtime changed during capture: ' + name)
+    return {'executable': identity, 'runtime': manifest, 'capture': capture}
+
+
+def settings_component(build, wx, evidence):
+    return offline_component(build, wx, evidence, 'settings')
 
 
 def prototype_component(build, wx, evidence, component='search'):
@@ -207,9 +224,13 @@ def main():
                         help='opt in to complete navigation bridge objects plus existing Settings and Search components; skips old macro-control units')
     parser.add_argument('--chart-presentation-component', action='store_true',
                         help='with --prototype-proof, also run the tracked offline chart presentation harness')
+    parser.add_argument('--energy-component', action='store_true',
+                        help='with --prototype-proof, also run the existing offline Energy component and seven captures')
     args = parser.parse_args()
     if args.chart_presentation_component and not args.prototype_proof:
         parser.error('--chart-presentation-component requires --prototype-proof')
+    if args.energy_component and not args.prototype_proof:
+        parser.error('--energy-component requires --prototype-proof')
     if args.prototype_proof:
         if args.legacy_control:
             parser.error('--prototype-proof does not repeat --legacy-control')
@@ -228,8 +249,9 @@ def main():
         report['scope'] = ('native Win32 translation-unit compilation and offline Settings '
                            'component interaction/capture; not product qualification')
     if args.prototype_proof:
-        report['scope'] = ('native Win32 navigation bridge translation units and offline Settings/Search '
-                           'components; not full OpenCPN, dependency, package or boat qualification')
+        components = 'Settings/Search' + ('/Energy' if args.energy_component else '')
+        report['scope'] = ('native Win32 navigation bridge translation units and offline ' + components +
+                           ' components; not full OpenCPN, dependency, package or boat qualification')
     active_units = () if args.prototype_proof else UNITS
     try:
         report['candidate'] = subprocess.check_output(['git', 'rev-parse', 'HEAD'], cwd=ROOT, text=True).strip()
@@ -254,6 +276,10 @@ def main():
         if args.settings_component:
             report['settingsInputs'] = {p: record(ROOT / p) for p in
                 ('tests/settings_drawer_test.cpp', 'tools/prototype/capture-ais-component.py',
+                 'tools/windows-ui.py')}
+        if args.energy_component:
+            report['energyInputs'] = {p: record(ROOT / p) for p in
+                ('tests/energy_panel_test.cpp', 'tools/prototype/capture-ais-component.py',
                  'tools/windows-ui.py')}
         lock = json.loads((ROOT / 'upstream.lock.json').read_text())
         upstream = args.upstream.resolve()
@@ -317,6 +343,7 @@ def main():
              '-DOPENNAV_CHECK_SETTINGS_COMPONENT=' + ('ON' if args.settings_component else 'OFF'),
              '-DOPENNAV_CHECK_PROTOTYPE=' + ('ON' if args.prototype_proof else 'OFF'),
              '-DOPENNAV_CHECK_CHART_COMPONENT=' + ('ON' if args.chart_presentation_component else 'OFF'),
+             '-DOPENNAV_CHECK_ENERGY_COMPONENT=' + ('ON' if args.energy_component else 'OFF'),
              '-DOPENNAV_GLEW_INCLUDE:PATH=' + glew.as_posix(),
              '-DwxWidgets_ROOT_DIR:PATH=' + wx.as_posix(), '-DwxWidgets_LIB_DIR:PATH=' + (wx / 'lib/vc14x_dll').as_posix(),
              '-DwxWidgets_CONFIGURATION=mswu'], evidence / 'configure.log')
@@ -346,6 +373,8 @@ def main():
             report['navigationGeneratedConfig'] = record(build / 'navigation-include/config.h')
         if args.chart_presentation_component:
             targets += ['chart_presentation_drawer_test']
+        if args.energy_component:
+            targets += ['energy_panel_test']
         if args.ui:
             targets += ['opennav_ui', 'check_SettingsStore']
         if args.settings_component:
@@ -379,6 +408,11 @@ def main():
             if (report['searchComponent']['capture']['source_commit'] != report['candidate'] or
                     any(record(ROOT / p) != rec for p, rec in report['prototypeInputs'].items())):
                 raise ValueError('Prototype component inputs changed during native proof')
+        if args.energy_component:
+            report['energyComponent'] = offline_component(build, wx, evidence, 'energy')
+            if (report['energyComponent']['capture']['source_commit'] != report['candidate'] or
+                    any(record(ROOT / p) != rec for p, rec in report['energyInputs'].items())):
+                raise ValueError('Energy component inputs changed during native proof')
         report['status'] = 'passed'
     finally:
         (evidence / 'summary.json').write_text(json.dumps(report, indent=2) + '\n')

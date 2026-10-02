@@ -52,7 +52,7 @@ enum class ButtonRole { Normal, Quiet, Primary, Critical, Segment };
 enum class XNavIcon { None, Plus, Minus, Ownship, Menu, Back, Close, Route, Compass, Settings,
   Chart, Traffic, Energy, Instruments, Anchor, Radar, Sun, Dusk, Moon, Bell,
   Search, Layers, Ruler, Pin, Sliders, Chevron, Edit, Shield, Spark,
-  Speed, Depth, Wind, Battery };
+  Speed, Depth, Wind, Battery, Download, Refresh, Info, Boat };
 
 // Known prototype metric symbols follow stable configured reading keys.
 XNavIcon MetricIconForKey(const std::string &key);

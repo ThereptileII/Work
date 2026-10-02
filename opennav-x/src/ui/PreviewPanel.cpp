@@ -109,7 +109,11 @@ PreviewPanel::PreviewPanel(wxWindow *parent)
   close_->Bind(wxEVT_BUTTON,[this](wxCommandEvent&){if(close_action_)close_action_();});
   Bind(wxEVT_PAINT, &PreviewPanel::Paint, this);
   Bind(wxEVT_SIZE, [this](wxSizeEvent &e) {
-    close_->SetSize(GetClientSize().x-FromDIP(112),FromDIP(28),FromDIP(80),FromDIP(44));
+    // Child positions are viewport-relative, but the header belongs to the
+    // scrolling content. A resize must not add the current scroll offset.
+    const auto header = CalcScrolledPosition(
+        wxPoint(GetClientSize().x-FromDIP(112),FromDIP(28)));
+    close_->SetSize(header.x,header.y,FromDIP(80),FromDIP(44));
     Refresh();
     e.Skip();
   });

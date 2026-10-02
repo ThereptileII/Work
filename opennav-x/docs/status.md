@@ -1,5 +1,60 @@
 # OpenNav X status — 2026-10-02
 
+## Current candidate gate — focused repairs awaiting native proof
+
+Full candidate `88c141ba9fee5c28e12b5f4ac0f7e7550d1a8ca6` is **not eligible
+for boat deployment or release**. Its [focused native proof](https://github.com/ThereptileII/Work/actions/runs/37032588707)
+passed 361 component checks, but its [full run](https://github.com/ThereptileII/Work/actions/runs/37033702537)
+failed the Linux navigation-object layout gate: the old oracle did not include
+the prototype's Layers control. Native integrated execution remains pending.
+Failure evidence is retained on `skager-validation-evidence`; earlier candidate
+entries below are historical and do not override this gate.
+
+The next focused proof combines three bounded changes:
+
+- SCRUM-224: require exactly one Layers control at the prototype-derived position
+  and size, preserving strict rejection of missing, misplaced and unknown
+  overlays. The retained failing layout passes; nine new negative cases fail.
+- SCRUM-14: restore the System intro and eight prototype rows, explicitly disable
+  unavailable capabilities, retain real recovery/advanced destinations and
+  update their affected pointer/scroll callers. This is partial System work,
+  not completion of update, backup or installer UI. Linux component: 201 checks.
+- SCRUM-226: fix the Energy Close button's content coordinate after a scrolled
+  resize. Unchanged product reproduces the drift; the correction passes 88
+  focused Linux checks, including real pointer close/reentry. A bounded native
+  Energy capture is opt-in alongside Settings, Search and Chart components.
+
+See [System review](design/reviews/scrum-14-system-composition-local.md),
+[Layers evidence](design/reviews/scrum224-layers-layout-oracle.md) and
+[Energy reproduction](validation/energy-header-scroll.md). Native proof,
+full integration and boat acceptance remain open. No boat installation,
+physical output or public release is authorized by these component results.
+
+## SCRUM-224 — c95d native UI gates fail; short prototype proof passes
+
+The frozen `c95d3a0` [full run](https://github.com/ThereptileII/Work/actions/runs/37017351644)
+passed native compilation and all 138 integrated tests, installed peer CLI,
+staged loader, pointer route gestures and repeated crash recovery. It then
+failed the Sensors Preferences pointer check and the 1920-wide Preferences
+width assertion. [Verified failure evidence](evidence/scrum-224-c95-native-ui-failure.json)
+records both artifacts and exact scope. The latter oracle expects 432px where
+the immutable prototype and actual native drawer require 460px. The former
+shows body scrolling after foreground activation and remains under investigation.
+No product package, installer, installed security probe or boat promotion is
+accepted. Linux endurance continues independently. Narrow reproductions and
+corrections precede any further full candidate build.
+
+Separately, `29ea06a358ed24cc29eb2be74b67b234a3ecaa6e` passes
+[focused native run 37026807977](https://github.com/ThereptileII/Work/actions/runs/37026807977):
+190 Settings, 82 Search/Shell and 46 Chart drawer checks (**318 total**), plus
+compilation of all 28 production UI objects and the complete NavigationActions,
+NavigationObjects and SettingsStore units. The downloaded artifact, 247 source
+inputs, 31 objects, three executables/runtimes and 23 captures were verified.
+[Exact proof and limitations](evidence/scrum-224-29ea-focused-native-proof.json)
+remain component-scoped. Display track colors/geometry are supported; known
+other Settings differences and physical boat acceptance remain open. This pass
+does not qualify the full candidate or the later local System-flow correction.
+
 ## SCRUM-14/15/216 — bounded prototype follow-up; native proof pending
 
 Published follow-up `34b8509` reached native CMake setup in

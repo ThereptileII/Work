@@ -507,14 +507,13 @@ try:
             else:ui.click_text(pid,label)
             data(lambda d:d['ui_page']==page)
             entry['night_surfaces'].append(chart.dark_surface(capture(f'dpi-{scale}-night-'+page.lower().replace(' ','-').replace('&','and')),page))
-        # These actions belong to the prototype Preferences drawer. Re-enter
-        # it for each action: the destination page dismisses the drawer, so
-        # a bare second "System" click has no visible Settings section target.
-        # Visible captions changed; diagnostic destination identities did not.
-        for label,page in [('Recordings & commissioning','Commissioning & recordings'),
-                           ('Export diagnostics','Field diagnostic bundle')]:
-            ui.click_text(pid,'Settings');data(lambda d:d['ui_page']=='Settings')
-            ui.click_text(pid,'System');ui.click_text(pid,label);data(lambda d:d['ui_page']==page)
+        # Reach the real recovery page through visible Preferences actions.
+        # open_system scrolls the lower recovery row into its native viewport;
+        # pointer_text requires a contained, enabled and uncovered destination.
+        for label,page in [('Commissioning & recordings','Commissioning & recordings'),
+                           ('Export diagnostic bundle','Field diagnostic bundle')]:
+            ui.open_system(pid);data(lambda d:d['ui_page']=='System')
+            ui.pointer_text(pid,label);data(lambda d:d['ui_page']==page)
             entry['night_surfaces'].append(chart.dark_surface(capture(f'dpi-{scale}-night-'+page.lower().replace(' ','-').replace('&','and')),page))
         ui.open_system(pid);ui.click_text(pid,'Diagnostics')
         # The page identity is published before its first native paint computes

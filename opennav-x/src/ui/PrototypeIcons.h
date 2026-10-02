@@ -38,6 +38,10 @@ inline const char *PrototypeIconPath(XNavIcon icon) {
     case XNavIcon::Chevron: return "m9 5 7 7-7 7";
     case XNavIcon::Menu: return "M3 6h18M3 12h18M3 18h18";
     case XNavIcon::Shield: return "M12 2 3 6v6c0 5 9 10 9 10s9-5 9-10V6Zm-5 9 3 3 7-7";
+    case XNavIcon::Download: return "M12 3v12m-5-5 5 5 5-5M4 17v4h16v-4";
+    case XNavIcon::Refresh: return "M20 8a9 9 0 1 0 1 8M20 3v5h-5";
+    case XNavIcon::Info: return "M12 11v6m0-10h.01M21 12a9 9 0 1 0-18 0 9 9 0 0 0 18 0Z";
+    case XNavIcon::Boat: return "M8 3h8v7l5 3-3 7H6l-3-7 5-3Zm0 7 4-2 4 2M12 8v12";
     default: return "";
   }
 }

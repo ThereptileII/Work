@@ -44,7 +44,7 @@ def navigation_layout(display, frame, client):
         assert region['height'] >= 48 and region['width'] >= 48, 'Primary rail values must remain readable'
         assert not overlaps(chart, region) and all(not overlaps(region, other) for other in rail[:i]), 'Chart and rail values must not overlap'
     controls = [c for c in display.get('interaction_controls', []) if c.get('visible')]
-    # The prototype specifies these six bounded floating controls, not a
+    # The prototype specifies these seven bounded floating controls, not a
     # general permission to cover the chart with permanent toolbars.
     right, bottom = chart['x']+chart['width'], chart['y']+chart['height']
     tools_x, tools_y = right-22-189, bottom-37-52
@@ -54,6 +54,8 @@ def navigation_layout(display, frame, client):
         '+': (tools_x+97, tools_y+4, 44, 44),
         '−': (tools_x+141, tools_y+4, 44, 44),
         'Follow boat': (chart['x']+28, bottom-37-44, 142, 44),
+        # Centered below the 68x90 compass: 22px top + 90px + 10px gap.
+        'Layers': (right-22-68+(68-44)//2, chart['y']+22+90+10, 44, 44),
     }
     orientation = [c for c in controls if c['label'] in ('North', 'Course', 'Head')]
     assert len(orientation) == 1, 'One chart orientation control required'
@@ -83,7 +85,7 @@ def navigation_layout(display, frame, client):
         assert required[0]['x']+required[0]['width'] <= chart['x'], 'Chart and Settings entries must fit the navigation strip'
     return {'frame': frame, 'client': client, 'chart': chart,
             'chart_client_area_fraction': chart['width'] * chart['height'] / (client['width'] * client['height']),
-            'primary_rail_values_visible': 4, 'prototype_floating_controls': 6,
+            'primary_rail_values_visible': 4, 'prototype_floating_controls': 7,
             'footer': footer, 'recovery_access': 'Settings', 'source_health_visible': True,
             'unspecified_controls_do_not_cover_chart': True}
 

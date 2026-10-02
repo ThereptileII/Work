@@ -150,6 +150,23 @@ def observe(predicate=lambda d: True):
         time.sleep(.1)
     raise AssertionError('Current mode-cycle UI state did not arrive')
 
+def reveal_preferences(label):
+    last_y=None
+    for _ in range(32):
+        current=observe();display=current['runtime']['display'];drawer=display.get('drawer',{})
+        assert current['ui_page']=='Settings' and drawer, 'Preferences drawer closed during scroll'
+        matches=[c for c in display['interaction_controls'] if c['label']==label and c['enabled']]
+        assert len(matches)==1, ('Unique Preferences action required',label,matches)
+        c=matches[0]
+        contained=(drawer['x']<=c['x'] and c['x']+c['width']<=drawer['x']+drawer['width']
+                   and drawer['y']<=c['y'] and c['y']+c['height']<=drawer['y']+drawer['height'])
+        if c['visible'] and contained:return current
+        assert c['y']!=last_y, ('Preferences scroll did not move the action',label)
+        last_y=c['y'];ticks=int(current['runtime']['ui_update']['ticks'])
+        click(drawer['x']+drawer['width']//2,drawer['y']+drawer['height']//2,5)
+        observe(lambda d:int(d['runtime']['ui_update']['ticks'])>=ticks+3)
+    raise AssertionError(('Bounded Preferences scroll could not reach action',label))
+
 def action(label, light=None, page=None):
     before=observe();ticks=int(before['runtime']['ui_update']['ticks'])
     matches=[c for c in before['runtime']['display']['interaction_controls']
@@ -194,6 +211,7 @@ try:
     action('−')
     action('Settings',page='Settings')
     action('System',page='Settings')
+    reveal_preferences('Interface & recovery')
     action('Interface & recovery',page='System')
     capture('07-system')
     system_ticks = int(observe(lambda d:d['ui_page']=='System')['runtime']['ui_update']['ticks'])
@@ -201,6 +219,9 @@ try:
     # Escape queues Back() to the Settings drawer. Observe that transition
     # before sending another pointer action; a retained System publication
     # does not mean its asynchronous navigation/focus work has completed.
+    observe(lambda d:int(d['runtime']['ui_update']['ticks'])>=system_ticks+3
+            and d['ui_page']=='Settings' and bool(d['runtime']['display'].get('drawer')))
+    reveal_preferences('Interface & recovery')
     returned = observe(lambda d:int(d['runtime']['ui_update']['ticks'])>=system_ticks+3
                        and d['ui_page']=='Settings'
                        and bool(d['runtime']['display'].get('drawer'))

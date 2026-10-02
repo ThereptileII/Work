@@ -1,8 +1,10 @@
 #include "ui/SettingsDrawer.h"
 #include "ui/DisplaySizing.h"
+#include "application/Version.h"
 #include <wx/dcbuffer.h>
 #include <wx/graphics.h>
 #include <wx/sizer.h>
+#include <wx/tokenzr.h>
 #include <array>
 #include <cmath>
 #include <limits>
@@ -380,16 +382,53 @@ void XNavSettingsDrawer::Build() {
       DisplayForm();
       break;
     }
-    case SettingsSection::System:
+    case SettingsSection::System: {
+      auto title_lines=std::make_shared<std::vector<wxString>>(
+          1,"A complete helm. A cared-for system.");
+      CopyBlock(126,[title_lines](XNavPainter &p,int width){
+        p.TextTracked(wxString::FromUTF8("OPENNAV X · ")+wxString::FromUTF8(application::Version),
+                      0,9,10,p.c.secondary,650,1.3,width);
+        for(std::size_t i=0;i<title_lines->size();++i)
+          p.TextTracked((*title_lines)[i],0,33+30*i,23,p.c.primary,700,-.6,width);
+        p.Wrapped("Set up, maintain and recover your navigation workspace.",
+                  0,73+30*(title_lines->size()-1),13,21,width,p.c.secondary,2);
+      });
+      auto *intro=copies_.back();
+      intro->Bind(wxEVT_SIZE,[this,intro,title_lines](wxSizeEvent &event){
+        wxClientDC dc(intro);dc.SetFont(UiFontWeight(*intro,23,700));
+        const int width=intro->GetClientSize().x;
+        const double tracking=-.6*intro->FromDIP(100)/100.;
+        wxStringTokenizer words("A complete helm. A cared-for system."," ");
+        title_lines->clear();wxString line;
+        while(words.HasMoreTokens()) {
+          const auto word=words.GetNextToken();
+          const auto candidate=line.empty()?word:line+" "+word;
+          if(!line.empty() && dc.GetTextExtent(candidate).x+tracking*(candidate.length()-1)>width) {
+            title_lines->push_back(line);line=word;
+          } else line=candidate;
+        }
+        title_lines->push_back(line);
+        const int height=FromDIP(126+30*(title_lines->size()-1));
+        if(intro->GetMinSize().y!=height) {
+          intro->SetMinSize(wxSize(FromDIP(300),height));body_->Layout();body_->FitInside();
+        }
+        intro->Refresh(false);event.Skip();
+      });
+      Link("Installation & recovery","Installer unavailable; recovery controls below",XNavIcon::Download,{});
+      Link("Updates","Update controls unavailable",XNavIcon::Refresh,{});
+      Link("Backups","Backup and restore controls unavailable",XNavIcon::Shield,{});
+      Link("Diagnostics","Versions, data quality and source health",XNavIcon::Instruments,actions_.diagnostics);
+      Link("Plugins","OpenCPN adapters and plugin settings",XNavIcon::Layers,actions_.plugins);
+      Link("Help & guides","Basic help; guides unavailable",XNavIcon::Info,
+           [this]{Select(SettingsSection::Help);});
+      Link("About & licenses","Version above; license viewer unavailable",XNavIcon::Info,{});
+      Link("Run vessel setup","Setup wizard unavailable; use Vessel tab",XNavIcon::Boat,{});
       Page("Interface & recovery","Legacy, Safe Mode, restart and diagnostics",XNavIcon::Shield,ProductPage::System);
-      Link("Diagnostics","Versions, data quality and current source state",XNavIcon::Settings,actions_.diagnostics);
-      Page("Recordings & commissioning","Read-only observation and field capture",XNavIcon::Instruments,ProductPage::Commissioning);
-      Page("Export diagnostics","Choose the information to include",XNavIcon::Settings,ProductPage::FieldReport);
-      Link("Plugins & adapters","Advanced OpenCPN plugin settings",XNavIcon::Layers,actions_.plugins);
       Link("Advanced / Legacy Settings",actions_.advanced
           ? "Connections, charts and additional preferences" : "OpenCPN settings unavailable",
           XNavIcon::Settings,actions_.advanced);
       break;
+    }
     case SettingsSection::Help:
       CopyBlock(145,[](XNavPainter &p,int width){p.TextTracked("OPENNAV X",0,4,9,p.c.accent,650,1.17);
         p.Text("Charts and navigation are owned by OpenCPN.",0,36,12,p.c.secondary,false,width);
