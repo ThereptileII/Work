@@ -1,5 +1,25 @@
 # OpenNav X status — 2026-10-02
 
+## SCRUM-224 / SCRUM-229 — ffe native build passes; preview and 125% touch gates fail
+
+The frozen [ffe run](https://github.com/ThereptileII/Work/actions/runs/37041103887)
+has completed its native job. [Downloaded terminal evidence](evidence/scrum-224-ffe-native-final.json)
+verifies artifact11246267901 (43,226,505 bytes, SHA-256
+`50ab9ff8307f85b792c9f1ee8ddb5fe771cb96c23527b1402af5c1e1459d853e`).
+Native compilation and138/138 integrated tests passed, as did installed peer
+and loader checks, pointer navigation/route gestures, three recovery sequences
+and the public ENC/plugin gate. The requested OpenGL phase actually used
+software fallback; this is not actual GPU/OpenGL acceptance.
+
+The preview stops at the obsolete Settings → Display → Chart presentation
+path already corrected in the prepared747 helper. The native125% DPI run
+separately fails to reach the lower Vessel Preferences action by touch. Its
+unverified pan start falls on the editable battery-capacity field; SCRUM-229
+tracks a strictly checked scroll-body gesture and native replay. The100%
+sequence completed,125% remains failed,150% was not reached. Fixture-free
+product, installer, package-security, native endurance and boat gates were not
+qualified; no replacement full candidate or boat deployment has started.
+
 ## SCRUM-224 / SCRUM-228 — local preview repair verified; two bounded failures retained
 
 The coherent Linux build at `74761400862bc1d25102b2b741d14247dd343cdc`
