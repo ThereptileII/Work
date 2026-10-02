@@ -57,11 +57,17 @@ class HandoffTests(unittest.TestCase):
 
     def refresh_inner(self):
         prefix = 'OpenNavX-Beta2-Portable-Recovery/'
+        notes = self.payload[handoff.RELEASE_NOTES]
+        notes_hash = handoff.digest(notes)
+        self.source['files'] = {'opennav-x/docs/beta2/' + handoff.RELEASE_NOTES: {'sha256': notes_hash}}
         self.payload['OpenNavX-Beta2-Portable-Recovery.zip'] = zipped([
+            (prefix + 'docs/' + handoff.RELEASE_NOTES, notes),
+            (prefix + 'FILE_SHA256.json', json.dumps({'docs/' + handoff.RELEASE_NOTES: notes_hash})),
             (prefix + 'docs/PRODUCT_BUILD.json', json.dumps(self.build)),
             (prefix + 'app/opencpn.exe', b'inert test bytes')])
         self.payload['OpenNavX-Beta2-source.zip'] = zipped([
-            ('SOURCE_REFERENCE.json', json.dumps(self.source))])
+            ('SOURCE_REFERENCE.json', json.dumps(self.source)),
+            ('opennav-x/docs/beta2/' + handoff.RELEASE_NOTES, notes)])
         self.repack()
 
     def repack(self, extra=()):
@@ -155,6 +161,47 @@ class HandoffTests(unittest.TestCase):
                 old = self.build[key]; self.build[key] = value; self.refresh_inner()
                 with self.assertRaises(ValueError): handoff.verify_payload(self.record, self.archive)
                 self.build[key] = old
+
+    def test_release_notes_are_required_reviewed_payload(self):
+        record = copy.deepcopy(self.record)
+        del record['payloadSha256'][handoff.RELEASE_NOTES]
+        with self.assertRaisesRegex(ValueError, 'six reviewed payload hashes'):
+            handoff.validate_acceptance(record, self.root)
+
+    def test_outer_release_notes_must_match_packaged_copy(self):
+        self.payload[handoff.RELEASE_NOTES] = b'changed notes after package assembly'
+        self.repack()
+        with self.assertRaisesRegex(ValueError, 'Portable release notes differ'):
+            handoff.verify_payload(self.record, self.archive)
+
+    def test_packaged_release_notes_missing_changed_or_wrong_hash(self):
+        original = dict(self.payload)
+        for archive_name, notes_path, manifest_name in (
+            ('OpenNavX-Beta2-Portable-Recovery.zip',
+             'OpenNavX-Beta2-Portable-Recovery/docs/' + handoff.RELEASE_NOTES,
+             'OpenNavX-Beta2-Portable-Recovery/FILE_SHA256.json'),
+            ('OpenNavX-Beta2-source.zip', 'opennav-x/docs/beta2/' + handoff.RELEASE_NOTES,
+             'SOURCE_REFERENCE.json')):
+            for mutation in ('missing', 'changed', 'hash'):
+                with self.subTest(archive=archive_name, mutation=mutation):
+                    self.payload = dict(original)
+                    with zipfile.ZipFile(io.BytesIO(self.payload[archive_name])) as inner:
+                        entries = {name: inner.read(name) for name in inner.namelist()}
+                    if mutation == 'missing':
+                        del entries[notes_path]
+                    elif mutation == 'changed':
+                        entries[notes_path] = b'different package notes'
+                    else:
+                        manifest = json.loads(entries[manifest_name])
+                        if manifest_name == 'SOURCE_REFERENCE.json':
+                            manifest['files'][notes_path]['sha256'] = '0' * 64
+                        else:
+                            manifest['docs/' + handoff.RELEASE_NOTES] = '0' * 64
+                        entries[manifest_name] = json.dumps(manifest).encode()
+                    self.payload[archive_name] = zipped(entries.items())
+                    self.repack()
+                    with self.assertRaisesRegex(ValueError, 'release notes'):
+                        handoff.verify_payload(self.record, self.archive)
 
     def test_wrong_corresponding_source(self):
         for key, value in [('productCommit', '2' * 40), ('upstreamCommit', '2' * 40),

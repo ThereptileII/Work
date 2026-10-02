@@ -29,6 +29,8 @@ if a.candidate:
 if not manifest['supportedOpenCpn']: raise SystemExit('No accepted OpenCPN configuration; release installer refused')
 a.output.mkdir(parents=True)
 preview=a.preview.resolve()
+if not (preview/'docs/OpenNavX-Beta2-Release-Notes.md').is_file():
+    raise SystemExit('Installer requires the recovery package release notes')
 require_status_only(json.loads((preview/'docs/PRODUCT_BUILD.json').read_text()))
 with zipfile.ZipFile(a.output/'payload.zip','w',zipfile.ZIP_DEFLATED,compresslevel=6) as z:
     records=[]

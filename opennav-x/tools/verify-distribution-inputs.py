@@ -13,7 +13,8 @@ required = (
     'docs/boat-commissioning.md', 'tools/accepted-beta1.lock.json',
     'tools/early-beta2-layout.lock.json',
     'docs/beta2/KNOWN_LIMITATIONS.md', 'docs/beta2/OpenNavX-Beta2-Test-Guide.md',
-    'docs/beta2/OpenNavX-Beta2-Install-Guide.md', 'docs/production-build-contract.md',
+    'docs/beta2/OpenNavX-Beta2-Install-Guide.md', 'docs/beta2/OpenNavX-Beta2-Release-Notes.md',
+    'docs/production-build-contract.md',
 )
 missing = [name for name in required if not (root / name).is_file()]
 if missing:

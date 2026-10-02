@@ -23,8 +23,25 @@ CAPTURES = {
     "owned-identity-day", "owned-aging-day", "owned-stale-day", "owned-replay-day",
     "prototype-fixture-day", "prototype-fixture-dusk", "prototype-fixture-night",
     "prototype-responsive-125", "prototype-responsive-150",
-    "prototype-hover-day", "prototype-focus-day",
+    "prototype-hover-day", "prototype-focus-day", "prototype-large-desktop-1920",
 }
+
+
+# The borderless component starts at (0,0) and captures this full client size.
+DESKTOP_SIZE = (1920, 1080)
+
+
+def validate_capture_names(names):
+    assert len(names) == len(set(names)), "Duplicate capture identity"
+    assert set(names) == CAPTURES, ("Missing/unexpected component evidence", names)
+    canonical = {f"prototype-fixture-{theme}" for theme in ("day", "dusk", "night")}
+    assert canonical <= set(names), "All three exact HTML comparisons are mandatory"
+    return canonical
+
+
+def validate_capture_size(name, size):
+    if name == "prototype-large-desktop-1920":
+        assert size == (1920, 1080), ("Large desktop capture cropped or resized", size)
 
 
 def measured_rect(item):
@@ -65,13 +82,13 @@ def main():
         spec = importlib.util.spec_from_file_location("windows_ui", ROOT / "tools/windows-ui.py")
         ui = importlib.util.module_from_spec(spec)
         spec.loader.exec_module(ui)
-        ui.ensure_desktop(1440, 900)
+        ui.ensure_desktop(*DESKTOP_SIZE)
     else:
         env["GDK_BACKEND"] = "x11"
         env.pop("WAYLAND_DISPLAY", None)
         number = next(n for n in range(177, 240) if not Path(f"/tmp/.X{n}-lock").exists())
         env["DISPLAY"] = f":{number}"
-        xserver = subprocess.Popen(["Xvfb", env["DISPLAY"], "-screen", "0", "1280x800x24", "-nolisten", "tcp"],
+        xserver = subprocess.Popen(["Xvfb", env["DISPLAY"], "-screen", "0", f"{DESKTOP_SIZE[0]}x{DESKTOP_SIZE[1]}x24", "-nolisten", "tcp"],
                                    stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
         time.sleep(.4)
         assert xserver.poll() is None
@@ -86,10 +103,7 @@ def main():
         assert record["passed"] is True and record["checks"] >= 208
         captures = record["captures"]
         names = [item["name"] for item in captures]
-        assert len(names) == len(set(names)), "Duplicate capture identity"
-        assert set(names) == CAPTURES, ("Missing/unexpected component evidence", names)
-        canonical = {f"prototype-fixture-{theme}" for theme in ("day", "dusk", "night")}
-        assert canonical <= set(names), "All three exact HTML comparisons are mandatory"
+        canonical = validate_capture_names(names)
         record.update(
             source_commit=subprocess.check_output(["git", "rev-parse", "HEAD"], cwd=ROOT, text=True).strip(),
             source_dirty=bool(subprocess.check_output(["git", "status", "--porcelain"], cwd=ROOT)),
@@ -108,6 +122,7 @@ def main():
             record["screenshots"][name] = hashlib.sha256(path.read_bytes()).hexdigest()
             with Image.open(path) as src:
                 current = src.convert("RGB")
+            validate_capture_size(name, current.size)
             x, y, width, height = item["horizon"]
             assert width > 0 and height > 0 and x >= 0 and y >= 0
             assert x + width <= current.width and y + height <= current.height

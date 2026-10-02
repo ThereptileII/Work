@@ -1,4 +1,237 @@
-# OpenNav X status — 2026-10-01
+# OpenNav X status — 2026-10-02
+
+## SCRUM-224 — curl suite passes; native packaging filename failure isolated
+
+The verified failure artifact for frozen `0e9ec666` in
+[run 36969350849](https://github.com/ThereptileII/Work/actions/runs/36969350849)
+shows OpenSSL passing 4,283 tests across 347 files and curl passing all
+1,569 reported tests. Curl installs `lib/libcurl_imp.lib`; the producer script
+then incorrectly requires `lib/libcurl.lib` and stops. This is a build
+packaging failure, not evidence of an application crash. No completed curl
+manifest, integrated application, installer or boat acceptance is claimed.
+See [retained failure evidence](evidence/scrum-224-0e9-import-library-failure.json).
+The replacement preparation explicitly configures curl's supported empty
+import-library suffix, checks its actual target/output before long tests, and
+corrects the zlib producer-fact receipt paths. Focused tests pass; independent
+review found no blocker for the bounded native naming proof. Screenshot
+wrapper alignment and required release notes are included in the preparation.
+The new full candidate will wait for the native proof. No product artifact is eligible for
+deployment from this run.
+
+## SCRUM-211/212 — separate security probes, no candidate rebuild
+
+Test-only revision `97c4d6ec16a2f31218e1cccced8385d0fefb2f47` adds bounded
+qualification independently of frozen `0e9ec666`. The actual plugin download
+caller and archive/record-writing source pass three Linux cases: valid install,
+untrusted TLS, and an interrupted response containing a complete extractable
+archive. Rejected transfers enter no archive reader and preserve files/records.
+See [scoped source evidence](evidence/scrum-211-plugin-guard-linux.json).
+Native Windows remains pending; no full installed-plugin acceptance is claimed.
+
+The separate two-instance probe verifies an eligible candidate artifact and its
+runtime hashes without running Setup or rebuilding the application. It permits
+pending-endurance development artifacts only after their native prerequisites
+and same-run restart receipt pass. Six inert preparation tests pass; native
+execution remains pending. The boat's fresh read-only audit still matches the
+approved stock executable and completed preservation baseline. Its newer
+qualified recovery tools are compatible with the installer entry points and
+must be preserved; no tooling update is required before deployment. No boat changes occurred.
+
+## SCRUM-25 — bounded artifact integrity passes native verification
+
+The isolated updater module at `395c9448262597281d3582da5db29405e12d298b`
+passes [Linux and native Windows x86](https://github.com/ThereptileII/Work/actions/runs/36971421203):
+27 top-level tests and 83 subtests per platform, plus vet. Both downloaded
+artifacts have verified size, SHA-256 and ZIP CRC. The new streaming check
+rejects malformed metadata, incorrect length/hash, reader failures and stalled
+readers with fixed memory and bounded reads. See [evidence](evidence/scrum-25-artifact-integrity-native.json).
+This does not fetch or execute a package, establish trusted file custody or
+qualify installed updater behavior. SCRUM-25 remains open. Frozen application
+candidate `0e9ec666` is unchanged.
+
+## SCRUM-24 — strict signed identity and release policy verified
+
+The isolated verifier/release-policy revision `fa4610be6bd5a5d6ef90f93749ed369bd3b48f72`
+passes [Linux and native Windows x86](https://github.com/ThereptileII/Work/actions/runs/36970037284).
+Each platform passes 22 top-level tests and 78 subtests, with no failures or
+skips, plus vet. Downloaded evidence passes size, SHA-256 and ZIP CRC checks.
+The final review closed ambiguous signed custom metadata: duplicate keys,
+case aliases, unknown fields, malformed types and oversized identity data now
+fail closed. Twenty-four actually signed negative cases pass through both
+verification entry points. See [native evidence](evidence/scrum-24-strict-identity-native.json).
+This qualifies the isolated deterministic policy, not an installed updater.
+SCRUM-25 still owns production trust/key/cache custody and transactional startup
+integration. The application candidate remains separately frozen at `0e9ec666`.
+
+## SCRUM-224 — production helper qualified; one integrated candidate started
+
+The candidate is now frozen at `0e9ec666ab27262a0c246f87f2e0fa5c7ede9fd0`
+(local `76bad1a`). [Focused native verification](https://github.com/ThereptileII/Work/actions/runs/36969097886)
+passes the actual production helper under PowerShell 7 and Windows PowerShell
+5.1, including success/failure restoration, repeat initialization, unchanged
+source checks and the early production-only preflight. The artifact is
+independently verified; see [evidence](evidence/scrum-224-production-source-preflight.json).
+A newer-PowerShell absent-versus-empty environment defect was reproduced and
+repaired without weakening assertions. The preceding diagnostic failures remain
+in CI/Jira evidence. Forty-two local dependency contracts also pass.
+
+Only the integrated branch has advanced: [candidate run 36969350849](https://github.com/ThereptileII/Work/actions/runs/36969350849).
+Eleven available early artifacts have verified length, SHA-256 and ZIP CRC.
+Pristine Windows passes 60/60; pristine Linux retains two classified upstream
+failures (64/66), which are not integrated acceptance. Native restart and
+maintenance contracts pass; see [scoped early evidence](evidence/scrum-224-0e9-early-gates.json).
+Integrated application, dependency reuse, installer/recovery, chart/display,
+endurance and real-boat gates are still pending. Prototype build fanout is deferred until this first native functional
+path succeeds. The boat is reachable with remote services running and no OpenCPN
+process; no installation or cleanup has been performed in this cycle.
+
+## SCRUM-224 — targeted native repair proof passes
+
+[Native comparison at `ac067b3`](https://github.com/ThereptileII/Work/actions/runs/36968122673)
+passes. Both unchanged upstream source checks fail in the inherited environment;
+initializing MSVC removes the missing-header error but retains the incorrect
+argument conversion. Initializing MSVC and preserving `/D` arguments passes
+both checks: 1119 emits exact `OK`, and 1167 analyzes 1,422 symbols. The
+downloaded archive matches its expected size, SHA-256 and all ZIP CRCs.
+See [the scoped proof](evidence/scrum-224-source-preflight-pass.json).
+Production integration and its native helper proof are underway; no full
+candidate build has been started on the strength of diagnosis alone.
+
+## SCRUM-224 — native source-check failure isolated; candidate withheld
+
+The frozen `45b8a9d` integrated Windows build and both native prototype jobs
+failed; publication was skipped. Integrated Linux completed successfully: both application suites passed 146/146,
+and its 10,800-second endurance run passed with 1 MiB resident-memory growth
+and no handle/thread growth. This is Linux-only evidence; physical GPU, boat,
+and screenshot acceptance remain separate. See [Linux results](evidence/scrum-224-45b8-linux-integrated.json).
+The Windows prerequisite compiled curl and reported 1,567 of 1,569 upstream
+tests passing, but source checks 1119 and 1167 failed. This is a dependency
+build/test failure; it does not establish an application runtime crash.
+No replacement application build or boat deployment is accepted.
+
+A [small native diagnostic](https://github.com/ThereptileII/Work/actions/runs/36967788225)
+at `87d63adb1bcf56d0336011f990e1819596ca0a11` reproduced both source-check
+failures without compiling curl or the application. Its verified artifact shows
+MSYS interpreting `/DWIN32` and `/D_WINDOWS` as file paths, followed by an
+unavailable `inttypes.h` header. The initialized-environment comparison then
+stopped on a diagnostic command-quoting defect; that comparison remains pending.
+The unchanged upstream scripts and generated CMake helper are retained.
+The diagnostic uses Schannel without external libraries and direct invocation,
+so it is not full producer or release qualification. The next native step is a
+bounded comparison of compiler initialization and argument conversion, before
+another full candidate build. See [retained evidence](evidence/scrum-224-source-preflight.json).
+
+## SCRUM-24/25 — signed release policy passes native tests
+
+The isolated update branch at `a3a7bac04a3bdda8ddd485450a7dab8aedbd2c4d`
+passes [Linux and native Windows/386](https://github.com/ThereptileII/Work/actions/runs/36939227135).
+Each platform passes 19 top-level tests and 30 subtests, without failures/skips,
+plus `go vet`; both downloaded artifacts have verified length, SHA-256 and CRC.
+The policy distinguishes upgrades, same release, downgrades, conflicting source
+identities and unsupported OpenCPN installations. Strict JSON and Windows path
+checks reject the case-alias and reserved-name defects found during review.
+The read-only composition binds policy identity to actual signed TUF metadata;
+no installer executes and no startup updater is enabled. See
+[exact native evidence](evidence/scrum-24-release-policy-native.json).
+Root/key/cache custody and transactional recovery remain open. The boat candidate
+is still separately frozen at `45b8a9d`.
+
+
+## SCRUM-25 — isolated signed-update verifier passes native feasibility
+
+The separate verifier branch at `24bd013f4891638f0e59411836c67f271a66a645`
+passes [Linux and native Windows 386](https://github.com/ThereptileII/Work/actions/runs/36936782032).
+Both downloaded result artifacts have verified size, SHA-256 and ZIP CRC.
+Each platform passes six top-level tests and nine subtests without skips, plus
+`go vet`. The tests use real Ed25519-signed metadata generated only in temporary
+fixtures and reject altered signatures/content, expired or older metadata,
+wrong channels/identity, oversized data and cross-origin redirects.
+
+This is a feasibility result, not a shipping updater. It neither executes a
+package nor modifies the application or installer. Trusted-root deployment,
+cache protection, application release/downgrade policy, dependency licensing and
+transactional installer handoff remain open; see
+[the scoped evidence](evidence/scrum-25-verifier-feasibility.json).
+SCRUM-24 now owns the deterministic release-policy prerequisite. Product
+qualification continues independently on frozen `45b8a9d`.
+
+
+## Current replacement — verified early gates
+
+All ten native boat-tooling jobs at exact `45b8a9d` pass. Twenty-seven
+available early artifacts have independently verified lengths, SHA-256 and
+all 1,237 ZIP entry CRCs. Supplemental AIS passes seven tests per platform;
+the Linux network fixture passes 18 TLS/transport scenarios and 30 offline
+checks. Prototype references capture 63 states per platform, without implying
+native application visual acceptance. Pristine Windows passes 60 tests;
+pristine Linux retains its two classified upstream failures out of 66 and is
+not release acceptance. At that earlier observation, integrated jobs were still running. Their later
+terminal outcomes are recorded above; installation remains withheld.
+See [the exact early evidence](evidence/scrum-224-45b8-early-gates.json).
+
+## Current replacement — native certificate path repair
+
+The application candidate is now frozen at
+`45b8a9d2809d0d34171010ad1c00f4a3cd056a09` (local `9c4740f`).
+The previous `37978e` composition and object-workflow builds failed before curl
+configure because a Windows-backslash script path made MSYS Perl look for
+certificate inputs in the output directory. The narrow caller repair uses the
+verified MSYS Perl explicitly and passes the same slash form as upstream CMake.
+
+[Focused native run 36935540968](https://github.com/ThereptileII/Work/actions/runs/36935540968)
+passes the new actual-script path regression and retained host/certificate/tool
+checks. Its downloaded artifact has verified length, SHA-256 and all 20 ZIP CRCs.
+See [the scoped proof](evidence/scrum-224-45b8-native-path-pass.json).
+Fresh [integrated](https://github.com/ThereptileII/Work/actions/runs/36935775514),
+[prototype](https://github.com/ThereptileII/Work/actions/runs/36935778459) and
+[native tooling](https://github.com/ThereptileII/Work/actions/runs/36935773834)
+runs target that exact commit; they are not yet accepted. No deployment or old
+installation cleanup has occurred. A read-only boat heartbeat at 22:24 UTC
+confirmed zero OpenCPN processes and all three remote-access services running.
+
+
+## SCRUM-218 — complete native diagnostic log retained
+
+The separate read-only collector at `c42ff4c97ee71cfe84bab54873ee5dac18f15510`
+passes [run 36932209206](https://github.com/ThereptileII/Work/actions/runs/36932209206)
+and ten focused refusal/security tests. It retained all 1,738,273,051 bytes of
+the cancelled b48 prototype job's log within the explicit 2 GiB / eight-minute
+limits. The downloaded archive and uncompressed log have independently verified
+hashes and lengths. No running product job was modified or restarted. This is
+diagnostic evidence, not application acceptance; see
+[the collection record](evidence/scrum-218-complete-native-log.json).
+
+## Previous candidate qualification — 37978e
+
+The previous frozen candidate is `37978e26517af810092ec2bc554b199d36a705d2`
+(local `2a3c2c6b88945a50a7b552fd41c37658747ac5a4`). Its
+[integrated run](https://github.com/ThereptileII/Work/actions/runs/36929977632)
+passes 90 Linux and 87 native Windows portable CTest contracts, plus ten
+repeated restart handoffs on each platform and the supporting policy suites.
+All ten [native tooling jobs](https://github.com/ThereptileII/Work/actions/runs/36929976171)
+pass. Fourteen downloaded early artifacts have verified size, SHA-256 and ZIP
+CRC records, including 238 actual COM shortcut migration checks on each host
+architecture, 22 maintenance reports, native broker/Prepare/Arm checks, and
+supplemental AIS tests. See [the exact-candidate early evidence](evidence/scrum-224-37978e-early-gates.json).
+
+The [prototype run](https://github.com/ThereptileII/Work/actions/runs/36929980191)
+has passed its supporting checks, but native composition job `110596574723`
+failed before curl configure: MSYS Perl received a backslash script path,
+and the certificate generator searched the output directory for source inputs.
+The producer correctly rejected the empty certificate. The separate object-flow
+job failed at the same preflight; its independently verified artifact confirms
+the same error. The integrated Windows job also failed at the same preflight; all three
+native failure artifacts have verified hashes and ZIP integrity.
+See [the verified failure record](evidence/scrum-224-37978-certificate-path-failure.json).
+The replacement caller-path repair has passed its focused native gate; its
+full qualification remains open as recorded above. No existing generator or
+TLS assertions were weakened.
+No artifact is approved for boat deployment. The previous b48 Linux job has
+completed successfully, including 146 fixture and 146 fixture-free test cases,
+the 10,800-second soak, loader checks and mode/navigation/chart fixtures. See
+[its bounded evidence review](evidence/scrum-224-b48-linux-complete.json).
+This older Linux result is not acceptance of this replacement revision. The boat remains
+unchanged and old installations are retained until a replacement is known-good.
 
 ## SCRUM-224 — native test-host producer binding verified; product gates remain open
 

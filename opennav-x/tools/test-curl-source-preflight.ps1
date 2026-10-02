@@ -117,6 +117,42 @@ try {
         '-DUSE_NGHTTP2=OFF','-DCURL_BROTLI=OFF','-DCURL_ZSTD=OFF','-DENABLE_ARES=OFF',
         '-DCURL_USE_GSSAPI=OFF','-DUSE_WIN32_IDN=ON','-DCURL_DISABLE_FORM_API=OFF','-DHTTP_ONLY=OFF')
     Checked (Run 'configure' $CMake $Configure $Evidence 300)
+    if ($ProductionOnly) {
+        # Use the actual pinned full curl project to reproduce the default import
+        # basename, then prove the supported override without compiling libcurl.
+        $DefaultProjectPath = Join-Path $Build 'lib/libcurl_shared.vcxproj'
+        $DefaultProject = [xml](Get-Content -LiteralPath $DefaultProjectPath -Raw)
+        $DefaultRelease = @($DefaultProject.Project.ItemDefinitionGroup | Where-Object { $_.Condition -match 'Release\|Win32' })
+        if ($DefaultRelease.Count -ne 1 -or -not ([string]$DefaultRelease[0].Link.ImportLibrary).EndsWith('libcurl_imp.lib')) {
+            throw 'Pinned curl default import library no longer reproduces libcurl_imp.lib'
+        }
+        $NamingBuild = Join-Path $Evidence 'build-import-name'
+        $NamingHook = Join-Path $PSScriptRoot 'windows-curl-import-layout.cmake'
+        $NamingConfigure = @($Configure)
+        $NamingConfigure[[Array]::IndexOf($NamingConfigure, '-B') + 1] = $NamingBuild
+        $NamingConfigure += @('-DIMPORT_LIB_SUFFIX:STRING=', "-DCMAKE_PROJECT_INCLUDE=$($NamingHook.Replace('\','/'))")
+        Checked (Run 'configure-import-name' $CMake $NamingConfigure $Evidence 300)
+        $FixedProjectPath = Join-Path $NamingBuild 'lib/libcurl_shared.vcxproj'
+        $FixedProject = [xml](Get-Content -LiteralPath $FixedProjectPath -Raw)
+        $FixedRelease = @($FixedProject.Project.ItemDefinitionGroup | Where-Object { $_.Condition -match 'Release\|Win32' })
+        $GeneratedImport = [IO.File]::ReadAllText((Join-Path $NamingBuild 'xnav-curl-import-Release.txt')).Trim()
+        $ExpectedImport = [IO.Path]::GetFullPath((Join-Path $NamingBuild 'lib/Release/libcurl.lib'))
+        if ($FixedRelease.Count -ne 1 -or -not ([string]$FixedRelease[0].Link.ImportLibrary).EndsWith('libcurl.lib') -or
+            [IO.Path]::GetFullPath($GeneratedImport) -ine $ExpectedImport) {
+            throw 'Pinned curl explicit empty suffix did not generate the required libcurl.lib'
+        }
+        # Existing diagnostic upload includes *.txt; preserve the exact XML bytes.
+        Copy-Item -LiteralPath $DefaultProjectPath -Destination (Join-Path $Evidence 'default-libcurl_shared.vcxproj.txt')
+        Copy-Item -LiteralPath $FixedProjectPath -Destination (Join-Path $Evidence 'fixed-libcurl_shared.vcxproj.txt')
+        $Report.importLibraryNaming = [ordered]@{
+            defaultImportLibrary=[string]$DefaultRelease[0].Link.ImportLibrary;
+            fixedImportLibrary=[string]$FixedRelease[0].Link.ImportLibrary;
+            generatedImportPath=$GeneratedImport; explicitOption='-DIMPORT_LIB_SUFFIX:STRING=';
+            sharedOnly=$true; hookSha256=(Digest $NamingHook);
+            curlLibCMakeSha256=(Digest (Join-Path $Source 'lib/CMakeLists.txt'));
+            defaultProjectSha256=(Digest $DefaultProjectPath); fixedProjectSha256=(Digest $FixedProjectPath);
+            compiled=$false; passed=$true}
+    }
     $TestBuild = Join-Path $Build 'tests'
     $Config = Join-Path $TestBuild 'configurehelp.pm'
     Copy-Item -LiteralPath $Config -Destination (Join-Path $Evidence 'configurehelp.pm')

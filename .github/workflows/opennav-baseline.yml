@@ -656,6 +656,7 @@ jobs:
             beta/OpenNavX-Beta2-Setup.exe
             beta/OpenNavX-Beta2-Test-Guide.md
             beta/OpenNavX-Beta2-Install-Guide.md
+            beta/OpenNavX-Beta2-Release-Notes.md
             beta/SHA256SUMS.txt
             beta/OpenNavX-Beta2-source.zip
           if-no-files-found: error

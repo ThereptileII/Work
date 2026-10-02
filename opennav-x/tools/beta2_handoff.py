@@ -20,10 +20,11 @@ import zipfile
 REPOSITORY = 'ThereptileII/Work'
 UPSTREAM = '37fd0cddb7334fe489e9f18aa163977a9c5c84f7'
 VERSION = '0.4.0-beta2'
+RELEASE_NOTES = 'OpenNavX-Beta2-Release-Notes.md'
 FILES = {
     'OpenNavX-Beta2-Setup.exe', 'OpenNavX-Beta2-Portable-Recovery.zip',
     'OpenNavX-Beta2-source.zip', 'OpenNavX-Beta2-Install-Guide.md',
-    'OpenNavX-Beta2-Test-Guide.md',
+    'OpenNavX-Beta2-Test-Guide.md', RELEASE_NOTES,
 }
 JOBS = {
     'contracts (windows-2022)', 'contracts (ubuntu-24.04)',
@@ -79,7 +80,7 @@ def validate_acceptance(record, root):
             'Exact downloaded candidate artifact identity required')
     hashes = record.get('payloadSha256', {})
     require(set(hashes) == FILES and all(sha(value) for value in hashes.values()),
-            'All five reviewed payload hashes required')
+            'All six reviewed payload hashes required')
     gates = record.get('boatGates', {})
     require(set(gates) == BOAT_GATES, 'Incomplete boat review coverage')
     root = Path(root).resolve()
@@ -144,6 +145,11 @@ def verify_payload(record, archive):
     with zipfile.ZipFile(io.BytesIO(payload['OpenNavX-Beta2-Portable-Recovery.zip'])) as portable:
         prefix = 'OpenNavX-Beta2-Portable-Recovery/'
         require(len(portable.namelist()) == len(set(portable.namelist())), 'Duplicate portable entry')
+        notes_path = 'docs/' + RELEASE_NOTES
+        require(prefix + notes_path in portable.namelist(), 'Portable release notes missing')
+        require(portable.read(prefix + notes_path) == payload[RELEASE_NOTES], 'Portable release notes differ')
+        file_hashes = json.loads(portable.read(prefix + 'FILE_SHA256.json'))
+        require(file_hashes.get(notes_path) == digest(payload[RELEASE_NOTES]), 'Portable release notes hash differs')
         build = json.loads(portable.read(prefix + 'docs/PRODUCT_BUILD.json'))
         require(build.get('version') == VERSION and build.get('commit') == record['commit'] and
                 build.get('test_fixtures') is False and build.get('build_purpose') == 'INSTALLED PRODUCT',
@@ -153,6 +159,11 @@ def verify_payload(record, archive):
     with zipfile.ZipFile(io.BytesIO(payload['OpenNavX-Beta2-source.zip'])) as source:
         require(len(source.namelist()) == len(set(source.namelist())), 'Duplicate source entry')
         reference = json.loads(source.read('SOURCE_REFERENCE.json'))
+        notes_path = 'opennav-x/docs/beta2/' + RELEASE_NOTES
+        require(notes_path in source.namelist(), 'Corresponding-source release notes missing')
+        require(source.read(notes_path) == payload[RELEASE_NOTES], 'Corresponding-source release notes differ')
+        require(reference.get('files', {}).get(notes_path, {}).get('sha256') == digest(payload[RELEASE_NOTES]),
+                'Corresponding-source release notes hash differs')
         require(reference.get('productCommit') == record['commit'] and
                 reference.get('upstreamCommit') == UPSTREAM and reference.get('openCpnVersion') == '5.12.4',
                 'Corresponding source identity differs')
@@ -219,7 +230,7 @@ def main():
             'Download **OpenNavX-Beta2-Windows** from the linked Actions run. '
             'Extract that outer download first; it contains the files below.\n\n'
             '1. Close OpenCPN and older XNav copies.\n'
-            '2. Read OpenNavX-Beta2-Install-Guide.md.\n'
+            '2. Read OpenNavX-Beta2-Release-Notes.md and OpenNavX-Beta2-Install-Guide.md.\n'
             '3. Run **OpenNavX-Beta2-Setup.exe** for the real OpenCPN installation.\n'
             '4. Follow OpenNavX-Beta2-Test-Guide.md.\n\n'
             '**OpenNavX-Beta2-Portable-Recovery.zip** is inside this download. '

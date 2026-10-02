@@ -25,6 +25,9 @@ class SourceDistributionTests(unittest.TestCase):
         self.prototype.write_text('name: exact prototype build workflow\n')
         (self.root / '.gitignore').write_text('build/\n')
         (self.root / 'source.cpp').write_text('int main() {}\n')
+        self.release_notes = self.root / 'docs/beta2/OpenNavX-Beta2-Release-Notes.md'
+        self.release_notes.parent.mkdir(parents=True)
+        self.release_notes.write_text('# SKAGER Beta 2\nEvaluation candidate; exact acceptance pending.\n')
         (self.root / 'patches').mkdir()
         for name in ('opencpn-5.12.4-xnav.patch', 'opencpn-5.12.4-regression-tests.patch',
                      'opencpn-5.12.4-ais-transport.patch', 'opencpn-5.12.4-chart-presentation.patch',
@@ -70,6 +73,8 @@ class SourceDistributionTests(unittest.TestCase):
         references = source_package.create_source_archive(self.root, self.commit, archive)
         with zipfile.ZipFile(archive) as source:
             self.assertIsNone(source.testzip())
+            self.assertEqual(source.read('opennav-x/docs/beta2/OpenNavX-Beta2-Release-Notes.md'),
+                             self.release_notes.read_bytes())
             self.assertEqual(source.read('.github/workflows/opennav-baseline.yml'), self.workflow.read_bytes())
             self.assertEqual(source.read('.github/workflows/opennav-prototype.yml'), self.prototype.read_bytes())
             self.assertEqual(len(references['integrationPatches']), 9)

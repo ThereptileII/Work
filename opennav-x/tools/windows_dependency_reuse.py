@@ -23,8 +23,8 @@ RECEIPT = "evidence/local/windows-dependency-first-success-receipt.json"
 PRODUCER_FACTS = {
     "openssl-parent": "evidence/local/windows-openssl-parent-tool-facts.json",
     "openssl-child": "evidence/local/windows-openssl-child-tool-facts.json",
-    "zlib-parent": "evidence/local/windows-zlib-parent-tool-facts.json",
-    "zlib-child": "evidence/local/windows-zlib-child-tool-facts.json",
+    "zlib-parent": "evidence/local/windows-zlib-1.3.2/windows-zlib-parent-tool-facts.json",
+    "zlib-child": "evidence/local/windows-zlib-1.3.2/windows-zlib-child-tool-facts.json",
     "curl-parent": "evidence/local/windows-curl-parent-tool-facts.json",
 }
 PATCHES = (
@@ -49,6 +49,7 @@ INPUTS = tuple(sorted((
     "tools/build-zlib-windows.ps1",
     "tools/build-curl-windows.ps1",
     "tools/windows-curl-environment.ps1",
+    "tools/windows-curl-import-layout.cmake",
     "tools/test-curl-source-preflight.ps1",
     "tools/patch-curl-test-openssl.py",
     "tools/windows-native-tool-facts.ps1",

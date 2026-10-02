@@ -96,6 +96,8 @@ if not "%preview_exit%"=="0" (
 exit /b %preview_exit%
 '''
     (destination / (name + '.cmd')).write_bytes(text.replace('\n', '\r\n').encode('utf-8'))
+if not (ROOT / 'docs/beta2/OpenNavX-Beta2-Release-Notes.md').is_file():
+    raise SystemExit('Beta 2 release notes are required in every recovery/installer package')
 for file in (ROOT / 'docs/beta2').glob('*.md'):
     shutil.copy2(file, destination / 'docs' / file.name)
 version_header = (ROOT / 'src/application/Version.h').read_text()

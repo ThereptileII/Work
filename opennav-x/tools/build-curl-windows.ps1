@@ -164,6 +164,7 @@ if (-not $DumpbinCandidates.Count) { throw 'MSVC Win32 dumpbin missing' }
 $Dumpbin = $DumpbinCandidates[0]
 $ToolFacts = Resolve-File (Join-Path $PSScriptRoot 'windows-native-tool-facts.ps1') 'Native tool-facts helper'
 $CMakeFactsInclude = Resolve-File (Join-Path $PSScriptRoot 'windows-native-tool-facts.cmake') 'Native CMake tool-facts include'
+$ImportLayoutInclude = Resolve-File (Join-Path $PSScriptRoot 'windows-curl-import-layout.cmake') 'Curl import layout include'
 $Facts = Join-Path $Evidence 'windows-curl-parent-tool-facts.json'
 foreach ($Tool in @('cmake.exe','perl.exe')) {
     if (-not (Get-Command $Tool -CommandType Application -ErrorAction SilentlyContinue)) { throw "curl build prerequisite missing: $Tool" }
@@ -271,10 +272,11 @@ try {
 Add-Content -LiteralPath $NativeLog -Value 'curl upstream certificate generation probe passed' -Encoding UTF8
 
 $Configure = @('-S',$Source,'-B',$Build,'-G','Visual Studio 17 2022','-A','Win32',
-    "-DCMAKE_INSTALL_PREFIX=$Prefix","-DCMAKE_PROJECT_INCLUDE=$($CMakeFactsInclude.Replace('\','/'))",
+    "-DCMAKE_INSTALL_PREFIX=$Prefix","-DCMAKE_PROJECT_INCLUDE=$($CMakeFactsInclude.Replace('\','/'));$($ImportLayoutInclude.Replace('\','/'))",
     "-DPERL_EXECUTABLE:FILEPATH=$TestPerl",
     '-DCMAKE_MSVC_RUNTIME_LIBRARY=MultiThreadedDLL',
     '-DBUILD_SHARED_LIBS=ON','-DBUILD_STATIC_LIBS=OFF','-DBUILD_CURL_EXE=ON','-DBUILD_TESTING=ON',
+    '-DIMPORT_LIB_SUFFIX:STRING=',
     '-DBUILD_EXAMPLES=OFF','-DBUILD_LIBCURL_DOCS=OFF','-DBUILD_MISC_DOCS=OFF',
     '-DCURL_USE_OPENSSL=ON','-DCURL_USE_SCHANNEL=OFF','-DCURL_STATIC_CRT=OFF','-DCURL_USE_CMAKECONFIG=OFF',
     "-DOPENSSL_ROOT_DIR=$OpenSslPrefix","-DOPENSSL_INCLUDE_DIR=$OpenSslPrefix/include",
@@ -285,6 +287,13 @@ $Configure = @('-S',$Source,'-B',$Build,'-G','Visual Studio 17 2022','-A','Win32
     '-DUSE_WIN32_IDN=ON','-DCURL_DISABLE_FORM_API=OFF','-DHTTP_ONLY=OFF',
     '-DCURL_CA_BUNDLE=none','-DCURL_CA_PATH=none','-DCURL_CA_FALLBACK=OFF','-DCURL_DISABLE_CA_SEARCH=ON','-DCURL_CA_SEARCH_SAFE=OFF')
 Invoke-Checked cmake.exe $Configure
+$ImportLayoutPath = Resolve-File (Join-Path $Build 'xnav-curl-import-Release.txt') 'Generated curl import layout'
+$ConfiguredImport = [IO.File]::ReadAllText($ImportLayoutPath).Trim()
+$ExpectedBuildImport = [IO.Path]::GetFullPath((Join-Path $Build 'lib/Release/libcurl.lib'))
+if ([IO.Path]::GetFullPath($ConfiguredImport) -ine $ExpectedBuildImport) {
+    throw "Configured curl import path differs from the producer contract: $ConfiguredImport"
+}
+Copy-Item -LiteralPath $ImportLayoutPath -Destination (Join-Path $Evidence 'windows-curl-import-Release.txt') -Force
 $CacheText = Get-Content -LiteralPath (Join-Path $Build 'CMakeCache.txt') -Raw
 if ($CacheText -notmatch '(?m)^PERL_EXECUTABLE:FILEPATH=(.+)$' -or
     (Resolve-Path -LiteralPath $Matches[1].Trim()).Path -ine $TestPerl) {
@@ -302,6 +311,10 @@ $env:PATH = "$(Join-Path $Build 'lib/Release');$(Join-Path $OpenSslPrefix 'bin')
 Invoke-WindowsCurlSourceChecks -TestPerl $TestPerl -Source $Source -Build $Build `
     -Evidence (Join-Path $Evidence 'windows-curl-source-preflight') | Tee-Object -FilePath $NativeLog -Append
 Invoke-Checked cmake.exe @('--build',$Build,'--config','Release','--parallel','2')
+# Do not spend the upstream suite on a producer whose actual linker output
+# cannot satisfy the declared install/cache contract. No rename or fallback.
+$BuiltImport = Resolve-File $ExpectedBuildImport 'Built curl import library before upstream tests'
+if ((Get-Item -LiteralPath $BuiltImport).Length -le 0) { throw 'Built curl import library is empty' }
 Invoke-Checked cmake.exe @('--build',$Build,'--config','Release','--target','tests','--parallel','2')
 $TestSummary = $null
 foreach ($Line in [IO.File]::ReadLines($NativeLog)) {

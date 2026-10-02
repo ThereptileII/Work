@@ -6,6 +6,7 @@ from __future__ import annotations
 import json
 import os
 from pathlib import Path
+import re
 import tempfile
 import unittest
 from unittest import mock
@@ -70,6 +71,35 @@ class SameJobReuseReceiptTests(unittest.TestCase):
         self.original.write_text(json.dumps({"mode": "source-only", "status": "verified"}))
         reuse.verify_same_job(self.root)
 
+    def test_zlib_facts_from_actual_producer_paths_are_consumed_and_bound(self):
+        # Derive the fixture locations from the producer, independently of the
+        # consumer map used by setUp. Refuse an unfamiliar declaration shape.
+        producer = Path(__file__).with_name("build-zlib-windows.ps1").read_text()
+        directories = re.findall(r"(?m)^\$Evidence = Join-Path \$Root '([^']+)'$", producer)
+        self.assertEqual(len(directories), 1)
+        for kind, variable in (("zlib-parent", "ParentFacts"), ("zlib-child", "ChildFacts")):
+            (self.root / reuse.PRODUCER_FACTS[kind]).unlink()
+            filenames = re.findall(
+                rf"(?m)^\${variable} = Join-Path \$Evidence '([^']+)'$", producer)
+            self.assertEqual(len(filenames), 1)
+            relative = directories[0] + "/" + filenames[0]
+            self.assertEqual(reuse.PRODUCER_FACTS[kind], relative)
+            path = self.root / relative
+            path.parent.mkdir(parents=True, exist_ok=True)
+            path.write_text(json.dumps({"schemaVersion": 1, "kind": kind}), encoding="utf-8")
+        self.capture()
+        reuse.verify_same_job(self.root)
+        for kind in ("zlib-parent", "zlib-child"):
+            with self.subTest(kind=kind):
+                path = self.root / reuse.PRODUCER_FACTS[kind]
+                original = path.read_bytes()
+                try:
+                    path.write_bytes(original + b" ")
+                    with self.assertRaisesRegex(ValueError, "job identity"):
+                        reuse.verify_same_job(self.root)
+                finally:
+                    path.write_bytes(original)
+
     def test_checkout_root_workflow_is_bound_by_commit_not_nested_path(self):
         workflow = ".github/workflows/opennav-baseline.yml"
         self.assertNotIn(workflow, reuse.INPUTS)
@@ -105,6 +135,7 @@ class SameJobReuseReceiptTests(unittest.TestCase):
             "evidence/local/windows-curl-native-output.log",
             "tools/build-curl-windows.ps1",
             "tools/windows-curl-environment.ps1",
+            "tools/windows-curl-import-layout.cmake",
             "tools/test-curl-source-preflight.ps1",
             "evidence/local/windows-curl-source-preflight/source-analysis.json",
             "evidence/local/windows-curl-source-preflight/test1119.stderr.txt",

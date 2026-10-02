@@ -1,0 +1,64 @@
+{
+  "schema": 1,
+  "issue": "SCRUM-224",
+  "commit": "0e9ec666ab27262a0c246f87f2e0fa5c7ede9fd0",
+  "run": "https://github.com/ThereptileII/Work/actions/runs/36969350849",
+  "job": 110721360745,
+  "observedUtc": "2026-10-02T06:37:00Z",
+  "status": "failed",
+  "artifact": {
+    "id": 11213290312,
+    "bytes": 11482710,
+    "sha256": "b5e2bd96d04cb6f66dee6e01f8a986fc7982dd1f632ad099b52ec053d4b409ea",
+    "sizeVerified": true,
+    "sha256Verified": true,
+    "zipCrcVerified": true
+  },
+  "evidenceFiles": {
+    "windows-xnav-Win32.log": {
+      "bytes": 5374791,
+      "sha256": "c4533a547eb71047eb44494ef93d593f0c8da2cc9195a6a93f1a48e6e445deef"
+    },
+    "windows-curl-native-output.log": {
+      "bytes": 251798,
+      "sha256": "fb322db0293f692de2b06fef6c106f5787d8c3ae87422156111ae3e7897d8e52"
+    },
+    "windows-openssl-native-output.log": {
+      "bytes": 5006602,
+      "sha256": "0c2bb0510c3be04e214cdf4f4a570c168cb5918fe561764594ba5be8c09f547c"
+    },
+    "windows-openssl-build.json": {
+      "bytes": 4147,
+      "sha256": "40e419d5aa967265fd67c6c62342675c90901deba52d3d8e2b5d592d28d13257"
+    },
+    "windows-curl-source-preflight/source-analysis.json": {
+      "bytes": 930,
+      "sha256": "74b121010778947384466c27fd5bb604e17528bc1f5774e9266cd7a48be5a19f"
+    }
+  },
+  "observations": {
+    "openssl": {
+      "version": "3.5.9",
+      "files": 347,
+      "tests": 4283,
+      "result": "PASS",
+      "producerManifestPresent": true
+    },
+    "curl": {
+      "version": "8.22.0",
+      "testsReported": 1569,
+      "testsPassed": 1569,
+      "installImportLibrary": "lib/libcurl_imp.lib",
+      "scriptRequires": "lib/libcurl.lib",
+      "producerManifestPresent": false
+    },
+    "failure": "Import library expected under wrong filename after successful upstream test and install.",
+    "applicationCrashEstablished": false
+  },
+  "limits": [
+    "Application compilation/integrated modes did not complete.",
+    "No successful curl producer manifest or accepted runtime closure.",
+    "Installer, charts, UI, native endurance and boat gates not reached.",
+    "No package eligible for boat deployment."
+  ]
+}

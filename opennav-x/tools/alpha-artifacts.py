@@ -33,7 +33,8 @@ files = [ROOT / 'build/developer-preview/OpenNavX-Beta2-Portable-Recovery.zip',
          ROOT / 'build/developer-preview/OpenNavX-Beta2-source.zip',
          ROOT / 'build/beta-installer/OpenNavX-Beta2-Setup.exe',
          ROOT / 'docs/beta2/OpenNavX-Beta2-Install-Guide.md',
-         ROOT / 'docs/beta2/OpenNavX-Beta2-Test-Guide.md']
+         ROOT / 'docs/beta2/OpenNavX-Beta2-Test-Guide.md',
+         ROOT / 'docs/beta2/OpenNavX-Beta2-Release-Notes.md']
 checks = []
 expected = {
     'OpenNavX-Beta2-Portable-Recovery.zip': gates['production-recovery-results.json']['package_sha256'],
