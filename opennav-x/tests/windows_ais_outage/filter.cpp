@@ -113,20 +113,71 @@ bool SameValue(const FWP_CONDITION_VALUE0 &a,const FWP_CONDITION_VALUE0 &b) {
   default:return false;
   }
 }
-void Verify(HANDLE engine,const FWPM_FILTER0 &expected) {
+void Hex(std::ostream &out,const unsigned char *data,std::size_t size) {
+  if(!data){out<<"null";return;}
+  // App ID is the inert marker path. Cap even an unexpected BFE blob at 64KiB.
+  const auto count=std::min<std::size_t>(size,65536);
+  const char digits[]="0123456789abcdef";out<<'"';
+  for(std::size_t i=0;i<count;++i)out<<digits[data[i]>>4]<<digits[data[i]&15];
+  out<<'"';
+}
+void Value(std::ostream &out,const FWP_CONDITION_VALUE0 &value) {
+  out<<"{\"type\":"<<value.type<<",\"value\":";
+  switch(value.type) {
+  case FWP_EMPTY:out<<"null";break;
+  case FWP_UINT8:out<<static_cast<unsigned>(value.uint8);break;
+  case FWP_UINT16:out<<value.uint16;break;
+  case FWP_UINT32:out<<value.uint32;break;
+  case FWP_UINT64:if(value.uint64)out<<*value.uint64;else out<<"null";break;
+  case FWP_BYTE_ARRAY16_TYPE:
+    Hex(out,value.byteArray16?value.byteArray16->byteArray16:nullptr,16);break;
+  case FWP_BYTE_BLOB_TYPE:
+    if(!value.byteBlob){out<<"null";break;}
+    out<<"{\"size\":"<<value.byteBlob->size<<",\"hex\":";
+    Hex(out,value.byteBlob->data,value.byteBlob->size);
+    out<<",\"truncated\":"<<(value.byteBlob->size>65536?"true":"false")<<'}';break;
+  case FWP_V4_ADDR_MASK:
+    if(!value.v4AddrMask){out<<"null";break;}
+    out<<"{\"address\":"<<value.v4AddrMask->addr<<",\"mask\":"<<value.v4AddrMask->mask<<'}';break;
+  case FWP_V6_ADDR_MASK:
+    if(!value.v6AddrMask){out<<"null";break;}
+    out<<"{\"address_hex\":";Hex(out,value.v6AddrMask->addr,16);
+    out<<",\"prefix_length\":"<<static_cast<unsigned>(value.v6AddrMask->prefixLength)<<'}';break;
+  default:out<<"null,\"unsupported_diagnostic_type\":true";break;
+  }
+  out<<'}';
+}
+void Filter(std::ostream &out,const FWPM_FILTER0 &filter) {
+  out<<"{\"key\":\""<<Text(filter.filterKey)<<"\",\"layer\":\""<<Text(filter.layerKey)
+     <<"\",\"sublayer\":\""<<Text(filter.subLayerKey)<<"\",\"action\":"<<filter.action.type
+     <<",\"flags\":"<<filter.flags<<",\"condition_count\":"<<filter.numFilterConditions
+     <<",\"filter_id\":"<<filter.filterId<<",\"weight_type\":"<<filter.weight.type
+     <<",\"effective_weight_type\":"<<filter.effectiveWeight.type<<",\"conditions\":[";
+  for(unsigned i=0;i<filter.numFilterConditions;++i) {
+    if(i)out<<',';const auto &condition=filter.filterCondition[i];
+    out<<"{\"field\":\""<<Text(condition.fieldKey)<<"\",\"match_type\":"<<condition.matchType<<",\"condition_value\":";
+    Value(out,condition.conditionValue);out<<'}';
+  }
+  out<<"]}";
+}
+bool Verify(HANDLE engine,const FWPM_FILTER0 &expected) {
   FWPM_FILTER0 *actual=nullptr;Check(FwpmFilterGetByKey0(engine,&expected.filterKey,&actual),"read back filter");
   bool same=Equal(actual->subLayerKey,expected.subLayerKey) && Equal(actual->layerKey,expected.layerKey) &&
       actual->action.type==FWP_ACTION_BLOCK && actual->flags==0 && actual->numFilterConditions==expected.numFilterConditions;
   // BFE may sort conditions; compare by field instead of relying on input order.
-  for(unsigned i=0;i<expected.numFilterConditions && same;++i) {
+  for(unsigned i=0;i<expected.numFilterConditions;++i) {
     bool found=false;
     for(unsigned j=0;j<actual->numFilterConditions;++j)
       if(Equal(expected.filterCondition[i].fieldKey,actual->filterCondition[j].fieldKey))
         found=expected.filterCondition[i].matchType==actual->filterCondition[j].matchType &&
               SameValue(expected.filterCondition[i].conditionValue,actual->filterCondition[j].conditionValue);
-    same=found;
+    same=same && found;
   }
-  FwpmFreeMemory0(reinterpret_cast<void **>(&actual));outage::Require(same,"filter readback differs from exact guarded scope");
+  // Log both full guarded representations before accepting any normalization.
+  // BFE-assigned IDs/weight types are diagnostic metadata, not compared fields.
+  std::cout<<"{\"event\":\"filter_readback\",\"matches\":"<<(same?"true":"false")<<",\"expected\":";
+  Filter(std::cout,expected);std::cout<<",\"actual\":";Filter(std::cout,*actual);std::cout<<'}'<<std::endl;
+  FwpmFreeMemory0(reinterpret_cast<void **>(&actual));return same;
 }
 int Audit(int argc,wchar_t **argv) {
   outage::Require(argc==5,"audit requires exactly three owned GUIDs");
@@ -191,7 +242,9 @@ int wmain(int argc,wchar_t **argv) {
       Check(FwpmTransactionCommit0(engine.value),"commit dual-family filters");
       commit_after=GetTickCount64();
     } catch(...) {FwpmTransactionAbort0(engine.value);FwpmFreeMemory0(reinterpret_cast<void **>(&appid));throw;}
-    Verify(engine.value,f4);Verify(engine.value,f6);FwpmFreeMemory0(reinterpret_cast<void **>(&appid));
+    const bool match4=Verify(engine.value,f4),match6=Verify(engine.value,f6);
+    FwpmFreeMemory0(reinterpret_cast<void **>(&appid));
+    outage::Require(match4 && match6,"filter readback differs from exact guarded scope");
     std::cout<<"{\"event\":\"active\",\"scope_verified\":true,\"families\":[4,6],\"action\":\"block\",\"dynamic\":true,\"commit_before_tick\":"
              <<commit_before<<",\"commit_after_tick\":"<<commit_after<<"}"<<std::endl;
     outage::Require(static_cast<bool>(std::getline(std::cin,command)) && command=="stop","bounded stop command required");

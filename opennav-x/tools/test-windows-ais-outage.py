@@ -207,6 +207,25 @@ def wait_until(predicate, seconds, description):
     raise RuntimeError("deadline: " + description)
 
 
+def wait_event(process, event, seconds, description):
+    def observe():
+        value = next(iter(process.snapshot(event)), None)
+        if value:
+            return value
+        code = process.process.poll()
+        if code is not None:
+            # Drain the finite pipe before reporting the original native error.
+            process.thread.join(timeout=.2)
+            value = next(iter(process.snapshot(event)), None)
+            if value:
+                return value
+            diagnostics = process.snapshot("diagnostic")
+            detail = diagnostics[-1].get("text", "") if diagnostics else "no native diagnostic"
+            raise RuntimeError(f"helper exited {code} before {description}: {detail}")
+        return None
+    return wait_until(observe, seconds, description)
+
+
 def audit(exe, keys, folder, phase):
     attempts = []
     end = time.monotonic() + 3
@@ -239,7 +258,7 @@ def phase(name, exe, clients, folder, marker_hash, port, report):
         item["command"] = command
         helper = Process(command, folder, name + "-helper")
         job.assign(helper.process)
-        keys = wait_until(lambda: next(iter(helper.snapshot("prepared")), None), 4, "guarded helper preparation")
+        keys = wait_event(helper, "prepared", 4, "guarded helper preparation")
         item["identity"] = keys
         for family in (4, 6):
             marker = clients[f"marker{family}"]
@@ -247,7 +266,7 @@ def phase(name, exe, clients, folder, marker_hash, port, report):
                     not marker.snapshot("flow_error", start), "target reconnected before filter arming")
         item["armed_monotonic"] = time.monotonic()
         helper.send("arm")
-        active = wait_until(lambda: next(iter(helper.snapshot("active")), None), 3, "verified dual-family filter commit")
+        active = wait_event(helper, "active", 3, "verified dual-family filter commit")
         item["active"] = active
         require(active.get("scope_verified") is True and active.get("families") == [4, 6],
                 "missing exact dual-family scope readback")

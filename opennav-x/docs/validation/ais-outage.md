@@ -105,6 +105,32 @@ or guards change. Downloaded artifact `11243223347` is retained locally at
 `4251e44033803582cbf7243bd736c8076ada0fd0648a6ef2e4efed833aa6d6c7`).
 Native compilation and behavioral proof remain pending after this correction.
 
+The next native attempt,
+[run 37045053523](https://github.com/ThereptileII/Work/actions/runs/37045053523),
+job `110964298147`, commit `e64f448bed1aa22587d3431054f9abce0bb63e67`,
+compiled successfully but refused its committed filters at strict readback,
+before emitting `active`. The original diagnostic did not identify which field
+differed. A fresh audit confirmed both owned filters and the sublayer absent
+after helper exit. Retained artifact `11244122828` is 647838 bytes, SHA-256
+`2609447b744d2dce14f93672102f1b5911ea50ab3ed111b3ff24a790c3b39306`, under
+`evidence/local/e64f-native/`.
+
+The diagnostic-only follow-up logs both families' complete expected/actual
+condition GUIDs, match types, value types and values, plus action, flags, layer,
+sublayer and count before the same strict decision. Byte blobs are hex encoded
+and bounded at 64KiB with explicit truncation; fixed address/mask values are also
+supported for diagnosis. No alternate address representation or added flag is
+accepted. The runner now surfaces helper exit/code/native error promptly instead
+of waiting for the generic preparation/activation deadline. Cleanup audit remains
+mandatory on this failure path.
+
+Microsoft documents [address value alternatives](https://learn.microsoft.com/en-us/windows-hardware/drivers/network/filtering-condition-data-types)
+and [BFE-assigned filter metadata](https://learn.microsoft.com/en-us/windows/win32/api/fwpmtypes/ns-fwpmtypes-fwpm_filter0).
+This does not prove which, if any, canonicalization occurred in this run; the
+next native readback must establish the actual discrepancy before any matching
+policy changes. Local follow-up checks cover Python syntax and three bounded
+runner event/early-exit cases only; native diagnostic output remains pending.
+
 Even a passing disposable proof would not qualify actual AISStream connection
 loss/aging/reconnect, DNS-address changes, TLS transport, onboard AIS continuity,
 SSH/Tailscale/RustDesk continuity, boat operation or real-executable scoping. Those
