@@ -1,7 +1,8 @@
 #!/usr/bin/env python3
 """Read-only package extraction, then the pinned disposable native peer test.
 
-Never executes Setup, deletes a portable marker, or builds application code.
+Executes authenticated Setup only for unsupported-build rejection. Never deletes
+a portable marker or builds application code.
 """
 import argparse
 import hashlib
@@ -161,6 +162,9 @@ def prepare(package_dir, recovery, output, commit):
 PREREQUISITES = (
     'Build and exercise integrated modes',
     'Verify packaged source reproduces the curl certificate-tool patch',
+    # This step verifies the positive early CLI receipt against the same source,
+    # installed executable and run attempt. Keep it mandatory: integration-step
+    # success alone must not replace explicit peer CLI evidence.
     'Installed native peer CLI refuses key changes on the disposable runner',
     'Staged native loader check without profile initialization',
     'Native pointer chart gestures, waypoint Go To and route creation',
@@ -227,7 +231,7 @@ def main(args):
     report = {'result': 'FAILED', 'candidate_commit': args.commit, 'candidate_run': args.run,
               'artifact_id': args.artifact, 'artifact_sha256': args.digest,
               'test_source_commit': subprocess.check_output(['git', 'rev-parse', 'HEAD'], cwd=ROOT, text=True).strip(),
-              'scope': 'Two concurrent XNav profiles; TCP 8443/8444, credential/certificate and navigation preservation. No installer execution, packet capture, or release acceptance.'}
+              'scope': 'Peer/plugin security and exact Setup unsupported-build preservation. No supported installation, application rebuild, packet capture, or release acceptance.'}
     try:
         run = api('/actions/runs/' + args.run)
         artifact = api('/actions/artifacts/' + args.artifact)
@@ -306,6 +310,27 @@ def main(args):
                 'native plugin download guard failed or changed candidate identity')
         report['plugin_download_guard'] = {'status': 'passed',
             'results_sha256': sha(plugin_evidence / 'native-results.json')}
+        unsupported_helper = ROOT / 'tools/test-installer-unsupported-candidate.py'
+        unsupported_evidence = args.evidence / 'installer-unsupported'
+        report['unsupported_probe_source_sha256'] = sha(unsupported_helper)
+        # The helper bounds its own child processes and owns their tree cleanup
+        # and profile-restoration finally block. An outer subprocess timeout
+        # would kill that owner before it could restore or report uncertainty.
+        unsupported_result = subprocess.run([sys.executable, str(unsupported_helper),
+            '--setup', str(workspace / SETUP), '--setup-sha256', report[SETUP + '_sha256'],
+            '--runtime', str(workspace / 'runtime'), '--manifest', str(plugin_manifest),
+            '--manifest-sha256', sha(plugin_manifest), '--adapter-sha256', report['adapter_sha256'],
+            '--commit', args.commit, '--seven', str(args.seven),
+            '--evidence', str(unsupported_evidence)], env=test_env)
+        unsupported = json.loads((unsupported_evidence / 'unsupported-results.json').read_text())
+        require(unsupported_result.returncode == 0 and unsupported['status'] == 'passed' and
+                unsupported['commit'] == args.commit and unsupported['setupSha256'] == report[SETUP + '_sha256'] and
+                unsupported['testSourceSha256'] == report['unsupported_probe_source_sha256'] and
+                unsupported['packageManifestSha256'] == sha(plugin_manifest) and
+                unsupported['profileRestoration'] == 'verified' and unsupported['installAndShortcutRootsAbsent'] is True,
+                'Unsupported-build preservation failed or changed candidate identity')
+        report['unsupported_build_preservation'] = {'status': 'passed',
+            'results_sha256': sha(unsupported_evidence / 'unsupported-results.json')}
         package = json.loads((workspace / 'package.json').read_text(encoding='utf-8-sig'))
         require(all(sha(workspace / 'runtime' / item['path']) == item['sha256'] for item in package['files']),
                 'packaged runtime changed during test')

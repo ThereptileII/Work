@@ -122,6 +122,18 @@ class PreparationTests(unittest.TestCase):
                 with self.assertRaises(ValueError):
                     probe.eligibility(*data, COMMIT, '123')
 
+    def test_early_cli_receipt_verification_step_remains_mandatory(self):
+        name = 'Installed native peer CLI refuses key changes on the disposable runner'
+        for conclusion in ('missing', 'skipped', 'failure'):
+            with self.subTest(conclusion=conclusion):
+                run, artifact, jobs, receipt = self.eligibility_fixture()
+                if conclusion == 'missing':
+                    jobs[0]['steps'] = [step for step in jobs[0]['steps'] if step['name'] != name]
+                else:
+                    next(step for step in jobs[0]['steps'] if step['name'] == name)['conclusion'] = conclusion
+                with self.assertRaisesRegex(ValueError, 'required native prerequisite not successful'):
+                    probe.eligibility(run, artifact, jobs, receipt, COMMIT, '123')
+
     def test_case_alias_zip(self):
         with tempfile.TemporaryDirectory() as tmp:
             archive = Path(tmp) / 'case.zip'

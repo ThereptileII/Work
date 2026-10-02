@@ -27,7 +27,7 @@ permissions:
 jobs:
   native-peer:
     runs-on: windows-2022
-    timeout-minutes: 20
+    timeout-minutes: 30
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
       - name: Resolve reviewed exact candidate request
