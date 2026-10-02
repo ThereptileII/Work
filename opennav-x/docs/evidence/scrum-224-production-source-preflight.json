@@ -1,0 +1,34 @@
+{
+  "schemaVersion": 1,
+  "issue": "SCRUM-224",
+  "commit": "0e9ec666ab27262a0c246f87f2e0fa5c7ede9fd0",
+  "localCommit": "76bad1a",
+  "run": "https://github.com/ThereptileII/Work/actions/runs/36969097886",
+  "jobId": 110719120828,
+  "artifact": {
+    "artifactId": 11210109466,
+    "bytes": 65136,
+    "sha256": "df4d9cfd126f6b33b11776083417fe0f524d4c0a2e2b4c315857c794f3cbcdde",
+    "allZipCrcsPassed": true
+  },
+  "checks": {
+    "powershell7Restoration": true,
+    "powershell51Restoration": true,
+    "reinitializationIdentity": true,
+    "successAndFailureRestoration": true,
+    "unchangedSourceChecks": [
+      1119,
+      1167
+    ],
+    "productionOnlyPreflight": true,
+    "powershell51SourceChecks": true,
+    "negativeControlsRetained": true
+  },
+  "localContractTests": 42,
+  "limits": [
+    "Focused configure-only native prerequisite proof, not application release qualification",
+    "One integrated candidate is permitted next; prototype fanout awaits functional path",
+    "Full curl upstream suite, application, reuse, installer, chart, display, endurance and boat gates remain"
+  ],
+  "result": "passed"
+}
