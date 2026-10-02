@@ -33,6 +33,13 @@ Name text does not enlarge the existing hit area. ENC text decluttering is not
 available through this overlay boundary, so dense real charts still require
 native review.
 
+Pinned `gui/src/ocpndc.cpp:1834–1870` clamps measured text width and height to
+500 pixels, while `DrawText` paints the complete string. The follow-up painter
+therefore omits either extent at or above 500 before bounds/collision checks.
+This deliberately also omits a genuinely exact-500-pixel name: the renderer
+does not expose enough information to distinguish it from a longer name. No
+text truncation, name limit, symbol or hit-test semantics change.
+
 Only verified active XNav chart presentation enables the label pass, using the
 existing `ChartBackground` availability gate. Standard and missing/changed
 presentation-resource fallback retain their existing supplemental AIS symbols
@@ -42,11 +49,16 @@ No illustrative course vector is added.
 ## Focused evidence
 
 - 58 existing/extended chart-target, owned-name lifetime, rename, age, omission,
-  label bounds/collision and effective-theme checks pass.
-- 23 real wxMemoryDC shared-painter checks pass at 96 DPI: selected priority,
+  label bounds/collision and effective-theme checks passed in the initial
+  increment; their inputs are unchanged and they were not rerun for the clamp fix.
+- 26 real wxMemoryDC shared-painter checks pass at 96 DPI: selected priority,
   live/aging labels, missing/stale/invalid/clipped/colliding omission, exact
   baseline/font/ink and drawing-state restoration. One inspected 960x320 PNG
   shows Day/Dusk/Night. The circles are fixture anchors, not an AIS glyph test.
+  Three added checks use an adapter reproducing the pinned 500-pixel metric
+  clamp while forwarding complete text to wxMemoryDC. A valid 128-byte name
+  measures 1024 pixels, reports 500, would falsely fit at x=460 in a 960-pixel
+  viewport, and now produces zero draw calls. The canonical PNG hash is unchanged.
 - The complete final `OnlineAisOverlay.cpp` compiles against actual prepared
   pinned OpenCPN headers with the retained production macros and include paths.
   No macro suppression, source shim or full application rebuild was used.

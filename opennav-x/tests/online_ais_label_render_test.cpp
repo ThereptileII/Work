@@ -15,11 +15,17 @@ struct Drawn { wxString text;int x,y;wxColour ink;wxFont font; };
 // Observe and forward to the actual wx drawing context; no replacement renderer.
 struct ObservedDC {
   wxMemoryDC &dc;std::vector<Drawn> drawn;
+  bool clamp_metrics=false;
   wxFont GetFont() const{return dc.GetFont();}
   wxColour GetTextForeground() const{return dc.GetTextForeground();}
   void SetFont(const wxFont &v){dc.SetFont(v);}
   void SetTextForeground(const wxColour &v){dc.SetTextForeground(v);}
-  void GetTextExtent(const wxString &s,int *w,int *h,int *d){dc.GetTextExtent(s,w,h,d);}
+  void GetTextExtent(const wxString &s,int *w,int *h,int *d){
+    dc.GetTextExtent(s,w,h,d);
+    // Reproduce pinned ocpnDC::GetTextExtent's native renderer limitation;
+    // DrawText still forwards the complete string to real wxMemoryDC.
+    if(clamp_metrics){*w=std::min(*w,500);*h=std::min(*h,500);}
+  }
   void DrawText(const wxString &s,int x,int y){drawn.push_back({s,x,y,dc.GetTextForeground(),dc.GetFont()});dc.DrawText(s,x,y);}
 };
 class App:public wxApp {public:bool OnInit() override{return true;}};
@@ -76,6 +82,25 @@ int main(int argc,char **argv) {
       canvas.Blit(theme*320,0,320,320,&dc,0,0);
       dc.SelectObject(wxNullBitmap);
     }
+    // With the pinned clamp, a 128-byte valid name appears to fit exactly at
+    // the right edge even though actual native text is wider. No truncation or
+    // drawing is permitted when the measurement has saturated.
+    ais::ChartTarget long_name;long_name.mmsi=265000008;
+    long_name.name=std::string(128,'W');long_name.age=ais::TargetAge::Live;
+    canvas.SetFont(ui::UiFont(*window,9));
+    int full_width=0,full_height=0;canvas.GetTextExtent(wxString::FromUTF8(long_name.name),&full_width,&full_height);
+    Check(full_width>500,"Long-name fixture must actually exceed the pinned 500px clamp");
+    ObservedDC clamped{canvas,{},true};
+    int measured_width=0,measured_height=0,descent=0;
+    clamped.GetTextExtent(wxString::FromUTF8(long_name.name),&measured_width,&measured_height,&descent);
+    Check(measured_width==500&&
+          ais::ChartLabelFits({460,0,measured_width,measured_height},{0,0,960,320},{})&&
+          !ais::ChartLabelFits({460,0,full_width,full_height},{0,0,960,320},{}),
+          "Pinned clamped metric falsely fits where full native text does not");
+    Check(integration::DrawOnlineAisLabels(clamped,*window,ui::LightMode::Day,{960,320},
+          {{long_name,{446,80}}})==0&&clamped.drawn.empty(),
+          "Saturated extent cannot admit full text beyond the viewport");
+    std::cout<<"Long-name native width "<<full_width<<", pinned metric "<<measured_width<<", painted labels 0\n";
     canvas.SelectObject(wxNullBitmap);
     Check(combined.ConvertToImage().SaveFile(wxString::FromUTF8(output),wxBITMAP_TYPE_PNG),"Fixture PNG saved");
     delete window;

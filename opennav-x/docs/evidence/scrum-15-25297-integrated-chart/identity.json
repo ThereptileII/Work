@@ -1,0 +1,94 @@
+{
+  "local_source_commit": "25297e3ef88682ad6d85438f762e314ef9fec8d6",
+  "local_source_tree": "833f50aae261b034696b04577d9f967b9c2e344a",
+  "upstream_commit": "37fd0cddb7334fe489e9f18aa163977a9c5c84f7",
+  "systemd_unit": "chart-refinement-25297-build.service",
+  "systemd_invocation": "6bd117233b1f40818fc2b70a962065d0",
+  "supervisor_pid": 178761,
+  "one_build_invocation": true,
+  "target": "opencpn",
+  "jobs": 2,
+  "expected_steps": 136,
+  "all_nine_patches_verified_before": true,
+  "recorded_at": "2026-10-02T20:32:14.617343+00:00",
+  "published_mapping_reported_by_root": {
+    "commit": "6e0117de2fd636fa458dcef449f0b6121a5865c2",
+    "tree": "44f59d8ed306657f1d088c22a4a13f02ef4ee50a",
+    "independently_verified_here": false
+  },
+  "chart_archive_sha256": "b027e029dc7b76595381d89e3718145eb5069e5a03917e78bada4f8ebe8c84e4",
+  "chart_cell_sha256": "7e474bea96e7a84c6f3ee6b44ff7db4288029fa47ac2a285594e18469dbf518c",
+  "capture_script_sha256": "ad3ee0c99a648034cbf12beefa8ec081cfa366605f36e6846f2c24d314e2b817",
+  "finalized_at": "2026-10-02T20:41:14.487410+00:00",
+  "binary_sha256": "08c39661aa695775a506157d29755fa4700fc8cd380f230a909d42ef63db9f39",
+  "binary_size_bytes": 25739296,
+  "build_exit": 0,
+  "completed_steps": 136,
+  "all_nine_patches_verified_after": true,
+  "capture_status": "passed",
+  "capture_clean_exit": true,
+  "app_pid_in_private_namespace": 7,
+  "capture_report_sha256": "06f81c21e12bdf143bbd1068bd5b9061d157e6624de58d739957c4deecfbc4f1",
+  "controlled_input_sha256": "e1f9a6628eacb99be6090b4d5aed6b1f4d4048123e0945ced4dc4968ecead163",
+  "capture_images": {
+    "XNav-Day-ownship-detail.png": "5824be99990e8e3d174d52d325720eb152a33021da7347e36b7540d467e493d8",
+    "XNav-Day.png": "08d5d4335450d3c773fec07f48a6b09b764db0b5a772267b1ce55365f930fefc",
+    "XNav-Dusk-ownship-detail.png": "43713106321b3ddbb4931abe38bb67bdc73d7fd9657e535f1b91ee4e7df7f6fb",
+    "XNav-Dusk.png": "1ed5d21629cc04c9b70bc5cd6c0efd8b8f474bd4578fa7e09e1070df3bcf769c",
+    "XNav-Night-ownship-detail.png": "21d8b2cbaef88f324f9d0e881c3cfc7ca250cbd43d709b16041a1ef1d470cc63",
+    "XNav-Night.png": "425a30b64958a2c3ac39e8ba83ce3307b9cb7a27e9077317d4ca7e32d688ee4b"
+  },
+  "observations": [
+    {
+      "theme": "Day",
+      "water_pixels": 341793,
+      "built_area_pixels": 90593,
+      "ownship_ink_pixels": 111,
+      "owned_ages_ms": {
+        "Latitude": 247,
+        "Longitude": 247,
+        "Speed over ground": 247,
+        "Course over ground": 247
+      }
+    },
+    {
+      "theme": "Dusk",
+      "water_pixels": 342129,
+      "built_area_pixels": 90576,
+      "ownship_ink_pixels": 111,
+      "owned_ages_ms": {
+        "Latitude": 508,
+        "Longitude": 508,
+        "Speed over ground": 508,
+        "Course over ground": 508
+      }
+    },
+    {
+      "theme": "Night",
+      "water_pixels": 342205,
+      "built_area_pixels": 90639,
+      "ownship_ink_pixels": 111,
+      "owned_ages_ms": {
+        "Latitude": 188,
+        "Longitude": 188,
+        "Speed over ground": 188,
+        "Course over ground": 188
+      }
+    }
+  ],
+  "scope": "One integrated app compile/link and one short Linux software real-ENC run with controlled loopback RMC. Not Windows, OpenGL, full-suite, endurance, live navigation or boat acceptance.",
+  "full_ci_eligible": false,
+  "remaining_gate": "Root-reported independent SCRUM-233 label-bounds correction; no new run authorized here.",
+  "preserved_original_binaries": {
+    "cf07197": {
+      "path": "/home/standard/Projects/X-nav-worktrees/ffe-preview-selector/.local/snapshot-coherence/install/bin/opencpn",
+      "sha256": "1c262147de5c7830576e354139c351b105a5ca4b982329a679bd516f18c152c8"
+    },
+    "785ffcd": {
+      "path": "/home/standard/Projects/X-nav-worktrees/scrum231-built-area-style/.local/built-area-build/install/bin/opencpn",
+      "sha256": "11e951ac3a90942c8d536ab6a7909c68763161caa38027133e000dd5746c0261"
+    }
+  },
+  "frozen_worktree_status": "",
+  "private_app_status": "?? evidence/\n"
+}

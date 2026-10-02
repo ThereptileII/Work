@@ -3,7 +3,7 @@
   "base": "cf07197",
   "checks": {
     "chart_target_layout_theme": 58,
-    "shared_wx_label_painter": 23
+    "shared_wx_label_painter": 26
   },
   "fixture": {
     "file": "labels-day-dusk-night.png",
@@ -14,10 +14,10 @@
     "src/ais/ChartTargets.h": "9fcf8790b46ad9445a52d4dea5fa012ae30b8d74566e72ba30d45568e615ec93",
     "src/ais/ChartTargets.cpp": "e34d835521e7963b8f87113c3c7a0c35d354a55b6aa6d0a06cf9d786a7463fb6",
     "src/integration/OnlineAisOverlay.cpp": "563a42d2216d2e96154f3d5876effb6eb568d341f3be1b5aac9b2180bd1e12ff",
-    "src/integration/OnlineAisLabels.h": "f963df8bb286b36ec688a793c80f9f540d332eff3b5af48255cbf09dd1aa97f3",
+    "src/integration/OnlineAisLabels.h": "aaab854fc4b84cfd52530e3e632d5d7361a63da1f18a0cece4f5d59e2ef4fbdd",
     "src/ui/Theme.h": "b28adb1f519ec5a1f9b7e2bfab6ec2ab1c7f06656bd129316e9e453ef1ec0776",
     "tests/online_ais_chart_tests.cpp": "fcbff9eabd5b791ad2c1e4c218a47df6428c92327b6336da9a3a7b9fe232cb51",
-    "tests/online_ais_label_render_test.cpp": "9b14f8b6ffd846eb6d9759e40f4f75cf47f824dddff539ac347fad04ff90a3dd",
+    "tests/online_ais_label_render_test.cpp": "1aba2c07f1e73cb8aebd8f319471998b25953c04213e6eb1cdcb36391865f64c",
     "src/ui/Controls.cpp": "af7939d53477998bc5d0c8403897b906f806dae3ddd2cfe99eeec5096e3979b1"
   },
   "binaries": {
@@ -26,12 +26,12 @@
       "sha256": "7d493a7d960b13a497c941e959777922c7769715b5aad65c554f6e0b71660d5f"
     },
     "label-render": {
-      "bytes": 175600,
-      "sha256": "ff631305984ca2dd5c0189f35f224ff48b5a85672f510a72be6ce8cd6fd8fc6f"
+      "bytes": 182904,
+      "sha256": "8f21de4016dbd66ae01d2493cea173d0f79a45694cc77ff7cd6a76020713c78f"
     },
     "OnlineAisOverlay.o": {
       "bytes": 97352,
-      "sha256": "fd858c34caafdf7117155a3f419af78ad6e0f6d67ba6cc13a571bb977e475551"
+      "sha256": "5d92dd9bfd51585067edee119922f4ee82c6b9ba1502494bca192f6add24e191"
     }
   },
   "font_scope": "Linux installed fallback selected by production UiFont; not Windows typography",
@@ -68,6 +68,17 @@
     ],
     "display": ":0",
     "exit": 0,
-    "executable_sha256": "ff631305984ca2dd5c0189f35f224ff48b5a85672f510a72be6ce8cd6fd8fc6f"
+    "executable_sha256": "8f21de4016dbd66ae01d2493cea173d0f79a45694cc77ff7cd6a76020713c78f"
+  },
+  "clamp_regression": {
+    "pinned_source": "upstream/OpenCPN/gui/src/ocpndc.cpp:1834-1870",
+    "native_width": 1024,
+    "clamped_width": 500,
+    "viewport_width": 960,
+    "label_x": 460,
+    "painted_labels": 0,
+    "checks_added": 3,
+    "conservative_limit": "omit width or height >=500; exactly 500 also omitted",
+    "prior_pure_checks": "58 unchanged-input checks retained from initial increment; not rerun"
   }
 }

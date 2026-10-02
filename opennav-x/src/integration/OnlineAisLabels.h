@@ -36,6 +36,9 @@ unsigned DrawOnlineAisLabels(DC &dc, wxWindow &window, ui::LightMode mode,
     if(name.empty())continue; // Invalid UTF-8 cannot become a replacement label.
     int width=0,height=0,descent=0;
     dc.GetTextExtent(name,&width,&height,&descent);
+    // Pinned ocpnDC clamps either extent to 500 but DrawText paints the full
+    // string. Saturated metrics cannot establish its bounds: omit the label.
+    if(width>=500 || height>=500)continue;
     if(descent<0 || descent>height)continue;
     // SVG y=-4 is the alphabetic baseline, not the top of its text box.
     const ais::ChartLabelBounds label{p.point.x+window.FromDIP(14),

@@ -68,12 +68,27 @@ candidate. The combined refinement source now includes:
   production units compile; 488 focused painter checks pass, including the
   Windows max-macro hazard and shared software/GL DPI factor (SCRUM-232).
 - Available owned online AIS names, exact prototype baseline and theme ink,
-  bounded placement and stale/lost label removal. 58 core and 23 painter checks
-  pass, and the production overlay compiles (SCRUM-233).
+  bounded placement and stale/lost label removal. 58 core checks and the updated
+  26-check painter pass; the production overlay compiles (SCRUM-233). Independent
+  review found OpenCPN's 500-pixel text-measurement clamp. The correction omits
+  saturated metrics; its regression exercises a real 1,024-pixel name reported
+  as 500 pixels. Exactly-500-pixel labels are conservatively omitted too.
 
-An integrated Linux link and short actual-chart check precede the next full
-native candidate. Windows, actual GL, physical boat review and remaining
-chart-symbol/label/route refinements are still open.
+The combined local `25297e3` / published `6e0117de` source completed one
+136-step integrated Linux link and a short real-ENC Day/Dusk/Night run with a
+clean exit. [Retained identity and captures](evidence/scrum-15-25297-integrated-chart/identity.json)
+bind the exact executable and public chart. Root review confirms the neutral
+built areas and east-facing prototype chevron. Controlled loopback input was
+fresh; it is not real boat-data evidence. These captures precede the label
+saturation repair and contain no online targets, so cannot qualify that repair.
+
+The same comparison still shows prominent text, dense soundings, stock hazard
+symbols and a red upstream course predictor. This is not prototype conformance.
+The [remaining presentation review](design/reviews/scrum15-chart-comparison-20261002.md)
+records the differences and source boundaries. SCRUM-234 corrects a separately
+confirmed GL-only online AIS stern-notch defect before the next candidate.
+Windows, actual GL, physical boat review and remaining chart-symbol/label/route
+refinements are still open. No replacement package is qualified yet.
 
 ## SCRUM-224 / SCRUM-228 / SCRUM-230 — clean GTK fix verified locally; stale snapshot blocks preview
 

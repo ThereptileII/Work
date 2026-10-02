@@ -68,8 +68,9 @@ software, incremental-segment and OpenGL drawing paths. It uses the exact
 `--route` values above only with verified XNav presentation. Standard uses the
 upstream active pen. This changes local paint state, never a stored route color
 or the route model. Upstream selection remains visible using its existing
-appearance; selected/inactive routes, waypoints, ownship, tracks, MOB, anchor
-radius and the complete route-state visual hierarchy remain unfinished.
+appearance; selected/inactive routes, waypoints, tracks, MOB, anchor radius and
+the complete route-state visual hierarchy remain unfinished. The bounded
+default-ownship increment below has separate evidence and open release gates.
 
 The prototype's 2.6px stroke and joins are not yet reproduced: this first
 increment preserves configured upstream width/style and needs a separate
@@ -209,4 +210,27 @@ modified. The generator rejects any other rule change, including label changes
 inside the two allowed lookups. Runtime verification and controlled style
 restart retain their existing behavior. This increment does not qualify the
 remaining ownship, symbol, label-density or chart-presentation work.
+
+## Default ownship and online AIS names (qualification pending)
+
+SCRUM-232 adds the immutable prototype chevron for the default, accurate,
+fixed-size ownship only. Shared drawing uses upstream position/rotation and
+retains user-size scaling; custom images, scaled hulls and inaccurate states
+remain stock. The [ownship review](reviews/scrum232-ownship-chevron.md) records
+exact path, theme colors, GL topology, DPI scope and safety boundaries.
+Day/Dusk/Night now have a short integrated Linux real-ENC capture, with fresh
+controlled loopback navigation and clean exit. It is not native Windows,
+actual OpenGL, physical touch or boat acceptance.
+
+SCRUM-233 adds available online AIS names at the prototype baseline and theme
+ink through owned snapshots. Freshness, selected-target priority, collisions,
+viewport bounds and bounded workload remain explicit. Stale/lost marks have no
+current name label; target details still carry their source state. Saturated
+500-pixel upstream text metrics cause omission, never falsely accepted bounds.
+The [AIS-label review](reviews/scrum233-online-ais-labels.md) scopes its fixture
+and production-object evidence. Standard receives no new labels.
+
+The [combined comparison](reviews/scrum15-chart-comparison-20261002.md) records
+remaining visual differences, including text density, stock chart symbols and
+course-predictor artwork. These increments do not accept the complete chart.
 See [bounded review](reviews/scrum231-built-area-style.md).
