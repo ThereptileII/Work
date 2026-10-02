@@ -3,7 +3,8 @@
 param(
     [Parameter(Mandatory=$true)][string]$TestPerl,
     [Parameter(Mandatory=$true)][string]$Evidence,
-    [string]$Archive
+    [string]$Archive,
+    [switch]$ProductionOnly
 )
 $ErrorActionPreference = 'Stop'
 Set-StrictMode -Version Latest
@@ -11,6 +12,8 @@ if ([Environment]::OSVersion.Platform -ne [PlatformID]::Win32NT) {
     throw 'Curl source preflight requires native Windows'
 }
 $Root = Split-Path $PSScriptRoot -Parent
+$Helper = Join-Path $PSScriptRoot 'windows-curl-environment.ps1'
+. $Helper
 $TestPerl = (Resolve-Path -LiteralPath $TestPerl).Path
 $Evidence = [IO.Path]::GetFullPath($Evidence)
 if (Test-Path -LiteralPath $Evidence) { throw 'Use a new evidence directory for each diagnostic' }
@@ -60,12 +63,17 @@ function EnvironmentFacts {
 }
 $Report = [ordered]@{schemaVersion=1; purpose='Native source-analysis diagnostic, not dependency or release qualification';
     commit=(& git -C $Root rev-parse HEAD); archiveSha256=$Lock.sha256; lockSha256=(Digest $LockPath);
+    productionOnly=[bool]$ProductionOnly; helperSha256=(Digest $Helper);
     limitations=@('Configure uses Schannel and no external TLS/compression dependencies; producer uses OpenSSL/zlib.',
         'The inherited case reproduces the producer MSYS Perl PATH prepend, but does not stage curl/OpenSSL/zlib binary directories.',
         'Direct script invocation does not reproduce the entire MSBuild/runtests process environment.',
         'No curl/OpenSSL/application binary or full upstream suite is qualified.'); cases=@(); passed=$false}
 $SavedEnvironment = @{}
 Get-ChildItem Env: | ForEach-Object { $SavedEnvironment[$_.Name] = $_.Value }
+$Vswhere = "${env:ProgramFiles(x86)}\Microsoft Visual Studio\Installer\vswhere.exe"
+$Vs = & $Vswhere -latest -products '*' -requires Microsoft.VisualStudio.Component.VC.Tools.x86.x64 -property installationPath
+if ($LASTEXITCODE -ne 0 -or -not $Vs) { throw 'Visual Studio x86 tools unavailable' }
+$DiagnosticAction = {
 try {
     # Match build-pristine-windows.ps1's scoped curl producer invocation. Keep
     # the absolute selected Perl for execution; PATH also controls its children.
@@ -73,6 +81,8 @@ try {
     $ResolvedPerl = (Get-Command perl.exe -CommandType Application -ErrorAction Stop | Select-Object -First 1).Source
     if ($ResolvedPerl -ine $TestPerl) { throw 'Producer-style PATH did not select the fixed MSYS2 test Perl' }
     $Report.testHostPathPrepend = Split-Path $TestPerl -Parent
+    $InheritedEnvironment = @{}
+    Get-ChildItem Env: | ForEach-Object { $InheritedEnvironment[$_.Name] = $_.Value }
     $CMake = (Get-Command cmake.exe -CommandType Application -ErrorAction Stop | Select-Object -First 1).Source
     if (-not $Archive) {
         $Archive = Join-Path $Evidence $Lock.archive
@@ -115,11 +125,9 @@ try {
     # The upstream scripts import from -I. and use this generated preprocessor.
     # Probe selection separately, without editing the module or either script.
     $Probe = 'use configurehelp qw($Cpreprocessor); print "module=$INC{q(configurehelp.pm)}\npreprocessor=$Cpreprocessor\n";'
-    foreach ($Mode in @('inherited','msvc-x86','msvc-x86-args')) {
+    $Modes = if ($ProductionOnly) { @('production-helper') } else { @('inherited','msvc-x86','production-helper') }
+    foreach ($Mode in $Modes) {
         if ($Mode -eq 'msvc-x86') {
-            $Vswhere = "${env:ProgramFiles(x86)}\Microsoft Visual Studio\Installer\vswhere.exe"
-            $Vs = & $Vswhere -latest -products '*' -requires Microsoft.VisualStudio.Component.VC.Tools.x86.x64 -property installationPath
-            if ($LASTEXITCODE -ne 0 -or -not $Vs) { throw 'Visual Studio x86 tools unavailable' }
             $Vcvars = Join-Path $Vs 'VC/Auxiliary/Build/vcvarsall.bat'
             # Import only the environment changes; never retain the complete environment,
             # which may contain CI credentials. The selected tool variables are recorded below.
@@ -151,14 +159,13 @@ try {
                 }
             }
         }
-        if ($Mode -eq 'msvc-x86-args') {
-            # Preserve compiler /D defines as arguments when MSYS Perl launches
-            # native cl.exe; keep any exclusions already supplied by the caller.
-            if (-not $env:MSYS2_ARG_CONV_EXCL) { $env:MSYS2_ARG_CONV_EXCL = '/D' }
-            elseif (@($env:MSYS2_ARG_CONV_EXCL -split ';') -notcontains '/D') {
-                $env:MSYS2_ARG_CONV_EXCL += ';/D'
-            }
+        if ($Mode -eq 'production-helper' -and -not $ProductionOnly) {
+            # Reinitialize from the same inherited producer environment, rather
+            # than retaining the manually initialized negative-control case.
+            Get-ChildItem Env: | Where-Object { -not $InheritedEnvironment.ContainsKey($_.Name) } | ForEach-Object { [Environment]::SetEnvironmentVariable($_.Name, $null, 'Process') }
+            foreach ($Name in $InheritedEnvironment.Keys) { [Environment]::SetEnvironmentVariable($Name, $InheritedEnvironment[$Name], 'Process') }
         }
+        $CaseAction = {
         $Facts = EnvironmentFacts
         $Facts | ConvertTo-Json -Depth 6 | Set-Content -LiteralPath (Join-Path $Evidence "$Mode.environment.json")
         $Import = Run "$Mode-configurehelp" $TestPerl @('-I.',"-I$Tests",'-e',$Probe) $TestBuild
@@ -169,6 +176,22 @@ try {
         if (-not (Test-Path -LiteralPath $Compiler) -or (Split-Path $Compiler -Leaf) -ine 'cl.exe') { throw 'Generated preprocessor is not native cl.exe' }
         $Report["$Mode-compiler"] = @{path=$Compiler; sha256=(Digest $Compiler); version=(Get-Item -LiteralPath $Compiler).VersionInfo.FileVersion}
         $null = Run "$Mode-cl-version" $Compiler @('/Bv') $TestBuild
+        if ($Mode -eq 'production-helper') {
+            $HelperEvidence = Join-Path $Evidence 'production-helper'
+            try {
+                Invoke-WindowsCurlSourceChecks -TestPerl $TestPerl -Source $Source -Build $Build -Evidence $HelperEvidence
+            } finally {
+                $HelperReport = Join-Path $HelperEvidence 'source-analysis.json'
+                if (Test-Path -LiteralPath $HelperReport) {
+                    $SourceResult = Get-Content -LiteralPath $HelperReport -Raw | ConvertFrom-Json
+                    $Report.productionSourceChecks = $SourceResult
+                    foreach ($Case in $SourceResult.cases) {
+                        $Report.cases += [ordered]@{environment=$Mode; test=$Case.test; msys2ArgConvExcl=$env:MSYS2_ARG_CONV_EXCL;
+                            upstreamPassed=$Case.passed; analysisNonempty=$Case.passed; result=$Case}
+                    }
+                }
+            }
+        } else {
         foreach ($Id in @(1119,1167)) {
             # Match tests/data/test1119 and test1167, including their distinct include args.
             $Arguments = @('-I.',"-I$Tests","$Tests/test$Id.pl","$Tests/..")
@@ -181,11 +204,16 @@ try {
             if ($Id -eq 1167 -and $Output -match '^(\d+) fine symbols found\r?\n$') { $SymbolCount = [int]$Matches[1] }
             $Report.cases += [ordered]@{environment=$Mode; test=$Id; msys2ArgConvExcl=$env:MSYS2_ARG_CONV_EXCL; upstreamPassed=$Passed; symbolCount=$SymbolCount; analysisNonempty=($Id -eq 1119 -or $SymbolCount -gt 0); result=$Result}
         }
+        }
+        }
+        if ($Mode -eq 'production-helper' -and -not $ProductionOnly) {
+            Invoke-WindowsCurlEnvironment -VisualStudio $Vs -TestPerl $TestPerl -Action $CaseAction
+        } else { & $CaseAction }
     }
     foreach ($Relative in $Report.sourceFiles.Keys) {
         if ((Digest (Join-Path $Source $Relative)) -cne $Report.sourceFiles[$Relative]) { throw "Upstream source changed: $Relative" }
     }
-    $Valid = @($Report.cases | Where-Object { $_.environment -eq 'msvc-x86-args' })
+    $Valid = @($Report.cases | Where-Object { $_.environment -eq 'production-helper' })
     $Report.inheritedFailureReproduced = @($Report.cases | Where-Object { $_.environment -eq 'inherited' -and -not $_.upstreamPassed }).Count -gt 0
     $Report.passed = $Valid.Count -eq 2 -and @($Valid | Where-Object { -not $_.upstreamPassed -or -not $_.analysisNonempty }).Count -eq 0
     if (-not $Report.passed) { throw 'MSVC environment with /D argument preservation did not pass both unchanged source tests; diagnosis remains unresolved' }
@@ -199,10 +227,14 @@ try {
     # Keep a bounded, useful diagnosis in the job log even if artifact retrieval
     # is unavailable. Never print the environment files or vcvars 'set' output.
     $LogFiles = @('source-preflight.json')
-    foreach ($Mode in @('inherited','msvc-x86','msvc-x86-args')) {
+    foreach ($Mode in @('inherited','msvc-x86')) {
         foreach ($Id in @(1119,1167)) {
             foreach ($Stream in @('stdout','stderr')) { $LogFiles += "$Mode-test$Id.$Stream.txt" }
         }
+    }
+    $LogFiles += 'production-helper/source-analysis.json'
+    foreach ($Id in @(1119,1167)) {
+        foreach ($Stream in @('stdout','stderr')) { $LogFiles += "production-helper/test$Id.$Stream.txt" }
     }
     foreach ($Name in $LogFiles) {
         $LogPath = Join-Path $Evidence $Name
@@ -215,4 +247,8 @@ try {
         }
     }
 }
+}
+if ($ProductionOnly) {
+    Invoke-WindowsCurlEnvironment -VisualStudio $Vs -TestPerl $TestPerl -Action $DiagnosticAction
+} else { & $DiagnosticAction }
 Write-Output "Unchanged curl source tests pass with MSVC x86 environment and /D argument preservation; inspect all case results in $Evidence"

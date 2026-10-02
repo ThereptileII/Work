@@ -51,6 +51,12 @@ try {
         throw 'OpenCPN 5.12.4 ships Win32 dependencies. An x64 dependency and plugin ABI port is not validated; refusing to mislabel Win32 as x64.'
     }
     if ($Integration) {
+        # Exercise the unchanged curl source tests with the reviewed native/MSYS
+        # environment before any maintained dependency compilation. The real curl
+        # producer repeats them against its own generated configurehelp.pm.
+        $CurlPreflight = Join-Path $Evidence ("windows-curl-source-early-$Variant")
+        Run pwsh @('-NoProfile', '-File', (Join-Path $PSScriptRoot 'test-curl-source-preflight.ps1'),
+            '-ProductionOnly', '-TestPerl', $env:SKAGER_CURL_TEST_PERL, '-Evidence', $CurlPreflight)
         # Fail on a changed zlib source before the costly OpenSSL build. The
         # normal zlib build below repeats the same guard and upstream tests.
         & (Join-Path $PSScriptRoot 'build-zlib-windows.ps1') -VerifySourceOnly

@@ -9,6 +9,8 @@ $ErrorActionPreference = 'Stop'
 Set-StrictMode -Version Latest
 
 $Root = Split-Path $PSScriptRoot -Parent
+$ProducerScript = $PSCommandPath
+. (Join-Path $PSScriptRoot 'windows-curl-environment.ps1')
 $Evidence = Join-Path $Root 'evidence/local'
 $NativeLog = Join-Path $Evidence 'windows-curl-native-output.log'
 if (-not $VerifyToolFactsOnly) {
@@ -179,6 +181,7 @@ $TestPerlRecord = [ordered]@{
     os=$TestPerlOs; runtimePath=$MsysRuntime; runtimeSha256=Digest $MsysRuntime
     runtimeBytes=(Get-Item -LiteralPath $MsysRuntime).Length
 }
+Invoke-WindowsCurlEnvironment -VisualStudio $VisualStudio -TestPerl $TestPerl -Action {
 if ($VerifyToolFactsOnly) {
     $BuiltManifest = Get-Content -LiteralPath (Join-Path $Prefix 'curl-build.json') -Raw | ConvertFrom-Json
     $BuiltHost = $BuiltManifest.buildSteps.testHost
@@ -192,8 +195,8 @@ if ($VerifyToolFactsOnly) {
     # Normal curl capture occurs after configure with these dependency DLL
     # directories prepended. Recreate that build PATH before live reprobe.
     $env:PATH = "$(Join-Path $Build 'lib/Release');$(Join-Path $OpenSslPrefix 'bin');$(Join-Path $ZlibPrefix 'bin');$env:PATH"
-    & $ToolFacts -Mode Verify -Kind curl-parent -Output $Facts -ProducerScript $PSCommandPath `
-        -Vswhere $Vswhere -VisualStudio $VisualStudio -Dumpbin $Dumpbin `
+    & $ToolFacts -Mode Verify -Kind curl-parent -Output $Facts -ProducerScript $ProducerScript `
+        -Vswhere $Vswhere -VisualStudio $VisualStudio -VcVars (Join-Path $VisualStudio 'VC/Auxiliary/Build/vcvarsall.bat') -Dumpbin $Dumpbin `
         -CMakeCache (Join-Path $Build 'CMakeCache.txt') -CMakeHookFacts (Join-Path $Build 'xnav-native-cmake-tools.txt') `
         -CurlTestPerl $TestPerl
     Write-Output 'Reprobed captured curl build-environment tool facts'
@@ -292,10 +295,12 @@ foreach ($RequiredPath in @((Join-Path $OpenSslPrefix 'include'),$OpenSslSslLib,
     if ($CacheText.Replace('\','/') -notlike "*$CmakePath*") { throw "CMake did not bind the explicit dependency path: $RequiredPath" }
 }
 $env:PATH = "$(Join-Path $Build 'lib/Release');$(Join-Path $OpenSslPrefix 'bin');$(Join-Path $ZlibPrefix 'bin');$env:PATH"
-& $ToolFacts -Mode Capture -Kind curl-parent -Output $Facts -ProducerScript $PSCommandPath `
-    -Vswhere $Vswhere -VisualStudio $VisualStudio -Dumpbin $Dumpbin `
+& $ToolFacts -Mode Capture -Kind curl-parent -Output $Facts -ProducerScript $ProducerScript `
+    -Vswhere $Vswhere -VisualStudio $VisualStudio -VcVars (Join-Path $VisualStudio 'VC/Auxiliary/Build/vcvarsall.bat') -Dumpbin $Dumpbin `
     -CMakeCache (Join-Path $Build 'CMakeCache.txt') -CMakeHookFacts (Join-Path $Build 'xnav-native-cmake-tools.txt') `
     -CurlTestPerl $TestPerl
+Invoke-WindowsCurlSourceChecks -TestPerl $TestPerl -Source $Source -Build $Build `
+    -Evidence (Join-Path $Evidence 'windows-curl-source-preflight') | Tee-Object -FilePath $NativeLog -Append
 Invoke-Checked cmake.exe @('--build',$Build,'--config','Release','--parallel','2')
 Invoke-Checked cmake.exe @('--build',$Build,'--config','Release','--target','tests','--parallel','2')
 $TestSummary = $null
@@ -310,8 +315,8 @@ if ($TestsReported -le 0 -or $TestsPassed -ne $TestsReported) {
     throw "curl upstream tests did not execute and pass a nonzero set: $TestsPassed/$TestsReported"
 }
 Invoke-Checked cmake.exe @('--install',$Build,'--config','Release')
-& $ToolFacts -Mode Verify -Kind curl-parent -Output $Facts -ProducerScript $PSCommandPath `
-    -Vswhere $Vswhere -VisualStudio $VisualStudio -Dumpbin $Dumpbin `
+& $ToolFacts -Mode Verify -Kind curl-parent -Output $Facts -ProducerScript $ProducerScript `
+    -Vswhere $Vswhere -VisualStudio $VisualStudio -VcVars (Join-Path $VisualStudio 'VC/Auxiliary/Build/vcvarsall.bat') -Dumpbin $Dumpbin `
     -CMakeCache (Join-Path $Build 'CMakeCache.txt') -CMakeHookFacts (Join-Path $Build 'xnav-native-cmake-tools.txt') `
     -CurlTestPerl $TestPerl
 
@@ -385,3 +390,4 @@ $Json | Set-Content -LiteralPath (Join-Path $Prefix 'curl-build.json') -Encoding
 $Json | Set-Content -LiteralPath (Join-Path $Cache 'curl-build.json') -Encoding UTF8
 $Json | Set-Content -LiteralPath (Join-Path $Evidence 'windows-curl-build.json') -Encoding UTF8
 Write-Output "Built and verified curl $($Lock.version) with OpenSSL $($Lock.opensslVersion) for Win32/x86"
+}

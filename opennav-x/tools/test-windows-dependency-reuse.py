@@ -104,6 +104,10 @@ class SameJobReuseReceiptTests(unittest.TestCase):
             next(iter(reuse.PRODUCER_FACTS.values())),
             "evidence/local/windows-curl-native-output.log",
             "tools/build-curl-windows.ps1",
+            "tools/windows-curl-environment.ps1",
+            "tools/test-curl-source-preflight.ps1",
+            "evidence/local/windows-curl-source-preflight/source-analysis.json",
+            "evidence/local/windows-curl-source-preflight/test1119.stderr.txt",
             "build/dependency-downloads/zlib-1.3.2.tar.gz",
         ):
             with self.subTest(relative=relative):
