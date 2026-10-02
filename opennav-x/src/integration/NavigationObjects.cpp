@@ -644,8 +644,8 @@ application::CommandResult StartAnchor(const vessel::Navigation &position,
       wxString::Format("%.0f", radius), wxEmptyString);
   point->m_bIsolatedMark = true;
   // Human-readable ownership annotation; the clear path also recognizes the
-  // exact old Beta 1 description for upgrade continuity.
-  point->m_MarkDescription = "OpenNav temporary anchor watch";
+  // exact historical descriptions for upgrade continuity.
+  point->m_MarkDescription = "SKAGER temporary anchor watch";
   if (!NavObj_dB::GetInstance().InsertRoutePoint(point)) {
     delete point;
     return {false, "Anchor save failed; watch unchanged", {}};
@@ -679,7 +679,8 @@ application::CommandResult ClearAnchor(const std::string &id) {
   bool removed = false;
   if (point && pWayPointMan &&
       pWayPointMan->FindWaypointByGuid(id) == point &&
-      (point->GetDescription() == "OpenNav temporary anchor watch" ||
+      (point->GetDescription() == "SKAGER temporary anchor watch" ||
+       point->GetDescription() == "OpenNav temporary anchor watch" ||
        point->GetDescription() ==
            "OpenNav anchor watch; radius stored using OpenCPN semantics") &&
       point->m_bIsolatedMark && !point->IsShared() && Copy(point).removable) {

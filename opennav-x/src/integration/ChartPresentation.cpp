@@ -1,4 +1,5 @@
 #include "integration/ChartPresentation.h"
+#include "integration/ChartNameTypography.h"
 #include "ui/Controls.h" // Before GL/X11 headers which define None.
 #include "XNavChartResources.h"
 #include "model/base_platform.h"
@@ -7,6 +8,18 @@
 #include "chcanv.h"
 #include "chartbase.h"
 #include "ocpndc.h"
+#include "FontMgr.h"
+
+#include "integration/ChartRouteGeometry.h"
+#include "integration/ChartCogPredictor.h"
+#include "model/route.h"
+#include "model/route_point.h"
+#include "model/config_vars.h"
+#include <wx/graphics.h>
+#include <memory>
+#ifdef ocpnUSE_GL
+#include "shaders.h"
+#endif
 #include <algorithm>
 #include <array>
 #include <cmath>
@@ -14,6 +27,7 @@
 #include <wx/ffile.h>
 #include <wx/fileconf.h>
 #include <wx/filename.h>
+#include <wx/fontenum.h>
 #include <wx/log.h>
 #include <wx/thread.h>
 
@@ -23,6 +37,7 @@ namespace {
 wxFileConfig *preferences = nullptr;
 bool xnav_mode = false, requested = true, active = false;
 std::string status = "Standard OpenCPN presentation";
+CogPredictorStyleOwnership cog_style;
 constexpr const char *key = "/OpenNav/ChartPresentationV1";
 wxString ResourceDirectory() {
   if (!g_BasePlatform) return {};
@@ -35,6 +50,23 @@ wxString ResourceDirectory() {
 wxColour Color(std::uint32_t c) {
   return {static_cast<unsigned char>(c >> 16),
           static_cast<unsigned char>(c >> 8), static_cast<unsigned char>(c)};
+}
+wxFont *GeographicNameFont(const char *feature, const char *instruction, bool tx) {
+  const auto role = GeographicChartName(feature, instruction, tx);
+  if (role == ChartNameRole::Unchanged) return nullptr;
+  // The selected chart style owns geographic-name typography. Never rewrite
+  // FontMgr's persisted ChartTexts preference; Standard retains it verbatim.
+  static const wxString face = [] {
+    for (const auto *candidate : {"Segoe UI Variable Display", "Segoe UI", "Arial"})
+      if (wxFontEnumerator::IsValidFacename(candidate)) return wxString(candidate);
+    return wxString("Arial");
+  }();
+  // 12/16 CSS px are 9/12 points at 96 DPI. The upstream renderer retains its
+  // DIP/content scale and the user's chart-text scale; do not scale twice.
+  return FontMgr::Get().FindOrCreateFont(
+      role == ChartNameRole::Land ? 9 : 12, wxFONTFAMILY_SWISS,
+      role == ChartNameRole::Land ? wxFONTSTYLE_NORMAL : wxFONTSTYLE_ITALIC,
+      wxFONTWEIGHT_NORMAL, false, face);
 }
 bool Verify(const wxString &folder) {
   for (const auto &resource : chart_style::generated::resources) {
@@ -61,11 +93,27 @@ bool Verify(const wxString &folder) {
   }
   return true;
 }
+void CaptureChartCogPredictorStyle(wxFileConfig &config) {
+  // Snapshot configuration before ShipIndicatorsDraw can increase its width.
+  // Saved factory defaults count as equivalent; do not rewrite any preference.
+  long cog_width = 3, cog_pen_style = 105;
+  wxString cog_color = "rgb(255,0,0)";
+  const bool valid_width = !config.HasEntry("/Settings/OwnshipCOGPredictorWidth") ||
+      config.Read("/Settings/OwnshipCOGPredictorWidth", &cog_width);
+  const bool valid_style = !config.HasEntry("/Settings/OwnshipCOGPredictorStyle") ||
+      config.Read("/Settings/OwnshipCOGPredictorStyle", &cog_pen_style);
+  const bool valid_color = !config.HasEntry("/Settings/OwnshipCOGPredictorColor") ||
+      config.Read("/Settings/OwnshipCOGPredictorColor", &cog_color);
+  cog_style.Capture(valid_width && cog_width == 3 ? 3 : -1,
+      valid_style && cog_pen_style == 105 ? 105 : -1,
+      valid_color && wxColour(cog_color) == wxColour(255, 0, 0));
+}
 } // namespace
 void ConfigureChartPresentation(wxFileConfig &config, bool xnav) {
   if (!wxIsMainThread())
     return;
   preferences = &config;
+  CaptureChartCogPredictorStyle(config);
   xnav_mode = xnav;
   active = false;
   wxString saved;
@@ -78,8 +126,8 @@ void ConfigureChartPresentation(wxFileConfig &config, bool xnav) {
     // coastline-only view still needs the same independently verified palette.
     const auto directory = ResourceDirectory();
     active = !directory.empty() && Verify(directory);
-    status = active ? "XNav presentation v1 / verified palette; ENC not loaded"
-                    : "XNav presentation resources missing or changed; Standard fallback";
+    status = active ? "SKAGER presentation v1 / verified palette; ENC not loaded"
+                    : "SKAGER presentation resources missing or changed; Standard fallback";
   } else {
     status = "Standard OpenCPN presentation";
   }
@@ -95,17 +143,18 @@ s52plib *CreateChartPresentation(const wxString &stock_path,
       auto *library = new s52plib(
           wxFileName(directory, "S52RAZDS.RLE").GetFullPath(), false, false, true);
       if (library->m_bOK) {
+        library->SetTextFontResolver(GeographicNameFont);
         active = true;
-        status = "XNav presentation v1 / pinned symbols";
-        wxLogMessage("OpenNav chart presentation: verified XNav resources");
+        status = "SKAGER presentation v1 / pinned symbols";
+        wxLogMessage("SKAGER chart presentation: verified SKAGER resources");
         return library;
       }
       delete library;
-      status = "XNav presentation could not load; Standard fallback";
+      status = "SKAGER presentation could not load; Standard fallback";
     } else
       status =
-          "XNav presentation resources missing or changed; Standard fallback";
-    wxLogWarning("OpenNav %s", wxString::FromUTF8(status));
+          "SKAGER presentation resources missing or changed; Standard fallback";
+    wxLogWarning("SKAGER %s", wxString::FromUTF8(status));
   } else
     status = "Standard OpenCPN presentation";
   // XNav's explicit Standard fallback is not shadowed by a working-directory
@@ -130,6 +179,134 @@ bool ChartActiveRouteInk(ChartCanvas &canvas, wxColour &ink) {
       ? ui::LightMode::Night : canvas.GetColorScheme() == GLOBAL_COLOR_SCHEME_DUSK
       ? ui::LightMode::Dusk : ui::LightMode::Day;
   ink = ui::Colour(ui::ActiveRouteInk(mode));
+  return true;
+}
+bool DefaultChartRouteStyle(Route &route) {
+  if (!route.IsVisible() || !route.m_bRtIsActive || route.m_bRtIsSelected ||
+      route.m_bIsBeingEdited || route.m_hiliteWidth ||
+      route.m_width != WIDTH_UNDEFINED || route.m_style != wxPENSTYLE_INVALID ||
+      !route.m_Colour.empty() || g_route_line_width != 2)
+    return false;
+  // Both manual and AIS MOB routes carry the upstream "mob" waypoint icon.
+  // Do not identify emergency routes by translated/user-editable route names.
+  for (auto *node = route.pRoutePointList->GetFirst(); node; node = node->GetNext())
+    if (node->GetData()->GetIconName() == "mob") return false;
+  return true;
+}
+bool DrawChartRouteSegment(ocpnDC &dc, ChartCanvas &canvas, double ax, double ay,
+                            double bx, double by, bool join_start, bool join_end) {
+  wxColour ink;
+  if (!ChartActiveRouteInk(canvas, ink)) return false;
+  int width = 0, height = 0; dc.GetSize(&width, &height);
+  auto triangles = ChartRouteSegmentMesh(ax, ay, bx, by,
+      canvas.FromDIP(100) / 100.0, width, height, join_start, join_end);
+  if (triangles.empty()) return false;
+  if (auto *native = dc.GetDC()) {
+    std::unique_ptr<wxGraphicsContext> gc(
+        wxGraphicsContext::CreateFromUnknownDC(*native));
+    if (!gc) return false;
+    auto path = gc->CreatePath();
+    for (std::size_t i = 0; i < triangles.size(); i += 6) {
+      path.MoveToPoint(triangles[i], triangles[i+1]);
+      path.AddLineToPoint(triangles[i+2], triangles[i+3]);
+      path.AddLineToPoint(triangles[i+4], triangles[i+5]);
+      path.CloseSubpath();
+    }
+    gc->SetBrush(wxBrush(ink));
+    gc->FillPath(path, wxWINDING_RULE);
+  } else {
+#ifdef ocpnUSE_GL
+    if (dc.m_canvasIndex < 0 || dc.m_canvasIndex >= 2) return false;
+    auto *shader = pcolor_tri_shader_program[dc.m_canvasIndex];
+    if (!shader) return false;
+    // Reuse the chart's existing solid-color shader. No bitmap allocation,
+    // texture upload, global line-width override or renderer-wide change.
+    GLint old_program = 0; glGetIntegerv(GL_CURRENT_PROGRAM, &old_program);
+    const auto blended = glIsEnabled(GL_BLEND);
+    glDisable(GL_BLEND); // Opaque foreground: overlapping joins stay one ink.
+    shader->Bind();
+    shader->SetUniformMatrix4fv("MVMatrix",
+        reinterpret_cast<GLfloat *>(canvas.GetpVP()->vp_matrix_transform));
+    float color[] = {ink.Red()/256.f, ink.Green()/256.f, ink.Blue()/256.f, 1.f};
+    shader->SetUniform4fv("color", color);
+    shader->SetAttributePointerf("position", triangles.data());
+    glDrawArrays(GL_TRIANGLES, 0, triangles.size()/2);
+    shader->UnBind();
+    glUseProgram(old_program);
+    if (blended) glEnable(GL_BLEND);
+#else
+    return false;
+#endif
+  }
+  // Dirty-region bookkeeping includes fractional stroke/join extents.
+  for (std::size_t i = 0; i < triangles.size(); i += 2) {
+    dc.CalcBoundingBox(std::floor(triangles[i]), std::floor(triangles[i+1]));
+    dc.CalcBoundingBox(std::ceil(triangles[i]), std::ceil(triangles[i+1]));
+  }
+  return true;
+}
+bool UseChartCogPredictorStyle(int width, int style, const wxString &color,
+                               int density_width) {
+  if (!wxIsMainThread()) return false;
+  const bool owned = cog_style.BeforeDensity(width, style,
+      wxColour(color) == wxColour(255, 0, 0), density_width);
+  return xnav_mode && active && owned;
+}
+bool DrawChartCogPredictor(ocpnDC &dc, ChartCanvas &canvas,
+                           double ax, double ay, double bx, double by) {
+  wxColour ink;
+  if (!ChartActiveRouteInk(canvas, ink)) return false;
+  int width=0, height=0; dc.GetSize(&width,&height);
+  bool valid = false;
+  auto triangles=ChartCogPredictorMesh(ax,ay,bx,by,
+      canvas.FromDIP(100)/100.0,width,height,&valid);
+  if (triangles.empty()) return valid;
+  if (auto *native=dc.GetDC()) {
+    std::unique_ptr<wxGraphicsContext> gc(
+        wxGraphicsContext::CreateFromUnknownDC(*native));
+    if (!gc) return false;
+    auto path=gc->CreatePath();
+    for (std::size_t i=0;i<triangles.size();i+=6) {
+      path.MoveToPoint(triangles[i],triangles[i+1]);
+      path.AddLineToPoint(triangles[i+2],triangles[i+3]);
+      path.AddLineToPoint(triangles[i+4],triangles[i+5]); path.CloseSubpath();
+    }
+    // wxColour's 8-bit alpha rounds the prototype's .65 to 166/255.
+    gc->SetBrush(wxBrush(wxColour(ink.Red(),ink.Green(),ink.Blue(),166)));
+    gc->FillPath(path,wxWINDING_RULE);
+  } else {
+#ifdef ocpnUSE_GL
+    if (dc.m_canvasIndex<0 || dc.m_canvasIndex>=2) return false;
+    auto *shader=pcolor_tri_shader_program[dc.m_canvasIndex];
+    if (!shader) return false;
+    GLint old_program=0, src_rgb=0, dst_rgb=0, src_alpha=0, dst_alpha=0;
+    GLint equation_rgb=0, equation_alpha=0;
+    glGetIntegerv(GL_CURRENT_PROGRAM,&old_program);
+    glGetIntegerv(GL_BLEND_SRC_RGB,&src_rgb); glGetIntegerv(GL_BLEND_DST_RGB,&dst_rgb);
+    glGetIntegerv(GL_BLEND_SRC_ALPHA,&src_alpha); glGetIntegerv(GL_BLEND_DST_ALPHA,&dst_alpha);
+    glGetIntegerv(GL_BLEND_EQUATION_RGB,&equation_rgb); glGetIntegerv(GL_BLEND_EQUATION_ALPHA,&equation_alpha);
+    const auto blended=glIsEnabled(GL_BLEND);
+    glEnable(GL_BLEND); glBlendFunc(GL_SRC_ALPHA,GL_ONE_MINUS_SRC_ALPHA);
+    glBlendEquationSeparate(GL_FUNC_ADD,GL_FUNC_ADD);
+    shader->Bind();
+    shader->SetUniformMatrix4fv("MVMatrix",
+        reinterpret_cast<GLfloat *>(canvas.GetpVP()->vp_matrix_transform));
+    float color[]={ink.Red()/256.f,ink.Green()/256.f,ink.Blue()/256.f,.65f};
+    shader->SetUniform4fv("color",color);
+    shader->SetAttributePointerf("position",triangles.data());
+    glDrawArrays(GL_TRIANGLES,0,triangles.size()/2);
+    shader->UnBind(); glUseProgram(old_program);
+    glBlendFuncSeparate(src_rgb,dst_rgb,src_alpha,dst_alpha);
+    glBlendEquationSeparate(equation_rgb,equation_alpha);
+    if (!blended) glDisable(GL_BLEND);
+#else
+    return false;
+#endif
+  }
+  for (std::size_t i=0;i<triangles.size();i+=2) {
+    dc.CalcBoundingBox(std::floor(triangles[i]),std::floor(triangles[i+1]));
+    dc.CalcBoundingBox(std::ceil(triangles[i]),std::ceil(triangles[i+1]));
+  }
   return true;
 }
 bool DrawChartOwnship(ocpnDC &dc, ChartCanvas &canvas, double x, double y,
@@ -294,6 +471,6 @@ application::CommandResult SetXNavChartRequested(bool enabled) {
                             : "Chart style save failed; check profile storage"};
   }
   requested = enabled;
-  return {true, "Chart style saved. Restart XNav to apply."};
+  return {true, "Chart style saved. Restart SKAGER to apply."};
 }
 } // namespace opennav::integration

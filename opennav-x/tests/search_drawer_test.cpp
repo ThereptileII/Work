@@ -224,6 +224,8 @@ private:
       case 16:
         settings_drawer_=dynamic_cast<ui::XNavSettingsDrawer *>(wxWindow::FindWindowByName("OpenNav preferences",frame_));
         Check(settings_drawer_ && settings_drawer_->IsShownOnScreen(),"Settings opens through the Shell navigation entry");
+        Check(settings_drawer_->GetTitle()=="SKAGER preferences",
+              "Public drawer title uses SKAGER while the established selector remains usable");
         Press(settings_drawer_,"Settings section: Navigation");break;
       case 17:
         Press(settings_drawer_,"Chart presentation");break;

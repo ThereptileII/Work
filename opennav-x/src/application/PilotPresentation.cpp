@@ -88,7 +88,7 @@ PilotPresentation PresentPilot(const adapters::PilotView &pilot,
   }
   if (pilot.output_unavailable && !replayed) {
     p.pending = false;
-    p.note = "Status only. XNav equipment control is unavailable in this product. Use the physical helm.";
+    p.note = "Status only. SKAGER equipment control is unavailable in this product. Use the physical helm.";
   }
   return p;
 }

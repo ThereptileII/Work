@@ -27,7 +27,7 @@ MakeNavigationActions(MyFrame &frame,
       pRouteManagerDialog->UpdateRouteListCtrl();
       pRouteManagerDialog->UpdateWptListCtrl();
     }
-    wxLogMessage("OpenNav navigation action: %s",
+    wxLogMessage("SKAGER navigation action: %s",
                  wxString::FromUTF8(r.message));
     return r;
   };

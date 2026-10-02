@@ -816,7 +816,8 @@ void ObjectScenarioStep(const vessel::Navigation &selected) {
       anchor_id = started.identity;
       auto *created_anchor = pWayPointMan->FindWaypointByGuid(anchor_id);
       Check(created_anchor && created_anchor->GetName() == "50" &&
-                created_anchor->GetIconName() == "anchor",
+                created_anchor->GetIconName() == "anchor" &&
+                created_anchor->GetDescription() == "SKAGER temporary anchor watch",
             "Anchor chart label uses whole metres and anchor icon");
       Check(!StartAnchor(selected, 50).ok, "No implicit anchor replacement");
       Check(!DeleteWaypoint(Mark(anchor_id)).ok, "Anchor mark protected");
@@ -849,19 +850,22 @@ void ObjectScenarioStep(const vessel::Navigation &selected) {
       Check(ClearAnchor(user_watch.identity).ok &&
                 pWayPointMan->FindWaypointByGuid(user_watch.identity) == user_mark,
             "Clearing user-repurposed watch preserves its waypoint");
-      auto old_watch = StartAnchor(selected, 70);
-      Check(old_watch.ok, "Create old-release ownership fixture");
-      auto *old_mark = pWayPointMan->FindWaypointByGuid(old_watch.identity);
-      old_mark->SetName("70.000000");
-      old_mark->SetIconName("diamond");
-      old_mark->m_MarkDescription =
-          "OpenNav anchor watch; radius stored using OpenCPN semantics";
-      Check(NavObj_dB::GetInstance().UpdateRoutePoint(old_mark),
-            "Persist exact Beta 1 watch shape");
-      Check(ClearAnchor(old_watch.identity).ok &&
-                !pWayPointMan->FindWaypointByGuid(old_watch.identity),
-            "Clearing an upgraded Beta 1 watch removes its owned mark");
-      Record("Anchor ownership preserves repurposed user marks and recognizes Beta 1 watches");
+      for (const auto *description : {
+               "OpenNav anchor watch; radius stored using OpenCPN semantics",
+               "OpenNav temporary anchor watch"}) {
+        auto old_watch = StartAnchor(selected, 70);
+        Check(old_watch.ok, "Create old-release ownership fixture");
+        auto *old_mark = pWayPointMan->FindWaypointByGuid(old_watch.identity);
+        old_mark->SetName("70.000000");
+        old_mark->SetIconName("diamond");
+        old_mark->m_MarkDescription = description;
+        Check(NavObj_dB::GetInstance().UpdateRoutePoint(old_mark),
+              "Persist exact historical watch description");
+        Check(ClearAnchor(old_watch.identity).ok &&
+                  !pWayPointMan->FindWaypointByGuid(old_watch.identity),
+              "Clearing an upgraded watch removes its owned mark");
+      }
+      Record("Anchor ownership preserves repurposed user marks and recognizes both historical watch descriptions");
       Check(g_pAIS != nullptr, "AIS service exists");
       target = std::make_shared<AisTargetData>(AisTargetCallbacks{});
       target->MMSI = 990000001;

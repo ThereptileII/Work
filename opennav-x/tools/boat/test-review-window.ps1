@@ -52,37 +52,37 @@ foreach($labels in @(@('Chart','Passage'),($rail+@('AUTO')),(@('Chart')+$rail[0.
  }
 }
 foreach($spec in @(
- @('OpenNav chart tools',@('Measure','Waypoint','+',[string][char]0x2212),@(),$true),
- @('OpenNav chart orientation',@('North'),@(),$true),
- @('OpenNav chart orientation',@('Course'),@(),$true),
- @('OpenNav follow boat',@('Follow boat'),@(),$true),
- @('OpenNav passage',@(),@('Close'),$true),
- @('OpenNav preferences',@(),@('Close'),$true),
- @('OpenNav anchor watch',@(),@('Close'),$true),
- @('OpenNav autopilot',@(),@('Close'),$true),
- @('OpenNav alerts',@(),@('Close'),$true),
- @('OpenNav source health',@(),@('Close'),$true),
- @('OpenNav source health',@('AUTO'),@('Close'),$false),
- @('OpenNav source health',@(),@('Back'),$false),
- @('OpenNav alerts',@('Acknowledge'),@('Close'),$false),
- @('OpenNav alerts',@(),@('Close','Back'),$false),
- @('OpenNav anchor watch',@('Set anchor'),@('Close'),$false),
- @('OpenNav autopilot',@('Auto'),@('Close'),$false),
- @('OpenNav anchor watch',@(),@('Back'),$false),
- @('OpenNav autopilot',@(),@('Close','Back'),$false),
- @('OpenNav preferences',@('AUTO'),@('Close'),$false),
- @('OpenNav preferences',@(),@('Back'),$false),
- @('OpenNav preferences',@(),@('Close','Back'),$false),
- @('OpenNav vessel traffic',@(),@('Back'),$true),
- @('OpenNav vessel traffic',@(),@('Close'),$true),
+ @('SKAGER chart tools',@('Measure','Waypoint','+',[string][char]0x2212),@(),$true),
+ @('SKAGER chart orientation',@('North'),@(),$true),
+ @('SKAGER chart orientation',@('Course'),@(),$true),
+ @('SKAGER follow boat',@('Follow boat'),@(),$true),
+ @('SKAGER passage',@(),@('Close'),$true),
+ @('SKAGER preferences',@(),@('Close'),$true),
+ @('SKAGER anchor watch',@(),@('Close'),$true),
+ @('SKAGER autopilot',@(),@('Close'),$true),
+ @('SKAGER alerts',@(),@('Close'),$true),
+ @('SKAGER source health',@(),@('Close'),$true),
+ @('SKAGER source health',@('AUTO'),@('Close'),$false),
+ @('SKAGER source health',@(),@('Back'),$false),
+ @('SKAGER alerts',@('Acknowledge'),@('Close'),$false),
+ @('SKAGER alerts',@(),@('Close','Back'),$false),
+ @('SKAGER anchor watch',@('Set anchor'),@('Close'),$false),
+ @('SKAGER autopilot',@('Auto'),@('Close'),$false),
+ @('SKAGER anchor watch',@(),@('Back'),$false),
+ @('SKAGER autopilot',@(),@('Close','Back'),$false),
+ @('SKAGER preferences',@('AUTO'),@('Close'),$false),
+ @('SKAGER preferences',@(),@('Back'),$false),
+ @('SKAGER preferences',@(),@('Close','Back'),$false),
+ @('SKAGER vessel traffic',@(),@('Back'),$true),
+ @('SKAGER vessel traffic',@(),@('Close'),$true),
  @('Unexpected modal',@(),@('Close'),$false),
- @('OpenNav passage',@('AUTO'),@('Close'),$false),
- @('OpenNav passage',@(),@('Close','Close'),$false),
- @('OpenNav passage',@(),@('Back'),$false),
- @('OpenNav vessel traffic',@(),@('Close','Back'),$false),
- @('OpenNav chart tools',@('Measure','Waypoint','+','+'),@(),$false),
- @('OpenNav chart orientation',@('North','Course'),@(),$false),
- @('OpenNav follow boat',@('Follow boat','STBY'),@(),$false))) {
+ @('SKAGER passage',@('AUTO'),@('Close'),$false),
+ @('SKAGER passage',@(),@('Close','Close'),$false),
+ @('SKAGER passage',@(),@('Back'),$false),
+ @('SKAGER vessel traffic',@(),@('Close','Back'),$false),
+ @('SKAGER chart tools',@('Measure','Waypoint','+','+'),@(),$false),
+ @('SKAGER chart orientation',@('North','Course'),@(),$false),
+ @('SKAGER follow boat',@('Follow boat','STBY'),@(),$false))) {
  Pass ('Fixed owned capture signature '+$spec[0]+' / '+$spec[3]) {
   if([OpenNavX.ReviewWindowNative]::IsPrototypeSurface($spec[0],$spec[1],$spec[2]) -ne $spec[3]){throw 'Capture signature mismatch.'}
  }
@@ -156,8 +156,8 @@ foreach($value in @(-1,0,99,32769,'900',900.5,$null)) {
   Refuse 'Pan refuses malformed/hidden chart geometry' {$v=CopyValue $chartData;$v.runtime.display.chart_region.width=$value;Convert-WindowReviewChart $v ('a'*40) $now $now}
 }
 Pass 'Display controls retain exact source page scopes; orientation requires navigation chart tools' {
-  if([OpenNavX.ReviewWindowNative]::ActionContext('Display') -cne 'OpenNav product page: Settings' -or
-     [OpenNavX.ReviewWindowNative]::ActionContext('ToggleFullscreen') -cne 'OpenNav product page: Display' -or
+  if([OpenNavX.ReviewWindowNative]::ActionContext('Display') -cne 'SKAGER product page: Settings' -or
+     [OpenNavX.ReviewWindowNative]::ActionContext('ToggleFullscreen') -cne 'SKAGER product page: Display' -or
      [OpenNavX.ReviewWindowNative]::ActionContext('ToggleOrientation') -cne 'Navigation chart tools'){throw 'Display action scope changed.'}
 }
 foreach($action in @('Fullscreen','North','Course','SetOrientation','SetResolution','SetDpi','Brightness','EnableControl')) {
@@ -202,7 +202,7 @@ foreach($label in @('Refresh target list','Show / hide AIS on chart','AUTO','TRA
     if([OpenNavX.ReviewWindowNative]::IsSelectionLabel($waypoint,$label) -or [OpenNavX.ReviewWindowNative]::IsSelectionLabel($ais,$label)){throw 'Command/malformed caption accepted'}
   }
 }
-foreach($page in @('OpenNav product page: Autopilot','OpenNav product page: Routes','OpenNav product page: Waypoint detail',$aisPage,'')) {
+foreach($page in @('SKAGER product page: Autopilot','SKAGER product page: Routes','SKAGER product page: Waypoint detail',$aisPage,'')) {
   Refuse 'Waypoint selection requires the exact list page even if another page has a matching caption' {
     [OpenNavX.ReviewWindowNative]::ChooseSelectionRow($waypoint,$page,@((Row 1 'Example / mark')))
   }

@@ -113,14 +113,14 @@ page_passed = 0
 for scale in (1., 1.25, 1.5):
     for horizon in (False, True):
         for delta in (0, -8, 8):
-            labels = [(3, 'Chart'), (4, 'Alerts 1'), (12, 'OpenNav status footer'),
+            labels = [(3, 'Chart'), (4, 'Alerts 1'), (12, 'SKAGER status footer'),
                       (6, 'Configure instruments')]
             parents = {3: 10, 4: 11, 12: 1, 6: 13, 13: 14}
             # The real Display page contains its own Configure instruments
             # action. Also exercise repeated captions at different nesting
             # depths: none defines the surrounding application geometry.
             labels += [(20, 'Configure instruments'), (21, 'Chart'),
-                       (22, 'OpenNav status footer'), (23, 'Alerts 1')]
+                       (22, 'SKAGER status footer'), (23, 'Alerts 1')]
             parents.update({20: 30, 30: 31, 31: 2, 21: 2, 22: 30, 23: 31})
             logical_height = 800/scale
             top = round((56 if logical_height<=600 else 60 if logical_height<=740 else 68)*scale)
@@ -160,7 +160,7 @@ labels = [entry for entry in labels if entry[0] != 24]
 for fault in ('missing-footer', 'duplicate-footer', 'old-system-button'):
     original = list(labels)
     if fault == 'missing-footer': labels = [entry for entry in labels if entry[0] != 12]
-    if fault == 'duplicate-footer': labels.append((25, 'OpenNav status footer'))
+    if fault == 'duplicate-footer': labels.append((25, 'SKAGER status footer'))
     if fault == 'old-system-button': labels = [(h, 'System' if h == 12 else caption) for h, caption in labels]
     try: page_check(1, 2, horizon=True)
     except AssertionError: pass
@@ -201,7 +201,7 @@ drawer_namespace=dict(C=C,W=W,user=None)
 exec(compile(ast.Module(body=[node],type_ignores=[]),str(source),'exec'),drawer_namespace)
 drawer_check=drawer_namespace['assert_prototype_drawer']
 drawer_checks=0
-def check_drawer(client_width,scale,expected_width,name='OpenNav preferences',fault=None):
+def check_drawer(client_width,scale,expected_width,name='SKAGER preferences',fault=None):
     global drawer_checks
     frame=(0,0,client_width,int(1080*scale))
     actual=expected_width+(fault if isinstance(fault,int) else 0)
@@ -235,7 +235,7 @@ for client_width,scale,width in ((1100,1,410),(1101,1,432),(1499,1,432),
         (1500,1,460),(1920,1,460),(2250,1.5,690),(1920,1.5,648)):
     for fault in (None,-1,1,-2,2): check_drawer(client_width,scale,width,fault=fault)
 check_drawer(1920,1,460,fault=-28)  # Obsolete 432px wide drawer must fail.
-for fault in (None,-2,2): check_drawer(1920,1,398,'OpenNav passage',fault)
+for fault in (None,-2,2): check_drawer(1920,1,398,'SKAGER passage',fault)
 for fault in ('missing','duplicate','wrong-owner','outside','covered','failed-query'):
     check_drawer(1920,1,460,fault=fault)
 print(f'{drawer_checks} native drawer width/tolerance/ownership/visibility checks passed')
@@ -280,9 +280,9 @@ for fault in (None, 'clipped', 'covered', 'no-hit', 'disabled', 'duplicate', 'mi
         wire.append(('mouse', event))
         if event == 0x0800 and fault == 'preferences-scroll': bounds[3] = (700,220,1040,292)
     pointer_namespace.update(
-        time=clock, windows=lambda pid:[(1,pid,'OpenNav X / OpenCPN')],
+        time=clock, windows=lambda pid:[(1,pid,'SKAGER / OpenCPN')],
         children=lambda root:captions, IsWindowEnabled=lambda h:fault!='disabled',
-        text=lambda h:'OpenNav preferences' if preferences else 'OpenNav X / OpenCPN',
+        text=lambda h:'SKAGER preferences' if preferences else 'SKAGER / OpenCPN',
         GetClassNameW=native_class, GetWindowRect=native_rect,
         GetParent=lambda h:parents.get(h), IsChild=is_child, WindowFromPoint=native_hit,
         declare=lambda dll,name,*args: (lambda:front[0]) if name=='GetForegroundWindow' else (lambda h,flag:1),
@@ -305,14 +305,14 @@ for fault in (None, 'clipped', 'covered', 'no-hit', 'disabled', 'duplicate', 'mi
             assert evidence['surface']['rect'] == [0,0,1280,800]
             assert evidence['current_foreground']['hwnd'] == 1
             assert evidence['current_foreground']['native_class'] == 'wxWindowNR'
-            assert evidence['current_foreground']['caption'] == 'OpenNav preferences'
+            assert evidence['current_foreground']['caption'] == 'SKAGER preferences'
             assert evidence['wheel_point'] == [870,340]
             assert evidence['descendant_relationship']['target_is_viewport_descendant'] is True
             assert evidence['descendant_relationship']['viewport_is_surface_descendant'] is True
             if fault == 'preferences-covered':
                 assert evidence['hit']['hwnd'] == 99
                 assert evidence['hit']['native_class'] == 'wxWindowNR'
-                assert evidence['hit']['caption'] == 'OpenNav preferences'
+                assert evidence['hit']['caption'] == 'SKAGER preferences'
                 assert evidence['hit']['rect'] is None
                 assert evidence['descendant_relationship']['hit_is_viewport'] is False
                 assert evidence['descendant_relationship']['hit_is_viewport_descendant'] is False
@@ -337,7 +337,7 @@ for scroll_case in scroll_cases:
     moved = [False]
     bounds = {1:(0,0,1280,800), 2:(680,180,1060,500), 3:(700,170,1040,242)}
     parents = {3:2, 2:1}
-    surface = 'Chart presentation' if scroll_case == 'chart-palette' else 'OpenNav preferences'
+    surface = 'Chart presentation' if scroll_case == 'chart-palette' else 'SKAGER preferences'
     caption = 'Chart palette preferences' if scroll_case == 'chart-palette' else 'Interface & recovery'
     captions = [(3, caption)]
     queried = [3]
@@ -383,7 +383,7 @@ for scroll_case in scroll_cases:
             bounds[3] = (700,220,1040,292)
 
     pointer_namespace.update(
-        time=clock, windows=lambda pid:[(1,pid,'OpenNav X / OpenCPN')],
+        time=clock, windows=lambda pid:[(1,pid,'SKAGER / OpenCPN')],
         children=lambda root:captions, IsWindowEnabled=lambda h:True,
         text=lambda h:surface if h == 1 else '',
         GetClassNameW=native_class, GetWindowRect=native_rect,

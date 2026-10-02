@@ -14,9 +14,9 @@ $oldDpi=[OpenNavX.RestartWindowNative]::SetThreadDpiAwarenessContext([IntPtr](-4
 if($oldDpi -eq [IntPtr]::Zero){throw 'Native physical-pixel DPI unavailable.'}
 try {
  foreach($spec in @(
-  @('--xnav','--legacy','normal','Open Legacy OpenCPN'),@('--xnav','--xnav','normal','Restart XNav'),@('--xnav','--safe-mode','normal','Safe Mode'),
-  @('--legacy','--xnav','normal','Switch to XNav'),@('--safe-mode','--xnav','normal','Switch to XNav'),
-  @('--legacy','--xnav','owned-pane','Switch to XNav'),@('--legacy','--xnav','owned-menu',''),
+  @('--xnav','--legacy','normal','Open Legacy OpenCPN'),@('--xnav','--xnav','normal','Restart SKAGER'),@('--xnav','--safe-mode','normal','Safe Mode'),
+  @('--legacy','--xnav','normal','Switch to SKAGER'),@('--safe-mode','--xnav','normal','Switch to SKAGER'),
+  @('--legacy','--xnav','owned-pane','Switch to SKAGER'),@('--legacy','--xnav','owned-menu',''),
   @('--legacy','--xnav','unowned-pane',''),@('--xnav','--legacy','owned-pane',''),@('--safe-mode','--xnav','owned-pane',''),
   @('--xnav','--legacy','ambiguous',''),@('--xnav','--legacy','replace-on-down',''),@('--legacy','--xnav','hidden-menu',''),@('--xnav','--legacy','modal',''))) {
   $directory=Join-Path ([IO.Path]::GetTempPath()) ('opennav-mode-window-'+[guid]::NewGuid().ToString('N'));$null=New-Item -ItemType Directory -Path $directory

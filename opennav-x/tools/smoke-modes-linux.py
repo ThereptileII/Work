@@ -199,7 +199,7 @@ def wait_exit(pid):
 try:
     time.sleep(1)
     app = launch('01-xnav-and-controlled-restarts', '--no_opengl', '--xnav')
-    handle, pid = window('OpenNav X / OpenCPN', app)
+    handle, pid = window('SKAGER / OpenCPN', app)
     ready(1)
     capture('01-xnav-unavailable')
     action('Day',light='Dusk')
@@ -241,7 +241,7 @@ try:
     xdo('key', 'ctrl+shift+l')
     assert app.wait(timeout=30) == 0, 'Initial XNav exit failed'
     owned_pids.discard(app.pid)
-    handle, pid = window('OpenCPN / Legacy')
+    handle, pid = window('SKAGER Legacy / OpenCPN')
     assert pid != app.pid
     ready(2)
     saved('XNav to Legacy')
@@ -250,7 +250,7 @@ try:
     click(600, 400, 3)
     xdo('key', 'End', 'Return')
     wait_exit(pid)
-    handle, pid = window('OpenNav X / OpenCPN')
+    handle, pid = window('SKAGER / OpenCPN')
     ready(3)
     saved('Legacy to XNav')
     capture('06-xnav-after-legacy')
@@ -259,7 +259,7 @@ try:
     wait_exit(pid)
     saved('Final IPC close')
     safe = launch('03-safe', '--no_opengl', '--xnav', '--legacy', '--safe-mode')
-    handle, pid = window('OpenNav Safe Mode / OpenCPN', safe)
+    handle, pid = window('SKAGER Safe Mode / OpenCPN', safe)
     ready(4)
     capture('12-safe-shared-profile')
     remote_quit('04-safe-quit')
@@ -267,7 +267,7 @@ try:
     owned_pids.discard(safe.pid)
     saved('Safe override and close')
     normal = launch('05-normal-after-safe', '--no_opengl')
-    handle, pid = window('OpenNav X / OpenCPN', normal)
+    handle, pid = window('SKAGER / OpenCPN', normal)
     ready(5)
     remote_quit('06-normal-quit')
     assert normal.wait(timeout=30) == 0

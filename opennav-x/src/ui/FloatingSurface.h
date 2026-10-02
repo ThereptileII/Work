@@ -1,4 +1,5 @@
 #pragma once
+#include "ui/Branding.h"
 #include "ui/Controls.h"
 #include <wx/frame.h>
 
@@ -9,7 +10,7 @@ namespace opennav::ui {
 class XNavFloatingSurface final : public wxFrame {
 public:
   XNavFloatingSurface(wxFrame &owner, const wxString &name, int radius = 12)
-      : wxFrame(&owner, wxID_ANY, name, wxDefaultPosition, wxDefaultSize,
+      : wxFrame(&owner, wxID_ANY, BrandedSurfaceTitle(name), wxDefaultPosition, wxDefaultSize,
                 wxFRAME_NO_TASKBAR | wxFRAME_FLOAT_ON_PARENT | wxFRAME_SHAPED |
                     wxBORDER_NONE), radius_(radius) {
     SetName(name);

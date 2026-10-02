@@ -25,19 +25,19 @@ RecoveryStore::RecoveryStore(const wxString &directory) {
     launch_failures_ = record_.failed_starts;
     previous_unfinished_ = previous.pending;
     if (previous.pending) {
-      wxLogWarning("OpenNav startup recovery: previous XNav startup did not "
+      wxLogWarning("SKAGER startup recovery: previous SKAGER startup did not "
                    "finish; consecutive failures %u",
                    record_.failed_starts);
       Save();
     }
     if (RecoveryRequired(record_))
-      reason_ = "Two XNav startups did not finish. Safe Mode prevents another "
+      reason_ = "Two SKAGER startups did not finish. Safe Mode prevents another "
                 "automatic attempt.";
   } catch (const std::exception &e) {
     failed_ = true;
     reason_ = std::string("Startup recovery record could not be verified: ") +
               e.what();
-    wxLogWarning("OpenNav %s", wxString::FromUTF8(reason_));
+    wxLogWarning("SKAGER %s", wxString::FromUTF8(reason_));
   }
 }
 bool RecoveryStore::Save() {
@@ -46,9 +46,9 @@ bool RecoveryStore::Save() {
       !file.Write(wxString::FromUTF8(EncodeRecovery(record_)), wxConvUTF8) ||
       !file.Commit()) {
     failed_ = true;
-    reason_ = "Cannot persist XNav startup recovery state. Check profile "
+    reason_ = "Cannot persist SKAGER startup recovery state. Check profile "
               "storage and permissions.";
-    wxLogWarning("OpenNav %s", wxString::FromUTF8(reason_));
+    wxLogWarning("SKAGER %s", wxString::FromUTF8(reason_));
     return false;
   }
   return true;
@@ -70,7 +70,7 @@ void RecoveryStore::ObserveHealthy(bool ready, vessel::Time now) {
   record_ = {};
   if (Save()) {
     attempt_ = false;
-    wxLogMessage("OpenNav XNav startup healthy after 30 seconds of normal "
+    wxLogMessage("SKAGER startup healthy after 30 seconds of normal "
                  "application processing");
   }
 }
@@ -80,7 +80,7 @@ void RecoveryStore::CleanClose() {
   record_ = {};
   if (Save()) {
     attempt_ = false;
-    wxLogMessage("OpenNav XNav clean close; startup recovery cleared");
+    wxLogMessage("SKAGER clean close; startup recovery cleared");
   }
 }
 bool RecoveryStore::Retry() {
@@ -108,8 +108,8 @@ bool RecoveryStore::Retry() {
   healthy_since_.reset();
   if (!Save())
     return false;
-  wxLogMessage("OpenNav startup recovery explicitly reset for a "
-               "human-requested XNav retry");
+  wxLogMessage("SKAGER startup recovery explicitly reset for a "
+               "human-requested SKAGER retry");
   return true;
 }
 } // namespace opennav::integration

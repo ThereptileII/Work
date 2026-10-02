@@ -1,3 +1,4 @@
+#include "ui/Branding.h"
 #include "ui/Drawer.h"
 #include "ui/PrototypeGeometry.h"
 #include "ui/ChoiceField.h"
@@ -14,7 +15,7 @@
 
 namespace opennav::ui {
 XNavDrawer::XNavDrawer(wxWindow &owner, const wxString &name)
-    : wxFrame(&owner, wxID_ANY, name, wxDefaultPosition, wxDefaultSize,
+    : wxFrame(&owner, wxID_ANY, BrandedSurfaceTitle(name), wxDefaultPosition, wxDefaultSize,
               wxBORDER_NONE | wxFRAME_SHAPED | wxTAB_TRAVERSAL |
               wxFRAME_NO_TASKBAR | wxFRAME_FLOAT_ON_PARENT) {
   SetName(name);

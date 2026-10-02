@@ -45,7 +45,7 @@ public:
     entry.TargetName = const_cast<wchar_t *>(target_.c_str());
     entry.Persist =
         CRED_PERSIST_LOCAL_MACHINE; // this user, this PC; no roaming
-    entry.UserName = const_cast<wchar_t *>(L"OpenNav X AISStream");
+    entry.UserName = const_cast<wchar_t *>(L"SKAGER AISStream");
     entry.CredentialBlob =
         reinterpret_cast<LPBYTE>(const_cast<char *>(key.View().data()));
     entry.CredentialBlobSize = static_cast<DWORD>(key.View().size());

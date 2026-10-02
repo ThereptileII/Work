@@ -20,7 +20,7 @@ if sys.platform!='win32' or os.environ.get('GITHUB_ACTIONS')!='true':
     raise SystemExit('This destructive fixture is restricted to disposable Windows CI')
 ROOT=Path(__file__).resolve().parents[1]
 EVIDENCE=ROOT/'evidence/local';EVIDENCE.mkdir(parents=True,exist_ok=True)
-PACKAGE=ROOT/'build/beta-installer';SETUP=PACKAGE/'OpenNavX-Beta2-Setup.exe'
+PACKAGE=ROOT/'build/beta-installer';SETUP=PACKAGE/'SKAGER-Beta2-Setup.exe'
 INSTALL=Path(os.environ['LOCALAPPDATA'])/'OpenNavXAlpha1'
 STOCK_HASH='7c6547562cca7954671eaab72833ca9d788710fd9808b6a699b6dc823852ae0c'
 SETUP_HASH='e949f55de57611afe2fc0dad5a8ac33795c46ba488cb40ca07b65f639a07b8aa'
@@ -210,7 +210,7 @@ def launch(exe,mode,title,profile,name,welcome_transition=None):
         else:
             assert exe.samefile(original) and not (INSTALL/'state.json').exists()
         accepted=json.loads((ROOT/'tools/accepted-beta1.lock.json').read_text())
-        candidate=json.loads((ROOT/'build/developer-preview/OpenNavX-Beta2-Portable-Recovery/docs/PRODUCT_BUILD.json').read_text())
+        candidate=json.loads((ROOT/'build/developer-preview/SKAGER-Beta2-Portable-Recovery/docs/PRODUCT_BUILD.json').read_text())
         proof=welcome.version_transition(welcome_transition,sha(exe),ownership,accepted['commit'],candidate['commit'])
     before=startup_baseline(profile)
     p=subprocess.Popen([str(exe),'--no_opengl',*mode]);owned.add(p.pid)
@@ -344,7 +344,7 @@ try:
         foreign_before=inventory(SHORTCUTS)
         try:
             failure=setup('Install',original,expected=1)
-            assert 'no verified OpenNav owner' in failure['error'],failure
+            assert 'no verified SKAGER owner' in failure['error'],failure
             assert inventory(SHORTCUTS)==foreign_before and not INSTALL.exists()
             assert inventory(stock)==stock_before
         finally:
@@ -426,7 +426,7 @@ try:
         assert not state()['previous']
         assert (SHORTCUTS/'Skager.lnk').is_file() and not NEUTRAL_SHORTCUTS.exists() and not OLD_SHORTCUTS.exists()
         assert sha(generation()/'app/opencpn.exe')==sha(ROOT/'build/production-install/opencpn.exe')
-        p,h,rgb=launch(generation()/'app/opencpn.exe',['--xnav'],'OpenNav X / OpenCPN',profile,'installer-00-clean-candidate')
+        p,h,rgb=launch(generation()/'app/opencpn.exe',['--xnav'],'SKAGER / OpenCPN',profile,'installer-00-clean-candidate')
         chart_check(rgb,'XNav','Clean installed XNav');close(p,h);assert fixture_snapshot(profile)==expected
         stable_resources(profile,stock)
         before=inventory(profile)
@@ -527,23 +527,23 @@ try:
         assert inventory(profile)==before and inventory(stock)==stock_before
         first=state()['current'];exe=generation()/'app/opencpn.exe'
         assert not (exe.parent/'OPENNAV_PORTABLE_PREVIEW').exists()
-        p,h,rgb=launch(exe,['--xnav'],'OpenNav X / OpenCPN',profile,'installer-01-xnav',welcome_transition='beta1-to-candidate')
+        p,h,rgb=launch(exe,['--xnav'],'SKAGER / OpenCPN',profile,'installer-01-xnav',welcome_transition='beta1-to-candidate')
         chart_check(rgb,'XNav','Installed XNav');close(p,h);assert fixture_snapshot(profile)==expected
         check('Installed XNav starts against normal wx profile; coastline and navigation fixtures preserved')
-        for mode,title,name in [('--legacy','OpenCPN / Legacy','legacy'),('--safe-mode','OpenNav Safe Mode / OpenCPN','safe')]:
+        for mode,title,name in [('--legacy','SKAGER Legacy / OpenCPN','legacy'),('--safe-mode','SKAGER Safe Mode / OpenCPN','safe')]:
             p,h,rgb=launch(exe,[mode],title,profile,'installer-02-'+name)
             chart_check(rgb,'Standard','Installed '+name);close(p,h);assert fixture_snapshot(profile)==expected
         check('Installed Legacy and Safe start with charts and shared navigation/config/plugin preferences')
         # Controlled return through both product interfaces, not only separate launches.
-        p,h,rgb=launch(exe,['--xnav'],'OpenNav X / OpenCPN',profile,'installer-03-before-switch')
+        p,h,rgb=launch(exe,['--xnav'],'SKAGER / OpenCPN',profile,'installer-03-before-switch')
         chart_check(rgb,'XNav','Installed XNav before mode switch')
         before=startup_baseline(profile);ui.open_system(p.pid);ui.click_text(p.pid,'Open Legacy OpenCPN')
         assert p.wait(timeout=35)==0;owned.discard(p.pid)
-        h,pid=ui.wait_window('OpenCPN / Legacy');owned.add(pid);wait_ready(profile,before)
+        h,pid=ui.wait_window('SKAGER Legacy / OpenCPN');owned.add(pid);wait_ready(profile,before)
         rgb=ui.capture(h,EVIDENCE/'installer-03-switched-legacy.png');report['screenshots'].append('installer-03-switched-legacy.png')
         chart_check(rgb,'Standard','Installed XNav to Legacy')
-        before=startup_baseline(profile);monitor=ui.monitor_process(pid);ui.click_menu(h,'Switch to XNav');ui.wait_clean_exit(monitor);owned.discard(pid)
-        h,pid=ui.wait_window('OpenNav X / OpenCPN');owned.add(pid);wait_ready(profile,before)
+        before=startup_baseline(profile);monitor=ui.monitor_process(pid);ui.click_menu(h,'Switch to SKAGER');ui.wait_clean_exit(monitor);owned.discard(pid)
+        h,pid=ui.wait_window('SKAGER / OpenCPN');owned.add(pid);wait_ready(profile,before)
         rgb=ui.capture(h,EVIDENCE/'installer-04-returned-xnav.png');report['screenshots'].append('installer-04-returned-xnav.png')
         chart_check(rgb,'XNav','Installed XNav Legacy XNav')
         monitor=ui.monitor_process(pid);ui.close(h);ui.wait_clean_exit(monitor);owned.discard(pid)

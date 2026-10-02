@@ -111,7 +111,7 @@ XNavChartPresentationDrawer::XNavChartPresentationDrawer(
   });
   style_=new XNavButton(body_,wxID_ANY,"Chart palette preferences","Chart palette preferences");
   style_->SetMinSize(FromDIP(wxSize(1,48)));style_->SetDisplayAction(48);
-  style_->SetHint("Open the separate XNav / Standard chart palette preference");
+  style_->SetHint("Open the separate SKAGER / Standard chart palette preference");
   style_->Bind(wxEVT_BUTTON,[this](wxCommandEvent &) {
     const auto generation=command_generation_;
     CallAfter([this,generation] {

@@ -99,12 +99,12 @@ void AlertCenter::Observe(const AlertInput &s) {
     ais_alarm |= t.upstream_alarm;
   if (ais_alarm)
     add("ais-alarm", "OpenCPN AIS alarm",
-        "Inspect AIS targets and the existing OpenCPN alarm. XNav "
+        "Inspect AIS targets and the existing OpenCPN alarm. SKAGER "
         "acknowledgement does not acknowledge OpenCPN.",
         "OpenCPN AIS alarm state", AlertLevel::Critical, AlertArea::Ais);
   if (s.anchor.alarm)
     add("anchor-alarm", "OpenCPN anchor watch alarm",
-        "Check vessel position and anchor watch. XNav acknowledgement does not "
+        "Check vessel position and anchor watch. SKAGER acknowledgement does not "
         "clear the anchor alarm.",
         "OpenCPN anchor watch", AlertLevel::Critical, AlertArea::Anchor);
   const auto route = s.vessel.navigation.route;

@@ -1,4 +1,4 @@
-# OpenNav X Beta 2 — desktop and boat-PC checks
+# SKAGER Beta 2 — desktop and boat-PC checks
 
 Use the installer for the real OpenCPN environment. Use the portable recovery ZIP
 for isolated troubleshooting. This checklist records observations; it does not
@@ -16,10 +16,10 @@ is not proof that its underlying hardware works.
 2. Install/update with the supplied Setup. Check the detected OpenCPN and recovery
    location; stop if compatibility fails.
 3. Read any expected version-change navigation caution before continuing. Open
-   XNav, Legacy and Safe Mode in turn. Confirm the same charts, routes,
+   SKAGER, Legacy and Safe Mode in turn. Confirm the same charts, routes,
    waypoints and settings remain available in installed mode.
 4. Test **System → Open Legacy OpenCPN**, then the Legacy menu's
-   **Switch to XNav** entry. Also test **System → Safe Mode** and return to XNav.
+   **Switch to SKAGER** entry. Also test **System → Safe Mode** and return to SKAGER.
    Close/restart normally and wait for each startup to finish. Coastlines/chart content must remain
    visible. A blank or all-water image is a failure when land should be in view.
 5. Close normally and verify Windows, SSH and RustDesk remain accessible.
@@ -99,7 +99,7 @@ verify the action is unavailable instead of inventing a successful test.
 
 **On the actual boat PC, do not activate routes or change output settings during
 remote read-only testing.** OpenCPN/plugins may emit navigation messages even
-while OpenNav autopilot control is disabled. Preserve real user objects.
+while SKAGER autopilot control is disabled. Preserve real user objects.
 
 ## Real data, instruments and energy
 

@@ -14,7 +14,7 @@ VIProductVersion "0.4.0.0"
 VIAddVersionKey "ProductName" "SKAGER Beta 2"
 VIAddVersionKey "FileDescription" "Version-gated SKAGER Beta setup"
 VIAddVersionKey "FileVersion" "0.4.0-beta2"
-VIAddVersionKey "LegalCopyright" "OpenNav X contributors; GPL"
+VIAddVersionKey "LegalCopyright" "OpenCPN and SKAGER contributors; GPL"
 Var StockPath
 Var Action
 Var ReportPath
@@ -32,6 +32,8 @@ Var SafeShortcut
 Var LegacyControl
 Var SafeControl
 Var ShortcutModes
+!define MUI_ICON "${BRAND_ICON}"
+!define MUI_UNICON "${BRAND_ICON}"
 !define MUI_WELCOMEPAGE_TITLE "Install SKAGER"
 !define MUI_WELCOMEPAGE_TEXT "Modern navigation interface for OpenCPN.$\r$\n$\r$\nSetup checks your existing OpenCPN, creates a recovery record and installs SKAGER beside it. SKAGER, Legacy and Safe Mode use your real charts and OpenCPN profile.$\r$\n$\r$\nClose OpenCPN before continuing. Beta 2 is for evaluation and is not approved for navigation."
 !insertmacro MUI_PAGE_WELCOME
@@ -260,7 +262,7 @@ Section "Uninstall"
   Pop $Result
   ${If} $Result != 0
     SetErrorLevel 1
-    MessageBox MB_ICONSTOP "Maintenance failed. OpenCPN and retained recovery generations are preserved. Inspect the OpenNav installation logs." /SD IDOK
+    MessageBox MB_ICONSTOP "Maintenance failed. OpenCPN and retained recovery generations are preserved. Inspect the SKAGER installation logs." /SD IDOK
     Abort
   ${EndIf}
   SetErrorLevel 0

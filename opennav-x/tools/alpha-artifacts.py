@@ -23,22 +23,22 @@ for name in ('production-recovery-results.json', 'installer-lifecycle.json'):
     gates[name] = record
     if record.get('status') != 'passed':
         raise SystemExit('Product artifact assembly requires passed native gate: ' + name)
-product = json.loads((ROOT / 'build/developer-preview/OpenNavX-Beta2-Portable-Recovery/docs/PRODUCT_BUILD.json').read_text())
+product = json.loads((ROOT / 'build/developer-preview/SKAGER-Beta2-Portable-Recovery/docs/PRODUCT_BUILD.json').read_text())
 require_status_only(product)
 if product.get('test_fixtures') is not False or product.get('build_purpose') != 'INSTALLED PRODUCT' or product['commit'] != os.environ['GITHUB_SHA']:
     raise SystemExit('Artifact set must contain the exact fixture-free product commit')
 output = ROOT / ('build/beta-boat-review' if args.boat_review else 'build/beta-artifacts')
 output.mkdir(parents=True, exist_ok=False)
-files = [ROOT / 'build/developer-preview/OpenNavX-Beta2-Portable-Recovery.zip',
-         ROOT / 'build/developer-preview/OpenNavX-Beta2-source.zip',
-         ROOT / 'build/beta-installer/OpenNavX-Beta2-Setup.exe',
-         ROOT / 'docs/beta2/OpenNavX-Beta2-Install-Guide.md',
-         ROOT / 'docs/beta2/OpenNavX-Beta2-Test-Guide.md',
-         ROOT / 'docs/beta2/OpenNavX-Beta2-Release-Notes.md']
+files = [ROOT / 'build/developer-preview/SKAGER-Beta2-Portable-Recovery.zip',
+         ROOT / 'build/developer-preview/SKAGER-Beta2-source.zip',
+         ROOT / 'build/beta-installer/SKAGER-Beta2-Setup.exe',
+         ROOT / 'docs/beta2/SKAGER-Beta2-Install-Guide.md',
+         ROOT / 'docs/beta2/SKAGER-Beta2-Test-Guide.md',
+         ROOT / 'docs/beta2/SKAGER-Beta2-Release-Notes.md']
 checks = []
 expected = {
-    'OpenNavX-Beta2-Portable-Recovery.zip': gates['production-recovery-results.json']['package_sha256'],
-    'OpenNavX-Beta2-Setup.exe': gates['installer-lifecycle.json']['setup_sha256'],
+    'SKAGER-Beta2-Portable-Recovery.zip': gates['production-recovery-results.json']['package_sha256'],
+    'SKAGER-Beta2-Setup.exe': gates['installer-lifecycle.json']['setup_sha256'],
 }
 for source in files:
     if not source.is_file():

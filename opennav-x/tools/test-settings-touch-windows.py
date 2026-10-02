@@ -58,7 +58,7 @@ def main():
         raise AssertionError('Native component observation deadline')
     def observe(label='Advanced battery model'):
         previous=data()['runtime']['ui_update']['ticks']
-        popup,_=ui.wait_window('OpenNav preferences',child.pid,timeout=5)
+        popup,_=ui.wait_window('SKAGER preferences',child.pid,timeout=5)
         found=[h for h,t in ui.children(popup) if t==label];assert len(found)==1,(label,found)
         target=found[0];r=bounds(target);native=(r.left,r.top,r.right,r.bottom)
         record=data(lambda d:geometry.matches_native_controls(d,{label:native},previous,require_visible=False))
@@ -75,7 +75,7 @@ def main():
         child=subprocess.Popen([str(args.client),str(args.output)],env=env,stdout=log,stderr=subprocess.STDOUT)
         frame,_=ui.wait_window('TEST ONLY - Preferences touch',child.pid,timeout=10)
         ui.size_window(frame)
-        before,target=observe();popup,_=ui.wait_window('OpenNav preferences',child.pid,timeout=5)
+        before,target=observe();popup,_=ui.wait_window('SKAGER preferences',child.pid,timeout=5)
         ui.SetForegroundWindow(popup);time.sleep(.2)
         assert ui.GetDpiForWindow(frame)==120 and ui.GetDpiForWindow(popup)==120
         assert before['native_dpi']==before['wx_dpi']==120,'Actual native and wx DPI must both be 120'

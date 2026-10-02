@@ -1,3 +1,4 @@
+#include "application/Brand.h"
 #include "ui/SettingsDrawer.h"
 #include "ui/DisplaySizing.h"
 #include "application/Version.h"
@@ -386,7 +387,7 @@ void XNavSettingsDrawer::Build() {
       auto title_lines=std::make_shared<std::vector<wxString>>(
           1,"A complete helm. A cared-for system.");
       CopyBlock(126,[title_lines](XNavPainter &p,int width){
-        p.TextTracked(wxString::FromUTF8("OPENNAV X · ")+wxString::FromUTF8(application::Version),
+        p.TextTracked(wxString(application::brand::Name) + wxString::FromUTF8(" · ")+wxString::FromUTF8(application::Version),
                       0,9,10,p.c.secondary,650,1.3,width);
         for(std::size_t i=0;i<title_lines->size();++i)
           p.TextTracked((*title_lines)[i],0,33+30*i,23,p.c.primary,700,-.6,width);
@@ -430,7 +431,7 @@ void XNavSettingsDrawer::Build() {
       break;
     }
     case SettingsSection::Help:
-      CopyBlock(145,[](XNavPainter &p,int width){p.TextTracked("OPENNAV X",0,4,9,p.c.accent,650,1.17);
+      CopyBlock(145,[](XNavPainter &p,int width){p.TextTracked(application::brand::Name,0,4,9,p.c.accent,650,1.17);
         p.Text("Charts and navigation are owned by OpenCPN.",0,36,12,p.c.secondary,false,width);
         p.Text("Predictions are advisory. Missing data stays unavailable.",0,62,12,p.c.secondary,false,width);
         p.Text("Legacy and Safe keep the same navigation profile.",0,88,12,p.c.secondary,false,width);});

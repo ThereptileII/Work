@@ -73,7 +73,7 @@ try:
             dialog,_=window('Safe Restart')
             if windows:ui.dismiss_native_dialog(dialog,'Normal start')
             else:xdo('windowfocus',dialog,'key','Return')
-        handle,pid=window('OpenNav X / OpenCPN');ready(count)
+        handle,pid=window('SKAGER / OpenCPN');ready(count)
         state=(profile/'opennav-startup.state').read_text()
         assert 'pending 1' in state and f'failures {count-1}' in state,state
         if count==1:
@@ -83,17 +83,17 @@ try:
         assert fixtures.snapshot(profile)==expected,'Abrupt stop lost navigation/configuration'
         report['checks'].append(f'Owned XNav process terminated before healthy startup {count}; navigation fixtures preserved')
     app=launch()
-    dialog,_=window('OpenNav startup recovery')
+    dialog,_=window('SKAGER startup recovery')
     if windows:ui.dismiss_native_dialog(dialog,'OK')
     else:xdo('windowfocus',dialog,'key','Return')
-    handle,pid=window('OpenNav Safe Mode / OpenCPN');ready(3)
+    handle,pid=window('SKAGER Safe Mode / OpenCPN');ready(3)
     if windows:
         assert ui.IsWindowEnabled(handle), 'Safe parent remains disabled after recovery notice'
-        assert not any(title == 'OpenNav startup recovery' for _,_,title in ui.windows(pid))
+        assert not any(title == 'SKAGER startup recovery' for _,_,title in ui.windows(pid))
         report['checks'].append('Actual native recovery notice dismissed; Safe parent enabled before mode request')
     log=(profile/'opencpn.log').read_text(errors='replace')
-    assert 'OpenNav automatic Safe Mode' in log
-    safe=log.rsplit('OpenNav startup: safe',1)[-1]
+    assert 'SKAGER automatic Safe Mode' in log
+    safe=log.rsplit('SKAGER startup: safe',1)[-1]
     assert 'Initializing PlugIn: Dashboard' not in safe, 'Safe Mode loaded Dashboard'
     state=(profile/'opennav-startup.state').read_text()
     assert 'failures 2' in state and 'pending 0' in state,state
@@ -103,14 +103,14 @@ try:
         capture('recovery-02-safe'),'Standard','Day','Automatic Safe recovery'))
     assert fixtures.snapshot(profile)==expected
     report['checks'].append('Third explicit XNav launch automatically starts Safe; recovery notice and disabled plugin verified')
-    if windows:ui.click_menu(handle,'Switch to XNav')
+    if windows:ui.click_menu(handle,'Switch to SKAGER')
     else:
         xdo('windowfocus',handle,'mousemove',600,400,'click',3);time.sleep(.3);xdo('key','End','Return')
     assert app.wait(timeout=30)==0;owned.discard(app.pid)
-    handle,pid=window('OpenNav X / OpenCPN');ready(4)
-    recovered_log=(profile/'opencpn.log').read_text(errors='replace').split('OpenNav startup: safe',1)[1]
-    assert recovered_log.count('OpenNav recovery notice after deferred startup')==1
-    assert recovered_log.index('OnInitTimer...Finalize Canvases') < recovered_log.index('OpenNav recovery notice after deferred startup')
+    handle,pid=window('SKAGER / OpenCPN');ready(4)
+    recovered_log=(profile/'opencpn.log').read_text(errors='replace').split('SKAGER startup: safe',1)[1]
+    assert recovered_log.count('SKAGER recovery notice after deferred startup')==1
+    assert recovered_log.index('OnInitTimer...Finalize Canvases') < recovered_log.index('SKAGER recovery notice after deferred startup')
     state=(profile/'opennav-startup.state').read_text()
     assert 'failures 0' in state and 'pending 1' in state,state
     assert list(profile.glob('opennav-startup.state.retry-*')),'Retry evidence not retained'

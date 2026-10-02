@@ -45,7 +45,7 @@ SettingsStore::SettingsStore(wxFileConfig &config) : config_(config) {
   } catch (const std::exception &e) {
     status_ =
         std::string("Settings rejected; live model disabled: ") + e.what();
-    wxLogWarning("OpenNav %s", wxString::FromUTF8(status_));
+    wxLogWarning("SKAGER %s", wxString::FromUTF8(status_));
   }
 }
 application::CommandResult SettingsStore::SaveDisplay(
@@ -96,7 +96,7 @@ application::CommandResult SettingsStore::SaveVessel(
         restored = (existed[i] ? config_.Write(keys[i], previous[i])
                                : (!config_.HasEntry(keys[i]) || config_.DeleteEntry(keys[i]))) && restored;
       restored = config_.Flush() && restored;
-      wxLogError("OpenNav vessel profile save failed; disk restore: %s",
+      wxLogError("SKAGER vessel profile save failed; disk restore: %s",
                  restored ? "confirmed" : "failed");
       return {false, restored ? "Vessel profile could not be saved; previous values restored"
                               : "Vessel profile save/restore failed; inspect storage before restarting"};
@@ -124,7 +124,7 @@ SettingsStore::Save(const application::Settings &settings) {
       else
         config_.DeleteEntry(key);
       const bool restored = config_.Flush();
-      wxLogError("OpenNav settings save failed; previous in-memory settings "
+      wxLogError("SKAGER settings save failed; previous in-memory settings "
                  "retained; disk restore: %s",
                  restored ? "confirmed" : "failed");
       return {false,
@@ -135,7 +135,7 @@ SettingsStore::Save(const application::Settings &settings) {
     }
     settings_ = settings;
     status_ = "Saved explicit vessel configuration in OpenCPN profile";
-    wxLogMessage("OpenNav settings saved (no sensor observations changed)");
+    wxLogMessage("SKAGER settings saved (no sensor observations changed)");
     return {true, status_};
   } catch (const std::exception &e) {
     return {false, e.what()};

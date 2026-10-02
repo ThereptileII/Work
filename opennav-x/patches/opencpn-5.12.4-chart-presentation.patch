@@ -109,11 +109,10 @@ index f6261063a..96a02812b 100755
  
    void InitializeTables(void);
    void DeleteGlobals(void);
-diff --git i/libs/s52plib/src/s52plib.cpp w/libs/s52plib/src/s52plib.cpp
-index 03dda4915..93d7df531 100755
---- i/libs/s52plib/src/s52plib.cpp
-+++ w/libs/s52plib/src/s52plib.cpp
-@@ -278,7 +278,9 @@ LUPHashIndex *LUPArrayContainer::GetArrayIndexHelper(const char *objectName) {
+diff --git a/libs/s52plib/src/s52plib.cpp b/libs/s52plib/src/s52plib.cpp
+--- a/libs/s52plib/src/s52plib.cpp
++++ b/libs/s52plib/src/s52plib.cpp
+@@ -278,7 +278,9 @@
  //-----------------------------------------------------------------------------
  //      s52plib implementation
  //-----------------------------------------------------------------------------
@@ -124,7 +123,7 @@ index 03dda4915..93d7df531 100755
    m_plib_file = PLib;
  
    pOBJLArray = new wxArrayPtrVoid;
-@@ -294,7 +296,7 @@ s52plib::s52plib(const wxString &PLib, bool b_forceLegacy) {
+@@ -294,7 +296,7 @@
    m_chartSymbols.SetTextureFormat(GL_TEXTURE_2D);
    InitializeNatsurHash();
  
@@ -133,7 +132,7 @@ index 03dda4915..93d7df531 100755
  
    m_bShowS57Text = false;
    m_bShowS57ImportantTextOnly = false;
-@@ -1130,7 +1132,7 @@ int s52plib::_LUP2rules(LUPrec *LUP, S57Obj *pObj) {
+@@ -1130,7 +1132,7 @@
      return 0;
  }
  
@@ -142,7 +141,7 @@ index 03dda4915..93d7df531 100755
    pAlloc = new wxArrayPtrVoid;
  
    //   Create the Rule Lookup Hash Tables
-@@ -1153,7 +1155,7 @@ int s52plib::S52_load_Plib(const wxString &PLib, bool b_forceLegacy) {
+@@ -1153,7 +1155,7 @@
    m_unused_color.B = 2;
    m_unused_wxColor.Set(2, 2, 2);
  
@@ -151,7 +150,7 @@ index 03dda4915..93d7df531 100755
      wxString msg(_T("Could not load XML PLib symbol file: "));
      msg += PLib;
      wxLogMessage(msg);
-@@ -2181,6 +2183,10 @@ bool s52plib::RenderText(wxDC *pdc, S52_TextC *ptext, int x, int y,
+@@ -2181,6 +2183,10 @@
          glEnable(GL_TEXTURE_2D);
  
          wxColour wcolor = GetFontColour_PlugIn(_("ChartTexts"));
@@ -162,11 +161,28 @@ index 03dda4915..93d7df531 100755
          f_cache->SetColor(wcolor);
  
          /* undo previous rotation to make text level */
-diff --git i/libs/s52plib/src/s52plib.h w/libs/s52plib/src/s52plib.h
-index e830babf2..455f0c0eb 100755
---- i/libs/s52plib/src/s52plib.h
-+++ w/libs/s52plib/src/s52plib.h
-@@ -182,7 +182,8 @@ typedef struct {
+@@ -2486,6 +2492,17 @@
+       text->pFont = FindOrCreateFont_PlugIn(
+             fontSize, templateFont->GetFamily(), templateFont->GetStyle(), fontweight_t,
+             false, templateFont->GetFaceName());
++      if (m_textFontResolver) {
++        wxFont *styled = m_textFontResolver(rzRules->obj->FeatureName,
++                                           rules->INSTstr, bTX);
++        if (styled && styled->IsOk()) {
++          text->pFont = styled;
++          // TX offsets and declutter bounds use the actual styled font.
++          dc.SetFont(*styled);
++          dc.GetTextExtent(_T("X"), &width, NULL, NULL, NULL, styled);
++          text->avgCharWidth = width;
++        }
++      }
+   }
+ 
+     //  Render text at declared x/y of object
+diff --git a/libs/s52plib/src/s52plib.h b/libs/s52plib/src/s52plib.h
+--- a/libs/s52plib/src/s52plib.h
++++ b/libs/s52plib/src/s52plib.h
+@@ -182,8 +182,13 @@
  
  class s52plib {
  public:
@@ -174,13 +190,19 @@ index e830babf2..455f0c0eb 100755
 +  s52plib(const wxString &PLib, bool b_forceLegacy = false, bool allowCwdOverride = true,
 +          bool useS52DefaultTextColor = false);
    ~s52plib();
++  // Optional presentation-only font policy. Install before rendering; returned
++  // fonts must outlive cached S-52 text. A null result keeps the stock font.
++  using TextFontResolver = wxFont *(*)(const char *, const char *, bool);
++  void SetTextFontResolver(TextFontResolver resolver) { m_textFontResolver = resolver; }
  
    // TODO: SetPPM, SetDisplayWidth etc. should be combined to be set together by pointing them to info about current monitor
-@@ -405,7 +406,8 @@ public:
+   /**
+@@ -405,7 +410,9 @@
    void SetReducedBBox(LLBBox box){ reducedBBox = box;}
  
  private:
 -  int S52_load_Plib(const wxString &PLib, bool b_forceLegacy);
++  TextFontResolver m_textFontResolver = nullptr;
 +  bool m_useS52DefaultTextColor = false;
 +  int S52_load_Plib(const wxString &PLib, bool b_forceLegacy, bool allowCwdOverride = true);
    bool S52_flush_Plib();
@@ -313,9 +335,10 @@ diff --git a/gui/src/chcanv.cpp b/gui/src/chcanv.cpp
  
      m_scaleBarRect = wxRect(x_origin, y_origin - 12, l1,
                              12);  // Store this for later reference
-diff --git a/gui/src/route_gui.cpp b/gui/src/route_gui.cpp
---- a/gui/src/route_gui.cpp
-+++ b/gui/src/route_gui.cpp
+diff --git i/gui/src/route_gui.cpp w/gui/src/route_gui.cpp
+index 6ea2dbf..a6b4d23 100644
+--- i/gui/src/route_gui.cpp
++++ w/gui/src/route_gui.cpp
 @@ -45,6 +45,9 @@
  #include "model/own_ship.h"
  #include "model/routeman.h"
@@ -326,13 +349,13 @@ diff --git a/gui/src/route_gui.cpp b/gui/src/route_gui.cpp
  #include "route_point_gui.h"
  #include "glChartCanvas.h"
  #include "line_clip.h"
-@@ -121,6 +124,15 @@
+@@ -121,8 +124,21 @@ void RouteGui::Draw(ocpnDC &dc, ChartCanvas *canvas, const LLBBox &box) {
      spen.SetWidth(width);
      dc.SetPen(spen);
      dc.SetBrush(*g_pRouteMan->GetActiveRouteBrush());
 +#ifdef OPENNAV_X
 +    wxColour xnav_ink;
-+    if (!m_route.m_bRtIsSelected &&
++    if (opennav::integration::DefaultChartRouteStyle(m_route) &&
 +        opennav::integration::ChartActiveRouteInk(*canvas, xnav_ink)) {
 +      spen.SetColour(xnav_ink);
 +      dc.SetPen(spen);
@@ -341,14 +364,79 @@ diff --git a/gui/src/route_gui.cpp b/gui/src/route_gui.cpp
 +#endif
    }
  
++  bool xnav_route = false;
++#ifdef OPENNAV_X
++  xnav_route = opennav::integration::DefaultChartRouteStyle(m_route);
++#endif
    wxPoint rpt1, rpt2;
-@@ -364,6 +376,16 @@
+   if (m_route.m_bVisible) DrawPointWhich(dc, canvas, 1, &rpt1);
+ 
+@@ -151,7 +167,8 @@ void RouteGui::Draw(ocpnDC &dc, ChartCanvas *canvas, const LLBBox &box) {
+       // Simple case
+       if (b_1_on && b_2_on)
+         RenderSegment(dc, rpt1.x, rpt1.y, rpt2.x, rpt2.y, vp, draw_arrow,
+-                      m_route.m_hiliteWidth);  // with arrows
++                      m_route.m_hiliteWidth, canvas, xnav_route,
++                      prp1 != m_route.GetPoint(1), node->GetNext() != nullptr);
+ 
+       //    In the cases where one point is on, and one off
+       //    we must decide which way to go in longitude
+@@ -175,7 +192,8 @@ void RouteGui::Draw(ocpnDC &dc, ChartCanvas *canvas, const LLBBox &box) {
+         if (dp < dtest) adder = 0;
+ 
+         RenderSegment(dc, rpt1.x, rpt1.y, rpt2.x + adder, rpt2.y, vp,
+-                      draw_arrow, m_route.m_hiliteWidth);
++                      draw_arrow, m_route.m_hiliteWidth, canvas, xnav_route,
++                      prp1 != m_route.GetPoint(1), node->GetNext() != nullptr);
+       } else if (!b_1_on) {
+         if (rpt1.x < rpt2.x)
+           adder = (int)pix_full_circle;
+@@ -189,7 +207,8 @@ void RouteGui::Draw(ocpnDC &dc, ChartCanvas *canvas, const LLBBox &box) {
+         if (dp < dtest) adder = 0;
+ 
+         RenderSegment(dc, rpt1.x + adder, rpt1.y, rpt2.x, rpt2.y, vp,
+-                      draw_arrow, m_route.m_hiliteWidth);
++                      draw_arrow, m_route.m_hiliteWidth, canvas, xnav_route,
++                      prp1 != m_route.GetPoint(1), node->GetNext() != nullptr);
+       }
+     }
+ 
+@@ -201,7 +220,9 @@ void RouteGui::Draw(ocpnDC &dc, ChartCanvas *canvas, const LLBBox &box) {
+ }
+ 
+ void RouteGui::RenderSegment(ocpnDC &dc, int xa, int ya, int xb, int yb,
+-                             ViewPort &vp, bool bdraw_arrow, int hilite_width) {
++                             ViewPort &vp, bool bdraw_arrow, int hilite_width,
++                             ChartCanvas *canvas, bool xnav_route,
++                             bool join_start, bool join_end) {
+   //    Get the dc boundary
+   int sx, sy;
+   dc.GetSize(&sx, &sy);
+@@ -222,7 +243,15 @@ void RouteGui::RenderSegment(ocpnDC &dc, int xa, int ya, int xb, int yb,
+   //    If hilite is desired, use a Native Graphics context to render alpha
+   //    colours That is, if wxGraphicsContext is available.....
+ 
+-  if (hilite_width) {
++  bool xnav_painted = false;
++#ifdef OPENNAV_X
++  if (xnav_route && canvas)
++    xnav_painted = opennav::integration::DrawChartRouteSegment(
++        dc, *canvas, xa, ya, xb, yb, join_start, join_end);
++#endif
++  if (xnav_painted) {
++    // Keep upstream direction-arrow geometry and active-point suppression below.
++  } else if (hilite_width) {
+     if (Visible ==
+         cohen_sutherland_line_clip_i(&x0, &y0, &x1, &y1, 0, sx, 0, sy)) {
+       wxPen psave = dc.GetPen();
+@@ -364,7 +393,22 @@ void RouteGui::DrawSegment(ocpnDC &dc, ChartCanvas *canvas, wxPoint *rp1,
    else
      dc.SetPen(*g_pRouteMan->GetRoutePen());
  
+-  RenderSegment(dc, rp1->x, rp1->y, rp2->x, rp2->y, vp, bdraw_arrow);
 +#ifdef OPENNAV_X
 +  wxColour xnav_ink;
-+  if (m_route.m_bRtIsActive && !m_route.m_bRtIsSelected &&
++  if (opennav::integration::DefaultChartRouteStyle(m_route) &&
 +      opennav::integration::ChartActiveRouteInk(*canvas, xnav_ink)) {
 +    auto pen = dc.GetPen();
 +    pen.SetColour(xnav_ink);
@@ -356,20 +444,77 @@ diff --git a/gui/src/route_gui.cpp b/gui/src/route_gui.cpp
 +    dc.SetBrush(wxBrush(xnav_ink));
 +  }
 +#endif
-   RenderSegment(dc, rp1->x, rp1->y, rp2->x, rp2->y, vp, bdraw_arrow);
++  bool xnav_route = false;
++#ifdef OPENNAV_X
++  xnav_route = opennav::integration::DefaultChartRouteStyle(m_route);
++#endif
++  RenderSegment(dc, rp1->x, rp1->y, rp2->x, rp2->y, vp, bdraw_arrow,
++                0, canvas, xnav_route);
  }
  
-@@ -430,6 +452,10 @@
+ void RouteGui::DrawGL(ViewPort &vp, ChartCanvas *canvas, ocpnDC &dc) {
+@@ -430,6 +474,10 @@ void RouteGui::DrawGLRouteLines(ViewPort &vp, ChartCanvas *canvas, ocpnDC &dc) {
      }
    }
  
 +#ifdef OPENNAV_X
-+  if (m_route.m_bRtIsActive && !m_route.m_bRtIsSelected)
++  if (opennav::integration::DefaultChartRouteStyle(m_route))
 +    opennav::integration::ChartActiveRouteInk(*canvas, col);
 +#endif
    wxPenStyle style = wxPENSTYLE_SOLID;
    if (m_route.m_style != wxPENSTYLE_INVALID) style = m_route.m_style;
    wxPen p = *wxThePenList->FindOrCreatePen(col, width, style);
+@@ -443,7 +491,11 @@ void RouteGui::DrawGLRouteLines(ViewPort &vp, ChartCanvas *canvas, ocpnDC &dc) {
+ 
+   dc.SetGLStipple();
+ 
+-  DrawGLLines(vp, &dc, canvas);
++  bool xnav_route = false;
++#ifdef OPENNAV_X
++  xnav_route = opennav::integration::DefaultChartRouteStyle(m_route);
++#endif
++  DrawGLLines(vp, &dc, canvas, xnav_route);
+ 
+   glDisable(GL_LINE_STIPPLE);
+ 
+@@ -465,7 +517,8 @@ void RouteGui::DrawGLRouteLines(ViewPort &vp, ChartCanvas *canvas, ocpnDC &dc) {
+ #endif
+ }
+ 
+-void RouteGui::DrawGLLines(ViewPort &vp, ocpnDC *dc, ChartCanvas *canvas) {
++void RouteGui::DrawGLLines(ViewPort &vp, ocpnDC *dc, ChartCanvas *canvas,
++                           bool xnav_route) {
+ #ifdef ocpnUSE_GL
+   float pix_full_circle =
+       WGS84_semimajor_axis_meters * mercator_k0 * 2 * PI * vp.view_scale_ppm;
+@@ -563,14 +616,24 @@ void RouteGui::DrawGLLines(ViewPort &vp, ocpnDC *dc, ChartCanvas *canvas) {
+           adder = pix_full_circle;
+       }
+ 
++      // Preserve upstream projection, visibility and wrap decisions. Only the
++      // untouched default active-route foreground uses fractional artwork.
++      const auto draw_line = [&](double ax, double ay, double bx, double by) {
++#ifdef OPENNAV_X
++        if (xnav_route && opennav::integration::DrawChartRouteSegment(
++                *dc, *canvas, ax, ay, bx, by,
++                prp1 != m_route.GetPoint(1), node->GetNext() != nullptr)) return;
++#endif
++        dc->DrawLine(ax, ay, bx, by);
++      };
+       if (dc)
+         if (adder) {
+           float adderc = cos(vp.rotation) * adder,
+                 adders = sin(vp.rotation) * adder;
+-          dc->DrawLine(r1.m_x, r1.m_y, r2.m_x + adderc, r2.m_y + adders);
+-          dc->DrawLine(r1.m_x - adderc, r1.m_y - adders, r2.m_x, r2.m_y);
++          draw_line(r1.m_x, r1.m_y, r2.m_x + adderc, r2.m_y + adders);
++          draw_line(r1.m_x - adderc, r1.m_y - adders, r2.m_x, r2.m_y);
+         } else
+-          dc->DrawLine(r1.m_x, r1.m_y, r2.m_x, r2.m_y);
++          draw_line(r1.m_x, r1.m_y, r2.m_x, r2.m_y);
+       else {
+       }
+ 
 diff --git a/gui/src/chcanv.cpp b/gui/src/chcanv.cpp
 --- a/gui/src/chcanv.cpp
 +++ b/gui/src/chcanv.cpp
@@ -466,3 +611,110 @@ diff --git a/gui/src/glChartCanvas.cpp b/gui/src/glChartCanvas.cpp
      }
  
      //        glDisableClientState(GL_VERTEX_ARRAY);
+diff --git i/gui/include/gui/route_gui.h w/gui/include/gui/route_gui.h
+index 67185e1..ac0844a 100644
+--- i/gui/include/gui/route_gui.h
++++ w/gui/include/gui/route_gui.h
+@@ -47,12 +47,15 @@ public:
+   void DrawSegment(ocpnDC &dc, ChartCanvas *canvas, wxPoint *rp1, wxPoint *rp2,
+                    ViewPort &vp, bool bdraw_arrow);
+ 
+-  void DrawGLLines(ViewPort &vp, ocpnDC *dc, ChartCanvas *canvas);
++  void DrawGLLines(ViewPort &vp, ocpnDC *dc, ChartCanvas *canvas,
++                   bool xnav_route = false);
+   void DrawGL(ViewPort &vp, ChartCanvas *canvas, ocpnDC &dc);
+   void DrawGLRouteLines(ViewPort &vp, ChartCanvas *canvas, ocpnDC &dc);
+   void CalculateDCRect(wxDC &dc_route, ChartCanvas *canvas, wxRect *prect);
+   void RenderSegment(ocpnDC &dc, int xa, int ya, int xb, int yb, ViewPort &vp,
+-                     bool bdraw_arrow, int hilite_width = 0);
++                     bool bdraw_arrow, int hilite_width = 0,
++                     ChartCanvas *canvas = nullptr, bool xnav_route = false,
++                     bool join_start = false, bool join_end = false);
+   void RenderSegmentArrowsGL(ocpnDC &dc, int xa, int ya, int xb, int yb,
+                              ViewPort &vp);
+   int SendToGPS(const wxString &com_name, bool bsend_waypoints,
+diff --git i/gui/src/chcanv.cpp w/gui/src/chcanv.cpp
+index 2c51fd6..cb832fc 100644
+--- i/gui/src/chcanv.cpp
++++ w/gui/src/chcanv.cpp
+@@ -5958,6 +5958,14 @@ void ChartCanvas::ShipIndicatorsDraw(ocpnDC &dc, int img_height,
+       1.0,
+       floor(m_pix_per_mm / 2));  // 0.5 mm nominal, but not less than 1 pixel
+ 
++  bool xnav_cog_style = false;
++#ifdef OPENNAV_X
++  // Observe preferences before upstream's display-density mutation. The shared
++  // style owner tracks that adjustment separately from runtime custom changes.
++  xnav_cog_style = opennav::integration::UseChartCogPredictorStyle(
++      g_cog_predictor_width, g_cog_predictor_style, g_cog_predictor_color,
++      static_cast<int>(nominal_line_width_pix));
++#endif
+   // If the calculated value is greater than the config file spec value, then
+   // use it.
+   if (nominal_line_width_pix > g_cog_predictor_width)
+@@ -6024,31 +6032,42 @@ void ChartCanvas::ShipIndicatorsDraw(ocpnDC &dc, int img_height,
+         dash_long[1] = dash_long[0] / 2;
+       }
+ 
+-      wxPen ppPen2(cPred, g_cog_predictor_width,
+-                   (wxPenStyle)g_cog_predictor_style);
+-      if (g_cog_predictor_style == (wxPenStyle)wxUSER_DASH)
+-        ppPen2.SetDashes(2, dash_long);
+-      dc.SetPen(ppPen2);
+-      dc.StrokeLine(
+-          lGPSPoint.m_x + GPSOffsetPixels.x, lGPSPoint.m_y + GPSOffsetPixels.y,
+-          lPredPoint.x + GPSOffsetPixels.x, lPredPoint.y + GPSOffsetPixels.y);
+-
+-      if (g_cog_predictor_width > 1) {
+-        float line_width = g_cog_predictor_width / 3.;
+-
+-        wxDash dash_long3[2];
+-        dash_long3[0] = g_cog_predictor_width / line_width * dash_long[0];
+-        dash_long3[1] = g_cog_predictor_width / line_width * dash_long[1];
+-
+-        wxPen ppPen3(GetGlobalColor(_T ( "UBLCK" )), wxMax(1, line_width),
++      bool xnav_cog_painted = false;
++#ifdef OPENNAV_X
++      if (xnav_cog_style && m_ownship_state == SHIP_NORMAL &&
++          g_OwnShipIconType == 0 && !m_pos_image_user)
++        xnav_cog_painted = opennav::integration::DrawChartCogPredictor(
++            dc, *this, lGPSPoint.m_x + GPSOffsetPixels.x,
++            lGPSPoint.m_y + GPSOffsetPixels.y,
++            lPredPoint.x + GPSOffsetPixels.x, lPredPoint.y + GPSOffsetPixels.y);
++#endif
++      if (!xnav_cog_painted) {
++        wxPen ppPen2(cPred, g_cog_predictor_width,
+                      (wxPenStyle)g_cog_predictor_style);
+         if (g_cog_predictor_style == (wxPenStyle)wxUSER_DASH)
+-          ppPen3.SetDashes(2, dash_long3);
+-        dc.SetPen(ppPen3);
+-        dc.StrokeLine(lGPSPoint.m_x + GPSOffsetPixels.x,
+-                      lGPSPoint.m_y + GPSOffsetPixels.y,
+-                      lPredPoint.x + GPSOffsetPixels.x,
+-                      lPredPoint.y + GPSOffsetPixels.y);
++          ppPen2.SetDashes(2, dash_long);
++        dc.SetPen(ppPen2);
++        dc.StrokeLine(
++            lGPSPoint.m_x + GPSOffsetPixels.x, lGPSPoint.m_y + GPSOffsetPixels.y,
++            lPredPoint.x + GPSOffsetPixels.x, lPredPoint.y + GPSOffsetPixels.y);
++
++        if (g_cog_predictor_width > 1) {
++          float line_width = g_cog_predictor_width / 3.;
++
++          wxDash dash_long3[2];
++          dash_long3[0] = g_cog_predictor_width / line_width * dash_long[0];
++          dash_long3[1] = g_cog_predictor_width / line_width * dash_long[1];
++
++          wxPen ppPen3(GetGlobalColor(_T ( "UBLCK" )), wxMax(1, line_width),
++                       (wxPenStyle)g_cog_predictor_style);
++          if (g_cog_predictor_style == (wxPenStyle)wxUSER_DASH)
++            ppPen3.SetDashes(2, dash_long3);
++          dc.SetPen(ppPen3);
++          dc.StrokeLine(lGPSPoint.m_x + GPSOffsetPixels.x,
++                        lGPSPoint.m_y + GPSOffsetPixels.y,
++                        lPredPoint.x + GPSOffsetPixels.x,
++                        lPredPoint.y + GPSOffsetPixels.y);
++        }
+       }
+ 
+       if (g_cog_predictor_endmarker) {

@@ -29,11 +29,16 @@ function Expand-ReviewArchive([string]$Archive,[string]$Destination) {
   $null=New-Item -ItemType Directory -Path $destination
   $zip=[IO.Compression.ZipFile]::OpenRead($archive)
   try {
-    $seen=@{};$total=[long]0
+    $seen=@{};$total=[long]0;$archiveRoot=$null
     if ($zip.Entries.Count -lt 1 -or $zip.Entries.Count -gt 20000) { throw 'Archive entry count outside bounds.' }
     foreach ($entry in $zip.Entries) {
       Assert-ReviewRelativePath $entry.FullName
-      if (-not $entry.FullName.StartsWith('OpenNavX-Beta2-Portable-Recovery/',[StringComparison]::Ordinal) -or $seen.ContainsKey($entry.FullName)) { throw 'Wrong recovery archive root or duplicate entry.' }
+      $entryRoot=$entry.FullName.Split('/')[0]
+      if ($entryRoot -cnotin @('SKAGER-Beta2-Portable-Recovery','OpenNavX-Beta2-Portable-Recovery') -or
+          ($null -ne $archiveRoot -and $entryRoot -cne $archiveRoot) -or
+          -not $entry.FullName.StartsWith($entryRoot+'/',[StringComparison]::Ordinal) -or
+          $seen.ContainsKey($entry.FullName)) { throw 'Wrong/mixed recovery archive root or duplicate entry.' }
+      $archiveRoot=$entryRoot
       if (($entry.ExternalAttributes -shr 16 -band 61440) -eq 40960) { throw 'Archive links are forbidden.' }
       $total+=$entry.Length
       if ($entry.Length -gt 1073741824 -or $total -gt 2147483648) { throw 'Archive expanded size outside bounds.' }
@@ -45,7 +50,7 @@ function Expand-ReviewArchive([string]$Archive,[string]$Destination) {
       [IO.Compression.ZipFileExtensions]::ExtractToFile($entry,$target,$false)
     }
   } finally {$zip.Dispose()}
-  return Join-Path $destination 'OpenNavX-Beta2-Portable-Recovery'
+  return Join-Path $destination $archiveRoot
 }
 function Assert-ReviewPackage([string]$Package,[string]$ManifestSha256,[string]$Commit,[bool]$Pristine=$false) {
   $package=Assert-LocalPath $Package

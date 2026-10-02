@@ -11,11 +11,11 @@ void ProductPanel::PilotSettings() {
   Heading("Autopilot setup", test_output ? "Developer loopback test only" : "Pilot status / equipment control unavailable");
   const auto &b = state_.settings.pilot;
   LiveText([](const auto &s) {
-    return wxString(!integration::PilotLoopbackTestsEnabled() ? "Status only / XNav cannot command equipment" : s.settings.pilot.permit_control ? "Loopback test permission configured" : "Autopilot control OFF") +
+    return wxString(!integration::PilotLoopbackTestsEnabled() ? "Status only / SKAGER cannot command equipment" : s.settings.pilot.permit_control ? "Loopback test permission configured" : "Autopilot control OFF") +
            (s.pilot.fresh ? " / Connected" : " / Waiting for pilot feedback");
   });
   Text(test_output ? "Loopback testing only. Manual control must also be enabled each session. SmartNav never steers the vessel."
-                  : "This product displays observed pilot status. Physical equipment commands are unavailable. Use the physical helm. Saved permissions from older builds cannot enable XNav control.");
+                  : "This product displays observed pilot status. Physical equipment commands are unavailable. Use the physical helm. Saved permissions from older builds cannot enable SKAGER control.");
   BeginActions(2);
   Action("Back to manual autopilot", [this] { ShowPage(ProductPage::Pilot, mode_); });
   if (test_output) Action(b.permit_control ? "Return to display-only" : "Permit loopback test control...", [this] {
@@ -71,7 +71,7 @@ void ProductPanel::PilotSettings() {
       "Remove translator binding",
       [this] {
         if (!ConfirmSheet(*this, mode_, "Remove translator binding?",
-                          "XNav control will be disabled. This cannot recall a "
+                          "SKAGER control will be disabled. This cannot recall a "
                           "command already transmitted; "
                           "use physical STANDBY if its outcome is uncertain.",
                           "Remove binding"))

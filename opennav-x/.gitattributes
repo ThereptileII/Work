@@ -9,3 +9,6 @@ docs/third-party/** -text
 # Exact published historical lifecycle fixture; its pinned SHA256 is checked
 # by native shortcut regression tests before loading its original functions.
 tools/fixtures/early-beta2-Lifecycle.ps1 -text
+
+# Embedded approved PNG bytes are hashed by the branding provenance gate.
+src/application/SkagerBrandAsset.h text eol=lf

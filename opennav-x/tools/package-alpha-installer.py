@@ -28,8 +28,9 @@ if a.candidate:
         'qualification':'candidate - not release acceptance'}]
 if not manifest['supportedOpenCpn']: raise SystemExit('No accepted OpenCPN configuration; release installer refused')
 a.output.mkdir(parents=True)
+subprocess.run([os.sys.executable, str(ROOT/'tools/verify-skager-brand.py')], check=True)
 preview=a.preview.resolve()
-if not (preview/'docs/OpenNavX-Beta2-Release-Notes.md').is_file():
+if not (preview/'docs/SKAGER-Beta2-Release-Notes.md').is_file():
     raise SystemExit('Installer requires the recovery package release notes')
 require_status_only(json.loads((preview/'docs/PRODUCT_BUILD.json').read_text()))
 with zipfile.ZipFile(a.output/'payload.zip','w',zipfile.ZIP_DEFLATED,compresslevel=6) as z:
@@ -49,10 +50,11 @@ package={'schema':1,'version':version,'commit':commit,
 record=a.output/'package.json';record.write_text(json.dumps(package,indent=2)+'\n',encoding='utf-8')
 compiler=Path(os.environ.get('ProgramFiles(x86)','C:/Program Files (x86)'))/'NSIS/makensis.exe'
 if not compiler.exists(): raise SystemExit('Native NSIS compiler missing')
-setup=a.output/'OpenNavX-Beta2-Setup.exe'
+setup=a.output/'SKAGER-Beta2-Setup.exe'
 subprocess.run([str(compiler),'/V3',f'/DOUTPUT={setup.resolve()}',
                f'/DPACKAGE={a.output.resolve()}',
                f'/DENGINE={ROOT / "installer/windows/Lifecycle.ps1"}',
+               f'/DBRAND_ICON={ROOT / "resources/branding/skager.ico"}',
                '/DMANIFEST_SHA256='+hashlib.sha256(record.read_bytes()).hexdigest(),
                str(ROOT/'installer/windows/AlphaSetup.nsi')],check=True)
 (setup.with_suffix('.exe.sha256')).write_text(hashlib.sha256(setup.read_bytes()).hexdigest()+'  '+setup.name+'\n')

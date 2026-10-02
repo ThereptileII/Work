@@ -101,16 +101,16 @@ namespace OpenNavX {
     // control (in particular key storage, route changes or hardware commands).
     public static bool IsPrototypeSurface(string title,string[] directLabels,string[] headingLabels) {
       switch(title) {
-        case "OpenNav chart tools":return SameLabels(directLabels,"Measure","Waypoint","+","\u2212");
-        case "OpenNav chart orientation":return SameLabels(directLabels,"North") || SameLabels(directLabels,"Course");
-        case "OpenNav follow boat":return SameLabels(directLabels,"Follow boat");
-        case "OpenNav anchor watch":
-        case "OpenNav alerts":
-        case "OpenNav source health":
-        case "OpenNav autopilot":
-        case "OpenNav preferences":return SameLabels(directLabels) && SameLabels(headingLabels,"Close");
-        case "OpenNav passage":return SameLabels(directLabels) && SameLabels(headingLabels,"Close");
-        case "OpenNav vessel traffic":return SameLabels(directLabels) && (SameLabels(headingLabels,"Close") || SameLabels(headingLabels,"Back"));
+        case "SKAGER chart tools":return SameLabels(directLabels,"Measure","Waypoint","+","\u2212");
+        case "SKAGER chart orientation":return SameLabels(directLabels,"North") || SameLabels(directLabels,"Course");
+        case "SKAGER follow boat":return SameLabels(directLabels,"Follow boat");
+        case "SKAGER anchor watch":
+        case "SKAGER alerts":
+        case "SKAGER source health":
+        case "SKAGER autopilot":
+        case "SKAGER preferences":return SameLabels(directLabels) && SameLabels(headingLabels,"Close");
+        case "SKAGER passage":return SameLabels(directLabels) && SameLabels(headingLabels,"Close");
+        case "SKAGER vessel traffic":return SameLabels(directLabels) && (SameLabels(headingLabels,"Close") || SameLabels(headingLabels,"Back"));
         default:return false;
       }
     }
@@ -136,7 +136,7 @@ namespace OpenNavX {
         try {
           if(!IsWindowVisible(h) || IsIconic(h) || GetWindow(h,4)!=frame || Owner(h)!=(uint)pid || IsChild(frame,h))return true;
           var title=Text(h);
-          if(title!="OpenNav chart tools" && title!="OpenNav chart orientation" && title!="OpenNav follow boat" && title!="OpenNav passage" && title!="OpenNav vessel traffic" && title!="OpenNav preferences" && title!="OpenNav anchor watch" && title!="OpenNav autopilot" && title!="OpenNav alerts" && title!="OpenNav source health")return true;
+          if(title!="SKAGER chart tools" && title!="SKAGER chart orientation" && title!="SKAGER follow boat" && title!="SKAGER passage" && title!="SKAGER vessel traffic" && title!="SKAGER preferences" && title!="SKAGER anchor watch" && title!="SKAGER autopilot" && title!="SKAGER alerts" && title!="SKAGER source health")return true;
           var direct=DirectLabels(h,pid);var heading=new List<string>();
           foreach(var child in Children(h))if(GetParent(child)==h && Owner(child)==(uint)pid)
             foreach(var label in DirectLabels(child,pid))if(label=="Close" || label=="Back")heading.Add(label);
@@ -148,7 +148,7 @@ namespace OpenNavX {
                signature=IsPrototypeSurface(title,direct,heading.ToArray());
           if(!unique || !enabled || !sameDpi || !size || !contained || !signature)
             throw new InvalidOperationException(String.Format("Owned prototype surface {0} refused: unique={1}, enabled={2}, dpi={3}, size={4}, contained={5}, signature={6}.",title,unique,enabled,sameDpi,size,contained,signature));
-          if((title=="OpenNav passage" || title=="OpenNav vessel traffic" || title=="OpenNav preferences" || title=="OpenNav anchor watch" || title=="OpenNav autopilot" || title=="OpenNav alerts" || title=="OpenNav source health") && ++drawers>1)throw new InvalidOperationException("More than one prototype sheet is visible.");
+          if((title=="SKAGER passage" || title=="SKAGER vessel traffic" || title=="SKAGER preferences" || title=="SKAGER anchor watch" || title=="SKAGER autopilot" || title=="SKAGER alerts" || title=="SKAGER source health") && ++drawers>1)throw new InvalidOperationException("More than one prototype sheet is visible.");
           Array.Sort(direct,StringComparer.Ordinal);heading.Sort(StringComparer.Ordinal);
           result.Add(new SurfaceInfo{Handle=h.ToInt64(),Title=title,Signature=String.Join("|",direct)+"/"+String.Join("|",heading.ToArray()),Dpi=dpi,Bounds=rect});
           return true;
@@ -349,8 +349,8 @@ namespace OpenNavX {
     public static string ActionContext(string action) {
       ActionLabels(action); // Unknown actions have no context, even without a window.
       switch(action) {
-        case "Display":return "OpenNav product page: Settings";
-        case "ToggleFullscreen":return "OpenNav product page: Display";
+        case "Display":return "SKAGER product page: Settings";
+        case "ToggleFullscreen":return "SKAGER product page: Display";
         case "ToggleOrientation":return "Navigation chart tools";
         case "CyclePalette":return "Navigation status bar";
         default:return "Installed XNav shell";
@@ -444,8 +444,8 @@ namespace OpenNavX {
     }
     public static string SelectionPage(string action) {
       switch(action) {
-        case "SelectFirstVisibleWaypoint":return "OpenNav product page: Waypoints";
-        case "SelectFirstVisibleAis":return "OpenNav product page: AIS targets";
+        case "SelectFirstVisibleWaypoint":return "SKAGER product page: Waypoints";
+        case "SelectFirstVisibleAis":return "SKAGER product page: AIS targets";
         default:throw new InvalidOperationException("Unsupported read-only row selection.");
       }
     }
@@ -495,14 +495,14 @@ namespace OpenNavX {
           final.Top!=chosen.Top || final.Left!=chosen.Left || !Contains(pageBounds,final) || !Contains(root.Bounds,final))
         throw new InvalidOperationException("Selected list/page changed before interaction; no retry.");
       ClickReviewedButton(frame,pid,button);
-      var expected=action=="SelectFirstVisibleWaypoint"?"OpenNav product page: Waypoint detail":"OpenNav product page: AIS target";
+      var expected=action=="SelectFirstVisibleWaypoint"?"SKAGER product page: Waypoint detail":"SKAGER product page: AIS target";
       if(Array.IndexOf(VisiblePageLabels(frame),expected)<0)
         throw new InvalidOperationException("Selection did not expose its read-only detail page; inspect saved before image without retrying.");
       return chosen;
     }
     public static string[] VisiblePageLabels(IntPtr frame) {
       var result=new List<string>();foreach(var h in Children(frame)) {
-        var text=Text(h);if(text.StartsWith("OpenNav product page:",StringComparison.Ordinal) || text.StartsWith("OpenNav page:",StringComparison.Ordinal))result.Add(text);
+        var text=Text(h);if(text.StartsWith("SKAGER product page:",StringComparison.Ordinal) || text.StartsWith("SKAGER page:",StringComparison.Ordinal))result.Add(text);
       }return result.ToArray();
     }
   }

@@ -1,4 +1,6 @@
 #include "ui/Shell.h"
+#include "application/Brand.h"
+#include "application/SkagerBrandAsset.h"
 
 #include "smartnav/Advisories.h"
 #include "vessel/DisplayItems.h"
@@ -9,6 +11,7 @@
 #include <wx/datetime.h>
 #include <wx/dcbuffer.h>
 #include <wx/dialog.h>
+#include <wx/mstream.h>
 #include <wx/popupwin.h>
 #include <wx/sizer.h>
 #include <wx/textctrl.h>
@@ -103,22 +106,32 @@ Shell::Shell(wxFrame &frame, wxAuiManager &manager, ShellActions actions,
   auto *row = new wxBoxSizer(wxHORIZONTAL);
   auto *brand = new wxPanel(top, wxID_ANY);
   brand_panel_ = brand;
+  brand->SetName("SKAGER brand");
+  brand->SetLabel(application::brand::ProductName);
+  wxMemoryInputStream logo_stream(application::kSkagerWordmarkPng,
+                                  sizeof(application::kSkagerWordmarkPng));
+  const wxImage logo(logo_stream, wxBITMAP_TYPE_PNG);
   brand->SetMinSize(frame_.FromDIP(wxSize(180,68)));
   brand->SetBackgroundStyle(wxBG_STYLE_PAINT);
-  brand->Bind(wxEVT_PAINT,[this,brand](wxPaintEvent &) {
+  brand->Bind(wxEVT_PAINT,[this,brand,logo,bitmap=wxBitmap{}](wxPaintEvent &) mutable {
     wxAutoBufferedPaintDC dc(brand);
     const auto c=Theme(mode_);
     dc.SetBackground(wxBrush(Colour(c.background))); dc.Clear();
     dc.SetDeviceOrigin(0, (brand->GetClientSize().y-brand->FromDIP(68))/2);
-    // Original 32-unit prototype brand path; a design mark, not ownship data.
+    // Exact approved SCRUM-89 artwork, fitted into the existing header slot.
+    // Cache per device size so ordinary paints do not resample the bitmap.
     const auto d=[brand](int x){return brand->FromDIP(x);};
-    const wxPoint hull[]={{d(25),d(43)},{d(35),d(23)},{d(45),d(43)},{d(35),d(37)}};
-    dc.SetBrush(wxBrush(Colour(c.accent)));dc.SetPen(*wxTRANSPARENT_PEN);dc.DrawPolygon(4,hull);
-    dc.SetPen(wxPen(Colour(c.background),d(2)));dc.DrawLine(d(35),d(23),d(35),d(37));dc.DrawLine(d(35),d(37),d(45),d(43));
-    dc.SetFont(UiFontWeight(*brand,23,650));dc.SetTextForeground(Colour(c.primary));
-    dc.DrawText("opennav",d(58),d(20));
-    const int x=d(58)+dc.GetTextExtent("opennav").x;
-    dc.SetFont(UiFontWeight(*brand,23,350));dc.SetTextForeground(Colour(c.accent));dc.DrawText("x",x,d(20));
+    if (logo.IsOk()) {
+      const int width=d(148);
+      const int height=width*logo.GetHeight()/logo.GetWidth();
+      if (!bitmap.IsOk() || bitmap.GetWidth()!=width || bitmap.GetHeight()!=height)
+        bitmap=wxBitmap(logo.Scale(width,height,wxIMAGE_QUALITY_HIGH));
+      dc.DrawBitmap(bitmap,d(16),(d(68)-height)/2,true);
+    } else {
+      dc.SetFont(UiFontWeight(*brand,23,650));
+      dc.SetTextForeground(Colour(c.primary));
+      dc.DrawText(application::brand::Name,d(16),d(20));
+    }
     dc.SetPen(wxPen(Colour(c.border)));dc.DrawLine(d(179),d(22),d(179),d(46));
   });
   brand->Bind(wxEVT_LEFT_UP,[this](wxMouseEvent&){ShowNavigation();});

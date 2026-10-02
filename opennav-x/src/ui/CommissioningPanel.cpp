@@ -78,7 +78,7 @@ void ProductPanel::CommissioningPanel() {
   Action("Open recording for REPLAY...", [this, service] {
     wxFileDialog file(
         this, "Open normalized recording", FilePath(service->Directory()), "",
-        "OpenNav recording (*.onxr)|*.onxr", wxFD_OPEN | wxFD_FILE_MUST_EXIST);
+        "SKAGER recording (*.onxr)|*.onxr", wxFD_OPEN | wxFD_FILE_MUST_EXIST);
     if (file.ShowModal() != wxID_OK)
       return;
     Result(service->OpenReplay(Path(file.GetPath()), vessel::Clock::now()));
@@ -95,7 +95,7 @@ void ProductPanel::CommissioningPanel() {
                         replay->duration.count() / 1000.0)
                   : wxString("Replay OFF");
   });
-  Text("REPLAY displays historical OpenNav data on a separate clock. It does "
+  Text("REPLAY displays historical SKAGER data on a separate clock. It does "
        "not move OpenCPN's ownship, activate a route or operate equipment. AIS "
        "and anchor state are not recorded in this format. At the end, retained "
        "observations age into stale state.");
@@ -113,7 +113,7 @@ void ProductPanel::CommissioningPanel() {
   Action("Export calibration observations...", [this, service] {
     wxFileDialog input(
         this, "Recording to export", FilePath(service->Directory()), "",
-        "OpenNav recording (*.onxr)|*.onxr", wxFD_OPEN | wxFD_FILE_MUST_EXIST);
+        "SKAGER recording (*.onxr)|*.onxr", wxFD_OPEN | wxFD_FILE_MUST_EXIST);
     if (input.ShowModal() != wxID_OK)
       return;
     auto device = state_.settings.energy.battery_device_id;

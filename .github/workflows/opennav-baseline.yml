@@ -1,4 +1,4 @@
-name: OpenNav X Beta 2
+name: SKAGER Beta 2
 on:
   push:
     branches: [opennav-x, opennav-x-beta2-ui, opennav-x-beta2-dpi, opennav-x-beta2-refinement]
@@ -548,7 +548,7 @@ jobs:
           $Candidate = @()
           $Compatibility = Get-Content opennav-x/installer/windows/compatibility.json -Raw | ConvertFrom-Json
           if ($Compatibility.supportedOpenCpn.Count -eq 0) { $Candidate = @('--candidate') }
-          python opennav-x/tools/package-alpha-installer.py --preview opennav-x/build/developer-preview/OpenNavX-Beta2-Portable-Recovery --output opennav-x/build/beta-installer @Candidate
+          python opennav-x/tools/package-alpha-installer.py --preview opennav-x/build/developer-preview/SKAGER-Beta2-Portable-Recovery --output opennav-x/build/beta-installer @Candidate
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
           python opennav-x/tools/smoke-installer-windows.py
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
@@ -659,14 +659,14 @@ jobs:
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         if: steps.qualification.outputs.accepted == 'true'
         with:
-          name: OpenNavX-Beta2-Windows
+          name: SKAGER-Beta2-Windows
           path: |
-            beta/OpenNavX-Beta2-Portable-Recovery.zip
-            beta/OpenNavX-Beta2-Setup.exe
-            beta/OpenNavX-Beta2-Test-Guide.md
-            beta/OpenNavX-Beta2-Install-Guide.md
-            beta/OpenNavX-Beta2-Release-Notes.md
+            beta/SKAGER-Beta2-Portable-Recovery.zip
+            beta/SKAGER-Beta2-Setup.exe
+            beta/SKAGER-Beta2-Test-Guide.md
+            beta/SKAGER-Beta2-Install-Guide.md
+            beta/SKAGER-Beta2-Release-Notes.md
             beta/SHA256SUMS.txt
-            beta/OpenNavX-Beta2-source.zip
+            beta/SKAGER-Beta2-source.zip
           if-no-files-found: error
           retention-days: 90

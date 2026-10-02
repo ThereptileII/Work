@@ -398,7 +398,7 @@ def capture(name):
     return rgb
 def chart_capture(name,phase):
     title=ui.text(handle) if windows else xdo('getwindowname',handle)
-    style='XNav' if title=='OpenNav X / OpenCPN' else 'Standard'
+    style='XNav' if title=='SKAGER / OpenCPN' else 'Standard'
     report.setdefault('chart_rendering',[]).append(chartcheck.presentation(capture(name),style,'Day',phase))
 def page_capture(name, page):
     capture(name)
@@ -442,11 +442,11 @@ def switch_to_xnav(count, transition, name):
     phase=transition
     process_stage('switch-to-xnav-request',pid=pid)
     if windows:
-        old=ui.monitor_process(pid);ui.click_menu(handle,'Switch to XNav');wait_native(old,pid)
+        old=ui.monitor_process(pid);ui.click_menu(handle,'Switch to SKAGER');wait_native(old,pid)
     else:
         old=pid;xdo('mousemove',600,400,'click',3);time.sleep(.4);xdo('key','End','Return')
         _,status=wait_pid(old,0);assert os.waitstatus_to_exitcode(status)==0
-    handle,pid=window('OpenNav X / OpenCPN');ready(count);preserved()
+    handle,pid=window('SKAGER / OpenCPN');ready(count);preserved()
     chart_capture(name,transition)
     if windows:
         saved=data(lambda d:d['settings']['capacity_kwh']=='24' and d['settings']['reserve_percent']=='20')
@@ -512,7 +512,7 @@ def failure_inventory(error):
 
 try:
     app=launch('xnav',True,'Run-XNav-Demo.cmd' if windows else None)
-    handle,pid=window('OpenNav X / OpenCPN');ready(1)
+    handle,pid=window('SKAGER / OpenCPN');ready(1)
     if windows:
         rect=ui.W.RECT();ui.GetWindowRect(handle,ui.C.byref(rect))
         report['initial_outer_pixels']=[rect.right-rect.left,rect.bottom-rect.top]
@@ -607,7 +607,7 @@ try:
             report['checks'].append('Native manual test enable/AUTO/+1/STANDBY/disable with fresh feedback and disabled OFF controls')
 
         if windows:
-            assert not any(caption.startswith('OpenNav page:') for _,caption in ui.children(handle)), 'Preview pane covers product page'
+            assert not any(caption.startswith('SKAGER page:') for _,caption in ui.children(handle)), 'Preview pane covers product page'
     report['checks'].append('Prototype navigation and eight retained product views captured; advanced frame accelerators remain covered')
     for title,key,name in [('Energy configuration','k','energy-settings'),
                            ('Data Sources','o','sources'),
@@ -749,7 +749,7 @@ try:
     report['checks'].append('All eight fixture-accelerator scenarios pass validity/shortfall assertions')
     command('Navigation','n')
     if windows:
-        assert not any(caption.startswith(('OpenNav page:', 'OpenNav product page:')) for _, caption in ui.children(handle))
+        assert not any(caption.startswith(('SKAGER page:', 'SKAGER product page:')) for _, caption in ui.children(handle))
         ui.click_text(pid,'+')
         shell_click('Passage')
         ui.assert_preview_page(handle,'Route')
@@ -760,7 +760,7 @@ try:
         ui.open_system(pid);ui.click_text(pid,'Open Legacy OpenCPN')
     else:xdo('key','ctrl+shift+l')
     assert wait_launch(app,35)==0
-    handle,pid=window('OpenCPN / Legacy');ready(2);preserved();chart_capture('preview-07-legacy','XNav to Legacy')
+    handle,pid=window('SKAGER Legacy / OpenCPN');ready(2);preserved();chart_capture('preview-07-legacy','XNav to Legacy')
     switch_to_xnav(3,'XNav to Legacy to XNav','preview-09-returned-xnav')
     live=data(lambda d:d['data_mode']!='DEMO')
     assert 'arrival_soc' not in live['energy'];preserved()
@@ -768,10 +768,10 @@ try:
         phase='XNav to Safe'
         process_stage('switch-to-safe-request',pid=pid)
         old=ui.monitor_process(pid);ui.open_system(pid);ui.click_text(pid,'Safe Mode');wait_native(old,pid)
-        handle,pid=window('OpenNav Safe Mode / OpenCPN');ready(4);chart_capture('preview-08-safe','XNav to Safe')
+        handle,pid=window('SKAGER Safe Mode / OpenCPN');ready(4);chart_capture('preview-08-safe','XNav to Safe')
         switch_to_xnav(5,'Safe to XNav','preview-12-safe-to-xnav');close_current();preserved()
         count=5
-        for launcher,title in [('Run-XNav.cmd','OpenNav X / OpenCPN'),('Run-Legacy.cmd','OpenCPN / Legacy'),('Run-Safe.cmd','OpenNav Safe Mode / OpenCPN')]:
+        for launcher,title in [('Run-XNav.cmd','SKAGER / OpenCPN'),('Run-Legacy.cmd','SKAGER Legacy / OpenCPN'),('Run-Safe.cmd','SKAGER Safe Mode / OpenCPN')]:
             app=launch('',launcher=launcher);handle,pid=window(title);count+=1;ready(count)
             chart_capture('preview-13-'+launcher[4:-4].lower(),'Direct '+title+' launcher startup')
             close_current();assert wait_launch(app,15)==0;preserved()
@@ -779,7 +779,7 @@ try:
         # startup must repair it without importing or rewriting chart choices.
         with (profile/'opencpn.conf').open('a') as stream:
             stream.write('\n[Directories]\nBaseShapefileDir=./\n')
-        app=launch('',direct=True);handle,pid=window('OpenNav X / OpenCPN');count+=1;ready(count)
+        app=launch('',direct=True);handle,pid=window('SKAGER / OpenCPN');count+=1;ready(count)
         chart_capture('preview-10-repaired-basemap','Direct startup with old Preview 0.1 basemap setting')
         close_current();assert wait_launch(app,15)==0;preserved()
         refused=subprocess.run([str(exe),'--xnav','--configdir',str(normal)],env=env,capture_output=True,timeout=20)
@@ -792,7 +792,7 @@ try:
         # Deactivation is logged only for a successfully initialized plugin.
         # Verify all completed normal launches, and no activation in Safe Mode,
         # using the upstream lifecycle rather than only the saved preference.
-        sessions=(profile/'opencpn.log').read_text(errors='replace').split('OpenNav startup: ')[1:]
+        sessions=(profile/'opencpn.log').read_text(errors='replace').split('SKAGER startup: ')[1:]
         normal_plugins=safe_plugins=0
         for session in sessions:
             initialized=any('PluginLoader: Deactivating PlugIn:' in line and line.endswith('\\profile\\plugins\\dashboard_pi.dll')
@@ -806,9 +806,9 @@ try:
         assert normal_plugins==7 and safe_plugins==2,(normal_plugins,safe_plugins)
         report['checks'].append('Bundled Dashboard initialized and cleanly unloaded in seven normal launches; inactive in both Safe launches')
     else:
-        close_current();app=launch('safe-mode');handle,pid=window('OpenNav Safe Mode / OpenCPN');ready(4);chart_capture('preview-08-safe','XNav to Safe')
+        close_current();app=launch('safe-mode');handle,pid=window('SKAGER Safe Mode / OpenCPN');ready(4);chart_capture('preview-08-safe','XNav to Safe')
         switch_to_xnav(5,'Safe to XNav','preview-12-safe-to-xnav');close_current();preserved()
-        app=launch('legacy');handle,pid=window('OpenCPN / Legacy');ready(6)
+        app=launch('legacy');handle,pid=window('SKAGER Legacy / OpenCPN');ready(6)
         chart_capture('preview-13-legacy','Direct Legacy startup')
         switch_to_xnav(7,'Direct Legacy to XNav','preview-14-legacy-to-xnav');close_current();preserved()
     handle=None

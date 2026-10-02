@@ -122,7 +122,7 @@ class MainButtonGeometry(unittest.TestCase):
         def rect():return SimpleNamespace(left=0,top=0,right=width,bottom=height)
         ui=SimpleNamespace(W=SimpleNamespace(RECT=rect),GetWindowRect=lambda *_:True,
                            GetClientRect=lambda *_:True,
-                           children=lambda _:[(2,'OpenNav status footer')])
+                           children=lambda _:[(2,'SKAGER status footer')])
         namespace=dict(ui=ui,C=SimpleNamespace(byref=lambda r:r),handle=1,
                        current_layout_observation=lambda:{'runtime':{'display':display}},
                        bounds=lambda _:SimpleNamespace(left=0,top=footer['y'],

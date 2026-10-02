@@ -136,7 +136,7 @@ void FieldJournal::Observe(const FieldSnapshot &s, vessel::Time wall) {
 }
 std::string FieldJournal::Export(vessel::Time wall) const {
   std::string text =
-      "OpenNav bounded transition journal / newest last / age at export\n";
+      "SKAGER bounded transition journal / newest last / age at export\n";
   for (const auto &e : entries_)
     text += Age(e.at, wall) + " ago / " + e.text + "\n";
   return text;
@@ -152,7 +152,7 @@ BuildFieldReport(const FieldSnapshot &s, const FieldEnvironment &env,
     out.push_back({name, text});
   };
   add("READ_ME.txt",
-      "OpenNav X field diagnostic bundle v1\nReview before sharing. No "
+      "SKAGER field diagnostic bundle v1\nReview before sharing. No "
       "automatic upload.\nDefault report omits positions, route/waypoint "
       "identities, AIS identities, device/interface names, full configuration, "
       "raw bus streams and external log files. Source aliases apply within "
@@ -163,7 +163,7 @@ BuildFieldReport(const FieldSnapshot &s, const FieldEnvironment &env,
       "navigation approval or physical hardware acceptance.\n");
   std::ostringstream o;
   o.imbue(std::locale::classic());
-  o << "Interface: XNav\nData: " << Mode(s.vessel)
+  o << "Interface: SKAGER\nData: " << Mode(s.vessel)
     << "\nStartup recovery required: " << env.startup_recovery_required << '\n';
   o << "Startup failures observed " << env.startup_failures_observed << "\nPrevious launch unfinished " << env.previous_launch_unfinished << "\n";
   if (env.build.size() > 16 || env.plugins.size() > 128)

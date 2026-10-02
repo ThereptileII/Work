@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Derive bounded XNav palette resources from verified pinned OpenCPN bytes.
 
-Only the enumerated palette roles, two built-up-area fill tokens and a proven
+Only the enumerated palette roles, geographic-name ink, two built-up-area fill tokens and a proven
 neutral sprite-ink mask may change. Original inputs are never modified.
 """
 import argparse
@@ -19,6 +19,24 @@ ALLOWED={'LANDA','CSTLN','DEPDW','DEPMD','DEPMS','DEPVS','DEPIT','DEPCN','DEPSC'
 BUILT_AREA_LOOKUPS={'16':('32052','Plain'),'356':('32391','Symbolized')}
 BUILT_AREA_INSTRUCTION="AC(CHBRN);TX(OBJNAM,1,2,3,'16120',0,0,CHBLK,26);LS(SOLD,1,LANDF)"
 BUILT_AREA_COLOR='XNBUA'
+GEOGRAPHIC_COLOR='XNGEO'
+ADDED_COLORS={BUILT_AREA_COLOR,GEOGRAPHIC_COLOR}
+GEOGRAPHIC_CLASSES={'BUAARE','LNDARE','LNDRGN','SEAARE'}
+
+def geographic_ink(name, instruction):
+    if name not in GEOGRAPHIC_CLASSES:return instruction
+    # Paint only an OBJNAM TX; no offsets, size specification, classification,
+    # symbols, conditional procedures or other attributes may change.
+    return re.sub(r"(TX\(OBJNAM,[^;()]+,)(?:CHBLK|CHGRD)(,26\))",
+                  r"\g<1>XNGEO\2",instruction)
+
+def styled_instruction(lookup):
+    instruction=lookup.findtext('instruction')
+    if lookup.get('id') in BUILT_AREA_LOOKUPS:
+        assert instruction==BUILT_AREA_INSTRUCTION
+        instruction=instruction.replace('AC(CHBRN)','AC(XNBUA)')
+    return geographic_ink(lookup.get('name'),instruction)
+
 
 def pinned_bytes(path, identity):
     content=path.read_bytes()
@@ -39,23 +57,23 @@ def validate_resource_changes(original, styled, colors):
     for table in after.find('color-tables'):
         source_table=next(t for t in before.find('color-tables') if t.attrib==table.attrib)
         if table.attrib['name'] in colors:
-            added=table.findall("color[@name='XNBUA']")
-            assert len(added)==1, 'Missing or duplicated built-up-area color'
+            for name in ADDED_COLORS:
+                assert len(table.findall("color[@name='"+name+"']"))==1, 'Missing or duplicated dedicated color'
         for color in table.findall('color'):
             name=color.attrib['name']
-            if table.attrib['name'] in colors and name in ALLOWED|{BUILT_AREA_COLOR}:
+            if table.attrib['name'] in colors and name in ALLOWED|ADDED_COLORS:
                 rgb=colors[table.attrib['name']][name]
                 expected={'name':name,**dict(zip(('r','g','b'),map(str,rgb)))}
                 assert color.attrib==expected, 'Unexpected palette color attributes: '+name
                 assert len(color)==0 and not (color.text or '').strip(), 'Unexpected palette color content: '+name
-                if name==BUILT_AREA_COLOR:
+                if name in ADDED_COLORS:
                     table.remove(color)
                 else:
                     color.attrib=next(c for c in source_table.findall('color') if c.attrib['name']==name).attrib.copy()
-    for lookup in after.find('lookups'):
-        if lookup.get('id') in BUILT_AREA_LOOKUPS:
-            assert lookup.findtext('instruction')==BUILT_AREA_INSTRUCTION.replace('AC(CHBRN)','AC(XNBUA)'), 'Built-up-area rule changed beyond fill'
-            lookup.find('instruction').text=BUILT_AREA_INSTRUCTION
+    assert len(before.find('lookups'))==len(after.find('lookups'))
+    for stock,styled in zip(before.find('lookups'),after.find('lookups')):
+        assert styled.findtext('instruction')==styled_instruction(stock), 'Lookup changed beyond approved paint roles'
+        styled.find('instruction').text=stock.findtext('instruction')
     # Added nodes must not make whitespace significant in the identity check.
     for tree in (before,after):
         for node in tree.iter():
@@ -75,7 +93,7 @@ def generate(source, output):
     xml=original['chartsymbols.xml'].decode('utf-8')
     colors={}
     for table,item in definition['themes'].items():
-        assert set(item['colors'])==ALLOWED|{BUILT_AREA_COLOR}
+        assert set(item['colors'])==ALLOWED|ADDED_COLORS
         colors[table]={}
         for name,value in item['colors'].items():
             value=tokens['themes'][item['theme']][value] if value.startswith('--') else value
@@ -86,7 +104,7 @@ def generate(source, output):
         def table_replace(match):
             body=match[2]
             for name,rgb in colors[table].items():
-                if name==BUILT_AREA_COLOR:
+                if name in ADDED_COLORS:
                     assert 'name="'+name+'"' not in body
                     body+='<color name="%s" r="%s" g="%s" b="%s"/>\n        '%((name,)+rgb)
                     continue
@@ -104,6 +122,15 @@ def generate(source, output):
         old='<instruction>'+BUILT_AREA_INSTRUCTION+'</instruction>'
         assert body.count(old)==1, 'Pinned built-up-area paint changed'
         xml=re.sub(pattern,lambda m:m[1]+m[2].replace(old,old.replace('AC(CHBRN)','AC(XNBUA)'))+m[3],xml,flags=re.S)
+    geography_count=0
+    def name_replace(match):
+        nonlocal geography_count
+        before=match[3]
+        after=geographic_ink(match[2],before)
+        if before!=after:geography_count+=1
+        return match[1]+after+match[4]
+    xml=re.sub(r'(<lookup\b[^>]*name="([^"]+)"[^>]*>)(.*?)(</lookup>)',name_replace,xml,flags=re.S)
+    assert geography_count==18, 'Pinned geographic name lookup count changed'
     validate_resource_changes(original['chartsymbols.xml'],xml,colors)
     result=dict(original);result['chartsymbols.xml']=xml.encode('utf-8')
     # Pinned Day ink identifies neutral CHBLK/CHGRD pixels. Theme sheets use
@@ -124,6 +151,7 @@ def generate(source, output):
     metadata={'version':definition['version'],'upstreamCommit':lock['upstreamCommit'],
               'prototypeSha256':definition['prototypeSha256'],'palette':colors,
               'neutralRasterInk':raster_ink,
+              'geographicNameLookups':geography_count,
               'files':{n:{'sha256':hashlib.sha256(c).hexdigest(),'bytes':len(c)} for n,c in result.items()}}
     write(output/'manifest.json',(json.dumps(metadata,indent=2)+'\n').encode())
     header=['#pragma once','#include <cstdint>','namespace opennav::chart_style::generated {',
@@ -141,4 +169,4 @@ def generate(source, output):
 if __name__=='__main__':
     p=argparse.ArgumentParser();p.add_argument('--source',type=Path,required=True);p.add_argument('--output',type=Path,required=True)
     a=p.parse_args();m=generate(a.source,a.output)
-    print('Verified pinned resources; generated three XNav palettes, two BUAARE fill tokens and resource hashes; other navigation rules unchanged')
+    print('Verified pinned resources; generated three chart palettes, two BUAARE fills, 18 geographic-name ink rules and resource hashes; other navigation rules unchanged')

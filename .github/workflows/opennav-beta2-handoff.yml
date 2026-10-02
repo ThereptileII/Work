@@ -1,4 +1,4 @@
-name: OpenNav X Beta 2 accepted test package
+name: SKAGER Beta 2 accepted test package
 on:
   push:
     branches: [opennav-x-beta2-handoff]
@@ -27,7 +27,7 @@ jobs:
           --output accepted-beta2
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
-          name: OpenNavX-Beta2-Windows
+          name: SKAGER-Beta2-Windows
           path: accepted-beta2
           if-no-files-found: error
           retention-days: 90

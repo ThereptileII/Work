@@ -159,7 +159,7 @@ def click_text(pid, label):
                     # offscreen children and would hide higher-DPI regressions.
                     ancestor=GetParent(handle);viewport=None
                     while ancestor:
-                        if text(ancestor).startswith(('OpenNav Alpha page:', 'OpenNav product page:', 'OpenNav page:')):
+                        if text(ancestor).startswith(('OpenNav Alpha page:', 'SKAGER product page:', 'SKAGER page:')):
                             viewport=ancestor;break
                         ancestor=GetParent(ancestor)
                     if viewport:
@@ -185,7 +185,7 @@ def click_text(pid, label):
     visible = [(title, children(h)) for h, _, title in windows(pid)]
     raise RuntimeError(f'Control not found: {label}: {visible}')
 
-def pointer_text(pid, label, *, scroll_surface='OpenNav preferences'):
+def pointer_text(pid, label, *, scroll_surface='SKAGER preferences'):
     """Click a fully visible native control through the actual Windows pointer.
 
     Unlike a direct HWND message, this cannot activate a covered or clipped
@@ -349,7 +349,7 @@ def open_system(pid):
     deadline = time.monotonic() + 8
     while time.monotonic() < deadline:
         pages = [h for root, _, _ in windows(pid) for h, caption in children(root)
-                 if caption == 'OpenNav product page: System']
+                 if caption == 'SKAGER product page: System']
         if len(pages) == 1:
             return
         time.sleep(.1)
@@ -462,7 +462,7 @@ def assert_page_geometry(handle, child, horizon=False):
     labels = [(h,caption) for h,caption in children(handle) if not IsChild(child,h)]
     navigation = [h for h, caption in labels if caption == 'Chart']
     alerts = [h for h, caption in labels if re.fullmatch(r'Alerts(?: \d+)?',caption)]
-    footer = [h for h, caption in labels if caption == 'OpenNav status footer']
+    footer = [h for h, caption in labels if caption == 'SKAGER status footer']
     rail = [h for h, caption in labels if caption == 'Configure instruments']
     assert len(navigation) == len(alerts) == len(footer) == len(rail) == 1
     def bounds(window):
@@ -497,8 +497,8 @@ def assert_preview_page(handle, page):
     This check is in addition to, not a substitute for, screenshot review.
     """
     if page == 'Route':
-        return assert_prototype_drawer(handle, 'OpenNav passage')
-    label = 'OpenNav page: ' + page
+        return assert_prototype_drawer(handle, 'SKAGER passage')
+    label = 'SKAGER page: ' + page
     matches = [child for child, caption in children(handle) if caption == label]
     assert len(matches) == 1, f'Visible page not found: {label}'
     child = matches[0]
@@ -509,10 +509,10 @@ def assert_preview_page(handle, page):
     return {'page': page, 'native_pixels': dimensions, 'visible_and_uncovered': True}
 
 def assert_product_page(handle, page):
-    drawers={'Settings':'OpenNav preferences','AIS targets':'OpenNav vessel traffic','Anchor watch':'OpenNav anchor watch','Manual autopilot':'OpenNav autopilot','Alerts':'OpenNav alerts'}
+    drawers={'Settings':'SKAGER preferences','AIS targets':'SKAGER vessel traffic','Anchor watch':'SKAGER anchor watch','Manual autopilot':'SKAGER autopilot','Alerts':'SKAGER alerts'}
     if page in drawers:
         return assert_prototype_drawer(handle,drawers[page])
-    label='OpenNav product page: '+page
+    label='SKAGER product page: '+page
     matches=[child for child,caption in children(handle) if caption==label]
     assert len(matches)==1,f'Visible XNav page not found: {label}'
     child=matches[0];rect,_=assert_page_geometry(handle,child,horizon=page=='Vessel instruments')
@@ -545,7 +545,7 @@ def assert_prototype_drawer(handle, name):
     scale=GetDpiForWindow(handle)/96
     client=W.RECT();assert GetClientRect(handle,C.byref(client))
     logical_width=client.right/scale
-    expected=(460 if logical_width>=1500 else 410 if logical_width<=1100 else 432) if name=='OpenNav preferences' else 398
+    expected=(460 if logical_width>=1500 else 410 if logical_width<=1100 else 432) if name=='SKAGER preferences' else 398
     assert abs(rect.right-rect.left-expected*scale)<=1, ('Prototype drawer width',name,
         {'actual_pixels':rect.right-rect.left,'expected_pixels':expected*scale,
          'client_pixels':[client.right,client.bottom],'dpi':96*scale})

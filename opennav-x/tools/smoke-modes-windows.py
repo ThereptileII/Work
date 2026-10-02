@@ -66,7 +66,7 @@ def saved(step):
     report['steps'].append({'step': step, 'persistence': 'pass'})
 
 try:
-    handle, pid = ui.wait_window('OpenNav X / OpenCPN', pid)
+    handle, pid = ui.wait_window('SKAGER / OpenCPN', pid)
     ready(1)
     capture_chart('01-xnav-unavailable.png')
     ui.cycle_light(pid)
@@ -93,15 +93,15 @@ try:
     ui.open_system(pid)
     ui.click_text(pid, 'Open Legacy OpenCPN')
     assert process.wait(timeout=40) == 0, 'XNav did not exit cleanly'
-    handle, pid = ui.wait_window('OpenCPN / Legacy')
+    handle, pid = ui.wait_window('SKAGER Legacy / OpenCPN')
     assert pid != process.pid, 'Mode change must use a new process'
     ready(2)
     saved('XNav to Legacy')
     capture_chart('11-legacy-after-xnav.png','Standard')
     old_process_handle = ui.monitor_process(pid)
-    ui.click_menu(handle, 'Switch to XNav')
+    ui.click_menu(handle, 'Switch to SKAGER')
     ui.wait_clean_exit(old_process_handle)
-    next_handle, next_pid = ui.wait_window('OpenNav X / OpenCPN')
+    next_handle, next_pid = ui.wait_window('SKAGER / OpenCPN')
     assert next_pid != pid
     handle, pid = next_handle, next_pid
     ready(3)
@@ -116,14 +116,14 @@ try:
     # normal preference, and use the exact same navigation/configuration store.
     safe = subprocess.Popen([str(exe), '--configdir', str(profile), '--no_opengl',
                              '--xnav', '--legacy', '--safe-mode'])
-    handle, pid = ui.wait_window('OpenNav Safe Mode / OpenCPN', safe.pid)
+    handle, pid = ui.wait_window('SKAGER Safe Mode / OpenCPN', safe.pid)
     ready(4)
     capture_chart('12-safe-shared-profile.png','Standard')
     ui.close(handle)
     assert safe.wait(timeout=30) == 0
     saved('Safe override and close')
     normal = subprocess.Popen([str(exe), '--configdir', str(profile), '--no_opengl'])
-    handle, pid = ui.wait_window('OpenNav X / OpenCPN', normal.pid)
+    handle, pid = ui.wait_window('SKAGER / OpenCPN', normal.pid)
     ready(5)
     ui.close(handle)
     assert normal.wait(timeout=30) == 0

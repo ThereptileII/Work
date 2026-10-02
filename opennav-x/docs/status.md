@@ -1,6 +1,38 @@
-# OpenNav X status — 2026-10-02
+# SKAGER status — 2026-10-02
 
-## Current: chart refinements and corrected candidate preparation
+## Current: SKAGER identity and prototype chart refinements
+
+The latest user instruction requires the approved SCRUM-89 SKAGER artwork and
+customer-facing name throughout the product. The combined development branch
+now includes native captions/logo (SCRUM-235), Windows application/setup/maintenance
+icons and SKAGER distribution/guide names (SCRUM-236), fractional default-route
+foreground (SCRUM-237), and geographic chart-name typography/ink (SCRUM-238).
+Current integration is local `5061d09`; these newer changes are not qualified
+by the older running candidate. Internal configuration/protocol identities,
+existing user data, immutable prototype and required OpenCPN attribution remain
+intact. See [native identity](architecture/skager-native-branding.md),
+[packaging identity](installer/skager-branding.md),
+[route foreground](design/reviews/scrum237-route-foreground.md) and
+[geographic names](design/reviews/scrum238-geographic-names.md).
+
+The stable predecessor `4c597955f96647a9c7b837139aa2732f2c3a3fa5` is in
+[run 37063131823](https://github.com/ThereptileII/Work/actions/runs/37063131823).
+At 21:22 UTC, Linux contracts passed 92/92 and Windows 89/89; 13 jobs passed,
+Linux endurance and integrated Windows qualification were still running.
+There was no failed job in that snapshot, but no final package acceptance.
+The earlier cf44 Linux endurance was also still running, not a three-hour pass.
+Long-running qualification continues in the background while these isolated
+visual changes receive focused checks. No redundant full candidate was started
+for the individual branding or paint changes.
+
+Prototype conformance remains open. Geographic text tracking, route underlay,
+waypoint/onboard-AIS hierarchy, relevant chart-symbol refinements, actual GL,
+native Windows DPI and boat-display comparisons cannot be declared passed from
+source or focused painter tests. SCRUM-239 is refining the remaining stock COG
+predictor while retaining its real OpenCPN geometry and validity. No physical
+actuator commands or boat-install retirement have been performed by this batch.
+
+## Previous: chart refinements and corrected candidate preparation
 
 The previous stale-snapshot and touch failures below are retained historical
 evidence. The corrected source now has two verified development gates:

@@ -127,9 +127,9 @@ void PreviewPanel::Update(PreviewPage page, LightMode mode,
   if (page != page_)
     Scroll(0, 0);
   page_ = page;
-  SetLabel(page == PreviewPage::Route    ? "OpenNav page: Route"
-           : page == PreviewPage::Energy ? "OpenNav page: Energy"
-                                         : "OpenNav page: Diagnostics");
+  SetLabel(page == PreviewPage::Route    ? "SKAGER page: Route"
+           : page == PreviewPage::Energy ? "SKAGER page: Energy"
+                                         : "SKAGER page: Diagnostics");
   mode_ = mode;
   SetBackgroundColour(Colour(Theme(mode).background));
   close_->SetLightMode(mode);

@@ -72,10 +72,15 @@ appearance; selected/inactive routes, waypoints, tracks, MOB, anchor radius and
 the complete route-state visual hierarchy remain unfinished. The bounded
 default-ownship increment below has separate evidence and open release gates.
 
-The prototype's 2.6px stroke and joins are not yet reproduced: this first
-increment preserves configured upstream width/style and needs a separate
-default-presentation decision that does not overwrite user preferences. Do not
-claim overall route conformance from matching the three ink values.
+SCRUM-237 adds a bounded default foreground: 2.6 logical pixels, round interior
+joins and butt route ends through a shared software/GL vector mesh. It applies
+only to untouched default active-route presentation; explicit/global custom
+width, explicit style/color, selection, highlight, editing and MOB keep upstream
+behavior. It changes no stored preference, route geometry or navigation state.
+The prototype's 6px translucent understroke and 32px illustrative context remain
+open. Integrated software, actual GL, native Windows and boat acceptance remain
+pending; see [the bounded foreground review](reviews/scrum237-route-foreground.md).
+Do not claim full route conformance from this increment.
 
 The test-only route driver returns upstream-projected screen positions. Tests
 sample multiple interior points of both actual route legs, require exact ink
@@ -234,3 +239,36 @@ The [combined comparison](reviews/scrum15-chart-comparison-20261002.md) records
 remaining visual differences, including text density, stock chart symbols and
 course-predictor artwork. These increments do not accept the complete chart.
 See [bounded review](reviews/scrum231-built-area-style.md).
+
+
+## SKAGER identity and geographic text (2026-10-02, pending visual gates)
+
+The selected style is presented to the user as SKAGER; the saved `XNav` value is
+retained for configuration compatibility. The immutable HTML is not renamed.
+The [geographic-name policy](reviews/scrum238-geographic-names.md) applies the
+prototype's 12px regular land /16px italic water hierarchy and chart-text ink
+to geographic names only. It preserves stored OpenCPN font settings for Standard
+and all navigation labels/soundings. The full strict resource guard now covers
+18 geographic ink substitutions in addition to two built-area fills.
+
+The [active-route foreground](reviews/scrum237-route-foreground.md) now uses
+shared 2.6px fractional geometry and round joins for factory-equivalent active
+route appearance. It does not yet implement the translucent 6px whole-path
+underlay. A 32px decorative halo cannot stand in for the prototype's meaningful
+route-corridor setting. These bounded changes and the current source/branding
+batch require fresh integrated/native/boat comparisons; no conformance PASS is
+added by this record.
+
+### Healthy factory-equivalent COG predictor increment (SCRUM-239)
+
+The shared software/GL ownship-indicator path can paint the existing COG line
+with route ink, 1.2 logical pixels, 5/5 dash and .65 opacity. Its real projected
+geometry, time horizon, validity/visibility and endpoint remain upstream.
+SKAGER presentation explicitly owns factory-equivalent width/style/color;
+startup capture precedes upstream density mutation and observed runtime custom
+changes revoke ownership. Nonfactory/custom/degraded states, HDT and endpoint
+markers keep stock appearance. No configuration is rewritten. Saved defaults
+cannot reveal identical-value user intent; density-raised persisted widths are
+conservatively stock on a later startup. See
+[the bounded predictor review](reviews/scrum239-cog-predictor.md). Actual GL,
+native Windows, boat and full ownship conformance remain pending.

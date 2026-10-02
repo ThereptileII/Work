@@ -270,7 +270,7 @@ try:
     assert connected.wait(10), 'OpenCPN did not connect to loopback fixture'
     resize_tick=int(read_json_snapshot(profile/'opennav-diagnostics.json')['runtime']['ui_update']['ticks'])
     if windows:
-        handle, _ = ui.wait_window('OpenNav X / OpenCPN', app.pid)
+        handle, _ = ui.wait_window('SKAGER / OpenCPN', app.pid)
         if native_reference_fullscreen:
             deadline = time.monotonic() + 10
             while time.monotonic() < deadline:
@@ -304,7 +304,7 @@ try:
             ui.size_window(handle)
     else:
         handle = subprocess.check_output(['xdotool', 'search', '--all', '--onlyvisible', '--pid', str(app.pid),
-                    '--name', '^OpenNav X / OpenCPN$'], env=env, text=True).splitlines()[0]
+                    '--name', '^SKAGER / OpenCPN$'], env=env, text=True).splitlines()[0]
         subprocess.run(['xdotool', 'windowsize', handle, '1280', '800', 'windowmove', handle, '0', '0'], env=env, check=True)
 
     # Unavailable values already match before resize. Do not accept the old
@@ -386,7 +386,7 @@ try:
             assert footer['health_summary']==('0 live signals, 1 stale' if position_state=='Stale' else '0 live signals'), footer
         assert footer['cog']=={'Current':'147°','Stale':'STALE','Unavailable':'—'}[cog_state], footer
         if windows:
-            native=[h for h,caption in ui.children(handle) if caption=='OpenNav status footer']
+            native=[h for h,caption in ui.children(handle) if caption=='SKAGER status footer']
             assert len(native)==1 and ui.IsWindowVisible(native[0]), 'Current native footer must be visible'
             bounds=ui.W.RECT()
             assert ui.GetWindowRect(native[0],ui.C.byref(bounds))
@@ -540,7 +540,7 @@ try:
             # desktop ownership explicitly; mouse down/up still hit the real
             # card controls. Native Windows receives no focus workaround.
             found=subprocess.run(['xdotool','search','--all','--onlyvisible','--pid',str(app.pid),
-                                  '--name','^OpenNav ((AIS|waypoint) context|vessel traffic)$'],env=env,
+                                  '--name','^SKAGER ((AIS|waypoint) context|vessel traffic)$'],env=env,
                                  capture_output=True,text=True)
             cards=found.stdout.splitlines()
             assert len(cards)<=1,('Multiple compact contexts',cards)

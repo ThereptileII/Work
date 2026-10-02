@@ -1,0 +1,44 @@
+{
+  "schema": 1,
+  "issue": "SCRUM-89",
+  "implementationIssue": "SCRUM-236",
+  "attachmentId": "10000",
+  "source": "resources/branding/skager-wordmark-approved.png",
+  "sourceSha256": "dce92b90a8657d045403cf4508d8220cb0306e6a251d58fbf40e6084ea3ee4ee",
+  "sourceBytes": 1206475,
+  "sourceDimensions": [
+    1447,
+    1087
+  ],
+  "generator": "tools/generate-skager-brand.py",
+  "pillowVersion": "12.3.0",
+  "wordmarkCrop": [
+    384,
+    440,
+    1064,
+    654
+  ],
+  "iconCrop": [
+    355,
+    177,
+    1091,
+    913
+  ],
+  "iconSizes": [
+    16,
+    20,
+    24,
+    32,
+    40,
+    48,
+    64,
+    128,
+    256
+  ],
+  "derivation": "Pixel-exact wordmark crop; square source crop scaled with Lanczos for ICO. No redrawn letters or new symbol.",
+  "outputs": {
+    "resources/branding/skager-wordmark.png": "efde82583f0225c61fc32843e746596dd98a017bdb7746949ca6614b7275922f",
+    "resources/branding/skager.ico": "33867d3f267603668ebc373a1ebf83565b2729817317f3905b4ebe1dc805c1d0",
+    "src/application/SkagerBrandAsset.h": "cc9f469181717b4fb80986b9406d2d6d078bfdb5971d2e68f6b4072b8dcd2019"
+  }
+}

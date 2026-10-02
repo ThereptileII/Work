@@ -17,7 +17,7 @@ OnlineAis::OnlineAis(wxFileConfig &config, std::unique_ptr<ais::IAisCredentials>
   enabled_ = config_.Read(enabled_key, &value) && value == "1";
   // Do not log invalid external settings or credential contents.
   if (!value.empty() && value != "0" && value != "1")
-    wxLogWarning("OpenNav Online AIS setting invalid; networking disabled");
+    wxLogWarning("SKAGER Online AIS setting invalid; networking disabled");
   credential_present_ = credentials_->Read().status == ais::CredentialStatus::Ready;
   // Construction does not connect. Normal application processing must first
   // supply the actual viewport and confirm that live operation is permitted.
@@ -49,7 +49,7 @@ application::CommandResult OnlineAis::Enable(bool enabled) {
                             : "Online AIS setting could not be saved; check profile storage"};
   }
   enabled_ = enabled;
-  wxLogMessage("OpenNav Online AIS: %s", enabled ? "enabled by user" : "disabled by user");
+  wxLogMessage("SKAGER Online AIS: %s", enabled ? "enabled by user" : "disabled by user");
   return {true, enabled ? "Online AIS enabled; supplemental internet traffic"
                         : "Online AIS disabled"};
 }

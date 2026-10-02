@@ -214,14 +214,14 @@ try:
         app = subprocess.Popen([str(exe), '--configdir', str(profile), '--no_opengl', '--xnav', '--xnav-demo'],
                                env=env, stdout=log, stderr=log)
     if windows:
-        handle, _ = ui.wait_window('OpenNav X / OpenCPN', app.pid)
+        handle, _ = ui.wait_window('SKAGER / OpenCPN', app.pid)
         open_process = ui.declare(C.WinDLL('kernel32'), 'OpenProcess', C.c_void_p, C.c_ulong, C.c_int, C.c_ulong)
         process_handle = open_process(0x410, 0, app.pid)
         assert process_handle
     else:
         deadline = time.monotonic()+60
         while time.monotonic() < deadline:
-            found = subprocess.run(['xdotool', 'search', '--all', '--onlyvisible', '--pid', str(app.pid), '--name', '^OpenNav X / OpenCPN$'],
+            found = subprocess.run(['xdotool', 'search', '--all', '--onlyvisible', '--pid', str(app.pid), '--name', '^SKAGER / OpenCPN$'],
                                    env=env, capture_output=True, text=True)
             if found.returncode == 0 and found.stdout.strip():
                 handle = found.stdout.splitlines()[0]; break

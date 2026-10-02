@@ -10,6 +10,7 @@ class wxFileConfig;
 class ChartCanvas;
 class ocpnDC;
 class wxRect;
+class Route;
 namespace opennav::integration {
 // Application-thread only. The library is selected once before charts retain
 // lookup pointers; changing a preference requires the ordinary controlled
@@ -20,6 +21,17 @@ bool ChartBackground(ColorScheme scheme, wxColour &land, wxColour &water);
 // Paint-time only; caller retains upstream active/selected route semantics.
 // Does not modify pens in RouteManager, route properties or navigation state.
 bool ChartActiveRouteInk(ChartCanvas &canvas, wxColour &ink);
+// Only untouched default active-route presentation; custom/special states fall
+// through to upstream. No stored route/global preference is changed.
+bool DefaultChartRouteStyle(Route &route);
+bool DrawChartRouteSegment(ocpnDC &dc, ChartCanvas &canvas, double ax, double ay,
+                            double bx, double by, bool join_start, bool join_end);
+// Call before upstream adjusts the global COG width for display density.
+// Captured factory-equivalent paint only; runtime custom changes revoke it.
+bool UseChartCogPredictorStyle(int width, int style, const wxString &color,
+                               int density_width);
+bool DrawChartCogPredictor(ocpnDC &dc, ChartCanvas &canvas,
+                           double ax, double ay, double bx, double by);
 // Default healthy ownship artwork only. Callers retain stock state/user-icon
 // selection, projection, rotation, sizing of predictors and scaled-ship paths.
 // Angle is the existing clockwise screen angle; scale is the stock user factor.

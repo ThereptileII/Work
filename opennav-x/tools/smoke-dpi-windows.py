@@ -79,7 +79,7 @@ def main_buttons(scale):
         assert frame.left<=x<x+w<=frame.right and frame.top<=y<y+h<=frame.bottom,(label,'clipped control')
         sizes[label]=[w,h]
     footer=display['footer_region']
-    footer_handles=[h for h,t in ui.children(handle) if t=='OpenNav status footer']
+    footer_handles=[h for h,t in ui.children(handle) if t=='SKAGER status footer']
     assert len(footer_handles)==1
     native=bounds(footer_handles[0])
     assert footer==dict(x=native.left,y=native.top,width=native.right-native.left,height=native.bottom-native.top)
@@ -147,7 +147,7 @@ def primary_hint_hover(label, should_show, settle=1.5):
 def chrome_bounds():
     labels=ui.children(handle)
     alerts=[h for h,t in labels if t=='Alerts' or t.startswith('Alerts ')]
-    footer=[h for h,t in labels if t=='OpenNav status footer']
+    footer=[h for h,t in labels if t=='SKAGER status footer']
     assert len(alerts)==len(footer)==1
     return bounds(ui.GetParent(alerts[0])).bottom,bounds(footer[0]).top
 
@@ -174,7 +174,7 @@ def preferences_observation(label='Advanced battery model'):
     # A pan can finish before the 1Hz diagnostic publication. Pair the actual
     # row position even while clipped; never poll for visibility or good layout.
     previous=int(data()['runtime']['ui_update']['ticks'])
-    popup,_=ui.wait_window('OpenNav preferences',pid)
+    popup,_=ui.wait_window('SKAGER preferences',pid)
     matches=[h for h,t in ui.children(popup) if t==label]
     assert len(matches)==1, ('One native Preferences action required',label)
     target=matches[0]
@@ -265,7 +265,7 @@ def instrument_geometry():
     return regions
 
 def system_geometry(scale):
-    required={'Open Legacy OpenCPN','Restart XNav','Safe Mode','Diagnostics',
+    required={'Open Legacy OpenCPN','Restart SKAGER','Safe Mode','Diagnostics',
               'Open diagnostics folder','Commissioning & recordings',
               'Export diagnostic bundle','Advanced / Legacy Settings'}
     seen=set();checked=[]
@@ -395,7 +395,7 @@ try:
         applied=dpi(scale);assert applied['percent']==scale;time.sleep(1)
         with (evidence/'dpi-launch.log').open('a') as out:
             app=subprocess.Popen([str(exe),'--configdir',str(profile),'--no_opengl','--xnav'],env=env,stdout=out,stderr=out)
-        count+=1;owned.add(app.pid);handle,pid=ui.wait_window('OpenNav X / OpenCPN',app.pid);ready();ui.size_window(handle)
+        count+=1;owned.add(app.pid);handle,pid=ui.wait_window('SKAGER / OpenCPN',app.pid);ready();ui.size_window(handle)
         observed=ui.GetDpiForWindow(handle);assert observed==96*scale//100,(scale,observed,'Actual application DPI must match request')
         d=data(lambda d:d['data_mode']=='OPENCPN selected navigation' and any(f'DPI: {observed}' in s for s in d['build_info']))
         entry={'percent':scale,'GetDpiForWindow':observed,'wxDpi':observed,'buttons':main_buttons(scale),'chart_rendering':[]}
@@ -530,20 +530,20 @@ try:
         report['screenshots'].append(path.name)
         ui.click_text(pid,'Open Legacy OpenCPN')
         assert app.wait(timeout=30)==0;owned.discard(pid);count+=1
-        handle,pid=ui.wait_window('OpenCPN / Legacy');owned.add(pid);ready();ui.size_window(handle)
+        handle,pid=ui.wait_window('SKAGER Legacy / OpenCPN');owned.add(pid);ready();ui.size_window(handle)
         assert ui.GetDpiForWindow(handle)==observed
         entry['chart_rendering'].append(chart.presentation(capture(f'dpi-{scale}-legacy'),'Standard','Day',f'{scale}% Legacy'))
-        process=ui.monitor_process(pid);ui.click_menu(handle,'Switch to XNav');ui.wait_clean_exit(process);owned.discard(pid);count+=1
-        handle,pid=ui.wait_window('OpenNav X / OpenCPN');owned.add(pid);ready();ui.size_window(handle)
+        process=ui.monitor_process(pid);ui.click_menu(handle,'Switch to SKAGER');ui.wait_clean_exit(process);owned.discard(pid);count+=1
+        handle,pid=ui.wait_window('SKAGER / OpenCPN');owned.add(pid);ready();ui.size_window(handle)
         assert ui.GetDpiForWindow(handle)==observed
         entry['chart_rendering'].append(chart.presentation(capture(f'dpi-{scale}-returned-xnav'),'XNav','Day',f'{scale}% returned XNav'))
         old=ui.monitor_process(pid);ui.open_system(pid);ui.click_text(pid,'Safe Mode')
         ui.wait_clean_exit(old);owned.discard(pid);count+=1
-        handle,pid=ui.wait_window('OpenNav Safe Mode / OpenCPN');owned.add(pid);ready();ui.size_window(handle)
+        handle,pid=ui.wait_window('SKAGER Safe Mode / OpenCPN');owned.add(pid);ready();ui.size_window(handle)
         assert ui.GetDpiForWindow(handle)==observed
         entry['chart_rendering'].append(chart.presentation(capture(f'dpi-{scale}-safe'),'Standard','Day',f'{scale}% Safe'))
-        old=ui.monitor_process(pid);ui.click_menu(handle,'Switch to XNav');ui.wait_clean_exit(old);owned.discard(pid);count+=1
-        handle,pid=ui.wait_window('OpenNav X / OpenCPN');owned.add(pid);ready();ui.size_window(handle)
+        old=ui.monitor_process(pid);ui.click_menu(handle,'Switch to SKAGER');ui.wait_clean_exit(old);owned.discard(pid);count+=1
+        handle,pid=ui.wait_window('SKAGER / OpenCPN');owned.add(pid);ready();ui.size_window(handle)
         assert ui.GetDpiForWindow(handle)==observed
         entry['chart_rendering'].append(chart.presentation(capture(f'dpi-{scale}-safe-to-xnav'),'XNav','Day',f'{scale}% Safe to XNav'))
         close_current();assert fixtures.snapshot(profile)==expected

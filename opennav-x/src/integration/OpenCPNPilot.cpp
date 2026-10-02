@@ -117,7 +117,7 @@ OpenCPNPilot::Status(const std::string &iface) const {
     const auto *stats = dynamic_cast<DriverStatsProvider *>(driver);
     status.connected = stats && stats->GetDriverStats().available;
     status.detail =
-        "Status only; this transport has no qualified XNav control path";
+        "Status only; this transport has no qualified SKAGER control path";
     return status;
   }
   const auto params = network->GetParams();
@@ -135,7 +135,7 @@ OpenCPNPilot::Status(const std::string &iface) const {
                     output_allowed_ && output_allowed_() &&
                     PilotOutputPermitted(Endpoint(driver));
   status.detail =
-      !PilotLoopbackTestsEnabled() ? "Status only; XNav equipment output unavailable in this product"
+      !PilotLoopbackTestsEnabled() ? "Status only; SKAGER equipment output unavailable in this product"
       : !status.connected         ? "OpenCPN network disconnected"
       : params.NetProtocol != TCP ? "Status only; N2K UDP output is unsupported"
       : params.IOSelect != DS_TYPE_INPUT_OUTPUT

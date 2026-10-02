@@ -37,7 +37,7 @@ def preferences_pan_path(viewport,target,scale,is_body):
 
 def reach_preferences_action(label,scale,*,ui,pid,observe,bounds,dpi,report):
     """Reach an action by body-targeted native touch, without activating it."""
-    popup,_=ui.wait_window('OpenNav preferences',pid)
+    popup,_=ui.wait_window('SKAGER preferences',pid)
     foreground=ui.declare(ui.user,'GetForegroundWindow',ui.W.HWND)
     ui.SetForegroundWindow(popup)
     attempts=[];last_rect=None

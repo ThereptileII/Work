@@ -1,3 +1,4 @@
+#include "application/Brand.h"
 #include "integration/OpenCPNIntegration.h"
 #include "application/AnchorView.h"
 #include "integration/BuildFeatures.h"
@@ -140,15 +141,15 @@ std::optional<platform::PreviewPaths> preview_paths;
 
 void RequestMode(InterfaceMode mode,bool safe=false) {
   if (!host || !g_bDeferredInitDone || restart) return;
-  wxLogMessage("OpenNav human mode request: %s", safe ? "safe"
+  wxLogMessage("SKAGER human mode request: %s", safe ? "safe"
                                                  : mode == InterfaceMode::XNav
                                                      ? "xnav"
                                                      : "legacy");
   if (mode == InterfaceMode::XNav && recovery && recovery->RequiresSafe() &&
       !recovery->Retry()) {
     wxMessageBox("Cannot reset the startup recovery record. Inspect the "
-                 "profile storage and diagnostics before retrying XNav.",
-                 "OpenNav recovery", wxOK | wxICON_ERROR, host);
+                 "profile storage and diagnostics before retrying SKAGER.",
+                 "SKAGER recovery", wxOK | wxICON_ERROR, host);
     return;
   }
   restart = mode;
@@ -159,11 +160,11 @@ void RequestMode(InterfaceMode mode,bool safe=false) {
   // Closing there would delete the canvas while that stack is still active.
   host->CallAfter([] {
     if (!host) { restart.reset(); return; }
-    wxLogMessage("OpenNav mode request: asking OpenCPN to close");
+    wxLogMessage("SKAGER mode request: asking OpenCPN to close");
     host->Close();
     if (host) {
       wxLogMessage(
-          "OpenNav mode request: OpenCPN kept the current window open");
+          "SKAGER mode request: OpenCPN kept the current window open");
       restart.reset(); // Upstream vetoed the close request.
     }
   });
@@ -178,11 +179,11 @@ ui::LightMode Light() {
 
 void AddCommandLine(wxCmdLineParser& parser) {
   integration::AddInstallerSelfTest(parser);
-  parser.AddSwitch("", "xnav", "OpenNav X interface");
+  parser.AddSwitch("", "xnav", "SKAGER interface");
   parser.AddSwitch("", "legacy", "Original OpenCPN interface");
-  parser.AddSwitch("", "safe-mode", "Legacy recovery; OpenNav modules disabled");
+  parser.AddSwitch("", "safe-mode", "Legacy recovery; SKAGER modules disabled");
 #if XNAV_ENABLE_TEST_FIXTURES
-  parser.AddSwitch("", "xnav-demo", "Explicit simulated XNav telemetry; no device commands");
+  parser.AddSwitch("", "xnav-demo", "Explicit simulated SKAGER telemetry; no device commands");
 #endif
 #ifdef OPENNAV_ROUTE_TESTS
   parser.AddSwitch("", "xnav-route-fixture", "TEST BUILD ONLY: isolated route contract scenario");
@@ -204,7 +205,7 @@ bool ParseCommandLine(wxCmdLineParser& parser) {
   }
   if (parser.Found("remote") && (flags.xnav || flags.legacy || flags.safe || demo)) {
     XNAV_EARLY_STARTUP_TRACE(RemoteConflict, false);
-    std::cerr << "OpenNav startup options cannot be combined with --remote\n";
+    std::cerr << "SKAGER startup options cannot be combined with --remote\n";
     return false;
   }
   wxString configdir;
@@ -218,9 +219,9 @@ bool ParseCommandLine(wxCmdLineParser& parser) {
       // Match that base for direct launch and restart as well as the launchers.
       if(!wxSetWorkingDirectory(configdir))
         throw std::runtime_error(
-            "Cannot use the portable OpenNav profile as its working directory");
+            "Cannot use the portable SKAGER profile as its working directory");
       if (parser.Found("remote"))
-        throw std::runtime_error("portable OpenNav does not send remote "
+        throw std::runtime_error("portable SKAGER does not send remote "
                                  "commands to another OpenCPN instance");
     } else if(!configdir.empty()) diagnostic_directory=configdir.ToStdString(wxConvUTF8);
   } catch(const std::exception& e) {
@@ -235,7 +236,7 @@ bool ParseCommandLine(wxCmdLineParser& parser) {
   if(parser.Found("xnav-object-fixture")){
     if(!flags.xnav||flags.safe||flags.legacy||demo||configdir.empty()||parser.Found("xnav-route-fixture")||!wxFileExists(configdir+"/OPENNAV_OBJECT_FIXTURE")){
       XNAV_EARLY_STARTUP_TRACE(FixturePolicyFailure, false);
-      std::cerr<<"Object fixture requires explicit XNav and a marked disposable profile\n";return false;
+      std::cerr<<"Object fixture requires explicit SKAGER and a marked disposable profile\n";return false;
     }
     object_test_profile=configdir.ToStdString(wxConvUTF8);
   }
@@ -243,7 +244,7 @@ bool ParseCommandLine(wxCmdLineParser& parser) {
     if (!flags.xnav || flags.safe || flags.legacy || demo || configdir.empty() ||
         !wxFileExists(configdir + "/OPENNAV_ROUTE_FIXTURE")) {
       XNAV_EARLY_STARTUP_TRACE(FixturePolicyFailure, false);
-      std::cerr << "Route fixture requires explicit XNav and a marked disposable profile\n";
+      std::cerr << "Route fixture requires explicit SKAGER and a marked disposable profile\n";
       return false;
     }
     route_test_profile = configdir.ToStdString(wxConvUTF8);
@@ -278,7 +279,7 @@ bool CheckStartupRecovery() {
       g_BasePlatform->GetPrivateDataDir());
   recovery_safe = recovery->RequiresSafe() && !flags.legacy;
   if (recovery_safe)
-    wxLogWarning("OpenNav automatic Safe Mode: %s",
+    wxLogWarning("SKAGER automatic Safe Mode: %s",
                  wxString::FromUTF8(recovery->Reason()));
   return recovery_safe;
 }
@@ -325,7 +326,7 @@ void InitializeResourceDefaults(wxFileConfig& config) {
         gWorldShapefileLocation = wxString::FromUTF8(selected_resources.basemap);
       if (g_sAIS_Alert_Sound_File.empty())
         g_sAIS_Alert_Sound_File = wxString::FromUTF8(selected_resources.ais_alarm);
-      wxLogMessage("OpenNav installed resource defaults: original supported OpenCPN; configured selections preserved");
+      wxLogMessage("SKAGER installed resource defaults: original supported OpenCPN; configured selections preserved");
     }
   }
 }
@@ -336,7 +337,7 @@ void SelectMode(wxFileConfig& config, bool upstream_safe) {
         preview_paths->root, gWorldShapefileLocation.ToStdString(wxConvUTF8));
     if (basemap) {
       gWorldShapefileLocation = wxString::FromUTF8(platform::PathUtf8(*basemap));
-      wxLogMessage("OpenNav portable basemap: using bundled coastline at %s",
+      wxLogMessage("SKAGER portable basemap: using bundled coastline at %s",
                    gWorldShapefileLocation);
     }
   }
@@ -345,7 +346,7 @@ void SelectMode(wxFileConfig& config, bool upstream_safe) {
   if (config.Read("/OpenNav/InterfaceMode", &value)) {
     persisted = integration::ParseInterfaceMode(value.ToStdString());
     if (!persisted) {
-      wxLogWarning("Invalid OpenNav InterfaceMode; using Legacy recovery");
+      wxLogWarning("Invalid SKAGER InterfaceMode; using Legacy recovery");
       persisted = InterfaceMode::Legacy;
     }
   }
@@ -366,11 +367,11 @@ void SelectMode(wxFileConfig& config, bool upstream_safe) {
         wxFileName::Mkdir(folder, wxS_DIR_DEFAULT, wxPATH_MKDIR_FULL))
       diagnostic_directory = folder.ToStdString(wxConvUTF8);
     else
-      wxLogWarning("OpenNav diagnostic directory unavailable: %s", folder);
+      wxLogWarning("SKAGER diagnostic directory unavailable: %s", folder);
   }
   integration::ConfigureChartPresentation(config, IsXNav());
   executable = wxStandardPaths::Get().GetExecutablePath().ToStdString(wxConvUTF8);
-  wxLogMessage("OpenNav startup: %s", selected == StartupMode::Safe ? "safe" : IsXNav() ? "xnav" : "legacy");
+  wxLogMessage("SKAGER startup: %s", selected == StartupMode::Safe ? "safe" : IsXNav() ? "xnav" : "legacy");
 }
 
 void Attach(MyFrame& frame, wxAuiManager& manager, wxFileConfig& config) {
@@ -383,10 +384,10 @@ void Attach(MyFrame& frame, wxAuiManager& manager, wxFileConfig& config) {
     config.Write("/OpenNav/PreviewWindowPlaced",true);
   }
   if (!IsXNav()) {
-    frame.SetTitle(selected == StartupMode::Safe ? "OpenNav Safe Mode / OpenCPN" : "OpenCPN / Legacy");
+    frame.SetTitle(selected == StartupMode::Safe ? application::brand::SafeModeTitle : application::brand::LegacyTitle);
     return;
   }
-  frame.SetTitle("OpenNav X / OpenCPN");
+  frame.SetTitle(application::brand::WindowTitle);
   settings = std::make_unique<integration::SettingsStore>(config);
   marine = std::make_unique<integration::MarineBridge>();
   auto configure_sources = [] {
@@ -615,7 +616,7 @@ void Attach(MyFrame& frame, wxAuiManager& manager, wxFileConfig& config) {
     view.output_unavailable = !simulated && !integration::PilotLoopbackTestsEnabled();
     view.adapter_status = simulated ? "DEMO / simulated feedback" : pilots->hardware.Description();
     if (before != view.command.state)
-      wxLogMessage("OpenNav manual pilot %llu: %s / %s",
+      wxLogMessage("SKAGER manual pilot %llu: %s / %s",
                    static_cast<unsigned long long>(view.command.request.id),
                    wxString::FromUTF8(adapters::CommandStateName(view.command.state)),
                    wxString::FromUTF8(view.command.detail));
@@ -627,7 +628,7 @@ void Attach(MyFrame& frame, wxAuiManager& manager, wxFileConfig& config) {
       return;
     auto c =
         pilots->Select(simulated).Request(action, delta, vessel::Clock::now());
-    wxLogMessage("OpenNav manual autopilot [%s] request %llu: %s / %s",
+    wxLogMessage("SKAGER manual autopilot [%s] request %llu: %s / %s",
                  simulated ? "DEMO" : "ST4000 live adapter",
                  static_cast<unsigned long long>(c.request.id),
                  wxString::FromUTF8(adapters::CommandStateName(c.state)),
@@ -639,7 +640,7 @@ void Attach(MyFrame& frame, wxAuiManager& manager, wxFileConfig& config) {
     if (enabled && commissioning && !commissioning->AllowsHardwareControl())
       return;
     pilots->Select(simulated).Enable(enabled, vessel::Clock::now());
-    wxLogMessage("OpenNav manual autopilot %s: %s",
+    wxLogMessage("SKAGER manual autopilot %s: %s",
                  simulated ? "DEMO" : "ST4000 live adapter",
                  enabled ? "enable requested" : "disabled");
   };
@@ -889,7 +890,7 @@ void Attach(MyFrame& frame, wxAuiManager& manager, wxFileConfig& config) {
   navigation = std::make_unique<NavigationBridge>(
       [](const vessel::VesselState &state) { selected_navigation = state; });
   route_progress = std::make_unique<integration::RouteProgressInput>(
-      "OpenNav session " + std::to_string(vessel::Clock::now().time_since_epoch().count()));
+      "SKAGER session " + std::to_string(vessel::Clock::now().time_since_epoch().count()));
 #ifdef OPENNAV_ROUTE_TESTS
   if (!route_test_profile.empty()) test::EnableRouteScenario(route_test_profile);
   if (!object_test_profile.empty()) test::EnableObjectScenario(object_test_profile);
@@ -911,13 +912,13 @@ void AfterDeferredInitialization() {
   recovery_notice_scheduled = true;
   host->CallAfter([] {
     if (!host || restart) return;
-    wxLogMessage("OpenNav recovery notice after deferred startup");
+    wxLogMessage("SKAGER recovery notice after deferred startup");
     wxMessageBox(
-        "XNav did not complete startup reliably. OpenCPN is running in "
-        "Safe Mode with OpenNav modules, plugins and OpenGL disabled. "
+        "SKAGER did not complete startup reliably. OpenCPN is running in "
+        "Safe Mode with SKAGER modules, plugins and OpenGL disabled. "
         "Navigation data has not been reset. Inspect the OpenCPN log; use "
-        "Switch to XNav only when ready to retry.",
-        "OpenNav startup recovery", wxOK | wxICON_INFORMATION, host);
+        "Switch to SKAGER only when ready to retry.",
+        "SKAGER startup recovery", wxOK | wxICON_INFORMATION, host);
   });
 }
 
@@ -1007,14 +1008,14 @@ vessel::RouteProgress CurrentRouteProgress() {
 void AppendModeMenu(wxMenu& menu) {
   const auto id = wxWindow::NewControlId();
   menu.AppendSeparator();
-  menu.Append(id, IsXNav() ? "Open Legacy OpenCPN" : "Switch to XNav");
+  menu.Append(id, IsXNav() ? "Open Legacy OpenCPN" : application::brand::SwitchToModern);
   menu.Bind(wxEVT_MENU, [](wxCommandEvent&) {
     RequestMode(IsXNav() ? InterfaceMode::Legacy : InterfaceMode::XNav);
   }, id);
 }
 
 bool PrepareClose(wxFileConfig& config) {
-  wxLogMessage("OpenNav close preparation: preserving shared configuration");
+  wxLogMessage("SKAGER close preparation: preserving shared configuration");
   if (restart && !restart_safe) {
     wxString previous;
     const bool had_value = config.Read("/OpenNav/InterfaceMode", &previous);
@@ -1025,7 +1026,7 @@ bool PrepareClose(wxFileConfig& config) {
       else config.DeleteEntry("/OpenNav/InterfaceMode");
       restart.reset();
       wxMessageBox("Cannot save interface preference. OpenCPN remains open.",
-                   "OpenNav restart", wxOK | wxICON_ERROR, host);
+                   "SKAGER restart", wxOK | wxICON_ERROR, host);
       return false;
     }
   }
@@ -1055,7 +1056,7 @@ void CompleteRestart() {
   auto args = profile_arguments;
   args.push_back(restart_safe ? "--safe-mode" : *restart == InterfaceMode::XNav ? "--xnav" : "--legacy");
   if (!platform::RestartAfterExit(executable, args)) {
-    wxLogError("OpenNav restart could not launch. Reopen OpenCPN to use the saved interface mode.");
+    wxLogError("SKAGER restart could not launch. Reopen OpenCPN to use the saved interface mode.");
   }
 }
 

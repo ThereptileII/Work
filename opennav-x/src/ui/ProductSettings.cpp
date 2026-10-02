@@ -1,3 +1,4 @@
+#include "application/Brand.h"
 #include "ui/ProductPanel.h"
 #include "ui/Sheet.h"
 #include "integration/BuildFeatures.h"
@@ -270,7 +271,7 @@ void ProductPanel::Sources() {
     return W(vessel::AisReportHealthName(vessel::AssessAisReports(s.ais, s.now)));
   }, [this] { ShowPage(ProductPage::Ais, mode_); });
   EndActions();
-  Text("Select a sensor for its value, source and last update. Connection changes apply without restarting XNav.");
+  Text("Select a sensor for its value, source and last update. Connection changes apply without restarting SKAGER.");
   BeginActions(2);
   Action("Source health", actions_.source_health);
   Action("Advanced source details", [this] { ShowPage(ProductPage::SourcesAdvanced, mode_); });
@@ -431,9 +432,9 @@ void ProductPanel::DisplaySettings() {
     BeginActions(2);
     const bool requested=actions_.chart_style_requested();
     for (bool xnav : {true,false}) {
-      auto *button=Action(xnav?"XNav":"Standard", [this,xnav] {
+      auto *button=Action(xnav?application::brand::ModernMode:"Standard", [this,xnav] {
         if (!ConfirmSheet(*this,mode_,"Change chart style",
-            "Restart XNav to apply the chart presentation. Routes, charts and navigation settings are preserved.",
+            "Restart SKAGER to apply the chart presentation. Routes, charts and navigation settings are preserved.",
             "Save and restart")) return;
         const auto result=actions_.set_chart_style(xnav);
         if (!result.ok) { ConfirmSheet(*this,mode_,"Chart style",W(result.message),"Back");return; }

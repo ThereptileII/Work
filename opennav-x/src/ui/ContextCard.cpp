@@ -48,7 +48,7 @@ std::optional<application::CommandResult> WaypointSheet(
   return {};
 }
 XNavContextCard::XNavContextCard(wxWindow &owner, ContextKind kind, Action action)
-    : wxDialog(&owner, wxID_ANY, kind == ContextKind::Ais ? "OpenNav AIS context" : kind == ContextKind::Waypoint ? "OpenNav waypoint context" : "OpenNav chart context",
+    : wxDialog(&owner, wxID_ANY, kind == ContextKind::Ais ? "SKAGER AIS context" : kind == ContextKind::Waypoint ? "SKAGER waypoint context" : "SKAGER chart context",
                wxDefaultPosition, wxDefaultSize, wxBORDER_NONE | wxTAB_TRAVERSAL),
       kind_(kind), action_(std::move(action)) {
   SetName(kind == ContextKind::Ais ? "OpenNav AIS context" : kind == ContextKind::Waypoint ? "OpenNav waypoint context" : "OpenNav chart context");

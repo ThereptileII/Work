@@ -1,0 +1,27 @@
+// SKAGER product resource, integrated build only. Executable/ABI identity stays OpenCPN.
+0 ICON "@OPENNAV_ROOT@/resources/branding/skager.ico"
+1 VERSIONINFO
+    FILEVERSION @VERSION_MAJOR@,@VERSION_MINOR@,@VERSION_PATCH@,0
+    PRODUCTVERSION 0,4,0,0
+    FILEFLAGSMASK 0
+    FILEOS 0x00040004L
+    FILETYPE 0x00000001L
+    BEGIN
+        BLOCK "StringFileInfo"
+            BEGIN
+                BLOCK "040904E4"
+                    BEGIN
+                        VALUE "CompanyName",      "SKAGER contributors\0"
+                        VALUE "FileDescription",  "SKAGER navigation based on OpenCPN\0"
+                        VALUE "FileVersion",      "@VERSION_MAJOR@,@VERSION_MINOR@,@VERSION_PATCH@\0"
+                        VALUE "InternalName",     "opencpn.exe\0"
+                        VALUE "LegalCopyright",   "OpenCPN and SKAGER contributors; GPL v2\0"
+                        VALUE "OriginalFilename", "opencpn.exe\0"
+                        VALUE "ProductName",      "SKAGER\0"
+                        VALUE "ProductVersion",   "0.4.0-beta2\0"
+                    END
+            END
+        BLOCK "VarFileInfo"
+            BEGIN
+            END
+    END

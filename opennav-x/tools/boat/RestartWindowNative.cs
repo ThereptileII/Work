@@ -60,12 +60,12 @@ namespace OpenNavX {
     private static Rect Bounds(IntPtr h) {Rect r;if(DwmGetWindowAttribute(h,9,out r,16)!=0 && !GetWindowRect(h,out r))throw new InvalidOperationException("Window bounds unavailable.");return r;}
     private static MonitorInfo Monitor(IntPtr h) {var m=new MonitorInfo();m.Size=(uint)Marshal.SizeOf(typeof(MonitorInfo));if(!GetMonitorInfoW(MonitorFromWindow(h,2),ref m))throw new InvalidOperationException("Monitor unavailable.");return m;}
     public static string Title(string mode) {
-      switch(mode) {case "--xnav":return "OpenNav X / OpenCPN";case "--legacy":return "OpenCPN / Legacy";case "--safe-mode":return "OpenNav Safe Mode / OpenCPN";default:throw new InvalidOperationException("Unknown installed mode.");}
+      switch(mode) {case "--xnav":return "SKAGER / OpenCPN";case "--legacy":return "SKAGER Legacy / OpenCPN";case "--safe-mode":return "SKAGER Safe Mode / OpenCPN";default:throw new InvalidOperationException("Unknown installed mode.");}
     }
     public static string Caption(string from,string to) {
       Title(from);Title(to);
-      if(from!="--xnav") {if(to=="--xnav")return "Switch to XNav";throw new InvalidOperationException("Legacy/Safe exposes only its actual XNav return action.");}
-      switch(to) {case "--xnav":return "Restart XNav";case "--legacy":return "Open Legacy OpenCPN";case "--safe-mode":return "Safe Mode";default:throw new InvalidOperationException("Unknown mode.");}
+      if(from!="--xnav") {if(to=="--xnav")return "Switch to SKAGER";throw new InvalidOperationException("Legacy/Safe exposes only its actual XNav return action.");}
+      switch(to) {case "--xnav":return "Restart SKAGER";case "--legacy":return "Open Legacy OpenCPN";case "--safe-mode":return "Safe Mode";default:throw new InvalidOperationException("Unknown mode.");}
     }
     public static WindowInfo AssertFrame(IntPtr h,int pid,string mode) {
       if(h==IntPtr.Zero || Owner(h)!=(uint)pid || GetForegroundWindow()!=h || GetParent(h)!=IntPtr.Zero ||
@@ -137,7 +137,7 @@ namespace OpenNavX {
       var matches=new List<IntPtr>();var systems=new List<IntPtr>();Exception failure=null;
       EnumChildWindows(frame,delegate(IntPtr h,IntPtr p){try {
         if(!IsWindowVisible(h) || Owner(h)!=(uint)pid)return true;
-        if(Text(h)=="OpenNav product page: System")systems.Add(h);
+        if(Text(h)=="SKAGER product page: System")systems.Add(h);
         if(Text(h)!=caption || Class(h)=="Static" || !IsWindowEnabled(h))return true;
         Rect r;if(!GetWindowRect(h,out r) || !Contains(root.Bounds,r))return true;
         for(var parent=GetParent(h);parent!=IntPtr.Zero && parent!=frame;parent=GetParent(parent)){Rect pr;if(!GetWindowRect(parent,out pr) || !Contains(pr,r))return true;}

@@ -8,7 +8,7 @@ building this ZIP alone does not establish acceptance.
 - Only the hash-validated OpenCPN 5.12.4 Windows x86 application is supported on
   Windows x64. Other releases/builds are refused. Upgrading an older OpenCPN
   installation is a separate operation with its own verified recovery backup;
-  OpenNav Setup does not bypass the compatibility check.
+  SKAGER Setup does not bypass the compatibility check.
 - The installer preserves the historical Alpha ownership/root/Start-menu identity
   to update existing installations safely. This is migration metadata, not a
   second installed application.
@@ -25,7 +25,7 @@ building this ZIP alone does not establish acceptance.
 - Live chart-corridor hazard queries and the custom Pathfinder radar receive/control
   integration remain incomplete. Lack of a detected hazard never means safe water.
 - Native OpenCPN/Legacy/plugin dialogs may retain their desktop styling and bright
-  surfaces. XNav primary flows receive separate Night/DPI/touch review.
+  surfaces. SKAGER primary flows receive separate Night/DPI/touch review.
 - Physical touch, actual GPU/OpenGL behavior and boat-source observations must be
   measured on the target machine. CI mouse/injected-touch evidence is additional,
   not a replacement for those checks.

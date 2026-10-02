@@ -1,3 +1,4 @@
+#include "application/Brand.h"
 #include "integration/PreviewDiagnostics.h"
 #include "integration/BuildFeatures.h"
 #include "OpenNavBuild.h"
@@ -14,12 +15,12 @@
 
 namespace opennav::integration {
 std::vector<std::string> PreviewBuildInfo(int dpi, const std::string &profile) {
-  return {std::string("OpenNav X ") + application::Edition + " / " +
-              application::Version + " / Interface: XNav",
+  return {std::string(application::brand::Name) + " " + application::Edition + " / " +
+              application::Version + " / Interface: " + application::brand::ModernMode,
           "OpenCPN 5.12.4 / 37fd0cddb7334fe489e9f18aa163977a9c5c84f7",
           "Build: " OPENNAV_BUILD_COMMIT,
           "Build purpose: " + std::string(BuildPurpose()),
-          "XNav equipment output: " + std::string(HardwareOutputPolicy()),
+          "SKAGER equipment output: " + std::string(HardwareOutputPolicy()),
           "Compiler: " OPENNAV_BUILD_COMPILER,
           "Built: " OPENNAV_BUILD_DATE " / CI: " OPENNAV_BUILD_RUN,
           "OS: " + wxGetOsDescription().ToStdString(wxConvUTF8) +

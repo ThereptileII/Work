@@ -24,8 +24,8 @@ foreach ($Name in @('production-package-selftest.json', 'production-restart-self
     }
 }
 if ($AssemblyExit -ne 0) { throw 'Recovery assembly failed' }
-python (Join-Path $PSScriptRoot 'verify-preview-pe.py') "$Output/OpenNavX-Beta2-Portable-Recovery/app" `
+python (Join-Path $PSScriptRoot 'verify-preview-pe.py') "$Output/SKAGER-Beta2-Portable-Recovery/app" `
     --report "$Root/evidence/local/preview-dll-audit.json"
 if ($LASTEXITCODE -ne 0) { throw 'Recovery dependency closure failed' }
-python (Join-Path $PSScriptRoot 'smoke-portable-production.py') --package "$Output/OpenNavX-Beta2-Portable-Recovery.zip"
+python (Join-Path $PSScriptRoot 'smoke-portable-production.py') --package "$Output/SKAGER-Beta2-Portable-Recovery.zip"
 if ($LASTEXITCODE -ne 0) { throw 'Extracted production recovery smoke test failed' }

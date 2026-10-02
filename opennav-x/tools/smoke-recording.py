@@ -167,16 +167,16 @@ try:
         time.sleep(.2)
     else:raise RuntimeError('Deferred startup failed')
     if windows:
-        handle,_=ui.wait_window('OpenNav X / OpenCPN',app.pid)
+        handle,_=ui.wait_window('SKAGER / OpenCPN',app.pid)
         ui.size_window(handle)
     else:
-        handle=xdo('search','--all','--onlyvisible','--pid',app.pid,'--name','^OpenNav X / OpenCPN$').splitlines()[0]
+        handle=xdo('search','--all','--onlyvisible','--pid',app.pid,'--name','^SKAGER / OpenCPN$').splitlines()[0]
         xdo('windowsize',handle,1280,800);xdo('windowmove',handle,0,0);xdo('windowfocus',handle)
     # Wait for the application layout, not merely the asynchronous native size
     # request. Otherwise a cached small-window button rectangle can be clicked
     # after the window has already expanded.
     if windows:
-        footers=[h for h,label in ui.children(handle) if label=='OpenNav status footer']
+        footers=[h for h,label in ui.children(handle) if label=='SKAGER status footer']
         assert len(footers)==1, 'One native status footer required'
         r=ui.W.RECT();assert ui.GetWindowRect(footers[0],ctypes.byref(r))
         footer=dict(x=r.left,y=r.top,width=r.right-r.left,height=r.bottom-r.top)

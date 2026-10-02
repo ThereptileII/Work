@@ -51,3 +51,11 @@ and its interrupted read-only commissioning transaction was subsequently
 The earlier Beta remains installed and closed. New deployment/capture requires
 a fresh read-only audit against the adopted baseline. Do not infer physical
 acceptance from Linux reference generation or the previous Windows suite.
+
+
+The user-authorized final identity is SKAGER. The original prototype remains
+unchanged design evidence; current customer-facing branding uses the approved
+SCRUM-89 wordmark and Windows icon derivative. This explicit identity change
+supersedes the prototype's development wordmark. The combined SCRUM-235–238
+batch has focused development checks but still requires exact-source native
+Windows and boat comparison; all screen-level acceptance rows remain Pending.

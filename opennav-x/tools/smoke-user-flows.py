@@ -320,14 +320,14 @@ try:
     trace = profile / 'opennav-ui-trace.log'
     assert trace.exists() and 'tick.end' in trace.read_text(), 'Test-only native trace is unavailable'
     if windows:
-        handle, _ = ui.wait_window('OpenNav X / OpenCPN', app.pid)
+        handle, _ = ui.wait_window('SKAGER / OpenCPN', app.pid)
         ui.size_window(handle)
         frame = ui.W.RECT()
         assert ui.GetWindowRect(handle, ui.C.byref(frame))
         report['frame_pixels'] = [frame.right - frame.left, frame.bottom - frame.top]
         assert report['frame_pixels'] == [1280, 800]
     else:
-        handle = xdo('search', '--all', '--onlyvisible', '--pid', app.pid, '--name', '^OpenNav X / OpenCPN$').splitlines()[0]
+        handle = xdo('search', '--all', '--onlyvisible', '--pid', app.pid, '--name', '^SKAGER / OpenCPN$').splitlines()[0]
         xdo('windowsize', handle, 1280, 800, 'windowmove', handle, 0, 0, 'windowfocus', handle)
     time.sleep(2)
     click('North')

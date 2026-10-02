@@ -236,7 +236,7 @@ index a7670a674..1542f919c 100644
 +#endif
    std::cout << kUsage;
 +#ifdef OPENNAV_X
-+  std::cout << "  --xnav | --legacy | --safe-mode  OpenNav interface/recovery mode\n";
++  std::cout << "  --xnav | --legacy | --safe-mode  SKAGER interface/recovery mode\n";
 +#if XNAV_ENABLE_TEST_FIXTURES
 +  std::cout << "  --xnav-demo                     Explicit simulated telemetry\n";
 +#endif
@@ -517,10 +517,10 @@ index 8b7a14403..74b928d44 100644
      }
  
 +#ifdef OPENNAV_X
-+    if (m_pMenuBar->FindMenu("OpenNav") == wxNOT_FOUND) {
++    if (m_pMenuBar->FindMenu("SKAGER") == wxNOT_FOUND) {
 +      auto *mode_menu = new wxMenu();
 +      opennav::AppendModeMenu(*mode_menu);
-+      m_pMenuBar->Append(mode_menu, "OpenNav");
++      m_pMenuBar->Append(mode_menu, "SKAGER");
 +    }
 +#endif
      UpdateGlobalMenuItems();  // update the state of the menu items (checkmarks

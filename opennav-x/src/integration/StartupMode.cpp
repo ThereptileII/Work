@@ -55,7 +55,7 @@ void ValidateTestStartup(TestStartupFlags requested, StartupFlags mode) {
   if (!TestFixturesEnabled())
     throw std::invalid_argument("Synthetic test input is not available in this product build");
   if (!mode.xnav || mode.legacy || mode.safe)
-    throw std::invalid_argument("Test input requires explicit XNav in a developer build");
+    throw std::invalid_argument("Test input requires explicit --xnav (SKAGER) in a developer build");
   if (count != 1)
     throw std::invalid_argument("Choose only one isolated test input");
 }

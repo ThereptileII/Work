@@ -103,7 +103,7 @@ try {
     if($spec[1] -ceq 'maximized-offscreen' -and (-not $resize.RestoreRequested -or -not $before.Maximized)){throw 'Oversized restore fixture did not actually maximize first.'}
    } elseif($spec[2]){
     if($refused -or (@($clicks) -join ',') -cne $spec[2]){throw ('Native display action failed: '+$spec[0]+'/'+$spec[1]+': '+$reason)}
-    if($spec[0] -ceq 'Display' -and [OpenNavX.ReviewWindowNative]::VisiblePageLabels([IntPtr]$ready.handle) -cnotcontains 'OpenNav product page: Display'){throw 'Display action did not enter its page.'}
+    if($spec[0] -ceq 'Display' -and [OpenNavX.ReviewWindowNative]::VisiblePageLabels([IntPtr]$ready.handle) -cnotcontains 'SKAGER product page: Display'){throw 'Display action did not enter its page.'}
     if($spec[0] -ceq 'ToggleFullscreen' -and ($before.Maximized -eq $after.Maximized -or $after.Maximized -ne ($spec[1] -ceq 'normal'))){throw 'Fullscreen/window fixture did not change actual frame state.'}
    } elseif(-not $refused -or @($clicks).Count){throw 'Unsafe/ambiguous native display fixture received a callback.'}
    $results.Add(@{action=$spec[0];case=$spec[1];refused=$refused;refusal=$reason;clicks=@($clicks);before=$before;after=$after;pid=$process.Id;createdFiletime=$ready.createdFiletime})

@@ -2,6 +2,7 @@
 import importlib.util
 import hashlib
 import json
+import re
 from pathlib import Path
 import shutil
 import tempfile
@@ -53,27 +54,37 @@ with tempfile.TemporaryDirectory(prefix='xnav-chart-test-') as d:
             'rastersymbols-dusk.png':'2513060ab2decd060ae8cd80919d1922f85f0a4282b99dee51b826d860ba9a5e',
             'rastersymbols-dark.png':'36a37bf3fe9257893adfb82e3d737ae62e98f631b4ed4bffe645e42d1697e8c9'}[name])
     a,b=ET.parse(source/'chartsymbols.xml').getroot(),ET.parse(output/'chartsymbols.xml').getroot()
-    # Independent exact exception list: only the two area-fill instructions.
+    # Independent exceptions: two area fills and geographic OBJNAM ink only.
     expected_ids={'16':('32052','Plain'),'356':('32391','Symbolized')}
     old="AC(CHBRN);TX(OBJNAM,1,2,3,'16120',0,0,CHBLK,26);LS(SOLD,1,LANDF)"
-    changed=[]
+    changed=[];geographic=[]
     for stock,styled in zip(a.find('lookups'),b.find('lookups')):
+        expected=stock.findtext('instruction')
         if stock.get('id') in expected_ids:
             rcid,table=expected_ids[stock.get('id')]
             check(stock.attrib=={'id':stock.get('id'),'RCID':rcid,'name':'BUAARE'})
             check(stock.findtext('type')=='Area' and stock.findtext('table-name')==table)
-            check(stock.findtext('instruction')==old)
-            check(styled.findtext('instruction')==old.replace('AC(CHBRN)','AC(XNBUA)'))
-            changed.append(stock.get('id'));styled.find('instruction').text=old
+            check(expected==old)
+            expected=expected.replace('AC(CHBRN)','AC(XNBUA)')
+            changed.append(stock.get('id'))
+        if stock.get('name') in {'BUAARE','LNDARE','LNDRGN','SEAARE'}:
+            new=re.sub(r"(TX\(OBJNAM,[^;()]+,)(CHBLK|CHGRD)(,26\))",r"\g<1>XNGEO\3",expected)
+            if new!=expected:geographic.append((stock.get('id'),stock.get('RCID')))
+            expected=new
+        check(styled.findtext('instruction')==expected)
+        styled.find('instruction').text=stock.findtext('instruction')
         check(ET.tostring(stock)==ET.tostring(styled))
     check(set(changed)==set(expected_ids) and len(changed)==2)
+    check(len(geographic)==18 and data['geographicNameLookups']==18)
+    check({i for i,_ in geographic}=={'16','84','91','178','356','424','431','519','1066','1134','1174','1240','1996','2209','2290','2358'})
     for section in ['lookups','line-styles','patterns','symbols']:
         check(ET.tostring(a.find(section))==ET.tostring(b.find(section)))
     for stock,styled in zip(a.find('color-tables'),b.find('color-tables')):
         check(stock.attrib==styled.attrib)
-        added=styled.findall("color[@name='XNBUA']")
-        check(len(added)==(1 if stock.get('name') in data['palette'] else 0))
-        for entry in added:styled.remove(entry)
+        for name in ('XNBUA','XNGEO'):
+            added=styled.findall("color[@name='"+name+"']")
+            check(len(added)==(1 if stock.get('name') in data['palette'] else 0))
+            for entry in added:styled.remove(entry)
         check(len(stock)==len(styled))
         for before,after in zip(stock,styled):
             if before.tag=='color' and stock.attrib['name'] in data['palette'] and before.attrib['name'] in g.ALLOWED:
@@ -110,12 +121,15 @@ with tempfile.TemporaryDirectory(prefix='xnav-chart-test-') as d:
     reject(lambda t:setattr(t.find("lookups/lookup[@id='1066']/instruction"),'text','AC(XNBUA)'))
     reject(lambda t:t.find('color-tables/color-table').remove(t.find("color-tables/color-table/color[@name='XNBUA']")))
     reject(lambda t:t.find('color-tables/color-table').append(ET.fromstring('<color name="XNBUA" r="175" g="191" b="174"/>')))
-    for name in ('LANDA','XNBUA'):
+    for name in ('LANDA','XNBUA','XNGEO'):
         path="color-tables/color-table/color[@name='"+name+"']"
         reject(lambda t:t.find(path).set('r','1'))
         reject(lambda t:t.find(path).set('a','0'))
         reject(lambda t:t.find(path).set('unexpected','true'))
     reject(lambda t:t.find("color-tables/color-table/color[@name='XNBUA']").append(ET.fromstring('<color name="CHBRN" r="1" g="1" b="1"/>')))
+    reject(lambda t:setattr(t.find("lookups/lookup[@name='LIGHTS']/instruction"),'text','TX(OBJNAM,1,2,3,15112,0,0,XNGEO,26)'))
+    reject(lambda t:t.find('color-tables/color-table').remove(t.find("color-tables/color-table/color[@name='XNGEO']")))
+    reject(lambda t:t.find('color-tables/color-table').append(ET.fromstring('<color name="XNGEO" r="1" g="1" b="1"/>')))
     check(original=={p.name:hashlib.sha256(p.read_bytes()).hexdigest() for p in source.iterdir() if p.is_file()})
     damaged=folder/'damaged';damaged.mkdir()
     for name in data['files']:shutil.copyfile(source/name,damaged/name)

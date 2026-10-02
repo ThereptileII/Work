@@ -59,7 +59,7 @@ def inventory():
 normal_before = inventory()
 temporary = tempfile.TemporaryDirectory(prefix='OpenNav product recovery ')
 temp = Path(temporary.name)
-package = temp / 'OpenNavX-Beta2-Portable-Recovery'
+package = temp / 'SKAGER-Beta2-Portable-Recovery'
 profile = package / 'profile'
 logs = package / 'logs'
 exe = package / 'app/opencpn.exe'
@@ -123,7 +123,7 @@ def capture(name, chart=True):
     rgb = ui.capture(handle, path, screen_pixels=True)
     report['screenshots'].append(path.name)
     if chart and 'colors' in globals():
-        style='XNav' if ui.text(handle)=='OpenNav X / OpenCPN' else 'Standard'
+        style='XNav' if ui.text(handle)=='SKAGER / OpenCPN' else 'Standard'
         report['chart_rendering'].append(charts.presentation(rgb,style,'Day',name))
     return rgb
 
@@ -166,10 +166,10 @@ def restart_xnav_from_legacy(name):
     previous = pid
     monitor = ui.monitor_process(pid)
     prepare_startup_observation()
-    ui.click_menu(handle, 'Switch to XNav')
+    ui.click_menu(handle, 'Switch to SKAGER')
     ui.wait_clean_exit(monitor)
     owned.discard(previous)
-    handle, pid = ui.wait_window('OpenNav X / OpenCPN')
+    handle, pid = ui.wait_window('SKAGER / OpenCPN')
     owned.add(pid)
     ready()
     data()
@@ -221,7 +221,7 @@ try:
     check('Exact extracted package inventory/hash and actual fixture-free executable identity verified')
     check('Extracted app/helper execute matching guarded-restart capability probes without profile initialization')
 
-    launch('Run-XNav.cmd', 'OpenNav X / OpenCPN')
+    launch('Run-SKAGER.cmd', 'SKAGER / OpenCPN')
     live = data()
     no_demo_controls()
     for name in ('Latitude', 'Battery SOC', 'Motor electrical power', 'Depth below transducer'):
@@ -242,7 +242,7 @@ try:
     no_demo_controls()
     ui.click_text(pid, 'Settings')
     data(lambda value: value['ui_page']=='Settings')
-    ui.assert_prototype_drawer(handle,'OpenNav preferences')
+    ui.assert_prototype_drawer(handle,'SKAGER preferences')
     capture('preferences', chart=False)
     no_demo_controls()
     ui.open_system(pid)
@@ -259,13 +259,13 @@ try:
     close()
     check('Out-of-box product shows real unavailable state, no Demo controls and Day/Dusk/Night chart content')
 
-    launch('Run-Legacy.cmd', 'OpenCPN / Legacy')
+    launch('Run-Legacy.cmd', 'SKAGER Legacy / OpenCPN')
     capture('legacy-start')
     restart_xnav_from_legacy('legacy-to-xnav')
     close()
     check('Legacy launcher and Legacy-to-XNav retain real coastline and isolated profile')
 
-    launch('Run-XNav.cmd', 'OpenNav X / OpenCPN')
+    launch('Run-SKAGER.cmd', 'SKAGER / OpenCPN')
     capture('xnav-before-legacy')
     monitor = ui.monitor_process(pid)
     previous = pid
@@ -274,7 +274,7 @@ try:
     ui.click_text(pid, 'Open Legacy OpenCPN')
     ui.wait_clean_exit(monitor)
     owned.discard(previous)
-    handle, pid = ui.wait_window('OpenCPN / Legacy')
+    handle, pid = ui.wait_window('SKAGER Legacy / OpenCPN')
     owned.add(pid)
     ready()
     capture('xnav-to-legacy')
@@ -282,7 +282,7 @@ try:
     close()
     check('Product XNav-to-Legacy-to-XNav controlled restart preserves coastline')
 
-    launch('Run-Safe.cmd', 'OpenNav Safe Mode / OpenCPN')
+    launch('Run-Safe.cmd', 'SKAGER Safe Mode / OpenCPN')
     capture('safe')
     restart_xnav_from_legacy('safe-to-xnav')
     close()

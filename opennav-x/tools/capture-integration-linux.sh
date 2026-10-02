@@ -27,7 +27,7 @@ app_pid=$!
 window=''
 for ((attempt=0; attempt<60; attempt++)); do
   kill -0 "$app_pid"
-  window=$(xdotool search --all --onlyvisible --pid "$app_pid" --name '^(OpenNav X / OpenCPN|OpenCPN / Legacy|OpenNav Safe Mode / OpenCPN)$' | head -1 || true)
+  window=$(xdotool search --all --onlyvisible --pid "$app_pid" --name '^(SKAGER / OpenCPN|SKAGER Legacy / OpenCPN|SKAGER Safe Mode / OpenCPN)$' | head -1 || true)
   if [[ -n "$window" ]] && rg -q 'OnInitTimer.*Finalize Canvases' "$profile/opencpn.log"; then break; fi
   sleep 1
 done

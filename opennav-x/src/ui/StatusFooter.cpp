@@ -131,7 +131,7 @@ class FooterHealthButton final : public XNavButton {
 };
 XNavStatusFooter::XNavStatusFooter(wxWindow *parent,std::function<void()> health)
     :wxPanel(parent,wxID_ANY) {
-  SetName("OpenNav status footer");SetLabel("OpenNav status footer");
+  SetName("OpenNav status footer");SetLabel("SKAGER status footer");
   SetBackgroundStyle(wxBG_STYLE_PAINT);SetMinSize(FromDIP(wxSize(0,34)));
   health_=new FooterHealthButton(this,std::move(health));
   Bind(wxEVT_PAINT,&XNavStatusFooter::Paint,this);

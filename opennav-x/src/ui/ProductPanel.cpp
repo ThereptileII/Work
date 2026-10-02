@@ -755,14 +755,14 @@ void ProductPanel::Build() {
   body_->Add(notice_, 0, wxEXPAND | wxALL, FromDIP(12));
   notice_->Hide();
   SetName("OpenNav product page");
-  SetLabel("OpenNav product page: " + W(PageTitle()));
+  SetLabel("SKAGER product page: " + W(PageTitle()));
   if (page_ == ProductPage::Alerts) {
     Heading("Alerts", "Open the notification centre from the status bar.");
   } else if (page_ == ProductPage::System) {
     Heading("System", "Interface, recovery and diagnostics");
     BeginActions(2);
     Action("Open Legacy OpenCPN",actions_.legacy);
-    Action("Restart XNav",actions_.restart_xnav);
+    Action("Restart SKAGER",actions_.restart_xnav);
     Action("Safe Mode",actions_.safe);
     Action("Diagnostics",actions_.diagnostics);
     Action("Open diagnostics folder",actions_.diagnostics_folder);
@@ -776,7 +776,7 @@ void ProductPanel::Build() {
   } else if (page_ == ProductPage::Commissioning) {
     CommissioningPanel();
   } else if (page_ == ProductPage::Home) {
-    Heading("Navigate with OpenNav X", "Beta / Chart, vessel and passage");
+    Heading("Navigate with SKAGER", "Beta / Chart, vessel and passage");
     BeginActions(3);
     for (const auto &p : std::vector<std::pair<wxString, ProductPage>>{
              {"Routes", ProductPage::Routes},

@@ -463,7 +463,7 @@ def main():
         resize_ticks = int(data()["runtime"]["ui_update"]["ticks"])
         resize_started = time.time_ns()
         if windows:
-            window, pid = ui.wait_window("OpenNav X / OpenCPN", app.pid)
+            window, pid = ui.wait_window("SKAGER / OpenCPN", app.pid)
             assert ui.GetDpiForWindow(window) == 96, "Primary reference requires 96 DPI"
             rect, client = ui.W.RECT(), ui.W.RECT()
             assert ui.GetWindowRect(window, ui.C.byref(rect))
@@ -476,7 +476,7 @@ def main():
             assert (client.right, client.bottom) == (1280, 800)
             record["captureScope"] = "1280x800 native client crop; full outer capture retained; boat fullscreen pending"
         else:
-            matches = xdo("search", "--all", "--onlyvisible", "--pid", app.pid, "--name", "^OpenNav X / OpenCPN$").splitlines()
+            matches = xdo("search", "--all", "--onlyvisible", "--pid", app.pid, "--name", "^SKAGER / OpenCPN$").splitlines()
             record["matched_windows"] = [{"id": item, "name": xdo("getwindowname", item), "geometry": xdo("getwindowgeometry", item)} for item in matches]
             assert len(matches) == 1, "The capture must resize the main frame, not an owned floating surface"
             window = matches[0]
@@ -726,7 +726,7 @@ def main():
             try:
                 if windows:
                     if not window:
-                        window, _ = ui.wait_window("OpenNav X / OpenCPN", app.pid, timeout=5)
+                        window, _ = ui.wait_window("SKAGER / OpenCPN", app.pid, timeout=5)
                     ui.close(window)  # normal WM_CLOSE; same path as the window close button
                 else:
                     subprocess.run([str(args.app), "--configdir", str(profile), "--remote", "--quit"],

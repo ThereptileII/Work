@@ -51,11 +51,13 @@ foreach($from in @('--xnav','--legacy','--safe-mode')) {
 $root=[IO.Path]::GetFullPath((Join-Path $PSScriptRoot '../..'))
 $ui=[IO.File]::ReadAllText((Join-Path $root 'src/ui/ProductPanel.cpp'))
 $bridge=[IO.File]::ReadAllText((Join-Path $root 'src/integration/OpenCPNIntegration.cpp'))
+$brand=[IO.File]::ReadAllText((Join-Path $root 'src/application/Brand.h'))
+$titleConstants=@{'--xnav'='WindowTitle';'--legacy'='LegacyTitle';'--safe-mode'='SafeModeTitle'}
 foreach($mode in @('--xnav','--legacy','--safe-mode')) {
- Check ($bridge.Contains('"'+[OpenNavX.RestartWindowNative]::Title($mode)+'"')) 'exact mode title derives from actual installed source'
+ Check ($brand.Contains('"'+[OpenNavX.RestartWindowNative]::Title($mode)+'"') -and $bridge.Contains('application::brand::'+$titleConstants[$mode])) 'exact mode title derives from actual installed source'
  Check ($ui.Contains('"'+[OpenNavX.RestartWindowNative]::Caption('--xnav',$mode)+'"')) 'exact System button derives from actual source'
 }
-Check ($bridge.Contains('"Switch to XNav"')) 'actual Legacy return menu exists'
+Check ($brand.Contains('"Switch to SKAGER"') -and $bridge.Contains('application::brand::SwitchToModern')) 'actual Legacy return menu exists'
 foreach($name in @('RestartWindowReview.ps1','review-restart-window.ps1')) {
  $errors=$null;$tokens=$null;$null=[Management.Automation.Language.Parser]::ParseFile((Join-Path $PSScriptRoot $name),[ref]$tokens,[ref]$errors)
  Check ($errors.Count -eq 0) ('script parse '+$name)

@@ -219,6 +219,25 @@ endif()
 # Separately owned, deterministically derived presentation resources. Verify
 # source bytes before generation; never overwrite the stock s57data directory.
 find_package(Python3 REQUIRED COMPONENTS Interpreter)
+# Verify approved, committed artwork without adding Pillow to product builds.
+execute_process(COMMAND "${Python3_EXECUTABLE}" "${OPENNAV_ROOT}/tools/verify-skager-brand.py"
+  RESULT_VARIABLE skager_brand_result)
+if(NOT skager_brand_result EQUAL 0)
+  message(FATAL_ERROR "SKAGER approved artwork verification failed")
+endif()
+set_property(DIRECTORY APPEND PROPERTY CMAKE_CONFIGURE_DEPENDS
+  "${OPENNAV_ROOT}/resources/branding/provenance.json"
+  "${OPENNAV_ROOT}/resources/branding/skager-wordmark-approved.png"
+  "${OPENNAV_ROOT}/resources/branding/skager-wordmark.png"
+  "${OPENNAV_ROOT}/resources/branding/skager.ico"
+  "${OPENNAV_ROOT}/src/application/SkagerBrandAsset.h")
+if(MSVC)
+  # The explicit integration hook runs after upstream's resource configuration.
+  # Replace only the disposable build output, keeping resource ID 0 (frame icon),
+  # executable filename, version and upstream source/stock install unchanged.
+  configure_file("${OPENNAV_ROOT}/src/integration/Skager.rc.in"
+    "${CMAKE_BINARY_DIR}/opencpn.rc" @ONLY)
+endif()
 set(xnav_chart_style "${CMAKE_BINARY_DIR}/opennav-chart-style/v1")
 execute_process(COMMAND "${Python3_EXECUTABLE}" "${OPENNAV_ROOT}/tools/generate-xnav-chart-style.py"
   --source "${CMAKE_SOURCE_DIR}/data/s57data" --output "${xnav_chart_style}"

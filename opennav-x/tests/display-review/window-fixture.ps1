@@ -31,7 +31,7 @@ public sealed class OpenNavPanFixtureCanvas : Panel {
 }
 '@
 $form=New-Object Windows.Forms.Form
-$form.Text='OpenNav X / OpenCPN';$form.StartPosition='Manual'
+$form.Text='SKAGER / OpenCPN';$form.StartPosition='Manual'
 $form.Location=New-Object Drawing.Point(20,20);$form.Size=New-Object Drawing.Size(900,640)
 $form.BackColor=[Drawing.Color]::FromArgb(10,24,32)
 function Button($Parent,[string]$Label,[int]$X,[int]$Y,[int]$Width=180) {
@@ -50,15 +50,15 @@ $panel=if($record.action -ceq 'PanRight'){New-Object OpenNavPanFixtureCanvas}els
 if($record.action -ceq 'PanRight'){$panel.Output=Join-Path $root 'clicks.txt'}
 $panel.Location=New-Object Drawing.Point(10,72);$panel.Size=New-Object Drawing.Size(840,430);$form.Controls.Add($panel)
 $null=$panel.Handle
-$pageLabel=switch($record.action){'Display'{'OpenNav product page: Settings'};'ToggleFullscreen'{'OpenNav product page: Display'};'CyclePalette'{'OpenNav product page: Display'};default{''}}
-if($record.case -ceq 'wrong-page'){$pageLabel='OpenNav product page: Autopilot configuration'}
+$pageLabel=switch($record.action){'Display'{'SKAGER product page: Settings'};'ToggleFullscreen'{'SKAGER product page: Display'};'CyclePalette'{'SKAGER product page: Display'};default{''}}
+if($record.case -ceq 'wrong-page'){$pageLabel='SKAGER product page: Autopilot configuration'}
 $null=[OpenNavDisplayFixtureLabel]::SetWindowTextW($panel.Handle,$pageLabel)
 $script:full=$false
 $script:button=$null
 switch($record.action) {
  'Display' {
   $script:button=Button $panel 'DISPLAY' 20 20 260
-  $script:button.Add_Click({SaveClick 'DISPLAY';$null=[OpenNavDisplayFixtureLabel]::SetWindowTextW($panel.Handle,'OpenNav product page: Display')})
+  $script:button.Add_Click({SaveClick 'DISPLAY';$null=[OpenNavDisplayFixtureLabel]::SetWindowTextW($panel.Handle,'SKAGER product page: Display')})
  }
  'ToggleFullscreen' {
   $script:button=Button $panel 'Fullscreen / window' 20 20 300
@@ -144,22 +144,22 @@ $form.Add_Shown({
  if($record.case -ceq 'return'){$form.FormBorderStyle='None';$form.WindowState='Maximized';$script:full=$true}
  if($prototype) {
   $last=if($record.case -ceq 'prototype-signature'){'AUTO'}else{[string][char]0x2212}
-  Surface 'OpenNav chart tools' 150 100 190 64 @('Measure','Waypoint','+',$last)
-  Surface 'OpenNav chart orientation' 150 180 68 90 @('North')
-  Surface 'OpenNav follow boat' 150 290 142 56 @('Follow boat')
+  Surface 'SKAGER chart tools' 150 100 190 64 @('Measure','Waypoint','+',$last)
+  Surface 'SKAGER chart orientation' 150 180 68 90 @('North')
+  Surface 'SKAGER follow boat' 150 290 142 56 @('Follow boat')
   if($record.case -ceq 'prototype-two-sheets'){
-   Surface 'OpenNav preferences' 360 100 432 460 @('Close') -Heading
-   Surface 'OpenNav passage' 390 100 398 460 @('Close') -Heading
+   Surface 'SKAGER preferences' 360 100 432 460 @('Close') -Heading
+   Surface 'SKAGER passage' 390 100 398 460 @('Close') -Heading
   }
-  if($record.case -ceq 'prototype-anchor'){Surface 'OpenNav anchor watch' 390 100 398 460 @('Close') -Heading}
-  if($record.case -ceq 'prototype-pilot'){Surface 'OpenNav autopilot' 390 100 398 460 @('Close') -Heading}
-  if($record.case -ceq 'prototype-alerts'){Surface 'OpenNav alerts' 390 100 398 460 @('Close') -Heading}
-  if($record.case -ceq 'prototype-preferences'){Surface 'OpenNav preferences' 360 100 432 460 @('Close') -Heading}
-  if($record.case -ceq 'prototype-passage'){Surface 'OpenNav passage' 390 100 398 460 @('Close') -Heading}
-  if($record.case -cin @('prototype-traffic','prototype-back')){Surface 'OpenNav vessel traffic' 390 100 398 460 @($(if($record.case -ceq 'prototype-back'){'Back'}else{'Close'})) -Heading}
+  if($record.case -ceq 'prototype-anchor'){Surface 'SKAGER anchor watch' 390 100 398 460 @('Close') -Heading}
+  if($record.case -ceq 'prototype-pilot'){Surface 'SKAGER autopilot' 390 100 398 460 @('Close') -Heading}
+  if($record.case -ceq 'prototype-alerts'){Surface 'SKAGER alerts' 390 100 398 460 @('Close') -Heading}
+  if($record.case -ceq 'prototype-preferences'){Surface 'SKAGER preferences' 360 100 432 460 @('Close') -Heading}
+  if($record.case -ceq 'prototype-passage'){Surface 'SKAGER passage' 390 100 398 460 @('Close') -Heading}
+  if($record.case -cin @('prototype-traffic','prototype-back')){Surface 'SKAGER vessel traffic' 390 100 398 460 @($(if($record.case -ceq 'prototype-back'){'Back'}else{'Close'})) -Heading}
   if($record.case -ceq 'prototype-unknown'){Surface 'Unknown plugin popup' 390 100 240 200 @('Close')}
-  if($record.case -ceq 'prototype-wrong-owner'){Surface 'OpenNav passage' 390 100 398 460 @('Close') -Heading -Unowned}
-  if($record.case -ceq 'prototype-duplicate'){Surface 'OpenNav chart tools' 390 100 190 64 @('Measure','Waypoint','+',[string][char]0x2212)}
+  if($record.case -ceq 'prototype-wrong-owner'){Surface 'SKAGER passage' 390 100 398 460 @('Close') -Heading -Unowned}
+  if($record.case -ceq 'prototype-duplicate'){Surface 'SKAGER chart tools' 390 100 190 64 @('Measure','Waypoint','+',[string][char]0x2212)}
   if($record.case -ceq 'prototype-clipped'){$script:surfaces[0].Left=$form.Right-20}
  }
  $chart=$panel.RectangleToScreen($panel.ClientRectangle)

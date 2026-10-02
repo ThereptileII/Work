@@ -1,5 +1,14 @@
 # Direct OpenCPN Upstream Modifications
 
+## Public SKAGER menu and launch help (SCRUM-235) — 2026-10-02
+
+The existing `opencpn-5.12.4-xnav.patch` now names the integrated Legacy mode
+menu SKAGER and uses SKAGER in CLI interface/recovery help. Its menu lookup uses
+the same public caption. Command switches, navigation behavior, upstream
+OpenCPN attribution and internal integration symbols are unchanged. See the
+[bounded native branding inventory](architecture/skager-native-branding.md).
+Native Windows and boat acceptance remain open for the integrated revision.
+
 ## Local peer sharing unavailable in public-beta candidates (SCRUM-212) — 2026-10-01
 
 The ninth reviewed patch, `patches/opencpn-5.12.4-peer-unavailable.patch`,
@@ -944,3 +953,43 @@ new artwork. Merge risk is limited to these pinned bitmap call sites and their
 retained cleanup/predictor context. See
 `docs/design/reviews/scrum232-ownship-chevron.md` for focused proof and explicit
 Windows/GL/DPI/boat gates.
+
+
+### SCRUM-238: selected-style geographic-name fonts
+
+The chart-presentation patch adds an optional font resolver at the existing
+`RenderT_All` font-cache construction boundary. Default is null. Verified SKAGER
+integration applies prototype name fonts only to the four geographic feature
+classes and leading OBJNAM TX; cached-font ownership stays with FontMgr. Other
+text/render/visibility logic and Standard/Legacy behavior are unchanged. A
+separate XNGEO resource role changes only 18 pinned geographic-name ink tokens;
+full-tree integrity remains enforced. See
+[scope and pending native evidence](design/reviews/scrum238-geographic-names.md).
+
+### SCRUM-237 — default active-route foreground (partial)
+
+The chart-presentation patch threads a bounded foreground-paint option through
+`RouteGui::RenderSegment` and `DrawGLLines`, with defaults preserving existing
+callers. Their existing projected/wrapped segment endpoints feed the shared
+`ChartRouteSegmentMesh` / `DrawChartRouteSegment` helper. Upstream arrows,
+waypoints, selection/highlight, editing, custom properties, MOB and navigation
+processing stay upstream. The previous route-ink hooks now use the same strict
+default-style eligibility gate. No `ocpnDC` implementation or generic GL renderer
+is patched. Two changed Linux production objects compile; the production-painter
+fixture passes 78 checks. The 6px underlay, 32px illustrative context, integrated
+native GL/Windows/boat and full hierarchy remain open. See
+`docs/design/reviews/scrum237-route-foreground.md` for exact scope and evidence.
+
+### SCRUM-239 — healthy factory-equivalent COG line paint
+
+One `ChartCanvas::ShipIndicatorsDraw` hook covers software and GL. Appearance
+ownership is captured from configuration before density mutation; the per-frame
+check tracks upstream's expected width increase and revokes ownership on custom
+runtime changes. Only the healthy default-icon COG line/black inner stroke is
+replaced. Existing projection, prediction time, COG/SOG and visibility guards,
+HDT, COG endpoint markers, custom settings and range rings remain upstream.
+No configuration write or generic renderer change is introduced. The new
+fractional dashed mesh/painter passes 72 focused checks; the previous route
+fixture passes 78. Both changed Linux production objects compile with `-Werror`.
+See `docs/design/reviews/scrum239-cog-predictor.md` for policy ambiguities,
+density-persistence limitation and outstanding native/boat visual gates.

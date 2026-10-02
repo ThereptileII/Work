@@ -56,16 +56,16 @@ class HandoffTests(unittest.TestCase):
                              workflow_run={'id': 7, 'head_sha': self.record['commit']})
 
     def refresh_inner(self):
-        prefix = 'OpenNavX-Beta2-Portable-Recovery/'
+        prefix = 'SKAGER-Beta2-Portable-Recovery/'
         notes = self.payload[handoff.RELEASE_NOTES]
         notes_hash = handoff.digest(notes)
         self.source['files'] = {'opennav-x/docs/beta2/' + handoff.RELEASE_NOTES: {'sha256': notes_hash}}
-        self.payload['OpenNavX-Beta2-Portable-Recovery.zip'] = zipped([
+        self.payload['SKAGER-Beta2-Portable-Recovery.zip'] = zipped([
             (prefix + 'docs/' + handoff.RELEASE_NOTES, notes),
             (prefix + 'FILE_SHA256.json', json.dumps({'docs/' + handoff.RELEASE_NOTES: notes_hash})),
             (prefix + 'docs/PRODUCT_BUILD.json', json.dumps(self.build)),
             (prefix + 'app/opencpn.exe', b'inert test bytes')])
-        self.payload['OpenNavX-Beta2-source.zip'] = zipped([
+        self.payload['SKAGER-Beta2-source.zip'] = zipped([
             ('SOURCE_REFERENCE.json', json.dumps(self.source)),
             ('opennav-x/docs/beta2/' + handoff.RELEASE_NOTES, notes)])
         self.repack()
@@ -83,6 +83,33 @@ class HandoffTests(unittest.TestCase):
         handoff.validate_acceptance(self.record, self.root)
         handoff.validate_ci(self.record, self.run, self.jobs, self.artifact)
         self.assertEqual(handoff.verify_payload(self.record, self.archive), self.payload)
+
+    def test_historical_bundle_remains_byte_exact(self):
+        # Preserve old names and bytes; do not relabel a previously accepted bundle.
+        legacy = {}
+        for name, data in self.payload.items():
+            old_name = name.replace('SKAGER-Beta2-', 'OpenNavX-Beta2-')
+            if name.endswith('.zip'):
+                with zipfile.ZipFile(io.BytesIO(data)) as z:
+                    data = zipped([(entry.replace('SKAGER-Beta2-', 'OpenNavX-Beta2-'),
+                                    z.read(entry).replace(b'SKAGER-Beta2-', b'OpenNavX-Beta2-')
+                                    if entry.endswith('.json') else z.read(entry))
+                                   for entry in z.namelist()])
+            legacy[old_name] = data
+        record = copy.deepcopy(self.record)
+        record['payloadSha256'] = {name: handoff.digest(legacy[name]) for name in handoff.LEGACY_FILES}
+        legacy['SHA256SUMS.txt'] = ''.join(value + '  ' + name + '\n' for name, value in
+                                          sorted(record['payloadSha256'].items())).encode()
+        archive = zipped(legacy.items())
+        record['artifact'].update(bytes=len(archive), sha256=handoff.digest(archive))
+        handoff.validate_acceptance(record, self.root)
+        self.assertEqual(handoff.verify_payload(record, archive), legacy)
+
+    def test_mixed_old_and_new_names_refused(self):
+        record = copy.deepcopy(self.record)
+        record['payloadSha256']['OpenNavX-Beta2-Setup.exe'] = record['payloadSha256'].pop('SKAGER-Beta2-Setup.exe')
+        with self.assertRaises(ValueError): handoff.validate_acceptance(record, self.root)
+        with self.assertRaises(ValueError): handoff.verify_payload(record, self.archive)
 
     def test_incomplete_or_unreviewed_boat_gate(self):
         for change in ('missing', 'pending', 'changed'):
@@ -150,7 +177,7 @@ class HandoffTests(unittest.TestCase):
                 with self.assertRaises(ValueError): handoff.verify_payload(self.record, self.archive)
 
     def test_manifest_fails_to_match_reviewed_bytes(self):
-        self.record['payloadSha256']['OpenNavX-Beta2-Setup.exe'] = '0' * 64
+        self.record['payloadSha256']['SKAGER-Beta2-Setup.exe'] = '0' * 64
         with self.assertRaises(ValueError): handoff.verify_payload(self.record, self.archive)
 
     def test_fixture_or_wrong_product_identity(self):
@@ -177,10 +204,10 @@ class HandoffTests(unittest.TestCase):
     def test_packaged_release_notes_missing_changed_or_wrong_hash(self):
         original = dict(self.payload)
         for archive_name, notes_path, manifest_name in (
-            ('OpenNavX-Beta2-Portable-Recovery.zip',
-             'OpenNavX-Beta2-Portable-Recovery/docs/' + handoff.RELEASE_NOTES,
-             'OpenNavX-Beta2-Portable-Recovery/FILE_SHA256.json'),
-            ('OpenNavX-Beta2-source.zip', 'opennav-x/docs/beta2/' + handoff.RELEASE_NOTES,
+            ('SKAGER-Beta2-Portable-Recovery.zip',
+             'SKAGER-Beta2-Portable-Recovery/docs/' + handoff.RELEASE_NOTES,
+             'SKAGER-Beta2-Portable-Recovery/FILE_SHA256.json'),
+            ('SKAGER-Beta2-source.zip', 'opennav-x/docs/beta2/' + handoff.RELEASE_NOTES,
              'SOURCE_REFERENCE.json')):
             for mutation in ('missing', 'changed', 'hash'):
                 with self.subTest(archive=archive_name, mutation=mutation):

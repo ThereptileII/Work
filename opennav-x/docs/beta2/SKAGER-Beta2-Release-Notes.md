@@ -31,8 +31,8 @@ Public release remains disabled until the exact candidate is accepted.
 
 ## Installation and recovery
 
-Use the supplied [installation guide](OpenNavX-Beta2-Install-Guide.md) and
-[test guide](OpenNavX-Beta2-Test-Guide.md). The supported application uses the
+Use the supplied [installation guide](SKAGER-Beta2-Install-Guide.md) and
+[test guide](SKAGER-Beta2-Test-Guide.md). The supported application uses the
 OpenCPN 5.12.4 Win32/x86 application and plugin ABI on Windows 10/11 x64.
 Setup checks the exact supported OpenCPN executable; do not bypass a refusal.
 Back up the real profile and separately stored charts before an authorized
@@ -41,8 +41,9 @@ installation or update, and close all application modes first.
 Installed modes share the existing OpenCPN navigation profile. Repair and
 rollback operate on owned application files; they are not a replacement for
 navigation-data backups. The portable recovery ZIP has its own separate profile
-and does not automatically load the normal charts or connections. Download
-filenames retain the `OpenNavX-Beta2` prefix for continuity.
+and does not automatically load the normal charts or connections. New download
+filenames use the `SKAGER-Beta2` prefix. Older accepted downloads retain their
+original names and hashes; they are never relabeled or repackaged.
 
 ## Limitations to review
 
