@@ -1,0 +1,107 @@
+{
+  "schemaVersion": 1,
+  "issue": "SCRUM-224",
+  "status": "passed-focused-native-compilation",
+  "sourceCommit": "488fbbdf5161e986c986773187b1008a7f8684f5",
+  "localSourceCommit": "548a37653d967d552ef68216184d0d6f3734664a",
+  "upstreamCommit": "37fd0cddb7334fe489e9f18aa163977a9c5c84f7",
+  "workflowRun": {
+    "id": 36984238840,
+    "jobId": 110765493006,
+    "conclusion": "success",
+    "url": "https://github.com/ThereptileII/Work/actions/runs/36984238840"
+  },
+  "artifact": {
+    "id": 11216589122,
+    "name": "native-changed-units-488fbbdf5161e986c986773187b1008a7f8684f5",
+    "bytes": 7519126,
+    "sha256": "668c0cbd7416a8f520d7e20ae07a21f85a5c44a6281520f0812f7d37eddf6472",
+    "apiSizeAndDigestMatched": true,
+    "zipEntriesCrcPassed": 699
+  },
+  "summary": {
+    "bytes": 47988,
+    "sha256": "d9a8d3e741e160e6a6cd5348a7543694c88c2bf7257eca806677504a552928e2"
+  },
+  "sourceBinding": {
+    "retainedCompleteNetworkingSourcesRehashed": 4,
+    "gateInputsMatchedLocalSource": 4,
+    "uiInputsMatchedLocalSource": 16,
+    "entireUiSourceTreeEntriesMatchedLocalSource": 231,
+    "patchesMatchedLocalSource": 9,
+    "windowsLineEndingsAccountedFor": true
+  },
+  "negativeControls": {
+    "downloader": {
+      "revertedMaxCallsOnly": 4,
+      "exitCode": 1,
+      "diagnostics": [
+        "C4003 max macro",
+        "C2589"
+      ],
+      "log": {
+        "bytes": 4532,
+        "sha256": "142dca42a8dd7982972dba4e1007b2eda79b14ab8a31189f9d988eb7e2dfb3d4"
+      }
+    },
+    "peerClient": {
+      "revertedMaxCallsOnly": 3,
+      "exitCode": 1,
+      "diagnostics": [
+        "C4003 max macro",
+        "C2589"
+      ],
+      "log": {
+        "bytes": 2943,
+        "sha256": "f39cdbd1d26c916e733552471ed9aef41ac0f250d78e0dba678f672fca11cd42"
+      }
+    }
+  },
+  "fixedCompile": {
+    "networkingUnitsPassed": [
+      "model/src/downloader.cpp",
+      "model/src/peer_client.cpp",
+      "libs/wxcurl/src/base.cpp",
+      "libs/wxcurl/src/http.cpp"
+    ],
+    "networkingObjectCount": 4,
+    "settingsStoreObjectCount": 1,
+    "actualUiTargetObjectCount": 26,
+    "all31ObjectsIndependentlyRehashed": true,
+    "allObjectsMachine": "COFF I386 (0x014c)",
+    "changedUiAndSettingsUnitsPassed": [
+      "src/ui/AisDrawer.cpp",
+      "src/ui/AnchorDrawer.cpp",
+      "src/ui/ChoiceField.cpp",
+      "src/ui/ContextCard.cpp",
+      "src/ui/Controls.cpp",
+      "src/ui/Drawer.cpp",
+      "src/ui/HealthDrawer.cpp",
+      "src/ui/Horizon.cpp",
+      "src/ui/PassageDrawer.cpp",
+      "src/ui/ProductPanel.cpp",
+      "src/ui/SettingsDrawer.cpp",
+      "src/ui/Sheet.cpp",
+      "src/ui/Shell.cpp",
+      "src/integration/SettingsStore.cpp"
+    ],
+    "changedUiAndSettingsUnitCount": 14,
+    "maskingDefinitionsForcedIncludesOrPchFound": false,
+    "productionUiPolicy": {
+      "testFixtures": false,
+      "pilotLoopback": false,
+      "runtimeTests": false
+    },
+    "compileLog": {
+      "bytes": 57663,
+      "sha256": "aac658ddceb687499115a4bd7c7d272cc05f5dfdc88a67c65dd15e7609ef8f02"
+    }
+  },
+  "limits": [
+    "Complete translation-unit/object compilation only; no full application link or execution.",
+    "The UI target compiled with test fixtures and pilot loopback disabled; no runtime, visual or interaction tests were performed.",
+    "OpenCPNIntegration.cpp and changed upstream GUI/CLI translation units are outside this focused target and still require the full native integration gate.",
+    "No dependency producer reuse, installer, packaged runtime closure, chart/plugin loading, endurance, boat or release acceptance is established.",
+    "This proof belongs to immutable source488fbbd/local548a376, not the failed eb86 candidate or a later changed revision."
+  ]
+}
