@@ -1,0 +1,117 @@
+{
+  "schemaVersion": 1,
+  "issues": [
+    "SCRUM-217",
+    "SCRUM-224"
+  ],
+  "status": "contract-job-logs-verified",
+  "sourceCommit": "eb86e4799c292a19a218626272d5a5bfa25aad5a",
+  "workflowRun": {
+    "id": 36975787975,
+    "attempt": 1,
+    "url": "https://github.com/ThereptileII/Work/actions/runs/36975787975"
+  },
+  "logRetention": "UTF-8 bytes of the exact GitHub connector decoded content, preserving BOM and original LF/CRLF; local hashes are not GitHub archive digests.",
+  "jobs": [
+    {
+      "id": 110739204782,
+      "name": "contracts (ubuntu-24.04)",
+      "url": "https://github.com/ThereptileII/Work/actions/runs/36975787975/job/110739204782",
+      "conclusion": "success",
+      "matchingRunAndCheckoutCommitVerified": true,
+      "decodedLog": {
+        "file": "110739204782.log",
+        "bytes": 90421,
+        "sha256": "0bc71c647cf6e9dfa0bab8c435a65e7e1b67943cbf8da9117412b6434943f035",
+        "bomPreserved": true,
+        "lineEndings": "LF"
+      },
+      "dependencyContracts": {
+        "receiptPassed": 15,
+        "evidencePassed": 14,
+        "reusePassed": 10,
+        "stagePassed": 4,
+        "totalPassed": 43,
+        "failed": 0,
+        "skipped": 0
+      },
+      "sourcePackageContracts": {
+        "sourcePassed": 11,
+        "opensslPassed": 9,
+        "curlPassed": 13
+      },
+      "versionProbe": {
+        "status": "passed",
+        "shells": [
+          "PowerShell on Linux"
+        ],
+        "assertionCount": "Not emitted by this suite; no inferred count.",
+        "scope": "Real ProbeVersion implementation with disposable process fixtures: stream identity/order, nonzero exit preservation, changed-stream hashes, size/start/timeout refusal."
+      },
+      "ctest": {
+        "passed": 90,
+        "failed": 0,
+        "notRun": 0
+      },
+      "delayedRestart": {
+        "test": "restart_lifecycle_contract",
+        "additionalPassedExecutions": 10,
+        "failed": 0
+      }
+    },
+    {
+      "id": 110739204905,
+      "name": "contracts (windows-2022)",
+      "url": "https://github.com/ThereptileII/Work/actions/runs/36975787975/job/110739204905",
+      "conclusion": "success",
+      "matchingRunAndCheckoutCommitVerified": true,
+      "decodedLog": {
+        "file": "110739204905.log",
+        "bytes": 124810,
+        "sha256": "b29c8120ccdc660e4fc1352cef6f4b6cee3bfb5e9959ef6a853b66c40c6c05bf",
+        "bomPreserved": true,
+        "lineEndings": "CRLF"
+      },
+      "dependencyContracts": {
+        "receiptPassed": 15,
+        "evidencePassed": 14,
+        "reusePassed": 10,
+        "stagePassed": 4,
+        "totalPassed": 43,
+        "failed": 0,
+        "skipped": 0
+      },
+      "sourcePackageContracts": {
+        "sourcePassed": 11,
+        "opensslPassed": 9,
+        "curlPassed": 13
+      },
+      "versionProbe": {
+        "status": "passed",
+        "shells": [
+          "PowerShell 7 on native Windows",
+          "Windows PowerShell 5.1"
+        ],
+        "assertionCount": "Not emitted by this suite; no inferred count.",
+        "scope": "Real ProbeVersion implementation with disposable process fixtures: stream identity/order, nonzero exit preservation, changed-stream hashes, size/start/timeout refusal."
+      },
+      "ctest": {
+        "passed": 87,
+        "failed": 0,
+        "notRun": 0
+      },
+      "delayedRestart": {
+        "test": "restart_lifecycle_contract",
+        "additionalPassedExecutions": 10,
+        "failed": 0
+      }
+    }
+  ],
+  "qualificationLimits": [
+    "Dependency receipt/evidence/reuse/staging counts are inert fixture contracts, including expected tamper and context refusals; they do not demonstrate reuse of actual native producer output.",
+    "The staging success text comes from test fixtures and is not evidence that the integrated application reused a production dependency cache.",
+    "Version-probe contracts do not establish actual certificate generation or the pinned OpenSSL/curl producer test results.",
+    "Native Windows contract compilation and tests passed, but integrated application, DLL/plugin loading, installer, UI, endurance, boat and release acceptance remain outside this record.",
+    "No tests or workflow jobs were rerun. Only these two small completed contract job logs were retrieved; no integrated job logs were downloaded."
+  ]
+}
