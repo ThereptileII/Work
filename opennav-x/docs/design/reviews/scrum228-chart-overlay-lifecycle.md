@@ -78,3 +78,35 @@ normal build in a private 1280x800 Xvfb display with `GDK_BACKEND=x11`, a
 new CTest registration or reported CTest count.
 Integrated clean-binary observation, native Windows and release qualification
 remain separate gates. No full build, CI dispatch or boat action occurred here.
+
+## Clean integrated replay
+
+One three-input replay against clean source
+`a3edcaef2904bf1450e306f3e086164479ec7f6f` completed with observer status
+**observed**, action duration 3.688 seconds, clean exit and unchanged disposable
+navigation fixtures. The executable was 25,721,672 bytes, SHA256
+`cb195d7356f5891aa2c4831b64f3bc8f33f0fe9e4fc4670c696200858b404985`, and
+reported that exact source identity. The separate observer was commit
+`399fe5775d3e2d88833e52787b4769095400da27`, unchanged script SHA256
+`7cf8e122462d3ea5ec2d360fea1995ced41937e80e583df064a28dcba2aa5773`.
+No temporary overlay instrumentation is present in this product build.
+
+Evidence: `soak-viewport-observation/evidence/local/viewport-clean-a3edcae/`.
+Before the first input, all floating controls are visibly painted at their
+full-size positions. The raw input records confirm the actual recipients:
+
+| Input | Raw receiving button bounds | Actual result |
+| --- | --- | --- |
+| `+` at (1002,571) | (980,549,44,44) | Button activation; scale 0.003000000026 → 0.006000000052 |
+| `−` at (1046,571) | (1024,549,44,44) | Button activation; scale 0.006000000052 → 0.003000000026 |
+| Day at (1201,34) | (1179,12,44,44) | Button activation; Day → Dusk |
+
+Center remains 59.08,18.5 and follow stays false throughout. The exact existing
+seven-control `navigation_layout` check passes on the final diagnostic, and
+the existing coastline/palette checks pass on all three before-input images
+and the final Dusk image. `geometry-and-coastline-check.json` retains these
+results. Final controls remain visible. The observed inverse zoom pair is
+not generalized into a new exact-net-zero navigation requirement.
+
+This passes the local prerequisite for root's separately authorized clean
+full preview. It is not endurance, native Windows, CI or boat acceptance.
