@@ -95,7 +95,7 @@ public:
     frame_->Show();
     timer_.SetOwner(this);
     Bind(wxEVT_TIMER,&TestApp::Step,this);
-    timer_.Start(350);
+    timer_.StartOnce(350);
     return true;
   }
   int OnRun() override { wxApp::OnRun(); return failed_?1:0; }
@@ -172,8 +172,12 @@ private:
     names_.push_back(name);
   }
   void Step(wxTimerEvent &) {
+    if(finished_)return;
+    const int current=step_++;
+    std::cout<<"Settings step "<<current<<" begin; captures="<<names_.size()
+             <<"; display saves="<<display_saves_<<std::endl;
     try {
-      switch(step_++) {
+      switch(current) {
       case 0: Feed(); break;
       case 1:
         {
@@ -410,6 +414,12 @@ private:
     } catch(const std::exception &e) {
       failed_=true;std::cerr<<e.what()<<std::endl;Finish();
     }
+    std::cout<<"Settings step "<<current<<" end; captures="<<names_.size()
+             <<"; display saves="<<display_saves_<<std::endl;
+    // Display popup checks yield to real native events. A repeating timer can
+    // enter the next scenario before this one submits Apply (wxMSW WM_TIMER).
+    // Rearm only after the entire current scenario, keeping the same cadence.
+    if(!finished_)timer_.StartOnce(350);
   }
   ui::XNavScroll *ScrollBody() {
     for(auto *child:panel_->GetChildren())
@@ -417,6 +427,8 @@ private:
     throw std::runtime_error("Preferences scroll body missing");
   }
   void Finish() {
+    if(finished_)return;
+    finished_=true;
     timer_.Stop();
     std::ofstream f((output_+"/result.json").ToStdString());
     f<<"{\"passed\":"<<(failed_?"false":"true")<<",\"checks\":"<<checks_<<",\"captures\":[";
@@ -436,7 +448,7 @@ private:
   ui::LightMode light_=ui::LightMode::Day;
   std::vector<std::string> names_;
   int step_=0,checks_=0,closed_=0;
-  bool failed_=false;
+  bool failed_=false,finished_=false;
 };
 } // namespace
 wxIMPLEMENT_APP_NO_MAIN(TestApp);
