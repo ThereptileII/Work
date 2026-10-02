@@ -18,10 +18,30 @@ These checks run again at probe completion. Pending development qualification
 remains pending even if the two-instance probe passes; it is never release
 acceptance. This permits useful independent work during the three-hour soak.
 
-GitHub must first register this newly added dispatch workflow (normally through
-the default branch); its presence on a test branch alone does not establish API
-availability. Publication, registration, input review, and dispatch remain with
-the parent review.
+Two invocation paths are prepared. Manual workflow_dispatch remains available
+when GitHub has registered the workflow; registration/API availability is not
+assumed and no default-branch change is required by this preparation. The
+alternative push trigger matches only branch `skager-candidate-security-probes`
+and path `opennav-x/tools/peer-candidate-request.json` together. Publishing only
+the workflow or unrelated changes does not match that path filter.
+
+No request file is supplied. The parent creates and reviews it only after an
+exact artifact exists and its native prerequisites pass. Its strict JSON schema
+has exactly four string fields: `run` (positive ASCII decimal run ID), `commit`
+(full lowercase 40-character SHA), `artifact` (positive ASCII decimal artifact
+ID), and `digest` (lowercase 64-character artifact SHA-256). Duplicate keys,
+unknown/case-aliased fields, non-string/nested values, invalid UTF-8, trailing
+JSON and requests over 2048 bytes are rejected. The request parser emits only
+validated workflow outputs; the existing probe still independently checks API,
+receipt, prerequisite, archive and runtime identities. No placeholder IDs are
+committed, and adding the request file is an explicit CI trigger action.
+
+Both paths retain separate test-source and candidate-binary identities. The
+push SHA identifies the test orchestration/request revision; the request commit
+identifies the already-built binary and must match both running diagnostics.
+Publication and invocation remain with the parent review; this preparation
+neither publishes a branch nor triggers a run. Inert request-schema checks cover
+valid input and malformed/ambiguous inputs without invoking the existing probe.
 
 `tools/probe-peer-candidate.py` binds the inputs to GitHub's run and artifact
 metadata, declared size and SHA-256, downloaded ZIP length/digest/CRC, internal

@@ -1,5 +1,8 @@
 name: SKAGER exact candidate two-instance probe
 on:
+  push:
+    branches: [skager-candidate-security-probes]
+    paths: [opennav-x/tools/peer-candidate-request.json]
   workflow_dispatch:
     inputs:
       candidate_run:
@@ -27,14 +30,25 @@ jobs:
     timeout-minutes: 15
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+      - name: Resolve reviewed exact candidate request
+        id: candidate
+        shell: pwsh
+        env:
+          CANDIDATE_RUN: ${{ inputs.candidate_run }}
+          CANDIDATE_COMMIT: ${{ inputs.candidate_commit }}
+          CANDIDATE_ARTIFACT: ${{ inputs.candidate_artifact }}
+          CANDIDATE_DIGEST: ${{ inputs.artifact_sha256 }}
+        run: |
+          python opennav-x/tools/read-peer-candidate-request.py
+          if ($LASTEXITCODE -ne 0) { throw 'Candidate request rejected' }
       - name: Bind and probe unchanged candidate package
         shell: pwsh
         env:
           GH_TOKEN: ${{ github.token }}
-          CANDIDATE_RUN: ${{ inputs.candidate_run }}
-          CANDIDATE_COMMIT: ${{ inputs.candidate_commit }}
-          CANDIDATE_ARTIFACT: ${{ inputs.candidate_artifact }}
-          ARTIFACT_DIGEST: ${{ inputs.artifact_sha256 }}
+          CANDIDATE_RUN: ${{ steps.candidate.outputs.run }}
+          CANDIDATE_COMMIT: ${{ steps.candidate.outputs.commit }}
+          CANDIDATE_ARTIFACT: ${{ steps.candidate.outputs.artifact }}
+          ARTIFACT_DIGEST: ${{ steps.candidate.outputs.digest }}
         run: |
           $ErrorActionPreference = 'Stop'
           python opennav-x/tools/probe-peer-candidate.py --run $env:CANDIDATE_RUN --commit $env:CANDIDATE_COMMIT --artifact $env:CANDIDATE_ARTIFACT --digest $env:ARTIFACT_DIGEST --seven 'C:\Program Files\7-Zip\7z.exe' --evidence opennav-x/evidence/local/peer-candidate
@@ -42,6 +56,6 @@ jobs:
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         if: always()
         with:
-          name: peer-candidate-${{ inputs.candidate_commit }}-test-${{ github.sha }}
+          name: peer-candidate-${{ steps.candidate.outputs.commit }}-test-${{ github.sha }}
           path: opennav-x/evidence/local/peer-candidate
           if-no-files-found: error
