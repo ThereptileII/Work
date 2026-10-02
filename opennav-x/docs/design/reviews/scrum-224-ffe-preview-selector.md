@@ -40,8 +40,9 @@ Five available installed Linux binaries in the primary, security-integration,
 scrum212-integration, skager-product-integration and waypoint-touch-regression
 build trees lack both the new System intro and unavailable-installer strings.
 No equivalent integrated executable was available for this exact interaction.
-Live preview re-execution, any next real failure, and native qualification remain
-pending. No full application build, suite, CI dispatch or boat operation ran.
+At the first source-fix commit, live preview re-execution and native qualification
+remained pending; no build, suite, CI dispatch or boat operation had run. The
+authorized isolated local verification is recorded below.
 
 ## Native Display route follow-up
 
@@ -76,4 +77,70 @@ install prefix point to `waypoint-touch-regression` at
 from FFE's local source, including chart bridge and new Search/Chart drawers;
 two upstream patch files also differ. This cache may support an incremental
 rebuild after reconciling that complete source set, not a Settings-only rebuild.
-No cache/source retargeting, build or install was performed.
+This was the read-only cache assessment before the separately authorized local
+verification below.
+
+## Coherent isolated Linux verification
+
+The authorized development build uses a private clean Git clone at
+`74761400862bc1d25102b2b741d14247dd343cdc`, a reflink copy of the configured
+cache and prepared OpenCPN tree, and a private development install. A read-only
+root bubblewrap namespace maps only these copies onto the cache's configured
+paths. Original worktrees, cache and frozen FFE are unchanged. The private
+prepared source was verified against pinned upstream plus all nine current
+patches before and after building; no changed header, dependency or version
+input was suppressed. This is a complete integrated source reconciliation, not
+a mixed-version Settings build.
+
+Ninja's final dry run required 244 target steps. The two-job `opencpn` build
+reached 231/244 at its 900-second bound; the authorized continuation finished
+in 53 seconds with 14 remaining steps including the existing libdnet echo.
+The installed executable is 25,721,560 bytes, SHA-256
+`233b0d8745c82a91dca7fe8c50ae879a16f1e3cb5475a421fdae322a54821b83`.
+Its generated build header records source `7476140`, GNU 16.2.1, 64-bit Linux
+and local-development authority. No full CTest suite or CI dispatch ran.
+
+The build identity, 1,510 tracked source hashes, logs and isolated binary are
+retained locally under `ffe-preview-selector/.local/incremental-preview/`;
+`source-identity.json` binds those inputs and executable. These ignored local
+artifacts are development evidence, not a distributable product or native
+Windows qualification.
+
+The first live preview passed the former Diagnostics collision, continued
+through the retained settings and stale-data checks, and visibly acknowledged
+the GPS alert. It then ended with wrapper exit 143 and no Python traceback or
+final result export. Its 36 screenshots and interruption record are retained
+in `preview-interrupted-1/`. The termination cause is unknown; this is not
+recorded as a product crash or a completed preview pass. An unchanged-binary
+repeat uses a bounded persistent supervisor and task-local temporary storage
+so session loss cannot discard its logs.
+
+The bounded repeat completed in 196 seconds with a genuine terminal failure at
+Legacy → XNav, not at the corrected selector. Its retained
+`app/evidence/local/preview-linux-results.json` binds the same executable SHA,
+60 pointer actions, 39 screenshots and six completed check groups. The actual
+Diagnostics pointer targeted the visible enabled Settings row
+`(671,664,386,72)`. `preview-05-diagnostics-linux.png` was inspected and shows
+the Diagnostics destination and exact `7476140` build. All eight fixture
+scenarios, stale/unavailable/shortfall assertions, alert acknowledgment, recovery
+and recurrence passed. XNav → Legacy exited cleanly and rendered the retained
+coastline.
+
+On the return request, the observed Legacy PID 1116 exited zero. The observed
+replacement descendant PID 1281 never produced the expected window and was
+retained as a zombie with `waitid` code 2/status 9 (SIGKILL), with empty observed
+argv. The last application log records Legacy's clean exit; no replacement
+startup was logged. `preview-failure-inventory.json` and the visually inspected
+black `preview-failure-linux.png` retain this missing-window state. The available
+kernel interval has no OOM record, and the bounded supervisor exited with the
+Python test's status 1 rather than timing out; the cause of the replacement's
+SIGKILL remains unknown. This is not a completed lifecycle/preview pass, and
+later Safe/direct-start steps were not reached. No third run was performed.
+
+The corrected native Display route remains native-execution pending: this Linux
+preview retains its existing Display fixture accelerator and therefore cannot
+qualify the new Windows Preferences → Navigation → Chart presentation → Chart
+palette preferences pointer path. Windows typography/DPI and boat acceptance
+are also unchanged and pending. The separate viewport observer uses this same
+binary; its results belong to SCRUM-228 and do not turn this preview failure into
+a pass.
