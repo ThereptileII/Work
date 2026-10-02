@@ -6,6 +6,7 @@ import importlib.util
 from pathlib import Path
 from types import SimpleNamespace
 import unittest
+from unittest.mock import patch
 
 spec = importlib.util.spec_from_file_location('diagnostic_geometry', Path(__file__).with_name('diagnostic-geometry.py'))
 geometry = importlib.util.module_from_spec(spec)
@@ -100,7 +101,7 @@ class MainButtonGeometry(unittest.TestCase):
     """
     def check_buttons(self, width, height, scale, nav, pilot=87, mutate=None):
         source=Path(__file__).with_name('smoke-dpi-windows.py')
-        tree=ast.parse(source.read_text())
+        tree=ast.parse(source.read_text(encoding='utf-8'))
         function=next(n for n in tree.body if isinstance(n,ast.FunctionDef)
                       and n.name=='main_buttons')
         factor=scale/100
@@ -164,7 +165,7 @@ class PreferencesTouch(unittest.TestCase):
     """
     def setUp(self):
         source=Path(__file__).with_name('smoke-dpi-windows.py')
-        tree=ast.parse(source.read_text())
+        tree=ast.parse(source.read_text(encoding='utf-8'))
         function=next(n for n in tree.body if isinstance(n,ast.FunctionDef)
                       and n.name=='touch_preferences_action')
         self.rects=[(120,410,480,482),(120,220,480,292)]
@@ -251,6 +252,23 @@ class PreferencesTouch(unittest.TestCase):
         self.pan_overlay=True
         self.reject()
         self.assertEqual(self.pans,[])
+
+
+class SourceEncoding(unittest.TestCase):
+    def test_ast_reads_preserve_unicode_with_legacy_windows_default(self):
+        original = Path.read_text
+        implicit_reads = []
+        def legacy_read_text(path, encoding=None, errors=None):
+            if encoding is None:
+                implicit_reads.append(path)
+            return original(path, encoding=encoding or 'cp1252', errors=errors)
+        with patch.object(Path, 'read_text', legacy_read_text):
+            sizes = MainButtonGeometry().check_buttons(1920, 1080, 100, 69)
+            self.assertEqual(sizes['−'], [44, 44])
+            touch = PreferencesTouch()
+            touch.setUp()
+            touch.test_visible_action_does_not_scroll()
+        self.assertEqual(implicit_reads, [], 'AST source must not use the system code page')
 
 
 if __name__ == '__main__':
