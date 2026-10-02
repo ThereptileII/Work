@@ -1,0 +1,50 @@
+{
+  "candidate": "c95d3a091bb2a0ce0e19d0146ab28dc848ef5290",
+  "run_url": "https://github.com/ThereptileII/Work/actions/runs/37017351644",
+  "native_job": 110874022741,
+  "result": "failure",
+  "integrated_ctest": {
+    "passed": 138,
+    "failed": 0,
+    "seconds": 18.41
+  },
+  "successful_later_steps": [
+    "installed peer CLI home refusal",
+    "staged loader",
+    "real pointer chart gestures and route creation",
+    "repeated crash-recovery"
+  ],
+  "failures": [
+    {
+      "gate": "fixture UI",
+      "error": "Sensors pointer target changed before input after foreground activation",
+      "location": "smoke-preview.py shell_pointer",
+      "status": "retained capture shows renewed body scrolling; focus/activation investigation ongoing"
+    },
+    {
+      "gate": "fullscreen1920 DPI",
+      "error": "Preferences width oracle expected432; native460 matches immutableHTML large-desktop rule",
+      "status": "strict test-oracle correction selected; no tolerance expansion"
+    }
+  ],
+  "verified_artifacts": [
+    {
+      "id": 11235876259,
+      "bytes": 41122972,
+      "sha256": "76da677fae2d15535b61238272808d825f22df6699c208403e15092d59e7bbb0",
+      "crc_path_entries": 12427
+    },
+    {
+      "id": 11235646271,
+      "bytes": 2224089,
+      "sha256": "2f276dec397f133e175622793a22faadbd97c50cab05644faa4d163505f71b75",
+      "crc_path_entries": 429
+    }
+  ],
+  "limitations": [
+    "No product package, installed security probe, candidate installer or boat acceptance",
+    "Linux endurance still running at native failure",
+    "No application crash inferred from UI assertions",
+    "No full rerun before narrow reproduction and corrections"
+  ]
+}

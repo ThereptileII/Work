@@ -1,5 +1,68 @@
 # OpenNav X status — 2026-10-02
 
+## SCRUM-224 — c95d native UI gates fail; short prototype proof passes
+
+The frozen `c95d3a0` [full run](https://github.com/ThereptileII/Work/actions/runs/37017351644)
+passed native compilation and all 138 integrated tests, installed peer CLI,
+staged loader, pointer route gestures and repeated crash recovery. It then
+failed the Sensors Preferences pointer check and the 1920-wide Preferences
+width assertion. [Verified failure evidence](evidence/scrum-224-c95-native-ui-failure.json)
+records both artifacts and exact scope. The latter oracle expects 432px where
+the immutable prototype and actual native drawer require 460px. The former
+shows body scrolling after foreground activation and remains under investigation.
+No product package, installer, installed security probe or boat promotion is
+accepted. Linux endurance continues independently. Narrow reproductions and
+corrections precede any further full candidate build.
+
+Separately, `29ea06a358ed24cc29eb2be74b67b234a3ecaa6e` passes
+[focused native run 37026807977](https://github.com/ThereptileII/Work/actions/runs/37026807977):
+190 Settings, 82 Search/Shell and 46 Chart drawer checks (**318 total**), plus
+compilation of all 28 production UI objects and the complete NavigationActions,
+NavigationObjects and SettingsStore units. The downloaded artifact, 247 source
+inputs, 31 objects, three executables/runtimes and 23 captures were verified.
+[Exact proof and limitations](evidence/scrum-224-29ea-focused-native-proof.json)
+remain component-scoped. Display track colors/geometry are supported; known
+other Settings differences and physical boat acceptance remain open. This pass
+does not qualify the full candidate or the later local System-flow correction.
+
+## SCRUM-14/15/216 — bounded prototype follow-up; native proof pending
+
+Published follow-up `34b8509` reached native CMake setup in
+[short run 37025085247](https://github.com/ThereptileII/Work/actions/runs/37025085247),
+which rejected an obsolete include directory before compilation or execution.
+The [retained artifact and all-path audit](evidence/scrum-224-prototype-native-setup.json)
+identify the narrow correction: remove `gui/src/s57/include`, absent from the
+pinned source tree; retain strict checks for all 27 actual directories and all
+production headers/macros. Only this short proof is retried. No application
+crash, dependency qualification, Windows UI pass or boat acceptance is inferred.
+
+Retry `9b0766b` / [37025995465](https://github.com/ThereptileII/Work/actions/runs/37025995465)
+compiled both complete navigation-bridge units and the production UI library.
+It stopped linking the standalone Search test because its Windows console
+entrypoint was missing. Both new fixtures now use the established explicit
+`main` → `wxEntry` pattern. Their local checks still pass (82 + 46); only the
+short native proof is retried. Product sources and `c95d` remain unchanged.
+
+Separate from frozen candidate `c95d3a0`, the October 2 follow-up restores rail
+metric icons and the Display selector track, adds saved-route/waypoint Search,
+and connects the native Chart presentation drawer to floating Layers and
+Settings → Navigation. OpenCPN owns the chart preferences; commands display
+observed readback, and unsupported/managed layers have no invented switch.
+
+The combined Linux component build passed. Search and Shell entrypoints passed
+82 checks, including rejected-action readback, Escape/Close and a short-chart
+overlap boundary; the chart drawer passed 46 checks. Two synthetic Shell captures
+and exact local source/executable identities are recorded in
+[scoped evidence](evidence/scrum14-prototype-combined-linux/verification.json).
+Earlier component-only Display and rail reviews retain their original scope.
+
+A separate short native proof compiles the complete changed navigation bridge
+and production UI, then runs the Settings, Search and Chart components. It does
+not rebuild dependency producers, qualify an installer, or launch on the boat.
+Windows and boat conformance remain pending. The full `c95d3a0` candidate remains
+unchanged: at 15:04 UTC its Linux endurance step and native integrated build were
+still running; no product artifact or boat replacement is accepted here.
+
 ## SCRUM-224/214 — native encoding proof passed; c95d replacement qualifying
 
 Published replacement `c95d3a091bb2a0ce0e19d0146ab28dc848ef5290`
