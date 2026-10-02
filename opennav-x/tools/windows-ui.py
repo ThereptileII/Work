@@ -185,11 +185,12 @@ def click_text(pid, label):
     visible = [(title, children(h)) for h, _, title in windows(pid)]
     raise RuntimeError(f'Control not found: {label}: {visible}')
 
-def pointer_text(pid, label):
+def pointer_text(pid, label, *, scroll_surface='OpenNav preferences'):
     """Click a fully visible native control through the actual Windows pointer.
 
     Unlike a direct HWND message, this cannot activate a covered or clipped
-    action. Used by the visible Preferences recovery path after footer removal.
+    action. Scrolling is restricted to the explicitly named owned drawer.
+    The default remains the Preferences recovery path.
     """
     deadline = time.monotonic() + 8
     last_scroll = None
@@ -240,7 +241,7 @@ def pointer_text(pid, label):
                             area.top <= rect.top < rect.bottom <= area.bottom):
                         contained = False
                         containment_rejection = int(parent)
-                        if (text(surface) == 'OpenNav preferences' and
+                        if (text(surface) == scroll_surface and
                                 area.left <= rect.left < rect.right <= area.right):
                             scroll_candidates[handle] = (surface, parent, area, rect)
                         break

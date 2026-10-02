@@ -328,7 +328,7 @@ print('12 pointer recovery visibility/occlusion/identity/scroll guards passed wi
 # Preferences scroll branch with delayed activation and retain strict refusal
 # when activation is denied, an overlay appears, or the viewport moves.
 scroll_cases = ('delayed-activation', 'activation-denied', 'activation-overlay',
-                'activation-moved-viewport')
+                'activation-moved-viewport', 'chart-palette')
 for scroll_case in scroll_cases:
     clock = Clock()
     wire = []
@@ -337,7 +337,9 @@ for scroll_case in scroll_cases:
     moved = [False]
     bounds = {1:(0,0,1280,800), 2:(680,180,1060,500), 3:(700,170,1040,242)}
     parents = {3:2, 2:1}
-    captions = [(3, 'Interface & recovery')]
+    surface = 'Chart presentation' if scroll_case == 'chart-palette' else 'OpenNav preferences'
+    caption = 'Chart palette preferences' if scroll_case == 'chart-palette' else 'Interface & recovery'
+    captions = [(3, caption)]
     queried = [3]
 
     def native_class(handle, buffer, capacity):
@@ -366,7 +368,7 @@ for scroll_case in scroll_cases:
         return front[0]
 
     def activate(handle):
-        if scroll_case == 'delayed-activation':
+        if scroll_case in ('delayed-activation','chart-palette'):
             activation_due[0] = clock.now + .15
         elif scroll_case == 'activation-moved-viewport':
             front[0] = 1
@@ -383,7 +385,7 @@ for scroll_case in scroll_cases:
     pointer_namespace.update(
         time=clock, windows=lambda pid:[(1,pid,'OpenNav X / OpenCPN')],
         children=lambda root:captions, IsWindowEnabled=lambda h:True,
-        text=lambda h:'OpenNav preferences' if h == 1 else '',
+        text=lambda h:surface if h == 1 else '',
         GetClassNameW=native_class, GetWindowRect=native_rect,
         GetParent=lambda h:parents.get(h), IsChild=is_child,
         WindowFromPoint=native_hit,
@@ -393,12 +395,12 @@ for scroll_case in scroll_cases:
         SetCursorPos=lambda x,y:wire.append(('cursor',x,y)) or True,
         MouseEvent=native_mouse)
     try:
-        pointer_namespace['pointer_text'](101, 'Interface & recovery')
+        pointer_namespace['pointer_text'](101, caption, scroll_surface=surface)
     except AssertionError:
-        assert scroll_case != 'delayed-activation', scroll_case
+        assert scroll_case not in ('delayed-activation','chart-palette'), scroll_case
         assert not wire, (scroll_case, wire)
     else:
-        assert scroll_case == 'delayed-activation', scroll_case
+        assert scroll_case in ('delayed-activation','chart-palette'), scroll_case
         assert ('mouse', 0x0800) in wire
         assert ('mouse', 2) in wire and ('mouse', 4) in wire
-print('4 delayed-foreground Preferences scroll activation guards passed without HWND command injection')
+print('5 delayed-foreground Preferences/chart-palette scroll activation guards passed without HWND command injection')

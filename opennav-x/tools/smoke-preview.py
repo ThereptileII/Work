@@ -288,6 +288,22 @@ def vessel_form_contract(record):
     assert save['enabled'],'Vessel profile Save identity must remain available'
     return {'fields':VESSEL_FIELD_LABELS,'save':{'label':save['label'],'enabled':save['enabled']}}
 
+def preferences_target(record,label):
+    display=record['runtime']['display'];drawer=display.get('drawer',{})
+    assert record.get('ui_page')=='Settings' and drawer, 'Preferences drawer closed during selection'
+    # The diagnostic walk also includes hidden controls on previous pages.
+    # A usable target must be visible, enabled and wholly inside this drawer.
+    candidates=[r for r in display['interaction_controls'] if r['label']==label and r['enabled'] and
+                drawer['x']<=r['x'] and r['x']+r['width']<=drawer['x']+drawer['width']]
+    visible=[r for r in candidates if r['visible'] and drawer['y']<=r['y'] and
+             r['y']+r['height']<=drawer['y']+drawer['height']]
+    assert len(visible)<=1,(label,'unique visible Preferences action',visible)
+    if visible:return visible[0],True
+    # Below-fold rows remain in the copied geometry. Use one horizontally
+    # contained candidate only for deciding a scroll, never for clicking.
+    assert len(candidates)==1,(label,'unique Preferences scroll target',candidates)
+    return candidates[0],False
+
 def preferences_entry(section,entry):
     command('Settings','g')
     destinations={'Advanced vessel model':'Vessel safety settings',
@@ -301,8 +317,8 @@ def preferences_entry(section,entry):
             display=d['runtime']['display'];bounds=display.get('drawer',{})
             return d.get('ui_page')=='Settings' and bool(bounds) and any(
                 r['label']==entry and r['enabled'] and
+                bounds['x']<=r['x'] and r['x']+r['width']<=bounds['x']+bounds['width'] and
                 (section=='System' or (r['visible'] and
-                 bounds['x']<=r['x'] and r['x']+r['width']<=bounds['x']+bounds['width'] and
                  bounds['y']<=r['y'] and r['y']+r['height']<=bounds['y']+bounds['height']))
                 for r in display['interaction_controls'])
     shell_click(section,in_drawer=True,settled=section_ready)
@@ -327,13 +343,8 @@ def preferences_entry(section,entry):
         last_y=None
         for _ in range(32):
             current=data();display=current['runtime']['display'];drawer=display.get('drawer',{})
-            targets=[r for r in display['interaction_controls'] if r['label']==entry]
-            assert len(targets)==1,(entry,'unique Preferences action',targets)
-            target=targets[0]
-            contained=(bool(drawer) and drawer['x']<=target['x'] and
-                       target['x']+target['width']<=drawer['x']+drawer['width'] and
-                       drawer['y']<=target['y'] and target['y']+target['height']<=drawer['y']+drawer['height'])
-            if target['visible'] and target['enabled'] and contained:
+            target,usable=preferences_target(current,entry)
+            if usable:
                 shell_click(entry,in_drawer=True)
                 break
             assert current.get('ui_page')=='Settings' and drawer,(entry,'Preferences drawer closed during scroll')
@@ -345,6 +356,13 @@ def preferences_entry(section,entry):
         else:raise AssertionError(entry+': bounded drawer scroll could not reach action')
     if entry in destinations:
         data(lambda d:d.get('ui_page')==destinations[entry])
+def display_preferences():
+    # Chart layers and palette choice have separate real destinations.
+    preferences_entry('Navigation','Chart presentation')
+    data(lambda d:d.get('ui_page')=='Chart presentation')
+    ui.pointer_text(pid,'Chart palette preferences',scroll_surface='Chart presentation')
+    data(lambda d:d.get('ui_page')=='Display')
+
 def product_click(label,enabled=True):
     target=interaction.control(data,label,product_scroll,enabled=enabled)
     pointer_click(target)
@@ -599,9 +617,11 @@ try:
         if windows:
             if name=='energy-settings':
                 preferences_entry('Vessel','Advanced battery model')
+            elif name=='display':
+                display_preferences()
             else:
                 section,entry={'sources':('Sensors','Manage sensors'),'vessel-settings':('Vessel','Advanced vessel model'),
-                               'radar-status':('Radar','Radar status'),'display':('Display','Chart presentation')}[name]
+                               'radar-status':('Radar','Radar status')}[name]
                 preferences_entry(section,entry)
         else:xdo('key','ctrl+shift+'+key);time.sleep(.6)
         expected_page='Display' if name=='display' else title
@@ -646,7 +666,7 @@ try:
             product_click('Configure data rail');product_click('Energy rail')
             data(lambda d:d['settings']['data_rail']==['soc','pack_power','sog','depth'])
             command('Navigation','n');capture('alpha-energy-rail')
-            preferences_entry('Display','Chart presentation')
+            display_preferences()
             product_click('Configure data rail');product_click('Navigation rail')
             data(lambda d:d['settings']['data_rail']==['sog','depth','aws','heading'])
             product_click('Back to Display')
