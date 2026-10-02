@@ -1,0 +1,187 @@
+{
+  "upstream_commit": "37fd0cddb7334fe489e9f18aa163977a9c5c84f7",
+  "failed_run": "37025085247",
+  "failed_head": "34b8509d90997f50ae94b33e8827949027c1d77b",
+  "artifact_sha256": "f952d278e81979d931e3508989a55b6e892f5a1aa23174b9f9bd2eba7628d33d",
+  "audit": "All declared navigation include paths checked against pinned Git tree and actual filesystem. Only obsolete gui/src/s57/include removed. No compile definitions/config/header behavior changed.",
+  "paths_before": 28,
+  "paths_retained": 27,
+  "paths": [
+    {
+      "path": "gui/src/s57/include",
+      "directory_exists": false,
+      "pinned_git_tree_entry": "",
+      "retained": false
+    },
+    {
+      "path": "gui/include/gui",
+      "directory_exists": true,
+      "pinned_git_tree_entry": "040000 tree 1adbb5a8321a065fadea810ded4a61193c3cd2ef\tgui/include/gui",
+      "retained": true
+    },
+    {
+      "path": "include",
+      "directory_exists": true,
+      "pinned_git_tree_entry": "040000 tree bccd8f6645e585bf6a64cf4250bc020d3e9cacd6\tinclude",
+      "retained": true
+    },
+    {
+      "path": "resources",
+      "directory_exists": true,
+      "pinned_git_tree_entry": "040000 tree 519810fc680649c5d40cfcc13fbd7494b8953a98\tresources",
+      "retained": true
+    },
+    {
+      "path": "gui/src/mbtiles",
+      "directory_exists": true,
+      "pinned_git_tree_entry": "040000 tree 35852f386da2530f343e22956f1f77b0d0bc14eb\tgui/src/mbtiles",
+      "retained": true
+    },
+    {
+      "path": "model/include",
+      "directory_exists": true,
+      "pinned_git_tree_entry": "040000 tree 81b7b4ffeae1bc4d64d21b88fc5c31d475f981f6\tmodel/include",
+      "retained": true
+    },
+    {
+      "path": "model/include/model",
+      "directory_exists": true,
+      "pinned_git_tree_entry": "040000 tree e4be322a33fc9dd874c210af1c86305cd9c30165\tmodel/include/model",
+      "retained": true
+    },
+    {
+      "path": "buildwin",
+      "directory_exists": true,
+      "pinned_git_tree_entry": "040000 tree 7385e54430ceacbc3ae86118bd4daa97d73cb948\tbuildwin",
+      "retained": true
+    },
+    {
+      "path": "libs/gui/include",
+      "directory_exists": true,
+      "pinned_git_tree_entry": "040000 tree 40be9a2011baa483e35e879998ad9835d54b9ed6\tlibs/gui/include",
+      "retained": true
+    },
+    {
+      "path": "libs/geoprim/src",
+      "directory_exists": true,
+      "pinned_git_tree_entry": "040000 tree 062db849050b0298c81c3544ebc577e5a63bd0c5\tlibs/geoprim/src",
+      "retained": true
+    },
+    {
+      "path": "libs/gdal/include",
+      "directory_exists": true,
+      "pinned_git_tree_entry": "040000 tree b1d41cd5211ac1ca489e86c261389d3f15b3dd37\tlibs/gdal/include",
+      "retained": true
+    },
+    {
+      "path": "libs/gdal/include/gdal",
+      "directory_exists": true,
+      "pinned_git_tree_entry": "040000 tree 7642d91b2138e079e2ab7037c978437dc552d159\tlibs/gdal/include/gdal",
+      "retained": true
+    },
+    {
+      "path": "libs/iso8211/include",
+      "directory_exists": true,
+      "pinned_git_tree_entry": "040000 tree 58005ce66ae09aac2812a6e3088de7de31a0f1a8\tlibs/iso8211/include",
+      "retained": true
+    },
+    {
+      "path": "libs/s52plib/src",
+      "directory_exists": true,
+      "pinned_git_tree_entry": "040000 tree 3b24bfb5626d9d65c25992abaf7705954856fc08\tlibs/s52plib/src",
+      "retained": true
+    },
+    {
+      "path": "libs/s57-charts/include",
+      "directory_exists": true,
+      "pinned_git_tree_entry": "040000 tree a941f253cdc1b9bd623707fbaf8e01ef7870eb5e\tlibs/s57-charts/include",
+      "retained": true
+    },
+    {
+      "path": "libs/observable/include",
+      "directory_exists": true,
+      "pinned_git_tree_entry": "040000 tree 324622d108ddb7d88dbe2ff7d10379375356e34c\tlibs/observable/include",
+      "retained": true
+    },
+    {
+      "path": "libs/pugixml",
+      "directory_exists": true,
+      "pinned_git_tree_entry": "040000 tree 4d5671638637518c29062d2b99355b012fbe5cff\tlibs/pugixml",
+      "retained": true
+    },
+    {
+      "path": "libs/nmea0183/src",
+      "directory_exists": true,
+      "pinned_git_tree_entry": "040000 tree 7fb8a96604e304985410a5576164b60bc9a3cbac\tlibs/nmea0183/src",
+      "retained": true
+    },
+    {
+      "path": "libs/std_filesystem/include",
+      "directory_exists": true,
+      "pinned_git_tree_entry": "040000 tree cf54e3c51dbc0d794026dfdcdc5c3a9ac9489279\tlibs/std_filesystem/include",
+      "retained": true
+    },
+    {
+      "path": "libs/wxJSON/include",
+      "directory_exists": true,
+      "pinned_git_tree_entry": "040000 tree baf840f55ca04482b7bad3857296c45f102078e8\tlibs/wxJSON/include",
+      "retained": true
+    },
+    {
+      "path": "libs/wxcurl/include",
+      "directory_exists": true,
+      "pinned_git_tree_entry": "040000 tree b636c4e625814ac04ed14dc3c6b49e582c7e0bfa\tlibs/wxcurl/include",
+      "retained": true
+    },
+    {
+      "path": "libs/IXWebSocket",
+      "directory_exists": true,
+      "pinned_git_tree_entry": "040000 tree 05de91db796313b6795baaab04613128eb2446fc\tlibs/IXWebSocket",
+      "retained": true
+    },
+    {
+      "path": "libs/tinyxml/include",
+      "directory_exists": true,
+      "pinned_git_tree_entry": "040000 tree 8832141a205c122c07ed689d5df1404645599acc\tlibs/tinyxml/include",
+      "retained": true
+    },
+    {
+      "path": "libs/libtess2/Include",
+      "directory_exists": true,
+      "pinned_git_tree_entry": "040000 tree b36e35e0c721c918b361589bdde21c9bc7e210de\tlibs/libtess2/Include",
+      "retained": true
+    },
+    {
+      "path": "libs/SQLiteCpp/include",
+      "directory_exists": true,
+      "pinned_git_tree_entry": "040000 tree a33a7fc62ad65875e711aea2d3c76cd25ddb9322\tlibs/SQLiteCpp/include",
+      "retained": true
+    },
+    {
+      "path": "libs/sqlite/include",
+      "directory_exists": true,
+      "pinned_git_tree_entry": "040000 tree 3dfc31e42ec165540e18cdb5814953dc46757bd5\tlibs/sqlite/include",
+      "retained": true
+    },
+    {
+      "path": "libs/serial/include",
+      "directory_exists": true,
+      "pinned_git_tree_entry": "040000 tree b25591034269f547ffa29b8039b88ecd6b0a04db\tlibs/serial/include",
+      "retained": true
+    },
+    {
+      "path": "libs/gl_headers/windows",
+      "directory_exists": true,
+      "pinned_git_tree_entry": "040000 tree 65d115779a108853b08bb4c42fb6a288c9df19a7\tlibs/gl_headers/windows",
+      "retained": true
+    }
+  ],
+  "cmake_sha256": "1d16b7c64ace14087e42949787b1076c385724aca1c70164c636cd968484deb8",
+  "native_compile": "not run; Windows retry owned by root",
+  "run_url": "https://github.com/ThereptileII/Work/actions/runs/37025085247",
+  "artifact_id": 11235261468,
+  "artifact_bytes": 2353084,
+  "artifact_crc_path_valid_entries": 386,
+  "stage": "CMake configuration; no application/component compiled or executed",
+  "correction": "Remove only obsolete include directory; expose bounded failure-log tail in CI output. Production code and frozen c95d remain unchanged."
+}

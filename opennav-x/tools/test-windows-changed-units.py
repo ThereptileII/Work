@@ -62,6 +62,11 @@ def run(args, log, *, cwd=ROOT, timeout=300, expected_failure=None):
                 not re.search(filename + r'\(\d+,\d+\): error C2589:', text)):
             raise RuntimeError(f'Legacy Windows max collision was not reproduced: {log}')
     elif code:
+        # Keep the actionable compiler/configuration error in the job log;
+        # the complete log remains in the uploaded exact-run evidence.
+        tail = '\n'.join(log.read_text(encoding='utf-8', errors='replace').splitlines()[-60:])
+        encoding = sys.stdout.encoding or 'utf-8'
+        print(tail.encode(encoding, errors='backslashreplace').decode(encoding), flush=True)
         raise RuntimeError(f'Command failed ({code}); retained log: {log}')
     return code
 

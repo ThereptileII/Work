@@ -2,6 +2,15 @@
 
 ## SCRUM-14/15/216 — bounded prototype follow-up; native proof pending
 
+Published follow-up `34b8509` reached native CMake setup in
+[short run 37025085247](https://github.com/ThereptileII/Work/actions/runs/37025085247),
+which rejected an obsolete include directory before compilation or execution.
+The [retained artifact and all-path audit](evidence/scrum-224-prototype-native-setup.json)
+identify the narrow correction: remove `gui/src/s57/include`, absent from the
+pinned source tree; retain strict checks for all 27 actual directories and all
+production headers/macros. Only this short proof is retried. No application
+crash, dependency qualification, Windows UI pass or boat acceptance is inferred.
+
 Separate from frozen candidate `c95d3a0`, the October 2 follow-up restores rail
 metric icons and the Display selector track, adds saved-route/waypoint Search,
 and connects the native Chart presentation drawer to floating Layers and

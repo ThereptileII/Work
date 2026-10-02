@@ -108,8 +108,11 @@ if(OPENNAV_CHECK_PROTOTYPE)
   # its transitive gui/geoprim/gdal/iso8211/s52plib/s57-charts/model targets.
   # Complete source files below compile as production Win32 objects. No app
   # link, producer dependency build, header substitution or macro suppression.
+  # The pinned root CMake still names obsolete gui/src/s57/include, but that
+  # directory is absent from its Git tree. Actual S57 headers below come from
+  # libs/s57-charts/include and libs/gdal/include/gdal; keep strict path checks.
   set(navigation_includes
-    gui/include/gui include resources gui/src/mbtiles gui/src/s57/include
+    gui/include/gui include resources gui/src/mbtiles
     model/include model/include/model buildwin
     libs/gui/include libs/geoprim/src libs/gdal/include libs/gdal/include/gdal
     libs/iso8211/include libs/s52plib/src libs/s57-charts/include
