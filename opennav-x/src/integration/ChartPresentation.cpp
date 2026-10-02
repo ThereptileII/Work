@@ -1,5 +1,6 @@
 #include "integration/ChartPresentation.h"
 #include "integration/ChartNameTypography.h"
+#include "integration/ChartLightLabel.h"
 #include "ui/Controls.h" // Before GL/X11 headers which define None.
 #include "XNavChartResources.h"
 #include "model/base_platform.h"
@@ -28,6 +29,7 @@
 #include <wx/fileconf.h>
 #include <wx/filename.h>
 #include <wx/fontenum.h>
+#include "integration/ChartSoundingFont.h"
 #include <wx/log.h>
 #include <wx/thread.h>
 
@@ -52,11 +54,18 @@ wxColour Color(std::uint32_t c) {
           static_cast<unsigned char>(c >> 8), static_cast<unsigned char>(c)};
 }
 wxFont *GeographicNameFont(const char *feature, const char *instruction, bool tx,
-                           double *tracking, unsigned char *opacity) {
+                           double *tracking, unsigned char *opacity, bool *light) {
+  *light = false;
+  if (IsGeneratedLightDescription(feature, instruction, tx)) {
+    // Pinned FontMgr factory face/size are cached from wxNORMAL_FONT.
+    static const wxFont system = *wxNORMAL_FONT;
+    *light = FactoryLightTextFont(*FontMgr::Get().GetFont(_("ChartTexts")), system,
+                                  FontMgr::Get().GetFontColor(_("ChartTexts")));
+  }
   const auto role = GeographicChartName(feature, instruction, tx);
-  if (role == ChartNameRole::Unchanged) return nullptr;
-  *tracking = role == ChartNameRole::Land ? 1.0 : 5.0;
-  *opacity = role == ChartNameRole::Land ? 255 : 92; // round(.36 * 255)
+  if (role == ChartNameRole::Unchanged && !*light) return nullptr;
+  *tracking = *light ? .12 : role == ChartNameRole::Land ? 1.0 : 5.0;
+  *opacity = *light || role == ChartNameRole::Land ? 255 : 92; // round(.36 * 255)
   // The selected chart style owns geographic-name typography. Never rewrite
   // FontMgr's persisted ChartTexts preference; Standard retains it verbatim.
   static const wxString face = [] {
@@ -64,12 +73,15 @@ wxFont *GeographicNameFont(const char *feature, const char *instruction, bool tx
       if (wxFontEnumerator::IsValidFacename(candidate)) return wxString(candidate);
     return wxString("Arial");
   }();
-  // 12/16 CSS px are 9/12 points at 96 DPI. The upstream renderer retains its
+  static const wxString light_face = wxFontEnumerator::IsValidFacename("Segoe UI")
+      ? wxString("Segoe UI") : wxString("Arial");
+  // Light descriptions: 8 CSS px = 6 points; geographic 12/16 px = 9/12 points.
+  // The upstream renderer retains its
   // DIP/content scale and the user's chart-text scale; do not scale twice.
   return FontMgr::Get().FindOrCreateFont(
-      role == ChartNameRole::Land ? 9 : 12, wxFONTFAMILY_SWISS,
-      role == ChartNameRole::Land ? wxFONTSTYLE_NORMAL : wxFONTSTYLE_ITALIC,
-      wxFONTWEIGHT_NORMAL, false, face);
+      *light ? 6 : role == ChartNameRole::Land ? 9 : 12, wxFONTFAMILY_SWISS,
+      *light || role == ChartNameRole::Land ? wxFONTSTYLE_NORMAL : wxFONTSTYLE_ITALIC,
+      wxFONTWEIGHT_NORMAL, false, *light ? light_face : face);
 }
 bool Verify(const wxString &folder) {
   for (const auto &resource : chart_style::generated::resources) {
@@ -147,6 +159,7 @@ s52plib *CreateChartPresentation(const wxString &stock_path,
           wxFileName(directory, "S52RAZDS.RLE").GetFullPath(), false, false, true);
       if (library->m_bOK) {
         library->SetTextFontResolver(GeographicNameFont);
+        library->SetSoundingFontResolver(ChartSoundingFont);
         active = true;
         status = "SKAGER presentation v1 / pinned symbols";
         wxLogMessage("SKAGER chart presentation: verified SKAGER resources");

@@ -14,7 +14,8 @@ LOCAL_UNITS = tuple('src/integration/' + name + '.cpp' for name in (
     'ChartRouteUnderlayGeometry', 'OnboardAisPresentation', 'OnlineAisOverlay'))
 UPSTREAM_UNITS = tuple('gui/src/' + name + '.cpp' for name in (
     'chcanv', 'route_gui', 'route_point_gui', 'waypointman_gui', 'ais', 'piano')) + (
-    'libs/s52plib/src/s52plib.cpp', 'libs/s52plib/src/chartsymbols.cpp')
+    'libs/s52plib/src/s52plib.cpp', 'libs/s52plib/src/chartsymbols.cpp',
+    'libs/s52plib/src/DepthFont.cpp')
 
 
 def extract_locked_tree(archive, destination, archive_root):

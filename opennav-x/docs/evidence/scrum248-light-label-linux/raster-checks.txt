@@ -1,0 +1,10 @@
+theme 0 first raster 3027us
+theme 0 10000 cache hits 323us
+halo=399 opaque glyph=0 visible=670
+theme 1 first raster 663us
+theme 1 10000 cache hits 351us
+halo=399 opaque glyph=0 visible=670
+theme 2 first raster 1375us
+theme 2 10000 cache hits 366us
+halo=399 opaque glyph=0 visible=670
+47 light label checks passed

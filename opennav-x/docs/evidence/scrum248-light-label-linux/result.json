@@ -1,0 +1,17 @@
+{
+  "baseCommit": "e14de49f444c56de28465416a83337838ad84413",
+  "pinnedOpenCPN": "37fd0cddb7334fe489e9f18aa163977a9c5c84f7",
+  "files": {
+    "src/integration/ChartLightLabel.h": "b7680059b5a7660ba525392d2f220477bc4a9876d8025b6df2075952f0582b3f",
+    "src/integration/ChartPresentation.cpp": "3f5639a8d1ce2bd76f05ce915be2ca1112c14ecc0fed0e47ac6d92fa0d821d12",
+    "patches/opencpn-5.12.4-chart-presentation.patch": "424d3558a093930938dc4acdaa535d955ecad82d507f7d1266e4d8c4ad400f8e",
+    "tests/chart_light_label_test.cpp": "90118112f20662a9c52d2d4f24dbc205af891e943d553d19d0008941d5800f93",
+    "tests/chart_name_render_boundary_test.cpp": "b00f93f827e70af0ef89752838830e0aad54445c6bb4abcc4765aa26ff744cb1"
+  },
+  "fixtureSha256": "77073bcad8dafade9a31476a4356f12e94c1c61bcdec28e17613ff81ba4677c2",
+  "limits": [
+    "Linux software/native glyph raster only",
+    "Recorded GL upload and actual shared renderer body, no real GL driver draw",
+    "No full build, CI, native Windows, real-chart capture or boat qualification"
+  ]
+}

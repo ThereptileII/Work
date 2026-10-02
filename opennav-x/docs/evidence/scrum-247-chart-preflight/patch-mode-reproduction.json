@@ -1,0 +1,39 @@
+{
+  "issue": "SCRUM-247",
+  "nativeFailure": {
+    "run": 37076177181,
+    "job": 111066487355,
+    "source": "eb9d32f49eb3d893952f456fb9bab740f6ee2642",
+    "localSource": "1ef52aacf7f1bf14e81c7869713d5afac05e69cf",
+    "phase": "prepare-integration before compilation",
+    "diagnostic": [
+      "error: gui/src/chcanv.cpp: wrong type",
+      "error: gui/src/chcanv.cpp: wrong type"
+    ]
+  },
+  "localReproduction": {
+    "gitVersion": "git version 2.55.0",
+    "core.filemode": false,
+    "core.autocrlf": true,
+    "pinnedUpstream": "37fd0cddb7334fe489e9f18aa163977a9c5c84f7",
+    "originalExit": 1,
+    "originalWrongTypeCount": 2,
+    "fixedPreparationExit": 0,
+    "fixedRepeatVerificationExit": 0,
+    "independentExpectedPatchedTree": "7f24b854fc65cca8153e82f7e71c8bb7d0a0b910",
+    "realIndexHasNoStagedChanges": true,
+    "pristineSourceUnchanged": true,
+    "patches": {
+      "opencpn-5.12.4-xnav.patch": "0cfbde6fdaaa8dfbb0563aa10e9ffc5e4e03e5ee0e2a72c92492879c7967a2c3",
+      "opencpn-5.12.4-regression-tests.patch": "3ef13652b8f3717d836883d2fbb7a18f35dbd2ca1162ac991fe339e61392dff1",
+      "opencpn-5.12.4-ais-transport.patch": "d343a0a7a77817c55b16734516b7d686dbfc2eb3f4207b43b6099d7d98c9b2f6",
+      "opencpn-5.12.4-chart-presentation.patch": "839a619a771c26f4d2d01dc059bad9c9630fbe198f827442ad1e96f8ef109445",
+      "opencpn-5.12.4-maintained-curl.patch": "dafa1fec0a69e3a1195db726c2cb26ceeb7535b5e25476ac2e4658d910f44e48",
+      "opencpn-5.12.4-download-trust.patch": "04763cb038ad088a722e76d4f85bde7e356489b697a373458195336d4278412b",
+      "opencpn-5.12.4-wxcurl-trust.patch": "f3ad76fc07b80e6f2c01331894ce5e685f6aa4456a2a3c761e3115c8c21f3d6b",
+      "opencpn-5.12.4-peer-response-buffer.patch": "c335f361766a6982c3d096e93f7c149179deb33134668e110111ac4980064e15",
+      "opencpn-5.12.4-peer-unavailable.patch": "5bf1c2ae4b09043ce18151f766aebd2b881b993f352000e34399de7e8b36b6d3"
+    }
+  },
+  "scope": "Linux reproduction with Windows-style Git settings only; no compile, native retry, visual or release acceptance"
+}

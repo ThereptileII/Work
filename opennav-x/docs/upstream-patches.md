@@ -1104,3 +1104,24 @@ creation revokes verified SKAGER presentation, and invalidates the existing
 atlas only when those colors change. Key geometry and interaction are untouched.
 The actual-method fixture covers late failure and unchanged-frame caching;
 integrated/native rendering qualification remains required.
+### SCRUM-249: verified sounding digit font
+
+The chart-presentation patch adds an optional owner-held sounding font policy in
+`s52plib::RenderSoundingSymbol`, installed only on the successfully verified
+SKAGER library. It maps the final prototype 10px normal font stack while keeping
+the sounding-size preference and semantic colors/qualifiers. `DepthFont::Build`
+accepts an optional exact-font flag to preserve the same fractional font as the
+software painter; existing callers retain their default path. Cache invalidation
+covers preference, content scale and DIP factor. All rule/pivot/rotation/color
+code after font selection and the complete multipoint semantic painter remain
+pinned. See `docs/design/reviews/scrum249-sounding-typography.md` for focused
+raster/object evidence and the outstanding Windows/actual-GL/boat gates.
+### SCRUM-248 LIGHTS descriptions
+
+The chart-presentation patch extends the optional text resolver with a bounded
+normal generated LIGHTS role. Existing RenderT_All/RenderText retain actual
+strings, visibility, placement and overlap logic; a shared cached label raster
+supplies prototype font/tracking/ink/water halo only for factory-equivalent
+ChartTexts appearance. Runtime custom appearance and unsupported raster bounds
+restore stock presentation. Other labels, global CHBLK, symbols and Standard
+remain unchanged. See [scope and evidence](design/reviews/scrum248-light-description-typography.md).

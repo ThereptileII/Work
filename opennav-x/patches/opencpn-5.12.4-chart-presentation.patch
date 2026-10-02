@@ -1629,3 +1629,327 @@ diff --git a/gui/include/gui/piano.h b/gui/include/gui/piano.h
    void DrawGLSL(int y);
    void BuildGLTexture();
    bool InArray(std::vector<int> &array, int key);
+diff --git a/libs/s52plib/src/s52plib.h b/libs/s52plib/src/s52plib.h
+--- a/libs/s52plib/src/s52plib.h
++++ b/libs/s52plib/src/s52plib.h
+@@ -191,6 +191,12 @@
+                                       double *, unsigned char *);
+   void SetTextFontResolver(TextFontResolver resolver) { m_textFontResolver = resolver; }
+ 
++  void SetSoundingFontResolver(wxFont (*resolver)(double, double)) {
++    m_soundingFontResolver = resolver;
++    m_presentationSoundingFont = wxNullFont;
++    m_texSoundings.Delete();
++  }
++
+   // TODO: SetPPM, SetDisplayWidth etc. should be combined to be set together by pointing them to info about current monitor
+   /**
+    * Set pixels per millimeter for symbol rendering.
+@@ -587,6 +593,14 @@
+ 
+   TexFont *m_txf;
+   DepthFont m_texSoundings;
++  // Installed only by a verified presentation, before first rendering. The
++  // owner retains this font; DepthFont stores a value copy, never its pointer.
++  using SoundingFontResolver = wxFont (*)(double, double);
++  SoundingFontResolver m_soundingFontResolver = nullptr;
++  wxFont m_presentationSoundingFont;
++  double m_presentationSoundingScale = -1;
++  double m_presentationSoundingContent = -1;
++  double m_presentationSoundingDip = -1;
+   bool m_benableGLLS;
+   DisCat m_nDisplayCategory;
+   ArrayOfNoshow m_noshow_array;
+diff --git a/libs/s52plib/src/s52plib.cpp b/libs/s52plib/src/s52plib.cpp
+--- a/libs/s52plib/src/s52plib.cpp
++++ b/libs/s52plib/src/s52plib.cpp
+@@ -3483,6 +3483,37 @@
+     // scale_factor *= pix_factor;
+   }
+ 
++  int charWidth, charHeight, charDescent;
++  if (m_soundingFontResolver) {
++    // Match the stock preference range. This changes the digit font only;
++    // all rule selection, colors and pivot groups below remain upstream.
++    const double sounding_scale =
++        m_SoundingsScaleFactor >= 0.5 && m_SoundingsScaleFactor <= 2.0
++            ? m_SoundingsScaleFactor : 1.0;
++    if (!m_presentationSoundingFont.IsOk() ||
++        m_presentationSoundingScale != sounding_scale ||
++        m_presentationSoundingContent != m_ContentScaleFactor ||
++        m_presentationSoundingDip != m_dipfactor) {
++      m_presentationSoundingFont =
++          m_soundingFontResolver(sounding_scale, m_ContentScaleFactor);
++      m_presentationSoundingScale = sounding_scale;
++      m_presentationSoundingContent = m_ContentScaleFactor;
++      m_presentationSoundingDip = m_dipfactor;
++      m_texSoundings.Delete();
++    }
++    m_soundFont = &m_presentationSoundingFont;
++    wxScreenDC sdc;
++    sdc.GetTextExtent(_T("0"), &charWidth, &charHeight, &charDescent,
++                      NULL, m_soundFont);
++    if (m_pdc) {
++      m_pdc->SetFont(*m_soundFont);
++    } else if (!m_texSoundings.IsBuilt()) {
++      m_texSoundings.SetContentScaleFactor(m_ContentScaleFactor);
++      // Keep the same fractional-size font as software. The stock atlas
++      // conversion rounds to integer points and applies scaling a second time.
++      m_texSoundings.Build(m_soundFont, sounding_scale, m_dipfactor, true);
++    }
++  } else {
+   wxFontWeight fontWeight = wxFONTWEIGHT_NORMAL;
+   wxString fontFacename = wxEmptyString;
+   double defaultHeight = 3.0;
+@@ -3494,7 +3525,6 @@
+ #endif
+ 
+   int point_size = 6;
+-  int charWidth, charHeight, charDescent;
+   charWidth = 1;
+ 
+   double target = defaultHeight * scale_factor;
+@@ -3560,6 +3590,8 @@
+                                           wxFONTSTYLE_NORMAL, fontWeight, false,
+                                           fontFacename);
+     m_pdc->SetFont(*m_soundFont);
++  }
++
+   }
+ 
+   int pivot_x;
+diff --git a/libs/s52plib/src/DepthFont.h b/libs/s52plib/src/DepthFont.h
+--- a/libs/s52plib/src/DepthFont.h
++++ b/libs/s52plib/src/DepthFont.h
+@@ -40,7 +40,8 @@
+   DepthFont();
+   ~DepthFont();
+ 
+-  void Build(wxFont *font, double scale, double dip_factor = 1.0);
++  void Build(wxFont *font, double scale, double dip_factor = 1.0,
++             bool exact_font = false);
+   void Delete();
+ 
+   bool IsBuilt() { return m_built; }
+diff --git a/libs/s52plib/src/DepthFont.cpp b/libs/s52plib/src/DepthFont.cpp
+--- a/libs/s52plib/src/DepthFont.cpp
++++ b/libs/s52plib/src/DepthFont.cpp
+@@ -39,7 +39,8 @@
+ 
+ DepthFont::~DepthFont() { Delete(); }
+ 
+-void DepthFont::Build(wxFont *font, double scale, double dip_factor) {
++void DepthFont::Build(wxFont *font, double scale, double dip_factor,
++                      bool exact_font) {
+   /* avoid rebuilding if the parameters are the same */
+   if (m_built && (*font == m_font)) return;
+ 
+@@ -52,7 +53,7 @@
+ 
+   double scaler = m_ContentScaleFactor * dip_factor;
+ 
+-  wxFont *scaled_font =
++  wxFont *scaled_font = exact_font ? font :
+           FindOrCreateFont_PlugIn(font->GetPointSize() / scaler,
+                                   font->GetFamily(), font->GetStyle(),
+                                   font->GetWeight(), false,
+diff --git a/libs/s52plib/src/s52plib.cpp b/libs/s52plib/src/s52plib.cpp
+--- a/libs/s52plib/src/s52plib.cpp
++++ b/libs/s52plib/src/s52plib.cpp
+@@ -1790,7 +1790,8 @@
+     // These labels use the existing whole-string texture path. Invalidate
+     // per label, before the upstream global scale tracker forgets a texture.
+     if (ptext->texobj &&
+-        (ptext->presentation_texture_scale != scale_factor ||
++        ((ptext->light_label && ptext->light_texture_build != ptext->light_raster.builds) ||
++         ptext->presentation_texture_scale != scale_factor ||
+          ptext->presentation_content_scale != m_ContentScaleFactor ||
+          ptext->presentation_texture_color != identity)) {
+       glDeleteTextures(1, (GLuint *)(&ptext->texobj));
+@@ -1799,6 +1800,7 @@
+     ptext->presentation_texture_scale = scale_factor;
+     ptext->presentation_content_scale = m_ContentScaleFactor;
+     ptext->presentation_texture_color = identity;
++    ptext->light_texture_build = ptext->light_raster.builds;
+   }
+ #endif
+ 
+@@ -1909,6 +1911,9 @@
+           mdc.SelectObject(wxNullBitmap);
+ 
+           wxImage image = bmp.ConvertToImage();
++#ifdef OPENNAV_X
++          if (ptext->light_label) image = ptext->light_raster.image;
++#endif
+           int ws = image.GetWidth(), hs = image.GetHeight();
+ 
+           ptext->RGBA_width = ws;
+@@ -1950,6 +1955,12 @@
+                 alpha = (alpha * ptext->text_opacity + 127) / 255;
+ #endif
+                 pdest[off * 4 + 3] = (unsigned char)(alpha & 0xff);
++#ifdef OPENNAV_X
++                if (ptext->light_label) {
++                  pdest[off*4] = r; pdest[off*4+1] = g; pdest[off*4+2] = b;
++                  pdest[off*4+3] = image.GetAlpha()[off];
++                }
++#endif
+               }
+           }
+ 
+@@ -2052,6 +2063,9 @@
+         pRectDrawn->SetY(yp);
+         pRectDrawn->SetWidth(ptext->text_width);
+         pRectDrawn->SetHeight(ptext->text_height);
++#ifdef OPENNAV_X
++        if (ptext->light_label) pRectDrawn->Inflate(ptext->light_raster.margin);
++#endif
+ 
+         if (bCheckOverlap) {
+ #ifdef OPENNAV_X
+@@ -2082,14 +2096,18 @@
+           uv[5] = 1;
+ 
+           // pixels
+-          coords[0] = 0;
+-          coords[1] = 0;
+-          coords[2] = ptext->RGBA_width;
+-          coords[3] = 0;
+-          coords[6] = ptext->RGBA_width;
+-          coords[7] = ptext->RGBA_height;
+-          coords[4] = 0;
+-          coords[5] = ptext->RGBA_height;
++          float label_pad = 0;
++#ifdef OPENNAV_X
++          if (ptext->light_label) label_pad = ptext->light_raster.margin;
++#endif
++          coords[0] = -label_pad;
++          coords[1] = -label_pad;
++          coords[2] = ptext->RGBA_width - label_pad;
++          coords[3] = -label_pad;
++          coords[6] = ptext->RGBA_width - label_pad;
++          coords[7] = ptext->RGBA_height - label_pad;
++          coords[4] = -label_pad;
++          coords[5] = ptext->RGBA_height - label_pad;
+ 
+           glUseProgram(S52texture_2D_shader_program);
+ 
+@@ -2391,6 +2409,9 @@
+     pRectDrawn->SetY(yp);
+     pRectDrawn->SetWidth(w);
+     pRectDrawn->SetHeight(h);
++#ifdef OPENNAV_X
++    if (ptext->light_label) pRectDrawn->Inflate(ptext->light_raster.margin);
++#endif
+ 
+     if (bCheckOverlap) {
+       if (CheckTextRectList(*pRectDrawn, ptext)) bdraw = false;
+@@ -2406,7 +2427,10 @@
+       pdc->SetTextForeground(wcolor);
+ 
+ #ifdef OPENNAV_X
+-      if (!name_run.Draw(*pdc, xp, yp, wcolor, ptext->text_opacity))
++      if (ptext->light_label)
++        pdc->DrawBitmap(ptext->light_raster.bitmap,
++                        xp-ptext->light_raster.margin, yp-ptext->light_raster.margin, true);
++      else if (!name_run.Draw(*pdc, xp, yp, wcolor, ptext->text_opacity))
+         pdc->DrawText(ptext->frmtd, xp, yp);
+ #else
+       pdc->DrawText(ptext->frmtd, xp, yp);
+@@ -2528,6 +2552,41 @@
+       return 0;
+     }
+ 
++    // Resolve presentation before font caching, including runtime preference
++    // changes. Visibility and generated chart text have already been decided.
++    wxFont *styled = nullptr;
++    double tracking = 0;
++    unsigned char opacity = 255;
++    bool light = false;
++    if (m_textFontResolver)
++      styled = m_textFontResolver(rzRules->obj->FeatureName, rules->INSTstr,
++                                 bTX, &tracking, &opacity, &light);
++#ifdef OPENNAV_X
++    if (light && styled) {
++      double scale = m_TextScaleFactor / m_dipfactor;
++      double raster_scale = wxMax(1.0, scale);
++      int points = styled->GetPointSize();
++      if (scale > 1) points = static_cast<int>(points * scale);
++      else if (!m_pdc) points = static_cast<int>(points / m_ContentScaleFactor);
++      wxFont *raster_font = FindOrCreateFont_PlugIn(points, styled->GetFamily(),
++          styled->GetStyle(), styled->GetWeight(), false, styled->GetFaceName());
++      const S52color *ink = getColor("XNGEO"), *water = getColor("DEPDW");
++      if (!text->light_raster.Build(*raster_font, text->frmtd, raster_scale,
++              wxColour(ink->R, ink->G, ink->B), wxColour(water->R, water->G, water->B))) {
++        // Atomic presentation fallback: keep the original stock font and ink.
++        light = false; styled = nullptr; tracking = 0; opacity = 255;
++      }
++    }
++    if (text->light_label != light) {
++      text->pFont = nullptr;
++#ifdef ocpnUSE_GL
++      if (text->texobj) glDeleteTextures(1, (GLuint *)&text->texobj);
++#endif
++      text->texobj = 0;
++      text->letter_spacing = 0; text->text_opacity = 255;
++      text->light_label = light;
++    }
++#endif
+     //    Establish a font
+     if (!text->pFont) {
+       // Process the font specifications from the LUP symbolization rule
+@@ -2604,17 +2663,13 @@
+       text->pFont = FindOrCreateFont_PlugIn(
+             fontSize, templateFont->GetFamily(), templateFont->GetStyle(), fontweight_t,
+             false, templateFont->GetFaceName());
+-      if (m_textFontResolver) {
+-        wxFont *styled = m_textFontResolver(rzRules->obj->FeatureName,
+-                                           rules->INSTstr, bTX,
+-                                           &text->letter_spacing, &text->text_opacity);
+-        if (styled && styled->IsOk()) {
++      if (styled && styled->IsOk()) {
++          text->letter_spacing = tracking; text->text_opacity = opacity;
+           text->pFont = styled;
+           // TX offsets and declutter bounds use the actual styled font.
+           dc.SetFont(*styled);
+           dc.GetTextExtent(_T("X"), &width, NULL, NULL, NULL, styled);
+           text->avgCharWidth = width;
+-        }
+       }
+   }
+ 
+diff --git a/libs/s52plib/src/s52plib.h b/libs/s52plib/src/s52plib.h
+--- a/libs/s52plib/src/s52plib.h
++++ b/libs/s52plib/src/s52plib.h
+@@ -188,5 +188,5 @@
+   // Optional presentation-only font policy. Install before rendering; returned
+   // fonts must outlive cached S-52 text. A null result keeps the stock font.
+   using TextFontResolver = wxFont *(*)(const char *, const char *, bool,
+-                                      double *, unsigned char *);
++                                      double *, unsigned char *, bool *);
+   void SetTextFontResolver(TextFontResolver resolver) { m_textFontResolver = resolver; }
+diff --git a/libs/s52plib/src/s52s57.h b/libs/s52plib/src/s52s57.h
+--- a/libs/s52plib/src/s52s57.h
++++ b/libs/s52plib/src/s52s57.h
+@@ -30,6 +30,9 @@
+ 
+ #include "bbox.h"
+ #include "color_types.h"
++#ifdef OPENNAV_X
++#include "integration/ChartLightLabel.h"
++#endif
+ 
+ #include <unordered_map>
+ #include <vector>
+@@ -258,6 +261,11 @@
+   S52color *pcol;  // pointer to S52colour
+   int dis;         // display
+   wxFont *pFont;
++  #ifdef OPENNAV_X
++  bool light_label = false;
++  opennav::integration::ChartLightLabelRaster light_raster;
++  unsigned light_texture_build = 0;
++#endif
+   double letter_spacing = 0;  // optional presentation, logical pixels
+   unsigned char text_opacity = 255;
+   double presentation_texture_scale = -1;

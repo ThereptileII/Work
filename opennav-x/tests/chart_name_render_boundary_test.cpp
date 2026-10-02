@@ -100,6 +100,37 @@ int main(int argc,char **argv) {
       Check(owner.RenderText(nullptr,&name,450,350,&glRect,nullptr,true),"Scaled cached name should draw");
       Check(name.texobj!=first&&std::find(deleted.begin(),deleted.end(),first)!=deleted.end(),"Scale invalidation releases old texture");
     }
+    // LIGHTS uses the same native glyph/halo payload in the actual SW painter
+    // and actual GL upload, with an expanded collision footprint.
+    fontContentScale=1;userInk=*wxBLACK;
+    for (double scale : {1.,1.5,2.}) {
+      s52plib owner;owner.m_TextScaleFactor=scale;
+      wxFont lightFont(6,wxFONTFAMILY_SWISS,wxFONTSTYLE_NORMAL,wxFONTWEIGHT_NORMAL,false,"Arial");
+      wxFont rasterFont=lightFont;rasterFont.SetPointSize(static_cast<int>(6*scale));
+      S52_TextC light;light.frmtd="Fl(2) W 10s 25ft 8Nm";light.pFont=&lightFont;light.pcol=&ink;
+      light.light_label=true;light.letter_spacing=.12;light.xoffs=2;light.yoffs=-1;
+      light.hjust='3';light.vjust='3';dc.SetFont(lightFont);dc.GetTextExtent("X",&light.avgCharWidth,nullptr);
+      Check(light.light_raster.Build(rasterFont,light.frmtd,scale,wxColour(104,123,122),wxColour(213,229,229)),"Prepared production light raster");
+      wxRect glRect,swRect;
+      Check(owner.RenderText(nullptr,&light,450,350,&glRect,nullptr,true),"Actual light GL upload executes");
+      const auto& raster=light.light_raster.image;
+      Check(uploaded.size()==static_cast<std::size_t>(raster.GetWidth()*raster.GetHeight()*4),"Full halo texture uploaded");
+      for(std::size_t i=0;i<uploaded.size()/4;++i) {
+        Check(uploaded[i*4]==raster.GetData()[i*3] && uploaded[i*4+1]==raster.GetData()[i*3+1] &&
+              uploaded[i*4+2]==raster.GetData()[i*3+2] && uploaded[i*4+3]==raster.GetAlpha()[i],
+              "Actual GL upload exactly equals shared software bitmap payload");
+      }
+      Check(owner.RenderText(&dc,&light,450,350,&swRect,nullptr,true),"Actual software light draw executes");
+      Check(glRect==swRect,"Light anchor, offsets and halo bounds agree in SW/GL");
+      Check(swRect.width==light.text_width+2*light.light_raster.margin,"Halo included in actual collision bounds");
+      const auto firstTexture=light.texobj;
+      Check(light.light_raster.Build(rasterFont,light.frmtd,scale,wxColour(173,187,177),wxColour(52,79,89)),"Theme change rebuilds halo and ink");
+      Check(owner.RenderText(nullptr,&light,450,350,&glRect,nullptr,true),"Theme change repaints actual GL label");
+      Check(light.texobj!=firstTexture && std::find(deleted.begin(),deleted.end(),firstTexture)!=deleted.end(),"Light palette change releases stale texture");
+      S52_TextC blocker;blocker.rText=swRect;owner.RegisterText(true,&blocker);
+      Check(!owner.RenderText(nullptr,&light,450,350,&glRect,nullptr,true),"GL light overlap is rejected");
+      Check(!owner.RenderText(&dc,&light,450,350,&swRect,nullptr,true),"Software light overlap is rejected");
+    }
     // Actual RenderText rejection plus the actual caller's registration block:
     // B overlaps visible A; unseen B would overlap otherwise-clear nav label C.
     fontContentScale=1;

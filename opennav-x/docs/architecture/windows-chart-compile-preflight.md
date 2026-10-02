@@ -7,12 +7,12 @@ It refuses combination with component/legacy proof modes, inherits the existing
 15-minute job bound and limits the object build to ten minutes. Root freezes and
 publishes the combined source before its single focused dispatch.
 
-The inventory is fourteen complete source files, not extracted functions:
+The inventory is fifteen complete source files, not extracted functions:
 
 - Local: `ChartPresentation`, `ChartRouteWaypoint`, `ChartRouteUnderlay`,
   `ChartRouteUnderlayGeometry`, `OnboardAisPresentation`, `OnlineAisOverlay`.
 - Patched OpenCPN: `chcanv`, `route_gui`, `route_point_gui`, `waypointman_gui`,
-  `ais`, `piano`, `s52plib`, `chartsymbols`.
+  `ais`, `piano`, `s52plib`, `chartsymbols`, `DepthFont` (the sounding-digit atlas source).
 
 The pinned upstream verifier and all nine reviewed integration patches run
 before preparation and again after compilation. Source and transitive header
@@ -53,7 +53,9 @@ selection. The twelve existing component-runtime/layout guard tests still pass.
 Actual locked dependency archives and all original upstream patches staged
 locally without building libraries. The production resource generator passed;
 a private Linux configure-only harness checked all CMake include paths and all
-fourteen target declarations. This syntax/path check did not compile chart
+the original fourteen target declarations; the SCRUM-249 sounding follow-up
+adds the real `libs/s52plib/src/DepthFont.cpp` object as the fifteenth. The
+focused inventory guard checks it explicitly. This syntax/path check did not compile chart
 objects and is not a native Windows pass. Python syntax, workflow YAML and diff
 whitespace checks passed.
 
@@ -63,7 +65,27 @@ now uses upstream's actual GNU-patch runner and the complete original patch
 series; that preparation passes. No production source or upstream patch was
 changed to accommodate the harness, and no native attempt was consumed.
 
-Native execution remains pending root's exact combined-source run. This gate
+The first native run [37076177181](https://github.com/ThereptileII/Work/actions/runs/37076177181)
+for remote `eb9d32f49eb3d893952f456fb9bab740f6ee2642` stopped before compilation.
+Git reported `gui/src/chcanv.cpp: wrong type` twice: with `core.filemode=false`,
+repeated diff sections that first omit mode metadata and later specify `100644`
+fail even when the pinned file itself is correctly `100644`. The same error is
+reproduced locally with all nine unchanged patches and Windows-style Git settings.
+Preparation now uses a temporary pinned index, refreshed from the clean worktree,
+for both `--check --index` and application. The real index remains unstaged. It
+then reconstructs the expected tree independently from the pinned commit and all
+nine patches and retains the exact source comparison. No patch metadata, source
+content, line-ending normalization or refusal guard was relaxed.
+
+`tests/prepare_integration_tests.py` exercises LF and CRLF checkouts with file-mode
+tracking disabled plus the normal Linux configuration; it reproduces the original
+failure and checks repeat preparation, real-index preservation, same-line-count
+tamper rejection and dirty/wrong-pinned-source refusal. Actual pinned-source
+preparation and repeat verification also pass. Compact exact identities are in
+`docs/evidence/scrum-247-chart-preflight/patch-mode-reproduction.json`. These are
+local Git preparation checks; the native retry and compilation remain pending.
+
+This gate
 cannot establish application/dependency linking, renderer behavior, font/DPI
 appearance, resource installation, installer/update/rollback, or boat safety.
 It does not compile the full `glChartCanvas`/`ocpn_frame` dependency trees or

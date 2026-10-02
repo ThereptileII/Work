@@ -289,3 +289,15 @@ invalidation; software uses native drawing and alpha. Other label classes,
 soundings, user preferences and Standard remain intact. The
 [focused review](reviews/scrum243-chart-name-spacing.md) records a corrected
 Latin/Unicode Day/Dusk/Night fixture. Native Windows/GL/boat acceptance is open.
+
+## SCRUM-248 light descriptions (qualification pending)
+
+Proven normal generated LIGHTS descriptions now map factory-equivalent appearance
+to the prototype's 8px regular symbol-label font, .12px tracking, chart-text ink
+and 3.5px round water halo. Both native software and GL texture upload consume
+the same bounded cached label raster. Actual text, chart preferences, visibility,
+light sectors and symbols remain upstream; custom appearance and out-of-bound
+raster requests retain stock presentation. The native raster approximates SVG
+stroke edges and rounds glyph placement. Small default-size readability,
+Windows/DPI, actual GL driver and boat review remain open. See
+[scope, guards and evidence](reviews/scrum248-light-description-typography.md).

@@ -1,0 +1,44 @@
+{
+  "actualSourceSha256": "aedefead496e64ed27b5e339a1713a587d5b00dba46578ed19bd6f73a7961a52",
+  "actualMethods": [
+    "S52_TextC::S52_TextC()",
+    "S52_TextC::~S52_TextC()",
+    "static void rotate(wxRect *r,",
+    "bool s52plib::RenderText(",
+    "bool s52plib::CheckTextRectList("
+  ],
+  "callerRegistrationVerbatim": true,
+  "extractedSha256": "b41e7c8c65932095697dbf5665adae505134ea7df23ba7dfa95459896857980a",
+  "compileCommand": [
+    "g++",
+    "-std=c++17",
+    "-Wall",
+    "-Werror",
+    "-Wno-unused-variable",
+    "-DOPENNAV_X",
+    "-DocpnUSE_GL",
+    "-I/home/standard/Projects/X-nav/.local/sysroot/usr/lib/wx/include/gtk3-unicode-3.2",
+    "-I/home/standard/Projects/X-nav/.local/sysroot/usr/include/wx-3.2",
+    "-DWXUSINGDLL",
+    "-D__WXGTK3__",
+    "-D__WXGTK__",
+    "-D_FILE_OFFSET_BITS=64",
+    "-I/home/standard/Projects/X-nav-worktrees/scrum247-light-labels/src",
+    "-I/home/standard/Projects/X-nav-worktrees/scrum247-light-labels/.local/light-boundary",
+    "-I/home/standard/Projects/X-nav-worktrees/scrum247-light-labels/.local/light-source/libs/s52plib/src",
+    "-I/home/standard/Projects/X-nav-worktrees/scrum247-light-labels/.local/light-source/libs/geoprim/src",
+    "/home/standard/Projects/X-nav-worktrees/scrum247-light-labels/tests/chart_name_render_boundary_test.cpp",
+    "-L/home/standard/Projects/X-nav/.local/sysroot/usr/lib",
+    "-lwx_gtk3u_core-3.2",
+    "-lwx_baseu-3.2",
+    "-o",
+    "/home/standard/Projects/X-nav-worktrees/scrum247-light-labels/.local/light-boundary/chart-name-boundary-test"
+  ],
+  "exitCode": 0,
+  "output": "6122091 actual RenderText DPI, overlap, registration, cache and color checks passed\n",
+  "limitations": [
+    "GL calls record uploads; no actual GL context or driver draw",
+    "Viewport and text-owner containers are fixtures",
+    "Linux font raster; native Windows and boat acceptance remain open"
+  ]
+}
