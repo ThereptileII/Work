@@ -356,6 +356,8 @@ if(OPENNAV_BUILD_TESTS)
     ${CMAKE_CURRENT_SOURCE_DIR}/tests/chart_layout_tests.py)
   add_test(NAME windows_route_summary_layout_contract COMMAND ${Python3_EXECUTABLE}
     ${CMAKE_CURRENT_SOURCE_DIR}/tests/windows_ui_layout_tests.py)
+  add_test(NAME preview_preferences_action_selection COMMAND ${Python3_EXECUTABLE}
+    ${CMAKE_CURRENT_SOURCE_DIR}/tests/preview_preferences_selector_tests.py)
   add_test(NAME native_reference_fullscreen_surface_contract COMMAND ${Python3_EXECUTABLE}
     ${CMAKE_CURRENT_SOURCE_DIR}/tests/smoke_navigation_surface_tests.py)
   add_test(NAME native_diagnostic_geometry_observation COMMAND ${Python3_EXECUTABLE}
