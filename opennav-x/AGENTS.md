@@ -47,11 +47,11 @@ transitions rather than assuming status-category queries identify each column.
 
 ## Development strategy and task sizing
 
-Use many small, bounded tasks when the work can be split cleanly: GPT-5.6-Luna
-handles straightforward tasks, GPT-5.6-Sol handles heavier tasks, and the root
-agent handles exceptional complexity and integration decisions. Tie every task
-to its Jira issue and record explicit ownership and acceptance criteria. Keep
-context limited and handoffs concise.
+For the current Windows stabilization and boat-test delivery stage, the user's
+2026-10-02 instruction is to use **GPT-6 Astra with High reasoning** for bounded
+parallel subagents. Give each agent one clear objective, owned files, acceptance
+criteria and a concise handoff. The root agent owns final integration. This
+stage-specific instruction supersedes the earlier Luna/Sol task routing.
 
 For reversible, noncritical documentation, copy, layout, or function changes,
 run focused checks relevant to the change and a smoke or visual review. Avoid
@@ -76,6 +76,46 @@ support, privacy/security and operations. OpenCPN remains a separately installed
 prerequisite. Unqualified XNav hardware output must be unavailable/default-off;
 SmartNav never steers. Keep public payment/download access closed until the
 full readiness report is reviewed and the user explicitly gives GO.
+
+## Background qualification and parallel progress
+
+Long-running builds, endurance runs and other lengthy gates must run
+asynchronously while independent, eligible Jira work continues. Record the
+exact candidate commit, CI run/job or process handle, and outstanding gates.
+Poll that live handle at sensible intervals; do not restart or cancel a healthy
+run merely because an observation timed out or unrelated work changed.
+
+When a Windows build fails, first reproduce the exact failing prerequisite in
+an inexpensive targeted native diagnostic. Verify the source-grounded repair
+before starting another full candidate build. Start one integrated Windows
+qualification path before redundant expensive UI fanout; broaden testing only
+when the focused result and dependencies justify it. Distinguish build/test
+failures from observed application crashes, and retain the actual failure logs.
+
+Freeze the candidate under qualification. Use separate worktrees and bounded
+agents for independent implementation, reviews, evidence inspection and
+deployment preparation. Do not share mutable build directories, profiles or
+hardware with a running test, or oversubscribe its resources in a way that
+invalidates performance evidence. Respect dependencies and the user's current
+software/boat-first priority; background time does not authorize website work.
+
+Distinguish two deliverables:
+
+- **Development boat review:** use the existing pending-endurance package after
+  its mandatory functional, security, installer/recovery, display and chart
+  prerequisites pass. Verify the artifact and complete the real boat's backup,
+  input-only audit and smoke checks. Label remaining gates explicitly. Endurance
+  may continue independently; this is not release or navigation approval.
+- **Public-beta/release qualification:** retain all required full-duration,
+  exact-revision gates and physical acceptance. A failed remaining gate prevents
+  release and requires assessing any earlier development deployment.
+
+Use focused checks for small reversible changes and batch broad suites at
+meaningful integration/release milestones. Reuse only dependency evidence
+allowed by the existing provenance/reuse checks. Do not rerun a full endurance
+suite for each documentation or cosmetic edit; assess affected tests instead.
+Never transfer release acceptance to a different commit or weaken critical
+checks to accelerate delivery. See [the boat testing workflow](docs/boat-pc-development.md#early-development-review-versus-release-acceptance).
 
 ## Core rules
 
