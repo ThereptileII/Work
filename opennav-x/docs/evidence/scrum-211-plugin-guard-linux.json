@@ -1,0 +1,118 @@
+{
+  "schemaVersion": 1,
+  "issue": "SCRUM-211",
+  "scope": "Linux exact-source caller guard; isolated fixture paths",
+  "implementationCommit": "9f12647",
+  "publishedTestCommit": "97c4d6ec16a2f31218e1cccced8385d0fefb2f47",
+  "resultSha256": "eac4366e9e693bcb18a73530fce2d937787b2ca260b4e9d54b26f4b198ddf8b8",
+  "status": "passed",
+  "source": {
+    "upstreamCommit": "37fd0cddb7334fe489e9f18aa163977a9c5c84f7",
+    "patchedSourceSha256": {
+      "model/src/plugin_handler.cpp": "912c756ea9d1b17eb8411132feae7c0136345e327f79d522bae478a36a218471",
+      "model/src/downloader.cpp": "0f77a193262b75e8e685ddf0064e0a2179bec63680afb375ea95d2fde3b8245b",
+      "model/include/model/downloader.h": "147a517339966a59375ba5af0ce4fec052b9fd3c35bdc05e54d2453d27682346"
+    },
+    "patchSha256": "063685c4051c4f4f49f25c189d8454f38523d6c0b8d18d11a021c51f867ff2f5",
+    "unchangedFunctionSlices": [
+      {
+        "signature": "static std::string dirListPath(",
+        "firstLine": 181,
+        "sha256": "d15deaf8144cfb22b5995cdeb1770b9d5f520c4f5cb769df76aba03fa20a8178"
+      },
+      {
+        "signature": "std::string PluginHandler::FileListPath(",
+        "firstLine": 428,
+        "sha256": "7196287882adf0d75938c084e7fa60def3560d6f15e5684a11fb10e1683d7739"
+      },
+      {
+        "signature": "std::string PluginHandler::VersionPath(",
+        "firstLine": 433,
+        "sha256": "29afe00ab446b984705bfc4fb5516928502abc7a4a36348f976ca04f38d78146"
+      },
+      {
+        "signature": "static void saveFilelist(",
+        "firstLine": 462,
+        "sha256": "5bcaea0bf6a982abc6f71447daacc0e15ab055cdb95b0832b7db5ac126baef04"
+      },
+      {
+        "signature": "static void saveDirlist(",
+        "firstLine": 473,
+        "sha256": "6f07f5a2a0ac3367c531b699821439b321aacea3684610515719a2de1f518d74"
+      },
+      {
+        "signature": "static void saveVersion(",
+        "firstLine": 488,
+        "sha256": "16987664ee291b3d0f5a509b062a293647dc00ed4e192dfb859bec3502a0196e"
+      },
+      {
+        "signature": "static int copy_data(",
+        "firstLine": 499,
+        "sha256": "cd88071dc95c3c1f9178a8eabbd14a1aca945eba917635b572505effb095d426"
+      },
+      {
+        "signature": "bool PluginHandler::ArchiveCheck(",
+        "firstLine": 829,
+        "sha256": "f064226df44a6a6b7be26358b5b15034de950014cf382bcd1e732143c50663f1"
+      },
+      {
+        "signature": "bool PluginHandler::ExplodeTarball(",
+        "firstLine": 840,
+        "sha256": "ceb60d89aad26ea39931cf100cd48ab3117bbe731d6470acdb6daf33d21e28db"
+      },
+      {
+        "signature": "bool PluginHandler::ExtractTarball(",
+        "firstLine": 924,
+        "sha256": "f021655fe3c862c505652f61e8a58770f4cd9e20e8d1b6d04046b7a13fcd8cc4"
+      },
+      {
+        "signature": "bool PluginHandler::InstallPlugin(PluginMetadata plugin, std::string path)",
+        "firstLine": 1216,
+        "sha256": "bef21b05a2a74ef6365ac58f413e19d0cc2b1230dd2cc64ea0ff2eb3d30ad75f"
+      },
+      {
+        "signature": "bool PluginHandler::InstallPlugin(PluginMetadata plugin)",
+        "firstLine": 1232,
+        "sha256": "724071092aade2c4f53789dbf6b9c6353e5cafde05c3316038a8ae4d78869dab"
+      }
+    ],
+    "probeSha256": "20f5f5d8ccbb3ecce466372982a0536da4f892a6f49b1b5fa68f927265c4e5fb"
+  },
+  "libraries": {
+    "libcurl": "8.22.0",
+    "libarchive": "3.8.9"
+  },
+  "archiveSha256": "e75ae5cbfbcf9021bcdfda43e868816316179d6218f0dd2b855db909e0d37d48",
+  "cases": [
+    {
+      "case": "valid",
+      "passed": true,
+      "accepted": true,
+      "archiveOpens": 1,
+      "archiveEntries": 2,
+      "installedFilesAndRecordsUnchanged": false
+    },
+    {
+      "case": "untrusted_tls",
+      "passed": true,
+      "accepted": false,
+      "archiveOpens": 0,
+      "archiveEntries": 0,
+      "installedFilesAndRecordsUnchanged": true
+    },
+    {
+      "case": "interrupted_extractable_archive",
+      "passed": true,
+      "accepted": false,
+      "archiveOpens": 0,
+      "archiveEntries": 0,
+      "installedFilesAndRecordsUnchanged": true
+    }
+  ],
+  "limitations": [
+    "Linux source-slice probe; not full installed PluginHandler or plugin ABI/UI acceptance",
+    "Fixture substitutes application path routing, metadata container, logging and temp allocation",
+    "Unexpected archive-error cleanup fails the probe; rollback is not qualified",
+    "Linux uses existing test-only CA and wx filesystem adapters; native Windows remains required"
+  ]
+}

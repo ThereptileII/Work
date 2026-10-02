@@ -1,0 +1,40 @@
+{
+  "schema": 1,
+  "issue": "SCRUM-224",
+  "commit": "eb86e4799c292a19a218626272d5a5bfa25aad5a",
+  "run": "https://github.com/ThereptileII/Work/actions/runs/36975479842",
+  "job": 110738264981,
+  "result": "passed",
+  "artifact": {
+    "id": 11212679613,
+    "bytes": 77127,
+    "sha256": "2337f4a17349f5553ad955274839b6fad51d8a3db853ec6f5d1cde5f22bf60c5",
+    "verifiedSize": true,
+    "verifiedSha256": true,
+    "crcCheckedEntries": 99
+  },
+  "naming": {
+    "explicitOption": "-DIMPORT_LIB_SUFFIX:STRING=",
+    "sharedOnly": true,
+    "hookSha256": "41fb61f6710d45bdcf98289a5d72f011ceaf378555c445dba8f9edc6bdf5c22e",
+    "curlLibCMakeSha256": "8fa2d3c63eea16e1bf7f759c200b2134f18e7cc89b264089ceebc9901ea0250b",
+    "defaultProjectSha256": "d124873f37d7e28d5f00251b90998cb103777a2a62a1cb8ba48c15e418df8f16",
+    "fixedProjectSha256": "a3befc60c77c088c0f6c0770ad2be5bf697e6ddeba42ab683fe9dadfbab51d25",
+    "compiled": false,
+    "passed": true
+  },
+  "defaultImportBasename": "libcurl_imp.lib",
+  "fixedImportBasename": "libcurl.lib",
+  "checks": [
+    "Actual pinned curl default versus configured generated MSVC Win32 import path",
+    "Generated target linker path matches declared producer output",
+    "Both unchanged source-analysis checks pass",
+    "PowerShell7 and WindowsPowerShell5.1 environment restoration pass"
+  ],
+  "limits": [
+    "Configure uses Schannel and no external TLS/compression dependencies; producer uses OpenSSL/zlib.",
+    "The inherited case reproduces the producer MSYS Perl PATH prepend, but does not stage curl/OpenSSL/zlib binary directories.",
+    "Direct script invocation does not reproduce the entire MSBuild/runtests process environment.",
+    "No curl/OpenSSL/application binary or full upstream suite is qualified."
+  ]
+}
