@@ -1,0 +1,57 @@
+{
+  "scope": "Offline Linux component and Shell integration only; native Windows, actual charts and boat acceptance pending",
+  "observed_utc": "2026-10-02T15:04:50.418781+00:00",
+  "source_commit": "6bc4f8c63a5aa469c010a1ab0e6864209cf40f20",
+  "source_tree": "3d633ba6677fa6a2fe05e35ba9505e32e0057cde",
+  "search_checks": 82,
+  "chart_checks": 46,
+  "build": "CMake/Ninja Release, existing local wxWidgets 3.2 dependencies; component targets only",
+  "captures_reviewed": [
+    "Search Day and Night component",
+    "chart Day top/bottom and Night unavailable",
+    "Shell 1280x800 and 853x600 Search"
+  ],
+  "executable_sha256": {
+    "search_drawer_test": "2382f2bf43fed5fe6d2e4add374a4d32201299d75ac08dff7f5ee1ca4813fec9",
+    "chart_presentation_drawer_test": "7bfab0e4f2e994229a86aa790e2cea7fa5eb645e28ed3b14d49458cc9808f700"
+  },
+  "changed_source_sha256": {
+    "src/application/NavigationObjects.h": "1e7af2c714aa0605ab165fda5b340e0e0c31bab0c42d8886a9c41199f5a91b88",
+    "src/integration/NavigationActions.cpp": "e14c014a5974727e1bee799656aec9b69dfc47f8c9104e498a9ea4208e346bd9",
+    "src/integration/NavigationObjects.cpp": "1bcfcadce9c396d18c875efc6c1dd55e65215d737c6b4ca52170aa06f73be3fc",
+    "src/integration/NavigationObjects.h": "2a750f7aba104f262d02249132f76519a0a86ebd1ba8717cebeadf2d27001bae",
+    "src/ui/ChartPresentationDrawer.cpp": "df3b82248393dd52670dc2f2de14f19c86cea45a35f85bfff367ff2ece9c8d52",
+    "src/ui/ChartPresentationDrawer.h": "9db905c2909f59b88a9ed2b3ad7b9d9764db9523ded7f0fe8582ffc79f53be01",
+    "src/ui/Controls.cpp": "af7939d53477998bc5d0c8403897b906f806dae3ddd2cfe99eeec5096e3979b1",
+    "src/ui/Controls.h": "82b0051813266d5a5348b2d42cb4afa3b9c538cd56f4ff6d0e85a3ede208a375",
+    "src/ui/PrototypeIcons.h": "0fabe39fb7d56410f48658af06268bb6541a344453ebd601c213c3bdd704372a",
+    "src/ui/SearchDrawer.cpp": "eef0099d629dcb29269eddac8ba27ee8622061e8d67c3d319e70f111ab4d61da",
+    "src/ui/SearchDrawer.h": "1a935be01c36bbfbdecfc4d9894d8551b190a3d6190cfb7040c26d7db50f5c16",
+    "src/ui/SettingsDrawer.cpp": "2982128d693c5582793fc446e60c0ce19011637a1dd0c61e3f9de0a5f9328989",
+    "src/ui/SettingsDrawer.h": "10a6e04975142545a52646faeff75502a1b997bba6548256d689bd8e55589d28",
+    "src/ui/Shell.cpp": "58f5426b9e4debcfcfdc09a1a0a3238358355bf081ab6acb5a420610230ed9c6",
+    "src/ui/Shell.h": "5a36d4eb93dd9a3501670593e000521c2c42daa9d38a25b3bc9c996a588ed38e",
+    "tests/chart_presentation_drawer_test.cpp": "802ca203d712b5de1d609651f9960d0edf4666b28163528c7a2d7f02874e1fe3",
+    "tests/search_drawer_test.cpp": "c6974497c2ac9f03cfb6c59898a77bf5b3e06c25820046b88355878ab84a0855",
+    "tests/windows_changed_units/CMakeLists.txt": "8d62b355366e22c982a80e73a58ef52039d169e9e06951543bbb45c1463333ef"
+  },
+  "capture_sha256": {
+    "shell-1280.png": "603441ea966533a177ea6626a24ac16fb511f7d5cd61af68b68b03562326cf2c",
+    "shell-853-search.png": "9a499544c5c1e9e5d6601330b850eb0ae71dacd32fa07147ed1183bfa8ff0f18"
+  },
+  "logs": {
+    "search.log": "drawer 682,80,398,674\n82 focused search checks passed; native Windows and boat remain pending\n",
+    "chart-final.log": ""
+  },
+  "chart_result": {
+    "passed": true,
+    "checks": 46,
+    "fixture_only": true,
+    "captures": [
+      "chart-day-top",
+      "chart-day-bottom",
+      "chart-dusk-raster",
+      "chart-night-unavailable"
+    ]
+  }
+}
