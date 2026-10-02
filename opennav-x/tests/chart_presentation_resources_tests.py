@@ -38,13 +38,20 @@ with tempfile.TemporaryDirectory(prefix='xnav-chart-test-') as d:
     check(first=={p.name:p.read_bytes() for p in output.iterdir()})
     for name,identity in data['files'].items():
         check(hashlib.sha256((output/name).read_bytes()).hexdigest()==identity['sha256'])
-        if name in {'S52RAZDS.RLE','rastersymbols-day.png'}:
+        if name == 'S52RAZDS.RLE':
             check((output/name).read_bytes()==g.pinned_bytes(source/name,identity))
+    from chart_anchor_resources_tests import verify_anchor
+    verify_anchor(source,output,data,check)
     _,day=g.decode((source/'rastersymbols-day.png').read_bytes())
     for name,ink in data['neutralRasterInk'].items():
         before_chunks,before=g.decode((source/name).read_bytes())
         after_chunks,after=g.decode((output/name).read_bytes())
         check([(k,v) for k,v in before_chunks if k!=b'IDAT']==[(k,v) for k,v in after_chunks if k!=b'IDAT'])
+        # The separate anchor proof checks every new alpha byte and pixel.
+        # Restore only that verified tile before the original neutral-ink proof.
+        for y in range(1160,1180):
+            start=(y*1500+20)*4
+            after[start:start+80]=before[start:start+80]
         check(before[3::4]==after[3::4])
         changed=[i for i in range(0,len(before),4) if before[i:i+4]!=after[i:i+4]]
         check(len(changed)==ink['changedPixels']==42100)
@@ -77,6 +84,11 @@ with tempfile.TemporaryDirectory(prefix='xnav-chart-test-') as d:
     check(set(changed)==set(expected_ids) and len(changed)==2)
     check(len(geographic)==18 and data['geographicNameLookups']==18)
     check({i for i,_ in geographic}=={'16','84','91','178','356','424','431','519','1066','1134','1174','1240','1996','2209','2290','2358'})
+    # Independently restore the sole authorized bitmap metadata change.
+    stock=a.findall("symbols/symbol[name='ACHARE51']")[-1].find('bitmap')
+    styled=b.findall("symbols/symbol[name='ACHARE51']")[-1].find('bitmap')
+    styled.attrib=stock.attrib.copy()
+    for tag in ('pivot','graphics-location'):styled.find(tag).attrib=stock.find(tag).attrib.copy()
     for section in ['lookups','line-styles','patterns','symbols']:
         check(ET.tostring(a.find(section))==ET.tostring(b.find(section)))
     for stock,styled in zip(a.find('color-tables'),b.find('color-tables')):
@@ -130,6 +142,10 @@ with tempfile.TemporaryDirectory(prefix='xnav-chart-test-') as d:
     reject(lambda t:setattr(t.find("lookups/lookup[@name='LIGHTS']/instruction"),'text','TX(OBJNAM,1,2,3,15112,0,0,XNGEO,26)'))
     reject(lambda t:t.find('color-tables/color-table').remove(t.find("color-tables/color-table/color[@name='XNGEO']")))
     reject(lambda t:t.find('color-tables/color-table').append(ET.fromstring('<color name="XNGEO" r="1" g="1" b="1"/>')))
+    reject(lambda t:t.findall("symbols/symbol[name='ACHARE51']")[-1].find('bitmap/pivot').set('x','11'))
+    reject(lambda t:t.findall("symbols/symbol[name='ACHARE51']")[0].find('bitmap/pivot').set('x','11'))
+    reject(lambda t:t.findall("symbols/symbol[name='ACHARE51']")[-1].find('bitmap/origin').set('x','1'))
+    reject(lambda t:t.findall("symbols/symbol[name='ACHARE51']")[-1].find('bitmap').set('width','21'))
     check(original=={p.name:hashlib.sha256(p.read_bytes()).hexdigest() for p in source.iterdir() if p.is_file()})
     damaged=folder/'damaged';damaged.mkdir()
     for name in data['files']:shutil.copyfile(source/name,damaged/name)

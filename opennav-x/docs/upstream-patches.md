@@ -993,3 +993,114 @@ fractional dashed mesh/painter passes 72 focused checks; the previous route
 fixture passes 78. Both changed Linux production objects compile with `-Werror`.
 See `docs/design/reviews/scrum239-cog-predictor.md` for policy ambiguities,
 density-persistence limitation and outstanding native/boat visual gates.
+
+### SCRUM-240 — healthy onboard AIS base body
+
+`AISDrawTarget` copies appearance inputs into a paint-only helper at the
+ordinary ship-body branch. Verified SKAGER presentation replaces only eligible
+healthy A/B body geometry/ink. Class A retains a triangular stern; Class B uses
+the prototype notch. All warning/navigation/special/Inland/realtime-prediction
+states fall back, while projection, user scaling, attenuation, selection and
+subsequent overlays remain upstream. The shared explicit triangle mesh avoids
+the pinned GL strip's concavity problem. No AIS semantic colors or global
+metrics change. See `docs/design/reviews/scrum240-onboard-ais-body.md` for exact
+eligibility, focused evidence and outstanding native/boat qualification.
+
+### SCRUM-243 — geographic name spacing and alpha
+
+The optional S-52 text-font resolver also supplies tracking and opacity for the
+bounded geographic names selected in SCRUM-238. Default fields are zero/opaque.
+The existing software and cached whole-string GL text paths consume a bounded
+integration-only helper; collision/justification widths include tracking.
+Geographic GL textures delete/recreate on their own scale/content-scale/ink
+change; explicit text-color preferences remain intact. S52PLIB opts into this
+helper only through the OpenNav integration CMake hook. Stock presentation,
+all navigation labels, chart strings and visibility remain unchanged.
+See `docs/design/reviews/scrum243-chart-name-spacing.md` for the native-shaping
+fallback, corrected painter evidence and outstanding platform gates.
+
+### SCRUM-242: proven default route waypoint artwork
+
+The chart-presentation patch adds an internal `MarkIcon` provenance bit, granted
+only by the pinned legacy diamond loader after source hash and uncached pixel
+verification, and revoked by user/plugin `ProcessIcon` replacements. A narrow
+`WayPointmanGui` query checks the exact owned bitmap instance. Software and GL
+`route_point_gui.cpp` hooks call the separate `ChartRouteWaypoint` helper for
+unique ordinary points in a default active route; all special/custom states and
+Standard/Legacy/Safe fall through. Dirty bounds include the new artwork; GL
+revalidates eligible point bounds before cached culling. No route/point data or
+navigation semantics are changed. See
+[the boundary and evidence](design/reviews/scrum242-route-waypoint-markers.md).
+
+## SCRUM-244: derived ACHARE51 anchorage artwork (no upstream patch)
+
+The resource generator relocates only the effective final `ACHARE51` RCID1105
+bitmap into proven unused transparent atlas space at `(20,1160,20,20)`, pivot
+`(10,10)`, preserving the geographic hotspot and exact prototype anchor scale.
+Only its six numeric bitmap fields and 126 formerly transparent pixels per
+palette change. The stock tile, other atlas pixels/alpha, atlas dimensions and
+all S-52 lookup/boundary/restriction/depth/hazard rules remain unchanged.
+See `docs/design/reviews/scrum244-anchorage-art.md` and
+`docs/evidence/scrum244-anchorage/review.json` for the authorized fit adjustment,
+real pinned-loader fixture and open full-chart/Windows/boat gates.
+
+### SCRUM-246 — local vector chart-selector palette
+
+`Piano::SetColorScheme` invokes one verified-SKAGER palette resolver after stock
+brush construction and before existing GL-atlas invalidation. Only selected and
+unselected vector-key fills use prototype route/floating-muted ink. No global
+colors, other chart families/states, geometry, chart data, selection or input
+handlers change. See [the scope and focused evidence](design/reviews/scrum246-chart-selector.md).
+
+### SCRUM-241 — bounded active-route understroke
+
+`RouteGui` now collects its already projected/rejected/clipped/wrapped legs before
+its existing paint pass. The software collector substitutes projection for point
+drawing; GL collection suppresses normal point-state writes until the unchanged
+normal pass. One owned `ChartRouteUnderlay` unions the 6px miter/butt stroke with
+existing `ocpn::tess2` and paints once at .6 alpha, before foreground/waypoints.
+No generic GL, `ocpnDC`, route model, configuration or navigation processing is
+changed. The same verified factory-equivalent/custom/MOB guards apply.
+
+The whole decorative layer is omitted for joined visible legs <=6 logical px,
+more than 1,024 collected legs, invalid geometry or tessellation/resource failure.
+This preserves all foreground/waypoint behavior. A demonstrated pinned-tess2
+coincident-edge defect and its intentionally failing raw reproduction are retained;
+no route simplification or partial alpha painting hides it. See
+[SCRUM-241 review](design/reviews/scrum241-route-underlay.md) for exact collection
+boundaries, memory/workload limits, fixture and reproduction. Focused geometry,
+real wx alpha and recorded GL submission tests pass, the actual changed Linux
+objects compile, and all nine patches apply to pinned upstream. Integrated real
+GL/native Windows/DPI/boat and full route conformance remain open.
+
+
+### SCRUM-239 follow-up — enabled COG endpoint fill
+
+One additional `ShipIndicatorsDraw` brush substitution uses prototype route ink
+only when the existing `xnav_cog_painted` result is true and chart ink is verified.
+The VECGND02-derived quad, projected prediction position, GPS offset, scale,
+stock black border, separate endmarker preference and HDT remain unchanged.
+No new geometry, preference mutation or renderer is introduced. The actual
+endpoint/guard/software polygon bodies pass 5,477 checks against the unmodified
+pinned marker; existing predictor checks pass 72. The changed production canvas
+object compiles and all nine patches apply. See
+[endpoint review](design/reviews/scrum239-cog-endpoint.md) for the explicit
+semantic extension, fixture and outstanding native/GL/boat gates.
+### SCRUM-243 reviewed text-boundary corrections
+
+The styled geographic whole-label GL path now preserves overlap rejection and
+uses the standard screen-space rotation before collision checks. Its cached
+metrics match the unscaled raster quad; styled software/GL offsets use measured
+native glyph units. Nonstyled paths retain their existing results and metrics.
+See `docs/design/reviews/scrum243-text-boundaries.md` for actual-method fixture,
+negative controls, production objects and remaining native gates. Styled GL
+font requests and tracking also follow software at content scales above one.
+
+### SCRUM-246 — deferred presentation fallback
+
+`Piano::SyncChartPresentation` runs before software painting and the GL atlas
+validity check. It restores the two stock vector brushes if deferred library
+creation revokes verified SKAGER presentation, and invalidates the existing
+atlas only when those colors change. Key geometry and interaction are untouched.
+The actual-method fixture covers late failure and unchanged-frame caching;
+integrated/native rendering qualification remains required.

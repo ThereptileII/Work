@@ -1,0 +1,6 @@
+{
+  "contentScale": 2,
+  "fontFactory": "Pinned FontMgr creates wxFont(contentScale*requestedPointSize)",
+  "exitCode": 1,
+  "output": "GL ink bounds must match software at every DPI\n"
+}

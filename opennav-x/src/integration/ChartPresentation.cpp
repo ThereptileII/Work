@@ -51,9 +51,12 @@ wxColour Color(std::uint32_t c) {
   return {static_cast<unsigned char>(c >> 16),
           static_cast<unsigned char>(c >> 8), static_cast<unsigned char>(c)};
 }
-wxFont *GeographicNameFont(const char *feature, const char *instruction, bool tx) {
+wxFont *GeographicNameFont(const char *feature, const char *instruction, bool tx,
+                           double *tracking, unsigned char *opacity) {
   const auto role = GeographicChartName(feature, instruction, tx);
   if (role == ChartNameRole::Unchanged) return nullptr;
+  *tracking = role == ChartNameRole::Land ? 1.0 : 5.0;
+  *opacity = role == ChartNameRole::Land ? 255 : 92; // round(.36 * 255)
   // The selected chart style owns geographic-name typography. Never rewrite
   // FontMgr's persisted ChartTexts preference; Standard retains it verbatim.
   static const wxString face = [] {
@@ -160,6 +163,17 @@ s52plib *CreateChartPresentation(const wxString &stock_path,
   // XNav's explicit Standard fallback is not shadowed by a working-directory
   // chartsymbols.xml. Normal Legacy/Safe retain the pinned loader behavior.
   return new s52plib(stock_path, force_legacy, false);
+}
+bool ChartVectorSelectorInk(ColorScheme scheme, wxColour &selected,
+                            wxColour &unselected) {
+  if (!xnav_mode || !active)
+    return false;
+  const auto mode = scheme == GLOBAL_COLOR_SCHEME_NIGHT ? ui::LightMode::Night
+                  : scheme == GLOBAL_COLOR_SCHEME_DUSK ? ui::LightMode::Dusk
+                                                      : ui::LightMode::Day;
+  selected = Color(ui::ActiveRouteInk(mode));
+  unselected = Color(ui::FloatingTheme(mode).secondary);
+  return true;
 }
 bool ChartBackground(ColorScheme scheme, wxColour &land, wxColour &water) {
   if (!xnav_mode || !active)

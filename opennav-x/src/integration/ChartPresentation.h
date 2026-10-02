@@ -18,6 +18,10 @@ namespace opennav::integration {
 void ConfigureChartPresentation(wxFileConfig &config, bool xnav);
 s52plib *CreateChartPresentation(const wxString &stock_path, bool force_legacy);
 bool ChartBackground(ColorScheme scheme, wxColour &land, wxColour &water);
+// Existing chart-selector vector keys only. Chart families, availability,
+// eclipsing and interaction remain owned by OpenCPN's Piano.
+bool ChartVectorSelectorInk(ColorScheme scheme, wxColour &selected,
+                            wxColour &unselected);
 // Paint-time only; caller retains upstream active/selected route semantics.
 // Does not modify pens in RouteManager, route properties or navigation state.
 bool ChartActiveRouteInk(ChartCanvas &canvas, wxColour &ink);

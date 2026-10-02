@@ -1,0 +1,8 @@
+MSBuild version 17.14.60+43b635718 for .NET Framework
+
+  1>Checking Build System
+  Building Custom Rule D:/a/Work/Work/opennav-x/tests/windows_floating_surface/CMakeLists.txt
+  floating_surface_test.cpp
+  FloatingSurface.cpp
+  Generating Code...
+  floating_surface_test.vcxproj -> D:\a\Work\Work\opennav-x\evidence\local\windows-changed-units\floating-build\Release\floating_surface_test.exe

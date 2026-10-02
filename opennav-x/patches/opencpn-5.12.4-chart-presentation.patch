@@ -109,105 +109,6 @@ index f6261063a..96a02812b 100755
  
    void InitializeTables(void);
    void DeleteGlobals(void);
-diff --git a/libs/s52plib/src/s52plib.cpp b/libs/s52plib/src/s52plib.cpp
---- a/libs/s52plib/src/s52plib.cpp
-+++ b/libs/s52plib/src/s52plib.cpp
-@@ -278,7 +278,9 @@
- //-----------------------------------------------------------------------------
- //      s52plib implementation
- //-----------------------------------------------------------------------------
--s52plib::s52plib(const wxString &PLib, bool b_forceLegacy) {
-+s52plib::s52plib(const wxString &PLib, bool b_forceLegacy, bool allowCwdOverride,
-+               bool useS52DefaultTextColor) {
-+  m_useS52DefaultTextColor = useS52DefaultTextColor;
-   m_plib_file = PLib;
- 
-   pOBJLArray = new wxArrayPtrVoid;
-@@ -294,7 +296,7 @@
-   m_chartSymbols.SetTextureFormat(GL_TEXTURE_2D);
-   InitializeNatsurHash();
- 
--  m_bOK = !(S52_load_Plib(PLib, b_forceLegacy) == 0);
-+  m_bOK = !(S52_load_Plib(PLib, b_forceLegacy, allowCwdOverride) == 0);
- 
-   m_bShowS57Text = false;
-   m_bShowS57ImportantTextOnly = false;
-@@ -1130,7 +1132,7 @@
-     return 0;
- }
- 
--int s52plib::S52_load_Plib(const wxString &PLib, bool b_forceLegacy) {
-+int s52plib::S52_load_Plib(const wxString &PLib, bool b_forceLegacy, bool allowCwdOverride) {
-   pAlloc = new wxArrayPtrVoid;
- 
-   //   Create the Rule Lookup Hash Tables
-@@ -1153,7 +1155,7 @@
-   m_unused_color.B = 2;
-   m_unused_wxColor.Set(2, 2, 2);
- 
--  if (!m_chartSymbols.LoadConfigFile(this, PLib)) {
-+  if (!m_chartSymbols.LoadConfigFile(this, PLib, allowCwdOverride)) {
-     wxString msg(_T("Could not load XML PLib symbol file: "));
-     msg += PLib;
-     wxLogMessage(msg);
-@@ -2181,6 +2183,10 @@
-         glEnable(GL_TEXTURE_2D);
- 
-         wxColour wcolor = GetFontColour_PlugIn(_("ChartTexts"));
-+        // XNav's verified presentation follows the software renderer's S-52
-+        // default ink. Preserve explicit user colors and stock GL behavior.
-+        if (m_useS52DefaultTextColor && wcolor == *wxBLACK)
-+          wcolor = wxColour(ptext->pcol->R, ptext->pcol->G, ptext->pcol->B);
-         f_cache->SetColor(wcolor);
- 
-         /* undo previous rotation to make text level */
-@@ -2486,6 +2492,17 @@
-       text->pFont = FindOrCreateFont_PlugIn(
-             fontSize, templateFont->GetFamily(), templateFont->GetStyle(), fontweight_t,
-             false, templateFont->GetFaceName());
-+      if (m_textFontResolver) {
-+        wxFont *styled = m_textFontResolver(rzRules->obj->FeatureName,
-+                                           rules->INSTstr, bTX);
-+        if (styled && styled->IsOk()) {
-+          text->pFont = styled;
-+          // TX offsets and declutter bounds use the actual styled font.
-+          dc.SetFont(*styled);
-+          dc.GetTextExtent(_T("X"), &width, NULL, NULL, NULL, styled);
-+          text->avgCharWidth = width;
-+        }
-+      }
-   }
- 
-     //  Render text at declared x/y of object
-diff --git a/libs/s52plib/src/s52plib.h b/libs/s52plib/src/s52plib.h
---- a/libs/s52plib/src/s52plib.h
-+++ b/libs/s52plib/src/s52plib.h
-@@ -182,8 +182,13 @@
- 
- class s52plib {
- public:
--  s52plib(const wxString &PLib, bool b_forceLegacy = false);
-+  s52plib(const wxString &PLib, bool b_forceLegacy = false, bool allowCwdOverride = true,
-+          bool useS52DefaultTextColor = false);
-   ~s52plib();
-+  // Optional presentation-only font policy. Install before rendering; returned
-+  // fonts must outlive cached S-52 text. A null result keeps the stock font.
-+  using TextFontResolver = wxFont *(*)(const char *, const char *, bool);
-+  void SetTextFontResolver(TextFontResolver resolver) { m_textFontResolver = resolver; }
- 
-   // TODO: SetPPM, SetDisplayWidth etc. should be combined to be set together by pointing them to info about current monitor
-   /**
-@@ -405,7 +410,9 @@
-   void SetReducedBBox(LLBBox box){ reducedBBox = box;}
- 
- private:
--  int S52_load_Plib(const wxString &PLib, bool b_forceLegacy);
-+  TextFontResolver m_textFontResolver = nullptr;
-+  bool m_useS52DefaultTextColor = false;
-+  int S52_load_Plib(const wxString &PLib, bool b_forceLegacy, bool allowCwdOverride = true);
-   bool S52_flush_Plib();
- 
-   void PLIB_LoadS57Config();
 diff --git a/gui/include/gui/chcanv.h b/gui/include/gui/chcanv.h
 --- a/gui/include/gui/chcanv.h
 +++ b/gui/include/gui/chcanv.h
@@ -718,3 +619,1013 @@ index 2c51fd6..cb832fc 100644
        }
  
        if (g_cog_predictor_endmarker) {
+diff --git a/gui/src/ais.cpp b/gui/src/ais.cpp
+--- a/gui/src/ais.cpp
++++ b/gui/src/ais.cpp
+@@ -54,6 +54,9 @@
+ #include "model/wx28compat.h"
+ 
+ #include "ais.h"
++#ifdef OPENNAV_X
++#include "integration/OnboardAisPresentation.h"
++#endif
+ #include "AISTargetAlertDialog.h"
+ #include "AISTargetQueryDialog.h"
+ #include "chcanv.h"
+@@ -1527,6 +1530,22 @@
+     }
+     dc.SetBrush(target_brush);
+ 
++    bool skager_body_drawn = false;
++#ifdef OPENNAV_X
++    // Copy paint inputs only. OpenCPN still owns validity, projection, targets,
++    // alerts, prediction, selection and every subsequent navigation overlay.
++    const opennav::integration::OnboardAisAppearance appearance{
++        int(td->Class), int(td->NavStatus), td->ShipType, int(td->n_alert_state),
++        td->b_active, td->b_lost, td->b_positionOnceValid, td->b_positionDoubtful,
++        td->b_nameValid, td->b_nameFromCache, g_bInlandEcdis, td->b_isEuroInland,
++        td->b_SarAircraftPosnReport, td->b_isFollower, bool(td->blue_paddle),
++        b_hdgValid, g_bDrawAISRealtime};
++    if (cp)
++      skager_body_drawn = opennav::integration::DrawChartOnboardAis(
++          dc, *cp, appearance, TargetPoint.x, TargetPoint.y,
++          theta + PI / 2., AIS_user_scale_factor, targetscale);
++#endif
++    if (!skager_body_drawn) {
+     if (dc.GetDC()) {
+       dc.StrokePolygon(nPoints, iconPoints, TargetPoint.x, TargetPoint.y,
+                        AIS_scale_factor);
+@@ -1573,6 +1592,7 @@
+ #endif
+ #endif
+     }
++    }  // stock body fallback
+     // Draw stroke "inverted v" for GPS Follower
+     if (td->b_isFollower) {
+       wxPoint ais_follow_stroke[3];
+diff --git a/libs/s52plib/src/s52plib.cpp b/libs/s52plib/src/s52plib.cpp
+index 03dda49..bc596a0 100755
+--- a/libs/s52plib/src/s52plib.cpp
++++ b/libs/s52plib/src/s52plib.cpp
+@@ -68,6 +68,9 @@ static const double WGS84_semimajor_axis_meters =
+ static const double mercator_k0 = 0.9996;
+ 
+ #include "s52plib.h"
++#ifdef OPENNAV_X
++#include "integration/ChartNameText.h"
++#endif
+ #include "mygeom.h"
+ #include "s52utils.h"
+ #include "chartsymbols.h"
+@@ -278,7 +281,9 @@ LUPHashIndex *LUPArrayContainer::GetArrayIndexHelper(const char *objectName) {
+ //-----------------------------------------------------------------------------
+ //      s52plib implementation
+ //-----------------------------------------------------------------------------
+-s52plib::s52plib(const wxString &PLib, bool b_forceLegacy) {
++s52plib::s52plib(const wxString &PLib, bool b_forceLegacy, bool allowCwdOverride,
++               bool useS52DefaultTextColor) {
++  m_useS52DefaultTextColor = useS52DefaultTextColor;
+   m_plib_file = PLib;
+ 
+   pOBJLArray = new wxArrayPtrVoid;
+@@ -294,7 +299,7 @@ s52plib::s52plib(const wxString &PLib, bool b_forceLegacy) {
+   m_chartSymbols.SetTextureFormat(GL_TEXTURE_2D);
+   InitializeNatsurHash();
+ 
+-  m_bOK = !(S52_load_Plib(PLib, b_forceLegacy) == 0);
++  m_bOK = !(S52_load_Plib(PLib, b_forceLegacy, allowCwdOverride) == 0);
+ 
+   m_bShowS57Text = false;
+   m_bShowS57ImportantTextOnly = false;
+@@ -1130,7 +1135,7 @@ int s52plib::_LUP2rules(LUPrec *LUP, S57Obj *pObj) {
+     return 0;
+ }
+ 
+-int s52plib::S52_load_Plib(const wxString &PLib, bool b_forceLegacy) {
++int s52plib::S52_load_Plib(const wxString &PLib, bool b_forceLegacy, bool allowCwdOverride) {
+   pAlloc = new wxArrayPtrVoid;
+ 
+   //   Create the Rule Lookup Hash Tables
+@@ -1153,7 +1158,7 @@ int s52plib::S52_load_Plib(const wxString &PLib, bool b_forceLegacy) {
+   m_unused_color.B = 2;
+   m_unused_wxColor.Set(2, 2, 2);
+ 
+-  if (!m_chartSymbols.LoadConfigFile(this, PLib)) {
++  if (!m_chartSymbols.LoadConfigFile(this, PLib, allowCwdOverride)) {
+     wxString msg(_T("Could not load XML PLib symbol file: "));
+     msg += PLib;
+     wxLogMessage(msg);
+@@ -1772,6 +1777,28 @@ bool s52plib::RenderText(wxDC *pdc, S52_TextC *ptext, int x, int y,
+   scale_factor /= m_dipfactor;
+   scale_factor *= m_TextScaleFactor;
+ 
++#if defined(OPENNAV_X) && defined(ocpnUSE_GL)
++  if (!pdc && (ptext->letter_spacing > 0 || ptext->text_opacity < 255)) {
++    wxColour ink = GetFontColour_PlugIn(_("ChartTexts"));
++    if (ink == *wxBLACK)
++      ink = wxColour(ptext->pcol->R, ptext->pcol->G, ptext->pcol->B);
++    const unsigned long identity = ink.Red() | (ink.Green() << 8) |
++                                   (ink.Blue() << 16);
++    // These labels use the existing whole-string texture path. Invalidate
++    // per label, before the upstream global scale tracker forgets a texture.
++    if (ptext->texobj &&
++        (ptext->presentation_texture_scale != scale_factor ||
++         ptext->presentation_content_scale != m_ContentScaleFactor ||
++         ptext->presentation_texture_color != identity)) {
++      glDeleteTextures(1, (GLuint *)(&ptext->texobj));
++      ptext->texobj = 0;
++    }
++    ptext->presentation_texture_scale = scale_factor;
++    ptext->presentation_content_scale = m_ContentScaleFactor;
++    ptext->presentation_texture_color = identity;
++  }
++#endif
++
+   // Has there been a change in scale factor by UI?
+   if (scale_factor != m_FinalTextScaleFactor){
+     ptext->texobj = 0;    // This will leak, but only a little
+@@ -1791,6 +1818,12 @@ bool s52plib::RenderText(wxDC *pdc, S52_TextC *ptext, int x, int y,
+     bool b_force_no_texfont = false;
+     if (ptext->bspecial_char)
+       b_force_no_texfont = true;
++#ifdef OPENNAV_X
++    // Native whole-label glyph raster keeps tracking and opacity identical for
++    // ASCII and international geographic names; cached once per label.
++    if (ptext->letter_spacing > 0 || ptext->text_opacity < 255)
++      b_force_no_texfont = true;
++#endif
+ 
+      //Fixme (dave)
+     // We also do this the hard way for rotation of strings.  Very slow.
+@@ -1811,6 +1844,12 @@ bool s52plib::RenderText(wxDC *pdc, S52_TextC *ptext, int x, int y,
+         wxScreenDC sdc;
+         sdc.GetTextExtent(ptext->frmtd, &w_scaled, &h_scaled, &descent, &exlead,
+                         scaled_font);  // measure the text
++#ifdef OPENNAV_X
++        sdc.SetFont(*scaled_font);
++        opennav::integration::ChartNameTextRun name_run(
++            sdc, ptext->frmtd, ptext->letter_spacing * scale_factor / m_ContentScaleFactor);
++        w_scaled += name_run.extra_width;
++#endif
+ 
+         // We cannot get the font ascent value to remove the interline spacing
+         // from the font "height". So we have to estimate based on conventional
+@@ -1842,7 +1881,11 @@ bool s52plib::RenderText(wxDC *pdc, S52_TextC *ptext, int x, int y,
+ 
+           mdc.Clear();
+ 
++#ifdef OPENNAV_X
++          name_run.DrawOpaque(mdc, 0, 0);
++#else
+           mdc.DrawText(ptext->frmtd, 0, 0);
++#endif
+           mdc.SelectObject(wxNullBitmap);
+ 
+           wxImage image = bmp.ConvertToImage();
+@@ -1855,6 +1898,18 @@ bool s52plib::RenderText(wxDC *pdc, S52_TextC *ptext, int x, int y,
+           unsigned char *d = image.GetData();
+           unsigned char *pdest = pRGBA;
+           S52color *ccolor = ptext->pcol;
++#ifdef OPENNAV_X
++          // Geographic ASCII now shares the Unicode texture path; preserve
++          // explicit user text colors just as the normal software path does.
++          S52color styled_color = *ccolor;
++          if (ptext->letter_spacing > 0 || ptext->text_opacity < 255) {
++            wxColour ink = GetFontColour_PlugIn(_("ChartTexts"));
++            if (ink != *wxBLACK) {
++              styled_color.R = ink.Red(); styled_color.G = ink.Green();
++              styled_color.B = ink.Blue(); ccolor = &styled_color;
++            }
++          }
++#endif
+ 
+           if (d) {
+             for (int y = 0; y < hs; y++)
+@@ -1871,6 +1926,9 @@ bool s52plib::RenderText(wxDC *pdc, S52_TextC *ptext, int x, int y,
+                 pdest[off * 4 + 2] = ccolor->B;
+ 
+                 int alpha = (r + g + b) / 3;
++                #ifdef OPENNAV_X
++                alpha = (alpha * ptext->text_opacity + 127) / 255;
++#endif
+                 pdest[off * 4 + 3] = (unsigned char)(alpha & 0xff);
+               }
+           }
+@@ -2181,6 +2239,10 @@ bool s52plib::RenderText(wxDC *pdc, S52_TextC *ptext, int x, int y,
+         glEnable(GL_TEXTURE_2D);
+ 
+         wxColour wcolor = GetFontColour_PlugIn(_("ChartTexts"));
++        // XNav's verified presentation follows the software renderer's S-52
++        // default ink. Preserve explicit user colors and stock GL behavior.
++        if (m_useS52DefaultTextColor && wcolor == *wxBLACK)
++          wcolor = wxColour(ptext->pcol->R, ptext->pcol->G, ptext->pcol->B);
+         f_cache->SetColor(wcolor);
+ 
+         /* undo previous rotation to make text level */
+@@ -2213,6 +2275,11 @@ bool s52plib::RenderText(wxDC *pdc, S52_TextC *ptext, int x, int y,
+     wxCoord w, h, descent, exlead;
+     pdc->GetTextExtent(ptext->frmtd, &w, &h, &descent,
+                        &exlead);  // measure the text
++#ifdef OPENNAV_X
++    opennav::integration::ChartNameTextRun name_run(
++        *pdc, ptext->frmtd, ptext->letter_spacing * wxMax(1.0, scale_factor));
++    w += name_run.extra_width;
++#endif
+ 
+     // We cannot get the font ascent value to remove the interline spacing.
+     // So we have to estimate based on conventional Arial metrics
+@@ -2292,7 +2359,12 @@ bool s52plib::RenderText(wxDC *pdc, S52_TextC *ptext, int x, int y,
+         wcolor = wxColour(ptext->pcol->R, ptext->pcol->G, ptext->pcol->B);
+       pdc->SetTextForeground(wcolor);
+ 
++#ifdef OPENNAV_X
++      if (!name_run.Draw(*pdc, xp, yp, wcolor, ptext->text_opacity))
++        pdc->DrawText(ptext->frmtd, xp, yp);
++#else
+       pdc->DrawText(ptext->frmtd, xp, yp);
++#endif
+     }
+ 
+     pdc->SetFont(oldfont);  // restore last font
+@@ -2486,6 +2558,18 @@ int s52plib::RenderT_All(ObjRazRules *rzRules, Rules *rules,
+       text->pFont = FindOrCreateFont_PlugIn(
+             fontSize, templateFont->GetFamily(), templateFont->GetStyle(), fontweight_t,
+             false, templateFont->GetFaceName());
++      if (m_textFontResolver) {
++        wxFont *styled = m_textFontResolver(rzRules->obj->FeatureName,
++                                           rules->INSTstr, bTX,
++                                           &text->letter_spacing, &text->text_opacity);
++        if (styled && styled->IsOk()) {
++          text->pFont = styled;
++          // TX offsets and declutter bounds use the actual styled font.
++          dc.SetFont(*styled);
++          dc.GetTextExtent(_T("X"), &width, NULL, NULL, NULL, styled);
++          text->avgCharWidth = width;
++        }
++      }
+   }
+ 
+     //  Render text at declared x/y of object
+diff --git a/libs/s52plib/src/s52plib.h b/libs/s52plib/src/s52plib.h
+index e830bab..541cf3b 100755
+--- a/libs/s52plib/src/s52plib.h
++++ b/libs/s52plib/src/s52plib.h
+@@ -182,8 +182,14 @@ typedef struct {
+ 
+ class s52plib {
+ public:
+-  s52plib(const wxString &PLib, bool b_forceLegacy = false);
++  s52plib(const wxString &PLib, bool b_forceLegacy = false, bool allowCwdOverride = true,
++          bool useS52DefaultTextColor = false);
+   ~s52plib();
++  // Optional presentation-only font policy. Install before rendering; returned
++  // fonts must outlive cached S-52 text. A null result keeps the stock font.
++  using TextFontResolver = wxFont *(*)(const char *, const char *, bool,
++                                      double *, unsigned char *);
++  void SetTextFontResolver(TextFontResolver resolver) { m_textFontResolver = resolver; }
+ 
+   // TODO: SetPPM, SetDisplayWidth etc. should be combined to be set together by pointing them to info about current monitor
+   /**
+@@ -405,7 +411,9 @@ public:
+   void SetReducedBBox(LLBBox box){ reducedBBox = box;}
+ 
+ private:
+-  int S52_load_Plib(const wxString &PLib, bool b_forceLegacy);
++  TextFontResolver m_textFontResolver = nullptr;
++  bool m_useS52DefaultTextColor = false;
++  int S52_load_Plib(const wxString &PLib, bool b_forceLegacy, bool allowCwdOverride = true);
+   bool S52_flush_Plib();
+ 
+   void PLIB_LoadS57Config();
+diff --git a/libs/s52plib/src/s52s57.h b/libs/s52plib/src/s52s57.h
+index 910960c..04c6440 100644
+--- a/libs/s52plib/src/s52s57.h
++++ b/libs/s52plib/src/s52s57.h
+@@ -258,6 +258,11 @@ public:
+   S52color *pcol;  // pointer to S52colour
+   int dis;         // display
+   wxFont *pFont;
++  double letter_spacing = 0;  // optional presentation, logical pixels
++  unsigned char text_opacity = 255;
++  double presentation_texture_scale = -1;
++  double presentation_content_scale = -1;
++  unsigned long presentation_texture_color = 0;
+   int rul_seq_creator;  // sequence number of the Rule creating this object
+   int RGBA_width;
+   int RGBA_height;
+
+diff --git a/gui/include/gui/waypointman_gui.h b/gui/include/gui/waypointman_gui.h
+index 91ede9201..9211be2d9 100644
+--- a/gui/include/gui/waypointman_gui.h
++++ b/gui/include/gui/waypointman_gui.h
+@@ -42,6 +42,7 @@ public:
+                         const wxString &description, bool add_in_front = false);
+   unsigned int GetIconTexture(const wxBitmap *pmb, int &glw, int &glh);
+ 
++  bool IsPinnedRouteDiamond(const wxString &key, const wxBitmap *bitmap) const;
+   void ReloadRoutepointIcons();
+ 
+ private:
+diff --git a/gui/src/route_point_gui.cpp b/gui/src/route_point_gui.cpp
+index 6fefddd2d..08de751c6 100644
+--- a/gui/src/route_point_gui.cpp
++++ b/gui/src/route_point_gui.cpp
+@@ -46,6 +46,7 @@ typedef void (*_GLUfuncptr)();
+ #include "svg_utils.h"
+ #include "viewport.h"
+ #include "waypointman_gui.h"
++#include "integration/ChartRouteWaypoint.h"
+ 
+ extern Multiplexer *g_pMUX;
+ extern ocpnGLOptions g_GLOptions;
+@@ -91,6 +92,9 @@ void RoutePointGui::Draw(ocpnDC &dc, ChartCanvas *canvas, wxPoint *rpn,
+ 
+   //  Substitue icon?
+   if (m_point.m_IconIsDirty) ReLoadIcon();
++  const int skager_ordinal = opennav::integration::ChartRouteWaypointOrdinal(
++      *canvas, m_point, WayPointmanGui(*pWayPointMan).IsPinnedRouteDiamond(
++          m_point.m_IconName, m_point.m_pbmIcon));
+   wxBitmap *pbm;
+   if ((m_point.m_bIsActive) && (m_point.m_IconName != _T("mob")))
+     pbm = pWayPointMan->GetIconBitmap(_T ( "activepoint" ));
+@@ -114,8 +118,13 @@ void RoutePointGui::Draw(ocpnDC &dc, ChartCanvas *canvas, wxPoint *rpn,
+   int sx2 = pbm->GetWidth() / 2;
+   int sy2 = pbm->GetHeight() / 2;
+ 
++
+   //    Calculate the mark drawing extents
+   wxRect r1(r.x - sx2, r.y - sy2, sx2 * 2, sy2 * 2);  // the bitmap extents
++  if (skager_ordinal) {
++    const int extent = opennav::integration::ChartRouteWaypointExtent(*canvas);
++    r1.Union(wxRect(r.x-extent, r.y-extent, 2*extent, 2*extent));
++  }
+ 
+   if (m_point.m_bShowName) {
+     if (0 == m_point.m_pMarkFont) {
+@@ -169,7 +178,9 @@ void RoutePointGui::Draw(ocpnDC &dc, ChartCanvas *canvas, wxPoint *rpn,
+   if (m_point.m_bBlink && (gFrame->nBlinkerTick & 1)) bDrawHL = true;
+ 
+   if ((!bDrawHL) && (NULL != m_point.m_pbmIcon)) {
+-    dc.DrawBitmap(*pbm, r.x - sx2, r.y - sy2, true);
++    if (!opennav::integration::DrawChartRouteWaypoint(
++            dc, *canvas, r.x, r.y, skager_ordinal))
++      dc.DrawBitmap(*pbm, r.x - pbm->GetWidth()/2, r.y - pbm->GetHeight()/2, true);
+     // on MSW, the dc Bounding box is not updated on DrawBitmap() method.
+     // Do it explicitely here for all platforms.
+     dc.CalcBoundingBox(r.x - sx2, r.y - sy2);
+@@ -240,6 +251,14 @@ void RoutePointGui::DrawGL(ViewPort &vp, ChartCanvas *canvas, ocpnDC &dc,
+       !m_point.m_bPtIsSelected)
+     return;
+ 
++  if (m_point.m_IconIsDirty) ReLoadIcon();
++  const int skager_ordinal = opennav::integration::ChartRouteWaypointOrdinal(
++      *canvas, m_point, WayPointmanGui(*pWayPointMan).IsPinnedRouteDiamond(
++          m_point.m_IconName, m_point.m_pbmIcon));
++  // Eligibility/scale may change without a viewport change (selection, route
++  // activation, mark-size preference). Rebuild the larger presentation bounds.
++  if (skager_ordinal) m_point.m_wpBBox.Invalidate();
++
+   if (m_point.m_wpBBox.GetValid() &&
+       vp.view_scale_ppm == m_point.m_wpBBox_view_scale_ppm &&
+       vp.rotation == m_point.m_wpBBox_rotation) {
+@@ -278,7 +297,6 @@ void RoutePointGui::DrawGL(ViewPort &vp, ChartCanvas *canvas, ocpnDC &dc,
+   if (r.x == INVALID_COORD) return;
+ 
+   //    Substitute icon?
+-  if (m_point.m_IconIsDirty) ReLoadIcon();
+   wxBitmap *pbm;
+   if ((m_point.m_bIsActive) && (m_point.m_IconName != _T("mob")))
+     pbm = pWayPointMan->GetIconBitmap(_T ( "activepoint" ));
+@@ -291,8 +309,13 @@ void RoutePointGui::DrawGL(ViewPort &vp, ChartCanvas *canvas, ocpnDC &dc,
+   int sx2 = pbm->GetWidth() / 2;
+   int sy2 = pbm->GetHeight() / 2;
+ 
++
+   //    Calculate the mark drawing extents
+   wxRect r1(r.x - sx2, r.y - sy2, sx2 * 2, sy2 * 2);  // the bitmap extents
++  if (skager_ordinal) {
++    const int extent = opennav::integration::ChartRouteWaypointExtent(*canvas);
++    r1.Union(wxRect(r.x-extent, r.y-extent, 2*extent, 2*extent));
++  }
+ 
+   wxRect r3 = r1;
+   if (m_point.m_bShowName) {
+@@ -384,7 +407,9 @@ void RoutePointGui::DrawGL(ViewPort &vp, ChartCanvas *canvas, ocpnDC &dc,
+ 
+   if (m_point.m_bBlink && (gFrame->nBlinkerTick & 1)) bDrawHL = true;
+ 
+-  if ((!bDrawHL) && (NULL != m_point.m_pbmIcon)) {
++  if ((!bDrawHL) && (NULL != m_point.m_pbmIcon) &&
++      !opennav::integration::DrawChartRouteWaypoint(
++          dc, *canvas, r.x, r.y, skager_ordinal)) {
+     int glw, glh;
+     unsigned int IconTexture =
+         WayPointmanGui(*pWayPointMan).GetIconTexture(pbm, glw, glh);
+@@ -397,7 +422,7 @@ void RoutePointGui::DrawGL(ViewPort &vp, ChartCanvas *canvas, ocpnDC &dc,
+     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+ 
+-    int w = r1.width, h = r1.height;
++    int w = 2*sx2, h = 2*sy2;
+ 
+     float scale = 1.0;
+     if (!m_point.m_bPreScaled) {
+@@ -407,8 +432,8 @@ void RoutePointGui::DrawGL(ViewPort &vp, ChartCanvas *canvas, ocpnDC &dc,
+     // Scale for MacOS Retina and GTK screen scaling
+     scale *= GetOCPNCanvasWindow()->GetContentScaleFactor();
+ 
+-    float ws = r1.width * scale;
+-    float hs = r1.height * scale;
++    float ws = w * scale;
++    float hs = h * scale;
+     float xs = r.x - ws / 2.;
+     float ys = r.y - hs / 2.;
+     float u = (float)w / glw, v = (float)h / glh;
+diff --git a/gui/src/waypointman_gui.cpp b/gui/src/waypointman_gui.cpp
+index 9a940f091..6bf4f102c 100644
+--- a/gui/src/waypointman_gui.cpp
++++ b/gui/src/waypointman_gui.cpp
+@@ -64,6 +64,7 @@ typedef void (*_GLUfuncptr)();
+ #include "svg_utils.h"
+ #include "waypointman_gui.h"
+ #include "ocpn_plugin.h"
++#include "integration/ChartWaypointIcon.h"
+ 
+ extern BasePlatform *g_BasePlatform;
+ extern float g_MarkScaleFactorExp;
+@@ -199,6 +200,7 @@ MarkIcon *WayPointmanGui::ProcessIcon(wxImage image, const wxString &key,
+   pmi->piconBitmap = NULL;
+   pmi->icon_texture = 0; /* invalidate */
+   pmi->preScaled = false;
++  pmi->skagerPinnedRouteDiamond = false; // User/plugin replacement, even same key.
+   pmi->iconImage = pbm->ConvertToImage();
+   pmi->m_blistImageOK = false;
+   delete pbm;
+@@ -619,6 +621,10 @@ MarkIcon *WayPointmanGui::ProcessLegacyIcon(wxString fileName,
+   pmi->piconBitmap = NULL;
+   pmi->icon_texture = 0; /* invalidate */
+   pmi->preScaled = false;
++  pmi->skagerPinnedRouteDiamond = key == "diamond" &&
++      opennav::integration::IsPinnedRouteDiamond(fileName) &&
++      opennav::integration::SameRouteDiamondPixels(image,
++          LoadSVG(fileName, (int)bm_size, (int)bm_size, NULL, false).ConvertToImage());
+   pmi->iconImage = imageClip;
+   pmi->m_blistImageOK = false;
+ 
+@@ -663,6 +669,17 @@ MarkIcon *WayPointmanGui::ProcessExtendedIcon(wxImage &image,
+   return pmi;
+ }
+ 
++bool WayPointmanGui::IsPinnedRouteDiamond(const wxString &key,
++                                            const wxBitmap *bitmap) const {
++  if (key != "diamond" || !bitmap || !bitmap->IsOk()) return false;
++  for (unsigned int i = 0; i < m_waypoint_man.m_pIconArray->GetCount(); ++i) {
++    const auto *icon = static_cast<MarkIcon *>(m_waypoint_man.m_pIconArray->Item(i));
++    if (icon->icon_name == key)
++      return icon->skagerPinnedRouteDiamond && icon->piconBitmap == bitmap;
++  }
++  return false; // Never inherit GetIconBitmap's missing-key fallback.
++}
++
+ wxRect WayPointmanGui::CropImageOnAlpha(wxImage &image) {
+   const int w = image.GetWidth();
+   const int h = image.GetHeight();
+diff --git a/model/include/model/MarkIcon.h b/model/include/model/MarkIcon.h
+index 3f3844716..99ad53d65 100644
+--- a/model/include/model/MarkIcon.h
++++ b/model/include/model/MarkIcon.h
+@@ -41,6 +41,8 @@ public:
+   wxString icon_name;
+   wxString icon_description;
+   bool preScaled;
++  // Only the verified shipped default route diamond; replacements revoke it.
++  bool skagerPinnedRouteDiamond = false;
+ 
+   unsigned int icon_texture, tex_w, tex_h;
+   wxImage iconImage;
+diff --git i/gui/include/gui/route_gui.h w/gui/include/gui/route_gui.h
+index ac0844af4..3f7d64ece 100644
+--- i/gui/include/gui/route_gui.h
++++ w/gui/include/gui/route_gui.h
+@@ -29,6 +29,7 @@
+ #define _ROUTE_GUI_H
+ 
+ #include <wx/gdicmn.h>
++#include <cstddef>
+ #include <wx/dc.h>
+ 
+ #include "bbox.h"
+@@ -38,6 +39,8 @@
+ #include "viewport.h"
+ #include "SendToGpsDlg.h"
+ 
++namespace opennav { namespace integration { class ChartRouteUnderlay; } }
++
+ class RouteGui {
+ public:
+   RouteGui(Route &route) : m_route(route) {}
+@@ -48,14 +51,17 @@ public:
+                    ViewPort &vp, bool bdraw_arrow);
+ 
+   void DrawGLLines(ViewPort &vp, ocpnDC *dc, ChartCanvas *canvas,
+-                   bool xnav_route = false);
++                   bool xnav_route = false,
++                   opennav::integration::ChartRouteUnderlay *underlay = nullptr);
+   void DrawGL(ViewPort &vp, ChartCanvas *canvas, ocpnDC &dc);
+   void DrawGLRouteLines(ViewPort &vp, ChartCanvas *canvas, ocpnDC &dc);
+   void CalculateDCRect(wxDC &dc_route, ChartCanvas *canvas, wxRect *prect);
+   void RenderSegment(ocpnDC &dc, int xa, int ya, int xb, int yb, ViewPort &vp,
+                      bool bdraw_arrow, int hilite_width = 0,
+                      ChartCanvas *canvas = nullptr, bool xnav_route = false,
+-                     bool join_start = false, bool join_end = false);
++                     bool join_start = false, bool join_end = false,
++                     opennav::integration::ChartRouteUnderlay *underlay = nullptr,
++                     std::size_t leg_index = 0);
+   void RenderSegmentArrowsGL(ocpnDC &dc, int xa, int ya, int xb, int yb,
+                              ViewPort &vp);
+   int SendToGPS(const wxString &com_name, bool bsend_waypoints,
+diff --git i/gui/src/route_gui.cpp w/gui/src/route_gui.cpp
+index a6b4d2351..9e35c186d 100644
+--- i/gui/src/route_gui.cpp
++++ w/gui/src/route_gui.cpp
+@@ -47,6 +47,7 @@
+ #include "route_gui.h"
+ #ifdef OPENNAV_X
+ #include "integration/ChartPresentation.h"
++#include "integration/ChartRouteUnderlay.h"
+ #endif
+ #include "route_point_gui.h"
+ #include "glChartCanvas.h"
+@@ -139,14 +140,23 @@ void RouteGui::Draw(ocpnDC &dc, ChartCanvas *canvas, const LLBBox &box) {
+ #ifdef OPENNAV_X
+   xnav_route = opennav::integration::DefaultChartRouteStyle(m_route);
+ #endif
++  // Collection reuses this exact segment walk. Projection-only calls mirror
++  // RoutePointGui::Draw's first step, without drawing or changing waypoint UI.
++  const auto draw_pass = [&](opennav::integration::ChartRouteUnderlay *underlay) {
++  std::size_t leg_index = 0;
+   wxPoint rpt1, rpt2;
+-  if (m_route.m_bVisible) DrawPointWhich(dc, canvas, 1, &rpt1);
++  if (m_route.m_bVisible) {
++    if (underlay) {
++      auto *point = m_route.GetPoint(1);
++      canvas->GetCanvasPointPix(point->m_lat, point->m_lon, &rpt1);
++    } else DrawPointWhich(dc, canvas, 1, &rpt1);
++  }
+ 
+   wxRoutePointListNode *node = m_route.pRoutePointList->GetFirst();
+   RoutePoint *prp1 = node->GetData();
+   node = node->GetNext();
+ 
+-  if (m_route.m_bVisible || prp1->IsShared())
++  if (!underlay && (m_route.m_bVisible || prp1->IsShared()))
+     RoutePointGui(*prp1).Draw(dc, canvas,
+                               NULL);  // prp1->Draw(dc, canvas, NULL);
+ 
+@@ -155,7 +165,9 @@ void RouteGui::Draw(ocpnDC &dc, ChartCanvas *canvas, const LLBBox &box) {
+ 
+     bool draw_arrow = !(prp2->m_bIsActive && g_bAllowShipToActive);
+ 
+-    if (m_route.m_bVisible || prp2->IsShared())
++    if (underlay)
++      canvas->GetCanvasPointPix(prp2->m_lat, prp2->m_lon, &rpt2);
++    else if (m_route.m_bVisible || prp2->IsShared())
+       RoutePointGui(*prp2).Draw(dc, canvas,
+                                 &rpt2);  // prp2->Draw(dc, canvas, &rpt2);
+ 
+@@ -168,7 +180,8 @@ void RouteGui::Draw(ocpnDC &dc, ChartCanvas *canvas, const LLBBox &box) {
+       if (b_1_on && b_2_on)
+         RenderSegment(dc, rpt1.x, rpt1.y, rpt2.x, rpt2.y, vp, draw_arrow,
+                       m_route.m_hiliteWidth, canvas, xnav_route,
+-                      prp1 != m_route.GetPoint(1), node->GetNext() != nullptr);
++                      prp1 != m_route.GetPoint(1), node->GetNext() != nullptr,
++                      underlay, leg_index);
+ 
+       //    In the cases where one point is on, and one off
+       //    we must decide which way to go in longitude
+@@ -193,7 +206,8 @@ void RouteGui::Draw(ocpnDC &dc, ChartCanvas *canvas, const LLBBox &box) {
+ 
+         RenderSegment(dc, rpt1.x, rpt1.y, rpt2.x + adder, rpt2.y, vp,
+                       draw_arrow, m_route.m_hiliteWidth, canvas, xnav_route,
+-                      prp1 != m_route.GetPoint(1), node->GetNext() != nullptr);
++                      prp1 != m_route.GetPoint(1), node->GetNext() != nullptr,
++                      underlay, leg_index);
+       } else if (!b_1_on) {
+         if (rpt1.x < rpt2.x)
+           adder = (int)pix_full_circle;
+@@ -208,7 +222,8 @@ void RouteGui::Draw(ocpnDC &dc, ChartCanvas *canvas, const LLBBox &box) {
+ 
+         RenderSegment(dc, rpt1.x + adder, rpt1.y, rpt2.x, rpt2.y, vp,
+                       draw_arrow, m_route.m_hiliteWidth, canvas, xnav_route,
+-                      prp1 != m_route.GetPoint(1), node->GetNext() != nullptr);
++                      prp1 != m_route.GetPoint(1), node->GetNext() != nullptr,
++                      underlay, leg_index);
+       }
+     }
+ 
+@@ -216,13 +231,27 @@ void RouteGui::Draw(ocpnDC &dc, ChartCanvas *canvas, const LLBBox &box) {
+     prp1 = prp2;
+ 
+     node = node->GetNext();
++    ++leg_index;
+   }
++  };
++#ifdef OPENNAV_X
++  wxColour underlay_ink;
++  if (xnav_route && opennav::integration::ChartActiveRouteInk(*canvas, underlay_ink)) {
++    opennav::integration::ChartRouteUnderlay underlay;
++    draw_pass(&underlay);
++    underlay.Draw(dc, *canvas);
++  }
++#endif
++  draw_pass(nullptr); // Existing normal waypoint/foreground/arrow order.
++
+ }
+ 
+ void RouteGui::RenderSegment(ocpnDC &dc, int xa, int ya, int xb, int yb,
+                              ViewPort &vp, bool bdraw_arrow, int hilite_width,
+                              ChartCanvas *canvas, bool xnav_route,
+-                             bool join_start, bool join_end) {
++                             bool join_start, bool join_end,
++                             opennav::integration::ChartRouteUnderlay *underlay,
++                             std::size_t leg_index) {
+   //    Get the dc boundary
+   int sx, sy;
+   dc.GetSize(&sx, &sy);
+@@ -240,6 +269,17 @@ void RouteGui::RenderSegment(ocpnDC &dc, int xa, int ya, int xb, int yb,
+   int x1 = xb;
+   int y1 = yb;
+ 
++  if (underlay) {
++#ifdef OPENNAV_X
++    // The same upstream early reject and clipping decision as the normal
++    // software pass. Clipped ends are not new route vertices or miter joins.
++    if (Visible == cohen_sutherland_line_clip_i(&x0, &y0, &x1, &y1, 0, sx, 0, sy))
++      underlay->Add(leg_index, x0, y0, x1, y1,
++                    x0 == xa && y0 == ya, x1 == xb && y1 == yb);
++#endif
++    return;
++  }
++
+   //    If hilite is desired, use a Native Graphics context to render alpha
+   //    colours That is, if wxGraphicsContext is available.....
+ 
+@@ -494,6 +534,12 @@ void RouteGui::DrawGLRouteLines(ViewPort &vp, ChartCanvas *canvas, ocpnDC &dc) {
+   bool xnav_route = false;
+ #ifdef OPENNAV_X
+   xnav_route = opennav::integration::DefaultChartRouteStyle(m_route);
++  wxColour underlay_ink;
++  if (xnav_route && opennav::integration::ChartActiveRouteInk(*canvas, underlay_ink)) {
++    opennav::integration::ChartRouteUnderlay underlay;
++    DrawGLLines(vp, &dc, canvas, false, &underlay);
++    underlay.Draw(dc, *canvas);
++  }
+ #endif
+   DrawGLLines(vp, &dc, canvas, xnav_route);
+ 
+@@ -518,7 +564,8 @@ void RouteGui::DrawGLRouteLines(ViewPort &vp, ChartCanvas *canvas, ocpnDC &dc) {
+ }
+ 
+ void RouteGui::DrawGLLines(ViewPort &vp, ocpnDC *dc, ChartCanvas *canvas,
+-                           bool xnav_route) {
++                           bool xnav_route,
++                           opennav::integration::ChartRouteUnderlay *underlay) {
+ #ifdef ocpnUSE_GL
+   float pix_full_circle =
+       WGS84_semimajor_axis_meters * mercator_k0 * 2 * PI * vp.view_scale_ppm;
+@@ -533,6 +580,7 @@ void RouteGui::DrawGLLines(ViewPort &vp, ocpnDC *dc, ChartCanvas *canvas,
+ 
+   // single point.. make sure it shows up for highlighting
+   if (m_route.GetnPoints() == 1 && dc) {
++    if (underlay) return;
+     canvas->GetDoubleCanvasPointPix(prp2->m_lat, prp2->m_lon, &r1);
+     dc->DrawLine(r1.m_x, r1.m_y, r1.m_x + 2, r1.m_y + 2);
+     return;
+@@ -543,12 +591,13 @@ void RouteGui::DrawGLLines(ViewPort &vp, ocpnDC *dc, ChartCanvas *canvas,
+ 
+   // dc is passed for thicker highlighted lines (performance not very important)
+ 
+-  for (node = node->GetNext(); node; node = node->GetNext()) {
++  std::size_t leg_index = 0;
++  for (node = node->GetNext(); node; node = node->GetNext(), ++leg_index) {
+     RoutePoint *prp1 = prp2;
+     prp2 = node->GetData();
+ 
+     // Provisional, to properly set status of last point in route
+-    prp2->m_pos_on_screen = false;
++    if (!underlay) prp2->m_pos_on_screen = false;
+     {
+       wxPoint2DDouble r2;
+       canvas->GetDoubleCanvasPointPix(prp2->m_lat, prp2->m_lon, &r2);
+@@ -568,7 +617,7 @@ void RouteGui::DrawGLLines(ViewPort &vp, ocpnDC *dc, ChartCanvas *canvas,
+            lat2r = prp2->m_lat > bbox.GetMaxLat();
+       if ((lat1l && lat2l) || (lat1r && lat2r)) {
+         r1valid = false;
+-        prp1->m_pos_on_screen = false;
++        if (!underlay) prp1->m_pos_on_screen = false;
+         continue;
+       }
+ 
+@@ -581,7 +630,7 @@ void RouteGui::DrawGLLines(ViewPort &vp, ocpnDC *dc, ChartCanvas *canvas,
+                       lon2r);
+         if ((lon1l && lon2l) || (lon1r && lon2r)) {
+           r1valid = false;
+-          prp1->m_pos_on_screen = false;
++          if (!underlay) prp1->m_pos_on_screen = false;
+           continue;
+         }
+       }
+@@ -620,6 +669,10 @@ void RouteGui::DrawGLLines(ViewPort &vp, ocpnDC *dc, ChartCanvas *canvas,
+       // untouched default active-route foreground uses fractional artwork.
+       const auto draw_line = [&](double ax, double ay, double bx, double by) {
+ #ifdef OPENNAV_X
++        if (underlay) {
++          underlay->Add(leg_index, ax, ay, bx, by);
++          return;
++        }
+         if (xnav_route && opennav::integration::DrawChartRouteSegment(
+                 *dc, *canvas, ax, ay, bx, by,
+                 prp1 != m_route.GetPoint(1), node->GetNext() != nullptr)) return;
+@@ -656,6 +709,13 @@ void RouteGui::CalculateDCRect(wxDC &dc_route, ChartCanvas *canvas,
+   // That is, draw only the route points, assuming that the segements will
+   // always be fully contained within the resulting rectangle.
+   // Can we prove this?
++  int underlay_margin = 0;
++#ifdef OPENNAV_X
++  wxColour underlay_ink;
++  if (opennav::integration::DefaultChartRouteStyle(m_route) &&
++      opennav::integration::ChartActiveRouteInk(*canvas, underlay_ink))
++    underlay_margin = static_cast<int>(ceil(12.0 * canvas->FromDIP(100) / 100.0)) + 1;
++#endif
+   if (m_route.m_bVisible) {
+     wxRoutePointListNode *node = m_route.pRoutePointList->GetFirst();
+     while (node) {
+@@ -670,6 +730,7 @@ void RouteGui::CalculateDCRect(wxDC &dc_route, ChartCanvas *canvas,
+       wxRect r = prp2->CurrentRect_in_DC;
+       // allow for large hilite circles at segment ends
+       r.Inflate(m_route.m_hiliteWidth, m_route.m_hiliteWidth);
++      r.Inflate(underlay_margin, underlay_margin);
+ 
+       update_rect.Union(r);
+       node = node->GetNext();
+diff --git a/gui/src/piano.cpp b/gui/src/piano.cpp
+--- a/gui/src/piano.cpp
++++ b/gui/src/piano.cpp
+@@ -39,6 +39,9 @@
+ 
+ #include "chcanv.h"
+ #include "piano.h"
++#ifdef OPENNAV_X
++#include "integration/ChartPresentation.h"
++#endif
+ #include "chartdb.h"
+ #include "chartbase.h"
+ #include "styles.h"
+@@ -578,6 +581,15 @@
+ 
+   m_unavailableBrush = wxBrush(GetGlobalColor(_T("UINFD")),
+                                wxBRUSHSTYLE_SOLID);  // and unavailable
++
++#ifdef OPENNAV_X
++  wxColour selected_vector, unselected_vector;
++  if (opennav::integration::ChartVectorSelectorInk(
++          cs, selected_vector, unselected_vector)) {
++    m_svBrush = wxBrush(selected_vector, wxBRUSHSTYLE_SOLID);
++    m_vBrush = wxBrush(unselected_vector, wxBRUSHSTYLE_SOLID);
++  }
++#endif
+ 
+   m_tex_piano_height = 0;  // force texture to update
+ }
+diff --git i/gui/src/chcanv.cpp w/gui/src/chcanv.cpp
+index 6ceddfb0b..d3f592c19 100644
+--- i/gui/src/chcanv.cpp
++++ w/gui/src/chcanv.cpp
+@@ -6111,7 +6111,16 @@ void ChartCanvas::ShipIndicatorsDraw(ocpnDC &dc, int img_height,
+         wxPen ppPen1(GetGlobalColor(_T ( "UBLCK" )), g_cog_predictor_width / 2,
+                      wxPENSTYLE_SOLID);
+         dc.SetPen(ppPen1);
+-        dc.SetBrush(wxBrush(cPred));
++        wxColour endpoint_fill = cPred;
++#ifdef OPENNAV_X
++        // Preserve the configured time-horizon marker, including its geometry
++        // and border. Only follow the successfully selected default COG paint.
++        wxColour route_ink;
++        if (xnav_cog_painted &&
++            opennav::integration::ChartActiveRouteInk(*this, route_ink))
++          endpoint_fill = route_ink;
++#endif
++        dc.SetBrush(wxBrush(endpoint_fill));
+ 
+         dc.StrokePolygon(4, icon);
+       }
+diff --git a/libs/s52plib/src/s52plib.cpp b/libs/s52plib/src/s52plib.cpp
+--- a/libs/s52plib/src/s52plib.cpp
++++ b/libs/s52plib/src/s52plib.cpp
+@@ -1760,6 +1760,9 @@
+ #define FIXIT
+ #endif
+   bool bdraw = true;
++#ifdef OPENNAV_X
++  const bool styled_name = ptext->letter_spacing > 0 || ptext->text_opacity < 255;
++#endif
+ 
+   wxFont *scaled_font = ptext->pFont;
+   wxCoord w_scaled = 0;
+@@ -1778,7 +1781,7 @@
+   scale_factor *= m_TextScaleFactor;
+ 
+ #if defined(OPENNAV_X) && defined(ocpnUSE_GL)
+-  if (!pdc && (ptext->letter_spacing > 0 || ptext->text_opacity < 255)) {
++  if (!pdc && styled_name) {
+     wxColour ink = GetFontColour_PlugIn(_("ChartTexts"));
+     if (ink == *wxBLACK)
+       ink = wxColour(ptext->pcol->R, ptext->pcol->G, ptext->pcol->B);
+@@ -1821,7 +1824,7 @@
+ #ifdef OPENNAV_X
+     // Native whole-label glyph raster keeps tracking and opacity identical for
+     // ASCII and international geographic names; cached once per label.
+-    if (ptext->letter_spacing > 0 || ptext->text_opacity < 255)
++    if (styled_name)
+       b_force_no_texfont = true;
+ #endif
+ 
+@@ -1854,10 +1857,19 @@
+         // We cannot get the font ascent value to remove the interline spacing
+         // from the font "height". So we have to estimate based on conventional
+         // Arial metrics
+-        ptext->rendered_char_height = (h_scaled - descent) * 8 / 10 * m_dipfactor;
+-
+-        ptext->text_width = w_scaled * m_dipfactor;
+-        ptext->text_height = h_scaled * m_dipfactor;
++        double text_metric_scale = m_dipfactor;
++#ifdef OPENNAV_X
++        if (styled_name) {
++          // The GL quad uses raw raster pixels; its shader adds no DIP scaling.
++          // Keep justification, offsets and collision bounds in those units.
++          text_metric_scale = 1.0;
++          sdc.GetTextExtent(_T("X"), &ptext->presentation_char_width, nullptr);
++        }
++#endif
++        ptext->rendered_char_height = (h_scaled - descent) * 8 / 10 * text_metric_scale;
++
++        ptext->text_width = w_scaled * text_metric_scale;
++        ptext->text_height = h_scaled * text_metric_scale;
+ 
+         /* make power of 2 */
+         int tex_w, tex_h;
+@@ -1969,11 +1981,21 @@
+         //  the wx convention using upper left corner. Also, allow for full text
+         //  height in the bitmap/texture, not the estimated "rendered" height.
+ 
++#ifdef OPENNAV_X
++        if (styled_name)
++          yadjust = -ptext->rendered_char_height; // same native baseline as software
++        else
++#endif
+         yadjust = -ptext->rendered_char_height * 10 / 8;
+ 
+         //  Add in the offsets, specified in units of nominal font height
+         yadjust += ptext->yoffs * (ptext->rendered_char_height);
+         //  X offset specified in units of average char width
++#ifdef OPENNAV_X
++        if (styled_name)
++          xadjust += ptext->xoffs * ptext->presentation_char_width;
++        else
++#endif
+         xadjust += ptext->xoffs * ptext->avgCharWidth;
+ 
+         // adjust for text justification
+@@ -2024,6 +2046,10 @@
+         pRectDrawn->SetHeight(ptext->text_height);
+ 
+         if (bCheckOverlap) {
++#ifdef OPENNAV_X
++          if (styled_name && fabs(vp_plib.rotation) > .01)
++            rotate(pRectDrawn, &vp_plib); // same screen space as stock glyphs
++#endif
+           if (CheckTextRectList(*pRectDrawn, ptext)) bdraw = false;
+         }
+ 
+@@ -2124,6 +2150,11 @@
+         }  // bdraw
+       }
+ 
++#ifdef OPENNAV_X
++      // A rejected geographic name must not be registered as drawn by
++      // RenderT_All, or its invisible rectangle can suppress navigation labels.
++      if (!styled_name)
++#endif
+       bdraw = true;
+     }
+ 
+@@ -2297,6 +2328,13 @@
+     yadjust += ptext->yoffs * (rendered_text_height);
+ 
+     //  X offset specified in units of average char width
++#ifdef OPENNAV_X
++    if (styled_name) {
++      int character_width = 0;
++      pdc->GetTextExtent(_T("X"), &character_width, nullptr);
++      xadjust += ptext->xoffs * character_width;
++    } else
++#endif
+     xadjust += ptext->xoffs * ptext->avgCharWidth * m_dipfactor;
+ 
+     // adjust for text justification
+diff --git a/libs/s52plib/src/s52s57.h b/libs/s52plib/src/s52s57.h
+--- a/libs/s52plib/src/s52s57.h
++++ b/libs/s52plib/src/s52s57.h
+@@ -263,6 +263,7 @@
+   double presentation_texture_scale = -1;
+   double presentation_content_scale = -1;
+   unsigned long presentation_texture_color = 0;
++  int presentation_char_width = 0; // measured cached raster glyph units
+   int rul_seq_creator;  // sequence number of the Rule creating this object
+   int RGBA_width;
+   int RGBA_height;
+diff --git a/libs/s52plib/src/s52plib.cpp b/libs/s52plib/src/s52plib.cpp
+--- a/libs/s52plib/src/s52plib.cpp
++++ b/libs/s52plib/src/s52plib.cpp
+@@ -1840,6 +1840,14 @@
+ 
+         int old_size = ptext->pFont->GetPointSize();
+         int new_size = old_size * scale_factor / m_ContentScaleFactor;
++#ifdef OPENNAV_X
++        if (styled_name) {
++          // Match the software font path, including FontMgr's own content-scale
++          // multiplication. At <=1 software uses the existing unscaled font.
++          new_size = scale_factor > 1 ? old_size * scale_factor
++                                      : old_size / m_ContentScaleFactor;
++        }
++#endif
+ 
+         scaled_font = FindOrCreateFont_PlugIn(
+           new_size, ptext->pFont->GetFamily(), ptext->pFont->GetStyle(),
+@@ -1850,6 +1858,6 @@
+ #ifdef OPENNAV_X
+         sdc.SetFont(*scaled_font);
+         opennav::integration::ChartNameTextRun name_run(
+-            sdc, ptext->frmtd, ptext->letter_spacing * scale_factor / m_ContentScaleFactor);
++            sdc, ptext->frmtd, ptext->letter_spacing * wxMax(1.0, scale_factor));
+         w_scaled += name_run.extra_width;
+ #endif
+diff --git a/gui/src/piano.cpp b/gui/src/piano.cpp
+--- a/gui/src/piano.cpp
++++ b/gui/src/piano.cpp
+@@ -129,6 +129,9 @@
+ }
+ 
+ void Piano::Paint(int y, ocpnDC &dc, wxDC *shapeDC) {
++#ifdef OPENNAV_X
++  SyncChartPresentation();
++#endif
+   if (shapeDC) {
+     shapeDC->SetBackground(*wxBLACK_BRUSH);
+     shapeDC->SetBrush(*wxWHITE_BRUSH);
+@@ -369,6 +372,9 @@
+ void Piano::DrawGL(int off) { return DrawGLSL(off); }
+ void Piano::DrawGLSL(int off) {
+ #ifdef ocpnUSE_GL
++#ifdef OPENNAV_X
++  SyncChartPresentation();
++#endif
+   unsigned int w = m_parentCanvas->GetClientSize().x *
+                    m_parentCanvas->GetContentScaleFactor();
+   int h = GetHeight();
+@@ -553,6 +559,22 @@
+   delete[] coords;
+ #endif  // gl
+ }
++
++#ifdef OPENNAV_X
++void Piano::SyncChartPresentation() {
++  // A deferred presentation-library failure can revoke the verified style
++  // after construction. Refresh only changed brushes before either renderer.
++  wxColour selected = GetGlobalColor(_T("GREEN1"));
++  wxColour unselected = GetGlobalColor(_T("GREEN2"));
++  opennav::integration::ChartVectorSelectorInk(
++      m_parentCanvas->GetColorScheme(), selected, unselected);
++  if (m_svBrush.GetColour() != selected || m_vBrush.GetColour() != unselected) {
++    m_svBrush = wxBrush(selected, wxBRUSHSTYLE_SOLID);
++    m_vBrush = wxBrush(unselected, wxBRUSHSTYLE_SOLID);
++    m_tex_piano_height = 0;
++  }
++}
++#endif
+ 
+ void Piano::SetColorScheme(ColorScheme cs) {
+   //    Recreate the local brushes
+diff --git a/gui/include/gui/piano.h b/gui/include/gui/piano.h
+--- a/gui/include/gui/piano.h
++++ b/gui/include/gui/piano.h
+@@ -128,6 +128,9 @@
+ private:
+   void SetPianoMode(int new_mode) { m_piano_mode = new_mode; }
+ 
++#ifdef OPENNAV_X
++  void SyncChartPresentation();
++#endif
+   void DrawGLSL(int y);
+   void BuildGLTexture();
+   bool InArray(std::vector<int> &array, int key);

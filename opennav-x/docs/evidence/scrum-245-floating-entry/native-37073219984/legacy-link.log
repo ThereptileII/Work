@@ -1,0 +1,9 @@
+MSBuild version 17.14.60+43b635718 for .NET Framework
+
+  1>Checking Build System
+  Building Custom Rule D:/a/Work/Work/opennav-x/tests/windows_floating_surface/CMakeLists.txt
+  legacy-floating-surface.cpp
+  FloatingSurface.cpp
+  Generating Code...
+MSVCRT.lib(exe_main.obj) : error LNK2019: unresolved external symbol _main referenced in function "int __cdecl __scrt_common_main_seh(void)" (?__scrt_common_main_seh@@YAHXZ) [D:\a\Work\Work\opennav-x\evidence\local\windows-changed-units\legacy-build\floating_surface_test.vcxproj]
+D:\a\Work\Work\opennav-x\evidence\local\windows-changed-units\legacy-build\Release\floating_surface_test.exe : fatal error LNK1120: 1 unresolved externals [D:\a\Work\Work\opennav-x\evidence\local\windows-changed-units\legacy-build\floating_surface_test.vcxproj]

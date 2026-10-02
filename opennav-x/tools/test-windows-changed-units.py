@@ -5,6 +5,7 @@ Compile-only by default. Optional Settings and prototype components provide
 isolated native interaction evidence, never product, package or dependency qualification.
 The opt-in prototype proof compiles the real navigation bridge and runs existing
 Settings/Search components, with optional Energy, without rebuilding old macro-control units.
+The isolated floating-surface mode proves only its console link and native lifecycle.
 The optional negative control restores exactly the seven legacy max calls in
 the two real source files; it must fail before the untouched fixed files pass.
 """
@@ -212,6 +213,123 @@ def prototype_component(build, wx, evidence, component='search'):
     return {'executable': identity, 'runtime': manifest, 'capture': capture}
 
 
+def require_missing_main_failure(text):
+    errors = set(re.findall(r'(?:fatal )?error (LNK\d+|C\d+):', text))
+    unresolved = re.findall(r'error LNK2019:([^\r\n]*)', text)
+    if (errors != {'LNK2019', 'LNK1120'} or not unresolved or
+            any(not re.search(r'unresolved external symbol _main\b', line) for line in unresolved) or
+            not re.search(r'error LNK1120: 1 unresolved externals', text)):
+        raise ValueError('Negative control failed for a different reason')
+
+
+def floating_surface_component(build, wx, evidence):
+    """Run the exact existing fixture with a verified app-local Win32 runtime."""
+    client = build / 'Release/floating_surface_test.exe'
+    identity = record(client)
+    runtime = stage_native_runtime(client, wx,
+        ('wxbase32u_vc14x.dll', 'wxmsw32u_core_vc14x.dll'))
+    (evidence / 'floating-runtime.json').write_text(json.dumps(runtime, indent=2) + '\n')
+    log = evidence / 'floating-surface.log'
+    run([client], log, timeout=30)
+    matches = re.findall(r'^(\d+) floating-surface lifecycle checks passed$',
+                         log.read_text(errors='replace'), re.M)
+    # The unchanged Windows branch executes exactly twelve checks. GTK has
+    # additional native mapping checks; its success cannot stand in for this.
+    if len(matches) != 1 or int(matches[0]) != 12:
+        raise ValueError('Floating surface did not finish all 12 Windows lifecycle checks')
+    if record(client) != identity or any(
+            record(client.parent / name)['sha256'] != item['sha256']
+            for name, item in runtime.items()):
+        raise ValueError('Floating surface executable/runtime changed during proof')
+    return {'executable': identity, 'runtime': runtime, 'checks': 12,
+            'exitCode': 0, 'fixtureOnly': True}
+
+
+def floating_workflow_input(product_root):
+    """Resolve only the supported standalone or repo/opennav-x layout."""
+    product_root = product_root.resolve()
+    repository = Path(subprocess.check_output(
+        ['git', 'rev-parse', '--show-toplevel'], cwd=product_root, text=True).strip()).resolve()
+    relative = Path('.github/workflows/skager-windows-changed-units.yml')
+    if repository == product_root:
+        workflow = product_root / relative
+    elif product_root == repository / 'opennav-x':
+        if (product_root / relative).exists():
+            raise ValueError('Ambiguous product-local workflow in the monorepo layout')
+        workflow = repository / relative
+    else:
+        raise ValueError('Unsupported product/repository layout for floating workflow')
+    if not workflow.is_file() or workflow.resolve() != workflow:
+        raise ValueError('Missing or redirected exact floating workflow input')
+    # The one parent path is generated only by the guarded monorepo layout.
+    # Retain an actual product-relative source key for the existing drift check.
+    key = Path(os.path.relpath(workflow, product_root)).as_posix()
+    return key, record(workflow)
+
+
+def floating_surface_proof(evidence):
+    if os.environ.get('GITHUB_ACTIONS') != 'true':
+        raise ValueError('Floating proof requires disposable native Windows CI, never the boat')
+    inputs = ('tests/floating_surface_test.cpp', 'src/ui/FloatingSurface.cpp',
+              'tests/windows_floating_surface/CMakeLists.txt',
+              'tools/test-windows-changed-units.py', 'tools/windows-wx.lock.json',
+              'tools/windows-ui.py')
+    sources = {p: record(ROOT / p) for p in inputs}
+    workflow_key, workflow_identity = floating_workflow_input(ROOT)
+    sources[workflow_key] = workflow_identity
+    # Bind all local transitive header inputs without building unrelated UI.
+    sources.update({str(p.relative_to(ROOT)): record(p)
+                    for p in sorted((ROOT / 'src').rglob('*.h'))})
+    (evidence / 'floating-inputs.json').write_text(json.dumps(sources, indent=2) + '\n')
+    sdk = ROOT / 'build/windows-changed-unit-sdk'
+    sdk.mkdir(parents=True, exist_ok=True)
+    wx = sdk / 'wx'
+    wxlock = json.loads((ROOT / 'tools/windows-wx.lock.json').read_text())
+    for item in wxlock['archives']:
+        archive = sdk / item['file']
+        fetch(item, archive)
+        run(['7z', 'x', '-y', '-o' + str(wx), archive], evidence / (item['file'] + '.log'))
+    fixed = (ROOT / 'tests/floating_surface_test.cpp').read_text()
+    entry = 'wxIMPLEMENT_APP_NO_MAIN(TestApp);\nint main(int argc, char **argv) { return wxEntry(argc, argv); }'
+    if fixed.count(entry) != 1:
+        raise ValueError('Unexpected fixture entrypoint; refusing approximate negative control')
+    legacy = evidence / 'legacy-floating-surface.cpp'
+    legacy.write_text(fixed.replace(entry, 'wxIMPLEMENT_APP(TestApp);'))
+    def configure(build, source):
+        run(['cmake', '-S', ROOT / 'tests/windows_floating_surface', '-B', build,
+             '-G', 'Visual Studio 17 2022', '-A', 'Win32',
+             '-DOPENNAV_FLOATING_TEST_SOURCE:FILEPATH=' + source.as_posix(),
+             '-DwxWidgets_ROOT_DIR:PATH=' + wx.as_posix(),
+             '-DwxWidgets_LIB_DIR:PATH=' + (wx / 'lib/vc14x_dll').as_posix(),
+             '-DwxWidgets_CONFIGURATION=mswu'], evidence / (build.name + '-configure.log'))
+    old_build = evidence / 'legacy-build'
+    configure(old_build, legacy)
+    old_log = evidence / 'legacy-link.log'
+    try:
+        run(['cmake', '--build', old_build, '--config', 'Release', '--target',
+             'floating_surface_test', '--parallel', '2'], old_log, timeout=120)
+    except RuntimeError:
+        text = old_log.read_text(errors='replace')
+        require_missing_main_failure(text)
+    else:
+        raise ValueError('Legacy console entrypoint unexpectedly linked')
+    build = evidence / 'floating-build'
+    configure(build, ROOT / 'tests/floating_surface_test.cpp')
+    run(['cmake', '--build', build, '--config', 'Release', '--target',
+         'floating_surface_test', '--parallel', '2'], evidence / 'floating-link.log', timeout=120)
+    spec = importlib.util.spec_from_file_location('windows_ui', ROOT / 'tools/windows-ui.py')
+    ui = importlib.util.module_from_spec(spec); spec.loader.exec_module(ui)
+    desktop = ui.ensure_desktop(1440, 900)
+    result = floating_surface_component(build, wx, evidence)
+    if (floating_workflow_input(ROOT) != (workflow_key, workflow_identity) or
+            any(record(ROOT / p) != identity for p, identity in sources.items())):
+        raise ValueError('Floating proof source changed during compilation/run')
+    return {'scope': 'isolated native Win32 floating-surface console link and lifecycle only',
+            'floatingInputs': sources, 'floatingSurface': result, 'desktop': desktop,
+            'legacyControl': {'source': record(legacy), 'expectedErrors': ['LNK2019 _main', 'LNK1120']},
+            'nativeProductAcceptance': False}
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--upstream', type=Path, default=ROOT / 'upstream/OpenCPN')
@@ -228,7 +346,18 @@ def main():
                         help='with --prototype-proof, also run the existing offline Energy component and seven captures')
     parser.add_argument('--settings-touch-only', action='store_true',
                         help='only production UI and isolated 125%% Settings native touch proof; no OpenCPN app')
+    parser.add_argument('--floating-surface-only', action='store_true',
+                        help='only exact floating-surface console link/control and native lifecycle fixture')
+    parser.add_argument('--chart-units-only', action='store_true',
+                        help='compile only real production chart units; no application link or runtime acceptance')
     args = parser.parse_args()
+    if args.chart_units_only and any((args.legacy_control, args.ui, args.settings_component,
+            args.prototype_proof, args.chart_presentation_component, args.energy_component,
+            args.settings_touch_only, args.floating_surface_only)):
+        parser.error('--chart-units-only cannot combine with other proof modes')
+    if args.floating_surface_only and any((args.legacy_control, args.ui, args.settings_component,
+            args.prototype_proof, args.chart_presentation_component, args.energy_component, args.settings_touch_only)):
+        parser.error('--floating-surface-only cannot combine with other proof modes')
     if args.settings_touch_only:
         if any((args.legacy_control,args.prototype_proof,args.settings_component,args.chart_presentation_component,args.energy_component)):
             parser.error('--settings-touch-only cannot combine with other proof modes')
@@ -260,9 +389,21 @@ def main():
                            ' components; not full OpenCPN, dependency, package or boat qualification')
     if args.settings_touch_only:
         report['scope'] = 'native production UI plus actual 125% Settings touch-only component; not full product acceptance'
+    if args.floating_surface_only:
+        report['scope'] = 'isolated native Win32 floating-surface console link and lifecycle only'
     active_units = () if args.prototype_proof or args.settings_touch_only else UNITS
     try:
         report['candidate'] = subprocess.check_output(['git', 'rev-parse', 'HEAD'], cwd=ROOT, text=True).strip()
+        if args.chart_units_only:
+            from windows_chart_units import compile_chart_units
+            report['scope'] = 'native Win32 production chart translation-unit compilation only; no link or visual acceptance'
+            report.update(compile_chart_units(args, evidence, sys.modules[__name__]))
+            report['status'] = 'passed'
+            return
+        if args.floating_surface_only:
+            report.update(floating_surface_proof(evidence))
+            report['status'] = 'passed'
+            return
         report['gateInputs'] = {p: record(ROOT / p) for p in
                                ('tools/test-windows-changed-units.py', 'tools/prepare-integration.py',
                                 'tests/windows_changed_units/CMakeLists.txt', 'upstream.lock.json')}

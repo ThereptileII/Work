@@ -1,0 +1,50 @@
+{
+  "jira": "SCRUM-243",
+  "baseCommit": "c4da42b",
+  "reviewedCommit": "23a397eeacab6840a43f77824697534381b6c9e3",
+  "actualRendererChecks": 6107722,
+  "nativeProductionObjects": [
+    "S52 GL",
+    "S52 software"
+  ],
+  "scope": "Styled geographic labels only; nonstyled overlap/metrics remain stock",
+  "verifiedScenarios": {
+    "dipFactors": [
+      1,
+      0.8,
+      0.6666666666666666,
+      0.5
+    ],
+    "rotations": [
+      0,
+      0.4,
+      1.5707963267948966
+    ],
+    "contentScale": [
+      1,
+      2
+    ],
+    "fontFactory": "Pinned FontMgr contentScale*requestedPointSize contract, with native wx font rendering",
+    "userTextScale": [
+      0.75,
+      1,
+      1.5
+    ],
+    "layoutCombinations": 72
+  },
+  "sourceHashes": {
+    "patches/opencpn-5.12.4-chart-presentation.patch": "6c6909b4b83781b5b6acd2b5c9a4f43e714661c754a801e5e9310f8c0ef1e3f3",
+    "tests/chart_name_render_boundary_test.cpp": "1ecc4af22552b45bd9e0aab06cf14805386a8c400ce4e0573d9dbf952b158364",
+    "tools/verify-chart-name-boundary.py": "09c4ebe8539b6a09ad463de1b71cce2ab3f5dfa6afd83d618855f3520ad12a7e"
+  },
+  "macroReview": {
+    "headersArchive": "/home/standard/Projects/X-nav/.local/downloads/wxWidgets-3.2.8-headers.7z",
+    "archiveSha256": "996041908057574ee3836a5f5e03f40858ffc61011231f19a5e87297b74b74e2",
+    "finding": "wx/msw/wrapwin.h includes winundef.h after windows.h; winundef.h240-255 removes DrawText macro; no speculative workaround added",
+    "nativeWindowsCompilationRun": false
+  },
+  "remaining": [
+    "Actual GL driver/canvas capture",
+    "Native Windows/DPI and boat acceptance"
+  ]
+}

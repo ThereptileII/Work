@@ -1,0 +1,44 @@
+{
+  "actualSourceSha256": "0471ef8c8f35d2cd2d20dfe84461f325045c3463f91f8e30f2a77f03e3f0ac30",
+  "actualMethods": [
+    "S52_TextC::S52_TextC()",
+    "S52_TextC::~S52_TextC()",
+    "static void rotate(wxRect *r,",
+    "bool s52plib::RenderText(",
+    "bool s52plib::CheckTextRectList("
+  ],
+  "callerRegistrationVerbatim": true,
+  "extractedSha256": "1f4044fbed7398270fc0e256ca1011655f3d6b5528ed5dd28a3c647df2d8e465",
+  "compileCommand": [
+    "g++",
+    "-std=c++17",
+    "-Wall",
+    "-Werror",
+    "-Wno-unused-variable",
+    "-DOPENNAV_X",
+    "-DocpnUSE_GL",
+    "-I/home/standard/Projects/X-nav/.local/sysroot/usr/lib/wx/include/gtk3-unicode-3.2",
+    "-I/home/standard/Projects/X-nav/.local/sysroot/usr/include/wx-3.2",
+    "-DWXUSINGDLL",
+    "-D__WXGTK3__",
+    "-D__WXGTK__",
+    "-D_FILE_OFFSET_BITS=64",
+    "-I/home/standard/Projects/X-nav-worktrees/scrum243-text-boundary-fixes/src",
+    "-I/home/standard/Projects/X-nav-worktrees/scrum243-text-boundary-fixes/.local/text-review/wrong-overlap/result",
+    "-I/home/standard/Projects/X-nav-worktrees/scrum243-text-boundary-fixes/.local/text-review/wrong-overlap/source/libs/s52plib/src",
+    "-I/home/standard/Projects/X-nav-worktrees/scrum243-text-boundary-fixes/.local/text-review/wrong-overlap/source/libs/geoprim/src",
+    "/home/standard/Projects/X-nav-worktrees/scrum243-text-boundary-fixes/tests/chart_name_render_boundary_test.cpp",
+    "-L/home/standard/Projects/X-nav/.local/sysroot/usr/lib",
+    "-lwx_gtk3u_core-3.2",
+    "-lwx_baseu-3.2",
+    "-o",
+    "/home/standard/Projects/X-nav-worktrees/scrum243-text-boundary-fixes/.local/text-review/wrong-overlap/result/chart-name-boundary-test"
+  ],
+  "exitCode": 1,
+  "output": "Styled rejected name reports false; stock behavior retained\n",
+  "limitations": [
+    "GL calls record uploads; no actual GL context or driver draw",
+    "Viewport and text-owner containers are fixtures",
+    "Linux font raster; native Windows and boat acceptance remain open"
+  ]
+}

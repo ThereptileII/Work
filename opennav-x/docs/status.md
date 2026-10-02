@@ -1,4 +1,4 @@
-# SKAGER status — 2026-10-02
+# SKAGER status — 2026-10-03
 
 ## Current: SKAGER identity and prototype chart refinements
 
@@ -7,20 +7,49 @@ customer-facing name throughout the product. The combined development branch
 now includes native captions/logo (SCRUM-235), Windows application/setup/maintenance
 icons and SKAGER distribution/guide names (SCRUM-236), fractional default-route
 foreground (SCRUM-237), and geographic chart-name typography/ink (SCRUM-238).
-Current integration is local `5061d09`; these newer changes are not qualified
-by the older running candidate. Internal configuration/protocol identities,
+The integrated source is local `1a02ae083501eb05feeef7879e6ee450c076be69`,
+published equivalent `280d5e2e28570fed4f2b84eaafc104bad9ee7c1f`. It also includes
+the bounded healthy COG predictor (SCRUM-239). Its integrated Linux build and
+six real-ENC software captures passed with two clean exits; see the
+[visual review and exact evidence](design/reviews/skager-chart-integrated-1a02ae0.md).
+Further focused integration now includes onboard AIS bodies (SCRUM-240), the
+bounded route understroke (SCRUM-241), verified default waypoint markers
+(SCRUM-242), geographic tracking/opacity (SCRUM-243), and the effective
+prototype anchorage glyph (SCRUM-244). All nine combined upstream patches apply
+to the pinned source. These increments still need a combined capture and native
+qualification. Independent review of SCRUM-243 found inherited GL texture-path
+overlap and DPI-bounds problems; those are being corrected before the next
+integrated build. Earlier source/painter checks do not waive those findings.
+These newer changes are not qualified by the older Windows candidate.
+Internal configuration/protocol identities,
 existing user data, immutable prototype and required OpenCPN attribution remain
 intact. See [native identity](architecture/skager-native-branding.md),
 [packaging identity](installer/skager-branding.md),
 [route foreground](design/reviews/scrum237-route-foreground.md) and
 [geographic names](design/reviews/scrum238-geographic-names.md).
 
-The stable predecessor `4c597955f96647a9c7b837139aa2732f2c3a3fa5` is in
+The preceding candidate `4c597955f96647a9c7b837139aa2732f2c3a3fa5` is in
 [run 37063131823](https://github.com/ThereptileII/Work/actions/runs/37063131823).
-At 21:22 UTC, Linux contracts passed 92/92 and Windows 89/89; 13 jobs passed,
-Linux endurance and integrated Windows qualification were still running.
-There was no failed job in that snapshot, but no final package acceptance.
-The earlier cf44 Linux endurance was also still running, not a three-hour pass.
+At 22:12 UTC on October 2, integrated Windows job 111026476044 failed to link
+`floating_surface_test.exe`: its console target expected `_main`, whereas
+`wxIMPLEMENT_APP` supplied the Windows GUI entry point. This is an automated
+fixture link failure, not an observed SKAGER crash. SCRUM-245 isolates the
+entry-point repair and native lifecycle proof, including a required reproduction
+of the original linker error, before another full candidate. No behavioral
+assertion is removed. Failure artifact 11254867923 has SHA-256
+`82e07a88d0e822a0556fcaa4eebc39ad7a33ca8e4d2a7491a9531097b077861b`.
+Linux contracts passed 92/92 and Windows 89/89; 13 other jobs passed. The latest
+22:25 UTC observation still has Linux endurance running, not accepted as a
+three-hour pass. Windows UI, fixture-free packaging and installer steps after
+the failed link were skipped and cannot be claimed passed.
+The isolated SCRUM-245 correction then passed native MSVC Win32 in
+[run 37073219984](https://github.com/ThereptileII/Work/actions/runs/37073219984),
+commit `e67f70e7dafc31b6da9d34d5eab8690a9eab09c8`: the old entry point reproduced
+the exact linker errors, and the fixed executable passed all 12 unchanged
+Windows lifecycle checks. The downloaded artifact's size/hash/CRC, 130 source
+inputs, executable and 11 runtime DLLs were independently verified; see
+[the retained receipt](evidence/scrum-245-floating-entry/native-37073219984/verification.json).
+This closes that fixture defect, not SCRUM-224 or full product qualification.
 Long-running qualification continues in the background while these isolated
 visual changes receive focused checks. No redundant full candidate was started
 for the individual branding or paint changes.
@@ -28,8 +57,14 @@ for the individual branding or paint changes.
 Prototype conformance remains open. Geographic text tracking, route underlay,
 waypoint/onboard-AIS hierarchy, relevant chart-symbol refinements, actual GL,
 native Windows DPI and boat-display comparisons cannot be declared passed from
-source or focused painter tests. SCRUM-239 is refining the remaining stock COG
-predictor while retaining its real OpenCPN geometry and validity. No physical
+source or focused painter tests. The bounded implementations retain explicit
+special-state and geometry fallbacks. The red COG endpoint,
+label density and stock chart-selector chrome remain visible differences.
+SCRUM-239's follow-up now themes the enabled course-marker fill without removing
+its configured navigation meaning. SCRUM-246 themes only local vector selector
+brushes, preserving all chart-selection behavior. Both are awaiting combined
+rendered evidence; the earlier screenshots remain accurate evidence of the gap.
+No physical
 actuator commands or boat-install retirement have been performed by this batch.
 
 ## Previous: chart refinements and corrected candidate preparation

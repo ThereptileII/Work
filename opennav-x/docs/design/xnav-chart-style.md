@@ -19,8 +19,9 @@ Chart depth units are an actual navigation label, not the prototype's fictional
 location/depth metadata. The native presentation uses the final `.map-disclaimer`
 8px typography, 22px right inset and floating muted ink. It states `Chart depths`
 and OpenCPN's resolved Feet/Meters/Fathoms; this is separate from measured depth
-at the transducer in the vessel rail. Stock chart-selector space is respected
-while its redesign remains pending. No quilt unit, sounding or user preference
+at the transducer in the vessel rail. Stock chart-selector space is respected;
+[SCRUM-246](reviews/scrum246-chart-selector.md) applies a bounded prototype-token
+palette to its vector keys. A broader redesign remains pending. No quilt unit, sounding or user preference
 is converted by this label. Mixed/unknown units fall through to stock behavior.
 The large emboss stays in Standard, Legacy and Safe Mode. This is an in-progress
 presentation correction, not accepted chart conformance.
@@ -77,9 +78,11 @@ joins and butt route ends through a shared software/GL vector mesh. It applies
 only to untouched default active-route presentation; explicit/global custom
 width, explicit style/color, selection, highlight, editing and MOB keep upstream
 behavior. It changes no stored preference, route geometry or navigation state.
-The prototype's 6px translucent understroke and 32px illustrative context remain
-open. Integrated software, actual GL, native Windows and boat acceptance remain
-pending; see [the bounded foreground review](reviews/scrum237-route-foreground.md).
+[SCRUM-241](reviews/scrum241-route-underlay.md) adds the bounded 6px/.6-opacity
+whole-union understroke, with explicit tiny-leg/workload fallbacks. The 32px
+illustrative context and integrated software, actual GL, native Windows and boat
+acceptance remain pending; see also
+[the foreground review](reviews/scrum237-route-foreground.md).
 Do not claim full route conformance from this increment.
 
 The test-only route driver returns upstream-projected screen positions. Tests
@@ -253,8 +256,9 @@ and all navigation labels/soundings. The full strict resource guard now covers
 
 The [active-route foreground](reviews/scrum237-route-foreground.md) now uses
 shared 2.6px fractional geometry and round joins for factory-equivalent active
-route appearance. It does not yet implement the translucent 6px whole-path
-underlay. A 32px decorative halo cannot stand in for the prototype's meaningful
+route appearance. [SCRUM-241](reviews/scrum241-route-underlay.md) adds the
+translucent 6px whole-union underlay for supported geometry, with an atomic
+underlay-only fallback for delicate short joins and bounded workload. A 32px decorative halo cannot stand in for the prototype's meaningful
 route-corridor setting. These bounded changes and the current source/branding
 batch require fresh integrated/native/boat comparisons; no conformance PASS is
 added by this record.
@@ -272,3 +276,16 @@ cannot reveal identical-value user intent; density-raised persisted widths are
 conservatively stock on a later startup. See
 [the bounded predictor review](reviews/scrum239-cog-predictor.md). Actual GL,
 native Windows, boat and full ownship conformance remain pending.
+
+## Geographic label tracking and opacity (SCRUM-243, pending qualification)
+
+Geographic land names now use the prototype's 1px tracking; water names use
+5px tracking and .36 opacity. The existing S-52 placement and declutter boxes
+account for their measured widths. Precomposed Latin names use native glyph
+advances; combining sequences and complex scripts retain native whole-string
+shaping to prevent detached accents or broken text. No chart name is rewritten.
+The GL path reuses cached native whole-label textures with per-label scale/ink
+invalidation; software uses native drawing and alpha. Other label classes,
+soundings, user preferences and Standard remain intact. The
+[focused review](reviews/scrum243-chart-name-spacing.md) records a corrected
+Latin/Unicode Day/Dusk/Night fixture. Native Windows/GL/boat acceptance is open.

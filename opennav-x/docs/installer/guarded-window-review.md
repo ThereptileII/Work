@@ -13,7 +13,7 @@ generation, initial environment, SID/session and bounded lifetime. The ordinary
 ## One requested mode change
 
 1. Prepare the commissioning session and launch its exact cold child through the
-   existing opt-in launch path. For XNav, use separate display-only review actions
+   existing opt-in launch path. For SKAGER, use separate display-only review actions
    to open **System**, then inspect its private screenshot.
 2. Use `RestartCommissioningArm.ps1 -Action Arm` for the intended parent PID,
    creation FILETIME and one of `--xnav`, `--legacy`, `--safe-mode`. Save the exact
@@ -30,11 +30,11 @@ generation, initial environment, SID/session and bounded lifetime. The ordinary
    that any child started. Missing/denied/uncertain outcomes require inspection,
    not an unguarded launch or another mode click.
 
-The XNav path requires its visible **System** page and unique enabled **Open
-Legacy OpenCPN**, **Restart XNav**, or **Safe Mode** button. Before release it
+The SKAGER path requires its visible **System** page and unique enabled **Open
+Legacy OpenCPN**, **Restart SKAGER**, or **Safe Mode** button. Before release it
 rechecks the same button handle, process, caption, page and geometry after the
 press callback. Legacy/Safe return uses the actual visible native menu's unique
-enabled **Switch to XNav** item; the menu's current command identity is resolved
+enabled **Switch to SKAGER** item; the menu's current command identity is resolved
 from that exact source-reviewed caption. There is no caller-supplied command ID,
 arbitrary caption, coordinate, accelerator or global input injection. A hidden
 menu or any modal dialog blocks the operation.
@@ -63,7 +63,7 @@ replacement `LaunchResult` or calls a process-start API.
   -ExpectedCompletionSha256 $completionHash -ReviewAction Capture
 ```
 
-Legacy/Safe children permit only capture and physical `Resize1280x800`. XNav
+Legacy/Safe children permit only capture and physical `Resize1280x800`. SKAGER
 children also permit the existing fixed display-only review actions. No action
 enables hardware control or activates a route. Perform each action separately
 and review its image before choosing another. Before arming the next transition,

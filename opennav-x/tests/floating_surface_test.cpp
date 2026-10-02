@@ -104,4 +104,7 @@ class TestApp final : public wxApp {
   int step_=0,checks_=0,activations_=0,canvas_clicks_=0; bool failed_=false;
 };
 }
-wxIMPLEMENT_APP(TestApp);
+// CMake builds a console test executable on Windows. Keep wxEntry responsible
+// for OnInit, the event loop, OnExit and cleanup, while returning its test code.
+wxIMPLEMENT_APP_NO_MAIN(TestApp);
+int main(int argc, char **argv) { return wxEntry(argc, argv); }

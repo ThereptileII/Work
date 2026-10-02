@@ -1,0 +1,15 @@
+[
+  "cmake",
+  "-S",
+  "D:\\a\\Work\\Work\\opennav-x\\tests\\windows_floating_surface",
+  "-B",
+  "D:\\a\\Work\\Work\\opennav-x\\evidence\\local\\windows-changed-units\\floating-build",
+  "-G",
+  "Visual Studio 17 2022",
+  "-A",
+  "Win32",
+  "-DOPENNAV_FLOATING_TEST_SOURCE:FILEPATH=D:/a/Work/Work/opennav-x/tests/floating_surface_test.cpp",
+  "-DwxWidgets_ROOT_DIR:PATH=D:/a/Work/Work/opennav-x/build/windows-changed-unit-sdk/wx",
+  "-DwxWidgets_LIB_DIR:PATH=D:/a/Work/Work/opennav-x/build/windows-changed-unit-sdk/wx/lib/vc14x_dll",
+  "-DwxWidgets_CONFIGURATION=mswu"
+]

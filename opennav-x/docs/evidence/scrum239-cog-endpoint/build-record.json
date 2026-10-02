@@ -1,0 +1,16 @@
+{
+  "base": "d02dd03",
+  "pinnedOpenCPN": "37fd0cddb7334fe489e9f18aa163977a9c5c84f7",
+  "endpointChecks": 5477,
+  "existingPredictorChecks": 72,
+  "productionCompile": "chcanv.cpp PASS with actual main-target GL/GLSL and -Werror",
+  "objectSHA256": "408ff3f732839aff41257cb20d693a5b16de6fb258c3b356399c8caa51ba2c14",
+  "patchApply": "All nine patches PASS in isolated pinned index",
+  "pending": [
+    "integrated chart scenes",
+    "actual GL output",
+    "native Windows/MSVC/DPI",
+    "boat validation"
+  ],
+  "pianoIssue": "SCRUM-246; no piano implementation in this commit"
+}

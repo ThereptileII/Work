@@ -1,0 +1,21 @@
+cmake_minimum_required(VERSION 3.24)
+project(skager_windows_floating_surface LANGUAGES CXX)
+if(NOT MSVC OR NOT CMAKE_SIZEOF_VOID_P EQUAL 4)
+  message(FATAL_ERROR "Native MSVC Win32 required")
+endif()
+get_filename_component(OPENNAV_ROOT "${CMAKE_CURRENT_LIST_DIR}/../.." ABSOLUTE)
+set(wxWidgets_USE_REL_AND_DBG OFF)
+find_package(wxWidgets REQUIRED COMPONENTS base core)
+include(${wxWidgets_USE_FILE})
+# Same console subsystem and unchanged fixture/production implementation as the
+# main CMake target. No OpenCPN application, unrelated UI or dependency build.
+if(NOT DEFINED OPENNAV_FLOATING_TEST_SOURCE)
+  set(OPENNAV_FLOATING_TEST_SOURCE "${OPENNAV_ROOT}/tests/floating_surface_test.cpp")
+endif()
+add_executable(floating_surface_test "${OPENNAV_FLOATING_TEST_SOURCE}"
+  "${OPENNAV_ROOT}/src/ui/FloatingSurface.cpp")
+target_include_directories(floating_surface_test PRIVATE "${OPENNAV_ROOT}/src")
+target_compile_features(floating_surface_test PRIVATE cxx_std_17)
+target_compile_options(floating_surface_test PRIVATE /utf-8)
+set_property(TARGET floating_surface_test PROPERTY MSVC_RUNTIME_LIBRARY MultiThreadedDLL)
+target_link_libraries(floating_surface_test PRIVATE ${wxWidgets_LIBRARIES})

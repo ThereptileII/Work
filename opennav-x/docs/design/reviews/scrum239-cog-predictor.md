@@ -81,3 +81,13 @@ validity/custom/endpoint/HDT scenarios require fresh execution. Native Windows
 acceptance remain open. The prototype's ownship glow/circles, full degraded-state
 hierarchy and route underlay/context are separate unresolved visual work. This
 increment is not overall ownship/chart conformance or release acceptance.
+
+
+## Endpoint fill follow-up
+
+The [bounded endpoint follow-up](scrum239-cog-endpoint.md), based on `d02dd03`,
+changes the existing enabled COG endpoint's fill to route ink only after the
+same default predictor paint succeeds. Its real projected quad, black border,
+scale and separate enable preference are preserved. The earlier line increment
+left this endpoint entirely stock; this follow-up does not change HDT or custom,
+degraded, Standard/Legacy/Safe behavior. Actual chart/native/boat gates stay open.

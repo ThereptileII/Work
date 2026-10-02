@@ -1,0 +1,2 @@
+Pinned raw union area 13.6049; correct finite stroke area 9.1199; stray point 1
+KNOWN PINNED TESS2 DEFECT: incorrect union; production guard must reject this entire layer

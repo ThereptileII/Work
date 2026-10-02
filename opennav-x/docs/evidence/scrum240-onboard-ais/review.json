@@ -1,0 +1,96 @@
+{
+  "scope": "SCRUM-240 Linux offline software painter and geometry; no real GL, Windows, traffic or boat qualification",
+  "base": "1a02ae083501eb05feeef7879e6ee450c076be69",
+  "upstream": "37fd0cddb7334fe489e9f18aa163977a9c5c84f7",
+  "prototype": {
+    "sha256": "b04573b920b6bccd16afd22f54a909e48afcfd502ce9cd7c69fdf5b6dd895447",
+    "bytes": 1382871
+  },
+  "sources": {
+    "src/integration/OnboardAisBody.h": {
+      "sha256": "2e8414c925c5f026198e164b08f70ee675a231abd5b1a3a7fce4167a410e1ab4",
+      "bytes": 3769
+    },
+    "src/integration/OnboardAisPaint.h": {
+      "sha256": "fa69529fb57cbfbc848ea37fcc3bc07024ca7e7c0633d356f736505a1bddf328",
+      "bytes": 1375
+    },
+    "src/integration/OnboardAisPresentation.h": {
+      "sha256": "4e4212761550dd7a5cdbbb368f50cb342daca705db902ec463fb361388bcd77d",
+      "bytes": 402
+    },
+    "src/integration/OnboardAisPresentation.cpp": {
+      "sha256": "605991a0d716a7b13c4850bee4170ec071eb18e9102e4bd4b1c9a1a7430ffc47",
+      "bytes": 3120
+    },
+    "src/integration/OpenCPN.cmake": {
+      "sha256": "e361916eaf23785356fd78725cd79d378f1bf973d427e057d361078f0cf55afe",
+      "bytes": 16851
+    },
+    "patches/opencpn-5.12.4-chart-presentation.patch": {
+      "sha256": "b3bfcec2d1d5a583f3bb826262ef6e8ef1486dd12cf3e5249e6a92d9f68b5218",
+      "bytes": 29721
+    },
+    "tests/onboard_ais_body_test.cpp": {
+      "sha256": "73197c6bf421c8377e87e62901666554c01e62e190bf84319dbb0208a3221b7d",
+      "bytes": 6691
+    },
+    "CMakeLists.txt": {
+      "sha256": "7f6d2f27760d6ffe5ff94d206e3bff4f9daab2979a12d9e74dab2853ab6e974d",
+      "bytes": 30326
+    }
+  },
+  "checks": 24751,
+  "run_output": "24751 checks passed\n",
+  "negative_control": {
+    "mutation": "Fill Class B stern notch by using the wrong fill diagonal; source copy confined to ignored private directory",
+    "exit": 1,
+    "output": "GL triangles match independent SVG interior after 12721 checks\n"
+  },
+  "fixture": {
+    "sha256": "6183bfa887282c820d255a868d37c900a0107c751abf4f1e181b6d9c497a8045",
+    "bytes": 21847
+  },
+  "fixture_executable": {
+    "sha256": "3a9ef3ab02548e97bcf7a1ce72d946e7329b9a52b1e69941b8299969d2bd16d7",
+    "bytes": 142832
+  },
+  "fixture_command": [
+    "g++",
+    "-Werror",
+    "-std=c++17",
+    "-Isrc",
+    "-I/home/standard/Projects/X-nav/.local/sysroot/usr/lib/wx/include/gtk3-unicode-3.2",
+    "-I/home/standard/Projects/X-nav/.local/sysroot/usr/include/wx-3.2",
+    "-DWXUSINGDLL",
+    "-D__WXGTK3__",
+    "-D__WXGTK__",
+    "-D_FILE_OFFSET_BITS=64",
+    "tests/onboard_ais_body_test.cpp",
+    "-L/home/standard/Projects/X-nav/.local/sysroot/usr/lib",
+    "-lwx_gtk3u_core-3.2",
+    "-lwx_baseu-3.2",
+    "-o",
+    ".local/onboard-ais/painter-test"
+  ],
+  "fixture_runtime": {
+    "display": ":0",
+    "LD_LIBRARY_PATH": "/home/standard/Projects/X-nav/.local/sysroot/usr/lib"
+  },
+  "objects": {
+    "presentation": {
+      "object": {
+        "sha256": "307eb0138d350245ca7480d79b26feb2d4301759daee1a6b93150d8711765895",
+        "bytes": 99608
+      },
+      "dependencies": 43
+    },
+    "upstream-ais": {
+      "object": {
+        "sha256": "4d5c7c67592658e2c420e9c4ce7a6cee0f0602ad28a12fae32c1de53695bf692",
+        "bytes": 357472
+      },
+      "dependencies": 118
+    }
+  }
+}

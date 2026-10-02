@@ -1,0 +1,602 @@
+{
+  "command": [
+    "g++",
+    "-Werror",
+    "-DHAVE_WX_GESTURE_EVENTS",
+    "-DIXWEBSOCKET_USE_OPEN_SSL",
+    "-DIXWEBSOCKET_USE_TLS",
+    "-DIXWEBSOCKET_USE_ZLIB",
+    "-DOPENNAV_ROUTE_TESTS=1",
+    "-DOPENNAV_X=1",
+    "-DRAPIDJSON_HAS_STDSTRING=1",
+    "-DTIXML_USE_STL",
+    "-DWXUSINGDLL",
+    "-DXNAV_ENABLE_PILOT_LOOPBACK_TESTS=1",
+    "-DXNAV_ENABLE_TEST_FIXTURES=1",
+    "-D_FILE_OFFSET_BITS=64",
+    "-D__OCPN_USE_GLEW__",
+    "-D__WXGTK3__",
+    "-D__WXGTK__",
+    "-DocpnUSE_GL",
+    "-DocpnUSE_GLSL",
+    "-DocpnUSE_SVG",
+    "-DocpnUSE_wxBitmapBundle",
+    "-Dopencpn_EXPORTS",
+    "-DwxUSE_WEBVIEW=0",
+    "-D__WXGTK3__",
+    "-O3",
+    "-DNDEBUG",
+    "-std=gnu++17",
+    "-DPREFIX=\"/home/standard/Projects/X-nav/build/xnav-install\"",
+    "-Wall",
+    "-Wno-unused",
+    "-fexceptions",
+    "-rdynamic",
+    "-fno-strict-aliasing",
+    "-Wno-deprecated-declarations",
+    "-Wno-unknown-pragmas",
+    "-Werror",
+    "-Wno-unknown-warning-option",
+    "-I/home/standard/Projects/X-nav/build/xnav-linux/include",
+    "-I/home/standard/Projects/X-nav-worktrees/scrum15-onboard-ais-presentation/build/integration-source/gui/include/gui",
+    "-I/home/standard/Projects/X-nav-worktrees/scrum15-onboard-ais-presentation/build/integration-source/include",
+    "-I/home/standard/Projects/X-nav-worktrees/scrum15-onboard-ais-presentation/build/integration-source/resources",
+    "-I/home/standard/Projects/X-nav-worktrees/scrum15-onboard-ais-presentation/build/integration-source/gui/src/mbtiles",
+    "-I/home/standard/Projects/X-nav-worktrees/scrum15-onboard-ais-presentation/build/integration-source/gui/src/s57/include",
+    "-I/home/standard/Projects/X-nav/.local/sysroot/usr/include",
+    "-I/home/standard/Projects/X-nav-worktrees/scrum15-onboard-ais-presentation/src",
+    "-I/home/standard/Projects/X-nav/tests",
+    "-I/home/standard/Projects/X-nav/build/xnav-linux/opennav-chart-style/v1",
+    "-I/home/standard/Projects/X-nav-worktrees/scrum15-onboard-ais-presentation/build/integration-source/libs/ssl_sha1/include",
+    "-I/usr/include/gtk-3.0",
+    "-I/usr/include/pango-1.0",
+    "-I/usr/include/cloudproviders",
+    "-I/usr/include/cairo",
+    "-I/usr/include/gdk-pixbuf-2.0",
+    "-I/usr/include/glycin-2",
+    "-I/usr/include/at-spi2-atk/2.0",
+    "-I/usr/include/at-spi-2.0",
+    "-I/usr/include/atk-1.0",
+    "-I/usr/include/dbus-1.0",
+    "-I/usr/lib/dbus-1.0/include",
+    "-I/usr/include/fribidi",
+    "-I/usr/include/pixman-1",
+    "-I/usr/include/harfbuzz",
+    "-I/usr/include/freetype2",
+    "-I/usr/include/libpng16",
+    "-I/usr/include/gio-unix-2.0",
+    "-I/usr/include/glib-2.0",
+    "-I/usr/lib/glib-2.0/include",
+    "-I/usr/include/libmount",
+    "-I/usr/include/blkid",
+    "-I/usr/include/sysprof-6",
+    "-I/home/standard/Projects/X-nav-worktrees/scrum15-onboard-ais-presentation/build/integration-source/libs/SQLiteCpp/include",
+    "-I/home/standard/Projects/X-nav/build/xnav-install/include",
+    "-I/home/standard/Projects/X-nav/build/xnav-linux/b2681f8/lib/include",
+    "-I/home/standard/Projects/X-nav-worktrees/scrum15-onboard-ais-presentation/build/integration-source/libs/gdal/include",
+    "-I/home/standard/Projects/X-nav-worktrees/scrum15-onboard-ais-presentation/build/integration-source/libs/gdal/include/gdal",
+    "-I/home/standard/Projects/X-nav/build/xnav-linux/libdnet-src/installed/include",
+    "-I/home/standard/Projects/X-nav-worktrees/scrum15-onboard-ais-presentation/build/integration-source/libs/libdnet/_DNET_IF",
+    "-I/home/standard/Projects/X-nav/build/xnav-linux/libdnet-src/installed/include/dnet",
+    "-I/home/standard/Projects/X-nav-worktrees/scrum15-onboard-ais-presentation/build/integration-source/libs/serial/include",
+    "-I/home/standard/Projects/X-nav-worktrees/scrum15-onboard-ais-presentation/build/integration-source/libs/std_filesystem/include",
+    "-I/home/standard/Projects/X-nav-worktrees/scrum15-onboard-ais-presentation/build/integration-source/libs/libtess2/Include",
+    "-I/home/standard/Projects/X-nav-worktrees/scrum15-onboard-ais-presentation/build/integration-source/libs/tinyxml/include",
+    "-I/home/standard/Projects/X-nav-worktrees/scrum15-onboard-ais-presentation/build/integration-source/libs/manual/include",
+    "-I/home/standard/Projects/X-nav-worktrees/scrum15-onboard-ais-presentation/build/integration-source/libs/s57-charts/include",
+    "-I/home/standard/Projects/X-nav-worktrees/scrum15-onboard-ais-presentation/build/integration-source/libs/iso8211/include",
+    "-I/home/standard/Projects/X-nav-worktrees/scrum15-onboard-ais-presentation/build/integration-source/libs/gui/include",
+    "-I/home/standard/Projects/X-nav-worktrees/scrum15-onboard-ais-presentation/build/integration-source/libs/garmin/jeeps",
+    "-I/home/standard/Projects/X-nav-worktrees/scrum15-onboard-ais-presentation/build/integration-source/libs/texcmp/squish",
+    "-I/home/standard/Projects/X-nav-worktrees/scrum15-onboard-ais-presentation/build/integration-source/libs/mipmap/include",
+    "-I/home/standard/Projects/X-nav-worktrees/scrum15-onboard-ais-presentation/build/integration-source/model/include",
+    "-I/home/standard/Projects/X-nav-worktrees/scrum15-onboard-ais-presentation/build/integration-source/libs/sqlite/include",
+    "-I/home/standard/Projects/X-nav-worktrees/scrum15-onboard-ais-presentation/build/integration-source/libs/wxcurl/include",
+    "-I/usr/include/libusb-1.0",
+    "-I/home/standard/Projects/X-nav-worktrees/scrum15-onboard-ais-presentation/build/integration-source/libs/observable/include",
+    "-I/home/standard/Projects/X-nav-worktrees/scrum15-onboard-ais-presentation/build/integration-source/libs/IXWebSocket",
+    "-I/home/standard/Projects/X-nav-worktrees/scrum15-onboard-ais-presentation/build/integration-source/libs/geoprim/src",
+    "-I/home/standard/Projects/X-nav-worktrees/scrum15-onboard-ais-presentation/build/integration-source/libs/mdns/include",
+    "-I/home/standard/Projects/X-nav-worktrees/scrum15-onboard-ais-presentation/build/integration-source/libs/mdns/mdns-1.4.3",
+    "-I/home/standard/Projects/X-nav-worktrees/scrum15-onboard-ais-presentation/build/integration-source/libs/mongoose/include",
+    "-I/home/standard/Projects/X-nav-worktrees/scrum15-onboard-ais-presentation/build/integration-source/libs/N2KParser/include",
+    "-I/home/standard/Projects/X-nav-worktrees/scrum15-onboard-ais-presentation/build/integration-source/libs/nmea0183/src",
+    "-I/home/standard/Projects/X-nav-worktrees/scrum15-onboard-ais-presentation/build/integration-source/libs/pugixml",
+    "-I/home/standard/Projects/X-nav/build/xnav-linux/_deps/rapidjson_src-src/include",
+    "-I/home/standard/Projects/X-nav-worktrees/scrum15-onboard-ais-presentation/build/integration-source/libs/s52plib/src",
+    "-I/home/standard/Projects/X-nav-worktrees/scrum15-onboard-ais-presentation/build/integration-source/libs/sound/include",
+    "-I/home/standard/Projects/X-nav-worktrees/scrum15-onboard-ais-presentation/build/integration-source/libs/wxJSON/include",
+    "-I/home/standard/Projects/X-nav-worktrees/scrum15-onboard-ais-presentation/build/integration-source/libs/wxservdisc",
+    "-I/home/standard/Projects/X-nav-worktrees/scrum15-onboard-ais-presentation/build/integration-source/libs/picosha2",
+    "-isystem",
+    "/home/standard/Projects/X-nav/.local/sysroot/usr/lib/wx/include/gtk3-unicode-3.2",
+    "-isystem",
+    "/home/standard/Projects/X-nav/.local/sysroot/usr/include/wx-3.2",
+    "-c",
+    "/home/standard/Projects/X-nav-worktrees/scrum15-onboard-ais-presentation/build/integration-source/gui/src/ais.cpp",
+    "-o",
+    "/home/standard/Projects/X-nav-worktrees/scrum15-onboard-ais-presentation/.local/onboard-ais/upstream-ais.o",
+    "-MMD",
+    "-MF",
+    "/home/standard/Projects/X-nav-worktrees/scrum15-onboard-ais-presentation/.local/onboard-ais/upstream-ais.d"
+  ],
+  "object": {
+    "sha256": "4d5c7c67592658e2c420e9c4ce7a6cee0f0602ad28a12fae32c1de53695bf692",
+    "bytes": 357472
+  },
+  "exit": 0,
+  "dependencies": {
+    "/home/standard/Projects/X-nav-worktrees/scrum15-onboard-ais-presentation/build/integration-source/gui/src/ais.cpp": {
+      "sha256": "81f82a9535bdccc551f4604c4cda4e89c775e6c2de43a679441fa30fc9063040",
+      "bytes": 77070
+    },
+    "/home/standard/Projects/X-nav-worktrees/scrum15-onboard-ais-presentation/src/integration/OpenCPNIntegration.h": {
+      "sha256": "726a6731bc68801a8faa7f9bdbe7d973920b01c4b270c97b57f1f13ec6289ff3",
+      "bytes": 2210
+    },
+    "/home/standard/Projects/X-nav-worktrees/scrum15-onboard-ais-presentation/src/vessel/RouteProgress.h": {
+      "sha256": "101f6110d827a854a622e89fe484d5ac1b323d35f103885dca7c35eec67e7785",
+      "bytes": 2456
+    },
+    "/home/standard/Projects/X-nav-worktrees/scrum15-onboard-ais-presentation/src/vessel/VesselState.h": {
+      "sha256": "37ebfc3556f851bc9532bf72922403b9a55990d1bf4860b23d0b82c66afac059",
+      "bytes": 4002
+    },
+    "/home/standard/Projects/X-nav-worktrees/scrum15-onboard-ais-presentation/build/integration-source/model/include/model/ais_decoder.h": {
+      "sha256": "0c4d06cae9cfafaf53c6ecf7f52ff9158d1882fbf4979a8fa0993d990b1687ba",
+      "bytes": 8361
+    },
+    "/home/standard/Projects/X-nav/build/xnav-linux/_deps/rapidjson_src-src/include/rapidjson/fwd.h": {
+      "sha256": "06a7b142b7b0e1d2b773e657bbafd9b861e4b0a17fadf49a806d8833ac6d557e",
+      "bytes": 4035
+    },
+    "/home/standard/Projects/X-nav/build/xnav-linux/_deps/rapidjson_src-src/include/rapidjson/rapidjson.h": {
+      "sha256": "f2a9af92f880ec8ed2ddc0ff9ae6d6f15adfa9137eaac9658bfe39ecdebc21f0",
+      "bytes": 21461
+    },
+    "/home/standard/Projects/X-nav-worktrees/scrum15-onboard-ais-presentation/build/integration-source/model/include/model/ais_bitstring.h": {
+      "sha256": "f3a99c4d502cdd2c0ba88ddcc87121f02ce58e46f6538fc4d0168b36f226270a",
+      "bytes": 2018
+    },
+    "/home/standard/Projects/X-nav-worktrees/scrum15-onboard-ais-presentation/build/integration-source/model/include/model/ais_defs.h": {
+      "sha256": "9e19b1ead1263e7317d4b9bfd7a24daf6083ed82548a8384d71cf13d57b9ace3",
+      "bytes": 2090
+    },
+    "/home/standard/Projects/X-nav-worktrees/scrum15-onboard-ais-presentation/build/integration-source/model/include/model/ais_target_data.h": {
+      "sha256": "21b023a9b9625b8a294e937f7b1534ce9e05758f2618b0f1fba8e45397a1a619",
+      "bytes": 8304
+    },
+    "/home/standard/Projects/X-nav-worktrees/scrum15-onboard-ais-presentation/build/integration-source/model/include/model/meteo_points.h": {
+      "sha256": "c0937f5aa47834bc8fbc49efb6b1914253f4722cc4dccf33965ac4aa34e8aa9e",
+      "bytes": 4269
+    },
+    "/home/standard/Projects/X-nav-worktrees/scrum15-onboard-ais-presentation/build/integration-source/model/include/model/navutil_base.h": {
+      "sha256": "d2a1859afc5d618c8c10f60abcdcf9b231a2aabc9b6090be39bceccff901d66b",
+      "bytes": 4035
+    },
+    "/home/standard/Projects/X-nav-worktrees/scrum15-onboard-ais-presentation/build/integration-source/model/include/model/config_vars.h": {
+      "sha256": "f627b00c070603a5ba76d863ac99064d28705efc0b577f3aaa1b9599e5821dd3",
+      "bytes": 4900
+    },
+    "/home/standard/Projects/X-nav-worktrees/scrum15-onboard-ais-presentation/build/integration-source/model/include/model/gpx_document.h": {
+      "sha256": "d8acc8d389171378544395cf78bbc05bdbb512f7856627400639cc6f4448dfc0",
+      "bytes": 1766
+    },
+    "/home/standard/Projects/X-nav-worktrees/scrum15-onboard-ais-presentation/build/integration-source/model/include/model/comm_navmsg.h": {
+      "sha256": "15da71e19082642241de2e5496c8068aeac8f349c72b1db4c0e01fb71e717e20",
+      "bytes": 12524
+    },
+    "/home/standard/Projects/X-nav-worktrees/scrum15-onboard-ais-presentation/build/integration-source/libs/observable/include/observable.h": {
+      "sha256": "a11b002b167b201a8bc9e3d573932dc033a043d904806409a93a5a11de653179",
+      "bytes": 7920
+    },
+    "/home/standard/Projects/X-nav-worktrees/scrum15-onboard-ais-presentation/build/integration-source/libs/observable/include/observable_evt.h": {
+      "sha256": "ae1484ceb1cd300548938a86453b9de79190dbffc0b2d4f6be3cddf37a4b5165",
+      "bytes": 1876
+    },
+    "/home/standard/Projects/X-nav-worktrees/scrum15-onboard-ais-presentation/build/integration-source/model/include/model/ocpn_types.h": {
+      "sha256": "4759750125ba3073f92617c07aac36fc7a76e4c1efd9348c6298d35961d807ad",
+      "bytes": 4335
+    },
+    "/home/standard/Projects/X-nav-worktrees/scrum15-onboard-ais-presentation/build/integration-source/model/include/model/select.h": {
+      "sha256": "4ff76e0b20caf62b87768304570ff98c75f1945bf79e1c3399eca4b53ebaa8fa",
+      "bytes": 4696
+    },
+    "/home/standard/Projects/X-nav-worktrees/scrum15-onboard-ais-presentation/build/integration-source/model/include/model/select_item.h": {
+      "sha256": "86a93add399c84127c685e99a87affb5e9958d7cc04b5ca9635655b4042134c6",
+      "bytes": 1978
+    },
+    "/home/standard/Projects/X-nav-worktrees/scrum15-onboard-ais-presentation/build/integration-source/model/include/model/track.h": {
+      "sha256": "87f3570f70723274a25a9c433979215d115c6965c49d635caf8c9f708db23863",
+      "bytes": 8261
+    },
+    "/home/standard/Projects/X-nav-worktrees/scrum15-onboard-ais-presentation/build/integration-source/model/include/model/datetime.h": {
+      "sha256": "45de96ae7d54ab3c0cb84659700e8df83455555cda312ae185592d2742574a96",
+      "bytes": 2873
+    },
+    "/home/standard/Projects/X-nav-worktrees/scrum15-onboard-ais-presentation/build/integration-source/include/ocpn_plugin.h": {
+      "sha256": "b9dd6df22181db4b9857531e2867eb8f16b91c1a6ef7ecddaaa71c90093f1785",
+      "bytes": 242308
+    },
+    "/home/standard/Projects/X-nav-worktrees/scrum15-onboard-ais-presentation/build/integration-source/libs/geoprim/src/bbox.h": {
+      "sha256": "0684431124aaec409e2fb6a89eb354daf544c535d7b65e2b20a38b20cfc774a0",
+      "bytes": 8213
+    },
+    "/home/standard/Projects/X-nav-worktrees/scrum15-onboard-ais-presentation/build/integration-source/model/include/model/hyperlink.h": {
+      "sha256": "27ea13346d03b1ed7202d5a901f1c4d564ebbc0e880032871d80fd8c3e873fc6",
+      "bytes": 1842
+    },
+    "/home/standard/Projects/X-nav-worktrees/scrum15-onboard-ais-presentation/build/integration-source/model/include/model/route.h": {
+      "sha256": "601604394a6d134e266dbdb0f851979f1d949f924d43cc61cb6b0fd853fe3e11",
+      "bytes": 14713
+    },
+    "/home/standard/Projects/X-nav-worktrees/scrum15-onboard-ais-presentation/build/integration-source/model/include/model/route_point.h": {
+      "sha256": "2ac07f2e201fe35e6a8351589dd256ae1fe7d5045592a65d3aa2d0f997fbd355",
+      "bytes": 21636
+    },
+    "/home/standard/Projects/X-nav-worktrees/scrum15-onboard-ais-presentation/build/integration-source/model/include/model/routeman.h": {
+      "sha256": "019bf24a75bdc1bfa6ea370751c21900bce71844bd8d84dfde9aa5786ef81d4d",
+      "bytes": 14761
+    },
+    "/home/standard/Projects/X-nav-worktrees/scrum15-onboard-ais-presentation/build/integration-source/model/include/model/MarkIcon.h": {
+      "sha256": "9dcf1fda70bbf0f0d647b065e191787c2c99829b0b4d8b68a1cd71bf8cbbf517",
+      "bytes": 1959
+    },
+    "/home/standard/Projects/X-nav-worktrees/scrum15-onboard-ais-presentation/build/integration-source/model/include/model/nav_object_database.h": {
+      "sha256": "c2f723a0688586c2c263c4769f7ec1e268cf93162544abbadcdcf347810d932f",
+      "bytes": 5968
+    },
+    "/home/standard/Projects/X-nav-worktrees/scrum15-onboard-ais-presentation/build/integration-source/libs/pugixml/pugixml.hpp": {
+      "sha256": "68ca7eac371875363257c85eea74e8e3d0a2d16e478d6685e140a9217bee36b4",
+      "bytes": 54297
+    },
+    "/home/standard/Projects/X-nav-worktrees/scrum15-onboard-ais-presentation/build/integration-source/libs/pugixml/pugiconfig.hpp": {
+      "sha256": "797e895912fdc50e8265a99000aeebf20dd6901afdb9be8d0d9497ae14333e24",
+      "bytes": 2896
+    },
+    "/home/standard/Projects/X-nav-worktrees/scrum15-onboard-ais-presentation/build/integration-source/libs/observable/include/observable_evtvar.h": {
+      "sha256": "b92dd38d6654b4341d7dec81e2a3e839d59394a5b40596b22aecf2e0af84c125",
+      "bytes": 3118
+    },
+    "/home/standard/Projects/X-nav-worktrees/scrum15-onboard-ais-presentation/build/integration-source/model/include/model/nmea_log.h": {
+      "sha256": "60fd550f3bb1a4543374baf68a97b3d26a643dfb6e55735a5a5fc1b55e3c1190",
+      "bytes": 937
+    },
+    "/home/standard/Projects/X-nav-worktrees/scrum15-onboard-ais-presentation/build/integration-source/model/include/model/navmsg_filter.h": {
+      "sha256": "2e3f94354541e29958ba0505e3457ab9374278c6f1db7a94e9aefb9f88952a84",
+      "bytes": 5208
+    },
+    "/home/standard/Projects/X-nav-worktrees/scrum15-onboard-ais-presentation/build/integration-source/libs/std_filesystem/include/std_filesystem.h": {
+      "sha256": "70199c3c02e7c26e610169531c5b9e5d86bd9dd40333aefa2c19ace48b49d63d",
+      "bytes": 262
+    },
+    "/home/standard/Projects/X-nav-worktrees/scrum15-onboard-ais-presentation/build/integration-source/libs/s52plib/src/color_types.h": {
+      "sha256": "0b226162ee9dd15140db40f16495caf1bd999f3691b15b43cf6efd6306826446",
+      "bytes": 2142
+    },
+    "/home/standard/Projects/X-nav-worktrees/scrum15-onboard-ais-presentation/build/integration-source/libs/nmea0183/src/nmea0183.h": {
+      "sha256": "666d04fa0232c6500711a774675d073d6551347ffabee50594db90b028d8433a",
+      "bytes": 4646
+    },
+    "/home/standard/Projects/X-nav-worktrees/scrum15-onboard-ais-presentation/build/integration-source/libs/nmea0183/src/nmea0183.hpp": {
+      "sha256": "66d5ebfa38707aa230299aaa36615e05216cae256ffcfc17c6a99a887b1530bd",
+      "bytes": 7526
+    },
+    "/home/standard/Projects/X-nav-worktrees/scrum15-onboard-ais-presentation/build/integration-source/libs/nmea0183/src/Sentence.hpp": {
+      "sha256": "e241784a9df302e817401c791fcedf623cf8e152ff38c96a12317f91a3492c1c",
+      "bytes": 4135
+    },
+    "/home/standard/Projects/X-nav-worktrees/scrum15-onboard-ais-presentation/build/integration-source/libs/nmea0183/src/Response.hpp": {
+      "sha256": "84bf9a6312cef0da0b76853586a1ff277518152f4a3cfb756ebda13279b1082d",
+      "bytes": 2727
+    },
+    "/home/standard/Projects/X-nav-worktrees/scrum15-onboard-ais-presentation/build/integration-source/libs/nmea0183/src/LatLong.hpp": {
+      "sha256": "3a5d5921f496522006abcc9d7d0706c0422c7f96b722ec86347d9ed63d1278f4",
+      "bytes": 3918
+    },
+    "/home/standard/Projects/X-nav-worktrees/scrum15-onboard-ais-presentation/build/integration-source/libs/nmea0183/src/hdm.hpp": {
+      "sha256": "9c7383d3357279d5c42faaed6605bf6980b1021feaff28b300558f25ef1906e6",
+      "bytes": 2521
+    },
+    "/home/standard/Projects/X-nav-worktrees/scrum15-onboard-ais-presentation/build/integration-source/libs/nmea0183/src/hdg.hpp": {
+      "sha256": "93b5fc91ad07f3fff215fda873aca196d5aa37490496943f92888d56d4bdf529",
+      "bytes": 2705
+    },
+    "/home/standard/Projects/X-nav-worktrees/scrum15-onboard-ais-presentation/build/integration-source/libs/nmea0183/src/hdt.hpp": {
+      "sha256": "2376d351565159a6ad5cce0b2f4ba9ebed15ea17caf167decdb81355b83bc8f7",
+      "bytes": 2390
+    },
+    "/home/standard/Projects/X-nav-worktrees/scrum15-onboard-ais-presentation/build/integration-source/libs/nmea0183/src/RMB.hpp": {
+      "sha256": "00603629b00167075900ce2df91c08eef1362e013931c8863e65da5bf84255e6",
+      "bytes": 2976
+    },
+    "/home/standard/Projects/X-nav-worktrees/scrum15-onboard-ais-presentation/build/integration-source/libs/nmea0183/src/RMC.HPP": {
+      "sha256": "3d585afdd7c372a4306496480482e4da11af6c2c3cc4104cf0c97d4e11ee2aa6",
+      "bytes": 2851
+    },
+    "/home/standard/Projects/X-nav-worktrees/scrum15-onboard-ais-presentation/build/integration-source/libs/nmea0183/src/wpl.hpp": {
+      "sha256": "dde162feba527e3659bb8d83e948e5da8c5abeff99f5073b21b63096c6a79b50",
+      "bytes": 2535
+    },
+    "/home/standard/Projects/X-nav-worktrees/scrum15-onboard-ais-presentation/build/integration-source/libs/nmea0183/src/rte.hpp": {
+      "sha256": "31ae37e20d4d6d359d8db6ae87528d643380bcc883856ebda5d9ebe1cd229125",
+      "bytes": 2727
+    },
+    "/home/standard/Projects/X-nav-worktrees/scrum15-onboard-ais-presentation/build/integration-source/libs/nmea0183/src/gll.hpp": {
+      "sha256": "9bfc98784c817e2e6501fe6ffce46c669bb50afda28a2eb658191177b07e420e",
+      "bytes": 2646
+    },
+    "/home/standard/Projects/X-nav-worktrees/scrum15-onboard-ais-presentation/build/integration-source/libs/nmea0183/src/vtg.hpp": {
+      "sha256": "373f799fbca2f3a3f3f346611d99030c2afc75735347da51c7e6150bd32c246b",
+      "bytes": 2616
+    },
+    "/home/standard/Projects/X-nav-worktrees/scrum15-onboard-ais-presentation/build/integration-source/libs/nmea0183/src/gsv.hpp": {
+      "sha256": "2494a84debf3c7b80fca09dcdd2748448992b3225fa6452d01d98c3c75bbb8f3",
+      "bytes": 2539
+    },
+    "/home/standard/Projects/X-nav-worktrees/scrum15-onboard-ais-presentation/build/integration-source/libs/nmea0183/src/gga.hpp": {
+      "sha256": "52095d4bd4b77aab17db728c883060c1ee307eff233e74aea743b86673dcbf82",
+      "bytes": 2899
+    },
+    "/home/standard/Projects/X-nav-worktrees/scrum15-onboard-ais-presentation/build/integration-source/libs/nmea0183/src/GPwpl.hpp": {
+      "sha256": "8966e629f7ff3e595b52ae2dccb4c940c786be395d021a6ae5cf244630e3f6c0",
+      "bytes": 2551
+    },
+    "/home/standard/Projects/X-nav-worktrees/scrum15-onboard-ais-presentation/build/integration-source/libs/nmea0183/src/apb.hpp": {
+      "sha256": "628a85811307d51a9347b368a837c7c8747bc95af2b1288872d9544a26e1adef",
+      "bytes": 3210
+    },
+    "/home/standard/Projects/X-nav-worktrees/scrum15-onboard-ais-presentation/build/integration-source/libs/nmea0183/src/xte.hpp": {
+      "sha256": "9673d76b0486d50089031da09e22a958da6df0c0d0094d78e0474da4aa347ba1",
+      "bytes": 2786
+    },
+    "/home/standard/Projects/X-nav-worktrees/scrum15-onboard-ais-presentation/build/integration-source/libs/nmea0183/src/mwd.hpp": {
+      "sha256": "b06efe81b3f99b88be5c2410d61b6a923978455ee216eaaf153b76512abc5fc4",
+      "bytes": 2693
+    },
+    "/home/standard/Projects/X-nav-worktrees/scrum15-onboard-ais-presentation/build/integration-source/libs/nmea0183/src/mwv.hpp": {
+      "sha256": "b167658ee1622e36259fadd1c4d60abf06d4833d3f4443568e9b1f0e6d27e7c2",
+      "bytes": 2698
+    },
+    "/home/standard/Projects/X-nav-worktrees/scrum15-onboard-ais-presentation/build/integration-source/libs/geoprim/src/vector2D.h": {
+      "sha256": "cabb99e3917b11df37ab6f89e65bb71de4f694d4895eaddd5bb948cbe146ee59",
+      "bytes": 2894
+    },
+    "/home/standard/Projects/X-nav-worktrees/scrum15-onboard-ais-presentation/build/integration-source/model/include/model/ais_state_vars.h": {
+      "sha256": "c11b699110466a7c023cb370835f6002284ee8da5d9c8a2ec8022a891c27a3a5",
+      "bytes": 3633
+    },
+    "/home/standard/Projects/X-nav-worktrees/scrum15-onboard-ais-presentation/build/integration-source/model/include/model/cutil.h": {
+      "sha256": "90cf89d8916655909a795d4c804242ebd8414bb3364651626d4100f519f897df",
+      "bytes": 2347
+    },
+    "/home/standard/Projects/X-nav-worktrees/scrum15-onboard-ais-presentation/build/integration-source/model/include/model/georef.h": {
+      "sha256": "a011daf612d73ad08bb408dd1b56c0b32f1bfb279145b4ef8bd30d4dfa3de816",
+      "bytes": 37485
+    },
+    "/home/standard/Projects/X-nav-worktrees/scrum15-onboard-ais-presentation/build/integration-source/model/include/model/own_ship.h": {
+      "sha256": "3524fb57c7e0e6fbb5c72e989b36e40595a000ce0fa17b8b87695c977da5dff7",
+      "bytes": 3314
+    },
+    "/home/standard/Projects/X-nav-worktrees/scrum15-onboard-ais-presentation/build/integration-source/model/include/model/wx28compat.h": {
+      "sha256": "91ec3a1111f8d1470caec2645cfa4cdf7aefde8eba2e96998541221dff769d0f",
+      "bytes": 2674
+    },
+    "/home/standard/Projects/X-nav-worktrees/scrum15-onboard-ais-presentation/build/integration-source/gui/include/gui/ais.h": {
+      "sha256": "645d987327a3192f1717bb3859f232e94ebb5697ce6cd5b388f81a8680a3d4d3",
+      "bytes": 3201
+    },
+    "/home/standard/Projects/X-nav-worktrees/scrum15-onboard-ais-presentation/build/integration-source/gui/include/gui/gui_lib.h": {
+      "sha256": "c36263c455992f9d5443fd766d42ac02df6345c2a06f59bbd8eccfb6ba83ab6c",
+      "bytes": 5051
+    },
+    "/home/standard/Projects/X-nav-worktrees/scrum15-onboard-ais-presentation/build/integration-source/gui/include/gui/navutil.h": {
+      "sha256": "f72514b39e653d63945c735765f7f0f2967707069f4ee9a0b1d0e2b1b0495d8f",
+      "bytes": 8426
+    },
+    "/home/standard/Projects/X-nav-worktrees/scrum15-onboard-ais-presentation/build/integration-source/gui/include/gui/chartdbs.h": {
+      "sha256": "1cb06f28cd323aa55bc708d63613c79b12fb4239c0933113d0e3565b0cbf524d",
+      "bytes": 14407
+    },
+    "/home/standard/Projects/X-nav-worktrees/scrum15-onboard-ais-presentation/build/integration-source/libs/geoprim/src/LLRegion.h": {
+      "sha256": "6081086144e56b982edc87f59d844f83936a21a194a48d14952889cb609dc514",
+      "bytes": 3187
+    },
+    "/home/standard/Projects/X-nav-worktrees/scrum15-onboard-ais-presentation/build/integration-source/gui/include/gui/ocpndc.h": {
+      "sha256": "bb092a5a1315e206b719958ae8e3e4328428c4c102162dc929944ac8f1373a03",
+      "bytes": 7451
+    },
+    "/home/standard/Projects/X-nav-worktrees/scrum15-onboard-ais-presentation/build/integration-source/gui/include/gui/dychart.h": {
+      "sha256": "6c7d587e86239dabf68e37ecc1b23103fc77f4a1eed9f703bf4dddf6a5d88719",
+      "bytes": 7076
+    },
+    "/home/standard/Projects/X-nav/build/xnav-linux/include/config.h": {
+      "sha256": "be9a77c48d2c67341e1f28db3d60b55044f874268adbfa799584a01e1e0e13bd",
+      "bytes": 1645
+    },
+    "/home/standard/Projects/X-nav/.local/sysroot/usr/include/GL/glew.h": {
+      "sha256": "5d5d33eef551f8d7ae4ba06f4efd7ade73b8095385649efd94949a25de293339",
+      "bytes": 1335182
+    },
+    "/home/standard/Projects/X-nav-worktrees/scrum15-onboard-ais-presentation/build/integration-source/libs/geoprim/src/linmath.h": {
+      "sha256": "5dacc3f5e696a265f1761b490ae41e244b35f6ca626474766c3548aea7e8c533",
+      "bytes": 14892
+    },
+    "/home/standard/Projects/X-nav-worktrees/scrum15-onboard-ais-presentation/build/integration-source/libs/s52plib/src/TexFont.h": {
+      "sha256": "617f486076ede172c50b129a65df5765d2314594e6355f77920ba55567d338d5",
+      "bytes": 3090
+    },
+    "/home/standard/Projects/X-nav-worktrees/scrum15-onboard-ais-presentation/build/integration-source/gui/include/gui/viewport.h": {
+      "sha256": "16449b22404af1d73814dff5255a9fecf88aca917e5bd9a6aacc6971c6a67e88",
+      "bytes": 10899
+    },
+    "/home/standard/Projects/X-nav-worktrees/scrum15-onboard-ais-presentation/build/integration-source/gui/include/gui/shaders.h": {
+      "sha256": "c2cc5b4d12d4dcea9cf767d081ec5af30ab755332e8f292744471096b179c241",
+      "bytes": 6079
+    },
+    "/home/standard/Projects/X-nav-worktrees/scrum15-onboard-ais-presentation/build/integration-source/libs/sound/include/OCPN_Sound.h": {
+      "sha256": "36f673e9551c3d637172b45ddac6d03e6fd5e625e4c3bbf54bd688f4128f7a72",
+      "bytes": 4379
+    },
+    "/home/standard/Projects/X-nav-worktrees/scrum15-onboard-ais-presentation/build/integration-source/gui/include/gui/AISTargetListDialog.h": {
+      "sha256": "72b0e0b799d50398b3dab80357c60824d710880d511a4fb5631760172e2222c2",
+      "bytes": 4279
+    },
+    "/home/standard/Projects/X-nav-worktrees/scrum15-onboard-ais-presentation/src/integration/OnboardAisPresentation.h": {
+      "sha256": "4e4212761550dd7a5cdbbb368f50cb342daca705db902ec463fb361388bcd77d",
+      "bytes": 402
+    },
+    "/home/standard/Projects/X-nav-worktrees/scrum15-onboard-ais-presentation/src/integration/OnboardAisBody.h": {
+      "sha256": "2e8414c925c5f026198e164b08f70ee675a231abd5b1a3a7fce4167a410e1ab4",
+      "bytes": 3769
+    },
+    "/home/standard/Projects/X-nav-worktrees/scrum15-onboard-ais-presentation/build/integration-source/gui/include/gui/AISTargetAlertDialog.h": {
+      "sha256": "c0866a2c79f66190a83bca4422b38cae4bc118059209fac6b55a808bec379736",
+      "bytes": 3897
+    },
+    "/home/standard/Projects/X-nav-worktrees/scrum15-onboard-ais-presentation/build/integration-source/gui/include/gui/AISTargetQueryDialog.h": {
+      "sha256": "b3eed32b7535c599009f3962294a67c7e725f23e4518c04bc4423a0b8ca6c471",
+      "bytes": 3860
+    },
+    "/home/standard/Projects/X-nav-worktrees/scrum15-onboard-ais-presentation/build/integration-source/gui/include/gui/chcanv.h": {
+      "sha256": "8568eb92f6eddbe22744c0ff9dd44766b98cf60ee39ac9374b6f7fda952d6f41",
+      "bytes": 43697
+    },
+    "/home/standard/Projects/X-nav-worktrees/scrum15-onboard-ais-presentation/build/integration-source/gui/include/gui/undo.h": {
+      "sha256": "05afd7b0f94afc05541c4674ec2728367c8c0c32530f2dfee3f7514f57f8a10e",
+      "bytes": 3055
+    },
+    "/home/standard/Projects/X-nav-worktrees/scrum15-onboard-ais-presentation/build/integration-source/gui/include/gui/ocpCursor.h": {
+      "sha256": "de275dd8fa7d514de343bef75f6d814563cf332b9f41d82b24504c4b188423b2",
+      "bytes": 1954
+    },
+    "/home/standard/Projects/X-nav-worktrees/scrum15-onboard-ais-presentation/build/integration-source/gui/include/gui/timers.h": {
+      "sha256": "bfba332cc45f1ca7ad311277549cf9989bb24607df76386e096a133b183b0c6b",
+      "bytes": 2029
+    },
+    "/home/standard/Projects/X-nav-worktrees/scrum15-onboard-ais-presentation/build/integration-source/gui/include/gui/emboss_data.h": {
+      "sha256": "c3861c22ec06c01fbcbe8763b1111007ff606cf04072bd7792472fdc21bab1b0",
+      "bytes": 2042
+    },
+    "/home/standard/Projects/X-nav-worktrees/scrum15-onboard-ais-presentation/build/integration-source/gui/include/gui/S57Sector.h": {
+      "sha256": "9eeb1b179fcdd25d8636ef53d22a49029de611ddcf5c454eb73b9c6557b0ad8a",
+      "bytes": 1957
+    },
+    "/home/standard/Projects/X-nav-worktrees/scrum15-onboard-ais-presentation/build/integration-source/gui/include/gui/gshhs.h": {
+      "sha256": "3d0cd891124fd21d0f3855c4f007326a57f0ac168c511d1bca72cf8d5bba692a",
+      "bytes": 11580
+    },
+    "/home/standard/Projects/X-nav-worktrees/scrum15-onboard-ais-presentation/build/integration-source/libs/geoprim/src/poly_math.h": {
+      "sha256": "647b5418db7b9e4687198b7c86b651352a2e08d2a8d9e8a811bbc4e85538e90c",
+      "bytes": 2027
+    },
+    "/home/standard/Projects/X-nav-worktrees/scrum15-onboard-ais-presentation/build/integration-source/gui/include/gui/notification_manager_gui.h": {
+      "sha256": "4a3734b7b16f1e178a6e081befe4def4e70d4abf7e2a2c891177c506323f1bcf",
+      "bytes": 5092
+    },
+    "/home/standard/Projects/X-nav-worktrees/scrum15-onboard-ais-presentation/build/integration-source/model/include/model/notification.h": {
+      "sha256": "787fcd40e85d7f8e75015a628b336b3a52e90a2049466401165bc6be90623cf0",
+      "bytes": 2507
+    },
+    "/home/standard/Projects/X-nav-worktrees/scrum15-onboard-ais-presentation/build/integration-source/gui/include/gui/FontMgr.h": {
+      "sha256": "4640e46bc1e579a9a8bdcfbaacea816f5f31bc3e55c4f717f4eaac50768454e0",
+      "bytes": 15183
+    },
+    "/home/standard/Projects/X-nav-worktrees/scrum15-onboard-ais-presentation/build/integration-source/gui/include/gui/FontDesc.h": {
+      "sha256": "573090af1fa367fcfd0628cc6dd43104cee4f1beb7f2576937487a29b4f22b6c",
+      "bytes": 2413
+    },
+    "/home/standard/Projects/X-nav-worktrees/scrum15-onboard-ais-presentation/build/integration-source/libs/geoprim/src/line_clip.h": {
+      "sha256": "c5e1ba332652a5b4fc61e22766e0cd6e954f4d475b2460479ab0462d9a934fa1",
+      "bytes": 1136
+    },
+    "/home/standard/Projects/X-nav-worktrees/scrum15-onboard-ais-presentation/build/integration-source/gui/include/gui/ocpn_frame.h": {
+      "sha256": "8133a7c77e4aed29dac11a0a47f527a4f0fa0c91a41b251c13cce10cd5013284",
+      "bytes": 14224
+    },
+    "/home/standard/Projects/X-nav-worktrees/scrum15-onboard-ais-presentation/build/integration-source/model/include/model/comm_appmsg_bus.h": {
+      "sha256": "9c99d718b9155c531993e8ec771d744bd1971e9ad9b9a63b3541d105ca16a54b",
+      "bytes": 2475
+    },
+    "/home/standard/Projects/X-nav-worktrees/scrum15-onboard-ais-presentation/build/integration-source/model/include/model/comm_appmsg.h": {
+      "sha256": "c12873f232714dfb98531e9bc23dbe5091bb31fef3f9933008611478231e37e8",
+      "bytes": 7721
+    },
+    "/home/standard/Projects/X-nav-worktrees/scrum15-onboard-ais-presentation/build/integration-source/model/include/model/comm_driver.h": {
+      "sha256": "8bc93ba3d53bfc42444854c0a13ed250ec47b7cc3bb2e16e815d927c95a35902",
+      "bytes": 4046
+    },
+    "/home/standard/Projects/X-nav-worktrees/scrum15-onboard-ais-presentation/build/integration-source/gui/include/gui/comm_overflow_dlg.h": {
+      "sha256": "58ea00f4ae9e845a378ae04fb13982acb5e56c8631c4e19ccb7b12ce9948c9df",
+      "bytes": 1902
+    },
+    "/home/standard/Projects/X-nav-worktrees/scrum15-onboard-ais-presentation/build/integration-source/gui/include/gui/connections_dlg.h": {
+      "sha256": "26c3b839aac91ffb4bafe0cbc0e6d56c245863d309189202e22b3f597eaa0348",
+      "bytes": 2607
+    },
+    "/home/standard/Projects/X-nav-worktrees/scrum15-onboard-ais-presentation/build/integration-source/model/include/model/conn_params.h": {
+      "sha256": "0668f53c82aee3fb6dd1bf63faf8af8e386b78ea8715266d14af2813763d0ee5",
+      "bytes": 4159
+    },
+    "/home/standard/Projects/X-nav-worktrees/scrum15-onboard-ais-presentation/build/integration-source/model/include/model/ds_porttype.h": {
+      "sha256": "f6ab200a7e2d40d953dd0bcc4e939e540aecf92768ddb3cdda35787c44bd0e1b",
+      "bytes": 1696
+    },
+    "/home/standard/Projects/X-nav-worktrees/scrum15-onboard-ais-presentation/build/integration-source/gui/include/gui/color_handler.h": {
+      "sha256": "c4c0ba90e751907be8259beff658c5c492d2a8db1c47b6fba7654cff3b0ca3ef",
+      "bytes": 963
+    },
+    "/home/standard/Projects/X-nav-worktrees/scrum15-onboard-ais-presentation/build/integration-source/gui/include/gui/data_monitor.h": {
+      "sha256": "d5492cef959d0818a2e8867953f4f1602ee760d01fdf593130ad0ec065b7fda9",
+      "bytes": 3117
+    },
+    "/home/standard/Projects/X-nav-worktrees/scrum15-onboard-ais-presentation/build/integration-source/model/include/model/data_monitor_src.h": {
+      "sha256": "aa6f693bc7c3a2c6d1fc05ec6489cf6fba494a202bdea7974f093865b5507762",
+      "bytes": 2892
+    },
+    "/home/standard/Projects/X-nav-worktrees/scrum15-onboard-ais-presentation/build/integration-source/model/include/model/comm_navmsg_bus.h": {
+      "sha256": "c7f94af0e4ad29da2e78bd2e052862039cb5b39bffcb8a68d14628365dbabaa7",
+      "bytes": 2975
+    },
+    "/home/standard/Projects/X-nav-worktrees/scrum15-onboard-ais-presentation/build/integration-source/model/include/model/ocpn_utils.h": {
+      "sha256": "f8b198d735b77b42d4a231f662b86af59a04cf592601515305a9d8cd3e9215d4",
+      "bytes": 3837
+    },
+    "/home/standard/Projects/X-nav-worktrees/scrum15-onboard-ais-presentation/build/integration-source/gui/include/gui/tty_scroll.h": {
+      "sha256": "66ab78ada2a7ee949091865d87ba078b6099ca2d0fd3d90782740591aaec759a",
+      "bytes": 4300
+    },
+    "/home/standard/Projects/X-nav-worktrees/scrum15-onboard-ais-presentation/build/integration-source/gui/include/gui/load_errors_dlg.h": {
+      "sha256": "d07882156896a1175154da9b1912bbd0997cad3d0e02c42af2450e26ea327e17",
+      "bytes": 1810
+    },
+    "/home/standard/Projects/X-nav-worktrees/scrum15-onboard-ais-presentation/build/integration-source/libs/s52plib/src/s52s57.h": {
+      "sha256": "96cdbeccf4c49aa536acf70e48d2bf8d10717bae6d27d6561f3dfe0fc7943cc2",
+      "bytes": 16262
+    },
+    "/home/standard/Projects/X-nav-worktrees/scrum15-onboard-ais-presentation/build/integration-source/libs/s57-charts/include/s57registrar_mgr.h": {
+      "sha256": "519cb77c0749462d2849ca102d02bbd6a09893dec4e0504e84db5dc890ba1e25",
+      "bytes": 2218
+    },
+    "/home/standard/Projects/X-nav-worktrees/scrum15-onboard-ais-presentation/build/integration-source/gui/include/gui/SencManager.h": {
+      "sha256": "f74251bf221e242ed8fc65cd5612c4546fffae9cd073554b515ae74b7f8aa322",
+      "bytes": 4713
+    },
+    "/home/standard/Projects/X-nav-worktrees/scrum15-onboard-ais-presentation/build/integration-source/gui/include/gui/displays.h": {
+      "sha256": "76e41e0fd4e68f13a474bbf735829f821779272542c8bf95923e7830a646c317",
+      "bytes": 2982
+    },
+    "/home/standard/Projects/X-nav-worktrees/scrum15-onboard-ais-presentation/build/integration-source/gui/include/gui/OCPNPlatform.h": {
+      "sha256": "3ba6c4fc383db0e7ceede01a956d3cfa9d8d39b434814603ad01d9f02d8696ab",
+      "bytes": 8666
+    },
+    "/home/standard/Projects/X-nav-worktrees/scrum15-onboard-ais-presentation/build/integration-source/model/include/model/base_platform.h": {
+      "sha256": "7289c5e956e9e57181bffb82005dd5b6770a93b7d1859582375bcf4cb18a39f0",
+      "bytes": 5678
+    },
+    "/home/standard/Projects/X-nav-worktrees/scrum15-onboard-ais-presentation/build/integration-source/gui/include/gui/styles.h": {
+      "sha256": "7b0c6f5dedd9966119957572afbdf377f20e98e413991a17a51ba79c6ad3bc0a",
+      "bytes": 7392
+    }
+  }
+}

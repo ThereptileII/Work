@@ -9,6 +9,7 @@ target_sources(${PACKAGE_NAME} PRIVATE "${OPENNAV_ROOT}/src/integration/OpenCPNI
 target_sources(${PACKAGE_NAME} PRIVATE "${OPENNAV_ROOT}/src/integration/AnchorGeometry.cpp")
 target_sources(${PACKAGE_NAME} PRIVATE "${OPENNAV_ROOT}/src/integration/OnlineAis.cpp")
 target_sources(${PACKAGE_NAME} PRIVATE "${OPENNAV_ROOT}/src/integration/OnlineAisOverlay.cpp")
+target_sources(${PACKAGE_NAME} PRIVATE "${OPENNAV_ROOT}/src/integration/OnboardAisPresentation.cpp")
 target_sources(${PACKAGE_NAME} PRIVATE "${OPENNAV_ROOT}/src/integration/DashboardPresentation.cpp")
 # Only the bundled, source-pinned Dashboard opts into transient XNav
 # presentation. No third-party plugin ABI or normal upstream build is changed.
@@ -48,6 +49,10 @@ string(TIMESTAMP OPENNAV_BUILD_DATE "%Y-%m-%dT%H:%M:%SZ" UTC)
 configure_file("${OPENNAV_ROOT}/src/integration/OpenNavBuild.h.in" "${CMAKE_BINARY_DIR}/include/OpenNavBuild.h" @ONLY)
 target_include_directories(${PACKAGE_NAME} PRIVATE "${OPENNAV_ROOT}/src")
 target_compile_definitions(${PACKAGE_NAME} PRIVATE OPENNAV_X=1)
+# The optional S-52 geographic-label painter is a bounded integration helper;
+# the standalone upstream library and all default presentation paths stay stock.
+target_compile_definitions(S52PLIB PRIVATE OPENNAV_X=1)
+target_include_directories(S52PLIB PRIVATE "${OPENNAV_ROOT}/src")
 # Preserve normal plugin preferences while upstream Safe Mode blocks loading.
 # Limit this additional definition to the one affected model translation unit.
 set_property(SOURCE "${CMAKE_SOURCE_DIR}/model/src/plugin_loader.cpp"
@@ -251,8 +256,19 @@ set_property(DIRECTORY APPEND PROPERTY CMAKE_CONFIGURE_DEPENDS
   "${OPENNAV_ROOT}/docs/design/prototype-tokens.json"
   "${OPENNAV_ROOT}/tools/generate-xnav-chart-style.py")
 set_property(DIRECTORY APPEND PROPERTY CMAKE_CONFIGURE_DEPENDS
-  "${OPENNAV_ROOT}/tools/chart_raster_ink.py")
-target_sources(${PACKAGE_NAME} PRIVATE "${OPENNAV_ROOT}/src/integration/ChartPresentation.cpp")
+  "${OPENNAV_ROOT}/tools/chart_raster_ink.py"
+  "${OPENNAV_ROOT}/tools/chart_anchor_art.py"
+  "${OPENNAV_ROOT}/resources/chart-style/v1/anchorage/ACHARE51.svg"
+  "${OPENNAV_ROOT}/resources/chart-style/v1/anchorage/ACHARE51-alpha.json"
+  "${OPENNAV_ROOT}/resources/chart-style/v1/anchorage/provenance.json"
+  "${OPENNAV_ROOT}/docs/design/prototype/src/chart-marker-art.js"
+  "${OPENNAV_ROOT}/docs/design/prototype/src/chart-symbols.js"
+  "${OPENNAV_ROOT}/docs/design/prototype/src/chart-symbols.css"
+  "${OPENNAV_ROOT}/docs/design/prototype/src/style.css")
+target_sources(${PACKAGE_NAME} PRIVATE "${OPENNAV_ROOT}/src/integration/ChartPresentation.cpp"
+  "${OPENNAV_ROOT}/src/integration/ChartRouteWaypoint.cpp"
+  "${OPENNAV_ROOT}/src/integration/ChartRouteUnderlay.cpp"
+  "${OPENNAV_ROOT}/src/integration/ChartRouteUnderlayGeometry.cpp")
 target_include_directories(${PACKAGE_NAME} PRIVATE "${xnav_chart_style}")
 install(FILES "${xnav_chart_style}/chartsymbols.xml" "${xnav_chart_style}/S52RAZDS.RLE"
   "${xnav_chart_style}/rastersymbols-day.png" "${xnav_chart_style}/rastersymbols-dusk.png"

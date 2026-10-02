@@ -2,7 +2,7 @@
 """Derive bounded XNav palette resources from verified pinned OpenCPN bytes.
 
 Only the enumerated palette roles, geographic-name ink, two built-up-area fill tokens and a proven
-neutral sprite-ink mask may change. Original inputs are never modified.
+neutral sprite-ink mask plus the isolated ACHARE51 artwork tile may change. Original inputs are never modified.
 """
 import argparse
 import hashlib
@@ -11,6 +11,7 @@ from pathlib import Path
 import re
 import xml.etree.ElementTree as ET
 from chart_raster_ink import decode, derive
+import chart_anchor_art
 
 ROOT=Path(__file__).resolve().parents[1]
 ALLOWED={'LANDA','CSTLN','DEPDW','DEPMD','DEPMS','DEPVS','DEPIT','DEPCN','DEPSC','SNDG1','SNDG2','CHBLK','CHGRD'}
@@ -74,6 +75,7 @@ def validate_resource_changes(original, styled, colors):
     for stock,styled in zip(before.find('lookups'),after.find('lookups')):
         assert styled.findtext('instruction')==styled_instruction(stock), 'Lookup changed beyond approved paint roles'
         styled.find('instruction').text=stock.findtext('instruction')
+    chart_anchor_art.restore_bitmap_for_validation(before, after)
     # Added nodes must not make whitespace significant in the identity check.
     for tree in (before,after):
         for node in tree.iter():
@@ -131,6 +133,7 @@ def generate(source, output):
         return match[1]+after+match[4]
     xml=re.sub(r'(<lookup\b[^>]*name="([^"]+)"[^>]*>)(.*?)(</lookup>)',name_replace,xml,flags=re.S)
     assert geography_count==18, 'Pinned geographic name lookup count changed'
+    xml=chart_anchor_art.relocate(xml)
     validate_resource_changes(original['chartsymbols.xml'],xml,colors)
     result=dict(original);result['chartsymbols.xml']=xml.encode('utf-8')
     # Pinned Day ink identifies neutral CHBLK/CHGRD pixels. Theme sheets use
@@ -144,6 +147,11 @@ def generate(source, output):
         result[name], count = derive(day_pixels, original[name], source_rgb, colors[table]['CHBLK'])
         raster_ink[name] = {'sourceRgb':source_rgb, 'targetRgb':colors[table]['CHBLK'],
                             'changedPixels':count, 'alphaAndGeometryPreserved':True}
+    anchor_art = {}
+    for table, name in [('DAY_BRIGHT','rastersymbols-day.png'),
+                        ('DUSK','rastersymbols-dusk.png'),
+                        ('NIGHT','rastersymbols-dark.png')]:
+        result[name], anchor_art[name] = chart_anchor_art.paint(result[name], table)
     output.mkdir(parents=True,exist_ok=True)
     def write(path,content):
         if not path.exists() or path.read_bytes()!=content:path.write_bytes(content)
@@ -151,6 +159,7 @@ def generate(source, output):
     metadata={'version':definition['version'],'upstreamCommit':lock['upstreamCommit'],
               'prototypeSha256':definition['prototypeSha256'],'palette':colors,
               'neutralRasterInk':raster_ink,
+              'anchorageArtwork':anchor_art,
               'geographicNameLookups':geography_count,
               'files':{n:{'sha256':hashlib.sha256(c).hexdigest(),'bytes':len(c)} for n,c in result.items()}}
     write(output/'manifest.json',(json.dumps(metadata,indent=2)+'\n').encode())
@@ -169,4 +178,4 @@ def generate(source, output):
 if __name__=='__main__':
     p=argparse.ArgumentParser();p.add_argument('--source',type=Path,required=True);p.add_argument('--output',type=Path,required=True)
     a=p.parse_args();m=generate(a.source,a.output)
-    print('Verified pinned resources; generated three chart palettes, two BUAARE fills, 18 geographic-name ink rules and resource hashes; other navigation rules unchanged')
+    print('Verified pinned resources; generated three chart palettes, two BUAARE fills, 18 geographic-name ink rules, isolated ACHARE51 artwork and resource hashes; other navigation rules unchanged')
