@@ -105,3 +105,14 @@ and payload SHA-256
 This demonstrates the archive layout only; it is not evidence for frozen
 candidate 0e9ec666. Native 7-Zip extraction and the actual current two-instance
 run remain pending.
+
+## Shared native plugin guard
+
+After the two-instance gate, the same authenticated and unchanged runtime is
+passed to the isolated SCRUM-211 plugin download guard. It builds only that
+small source probe against matching SDKs and the candidate DLLs. The helper
+receives the parent-verified package manifest hash and exact commit, inherits
+no GitHub token, and records temporary trust cleanup. Both probes must pass
+before the combined result passes. The final runtime hash and upstream gate
+checks still run afterward. No second candidate download or product build is
+introduced; native execution remains pending an eligible candidate artifact.

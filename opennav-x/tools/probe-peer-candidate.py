@@ -286,6 +286,26 @@ def main(args):
                 observed['test_source_commit'] == report['test_source_commit'] and
                 observed['executable_sha256'] == report['executable_sha256'] and len(observed['profiles']) == 2 and
                 all(p['build_commit'] == args.commit for p in observed['profiles']), 'running candidate identity/result mismatch')
+        plugin_helper = ROOT / 'tools/test-plugin-download-guard-windows.py'
+        plugin_evidence = args.evidence / 'plugin-download-guard'
+        plugin_manifest = workspace / 'package.json'
+        report['plugin_probe_files_sha256'] = {name: sha(ROOT / name) for name in (
+            'tools/test-plugin-download-guard-windows.py', 'tools/test-plugin-download-guard.py',
+            'tools/plugin-download-guard-probe.cpp', 'tools/plugin-download-guard-server.py',
+            'tools/plugin-probe-owned-trust.ps1', 'tools/windows-plugin-archive-sdk.lock.json',
+            'tests/plugin_download_guard/CMakeLists.txt')}
+        plugin_result = subprocess.run([sys.executable, str(plugin_helper),
+            '--runtime-dir', str(workspace / 'runtime'), '--package-manifest-path', str(plugin_manifest),
+            '--expected-manifest-sha256', sha(plugin_manifest), '--expected-commit', args.commit,
+            '--evidence', str(plugin_evidence)], timeout=600, env=test_env)
+        plugin_observed = json.loads((plugin_evidence / 'native-results.json').read_text())
+        require(plugin_result.returncode == 0 and plugin_observed['status'] == 'passed' and
+                plugin_observed['commit'] == args.commit and
+                plugin_observed['packageManifestSha256'] == sha(plugin_manifest) and
+                plugin_observed['ownedCaCleanup'] == 'verified absent',
+                'native plugin download guard failed or changed candidate identity')
+        report['plugin_download_guard'] = {'status': 'passed',
+            'results_sha256': sha(plugin_evidence / 'native-results.json')}
         package = json.loads((workspace / 'package.json').read_text(encoding='utf-8-sig'))
         require(all(sha(workspace / 'runtime' / item['path']) == item['sha256'] for item in package['files']),
                 'packaged runtime changed during test')

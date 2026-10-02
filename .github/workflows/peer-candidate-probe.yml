@@ -1,4 +1,4 @@
-name: SKAGER exact candidate two-instance probe
+name: SKAGER exact candidate security probes
 on:
   push:
     branches: [skager-candidate-security-probes]
@@ -27,7 +27,7 @@ permissions:
 jobs:
   native-peer:
     runs-on: windows-2022
-    timeout-minutes: 15
+    timeout-minutes: 20
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
       - name: Resolve reviewed exact candidate request
@@ -52,7 +52,7 @@ jobs:
         run: |
           $ErrorActionPreference = 'Stop'
           python opennav-x/tools/probe-peer-candidate.py --run $env:CANDIDATE_RUN --commit $env:CANDIDATE_COMMIT --artifact $env:CANDIDATE_ARTIFACT --digest $env:ARTIFACT_DIGEST --seven 'C:\Program Files\7-Zip\7z.exe' --evidence opennav-x/evidence/local/peer-candidate
-          if ($LASTEXITCODE -ne 0) { throw 'Exact candidate two-instance probe failed' }
+          if ($LASTEXITCODE -ne 0) { throw 'Exact candidate security probes failed' }
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         if: always()
         with:

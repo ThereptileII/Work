@@ -48,8 +48,12 @@ def prepare(upstream, source):
         dest = source / relative
         dest.parent.mkdir(parents=True, exist_ok=True)
         dest.write_bytes(data)
+    return patch_and_slice(source)
+
+
+def patch_and_slice(source, patch_program="patch"):
     patch = ROOT / "patches/opencpn-5.12.4-download-trust.patch"
-    subprocess.run(["patch", "--batch", "--fuzz=0", "-p1", "-d", str(source)],
+    subprocess.run([str(patch_program), "--batch", "--fuzz=0", "-p1", "-d", str(source)],
                    input=patch.read_bytes(), check=True, stdout=subprocess.DEVNULL)
     for relative, expected in EXPECTED.items():
         if sha((source / relative).read_bytes()) != expected:
@@ -68,7 +72,7 @@ def prepare(upstream, source):
         slices.append(body)
         records.append({"signature": signature, "firstLine": text.count("\n", 0, start) + 1,
                         "sha256": sha(body.encode())})
-    (source / "plugin-handler-slices.inc").write_text("\n".join(slices))
+    (source / "plugin-handler-slices.inc").write_text("\n".join(slices), newline="\n")
     return {"upstreamCommit": PIN, "patchedSourceSha256": EXPECTED,
             "patchSha256": sha(patch.read_bytes()), "unchangedFunctionSlices": records,
             "probeSha256": sha((ROOT / "tools/plugin-download-guard-probe.cpp").read_bytes())}
@@ -101,8 +105,13 @@ def probe(binary, work, name, url, ca, expected_ok):
     for suffix in ("files", "dirs", "version"):
         (root / "records" / f"fixture.{suffix}").write_bytes(b"existing record\n")
     before = snapshot(root)
-    result = subprocess.run([str(binary), url, str(root)],
-        env=dict(os.environ, OPENNAV_DOWNLOADER_TEST_CA_FILE=str(ca)),
+    env = dict(os.environ)
+    env.pop("OPENNAV_DOWNLOADER_TEST_CA_FILE", None)
+    if ca is not None:
+        env["OPENNAV_DOWNLOADER_TEST_CA_FILE"] = str(ca)
+    else:
+        env["PATH"] = str(binary.parent) + os.pathsep + str(Path(os.environ["SystemRoot"]) / "System32")
+    result = subprocess.run([str(binary), url, str(root)], env=env,
         capture_output=True, text=True, timeout=30)
     (work / f"{name}.stdout").write_text(result.stdout)
     (work / f"{name}.stderr").write_text(result.stderr)
@@ -152,6 +161,36 @@ def start_server(work, name, cert, key, archive):
     raise RuntimeError("TLS fixture did not start")
 
 
+def run_cases(binary, output, ca, valid_cert, valid_key, bad_cert, bad_key, result):
+    archive = output / "inert.tar"
+    with tarfile.open(archive, "w", format=tarfile.USTAR_FORMAT) as tar:
+        for name, data in (("fixture/metadata.xml", b"<plugin/>"),
+            ("fixture/share/existing.txt", b"updated inert payload\n"),
+            ("fixture/share/new.txt", b"new inert payload\n")):
+            info = tarfile.TarInfo(name)
+            info.size = len(data)
+            info.mode = 0o600
+            tar.addfile(info, io.BytesIO(data))
+    result["archiveSha256"] = sha(archive.read_bytes())
+    servers = []
+    try:
+        good, good_port = start_server(output, "trusted", valid_cert, valid_key, archive)
+        servers.append(good)
+        bad, bad_port = start_server(output, "untrusted", bad_cert, bad_key, archive)
+        servers.append(bad)
+        result["cases"] = []
+        for name, url, expected in (
+            ("valid", f"https://localhost:{good_port}/valid", True),
+            ("untrusted_tls", f"https://localhost:{bad_port}/valid", False),
+            ("interrupted_extractable_archive", f"https://localhost:{good_port}/interrupted", False)):
+            result["cases"].append(probe(binary, output, name, url, ca, expected))
+    finally:
+        for process in servers:
+            process.terminate()
+        for process in servers:
+            process.wait(timeout=5)
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--upstream", type=Path, default=ROOT / "upstream/OpenCPN")
@@ -186,33 +225,7 @@ def main():
             other_key, other_ca = tls.make_ca(certs, "untrusted")
             valid_key, valid_cert = tls.make_leaf(certs, "valid", key, ca, "localhost")
             bad_key, bad_cert = tls.make_leaf(certs, "bad", other_key, other_ca, "localhost")
-            archive = output / "inert.tar"
-            with tarfile.open(archive, "w", format=tarfile.USTAR_FORMAT) as tar:
-                for name, data in (("fixture/metadata.xml", b"<plugin/>"),
-                    ("fixture/share/existing.txt", b"updated inert payload\n"),
-                    ("fixture/share/new.txt", b"new inert payload\n")):
-                    info = tarfile.TarInfo(name)
-                    info.size = len(data)
-                    info.mode = 0o600
-                    tar.addfile(info, io.BytesIO(data))
-            result["archiveSha256"] = sha(archive.read_bytes())
-            servers = []
-            try:
-                good, good_port = start_server(output, "trusted", valid_cert, valid_key, archive)
-                servers.append(good)
-                bad, bad_port = start_server(output, "untrusted", bad_cert, bad_key, archive)
-                servers.append(bad)
-                result["cases"] = []
-                for name, url, expected in (
-                    ("valid", f"https://localhost:{good_port}/valid", True),
-                    ("untrusted_tls", f"https://localhost:{bad_port}/valid", False),
-                    ("interrupted_extractable_archive", f"https://localhost:{good_port}/interrupted", False)):
-                    result["cases"].append(probe(binary, output, name, url, ca, expected))
-            finally:
-                for process in servers:
-                    process.terminate()
-                for process in servers:
-                    process.wait(timeout=5)
+            run_cases(binary, output, ca, valid_cert, valid_key, bad_cert, bad_key, result)
         result["status"] = "passed"
     except Exception as error:
         result["failure"] = str(error)

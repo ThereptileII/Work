@@ -1,0 +1,32 @@
+{
+  "repository": "OpenCPN/OCPNWindowsCoreBuildSupport",
+  "commit": "e90cc5842b02d5502a549f0f90424e3e1614bf67",
+  "upstreamTag": "v0.5",
+  "scope": "Probe SDK only; archive.dll must equal independently verified candidate runtime before use",
+  "files": [
+    {
+      "path": "buildwin/include/archive.h",
+      "url": "https://raw.githubusercontent.com/OpenCPN/OCPNWindowsCoreBuildSupport/e90cc5842b02d5502a549f0f90424e3e1614bf67/buildwin/include/archive.h",
+      "sha256": "9ac48c8cf992d2238b17b0f9cb5aec59373980826f69fef03c2fa99dd83d7cd0",
+      "bytes": 52251
+    },
+    {
+      "path": "buildwin/include/archive_entry.h",
+      "url": "https://raw.githubusercontent.com/OpenCPN/OCPNWindowsCoreBuildSupport/e90cc5842b02d5502a549f0f90424e3e1614bf67/buildwin/include/archive_entry.h",
+      "sha256": "8cfe98cd9605a467753ed0e771c0d2dc38231848dbaed311d159f55984729873",
+      "bytes": 32986
+    },
+    {
+      "path": "buildwin/archive.lib",
+      "url": "https://raw.githubusercontent.com/OpenCPN/OCPNWindowsCoreBuildSupport/e90cc5842b02d5502a549f0f90424e3e1614bf67/buildwin/archive.lib",
+      "sha256": "69bf769204ea238957623a32ce5592408a588b90b1f37586e955aeeef4eaac6a",
+      "bytes": 111308
+    },
+    {
+      "path": "buildwin/archive.dll",
+      "url": "https://raw.githubusercontent.com/OpenCPN/OCPNWindowsCoreBuildSupport/e90cc5842b02d5502a549f0f90424e3e1614bf67/buildwin/archive.dll",
+      "sha256": "a56ca71de9e99273f871eff0dd10de97bff7c94fa75d173f86269c9e8faa8cff",
+      "bytes": 524288
+    }
+  ]
+}

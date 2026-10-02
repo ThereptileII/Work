@@ -78,3 +78,57 @@ Retained local evidence is
 `eac4366e9e693bcb18a73530fce2d937787b2ca260b4e9d54b26f4b198ddf8b8`.
 An earlier fixture-start failure and earlier successful run remain retained
 alongside it. Native Windows has not run for this probe.
+
+## Isolated native consumer
+
+`tools/test-plugin-download-guard-windows.py` is restricted to GitHub-hosted
+Windows. Its caller must first authenticate the exact candidate through the
+GitHub run/artifact API, verify the outer archive and internal checksums, and
+verify the installer/recovery counterparts. The peer candidate adapter's
+`prepare()` already supplies this boundary. The caller passes its authenticated
+manifest hash and candidate commit explicitly; a `verified: true` field is not
+accepted as authority. This helper independently rehashes the supplied manifest,
+all package files, and the fixture-free/status-only `PRODUCT_BUILD.json` policy,
+before and after the probe. It never launches the packaged application.
+
+```sh
+python tools/test-plugin-download-guard-windows.py \
+  --runtime-dir <verified-runtime-containing-app-and-docs> \
+  --package-manifest-path <verified-package.json> \
+  --expected-manifest-sha256 <parent-verified-sha256> \
+  --expected-commit <exact-candidate-commit> \
+  --evidence <new-evidence-directory>
+```
+
+The existing curl/OpenSSL/zlib manifests must bind their installed Win32 DLLs
+and exact reviewed source identities. The helper does not call, relax, or
+pretend to satisfy same-job dependency reuse. Official locked wxWidgets 3.2.8
+SDK archives supply real headers/import libraries; both required wx runtime
+DLLs must equal the candidate. The libarchive SDK is limited to four pinned
+files at OpenCPN support commit
+`e90cc5842b02d5502a549f0f90424e3e1614bf67` (resolved upstream `v0.5`), recorded
+in `tools/windows-plugin-archive-sdk.lock.json`. Its `archive.dll` must equal
+the candidate before linking its import library; the bundle's obsolete curl
+is never fetched. Curl 8.22.0 public headers come from the locked source archive
+and must individually equal the producer manifest.
+
+When `--curl-import-lib` supplies the original producer library, its hash and
+size must match; mismatch aborts. Otherwise the separately authorized fallback
+uses MSVC `dumpbin` on the exact candidate DLL and `lib.exe /machine:x86` to
+create a disposable import library. It accepts only a complete, unique table
+of undecorated `curl_*` names; forwarded/unknown export shapes abort. Evidence
+records the DLL, export listing/names, DEF file, both tool hashes and generated
+library hash. This is explicitly a **probe-only reconstructed library**, never
+the producer library or evidence authorizing dependency reuse.
+
+Only the probe and Downloader translation units compile, with native MSVC
+Win32 `/MD`. Neither the Linux wx shim nor the test CA macro is enabled.
+Execution uses copied, hash-checked candidate DLLs and a reduced PATH. The
+existing CA-generation and three-case logic are shared with Linux, but the
+native caller supplies no CA override. `plugin-probe-owned-trust.ps1` checks
+that its generated thumbprint was absent, records ownership before importing
+into CurrentUser Root, and removes/verifies that exact thumbprint in `finally`.
+Uncertain cleanup fails the result. Keys and temporary SDK/runtime files are
+deleted afterward; diagnostic sources, hashes, logs, probe and generated
+import-library evidence remain. No CI dispatch or native passing result is
+implied by this implementation.
