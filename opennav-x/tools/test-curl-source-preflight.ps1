@@ -55,7 +55,8 @@ function EnvironmentFacts {
     }
     return [ordered]@{path=$env:PATH; include=$env:INCLUDE; lib=$env:LIB; libpath=$env:LIBPATH;
         perl5lib=$env:PERL5LIB; perl5opt=$env:PERL5OPT; targetArchitecture=$env:VSCMD_ARG_TGT_ARCH;
-        windowsSdkVersion=$env:WindowsSDKVersion; vcToolsVersion=$env:VCToolsVersion; commands=$Commands}
+        windowsSdkVersion=$env:WindowsSDKVersion; vcToolsVersion=$env:VCToolsVersion;
+        msys2ArgConvExcl=$env:MSYS2_ARG_CONV_EXCL; commands=$Commands}
 }
 $Report = [ordered]@{schemaVersion=1; purpose='Native source-analysis diagnostic, not dependency or release qualification';
     commit=(& git -C $Root rev-parse HEAD); archiveSha256=$Lock.sha256; lockSha256=(Digest $LockPath);
@@ -114,7 +115,7 @@ try {
     # The upstream scripts import from -I. and use this generated preprocessor.
     # Probe selection separately, without editing the module or either script.
     $Probe = 'use configurehelp qw($Cpreprocessor); print "module=$INC{q(configurehelp.pm)}\npreprocessor=$Cpreprocessor\n";'
-    foreach ($Mode in @('inherited','msvc-x86')) {
+    foreach ($Mode in @('inherited','msvc-x86','msvc-x86-args')) {
         if ($Mode -eq 'msvc-x86') {
             $Vswhere = "${env:ProgramFiles(x86)}\Microsoft Visual Studio\Installer\vswhere.exe"
             $Vs = & $Vswhere -latest -products '*' -requires Microsoft.VisualStudio.Component.VC.Tools.x86.x64 -property installationPath
@@ -122,13 +123,40 @@ try {
             $Vcvars = Join-Path $Vs 'VC/Auxiliary/Build/vcvarsall.bat'
             # Import only the environment changes; never retain the complete environment,
             # which may contain CI credentials. The selected tool variables are recorded below.
-            $Lines = & $env:ComSpec /d /s /c "`"`"$Vcvars`" x86 >nul && set`""
-            if ($LASTEXITCODE -ne 0) { throw 'MSVC x86 environment initialization failed' }
+            $EnvironmentCmd = Join-Path ([IO.Path]::GetTempPath()) ("xnav-curl-source-env-$([guid]::NewGuid().ToString('N')).cmd")
+            foreach ($CmdPath in @($EnvironmentCmd, $Vcvars)) {
+                if ($CmdPath.Contains('%') -or $CmdPath.Contains('"') -or
+                    $CmdPath.Contains([char]10) -or $CmdPath.Contains([char]13)) {
+                    throw 'Unsupported MSVC environment command path'
+                }
+            }
+            $EnvironmentLines = @(
+                '@echo off',
+                'setlocal DisableDelayedExpansion',
+                "call `"$Vcvars`" x86 >nul || exit /b 1",
+                'set'
+            )
+            try {
+                [IO.File]::WriteAllLines($EnvironmentCmd, $EnvironmentLines, [Text.UTF8Encoding]::new($false))
+                # Match the existing OpenSSL/zlib producer .cmd invocation pattern.
+                $Lines = & $env:ComSpec /d /s /c "`"$EnvironmentCmd`""
+                if ($LASTEXITCODE -ne 0) { throw 'MSVC x86 environment initialization failed' }
+            } finally {
+                if (Test-Path -LiteralPath $EnvironmentCmd) { Remove-Item -LiteralPath $EnvironmentCmd -Force }
+            }
             $Report.vcvarsall = @{path=$Vcvars; sha256=(Digest $Vcvars); arguments=@('x86')}
             foreach ($Line in $Lines) {
                 if ($Line -match '^((?:PATH|INCLUDE|LIB|LIBPATH|VSCMD_ARG_TGT_ARCH|VSCMD_ARG_HOST_ARCH|WindowsSDKVersion|WindowsSdkDir|WindowsSdkBinPath|WindowsSdkVerBinPath|VCToolsVersion|VCToolsInstallDir|VCINSTALLDIR|VSINSTALLDIR|UniversalCRTSdkDir|UCRTVersion))=(.*)$') {
                     [Environment]::SetEnvironmentVariable($Matches[1], $Matches[2], 'Process')
                 }
+            }
+        }
+        if ($Mode -eq 'msvc-x86-args') {
+            # Preserve compiler /D defines as arguments when MSYS Perl launches
+            # native cl.exe; keep any exclusions already supplied by the caller.
+            if (-not $env:MSYS2_ARG_CONV_EXCL) { $env:MSYS2_ARG_CONV_EXCL = '/D' }
+            elseif (@($env:MSYS2_ARG_CONV_EXCL -split ';') -notcontains '/D') {
+                $env:MSYS2_ARG_CONV_EXCL += ';/D'
             }
         }
         $Facts = EnvironmentFacts
@@ -151,16 +179,16 @@ try {
             if ($Id -eq 1119) { $Passed = $Passed -and $Output -ceq "OK`n" }
             $SymbolCount = $null
             if ($Id -eq 1167 -and $Output -match '^(\d+) fine symbols found\r?\n$') { $SymbolCount = [int]$Matches[1] }
-            $Report.cases += [ordered]@{environment=$Mode; test=$Id; upstreamPassed=$Passed; symbolCount=$SymbolCount; analysisNonempty=($Id -eq 1119 -or $SymbolCount -gt 0); result=$Result}
+            $Report.cases += [ordered]@{environment=$Mode; test=$Id; msys2ArgConvExcl=$env:MSYS2_ARG_CONV_EXCL; upstreamPassed=$Passed; symbolCount=$SymbolCount; analysisNonempty=($Id -eq 1119 -or $SymbolCount -gt 0); result=$Result}
         }
     }
     foreach ($Relative in $Report.sourceFiles.Keys) {
         if ((Digest (Join-Path $Source $Relative)) -cne $Report.sourceFiles[$Relative]) { throw "Upstream source changed: $Relative" }
     }
-    $Valid = @($Report.cases | Where-Object { $_.environment -eq 'msvc-x86' })
+    $Valid = @($Report.cases | Where-Object { $_.environment -eq 'msvc-x86-args' })
     $Report.inheritedFailureReproduced = @($Report.cases | Where-Object { $_.environment -eq 'inherited' -and -not $_.upstreamPassed }).Count -gt 0
     $Report.passed = $Valid.Count -eq 2 -and @($Valid | Where-Object { -not $_.upstreamPassed -or -not $_.analysisNonempty }).Count -eq 0
-    if (-not $Report.passed) { throw 'MSVC environment did not pass both unchanged source tests; diagnosis remains unresolved' }
+    if (-not $Report.passed) { throw 'MSVC environment with /D argument preservation did not pass both unchanged source tests; diagnosis remains unresolved' }
 } catch {
     $Report.error = $_.Exception.Message
     throw
@@ -168,5 +196,23 @@ try {
     $Report | ConvertTo-Json -Depth 12 | Set-Content -LiteralPath (Join-Path $Evidence 'source-preflight.json')
     Get-ChildItem Env: | Where-Object { -not $SavedEnvironment.ContainsKey($_.Name) } | ForEach-Object { [Environment]::SetEnvironmentVariable($_.Name, $null, 'Process') }
     foreach ($Name in $SavedEnvironment.Keys) { [Environment]::SetEnvironmentVariable($Name, $SavedEnvironment[$Name], 'Process') }
+    # Keep a bounded, useful diagnosis in the job log even if artifact retrieval
+    # is unavailable. Never print the environment files or vcvars 'set' output.
+    $LogFiles = @('source-preflight.json')
+    foreach ($Mode in @('inherited','msvc-x86','msvc-x86-args')) {
+        foreach ($Id in @(1119,1167)) {
+            foreach ($Stream in @('stdout','stderr')) { $LogFiles += "$Mode-test$Id.$Stream.txt" }
+        }
+    }
+    foreach ($Name in $LogFiles) {
+        $LogPath = Join-Path $Evidence $Name
+        if (Test-Path -LiteralPath $LogPath -PathType Leaf) {
+            $Text = [IO.File]::ReadAllText($LogPath)
+            $Limit = if ($Name -eq 'source-preflight.json') { 24000 } else { 4096 }
+            Write-Output "--- retained diagnostic: $Name ---"
+            Write-Output $Text.Substring(0, [Math]::Min($Text.Length, $Limit))
+            if ($Text.Length -gt $Limit) { Write-Output '[truncated in job log; complete file retained in artifact]' }
+        }
+    }
 }
-Write-Output "Unchanged curl source tests pass with MSVC x86 environment; inspect inherited results in $Evidence"
+Write-Output "Unchanged curl source tests pass with MSVC x86 environment and /D argument preservation; inspect all case results in $Evidence"
