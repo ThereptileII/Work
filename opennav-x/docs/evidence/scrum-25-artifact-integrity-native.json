@@ -1,0 +1,80 @@
+{
+  "schemaVersion": 1,
+  "issue": "SCRUM-25",
+  "status": "passed",
+  "purpose": "Verify-only streamed release artifact integrity; isolated updater probe",
+  "repository": "ThereptileII/Work",
+  "remoteCommit": "395c9448262597281d3582da5db29405e12d298b",
+  "localImplementationCommit": "6417894f1cb3739a8c12bcb45e66ae08931be05b",
+  "runId": 36971421203,
+  "runUrl": "https://github.com/ThereptileII/Work/actions/runs/36971421203",
+  "workflow": ".github/workflows/update-verifier-probe.yml",
+  "verifiedUtc": "2026-10-02T06:03:19.586478+00:00",
+  "platforms": [
+    {
+      "platform": "Linux/amd64",
+      "jobId": 110726006509,
+      "jobConclusion": "success",
+      "vet": {
+        "command": "go vet ./...",
+        "conclusion": "success",
+        "evidence": "GitHub job step status"
+      },
+      "artifactId": 11212280261,
+      "artifactBytes": 7097,
+      "artifactSha256": "7ab51db0ec18b1d10c11ea731f3aaeadf102c36811dd1eb676898c97990d60fb",
+      "apiLengthAndDigestVerified": true,
+      "zipCrcVerified": true,
+      "testResultFile": "verifier-tests.json",
+      "testResultBytes": 98543,
+      "testResultSha256": "08ec3acd12e78ed3a5d40645861e0119dcf267dc84991a1ad46f60749f7c0a8c",
+      "passedPackages": 2,
+      "passedTopLevelTests": 27,
+      "passedSubtests": 83,
+      "artifactIntegrityTopLevelTests": 5,
+      "artifactIntegritySubtests": 5
+    },
+    {
+      "platform": "native Windows/386",
+      "jobId": 110726006351,
+      "jobConclusion": "success",
+      "vet": {
+        "command": "go vet ./...",
+        "conclusion": "success",
+        "evidence": "GitHub job step status"
+      },
+      "artifactId": 11212016761,
+      "artifactBytes": 6039,
+      "artifactSha256": "9803a37687566b525ee23dc1656f368626b9b12a4524be116a4ac458ea248aab",
+      "apiLengthAndDigestVerified": true,
+      "zipCrcVerified": true,
+      "testResultFile": "verifier-tests.json",
+      "testResultBytes": 97990,
+      "testResultSha256": "c4b6f61b8ade129dfe26b0e5ad63d9e30308fe857c8f44d0e41d996f87a0a5e1",
+      "passedPackages": 2,
+      "passedTopLevelTests": 27,
+      "passedSubtests": 83,
+      "artifactIntegrityTopLevelTests": 5,
+      "artifactIntegritySubtests": 5
+    }
+  ],
+  "artifactIntegrityTests": [
+    "TestVerifyArtifactIntegrity",
+    "TestVerifyArtifactRejectsMetadataBeforeReading",
+    "TestVerifyArtifactReaderErrors",
+    "TestVerifyArtifactReadBound",
+    "TestVerifyArtifactNoProgress"
+  ],
+  "coverage": [
+    "Valid and same-length tampered payloads; truncated, empty and extra bytes",
+    "Invalid length/digest metadata rejected before reading, including int64 extremes; exact 4 GiB metadata accepted",
+    "Reader errors preserved even with returned data; final bytes plus EOF accepted; invalid reader counts refused",
+    "Fixed read window and declared-length-plus-one limit against an endless stream",
+    "Repeated zero-progress reads stop; real progress resets the counter"
+  ],
+  "limitations": [
+    "Library verification only: no production download, installer handoff, execution or deployment is qualified.",
+    "Caller must supply authenticated parsed policy, bound blocking reads and retain the same verified bytes; file custody and verification-to-use races remain caller responsibilities.",
+    "This focused run does not qualify the frozen main candidate, boat, or release."
+  ]
+}
