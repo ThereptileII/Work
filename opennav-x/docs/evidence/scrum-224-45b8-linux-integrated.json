@@ -1,0 +1,180 @@
+{
+  "schema": 1,
+  "commit": "45b8a9d2809d0d34171010ad1c00f4a3cd056a09",
+  "run_id": 36935775514,
+  "job_id": 110615569309,
+  "artifact_id": 11205351206,
+  "job_steps": "All returned step summaries completed success",
+  "scope": "Linux development evidence only; no Windows or boat qualification",
+  "suites": {
+    "production-linux-tests.xml": {
+      "name": "(empty)",
+      "tests": "146",
+      "failures": "0",
+      "disabled": "0",
+      "skipped": "0",
+      "hostname": "",
+      "time": "14",
+      "timestamp": "2026-10-02T02:10:52"
+    },
+    "xnav-linux-tests.xml": {
+      "name": "(empty)",
+      "tests": "146",
+      "failures": "0",
+      "disabled": "0",
+      "skipped": "0",
+      "hostname": "",
+      "time": "14",
+      "timestamp": "2026-10-01T22:47:37"
+    }
+  },
+  "summaries": {
+    "boat-input-results.json": {
+      "result": "loopback transport and lifecycle passed; numeric and stale screenshot review required",
+      "authority": "Linux development",
+      "visual_review": "required",
+      "transport_errors": []
+    },
+    "charts-results.json": {
+      "result": "passed; native screenshot review and physical GPU gate remain separate",
+      "authority": "Linux development",
+      "scope": "Disposable rendering fixture; not redistributed as a navigation product"
+    },
+    "downloader-trust-linux.json": {
+      "status": "passed"
+    },
+    "installed-resource-runtime/result.json": {
+      "result": "passed",
+      "authority": "Linux development; actual application/harmonic loader, synthetic stock-locator identity"
+    },
+    "installer-loader-selftest.json": {
+      "status": "passed"
+    },
+    "instruments-input-results.json": {
+      "result": "loopback transport and lifecycle passed; numeric and stale screenshot review required",
+      "authority": "Linux development",
+      "visual_review": "required",
+      "transport_errors": []
+    },
+    "linux-mode-cycle-results.json": {
+      "result": "interaction and persistence passed; screenshot review required",
+      "authority": "Linux development only",
+      "executable_build_commit": "45b8a9d2809d0d34171010ad1c00f4a3cd056a09"
+    },
+    "n2k-input-results.json": {
+      "result": "loopback transport and lifecycle passed; numeric and stale screenshot review required",
+      "authority": "Linux development",
+      "visual_review": "required",
+      "transport_errors": []
+    },
+    "navigation-input-results.json": {
+      "result": "loopback transport and lifecycle passed; numeric and stale screenshot review required",
+      "authority": "Linux development",
+      "visual_review": "required",
+      "transport_errors": []
+    },
+    "objects-input-results.json": {
+      "result": "loopback transport and lifecycle passed; numeric and stale screenshot review required",
+      "authority": "Linux development",
+      "visual_review": "required",
+      "transport_errors": []
+    },
+    "pilot-results.json": {
+      "result": "passed; screenshot review required",
+      "authority": "Linux development",
+      "transport_failures": []
+    },
+    "preview-linux-results.json": {
+      "result": "passed; screenshot review required",
+      "authority": "Linux development",
+      "higher_dpi": "Not exercised by this hosted desktop; manual validation remains open"
+    },
+    "recording-results.json": {
+      "result": "passed; screenshot review required",
+      "authority": "Linux development"
+    },
+    "recovery-linux-results.json": {
+      "result": "passed; native screenshot review required",
+      "authority": "Linux development"
+    },
+    "route-input-results.json": {
+      "result": "loopback transport and lifecycle passed; numeric and stale screenshot review required",
+      "authority": "Linux development",
+      "visual_review": "required",
+      "transport_errors": []
+    },
+    "route-progress-results.json": {
+      "result": "passed"
+    },
+    "signalk-results.json": {
+      "status": "passed",
+      "authority": "Linux development",
+      "build_commit": "45b8a9d2809d0d34171010ad1c00f4a3cd056a09",
+      "transport_errors": []
+    },
+    "soak/results.json": {
+      "status": "passed",
+      "authority": "Linux development",
+      "scope": "Actual process, DEMO vessel/route/AIS, software chart, repeated UI and dropout recovery; no hardware commands",
+      "build_commit": "45b8a9d2809d0d34171010ad1c00f4a3cd056a09"
+    },
+    "user-flows-results.json": {
+      "result": "passed; native screenshots require review",
+      "authority": "Linux development",
+      "transport_errors": []
+    }
+  },
+  "endurance": {
+    "status": "passed",
+    "requested_seconds": 10800,
+    "release_duration": true,
+    "authority": "Linux development",
+    "scope": "Actual process, DEMO vessel/route/AIS, software chart, repeated UI and dropout recovery; no hardware commands",
+    "samples": 1080,
+    "actions": 540,
+    "screenshots": 2,
+    "build_commit": "45b8a9d2809d0d34171010ad1c00f4a3cd056a09",
+    "startup_seconds": 3.9395253109998976,
+    "elapsed_seconds": 10800.079676796,
+    "resource_growth": {
+      "resident_bytes": 1048576.0,
+      "handles": 0.0,
+      "threads": 0.0
+    },
+    "growth_limits": {
+      "resident_bytes": 134217728,
+      "private_bytes": 134217728,
+      "handles": 32,
+      "gdi_objects": 64,
+      "user_objects": 64,
+      "threads": 8
+    },
+    "cpu_percent_one_core": 3.6110851052588164,
+    "maximum_page_observation_seconds": 1.2540617840004415,
+    "ui_observation_limit_seconds": 8,
+    "route_progress_samples": 765
+  },
+  "downloader_trust_cases": 12,
+  "wxcurl_trust": {
+    "status": "passed",
+    "cases": 13
+  },
+  "chart_renderer": "22:58:03.962 MESSAGE glChartCanvas.cpp:1088 OpenGL-> Renderer String: llvmpipe (LLVM 20.1.2, 256 bits)",
+  "exceptions": [
+    "No CTest failures, disabled, or skipped tests in either 146-test suite.",
+    "Visual/numeric screenshot review remains required by multiple result files; it was not performed in this audit.",
+    "Higher DPI not exercised on hosted desktop; native Windows manual validation remains open.",
+    "OpenGL renderer is llvmpipe; physical GPU gate remains separate.",
+    "Synthetic loopback/DEMO/disposable profiles only; no physical pilot or boat acceptance.",
+    "No aggregate shell-level contract assertion total was retained in the selected CTest XML; 146 means CTest cases, not individual internal assertions."
+  ],
+  "job_status": "completed",
+  "job_conclusion": "success",
+  "artifact": {
+    "id": 11205351206,
+    "bytes": 19178795,
+    "sha256": "2764219e0343d190773a9f1590d5fa1289e4f44bc79a5cbe5c6583ba0bddb631",
+    "downloadVerified": true,
+    "allZipCrcsPassed": true
+  }
+}

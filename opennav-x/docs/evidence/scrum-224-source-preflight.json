@@ -1,0 +1,31 @@
+{
+  "schemaVersion": 1,
+  "issue": "SCRUM-224",
+  "commit": "87d63adb1bcf56d0336011f990e1819596ca0a11",
+  "run": "https://github.com/ThereptileII/Work/actions/runs/36967788225",
+  "jobId": 110715184898,
+  "conclusion": "failure",
+  "artifact": {
+    "id": 11209793231,
+    "bytes": 24135,
+    "sha256": "02a61d9fa3c951b012a72af3226c1e1e06f8b1c0ab6d3d028192da919fb2ae51",
+    "downloadVerified": true,
+    "allZipCrcsPassed": true
+  },
+  "observed": {
+    "inherited1119Exit": 2,
+    "inherited1167Exit": 2,
+    "errors": [
+      "MSYS translates /DWIN32 and /D_WINDOWS into nonexistent source paths",
+      "MSVC cannot find inttypes.h"
+    ],
+    "initializedComparison": "Not executed: diagnostic vcvars quoting defect"
+  },
+  "limitations": [
+    "Configure-only Schannel configuration, not production OpenSSL/zlib",
+    "Direct invocation, not full MSBuild harness",
+    "No application runtime stability claim",
+    "Candidate45b8 remains withheld"
+  ],
+  "nextStep": "Correct diagnostic quoting and compare inherited, initialized MSVC, and initialized MSVC with narrow /D conversion exclusion; no full rebuild until targeted proof."
+}

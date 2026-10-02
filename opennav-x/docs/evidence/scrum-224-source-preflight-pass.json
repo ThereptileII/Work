@@ -1,0 +1,81 @@
+{
+  "schemaVersion": 1,
+  "issue": "SCRUM-224",
+  "commit": "ac067b3a2a1b71ce67c1aff07b0d074ed11cc427",
+  "run": "https://github.com/ThereptileII/Work/actions/runs/36968122673",
+  "jobId": 110716193381,
+  "artifact": {
+    "id": 11209948547,
+    "bytes": 36281,
+    "sha256": "c4940f6ac075c43ebc7ab8328eb54c7dc1dfec95c6ccadcfcdafa1e34b32535a",
+    "downloadVerified": true,
+    "allZipCrcsPassed": true
+  },
+  "sourceFiles": {
+    "tests/test1119.pl": "b92948970110cdd9774326664147acf77d53202c54d6e70c8f209ed7ab49eeb0",
+    "tests/test1167.pl": "3c61bbdb52e8fa7c736a174a1ffe06fe8cb8c83aece0fb29f8cfe6915846bc4f",
+    "tests/data/test1119": "e20c43a99cf8fb504c8d435b3b3c6bf1d75a3c13579ab9da4b92d4684c185f5f",
+    "tests/data/test1167": "9e504cf2886a83dbaefde841ad577bb1270fa4516ccc3d35f120e38b913a1606",
+    "tests/CMakeLists.txt": "feadd8343c7989642522c56e3d0c7ef8cfa88c86667c27ebdb78c2d2c425e735",
+    "tests/configurehelp.pm.in": "61090d929d421a7d1a1e7fb93992b1cc406da790c7df98b14a4457a69b5fbb24"
+  },
+  "configurehelpSha256": "a525a5c62c31cf2fbc51add0153b08bf1feef775a320069f105fa07033a75052",
+  "cases": [
+    {
+      "environment": "inherited",
+      "test": 1119,
+      "passed": false,
+      "exit": 2,
+      "symbols": null,
+      "argumentExclusion": null
+    },
+    {
+      "environment": "inherited",
+      "test": 1167,
+      "passed": false,
+      "exit": 2,
+      "symbols": null,
+      "argumentExclusion": null
+    },
+    {
+      "environment": "msvc-x86",
+      "test": 1119,
+      "passed": false,
+      "exit": 2,
+      "symbols": null,
+      "argumentExclusion": null
+    },
+    {
+      "environment": "msvc-x86",
+      "test": 1167,
+      "passed": false,
+      "exit": 2,
+      "symbols": null,
+      "argumentExclusion": null
+    },
+    {
+      "environment": "msvc-x86-args",
+      "test": 1119,
+      "passed": true,
+      "exit": 0,
+      "symbols": null,
+      "argumentExclusion": "/D"
+    },
+    {
+      "environment": "msvc-x86-args",
+      "test": 1167,
+      "passed": true,
+      "exit": 0,
+      "symbols": 1422,
+      "argumentExclusion": "/D"
+    }
+  ],
+  "passed": true,
+  "limitations": [
+    "Configure uses Schannel and no external TLS/compression dependencies; producer uses OpenSSL/zlib.",
+    "The inherited case reproduces the producer MSYS Perl PATH prepend, but does not stage curl/OpenSSL/zlib binary directories.",
+    "Direct script invocation does not reproduce the entire MSBuild/runtests process environment.",
+    "No curl/OpenSSL/application binary or full upstream suite is qualified."
+  ],
+  "productionRepair": "Pending production helper integration/native proof, full Windows candidate still withheld"
+}
