@@ -1,0 +1,23 @@
+{
+  "platform": "linux",
+  "viewport": [
+    1280,
+    800
+  ],
+  "base_commit": "ad37096",
+  "bridge_dependency": "ac77afea030bc9b256e36c5f28a3f41ed1fdd864",
+  "checks": 46,
+  "executable_sha256": "e2cc8e1a87e9d3fbca9c4fbcca123daf2e5a6b30dbc9ca62c7b05f902ec25854",
+  "source_sha256": {
+    "src/ui/ChartPresentationDrawer.cpp": "df3b82248393dd52670dc2f2de14f19c86cea45a35f85bfff367ff2ece9c8d52",
+    "src/ui/ChartPresentationDrawer.h": "9db905c2909f59b88a9ed2b3ad7b9d9764db9523ded7f0fe8582ffc79f53be01",
+    "tests/chart_presentation_drawer_test.cpp": "802ca203d712b5de1d609651f9960d0edf4666b28163528c7a2d7f02874e1fe3"
+  },
+  "capture_sha256": {
+    "chart-day-top": "ff7eacf99884312da52fbdb14f6ad7518d36e9353175d34afdb7fe12d9b3d9b3",
+    "chart-day-bottom": "694620cd5ef99b77ba75b28d78af2e7c426da7b38b6bd69dad47c4aad734e3c8",
+    "chart-dusk-raster": "b94999c18c0dbbde80f1fdf0e8f9ca308f062f202b54ced344e9131362b8d69a",
+    "chart-night-unavailable": "df9afadebb4be9525604316724280f08cff7280d7e15c70605136e43a717181f"
+  },
+  "scope": "Offline component only; Windows, boat and whole-screen acceptance remain open"
+}

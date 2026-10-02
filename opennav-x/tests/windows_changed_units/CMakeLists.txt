@@ -65,7 +65,12 @@ endforeach()
 
 option(OPENNAV_CHECK_UI "Compile the real UI target and complete SettingsStore" OFF)
 option(OPENNAV_CHECK_SETTINGS_COMPONENT "Link the offline Settings component for native interaction checks" OFF)
-if(OPENNAV_CHECK_SETTINGS_COMPONENT AND NOT OPENNAV_CHECK_UI)
+option(OPENNAV_CHECK_PROTOTYPE "Compile complete navigation bridge units and run offline prototype components" OFF)
+option(OPENNAV_CHECK_CHART_COMPONENT "Link the offline chart-presentation component" OFF)
+if(OPENNAV_CHECK_CHART_COMPONENT AND NOT OPENNAV_CHECK_PROTOTYPE)
+  message(FATAL_ERROR "Chart component requires the prototype proof")
+endif()
+if((OPENNAV_CHECK_SETTINGS_COMPONENT OR OPENNAV_CHECK_PROTOTYPE) AND NOT OPENNAV_CHECK_UI)
   message(FATAL_ERROR "Settings component requires the production UI target")
 endif()
 if(OPENNAV_CHECK_UI)
@@ -92,5 +97,65 @@ if(OPENNAV_CHECK_UI)
     target_link_libraries(settings_drawer_test PRIVATE opennav_ui)
     target_compile_features(settings_drawer_test PRIVATE cxx_std_17)
     target_compile_options(settings_drawer_test PRIVATE /utf-8)
+  endif()
+endif()
+
+if(OPENNAV_CHECK_PROTOTYPE)
+  if(NOT IS_DIRECTORY "${OPENNAV_GLEW_INCLUDE}" OR NOT EXISTS "${OPENNAV_GLEW_INCLUDE}/glew.h")
+    message(FATAL_ERROR "Prototype proof requires the locked production Windows GLEW header")
+  endif()
+  # Derived from pinned OpenCPN CMakeLists.txt's application include block and
+  # its transitive gui/geoprim/gdal/iso8211/s52plib/s57-charts/model targets.
+  # Complete source files below compile as production Win32 objects. No app
+  # link, producer dependency build, header substitution or macro suppression.
+  set(navigation_includes
+    gui/include/gui include resources gui/src/mbtiles gui/src/s57/include
+    model/include model/include/model buildwin
+    libs/gui/include libs/geoprim/src libs/gdal/include libs/gdal/include/gdal
+    libs/iso8211/include libs/s52plib/src libs/s57-charts/include
+    libs/observable/include libs/pugixml libs/nmea0183/src
+    libs/std_filesystem/include libs/wxJSON/include libs/wxcurl/include
+    libs/IXWebSocket libs/tinyxml/include libs/libtess2/Include
+    libs/SQLiteCpp/include libs/sqlite/include libs/serial/include
+    libs/gl_headers/windows)
+  list(TRANSFORM navigation_includes PREPEND "${OPENNAV_SOURCE_DIR}/")
+  foreach(directory IN LISTS navigation_includes)
+    if(NOT IS_DIRECTORY "${directory}")
+      message(FATAL_ERROR "Pinned navigation include directory missing: ${directory}")
+    endif()
+  endforeach()
+  # The same config.h.in as production, with the installed Windows feature
+  # profile needed by these headers. Other probe families keep their old config.
+  set(OPENGL_FOUND 1)
+  set(OCPN_USE_NEWSERIAL 1)
+  set(OCPN_USE_LZMA 1)
+  configure_file("${OPENNAV_SOURCE_DIR}/cmake/in-files/config.h.in"
+    "${CMAKE_CURRENT_BINARY_DIR}/navigation-include/config.h")
+  foreach(name NavigationActions NavigationObjects)
+    add_library(check_${name} OBJECT "${OPENNAV_ROOT}/src/integration/${name}.cpp")
+    target_include_directories(check_${name} BEFORE PRIVATE
+      "${CMAKE_CURRENT_BINARY_DIR}/navigation-include" "${OPENNAV_ROOT}/src"
+      "${CURL_INCLUDE}" "${OPENNAV_GLEW_INCLUDE}" ${navigation_includes})
+    target_link_libraries(check_${name} PRIVATE opennav_build_policy opennav_json_headers)
+    target_compile_features(check_${name} PRIVATE cxx_std_17)
+    target_compile_options(check_${name} PRIVATE /utf-8 /EHa /diagnostics:column)
+    target_compile_definitions(check_${name} PRIVATE
+      WIN32 _WINDOWS __MSVC__ _CRT_NONSTDC_NO_DEPRECATE _CRT_SECURE_NO_DEPRECATE
+      _HAS_STD_BYTE=0 _DISABLE_CONSTEXPR_MUTEX_CONSTRUCTOR PSAPI_VERSION=1
+      _SILENCE_ALL_CXX17_DEPRECATION_WARNINGS=1
+      IXWEBSOCKET_USE_TLS IXWEBSOCKET_USE_OPEN_SSL IXWEBSOCKET_USE_ZLIB
+      OPENNAV_X=1 HAVE_WX_GESTURE_EVENTS __OCPN_USE_GLEW__
+      ocpnUSE_GL ocpnUSE_GLSL ocpnUSE_SVG ocpnUSE_wxBitmapBundle
+      RAPIDJSON_HAS_STDSTRING=1 TIXML_USE_STL)
+  endforeach()
+  add_executable(search_drawer_test "${OPENNAV_ROOT}/tests/search_drawer_test.cpp")
+  target_link_libraries(search_drawer_test PRIVATE opennav_ui opennav_integration)
+  target_compile_features(search_drawer_test PRIVATE cxx_std_17)
+  target_compile_options(search_drawer_test PRIVATE /utf-8)
+  if(OPENNAV_CHECK_CHART_COMPONENT)
+    add_executable(chart_presentation_drawer_test "${OPENNAV_ROOT}/tests/chart_presentation_drawer_test.cpp")
+    target_link_libraries(chart_presentation_drawer_test PRIVATE opennav_ui)
+    target_compile_features(chart_presentation_drawer_test PRIVATE cxx_std_17)
+    target_compile_options(chart_presentation_drawer_test PRIVATE /utf-8)
   endif()
 endif()

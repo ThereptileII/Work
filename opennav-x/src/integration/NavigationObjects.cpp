@@ -4,6 +4,8 @@
 #include "MarkInfo.h"
 #include "RoutePropDlgImpl.h"
 #include "chcanv.h"
+#include "chartdb.h"
+#include "s52plib.h"
 #include "model/ais_decoder.h"
 #include "model/ais_target_data.h"
 #include "model/georef.h"
@@ -27,6 +29,8 @@
 #include <wx/thread.h>
 
 extern bool bGPSValid;
+extern ChartDB *ChartData;
+extern s52plib *ps52plib;
 extern MarkInfoDlg *g_pMarkInfoDialog;
 extern MyFrame *gFrame;
 extern RoutePropDlgImpl *pRoutePropDialog;
@@ -696,5 +700,111 @@ application::CommandResult ClearAnchor(const std::string &id) {
   SendJSONMessageToAllPlugins("OCPN_ANCHOR_WATCH_CLEARED", message);
   return {true, removed ? "Anchor watch and temporary mark removed"
                         : "Anchor watch cleared; existing user waypoint retained", id};
+}
+// Presentation inspection and commands run only on the application thread.
+// Keep this block free of chart loading, preference copies and navigation math.
+application::ChartPresentationState CopyChartPresentation(MyFrame &frame) {
+  application::ChartPresentationState state;
+  if (!wxIsMainThread()) {
+    state.reason = "Chart presentation requires the application thread";
+    return state;
+  }
+  auto *canvas = frame.GetPrimaryCanvas();
+  if (!canvas) {
+    state.reason = "Chart canvas unavailable";
+    return state;
+  }
+  state.available = true;
+  switch (canvas->GetUpMode()) {
+  case NORTH_UP_MODE: state.orientation = application::ChartOrientation::NorthUp; break;
+  case COURSE_UP_MODE: state.orientation = application::ChartOrientation::CourseUp; break;
+  case HEAD_UP_MODE: state.orientation = application::ChartOrientation::HeadUp; break;
+  }
+  int family = CHART_FAMILY_UNKNOWN;
+  state.format_reason = "Current chart format unavailable";
+  if (canvas->GetQuiltMode()) {
+    // Only inspect the already-selected entry. Never open a chart or rebuild a stack.
+    if (ChartData && ChartData->IsValid() && !ChartData->IsBusy()) {
+      const int index = canvas->GetQuiltReferenceChartIndex();
+      if (index >= 0 && index < ChartData->GetChartTableEntries()) {
+        family = ChartData->GetDBChartFamily(index);
+        state.format_reason = "Format of the current quilt reference chart";
+      }
+    }
+  } else if (canvas->m_singleChart) {
+    family = canvas->m_singleChart->GetChartFamily();
+    state.format_reason = "Format of the current chart";
+  }
+  if (family == CHART_FAMILY_VECTOR) state.format = application::ChartFormat::Vector;
+  else if (family == CHART_FAMILY_RASTER) state.format = application::ChartFormat::Raster;
+  const bool enc = ps52plib && state.format == application::ChartFormat::Vector &&
+                   canvas->GetENCDisplayCategory() != DISPLAYBASE;
+  const std::string enc_reason = enc ? "" :
+      "Requires a vector chart and an ENC display category above Base";
+  state.ais_vessels = {canvas->GetShowAIS(), true, "Chart visibility only; reception and alarms unchanged"};
+  // The prototype's Symbol labels row means the upstream ENC text master switch.
+  // Preserve independent buoy-label and light-description preferences.
+  state.enc_text = {canvas->GetShowENCText(), enc, enc_reason};
+  state.depth_soundings = {canvas->GetShowENCDepth(), enc, enc_reason};
+  return state;
+}
+namespace {
+enum class PresentationLayer { Ais, EncText, Soundings };
+application::ChartPresentationResult SetPresentationLayer(
+    MyFrame &frame, PresentationLayer layer, bool show) {
+  auto before = CopyChartPresentation(frame);
+  if (!before.available) return {{false, before.reason}, std::move(before)};
+  const auto field = [layer](const application::ChartPresentationState &state)
+      -> const application::ChartLayerState & {
+    if (layer == PresentationLayer::Ais) return state.ais_vessels;
+    if (layer == PresentationLayer::EncText) return state.enc_text;
+    return state.depth_soundings;
+  };
+  if (!field(before).editable)
+    return {{false, field(before).reason}, std::move(before)};
+  auto *canvas = frame.GetPrimaryCanvas();
+  if (!canvas) return {{false, "Chart canvas unavailable"}, CopyChartPresentation(frame)};
+  const bool current = layer == PresentationLayer::Ais ? canvas->GetShowAIS() :
+      layer == PresentationLayer::EncText ? canvas->GetShowENCText() : canvas->GetShowENCDepth();
+  if (current != show) {
+    switch (layer) {
+    case PresentationLayer::Ais: frame.ToggleAISDisplay(canvas); break;
+    case PresentationLayer::EncText: frame.ToggleENCText(canvas); break;
+    case PresentationLayer::Soundings: frame.ToggleSoundings(canvas); break;
+    }
+  }
+  auto after = CopyChartPresentation(frame);
+  const bool ok = after.available && field(after).visible == show;
+  return {{ok, ok ? "Chart presentation applied" : "Chart presentation changed; inspect current state"},
+          std::move(after)};
+}
+} // namespace
+application::ChartPresentationResult SetChartAis(MyFrame &frame, bool show) {
+  return SetPresentationLayer(frame, PresentationLayer::Ais, show);
+}
+application::ChartPresentationResult SetChartEncText(MyFrame &frame, bool show) {
+  return SetPresentationLayer(frame, PresentationLayer::EncText, show);
+}
+application::ChartPresentationResult SetChartSoundings(MyFrame &frame, bool show) {
+  return SetPresentationLayer(frame, PresentationLayer::Soundings, show);
+}
+application::ChartPresentationResult SetChartOrientation(
+    MyFrame &frame, application::ChartOrientation orientation) {
+  auto before = CopyChartPresentation(frame);
+  if (!before.available) return {{false, before.reason}, std::move(before)};
+  int mode;
+  switch (orientation) {
+  case application::ChartOrientation::NorthUp: mode = NORTH_UP_MODE; break;
+  case application::ChartOrientation::CourseUp: mode = COURSE_UP_MODE; break;
+  case application::ChartOrientation::HeadUp: mode = HEAD_UP_MODE; break;
+  default: return {{false, "Unknown chart orientation"}, std::move(before)};
+  }
+  auto *canvas = frame.GetPrimaryCanvas();
+  if (!canvas) return {{false, "Chart canvas unavailable"}, CopyChartPresentation(frame)};
+  if (canvas->GetUpMode() != mode) frame.SetUpMode(canvas, mode);
+  auto after = CopyChartPresentation(frame);
+  const bool ok = after.available && after.orientation == orientation;
+  return {{ok, ok ? "Chart orientation applied; rotation depends on source data" :
+                       "Chart orientation changed; inspect current state"}, std::move(after)};
 }
 } // namespace opennav::integration

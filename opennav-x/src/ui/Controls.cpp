@@ -593,7 +593,8 @@ void XNavButton::Paint(wxPaintEvent&) {
   }
   dc.SetPen(settings_tab_ || navigation_item_ || role_ == ButtonRole::Quiet || role_ == ButtonRole::Segment ? *wxTRANSPARENT_PEN : wxPen(opacity(edge)));
   dc.SetBrush(wxBrush(opacity(fill)));
-  dc.DrawRoundedRectangle(1, 1, size.x - 2, size.y - 2, FromDIP(navigation_item_ || summary_ ? 10 : role_ == ButtonRole::Segment ? 6 : spacing::control_radius));
+  const int inset = segment_in_track_ ? 0 : 1;
+  dc.DrawRoundedRectangle(inset, inset, size.x - 2*inset, size.y - 2*inset, FromDIP(navigation_item_ || summary_ ? 10 : role_ == ButtonRole::Segment ? 6 : spacing::control_radius));
   if (HasFocus() && keyboard_focus_) {
     dc.SetBrush(*wxTRANSPARENT_BRUSH);
     dc.SetPen(wxPen(Colour(semantic), FromDIP(2)));
@@ -605,7 +606,7 @@ void XNavButton::Paint(wxPaintEvent&) {
   }
   const auto text_color = opacity(text_color_ ? Colour(*text_color_) : ink);
   dc.SetTextForeground(text_color);
-  dc.SetFont(UiFontWeight(*this, settings_tab_ ? 11 : role_ == ButtonRole::Segment ? 10 : text_size_, settings_tab_ ? 400 : 500));
+  dc.SetFont(UiFontWeight(*this, settings_tab_ ? 11 : role_ == ButtonRole::Segment ? 10 : text_size_, settings_tab_ || segment_in_track_ ? 400 : 500));
   if (settings_tab_) {
 #if defined(__WXMSW__) && wxUSE_GRAPHICS_DIRECT2D
     // Match natural DirectWrite advances used by the HTML and tab layout.
@@ -703,6 +704,15 @@ void XNavButton::Paint(wxPaintEvent&) {
   dc.DrawText(label, (size.x - extent.x) / 2, (size.y - extent.y) / 2);
 }
 
+XNavIcon MetricIconForKey(const std::string &key) {
+  if (key == "sog" || key == "stw") return XNavIcon::Speed;
+  if (key == "depth") return XNavIcon::Depth;
+  if (key == "aws" || key == "awa" || key == "tws" || key == "twa") return XNavIcon::Wind;
+  if (key == "soc" || key == "voltage" || key == "current" || key == "pack_power") return XNavIcon::Battery;
+  // The reference supplies no matching symbol for the other selectable values.
+  return XNavIcon::None;
+}
+
 XNavDataValue::XNavDataValue(wxWindow* parent, const wxString& label,
                              const wxString& unit, int decimals)
     : wxPanel(parent, wxID_ANY), label_(label), unit_(unit), decimals_(decimals) {
@@ -787,7 +797,20 @@ void XNavDataValue::Paint(wxPaintEvent&) {
     if(title=="TRUE WIND") title="True wind";
     if(title=="SPEED OVER GROUND") title="Speed over ground";
     if(title=="HEADING") title="Heading";
-    dc.DrawText(wxControl::Ellipsize(title,dc,wxELLIPSIZE_END,available),x,FromDIP(label_y));
+    const int icon_size = FromDIP(16); // .metric-label .icon in the immutable prototype.
+    const int label_width = available - (metric_icon_ == XNavIcon::None ? 0 : icon_size + FromDIP(6));
+    dc.DrawText(wxControl::Ellipsize(title,dc,wxELLIPSIZE_END,std::max(1,label_width)),x,FromDIP(label_y));
+    if (metric_icon_ != XNavIcon::None) {
+      const auto svg = wxString::Format(
+          "<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"24\" height=\"24\" viewBox=\"0 0 24 24\">"
+          "<path d=\"%s\" fill=\"none\" stroke=\"#%06x\" stroke-width=\"1.65\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/></svg>",
+          wxString::FromUTF8(PrototypeIconPath(metric_icon_)), colors.muted);
+      const auto bitmap = wxBitmapBundle::FromSVG(svg.utf8_str(), wxSize(icon_size,icon_size)).GetBitmap(wxSize(icon_size,icon_size));
+      // The prototype label box is 16px high and starts at the row padding.
+      // Keep its icon top independent of platform font metrics.
+      const int icon_y = FromDIP(label_y);
+      if (bitmap.IsOk()) dc.DrawBitmap(bitmap,right-icon_size,icon_y,true);
+    }
     const bool stale=reading_.quality==vessel::Quality::Stale;
     const auto value=reading_.value?wxString::Format("%.*f",decimals_,*reading_.value):wxString::FromUTF8("—");
     int value_size = metric_font_size_ ? metric_font_size_ : roomy ? 48 : medium ? 40 : 33;

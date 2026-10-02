@@ -11,7 +11,8 @@ namespace opennav::ui {
 enum class SettingsSection { Vessel, Navigation, Sensors, Autopilot, Radar, Display, System, Help };
 struct SettingsDrawerActions {
   std::function<void(ProductPage)> page;
-  std::function<void()> advanced, plugins, diagnostics, fullscreen, legacy, safe;
+  std::function<void()> advanced, plugins, diagnostics, fullscreen, legacy, safe,
+      chart_presentation;
   std::function<void(LightMode)> theme;
   std::function<application::DisplayPreferences()> display;
   std::function<application::CommandResult(const application::DisplayPreferences &)> save_display;
@@ -45,6 +46,7 @@ private:
   ProductState state_;
   SettingsSection section_ = SettingsSection::Vessel;
   wxPanel *tabs_ = nullptr;
+  wxPanel *light_track_ = nullptr;
   std::vector<XNavButton *> tabs_buttons_, buttons_;
   std::vector<std::pair<XNavButton *, LightMode>> light_buttons_;
   std::vector<wxPanel *> copies_;

@@ -1,14 +1,17 @@
 #!/usr/bin/env python3
 """Compile complete patched Windows units without rebuilding dependencies.
 
-Compile-only by default. Optional Settings component execution provides isolated
-native interaction evidence, never product, package or dependency qualification.
+Compile-only by default. Optional Settings and prototype components provide
+isolated native interaction evidence, never product, package or dependency qualification.
+The opt-in prototype proof compiles the real navigation bridge and runs existing
+Settings/Search components, without rebuilding old macro-control units.
 The optional negative control restores exactly the seven legacy max calls in
 the two real source files; it must fail before the untouched fixed files pass.
 """
 import argparse
 import hashlib
 import json
+import importlib.util
 import os
 from pathlib import Path
 import re
@@ -26,6 +29,12 @@ UI_CHANGED = tuple('src/ui/' + name + '.cpp' for name in (
     'Drawer', 'HealthDrawer', 'Horizon', 'PassageDrawer', 'ProductPanel',
     'SettingsDrawer', 'Sheet', 'Shell'))
 SETTINGS = 'src/integration/SettingsStore.cpp'
+NAVIGATION_UNITS = ('src/integration/NavigationActions.cpp', 'src/integration/NavigationObjects.cpp')
+SEARCH_CAPTURES = {
+    'saved-objects-day': (1280, 800), 'empty-night': (1280, 800),
+    'shell-1280': (1280, 800), 'shell-853': (853, 600),
+    'shell-853-search': (853, 600),
+}
 
 
 def record(path):
@@ -118,6 +127,69 @@ def settings_component(build, wx, evidence):
     return {'executable': record(client), 'runtime': manifest, 'capture': capture}
 
 
+def prototype_component(build, wx, evidence, component='search'):
+    if component not in ('search', 'chart-presentation'):
+        raise ValueError('Unknown prototype component')
+    if sys.platform != 'win32' or os.environ.get('GITHUB_ACTIONS') != 'true':
+        raise ValueError('Prototype capture requires disposable native Windows CI, never the boat')
+    chart = component == 'chart-presentation'
+    client = build / ('Release/chart_presentation_drawer_test.exe' if chart else 'Release/search_drawer_test.exe')
+    expected_captures = ({name: (1280, 800) for name in (
+        'chart-day-top', 'chart-day-bottom', 'chart-dusk-raster', 'chart-night-unavailable')}
+        if chart else SEARCH_CAPTURES)
+    identity = record(client)
+    manifest = stage_native_runtime(client, wx,
+        ('wxbase32u_vc14x.dll', 'wxmsw32u_core_vc14x.dll', 'wxmsw32u_aui_vc14x.dll'))
+    (evidence / (component + '-runtime.json')).write_text(json.dumps(manifest, indent=2) + '\n')
+    output = evidence / (component + '-component')
+    if output.exists():
+        raise ValueError('Prototype capture requires a new evidence directory')
+    spec = importlib.util.spec_from_file_location('windows_ui', ROOT / 'tools/windows-ui.py')
+    ui = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(ui)
+    ui.ensure_desktop(1440, 900)
+    run([client, output], evidence / (component + '-component.log'), timeout=45)
+    if chart:
+        result = json.loads((output / 'result.json').read_text())
+        if (not result['passed'] or not result['fixture_only'] or result['checks'] < 46 or
+                len(result['captures']) != 4 or set(result['captures']) != set(expected_captures)):
+            raise ValueError('Chart component did not finish its actual focused interaction checks')
+        checks = result['checks']
+    else:
+        text = (evidence / 'search-component.log').read_text(errors='replace')
+        matches = re.findall(r'^(\d+) focused search checks passed; native Windows and boat remain pending$', text, re.M)
+        if len(matches) != 1 or int(matches[0]) < 82:
+            raise ValueError('Search component did not finish its actual focused interaction checks')
+        checks = int(matches[0])
+    from PIL import Image
+    if {p.stem for p in output.glob('*.png')} != set(expected_captures):
+        raise ValueError('Missing/unexpected prototype captures')
+    screenshots = {}
+    for name, dimensions in expected_captures.items():
+        path = output / (name + '.png')
+        with Image.open(path) as image:
+            if image.size != dimensions or len(image.convert('RGB').getcolors(2000000) or ()) < 25:
+                raise ValueError('Missing/blank prototype surface or wrong viewport: ' + name)
+            if name in ('saved-objects-day', 'empty-night'):
+                expected = (12, 17, 21) if name == 'empty-night' else (21, 35, 38)
+                if image.convert('RGB').getpixel((690, 400)) != expected:
+                    raise ValueError('Search drawer theme/placement differs: ' + name)
+        screenshots[name] = dict(size=list(dimensions), **record(path))
+    if len({v['sha256'] for v in screenshots.values()}) != len(screenshots):
+        raise ValueError('Prototype captures reused stale pixels')
+    if record(client) != identity:
+        raise ValueError('Prototype executable changed during capture')
+    for name, item in manifest.items():
+        if record(client.parent / name)['sha256'] != item['sha256']:
+            raise ValueError('Prototype runtime changed during capture: ' + name)
+    capture = {'passed': True, 'checks': checks, 'platform': sys.platform,
+               'source_commit': subprocess.check_output(['git', 'rev-parse', 'HEAD'], cwd=ROOT, text=True).strip(),
+               'executable_sha256': identity['sha256'], 'screenshots': screenshots,
+               'conformance': 'PENDING native visual review and boat acceptance; offline component only'}
+    (output / 'capture.json').write_text(json.dumps(capture, indent=2) + '\n')
+    return {'executable': identity, 'runtime': manifest, 'capture': capture}
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--upstream', type=Path, default=ROOT / 'upstream/OpenCPN')
@@ -126,7 +198,17 @@ def main():
     parser.add_argument('--ui', action='store_true', help='also compile the real production UI static library and SettingsStore')
     parser.add_argument('--settings-component', action='store_true',
                         help='with --ui, link and run the existing offline native Settings component')
+    parser.add_argument('--prototype-proof', action='store_true',
+                        help='opt in to complete navigation bridge objects plus existing Settings and Search components; skips old macro-control units')
+    parser.add_argument('--chart-presentation-component', action='store_true',
+                        help='with --prototype-proof, also run the tracked offline chart presentation harness')
     args = parser.parse_args()
+    if args.chart_presentation_component and not args.prototype_proof:
+        parser.error('--chart-presentation-component requires --prototype-proof')
+    if args.prototype_proof:
+        if args.legacy_control:
+            parser.error('--prototype-proof does not repeat --legacy-control')
+        args.ui = args.settings_component = True
     if args.settings_component and not args.ui:
         parser.error('--settings-component requires --ui')
     if sys.platform != 'win32':
@@ -140,11 +222,21 @@ def main():
     if args.settings_component:
         report['scope'] = ('native Win32 translation-unit compilation and offline Settings '
                            'component interaction/capture; not product qualification')
+    if args.prototype_proof:
+        report['scope'] = ('native Win32 navigation bridge translation units and offline Settings/Search '
+                           'components; not full OpenCPN, dependency, package or boat qualification')
+    active_units = () if args.prototype_proof else UNITS
     try:
         report['candidate'] = subprocess.check_output(['git', 'rev-parse', 'HEAD'], cwd=ROOT, text=True).strip()
         report['gateInputs'] = {p: record(ROOT / p) for p in
                                ('tools/test-windows-changed-units.py', 'tools/prepare-integration.py',
                                 'tests/windows_changed_units/CMakeLists.txt', 'upstream.lock.json')}
+        if args.prototype_proof:
+            report['prototypeInputs'] = {p: record(ROOT / p) for p in
+                (*NAVIGATION_UNITS, 'tests/search_drawer_test.cpp',
+                 'tools/windows-prototype-headers.lock.json', 'tools/windows-ui.py')}
+        if args.chart_presentation_component:
+            report['prototypeInputs']['tests/chart_presentation_drawer_test.cpp'] = record(ROOT / 'tests/chart_presentation_drawer_test.cpp')
         if args.ui:
             report['uiBuildPolicy'] = {'testFixtures': False, 'pilotLoopback': False,
                                        'runtimeTests': args.settings_component}
@@ -171,9 +263,9 @@ def main():
         source = ROOT / 'build/integration-source'
         report['upstream'] = lock['commit']
         report['patches'] = {p.name: record(p) for p in sorted((ROOT / 'patches').glob('*.patch'))}
-        report['sources'] = {p: record(source / p) for p in UNITS}
+        report['sources'] = {p: record(source / p) for p in active_units}
         report['configTemplate'] = record(source / 'cmake/in-files/config.h.in')
-        for relative in UNITS:
+        for relative in active_units:
             dest = evidence / 'source' / relative
             dest.parent.mkdir(parents=True, exist_ok=True)
             shutil.copyfile(source / relative, dest)
@@ -199,12 +291,28 @@ def main():
                 dest.parent.mkdir(parents=True, exist_ok=True)
                 dest.write_bytes(tar.extractfile(member).read())
         report['sdkLocks'] = {p: record(ROOT / 'tools' / p) for p in ('windows-wx.lock.json', 'windows-curl.lock.json')}
+        glew = sdk / 'prototype-headers'
+        if args.prototype_proof:
+            header_lock = json.loads((ROOT / 'tools/windows-prototype-headers.lock.json').read_text())
+            for item in header_lock['files']:
+                fetch(item, glew / item['file'])
+            report['prototypeHeaders'] = {item['file']: record(glew / item['file']) for item in header_lock['files']}
+            # Bind the actual pinned header/build-contract input, not just our
+            # object filenames. Source tree remains owned by prepare-integration.
+            report['navigationHeaderTree'] = {str(p.relative_to(source)): record(p)
+                for p in sorted(source.rglob('*')) if p.is_file() and p.suffix in ('.h', '.hpp', '.in')}
+            report['navigationBuildContracts'] = {str(p.relative_to(source)): record(p)
+                for p in sorted(source.rglob('CMakeLists.txt'))}
+
         build = evidence / 'build'
         run(['cmake', '-S', ROOT / 'tests/windows_changed_units', '-B', build,
              '-G', 'Visual Studio 17 2022', '-A', 'Win32',
              '-DOPENNAV_SOURCE_DIR:PATH=' + source.as_posix(), '-DCURL_INCLUDE:PATH=' + headers.as_posix(),
              '-DOPENNAV_CHECK_UI=' + ('ON' if args.ui else 'OFF'),
              '-DOPENNAV_CHECK_SETTINGS_COMPONENT=' + ('ON' if args.settings_component else 'OFF'),
+             '-DOPENNAV_CHECK_PROTOTYPE=' + ('ON' if args.prototype_proof else 'OFF'),
+             '-DOPENNAV_CHECK_CHART_COMPONENT=' + ('ON' if args.chart_presentation_component else 'OFF'),
+             '-DOPENNAV_GLEW_INCLUDE:PATH=' + glew.as_posix(),
              '-DwxWidgets_ROOT_DIR:PATH=' + wx.as_posix(), '-DwxWidgets_LIB_DIR:PATH=' + (wx / 'lib/vc14x_dll').as_posix(),
              '-DwxWidgets_CONFIGURATION=mswu'], evidence / 'configure.log')
         report['generatedConfig'] = record(build / 'include/config.h')
@@ -227,7 +335,12 @@ def main():
                     report['legacyControls'][relative] = {'exitCode': code, 'source': record(path)}
                 finally:
                     path.write_bytes(original)
-        targets = ['check_' + Path(p).stem for p in UNITS]
+        targets = ['check_' + Path(p).stem for p in active_units]
+        if args.prototype_proof:
+            targets += ['check_' + Path(p).stem for p in NAVIGATION_UNITS] + ['search_drawer_test']
+            report['navigationGeneratedConfig'] = record(build / 'navigation-include/config.h')
+        if args.chart_presentation_component:
+            targets += ['chart_presentation_drawer_test']
         if args.ui:
             targets += ['opennav_ui', 'check_SettingsStore']
         if args.settings_component:
@@ -235,10 +348,10 @@ def main():
         run(['cmake', '--build', build, '--config', 'Release', '--target', *targets,
              '--parallel', '2', '--', '/verbosity:normal'],
             evidence / 'compile.log', timeout=420)
-        if any(record(source / p) != report['sources'][p] for p in UNITS):
+        if any(record(source / p) != report['sources'][p] for p in active_units):
             raise ValueError('Production source changed during compile')
         objects = sorted(build.glob('check_*.dir/Release/*.obj'))
-        if len(objects) != len(UNITS) + int(args.ui) or any(p.stat().st_size == 0 for p in objects):
+        if len(objects) != len(active_units) + int(args.ui) + len(NAVIGATION_UNITS) * int(args.prototype_proof) or any(p.stat().st_size == 0 for p in objects):
             raise ValueError('Missing native translation-unit objects')
         report['objects'] = {str(p.relative_to(evidence)): record(p) for p in objects}
         if args.ui:
@@ -254,6 +367,13 @@ def main():
             if (report['settingsComponent']['capture']['source_commit'] != report['candidate'] or
                     any(record(ROOT / p) != rec for p, rec in report['settingsInputs'].items())):
                 raise ValueError('Settings component inputs changed during native proof')
+        if args.prototype_proof:
+            report['searchComponent'] = prototype_component(build, wx, evidence)
+            if args.chart_presentation_component:
+                report['chartPresentationComponent'] = prototype_component(build, wx, evidence, 'chart-presentation')
+            if (report['searchComponent']['capture']['source_commit'] != report['candidate'] or
+                    any(record(ROOT / p) != rec for p, rec in report['prototypeInputs'].items())):
+                raise ValueError('Prototype component inputs changed during native proof')
         report['status'] = 'passed'
     finally:
         (evidence / 'summary.json').write_text(json.dumps(report, indent=2) + '\n')

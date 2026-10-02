@@ -31,6 +31,13 @@ MakeNavigationActions(MyFrame &frame,
                  wxString::FromUTF8(r.message));
     return r;
   };
+  a.chart_presentation = [&frame] { return CopyChartPresentation(frame); };
+  a.set_chart_ais = [&frame](bool show) { return SetChartAis(frame, show); };
+  a.set_chart_enc_text = [&frame](bool show) { return SetChartEncText(frame, show); };
+  a.set_chart_soundings = [&frame](bool show) { return SetChartSoundings(frame, show); };
+  a.set_chart_orientation = [&frame](application::ChartOrientation mode) {
+    return SetChartOrientation(frame, mode);
+  };
   a.catalog = CopyNavigationCatalog;
   a.route = CopyNavigationRoute;
   a.waypoint_context = [position](const std::string &id, vessel::Time now) {

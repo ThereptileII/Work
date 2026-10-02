@@ -18,6 +18,9 @@ remote boat smoke tests.
 | Select AIS | Tap received target → compact card | 1 | Close/outside returns to chart | Expired/lost selection is cleared; no synthetic target substitution |
 | Inspect AIS | Selected card → Details; or Menu → AIS targets → vessel | 1 or 3 | Back returns to targets | Lost target shows unavailable; CPA/TCPA remain upstream results |
 | Chart orientation | Tap North/Course control beside Center | 1 | Chart remains visible | Label reads the actual OpenCPN selection; uses the existing North/Course action |
+| Explicit chart orientation | Chart → Layers → North up, Course up or Head up | 2 | Close or Escape returns to the chart | Selected mode is upstream state; current course/heading is still required for suitable rotation |
+| Find a saved object | Search → optionally type a name → select route or waypoint | 2, plus typing | Close/Escape cancels; reopening starts a fresh search | Deleted/ambiguous objects cannot select; no result stays explicit; a route opens details without activation |
+| Chart layers | Chart → Layers → AIS, ENC text or soundings switch | 2 | Close/Escape returns to the chart | Read back actual state; unsupported controls stay unavailable; symbols/contours remain under OpenCPN safety presentation |
 | Display mode | Tap current Day/Dusk/Night label | 1 per step | No modal | Label and chart/XNav palette change together |
 | Instruments | Menu → Vessel instruments | 2 | Back → Menu; Navigation → chart | Stale/missing readings show their state; groups retain configured selections |
 | Propulsion/energy | Energy action, or Menu → Propulsion & energy | 1 or 2 | Navigation returns to chart | Dependent predictions are withheld and their blocking reason shown |

@@ -1,8 +1,17 @@
 name: SKAGER focused native changed-unit and Settings proof
 on:
   push:
-    branches: [skager-windows-changed-units]
+    branches: [skager-windows-changed-units, skager-prototype-proof]
   workflow_dispatch:
+    inputs:
+      prototype:
+        description: Run the bounded navigation bridge / Search / Settings proof
+        type: boolean
+        default: false
+      chart_presentation:
+        description: Include the tracked chart presentation harness (requires prototype)
+        type: boolean
+        default: false
 permissions:
   contents: read
 jobs:
@@ -16,13 +25,28 @@ jobs:
           git clone --depth 1 --branch Release_5.12.4 https://github.com/OpenCPN/OpenCPN.git opennav-x/upstream/OpenCPN
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
       - name: Prove native peer CLI home precondition before GUI startup
+        if: ${{ github.ref != 'refs/heads/skager-prototype-proof' && inputs.prototype != true }}
         run: python opennav-x/tools/test-peer-cli-precondition-windows.py --evidence opennav-x/evidence/local/peer-cli-precondition
       - name: Install capture dependency
         run: python -m pip install Pillow==11.3.0
       - name: Verify component runtime staging guards
         run: python opennav-x/tests/windows_changed_units_runtime_tests.py
-      - name: Compile changed units, reproduce legacy macro failure and exercise native Settings
-        run: python opennav-x/tools/test-windows-changed-units.py --legacy-control --ui --settings-component
+      - name: Run selected bounded native proof
+        env:
+          PROTOTYPE_PROOF: ${{ github.ref == 'refs/heads/skager-prototype-proof' || inputs.prototype == true }}
+          CHART_COMPONENT: ${{ github.ref == 'refs/heads/skager-prototype-proof' || inputs.chart_presentation == true }}
+        run: |
+          if ($env:CHART_COMPONENT -eq 'true' -and $env:PROTOTYPE_PROOF -ne 'true') {
+            throw 'Chart presentation requires prototype proof'
+          }
+          if ($env:PROTOTYPE_PROOF -eq 'true') {
+            $proofArgs = @('--prototype-proof')
+            if ($env:CHART_COMPONENT -eq 'true') { $proofArgs += '--chart-presentation-component' }
+            python opennav-x/tools/test-windows-changed-units.py @proofArgs
+          } else {
+            python opennav-x/tools/test-windows-changed-units.py --legacy-control --ui --settings-component
+          }
+          exit $LASTEXITCODE
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         if: always()
         with:

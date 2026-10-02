@@ -23,7 +23,8 @@ to native behavior; it does not authorize mock hardware or installer actions.
 | Radar | Native focus composition over copied adapter status | Independently scrolling controls; Close restores chart; all scanner controls unavailable until receive/control contracts exist; no synthetic sweep or transmitter command |
 | Health / Sensors | `XNavHealthDrawer` over owned assessed measurements | Disclosure preserves age; root Close; per-sensor configuration opens existing validated settings; online AIS separate from onboard |
 | Alerts / banner | Existing episode/acknowledgement model | Acknowledgement never hides an unresolved critical cause |
-| Chart layers / orientation / follow | Existing OpenCPN presentation and chart actions | Retain shared chart model; XNav/Standard is a presentation preference |
+| Search | Top-bar Search → optional name → saved route or waypoint | Owned saved-object catalog; revalidate identity before selection; no chart place-name index or automatic route activation |
+| Chart layers / orientation / follow | Existing OpenCPN presentation and chart actions | Retain shared chart model; AIS, ENC text and soundings read back upstream state; North/Course/Head modes remain upstream-owned; XNav/Standard is a separate presentation preference |
 | Theme button / Display | Day → Dusk → Night → Day | Applies UI and proper chart presentation; no bright primary sheets |
 | Settings sections | Existing validated settings store | Focused editing, validation inline, cancel preserves previous value |
 | System / Diagnostics | Real build, sources, age, logs and recovery | One contextual return; technical metadata stays here |

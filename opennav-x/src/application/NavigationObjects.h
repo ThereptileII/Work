@@ -24,6 +24,32 @@ struct CommandResult {
   bool ok = false;
   std::string message, identity;
 };
+enum class ChartOrientation { NorthUp, CourseUp, HeadUp };
+enum class ChartFormat { Unavailable, Vector, Raster };
+struct ChartLayerState {
+  // No value means this boundary cannot observe the layer; false means hidden.
+  std::optional<bool> visible;
+  bool editable = false;
+  std::string reason;
+};
+struct ChartPresentationState {
+  bool available = false;
+  std::string reason;
+  ChartFormat format = ChartFormat::Unavailable;
+  // Format describes the current chart or quilt reference, never a style preset.
+  std::string format_reason;
+  std::optional<ChartOrientation> orientation;
+  ChartLayerState ais_vessels, enc_text, depth_soundings;
+  ChartLayerState chart_symbols{{}, false, "Chart symbols remain managed by OpenCPN"};
+  ChartLayerState depth_contours{{}, false, "OpenCPN retains safety-contour presentation"};
+  ChartLayerState route_corridor{{}, false, "Chart corridor integration unavailable"};
+  ChartLayerState wind_vectors{{}, false, "Chart wind-vector provider unavailable"};
+  ChartLayerState radar_overlay{{}, false, "No compatible radar adapter connected"};
+};
+struct ChartPresentationResult {
+  CommandResult command;
+  ChartPresentationState state;
+};
 struct Coordinate {
   double latitude_deg = 0, longitude_deg = 0;
 };
@@ -54,6 +80,11 @@ struct AnchorState {
 // UI receives owned values and explicit human-command callbacks. The service
 // implementation remains inside the OpenCPN integration boundary.
 struct NavigationActions {
+  // Copies only; every action returns fresh readback and never caches preferences.
+  std::function<ChartPresentationState()> chart_presentation;
+  std::function<ChartPresentationResult(bool)> set_chart_ais, set_chart_enc_text,
+      set_chart_soundings;
+  std::function<ChartPresentationResult(ChartOrientation)> set_chart_orientation;
   std::function<CommandResult(int)> view_ais;
   std::function<Catalog()> catalog;
   // One owned selection, or unavailable for a missing/ambiguous identity.

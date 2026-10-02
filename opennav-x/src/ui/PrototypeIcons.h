@@ -6,6 +6,10 @@
 namespace opennav::ui {
 inline const char *PrototypeIconPath(XNavIcon icon) {
   switch (icon) {
+    case XNavIcon::Speed: return "M4 17a9 9 0 1 1 16 0m-8-4 5-6M8 20h8";
+    case XNavIcon::Depth: return "M12 3v13m-4-4 4 4 4-4M3 21l3-2 3 2 3-2 3 2 3-2 3 2";
+    case XNavIcon::Wind: return "M3 7h12a3 3 0 1 0-3-3M3 12h16a3 3 0 1 1-3 3M3 17h6a3 3 0 1 1-3 3";
+    case XNavIcon::Battery: return "M3 6h16v12H3Zm18 4v4M6 9v6m4-6v6m4-6v6";
     case XNavIcon::Spark: return "m12 2 2.5 7.5L22 12l-7.5 2.5L12 22l-2.5-7.5L2 12l7.5-2.5Z";
     case XNavIcon::Plus: return "M12 5v14M5 12h14";
     case XNavIcon::Minus: return "M5 12h14";

@@ -1,0 +1,131 @@
+{
+  "scope": "SCRUM-216 Display light segmented track only; local Linux feedback, native Windows and boat acceptance remain open",
+  "base_commit": "24d0a5a148398e6adc943ee87fdfc03174b06e2d",
+  "platform": "linux",
+  "viewport": [
+    1280,
+    800
+  ],
+  "html_sha256": "b04573b920b6bccd16afd22f54a909e48afcfd502ce9cd7c69fdf5b6dd895447",
+  "executable_sha256": "a82f56c8e64ee031c6b289db9d879b7401ecfd0511e9a1b53cbadc26228362b8",
+  "canonical_windows_buttons": [
+    {
+      "rect": {
+        "x": 675,
+        "y": 507.109375,
+        "width": 123.328125,
+        "height": 40
+      },
+      "style": {
+        "fontFamily": "\"Segoe UI Variable Display\", \"Segoe UI\", Arial, sans-serif",
+        "fontSize": "10px",
+        "fontWeight": "400",
+        "fontStyle": "normal",
+        "lineHeight": "normal",
+        "letterSpacing": "normal",
+        "fontVariantNumeric": "normal",
+        "textTransform": "none",
+        "color": "rgb(243, 245, 238)",
+        "backgroundColor": "rgb(38, 57, 61)",
+        "borderRadius": "6px",
+        "borderWidth": "0px",
+        "borderColor": "rgb(243, 245, 238)",
+        "padding": "7px 4px",
+        "margin": "0px",
+        "gap": "normal",
+        "boxShadow": "none",
+        "opacity": "1",
+        "transition": "none",
+        "minHeight": "40px",
+        "minWidth": "auto",
+        "stroke": "none",
+        "strokeWidth": "1px",
+        "fill": "rgb(0, 0, 0)"
+      }
+    },
+    {
+      "rect": {
+        "x": 802.328125,
+        "y": 507.109375,
+        "width": 123.34375,
+        "height": 40
+      },
+      "style": {
+        "fontFamily": "\"Segoe UI Variable Display\", \"Segoe UI\", Arial, sans-serif",
+        "fontSize": "10px",
+        "fontWeight": "400",
+        "fontStyle": "normal",
+        "lineHeight": "normal",
+        "letterSpacing": "normal",
+        "fontVariantNumeric": "normal",
+        "textTransform": "none",
+        "color": "rgb(126, 150, 153)",
+        "backgroundColor": "rgba(0, 0, 0, 0)",
+        "borderRadius": "6px",
+        "borderWidth": "0px",
+        "borderColor": "rgb(126, 150, 153)",
+        "padding": "7px 4px",
+        "margin": "0px",
+        "gap": "normal",
+        "boxShadow": "none",
+        "opacity": "1",
+        "transition": "none",
+        "minHeight": "40px",
+        "minWidth": "auto",
+        "stroke": "none",
+        "strokeWidth": "1px",
+        "fill": "rgb(0, 0, 0)"
+      }
+    },
+    {
+      "rect": {
+        "x": 929.671875,
+        "y": 507.109375,
+        "width": 123.328125,
+        "height": 40
+      },
+      "style": {
+        "fontFamily": "\"Segoe UI Variable Display\", \"Segoe UI\", Arial, sans-serif",
+        "fontSize": "10px",
+        "fontWeight": "400",
+        "fontStyle": "normal",
+        "lineHeight": "normal",
+        "letterSpacing": "normal",
+        "fontVariantNumeric": "normal",
+        "textTransform": "none",
+        "color": "rgb(126, 150, 153)",
+        "backgroundColor": "rgba(0, 0, 0, 0)",
+        "borderRadius": "6px",
+        "borderWidth": "0px",
+        "borderColor": "rgb(126, 150, 153)",
+        "padding": "7px 4px",
+        "margin": "0px",
+        "gap": "normal",
+        "boxShadow": "none",
+        "opacity": "1",
+        "transition": "none",
+        "minHeight": "40px",
+        "minWidth": "auto",
+        "stroke": "none",
+        "strokeWidth": "1px",
+        "fill": "rgb(0, 0, 0)"
+      }
+    }
+  ],
+  "local_day_pixels": {
+    "850,520": "#1d2d31",
+    "900,540": "#1d2d31",
+    "735,510": "#26393d"
+  },
+  "sources": {
+    "src/ui/SettingsDrawer.cpp": "85913c70569af598f70a497c3d15bd8866a3959047fe46ac979d41bfa481db89",
+    "src/ui/SettingsDrawer.h": "a8f192b5425809b9bcef54c8238bbd1b85bba8841bf8f5763bb124e7a9e40db6",
+    "src/ui/Controls.cpp": "a13cbe1af67e0564fb8e4f854c58cb312165f31afd69956fe2b8162c0595cb6d",
+    "src/ui/Controls.h": "b6b0fc7b870dd3de85db3c60576dc0f31378d0b0d28b61e4bbac82483c147866"
+  },
+  "captures": {
+    "display-day.png": "fcc93f87baee73d04f4fa109a6078bb6d661a6cbda55afa22f27f30c069dec93",
+    "display-dusk.png": "01669bb961f87e90c1988548507d9e8b1b344b6f27e66edf4047e80f98546ff3",
+    "display-night.png": "3668e9334bf17d1a9da7ccafb5cedc2ddb1626642ac71d28915f66f9070ef287"
+  }
+}

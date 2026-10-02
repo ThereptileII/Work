@@ -51,6 +51,10 @@ void XNavSettingsDrawer::Update(const ProductState &state,LightMode mode) {
     for(auto *b:tabs_buttons_)b->SetLightMode(mode);
     for(const auto &choice:light_buttons_)choice.first->SetSelected(choice.second==mode);
     tabs_->SetBackgroundColour(Colour(Theme(mode).background));
+    if(light_track_) {
+      light_track_->SetBackgroundColour(Colour(Theme(mode).surface));
+      light_track_->Refresh(false);
+    }
     for(auto *frame:input_frames_)frame->Refresh(false);
     for(auto *panel:field_containers_)panel->SetBackgroundColour(Colour(Theme(mode).background));
     for(std::size_t i=0;i<field_captions_.size();++i)
@@ -125,19 +129,33 @@ void XNavSettingsDrawer::DisplayForm() {
   layout_field_->Bind(wxEVT_CHOICE,[this](wxCommandEvent &event){
     display_draft_.layout=static_cast<application::ChartLayout>(event.GetInt());display_dirty_=true;
   });
-  CopyBlock(34,[](XNavPainter &p,int width){p.TextTracked("LIGHT FOR THE MOMENT",0,4,10,p.c.secondary,400,1.5,width);});
+  CopyBlock(33,[](XNavPainter &p,int width){p.TextTracked("LIGHT FOR THE MOMENT",0,4,10,p.c.secondary,400,1.5,width);});
+  light_track_=new wxPanel(body_,wxID_ANY);
+  light_track_->SetName("Display light track");
+  light_track_->SetBackgroundStyle(wxBG_STYLE_PAINT);
+  light_track_->SetBackgroundColour(Colour(Theme(light_).surface));
+  light_track_->Bind(wxEVT_PAINT,[this](wxPaintEvent &){
+    wxAutoBufferedPaintDC dc(light_track_);
+    dc.SetBackground(wxBrush(Colour(Theme(light_).background)));dc.Clear();
+    dc.SetPen(*wxTRANSPARENT_PEN);dc.SetBrush(wxBrush(Colour(Theme(light_).surface)));
+    dc.DrawRoundedRectangle(wxPoint(0,0),light_track_->GetClientSize(),FromDIP(9));
+  });
   auto *row=new wxBoxSizer(wxHORIZONTAL);
   for(const auto mode:{LightMode::Day,LightMode::Dusk,LightMode::Night}) {
     const wxString name=mode==LightMode::Day?"Day":mode==LightMode::Dusk?"Dusk":"Night";
-    auto *b=new XNavButton(body_,wxID_ANY,name,"Display "+name);b->SetRole(ButtonRole::Segment);
+    auto *b=new XNavButton(light_track_,wxID_ANY,name,"Display "+name);b->SetSegmentInTrack();
     b->SetSelected(mode==light_);b->SetLightMode(light_);b->SetMinSize(FromDIP(wxSize(48,40)));b->Enable(bool(actions_.theme));
     b->Bind(wxEVT_BUTTON,[this,mode](wxCommandEvent &){CallAfter([this,mode]{
       if(actions_.theme) actions_.theme(mode);
       Select(SettingsSection::Display);
     });});
+    if(mode!=LightMode::Day)row->AddSpacer(FromDIP(4));
     row->Add(b,1);buttons_.push_back(b);light_buttons_.push_back({b,mode});
   }
-  content_->Add(row,0,wxEXPAND|wxBOTTOM,FromDIP(30));
+  auto *track_layout=new wxBoxSizer(wxVERTICAL);
+  track_layout->Add(row,1,wxEXPAND|wxALL,FromDIP(4));
+  light_track_->SetSizer(track_layout);
+  content_->Add(light_track_,0,wxEXPAND|wxBOTTOM,FromDIP(30));
   Button("Apply display preferences",[this]{SaveDisplay();},ButtonRole::Primary);
   display_message_=new wxStaticText(body_,wxID_ANY,wxEmptyString);
   display_message_->SetFont(UiFont(*this,11));
@@ -285,7 +303,7 @@ void XNavSettingsDrawer::Button(const wxString &label,std::function<void()> acti
 }
 void XNavSettingsDrawer::Build() {
   ClearBody();tabs_buttons_.clear();buttons_.clear();light_buttons_.clear();copies_.clear();
-  scale_field_=nullptr;layout_field_=nullptr;display_message_=nullptr;
+  scale_field_=nullptr;layout_field_=nullptr;display_message_=nullptr;light_track_=nullptr;
   fields_.fill(nullptr);input_frames_.clear();field_containers_.clear();field_captions_.clear();message_=nullptr;
   tabs_=new wxPanel(body_,wxID_ANY);tabs_->SetLabel(wxEmptyString);
   tabs_->SetBackgroundColour(Colour(Theme(light_).background));
@@ -316,7 +334,7 @@ void XNavSettingsDrawer::Build() {
       break;
     case SettingsSection::Navigation:
       Page("Navigation preferences","Units, chart orientation and navigation alarms",XNavIcon::Compass,ProductPage::NavigationSettings);
-      Page("Chart presentation","XNav or Standard, light and display",XNavIcon::Layers,ProductPage::Display);
+      Link("Chart presentation","Layers, orientation and chart palette",XNavIcon::Layers,actions_.chart_presentation);
       Link("Charts & coverage","Configured OpenCPN charts and connections",XNavIcon::Chart,actions_.advanced);
       Page("Alarms & thresholds","Inspect current navigation conditions",XNavIcon::Bell,ProductPage::Alerts);
       Page("Passage library","Saved OpenCPN routes",XNavIcon::Route,ProductPage::Routes);

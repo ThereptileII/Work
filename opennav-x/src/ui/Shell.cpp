@@ -147,6 +147,10 @@ Shell::Shell(wxFrame &frame, wxAuiManager &manager, ShellActions actions,
     row->Add(b, 0, wxALL, frame_.FromDIP(4));
     b->Hide();
   }
+  auto *search = Button(top, "Search", "Search saved routes and waypoints", [this] { ShowSearch(); });
+  search->SetMinSize(frame_.FromDIP(wxSize(44,44)));
+  search->SetIcon(XNavIcon::Search); search->SetIconOnly();
+  search->SetRole(ButtonRole::Quiet);
   theme_button_ =
       Button(top, LightName(), "Cycle day, dusk and night palettes", [this] {
         SetLight(mode_ == LightMode::Day    ? LightMode::Dusk
@@ -172,6 +176,7 @@ Shell::Shell(wxFrame &frame, wxAuiManager &manager, ShellActions actions,
 
   alert_pane_->SetSizer(alert_row);
   row->Add(alert_pane_,1,wxEXPAND);
+  row->Add(search,0,wxALIGN_CENTER_VERTICAL|wxLEFT|wxRIGHT,frame_.FromDIP(4));
   row->Add(theme_button_,0,wxALIGN_CENTER_VERTICAL|wxLEFT|wxRIGHT,frame_.FromDIP(4));
   row->Add(alert_button_,0,wxALIGN_CENTER_VERTICAL|wxLEFT|wxRIGHT,frame_.FromDIP(4));
   top->SetSizer(row);
@@ -256,6 +261,13 @@ Shell::Shell(wxFrame &frame, wxAuiManager &manager, ShellActions actions,
   orientation_button_->SetFloating();
   orientation_button_->SetMinSize(frame_.FromDIP(wxSize(68,90)));
   orientation->Add(orientation_button_,1,wxEXPAND); chart_orientation_->SetSizerAndFit(orientation);
+  chart_layers_ = overlay("OpenNav chart layers");
+  auto *layer_layout = new wxBoxSizer(wxVERTICAL);
+  auto *layers = Button(chart_layers_,"Layers","Chart layers",[this] { ShowChartPresentation(); });
+  layers->SetIcon(XNavIcon::Layers); layers->SetIconOnly();
+  layers->SetRole(ButtonRole::Quiet); layers->SetFloating();
+  layers->SetMinSize(frame_.FromDIP(wxSize(44,44)));
+  layer_layout->Add(layers,1,wxEXPAND); chart_layers_->SetSizerAndFit(layer_layout);
   chart_follow_ = overlay("OpenNav follow boat");
   auto *following=new wxBoxSizer(wxHORIZONTAL);
   auto *center=Button(chart_follow_,"Follow boat","Center chart on boat and follow position",actions_.follow);
@@ -492,6 +504,8 @@ Shell::~Shell() {
   if (settings_drawer_) { settings_drawer_->Dismiss(); settings_drawer_->Destroy(); settings_drawer_ = nullptr; }
   if (anchor_drawer_) { anchor_drawer_->Dismiss(); anchor_drawer_->Destroy(); anchor_drawer_ = nullptr; }
   if (alert_drawer_) { alert_drawer_->Dismiss(); alert_drawer_->Destroy(); alert_drawer_ = nullptr; }
+  if (search_drawer_) { search_drawer_->Dismiss(); search_drawer_->Destroy(); search_drawer_ = nullptr; }
+  if (chart_presentation_drawer_) { chart_presentation_drawer_->Dismiss(); chart_presentation_drawer_->Destroy(); chart_presentation_drawer_ = nullptr; }
   if (health_drawer_) { health_drawer_->Dismiss(); health_drawer_->Destroy(); health_drawer_ = nullptr; }
   if (pilot_drawer_) { pilot_drawer_->Dismiss(); pilot_drawer_->Destroy(); pilot_drawer_ = nullptr; }
   for (const auto &c : commands_)
@@ -668,6 +682,7 @@ void Shell::UpdateRail(const std::vector<std::string> &keys, vessel::Time now) {
                                 wxString::FromUTF8(item.unit), decimals);
           value->SetLightMode(mode_);
           value->SetCompact(true);
+          value->SetMetricIcon(MetricIconForKey(key));
           const auto viewport=frame_.ToDIP(frame_.GetClientSize());
           const auto layout=prototype::DisplayDesktop(viewport.x,viewport.y,display_.layout);
           value->SetMetricFontSize(display_.layout==application::ChartLayout::InstrumentFocus
@@ -797,7 +812,9 @@ void Shell::ApplyOwnedScale() {
                     static_cast<XNavDrawer *>(anchor_drawer_),
                     static_cast<XNavDrawer *>(pilot_drawer_),
                     static_cast<XNavDrawer *>(alert_drawer_),
-                    static_cast<XNavDrawer *>(health_drawer_)})
+                    static_cast<XNavDrawer *>(health_drawer_),
+                    static_cast<XNavDrawer *>(search_drawer_),
+                    static_cast<XNavDrawer *>(chart_presentation_drawer_)})
     if(drawer)drawer->SetInterfaceScale(percent);
 }
 
@@ -963,6 +980,15 @@ void Shell::Tick() {
     ais_drawer_->Update(ais_state_, online_ais_state_, now, mode_);
     ais_drawer_->Present(DrawerWorkspace());
   }
+  if (search_drawer_ && search_drawer_->IsShown()) {
+    search_drawer_->Update(mode_);
+    search_drawer_->Present(DrawerWorkspace());
+  }
+  if (chart_presentation_drawer_ && chart_presentation_drawer_->IsShown()) {
+    chart_presentation_drawer_->Update(actions_.navigation.chart_presentation
+        ? actions_.navigation.chart_presentation() : application::ChartPresentationState{},mode_);
+    chart_presentation_drawer_->Present(DrawerWorkspace());
+  }
   if (passage_drawer_ && passage_drawer_->IsShown()) {
     passage_drawer_->Update(state_, field_snapshot_.advice, energy, now, mode_);
     passage_drawer_->Present(DrawerWorkspace());
@@ -1095,6 +1121,8 @@ void Shell::UpdateScrollControls() {
 }
 
 std::string Shell::PageTitle() const {
+  if (search_drawer_ && search_drawer_->IsShown()) return "Chart search";
+  if (chart_presentation_drawer_ && chart_presentation_drawer_->IsShown()) return "Chart presentation";
   if (health_drawer_ && health_drawer_->IsShown()) return "Source health";
   if (alert_drawer_ && alert_drawer_->IsShown()) return "Alerts";
   if (pilot_drawer_ && pilot_drawer_->IsShown()) return "Manual autopilot";
@@ -1142,6 +1170,8 @@ void Shell::SelectDemo(vessel::DemoScenario scenario) {
 #endif
 void Shell::ShowNavigation() {
   CloseContext();
+  if (search_drawer_) search_drawer_->Dismiss();
+  if (chart_presentation_drawer_) chart_presentation_drawer_->Dismiss();
   if (health_drawer_) health_drawer_->Dismiss();
   if (alert_drawer_) alert_drawer_->Dismiss();
   if (pilot_drawer_) pilot_drawer_->Dismiss();
@@ -1307,10 +1337,40 @@ void Shell::ShowPassage() {
   passage_drawer_->Present(DrawerWorkspace());
   Tick();
 }
+void Shell::ShowSearch() {
+  ShowNavigation();
+  if (!search_drawer_) {
+    search_drawer_ = new XNavSearchDrawer(frame_, actions_.navigation);
+    const std::weak_ptr<int> lifetime = context_lifetime_;
+    search_drawer_->on_select = [this,lifetime](const std::string &id,bool route) {
+      if (!lifetime.expired()) ShowObject(id,route);
+    };
+  }
+  search_drawer_->SetInterfaceScale(display_.scale_percent);
+  search_drawer_->Open(DrawerWorkspace(),mode_);
+}
+void Shell::ShowChartPresentation() {
+  ShowNavigation();
+  if (!chart_presentation_drawer_) {
+    chart_presentation_drawer_ = new XNavChartPresentationDrawer(frame_,actions_.navigation);
+    const std::weak_ptr<int> lifetime = context_lifetime_;
+    chart_presentation_drawer_->on_style_preferences = [this,lifetime] {
+      if (!lifetime.expired()) ShowProduct(ProductPage::Display);
+    };
+  }
+  chart_presentation_drawer_->SetInterfaceScale(display_.scale_percent);
+  chart_presentation_drawer_->Open(DrawerWorkspace(),actions_.navigation.chart_presentation
+      ? actions_.navigation.chart_presentation() : application::ChartPresentationState{},mode_);
+  PlaceChartControls();
+}
 void Shell::ShowSettings() {
   ShowNavigation();
   if (!settings_drawer_) {
     SettingsDrawerActions actions;
+    const std::weak_ptr<int> lifetime = context_lifetime_;
+    actions.chart_presentation = [this,lifetime] {
+      if (!lifetime.expired()) ShowChartPresentation();
+    };
     actions.page = [this](ProductPage page) { ShowProduct(page); };
     if(actions_.navigation.legacy_settings)
       actions.advanced = [this] { ShowNavigation(); actions_.navigation.legacy_settings(); };
@@ -1447,6 +1507,8 @@ void Shell::UpdateContext(vessel::Time now) {
 }
 void Shell::ShowPage(PreviewPage page) {
   CloseContext();
+  if (search_drawer_) search_drawer_->Dismiss();
+  if (chart_presentation_drawer_) chart_presentation_drawer_->Dismiss();
   if (health_drawer_) health_drawer_->Dismiss();
   if (alert_drawer_) alert_drawer_->Dismiss();
   if (pilot_drawer_) pilot_drawer_->Dismiss();
@@ -1563,7 +1625,16 @@ void Shell::PlaceChartControls() {
     wxPoint position;
     if(overlay==chart_tools_)position={chart.x+chart.width-size.x-frame_.FromDIP(22),chart.y+chart.height-size.y-frame_.FromDIP(37)};
     else if(overlay==chart_orientation_)position={chart.x+chart.width-size.x-frame_.FromDIP(22),chart.y+frame_.FromDIP(22)};
+    else if(overlay==chart_layers_)position={chart.x+chart.width-size.x-frame_.FromDIP(34),chart.y+frame_.FromDIP(122)};
     else position={chart.x+frame_.FromDIP(28),chart.y+chart.height-size.y-frame_.FromDIP(37)};
+    if (overlay==chart_layers_) {
+      const auto tools_size=chart_tools_->GetSize();
+      wxRect tools(chart.x+chart.width-tools_size.x-frame_.FromDIP(22),
+                   chart.y+chart.height-tools_size.y-frame_.FromDIP(37),
+                   tools_size.x,tools_size.y);
+      tools.Inflate(frame_.FromDIP(8));
+      if (tools.Intersects(wxRect(position,size))) {overlay->Hide();continue;}
+    }
     // A separate owned surface remains above both software and GL child
     // canvases without repeatedly raising the entire chart/application.
     const auto screen = frame_.ClientToScreen(position);

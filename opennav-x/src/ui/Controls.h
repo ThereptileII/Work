@@ -7,6 +7,7 @@
 #include <wx/panel.h>
 #include <wx/scrolwin.h>
 #include <wx/dc.h>
+#include <string>
 
 namespace opennav::ui {
 
@@ -50,7 +51,11 @@ class XNavPainter {
 enum class ButtonRole { Normal, Quiet, Primary, Critical, Segment };
 enum class XNavIcon { None, Plus, Minus, Ownship, Menu, Back, Close, Route, Compass, Settings,
   Chart, Traffic, Energy, Instruments, Anchor, Radar, Sun, Dusk, Moon, Bell,
-  Search, Layers, Ruler, Pin, Sliders, Chevron, Edit, Shield, Spark };
+  Search, Layers, Ruler, Pin, Sliders, Chevron, Edit, Shield, Spark,
+  Speed, Depth, Wind, Battery };
+
+// Known prototype metric symbols follow stable configured reading keys.
+XNavIcon MetricIconForKey(const std::string &key);
 
 // Shared touch/wheel scrolling with no bright native scrollbar. Persistent
 // XNav navigation buttons are supplied outside the scrolling content.
@@ -80,6 +85,9 @@ class XNavButton : public wxControl {
 #endif
   void SetLabel(const wxString &label) override;
   void SetRole(ButtonRole role) { role_ = role; Refresh(); }
+  // A CSS-like segment inside a padded surface track; other Segment users
+  // retain their existing geometry and typography.
+  void SetSegmentInTrack() { role_ = ButtonRole::Segment; segment_in_track_ = true; Refresh(); }
   void SetSelected(bool selected) { if(selected_ != selected) { selected_ = selected; Refresh(); } }
   bool IsSelected() const { return selected_; }
   void SetIcon(XNavIcon icon) { icon_ = icon; Refresh(); }
@@ -130,6 +138,7 @@ class XNavButton : public wxControl {
   bool inline_icon_ = false;
   bool settings_tab_ = false, suite_link_ = false, vessel_profile_ = false;
   bool toggle_ = false;
+  bool segment_in_track_ = false;
   int text_size_ = 12;
   int action_base_height_ = 0;
   int action_base_font_ = 12;
@@ -158,6 +167,7 @@ class XNavDataValue final : public wxPanel {
   void SetLightMode(LightMode mode);
   void SetReading(const vessel::Sample& sample, vessel::Time now);
   void SetCompact(bool compact);
+  void SetMetricIcon(XNavIcon icon) { if(metric_icon_!=icon){metric_icon_=icon;Refresh(false);} }
   void SetMetricFontSize(int pixels) { if(metric_font_size_!=pixels){metric_font_size_ = pixels; Refresh(false);} }
   void SetMetricLabelSize(int pixels) { if(metric_label_size_!=pixels){metric_label_size_=pixels;Refresh(false);} }
   void SetContentInset(int pixels) { if(content_inset_!=pixels){content_inset_=pixels;Refresh(false);} }
@@ -178,6 +188,7 @@ class XNavDataValue final : public wxPanel {
   int metric_font_size_ = 0;
   int metric_label_size_ = 0;
   int content_inset_ = 0;
+  XNavIcon metric_icon_ = XNavIcon::None;
 };
 
 // Equal CSS-style rows use cumulative rounding, avoiding per-row integer

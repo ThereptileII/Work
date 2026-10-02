@@ -2,7 +2,14 @@
 #include "application/NavigationObjects.h"
 #include "vessel/RouteProgress.h"
 
+class MyFrame;
 namespace opennav::integration {
+application::ChartPresentationState CopyChartPresentation(MyFrame &frame);
+application::ChartPresentationResult SetChartAis(MyFrame &frame, bool show);
+application::ChartPresentationResult SetChartEncText(MyFrame &frame, bool show);
+application::ChartPresentationResult SetChartSoundings(MyFrame &frame, bool show);
+application::ChartPresentationResult SetChartOrientation(
+    MyFrame &frame, application::ChartOrientation orientation);
 application::Catalog CopyNavigationCatalog();
 std::optional<application::Route> CopyNavigationRoute(const std::string &id);
 application::WaypointContext CopyWaypointContext(

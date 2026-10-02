@@ -13,6 +13,8 @@
 #include "ui/PilotDrawer.h"
 #include "ui/AlertDrawer.h"
 #include "ui/HealthDrawer.h"
+#include "ui/SearchDrawer.h"
+#include "ui/ChartPresentationDrawer.h"
 #include "ui/StatusFooter.h"
 #include "integration/BuildFeatures.h"
 #if XNAV_ENABLE_TEST_FIXTURES
@@ -108,6 +110,8 @@ public:
   bool FooterMiddleVisible() const { return footer_->MiddleVisible(); }
   const application::FooterView &NavigationFooter() const { return footer_->View(); }
   std::optional<wxRect> DrawerRegion() const {
+    if (chart_presentation_drawer_ && chart_presentation_drawer_->IsShown()) return chart_presentation_drawer_->GetScreenRect();
+    if (search_drawer_ && search_drawer_->IsShown()) return search_drawer_->GetScreenRect();
     if (health_drawer_ && health_drawer_->IsShown()) return health_drawer_->GetScreenRect();
     if (alert_drawer_ && alert_drawer_->IsShown()) return alert_drawer_->GetScreenRect();
     if (pilot_drawer_ && pilot_drawer_->IsShown()) return pilot_drawer_->GetScreenRect();
@@ -161,6 +165,8 @@ private:
   void ShowPilot();
   void ShowAlerts();
   void ShowHealth();
+  void ShowSearch();
+  void ShowChartPresentation();
   wxRect DrawerWorkspace() const;
   void OnCommand(wxCommandEvent &event);
   void StartDemo();
@@ -179,6 +185,8 @@ private:
   XNavPilotDrawer *pilot_drawer_ = nullptr;
   XNavAlertDrawer *alert_drawer_ = nullptr;
   XNavHealthDrawer *health_drawer_ = nullptr;
+  XNavSearchDrawer *search_drawer_ = nullptr;
+  XNavChartPresentationDrawer *chart_presentation_drawer_ = nullptr;
   PilotDrawerActions pilot_actions_;
   application::AlertCenter alerts_;
   wxPanel *alert_pane_ = nullptr;
@@ -229,7 +237,8 @@ private:
   XNavHorizon *horizon_ = nullptr;
   XNavStatusFooter *footer_ = nullptr;
   wxPanel *route_actions_ = nullptr;
-  XNavFloatingSurface *chart_tools_ = nullptr, *chart_orientation_ = nullptr, *chart_follow_ = nullptr;
+  XNavFloatingSurface *chart_tools_ = nullptr, *chart_orientation_ = nullptr,
+      *chart_layers_ = nullptr, *chart_follow_ = nullptr;
   std::vector<wxWindow *> chart_overlays_;
   XNavButton *page_up_ = nullptr, *page_down_ = nullptr;
   XNavButton *rail_up_ = nullptr, *rail_down_ = nullptr;
