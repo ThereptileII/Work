@@ -1,5 +1,33 @@
 # OpenNav X status — 2026-10-02
 
+## SCRUM-224/98 — focused native proof passed; exact replacement qualifying
+
+Published source `2060f8f6b078db6e74e6f8b111e7439073ca1bce` (local `af33a05`)
+passes [focused native run 37014950505](https://github.com/ThereptileII/Work/actions/runs/37014950505).
+The downloaded artifact matches its API length and SHA-256; all 867 ZIP entries
+pass CRC/path checks. Native Settings completes 190 checks, fourteen captures
+and ordered interaction steps 0–23, including root reopening. The executable,
+twelve runtime DLLs and fourteen captures match their retained hashes. All five
+changed objects and 26 UI objects compile; both legacy macro negative controls
+fail as intended. The native home-directory excerpt proof passes, but does not
+execute the actual installed CLI. See the [scoped proof](evidence/scrum-224-2060-focused-native-proof.json).
+All 256 retained source/input records correspond to exact local `af33a05`:
+seven are byte-identical and 249 match the expected Windows CRLF checkout.
+
+The preceding `f2704c3` probe failed because the Settings test's recurring timer
+re-entered its interaction sequence. That failure remains retained. The `2060`
+correction changes only `tests/settings_drawer_test.cpp`; production Settings
+code remains unchanged.
+
+After this proof, the integrated branch advanced once from `488f` to exact
+`2060`. [Full candidate run 37015958242](https://github.com/ThereptileII/Work/actions/runs/37015958242),
+created at 13:52:44 UTC, is in progress. Actual CLI, complete DPI/fullscreen,
+chart/plugin, installer/recovery, runtime closure and native endurance gates
+remain open. Captures still require visual review; this is neither product nor
+boat acceptance. Publication to `ThereptileII/Work` was explicitly authorized
+on 2026-10-02; the repaired source and earlier qualification evidence are
+published. No boat deployment or retirement has occurred.
+
 ## SCRUM-224 — compile repaired; three native qualification failures isolated
 
 Frozen `488fbbdf5161e986c986773187b1008a7f8684f5` has completed
@@ -16,12 +44,11 @@ DPI oracle expects 61px navigation although the immutable HTML and actual
 native rendering require 69px. Local repairs preserve the unknown-profile
 refusal and strict UI assertions. The Preferences component passes 179 checks
 and its no-reset negative control fails; 23 geometry tests distinguish the
-prototype width breakpoint and reject deliberately incorrect sizes. Native
-proof of the combined repairs is now running at published source
-`f2704c3036b3805236272cb60d39aea5b13c92ec`
-([focused run 37013831216](https://github.com/ThereptileII/Work/actions/runs/37013831216)).
-This remains an in-progress observation; artifact-bound proof and a new full
-candidate qualification are still pending.
+prototype width breakpoint and reject deliberately incorrect sizes. The first
+[focused run 37013831216](https://github.com/ThereptileII/Work/actions/runs/37013831216)
+subsequently failed on test-timer reentrancy. Its retained failure and the passing
+replacement proof are distinguished above; full candidate qualification remains
+pending.
 
 Linux integrated qualification passed: 146/146 tests in each fixture and
 fixture-free configuration, plus the actual three-hour trip. The latter records

@@ -1,0 +1,136 @@
+{
+  "schemaVersion": 1,
+  "issues": [
+    "SCRUM-224",
+    "SCRUM-98",
+    "SCRUM-212"
+  ],
+  "status": "passed-focused-native-proof; integrated qualification in progress",
+  "accepted": false,
+  "sourceCommit": "2060f8f6b078db6e74e6f8b111e7439073ca1bce",
+  "localSourceCommit": "af33a0502876f2acea9bc07233222cf133feecc7",
+  "upstreamCommit": "37fd0cddb7334fe489e9f18aa163977a9c5c84f7",
+  "workflowRun": {
+    "id": 37014950505,
+    "jobId": 110863419998,
+    "conclusion": "success",
+    "url": "https://github.com/ThereptileII/Work/actions/runs/37014950505"
+  },
+  "artifact": {
+    "id": 11228964346,
+    "bytes": 14899545,
+    "sha256": "54b289279b3bdd4f3442353c08c6687b29a2482a7c93302c4eadf397dd07406b",
+    "apiSizeAndDigestMatched": true,
+    "zipEntriesCrcAndPathChecksPassed": 867
+  },
+  "retainedRecords": [
+    {
+      "artifactPath": "windows-changed-units/summary.json",
+      "bytes": 54550,
+      "sha256": "29e727eacbb0aca8a9ab0909c35eca862b25098c7043ea62c17206eaa5c77eac"
+    },
+    {
+      "artifactPath": "peer-cli-precondition/summary.json",
+      "bytes": 4357,
+      "sha256": "4abc00be229352b888de99939a001faa9dc49fd44714c076a5299fe50d4a0218"
+    },
+    {
+      "artifactPath": "windows-changed-units/settings-component/result.json",
+      "bytes": 300,
+      "sha256": "93711547218a1f973f66374881718630ebc0cd4cdfaecc460f8f9a39329f7926"
+    },
+    {
+      "artifactPath": "windows-changed-units/settings-component/interaction.log",
+      "bytes": 2499,
+      "sha256": "1dfdedc6ac13cd2bbd5dd657bcc91f5ae86b5e82d74d71802e8cf2b8bdbf9d2d"
+    }
+  ],
+  "compilation": {
+    "changedObjectsPassed": 5,
+    "uiObjectsPassed": 26,
+    "uiBuildPolicy": {
+      "testFixtures": false,
+      "pilotLoopback": false,
+      "runtimeTests": true
+    },
+    "legacyMacroNegativeControls": {
+      "model/src/downloader.cpp": {
+        "exitCode": 1,
+        "result": "failed as intended"
+      },
+      "model/src/peer_client.cpp": {
+        "exitCode": 1,
+        "result": "failed as intended"
+      }
+    }
+  },
+  "settingsComponent": {
+    "exitCode": 0,
+    "checksPassed": 190,
+    "captureCount": 14,
+    "orderedInteractionSteps": {
+      "first": 0,
+      "last": 23,
+      "eachBeginAndEndInOrder": true,
+      "rootOpenReached": true
+    },
+    "executable": {
+      "bytes": 311808,
+      "sha256": "e02e6db1330670b941f7cc842c7751b2dadd1aaa1f631cfa6816ae1fb4aa4a97"
+    },
+    "runtimeDllCount": 12,
+    "executableRuntimeAndCaptureHashesIndependentlyVerified": true,
+    "testSource": {
+      "bytes": 24065,
+      "sha256": "ae792eb2ee72f45ae653f1d2672708ae7c5e99ecdade8e38fe0cdf58444aa48c"
+    },
+    "visualConformance": "Pending separate reference/current/diff review; capture production is not visual acceptance."
+  },
+  "homePrecondition": {
+    "status": "passed",
+    "scope": "Native pinned-wx/home-creation excerpt proof, not an installed CLI test.",
+    "installedCliExecuted": false,
+    "beforeHomeCreation": "guard accepted absent directory; exact sentinel seeded",
+    "afterHomeCreation": "Guard refuses an already existing exact OpenCPN common-data profile directory.",
+    "cleanup": "owned directory removed"
+  },
+  "previousFocusedFailure": {
+    "sourceCommit": "f2704c3036b3805236272cb60d39aea5b13c92ec",
+    "runId": 37013831216,
+    "url": "https://github.com/ThereptileII/Work/actions/runs/37013831216",
+    "status": "failed; retained, not superseded as a pass",
+    "cause": "Recurring timer reentrancy in the Settings component test.",
+    "replacementChange": "Only tests/settings_drawer_test.cpp changed for this correction; the production Settings repair remains unchanged."
+  },
+  "integratedCandidate": {
+    "branch": "opennav-x-beta2-ui",
+    "sourceCommit": "2060f8f6b078db6e74e6f8b111e7439073ca1bce",
+    "previousSourceCommit": "488fbbdf5161e986c986773187b1008a7f8684f5",
+    "advancement": "One fast-forward after the focused native proof passed.",
+    "runId": 37015958242,
+    "url": "https://github.com/ThereptileII/Work/actions/runs/37015958242",
+    "createdAt": "2026-10-02T13:52:44Z",
+    "statusAtRecord": "in_progress",
+    "jiraSelectionComment": "10466"
+  },
+  "publication": {
+    "authorizedDate": "2026-10-02",
+    "repository": "ThereptileII/Work",
+    "sourcePublished": true,
+    "earlierQualificationEvidenceCommit": "660b097938dc34231be65c098d073156069cc925"
+  },
+  "limits": [
+    "Offline native component execution and targeted compilation only; not full OpenCPN application or installed peer CLI execution.",
+    "Actual integrated CLI, 100/125/150% DPI/fullscreen, chart/plugin, installer/recovery, runtime closure and native endurance gates remain open.",
+    "Fourteen hashed captures do not establish visual conformance or physical touch acceptance.",
+    "No product, boat, deployment, retirement, public access or release acceptance is established."
+  ],
+  "sourceBinding": {
+    "comparedToLocalCommit": "af33a0502876f2acea9bc07233222cf133feecc7",
+    "sourceAndInputHashesCompared": 256,
+    "byteIdentical": 7,
+    "matchedExpectedWindowsCrlfCheckout": 249,
+    "mismatches": 0,
+    "scope": "Line-ending-normalized correspondence to the exact source revision; not a claim that all text bytes match across operating systems."
+  }
+}
