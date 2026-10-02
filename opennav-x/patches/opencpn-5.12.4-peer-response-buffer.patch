@@ -62,13 +62,13 @@ diff --git a/model/src/peer_client.cpp b/model/src/peer_client.cpp
 -
 -  char* ptr = (char*)realloc(mem->memory, mem->size + realsize + 1);
 +  // OPENNAV_PEER_BUFFER_CALLBACK_BODY
-+  if (!userp || (size != 0 && nmemb > std::numeric_limits<size_t>::max() / size))
++  if (!userp || (size != 0 && nmemb > (std::numeric_limits<size_t>::max)() / size))
 +    return 0;
 +  const size_t realsize = size * nmemb;
 +  auto mem = static_cast<MemoryStruct*>(userp);
 +  if (!mem->memory || (realsize != 0 && !contents) ||
-+      realsize == std::numeric_limits<size_t>::max() ||
-+      mem->size > std::numeric_limits<size_t>::max() - realsize - 1 ||
++      realsize == (std::numeric_limits<size_t>::max)() ||
++      mem->size > (std::numeric_limits<size_t>::max)() - realsize - 1 ||
 +      mem->size > kMaxPeerResponseBytes ||
 +      realsize > kMaxPeerResponseBytes - mem->size) {
 +    return 0;

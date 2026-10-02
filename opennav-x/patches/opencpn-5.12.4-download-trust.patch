@@ -41,7 +41,7 @@ diff --git a/model/src/downloader.cpp b/model/src/downloader.cpp
 -}
 -
 -static unsigned write_cb(char* in, unsigned size, unsigned nmemb, void* data);
-+  if (size != 0 && nmemb > std::numeric_limits<size_t>::max() / size) return 0;
++  if (size != 0 && nmemb > (std::numeric_limits<size_t>::max)() / size) return 0;
 +  return size * nmemb;
 +}
 +
@@ -270,7 +270,7 @@ diff --git a/model/src/downloader.cpp b/model/src/downloader.cpp
 +    r = curl_easy_getinfo(curl, CURLINFO_CONTENT_LENGTH_DOWNLOAD_T, &filesize);
 +    if (r == CURLE_OK &&
 +        (filesize < 0 ||
-+         filesize > static_cast<curl_off_t>(std::numeric_limits<long>::max()))) {
++         filesize > static_cast<curl_off_t>((std::numeric_limits<long>::max)()))) {
 +      r = CURLE_FILESIZE_EXCEEDED;
 +    }
    }
@@ -300,11 +300,11 @@ diff --git a/model/src/downloader.cpp b/model/src/downloader.cpp
 -  return in == NULL ? 0 : size * nmemb;
 -}
 +  if (data == nullptr || in == nullptr ||
-+      (size != 0 && nmemb > std::numeric_limits<size_t>::max() / size)) {
++      (size != 0 && nmemb > (std::numeric_limits<size_t>::max)() / size)) {
 +    return 0;
 +  }
 +  const size_t bytes = size * nmemb;
-+  if (bytes > std::numeric_limits<unsigned>::max()) return 0;
++  if (bytes > (std::numeric_limits<unsigned>::max)()) return 0;
 +  try {
 +    downloader->on_chunk(in, static_cast<unsigned>(bytes));
 +    return downloader->write_ok() ? bytes : 0;

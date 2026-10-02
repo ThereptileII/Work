@@ -38,6 +38,19 @@ installation is mutated or cleaned by this patch. Merge risk is low and
 localized to `model/cmake/Curl.cmake`; native Windows application link/import,
 TLS, installer upgrade/rollback and runtime acceptance remain required. See
 `docs/architecture/windows-native-dependency-integration.md`.
+## Windows numeric-limit compilation boundary (SCRUM-224) — 2026-10-02
+
+Native candidate `eb86e4799c292a19a218626272d5a5bfa25aad5a` reached
+application compilation after the maintained dependency suites, then failed
+because Windows' function-like `max` macro expanded seven added
+`std::numeric_limits<T>::max()` calls in Downloader and the peer response buffer.
+The repair parenthesizes those function names as
+`(std::numeric_limits<T>::max)()`. Every overflow/size bound and failure behavior
+is preserved. It does not change global `NOMINMAX` or upstream Windows headers.
+A focused native actual-source compile must pass before the next integrated
+candidate. A previous isolated plugin test's `NOMINMAX` definition masked this
+environment mismatch; it must not be used to qualify production compilation.
+
 ## Public Downloader TLS boundary (SCRUM-211) — 2026-09-30
 
 The reviewed integration patch

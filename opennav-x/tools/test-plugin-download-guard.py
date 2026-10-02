@@ -18,7 +18,7 @@ ROOT = Path(__file__).resolve().parents[1]
 PIN = "37fd0cddb7334fe489e9f18aa163977a9c5c84f7"
 EXPECTED = {
     "model/src/plugin_handler.cpp": "912c756ea9d1b17eb8411132feae7c0136345e327f79d522bae478a36a218471",
-    "model/src/downloader.cpp": "0f77a193262b75e8e685ddf0064e0a2179bec63680afb375ea95d2fde3b8245b",
+    "model/src/downloader.cpp": "6163ffeab05b71573e56c568e89616237817226ad2a65558e1f32ea2b7ad81ab",
     "model/include/model/downloader.h": "147a517339966a59375ba5af0ce4fec052b9fd3c35bdc05e54d2453d27682346",
 }
 SIGNATURES = (

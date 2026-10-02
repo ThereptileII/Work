@@ -15,7 +15,7 @@ add_executable(plugin-download-guard-probe
   "${SOURCE_DIR}/model/src/downloader.cpp"
   "${TOOLS_DIR}/plugin-download-guard-probe.cpp")
 target_compile_features(plugin-download-guard-probe PRIVATE cxx_std_17)
-target_compile_definitions(plugin-download-guard-probe PRIVATE _CRT_SECURE_NO_WARNINGS NOMINMAX)
+target_compile_definitions(plugin-download-guard-probe PRIVATE _CRT_SECURE_NO_WARNINGS)
 target_include_directories(plugin-download-guard-probe PRIVATE
   "${SOURCE_DIR}" "${SOURCE_DIR}/model/include" "${CURL_INCLUDE}" "${ARCHIVE_INCLUDE}")
 target_link_libraries(plugin-download-guard-probe PRIVATE
