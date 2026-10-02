@@ -277,7 +277,40 @@
   ],
   "limitations": [
     "Earlier run SIGTERM143 retained separately; no full result.",
-    "Replacement descendant SIGKILL9 cause unproved.",
+    "OpenCPN-named descendant SIGKILL9 cause and exact child role are unproved; observed argv was empty.",
     "Windows Display pointer path, native rendering and boat qualification remain open."
-  ]
+  ],
+  "minimal_followup": {
+    "result": "minimal lifecycle completed",
+    "result_sha256": "5f794c33c8c53e44c8acf25b3dbfcd6e405e278d4b95d7725e6596fed3daf3d5",
+    "executable_sha256": "233b0d8745c82a91dca7fe8c50ae879a16f1e3cb5475a421fdae322a54821b83",
+    "exit_codes": [
+      {
+        "event": "popen-exit",
+        "phase": "XNav to Legacy",
+        "monotonic_ms": 21346494,
+        "pid": 8,
+        "exit_code": 0
+      },
+      {
+        "event": "waitpid-exit",
+        "phase": "Legacy to XNav",
+        "monotonic_ms": 21355270,
+        "pid": 188,
+        "start_ticks": 2134641,
+        "raw_wait_status": 0,
+        "exit_code": 0
+      },
+      {
+        "event": "waitpid-exit",
+        "phase": "Legacy to XNav",
+        "monotonic_ms": 21364530,
+        "pid": 359,
+        "start_ticks": 2135523,
+        "raw_wait_status": 0,
+        "exit_code": 0
+      }
+    ],
+    "scope": "Single ~29-second process/signal trace without preceding UI/scenario tour. Successful restart clone/exec identities were bound. Trace/reduced sequence alter timing; previous full-preview failure remains open."
+  }
 }

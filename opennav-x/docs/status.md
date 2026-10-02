@@ -6,8 +6,9 @@ The coherent Linux build at `74761400862bc1d25102b2b741d14247dd343cdc`
 verifies the corrected visible Diagnostics selection, all eight data scenarios,
 60 pointer actions and XNav → Legacy with coastline content.
 [Retained preview evidence](evidence/scrum-224-747-local-preview.json) records
-the subsequent Legacy → XNav failure: the replacement descendant received
-SIGKILL before its window/startup log appeared. The sender/cause is under
+the subsequent Legacy → XNav failure: an OpenCPN-named descendant received
+SIGKILL before the expected replacement window/startup log appeared. Its empty
+observed argv does not establish which forked child it was. The sender/cause is under
 investigation; this is not a full preview or lifecycle pass. An earlier
 interrupted run remains separate. No new full candidate was dispatched.
 
