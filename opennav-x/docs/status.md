@@ -1,6 +1,29 @@
 # OpenNav X status — 2026-10-02
 
-## SCRUM-224/98 — focused native proof passed; exact replacement qualifying
+## SCRUM-224/214 — native encoding proof passed; c95d replacement qualifying
+
+Published replacement `c95d3a091bb2a0ce0e19d0146ab28dc848ef5290`
+(local `24d0a5a`) passes [native Python-only run 37017228040](https://github.com/ThereptileII/Work/actions/runs/37017228040):
+Windows Python 3.12.10 with default cp1252 completes all 24 tests in 0.303 seconds.
+The GitHub comparison against `2060` confirms only the geometry test file and
+its small Python-only workflow changed; product code is unchanged. Both AST
+source reads now explicitly use UTF-8, with a regression for legacy Windows
+decoding. Geometry, clipping and touch assertions remain intact.
+
+The preceding `2060` full run failed Windows contracts at 86/87 tests: implicit
+cp1252 decoding corrupted the Unicode minus label in the geometry harness,
+failing thirteen subcases. Native integration was skipped. This is a test-source
+encoding defect, not a product crash. Other Linux jobs from that revision remain
+running; no endurance result is inferred. The earlier 190-check Settings
+component proof remains valid within its recorded scope.
+
+After the native Python proof passed, the integrated branch advanced to exact
+`c95d`. [Replacement run 37017351644](https://github.com/ThereptileII/Work/actions/runs/37017351644)
+is in progress. Full native application, CLI, DPI/visual, installer/recovery and
+endurance acceptance remain open. See the [failure and replacement proof record](evidence/scrum-224-c95d-native-python-proof.json).
+No product, boat or release acceptance is claimed.
+
+## SCRUM-224/98 — retained 2060 focused native proof
 
 Published source `2060f8f6b078db6e74e6f8b111e7439073ca1bce` (local `af33a05`)
 passes [focused native run 37014950505](https://github.com/ThereptileII/Work/actions/runs/37014950505).
@@ -21,7 +44,8 @@ code remains unchanged.
 
 After this proof, the integrated branch advanced once from `488f` to exact
 `2060`. [Full candidate run 37015958242](https://github.com/ThereptileII/Work/actions/runs/37015958242),
-created at 13:52:44 UTC, is in progress. Actual CLI, complete DPI/fullscreen,
+created at 13:52:44 UTC, later failed Windows contracts and skipped native
+integration as described above; separate Linux jobs remain running. Actual CLI, complete DPI/fullscreen,
 chart/plugin, installer/recovery, runtime closure and native endurance gates
 remain open. Captures still require visual review; this is neither product nor
 boat acceptance. Publication to `ThereptileII/Work` was explicitly authorized

@@ -1,0 +1,81 @@
+{
+  "schemaVersion": 1,
+  "issues": [
+    "SCRUM-224",
+    "SCRUM-214",
+    "SCRUM-98"
+  ],
+  "jiraComments": [
+    "10469",
+    "10470"
+  ],
+  "status": "passed-native-python-contract-proof; replacement integrated qualification in progress",
+  "accepted": false,
+  "sourceCommit": "c95d3a091bb2a0ce0e19d0146ab28dc848ef5290",
+  "localSourceCommit": "24d0a5a148398e6adc943ee87fdfc03174b06e2d",
+  "previousCandidate": {
+    "sourceCommit": "2060f8f6b078db6e74e6f8b111e7439073ca1bce",
+    "runId": 37015958242,
+    "url": "https://github.com/ThereptileII/Work/actions/runs/37015958242",
+    "windowsContracts": {
+      "jobId": 110866741412,
+      "conclusion": "failure",
+      "passed": 86,
+      "total": 87,
+      "failedTest": "native_diagnostic_geometry_observation",
+      "failedSubcases": 13
+    },
+    "nativeIntegration": "skipped",
+    "otherLinuxJobsAtRecord": "still running; no completion or endurance acceptance inferred"
+  },
+  "cause": {
+    "classification": "Test-source decoding failure, not a product crash.",
+    "detail": "Implicit locale decoding of UTF-8 harness source before AST parsing used Windows cp1252, corrupting the Unicode minus control label and producing 13 lookup failures.",
+    "repair": "Both AST source reads explicitly request UTF-8; a focused legacy-default encoding regression is added. Geometry, clipping and touch assertions remain unchanged."
+  },
+  "nativeProof": {
+    "runId": 37017228040,
+    "jobId": 110870970253,
+    "url": "https://github.com/ThereptileII/Work/actions/runs/37017228040",
+    "conclusion": "success",
+    "platform": "Windows",
+    "pythonVersion": "3.12.10",
+    "defaultEncoding": "cp1252",
+    "testsPassed": 24,
+    "testsFailed": 0,
+    "durationSeconds": 0.303,
+    "scope": "Python contract suite only; no application build or product execution."
+  },
+  "sourceComparison": {
+    "base": "2060f8f6b078db6e74e6f8b111e7439073ca1bce",
+    "head": "c95d3a091bb2a0ce0e19d0146ab28dc848ef5290",
+    "verifiedUsing": "GitHub API comparison",
+    "changedFiles": [
+      "opennav-x/tools/test-diagnostic-geometry.py",
+      ".github/workflows/skager-native-python-contracts.yml"
+    ],
+    "changedFileCount": 2,
+    "productSourceChanged": false
+  },
+  "retainedSettingsProof": {
+    "record": "scrum-224-2060-focused-native-proof.json",
+    "runId": 37014950505,
+    "sourceCommit": "2060f8f6b078db6e74e6f8b111e7439073ca1bce",
+    "checksPassed": 190,
+    "captures": 14,
+    "scope": "Prior exact-revision native component/compilation proof remains scoped; not whole-product or visual acceptance."
+  },
+  "replacementQualification": {
+    "branch": "opennav-x-beta2-ui",
+    "sourceCommit": "c95d3a091bb2a0ce0e19d0146ab28dc848ef5290",
+    "runId": 37017351644,
+    "url": "https://github.com/ThereptileII/Work/actions/runs/37017351644",
+    "statusAtRecord": "in_progress",
+    "advancement": "Replacement advanced after the native Python-only proof passed."
+  },
+  "limits": [
+    "No integrated native application, actual CLI, full DPI/visual, installer/recovery, runtime closure or endurance acceptance is established.",
+    "Running Linux jobs on the preceding revision are retained as separate observations, not transferred qualification.",
+    "No boat deployment, retirement, public release or product acceptance is established."
+  ]
+}
