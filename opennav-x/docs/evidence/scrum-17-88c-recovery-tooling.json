@@ -1,0 +1,266 @@
+{
+  "schema": 1,
+  "purpose": "Verified native recovery-tooling subset for SCRUM-17; not installed application or physical boat acceptance",
+  "commit": "88c141ba9fee5c28e12b5f4ac0f7e7550d1a8ca6",
+  "localEquivalentCommit": "688bb713db885dbe78ca6db861382ce248c231f7",
+  "run": "https://github.com/ThereptileII/Work/actions/runs/37033702537",
+  "runAttempt": 1,
+  "artifacts": [
+    {
+      "id": 11238283205,
+      "name": "boat-maintenance-88c141ba9fee5c28e12b5f4ac0f7e7550d1a8ca6",
+      "bytes": 24976,
+      "sha256": "178524428f1a4f301f14cf89483261918d2a630741a8bc2b7b93da297377eb9c",
+      "entries": 21
+    },
+    {
+      "id": 11238262940,
+      "name": "commissioning-restart-88c141ba9fee5c28e12b5f4ac0f7e7550d1a8ca6",
+      "bytes": 6642,
+      "sha256": "fa6aed1bcc8db9abdad36f2edfd9da752d82bf1cd6bedea03601da20cf8e6f1c",
+      "entries": 2
+    },
+    {
+      "id": 11238950241,
+      "name": "commissioning-broker-88c141ba9fee5c28e12b5f4ac0f7e7550d1a8ca6",
+      "bytes": 16706,
+      "sha256": "acbbd31c1eafab19074e6ab0ee590cf19530fdcc4378628e63ecaa944f2aef14",
+      "entries": 37
+    },
+    {
+      "id": 11238910371,
+      "name": "commissioning-restart-qualified-88c141ba9fee5c28e12b5f4ac0f7e7550d1a8ca6",
+      "bytes": 335,
+      "sha256": "ecde6d22ff9e3ad78996ad6a10f33e671580671fe783d82a70d886f37c92392b",
+      "entries": 1
+    }
+  ],
+  "verification": {
+    "archiveByteCountDigestAndCrc": true,
+    "safeUniqueBoundedArchiveMembers": true,
+    "exactRunCommitRepositoryAndUnexpired": true,
+    "attestationMatchesRunAttempt": true,
+    "entrypointSourceAndCopiedHashesMatch": true,
+    "nativeCheckoutNormalization": "Git LF to Windows CRLF only"
+  },
+  "maintenance": {
+    "reportsPassed": 21,
+    "reports": [
+      {
+        "name": "maintenance-ais-credential-import.log",
+        "status": "passed",
+        "sha256": "0dd263e27fc9fa7e684369300b8b07ae56d70ca700e637eeb350acd762967736"
+      },
+      {
+        "name": "maintenance-baseline-adoption.log",
+        "status": "passed",
+        "sha256": "aee03f83be5a611536a7d11ef401334847e2d30f982ff6c62040e43a4b2e8df3"
+      },
+      {
+        "name": "maintenance-boat-tools.log",
+        "status": "passed",
+        "sha256": "be755056ef63582fafcc0d6c34dcad1c869939c5c231586233dad4521ab49dcc"
+      },
+      {
+        "name": "maintenance-broker-fixture-contracts.log",
+        "status": "passed",
+        "sha256": "fd7f6a349ea5503bf97248f9419b93cfadb3b62b6c9dd5a23d3939a95e786d37"
+      },
+      {
+        "name": "maintenance-commissioning-launch.log",
+        "status": "passed",
+        "sha256": "47e2690ed75119964e24eb835d430001703147fd24c202013cd50ceecf260819"
+      },
+      {
+        "name": "maintenance-commissioning.log",
+        "status": "passed",
+        "sha256": "6ec421f2fe9a57c2d61d7b982a1776a2e5e1bec62b4550850f53e0567f974b74"
+      },
+      {
+        "name": "maintenance-installed-welcome.log",
+        "status": "passed",
+        "sha256": "0de2c9f4b9bc6c3c2b0d309a97e40cabd54aee1e22fe6b19643ba3b4288cd23b"
+      },
+      {
+        "name": "maintenance-navigation-copy.log",
+        "status": "passed",
+        "unitTests": 11,
+        "sha256": "c3366a5d759ebc0b1e1976ee60b2c1432bfca4ad6c6c5c21a59742d02e309376"
+      },
+      {
+        "name": "maintenance-official-upgrade-policy.log",
+        "status": "passed",
+        "sha256": "8243df3ce4b5b38eb79319c9c27908e7a17e32f62c2ca1655ce0eefa9de3225b"
+      },
+      {
+        "name": "maintenance-preparation.log",
+        "status": "passed",
+        "sha256": "372f86f3ce96e7b2daf56b416ca7c9e8d6dc10ab5e2f40df64e353f85ee63dda"
+      },
+      {
+        "name": "maintenance-renderer-log.log",
+        "status": "passed",
+        "sha256": "b8f6699545a7163269134b50b2236466888814bed3a3fbeb320e4c5935c2a378"
+      },
+      {
+        "name": "maintenance-restart-aui-persistence.log",
+        "status": "passed",
+        "sha256": "4f7540a25975f42e930bf7471dc86d2cd1bc3b1cbc378bd9ba23717089024abf"
+      },
+      {
+        "name": "maintenance-restart-commissioning.log",
+        "status": "passed",
+        "sha256": "d0d0d9826694178af235cd0bb92994cf60515def309eb025538f6dccb663bbb9"
+      },
+      {
+        "name": "maintenance-restart-window-review.log",
+        "status": "passed",
+        "sha256": "f7a0dac16aee6160c6d2dcfd83063df9ce231d2145975190e01c4f9d280126c7"
+      },
+      {
+        "name": "maintenance-review-staging.log",
+        "status": "passed",
+        "sha256": "a7aa78fffecb98147cd3913c7d476f7b84a0b1a2ee0d71720aea89345046fc02"
+      },
+      {
+        "name": "maintenance-review-window.log",
+        "status": "passed",
+        "sha256": "4461e329fbfab3082152e0166c252a150b66d86991742d8edb06dc5f4b2777ad"
+      },
+      {
+        "name": "maintenance-source-checkout.log",
+        "status": "passed",
+        "sha256": "0c76928637abbdaa11bf303efccd44d533dd502bd8648c0456723f86df599fe5"
+      },
+      {
+        "name": "maintenance-startup-log.log",
+        "status": "passed",
+        "sha256": "b25d79bef7fcd830fcfb809b7f86747f8d56d5bb997dcfca7cc72a033b91a923"
+      },
+      {
+        "name": "maintenance-stock-chart.log",
+        "status": "passed",
+        "sha256": "7d4ad3aacddcd5ab6af82671599c43dcb26df99a0f53761e1bc33605e5739fb2"
+      },
+      {
+        "name": "maintenance-stock-review.log",
+        "status": "passed",
+        "sha256": "72b55d8bb1e97260d1572e01b560ea84d1a4104c7907359bb5d49848cc578809"
+      },
+      {
+        "name": "maintenance-stock-welcome.log",
+        "status": "passed",
+        "sha256": "840e195bfdd33dc6cf6f41b176c0ebc30d6e73844655e6d1a31d7883fae2c066"
+      }
+    ]
+  },
+  "restartTransport": {
+    "nativeChecks": 384,
+    "nativeCases": 24,
+    "protocolChecksReported": 886,
+    "markerPublicationChecksReported": 87,
+    "status": "passed",
+    "noMarineCode": true
+  },
+  "actualBroker": {
+    "checks": 51,
+    "status": "passed",
+    "cleanupErrors": [],
+    "cases": [
+      {
+        "brokerExit": 0,
+        "name": "success",
+        "realApplication": false,
+        "markerChildren": 1,
+        "helperExit": 0
+      },
+      {
+        "brokerExit": 1,
+        "name": "output-connection",
+        "realApplication": false,
+        "markerChildren": 0,
+        "helperExit": 31
+      },
+      {
+        "brokerExit": 1,
+        "name": "plugin-bytes",
+        "realApplication": false,
+        "markerChildren": 0,
+        "helperExit": 31
+      },
+      {
+        "brokerExit": 1,
+        "name": "expired",
+        "realApplication": false,
+        "markerChildren": 0,
+        "helperExit": 29
+      },
+      {
+        "brokerExit": 1,
+        "name": "consumed",
+        "realApplication": false,
+        "markerChildren": 0,
+        "helperExit": 29
+      },
+      {
+        "brokerExit": 1,
+        "name": "receipt-recording-failure",
+        "realApplication": false,
+        "markerChildren": 1,
+        "helperExit": 0
+      }
+    ],
+    "productAcceptance": false,
+    "realApplication": false,
+    "physicalOutput": false
+  },
+  "actualPrepareArmCollect": {
+    "checks": 56,
+    "status": "passed",
+    "cleanupErrors": [],
+    "cases": [
+      {
+        "name": "corrupt-capability",
+        "status": "refused-before-session",
+        "markerChildren": null
+      },
+      {
+        "name": "shutdown-copy-hash",
+        "status": "refused-before-session",
+        "markerChildren": null
+      },
+      {
+        "name": "success",
+        "status": "passed",
+        "markerChildren": 1
+      },
+      {
+        "name": "output-connection",
+        "status": "passed",
+        "markerChildren": 0
+      }
+    ],
+    "productAcceptance": false,
+    "realApplication": false,
+    "physicalOutput": false
+  },
+  "qualification": {
+    "prepareArm": "success",
+    "broker": "success",
+    "owner": "OpenNavX.CI.RestartGates.1",
+    "commit": "88c141ba9fee5c28e12b5f4ac0f7e7550d1a8ca6",
+    "maintenance": "success",
+    "runId": "37033702537",
+    "actualBoat": false,
+    "schema": 1,
+    "runAttempt": "1",
+    "transport": "success"
+  },
+  "limitations": [
+    "Disposable native filesystem and marker-only process fixtures. No boat or navigation hardware accessed.",
+    "The full native application, installer lifecycle, endurance and physical boat gates remain pending.",
+    "Existing qualified boat tooling at20765cf must remain in place; this evidence does not authorize replacing the cold-baseline reader.",
+    "No application launch, installed profile mutation, retirement or actuator command occurred."
+  ],
+  "verifiedDateUtc": "2026-10-02"
+}

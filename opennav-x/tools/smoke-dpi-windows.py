@@ -20,6 +20,7 @@ def module(name):
     m=importlib.util.module_from_spec(s);s.loader.exec_module(m);return m
 ui=module('windows-ui');chart=module('chart-render-check');fixtures=module('profile-fixtures')
 geometry_observation=module('diagnostic-geometry')
+preferences_touch=module('preferences-touch')
 helper=root/'build/xnav-windows/Release/opennav-test-dpi.exe'
 exe=root/'build/xnav-install/opencpn.exe'
 env=dict(os.environ,OPENNAV_DISPOSABLE_DESKTOP='1')
@@ -184,66 +185,15 @@ def preferences_observation(label='Advanced battery model'):
     return observed,target
 
 def vessel_form_contract(record,require_save_visible=False):
-    controls=record['runtime']['display']['interaction_controls']
-    fields=['Field: Vessel name','Field: Draft · metres','Field: Safety depth · metres',
-            'Field: Usable battery capacity · kWh','Field: Minimum reserve · %']
-    observed=[c['label'] for c in controls if c['label'].startswith('Field: ')]
-    assert sorted(observed)==sorted(fields),('Vessel form fields changed',observed)
-    save=[c for c in controls if c['label']=='Save vessel profile']
-    assert len(save)==1 and save[0]['enabled'],'Vessel profile Save identity must remain available'
-    if require_save_visible:
-        assert save[0]['visible'],'Save action must be fully visible and reachable without activation'
-    return {'fields':fields,'save':{'label':save[0]['label'],'enabled':save[0]['enabled'],
-                                    'visible':save[0]['visible']}}
+    return preferences_touch.vessel_form_contract(record,require_save_visible)
+
+def reach_preferences_action(label,scale):
+    return preferences_touch.reach_preferences_action(label,scale,ui=ui,pid=pid,
+        observe=preferences_observation,bounds=bounds,dpi=dpi,report=report)
 
 def touch_preferences_action(label,scale):
-    """Reach a real drawer action before tapping; never message a clipped HWND."""
-    popup,_=ui.wait_window('OpenNav preferences',pid)
-    foreground=ui.declare(ui.user,'GetForegroundWindow',ui.W.HWND)
-    ui.SetForegroundWindow(popup)
-    attempts=[];last_rect=None
-    for _ in range(40):
-        assert foreground()==popup,'Another window interrupted the Preferences gesture'
-        observed,target=preferences_observation(label)
-        controls=observed['runtime']['display']['interaction_controls']
-        found=[c for c in controls if c['label']==label]
-        assert len(found)==1,(label,'Missing or duplicate paired action')
-        control=found[0]
-        assert control['enabled'] and ui.IsWindowEnabled(target),(label,'Preferences action disabled')
-        rect=bounds(target);native=(rect.left,rect.top,rect.right,rect.bottom)
-        assert native==(control['x'],control['y'],control['x']+control['width'],control['y']+control['height']), 'Preferences moved after its observation'
-        body=ui.GetParent(target)
-        assert ui.GetParent(body)==popup,'Preferences target is not in this drawer body'
-        viewport=bounds(body)
-        assert viewport.left<=rect.left<rect.right<=viewport.right,(label,'Action horizontally clipped')
-        visible=viewport.top<=rect.top<rect.bottom<=viewport.bottom
-        attempts.append({'native_bounds':list(native),'visible':control['visible'],
-                         'tick':observed['runtime']['ui_update']['ticks']})
-        assert bool(control['visible'])==visible,(label,'Native and diagnostic visibility disagree')
-        if visible:break
-        assert native!=last_rect,(label,'Touch pan did not move the clipped action')
-        last_rect=native
-        padding=round(24*scale/100);distance=round(160*scale/100)
-        x=(viewport.left+viewport.right)//2
-        below=rect.bottom>viewport.bottom
-        start=viewport.bottom-padding if below else viewport.top+padding
-        end=max(viewport.top+padding,start-distance) if below else min(viewport.bottom-padding,start+distance)
-        assert start!=end,(label,'No usable Preferences pan area')
-        hit=ui.WindowFromPoint(ui.W.POINT(x,start))
-        assert hit==body or ui.IsChild(body,hit),'Preferences pan would touch another surface'
-        assert dpi('--pan',x,start,x,end)['touch_injected']
-        time.sleep(.4)
-    else:raise AssertionError(label+': Preferences action cannot be reached by bounded touch scroll')
-    assert foreground()==popup and ui.IsWindowEnabled(target)
-    current=bounds(target)
-    assert (current.left,current.top,current.right,current.bottom)==native,'Preferences moved before the tap'
-    point=ui.W.POINT((rect.left+rect.right)//2,(rect.top+rect.bottom)//2)
-    assert ui.WindowFromPoint(point)==target,'Another surface covers the Preferences action'
-    result=dpi('--tap',point.x,point.y)
-    assert result['touch_injected']
-    return {'label':label,'observations':attempts,'fully_visible':True,
-            'native_hit_target_verified':True,'tap':[point.x,point.y],
-            'touch_injected':True}
+    return preferences_touch.touch_preferences_action(label,scale,ui=ui,pid=pid,
+        observe=preferences_observation,bounds=bounds,dpi=dpi,report=report)
 
 def rail_geometry(scale):
     d=current_layout_observation()
@@ -479,16 +429,10 @@ try:
         # settled endpoint/accessibility regression with the real lower action.
         ui.click_text(pid,'Settings');data(lambda d:d['ui_page']=='Settings')
         ui.click_text(pid,'Vessel')
-        for _ in range(40):
-            current,_=preferences_observation();display=current['runtime']['display'];drawer=display['drawer']
-            last=[c for c in display['interaction_controls'] if c['label']=='Advanced battery model' and c['visible']]
-            if len(last)==1:break
-            popup,_=ui.wait_window('OpenNav preferences',pid);ui.SetForegroundWindow(popup)
-            x=drawer['x']+drawer['width']//2;end=drawer['y']+drawer['height']-50
-            assert dpi('--pan',x,end,x,end-int(160*scale/100))['touch_injected']
-            time.sleep(.4)
-        else:raise AssertionError('Lower Preferences action cannot be reached by touch')
-        endpoint=last[0];time.sleep(1.2)
+        reached,_target,_scroll=reach_preferences_action('Advanced battery model',scale)
+        endpoint=next(c for c in reached['runtime']['display']['interaction_controls']
+                      if c['label']=='Advanced battery model')
+        time.sleep(1.2)
         after,_=preferences_observation()
         report.setdefault('preferences_endpoint_observations',[]).append({'scale':scale,'before':endpoint,
             'after':[c for c in after['runtime']['display']['interaction_controls'] if c['label']=='Advanced battery model']})

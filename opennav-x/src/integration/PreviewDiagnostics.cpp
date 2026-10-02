@@ -34,9 +34,23 @@ void WritePreviewDiagnostics(const std::string &path,
                              const std::vector<vessel::SourceHealth> &sources,
                              const std::string &ui_page,
                              const wxJSONValue &runtime) {
-  const auto now = state.replayed ? e.calculated_at : vessel::Clock::now();
+  // Selected vessel values, route and prediction belong to the same Shell
+  // evaluation. Serialization may cross a freshness boundary after that frame.
+  const auto now = e.calculated_at;
+  const auto published_at = vessel::Clock::now();
+  // Candidate health is collected separately by the diagnostic callback.
+  const auto health_now = state.replayed ? now : published_at;
+  const auto stamp = [](vessel::Time at) {
+    return wxString::Format("%lld", static_cast<long long>(
+        std::chrono::duration_cast<vessel::Duration>(at.time_since_epoch()).count()));
+  };
   wxJSONValue report;
   report["runtime"] = runtime;
+  report["evaluation_monotonic_ms"] = stamp(now);
+  report["publication_monotonic_ms"] = stamp(published_at);
+  report["publication_clock"] = wxString("live monotonic clock");
+  report["source_candidates_evaluation_monotonic_ms"] = stamp(health_now);
+  report["evaluation_scope"] = wxString("Selected vessel data, route and energy; runtime and candidate health collected separately");
   report["ui_page"] = wxString::FromUTF8(ui_page);
   report["version"] = wxString::FromUTF8(application::Version);
   report["data_mode"] =
@@ -163,7 +177,7 @@ void WritePreviewDiagnostics(const std::string &path,
   }
   for (const auto &source : sources) {
     wxJSONValue v;
-    const auto a = vessel::Assess(source.sample, now);
+    const auto a = vessel::Assess(source.sample, health_now);
     v["quantity"] = wxString::FromUTF8(vessel::Describe(source.quantity).key);
     v["source_id"] = wxString::FromUTF8(source.source_id);
     v["device_id"] = wxString::FromUTF8(source.sample.device_id);
@@ -185,10 +199,10 @@ void WritePreviewDiagnostics(const std::string &path,
         static_cast<int>(source.sample.freshness.aging_after.count());
     v["stale_after_ms"] =
         static_cast<int>(source.sample.freshness.stale_after.count());
-    if (now >= source.sample.observed_at)
+    if (health_now >= source.sample.observed_at)
       v["age_ms"] =
           static_cast<int>(std::min<long long>(std::chrono::duration_cast<vessel::Duration>(
-              now - source.sample.observed_at).count(), 2147483647));
+              health_now - source.sample.observed_at).count(), 2147483647));
     if (a.value)
       v["value"] = *a.value;
     auto policy = settings.sources.find(source.quantity);

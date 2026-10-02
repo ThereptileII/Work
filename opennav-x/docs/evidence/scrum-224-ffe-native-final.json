@@ -1,0 +1,118 @@
+{
+  "issue": "SCRUM-224",
+  "related_issues": [
+    "SCRUM-229",
+    "SCRUM-214",
+    "SCRUM-216"
+  ],
+  "run": "https://github.com/ThereptileII/Work/actions/runs/37041103887",
+  "job": 110953645596,
+  "artifact": {
+    "artifact": 11246267901,
+    "source": "ffe4ecf11f43a916098fefe8f17071c63867a838",
+    "bytes": 43226505,
+    "sha256": "50ab9ff8307f85b792c9f1ee8ddb5fe771cb96c23527b1402af5c1e1459d853e",
+    "entries": 12828,
+    "crc": "pass",
+    "path_checks": "pass",
+    "selected_root_evidence_files": 413
+  },
+  "native_integrated_tests": {
+    "name": "(empty)",
+    "tests": "138",
+    "failures": "0",
+    "disabled": "0",
+    "skipped": "0",
+    "hostname": "",
+    "time": "20",
+    "timestamp": "2026-10-02T18:49:19"
+  },
+  "release_eligible": false,
+  "preview": {
+    "error": "Obsolete Settings\u2192Display\u2192Chart presentation entry; predicate never becomes true",
+    "executed_source": "ffe4ecf11f43a916098fefe8f17071c63867a838",
+    "prepared_fix_source": "74761400862bc1d25102b2b741d14247dd343cdc",
+    "fix_native_acceptance": "pending",
+    "screenshots": 33,
+    "completed_checks": [
+      "Disposable fixture tree uses exact tested native install; never included in product package",
+      "Bottom route summary lays out after narrow-to-wide resize",
+      "Persistent page controls scroll diagnostics and return to top without native scrollbars",
+      "Native manual test enable/AUTO/+1/STANDBY/disable with fresh feedback and disabled OFF controls",
+      "Prototype navigation and eight retained product views captured; advanced frame accelerators remain covered",
+      "Native battery assumption sheet saves explicit live configuration; DEMO remains separate"
+    ],
+    "receipt_sha256": "445a311c33f534dd35758171352cfb902486efd40e28590652979b2d3a2b1c08"
+  },
+  "dpi": {
+    "error": "AssertionError('Lower Preferences action cannot be reached by touch')",
+    "completed_percent": [
+      100
+    ],
+    "failed_percent": 125,
+    "not_reached_percent": [
+      150
+    ],
+    "restored": {
+      "before_percent": 125,
+      "percent": 100,
+      "source_id": 0,
+      "minimum_relative": 0,
+      "maximum_relative": 3
+    },
+    "receipt_sha256": "224a76f2ca32e421e6450dafc41e1ed6f2dd9a974724cd7666a19a31d68f05f5",
+    "authority": "Hosted Windows injected touch; not physical touchscreen"
+  },
+  "charts": {
+    "result": "passed; native screenshot review and physical GPU gate remain separate",
+    "origin": "https://www.charts.noaa.gov/ENCs/US5SEAFL.zip",
+    "sha256": "b027e029dc7b76595381d89e3718145eb5069e5a03917e78bada4f8ebe8c84e4",
+    "phases": [
+      {
+        "requested": "software",
+        "actual_opengl": false
+      },
+      {
+        "requested": "opengl",
+        "actual_opengl": false
+      }
+    ],
+    "visual_review": "Root inspected software and requested-OpenGL initial ENC screenshots: real coastline, soundings, navigation symbols and chart controls visible. Both paths actually used software fallback. Not prototype or physical GPU acceptance.",
+    "receipt_sha256": "89c624178a2ecc2d74e53f3edeb97331871a435af6fb8a0304e8a2594963381a"
+  },
+  "recovery_repeats": [
+    {
+      "phase": 0,
+      "result": "passed; native screenshot review required",
+      "receipt_sha256": "cdb05c9c00582214630b51ee9f4f39534bbe17afb74bfeb55f2f707354fb8583"
+    },
+    {
+      "phase": 1,
+      "result": "passed; native screenshot review required",
+      "receipt_sha256": "a20894f954536af1826dd1f4ef7e47c0d21209819d9f34e13e274cdb156ecee8"
+    },
+    {
+      "phase": 2,
+      "result": "passed; native screenshot review required",
+      "receipt_sha256": "a20894f954536af1826dd1f4ef7e47c0d21209819d9f34e13e274cdb156ecee8"
+    }
+  ],
+  "user_flows": {
+    "result": "passed; native screenshots require review",
+    "receipt_sha256": "0c4d3483a4adb8e535a32877b465930fe6a1b323d06439bc68cdbee5aa1054cf"
+  },
+  "not_qualified": [
+    "Fixture-free product build",
+    "Installer lifecycle",
+    "Package-security probe",
+    "150% DPI",
+    "Native elapsed-time endurance",
+    "Actual GPU/OpenGL",
+    "Boat installation"
+  ],
+  "published_images": {
+    "scrum-224-ffe-native-preview-failure.png": "c3ddb8cb592133f7ec2b363f47b976c669cb4b6ec923c984bf721776891c7901",
+    "scrum-229-ffe-native-125-touch-failure.png": "04ad300a2799579207447f852b0e4ddfefab36a98ed54c17b8a0938bd4533fe8",
+    "scrum-224-ffe-native-enc-software.png": "f7f4249872c1f0b14aa1996ea5f47b76487217e1351baf550e0e483fd1486604"
+  }
+}

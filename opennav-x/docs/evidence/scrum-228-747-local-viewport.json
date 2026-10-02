@@ -1,0 +1,463 @@
+{
+  "status": "observed",
+  "requested_seconds": null,
+  "release_duration": false,
+  "authority": "Linux development",
+  "scope": "Diagnostic-only three chart inputs on disposable DEMO; no endurance, release, native Windows or boat qualification",
+  "samples": 1,
+  "actions": [
+    {
+      "elapsed": 0.0,
+      "slot": 0,
+      "page_observation_seconds": 0.053317238998715766
+    }
+  ],
+  "screenshots": [
+    "start.png",
+    "viewport-1-before.png",
+    "viewport-2-before.png",
+    "viewport-3-before.png",
+    "end.png"
+  ],
+  "harness_commit": "1101b00b7fe2f727d4256f5d9cadcfa4f255931d",
+  "harness_sha256": "7cf8e122462d3ea5ec2d360fea1995ced41937e80e583df064a28dcba2aa5773",
+  "viewport_observations": [
+    {
+      "label": "+",
+      "before": {
+        "observed_monotonic": 20446.131536575,
+        "observed_unix_ns": 1790966145943860968,
+        "diagnostic_mtime_ns": 1790966145105298051,
+        "diagnostic_clock": "live monotonic clock",
+        "ui_update": {
+          "timer_period_ms": 250,
+          "mean_ms": 18.1224113,
+          "scope": "Shell update callback including diagnostics; excludes asynchronous chart painting",
+          "maximum_ms": 71.329451,
+          "ticks": "10",
+          "last_ms": 1.892331
+        },
+        "page": "Navigation",
+        "light": "Day",
+        "chart": {
+          "canvas_pixels": {
+            "height": 566,
+            "width": 1014
+          },
+          "latitude": 59.08,
+          "follow": false,
+          "opengl_enabled": false,
+          "scale_bar": {
+            "height": 29,
+            "y": 505,
+            "width": 29,
+            "x": 191
+          },
+          "depth_unit_type": 0,
+          "quilt": true,
+          "scale_ppm": 0.003000000026,
+          "longitude": 18.5,
+          "depth_units_visible": true
+        }
+      },
+      "input_returned": true,
+      "fresh_diagnostic_controls": [
+        {
+          "height": 44,
+          "y": 343,
+          "visible": true,
+          "width": 44,
+          "accessible_name": "Zoom chart in",
+          "x": 626,
+          "label": "+",
+          "enabled": true
+        }
+      ],
+      "selected_control": {
+        "height": 44,
+        "y": 343,
+        "visible": true,
+        "width": 44,
+        "accessible_name": "Zoom chart in",
+        "x": 626,
+        "label": "+",
+        "enabled": true
+      },
+      "input_method": "X11 pointer click",
+      "activation_scope": "Pointer trace, when present, is evidence; fresh diagnostics alone are not activation acknowledgement",
+      "sent_screen_point": [
+        648,
+        365
+      ],
+      "before_screenshot": "viewport-1-before.png",
+      "input_started_monotonic": 20446.348563943,
+      "input_finished_monotonic": 20446.955070805,
+      "after": {
+        "observed_monotonic": 20446.956964597,
+        "observed_unix_ns": 1790966146769285290,
+        "diagnostic_mtime_ns": 1790966146352303874,
+        "diagnostic_clock": "live monotonic clock",
+        "ui_update": {
+          "timer_period_ms": 250,
+          "mean_ms": 13.62505225,
+          "scope": "Shell update callback including diagnostics; excludes asynchronous chart painting",
+          "maximum_ms": 71.329451,
+          "ticks": "16",
+          "last_ms": 0.973616
+        },
+        "page": "Navigation",
+        "light": "Day",
+        "chart": {
+          "canvas_pixels": {
+            "height": 566,
+            "width": 1014
+          },
+          "latitude": 59.08,
+          "follow": false,
+          "opengl_enabled": false,
+          "scale_bar": {
+            "height": 29,
+            "y": 505,
+            "width": 29,
+            "x": 191
+          },
+          "depth_unit_type": 0,
+          "quilt": true,
+          "scale_ppm": 0.003000000026,
+          "longitude": 18.5,
+          "depth_units_visible": true
+        }
+      },
+      "scale_ratio": 1.0,
+      "pointer_trace": [
+        "OpenNav test-ui 20446354 pointer.raw-down tick=18446744073709549591 detail=0",
+        "OpenNav test-ui 20446354 pointer.raw-window tick=80 detail=68",
+        "OpenNav test-ui 20446354 pointer.raw-size tick=1014 detail=566",
+        "OpenNav test-ui 20446354 pointer.raw-up tick=18446744073709549591 detail=0"
+      ],
+      "activation_observed": false,
+      "trace_limit": "Existing fixture trace is bounded to 2048 records; absence is not proof of failed activation"
+    },
+    {
+      "label": "\u2212",
+      "before": {
+        "observed_monotonic": 20446.959415875,
+        "observed_unix_ns": 1790966146771735555,
+        "diagnostic_mtime_ns": 1790966146352303874,
+        "diagnostic_clock": "live monotonic clock",
+        "ui_update": {
+          "timer_period_ms": 250,
+          "mean_ms": 13.62505225,
+          "scope": "Shell update callback including diagnostics; excludes asynchronous chart painting",
+          "maximum_ms": 71.329451,
+          "ticks": "16",
+          "last_ms": 0.973616
+        },
+        "page": "Navigation",
+        "light": "Day",
+        "chart": {
+          "canvas_pixels": {
+            "height": 566,
+            "width": 1014
+          },
+          "latitude": 59.08,
+          "follow": false,
+          "opengl_enabled": false,
+          "scale_bar": {
+            "height": 29,
+            "y": 505,
+            "width": 29,
+            "x": 191
+          },
+          "depth_unit_type": 0,
+          "quilt": true,
+          "scale_ppm": 0.003000000026,
+          "longitude": 18.5,
+          "depth_units_visible": true
+        }
+      },
+      "input_returned": true,
+      "fresh_diagnostic_controls": [
+        {
+          "height": 44,
+          "y": 343,
+          "visible": true,
+          "width": 44,
+          "accessible_name": "Zoom chart out",
+          "x": 670,
+          "label": "\u2212",
+          "enabled": true
+        }
+      ],
+      "selected_control": {
+        "height": 44,
+        "y": 343,
+        "visible": true,
+        "width": 44,
+        "accessible_name": "Zoom chart out",
+        "x": 670,
+        "label": "\u2212",
+        "enabled": true
+      },
+      "input_method": "X11 pointer click",
+      "activation_scope": "Pointer trace, when present, is evidence; fresh diagnostics alone are not activation acknowledgement",
+      "sent_screen_point": [
+        692,
+        365
+      ],
+      "before_screenshot": "viewport-2-before.png",
+      "input_started_monotonic": 20447.175401715,
+      "input_finished_monotonic": 20447.78183339,
+      "after": {
+        "observed_monotonic": 20447.885706727,
+        "observed_unix_ns": 1790966147698027641,
+        "diagnostic_mtime_ns": 1790966147596309684,
+        "diagnostic_clock": "live monotonic clock",
+        "ui_update": {
+          "timer_period_ms": 250,
+          "mean_ms": 11.89833462,
+          "scope": "Shell update callback including diagnostics; excludes asynchronous chart painting",
+          "maximum_ms": 71.329451,
+          "ticks": "21",
+          "last_ms": 1.221157
+        },
+        "page": "Navigation",
+        "light": "Day",
+        "chart": {
+          "canvas_pixels": {
+            "height": 566,
+            "width": 1014
+          },
+          "latitude": 59.03687386,
+          "follow": false,
+          "opengl_enabled": false,
+          "scale_bar": {
+            "height": 29,
+            "y": 505,
+            "width": 29,
+            "x": 191
+          },
+          "depth_unit_type": 0,
+          "quilt": true,
+          "scale_ppm": 0.003000000026,
+          "longitude": 18.99726669,
+          "depth_units_visible": true
+        }
+      },
+      "scale_ratio": 1.0,
+      "pointer_trace": [
+        "OpenNav test-ui 20447179 pointer.raw-down tick=18446744073709549591 detail=0",
+        "OpenNav test-ui 20447179 pointer.raw-window tick=80 detail=68",
+        "OpenNav test-ui 20447179 pointer.raw-size tick=1014 detail=566",
+        "OpenNav test-ui 20447181 pointer.raw-up tick=18446744073709549591 detail=0"
+      ],
+      "activation_observed": false,
+      "trace_limit": "Existing fixture trace is bounded to 2048 records; absence is not proof of failed activation"
+    },
+    {
+      "label": "Day",
+      "before": {
+        "observed_monotonic": 20447.889833071,
+        "observed_unix_ns": 1790966147702153915,
+        "diagnostic_mtime_ns": 1790966147596309684,
+        "diagnostic_clock": "live monotonic clock",
+        "ui_update": {
+          "timer_period_ms": 250,
+          "mean_ms": 11.89833462,
+          "scope": "Shell update callback including diagnostics; excludes asynchronous chart painting",
+          "maximum_ms": 71.329451,
+          "ticks": "21",
+          "last_ms": 1.221157
+        },
+        "page": "Navigation",
+        "light": "Day",
+        "chart": {
+          "canvas_pixels": {
+            "height": 566,
+            "width": 1014
+          },
+          "latitude": 59.03687386,
+          "follow": false,
+          "opengl_enabled": false,
+          "scale_bar": {
+            "height": 29,
+            "y": 505,
+            "width": 29,
+            "x": 191
+          },
+          "depth_unit_type": 0,
+          "quilt": true,
+          "scale_ppm": 0.003000000026,
+          "longitude": 18.99726669,
+          "depth_units_visible": true
+        }
+      },
+      "input_returned": true,
+      "fresh_diagnostic_controls": [
+        {
+          "height": 44,
+          "y": 12,
+          "visible": true,
+          "width": 44,
+          "accessible_name": "Cycle day, dusk and night palettes",
+          "x": 1179,
+          "label": "Day",
+          "enabled": true
+        }
+      ],
+      "selected_control": {
+        "height": 44,
+        "y": 12,
+        "visible": true,
+        "width": 44,
+        "accessible_name": "Cycle day, dusk and night palettes",
+        "x": 1179,
+        "label": "Day",
+        "enabled": true
+      },
+      "input_method": "X11 pointer click",
+      "activation_scope": "Pointer trace, when present, is evidence; fresh diagnostics alone are not activation acknowledgement",
+      "sent_screen_point": [
+        1201,
+        34
+      ],
+      "before_screenshot": "viewport-3-before.png",
+      "input_started_monotonic": 20448.056493822,
+      "input_finished_monotonic": 20448.660229059,
+      "after": {
+        "observed_monotonic": 20448.868623737,
+        "observed_unix_ns": 1790966148680944590,
+        "diagnostic_mtime_ns": 1790966148602314382,
+        "diagnostic_clock": "live monotonic clock",
+        "ui_update": {
+          "timer_period_ms": 250,
+          "mean_ms": 11.1698766,
+          "scope": "Shell update callback including diagnostics; excludes asynchronous chart painting",
+          "maximum_ms": 71.329451,
+          "ticks": "25",
+          "last_ms": 2.166928
+        },
+        "page": "Navigation",
+        "light": "Dusk",
+        "chart": {
+          "canvas_pixels": {
+            "height": 566,
+            "width": 1014
+          },
+          "latitude": 59.03687386,
+          "follow": false,
+          "opengl_enabled": false,
+          "scale_bar": {
+            "height": 29,
+            "y": 505,
+            "width": 29,
+            "x": 191
+          },
+          "depth_unit_type": 0,
+          "quilt": true,
+          "scale_ppm": 0.003000000026,
+          "longitude": 18.99726669,
+          "depth_units_visible": true
+        }
+      },
+      "scale_ratio": 1.0,
+      "pointer_trace": [
+        "OpenNav test-ui 20448059 pointer.raw-down tick=18446744073709549573 detail=1",
+        "OpenNav test-ui 20448060 pointer.raw-window tick=1179 detail=12",
+        "OpenNav test-ui 20448060 pointer.raw-size tick=44 detail=44",
+        "OpenNav test-ui 20448060 pointer.down tick=18446744073709549573 detail=1",
+        "OpenNav test-ui 20448060 pointer.focus tick=18446744073709549573 detail=0",
+        "OpenNav test-ui 20448060 pointer.raw-up tick=18446744073709549573 detail=1",
+        "OpenNav test-ui 20448060 pointer.up tick=18446744073709549573 detail=1",
+        "OpenNav test-ui 20448060 pointer.activate tick=18446744073709549573 detail=1"
+      ],
+      "activation_observed": true,
+      "trace_limit": "Existing fixture trace is bounded to 2048 records; absence is not proof of failed activation"
+    }
+  ],
+  "build_commit": "74761400862bc1d25102b2b741d14247dd343cdc",
+  "binary_matches_harness_commit": false,
+  "initial_viewport": {
+    "observed_monotonic": 20445.709778306,
+    "observed_unix_ns": 1790966145522100673,
+    "diagnostic_mtime_ns": 1790966145105298051,
+    "diagnostic_clock": "live monotonic clock",
+    "ui_update": {
+      "timer_period_ms": 250,
+      "mean_ms": 18.1224113,
+      "scope": "Shell update callback including diagnostics; excludes asynchronous chart painting",
+      "maximum_ms": 71.329451,
+      "ticks": "10",
+      "last_ms": 1.892331
+    },
+    "page": "Navigation",
+    "light": "Day",
+    "chart": {
+      "canvas_pixels": {
+        "height": 566,
+        "width": 1014
+      },
+      "latitude": 59.08,
+      "follow": false,
+      "opengl_enabled": false,
+      "scale_bar": {
+        "height": 29,
+        "y": 505,
+        "width": 29,
+        "x": 191
+      },
+      "depth_unit_type": 0,
+      "quilt": true,
+      "scale_ppm": 0.003000000026,
+      "longitude": 18.5,
+      "depth_units_visible": true
+    }
+  },
+  "startup_seconds": 4.976512134999211,
+  "elapsed_seconds": 2.850595855998108,
+  "final_viewport": {
+    "observed_monotonic": 20449.086738588,
+    "observed_unix_ns": 1790966148899058689,
+    "diagnostic_mtime_ns": 1790966148602314382,
+    "diagnostic_clock": "live monotonic clock",
+    "ui_update": {
+      "timer_period_ms": 250,
+      "mean_ms": 11.1698766,
+      "scope": "Shell update callback including diagnostics; excludes asynchronous chart painting",
+      "maximum_ms": 71.329451,
+      "ticks": "25",
+      "last_ms": 2.166928
+    },
+    "page": "Navigation",
+    "light": "Dusk",
+    "chart": {
+      "canvas_pixels": {
+        "height": 566,
+        "width": 1014
+      },
+      "latitude": 59.03687386,
+      "follow": false,
+      "opengl_enabled": false,
+      "scale_bar": {
+        "height": 29,
+        "y": 505,
+        "width": 29,
+        "x": 191
+      },
+      "depth_unit_type": 0,
+      "quilt": true,
+      "scale_ppm": 0.003000000026,
+      "longitude": 18.99726669,
+      "depth_units_visible": true
+    }
+  },
+  "issue": "SCRUM-228",
+  "review_source": "https://github.com/ThereptileII/Work/blob/8026b28e65175c3567aa20adeb9ba5951ed61919/opennav-x/docs/design/reviews/scrum224-soak-viewport-observation.md",
+  "raw_result_sha256": "b798b0edefe37f3c8345e730aeb8a7530533fd7005d655262215b5f21ebc741a",
+  "interpretation": "Initial floating controls are not painted; reported zoom positions receive chart input. Not proof of Windows failure or cause of prior c95 scale drift.",
+  "published_images": {
+    "scrum-228-747-before.png": "69e9eadc3067e54c6bed34d12b03e772891dfb065fe46489ccdb122b7ad4fcaa",
+    "scrum-228-747-after.png": "2f871e8c204790185e42550c60b9fbbdd40e7c1a5068cd6952a8a47a21962ea4",
+    "scrum-224-747-diagnostics.png": "be6c32722c721c63b3ce493fd797df29bbfb1bdfee6e2c58d0c08fa371863649"
+  }
+}

@@ -1,0 +1,101 @@
+{
+  "source_commit": "688bb713db885dbe78ca6db861382ce248c231f7",
+  "platform": "Linux",
+  "exit_code": 0,
+  "inputs_unchanged_after_run": true,
+  "result": {
+    "passed": true,
+    "checks": 181,
+    "captures": [
+      "settings-day",
+      "settings-dusk",
+      "settings-night",
+      "sensors-day",
+      "sensors-dusk",
+      "sensors-night",
+      "display-day",
+      "display-150-chart-night",
+      "display-applied-125-chart",
+      "display-dusk",
+      "display-night",
+      "system-night",
+      "settings-radar-night",
+      "settings-autopilot-night"
+    ]
+  },
+  "captures": [
+    {
+      "name": "display-150-chart-night.png",
+      "bytes": 38514,
+      "sha256": "d4ab0378dfe6a63a546bc132dc11164d5ebbc1bb4bfcb0e315a5ca14728931e4"
+    },
+    {
+      "name": "display-applied-125-chart.png",
+      "bytes": 38767,
+      "sha256": "3668e9334bf17d1a9da7ccafb5cedc2ddb1626642ac71d28915f66f9070ef287"
+    },
+    {
+      "name": "display-day.png",
+      "bytes": 38600,
+      "sha256": "fcc93f87baee73d04f4fa109a6078bb6d661a6cbda55afa22f27f30c069dec93"
+    },
+    {
+      "name": "display-dusk.png",
+      "bytes": 38915,
+      "sha256": "01669bb961f87e90c1988548507d9e8b1b344b6f27e66edf4047e80f98546ff3"
+    },
+    {
+      "name": "display-night.png",
+      "bytes": 38767,
+      "sha256": "3668e9334bf17d1a9da7ccafb5cedc2ddb1626642ac71d28915f66f9070ef287"
+    },
+    {
+      "name": "sensors-day.png",
+      "bytes": 44816,
+      "sha256": "b8310de09da4e5c515b91b7da9deb75aecf8162f79bc062189464d2438bcba0e"
+    },
+    {
+      "name": "sensors-dusk.png",
+      "bytes": 44823,
+      "sha256": "3369d52cc9ad9bb9cc3ef3f744fd5a3c5d85ebf8b55c0a1c9d1c2df406150ff3"
+    },
+    {
+      "name": "sensors-night.png",
+      "bytes": 44737,
+      "sha256": "350700f743cff2fd1ba405000cf2c7691604f96e85f7087c1ff34a559238a977"
+    },
+    {
+      "name": "settings-autopilot-night.png",
+      "bytes": 38013,
+      "sha256": "e68f2712e8c40e625f38c4bd97bb3205f80bbd2155c6911a0b138501b3c7e920"
+    },
+    {
+      "name": "settings-day.png",
+      "bytes": 32216,
+      "sha256": "edde30e66fb00385d39e93d443582088f0d23e85345e75999e22fc510f3c4ba9"
+    },
+    {
+      "name": "settings-dusk.png",
+      "bytes": 34444,
+      "sha256": "fe3e8a26a8cbf9394ca5deab199b225feef1af6dda400aea92fcf805fc86a7e4"
+    },
+    {
+      "name": "settings-night.png",
+      "bytes": 34200,
+      "sha256": "d2ae23c8b7e416d89a02f84041d19d016073fc977bf9e82c09e9ebe38eefa5e9"
+    },
+    {
+      "name": "settings-radar-night.png",
+      "bytes": 36755,
+      "sha256": "7b4e37a5ed1b106b060d99b7387ebf92f3f1ca17e46385b70a4d41de5bab3df4"
+    },
+    {
+      "name": "system-night.png",
+      "bytes": 51356,
+      "sha256": "98de89ec7df1cc5b1fca12e5f3afa033dc023986d8c68e882399935d003b5bb7"
+    }
+  ],
+  "scope": "Focused combined offline Settings development check; native-only activation and Windows drawer paint not executed",
+  "input_count": 67,
+  "executable_sha256": "79b6a25de2597e5e2a5c894b865adeb6d8467450e438da0e750040ccee43232f"
+}

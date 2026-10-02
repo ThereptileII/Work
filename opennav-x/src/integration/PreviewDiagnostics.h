@@ -7,6 +7,8 @@
 #include <wx/jsonval.h>
 namespace opennav::integration {
 std::vector<std::string> PreviewBuildInfo(int dpi, const std::string &profile);
+// state and energy are one evaluation frame; energy.calculated_at is its clock.
+// Runtime observations and source candidates are collected independently.
 void WritePreviewDiagnostics(const std::string &path,
                              const vessel::VesselState &state,
                              const std::vector<std::string> &info,

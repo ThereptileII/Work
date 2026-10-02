@@ -4,6 +4,10 @@ on:
     branches: [skager-windows-changed-units, skager-prototype-proof]
   workflow_dispatch:
     inputs:
+      preferences_touch:
+        description: Run only the isolated native 125% Settings touch proof
+        type: boolean
+        default: false
       prototype:
         description: Run the bounded navigation bridge / Search / Settings proof
         type: boolean
@@ -33,7 +37,7 @@ jobs:
           git clone --depth 1 --branch Release_5.12.4 https://github.com/OpenCPN/OpenCPN.git opennav-x/upstream/OpenCPN
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
       - name: Prove native peer CLI home precondition before GUI startup
-        if: ${{ github.ref != 'refs/heads/skager-prototype-proof' && inputs.prototype != true }}
+        if: ${{ github.ref != 'refs/heads/skager-prototype-proof' && inputs.prototype != true && inputs.preferences_touch != true && !contains(github.event.head_commit.message, '[preferences-touch]') }}
         run: python opennav-x/tools/test-peer-cli-precondition-windows.py --evidence opennav-x/evidence/local/peer-cli-precondition
       - name: Install capture dependency
         run: python -m pip install Pillow==11.3.0
@@ -45,10 +49,17 @@ jobs:
         run: python opennav-x/tests/chart_layout_tests.py
       - name: Run selected bounded native proof
         env:
+          PREFERENCES_TOUCH: ${{ inputs.preferences_touch == true || contains(github.event.head_commit.message, '[preferences-touch]') }}
           PROTOTYPE_PROOF: ${{ github.ref == 'refs/heads/skager-prototype-proof' || inputs.prototype == true }}
           CHART_COMPONENT: ${{ github.ref == 'refs/heads/skager-prototype-proof' || inputs.chart_presentation == true }}
           ENERGY_COMPONENT: ${{ inputs.energy_component == true || contains(github.event.head_commit.message, '[energy-component]') }}
         run: |
+          if ($env:PREFERENCES_TOUCH -eq 'true') {
+            python opennav-x/tests/dpi_preferences_pan_tests.py
+            if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+            python opennav-x/tools/test-windows-changed-units.py --settings-touch-only
+            exit $LASTEXITCODE
+          }
           if ($env:CHART_COMPONENT -eq 'true' -and $env:PROTOTYPE_PROOF -ne 'true') {
             throw 'Chart presentation requires prototype proof'
           }

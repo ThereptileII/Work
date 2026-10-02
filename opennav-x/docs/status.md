@@ -1,34 +1,188 @@
 # OpenNav X status — 2026-10-02
 
-## Current candidate gate — focused repairs awaiting native proof
+## Current stabilization candidate — bounded checks before another full build
 
-Full candidate `88c141ba9fee5c28e12b5f4ac0f7e7550d1a8ca6` is **not eligible
-for boat deployment or release**. Its [focused native proof](https://github.com/ThereptileII/Work/actions/runs/37032588707)
-passed 361 component checks, but its [full run](https://github.com/ThereptileII/Work/actions/runs/37033702537)
-failed the Linux navigation-object layout gate: the old oracle did not include
-the prototype's Layers control. Native integrated execution remains pending.
-Failure evidence is retained on `skager-validation-evidence`; earlier candidate
-entries below are historical and do not override this gate.
+The combined source now includes the visible Preferences selector/menu repair,
+the verified GTK floating-control correction (SCRUM-228), body-targeted Windows
+touch scrolling (SCRUM-229), and coherent selected-data/energy diagnostic timing
+(SCRUM-230). Each original failure remains recorded below. The new diagnostic
+regression exercises the real writer at the unchanged freshness boundary;
+Windows touch uses actual production widgets in a separate disposable process.
 
-The next focused proof combines three bounded changes:
+The next validation runs in parallel: one clean incremental Linux application
+build/preview and one bounded native 125% Settings touch proof. This is not a
+qualified package. No new full Windows candidate is eligible until those
+focused checks pass. Remaining full integration, package security, installer,
+recovery, DPI, physical boat and visual-conformance gates remain mandatory.
+No boat installation, old-version removal, hardware output or public release
+follows from publishing this source.
 
-- SCRUM-224: require exactly one Layers control at the prototype-derived position
-  and size, preserving strict rejection of missing, misplaced and unknown
-  overlays. The retained failing layout passes; nine new negative cases fail.
-- SCRUM-14: restore the System intro and eight prototype rows, explicitly disable
-  unavailable capabilities, retain real recovery/advanced destinations and
-  update their affected pointer/scroll callers. This is partial System work,
-  not completion of update, backup or installer UI. Linux component: 201 checks.
-- SCRUM-226: fix the Energy Close button's content coordinate after a scrolled
-  resize. Unchanged product reproduces the drift; the correction passes 88
-  focused Linux checks, including real pointer close/reentry. A bounded native
-  Energy capture is opt-in alongside Settings, Search and Chart components.
+## SCRUM-224 / SCRUM-228 / SCRUM-230 — clean GTK fix verified locally; stale snapshot blocks preview
 
-See [System review](design/reviews/scrum-14-system-composition-local.md),
-[Layers evidence](design/reviews/scrum224-layers-layout-oracle.md) and
-[Energy reproduction](validation/energy-header-scroll.md). Native proof,
-full integration and boat acceptance remain open. No boat installation,
-physical output or public release is authorized by these component results.
+The coherent Linux build at `a3edcaef2904bf1450e306f3e086164479ec7f6f`
+contains the approved GTK floating-surface fix without temporary diagnostics.
+Its short viewport check passed actual zoom/palette button activation, stable
+chart center, correct painted positions and coastline/layout checks.
+[Exact build and failure evidence](evidence/scrum-224-a3edcae-local-preview.json)
+binds executable SHA-256
+`cb195d7356f5891aa2c4831b64f3bc8f33f0fe9e4fc4670c696200858b404985`.
+The prior747 and671 binaries and evidence remain preserved.
+
+The one traced full preview then failed the existing stale-data assertion.
+At5038ms, the exported snapshot marks samples stale and omits route distance,
+but still includes an aging arrival-SOC estimate. The retained
+[UI screenshot](evidence/scrum-230-a3edcae-stale-ui.png) already shows unavailable
+values and “Battery SOC stale”; this is an inconsistent snapshot observation,
+not proof that stale advice remains visible. SCRUM-230 is In Progress. No
+assertion was relaxed and no rerun was performed.
+
+Lifecycle checks were not reached. The original747 missing-window/SIGKILL
+uncertainty remains open; its observed descendant was not proven to be the
+restart child. Process tracing can alter timing and grants no waiver. This is
+not a full preview, native Windows or boat pass, and no new full candidate was
+dispatched by this local verification.
+
+## SCRUM-224 / SCRUM-229 — ffe native build passes; preview and 125% touch gates fail
+
+The frozen [ffe run](https://github.com/ThereptileII/Work/actions/runs/37041103887)
+has completed its native job. [Downloaded terminal evidence](evidence/scrum-224-ffe-native-final.json)
+verifies artifact11246267901 (43,226,505 bytes, SHA-256
+`50ab9ff8307f85b792c9f1ee8ddb5fe771cb96c23527b1402af5c1e1459d853e`).
+Native compilation and138/138 integrated tests passed, as did installed peer
+and loader checks, pointer navigation/route gestures, three recovery sequences
+and the public ENC/plugin gate. The requested OpenGL phase actually used
+software fallback; this is not actual GPU/OpenGL acceptance.
+
+The preview stops at the obsolete Settings → Display → Chart presentation
+path already corrected in the prepared747 helper. The native125% DPI run
+separately fails to reach the lower Vessel Preferences action by touch. Its
+unverified pan start falls on the editable battery-capacity field; SCRUM-229
+tracks a strictly checked scroll-body gesture and native replay. The100%
+sequence completed,125% remains failed,150% was not reached. Fixture-free
+product, installer, package-security, native endurance and boat gates were not
+qualified; no replacement full candidate or boat deployment has started.
+
+## SCRUM-224 / SCRUM-228 — local preview repair verified; two bounded failures retained
+
+The coherent Linux build at `74761400862bc1d25102b2b741d14247dd343cdc`
+verifies the corrected visible Diagnostics selection, all eight data scenarios,
+60 pointer actions and XNav → Legacy with coastline content.
+[Retained preview evidence](evidence/scrum-224-747-local-preview.json) records
+the subsequent Legacy → XNav failure: an OpenCPN-named descendant received
+SIGKILL before the expected replacement window/startup log appeared. Its empty
+observed argv does not establish which forked child it was. The sender/cause is under
+investigation; this is not a full preview or lifecycle pass. An earlier
+interrupted run remains separate. No new full candidate was dispatched.
+
+A separate three-input check of that same executable confirms an initial
+Linux floating-chart-control visibility/geometry inconsistency after startup
+resize. The chart receives the zoom-labelled inputs while controls are not
+painted; palette input still works. [Evidence and images](evidence/scrum-228-747-local-viewport.json)
+retain the actual input trace and unchanged scale. SCRUM-228 tracks the fix.
+This does not explain the older c95 scale drift or establish a Windows failure.
+The frozen ffe native build continues; package/boat promotion remains blocked
+by its Linux preview failure. Boat files, profiles and remote access are unchanged.
+
+## SCRUM-224 / SCRUM-14 / SCRUM-226 — combined focused Windows proof passes
+
+Published `ffe4ecf11f43a916098fefe8f17071c63867a838`
+(local `f220b31391815663c442d1f8dcbe98a54c03333c`) passed
+[native run37039246758](https://github.com/ThereptileII/Work/actions/runs/37039246758):
+**469 component checks** (Settings250, Search85, Chart46, Energy88). The strict
+Layers and drawer geometry checks and runtime staging guards also passed.
+[Downloaded proof](evidence/scrum-224-ffe-focused-native/verification.json)
+verifies exact artifact11241214936,259 unique source/patch/lock inputs,
+31 compiled objects,12 runtime files,four executables and30 canonical captures.
+The immutable Search reference job was intentionally skipped.
+
+Native review confirms the System intro/row order, truthful disabled states and
+visible recovery/Advanced links. Title/subtitle ink remains2px/4px above the
+canonical reference, and row font metrics remain unmatched; this is partial
+System refinement, not whole-view visual acceptance. Search/Chart retain their
+previous appearance (only Shell clock pixels differ). The Energy header repair
+passes actual pointer-close/reentry after scrolling and resizing; both retained
+header screenshots show the action in its correct upper-right position.
+
+After the downloaded focused evidence passed, the exact same `ffe4ecf` commit
+was promoted once to [full qualification run37041103887](https://github.com/ThereptileII/Work/actions/runs/37041103887).
+It is frozen. The prior88 Linux layout-oracle failure remains retained below;
+its native job subsequently failed the same obsolete Layers oracle after successful compilation and138 tests. Waiting for that already-disqualified
+candidate's terminal native result is no longer a prerequisite to starting the
+corrected candidate; no run was cancelled or restarted. No package or boat
+promotion follows from the component-only pass. Exact full-shell DPI,
+dependency/security, installer, recovery and physical-display gates remain open.
+
+The exact ffe Linux job then failed in the preview interaction check after the
+repaired Layers check, navigation/input, recording, recovery and user-flow
+checks passed. [Downloaded failure evidence](evidence/scrum-224-ffe-preview-selector-failure.json)
+shows a hidden previous Diagnostics control counted alongside the visible
+Preferences action. No crash was reported. A focused selector repair is being
+verified before any new candidate; the native job continues unchanged. This
+candidate is not eligible for boat deployment or package-security probing.
+
+The older c95 Linux job completed:146/146 fixture-integrated tests and the same
+146/146 fixture-free product tests passed. Its downloaded
+[three-hour evidence](evidence/scrum-224-c95-linux-final.json) contains1080 samples,
+zero sustained handle/thread growth, resident-memory median change−106496 bytes,
+and2.58% of one CPU core. The final soak image is all water after substantial
+viewport scale/longitude drift; it is explicitly **not chart-content acceptance**.
+Numeric endurance does not qualify ffe, native Windows, or the boat display.
+Boat/profile/remote access and public payment/download access were unchanged.
+
+## SCRUM-227 — disposable AIS outage boundary verified
+
+The separate [native run37047212685](https://github.com/ThereptileII/Work/actions/runs/37047212685)
+passes on exact source `97142aa1a99ed789380274f20ae7a5c5349d18aa`.
+[Downloaded evidence](evidence/scrum-227-disposable-native-proof.json) verifies
+all four source inputs,three Win32 executables and both IPv4/IPv6 phases.
+Existing marker connections were interrupted, retries were blocked and traffic
+recovered after both normal helper exit and forced termination. Independent
+control traffic stayed connected without errors. Fresh independent queries
+confirmed the uniquely owned filters and sublayer were removed in both phases.
+
+This helper can target only inert loopback marker executables in a disposable
+hosted runner. It does not target OpenCPN,AISStream or boat traffic. The initial
+RPC type compile failure and strict readback refusal were retained; the latter
+was documented Windows INDEXED metadata, now explicitly requested and compared
+exactly without masking unknown flags. Actual-product binding and live
+AIS loss/aging/reconnect remain open;SCRUM-227 is not Done. Product candidate,
+boat installation, remote access and hardware-control policy are unchanged.
+
+## SCRUM-224 / SCRUM-213 — native focus repair proven; integrated layout oracle correction required
+
+Published source `88c141ba9fee5c28e12b5f4ac0f7e7550d1a8ca6`
+(local equivalent `688bb713db885dbe78ca6db861382ce248c231f7`) passed the
+[focused native run](https://github.com/ThereptileII/Work/actions/runs/37032588707):
+230 Settings + 85 Search/Shell + 46 Chart checks, plus the corrected strict
+large-desktop geometry oracle. Downloaded artifact `11238311244` was verified
+against its SHA-256, 247 source inputs, 31 objects, 12 runtime files, three
+executables and 23 canonical captures. Combined Linux Settings passed 181
+checks with 14 captures; this does not replace integrated Linux qualification.
+
+The retained `60929a5` negative control reproduces the actual failure:
+restoring focus to Advanced battery model scrolls Sensors out of its pointer
+target. Explicit Preferences reopening now focuses its current visible tab
+before resetting scroll. The unchanged native pointer checks and before/after
+trace prove stable geometry and real Sensors selection. The independent
+1920-width failure was an obsolete test expectation: the immutable prototype
+and native product require 460 DIP at the large-desktop breakpoint. No tolerance
+was widened and no release gate was removed.
+
+[Verified native evidence](evidence/scrum-224-88c-focused-native-proof.json) and
+[scoped visual review](design/reviews/native88-focused-review.md) cover the
+Search row/focus outline, shared Windows title/border, Chart supporting text
+and System flow corrections. Original HTML is unchanged. Whole-view conformance,
+other DPI/Back-header states and boat acceptance remain open.
+
+After this evidence passed, the **same commit** was promoted to
+[full Linux/Windows qualification run 37033702537](https://github.com/ThereptileII/Work/actions/runs/37033702537).
+The candidate remains frozen. Its integrated Linux job failed before navigation-object interactions because the strict chart-layout oracle still listed the six pre-Layers floating controls. The actual new44×44 Layers button matches the immutable prototype. [Verified failure evidence](evidence/scrum-224-88c-linux-layout-failure.json) retains the real screenshot and layout. The isolated correction requires the exact seventh control and preserves one-pixel geometry bounds and arbitrary-overlay rejection; captured negative/positive replay plus nine targeted rejections pass. No application geometry changed. Native Windows continues independently; **this run is not eligible for boat deployment or security-package probing**. Full product/dependency, installer/recovery, native DPI and boat gates remain unaccepted.
+
+The same commit's [native recovery subset](evidence/scrum-17-88c-recovery-tooling.json) has21 passing maintenance reports,384 marker-process checks,51 actual broker checks and56 Prepare/Arm/Collect checks, with downloaded bytes/source identities verified. These disposable tests do not imply real-profile or application acceptance.
+The older c95d failed native evidence remains preserved; its already-running
+Linux endurance continues independently. The boat installation and remote
+access were not modified; older-install retirement remains gated by a known-good
+replacement. No public payment/download access was opened.
 
 ## SCRUM-224 — c95d native UI gates fail; short prototype proof passes
 

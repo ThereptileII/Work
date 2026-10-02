@@ -226,7 +226,13 @@ def main():
                         help='with --prototype-proof, also run the tracked offline chart presentation harness')
     parser.add_argument('--energy-component', action='store_true',
                         help='with --prototype-proof, also run the existing offline Energy component and seven captures')
+    parser.add_argument('--settings-touch-only', action='store_true',
+                        help='only production UI and isolated 125%% Settings native touch proof; no OpenCPN app')
     args = parser.parse_args()
+    if args.settings_touch_only:
+        if any((args.legacy_control,args.prototype_proof,args.settings_component,args.chart_presentation_component,args.energy_component)):
+            parser.error('--settings-touch-only cannot combine with other proof modes')
+        args.ui = True
     if args.chart_presentation_component and not args.prototype_proof:
         parser.error('--chart-presentation-component requires --prototype-proof')
     if args.energy_component and not args.prototype_proof:
@@ -252,7 +258,9 @@ def main():
         components = 'Settings/Search' + ('/Energy' if args.energy_component else '')
         report['scope'] = ('native Win32 navigation bridge translation units and offline ' + components +
                            ' components; not full OpenCPN, dependency, package or boat qualification')
-    active_units = () if args.prototype_proof else UNITS
+    if args.settings_touch_only:
+        report['scope'] = 'native production UI plus actual 125% Settings touch-only component; not full product acceptance'
+    active_units = () if args.prototype_proof or args.settings_touch_only else UNITS
     try:
         report['candidate'] = subprocess.check_output(['git', 'rev-parse', 'HEAD'], cwd=ROOT, text=True).strip()
         report['gateInputs'] = {p: record(ROOT / p) for p in
@@ -266,7 +274,7 @@ def main():
             report['prototypeInputs']['tests/chart_presentation_drawer_test.cpp'] = record(ROOT / 'tests/chart_presentation_drawer_test.cpp')
         if args.ui:
             report['uiBuildPolicy'] = {'testFixtures': False, 'pilotLoopback': False,
-                                       'runtimeTests': args.settings_component}
+                                       'runtimeTests': args.settings_component or args.settings_touch_only}
             report['uiInputs'] = {p: record(ROOT / p) for p in
                                   ('CMakeLists.txt', 'cmake/AisJson.cmake', *UI_CHANGED, SETTINGS)}
             # Bind the complete local header/source tree consumed by the real UI
@@ -277,6 +285,11 @@ def main():
             report['settingsInputs'] = {p: record(ROOT / p) for p in
                 ('tests/settings_drawer_test.cpp', 'tools/prototype/capture-ais-component.py',
                  'tools/windows-ui.py')}
+        if args.settings_touch_only:
+            report['touchInputs'] = {p: record(ROOT / p) for p in (
+                'tests/settings_touch_test.cpp', 'tests/WindowsDpi.cpp',
+                'tools/test-settings-touch-windows.py', 'tools/preferences-touch.py',
+                'tools/diagnostic-geometry.py', 'tools/diagnostic_snapshot.py', 'tools/windows-ui.py')}
         if args.energy_component:
             report['energyInputs'] = {p: record(ROOT / p) for p in
                 ('tests/energy_panel_test.cpp', 'tools/prototype/capture-ais-component.py',
@@ -341,6 +354,7 @@ def main():
              '-DOPENNAV_SOURCE_DIR:PATH=' + source.as_posix(), '-DCURL_INCLUDE:PATH=' + headers.as_posix(),
              '-DOPENNAV_CHECK_UI=' + ('ON' if args.ui else 'OFF'),
              '-DOPENNAV_CHECK_SETTINGS_COMPONENT=' + ('ON' if args.settings_component else 'OFF'),
+             '-DOPENNAV_CHECK_SETTINGS_TOUCH=' + ('ON' if args.settings_touch_only else 'OFF'),
              '-DOPENNAV_CHECK_PROTOTYPE=' + ('ON' if args.prototype_proof else 'OFF'),
              '-DOPENNAV_CHECK_CHART_COMPONENT=' + ('ON' if args.chart_presentation_component else 'OFF'),
              '-DOPENNAV_CHECK_ENERGY_COMPONENT=' + ('ON' if args.energy_component else 'OFF'),
@@ -379,6 +393,8 @@ def main():
             targets += ['opennav_ui', 'check_SettingsStore']
         if args.settings_component:
             targets += ['settings_drawer_test']
+        if args.settings_touch_only:
+            targets += ['settings_touch_test', 'opennav-test-dpi']
         run(['cmake', '--build', build, '--config', 'Release', '--target', *targets,
              '--parallel', '2', '--', '/verbosity:normal'],
             evidence / 'compile.log', timeout=420)
@@ -413,6 +429,24 @@ def main():
             if (report['energyComponent']['capture']['source_commit'] != report['candidate'] or
                     any(record(ROOT / p) != rec for p, rec in report['energyInputs'].items())):
                 raise ValueError('Energy component inputs changed during native proof')
+        if args.settings_touch_only:
+            client = build / 'Release/settings_touch_test.exe'
+            runtime = stage_native_runtime(client, wx,
+                ('wxbase32u_vc14x.dll', 'wxmsw32u_core_vc14x.dll', 'wxmsw32u_aui_vc14x.dll'))
+            identity = record(client)
+            report['touchRuntime'] = runtime
+            output = evidence / 'settings-touch'
+            run([sys.executable, ROOT / 'tools/test-settings-touch-windows.py',
+                 '--client', client, '--dpi-helper', build / 'Release/opennav-test-dpi.exe',
+                 '--output', output], evidence / 'settings-touch.log', timeout=90)
+            report['settingsTouch'] = json.loads((output / 'result.json').read_text())
+            if (not report['settingsTouch']['passed'] or
+                    report['settingsTouch']['source_commit'] != report['candidate'] or
+                    report['settingsTouch']['executable_sha256'] != identity['sha256'] or
+                    record(client) != identity or
+                    any(record(ROOT / p) != rec for p, rec in report['touchInputs'].items()) or
+                    any(record(client.parent / p)['sha256'] != rec['sha256'] for p, rec in runtime.items())):
+                raise ValueError('Settings touch identity or runtime proof changed')
         report['status'] = 'passed'
     finally:
         (evidence / 'summary.json').write_text(json.dumps(report, indent=2) + '\n')

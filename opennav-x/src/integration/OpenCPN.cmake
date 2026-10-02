@@ -92,6 +92,12 @@ endif()
 # Defer attaching model-bound tests; test sources stay outside upstream.
 function(opennav_attach_route_tests)
   if(TARGET tests)
+    target_sources(tests PRIVATE
+      "${OPENNAV_ROOT}/tests/preview_diagnostics_tests.cpp"
+      "${OPENNAV_ROOT}/src/integration/PreviewDiagnostics.cpp")
+    target_compile_definitions(tests PRIVATE OPENNAV_DIAGNOSTICS_GTEST=1)
+    target_include_directories(tests PRIVATE "${CMAKE_BINARY_DIR}/include")
+    target_link_libraries(tests PRIVATE ocpn::wxjson)
     target_sources(tests PRIVATE "${OPENNAV_ROOT}/tests/peer_unavailable_tests.cpp")
     target_sources(tests PRIVATE "${OPENNAV_ROOT}/tests/pilot_presentation_tests.cpp")
     target_sources(tests PRIVATE "${OPENNAV_ROOT}/tests/anchor_view_tests.cpp"

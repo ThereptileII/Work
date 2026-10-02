@@ -1,0 +1,7 @@
+{"phase":"energy-scrolled","scroll_y":144,"close":[982,-48,80,44]}
+{"phase":"energy-resized-return","scroll_y":0,"close":[982,96,80,44]}
+{"phase":"energy-reopened","scroll_y":0,"close":[982,96,80,44]}
+{"phase":"diagnostics-entry","scroll_y":0,"close":[982,96,80,44]}
+{"phase":"diagnostics-scrolled","scroll_y":456,"close":[982,-360,80,44]}
+{"phase":"route-after-scrolled-diagnostics","scroll_y":0,"close":[982,96,80,44]}
+{"phase":"energy-reentry-after-route","scroll_y":0,"close":[982,96,80,44]}
