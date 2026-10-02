@@ -127,15 +127,19 @@ and recurrence passed. XNav → Legacy exited cleanly and rendered the retained
 coastline.
 
 On the return request, the observed Legacy PID 1116 exited zero. The observed
-replacement descendant PID 1281 never produced the expected window and was
+opencpn-named/executable-matched descendant PID 1281 was
 retained as a zombie with `waitid` code 2/status 9 (SIGKILL), with empty observed
 argv. The last application log records Legacy's clean exit; no replacement
 startup was logged. `preview-failure-inventory.json` and the visually inspected
 black `preview-failure-linux.png` retain this missing-window state. The available
 kernel interval has no OOM record, and the bounded supervisor exited with the
-Python test's status 1 rather than timing out; the cause of the replacement's
-SIGKILL remains unknown. This is not a completed lifecycle/preview pass, and
-later Safe/direct-start steps were not reached. No third run was performed.
+Python test's status 1 rather than timing out; the cause of that descendant's
+SIGKILL remains unknown. Its empty argv
+and the absence of a clone-to-exec trace do not prove it was the intended
+restart child: a pre-exec loader child can temporarily inherit the same
+process name/executable. The expected XNav window was still absent. This is not
+a completed lifecycle/preview pass, and later Safe/direct-start steps were not
+reached. No third full preview run was performed.
 
 The corrected native Display route remains native-execution pending: this Linux
 preview retains its existing Display fixture accelerator and therefore cannot
@@ -144,3 +148,23 @@ palette preferences pointer path. Windows typography/DPI and boat acceptance
 are also unchanged and pending. The separate viewport observer uses this same
 binary; its results belong to SCRUM-228 and do not turn this preview failure into
 a pass.
+
+## Single minimal lifecycle trace — Jira comment 10529
+
+A separately authorized 120-second-bounded trace reused the same executable,
+disposable profile setup, namespace bindings, subreaper and return-menu action,
+without the preceding settings/scenario tour. A locally extracted signed
+strace 7.0-1 package recorded process/signal operations only. The trace completed
+in about 29 seconds: XNav PID 8 → Legacy 188 → XNav 359, each exiting zero.
+The returned XNav screenshot was visually inspected. Exact source/binary/package
+identity, raw traces and results remain in `.local/lifecycle-trace/`; no system
+package installation, rebuild or product change was made for this trace.
+
+Unlike failed-run PID 1281, successful PID 359 is bound by an observed parent
+clone followed by setsid and exec of the intended XNav command. Nested glycin
+image-loader sandboxes also produce SIGKILL descendants at parent exit through
+bwrap parent-death handling. They are distinct from successful PID 359 and do
+not prove the identity or cause of failed-run PID 1281. No application
+kill(..., SIGKILL) was observed in this trace. Reduced sequence and tracing can
+change timing; one clean minimal cycle does not resolve or waive the original
+full-preview failure. No second trace was run.
