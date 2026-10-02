@@ -1,0 +1,141 @@
+{
+  "schemaVersion": 1,
+  "issue": "SCRUM-24",
+  "scope": "Strict signed custom release-identity parsing and existing verifier/release-policy regression tests; verify-only.",
+  "repository": "ThereptileII/Work",
+  "implementationCommit": "1a937d3",
+  "testedCommit": "fa4610be6bd5a5d6ef90f93749ed369bd3b48f72",
+  "workflow": ".github/workflows/update-verifier-probe.yml",
+  "runId": 36970037284,
+  "runUrl": "https://github.com/ThereptileII/Work/actions/runs/36970037284",
+  "validatedAtUtc": "2026-10-02T05:44:27.852509+00:00",
+  "signedNegativeScenarios": [
+    "array-root",
+    "array-version",
+    "boolean-version",
+    "case-alias-channel",
+    "case-alias-commit",
+    "case-alias-version",
+    "deep-version",
+    "duplicate-channel",
+    "duplicate-commit",
+    "duplicate-version",
+    "empty-object",
+    "escaped-duplicate",
+    "extra-case-alias-channel",
+    "extra-case-alias-commit",
+    "extra-case-alias-version",
+    "invalid-utf8",
+    "missing-version",
+    "null-version",
+    "number-version",
+    "object-version",
+    "oversize-custom",
+    "string-root",
+    "unknown",
+    "unknown-nested"
+  ],
+  "jobs": [
+    {
+      "jobId": 110721904869,
+      "jobUrl": "https://github.com/ThereptileII/Work/actions/runs/36970037284/job/110721904869",
+      "runner": "windows-2022",
+      "goarch": "386",
+      "conclusion": "success",
+      "vet": "success",
+      "topLevelPassed": 22,
+      "subtestsPassed": 78,
+      "failed": 0,
+      "skipped": 0,
+      "packages": [
+        {
+          "package": "example.com/opennav-update-verifier",
+          "topLevelPassed": 13,
+          "subtestsPassed": 63,
+          "elapsedSeconds": 4.397
+        },
+        {
+          "package": "example.com/opennav-update-verifier/releasepolicy",
+          "topLevelPassed": 9,
+          "subtestsPassed": 15,
+          "elapsedSeconds": 0.519
+        }
+      ],
+      "signedCustomIdentityTests": {
+        "TestSignedCustomIdentityIsStrict": {
+          "passed": 24,
+          "failed": 0,
+          "skipped": 0
+        },
+        "TestVerifiedReleaseRejectsAmbiguousSignedCustomIdentity": {
+          "passed": 24,
+          "failed": 0,
+          "skipped": 0
+        }
+      },
+      "artifact": {
+        "id": 11210998209,
+        "name": "update-verifier-windows-2022-386-fa4610be6bd5a5d6ef90f93749ed369bd3b48f72",
+        "bytes": 5592,
+        "sha256": "6af14f4ba31f884b72fbd74eb16e3b27f255ac737f1af50adce9cbee22ae6375",
+        "lengthVerified": true,
+        "sha256Verified": true,
+        "zipCrcVerified": true,
+        "goJsonSha256": "0e40f53362fb4382e370c13819fff82bf1941c261420608f149ecb249339c648"
+      }
+    },
+    {
+      "jobId": 110721904753,
+      "jobUrl": "https://github.com/ThereptileII/Work/actions/runs/36970037284/job/110721904753",
+      "runner": "ubuntu-24.04",
+      "goarch": "amd64",
+      "conclusion": "success",
+      "vet": "success",
+      "topLevelPassed": 22,
+      "subtestsPassed": 78,
+      "failed": 0,
+      "skipped": 0,
+      "packages": [
+        {
+          "package": "example.com/opennav-update-verifier",
+          "topLevelPassed": 13,
+          "subtestsPassed": 63,
+          "elapsedSeconds": 0.779
+        },
+        {
+          "package": "example.com/opennav-update-verifier/releasepolicy",
+          "topLevelPassed": 9,
+          "subtestsPassed": 15,
+          "elapsedSeconds": 0.007
+        }
+      ],
+      "signedCustomIdentityTests": {
+        "TestSignedCustomIdentityIsStrict": {
+          "passed": 24,
+          "failed": 0,
+          "skipped": 0
+        },
+        "TestVerifiedReleaseRejectsAmbiguousSignedCustomIdentity": {
+          "passed": 24,
+          "failed": 0,
+          "skipped": 0
+        }
+      },
+      "artifact": {
+        "id": 11211530558,
+        "name": "update-verifier-ubuntu-24.04-amd64-fa4610be6bd5a5d6ef90f93749ed369bd3b48f72",
+        "bytes": 6523,
+        "sha256": "d9406f81fc1a79db1048912ce3956abd681928a82425e612b17c6261b8f34d6d",
+        "lengthVerified": true,
+        "sha256Verified": true,
+        "zipCrcVerified": true,
+        "goJsonSha256": "979fd437bee0909f7aaab81c75ef76a42f4400b0bdd09fa0923bfe3bfa6b9f04"
+      }
+    }
+  ],
+  "limits": [
+    "These results qualify the isolated verifier and release-policy module only.",
+    "No update payload was executed or installed; no production signing keys, update endpoints, product build, boat validation, or release approval are covered."
+  ],
+  "passed": true
+}
