@@ -168,6 +168,14 @@ class PreferencesTouch(unittest.TestCase):
         tree=ast.parse(source.read_text(encoding='utf-8'))
         function=next(n for n in tree.body if isinstance(n,ast.FunctionDef)
                       and n.name=='touch_preferences_action')
+        # The production gate delegates to this shared helper. Exercise that
+        # actual module as well as the wrapper, rather than an obsolete copied
+        # body or a stub which would hide missing integration dependencies.
+        helper_spec=importlib.util.spec_from_file_location(
+            'preferences_touch',source.with_name('preferences-touch.py'))
+        preferences_touch=importlib.util.module_from_spec(helper_spec)
+        helper_spec.loader.exec_module(preferences_touch)
+        preferences_touch.time=SimpleNamespace(sleep=lambda _:None)
         self.rects=[(120,410,480,482),(120,220,480,292)]
         self.index=0;self.pans=[];self.taps=[]
         self.enabled=True;self.visible_override=None
@@ -198,9 +206,11 @@ class PreferencesTouch(unittest.TestCase):
             W=SimpleNamespace(HWND=int,POINT=lambda x,y:SimpleNamespace(x=x,y=y)),
             declare=lambda *args:lambda:20,SetForegroundWindow=lambda _:True,
             IsWindowEnabled=lambda _:self.enabled,GetParent=lambda h:{22:21,21:20}[h],
-            WindowFromPoint=hit,IsChild=lambda parent,child:parent==21 and child==22)
+            WindowFromPoint=hit,IsChild=lambda parent,child:parent==21 and child==22,
+            GetClassNameW=lambda handle,buffer,size:
+                setattr(buffer,'value','wxWindowNR' if handle==21 else 'Button') or 10)
         namespace=dict(ui=ui,pid=7,bounds=bounds,preferences_observation=observation,
-                       dpi=inject,time=SimpleNamespace(sleep=lambda _:None))
+                       dpi=inject,preferences_touch=preferences_touch,report={})
         exec(compile(ast.Module(body=[function],type_ignores=[]),str(source),'exec'),namespace)
         self.action=namespace['touch_preferences_action']
 
