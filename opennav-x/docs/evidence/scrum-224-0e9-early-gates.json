@@ -1,0 +1,139 @@
+{
+  "schemaVersion": 1,
+  "runId": 36969350849,
+  "commit": "0e9ec666ab27262a0c246f87f2e0fa5c7ede9fd0",
+  "inspectedAtUtc": "2026-10-02T05:54:28.190405+00:00",
+  "artifactCount": 11,
+  "allArtifactIntegrityVerified": true,
+  "artifacts": [
+    {
+      "id": 11211460202,
+      "name": "restart-window-0e9ec666ab27262a0c246f87f2e0fa5c7ede9fd0",
+      "bytes": 23454,
+      "sha256": "a16be35c8c34a2cc08f631192af8b95b789b9720c2050ec879b1ec63f1ff38ef"
+    },
+    {
+      "id": 11211371217,
+      "name": "linux-pristine-0e9ec666ab27262a0c246f87f2e0fa5c7ede9fd0",
+      "bytes": 475677,
+      "sha256": "25d7e983d45f0564276852c1cfae860bacc4c582c3efc835b6f754c4029b4200"
+    },
+    {
+      "id": 11211300407,
+      "name": "stock-welcome-sv-0e9ec666ab27262a0c246f87f2e0fa5c7ede9fd0",
+      "bytes": 501643,
+      "sha256": "14b42203dc23c77cd80e5f0c4e23ff50fa7804c945dd8be03dddd4144853600c"
+    },
+    {
+      "id": 11211285929,
+      "name": "stock-welcome-en_US-0e9ec666ab27262a0c246f87f2e0fa5c7ede9fd0",
+      "bytes": 474298,
+      "sha256": "85804bcd6c90c3cfeaa29f9bca394daadc00ea9749f86c17ec3e1da81a360a74"
+    },
+    {
+      "id": 11210967265,
+      "name": "commissioning-restart-0e9ec666ab27262a0c246f87f2e0fa5c7ede9fd0",
+      "bytes": 6637,
+      "sha256": "7fe7f37fd00fa53fe3b9544d2c53c435952aa26f72760066eca9d4c5653b9299"
+    },
+    {
+      "id": 11210947167,
+      "name": "official-prerequisite-0e9ec666ab27262a0c246f87f2e0fa5c7ede9fd0",
+      "bytes": 219967,
+      "sha256": "c0a2e375cb6fa2835da810e564899529b3f052e3f23ddb5cf8e7575147c656dc"
+    },
+    {
+      "id": 11210938609,
+      "name": "windows-pristine-0e9ec666ab27262a0c246f87f2e0fa5c7ede9fd0",
+      "bytes": 496941,
+      "sha256": "661f78bbb2a497219885fadc6e772cfe6bcf6ae01deb46704eb14d3dcc0e1862"
+    },
+    {
+      "id": 11210912750,
+      "name": "boat-maintenance-0e9ec666ab27262a0c246f87f2e0fa5c7ede9fd0",
+      "bytes": 24977,
+      "sha256": "4bb06240e019a54b640421c855e02b92ab0eebe39d9b8cc2ce75f2b3dc1c8cbf"
+    },
+    {
+      "id": 11210719119,
+      "name": "commissioning-broker-0e9ec666ab27262a0c246f87f2e0fa5c7ede9fd0",
+      "bytes": 16709,
+      "sha256": "1f1d734c6eff58afd332a85233a6bc743ed44d4c3227d3f43003f92da183ae85"
+    },
+    {
+      "id": 11210703958,
+      "name": "boat-firmware-0e9ec666ab27262a0c246f87f2e0fa5c7ede9fd0",
+      "bytes": 2812,
+      "sha256": "15e9f8a25e59546bc6a444b668562be472a6acb45557d365858ee431076530a6"
+    },
+    {
+      "id": 11210564809,
+      "name": "commissioning-restart-qualified-0e9ec666ab27262a0c246f87f2e0fa5c7ede9fd0",
+      "bytes": 337,
+      "sha256": "bae6a6aa750c5e2ba89a9a9dc9e50325ee9b546c40c5caeb46522bd07ed250ea"
+    }
+  ],
+  "ctest": {
+    "linux-tests.xml": {
+      "tests": 66,
+      "failures": 2,
+      "disabled": 0,
+      "skipped": 0,
+      "passed": 64,
+      "failed_tests": [
+        "DriverRegistry.RegisterDriver",
+        "IpcServer.Commands"
+      ]
+    },
+    "windows-pristine-tests.xml": {
+      "tests": 60,
+      "failures": 0,
+      "disabled": 0,
+      "skipped": 0,
+      "passed": 60,
+      "failed_tests": []
+    }
+  },
+  "limits": [
+    "Early artifact snapshot only; no integrated application artifact available.",
+    "Pristine Linux has two known upstream failures; integrated regression acceptance permits no exceptions.",
+    "Linux integrated job remained in progress after successful build/regression and functional steps; native Windows integrated job remained in progress. No integrated suite counts inferred.",
+    "Official prerequisite stock process returned 1223 despite verified installation postconditions; Alpha installer lifecycle still requires zero.",
+    "Marker-only/disposable fixture checks do not establish real boat or product acceptance. No hardware output or firmware flashing performed."
+  ],
+  "restartProtocolLog": {
+    "protocolChecksPassed": 886,
+    "markerPublicationChecksPassed": 87,
+    "nativeProcessChecksPassed": 384,
+    "nativeProcessCasesPassed": 24,
+    "source": "11210967265.zip:native-process-tests.log"
+  },
+  "runUrl": "https://github.com/ThereptileII/Work/actions/runs/36969350849",
+  "maintenance": {
+    "suites": 21,
+    "reportedChecksOrTests": 1690,
+    "passed": true,
+    "scope": "Native disposable contracts, not real boat acceptance"
+  },
+  "restartQualification": {
+    "owner": "OpenNavX.CI.RestartGates.1",
+    "runId": "36969350849",
+    "schema": 1,
+    "commit": "0e9ec666ab27262a0c246f87f2e0fa5c7ede9fd0",
+    "transport": "success",
+    "maintenance": "success",
+    "broker": "success",
+    "prepareArm": "success",
+    "actualBoat": false,
+    "runAttempt": "1"
+  },
+  "stockPrerequisite": {
+    "status": "passed",
+    "invocation": "Unmodified official stock interactive wizard",
+    "callerAdministrator": true,
+    "stockExitCode": 1223,
+    "executableSha256": "7c6547562cca7954671eaab72833ca9d788710fd9808b6a699b6dc823852ae0c",
+    "exitCodeAnomaly": "Exact official package completed visibly and all hash/resource/registration postconditions passed despite 1223; Alpha lifecycle still requires zero.",
+    "pagesCount": 9
+  }
+}
