@@ -46,6 +46,25 @@ viewport scale/longitude drift; it is explicitly **not chart-content acceptance*
 Numeric endurance does not qualify ffe, native Windows, or the boat display.
 Boat/profile/remote access and public payment/download access were unchanged.
 
+## SCRUM-227 — disposable AIS outage boundary verified
+
+The separate [native run37047212685](https://github.com/ThereptileII/Work/actions/runs/37047212685)
+passes on exact source `97142aa1a99ed789380274f20ae7a5c5349d18aa`.
+[Downloaded evidence](evidence/scrum-227-disposable-native-proof.json) verifies
+all four source inputs,three Win32 executables and both IPv4/IPv6 phases.
+Existing marker connections were interrupted, retries were blocked and traffic
+recovered after both normal helper exit and forced termination. Independent
+control traffic stayed connected without errors. Fresh independent queries
+confirmed the uniquely owned filters and sublayer were removed in both phases.
+
+This helper can target only inert loopback marker executables in a disposable
+hosted runner. It does not target OpenCPN,AISStream or boat traffic. The initial
+RPC type compile failure and strict readback refusal were retained; the latter
+was documented Windows INDEXED metadata, now explicitly requested and compared
+exactly without masking unknown flags. Actual-product binding and live
+AIS loss/aging/reconnect remain open;SCRUM-227 is not Done. Product candidate,
+boat installation, remote access and hardware-control policy are unchanged.
+
 ## SCRUM-224 / SCRUM-213 — native focus repair proven; integrated layout oracle correction required
 
 Published source `88c141ba9fee5c28e12b5f4ac0f7e7550d1a8ca6`
