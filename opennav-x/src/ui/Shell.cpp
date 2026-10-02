@@ -1331,7 +1331,7 @@ void Shell::ShowSettings() {
     settings_drawer_->on_dismiss=[this]{if(settings_drawer_)settings_drawer_->ResetDraft();};
   }
   settings_drawer_->SetInterfaceScale(display_.scale_percent);
-  settings_drawer_->Present(DrawerWorkspace());
+  settings_drawer_->Open(DrawerWorkspace());
   Tick();
 }
 application::CommandResult Shell::ApplyDisplayPreferences(

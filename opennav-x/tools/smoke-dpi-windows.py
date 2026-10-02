@@ -64,8 +64,9 @@ def main_buttons(scale):
     frame=ui.W.RECT();ui.GetWindowRect(handle,C.byref(frame));sizes={}
     display=current_layout_observation()['runtime']['display'];light=display['light']
     client=ui.W.RECT();assert ui.GetClientRect(handle,C.byref(client))
-    logical_height=client.bottom*100/scale
-    nav=43 if logical_height<=600 else 51 if logical_height<=740 else 61
+    logical_width=client.right*100/scale;logical_height=client.bottom*100/scale
+    # Immutable HTML: min-width:1500 gives 69px; compact height rules override it.
+    nav=43 if logical_height<=600 else 51 if logical_height<=740 else 69 if logical_width>=1500 else 61
     pilot=66 if logical_height<=600 else 74 if logical_height<=740 else 87
     heights={label:nav for label in ('Chart','Passage','Traffic','Energy','Instruments','Anchor','Radar','Settings')}
     heights.update({'Autopilot':pilot,light:44,'+':44,'−':44,'Follow boat':44})

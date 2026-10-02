@@ -338,11 +338,6 @@ try:
         assert not INSTALL.exists() and inventory(stock)==stock_before
         check('Registry discovery handles the official build-suffixed key and verifies its exact hash without modification')
         wizard(original)
-        bad=temporary/'unknown';bad.mkdir();shutil.copy2(original,bad/'opencpn.exe')
-        with (bad/'opencpn.exe').open('ab') as f:f.write(b'unsupported build')
-        setup('Install',bad/'opencpn.exe',expected=1)
-        assert not INSTALL.exists();assert inventory(stock)==stock_before
-        check('Unknown executable hash refused before creating install root or changing stock')
         assert not SHORTCUTS.exists() and not NEUTRAL_SHORTCUTS.exists() and not OLD_SHORTCUTS.exists()
         SHORTCUTS.mkdir();foreign_link=SHORTCUTS/'Skager.lnk'
         foreign_link.write_bytes(b'foreign shortcut content must not be claimed')
@@ -374,6 +369,31 @@ try:
         with (profile/'opencpn.conf').open('a') as f:f.write('\n[Settings/GlobalState]\nVPLatLon=59.0800,18.5000\nVPScale=0.003\n')
         shutil.copy2(profile/'opencpn.conf',profile/'opencpn.ini')
         expected=fixtures.snapshot(profile);before=inventory(profile)
+        # Reject against an existing seeded profile, and inspect the actual
+        # unsupported tree passed to Setup rather than only its supported sibling.
+        bad=temporary/'unknown';bad.mkdir();shutil.copy2(original,bad/'opencpn.exe')
+        with (bad/'opencpn.exe').open('ab') as f:f.write(b'unsupported build')
+        (bad/'user-owned').mkdir();(bad/'user-owned/keep.txt').write_bytes(b'Preserve unsupported installation contents.\n')
+        rejected_before=inventory(bad)
+        assert before and rejected_before and sha(bad/'opencpn.exe')!=STOCK_HASH
+        assert not INSTALL.exists() and not SHORTCUTS.exists() and not NEUTRAL_SHORTCUTS.exists() and not OLD_SHORTCUTS.exists()
+        failure=setup('Install',bad/'opencpn.exe',expected=1)
+        assert failure['status']=='failed' and 'Unsupported OpenCPN executable.' in failure['error'],failure
+        rejected_after=inventory(bad);profile_after=inventory(profile)
+        assert rejected_after==rejected_before,'Unsupported installation tree changed during rejection'
+        assert profile_after==before,'Existing shared profile changed during unsupported-build rejection'
+        assert inventory(stock)==stock_before
+        assert not INSTALL.exists() and not SHORTCUTS.exists() and not NEUTRAL_SHORTCUTS.exists() and not OLD_SHORTCUTS.exists()
+        report['unsupported_build_preservation']={
+            'status':'passed','setup_sha256':sha(SETUP),'test_source_sha256':sha(Path(__file__)),
+            'package_manifest_sha256':sha(PACKAGE/'package.json'),
+            'rejected_tree_files':len(rejected_before),'profile_files':len(before),
+            'rejected_tree_before_sha256':hashlib.sha256(json.dumps(rejected_before,sort_keys=True).encode()).hexdigest(),
+            'rejected_tree_after_sha256':hashlib.sha256(json.dumps(rejected_after,sort_keys=True).encode()).hexdigest(),
+            'profile_before_sha256':hashlib.sha256(json.dumps(before,sort_keys=True).encode()).hexdigest(),
+            'profile_after_sha256':hashlib.sha256(json.dumps(profile_after,sort_keys=True).encode()).hexdigest(),
+            'install_root_absent':True,'all_shortcut_groups_absent':True}
+        check('Unknown executable hash refused; rejected tree and existing profile unchanged; install root and all shortcut groups absent')
         # Stock plugins are user-owned inputs. A legacy TLS DLL copied from
         # there must refuse a fresh candidate without deleting the source.
         stock_plugins=stock/'plugins';created_stock_plugins=not stock_plugins.exists()

@@ -1,0 +1,174 @@
+{
+  "issue": "SCRUM-98",
+  "accepted": false,
+  "productionSourceChanged": false,
+  "cause": "Windows DPI smoke oracle omitted immutable HTML min-width:1500px navigation height 69px. Native component already matches it.",
+  "nativeEvidence": {
+    "commit": "488fbbdf5161e986c986773187b1008a7f8684f5",
+    "ciRun": "https://github.com/ThereptileII/Work/actions/runs/36984898997",
+    "jobId": 110769523919,
+    "files": {
+      "dpi-results.json": "3d0122ed8e90c7c46e56b72b5a98129cb16b6ada84a43e83d1b7d221ef5de6be",
+      "dpi-100-failure-visible.png": "7199c7b13b39ac64e03cca50d5216c732638fdf9aa0876ec5b1c056d3baf98ec",
+      "dpi-100-fullscreen.json": "c9dc42f7297567520507d2875de1ef95c28d51b399270f02cfe49c365b50dee1"
+    },
+    "chartControl": {
+      "x": 9,
+      "height": 69,
+      "accessible_name": "Navigation",
+      "width": 69,
+      "label": "Chart",
+      "y": 90,
+      "visible": true,
+      "enabled": true
+    }
+  },
+  "focusedProof": {
+    "authority": "Saved native observation replay on Linux; not a fresh native execution or rendering acceptance",
+    "runs": {
+      "originalGate": {
+        "result": "rejected",
+        "error": "('Chart', 'exact prototype height', 69, 61)"
+      },
+      "correctedGate": {
+        "result": "passed",
+        "sizes": {
+          "Chart": [
+            69,
+            69
+          ],
+          "Passage": [
+            69,
+            69
+          ],
+          "Traffic": [
+            69,
+            69
+          ],
+          "Energy": [
+            69,
+            69
+          ],
+          "Instruments": [
+            69,
+            69
+          ],
+          "Anchor": [
+            69,
+            69
+          ],
+          "Radar": [
+            69,
+            69
+          ],
+          "Settings": [
+            69,
+            69
+          ],
+          "Autopilot": [
+            183,
+            87
+          ],
+          "Day": [
+            44,
+            44
+          ],
+          "+": [
+            44,
+            44
+          ],
+          "\u2212": [
+            44,
+            44
+          ],
+          "Follow boat": [
+            142,
+            44
+          ],
+          "footer": [
+            1920,
+            34
+          ]
+        }
+      },
+      "negative61px": {
+        "result": "rejected",
+        "error": "('Chart', 'exact prototype height', 61, 69)"
+      }
+    },
+    "portableRegression": "python tools/test-diagnostic-geometry.py: 23 tests passed",
+    "immutableHtml": {
+      "authority": "Linux immutable HTML geometry only; not Windows typography acceptance",
+      "htmlSha256": "b04573b920b6bccd16afd22f54a909e48afcfd502ce9cd7c69fdf5b6dd895447",
+      "measurements": [
+        {
+          "viewport": [
+            1280,
+            800
+          ],
+          "navigationHeight": 61,
+          "autopilotHeight": 87
+        },
+        {
+          "viewport": [
+            1499,
+            1080
+          ],
+          "navigationHeight": 61,
+          "autopilotHeight": 87
+        },
+        {
+          "viewport": [
+            1500,
+            1080
+          ],
+          "navigationHeight": 69,
+          "autopilotHeight": 87
+        },
+        {
+          "viewport": [
+            1920,
+            1080
+          ],
+          "navigationHeight": 69,
+          "autopilotHeight": 87
+        },
+        {
+          "viewport": [
+            1920,
+            741
+          ],
+          "navigationHeight": 69,
+          "autopilotHeight": 87
+        },
+        {
+          "viewport": [
+            1920,
+            740
+          ],
+          "navigationHeight": 51,
+          "autopilotHeight": 74
+        },
+        {
+          "viewport": [
+            1920,
+            601
+          ],
+          "navigationHeight": 51,
+          "autopilotHeight": 74
+        },
+        {
+          "viewport": [
+            1920,
+            600
+          ],
+          "navigationHeight": 43,
+          "autopilotHeight": 66
+        }
+      ]
+    }
+  },
+  "visualReview": "Reviewed saved native 1920x1080 failure screenshot alongside unchanged HTML render. Sidebar Chart bounds x9,y90,w69,h69 agree. This scoped review does not accept remaining typography or full-screen product differences.",
+  "preservedChecks": "One-pixel native rounding bound, full-frame containment, footer geometry, visibility, touch and typography gates unchanged.",
+  "remainingGate": "Exact integrated candidate must pass fresh native Windows DPI 100/125/150 and 1920x1080 fullscreen; no fresh native proof, full build, deployment or boat operation was performed."
+}

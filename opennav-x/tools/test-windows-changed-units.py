@@ -1,7 +1,8 @@
 #!/usr/bin/env python3
 """Compile complete patched Windows units without rebuilding dependencies.
 
-Compile-only evidence, not runtime, link, package or dependency qualification.
+Compile-only by default. Optional Settings component execution provides isolated
+native interaction evidence, never product, package or dependency qualification.
 The optional negative control restores exactly the seven legacy max calls in
 the two real source files; it must fail before the untouched fixed files pass.
 """
@@ -73,13 +74,61 @@ def fetch(item, path):
         raise ValueError(f'SDK download differs from lock: {path.name}')
 
 
+def stage_native_runtime(client, wx, wx_dlls):
+    """Stage the locked wx DLLs and installed Win32 compiler runtime app-local."""
+    runtime = []
+    for name in wx_dlls:
+        source = wx / 'lib/vc14x_dll' / name
+        shutil.copy2(source, client.parent / name)
+        runtime.append(source)
+    vswhere = Path(os.environ['ProgramFiles(x86)']) / 'Microsoft Visual Studio/Installer/vswhere.exe'
+    install = subprocess.check_output([str(vswhere), '-latest', '-products', '*',
+        '-requires', 'Microsoft.VisualStudio.Component.VC.Tools.x86.x64',
+        '-property', 'installationPath'], text=True).strip()
+    if not install:
+        raise ValueError('Native Visual C++ toolchain installation missing')
+    # A Win32 executable needs x86 CRT DLLs, irrespective of runner bitness.
+    versions = sorted((Path(install) / 'VC/Redist/MSVC').glob('*/x86/Microsoft.VC143.CRT'),
+                      key=lambda p: tuple(int(n) for n in p.parts[-3].split('.')))
+    if not versions:
+        raise ValueError('Native x86 VC143 runtime missing')
+    crt = versions[-1]
+    if not all((crt / name).is_file() for name in ('msvcp140.dll', 'vcruntime140.dll')):
+        raise ValueError('Native x86 VC143 runtime incomplete')
+    for source in sorted(crt.glob('*.dll')):
+        shutil.copy2(source, client.parent / source.name)
+        runtime.append(source)
+    return {source.name: dict(source=str(source), **record(client.parent / source.name))
+            for source in runtime}
+
+
+def settings_component(build, wx, evidence):
+    """Use the existing offline component and capture gate with app-local DLLs."""
+    client = build / 'Release/settings_drawer_test.exe'
+    manifest = stage_native_runtime(client, wx,
+        ('wxbase32u_vc14x.dll', 'wxmsw32u_core_vc14x.dll', 'wxmsw32u_aui_vc14x.dll'))
+    (evidence / 'settings-runtime.json').write_text(json.dumps(manifest, indent=2) + '\n')
+    output = evidence / 'settings-component'
+    run([sys.executable, ROOT / 'tools/prototype/capture-ais-component.py',
+         '--component', 'settings', '--client', client, '--output', output],
+        evidence / 'settings-component.log', timeout=90)
+    capture = json.loads((output / 'capture.json').read_text())
+    if capture['platform'] != 'win32' or capture['executable_sha256'] != record(client)['sha256']:
+        raise ValueError('Settings component capture does not identify the native tested executable')
+    return {'executable': record(client), 'runtime': manifest, 'capture': capture}
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--upstream', type=Path, default=ROOT / 'upstream/OpenCPN')
     parser.add_argument('--evidence', type=Path, default=ROOT / 'evidence/local/windows-changed-units')
     parser.add_argument('--legacy-control', action='store_true')
     parser.add_argument('--ui', action='store_true', help='also compile the real production UI static library and SettingsStore')
+    parser.add_argument('--settings-component', action='store_true',
+                        help='with --ui, link and run the existing offline native Settings component')
     args = parser.parse_args()
+    if args.settings_component and not args.ui:
+        parser.error('--settings-component requires --ui')
     if sys.platform != 'win32':
         raise SystemExit('Native Windows required; Linux compilation does not qualify this gate')
     for name in ('CL', '_CL_', 'CXXFLAGS', 'CFLAGS'):
@@ -88,19 +137,27 @@ def main():
     evidence = args.evidence.resolve()
     evidence.mkdir(parents=True, exist_ok=False)
     report = {'status': 'failed', 'scope': 'native Win32 complete translation-unit compilation only'}
+    if args.settings_component:
+        report['scope'] = ('native Win32 translation-unit compilation and offline Settings '
+                           'component interaction/capture; not product qualification')
     try:
         report['candidate'] = subprocess.check_output(['git', 'rev-parse', 'HEAD'], cwd=ROOT, text=True).strip()
         report['gateInputs'] = {p: record(ROOT / p) for p in
                                ('tools/test-windows-changed-units.py', 'tools/prepare-integration.py',
                                 'tests/windows_changed_units/CMakeLists.txt', 'upstream.lock.json')}
         if args.ui:
-            report['uiBuildPolicy'] = {'testFixtures': False, 'pilotLoopback': False, 'runtimeTests': False}
+            report['uiBuildPolicy'] = {'testFixtures': False, 'pilotLoopback': False,
+                                       'runtimeTests': args.settings_component}
             report['uiInputs'] = {p: record(ROOT / p) for p in
                                   ('CMakeLists.txt', 'cmake/AisJson.cmake', *UI_CHANGED, SETTINGS)}
             # Bind the complete local header/source tree consumed by the real UI
             # target, including unchanged units and transitive build-policy code.
             report['uiSourceTree'] = {str(p.relative_to(ROOT)): record(p)
                                       for p in sorted((ROOT / 'src').rglob('*')) if p.is_file()}
+        if args.settings_component:
+            report['settingsInputs'] = {p: record(ROOT / p) for p in
+                ('tests/settings_drawer_test.cpp', 'tools/prototype/capture-ais-component.py',
+                 'tools/windows-ui.py')}
         lock = json.loads((ROOT / 'upstream.lock.json').read_text())
         upstream = args.upstream.resolve()
         default = ROOT / 'upstream/OpenCPN'
@@ -147,6 +204,7 @@ def main():
              '-G', 'Visual Studio 17 2022', '-A', 'Win32',
              '-DOPENNAV_SOURCE_DIR:PATH=' + source.as_posix(), '-DCURL_INCLUDE:PATH=' + headers.as_posix(),
              '-DOPENNAV_CHECK_UI=' + ('ON' if args.ui else 'OFF'),
+             '-DOPENNAV_CHECK_SETTINGS_COMPONENT=' + ('ON' if args.settings_component else 'OFF'),
              '-DwxWidgets_ROOT_DIR:PATH=' + wx.as_posix(), '-DwxWidgets_LIB_DIR:PATH=' + (wx / 'lib/vc14x_dll').as_posix(),
              '-DwxWidgets_CONFIGURATION=mswu'], evidence / 'configure.log')
         report['generatedConfig'] = record(build / 'include/config.h')
@@ -172,6 +230,8 @@ def main():
         targets = ['check_' + Path(p).stem for p in UNITS]
         if args.ui:
             targets += ['opennav_ui', 'check_SettingsStore']
+        if args.settings_component:
+            targets += ['settings_drawer_test']
         run(['cmake', '--build', build, '--config', 'Release', '--target', *targets,
              '--parallel', '2', '--', '/verbosity:normal'],
             evidence / 'compile.log', timeout=420)
@@ -189,6 +249,11 @@ def main():
             report['uiObjects'] = {str(p.relative_to(evidence)): record(p) for p in ui_objects}
             if any(record(ROOT / p) != rec for p, rec in report['uiSourceTree'].items()):
                 raise ValueError('UI source tree changed during compilation')
+        if args.settings_component:
+            report['settingsComponent'] = settings_component(build, wx, evidence)
+            if (report['settingsComponent']['capture']['source_commit'] != report['candidate'] or
+                    any(record(ROOT / p) != rec for p, rec in report['settingsInputs'].items())):
+                raise ValueError('Settings component inputs changed during native proof')
         report['status'] = 'passed'
     finally:
         (evidence / 'summary.json').write_text(json.dumps(report, indent=2) + '\n')

@@ -1,10 +1,13 @@
 param([ValidateSet('Win32', 'x64')][string]$Architecture = 'Win32', [switch]$Integration, [switch]$Production,
-      [switch]$PrototypeObjectFlow, [switch]$ReuseVerifiedDependencies)
+      [switch]$PrototypeObjectFlow, [switch]$ReuseVerifiedDependencies, [switch]$VerifyPeerCli)
 $ErrorActionPreference = 'Stop'
 Set-StrictMode -Version Latest
 $Root = Split-Path $PSScriptRoot -Parent
 $Source = Join-Path $Root 'upstream/OpenCPN'
 if ($Production -and -not $Integration) { throw 'Production requires Integration' }
+if ($VerifyPeerCli -and (-not $Integration -or $Production)) {
+    throw 'Peer CLI isolation verification requires the initial integrated fixture build'
+}
 if ($ReuseVerifiedDependencies -and (-not $Production -or -not $Integration -or
     $env:GITHUB_ACTIONS -cne 'true' -or $env:GITHUB_JOB -cne 'windows-integration')) {
     throw 'Dependency reuse is only available to the explicit same-job CI production invocation'
@@ -220,6 +223,14 @@ try {
                 throw "Disposable integration install retained legacy TLS runtime: $Legacy"
             }
         }
+    }
+    if ($VerifyPeerCli) {
+        # Run before any installed application/model test: even GUI launches
+        # with --configdir create the normal home directory in InitializeLogFile.
+        # The CLI test must still refuse every pre-existing common-data profile.
+        Run python @((Join-Path $PSScriptRoot 'peer-cli-receipt.py'), 'capture',
+            '--cli', (Join-Path $Install 'opencpn-cmd.exe'),
+            '--receipt', (Join-Path $Evidence 'windows-peer-cli-receipt.json'))
     }
     Run ctest @('--test-dir', (Join-Path $Build 'test'), '-C', 'Release', '--output-on-failure', '--no-tests=error',
         '--timeout', '90', '--output-junit', (Join-Path $Evidence "windows-$Variant-tests.xml"))

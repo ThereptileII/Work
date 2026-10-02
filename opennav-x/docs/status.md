@@ -1,5 +1,34 @@
 # OpenNav X status — 2026-10-02
 
+
+## SCRUM-224 — local Windows repairs ready for focused native proof
+
+Candidate `488fbbdf5161e986c986773187b1008a7f8684f5` compiled and linked on
+native Windows, with 138/138 application tests passing. Its integrated run
+then failed the peer CLI directory precondition, root Settings reopen flow
+and 1920px geometry oracle. Linux passes 146/146 tests in each configuration
+and its actual three-hour stability run. The full qualification remains failed;
+no eligible Windows installer/package or boat deployment resulted. See the
+[terminal evidence](evidence/scrum-224-488f-terminal-qualification.json).
+
+The repairs are combined locally: the original CLI guard runs before GUI home
+creation and keeps a mandatory same-run receipt check; root Preferences resets
+scroll without disturbing live refresh; the geometry oracle uses the immutable
+prototype's wide-screen breakpoint. The installer rejection assertion now
+verifies the actual rejected tree and existing test profile. Focused component,
+negative-control, geometry and security-harness checks passed. See
+[repair provenance and scoped results](evidence/scrum-224-488f-repair-preparation.json).
+
+The existing short native workflow is prepared to exercise the real Settings
+component and pinned Windows home-creation boundary before one integrated
+retry. It does not rebuild dependency producers or the complete application.
+Native proof is not yet run. The user explicitly authorized publication to
+`ThereptileII/Work` on 2026-10-02; the prepared source may now be published for
+focused native verification before one integrated retry.
+The boat, old installations and hardware-output policy are unchanged.
+
+The older observations below retain their original revision scope.
+
 ## SCRUM-224 — eb86 dependency producers pass; application compilation fails
 
 Frozen `eb86e4799c292a19a218626272d5a5bfa25aad5a` failed native application

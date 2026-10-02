@@ -23,6 +23,12 @@ XNavSettingsDrawer::XNavSettingsDrawer(wxWindow &owner, SettingsDrawerActions ac
   SetHeading("PREFERENCES","A helm of your own",false);
   Build();
 }
+void XNavSettingsDrawer::Open(const wxRect &workspace) {
+  Present(workspace);
+  // Prototype openPanel('settings') starts the drawer body at the top.
+  // Keep this separate from Present(), which also runs during live refresh.
+  body_->Scroll(0, 0);
+}
 void XNavSettingsDrawer::Select(SettingsSection section) {
   if (static_cast<unsigned>(section)>=titles.size()) return;
   // The prototype renders select values from the last applied preferences on

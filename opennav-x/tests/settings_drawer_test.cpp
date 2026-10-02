@@ -361,11 +361,60 @@ private:
       case 17: Check(diagnostics_==1,"diagnostics callback once");Click("Radar");break;
       case 18: Capture("settings-radar-night");Click("Autopilot");break;
       case 19: Capture("settings-autopilot-night");Click("Close");break;
-      case 20: Check(closed_==1 && !panel_->IsShown(),"close hides only preferences");Finish();break;
+      case 20:
+        Check(closed_==1 && !panel_->IsShown(),"close hides only preferences");
+        display_.scale_percent=100;
+        panel_->SetDisplayPreferences(display_);
+        panel_->Select(ui::SettingsSection::Vessel);
+        Feed();
+        break;
+      case 21:
+        {
+          // Reproduce the retained offset after reaching Advanced battery model.
+          // Scroll the real component body; no fixture-only product hooks.
+          auto *body=ScrollBody();
+          body->Scroll(0,body->GetVirtualSize().y);
+          Check(body->GetViewStart().y>0,"Vessel body overflows at canonical size");
+          Check(!body->GetScreenRect().Contains(Find(panel_,"Sensors")->GetScreenRect()),
+                "scrolled Sensors tab starts outside the body viewport");
+          const auto offset=body->GetViewStart();
+          light_=ui::LightMode::Dusk;Feed();
+          Check(body->GetViewStart()==offset,"live state and theme refresh preserve scroll");
+          panel_->Dismiss();
+          panel_->Open(wxRect(frame_->ClientToScreen({80,68}),wxSize(1014,698)));
+        }
+        break;
+      case 22:
+        {
+          auto *body=ScrollBody();
+          Check(body->GetViewStart()==wxPoint(0,0),"root Preferences reopening resets body scroll");
+          Check(panel_->Section()==ui::SettingsSection::Vessel,"reopening preserves selected section");
+          for(const auto *tab:{"Vessel","Navigation","Sensors","Autopilot","Radar","Display","System","Help"}) {
+            auto *b=Find(panel_,tab);
+            Check(b && b->IsShownOnScreen() && b->IsEnabled() &&
+                  body->GetScreenRect().Contains(b->GetScreenRect()),
+                  "reopened section fully visible and enabled in body viewport");
+          }
+          auto *sensor=Find(panel_,"Sensors");
+          const auto rect=sensor->GetScreenRect();
+          wxUIActionSimulator input;
+          Check(input.MouseMove(rect.x+rect.width/2,rect.y+rect.height/2) && input.MouseClick(),
+                "reopened Sensors section receives real pointer input");
+        }
+        break;
+      case 23:
+        Check(panel_->Section()==ui::SettingsSection::Sensors,"pointer reaches Sensors after root reopen");
+        Check(saves_==2 && display_saves_==2,"reopening does not save settings");
+        Finish();break;
       }
     } catch(const std::exception &e) {
       failed_=true;std::cerr<<e.what()<<std::endl;Finish();
     }
+  }
+  ui::XNavScroll *ScrollBody() {
+    for(auto *child:panel_->GetChildren())
+      if(auto *body=dynamic_cast<ui::XNavScroll *>(child))return body;
+    throw std::runtime_error("Preferences scroll body missing");
   }
   void Finish() {
     timer_.Stop();

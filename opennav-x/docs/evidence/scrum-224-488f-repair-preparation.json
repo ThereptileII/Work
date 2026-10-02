@@ -1,0 +1,69 @@
+{
+  "schemaVersion": 1,
+  "issue": "SCRUM-224",
+  "relatedIssues": [
+    "SCRUM-98",
+    "SCRUM-212",
+    "SCRUM-22"
+  ],
+  "status": "local-repairs-reviewed-native-proof-pending",
+  "failedCandidate": "488fbbdf5161e986c986773187b1008a7f8684f5",
+  "localImplementationCommit": "8d9099c2b9332bb768a47d9e12248b65cd21488e",
+  "localImplementationTree": "8fce6cd536c7745fb62b281f192916bd71b0e0ef",
+  "changes": [
+    {
+      "issue": "SCRUM-212",
+      "implementation": "Run unchanged peer CLI refusal test before GUI normal-home creation; retain same-source/executable/run-attempt positive receipt and mandatory named gate",
+      "sourceCommits": [
+        "e9835f75924296e4f0887e0f168eda1b3c1bd730",
+        "ee7fb7813b2361eed2cb87e9ee4213c1847fdbff",
+        "c352cf1aa24c816629957a5e8b4934cb3b54a16e"
+      ]
+    },
+    {
+      "issue": "SCRUM-98",
+      "implementation": "Root Preferences opening resets scroll; live refresh does not; preview predicates unchanged",
+      "sourceCommit": "1cd2f865efeaa9c4ac3851e9efa567eaedaff786",
+      "evidence": "scrum-98-preferences-reopen-488f-repair.json"
+    },
+    {
+      "issue": "SCRUM-98",
+      "implementation": "DPI exact-height oracle honors immutable 1500px-wide navigation breakpoint and existing height overrides",
+      "sourceCommit": "4a1752708d7228f997967f74b8e89431b265baf1",
+      "evidence": "scrum98-wide-dpi-oracle.json"
+    },
+    {
+      "issue": "SCRUM-22",
+      "implementation": "Unsupported installation smoke checks rejected tree and existing shared test profile, exact error, absent owned install/shortcut roots",
+      "sourceCommit": "0fc08f9e51f9515120ad6848ffa461e1699d3021",
+      "nativeExecution": "pending"
+    }
+  ],
+  "focusedValidation": {
+    "settingsComponentChecks": 179,
+    "settingsCaptures": 14,
+    "settingsNegativeControl": "fails root reopen assertion with reset omitted",
+    "geometryTestMethods": 23,
+    "cliIsolationTests": 7,
+    "receiptTests": 4,
+    "sharedRuntimeTests": 4,
+    "captureWrapperTests": 4,
+    "mergedRootValidation": "8 receipt/runtime tests plus changed Python syntax pass; no repeated broad suite"
+  },
+  "preparedNativeProof": {
+    "workflow": ".github/workflows/skager-windows-changed-units.yml",
+    "settingsComponent": true,
+    "cliWindowsHomePrecondition": true,
+    "fullOpenCpnBuild": false,
+    "dependencyProducerRebuild": false,
+    "execution": "Prepared for dispatch after authorized publication"
+  },
+  "limits": [
+    "Local focused checks are not Windows or release qualification",
+    "Native home excerpt proof does not execute installed CLI; integrated unchanged CLI gate remains mandatory",
+    "No full build retry launched",
+    "No Windows product package or boat deployment",
+    "No profile or actuator changes on boat"
+  ],
+  "publication": "Explicitly authorized by the user on 2026-10-02 for ThereptileII/Work; native proof pending"
+}

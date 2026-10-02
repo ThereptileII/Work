@@ -458,14 +458,16 @@ jobs:
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
       - name: Build and exercise integrated modes
         id: integrated
-        run: ./opennav-x/tools/build-pristine-windows.ps1 -Architecture Win32 -Integration
+        run: ./opennav-x/tools/build-pristine-windows.ps1 -Architecture Win32 -Integration -VerifyPeerCli
       - name: Verify packaged source reproduces the curl certificate-tool patch
         if: ${{ success() && steps.integrated.conclusion == 'success' }}
         run: |
           python opennav-x/tools/test-curl-patch-source-package.py --archive opennav-x/build/dependency-downloads/curl-8.22.0.tar.xz -v
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+      # Preserve the candidate probe's named prerequisite, but validate the
+      # positive early-test receipt instead of revisiting the GUI-created home.
       - name: Installed native peer CLI refuses key changes on the disposable runner
-        run: python opennav-x/tools/test-peer-cli.py --cli opennav-x/build/xnav-install/opencpn-cmd.exe
+        run: python opennav-x/tools/peer-cli-receipt.py verify --cli opennav-x/build/xnav-install/opencpn-cmd.exe --receipt opennav-x/evidence/local/windows-peer-cli-receipt.json
       - name: Staged native loader check without profile initialization
         if: ${{ !cancelled() && steps.integrated.conclusion == 'success' }}
         run: python opennav-x/tools/smoke-installer-selftest.py --expect-test-loopback --app opennav-x/build/xnav-install/opencpn.exe

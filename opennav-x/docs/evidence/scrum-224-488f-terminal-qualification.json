@@ -1,0 +1,301 @@
+{
+  "schemaVersion": 1,
+  "issue": "SCRUM-224",
+  "relatedIssues": [
+    "SCRUM-98",
+    "SCRUM-212"
+  ],
+  "status": "failed-native-functional-qualification-after-successful-compile",
+  "sourceCommit": "488fbbdf5161e986c986773187b1008a7f8684f5",
+  "workflowRun": {
+    "id": 36984898997,
+    "attempt": 1,
+    "url": "https://github.com/ThereptileII/Work/actions/runs/36984898997",
+    "jobs": {
+      "successful": 14,
+      "failed": 1,
+      "skipped": 1
+    }
+  },
+  "native": {
+    "jobId": 110769523919,
+    "conclusion": "failure",
+    "completedAt": "2026-10-02T10:07:23Z",
+    "steps": [
+      {
+        "name": "Set up job",
+        "conclusion": "success"
+      },
+      {
+        "name": "Preserve native Perl for OpenSSL and install curl's POSIX test host",
+        "conclusion": "success"
+      },
+      {
+        "name": "Run msys2/setup-msys2@66cd2cce69caa17b53920067426061ca1de3a884",
+        "conclusion": "success"
+      },
+      {
+        "name": "Select explicit curl test Perl",
+        "conclusion": "success"
+      },
+      {
+        "name": "Verify native curl test-host binding before dependency compilation",
+        "conclusion": "success"
+      },
+      {
+        "name": "Fetch pinned source",
+        "conclusion": "success"
+      },
+      {
+        "name": "Build and exercise integrated modes",
+        "conclusion": "success"
+      },
+      {
+        "name": "Verify packaged source reproduces the curl certificate-tool patch",
+        "conclusion": "success"
+      },
+      {
+        "name": "Installed native peer CLI refuses key changes on the disposable runner",
+        "conclusion": "failure"
+      },
+      {
+        "name": "Staged native loader check without profile initialization",
+        "conclusion": "success"
+      },
+      {
+        "name": "Native pointer chart gestures, waypoint Go To and route creation",
+        "conclusion": "success"
+      },
+      {
+        "name": "Preserve failed native chart interaction evidence",
+        "conclusion": "skipped"
+      },
+      {
+        "name": "Repeat native crash-recovery returns with separate evidence",
+        "conclusion": "success"
+      },
+      {
+        "name": "Retain complete fixture UI and scenario regression suite",
+        "conclusion": "failure"
+      },
+      {
+        "name": "Capture successful same-job Windows dependency closure",
+        "conclusion": "skipped"
+      },
+      {
+        "name": "Build native installed product without synthetic data",
+        "conclusion": "skipped"
+      },
+      {
+        "name": "Native public Downloader Windows trust and rejection gate",
+        "conclusion": "skipped"
+      },
+      {
+        "name": "Exact peer response buffer on native MSVC Win32",
+        "conclusion": "skipped"
+      },
+      {
+        "name": "Package and test the fixture-free recovery distribution",
+        "conclusion": "skipped"
+      },
+      {
+        "name": "Preserve failed portable interaction evidence immediately",
+        "conclusion": "skipped"
+      },
+      {
+        "name": "Build and exercise candidate Beta installer",
+        "conclusion": "skipped"
+      },
+      {
+        "name": "Preserve failed installer transaction before remaining UI checks",
+        "conclusion": "skipped"
+      },
+      {
+        "name": "Native 100 / 125 / 150 percent DPI and touch interactions",
+        "conclusion": "failure"
+      },
+      {
+        "name": "Preserve failed DPI interaction evidence immediately",
+        "conclusion": "success"
+      },
+      {
+        "name": "Public ENC chart and plugin rendering gate",
+        "conclusion": "success"
+      },
+      {
+        "name": "Require same-run restart qualification before delivering any product artifact",
+        "conclusion": "skipped"
+      },
+      {
+        "name": "Verify exact restart qualification identity",
+        "conclusion": "skipped"
+      },
+      {
+        "name": "Prepare development boat review after native functional gates",
+        "conclusion": "skipped"
+      },
+      {
+        "name": "Upload development review only while endurance runs",
+        "conclusion": "skipped"
+      },
+      {
+        "name": "Actual elapsed-time native trip and resource stability",
+        "conclusion": "skipped"
+      },
+      {
+        "name": "Collect tested Beta downloads and hashes",
+        "conclusion": "skipped"
+      },
+      {
+        "name": "Complete job",
+        "conclusion": "success"
+      }
+    ],
+    "applicationCompileAndLink": "passed",
+    "applicationCtest": {
+      "passed": 138,
+      "failed": 0,
+      "skipped": 0,
+      "report": "windows-xnav-tests.xml",
+      "sha256": "b418fb33356bf1e456acb1a2de7d490a7f433fdb39afbfe103aed602ceabb6fc"
+    },
+    "fixtureExecutableSha256": "c437ada0ded8ba90f946c7d4c5800fa712652131098d0bdaf41cd7d07b34c3ca",
+    "dependencyProducers": {
+      "openssl": {
+        "version": "3.5.9",
+        "reportedTestsPassed": 4283,
+        "testFiles": 347
+      },
+      "zlib": {
+        "version": "1.3.2",
+        "passed": 13
+      },
+      "curl": {
+        "version": "8.22.0",
+        "reportedTestsPassed": 1569,
+        "considered": 2072,
+        "skipped": 503
+      }
+    },
+    "failures": [
+      {
+        "step": 10,
+        "classification": "test sequencing",
+        "issue": "SCRUM-212",
+        "reason": "Native CLI guard correctly refuses an existing common-data config directory. Earlier GUI tests created it through pinned InitializeLogFile despite --configdir.",
+        "repair": "Run unchanged CLI check after install/dependency verification and before CTest/GUI; preserve refusal of unknown profiles.",
+        "localRepairCommit": "e9835f75924296e4f0887e0f168eda1b3c1bd730"
+      },
+      {
+        "step": 15,
+        "classification": "product interaction bug",
+        "issue": "SCRUM-98",
+        "reason": "Root Preferences reopening retains scroll from Advanced battery; section tabs are above the viewport.",
+        "repair": "Reset scroll on root Open only, preserving ordinary Present/live refresh scroll and existing test predicates.",
+        "localRepairCommit": "1cd2f865efeaa9c4ac3851e9efa567eaedaff786",
+        "focusedLinuxProof": "179 component assertions / 14 captures; removing only reset fails the new root-reopen assertion."
+      },
+      {
+        "step": 24,
+        "classification": "test oracle inconsistent with immutable prototype",
+        "issue": "SCRUM-98",
+        "reason": "1920 workspace correctly renders 69px navigation; stale height-only oracle expects 61px. Test stops before 125/150 acceptance.",
+        "repair": "Use prototype min-width:1500 rule with existing compact-height overrides and exact geometry assertions.",
+        "localRepairCommit": "4a1752708d7228f997967f74b8e89431b265baf1",
+        "focusedProof": "23 tests; saved native observation passes corrected oracle; original oracle and deliberately wrong height still fail. Not a fresh Windows run."
+      }
+    ],
+    "reportDigests": {
+      "charts-results.json": "012310a0f411a2945b49f219f53766dff954497d3191edb18685f099cffa8683",
+      "dpi-results.json": "3d0122ed8e90c7c46e56b72b5a98129cb16b6ada84a43e83d1b7d221ef5de6be",
+      "preview-results.json": "e584cfea68cf5cf7e7ef38486ace08af674d635602d3a5fefb9d032192f0a257",
+      "recovery-repeat-1/recovery-results.json": "a20894f954536af1826dd1f4ef7e47c0d21209819d9f34e13e274cdb156ecee8",
+      "recovery-repeat-2/recovery-results.json": "a20894f954536af1826dd1f4ef7e47c0d21209819d9f34e13e274cdb156ecee8"
+    }
+  },
+  "linux": {
+    "jobId": 110767574729,
+    "conclusion": "success",
+    "completedAt": "2026-10-02T12:12:40Z",
+    "ctest": [
+      {
+        "configuration": "fixture integration",
+        "passed": 146,
+        "failed": 0,
+        "skipped": 0,
+        "report": "xnav-linux-tests.xml",
+        "sha256": "201c4608c4ddf0b4fc06c8bc57c7e5f98ae29bf1ba8c715d8a47611a6fcaa2d3"
+      },
+      {
+        "configuration": "fixture-free production",
+        "passed": 146,
+        "failed": 0,
+        "skipped": 0,
+        "report": "production-linux-tests.xml",
+        "sha256": "04f63715edb5932d0c39ce5225783ecd3991dc9c97c0bb43fb0de1b74c0b201a"
+      }
+    ],
+    "counting": "Configurations run separately; not claimed as 292 unique tests.",
+    "endurance": {
+      "report": "soak/results.json",
+      "sha256": "88270ffbfc592742d390505184f190853411e9904cdda51a2f956bc554f9541e",
+      "status": "passed",
+      "requestedSeconds": 10800,
+      "elapsedSeconds": 10800.179275894001,
+      "samples": 1080,
+      "actions": 540,
+      "routeProgressSamples": 765,
+      "startupSeconds": 3.937649685999986,
+      "cpuPercentOneCore": 3.211172578071129,
+      "residentBytesGrowth": 1122304,
+      "handleGrowth": 0,
+      "threadGrowth": 0,
+      "maximumPageObservationSeconds": 1.353908596999645,
+      "scope": "Actual Linux process with deterministic demo vessel/route/AIS, software chart, UI/dropout recovery; no physical commands; not Windows or boat acceptance."
+    }
+  },
+  "artifacts": [
+    {
+      "platform": "native Windows",
+      "id": 11220832386,
+      "name": "windows-integration-488fbbdf5161e986c986773187b1008a7f8684f5",
+      "bytes": 40924854,
+      "sha256": "19ceba89b2148d41f6308fa0862fccf61a1b4058303ee882b16d66f70c14e130",
+      "apiSizeAndDigestMatched": true,
+      "zipEntriesCrcPassed": 12419
+    },
+    {
+      "platform": "Linux",
+      "id": 11225731009,
+      "name": "linux-integration-488fbbdf5161e986c986773187b1008a7f8684f5",
+      "bytes": 19194569,
+      "sha256": "23440a5928f31d40595a4b158198468cbacdfc2ed2168a56f71fdbaa227dddff",
+      "apiSizeAndDigestMatched": true,
+      "zipEntriesCrcPassed": 4245
+    }
+  ],
+  "chartReview": {
+    "reviewed": [
+      "chart-software-06-returned.png",
+      "chart-opengl-06-returned.png"
+    ],
+    "resolution": "1280x800",
+    "observation": "Public Seattle ENC land/coastline, soundings and buoy/route/ownship content visible after returned-mode phases. Not blank/all-water.",
+    "limits": "Chart-content inspection only; not prototype conformance or physical boat GPU acceptance."
+  },
+  "remaining": [
+    "Native focused proof of combined repairs",
+    "New exact candidate integrated native qualification",
+    "Fixture-free native build and security probes",
+    "Installer/recovery/distribution",
+    "100/125/150 DPI completion",
+    "Native endurance",
+    "Physical boat acceptance and safe retirement"
+  ],
+  "deployment": {
+    "eligible": false,
+    "productPackageProduced": false,
+    "boatModified": false,
+    "obsoleteInstallsRemoved": false
+  }
+}

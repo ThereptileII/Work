@@ -24,6 +24,7 @@ struct SettingsDrawerActions {
 class XNavSettingsDrawer final : public XNavDrawer {
 public:
   XNavSettingsDrawer(wxWindow &, SettingsDrawerActions);
+  void Open(const wxRect &workspace);
   void Select(SettingsSection);
   SettingsSection Section() const { return section_; }
   void Update(const ProductState &, LightMode);
