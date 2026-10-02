@@ -123,3 +123,19 @@ func TestVerifiedReleaseRetainsLargeSemVerIdentity(t *testing.T) {
 		t.Fatalf("bounded large version lost at signed policy boundary: %q, %v", got.Version, err)
 	}
 }
+
+func TestVerifiedReleaseRejectsAmbiguousSignedCustomIdentity(t *testing.T) {
+	for name, custom := range invalidSignedIdentityCases() {
+		t.Run(name, func(t *testing.T) {
+			f := newFixture(t)
+			f.publish(t, 1, "beta", policyBytes(t, signedPolicyFixture()), false, func(target *metadata.TargetFiles) {
+				raw := json.RawMessage(custom)
+				target.Custom = &raw
+			})
+			got, err := verifyReleaseWithClient(f.request("beta"), time.Now().Add(maxOperationTime), f.server.Client())
+			if err == nil || !strings.Contains(err.Error(), "signed release identity:") || got.Commit != "" || got.Installer.URL != "" {
+				t.Fatalf("valid policy body masked rejected signed custom metadata: %+v %v", got, err)
+			}
+		})
+	}
+}

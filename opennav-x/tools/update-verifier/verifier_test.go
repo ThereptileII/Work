@@ -1,6 +1,7 @@
 package verifier
 
 import (
+	"bytes"
 	"crypto"
 	"crypto/ed25519"
 	"encoding/json"
@@ -243,4 +244,68 @@ func TestTransportDeadlineRedirectAndMetadataLimit(t *testing.T) {
 			t.Fatalf("oversize metadata accepted: %v", err)
 		}
 	})
+}
+
+// These documents are embedded as raw custom metadata before the existing
+// fixture signs targets with Ed25519. Signature verification must succeed and
+// the application identity parser must reject the ambiguous/unsupported shape.
+func invalidSignedIdentityCases() map[string]string {
+	valid := `{"channel":"beta","version":"2.0.0","commit":"` + strings.Repeat("a", 40) + `"}`
+	cases := map[string]string{
+		"unknown":           strings.Replace(valid, `{`, `{"execute":"untrusted",`, 1),
+		"unknown-nested":    strings.Replace(valid, `{`, `{"extension":{"channel":"stable"},`, 1),
+		"escaped-duplicate": strings.Replace(valid, `{`, `{"\u0063hannel":"stable",`, 1),
+		"object-version":    strings.Replace(valid, `"2.0.0"`, `{"value":"2.0.0"}`, 1),
+		"array-version":     strings.Replace(valid, `"2.0.0"`, `["2.0.0"]`, 1),
+		"deep-version":      strings.Replace(valid, `"2.0.0"`, strings.Repeat("[", 32)+`"2.0.0"`+strings.Repeat("]", 32), 1),
+		"number-version":    strings.Replace(valid, `"2.0.0"`, `2`, 1),
+		"boolean-version":   strings.Replace(valid, `"2.0.0"`, `true`, 1),
+		"null-version":      strings.Replace(valid, `"2.0.0"`, `null`, 1),
+		"missing-version":   strings.Replace(valid, `"version":"2.0.0",`, ``, 1),
+		"empty-object":      `{}`,
+		"array-root":        `[` + valid + `]`,
+		"string-root":       `"identity"`,
+		"oversize-custom":   strings.Replace(valid, `2.0.0`, strings.Repeat("x", maxReleaseIdentityBytes), 1),
+		"invalid-utf8":      strings.Replace(valid, `2.0.0`, string([]byte{0xff}), 1),
+	}
+	for _, key := range []string{"channel", "version", "commit"} {
+		cases["duplicate-"+key] = strings.Replace(valid, `{`, `{"`+key+`":"conflicting",`, 1)
+		cases["case-alias-"+key] = strings.Replace(valid, `"`+key+`":`, `"`+strings.ToUpper(key)+`":`, 1)
+		cases["extra-case-alias-"+key] = strings.Replace(valid, `{`, `{"`+strings.ToUpper(key)+`":"conflicting",`, 1)
+	}
+	return cases
+}
+
+func TestSignedCustomIdentityIsStrict(t *testing.T) {
+	for name, custom := range invalidSignedIdentityCases() {
+		t.Run(name, func(t *testing.T) {
+			f := newFixture(t)
+			f.publish(t, 1, "beta", []byte(`{"package":"signed"}`), false, func(tf *metadata.TargetFiles) {
+				raw := json.RawMessage(custom)
+				tf.Custom = &raw
+			})
+			release, data, err := f.verify("beta")
+			if err == nil || !strings.Contains(err.Error(), "signed release identity:") || release != (Release{}) || data != nil {
+				t.Fatalf("signed custom identity was not rejected at parser boundary: release=%+v bytes=%d error=%v", release, len(data), err)
+			}
+		})
+	}
+}
+
+func TestCustomIdentityJSONBoundary(t *testing.T) {
+	valid := []byte(`{"channel":"beta","version":"2.0.0","commit":"` + strings.Repeat("a", 40) + `"}`)
+	// Trailing JSON/malformed envelopes cannot be serialized by the signed
+	// fixture. Exercise those grammar bounds directly rather than bypass TUF.
+	for _, data := range [][]byte{nil, []byte(`null`), append(append([]byte{}, valid...), []byte(`{}`)...), valid[:len(valid)-1]} {
+		if got, err := parseReleaseIdentity(data); err == nil || got != (Release{}) {
+			t.Fatalf("invalid custom JSON returned identity: %+v %v", got, err)
+		}
+	}
+	atLimit := append(append([]byte{}, valid...), bytes.Repeat([]byte(" "), maxReleaseIdentityBytes-len(valid))...)
+	if _, err := parseReleaseIdentity(atLimit); err != nil {
+		t.Fatalf("valid identity at exact byte limit: %v", err)
+	}
+	if got, err := parseReleaseIdentity(append(atLimit, ' ')); err == nil || got != (Release{}) {
+		t.Fatalf("custom byte limit not enforced: %+v %v", got, err)
+	}
 }
