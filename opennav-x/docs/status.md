@@ -1,5 +1,23 @@
 # OpenNav X status — 2026-10-02
 
+## SCRUM-224 — eb86 dependency producers pass; application compilation fails
+
+Frozen `eb86e4799c292a19a218626272d5a5bfa25aad5a` failed native application
+compilation in [run 36975787975](https://github.com/ThereptileII/Work/actions/runs/36975787975).
+The verified artifact shows OpenSSL 3.5.9 reporting PASS for 4,283 tests,
+zlib 1.3.2 passing 13 tests, and curl 8.22.0 passing all 1,569 reported tests;
+curl separately records 503 skips. Both unchanged curl source checks pass.
+The actual curl import library now installs as `lib/libcurl.lib`, its producer
+manifest completes, and the certificate probe uses the pinned OpenSSL producer.
+Application configuration reaches `CMAKE_INSTALL_LIBDIR=lib`, then compilation
+fails on Windows `max` macro collisions in Downloader and peer-client code.
+See [verified failure evidence](evidence/scrum-224-eb86-native-compile-failure.json).
+
+This is a compile failure, not an application crash. Actual dependency reuse,
+installed runtime, installer, native UI/chart/endurance and boat acceptance are
+not established; no Windows product package from this run is eligible for deployment.
+The historical evidence below remains scoped to its own revision.
+
 ## SCRUM-224 — curl suite passes; native packaging filename failure isolated
 
 The verified failure artifact for frozen `0e9ec666` in

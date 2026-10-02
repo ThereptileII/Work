@@ -1,0 +1,25 @@
+name: SKAGER focused native changed-unit compilation
+on:
+  push:
+    branches: [skager-windows-changed-units]
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  compile:
+    runs-on: windows-2022
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+      - name: Fetch supported OpenCPN source
+        run: |
+          git clone --depth 1 --branch Release_5.12.4 https://github.com/OpenCPN/OpenCPN.git opennav-x/upstream/OpenCPN
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+      - name: Compile complete changed units and reproduce legacy Windows macro failure
+        run: python opennav-x/tools/test-windows-changed-units.py --legacy-control
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: native-changed-units-${{ github.sha }}
+          path: opennav-x/evidence/local/windows-changed-units
+          if-no-files-found: error

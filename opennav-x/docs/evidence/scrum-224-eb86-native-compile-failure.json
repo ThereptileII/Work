@@ -1,0 +1,208 @@
+{
+  "schemaVersion": 1,
+  "issue": "SCRUM-224",
+  "status": "failed-application-compilation-after-passed-dependency-producers",
+  "sourceCommit": "eb86e4799c292a19a218626272d5a5bfa25aad5a",
+  "workflowRun": {
+    "id": 36975787975,
+    "attempt": 1,
+    "url": "https://github.com/ThereptileII/Work/actions/runs/36975787975",
+    "nativeJobId": 110740865045,
+    "nativeJobConclusion": "failure",
+    "transcriptEndUtc": "2026-10-02T08:03:19Z"
+  },
+  "artifact": {
+    "id": 11215329269,
+    "name": "windows-integration-eb86e4799c292a19a218626272d5a5bfa25aad5a",
+    "bytes": 11935653,
+    "sha256": "be004584fb09790a2af921956cce851dd133ab152139c799834ac9e393dbde4d",
+    "apiSizeAndDigestMatched": true,
+    "zipEntriesCrcPassed": 5090,
+    "flatBuildLogMatchesZip": true
+  },
+  "passedStages": {
+    "sourceAnalysis": [
+      {
+        "report": "windows-curl-source-early-xnav/production-helper/source-analysis.json",
+        "testsPassed": [
+          1119,
+          1167
+        ],
+        "test1167Symbols": 1422,
+        "sourceUnchanged": true
+      },
+      {
+        "report": "windows-curl-source-preflight/source-analysis.json",
+        "testsPassed": [
+          1119,
+          1167
+        ],
+        "test1167Symbols": 1422,
+        "sourceUnchanged": true
+      }
+    ],
+    "openssl": {
+      "version": "3.5.9",
+      "configureCompileTestInstall": "passed",
+      "testFiles": 347,
+      "testsReported": 4283,
+      "result": "PASS",
+      "testWallSeconds": 1342,
+      "skippedRecipesInMainRun": 35,
+      "separatePreparation": "Non-FIPS 00-prep_fipsmodule_cnf.t skipped; separate Files=1 Tests=0 Result=NOTESTS, not a test pass.",
+      "skipScope": "Main-run skips include unavailable Windows/shared-build features, FIPS, optional algorithms, locale/registry and external integrations; full reasons retained in raw log.",
+      "libLayout": "Installed lib/libssl.lib and lib/libcrypto.lib, both hash-recorded and copied to buildwin cache by producer."
+    },
+    "zlib": {
+      "version": "1.3.2",
+      "configureCompileTestInstall": "passed",
+      "testsPassed": 13,
+      "testsFailed": 0,
+      "testWallSeconds": 13.45,
+      "libLayout": "lib/zlib1.lib"
+    },
+    "curl": {
+      "version": "8.22.0",
+      "configureCompileTestInstall": "passed",
+      "testsConsidered": 2072,
+      "testsReported": 1569,
+      "testsPassed": 1569,
+      "testsSkipped": 503,
+      "testWallSeconds": 783,
+      "skipReasons": {
+        "curl lacks Debug support": 128,
+        "curl lacks crypto support": 77,
+        "no stunnel": 69,
+        "curl lacks NTLM support": 53,
+        "curl lacks sftp server support": 40,
+        "curl has win32 support": 22,
+        "configured as DISABLED": 17,
+        "curl lacks scp server support": 14,
+        "disabled by keyword": 11,
+        "curl lacks PSL support": 7,
+        "curl lacks GSS-API support": 6,
+        "curl lacks Schannel support": 6,
+        "curl lacks http/2 support": 5,
+        "curl lacks wakeup support": 5,
+        "curl lacks brotli support": 4,
+        "curl lacks h2c support": 4,
+        "curl lacks sftp support": 4,
+        "curl has IDN support": 3,
+        "curl lacks http/3 support": 3,
+        "curl lacks override-dns support": 3,
+        "curl lacks TrackMemory support": 3,
+        "curl lacks ECH support": 2,
+        "curl lacks getrlimit support": 2,
+        "curl lacks smb support": 2,
+        "curl lacks zstd support": 2,
+        "Resolving IPv6 'ip6-localhost' did not work": 2,
+        "curl has IPv6 support": 1,
+        "curl has proxy support": 1,
+        "curl has threaded-resolver support": 1,
+        "curl lacks large-size support": 1,
+        "curl lacks scp support": 1,
+        "curl lacks ssl-sessions support": 1,
+        "curl lacks SSLS-EXPORT support": 1,
+        "curl lacks Unicode support": 1,
+        "Test requires a Unix system": 1
+      },
+      "producerManifestPresent": true,
+      "dependencyManifestHashesVerified": true,
+      "nativeTestLogHashMatchesManifest": true,
+      "importLibrary": {
+        "path": "lib/libcurl.lib",
+        "sha256": "2263c0caca0a57f82f1c2539d1b15b8bd310a250932dba87d04408083711dd40",
+        "bytes": 22760,
+        "cacheCopyHashMatches": true
+      },
+      "certificateProbe": {
+        "result": "passed",
+        "tool": "Pinned producer OpenSSL 3.5.9",
+        "toolSha256": "7488092876551c31a9b1f5c84dd4219d813ce68df7628ed4a8b4dbdd9fa7f10c",
+        "matchesOpenSslProducerOutput": true,
+        "generatorPatchedSha256": "4c176ec6a1556f519d6c0c02d17c40caadb9a542894fedc9f2055b7a48ce9ab3"
+      }
+    },
+    "applicationConfigure": {
+      "completed": true,
+      "CMAKE_INSTALL_LIBDIR": "lib",
+      "compilationStarted": true
+    }
+  },
+  "failure": {
+    "stage": "Build and exercise integrated modes: native application model compilation",
+    "project": "model/_model_src.vcxproj",
+    "diagnostic": "C4003 max macro invocation followed by C2589/C2059/C2143 syntax errors",
+    "sourceLocations": {
+      "model/src/downloader.cpp": [
+        41,
+        234,
+        255,
+        259
+      ],
+      "model/src/peer_client.cpp": [
+        94,
+        99,
+        100
+      ]
+    },
+    "terminalError": "cmake failed with exit code 1",
+    "applicationCrashEstablished": false
+  },
+  "evidenceFiles": {
+    "windows-xnav-Win32.log": {
+      "bytes": 5687584,
+      "sha256": "2f3bd04e75366708e92dad5524d3575c03329575b6bc41b16e94b5394725297e"
+    },
+    "windows-openssl-build.json": {
+      "bytes": 4147,
+      "sha256": "912c7e08e8f9eeaf6bed8ce767077e36f357289b4d3ed26b53480ca9ca2fe730"
+    },
+    "windows-openssl-native-output.log": {
+      "bytes": 5006617,
+      "sha256": "5c68e2e918c05f7e33b8d11492f990c639673316d69a7fe420406e6276691cf0"
+    },
+    "windows-zlib-1.3.2/zlib-build.json": {
+      "bytes": 1232,
+      "sha256": "b06d1bdca2dbf4d5412c8004861d078a8c49a50b79de253fd21dda67ccb7a8e8"
+    },
+    "windows-zlib-native-output.log": {
+      "bytes": 7203,
+      "sha256": "fc54226246df8e29d093c531f1de7495988a2cead8c88f7a42ee4f78e9bf5f26"
+    },
+    "windows-curl-build.json": {
+      "bytes": 11676,
+      "sha256": "ab4447aac1cc097499bf8a7fc0c21f8630e54c37afae55dea46f353496457ecd"
+    },
+    "windows-curl-native-output.log": {
+      "bytes": 253218,
+      "sha256": "b2637bfe311d3ace39f723d5c55cd3dd82ff210b9a1a2be61848ecc7b7843b34"
+    },
+    "windows-curl-certificate-patch.json": {
+      "bytes": 399,
+      "sha256": "4b93e4040b89d67b0e1a0742d67e4a297d1e078b8fdfebafe5489dacfc36a3c4"
+    },
+    "windows-curl-source-early-xnav/production-helper/source-analysis.json": {
+      "bytes": 930,
+      "sha256": "be8e9f74f13fe0719600fe2c47a38f7f8e7783187b33416809393be1e2cd2843"
+    },
+    "windows-curl-source-preflight/source-analysis.json": {
+      "bytes": 930,
+      "sha256": "74b121010778947384466c27fd5bb604e17528bc1f5774e9266cd7a48be5a19f"
+    }
+  },
+  "notReached": [
+    "Packaged source certificate-patch reproduction gate",
+    "Integrated application execution and native regression suite",
+    "Successful same-job dependency closure capture and production reuse",
+    "Fixture-free product, runtime closure, recovery distribution and installer",
+    "Native DPI/touch, charts/plugins and 10800-second endurance",
+    "Development or final candidate artifact delivery and actual boat acceptance"
+  ],
+  "limits": [
+    "Producer output hashes are retained manifest observations; the failure artifact does not contain the dependency DLL/import-library bytes for independent rehashing.",
+    "Passed configured dependency suites do not cover their explicitly skipped upstream cases.",
+    "Earlier contract and restart prerequisite evidence remains valid in its limited scope; it does not override this application compile failure.",
+    "No eligible Windows product package is established. No tests were rerun and no boat or public release operations occurred."
+  ]
+}
