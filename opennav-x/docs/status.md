@@ -1,5 +1,54 @@
 # OpenNav X status — 2026-10-02
 
+## Current: focused stability repairs pass; one full candidate running
+
+The previous stale-snapshot and touch failures below are retained historical
+evidence. The corrected source now has two verified development gates:
+
+- [Exact Linux preview](evidence/scrum-224-cf07197-linux-preview/coherence-identity.json)
+  at local `cf0719749482e62d48daed02515f2b6c6d242b67`, published equivalent
+  `e0e0e9ef71714932ab69d533d1f86cbcd48e33b3`: the 129-check freshness regression
+  and one full preview pass. The preview took 213 seconds, retained 44 captures,
+  exercised 60 pointer actions and all eight scenarios, and observed seven
+  clean application exits through XNav, Legacy, Safe and direct Legacy return.
+  Real coastline remains visible in the reviewed final return. This run used
+  process/signal tracing; it does not retrospectively identify the older747
+  SIGKILL cause. The interrupted build wrapper, brief overlapping Ninja and
+  explicit object/cache recovery are recorded, not hidden.
+- [Downloaded native touch proof](evidence/scrum-229-cf44-native-touch/verification.json)
+  for `cf44e938a3539af6e97a03346542f04f3e7895a4` passes actual 125% Windows
+  input. The original Edit target gives zero scroll. Three native body-hit pans
+  move 480 px, leave Save and the lower action fully visible, and an exact tap
+  activates the action once without saving or changing fields. The initial
+  test's unsupported forwarded-message-count assumption was removed; native
+  hit, movement, settled geometry and state assertions remain strict. Artifact
+  hashes, 273 recorded input entries, 29 objects, 12 runtime DLLs and both test
+  executables were verified. This is a component proof, not full-app DPI or
+  physical touchscreen acceptance.
+
+After those checks, the exact `cf44e938` source was promoted once to
+[full run37057756273](https://github.com/ThereptileII/Work/actions/runs/37057756273).
+It is frozen. No replacement package or boat deployment is yet qualified.
+
+## SCRUM-15 / SCRUM-231 / SCRUM-232 — user chart feedback confirmed
+
+The user's screenshot concern is valid: the active XNav chart presentation
+still differs visibly from the immutable prototype. Functional chart tests do
+not qualify chart appearance. The retained FFE ENC view uses XNav resources,
+but its large mustard built-up areas retain stock CHBRN. Inspection of the
+hash-pinned public US5SEAFL cell identifies the Seattle and West Seattle
+BUAARE polygons. SCRUM-231 changes only their fill through a dedicated XNav
+paint role using the prototype shore neutral. CHBRN also colours hazards and
+light sectors and must remain intact for those uses.
+
+SCRUM-232 separately tracks the stock red default ownship versus the prototype
+chevron, preserving OpenCPN position, heading, accuracy, user-icon and scaled
+ship semantics. Heavy labels and chart-symbol/route/waypoint/AIS styling remain
+open. Some illustrative prototype danger symbols omit required chart meaning;
+they cannot be copied indiscriminately. No primary chart view is visually
+accepted. The chart corrections are isolated from the running stability
+candidate until their own focused review completes.
+
 ## SCRUM-224 / SCRUM-228 / SCRUM-230 — clean GTK fix verified locally; stale snapshot blocks preview
 
 The coherent Linux build at `a3edcaef2904bf1450e306f3e086164479ec7f6f`
