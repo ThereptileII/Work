@@ -1,0 +1,39 @@
+name: SKAGER disposable native AIS outage boundary
+on:
+  push:
+    branches: [skager-ais-outage-proof]
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  disposable-outage:
+    runs-on: windows-2022
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+      - name: Exercise dynamic WFP with inert loopback markers only
+        env:
+          XNAV_DISPOSABLE_AIS_OUTAGE: '1'
+        run: |
+          $ErrorActionPreference = 'Stop'
+          $vswhere = Join-Path ${env:ProgramFiles(x86)} 'Microsoft Visual Studio\Installer\vswhere.exe'
+          $vs = & $vswhere -latest -products '*' -requires Microsoft.VisualStudio.Component.VC.Tools.x86.x64 -property installationPath
+          if ($LASTEXITCODE -ne 0 -or -not $vs) { throw 'Native MSVC installation missing' }
+          $developer = Join-Path $vs 'Common7\Tools\VsDevCmd.bat'
+          if (-not (Test-Path -LiteralPath $developer)) { throw 'Native MSVC environment missing' }
+          $launcher = Join-Path $env:RUNNER_TEMP 'skager-ais-outage-proof.cmd'
+          @"
+          @echo off
+          call "$developer" -arch=x86 -host_arch=x64
+          if errorlevel 1 exit /b %errorlevel%
+          python opennav-x/tools/test-windows-ais-outage.py --output "$env:RUNNER_TEMP\skager-ais-outage-proof" --confirm-disposable
+          exit /b %errorlevel%
+          "@ | Set-Content -LiteralPath $launcher -Encoding ascii
+          & cmd.exe /d /c $launcher
+          exit $LASTEXITCODE
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: disposable-ais-outage-${{ github.sha }}
+          path: ${{ runner.temp }}/skager-ais-outage-proof
+          if-no-files-found: error
