@@ -1,0 +1,115 @@
+{
+  "schema": 1,
+  "status": "failed-broker-harness-no-qualified-bundle",
+  "repository": "ThereptileII/Work",
+  "runId": 37124017315,
+  "runAttempt": 1,
+  "publishedCommit": "7eb5ab21eadecf2d63525d9722e9f883f9abb5eb",
+  "mappedLocalRootSource": "5766421b069b678bc3cc9baae0bf3436e4116efb",
+  "jobs": {
+    "policy": {
+      "id": 111205584804,
+      "conclusion": "success"
+    },
+    "window": {
+      "id": 111205584669,
+      "conclusion": "success"
+    },
+    "broker": {
+      "id": 111205584879,
+      "conclusion": "failure"
+    },
+    "bundle": {
+      "id": 111205834945,
+      "conclusion": "skipped"
+    }
+  },
+  "artifacts": [
+    {
+      "id": 11273718683,
+      "kind": "policy",
+      "sha256": "0ac0c4f7d38955580ffc2ea54418ff8eee8dde125a13cd2ab3fb5942b7e2e5f3"
+    },
+    {
+      "id": 11273608874,
+      "kind": "window",
+      "sha256": "697d7e5f9c19b1c53944fc74764d1977044838424968b6f44b4216fcf363e709"
+    },
+    {
+      "id": 11274468201,
+      "kind": "broker",
+      "sha256": "365d5d6cd158fabae8dd13148017c2b5a3ac4a642d74b2d5ac75d585c5eccece"
+    }
+  ],
+  "independentAudit": {
+    "gateCommitRunAttemptMatch": true,
+    "retainedOperatorNames": 117,
+    "sourceAndWindowsCheckoutHashesMatch": true,
+    "policyAndWindowInventoryEqual": true,
+    "allRetainedReportHashesMatch": true,
+    "nativePaletteFixtureCases": 16,
+    "nativePaletteFixtureZeroExits": 16,
+    "nativeModeFixtureCases": 14,
+    "actualHelperAndFixtureSourceHashesMatch": true
+  },
+  "failure": {
+    "error": "Unable to find type [OpenNavX.RestartCommissioningNative].",
+    "boundary": "Get-RestartBaseline called by new test harness replay after actual Standard child/permit; harness process lacked native decoder initialization",
+    "lastProvenCheck": "palette-standard: actual broker permit binds immutable selected palette",
+    "completedBrokerCases": [
+      {
+        "name": "success",
+        "brokerExit": 0,
+        "helperExit": 0,
+        "markerChildren": 1
+      },
+      {
+        "name": "output-connection",
+        "brokerExit": 1,
+        "helperExit": 31,
+        "markerChildren": 0
+      },
+      {
+        "name": "plugin-bytes",
+        "brokerExit": 1,
+        "helperExit": 31,
+        "markerChildren": 0
+      },
+      {
+        "name": "expired",
+        "brokerExit": 1,
+        "helperExit": 29,
+        "markerChildren": 0
+      },
+      {
+        "name": "consumed",
+        "brokerExit": 1,
+        "helperExit": 29,
+        "markerChildren": 0
+      },
+      {
+        "name": "receipt-recording-failure",
+        "brokerExit": 1,
+        "helperExit": 0,
+        "markerChildren": 1
+      }
+    ],
+    "cleanupErrors": [],
+    "remainingNativeCasesNotClaimed": true
+  },
+  "correction": {
+    "path": "tools/test-commissioning-broker-windows.ps1",
+    "action": "Initialize-RestartNative in the harness process immediately after importing RestartCommissioning.ps1",
+    "production117FilesChanged": false,
+    "localChecks": [
+      "actual initializer compiled native decoder in current PowerShell process",
+      "corrected harness parsed",
+      "git diff --check passed"
+    ],
+    "nativeCorrectionRunPending": true
+  },
+  "actualBoat": false,
+  "staged": false,
+  "applicationChanged": false,
+  "applicationAcceptance": false
+}

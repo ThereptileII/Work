@@ -12,6 +12,9 @@ if($PSVersionTable.PSEdition -ne 'Desktop') {
 if(@(Get-Process -Name opencpn -ErrorAction SilentlyContinue).Count){throw 'No existing OpenCPN process permitted during isolated marker tests.'}
 $sourceTools=Join-Path $PSScriptRoot 'boat';$fixtureSources=Join-Path (Split-Path $PSScriptRoot -Parent) 'tests/commissioning-restart'
 . (Join-Path $sourceTools 'RestartCommissioning.ps1')
+# This harness now replays completed journals itself. Add-Type in the separate
+# broker process does not initialize this PowerShell process's wire decoder.
+Initialize-RestartNative
 . (Join-Path $sourceTools 'Commissioning.ps1')
 . (Join-Path $fixtureSources 'New-BrokerFixture.ps1')
 . (Join-Path $fixtureSources 'BrokerMarkerCleanup.ps1')
