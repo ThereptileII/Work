@@ -1,0 +1,3 @@
+219 bitmap checks passed across 3 severities, 3 themes and 4 DPI sizes
+Actual cache/theme/hit methods: severity, theme return, DPI replacement, unchanged placement, unknown/Legacy fallback passed
+GL blend opt-out is inert; enabled/disabled incoming state fully restored

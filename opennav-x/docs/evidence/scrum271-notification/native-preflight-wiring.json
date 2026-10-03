@@ -1,0 +1,54 @@
+{
+  "issue": "SCRUM-271",
+  "selection": "notification-unit-only",
+  "implementationBase": "c1f347d16f3f624f2497d15fb956c3aeaec822f7",
+  "localUnits": [],
+  "upstreamUnits": [
+    "gui/src/notification_manager_gui.cpp"
+  ],
+  "defaultChartUnitCount": 23,
+  "checks": [
+    {
+      "command": [
+        "python3",
+        "tests/windows_chart_units_tests.py",
+        "NotificationPreflightGuards"
+      ],
+      "exitCode": 0,
+      "output": "...\n----------------------------------------------------------------------\nRan 3 tests in 1.171s\n\nOK\n"
+    },
+    {
+      "command": [
+        "python3",
+        "tests/windows_chart_units_tests.py",
+        "ChartPreflightGuards.test_required_real_units_unique",
+        "ChartPreflightGuards.test_mode_conflicts_rejected_before_platform_or_side_effects"
+      ],
+      "exitCode": 0,
+      "output": "..\n----------------------------------------------------------------------\nRan 2 tests in 0.992s\n\nOK\n"
+    }
+  ],
+  "nativeCompileExecuted": false,
+  "workflowDispatched": false,
+  "applicationLinked": false,
+  "applicationExecuted": false,
+  "inputs": {
+    "tools/windows_chart_units.py": {
+      "sha256": "022bbf83abeb1bfbe29e0c6b970d06665ffbd4205bd6d5dedf5a0c0c3df024bb",
+      "bytes": 15762
+    },
+    "tools/test-windows-changed-units.py": {
+      "sha256": "968ed5ace2bd40f350ccd80fc13aec68cdc0fb9ee8f82fd29066e86e9e49f48b",
+      "bytes": 37334
+    },
+    "tests/windows_chart_units_tests.py": {
+      "sha256": "22cc83a02074a15368779d8ec3a2ea75e03243e594cfc7136e2154dcc970034e",
+      "bytes": 8601
+    },
+    ".github/workflows/skager-windows-changed-units.yml": {
+      "sha256": "395102f49768fcbfc22486aadfb2b0477e72456b1d17be913c9688f673f10af2",
+      "bytes": 8741
+    }
+  },
+  "sharedCMakeUnchanged": true
+}

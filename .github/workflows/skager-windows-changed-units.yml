@@ -1,9 +1,13 @@
 name: SKAGER focused native changed-unit and Settings proof
 on:
   push:
-    branches: [skager-windows-changed-units, skager-prototype-proof, skager-chart-module-preflight]
+    branches: [skager-windows-changed-units, skager-prototype-proof, skager-chart-module-preflight, skager-notification-preflight]
   workflow_dispatch:
     inputs:
+      notification_unit:
+        description: Compile only the real notification unit (no app link or runtime acceptance)
+        type: boolean
+        default: false
       chart_units:
         description: Compile only changed production chart units (no app link or runtime acceptance)
         type: boolean
@@ -39,6 +43,7 @@ jobs:
     runs-on: windows-2022
     timeout-minutes: 15
     env:
+      NOTIFICATION_UNIT: ${{ github.ref == 'refs/heads/skager-notification-preflight' || inputs.notification_unit == true || contains(github.event.head_commit.message, '[notification-unit]') }}
       CHART_UNITS: ${{ inputs.chart_units == true || contains(github.event.head_commit.message, '[chart-units]') }}
       FLOATING_SURFACE: ${{ inputs.floating_surface == true || contains(github.event.head_commit.message, '[floating-surface]') }}
     steps:
@@ -49,18 +54,19 @@ jobs:
           git clone --depth 1 --branch Release_5.12.4 https://github.com/OpenCPN/OpenCPN.git opennav-x/upstream/OpenCPN
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
       - name: Prove native peer CLI home precondition before GUI startup
-        if: ${{ env.FLOATING_SURFACE != 'true' && env.CHART_UNITS != 'true' && github.ref != 'refs/heads/skager-prototype-proof' && inputs.prototype != true && inputs.preferences_touch != true && !contains(github.event.head_commit.message, '[preferences-touch]') }}
+        if: ${{ env.FLOATING_SURFACE != 'true' && env.CHART_UNITS != 'true' && env.NOTIFICATION_UNIT != 'true' && github.ref != 'refs/heads/skager-prototype-proof' && inputs.prototype != true && inputs.preferences_touch != true && !contains(github.event.head_commit.message, '[preferences-touch]') }}
         run: python opennav-x/tools/test-peer-cli-precondition-windows.py --evidence opennav-x/evidence/local/peer-cli-precondition
       - name: Install capture dependency
-        if: env.FLOATING_SURFACE != 'true' && env.CHART_UNITS != 'true'
+        if: env.FLOATING_SURFACE != 'true' && env.CHART_UNITS != 'true' && env.NOTIFICATION_UNIT != 'true'
         run: python -m pip install Pillow==11.3.0
       - name: Verify component runtime staging guards
+        if: env.NOTIFICATION_UNIT != 'true'
         run: python opennav-x/tests/windows_changed_units_runtime_tests.py
       - name: Verify strict native drawer geometry oracle
-        if: env.FLOATING_SURFACE != 'true' && env.CHART_UNITS != 'true'
+        if: env.FLOATING_SURFACE != 'true' && env.CHART_UNITS != 'true' && env.NOTIFICATION_UNIT != 'true'
         run: python opennav-x/tests/windows_ui_layout_tests.py
       - name: Verify strict chart layout and Layers oracle
-        if: env.FLOATING_SURFACE != 'true' && env.CHART_UNITS != 'true'
+        if: env.FLOATING_SURFACE != 'true' && env.CHART_UNITS != 'true' && env.NOTIFICATION_UNIT != 'true'
         run: python opennav-x/tests/chart_layout_tests.py
       - name: Run selected bounded native proof
         env:
@@ -70,6 +76,15 @@ jobs:
           SEARCH_REFERENCE: ${{ inputs.search_reference == true || contains(github.event.head_commit.message, '[search-reference]') }}
           ENERGY_COMPONENT: ${{ inputs.energy_component == true || contains(github.event.head_commit.message, '[energy-component]') }}
         run: |
+          if ($env:NOTIFICATION_UNIT -eq 'true') {
+            if ($env:CHART_UNITS -eq 'true' -or $env:FLOATING_SURFACE -eq 'true' -or $env:PREFERENCES_TOUCH -eq 'true' -or $env:PROTOTYPE_PROOF -eq 'true' -or $env:CHART_COMPONENT -eq 'true' -or $env:ENERGY_COMPONENT -eq 'true' -or $env:SEARCH_REFERENCE -eq 'true') {
+              throw 'Notification unit preflight cannot combine with other proof modes'
+            }
+            python opennav-x/tests/windows_chart_units_tests.py NotificationPreflightGuards
+            if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+            python opennav-x/tools/test-windows-changed-units.py --notification-unit-only
+            exit $LASTEXITCODE
+          }
           if ($env:CHART_UNITS -eq 'true') {
             if ($env:FLOATING_SURFACE -eq 'true' -or $env:PREFERENCES_TOUCH -eq 'true' -or $env:PROTOTYPE_PROOF -eq 'true' -or $env:CHART_COMPONENT -eq 'true' -or $env:ENERGY_COMPONENT -eq 'true' -or $env:SEARCH_REFERENCE -eq 'true') {
               throw 'Chart unit preflight cannot combine with component proof modes'
@@ -113,7 +128,7 @@ jobs:
             opennav-x/evidence/local/peer-cli-precondition
           if-no-files-found: error
   search-reference:
-    if: ${{ inputs.chart_units != true && !contains(github.event.head_commit.message, '[chart-units]') && (inputs.search_reference == true || contains(github.event.head_commit.message, '[search-reference]')) }}
+    if: ${{ github.ref != 'refs/heads/skager-notification-preflight' && inputs.notification_unit != true && !contains(github.event.head_commit.message, '[notification-unit]') && inputs.chart_units != true && !contains(github.event.head_commit.message, '[chart-units]') && (inputs.search_reference == true || contains(github.event.head_commit.message, '[search-reference]')) }}
     runs-on: windows-2022
     timeout-minutes: 10
     steps:

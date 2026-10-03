@@ -1,11 +1,29 @@
 # SKAGER status — 2026-10-03
 
+## Corrected candidate under native/Linux qualification
+
+Local **`8a0ed1f646e2551a55639c1cc3fb609cc2652464`** is published as
+**`442960ba55277845e171f9b95a38838f66c23981`**, independently reconstructed
+tree `3b74065f9f9886ebe73f33f85b71ca8bb469865e` (4,689 mapped entries; eight
+unrelated root files preserved). The [corrected full run](https://github.com/ThereptileII/Work/actions/runs/37126951293)
+started after the focused SCRUM-270 proof below passed. The
+[publication receipt](evidence/scrum270-preview-validity/publication.json)
+keeps the exact identities. Application source, patches, chart assets and CMake
+are unchanged from 1835/9d98. The difference includes the coherent preview
+predicate, immediate failed-fixture upload and separately qualified review tools.
+Native/full/boat acceptance is pending; the current source is frozen and no
+new application has been installed or launched on the boat.
+
 ## Native application passes build; preview sample timing blocks packaging
 
 The exact `1835d1b` / `9d98a500` native job has now completed with a retained
 [fixture-suite failure](evidence/scrum270-native-9d98-preview-failure/README.md).
 The application build, all 139 native CTests, pointer route gestures, repeated
 crash recovery, 100/125/150% DPI/touch and public ENC checks passed. Independent
+renderer inspection confirms software and permitted fallback only: the hosted
+machine rejected OpenGL, so this result does not qualify native hardware GL.
+The [renderer receipt](evidence/scrum270-native-9d98-preview-failure/renderer-proof.json)
+retains the exact report identity and observations. Independent
 artifact inspection confirms the fresh five-export private DLL, its complete
 source/resource identity and identical private/host presentation resources.
 The actual GDI probe selected Segoe UI for both the UI and ordinary chart text;
@@ -27,7 +45,7 @@ failure upload is added so a future failure can be inspected while
 independent display checks continue. No blind full rerun or boat installation
 has occurred. The current Linux elapsed-time gate continues separately.
 
-## Current frozen combined candidate
+## Preceding combined candidate (native fixture failure retained above)
 
 Local source/evidence **`1835d1b84df89aff42220ac8bb535e4262034a54`** is published
 as **`9d98a500916e8a7f59dac9735427dde6d3c7d2e5`**. All 4,649 mapped blob/mode

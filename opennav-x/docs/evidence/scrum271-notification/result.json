@@ -1,0 +1,39 @@
+{
+  "issue": "SCRUM-271",
+  "baseCommit": "0394b4a3a356c1ea2323aa977419184184e22667",
+  "scope": "Isolated notification presentation; no full build, workflow dispatch, push, application launch or boat access",
+  "preparedUpstreamCommit": "37fd0cddb7334fe489e9f18aa163977a9c5c84f7",
+  "sources": {
+    "notification_manager_gui.cpp": {
+      "upstreamSha256": "0c7ecf3a203c560dbe44bb875a8569dee183c9bdc578e791b4236e2a81e7ac9c",
+      "patchedSha256": "56c0843a7564f4a7cd945ecc53a0511f49c5957ab06e7564bebd08efc373b3d1"
+    }
+  },
+  "objects": {
+    "notification.o": "81bcb1589b47113faef0809153bd81e571738f25b83240b0d9205dd0407272a3",
+    "notification-software.o": "6036e9e9055e98017895482084a44926dcc984baabfbecaf2d46f27e064b7a49",
+    "notification-stock.o": "9d0854a30db2dd2a7c5b1239b925ac3757890ba668d5355edaaa605de5a28c7d"
+  },
+  "compileVariants": {
+    "OPENNAV_X_GL": "passed",
+    "OPENNAV_X_software": "passed",
+    "stock_GL_without_OPENNAV_X": "passed"
+  },
+  "focusedChecks": [
+    "219 bitmap checks passed across 3 severities, 3 themes and 4 DPI sizes",
+    "Actual cache/theme/hit methods: severity, theme return, DPI replacement, unchanged placement, unknown/Legacy fallback passed",
+    "GL blend opt-out is inert; enabled/disabled incoming state fully restored"
+  ],
+  "patchApplyCheck": "passed against unchanged pinned notification source",
+  "referenceScreenshot": {
+    "path": "/home/standard/Projects/X-nav-worktrees/scrum259-full-9d98-watch/.local/failure/evidence/local/chart-software-02-zoom.png",
+    "sha256": "f4534b43c11505ce6eed65fbd080eff04edcf280913187f98aedcc250703149f"
+  },
+  "unresolved": [
+    "Fresh exact-revision native Windows MSVC and software/GL chart captures",
+    "Actual GL texture upload and rounded-edge compositing on target GPU",
+    "Day/Dusk/Night/Day return in native application; severity and count/acknowledgement exercise",
+    "Native1280x800 and1920x1080 placement,44DIP hit bounds and100/125/150percent DPI",
+    "Actual boat-PC display/touch/GPU acceptance"
+  ]
+}

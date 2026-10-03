@@ -107,5 +107,59 @@ class ChartPreflightGuards(unittest.TestCase):
             self.assertIn('--chart-units-only cannot combine', result.stderr)
 
 
+class NotificationPreflightGuards(unittest.TestCase):
+    def test_closed_selection_preserves_default_gate(self):
+        self.assertEqual(chart.selected_units(), (chart.LOCAL_UNITS, chart.UPSTREAM_UNITS))
+        self.assertEqual(len(sum(chart.selected_units(), ())), 23)
+        self.assertEqual(chart.selected_units(True),
+                         ((), ('gui/src/notification_manager_gui.cpp',)))
+        self.assertEqual(set(chart.NOTIFICATION_INPUTS),
+                         {'src/ui/NotificationButtonBitmap.h',
+                          'src/integration/NotificationButtonGL.h'})
+        for name in chart.NOTIFICATION_INPUTS:
+            self.assertTrue((ROOT / name).is_file())
+
+    def test_notification_inventory_rejects_unrelated_object_and_substitute_source(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            path = root / 'check_chart_notification_manager_gui.dir/Release/notification_manager_gui.obj'
+            path.parent.mkdir(parents=True)
+            path.write_bytes(struct.pack('<H', 0x14c) + bytes(54))
+            units = chart.selected_units(True)[1]
+            self.assertEqual(chart.verify_objects(root, units, record),
+                             {'check_chart_notification_manager_gui': record(path)})
+            other = root / 'check_chart_chcanv.dir/Release/chcanv.obj'
+            other.parent.mkdir(parents=True)
+            other.write_bytes(path.read_bytes())
+            with self.assertRaisesRegex(ValueError, 'Unexpected/duplicate'):
+                chart.verify_objects(root, units, record)
+            project = root / 'notification.vcxproj'
+            real = root / chart.NOTIFICATION_UNIT
+            for sources in ((real,), (root / 'stub/notification_manager_gui.cpp',), (real, other)):
+                project.write_text('<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">'
+                    '<ItemDefinitionGroup><ClCompile /></ItemDefinitionGroup><ItemGroup>' +
+                    ''.join('<ClCompile Include="' + p.as_posix() + '" />' for p in sources) +
+                    '</ItemGroup></Project>')
+                if sources == (real,):
+                    chart.verify_notification_project(project, real)
+                else:
+                    with self.assertRaisesRegex(ValueError, 'only the real prepared source'):
+                        chart.verify_notification_project(project, real)
+
+    def test_mode_conflicts_rejected_before_platform_or_side_effects(self):
+        with tempfile.TemporaryDirectory() as directory:
+            evidence = Path(directory) / 'untouched'
+            for flag in ('--chart-units-only', '--floating-surface-only', '--ui',
+                         '--prototype-proof', '--legacy-control', '--settings-touch-only',
+                         '--settings-component', '--chart-presentation-component', '--energy-component'):
+                with self.subTest(flag=flag):
+                    result = subprocess.run([sys.executable, ROOT / 'tools/test-windows-changed-units.py',
+                        '--notification-unit-only', flag, '--evidence', evidence],
+                        capture_output=True, text=True)
+                    self.assertEqual(result.returncode, 2)
+                    self.assertIn('--notification-unit-only cannot combine', result.stderr)
+                    self.assertFalse(evidence.exists())
+
+
 if __name__ == '__main__':
     unittest.main()

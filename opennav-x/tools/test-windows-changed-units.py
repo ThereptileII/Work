@@ -350,7 +350,14 @@ def main():
                         help='only exact floating-surface console link/control and native lifecycle fixture')
     parser.add_argument('--chart-units-only', action='store_true',
                         help='compile only real production chart units; no application link or runtime acceptance')
+    parser.add_argument('--notification-unit-only', action='store_true',
+                        help='compile only the real production notification unit; no application link or runtime acceptance')
     args = parser.parse_args()
+    if args.notification_unit_only and any((args.chart_units_only, args.legacy_control,
+            args.ui, args.settings_component, args.prototype_proof,
+            args.chart_presentation_component, args.energy_component,
+            args.settings_touch_only, args.floating_surface_only)):
+        parser.error('--notification-unit-only cannot combine with other proof modes')
     if args.chart_units_only and any((args.legacy_control, args.ui, args.settings_component,
             args.prototype_proof, args.chart_presentation_component, args.energy_component,
             args.settings_touch_only, args.floating_surface_only)):
@@ -394,9 +401,10 @@ def main():
     active_units = () if args.prototype_proof or args.settings_touch_only else UNITS
     try:
         report['candidate'] = subprocess.check_output(['git', 'rev-parse', 'HEAD'], cwd=ROOT, text=True).strip()
-        if args.chart_units_only:
+        if args.chart_units_only or args.notification_unit_only:
             from windows_chart_units import compile_chart_units
-            report['scope'] = 'native Win32 production chart translation-unit compilation only; no link or visual acceptance'
+            selected = 'notification' if args.notification_unit_only else 'chart'
+            report['scope'] = f'native Win32 production {selected} translation-unit compilation only; no link or visual acceptance'
             report.update(compile_chart_units(args, evidence, sys.modules[__name__]))
             report['status'] = 'passed'
             return

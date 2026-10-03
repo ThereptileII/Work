@@ -2661,3 +2661,111 @@ diff --git a/libs/s52plib/src/s52plib.h b/libs/s52plib/src/s52plib.h
    int DoRenderObjectTextOnly(wxDC *pdcin, ObjRazRules *rzRules);
  
    //    Area Renderers
+diff --git a/gui/src/notification_manager_gui.cpp b/gui/src/notification_manager_gui.cpp
+--- a/gui/src/notification_manager_gui.cpp
++++ b/gui/src/notification_manager_gui.cpp
+@@ -27,6 +27,10 @@
+ #include <vector>
+ #include <wx/statline.h>
+ #include <wx/textwrapper.h>
++#ifdef OPENNAV_X
++#include "ui/NotificationButtonBitmap.h" // Before GL/X11 None macro.
++#include "integration/OpenCPNIntegration.h"
++#endif
+ 
+ #include "notification_manager_gui.h"
+ #include "model/notification_manager.h"
+@@ -37,6 +41,9 @@
+ #include "OCPNPlatform.h"
+ #include "chcanv.h"
+ #include "glChartCanvas.h"
++#if defined(OPENNAV_X) && defined(ocpnUSE_GL)
++#include "integration/NotificationButtonGL.h"
++#endif
+ #include "gui_lib.h"
+ #include "svg_utils.h"
+ #include "model/datetime.h"
+@@ -436,6 +443,9 @@
+     }
+ 
+     if (g_bopengl && m_texobj /*&& m_texOK*/) {
++#ifdef OPENNAV_X
++      opennav::integration::NotificationButtonBlend blend(m_xnavBitmap);
++#endif
+       glBindTexture(GL_TEXTURE_2D, m_texobj);
+       glEnable(GL_TEXTURE_2D);
+ 
+@@ -535,6 +545,12 @@
+ 
+ bool NotificationButton::UpdateStatus(bool bnew) {
+   bool rv = false;
++#ifdef OPENNAV_X
++  // DPI changes must replace both the cached bitmap and its existing GL texture.
++  if (m_xnavBitmap && m_StatBmp.GetSize() !=
++                          opennav::ui::NotificationButtonSize(*m_parent))
++    bnew = true;
++#endif
+   if (bnew) m_lastNoteIconName.Clear();  // force an update to occur
+   if (m_lastNoteIconName != m_NoteIconName) {
+     CreateBmp(bnew);
+@@ -582,6 +598,25 @@
+ }
+ 
+ void NotificationButton::CreateBmp(bool newColorScheme) {
++#ifdef OPENNAV_X
++  m_xnavBitmap = false;
++  if (opennav::IsXNav()) {
++    const auto mode = m_cs == GLOBAL_COLOR_SCHEME_NIGHT
++                          ? opennav::ui::LightMode::Night
++                      : m_cs == GLOBAL_COLOR_SCHEME_DUSK
++                          ? opennav::ui::LightMode::Dusk
++                          : opennav::ui::LightMode::Day;
++    auto bitmap = opennav::ui::NotificationButtonBitmap(
++        m_NoteIconName, mode, opennav::ui::NotificationButtonSize(*m_parent));
++    if (bitmap.IsOk() && bitmap.HasAlpha()) {
++      m_StatBmp = bitmap;
++      m_rect.SetSize(bitmap.GetSize());
++      m_lastNoteIconName = m_NoteIconName;
++      m_xnavBitmap = true;
++      return;
++    }
++  }
++#endif
+   // wxString gpsIconName;
+   ocpnStyle::Style* style = g_StyleManager->GetCurrentStyle();
+ 
+@@ -754,6 +789,10 @@
+           teximage[d + 1] = imgdata[s + 1];
+           teximage[d + 2] = imgdata[s + 2];
+           teximage[d + 3] = 255;
++#ifdef OPENNAV_X
++          if (m_xnavBitmap && imgalpha)
++            teximage[d + 3] = imgalpha[i * m_image_width + j];
++#endif
+         }
+       }
+ 
+@@ -837,6 +876,10 @@
+           teximage[d + 1] = imgdata[s + 1];
+           teximage[d + 2] = imgdata[s + 2];
+           teximage[d + 3] = 255;
++#ifdef OPENNAV_X
++          if (m_xnavBitmap && imgalpha)
++            teximage[d + 3] = imgalpha[i * m_image_width + j];
++#endif
+         }
+       }
+ 
+diff --git a/gui/include/gui/notification_manager_gui.h b/gui/include/gui/notification_manager_gui.h
+--- a/gui/include/gui/notification_manager_gui.h
++++ b/gui/include/gui/notification_manager_gui.h
+@@ -151,6 +151,9 @@
+   bool m_shown;
+   ColorScheme m_cs;
+   bool m_texOK;
++#ifdef OPENNAV_X
++  bool m_xnavBitmap = false;
++#endif
+ 
+ #ifdef ocpnUSE_GL
+   unsigned int m_texobj;

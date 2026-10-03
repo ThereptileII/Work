@@ -8,6 +8,7 @@ import struct
 import subprocess
 import sys
 import tarfile
+import xml.etree.ElementTree as ET
 
 LOCAL_UNITS = tuple('src/integration/' + name + '.cpp' for name in (
     'ChartPresentation', 'ChartRouteWaypoint', 'ChartRouteLabel', 'ChartRouteUnderlay',
@@ -18,6 +19,15 @@ UPSTREAM_UNITS = tuple('gui/src/' + name + '.cpp' for name in (
     'chcanv', 'glChartCanvas', 'route_gui', 'route_point_gui', 'waypointman_gui', 'ais', 'piano')) + (
     'libs/s52plib/src/s52plib.cpp', 'libs/s52plib/src/chartsymbols.cpp',
     'libs/s52plib/src/DepthFont.cpp', 'model/src/plugin_loader.cpp')
+
+NOTIFICATION_UNIT = 'gui/src/notification_manager_gui.cpp'
+NOTIFICATION_INPUTS = ('src/ui/NotificationButtonBitmap.h',
+                       'src/integration/NotificationButtonGL.h')
+
+
+def selected_units(notification_only=False):
+    """Closed selection: one production notification unit or the unchanged chart gate."""
+    return ((), (NOTIFICATION_UNIT,)) if notification_only else (LOCAL_UNITS, UPSTREAM_UNITS)
 
 
 def extract_locked_tree(archive, destination, archive_root):
@@ -119,9 +129,20 @@ def verify_objects(build, units, record):
     return actual
 
 
+def verify_notification_project(path, source):
+    """Require the generated MSVC project to compile that complete prepared file."""
+    units = [Path(node.attrib['Include']).resolve()
+             for node in ET.parse(path).iter()
+             if node.tag.rsplit('}', 1)[-1] == 'ClCompile' and 'Include' in node.attrib]
+    if units != [source.resolve()]:
+        raise ValueError('Notification project must compile only the real prepared source')
+
+
 def compile_chart_units(args, evidence, api):
     if sys.platform != 'win32' or os.environ.get('GITHUB_ACTIONS') != 'true':
         raise ValueError('Chart preflight requires disposable native Windows CI, never the boat')
+    notification_only = getattr(args, 'notification_unit_only', False)
+    local_units, upstream_units = selected_units(notification_only)
     source = api.ROOT / 'build/integration-source'
     upstream = api.ROOT / 'upstream/OpenCPN'
     lock = json.loads((api.ROOT / 'upstream.lock.json').read_text())
@@ -148,14 +169,18 @@ def compile_chart_units(args, evidence, api):
         'tools/chart_generic_beacon_art.py', 'tools/derive-generic-beacon-art.py',
         'docs/design/prototype/src/chart-symbols.js', 'docs/design/prototype/src/chart-symbols.css',
         'docs/design/prototype/src/style.css', 'docs/design/prototype/src/seamarks.json'}
+    if notification_only:
+        # Require these even if a mistaken source inventory omitted a header.
+        names.update(NOTIFICATION_INPUTS)
     inputs = {p: api.record(api.ROOT / p) for p in sorted(names)}
     workflow_key, workflow = api.floating_workflow_input(api.ROOT)
     inputs[workflow_key] = workflow
     upstream_inputs = {p.relative_to(source).as_posix(): api.record(p)
         for p in source.rglob('*') if p.is_file() and
         (p.suffix in ('.h', '.hpp', '.in', '.cmake', '.patch') or p.name == 'CMakeLists.txt')}
-    upstream_inputs.update({p: api.record(source / p) for p in UPSTREAM_UNITS})
-    report = {'upstream': lock['commit'], 'localUnits': LOCAL_UNITS, 'upstreamUnits': UPSTREAM_UNITS,
+    upstream_inputs.update({p: api.record(source / p) for p in upstream_units})
+    report = {'upstream': lock['commit'], 'localUnits': local_units, 'upstreamUnits': upstream_units,
+              'selection': 'notification-unit-only' if notification_only else 'chart-units-only',
               'localInputs': inputs, 'upstreamInputs': upstream_inputs,
               'policy': {'testFixtures': False, 'pilotLoopback': False, 'openglCompiled': True,
                          'dependencyBuilds': False, 'applicationLinked': False},
@@ -163,13 +188,13 @@ def compile_chart_units(args, evidence, api):
     def save():
         (evidence / 'chart-inputs.json').write_text(json.dumps(report, indent=2) + '\n')
     save()
-    for path in UPSTREAM_UNITS:
+    for path in upstream_units:
         dest = evidence / 'source' / path
         dest.parent.mkdir(parents=True, exist_ok=True)
         shutil.copyfile(source / path, dest)
     # Keep unbuilt SDK libraries/archives out of the uploaded focused artifact.
     # Their locked archive identities and every consumed header hash are retained.
-    for path in LOCAL_UNITS:
+    for path in local_units:
         dest = evidence / 'source/product' / path
         dest.parent.mkdir(parents=True, exist_ok=True)
         shutil.copyfile(api.ROOT / path, dest)
@@ -197,14 +222,14 @@ def compile_chart_units(args, evidence, api):
     api.run(['cmake', '-S', api.ROOT / 'tests/windows_changed_units', '-B', build,
              '-G', 'Visual Studio 17 2022', '-A', 'Win32', '-DOPENNAV_CHECK_CHART_UNITS=ON',
              '-DOPENNAV_SOURCE_DIR:PATH=' + source.as_posix(),
-             '-DOPENNAV_CHART_LOCAL=' + ';'.join(LOCAL_UNITS),
-             '-DOPENNAV_CHART_UPSTREAM=' + ';'.join(UPSTREAM_UNITS),
+             '-DOPENNAV_CHART_LOCAL=' + ';'.join(local_units),
+             '-DOPENNAV_CHART_UPSTREAM=' + ';'.join(upstream_units),
              '-DOPENNAV_CHART_SDK:PATH=' + sdk.as_posix(),
              '-DOPENNAV_CHART_RESOURCES:PATH=' + resources.as_posix(),
              '-DwxWidgets_ROOT_DIR:PATH=' + wx.as_posix(),
              '-DwxWidgets_LIB_DIR:PATH=' + (wx / 'lib/vc14x_dll').as_posix(),
              '-DwxWidgets_CONFIGURATION=mswu'], evidence / 'configure.log')
-    targets = ['check_chart_' + Path(p).stem for p in LOCAL_UNITS + UPSTREAM_UNITS]
+    targets = ['check_chart_' + Path(p).stem for p in local_units + upstream_units]
     projects = {p.stem: p for p in build.glob('check_chart_*.vcxproj')}
     if set(projects) != set(targets):
         raise ValueError('Unexpected chart compile project inventory')
@@ -215,13 +240,16 @@ def compile_chart_units(args, evidence, api):
         if not all(value in text for value in ('XNAV_ENABLE_TEST_FIXTURES=0',
                 'XNAV_ENABLE_PILOT_LOOPBACK_TESTS=0', 'ocpnUSE_GL', 'OPENNAV_X=1')):
             raise ValueError('Chart project lacks production integration policy')
+    if notification_only:
+        verify_notification_project(projects['check_chart_notification_manager_gui'],
+                                    source / NOTIFICATION_UNIT)
     report['generatedConfig'] = api.record(build / 'include/config.h')
     report['generatedSoundConfig'] = api.record(build / 'include/snd_config.h')
     report['projects'] = {name: api.record(path) for name, path in projects.items()}
     save()
     api.run(['cmake', '--build', build, '--config', 'Release', '--target', *targets,
              '--parallel', '2', '--', '/verbosity:normal'], evidence / 'compile.log', timeout=600)
-    report['objects'] = verify_objects(build, LOCAL_UNITS + UPSTREAM_UNITS, api.record)
+    report['objects'] = verify_objects(build, local_units + upstream_units, api.record)
     # Revalidate actual source and generation identity, not just reported status.
     for directory, records in ((api.ROOT, inputs), (source, upstream_inputs),
                                (sdk, sdk_inputs), (resources, generated)):
