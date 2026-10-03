@@ -56,7 +56,8 @@ list(PREPEND chart_includes
   "${CMAKE_CURRENT_BINARY_DIR}/include" "${OPENNAV_ROOT}/src"
   "${OPENNAV_CHART_RESOURCES}" "${OPENNAV_CHART_SDK}/glew"
   "${OPENNAV_CHART_SDK}/shapelib" "${OPENNAV_CHART_SDK}/rapidjson/include"
-  "${OPENNAV_CHART_SDK}/shapefile/lib/include" "${OPENNAV_CHART_SDK}/curl")
+  "${OPENNAV_CHART_SDK}/shapefile/lib/include" "${OPENNAV_CHART_SDK}/curl"
+  "${OPENNAV_CHART_SDK}/libarchive")
 foreach(directory IN LISTS chart_includes)
   if(NOT IS_DIRECTORY "${directory}")
     message(FATAL_ERROR "Pinned chart include directory missing: ${directory}")

@@ -209,7 +209,7 @@ Section "SKAGER Beta integration"
   Pop $Result
   ${If} $Result != 0
     SetErrorLevel 1
-    MessageBox MB_ICONSTOP "SKAGER setup did not complete. Existing application generations and navigation data are preserved. Inspect setup details and %LOCALAPPDATA%\OpenNavXAlpha1\logs, then rerun Setup." /SD IDOK
+    MessageBox MB_ICONSTOP "SKAGER setup did not complete. Existing application generations and navigation data are preserved. Inspect the setup details, then run Setup again. If SKAGER is already installed, choose Diagnostics in SKAGER Maintenance to collect a report." /SD IDOK
     Abort
   ${EndIf}
   SetErrorLevel 0
@@ -248,7 +248,7 @@ Function un.MaintenancePage
   ${NSD_CB_AddString} $ActionControl "Uninstall"
   ${NSD_CB_AddString} $ActionControl "Diagnostics"
   ${NSD_CB_SelectString} $ActionControl "$Action"
-  ${NSD_CreateLabel} 0 100u 100% 40u "Close all OpenCPN modes before repair, rollback or uninstall. Diagnostics writes a report in %LOCALAPPDATA%\OpenNavXAlpha1\logs. To update, download and run the newer Beta Setup."
+  ${NSD_CreateLabel} 0 100u 100% 40u "Close all OpenCPN modes before repair, rollback or uninstall. Choose Diagnostics to save a SKAGER installation report. To update, download and run the newer SKAGER Setup."
   Pop $0
   GetDlgItem $0 $HWNDPARENT 1
   SendMessage $0 ${WM_SETTEXT} 0 "STR:Continue"

@@ -63,6 +63,11 @@ set_property(SOURCE "${CMAKE_SOURCE_DIR}/model/src/plugin_loader.cpp"
   DIRECTORY "${CMAKE_SOURCE_DIR}/model" APPEND PROPERTY COMPILE_DEFINITIONS OPENNAV_X=1)
 set_property(SOURCE "${CMAKE_SOURCE_DIR}/model/src/plugin_loader.cpp"
   DIRECTORY "${CMAKE_SOURCE_DIR}/model" APPEND PROPERTY INCLUDE_DIRECTORIES "${OPENNAV_ROOT}/src")
+# The shared model object now calls the optional presentation callback. Every
+# consumer (including upstream headless fixtures) needs its real implementation.
+# LINK_ONLY keeps integration compile flags/includes out of the model and its
+# consumers; the unregistered callback retains ordinary upstream loading.
+target_link_libraries(_model_src PUBLIC "$<LINK_ONLY:opennav_integration>")
 # Bound untrusted Signal K before the upstream recursive parser, not only after
 # the driver has already decoded it. The pristine build has no OpenNav include.
 set_property(SOURCE "${CMAKE_SOURCE_DIR}/model/src/comm_drv_signalk_net.cpp"

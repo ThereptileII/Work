@@ -1,5 +1,5 @@
 {
-  "provenance": "Same release archives selected by pinned OpenCPN libs/shapelib and libs/rapidjson CMake; SHA256 strengthens their upstream MD5. Only headers are consumed; original upstream patch series is applied.",
+  "provenance": "Same release archives selected by pinned OpenCPN libs/shapelib and libs/rapidjson CMake; SHA256 strengthens their upstream MD5. Only headers are consumed; original upstream patch series is applied. The public libarchive headers are exact files from the production Win32 OCPNWindowsCoreBuildSupport v0.5 commit already selected by windows-prototype-headers.lock.json; no library is downloaded or built.",
   "archives": [
     {
       "name": "shapelib",
@@ -18,6 +18,20 @@
       "sha256": "bf7ced29704a1e696fbccf2a2b4ea068e7774fa37f6d7dd4039d0787f8bed98e",
       "archiveRoot": "rapidjson-1.1.0",
       "patchDirectory": "libs/rapidjson/patches"
+    }
+  ],
+  "files": [
+    {
+      "file": "archive.h",
+      "url": "https://raw.githubusercontent.com/OpenCPN/OCPNWindowsCoreBuildSupport/e90cc5842b02d5502a549f0f90424e3e1614bf67/buildwin/include/archive.h",
+      "bytes": 52251,
+      "sha256": "9ac48c8cf992d2238b17b0f9cb5aec59373980826f69fef03c2fa99dd83d7cd0"
+    },
+    {
+      "file": "archive_entry.h",
+      "url": "https://raw.githubusercontent.com/OpenCPN/OCPNWindowsCoreBuildSupport/e90cc5842b02d5502a549f0f90424e3e1614bf67/buildwin/include/archive_entry.h",
+      "bytes": 32986,
+      "sha256": "8cfe98cd9605a467753ed0e771c0d2dc38231848dbaed311d159f55984729873"
     }
   ]
 }

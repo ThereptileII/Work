@@ -67,6 +67,10 @@ def apply_dependency_patches(source, destination, library, api, evidence):
 
 def header_sources(source, sdk, api, evidence):
     locks = json.loads((api.ROOT / 'tools/windows-chart-headers.lock.json').read_text())
+    # Model PluginHandler exposes libarchive in its public header; use the
+    # exact production Windows support files, not host or Android substitutes.
+    for item in locks['files']:
+        api.fetch(item, sdk / 'libarchive' / item['file'])
     for item in locks['archives']:
         archive = sdk / item['file']
         api.fetch(item, archive)
