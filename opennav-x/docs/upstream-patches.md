@@ -1,5 +1,20 @@
 # Direct OpenCPN Upstream Modifications
 
+## Classified prototype light and special-buoy aliases (SCRUM-264)
+
+The core and private `RenderSY` hooks select only stable library-owned alias
+Rules after verified SKAGER resource loading. Original LIGHTS11/12/13 vectors
+remain stock; compact light aliases require absence of an ORIENT attribute.
+Encoded directions and all upstream conditional/angle handling are retained.
+The separate special-buoy hook requires Simplified lookup and the exact inspected
+white/orange horizontal-band pillar attributes. It changes no lookup or object
+metadata. Day/Night may use XNSPPW01; Dusk and unknown schemes retain the original
+Rule. Missing or invalid aliases, Standard, disabled integration and unclassified
+objects retain stock. Separate TOPMAR and LIGHTS composition remains unchanged.
+See the [light boundary](evidence/scrum264-oriented-light-aliases/README.md) and
+[buoy boundary](evidence/scrum264-white-orange-pillar/README.md) for exact checks,
+rejected color trial and remaining actual native/boat gates.
+
 ## Effective point-symbol presentation (SCRUM-267) — in progress
 
 The supplied modern art maps to Simplified lookup records, but upstream defaults

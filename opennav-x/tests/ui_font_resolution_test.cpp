@@ -1,5 +1,6 @@
 // Read the actual production font selection; never install or copy fonts.
 #include "ui/Controls.h"
+#include "integration/ChartTextFace.h"
 #include <wx/app.h>
 #include <wx/dcmemory.h>
 #include <wx/fontenum.h>
@@ -46,6 +47,33 @@ int main(int argc, char** argv) {
       std::cout << " actual-platform-face-not-qualified-on-Linux";
 #endif
       std::cout << '\n';
+    }
+    // Ordinary chart labels use explicit Segoe UI CSS, not the root UI stack.
+    const auto chartFace = opennav::integration::PrototypeChartTextFace();
+    const wxString expectedChartFace = wxFontEnumerator::IsValidFacename("Segoe UI")
+        ? "Segoe UI" : wxFontEnumerator::IsValidFacename("Arial") ? "Arial" : "";
+    if (chartFace != expectedChartFace)
+      throw std::runtime_error("Ordinary chart family selection differs from installed explicit CSS fallback");
+    if (!chartFace.empty()) {
+      wxFont font(17, wxFONTFAMILY_SWISS, wxFONTSTYLE_ITALIC,
+                  wxFONTWEIGHT_BOLD, false, chartFace);
+      if (!font.IsOk() || font.GetPointSize() != 17 ||
+          font.GetStyle() != wxFONTSTYLE_ITALIC || font.GetWeight() != wxFONTWEIGHT_BOLD)
+        throw std::runtime_error("Ordinary chart face changed size/style/weight");
+      dc.SetFont(font);
+      std::cout << "ordinary-chart-policy: selected=" << font.GetFaceName();
+#ifdef __WXMSW__
+      wchar_t actual[256]{};
+      if (!GetTextFaceW(static_cast<HDC>(dc.GetHDC()), 256, actual) ||
+          wxString(actual).CmpNoCase(chartFace) != 0)
+        throw std::runtime_error("Windows substituted the ordinary chart family");
+      std::cout << " GDI-face=" << wxString(actual) << " dpi=" << frame.GetDPI().x;
+#else
+      std::cout << " actual-platform-face-not-qualified-on-Linux";
+#endif
+      std::cout << '\n';
+    } else {
+      std::cout << "ordinary-chart-policy: no installed CSS face; preserve original template\n";
     }
     std::cout << "Production family/weight checks passed; native Windows/boat DPI review remains required\n";
   } catch (const std::exception& e) { std::cerr << e.what() << '\n'; result = 1; }

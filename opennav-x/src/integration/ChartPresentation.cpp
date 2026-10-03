@@ -1,6 +1,7 @@
 #include "integration/ChartPresentation.h"
 #include "integration/ChartCanvasInk.h"
 #include "integration/ChartNameTypography.h"
+#include "integration/ChartTextFace.h"
 #include "integration/ChartLightLabel.h"
 #include "ui/Controls.h" // Before GL/X11 headers which define None.
 #include "XNavChartResources.h"
@@ -167,6 +168,7 @@ s52plib *CreateChartPresentation(const wxString &stock_path,
         library->EnablePresentationSimplifiedSymbols();
         library->EnablePresentationLightSymbols();
         library->SetTextFontResolver(GeographicNameFont);
+        library->SetPresentationTextFace(PrototypeChartTextFace());
         library->SetSoundingFontResolver(ChartSoundingFont);
         active = true;
         status = "SKAGER presentation v1 / pinned symbols";

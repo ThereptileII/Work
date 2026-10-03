@@ -1,5 +1,15 @@
 # Prototype conformance — in progress
 
+Current local `ccc0faa` / published `1c3e32d6` adds a narrowly classified
+[white/orange pillar derivative](../evidence/scrum264-white-orange-pillar/README.md).
+Its focused resource/loader/object checks and [16 integrated Linux captures](../evidence/skager-chart-ccc0faa-linux/README.md)
+pass; Dusk deliberately retains the original symbol after the brighter
+orange trial lost color recognition. This is an explicit remaining difference.
+The [focused native private-object run](https://github.com/ThereptileII/Work/actions/runs/37112484119)
+passes the CMake path repair and all 70 actual private objects, with an
+[independently audited artifact](../evidence/scrum259-native70-ccc0/README.md). Neither
+compilation nor individual symbol proof advances a screen-level acceptance row.
+
 Frozen local `5c05eb5` / published `159cbeff` has a fresh integrated Linux build,
 147 passing regressions and 24 original real-chart images covering the corrected
 [short red/green light aliases](../evidence/scrum264-colored-lights-5c05-linux/README.md)
@@ -13,8 +23,8 @@ The unchanged font/header inputs retain the qualification boundaries below.
 The [remaining family inventory](../evidence/scrum264-remaining-symbol-boundaries/README.md)
 distinguishes supplied custom SVGs from stock catalogue entries. No direct custom
 physical-tower or classified fixed-beacon artwork exists in the prototype. The
-white/orange special-purpose derivative is being implemented with explicit class
-guards; it is not part of the frozen source or images above. Long-range/sector
+white/orange special-purpose derivative is included in ccc0faa with explicit
+class guards; it is not part of the earlier 5c05 images. Long-range/sector
 lights and other unmapped families remain open, subject to navigation meaning.
 Windows/private-renderer/physical boat acceptance remains pending.
 

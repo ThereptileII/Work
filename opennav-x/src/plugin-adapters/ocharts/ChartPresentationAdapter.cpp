@@ -1,6 +1,7 @@
 #include "plugin-adapters/ocharts/ChartPresentationAdapter.h"
 #include "plugin-adapters/ocharts/BindingState.h"
 #include "integration/ChartNameTypography.h"
+#include "integration/ChartTextFace.h"
 #include "integration/ChartLightLabel.h"
 #include "integration/ChartSoundingFont.h"
 #include "plugin-adapters/ocharts/ResourceVerification.h"
@@ -71,6 +72,7 @@ s52plib* CreateChartPresentation(const wxString& stockDirectory) {
           library->EnablePresentationSimplifiedSymbols();
           library->EnablePresentationLightSymbols();
           library->SetTextFontResolver(GeographicNameFont);
+          library->SetPresentationTextFace(PrototypeChartTextFace());
           library->SetSoundingFontResolver(ChartSoundingFont);
           binding.Complete(true,SKAGER_CHART_REASON_NONE);
           wxLogMessage("SKAGER o-charts: verified private presentation selected");

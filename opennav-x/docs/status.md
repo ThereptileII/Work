@@ -1,5 +1,28 @@
 # SKAGER status — 2026-10-03
 
+## Current focused Windows repair and classified buoy candidate
+
+Frozen source **`ccc0faad089e89a5b3a0b1f2994f4fa4ee18053d`**, published as
+**`1c3e32d68b2e12892a62e6fe28d61cfaa2377a45`**, adds the reviewed private
+CMake path repair and the [classified white/orange pillar derivative](evidence/scrum264-white-orange-pillar/README.md).
+All 4,074 mapped blob/mode entries independently reconstruct the remote tree.
+The [short native gate](https://github.com/ThereptileII/Work/actions/runs/37112484119)
+passes the original Windows escape reproduction, normalized paths and all 70
+actual private production translation units. The [independent artifact audit](evidence/scrum259-native70-ccc0/README.md)
+verifies all actual I386 objects and source/resource identities. It does not
+qualify dependency producers, DLL linking, runtime or packaging.
+The [integrated Linux build and real-chart review](evidence/skager-chart-ccc0faa-linux/README.md)
+pass 147/147 regressions, 16 captures and four clean exits. All Standard and
+Day-return chart comparisons are exact; changes remain inside the two buoy bodies.
+
+The buoy alias is restricted to the inspected white/orange horizontal-band
+pillar classification, verified SKAGER presentation and Simplified lookup.
+Day and Night use the supplied prototype's stem/base geometry with preserved
+classification. Dusk retains the original symbol: a tested brighter orange
+lost its recognizable hue and was rejected. Unmapped fixed beacons, physical
+lighthouse towers and directional/sector lights are not claimed to match.
+No candidate from this cycle has been installed or launched on the boat.
+
 ## Latest bounded light and hatch correction
 
 Application source **`5c05eb55c15b67d4014df55896d95452e9cc9d64`** combines

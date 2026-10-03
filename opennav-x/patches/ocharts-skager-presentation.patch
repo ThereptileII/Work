@@ -849,3 +849,78 @@ diff --git a/libs/s52plib/src/s52plib.cpp b/libs/s52plib/src/s52plib.cpp
          paintRule = found->second;
      }
  #endif
+
+diff --git a/libs/s52plib/src/s52plib.h b/libs/s52plib/src/s52plib.h
+--- a/libs/s52plib/src/s52plib.h
++++ b/libs/s52plib/src/s52plib.h
+@@ -190,6 +190,10 @@
+   using TextFontResolver = wxFont *(*)(const char *, const char *, bool,
+                                       double *, unsigned char *, bool *);
+   void SetTextFontResolver(TextFontResolver resolver) { m_textFontResolver = resolver; }
++#ifdef SKAGER_OCHARTS_ADAPTER
++  // Configure only on a verified new library, before any text is cached.
++  void SetPresentationTextFace(const wxString& face) { m_presentationTextFace = face; }
++#endif
+ 
+   void SetSoundingFontResolver(wxFont (*resolver)(double, double)) {
+     m_soundingFontResolver = resolver;
+@@ -421,6 +425,9 @@
+ 
+ private:
+   TextFontResolver m_textFontResolver = nullptr;
++#ifdef SKAGER_OCHARTS_ADAPTER
++  wxString m_presentationTextFace;
++#endif
+   bool m_useS52DefaultTextColor = false;
+   bool m_presentationSimpleSymbols = false;
+   bool m_presentationLightSymbols = false;
+
+diff --git a/libs/s52plib/src/s52plib.cpp b/libs/s52plib/src/s52plib.cpp
+--- a/libs/s52plib/src/s52plib.cpp
++++ b/libs/s52plib/src/s52plib.cpp
+@@ -2644,6 +2644,16 @@
+       text->pFont = FindOrCreateFont_PlugIn(
+             fontSize, wxFONTFAMILY_SWISS, templateFont->GetStyle(), fontweight_t,
+             false, templateFont->GetFaceName());
++#ifdef SKAGER_OCHARTS_ADAPTER
++      // Keep ordinary TX/TE's original size/style/weight and stock fallback.
++      // Geographic/LIGHTS handlers remain authoritative for their own fonts.
++      if (!styled && !m_presentationTextFace.empty()) {
++        wxFont* faceFont = FindOrCreateFont_PlugIn(
++            fontSize, wxFONTFAMILY_SWISS, templateFont->GetStyle(), fontweight_t,
++            false, m_presentationTextFace);
++        if (faceFont && faceFont->IsOk()) text->pFont = faceFont;
++      }
++#endif
+       if (styled && styled->IsOk()) {
+           text->letter_spacing = tracking; text->text_opacity = opacity;
+           text->pFont = styled;
+
+diff --git a/libs/s52plib/src/s52plib.cpp b/libs/s52plib/src/s52plib.cpp
+--- a/libs/s52plib/src/s52plib.cpp
++++ b/libs/s52plib/src/s52plib.cpp
+@@ -52,6 +52,8 @@
+ #endif
+ #ifdef SKAGER_OCHARTS_ADAPTER
+ #include "integration/ChartNameText.h"
++#include "integration/ChartNameTypography.h"
++#include "integration/ChartLightLabel.h"
+ #endif
+ #include "mygeom.h"
+ #include "s52utils.h"
+@@ -2647,7 +2649,14 @@
+ #ifdef SKAGER_OCHARTS_ADAPTER
+       // Keep ordinary TX/TE's original size/style/weight and stock fallback.
+       // Geographic/LIGHTS handlers remain authoritative for their own fonts.
+-      if (!styled && !m_presentationTextFace.empty()) {
++      // A designated handler can deliberately decline (custom LIGHTS font or
++      // failed specialized raster). Preserve that stock fallback as well.
++      if (!styled && !m_presentationTextFace.empty() &&
++          opennav::integration::GeographicChartName(
++              rzRules->obj->FeatureName, rules->INSTstr, bTX) ==
++              opennav::integration::ChartNameRole::Unchanged &&
++          !opennav::integration::IsGeneratedLightDescription(
++              rzRules->obj->FeatureName, rules->INSTstr, bTX)) {
+         wxFont* faceFont = FindOrCreateFont_PlugIn(
+             fontSize, wxFONTFAMILY_SWISS, templateFont->GetStyle(), fontweight_t,
+             false, m_presentationTextFace);

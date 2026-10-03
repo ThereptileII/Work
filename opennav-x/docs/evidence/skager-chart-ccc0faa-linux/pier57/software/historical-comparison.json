@@ -1,0 +1,103 @@
+{
+  "historical_commit": "5c05eb55c15b67d4014df55896d95452e9cc9d64",
+  "source_commit": "ccc0faad089e89a5b3a0b1f2994f4fa4ee18053d",
+  "chart_roi": [
+    80,
+    68,
+    1094,
+    634
+  ],
+  "wordmark_roi": [
+    8,
+    8,
+    174,
+    58
+  ],
+  "only_exclusion": {
+    "Dusk historical963 only": [
+      883,
+      545,
+      1072,
+      597
+    ],
+    "Day/Night/Day-return historical5c05": null
+  },
+  "outside_roi": "Dynamic clock/input ages/caption are retained in whole images but were never part of the historical chart/wordmark equality oracle.",
+  "captures": [
+    {
+      "name": "SKAGER-Day",
+      "historical_commit": "5c05eb55c15b67d4014df55896d95452e9cc9d64",
+      "comparison_exclusion": null,
+      "historical_image_sha256": "9a52f84c45fa90b376783684e3e28567ce697e58842a8f0d879cdb7f566b8a32",
+      "changed_chart_pixels_after_declared_exclusion": 294,
+      "wordmark_identical": true
+    },
+    {
+      "name": "SKAGER-Dusk",
+      "historical_commit": "9632421f701c5ec74d7a1360bc713c0034faf9af",
+      "comparison_exclusion": [
+        883,
+        545,
+        1072,
+        597
+      ],
+      "historical_image_sha256": "96e1d7d01c74dbcfb53741fe1e2417d0c6cbad73757b597fe82f09987ced0321",
+      "changed_chart_pixels_after_declared_exclusion": 0,
+      "wordmark_identical": true
+    },
+    {
+      "name": "SKAGER-Night",
+      "historical_commit": "5c05eb55c15b67d4014df55896d95452e9cc9d64",
+      "comparison_exclusion": null,
+      "historical_image_sha256": "c2090d9e86b4ee618b5208fb92dafc09917a278b77bf150a2a5be3fe214e3962",
+      "changed_chart_pixels_after_declared_exclusion": 280,
+      "wordmark_identical": true
+    },
+    {
+      "name": "SKAGER-Day-return",
+      "historical_commit": "5c05eb55c15b67d4014df55896d95452e9cc9d64",
+      "comparison_exclusion": null,
+      "historical_image_sha256": "44c249bcc7b32ad4216293033fcc5eda2349f706f409806234d8f969ef4bd837",
+      "changed_chart_pixels_after_declared_exclusion": 294,
+      "wordmark_identical": true
+    },
+    {
+      "name": "Standard-Day",
+      "historical_commit": "5c05eb55c15b67d4014df55896d95452e9cc9d64",
+      "comparison_exclusion": null,
+      "historical_image_sha256": "d176480e081e8bcd93a36112d662e65a4857ccbab33282cb2bb3b4ae9b3a33f8",
+      "changed_chart_pixels_after_declared_exclusion": 0,
+      "wordmark_identical": true
+    },
+    {
+      "name": "Standard-Dusk",
+      "historical_commit": "9632421f701c5ec74d7a1360bc713c0034faf9af",
+      "comparison_exclusion": [
+        883,
+        545,
+        1072,
+        597
+      ],
+      "historical_image_sha256": "b5bc67f39ed0db131acbb0f4b1f420fd1d32d4ce3792886fc678af367fb8938b",
+      "changed_chart_pixels_after_declared_exclusion": 0,
+      "wordmark_identical": true
+    },
+    {
+      "name": "Standard-Night",
+      "historical_commit": "5c05eb55c15b67d4014df55896d95452e9cc9d64",
+      "comparison_exclusion": null,
+      "historical_image_sha256": "9ca08c4f532c983ff8d2fb00ba2281dd48342a47968aa3eb8dc0428ebba93101",
+      "changed_chart_pixels_after_declared_exclusion": 0,
+      "wordmark_identical": true
+    },
+    {
+      "name": "Standard-Day-return",
+      "historical_commit": "5c05eb55c15b67d4014df55896d95452e9cc9d64",
+      "comparison_exclusion": null,
+      "historical_image_sha256": "e21a9ec2d56c9e9865fad39f8cbab4bf42506a6958e6967ba93c53e73f9981af",
+      "changed_chart_pixels_after_declared_exclusion": 0,
+      "wordmark_identical": true
+    }
+  ],
+  "status": "passed"
+}

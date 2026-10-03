@@ -364,12 +364,21 @@ co-located buoy/TOPMAR composition remain unchanged. Source lookup
 order, physical TOPMAR, unknown/inland/Paper Chart users and original glyphs are
 preserved. All owned colors apply the prototype Night brightness exactly once.
 
-BOYSPP11 remains stock because its existing selectors do not prove yellow;
-actual white/orange buoys must not acquire a yellow/X mark. Generic beacon
+BOYSPP11 is never globally replaced because its selectors do not prove yellow.
+An additional bounded `XNSPPW01` derivative is selected only for inspected
+white/orange horizontal-band pillar attributes (BOYSHP4, COLOUR1,11,
+COLPAT1, CATSPM27), Simplified lookup and verified SKAGER presentation. It uses
+the supplied stem/base geometry without inventing an X or physical topmark.
+ORIENT, direct TOPSHP, missing/duplicate/malformed attributes and unknown schemes
+retain the original Rule. Day keeps stock orange, Night uses the documented
+owned legibility lift, and Dusk retains stock after the brighter trial lost
+orange recognition. See [scope and focused evidence](../evidence/scrum264-white-orange-pillar/README.md).
+Generic beacon
 composition, remaining Paper Chart art and actual native/private-chart display
 qualification remain open. See `docs/evidence/scrum264-seamark-art/README.md`
 and the complete preceding family audit for exact boundaries and evidence.
 
 The orientation correction and focused core/private source evidence are in
 `docs/evidence/scrum264-oriented-light-aliases/README.md`. Actual revised
-red/green ENC captures and native/private-chart/boat qualification remain open.
+red/green ENC captures pass in the bounded [Linux review](../evidence/scrum264-colored-lights-5c05-linux/README.md);
+native/private-chart/boat qualification remains open.

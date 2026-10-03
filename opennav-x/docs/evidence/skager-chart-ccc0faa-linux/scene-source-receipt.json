@@ -1,0 +1,57 @@
+{
+  "source": "docs/evidence/scrum264-public-enc-scenes/scenes.json",
+  "class": "BOYSPP",
+  "features": [
+    {
+      "RCID": 23,
+      "longitude": -122.3427489,
+      "latitude": 47.6059633,
+      "mercatorProjectedCenterEstimate": [
+        591.0809725322391,
+        359.58888381756844
+      ],
+      "sourceAttributes": {
+        "BOYSHP": 4,
+        "COLOUR": [
+          "1",
+          "11"
+        ],
+        "COLPAT": [
+          "1"
+        ],
+        "CATSPM": [
+          "27"
+        ]
+      },
+      "note": "Geometry-only independent viewport estimate, not an actual RenderRasterSymbol trace. Nominal old 13x13/pivot6,6; new alpha [9,7,15,24]/pivot12,14. Actual pixel observations remain separately reported."
+    },
+    {
+      "RCID": 24,
+      "longitude": -122.3428703,
+      "latitude": 47.6061367,
+      "mercatorProjectedCenterEstimate": [
+        582.972460823017,
+        342.41110194493086
+      ],
+      "sourceAttributes": {
+        "BOYSHP": 4,
+        "COLOUR": [
+          "1",
+          "11"
+        ],
+        "COLPAT": [
+          "1"
+        ],
+        "CATSPM": [
+          "27"
+        ]
+      },
+      "note": "Geometry-only independent viewport estimate, not an actual RenderRasterSymbol trace. Nominal old 13x13/pivot6,6; new alpha [9,7,15,24]/pivot12,14. Actual pixel observations remain separately reported."
+    }
+  ],
+  "linkedLightRCIDs": [
+    39,
+    43
+  ],
+  "plannedComparisons": "Standard exact entire chart5c05 for Day/Night; Dusk963 only declared toolbar exception; all Day returns entire chart; unchanged hatch and exposed light marks; changes reviewed around two source positions only."
+}
