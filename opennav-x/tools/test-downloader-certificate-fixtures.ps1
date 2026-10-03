@@ -26,8 +26,10 @@ try {
   $Workflow = Join-Path $Root '.github/workflows/skager-certificate-fixtures.yml'
   if (-not (Test-Path -LiteralPath $Workflow)) { $Workflow = Join-Path (Split-Path $Root -Parent) '.github/workflows/skager-certificate-fixtures.yml' }
   $Report.workflow = Identity $Workflow
-  $Provider = Get-Command openssl.exe -CommandType Application -ErrorAction Stop
+  $ProviderCandidates = @(Get-Command openssl.exe -CommandType Application -ErrorAction Stop)
+  $Provider = $ProviderCandidates[0]
   $ProviderPath = $Provider.Source
+  $Report.opensslPathCandidates = @($ProviderCandidates | ForEach-Object { $_.Source })
   $Report.openssl = [ordered]@{path=$ProviderPath;identity=(Identity $ProviderPath);version=(& $ProviderPath version | Out-String).Trim();details=(& $ProviderPath version -a | Out-String).Trim();maintainedProducerVersion='3.5.9';producerQualification=$false}
   if ($LASTEXITCODE -ne 0) { throw 'OpenSSL version query failed' }
   # Parse only these actual function definitions. Never dot-source the enclosing

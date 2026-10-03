@@ -42,3 +42,14 @@ verified `opennav-x` source mapping and workflow at repository `.github/workflow
 The workflow invokes `tools/test-downloader-certificate-fixtures.ps1` and retains
 `native-certificate-fixtures-<sha>`. Do not start another full candidate until the
 native fixture gate passes and its original artifact is independently audited.
+
+The first native fixture run, `37144998291` at remote `1d9a6f6`, stopped before
+certificate generation: PowerShell returned four application matches for
+`Get-Command openssl.exe`, and the preflight joined their paths accidentally.
+Original artifact `11281613394` and its three exact source identities are retained
+under `docs/evidence/scrum277-native-provider-selection`. The preflight now takes
+array element zero, matching PATH invocation precedence, and records all candidate
+paths. The actual three AST selection statements were checked locally against
+two real OpenSSL paths in both orders; each selected the scalar first path and
+matched direct `openssl.exe` invocation. The production zero-byte fix is unchanged;
+corrected native verification remains pending.
