@@ -1,0 +1,44 @@
+05:01:50: Error: Failed to load shared library 'D:\a\Work\Work\opennav-x\build\windows-ocharts-loader-guards\cases\invalid-pe-after-exact-hash\adapter/skager-ocharts-adapter.dll' (error 193: D:\a\Work\Work\opennav-x\build\windows-ocharts-loader-guards\cases\invalid-pe-after-exact-hash\adapter/skager-ocharts-adapter.dll is not a valid Win32 application.)
+05:01:50: Error: Couldn't find symbol 'skager_bind_chart_presentation_v1' in a dynamic library (error 127: The specified procedure could not be found.)
+05:01:50: Error: Couldn't find symbol 'skager_chart_presentation_status_v1' in a dynamic library (error 127: The specified procedure could not be found.)
+05:01:51: Error: Failed to load shared library 'D:\a\Work\Work\opennav-x\build\windows-ocharts-loader-guards\cases\callback-and-fallback\missing.dll' (error 126: The specified module could not be found.)
+PASS copied status matrix
+PASS unavailable
+PASS safe
+PASS not-main
+PASS standard-empty-resources
+PASS wrong-original-name
+PASS actual worker thread
+PASS wrong-original-hash
+PASS wrong-adapter-hash
+PASS wrong-adapter-size
+PASS missing-adapter
+PASS relative-original
+PASS unc-original
+PASS original-reparse-parent
+PASS adapter-reparse-parent
+PASS exclusive-original-lock
+PASS exclusive-adapter-lock
+PASS changed-adapter-after-compatibility
+PASS changed-original-after-compatibility
+PASS compatibility refused
+PASS compatibility missing
+PASS invalid PE load refused
+PASS over-capacity-utf8-resource
+PASS no_bind
+PASS no_status
+PASS no_create
+PASS no_destroy
+PASS binding-rejected
+PASS status-return
+PASS status-size
+PASS status-version
+PASS status-reserved
+PASS status-reason
+PASS status-selected
+PASS status-unknown
+PASS single bound module and lock lifetime
+PASS actual null/forwarded callback and residue-safe fallback
+Injected invalid-handle FreeLibrary error: 126
+PASS injected invalid-handle refusal retains ownership
+PASS 38 native loader groups; no plugin factory/helper execution

@@ -63,7 +63,7 @@ if ($Action -eq 'Collect') {
   return
 }
 if ($RetireUnstarted) {throw 'RetireUnstarted is available only when collecting a known dispatch.'}
-if (@(Get-Process -Name opencpn -ErrorAction SilentlyContinue).Count) {throw 'Close OpenCPN/XNav normally before stock upgrade.'}
+if (@(Get-Process -Name opencpn -ErrorAction SilentlyContinue).Count) {throw 'Close OpenCPN/SKAGER normally before stock upgrade.'}
 $Record=Assert-LocalPath $Record
 if ($ExpectedRecordSha256 -cnotmatch '^[a-f0-9]{64}$' -or (Get-Digest $Record) -cne $ExpectedRecordSha256) {throw 'Prepared record hash mismatch.'}
 $prepared=Read-Record $Record

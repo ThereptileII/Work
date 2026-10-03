@@ -7,6 +7,7 @@ import re
 import xml.etree.ElementTree as ET
 
 from chart_raster_ink import decode, derive
+from chart_day_neutral_ink import derive_day
 
 
 def verify_anchor(source, output, metadata, check):
@@ -50,6 +51,7 @@ def verify_anchor(source, output, metadata, check):
             ('rastersymbols-dusk.png', 'DUSK', (54,54,54), (168,187,183)),
             ('rastersymbols-dark.png', 'NIGHT', (27,27,27), (98,115,108))):
         content = (source/name).read_bytes()
+        if table=='DAY_BRIGHT':content,_=derive_day((source/'chartsymbols.xml').read_bytes(),content,metadata['palette'][table]['CHBLK'])
         if neutral_before:
             content, _ = derive(day, content, neutral_before, metadata['palette'][table]['CHBLK'])
         before_chunks, before = decode(content)

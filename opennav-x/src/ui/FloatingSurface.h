@@ -29,6 +29,9 @@ public:
     });
   }
   void Present(const wxPoint &screen);
+  // Opt-in paint for the prototype map-tools frame; owned-window behavior and
+  // all existing button/hit rectangles remain unchanged.
+  void SetChartToolsTheme(LightMode mode);
   // Reconcile an already visible owned surface after its owner is raised.
   // This never shows, moves or activates the surface.
   void RestackAboveOwner();
@@ -38,6 +41,8 @@ public:
 private:
   void RestackNativeAboveOwner();
   void Shape();
+  void PaintChartTools(wxPaintEvent &);
+  bool chart_tools_paint_ = false;
   int radius_;
 #ifdef __WXGTK__
   bool show_requested_ = false;

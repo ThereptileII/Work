@@ -31,6 +31,8 @@ with tempfile.TemporaryDirectory(prefix='xnav-chart-test-') as d:
     output=folder/'generated'
     original={p.name:hashlib.sha256(p.read_bytes()).hexdigest() for p in source.iterdir() if p.is_file()}
     data=g.generate(source,output)
+    from chart_area_resources_tests import verify_area_ink
+    verify_area_ink(source,output,data,check)
     check(data['upstreamCommit']=='37fd0cddb7334fe489e9f18aa163977a9c5c84f7')
     check(len(data['palette'])==3)
     first={p.name:p.read_bytes() for p in output.iterdir()}
@@ -40,6 +42,8 @@ with tempfile.TemporaryDirectory(prefix='xnav-chart-test-') as d:
         check(hashlib.sha256((output/name).read_bytes()).hexdigest()==identity['sha256'])
         if name == 'S52RAZDS.RLE':
             check((output/name).read_bytes()==g.pinned_bytes(source/name,identity))
+    from chart_day_neutral_resources_tests import verify_day_neutral
+    verify_day_neutral(source,output,data,check)
     from chart_cardinal_resources_tests import verify_cardinals
     verify_cardinals(source,output,data,check)
     from chart_service_resources_tests import verify_services
@@ -91,6 +95,9 @@ with tempfile.TemporaryDirectory(prefix='xnav-chart-test-') as d:
             new=re.sub(r"(TX\(OBJNAM,[^;()]+,)(CHBLK|CHGRD)(,26\))",r"\g<1>XNGEO\3",expected)
             if new!=expected:geographic.append((stock.get('id'),stock.get('RCID')))
             expected=new
+        if stock.get('id')=='25':
+            check(stock.attrib=={'id':'25','RCID':'32061','name':'CBLARE'})
+            expected=expected.replace('LS(DASH,2,CHMGD)','LS(DASH,2,XNARE)')
         check(styled.findtext('instruction')==expected)
         styled.find('instruction').text=stock.findtext('instruction')
         check(ET.tostring(stock)==ET.tostring(styled))
@@ -112,11 +119,14 @@ with tempfile.TemporaryDirectory(prefix='xnav-chart-test-') as d:
     check(len(cables)==1 and cables[0].attrib=={'RCID':'2012'})
     check(cables[0].findtext('color-ref')=='AXNCBL')
     cables[0].find('color-ref').text='ACHMGD'
+    ferry=b.find("line-styles/line-style[name='FERYRT01']")
+    check(ferry.attrib=={'RCID':'2019'} and ferry.findtext('color-ref')=='AXNARE')
+    ferry.find('color-ref').text='ACHMGD'
     for section in ['lookups','line-styles','patterns','symbols']:
         check(ET.tostring(a.find(section))==ET.tostring(b.find(section)))
     for stock,styled in zip(a.find('color-tables'),b.find('color-tables')):
         check(stock.attrib==styled.attrib)
-        for name in ('XNBUA','XNGEO','XNCBL'):
+        for name in ('XNBUA','XNGEO','XNCBL','XNARE'):
             added=styled.findall("color[@name='"+name+"']")
             check(len(added)==(1 if stock.get('name') in data['palette'] else 0))
             for entry in added:styled.remove(entry)
@@ -137,10 +147,14 @@ with tempfile.TemporaryDirectory(prefix='xnav-chart-test-') as d:
     for table,digest in [('DAY_BRIGHT','031918f6b6fade989023d4d19d4adc3ac03bba8984538b159c18a02a1f1876f8'),
                          ('DUSK','596390392670a8b780293e340557a9bf151fc3ca2dd6e8bd421982b6d2e67a2a')]:
         unchanged=ET.parse(output/'chartsymbols.xml').getroot().find("color-tables/color-table[@name='"+table+"']")
+        unchanged.remove(unchanged.find("color[@name='XNARE']"))
         # Restore only the prior XNBUA shade before the existing whole-table
         # identity oracle; all other Day/Dusk palette bytes must remain exact.
         prior=(175,191,174) if table=='DAY_BRIGHT' else (116,135,121)
         unchanged.find("color[@name='XNBUA']").attrib.update(dict(zip(('r','g','b'),map(str,prior))))
+        if table=='DAY_BRIGHT':
+            for role in ('CHBLK','CHGRD'):
+                unchanged.find("color[@name='"+role+"']").attrib.update(r='7',g='7',b='7')
         check(hashlib.sha256(ET.tostring(unchanged)).hexdigest()==digest)
     # Literal effective Night colors independently confirmed against the final
     # CSS and canonical Windows pixels, not copied from generator output.
@@ -167,8 +181,8 @@ with tempfile.TemporaryDirectory(prefix='xnav-chart-test-') as d:
         check(luminance(data['palette']['NIGHT'][color])<luminance(data['palette']['DUSK'][color]))
     # Guard the observed invisible dark ink on the new Night water. These
     # numerical checks do not replace actual symbol/hazard review.
-    check(data['palette']['DAY_BRIGHT']['CHBLK']==(7,7,7))
-    for table in ('DUSK','NIGHT'):
+    check(data['palette']['DAY_BRIGHT']['CHBLK']==(83,100,95))
+    for table in ('DAY_BRIGHT','DUSK','NIGHT'):
         colors=data['palette'][table]
         check(contrast(colors['CHBLK'],colors['DEPDW'])>=4)
         check(contrast(colors['CHBLK'],colors['DEPVS'])>=2)
@@ -191,7 +205,7 @@ with tempfile.TemporaryDirectory(prefix='xnav-chart-test-') as d:
     reject(lambda t:setattr(t.find("lookups/lookup[@id='1066']/instruction"),'text','AC(XNBUA)'))
     reject(lambda t:t.find('color-tables/color-table').remove(t.find("color-tables/color-table/color[@name='XNBUA']")))
     reject(lambda t:t.find('color-tables/color-table').append(ET.fromstring('<color name="XNBUA" r="175" g="191" b="174"/>')))
-    for name in ('LANDA','XNBUA','XNGEO','XNCBL'):
+    for name in ('LANDA','XNBUA','XNGEO','XNCBL','XNARE'):
         path="color-tables/color-table/color[@name='"+name+"']"
         reject(lambda t:t.find(path).set('r','1'))
         reject(lambda t:t.find(path).set('a','0'))

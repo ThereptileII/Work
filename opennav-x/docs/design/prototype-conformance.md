@@ -1,13 +1,33 @@
 # Prototype conformance — in progress
 
-The combined source is now `78eccb8` (published `61a0a783`). It includes exact
+The latest correction batch adds exact ferry/cable-area paint (SCRUM-260),
+40,482 role-proven Day neutral pixels (SCRUM-261), and the native chart-toolbar
+border/divider plus full Instruments caption (SCRUM-14). Their focused source,
+pixel and resource evidence is linked from status.md. All screen-level rows
+remain Pending until the combined application and physical display are reviewed.
+Remaining off-palette wreck pixels and other stock chromatic roles are explicitly
+not represented as matched by these bounded corrections.
+
+The replacement application is local `dfa7b72`, published `c9ff4ae2`. Its
+integrated Linux build, five drawing fixtures and 147 regressions pass; all 23
+changed native compilation units pass separately. The full Windows run
+37097634494 stopped before application compilation on a deterministic line-ending
+preparation check. Its bounded correction now passes the separate native
+14/16/38-case gate in run 37098440931 at published `5d6c5cf4`
+([downloaded evidence](../evidence/scrum259-native-final/README.md)).
+Neither result qualifies a Windows application rendering or icon. The prior
+78eccb8 chart images below remain their own unchanged evidence; they do not
+exercise the new private o-charts renderer required by the boat's licensed
+vector collection. Actual native and boat chart comparisons remain required.
+
+The preceding chart-capture source is `78eccb8` (published `61a0a783`). It includes exact
 classified cardinal artwork and the actual-active-waypoint name card, together
 with the prior land/Night/service/branding corrections. Its integrated Linux
 build and [native seventeen-unit preflight](../evidence/scrum-247-native-chart17-final/README.md)
 pass. The [sixteen real-ENC comparisons](../evidence/skager-product-fidelity-78eccb8-linux/README.md)
 and [software/GL route/card comparisons](reviews/scrum252-257-final-78eccb8.md)
-also pass their bounded gates. Full native runtime qualification is running on
-that exact published commit. No screen-level acceptance row is changed by
+also pass their bounded gates. That full native run subsequently failed the translucent geographic-name
+painter; the separate correction and replacement are recorded in status.md. No screen-level acceptance row is changed by
 compilation or a subset of chart states. The public NOAA comparison cell contains no cardinal objects, so those
 images cannot establish actual ENC cardinal recognition.
 

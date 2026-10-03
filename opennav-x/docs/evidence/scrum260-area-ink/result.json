@@ -1,0 +1,43 @@
+{
+  "targetedAreaChecks": 31,
+  "affectedExistingXmlChecks": 6486,
+  "exactPriorXmlRecoveredByReversingOnlyTwoPaintTokensAndThreeAddedColors": true,
+  "byteIdenticalOtherResources": [
+    "rastersymbols-day.png",
+    "rastersymbols-dusk.png",
+    "rastersymbols-dark.png",
+    "S52RAZDS.RLE"
+  ],
+  "fullResourceSuiteRepeated": false,
+  "nativeOrRealEncAcceptance": false,
+  "resources": {
+    "chartsymbols.xml": {
+      "bytes": 2232211,
+      "sha256": "d98f6667b0d6241f8783206db8faee3302a27e198b57973573a28f2c0fa0bbcb"
+    },
+    "S52RAZDS.RLE": {
+      "bytes": 1305627,
+      "sha256": "560e1a1df493d7ae4c8506da814ad936adb13ef93c6f1e2abc93f2819860ff26"
+    },
+    "rastersymbols-day.png": {
+      "bytes": 197801,
+      "sha256": "a737bdb7d372077c2bfe806c5f020f45b4517029c0b43913084720664c520ea3"
+    },
+    "rastersymbols-dusk.png": {
+      "bytes": 172357,
+      "sha256": "201f0663bd786d5e1d8ba09d8d43b106df164d5a282f60860258d226adadb6c9"
+    },
+    "rastersymbols-dark.png": {
+      "bytes": 167654,
+      "sha256": "9c91273e3dbe9563d79b2d2b0a757bb83207aa0db9183e8aecc1112070ead724"
+    },
+    "manifest.json": {
+      "bytes": 24560,
+      "sha256": "03ed53bd03108fdb50b566f4707d81fb8d2a7e2ed02a389e78ca608ba023b67f"
+    },
+    "XNavChartResources.h": {
+      "bytes": 934,
+      "sha256": "3166b1d5cc91831cdecd3299031906041271d3f9bfd1cb217366c57fcf38af9a"
+    }
+  }
+}

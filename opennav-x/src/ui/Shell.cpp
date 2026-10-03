@@ -649,6 +649,7 @@ void Shell::ApplyTheme() {
   theme_button_->SetLabel(LightName());
   theme_button_->SetIcon(mode_ == LightMode::Day ? XNavIcon::Sun : mode_ == LightMode::Dusk ? XNavIcon::Dusk : XNavIcon::Moon);
   for (auto *overlay : chart_overlays_) overlay->SetBackgroundColour(Colour(FloatingTheme(mode_).surface));
+  static_cast<XNavFloatingSurface *>(chart_tools_)->SetChartToolsTheme(mode_);
   for (auto *pane : panes_) {
     pane->SetBackgroundColour(Colour(colors.background));
     for (auto *child : pane->GetChildren())

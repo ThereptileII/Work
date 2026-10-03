@@ -4,6 +4,7 @@ import json
 from pathlib import Path
 import xml.etree.ElementTree as ET
 from chart_raster_ink import decode,derive
+from chart_day_neutral_ink import derive_day
 
 
 def verify_cardinals(source,output,metadata,check):
@@ -49,6 +50,7 @@ def verify_cardinals(source,output,metadata,check):
     _,day=decode((source/'rastersymbols-day.png').read_bytes())
     for table,file,neutral in [('DAY_BRIGHT','rastersymbols-day.png',None),('DUSK','rastersymbols-dusk.png',(54,54,54)),('NIGHT','rastersymbols-dark.png',(27,27,27))]:
         raw=(source/file).read_bytes()
+        if table=='DAY_BRIGHT':raw,_=derive_day((source/'chartsymbols.xml').read_bytes(),raw,metadata['palette'][table]['CHBLK'])
         if neutral:raw,_=derive(day,raw,neutral,metadata['palette'][table]['CHBLK'])
         ca,before=decode(raw);cb,after=decode((output/file).read_bytes())
         check([(k,v) for k,v in ca if k!=b'IDAT']==[(k,v) for k,v in cb if k!=b'IDAT'])

@@ -268,6 +268,7 @@ set_property(DIRECTORY APPEND PROPERTY CMAKE_CONFIGURE_DEPENDS
   "${OPENNAV_ROOT}/tools/generate-xnav-chart-style.py")
 set_property(DIRECTORY APPEND PROPERTY CMAKE_CONFIGURE_DEPENDS
   "${OPENNAV_ROOT}/tools/chart_raster_ink.py"
+  "${OPENNAV_ROOT}/tools/chart_day_neutral_ink.py"
   "${OPENNAV_ROOT}/tools/chart_anchor_art.py"
   "${OPENNAV_ROOT}/tools/chart_cable_paint.py"
   "${OPENNAV_ROOT}/tools/chart_service_art.py"

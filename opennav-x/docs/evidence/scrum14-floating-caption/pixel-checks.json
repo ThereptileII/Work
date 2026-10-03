@@ -1,0 +1,53 @@
+{
+  "scope": "actual Linux wx component captures only",
+  "results": [
+    {
+      "theme": "Day",
+      "caption_matches_untruncated_native_oracle": true,
+      "border_rgb": [
+        232,
+        236,
+        228
+      ],
+      "divider_rgb": [
+        220,
+        226,
+        217
+      ],
+      "button_pixels_unchanged": true,
+      "outside_pixels_unchanged": true
+    },
+    {
+      "theme": "Dusk",
+      "caption_matches_untruncated_native_oracle": true,
+      "border_rgb": [
+        44,
+        67,
+        71
+      ],
+      "divider_rgb": [
+        49,
+        72,
+        74
+      ],
+      "button_pixels_unchanged": true,
+      "outside_pixels_unchanged": true
+    },
+    {
+      "theme": "Night",
+      "caption_matches_untruncated_native_oracle": true,
+      "border_rgb": [
+        30,
+        45,
+        51
+      ],
+      "divider_rgb": [
+        37,
+        51,
+        56
+      ],
+      "button_pixels_unchanged": true,
+      "outside_pixels_unchanged": true
+    }
+  ]
+}

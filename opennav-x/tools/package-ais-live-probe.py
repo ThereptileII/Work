@@ -121,7 +121,7 @@ It prints only connection states and aggregate report/target counts. A nonzero
 exit is negative commissioning evidence. This does not qualify the chart or UI.
 
 The sibling source ZIP includes exact application, integration and bundled
-dependency source and all OpenNav CI recipes. See licenses/ for notices.
+dependency source and all SKAGER CI recipes. See licenses/ for notices.
 MSVC DLLs are licensed x86 redistributables from the native CI toolchain.
 ''', encoding='utf-8')
     (package / 'BUILD_INFO.json').write_text(json.dumps({

@@ -63,8 +63,14 @@ Final HTML marker variables (from the appended stylesheet, not the earlier
 | Area | #9c8696 | #b8a0b1 | #917f8d |
 
 These are design targets, not an accepted recoloring of navigation marks.
-The current bounded ink pass retains pinned chromatic pixels and uses the
-reviewed general-ink contrast roles below for neutral symbols.
+The current bounded ink pass retains pinned chromatic pixels. SCRUM-261 uses
+the exact Day marker-black token for CHBLK/CHGRD, with unchanged 4/2/3 contrast
+guards and an independently verified 40,482-pixel bitmap ownership mask.
+All sounding rectangles and shared/unknown/off-palette raster roles are excluded.
+[Exact mask and remaining limits](reviews/scrum261-day-neutral-ink.md).
+SCRUM-260 additionally uses the exact area hue for only the FERYRT01 pen and
+Plain CBLARE boundary; all geometry, restrictions and other CHMGD uses remain
+unchanged. [Exact mapping](../evidence/scrum260-area-ink/README.md).
 
 The final SVG route stroke is 2.6 CSS px with round joins. Prototype AIS paths
 use #916477 stroke, 1.6px; selected fill #cb9cb1; vector line 1px dashed 4/4;
@@ -167,7 +173,9 @@ an illustrative map, not a claim that the prototype defines those extra colors.
 Generation verifies every stock input hash against `source-lock.json`, changes
 only the allowed RGB attributes in DAY_BRIGHT/DUSK/NIGHT, preserves every symbol,
 lookup, line style and pattern definition, and emits a resource hash header.
-Day sprites and the RLE resource remain byte-identical. Dusk/Night sprites now
+The RLE resource remains byte-identical. The initial Day atlas was unchanged;
+the separately reviewed owned tiles and SCRUM-261 mask now alter only their
+documented regions. Dusk/Night sprites
 derive only neutral pixels matching the Day neutral RGB, the pinned theme's
 neutral RGB and identical nonzero alpha: 42,100 pixels per sheet. Every other
 pixel, all alpha values and PNG metadata remain unchanged. This preserves
@@ -194,8 +202,8 @@ Real ENC appearance, hazards, OpenGL/software rendering, style/mode cycles and
 boat display remain pending. Route, ownship and AIS overlay restyling is a
 separate unfinished part of this workstream.
 
-The second ink pass adds CHBLK after actual native ENC review found monochrome
-text nearly invisible at Night. Day retains the pinned #070707 rather than
+The historical second ink pass added CHBLK after actual native ENC review found
+monochrome text nearly invisible at Night. At that stage Day retained #070707 rather than
 substituting low-contrast muted text over shallow water. Dusk uses the existing
 prototype floating text token; Night uses its chart-text token. Numeric contrast
 checks cover deep water, very-shallow water and land independently. These checks
@@ -208,6 +216,10 @@ difference. This is a known defect, not accepted parity. The large embossed
 "Feet" overlay is OpenCPN's real chart depth unit, not a place label; it must
 remain semantically visible if its presentation is changed.
 See the [contrast investigation](reviews/chart-ink-contrast-investigation.md).
+SCRUM-261 supersedes that historical Day decision with the actual marker-black
+token, rather than the previously rejected chart-text token; its independent
+contrast measurements retain the same thresholds. This is still subject to
+actual Windows/ENC and boat readability review.
 
 ## SCRUM-231 built-up areas (qualification pending)
 

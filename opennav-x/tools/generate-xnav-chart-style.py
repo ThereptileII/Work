@@ -2,7 +2,7 @@
 """Derive bounded XNav palette resources from verified pinned OpenCPN bytes.
 
 Only the enumerated palette roles, geographic-name ink, two built-up-area fill tokens and a proven
-neutral sprite-ink mask, isolated ACHARE51/PILBOP02/RTPBCN02/BOYCAR01-04 artwork tiles and CBLSUB06 paint role may change. Original inputs are never modified.
+neutral sprite-ink mask, isolated ACHARE51/PILBOP02/RTPBCN02/BOYCAR01-04 artwork tiles and CBLSUB06/FERYRT01/Plain CBLARE paint roles may change. Original inputs are never modified.
 """
 import argparse
 import hashlib
@@ -15,6 +15,7 @@ import chart_anchor_art
 import chart_cable_paint
 import chart_service_art
 import chart_cardinal_art
+import chart_day_neutral_ink
 
 ROOT=Path(__file__).resolve().parents[1]
 ALLOWED={'LANDA','CSTLN','DEPDW','DEPMD','DEPMS','DEPVS','DEPIT','DEPCN','DEPSC','SNDG1','SNDG2','CHBLK','CHGRD'}
@@ -24,7 +25,7 @@ BUILT_AREA_LOOKUPS={'16':('32052','Plain'),'356':('32391','Symbolized')}
 BUILT_AREA_INSTRUCTION="AC(CHBRN);TX(OBJNAM,1,2,3,'16120',0,0,CHBLK,26);LS(SOLD,1,LANDF)"
 BUILT_AREA_COLOR='XNBUA'
 GEOGRAPHIC_COLOR='XNGEO'
-ADDED_COLORS={BUILT_AREA_COLOR,GEOGRAPHIC_COLOR,chart_cable_paint.COLOR}
+ADDED_COLORS={BUILT_AREA_COLOR,GEOGRAPHIC_COLOR,chart_cable_paint.COLOR,chart_cable_paint.AREA_COLOR}
 GEOGRAPHIC_CLASSES={'BUAARE','LNDARE','LNDRGN','SEAARE'}
 # Apply the prototype's chart-only Night brightness once to owned paint inputs.
 # CHBLK/CHGRD, safety contour and soundings deliberately retain brighter ink:
@@ -40,7 +41,7 @@ def geographic_ink(name, instruction):
                   r"\g<1>XNGEO\2",instruction)
 
 def styled_instruction(lookup):
-    instruction=lookup.findtext('instruction')
+    instruction=chart_cable_paint.area_instruction(lookup)
     if lookup.get('id') in BUILT_AREA_LOOKUPS:
         assert instruction==BUILT_AREA_INSTRUCTION
         instruction=instruction.replace('AC(CHBRN)','AC(XNBUA)')
@@ -118,7 +119,7 @@ def generate(source, output):
                 raw=colors[table][name]
                 colors[table][name]=tuple((channel*78+50)//100 for channel in raw)
                 night_mapping[name]={'raw':raw,'effective':colors[table][name]}
-            if name==chart_cable_paint.COLOR:
+            if name in (chart_cable_paint.COLOR,chart_cable_paint.AREA_COLOR):
                 colors[table][name]=chart_cable_paint.theme_ink(table,colors[table][name])
         pattern=r'(<color-table name="'+re.escape(table)+r'">)(.*?)(</color-table>)'
         assert len(re.findall(pattern,xml,re.S))==1
@@ -169,6 +170,8 @@ def generate(source, output):
         result[name], count = derive(day_pixels, original[name], source_rgb, colors[table]['CHBLK'])
         raster_ink[name] = {'sourceRgb':source_rgb, 'targetRgb':colors[table]['CHBLK'],
                             'changedPixels':count, 'alphaAndGeometryPreserved':True}
+    result['rastersymbols-day.png'], day_ink = chart_day_neutral_ink.derive_day(
+        original['chartsymbols.xml'], original['rastersymbols-day.png'], colors['DAY_BRIGHT']['CHBLK'])
     anchor_art = {}
     service_art = {}
     cardinal_art = {}
@@ -184,7 +187,7 @@ def generate(source, output):
     for name,content in result.items():write(output/name,content)
     metadata={'version':definition['version'],'upstreamCommit':lock['upstreamCommit'],
               'prototypeSha256':definition['prototypeSha256'],'palette':colors,
-              'neutralRasterInk':raster_ink,
+              'neutralRasterInk':raster_ink, 'dayNeutralRasterInk':day_ink,
               'nightCanvas':{'brightness':.78,'roles':night_mapping,
                              'retainedSafetyInk':sorted(NIGHT_SAFETY_ROLES)},
               'anchorageArtwork':anchor_art,
@@ -192,6 +195,8 @@ def generate(source, output):
               'cardinalArtwork':cardinal_art,
               'geographicNameLookups':geography_count,
               'submarineCablePaint':{'name':'CBLSUB06','RCID':'2012','color':'XNCBL','unchangedHPGL':True},
+              'areaLinePaint':{'color':'XNARE','ferryLineRCID':'2019','plainCableLookupRCID':'32061',
+                               'unchangedGeometryAndRestrictions':True},
               'files':{n:{'sha256':hashlib.sha256(c).hexdigest(),'bytes':len(c)} for n,c in result.items()}}
     write(output/'manifest.json',(json.dumps(metadata,indent=2)+'\n').encode())
     header=['#pragma once','#include <cstdint>','namespace opennav::chart_style::generated {',
@@ -209,4 +214,4 @@ def generate(source, output):
 if __name__=='__main__':
     p=argparse.ArgumentParser();p.add_argument('--source',type=Path,required=True);p.add_argument('--output',type=Path,required=True)
     a=p.parse_args();m=generate(a.source,a.output)
-    print('Verified pinned resources; generated three chart palettes, two BUAARE fills, 18 geographic-name ink rules, isolated ACHARE51/PILBOP02/RTPBCN02/BOYCAR01-04 artwork, CBLSUB06 paint and resource hashes; other navigation rules unchanged')
+    print('Verified pinned resources; generated three chart palettes, two BUAARE fills, 18 geographic-name ink rules, isolated ACHARE51/PILBOP02/RTPBCN02/BOYCAR01-04 artwork, CBLSUB06/FERYRT01/Plain CBLARE paint and resource hashes; other navigation rules unchanged')

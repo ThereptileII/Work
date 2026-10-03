@@ -1,0 +1,42 @@
+{
+  "baseline": "8e353cfbff4bbb38ccec5ef04da18ac9d9d33261",
+  "scope": "Linux wxGTK component comparison only; native Windows/DPI and boat acceptance open",
+  "source_sha256": {
+    "CMakeLists.txt": "ddf40f75ed9a0185e4574e35817bed2f3166de36d4cc50a592a8affea8667c46",
+    "src/ui/Controls.cpp": "2910036a24c3473c3d3c9b82ca5b37cf2cfcc37e6e5242c99a0e5c36a5e5eb0d",
+    "src/ui/FloatingSurface.cpp": "fc6dc88cef1f636499841d70794de4e4fd9109108514ec3301f2f8a7bf7a52a6",
+    "src/ui/FloatingSurface.h": "24da15dab97e3a775c70348d612eda850fbb5214ca3ec9919a8faa5564e9ddc3",
+    "src/ui/Shell.cpp": "adbf5f4bbc8d56cd35bc0e67d6dd8bce6643c2d6751bae36a8184b1f987d05f2",
+    "tests/chart_chrome_presentation_test.cpp": "300fba7845c6aa4c860fe8b250032ccfafd5b6e5db6f4e0c3945b8a40f3c6fc9",
+    "tests/floating_surface_test.cpp": "d90ac75f0525679faf5901b3793c52b81723a4211e83a27190f0504ffb3a0d4d",
+    "tools/verify-chart-chrome-pixels.py": "655578bb70a000630410aeffec29c37380485a15fb7560ecc6d3e7893d8148bd",
+    "src/ui/Theme.h": "b28adb1f519ec5a1f9b7e2bfab6ec2ab1c7f06656bd129316e9e453ef1ec0776",
+    "docs/design/prototype/src/style.css": "f943f5c91e2b260067e97a80d47fc923b64c3bb715c73a58ce1d4a6bf7a1bb46",
+    "docs/design/prototype/reference/linux/capture.json": "f369d4a660fb6f987437d3d46e138de5e8b0e13b3c081aaed1864b69f92fc3cb"
+  },
+  "baseline_source_sha256": {
+    "src/ui/Controls.cpp": "af7939d53477998bc5d0c8403897b906f806dae3ddd2cfe99eeec5096e3979b1",
+    "src/ui/FloatingSurface.cpp": "5f9629577d3a5dadbe6292eb3055069ab64ab1f6a7b33e6806bb1b6d81c1b439",
+    "src/ui/FloatingSurface.h": "138666087fdadc0edbaead939db2079d6ea06fde242c6fb4c9c4dfa2b0f72ffe"
+  },
+  "executable_sha256": {
+    "before": "9d0aa2f7f729ab7a0ae7ebb3a672897c244bfb00e868851946c9ad7c4b9dd52e",
+    "after": "4d75fe4330353ee930ca228a98cc88281584a4730b7f521a51b2b459286497e7",
+    "lifecycle": "643c5d2810139cf478aa214dad18bc10a91b5417bc647c6082250fa4d540283b"
+  },
+  "evidence_sha256": {
+    "README.md": "6e921cee1cf15a9c3f4acf04a25e3667b73191a74c1c309cfc39f271031f8252",
+    "after/Day.png": "7fa46a10e62b1a3927715da8267dcf35798653ad063112b0b08c690a3624368d",
+    "after/Dusk.png": "6b0eb9107a3f087a58f28eb39841acfb1e0b1c95ccf83cf60f6635a94c959c41",
+    "after/Night.png": "abfae1cc0be0f0ac4b09812b9dc87a735fb1ea852a74829b47815b3a54c58f5b",
+    "after/render.log": "e9132937c64b2f7532a5ad2548d5897f76c7e700375ed7a02d51d71340e9ba14",
+    "before/Day.png": "1d780453909b040c19ba0c0fad9df7af631736f6f00e6649d84c6d66ac0dd97c",
+    "before/Dusk.png": "cb098bf29b7904dde42bf8a373afd4766926b4c2a4b1e519cdf85b228d07ec3a",
+    "before/Night.png": "a6a6ceb487ddf80e73cc751a86239aa661288449b025d4bfbeff91ae9fe065b0",
+    "before/render.log": "e9132937c64b2f7532a5ad2548d5897f76c7e700375ed7a02d51d71340e9ba14",
+    "lifecycle.log": "ebc203601dfb77695e64b66d14c29a0bf3e29b2e18d0109061a7fcd7f8d92f2f",
+    "pixel-checks.json": "6cbf2f73b20e4537312d205b343f3961dc44be461b7990c9a9a803f98c55d128",
+    "shell-compile-command.json": "1954f1efa1f92bdc03e11589aeb13c27ab531cd3cac23f7a985baebf1c121258",
+    "shell-compile.log": "9fa3b6ead7afc298499f30c5b70014c78b6686a8269611537606fa5a7c02b6a2"
+  }
+}

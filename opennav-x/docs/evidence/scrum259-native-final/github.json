@@ -1,0 +1,81 @@
+{
+  "jobs": {
+    "jobs": [
+      {
+        "id": 111133035756,
+        "name": "Native Win32 private chart loader boundaries",
+        "status": "completed",
+        "conclusion": "success",
+        "run_id": 37098440931,
+        "logs_url": null,
+        "steps": [
+          {
+            "name": "Set up job",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 1
+          },
+          {
+            "name": "Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 2
+          },
+          {
+            "name": "Verify adapter preparation and build wiring",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 3
+          },
+          {
+            "name": "Exercise unchanged production loader with harmless native DLLs",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 4
+          },
+          {
+            "name": "Run actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 5
+          },
+          {
+            "name": "Post Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 10
+          },
+          {
+            "name": "Complete job",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 11
+          }
+        ]
+      }
+    ]
+  },
+  "artifacts": {
+    "artifacts": [
+      {
+        "id": 11265451293,
+        "name": "native-ocharts-loader-guards-5d6c5cf44cb72f8166b2ab67115bccd568336e35",
+        "size_in_bytes": 16574,
+        "url": "https://api.github.com/repos/ThereptileII/Work/actions/artifacts/11265451293",
+        "archive_download_url": "https://api.github.com/repos/ThereptileII/Work/actions/artifacts/11265451293/zip",
+        "expired": false,
+        "created_at": "2026-10-03T05:01:52Z",
+        "expires_at": "2027-01-01T05:00:59Z",
+        "updated_at": "2026-10-03T05:01:52Z",
+        "digest": "sha256:0789dc1b6afef740703e59b1e4a55c66b20b3be666dcab24b9abb5137f16e908",
+        "workflow_run": {
+          "id": 37098440931,
+          "repository_id": 864043804,
+          "head_repository_id": 864043804,
+          "head_branch": "skager-ocharts-loader",
+          "head_sha": "5d6c5cf44cb72f8166b2ab67115bccd568336e35"
+        }
+      }
+    ]
+  }
+}

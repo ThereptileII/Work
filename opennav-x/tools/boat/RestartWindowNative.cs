@@ -64,7 +64,7 @@ namespace OpenNavX {
     }
     public static string Caption(string from,string to) {
       Title(from);Title(to);
-      if(from!="--xnav") {if(to=="--xnav")return "Switch to SKAGER";throw new InvalidOperationException("Legacy/Safe exposes only its actual XNav return action.");}
+      if(from!="--xnav") {if(to=="--xnav")return "Switch to SKAGER";throw new InvalidOperationException("Legacy/Safe exposes only its actual SKAGER return action.");}
       switch(to) {case "--xnav":return "Restart SKAGER";case "--legacy":return "Open Legacy OpenCPN";case "--safe-mode":return "Safe Mode";default:throw new InvalidOperationException("Unknown mode.");}
     }
     public static WindowInfo AssertFrame(IntPtr h,int pid,string mode) {

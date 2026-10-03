@@ -25,7 +25,7 @@ foreach ($protected in @($destination,'C:\ProgramData\opencpn')) {
   if ($Output.StartsWith($protected+'\',[StringComparison]::OrdinalIgnoreCase)) { throw 'Evidence must remain outside the live application/profile.' }
 }
 function Assert-Closed {
-  if (@(Get-Process -Name opencpn -ErrorAction SilentlyContinue).Count) { throw 'OpenCPN/XNav is running; no installer input sent.' }
+  if (@(Get-Process -Name opencpn -ErrorAction SilentlyContinue).Count) { throw 'OpenCPN/SKAGER is running; no installer input sent.' }
 }
 function Read-OriginalRegistration {
   $base=[Microsoft.Win32.RegistryKey]::OpenBaseKey([Microsoft.Win32.RegistryHive]::LocalMachine,[Microsoft.Win32.RegistryView]::Registry32)

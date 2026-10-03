@@ -20,7 +20,7 @@ $SetupHash='e949f55de57611afe2fc0dad5a8ac33795c46ba488cb40ca07b65f639a07b8aa'
 $TargetHash='7c6547562cca7954671eaab72833ca9d788710fd9808b6a699b6dc823852ae0c'
 $PluginUninstallerHash='0da3cfb79b1cf2085f6f53c095abe60300f76f95a9503c09ce467a9c833912fb'
 function Assert-UpgradeClosed {
-  if (@(Get-Process -Name opencpn -ErrorAction SilentlyContinue).Count) {throw 'Close every OpenCPN/XNav instance normally before stock maintenance.'}
+  if (@(Get-Process -Name opencpn -ErrorAction SilentlyContinue).Count) {throw 'Close every OpenCPN/SKAGER instance normally before stock maintenance.'}
 }
 function Upgrade-Relative([string]$Root,[string]$Relative) {
   if (-not $Relative -or $Relative -match '[:\x00-\x1f]' -or $Relative.StartsWith('/') -or $Relative.StartsWith('\')) {throw 'Unsafe recovery relative path.'}

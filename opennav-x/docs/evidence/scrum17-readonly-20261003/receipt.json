@@ -1,0 +1,10 @@
+{
+  "read-only.ps1": {
+    "bytes": 5101,
+    "sha256": "7afb6e4442d70f6bc8ee16a9551d22ec362082574db9950a5c80c1631d08fb95"
+  },
+  "observations.json": {
+    "bytes": 2251,
+    "sha256": "68f346801944b95145dc92072f710ead54daf00e793ba86644556ec4c76a9ad1"
+  }
+}

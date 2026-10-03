@@ -694,7 +694,9 @@ void XNavButton::Paint(wxPaintEvent&) {
         return;
       }
       dc.SetFont(UiFont(*this, compact_nav ? 9 : navigation_item_ ? 10 : 11));
-      const auto label=wxControl::Ellipsize(GetLabel(),dc,wxELLIPSIZE_END,std::max(1,size.x-FromDIP(8)));
+      // CSS flex captions retain their natural text width within the button;
+      // the 54px Instruments caption fits 61px without an extra 8px deduction.
+      const auto label=wxControl::Ellipsize(GetLabel(),dc,wxELLIPSIZE_END,std::max(1,size.x-FromDIP(navigation_item_ ? 0 : 8)));
       dc.DrawText(label,(size.x-dc.GetTextExtent(label).x)/2,y+FromDIP(short_nav?22:compact_nav?25:29));
     }
     return;

@@ -1,0 +1,22 @@
+{
+  "from": "4e2715088361b0068e920f7744b49ab68ab439e1",
+  "to": "dfa7b721ef6eca3f084f77e95dd8e2adc20bde4b",
+  "allChanges": [
+    "docs/design/reviews/scrum247-plugin-loader-header-closure.md",
+    "docs/evidence/scrum259-native23-failed/11264223120.zip",
+    "docs/evidence/scrum259-native23-failed/README.md",
+    "docs/evidence/scrum259-native23-failed/archive-inventory.json.gz",
+    "docs/evidence/scrum259-native23-failed/chart-inputs.json.gz",
+    "docs/evidence/scrum259-native23-failed/compile.log.gz",
+    "docs/evidence/scrum259-native23-failed/configure.log.gz",
+    "docs/evidence/scrum259-native23-failed/github.json",
+    "docs/evidence/scrum259-native23-failed/summary.json.gz",
+    "docs/evidence/scrum259-native23-failed/verification.json",
+    "installer/windows/AlphaSetup.nsi",
+    "src/integration/OpenCPN.cmake",
+    "tests/windows_changed_units/ChartUnits.cmake",
+    "tools/windows-chart-headers.lock.json",
+    "tools/windows_chart_units.py"
+  ],
+  "reuse": "independently generated seven resources from identical pinned upstream, patch and resource-generation inputs"
+}

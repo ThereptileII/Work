@@ -164,7 +164,7 @@ namespace OpenNavX {
     }
     private static WindowInfo FrameIdentity(IntPtr frame,int pid,bool requireForeground) {
       if(frame==IntPtr.Zero || Owner(frame)!=(uint)pid || GetParent(frame)!=IntPtr.Zero ||
-         IsIconic(frame) || !IsWindowVisible(frame) || !IsWindowEnabled(frame))throw new InvalidOperationException("Exact reviewed XNav frame must be foreground and enabled; dismiss other windows manually.");
+         IsIconic(frame) || !IsWindowVisible(frame) || !IsWindowEnabled(frame))throw new InvalidOperationException("Exact reviewed SKAGER frame must be foreground and enabled; dismiss other windows manually.");
       int menu=0,navigation=0;
       foreach(var child in Children(frame)) {
         var text=Text(child);
@@ -173,7 +173,7 @@ namespace OpenNavX {
         if(text=="Navigation" && Class(child)!="Static")navigation++;
       }
       bool prototype=PrototypeNavigation(frame,pid)!=IntPtr.Zero;
-      if((prototype && (menu!=0 || navigation!=0)) || (!prototype && (menu!=1 || navigation!=1)))throw new InvalidOperationException("Normal installed XNav shell was not uniquely identified.");
+      if((prototype && (menu!=0 || navigation!=0)) || (!prototype && (menu!=1 || navigation!=1)))throw new InvalidOperationException("Normal installed SKAGER shell was not uniquely identified.");
       var rect=Bounds(frame);
       if(rect.Width<100 || rect.Height<100 || rect.Width>7680 || rect.Height>4320)throw new InvalidOperationException("Reviewed frame dimensions are outside bounded display geometry.");
       var dpi=GetDpiForWindow(frame);
@@ -271,7 +271,7 @@ namespace OpenNavX {
           throw new InvalidOperationException("Application did not accept exactly 1280x800 physical pixels in the pinned work area; no resize retry.");
         return result;
       } catch(Exception error) {
-        throw new InvalidOperationException("Fixed XNav resize refused at "+stage+"; before="+Geometry(result.Before)+"; restored="+Geometry(result.Restored)+"; after="+Geometry(result.After)+"; current="+CurrentGeometry(frame,pid)+". "+error.Message,error);
+        throw new InvalidOperationException("Fixed SKAGER resize refused at "+stage+"; before="+Geometry(result.Before)+"; restored="+Geometry(result.Restored)+"; after="+Geometry(result.After)+"; current="+CurrentGeometry(frame,pid)+". "+error.Message,error);
       }
     }
     public static void Escape(IntPtr frame,int pid) {

@@ -2,6 +2,53 @@
 
 ## Current combined candidate: SKAGER chart fidelity and branding
 
+The next correction batch includes the exact prototype
+[ferry/cable-area ink](evidence/scrum260-area-ink/README.md),
+[Day neutral marker ink](design/reviews/scrum261-day-neutral-ink.md), and
+[floating chart-control border and complete navigation captions](evidence/scrum14-floating-caption/README.md).
+These preserve navigational classifications, symbol geometry, soundings,
+Standard resources and control hit areas. The Day mask changes only 40,482
+unambiguously owned neutral pixels; off-palette wreck bitmaps remain unchanged.
+The [final copy audit](design/reviews/scrum236-final-copy-audit.md) also closes
+remaining operator/diagnostic product labels. Customer-facing identity is
+SKAGER with the approved Jira artwork; immutable evidence, compatibility IDs
+and required OpenCPN attribution remain. Focused checks pass, but fresh combined
+application captures, Windows packaging and boat acceptance are still required.
+
+### Preceding integrated candidate and corrected Windows prerequisite
+
+The replacement source is `dfa7b721ef6eca3f084f77e95dd8e2adc20bde4b`,
+published exactly as `c9ff4ae2c110d234807a326bc30c25084eb42a5d` (2,849 mapped
+blobs/modes verified). Its [integrated Linux build/install](evidence/scrum259-linux-dfa7b72/README.md)
+passes all five original drawing fixtures and **147/147** regressions. The
+shared-model callback link correction and the initial isolated test-environment
+failure are retained with their passing evidence. The
+[corrected native preflight](evidence/scrum259-native23-corrected/README.md)
+passes all **23 actual Win32 compilation units** with independently verified
+downloaded objects. Its earlier missing-header failure is retained separately.
+
+The [full replacement run 37097634494](https://github.com/ThereptileII/Work/actions/runs/37097634494)
+stopped at its Windows private-loader prerequisite, before application
+compilation: the preparation test expected deterministic LF output, but inherited
+Windows Git settings produced CRLF. Thirteen of fourteen preparation cases
+passed; the native loader did not execute, so its expected artifact was absent.
+A bounded production preparation correction now passes its
+[separate native gate](evidence/scrum259-native-final/README.md), run
+37098440931 at exact published `5d6c5cf44cb72f8166b2ab67115bccd568336e35`:
+14 preparation cases, 16 build-wiring refusals and 38 actual harmless-DLL
+loader groups. The downloaded artifact and source identities were independently
+verified. Git patch output now explicitly stays LF regardless of inherited
+Windows settings. This does not qualify the private renderer DLL, application,
+charts or final package; no application crash is inferred from the original run.
+Other Linux/native jobs continue independently. The Windows real-module,
+final-icon, installer, chart and boat gates remain open.
+
+The [fresh read-only boat check](evidence/scrum17-readonly-20261003/README.md)
+confirms unchanged validated stock OpenCPN, installed Beta 1, profile and recovery
+state, with no navigation/helper processes. SSH and Tailscale remain healthy;
+RustDesk's service is running, but interactive connectivity was not exercised.
+No candidate was installed and no older generation was removed.
+
 **Boat chart presentation gap (SCRUM-259):** the fresh read-only inventory found
 581 `.oesu` files in the first configured chart root and two MBTiles files in the
 second. Both roots are available; no chart contents, private paths or licence
@@ -24,7 +71,7 @@ against the approved Jira artwork; native final-binary results remain open.
 No boat plugin or stock resources have been changed. Raster MBTiles
 cannot receive object-level vector styling. [Availability evidence](evidence/boat-chart-types-20261003/summary.json).
 
-The clean application source is `78eccb8b7f21b260ded57d3ba763f884d60c8180`,
+The preceding chart-capture application source is `78eccb8b7f21b260ded57d3ba763f884d60c8180`,
 published exactly as `61a0a7838b56ad841bb458af6fc62651464bdafe` (2,472 mapped
 blobs/modes verified). Its [integrated Linux build and staging pass](evidence/skager-chart-78eccb8-linux-build/README.md).
 This combines the prior palette/service artwork, the [four classified cardinal

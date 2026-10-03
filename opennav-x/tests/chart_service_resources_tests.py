@@ -5,6 +5,7 @@ from pathlib import Path
 import re
 import xml.etree.ElementTree as ET
 from chart_raster_ink import decode, derive
+from chart_day_neutral_ink import derive_day
 
 
 def verify_services(source, output, metadata, check):
@@ -45,6 +46,7 @@ def verify_services(source, output, metadata, check):
                                   ('rastersymbols-dusk.png','DUSK',(54,54,54),(168,187,183)),
                                   ('rastersymbols-dark.png','NIGHT',(27,27,27),(98,115,108))]:
         content=(source/name).read_bytes()
+        if table=='DAY_BRIGHT':content,_=derive_day((source/'chartsymbols.xml').read_bytes(),content,metadata['palette'][table]['CHBLK'])
         if neutral:content,_=derive(day,content,neutral,metadata['palette'][table]['CHBLK'])
         cb,before=decode(content);ca,after=decode((output/name).read_bytes())
         check([(k,v) for k,v in cb if k!=b'IDAT']==[(k,v) for k,v in ca if k!=b'IDAT'])
