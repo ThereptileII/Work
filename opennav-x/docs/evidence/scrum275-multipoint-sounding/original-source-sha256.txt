@@ -1,0 +1,2 @@
+47928a42302f73f70b13a8a78ecaf861a7338e6d792b16b2c508ed22b816e876  src/integration/ChartCaLightPoint.h
+f7ac97fdecfebc03e0a91ef040613e8bf97ca65020351c02c4082c0be2fe8571  tests/chart_ca_light_point_test.cpp

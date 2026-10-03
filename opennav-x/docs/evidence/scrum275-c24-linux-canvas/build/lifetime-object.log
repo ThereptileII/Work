@@ -1,0 +1,3 @@
+[1/2] cd /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-linux/libs/libdnet && /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/.local/sysroot/usr/bin/cmake -E echo Built\ the\ libdnet\ library
+Built the libdnet library
+[2/2] Building CXX object CMakeFiles/opencpn.dir/gui/src/s57chart.cpp.o

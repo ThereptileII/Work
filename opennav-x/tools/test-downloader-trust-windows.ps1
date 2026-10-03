@@ -92,7 +92,7 @@ function New-Leaf([string]$Name,[string]$CaKey,[string]$CaCert,[string]$Dns,[swi
     OpenSsl @('x509','-req','-in',$Csr,'-CA',$CaCert,'-CAkey',$CaKey,'-CAcreateserial','-days','1','-extfile',$Ext,'-out',$Cert)
   } else {
     $Index=Join-Path $Fixtures "$Name-index.txt"; $Serial=Join-Path $Fixtures "$Name-serial"; $NewCerts=Join-Path $Fixtures "$Name-newcerts"; $Config=Join-Path $Fixtures "$Name-ca.cnf"
-    Set-Content -LiteralPath $Index -Value '' -Encoding ascii; Set-Content -LiteralPath $Serial -Value '1000' -Encoding ascii; $null=New-Item -ItemType Directory $NewCerts
+    [IO.File]::WriteAllBytes($Index, [byte[]]::new(0)); Set-Content -LiteralPath $Serial -Value '1000' -Encoding ascii; $null=New-Item -ItemType Directory $NewCerts
     $Index=$Index.Replace('\','/');$Serial=$Serial.Replace('\','/');$NewCerts=$NewCerts.Replace('\','/');$CaCert=$CaCert.Replace('\','/');$CaKey=$CaKey.Replace('\','/')
     @("[ca]","default_ca=local","[local]","database=$Index","serial=$Serial","new_certs_dir=$NewCerts","certificate=$CaCert","private_key=$CaKey","default_md=sha256","policy=policy","x509_extensions=server","[policy]","commonName=supplied","[server]","subjectAltName=DNS:$Dns","extendedKeyUsage=serverAuth") | Set-Content -LiteralPath $Config -Encoding ascii
     OpenSsl @('ca','-batch','-config',$Config,'-in',$Csr,'-out',$Cert,'-startdate','20200101000000Z','-enddate','20200102000000Z')

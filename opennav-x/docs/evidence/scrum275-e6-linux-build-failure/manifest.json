@@ -1,0 +1,22 @@
+{
+  "advance-patched-source.py": {
+    "bytes": 2223,
+    "sha256": "17b6598061853bb5d0879d1aaee13aa26939ece11c9c11a24a1b51d695e9bfe3"
+  },
+  "build.log": {
+    "bytes": 28709,
+    "sha256": "2b2f28102484490f1a9b160049c68492b34d22fe1d9fd633e2086f9c2f61fd41"
+  },
+  "donor-after.json": {
+    "bytes": 369,
+    "sha256": "ec99cca70cc22635d83b159199796d997846f04c8b292f7818a8fd45886e6fe1"
+  },
+  "run-build.sh": {
+    "bytes": 1898,
+    "sha256": "125b8025e8d94e025ec9cc748924dfddb6f96d4e7812fe59b4acd5da08c7a179"
+  },
+  "source-advance.json": {
+    "bytes": 3586,
+    "sha256": "8c5627f91beb2dad7501a3930c2497c8cf73c821b46a9127205fb112d71ba55d"
+  }
+}

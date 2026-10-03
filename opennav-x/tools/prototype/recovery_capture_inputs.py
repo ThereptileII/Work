@@ -263,7 +263,9 @@ def verify_disposable_package(receipt):
     return receipt
 
 
-IHO_SCENES = ('yellow', 'lateral', 'cardinals')
+IHO_SCENES = ('yellow', 'lateral', 'cardinals', 'light-fog', 'sector-rwg')
+IHO_LIGHT_SCENES = 'docs/evidence/scrum275276-package-scenes/scenes.json'
+IHO_LIGHT_SCENES_SHA256 = 'fee43e336d3d54eb418181c7a35f8c158840b0d1046b3a95898c303415f88ddd'
 IHO_SCENE_INVENTORY = 'docs/evidence/scrum264-public-enc-scenes/scenes.json'
 IHO_SCENE_INVENTORY_SHA256 = '1da8b7c03d1bbbd35296531a2c7ea01c3c5aa9261d9b9e9336f6e6c3e3cfb1b3'
 IHO_VIEW_RECEIPTS = {
@@ -292,6 +294,21 @@ def iho_scene(name='yellow', root=None):
                                     {'class': 'TOPMAR', 'RCID': 257, 'COLOUR': ['6'], 'TOPSHP': 7}],
                 'source_audit_sha256': '567c4dea09a1d05a11919174e10268b7e75ea9e5ac85c281a10097bd0360e15b'}
     root = Path(root) if root is not None else Path(__file__).resolve().parents[2]
+    if name in ('light-fog', 'sector-rwg'):
+        inventory, source = _locked_scene_json(root, IHO_LIGHT_SCENES, IHO_LIGHT_SCENES_SHA256)
+        require(inventory['cell'] == 'GB4X0000.000' and inventory['source_sha256'] == IHO_SHA256 and
+                inventory['coordinate_order'] == 'latitude,longitude', 'IHO light scene identity differs')
+        selected = [s for s in inventory['scenes'] if s['name'] == name]
+        require(len(selected) == 1, 'IHO light scene selection differs')
+        selected = selected[0]
+        require(all(f['position_lat_lon'] == selected['center'] for f in selected['source_features']),
+                'IHO light scene coordinate order differs')
+        return {'scene': name, 'center': selected['center'],
+                'requested_scale_ppm': selected['requested_scale_ppm'],
+                'expected_scale_ppm': selected['expected_scale_ppm'],
+                'scale_basis': inventory['scale_basis'], 'pixel_proof': None,
+                'visual_acceptance': 'review-required; no glyph or selected-alias acceptance oracle',
+                'source_features': selected['source_features'], 'source_inventory': source}
     inventory, source = _locked_scene_json(root, IHO_SCENE_INVENTORY, IHO_SCENE_INVENTORY_SHA256)
     selected = [s for s in inventory if s['id'] == 's64-' + name]
     require(len(selected) == 1 and selected[0]['cell'] == 'GB4X0000', 'IHO scene inventory differs')
@@ -349,7 +366,7 @@ def presentation(snapshot, style, iho=False, scene='yellow'):
                 'IHO Simplified saved/effective table differs')
         c = snapshot['runtime']['chart']
         require(abs(c['latitude']-selected['center'][0]) < 1e-7 and abs(c['longitude']-selected['center'][1]) < 1e-7 and
-                abs(c['scale_ppm']-selected['observed_scale_ppm']) < 1e-7 and c['follow'] is False and c['quilt'] is True,
+                abs(c['scale_ppm']-selected.get('expected_scale_ppm', selected.get('observed_scale_ppm'))) < 1e-7 and c['follow'] is False and c['quilt'] is True,
                 'Actual official test viewport differs')
         require(c['canvas_pixels'] == {'width': 1014, 'height': 566} and c['database_entries'] == 1 and
                 c['quilt_members'] == [{'type': 5, 'native_scale': 52000, 'file': 'GB4X0000.000', 'index': c['quilt_reference']}],

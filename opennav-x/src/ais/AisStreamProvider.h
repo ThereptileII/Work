@@ -2,6 +2,9 @@
 #include "ais/Provider.h"
 #include "ais/Subscription.h"
 #include <string>
+#ifdef OPENNAV_AIS_TEST_TRANSPORT
+#include <functional>
+#endif
 
 namespace opennav::ais {
 class IAisCredentials;
@@ -27,7 +30,7 @@ public:
   // Compiled exclusively into a dedicated loopback integration test driver.
   static std::unique_ptr<AisStreamProvider>
   ForTest(std::unique_ptr<IAisCredentials>, const std::string &loopback_url,
-          const std::string &test_ca);
+          const std::string &test_ca, std::function<void()> before_open = {});
 #endif
 private:
   AisStreamProvider(std::unique_ptr<IAisCredentials>, std::string url,

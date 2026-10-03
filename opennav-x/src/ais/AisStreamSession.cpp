@@ -19,14 +19,16 @@ bool AisStreamSession::Advance(vessel::Time now) {
   return true;
 }
 void AisStreamSession::State(Connection state, vessel::Time now) {
+  if (state != Connection::Subscribing && state != Connection::Connected)
+    connection_ = {};
   if (health_.connection != state) {
     health_.connection = state;
     health_.state_since = now;
   }
 }
-void AisStreamSession::Enable(bool enabled, vessel::Time now) {
+bool AisStreamSession::Enable(bool enabled, vessel::Time now) {
   if (!Advance(now) || enabled == enabled_)
-    return;
+    return false;
   enabled_ = enabled;
   failures_ = 0;
   health_.subscription_confirmed = false;
@@ -35,6 +37,7 @@ void AisStreamSession::Enable(bool enabled, vessel::Time now) {
   if (!enabled)
     cache_ = TargetCache{}; // explicit user disable removes online targets
   State(enabled ? Connection::Offline : Connection::Disabled, now);
+  return true;
 }
 bool AisStreamSession::ObserveViewport(Viewport viewport) {
   return subscription_.ObserveViewport(viewport);
@@ -51,13 +54,19 @@ bool AisStreamSession::Connecting(vessel::Time now) {
   State(Connection::Connecting, now);
   return true;
 }
-void AisStreamSession::Opened(vessel::Time now) {
+bool AisStreamSession::Opened(vessel::Time now, ConnectionObservation connection) {
   if (!Advance(now) || !enabled_ ||
       health_.connection != Connection::Connecting)
-    return;
+    return false;
   new_connection_ = true;
   health_.subscription_confirmed = false;
   State(Connection::Subscribing, now);
+  // An unavailable observation never prevents normal connection/subscription.
+  if ((connection.family == AddressFamily::IPv4 || connection.family == AddressFamily::IPv6) &&
+      connection.local.port && connection.remote.port && connection.generation &&
+      connection.captured_at > vessel::Time{} && connection.captured_at <= now)
+    connection_ = connection;
+  return true;
 }
 void AisStreamSession::CredentialMissing(vessel::Time now) {
   if (!Advance(now) || !enabled_)
@@ -162,6 +171,7 @@ bool AisStreamSession::ShouldClose() const {
 ProviderSnapshot AisStreamSession::Read(vessel::Time now) const {
   ProviderSnapshot snapshot;
   snapshot.health = health_;
+  snapshot.connection = connection_;
   snapshot.health.compression_enabled = compression_;
   snapshot.health.retry_at = retry_at_;
   if (enabled_)

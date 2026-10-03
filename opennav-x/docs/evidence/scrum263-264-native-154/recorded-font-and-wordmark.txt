@@ -1,0 +1,10 @@
+189932 wordmark checks passed; 18 native before/after theme/size drawings
+available: Segoe UI Variable Display=0
+available: Segoe UI=1
+available: Arial=1
+system-font: Segoe UI
+production: px=11 weight=400 selected=Segoe UI GDI-face=Segoe UI dpi=96
+production: px=23 weight=650 selected=Segoe UI GDI-face=Segoe UI dpi=96
+production: px=48 weight=400 selected=Segoe UI GDI-face=Segoe UI dpi=96
+ordinary-chart-policy: selected=Segoe UI GDI-face=Segoe UI dpi=96
+Production family/weight checks passed; native Windows/boat DPI review remains required

@@ -1,0 +1,48 @@
+{
+  "fixtureSha256": "c70d9e0f53e149270f85900f8576082db86781d64fbb71aa7d5ceb4af4aa22e3",
+  "coordinateOrder": "latitude,longitude; handoff W/N shorthand corrected against source [shape.y,shape.x]",
+  "scenes": [
+    {
+      "id": "s64-light32-fog33",
+      "cell": "GB4X0000",
+      "kind": "IHO-S64-official-test-data-not-real-world",
+      "center": [
+        -32.3760351,
+        61.0307025
+      ],
+      "scalePpm": 0.6,
+      "themes": [
+        "Day",
+        "Dusk",
+        "Night",
+        "Day"
+      ],
+      "features": [
+        {
+          "class": "LIGHTS",
+          "attributes": {
+            "RCID": 32,
+            "latitude": -32.3760351,
+            "longitude": 61.0307025,
+            "COLOUR": [
+              "1"
+            ],
+            "VALNMR": 20.0
+          },
+          "expectedRaster": "XNLIT013",
+          "related": []
+        },
+        {
+          "class": "FOGSIG",
+          "attributes": {
+            "RCID": 33,
+            "latitude": -32.3760351,
+            "longitude": 61.0307025
+          },
+          "expectedRaster": "FOGSIG01",
+          "related": []
+        }
+      ]
+    }
+  ]
+}

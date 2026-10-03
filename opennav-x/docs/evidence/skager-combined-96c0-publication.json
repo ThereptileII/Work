@@ -1,0 +1,12 @@
+{
+  "local_commit": "96c0c2705aacae511b6f8c22afaa6618dbabceff",
+  "remote_commit": "15452e512fd073090b1a4cea7c9010eac0874118",
+  "remote_tree": "3c53cff0332dfc09babb8e5b8daa7986f77a9c84",
+  "mapped_entries": 4782,
+  "unrelated_root_entries_preserved": 8,
+  "independently_reconstructed": true,
+  "branch": "opennav-x-beta2-ui",
+  "run_url": "https://github.com/ThereptileII/Work/actions/runs/37136712793",
+  "qualification_started_utc": "2026-10-03T16:24:07Z",
+  "scope": "One combined full candidate after independently audited native path/cache and notification compilation proofs. Full link/TLS, package, installer, native visual and boat acceptance remain pending."
+}

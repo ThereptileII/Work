@@ -1,0 +1,30 @@
+normal IPv4
+OBS 2 4 57658 33229 0 0 127 0 0 1 0 0 0 0 0 0 0 0 0 0 0 0 127 0 0 1 0 0 0 0 0 0 0 0 0 0 0 0
+OBS 4 4 55290 33229 0 0 127 0 0 1 0 0 0 0 0 0 0 0 0 0 0 0 127 0 0 1 0 0 0 0 0 0 0 0 0 0 0 0
+PASS provider: confirmed, real transport reports, viewport replacement, reconnect, resubscribe, owned lifetime, disable
+PASS server: complete prompt subscriptions, compression, 5s pan cadence, bounded reconnect, key never logged
+disable-enable IPv4
+OBS 4 4 54158 39805 0 0 127 0 0 1 0 0 0 0 0 0 0 0 0 0 0 0 127 0 0 1 0 0 0 0 0 0 0 0 0 0 0 0
+OBS 6 4 45000 39805 0 0 127 0 0 1 0 0 0 0 0 0 0 0 0 0 0 0 127 0 0 1 0 0 0 0 0 0 0 0 0 0 0 0
+PASS provider: confirmed, real transport reports, viewport replacement, reconnect, resubscribe, owned lifetime, disable
+PASS server: complete prompt subscriptions, compression, 5s pan cadence, bounded reconnect, key never logged
+credential-change IPv4
+OBS 3 4 60266 54369 0 0 127 0 0 1 0 0 0 0 0 0 0 0 0 0 0 0 127 0 0 1 0 0 0 0 0 0 0 0 0 0 0 0
+OBS 5 4 57050 54369 0 0 127 0 0 1 0 0 0 0 0 0 0 0 0 0 0 0 127 0 0 1 0 0 0 0 0 0 0 0 0 0 0 0
+PASS provider: confirmed, real transport reports, viewport replacement, reconnect, resubscribe, owned lifetime, disable
+PASS server: complete prompt subscriptions, compression, 5s pan cadence, bounded reconnect, key never logged
+open-disable-enable IPv4
+OBS 6 4 41070 56161 0 0 127 0 0 1 0 0 0 0 0 0 0 0 0 0 0 0 127 0 0 1 0 0 0 0 0 0 0 0 0 0 0 0
+OBS 8 4 52402 56161 0 0 127 0 0 1 0 0 0 0 0 0 0 0 0 0 0 0 127 0 0 1 0 0 0 0 0 0 0 0 0 0 0 0
+PASS provider: confirmed, real transport reports, viewport replacement, reconnect, resubscribe, owned lifetime, disable
+PASS server: complete prompt subscriptions, compression, 5s pan cadence, bounded reconnect, key never logged
+open-credential-change IPv4
+OBS 5 4 40434 44197 0 0 127 0 0 1 0 0 0 0 0 0 0 0 0 0 0 0 127 0 0 1 0 0 0 0 0 0 0 0 0 0 0 0
+OBS 7 4 40448 44197 0 0 127 0 0 1 0 0 0 0 0 0 0 0 0 0 0 0 127 0 0 1 0 0 0 0 0 0 0 0 0 0 0 0
+PASS provider: confirmed, real transport reports, viewport replacement, reconnect, resubscribe, owned lifetime, disable
+PASS server: complete prompt subscriptions, compression, 5s pan cadence, bounded reconnect, key never logged
+normal IPv6
+OBS 2 6 42088 48623 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1
+OBS 4 6 52586 48623 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1
+PASS provider: confirmed, real transport reports, viewport replacement, reconnect, resubscribe, owned lifetime, disable
+PASS server: complete prompt subscriptions, compression, 5s pan cadence, bounded reconnect, key never logged

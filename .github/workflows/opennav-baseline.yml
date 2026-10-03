@@ -554,9 +554,32 @@ jobs:
           python opennav-x/tools/windows_dependency_reuse.py capture --root opennav-x --fixture-success
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
           Write-Output "Dependency receipt capture passed: $([DateTime]::UtcNow.ToString('o'))"
+      - name: Native AIS observation and transport with same-job maintained TLS
+        id: ais_runtime
+        run: |
+          python opennav-x/tools/test-ais-runtime-gate.py 2>&1 | Tee-Object opennav-x/evidence/local/ais-runtime-guards.log
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          python opennav-x/tools/windows_dependency_reuse.py verify --root opennav-x 2>&1 | Tee-Object opennav-x/evidence/local/ais-runtime-receipt-check.log
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          ./opennav-x/tools/build-openssl-windows.ps1 -IntegrationSource opennav-x/build/integration-source -VerifyToolFactsOnly 2>&1 | Tee-Object opennav-x/evidence/local/ais-runtime-openssl-tool-check.log
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          ./opennav-x/tools/build-zlib-windows.ps1 -VerifyToolFactsOnly 2>&1 | Tee-Object opennav-x/evidence/local/ais-runtime-zlib-tool-check.log
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          python opennav-x/tools/test-ais-runtime-windows.py
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
       - name: Build native installed product without synthetic data
         id: production
         run: ./opennav-x/tools/build-pristine-windows.ps1 -Architecture Win32 -Integration -Production -ReuseVerifiedDependencies -PrivateOCharts
+      - name: Preserve failed production transcript before independent display checks
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: ${{ !cancelled() && steps.production.conclusion == 'failure' }}
+        with:
+          name: windows-production-failure-${{ github.sha }}
+          path: |
+            opennav-x/evidence/local/windows-production-*
+            opennav-x/evidence/local/windows-native-output.log
+            opennav-x/evidence/local/ocharts-private-wxcurl-trust-windows
+          if-no-files-found: error
       - name: Resolve private chart imports in the real host without plugin initialization
         id: private_module
         run: |

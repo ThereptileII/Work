@@ -1,6 +1,65 @@
 # SKAGER status — 2026-10-03
 
-## Corrected path/cache gates pass; combined replacement prepared
+## Current local correction batch — actual GL light point still open
+
+The native certificate-fixture repair passes its [short Windows gate](https://github.com/ThereptileII/Work/actions/runs/37145287262)
+at exact `a191102c6f150f47980bdb1c774878483c203b99` / local `827cf9b`.
+[Seven helper checks and the independently audited original artifact](evidence/scrum277-native-fixtures-a191/README.md)
+prove original CRLF rejection, corrected issuance and specific expiry rejection.
+The runner tool is OpenSSL 3.6.4; maintained 3.5.9 full Downloader/wxCurl TLS
+acceptance is still mandatory. No new full candidate has been dispatched.
+
+The corrected `c24c154` Linux Release application builds and links with
+unchanged warning policy. Eight real-chart software SKAGER/Standard theme
+captures pass. [Actual Mesa GL failure and original diagnostics](evidence/scrum275-c24-linux-canvas/README.md)
+showed the added central light missing because an unrelated SOUNDG multipoint
+container has no scalar coordinate. OpenCPN deliberately stores its geometry in
+arrays; the presentation inventory incorrectly read the unused scalar instead.
+
+Local `326daf7` corrects both inventory passes without changing soundings or
+independent-point refusal. The regression failed against the original helper;
+[147 core / 147 private / 145 no-GL focused checks](evidence/scrum275-multipoint-sounding/README.md)
+now pass at normal O3/Werror. Independent source review checked parent/clone
+initialization. The warm application is advancing to this exact combined source
+for actual software/Mesa light and sector captures. This is not yet a GL pass.
+
+Root now composes reviewed SCRUM-274/275 plus scoped-lifetime repair and the
+[SCRUM-276 compact sector fan](evidence/scrum276-compact-ca-fan/README.md).
+576 focused software/Mesa checks pass for each actual core/private method
+variant, with exact Standard/oriented/uncertain image fallback. Original sector
+geometry remains authoritative. Full-canvas clipping and near-cap tile cost
+still require actual candidate review. No all-round/expanded-light or complete
+lighthouse-family conformance is claimed. Fonts, smaller logo and neutral
+structural palette remain in the batch. The boat installation is unchanged.
+
+## Combined replacement: certificate-fixture setup failure isolated
+
+Native job `111243795980` failed after the application built and all **139/139
+production tests passed**. Actual Downloader and private wxCurl trust probes
+configured and linked, closing the prior CMake path failure at that boundary.
+Before TLS assertions started, OpenSSL rejected the expired-certificate fixture's
+CA index (`could not load/parse file`). `Set-Content -Value ''` writes a newline;
+the CA database requires an initially zero-byte file. **SCRUM-277** owns the
+small correction and native fixture-only proof before another full candidate.
+The [original failure artifact](evidence/scrum272-native-154-expired-fixture/README.md)
+is retained, independently hashed and inspected. No TLS acceptance is claimed.
+
+Integrated modes, chart gestures, repeated recovery, fixture UI and dependency
+capture passed. Independent DPI/ENC checks passed with software fallback; actual
+native OpenGL remains open. Module/package/installer gates were skipped, so no
+eligible boat package exists. A next-run workflow-only correction immediately
+uploads existing production failure records; every original step, failure status
+and package eligibility guard is preserved. Its ordered YAML comparison passes.
+
+Local **`96c0c2705aacae511b6f8c22afaa6618dbabceff`** is published as
+**`15452e512fd073090b1a4cea7c9010eac0874118`**. The complete 4,782-entry mapped
+tree `3c53cff0332dfc09babb8e5b8daa7986f77a9c84` was independently reconstructed
+with eight unrelated root files preserved. One
+[combined full run](https://github.com/ThereptileII/Work/actions/runs/37136712793)
+started at 16:24 UTC after the focused proof below. The
+[publication receipt](evidence/skager-combined-96c0-publication.json) keeps exact
+identities. Application source is frozen during qualification; no replacement
+application has been installed, launched or retired on the boat in this cycle.
 
 The [focused native run 37135967220](https://github.com/ThereptileII/Work/actions/runs/37135967220)
 passed at exact source `71470d07d8dd9ac6a3050e2b64093e0892473c97` / local
@@ -24,6 +83,71 @@ Supplementary package review now supports
 with locked provenance and unchanged yellow-pair checks. These require actual
 image review and do not claim complete symbol-family conformance. Boat native
 chart/font/logo acceptance and replacement installation remain pending.
+
+A subsequent read-only lighthouse review identified a remaining presentation
+gap: ordinary sector and long-range lights often emit upstream `CA` arcs rather
+than the `SY(LIGHTS11–13)` commands covered by the new compact aliases. They
+therefore still lack the prototype's independent central point. **SCRUM-275**
+tracks a bounded follow-on in an isolated worktree, retaining actual sector
+bearings, colors, ranges and visibility. The frozen candidate is unchanged and
+must not be described as complete lighthouse conformance. Prototype fan styling
+and pin/focus/readout interaction are separate open SCRUM-14/15 concerns.
+**SCRUM-276** now owns a separate ordinary R/W/G compact-fan paint increment:
+the prototype wash and fine translucent lines, retaining upstream geometry and
+navigation distinctions. Software and GLSL need bounded alpha-capable paint;
+changing shared symbol colors alone cannot reproduce the reference. This work
+is isolated from 15452e5 and does not include expanded/pinned interaction.
+
+The isolated CA-point implementation `ef266211e214c9ad57b14c7283b3ecd2fe71c67a`
+is followed by `5085641e1c7af3f6294ce99bd42820622d48f3d8`: ordinary mixed-color
+groups now use a generic prototype location point while each original sector
+remains independent. An exact offset FOGSIG lookup is allowed; tower/pile
+groups still retain stock presentation because the added point would obscure
+their structural symbols. The follow-on passes 121 core, 121 private and 119
+no-GL focused checks, and four affected production compilations. Root reviewed
+the delta and independently verified source/output identities and unchanged
+painters. These are not actual canvas results. The 32,768-object bound remains;
+the roughly 55 ms maximum all-light desktop case needs boat responsiveness
+review. SCRUM-275 is in Testing, with native/private-DLL/boat visuals and
+scaling/rotation still open. No change entered the failed 15452e5 candidate.
+
+In parallel, **SCRUM-274** implements an isolated read-only
+AIS transport-observation dependency for SCRUM-227. The pinned transport has no
+public positively attributed endpoint copy. A value captured inside its accepted
+connection path, with immutable time and generation, avoids UI/socket lifetime
+leaks. Independent review also found rejected-Open and unlocked credential-read
+races that the new observation must guard. This work is not part of 15452e5;
+no firewall, real outage, hardware command or boat action has been performed.
+The separately reviewed implementation `20ee0b566527ceab5d46663df348d3f96fd905e8` is now
+in Testing: 178 session checks, six actual TLS/provider lifecycle cases and 18
+existing transport scenarios passed on Linux. Root reviewed the boundary and
+independently verified 12 source inputs, 129 compiled IX records and four
+retained outputs. Native Win32 runtime and actual outage/boat gates remain open;
+the frozen build excludes it. It is now composed locally for the next candidate.
+Its isolated continuation `e4400d8acabf10e012398caf164d0e9973567b46` prepares a
+small native runtime gate for the next required candidate, reusing verified
+same-job TLS dependencies. Three offline guard checks pass; actual native
+configure/link/runtime execution is still pending. No separate dependency or
+application rebuild was launched for this preparation.
+
+The separate source-composition rehearsal `e6ef3843dc604368d32bc823c770bec76d890b69`
+combined these two reviewed workstreams without modifying 15452e5. Root now
+incorporates that reviewed composition and the lifetime correction below.
+Ordered core/private patches, committed-byte preservation and owned-header
+closure pass; the only original conflict was two appended documentation sections,
+both retained. Isolated input results are not reclassified as combined runtime
+proof. This is preparation for the next required candidate, not a published or
+accepted replacement, and it does not close remaining lighthouse-family styling.
+
+The exact e6 Linux Release attempt failed `-Werror=dangling-pointer` in the
+scoped light inventory before link. [Original failure evidence](evidence/scrum275-e6-linux-build-failure/README.md)
+retains full compiler output and verifies all 4,610 donor fingerprints unchanged.
+Isolated repair `eaff747` uses scoped stable ownership, restores the previous
+borrow before destruction, and preserves stock paint on allocation failure.
+Focused actual-source checks at `-O3 -Werror` pass 133 core, 133 private and
+131 no-GL cases. The previously failing actual Release object now passes unchanged flags; the
+same warm application build/link and canvas proof continue separately. No warning
+is suppressed and no e6 application/canvas pass is claimed.
 
 ## Production application builds; trust-probe configuration blocks candidate
 

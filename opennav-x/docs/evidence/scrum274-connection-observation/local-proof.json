@@ -1,0 +1,615 @@
+{
+  "scope": "Isolated Linux actual patched IX/provider and loopback tests only",
+  "baseCommit": "96c0c2705aacae511b6f8c22afaa6618dbabceff",
+  "upstreamCommit": "37fd0cddb7334fe489e9f18aa163977a9c5c84f7",
+  "recordedAt": "2026-10-03T16:58:38.188346+00:00",
+  "nativeWindowsAcceptance": false,
+  "boatAcceptance": false,
+  "wfpAcceptance": false,
+  "ageOut60Or120SecondsAcceptance": false,
+  "applicationBuild": false,
+  "sessionChecks": 178,
+  "transportScenarios": 18,
+  "providerScenarios": [
+    "normal IPv4",
+    "credential Read: disable-enable IPv4",
+    "credential Read: credential-change IPv4",
+    "successful Open: disable-enable IPv4",
+    "successful Open: credential-change IPv4",
+    "normal IPv6"
+  ],
+  "localInputs": {
+    "patches/opencpn-5.12.4-ais-transport.patch": {
+      "bytes": 28491,
+      "sha256": "ee6689b8943284347fadca9564892b31db4c43db2a007412ac3fdc2072d07fd7"
+    },
+    "src/ais/Provider.h": {
+      "bytes": 1832,
+      "sha256": "cbbf30f2d55bec7b1be3a6b8acf73c17976986e08c4aa33d088f4dc34d75c210"
+    },
+    "src/ais/AisStreamProvider.h": {
+      "bytes": 1506,
+      "sha256": "01c503d89e3e4332b1e992545c324dc13ae4be4bdadc1dc8ed5ac12ddd604b16"
+    },
+    "src/ais/AisStreamProvider.cpp": {
+      "bytes": 9142,
+      "sha256": "1b7d713f3e832119c02150f8aa283a1aae482daf2f1408b5cbcf21449963768b"
+    },
+    "src/ais/AisStreamSession.h": {
+      "bytes": 1441,
+      "sha256": "fcaf050125d3847b85f8487563d61c61bd8445a70686d3cc6a23c365563f63ac"
+    },
+    "src/ais/AisStreamSession.cpp": {
+      "bytes": 6725,
+      "sha256": "5f715a56a9aefdecbadf9faf297b833d9f76d322bb76443fdcdc4a907af883dc"
+    },
+    "tests/ais_session_tests.cpp": {
+      "bytes": 10333,
+      "sha256": "d3d15b9ca0a9ed45dcde0cac229ee4cebea44cead91b2592666e6a1890ce7c6e"
+    },
+    "tests/ais_transport/client.cpp": {
+      "bytes": 3004,
+      "sha256": "1f0a9fb3628a296f26732f476163f429f6b5c2f242ba61d59a07de8adf36fc00"
+    },
+    "tests/ais_transport/provider_client.cpp": {
+      "bytes": 6572,
+      "sha256": "f3d7c4288c160a432939b45c92e5102ca34767ad365a28c43b6aca1d1862bb9f"
+    },
+    "tests/ais_transport/provider_tests.py": {
+      "bytes": 8800,
+      "sha256": "7a316e5b02d35a31ce42b78bba9c0e99065e73e27c100aa6ca0399c9cce3007c"
+    },
+    "tests/ais_transport/CMakeLists.txt": {
+      "bytes": 1515,
+      "sha256": "1dfc2757dbeab22fe8d9dcaf1a322761d109cecd8755a836d5214c04c4b048ae"
+    },
+    "cmake/AisJson.cmake": {
+      "bytes": 1884,
+      "sha256": "9d5c4342c9a2cba43920660998a7b4e1a8ae84fd7c23497919c83812f6f40378"
+    }
+  },
+  "compiledIX": {
+    "libs/IXWebSocket/CMakeLists.txt": {
+      "bytes": 12022,
+      "sha256": "317565cf0f380752ca439b6c5520a14d27f03ff66cd00a4af37a666193f57257"
+    },
+    "libs/IXWebSocket/httpd.cpp": {
+      "bytes": 968,
+      "sha256": "c32af24382d90bc84448d90fac0da5959ecddb5af40d303c8739ed6ca6c8fb4d"
+    },
+    "libs/IXWebSocket/ixwebsocket/IXBase64.h": {
+      "bytes": 4938,
+      "sha256": "93817434aecaa03d7f50b1bfcdf4bb34bc726f52169a9184d272881edca32dea"
+    },
+    "libs/IXWebSocket/ixwebsocket/IXBench.cpp": {
+      "bytes": 1277,
+      "sha256": "e97d797ada2a978b82fcc00c0cc7d54738fda5c0cbce7ab7fb9cd4df9ae49e89"
+    },
+    "libs/IXWebSocket/ixwebsocket/IXBench.h": {
+      "bytes": 639,
+      "sha256": "74aa6c8a6265563e6091a2694d82d92dbba556e054e7cc5dc8bcc62710f9ed1f"
+    },
+    "libs/IXWebSocket/ixwebsocket/IXCancellationRequest.cpp": {
+      "bytes": 940,
+      "sha256": "a7e6fa7ce4e664bd10aeef5d364f281e608114bee7d79866bbb1001deba45b2f"
+    },
+    "libs/IXWebSocket/ixwebsocket/IXCancellationRequest.h": {
+      "bytes": 399,
+      "sha256": "de61d229268b0cfcbeacd9c03778c3fd584eacc194c397eea05636c54de0bfbb"
+    },
+    "libs/IXWebSocket/ixwebsocket/IXConnectionState.cpp": {
+      "bytes": 1485,
+      "sha256": "3db8ae627ee4b24473b2106e05a43b2bdc846cdd2943a7a423d4db565384b693"
+    },
+    "libs/IXWebSocket/ixwebsocket/IXConnectionState.h": {
+      "bytes": 1225,
+      "sha256": "4f8fdeac1c41dc84119e10a2e182433b3b07576cea9c436ed5fcb406fd808a2f"
+    },
+    "libs/IXWebSocket/ixwebsocket/IXDNSLookup.cpp": {
+      "bytes": 5921,
+      "sha256": "1bd10ab5979fce8a784c03b24fec9fcd29683e837bc0f8693d23db001ae838fe"
+    },
+    "libs/IXWebSocket/ixwebsocket/IXDNSLookup.h": {
+      "bytes": 2084,
+      "sha256": "898d50b3349cd75eee721dd24e6226ab013b7b4a9324c525a8366eec071c059c"
+    },
+    "libs/IXWebSocket/ixwebsocket/IXExponentialBackoff.cpp": {
+      "bytes": 1256,
+      "sha256": "119eb794c562fe0329cf764ce67f31897b9d5c40623a6cd6329b10985b70d598"
+    },
+    "libs/IXWebSocket/ixwebsocket/IXExponentialBackoff.h": {
+      "bytes": 442,
+      "sha256": "4a7971c3ac4935ed8c2c02a199c1d98bed1432c6fea5694881f46fb29017bc3d"
+    },
+    "libs/IXWebSocket/ixwebsocket/IXGetFreePort.cpp": {
+      "bytes": 2429,
+      "sha256": "3223efb8468f6ff05e7e7bfd47de252e0c7c1073ee955b8926b1c1e1b1ad8eeb"
+    },
+    "libs/IXWebSocket/ixwebsocket/IXGetFreePort.h": {
+      "bytes": 186,
+      "sha256": "ee2d861b25c54dc70e3527090c782c1c5d39a7be78cf5d1a8c72801e5687d544"
+    },
+    "libs/IXWebSocket/ixwebsocket/IXGzipCodec.cpp": {
+      "bytes": 3299,
+      "sha256": "a350b2a56a05b9472d6a151d9ce8d84a7d2916d22c36860d2d4193e8d8c437b4"
+    },
+    "libs/IXWebSocket/ixwebsocket/IXGzipCodec.h": {
+      "bytes": 305,
+      "sha256": "38af21c8b9723501accfb30cff302e11ba6f246a4f98c11fc7279be5778aa1f0"
+    },
+    "libs/IXWebSocket/ixwebsocket/IXHttp.cpp": {
+      "bytes": 6120,
+      "sha256": "2682326ac7573e585da2787def7e502b79128d769fb2bf77685d59c13cbce9ff"
+    },
+    "libs/IXWebSocket/ixwebsocket/IXHttp.h": {
+      "bytes": 3917,
+      "sha256": "2cfa1d96025e4dbc963d5855edc08ee85604e702dec7b6a81fcbb4798b556365"
+    },
+    "libs/IXWebSocket/ixwebsocket/IXHttpClient.cpp": {
+      "bytes": 29248,
+      "sha256": "92d435846fe19c1cda82bc204d0f4132e4467e3344a473d96c4140922bc09573"
+    },
+    "libs/IXWebSocket/ixwebsocket/IXHttpClient.h": {
+      "bytes": 4596,
+      "sha256": "3406de67e3092daced8dad115ec3fc8eb10dbb888312756457c329e8931472ec"
+    },
+    "libs/IXWebSocket/ixwebsocket/IXHttpServer.cpp": {
+      "bytes": 8598,
+      "sha256": "13e28ad45b6131b512ab487ed0c744de69cd74575e166861d4de1a4b06e0e5df"
+    },
+    "libs/IXWebSocket/ixwebsocket/IXHttpServer.h": {
+      "bytes": 1705,
+      "sha256": "c0614ad2986661d5c29563158c3fde8f74650bdddcab5dc78b664973b87ebccd"
+    },
+    "libs/IXWebSocket/ixwebsocket/IXNetSystem.cpp": {
+      "bytes": 14140,
+      "sha256": "952b5e802acee6e97ca3e0dec1813a48fc3db62da6188ea4e923b0884e2065e9"
+    },
+    "libs/IXWebSocket/ixwebsocket/IXNetSystem.h": {
+      "bytes": 2005,
+      "sha256": "1af90d82363a7a6e10e32c775e3c9fa9a3a38f703e9815be9567afac9ee13091"
+    },
+    "libs/IXWebSocket/ixwebsocket/IXProgressCallback.h": {
+      "bytes": 343,
+      "sha256": "45c8cf2437b800ae87fbce16204c4ec0ed1fda146928cb8068b0fb8c109a12ef"
+    },
+    "libs/IXWebSocket/ixwebsocket/IXSelectInterrupt.cpp": {
+      "bytes": 893,
+      "sha256": "b7b72158a1c463a998df1ab774f771d23e28a6f4ce4af0dfebba6b9967a5e318"
+    },
+    "libs/IXWebSocket/ixwebsocket/IXSelectInterrupt.h": {
+      "bytes": 789,
+      "sha256": "c6b995c682d876cebd6f410b7be4771de088f2e74f28cdb8bc99d7d58b4ac8db"
+    },
+    "libs/IXWebSocket/ixwebsocket/IXSelectInterruptEvent.cpp": {
+      "bytes": 2015,
+      "sha256": "e2713c90e5f3b3cd58a2da8c640ebd244db020199ce0d1d0ffc7c41fc4d41986"
+    },
+    "libs/IXWebSocket/ixwebsocket/IXSelectInterruptEvent.h": {
+      "bytes": 847,
+      "sha256": "122f9277afe432de6202b23c9b12c3798c2274900c031ae5623f3080f5895f31"
+    },
+    "libs/IXWebSocket/ixwebsocket/IXSelectInterruptFactory.cpp": {
+      "bytes": 524,
+      "sha256": "400c23779cb48838d8c7d0effbdc72e15e2604873fd2fb3cc827c91ba52a95ce"
+    },
+    "libs/IXWebSocket/ixwebsocket/IXSelectInterruptFactory.h": {
+      "bytes": 338,
+      "sha256": "86d3ff5ed858574ccead8a56a0cdc786527f80f9eb4e750450f5f6925af63f74"
+    },
+    "libs/IXWebSocket/ixwebsocket/IXSelectInterruptPipe.cpp": {
+      "bytes": 4385,
+      "sha256": "7692c419dce37a57cab1237d36aff4bb5b2f03ae413ae811902d6977cbd80552"
+    },
+    "libs/IXWebSocket/ixwebsocket/IXSelectInterruptPipe.h": {
+      "bytes": 1027,
+      "sha256": "1005753043747c58926e7f938ef7d89829894df74e8c0daf511f2bfcc68fb242"
+    },
+    "libs/IXWebSocket/ixwebsocket/IXSetThreadName.cpp": {
+      "bytes": 2145,
+      "sha256": "1e51391dbd38927dabd9c2107112339e4cf7be8660e3b4aeffa18e2b62ca43d1"
+    },
+    "libs/IXWebSocket/ixwebsocket/IXSetThreadName.h": {
+      "bytes": 220,
+      "sha256": "1c36394332a85eff52025f216e2c70bb86c803ebad358474cb0c3d8877882a9e"
+    },
+    "libs/IXWebSocket/ixwebsocket/IXSocket.cpp": {
+      "bytes": 15100,
+      "sha256": "007edd69bf87d5a713f46b3e8452de15827cbe3d9281e4abe7ec5f59be9a310a"
+    },
+    "libs/IXWebSocket/ixwebsocket/IXSocket.h": {
+      "bytes": 3551,
+      "sha256": "7ad3dece271a111c2d994fd465caa8caa82db138ee0af30b457c8a0b2c06ad20"
+    },
+    "libs/IXWebSocket/ixwebsocket/IXSocketAppleSSL.cpp": {
+      "bytes": 8692,
+      "sha256": "aa43bca06e4408343a81899fec834b0c13bd1adc6f1fb5ea8791d512c31282f0"
+    },
+    "libs/IXWebSocket/ixwebsocket/IXSocketAppleSSL.h": {
+      "bytes": 1626,
+      "sha256": "615ef7923eebafe391efc21b6bb1ffea74a32e9c0c1cc386246f106b800963bb"
+    },
+    "libs/IXWebSocket/ixwebsocket/IXSocketConnect.cpp": {
+      "bytes": 4616,
+      "sha256": "24d755d67d92072f04bc276f6eba8cbb496ea8df01fc01567d44332961e000a0"
+    },
+    "libs/IXWebSocket/ixwebsocket/IXSocketConnect.h": {
+      "bytes": 784,
+      "sha256": "89b1f457f0d92e7035ec46ec03343592d02a6982ea945377bd85d6d3bbbb7506"
+    },
+    "libs/IXWebSocket/ixwebsocket/IXSocketConnectionInfo.h": {
+      "bytes": 666,
+      "sha256": "d5a21ebb587d70057c66e0ca90055ee47cd807063e45b823409f6c510195859f"
+    },
+    "libs/IXWebSocket/ixwebsocket/IXSocketFactory.cpp": {
+      "bytes": 1498,
+      "sha256": "8536d73570c035ade6edc96437eaeeed8b9f2d9f012689fc3e582a70835ab57d"
+    },
+    "libs/IXWebSocket/ixwebsocket/IXSocketFactory.h": {
+      "bytes": 500,
+      "sha256": "970d537ae3ddfa61d75a40c7c9a9875a114e5e28ba1de95306cd37840c1b29fa"
+    },
+    "libs/IXWebSocket/ixwebsocket/IXSocketMbedTLS.cpp": {
+      "bytes": 10849,
+      "sha256": "2f29da05be40992865aa3a9e6b1c283bba8882ed67e7c9bf8da0a725bc71fbd7"
+    },
+    "libs/IXWebSocket/ixwebsocket/IXSocketMbedTLS.h": {
+      "bytes": 1674,
+      "sha256": "3959e1ab095afd5de6a84a51bcd9457b733515c7be0e549f202f3d5d3b5066fe"
+    },
+    "libs/IXWebSocket/ixwebsocket/IXSocketOpenSSL.cpp": {
+      "bytes": 28109,
+      "sha256": "87cdc39be7b671f08e61d1ee3e82fdf11fe44fb3bc4f52970079f73b3ac229be"
+    },
+    "libs/IXWebSocket/ixwebsocket/IXSocketOpenSSL.h": {
+      "bytes": 2291,
+      "sha256": "1cc9596bfdccb937ef08d9f54b09d43b47040ac6766941a824631cd82f3b801a"
+    },
+    "libs/IXWebSocket/ixwebsocket/IXSocketServer.cpp": {
+      "bytes": 16491,
+      "sha256": "ad5f4bb07a960cf05eaaeb765c8e762294a91838e0f3ec19a81034aa5c94cfe3"
+    },
+    "libs/IXWebSocket/ixwebsocket/IXSocketServer.h": {
+      "bytes": 4229,
+      "sha256": "2960d845c8adaf7c70d9a311f1776f4ce00f659e501e6914bd1934dc87cd474a"
+    },
+    "libs/IXWebSocket/ixwebsocket/IXSocketTLSOptions.cpp": {
+      "bytes": 2621,
+      "sha256": "b45926be3c736cb18d0d4cbf522b5cae49a50d529a98931d6d71e5e32ea29876"
+    },
+    "libs/IXWebSocket/ixwebsocket/IXSocketTLSOptions.h": {
+      "bytes": 1426,
+      "sha256": "f5b475929184ecea58a877f0b3bde6a76213a9558de4c68782b0c74a09dbb650"
+    },
+    "libs/IXWebSocket/ixwebsocket/IXStrCaseCompare.cpp": {
+      "bytes": 1176,
+      "sha256": "a24da125638d153a45717f7c85c18fd41cb8b7545a1fe764bd541dbc9ab82373"
+    },
+    "libs/IXWebSocket/ixwebsocket/IXStrCaseCompare.h": {
+      "bytes": 571,
+      "sha256": "506cb8621b3646a62295f9236736e7dee59df7d53bb0b9f61dca18bb75324bda"
+    },
+    "libs/IXWebSocket/ixwebsocket/IXUdpSocket.cpp": {
+      "bytes": 2796,
+      "sha256": "a1330a7dac374e54dea210049e45daf4dcd1bdfd7c0cacfb49143afcf1585ec5"
+    },
+    "libs/IXWebSocket/ixwebsocket/IXUdpSocket.h": {
+      "bytes": 862,
+      "sha256": "f73449ab89d5c1bd322673fe435e1ac0f0501e8cbad3e6f068e8e1e8db6d67a4"
+    },
+    "libs/IXWebSocket/ixwebsocket/IXUniquePtr.h": {
+      "bytes": 362,
+      "sha256": "7a728cbdb1b23f6fe06294852c273eab843384ee34cbb7eed40670897d77eeaa"
+    },
+    "libs/IXWebSocket/ixwebsocket/IXUrlParser.cpp": {
+      "bytes": 10960,
+      "sha256": "e0364696212b2b43a3d4ee647cbc273b8510090ed03a90c0635e195f5a6a364c"
+    },
+    "libs/IXWebSocket/ixwebsocket/IXUrlParser.h": {
+      "bytes": 832,
+      "sha256": "d78162fdecee330c3c6bd50e95de35d7107587417896935f93e7c79444b9809b"
+    },
+    "libs/IXWebSocket/ixwebsocket/IXUserAgent.cpp": {
+      "bytes": 2415,
+      "sha256": "f971c19f0fc5022cb463c40c637e75e3a780583bb7ea194fb79058c2c8443129"
+    },
+    "libs/IXWebSocket/ixwebsocket/IXUserAgent.h": {
+      "bytes": 214,
+      "sha256": "497c05813401b33544473e8a3fef14f4a234f06b1c02db495fd0a1c100ee4a00"
+    },
+    "libs/IXWebSocket/ixwebsocket/IXUtf8Validator.h": {
+      "bytes": 7222,
+      "sha256": "3eae342116c5f8ceebb1f82f2783f6219d4407595be8668b36364ece8a9278de"
+    },
+    "libs/IXWebSocket/ixwebsocket/IXUuid.cpp": {
+      "bytes": 1612,
+      "sha256": "fd55e10ec6f2f619202df8e7da0ae4e956959547bf9fc50fd6ce1cb7fc6165ca"
+    },
+    "libs/IXWebSocket/ixwebsocket/IXUuid.h": {
+      "bytes": 246,
+      "sha256": "8e0636bef8c5e7d3bda0c7394a673089baddcb5ea193a1af379f30f36bec1d18"
+    },
+    "libs/IXWebSocket/ixwebsocket/IXWebSocket.cpp": {
+      "bytes": 21508,
+      "sha256": "9cde47f84fef8a87269bcde1f5bfd5ab1d848fd4275c921da00c9edf099cb4bf"
+    },
+    "libs/IXWebSocket/ixwebsocket/IXWebSocket.h": {
+      "bytes": 7790,
+      "sha256": "be5dac43365f1d99884f848557611da272ea75ca236401301e5bdde822c7186f"
+    },
+    "libs/IXWebSocket/ixwebsocket/IXWebSocketCloseConstants.cpp": {
+      "bytes": 2073,
+      "sha256": "3b5d4967e1d62ec1b4e53a61762fc461f55de0f8b93fa35a83661ff95a823379"
+    },
+    "libs/IXWebSocket/ixwebsocket/IXWebSocketCloseConstants.h": {
+      "bytes": 1410,
+      "sha256": "f842cb37b33f7f321631a2253c7610922c8832180df26ed74673d695baad2089"
+    },
+    "libs/IXWebSocket/ixwebsocket/IXWebSocketCloseInfo.h": {
+      "bytes": 539,
+      "sha256": "cc6e5a1cb76963c44f893713583f9af002f039d9a8b853ec02e70627d11058ce"
+    },
+    "libs/IXWebSocket/ixwebsocket/IXWebSocketErrorInfo.h": {
+      "bytes": 419,
+      "sha256": "46cee5de96aebf91f3b212754992af6d312f402b1d8947bd7851e76a8e42987a"
+    },
+    "libs/IXWebSocket/ixwebsocket/IXWebSocketHandshake.cpp": {
+      "bytes": 13577,
+      "sha256": "f44cb3067f7e42d698430fdfa80adeed637867ab783684aa8427f6dde6049949"
+    },
+    "libs/IXWebSocket/ixwebsocket/IXWebSocketHandshake.h": {
+      "bytes": 2234,
+      "sha256": "f956e1168fe0b58dc0b9e036dd00c7b91be9cc82b893b774a056d017d6333ebe"
+    },
+    "libs/IXWebSocket/ixwebsocket/IXWebSocketHandshakeKeyGen.h": {
+      "bytes": 6513,
+      "sha256": "9685e52863bd847dabdc30d64907ff8622f7f5659e49702bad750585d8590d7e"
+    },
+    "libs/IXWebSocket/ixwebsocket/IXWebSocketHttpHeaders.cpp": {
+      "bytes": 2658,
+      "sha256": "f5bd395f200cdbdafc3343d16577ff51bc5c4db58eef78689968a81dd73b9d55"
+    },
+    "libs/IXWebSocket/ixwebsocket/IXWebSocketHttpHeaders.h": {
+      "bytes": 587,
+      "sha256": "f78234adf9bad11aa3875913e9e70d7de6add70a29dbea3d82224b83491a0f3f"
+    },
+    "libs/IXWebSocket/ixwebsocket/IXWebSocketInitResult.h": {
+      "bytes": 1009,
+      "sha256": "b3f41a1e86ac6deba388d4842e258bc102419160cbe557d47a1c7b8a412bf168"
+    },
+    "libs/IXWebSocket/ixwebsocket/IXWebSocketMessage.h": {
+      "bytes": 1743,
+      "sha256": "3f26dfe094dd14812867bee37fe8a121a8c53815c4f18fc78d14f8c3dbc26ca1"
+    },
+    "libs/IXWebSocket/ixwebsocket/IXWebSocketMessageType.h": {
+      "bytes": 349,
+      "sha256": "daf949f2157863d4e5d57bb44ecb1bcf5ce017e9a47297632e4c269380a7f45e"
+    },
+    "libs/IXWebSocket/ixwebsocket/IXWebSocketOpenInfo.h": {
+      "bytes": 918,
+      "sha256": "8e2afd38d821dfec3411e6389b7bc793223bd3d8a7bcb80f095a29c61d5266d4"
+    },
+    "libs/IXWebSocket/ixwebsocket/IXWebSocketPerMessageDeflate.cpp": {
+      "bytes": 4181,
+      "sha256": "10c51e1164b8f72f881e63ad9e5b35984c5f45aeb7d7d1f63978de2801deaeab"
+    },
+    "libs/IXWebSocket/ixwebsocket/IXWebSocketPerMessageDeflate.h": {
+      "bytes": 2794,
+      "sha256": "1fbf5f48109210e3668395cf5db593697699057728f4089c66ad71aefac21033"
+    },
+    "libs/IXWebSocket/ixwebsocket/IXWebSocketPerMessageDeflateCodec.cpp": {
+      "bytes": 8017,
+      "sha256": "9e749ed4fd1d63878879e70dca02bbffa044c99016d83c3606c90d62972b85d7"
+    },
+    "libs/IXWebSocket/ixwebsocket/IXWebSocketPerMessageDeflateCodec.h": {
+      "bytes": 1801,
+      "sha256": "398df9740ccb0e01363286e761bc3067ec1492ee59184e788b47a5a22b6fccf3"
+    },
+    "libs/IXWebSocket/ixwebsocket/IXWebSocketPerMessageDeflateOptions.cpp": {
+      "bytes": 5845,
+      "sha256": "701e8ecc383fd579abad14cd990537bdd39bb58de883bd44c6073169e7a67d3c"
+    },
+    "libs/IXWebSocket/ixwebsocket/IXWebSocketPerMessageDeflateOptions.h": {
+      "bytes": 1448,
+      "sha256": "18ef09c9a4edb630bd4314e898653d2e4ea720095066e04fbda7a34400c9f4c3"
+    },
+    "libs/IXWebSocket/ixwebsocket/IXWebSocketProxyServer.cpp": {
+      "bytes": 4935,
+      "sha256": "703707ec15e252babfe50f07f86c2ab0361fb9fafe6236267608662e32204ff9"
+    },
+    "libs/IXWebSocket/ixwebsocket/IXWebSocketProxyServer.h": {
+      "bytes": 737,
+      "sha256": "83d148b28672db3562b4fcb722f02b525dabe4bb225597cbb5e8c6ab8cdf8364"
+    },
+    "libs/IXWebSocket/ixwebsocket/IXWebSocketSendData.h": {
+      "bytes": 4069,
+      "sha256": "242f5e3f452cf3e777ccaf8336d2025e6845e739a2b9d0e20f3b2d07838ffb6e"
+    },
+    "libs/IXWebSocket/ixwebsocket/IXWebSocketSendInfo.h": {
+      "bytes": 557,
+      "sha256": "d4e1196c0523fd2dec1bcea5d884afa9f02f5a1a4fa72643306c051ed4880604"
+    },
+    "libs/IXWebSocket/ixwebsocket/IXWebSocketServer.cpp": {
+      "bytes": 6987,
+      "sha256": "d7c1eb49f85e55b1c753d322f6472bb1f4065df84a7fd719623dd97ae83efdac"
+    },
+    "libs/IXWebSocket/ixwebsocket/IXWebSocketServer.h": {
+      "bytes": 2728,
+      "sha256": "cf418a65e9647a488a6cc36f57469b3c53ab1200bd9f88b40daf9ff06f3c5e06"
+    },
+    "libs/IXWebSocket/ixwebsocket/IXWebSocketTransport.cpp": {
+      "bytes": 47519,
+      "sha256": "f0460b8b3307daf5aaa4e1016c20bb3cd3d521870ad66878694fdb0a0552b9b5"
+    },
+    "libs/IXWebSocket/ixwebsocket/IXWebSocketTransport.h": {
+      "bytes": 10012,
+      "sha256": "7ff7aeeceb293fec5ea0cd7cbe3c79962b1b2770fb329ff7367978d67b435d68"
+    },
+    "libs/IXWebSocket/ixwebsocket/IXWebSocketVersion.h": {
+      "bytes": 178,
+      "sha256": "06b4b521ca2667df7d5e2b38eda678bd6678ea15a6a192b1d1027e7bbc113ae6"
+    },
+    "libs/IXWebSocket/main.cpp": {
+      "bytes": 2605,
+      "sha256": "453735e9ef3986f624b933ac291c41904c39a32692761e7ee7fc6c3e758f22e4"
+    },
+    "libs/IXWebSocket/test/CMakeLists.txt": {
+      "bytes": 2693,
+      "sha256": "04b5e705d32ef04ad2865738a6d43b19a6a16b9cb63da4a07c287f7217086163"
+    },
+    "libs/IXWebSocket/test/IXDNSLookupTest.cpp": {
+      "bytes": 1386,
+      "sha256": "fe68ed6f070081108f25989b24e8d31c8275c96b105bb59e31d40da54ed9bef8"
+    },
+    "libs/IXWebSocket/test/IXExponentialBackoffTest.cpp": {
+      "bytes": 1454,
+      "sha256": "121e3d73617b148d7c6336651dc41d64073c6f7a3337f85a17f7ccab9c079ef6"
+    },
+    "libs/IXWebSocket/test/IXHttpClientTest.cpp": {
+      "bytes": 13467,
+      "sha256": "9da9022de60c8887adf8c59c3b0f17c18a1a0c78933b67ae72e4cc4995e7e394"
+    },
+    "libs/IXWebSocket/test/IXHttpServerTest.cpp": {
+      "bytes": 7333,
+      "sha256": "9cef21ecbbbe33b4e133c040b2ea5a0175ada4f33ecd3069ed8027ba2abeaab2"
+    },
+    "libs/IXWebSocket/test/IXHttpTest.cpp": {
+      "bytes": 1248,
+      "sha256": "c24eee5540148be6a54ba4409baa2783d963c7a5164fcdd6a3c52d6d1a36d524"
+    },
+    "libs/IXWebSocket/test/IXSentryClientTest.cpp": {
+      "bytes": 1261,
+      "sha256": "9977836a92c7733ba68a28041a4393a50a5d3f3fae90c3486df9481a51c57828"
+    },
+    "libs/IXWebSocket/test/IXSocketConnectTest.cpp": {
+      "bytes": 1551,
+      "sha256": "56b85864c2351492cd334680e15956e6869ff520d62a834a544818f05a9c7b3c"
+    },
+    "libs/IXWebSocket/test/IXSocketTest.cpp": {
+      "bytes": 3126,
+      "sha256": "4fff23238b12a0d72e91100eeaffcf8fd6002852eb24e07f5b2c170f2aa205cd"
+    },
+    "libs/IXWebSocket/test/IXStrCaseCompareTest.cpp": {
+      "bytes": 1126,
+      "sha256": "d7ba89095f35bcb946b57404d510889ef269262de4a637b16793f090fc5f4edb"
+    },
+    "libs/IXWebSocket/test/IXStreamSqlTest.cpp": {
+      "bytes": 1136,
+      "sha256": "d241798cb760599a6c2223d040059d552b0a141b6800ea7972001f0d9d3cfe73"
+    },
+    "libs/IXWebSocket/test/IXTest.cpp": {
+      "bytes": 5801,
+      "sha256": "89988eebfbbd3cf947aa7d3e78d2fb8235683794bb85b803f6d4e3e3215c309c"
+    },
+    "libs/IXWebSocket/test/IXTest.h": {
+      "bytes": 1315,
+      "sha256": "a045e0f9cc2027d99bc63b5231d517849745d2519546bfef7adc1d380cb46495"
+    },
+    "libs/IXWebSocket/test/IXUnityBuildsTest.cpp": {
+      "bytes": 1810,
+      "sha256": "97bb40475e4154deb7a6ac973d27db29c0c1b95058d81799ad05880be0c6f690"
+    },
+    "libs/IXWebSocket/test/IXUrlParserTest.cpp": {
+      "bytes": 3942,
+      "sha256": "0bcae9f9b07660504ffe9f29303f8046f1cffd44cedadad137b6f30cbe73b82d"
+    },
+    "libs/IXWebSocket/test/IXWebSocketBroadcastTest.cpp": {
+      "bytes": 9661,
+      "sha256": "6a6d893aae41921fb0369fa1e0d10688d462c2324e6e8a6801aa52e1b10fdb6c"
+    },
+    "libs/IXWebSocket/test/IXWebSocketChatTest.cpp": {
+      "bytes": 9409,
+      "sha256": "886646b57036607c6b388f7b3b2cb7706e5e28612cea114ab5e1acd80a997038"
+    },
+    "libs/IXWebSocket/test/IXWebSocketCloseTest.cpp": {
+      "bytes": 13702,
+      "sha256": "c06db5bbf2f6192c35d32221c92b98b2887ef4ede9daeb24cc96864f5b06c695"
+    },
+    "libs/IXWebSocket/test/IXWebSocketLeakTest.cpp": {
+      "bytes": 5910,
+      "sha256": "0f95d2bb1ec43febcd2eb028ce358259d3d200dae3d3d2e1dd07c1cc417390b5"
+    },
+    "libs/IXWebSocket/test/IXWebSocketPerMessageDeflateCompressorTest.cpp": {
+      "bytes": 2370,
+      "sha256": "224b5f22ace2ecc3399a40318ba927571c5c3981b3f41191706ad3295fc4e515"
+    },
+    "libs/IXWebSocket/test/IXWebSocketPingTest.cpp": {
+      "bytes": 13751,
+      "sha256": "8434adb0101179802bc1f7ef92271d2e39eb50c50e9112f36d90658a822f0c5b"
+    },
+    "libs/IXWebSocket/test/IXWebSocketPingTimeoutTest.cpp": {
+      "bytes": 15212,
+      "sha256": "128d899c88f73e0e8e75d4c597f3aaea1587ed1dc88cbc6e42c77772fabe4d22"
+    },
+    "libs/IXWebSocket/test/IXWebSocketServerTest.cpp": {
+      "bytes": 6842,
+      "sha256": "ad1e1afadfc76412733f8c42ebe01074f885426bd7a64e3a8951f59889d151be"
+    },
+    "libs/IXWebSocket/test/IXWebSocketSubProtocolTest.cpp": {
+      "bytes": 3134,
+      "sha256": "4adc802e53cdf634ab987929bca2e38ca66f59a976a313482a30ec7a9a90311b"
+    },
+    "libs/IXWebSocket/test/IXWebSocketTestConnectionDisconnection.cpp": {
+      "bytes": 4794,
+      "sha256": "c4be09bc12a96d7acefe672981db693fc874bfc2458115caf7066a491a636e6d"
+    },
+    "libs/IXWebSocket/test/compatibility/cpp/libwebsockets/devnull_client.cpp": {
+      "bytes": 5711,
+      "sha256": "dfff10bc90fc47e0868e01e5b4c32c060712b18039211f3b8b465c7767742f07"
+    },
+    "libs/IXWebSocket/test/test_runner.cpp": {
+      "bytes": 532,
+      "sha256": "53f67d4511766dec0c5d9e4b01b7dcc559cf98451c3f96d6a0da1dfcc03e022d"
+    },
+    "libs/IXWebSocket/third_party/cpp-linenoise/example/CMakeLists.txt": {
+      "bytes": 126,
+      "sha256": "d606d193225a1bda020c4792d706e94e77974f09010268f3dd3893ac3060127f"
+    },
+    "libs/IXWebSocket/third_party/cpp-linenoise/example/example.cpp": {
+      "bytes": 1292,
+      "sha256": "05b17cec60f7b0c95e29bb8adf5aebf10ccede0035536b13756fbe7cec71b04c"
+    },
+    "libs/IXWebSocket/third_party/cpp-linenoise/linenoise.cpp": {
+      "bytes": 92428,
+      "sha256": "8857861960378ef4027a3304739462b7c88047df9dc3f0a52abf0019be4b170f"
+    },
+    "libs/IXWebSocket/third_party/msgpack11/msgpack11.cpp": {
+      "bytes": 40207,
+      "sha256": "550cd67c9d9fdf75acfcce2b39290d6ffb3473f42b1d7a1e8629a7b762870683"
+    },
+    "libs/IXWebSocket/ws/CMakeLists.txt": {
+      "bytes": 846,
+      "sha256": "d3e0899e4de1cb5dcf626444115a2c83363b0669c4601d5b4540705eb55386f0"
+    },
+    "libs/IXWebSocket/ws/ws.cpp": {
+      "bytes": 96297,
+      "sha256": "b10a400d5af4a8e01dc4ae5cd081667325eb748d71262bdd94ede22f21189fa3"
+    }
+  },
+  "outputs": {
+    "transport-build/ais_provider_test_client": {
+      "bytes": 4921248,
+      "sha256": "454349737b0762d87ad5e3f836a38e0037e7b59bfdb811d0f1963b3ff3d2218a"
+    },
+    "transport-build/ais_transport_test_client": {
+      "bytes": 3277560,
+      "sha256": "e70b085a8fb9d6a6343b8c90d09ec0203680a16a4e4730e41e7c98da3d96685c"
+    },
+    "ais_session_tests": {
+      "bytes": 1294416,
+      "sha256": "e149623bb0bb01e7f95c7cfd9b3cd7b70acedce39b2c42c51edc0ab344a48a40"
+    },
+    "provider-production.o": {
+      "bytes": 695336,
+      "sha256": "3cb875e3147566cb8f463609c94702665c2a1c7c3d9cbaedbc02e5c8653da646"
+    }
+  },
+  "checks": {
+    "completePatchMatchesPristinePinnedIX": true,
+    "productionProviderHasNoForTestOrOpenGateSymbols": true
+  },
+  "toolchain": {
+    "compiler": "c++ (GCC) 16.2.1 20260810",
+    "openssl": "OpenSSL 3.6.4 25 Aug 2026 (Library: OpenSSL 3.6.4 25 Aug 2026)"
+  }
+}

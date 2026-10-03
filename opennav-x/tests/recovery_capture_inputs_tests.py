@@ -375,6 +375,40 @@ class NamedIhoScenes(unittest.TestCase):
             with self.assertRaisesRegex(ValueError,'scene source changed'):
                 inputs.iho_scene('lateral',root)
 
+    def test_light_views_refuse_reversed_coordinates(self):
+        # Future scene guard inputs only: this modified historical observer is
+        # not represented as an actual capture of either new scene.
+        current = json.loads((ROOT/'docs/evidence/scrum264-yellow-e1d-linux/software/s64-yellow-SKAGER-Day.json').read_text())
+        for name, center, ids in (
+                ('light-fog', [-32.3760351,61.0307025], [33,32]),
+                ('sector-rwg', [-32.4843207,60.9650566], [620,1881,1882])):
+            with self.subTest(scene=name):
+                selected = inputs.iho_scene(name)
+                self.assertEqual(selected['center'],center)
+                self.assertEqual([f['attributes']['RCID'] for f in selected['source_features']],ids)
+                self.assertIsNone(selected['pixel_proof'])
+                self.assertNotIn('observed_scale_ppm',selected)
+                self.assertEqual(selected['expected_scale_ppm'],.5826126536)
+                snapshot = copy.deepcopy(current)
+                chart = snapshot['runtime']['chart']
+                chart['latitude'],chart['longitude'] = center
+                inputs.presentation(snapshot,'XNav',True,name)
+                chart['latitude'],chart['longitude'] = reversed(center)
+                with self.assertRaisesRegex(ValueError,'viewport'):
+                    inputs.presentation(snapshot,'XNav',True,name)
+
+    def test_light_scene_source_tamper_refused(self):
+        with tempfile.TemporaryDirectory() as name:
+            root = Path(name)
+            target = root/inputs.IHO_LIGHT_SCENES
+            target.parent.mkdir(parents=True)
+            raw = (ROOT/inputs.IHO_LIGHT_SCENES).read_bytes()
+            target.write_bytes(raw.replace(b'\n',b'\r\n'))
+            self.assertEqual(inputs.iho_scene('light-fog',root)['center'],[-32.3760351,61.0307025])
+            target.write_bytes(raw.replace(b'257.0',b'258.0'))
+            with self.assertRaisesRegex(ValueError,'scene source changed'):
+                inputs.iho_scene('sector-rwg',root)
+
     def test_yellow_default_and_collector_dispatch_remain_bounded(self):
         import ast
         yellow = inputs.iho_scene()

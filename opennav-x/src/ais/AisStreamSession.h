@@ -6,11 +6,11 @@ namespace opennav::ais {
 // only an owned ProviderSnapshot. No credentials or remote text are retained.
 class AisStreamSession {
 public:
-  void Enable(bool enabled, vessel::Time now);
+  bool Enable(bool enabled, vessel::Time now);
   bool ObserveViewport(Viewport viewport);
   bool NeedsConnection(vessel::Time now) const;
   bool Connecting(vessel::Time now);
-  void Opened(vessel::Time now);
+  bool Opened(vessel::Time now, ConnectionObservation connection = {});
   void CredentialMissing(vessel::Time now);
   void RetryCredentials(vessel::Time now);
   std::vector<BoundingBox> PendingSubscription(vessel::Time now) const;
@@ -32,5 +32,6 @@ private:
   SubscriptionPolicy subscription_;
   TargetCache cache_;
   ProviderHealth health_;
+  ConnectionObservation connection_;
 };
 } // namespace opennav::ais

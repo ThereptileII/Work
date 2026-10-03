@@ -1,0 +1,184 @@
+{
+  "local_source": "96c0c2705aacae511b6f8c22afaa6618dbabceff",
+  "remote_source": "15452e512fd073090b1a4cea7c9010eac0874118",
+  "run": 37136712793,
+  "job": 111243795980,
+  "artifact_id": 11281990645,
+  "artifact_name": "windows-integration-154.zip",
+  "archive": {
+    "bytes": 65648702,
+    "sha256": "1fa9660cbf99b68893cd96b49c6fee22d92dd9f4a4d0d39f3660f970cba43f3b"
+  },
+  "scope": "Read-only visual review of retained fixture-enabled native app images from a failed full candidate; no native GL/private chart/boat or release acceptance.",
+  "images": {
+    "dpi-100-01-navigation-day.png": {
+      "archive_entry": "evidence/local/dpi-100-01-navigation-day.png",
+      "bytes": 61192,
+      "sha256": "5680880c0603a1f5b68e0804800ffb6afaeb16460562d7d1e67ce2e6145c965c",
+      "dimensions": [
+        1280,
+        800
+      ]
+    },
+    "dpi-100-navigation-dusk.png": {
+      "archive_entry": "evidence/local/dpi-100-navigation-dusk.png",
+      "bytes": 60628,
+      "sha256": "6dd21c0ef878a8ed770255fe382c7d7367e1821ba50faa26e43bbd21085a15e4",
+      "dimensions": [
+        1280,
+        800
+      ]
+    },
+    "dpi-100-02-navigation-night.png": {
+      "archive_entry": "evidence/local/dpi-100-02-navigation-night.png",
+      "bytes": 60515,
+      "sha256": "f42345173bc4958bcac3c818e131bd5a04b6655ddb2f367fe477652f7e6eee35",
+      "dimensions": [
+        1280,
+        800
+      ]
+    },
+    "dpi-100-1920-navigation-day.png": {
+      "archive_entry": "evidence/local/dpi-100-1920-navigation-day.png",
+      "bytes": 63152,
+      "sha256": "625755679ceb79ac06cbc290f9cf54e4d1837b28ea7ab027d7db87054658ddc6",
+      "dimensions": [
+        1920,
+        1080
+      ]
+    },
+    "dpi-125-01-navigation-day.png": {
+      "archive_entry": "evidence/local/dpi-125-01-navigation-day.png",
+      "bytes": 67564,
+      "sha256": "81e9a8a9143c5eb2fb03c6c7a83b97552913658ad65a18e659afced1472e4f41",
+      "dimensions": [
+        1280,
+        800
+      ]
+    },
+    "dpi-150-02-navigation-night.png": {
+      "archive_entry": "evidence/local/dpi-150-02-navigation-night.png",
+      "bytes": 65273,
+      "sha256": "159add74dbfaa4b5ab2004487dc8bc4c96f953a729d3e7f11d2ce3929b314fb1",
+      "dimensions": [
+        1280,
+        800
+      ]
+    },
+    "chart-software-01-loaded.png": {
+      "archive_entry": "evidence/local/chart-software-01-loaded.png",
+      "bytes": 115816,
+      "sha256": "b5aab393d7972d9a2308149e4058cddf0d34e8599e259627dd70a8206cbdf6d8",
+      "dimensions": [
+        1280,
+        800
+      ]
+    },
+    "chart-software-02-zoom.png": {
+      "archive_entry": "evidence/local/chart-software-02-zoom.png",
+      "bytes": 66007,
+      "sha256": "58ae1f1c78ecedc4a80df14c8a6e35df4235e3173393d1ae78a8c0e1f47f2147",
+      "dimensions": [
+        1280,
+        800
+      ]
+    },
+    "skager-wordmark-production.png": {
+      "archive_entry": "evidence/local/skager-wordmark-production.png",
+      "bytes": 125503,
+      "sha256": "1c12662472ce92a088f537851e6a86aef878ab4a34f1bdc53471b44af5fa1c47",
+      "dimensions": [
+        960,
+        930
+      ]
+    }
+  },
+  "references": {
+    "docs/design/prototype/index.html": {
+      "bytes": 1382871,
+      "sha256": "b04573b920b6bccd16afd22f54a909e48afcfd502ce9cd7c69fdf5b6dd895447"
+    },
+    "docs/design/prototype/reference/windows/navigation-day.png": {
+      "bytes": 373188,
+      "sha256": "02c4d8f6bb0536fdeeb9ff0a3c58d707660139565dcebc891bca326326897089"
+    },
+    "docs/design/prototype/reference/windows/navigation-night.png": {
+      "bytes": 353193,
+      "sha256": "2c1d95c8669be47418b587c985f9c1b2ca53c573dfa7f319d96b777abbe97117"
+    },
+    "resources/branding/skager-wordmark.png": {
+      "bytes": 136802,
+      "sha256": "efde82583f0225c61fc32843e746596dd98a017bdb7746949ca6614b7275922f"
+    },
+    "src/ui/SkagerWordmark.h": {
+      "bytes": 3583,
+      "sha256": "c2fc3d1afdf88bfd2e884d541e7b3ad4463702cece09057e38f4d496deda9928"
+    },
+    "src/ui/FloatingSurface.cpp": {
+      "bytes": 4170,
+      "sha256": "fc6dc88cef1f636499841d70794de4e4fd9109108514ec3301f2f8a7bf7a52a6"
+    }
+  },
+  "zip_entries_crc_passed": 18441,
+  "font_log": {
+    "archive_entry": "evidence/local/windows-production-Win32.log",
+    "bytes": 1120252,
+    "sha256": "d1717335629b19544ae229720b8420d641fda8b253d8f05731704c8a49f69d86",
+    "excerpt_lines": [
+      3777,
+      3786
+    ]
+  },
+  "dpi": {
+    "result": "passed; native visual review required",
+    "scales": [
+      {
+        "percent": 100,
+        "GetDpiForWindow": 96,
+        "wxDpi": 96
+      },
+      {
+        "percent": 125,
+        "GetDpiForWindow": 120,
+        "wxDpi": 120
+      },
+      {
+        "percent": 150,
+        "GetDpiForWindow": 144,
+        "wxDpi": 144
+      }
+    ]
+  },
+  "chart_runtime": [
+    {
+      "requested_rendering": "software",
+      "opengl_enabled": false,
+      "core_presentation": {
+        "saved_point_style": 82,
+        "effective_point_style": 76,
+        "available": true
+      },
+      "private_available": false
+    },
+    {
+      "requested_rendering": "opengl",
+      "opengl_enabled": false,
+      "core_presentation": {
+        "saved_point_style": 82,
+        "effective_point_style": 76,
+        "available": true
+      },
+      "private_available": false
+    }
+  ],
+  "dpi-results.json": {
+    "archive_entry": "evidence/local/dpi-results.json",
+    "bytes": 122957,
+    "sha256": "dbf2e85b1dd54f7293a59348bd03b2a838ce001aad688f36cb7cd86b7598c7c3"
+  },
+  "charts-results.json": {
+    "archive_entry": "evidence/local/charts-results.json",
+    "bytes": 58488,
+    "sha256": "a440edc9901fc6e5b452df291c172556b37b28654431459c53bbb54b3694cf7f"
+  }
+}

@@ -1,0 +1,8 @@
+/tmp/skager-capture-jsr581rt/s64-light32-fog33-SKAGER
+Verified private clean application c24c15482293ad2e2f3ce4e1c8af2ca5669381de and exact upstream result of nine patches
+Traceback (most recent call last):
+  File "/home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/evidence/local/ca-light-e6ef384/iho/capture-s64.py", line 158, in <module>
+    wait(lambda:trace_done(trace))
+  File "/home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/evidence/local/ca-light-e6ef384/iho/capture-s64.py", line 88, in wait
+    raise AssertionError('Bounded chart wait expired')
+AssertionError: Bounded chart wait expired

@@ -1,0 +1,15 @@
+[
+  "/usr/bin/c++",
+  "-DIXWEBSOCKET_USE_OPEN_SSL",
+  "-DIXWEBSOCKET_USE_TLS",
+  "-DIXWEBSOCKET_USE_ZLIB",
+  "-DXNAV_ENABLE_PILOT_LOOPBACK_TESTS=0",
+  "-DXNAV_ENABLE_TEST_FIXTURES=0",
+  "-I/home/standard/Projects/X-nav-worktrees/scrum274-ais-connection-observation/src",
+  "-I/home/standard/Projects/X-nav-worktrees/scrum274-ais-connection-observation/.local/ix-source/libs/IXWebSocket",
+  "-g",
+  "-o",
+  "/home/standard/Projects/X-nav-worktrees/scrum274-ais-connection-observation/.local/provider-production.o",
+  "-c",
+  "/home/standard/Projects/X-nav-worktrees/scrum274-ais-connection-observation/src/ais/AisStreamProvider.cpp"
+]

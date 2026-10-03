@@ -15,7 +15,7 @@ LOCAL_UNITS = tuple('src/integration/' + name + '.cpp' for name in (
     'OChartsPresentation', 'OChartsModuleLoader', 'PluginPresentationLoader',
     'ChartNameAlphaWindows', 'ChartModuleCheck'))
 UPSTREAM_UNITS = tuple('gui/src/' + name + '.cpp' for name in (
-    'chcanv', 'glChartCanvas', 'route_gui', 'route_point_gui', 'waypointman_gui', 'ais', 'piano')) + (
+    'chcanv', 'glChartCanvas', 'route_gui', 'route_point_gui', 'waypointman_gui', 'ais', 'piano', 's57chart')) + (
     'libs/s52plib/src/s52plib.cpp', 'libs/s52plib/src/chartsymbols.cpp',
     'libs/s52plib/src/DepthFont.cpp', 'model/src/plugin_loader.cpp')
 

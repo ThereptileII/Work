@@ -1,0 +1,22 @@
+renderer=llvmpipe (LLVM 22.1.8, 256 bits) version=4.6 (Compatibility Profile) Mesa 26.2.2-arch1.1
+DAY_BRIGHT 1 sample=84,105,121 expectedInk=247,244,216
+tileStraight=247,244,216 alpha=43
+DAY_BRIGHT 3 sample=73,83,103 expectedInk=182,110,108
+tileStraight=182,110,108 alpha=43
+DAY_BRIGHT 4 sample=55,88,105 expectedInk=80,141,120
+tileStraight=80,141,120 alpha=43
+DUSK 1 sample=79,100,114 expectedInk=221,214,174
+tileStraight=221,214,174 alpha=43
+DUSK 3 sample=78,89,109 expectedInk=211,148,140
+tileStraight=211,148,140 alpha=43
+DUSK 4 sample=66,95,112 expectedInk=143,186,162
+tileStraight=143,186,162 alpha=43
+NIGHT 1 sample=66,87,103 expectedInk=143,136,106
+tileStraight=143,136,106 alpha=43
+NIGHT 3 sample=65,80,100 expectedInk=136,94,87
+tileStraight=136,94,87 alpha=43
+NIGHT 4 sample=58,85,102 expectedInk=94,122,103
+tileStraight=94,122,103 alpha=43
+typicalUploadAndFinishMs=1.91874
+maximumTile=1023x1023 maximumBuildMs=84.8569
+typicalTileBuildMs=1.695 checks=549

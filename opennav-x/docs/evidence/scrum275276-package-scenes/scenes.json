@@ -1,0 +1,167 @@
+{
+  "cell": "GB4X0000.000",
+  "source_sha256": "c70d9e0f53e149270f85900f8576082db86781d64fbb71aa7d5ceb4af4aa22e3",
+  "coordinate_order": "latitude,longitude",
+  "scope": "Official IHO S-64 presentation-test geography, not operational ENC",
+  "decoder": "pyogrio/GDAL, UPDATES=APPLY, point WKB decoded with Shapely; all non-null attributes retained; absent/null fields omitted",
+  "scale_basis": "Requested .6 -> expected .5826126536 reuses retained canonical 1014x566 IHO viewport calibration; this is not a newly observed sector-rwg capture",
+  "scenes": [
+    {
+      "name": "light-fog",
+      "center": [
+        -32.3760351,
+        61.0307025
+      ],
+      "requested_scale_ppm": 0.6,
+      "expected_scale_ppm": 0.5826126536,
+      "source_features": [
+        {
+          "class": "FOGSIG",
+          "position_lat_lon": [
+            -32.3760351,
+            61.0307025
+          ],
+          "attributes": {
+            "RCID": 33,
+            "PRIM": 1,
+            "GRUP": 2,
+            "OBJL": 58,
+            "RVER": 1,
+            "AGEN": 540,
+            "FIDN": 29142480,
+            "FIDS": 1,
+            "LNAM": "021C01BCADD00001",
+            "CATFOG": 2,
+            "SIGGRP": "(2)"
+          }
+        },
+        {
+          "class": "LIGHTS",
+          "position_lat_lon": [
+            -32.3760351,
+            61.0307025
+          ],
+          "attributes": {
+            "RCID": 32,
+            "PRIM": 1,
+            "GRUP": 2,
+            "OBJL": 75,
+            "RVER": 1,
+            "AGEN": 540,
+            "FIDN": 29142479,
+            "FIDS": 1,
+            "LNAM": "021C01BCADCF0001",
+            "LNAM_REFS": [
+              "021C01BCADD00001"
+            ],
+            "FFPT_RIND": [
+              2
+            ],
+            "COLOUR": [
+              "1"
+            ],
+            "HEIGHT": 55.0,
+            "LITCHR": 2,
+            "SIGGRP": "(1)",
+            "SIGPER": 30.0,
+            "VALNMR": 20.0
+          }
+        }
+      ]
+    },
+    {
+      "name": "sector-rwg",
+      "center": [
+        -32.4843207,
+        60.9650566
+      ],
+      "requested_scale_ppm": 0.6,
+      "expected_scale_ppm": 0.5826126536,
+      "source_features": [
+        {
+          "class": "LIGHTS",
+          "position_lat_lon": [
+            -32.4843207,
+            60.9650566
+          ],
+          "attributes": {
+            "RCID": 620,
+            "PRIM": 1,
+            "GRUP": 2,
+            "OBJL": 75,
+            "RVER": 1,
+            "AGEN": 540,
+            "FIDN": 29142318,
+            "FIDS": 1,
+            "LNAM": "021C01BCAD2E0001",
+            "COLOUR": [
+              "4"
+            ],
+            "LITCHR": 8,
+            "SECTR1": 257.0,
+            "SECTR2": 275.0,
+            "SIGGRP": "(2)",
+            "SIGPER": 8.0,
+            "VALNMR": 6.0
+          }
+        },
+        {
+          "class": "LIGHTS",
+          "position_lat_lon": [
+            -32.4843207,
+            60.9650566
+          ],
+          "attributes": {
+            "RCID": 1881,
+            "PRIM": 1,
+            "GRUP": 2,
+            "OBJL": 75,
+            "RVER": 1,
+            "AGEN": 540,
+            "FIDN": 29142319,
+            "FIDS": 1,
+            "LNAM": "021C01BCAD2F0001",
+            "COLOUR": [
+              "3"
+            ],
+            "LITCHR": 8,
+            "SECTR1": 295.0,
+            "SECTR2": 300.0,
+            "SIGGRP": "(2)",
+            "SIGPER": 8.0,
+            "VALNMR": 6.0
+          }
+        },
+        {
+          "class": "LIGHTS",
+          "position_lat_lon": [
+            -32.4843207,
+            60.9650566
+          ],
+          "attributes": {
+            "RCID": 1882,
+            "PRIM": 1,
+            "GRUP": 2,
+            "OBJL": 75,
+            "RVER": 1,
+            "AGEN": 540,
+            "FIDN": 29142320,
+            "FIDS": 1,
+            "LNAM": "021C01BCAD300001",
+            "COLOUR": [
+              "1"
+            ],
+            "HEIGHT": 4.0,
+            "LITCHR": 8,
+            "OBJNAM": "Arnund",
+            "SECTR1": 275.0,
+            "SECTR2": 295.0,
+            "SIGGRP": "(2)",
+            "SIGPER": 8.0,
+            "VALNMR": 8.0
+          }
+        }
+      ]
+    }
+  ]
+}

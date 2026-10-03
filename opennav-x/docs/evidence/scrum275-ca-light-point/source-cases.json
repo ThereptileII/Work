@@ -1,0 +1,362 @@
+{
+  "sourceSha256": "c70d9e0f53e149270f85900f8576082db86781d64fbb71aa7d5ceb4af4aa22e3",
+  "geometry": "Official IHO presentation test geography, not operational ENC",
+  "cases": [
+    {
+      "target": {
+        "class": "LIGHTS",
+        "RCID": 32,
+        "position": [
+          -32.3760351,
+          61.0307025
+        ],
+        "attributes": {
+          "COLOUR": [
+            "1"
+          ],
+          "VALNMR": 20.0
+        }
+      },
+      "coLocatedPoints": [
+        {
+          "class": "FOGSIG",
+          "RCID": 33,
+          "position": [
+            -32.3760351,
+            61.0307025
+          ],
+          "attributes": {}
+        },
+        {
+          "class": "LIGHTS",
+          "RCID": 32,
+          "position": [
+            -32.3760351,
+            61.0307025
+          ],
+          "attributes": {
+            "COLOUR": [
+              "1"
+            ],
+            "VALNMR": 20.0
+          }
+        }
+      ]
+    },
+    {
+      "target": {
+        "class": "LIGHTS",
+        "RCID": 992,
+        "position": [
+          -32.5420331,
+          60.9234263
+        ],
+        "attributes": {
+          "COLOUR": [
+            "1"
+          ],
+          "VALNMR": 10.0,
+          "SECTR1": 345.0,
+          "SECTR2": 352.0
+        }
+      },
+      "coLocatedPoints": [
+        {
+          "class": "FOGSIG",
+          "RCID": 991,
+          "position": [
+            -32.5420331,
+            60.9234263
+          ],
+          "attributes": {}
+        },
+        {
+          "class": "LNDMRK",
+          "RCID": 1003,
+          "position": [
+            -32.5420331,
+            60.9234263
+          ],
+          "attributes": {
+            "CATLMK": [
+              "17"
+            ],
+            "FUNCTN": [
+              "33"
+            ]
+          }
+        },
+        {
+          "class": "LIGHTS",
+          "RCID": 992,
+          "position": [
+            -32.5420331,
+            60.9234263
+          ],
+          "attributes": {
+            "COLOUR": [
+              "1"
+            ],
+            "VALNMR": 10.0,
+            "SECTR1": 345.0,
+            "SECTR2": 352.0
+          }
+        },
+        {
+          "class": "LIGHTS",
+          "RCID": 993,
+          "position": [
+            -32.5420331,
+            60.9234263
+          ],
+          "attributes": {
+            "COLOUR": [
+              "1"
+            ],
+            "VALNMR": 12.0
+          }
+        },
+        {
+          "class": "LIGHTS",
+          "RCID": 994,
+          "position": [
+            -32.5420331,
+            60.9234263
+          ],
+          "attributes": {
+            "COLOUR": [
+              "3"
+            ],
+            "VALNMR": 9.0,
+            "SECTR1": 154.0,
+            "SECTR2": 208.0
+          }
+        },
+        {
+          "class": "PILPNT",
+          "RCID": 1004,
+          "position": [
+            -32.5420331,
+            60.9234263
+          ],
+          "attributes": {}
+        }
+      ]
+    },
+    {
+      "target": {
+        "class": "LIGHTS",
+        "RCID": 993,
+        "position": [
+          -32.5420331,
+          60.9234263
+        ],
+        "attributes": {
+          "COLOUR": [
+            "1"
+          ],
+          "VALNMR": 12.0
+        }
+      },
+      "coLocatedPoints": [
+        {
+          "class": "FOGSIG",
+          "RCID": 991,
+          "position": [
+            -32.5420331,
+            60.9234263
+          ],
+          "attributes": {}
+        },
+        {
+          "class": "LNDMRK",
+          "RCID": 1003,
+          "position": [
+            -32.5420331,
+            60.9234263
+          ],
+          "attributes": {
+            "CATLMK": [
+              "17"
+            ],
+            "FUNCTN": [
+              "33"
+            ]
+          }
+        },
+        {
+          "class": "LIGHTS",
+          "RCID": 992,
+          "position": [
+            -32.5420331,
+            60.9234263
+          ],
+          "attributes": {
+            "COLOUR": [
+              "1"
+            ],
+            "VALNMR": 10.0,
+            "SECTR1": 345.0,
+            "SECTR2": 352.0
+          }
+        },
+        {
+          "class": "LIGHTS",
+          "RCID": 993,
+          "position": [
+            -32.5420331,
+            60.9234263
+          ],
+          "attributes": {
+            "COLOUR": [
+              "1"
+            ],
+            "VALNMR": 12.0
+          }
+        },
+        {
+          "class": "LIGHTS",
+          "RCID": 994,
+          "position": [
+            -32.5420331,
+            60.9234263
+          ],
+          "attributes": {
+            "COLOUR": [
+              "3"
+            ],
+            "VALNMR": 9.0,
+            "SECTR1": 154.0,
+            "SECTR2": 208.0
+          }
+        },
+        {
+          "class": "PILPNT",
+          "RCID": 1004,
+          "position": [
+            -32.5420331,
+            60.9234263
+          ],
+          "attributes": {}
+        }
+      ]
+    },
+    {
+      "target": {
+        "class": "LIGHTS",
+        "RCID": 994,
+        "position": [
+          -32.5420331,
+          60.9234263
+        ],
+        "attributes": {
+          "COLOUR": [
+            "3"
+          ],
+          "VALNMR": 9.0,
+          "SECTR1": 154.0,
+          "SECTR2": 208.0
+        }
+      },
+      "coLocatedPoints": [
+        {
+          "class": "FOGSIG",
+          "RCID": 991,
+          "position": [
+            -32.5420331,
+            60.9234263
+          ],
+          "attributes": {}
+        },
+        {
+          "class": "LNDMRK",
+          "RCID": 1003,
+          "position": [
+            -32.5420331,
+            60.9234263
+          ],
+          "attributes": {
+            "CATLMK": [
+              "17"
+            ],
+            "FUNCTN": [
+              "33"
+            ]
+          }
+        },
+        {
+          "class": "LIGHTS",
+          "RCID": 992,
+          "position": [
+            -32.5420331,
+            60.9234263
+          ],
+          "attributes": {
+            "COLOUR": [
+              "1"
+            ],
+            "VALNMR": 10.0,
+            "SECTR1": 345.0,
+            "SECTR2": 352.0
+          }
+        },
+        {
+          "class": "LIGHTS",
+          "RCID": 993,
+          "position": [
+            -32.5420331,
+            60.9234263
+          ],
+          "attributes": {
+            "COLOUR": [
+              "1"
+            ],
+            "VALNMR": 12.0
+          }
+        },
+        {
+          "class": "LIGHTS",
+          "RCID": 994,
+          "position": [
+            -32.5420331,
+            60.9234263
+          ],
+          "attributes": {
+            "COLOUR": [
+              "3"
+            ],
+            "VALNMR": 9.0,
+            "SECTR1": 154.0,
+            "SECTR2": 208.0
+          }
+        },
+        {
+          "class": "PILPNT",
+          "RCID": 1004,
+          "position": [
+            -32.5420331,
+            60.9234263
+          ],
+          "attributes": {}
+        }
+      ]
+    }
+  ],
+  "standaloneSourceCandidates": [
+    {
+      "class": "LIGHTS",
+      "RCID": 1719,
+      "position": [
+        -32.3501784,
+        60.9288803
+      ],
+      "attributes": {
+        "COLOUR": [
+          "3"
+        ],
+        "VALNMR": 11.0
+      }
+    }
+  ],
+  "limits": "Decoder inventory only; no native lookup/visibility/canvas claim. NaN decoder nulls and empty lists omitted as absent fields."
+}

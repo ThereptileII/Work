@@ -1323,3 +1323,90 @@ GUID acknowledgement code are unchanged.
 Focused compilation, paint/cache/source boundaries and unqualified native/GL
 and boat gates are recorded in
 [the SCRUM-271 review](design/reviews/scrum271-notification-style.md).
+
+### SCRUM-274: owned AIS connection observation
+
+The AIS transport patch adds an owned numeric connection value to IX's existing
+client init result and Open event. After successful TLS/HTTP upgrade, while the
+transport owns its socket mutex, the socket copies both OS-reported endpoints
+under its base socket mutex. Values include address family, network-order
+address bytes, host-order ports, IPv6 scope IDs and a steady-clock capture time.
+Failure remains unavailable and never changes connection success. No descriptor,
+socket pointer, hostname, credential or peer text crosses this boundary. The
+new value header is included in IX's existing header/install list.
+
+The provider adds its lifetime-scoped generation and passes the value through an
+accepted session Open transition only. The session clears it whenever state
+leaves Subscribing/Connected. Repeated enable calls and viewport subscription
+changes preserve the original capture. Actual enable transitions and credential
+changes invalidate in-flight callbacks and credential reads; a read completing
+after such a change is discarded before connection. Snapshots retain owned
+historical values and Read never refreshes their timestamps. Observation is not
+a current-liveness or process-identity claim.
+
+Dedicated loopback tests alone may pause a genuine IX Open before the provider
+mutex/generation check via OPENNAV_AIS_TEST_TRANSPORT. This bounded gate is absent
+from production compilation and has a finite test deadline. It exercises delayed
+Open versus disable/re-enable and credential replacement without a socket getter
+or a production fault-injection API. Evidence and remaining native/WFP/boat gates:
+[SCRUM-274 checks](evidence/scrum274-connection-observation/README.md).
+
+## SCRUM-275: scoped ordinary CA light point (pending canvas qualification)
+
+The chart-presentation core patch and private o-charts patch add one bounded
+presentation inventory around existing point passes (core GL/DC, private GL's
+two rectangles/DC). Only verified Simplified ordinary homogeneous LIGHTS CA
+records can add an existing library-owned prototype point after the unchanged
+arc painter. Co-located structures/topmarks, mixed/uncertain/directional cases
+and the legacy no-arc GL path retain original painting. Scope RAII borrows no
+object beyond that synchronous pass. No conditional calculation, resource,
+lookup, arc, visibility or navigation behavior is replaced. Exact boundaries,
+focused method/changed-object proof, source counts and remaining canvas/native/
+boat gates are in `docs/evidence/scrum275-ca-light-point/README.md`.
+
+### SCRUM-275 follow-on: mixed ordinary sectors and exact offset fog
+
+The subsequent shared inventory helper allows different individually eligible
+ordinary single-color CA records to share one generic `XNLIT013` location point.
+Each original CA instruction still paints independently. Only the full verified
+Simplified FOGSIG/31164 → `SY(FOGSIG01)` signature is exempted from co-located
+point refusal; a loaded rule must also retain its pinned raster identity and
+geometry. A null lazy rule is not processed as a getter. Independent tower,
+pile, topmark and all other point classes still refuse the added location point.
+No upstream patch body, resource or conditional rule changes in this increment.
+The source-bound bitmap-selection proof, focused checks, changed-object builds
+and unqualified canvas/native/boat limits are in
+`docs/evidence/scrum275-ca-light-fog-mixed/README.md`.
+
+### SCRUM-275 lifetime correction after normal Release compilation
+
+The unchanged normal GCC16 Release `-O3 -Werror` build rejected storing the
+stack inventory address in the library. The shared helper now owns a stable
+inventory allocation for the synchronous pass and restores the prior library
+pointer before freeing it. Disabled/Paper and allocation-failed scopes shadow
+an outer inventory with null; they never consume that outer pass's points.
+Disabled/Paper passes allocate nothing. Existing bounded map-allocation failure
+and original stock rendering are preserved. No compiler diagnostic is suppressed,
+no upstream painter or conditional changes, and no pointer lifetime escapes the
+integration pass. [Focused checks and limits](evidence/scrum275-scope-lifetime/README.md)
+retain the original failure separately. Native and actual canvas acceptance
+remain independent gates.
+
+SCRUM-276 adds guarded ordinary compact sector fan paint at the existing core
+and private `RenderCARC_GLSL` / `RenderCARC_VBO` boundaries. It uses exact prototype
+wash/line inks, weights and alpha with each renderer's unchanged CA geometry.
+The shared header owns only bounded transient tiles; it neither changes shared
+Rule caches nor persists GL state. Disabled, nonordinary, unsupported viewport
+and excessive-work cases retain the original painter. The private preparation
+closure includes the header. Focused actual-method software/Mesa, source patch,
+O3 object and explicit near-cap performance limitations are recorded in
+`docs/evidence/scrum276-compact-ca-fan/README.md`.
+
+### SCRUM-275 actual GL multipoint-sounding correction
+
+Pinned `SetMultipointGeometry` stores SOUNDG parents as GEO_POINT with arrays,
+without scalar coordinates. Both shared inventory walks now exclude only the
+validated non-clone multipoint container before scalar access. Independent
+malformed points retain refusal; no sounding data or painter changes. The
+[negative reproduction and 147/147/145 focused checks](evidence/scrum275-multipoint-sounding/README.md)
+precede actual combined canvas/native verification.

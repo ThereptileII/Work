@@ -1,0 +1,76 @@
+{
+  "kind": "offline audit of retained files only; not new runtime",
+  "source": "c24c15482293ad2e2f3ce4e1c8af2ca5669381de",
+  "installedElfSha256AfterAllCaptures": "13d6dcdf1c52f55237afd166f022d09252a7e362e66d962187fde08286fdb76d",
+  "trackedSourceCleanBeforeEvidence": true,
+  "donorFingerprintsMatched": 4610,
+  "donorChanged": [],
+  "correctedDiagnostic": {
+    "inventoryPasses": 13,
+    "constructedSizes": [
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+    ],
+    "pointEntryCount": 13,
+    "firstBadNode": [
+      {
+        "reason": "invalid context/coordinate",
+        "object": {
+          "rz": "0x55555e1ff7c0",
+          "object": "0x55555c850360",
+          "class": "SOUNDG",
+          "index": 115,
+          "lat": 4.63557649527823e-310,
+          "lon": 2.12199583e-314,
+          "primitive": 0,
+          "context": "0x55555d78f2b0",
+          "x": 0.0,
+          "y": NaN,
+          "lookup": {
+            "RCID": 31311,
+            "FTYP": 80,
+            "RPRI": 79,
+            "DISC": 79,
+            "LUCM": 33010,
+            "TNAM": 76,
+            "DPRI": 54
+          },
+          "ruleLoaded": true,
+          "rule": {
+            "type": 8,
+            "next": "0x0",
+            "private": 0,
+            "instruction": "SOUNDG02)\u001f"
+          },
+          "attributes": [
+            "catgeo",
+            "QUASOU",
+            "SCAMIN"
+          ]
+        }
+      }
+    ],
+    "takeSuccessEvents": 0,
+    "dictionaryEvents": 0,
+    "actualInferiorExit": [
+      {
+        "kind": "inferior_exit",
+        "exit_code": 0,
+        "sequence": 41
+      }
+    ],
+    "rawCollectorExit": 1,
+    "collectorIssue": "Exact dictionary equality rejected added sequence41 field despite actual exit_code0. Original report/trace untouched."
+  }
+}

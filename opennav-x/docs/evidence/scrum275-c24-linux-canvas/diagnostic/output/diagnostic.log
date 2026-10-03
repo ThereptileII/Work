@@ -1,0 +1,59 @@
+{
+"s52plib.m_presentationLightSymbols":778,
+"s52plib.m_presentationCaLights":784,
+"s52plib.m_useGLSL":2392,
+"s52plib.m_pdc":920,
+"s52plib.vp_plib":2408,
+"s52plib.m_nSymbolStyle":0,
+"VPointCompat.pix_width":0,
+"VPointCompat.pix_height":4,
+"ObjRazRules.next":32,
+"ObjRazRules.obj":8,
+"ObjRazRules.LUP":0,
+"S57Obj.Primitive_type":8,
+"S57Obj.m_chart_context":320,
+"S57Obj.x":48,
+"S57Obj.y":56,
+"S57Obj.att_array":16,
+"S57Obj.n_attr":32,
+"S57Obj.FeatureName":0,
+"S57Obj.Index":40,
+"S57Obj.m_lat":152,
+"S57Obj.m_lon":160,
+"Rules.next":40,
+"Rules.ruleType":0,
+"Rules.b_private_razRule":36,
+"Rules.razRule":16,
+"Rules.INSTstr":8,
+"Rule.RCID":0,
+"Rule.pos.symb.bnbox_w.SYHL":32,
+"Rule.pos.symb.bnbox_h.SYVL":36,
+"Rule.pos.symb.pivot_x.SYCL":24,
+"Rule.pos.symb.pivot_y.SYRW":28,
+"Rule.pos.symb.bnbox_x.SBXC":40,
+"Rule.pos.symb.bnbox_y.SBXR":44,
+"Rule.name":4,
+"Rule.definition":12,
+"LUPrec.ruleList":120,
+"LUPrec.FTYP":12,
+"LUPrec.RPRI":20,
+"LUPrec.DISC":104,
+"LUPrec.LUCM":108,
+"LUPrec.OBCL":4,
+"LUPrec.TNAM":24,
+"LUPrec.RCID":0,
+"LUPrec.DPRI":16,
+"wxPoint.x":0,
+"wxPoint.y":4,
+"inventoryMapCountOffset":24,
+"pointerBytes":8}
+
+/tmp/skager-capture-zmqo8qno/s64-light32-fog33-SKAGER
+Verified private clean application c24c15482293ad2e2f3ce4e1c8af2ca5669381de and exact upstream result of nine patches
+Traceback (most recent call last):
+  File "/home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/evidence/local/ca-light-e6ef384/diagnostic/diagnostic.py", line 151, in <module>
+    wait(lambda:'OnInitTimer...Finalize Canvases' in (profile/'opencpn.log').read_text(errors='replace'))
+  File "/home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/evidence/local/ca-light-e6ef384/diagnostic/diagnostic.py", line 81, in wait
+    if app and app.poll() is not None:raise AssertionError(('app exited',app.returncode))
+                                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: ('app exited', 0)

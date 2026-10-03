@@ -2769,3 +2769,240 @@ diff --git a/gui/include/gui/notification_manager_gui.h b/gui/include/gui/notifi
  
  #ifdef ocpnUSE_GL
    unsigned int m_texobj;
+--- a/libs/s52plib/src/s52plib.h
++++ b/libs/s52plib/src/s52plib.h
+@@ -28,6 +28,9 @@
+ 
+ #include <vector>
+ #include "s52s57.h"  //types
++#ifdef OPENNAV_X
++#include "integration/ChartCaLightPoint.h"
++#endif
+ 
+ class wxGLContext;
+ 
+@@ -358,6 +361,15 @@
+ 
+   // Todo accessors
+   void EnablePresentationLightSymbols() { m_presentationLightSymbols = true; }
++#ifdef OPENNAV_X
++  bool PresentationCaLightsEnabled() const { return m_presentationLightSymbols; }
++  opennav::integration::CaLightPointInventory* SetPresentationCaLights(
++      opennav::integration::CaLightPointInventory* inventory) {
++    auto* previous = m_presentationCaLights;
++    m_presentationCaLights = inventory;
++    return previous;
++  }
++#endif
+   LUPname m_nSymbolStyle;
+   LUPname m_nBoundaryStyle;
+   bool m_bOK;
+@@ -436,6 +448,10 @@
+   bool m_useS52DefaultTextColor = false;
+   bool m_presentationSimpleSymbols = false;
+   bool m_presentationLightSymbols = false;
++#ifdef OPENNAV_X
++  opennav::integration::CaLightPointInventory* m_presentationCaLights = nullptr;
++  void RenderPresentationCaLightPoint(ObjRazRules* rzRules);
++#endif
+   int S52_load_Plib(const wxString &PLib, bool b_forceLegacy, bool allowCwdOverride = true);
+   bool S52_flush_Plib();
+ 
+--- a/libs/s52plib/src/s52plib.cpp
++++ b/libs/s52plib/src/s52plib.cpp
+@@ -6020,13 +6020,39 @@
+   return 1;
+ }
+ 
++#ifdef OPENNAV_X
++void s52plib::RenderPresentationCaLightPoint(ObjRazRules* rzRules) {
++  if (!m_presentationLightSymbols || !m_presentationCaLights || !rzRules) return;
++  const char* name = m_presentationCaLights->Take(rzRules->obj);
++  if (!name) return;
++  const auto found = _symb_sym->find(wxString::FromUTF8(name));
++  if (found == _symb_sym->end() || !found->second ||
++      found->second->definition.SYDF != 'R' ||
++      std::memcmp(found->second->name.SYNM, name, 8)) return;
++  wxPoint point;
++  GetPointPixSingle(rzRules, rzRules->obj->y, rzRules->obj->x, &point);
++  RenderRasterSymbol(rzRules, found->second, point, 0);
++}
++#endif
++
+ int s52plib::RenderCARC(ObjRazRules *rzRules, Rules *rules) {
++  int result;
+ #ifdef ocpnUSE_GL
+   if (m_useGLSL)
+-    return RenderCARC_GLSL(rzRules, rules);
++    result = RenderCARC_GLSL(rzRules, rules);
+   else
+ #endif
+-    return RenderCARC_VBO(rzRules, rules);
++    result = RenderCARC_VBO(rzRules, rules);
++
++#ifdef OPENNAV_X
++  // The legacy GL/VBO branch draws no arc, despite returning 1.
++  bool hasArcPainter = m_pdc != nullptr;
++#ifdef ocpnUSE_GL
++  hasArcPainter = hasArcPainter || m_useGLSL;
++#endif
++  if (hasArcPainter) RenderPresentationCaLightPoint(rzRules);
++#endif
++  return result;
+ }
+ 
+ #ifdef ocpnUSE_GL
+--- a/gui/src/s57chart.cpp
++++ b/gui/src/s57chart.cpp
+@@ -1784,6 +1784,10 @@
+ 
+   // qDebug() << "Done Lines" << sw.GetTime();
+ 
++#ifdef OPENNAV_X
++  opennav::integration::CaLightPointScope<s52plib> lightPoints(ps52plib, razRules, ps52plib->GetEffectiveSymbolStyle() == SIMPLIFIED ? 0 : 1);
++#endif
++
+   for (i = 0; i < PRIO_NUM; ++i) {
+     if (ps52plib->GetEffectiveSymbolStyle() == SIMPLIFIED)
+       top = razRules[i][0];  // SIMPLIFIED Points
+@@ -2396,6 +2400,10 @@
+   ObjRazRules *top;
+   ObjRazRules *crnt;
+   ViewPort tvp = vp;  // undo const  TODO fix this in PLIB
++
++#ifdef OPENNAV_X
++  opennav::integration::CaLightPointScope<s52plib> lightPoints(ps52plib, razRules, ps52plib->GetEffectiveSymbolStyle() == SIMPLIFIED ? 0 : 1);
++#endif
+ 
+   for (i = 0; i < PRIO_NUM; ++i) {
+     //      Set up a Clipper for Lines
+
+--- a/libs/s52plib/src/s52plib.cpp
++++ b/libs/s52plib/src/s52plib.cpp
+@@ -70,6 +70,7 @@
+ #include "s52plib.h"
+ #ifdef OPENNAV_X
+ #include "integration/ChartLightSymbol.h"
++#include "integration/ChartCaFan.h"
+ #include "integration/ChartSpecialBuoySymbol.h"
+ #include "integration/ChartYellowBuoySymbol.h"
+ #endif
+@@ -6102,6 +6103,16 @@
+   slong = tkz.GetNextToken();
+   long sector_radius;
+   slong.ToLong(&sector_radius);
++#ifdef OPENNAV_X
++  const unsigned fanColor = opennav::integration::CaFanColor(
++      PresentationCaLightsEnabled(), rzRules);
++  opennav::integration::CaFanPaint fanPaint;
++  const bool fanEligible = fanColor && outline_color == "OUTLW" &&
++      outline_width == 4 && arc_width == 2 && sector_radius > 0 &&
++      arc_color == (fanColor == 3 ? "LITRD" : fanColor == 4 ? "LITGN" : "LITYW") &&
++      opennav::integration::CaFanColors(fanColor, m_ColorScheme, fanPaint);
++#endif
++
+ 
+   // Center point
+   wxPoint r;
+@@ -6150,7 +6161,7 @@
+   }
+ 
+   //      Enable anti-aliased lines, at best quality
+-  glEnable(GL_BLEND);
++
+ 
+   // Rotate the center point about vp center
+   wxPoint point = r;
+@@ -6164,6 +6175,43 @@
+ 
+   point.x = (int)xp + vp_plib.pix_width / 2;
+   point.y = (int)yp + vp_plib.pix_height / 2;
++#ifdef OPENNAV_X
++  if (!m_pdc && fanEligible) {
++    const int leg_len = (int)sec_rad;
++    float a = (sectr1 - 90) * PI / 180;
++    a += vp_plib.rotation;
++    const wxPoint leg1(point.x + (int)(leg_len * cosf(a)),
++                       point.y + (int)(leg_len * sinf(a)));
++    a = (sectr2 - 90) * PI / 180.;
++    a += vp_plib.rotation;
++    const wxPoint leg2(point.x + (int)(leg_len * cosf(a)),
++                       point.y + (int)(leg_len * sinf(a)));
++    // Match the original shader's float rounding and wrap convention.
++    float sr1 = sectr1 + (vp_plib.rotation * 180 / PI);
++    if (sr1 > 360.) sr1 -= 360.;
++    float sr2 = sectr2 + (vp_plib.rotation * 180 / PI);
++    if (sr2 > 360.) sr2 -= 360.;
++    float sb = sr1, se = sr2 > sr1 ? sr2 : sr2 + 360;
++    if ((sb < 0) || (se < 0)) { sb += 360.; se += 360.; }
++    opennav::integration::CaFanTile tile;
++    if (tile.Build({point, leg1, leg2, rad, sb, se,
++                    m_ContentScaleFactor / m_dipfactor}, fanPaint) &&
++        opennav::integration::DrawCaFanGL(tile, S52texture_2D_shader_program,
++                                         vp_plib.pix_width, vp_plib.pix_height)) {
++      // Full conservative radius includes wash center, legs and antialiasing.
++      const double extent = wxMax(rad, sec_rad) +
++                            ceil(1.3 * m_ContentScaleFactor / m_dipfactor) + 3;
++      double latmin, lonmin, latmax, lonmax;
++      GetPixPointSingleNoRotate(r.x - extent, r.y + extent, &latmin, &lonmin);
++      GetPixPointSingleNoRotate(r.x + extent, r.y - extent, &latmax, &lonmax);
++      LLBBox box; box.Set(latmin, lonmin, latmax, lonmax);
++      rzRules->obj->BBObj.Expand(box);
++      return 1;
++    }
++  }
++#endif
++  glEnable(GL_BLEND);
++
+ 
+   float rad_fluff = rad + 20;
+   float coords[8];
+@@ -6385,6 +6433,16 @@
+   slong = tkz.GetNextToken();
+   long sector_radius;
+   slong.ToLong(&sector_radius);
++#ifdef OPENNAV_X
++  const unsigned fanColor = opennav::integration::CaFanColor(
++      PresentationCaLightsEnabled(), rzRules);
++  opennav::integration::CaFanPaint fanPaint;
++  const bool fanEligible = fanColor && outline_color == "OUTLW" &&
++      outline_width == 4 && arc_width == 2 && sector_radius > 0 &&
++      arc_color == (fanColor == 3 ? "LITRD" : fanColor == 4 ? "LITGN" : "LITYW") &&
++      opennav::integration::CaFanColors(fanColor, m_ColorScheme, fanPaint);
++#endif
++
+   carc_hash += slong;
+   carc_hash += _T(".");
+ 
+@@ -6447,6 +6505,31 @@
+   carc_hash += xs;
+ 
+   if (m_pdc) {  // DC rendering
++#ifdef OPENNAV_X
++    if (fanEligible) {
++      wxPoint center;
++      GetPointPixSingle(rzRules, rzRules->obj->y, rzRules->obj->x, &center);
++      const int fan_radius = (int)(radius * canvas_pix_per_mm);
++      const int leg_len = (int)(sector_radius * canvas_pix_per_mm);
++      float a = (sectr1 - 90) * PI / 180;
++      const wxPoint leg1(center.x + (int)(leg_len * cosf(a)),
++                         center.y + (int)(leg_len * sinf(a)));
++      a = (sectr2 - 90) * PI / 180.;
++      const wxPoint leg2(center.x + (int)(leg_len * cosf(a)),
++                         center.y + (int)(leg_len * sinf(a)));
++      opennav::integration::CaFanTile tile;
++      if (tile.Build({center, leg1, leg2, double(fan_radius), sectr1, sectr2,
++                      m_ContentScaleFactor / m_dipfactor}, fanPaint) && tile.Draw(*m_pdc)) {
++        double latmin, lonmin, latmax, lonmax;
++        GetPixPointSingleNoRotate(tile.bounds.x, tile.bounds.GetBottom(), &latmin, &lonmin);
++        GetPixPointSingleNoRotate(tile.bounds.GetRight(), tile.bounds.y, &latmax, &lonmax);
++        LLBBox box; box.Set(latmin, lonmin, latmax, lonmax);
++        rzRules->obj->BBObj.Expand(box);
++        return 1;
++      }
++    }
++#endif
++
+     if (fabs(prule->parm7 - xscale) > .00001) {
+       ClearRulesCache(prule);
+     }

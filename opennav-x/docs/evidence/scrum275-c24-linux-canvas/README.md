@@ -1,0 +1,35 @@
+# SCRUM-275 corrected Release build and actual canvas evidence
+
+The isolated warm application build uses exact source `c24c15482293ad2e2f3ce4e1c8af2ca5669381de`: reviewed `eaff7473a019d3cb4736b6d11b397abafec2c3dd` mapped onto `e6ef3843dc604368d32bc823c770bec76d890b69` plus the original failed-build evidence commit `64bc1ab`. SCRUM-276 is excluded. The previously failing actual `s57chart.cpp.o` compiled alone with unchanged Release `-O3 -Werror`; the same warm app-only build then completed 67 remaining steps and installation. No dependency producer or test suite ran. Original e6 compiler failure remains in `../scrum275-e6-linux-build-failure`.
+
+Installed ELF SHA256: `13d6dcdf1c52f55237afd166f022d09252a7e362e66d962187fde08286fdb76d`. Build ELF: `c977d9ea3cdd1e0cee90140edd2691493a95786ff6b4b7bf2f2929bb8c9fec51`. Resource manifest stays `ffa75c9d097a143e58aa13f9300b04bebac0836ab849bd4284401df1866f4b2a`. Source, generated identity, all nine ordered upstream patches, installed resources and runtime loader identity were verified. All 4,610 donor fingerprints still match bytes, sizes and modification times after the captures. ELF bytes remained unchanged throughout all probes.
+
+## Software: actual LIGHTS32 plus FOGSIG33 passes
+
+All eight SKAGER/Standard Day/Dusk/Night/Day-return software captures passed, including unmasked whole-chart Day equality and actual clean process exits. Full-resolution originals and 72px source-centered crops are under `iho/output/capture-ca-light-c24c154-software`. Day/Dusk/Night originals and source crops were visually inspected before starting OpenGL. The added circle/rays are visible beside the stock magenta fog glyph. The original large all-round light ring remains; this is not compact sector-paint evidence.
+
+External entry probes on the unchanged actual executable observed LIGHTS source RCID32 (runtime object index31) entering original `RenderCARC`, lookup31183/table76, followed by actual `RenderRasterSymbol` with `XNLIT013`. FOGSIG source RCID33 (runtime index32) entered original `RenderSY` and raster with `FOGSIG01`, lookup31164/table76. Both raster anchors are canvas507,283. Probes disabled before settled screenshots. There were no inferior calls, chart/model writes, injected objects or test painter calls.
+
+Scene: exact official IHO S-64 presentation-test cell `GB4X0000.000`, SHA256 `c70d9e0f53e149270f85900f8576082db86781d64fbb71aa7d5ceb4af4aa22e3`; this is not an operational ENC. Actual source order is latitude **-32.3760351**, longitude **+61.0307025**, correcting the earlier W/N shorthand without changing geometry. Requested scale0.6 yielded checked actual0.5826126536, canvas1014x566 within1280x800, one native-scale52000 ENC quilt member, follow disabled, normal Simplified/Standard-category visibility.
+
+The existing capture contract sends explicitly recorded simulated loopback RMC at47.6,-122.36 into the real OpenCPN input path, independent of the IHO viewport. It is not live navigation. Fresh disposable profiles, isolated network namespace and no hardware output were used. Diagnostics verify selected OpenCPN navigation, developer fixture build, pilot disabled/control unavailable, and private o-charts adapter unavailable.
+
+## OpenGL: original failure retained
+
+The first Mesa llvmpipe run reached original LIGHTS CA and original FOGSIG raster at the same scene, but never reached the required LIGHTS raster. The unchanged 45-second bounded trace wait failed before any theme-cycle assertion. `iho/output/capture-ca-light-c24c154-opengl` retains its original failure screenshot, trace, report and profile logs. No OpenGL marker/theme pass, Standard GL run, or clean acceptance exit is claimed. Mesa26.2.2/LLVM22.1.8 compatibility4.6 and GLSL4.60 were independently recorded.
+
+The previously retained Standard GL Day-return label shift is still a separate inherited failure (`../scrum264-yellow-e1d-linux`); it was not reached or waived here.
+
+## Bounded diagnostic and exact limits
+
+Two separately retained read-only diagnostic attempts followed root review; no application rebuild or source changes occurred. `diagnostic` has an operator error: the intended post-Take offset0x150 was mistakenly entered as0x250. GDB stopped on that invalid probe; its abnormal exit is collector failure and provides no product-crash proof.
+
+`diagnostic-corrected` validates exact ELF instruction bytes and boundaries before launch. A separate helper verifies the production class offsets and the same-compiler map count/head/key/value representation against a three-entry map; it calls no application painter. The replay observed thirteen fresh enabled inventories with column0,757 heads, all empty immediately after construction. The same original LIGHTS object then reached `RenderPresentationCaLightPoint` with enabled1,GLSL1,DCnull,table76 and the same empty inventory. No successful Take or dictionary lookup event occurred: this attempt does not establish resource-dictionary contents.
+
+Every constructor saw unrelated `SOUNDG` runtime index115 with `Primitive_type=GEO_POINT`, valid chart context, x0 and NaN y. The inventory's global scalar-coordinate check therefore returns before populating any light. Exact loaded FOGSIG31164 metadata, single-rule chain, raster1338,12x13 dimensions and pivot15,-3 are recorded and valid. No duplicate heads were observed. The trace contains the actual nonfinite value rather than normalizing it.
+
+Pinned core source explains the mismatch: `gui/src/Osenc.cpp:947` routes multipoint records to `S57Obj::SetMultipointGeometry`; `gui/src/s57obj.cpp:340–375` sets `GEO_POINT`, point count, `geoPtz`, `geoPtMulti` and bounds, but never initializes parent x/y/m_lat/m_lon. `S57Obj::Init` at134–175 initializes those array pointers to null but does not initialize scalar coordinates; `libs/s52plib/src/s52s57.h:409–423` declares those scalars without defaults. Scalar `SetPointGeometry` at258–277 does set them. Actual `RenderMPS` at `libs/s52plib/src/s52plib.cpp:5889` uses the multipoint arrays. The diagnostic did not read npt/array fields, so runtime array identity remains source-supported inference; the observed NaN-triggered empty inventory is direct evidence. A correction must distinguish valid multipoint containers before scalar reads in both inventory walks, while preserving independent malformed-point rejection and unchanged sounding data/rendering.
+
+The corrected diagnostic actually exited normally (`exit_code:0`,sequence41). Its reused collector's final exact-dictionary comparison rejected that added sequence field and labelled the report failed. The original report and exit record remain untouched. `offline-audit.json` verifies this discrepancy and the retained thirteen-pass observations without replaying the app. This single Day diagnostic is not a theme acceptance run.
+
+Native Windows, actual private adapter, full OpenGL/theme coverage, ordinary mixed sectors, tower/pile cases and boat acceptance remain pending. No root/shared prepared tree, prior evidence, remote, CI or boat was changed.

@@ -1,0 +1,23 @@
+name: SKAGER native certificate fixture preflight
+on:
+  push:
+    branches: [skager-certificate-fixtures]
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  certificate-fixtures:
+    runs-on: windows-2022
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+      - name: Exercise actual certificate helpers without importing trust
+        shell: pwsh
+        run: |
+          ./opennav-x/tools/test-downloader-certificate-fixtures.ps1
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: native-certificate-fixtures-${{ github.sha }}
+          path: opennav-x/evidence/local/downloader-certificate-fixtures
+          if-no-files-found: error

@@ -1,0 +1,9 @@
+In file included from /home/standard/Projects/X-nav-worktrees/scrum276-ca-fan/tests/chart_ca_fan_test.cpp:59:
+/home/standard/Projects/X-nav-worktrees/scrum276-ca-fan/.local/fan-refusal-sealed/core/fan-methods.inc: In member function ‘int s52plib::RenderCARC_VBO(ObjRazRules*, Rules*)’:
+/home/standard/Projects/X-nav-worktrees/scrum276-ca-fan/.local/fan-refusal-sealed/core/fan-methods.inc:409:9: warning: unused variable ‘nominal_arc_width_pix’ [-Wunused-variable]
+  409 |   float nominal_arc_width_pix = wxMax(
+      |         ^~~~~~~~~~~~~~~~~~~~~
+/home/standard/Projects/X-nav-worktrees/scrum276-ca-fan/.local/fan-refusal-sealed/core/fan-methods.inc: In member function ‘int s52plib::StockCARC_VBO(ObjRazRules*, Rules*)’:
+/home/standard/Projects/X-nav-worktrees/scrum276-ca-fan/.local/fan-refusal-sealed/core/fan-methods.inc:1060:9: warning: unused variable ‘nominal_arc_width_pix’ [-Wunused-variable]
+ 1060 |   float nominal_arc_width_pix = wxMax(
+      |         ^~~~~~~~~~~~~~~~~~~~~

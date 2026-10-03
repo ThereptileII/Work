@@ -42,9 +42,9 @@ jobs:
           # Optional bounded additions; original yellow+Seattle matrix remains.
           if ($Target.PSObject.Properties.Name -contains 'iho_review_scenes') {
             if ($Target.iho_review_scenes -isnot [Array] -or @($Target.iho_review_scenes).Count -gt 2 -or
-                @($Target.iho_review_scenes | Where-Object { $_ -cnotin @('lateral','cardinals') }).Count -or
+                @($Target.iho_review_scenes | Where-Object { $_ -cnotin @('lateral','cardinals','light-fog','sector-rwg') }).Count -or
                 @($Target.iho_review_scenes | Select-Object -Unique).Count -ne @($Target.iho_review_scenes).Count) {
-              throw 'Only unique named lateral/cardinals IHO review additions are supported'
+              throw 'At most two unique named lateral/cardinals/light-fog/sector-rwg IHO review additions are supported'
             }
           }
           $Run = gh api "repos/$env:GITHUB_REPOSITORY/actions/runs/$($Target.producer_run_id)" | ConvertFrom-Json
