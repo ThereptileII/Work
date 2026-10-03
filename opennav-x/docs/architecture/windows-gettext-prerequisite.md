@@ -65,3 +65,14 @@ records exact source/receipt/catalog identities and has no app, upstream or
 maintained dependency build. Root must publish and verify this native proof
 before another full candidate. Native proof, full candidate, runtime/installer
 and boat acceptance remain open at this implementation commit.
+
+### Native path-spelling correction
+
+The first short native proof failed inside the offline contracts before package
+acquisition: a lexical path versus `resolve()` comparison rejected regular
+fixture paths after canonical spelling changed. The correction checks actual
+`lstat` symlink/reparse attributes on the file and all ancestors instead. Known
+roots, regular-file checks and exact identities remain required. Windows 8.3
+aliases must pass a real same-file proof; junction ancestry must be refused.
+See `docs/evidence/scrum255-gettext-path-failure/` for the unchanged failed
+artifact, precise evidence limits and the pending native alias/junction proof.

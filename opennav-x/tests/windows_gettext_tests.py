@@ -4,6 +4,9 @@ import json
 import os
 from pathlib import Path
 import subprocess
+import stat
+import sys
+from types import SimpleNamespace
 import tempfile
 import unittest
 from unittest.mock import patch
@@ -15,7 +18,13 @@ g=importlib.util.module_from_spec(spec);spec.loader.exec_module(g)
 class GettextPrerequisiteTests(unittest.TestCase):
     def setUp(self):
         self.work=tempfile.TemporaryDirectory();self.addCleanup(self.work.cleanup)
-        self.root=Path(self.work.name);self.pf=self.root/'Program Files';self.pf86=self.root/'Program Files (x86)'
+        self.root=Path(self.work.name)
+        if sys.platform=='win32' and not getattr(type(self),'path_diagnostics_printed',False):
+            print(json.dumps({'nativeTemp':str(self.root),'resolvedTemp':str(self.root.resolve()),
+                'tempSpellingChanged':os.path.normcase(str(self.root))!=os.path.normcase(str(self.root.resolve())),
+                'tempReparseAttributes':getattr(self.root.lstat(),'st_file_attributes',0)}),flush=True)
+            type(self).path_diagnostics_printed=True
+        self.pf=self.root/'Program Files';self.pf86=self.root/'Program Files (x86)'
         self.bin=self.pf/'Poedit/Gettexttools/bin';self.receipt=self.root/'evidence/gettext.json'
         self.choco=self.root/'chocolatey/bin/choco.exe';self.choco.parent.mkdir(parents=True);self.choco.write_bytes(b'package manager fixture')
         self.environment=patch.dict(os.environ,{'ProgramFiles':str(self.pf),'ProgramFiles(x86)':str(self.pf86),'ChocolateyInstall':str(self.choco.parent.parent)})
@@ -27,6 +36,55 @@ class GettextPrerequisiteTests(unittest.TestCase):
     def native(self,command,timeout,log):
         return {'exitCode':0}, Path(command[0]).stem+' (GNU gettext-tools) 0.26\n'
     def ensure(self,install=False):return g.ensure(self.receipt,install)
+    def test_plain_file_does_not_treat_resolved_spelling_as_a_link(self):
+        self.tools()
+        with patch.object(Path,'resolve',side_effect=AssertionError('Spelling comparison is not a link test')):
+            g.plain_file(self.bin/'msgfmt.exe')
+    def test_leaf_reparse_attribute_is_rejected(self):
+        self.tools();target=self.bin/'msgfmt.exe';real=Path.lstat
+        def lstat(path):
+            info=real(path)
+            return SimpleNamespace(st_mode=info.st_mode,st_file_attributes=stat.FILE_ATTRIBUTE_REPARSE_POINT) if path==target else info
+        with patch.object(Path,'lstat',lstat):
+            with self.assertRaisesRegex(RuntimeError,'link/reparse'):g.plain_file(target)
+    def test_ancestor_reparse_attribute_is_rejected(self):
+        self.tools();target=self.bin;real=Path.lstat
+        def lstat(path):
+            info=real(path)
+            return SimpleNamespace(st_mode=info.st_mode,st_file_attributes=stat.FILE_ATTRIBUTE_REPARSE_POINT) if path==target else info
+        with patch.object(Path,'lstat',lstat):
+            with self.assertRaisesRegex(RuntimeError,'link/reparse'):g.plain_file(target/'msgfmt.exe')
+    def test_symbolic_link_component_is_rejected(self):
+        self.tools();target=self.bin;real=Path.lstat
+        def lstat(path):
+            return SimpleNamespace(st_mode=stat.S_IFLNK,st_file_attributes=0) if path==target else real(path)
+        with patch.object(Path,'lstat',lstat):
+            with self.assertRaisesRegex(RuntimeError,'link/reparse'):g.plain_file(target/'msgfmt.exe')
+    @unittest.skipUnless(sys.platform=='win32','actual Windows short-path API')
+    def test_actual_windows_short_alias_is_a_plain_file(self):
+        import ctypes
+        from ctypes import wintypes
+        self.tools();path=self.bin/'msgfmt.exe'
+        getshort=ctypes.WinDLL('kernel32',use_last_error=True).GetShortPathNameW
+        getshort.argtypes=[wintypes.LPCWSTR,wintypes.LPWSTR,wintypes.DWORD];getshort.restype=wintypes.DWORD
+        buffer=ctypes.create_unicode_buffer(32768)
+        length=getshort(str(path),buffer,len(buffer));self.assertGreater(length,0);self.assertLess(length,len(buffer))
+        short=Path(buffer.value)
+        print(json.dumps({'shortAlias':str(short),'resolvedAlias':str(short.resolve()),
+                         'sameFile':short.samefile(path),'aliasReparseAttributes':getattr(short.lstat(),'st_file_attributes',0)}),flush=True)
+        self.assertTrue(short.samefile(path));g.plain_file(short)
+        # This runner must expose the real canonical-spelling mismatch that the
+        # former resolve-vs-absolute rule incorrectly rejected.
+        self.assertNotEqual(os.path.normcase(str(short)),os.path.normcase(str(short.resolve())))
+    @unittest.skipUnless(sys.platform=='win32','actual Windows directory junction')
+    def test_actual_windows_junction_ancestor_is_rejected(self):
+        self.tools();junction=self.root/'junction'
+        result=subprocess.run([str(Path(os.environ['SystemRoot'])/'System32/cmd.exe'),'/d','/c','mklink','/J',str(junction),str(self.bin)],capture_output=True,text=True)
+        self.assertEqual(result.returncode,0,result.stdout+result.stderr)
+        try:
+            self.assertTrue(junction.lstat().st_file_attributes & stat.FILE_ATTRIBUTE_REPARSE_POINT)
+            with self.assertRaisesRegex(RuntimeError,'link/reparse'):g.plain_file(junction/'msgfmt.exe')
+        finally:junction.rmdir()
     def test_known_pair_requires_no_acquisition(self):
         self.tools()
         with patch.object(g,'native',side_effect=self.native) as run:
@@ -35,7 +93,7 @@ class GettextPrerequisiteTests(unittest.TestCase):
             self.assertEqual(g.verify(self.receipt),r)
     def test_x86_known_pair_is_supported(self):
         folder=self.pf86/'Poedit/Gettexttools/bin';self.tools(folder)
-        with patch.object(g,'native',side_effect=self.native):self.assertEqual(self.ensure()['directory'],str(folder))
+        with patch.object(g,'native',side_effect=self.native):self.assertEqual(self.ensure()['directory'],str(folder.resolve()))
     def test_path_lookalike_never_selected(self):
         rogue=self.root/'rogue';self.tools(rogue)
         with patch.dict(os.environ,{'PATH':str(rogue)}),patch.object(g,'native') as run:

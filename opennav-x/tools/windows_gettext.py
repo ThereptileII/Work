@@ -12,6 +12,7 @@ import os
 from pathlib import Path
 import re
 import subprocess
+import stat
 import sys
 import time
 
@@ -93,12 +94,22 @@ def directories():
     return values
 
 
+def plain_file(path):
+    """Reject actual links/reparse components, not Windows 8.3 spelling aliases."""
+    if not path.is_absolute() or '..' in path.parts:
+        raise RuntimeError('Required tool path is not absolute and plain: '+str(path))
+    for component in (path, *path.parents):
+        info = component.lstat()
+        if stat.S_ISLNK(info.st_mode) or getattr(info,'st_file_attributes',0) & stat.FILE_ATTRIBUTE_REPARSE_POINT:
+            raise RuntimeError('Required tool path contains a link/reparse point: '+str(component))
+        if component == path and not stat.S_ISREG(info.st_mode):
+            raise RuntimeError('Required tool is not a regular file: '+str(path))
+
+
 def tool_fact(path, logs):
-    if not path.is_file() or path.is_symlink():
-        raise RuntimeError('Required Poedit tool missing or redirected: '+str(path))
-    # Do not accept symlink/junction redirection outside the known Poedit bin.
-    if os.path.normcase(str(path.resolve())) != os.path.normcase(str(path.absolute())):
-        raise RuntimeError('Poedit tool path is redirected: '+str(path))
+    # Windows resolves legitimate 8.3 aliases to long names. Inspect actual
+    # filesystem components instead of treating canonical spelling as a link.
+    plain_file(path)
     before = identity(path)
     result, output = native([path, '--version'], 30, logs/path.stem)
     lines = [line.strip() for line in output.splitlines() if line.strip()]
@@ -129,8 +140,7 @@ def chocolatey():
     if not root:
         root = str(Path(os.environ.get('ProgramData', r'C:\ProgramData'))/'chocolatey')
     path = Path(root)/'bin/choco.exe'
-    if not path.is_absolute() or not path.is_file() or path.is_symlink() or path.resolve() != path.absolute():
-        raise RuntimeError('Known Chocolatey executable is unavailable or redirected')
+    plain_file(path)
     return path
 
 
