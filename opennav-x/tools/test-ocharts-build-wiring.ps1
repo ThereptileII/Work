@@ -32,6 +32,7 @@ $Root = $Fixture
 $Evidence = Join-Path $Root 'evidence/local'
 $Source = Join-Path $Root 'build/integration-source'
 $ZlibPrefix = Join-Path $Root 'build/windows-zlib-1.3.2/install'
+$OpenSslPrefix = Join-Path $Root 'build/windows-openssl-3.5.9/install'
 $Calls = [Collections.Generic.List[object]]::new()
 $Fail = ''
 $OldEnv = @{}
@@ -46,6 +47,10 @@ function Run([string]$Program,[string[]]$Arguments) {
     $Calls.Add(@{program=$Program;arguments=$Arguments})
     if ($Fail -and $Arguments -contains $Fail) { throw "Simulated native/validator failure: $Fail" }
     if ($Arguments -contains '--curl-prefix') {
+        $OpenSslIndex = [array]::IndexOf($Arguments, '--openssl-prefix')
+        if ($OpenSslIndex -lt 0 -or $Arguments[$OpenSslIndex+1] -cne $OpenSslPrefix) {
+            throw 'Private producer verification requires the exact same-job OpenSSL prefix'
+        }
         $Prepared=Join-Path $Root 'build/ocharts-prepared'
         Put (Join-Path $Prepared 'preparation.json') '{"fixture":"prepared"}'
         foreach ($Library in @('curl','zlib')) {

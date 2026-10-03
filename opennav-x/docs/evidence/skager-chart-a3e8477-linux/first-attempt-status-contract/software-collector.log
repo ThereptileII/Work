@@ -1,0 +1,8 @@
+/tmp/skager-capture-sh911u16/SKAGER
+Verified private clean application a3e84771652c920479517f0d16a1dd6133c440d2 and exact upstream result of nine patches
+Traceback (most recent call last):
+  File "/home/standard/Projects/X-nav-worktrees/scrum260-area-ink/.local/combined-linux-capture/capture-final.py", line 173, in <module>
+    i.require(d['runtime']['chart_presentation']['status']==('SKAGER presentation v1 / pinned symbols' if style=='XNav' else 'Standard OpenCPN presentation'),'Requested style fell back')
+  File "/home/standard/Projects/X-nav-worktrees/scrum260-area-ink/.local/combined-linux-capture/cache-inputs-readonly.py", line 21, in require
+    raise RuntimeError(message)
+RuntimeError: Requested style fell back

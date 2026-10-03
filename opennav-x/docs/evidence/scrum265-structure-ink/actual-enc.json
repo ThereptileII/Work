@@ -1,0 +1,1014 @@
+{
+  "source": "US5SEAFL.000",
+  "sha256": "7e474bea96e7a84c6f3ee6b44ff7db4288029fa47ac2a285594e18469dbf518c",
+  "bbox": [
+    -122.39,
+    47.58,
+    -122.33,
+    47.62
+  ],
+  "reader": "pyogrio 0.13.0",
+  "features": {
+    "BUISGL": [
+      {
+        "RCID": 509,
+        "PRIM": 3,
+        "SCAMIN": 17999,
+        "geometry": "Polygon"
+      },
+      {
+        "RCID": 510,
+        "PRIM": 3,
+        "SCAMIN": 17999,
+        "geometry": "Polygon"
+      },
+      {
+        "RCID": 511,
+        "PRIM": 3,
+        "SCAMIN": 17999,
+        "geometry": "Polygon"
+      },
+      {
+        "RCID": 514,
+        "PRIM": 3,
+        "SCAMIN": 17999,
+        "geometry": "Polygon"
+      },
+      {
+        "RCID": 518,
+        "PRIM": 3,
+        "SCAMIN": 17999,
+        "geometry": "Polygon"
+      },
+      {
+        "RCID": 520,
+        "PRIM": 3,
+        "SCAMIN": 17999,
+        "geometry": "Polygon"
+      },
+      {
+        "RCID": 523,
+        "PRIM": 3,
+        "SCAMIN": 17999,
+        "geometry": "Polygon"
+      },
+      {
+        "RCID": 525,
+        "PRIM": 3,
+        "SCAMIN": 17999,
+        "geometry": "Polygon"
+      },
+      {
+        "RCID": 530,
+        "PRIM": 3,
+        "SCAMIN": 17999,
+        "geometry": "Polygon"
+      },
+      {
+        "RCID": 535,
+        "PRIM": 3,
+        "SCAMIN": 17999,
+        "geometry": "Polygon"
+      },
+      {
+        "RCID": 536,
+        "PRIM": 3,
+        "SCAMIN": 17999,
+        "geometry": "Polygon"
+      },
+      {
+        "RCID": 537,
+        "PRIM": 3,
+        "SCAMIN": 17999,
+        "geometry": "Polygon"
+      },
+      {
+        "RCID": 538,
+        "PRIM": 3,
+        "FUNCTN": [
+          "6"
+        ],
+        "SCAMIN": 17999,
+        "geometry": "Polygon"
+      },
+      {
+        "RCID": 540,
+        "PRIM": 3,
+        "SCAMIN": 17999,
+        "geometry": "Polygon"
+      },
+      {
+        "RCID": 542,
+        "PRIM": 3,
+        "SCAMIN": 17999,
+        "geometry": "Polygon"
+      },
+      {
+        "RCID": 543,
+        "PRIM": 3,
+        "SCAMIN": 17999,
+        "geometry": "Polygon"
+      },
+      {
+        "RCID": 553,
+        "PRIM": 3,
+        "SCAMIN": 17999,
+        "geometry": "Polygon"
+      },
+      {
+        "RCID": 555,
+        "PRIM": 3,
+        "SCAMIN": 17999,
+        "geometry": "Polygon"
+      },
+      {
+        "RCID": 556,
+        "PRIM": 3,
+        "SCAMIN": 17999,
+        "geometry": "Polygon"
+      },
+      {
+        "RCID": 557,
+        "PRIM": 3,
+        "SCAMIN": 17999,
+        "geometry": "Polygon"
+      },
+      {
+        "RCID": 558,
+        "PRIM": 3,
+        "SCAMIN": 17999,
+        "geometry": "Polygon"
+      },
+      {
+        "RCID": 559,
+        "PRIM": 3,
+        "SCAMIN": 17999,
+        "geometry": "Polygon"
+      },
+      {
+        "RCID": 563,
+        "PRIM": 3,
+        "SCAMIN": 17999,
+        "geometry": "Polygon"
+      },
+      {
+        "RCID": 564,
+        "PRIM": 3,
+        "SCAMIN": 17999,
+        "geometry": "Polygon"
+      },
+      {
+        "RCID": 565,
+        "PRIM": 3,
+        "SCAMIN": 17999,
+        "geometry": "Polygon"
+      },
+      {
+        "RCID": 567,
+        "PRIM": 3,
+        "SCAMIN": 17999,
+        "geometry": "Polygon"
+      },
+      {
+        "RCID": 568,
+        "PRIM": 3,
+        "SCAMIN": 17999,
+        "geometry": "Polygon"
+      },
+      {
+        "RCID": 569,
+        "PRIM": 3,
+        "SCAMIN": 17999,
+        "geometry": "Polygon"
+      },
+      {
+        "RCID": 571,
+        "PRIM": 3,
+        "SCAMIN": 17999,
+        "geometry": "Polygon"
+      },
+      {
+        "RCID": 572,
+        "PRIM": 3,
+        "SCAMIN": 17999,
+        "geometry": "Polygon"
+      },
+      {
+        "RCID": 573,
+        "PRIM": 3,
+        "SCAMIN": 17999,
+        "geometry": "Polygon"
+      },
+      {
+        "RCID": 576,
+        "PRIM": 3,
+        "SCAMIN": 17999,
+        "geometry": "Polygon"
+      },
+      {
+        "RCID": 580,
+        "PRIM": 3,
+        "SCAMIN": 17999,
+        "geometry": "Polygon"
+      },
+      {
+        "RCID": 581,
+        "PRIM": 3,
+        "SCAMIN": 17999,
+        "geometry": "Polygon"
+      },
+      {
+        "RCID": 582,
+        "PRIM": 3,
+        "SCAMIN": 17999,
+        "geometry": "Polygon"
+      },
+      {
+        "RCID": 584,
+        "PRIM": 3,
+        "SCAMIN": 17999,
+        "geometry": "Polygon"
+      },
+      {
+        "RCID": 585,
+        "PRIM": 3,
+        "SCAMIN": 17999,
+        "geometry": "Polygon"
+      },
+      {
+        "RCID": 588,
+        "PRIM": 3,
+        "SCAMIN": 17999,
+        "geometry": "Polygon"
+      },
+      {
+        "RCID": 589,
+        "PRIM": 3,
+        "SCAMIN": 17999,
+        "geometry": "Polygon"
+      },
+      {
+        "RCID": 591,
+        "PRIM": 3,
+        "SCAMIN": 17999,
+        "geometry": "Polygon"
+      },
+      {
+        "RCID": 592,
+        "PRIM": 3,
+        "SCAMIN": 17999,
+        "geometry": "Polygon"
+      },
+      {
+        "RCID": 593,
+        "PRIM": 3,
+        "SCAMIN": 17999,
+        "geometry": "Polygon"
+      },
+      {
+        "RCID": 594,
+        "PRIM": 3,
+        "SCAMIN": 17999,
+        "geometry": "Polygon"
+      },
+      {
+        "RCID": 596,
+        "PRIM": 3,
+        "SCAMIN": 17999,
+        "geometry": "Polygon"
+      },
+      {
+        "RCID": 597,
+        "PRIM": 3,
+        "SCAMIN": 17999,
+        "geometry": "Polygon"
+      },
+      {
+        "RCID": 605,
+        "PRIM": 3,
+        "SCAMIN": 17999,
+        "geometry": "Polygon"
+      },
+      {
+        "RCID": 606,
+        "PRIM": 3,
+        "SCAMIN": 17999,
+        "geometry": "Polygon"
+      },
+      {
+        "RCID": 608,
+        "PRIM": 3,
+        "SCAMIN": 17999,
+        "geometry": "Polygon"
+      },
+      {
+        "RCID": 609,
+        "PRIM": 3,
+        "SCAMIN": 17999,
+        "geometry": "Polygon"
+      },
+      {
+        "RCID": 614,
+        "PRIM": 3,
+        "SCAMIN": 17999,
+        "geometry": "Polygon"
+      },
+      {
+        "RCID": 616,
+        "PRIM": 3,
+        "SCAMIN": 17999,
+        "geometry": "Polygon"
+      },
+      {
+        "RCID": 617,
+        "PRIM": 3,
+        "SCAMIN": 17999,
+        "geometry": "Polygon"
+      },
+      {
+        "RCID": 618,
+        "PRIM": 3,
+        "SCAMIN": 17999,
+        "geometry": "Polygon"
+      },
+      {
+        "RCID": 624,
+        "PRIM": 3,
+        "SCAMIN": 17999,
+        "geometry": "Polygon"
+      },
+      {
+        "RCID": 625,
+        "PRIM": 3,
+        "SCAMIN": 17999,
+        "geometry": "Polygon"
+      },
+      {
+        "RCID": 626,
+        "PRIM": 3,
+        "SCAMIN": 17999,
+        "geometry": "Polygon"
+      },
+      {
+        "RCID": 629,
+        "PRIM": 3,
+        "SCAMIN": 17999,
+        "geometry": "Polygon"
+      },
+      {
+        "RCID": 630,
+        "PRIM": 3,
+        "SCAMIN": 17999,
+        "geometry": "Polygon"
+      },
+      {
+        "RCID": 631,
+        "PRIM": 3,
+        "SCAMIN": 17999,
+        "geometry": "Polygon"
+      },
+      {
+        "RCID": 634,
+        "PRIM": 3,
+        "SCAMIN": 17999,
+        "geometry": "Polygon"
+      },
+      {
+        "RCID": 637,
+        "PRIM": 3,
+        "SCAMIN": 17999,
+        "geometry": "Polygon"
+      },
+      {
+        "RCID": 638,
+        "PRIM": 3,
+        "SCAMIN": 17999,
+        "geometry": "Polygon"
+      },
+      {
+        "RCID": 639,
+        "PRIM": 3,
+        "SCAMIN": 17999,
+        "geometry": "Polygon"
+      },
+      {
+        "RCID": 640,
+        "PRIM": 3,
+        "SCAMIN": 17999,
+        "geometry": "Polygon"
+      },
+      {
+        "RCID": 648,
+        "PRIM": 3,
+        "SCAMIN": 17999,
+        "geometry": "Polygon"
+      },
+      {
+        "RCID": 649,
+        "PRIM": 3,
+        "SCAMIN": 17999,
+        "geometry": "Polygon"
+      },
+      {
+        "RCID": 650,
+        "PRIM": 3,
+        "SCAMIN": 17999,
+        "geometry": "Polygon"
+      },
+      {
+        "RCID": 651,
+        "PRIM": 3,
+        "SCAMIN": 17999,
+        "geometry": "Polygon"
+      },
+      {
+        "RCID": 652,
+        "PRIM": 3,
+        "SCAMIN": 17999,
+        "geometry": "Polygon"
+      }
+    ],
+    "FLODOC": [
+      {
+        "RCID": 2694,
+        "PRIM": 3,
+        "geometry": "Polygon"
+      },
+      {
+        "RCID": 2695,
+        "PRIM": 3,
+        "geometry": "Polygon"
+      },
+      {
+        "RCID": 2696,
+        "PRIM": 3,
+        "geometry": "Polygon"
+      },
+      {
+        "RCID": 2697,
+        "PRIM": 3,
+        "geometry": "Polygon"
+      }
+    ],
+    "MORFAC": [
+      {
+        "RCID": 2698,
+        "PRIM": 3,
+        "CATMOR": 1,
+        "WATLEV": 2.0,
+        "SCAMIN": 21999,
+        "geometry": "Polygon"
+      },
+      {
+        "RCID": 2699,
+        "PRIM": 3,
+        "CATMOR": 1,
+        "WATLEV": 2.0,
+        "SCAMIN": 21999,
+        "geometry": "Polygon"
+      },
+      {
+        "RCID": 2700,
+        "PRIM": 3,
+        "CATMOR": 1,
+        "WATLEV": 2.0,
+        "SCAMIN": 21999,
+        "geometry": "Polygon"
+      },
+      {
+        "RCID": 2701,
+        "PRIM": 3,
+        "CATMOR": 1,
+        "WATLEV": 2.0,
+        "SCAMIN": 21999,
+        "geometry": "Polygon"
+      },
+      {
+        "RCID": 2702,
+        "PRIM": 3,
+        "CATMOR": 1,
+        "WATLEV": 2.0,
+        "SCAMIN": 21999,
+        "geometry": "Polygon"
+      },
+      {
+        "RCID": 2703,
+        "PRIM": 3,
+        "CATMOR": 1,
+        "WATLEV": 2.0,
+        "SCAMIN": 21999,
+        "geometry": "Polygon"
+      },
+      {
+        "RCID": 2704,
+        "PRIM": 3,
+        "CATMOR": 1,
+        "WATLEV": 2.0,
+        "SCAMIN": 21999,
+        "geometry": "Polygon"
+      },
+      {
+        "RCID": 2705,
+        "PRIM": 3,
+        "CATMOR": 1,
+        "WATLEV": 2.0,
+        "SCAMIN": 21999,
+        "geometry": "Polygon"
+      },
+      {
+        "RCID": 2706,
+        "PRIM": 3,
+        "CATMOR": 1,
+        "WATLEV": 2.0,
+        "SCAMIN": 21999,
+        "geometry": "Polygon"
+      },
+      {
+        "RCID": 2707,
+        "PRIM": 3,
+        "CATMOR": 1,
+        "WATLEV": 2.0,
+        "SCAMIN": 21999,
+        "geometry": "Polygon"
+      },
+      {
+        "RCID": 2788,
+        "PRIM": 1,
+        "CATMOR": 1,
+        "WATLEV": 2.0,
+        "SCAMIN": 21999,
+        "geometry": "Point"
+      },
+      {
+        "RCID": 2795,
+        "PRIM": 1,
+        "CATMOR": 1,
+        "WATLEV": 2.0,
+        "SCAMIN": 21999,
+        "geometry": "Point"
+      },
+      {
+        "RCID": 2796,
+        "PRIM": 1,
+        "CATMOR": 1,
+        "WATLEV": 2.0,
+        "SCAMIN": 21999,
+        "geometry": "Point"
+      },
+      {
+        "RCID": 2797,
+        "PRIM": 1,
+        "CATMOR": 1,
+        "WATLEV": 2.0,
+        "SCAMIN": 21999,
+        "geometry": "Point"
+      },
+      {
+        "RCID": 2798,
+        "PRIM": 1,
+        "CATMOR": 1,
+        "WATLEV": 2.0,
+        "SCAMIN": 21999,
+        "geometry": "Point"
+      },
+      {
+        "RCID": 2799,
+        "PRIM": 1,
+        "CATMOR": 1,
+        "WATLEV": 2.0,
+        "SCAMIN": 21999,
+        "geometry": "Point"
+      },
+      {
+        "RCID": 2800,
+        "PRIM": 1,
+        "CATMOR": 1,
+        "WATLEV": 2.0,
+        "SCAMIN": 21999,
+        "geometry": "Point"
+      },
+      {
+        "RCID": 2805,
+        "PRIM": 1,
+        "CATMOR": 1,
+        "WATLEV": 2.0,
+        "SCAMIN": 21999,
+        "geometry": "Point"
+      },
+      {
+        "RCID": 2806,
+        "PRIM": 1,
+        "CATMOR": 1,
+        "WATLEV": 2.0,
+        "SCAMIN": 21999,
+        "geometry": "Point"
+      },
+      {
+        "RCID": 2807,
+        "PRIM": 1,
+        "CATMOR": 1,
+        "WATLEV": 2.0,
+        "SCAMIN": 21999,
+        "geometry": "Point"
+      },
+      {
+        "RCID": 2809,
+        "PRIM": 1,
+        "CATMOR": 1,
+        "WATLEV": 2.0,
+        "SCAMIN": 21999,
+        "geometry": "Point"
+      },
+      {
+        "RCID": 2814,
+        "PRIM": 1,
+        "CATMOR": 1,
+        "WATLEV": 2.0,
+        "SCAMIN": 21999,
+        "geometry": "Point"
+      },
+      {
+        "RCID": 2817,
+        "PRIM": 1,
+        "CATMOR": 1,
+        "WATLEV": 2.0,
+        "SCAMIN": 21999,
+        "geometry": "Point"
+      },
+      {
+        "RCID": 2819,
+        "PRIM": 1,
+        "CATMOR": 1,
+        "WATLEV": 2.0,
+        "SCAMIN": 21999,
+        "geometry": "Point"
+      },
+      {
+        "RCID": 2821,
+        "PRIM": 1,
+        "CATMOR": 1,
+        "WATLEV": 2.0,
+        "SCAMIN": 21999,
+        "geometry": "Point"
+      },
+      {
+        "RCID": 2822,
+        "PRIM": 1,
+        "CATMOR": 1,
+        "WATLEV": 2.0,
+        "SCAMIN": 21999,
+        "geometry": "Point"
+      },
+      {
+        "RCID": 2823,
+        "PRIM": 1,
+        "CATMOR": 7,
+        "SCAMIN": 21999,
+        "geometry": "Point"
+      },
+      {
+        "RCID": 2824,
+        "PRIM": 1,
+        "CATMOR": 1,
+        "WATLEV": 2.0,
+        "SCAMIN": 21999,
+        "geometry": "Point"
+      },
+      {
+        "RCID": 2825,
+        "PRIM": 1,
+        "CATMOR": 7,
+        "SCAMIN": 21999,
+        "geometry": "Point"
+      },
+      {
+        "RCID": 2826,
+        "PRIM": 1,
+        "CATMOR": 1,
+        "WATLEV": 2.0,
+        "SCAMIN": 21999,
+        "geometry": "Point"
+      },
+      {
+        "RCID": 2830,
+        "PRIM": 1,
+        "CATMOR": 1,
+        "WATLEV": 2.0,
+        "SCAMIN": 21999,
+        "geometry": "Point"
+      },
+      {
+        "RCID": 2831,
+        "PRIM": 1,
+        "CATMOR": 1,
+        "WATLEV": 2.0,
+        "SCAMIN": 21999,
+        "geometry": "Point"
+      },
+      {
+        "RCID": 2833,
+        "PRIM": 1,
+        "CATMOR": 1,
+        "WATLEV": 2.0,
+        "SCAMIN": 21999,
+        "geometry": "Point"
+      },
+      {
+        "RCID": 2834,
+        "PRIM": 1,
+        "CATMOR": 1,
+        "WATLEV": 2.0,
+        "SCAMIN": 21999,
+        "geometry": "Point"
+      },
+      {
+        "RCID": 2835,
+        "PRIM": 1,
+        "CATMOR": 1,
+        "WATLEV": 2.0,
+        "SCAMIN": 21999,
+        "geometry": "Point"
+      },
+      {
+        "RCID": 2836,
+        "PRIM": 1,
+        "CATMOR": 1,
+        "WATLEV": 2.0,
+        "SCAMIN": 21999,
+        "geometry": "Point"
+      },
+      {
+        "RCID": 2844,
+        "PRIM": 1,
+        "CATMOR": 1,
+        "WATLEV": 2.0,
+        "SCAMIN": 21999,
+        "geometry": "Point"
+      },
+      {
+        "RCID": 2845,
+        "PRIM": 1,
+        "CATMOR": 1,
+        "WATLEV": 2.0,
+        "SCAMIN": 21999,
+        "geometry": "Point"
+      },
+      {
+        "RCID": 2846,
+        "PRIM": 1,
+        "CATMOR": 1,
+        "WATLEV": 2.0,
+        "SCAMIN": 21999,
+        "geometry": "Point"
+      },
+      {
+        "RCID": 2847,
+        "PRIM": 1,
+        "CATMOR": 1,
+        "WATLEV": 2.0,
+        "SCAMIN": 21999,
+        "geometry": "Point"
+      },
+      {
+        "RCID": 2849,
+        "PRIM": 1,
+        "CATMOR": 1,
+        "WATLEV": 2.0,
+        "SCAMIN": 21999,
+        "geometry": "Point"
+      },
+      {
+        "RCID": 2855,
+        "PRIM": 1,
+        "CATMOR": 1,
+        "WATLEV": 2.0,
+        "SCAMIN": 21999,
+        "geometry": "Point"
+      },
+      {
+        "RCID": 2856,
+        "PRIM": 1,
+        "CATMOR": 1,
+        "WATLEV": 2.0,
+        "SCAMIN": 21999,
+        "geometry": "Point"
+      },
+      {
+        "RCID": 2857,
+        "PRIM": 1,
+        "CATMOR": 1,
+        "WATLEV": 2.0,
+        "SCAMIN": 21999,
+        "geometry": "Point"
+      },
+      {
+        "RCID": 2860,
+        "PRIM": 1,
+        "CATMOR": 1,
+        "WATLEV": 2.0,
+        "SCAMIN": 21999,
+        "geometry": "Point"
+      },
+      {
+        "RCID": 2861,
+        "PRIM": 1,
+        "CATMOR": 1,
+        "WATLEV": 2.0,
+        "SCAMIN": 21999,
+        "geometry": "Point"
+      },
+      {
+        "RCID": 2872,
+        "PRIM": 1,
+        "CATMOR": 1,
+        "WATLEV": 2.0,
+        "SCAMIN": 21999,
+        "geometry": "Point"
+      },
+      {
+        "RCID": 2873,
+        "PRIM": 1,
+        "CATMOR": 1,
+        "WATLEV": 2.0,
+        "SCAMIN": 21999,
+        "geometry": "Point"
+      },
+      {
+        "RCID": 2874,
+        "PRIM": 1,
+        "CATMOR": 1,
+        "WATLEV": 2.0,
+        "SCAMIN": 21999,
+        "geometry": "Point"
+      },
+      {
+        "RCID": 2875,
+        "PRIM": 1,
+        "CATMOR": 1,
+        "WATLEV": 2.0,
+        "SCAMIN": 21999,
+        "geometry": "Point"
+      },
+      {
+        "RCID": 2876,
+        "PRIM": 1,
+        "CATMOR": 1,
+        "WATLEV": 2.0,
+        "SCAMIN": 21999,
+        "geometry": "Point"
+      },
+      {
+        "RCID": 2877,
+        "PRIM": 1,
+        "CATMOR": 1,
+        "WATLEV": 2.0,
+        "SCAMIN": 21999,
+        "geometry": "Point"
+      },
+      {
+        "RCID": 2878,
+        "PRIM": 1,
+        "CATMOR": 1,
+        "WATLEV": 2.0,
+        "SCAMIN": 21999,
+        "geometry": "Point"
+      },
+      {
+        "RCID": 2879,
+        "PRIM": 1,
+        "CATMOR": 1,
+        "WATLEV": 2.0,
+        "SCAMIN": 21999,
+        "geometry": "Point"
+      },
+      {
+        "RCID": 2880,
+        "PRIM": 1,
+        "CATMOR": 1,
+        "WATLEV": 2.0,
+        "SCAMIN": 21999,
+        "geometry": "Point"
+      }
+    ],
+    "PONTON": [
+      {
+        "RCID": 2708,
+        "PRIM": 3,
+        "geometry": "Polygon"
+      },
+      {
+        "RCID": 2711,
+        "PRIM": 3,
+        "geometry": "Polygon"
+      },
+      {
+        "RCID": 2712,
+        "PRIM": 3,
+        "geometry": "Polygon"
+      },
+      {
+        "RCID": 2713,
+        "PRIM": 3,
+        "geometry": "Polygon"
+      },
+      {
+        "RCID": 2714,
+        "PRIM": 3,
+        "geometry": "Polygon"
+      },
+      {
+        "RCID": 2715,
+        "PRIM": 3,
+        "OBJNAM": "54",
+        "geometry": "Polygon"
+      },
+      {
+        "RCID": 2716,
+        "PRIM": 3,
+        "OBJNAM": "55",
+        "geometry": "Polygon"
+      },
+      {
+        "RCID": 2719,
+        "PRIM": 3,
+        "geometry": "Polygon"
+      },
+      {
+        "RCID": 2721,
+        "PRIM": 3,
+        "geometry": "Polygon"
+      },
+      {
+        "RCID": 2760,
+        "PRIM": 2,
+        "SCAMIN": 21999.0,
+        "geometry": "LineString"
+      }
+    ],
+    "CRANES": [
+      {
+        "RCID": 2776,
+        "PRIM": 1,
+        "SCAMIN": 17999,
+        "geometry": "Point"
+      },
+      {
+        "RCID": 2777,
+        "PRIM": 1,
+        "SCAMIN": 17999,
+        "geometry": "Point"
+      }
+    ],
+    "LNDMRK": [
+      {
+        "RCID": 666,
+        "PRIM": 1,
+        "CONVIS": 1,
+        "SCAMIN": 29999,
+        "geometry": "Point"
+      },
+      {
+        "RCID": 668,
+        "PRIM": 1,
+        "CONVIS": 1,
+        "OBJNAM": "Smith Building",
+        "SCAMIN": 29999,
+        "geometry": "Point"
+      },
+      {
+        "RCID": 670,
+        "PRIM": 1,
+        "CONVIS": 1,
+        "OBJNAM": "King Street Depot",
+        "SCAMIN": 29999,
+        "geometry": "Point"
+      },
+      {
+        "RCID": 671,
+        "PRIM": 1,
+        "CONVIS": 1,
+        "SCAMIN": 29999,
+        "geometry": "Point"
+      },
+      {
+        "RCID": 673,
+        "PRIM": 1,
+        "CONVIS": 1,
+        "SCAMIN": 29999,
+        "geometry": "Point"
+      },
+      {
+        "RCID": 677,
+        "PRIM": 1,
+        "CONVIS": 1,
+        "SCAMIN": 29999,
+        "geometry": "Point"
+      }
+    ],
+    "SILTNK": []
+  },
+  "inputFiles": {
+    "US5SEAFL.000": "7e474bea96e7a84c6f3ee6b44ff7db4288029fa47ac2a285594e18469dbf518c",
+    "US5SEAFL.001": "504440d201453548aae160c4c5340d55d480bd39cd57061b7fc03262968e062d"
+  }
+}

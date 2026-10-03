@@ -1,0 +1,14 @@
+{
+  "applicationSource": "ebebd3a78a3f8421f55aa57e88ce2293b11ad3eb",
+  "command": "python tests/chart_presentation_resources_tests.py",
+  "exitCode": 0,
+  "assertions": 66093,
+  "meaning": "One complete combined resource suite including exact inverse, deterministic output, Windows line endings and negative mutation cases; not application rendering acceptance.",
+  "inputs": {
+    "tools/generate-xnav-chart-style.py": "022947ed711d769a0e17e3320c595a5f164a109ca9ed9ae4544cb25bfbff4f03",
+    "tools/chart_seamark_art.py": "fd05b5bd463dbed01c27b11e398c01488eec218e3b1deede0466f4125b604748",
+    "tools/chart_structure_paint.py": "aebe01e1ed890e425a5f1b18e4fc876b00ebb11d78da6382c7c3540128f03ec0",
+    "tests/chart_presentation_resources_tests.py": "f5d5122e88e947a75c7db5ed15cf836dd1ca52458dbb3ed0f835782d49e62c9d",
+    "resources/chart-style/v1/definition.json": "cc4b372518943fdc74d29ec0eb620ee415abe3fda978ec92898eb9e29b8b876c"
+  }
+}

@@ -76,7 +76,7 @@ function Build-PrivateOCharts([bool]$Reuse) {
         Run python @((Join-Path $PSScriptRoot 'prepare-ocharts-adapter.py'),
             '--output', $Prepared, '--cache', (Join-Path $Root 'build/ocharts-source-cache'),
             '--curl-prefix', (Join-Path $Root 'build/windows-curl-8.22.0/install'),
-            '--zlib-prefix', $ZlibPrefix, '--resources', $Resources)
+            '--openssl-prefix', $OpenSslPrefix, '--zlib-prefix', $ZlibPrefix, '--resources', $Resources)
         Run cmake @('-S', (Join-Path $Root 'cmake/ocharts-adapter'), '-B', $NativeBuild,
             '-G', 'Visual Studio 17 2022', '-A', 'Win32', '-DCMAKE_POLICY_VERSION_MINIMUM=3.5',
             "-DSKAGER_PREPARED=$Prepared")
@@ -334,6 +334,7 @@ try {
         Run (Join-Path $Build 'Release/chart_name_text_test.exe') @((Join-Path $Evidence "chart-names-$Variant.png"))
         Run (Join-Path $Build 'Release/chart_light_label_test.exe') @((Join-Path $Evidence "chart-lights-$Variant.png"))
         Run (Join-Path $Build 'Release/skager_wordmark_test.exe') @((Join-Path $Evidence "skager-wordmark-$Variant.png"))
+        Run (Join-Path $Build 'Release/ui_font_resolution_test.exe') @()
         Run (Join-Path $Build 'Release/chart_route_label_test.exe') @((Join-Path $Evidence "chart-route-labels-$Variant.png"))
         Run (Join-Path $Build 'Release/onboard_ais_body_test.exe') @((Join-Path $Evidence "onboard-ais-$Variant.png"))
     }

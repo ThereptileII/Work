@@ -342,3 +342,19 @@ names and name visibility, every SCRUM-242 eligibility fallback, custom Marks
 appearance and offsets, and stock navigation geometry. Its Night-only label
 palette includes the immutable chart ancestor brightness. Native/real-route/
 boat acceptance remains open.
+
+### SCRUM-264: classified prototype seamark artwork
+
+The owned resource derivative now maps the sixteen exact Simplified marine
+BOYLAT selectors 1029–1044 to eight private ordinary/preferred-channel glyphs,
+and gives BOYISD12/BOYSAW12 the supplied prototype Simplified artwork. LIGHTS13
+uses the centered prototype circle/rays with an explicit raster preference;
+its color/sector/range conditional procedures remain unchanged. Source lookup
+order, physical TOPMAR, unknown/inland/Paper Chart users and original glyphs are
+preserved. All owned colors apply the prototype Night brightness exactly once.
+
+BOYSPP11 remains stock because its existing selectors do not prove yellow;
+actual white/orange buoys must not acquire a yellow/X mark. Generic beacon
+composition, remaining Paper Chart art and actual native/private-chart display
+qualification remain open. See `docs/evidence/scrum264-seamark-art/README.md`
+and the complete preceding family audit for exact boundaries and evidence.

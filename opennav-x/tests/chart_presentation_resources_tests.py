@@ -33,6 +33,8 @@ with tempfile.TemporaryDirectory(prefix='xnav-chart-test-') as d:
     data=g.generate(source,output)
     from chart_area_resources_tests import verify_area_ink
     verify_area_ink(source,output,data,check)
+    from chart_structure_resources_tests import verify as verify_structures
+    verify_structures(source,output,check)
     check(data['upstreamCommit']=='37fd0cddb7334fe489e9f18aa163977a9c5c84f7')
     check(len(data['palette'])==3)
     first={p.name:p.read_bytes() for p in output.iterdir()}
@@ -44,6 +46,8 @@ with tempfile.TemporaryDirectory(prefix='xnav-chart-test-') as d:
             check((output/name).read_bytes()==g.pinned_bytes(source/name,identity))
     from chart_day_neutral_resources_tests import verify_day_neutral
     verify_day_neutral(source,output,data,check)
+    from chart_seamark_resources_tests import verify_seamarks,restore_tiles,SELECTED,ALIASES
+    verify_seamarks(source,output,data,check)
     from chart_cardinal_resources_tests import verify_cardinals
     verify_cardinals(source,output,data,check)
     from chart_service_resources_tests import verify_services
@@ -69,6 +73,7 @@ with tempfile.TemporaryDirectory(prefix='xnav-chart-test-') as d:
             for x in (116,148,180,212):
                 start=(y*1500+x)*4
                 after[start:start+96]=before[start:start+96]
+        restore_tiles(before,after)
         check(before[3::4]==after[3::4])
         changed=[i for i in range(0,len(before),4) if before[i:i+4]!=after[i:i+4]]
         check(len(changed)==ink['changedPixels']==42100)
@@ -78,7 +83,7 @@ with tempfile.TemporaryDirectory(prefix='xnav-chart-test-') as d:
             'rastersymbols-dusk.png':'2513060ab2decd060ae8cd80919d1922f85f0a4282b99dee51b826d860ba9a5e',
             'rastersymbols-dark.png':'36a37bf3fe9257893adfb82e3d737ae62e98f631b4ed4bffe645e42d1697e8c9'}[name])
     a,b=ET.parse(source/'chartsymbols.xml').getroot(),ET.parse(output/'chartsymbols.xml').getroot()
-    # Independent exceptions: two area fills and geographic OBJNAM ink only.
+    # Independently enumerate approved area fills and geographic OBJNAM ink.
     expected_ids={'16':('32052','Plain'),'356':('32391','Symbolized')}
     old="AC(CHBRN);TX(OBJNAM,1,2,3,'16120',0,0,CHBLK,26);LS(SOLD,1,LANDF)"
     changed=[];geographic=[]
@@ -98,6 +103,13 @@ with tempfile.TemporaryDirectory(prefix='xnav-chart-test-') as d:
         if stock.get('id')=='25':
             check(stock.attrib=={'id':'25','RCID':'32061','name':'CBLARE'})
             expected=expected.replace('LS(DASH,2,CHMGD)','LS(DASH,2,XNARE)')
+        if stock.get('id') in {'17','18','19','20','61','98','135','357','358','359','360','401','438','477'}:
+            check(stock.get('name') in {'BUISGL','FLODOC','MORFAC','PONTON'} and stock.findtext('type')=='Area')
+            expected=expected.replace('AC(CHBRN)','AC(XNSTR)',1)
+        if stock.get('id') in {'16','18','20','356','358','360'}:
+            expected=expected.replace('LS(SOLD,1,LANDF)','LS(SOLD,1,XNSHR)',1)
+        if 1029 <= int(stock.get('id')) <= 1044:
+            expected=re.sub(r'^SY\(BOYLAT\d{2}\)','SY('+SELECTED[int(stock.get('id'))-1029]+')',expected)
         check(styled.findtext('instruction')==expected)
         styled.find('instruction').text=stock.findtext('instruction')
         check(ET.tostring(stock)==ET.tostring(styled))
@@ -109,11 +121,13 @@ with tempfile.TemporaryDirectory(prefix='xnav-chart-test-') as d:
     styled=b.findall("symbols/symbol[name='ACHARE51']")[-1].find('bitmap')
     styled.attrib=stock.attrib.copy()
     for tag in ('pivot','graphics-location'):styled.find(tag).attrib=stock.find(tag).attrib.copy()
-    for name in ('PILBOP02','RTPBCN02','BOYCAR01','BOYCAR02','BOYCAR03','BOYCAR04'):
+    for name in ('PILBOP02','RTPBCN02','BOYCAR01','BOYCAR02','BOYCAR03','BOYCAR04','BOYISD12','BOYSAW12','LIGHTS13'):
         stock=a.findall("symbols/symbol[name='"+name+"']")[-1].find('bitmap')
         styled=b.findall("symbols/symbol[name='"+name+"']")[-1].find('bitmap')
         styled.attrib=stock.attrib.copy()
         for tag in ('pivot','graphics-location'):styled.find(tag).attrib=stock.find(tag).attrib.copy()
+    b.find("symbols/symbol[name='LIGHTS13']/prefer-bitmap").text='no'
+    for name in ALIASES:b.find('symbols').remove(b.find("symbols/symbol[name='"+name+"']"))
     # Independently undo only the cable paint reference before whole-tree proof.
     cables=b.findall("line-styles/line-style[name='CBLSUB06']")
     check(len(cables)==1 and cables[0].attrib=={'RCID':'2012'})
@@ -126,7 +140,7 @@ with tempfile.TemporaryDirectory(prefix='xnav-chart-test-') as d:
         check(ET.tostring(a.find(section))==ET.tostring(b.find(section)))
     for stock,styled in zip(a.find('color-tables'),b.find('color-tables')):
         check(stock.attrib==styled.attrib)
-        for name in ('XNBUA','XNGEO','XNCBL','XNARE'):
+        for name in ('XNBUA','XNGEO','XNCBL','XNARE','XNSTR','XNSHR'):
             added=styled.findall("color[@name='"+name+"']")
             check(len(added)==(1 if stock.get('name') in data['palette'] else 0))
             for entry in added:styled.remove(entry)
@@ -148,6 +162,8 @@ with tempfile.TemporaryDirectory(prefix='xnav-chart-test-') as d:
                          ('DUSK','596390392670a8b780293e340557a9bf151fc3ca2dd6e8bd421982b6d2e67a2a')]:
         unchanged=ET.parse(output/'chartsymbols.xml').getroot().find("color-tables/color-table[@name='"+table+"']")
         unchanged.remove(unchanged.find("color[@name='XNARE']"))
+        unchanged.remove(unchanged.find("color[@name='XNSTR']"))
+        unchanged.remove(unchanged.find("color[@name='XNSHR']"))
         # Restore only the prior XNBUA shade before the existing whole-table
         # identity oracle; all other Day/Dusk palette bytes must remain exact.
         prior=(175,191,174) if table=='DAY_BRIGHT' else (116,135,121)
@@ -158,7 +174,7 @@ with tempfile.TemporaryDirectory(prefix='xnav-chart-test-') as d:
         check(hashlib.sha256(ET.tostring(unchanged)).hexdigest()==digest)
     # Literal effective Night colors independently confirmed against the final
     # CSS and canonical Windows pixels, not copied from generator output.
-    expected_night={'LANDA':(29,41,37),'XNBUA':(29,41,37),'CSTLN':(55,68,58),
+    expected_night={'XNSHR':(55,68,58),'XNSTR':(29,41,37),'LANDA':(29,41,37),'XNBUA':(29,41,37),'CSTLN':(55,68,58),
         'DEPDW':(14,23,28),'DEPMD':(22,35,41),'DEPMS':(33,51,57),
         'DEPVS':(48,66,75),'DEPIT':(40,53,46),'DEPCN':(33,51,57),'XNGEO':(91,104,94)}
     check(set(data['nightCanvas']['roles'])==set(expected_night))
@@ -205,7 +221,7 @@ with tempfile.TemporaryDirectory(prefix='xnav-chart-test-') as d:
     reject(lambda t:setattr(t.find("lookups/lookup[@id='1066']/instruction"),'text','AC(XNBUA)'))
     reject(lambda t:t.find('color-tables/color-table').remove(t.find("color-tables/color-table/color[@name='XNBUA']")))
     reject(lambda t:t.find('color-tables/color-table').append(ET.fromstring('<color name="XNBUA" r="175" g="191" b="174"/>')))
-    for name in ('LANDA','XNBUA','XNGEO','XNCBL','XNARE'):
+    for name in ('LANDA','XNBUA','XNGEO','XNCBL','XNARE','XNSTR','XNSHR'):
         path="color-tables/color-table/color[@name='"+name+"']"
         reject(lambda t:t.find(path).set('r','1'))
         reject(lambda t:t.find(path).set('a','0'))

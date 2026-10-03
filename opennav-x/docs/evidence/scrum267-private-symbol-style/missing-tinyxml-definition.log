@@ -1,0 +1,5 @@
+In file included from /home/standard/Projects/X-nav-worktrees/scrum267-private-symbol-style/.local/symbol-style/source/src/eSENCChart.cpp:54:
+/home/standard/Projects/X-nav-worktrees/scrum267-private-symbol-style/.local/symbol-style/source/libs/tinyxml/include/tinyxml.h:52:18: fatal error: tinystr.h: No such file or directory
+   52 |         #include "tinystr.h"
+      |                  ^~~~~~~~~~~
+compilation terminated.

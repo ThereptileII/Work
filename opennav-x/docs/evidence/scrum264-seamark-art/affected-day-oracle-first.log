@@ -1,0 +1,12 @@
+seamarks 0
+Traceback (most recent call last):
+  File "/home/standard/Projects/X-nav-worktrees/scrum264-symbol-family-audit/.local/seamark-proof/affected-checks.py", line 20, in <module>
+    test(source,output,data,check);print(test.__name__,checks,flush=True)
+    ~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/standard/Projects/X-nav-worktrees/scrum264-symbol-family-audit/tests/chart_day_neutral_resources_tests.py", line 63, in verify_day_neutral
+    check(hashlib.sha256((output/name).read_bytes()).hexdigest() == digest)
+    ~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/standard/Projects/X-nav-worktrees/scrum264-symbol-family-audit/.local/seamark-proof/affected-checks.py", line 11, in check
+    assert value,checks
+           ^^^^^
+AssertionError: 1251

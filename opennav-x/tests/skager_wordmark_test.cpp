@@ -34,12 +34,18 @@ int main(int argc,char** argv) {
     const unsigned accent[]={0xb6efce,0x9bc5b1,0x85a995};
     const LightMode modes[]={LightMode::Day,LightMode::Dusk,LightMode::Night};
     const char* names[]={"Day","Dusk","Night"};
-    wxBitmap sheet(960,520);wxMemoryDC sheetdc(sheet);
+    check(SkagerWordmark::HeaderWidthDip==124 && SkagerWordmark::HeaderLeftDip==28,
+          "Approved smaller footprint remains centered in the unchanged identity slot");
+    wxBitmap sheet(960,930);wxMemoryDC sheetdc(sheet);
     sheetdc.SetBackground(*wxWHITE_BRUSH);sheetdc.Clear();sheetdc.SetTextForeground(*wxBLACK);
     for(int theme=0;theme<3;++theme) {
       sheetdc.DrawText(names[theme],theme*320+10,8);
-      for(int size=0;size<3;++size) {
-        const int percent=100+size*25,width=148*percent/100,pw=180*percent/100,ph=68*percent/100;
+      for(int size=0;size<6;++size) {
+        // Keep every original-size assertion and add the smaller production size.
+        const bool smaller=size>=3;
+        const int dip=smaller?SkagerWordmark::HeaderWidthDip:148;
+        const int left=smaller?SkagerWordmark::HeaderLeftDip:16;
+        const int percent=100+(size%3)*25,width=dip*percent/100,pw=180*percent/100,ph=68*percent/100;
         const auto before=wordmark.Builds();
         const auto& bitmap=wordmark.Bitmap(width,modes[theme]);
         check(bitmap.IsOk()&&wordmark.Builds()==before+1,"Theme/size change rebuilds");
@@ -65,13 +71,14 @@ int main(int argc,char** argv) {
             in=occupied;
           }
           check(runs==(row?3:6),"Each approved letter remains separately readable");
-          std::cout<<names[theme]<<" "<<percent<<"% row "<<row<<": runs="<<runs<<" lit="<<lit<<" peak="<<peak<<"\n";
-          check(lit>(row?100:1000)&&peak>200,"Both rows retain substantial visible ink");
+          std::cout<<names[theme]<<" "<<dip<<" DIP "<<percent<<"% row "<<row<<": runs="<<runs<<" lit="<<lit<<" peak="<<peak<<"\n";
+          // Same minimum ink density at the intentionally reduced pixel area.
+          check(lit*148*148>(row?100:1000)*dip*dip&&peak>200,"Both rows retain substantial visible ink density");
         }
         wxBitmap panel(pw,ph);wxMemoryDC dc(panel);dc.SetBackground(wxBrush(colour(backgrounds[theme])));dc.Clear();
-        dc.DrawBitmap(bitmap,16*percent/100,(ph-image.GetHeight())/2,true);dc.SelectObject(wxNullBitmap);
+        dc.DrawBitmap(bitmap,left*percent/100,(ph-image.GetHeight())/2,true);dc.SelectObject(wxNullBitmap);
         const auto composed=panel.ConvertToImage();
-        const int ox=16*percent/100,oy=(ph-image.GetHeight())/2;
+        const int ox=left*percent/100,oy=(ph-image.GetHeight())/2;
         auto luminance=[](int r,int g,int b){
           auto channel=[](int v){const double c=v/255.;return c<=.04045?c/12.92:std::pow((c+.055)/1.055,2.4);};
           return .2126*channel(r)+.7152*channel(g)+.0722*channel(b);
@@ -84,7 +91,7 @@ int main(int argc,char** argv) {
               strongest=std::max(strongest,luminance(composed.GetRed(x+ox,y+oy),composed.GetGreen(x+ox,y+oy),composed.GetBlue(x+ox,y+oy)));
           const double contrast=(strongest+.05)/(background_luminance+.05);
           check(contrast>=4.5,"Both rows retain a readable bright core in each theme/size");
-          std::cout<<names[theme]<<" "<<percent<<"% row "<<row<<": peak contrast="<<contrast<<"\n";
+          std::cout<<names[theme]<<" "<<dip<<" DIP "<<percent<<"% row "<<row<<": peak contrast="<<contrast<<"\n";
         }
         for(int y=0;y<image.GetHeight();++y) for(int x=0;x<width;++x)
           if(alpha[y*width+x]==0) {
@@ -92,8 +99,8 @@ int main(int argc,char** argv) {
                   composed.GetGreen(x+ox,y+oy)==((backgrounds[theme]>>8)&255)&&
                   composed.GetBlue(x+ox,y+oy)==(backgrounds[theme]&255),"Transparent logo pixels exactly reveal native header");
           }
-        sheetdc.DrawText(wxString::Format("%d%%",percent),theme*320+10,35+size*130);
-        sheetdc.DrawBitmap(panel,theme*320+10,55+size*130,false);
+        sheetdc.DrawText(wxString(smaller?"124 DIP ":"148 DIP ")+wxString::Format("%d%%",percent),theme*320+10,35+size*145);
+        sheetdc.DrawBitmap(panel,theme*320+10,55+size*145,false);
       }
       // Same size with a new light mode must also rebuild, independent of DPI.
       const auto before=wordmark.Builds();wordmark.Bitmap(222,modes[(theme+1)%3]);
@@ -112,9 +119,9 @@ int main(int argc,char** argv) {
     check(std::memcmp(original.GetData(),saved.GetData(),680*214*3)==0&&!original.HasAlpha(),"Approved decoded image remains unchanged");
     SkagerWordmark missing{wxImage()};check(!missing.UsesCoverage()&&!missing.Bitmap(148,LightMode::Day).IsOk(),"Missing source safely rejects");
     check(!wordmark.Bitmap(0,LightMode::Day).IsOk()&&!wordmark.Bitmap(2049,LightMode::Day).IsOk(),"Invalid target size rejects");
-    sheetdc.DrawText("Actual wx native component raster; rows 100 / 125 / 150%; Linux component evidence only",10,475);
+    sheetdc.DrawText("Actual wx component raster; before/after 100 / 125 / 150%; platform qualification remains separate",10,905);
     sheetdc.SelectObject(wxNullBitmap);check(sheet.ConvertToImage().SaveFile(argv[1],wxBITMAP_TYPE_PNG),"Native drawing fixture saved");
-    std::cout<<checks<<" wordmark checks passed; 9 native theme/size drawings\n";
+    std::cout<<checks<<" wordmark checks passed; 18 native before/after theme/size drawings\n";
   }catch(const std::exception& e){std::cerr<<e.what()<<'\n';result=1;}
   wxTheApp->OnExit();wxEntryCleanup();return result;
 }

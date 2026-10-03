@@ -12,8 +12,58 @@ unambiguously owned neutral pixels; off-palette wreck bitmaps remain unchanged.
 The [final copy audit](design/reviews/scrum236-final-copy-audit.md) also closes
 remaining operator/diagnostic product labels. Customer-facing identity is
 SKAGER with the approved Jira artwork; immutable evidence, compatibility IDs
-and required OpenCPN attribution remain. Focused checks pass, but fresh combined
-application captures, Windows packaging and boat acceptance are still required.
+and required OpenCPN attribution remain.
+
+Exact application source `a3e84771652c920479517f0d16a1dd6133c440d2`, published
+as `7a9e5496347cf8c0dd31aafc373b65f8621fe5a0`, passes the integrated Linux
+build/install and **147/147** regressions. Its
+[sixteen actual ENC captures](evidence/skager-chart-a3e8477-linux/README.md)
+retain coastlines and pass the original bounded content probes, but **the full
+GL Day-return comparison fails at 1,270 chart-selector pixels**. The initial
+atlas retains stock outline ink until a theme change. That failure is retained;
+it is not a visual pass. Standard historical chart comparisons and software
+theme returns are exact within their documented scope. The
+[focused cache correction](evidence/scrum266-selector-cache/README.md) passes
+21 actual atlas/cache checks and 159 existing brush checks, with the original
+source reproducing the failure. Integrated GL recapture remains required.
+The [current native qualification run](https://github.com/ThereptileII/Work/actions/runs/37100591834)
+stopped at private-adapter preparation after the maintained curl tests passed.
+The adapter resolved `openssl-build.json` under the curl install directory,
+where that producer manifest does not exist. This occurred before adapter or
+application compilation; it is not an application crash. The failure is retained
+and the bounded path correction is being verified before another Windows build.
+Linux qualification continues independently. No Windows package or boat
+acceptance is claimed.
+
+The user's additional October 3 feedback is represented by SCRUM-263–267.
+The [approved header wordmark is now 124 DIP](design/reviews/scrum263-header-typeface.md),
+down from 148, with source artwork and Windows icon unchanged. The prototype's
+Segoe UI Variable Display / Segoe UI / Arial font stack is already selected by
+native UI policy. Canonical Windows browser evidence resolves Segoe UI; an
+actual native HDC face probe is now in the Windows drawing gate. Its fresh
+Windows result and generic ENC/user-font review remain open. Eleven supplied
+[modern marine/light glyphs](evidence/scrum264-seamark-art/README.md) now have
+bounded resource/loader proof: eight classified lateral aliases, isolated danger,
+safe water and the prototype light circle/rays. The special-purpose buoy remains
+stock because its actual white/orange classification cannot safely be painted
+as the prototype's yellow mark. Generic beacons and unproved physical topmark
+composition also remain open.
+
+[Structural fill and outline changes](evidence/scrum265-structure-ink/README.md)
+replace fourteen specific brown fills and six outlines with prototype land/shore
+roles. Shared hazard brown is preserved. This is not a claim that every remaining
+brown chart object can safely be recolored. The actual public ENC before-captures
+are retained in [the Pier 57 scene record](evidence/scrum264-public-enc-scenes/README.md).
+
+The stock default Paper Chart table would hide the new Simplified artwork.
+Both the [core](evidence/scrum267-effective-symbol-style/README.md) and
+[private renderer](evidence/scrum267-private-symbol-style/README.md) now use an
+effective Simplified table only inside a verified SKAGER presentation instance.
+The saved OpenCPN preference remains unchanged for Standard and Legacy. Actual
+render/query/cache consumers share the same effective selection; diagnostics
+expose saved and effective values. Focused compiled-method/object checks pass.
+The combined application, retained-preference round trip, whole GL theme return,
+actual Windows fonts and boat rendering still require fresh qualification.
 
 ### Preceding integrated candidate and corrected Windows prerequisite
 

@@ -1,0 +1,301 @@
+{
+  "issue": "SCRUM-265",
+  "base": "a3e84771652c920479517f0d16a1dd6133c440d2",
+  "baselineXmlSha256": "00ac4246589f1469dec89438d3ea6a3de245dae5ece928da9ee342fbce0b525c",
+  "reverseByteEquality": true,
+  "changedAreaRules": 14,
+  "rasterAndRleByteEquality": true,
+  "currentXmlSha256": "f1cb1507cc09b4aa0156c43f5ef994fdfbf6d43904a9a4e8861ee7ff5b6a71ee",
+  "themeComparison": {
+    "DAY_BRIGHT": {
+      "stockCHBRN": [
+        177,
+        145,
+        57
+      ],
+      "newXNSTR": [
+        238,
+        238,
+        226
+      ],
+      "borderCSTLN": [
+        175,
+        191,
+        174
+      ],
+      "borderLANDF": [
+        139,
+        102,
+        31
+      ],
+      "borderCHBLK": [
+        83,
+        100,
+        95
+      ],
+      "fillVsBorders": {
+        "CSTLN": 1.65,
+        "LANDF": 4.471,
+        "CHBLK": 5.353
+      },
+      "backgrounds": {
+        "LANDA": {
+          "rgb": [
+            238,
+            238,
+            226
+          ],
+          "oldFillContrast": 2.574,
+          "newFillContrast": 1.0,
+          "shoreBorderContrast": 1.65
+        },
+        "DEPDW": {
+          "rgb": [
+            213,
+            229,
+            229
+          ],
+          "oldFillContrast": 2.317,
+          "newFillContrast": 1.111,
+          "shoreBorderContrast": 1.485
+        },
+        "DEPMD": {
+          "rgb": [
+            199,
+            220,
+            221
+          ],
+          "oldFillContrast": 2.108,
+          "newFillContrast": 1.221,
+          "shoreBorderContrast": 1.351
+        },
+        "DEPMS": {
+          "rgb": [
+            173,
+            203,
+            206
+          ],
+          "oldFillContrast": 1.75,
+          "newFillContrast": 1.471,
+          "shoreBorderContrast": 1.122
+        },
+        "DEPVS": {
+          "rgb": [
+            134,
+            172,
+            182
+          ],
+          "oldFillContrast": 1.231,
+          "newFillContrast": 2.091,
+          "shoreBorderContrast": 1.267
+        },
+        "DEPIT": {
+          "rgb": [
+            181,
+            201,
+            171
+          ],
+          "oldFillContrast": 1.706,
+          "newFillContrast": 1.509,
+          "shoreBorderContrast": 1.094
+        }
+      }
+    },
+    "DUSK": {
+      "stockCHBRN": [
+        54,
+        44,
+        17
+      ],
+      "newXNSTR": [
+        78,
+        97,
+        93
+      ],
+      "borderCSTLN": [
+        116,
+        135,
+        121
+      ],
+      "borderLANDF": [
+        76,
+        56,
+        17
+      ],
+      "borderCHBLK": [
+        225,
+        229,
+        216
+      ],
+      "fillVsBorders": {
+        "CSTLN": 1.718,
+        "LANDF": 1.697,
+        "CHBLK": 5.138
+      },
+      "backgrounds": {
+        "LANDA": {
+          "rgb": [
+            78,
+            97,
+            93
+          ],
+          "oldFillContrast": 2.093,
+          "newFillContrast": 1.0,
+          "shoreBorderContrast": 1.718
+        },
+        "DEPDW": {
+          "rgb": [
+            52,
+            79,
+            89
+          ],
+          "oldFillContrast": 1.579,
+          "newFillContrast": 1.325,
+          "shoreBorderContrast": 2.277
+        },
+        "DEPMD": {
+          "rgb": [
+            66,
+            95,
+            105
+          ],
+          "oldFillContrast": 2.014,
+          "newFillContrast": 1.039,
+          "shoreBorderContrast": 1.785
+        },
+        "DEPMS": {
+          "rgb": [
+            86,
+            120,
+            128
+          ],
+          "oldFillContrast": 2.881,
+          "newFillContrast": 1.377,
+          "shoreBorderContrast": 1.248
+        },
+        "DEPVS": {
+          "rgb": [
+            113,
+            140,
+            147
+          ],
+          "oldFillContrast": 3.852,
+          "newFillContrast": 1.841,
+          "shoreBorderContrast": 1.071
+        },
+        "DEPIT": {
+          "rgb": [
+            98,
+            118,
+            107
+          ],
+          "oldFillContrast": 2.834,
+          "newFillContrast": 1.354,
+          "shoreBorderContrast": 1.269
+        }
+      }
+    },
+    "NIGHT": {
+      "stockCHBRN": [
+        15,
+        13,
+        5
+      ],
+      "newXNSTR": [
+        29,
+        41,
+        37
+      ],
+      "borderCSTLN": [
+        55,
+        68,
+        58
+      ],
+      "borderLANDF": [
+        23,
+        17,
+        5
+      ],
+      "borderCHBLK": [
+        117,
+        133,
+        121
+      ],
+      "fillVsBorders": {
+        "CSTLN": 1.469,
+        "LANDF": 1.248,
+        "CHBLK": 3.859
+      },
+      "backgrounds": {
+        "LANDA": {
+          "rgb": [
+            29,
+            41,
+            37
+          ],
+          "oldFillContrast": 1.293,
+          "newFillContrast": 1.0,
+          "shoreBorderContrast": 1.469
+        },
+        "DEPDW": {
+          "rgb": [
+            14,
+            23,
+            28
+          ],
+          "oldFillContrast": 1.072,
+          "newFillContrast": 1.206,
+          "shoreBorderContrast": 1.771
+        },
+        "DEPMD": {
+          "rgb": [
+            22,
+            35,
+            41
+          ],
+          "oldFillContrast": 1.21,
+          "newFillContrast": 1.069,
+          "shoreBorderContrast": 1.569
+        },
+        "DEPMS": {
+          "rgb": [
+            33,
+            51,
+            57
+          ],
+          "oldFillContrast": 1.479,
+          "newFillContrast": 1.144,
+          "shoreBorderContrast": 1.284
+        },
+        "DEPVS": {
+          "rgb": [
+            48,
+            66,
+            75
+          ],
+          "oldFillContrast": 1.858,
+          "newFillContrast": 1.437,
+          "shoreBorderContrast": 1.022
+        },
+        "DEPIT": {
+          "rgb": [
+            40,
+            53,
+            46
+          ],
+          "oldFillContrast": 1.517,
+          "newFillContrast": 1.174,
+          "shoreBorderContrast": 1.251
+        }
+      }
+    }
+  },
+  "sourceHashes": {
+    "tools/chart_structure_paint.py": "0bdc05b3c8831403c861d7bdd4f94d24d765516db9fb6682146ae8d480d6be77",
+    "tools/generate-xnav-chart-style.py": "777de7f86a7664e113a91e0c7578ec4b64b1083e3c7cb94569fea3d71819370a",
+    "resources/chart-style/v1/definition.json": "3fb616bce4f06edfcce1886a8a559f616bccc190168bac0c269674fd7660c4ac",
+    "tests/chart_structure_resources_tests.py": "ae5d3b9b10b6c238ad92da50ed868b1cf77c80c2c91ea9fdc175ec46f7ea18aa",
+    "tests/chart_presentation_resources_tests.py": "66d96e05577cc2f61d416522e3364b9c434cab22c0c7077f3bd4ed1bf6ea5790",
+    "docs/design/prototype/index.html": "b04573b920b6bccd16afd22f54a909e48afcfd502ce9cd7c69fdf5b6dd895447"
+  }
+}

@@ -1,5 +1,24 @@
 # Prototype conformance — in progress
 
+The a3e8477 Linux application now has 147 passing regressions and sixteen real
+ENC images, but its **complete GL Day-return comparison fails** at the chart
+selector (1,270 pixels). See [retained evidence](../evidence/skager-chart-a3e8477-linux/README.md).
+The bounded atlas-cache correction has focused proof; complete recapture is
+pending. New user feedback additionally requires the supplied modern buoy/light
+art, remaining brown structural fills, prototype font verification and a
+smaller logo (SCRUM-263–266). The 124 DIP wordmark has component proof; it does
+not establish an accepted full-screen or boat result. No row below is advanced
+by these partial results.
+
+The next integrated batch includes eleven classified prototype marine/light
+assets, fourteen structural land fills, six shoreline outlines, the 124 DIP
+wordmark and a verified-instance Simplified symbol selection which preserves the
+saved Standard/Legacy preference. Resource/method proofs do not establish actual
+chart readability. Unmapped special-purpose buoys, fixed beacons and physical
+topmark composition remain explicit gaps. Full software/GL, Windows and boat
+captures are pending. The current full native run stopped on dependency-manifest
+path resolution before application compilation; it provides no new UI pass.
+
 The latest correction batch adds exact ferry/cable-area paint (SCRUM-260),
 40,482 role-proven Day neutral pixels (SCRUM-261), and the native chart-toolbar
 border/divider plus full Instruments caption (SCRUM-14). Their focused source,

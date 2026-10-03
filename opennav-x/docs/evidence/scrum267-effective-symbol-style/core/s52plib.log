@@ -1,0 +1,4 @@
+/home/standard/Projects/X-nav-worktrees/skager-product-fidelity/.local/scrum267/after/libs/s52plib/src/s52plib.cpp: In member function ‘void s52plib::PLIB_LoadS57ObjectConfig(wxFileConfig*)’:
+/home/standard/Projects/X-nav-worktrees/skager-product-fidelity/.local/scrum267/after/libs/s52plib/src/s52plib.cpp:10172:28: warning: ‘char* strncpy(char*, const char*, size_t)’ specified bound 6 equals destination size [-Wstringop-truncation]
+10172 |                     strncpy( pOLE->OBJLName, sObj.mb_str(), 6 );
+      |                     ~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

@@ -1,0 +1,23 @@
+{
+  "upstreamCommit": "c98bf5f0654a6aee52cd9a6b9fabc0d1cf8047e8",
+  "baseProduct": "e0e61365d51732b5c88f7009d09507a09191d4de",
+  "allLockedOriginalBlobsVerified": true,
+  "bothFinalPatchesApplyFromLockedOriginals": true,
+  "reappliedSourceEqualsCompiledSource": true,
+  "sourceHashes": {
+    "patches/ocharts-skager-presentation.patch": "744d9cea66002eb4bd2be0a92b622d981784a3b48aae1c06572547dfeb5594ae",
+    "src/plugin-adapters/ocharts/ChartPresentationAdapter.cpp": "4e3a1c48ec54b813ecb7a7d66793016990ba3a58f8f95cb3d1804fa621288dde",
+    "tools/test-ocharts-symbol-style.py": "1b428551180ab9264ea9b27db50c9910da92703fe11573c391e0348fbb307a1b",
+    "src/plugin-adapters/ocharts/tests/symbol_style_test.cpp": "7d11979d46850d647bb183349c8ee613b23ea5833468ebaf45ce0df387b65996"
+  },
+  "objects": {
+    "s52plib": "160b2e3067d4df11ad41d2f0c93b1cb080d1e077e134c2d67295ed61c9aac338",
+    "eSENCChart": "6c6be04ad81695848f16be72ae418fb97f7949038c045a234c9a1bba7266beb9",
+    "ChartPresentationAdapter": "9fd63357980ef29fa19fc94da3f489f81a62e73727cfc88d42d689a10c5ea8f3"
+  },
+  "limits": [
+    "No Windows compile/run in this increment.",
+    "No DLL/plugin/helper/actual chart/boat or profile access executed.",
+    "Actual core/private mode/style cycles and real chart semantics remain acceptance gates."
+  ]
+}

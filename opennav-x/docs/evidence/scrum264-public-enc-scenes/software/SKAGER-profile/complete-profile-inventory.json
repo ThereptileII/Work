@@ -1,0 +1,1442 @@
+{
+  "Configs/configs.xml": {
+    "bytes": 361,
+    "sha256": "c842689cb86a22f9b4607f48a9b8b29f080efd4ca54621ebfade4e1bdce5447c"
+  },
+  "OPENNAV_TEST_PROFILE": {
+    "bytes": 33,
+    "sha256": "6fc9f514880b1c406417964ee97ad37b28f2c5a4cdde61a43ef577cf4b25a1e4"
+  },
+  "SENC/C989771805D5_US5SEAFL.S57": {
+    "bytes": 1046994,
+    "sha256": "a21e8a4a81e8e3654512f6ce60af4f89136b8eb8850f4dedcb4e5c696debc52a"
+  },
+  "chartlist.dat": {
+    "bytes": 391,
+    "sha256": "86f00e968426a6fe2975002ff436b9eaa5ee80d46d13be09bc8c6379e4d48d3e"
+  },
+  "iconCacheSVG/_home_standard_Projects_X-nav-worktrees_scrum259-linux-6dafd29_build_xnav-install_share_opencpn_uidata_MUI_flat_CompassRose.svg_32x32": {
+    "bytes": 1600,
+    "sha256": "64b46638b518b4d5a3154e9d2792dec1c0b91b0a18d4760f4f48df18a29fd90a"
+  },
+  "iconCacheSVG/_home_standard_Projects_X-nav-worktrees_scrum259-linux-6dafd29_build_xnav-install_share_opencpn_uidata_MUI_flat_CompassRoseBlue.svg_32x32": {
+    "bytes": 1597,
+    "sha256": "908c47a72433561753f3ce28e2a559d0638ee031194a984dd4ae322ee5c1b9da"
+  },
+  "iconCacheSVG/_home_standard_Projects_X-nav-worktrees_scrum259-linux-6dafd29_build_xnav-install_share_opencpn_uidata_MUI_flat_MUI_RMD.svg_32x32": {
+    "bytes": 562,
+    "sha256": "229586df0a525bee1159f44d372321a785f225dce2edc8d96f88ea21fff3b4a2"
+  },
+  "iconCacheSVG/_home_standard_Projects_X-nav-worktrees_scrum259-linux-6dafd29_build_xnav-install_share_opencpn_uidata_MUI_flat_MUI_Sconfig_1.svg_57x57": {
+    "bytes": 1124,
+    "sha256": "d1c013f3313177cbf4652a67f09ad544046a0540ccd5fcfff998984c1ae3e7f4"
+  },
+  "iconCacheSVG/_home_standard_Projects_X-nav-worktrees_scrum259-linux-6dafd29_build_xnav-install_share_opencpn_uidata_MUI_flat_MUI_Sconfig_2.svg_57x57": {
+    "bytes": 1303,
+    "sha256": "88287512db93f85e85b9c9ca3d6d518cc38b4f779d85d7c3f7bdac71a513b343"
+  },
+  "iconCacheSVG/_home_standard_Projects_X-nav-worktrees_scrum259-linux-6dafd29_build_xnav-install_share_opencpn_uidata_MUI_flat_MUI_colorscheme.svg_32x32": {
+    "bytes": 1124,
+    "sha256": "11a7958589a4bf13e961d467b946c94c01597cde49ae9fd9eebeda534a024afe"
+  },
+  "iconCacheSVG/_home_standard_Projects_X-nav-worktrees_scrum259-linux-6dafd29_build_xnav-install_share_opencpn_uidata_MUI_flat_MUI_help.svg_32x32": {
+    "bytes": 1186,
+    "sha256": "a177c82920f0bae64ce4102bc3c9148cc398de13c6cb2e5b35449dff8d527146"
+  },
+  "iconCacheSVG/_home_standard_Projects_X-nav-worktrees_scrum259-linux-6dafd29_build_xnav-install_share_opencpn_uidata_MUI_flat_MUI_menu.svg_32x32": {
+    "bytes": 185,
+    "sha256": "07d63b55218b4fad63964b3864e600bcd0dfa1bdbf77819d3b1e1f1f87082f9f"
+  },
+  "iconCacheSVG/_home_standard_Projects_X-nav-worktrees_scrum259-linux-6dafd29_build_xnav-install_share_opencpn_uidata_MUI_flat_MUI_print.svg_32x32": {
+    "bytes": 857,
+    "sha256": "4b78e7316a26bf2cbcef0bca030bf46aec6799fbf9ba2970895f9b1fbf80de88"
+  },
+  "iconCacheSVG/_home_standard_Projects_X-nav-worktrees_scrum259-linux-6dafd29_build_xnav-install_share_opencpn_uidata_MUI_flat_MUI_route.svg_32x32": {
+    "bytes": 1052,
+    "sha256": "8217c73e7af5d10baeda881f0b1a18887c966f45ef72f995aebcffdcced071cc"
+  },
+  "iconCacheSVG/_home_standard_Projects_X-nav-worktrees_scrum259-linux-6dafd29_build_xnav-install_share_opencpn_uidata_MUI_flat_MUI_route_toggled.svg_32x32": {
+    "bytes": 810,
+    "sha256": "9e4abcdab4867d7cfb4993a40aa6c886e787650206cb5542ff6ff471ea943da3"
+  },
+  "iconCacheSVG/_home_standard_Projects_X-nav-worktrees_scrum259-linux-6dafd29_build_xnav-install_share_opencpn_uidata_MUI_flat_MUI_settings.svg_32x32": {
+    "bytes": 1548,
+    "sha256": "40e326632618c27920c2f5d73d7ad253388cb91beecda5d900d186042104a57e"
+  },
+  "iconCacheSVG/_home_standard_Projects_X-nav-worktrees_scrum259-linux-6dafd29_build_xnav-install_share_opencpn_uidata_MUI_flat_MUI_track.svg_32x32": {
+    "bytes": 889,
+    "sha256": "8fa4dc8f5ab641273459b763d8bcdb2cebb6d94ec5620817441be1966c09e7cc"
+  },
+  "iconCacheSVG/_home_standard_Projects_X-nav-worktrees_scrum259-linux-6dafd29_build_xnav-install_share_opencpn_uidata_MUI_flat_MUI_track_toggled.svg_32x32": {
+    "bytes": 717,
+    "sha256": "eac6884dbd04fc7444cca7d22094127629cee13377ed793900bc2834d17bb1eb"
+  },
+  "iconCacheSVG/_home_standard_Projects_X-nav-worktrees_scrum259-linux-6dafd29_build_xnav-install_share_opencpn_uidata_MUI_flat_X_mult.svg_19x19": {
+    "bytes": 331,
+    "sha256": "32270415c2f6aa91cac2c8fa249e154acd10114cca3640be051df845a9f521be"
+  },
+  "iconCacheSVG/_home_standard_Projects_X-nav-worktrees_scrum259-linux-6dafd29_build_xnav-install_share_opencpn_uidata_MUI_flat_check_mark.svg_19x19": {
+    "bytes": 311,
+    "sha256": "710d4a6b1bfb32c8f91ba0ba73743b73340e7810ab6dc36d8f615d4e2331736a"
+  },
+  "iconCacheSVG/_home_standard_Projects_X-nav-worktrees_scrum259-linux-6dafd29_build_xnav-install_share_opencpn_uidata_MUI_flat_circle-off.svg_19x19": {
+    "bytes": 383,
+    "sha256": "8d5ae86a626bfd7a3e83955810618e2f835febdc298ac123e4f54dafec9fdc21"
+  },
+  "iconCacheSVG/_home_standard_Projects_X-nav-worktrees_scrum259-linux-6dafd29_build_xnav-install_share_opencpn_uidata_MUI_flat_circle-on.svg_19x19": {
+    "bytes": 306,
+    "sha256": "6fd3ce02ebd4bac61be27a9b0a8b70afcd7f594e8d65b9f1e10960ceb3419620"
+  },
+  "iconCacheSVG/_home_standard_Projects_X-nav-worktrees_scrum259-linux-6dafd29_build_xnav-install_share_opencpn_uidata_MUI_flat_exclaim_mark.svg_19x19": {
+    "bytes": 175,
+    "sha256": "269dd799a22a04298f7fbaf86e89ce5af73f722bfc7a3e3cf2b26f643baff474"
+  },
+  "iconCacheSVG/_home_standard_Projects_X-nav-worktrees_scrum259-linux-6dafd29_build_xnav-install_share_opencpn_uidata_MUI_flat_gpsGrn.svg_32x32": {
+    "bytes": 1367,
+    "sha256": "9663f8db6f2c980bd03383bd247dee5985d4336de02eb5fcb59083752608455e"
+  },
+  "iconCacheSVG/_home_standard_Projects_X-nav-worktrees_scrum259-linux-6dafd29_build_xnav-install_share_opencpn_uidata_MUI_flat_gpsRed.svg_32x32": {
+    "bytes": 1354,
+    "sha256": "f6ce0608a5b3c6e063e440cf903244529fe52f9f2bb7a8db3bd959ca74969cb5"
+  },
+  "iconCacheSVG/_home_standard_Projects_X-nav-worktrees_scrum259-linux-6dafd29_build_xnav-install_share_opencpn_uidata_MUI_flat_mob_btn.svg_32x32": {
+    "bytes": 1958,
+    "sha256": "98e33ad4029b19f4aff70c8759a3492651e901e235dd959952918e6c24bb12d4"
+  },
+  "iconCacheSVG/_home_standard_Projects_X-nav-worktrees_scrum259-linux-6dafd29_build_xnav-install_share_opencpn_uidata_MUI_flat_notification-info-2.svg_28x28": {
+    "bytes": 791,
+    "sha256": "dd97d46d13b316694b5b9d5e0c8e1f6ee62a809624848453b1e8f3ba660ae34b"
+  },
+  "iconCacheSVG/_home_standard_Projects_X-nav-worktrees_scrum259-linux-6dafd29_build_xnav-install_share_opencpn_uidata_MUI_flat_setting_gear.svg_19x19": {
+    "bytes": 530,
+    "sha256": "b0515d59b30f276ff0e5f632274a6548c9b9157d913e75381d461f9f71392f43"
+  },
+  "iconCacheSVG/_home_standard_Projects_X-nav-worktrees_scrum259-linux-6dafd29_build_xnav-install_share_opencpn_uidata_MUI_flat_trash_bin.svg_19x19": {
+    "bytes": 359,
+    "sha256": "e30838ee3aa13427d03dfe5e89e7bc79b01c8da08e542cff3ee66bb9fdf0a0ca"
+  },
+  "iconCacheSVG/_home_standard_Projects_X-nav-worktrees_scrum259-linux-6dafd29_build_xnav-install_share_opencpn_uidata_markicons_1st-Active-Waypoint.svg_68x68": {
+    "bytes": 778,
+    "sha256": "b3ebb96edfe63bf584ffe9ca4044c9bf53934c3e7bbf4fe7389d88c3f7c7dbc4"
+  },
+  "iconCacheSVG/_home_standard_Projects_X-nav-worktrees_scrum259-linux-6dafd29_build_xnav-install_share_opencpn_uidata_markicons_1st-Anchorage.svg_68x68": {
+    "bytes": 952,
+    "sha256": "1df1996dc895ff2174dc11d526567927efa239cc1c1b976b05f7d09d2c14d95b"
+  },
+  "iconCacheSVG/_home_standard_Projects_X-nav-worktrees_scrum259-linux-6dafd29_build_xnav-install_share_opencpn_uidata_markicons_1st-Diamond.svg_68x68": {
+    "bytes": 632,
+    "sha256": "1d9c111b0bd833fd6fa4ebfaa18deaaf79adfe16ed315047799dd54e3abdde11"
+  },
+  "iconCacheSVG/_home_standard_Projects_X-nav-worktrees_scrum259-linux-6dafd29_build_xnav-install_share_opencpn_uidata_markicons_1st-Man-Overboard.svg_68x68": {
+    "bytes": 1475,
+    "sha256": "34d57384f37ae81cf00565066787d2e6e2319ace2134dc9fcaa379e386e1e684"
+  },
+  "iconCacheSVG/_home_standard_Projects_X-nav-worktrees_scrum259-linux-6dafd29_build_xnav-install_share_opencpn_uidata_markicons_1st-No-Anchoring.svg_68x68": {
+    "bytes": 887,
+    "sha256": "ab7fa17fc79bcc2d27db8e794c3b1228e841c98b8a239ca31478781ae6d94090"
+  },
+  "iconCacheSVG/_home_standard_Projects_X-nav-worktrees_scrum259-linux-6dafd29_build_xnav-install_share_opencpn_uidata_markicons_Activity-Campfire.svg_68x68": {
+    "bytes": 1105,
+    "sha256": "15f7871e0c97fe1fbb39d88fb5a60b542b159dd9b63c8c80eb71e159153630f1"
+  },
+  "iconCacheSVG/_home_standard_Projects_X-nav-worktrees_scrum259-linux-6dafd29_build_xnav-install_share_opencpn_uidata_markicons_Activity-Camping.svg_68x68": {
+    "bytes": 786,
+    "sha256": "0043c9286f0f668baf670776e8f145836ad6e3c0adc6229011be28f14272069c"
+  },
+  "iconCacheSVG/_home_standard_Projects_X-nav-worktrees_scrum259-linux-6dafd29_build_xnav-install_share_opencpn_uidata_markicons_Activity-Diving-Scuba-Flag.svg_68x68": {
+    "bytes": 555,
+    "sha256": "70ef4f444e815d980f720507ba675099e2f4cf7249168ee7681348b79cd8d657"
+  },
+  "iconCacheSVG/_home_standard_Projects_X-nav-worktrees_scrum259-linux-6dafd29_build_xnav-install_share_opencpn_uidata_markicons_Activity-Diving-Scuba-Tank.svg_68x68": {
+    "bytes": 1518,
+    "sha256": "43257cca6788970de8c2a6e7a51547523a02248bc2b2f1b85d4ace78ba595a90"
+  },
+  "iconCacheSVG/_home_standard_Projects_X-nav-worktrees_scrum259-linux-6dafd29_build_xnav-install_share_opencpn_uidata_markicons_Activity-Diving-Snorkel.svg_68x68": {
+    "bytes": 1392,
+    "sha256": "1b53818cf6fbfb55250d21e1d72b7e127a7124c3629f3f09ebe72ae1ddc00bab"
+  },
+  "iconCacheSVG/_home_standard_Projects_X-nav-worktrees_scrum259-linux-6dafd29_build_xnav-install_share_opencpn_uidata_markicons_Activity-Diving-Spearing.svg_68x68": {
+    "bytes": 820,
+    "sha256": "45e3e7e7b38adf8bf44a47528bcd2b40a6adc37a5be822c73366d5ca5164d227"
+  },
+  "iconCacheSVG/_home_standard_Projects_X-nav-worktrees_scrum259-linux-6dafd29_build_xnav-install_share_opencpn_uidata_markicons_Activity-Fishing.svg_68x68": {
+    "bytes": 937,
+    "sha256": "debcf4d751541cb77c8cc6900e3961e95bb9762a35b21a71114d4c7db9362548"
+  },
+  "iconCacheSVG/_home_standard_Projects_X-nav-worktrees_scrum259-linux-6dafd29_build_xnav-install_share_opencpn_uidata_markicons_Authority-Customs.svg_68x68": {
+    "bytes": 763,
+    "sha256": "84606a7a716df08bc6bacb0e90d492a4186bd8c68bfd52008285f9933eac2e13"
+  },
+  "iconCacheSVG/_home_standard_Projects_X-nav-worktrees_scrum259-linux-6dafd29_build_xnav-install_share_opencpn_uidata_markicons_Authority-Health.svg_68x68": {
+    "bytes": 510,
+    "sha256": "a349567cc659f13b2819d076adc0caf134b20ee88964d7f68301cd2b52d726ef"
+  },
+  "iconCacheSVG/_home_standard_Projects_X-nav-worktrees_scrum259-linux-6dafd29_build_xnav-install_share_opencpn_uidata_markicons_Authority-Immigration.svg_68x68": {
+    "bytes": 902,
+    "sha256": "fac184c5b02761c36685900d48d5c31aa2656a87f036d43d1aa8cacfcb6ca16c"
+  },
+  "iconCacheSVG/_home_standard_Projects_X-nav-worktrees_scrum259-linux-6dafd29_build_xnav-install_share_opencpn_uidata_markicons_Authority-Police.svg_68x68": {
+    "bytes": 1083,
+    "sha256": "b1487201141ffcb89c2284c0dac01178e3ecb484f2886b8261f18461d752d24b"
+  },
+  "iconCacheSVG/_home_standard_Projects_X-nav-worktrees_scrum259-linux-6dafd29_build_xnav-install_share_opencpn_uidata_markicons_Authority-Quarantine-Area.svg_68x68": {
+    "bytes": 1168,
+    "sha256": "0f6500109c948b703f0c8d8897d98c85f348599036a5db4791cc924abcb53d3b"
+  },
+  "iconCacheSVG/_home_standard_Projects_X-nav-worktrees_scrum259-linux-6dafd29_build_xnav-install_share_opencpn_uidata_markicons_Authority-Quarantine-Building.svg_68x68": {
+    "bytes": 789,
+    "sha256": "2fe83f07db4b2aac746d33d3ff33ed73df6b519bfee43e3ff420c2fcadd6160b"
+  },
+  "iconCacheSVG/_home_standard_Projects_X-nav-worktrees_scrum259-linux-6dafd29_build_xnav-install_share_opencpn_uidata_markicons_Authority-Quarantine-Flag.svg_68x68": {
+    "bytes": 719,
+    "sha256": "969881ab75da70af2c1fc169e310a21db7c24325a87e9613ea9933d3209022a1"
+  },
+  "iconCacheSVG/_home_standard_Projects_X-nav-worktrees_scrum259-linux-6dafd29_build_xnav-install_share_opencpn_uidata_markicons_DragHandle.svg_34x34": {
+    "bytes": 1146,
+    "sha256": "a138edd5e9607feb23bed44566b311122b2ba999f89f8bcb455d39e6f08e1d48"
+  },
+  "iconCacheSVG/_home_standard_Projects_X-nav-worktrees_scrum259-linux-6dafd29_build_xnav-install_share_opencpn_uidata_markicons_Hazard-Airplane.svg_68x68": {
+    "bytes": 983,
+    "sha256": "c0fa600b606d98d38819b977ad0cefe4af6438894772704bbf1dc7da2005a3b3"
+  },
+  "iconCacheSVG/_home_standard_Projects_X-nav-worktrees_scrum259-linux-6dafd29_build_xnav-install_share_opencpn_uidata_markicons_Hazard-Animals-Crocodile.svg_68x68": {
+    "bytes": 1506,
+    "sha256": "d302d46c6f9a161b5bcca7fcb3a968d11e01309a7139d7604bcec7606d56d033"
+  },
+  "iconCacheSVG/_home_standard_Projects_X-nav-worktrees_scrum259-linux-6dafd29_build_xnav-install_share_opencpn_uidata_markicons_Hazard-Animals-Jellyfish.svg_68x68": {
+    "bytes": 1353,
+    "sha256": "f8c4f2999d21256526f0a374f3965fa478d8555f0899b9ca2a6dd87caef57d4b"
+  },
+  "iconCacheSVG/_home_standard_Projects_X-nav-worktrees_scrum259-linux-6dafd29_build_xnav-install_share_opencpn_uidata_markicons_Hazard-Animals-Shark.svg_68x68": {
+    "bytes": 1419,
+    "sha256": "89578dc3053adbe60136a5d557686642902e9c5733279a083b76e820ab714d70"
+  },
+  "iconCacheSVG/_home_standard_Projects_X-nav-worktrees_scrum259-linux-6dafd29_build_xnav-install_share_opencpn_uidata_markicons_Hazard-Danger.svg_68x68": {
+    "bytes": 940,
+    "sha256": "c0edd8d63847f0d7b9ac96d62f14da44c00796cc2677c7fdd4054d2bed646bdc"
+  },
+  "iconCacheSVG/_home_standard_Projects_X-nav-worktrees_scrum259-linux-6dafd29_build_xnav-install_share_opencpn_uidata_markicons_Hazard-Dredging.svg_68x68": {
+    "bytes": 970,
+    "sha256": "cbcaaa587bec6d27a33bb4e7b668bc6a0461ddf3b7b77e2a600111ba5c4e6593"
+  },
+  "iconCacheSVG/_home_standard_Projects_X-nav-worktrees_scrum259-linux-6dafd29_build_xnav-install_share_opencpn_uidata_markicons_Hazard-Fish-Aquatic-Farm.svg_68x68": {
+    "bytes": 1012,
+    "sha256": "704ee02f9fb691126c00dfde77bd33e24fc63fe6cf6ffdc0c73ce08498d073c0"
+  },
+  "iconCacheSVG/_home_standard_Projects_X-nav-worktrees_scrum259-linux-6dafd29_build_xnav-install_share_opencpn_uidata_markicons_Hazard-Fish-Lobster-String.svg_68x68": {
+    "bytes": 756,
+    "sha256": "f81233b7f13d2f60944dbd80223268db1b38b8d4fa5836a2b8bbf4cffc69a71d"
+  },
+  "iconCacheSVG/_home_standard_Projects_X-nav-worktrees_scrum259-linux-6dafd29_build_xnav-install_share_opencpn_uidata_markicons_Hazard-Fish-Nets.svg_68x68": {
+    "bytes": 1508,
+    "sha256": "c97d2fe6fd61eafa373a772e33cf790716de9362b29c59344dbefd5cbe5b171a"
+  },
+  "iconCacheSVG/_home_standard_Projects_X-nav-worktrees_scrum259-linux-6dafd29_build_xnav-install_share_opencpn_uidata_markicons_Hazard-Lighthouse.svg_68x68": {
+    "bytes": 1107,
+    "sha256": "eb517e7276af6a298ddb6b8d9fd7b7f5b24c28c8ec3034c82c48356fe667985b"
+  },
+  "iconCacheSVG/_home_standard_Projects_X-nav-worktrees_scrum259-linux-6dafd29_build_xnav-install_share_opencpn_uidata_markicons_Hazard-Obstruction-Deep.svg_68x68": {
+    "bytes": 1008,
+    "sha256": "8514a2b2830d240ea84a98baf53b12722c632105fda21c1b76a4d5e56dc18e8e"
+  },
+  "iconCacheSVG/_home_standard_Projects_X-nav-worktrees_scrum259-linux-6dafd29_build_xnav-install_share_opencpn_uidata_markicons_Hazard-Obstruction-Dry.svg_68x68": {
+    "bytes": 1215,
+    "sha256": "228ee52afb0c1e5c2b0a2343bc70a5fb010d017448dd03e50e8de6173e8af4c9"
+  },
+  "iconCacheSVG/_home_standard_Projects_X-nav-worktrees_scrum259-linux-6dafd29_build_xnav-install_share_opencpn_uidata_markicons_Hazard-Obstruction-Shallow.svg_68x68": {
+    "bytes": 1036,
+    "sha256": "fc2090e1f093958979305086f6b2ae998d5b7dac9d9fe7e26453b59de06f11e5"
+  },
+  "iconCacheSVG/_home_standard_Projects_X-nav-worktrees_scrum259-linux-6dafd29_build_xnav-install_share_opencpn_uidata_markicons_Hazard-Oil-Platform.svg_68x68": {
+    "bytes": 708,
+    "sha256": "b3c2fcc91ec6026ad392dc28ec3b2cddadf91e85ce181d828f995cfb7bb32239"
+  },
+  "iconCacheSVG/_home_standard_Projects_X-nav-worktrees_scrum259-linux-6dafd29_build_xnav-install_share_opencpn_uidata_markicons_Hazard-Overfalls.svg_68x68": {
+    "bytes": 936,
+    "sha256": "757ac6b4edf18faa8c0a0c1044a72eb434a4dc4b3724adbedb18e0a111414c1e"
+  },
+  "iconCacheSVG/_home_standard_Projects_X-nav-worktrees_scrum259-linux-6dafd29_build_xnav-install_share_opencpn_uidata_markicons_Hazard-Pollution-Air.svg_68x68": {
+    "bytes": 1418,
+    "sha256": "cc09dbb4516798dfddbc4fe4f74da593b98f121d29ec4d204f4869ad83d9705c"
+  },
+  "iconCacheSVG/_home_standard_Projects_X-nav-worktrees_scrum259-linux-6dafd29_build_xnav-install_share_opencpn_uidata_markicons_Hazard-Pollution-Bio.svg_68x68": {
+    "bytes": 1677,
+    "sha256": "e67bb7c9e5a89d1bbe3bb27f10484f55cdafc96cd32517d4dad6bb4126acfcdc"
+  },
+  "iconCacheSVG/_home_standard_Projects_X-nav-worktrees_scrum259-linux-6dafd29_build_xnav-install_share_opencpn_uidata_markicons_Hazard-Pollution-Nuclear.svg_68x68": {
+    "bytes": 1282,
+    "sha256": "963f15f201425fe3403e890134cd3f370f884bb79fa9a5afac0820eb67f64ea4"
+  },
+  "iconCacheSVG/_home_standard_Projects_X-nav-worktrees_scrum259-linux-6dafd29_build_xnav-install_share_opencpn_uidata_markicons_Hazard-Pollution-Oil.svg_68x68": {
+    "bytes": 1246,
+    "sha256": "0ac749d816281e0e1abac084f80157edce44d3713648bc1c6da7e1bf81dfb43b"
+  },
+  "iconCacheSVG/_home_standard_Projects_X-nav-worktrees_scrum259-linux-6dafd29_build_xnav-install_share_opencpn_uidata_markicons_Hazard-Pollution-Quarantine-Area.svg_68x68": {
+    "bytes": 913,
+    "sha256": "d8d024702b792e5764dfe551e7f662ead0610093023474117733282ed1e3bf0a"
+  },
+  "iconCacheSVG/_home_standard_Projects_X-nav-worktrees_scrum259-linux-6dafd29_build_xnav-install_share_opencpn_uidata_markicons_Hazard-Power-Cable.svg_68x68": {
+    "bytes": 911,
+    "sha256": "1b7c743b3b49660dcd2f1c29fb7448758b154cd0ec07234c63e1eb4972c9a8b6"
+  },
+  "iconCacheSVG/_home_standard_Projects_X-nav-worktrees_scrum259-linux-6dafd29_build_xnav-install_share_opencpn_uidata_markicons_Hazard-Power-Line1.svg_68x68": {
+    "bytes": 819,
+    "sha256": "24eac6a5b726b0dc6ba0a926c512b931ff74ad2b4f0b23018e579fc48df3f1d1"
+  },
+  "iconCacheSVG/_home_standard_Projects_X-nav-worktrees_scrum259-linux-6dafd29_build_xnav-install_share_opencpn_uidata_markicons_Hazard-Power-Line2.svg_68x68": {
+    "bytes": 968,
+    "sha256": "b729a12022c0e71faed8099a71cdd6d5ac9eb6d67ec2248d0a6370e5961514eb"
+  },
+  "iconCacheSVG/_home_standard_Projects_X-nav-worktrees_scrum259-linux-6dafd29_build_xnav-install_share_opencpn_uidata_markicons_Hazard-Rock-Awash.svg_68x68": {
+    "bytes": 658,
+    "sha256": "5f7a4c152451887dd28cc0686976273668836dbe26359173345945faf0136d4e"
+  },
+  "iconCacheSVG/_home_standard_Projects_X-nav-worktrees_scrum259-linux-6dafd29_build_xnav-install_share_opencpn_uidata_markicons_Hazard-Rock-Exposed.svg_68x68": {
+    "bytes": 689,
+    "sha256": "87611d90a89795a778e5f90c22b25eb0e9ecf6d874ab12c5527962fff2198726"
+  },
+  "iconCacheSVG/_home_standard_Projects_X-nav-worktrees_scrum259-linux-6dafd29_build_xnav-install_share_opencpn_uidata_markicons_Hazard-Sandbar.svg_68x68": {
+    "bytes": 808,
+    "sha256": "ff15c2d8451dbfcdc8da834b629309557329ead1c006217318c268c75c56d11f"
+  },
+  "iconCacheSVG/_home_standard_Projects_X-nav-worktrees_scrum259-linux-6dafd29_build_xnav-install_share_opencpn_uidata_markicons_Hazard-Snag.svg_68x68": {
+    "bytes": 622,
+    "sha256": "83cde9b1df2fda8538ee12e68ba36ef2419f169844fc7522eea939217ddd18d7"
+  },
+  "iconCacheSVG/_home_standard_Projects_X-nav-worktrees_scrum259-linux-6dafd29_build_xnav-install_share_opencpn_uidata_markicons_Hazard-Warning.svg_68x68": {
+    "bytes": 1179,
+    "sha256": "a92698f7f4e7008895e050c87a7ff3f3441b437efcddfa63ccaaa811b8a44176"
+  },
+  "iconCacheSVG/_home_standard_Projects_X-nav-worktrees_scrum259-linux-6dafd29_build_xnav-install_share_opencpn_uidata_markicons_Hazard-Wind-Farm.svg_68x68": {
+    "bytes": 689,
+    "sha256": "74f7aadf22a65000f8ff9aa6976ca3ea9b487a210fdadae12e6e6f76e411712c"
+  },
+  "iconCacheSVG/_home_standard_Projects_X-nav-worktrees_scrum259-linux-6dafd29_build_xnav-install_share_opencpn_uidata_markicons_Hazard-Wreck1.svg_68x68": {
+    "bytes": 845,
+    "sha256": "5bd14b85f84404c15835bd3b6088fc87382d85e5a9b86a1a6322e811c3302b20"
+  },
+  "iconCacheSVG/_home_standard_Projects_X-nav-worktrees_scrum259-linux-6dafd29_build_xnav-install_share_opencpn_uidata_markicons_Hazard-Wreck2.svg_68x68": {
+    "bytes": 894,
+    "sha256": "e86f35b00bb909c7552b7268f85bb67cc0872cbbf4810181436083e9c6ab529a"
+  },
+  "iconCacheSVG/_home_standard_Projects_X-nav-worktrees_scrum259-linux-6dafd29_build_xnav-install_share_opencpn_uidata_markicons_Info-Fish-Haven.svg_68x68": {
+    "bytes": 892,
+    "sha256": "c2aa191a9c53b334a239ede707adfb0d200b2f6567c19cd937ade6b9d3d59724"
+  },
+  "iconCacheSVG/_home_standard_Projects_X-nav-worktrees_scrum259-linux-6dafd29_build_xnav-install_share_opencpn_uidata_markicons_Info-Fish-Pelagic.svg_68x68": {
+    "bytes": 869,
+    "sha256": "a7fb75a4c8691e69a53c55610ada7ff974bc5c17c2cf3722ffcb2a064570dbb4"
+  },
+  "iconCacheSVG/_home_standard_Projects_X-nav-worktrees_scrum259-linux-6dafd29_build_xnav-install_share_opencpn_uidata_markicons_Info-Fish-Reef.svg_68x68": {
+    "bytes": 1264,
+    "sha256": "059a693e2e48a1badb83e7b0363d3f653c118d4c3680b4d059b8b7347d6bdfa8"
+  },
+  "iconCacheSVG/_home_standard_Projects_X-nav-worktrees_scrum259-linux-6dafd29_build_xnav-install_share_opencpn_uidata_markicons_Info-Fish-Shark.svg_68x68": {
+    "bytes": 820,
+    "sha256": "3cf76c7a77135ea84d4dc716be594bf36a8b13d5a640d319e681a74206589499"
+  },
+  "iconCacheSVG/_home_standard_Projects_X-nav-worktrees_scrum259-linux-6dafd29_build_xnav-install_share_opencpn_uidata_markicons_Info-Fish-Whale.svg_68x68": {
+    "bytes": 601,
+    "sha256": "4af79b97e3ec1e596579c1eedd3c8485cfac7bac38bc419c5ac45cb1767f38dc"
+  },
+  "iconCacheSVG/_home_standard_Projects_X-nav-worktrees_scrum259-linux-6dafd29_build_xnav-install_share_opencpn_uidata_markicons_Info-Fish.svg_68x68": {
+    "bytes": 597,
+    "sha256": "e4a1ec92bcec39b0665c8375f0c60c7a70021a4ed1e7feddf99e84e277dcf13f"
+  },
+  "iconCacheSVG/_home_standard_Projects_X-nav-worktrees_scrum259-linux-6dafd29_build_xnav-install_share_opencpn_uidata_markicons_Info-Info.svg_68x68": {
+    "bytes": 636,
+    "sha256": "dd80923ffe1e148b5fe4095cd29e741a123707640859c4b2ef18454709dcb128"
+  },
+  "iconCacheSVG/_home_standard_Projects_X-nav-worktrees_scrum259-linux-6dafd29_build_xnav-install_share_opencpn_uidata_markicons_Info-No-Discharge.svg_68x68": {
+    "bytes": 1192,
+    "sha256": "658c46e0135ab5961a5704f62320f20eac14828f099dd00eda9496698032a434"
+  },
+  "iconCacheSVG/_home_standard_Projects_X-nav-worktrees_scrum259-linux-6dafd29_build_xnav-install_share_opencpn_uidata_markicons_Info-Photo.svg_68x68": {
+    "bytes": 695,
+    "sha256": "ca73d5b8b98670122622e26c6688e8e9c0b3946f20c9d8abcc26f025b9d1e264"
+  },
+  "iconCacheSVG/_home_standard_Projects_X-nav-worktrees_scrum259-linux-6dafd29_build_xnav-install_share_opencpn_uidata_markicons_Info-Video.svg_68x68": {
+    "bytes": 623,
+    "sha256": "2bbe8160ed03075da435d6f4b1e9220858d8839255cab278a96f6a3990611056"
+  },
+  "iconCacheSVG/_home_standard_Projects_X-nav-worktrees_scrum259-linux-6dafd29_build_xnav-install_share_opencpn_uidata_markicons_Landmarks-Bridge1.svg_68x68": {
+    "bytes": 1157,
+    "sha256": "572f527cf2d69fb94db7e7aa3effe98b36f434f0a3554abef3af8322109bf8fd"
+  },
+  "iconCacheSVG/_home_standard_Projects_X-nav-worktrees_scrum259-linux-6dafd29_build_xnav-install_share_opencpn_uidata_markicons_Landmarks-Bridge2.svg_68x68": {
+    "bytes": 815,
+    "sha256": "219183d34ffea57bd497d8bca7ac21e5f8da19bab99e84801175fc64ffa0dc77"
+  },
+  "iconCacheSVG/_home_standard_Projects_X-nav-worktrees_scrum259-linux-6dafd29_build_xnav-install_share_opencpn_uidata_markicons_Landmarks-Bridge3.svg_68x68": {
+    "bytes": 749,
+    "sha256": "62583293932c9ebd56589edae3b248084cc0f36e84e0925dab019cf086be88ec"
+  },
+  "iconCacheSVG/_home_standard_Projects_X-nav-worktrees_scrum259-linux-6dafd29_build_xnav-install_share_opencpn_uidata_markicons_Landmarks-Pier1.svg_68x68": {
+    "bytes": 1118,
+    "sha256": "5bd43e8ea276962f750b283632efd6c1123acfe548d7d1cdf70706396d475557"
+  },
+  "iconCacheSVG/_home_standard_Projects_X-nav-worktrees_scrum259-linux-6dafd29_build_xnav-install_share_opencpn_uidata_markicons_Landmarks-Pier2.svg_68x68": {
+    "bytes": 1021,
+    "sha256": "fe7de65440f75eea50105cce186f15a06b79db32d303f5c16a5af811911e87d4"
+  },
+  "iconCacheSVG/_home_standard_Projects_X-nav-worktrees_scrum259-linux-6dafd29_build_xnav-install_share_opencpn_uidata_markicons_Landmarks-Pier3.svg_68x68": {
+    "bytes": 1117,
+    "sha256": "cf286b8d75d9e3989f7674caa4b22231a37c6e322da308b3fa795d2c6ec58d3d"
+  },
+  "iconCacheSVG/_home_standard_Projects_X-nav-worktrees_scrum259-linux-6dafd29_build_xnav-install_share_opencpn_uidata_markicons_Landmarks-Stream-River.svg_68x68": {
+    "bytes": 2139,
+    "sha256": "7f2236c8a2ce7cab524afe9f1d8363e8ba720f63cbffa6468fe347ccb56c7f84"
+  },
+  "iconCacheSVG/_home_standard_Projects_X-nav-worktrees_scrum259-linux-6dafd29_build_xnav-install_share_opencpn_uidata_markicons_Landmarks-Waterfall.svg_68x68": {
+    "bytes": 1688,
+    "sha256": "9859f5e7b7482d171281e2fa302d50d37b68741677ac6800fe388407bf6899e3"
+  },
+  "iconCacheSVG/_home_standard_Projects_X-nav-worktrees_scrum259-linux-6dafd29_build_xnav-install_share_opencpn_uidata_markicons_Marks-Active-Waypoint.svg_68x68": {
+    "bytes": 778,
+    "sha256": "b3ebb96edfe63bf584ffe9ca4044c9bf53934c3e7bbf4fe7389d88c3f7c7dbc4"
+  },
+  "iconCacheSVG/_home_standard_Projects_X-nav-worktrees_scrum259-linux-6dafd29_build_xnav-install_share_opencpn_uidata_markicons_Marks-Beacon-Danger.svg_68x68": {
+    "bytes": 393,
+    "sha256": "d0a2ea9f2813929877a2cd27bae1f724ba0ed66fa5af2d6bbc7cab41863a49fa"
+  },
+  "iconCacheSVG/_home_standard_Projects_X-nav-worktrees_scrum259-linux-6dafd29_build_xnav-install_share_opencpn_uidata_markicons_Marks-Beacon-SafeWater.svg_68x68": {
+    "bytes": 258,
+    "sha256": "3a442ed47e70d2262467b98591c9898e0987e4a7e80744acaa0cf94982e311d9"
+  },
+  "iconCacheSVG/_home_standard_Projects_X-nav-worktrees_scrum259-linux-6dafd29_build_xnav-install_share_opencpn_uidata_markicons_Marks-Blank.svg_68x68": {
+    "bytes": 192,
+    "sha256": "275845d6395ffc41b7e13090cadf665b08397317305f20e1f3bd3196a04ac62e"
+  },
+  "iconCacheSVG/_home_standard_Projects_X-nav-worktrees_scrum259-linux-6dafd29_build_xnav-install_share_opencpn_uidata_markicons_Marks-Boarding-Location.svg_68x68": {
+    "bytes": 1000,
+    "sha256": "1704ba1815ea5344779830a2517cc85248061e621c1014ea6cb451fbf3a21b0c"
+  },
+  "iconCacheSVG/_home_standard_Projects_X-nav-worktrees_scrum259-linux-6dafd29_build_xnav-install_share_opencpn_uidata_markicons_Marks-Boundary.svg_68x68": {
+    "bytes": 682,
+    "sha256": "3bca9d87038687576acd24a4676efaca2862bd6f39d12fb7375febae7eb1b678"
+  },
+  "iconCacheSVG/_home_standard_Projects_X-nav-worktrees_scrum259-linux-6dafd29_build_xnav-install_share_opencpn_uidata_markicons_Marks-Buoy-Danger.svg_68x68": {
+    "bytes": 461,
+    "sha256": "8678d9c450f8fa801b62842022b7348894975d6de7d68c1b6a88e082a37aa921"
+  },
+  "iconCacheSVG/_home_standard_Projects_X-nav-worktrees_scrum259-linux-6dafd29_build_xnav-install_share_opencpn_uidata_markicons_Marks-Buoy-Safe-Water.svg_68x68": {
+    "bytes": 559,
+    "sha256": "9570ddcf05b6ec44701a08da605ca72d2b6ebb2993e922807297e51939806f65"
+  },
+  "iconCacheSVG/_home_standard_Projects_X-nav-worktrees_scrum259-linux-6dafd29_build_xnav-install_share_opencpn_uidata_markicons_Marks-Buoy-TypeA.svg_68x68": {
+    "bytes": 914,
+    "sha256": "4986cac8decc005477e2c7d550fb009556b838971b4b29417131bcc68bee2d87"
+  },
+  "iconCacheSVG/_home_standard_Projects_X-nav-worktrees_scrum259-linux-6dafd29_build_xnav-install_share_opencpn_uidata_markicons_Marks-Buoy-TypeB.svg_68x68": {
+    "bytes": 958,
+    "sha256": "7fd9654f5bff65c6225421ae2e5adadaa9079bea5c069d46af628f44441529f0"
+  },
+  "iconCacheSVG/_home_standard_Projects_X-nav-worktrees_scrum259-linux-6dafd29_build_xnav-install_share_opencpn_uidata_markicons_Marks-Cardinal-East-Lighted.svg_68x68": {
+    "bytes": 936,
+    "sha256": "b2e34f686632598d571c8a1241822a07dc3351d6382df96767e7323207db9e1a"
+  },
+  "iconCacheSVG/_home_standard_Projects_X-nav-worktrees_scrum259-linux-6dafd29_build_xnav-install_share_opencpn_uidata_markicons_Marks-Cardinal-East.svg_68x68": {
+    "bytes": 673,
+    "sha256": "ee6310a36d9a0dc9068b4b96d33156a2fbf382d7a14fc00b1bdacd585a33239c"
+  },
+  "iconCacheSVG/_home_standard_Projects_X-nav-worktrees_scrum259-linux-6dafd29_build_xnav-install_share_opencpn_uidata_markicons_Marks-Cardinal-Nord-Lighted.svg_68x68": {
+    "bytes": 950,
+    "sha256": "b3d830db597405002ce7bfe6a67321fb6b7798d2206b0469203000f74a1cc502"
+  },
+  "iconCacheSVG/_home_standard_Projects_X-nav-worktrees_scrum259-linux-6dafd29_build_xnav-install_share_opencpn_uidata_markicons_Marks-Cardinal-Nord.svg_68x68": {
+    "bytes": 694,
+    "sha256": "25008df50d8687b226fb1a53ab2198bac3d477ce07067a5bfc4a749f181a630f"
+  },
+  "iconCacheSVG/_home_standard_Projects_X-nav-worktrees_scrum259-linux-6dafd29_build_xnav-install_share_opencpn_uidata_markicons_Marks-Cardinal-North-Lighted.svg_68x68": {
+    "bytes": 992,
+    "sha256": "7f6770c8a5411d2d318d5545d11cd14a8536e1bb0b66ebea9c3467abd99bffed"
+  },
+  "iconCacheSVG/_home_standard_Projects_X-nav-worktrees_scrum259-linux-6dafd29_build_xnav-install_share_opencpn_uidata_markicons_Marks-Cardinal-North.svg_68x68": {
+    "bytes": 733,
+    "sha256": "5433cd99e3db746826671020dba691b171b3ee2ca9e5f654de9429c558e8c9a8"
+  },
+  "iconCacheSVG/_home_standard_Projects_X-nav-worktrees_scrum259-linux-6dafd29_build_xnav-install_share_opencpn_uidata_markicons_Marks-Cardinal-South-Lighted.svg_68x68": {
+    "bytes": 960,
+    "sha256": "4864aec8eceb929af99706bd220adc77d050a205d86042f042ab275ecd61c870"
+  },
+  "iconCacheSVG/_home_standard_Projects_X-nav-worktrees_scrum259-linux-6dafd29_build_xnav-install_share_opencpn_uidata_markicons_Marks-Cardinal-South.svg_68x68": {
+    "bytes": 682,
+    "sha256": "75ebcea9b3d57d8e3504f47698c8e3b2171d2998e6327f2872afdde12ee8501e"
+  },
+  "iconCacheSVG/_home_standard_Projects_X-nav-worktrees_scrum259-linux-6dafd29_build_xnav-install_share_opencpn_uidata_markicons_Marks-Cardinal-West-Lighted.svg_68x68": {
+    "bytes": 953,
+    "sha256": "3c4b8eb013219e8340b32bbb39ee1b1a24acd722f17873eeb4ec7098c4325d1e"
+  },
+  "iconCacheSVG/_home_standard_Projects_X-nav-worktrees_scrum259-linux-6dafd29_build_xnav-install_share_opencpn_uidata_markicons_Marks-Cardinal-West.svg_68x68": {
+    "bytes": 690,
+    "sha256": "fbad72dd314370f565ff99c64352bce1a984823d4df7a4359f589e772d14a600"
+  },
+  "iconCacheSVG/_home_standard_Projects_X-nav-worktrees_scrum259-linux-6dafd29_build_xnav-install_share_opencpn_uidata_markicons_Marks-Caution-Lighted.svg_68x68": {
+    "bytes": 1260,
+    "sha256": "a4aaa2ae2427a739ec017797ff75da3f6abce25d83706f705504e4bcc5dcfccc"
+  },
+  "iconCacheSVG/_home_standard_Projects_X-nav-worktrees_scrum259-linux-6dafd29_build_xnav-install_share_opencpn_uidata_markicons_Marks-Caution.svg_68x68": {
+    "bytes": 1014,
+    "sha256": "57b16c5e64e535cf51c03e41f557ec0172b698bb13489002ddf18e4e1a0b9e9a"
+  },
+  "iconCacheSVG/_home_standard_Projects_X-nav-worktrees_scrum259-linux-6dafd29_build_xnav-install_share_opencpn_uidata_markicons_Marks-Danger-Topmark-Lighted.svg_68x68": {
+    "bytes": 923,
+    "sha256": "108fa6547e44c652fdcf0e1017839396aff6041c72482c660ab32df8775adf7a"
+  },
+  "iconCacheSVG/_home_standard_Projects_X-nav-worktrees_scrum259-linux-6dafd29_build_xnav-install_share_opencpn_uidata_markicons_Marks-Danger-Topmark.svg_68x68": {
+    "bytes": 652,
+    "sha256": "c94d895536067d19f3b9e1e80bab5d4dc6c372d7e53d2b89cbc4a602a7f98f0a"
+  },
+  "iconCacheSVG/_home_standard_Projects_X-nav-worktrees_scrum259-linux-6dafd29_build_xnav-install_share_opencpn_uidata_markicons_Marks-Lateral-Port-IALA-A-Lighted.svg_68x68": {
+    "bytes": 901,
+    "sha256": "114dec2d5913f1e2ef6b9ff1b2615bf86ffecd97ae18cc73cb25d125d08dd319"
+  },
+  "iconCacheSVG/_home_standard_Projects_X-nav-worktrees_scrum259-linux-6dafd29_build_xnav-install_share_opencpn_uidata_markicons_Marks-Lateral-Port-IALA-A.svg_68x68": {
+    "bytes": 626,
+    "sha256": "156b6b2098c4ab1349f4e2fd7eaf306ac0d104961ec8387ffc6c93df0e2fb301"
+  },
+  "iconCacheSVG/_home_standard_Projects_X-nav-worktrees_scrum259-linux-6dafd29_build_xnav-install_share_opencpn_uidata_markicons_Marks-Lateral-Port-IALA-B-Lighted.svg_68x68": {
+    "bytes": 890,
+    "sha256": "7ab05b06ceacb7d5e70ef0f96290483b9e0e2af165dbac4969e4449228c8a31e"
+  },
+  "iconCacheSVG/_home_standard_Projects_X-nav-worktrees_scrum259-linux-6dafd29_build_xnav-install_share_opencpn_uidata_markicons_Marks-Lateral-Port-IALA-B.svg_68x68": {
+    "bytes": 622,
+    "sha256": "4ca762f9a33f51d4dd6d8d135b0165c9ceeaca6a2a6716d2ce2d90e57f76776d"
+  },
+  "iconCacheSVG/_home_standard_Projects_X-nav-worktrees_scrum259-linux-6dafd29_build_xnav-install_share_opencpn_uidata_markicons_Marks-Lateral-Starboard-IALA-A-Lighted.svg_68x68": {
+    "bytes": 929,
+    "sha256": "8d27558a7b5fdf4aec7e7e51bebd961d5d0505bc329e1f8d2644fe60e0f13b2f"
+  },
+  "iconCacheSVG/_home_standard_Projects_X-nav-worktrees_scrum259-linux-6dafd29_build_xnav-install_share_opencpn_uidata_markicons_Marks-Lateral-Starboard-IALA-A.svg_68x68": {
+    "bytes": 675,
+    "sha256": "8958d0b67fd5e9d62931332d77c6a274a2c54d7fd5598940cce235b6a30b4ac5"
+  },
+  "iconCacheSVG/_home_standard_Projects_X-nav-worktrees_scrum259-linux-6dafd29_build_xnav-install_share_opencpn_uidata_markicons_Marks-Lateral-Starboard-IALA-B-Lighted.svg_68x68": {
+    "bytes": 939,
+    "sha256": "621444a642e60d51c61f514aab71e189b59c098c85960464567d35def9a3dfe5"
+  },
+  "iconCacheSVG/_home_standard_Projects_X-nav-worktrees_scrum259-linux-6dafd29_build_xnav-install_share_opencpn_uidata_markicons_Marks-Lateral-Starboard-IALA-B.svg_68x68": {
+    "bytes": 679,
+    "sha256": "1642e00639f70fd923b32a4fec6f2c9d66947f7b495de007f889512b413deb8f"
+  },
+  "iconCacheSVG/_home_standard_Projects_X-nav-worktrees_scrum259-linux-6dafd29_build_xnav-install_share_opencpn_uidata_markicons_Marks-Light-Green.svg_68x68": {
+    "bytes": 811,
+    "sha256": "f4da24803fcf9dc91dab4f157a6ef5ec5698849e9746a9ea31c1ba23dc6db762"
+  },
+  "iconCacheSVG/_home_standard_Projects_X-nav-worktrees_scrum259-linux-6dafd29_build_xnav-install_share_opencpn_uidata_markicons_Marks-Light-Red-Green.svg_68x68": {
+    "bytes": 875,
+    "sha256": "9572eb75f2beb7e2a9655c32963db058063ac68212414c4e22d154c69e63666c"
+  },
+  "iconCacheSVG/_home_standard_Projects_X-nav-worktrees_scrum259-linux-6dafd29_build_xnav-install_share_opencpn_uidata_markicons_Marks-Light-Red.svg_68x68": {
+    "bytes": 821,
+    "sha256": "de58b094ec865e52fb405c35320b82944f4d3858ec64140b3834eec0d5c7f8b6"
+  },
+  "iconCacheSVG/_home_standard_Projects_X-nav-worktrees_scrum259-linux-6dafd29_build_xnav-install_share_opencpn_uidata_markicons_Marks-Light-TypeA.svg_68x68": {
+    "bytes": 657,
+    "sha256": "dde32aba021eda9821bff9b446d8f3da8bf57b1e545e661331258192cb2f8027"
+  },
+  "iconCacheSVG/_home_standard_Projects_X-nav-worktrees_scrum259-linux-6dafd29_build_xnav-install_share_opencpn_uidata_markicons_Marks-Light-TypeB.svg_68x68": {
+    "bytes": 763,
+    "sha256": "9ec59c3b1209bff186a31031396cbbea7b2f26a95f27b80375099a19bc95dff7"
+  },
+  "iconCacheSVG/_home_standard_Projects_X-nav-worktrees_scrum259-linux-6dafd29_build_xnav-install_share_opencpn_uidata_markicons_Marks-Light-Vessel.svg_68x68": {
+    "bytes": 936,
+    "sha256": "04e658b4e3253a7961eb42afb04c24543ed50ef1ff8e1409d967293a820dbd24"
+  },
+  "iconCacheSVG/_home_standard_Projects_X-nav-worktrees_scrum259-linux-6dafd29_build_xnav-install_share_opencpn_uidata_markicons_Marks-Mooring-Buoy-Super.svg_68x68": {
+    "bytes": 464,
+    "sha256": "99651d9c6252938a27d16f44019f872a5cbf1fb58d6035d4a619863ee57098e7"
+  },
+  "iconCacheSVG/_home_standard_Projects_X-nav-worktrees_scrum259-linux-6dafd29_build_xnav-install_share_opencpn_uidata_markicons_Marks-Mooring-Buoy.svg_68x68": {
+    "bytes": 458,
+    "sha256": "805ac40a676798286e847f35977be88fa3353f3baf7dddfde28dd38df2239646"
+  },
+  "iconCacheSVG/_home_standard_Projects_X-nav-worktrees_scrum259-linux-6dafd29_build_xnav-install_share_opencpn_uidata_markicons_Marks-Mooring-Float.svg_68x68": {
+    "bytes": 571,
+    "sha256": "73a1d77fe5154109d5cb4f2ae0ab405ec703d7a037285603528abb4efb96fbb1"
+  },
+  "iconCacheSVG/_home_standard_Projects_X-nav-worktrees_scrum259-linux-6dafd29_build_xnav-install_share_opencpn_uidata_markicons_Marks-Mooring-Pile.svg_68x68": {
+    "bytes": 303,
+    "sha256": "1610e63a74ca0413321011a06656578cf5e43effadd806fc8abefb367b9937da"
+  },
+  "iconCacheSVG/_home_standard_Projects_X-nav-worktrees_scrum259-linux-6dafd29_build_xnav-install_share_opencpn_uidata_markicons_Marks-New-Danger-Lighted.svg_68x68": {
+    "bytes": 923,
+    "sha256": "e7d5bbb2ed1fe6642222a37aa4a20708d98790a540ff5b3b9c7b080563169247"
+  },
+  "iconCacheSVG/_home_standard_Projects_X-nav-worktrees_scrum259-linux-6dafd29_build_xnav-install_share_opencpn_uidata_markicons_Marks-New-Danger.svg_68x68": {
+    "bytes": 646,
+    "sha256": "210935db1aae1f3977d72e12cc8cb7ba7bc9312b0e52b34baa5462274b7eae01"
+  },
+  "iconCacheSVG/_home_standard_Projects_X-nav-worktrees_scrum259-linux-6dafd29_build_xnav-install_share_opencpn_uidata_markicons_Marks-Race-Committee-Start-Boat.svg_68x68": {
+    "bytes": 797,
+    "sha256": "10ed1d7ce6f1e6a5dd29f38df92060b7be9696d134fbb23b8563d523fb972a0a"
+  },
+  "iconCacheSVG/_home_standard_Projects_X-nav-worktrees_scrum259-linux-6dafd29_build_xnav-install_share_opencpn_uidata_markicons_Marks-Race-Finish.svg_68x68": {
+    "bytes": 734,
+    "sha256": "7b8ded77d6932df1b9d318ccfe47633aa1586723ca7e5e4696297e7f9fa21b88"
+  },
+  "iconCacheSVG/_home_standard_Projects_X-nav-worktrees_scrum259-linux-6dafd29_build_xnav-install_share_opencpn_uidata_markicons_Marks-Race-Start.svg_68x68": {
+    "bytes": 304,
+    "sha256": "884757ab0682f9474abe4a91af234ad673398fef2bc44526976a743d2cade260"
+  },
+  "iconCacheSVG/_home_standard_Projects_X-nav-worktrees_scrum259-linux-6dafd29_build_xnav-install_share_opencpn_uidata_markicons_Marks-Race-Tetrahedron-Mark1.svg_68x68": {
+    "bytes": 682,
+    "sha256": "f7e9a7ed50858e2f81b72bbf9f718cc9514502456c8c3fd841f360300dfe992e"
+  },
+  "iconCacheSVG/_home_standard_Projects_X-nav-worktrees_scrum259-linux-6dafd29_build_xnav-install_share_opencpn_uidata_markicons_Marks-Race-Tetrahedron-Mark2.svg_68x68": {
+    "bytes": 823,
+    "sha256": "528c5abde9ae56c951f089beb30f1d00eff59fb0908c96d0396194a113c7732a"
+  },
+  "iconCacheSVG/_home_standard_Projects_X-nav-worktrees_scrum259-linux-6dafd29_build_xnav-install_share_opencpn_uidata_markicons_Marks-Race-Tetrahedron-Mark3.svg_68x68": {
+    "bytes": 852,
+    "sha256": "efb50f02946722a3b9c87b0156fb8157c73fae81fcad0d2aa326116088306ac6"
+  },
+  "iconCacheSVG/_home_standard_Projects_X-nav-worktrees_scrum259-linux-6dafd29_build_xnav-install_share_opencpn_uidata_markicons_Marks-Race-Tetrahedron-Mark4.svg_68x68": {
+    "bytes": 761,
+    "sha256": "f00f1409daa25c397b8b3cc975ff0949d7982f975b5db4e65d4af8f33099f091"
+  },
+  "iconCacheSVG/_home_standard_Projects_X-nav-worktrees_scrum259-linux-6dafd29_build_xnav-install_share_opencpn_uidata_markicons_Marks-Race-Tetrahedron-Mark5.svg_68x68": {
+    "bytes": 834,
+    "sha256": "4fb75d585b442cc1e5c0473b49866c2bd7ad8ab77327e325d4681ca7a4d4f6f5"
+  },
+  "iconCacheSVG/_home_standard_Projects_X-nav-worktrees_scrum259-linux-6dafd29_build_xnav-install_share_opencpn_uidata_markicons_Marks-Safe-Water-Lighted.svg_68x68": {
+    "bytes": 1033,
+    "sha256": "a40d5bc7e064bd6b0e541b235d443bce0ad230133dbce00c2dc6ab733ad88c31"
+  },
+  "iconCacheSVG/_home_standard_Projects_X-nav-worktrees_scrum259-linux-6dafd29_build_xnav-install_share_opencpn_uidata_markicons_Marks-Safe-Water.svg_68x68": {
+    "bytes": 775,
+    "sha256": "72cc8d134e26ea542b8b396ed39972b71bc6d96186136a589e5a92e182a0857e"
+  },
+  "iconCacheSVG/_home_standard_Projects_X-nav-worktrees_scrum259-linux-6dafd29_build_xnav-install_share_opencpn_uidata_markicons_Sea-Current-Eastbound.svg_68x68": {
+    "bytes": 850,
+    "sha256": "976520e7ddbb909db4ea8245ac70e6739a994ab572572eceb088be09e99acd81"
+  },
+  "iconCacheSVG/_home_standard_Projects_X-nav-worktrees_scrum259-linux-6dafd29_build_xnav-install_share_opencpn_uidata_markicons_Sea-Current-N-Eastbound.svg_68x68": {
+    "bytes": 1052,
+    "sha256": "8cbd248f93837ba64b33fdfaa6c0db272dedf4e68c786044f47ae23375db469d"
+  },
+  "iconCacheSVG/_home_standard_Projects_X-nav-worktrees_scrum259-linux-6dafd29_build_xnav-install_share_opencpn_uidata_markicons_Sea-Current-N-Westbound.svg_68x68": {
+    "bytes": 1076,
+    "sha256": "bae2f679579f58d0101b6f4337e1b7c24db6d158c0db09e1a7b9f9ce919f7608"
+  },
+  "iconCacheSVG/_home_standard_Projects_X-nav-worktrees_scrum259-linux-6dafd29_build_xnav-install_share_opencpn_uidata_markicons_Sea-Current-Northbound.svg_68x68": {
+    "bytes": 973,
+    "sha256": "27d026ad8ae8ae39faba591ac2df74c5940b0f6b63b77aa3efd4afec09c8aeec"
+  },
+  "iconCacheSVG/_home_standard_Projects_X-nav-worktrees_scrum259-linux-6dafd29_build_xnav-install_share_opencpn_uidata_markicons_Sea-Current-S-Eastbound.svg_68x68": {
+    "bytes": 1067,
+    "sha256": "8367317afc7f9fa7897044951831ad6296563552ac7ad73fc2a0518ceefa5614"
+  },
+  "iconCacheSVG/_home_standard_Projects_X-nav-worktrees_scrum259-linux-6dafd29_build_xnav-install_share_opencpn_uidata_markicons_Sea-Current-S-Westbound.svg_68x68": {
+    "bytes": 1055,
+    "sha256": "8ece30fc8aa35a7ff97626697cf8d19a6f0e4c4e8d785e6163661a55534cb73a"
+  },
+  "iconCacheSVG/_home_standard_Projects_X-nav-worktrees_scrum259-linux-6dafd29_build_xnav-install_share_opencpn_uidata_markicons_Sea-Current-Southbound.svg_68x68": {
+    "bytes": 985,
+    "sha256": "cd46d7dbdeae8006356967b6068b15e777ccaf78736303255e5281608902f71c"
+  },
+  "iconCacheSVG/_home_standard_Projects_X-nav-worktrees_scrum259-linux-6dafd29_build_xnav-install_share_opencpn_uidata_markicons_Sea-Current-Westbound.svg_68x68": {
+    "bytes": 859,
+    "sha256": "7055161c542814b19180e9868c7ec7de1a66a130ef27d4224e3e91be5af5817a"
+  },
+  "iconCacheSVG/_home_standard_Projects_X-nav-worktrees_scrum259-linux-6dafd29_build_xnav-install_share_opencpn_uidata_markicons_Sea-DepthA-Black.svg_68x68": {
+    "bytes": 519,
+    "sha256": "8daadf21c45435e68f8416c91956c8b70e6cd1a0621b5559daf37b3668586535"
+  },
+  "iconCacheSVG/_home_standard_Projects_X-nav-worktrees_scrum259-linux-6dafd29_build_xnav-install_share_opencpn_uidata_markicons_Sea-DepthA-Blue.svg_68x68": {
+    "bytes": 533,
+    "sha256": "bc479449f9e5e0dfc4c416c32a939dfcc5e3f93082be4570fe37a00e27c50bec"
+  },
+  "iconCacheSVG/_home_standard_Projects_X-nav-worktrees_scrum259-linux-6dafd29_build_xnav-install_share_opencpn_uidata_markicons_Sea-DepthA-Green.svg_68x68": {
+    "bytes": 543,
+    "sha256": "cbd5c5ce411343f44b5fe356c91472b237c30570838e5e043abca7fd33a166fa"
+  },
+  "iconCacheSVG/_home_standard_Projects_X-nav-worktrees_scrum259-linux-6dafd29_build_xnav-install_share_opencpn_uidata_markicons_Sea-DepthA-Magenta.svg_68x68": {
+    "bytes": 545,
+    "sha256": "d64247dd255737327fcc3ca8a7ee2ab930c90d8df68d9b4044a0922299564a11"
+  },
+  "iconCacheSVG/_home_standard_Projects_X-nav-worktrees_scrum259-linux-6dafd29_build_xnav-install_share_opencpn_uidata_markicons_Sea-DepthA-Orange.svg_68x68": {
+    "bytes": 551,
+    "sha256": "ff49ba24025b5641ac683c11c10ddfa2914e96db032ee20ec11a43ad4a0c618e"
+  },
+  "iconCacheSVG/_home_standard_Projects_X-nav-worktrees_scrum259-linux-6dafd29_build_xnav-install_share_opencpn_uidata_markicons_Sea-DepthA-Red.svg_68x68": {
+    "bytes": 545,
+    "sha256": "8dee2777717c5851baead4c093d065869a34577e6cf98d14e0068867c8755715"
+  },
+  "iconCacheSVG/_home_standard_Projects_X-nav-worktrees_scrum259-linux-6dafd29_build_xnav-install_share_opencpn_uidata_markicons_Sea-DepthA-White.svg_68x68": {
+    "bytes": 554,
+    "sha256": "9afb6dedd688d6f83c51b6354baee27aa67bb6c8e8f8f45167b805fcae7e1a1d"
+  },
+  "iconCacheSVG/_home_standard_Projects_X-nav-worktrees_scrum259-linux-6dafd29_build_xnav-install_share_opencpn_uidata_markicons_Sea-DepthA-Yellow.svg_68x68": {
+    "bytes": 537,
+    "sha256": "79f2917893eb9df9960029a440c4782e8b218c3409a8f26aef9656acf4502c40"
+  },
+  "iconCacheSVG/_home_standard_Projects_X-nav-worktrees_scrum259-linux-6dafd29_build_xnav-install_share_opencpn_uidata_markicons_Sea-DepthB-Black.svg_68x68": {
+    "bytes": 721,
+    "sha256": "d4fffbef22aab71fdcad204aab6cb0593f21ecd85985af6988516cbe2afa3488"
+  },
+  "iconCacheSVG/_home_standard_Projects_X-nav-worktrees_scrum259-linux-6dafd29_build_xnav-install_share_opencpn_uidata_markicons_Sea-DepthB-Blue.svg_68x68": {
+    "bytes": 777,
+    "sha256": "8d28668ecc1e9670ea1eca12354a6139e029c79ef5b6c47549bd6b933a058e90"
+  },
+  "iconCacheSVG/_home_standard_Projects_X-nav-worktrees_scrum259-linux-6dafd29_build_xnav-install_share_opencpn_uidata_markicons_Sea-DepthB-Green.svg_68x68": {
+    "bytes": 745,
+    "sha256": "e3450dc5ec970184fd352293b7daf394a3effea8d3c1dca2d50f86644d80ba7b"
+  },
+  "iconCacheSVG/_home_standard_Projects_X-nav-worktrees_scrum259-linux-6dafd29_build_xnav-install_share_opencpn_uidata_markicons_Sea-DepthB-Magenta.svg_68x68": {
+    "bytes": 796,
+    "sha256": "5c1eaffbdbc11a4f23f254a329ea418da5e745542380444c336f832c02943435"
+  },
+  "iconCacheSVG/_home_standard_Projects_X-nav-worktrees_scrum259-linux-6dafd29_build_xnav-install_share_opencpn_uidata_markicons_Sea-DepthB-Orange.svg_68x68": {
+    "bytes": 779,
+    "sha256": "3c164c8f5a10e67d630275b66d284ce53cb75d5ca56d118cfde2c54fbf6c6897"
+  },
+  "iconCacheSVG/_home_standard_Projects_X-nav-worktrees_scrum259-linux-6dafd29_build_xnav-install_share_opencpn_uidata_markicons_Sea-DepthB-Red.svg_68x68": {
+    "bytes": 773,
+    "sha256": "8aa757ac6c289f989341980ef7fe91bb9fe00ae33e171a13a14acc384b3fe192"
+  },
+  "iconCacheSVG/_home_standard_Projects_X-nav-worktrees_scrum259-linux-6dafd29_build_xnav-install_share_opencpn_uidata_markicons_Sea-DepthB-White.svg_68x68": {
+    "bytes": 789,
+    "sha256": "d77b9fe0d891569ea360aba6efafa3d568c2b7046ef7edb2a0dadbc2280cfa76"
+  },
+  "iconCacheSVG/_home_standard_Projects_X-nav-worktrees_scrum259-linux-6dafd29_build_xnav-install_share_opencpn_uidata_markicons_Sea-DepthB-Yellow.svg_68x68": {
+    "bytes": 801,
+    "sha256": "ae3564c5ac53dfe3e46cccff6e5f166fdbcea58bcea8441adb1c2de2179a4129"
+  },
+  "iconCacheSVG/_home_standard_Projects_X-nav-worktrees_scrum259-linux-6dafd29_build_xnav-install_share_opencpn_uidata_markicons_Sea-Eddies-Black.svg_68x68": {
+    "bytes": 871,
+    "sha256": "3246932fb3155e9083d25fb97f0ab6dfed131d5a7d1e4b63b468b8a5bfb181dc"
+  },
+  "iconCacheSVG/_home_standard_Projects_X-nav-worktrees_scrum259-linux-6dafd29_build_xnav-install_share_opencpn_uidata_markicons_Sea-Eddies-Blue.svg_68x68": {
+    "bytes": 914,
+    "sha256": "aeee8a298ac4b0ecf9586a706aa0769d5579f635863cde3a1e3513f68a7aacc3"
+  },
+  "iconCacheSVG/_home_standard_Projects_X-nav-worktrees_scrum259-linux-6dafd29_build_xnav-install_share_opencpn_uidata_markicons_Sea-Eddies-Green.svg_68x68": {
+    "bytes": 1052,
+    "sha256": "deab2542889fe5136cc3ed2ae8087256932f5e8ec54b0ddceb56a90d02f3b338"
+  },
+  "iconCacheSVG/_home_standard_Projects_X-nav-worktrees_scrum259-linux-6dafd29_build_xnav-install_share_opencpn_uidata_markicons_Sea-Eddies-Magenta.svg_68x68": {
+    "bytes": 911,
+    "sha256": "806c39d13bbbd8e82992f03c1e03be43e7e894f6c5197608f423767e7938f986"
+  },
+  "iconCacheSVG/_home_standard_Projects_X-nav-worktrees_scrum259-linux-6dafd29_build_xnav-install_share_opencpn_uidata_markicons_Sea-Eddies-Orange.svg_68x68": {
+    "bytes": 1063,
+    "sha256": "71e54a4bd152a3ffb123319d8586e60321c247130af98f0ef6883ed748c0812f"
+  },
+  "iconCacheSVG/_home_standard_Projects_X-nav-worktrees_scrum259-linux-6dafd29_build_xnav-install_share_opencpn_uidata_markicons_Sea-Eddies-Red.svg_68x68": {
+    "bytes": 916,
+    "sha256": "7d9b0b1f4506e7f5d0836bb99c3a9ad4acfe3fa328536916fa5b9c1138907be0"
+  },
+  "iconCacheSVG/_home_standard_Projects_X-nav-worktrees_scrum259-linux-6dafd29_build_xnav-install_share_opencpn_uidata_markicons_Sea-Eddies-White.svg_68x68": {
+    "bytes": 914,
+    "sha256": "627db66ff39d8fee4bda98509c6e1b1969bae8cdebcb03f4dbf6d34f4fb6622c"
+  },
+  "iconCacheSVG/_home_standard_Projects_X-nav-worktrees_scrum259-linux-6dafd29_build_xnav-install_share_opencpn_uidata_markicons_Sea-Eddies-Yellow.svg_68x68": {
+    "bytes": 1069,
+    "sha256": "2dde4fa35f9ee9484ad0789e0e9d5e52c65d3d4b9353277a733bb7380763d7b5"
+  },
+  "iconCacheSVG/_home_standard_Projects_X-nav-worktrees_scrum259-linux-6dafd29_build_xnav-install_share_opencpn_uidata_markicons_Sea-Floor-Coral.svg_68x68": {
+    "bytes": 2954,
+    "sha256": "135172eee8777f1a9a708a9779dde1149936da62dc383203b91164049bef3094"
+  },
+  "iconCacheSVG/_home_standard_Projects_X-nav-worktrees_scrum259-linux-6dafd29_build_xnav-install_share_opencpn_uidata_markicons_Sea-Floor-Sea-Weed.svg_68x68": {
+    "bytes": 1207,
+    "sha256": "fe93649ce7a1c714c188f0613fc651f4a67d15623454f35a47ca73277bcc4611"
+  },
+  "iconCacheSVG/_home_standard_Projects_X-nav-worktrees_scrum259-linux-6dafd29_build_xnav-install_share_opencpn_uidata_markicons_Sea-Floor-Text-Clay.svg_68x68": {
+    "bytes": 818,
+    "sha256": "f91d71264341ebf3850945ae1c0ae9f7e98179bf1aa168118d077a61e48b446f"
+  },
+  "iconCacheSVG/_home_standard_Projects_X-nav-worktrees_scrum259-linux-6dafd29_build_xnav-install_share_opencpn_uidata_markicons_Sea-Floor-Text-Coral.svg_68x68": {
+    "bytes": 1037,
+    "sha256": "1b3ab683a683cbb5b7f79fd89f6f757e772360e1bee36ccb1040b2f6f7fd533e"
+  },
+  "iconCacheSVG/_home_standard_Projects_X-nav-worktrees_scrum259-linux-6dafd29_build_xnav-install_share_opencpn_uidata_markicons_Sea-Floor-Text-Grass.svg_68x68": {
+    "bytes": 1174,
+    "sha256": "6e93ece192b8afedfdeaf0b375adc2f13dc0fa007abe833a5a15025b2fdbdedb"
+  },
+  "iconCacheSVG/_home_standard_Projects_X-nav-worktrees_scrum259-linux-6dafd29_build_xnav-install_share_opencpn_uidata_markicons_Sea-Floor-Text-Mud.svg_68x68": {
+    "bytes": 690,
+    "sha256": "f620419de75be3ed48e1bc845a8adbbc73a023f84bce37f1916e305f96853bd3"
+  },
+  "iconCacheSVG/_home_standard_Projects_X-nav-worktrees_scrum259-linux-6dafd29_build_xnav-install_share_opencpn_uidata_markicons_Sea-Floor-Text-Rock.svg_68x68": {
+    "bytes": 957,
+    "sha256": "61ad64c89cb794a17ca381998679f1480b1683d087756c8a79b11010b8f60b36"
+  },
+  "iconCacheSVG/_home_standard_Projects_X-nav-worktrees_scrum259-linux-6dafd29_build_xnav-install_share_opencpn_uidata_markicons_Sea-Floor-Text-Sand.svg_68x68": {
+    "bytes": 896,
+    "sha256": "9484218ef7b8e66432092dd6e93c0e5437aa452a8dd02faf4ddb114ce77e47bf"
+  },
+  "iconCacheSVG/_home_standard_Projects_X-nav-worktrees_scrum259-linux-6dafd29_build_xnav-install_share_opencpn_uidata_markicons_Sea-Height-Black.svg_68x68": {
+    "bytes": 734,
+    "sha256": "beb07edaf3dbb0c79b64373143c55231d41a6df409bbb5d54aa25e402b747daa"
+  },
+  "iconCacheSVG/_home_standard_Projects_X-nav-worktrees_scrum259-linux-6dafd29_build_xnav-install_share_opencpn_uidata_markicons_Sea-Height-Blue.svg_68x68": {
+    "bytes": 776,
+    "sha256": "43c453f62e85fd718c049365b3ee42baacadf5c6d8b5ba2af3bbc983e4cc9cd2"
+  },
+  "iconCacheSVG/_home_standard_Projects_X-nav-worktrees_scrum259-linux-6dafd29_build_xnav-install_share_opencpn_uidata_markicons_Sea-Height-Green.svg_68x68": {
+    "bytes": 767,
+    "sha256": "41274d2723beec9e7ae40795dff0cb8448ffac3d8c216ca76662c0452aa40880"
+  },
+  "iconCacheSVG/_home_standard_Projects_X-nav-worktrees_scrum259-linux-6dafd29_build_xnav-install_share_opencpn_uidata_markicons_Sea-Height-Magenta.svg_68x68": {
+    "bytes": 790,
+    "sha256": "8db235fdebb2b47652706e9aea7fb15a13362de9a13d0abbe8d5ff0fd5d85170"
+  },
+  "iconCacheSVG/_home_standard_Projects_X-nav-worktrees_scrum259-linux-6dafd29_build_xnav-install_share_opencpn_uidata_markicons_Sea-Height-Orange.svg_68x68": {
+    "bytes": 779,
+    "sha256": "c14ed3b00ea887f4a3a02aa251df180f516a5237af7f13643fabe42d62afcc5b"
+  },
+  "iconCacheSVG/_home_standard_Projects_X-nav-worktrees_scrum259-linux-6dafd29_build_xnav-install_share_opencpn_uidata_markicons_Sea-Height-Red.svg_68x68": {
+    "bytes": 785,
+    "sha256": "441670c5a5c6104e6025aedf78d63aa3eb6b1297fe86f75c416c52f238a223f5"
+  },
+  "iconCacheSVG/_home_standard_Projects_X-nav-worktrees_scrum259-linux-6dafd29_build_xnav-install_share_opencpn_uidata_markicons_Sea-Height-White.svg_68x68": {
+    "bytes": 782,
+    "sha256": "83613cacb66f568d469d73fbfe77b591a9fec5e33d9458b9d8434491fd8e7a21"
+  },
+  "iconCacheSVG/_home_standard_Projects_X-nav-worktrees_scrum259-linux-6dafd29_build_xnav-install_share_opencpn_uidata_markicons_Sea-Height-Yellow.svg_68x68": {
+    "bytes": 794,
+    "sha256": "ffd2e6f0d3b5714f3fd30289cfc9c43ce45528c710b782ce6fa55cd6e0947884"
+  },
+  "iconCacheSVG/_home_standard_Projects_X-nav-worktrees_scrum259-linux-6dafd29_build_xnav-install_share_opencpn_uidata_markicons_Service-Chandlery.svg_68x68": {
+    "bytes": 613,
+    "sha256": "d19d8c7a0a2841ed3795e6c8e419e2ebc80faac1bb06ce669a0b07f69920d254"
+  },
+  "iconCacheSVG/_home_standard_Projects_X-nav-worktrees_scrum259-linux-6dafd29_build_xnav-install_share_opencpn_uidata_markicons_Service-Dock-Dinghy.svg_68x68": {
+    "bytes": 1074,
+    "sha256": "21ce47029a74fa722c8628e95dee281f093f9b5acf05c4ed545db82aebe60cfa"
+  },
+  "iconCacheSVG/_home_standard_Projects_X-nav-worktrees_scrum259-linux-6dafd29_build_xnav-install_share_opencpn_uidata_markicons_Service-Dock.svg_68x68": {
+    "bytes": 860,
+    "sha256": "3bb501a347dbeff7f132a6c633709c8ec953ed585f3f1408febf83aeb18108f0"
+  },
+  "iconCacheSVG/_home_standard_Projects_X-nav-worktrees_scrum259-linux-6dafd29_build_xnav-install_share_opencpn_uidata_markicons_Service-Food.svg_68x68": {
+    "bytes": 1043,
+    "sha256": "083dad2888b63874b0d4b575a56a97fd8847ee8318ed4f80d0c400e4e414818e"
+  },
+  "iconCacheSVG/_home_standard_Projects_X-nav-worktrees_scrum259-linux-6dafd29_build_xnav-install_share_opencpn_uidata_markicons_Service-Fuel-Jerry-Diesel.svg_68x68": {
+    "bytes": 769,
+    "sha256": "9e440a6dc79efd6e4bc4ffe766d5bd6524a1a6624b5179bb5171f84e8ecd47fb"
+  },
+  "iconCacheSVG/_home_standard_Projects_X-nav-worktrees_scrum259-linux-6dafd29_build_xnav-install_share_opencpn_uidata_markicons_Service-Fuel-Jerry-Petrol.svg_68x68": {
+    "bytes": 625,
+    "sha256": "8be8de4137f98fc2247775933f138c68384d12f187a3e82904ab2898a2afd1ed"
+  },
+  "iconCacheSVG/_home_standard_Projects_X-nav-worktrees_scrum259-linux-6dafd29_build_xnav-install_share_opencpn_uidata_markicons_Service-Fuel-Jerry.svg_68x68": {
+    "bytes": 1092,
+    "sha256": "0ddf2c6ffded8ad3655dd4f8c006ddc406b52301f6852226021e2082383a0fc3"
+  },
+  "iconCacheSVG/_home_standard_Projects_X-nav-worktrees_scrum259-linux-6dafd29_build_xnav-install_share_opencpn_uidata_markicons_Service-Fuel-LPG.svg_68x68": {
+    "bytes": 1151,
+    "sha256": "636b9a492d5f57f9c11383aa770610a273de8fa6b10b26dd80c19329ef85c6e4"
+  },
+  "iconCacheSVG/_home_standard_Projects_X-nav-worktrees_scrum259-linux-6dafd29_build_xnav-install_share_opencpn_uidata_markicons_Service-Fuel-Pump-Diesel-Petrol.svg_68x68": {
+    "bytes": 1631,
+    "sha256": "85e251ba7cc027ef05b4b30886aef34cc6de6cae3edd6f952b698cfe267955f5"
+  },
+  "iconCacheSVG/_home_standard_Projects_X-nav-worktrees_scrum259-linux-6dafd29_build_xnav-install_share_opencpn_uidata_markicons_Service-Fuel-Pump-Diesel.svg_68x68": {
+    "bytes": 978,
+    "sha256": "448932a1cd3ea37000e92daf5406f3ce3d8fee2b03a8a4736194551c6ef8f0d3"
+  },
+  "iconCacheSVG/_home_standard_Projects_X-nav-worktrees_scrum259-linux-6dafd29_build_xnav-install_share_opencpn_uidata_markicons_Service-Fuel-Pump-Petrol.svg_68x68": {
+    "bytes": 977,
+    "sha256": "384433a552e60fca1f60587ad4bde03dc38ca442dec9a8967d926f5b04dfa1b5"
+  },
+  "iconCacheSVG/_home_standard_Projects_X-nav-worktrees_scrum259-linux-6dafd29_build_xnav-install_share_opencpn_uidata_markicons_Service-Grocery1.svg_68x68": {
+    "bytes": 1402,
+    "sha256": "78af9032a5bc2bc87b91c57370955b3121dd3776256f040be35a91c7fc04fa4c"
+  },
+  "iconCacheSVG/_home_standard_Projects_X-nav-worktrees_scrum259-linux-6dafd29_build_xnav-install_share_opencpn_uidata_markicons_Service-Grocery2.svg_68x68": {
+    "bytes": 1237,
+    "sha256": "b822e1c4c27d166c54a19f77899ac3eb2e57e3eb802b7b107f4d5db5437ffa6b"
+  },
+  "iconCacheSVG/_home_standard_Projects_X-nav-worktrees_scrum259-linux-6dafd29_build_xnav-install_share_opencpn_uidata_markicons_Service-Haulout.svg_68x68": {
+    "bytes": 1067,
+    "sha256": "9aa1b8eda52100f14ce87e55f30324049aa96dd288c98dc27d9853a92ddb218a"
+  },
+  "iconCacheSVG/_home_standard_Projects_X-nav-worktrees_scrum259-linux-6dafd29_build_xnav-install_share_opencpn_uidata_markicons_Service-Ice1.svg_68x68": {
+    "bytes": 2044,
+    "sha256": "5893b9daab117f37d9959c2cc0177e2723307cd5fdd3295ff711d1c604570999"
+  },
+  "iconCacheSVG/_home_standard_Projects_X-nav-worktrees_scrum259-linux-6dafd29_build_xnav-install_share_opencpn_uidata_markicons_Service-Ice2.svg_68x68": {
+    "bytes": 1490,
+    "sha256": "af1b45eaa006d7990d7f062575653000870f628c28f248338da948a6115fd572"
+  },
+  "iconCacheSVG/_home_standard_Projects_X-nav-worktrees_scrum259-linux-6dafd29_build_xnav-install_share_opencpn_uidata_markicons_Service-Ice3.svg_68x68": {
+    "bytes": 1802,
+    "sha256": "49cd04846497713372826584b69d1161da5b63c77ab71da6a31e0d5342d5e2df"
+  },
+  "iconCacheSVG/_home_standard_Projects_X-nav-worktrees_scrum259-linux-6dafd29_build_xnav-install_share_opencpn_uidata_markicons_Service-Internet-Cafe.svg_68x68": {
+    "bytes": 828,
+    "sha256": "7f5a612640028051fdaac41351a5f6fb9209ef51d486a7fb244e28353bd3b9df"
+  },
+  "iconCacheSVG/_home_standard_Projects_X-nav-worktrees_scrum259-linux-6dafd29_build_xnav-install_share_opencpn_uidata_markicons_Service-Internet-WiFi.svg_68x68": {
+    "bytes": 845,
+    "sha256": "65220aacb6eb170bbb6bf468257d76a9c161d13b396e99b54389e84616f293cc"
+  },
+  "iconCacheSVG/_home_standard_Projects_X-nav-worktrees_scrum259-linux-6dafd29_build_xnav-install_share_opencpn_uidata_markicons_Service-Laundry.svg_68x68": {
+    "bytes": 1136,
+    "sha256": "5b2a1f3765ec7b4701ae96bb9a84ab89550da5f555f4c16460338c64e0afb739"
+  },
+  "iconCacheSVG/_home_standard_Projects_X-nav-worktrees_scrum259-linux-6dafd29_build_xnav-install_share_opencpn_uidata_markicons_Service-Marina.svg_68x68": {
+    "bytes": 1355,
+    "sha256": "64b73fc070a5fd54207caa8952b6fcb2133be0fb6b469024eae28c211b296e79"
+  },
+  "iconCacheSVG/_home_standard_Projects_X-nav-worktrees_scrum259-linux-6dafd29_build_xnav-install_share_opencpn_uidata_markicons_Service-Public-Landing.svg_68x68": {
+    "bytes": 1004,
+    "sha256": "c17998ac66430d84a3830f52daca05f523f1b09432aad43c65689a6fc6dbbddb"
+  },
+  "iconCacheSVG/_home_standard_Projects_X-nav-worktrees_scrum259-linux-6dafd29_build_xnav-install_share_opencpn_uidata_markicons_Service-Pump-Out-Boat.svg_68x68": {
+    "bytes": 818,
+    "sha256": "bb95e7dafb2401dbadc47e4b6ead5649d1b0773e35ef269dc05deec432fd0b25"
+  },
+  "iconCacheSVG/_home_standard_Projects_X-nav-worktrees_scrum259-linux-6dafd29_build_xnav-install_share_opencpn_uidata_markicons_Service-Pump-Out-Facility.svg_68x68": {
+    "bytes": 1053,
+    "sha256": "544de69d90362aecea2e2eb69401cc49c5f423fe227a967da25c1ed3456f9d9f"
+  },
+  "iconCacheSVG/_home_standard_Projects_X-nav-worktrees_scrum259-linux-6dafd29_build_xnav-install_share_opencpn_uidata_markicons_Service-Repairs.svg_68x68": {
+    "bytes": 623,
+    "sha256": "b2ef332e37c70d16c1163a72d91e194f77955dc1ddf7ea1da15426692a945591"
+  },
+  "iconCacheSVG/_home_standard_Projects_X-nav-worktrees_scrum259-linux-6dafd29_build_xnav-install_share_opencpn_uidata_markicons_Service-Water1.svg_68x68": {
+    "bytes": 1214,
+    "sha256": "21b132db198bfa7128f555f0a19f82805956847467df5d914e4bd8324da5781c"
+  },
+  "iconCacheSVG/_home_standard_Projects_X-nav-worktrees_scrum259-linux-6dafd29_build_xnav-install_share_opencpn_uidata_markicons_Service-Water2.svg_68x68": {
+    "bytes": 1292,
+    "sha256": "9b1e2e155584ea400f4586e1d863adb26dbc934fa18c5fe1bfdc3560665c4637"
+  },
+  "iconCacheSVG/_home_standard_Projects_X-nav-worktrees_scrum259-linux-6dafd29_build_xnav-install_share_opencpn_uidata_markicons_Service-Wine&Dine.svg_68x68": {
+    "bytes": 1317,
+    "sha256": "a6190aaf32c05e91a2774671c706e8403feff8487d991426320a60a3db17169a"
+  },
+  "iconCacheSVG/_home_standard_Projects_X-nav-worktrees_scrum259-linux-6dafd29_build_xnav-install_share_opencpn_uidata_markicons_Service-Yacht-Club.svg_68x68": {
+    "bytes": 1127,
+    "sha256": "8f986e7cfe37c7410efabe39d7a5c9764aba5cdfd7054fbb4a75b780006009f2"
+  },
+  "iconCacheSVG/_home_standard_Projects_X-nav-worktrees_scrum259-linux-6dafd29_build_xnav-install_share_opencpn_uidata_markicons_Symbol-Anchor1.svg_68x68": {
+    "bytes": 957,
+    "sha256": "a31a013ea0282e0f2151ac8aa7c38c6c48f5027e4d35730accd766c8800ade4c"
+  },
+  "iconCacheSVG/_home_standard_Projects_X-nav-worktrees_scrum259-linux-6dafd29_build_xnav-install_share_opencpn_uidata_markicons_Symbol-Anchor2.svg_68x68": {
+    "bytes": 693,
+    "sha256": "3f8139f33852cbe3e5436fe88b9d1a25201a8ad61429660eac57c4233fc4e247"
+  },
+  "iconCacheSVG/_home_standard_Projects_X-nav-worktrees_scrum259-linux-6dafd29_build_xnav-install_share_opencpn_uidata_markicons_Symbol-Anchor3.svg_68x68": {
+    "bytes": 752,
+    "sha256": "2d2272a26b33a451609290f0b09df330457ed6aafa3b57a638892d57c47b0f64"
+  },
+  "iconCacheSVG/_home_standard_Projects_X-nav-worktrees_scrum259-linux-6dafd29_build_xnav-install_share_opencpn_uidata_markicons_Symbol-Arrow-Black.svg_68x68": {
+    "bytes": 453,
+    "sha256": "072d3e1d417b8c9e47a812fef06bd1fa6f80bae50eff8c2d1a5e5e680a467c5e"
+  },
+  "iconCacheSVG/_home_standard_Projects_X-nav-worktrees_scrum259-linux-6dafd29_build_xnav-install_share_opencpn_uidata_markicons_Symbol-Arrow-Blue.svg_68x68": {
+    "bytes": 473,
+    "sha256": "fb4f7cb7b4a84294f4a9595e051ae09c92ae22fae450f5d4a48f62493f7f7f75"
+  },
+  "iconCacheSVG/_home_standard_Projects_X-nav-worktrees_scrum259-linux-6dafd29_build_xnav-install_share_opencpn_uidata_markicons_Symbol-Arrow-Green.svg_68x68": {
+    "bytes": 513,
+    "sha256": "3d2bf1774b75a62906a6159ee6c2e3d9a98c6e825b29146eeb1f17b9f96c35a4"
+  },
+  "iconCacheSVG/_home_standard_Projects_X-nav-worktrees_scrum259-linux-6dafd29_build_xnav-install_share_opencpn_uidata_markicons_Symbol-Arrow-Magenta.svg_68x68": {
+    "bytes": 481,
+    "sha256": "866e3df09f556a473c4e175e1afb3be0ebbd5934cc5ce758261d8fa88dbc3106"
+  },
+  "iconCacheSVG/_home_standard_Projects_X-nav-worktrees_scrum259-linux-6dafd29_build_xnav-install_share_opencpn_uidata_markicons_Symbol-Arrow-Orange.svg_68x68": {
+    "bytes": 524,
+    "sha256": "8aaf8bf073bbe2dbb02af607670d1c0c5929b15ef008701767f3de6a27b4a0e4"
+  },
+  "iconCacheSVG/_home_standard_Projects_X-nav-worktrees_scrum259-linux-6dafd29_build_xnav-install_share_opencpn_uidata_markicons_Symbol-Arrow-Red.svg_68x68": {
+    "bytes": 482,
+    "sha256": "081de3341de8476a5655c25d7904d6d723fbe08d5a66996686655d7bb84f8488"
+  },
+  "iconCacheSVG/_home_standard_Projects_X-nav-worktrees_scrum259-linux-6dafd29_build_xnav-install_share_opencpn_uidata_markicons_Symbol-Arrow-White.svg_68x68": {
+    "bytes": 482,
+    "sha256": "0ba1c7d5dbe1b1bc750948a2f6ff793d900da880cafa7e11c27b863e2a5555ee"
+  },
+  "iconCacheSVG/_home_standard_Projects_X-nav-worktrees_scrum259-linux-6dafd29_build_xnav-install_share_opencpn_uidata_markicons_Symbol-Arrow-Yellow.svg_68x68": {
+    "bytes": 525,
+    "sha256": "850484b2eefc40460ab068c8030298680fa73611691d82c7717f69fb2bf7d161"
+  },
+  "iconCacheSVG/_home_standard_Projects_X-nav-worktrees_scrum259-linux-6dafd29_build_xnav-install_share_opencpn_uidata_markicons_Symbol-Circle-Black.svg_68x68": {
+    "bytes": 479,
+    "sha256": "a9b50b57af866c5aa537b7bc5a1bc125c6c56a97290aa61fd46ea137eb496ef7"
+  },
+  "iconCacheSVG/_home_standard_Projects_X-nav-worktrees_scrum259-linux-6dafd29_build_xnav-install_share_opencpn_uidata_markicons_Symbol-Circle-Blue.svg_68x68": {
+    "bytes": 472,
+    "sha256": "9c70aa35d31f6bc72ecd5a7c32ee2acabf35d4b75345a307f0a03d1e0e77ac24"
+  },
+  "iconCacheSVG/_home_standard_Projects_X-nav-worktrees_scrum259-linux-6dafd29_build_xnav-install_share_opencpn_uidata_markicons_Symbol-Circle-Green.svg_68x68": {
+    "bytes": 526,
+    "sha256": "5f5647635a00a36b35372fd598207dc4d739ae19b9d976cef91abf2f5ee3013f"
+  },
+  "iconCacheSVG/_home_standard_Projects_X-nav-worktrees_scrum259-linux-6dafd29_build_xnav-install_share_opencpn_uidata_markicons_Symbol-Circle-Magenta.svg_68x68": {
+    "bytes": 472,
+    "sha256": "f57368c6408f92e53be781310a70445ff0aba1cf84182a209eadbff73c4ebe55"
+  },
+  "iconCacheSVG/_home_standard_Projects_X-nav-worktrees_scrum259-linux-6dafd29_build_xnav-install_share_opencpn_uidata_markicons_Symbol-Circle-Orange.svg_68x68": {
+    "bytes": 534,
+    "sha256": "32138da7070c00a11cccd14c1d8c1f05ebbd4605846f907337ea0ffdd40b914e"
+  },
+  "iconCacheSVG/_home_standard_Projects_X-nav-worktrees_scrum259-linux-6dafd29_build_xnav-install_share_opencpn_uidata_markicons_Symbol-Circle-Red.svg_68x68": {
+    "bytes": 479,
+    "sha256": "5689b13f33b6d65a15c0551b78d4ba4be12da8a7b4b192e464ac4df0e50db910"
+  },
+  "iconCacheSVG/_home_standard_Projects_X-nav-worktrees_scrum259-linux-6dafd29_build_xnav-install_share_opencpn_uidata_markicons_Symbol-Circle-White.svg_68x68": {
+    "bytes": 486,
+    "sha256": "8e643fdaa913027be3c936214a268e172b07c3be26bcc2837b7af42860595b6d"
+  },
+  "iconCacheSVG/_home_standard_Projects_X-nav-worktrees_scrum259-linux-6dafd29_build_xnav-install_share_opencpn_uidata_markicons_Symbol-Circle-Yellow.svg_68x68": {
+    "bytes": 538,
+    "sha256": "a60663c212b2da11c42827429af5e45af7a5ba7fc8b556df67d0967b38e97fef"
+  },
+  "iconCacheSVG/_home_standard_Projects_X-nav-worktrees_scrum259-linux-6dafd29_build_xnav-install_share_opencpn_uidata_markicons_Symbol-Circle.svg_68x68": {
+    "bytes": 617,
+    "sha256": "4f5d059cbb4813002aa63db53264642d9d4f6ca150bffc34f0cd40b3298e1986"
+  },
+  "iconCacheSVG/_home_standard_Projects_X-nav-worktrees_scrum259-linux-6dafd29_build_xnav-install_share_opencpn_uidata_markicons_Symbol-Diamond-Black.svg_68x68": {
+    "bytes": 485,
+    "sha256": "c69e6f505adf88feb214ef2afd0808feddd627847f2c1b496c6f70d741076d2e"
+  },
+  "iconCacheSVG/_home_standard_Projects_X-nav-worktrees_scrum259-linux-6dafd29_build_xnav-install_share_opencpn_uidata_markicons_Symbol-Diamond-Blue.svg_68x68": {
+    "bytes": 438,
+    "sha256": "5ef07eb77e5cd81333fee79ad14c8b109b3dfb29114f85d274389ca235463652"
+  },
+  "iconCacheSVG/_home_standard_Projects_X-nav-worktrees_scrum259-linux-6dafd29_build_xnav-install_share_opencpn_uidata_markicons_Symbol-Diamond-Green.svg_68x68": {
+    "bytes": 478,
+    "sha256": "4be54fc6acd0d50191dc1cdde5383d2082010e85083bc2fb337f6d202f961dae"
+  },
+  "iconCacheSVG/_home_standard_Projects_X-nav-worktrees_scrum259-linux-6dafd29_build_xnav-install_share_opencpn_uidata_markicons_Symbol-Diamond-Magenta.svg_68x68": {
+    "bytes": 444,
+    "sha256": "5a88fa543afc1d91bc1cbdb14f97b8f1a8ec517c6d2858499868d0b7c5cd1165"
+  },
+  "iconCacheSVG/_home_standard_Projects_X-nav-worktrees_scrum259-linux-6dafd29_build_xnav-install_share_opencpn_uidata_markicons_Symbol-Diamond-Orange.svg_68x68": {
+    "bytes": 484,
+    "sha256": "88452900fc7a6d0dd1b0321e6fd0efcc4a8539919c1efa99e2046ec192140d0c"
+  },
+  "iconCacheSVG/_home_standard_Projects_X-nav-worktrees_scrum259-linux-6dafd29_build_xnav-install_share_opencpn_uidata_markicons_Symbol-Diamond-Red.svg_68x68": {
+    "bytes": 449,
+    "sha256": "2d9f6e337a4a957b7c224e4234a6a0711c0c22bea9fc2d1cedb99ef6c8cb13a0"
+  },
+  "iconCacheSVG/_home_standard_Projects_X-nav-worktrees_scrum259-linux-6dafd29_build_xnav-install_share_opencpn_uidata_markicons_Symbol-Diamond-White.svg_68x68": {
+    "bytes": 451,
+    "sha256": "17b53da0c5c638398e0cbae96ba01eb833c5ea6b89b1983d51226ba0ead30f8b"
+  },
+  "iconCacheSVG/_home_standard_Projects_X-nav-worktrees_scrum259-linux-6dafd29_build_xnav-install_share_opencpn_uidata_markicons_Symbol-Diamond-Yellow.svg_68x68": {
+    "bytes": 488,
+    "sha256": "f11d116b8388bac38c05bf805b105234e37a6a5ac9c210e1d8d5bbe52793d3bd"
+  },
+  "iconCacheSVG/_home_standard_Projects_X-nav-worktrees_scrum259-linux-6dafd29_build_xnav-install_share_opencpn_uidata_markicons_Symbol-Empty.svg_68x68": {
+    "bytes": 192,
+    "sha256": "275845d6395ffc41b7e13090cadf665b08397317305f20e1f3bd3196a04ac62e"
+  },
+  "iconCacheSVG/_home_standard_Projects_X-nav-worktrees_scrum259-linux-6dafd29_build_xnav-install_share_opencpn_uidata_markicons_Symbol-Exclamation-Black.svg_68x68": {
+    "bytes": 316,
+    "sha256": "4e84404fd57591e732c521ecd502c39b44ef4f5b9e6eb3815c0f69d01635cf31"
+  },
+  "iconCacheSVG/_home_standard_Projects_X-nav-worktrees_scrum259-linux-6dafd29_build_xnav-install_share_opencpn_uidata_markicons_Symbol-Exclamation-Blue.svg_68x68": {
+    "bytes": 314,
+    "sha256": "44cdfccfb9a6cccdc40c85ed2737be3f80307260ca35a6665f05fab10fee367f"
+  },
+  "iconCacheSVG/_home_standard_Projects_X-nav-worktrees_scrum259-linux-6dafd29_build_xnav-install_share_opencpn_uidata_markicons_Symbol-Exclamation-Green.svg_68x68": {
+    "bytes": 346,
+    "sha256": "08e7dd8f2c37fea3277daca0227f142bdd1800248215c5caa2d804aa6db180c1"
+  },
+  "iconCacheSVG/_home_standard_Projects_X-nav-worktrees_scrum259-linux-6dafd29_build_xnav-install_share_opencpn_uidata_markicons_Symbol-Exclamation-Magenta.svg_68x68": {
+    "bytes": 319,
+    "sha256": "b65b1ce4e85555b2e8bcafe9e311fee1c5078f3df7d0ea3cec26ea99b0f14e5f"
+  },
+  "iconCacheSVG/_home_standard_Projects_X-nav-worktrees_scrum259-linux-6dafd29_build_xnav-install_share_opencpn_uidata_markicons_Symbol-Exclamation-Orange.svg_68x68": {
+    "bytes": 346,
+    "sha256": "333fa3a50b14fd54a93c99337bb61216dc714c0a87945a60d1a1560160e85514"
+  },
+  "iconCacheSVG/_home_standard_Projects_X-nav-worktrees_scrum259-linux-6dafd29_build_xnav-install_share_opencpn_uidata_markicons_Symbol-Exclamation-Red.svg_68x68": {
+    "bytes": 317,
+    "sha256": "2dc6d592a37a50fd66961846b2176ff7fed221b131cf8bdd1d18f7f96d9b718f"
+  },
+  "iconCacheSVG/_home_standard_Projects_X-nav-worktrees_scrum259-linux-6dafd29_build_xnav-install_share_opencpn_uidata_markicons_Symbol-Exclamation-White.svg_68x68": {
+    "bytes": 316,
+    "sha256": "bdc10c1cc96583a45ba6a881913fb133596e0320f01339a31d6e5ef5764a434e"
+  },
+  "iconCacheSVG/_home_standard_Projects_X-nav-worktrees_scrum259-linux-6dafd29_build_xnav-install_share_opencpn_uidata_markicons_Symbol-Exclamation-Yellow.svg_68x68": {
+    "bytes": 353,
+    "sha256": "3c299575c6ed8c8b8b7cf0708743b74080dde2605a9232e36ee25d9217d1a57f"
+  },
+  "iconCacheSVG/_home_standard_Projects_X-nav-worktrees_scrum259-linux-6dafd29_build_xnav-install_share_opencpn_uidata_markicons_Symbol-Glow-LargeBlack.svg_68x68": {
+    "bytes": 907,
+    "sha256": "a5ed549dd2876299c574f8eb04b0e4dcbe8197184eee2863f3c26c24bf87e5c5"
+  },
+  "iconCacheSVG/_home_standard_Projects_X-nav-worktrees_scrum259-linux-6dafd29_build_xnav-install_share_opencpn_uidata_markicons_Symbol-Glow-LargeBlue.svg_68x68": {
+    "bytes": 855,
+    "sha256": "13881d72148f5af7d3d77be61c99a943aef8fe7b8038c811142b90501edb4bae"
+  },
+  "iconCacheSVG/_home_standard_Projects_X-nav-worktrees_scrum259-linux-6dafd29_build_xnav-install_share_opencpn_uidata_markicons_Symbol-Glow-LargeGreen.svg_68x68": {
+    "bytes": 1009,
+    "sha256": "57c8a98832ae5b975ea6f776f4cd5c70b6d67353ef602ac2c3e6332bcbacbe74"
+  },
+  "iconCacheSVG/_home_standard_Projects_X-nav-worktrees_scrum259-linux-6dafd29_build_xnav-install_share_opencpn_uidata_markicons_Symbol-Glow-LargeMagenta.svg_68x68": {
+    "bytes": 839,
+    "sha256": "5aa63d4f2af8cfd9e11ba690d400d58e5fc3ff1f4871e9d7a3a0710b6d6cbe70"
+  },
+  "iconCacheSVG/_home_standard_Projects_X-nav-worktrees_scrum259-linux-6dafd29_build_xnav-install_share_opencpn_uidata_markicons_Symbol-Glow-LargeOrange.svg_68x68": {
+    "bytes": 953,
+    "sha256": "5aa920837f0e7ce31a8027e8143f480a1949a05a1f50f18bbb4125d655bc3635"
+  },
+  "iconCacheSVG/_home_standard_Projects_X-nav-worktrees_scrum259-linux-6dafd29_build_xnav-install_share_opencpn_uidata_markicons_Symbol-Glow-LargeRed.svg_68x68": {
+    "bytes": 892,
+    "sha256": "571b2d400dd018cb5c8377cec2393f2b3019d12710372fbcc65fb5b2958e8f77"
+  },
+  "iconCacheSVG/_home_standard_Projects_X-nav-worktrees_scrum259-linux-6dafd29_build_xnav-install_share_opencpn_uidata_markicons_Symbol-Glow-LargeWhite.svg_68x68": {
+    "bytes": 799,
+    "sha256": "51812185dabe33a426b7127e9abb56cacb3741b840cb0134d84ab06c5f972940"
+  },
+  "iconCacheSVG/_home_standard_Projects_X-nav-worktrees_scrum259-linux-6dafd29_build_xnav-install_share_opencpn_uidata_markicons_Symbol-Glow-LargeYellow.svg_68x68": {
+    "bytes": 916,
+    "sha256": "d8e23950aebc305de91f0a9a7ec69986bbce53919bc444bf370230172d403f02"
+  },
+  "iconCacheSVG/_home_standard_Projects_X-nav-worktrees_scrum259-linux-6dafd29_build_xnav-install_share_opencpn_uidata_markicons_Symbol-Glow-Small-Black.svg_68x68": {
+    "bytes": 563,
+    "sha256": "ff15652b7f7a276a6e7abb1607c0eacd369bb530bd3c09809fc6af538891ec7b"
+  },
+  "iconCacheSVG/_home_standard_Projects_X-nav-worktrees_scrum259-linux-6dafd29_build_xnav-install_share_opencpn_uidata_markicons_Symbol-Glow-Small-Blue.svg_68x68": {
+    "bytes": 506,
+    "sha256": "978c0c18c78bb732e7632037f60092ed4083a033c5442c0834ffd32bc8dbac88"
+  },
+  "iconCacheSVG/_home_standard_Projects_X-nav-worktrees_scrum259-linux-6dafd29_build_xnav-install_share_opencpn_uidata_markicons_Symbol-Glow-Small-Green.svg_68x68": {
+    "bytes": 565,
+    "sha256": "e5d1e8760e06f14af82a6501fcffed52cfb291276157e5d44e2dfcda48bf1959"
+  },
+  "iconCacheSVG/_home_standard_Projects_X-nav-worktrees_scrum259-linux-6dafd29_build_xnav-install_share_opencpn_uidata_markicons_Symbol-Glow-Small-Magenta.svg_68x68": {
+    "bytes": 503,
+    "sha256": "4c9af769ed2422b905d4f5b4d4546edd1a71e44f02340e44bb7fd8c7832d9220"
+  },
+  "iconCacheSVG/_home_standard_Projects_X-nav-worktrees_scrum259-linux-6dafd29_build_xnav-install_share_opencpn_uidata_markicons_Symbol-Glow-Small-Orange.svg_68x68": {
+    "bytes": 538,
+    "sha256": "740f49bb66d3ef3606a1d0304f98e29d715849aa78d01c63cde827ec52395bd2"
+  },
+  "iconCacheSVG/_home_standard_Projects_X-nav-worktrees_scrum259-linux-6dafd29_build_xnav-install_share_opencpn_uidata_markicons_Symbol-Glow-Small-Red.svg_68x68": {
+    "bytes": 517,
+    "sha256": "672b24d6c5f5f5097ff0f650328e441617b2f3bd4aa09ddf5c2c4ebd5a7773dc"
+  },
+  "iconCacheSVG/_home_standard_Projects_X-nav-worktrees_scrum259-linux-6dafd29_build_xnav-install_share_opencpn_uidata_markicons_Symbol-Glow-Small-White.svg_68x68": {
+    "bytes": 489,
+    "sha256": "c651d84fe8a758c6a4226d0ed94626ef22eac0b33a459b03a7324113f508a714"
+  },
+  "iconCacheSVG/_home_standard_Projects_X-nav-worktrees_scrum259-linux-6dafd29_build_xnav-install_share_opencpn_uidata_markicons_Symbol-Glow-Small-Yellow.svg_68x68": {
+    "bytes": 537,
+    "sha256": "6a6655991f4f901be0caea8240d1efae9b46e939508a68b02e2aaa129040257d"
+  },
+  "iconCacheSVG/_home_standard_Projects_X-nav-worktrees_scrum259-linux-6dafd29_build_xnav-install_share_opencpn_uidata_markicons_Symbol-Pin-Black.svg_68x68": {
+    "bytes": 471,
+    "sha256": "0f1d44b7d77df553f726c6bbda7bc69ec6b319d74a7d3dc60d8333a8ac5e8ee3"
+  },
+  "iconCacheSVG/_home_standard_Projects_X-nav-worktrees_scrum259-linux-6dafd29_build_xnav-install_share_opencpn_uidata_markicons_Symbol-Pin-Blue.svg_68x68": {
+    "bytes": 485,
+    "sha256": "61fb16d728158381873b0a8110654ada2f959f47a83ae9deb09661b188c7957a"
+  },
+  "iconCacheSVG/_home_standard_Projects_X-nav-worktrees_scrum259-linux-6dafd29_build_xnav-install_share_opencpn_uidata_markicons_Symbol-Pin-Green.svg_68x68": {
+    "bytes": 488,
+    "sha256": "1cd6d2c1ab2fb6edc014b16fcf3c7beba0d82cb32a6090b75f96cedee5d66b99"
+  },
+  "iconCacheSVG/_home_standard_Projects_X-nav-worktrees_scrum259-linux-6dafd29_build_xnav-install_share_opencpn_uidata_markicons_Symbol-Pin-Magenta.svg_68x68": {
+    "bytes": 491,
+    "sha256": "f68e18bc2e7fb50c36e7493fc4dfd93bb9b5ee1ea94d6404c631b2ee6cb8b7db"
+  },
+  "iconCacheSVG/_home_standard_Projects_X-nav-worktrees_scrum259-linux-6dafd29_build_xnav-install_share_opencpn_uidata_markicons_Symbol-Pin-Orange.svg_68x68": {
+    "bytes": 537,
+    "sha256": "a9d526904798cfe95ac00d2b7581f23a0cf71f993a86031fe4e76b1bcf8e38a6"
+  },
+  "iconCacheSVG/_home_standard_Projects_X-nav-worktrees_scrum259-linux-6dafd29_build_xnav-install_share_opencpn_uidata_markicons_Symbol-Pin-Red.svg_68x68": {
+    "bytes": 491,
+    "sha256": "dabf6a75f634c89fe14d8ba97695d74b0701b697bb12b9ae875d30a557ab8573"
+  },
+  "iconCacheSVG/_home_standard_Projects_X-nav-worktrees_scrum259-linux-6dafd29_build_xnav-install_share_opencpn_uidata_markicons_Symbol-Pin-White.svg_68x68": {
+    "bytes": 563,
+    "sha256": "ff6f109c36ad039f8328db7ffa18372490c398286c4a1a645140d881908f67b6"
+  },
+  "iconCacheSVG/_home_standard_Projects_X-nav-worktrees_scrum259-linux-6dafd29_build_xnav-install_share_opencpn_uidata_markicons_Symbol-Pin-Yellow.svg_68x68": {
+    "bytes": 491,
+    "sha256": "d42aee3d9346b50c4d02a476f6e177473313f8105e2a65fadcebe5ce5c10a55e"
+  },
+  "iconCacheSVG/_home_standard_Projects_X-nav-worktrees_scrum259-linux-6dafd29_build_xnav-install_share_opencpn_uidata_markicons_Symbol-Question-Black.svg_68x68": {
+    "bytes": 440,
+    "sha256": "c417b2be4d3153af1d30a874cece7b89a8e96d7f5026467e7c29fea33cf09067"
+  },
+  "iconCacheSVG/_home_standard_Projects_X-nav-worktrees_scrum259-linux-6dafd29_build_xnav-install_share_opencpn_uidata_markicons_Symbol-Question-Blue.svg_68x68": {
+    "bytes": 458,
+    "sha256": "5f996fedae6b2a5b1cbf3a5b83e14f5fe1d603b50df6b804339ac58c894db053"
+  },
+  "iconCacheSVG/_home_standard_Projects_X-nav-worktrees_scrum259-linux-6dafd29_build_xnav-install_share_opencpn_uidata_markicons_Symbol-Question-Green.svg_68x68": {
+    "bytes": 505,
+    "sha256": "fdd513be7b2855370b3ba110c236bead42c45d5bc99948375e89817fbb187ef4"
+  },
+  "iconCacheSVG/_home_standard_Projects_X-nav-worktrees_scrum259-linux-6dafd29_build_xnav-install_share_opencpn_uidata_markicons_Symbol-Question-Magenta.svg_68x68": {
+    "bytes": 464,
+    "sha256": "a5912ec0f66ea09c3d4e618860d44f5830860744f97c02ea4f3ad15f11bb0fa0"
+  },
+  "iconCacheSVG/_home_standard_Projects_X-nav-worktrees_scrum259-linux-6dafd29_build_xnav-install_share_opencpn_uidata_markicons_Symbol-Question-Orange.svg_68x68": {
+    "bytes": 511,
+    "sha256": "3746047055a1443fc6bc713b14c0a0e00a02c5c003a26ccae28ac69d20743f79"
+  },
+  "iconCacheSVG/_home_standard_Projects_X-nav-worktrees_scrum259-linux-6dafd29_build_xnav-install_share_opencpn_uidata_markicons_Symbol-Question-Red.svg_68x68": {
+    "bytes": 462,
+    "sha256": "a9029ac8ba45f27d0689408a00a5adf4794b3d0ab2ee5f8ee9249c58de615164"
+  },
+  "iconCacheSVG/_home_standard_Projects_X-nav-worktrees_scrum259-linux-6dafd29_build_xnav-install_share_opencpn_uidata_markicons_Symbol-Question-White.svg_68x68": {
+    "bytes": 466,
+    "sha256": "7191b6e213189f3ac2cd80879cb59483a286c2308299c91248cf3ab745232be6"
+  },
+  "iconCacheSVG/_home_standard_Projects_X-nav-worktrees_scrum259-linux-6dafd29_build_xnav-install_share_opencpn_uidata_markicons_Symbol-Question-Yellow.svg_68x68": {
+    "bytes": 511,
+    "sha256": "08fc4970a38e75b974750c9aa4b2124e07a615ba5b8cba3cff5b8562b752c041"
+  },
+  "iconCacheSVG/_home_standard_Projects_X-nav-worktrees_scrum259-linux-6dafd29_build_xnav-install_share_opencpn_uidata_markicons_Symbol-Spot-Black.svg_68x68": {
+    "bytes": 798,
+    "sha256": "d356ac912908fdd4264e54a3784da0491dcf32ce874f67cbd4a374ebf6468871"
+  },
+  "iconCacheSVG/_home_standard_Projects_X-nav-worktrees_scrum259-linux-6dafd29_build_xnav-install_share_opencpn_uidata_markicons_Symbol-Spot-Blue.svg_68x68": {
+    "bytes": 793,
+    "sha256": "d100ce78f05f9b20d8cce53ece77dccbdda2aeac5c4e19753bbf9dd535b71427"
+  },
+  "iconCacheSVG/_home_standard_Projects_X-nav-worktrees_scrum259-linux-6dafd29_build_xnav-install_share_opencpn_uidata_markicons_Symbol-Spot-Green.svg_68x68": {
+    "bytes": 756,
+    "sha256": "fd9c55edd0ffdfed3d0ddb569936ccca4b2dc32c6f7ba54ba6909b997c3e58c9"
+  },
+  "iconCacheSVG/_home_standard_Projects_X-nav-worktrees_scrum259-linux-6dafd29_build_xnav-install_share_opencpn_uidata_markicons_Symbol-Spot-Magenta.svg_68x68": {
+    "bytes": 761,
+    "sha256": "48c404ed80bafc41237d32fccdefff0da24d32473506ef2cdf0a179fc53b4c98"
+  },
+  "iconCacheSVG/_home_standard_Projects_X-nav-worktrees_scrum259-linux-6dafd29_build_xnav-install_share_opencpn_uidata_markicons_Symbol-Spot-Orange.svg_68x68": {
+    "bytes": 846,
+    "sha256": "bb7b6e2a6d7a2d24fb5c6d7ddd6873cc1d3ec94a06059d81572f4f098a324a0c"
+  },
+  "iconCacheSVG/_home_standard_Projects_X-nav-worktrees_scrum259-linux-6dafd29_build_xnav-install_share_opencpn_uidata_markicons_Symbol-Spot-Red.svg_68x68": {
+    "bytes": 807,
+    "sha256": "c7cf324283b104f9501ec8fe2951d91913b6fa4f53123b8ee04a5cbdca9c4681"
+  },
+  "iconCacheSVG/_home_standard_Projects_X-nav-worktrees_scrum259-linux-6dafd29_build_xnav-install_share_opencpn_uidata_markicons_Symbol-Spot-White.svg_68x68": {
+    "bytes": 885,
+    "sha256": "19c5580e91a39f951b23c739ca067c1e0b87705f855ec96bfdf0fe7e5bd9f001"
+  },
+  "iconCacheSVG/_home_standard_Projects_X-nav-worktrees_scrum259-linux-6dafd29_build_xnav-install_share_opencpn_uidata_markicons_Symbol-Spot-Yellow.svg_68x68": {
+    "bytes": 757,
+    "sha256": "e7963d338542242bc6deb37e0e79817d567c781feee38ede594463003845ef2c"
+  },
+  "iconCacheSVG/_home_standard_Projects_X-nav-worktrees_scrum259-linux-6dafd29_build_xnav-install_share_opencpn_uidata_markicons_Symbol-Square-Black.svg_68x68": {
+    "bytes": 300,
+    "sha256": "6609e7b8f3eae21452b5a7f2a4a2e0c9b4344310174d1104797a5673feca1cbc"
+  },
+  "iconCacheSVG/_home_standard_Projects_X-nav-worktrees_scrum259-linux-6dafd29_build_xnav-install_share_opencpn_uidata_markicons_Symbol-Square-Blue.svg_68x68": {
+    "bytes": 300,
+    "sha256": "52521bacadb8a136b03ae83fd586041eb57bb4deba16e97871fd21084f459dee"
+  },
+  "iconCacheSVG/_home_standard_Projects_X-nav-worktrees_scrum259-linux-6dafd29_build_xnav-install_share_opencpn_uidata_markicons_Symbol-Square-Green.svg_68x68": {
+    "bytes": 327,
+    "sha256": "c91b4e70102ae71479f76dba70ff844f909370d51a5cc1c69ae49c97d916a6c0"
+  },
+  "iconCacheSVG/_home_standard_Projects_X-nav-worktrees_scrum259-linux-6dafd29_build_xnav-install_share_opencpn_uidata_markicons_Symbol-Square-Magenta.svg_68x68": {
+    "bytes": 297,
+    "sha256": "a38c70e1e68bf2f984b6e0d21ad81f0dbdd89df36e692ea775fc9d98d914dad3"
+  },
+  "iconCacheSVG/_home_standard_Projects_X-nav-worktrees_scrum259-linux-6dafd29_build_xnav-install_share_opencpn_uidata_markicons_Symbol-Square-Orange.svg_68x68": {
+    "bytes": 323,
+    "sha256": "5af10ce7191930bf5b946c6260cdf972d77e89a78266b165db82330169ed1571"
+  },
+  "iconCacheSVG/_home_standard_Projects_X-nav-worktrees_scrum259-linux-6dafd29_build_xnav-install_share_opencpn_uidata_markicons_Symbol-Square-Red.svg_68x68": {
+    "bytes": 299,
+    "sha256": "90741af21193c56dae8305b5bc841cf34b9038fb8b6ba04a7fe25cef642dfc04"
+  },
+  "iconCacheSVG/_home_standard_Projects_X-nav-worktrees_scrum259-linux-6dafd29_build_xnav-install_share_opencpn_uidata_markicons_Symbol-Square-White.svg_68x68": {
+    "bytes": 305,
+    "sha256": "d9e531227bbf21fb09d15573e20eeaed5093a9b4f15ebcae21c65f85f7299132"
+  },
+  "iconCacheSVG/_home_standard_Projects_X-nav-worktrees_scrum259-linux-6dafd29_build_xnav-install_share_opencpn_uidata_markicons_Symbol-Square-Yellow.svg_68x68": {
+    "bytes": 318,
+    "sha256": "9f29c0566d0dfb41dc3043714e01b89456279db39b1b2d0d7cf513024ec03880"
+  },
+  "iconCacheSVG/_home_standard_Projects_X-nav-worktrees_scrum259-linux-6dafd29_build_xnav-install_share_opencpn_uidata_markicons_Symbol-Square.svg_68x68": {
+    "bytes": 297,
+    "sha256": "b9aff76217c4c8df108fd0cd6d78101355b1a24b0af4bf58d1bfa5feaedd4111"
+  },
+  "iconCacheSVG/_home_standard_Projects_X-nav-worktrees_scrum259-linux-6dafd29_build_xnav-install_share_opencpn_uidata_markicons_Symbol-Star-Black.svg_68x68": {
+    "bytes": 544,
+    "sha256": "15ce48ca51526fa4f244ebe4e553ea5035a40233020e52a578cf0052b4d22a96"
+  },
+  "iconCacheSVG/_home_standard_Projects_X-nav-worktrees_scrum259-linux-6dafd29_build_xnav-install_share_opencpn_uidata_markicons_Symbol-Star-Blue.svg_68x68": {
+    "bytes": 580,
+    "sha256": "a582fda3f2c9ca33b300db3836114fed305c7e1ead6a67878c444181c576d0b3"
+  },
+  "iconCacheSVG/_home_standard_Projects_X-nav-worktrees_scrum259-linux-6dafd29_build_xnav-install_share_opencpn_uidata_markicons_Symbol-Star-Green.svg_68x68": {
+    "bytes": 637,
+    "sha256": "18042b1c257c21f1647adb328eb6e599b3a03cd64d5036844a0e27548f98f52a"
+  },
+  "iconCacheSVG/_home_standard_Projects_X-nav-worktrees_scrum259-linux-6dafd29_build_xnav-install_share_opencpn_uidata_markicons_Symbol-Star-Magenta.svg_68x68": {
+    "bytes": 586,
+    "sha256": "743b92322df98455ed3f2964814e1e8fef9a67c169f69738eb8d3a311d7222dd"
+  },
+  "iconCacheSVG/_home_standard_Projects_X-nav-worktrees_scrum259-linux-6dafd29_build_xnav-install_share_opencpn_uidata_markicons_Symbol-Star-Orange.svg_68x68": {
+    "bytes": 637,
+    "sha256": "20bedb6caee4924abd5ad0b8ef383ea993f55a931f54224d78b408b495b1371c"
+  },
+  "iconCacheSVG/_home_standard_Projects_X-nav-worktrees_scrum259-linux-6dafd29_build_xnav-install_share_opencpn_uidata_markicons_Symbol-Star-Red.svg_68x68": {
+    "bytes": 584,
+    "sha256": "141f042a8338ca581c2ec740483a1dae6bd7440edce69a8e6f3176839724c452"
+  },
+  "iconCacheSVG/_home_standard_Projects_X-nav-worktrees_scrum259-linux-6dafd29_build_xnav-install_share_opencpn_uidata_markicons_Symbol-Star-White.svg_68x68": {
+    "bytes": 587,
+    "sha256": "53376deb41022ab5238997b6dbbcc6f58ee3834c3bc4e046527ed8f93ca48a7a"
+  },
+  "iconCacheSVG/_home_standard_Projects_X-nav-worktrees_scrum259-linux-6dafd29_build_xnav-install_share_opencpn_uidata_markicons_Symbol-Star-Yellow.svg_68x68": {
+    "bytes": 645,
+    "sha256": "f2b726b79e9487d4dc02b62744cb551a04e002384035b54d393baa586b78d3fb"
+  },
+  "iconCacheSVG/_home_standard_Projects_X-nav-worktrees_scrum259-linux-6dafd29_build_xnav-install_share_opencpn_uidata_markicons_Symbol-Tick-Black.svg_68x68": {
+    "bytes": 501,
+    "sha256": "4aee2caa4eca13652efb1f51773685d4bfee8b207a1d2856fd04ad5f9ac36bec"
+  },
+  "iconCacheSVG/_home_standard_Projects_X-nav-worktrees_scrum259-linux-6dafd29_build_xnav-install_share_opencpn_uidata_markicons_Symbol-Tick-Blue.svg_68x68": {
+    "bytes": 533,
+    "sha256": "c5ee9a3feb7fbd73dc21a81ad5408b3b5f09cd2c81ca6b3928b11878abdb37f3"
+  },
+  "iconCacheSVG/_home_standard_Projects_X-nav-worktrees_scrum259-linux-6dafd29_build_xnav-install_share_opencpn_uidata_markicons_Symbol-Tick-Green.svg_68x68": {
+    "bytes": 592,
+    "sha256": "4275b6342a670990d82151eb282f1eb12095faea75ad383181ee6d15ac4bb9c3"
+  },
+  "iconCacheSVG/_home_standard_Projects_X-nav-worktrees_scrum259-linux-6dafd29_build_xnav-install_share_opencpn_uidata_markicons_Symbol-Tick-Magenta.svg_68x68": {
+    "bytes": 546,
+    "sha256": "2a6a1e032b447a74729e0bed5c5e4435334208b3398ec21270c6d65bb9d1621d"
+  },
+  "iconCacheSVG/_home_standard_Projects_X-nav-worktrees_scrum259-linux-6dafd29_build_xnav-install_share_opencpn_uidata_markicons_Symbol-Tick-Orange.svg_68x68": {
+    "bytes": 609,
+    "sha256": "0d57c4fb1d4cd07eb112a669d7e446322ba68f40aa683720f257a3c42452f798"
+  },
+  "iconCacheSVG/_home_standard_Projects_X-nav-worktrees_scrum259-linux-6dafd29_build_xnav-install_share_opencpn_uidata_markicons_Symbol-Tick-Red.svg_68x68": {
+    "bytes": 541,
+    "sha256": "e0420441b644a9c004b72da85ca72976686eecf0b7390824640711ab68e4f4dd"
+  },
+  "iconCacheSVG/_home_standard_Projects_X-nav-worktrees_scrum259-linux-6dafd29_build_xnav-install_share_opencpn_uidata_markicons_Symbol-Tick-White.svg_68x68": {
+    "bytes": 541,
+    "sha256": "44770890c70f0d79c2a19348b90bf9bd94db5ee42d3383861da77b185865ef1b"
+  },
+  "iconCacheSVG/_home_standard_Projects_X-nav-worktrees_scrum259-linux-6dafd29_build_xnav-install_share_opencpn_uidata_markicons_Symbol-Tick-Yellow.svg_68x68": {
+    "bytes": 614,
+    "sha256": "9c0f07cb98264ddb0a593840a7055145cf38a8d69085196dbc9328bcf79ffe31"
+  },
+  "iconCacheSVG/_home_standard_Projects_X-nav-worktrees_scrum259-linux-6dafd29_build_xnav-install_share_opencpn_uidata_markicons_Symbol-Triangle.svg_68x68": {
+    "bytes": 592,
+    "sha256": "8542154e0490d572899506cb78722af7bda90707d5fd7904f31c9d91085f58a4"
+  },
+  "iconCacheSVG/_home_standard_Projects_X-nav-worktrees_scrum259-linux-6dafd29_build_xnav-install_share_opencpn_uidata_markicons_Symbol-X-Large-Black.svg_68x68": {
+    "bytes": 524,
+    "sha256": "737583b17bb4d4a26c4a687eb27b880fbfab312cadf4c58c68ec390c6bdacf9c"
+  },
+  "iconCacheSVG/_home_standard_Projects_X-nav-worktrees_scrum259-linux-6dafd29_build_xnav-install_share_opencpn_uidata_markicons_Symbol-X-Large-Blue.svg_68x68": {
+    "bytes": 502,
+    "sha256": "926b4a1e4881731e49d8cd418feb71afac22c66669e35e5be38bca81689c37aa"
+  },
+  "iconCacheSVG/_home_standard_Projects_X-nav-worktrees_scrum259-linux-6dafd29_build_xnav-install_share_opencpn_uidata_markicons_Symbol-X-Large-Green.svg_68x68": {
+    "bytes": 556,
+    "sha256": "bf62f70791cb8581ed1ee78ec3e86b85b5bde3d7fd173612d06ab90c1af78b0c"
+  },
+  "iconCacheSVG/_home_standard_Projects_X-nav-worktrees_scrum259-linux-6dafd29_build_xnav-install_share_opencpn_uidata_markicons_Symbol-X-Large-Magenta.svg_68x68": {
+    "bytes": 506,
+    "sha256": "138a3c18f5d059cebc8e3a7f6b670addebb3656e1977a7d51a68c7573a684f9d"
+  },
+  "iconCacheSVG/_home_standard_Projects_X-nav-worktrees_scrum259-linux-6dafd29_build_xnav-install_share_opencpn_uidata_markicons_Symbol-X-Large-Orange.svg_68x68": {
+    "bytes": 571,
+    "sha256": "a1443de1f87fddfb5222cade933feb78f312327f3b59054333f202ec75608aab"
+  },
+  "iconCacheSVG/_home_standard_Projects_X-nav-worktrees_scrum259-linux-6dafd29_build_xnav-install_share_opencpn_uidata_markicons_Symbol-X-Large-Red.svg_68x68": {
+    "bytes": 509,
+    "sha256": "ae448434b4231cc38de4166d5d452d995639e7eb3d12ff19f52e618ee3a87ca3"
+  },
+  "iconCacheSVG/_home_standard_Projects_X-nav-worktrees_scrum259-linux-6dafd29_build_xnav-install_share_opencpn_uidata_markicons_Symbol-X-Large-White.svg_68x68": {
+    "bytes": 497,
+    "sha256": "81a62ad189640ab05e7e933b10e6907198a0da54ef4cb3791aa18035ae431874"
+  },
+  "iconCacheSVG/_home_standard_Projects_X-nav-worktrees_scrum259-linux-6dafd29_build_xnav-install_share_opencpn_uidata_markicons_Symbol-X-Large-Yellow.svg_68x68": {
+    "bytes": 536,
+    "sha256": "14eab8b0984a64ebf7a249898f206b658e7b436453df6b4d0b597f6ad8e3d4cd"
+  },
+  "iconCacheSVG/_home_standard_Projects_X-nav-worktrees_scrum259-linux-6dafd29_build_xnav-install_share_opencpn_uidata_markicons_Symbol-X-Small-Black.svg_68x68": {
+    "bytes": 356,
+    "sha256": "917d901f07563a0ce0c2c2d6a3b65dce1679ac934ba57b17411345aa3f751a45"
+  },
+  "iconCacheSVG/_home_standard_Projects_X-nav-worktrees_scrum259-linux-6dafd29_build_xnav-install_share_opencpn_uidata_markicons_Symbol-X-Small-Blue.svg_68x68": {
+    "bytes": 355,
+    "sha256": "bcbbafd2de8cb4e701638f7ba9333ebe1bd366f23c5c167754723a4d35133cce"
+  },
+  "iconCacheSVG/_home_standard_Projects_X-nav-worktrees_scrum259-linux-6dafd29_build_xnav-install_share_opencpn_uidata_markicons_Symbol-X-Small-Green.svg_68x68": {
+    "bytes": 357,
+    "sha256": "0f62dd131dfb8e59f9f7f250ab17b21a89160711823123ad527d477630982793"
+  },
+  "iconCacheSVG/_home_standard_Projects_X-nav-worktrees_scrum259-linux-6dafd29_build_xnav-install_share_opencpn_uidata_markicons_Symbol-X-Small-Magenta.svg_68x68": {
+    "bytes": 359,
+    "sha256": "2418d24bab8342f98eafffb6a3b3b56fd4a64dff711650ba46c2d8793628ea13"
+  },
+  "iconCacheSVG/_home_standard_Projects_X-nav-worktrees_scrum259-linux-6dafd29_build_xnav-install_share_opencpn_uidata_markicons_Symbol-X-Small-Orange.svg_68x68": {
+    "bytes": 393,
+    "sha256": "ba62a76840c908dfee7463f3b0ff9d79a3b0a9d97c149bb8275798bcb7d8d6d5"
+  },
+  "iconCacheSVG/_home_standard_Projects_X-nav-worktrees_scrum259-linux-6dafd29_build_xnav-install_share_opencpn_uidata_markicons_Symbol-X-Small-Red.svg_68x68": {
+    "bytes": 360,
+    "sha256": "136b81a4c1bdb27ce17a4a5c16f08a8be9fc9b2964ae31518e9c9875c720b347"
+  },
+  "iconCacheSVG/_home_standard_Projects_X-nav-worktrees_scrum259-linux-6dafd29_build_xnav-install_share_opencpn_uidata_markicons_Symbol-X-Small-White.svg_68x68": {
+    "bytes": 360,
+    "sha256": "dffe3abee231f6183aa1a55bc3e5a55929fa9e653f501e5af094160663b210d8"
+  },
+  "iconCacheSVG/_home_standard_Projects_X-nav-worktrees_scrum259-linux-6dafd29_build_xnav-install_share_opencpn_uidata_markicons_Symbol-X-Small-Yellow.svg_68x68": {
+    "bytes": 392,
+    "sha256": "4df8a39f4e43c22f197e374e67013324f37c47098319577a6246b9c8c5177a59"
+  },
+  "iconCacheSVG/_home_standard_Projects_X-nav-worktrees_scrum259-linux-6dafd29_build_xnav-install_share_opencpn_uidata_markicons_Weather-Hurricane-NH.svg_68x68": {
+    "bytes": 796,
+    "sha256": "78d204e02e785b5309f837d5e51efab4e715faec67853ba56a4a68d0dd6253e0"
+  },
+  "iconCacheSVG/_home_standard_Projects_X-nav-worktrees_scrum259-linux-6dafd29_build_xnav-install_share_opencpn_uidata_markicons_Weather-Hurricane-SH.svg_68x68": {
+    "bytes": 802,
+    "sha256": "292fac0af7710e14f779158a2203fd0ac14a217d4507bc5113b5ea273bbb7f11"
+  },
+  "iconCacheSVG/_home_standard_Projects_X-nav-worktrees_scrum259-linux-6dafd29_build_xnav-install_share_opencpn_uidata_markicons_Weather-Tropical Depression.svg_68x68": {
+    "bytes": 1202,
+    "sha256": "2c9450102e7e849534ec0acc8bcac9d7490d9b5ace321967427b7fe279ac7da2"
+  },
+  "iconCacheSVG/_home_standard_Projects_X-nav-worktrees_scrum259-linux-6dafd29_build_xnav-install_share_opencpn_uidata_markicons_Weather-Tropical High.svg_68x68": {
+    "bytes": 1134,
+    "sha256": "229bcbd3fc165cdf5d1b5b9749059636d51d8e2a18748de4f4dc866ebb7e0a8b"
+  },
+  "iconCacheSVG/_home_standard_Projects_X-nav-worktrees_scrum259-linux-6dafd29_build_xnav-install_share_opencpn_uidata_markicons_Weather-Tropical-Storm-NH.svg_68x68": {
+    "bytes": 1015,
+    "sha256": "ee2e249ac1219e4b899ad49a81dbd1e40485659f7101ebcbc8afdcb49fcfcd3f"
+  },
+  "iconCacheSVG/_home_standard_Projects_X-nav-worktrees_scrum259-linux-6dafd29_build_xnav-install_share_opencpn_uidata_markicons_Weather-Tropical-Storm-SH.svg_68x68": {
+    "bytes": 1036,
+    "sha256": "700e595780c60336c46bed759ebf58fb967e2d12143a9f0e6b2ed9753363e628"
+  },
+  "mmsitoname.csv": {
+    "bytes": 60,
+    "sha256": "676df53ad9b19219362ffe2b4041113e8112c1a88d237d36ae6ff0b5c189242a"
+  },
+  "navobj.db": {
+    "bytes": 65536,
+    "sha256": "cf84fca2550de8e512a0f446df842a100eb60909ef198e77143d1187f3e29e77"
+  },
+  "opencpn.conf": {
+    "bytes": 12088,
+    "sha256": "27542070494e3b5260cf0f069df67f5f3be7bb20dd345f9991e6082e55b8d0ae"
+  },
+  "opencpn.log": {
+    "bytes": 14771,
+    "sha256": "9b281909ab89bd9bc38037615e68d93b8ba9e4ab066f5512437de4c8162c8628"
+  },
+  "opennav-diagnostics.json": {
+    "bytes": 36731,
+    "sha256": "f5be876c59784e220dbd43c673019e9c8f9ebde6345a075ef4f5f0c90eb1e773"
+  },
+  "opennav-startup.state": {
+    "bytes": 40,
+    "sha256": "cfa67d3765061de8bdee8c8a90da070641dfc1995cb1f57fb9b92eba4cf080cd"
+  }
+}

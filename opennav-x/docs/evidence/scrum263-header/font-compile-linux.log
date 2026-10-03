@@ -1,0 +1,14 @@
+src/ui/Controls.cpp: In member function ‘virtual int opennav::ui::{anonymous}::FocusInput::FilterEvent(wxEvent&)’:
+src/ui/Controls.cpp:36:20: warning: variable ‘position’ set but not used [-Wunused-but-set-variable=]
+   36 |         const auto position=window->GetScreenPosition();
+      |                    ^~~~~~~~
+src/ui/Controls.cpp:38:20: warning: variable ‘size’ set but not used [-Wunused-but-set-variable=]
+   38 |         const auto size=window->GetClientSize();
+      |                    ^~~~
+src/ui/Controls.cpp: In function ‘bool opennav::ui::ThemeWindowChrome(wxWindow&, LightMode)’:
+src/ui/Controls.cpp:122:34: warning: unused parameter ‘window’ [-Wunused-parameter]
+  122 | bool ThemeWindowChrome(wxWindow &window, LightMode mode) {
+      |                        ~~~~~~~~~~^~~~~~
+src/ui/Controls.cpp:122:52: warning: unused parameter ‘mode’ [-Wunused-parameter]
+  122 | bool ThemeWindowChrome(wxWindow &window, LightMode mode) {
+      |                                          ~~~~~~~~~~^~~~

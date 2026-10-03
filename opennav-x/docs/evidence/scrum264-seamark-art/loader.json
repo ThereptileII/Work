@@ -1,0 +1,69 @@
+{
+  "productionSource": "/home/standard/Projects/X-nav/upstream/OpenCPN/libs/s52plib/src/chartsymbols.cpp",
+  "productionSourceSha256": "8eec8029788264f9e0bf6583b4bdc13947865e21c62981b77942f470e589a6ed",
+  "unchangedMethods": [
+    "ChartSymbols",
+    "~ChartSymbols",
+    "InitializeTables",
+    "DeleteGlobals",
+    "ProcessColorTables",
+    "ProcessSymbols",
+    "BuildSymbol",
+    "LoadRasterFileForColorTable",
+    "FindColorTable",
+    "HashKey",
+    "GetImage",
+    "GetGLTextureRect"
+  ],
+  "excerptsSha256": "5953e35bb13b98e030bc9479358affa256a4cb8466204d8738f2744f500f34cc",
+  "fixtureContainers": "Only S52 owner containers are substituted; real pinned ProcessSymbols, BuildSymbol, PNG loader, GetImage, GetGLTextureRect execute.",
+  "privateLoaderSourceProof": {
+    "source": "/home/standard/Projects/X-nav-worktrees/scrum259-adapter-preparation/.local/pinned-source/libs/s52plib/src/chartsymbols.cpp",
+    "gitBlob": "30ae2477b4b8ba748a8cd6f046079e8607b8151f",
+    "sha256": "a88dd1739236032b23548a70e45bf9b8c649118678b36743ee5e754b47e6c208",
+    "byteIdenticalExecutedMethods": {
+      "ProcessSymbols": "afab3a5b9ff1435e42fddc2cf3f35aab76aa7b288ede6023a8f2a2db0e1d5cf4",
+      "BuildSymbol": "81ca854f5c3775390ad0297fa87ea29973141dde92c569f53bed1bc10b48fc29",
+      "GetImage": "c1356cfc1caf5641e5b4e5782b0bea362f4a877ee3ac7290072eab0a1f4f4a48",
+      "GetGLTextureRect": "638c5bf010c8e4a6ce39f84e80e2b2b36b7e3746464a331a4df027eb78ed0927"
+    },
+    "scope": "Actual owned-resource validation executes; shared method bodies match. Private DLL renderer and GL atlas upload remain unexecuted."
+  },
+  "compileCommand": [
+    "g++",
+    "-std=c++17",
+    "-Wall",
+    "-Wextra",
+    "-Werror",
+    "-Wno-unused-parameter",
+    "-Wno-deprecated-copy",
+    "-DocpnUSE_GL",
+    "-I/home/standard/Projects/X-nav/.local/sysroot/usr/lib/wx/include/gtk3-unicode-3.2",
+    "-I/home/standard/Projects/X-nav/.local/sysroot/usr/include/wx-3.2",
+    "-DWXUSINGDLL",
+    "-D__WXGTK3__",
+    "-D__WXGTK__",
+    "-D_FILE_OFFSET_BITS=64",
+    "-I/home/standard/Projects/X-nav/upstream/OpenCPN/libs/s52plib/src",
+    "-I/home/standard/Projects/X-nav/upstream/OpenCPN/libs/geoprim/src",
+    "-I/home/standard/Projects/X-nav/upstream/OpenCPN/libs/pugixml",
+    "-I/home/standard/Projects/X-nav-worktrees/scrum264-symbol-family-audit/src",
+    "-I/home/standard/Projects/X-nav-worktrees/scrum264-symbol-family-audit/.local/seamark-proof/shared-loader",
+    "/home/standard/Projects/X-nav-worktrees/scrum264-symbol-family-audit/tests/chart_seamark_loader_test.cpp",
+    "/home/standard/Projects/X-nav/upstream/OpenCPN/libs/pugixml/pugixml.cpp",
+    "-L/home/standard/Projects/X-nav/.local/sysroot/usr/lib",
+    "-lwx_gtk3u_core-3.2",
+    "-lwx_baseu-3.2",
+    "-lGL",
+    "-lGLEW",
+    "-o",
+    "/home/standard/Projects/X-nav-worktrees/scrum264-symbol-family-audit/.local/seamark-proof/shared-loader/anchor-loader-test"
+  ],
+  "exitCode": 0,
+  "output": "30500 actual pinned loader checks passed; GL context and native Windows acceptance remain open\n",
+  "limitations": [
+    "No GL context or texture draw",
+    "No full chart canvas",
+    "Native Windows and boat display acceptance remain open"
+  ]
+}

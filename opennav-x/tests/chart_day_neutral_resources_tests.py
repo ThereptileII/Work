@@ -28,6 +28,8 @@ def verify_day_neutral(source, output, metadata, check):
                   (116,24,28),(148,24,28),(180,24,28),(212,24,28)]:
         for y in range(1160,1160+h):
             i=(y*1500+x)*4;after[i:i+w*4]=before[i:i+w*4]
+    from chart_seamark_resources_tests import restore_tiles
+    restore_tiles(before,after)
     # Independently decoded with Pillow, independently enumerated from original
     # XML rectangles/roles. See retained audit; no generator output is the oracle.
     check(hashlib.sha256(after).hexdigest() == EXPECTED_RGBA)
@@ -58,7 +60,13 @@ def verify_day_neutral(source, output, metadata, check):
     check(after == before)
     for name,digest in [('rastersymbols-dusk.png','201f0663bd786d5e1d8ba09d8d43b106df164d5a282f60860258d226adadb6c9'),
                         ('rastersymbols-dark.png','9c91273e3dbe9563d79b2d2b0a757bb83207aa0db9183e8aecc1112070ead724')]:
-        check(hashlib.sha256((output/name).read_bytes()).hexdigest() == digest)
+        # Restore only the independently proved new seamark slots before the
+        # existing complete Dusk/Night PNG golden. Other bytes stay exact.
+        from chart_raster_ink import encode
+        _,old_pixels=decode((source/name).read_bytes())
+        chunks,current_pixels=decode((output/name).read_bytes())
+        restore_tiles(old_pixels,current_pixels)
+        check(hashlib.sha256(encode(chunks,current_pixels)).hexdigest() == digest)
     from chart_day_neutral_ink import derive_day
     xml=(source/'chartsymbols.xml').read_bytes();png=(source/'rastersymbols-day.png').read_bytes()
     for bad_xml,bad_png,target in [(xml.replace(b'DCHGRD',b'DSNDG1',1),png,(83,100,95)),

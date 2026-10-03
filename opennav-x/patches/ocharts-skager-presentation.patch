@@ -651,3 +651,102 @@
  
  
      if( ps52plib->m_bOK ) {
+--- a/libs/s52plib/src/s52plib.h
++++ b/libs/s52plib/src/s52plib.h
+@@ -342,6 +342,12 @@
+ 
+ 
+   // Todo accessors
++  // Display-only policy; the host/saved preference is never overwritten.
++  void EnablePresentationSimplifiedSymbols() { m_presentationSimpleSymbols = true; }
++  LUPname GetEffectiveSymbolStyle() const {
++    return m_presentationSimpleSymbols ? SIMPLIFIED : m_nSymbolStyle;
++  }
++
+   LUPname m_nSymbolStyle;
+   LUPname m_nBoundaryStyle;
+   bool m_bOK;
+@@ -415,6 +421,7 @@
+ private:
+   TextFontResolver m_textFontResolver = nullptr;
+   bool m_useS52DefaultTextColor = false;
++  bool m_presentationSimpleSymbols = false;
+   int S52_load_Plib(const wxString &PLib, bool b_forceLegacy, bool allowCwdOverride = true);
+   bool S52_flush_Plib();
+ 
+--- a/libs/s52plib/src/s52plib.cpp
++++ b/libs/s52plib/src/s52plib.cpp
+@@ -631,7 +631,7 @@
+ 
+ void s52plib::UpdateMarinerParams(void) {
+   //      Symbol Style
+-  if (SIMPLIFIED == m_nSymbolStyle)
++  if (SIMPLIFIED == GetEffectiveSymbolStyle())
+     S52_setMarinerParam(S52_MAR_SYMPLIFIED_PNT, 1.0);
+   else
+     S52_setMarinerParam(S52_MAR_SYMPLIFIED_PNT, 0.0);
+--- a/src/eSENCChart.cpp
++++ b/src/eSENCChart.cpp
+@@ -2560,7 +2560,7 @@
+     }
+ 
+     for( i = 0; i < PRIO_NUM; ++i ) {
+-        if( ps52plib->m_nSymbolStyle == SIMPLIFIED )
++        if( ps52plib->GetEffectiveSymbolStyle() == SIMPLIFIED )
+             top = razRules[i][0];       //SIMPLIFIED Points
+         else
+             top = razRules[i][1];           //Paper Chart Points Points
+@@ -2738,7 +2738,7 @@
+     }
+ 
+     for( i = 0; i < PRIO_NUM; ++i ) {
+-        if( ps52plib->m_nSymbolStyle == SIMPLIFIED )
++        if( ps52plib->GetEffectiveSymbolStyle() == SIMPLIFIED )
+             top = razRules[i][0];       //SIMPLIFIED Points
+         else
+             top = razRules[i][1];           //Paper Chart Points Points
+@@ -2791,7 +2791,7 @@
+       }
+ 
+       for( i = 0; i < PRIO_NUM; ++i ) {
+-          if( ps52plib->m_nSymbolStyle == SIMPLIFIED )
++          if( ps52plib->GetEffectiveSymbolStyle() == SIMPLIFIED )
+               top = razRules[i][0];       //SIMPLIFIED Points
+           else
+               top = razRules[i][1];           //Paper Chart Points Points
+@@ -2985,7 +2985,7 @@
+             ps52plib->RenderObjectToDCText( &dcinput, crnt );
+         }
+ 
+-        if( ps52plib->m_nSymbolStyle == SIMPLIFIED )
++        if( ps52plib->GetEffectiveSymbolStyle() == SIMPLIFIED )
+             top = razRules[i][0];       //SIMPLIFIED Points
+         else
+             top = razRules[i][1];           //Paper Chart Points Points
+@@ -4565,7 +4565,7 @@
+             case GEO_META:
+             case GEO_PRIM:
+ 
+-                if( PAPER_CHART == ps52plib->m_nSymbolStyle )
++                if( PAPER_CHART == ps52plib->GetEffectiveSymbolStyle() )
+                     LUP_Name = PAPER_CHART;
+                 else
+                     LUP_Name = SIMPLIFIED;
+@@ -6737,7 +6737,7 @@
+         if( 1 /*selection_mask & MASK_POINT*/){
+             // Points by type, array indices [0..1]
+ 
+-            int point_type = ( ps52plib->m_nSymbolStyle == SIMPLIFIED ) ? 0 : 1;
++            int point_type = ( ps52plib->GetEffectiveSymbolStyle() == SIMPLIFIED ) ? 0 : 1;
+             top = razRules[i][point_type];
+ 
+             while( top != NULL ) {
+@@ -7260,7 +7260,7 @@
+     {
+       // Points by type, array indices [0..1]
+ 
+-      int point_type = (ps52plib->m_nSymbolStyle == SIMPLIFIED) ? 0 : 1;
++      int point_type = (ps52plib->GetEffectiveSymbolStyle() == SIMPLIFIED) ? 0 : 1;
+       top = razRules[i][point_type];
+ 
+       while (top != NULL) {

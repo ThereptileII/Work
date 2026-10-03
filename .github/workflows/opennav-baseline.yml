@@ -21,6 +21,8 @@ jobs:
         run: |
           $evidence = 'opennav-x/evidence/local/ocharts-loader-contracts'
           New-Item -ItemType Directory -Force $evidence | Out-Null
+          python opennav-x/tools/test-curl-package.py -v 2>&1 | Tee-Object "$evidence/producer-prefix.log"
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
           python opennav-x/tools/test-ocharts-adapter-preparation.py 2>&1 | Tee-Object "$evidence/preparation.log"
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
           & pwsh -NoProfile -File opennav-x/tools/test-ocharts-build-wiring.ps1 2>&1 | Tee-Object "$evidence/build-wiring.log"

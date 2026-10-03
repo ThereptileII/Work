@@ -1,0 +1,23 @@
+{
+  "scriptSha256": "be938ac00a1df939a860aae7da5842c47d1d40bd40e013fa60837735d9505248",
+  "exitCode": 0,
+  "observation": {
+    "schema": "SKAGER.PrototypeFontInventory.1",
+    "timeUtc": "2026-10-03T07:05:05.3976451Z",
+    "fonts": [
+      {
+        "family": "Segoe UI Variable Display",
+        "available": true
+      },
+      {
+        "family": "Segoe UI",
+        "available": true
+      },
+      {
+        "family": "Arial",
+        "available": true
+      }
+    ],
+    "scope": "Installed family inventory only; application HDC and chart font qualification remain separate."
+  }
+}

@@ -1,0 +1,39 @@
+{
+  "issue": "SCRUM-266",
+  "base": "a3e84771652c920479517f0d16a1dd6133c440d2",
+  "upstream": "37fd0cddb7334fe489e9f18aa163977a9c5c84f7",
+  "failedCaptureOrigin": "scrum260-area-ink/.local/combined-linux-capture/output/capture-a3e8477-opengl",
+  "comparisonRegionHalfOpen": [
+    80,
+    68,
+    1095,
+    635
+  ],
+  "changedPixels": 1270,
+  "boundsInclusive": [
+    83,
+    614,
+    685,
+    631
+  ],
+  "stockToStyledOutlinePixels": 1192,
+  "productionObjectCompileExit": 0,
+  "productionObjectSha256": "dd9cb3c73eb3744f7e94e2e71c9e7858f9667506eee890e9731b1636d4837510",
+  "sourceHashes": {
+    "patches/opencpn-5.12.4-chart-presentation.patch": "fc3bb0dc2e5a5e3ab81b264ca3dc302df4fbcf204f3d40e944e29c2dca652a4b",
+    "tests/chart_selector_cache_test.cpp": "4dfc9d26f1f707eb5d506dce05d04349357aa3e5022ea8074ce41e11a19b5ee8",
+    "tools/test-chart-selector-cache.py": "3b455732417a4b5356ad31a307e1587eb72a7b66238d38224b668d77e8ac4098",
+    ".local/selector-cache/source/gui/src/piano.cpp": "09ef38ebea33ea8bb91860e6eb58fbf9c720b22d85fe4113ab5ee6c037a6ca4d",
+    ".local/selector-cache/source/gui/include/gui/piano.h": "643bdfaf5c83f999d787b53f477ed9835be40b50129be7c9077376baf09d0071",
+    ".local/selector-cache/baseline/gui/src/piano.cpp": "172bf0eecab51041449bae8433729297b55c703a414051b82be9f23066cae518"
+  },
+  "failedImagesSha256": {
+    "failed-SKAGER-Day.png": "cdc13deee5e77789aa3777f293d1d21dabdc66fd1c2a2cb2dba152e2f386f0b5",
+    "failed-SKAGER-Day-return.png": "237691af40f2a0171f6fa886cc14eb16d6d3a81812321800546c8fbffd86a91d"
+  },
+  "limits": [
+    "Captured GL uploads are not actual GPU rendering acceptance.",
+    "Integrated GL Day return and Standard/software exact-return regression remain for root batch.",
+    "No Windows or boat acceptance."
+  ]
+}

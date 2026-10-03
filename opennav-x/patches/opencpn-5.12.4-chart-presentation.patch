@@ -2193,3 +2193,216 @@ diff --git a/model/src/plugin_loader.cpp b/model/src/plugin_loader.cpp
  
    if (!pic->m_library.IsLoaded()) {
      //  Look in the Blacklist, try to match a filename, to give some kind of
+diff --git a/gui/src/piano.cpp b/gui/src/piano.cpp
+--- a/gui/src/piano.cpp
++++ b/gui/src/piano.cpp
+@@ -301,7 +301,8 @@
+   nominal_line_width_pix = wxMax(1.0, nominal_line_width_pix);
+ 
+   // draw the needed rectangles
+-  wxPen ppPen(GetGlobalColor(_T("CHBLK")), nominal_line_width_pix,
++  const wxColour outline_ink = GetGlobalColor(_T("CHBLK"));
++  wxPen ppPen(outline_ink, nominal_line_width_pix,
+               wxPENSTYLE_SOLID);
+   dc.SetPen(ppPen);
+   for (unsigned int b = 0; b < (sizeof brushes) / (sizeof *brushes); b++) {
+@@ -366,6 +367,10 @@
+                     data);
+     delete[] data;
+   }
++#ifdef OPENNAV_X
++  // Commit only after atlas and icon uploads; deferred builds retain no new ink.
++  m_tex_outline_color = outline_ink;
++#endif
+ #endif
+ }
+ 
+@@ -380,6 +385,12 @@
+   int h = GetHeight();
+   unsigned int endx = 0;
+ 
++#ifdef OPENNAV_X
++  // Lazy S-52 loading can change the resolved ink without a theme/size change.
++  // Compare against the ink actually baked into the last completed atlas.
++  if (m_tex_outline_color != GetGlobalColor(_T("CHBLK")))
++    m_tex_piano_height = 0;
++#endif
+   if (static_cast<int>(m_tex_piano_height) != h) BuildGLTexture();
+ 
+   if (static_cast<int>(m_tex_piano_height) != h) return;
+diff --git a/gui/include/gui/piano.h b/gui/include/gui/piano.h
+--- a/gui/include/gui/piano.h
++++ b/gui/include/gui/piano.h
+@@ -184,5 +184,8 @@
+   bool m_brounded;
+   bool m_bleaving;
+ 
++#ifdef OPENNAV_X
++  wxColour m_tex_outline_color;  // Invalid until BuildGLTexture completes.
++#endif
+   unsigned int m_tex, m_texw, m_texh, m_tex_piano_height;
+   int m_ref, m_pad, m_radius, m_texPitch;
+diff --git a/libs/s52plib/src/s52plib.h b/libs/s52plib/src/s52plib.h
+--- a/libs/s52plib/src/s52plib.h
++++ b/libs/s52plib/src/s52plib.h
+@@ -346,6 +346,12 @@
+                       double ref_scale, double display_scale
+                       );
+ 
++  // Display-only policy; the stored OpenCPN preference is never overwritten.
++  void EnablePresentationSimplifiedSymbols() { m_presentationSimpleSymbols = true; }
++  LUPname GetEffectiveSymbolStyle() const {
++    return m_presentationSimpleSymbols ? SIMPLIFIED : m_nSymbolStyle;
++  }
++
+   // Todo accessors
+   LUPname m_nSymbolStyle;
+   LUPname m_nBoundaryStyle;
+@@ -420,6 +426,7 @@
+ private:
+   TextFontResolver m_textFontResolver = nullptr;
+   bool m_useS52DefaultTextColor = false;
++  bool m_presentationSimpleSymbols = false;
+   int S52_load_Plib(const wxString &PLib, bool b_forceLegacy, bool allowCwdOverride = true);
+   bool S52_flush_Plib();
+ 
+diff --git a/libs/s52plib/src/s52plib.cpp b/libs/s52plib/src/s52plib.cpp
+--- a/libs/s52plib/src/s52plib.cpp
++++ b/libs/s52plib/src/s52plib.cpp
+@@ -638,7 +638,7 @@
+ 
+ void s52plib::UpdateMarinerParams(void) {
+   //      Symbol Style
+-  if (SIMPLIFIED == m_nSymbolStyle)
++  if (SIMPLIFIED == GetEffectiveSymbolStyle())
+     S52_setMarinerParam(S52_MAR_SYMPLIFIED_PNT, 1.0);
+   else
+     S52_setMarinerParam(S52_MAR_SYMPLIFIED_PNT, 0.0);
+diff --git a/gui/src/s57chart.cpp b/gui/src/s57chart.cpp
+--- a/gui/src/s57chart.cpp
++++ b/gui/src/s57chart.cpp
+@@ -1785,7 +1785,7 @@
+   // qDebug() << "Done Lines" << sw.GetTime();
+ 
+   for (i = 0; i < PRIO_NUM; ++i) {
+-    if (ps52plib->m_nSymbolStyle == SIMPLIFIED)
++    if (ps52plib->GetEffectiveSymbolStyle() == SIMPLIFIED)
+       top = razRules[i][0];  // SIMPLIFIED Points
+     else
+       top = razRules[i][1];  // Paper Chart Points Points
+@@ -1852,7 +1852,7 @@
+       ps52plib->RenderObjectToGLText(glc, crnt);
+     }
+ 
+-    if (ps52plib->m_nSymbolStyle == SIMPLIFIED)
++    if (ps52plib->GetEffectiveSymbolStyle() == SIMPLIFIED)
+       top = razRules[i][0];  // SIMPLIFIED Points
+     else
+       top = razRules[i][1];  // Paper Chart Points Points
+@@ -2424,7 +2424,7 @@
+       ps52plib->RenderObjectToDC(&dcinput, crnt);
+     }
+ 
+-    if (ps52plib->m_nSymbolStyle == SIMPLIFIED)
++    if (ps52plib->GetEffectiveSymbolStyle() == SIMPLIFIED)
+       top = razRules[i][0];  // SIMPLIFIED Points
+     else
+       top = razRules[i][1];  // Paper Chart Points Points
+@@ -2477,7 +2477,7 @@
+       ps52plib->RenderObjectToDCText(&dcinput, crnt);
+     }
+ 
+-    if (ps52plib->m_nSymbolStyle == SIMPLIFIED)
++    if (ps52plib->GetEffectiveSymbolStyle() == SIMPLIFIED)
+       top = razRules[i][0];  // SIMPLIFIED Points
+     else
+       top = razRules[i][1];  // Paper Chart Points Points
+@@ -4201,7 +4201,7 @@
+       case GEO_META:
+       case GEO_PRIM:
+ 
+-        if (PAPER_CHART == ps52plib->m_nSymbolStyle)
++        if (PAPER_CHART == ps52plib->GetEffectiveSymbolStyle())
+           LUP_Name = PAPER_CHART;
+         else
+           LUP_Name = SIMPLIFIED;
+@@ -4632,7 +4632,7 @@
+     {
+       // Points by type, array indices [0..1]
+ 
+-      int point_type = (ps52plib->m_nSymbolStyle == SIMPLIFIED) ? 0 : 1;
++      int point_type = (ps52plib->GetEffectiveSymbolStyle() == SIMPLIFIED) ? 0 : 1;
+       top = razRules[i][point_type];
+ 
+       while (top != NULL) {
+@@ -4739,7 +4739,7 @@
+     if (selection_mask & MASK_POINT) {
+       // Points by type, array indices [0..1]
+ 
+-      int point_type = (ps52plib->m_nSymbolStyle == SIMPLIFIED) ? 0 : 1;
++      int point_type = (ps52plib->GetEffectiveSymbolStyle() == SIMPLIFIED) ? 0 : 1;
+       top = razRules[i][point_type];
+ 
+       while (top != NULL) {
+diff --git a/gui/src/pluginmanager.cpp b/gui/src/pluginmanager.cpp
+--- a/gui/src/pluginmanager.cpp
++++ b/gui/src/pluginmanager.cpp
+@@ -1815,7 +1815,7 @@
+         ps52plib->m_bShowS57ImportantTextOnly;
+     v[_T("OpenCPN S52PLIB UseSCAMIN")] = ps52plib->m_bUseSCAMIN;
+     v[_T("OpenCPN S52PLIB UseSUPER_SCAMIN")] = ps52plib->m_bUseSUPER_SCAMIN;
+-    v[_T("OpenCPN S52PLIB SymbolStyle")] = ps52plib->m_nSymbolStyle;
++    v[_T("OpenCPN S52PLIB SymbolStyle")] = ps52plib->GetEffectiveSymbolStyle();
+     v[_T("OpenCPN S52PLIB BoundaryStyle")] = ps52plib->m_nBoundaryStyle;
+     v[_T("OpenCPN S52PLIB ColorShades")] =
+         S52_getMarinerParam(S52_MAR_TWO_SHADES);
+@@ -4373,7 +4373,7 @@
+ 
+ int PI_GetPLIBSymbolStyle() {
+   if (ps52plib)
+-    return ps52plib->m_nSymbolStyle;
++    return ps52plib->GetEffectiveSymbolStyle();
+   else
+     return 0;
+ }
+@@ -4570,7 +4570,7 @@
+     case GEO_META:
+     case GEO_PRIM:
+ 
+-      if (PAPER_CHART == ps52plib->m_nSymbolStyle)
++      if (PAPER_CHART == ps52plib->GetEffectiveSymbolStyle())
+         LUP_Name = PAPER_CHART;
+       else
+         LUP_Name = SIMPLIFIED;
+diff --git a/gui/src/cm93.cpp b/gui/src/cm93.cpp
+--- a/gui/src/cm93.cpp
++++ b/gui/src/cm93.cpp
+@@ -2316,14 +2316,14 @@
+           case GEO_POINT:
+           case GEO_META:
+           case GEO_PRIM:
+-            if (PAPER_CHART == ps52plib->m_nSymbolStyle)
++            if (PAPER_CHART == ps52plib->GetEffectiveSymbolStyle())
+               LUP_Name = PAPER_CHART;
+             else
+               LUP_Name = SIMPLIFIED;
+ 
+             if (m_b2pointLUPS) {
+               LUPname LUPO_Name;
+-              if (PAPER_CHART == ps52plib->m_nSymbolStyle)
++              if (PAPER_CHART == ps52plib->GetEffectiveSymbolStyle())
+                 LUPO_Name = SIMPLIFIED;
+               else
+                 LUPO_Name = PAPER_CHART;
+diff --git a/gui/src/chcanv.cpp b/gui/src/chcanv.cpp
+--- a/gui/src/chcanv.cpp
++++ b/gui/src/chcanv.cpp
+@@ -11523,7 +11523,7 @@
+         ps52plib->m_bShowS57ImportantTextOnly;
+     v[_T("OpenCPN S52PLIB UseSCAMIN")] = ps52plib->m_bUseSCAMIN;
+     v[_T("OpenCPN S52PLIB UseSUPER_SCAMIN")] = ps52plib->m_bUseSUPER_SCAMIN;
+-    v[_T("OpenCPN S52PLIB SymbolStyle")] = ps52plib->m_nSymbolStyle;
++    v[_T("OpenCPN S52PLIB SymbolStyle")] = ps52plib->GetEffectiveSymbolStyle();
+     v[_T("OpenCPN S52PLIB BoundaryStyle")] = ps52plib->m_nBoundaryStyle;
+     v[_T("OpenCPN S52PLIB ColorShades")] =
+         S52_getMarinerParam(S52_MAR_TWO_SHADES);

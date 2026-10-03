@@ -58,6 +58,8 @@ def verify_cardinals(source,output,metadata,check):
         for x,w,h in [(20,20,20),(52,24,24),(84,24,24)]:
             for y in range(1160,1160+h):
                 start=(y*1500+x)*4;after[start:start+w*4]=before[start:start+w*4]
+        from chart_seamark_resources_tests import restore_tiles
+        restore_tiles(before,after)
         changed=[j for j in range(0,len(before),4) if before[j:j+4]!=after[j:j+4]]
         check(len(changed)==404)
         for i,(name,_,_,_,_,count) in enumerate(expected):

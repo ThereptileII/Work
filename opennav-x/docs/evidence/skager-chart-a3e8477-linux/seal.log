@@ -1,0 +1,50 @@
+Verified private clean application a3e84771652c920479517f0d16a1dd6133c440d2 and exact upstream result of nine patches
+{
+  "schema": 1,
+  "commit": "a3e84771652c920479517f0d16a1dd6133c440d2",
+  "binary_sha256": "dfb404933197888e137eef709d2866d23205e973543b3ab8cd1335654ab75a95",
+  "build_flags": {
+    "OCPN_BUILD_TEST": "ON",
+    "OPENNAV_ENABLE_ROUTE_SCENARIO": "ON",
+    "XNAV_ENABLE_PILOT_LOOPBACK_TESTS": "ON",
+    "XNAV_ENABLE_TEST_FIXTURES": "ON"
+  },
+  "manifest_sha256": "c92bcdcfb19d2a4f0578b62f30d94eaf3ff59c3fb1705caa86a65e27a9f3309f",
+  "resource_files": {
+    "chartsymbols.xml": {
+      "sha256": "00ac4246589f1469dec89438d3ea6a3de245dae5ece928da9ee342fbce0b525c",
+      "bytes": 2232219
+    },
+    "S52RAZDS.RLE": {
+      "sha256": "560e1a1df493d7ae4c8506da814ad936adb13ef93c6f1e2abc93f2819860ff26",
+      "bytes": 1305627
+    },
+    "rastersymbols-day.png": {
+      "sha256": "afaa3654e49be7a6095a5130cafe735782d9b8e972bac5d496535e18959a3c88",
+      "bytes": 197895
+    },
+    "rastersymbols-dusk.png": {
+      "sha256": "201f0663bd786d5e1d8ba09d8d43b106df164d5a282f60860258d226adadb6c9",
+      "bytes": 172357
+    },
+    "rastersymbols-dark.png": {
+      "sha256": "9c91273e3dbe9563d79b2d2b0a757bb83207aa0db9183e8aecc1112070ead724",
+      "bytes": 167654
+    }
+  },
+  "source_evidence": {
+    "src/integration/ChartNameTypography.h": "23688fca7f9ed456e7458fe1228e0bf9908660a953732cb6e6749c5838e1f4d9",
+    "src/integration/ChartCogPredictor.h": "3e7841bb311bb9d4951be082a669f4737ee978dd426df4899a22bc9971033c90",
+    "src/integration/ChartPresentation.cpp": "a5edea8ff8c5c8c127e2c8418882502ce08084b3642fb96924877c8f31e4ed56",
+    "patches/opencpn-5.12.4-xnav.patch": "dfbacadf42502d1d0366745b3a187d256e620b0d2ea7dba9e8912c46e999e0b3",
+    "patches/opencpn-5.12.4-chart-presentation.patch": "1ab4a3311b889efd234e91f56946edbd5b652a75fd148cc81ab306c4f73c2a9e",
+    "resources/chart-style/v1/definition.json": "38801f8a082d0e94ddd0eef940f065a56b9dcda0c87a17ddf43e3678d422ebb0",
+    "docs/design/prototype-tokens.json": "111ee35527a974b2df6c2c4af0afd04e5aebdf14bad3004a98be9064aef790c6",
+    "src/application/SkagerBrandAsset.h": "cc9f469181717b4fb80986b9406d2d6d078bfdb5971d2e68f6b4072b8dcd2019",
+    "resources/branding/provenance.json": "f639aa4ffa1194fb527388b15b2f9880746829d4120e30b4ddca32b0326557a6",
+    "tools/chart_cable_paint.py": "462e92d27cfbf553454c286bc074e166699922fcab0b6874f40c9d7984186822",
+    "tools/chart_day_neutral_ink.py": "0f136c0e9764c7750ab581ef3c9b0c35c976563ceb88d8598eeee5a0e7761840"
+  },
+  "authority": "Private Linux development capture only; not Windows or boat acceptance",
+  "runtime_identity": "Still required from loader self-test and actual capture diagnostics"
+}

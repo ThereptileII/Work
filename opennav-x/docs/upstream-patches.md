@@ -1,5 +1,19 @@
 # Direct OpenCPN Upstream Modifications
 
+## Effective point-symbol presentation (SCRUM-267) — in progress
+
+The supplied modern art maps to Simplified lookup records, but upstream defaults
+to Paper. The verified SKAGER S-52 instance therefore enables a nonpersistent
+effective Simplified policy, separate from `m_nSymbolStyle`. Rendering, object
+queries, caches, mariner parameters and plugin presentation messages use the
+effective getter; configuration and advanced preference readers/writers retain
+the original field. Standard/Legacy/fallback instances remain ordinary. Core
+diagnostics record both values. The private o-charts port must agree before
+qualification. [Focused source/method evidence](evidence/scrum267-effective-symbol-style/README.md)
+records unchanged complete persistence/conditional sources, 31 method checks and
+seven actual production object compilations. Actual profile/mode cycles and
+native/boat visual validation remain open.
+
 ## Exact-plugin presentation selection (SCRUM-259) — in progress
 
 The chart-presentation patch adds one optional hook at the shared
@@ -1078,6 +1092,18 @@ See `docs/design/reviews/scrum244-anchorage-art.md` and
 real pinned-loader fixture and open full-chart/Windows/boat gates.
 
 ### SCRUM-246 — local vector chart-selector palette
+
+SCRUM-266 additionally records the actual CHBLK color used when
+`Piano::BuildGLTexture` finishes constructing its atlas. `DrawGLSL` invalidates
+the atlas before the existing height/rebuild check if that resolved color has
+changed. Lazy S-52 creation can change the resolved outline after initial style
+activation without changing either tracked vector brush. This fixes the retained
+1,270-pixel GL Day-return mismatch without changing selector geometry, chart
+selection, hit regions, persistence, software drawing or any palette value.
+Deferred atlas builds do not stamp new ink. The 21-case actual method/bitmap
+fixture reproduces the original failure and passes the correction; 159 existing
+brush checks and the real production GL compilation also pass. Integrated and
+native/boat gates remain open. [Evidence](evidence/scrum266-selector-cache/README.md).
 
 `Piano::SetColorScheme` invokes one verified-SKAGER palette resolver after stock
 brush construction and before existing GL-atlas invalidation. Only selected and

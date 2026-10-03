@@ -1,8 +1,11 @@
 #!/usr/bin/env python3
 """Derive bounded XNav palette resources from verified pinned OpenCPN bytes.
 
-Only the enumerated palette roles, geographic-name ink, two built-up-area fill tokens and a proven
-neutral sprite-ink mask, isolated ACHARE51/PILBOP02/RTPBCN02/BOYCAR01-04 artwork tiles and CBLSUB06/FERYRT01/Plain CBLARE paint roles may change. Original inputs are never modified.
+Only the enumerated palette roles, geographic-name ink, two built-up-area
+and fourteen structural fills, six structural outlines, a proven neutral
+sprite-ink mask, isolated anchor/service/cardinal artwork, eleven classified
+marine/light tiles with sixteen exact alias redirects, and cable/ferry paint
+roles may change. Original inputs are never modified.
 """
 import argparse
 import hashlib
@@ -15,7 +18,9 @@ import chart_anchor_art
 import chart_cable_paint
 import chart_service_art
 import chart_cardinal_art
+import chart_seamark_art
 import chart_day_neutral_ink
+import chart_structure_paint
 
 ROOT=Path(__file__).resolve().parents[1]
 ALLOWED={'LANDA','CSTLN','DEPDW','DEPMD','DEPMS','DEPVS','DEPIT','DEPCN','DEPSC','SNDG1','SNDG2','CHBLK','CHGRD'}
@@ -25,12 +30,12 @@ BUILT_AREA_LOOKUPS={'16':('32052','Plain'),'356':('32391','Symbolized')}
 BUILT_AREA_INSTRUCTION="AC(CHBRN);TX(OBJNAM,1,2,3,'16120',0,0,CHBLK,26);LS(SOLD,1,LANDF)"
 BUILT_AREA_COLOR='XNBUA'
 GEOGRAPHIC_COLOR='XNGEO'
-ADDED_COLORS={BUILT_AREA_COLOR,GEOGRAPHIC_COLOR,chart_cable_paint.COLOR,chart_cable_paint.AREA_COLOR}
+ADDED_COLORS={BUILT_AREA_COLOR,GEOGRAPHIC_COLOR,chart_cable_paint.COLOR,chart_cable_paint.AREA_COLOR,chart_structure_paint.COLOR,chart_structure_paint.OUTLINE_COLOR}
 GEOGRAPHIC_CLASSES={'BUAARE','LNDARE','LNDRGN','SEAARE'}
 # Apply the prototype's chart-only Night brightness once to owned paint inputs.
 # CHBLK/CHGRD, safety contour and soundings deliberately retain brighter ink:
 # dimming them would violate the measured 4/2/3 hazard-contrast guards.
-NIGHT_CANVAS_ROLES={'LANDA','XNBUA','XNGEO','CSTLN','DEPDW','DEPMD','DEPMS','DEPVS','DEPIT','DEPCN'}
+NIGHT_CANVAS_ROLES={chart_structure_paint.COLOR,chart_structure_paint.OUTLINE_COLOR,'LANDA','XNBUA','XNGEO','CSTLN','DEPDW','DEPMD','DEPMS','DEPVS','DEPIT','DEPCN'}
 NIGHT_SAFETY_ROLES={'CHBLK','CHGRD','DEPSC','SNDG1','SNDG2'}
 
 def geographic_ink(name, instruction):
@@ -42,10 +47,15 @@ def geographic_ink(name, instruction):
 
 def styled_instruction(lookup):
     instruction=chart_cable_paint.area_instruction(lookup)
+    if lookup.get('id') in chart_structure_paint.RULES:
+        instruction=chart_structure_paint.instruction(lookup)
+    if lookup.get('id') in chart_seamark_art.SELECTORS:
+        instruction=chart_seamark_art.instruction(lookup)
     if lookup.get('id') in BUILT_AREA_LOOKUPS:
         assert instruction==BUILT_AREA_INSTRUCTION
         instruction=instruction.replace('AC(CHBRN)','AC(XNBUA)')
-    return geographic_ink(lookup.get('name'),instruction)
+    instruction=geographic_ink(lookup.get('name'),instruction)
+    return chart_structure_paint.outline_instruction(lookup,instruction)
 
 
 def pinned_bytes(path, identity):
@@ -88,6 +98,7 @@ def validate_resource_changes(original, styled, colors):
     chart_cable_paint.restore_for_validation(before, after)
     chart_service_art.restore_bitmap_for_validation(before, after)
     chart_cardinal_art.restore_bitmap_for_validation(before, after)
+    chart_seamark_art.restore_for_validation(before, after)
     # Added nodes must not make whitespace significant in the identity check.
     for tree in (before,after):
         for node in tree.iter():
@@ -155,8 +166,11 @@ def generate(source, output):
     assert geography_count==18, 'Pinned geographic name lookup count changed'
     xml=chart_anchor_art.relocate(xml)
     xml=chart_cable_paint.recolor(xml)
+    xml=chart_structure_paint.recolor(xml)
+    xml=chart_structure_paint.recolor_outlines(xml)
     xml=chart_service_art.relocate(xml)
     xml=chart_cardinal_art.relocate(xml)
+    xml=chart_seamark_art.relocate(xml)
     validate_resource_changes(original['chartsymbols.xml'],xml,colors)
     result=dict(original);result['chartsymbols.xml']=xml.encode('utf-8')
     # Pinned Day ink identifies neutral CHBLK/CHGRD pixels. Theme sheets use
@@ -175,12 +189,14 @@ def generate(source, output):
     anchor_art = {}
     service_art = {}
     cardinal_art = {}
+    seamark_art = {}
     for table, name in [('DAY_BRIGHT','rastersymbols-day.png'),
                         ('DUSK','rastersymbols-dusk.png'),
                         ('NIGHT','rastersymbols-dark.png')]:
         result[name], anchor_art[name] = chart_anchor_art.paint(result[name], table)
         result[name], service_art[name] = chart_service_art.paint(result[name], table)
         result[name], cardinal_art[name] = chart_cardinal_art.paint(result[name], table)
+        result[name], seamark_art[name] = chart_seamark_art.paint(result[name], table)
     output.mkdir(parents=True,exist_ok=True)
     def write(path,content):
         if not path.exists() or path.read_bytes()!=content:path.write_bytes(content)
@@ -193,7 +209,11 @@ def generate(source, output):
               'anchorageArtwork':anchor_art,
               'serviceArtwork':service_art,
               'cardinalArtwork':cardinal_art,
+              'seamarkArtwork':seamark_art,
               'geographicNameLookups':geography_count,
+              'structuralAreaPaint':{'color':'XNSTR','lookupIds':sorted(chart_structure_paint.RULES),
+                                     'outlineColor':'XNSHR','outlineLookupIds':sorted(chart_structure_paint.OUTLINE_RULES),
+                                     'unchangedWidthsSelectorsAndLabels':True},
               'submarineCablePaint':{'name':'CBLSUB06','RCID':'2012','color':'XNCBL','unchangedHPGL':True},
               'areaLinePaint':{'color':'XNARE','ferryLineRCID':'2019','plainCableLookupRCID':'32061',
                                'unchangedGeometryAndRestrictions':True},
@@ -214,4 +234,4 @@ def generate(source, output):
 if __name__=='__main__':
     p=argparse.ArgumentParser();p.add_argument('--source',type=Path,required=True);p.add_argument('--output',type=Path,required=True)
     a=p.parse_args();m=generate(a.source,a.output)
-    print('Verified pinned resources; generated three chart palettes, two BUAARE fills, 18 geographic-name ink rules, isolated ACHARE51/PILBOP02/RTPBCN02/BOYCAR01-04 artwork, CBLSUB06/FERYRT01/Plain CBLARE paint and resource hashes; other navigation rules unchanged')
+    print('Verified pinned resources; generated three chart palettes, bounded structural fill/outline and geographic-name ink, isolated anchor/service/cardinal and classified seamark artwork, cable/ferry paint and resource hashes; other navigation rules unchanged')

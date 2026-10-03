@@ -1,0 +1,478 @@
+{
+  "note": "Complete read-only inspection, including images after the preserved GL fail-fast assertion. It does not supersede or mark that assertion passed.",
+  "chart_roi": [
+    80,
+    68,
+    1094,
+    634
+  ],
+  "only_historical_exclusion": [
+    883,
+    545,
+    1072,
+    597
+  ],
+  "results": {
+    "software": [
+      {
+        "name": "SKAGER-Day",
+        "historical_chart_changes_outside_toolbar": 10582,
+        "historical_wordmark_changes": 0
+      },
+      {
+        "name": "SKAGER-Dusk",
+        "historical_chart_changes_outside_toolbar": 7089,
+        "historical_wordmark_changes": 0
+      },
+      {
+        "name": "SKAGER-Night",
+        "historical_chart_changes_outside_toolbar": 7028,
+        "historical_wordmark_changes": 0
+      },
+      {
+        "name": "SKAGER-Day-return",
+        "historical_chart_changes_outside_toolbar": 10582,
+        "historical_wordmark_changes": 0,
+        "hot_return": {
+          "changed_pixels": 0,
+          "screen_bounds": null,
+          "changed_transitions": []
+        }
+      },
+      {
+        "name": "Standard-Day",
+        "historical_chart_changes_outside_toolbar": 0,
+        "historical_wordmark_changes": 0
+      },
+      {
+        "name": "Standard-Dusk",
+        "historical_chart_changes_outside_toolbar": 0,
+        "historical_wordmark_changes": 0
+      },
+      {
+        "name": "Standard-Night",
+        "historical_chart_changes_outside_toolbar": 0,
+        "historical_wordmark_changes": 0
+      },
+      {
+        "name": "Standard-Day-return",
+        "historical_chart_changes_outside_toolbar": 0,
+        "historical_wordmark_changes": 0,
+        "hot_return": {
+          "changed_pixels": 0,
+          "screen_bounds": null,
+          "changed_transitions": []
+        }
+      }
+    ],
+    "opengl": [
+      {
+        "name": "SKAGER-Day",
+        "historical_chart_changes_outside_toolbar": 5277,
+        "historical_wordmark_changes": 0
+      },
+      {
+        "name": "SKAGER-Dusk",
+        "historical_chart_changes_outside_toolbar": 3855,
+        "historical_wordmark_changes": 0
+      },
+      {
+        "name": "SKAGER-Night",
+        "historical_chart_changes_outside_toolbar": 3855,
+        "historical_wordmark_changes": 0
+      },
+      {
+        "name": "SKAGER-Day-return",
+        "historical_chart_changes_outside_toolbar": 6547,
+        "historical_wordmark_changes": 0,
+        "hot_return": {
+          "changed_pixels": 1270,
+          "screen_bounds": [
+            83,
+            614,
+            686,
+            632
+          ],
+          "changed_transitions": [
+            {
+              "before": [
+                7,
+                7,
+                7
+              ],
+              "after": [
+                83,
+                100,
+                95
+              ],
+              "count": 1192
+            },
+            {
+              "before": [
+                8,
+                11,
+                11
+              ],
+              "after": [
+                78,
+                96,
+                92
+              ],
+              "count": 10
+            },
+            {
+              "before": [
+                7,
+                8,
+                8
+              ],
+              "after": [
+                82,
+                100,
+                95
+              ],
+              "count": 8
+            },
+            {
+              "before": [
+                38,
+                123,
+                117
+              ],
+              "after": [
+                39,
+                124,
+                118
+              ],
+              "count": 8
+            },
+            {
+              "before": [
+                6,
+                9,
+                9
+              ],
+              "after": [
+                52,
+                65,
+                62
+              ],
+              "count": 4
+            },
+            {
+              "before": [
+                8,
+                11,
+                11
+              ],
+              "after": [
+                76,
+                94,
+                89
+              ],
+              "count": 4
+            },
+            {
+              "before": [
+                22,
+                64,
+                61
+              ],
+              "after": [
+                60,
+                110,
+                105
+              ],
+              "count": 4
+            },
+            {
+              "before": [
+                2,
+                2,
+                2
+              ],
+              "after": [
+                12,
+                14,
+                14
+              ],
+              "count": 3
+            },
+            {
+              "before": [
+                34,
+                108,
+                103
+              ],
+              "after": [
+                44,
+                120,
+                115
+              ],
+              "count": 3
+            },
+            {
+              "before": [
+                31,
+                98,
+                93
+              ],
+              "after": [
+                48,
+                119,
+                113
+              ],
+              "count": 3
+            },
+            {
+              "before": [
+                2,
+                2,
+                2
+              ],
+              "after": [
+                11,
+                14,
+                13
+              ],
+              "count": 3
+            },
+            {
+              "before": [
+                2,
+                2,
+                2
+              ],
+              "after": [
+                12,
+                14,
+                13
+              ],
+              "count": 2
+            },
+            {
+              "before": [
+                22,
+                65,
+                62
+              ],
+              "after": [
+                59,
+                111,
+                105
+              ],
+              "count": 2
+            },
+            {
+              "before": [
+                3,
+                3,
+                3
+              ],
+              "after": [
+                24,
+                29,
+                27
+              ],
+              "count": 2
+            },
+            {
+              "before": [
+                32,
+                99,
+                94
+              ],
+              "after": [
+                48,
+                119,
+                113
+              ],
+              "count": 2
+            },
+            {
+              "before": [
+                22,
+                63,
+                60
+              ],
+              "after": [
+                60,
+                110,
+                104
+              ],
+              "count": 2
+            },
+            {
+              "before": [
+                6,
+                9,
+                9
+              ],
+              "after": [
+                51,
+                65,
+                62
+              ],
+              "count": 2
+            },
+            {
+              "before": [
+                34,
+                108,
+                103
+              ],
+              "after": [
+                44,
+                121,
+                115
+              ],
+              "count": 2
+            },
+            {
+              "before": [
+                8,
+                12,
+                11
+              ],
+              "after": [
+                75,
+                94,
+                89
+              ],
+              "count": 2
+            },
+            {
+              "before": [
+                34,
+                107,
+                102
+              ],
+              "after": [
+                45,
+                120,
+                114
+              ],
+              "count": 2
+            },
+            {
+              "before": [
+                8,
+                12,
+                11
+              ],
+              "after": [
+                75,
+                94,
+                88
+              ],
+              "count": 2
+            },
+            {
+              "before": [
+                6,
+                9,
+                8
+              ],
+              "after": [
+                51,
+                64,
+                60
+              ],
+              "count": 2
+            },
+            {
+              "before": [
+                2,
+                2,
+                2
+              ],
+              "after": [
+                11,
+                13,
+                13
+              ],
+              "count": 2
+            },
+            {
+              "before": [
+                3,
+                3,
+                3
+              ],
+              "after": [
+                24,
+                29,
+                28
+              ],
+              "count": 1
+            },
+            {
+              "before": [
+                34,
+                109,
+                104
+              ],
+              "after": [
+                44,
+                121,
+                115
+              ],
+              "count": 1
+            },
+            {
+              "before": [
+                31,
+                97,
+                93
+              ],
+              "after": [
+                48,
+                118,
+                113
+              ],
+              "count": 1
+            },
+            {
+              "before": [
+                3,
+                3,
+                3
+              ],
+              "after": [
+                23,
+                28,
+                27
+              ],
+              "count": 1
+            }
+          ]
+        }
+      },
+      {
+        "name": "Standard-Day",
+        "historical_chart_changes_outside_toolbar": 0,
+        "historical_wordmark_changes": 0
+      },
+      {
+        "name": "Standard-Dusk",
+        "historical_chart_changes_outside_toolbar": 0,
+        "historical_wordmark_changes": 0
+      },
+      {
+        "name": "Standard-Night",
+        "historical_chart_changes_outside_toolbar": 0,
+        "historical_wordmark_changes": 0
+      },
+      {
+        "name": "Standard-Day-return",
+        "historical_chart_changes_outside_toolbar": 0,
+        "historical_wordmark_changes": 0,
+        "hot_return": {
+          "changed_pixels": 0,
+          "screen_bounds": null,
+          "changed_transitions": []
+        }
+      }
+    ]
+  }
+}

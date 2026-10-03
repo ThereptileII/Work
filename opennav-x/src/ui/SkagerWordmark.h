@@ -16,6 +16,9 @@ namespace opennav::ui {
 // This recovers a reviewed raster approximation, not an original vector alpha.
 class SkagerWordmark {
  public:
+  // Display scale only: the approved raster and 180 x 68 DIP identity slot stay fixed.
+  static constexpr int HeaderWidthDip = 124;
+  static constexpr int HeaderLeftDip = 28;
   explicit SkagerWordmark(const wxImage& original) : original_(original) {
     if (!original.IsOk() || original.GetWidth()!=680 || original.GetHeight()!=214 ||
         original.HasAlpha() || original.HasMask()) return;

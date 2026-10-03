@@ -1,0 +1,290 @@
+{
+  "README.md": {
+    "bytes": 8320,
+    "sha256": "9262f5e7bcbb1b017dc06000217c5d8b3b7047e4b9a70d576e27ff030e8f2d59"
+  },
+  "cell-summary.json": {
+    "bytes": 7620,
+    "sha256": "bca3c75063b079ef3c51bc4a7800f45fed99a8fe856ca67c84a884a1b03d635e"
+  },
+  "collector/cache-inputs-readonly.py": {
+    "bytes": 4630,
+    "sha256": "0528801cfb7b27faa8027869ad8ee5ab07b6475e27544c6bf93f04e6e8c1750d"
+  },
+  "collector/capture-pier57.py": {
+    "bytes": 20533,
+    "sha256": "0315491178e8ceb09098d3e3d468d484818f7f5536fc3c97a51c32a8cf9f88af"
+  },
+  "collector/frozen-inputs.json": {
+    "bytes": 1158,
+    "sha256": "2524294805dfddc87de41f912bb7fdf485dee521b33c203cf6970c0204a738bf"
+  },
+  "collector/run-capture-isolated.sh": {
+    "bytes": 650,
+    "sha256": "9fc2863d87f6f67ea3b38d9ae690f5e5d782de8a00359c54f53b026bec97a8e2"
+  },
+  "collector/staged-inputs.json": {
+    "bytes": 2597,
+    "sha256": "161fccb24fc1f9b4791241a8a2a057d0cc07f5816f2a267a961a26f8ad235162"
+  },
+  "features.json.gz": {
+    "bytes": 12412,
+    "sha256": "567c4dea09a1d05a11919174e10268b7e75ea9e5ac85c281a10097bd0360e15b"
+  },
+  "inspect-public-enc.py": {
+    "bytes": 2664,
+    "sha256": "a94a51def0865edb9610f8cbe3414c786e842673d31404d843661b12bcc00a6d"
+  },
+  "opengl/SKAGER-Day-return.json": {
+    "bytes": 31338,
+    "sha256": "9b06d6209bb2e16b6fac7000385e1b576db4e7293fdb9428b6e92dbf39749233"
+  },
+  "opengl/SKAGER-Day-return.png": {
+    "bytes": 98388,
+    "sha256": "5a2ffac90ec0624dba289f8ccad52c112b15ab814bada0ccc2591363fa64cf3a"
+  },
+  "opengl/SKAGER-Day.json": {
+    "bytes": 28451,
+    "sha256": "694326690c82ae52ecec80439c72fc3590e48b157f7346d0698b665b0b1450c9"
+  },
+  "opengl/SKAGER-Day.png": {
+    "bytes": 98386,
+    "sha256": "1dda644afc8b607a8e6a71f48b2b413b4d666d196b6e5ca166b37fc00921d923"
+  },
+  "opengl/SKAGER-Dusk.json": {
+    "bytes": 31343,
+    "sha256": "d741ca29e7eafd760ba2a4be9579a9c45846d19e1e18de11c44600fcccba5785"
+  },
+  "opengl/SKAGER-Dusk.png": {
+    "bytes": 97560,
+    "sha256": "6bddae700aaa4f34a3147e8ac7c4c62426d475a307d9d0e110012aabeb8bebf9"
+  },
+  "opengl/SKAGER-Night.json": {
+    "bytes": 31345,
+    "sha256": "89eb8ff9f196b8ea757251793ccf8b89325c7580c7619893d4e0553b596928d5"
+  },
+  "opengl/SKAGER-Night.png": {
+    "bytes": 96013,
+    "sha256": "5c38b49a91ad271537f542a8d8dd64e7b943b46ef836281cbd103a1365f79fef"
+  },
+  "opengl/SKAGER-launch.log": {
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "opengl/SKAGER-profile/OPENNAV_TEST_PROFILE": {
+    "bytes": 33,
+    "sha256": "6fc9f514880b1c406417964ee97ad37b28f2c5a4cdde61a43ef577cf4b25a1e4"
+  },
+  "opengl/SKAGER-profile/complete-profile-inventory.json": {
+    "bytes": 94804,
+    "sha256": "b2404529246d475438fb506998b8664fcf472b49f47fd266422102dfbc069268"
+  },
+  "opengl/SKAGER-profile/gl_caps.json.gz": {
+    "bytes": 2582,
+    "sha256": "b8802a83e7269dda4158e8eeb753a925cc1126bf146025687390ee74c93f53e0"
+  },
+  "opengl/SKAGER-profile/opencpn.conf": {
+    "bytes": 12088,
+    "sha256": "a6f01f665077e76af2a84ecaecd84203d150e0688e3ebf7f6d1ce7e386b12689"
+  },
+  "opengl/SKAGER-profile/opencpn.log.gz": {
+    "bytes": 3704,
+    "sha256": "9ab208d263d5375b676c40fd18246e7e175707d3a07cde3058581a9e0834e423"
+  },
+  "opengl/Standard-Day-return.json": {
+    "bytes": 31336,
+    "sha256": "dff3dced8a81ae938ec73e0198229f185d8530ccd3aa41d2065e84611c6c8039"
+  },
+  "opengl/Standard-Day-return.png": {
+    "bytes": 104590,
+    "sha256": "6b6ddc688fabc3121ffc8b21a585ba0765c6e3f72e09c2d99b785ac9c44a1898"
+  },
+  "opengl/Standard-Day.json": {
+    "bytes": 28445,
+    "sha256": "dc81723c494d6630ed44fba6a3fa7d6f7faab90e011d26c00fbebb14ac994f36"
+  },
+  "opengl/Standard-Day.png": {
+    "bytes": 104583,
+    "sha256": "be4b0bd5f1e3d5b38143785211e6af3a1c21869d40e493d0e4a6a1d203e60b27"
+  },
+  "opengl/Standard-Dusk.json": {
+    "bytes": 31338,
+    "sha256": "f3a981ed7f0f7b3df849ce8931dfdaa31beb1c9e426de891f5b12f44c5306eb8"
+  },
+  "opengl/Standard-Dusk.png": {
+    "bytes": 99705,
+    "sha256": "1bfb9f5a86216513c13593b44a2a1bed461cbe6d02bf782e6165d24cb1d4cc02"
+  },
+  "opengl/Standard-Night.json": {
+    "bytes": 31329,
+    "sha256": "b9f16d55f20f0629def8ee7d5e778decee7b1003e45b22ecce4c74f8b3227a19"
+  },
+  "opengl/Standard-Night.png": {
+    "bytes": 96211,
+    "sha256": "29ee87bf5278b7066a004b208beba725e19afbae7bfbc07420cd4aa49db7ae05"
+  },
+  "opengl/Standard-launch.log": {
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "opengl/Standard-profile/OPENNAV_TEST_PROFILE": {
+    "bytes": 33,
+    "sha256": "6fc9f514880b1c406417964ee97ad37b28f2c5a4cdde61a43ef577cf4b25a1e4"
+  },
+  "opengl/Standard-profile/complete-profile-inventory.json": {
+    "bytes": 94804,
+    "sha256": "e348aeb3fbe1585ef200ac7870dcf6e622ea428cba18299adb3e15fc63109038"
+  },
+  "opengl/Standard-profile/gl_caps.json.gz": {
+    "bytes": 2582,
+    "sha256": "b8802a83e7269dda4158e8eeb753a925cc1126bf146025687390ee74c93f53e0"
+  },
+  "opengl/Standard-profile/opencpn.conf": {
+    "bytes": 12092,
+    "sha256": "bbf5a0b5347cb2e285e8257a47ca4b46225f88267bedf85ccdc26c1f73a8f22a"
+  },
+  "opengl/Standard-profile/opencpn.log.gz": {
+    "bytes": 3660,
+    "sha256": "0156c66c6c03a6cd183bf4f714407b156429da98785e4377dae16b988bb70e88"
+  },
+  "opengl/collector.log": {
+    "bytes": 2840,
+    "sha256": "ba6ddcc6dae5306879161b3be0caaba27aff9e3a4fa7c2bf466e2af31423dcc2"
+  },
+  "opengl/controlled-input.json": {
+    "bytes": 9154,
+    "sha256": "23069465e2ff36572e853a7996feb4b401024303d4e1bcaa5c7f46e4bab64753"
+  },
+  "opengl/loader-selftest.json": {
+    "bytes": 715,
+    "sha256": "4f6242cf8b550ed1977c03ff6a627ce5b5884db48519b7c72d72f1e0029355e3"
+  },
+  "opengl/report.json": {
+    "bytes": 37033,
+    "sha256": "ccc87fba271aacada1d37de2d819281a2ecd61f628b449bda0db6751731f3a50"
+  },
+  "scenes.json": {
+    "bytes": 21428,
+    "sha256": "1da8b7c03d1bbbd35296531a2c7ea01c3c5aa9261d9b9e9336f6e6c3e3cfb1b3"
+  },
+  "software/SKAGER-Day-return.json": {
+    "bytes": 31341,
+    "sha256": "f447534a43db3918617c2e62e8054cd9ed4f754dff25bb731d1043f326f4a044"
+  },
+  "software/SKAGER-Day-return.png": {
+    "bytes": 135420,
+    "sha256": "f271840290778fef4e24805a58d93a26345a8e497d2beeef2e4951cb1321c27b"
+  },
+  "software/SKAGER-Day.json": {
+    "bytes": 28452,
+    "sha256": "c684afc98eed96eeb60800dbfc44cfcb251b7d2e0a712a31662a10c3dfc50cdf"
+  },
+  "software/SKAGER-Day.png": {
+    "bytes": 135060,
+    "sha256": "dbd37257cd66d098c055ae14e2d50a97a0a64f86d1c7886a505b29293d8c6b36"
+  },
+  "software/SKAGER-Dusk.json": {
+    "bytes": 31340,
+    "sha256": "02a60b6cd3cc391f4e17e96dbb3d699fbfef7f6f046956171e9b3a8a34d41e8b"
+  },
+  "software/SKAGER-Dusk.png": {
+    "bytes": 134084,
+    "sha256": "c1eb136af135abd14f4affc729849950a210bb9238ec5d4676eca207223b34a3"
+  },
+  "software/SKAGER-Night.json": {
+    "bytes": 31340,
+    "sha256": "ed6e67ecb3e11377b87a15ffbe6082d465271a1af17636e85a15c229a372a55a"
+  },
+  "software/SKAGER-Night.png": {
+    "bytes": 129605,
+    "sha256": "738214e2ec045fb336b06c1e2f712cc3c89a51e331851dac599afaf352143753"
+  },
+  "software/SKAGER-launch.log": {
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "software/SKAGER-profile/OPENNAV_TEST_PROFILE": {
+    "bytes": 33,
+    "sha256": "6fc9f514880b1c406417964ee97ad37b28f2c5a4cdde61a43ef577cf4b25a1e4"
+  },
+  "software/SKAGER-profile/complete-profile-inventory.json": {
+    "bytes": 94678,
+    "sha256": "e9e965ff41f0ba8564c1946a4c9a86bb0789629bcdb47182aee440418fa407dc"
+  },
+  "software/SKAGER-profile/opencpn.conf": {
+    "bytes": 12088,
+    "sha256": "27542070494e3b5260cf0f069df67f5f3be7bb20dd345f9991e6082e55b8d0ae"
+  },
+  "software/SKAGER-profile/opencpn.log.gz": {
+    "bytes": 2951,
+    "sha256": "03fde520f01664908bec9dfbf31e018bcc92c0e713e3f447d894fb1feda15be3"
+  },
+  "software/Standard-Day-return.json": {
+    "bytes": 31332,
+    "sha256": "280340482c456b3924e8267220527cf20a5bbf569bc67266e4f40ec99612aa78"
+  },
+  "software/Standard-Day-return.png": {
+    "bytes": 144236,
+    "sha256": "ed50ee70bbafa96b563c07866acf585aba15a93a1e90fa15a02bbcaab95dcfa5"
+  },
+  "software/Standard-Day.json": {
+    "bytes": 28443,
+    "sha256": "c91c5ddc1193930af5dd3dca577defc163d40c4b1bdd19102af80e771a8a496c"
+  },
+  "software/Standard-Day.png": {
+    "bytes": 144230,
+    "sha256": "f3e9266dd203c81e007848ba0ed0c19ad107d9596a972f5a580094c4fc477c6c"
+  },
+  "software/Standard-Dusk.json": {
+    "bytes": 31339,
+    "sha256": "62b4fef1c2aeaef87e5acc0ff97cb1b96d4790a7569f11c7adc3f5d9b5eee50f"
+  },
+  "software/Standard-Dusk.png": {
+    "bytes": 130655,
+    "sha256": "e7b6def15a75f3b1333ee89753cb1f0a629919066b453c8b3074785e0ad72362"
+  },
+  "software/Standard-Night.json": {
+    "bytes": 31341,
+    "sha256": "432c23b9659d3756a2776ae33c5fe5564eaed4579c4c5cfbb3a9fdb7e1b2fb08"
+  },
+  "software/Standard-Night.png": {
+    "bytes": 126088,
+    "sha256": "b8e81de5289614336d8389a34529c84324702eb98d21a99b0229b9397ccf2582"
+  },
+  "software/Standard-launch.log": {
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "software/Standard-profile/OPENNAV_TEST_PROFILE": {
+    "bytes": 33,
+    "sha256": "6fc9f514880b1c406417964ee97ad37b28f2c5a4cdde61a43ef577cf4b25a1e4"
+  },
+  "software/Standard-profile/complete-profile-inventory.json": {
+    "bytes": 94678,
+    "sha256": "80ef5e569ef43f4c5bb8c6b866686a15dbab0c989e917407d08d441465660b1f"
+  },
+  "software/Standard-profile/opencpn.conf": {
+    "bytes": 12092,
+    "sha256": "dce07e7ba0473a381aa0f55094b293dbfb77f6c0793eaa94cfc46447812d869d"
+  },
+  "software/Standard-profile/opencpn.log.gz": {
+    "bytes": 2910,
+    "sha256": "4f4d158951481164b6f10a5d92299d1d7bb6c2da103fbd901f946b81e2fa89aa"
+  },
+  "software/collector.log": {
+    "bytes": 2842,
+    "sha256": "afeca0172164292d4c14786f0e48b1e3fffdda2c1d8d24ae539d4241b74a92ab"
+  },
+  "software/controlled-input.json": {
+    "bytes": 8745,
+    "sha256": "1abc25952faabfbdc0f1b4fd58bd6d19dc0a84f21c7e6be17e10a71026dc3fb4"
+  },
+  "software/loader-selftest.json": {
+    "bytes": 715,
+    "sha256": "4f6242cf8b550ed1977c03ff6a627ce5b5884db48519b7c72d72f1e0029355e3"
+  },
+  "software/report.json": {
+    "bytes": 37038,
+    "sha256": "d6ce81f6e9fcbe4c13372bcd1ecfd1ed5ca5ff52d976679b3a1fc55249f4444b"
+  }
+}

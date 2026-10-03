@@ -1,0 +1,54 @@
+{
+  "source": "a3e84771652c920479517f0d16a1dd6133c440d2",
+  "upstream": "37fd0cddb7334fe489e9f18aa163977a9c5c84f7",
+  "incrementalBuildSteps": 193,
+  "buildInstallExit": 0,
+  "existingTests": {
+    "passed": 147,
+    "failed": 0,
+    "seconds": 21.95
+  },
+  "unchangedStandaloneGeometryFixturesRepeated": false,
+  "captures": 16,
+  "normalQualifiedApplicationExits": 4,
+  "renderer": "software plus actual Mesa 26.2.2 llvmpipe LLVM 22.1.8 GL 4.6 compatibility context",
+  "authority": "Linux development evidence; not physical GPU, Windows, o-charts adapter execution or boat acceptance",
+  "binaryAndGeneratedHeaderFiles": {
+    "build/xnav-linux/opencpn": {
+      "bytes": 26059968,
+      "sha256": "d88b1f3ef5c988f2be1a37aaa56e9b1cdc1d8306dd4c71a5abb3ec0f987a083b"
+    },
+    "build/xnav-install/bin/opencpn": {
+      "bytes": 26059968,
+      "sha256": "dfb404933197888e137eef709d2866d23205e973543b3ab8cd1335654ab75a95"
+    },
+    "build/xnav-linux/include/OpenNavBuild.h": {
+      "bytes": 243,
+      "sha256": "255e98666080b30d18e2752ba59a87cda5f8bbb6c53578f98f640242219bde3e"
+    },
+    "build/xnav-linux/opennav-chart-style/v1/XNavChartResources.h": {
+      "bytes": 934,
+      "sha256": "afedaa8e4cc084a7286573fa24b9485555835444d962648eec0784859332154d"
+    }
+  },
+  "originalCollectorFailure": "Old exact status text did not include the source-defined o-charts suffix. No fallback observed. Entire original failure retained; one software retry after exact full-string correction.",
+  "failedAttemptCleanup": "Original log records MyFrame exiting cleanly, shared config preservation, recovery cleared and MyApp exiting cleanly. Failed capture report remains status failed / clean_exit false; cleanup process exit code was not separately retained.",
+  "historicalSource": "78eccb8b7f21b260ded57d3ba763f884d60c8180",
+  "standardComparison": "Complete independent image accounting finds zero differing pixels in all eight historical Standard chart ROIs outside the verified toolbar rectangle. Wordmarks unchanged.",
+  "toolbarExclusion": [
+    883,
+    545,
+    1072,
+    597
+  ],
+  "hotReturnComparison": {
+    "software": "Both full chart returns exact",
+    "openglStandard": "Full chart return exact",
+    "openglSKAGER": "FAILED: 1270 differing pixels, bounds [83,614,686,632]; 1192 pixels CHBLK old 7,7,7 to new 83,100,95. Original fail-fast comparison remains failed."
+  },
+  "reportingCorrection": "The first agent summary mistakenly inferred GL comparison success from a subsequent successful shell log-search command. The independent reviewer caught this; original comparison JSON/log had correctly retained failure. No assertion changed or app retry followed.",
+  "historicalCacheRehashedUnchanged": {
+    "install/bin/opencpn": "a58256d8c824a43d7d74b90deb6ad6697a2ba1dabbf47b13c4e8057dd4738ffb",
+    "install/share/opencpn/opennav/chart-style/v1/manifest.json": "03533971dfba1bb3cb2cba6ab52b1528a56b4f27c8b4fc118b4b503c25b4bdde"
+  }
+}

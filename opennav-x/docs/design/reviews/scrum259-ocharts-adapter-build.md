@@ -71,7 +71,7 @@ prefixes; do not rebuild networking or use old plugin import libraries:
 From the product checkout, with its already generated, verified chart resources:
 
 ```powershell
-python tools/prepare-ocharts-adapter.py --output build/ocharts-prepared --cache build/ocharts-source-cache --curl-prefix build/windows-curl-8.22.0/install --zlib-prefix build/windows-zlib-1.3.2/install --resources build/opennav-chart-style/v1
+python tools/prepare-ocharts-adapter.py --output build/ocharts-prepared --cache build/ocharts-source-cache --curl-prefix build/windows-curl-8.22.0/install --openssl-prefix build/windows-openssl-3.5.9/install --zlib-prefix build/windows-zlib-1.3.2/install --resources build/opennav-chart-style/v1
 cmake -S cmake/ocharts-adapter -B build/ocharts-native -G "Visual Studio 17 2022" -A Win32 -DCMAKE_POLICY_VERSION_MINIMUM=3.5 -DSKAGER_PREPARED="$PWD/build/ocharts-prepared"
 cmake --build build/ocharts-native --config Release --target skager-ocharts-adapter --parallel 2
 python tools/prepare-ocharts-adapter.py --prepared build/ocharts-prepared --package-dll build/ocharts-native/Release/skager-ocharts-adapter.dll --output build/ocharts-package

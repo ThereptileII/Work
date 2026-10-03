@@ -1,0 +1,68 @@
+{
+  "base": "a3e84771652c920479517f0d16a1dd6133c440d2",
+  "auditCommit": "8ebcf6e03502a79b351c40b94086acffbddc0242",
+  "sourceManifestSha256": "c6e36948f98cf010defc09212406e87fe9417398d6ea2e0cb6a167b64861014f",
+  "generatedFiles": {
+    "chartsymbols.xml": {
+      "sha256": "6c08d06893a407a98ec98a45a0ecf258579a2f0ae8da90855cda35502e785013",
+      "bytes": 2237785
+    },
+    "S52RAZDS.RLE": {
+      "sha256": "560e1a1df493d7ae4c8506da814ad936adb13ef93c6f1e2abc93f2819860ff26",
+      "bytes": 1305627
+    },
+    "rastersymbols-day.png": {
+      "sha256": "fe928da7a7afcee5907c8aa3752e426f44d6ce773f92cc81802b5b87c4e8307e",
+      "bytes": 199579
+    },
+    "rastersymbols-dusk.png": {
+      "sha256": "bf7f4f75287cfb3488b5deb625009f4365f8ef347cd33d820d65c3786a46e161",
+      "bytes": 173975
+    },
+    "rastersymbols-dark.png": {
+      "sha256": "ac8a61fbe1577de2f717ebbe14e3f5e2f6daa67dfe511813b57fb9f1e2029291",
+      "bytes": 169363
+    }
+  },
+  "ownedAssets": 11,
+  "ownedAliases": 8,
+  "redirectedLookupIds": [
+    1029,
+    1030,
+    1031,
+    1032,
+    1033,
+    1034,
+    1035,
+    1036,
+    1037,
+    1038,
+    1039,
+    1040,
+    1041,
+    1042,
+    1043,
+    1044
+  ],
+  "addedLookupRows": 0,
+  "withheld": [
+    "BOYSPP11: no source COLOUR proof",
+    "BCNGEN01: physical topmark composition unresolved"
+  ],
+  "compiledLoaderChecks": 30500,
+  "limits": [
+    "No full application build",
+    "No actual GL context",
+    "No Windows/private adapter execution",
+    "No boat or encrypted-chart acceptance"
+  ],
+  "affectedResourceChecks": 65671,
+  "resourceChecks": {
+    "seamarksAndNegative": 45116,
+    "anchor": 1462,
+    "service": 2649,
+    "cardinal": 8708,
+    "dayNeutral": 1255,
+    "completeXmlInverse": 6481
+  }
+}

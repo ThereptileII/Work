@@ -1,0 +1,86 @@
+{
+  "schemaVersion": 1,
+  "library": "OpenSSL",
+  "version": "3.5.9",
+  "configuration": "VC-WIN32 shared",
+  "architecture": "Win32",
+  "abi": "x86",
+  "source": {
+    "url": "https://github.com/openssl/openssl/releases/download/openssl-3.5.9/openssl-3.5.9.tar.gz",
+    "archive": "openssl-3.5.9.tar.gz",
+    "sha256": "603f5602e2eef00d77fbd429d34dcd5822bb301757a1bc9cdb24c670f1eb859a",
+    "bytes": 53279637,
+    "signingPrimaryFingerprint": "B146647E45A7B33947AB226B2A2C87D161692D40"
+  },
+  "toolchain": {
+    "visualStudioInstallation": "C:\\Program Files\\Microsoft Visual Studio\\2022\\Enterprise",
+    "vcvarsall": "C:\\Program Files\\Microsoft Visual Studio\\2022\\Enterprise\\VC\\Auxiliary\\Build\\vcvarsall.bat",
+    "compiler": "cl /Bv (captured in Windows native log)",
+    "nmake": "nmake /? (captured in Windows native log)",
+    "perl": "perl -V (captured in Windows native log)",
+    "nasm": "NASM 3.02 Win64 host tool; nasm -v captured in Windows native log",
+    "nasmProvenance": "Official NASM HTTPS release; vendor publishes no independent checksum or signature",
+    "nasmArchiveSha256": "161d0bfaff53c2f9e9f3e69fd0672323ebabafd1268976a5cec11be92a19aee7"
+  },
+  "buildSteps": {
+    "configure": "passed",
+    "compile": "passed",
+    "test": "passed",
+    "install": "passed",
+    "log": "evidence/local/windows-openssl-native-output.log"
+  },
+  "versionOutput": "OpenSSL 3.5.9 29 Sep 2026 (Library: OpenSSL 3.5.9 29 Sep 2026)\r\nbuilt on: Sat Oct  3 05:53:48 2026 UTC\r\nplatform: VC-WIN32\r\noptions:  bn(64,32)\r\ncompiler: cl  /Zi /Fdossl_static.pdb /GF /Gy /MD /W3 /wd4090 /nologo /O2 -DL_ENDIAN -DOPENSSL_PIC -D\"OPENSSL_BUILDING_OPENSSL\" -D\"OPENSSL_SYS_WIN32\" -D\"WIN32_LEAN_AND_MEAN\" -D\"UNICODE\" -D\"_UNICODE\" -D\"_CRT_SECURE_NO_DEPRECATE\" -D\"_WINSOCK_DEPRECATED_NO_WARNINGS\" -D\"NDEBUG\"\r\nOPENSSLDIR: \"D:\\a\\Work\\Work\\opennav-x\\build\\windows-openssl-3.5.9\\install\\ssl\"\r\nENGINESDIR: \"D:\\a\\Work\\Work\\opennav-x\\build\\windows-openssl-3.5.9\\install\\lib\\engines-3\"\r\nMODULESDIR: \"D:\\a\\Work\\Work\\opennav-x\\build\\windows-openssl-3.5.9\\install\\lib\\ossl-modules\"\r\nSeeding source: os-specific\r\nCPUINFO: OPENSSL_ia32cap=0xfeda3203078bffff:0x00400684219c07a9:0x0000000000000010:0x0000000000000000:0x0000000000000000",
+  "outputs": {
+    "include/openssl/opensslv.h": {
+      "sha256": "dfd0ec688fe70c910984451361e325744a939ace239f5619ec4e27868db975ee",
+      "bytes": 3580
+    },
+    "lib/libssl.lib": {
+      "sha256": "399fd950e92b03dc7a69c08ff045882c2882d9da1bdf17c73ccfc7b70dcedfd1",
+      "bytes": 147790
+    },
+    "lib/libcrypto.lib": {
+      "sha256": "7ecf7051fc06fff93983a8c35b194809bb60d7e9c6aaf480b6ffdcefe7b10e7c",
+      "bytes": 1383006
+    },
+    "bin/libssl-3.dll": {
+      "sha256": "585b902f99231e3723958fab0ffb274b47c91a03ce5c604abdc48209d60a9cba",
+      "bytes": 1067520
+    },
+    "bin/libcrypto-3.dll": {
+      "sha256": "1e496d71f6c8b7b2dfa2a10b482916a3a5fadb6f556f7bfa7f5ec12a039de8a1",
+      "bytes": 4491776
+    },
+    "bin/openssl.exe": {
+      "sha256": "25473c74252a9c7d23e1d9c5061505e356b66a4105cf73c57f73d6c29c2a3117",
+      "bytes": 722944
+    }
+  },
+  "cacheBuildwin": {
+    "include/openssl/opensslv.h": {
+      "source": "include/openssl/opensslv.h",
+      "sha256": "dfd0ec688fe70c910984451361e325744a939ace239f5619ec4e27868db975ee",
+      "bytes": 3580
+    },
+    "libssl.lib": {
+      "source": "lib/libssl.lib",
+      "sha256": "399fd950e92b03dc7a69c08ff045882c2882d9da1bdf17c73ccfc7b70dcedfd1",
+      "bytes": 147790
+    },
+    "libcrypto.lib": {
+      "source": "lib/libcrypto.lib",
+      "sha256": "7ecf7051fc06fff93983a8c35b194809bb60d7e9c6aaf480b6ffdcefe7b10e7c",
+      "bytes": 1383006
+    },
+    "libssl-3.dll": {
+      "source": "bin/libssl-3.dll",
+      "sha256": "585b902f99231e3723958fab0ffb274b47c91a03ce5c604abdc48209d60a9cba",
+      "bytes": 1067520
+    },
+    "libcrypto-3.dll": {
+      "source": "bin/libcrypto-3.dll",
+      "sha256": "1e496d71f6c8b7b2dfa2a10b482916a3a5fadb6f556f7bfa7f5ec12a039de8a1",
+      "bytes": 4491776
+    }
+  }
+}

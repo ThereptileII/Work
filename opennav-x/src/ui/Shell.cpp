@@ -123,10 +123,10 @@ Shell::Shell(wxFrame &frame, wxAuiManager &manager, ShellActions actions,
     // Rejected coverage uses the original logo; cache by device size and ink.
     const auto d=[brand](int x){return brand->FromDIP(x);};
     if (logo.IsOk()) {
-      const int width=d(148);
+      const int width=d(SkagerWordmark::HeaderWidthDip);
       const int height=width*logo.GetHeight()/logo.GetWidth();
       const auto& bitmap=wordmark.Bitmap(width,mode_);
-      if (bitmap.IsOk()) dc.DrawBitmap(bitmap,d(16),(d(68)-height)/2,true);
+      if (bitmap.IsOk()) dc.DrawBitmap(bitmap,d(SkagerWordmark::HeaderLeftDip),(d(68)-height)/2,true);
     } else {
       dc.SetFont(UiFontWeight(*brand,23,650));
       dc.SetTextForeground(Colour(c.primary));

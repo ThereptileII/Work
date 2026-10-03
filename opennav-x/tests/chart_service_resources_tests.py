@@ -59,6 +59,8 @@ def verify_services(source, output, metadata, check):
             for x in (116,148,180,212):
                 start=(y*1500+x)*4
                 after[start:start+96]=before[start:start+96]
+        from chart_seamark_resources_tests import restore_tiles
+        restore_tiles(before,after)
         changed=[i for i in range(0,len(before),4) if before[i:i+4]!=after[i:i+4]]
         check(len(changed)==304)
         for symbol,rcid,count,x,pixels,digest in fixtures:

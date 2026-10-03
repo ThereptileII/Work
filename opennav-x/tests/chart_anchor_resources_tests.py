@@ -65,6 +65,8 @@ def verify_anchor(source, output, metadata, check):
         for y in range(1160,1188):
             for x in (116,148,180,212):
                 i=(y*1500+x)*4;after[i:i+96]=before[i:i+96]
+        from chart_seamark_resources_tests import restore_tiles
+        restore_tiles(before,after)
         changed = [i for i in range(0,len(before),4) if before[i:i+4] != after[i:i+4]]
         check(len(changed) == 126)
         check(all(20 <= i//4%1500 < 40 and 1160 <= i//4//1500 < 1180 for i in changed))

@@ -21,9 +21,10 @@ LOCAL = ('src/plugin-adapters/ChartPresentationBindingV1.h',
          'src/plugin-adapters/ocharts/OwnedPresentationValidation.h',
          'src/plugin-adapters/ocharts/ResourceVerification.h',
          'src/integration/ChartNameTypography.h', 'src/integration/ChartNameText.h',
+         'src/integration/ChartNameSpacing.h',
          'src/integration/ChartNameAlphaWindows.cpp',
          'src/integration/ChartLightLabel.h', 'src/integration/ChartSoundingFont.h',
-         'src/integration/ChartCanvasInk.h')
+         'src/integration/ChartCanvasInk.h', 'src/ui/Theme.h')
 RECIPE = 'cmake/ocharts-adapter/CMakeLists.txt'
 INPUTS = (LOCK, RECIPE, 'tools/prepare-ocharts-adapter.py',
           'tools/verify-ocharts-adapter-package.py', 'tools/windows-wx.lock.json',
@@ -162,21 +163,41 @@ def verify_prepared(directory):
     return receipt
 
 
+def verify_producer_dependencies(curl_prefix, openssl_prefix, zlib_prefix):
+    """Verify explicit same-job producers, not the co-located installed package."""
+    from curl_package import verify_manifest, verify_file
+    manifests = {
+        'curl': verify_manifest(curl_prefix, 'curl', dependency_prefixes={
+            'openssl': openssl_prefix, 'zlib': zlib_prefix}),
+        'zlib': verify_manifest(zlib_prefix, 'zlib'),
+    }
+    for library, prefix in (('curl', curl_prefix), ('zlib', zlib_prefix)):
+        for name, expected in manifests[library]['outputs'].items():
+            verify_file(prefix / name, expected)
+    return manifests
+
+
+def copy_local_inputs(out):
+    """Copy the exact owned include closure consumed by the native recipe."""
+    for name in LOCAL:
+        target = out / 'local' / name
+        target.parent.mkdir(parents=True, exist_ok=True)
+        target.write_bytes((ROOT / name).read_bytes().replace(b'\r\n', b'\n'))
+
+
 def prepare(args):
+    manifests = verify_producer_dependencies(args.curl_prefix, args.openssl_prefix, args.zlib_prefix)
     out = args.output.resolve()
     out.mkdir(parents=True, exist_ok=False)
     lock = fetch_sources(out / 'original', args.cache.resolve())
     shutil.copytree(out / 'original', out / 'source')
     apply_patches(out / 'source', ROOT)
-    for name in LOCAL:
-        target = out / 'local' / name
-        target.parent.mkdir(parents=True, exist_ok=True)
-        target.write_bytes((ROOT / name).read_bytes().replace(b'\r\n', b'\n'))
+    copy_local_inputs(out)
     # Consume current, tested dependency outputs; never fallback to plugin vendor libs.
-    from curl_package import verify_manifest, verify_file
+    from curl_package import verify_file
     for library in ('curl', 'zlib'):
         prefix = args.curl_prefix if library == 'curl' else args.zlib_prefix
-        manifest = verify_manifest(prefix, library)
+        manifest = manifests[library]
         for name, expected in manifest['outputs'].items():
             verify_file(prefix / name, expected)
             target = out / 'sdk' / name
@@ -267,6 +288,7 @@ def main():
     parser.add_argument('--output', type=Path)
     parser.add_argument('--cache', type=Path)
     parser.add_argument('--curl-prefix', type=Path)
+    parser.add_argument('--openssl-prefix', type=Path)
     parser.add_argument('--zlib-prefix', type=Path)
     parser.add_argument('--resources', type=Path)
     parser.add_argument('--verify-prepared', type=Path)
@@ -280,8 +302,8 @@ def main():
     elif args.verify_prepared:
         verify_prepared(args.verify_prepared)
     else:
-        if not all((args.output, args.cache, args.curl_prefix, args.zlib_prefix, args.resources)):
-            parser.error('Preparation requires output/cache/curl-prefix/zlib-prefix/resources')
+        if not all((args.output, args.cache, args.curl_prefix, args.openssl_prefix, args.zlib_prefix, args.resources)):
+            parser.error('Preparation requires output/cache/curl-prefix/openssl-prefix/zlib-prefix/resources')
         prepare(args)
 
 

@@ -1,0 +1,41 @@
+{
+  "run": 37100591834,
+  "job": 111140026866,
+  "remoteSource": "7a9e5496347cf8c0dd31aafc373b65f8621fe5a0",
+  "artifact": 11267320618,
+  "artifactBytes": 20210979,
+  "artifactSha256": "95dd873df5e50337739c94bb598191a8952b167a44672ad3847b61b41508bd27",
+  "zipEntries": 5799,
+  "allZipCrcsPassed": true,
+  "failurePhase": "private adapter preparation before integrated configure/compile",
+  "files": {
+    "build-wiring-checks.log": {
+      "bytes": 130,
+      "sha256": "5b67af5d740adaab1e81a79c67e37b229c3a15646c1e65f80e98ede9f320d650"
+    },
+    "job-failure-excerpt.log": {
+      "bytes": 14801,
+      "sha256": "5aff412614bc72b624f305f273d2c07d09d6d886a18c3851ba08b9ccc6a683a5"
+    },
+    "package-checks.log": {
+      "bytes": 2568,
+      "sha256": "68370b5d69280a377dc2123339e163c346e6c97143ddbe7f1c6ba9ca8d41362e"
+    },
+    "preparation-checks.log": {
+      "bytes": 113,
+      "sha256": "82430634fc6c4fd8ddbe290d9a159882f24a52f6c6389b69c574e28f8d127d2c"
+    },
+    "windows-curl-build.json": {
+      "bytes": 11676,
+      "sha256": "0c0b0b3fef8a47ff2b978e5469245abcae7cc8776af8c4c3a74ab8288c2e719f"
+    },
+    "windows-openssl-build.json": {
+      "bytes": 4147,
+      "sha256": "7d09a6e3d7a0f15468ab2544c742a6981ea87558eca7d2519bf4cb6d9c6deb60"
+    },
+    "zlib-build.json": {
+      "bytes": 1232,
+      "sha256": "965009bb5210694ae69b5037b832297f0113fae449f5568ef19f715faa064bed"
+    }
+  }
+}

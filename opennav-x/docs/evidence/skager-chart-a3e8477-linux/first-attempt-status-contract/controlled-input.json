@@ -1,0 +1,44 @@
+{
+  "scope": "Owned simulated loopback RMC into actual OpenCPN input path; not live navigation",
+  "connections": [
+    {
+      "peer": "127.0.0.1",
+      "connected_monotonic": 61278.844740739
+    }
+  ],
+  "sent": [
+    {
+      "sent_monotonic": 61279.145020977,
+      "sentence": "$GPRMC,055618,A,4736.000,N,12221.600,W,3.0,90.0,031026,,,A*53"
+    },
+    {
+      "sent_monotonic": 61279.445236905,
+      "sentence": "$GPRMC,055619,A,4736.000,N,12221.600,W,3.0,90.0,031026,,,A*52"
+    },
+    {
+      "sent_monotonic": 61279.745445114,
+      "sentence": "$GPRMC,055619,A,4736.000,N,12221.600,W,3.0,90.0,031026,,,A*52"
+    },
+    {
+      "sent_monotonic": 61280.045694584,
+      "sentence": "$GPRMC,055619,A,4736.000,N,12221.600,W,3.0,90.0,031026,,,A*52"
+    },
+    {
+      "sent_monotonic": 61280.34617306,
+      "sentence": "$GPRMC,055620,A,4736.000,N,12221.600,W,3.0,90.0,031026,,,A*58"
+    },
+    {
+      "sent_monotonic": 61280.646594965,
+      "sentence": "$GPRMC,055620,A,4736.000,N,12221.600,W,3.0,90.0,031026,,,A*58"
+    },
+    {
+      "sent_monotonic": 61280.946864751,
+      "sentence": "$GPRMC,055620,A,4736.000,N,12221.600,W,3.0,90.0,031026,,,A*58"
+    },
+    {
+      "sent_monotonic": 61281.247347793,
+      "sentence": "$GPRMC,055621,A,4736.000,N,12221.600,W,3.0,90.0,031026,,,A*59"
+    }
+  ],
+  "errors": []
+}

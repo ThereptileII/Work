@@ -698,6 +698,12 @@ void Attach(MyFrame& frame, wxAuiManager& manager, wxFileConfig& config) {
         integration::ReadRuntimeDiagnostics(*frame.GetPrimaryCanvas());
     runtime["chart_presentation"]["status"] = wxString::FromUTF8(integration::ChartPresentationStatus());
     runtime["chart_presentation"]["requested"] = wxString(integration::XNavChartRequested() ? "XNav" : "Standard");
+    if (ps52plib) {
+      runtime["chart_presentation"]["saved_point_style"] =
+          static_cast<int>(ps52plib->m_nSymbolStyle);
+      runtime["chart_presentation"]["effective_point_style"] =
+          static_cast<int>(ps52plib->GetEffectiveSymbolStyle());
+    }
     runtime["test_fixtures"] = integration::TestFixturesEnabled();
     runtime["build_purpose"] = wxString::FromUTF8(integration::BuildPurpose().data());
     if (online_ais) {

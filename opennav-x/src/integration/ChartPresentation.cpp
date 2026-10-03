@@ -162,6 +162,9 @@ s52plib *CreateChartPresentation(const wxString &stock_path,
       auto *library = new s52plib(
           wxFileName(directory, "S52RAZDS.RLE").GetFullPath(), false, false, true);
       if (library->m_bOK) {
+        // Presentation-local: retain the user's saved Paper/Simplified choice
+        // for Standard and Legacy, while this verified style uses its artwork.
+        library->EnablePresentationSimplifiedSymbols();
         library->SetTextFontResolver(GeographicNameFont);
         library->SetSoundingFontResolver(ChartSoundingFont);
         active = true;

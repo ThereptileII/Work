@@ -1,0 +1,12 @@
+/home/standard/Projects/X-nav-worktrees/scrum266-selector-cache/.local/selector-cache/source/gui/src/piano.cpp: In member function ‘void Piano::BuildGLTexture()’:
+/home/standard/Projects/X-nav-worktrees/scrum266-selector-cache/.local/selector-cache/source/gui/src/piano.cpp:372:3: error: ‘m_tex_outline_color’ was not declared in this scope
+  372 |   m_tex_outline_color = outline_ink;
+      |   ^~~~~~~~~~~~~~~~~~~
+/home/standard/Projects/X-nav-worktrees/scrum266-selector-cache/.local/selector-cache/source/gui/src/piano.cpp: In member function ‘void Piano::DrawGLSL(int)’:
+/home/standard/Projects/X-nav-worktrees/scrum266-selector-cache/.local/selector-cache/source/gui/src/piano.cpp:391:7: error: ‘m_tex_outline_color’ was not declared in this scope
+  391 |   if (m_tex_outline_color != GetGlobalColor(_T("CHBLK")))
+      |       ^~~~~~~~~~~~~~~~~~~
+At global scope:
+cc1plus: note: unrecognized command-line option ‘-Wno-unknown-warning-option’ may have been intended to silence earlier diagnostics
+
+exit_code=1

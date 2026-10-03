@@ -7,6 +7,7 @@ import shutil
 import json
 import hashlib
 import os
+import re
 import zipfile
 from unittest.mock import patch
 import tempfile
@@ -43,6 +44,36 @@ def pe(import_name=b'opencpn.exe', exported=None):
 
 
 class Guards(unittest.TestCase):
+    def test_prepared_owned_include_closure(self):
+        # Exercise the production copier in an isolated directory. Resolve every
+        # quoted owned include from the copied source, not the full checkout's
+        # include path which hid this omission from the host's native proof.
+        def check(directory):
+            files = {p.relative_to(directory / 'local').as_posix(): p
+                     for p in (directory / 'local').rglob('*') if p.is_file()}
+            self.assertEqual(set(files), set(v.prep.LOCAL))
+            for name, target in files.items():
+                self.assertIn(name, v.prep.INPUTS)
+                self.assertEqual(target.read_bytes(),
+                                 (ROOT / name).read_bytes().replace(b'\r\n', b'\n'))
+                for include in re.findall(r'^\s*#include\s*"([^"]+)"', target.read_text(), re.M):
+                    owned = Path('src') / include
+                    if (ROOT / owned).is_file():
+                        self.assertIn(owned.as_posix(), files,
+                                      name + ' cannot resolve ' + include)
+        with tempfile.TemporaryDirectory() as raw:
+            prepared = Path(raw)
+            v.prep.copy_local_inputs(prepared)
+            check(prepared)
+        # Reproduce both pre-fix omissions through the same actual copy path.
+        for missing in ('src/integration/ChartNameSpacing.h', 'src/ui/Theme.h'):
+            with self.subTest(missing=missing), tempfile.TemporaryDirectory() as raw:
+                with patch.object(v.prep, 'LOCAL', tuple(p for p in v.prep.LOCAL if p != missing)):
+                    prepared = Path(raw)
+                    v.prep.copy_local_inputs(prepared)
+                    with self.assertRaisesRegex(AssertionError, 'cannot resolve'):
+                        check(prepared)
+
     def test_exact_pe(self):
         imports, exports = v.pe_contract(pe())
         self.assertEqual(imports, ['opencpn.exe'])

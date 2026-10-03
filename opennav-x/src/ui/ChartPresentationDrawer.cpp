@@ -184,7 +184,8 @@ void XNavChartPresentationDrawer::ReflowNotes() {
   const std::array<wxString,5> paragraphs{{
       wxString("Observed chart format: ")+format+". This is not a style switch.",
       W(state_.format_reason),
-      "Chart symbols and depth contours remain under OpenCPN presentation and safety settings. "
+      "SKAGER uses its own chart symbols. Standard keeps your OpenCPN symbol preference. "
+      "OpenCPN depth and safety settings remain in use. "
       "ENC controls do not alter text or soundings embedded in raster charts.",
       "Course up needs a current course; Head up needs current heading. Check source health.",
       status}};

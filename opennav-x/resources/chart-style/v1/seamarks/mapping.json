@@ -1,0 +1,436 @@
+{
+  "symbols": {
+    "XNLAT013": {
+      "source": "BOYLAT13",
+      "sourceRcid": 2050,
+      "rcid": 60001,
+      "original": [
+        1232,
+        10,
+        14,
+        14
+      ],
+      "originalPivot": [
+        9,
+        9
+      ],
+      "tile": [
+        244,
+        1160,
+        24,
+        28
+      ],
+      "pivot": [
+        12,
+        14
+      ],
+      "sourceNodeSha256": "42b64f6bc0c3f85806d2e3a87ee9747a19fb5d37808e5218ef1bf1ada80b7e04"
+    },
+    "XNLAT014": {
+      "source": "BOYLAT14",
+      "sourceRcid": 2051,
+      "rcid": 60002,
+      "original": [
+        1256,
+        10,
+        14,
+        14
+      ],
+      "originalPivot": [
+        9,
+        9
+      ],
+      "tile": [
+        276,
+        1160,
+        24,
+        28
+      ],
+      "pivot": [
+        12,
+        14
+      ],
+      "sourceNodeSha256": "13e4b5ba15e10011d8e1718d195f6126bb4d494fac5e926d90adad990802ce79"
+    },
+    "XNLAT023": {
+      "source": "BOYLAT23",
+      "sourceRcid": 2052,
+      "rcid": 60003,
+      "original": [
+        1280,
+        10,
+        16,
+        13
+      ],
+      "originalPivot": [
+        8,
+        6
+      ],
+      "tile": [
+        308,
+        1160,
+        24,
+        28
+      ],
+      "pivot": [
+        12,
+        14
+      ],
+      "sourceNodeSha256": "ee02678e0188bd20d65ef961fa119325f8a35d0996cadcac1d43dfb6b9a19483"
+    },
+    "XNLAT024": {
+      "source": "BOYLAT24",
+      "sourceRcid": 2053,
+      "rcid": 60004,
+      "original": [
+        1306,
+        10,
+        16,
+        13
+      ],
+      "originalPivot": [
+        8,
+        6
+      ],
+      "tile": [
+        340,
+        1160,
+        24,
+        28
+      ],
+      "pivot": [
+        12,
+        14
+      ],
+      "sourceNodeSha256": "9edccd70199d35f2449f9bf3d3fd02dbefc7889a4032685e5afdb17dba18e71f"
+    },
+    "XNCAN072": {
+      "source": "BOYCAN72",
+      "sourceRcid": 26,
+      "rcid": 60005,
+      "original": [
+        805,
+        701,
+        19,
+        15
+      ],
+      "originalPivot": [
+        9,
+        11
+      ],
+      "tile": [
+        372,
+        1160,
+        24,
+        28
+      ],
+      "pivot": [
+        12,
+        14
+      ],
+      "sourceNodeSha256": "3941c8f96968dd963a4b2e6e8b7195af21af91a81ba77bb56efba1e6feed6480"
+    },
+    "XNCAN073": {
+      "source": "BOYCAN73",
+      "sourceRcid": 26,
+      "rcid": 60006,
+      "original": [
+        834,
+        701,
+        19,
+        15
+      ],
+      "originalPivot": [
+        9,
+        11
+      ],
+      "tile": [
+        404,
+        1160,
+        24,
+        28
+      ],
+      "pivot": [
+        12,
+        14
+      ],
+      "sourceNodeSha256": "6e00067c81369b536de1086736035373aa149e175987f5f3ff1d6e2e2606c4ed"
+    },
+    "XNCON066": {
+      "source": "BOYCON66",
+      "sourceRcid": 31,
+      "rcid": 60007,
+      "original": [
+        891,
+        701,
+        19,
+        16
+      ],
+      "originalPivot": [
+        9,
+        12
+      ],
+      "tile": [
+        436,
+        1160,
+        24,
+        28
+      ],
+      "pivot": [
+        12,
+        14
+      ],
+      "sourceNodeSha256": "f9501c1c3f3d0450582e5286cbd4b5f226f2ad3496f6a6493cfebd77bac2d081"
+    },
+    "XNCON067": {
+      "source": "BOYCON67",
+      "sourceRcid": 31,
+      "rcid": 60008,
+      "original": [
+        920,
+        701,
+        19,
+        16
+      ],
+      "originalPivot": [
+        9,
+        12
+      ],
+      "tile": [
+        468,
+        1160,
+        24,
+        28
+      ],
+      "pivot": [
+        12,
+        14
+      ],
+      "sourceNodeSha256": "285062b0f4e9bd012b94f9f228149aef52335bd1bf986447f0311136f4637a74"
+    },
+    "BOYISD12": {
+      "source": "BOYISD12",
+      "sourceRcid": 2049,
+      "rcid": 2049,
+      "original": [
+        1210,
+        10,
+        12,
+        17
+      ],
+      "originalPivot": [
+        5,
+        8
+      ],
+      "tile": [
+        500,
+        1160,
+        24,
+        28
+      ],
+      "pivot": [
+        12,
+        14
+      ],
+      "sourceNodeSha256": "0a4d6ed41ee7ff5dea5a95e4b15950b4550654b6c396a8d4cbe82eb876bfb855"
+    },
+    "BOYSAW12": {
+      "source": "BOYSAW12",
+      "sourceRcid": 1294,
+      "rcid": 1294,
+      "original": [
+        1451,
+        10,
+        13,
+        13
+      ],
+      "originalPivot": [
+        6,
+        6
+      ],
+      "tile": [
+        532,
+        1160,
+        24,
+        28
+      ],
+      "pivot": [
+        12,
+        14
+      ],
+      "sourceNodeSha256": "64678f1bc372712a728b361a1ecfe4e09f4a435b532d385f580c78a5df28b7b0"
+    },
+    "LIGHTS13": {
+      "source": "LIGHTS13",
+      "sourceRcid": 1398,
+      "rcid": 1398,
+      "original": [
+        278,
+        175,
+        22,
+        22
+      ],
+      "originalPivot": [
+        0,
+        0
+      ],
+      "tile": [
+        564,
+        1160,
+        24,
+        28
+      ],
+      "pivot": [
+        12,
+        14
+      ],
+      "sourceNodeSha256": "d61559cd61187c3f7ad6239313d6447223ddf6759ac90d4d842a3893e4fada2b"
+    }
+  },
+  "selectors": {
+    "1029": {
+      "alias": "XNCON066",
+      "rcid": "31081",
+      "attributes": [
+        "BOYSHP1",
+        "COLOUR3,4,3"
+      ],
+      "instruction": "SY(BOYLAT14);TE('%s','OBJNAM',2,1,2,'15110',-1,-1,CHBLK,21)"
+    },
+    "1030": {
+      "alias": "XNCON067",
+      "rcid": "31082",
+      "attributes": [
+        "BOYSHP1",
+        "COLOUR4,3,4"
+      ],
+      "instruction": "SY(BOYLAT13);TE('%s','OBJNAM',2,1,2,'15110',-1,-1,CHBLK,21)"
+    },
+    "1031": {
+      "alias": "XNCAN072",
+      "rcid": "31083",
+      "attributes": [
+        "BOYSHP2",
+        "COLOUR3,4,3"
+      ],
+      "instruction": "SY(BOYLAT24);TE('%s','OBJNAM',2,1,2,'15110',-1,-1,CHBLK,21)"
+    },
+    "1032": {
+      "alias": "XNCAN073",
+      "rcid": "31084",
+      "attributes": [
+        "BOYSHP2",
+        "COLOUR4,3,4"
+      ],
+      "instruction": "SY(BOYLAT23);TE('%s','OBJNAM',2,1,2,'15110',-1,-1,CHBLK,21)"
+    },
+    "1033": {
+      "alias": "XNCAN072",
+      "rcid": "31085",
+      "attributes": [
+        "CATLAM3",
+        "COLOUR3,4,3"
+      ],
+      "instruction": "SY(BOYLAT24);TE('%s','OBJNAM',2,1,2,'15110',-1,-1,CHBLK,21)"
+    },
+    "1034": {
+      "alias": "XNCAN073",
+      "rcid": "31086",
+      "attributes": [
+        "CATLAM3",
+        "COLOUR4,3,4"
+      ],
+      "instruction": "SY(BOYLAT23);TE('%s','OBJNAM',2,1,2,'15110',-1,-1,CHBLK,21)"
+    },
+    "1035": {
+      "alias": "XNCON066",
+      "rcid": "31087",
+      "attributes": [
+        "CATLAM4",
+        "COLOUR3,4,3"
+      ],
+      "instruction": "SY(BOYLAT14);TE('%s','OBJNAM',2,1,2,'15110',-1,-1,CHBLK,21)"
+    },
+    "1036": {
+      "alias": "XNCON067",
+      "rcid": "31088",
+      "attributes": [
+        "CATLAM4",
+        "COLOUR4,3,4"
+      ],
+      "instruction": "SY(BOYLAT13);TE('%s','OBJNAM',2,1,2,'15110',-1,-1,CHBLK,21)"
+    },
+    "1037": {
+      "alias": "XNLAT014",
+      "rcid": "31089",
+      "attributes": [
+        "BOYSHP1",
+        "COLOUR3"
+      ],
+      "instruction": "SY(BOYLAT14);TE('%s','OBJNAM',2,1,2,'15110',-1,-1,CHBLK,21)"
+    },
+    "1038": {
+      "alias": "XNLAT013",
+      "rcid": "31090",
+      "attributes": [
+        "BOYSHP1",
+        "COLOUR4"
+      ],
+      "instruction": "SY(BOYLAT13);TE('%s','OBJNAM',2,1,2,'15110',-1,-1,CHBLK,21)"
+    },
+    "1039": {
+      "alias": "XNLAT024",
+      "rcid": "31091",
+      "attributes": [
+        "BOYSHP2",
+        "COLOUR3"
+      ],
+      "instruction": "SY(BOYLAT24);TE('%s','OBJNAM',2,1,2,'15110',-1,-1,CHBLK,21)"
+    },
+    "1040": {
+      "alias": "XNLAT023",
+      "rcid": "31092",
+      "attributes": [
+        "BOYSHP2",
+        "COLOUR4"
+      ],
+      "instruction": "SY(BOYLAT23);TE('%s','OBJNAM',2,1,2,'15110',-1,-1,CHBLK,21)"
+    },
+    "1041": {
+      "alias": "XNLAT024",
+      "rcid": "31093",
+      "attributes": [
+        "CATLAM1",
+        "COLOUR3"
+      ],
+      "instruction": "SY(BOYLAT24);TE('%s','OBJNAM',2,1,2,'15110',-1,-1,CHBLK,21)"
+    },
+    "1042": {
+      "alias": "XNLAT023",
+      "rcid": "31094",
+      "attributes": [
+        "CATLAM1",
+        "COLOUR4"
+      ],
+      "instruction": "SY(BOYLAT23);TE('%s','OBJNAM',2,1,2,'15110',-1,-1,CHBLK,21)"
+    },
+    "1043": {
+      "alias": "XNLAT014",
+      "rcid": "31095",
+      "attributes": [
+        "CATLAM2",
+        "COLOUR3"
+      ],
+      "instruction": "SY(BOYLAT14);TE('%s','OBJNAM',2,1,2,'15110',-1,-1,CHBLK,21)"
+    },
+    "1044": {
+      "alias": "XNLAT013",
+      "rcid": "31096",
+      "attributes": [
+        "CATLAM2",
+        "COLOUR4"
+      ],
+      "instruction": "SY(BOYLAT13);TE('%s','OBJNAM',2,1,2,'15110',-1,-1,CHBLK,21)"
+    }
+  }
+}

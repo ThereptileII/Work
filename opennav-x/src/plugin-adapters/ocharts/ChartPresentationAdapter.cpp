@@ -68,6 +68,7 @@ s52plib* CreateChartPresentation(const wxString& stockDirectory) {
           wxFileName(directory,"S52RAZDS.RLE").GetFullPath(),false,false,true);
       if (library->m_bOK) {
         if (VerifyCompiledResources(directory)) {
+          library->EnablePresentationSimplifiedSymbols();
           library->SetTextFontResolver(GeographicNameFont);
           library->SetSoundingFontResolver(ChartSoundingFont);
           binding.Complete(true,SKAGER_CHART_REASON_NONE);

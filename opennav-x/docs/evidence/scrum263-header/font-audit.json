@@ -1,0 +1,283 @@
+{
+  "prototypeSha256": "b04573b920b6bccd16afd22f54a909e48afcfd502ce9cd7c69fdf5b6dd895447",
+  "canonicalWindowsCaptureSha256": "c1b26d724155379a098c8f14403681fef66083d8f6c1d34ae9fc7b010aa31ae8",
+  "platform": "Windows",
+  "stateCount": 60,
+  "computedFamilies": {
+    "\"Segoe UI Variable Display\", \"Segoe UI\", Arial, sans-serif": 7464
+  },
+  "platformFaces": [
+    {
+      "family": "Segoe UI",
+      "postScriptName": "SegoeUI",
+      "recordCount": 174
+    },
+    {
+      "family": "Segoe UI",
+      "postScriptName": "SegoeUI-Bold",
+      "recordCount": 60
+    }
+  ],
+  "computedRoles": {
+    ".topbar": [
+      [
+        "\"Segoe UI Variable Display\", \"Segoe UI\", Arial, sans-serif",
+        "16px",
+        "400"
+      ]
+    ],
+    ".sidebar": [
+      [
+        "\"Segoe UI Variable Display\", \"Segoe UI\", Arial, sans-serif",
+        "16px",
+        "400"
+      ]
+    ],
+    "#workspace": [
+      [
+        "\"Segoe UI Variable Display\", \"Segoe UI\", Arial, sans-serif",
+        "16px",
+        "400"
+      ]
+    ],
+    "#chartView": [
+      [
+        "\"Segoe UI Variable Display\", \"Segoe UI\", Arial, sans-serif",
+        "16px",
+        "400"
+      ]
+    ],
+    ".data-rail": [
+      [
+        "\"Segoe UI Variable Display\", \"Segoe UI\", Arial, sans-serif",
+        "16px",
+        "400"
+      ]
+    ],
+    ".timeline": [
+      [
+        "\"Segoe UI Variable Display\", \"Segoe UI\", Arial, sans-serif",
+        "16px",
+        "400"
+      ]
+    ],
+    ".statusbar": [
+      [
+        "\"Segoe UI Variable Display\", \"Segoe UI\", Arial, sans-serif",
+        "9px",
+        "400"
+      ]
+    ],
+    ".nav-btn": [
+      [
+        "\"Segoe UI Variable Display\", \"Segoe UI\", Arial, sans-serif",
+        "10px",
+        "400"
+      ]
+    ],
+    ".icon-btn": [
+      [
+        "\"Segoe UI Variable Display\", \"Segoe UI\", Arial, sans-serif",
+        "16px",
+        "400"
+      ]
+    ],
+    ".metric": [
+      [
+        "\"Segoe UI Variable Display\", \"Segoe UI\", Arial, sans-serif",
+        "16px",
+        "400"
+      ]
+    ],
+    ".metric-value": [
+      [
+        "\"Segoe UI Variable Display\", \"Segoe UI\", Arial, sans-serif",
+        "48px",
+        "400"
+      ]
+    ],
+    ".metric-label": [
+      [
+        "\"Segoe UI Variable Display\", \"Segoe UI\", Arial, sans-serif",
+        "11px",
+        "400"
+      ]
+    ],
+    ".next-turn": [
+      [
+        "\"Segoe UI Variable Display\", \"Segoe UI\", Arial, sans-serif",
+        "16px",
+        "400"
+      ]
+    ],
+    ".turn-main": [
+      [
+        "\"Segoe UI Variable Display\", \"Segoe UI\", Arial, sans-serif",
+        "20px",
+        "400"
+      ]
+    ],
+    ".turn-sub": [
+      [
+        "\"Segoe UI Variable Display\", \"Segoe UI\", Arial, sans-serif",
+        "10px",
+        "400"
+      ]
+    ],
+    ".map-tools": [
+      [
+        "\"Segoe UI Variable Display\", \"Segoe UI\", Arial, sans-serif",
+        "16px",
+        "400"
+      ]
+    ],
+    ".follow-btn": [
+      [
+        "\"Segoe UI Variable Display\", \"Segoe UI\", Arial, sans-serif",
+        "11px",
+        "550"
+      ]
+    ],
+    ".autopilot-summary": [
+      [
+        "\"Segoe UI Variable Display\", \"Segoe UI\", Arial, sans-serif",
+        "16px",
+        "400"
+      ]
+    ],
+    ".chart-route": [
+      [
+        "\"Segoe UI Variable Display\", \"Segoe UI\", Arial, sans-serif",
+        "16px",
+        "400"
+      ]
+    ],
+    ".chart-land": [
+      [
+        "\"Segoe UI Variable Display\", \"Segoe UI\", Arial, sans-serif",
+        "16px",
+        "400"
+      ]
+    ],
+    ".chart-depth": [
+      [
+        "\"Segoe UI Variable Display\", \"Segoe UI\", Arial, sans-serif",
+        "10px",
+        "400"
+      ]
+    ],
+    ".ais-ship": [
+      [
+        "\"Segoe UI Variable Display\", \"Segoe UI\", Arial, sans-serif",
+        "16px",
+        "400"
+      ]
+    ],
+    ".drawer": [
+      [
+        "\"Segoe UI Variable Display\", \"Segoe UI\", Arial, sans-serif",
+        "16px",
+        "400"
+      ]
+    ],
+    ".drawer-head": [
+      [
+        "\"Segoe UI Variable Display\", \"Segoe UI\", Arial, sans-serif",
+        "16px",
+        "400"
+      ]
+    ],
+    ".drawer-head h2": [
+      [
+        "\"Segoe UI Variable Display\", \"Segoe UI\", Arial, sans-serif",
+        "26px",
+        "450"
+      ]
+    ],
+    ".drawer-body": [
+      [
+        "\"Segoe UI Variable Display\", \"Segoe UI\", Arial, sans-serif",
+        "16px",
+        "400"
+      ]
+    ],
+    ".btn": [
+      [
+        "\"Segoe UI Variable Display\", \"Segoe UI\", Arial, sans-serif",
+        "12px",
+        "500"
+      ],
+      [
+        "\"Segoe UI Variable Display\", \"Segoe UI\", Arial, sans-serif",
+        "13px",
+        "500"
+      ]
+    ],
+    ".tag": [
+      [
+        "\"Segoe UI Variable Display\", \"Segoe UI\", Arial, sans-serif",
+        "9px",
+        "400"
+      ]
+    ],
+    ".segment button": [
+      [
+        "\"Segoe UI Variable Display\", \"Segoe UI\", Arial, sans-serif",
+        "10px",
+        "400"
+      ]
+    ],
+    ".list-card": [
+      [
+        "\"Segoe UI Variable Display\", \"Segoe UI\", Arial, sans-serif",
+        "16px",
+        "400"
+      ]
+    ],
+    ".row": [
+      [
+        "\"Segoe UI Variable Display\", \"Segoe UI\", Arial, sans-serif",
+        "11px",
+        "400"
+      ],
+      [
+        "\"Segoe UI Variable Display\", \"Segoe UI\", Arial, sans-serif",
+        "12px",
+        "400"
+      ]
+    ],
+    ".dashboard-card": [
+      [
+        "\"Segoe UI Variable Display\", \"Segoe UI\", Arial, sans-serif",
+        "16px",
+        "400"
+      ]
+    ],
+    ".big-stat": [
+      [
+        "\"Segoe UI Variable Display\", \"Segoe UI\", Arial, sans-serif",
+        "60px",
+        "350"
+      ]
+    ],
+    ".view-header h1": [
+      [
+        "\"Segoe UI Variable Display\", \"Segoe UI\", Arial, sans-serif",
+        "30px",
+        "400"
+      ]
+    ],
+    ".toggle": [
+      [
+        "\"Segoe UI Variable Display\", \"Segoe UI\", Arial, sans-serif",
+        "11px",
+        "400"
+      ],
+      [
+        "\"Segoe UI Variable Display\", \"Segoe UI\", Arial, sans-serif",
+        "12px",
+        "400"
+      ]
+    ]
+  }
+}

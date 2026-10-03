@@ -1,0 +1,661 @@
+{
+  "issue": "SCRUM-264",
+  "nightBrightness": 0.78,
+  "rasterizer": "rsvg-convert version 2.62.3\n\nlibraries used:\n  cairo 1.18.4\n  pango 1.58.2\n  harfbuzz 14.4.0\n  fontconfig 2.18.3",
+  "symbols": {
+    "XNLAT013": {
+      "source": "BOYLAT13",
+      "sourceRcid": 2050,
+      "rcid": 60001,
+      "original": [
+        1232,
+        10,
+        14,
+        14
+      ],
+      "originalPivot": [
+        9,
+        9
+      ],
+      "tile": [
+        244,
+        1160,
+        24,
+        28
+      ],
+      "pivot": [
+        12,
+        14
+      ],
+      "sourceNodeSha256": "42b64f6bc0c3f85806d2e3a87ee9747a19fb5d37808e5218ef1bf1ada80b7e04",
+      "prototypeScale": 0.84375,
+      "themes": {
+        "DAY_BRIGHT": {
+          "rgbaSha256": "1cd188b28f5f44be2d4f14a4793c7f6b2152c04d8375b130e234ba03769999c1",
+          "changedPixels": 78
+        },
+        "DUSK": {
+          "rgbaSha256": "a0d39f1b90010c88a1446fdf4cefa5cb139f121873284c423168ff17f21ff048",
+          "changedPixels": 78
+        },
+        "NIGHT": {
+          "rgbaSha256": "b6c5bef27884eed1972959a891dad6afb14c60f792bd0fc8bfa01ef53b8f3c32",
+          "changedPixels": 78
+        }
+      }
+    },
+    "XNLAT014": {
+      "source": "BOYLAT14",
+      "sourceRcid": 2051,
+      "rcid": 60002,
+      "original": [
+        1256,
+        10,
+        14,
+        14
+      ],
+      "originalPivot": [
+        9,
+        9
+      ],
+      "tile": [
+        276,
+        1160,
+        24,
+        28
+      ],
+      "pivot": [
+        12,
+        14
+      ],
+      "sourceNodeSha256": "13e4b5ba15e10011d8e1718d195f6126bb4d494fac5e926d90adad990802ce79",
+      "prototypeScale": 0.84375,
+      "themes": {
+        "DAY_BRIGHT": {
+          "rgbaSha256": "3c5a234947f59c11b8dd534d1eda0f072566027895b6359e252d03622a52169c",
+          "changedPixels": 78
+        },
+        "DUSK": {
+          "rgbaSha256": "70847a3375e5b41ff85a6a5aad2c5311d683374bd38dc57aedcf7b2dd26893cd",
+          "changedPixels": 78
+        },
+        "NIGHT": {
+          "rgbaSha256": "85ab4bc596827dad951fa5b2c9b7c65193973950286c2045e86842e6aebf0d5f",
+          "changedPixels": 78
+        }
+      }
+    },
+    "XNLAT023": {
+      "source": "BOYLAT23",
+      "sourceRcid": 2052,
+      "rcid": 60003,
+      "original": [
+        1280,
+        10,
+        16,
+        13
+      ],
+      "originalPivot": [
+        8,
+        6
+      ],
+      "tile": [
+        308,
+        1160,
+        24,
+        28
+      ],
+      "pivot": [
+        12,
+        14
+      ],
+      "sourceNodeSha256": "ee02678e0188bd20d65ef961fa119325f8a35d0996cadcac1d43dfb6b9a19483",
+      "prototypeScale": 0.84375,
+      "themes": {
+        "DAY_BRIGHT": {
+          "rgbaSha256": "625d1a562f9907e4c852ded1af4e040b645dc7dbc41883bb0c352ce4805dd046",
+          "changedPixels": 78
+        },
+        "DUSK": {
+          "rgbaSha256": "be1715d098711fcb56c41f68e33ede6021987486a6209a231dbaaf6e3e762463",
+          "changedPixels": 78
+        },
+        "NIGHT": {
+          "rgbaSha256": "52243af3135d38f76eb15286f8b02b6c1d07789c92ed61668904e201078be1c3",
+          "changedPixels": 78
+        }
+      }
+    },
+    "XNLAT024": {
+      "source": "BOYLAT24",
+      "sourceRcid": 2053,
+      "rcid": 60004,
+      "original": [
+        1306,
+        10,
+        16,
+        13
+      ],
+      "originalPivot": [
+        8,
+        6
+      ],
+      "tile": [
+        340,
+        1160,
+        24,
+        28
+      ],
+      "pivot": [
+        12,
+        14
+      ],
+      "sourceNodeSha256": "9edccd70199d35f2449f9bf3d3fd02dbefc7889a4032685e5afdb17dba18e71f",
+      "prototypeScale": 0.84375,
+      "themes": {
+        "DAY_BRIGHT": {
+          "rgbaSha256": "13eb1247514a58eb8412f1f12a5081356ad7fefb26619dcded8c8620b05b5e38",
+          "changedPixels": 78
+        },
+        "DUSK": {
+          "rgbaSha256": "58673961416916c25d03877fb407d0a4828a3ee63054f0daa322dd1be626f2d1",
+          "changedPixels": 78
+        },
+        "NIGHT": {
+          "rgbaSha256": "4eed436afe9d5c305cd2a1ef32ac076a35c2ba77de2747bb4adbafcc88d414c4",
+          "changedPixels": 78
+        }
+      }
+    },
+    "XNCAN072": {
+      "source": "BOYCAN72",
+      "sourceRcid": 26,
+      "rcid": 60005,
+      "original": [
+        805,
+        701,
+        19,
+        15
+      ],
+      "originalPivot": [
+        9,
+        11
+      ],
+      "tile": [
+        372,
+        1160,
+        24,
+        28
+      ],
+      "pivot": [
+        12,
+        14
+      ],
+      "sourceNodeSha256": "3941c8f96968dd963a4b2e6e8b7195af21af91a81ba77bb56efba1e6feed6480",
+      "prototypeScale": 0.84375,
+      "themes": {
+        "DAY_BRIGHT": {
+          "rgbaSha256": "89ce8a19d24636640c0c8a2a38fd1302c79198f665f613d0f4f5b71e64a9b91b",
+          "changedPixels": 78
+        },
+        "DUSK": {
+          "rgbaSha256": "57281d4eda58ffa5005b734ffbc5730fda018c0ba9771bfe434f0230f0729de3",
+          "changedPixels": 78
+        },
+        "NIGHT": {
+          "rgbaSha256": "5e91414fe55363fdc7585928db05979194102cda2af06afa851841a5daa43df9",
+          "changedPixels": 78
+        }
+      }
+    },
+    "XNCAN073": {
+      "source": "BOYCAN73",
+      "sourceRcid": 26,
+      "rcid": 60006,
+      "original": [
+        834,
+        701,
+        19,
+        15
+      ],
+      "originalPivot": [
+        9,
+        11
+      ],
+      "tile": [
+        404,
+        1160,
+        24,
+        28
+      ],
+      "pivot": [
+        12,
+        14
+      ],
+      "sourceNodeSha256": "6e00067c81369b536de1086736035373aa149e175987f5f3ff1d6e2e2606c4ed",
+      "prototypeScale": 0.84375,
+      "themes": {
+        "DAY_BRIGHT": {
+          "rgbaSha256": "afab1983894c2eb6064c72f3513cb49407a9784ff63532f2117f2f643b77fc68",
+          "changedPixels": 78
+        },
+        "DUSK": {
+          "rgbaSha256": "3e03bf471a3462c3c7accf85095d045712ff1f5ca2aeb125d601610c595a2a89",
+          "changedPixels": 78
+        },
+        "NIGHT": {
+          "rgbaSha256": "d960fca4f0a02481cd3f500ab7c9551e4900c0f0bfd710cae49129f2b8460f1f",
+          "changedPixels": 78
+        }
+      }
+    },
+    "XNCON066": {
+      "source": "BOYCON66",
+      "sourceRcid": 31,
+      "rcid": 60007,
+      "original": [
+        891,
+        701,
+        19,
+        16
+      ],
+      "originalPivot": [
+        9,
+        12
+      ],
+      "tile": [
+        436,
+        1160,
+        24,
+        28
+      ],
+      "pivot": [
+        12,
+        14
+      ],
+      "sourceNodeSha256": "f9501c1c3f3d0450582e5286cbd4b5f226f2ad3496f6a6493cfebd77bac2d081",
+      "prototypeScale": 0.84375,
+      "themes": {
+        "DAY_BRIGHT": {
+          "rgbaSha256": "1d6ead71a866f4899958742622ccb5007c3525fe3992ca5f51d7a8e4f049d178",
+          "changedPixels": 78
+        },
+        "DUSK": {
+          "rgbaSha256": "830812c4c3d98dbca47ce17d1c2bc7c9c0c2b5f61a4e778f5457d7eb433e231d",
+          "changedPixels": 78
+        },
+        "NIGHT": {
+          "rgbaSha256": "e24dd71cfc03fabc3ef7bcf5d724139c67cb2609504d2b3a4bbc16053624a9cc",
+          "changedPixels": 78
+        }
+      }
+    },
+    "XNCON067": {
+      "source": "BOYCON67",
+      "sourceRcid": 31,
+      "rcid": 60008,
+      "original": [
+        920,
+        701,
+        19,
+        16
+      ],
+      "originalPivot": [
+        9,
+        12
+      ],
+      "tile": [
+        468,
+        1160,
+        24,
+        28
+      ],
+      "pivot": [
+        12,
+        14
+      ],
+      "sourceNodeSha256": "285062b0f4e9bd012b94f9f228149aef52335bd1bf986447f0311136f4637a74",
+      "prototypeScale": 0.84375,
+      "themes": {
+        "DAY_BRIGHT": {
+          "rgbaSha256": "59e9ac56ac8d033e3d6b030f21e56c625a3126c2d2df9058c6d00faa5bd02aba",
+          "changedPixels": 78
+        },
+        "DUSK": {
+          "rgbaSha256": "df28cd00b63093a162e837c1ce6b504968a8517bd4f522986a98a0b8f3a05217",
+          "changedPixels": 78
+        },
+        "NIGHT": {
+          "rgbaSha256": "6e6d0a8b7a550492827412adc4145963b955cdbe53b57f401bffbf538816929a",
+          "changedPixels": 78
+        }
+      }
+    },
+    "BOYISD12": {
+      "source": "BOYISD12",
+      "sourceRcid": 2049,
+      "rcid": 2049,
+      "original": [
+        1210,
+        10,
+        12,
+        17
+      ],
+      "originalPivot": [
+        5,
+        8
+      ],
+      "tile": [
+        500,
+        1160,
+        24,
+        28
+      ],
+      "pivot": [
+        12,
+        14
+      ],
+      "sourceNodeSha256": "0a4d6ed41ee7ff5dea5a95e4b15950b4550654b6c396a8d4cbe82eb876bfb855",
+      "prototypeScale": 0.84375,
+      "themes": {
+        "DAY_BRIGHT": {
+          "rgbaSha256": "96d1eced6b085f485b49783a821adcd44d8e745daddaeb5653bcb07d7890872c",
+          "changedPixels": 100
+        },
+        "DUSK": {
+          "rgbaSha256": "917681c9aa7483bf3cfa1788e5f1c4d6870ee6f0e4ac2014b7d7f5042ea03e61",
+          "changedPixels": 100
+        },
+        "NIGHT": {
+          "rgbaSha256": "399159d1ad8092a7c4527ce53b0949ca391fe75b51d359f20b12117f90fdcf1c",
+          "changedPixels": 100
+        }
+      }
+    },
+    "BOYSAW12": {
+      "source": "BOYSAW12",
+      "sourceRcid": 1294,
+      "rcid": 1294,
+      "original": [
+        1451,
+        10,
+        13,
+        13
+      ],
+      "originalPivot": [
+        6,
+        6
+      ],
+      "tile": [
+        532,
+        1160,
+        24,
+        28
+      ],
+      "pivot": [
+        12,
+        14
+      ],
+      "sourceNodeSha256": "64678f1bc372712a728b361a1ecfe4e09f4a435b532d385f580c78a5df28b7b0",
+      "prototypeScale": 0.84375,
+      "themes": {
+        "DAY_BRIGHT": {
+          "rgbaSha256": "a1d7206961ba7713134f8e5d95a914e7d2c42393eb0ab5a6604f5cb4e14a690b",
+          "changedPixels": 84
+        },
+        "DUSK": {
+          "rgbaSha256": "619d49f36ab621aca4931351375e8b51061689a55fdd6ff37087857da7a3410e",
+          "changedPixels": 84
+        },
+        "NIGHT": {
+          "rgbaSha256": "6645e1d08cd5960d11a3848e693f1ef7c987751b86246ee971499f0e0a7a7ba6",
+          "changedPixels": 84
+        }
+      }
+    },
+    "LIGHTS13": {
+      "source": "LIGHTS13",
+      "sourceRcid": 1398,
+      "rcid": 1398,
+      "original": [
+        278,
+        175,
+        22,
+        22
+      ],
+      "originalPivot": [
+        0,
+        0
+      ],
+      "tile": [
+        564,
+        1160,
+        24,
+        28
+      ],
+      "pivot": [
+        12,
+        14
+      ],
+      "sourceNodeSha256": "d61559cd61187c3f7ad6239313d6447223ddf6759ac90d4d842a3893e4fada2b",
+      "prototypeScale": 0.78125,
+      "themes": {
+        "DAY_BRIGHT": {
+          "rgbaSha256": "409b10976ec0856f30c32a9a3c2578bee85b2d142211cfc830bb5a9fae961198",
+          "changedPixels": 88
+        },
+        "DUSK": {
+          "rgbaSha256": "89b150f25640cc4196eabf5df4f41c87fbb5fc14501364751ee2faf7c954dc30",
+          "changedPixels": 88
+        },
+        "NIGHT": {
+          "rgbaSha256": "d5c8f0b72d994526ed5e7d7cdd718ed7082a2c974b7a711460c9ba8c37bb32a4",
+          "changedPixels": 88
+        }
+      }
+    }
+  },
+  "sources": {
+    "docs/design/prototype/src/chart-marker-art.js": "be2c7f44817c29d3714412c7974d3cf07e238f65c7131958b0cb8ff6fbd7816d",
+    "docs/design/prototype/src/seamarks.json": "78377f9622f82b6e2e16b6709fe62056863389ae5f6cc21bc6da9de3ed9cdfd9",
+    "docs/design/prototype/src/chart-symbols.css": "ca7ec18b38bf682600b6c3c39c5798c94b00bbaddd5589119d5fcb77ad599cb3",
+    "docs/design/prototype/src/chart-symbols.js": "d88ffe6f7566fb5fddcb49488cf28e2267e6a76a7ffabda7e53fb3751b7cc1b3",
+    "docs/design/prototype/src/style.css": "f943f5c91e2b260067e97a80d47fc923b64c3bb715c73a58ce1d4a6bf7a1bb46",
+    "docs/design/prototype-tokens.json": "111ee35527a974b2df6c2c4af0afd04e5aebdf14bad3004a98be9064aef790c6",
+    "resources/chart-style/v1/seamarks/BOYISD12-DAY_BRIGHT-rgba.json": "c483c43f0181b74ffc5b8f0f2da10163687c9c78fe8764b85278f9c4555ee977",
+    "resources/chart-style/v1/seamarks/BOYISD12-DAY_BRIGHT.svg": "1b3c4c35926df39e33b17acefb26ec01d12a3693b21cf60e67c6feef8053abaa",
+    "resources/chart-style/v1/seamarks/BOYISD12-DUSK-rgba.json": "1116f8977d03f101d6fe56a647e44290ce964e1d2d198703c084e15f214ba709",
+    "resources/chart-style/v1/seamarks/BOYISD12-DUSK.svg": "c4ee9ff793310c053574a23635e395e3cf3cee7bc1d028ea04ce2d46f4f262a2",
+    "resources/chart-style/v1/seamarks/BOYISD12-NIGHT-rgba.json": "81cfbd3801d6245846e86a885621331e193f47cbed44784dddc19b1b7c46a15f",
+    "resources/chart-style/v1/seamarks/BOYISD12-NIGHT.svg": "350b25d611cd11a15a73be35e19114b0344118a3d59938373ecbc16c85dafcb0",
+    "resources/chart-style/v1/seamarks/BOYSAW12-DAY_BRIGHT-rgba.json": "ae7ea600b18978c994d9c9f70ba8bf0c12211f8fe357749ba3d0e251bfc9c5df",
+    "resources/chart-style/v1/seamarks/BOYSAW12-DAY_BRIGHT.svg": "634550bbefef375c089f54703e0d25b8e008347770b4dafef0b623201a07c14b",
+    "resources/chart-style/v1/seamarks/BOYSAW12-DUSK-rgba.json": "7f36afd619d71f7d8bb6dab9f0f7fe3946cecdfe806b3ab8511743ebe6091045",
+    "resources/chart-style/v1/seamarks/BOYSAW12-DUSK.svg": "6f3885394171b9613c5e02ead4ea21e78b4b4e03767312fc16cb48ed3262bfd7",
+    "resources/chart-style/v1/seamarks/BOYSAW12-NIGHT-rgba.json": "8ebb69c8d3e48d7533f846eae230e1bb49718369966e82f38a27a2667ab8bfb4",
+    "resources/chart-style/v1/seamarks/BOYSAW12-NIGHT.svg": "2cd95bbd52ee893b138a6c927ba127e3e27b4814e8efc4763b6d819cc665d66f",
+    "resources/chart-style/v1/seamarks/LIGHTS13-DAY_BRIGHT-rgba.json": "f10ea1f607a5b257a21a36704e18b7bb1bf501668b80b887e0993a0496bb5b45",
+    "resources/chart-style/v1/seamarks/LIGHTS13-DAY_BRIGHT.svg": "7f8b8baaf8644fc339f41d8c58647d4ab7ec50e2709a98d1f35b8623f9c06631",
+    "resources/chart-style/v1/seamarks/LIGHTS13-DUSK-rgba.json": "03aeb3957dae708c07f734ab78d19335935d47c182f0d4c362abf6c7a434a918",
+    "resources/chart-style/v1/seamarks/LIGHTS13-DUSK.svg": "648e6adf78d25d4e27337d3668b3fd6d94d7131082db590cc33cdc7229a1d182",
+    "resources/chart-style/v1/seamarks/LIGHTS13-NIGHT-rgba.json": "8cee428afc70240890c5497bcbdd95b9bf6ce79d16e23ef5d3e992bd50c94fbc",
+    "resources/chart-style/v1/seamarks/LIGHTS13-NIGHT.svg": "f46057d1dc18dab90dc3cf95901c5179928f2a54c20e05e1cf96b2375d7bdc56",
+    "resources/chart-style/v1/seamarks/XNCAN072-DAY_BRIGHT-rgba.json": "a53e81260ab115c102c868550acd8c5b9e3e4146ef73d70673db1c48c5319d72",
+    "resources/chart-style/v1/seamarks/XNCAN072-DAY_BRIGHT.svg": "0d619870d7c7181ac358273ae8ea0ed34fac09f9f0d381088cee0c0c9078293d",
+    "resources/chart-style/v1/seamarks/XNCAN072-DUSK-rgba.json": "74717abbe7a9ba904b2d0f6f8d04cee87d7439b91d38d82b38622ac33622adfb",
+    "resources/chart-style/v1/seamarks/XNCAN072-DUSK.svg": "660ceeb9f75916a8359489f029a6f9725bcf91be9752c5cde26d7feae66a7ba9",
+    "resources/chart-style/v1/seamarks/XNCAN072-NIGHT-rgba.json": "0d33eb443ff8989de0fb99477df7d814c3dcb0c905a93689a1a066dd6104b232",
+    "resources/chart-style/v1/seamarks/XNCAN072-NIGHT.svg": "279b31eadbfe58833009211b65204db5c810dded3347b5a75bdb17109e543a66",
+    "resources/chart-style/v1/seamarks/XNCAN073-DAY_BRIGHT-rgba.json": "bff777111a10b8d9cbee83390700245b85ac33c11ae93979df42b6752640aa08",
+    "resources/chart-style/v1/seamarks/XNCAN073-DAY_BRIGHT.svg": "b46d93bf4a7930eef9b5cc4cf39b6647fbf90eb79c3e1c4f7fc37b1c1dc37387",
+    "resources/chart-style/v1/seamarks/XNCAN073-DUSK-rgba.json": "9cb4a88e29934675e3e1b93b8c5dbc97bdaf73eca8aa675d8f739c32fd0ea51a",
+    "resources/chart-style/v1/seamarks/XNCAN073-DUSK.svg": "c098694270ec0daf57ce0e231e2a1c544f209d41b509b7253cbb72dacb768c27",
+    "resources/chart-style/v1/seamarks/XNCAN073-NIGHT-rgba.json": "3080c7c52ac655200e0210af69e2ae3719490c03c0b8398a257421f20875cf47",
+    "resources/chart-style/v1/seamarks/XNCAN073-NIGHT.svg": "ce278633cbc2fb64130595a0caeccc6d27934ece56b30414f20c8f0717e815e6",
+    "resources/chart-style/v1/seamarks/XNCON066-DAY_BRIGHT-rgba.json": "6677f596bcf4cdba746c53e26823ba3753a883b6ecb0a22d749eadd8502828d0",
+    "resources/chart-style/v1/seamarks/XNCON066-DAY_BRIGHT.svg": "807c0575c4c0fef318df78a7b152b9ef0b0383c190670ac3cb697b05759e6e4a",
+    "resources/chart-style/v1/seamarks/XNCON066-DUSK-rgba.json": "aa9e396b36884a077a15a3cd6809918d83266be6b087bd8faab4d097f2895a76",
+    "resources/chart-style/v1/seamarks/XNCON066-DUSK.svg": "b13dd3d85e5c8d3ab566d04c8089c4d810dcb8cb0abffa6ce5644d702f238374",
+    "resources/chart-style/v1/seamarks/XNCON066-NIGHT-rgba.json": "db41dc4ecee44c3f4b172be9cdcf281bd229ab1b42dfbf7322b98834a1ef38b7",
+    "resources/chart-style/v1/seamarks/XNCON066-NIGHT.svg": "1aef423871bf1464f69f200c906acfbf5be5e7a0b9030cc08634b0e6abf2b669",
+    "resources/chart-style/v1/seamarks/XNCON067-DAY_BRIGHT-rgba.json": "a2d946254bb9135f032c2a08d41c4badd80396d783961a2e91899ccaf523e128",
+    "resources/chart-style/v1/seamarks/XNCON067-DAY_BRIGHT.svg": "58bdbfa03dab56f50770806bd5509256b5339171b34553a311a1a4821bbf0350",
+    "resources/chart-style/v1/seamarks/XNCON067-DUSK-rgba.json": "3702ff0ff3a963271c0453a04359e3881badacd989b636b0454f337817398a0f",
+    "resources/chart-style/v1/seamarks/XNCON067-DUSK.svg": "653f4480963c5e13414b3fcdf85e08f905dee03f7de2c878d60a0010d69dd4db",
+    "resources/chart-style/v1/seamarks/XNCON067-NIGHT-rgba.json": "ca5a96dc94a09d872274cc5b331a86382d70ad2b6909d4a6ad48b270d2fb92e5",
+    "resources/chart-style/v1/seamarks/XNCON067-NIGHT.svg": "fdeed3dfdbea04554b9d172bdd1c6e538a8e5141ca51008945e332c25c34aeb8",
+    "resources/chart-style/v1/seamarks/XNLAT013-DAY_BRIGHT-rgba.json": "18c6a2adb42932d0360aea0fd30dc25822e763be282979a324684515dabf4070",
+    "resources/chart-style/v1/seamarks/XNLAT013-DAY_BRIGHT.svg": "c7a7609bf6574df993774658fe38f8fec09990b0c9b9ac91bb6266b544f9c618",
+    "resources/chart-style/v1/seamarks/XNLAT013-DUSK-rgba.json": "a91327f3cfcb83089a3f4956851c157acc1bd77c9c76287821475bdceb60892a",
+    "resources/chart-style/v1/seamarks/XNLAT013-DUSK.svg": "f324b4707dbdbfa12c846bf2531aa6ab9633174559a65071508b28ffc1de49cd",
+    "resources/chart-style/v1/seamarks/XNLAT013-NIGHT-rgba.json": "0c2fd37a7f8ae56476f163eee154dd3385b2e673be5889122bb950b6caaf70d1",
+    "resources/chart-style/v1/seamarks/XNLAT013-NIGHT.svg": "97225c6622cd4d9be3e5e744494cfcd0c1069e1568e7278daa328265dfa58d21",
+    "resources/chart-style/v1/seamarks/XNLAT014-DAY_BRIGHT-rgba.json": "3ddb78a7354e5819a0bdf82d3573070353ea7a41598cba1b7320ccc77b3088e1",
+    "resources/chart-style/v1/seamarks/XNLAT014-DAY_BRIGHT.svg": "343e52f91902fe13e25f8297ebe07c82a58c27489cc3fc7439e72620aa4b3559",
+    "resources/chart-style/v1/seamarks/XNLAT014-DUSK-rgba.json": "29bd5b3a8c223af69668cbb74c86929b82219df747591dbd3246b27dc8e28008",
+    "resources/chart-style/v1/seamarks/XNLAT014-DUSK.svg": "a6f0a1f4139cb0dcb7f94ffa2531f8fd54f672475cbd8d6d58951b17d497a436",
+    "resources/chart-style/v1/seamarks/XNLAT014-NIGHT-rgba.json": "34abf0b70e74330198cbc9c7cdc5abad864cdf5f10f58280b1650bc5aeab38de",
+    "resources/chart-style/v1/seamarks/XNLAT014-NIGHT.svg": "364491a822462bd23f1ab5921d12e0af1937db843cd2664a4ba8fcb0ab0ac782",
+    "resources/chart-style/v1/seamarks/XNLAT023-DAY_BRIGHT-rgba.json": "5e4029afc4a8d41e830cabb38b3f48505e76f0140af81cab9a47818f0c351355",
+    "resources/chart-style/v1/seamarks/XNLAT023-DAY_BRIGHT.svg": "c8d956c5cd04689df576b1ebec19ff09c9534020314c77dce6d0cdc99f8135d4",
+    "resources/chart-style/v1/seamarks/XNLAT023-DUSK-rgba.json": "33bcdbf5ffd911f629070e86ac30cfb67ab559153854991fad7fced705ff2825",
+    "resources/chart-style/v1/seamarks/XNLAT023-DUSK.svg": "016ca90648a98e0a694acd3a8bd63418d7e0baddf5bb2e6ec36d500a56d8be25",
+    "resources/chart-style/v1/seamarks/XNLAT023-NIGHT-rgba.json": "c6af08cfd54314ab050642da2a4033dc1041940db6f29b930df32eb16b4333c7",
+    "resources/chart-style/v1/seamarks/XNLAT023-NIGHT.svg": "9310ff7b112724687a8564519a602d3d71c9d4b712d18ce9e3cb18520bf2c4b9",
+    "resources/chart-style/v1/seamarks/XNLAT024-DAY_BRIGHT-rgba.json": "6b2f389f8724a30991d14b7d18e724bf76f952e22320d1e09d4e57ca9aef255f",
+    "resources/chart-style/v1/seamarks/XNLAT024-DAY_BRIGHT.svg": "cd969beb553ada2259cdaa289922c5bda7fa2ca44330b6970b837f4109279961",
+    "resources/chart-style/v1/seamarks/XNLAT024-DUSK-rgba.json": "bf204db9cd18e357ed46502b6d3f4f88478090b96456115842f95c484f15c53b",
+    "resources/chart-style/v1/seamarks/XNLAT024-DUSK.svg": "69016fd4f9097f5081f03b25c3722551a354b8bbae7f545f1a2101c617590d75",
+    "resources/chart-style/v1/seamarks/XNLAT024-NIGHT-rgba.json": "b5ae5c1d4b2308d2e7fd4235d7cd75edf16a68fa4a9b315d3e9927767a6dffca",
+    "resources/chart-style/v1/seamarks/XNLAT024-NIGHT.svg": "dd25707242dfd84c3b4388aca0da84893fc41b4546a8f25b528d80a114489259",
+    "resources/chart-style/v1/seamarks/mapping.json": "ce6d9e8cc9b18532e3235f981bc894d6dd367b67e23530adeab9305b423f226b"
+  },
+  "colors": {
+    "DAY_BRIGHT": {
+      "--chart-text": [
+        104,
+        123,
+        122
+      ],
+      "--floating": [
+        247,
+        248,
+        240
+      ],
+      "--mark-yellow": [
+        172,
+        141,
+        76
+      ],
+      "--mark-green": [
+        80,
+        141,
+        120
+      ],
+      "--water": [
+        213,
+        229,
+        229
+      ],
+      "--mark-red": [
+        182,
+        110,
+        108
+      ],
+      "--mark-black": [
+        83,
+        100,
+        95
+      ],
+      "--mark-white": [
+        246,
+        247,
+        239
+      ]
+    },
+    "DUSK": {
+      "--chart-text": [
+        173,
+        187,
+        177
+      ],
+      "--floating": [
+        36,
+        58,
+        64
+      ],
+      "--mark-yellow": [
+        203,
+        177,
+        122
+      ],
+      "--mark-green": [
+        143,
+        186,
+        162
+      ],
+      "--water": [
+        52,
+        79,
+        89
+      ],
+      "--mark-red": [
+        211,
+        148,
+        140
+      ],
+      "--mark-black": [
+        195,
+        206,
+        194
+      ],
+      "--mark-white": [
+        215,
+        222,
+        207
+      ]
+    },
+    "NIGHT": {
+      "--chart-text": [
+        91,
+        104,
+        94
+      ],
+      "--floating": [
+        16,
+        26,
+        32
+      ],
+      "--mark-yellow": [
+        131,
+        112,
+        76
+      ],
+      "--mark-green": [
+        94,
+        122,
+        103
+      ],
+      "--water": [
+        14,
+        23,
+        28
+      ],
+      "--mark-red": [
+        136,
+        94,
+        87
+      ],
+      "--mark-black": [
+        107,
+        119,
+        109
+      ],
+      "--mark-white": [
+        128,
+        136,
+        125
+      ]
+    }
+  }
+}

@@ -1,0 +1,52 @@
+/tmp/skager-capture-wmco7k9n/SKAGER
+/home/standard/Projects/X-nav-worktrees/scrum260-area-ink/.local/combined-linux-capture/capture-final.py:189: DeprecationWarning: Image.Image.getdata is deprecated and will be removed in Pillow 14 (2027-10-15). Use get_flattened_data instead.
+  edge_top = list(image.crop((690,68,1094,76)).getdata())
+/home/standard/Projects/X-nav-worktrees/scrum260-area-ink/.local/combined-linux-capture/capture-final.py:190: DeprecationWarning: Image.Image.getdata is deprecated and will be removed in Pillow 14 (2027-10-15). Use get_flattened_data instead.
+  edge_bottom = list(image.crop((690,626,1094,634)).getdata())
+/home/standard/Projects/X-nav-worktrees/scrum260-area-ink/.local/combined-linux-capture/capture-final.py:200: DeprecationWarning: Image.Image.getdata is deprecated and will be removed in Pillow 14 (2027-10-15). Use get_flattened_data instead.
+  pixels=collections.Counter(image.crop((x,y,x+w,y+h)).getdata())
+/home/standard/Projects/X-nav-worktrees/scrum260-area-ink/.local/combined-linux-capture/capture-final.py:189: DeprecationWarning: Image.Image.getdata is deprecated and will be removed in Pillow 14 (2027-10-15). Use get_flattened_data instead.
+  edge_top = list(image.crop((690,68,1094,76)).getdata())
+/home/standard/Projects/X-nav-worktrees/scrum260-area-ink/.local/combined-linux-capture/capture-final.py:190: DeprecationWarning: Image.Image.getdata is deprecated and will be removed in Pillow 14 (2027-10-15). Use get_flattened_data instead.
+  edge_bottom = list(image.crop((690,626,1094,634)).getdata())
+/home/standard/Projects/X-nav-worktrees/scrum260-area-ink/.local/combined-linux-capture/capture-final.py:200: DeprecationWarning: Image.Image.getdata is deprecated and will be removed in Pillow 14 (2027-10-15). Use get_flattened_data instead.
+  pixels=collections.Counter(image.crop((x,y,x+w,y+h)).getdata())
+/home/standard/Projects/X-nav-worktrees/scrum260-area-ink/.local/combined-linux-capture/capture-final.py:189: DeprecationWarning: Image.Image.getdata is deprecated and will be removed in Pillow 14 (2027-10-15). Use get_flattened_data instead.
+  edge_top = list(image.crop((690,68,1094,76)).getdata())
+/home/standard/Projects/X-nav-worktrees/scrum260-area-ink/.local/combined-linux-capture/capture-final.py:190: DeprecationWarning: Image.Image.getdata is deprecated and will be removed in Pillow 14 (2027-10-15). Use get_flattened_data instead.
+  edge_bottom = list(image.crop((690,626,1094,634)).getdata())
+/home/standard/Projects/X-nav-worktrees/scrum260-area-ink/.local/combined-linux-capture/capture-final.py:200: DeprecationWarning: Image.Image.getdata is deprecated and will be removed in Pillow 14 (2027-10-15). Use get_flattened_data instead.
+  pixels=collections.Counter(image.crop((x,y,x+w,y+h)).getdata())
+/home/standard/Projects/X-nav-worktrees/scrum260-area-ink/.local/combined-linux-capture/capture-final.py:189: DeprecationWarning: Image.Image.getdata is deprecated and will be removed in Pillow 14 (2027-10-15). Use get_flattened_data instead.
+  edge_top = list(image.crop((690,68,1094,76)).getdata())
+/home/standard/Projects/X-nav-worktrees/scrum260-area-ink/.local/combined-linux-capture/capture-final.py:190: DeprecationWarning: Image.Image.getdata is deprecated and will be removed in Pillow 14 (2027-10-15). Use get_flattened_data instead.
+  edge_bottom = list(image.crop((690,626,1094,634)).getdata())
+/home/standard/Projects/X-nav-worktrees/scrum260-area-ink/.local/combined-linux-capture/capture-final.py:200: DeprecationWarning: Image.Image.getdata is deprecated and will be removed in Pillow 14 (2027-10-15). Use get_flattened_data instead.
+  pixels=collections.Counter(image.crop((x,y,x+w,y+h)).getdata())
+/tmp/skager-capture-wmco7k9n/Standard
+/home/standard/Projects/X-nav-worktrees/scrum260-area-ink/.local/combined-linux-capture/capture-final.py:189: DeprecationWarning: Image.Image.getdata is deprecated and will be removed in Pillow 14 (2027-10-15). Use get_flattened_data instead.
+  edge_top = list(image.crop((690,68,1094,76)).getdata())
+/home/standard/Projects/X-nav-worktrees/scrum260-area-ink/.local/combined-linux-capture/capture-final.py:190: DeprecationWarning: Image.Image.getdata is deprecated and will be removed in Pillow 14 (2027-10-15). Use get_flattened_data instead.
+  edge_bottom = list(image.crop((690,626,1094,634)).getdata())
+/home/standard/Projects/X-nav-worktrees/scrum260-area-ink/.local/combined-linux-capture/capture-final.py:200: DeprecationWarning: Image.Image.getdata is deprecated and will be removed in Pillow 14 (2027-10-15). Use get_flattened_data instead.
+  pixels=collections.Counter(image.crop((x,y,x+w,y+h)).getdata())
+/home/standard/Projects/X-nav-worktrees/scrum260-area-ink/.local/combined-linux-capture/capture-final.py:189: DeprecationWarning: Image.Image.getdata is deprecated and will be removed in Pillow 14 (2027-10-15). Use get_flattened_data instead.
+  edge_top = list(image.crop((690,68,1094,76)).getdata())
+/home/standard/Projects/X-nav-worktrees/scrum260-area-ink/.local/combined-linux-capture/capture-final.py:190: DeprecationWarning: Image.Image.getdata is deprecated and will be removed in Pillow 14 (2027-10-15). Use get_flattened_data instead.
+  edge_bottom = list(image.crop((690,626,1094,634)).getdata())
+/home/standard/Projects/X-nav-worktrees/scrum260-area-ink/.local/combined-linux-capture/capture-final.py:200: DeprecationWarning: Image.Image.getdata is deprecated and will be removed in Pillow 14 (2027-10-15). Use get_flattened_data instead.
+  pixels=collections.Counter(image.crop((x,y,x+w,y+h)).getdata())
+/home/standard/Projects/X-nav-worktrees/scrum260-area-ink/.local/combined-linux-capture/capture-final.py:189: DeprecationWarning: Image.Image.getdata is deprecated and will be removed in Pillow 14 (2027-10-15). Use get_flattened_data instead.
+  edge_top = list(image.crop((690,68,1094,76)).getdata())
+/home/standard/Projects/X-nav-worktrees/scrum260-area-ink/.local/combined-linux-capture/capture-final.py:190: DeprecationWarning: Image.Image.getdata is deprecated and will be removed in Pillow 14 (2027-10-15). Use get_flattened_data instead.
+  edge_bottom = list(image.crop((690,626,1094,634)).getdata())
+/home/standard/Projects/X-nav-worktrees/scrum260-area-ink/.local/combined-linux-capture/capture-final.py:200: DeprecationWarning: Image.Image.getdata is deprecated and will be removed in Pillow 14 (2027-10-15). Use get_flattened_data instead.
+  pixels=collections.Counter(image.crop((x,y,x+w,y+h)).getdata())
+/home/standard/Projects/X-nav-worktrees/scrum260-area-ink/.local/combined-linux-capture/capture-final.py:189: DeprecationWarning: Image.Image.getdata is deprecated and will be removed in Pillow 14 (2027-10-15). Use get_flattened_data instead.
+  edge_top = list(image.crop((690,68,1094,76)).getdata())
+/home/standard/Projects/X-nav-worktrees/scrum260-area-ink/.local/combined-linux-capture/capture-final.py:190: DeprecationWarning: Image.Image.getdata is deprecated and will be removed in Pillow 14 (2027-10-15). Use get_flattened_data instead.
+  edge_bottom = list(image.crop((690,626,1094,634)).getdata())
+/home/standard/Projects/X-nav-worktrees/scrum260-area-ink/.local/combined-linux-capture/capture-final.py:200: DeprecationWarning: Image.Image.getdata is deprecated and will be removed in Pillow 14 (2027-10-15). Use get_flattened_data instead.
+  pixels=collections.Counter(image.crop((x,y,x+w,y+h)).getdata())
+Verified private clean application a3e84771652c920479517f0d16a1dd6133c440d2 and exact upstream result of nine patches
+Eight exact-build real-ENC theme-cycle captures passed: /home/standard/Projects/X-nav-worktrees/scrum260-area-ink/.local/combined-linux-capture/output/capture-a3e8477-opengl
