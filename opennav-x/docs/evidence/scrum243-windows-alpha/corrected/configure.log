@@ -1,0 +1,11 @@
+-- Selecting Windows SDK version 10.0.26100.0 to target Windows 10.0.20348.
+-- The CXX compiler identification is MSVC 19.44.35229.0
+-- Detecting CXX compiler ABI info
+-- Detecting CXX compiler ABI info - done
+-- Check for working CXX compiler: C:/Program Files/Microsoft Visual Studio/2022/Enterprise/VC/Tools/MSVC/14.44.35207/bin/Hostx64/x86/cl.exe - skipped
+-- Detecting CXX compile features
+-- Detecting CXX compile features - done
+-- Found wxWidgets: D:/a/Work/Work/opennav-x/build/windows-chart-name-sdk/wx/lib/vc14x_dll/wxbase32u.lib;D:/a/Work/Work/opennav-x/build/windows-chart-name-sdk/wx/lib/vc14x_dll/wxmsw32u_core.lib;D:/a/Work/Work/opennav-x/build/windows-chart-name-sdk/wx/lib/vc14x_dll/wxpng.lib;D:/a/Work/Work/opennav-x/build/windows-chart-name-sdk/wx/lib/vc14x_dll/wxtiff.lib;D:/a/Work/Work/opennav-x/build/windows-chart-name-sdk/wx/lib/vc14x_dll/wxjpeg.lib;D:/a/Work/Work/opennav-x/build/windows-chart-name-sdk/wx/lib/vc14x_dll/wxzlib.lib;D:/a/Work/Work/opennav-x/build/windows-chart-name-sdk/wx/lib/vc14x_dll/wxregexu.lib;D:/a/Work/Work/opennav-x/build/windows-chart-name-sdk/wx/lib/vc14x_dll/wxexpat.lib;gdiplus;msimg32;winmm;comctl32;uuid;oleacc;uxtheme;rpcrt4;shlwapi;version;wsock32 (found version "3.2.8") found components: base core png tiff jpeg zlib regex expat
+-- Configuring done (11.2s)
+-- Generating done (0.0s)
+-- Build files have been written to: D:/a/Work/Work/opennav-x/evidence/local/chart-name-painter/build

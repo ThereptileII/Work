@@ -88,6 +88,31 @@ try {
   Require ($prepared.status -ceq 'prepared-only' -and -not $prepared.applicationLaunched -and -not $prepared.profileChanged -and (Get-Digest $prepared.record) -ceq $prepared.recordSha256) ($case+': actual private immutable session produced without application launch')
   Require ($session.sid -ceq [Security.Principal.WindowsIdentity]::GetCurrent().User.Value -and $session.windowsSessionId -ceq [Diagnostics.Process]::GetCurrentProcess().SessionId.ToString()) ($case+': actual OS account/session retained')
   Require ((Get-Digest $session.beforeIni) -ceq $iniBefore -and $session.scripts.Count -eq ($script:RestartDependencies.Count+1)) ($case+': cold bytes and all production/fixture dependencies pinned')
+  $coldDependency=@($session.scripts|Where-Object {$_.name -ceq 'ColdBaseline.ps1'})
+  Require ($coldDependency.Count -eq 1 -and $coldDependency[0].sha256 -ceq (Get-Digest (Join-Path $fixture.scripts 'ColdBaseline.ps1'))) ($case+': actual fresh Prepare pins the exact composed cold-baseline reader')
+  if($case -ceq 'success') {
+   # Exercise actual Arm's immutable-session reader before it reaches any
+   # parent-process lookup or task creation. Only disposable fixture bytes change.
+   $sessionBytes=[IO.File]::ReadAllBytes($prepared.record)
+   $coldPath=Join-Path $fixture.scripts 'ColdBaseline.ps1';$coldBytes=[IO.File]::ReadAllBytes($coldPath)
+   foreach($mutation in @('cold-byte','old-closure','other-directory')) {
+    try {
+     $changedSession=$session|ConvertTo-Json -Depth 24|ConvertFrom-Json
+     if($mutation -ceq 'cold-byte') {[IO.File]::AppendAllText($coldPath,"`n# altered disposable dependency`n")}
+     elseif($mutation -ceq 'old-closure') {$changedSession.scripts=@($changedSession.scripts|Where-Object {$_.name -cne 'ColdBaseline.ps1'})}
+     else {$changedSession.toolDirectory=$fixture.root}
+     if($mutation -cne 'cold-byte'){[IO.File]::WriteAllText($prepared.record,($changedSession|ConvertTo-Json -Depth 24))}
+     $badArgs='-SessionRecord "'+$prepared.record+'" -ExpectedSha256 '+(Get-Digest $prepared.record)+' -ParentProcessId 42 -ParentCreatedFiletime 133000000000000000 -Mode --legacy'
+     $rejected=Invoke-FixtureScript $fixture 'RestartCommissioningArm.ps1' $badArgs ('composed-'+$mutation)
+     $reason=if($mutation -ceq 'cold-byte'){'Commissioning verifier changed after cold review.'}else{'Cold restart tool inventory differs.'}
+     Require ($rejected.exit -ne 0 -and $rejected.stderr.Contains($reason)) ('Composed session refuses '+$mutation+' through actual Arm identity guard')
+     Require (@(Get-ChildItem -LiteralPath $directory -Filter 'arm-*.json').Count -eq 0) ('Composed '+$mutation+' refusal creates no Arm intent')
+    } finally {
+     [IO.File]::WriteAllBytes($prepared.record,$sessionBytes);[IO.File]::WriteAllBytes($coldPath,$coldBytes)
+    }
+   }
+   Require ((Get-Digest $prepared.record) -ceq $prepared.recordSha256 -and (Get-Digest $coldPath) -ceq $coldDependency[0].sha256) 'Composed negative fixtures restore exact bytes before actual successful Arm/Collect'
+  }
   Assert-RestartPrivateDirectory $directory $session.sid;Require $true ($case+': actual private evidence ACL enforced')
   [IO.File]::WriteAllText((Join-Path $fixture.app 'target-mode.txt'),'--legacy');[IO.File]::WriteAllText((Join-Path $fixture.app 'hold-child.txt'),'marker-only child identity hold');[IO.File]::WriteAllText((Join-Path $fixture.app 'hold-parent-for-scheduler.txt'),'bounded native scheduler fixture')
   $start=New-Object Diagnostics.ProcessStartInfo;$start.FileName=$fixture.executable;$start.Arguments='--parent';$start.WorkingDirectory=$fixture.app;$start.UseShellExecute=$false

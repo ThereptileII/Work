@@ -6,6 +6,7 @@ Windows runtime preparation and native gates are performed by the caller.
 """
 import argparse
 import hashlib
+import importlib.util
 import json
 import os
 from pathlib import Path
@@ -51,6 +52,10 @@ for required in ['msvcp140.dll', 'vcruntime140.dll']:
         raise SystemExit('App-local MSVC runtime missing: ' + required)
 verify_packaged_openssl(app, openssl_source['manifest'])
 verify_packaged_curl(app, curl_sources['manifests'])
+adapter_spec = importlib.util.spec_from_file_location('ocharts_package', ROOT / 'tools/verify-ocharts-adapter-package.py')
+adapter_package = importlib.util.module_from_spec(adapter_spec)
+adapter_spec.loader.exec_module(adapter_package)
+adapter_sources = adapter_package.installed_source_bundle(app, args.build)
 (app / 'OPENNAV_PORTABLE_PREVIEW').write_text('SKAGER portable Beta 2 recovery\n')
 for directory in ['profile', 'logs', 'docs/licenses']:
     (destination / directory).mkdir(parents=True)
@@ -207,6 +212,10 @@ Build scripts, dependency locks and exact integration patches are in the project
 The CI artifact also supplies a corresponding-source archive with the exact root
 CI workflow, reviewed integrated OpenCPN files, the verified inert OpenSSL, curl and zlib source
 archives used by this build, and a per-file SOURCE_REFERENCE.json with its exact hash.
+If the private o-charts presentation adapter is included, its exact original
+sources, reviewed patches, build recipe and notices are supplied in
+`app/opennav/third-party/ocharts/corresponding-source.zip` and in the standalone
+source artifact. Licensed charts and closed helpers are not distributed.
 See `licenses/`
 for bundled OpenCPN/library notices and the installed application's license files.
 
@@ -229,5 +238,5 @@ with zipfile.ZipFile(archive, 'w', zipfile.ZIP_DEFLATED, compresslevel=6) as z:
 # Complete exact source plus root CI recipe, not an expiring download offer.
 from source_package import create_source_archive
 create_source_archive(ROOT, commit, args.output / 'SKAGER-Beta2-source.zip',
-                      [openssl_source['sourceBundle']] + curl_sources['sourceBundles'])
+                      [openssl_source['sourceBundle']] + curl_sources['sourceBundles'] + adapter_sources)
 print(archive)

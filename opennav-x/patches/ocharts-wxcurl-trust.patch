@@ -1,0 +1,105 @@
+diff --git a/libs/wxcurl/src/base.cpp b/libs/wxcurl/src/base.cpp
+--- a/libs/wxcurl/src/base.cpp
++++ b/libs/wxcurl/src/base.cpp
+@@ -404,6 +404,7 @@
+                     long flags /*=wxCURL_DEFAULT_FLAGS*/)
+  : m_pCURL(NULL),
+ m_bAbortHungTransfer(false),
++m_bHandleReady(false),
+ m_szCurrFullURL(wxCURL_STRING2BUF(szURL)),
+ m_szUsername(wxCURL_STRING2BUF(szUserName)),
+ m_szPassword(wxCURL_STRING2BUF(szPassword)),
+@@ -437,6 +438,7 @@
+ typedef int (*func_T)(void);
+ bool wxCurlBase::SetOpt(CURLoption option, ...)
+ {
++    if (!m_bHandleReady) return false;
+     va_list arg;
+ 
+     func_T param_func = (func_T)0;
+@@ -472,7 +474,10 @@
+ 
+     va_end(arg);
+ 
+-    DumpErrorIfNeed(res);
++    if (res != CURLE_OK) {
++        m_bHandleReady = false;
++        DumpErrorIfNeed(res);
++    }
+     return (res == CURLE_OK);
+ }
+ 
+@@ -510,6 +515,7 @@
+ 
+ bool wxCurlBase::Perform()
+ {
++    if (!m_pCURL || !m_bHandleReady) return false;
+     CURLcode res = CURLE_OK;
+ 
+     if((m_nFlags & wxCURL_SEND_BEGINEND_EVENTS) && m_pEvtHandler)
+@@ -547,7 +553,8 @@
+ 
+     m_pCURL = curl_easy_init();
+ 
+-    return (m_pCURL != NULL);
++    m_bHandleReady = (m_pCURL != NULL);
++    return m_bHandleReady;
+ }
+ 
+ bool wxCurlBase::ReInitHandle()
+@@ -563,6 +570,7 @@
+         curl_easy_cleanup(m_pCURL);
+         m_pCURL = NULL;
+     }
++    m_bHandleReady = false;
+ 
+     return true;
+ }
+@@ -811,7 +819,8 @@
+     if (!relativeURL.empty())
+         SetURL(relativeURL);        // update the m_szCurrFullURL string
+ 
+-    if(m_pCURL && ResetHandle())
++    m_bHandleReady = m_pCURL && ResetHandle();
++    if(m_bHandleReady)
+     {
+         ResetResponseVars();
+ 
+@@ -824,10 +833,17 @@
+                     "Accept: application/xml,text/html,application/xhtml+xml;q=0.9,*/*;q=0.8\r\n" \
+                     "Connection: keep-alive"); //Pretend we are a normal browser
+         SetOpt(CURLOPT_FOLLOWLOCATION, 1L);
++        SetOpt(CURLOPT_MAXREDIRS, 5L);
++        if (wxCURL_BUF2STRING(m_szCurrFullURL).Lower().StartsWith(wxS("https://")))
++            SetOpt(CURLOPT_REDIR_PROTOCOLS, (long)CURLPROTO_HTTPS);
+ #ifdef __WXMSW__
+-        SetOpt(CURLOPT_CAINFO, "curl-ca-bundle.crt"); //Use our local certificate list on Windows
+-        SetOpt(CURLOPT_SSL_VERIFYPEER, true);		// FIXME: Temporary until we get certificates working
++#if LIBCURL_VERSION_NUM < 0x074700
++#error Maintained Windows wxCurl requires native CA support
+ #endif
++        SetOpt(CURLOPT_SSL_OPTIONS, (long)CURLSSLOPT_NATIVE_CA);
++#endif
++        SetOpt(CURLOPT_SSL_VERIFYPEER, 1L);
++        SetOpt(CURLOPT_SSL_VERIFYHOST, 2L);
+         SetOpt(CURLOPT_ENCODING, "gzip,deflate"); //Save bandwidth by using compression
+ 
+         if(m_pEvtHandler && (m_nFlags & wxCURL_SEND_PROGRESS_EVENTS))
+diff --git a/libs/wxcurl/src/wx/curl/base.h b/libs/wxcurl/src/wx/curl/base.h
+--- a/libs/wxcurl/src/wx/curl/base.h
++++ b/libs/wxcurl/src/wx/curl/base.h
+@@ -562,10 +562,12 @@
+ protected:
+ 
+     // The internal pointer to the libCURL session.
+     CURL*                   m_pCURL;
+-	// Flag for terminating a possibly hung transfer
+-	bool                    m_bAbortHungTransfer;
++    // Flag for terminating a possibly hung transfer
++    bool                    m_bAbortHungTransfer;
++    // SCRUM-211: any rejected option blocks this transfer.
++    bool                    m_bHandleReady;
+ 
+     // libCURL <-> wxString conversions helpers (see below)
+ 
+     #define wxCURL_BUF2STRING(x)         wxString((const char*)(x), wxConvLibc)

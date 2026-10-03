@@ -1,0 +1,13 @@
+{
+  "job": 111104385609,
+  "result": "success",
+  "gettextNativeStreamPairsRehashed": 5,
+  "toolBinaryHashes": "runner observations; executables not uploaded",
+  "archive": {
+    "artifactId": 11261364812,
+    "bytes": 501399,
+    "sha256": "0b7ff4704cb3d09660f778be5ffb3d6605b02b61f946b9894d25a19e4ae7f5c0",
+    "crcEntriesPassed": 387
+  },
+  "fullIntegratedCandidate": "still running; not accepted"
+}

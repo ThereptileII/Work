@@ -1,0 +1,653 @@
+--- a/libs/s52plib/src/DepthFont.cpp
++++ b/libs/s52plib/src/DepthFont.cpp
+@@ -39,7 +39,8 @@
+ 
+ DepthFont::~DepthFont() { Delete(); }
+ 
+-void DepthFont::Build(wxFont *font, double scale, double dip_factor) {
++void DepthFont::Build(wxFont *font, double scale, double dip_factor,
++                      bool exact_font) {
+   /* avoid rebuilding if the parameters are the same */
+   if (m_built && (*font == m_font)) return;
+ 
+@@ -51,7 +52,7 @@
+ 
+   double scaler = m_ContentScaleFactor * dip_factor;
+ 
+-  wxFont *scaled_font =
++  wxFont *scaled_font = exact_font ? font :
+           FindOrCreateFont_PlugIn(font->GetPointSize() / scaler,
+                                   font->GetFamily(), font->GetStyle(),
+                                   font->GetWeight(), false,
+--- a/libs/s52plib/src/DepthFont.h
++++ b/libs/s52plib/src/DepthFont.h
+@@ -40,7 +40,8 @@
+   DepthFont();
+   ~DepthFont();
+ 
+-  void Build(wxFont *font, double scale, double dip_factor = 1.0);
++  void Build(wxFont *font, double scale, double dip_factor = 1.0,
++             bool exact_font = false);
+   void Delete();
+ 
+   bool IsBuilt() { return m_built; }
+--- a/libs/s52plib/src/chartsymbols.cpp
++++ b/libs/s52plib/src/chartsymbols.cpp
+@@ -55,6 +55,7 @@
+ #endif
+ 
+ #include "s52plib.h"
++#include "plugin-adapters/ocharts/OwnedPresentationValidation.h"
+ 
+ extern bool g_bopengl;
+ 
+@@ -677,7 +678,7 @@
+ }
+ 
+ bool ChartSymbols::LoadConfigFile(s52plib *plibArg,
+-                                  const wxString &s52ilePath) {
++                                  const wxString &s52ilePath, bool allowCwdOverride) {
+   plib = plibArg;
+ 
+   // Expect to find library data XML file in same folder as other S52 data.
+@@ -690,7 +691,7 @@
+   wxString fullFilePath =
+       configFileDirectory + wxFileName::GetPathSeparator() + xmlFileName;
+ 
+-  if (wxFileName::FileExists(xmlFileName)) {
++  if (allowCwdOverride && wxFileName::FileExists(xmlFileName)) {
+     fullFilePath = xmlFileName;
+     configFileDirectory = _T(".");
+   }
+@@ -702,7 +703,16 @@
+     return false;
+   }
+ 
+-  if (m_symbolsDoc.load_file(fullFilePath.fn_str())) {
++  const bool parsed = m_symbolsDoc.load_file(fullFilePath.fn_str());
++  // Owned presentation never accepts upstream's partial/parse-failed success.
++  // Validate before installing tables or allocating any GL texture.
++  if (!allowCwdOverride &&
++      (!parsed || !skager::ocharts::ValidateOwnedPresentation(
++                      m_symbolsDoc, configFileDirectory))) {
++    m_symbolsDoc.reset();
++    return false;
++  }
++  if (parsed) {
+     wxString msg(_T("ChartSymbols loaded from "));
+     msg += fullFilePath;
+     wxLogMessage(msg);
+--- a/libs/s52plib/src/chartsymbols.h
++++ b/libs/s52plib/src/chartsymbols.h
+@@ -128,7 +128,7 @@
+ public:
+   ChartSymbols(void);
+   ~ChartSymbols(void);
+-  bool LoadConfigFile(s52plib *plibArg, const wxString &path);
++  bool LoadConfigFile(s52plib *plibArg, const wxString &path, bool allowCwdOverride = true);
+ 
+   void InitializeTables(void);
+   void DeleteGlobals(void);
+--- a/libs/s52plib/src/s52plib.cpp
++++ b/libs/s52plib/src/s52plib.cpp
+@@ -46,6 +46,9 @@
+ static const double mercator_k0 = 0.9996;
+ 
+ #include "s52plib.h"
++#ifdef SKAGER_OCHARTS_ADAPTER
++#include "integration/ChartNameText.h"
++#endif
+ #include "mygeom.h"
+ #include "s52utils.h"
+ #include "chartsymbols.h"
+@@ -255,7 +258,9 @@
+ //-----------------------------------------------------------------------------
+ //      s52plib implementation
+ //-----------------------------------------------------------------------------
+-s52plib::s52plib(const wxString &PLib, bool b_forceLegacy) {
++s52plib::s52plib(const wxString &PLib, bool b_forceLegacy, bool allowCwdOverride,
++               bool useS52DefaultTextColor) {
++  m_useS52DefaultTextColor = useS52DefaultTextColor;
+   m_plib_file = PLib;
+ 
+   pOBJLArray = new wxArrayPtrVoid;
+@@ -271,7 +276,7 @@
+   m_chartSymbols.SetTextureFormat(GL_TEXTURE_2D);
+   InitializeNatsurHash();
+ 
+-  m_bOK = !(S52_load_Plib(PLib, b_forceLegacy) == 0);
++  m_bOK = !(S52_load_Plib(PLib, b_forceLegacy, allowCwdOverride) == 0);
+ 
+   m_bShowS57Text = false;
+   m_bShowS57ImportantTextOnly = false;
+@@ -1117,7 +1122,7 @@
+     return 0;
+ }
+ 
+-int s52plib::S52_load_Plib(const wxString &PLib, bool b_forceLegacy) {
++int s52plib::S52_load_Plib(const wxString &PLib, bool b_forceLegacy, bool allowCwdOverride) {
+   pAlloc = new wxArrayPtrVoid;
+ 
+   //   Create the Rule Lookup Hash Tables
+@@ -1140,7 +1145,7 @@
+   m_unused_color.B = 2;
+   m_unused_wxColor.Set(2, 2, 2);
+ 
+-  if (!m_chartSymbols.LoadConfigFile(this, PLib)) {
++  if (!m_chartSymbols.LoadConfigFile(this, PLib, allowCwdOverride)) {
+     wxString msg(_T("Could not load XML PLib symbol file: "));
+     msg += PLib;
+     wxLogMessage(msg);
+@@ -1743,6 +1748,9 @@
+ #define FIXIT
+ #endif
+   bool bdraw = true;
++#ifdef SKAGER_OCHARTS_ADAPTER
++  const bool styled_name = ptext->letter_spacing > 0 || ptext->text_opacity < 255;
++#endif
+ 
+   wxFont *scaled_font = ptext->pFont;
+   wxCoord w_scaled = 0;
+@@ -1760,6 +1768,30 @@
+   scale_factor /= m_dipfactor;
+   scale_factor *= m_TextScaleFactor;
+ 
++#if defined(SKAGER_OCHARTS_ADAPTER) && defined(ocpnUSE_GL)
++  if (!pdc && styled_name) {
++    wxColour ink = GetFontColour_PlugIn(_("ChartTexts"));
++    if (ink == *wxBLACK)
++      ink = wxColour(ptext->pcol->R, ptext->pcol->G, ptext->pcol->B);
++    const unsigned long identity = ink.Red() | (ink.Green() << 8) |
++                                   (ink.Blue() << 16);
++    // These labels use the existing whole-string texture path. Invalidate
++    // per label, before the upstream global scale tracker forgets a texture.
++    if (ptext->texobj &&
++        ((ptext->light_label && ptext->light_texture_build != ptext->light_raster.builds) ||
++         ptext->presentation_texture_scale != scale_factor ||
++         ptext->presentation_content_scale != m_ContentScaleFactor ||
++         ptext->presentation_texture_color != identity)) {
++      glDeleteTextures(1, (GLuint *)(&ptext->texobj));
++      ptext->texobj = 0;
++    }
++    ptext->presentation_texture_scale = scale_factor;
++    ptext->presentation_content_scale = m_ContentScaleFactor;
++    ptext->presentation_texture_color = identity;
++    ptext->light_texture_build = ptext->light_raster.builds;
++  }
++#endif
++
+   // Has there been a change in scale factor by UI?
+   if (scale_factor != m_FinalTextScaleFactor){
+     ptext->texobj = 0;    // This will leak, but only a little
+@@ -1779,6 +1811,12 @@
+     bool b_force_no_texfont = false;
+     if (ptext->bspecial_char)
+       b_force_no_texfont = true;
++#ifdef SKAGER_OCHARTS_ADAPTER
++    // Native whole-label glyph raster keeps tracking and opacity identical for
++    // ASCII and international geographic names; cached once per label.
++    if (styled_name)
++      b_force_no_texfont = true;
++#endif
+ 
+      //Fixme (dave)
+     // We also do this the hard way for rotation of strings.  Very slow.
+@@ -1792,6 +1830,14 @@
+ 
+         int old_size = ptext->pFont->GetPointSize();
+         int new_size = old_size * scale_factor / m_ContentScaleFactor;
++#ifdef SKAGER_OCHARTS_ADAPTER
++        if (styled_name) {
++          // Match the software font path, including FontMgr's own content-scale
++          // multiplication. At <=1 software uses the existing unscaled font.
++          new_size = scale_factor > 1 ? old_size * scale_factor
++                                      : old_size / m_ContentScaleFactor;
++        }
++#endif
+ 
+         scaled_font = FindOrCreateFont_PlugIn(
+           new_size, ptext->pFont->GetFamily(), ptext->pFont->GetStyle(),
+@@ -1799,14 +1845,29 @@
+         wxScreenDC sdc;
+         sdc.GetTextExtent(ptext->frmtd, &w_scaled, &h_scaled, &descent, &exlead,
+                         scaled_font);  // measure the text
++#ifdef SKAGER_OCHARTS_ADAPTER
++        sdc.SetFont(*scaled_font);
++        opennav::integration::ChartNameTextRun name_run(
++            sdc, ptext->frmtd, ptext->letter_spacing * wxMax(1.0, scale_factor));
++        w_scaled += name_run.extra_width;
++#endif
+ 
+         // We cannot get the font ascent value to remove the interline spacing
+         // from the font "height". So we have to estimate based on conventional
+         // Arial metrics
+-        ptext->rendered_char_height = (h_scaled - descent) * 8 / 10 * m_dipfactor;
+-
+-        ptext->text_width = w_scaled * m_dipfactor;
+-        ptext->text_height = h_scaled * m_dipfactor;
++        double text_metric_scale = m_dipfactor;
++#ifdef SKAGER_OCHARTS_ADAPTER
++        if (styled_name) {
++          // The GL quad uses raw raster pixels; its shader adds no DIP scaling.
++          // Keep justification, offsets and collision bounds in those units.
++          text_metric_scale = 1.0;
++          sdc.GetTextExtent(_T("X"), &ptext->presentation_char_width, nullptr);
++        }
++#endif
++        ptext->rendered_char_height = (h_scaled - descent) * 8 / 10 * text_metric_scale;
++
++        ptext->text_width = w_scaled * text_metric_scale;
++        ptext->text_height = h_scaled * text_metric_scale;
+ 
+         /* make power of 2 */
+         int tex_w, tex_h;
+@@ -1830,10 +1891,17 @@
+ 
+           mdc.Clear();
+ 
++#ifdef SKAGER_OCHARTS_ADAPTER
++          name_run.DrawOpaque(mdc, 0, 0);
++#else
+           mdc.DrawText(ptext->frmtd, 0, 0);
++#endif
+           mdc.SelectObject(wxNullBitmap);
+ 
+           wxImage image = bmp.ConvertToImage();
++#ifdef SKAGER_OCHARTS_ADAPTER
++          if (ptext->light_label) image = ptext->light_raster.image;
++#endif
+           int ws = image.GetWidth(), hs = image.GetHeight();
+ 
+           ptext->RGBA_width = ws;
+@@ -1843,6 +1911,18 @@
+           unsigned char *d = image.GetData();
+           unsigned char *pdest = pRGBA;
+           S52color *ccolor = ptext->pcol;
++#ifdef SKAGER_OCHARTS_ADAPTER
++          // Geographic ASCII now shares the Unicode texture path; preserve
++          // explicit user text colors just as the normal software path does.
++          S52color styled_color = *ccolor;
++          if (ptext->letter_spacing > 0 || ptext->text_opacity < 255) {
++            wxColour ink = GetFontColour_PlugIn(_("ChartTexts"));
++            if (ink != *wxBLACK) {
++              styled_color.R = ink.Red(); styled_color.G = ink.Green();
++              styled_color.B = ink.Blue(); ccolor = &styled_color;
++            }
++          }
++#endif
+ 
+           if (d) {
+             for (int y = 0; y < hs; y++)
+@@ -1859,7 +1939,16 @@
+                 pdest[off * 4 + 2] = ccolor->B;
+ 
+                 int alpha = (r + g + b) / 3;
++                #ifdef SKAGER_OCHARTS_ADAPTER
++                alpha = (alpha * ptext->text_opacity + 127) / 255;
++#endif
+                 pdest[off * 4 + 3] = (unsigned char)(alpha & 0xff);
++#ifdef SKAGER_OCHARTS_ADAPTER
++                if (ptext->light_label) {
++                  pdest[off*4] = r; pdest[off*4+1] = g; pdest[off*4+2] = b;
++                  pdest[off*4+3] = image.GetAlpha()[off];
++                }
++#endif
+               }
+           }
+ 
+@@ -1899,11 +1988,21 @@
+         //  the wx convention using upper left corner. Also, allow for full text
+         //  height in the bitmap/texture, not the estimated "rendered" height.
+ 
++#ifdef SKAGER_OCHARTS_ADAPTER
++        if (styled_name)
++          yadjust = -ptext->rendered_char_height; // same native baseline as software
++        else
++#endif
+         yadjust = -ptext->rendered_char_height * 10 / 8;
+ 
+         //  Add in the offsets, specified in units of nominal font height
+         yadjust += ptext->yoffs * (ptext->rendered_char_height);
+         //  X offset specified in units of average char width
++#ifdef SKAGER_OCHARTS_ADAPTER
++        if (styled_name)
++          xadjust += ptext->xoffs * ptext->presentation_char_width;
++        else
++#endif
+         xadjust += ptext->xoffs * ptext->avgCharWidth;
+ 
+         // adjust for text justification
+@@ -1952,8 +2051,15 @@
+         pRectDrawn->SetY(yp);
+         pRectDrawn->SetWidth(ptext->text_width);
+         pRectDrawn->SetHeight(ptext->text_height);
++#ifdef SKAGER_OCHARTS_ADAPTER
++        if (ptext->light_label) pRectDrawn->Inflate(ptext->light_raster.margin);
++#endif
+ 
+         if (bCheckOverlap) {
++#ifdef SKAGER_OCHARTS_ADAPTER
++          if (styled_name && fabs(vp_plib.rotation) > .01)
++            rotate(pRectDrawn, &vp_plib); // same screen space as stock glyphs
++#endif
+           if (CheckTextRectList(*pRectDrawn, ptext)) bdraw = false;
+         }
+ 
+@@ -1978,14 +2084,18 @@
+           uv[5] = 1;
+ 
+           // pixels
+-          coords[0] = 0;
+-          coords[1] = 0;
+-          coords[2] = ptext->RGBA_width;
+-          coords[3] = 0;
+-          coords[6] = ptext->RGBA_width;
+-          coords[7] = ptext->RGBA_height;
+-          coords[4] = 0;
+-          coords[5] = ptext->RGBA_height;
++          float label_pad = 0;
++#ifdef SKAGER_OCHARTS_ADAPTER
++          if (ptext->light_label) label_pad = ptext->light_raster.margin;
++#endif
++          coords[0] = -label_pad;
++          coords[1] = -label_pad;
++          coords[2] = ptext->RGBA_width - label_pad;
++          coords[3] = -label_pad;
++          coords[6] = ptext->RGBA_width - label_pad;
++          coords[7] = ptext->RGBA_height - label_pad;
++          coords[4] = -label_pad;
++          coords[5] = ptext->RGBA_height - label_pad;
+ 
+           glUseProgram(S52texture_2D_shader_program);
+ 
+@@ -2054,6 +2164,11 @@
+         }  // bdraw
+       }
+ 
++#ifdef SKAGER_OCHARTS_ADAPTER
++      // A rejected geographic name must not be registered as drawn by
++      // RenderT_All, or its invisible rectangle can suppress navigation labels.
++      if (!styled_name)
++#endif
+       bdraw = true;
+     }
+ 
+@@ -2169,6 +2284,10 @@
+         glEnable(GL_TEXTURE_2D);
+ 
+         wxColour wcolor = GetFontColour_PlugIn(_("ChartTexts"));
++        // XNav's verified presentation follows the software renderer's S-52
++        // default ink. Preserve explicit user colors and stock GL behavior.
++        if (m_useS52DefaultTextColor && wcolor == *wxBLACK)
++          wcolor = wxColour(ptext->pcol->R, ptext->pcol->G, ptext->pcol->B);
+         f_cache->SetColor(wcolor);
+ 
+         /* undo previous rotation to make text level */
+@@ -2201,6 +2320,11 @@
+     wxCoord w, h, descent, exlead;
+     pdc->GetTextExtent(ptext->frmtd, &w, &h, &descent,
+                        &exlead);  // measure the text
++#ifdef SKAGER_OCHARTS_ADAPTER
++    opennav::integration::ChartNameTextRun name_run(
++        *pdc, ptext->frmtd, ptext->letter_spacing * wxMax(1.0, scale_factor));
++    w += name_run.extra_width;
++#endif
+ 
+     // We cannot get the font ascent value to remove the interline spacing.
+     // So we have to estimate based on conventional Arial metrics
+@@ -2218,6 +2342,13 @@
+     yadjust += ptext->yoffs * (rendered_text_height);
+ 
+     //  X offset specified in units of average char width
++#ifdef SKAGER_OCHARTS_ADAPTER
++    if (styled_name) {
++      int character_width = 0;
++      pdc->GetTextExtent(_T("X"), &character_width, nullptr);
++      xadjust += ptext->xoffs * character_width;
++    } else
++#endif
+     xadjust += ptext->xoffs * ptext->avgCharWidth * m_dipfactor;
+ 
+     // adjust for text justification
+@@ -2266,6 +2397,9 @@
+     pRectDrawn->SetY(yp);
+     pRectDrawn->SetWidth(w);
+     pRectDrawn->SetHeight(h);
++#ifdef SKAGER_OCHARTS_ADAPTER
++    if (ptext->light_label) pRectDrawn->Inflate(ptext->light_raster.margin);
++#endif
+ 
+     if (bCheckOverlap) {
+       if (CheckTextRectList(*pRectDrawn, ptext)) bdraw = false;
+@@ -2280,7 +2414,15 @@
+         wcolor = wxColour(ptext->pcol->R, ptext->pcol->G, ptext->pcol->B);
+       pdc->SetTextForeground(wcolor);
+ 
++#ifdef SKAGER_OCHARTS_ADAPTER
++      if (ptext->light_label)
++        pdc->DrawBitmap(ptext->light_raster.bitmap,
++                        xp-ptext->light_raster.margin, yp-ptext->light_raster.margin, true);
++      else if (!name_run.Draw(*pdc, xp, yp, wcolor, ptext->text_opacity))
++        pdc->DrawText(ptext->frmtd, xp, yp);
++#else
+       pdc->DrawText(ptext->frmtd, xp, yp);
++#endif
+     }
+ 
+     pdc->SetFont(oldfont);  // restore last font
+@@ -2398,6 +2540,41 @@
+       return 0;
+     }
+ 
++    // Resolve presentation before font caching, including runtime preference
++    // changes. Visibility and generated chart text have already been decided.
++    wxFont *styled = nullptr;
++    double tracking = 0;
++    unsigned char opacity = 255;
++    bool light = false;
++    if (m_textFontResolver)
++      styled = m_textFontResolver(rzRules->obj->FeatureName, rules->INSTstr,
++                                 bTX, &tracking, &opacity, &light);
++#ifdef SKAGER_OCHARTS_ADAPTER
++    if (light && styled) {
++      double scale = m_TextScaleFactor / m_dipfactor;
++      double raster_scale = wxMax(1.0, scale);
++      int points = styled->GetPointSize();
++      if (scale > 1) points = static_cast<int>(points * scale);
++      else if (!m_pdc) points = static_cast<int>(points / m_ContentScaleFactor);
++      wxFont *raster_font = FindOrCreateFont_PlugIn(points, styled->GetFamily(),
++          styled->GetStyle(), styled->GetWeight(), false, styled->GetFaceName());
++      const S52color *ink = getColor(m_ColorScheme == "NIGHT" ? "CHBLK" : "XNGEO"), *water = getColor("DEPDW");
++      if (!text->light_raster.Build(*raster_font, text->frmtd, raster_scale,
++              wxColour(ink->R, ink->G, ink->B), wxColour(water->R, water->G, water->B))) {
++        // Atomic presentation fallback: keep the original stock font and ink.
++        light = false; styled = nullptr; tracking = 0; opacity = 255;
++      }
++    }
++    if (text->light_label != light) {
++      text->pFont = nullptr;
++#ifdef ocpnUSE_GL
++      if (text->texobj) glDeleteTextures(1, (GLuint *)&text->texobj);
++#endif
++      text->texobj = 0;
++      text->letter_spacing = 0; text->text_opacity = 255;
++      text->light_label = light;
++    }
++#endif
+     //    Establish a font
+     if (!text->pFont) {
+       // Process the font specifications from the LUP symbolization rule
+@@ -2463,6 +2640,14 @@
+       text->pFont = FindOrCreateFont_PlugIn(
+             fontSize, wxFONTFAMILY_SWISS, templateFont->GetStyle(), fontweight_t,
+             false, templateFont->GetFaceName());
++      if (styled && styled->IsOk()) {
++          text->letter_spacing = tracking; text->text_opacity = opacity;
++          text->pFont = styled;
++          // TX offsets and declutter bounds use the actual styled font.
++          dc.SetFont(*styled);
++          dc.GetTextExtent(_T("X"), &width, NULL, NULL, NULL, styled);
++          text->avgCharWidth = width;
++      }
+   }
+ 
+     //  Render text at declared x/y of object
+@@ -3331,6 +3516,41 @@
+     // scale_factor *= pix_factor;
+   }
+ 
++  int charWidth, charHeight, charDescent;
++  if (m_soundingFontResolver) {
++    // Match the stock preference range. This changes the digit font only;
++    // all rule selection, colors and pivot groups below remain upstream.
++    const double sounding_scale =
++        m_SoundingsScaleFactor >= 0.5 && m_SoundingsScaleFactor <= 2.0
++            ? m_SoundingsScaleFactor : 1.0;
++    // Cache the attempt by its inputs even on failure: stock digits must not
++    // rebuild their atlas or retry an unavailable native font for each glyph.
++    if (m_presentationSoundingScale != sounding_scale ||
++        m_presentationSoundingContent != m_ContentScaleFactor ||
++        m_presentationSoundingDip != m_dipfactor) {
++      m_presentationSoundingFont =
++          m_soundingFontResolver(sounding_scale, m_ContentScaleFactor);
++      m_presentationSoundingScale = sounding_scale;
++      m_presentationSoundingContent = m_ContentScaleFactor;
++      m_presentationSoundingDip = m_dipfactor;
++      m_texSoundings.Delete();
++    }
++  }
++  if (m_soundingFontResolver && m_presentationSoundingFont.IsOk()) {
++    const double sounding_scale = m_presentationSoundingScale;
++    m_soundFont = &m_presentationSoundingFont;
++    wxScreenDC sdc;
++    sdc.GetTextExtent(_T("0"), &charWidth, &charHeight, &charDescent,
++                      NULL, m_soundFont);
++    if (m_pdc) {
++      m_pdc->SetFont(*m_soundFont);
++    } else if (!m_texSoundings.IsBuilt()) {
++      m_texSoundings.SetContentScaleFactor(m_ContentScaleFactor);
++      // Keep the same fractional-size font as software. The stock atlas
++      // conversion rounds to integer points and applies scaling a second time.
++      m_texSoundings.Build(m_soundFont, sounding_scale, m_dipfactor, true);
++    }
++  } else {
+   wxFontWeight fontWeight = wxFONTWEIGHT_NORMAL;
+   wxString fontFacename = wxEmptyString;
+   double defaultHeight = 3.0;
+@@ -3342,7 +3562,6 @@
+ #endif
+ 
+   int point_size = 6;
+-  int charWidth, charHeight, charDescent;
+   charWidth = 1;
+ 
+   double target = defaultHeight * scale_factor;
+@@ -3408,6 +3627,8 @@
+                                           wxFONTSTYLE_NORMAL, fontWeight, false,
+                                           fontFacename);
+     m_pdc->SetFont(*m_soundFont);
++  }
++
+   }
+ 
+   int pivot_x;
+--- a/libs/s52plib/src/s52plib.h
++++ b/libs/s52plib/src/s52plib.h
+@@ -182,8 +182,21 @@
+ 
+ class s52plib {
+ public:
+-  s52plib(const wxString &PLib, bool b_forceLegacy = false);
++  s52plib(const wxString &PLib, bool b_forceLegacy = false, bool allowCwdOverride = true,
++          bool useS52DefaultTextColor = false);
+   ~s52plib();
++  // Optional presentation-only font policy. Install before rendering; returned
++  // fonts must outlive cached S-52 text. A null result keeps the stock font.
++  using TextFontResolver = wxFont *(*)(const char *, const char *, bool,
++                                      double *, unsigned char *, bool *);
++  void SetTextFontResolver(TextFontResolver resolver) { m_textFontResolver = resolver; }
++
++  void SetSoundingFontResolver(wxFont (*resolver)(double, double)) {
++    m_soundingFontResolver = resolver;
++    m_presentationSoundingFont = wxNullFont;
++    m_presentationSoundingScale = -1;
++    m_texSoundings.Delete();
++  }
+ 
+   void SetPPMM(float ppmm);
+   float GetPPMM() { return canvas_pix_per_mm; }
+@@ -400,7 +413,9 @@
+   void SetReducedBBox(LLBBox box){ reducedBBox = box;}
+ 
+ private:
+-  int S52_load_Plib(const wxString &PLib, bool b_forceLegacy);
++  TextFontResolver m_textFontResolver = nullptr;
++  bool m_useS52DefaultTextColor = false;
++  int S52_load_Plib(const wxString &PLib, bool b_forceLegacy, bool allowCwdOverride = true);
+   bool S52_flush_Plib();
+ 
+   void PLIB_LoadS57Config();
+@@ -569,6 +584,14 @@
+ 
+   TexFont *m_txf;
+   DepthFont m_texSoundings;
++  // Installed only by a verified presentation, before first rendering. The
++  // owner retains this font; DepthFont stores a value copy, never its pointer.
++  using SoundingFontResolver = wxFont (*)(double, double);
++  SoundingFontResolver m_soundingFontResolver = nullptr;
++  wxFont m_presentationSoundingFont;
++  double m_presentationSoundingScale = -1;
++  double m_presentationSoundingContent = -1;
++  double m_presentationSoundingDip = -1;
+   bool m_benableGLLS;
+   DisCat m_nDisplayCategory;
+   ArrayOfNoshow m_noshow_array;
+--- a/libs/s52plib/src/s52s57.h
++++ b/libs/s52plib/src/s52s57.h
+@@ -30,6 +30,9 @@
+ 
+ #include "bbox.h"
+ #include "color_types.h"
++#ifdef SKAGER_OCHARTS_ADAPTER
++#include "integration/ChartLightLabel.h"
++#endif
+ 
+ #include <unordered_map>
+ #include <vector>
+@@ -256,6 +259,17 @@
+   S52color *pcol;  // pointer to S52colour
+   int dis;         // display
+   wxFont *pFont;
++  #ifdef SKAGER_OCHARTS_ADAPTER
++  bool light_label = false;
++  opennav::integration::ChartLightLabelRaster light_raster;
++  unsigned light_texture_build = 0;
++#endif
++  double letter_spacing = 0;  // optional presentation, logical pixels
++  unsigned char text_opacity = 255;
++  double presentation_texture_scale = -1;
++  double presentation_content_scale = -1;
++  unsigned long presentation_texture_color = 0;
++  int presentation_char_width = 0; // measured cached raster glyph units
+   int rul_seq_creator;  // sequence number of the Rule creating this object
+   int RGBA_width;
+   int RGBA_height;
+--- a/src/o-charts_pi.cpp
++++ b/src/o-charts_pi.cpp
+@@ -54,6 +54,7 @@
+ #include "s57RegistrarMgr.h"
+ #include "S57ClassRegistrar.h"
+ #include "s52plib.h"
++#include "plugin-adapters/ocharts/ChartPresentationAdapter.h"
+ #include "s52utils.h"
+ #include "Osenc.h"
+ #include "chartsymbols.h"
+@@ -2653,7 +2654,7 @@
+     wxString plib_data = *GetpSharedDataLocation();
+     plib_data += _T("s57data/"); //TODO use sep
+ 
+-    ps52plib = new s52plib( plib_data, false );
++    ps52plib = skager::ocharts::CreateChartPresentation(plib_data);
+ 
+ 
+     if( ps52plib->m_bOK ) {

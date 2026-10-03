@@ -1,0 +1,7 @@
+#pragma once
+#include <cstdint>
+namespace skager_ocharts {
+inline constexpr bool available = @skager_ocharts_available@;
+inline constexpr char sha256[] = "@skager_ocharts_sha256@";
+inline constexpr std::uint64_t bytes = @skager_ocharts_bytes@;
+}

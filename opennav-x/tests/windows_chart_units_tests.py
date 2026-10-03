@@ -90,9 +90,9 @@ class ChartPreflightGuards(unittest.TestCase):
 
     def test_required_real_units_unique(self):
         units = chart.LOCAL_UNITS + chart.UPSTREAM_UNITS
-        self.assertEqual(len(units), 17)
+        self.assertEqual(len(units), 21)
         self.assertEqual(len({Path(p).stem for p in units}), len(units))
-        for name in ('chcanv', 'glChartCanvas', 'route_gui', 'route_point_gui', 'waypointman_gui', 'ais', 'piano', 's52plib', 'DepthFont'):
+        for name in ('chcanv', 'glChartCanvas', 'route_gui', 'route_point_gui', 'waypointman_gui', 'ais', 'piano', 's52plib', 'DepthFont', 'plugin_loader'):
             self.assertIn(name, {Path(p).stem for p in chart.UPSTREAM_UNITS})
         for path in chart.LOCAL_UNITS:
             self.assertTrue((ROOT / path).is_file(), path)

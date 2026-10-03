@@ -1,0 +1,217 @@
+{
+  "changedPixels": 1821,
+  "changedBounds": [
+    17,
+    87,
+    875,
+    100
+  ],
+  "changedPixelsOutsideOriginalWaterOracle": 0,
+  "originalWaterPixels": [
+    {
+      "theme": 0,
+      "bounds": [
+        41,
+        40,
+        40
+      ],
+      "maximumDelta": [
+        36,
+        36,
+        36
+      ],
+      "violatingChannels": 0,
+      "first": [],
+      "drawnBounds": [
+        17,
+        87,
+        155,
+        100
+      ]
+    },
+    {
+      "theme": 1,
+      "bounds": [
+        45,
+        40,
+        33
+      ],
+      "maximumDelta": [
+        50,
+        43,
+        34
+      ],
+      "violatingChannels": 588,
+      "first": [
+        [
+          381,
+          87,
+          2,
+          [
+            70,
+            108,
+            123
+          ],
+          34,
+          33
+        ],
+        [
+          382,
+          87,
+          0,
+          [
+            102,
+            115,
+            106
+          ],
+          50,
+          45
+        ],
+        [
+          384,
+          87,
+          2,
+          [
+            80,
+            115,
+            123
+          ],
+          34,
+          33
+        ]
+      ],
+      "drawnBounds": [
+        377,
+        87,
+        515,
+        100
+      ]
+    },
+    {
+      "theme": 2,
+      "bounds": [
+        37,
+        39,
+        32
+      ],
+      "maximumDelta": [
+        44,
+        44,
+        36
+      ],
+      "violatingChannels": 588,
+      "first": [
+        [
+          741,
+          87,
+          2,
+          [
+            35,
+            62,
+            72
+          ],
+          36,
+          32
+        ],
+        [
+          742,
+          87,
+          0,
+          [
+            62,
+            68,
+            54
+          ],
+          44,
+          37
+        ],
+        [
+          744,
+          87,
+          2,
+          [
+            41,
+            68,
+            72
+          ],
+          36,
+          32
+        ]
+      ],
+      "drawnBounds": [
+        737,
+        87,
+        875,
+        100
+      ]
+    }
+  ],
+  "correctedWaterPixels": [
+    {
+      "theme": 0,
+      "bounds": [
+        41,
+        40,
+        40
+      ],
+      "maximumDelta": [
+        39,
+        39,
+        39
+      ],
+      "violatingChannels": 0,
+      "first": [],
+      "drawnBounds": [
+        17,
+        87,
+        153,
+        100
+      ]
+    },
+    {
+      "theme": 1,
+      "bounds": [
+        45,
+        40,
+        33
+      ],
+      "maximumDelta": [
+        43,
+        38,
+        32
+      ],
+      "violatingChannels": 0,
+      "first": [],
+      "drawnBounds": [
+        377,
+        87,
+        513,
+        100
+      ]
+    },
+    {
+      "theme": 2,
+      "bounds": [
+        37,
+        39,
+        32
+      ],
+      "maximumDelta": [
+        36,
+        37,
+        31
+      ],
+      "violatingChannels": 0,
+      "first": [],
+      "drawnBounds": [
+        737,
+        87,
+        873,
+        100
+      ]
+    }
+  ],
+  "sourceGeometryUnchanged": true,
+  "opaqueRowsByteIdentical": true,
+  "smoothingCoverageFootprintMayDiffer": true
+}

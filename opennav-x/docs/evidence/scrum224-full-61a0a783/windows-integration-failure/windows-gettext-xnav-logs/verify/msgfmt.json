@@ -1,0 +1,18 @@
+{
+  "command": [
+    "C:\\Program Files\\Poedit\\GettextTools\\bin\\msgfmt.exe",
+    "--version"
+  ],
+  "exitCode": 0,
+  "timedOut": false,
+  "timeoutSeconds": 30,
+  "ownedProcessCleanup": null,
+  "stdout": {
+    "bytes": 324,
+    "sha256": "1ff07d323b071b52af7511b8e9fade3e1552dd1510974d77eacf12af45cbc63b"
+  },
+  "stderr": {
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  }
+}

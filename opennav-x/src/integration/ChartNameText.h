@@ -6,6 +6,11 @@
 
 namespace opennav::integration {
 
+#ifdef __WXMSW__
+// Changes only this fresh translucent context when its backend is GDI+.
+bool PrepareChartNameAlpha(wxGraphicsContext& context);
+#endif
+
 struct ChartNameTextRun {
   wxString text;
   wxArrayInt advances;
@@ -48,6 +53,9 @@ struct ChartNameTextRun {
     if (opacity == 255) { DrawOpaque(dc, x, y); return true; }
     std::unique_ptr<wxGraphicsContext> gc(wxGraphicsContext::CreateFromUnknownDC(dc));
     if (!gc) return false;
+#ifdef __WXMSW__
+    if (!PrepareChartNameAlpha(*gc)) return false;
+#endif
     color.Set(color.Red(), color.Green(), color.Blue(), opacity);
     gc->SetFont(dc.GetFont(), color);
     Paint([&gc](const wxString& s, double a, double b) { gc->DrawText(s, a, b); }, x, y);

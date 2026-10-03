@@ -1,0 +1,65 @@
+{
+  "run": 37093438232,
+  "artifact": 11263777414,
+  "archive": {
+    "bytes": 4221207,
+    "sha256": "f5c30900d9819d3d1d335388628667097bdcb412d453b4c7b200d7611ccc93d0"
+  },
+  "crcEntries": 83,
+  "status": "failed",
+  "candidate": "b1d65269064a4b5c30b649347d5332a9a126c185",
+  "mappedLocal": "7b850013b5eea4910230d9903cd189f1d3a7a7f0",
+  "sources": [
+    {
+      "path": "tests/chart_name_text_test.cpp",
+      "match": "checkout-CRLF",
+      "bytes": 5677,
+      "sha256": "f2536f358346a07a1b2f9532967b70181d28f60ff7299d47d4724dc03802a3df"
+    },
+    {
+      "path": "src/integration/ChartNameText.h",
+      "match": "checkout-CRLF",
+      "bytes": 2136,
+      "sha256": "d58b4d52ff601a288d51788978c2e06f8d83889a302ea0a707b9d91146ad79d4"
+    },
+    {
+      "path": "src/integration/ChartNameSpacing.h",
+      "match": "checkout-CRLF",
+      "bytes": 1274,
+      "sha256": "21007bdd438595cad679a9df06620e43c0f52a39074f9a29982e2b80ec1af019"
+    },
+    {
+      "path": "tests/windows_chart_name_painter/CMakeLists.txt",
+      "match": "checkout-CRLF",
+      "bytes": 1027,
+      "sha256": "050ac1f474cbcf8a7f9dc51b683099af5c72dfe86eb182c6f346759365eec946"
+    },
+    {
+      "path": "tools/test-chart-name-painter-windows.py",
+      "match": "checkout-CRLF",
+      "bytes": 4871,
+      "sha256": "885e5d215b33c7d08e5e5770b5a202144b94ebafc1ad34669b816cf58f9ac3c5"
+    },
+    {
+      "path": "tools/test-windows-changed-units.py",
+      "match": "checkout-CRLF",
+      "bytes": 37232,
+      "sha256": "f7a3084410a11700bb06670222b71d78c9bcc1f417599dcb030c71a56714b180"
+    },
+    {
+      "path": "tools/windows-wx.lock.json",
+      "match": "checkout-CRLF",
+      "bytes": 1017,
+      "sha256": "2fb563c4de7819d4b10d7a567e59510cd033c3b9cb55ce4ebb654964da60267f"
+    },
+    {
+      "path": "../.github/workflows/skager-chart-name-painter.yml",
+      "match": "checkout-CRLF",
+      "bytes": 947,
+      "sha256": "2c8d687bff983275a0b0c4130cc21a4053bf6611017dcb2659e475e6993490a4"
+    }
+  ],
+  "peX86FilesRehashed": 12,
+  "imageRehashed": true,
+  "allRetainedCRCsPassed": true
+}

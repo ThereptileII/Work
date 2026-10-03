@@ -21,6 +21,9 @@ int main(int argc, char** argv) {
     using namespace opennav::integration;
     wxInitAllImageHandlers();
     wxBitmap bitmap(1080,250,24); wxMemoryDC dc(bitmap);
+    std::cout << "renderer=" << wxGraphicsRenderer::GetDefaultRenderer()->GetName().ToStdString()
+              << " ppi=" << dc.GetPPI().x << ',' << dc.GetPPI().y
+              << " bitmapDepth=" << bitmap.GetDepth() << '\n';
     const wxColour backgrounds[] = {{213,229,229},{52,79,89},{18,30,36}};
     const wxColour inks[] = {{104,123,122},{173,187,177},{117,133,121}};
     for (int theme = 0; theme < 3; ++theme) {
@@ -35,6 +38,13 @@ int main(int argc, char** argv) {
       land.DrawOpaque(dc,theme*360+16,48);
       dc.SetFont(wxFont(12,wxFONTFAMILY_SWISS,wxFONTSTYLE_ITALIC,wxFONTWEIGHT_NORMAL,false,"Arial"));
       ChartNameTextRun water(dc,wxString::FromUTF8("ÖSTERSJÖN"),5);
+      int water_width=0,water_height=0;
+      dc.GetTextExtent(water.text,&water_width,&water_height);
+      std::cout << "theme=" << theme << " waterOrigin=" << theme*360+16
+                << ",85 waterExtent=" << water_width+water.extra_width << ','
+                << water_height << " font=" << dc.GetFont().GetFaceName().ToStdString()
+                << " pointSize=" << dc.GetFont().GetFractionalPointSize()
+                << " pixelSize=" << dc.GetFont().GetPixelSize().y << '\n';
       check(water.extra_width==45,"5px water tracking includes nine advances");
       check(water.Draw(dc,theme*360+16,85,inks[theme],92),"Actual alpha-capable native DC required");
       check(dc.GetTextForeground()==inks[theme],"Graphics opacity must not mutate DC ink");
@@ -54,6 +64,8 @@ int main(int argc, char** argv) {
     }
     dc.SelectObject(wxNullBitmap);
     const wxImage image=bitmap.ConvertToImage();
+    // Retain the actual pixels before any oracle can fail on a native backend.
+    check(image.SaveFile(output,wxBITMAP_TYPE_PNG),"Native evidence image saved");
     for(int theme=0;theme<3;++theme) {
       int changed=0;
       for(int y=80;y<122;++y)for(int x=theme*360+10;x<(theme+1)*360;++x) {
@@ -64,14 +76,22 @@ int main(int argc, char** argv) {
           const int channels[]={r,g,b};
           const int bg[]={backgrounds[theme].Red(),backgrounds[theme].Green(),backgrounds[theme].Blue()};
           const int fg[]={inks[theme].Red(),inks[theme].Green(),inks[theme].Blue()};
-          for(int c=0;c<3;++c)
-            check(std::abs(channels[c]-bg[c])<=std::ceil(std::abs(fg[c]-bg[c])*92./255.)+1,
+          for(int c=0;c<3;++c) {
+            const auto limit=std::ceil(std::abs(fg[c]-bg[c])*92./255.)+1;
+            if(std::abs(channels[c]-bg[c])>limit)
+              std::cerr << "firstAlphaViolation theme=" << theme << " region="
+                        << theme*360+10 << ",80," << (theme+1)*360 << ",122"
+                        << " pixel=" << x << ',' << y << " channel=" << c
+                        << " rgb=" << r << ',' << g << ',' << b
+                        << " background=" << bg[c] << " ink=" << fg[c]
+                        << " opacity=92 limit=" << limit << '\n';
+            check(std::abs(channels[c]-bg[c])<=limit,
                   "Water label must not become opaque or ignore alpha");
+          }
         }
       }
       check(changed>20,"Water name remains painted");
     }
-    check(image.SaveFile(output,wxBITMAP_TYPE_PNG),"Native evidence image saved");
     std::cout<<checks<<" geographic name painter checks passed\n";
   } catch(const std::exception& e) {std::cerr<<e.what()<<'\n';result=1;}
   wxTheApp->OnExit();wxEntryCleanup();return result;

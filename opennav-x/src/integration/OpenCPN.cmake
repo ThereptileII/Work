@@ -53,10 +53,15 @@ target_compile_definitions(${PACKAGE_NAME} PRIVATE OPENNAV_X=1)
 # the standalone upstream library and all default presentation paths stay stock.
 target_compile_definitions(S52PLIB PRIVATE OPENNAV_X=1)
 target_include_directories(S52PLIB PRIVATE "${OPENNAV_ROOT}/src")
+if(WIN32)
+  target_link_libraries(S52PLIB PRIVATE opennav_chart_name_alpha)
+endif()
 # Preserve normal plugin preferences while upstream Safe Mode blocks loading.
 # Limit this additional definition to the one affected model translation unit.
 set_property(SOURCE "${CMAKE_SOURCE_DIR}/model/src/plugin_loader.cpp"
   DIRECTORY "${CMAKE_SOURCE_DIR}/model" APPEND PROPERTY COMPILE_DEFINITIONS OPENNAV_X=1)
+set_property(SOURCE "${CMAKE_SOURCE_DIR}/model/src/plugin_loader.cpp"
+  DIRECTORY "${CMAKE_SOURCE_DIR}/model" APPEND PROPERTY INCLUDE_DIRECTORIES "${OPENNAV_ROOT}/src")
 # Bound untrusted Signal K before the upstream recursive parser, not only after
 # the driver has already decoded it. The pristine build has no OpenNav include.
 set_property(SOURCE "${CMAKE_SOURCE_DIR}/model/src/comm_drv_signalk_net.cpp"
@@ -300,11 +305,60 @@ set_property(DIRECTORY APPEND PROPERTY CMAKE_CONFIGURE_DEPENDS
   "${OPENNAV_ROOT}/docs/design/prototype/src/chart-symbols.css"
   "${OPENNAV_ROOT}/docs/design/prototype/src/style.css")
 target_sources(${PACKAGE_NAME} PRIVATE "${OPENNAV_ROOT}/src/integration/ChartPresentation.cpp"
+  "${OPENNAV_ROOT}/src/integration/OChartsPresentation.cpp"
+  "${OPENNAV_ROOT}/src/integration/OChartsModuleLoader.cpp"
   "${OPENNAV_ROOT}/src/integration/ChartRouteWaypoint.cpp"
   "${OPENNAV_ROOT}/src/integration/ChartRouteLabel.cpp"
   "${OPENNAV_ROOT}/src/integration/ChartRouteUnderlay.cpp"
   "${OPENNAV_ROOT}/src/integration/ChartRouteUnderlayGeometry.cpp")
 target_include_directories(${PACKAGE_NAME} PRIVATE "${xnav_chart_style}")
+# The private o-charts adapter is optional until its exact source, native ABI
+# and chart lifecycle have qualified. A missing package preserves stock plugin
+# loading and is reported separately from core ENC presentation.
+set(SKAGER_OCHARTS_PACKAGE "" CACHE PATH "Qualified private chart adapter package")
+set(skager_ocharts_available false)
+set(skager_ocharts_sha256 "")
+set(skager_ocharts_bytes 0)
+if(SKAGER_OCHARTS_PACKAGE)
+  if(NOT WIN32 OR NOT MSVC OR NOT CMAKE_SIZEOF_VOID_P EQUAL 4)
+    message(FATAL_ERROR "Private chart adapter requires native MSVC Win32")
+  endif()
+  get_filename_component(SKAGER_OCHARTS_PACKAGE "${SKAGER_OCHARTS_PACKAGE}" ABSOLUTE)
+  set(skager_ocharts_validator "${OPENNAV_ROOT}/tools/verify-ocharts-adapter-package.py")
+  execute_process(COMMAND "${Python3_EXECUTABLE}" "${skager_ocharts_validator}"
+    --package "${SKAGER_OCHARTS_PACKAGE}" --resources "${xnav_chart_style}"
+    --header "${CMAKE_BINARY_DIR}/include/SkagerOChartsPackage.h"
+    RESULT_VARIABLE skager_ocharts_result)
+  if(NOT skager_ocharts_result EQUAL 0)
+    message(FATAL_ERROR "Private chart adapter source/package verification failed")
+  endif()
+  set_property(DIRECTORY APPEND PROPERTY CMAKE_CONFIGURE_DEPENDS
+    "${SKAGER_OCHARTS_PACKAGE}/skager-ocharts-adapter.dll"
+    "${SKAGER_OCHARTS_PACKAGE}/manifest.json"
+    "${SKAGER_OCHARTS_PACKAGE}/corresponding-source.zip"
+    "${skager_ocharts_validator}" "${OPENNAV_ROOT}/tools/prepare-ocharts-adapter.py")
+  # Recheck source/resources at build and install, including changes after
+  # configure. The compiled header is emitted only by successful configuration.
+  add_custom_target(skager_verify_ocharts_package
+    COMMAND "${Python3_EXECUTABLE}" "${skager_ocharts_validator}"
+      --package "${SKAGER_OCHARTS_PACKAGE}" --resources "${xnav_chart_style}"
+    VERBATIM)
+  add_dependencies(${PACKAGE_NAME} skager_verify_ocharts_package)
+  install(CODE "
+    execute_process(COMMAND \"${Python3_EXECUTABLE}\" \"${skager_ocharts_validator}\"
+      --package \"${SKAGER_OCHARTS_PACKAGE}\" --resources \"${xnav_chart_style}\"
+      RESULT_VARIABLE skager_ocharts_install_result)
+    if(NOT skager_ocharts_install_result EQUAL 0)
+      message(FATAL_ERROR \"Private chart adapter changed before install\")
+    endif()")
+  install(FILES "${SKAGER_OCHARTS_PACKAGE}/skager-ocharts-adapter.dll" DESTINATION .)
+  install(FILES "${SKAGER_OCHARTS_PACKAGE}/manifest.json"
+    "${SKAGER_OCHARTS_PACKAGE}/corresponding-source.zip"
+    DESTINATION "${PREFIX_PKGDATA}/opennav/third-party/ocharts")
+else()
+  configure_file("${OPENNAV_ROOT}/src/integration/SkagerOChartsPackage.h.in"
+    "${CMAKE_BINARY_DIR}/include/SkagerOChartsPackage.h" @ONLY)
+endif()
 install(FILES "${xnav_chart_style}/chartsymbols.xml" "${xnav_chart_style}/S52RAZDS.RLE"
   "${xnav_chart_style}/rastersymbols-day.png" "${xnav_chart_style}/rastersymbols-dusk.png"
   "${xnav_chart_style}/rastersymbols-dark.png" "${xnav_chart_style}/manifest.json"

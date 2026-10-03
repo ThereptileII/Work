@@ -2,6 +2,21 @@
 
 ## Current combined candidate: SKAGER chart fidelity and branding
 
+**Boat chart presentation gap (SCRUM-259):** the fresh read-only inventory found
+581 `.oesu` files in the first configured chart root and two MBTiles files in the
+second. Both roots are available; no chart contents, private paths or licence
+material were exported, and the profile remained unchanged. The accepted
+o-charts source constructs and renders with its own S-52 library from the stock
+shared resource directory. Current core `CreateChartPresentation` does not
+intercept that construction. Consequently the core NOAA captures below cannot
+qualify SKAGER presentation on the boat's o-charts collection. The exact plugin
+resource/API boundary has now been inspected under SCRUM-259. A separately named,
+exact-source private renderer adapter and fail-closed host boundary are implemented;
+the source/package recipe has passed focused preparation checks. Native ABI,
+private downloader trust, complete application and boat rendering gates remain
+open. No boat plugin or stock resources have been changed. Raster MBTiles
+cannot receive object-level vector styling. [Availability evidence](evidence/boat-chart-types-20261003/summary.json).
+
 The clean application source is `78eccb8b7f21b260ded57d3ba763f884d60c8180`,
 published exactly as `61a0a7838b56ad841bb458af6fc62651464bdafe` (2,472 mapped
 blobs/modes verified). Its [integrated Linux build and staging pass](evidence/skager-chart-78eccb8-linux-build/README.md).
@@ -25,11 +40,38 @@ clean shutdown. A card-covered GL pixel sample required a documented collector
 correction; its original failure and missing-stroke negative controls remain.
 No application correction or weakened navigation assertion was involved.
 
-The exact published candidate is now in the [full Linux/Windows qualification
+The exact published candidate entered the [full Linux/Windows qualification
 run 37088759582](https://github.com/ThereptileII/Work/actions/runs/37088759582).
-Long qualification runs in the background while evidence and boat preparation
-continue. No full release, physical GPU, boat visual pass or obsolete-version
-retirement is implied. Whole-chart prototype conformance remains open.
+Windows job 111105527254 built and installed the application, but failed the
+offline geographic-name painter at 03:16:18 UTC: water-label pixels exceeded
+the required alpha bound. That candidate remains unqualified. The isolated
+[native diagnosis and correction](evidence/scrum243-windows-alpha/README.md)
+now pass all 2,452 original Windows assertions in run 37094223771 at exact
+`7687ce53c780bdfd53db30bb063f9bcc8f6404b7`. GDI+ grayscale coverage restores
+translucent text without changing bounds, colors, opacity or any opaque pixels.
+The original failed artifact and paired images remain retained. A complete
+replacement application/package has not yet been qualified. Linux qualification
+continues in the background. No
+full release, physical GPU, boat visual pass or obsolete-version retirement is
+implied. Whole-chart prototype conformance remains open.
+
+Boat review preparation found a tooling integration gap: the already qualified
+cold-baseline recovery checkout predates SKAGER window selectors, while the
+application candidate's tools lack that completed-baseline reader. SCRUM-258
+[combines those previously reviewed boundaries](installer/skager-boat-tool-composition.md)
+without changing the frozen application. Its exact local `3da0e563de40f71fdb5c31df89c9ec65a04826b5`
+is published as `ffa2de31ae02ca826ec5d3604f57a8c619035bb1` on the separate
+`skager-boat-review-composition` branch: all 2,484 local blobs/modes match and
+eight unrelated repository files remain unchanged. Independent source review and
+945 focused portable checks pass. All ten jobs in [native tooling run 37090716935](https://github.com/ThereptileII/Work/actions/runs/37090716935)
+now pass, with [six original artifacts independently verified](evidence/scrum258-native-tooling/README.md),
+including actual dependency refusals and successful Prepare/Arm/Collect. It
+built only small test helpers, not another OpenCPN application. At 03:13:19 UTC,
+all 117 tools were staged separately and independently rehashed on the boat;
+[the staging receipt](evidence/scrum258-native-tooling/boat-staging.json) confirms
+unchanged stock executable, profile, installed state and qualified source checkout.
+SSH, Tailscale and RustDesk remain running. No new tools were executed and no
+application was launched or installed.
 
 ## Previous correction batch: chart labels, Night, land and service symbols
 

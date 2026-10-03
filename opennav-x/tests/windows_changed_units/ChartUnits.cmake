@@ -21,6 +21,13 @@ set(OCPN_USE_LZMA 1)
 set(USE_GARMINHOST 1)
 configure_file("${OPENNAV_SOURCE_DIR}/cmake/in-files/config.h.in"
   "${CMAKE_CURRENT_BINARY_DIR}/include/config.h")
+# Actual default production configuration: no unqualified private adapter.
+# Windows still compiles the complete loader and hash/refusal branches.
+set(skager_ocharts_available false)
+set(skager_ocharts_sha256 "")
+set(skager_ocharts_bytes 0)
+configure_file("${OPENNAV_ROOT}/src/integration/SkagerOChartsPackage.h.in"
+  "${CMAKE_CURRENT_BINARY_DIR}/include/SkagerOChartsPackage.h" @ONLY)
 # chcanv includes SystemCmdSound even with Windows' native sound backend.
 # Reuse the pinned production generator with the Windows default backend flags;
 # do not supply a hand-written header or build sound dependencies for this gate.

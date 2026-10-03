@@ -1,0 +1,914 @@
+{
+  "schema": 1,
+  "source": {
+    "repository": "bdbcat/o-charts_pi",
+    "commit": "c98bf5f0654a6aee52cd9a6b9fabc0d1cf8047e8",
+    "tree": "c98bf5f0654a6aee52cd9a6b9fabc0d1cf8047e8",
+    "files": {
+      "CMakeLists.txt": {
+        "gitBlob": "9050f108a8567a58f8975556db433aadf7c385fe",
+        "bytes": 3303
+      },
+      "COPYING": {
+        "gitBlob": "7d5393a1212da0841e28e2f74883cb40fbd75a1f",
+        "bytes": 15170
+      },
+      "COPYING.gplv2": {
+        "gitBlob": "7d5393a1212da0841e28e2f74883cb40fbd75a1f",
+        "bytes": 15170
+      },
+      "Plugin.cmake": {
+        "gitBlob": "c6b3200cde359d2dccdf253045435089ea945c3a",
+        "bytes": 4995
+      },
+      "README.md": {
+        "gitBlob": "57d0c7f70812743f901c6f0eb0c2621c28f4aedc",
+        "bytes": 1094
+      },
+      "VERSION.cmake": {
+        "gitBlob": "593263ae95fe817f7156f40bc9684b9bacc67648",
+        "bytes": 29
+      },
+      "config.h.in": {
+        "gitBlob": "3f062392e404a63da0f6b9aa1a79566d35e3aab5",
+        "bytes": 878
+      },
+      "debian/copyright": {
+        "gitBlob": "124c79f1c1a7a9dcb7b03a1d91b3a63e772ed74a",
+        "bytes": 1775
+      },
+      "libs/cpl/CMakeLists.txt": {
+        "gitBlob": "f99770b2b301ea1cf5d8037a3c46842399c31161",
+        "bytes": 801
+      },
+      "libs/cpl/src/cpl_config.h": {
+        "gitBlob": "793212329c595a4701378b6a0dc7c831df1240d9",
+        "bytes": 2606
+      },
+      "libs/cpl/src/cpl_conv.cpp": {
+        "gitBlob": "d672b706fb26fae9c5097165e3e0b611c09efd12",
+        "bytes": 41765
+      },
+      "libs/cpl/src/cpl_conv.h": {
+        "gitBlob": "cb4bdb938c666d39b8f2c718f9f2f9db131c69a8",
+        "bytes": 9367
+      },
+      "libs/cpl/src/cpl_csv.cpp": {
+        "gitBlob": "45795f18584e20e9f5facf71dc6363840ba3e52d",
+        "bytes": 34823
+      },
+      "libs/cpl/src/cpl_csv.h": {
+        "gitBlob": "a5821265c464445b9c4204176ad26b89856a495e",
+        "bytes": 3613
+      },
+      "libs/cpl/src/cpl_error.cpp": {
+        "gitBlob": "1e3a68fa45a7e931a395cf5bd5064eb883df6e2f",
+        "bytes": 21722
+      },
+      "libs/cpl/src/cpl_error.h": {
+        "gitBlob": "9764cb4e8f0888f1e63736da1c71d7b22439e2b5",
+        "bytes": 5250
+      },
+      "libs/cpl/src/cpl_findfile.cpp": {
+        "gitBlob": "5ba387521c7cab4c5d378ce1e23ea20084e6af4f",
+        "bytes": 6690
+      },
+      "libs/cpl/src/cpl_path.cpp": {
+        "gitBlob": "e578e31838cb213ae89886032d9ae19ab5e99a76",
+        "bytes": 21255
+      },
+      "libs/cpl/src/cpl_port.h": {
+        "gitBlob": "476cb5c01e640f8cba22eec6c697b53450aff94d",
+        "bytes": 14150
+      },
+      "libs/cpl/src/cpl_string.cpp": {
+        "gitBlob": "9d3bbef0eaa690f159af8c5d500356add93ac270",
+        "bytes": 46751
+      },
+      "libs/cpl/src/cpl_string.h": {
+        "gitBlob": "250505351e5a7cd6aff9b1caaae021f7dfa5fcdd",
+        "bytes": 6685
+      },
+      "libs/cpl/src/cpl_vsi.h": {
+        "gitBlob": "d247714cabbd567e0ac4ab55830434142f1bae97",
+        "bytes": 10066
+      },
+      "libs/cpl/src/cpl_vsisimple.cpp": {
+        "gitBlob": "b25fb3dfcf77eb55656627d072910e7a8ebd73db",
+        "bytes": 14535
+      },
+      "libs/dsa/CMakeLists.txt": {
+        "gitBlob": "3fb8267d7a5cc14373f8e16f7a730bcba906d456",
+        "bytes": 630
+      },
+      "libs/dsa/src/dsa_utils.cpp": {
+        "gitBlob": "ee4035b01d5e856b220175839384383e7745b0ec",
+        "bytes": 19110
+      },
+      "libs/dsa/src/dsa_utils.h": {
+        "gitBlob": "6f71b15098fd1c5e087d987ec58475f8863de5d2",
+        "bytes": 2505
+      },
+      "libs/dsa/src/mp_math.c": {
+        "gitBlob": "0c2297fdfc7c8b328b8de95c2124d46ef32ab712",
+        "bytes": 73666
+      },
+      "libs/dsa/src/mp_math.h": {
+        "gitBlob": "9bcb57dd20c7a762ef017cf5431747b03662eb16",
+        "bytes": 12125
+      },
+      "libs/dsa/src/sha1.c": {
+        "gitBlob": "499f03609990bcf5d73633783705eb080a239e93",
+        "bytes": 10267
+      },
+      "libs/dsa/src/sha1.h": {
+        "gitBlob": "2ce5517be51895587e6793064af79ba4ed304ac4",
+        "bytes": 2248
+      },
+      "libs/gdal/src/cpl_config.h": {
+        "gitBlob": "793212329c595a4701378b6a0dc7c831df1240d9",
+        "bytes": 2606
+      },
+      "libs/gdal/src/cpl_config.h.orig": {
+        "gitBlob": "3cad8ad383c74302fb7e56adfa74064683c5b078",
+        "bytes": 1113
+      },
+      "libs/gdal/src/cpl_conv.cpp": {
+        "gitBlob": "55fe27dae758cfb4d13ec197322d0766d6891477",
+        "bytes": 41764
+      },
+      "libs/gdal/src/cpl_conv.h": {
+        "gitBlob": "cb4bdb938c666d39b8f2c718f9f2f9db131c69a8",
+        "bytes": 9367
+      },
+      "libs/gdal/src/cpl_csv.cpp": {
+        "gitBlob": "45795f18584e20e9f5facf71dc6363840ba3e52d",
+        "bytes": 34823
+      },
+      "libs/gdal/src/cpl_csv.h": {
+        "gitBlob": "a5821265c464445b9c4204176ad26b89856a495e",
+        "bytes": 3613
+      },
+      "libs/gdal/src/cpl_error.cpp": {
+        "gitBlob": "1e3a68fa45a7e931a395cf5bd5064eb883df6e2f",
+        "bytes": 21722
+      },
+      "libs/gdal/src/cpl_error.h": {
+        "gitBlob": "9764cb4e8f0888f1e63736da1c71d7b22439e2b5",
+        "bytes": 5250
+      },
+      "libs/gdal/src/cpl_findfile.cpp": {
+        "gitBlob": "5ba387521c7cab4c5d378ce1e23ea20084e6af4f",
+        "bytes": 6690
+      },
+      "libs/gdal/src/cpl_list.h": {
+        "gitBlob": "9a4932c6635ac4f5cd86c7911914ce308388bd56",
+        "bytes": 3169
+      },
+      "libs/gdal/src/cpl_minixml.cpp": {
+        "gitBlob": "79e14564a48ee3d5520b1399bddc2a1172bed07f",
+        "bytes": 58907
+      },
+      "libs/gdal/src/cpl_minixml.h": {
+        "gitBlob": "78fbcb97c603d72b1ca85b1bb4cbd9fdd8aa1f31",
+        "bytes": 7499
+      },
+      "libs/gdal/src/cpl_multiproc.h": {
+        "gitBlob": "f1e0a61d5b96fec3b585012ef2de567276702021",
+        "bytes": 3158
+      },
+      "libs/gdal/src/cpl_odbc.h": {
+        "gitBlob": "be0394d5f5505e74f108b0503b2e7fcd5f27e3cc",
+        "bytes": 5872
+      },
+      "libs/gdal/src/cpl_path.cpp": {
+        "gitBlob": "e578e31838cb213ae89886032d9ae19ab5e99a76",
+        "bytes": 21255
+      },
+      "libs/gdal/src/cpl_port.h": {
+        "gitBlob": "476cb5c01e640f8cba22eec6c697b53450aff94d",
+        "bytes": 14150
+      },
+      "libs/gdal/src/cpl_string.cpp": {
+        "gitBlob": "9d3bbef0eaa690f159af8c5d500356add93ac270",
+        "bytes": 46751
+      },
+      "libs/gdal/src/cpl_string.h": {
+        "gitBlob": "250505351e5a7cd6aff9b1caaae021f7dfa5fcdd",
+        "bytes": 6685
+      },
+      "libs/gdal/src/cpl_vsi.h": {
+        "gitBlob": "d247714cabbd567e0ac4ab55830434142f1bae97",
+        "bytes": 10066
+      },
+      "libs/gdal/src/cpl_vsisimple.cpp": {
+        "gitBlob": "b25fb3dfcf77eb55656627d072910e7a8ebd73db",
+        "bytes": 14535
+      },
+      "libs/gdal/src/cplgetsymbol.cpp": {
+        "gitBlob": "2bb154fc1e0a1d909574b7a35aa67f8009bfb0a7",
+        "bytes": 7299
+      },
+      "libs/gdal/src/ddfrecordindex.cpp": {
+        "gitBlob": "9894a2a8e80d3e0456497fa701234f6877e0ea67",
+        "bytes": 11407
+      },
+      "libs/gdal/src/gdal.h": {
+        "gitBlob": "3ad3401b8451dfce2c010fb4d79a9a714ae4efa9",
+        "bytes": 23523
+      },
+      "libs/gdal/src/gdal_frmts.h": {
+        "gitBlob": "f742eabe9accc4d06c34056d626557645b177ec1",
+        "bytes": 5604
+      },
+      "libs/gdal/src/gdal_misc.cpp": {
+        "gitBlob": "9d796f897392be72ac80d0f29585c2d8d5725d73",
+        "bytes": 7270
+      },
+      "libs/gdal/src/gdal_priv.h": {
+        "gitBlob": "327b5929e195c8f5962bf32e8047828d70b13e8b",
+        "bytes": 23312
+      },
+      "libs/gdal/src/iso8211.h": {
+        "gitBlob": "c7b6257737316b5eafb93a29e03909d8861a167c",
+        "bytes": 18403
+      },
+      "libs/gdal/src/ogr_api.h": {
+        "gitBlob": "f49ecc95ec6cce5c105eb48f8209bcb9d7b684f0",
+        "bytes": 15399
+      },
+      "libs/gdal/src/ogr_attrind.h": {
+        "gitBlob": "b890941fdd36f9202caf558e2490776ef6a62156",
+        "bytes": 4136
+      },
+      "libs/gdal/src/ogr_core.h": {
+        "gitBlob": "041b972d6365764fbf4cf87d8c80bc5c7b594c17",
+        "bytes": 10469
+      },
+      "libs/gdal/src/ogr_feature.h": {
+        "gitBlob": "e8c913ea53a93cf0a39c2824b82356bbe875cd91",
+        "bytes": 14942
+      },
+      "libs/gdal/src/ogr_geometry.h": {
+        "gitBlob": "771d1579ebce4ddbc9424c857419df8c4c6ddd43",
+        "bytes": 19725
+      },
+      "libs/gdal/src/ogr_p.h": {
+        "gitBlob": "89b2bbae0f9b6d51c5ed9a042a647d5f334a9fa1",
+        "bytes": 3609
+      },
+      "libs/gdal/src/ogr_s57.h": {
+        "gitBlob": "cdc007a9c5b208c157335069cf75c1fe9495b747",
+        "bytes": 6092
+      },
+      "libs/gdal/src/ogr_spatialref.h": {
+        "gitBlob": "0a3facfe3d03954caa49c10a22baca663bd71ee1",
+        "bytes": 21265
+      },
+      "libs/gdal/src/ograssemblepolygon.cpp": {
+        "gitBlob": "8890fae39e7b2d03ce77123147d1845831eda764",
+        "bytes": 13099
+      },
+      "libs/gdal/src/ogrcurve.cpp": {
+        "gitBlob": "a35c17aca954f41fc1d2ae8b5e4583478a38a56a",
+        "bytes": 4858
+      },
+      "libs/gdal/src/ogrfeature.cpp": {
+        "gitBlob": "c194578466df738a068e8bd16d218d32059e7c2e",
+        "bytes": 75394
+      },
+      "libs/gdal/src/ogrfeaturedefn.cpp": {
+        "gitBlob": "ad3b98257148c4aca7e2fd41ff8405ab4dbbb85c",
+        "bytes": 20608
+      },
+      "libs/gdal/src/ogrfielddefn.cpp": {
+        "gitBlob": "cc6c509b4f8fdfeed5cdabe1e6281cc51005a6f9",
+        "bytes": 21079
+      },
+      "libs/gdal/src/ogrgeometry.cpp": {
+        "gitBlob": "9d343ca9bff284fbbd4fa23950270640d85cd66f",
+        "bytes": 39241
+      },
+      "libs/gdal/src/ogrgeometrycollection.cpp": {
+        "gitBlob": "6d345f9ec396d08c6489840f1976ae4e9fe25740",
+        "bytes": 29314
+      },
+      "libs/gdal/src/ogrgeometryfactory.cpp": {
+        "gitBlob": "a961fb46f7854ad5f5c050b76cf6b946cfe75f3b",
+        "bytes": 26215
+      },
+      "libs/gdal/src/ogrlayer.cpp": {
+        "gitBlob": "76e0f9e623a4e819c4f635eceda9c3885a02655e",
+        "bytes": 18564
+      },
+      "libs/gdal/src/ogrlinearring.cpp": {
+        "gitBlob": "4dc72e7be43966be4fd2a0df96e19bff8f79cf9e",
+        "bytes": 13064
+      },
+      "libs/gdal/src/ogrlinestring.cpp": {
+        "gitBlob": "30be1dd774e30e1fdf64ccba14ecbe9193ea31c9",
+        "bytes": 37762
+      },
+      "libs/gdal/src/ogrmultilinestring.cpp": {
+        "gitBlob": "2ed2c15da62dc97940d99d0d653926af197196a6",
+        "bytes": 12294
+      },
+      "libs/gdal/src/ogrmultipoint.cpp": {
+        "gitBlob": "c3bde6c0de2e3e2b5d83912bf9610579827f6801",
+        "bytes": 14672
+      },
+      "libs/gdal/src/ogrmultipolygon.cpp": {
+        "gitBlob": "e5993422341f0ed7730907e3ca8bbfdd9b948e95",
+        "bytes": 13512
+      },
+      "libs/gdal/src/ogrpoint.cpp": {
+        "gitBlob": "94028150ed86416e604378d04028fc9c2b1f2efe",
+        "bytes": 16082
+      },
+      "libs/gdal/src/ogrpolygon.cpp": {
+        "gitBlob": "e3456aba152243dc3107e2f73b08d49f6868fdbd",
+        "bytes": 29936
+      },
+      "libs/gdal/src/ogrs57datasource.cpp": {
+        "gitBlob": "56a0fc29b6d15a4112a7232ef174fd3e4a88c9c0",
+        "bytes": 24784
+      },
+      "libs/gdal/src/ogrs57layer.cpp": {
+        "gitBlob": "6e82e6e2dd93d412db352240a0e5fdf2a0669304",
+        "bytes": 11282
+      },
+      "libs/gdal/src/ogrsf_frmts.h": {
+        "gitBlob": "ab65829594a5bb1e865e28f45ebe12f86074e006",
+        "bytes": 9615
+      },
+      "libs/gdal/src/ogrutils.cpp": {
+        "gitBlob": "bb39683bf5046f8349bce34867bb1df2955808fa",
+        "bytes": 13383
+      },
+      "libs/gdal/src/s57.h": {
+        "gitBlob": "11544c288b9d83bd7c8c540de2603cb91ebe46bb",
+        "bytes": 11338
+      },
+      "libs/gdal/src/s57classregistrar.cpp": {
+        "gitBlob": "81926cd4b8324be497143dd7bc11fc888b222c5e",
+        "bytes": 17936
+      },
+      "libs/gdal/src/s57featuredefns.cpp": {
+        "gitBlob": "444754c2b912ff811716be8f84e4154cf1b05931",
+        "bytes": 14970
+      },
+      "libs/gdal/src/s57reader.cpp": {
+        "gitBlob": "cb62bd1f29ff03fcf5a3e169d900dd8b768dddf0",
+        "bytes": 99472
+      },
+      "libs/geoprim/CMakeLists.txt": {
+        "gitBlob": "eae47b966a49e0340e870daf43dc31fb2a7ae2ed",
+        "bytes": 1242
+      },
+      "libs/geoprim/src/.directory": {
+        "gitBlob": "e240bd4225571ed6b102ff0ca93fc0a7c5183c02",
+        "bytes": 60
+      },
+      "libs/geoprim/src/LLRegion.cpp": {
+        "gitBlob": "d87327ffc123d9eacb16b1d774ed1d5b0f7df558",
+        "bytes": 19869
+      },
+      "libs/geoprim/src/LLRegion.h": {
+        "gitBlob": "b349816e9c88e26b7e646e76e29954f25e5e69b4",
+        "bytes": 3187
+      },
+      "libs/geoprim/src/LOD_reduce.cpp": {
+        "gitBlob": "1f4607263be4dda67132f08bd5b748f5429d0197",
+        "bytes": 6686
+      },
+      "libs/geoprim/src/LOD_reduce.h": {
+        "gitBlob": "f1a1f7f5479c9703f1252217f58d5f25f7f3cb61",
+        "bytes": 2283
+      },
+      "libs/geoprim/src/bbox.cpp": {
+        "gitBlob": "47ba2838f43af1b58b2d109a86458979475907b5",
+        "bytes": 12190
+      },
+      "libs/geoprim/src/bbox.h": {
+        "gitBlob": "c6b8efd232910d758effe6e4d28f65bfbd031961",
+        "bytes": 5944
+      },
+      "libs/geoprim/src/line_clip.cpp": {
+        "gitBlob": "b6badd5b08681813db6fda29d9a415b78880f1af",
+        "bytes": 4265
+      },
+      "libs/geoprim/src/line_clip.h": {
+        "gitBlob": "478e4013ccb687016c67e24535ff280cb770fdf3",
+        "bytes": 1136
+      },
+      "libs/geoprim/src/linmath.h": {
+        "gitBlob": "5e5af3da66a480a67741f2b85b743ed489dd52bf",
+        "bytes": 14892
+      },
+      "libs/geoprim/src/poly_math.cpp": {
+        "gitBlob": "a591c1a962cae57abeeb3833587946b4d1b070b8",
+        "bytes": 6544
+      },
+      "libs/geoprim/src/poly_math.h": {
+        "gitBlob": "f24efa8f77afe28d1531517b12cc9cc0602047aa",
+        "bytes": 2027
+      },
+      "libs/geoprim/src/vector2D.cpp": {
+        "gitBlob": "c1c75c43c0f16bc024839ea4c272c51c413039a1",
+        "bytes": 3213
+      },
+      "libs/geoprim/src/vector2D.h": {
+        "gitBlob": "90807ae5caa31332d795bd5eb0353ab51607b2d9",
+        "bytes": 2870
+      },
+      "libs/iso8211/CMakeLists.txt": {
+        "gitBlob": "eab46d95eeb7ee25ecea4de8fbdee97057a40057",
+        "bytes": 750
+      },
+      "libs/iso8211/src/ddffield.cpp": {
+        "gitBlob": "56d56fd5bc1c34797da6117b8f21bece5b6576cf",
+        "bytes": 14089
+      },
+      "libs/iso8211/src/ddffielddefn.cpp": {
+        "gitBlob": "6ef88510666ec46ee3006002e031f366bd1b1395",
+        "bytes": 30073
+      },
+      "libs/iso8211/src/ddfmodule.cpp": {
+        "gitBlob": "bedf42d8440a83ef0cb9d47fdb793a730662a8d3",
+        "bytes": 26818
+      },
+      "libs/iso8211/src/ddfrecord.cpp": {
+        "gitBlob": "4fe0c709bbe33c712948e25d08a59e20e00a5602",
+        "bytes": 76365
+      },
+      "libs/iso8211/src/ddfsubfielddefn.cpp": {
+        "gitBlob": "0f1aacaa81833b9b40567a81bb96956cf6de1481",
+        "bytes": 34475
+      },
+      "libs/iso8211/src/ddfutils.cpp": {
+        "gitBlob": "3b419e30cafb0204d04b7ce15dcdbfe43a93ff3c",
+        "bytes": 4641
+      },
+      "libs/iso8211/src/iso8211.h": {
+        "gitBlob": "adfb0da1e077d4adf65db850a316ecb214b9de3b",
+        "bytes": 18356
+      },
+      "libs/pugixml/CMakeLists.txt": {
+        "gitBlob": "d8adb3e396f2172883410fbce8c8da86aac89751",
+        "bytes": 401
+      },
+      "libs/pugixml/pugiconfig.hpp": {
+        "gitBlob": "e8889db8328494741b8dd690b6c86520967cc86a",
+        "bytes": 2792
+      },
+      "libs/pugixml/pugixml.cpp": {
+        "gitBlob": "c099602bc7fd2f86c3f76565a51aede919524271",
+        "bytes": 352113
+      },
+      "libs/pugixml/pugixml.hpp": {
+        "gitBlob": "969efcbd45a557a7c8242ea54ca86b8a25b9e5e8",
+        "bytes": 52898
+      },
+      "libs/s52plib/CMakeLists.txt": {
+        "gitBlob": "b469184f9bb7aafa7de52bf4b19e018522cc172b",
+        "bytes": 1015
+      },
+      "libs/s52plib/src/Cs52_shaders.cpp": {
+        "gitBlob": "199d65cee34734f1efd7a6f9b69da51e47998305",
+        "bytes": 9079
+      },
+      "libs/s52plib/src/Cs52_shaders.h": {
+        "gitBlob": "42af08f9ae7b7c10deb9e985e1c89a6b7cacfe70",
+        "bytes": 6347
+      },
+      "libs/s52plib/src/DepthFont.cpp": {
+        "gitBlob": "7b853e97a3f880117642e706e64e4bd8cc31cb11",
+        "bytes": 5449
+      },
+      "libs/s52plib/src/DepthFont.h": {
+        "gitBlob": "b661409e10216eeea3dba8b99cf71ccabf449eb1",
+        "bytes": 2490
+      },
+      "libs/s52plib/src/TexFont.cpp": {
+        "gitBlob": "14abaec8488d816c38904760fea9fd35f77dffeb",
+        "bytes": 13745
+      },
+      "libs/s52plib/src/TexFont.h": {
+        "gitBlob": "41488050c6cca973d836d1dd6458905dba15496f",
+        "bytes": 3090
+      },
+      "libs/s52plib/src/chartsymbols.cpp": {
+        "gitBlob": "30ae2477b4b8ba748a8cd6f046079e8607b8151f",
+        "bytes": 29460
+      },
+      "libs/s52plib/src/chartsymbols.h": {
+        "gitBlob": "b78c2250c9297708ae230c96b10a8a4c80b9d4a4",
+        "bytes": 5491
+      },
+      "libs/s52plib/src/color_types.h": {
+        "gitBlob": "2f307bdd56ad80279fa8e216403f17a58a19c19d",
+        "bytes": 2142
+      },
+      "libs/s52plib/src/mygeom.h": {
+        "gitBlob": "14bd45d58bb96945b30dea5d984481d1e75a0de5",
+        "bytes": 9015
+      },
+      "libs/s52plib/src/mygeomOC.cpp": {
+        "gitBlob": "b4073f535c90fd64fa34462bce2ee7c23e6a6a77",
+        "bytes": 46762
+      },
+      "libs/s52plib/src/s52cnsy.cpp": {
+        "gitBlob": "08284458120d19797d2785fcddb9850969149203",
+        "bytes": 202484
+      },
+      "libs/s52plib/src/s52plib.cpp": {
+        "gitBlob": "72356a432ace97dec3cb05eb060effa1a9908786",
+        "bytes": 329596
+      },
+      "libs/s52plib/src/s52plib.h": {
+        "gitBlob": "181f3a24b802c977a3a91fc54feb1e1ff17b2796",
+        "bytes": 23034
+      },
+      "libs/s52plib/src/s52plibGL.h": {
+        "gitBlob": "296b2a53d75fd4b4e86f90d0c538358e30d3946f",
+        "bytes": 2282
+      },
+      "libs/s52plib/src/s52s57.h": {
+        "gitBlob": "449e65853c7c81f13cc1a83e3fc144fcf1e2a1bf",
+        "bytes": 16034
+      },
+      "libs/s52plib/src/s52shaders.cpp": {
+        "gitBlob": "39cca1b9defed1982ecb56df4d86fb7b134b189e",
+        "bytes": 26565
+      },
+      "libs/s52plib/src/s52shaders.h": {
+        "gitBlob": "aeecc742ae13896c7290413751a003272e7ed4fc",
+        "bytes": 4854
+      },
+      "libs/s52plib/src/s52utils.cpp": {
+        "gitBlob": "eba8e1a9201a80c7fd9ee3b7373615cd69496c2e",
+        "bytes": 7779
+      },
+      "libs/s52plib/src/s52utils.h": {
+        "gitBlob": "421e3a5f95167ff073b29517ed078a4f41d37449",
+        "bytes": 3151
+      },
+      "libs/tinyxml/CMakeLists.txt": {
+        "gitBlob": "39876058191c29886a266de8df2e9b95532c7acc",
+        "bytes": 1272
+      },
+      "libs/tinyxml/include/tinyxml.h": {
+        "gitBlob": "a3589e5b26938d2c16a7f82aba74a70bbe1cbec9",
+        "bytes": 64834
+      },
+      "libs/tinyxml/src/tinyxml.cpp": {
+        "gitBlob": "9c161dfcb934e855ff679998c34669bfdd66aa21",
+        "bytes": 37591
+      },
+      "libs/tinyxml/src/tinyxmlerror.cpp": {
+        "gitBlob": "538c21d0bd95fb114e70636bc1a776937975a912",
+        "bytes": 1791
+      },
+      "libs/tinyxml/src/tinyxmlparser.cpp": {
+        "gitBlob": "81b7eae96be92dd30087a74556b74840189ad273",
+        "bytes": 37242
+      },
+      "libs/wxJSON/CMakeLists.txt": {
+        "gitBlob": "211b5fed7b200fb2aa0bec3e6cb40c98eae51613",
+        "bytes": 919
+      },
+      "libs/wxJSON/include/wx/json_defs.h": {
+        "gitBlob": "9207a290008383a3a4f89b38f182f436fc4747c4",
+        "bytes": 6658
+      },
+      "libs/wxJSON/include/wx/jsonreader.h": {
+        "gitBlob": "83f779855c6c9ebb8bc35c2d231cd626ca216671",
+        "bytes": 4742
+      },
+      "libs/wxJSON/include/wx/jsonval.h": {
+        "gitBlob": "511719a784f312af52ad5eb330aec456d9918f8c",
+        "bytes": 15092
+      },
+      "libs/wxJSON/include/wx/jsonwriter.h": {
+        "gitBlob": "1cbda96debeed43c5c8ebf3f66f9970fed5daf8a",
+        "bytes": 3762
+      },
+      "libs/wxJSON/src/jsonreader.cpp": {
+        "gitBlob": "640f638d77a5fd2aef733b949328fc082d39918a",
+        "bytes": 72208
+      },
+      "libs/wxJSON/src/jsonval.cpp": {
+        "gitBlob": "7a6811d57e2bc51b9ea2362a00537e3513366f06",
+        "bytes": 102960
+      },
+      "libs/wxJSON/src/jsonwriter.cpp": {
+        "gitBlob": "a1836768d6afcfaa9c564824eb0b0343aa0c96da",
+        "bytes": 41793
+      },
+      "libs/wxcurl/src/base.cpp": {
+        "gitBlob": "b79adce393af14097e13cd66434a651348f104bb",
+        "bytes": 26784
+      },
+      "libs/wxcurl/src/dav.cpp": {
+        "gitBlob": "7900daaf68b527ede34f15eabc579d8d357a6dd7",
+        "bytes": 6678
+      },
+      "libs/wxcurl/src/davtool.cpp": {
+        "gitBlob": "998f3eec77edcb824ceafec3275830989d004c93",
+        "bytes": 9532
+      },
+      "libs/wxcurl/src/dialog.cpp": {
+        "gitBlob": "0c3f35016611c0a58040f45cfd029d4826a14ded",
+        "bytes": 22125
+      },
+      "libs/wxcurl/src/ftp.cpp": {
+        "gitBlob": "d6f0a8f81936125f52afdbecbf2cfbb05ac73795",
+        "bytes": 11902
+      },
+      "libs/wxcurl/src/ftpparse.cpp": {
+        "gitBlob": "a1d5a8a1c17a47d8122bb1685e89aaf8193f9599",
+        "bytes": 13752
+      },
+      "libs/wxcurl/src/ftpparse.h": {
+        "gitBlob": "a86bb17774ddda2ae5753954877ef4e4a0a6c4fe",
+        "bytes": 1712
+      },
+      "libs/wxcurl/src/ftptool.cpp": {
+        "gitBlob": "a27a09ca85ade6ead0ec8f39527f64b2a54fec6d",
+        "bytes": 5453
+      },
+      "libs/wxcurl/src/http.cpp": {
+        "gitBlob": "52fbdbcf655cf0b671bd0f88ab84e07d6b0c4dfc",
+        "bytes": 9567
+      },
+      "libs/wxcurl/src/panel.cpp": {
+        "gitBlob": "bdee4b7022171fc9b49a6deffca0189ebed8a382",
+        "bytes": 6305
+      },
+      "libs/wxcurl/src/telnet.cpp": {
+        "gitBlob": "4a2041b4300a11407718f72badb425b065c68b9e",
+        "bytes": 928
+      },
+      "libs/wxcurl/src/thread.cpp": {
+        "gitBlob": "4e5e6358b1d671fd07d6484e12eaeb0d66ba8ba0",
+        "bytes": 10876
+      },
+      "libs/wxcurl/src/utils.cpp": {
+        "gitBlob": "0d43b661b8b70be37fcb80ab1b88c8572a13d446",
+        "bytes": 3184
+      },
+      "libs/wxcurl/src/wx/curl/base.h": {
+        "gitBlob": "c250078dbecd9415f0667a5d0d8c77a67615da09",
+        "bytes": 26563
+      },
+      "libs/wxcurl/src/wx/curl/dav.h": {
+        "gitBlob": "286cbbef22c2d13c6e197c40911e56186e6e36b2",
+        "bytes": 2681
+      },
+      "libs/wxcurl/src/wx/curl/davtool.h": {
+        "gitBlob": "3c5b9cfb3a807874d31bd807e02261dc445cbd1f",
+        "bytes": 3362
+      },
+      "libs/wxcurl/src/wx/curl/dialog.h": {
+        "gitBlob": "7c454b6ad2ab217a3b63e3e0e879d2067d099cbb",
+        "bytes": 11384
+      },
+      "libs/wxcurl/src/wx/curl/ftp.h": {
+        "gitBlob": "aa446941c582c1aa0bd77ebcbf2b34422ba10b05",
+        "bytes": 4548
+      },
+      "libs/wxcurl/src/wx/curl/ftptool.h": {
+        "gitBlob": "c522ce744a336d307f2b4c50582a803bbe860f66",
+        "bytes": 2661
+      },
+      "libs/wxcurl/src/wx/curl/http.h": {
+        "gitBlob": "0c9e5354e2ba86ae11b662546d605ed21dae6057",
+        "bytes": 3756
+      },
+      "libs/wxcurl/src/wx/curl/panel.h": {
+        "gitBlob": "ed458f844a9d23f212763211b776d55b81917091",
+        "bytes": 3429
+      },
+      "libs/wxcurl/src/wx/curl/telnet.h": {
+        "gitBlob": "939423dca2545233c669add24c0896e04c587d47",
+        "bytes": 619
+      },
+      "libs/wxcurl/src/wx/curl/thread.h": {
+        "gitBlob": "fef92da62ec1d5c5e9e9171b509938568cbad4b9",
+        "bytes": 12831
+      },
+      "libs/wxcurl/src/wx/curl/utils.h": {
+        "gitBlob": "5bb2fe32268f9c422f77bb055b98f20e5c254263",
+        "bytes": 3432
+      },
+      "src/._s52plib.cpp": {
+        "gitBlob": "be384f34bf20e5b55516f63eacf30073bcb0dcdd",
+        "bytes": 4096
+      },
+      "src/InstallDirs.cpp": {
+        "gitBlob": "50142b591df542dc3ee8b61276206f6ec0d5db58",
+        "bytes": 1600
+      },
+      "src/InstallDirs.h": {
+        "gitBlob": "ef5f77837897414c521ad1f5bc693d76ada28cd9",
+        "bytes": 484
+      },
+      "src/OCPNRegion.cpp": {
+        "gitBlob": "7da36d4f51723c1d78b6cf7d1242980e0a45ca06",
+        "bytes": 130414
+      },
+      "src/OCPNRegion.h": {
+        "gitBlob": "a3e5c97ff056cdadae1ac134a2b40535e09c8493",
+        "bytes": 6404
+      },
+      "src/Osenc.cpp": {
+        "gitBlob": "e3cfdbfad13c4e92ab2c9c26efbedc80808647e6",
+        "bytes": 98753
+      },
+      "src/Osenc.h": {
+        "gitBlob": "9757445e27b93099e23682a845806508ba6df4fa",
+        "bytes": 23334
+      },
+      "src/S57ClassRegistrar.h": {
+        "gitBlob": "58fbc4ed9b7b929c4ea0e3903577dff183eca07c",
+        "bytes": 3676
+      },
+      "src/androidSupport.cpp": {
+        "gitBlob": "d2ec1e5d0dca44ca49e84fcc691a1b70ee5e6374",
+        "bytes": 26206
+      },
+      "src/androidSupport.h": {
+        "gitBlob": "f034669f44abc54f18fbb89e1f08a5bae1de28e1",
+        "bytes": 2515
+      },
+      "src/chart.cpp": {
+        "gitBlob": "fa948ab226a7d890f472eefeae822d8bf2e795d1",
+        "bytes": 219079
+      },
+      "src/chart.h": {
+        "gitBlob": "367aec5bde39393f4301c05aae525c9aedca73b4",
+        "bytes": 17812
+      },
+      "src/cutil.cpp": {
+        "gitBlob": "7a7affef3b510e512474c646a64d8530f5e17df0",
+        "bytes": 17342
+      },
+      "src/cutil.h": {
+        "gitBlob": "a5c687c0b5fbec5e329de8d765810db58e47a667",
+        "bytes": 3918
+      },
+      "src/default_pi.xpm": {
+        "gitBlob": "d57d94e5097a23df9f252d086b0149867dfb38c3",
+        "bytes": 4052
+      },
+      "src/dychart.h": {
+        "gitBlob": "6aaae5513b204399251cbbad5aac8c824f7eb7c4",
+        "bytes": 7432
+      },
+      "src/eSENCChart.cpp": {
+        "gitBlob": "02e3d21f580fa1bc5cca38ebf097d169358bd80a",
+        "bytes": 350764
+      },
+      "src/eSENCChart.h": {
+        "gitBlob": "3015e81f79abe82f1c705c3fa99abf55e10c84ee",
+        "bytes": 19398
+      },
+      "src/fpr.cpp": {
+        "gitBlob": "040609a443e720f9072210ca1ce881463573e99c",
+        "bytes": 16205
+      },
+      "src/fpr.h": {
+        "gitBlob": "d7727dc550f5ab9aea76df94bd224cac3caa3371",
+        "bytes": 1959
+      },
+      "src/georef.cpp": {
+        "gitBlob": "649058b6559f64a1c4cf8d0a7541fbc879b375c0",
+        "bytes": 18546
+      },
+      "src/georef.h": {
+        "gitBlob": "4e660f4378c178b90b2e5afd29c9b77166c51f61",
+        "bytes": 10311
+      },
+      "src/linmath.h": {
+        "gitBlob": "5732a76afc96652d269466055701a097e784a830",
+        "bytes": 12700
+      },
+      "src/o-charts_pi.cpp": {
+        "gitBlob": "2dc83c6a6eda949773bc440dc8c83f8b20aeb67f",
+        "bytes": 180414
+      },
+      "src/o-charts_pi.h": {
+        "gitBlob": "02cbedd3ccfce4cc29e4fc645a40bc1018861733",
+        "bytes": 16791
+      },
+      "src/ochartShop.cpp": {
+        "gitBlob": "5e92b3e5008da47a041737b11e0d8b1189c9de93",
+        "bytes": 265070
+      },
+      "src/ochartShop.h": {
+        "gitBlob": "f4004ec623ab852d6f56dc6574e97a84957c8da5",
+        "bytes": 19578
+      },
+      "src/ocpn_types.h": {
+        "gitBlob": "429aa94c5bc3b502be6912e68e61a6c29825a203",
+        "bytes": 3448
+      },
+      "src/oernc_inStream.cpp": {
+        "gitBlob": "3045cd56744160d62c3173becd0e41491f1d7c1c",
+        "bytes": 49018
+      },
+      "src/oernc_inStream.h": {
+        "gitBlob": "05be89bf8623441d7fcf628d83f252a65ee003e2",
+        "bytes": 5467
+      },
+      "src/piScreenLog.cpp": {
+        "gitBlob": "08e3d53e8a179b803d33c99d3ab6d5c8ff63d47f",
+        "bytes": 10137
+      },
+      "src/piScreenLog.h": {
+        "gitBlob": "9df9c03e3fca6b30f4d8527924e8391ae99afd18",
+        "bytes": 1384
+      },
+      "src/s57RegistrarMgr.cpp": {
+        "gitBlob": "223168e8b5b1d685baf3da4d9c050cb590e21a03",
+        "bytes": 5995
+      },
+      "src/s57RegistrarMgr.h": {
+        "gitBlob": "43d448c41924fffdfde78d8bc0ddbc7da08844c5",
+        "bytes": 2437
+      },
+      "src/sha256.c": {
+        "gitBlob": "0e4da3971a44150c4498be8dafca49b640787c08",
+        "bytes": 5263
+      },
+      "src/sha256.h": {
+        "gitBlob": "0547419652c0bd5684b68d1b564aa36fd59e38f1",
+        "bytes": 1434
+      },
+      "src/uKey.cpp": {
+        "gitBlob": "32c31be8f16136fc679b1c0145161cd22a6544ab",
+        "bytes": 7854
+      },
+      "src/uKey.h": {
+        "gitBlob": "881557b453bb52b639fd477be060ecf731051051",
+        "bytes": 2080
+      },
+      "src/validator.cpp": {
+        "gitBlob": "16f3158f27c657ce81bfed3e5abef1f83b5571fd",
+        "bytes": 19433
+      },
+      "src/validator.h": {
+        "gitBlob": "a7b790507de3267882e83ac7969eea16f18004fd",
+        "bytes": 2075
+      },
+      "src/viewport.cpp": {
+        "gitBlob": "cf662ea3e79d46e581b272c8d9e1cf4e04c5b2e7",
+        "bytes": 31269
+      },
+      "src/viewport.h": {
+        "gitBlob": "124d1372bce9fcd5884bf90e13b19d74794ec289",
+        "bytes": 5695
+      }
+    }
+  },
+  "gitlink": {
+    "path": "opencpn-libs",
+    "repository": "leamas/opencpn-libs",
+    "commit": "38762f4e7b8faf39133cc40efc99b12b5200f04b",
+    "tree": "38762f4e7b8faf39133cc40efc99b12b5200f04b",
+    "files": {
+      "api-17/CMakeLists.txt": {
+        "gitBlob": "2b9f2d8c931bcfce01a4fdd36971a3c7d6876473",
+        "bytes": 1229
+      },
+      "api-17/msvc-wx32/opencpn.lib": {
+        "gitBlob": "6bd26e641371368e99fc145797c800441aa6017c",
+        "bytes": 153546
+      },
+      "api-17/ocpn_plugin.h": {
+        "gitBlob": "0df5a408fcd683fec16e0cc8059309cb2b404210",
+        "bytes": 55685
+      }
+    }
+  },
+  "glew": {
+    "commit": "e90cc5842b02d5502a549f0f90424e3e1614bf67",
+    "files": {
+      "glew32.lib": {
+        "url": "https://raw.githubusercontent.com/OpenCPN/OCPNWindowsCoreBuildSupport/e90cc5842b02d5502a549f0f90424e3e1614bf67/buildwin/glew32.lib",
+        "bytes": 712098,
+        "sha256": "79b338b7f54c7d41a12c735812b260115672e05c0917fd30ef61c739b6a1994c"
+      },
+      "glew32.dll": {
+        "url": "https://raw.githubusercontent.com/OpenCPN/OCPNWindowsCoreBuildSupport/e90cc5842b02d5502a549f0f90424e3e1614bf67/buildwin/glew32.dll",
+        "bytes": 389632,
+        "sha256": "8c7805a05a321fab37a31822ea2d2a6997ddfd130cf0a09a54a428d6e6995700"
+      },
+      "include/glew/glew.h": {
+        "url": "https://raw.githubusercontent.com/OpenCPN/OCPNWindowsCoreBuildSupport/e90cc5842b02d5502a549f0f90424e3e1614bf67/buildwin/include/glew/glew.h",
+        "bytes": 1210287,
+        "sha256": "1a2d50dc00a69940838cb3b5413cf7a7ac3cee8078672f27ffbfa2d3b88ad344"
+      }
+    }
+  }
+}

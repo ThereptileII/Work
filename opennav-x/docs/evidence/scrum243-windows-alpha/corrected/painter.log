@@ -1,0 +1,5 @@
+renderer=gdiplus ppi=96,96 bitmapDepth=24
+theme=0 waterOrigin=16,85 waterExtent=145,19 font=Arial pointSize=12 pixelSize=16
+theme=1 waterOrigin=376,85 waterExtent=145,19 font=Arial pointSize=12 pixelSize=16
+theme=2 waterOrigin=736,85 waterExtent=145,19 font=Arial pointSize=12 pixelSize=16
+2452 geographic name painter checks passed

@@ -17,6 +17,7 @@ $intent=@{owner='OpenNavX.ChartHelperShutdown.1';utc=[datetime]::UtcNow.ToString
  launchRequestSha256=$ExpectedRequestSha256;helper=$context.helper;helperSha256=$script:ChartHelperHash;
  nativeSha256=(Get-Digest (Join-Path $PSScriptRoot 'ChartHelperShutdownNative.cs'));command=2;bytes=1025;noRetry=$true;forceTermination=$false}
 Write-Record (Join-Path $directory 'intent.json') $intent
+$null=New-ChartHelperGlobalLocator $Workspace $context.launch.sid $HelperProcessId $ExpectedHelperStartedUtcTicks (Join-Path $directory 'intent.json') 'OpenNavX.ChartHelperShutdown.1'
 # One deterministic atomic create-new locator excludes concurrent attempts as
 # well as later retries. A crash after it is published requires inspection.
 $locator=Join-Path $context.cold ('chart-helper-shutdown-'+$HelperProcessId+'-'+$ExpectedHelperStartedUtcTicks+'.json')

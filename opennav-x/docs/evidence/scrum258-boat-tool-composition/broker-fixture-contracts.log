@@ -1,0 +1,32 @@
+{
+  "status": "passed",
+  "count": 24,
+  "checks": [
+    "One immediate marker read preserves complete ten-line payload and empty fields",
+    "Strict UTF-8 and CRLF preserve the final empty field",
+    "Immediate reader refuses missing and preserves path/stage/error evidence",
+    "Immediate reader refuses oversized and preserves path/stage/error evidence",
+    "Immediate reader refuses invalid-utf8 and preserves path/stage/error evidence",
+    "Cleanup accepts only complete armed marker identity and exact session binding",
+    "Cleanup rejects malformed or replaced identity field 0",
+    "Cleanup rejects malformed or replaced identity field 0",
+    "Cleanup rejects malformed or replaced identity field 0",
+    "Cleanup rejects malformed or replaced identity field 1",
+    "Cleanup rejects malformed or replaced identity field 1",
+    "Cleanup rejects malformed or replaced identity field 2",
+    "Cleanup rejects malformed or replaced identity field 3",
+    "Cleanup rejects malformed or replaced identity field 4",
+    "Cleanup rejects an incomplete marker write",
+    "Synthetic root has fixed 21380 bytes without substituting production lineage validation",
+    "Full padded root changes exactly one output-direction byte",
+    "Neutral comment padding leaves the same four reviewed INI values",
+    "Actual restart parser accepts the full-size synthetic profile",
+    "Every production-pinned dependency, including baseline lineage, copies with exact bytes",
+    "Copied broker dependency closure imports the actual commissioning audit and resource policy",
+    "Fresh restart dependency closure pins exactly one byte-identical cold-baseline reader",
+    "Missing cold-baseline module refuses composed audit import before any launch or pipe",
+    "A missing transitive resource policy refuses copied audit import without any process or output"
+  ],
+  "applicationLaunched": false,
+  "boatAccess": false
+}

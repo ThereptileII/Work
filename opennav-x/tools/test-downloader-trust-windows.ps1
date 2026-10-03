@@ -1,5 +1,6 @@
 param(
   [string]$IntegrationSource = '',
+  [string]$OChartsPrepared = '',
   [ValidateSet('production-install','xnav-install')][string]$Install = 'production-install'
 )
 $ErrorActionPreference = 'Stop'
@@ -17,7 +18,19 @@ $InstallRoot = (Resolve-Path -LiteralPath (Join-Path $Root "build/$Install")).Pa
 $Cache = Join-Path $IntegrationSource 'cache/buildwin'
 $Wx = Join-Path $IntegrationSource 'cache/wxWidgets-3.2.8'
 $ManifestPath = Join-Path $Cache 'curl-build.json'
-$Evidence = Join-Path $Root 'evidence/local/downloader-trust-windows'
+$Evidence = Join-Path $Root $(if($OChartsPrepared){'evidence/local/ocharts-private-wxcurl-trust-windows'}else{'evidence/local/downloader-trust-windows'})
+$WxCurlRoot = Join-Path $IntegrationSource 'libs/wxcurl'
+$WxCurlInclude = Join-Path $WxCurlRoot 'include'
+$AdapterArgs = @()
+if($OChartsPrepared) {
+  $OChartsPrepared = (Resolve-Path -LiteralPath $OChartsPrepared).Path
+  & python (Join-Path $Root 'tools/prepare-ocharts-adapter.py') --verify-prepared $OChartsPrepared
+  if($LASTEXITCODE -ne 0){throw 'Private adapter preparation verification failed'}
+  $WxCurlRoot = Join-Path $OChartsPrepared 'source/libs/wxcurl'
+  $WxCurlInclude = Join-Path $WxCurlRoot 'src'
+  $Wx = Join-Path $OChartsPrepared 'sdk/wx'
+  $AdapterArgs = @("-DSKAGER_OCHARTS_PREPARED=$OChartsPrepared")
+}
 $Work = Join-Path $env:RUNNER_TEMP ("opennav-downloader-trust-" + [guid]::NewGuid().ToString('N'))
 $Build = Join-Path $Work 'build'
 $Fixtures = Join-Path $Work 'fixtures'
@@ -141,6 +154,10 @@ try {
     $Path=Require-File (Join-Path $Cache $Property.Name) "curl $($Property.Name)"
     if((Digest $Path)-cne $Property.Value.sha256 -or (Get-Item -LiteralPath $Path).Length -ne $Property.Value.bytes){throw "curl manifest mismatch: $($Property.Name)"}
   }
+  if($OChartsPrepared) {
+    $PreparedManifest=Require-File (Join-Path $OChartsPrepared 'sdk/curl-build.json') 'prepared curl manifest'
+    if((Digest $PreparedManifest)-cne (Digest $ManifestPath)){throw 'Private wxCurl probe dependency differs from the prepared adapter'}
+  }
   $InstalledCurl=Require-File (Join-Path $InstallRoot 'libcurl.dll') 'installed production libcurl DLL'
   if((Digest $InstalledCurl)-cne $Manifest.cacheBuildwin.'libcurl.dll'.sha256){throw 'Installed libcurl.dll differs from its maintained producer manifest'}
   foreach($Dependency in @(@('openssl-build.json','libssl-3.dll','bin/libssl-3.dll','openssl'),@('openssl-build.json','libcrypto-3.dll','bin/libcrypto-3.dll','openssl'),@('zlib-build.json','zlib1.dll','bin/zlib1.dll','zlib'))){
@@ -150,15 +167,23 @@ try {
   $SourceHeader=Require-File (Join-Path $IntegrationSource 'model/include/model/downloader.h') 'actual integrated downloader header'
   if((Get-Content -LiteralPath $SourceCpp -Raw) -notmatch 'CURLSSLOPT_NATIVE_CA'){throw 'Integrated Downloader does not contain the Windows native CA path'}
   if((Get-Content -LiteralPath $SourceCpp -Raw) -match '#define\s+OPENNAV_DOWNLOADER_TLS_TEST'){throw 'Integrated source forces the test-only CA injection path'}
-  $WxCurlSource=Require-File (Join-Path $IntegrationSource 'libs/wxcurl/src/base.cpp') 'actual integrated wxCurl source'
+  $WxCurlSource=Require-File (Join-Path $WxCurlRoot 'src/base.cpp') 'actual selected wxCurl source'
+  $WxCurlHeader=Require-File (Join-Path $WxCurlInclude 'wx/curl/base.h') 'actual selected wxCurl header'
   if((Get-Content -LiteralPath $WxCurlSource -Raw) -notmatch 'CURLSSLOPT_NATIVE_CA'){throw 'Integrated wxCurl does not contain the Windows native CA path'}
   if((Get-Content -LiteralPath $WxCurlSource -Raw) -match '#define\s+OPENNAV_WXCURL_TLS_TEST'){throw 'Integrated wxCurl source forces the test-only CA injection path'}
-  Run cmake @('-S',(Join-Path $Root 'tests/downloader_trust'),'-B',$Build,'-G','Visual Studio 17 2022','-A','Win32',"-DOPENNAV_SOURCE_DIR=$IntegrationSource","-DOPENNAV_TOOLS_DIR=$(Join-Path $Root 'tools')","-DCURL_ROOT=$Cache","-DwxWidgets_ROOT_DIR=$Wx","-DwxWidgets_LIB_DIR=$(Join-Path $Wx 'lib/vc14x_dll')",'-DwxWidgets_CONFIGURATION=mswu')
+  Run cmake (@('-S',(Join-Path $Root 'tests/downloader_trust'),'-B',$Build,'-G','Visual Studio 17 2022','-A','Win32',"-DOPENNAV_SOURCE_DIR=$IntegrationSource","-DOPENNAV_TOOLS_DIR=$(Join-Path $Root 'tools')","-DCURL_ROOT=$Cache","-DwxWidgets_ROOT_DIR=$Wx","-DwxWidgets_LIB_DIR=$(Join-Path $Wx 'lib/vc14x_dll')",'-DwxWidgets_CONFIGURATION=mswu') + $AdapterArgs)
   Run cmake @('--build',$Build,'--config','Release','--parallel','2')
   Copy-Item -LiteralPath (Join-Path $Build 'Release/downloader-trust-probe.exe') -Destination $Runtime
   Copy-Item -LiteralPath (Join-Path $Build 'Release/wxcurl-trust-probe.exe') -Destination $Runtime
   foreach($Dll in (Get-ChildItem -LiteralPath $InstallRoot -Filter '*.dll' -File)){Copy-Item -LiteralPath $Dll.FullName -Destination $Runtime}
-  $Prereqs=[ordered]@{integrationSource=$IntegrationSource;downloaderCppSha256=Digest $SourceCpp;downloaderHeaderSha256=Digest $SourceHeader;probeSha256=Digest (Join-Path $Runtime 'downloader-trust-probe.exe');wxCurlBaseSha256=Digest $WxCurlSource;wxCurlHttpSha256=Digest (Join-Path $IntegrationSource 'libs/wxcurl/src/http.cpp');wxCurlProbeSha256=Digest (Join-Path $Runtime 'wxcurl-trust-probe.exe');curlManifestSha256=Digest $ManifestPath;runtimeDlls=[ordered]@{}}
+  if($OChartsPrepared) {
+    foreach($Dll in (Get-ChildItem -LiteralPath $Runtime -Filter 'wx*.dll' -File)) {
+      $PreparedDll=Require-File (Join-Path $Wx "lib/vc14x_dll/$($Dll.Name)") 'prepared wxWidgets runtime'
+      if((Digest $PreparedDll)-cne (Digest $Dll.FullName)){throw "Private wxCurl runtime differs from locked wxWidgets: $($Dll.Name)"}
+    }
+  }
+  $Prereqs=[ordered]@{integrationSource=$IntegrationSource;downloaderCppSha256=Digest $SourceCpp;downloaderHeaderSha256=Digest $SourceHeader;probeSha256=Digest (Join-Path $Runtime 'downloader-trust-probe.exe');wxCurlBaseSha256=Digest $WxCurlSource;wxCurlHttpSha256=Digest (Join-Path $WxCurlRoot 'src/http.cpp');wxCurlHeaderSha256=Digest $WxCurlHeader;wxCurlSourceKind=$(if($OChartsPrepared){'verified-private-ocharts'}else{'integrated-core'});wxCurlProbeSha256=Digest (Join-Path $Runtime 'wxcurl-trust-probe.exe');curlManifestSha256=Digest $ManifestPath;runtimeDlls=[ordered]@{}}
+  if($OChartsPrepared){$Prereqs['ochartsPreparationSha256']=Digest (Join-Path $OChartsPrepared 'preparation.json')}
   foreach($Dll in (Get-ChildItem -LiteralPath $Runtime -Filter '*.dll' -File|Sort-Object Name)){$Prereqs.runtimeDlls[$Dll.Name]=Digest $Dll.FullName}
   $Prereqs|ConvertTo-Json -Depth 5|Set-Content -LiteralPath (Join-Path $Evidence 'prerequisites.json') -Encoding utf8
   $Trusted=New-Ca 'opennav-scrum211-owned-ca';$Other=New-Ca 'opennav-scrum211-untrusted-ca'

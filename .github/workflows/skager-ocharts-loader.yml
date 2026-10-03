@@ -1,0 +1,25 @@
+name: SKAGER native o-charts loader guards
+on:
+  push:
+    branches: [skager-ocharts-loader]
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  loader-guards:
+    name: Native Win32 private chart loader boundaries
+    runs-on: windows-2022
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+      - name: Exercise unchanged production loader with harmless native DLLs
+        shell: pwsh
+        run: |
+          python opennav-x/tools/test-ocharts-loader-windows.py --evidence opennav-x/evidence/local/ocharts-loader-guards
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: native-ocharts-loader-guards-${{ github.sha }}
+          path: opennav-x/evidence/local/ocharts-loader-guards
+          if-no-files-found: error

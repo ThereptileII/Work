@@ -2161,3 +2161,35 @@ diff --git a/gui/src/route_point_gui.cpp b/gui/src/route_point_gui.cpp
 +      *canvas, m_point, skager_label_ordinal);
    // Already DIP/mark-scaled: union only after upstream icon scaling.
    if (skager_label) hilitebox.Union(m_point.m_skagerLabel->bounds);
+diff --git a/model/src/plugin_loader.cpp b/model/src/plugin_loader.cpp
+--- a/model/src/plugin_loader.cpp
++++ b/model/src/plugin_loader.cpp
+@@ -24,6 +24,9 @@
+  */
+ 
+ #include "config.h"
++#ifdef OPENNAV_X
++#include "integration/PluginPresentationFallback.h"
++#endif
+ 
+ #include <algorithm>
+ #include <set>
+@@ -1530,8 +1533,18 @@
+       PluginStatus::Unmanaged;  // Status is updated later, if necessary
+ 
+   // load the library
++#ifdef OPENNAV_X
++  const auto load_outcome = opennav::integration::LoadPluginWithPresentationFallback(
++      pic->m_library, plugin_file,
++      [this](const wxString& path) { return CheckPluginCompatibility(path); });
++  if (load_outcome == opennav::integration::PluginModuleLoadOutcome::UnloadFailed) {
++    wxLogWarning("SKAGER: previous or rejected plugin module could not unload");
++    return nullptr;
++  }
++#else
+   if (pic->m_library.IsLoaded()) pic->m_library.Unload();
+   pic->m_library.Load(plugin_file);
++#endif
+ 
+   if (!pic->m_library.IsLoaded()) {
+     //  Look in the Blacklist, try to match a filename, to give some kind of

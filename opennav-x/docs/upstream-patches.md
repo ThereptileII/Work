@@ -1,5 +1,20 @@
 # Direct OpenCPN Upstream Modifications
 
+## Exact-plugin presentation selection (SCRUM-259) — in progress
+
+The chart-presentation patch adds one optional hook at the shared
+`model/src/plugin_loader.cpp` load boundary, covering initial load and reload.
+The original `m_plugin_file` remains unchanged. The registered application hook
+may load one hash-qualified SKAGER-owned o-charts adapter; false retains the
+original module, and failure to unload a rejected module stops that load.
+Model-only tools have no registration and preserve the stock path. Adapter
+selection is unavailable in Standard/Legacy/Safe and when the qualified package
+or resources are absent. No global shared-data API, CWD, original plugin, helper
+or chart file is rewritten. [Ownership and acceptance boundary](architecture/ocharts-presentation-adapter.md).
+
+The current default build carries no qualified adapter. Linux source checks
+alone do not accept this Windows/module-lifetime boundary.
+
 ## Actual active waypoint name presentation (SCRUM-257) — 2026-10-03
 
 The chart-presentation patch now obtains a separate label ordinal in the pinned

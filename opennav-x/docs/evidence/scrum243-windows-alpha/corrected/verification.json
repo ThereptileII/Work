@@ -1,0 +1,73 @@
+{
+  "run": 37094223771,
+  "job": 111120723055,
+  "artifact": 11263384386,
+  "archive": {
+    "bytes": 4224200,
+    "sha256": "a5c29544630e24e7f9348b7a3ee6e74d14380f080f6bdac1326f55b362f7aced"
+  },
+  "crcEntries": 84,
+  "status": "passed",
+  "candidate": "7687ce53c780bdfd53db30bb063f9bcc8f6404b7",
+  "mappedLocal": "8b9e0a45c569d75d0c4f4c7a71a263cf5a910f95",
+  "sources": [
+    {
+      "path": "tests/chart_name_text_test.cpp",
+      "match": "checkout-CRLF",
+      "bytes": 5677,
+      "sha256": "f2536f358346a07a1b2f9532967b70181d28f60ff7299d47d4724dc03802a3df"
+    },
+    {
+      "path": "src/integration/ChartNameText.h",
+      "match": "checkout-CRLF",
+      "bytes": 2373,
+      "sha256": "306b7d4742596a38adb334dad6c3e33e8f44bd155fa1437d3ef31a6034005a31"
+    },
+    {
+      "path": "src/integration/ChartNameAlphaWindows.cpp",
+      "match": "checkout-CRLF",
+      "bytes": 946,
+      "sha256": "c3e8f7c8ec46de5e80988381217e1dd489726f533e0eb6ef03400fa53da5809a"
+    },
+    {
+      "path": "src/integration/ChartNameSpacing.h",
+      "match": "checkout-CRLF",
+      "bytes": 1274,
+      "sha256": "21007bdd438595cad679a9df06620e43c0f52a39074f9a29982e2b80ec1af019"
+    },
+    {
+      "path": "tests/windows_chart_name_painter/CMakeLists.txt",
+      "match": "checkout-CRLF",
+      "bytes": 1098,
+      "sha256": "66d2b53d4763e006f765741ea24f0355a408e0d73cc87157042630e72a0bc7a8"
+    },
+    {
+      "path": "tools/test-chart-name-painter-windows.py",
+      "match": "checkout-CRLF",
+      "bytes": 4928,
+      "sha256": "eb6c640fba17f480d2aa4506601192bd423d7720cd82d0904f1c2f13d663f012"
+    },
+    {
+      "path": "tools/test-windows-changed-units.py",
+      "match": "checkout-CRLF",
+      "bytes": 37232,
+      "sha256": "f7a3084410a11700bb06670222b71d78c9bcc1f417599dcb030c71a56714b180"
+    },
+    {
+      "path": "tools/windows-wx.lock.json",
+      "match": "checkout-CRLF",
+      "bytes": 1017,
+      "sha256": "2fb563c4de7819d4b10d7a567e59510cd033c3b9cb55ce4ebb654964da60267f"
+    },
+    {
+      "path": "../.github/workflows/skager-chart-name-painter.yml",
+      "match": "checkout-CRLF",
+      "bytes": 937,
+      "sha256": "663ec2bca62d2b72688fcdd4b91612f838988563f4e89b85481b638a00d8eb0d"
+    }
+  ],
+  "peX86FilesRehashed": 12,
+  "imageRehashed": true,
+  "allRetainedCRCsPassed": true,
+  "helperCompileAndGdiplusLinkObserved": true
+}

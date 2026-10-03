@@ -16,6 +16,8 @@ namespace opennav::integration {
 // lookup pointers; changing a preference requires the ordinary controlled
 // restart.
 void ConfigureChartPresentation(wxFileConfig &config, bool xnav);
+// For opt-in verified plugin adapters only. No shared-data API redirection.
+wxString VerifiedPluginChartPresentationDirectory();
 s52plib *CreateChartPresentation(const wxString &stock_path, bool force_legacy);
 bool ChartBackground(ColorScheme scheme, wxColour &land, wxColour &water);
 // Existing chart-selector vector keys only. Chart families, availability,

@@ -31,6 +31,8 @@
 #include <wx/filename.h>
 #include <wx/fontenum.h>
 #include "integration/ChartSoundingFont.h"
+#include "integration/OChartsPresentation.h"
+#include "integration/PluginPresentationLoader.h"
 #include <wx/log.h>
 #include <wx/thread.h>
 
@@ -131,6 +133,7 @@ void ConfigureChartPresentation(wxFileConfig &config, bool xnav) {
   preferences = &config;
   CaptureChartCogPredictorStyle(config);
   xnav_mode = xnav;
+  RegisterPluginPresentationLoader(xnav ? LoadQualifiedOChartsPresentation : nullptr);
   active = false;
   wxString saved;
   requested = !config.Read(key, &saved) || saved == "XNav";
@@ -177,6 +180,11 @@ s52plib *CreateChartPresentation(const wxString &stock_path,
   // XNav's explicit Standard fallback is not shadowed by a working-directory
   // chartsymbols.xml. Normal Legacy/Safe retain the pinned loader behavior.
   return new s52plib(stock_path, force_legacy, false);
+}
+wxString VerifiedPluginChartPresentationDirectory() {
+  if (!wxIsMainThread() || !xnav_mode || !requested || !active) return {};
+  const auto directory = ResourceDirectory();
+  return !directory.empty() && Verify(directory) ? directory : wxString();
 }
 bool ChartVectorSelectorInk(ColorScheme scheme, wxColour &selected,
                             wxColour &unselected) {
@@ -433,7 +441,9 @@ bool DrawChartDepthUnit(ocpnDC &dc, ChartCanvas &canvas) {
   dc.SetTextForeground(ink);
   return fits;
 }
-std::string ChartPresentationStatus() { return status; }
+std::string ChartPresentationStatus() {
+  return status + "; " + OChartsPresentationStatus();
+}
 bool ChartScaleGeometry(ChartCanvas &canvas, int &x, int &y,
                         int &reference_width) {
   if (!wxIsMainThread() || !xnav_mode || !active ||

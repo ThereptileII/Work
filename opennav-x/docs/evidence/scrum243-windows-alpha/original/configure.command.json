@@ -1,0 +1,14 @@
+[
+  "cmake",
+  "-S",
+  "D:\\a\\Work\\Work\\opennav-x\\tests\\windows_chart_name_painter",
+  "-B",
+  "D:\\a\\Work\\Work\\opennav-x\\evidence\\local\\chart-name-painter\\build",
+  "-G",
+  "Visual Studio 17 2022",
+  "-A",
+  "Win32",
+  "-DwxWidgets_ROOT_DIR:PATH=D:/a/Work/Work/opennav-x/build/windows-chart-name-sdk/wx",
+  "-DwxWidgets_LIB_DIR:PATH=D:/a/Work/Work/opennav-x/build/windows-chart-name-sdk/wx/lib/vc14x_dll",
+  "-DwxWidgets_CONFIGURATION=mswu"
+]

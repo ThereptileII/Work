@@ -1,6 +1,7 @@
 # Explicit baseline lineage. The recovered a2e4 root is never replaced globally.
 # Imported after Commissioning primitives; no launch or transport operations.
 . (Join-Path $PSScriptRoot 'RestartCommissioningPolicy.ps1')
+. (Join-Path $PSScriptRoot 'ColdBaseline.ps1')
 $script:CommissioningBaselineOwner='OpenNavX.ReviewedCommissioningBaseline.1'
 function Assert-CommissioningTextureMinimum($Before,$After) {
   # The observed second 5.12.4 launch loads the earlier upgrade's 64MB value.
@@ -135,6 +136,60 @@ function Read-CommissioningBaseline([string]$Workspace,[string]$Record,[string]$
   if(-not $Record -and -not $Sha256){return [pscustomobject]@{sha256=$script:CommissioningBaseline;bytes=21380;record=$null;recordSha256=$null}}
   if($Depth -ge 8 -or $Sha256 -cnotmatch '^[a-f0-9]{64}$'){throw 'Malformed or excessive baseline lineage.'}
   $record=Assert-LocalPath $Record;$directory=[IO.Path]::GetDirectoryName($record)
+  if([IO.Path]::GetFileName($record) -ceq 'completed-cold-baseline.json') {
+    if([IO.Path]::GetDirectoryName($directory) -ine (Join-Path $Workspace 'runs') -or
+       [IO.Path]::GetFileName($directory) -cnotmatch '^\d{8}-\d{6}-cold-baseline-[a-f0-9]{8}$' -or
+       (Get-Digest $record) -cne $Sha256){throw 'Expected exact completed cold baseline below this workspace.'}
+    $value=Read-Record $record
+    if($value.schema -ne 1 -or $value.owner -cne $script:ColdBaselineOwner -or $value.status -cne 'completed' -or
+       $value.provenance -cne 'pre-existing-current-user-state;origin-unverified' -or
+       $value.preservationOnly -isnot [bool] -or -not $value.preservationOnly -or
+       $value.launchPermission -isnot [bool] -or $value.launchPermission -or
+       $value.profileChanged -isnot [bool] -or $value.profileChanged -or
+       $value.applicationLaunched -isnot [bool] -or $value.applicationLaunched -or
+       $value.baselineSha256 -cnotmatch '^[a-f0-9]{64}$' -or $value.baselineBytes -le 0 -or $value.baselineBytes -gt 4194304){throw 'Incomplete or authority-claiming cold baseline.'}
+    $capturePath=Assert-LocalPath $value.captureRecord
+    if([IO.Path]::GetDirectoryName($capturePath) -ine $directory -or [IO.Path]::GetFileName($capturePath) -cne 'capture.json' -or
+       $value.captureSha256 -cnotmatch '^[a-f0-9]{64}$' -or (Get-Digest $capturePath) -cne $value.captureSha256){throw 'Cold capture lineage changed.'}
+    $capture=Read-Record $capturePath
+    if($capture.schema -ne 1 -or $capture.owner -cne $script:ColdCaptureOwner -or $capture.status -cne 'captured' -or
+       $capture.provenance -cne $value.provenance -or $capture.launchPermission -isnot [bool] -or $capture.launchPermission -or
+       $capture.profileChanged -isnot [bool] -or $capture.profileChanged -or
+       $capture.applicationLaunched -isnot [bool] -or $capture.applicationLaunched -or
+       $capture.profileSha256 -cne $value.baselineSha256 -or $capture.profileBytes -ne $value.baselineBytes -or
+       $capture.sourceIniLastWriteTicks -le 0 -or $capture.sourceIniCreationTicks -le 0 -or
+       $capture.predecessorRecord -ine $value.predecessorRecord -or $capture.predecessorSha256 -cne $value.predecessorSha256 -or
+       $capture.stockSha256 -cne '7c6547562cca7954671eaab72833ca9d788710fd9808b6a699b6dc823852ae0c'){
+      throw 'Cold capture identity or preservation claim changed.'
+    }
+    if((Assert-LocalPath $capture.context.workspace) -ine (Assert-LocalPath $Workspace) -or
+       (Assert-LocalPath $capture.profileTree.root) -ine (Assert-LocalPath $capture.context.profile) -or
+       $capture.profileTree.exists -isnot [bool] -or -not $capture.profileTree.exists -or
+       $capture.context.sid -cnotmatch '^S-1-5-[0-9-]+$'){
+      throw 'Cold capture workspace or actual profile root changed.'
+    }
+    Assert-ColdPrivateEvidence $directory $capture.context.sid
+    $prior=Read-CommissioningBaseline $Workspace $capture.predecessorRecord $capture.predecessorSha256 ($Depth+1)
+    if(-not $prior.record -or $prior.sid -cne $capture.context.sid -or $prior.profile -ine $capture.context.profile){throw 'Cold predecessor belongs to another user/profile.'}
+    $old=Join-Path $directory 'predecessor.ini';$backup=Join-Path $directory 'profile-backup';$saved=Join-Path $backup 'opencpn.ini'
+    if((Get-Digest $old) -cne $prior.sha256 -or (Get-Item -LiteralPath $old).Length -ne $prior.bytes -or
+       (Get-Digest $saved) -cne $value.baselineSha256 -or (Get-Item -LiteralPath $saved).Length -ne $value.baselineBytes -or
+       (Get-Digest (Join-Path $directory 'input-only.ini')) -cne $capture.inputSha256 -or
+       (Get-CommissioningHash (Get-CommissioningInputBytes ([IO.File]::ReadAllBytes($saved)))) -cne $capture.inputSha256){throw 'Cold backup or one-byte input transform differs.'}
+    $backupTree=Get-PreparationTree $backup
+    if(($backupTree.entries | ConvertTo-Json -Depth 8 -Compress) -cne ($capture.profileTree.entries | ConvertTo-Json -Depth 8 -Compress)){
+      throw 'Full cold profile backup changed.'
+    }
+    $reviewPath=Join-Path $directory 'review.json'
+    if($value.reviewSha256 -cnotmatch '^[a-f0-9]{64}$' -or (Get-Digest $reviewPath) -cne $value.reviewSha256){throw 'Cold independent review changed.'}
+    $review=Read-Record $reviewPath
+    if($review.captureSha256 -cne $value.captureSha256 -or $review.predecessorRecordSha256 -cne $capture.predecessorSha256 -or
+       @((Assert-ColdBaselineDelta $old $saved $review ([datetime]::Parse($value.createdUtc).ToUniversalTime()))).Count -ne $value.changedKeys){
+      throw 'Cold key review no longer matches copied bytes.'
+    }
+    return [pscustomobject]@{sha256=$value.baselineSha256;bytes=$value.baselineBytes;record=$record;recordSha256=$Sha256;
+      sid=$capture.context.sid;profile=$capture.context.profile}
+  }
   if([IO.Path]::GetFileName($record) -cne 'adopted-baseline.json' -or [IO.Path]::GetDirectoryName($directory) -ine (Join-Path $Workspace 'runs') -or
      [IO.Path]::GetFileName($directory) -cnotmatch '^\d{8}-\d{6}-baseline-adoption-[a-f0-9]{8}$' -or (Get-Digest $record) -cne $Sha256){throw 'Expected immutable completed baseline lineage below this workspace.'}
   $value=Read-Record $record

@@ -17,6 +17,7 @@ $intent=Join-Path $directory 'intent.json'
 Write-Record $intent @{owner='OpenNavX.OrphanChartHelperShutdown.1';utc=[datetime]::UtcNow.ToString('o');recordSha256=$ExpectedRecordSha256;
  helper=$context.helper;helperSha256=$script:ChartHelperHash;nativeSha256=(Get-Digest (Join-Path $PSScriptRoot 'ChartHelperShutdownNative.cs'));
  launchProvenance='Unrecorded parent has exited; no launch or restore permission implied';command=2;bytes=1025;noRetry=$true;forceTermination=$false}
+$null=New-ChartHelperGlobalLocator $Workspace $context.context.sid $HelperProcessId $ExpectedHelperStartedUtcTicks $intent 'OpenNavX.OrphanChartHelperShutdown.1'
 # Shared locator with the older launch-bound path: exactly one attempt per process.
 $locator=Join-Path $context.cold ('chart-helper-shutdown-'+$HelperProcessId+'-'+$ExpectedHelperStartedUtcTicks+'.json')
 Write-Record $locator @{owner='OpenNavX.OrphanChartHelperShutdown.1';intent=$intent;intentSha256=(Get-Digest $intent)}
