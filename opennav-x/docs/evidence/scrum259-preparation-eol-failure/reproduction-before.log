@@ -1,0 +1,14 @@
+F
+======================================================================
+FAIL: test_patch_isolated_from_parent_git_and_crlf (__main__.Guards.test_patch_isolated_from_parent_git_and_crlf)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/standard/Projects/X-nav-worktrees/scrum259-full-loader-fix/tools/test-ocharts-adapter-preparation.py", line 182, in test_patch_isolated_from_parent_git_and_crlf
+    self.assertEqual((source / 'input.txt').read_bytes(),b'after\n')
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: b'after\r\n' != b'after\n'
+
+----------------------------------------------------------------------
+Ran 1 test in 0.015s
+
+FAILED (failures=1)

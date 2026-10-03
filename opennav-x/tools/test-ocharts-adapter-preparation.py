@@ -6,6 +6,7 @@ import struct
 import shutil
 import json
 import hashlib
+import os
 import zipfile
 from unittest.mock import patch
 import tempfile
@@ -174,13 +175,18 @@ class Guards(unittest.TestCase):
             root = Path(raw)
             subprocess.run(['git','init','--quiet',str(root)],check=True)
             source = root / 'nested/source'; source.mkdir(parents=True)
-            (source / 'input.txt').write_bytes(b'before\r\n')
             patch_file = root / 'change.patch'
             patch_file.write_text('--- a/input.txt\n+++ b/input.txt\n@@ -1 +1 @@\n-before\n+after\n')
-            with patch.object(v.prep,'PATCHES',('change.patch',)):
-                v.prep.apply_patches(source,root)
-            self.assertEqual((source / 'input.txt').read_bytes(),b'after\n')
-            self.assertFalse((source / '.git').exists())
+            for autocrlf in ('true', 'input', 'false'):
+                with self.subTest(autocrlf=autocrlf):
+                    (source / 'input.txt').write_bytes(b'before\r\n')
+                    policy = {'GIT_CONFIG_COUNT': '2', 'GIT_CONFIG_KEY_0': 'core.autocrlf',
+                              'GIT_CONFIG_VALUE_0': autocrlf, 'GIT_CONFIG_KEY_1': 'core.eol',
+                              'GIT_CONFIG_VALUE_1': 'crlf'}
+                    with patch.dict(os.environ, policy), patch.object(v.prep,'PATCHES',('change.patch',)):
+                        v.prep.apply_patches(source,root)
+                    self.assertEqual((source / 'input.txt').read_bytes(),b'after\n')
+                    self.assertFalse((source / '.git').exists())
 
     def test_native_private_tls_source_selection_and_alpha_closure(self):
         cmake = (ROOT / 'tests/downloader_trust/CMakeLists.txt').read_text()

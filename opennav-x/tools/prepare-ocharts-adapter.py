@@ -116,7 +116,10 @@ def apply_patches(source, root):
         with tempfile.TemporaryDirectory(prefix='skager-patch-index-') as raw:
             metadata = Path(raw) / 'git'
             subprocess.run(['git', 'init', '--bare', '--quiet', str(metadata)], check=True)
-            command = ['git', '-c', 'core.bare=false', '--git-dir=' + str(metadata),
+            # This derived source is deliberately LF. Do not let the runner's
+            # global Windows checkout policy re-expand patched files to CRLF.
+            command = ['git', '-c', 'core.bare=false', '-c', 'core.autocrlf=false',
+                       '-c', 'core.eol=lf', '--git-dir=' + str(metadata),
                        '--work-tree=' + str(source.resolve()), 'apply']
             subprocess.run(command + ['--check', '-'], input=patch, cwd=source, check=True)
             subprocess.run(command + ['-'], input=patch, cwd=source, check=True)
