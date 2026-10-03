@@ -14,7 +14,14 @@ resource/API boundary has now been inspected under SCRUM-259. A separately named
 exact-source private renderer adapter and fail-closed host boundary are implemented;
 the source/package recipe has passed focused preparation checks. Native ABI,
 private downloader trust, complete application and boat rendering gates remain
-open. No boat plugin or stock resources have been changed. Raster MBTiles
+open. The [actual Win32 loader boundary](evidence/scrum259-native-loader/README.md)
+passes all 38 native groups at published `4609f31dba3e970802e6ba3fbe3438e129ab9aad`.
+The next candidate also includes an explicit early real-host module check,
+which blocks child-process creation and never invokes the plugin factory or
+initialization. It has not yet passed natively. The installer gate now checks
+the actual application's and Setup's PE icon frames and product metadata
+against the approved Jira artwork; native final-binary results remain open.
+No boat plugin or stock resources have been changed. Raster MBTiles
 cannot receive object-level vector styling. [Availability evidence](evidence/boat-chart-types-20261003/summary.json).
 
 The clean application source is `78eccb8b7f21b260ded57d3ba763f884d60c8180`,

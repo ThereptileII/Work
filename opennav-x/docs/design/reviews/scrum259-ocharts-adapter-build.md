@@ -24,6 +24,24 @@ otherwise selects the old API import library unless its package name contains
 and locked wxWidgets 3.2.8. A module-definition file specifies the four exact
 C factory/binding/status names, all of which the actual PE validator requires.
 
+The recipe defines `DECL_EXP` empty for every private compilation unit before
+adding the static libraries. The pinned API17 header honors this override with
+`#ifndef DECL_EXP`; otherwise its Windows `__declspec(dllexport)` annotates host
+API classes and generates unwanted exported copy/inline methods. A read-only
+parse of the accepted original DLL (`99edcfd4419d606ef5c3fd554759e853cfda1fe4f38c05e26266f335a5a5b875`)
+found 116 named exports, including these methods. A `.def` alone does not hide
+them, so the previous recipe could not satisfy the strict four-export gate.
+The override leaves the `.def` factory entries and the adapter's explicit
+`SKAGER_ADAPTER_EXPORT` bind/status declarations intact. It does not change
+`DECL_IMP`, calling conventions or the API17 import library. The pinned import
+library supplies ordinary function thunks as well as `__imp_` symbols (checked
+for `GetGlobalColor`, `GetpSharedDataLocation` and `opencpn_plugin` constructors),
+so plain external function declarations still resolve to the same host DLL.
+The API's separate data-import declaration for `wxEVT_DOWNLOAD_EVENT` is
+unchanged. Preprocessing the exact pinned macro block with and without the
+override confirms the difference; this is a source/COFF review, not a native
+link claim. The native package gate must still confirm exactly four exports.
+
 The wrapper excludes upstream packaging/installation, `libs/oeserverd`, old
 prebuilt curl/zlib libraries and all helper/licensing/chart payloads. It has no
 install target. Only the upstream public API import library and pinned OpenCPN

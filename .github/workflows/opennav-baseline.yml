@@ -1,7 +1,7 @@
 name: SKAGER Beta 2
 on:
   push:
-    branches: [opennav-x, opennav-x-beta2-ui, opennav-x-beta2-dpi, opennav-x-beta2-refinement]
+    branches: [opennav-x, opennav-x-beta2-ui, opennav-x-beta2-dpi, opennav-x-beta2-refinement, skager-chart-private-candidate]
     paths: ['opennav-x/**', '.github/workflows/opennav-baseline.yml']
   workflow_dispatch:
 permissions:
@@ -10,6 +10,25 @@ concurrency:
   group: opennav-beta-${{ github.ref }}-${{ github.sha }}
   cancel-in-progress: true
 jobs:
+  native-private-chart-loader:
+    name: Native private chart loader refusal and fallback gate
+    runs-on: windows-2022
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+      - name: Exercise actual module loading with harmless DLLs
+        run: |
+          python opennav-x/tools/test-ocharts-adapter-preparation.py
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          ./opennav-x/tools/test-ocharts-build-wiring.ps1
+          python opennav-x/tools/test-ocharts-loader-windows.py --evidence opennav-x/evidence/local/ocharts-loader-guards
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: native-ocharts-loader-guards-${{ github.sha }}
+          path: opennav-x/evidence/local/ocharts-loader-guards
+          if-no-files-found: error
   boat-firmware:
     name: Boat C6 producer expiry compile (no flashing)
     runs-on: ubuntu-24.04
@@ -429,7 +448,7 @@ jobs:
     permissions:
       contents: read
       actions: read
-    needs: [contracts, native-restart-window, native-stock-welcome]
+    needs: [contracts, native-restart-window, native-stock-welcome, native-private-chart-loader]
     runs-on: windows-2022
     # The first source-built pass retains all upstream tests; the production
     # pass may reuse only its verified closure in this same job.
@@ -466,7 +485,7 @@ jobs:
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
       - name: Build and exercise integrated modes
         id: integrated
-        run: ./opennav-x/tools/build-pristine-windows.ps1 -Architecture Win32 -Integration -VerifyPeerCli
+        run: ./opennav-x/tools/build-pristine-windows.ps1 -Architecture Win32 -Integration -VerifyPeerCli -PrivateOCharts
       - name: Verify packaged source reproduces the curl certificate-tool patch
         if: ${{ success() && steps.integrated.conclusion == 'success' }}
         run: |
@@ -517,7 +536,12 @@ jobs:
           Write-Output "Dependency receipt capture passed: $([DateTime]::UtcNow.ToString('o'))"
       - name: Build native installed product without synthetic data
         id: production
-        run: ./opennav-x/tools/build-pristine-windows.ps1 -Architecture Win32 -Integration -Production -ReuseVerifiedDependencies
+        run: ./opennav-x/tools/build-pristine-windows.ps1 -Architecture Win32 -Integration -Production -ReuseVerifiedDependencies -PrivateOCharts
+      - name: Resolve private chart imports in the real host without plugin initialization
+        id: private_module
+        run: |
+          python opennav-x/tools/test-chart-module-windows.py --install opennav-x/build/production-install --evidence opennav-x/evidence/local/ocharts-real-host-module
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
       - name: Native public Downloader Windows trust and rejection gate
         id: downloader_trust
         run: ./opennav-x/tools/test-downloader-trust-windows.ps1 -Install production-install
@@ -528,7 +552,7 @@ jobs:
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
       - name: Package and test the fixture-free recovery distribution
         id: portable
-        if: ${{ !cancelled() && steps.production.conclusion == 'success' && steps.downloader_trust.conclusion == 'success' && steps.peer_buffer.conclusion == 'success' }}
+        if: ${{ !cancelled() && steps.production.conclusion == 'success' && steps.private_module.conclusion == 'success' && steps.downloader_trust.conclusion == 'success' && steps.peer_buffer.conclusion == 'success' }}
         run: ./opennav-x/tools/package-preview-windows.ps1
       - name: Preserve failed portable interaction evidence immediately
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
@@ -550,6 +574,8 @@ jobs:
           $Compatibility = Get-Content opennav-x/installer/windows/compatibility.json -Raw | ConvertFrom-Json
           if ($Compatibility.supportedOpenCpn.Count -eq 0) { $Candidate = @('--candidate') }
           python opennav-x/tools/package-alpha-installer.py --preview opennav-x/build/developer-preview/SKAGER-Beta2-Portable-Recovery --output opennav-x/build/beta-installer @Candidate
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          python opennav-x/tools/verify-skager-pe-brand.py --application opennav-x/build/developer-preview/SKAGER-Beta2-Portable-Recovery/app/opencpn.exe --setup opennav-x/build/beta-installer/SKAGER-Beta2-Setup.exe --report opennav-x/evidence/local/installer-skager-pe-brand.json
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
           python opennav-x/tools/smoke-installer-windows.py
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
@@ -619,7 +645,12 @@ jobs:
         if: always()
         with:
           name: windows-integration-${{ github.sha }}
-          path: opennav-x/evidence/local
+          path: |
+            opennav-x/evidence/local
+            opennav-x/build/ocharts-package
+            opennav-x/build/ocharts-native/CMakeFiles/CMakeConfigureLog.yaml
+            opennav-x/build/ocharts-native/CMakeCache.txt
+            opennav-x/build/ocharts-native/Release/skager-ocharts-adapter.dll
   application-abi:
     name: Approved OpenCPN ABI on Windows x64
     runs-on: windows-2022

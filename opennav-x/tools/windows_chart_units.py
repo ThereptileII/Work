@@ -12,7 +12,8 @@ import tarfile
 LOCAL_UNITS = tuple('src/integration/' + name + '.cpp' for name in (
     'ChartPresentation', 'ChartRouteWaypoint', 'ChartRouteLabel', 'ChartRouteUnderlay',
     'ChartRouteUnderlayGeometry', 'OnboardAisPresentation', 'OnlineAisOverlay',
-    'OChartsPresentation', 'OChartsModuleLoader', 'PluginPresentationLoader'))
+    'OChartsPresentation', 'OChartsModuleLoader', 'PluginPresentationLoader',
+    'ChartNameAlphaWindows', 'ChartModuleCheck'))
 UPSTREAM_UNITS = tuple('gui/src/' + name + '.cpp' for name in (
     'chcanv', 'glChartCanvas', 'route_gui', 'route_point_gui', 'waypointman_gui', 'ais', 'piano')) + (
     'libs/s52plib/src/s52plib.cpp', 'libs/s52plib/src/chartsymbols.cpp',

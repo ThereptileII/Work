@@ -1,7 +1,7 @@
 name: SKAGER focused native changed-unit and Settings proof
 on:
   push:
-    branches: [skager-windows-changed-units, skager-prototype-proof]
+    branches: [skager-windows-changed-units, skager-prototype-proof, skager-chart-module-preflight]
   workflow_dispatch:
     inputs:
       chart_units:

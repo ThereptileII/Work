@@ -1,5 +1,5 @@
 param([ValidateSet('Win32', 'x64')][string]$Architecture = 'Win32', [switch]$Integration, [switch]$Production,
-      [switch]$PrototypeObjectFlow, [switch]$ReuseVerifiedDependencies, [switch]$VerifyPeerCli)
+      [switch]$PrototypeObjectFlow, [switch]$ReuseVerifiedDependencies, [switch]$VerifyPeerCli, [switch]$PrivateOCharts)
 $ErrorActionPreference = 'Stop'
 Set-StrictMode -Version Latest
 $Root = Split-Path $PSScriptRoot -Parent
@@ -14,6 +14,10 @@ if ($ReuseVerifiedDependencies -and (-not $Production -or -not $Integration -or
 }
 if ($PrototypeObjectFlow -and (-not $Integration -or $Production -or $env:GITHUB_ACTIONS -ne 'true')) {
     throw 'The prototype-only object flow is a disposable CI development gate, not a production/release gate'
+}
+if ($PrivateOCharts -and (-not $Integration -or $env:GITHUB_ACTIONS -cne 'true' -or
+    $env:GITHUB_JOB -cne 'windows-integration')) {
+    throw 'Private adapter build requires the explicit disposable Windows integration job'
 }
 $Variant = if ($Production) { 'production' } elseif ($Integration) { 'xnav' } else { 'pristine' }
 $Evidence = Join-Path $Root 'evidence/local'
@@ -34,7 +38,91 @@ function Assert-ManifestRecord([object]$Record, [string]$Path, [string]$Label) {
         throw "$Label differs from its producer manifest"
     }
 }
+function Build-PrivateOCharts([bool]$Reuse) {
+    $Prepared = Join-Path $Root 'build/ocharts-prepared'
+    $NativeBuild = Join-Path $Root 'build/ocharts-native'
+    $Package = Join-Path $Root 'build/ocharts-package'
+    $Resources = Join-Path $Root 'build/ocharts-chart-style/v1'
+    $ReceiptPath = Join-Path $Evidence 'windows-ocharts-first-build.json'
+    $Identity = [ordered]@{
+        run = $env:GITHUB_RUN_ID; attempt = $env:GITHUB_RUN_ATTEMPT
+        job = $env:GITHUB_JOB; commit = $env:GITHUB_SHA
+        script = Digest (Join-Path $PSScriptRoot 'build-pristine-windows.ps1')
+    }
+    foreach ($Value in $Identity.Values) {
+        if (-not $Value) { throw 'Private adapter requires complete same-job identity' }
+    }
+    if ($Reuse) {
+        $Previous = Get-Content -LiteralPath $ReceiptPath -Raw | ConvertFrom-Json
+        foreach ($Key in $Identity.Keys) {
+            if ($Previous.identity.$Key -cne $Identity[$Key]) {
+                throw 'Private adapter build belongs to different job/source inputs'
+            }
+        }
+        Assert-ManifestRecord $Previous.preparation (Join-Path $Prepared 'preparation.json') 'private preparation receipt'
+        foreach ($Name in @('manifest.json','skager-ocharts-adapter.dll','corresponding-source.zip')) {
+            Assert-ManifestRecord $Previous.package.$Name (Join-Path $Package $Name) "private package $Name"
+        }
+    } else {
+        foreach ($Path in @($Prepared,$NativeBuild,$Package,$ReceiptPath)) {
+            if (Test-Path -LiteralPath $Path) { throw "Private adapter first build requires a fresh output: $Path" }
+        }
+    }
+    # Generate from the same pinned integration input before the host configure.
+    # The host repeats generation; its package verifier requires exact equality.
+    Run python @((Join-Path $PSScriptRoot 'generate-xnav-chart-style.py'),
+        '--source', (Join-Path $Source 'data/s57data'), '--output', $Resources)
+    if (-not $Reuse) {
+        Run python @((Join-Path $PSScriptRoot 'prepare-ocharts-adapter.py'),
+            '--output', $Prepared, '--cache', (Join-Path $Root 'build/ocharts-source-cache'),
+            '--curl-prefix', (Join-Path $Root 'build/windows-curl-8.22.0/install'),
+            '--zlib-prefix', $ZlibPrefix, '--resources', $Resources)
+        Run cmake @('-S', (Join-Path $Root 'cmake/ocharts-adapter'), '-B', $NativeBuild,
+            '-G', 'Visual Studio 17 2022', '-A', 'Win32', '-DCMAKE_POLICY_VERSION_MINIMUM=3.5',
+            "-DSKAGER_PREPARED=$Prepared")
+        Run cmake @('--build', $NativeBuild, '--config', 'Release', '--target',
+            'skager-ocharts-adapter', '--parallel', '2')
+        Run python @((Join-Path $PSScriptRoot 'prepare-ocharts-adapter.py'),
+            '--prepared', $Prepared, '--package-dll', (Join-Path $NativeBuild 'Release/skager-ocharts-adapter.dll'),
+            '--output', $Package)
+    }
+    # Re-derive original+patch source and inspect every prepared byte on BOTH
+    # passes. A package receipt alone is never proof of available SDK/runtime.
+    Run python @((Join-Path $PSScriptRoot 'prepare-ocharts-adapter.py'), '--verify-prepared', $Prepared)
+    foreach ($Library in @('curl','zlib')) {
+        $Prefix = if ($Library -eq 'curl') { Join-Path $Root 'build/windows-curl-8.22.0/install' } else { $ZlibPrefix }
+        $Manifest = Join-Path $Prefix "$Library-build.json"
+        if ((Digest $Manifest) -cne (Digest (Join-Path $Prepared "sdk/$Library-build.json"))) {
+            throw "Private adapter $Library manifest differs from same-job producer"
+        }
+        $Facts = Get-Content -LiteralPath $Manifest -Raw | ConvertFrom-Json
+        foreach ($Item in $Facts.outputs.PSObject.Properties) {
+            Assert-ManifestRecord $Item.Value (Join-Path $Prefix $Item.Name) "$Library producer $($Item.Name)"
+            Assert-ManifestRecord $Item.Value (Join-Path $Prepared "sdk/$($Item.Name)") "private $Library SDK $($Item.Name)"
+        }
+    }
+    Run python @((Join-Path $PSScriptRoot 'verify-ocharts-adapter-package.py'),
+        '--package', $Package, '--resources', $Resources,
+        '--header', (Join-Path $Root 'build/ocharts-verification/SkagerOChartsPackage.h'))
+    if (-not $Reuse) {
+        $Files = [ordered]@{}
+        foreach ($Name in @('manifest.json','skager-ocharts-adapter.dll','corresponding-source.zip')) {
+            $Path = Join-Path $Package $Name
+            $Files[$Name] = @{sha256=(Digest $Path);bytes=(Get-Item -LiteralPath $Path).Length}
+        }
+        $PrepPath = Join-Path $Prepared 'preparation.json'
+        [ordered]@{identity=$Identity; package=$Files
+            preparation=@{sha256=(Digest $PrepPath);bytes=(Get-Item -LiteralPath $PrepPath).Length}
+        } | ConvertTo-Json -Depth 8 | Set-Content -LiteralPath $ReceiptPath -Encoding utf8
+    }
+    $script:OChartsPackage = $Package
+}
+$OChartsPackage = ''
 try {
+    if ($ReuseVerifiedDependencies -and -not $PrivateOCharts -and
+        (Test-Path -LiteralPath (Join-Path $Evidence 'windows-ocharts-first-build.json'))) {
+        throw 'Production pass must preserve the first pass PrivateOCharts selection'
+    }
     if ($Integration) {
         if (-not (Test-Path -LiteralPath $env:SKAGER_NATIVE_PERL -PathType Leaf)) {
             throw 'The native OpenSSL build Perl was not selected before MSYS2 setup'
@@ -187,6 +275,7 @@ try {
                 (Join-Path $Source "cache/buildwin/$CacheOutput") "cached $CacheOutput"
         }
     }
+    if ($PrivateOCharts) { Build-PrivateOCharts ([bool]$ReuseVerifiedDependencies) }
     $Wx = Join-Path $Source 'cache/wxWidgets-3.2.8'
     $Build = Join-Path $Root "build/$Variant-windows"
     $Install = Join-Path $Root "build/$Variant-install"
@@ -197,7 +286,7 @@ try {
     $OpenNavArgs = @()
     if ($Integration) {
         $Fixtures = if ($Production) { 'OFF' } else { 'ON' }
-        $OpenNavArgs = @("-DOPENNAV_ROOT=$Root", "-DOPENNAV_ENABLE_ROUTE_SCENARIO=$Fixtures", "-DXNAV_ENABLE_TEST_FIXTURES=$Fixtures", "-DXNAV_ENABLE_PILOT_LOOPBACK_TESTS=$Fixtures")
+        $OpenNavArgs = @("-DOPENNAV_ROOT=$Root", "-DOPENNAV_ENABLE_ROUTE_SCENARIO=$Fixtures", "-DXNAV_ENABLE_TEST_FIXTURES=$Fixtures", "-DXNAV_ENABLE_PILOT_LOOPBACK_TESTS=$Fixtures", "-DSKAGER_OCHARTS_PACKAGE=$OChartsPackage")
     }
     Run cmake (@('-S', $Source, '-B', $Build, '-G', 'Visual Studio 17 2022',
         '-A', $Architecture, '-DCMAKE_POLICY_VERSION_MINIMUM=3.5', '-DCMAKE_BUILD_TYPE=Release',
@@ -253,6 +342,13 @@ try {
     Get-FileHash (Join-Path $Build 'Release/opencpn.exe') -Algorithm SHA256 |
         Format-List | Out-File (Join-Path $Evidence "windows-$Variant-executable-sha256.txt")
     Run python @((Join-Path $PSScriptRoot 'verify-upstream.py'))
+    if ($PrivateOCharts -and $Production) {
+        # Installed maintained runtime is now available. Keep the private probe
+        # separate from the unchanged core TLS gate and its evidence directory.
+        Run pwsh @('-NoLogo', '-NoProfile', '-File', (Join-Path $PSScriptRoot 'test-downloader-trust-windows.ps1'),
+            '-IntegrationSource', $Source, '-Install', 'production-install',
+            '-OChartsPrepared', (Join-Path $Root 'build/ocharts-prepared'))
+    }
     if ($Integration -and -not $Production) {
         if ($PrototypeObjectFlow) {
             # Additional targeted development job. The default full integrated

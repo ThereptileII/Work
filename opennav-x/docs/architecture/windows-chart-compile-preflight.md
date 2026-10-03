@@ -59,6 +59,17 @@ sets `nativeProductAcceptance=false`.
 
 ## Preparation checks and limits
 
+The SCRUM-259 follow-up extends the current inventory to 23 complete units:
+the previous 17 plus `OChartsPresentation`, `OChartsModuleLoader`,
+`PluginPresentationLoader`, the real patched `model/src/plugin_loader.cpp`,
+`ChartNameAlphaWindows` and `ChartModuleCheck`. The latter is the explicit
+early diagnostic, not normal plugin initialization. Its generated package
+header uses the production default unavailable state; the Windows-only
+implementation still compiles. The private adapter's actual imports, binding
+and checked unload require a separate run inside the complete fixture-free
+application. The focused branch `skager-chart-module-preflight` selects this
+object check with the existing `[chart-units]` commit marker.
+
 Seven offline guard tests pass for archive traversal/link/case-duplicate
 refusal, actual object inventory/architecture refusal and exclusive CLI mode
 selection. The twelve existing component-runtime/layout guard tests still pass.

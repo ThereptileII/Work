@@ -28,6 +28,9 @@ include_directories(BEFORE "${P}/opencpn-libs/api-17" "${CMAKE_BINARY_DIR}/inclu
   "${SKAGER_PREPARED}/sdk/glew/include/glew")
 add_compile_definitions(UNICODE _UNICODE ocpnUSE_GL ocpnUSE_GLSL __OCPN_USE_GLEW__
   __OCPN_USE_CURL__ SKAGER_OCHARTS_ADAPTER _CRT_NONSTDC_NO_DEPRECATE _CRT_SECURE_NO_DEPRECATE)
+# API17 otherwise dllexports host API classes and their generated methods.
+# The .def owns create/destroy; private bind/status have explicit exports.
+add_compile_definitions("DECL_EXP=")
 add_subdirectory("${P}/opencpn-libs/api-17" api)
 foreach(lib cpl dsa wxJSON iso8211 tinyxml geoprim pugixml s52plib)
   add_subdirectory("${P}/libs/${lib}" "libs/${lib}")

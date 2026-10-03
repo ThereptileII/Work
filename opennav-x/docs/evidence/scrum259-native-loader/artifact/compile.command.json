@@ -1,0 +1,11 @@
+[
+  "cmake",
+  "--build",
+  "D:\\a\\Work\\Work\\opennav-x\\build\\windows-ocharts-loader-guards\\build",
+  "--config",
+  "Release",
+  "--parallel",
+  "2",
+  "--",
+  "/verbosity:normal"
+]
