@@ -135,6 +135,134 @@ def new_profile(profile, version):
         encoding='utf-8')
 
 
+def _capture_tree(root, *, mutable=False):
+    """Inventory plain files/directories; mutable trees still reject all links."""
+    plain(root)
+    require(root.is_dir(), 'Capture package root is not a directory')
+    files, directories, folded = {}, [], set()
+    for path in sorted(root.rglob('*')):
+        plain(path)
+        relative = path.relative_to(root).as_posix()
+        require(relative.casefold() not in folded, 'Case-ambiguous capture path: ' + relative)
+        folded.add(relative.casefold())
+        parts = path.relative_to(root).parts
+        require(parts[0].casefold() not in ('profile', 'logs') or parts[0] in ('profile', 'logs'),
+                'Case alias of mutable capture tree: ' + relative)
+        require(all(':' not in part and not part.endswith((' ', '.')) for part in parts),
+                'Unsafe capture path: ' + relative)
+        info = path.lstat()
+        directory = stat.S_ISDIR(info.st_mode)
+        require(directory or (stat.S_ISREG(info.st_mode) and info.st_nlink == 1),
+                'Non-regular/hard-linked capture payload: ' + relative)
+        if mutable and parts[0] in ('profile', 'logs'):
+            continue
+        if directory:
+            directories.append(relative)
+        else:
+            files[relative] = {'sha256': sha(path), 'bytes': info.st_size}
+    return {'files': files, 'directories': directories}
+
+
+def _payload_sha(inventory):
+    return hashlib.sha256(json.dumps(inventory, sort_keys=True, separators=(',', ':')).encode()).hexdigest()
+
+
+def stage_disposable_package(package_root, output, verified_identity):
+    """Copy an already audited package, never its packaged profile or logs.
+
+    The caller owns full verify_package checks of the original ZIP/root before
+    and after capture. This boundary checks original bytes against that receipt
+    again before copying, and seals every copied immutable byte independently.
+    """
+    package_root, output = Path(package_root).absolute(), Path(output).absolute()
+    plain(package_root)
+    plain(output)
+    require(output.is_dir(), 'Capture output must be an existing plain directory')
+    package_root, output = package_root.resolve(), output.resolve()
+    require(package_root != output and package_root not in output.parents and output not in package_root.parents,
+            'Capture output and original package must not overlap')
+    destination = output / 'disposable-package'
+    require(not any(path.name.casefold() == destination.name for path in output.iterdir()),
+            'Disposable package or case alias already exists')
+    verified_root = Path(verified_identity['root']).absolute()
+    # Windows may expand an audited TEMP 8.3 spelling during resolve(). Check
+    # the receipt's original path for links before comparing both canonical paths.
+    plain(verified_root)
+    require(package_root == verified_root.resolve(strict=True), 'Verified original package path differs')
+    original = _capture_tree(package_root)
+    manifest_path = package_root / 'FILE_SHA256.json'
+    plain(manifest_path)
+    require(sha(manifest_path) == verified_identity['file_manifest_sha256'], 'Original manifest changed before copy')
+    manifest = json.loads(manifest_path.read_text(encoding='utf-8-sig'), object_pairs_hook=unique_object)
+    require(set(original['files']) == set(manifest) | {'FILE_SHA256.json'}, 'Original payload inventory changed before copy')
+    require(all(original['files'][name]['sha256'] == digest for name, digest in manifest.items()),
+            'Original payload changed before copy')
+    require(manifest['app/opencpn.exe'] == verified_identity['executable_sha256'] and
+            manifest['docs/PRODUCT_BUILD.json'] == verified_identity['product_build_sha256'] and
+            manifest['profile/opencpn.conf'] == verified_identity['packaged_profile_sha256'],
+            'Original identity differs before copy')
+    version = verified_identity['config_version_string']
+    require(isinstance(version, str) and re.fullmatch(r'Version [^\r\n\x00]+ Build [^\r\n\x00]+', version),
+            'Malformed disposable profile version')
+    config = configparser.ConfigParser(interpolation=None, strict=True)
+    config.read_string((package_root / 'profile/opencpn.conf').read_text(encoding='utf-8-sig'))
+    require(config['Settings']['ConfigVersionString'] == version, 'Packaged profile version changed before copy')
+    immutable = {
+        'files': {name: value for name, value in original['files'].items()
+                  if PurePosixPath(name).parts[0] not in ('profile', 'logs')},
+        'directories': [name for name in original['directories']
+                        if PurePosixPath(name).parts[0] not in ('profile', 'logs')]}
+    destination.mkdir(exist_ok=False)
+    # No cleanup on failure: preserve incomplete evidence, never traverse a
+    # potentially substituted tree to remove it or retry into that destination.
+    for name in immutable['directories']:
+        destination.joinpath(*PurePosixPath(name).parts).mkdir(exist_ok=False)
+    for name in immutable['files']:
+        source = package_root.joinpath(*PurePosixPath(name).parts)
+        target = destination.joinpath(*PurePosixPath(name).parts)
+        plain(source)
+        plain(target.parent)
+        with source.open('rb') as stream, target.open('xb') as copied:
+            shutil.copyfileobj(stream, copied)
+    new_profile(destination / 'profile', version)
+    (destination / 'logs').mkdir()
+    receipt = {
+        'schema_version': 1, 'root': str(destination),
+        'executable': str(destination / 'app/opencpn.exe'),
+        'profile': str(destination / 'profile'), 'logs': str(destination / 'logs'),
+        'application_commit': verified_identity['application_commit'],
+        'executable_sha256': verified_identity['executable_sha256'],
+        'original_root': str(package_root),
+        'original_archive_sha256': verified_identity['archive_sha256'],
+        'original_file_manifest_sha256': verified_identity['file_manifest_sha256'],
+        'immutable_payload': immutable, 'immutable_payload_sha256': _payload_sha(immutable),
+        'mutable_roots': ['profile', 'logs'],
+        'profile_policy': 'Only ConfigVersionString transferred; no packaged profile/log content copied',
+        'manifest_policy': 'Original FILE_SHA256.json is documentary; its profile/log hashes do not describe this fresh profile'}
+    verify_disposable_package(receipt)
+    require(_capture_tree(package_root) == original, 'Original package changed during copy')
+    return receipt
+
+
+def verify_disposable_package(receipt):
+    """Pre/post launch seal. No launch or original-package verification occurs."""
+    root = Path(receipt['root'])
+    require(receipt['schema_version'] == 1 and root.is_absolute() and
+            receipt['mutable_roots'] == ['profile', 'logs'], 'Invalid disposable package receipt')
+    for name, relative in (('executable', 'app/opencpn.exe'), ('profile', 'profile'), ('logs', 'logs')):
+        require(receipt[name] == str(root / relative), 'Disposable package paths differ: ' + name)
+    for name in ('profile', 'logs'):
+        plain(root / name)
+        require((root / name).is_dir(), 'Mutable capture root is not a directory: ' + name)
+    require(_payload_sha(receipt['immutable_payload']) == receipt['immutable_payload_sha256'],
+            'Disposable immutable receipt changed')
+    observed = _capture_tree(root, mutable=True)
+    require(observed == receipt['immutable_payload'], 'Copied immutable package changed or gained extra payload')
+    require(observed['files']['app/opencpn.exe']['sha256'] == receipt['executable_sha256'],
+            'Copied executable identity differs')
+    return receipt
+
+
 def stage_iho(source, output):
     source = source.absolute()
     plain(source)

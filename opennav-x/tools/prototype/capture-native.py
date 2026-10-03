@@ -21,7 +21,8 @@ import zipfile
 ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT / "tools"))
 from diagnostic_snapshot import read_json_snapshot
-from recovery_capture_inputs import (verify_package, new_profile, stage_iho, runtime_identity,
+from recovery_capture_inputs import (verify_package, stage_disposable_package, verify_disposable_package,
+                                     stage_iho, runtime_identity,
                                      presentation, iho_pixels, day_return, IHO_CENTER, IHO_SHA256, sha)
 
 
@@ -100,18 +101,25 @@ def main():
         recovery = verify_package(args.recovery_package, args.expected_application_commit,
                                   args.expected_executable_sha256, args.expected_file_manifest_sha256,
                                   args.recovery_archive, args.expected_recovery_archive_sha256)
-        args.app = args.recovery_package.absolute() / "app/opencpn.exe"
     elif any((args.recovery_archive, args.expected_file_manifest_sha256, args.expected_recovery_archive_sha256)):
         parser.error("Package audit inputs require --recovery-package")
-    if args.expected_executable_sha256:
+    if args.expected_executable_sha256 and not recovery:
         assert sha(args.app) == args.expected_executable_sha256, "Expected application executable differs"
     args.output.mkdir(parents=True, exist_ok=False)
     profile = args.output.resolve() / "profile"
+    disposable = None
     if recovery:
-        new_profile(profile, recovery["config_version_string"])
+        # The production portable guard requires the executable's OWN sibling
+        # profile/logs. Keep the audited original untouched and run byte-identical
+        # app/resources in a new disposable package with a disconnected profile.
+        disposable = stage_disposable_package(args.recovery_package, args.output.resolve(), recovery)
+        args.app = Path(disposable["executable"])
+        profile = Path(disposable["profile"])
+        diagnostics_path = Path(disposable["logs"]) / "opennav-diagnostics.json"
     else:
         subprocess.run([sys.executable, str(ROOT / "tools/prepare-test-profile.py"),
                         "--build", str(args.build), "--profile", str(profile)], check=True)
+        diagnostics_path = profile / "opennav-diagnostics.json"
     if args.iho_s64:
         charts = args.output.resolve() / "iho-fixture"
         chart_provenance = stage_iho(args.iho_s64, charts)
@@ -149,6 +157,8 @@ def main():
               "executable_sha256": hashlib.sha256(args.app.read_bytes()).hexdigest(), "captures": []}
     record["expected_application_commit"] = args.expected_application_commit
     record["recovery_package_audit"] = recovery
+    record["disposable_package"] = disposable
+    record["diagnostics_path"] = str(diagnostics_path)
     record["isolation_scope"] = "Fresh disconnected profile; no copied connections/plugins or device commands. Disposable CI desktop required; not an OS network/device sandbox."
     xserver = None if windows else subprocess.Popen(["Xvfb", env["DISPLAY"], "-screen", "0", "1280x800x24", "-nolisten", "tcp"],
                                env=env, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
@@ -162,7 +172,7 @@ def main():
         return subprocess.check_output(["xdotool", *map(str, command)], env=env, text=True).strip()
 
     def data():
-        return read_json_snapshot(profile / "opennav-diagnostics.json")
+        return read_json_snapshot(diagnostics_path)
 
     def click(label, expected_light=None, in_drawer=False):
         before = data()
@@ -536,7 +546,7 @@ def main():
         settle = time.monotonic()
         while time.monotonic() - settle < 10:
             observed = data()
-            if ((profile / "opennav-diagnostics.json").stat().st_mtime_ns > resize_started
+            if (diagnostics_path.stat().st_mtime_ns > resize_started
                     and int(observed["runtime"]["ui_update"]["ticks"]) >= resize_ticks + 3
                     and observed["runtime"]["chart"]["canvas_pixels"] == {"width":1014,"height":566}):
                 break
@@ -787,6 +797,21 @@ def main():
                 shutdown_error = type(error).__name__
         if app:
             record["exit_code"] = app.returncode
+        if disposable:
+            try:
+                record["disposable_immutable_payload_unchanged"] = verify_disposable_package(disposable) == disposable
+                # Retain these two bounded disconnected-session diagnostics,
+                # never the copied package/profile/chart database as evidence.
+                for source, name in ((profile / "opencpn.log", "native-opencpn.log"),
+                                     (diagnostics_path, "last-diagnostics.json")):
+                    if source.is_file():
+                        if source.stat().st_size > 16 * 1024 * 1024:
+                            raise ValueError("Disposable diagnostic exceeds evidence limit")
+                        (args.output / name).write_bytes(source.read_bytes())
+            except (OSError, ValueError) as error:
+                record["disposable_immutable_payload_unchanged"] = False
+                record["disposable_payload_change"] = str(error)
+                shutdown_error = "Disposable immutable payload changed during capture"
         if recovery:
             try:
                 record["recovery_package_unchanged"] = verify_package(

@@ -1,11 +1,53 @@
 # SKAGER status — 2026-10-03
 
+## Corrected candidate under native/Linux qualification
+
+Local **`8a0ed1f646e2551a55639c1cc3fb609cc2652464`** is published as
+**`442960ba55277845e171f9b95a38838f66c23981`**, independently reconstructed
+tree `3b74065f9f9886ebe73f33f85b71ca8bb469865e` (4,689 mapped entries; eight
+unrelated root files preserved). The [corrected full run](https://github.com/ThereptileII/Work/actions/runs/37126951293)
+started after the focused SCRUM-270 proof below passed. The
+[publication receipt](evidence/scrum270-preview-validity/publication.json)
+keeps the exact identities. Application source, patches, chart assets and CMake
+are unchanged from 1835/9d98. The difference includes the coherent preview
+predicate, immediate failed-fixture upload and separately qualified review tools.
+Native/full/boat acceptance is pending; the current source is frozen and no
+new application has been installed or launched on the boat.
+
+The exact native job `111215213199` passed integrated build/exercise at
+15:10:14 UTC and the formerly failing full preview scenario suite at
+15:15:05 UTC. Startup/loader, pointer chart interaction and repeated crash recovery
+also passed. Its same-job dependency closure passed; the fixture-free product
+build is running. Packaging, installer, exact product chart/DPI and boat gates
+remain open. The Linux elapsed-time gate continues in the background. These
+are interim job observations, not a qualified downloadable candidate.
+
+The supplementary actual-package chart collector now preserves the application's
+portable-profile guard: it runs a verified disposable copy with its own clean
+profile/logs and leaves the audited original package untouched. Pre-dispatch
+inspection caught the former external-profile request and wrong diagnostics
+path. Twenty focused offline cases and four checks linked to the unchanged
+production path guard pass; native launch remains pending. See the
+[bounded collector correction](evidence/scrum264-native-recovery-collector/README.md).
+Its separate native preflight caught asymmetric canonical path comparison before
+CMake or any application launch. The original artifact is retained; the narrow
+plain-path-then-canonical correction and real equivalent-path regression now pass
+[native run 37130959195](https://github.com/ThereptileII/Work/actions/runs/37130959195):
+21 Python cases without skips and four actual MSVC Win32 portable-path checks.
+The downloaded original evidence and exact source hashes are retained. This
+closes the collector path defect, not application/visual acceptance. No additional
+full application build was started.
+
 ## Native application passes build; preview sample timing blocks packaging
 
 The exact `1835d1b` / `9d98a500` native job has now completed with a retained
 [fixture-suite failure](evidence/scrum270-native-9d98-preview-failure/README.md).
 The application build, all 139 native CTests, pointer route gestures, repeated
 crash recovery, 100/125/150% DPI/touch and public ENC checks passed. Independent
+renderer inspection confirms software and permitted fallback only: the hosted
+machine rejected OpenGL, so this result does not qualify native hardware GL.
+The [renderer receipt](evidence/scrum270-native-9d98-preview-failure/renderer-proof.json)
+retains the exact report identity and observations. Independent
 artifact inspection confirms the fresh five-export private DLL, its complete
 source/resource identity and identical private/host presentation resources.
 The actual GDI probe selected Segoe UI for both the UI and ordinary chart text;
@@ -27,7 +69,7 @@ failure upload is added so a future failure can be inspected while
 independent display checks continue. No blind full rerun or boat installation
 has occurred. The current Linux elapsed-time gate continues separately.
 
-## Current frozen combined candidate
+## Preceding combined candidate (native fixture failure retained above)
 
 Local source/evidence **`1835d1b84df89aff42220ac8bb535e4262034a54`** is published
 as **`9d98a500916e8a7f59dac9735427dde6d3c7d2e5`**. All 4,649 mapped blob/mode

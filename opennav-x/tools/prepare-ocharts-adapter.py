@@ -34,6 +34,7 @@ INPUTS = (LOCK, RECIPE, 'cmake/ocharts-adapter/PreparedPath.cmake',
           'tools/windows-curl.lock.json', 'tools/windows-zlib.lock.json', 'tools/windows-openssl.lock.json',
           'tools/curl_package.py', 'tools/openssl_package.py',
           'tools/test-downloader-trust-windows.ps1', 'tests/downloader_trust/CMakeLists.txt',
+          'tests/downloader_trust/InputPaths.cmake', 'tests/downloader_trust/Targets.cmake',
           'tools/wxcurl-trust-probe.cpp', 'tools/downloader-trust-probe.cpp',
           'tools/downloader-trust-server.py') + PATCHES + LOCAL
 

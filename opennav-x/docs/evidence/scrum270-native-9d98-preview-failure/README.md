@@ -13,6 +13,14 @@ Passed scope before/after that failure:
 - The raw font probe proves the hosted machine lacked Segoe UI Variable Display; UI sizes 11/23/48 and ordinary chart text selected the approved Segoe UI fallback in the actual GDI DC. Exact source-log lines are retained in `font-proof.txt`.
 - Packaged source, staged loader, native pointer gestures and repeat crash recovery passed. Subsequent native 100/125/150% DPI and public ENC gates also passed despite the earlier fixture failure.
 
+The public ENC gate covered **software and permitted software fallback**, not
+working native OpenGL. Both recorded runtime observations have
+`opengl_enabled: false`; the requested OpenGL phase explicitly reports that the
+host rejected it. [The bounded renderer receipt](renderer-proof.json) identifies
+the original report's hash and exact observations. Its screenshot filenames do
+not override runtime evidence. The replacement candidate needs its own renderer
+observation, and the physical boat GPU remains a separate acceptance gate.
+
 The fixture-free product build, actual real-host private-module check, portable recovery/setup, Windows elapsed endurance and early development package were skipped. The archive contains **no `opencpn.exe` or installer**: its only four EXEs are CMake compiler-identification probes. Therefore it cannot support a native preview replay without rebuilding, nor an application/setup PE icon audit. The fixture EXE hash in the preview report is reported identity only, not an independently rehashed executable. Dependency producer logs/receipts do not constitute a qualified reusable application package.
 
 The separate obsolete b8/d5 Linux job [111177754810](https://github.com/ThereptileII/Work/actions/runs/37114216075/job/111177754810) completed successfully with all 29 recorded steps passing, including its three-hour elapsed-time gate and fixture-free build/loader. `obsolete-b8-linux-terminal.json` preserves only that API result; it is not evidence for 1835/9d98.

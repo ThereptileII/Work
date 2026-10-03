@@ -1,0 +1,13 @@
+{
+  "scope": "Production portable path contract only; no application launch",
+  "platform": "linux",
+  "probe_sha256": "bb77a3b24989d3f1da67a014747731dd0935a8570e237e87cade32ea390fb2df",
+  "production_source_sha256": "4507caaa3f236c824c78c7f28032acf9880657dc288a6c7039d298d3cafbfa75",
+  "checks": [
+    "original collector invocation refused by actual production guard",
+    "actual guard accepts copied package with own explicit/default profile and logs",
+    "copied portable marker still refuses external configdir",
+    "portable log writes preserve copied immutable bytes and complete audited original"
+  ],
+  "result": "PASS"
+}

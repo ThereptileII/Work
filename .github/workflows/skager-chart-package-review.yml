@@ -84,6 +84,12 @@ jobs:
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
           python opennav-x/tests/recovery_capture_inputs_tests.py
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          cmake -S opennav-x/tests/portable_capture_boundary -B opennav-x/build/portable-capture-boundary -G "Visual Studio 17 2022" -A Win32
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          cmake --build opennav-x/build/portable-capture-boundary --config Release
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          python opennav-x/tests/portable_capture_boundary_tests.py --probe opennav-x/build/portable-capture-boundary/Release/portable-capture-probe.exe --output opennav-x/evidence/local/package-chart-review/portable-boundary.json
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
           python opennav-x/tools/prototype/fetch-iho-review-cell.py --output opennav-x/build/native-iho-review
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
           Copy-Item opennav-x/build/native-iho-review/source-receipt.json opennav-x/evidence/local/package-chart-review/iho-source-receipt.json
@@ -118,5 +124,6 @@ jobs:
           path: |
             opennav-x/evidence/local/package-chart-review
             !opennav-x/evidence/local/package-chart-review/**/profile/**
+            !opennav-x/evidence/local/package-chart-review/**/disposable-package/**
             !opennav-x/evidence/local/package-chart-review/**/iho-fixture/**
           if-no-files-found: warn
