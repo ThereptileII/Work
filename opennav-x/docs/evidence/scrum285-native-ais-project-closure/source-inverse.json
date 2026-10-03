@@ -1,0 +1,7 @@
+{
+  "originalSourceSha256": "bde77d4713650c684ca6200f823ec71acdf0df4d447854217c4260f4e6e7046d",
+  "repairedSourceSha256": "8689934a1cb9abe0ef14faa8fe4ef82e5a4df7599d489a967a67c357c133837e",
+  "outsideExtractedClosureByteIdentical": true,
+  "correction": "ProjectReference edges selected structurally beneath ItemGroup; configuration metadata excluded",
+  "pathParser": "PureWindowsPath reads native MSBuild path strings without changing their Windows basename semantics; enables unchanged original bytes in offline Linux regression"
+}

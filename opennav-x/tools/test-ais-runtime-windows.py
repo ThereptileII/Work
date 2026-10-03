@@ -4,7 +4,7 @@ import argparse
 import importlib.util
 import json
 import os
-from pathlib import Path
+from pathlib import Path, PureWindowsPath
 import re
 import shutil
 import struct
@@ -68,6 +68,19 @@ def private_links(project, cache):
         matches = {item for item in dependencies if item.rsplit('/', 1)[-1] == name}
         if matches != {wanted}:
             raise ValueError('Import library is not exclusively private verified input: ' + name)
+
+
+def project_closure(projects):
+    """Follow real MSBuild item edges, excluding per-configuration metadata."""
+    closure, pending = {}, list(TARGETS)
+    while pending:
+        name = pending.pop()
+        if name in closure or name == 'ZERO_CHECK': continue
+        project = projects[name]
+        closure[name] = project
+        for node in ET.parse(project).findall('.//m:ItemGroup/m:ProjectReference', NS):
+            pending.append(PureWindowsPath(node.attrib['Include']).stem)
+    return closure
 
 
 def child_environment(private, runtime):
@@ -173,14 +186,7 @@ def main():
         for name in TARGETS[:2]:
             private_links(projects[name], cache)
         # Follow only the three selected targets' actual generated dependencies.
-        closure, pending = {}, list(TARGETS)
-        while pending:
-            name = pending.pop()
-            if name in closure or name == 'ZERO_CHECK': continue
-            project = projects[name]
-            closure[name] = project
-            for node in ET.parse(project).findall('.//m:ProjectReference', NS):
-                pending.append(Path(node.attrib['Include']).stem)
+        closure = project_closure(projects)
         report['projects'] = {name: api.record(path) for name, path in closure.items()}
         sources = set()
         for name, project in closure.items():

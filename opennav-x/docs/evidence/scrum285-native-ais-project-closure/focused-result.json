@@ -1,0 +1,18 @@
+{
+  "passed": true,
+  "tests": 7,
+  "skipped": 0,
+  "originalRun": 37155858878,
+  "originalCommit": "4ddf1f383e495150551946dd36103cd77cea85eb",
+  "expectedClosure": [
+    "ais_provider_test_client",
+    "ais_session_native",
+    "ais_transport_test_client",
+    "ixwebsocket",
+    "opennav_ais",
+    "opennav_ais_codec",
+    "opennav_ais_credentials",
+    "opennav_vessel"
+  ],
+  "scope": "Original generated project parsing only; no AIS/native binary execution"
+}

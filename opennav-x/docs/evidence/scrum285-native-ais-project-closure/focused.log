@@ -1,0 +1,12 @@
+test_actual_eight_project_closure (__main__.ProjectTests.test_actual_eight_project_closure) ... ok
+test_configuration_metadata_is_never_an_edge (__main__.ProjectTests.test_configuration_metadata_is_never_an_edge) ... ok
+test_downstream_runtime_and_foreign_source_guards_unchanged (__main__.ProjectTests.test_downstream_runtime_and_foreign_source_guards_unchanged) ... ok
+test_missing_dependency_project_refuses (__main__.ProjectTests.test_missing_dependency_project_refuses) ... ok
+test_missing_real_include_refuses (__main__.ProjectTests.test_missing_real_include_refuses) ... ok
+test_original_selector_reproduces_real_failure (__main__.ProjectTests.test_original_selector_reproduces_real_failure) ... ok
+test_unknown_real_dependency_refuses (__main__.ProjectTests.test_unknown_real_dependency_refuses) ... ok
+
+----------------------------------------------------------------------
+Ran 7 tests in 0.046s
+
+OK
