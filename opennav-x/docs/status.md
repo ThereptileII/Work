@@ -1,6 +1,37 @@
 # SKAGER status — 2026-10-03
 
-## Current correction batch: chart labels, Night, land and service symbols
+## Current combined candidate: SKAGER chart fidelity and branding
+
+The clean application source is `78eccb8b7f21b260ded57d3ba763f884d60c8180`,
+published exactly as `61a0a7838b56ad841bb458af6fc62651464bdafe` (2,472 mapped
+blobs/modes verified). Its [integrated Linux build and staging pass](evidence/skager-chart-78eccb8-linux-build/README.md).
+This combines the prior palette/service artwork, the [four classified cardinal
+glyphs](design/reviews/scrum256-cardinal-glyphs.md), and the [actual active-waypoint
+name card](design/reviews/scrum257-active-name.md). Active-point symbol/blinking
+and navigation semantics remain upstream-owned. SKAGER naming and the approved
+Jira logo are wired into the product and Windows resources; compatibility IDs,
+original source evidence and required OpenCPN credit are retained.
+
+The [actual native Gettext prerequisite proof now passes](evidence/scrum255-gettext-native-pass/README.md):
+25 contracts, successful bounded acquisition, exact-path tool identities and a
+real UTF-8 catalog operation. Both earlier focused failures are retained.
+The [final seventeen-unit native preflight](evidence/scrum-247-native-chart17-final/README.md)
+passes with independently verified downloaded objects and resources. All
+[sixteen final ENC comparisons](evidence/skager-product-fidelity-78eccb8-linux/README.md)
+pass, and Standard pixels remain identical. The [software and actual-GL route
+runs](design/reviews/scrum252-257-final-78eccb8.md) pass all 26 original assertions,
+hot themes, active-name cards with preserved icon blinking, stale controls and
+clean shutdown. A card-covered GL pixel sample required a documented collector
+correction; its original failure and missing-stroke negative controls remain.
+No application correction or weakened navigation assertion was involved.
+
+The exact published candidate is now in the [full Linux/Windows qualification
+run 37088759582](https://github.com/ThereptileII/Work/actions/runs/37088759582).
+Long qualification runs in the background while evidence and boat preparation
+continue. No full release, physical GPU, boat visual pass or obsolete-version
+retirement is implied. Whole-chart prototype conformance remains open.
+
+## Previous correction batch: chart labels, Night, land and service symbols
 
 Local `f0976cc65ea63d3ed6f60ac53ec38a856d11b66b` is frozen and published as
 `9a4231f45d978321c612a6a1de66d735d531bbaa`. Its combined Linux application
@@ -29,7 +60,7 @@ built-up-area fill to prototype land. It retains navigation classifications,
 hazard contrast, Standard resources and Legacy/Safe boundaries. No new boat
 installation or old-generation retirement has occurred.
 
-## Current: frozen SKAGER candidate enters integrated qualification
+## Previous full candidate: integrated failures retained
 
 The frozen implementation is local
 `1356fd1603aacbea04d7081d16331e9a181180bb`, published as

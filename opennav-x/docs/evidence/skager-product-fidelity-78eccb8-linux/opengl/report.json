@@ -1,0 +1,1205 @@
+{
+  "schema": 1,
+  "commit": "78eccb8b7f21b260ded57d3ba763f884d60c8180",
+  "binary_sha256": "a58256d8c824a43d7d74b90deb6ad6697a2ba1dabbf47b13c4e8057dd4738ffb",
+  "build_flags": {
+    "OCPN_BUILD_TEST": "ON",
+    "OPENNAV_ENABLE_ROUTE_SCENARIO": "ON",
+    "XNAV_ENABLE_PILOT_LOOPBACK_TESTS": "ON",
+    "XNAV_ENABLE_TEST_FIXTURES": "ON"
+  },
+  "manifest_sha256": "03533971dfba1bb3cb2cba6ab52b1528a56b4f27c8b4fc118b4b503c25b4bdde",
+  "resource_files": {
+    "chartsymbols.xml": {
+      "sha256": "d4e9274e379b30368ac355f90e5c9786e86f7c979fb82c524ebddf366dc6fba9",
+      "bytes": 2232050
+    },
+    "S52RAZDS.RLE": {
+      "sha256": "560e1a1df493d7ae4c8506da814ad936adb13ef93c6f1e2abc93f2819860ff26",
+      "bytes": 1305627
+    },
+    "rastersymbols-day.png": {
+      "sha256": "a737bdb7d372077c2bfe806c5f020f45b4517029c0b43913084720664c520ea3",
+      "bytes": 197801
+    },
+    "rastersymbols-dusk.png": {
+      "sha256": "201f0663bd786d5e1d8ba09d8d43b106df164d5a282f60860258d226adadb6c9",
+      "bytes": 172357
+    },
+    "rastersymbols-dark.png": {
+      "sha256": "9c91273e3dbe9563d79b2d2b0a757bb83207aa0db9183e8aecc1112070ead724",
+      "bytes": 167654
+    }
+  },
+  "source_evidence": {
+    "src/integration/ChartNameTypography.h": "23688fca7f9ed456e7458fe1228e0bf9908660a953732cb6e6749c5838e1f4d9",
+    "src/integration/ChartCogPredictor.h": "3e7841bb311bb9d4951be082a669f4737ee978dd426df4899a22bc9971033c90",
+    "src/integration/ChartPresentation.cpp": "9e26a9b5b5dabe603d14cff54c203f39b669270af88bd7a13705b037c6c859a4",
+    "patches/opencpn-5.12.4-xnav.patch": "dfbacadf42502d1d0366745b3a187d256e620b0d2ea7dba9e8912c46e999e0b3",
+    "patches/opencpn-5.12.4-chart-presentation.patch": "6525f9b389d53d3882fab77f86158fe5921f58cd6d8519f10b65cd417894bba4",
+    "resources/chart-style/v1/definition.json": "4c91c3bd0c74d09343c185ddd956b32e818a1f82b5fb27569dc1732b846e45ed",
+    "docs/design/prototype-tokens.json": "111ee35527a974b2df6c2c4af0afd04e5aebdf14bad3004a98be9064aef790c6",
+    "src/application/SkagerBrandAsset.h": "cc9f469181717b4fb80986b9406d2d6d078bfdb5971d2e68f6b4072b8dcd2019",
+    "resources/branding/provenance.json": "f639aa4ffa1194fb527388b15b2f9880746829d4120e30b4ddca32b0326557a6"
+  },
+  "authority": "Linux Xvfb opengl development visuals only; not native Windows, production or boat acceptance",
+  "runtime_identity": "Must be confirmed by loader self-test and capture diagnostics before accepting images",
+  "renderer_requested": "opengl",
+  "scope": "Public real ENC with controlled simulated loopback RMC; no private boat profile, hardware, Demo or scenario activation",
+  "baseline_report_sha256": "1c8a700d0f78dee1dbd669a690461bcf91744ae7692a6d26aa5dedd4e305d8ab",
+  "baseline_commit": "1356fd1603aacbea04d7081d16331e9a181180bb",
+  "chart_source_files": {
+    "CATALOG.031": "6f127353e5e20788574b6183962b023e4191cc52f431f3a33ba3bb4ff9ce7d76",
+    "README.TXT": "c202a13afaebd80a89433fda9466cb09d60e2f8345202ecb302b855daa50b573",
+    "US5SEAFL/US419FLA.TXT": "71837814a9b696ef71d84638bcf44dd87eef438a9852f1f03e17aa54198f1927",
+    "US5SEAFL/US419FLB.TXT": "2f670f03807112f993c8372e9d276b5cc06e27c15eb69349d78a13475b65bba6",
+    "US5SEAFL/US5SEAFL.000": "7e474bea96e7a84c6f3ee6b44ff7db4288029fa47ac2a285594e18469dbf518c",
+    "US5SEAFL/US5SEAFL.001": "504440d201453548aae160c4c5340d55d480bd39cd57061b7fc03262968e062d",
+    "USERAGREEMENT.TXT": "27b503af0727216809c8cc9cd73a8895073f43535f4e1bdba8b0b14c599f848f"
+  },
+  "captures": [
+    {
+      "name": "SKAGER-Day",
+      "image_sha256": "293e1ef6190771f9f5c365621004b456c13d77172281d402bf486149b288cf0f",
+      "surface_roles": {
+        "land_rgb": [
+          237,
+          237,
+          225
+        ],
+        "land_pixels": 103783,
+        "water_rgb": [
+          212,
+          228,
+          228
+        ],
+        "baseline_capture": "SKAGER-Day",
+        "land_built_up_share_color": true,
+        "comparison_scope": "exact eligible surface roles; shared land/BUA color does not independently identify built-up geometry; historical comparison excludes changed BUA ink"
+      },
+      "wordmark": {
+        "empty_background_probes": 700,
+        "background_rgb": [
+          21,
+          35,
+          38
+        ],
+        "separate_letter_columns": [
+          6,
+          3
+        ],
+        "pointer_parked_at": [
+          5,
+          5
+        ]
+      },
+      "edge_negative_rejected": true,
+      "edge_probe_pixels": 3232,
+      "repeated_edge_pixels": 1860,
+      "build_commit": "78eccb8b7f21b260ded57d3ba763f884d60c8180",
+      "chart": {
+        "canvas_pixels": {
+          "height": 566,
+          "width": 1014
+        },
+        "latitude": 47.6,
+        "database_entries": 1,
+        "follow": false,
+        "quilt_members": [
+          {
+            "type": 5,
+            "native_scale": 12000,
+            "file": "US5SEAFL.000",
+            "index": 0
+          }
+        ],
+        "opengl_enabled": true,
+        "quilt_reference": 0,
+        "scale_bar": {
+          "height": 29,
+          "y": 505,
+          "width": 25,
+          "x": 191
+        },
+        "depth_unit_type": 1,
+        "quilt": true,
+        "scale_ppm": 0.150000006,
+        "longitude": -122.36,
+        "depth_units_visible": true
+      },
+      "presentation": {
+        "status": "SKAGER presentation v1 / pinned symbols",
+        "requested": "XNav"
+      },
+      "water_pixels": 357245,
+      "water_color_counts": {
+        "(212, 228, 228)": 357245
+      },
+      "land_or_built_area_pixels": 103783,
+      "built_area_color_shared_with_land": true,
+      "owned_values": {
+        "Latitude": {
+          "device_id": "",
+          "stale_after_ms": 5000,
+          "name": "Latitude",
+          "quality": "LIVE",
+          "observed_monotonic_ms": "47510682",
+          "validity": "Measured",
+          "value": 47.6,
+          "aging_after_ms": 2000,
+          "unit": "deg",
+          "age_ms": 254,
+          "source": "OpenCPN selected navigation (sensor identity unavailable)"
+        },
+        "Longitude": {
+          "device_id": "",
+          "stale_after_ms": 5000,
+          "name": "Longitude",
+          "quality": "LIVE",
+          "observed_monotonic_ms": "47510682",
+          "validity": "Measured",
+          "value": -122.36,
+          "aging_after_ms": 2000,
+          "unit": "deg",
+          "age_ms": 254,
+          "source": "OpenCPN selected navigation (sensor identity unavailable)"
+        },
+        "Speed over ground": {
+          "device_id": "",
+          "stale_after_ms": 5000,
+          "name": "Speed over ground",
+          "quality": "LIVE",
+          "observed_monotonic_ms": "47510682",
+          "validity": "Measured",
+          "value": 3,
+          "aging_after_ms": 2000,
+          "unit": "kn",
+          "age_ms": 254,
+          "source": "OpenCPN selected navigation (sensor identity unavailable)"
+        },
+        "Course over ground": {
+          "device_id": "",
+          "stale_after_ms": 5000,
+          "name": "Course over ground",
+          "quality": "LIVE",
+          "observed_monotonic_ms": "47510682",
+          "validity": "Measured",
+          "value": 90,
+          "aging_after_ms": 2000,
+          "unit": "deg true",
+          "age_ms": 254,
+          "source": "OpenCPN selected navigation (sensor identity unavailable)"
+        }
+      },
+      "latest_owned_input_monotonic": 47511.883663982
+    },
+    {
+      "name": "SKAGER-Dusk",
+      "image_sha256": "f44e552c4303b706a8f90b0e79d4104ee83e2d2bf9ec7254feec9d976858f39c",
+      "surface_roles": {
+        "land_rgb": [
+          78,
+          97,
+          93
+        ],
+        "land_pixels": 103809,
+        "water_rgb": [
+          52,
+          79,
+          89
+        ],
+        "baseline_capture": "SKAGER-Dusk",
+        "land_built_up_share_color": true,
+        "comparison_scope": "exact eligible surface roles; shared land/BUA color does not independently identify built-up geometry; historical comparison excludes changed BUA ink"
+      },
+      "wordmark": {
+        "empty_background_probes": 700,
+        "background_rgb": [
+          29,
+          40,
+          46
+        ],
+        "separate_letter_columns": [
+          6,
+          3
+        ],
+        "pointer_parked_at": [
+          5,
+          5
+        ]
+      },
+      "edge_negative_rejected": true,
+      "edge_probe_pixels": 3232,
+      "repeated_edge_pixels": 1865,
+      "build_commit": "78eccb8b7f21b260ded57d3ba763f884d60c8180",
+      "chart": {
+        "canvas_pixels": {
+          "height": 566,
+          "width": 1014
+        },
+        "latitude": 47.6,
+        "database_entries": 1,
+        "follow": false,
+        "quilt_members": [
+          {
+            "type": 5,
+            "native_scale": 12000,
+            "file": "US5SEAFL.000",
+            "index": 0
+          }
+        ],
+        "opengl_enabled": true,
+        "quilt_reference": 0,
+        "scale_bar": {
+          "height": 29,
+          "y": 505,
+          "width": 25,
+          "x": 191
+        },
+        "depth_unit_type": 1,
+        "quilt": true,
+        "scale_ppm": 0.150000006,
+        "longitude": -122.36,
+        "depth_units_visible": true
+      },
+      "presentation": {
+        "status": "SKAGER presentation v1 / pinned symbols",
+        "requested": "XNav"
+      },
+      "water_pixels": 358134,
+      "water_color_counts": {
+        "(52, 79, 89)": 358134
+      },
+      "land_or_built_area_pixels": 103809,
+      "built_area_color_shared_with_land": true,
+      "owned_values": {
+        "Latitude": {
+          "device_id": "",
+          "stale_after_ms": 5000,
+          "name": "Latitude",
+          "quality": "LIVE",
+          "observed_monotonic_ms": "47513387",
+          "validity": "Measured",
+          "value": 47.6,
+          "aging_after_ms": 2000,
+          "unit": "deg",
+          "age_ms": 298,
+          "source": "OpenCPN selected navigation (sensor identity unavailable)"
+        },
+        "Longitude": {
+          "device_id": "",
+          "stale_after_ms": 5000,
+          "name": "Longitude",
+          "quality": "LIVE",
+          "observed_monotonic_ms": "47513387",
+          "validity": "Measured",
+          "value": -122.36,
+          "aging_after_ms": 2000,
+          "unit": "deg",
+          "age_ms": 298,
+          "source": "OpenCPN selected navigation (sensor identity unavailable)"
+        },
+        "Speed over ground": {
+          "device_id": "",
+          "stale_after_ms": 5000,
+          "name": "Speed over ground",
+          "quality": "LIVE",
+          "observed_monotonic_ms": "47513387",
+          "validity": "Measured",
+          "value": 3,
+          "aging_after_ms": 2000,
+          "unit": "kn",
+          "age_ms": 298,
+          "source": "OpenCPN selected navigation (sensor identity unavailable)"
+        },
+        "Course over ground": {
+          "device_id": "",
+          "stale_after_ms": 5000,
+          "name": "Course over ground",
+          "quality": "LIVE",
+          "observed_monotonic_ms": "47513387",
+          "validity": "Measured",
+          "value": 90,
+          "aging_after_ms": 2000,
+          "unit": "deg true",
+          "age_ms": 298,
+          "source": "OpenCPN selected navigation (sensor identity unavailable)"
+        }
+      },
+      "latest_owned_input_monotonic": 47513.988963111
+    },
+    {
+      "name": "SKAGER-Night",
+      "image_sha256": "e7f8fc70eb5aba0d9490d4d66b0374af62449c3dbc47bb1d2ba939c679baf008",
+      "surface_roles": {
+        "land_rgb": [
+          29,
+          41,
+          37
+        ],
+        "land_pixels": 103840,
+        "water_rgb": [
+          14,
+          23,
+          28
+        ],
+        "baseline_capture": "SKAGER-Night",
+        "land_built_up_share_color": true,
+        "comparison_scope": "exact eligible surface roles; shared land/BUA color does not independently identify built-up geometry; historical comparison excludes changed BUA ink"
+      },
+      "wordmark": {
+        "empty_background_probes": 700,
+        "background_rgb": [
+          12,
+          17,
+          21
+        ],
+        "separate_letter_columns": [
+          6,
+          3
+        ],
+        "pointer_parked_at": [
+          5,
+          5
+        ]
+      },
+      "edge_negative_rejected": true,
+      "edge_probe_pixels": 3232,
+      "repeated_edge_pixels": 1865,
+      "build_commit": "78eccb8b7f21b260ded57d3ba763f884d60c8180",
+      "chart": {
+        "canvas_pixels": {
+          "height": 566,
+          "width": 1014
+        },
+        "latitude": 47.6,
+        "database_entries": 1,
+        "follow": false,
+        "quilt_members": [
+          {
+            "type": 5,
+            "native_scale": 12000,
+            "file": "US5SEAFL.000",
+            "index": 0
+          }
+        ],
+        "opengl_enabled": true,
+        "quilt_reference": 0,
+        "scale_bar": {
+          "height": 29,
+          "y": 505,
+          "width": 25,
+          "x": 191
+        },
+        "depth_unit_type": 1,
+        "quilt": true,
+        "scale_ppm": 0.150000006,
+        "longitude": -122.36,
+        "depth_units_visible": true
+      },
+      "presentation": {
+        "status": "SKAGER presentation v1 / pinned symbols",
+        "requested": "XNav"
+      },
+      "water_pixels": 358279,
+      "water_color_counts": {
+        "(14, 23, 28)": 358279
+      },
+      "land_or_built_area_pixels": 103840,
+      "built_area_color_shared_with_land": true,
+      "owned_values": {
+        "Latitude": {
+          "device_id": "",
+          "stale_after_ms": 5000,
+          "name": "Latitude",
+          "quality": "LIVE",
+          "observed_monotonic_ms": "47515791",
+          "validity": "Measured",
+          "value": 47.6,
+          "aging_after_ms": 2000,
+          "unit": "deg",
+          "age_ms": 102,
+          "source": "OpenCPN selected navigation (sensor identity unavailable)"
+        },
+        "Longitude": {
+          "device_id": "",
+          "stale_after_ms": 5000,
+          "name": "Longitude",
+          "quality": "LIVE",
+          "observed_monotonic_ms": "47515791",
+          "validity": "Measured",
+          "value": -122.36,
+          "aging_after_ms": 2000,
+          "unit": "deg",
+          "age_ms": 102,
+          "source": "OpenCPN selected navigation (sensor identity unavailable)"
+        },
+        "Speed over ground": {
+          "device_id": "",
+          "stale_after_ms": 5000,
+          "name": "Speed over ground",
+          "quality": "LIVE",
+          "observed_monotonic_ms": "47515791",
+          "validity": "Measured",
+          "value": 3,
+          "aging_after_ms": 2000,
+          "unit": "kn",
+          "age_ms": 102,
+          "source": "OpenCPN selected navigation (sensor identity unavailable)"
+        },
+        "Course over ground": {
+          "device_id": "",
+          "stale_after_ms": 5000,
+          "name": "Course over ground",
+          "quality": "LIVE",
+          "observed_monotonic_ms": "47515791",
+          "validity": "Measured",
+          "value": 90,
+          "aging_after_ms": 2000,
+          "unit": "deg true",
+          "age_ms": 102,
+          "source": "OpenCPN selected navigation (sensor identity unavailable)"
+        }
+      },
+      "latest_owned_input_monotonic": 47516.420388688
+    },
+    {
+      "name": "SKAGER-Day-return",
+      "image_sha256": "eeed18971533579dfdd4d1c4b1687c5449e5b361108c2f83b0689ca81ef517a0",
+      "surface_roles": {
+        "land_rgb": [
+          237,
+          237,
+          225
+        ],
+        "land_pixels": 103783,
+        "water_rgb": [
+          212,
+          228,
+          228
+        ],
+        "baseline_capture": "SKAGER-Day-return",
+        "land_built_up_share_color": true,
+        "comparison_scope": "exact eligible surface roles; shared land/BUA color does not independently identify built-up geometry; historical comparison excludes changed BUA ink"
+      },
+      "wordmark": {
+        "empty_background_probes": 700,
+        "background_rgb": [
+          21,
+          35,
+          38
+        ],
+        "separate_letter_columns": [
+          6,
+          3
+        ],
+        "pointer_parked_at": [
+          5,
+          5
+        ]
+      },
+      "edge_negative_rejected": true,
+      "edge_probe_pixels": 3232,
+      "repeated_edge_pixels": 1860,
+      "build_commit": "78eccb8b7f21b260ded57d3ba763f884d60c8180",
+      "chart": {
+        "canvas_pixels": {
+          "height": 566,
+          "width": 1014
+        },
+        "latitude": 47.6,
+        "database_entries": 1,
+        "follow": false,
+        "quilt_members": [
+          {
+            "type": 5,
+            "native_scale": 12000,
+            "file": "US5SEAFL.000",
+            "index": 0
+          }
+        ],
+        "opengl_enabled": true,
+        "quilt_reference": 0,
+        "scale_bar": {
+          "height": 29,
+          "y": 505,
+          "width": 25,
+          "x": 191
+        },
+        "depth_unit_type": 1,
+        "quilt": true,
+        "scale_ppm": 0.150000006,
+        "longitude": -122.36,
+        "depth_units_visible": true
+      },
+      "presentation": {
+        "status": "SKAGER presentation v1 / pinned symbols",
+        "requested": "XNav"
+      },
+      "water_pixels": 357245,
+      "water_color_counts": {
+        "(212, 228, 228)": 357245
+      },
+      "land_or_built_area_pixels": 103783,
+      "built_area_color_shared_with_land": true,
+      "owned_values": {
+        "Latitude": {
+          "device_id": "",
+          "stale_after_ms": 5000,
+          "name": "Latitude",
+          "quality": "LIVE",
+          "observed_monotonic_ms": "47518222",
+          "validity": "Measured",
+          "value": 47.6,
+          "aging_after_ms": 2000,
+          "unit": "deg",
+          "age_ms": 104,
+          "source": "OpenCPN selected navigation (sensor identity unavailable)"
+        },
+        "Longitude": {
+          "device_id": "",
+          "stale_after_ms": 5000,
+          "name": "Longitude",
+          "quality": "LIVE",
+          "observed_monotonic_ms": "47518222",
+          "validity": "Measured",
+          "value": -122.36,
+          "aging_after_ms": 2000,
+          "unit": "deg",
+          "age_ms": 104,
+          "source": "OpenCPN selected navigation (sensor identity unavailable)"
+        },
+        "Speed over ground": {
+          "device_id": "",
+          "stale_after_ms": 5000,
+          "name": "Speed over ground",
+          "quality": "LIVE",
+          "observed_monotonic_ms": "47518222",
+          "validity": "Measured",
+          "value": 3,
+          "aging_after_ms": 2000,
+          "unit": "kn",
+          "age_ms": 104,
+          "source": "OpenCPN selected navigation (sensor identity unavailable)"
+        },
+        "Course over ground": {
+          "device_id": "",
+          "stale_after_ms": 5000,
+          "name": "Course over ground",
+          "quality": "LIVE",
+          "observed_monotonic_ms": "47518222",
+          "validity": "Measured",
+          "value": 90,
+          "aging_after_ms": 2000,
+          "unit": "deg true",
+          "age_ms": 104,
+          "source": "OpenCPN selected navigation (sensor identity unavailable)"
+        }
+      },
+      "latest_owned_input_monotonic": 47518.522318374
+    },
+    {
+      "name": "Standard-Day",
+      "image_sha256": "5f3433667f4d65c678bef0227711a04300b7c8bdf4f7aafa990bf1c8f2a96cf1",
+      "surface_roles": {
+        "land_rgb": [
+          200,
+          184,
+          122
+        ],
+        "land_pixels": 17156,
+        "water_rgb": [
+          211,
+          233,
+          237
+        ],
+        "baseline_capture": "Standard-Day",
+        "land_built_up_share_color": false,
+        "comparison_scope": "exact eligible surface roles; shared land/BUA color does not independently identify built-up geometry; historical comparison excludes changed BUA ink"
+      },
+      "wordmark": {
+        "empty_background_probes": 700,
+        "background_rgb": [
+          21,
+          35,
+          38
+        ],
+        "separate_letter_columns": [
+          6,
+          3
+        ],
+        "pointer_parked_at": [
+          5,
+          5
+        ]
+      },
+      "edge_negative_rejected": true,
+      "edge_probe_pixels": 3232,
+      "repeated_edge_pixels": 242,
+      "build_commit": "78eccb8b7f21b260ded57d3ba763f884d60c8180",
+      "chart": {
+        "canvas_pixels": {
+          "height": 566,
+          "width": 1014
+        },
+        "latitude": 47.6,
+        "database_entries": 1,
+        "follow": false,
+        "quilt_members": [
+          {
+            "type": 5,
+            "native_scale": 12000,
+            "file": "US5SEAFL.000",
+            "index": 0
+          }
+        ],
+        "opengl_enabled": true,
+        "quilt_reference": 0,
+        "scale_bar": {
+          "height": 12,
+          "y": 527,
+          "width": 82,
+          "x": 18
+        },
+        "depth_unit_type": 1,
+        "quilt": true,
+        "scale_ppm": 0.150000006,
+        "longitude": -122.36,
+        "depth_units_visible": true
+      },
+      "presentation": {
+        "status": "Standard OpenCPN presentation",
+        "requested": "Standard"
+      },
+      "water_pixels": 353471,
+      "water_color_counts": {
+        "(115, 181, 238)": 3656,
+        "(151, 196, 241)": 0,
+        "(170, 195, 240)": 0,
+        "(185, 212, 224)": 2294,
+        "(211, 233, 237)": 347521
+      },
+      "land_or_built_area_pixels": 85928,
+      "built_area_color_shared_with_land": false,
+      "owned_values": {
+        "Latitude": {
+          "device_id": "",
+          "stale_after_ms": 5000,
+          "name": "Latitude",
+          "quality": "LIVE",
+          "observed_monotonic_ms": "47525588",
+          "validity": "Measured",
+          "value": 47.6,
+          "aging_after_ms": 2000,
+          "unit": "deg",
+          "age_ms": 137,
+          "source": "OpenCPN selected navigation (sensor identity unavailable)"
+        },
+        "Longitude": {
+          "device_id": "",
+          "stale_after_ms": 5000,
+          "name": "Longitude",
+          "quality": "LIVE",
+          "observed_monotonic_ms": "47525588",
+          "validity": "Measured",
+          "value": -122.36,
+          "aging_after_ms": 2000,
+          "unit": "deg",
+          "age_ms": 137,
+          "source": "OpenCPN selected navigation (sensor identity unavailable)"
+        },
+        "Speed over ground": {
+          "device_id": "",
+          "stale_after_ms": 5000,
+          "name": "Speed over ground",
+          "quality": "LIVE",
+          "observed_monotonic_ms": "47525588",
+          "validity": "Measured",
+          "value": 3,
+          "aging_after_ms": 2000,
+          "unit": "kn",
+          "age_ms": 137,
+          "source": "OpenCPN selected navigation (sensor identity unavailable)"
+        },
+        "Course over ground": {
+          "device_id": "",
+          "stale_after_ms": 5000,
+          "name": "Course over ground",
+          "quality": "LIVE",
+          "observed_monotonic_ms": "47525588",
+          "validity": "Measured",
+          "value": 90,
+          "aging_after_ms": 2000,
+          "unit": "deg true",
+          "age_ms": 137,
+          "source": "OpenCPN selected navigation (sensor identity unavailable)"
+        }
+      },
+      "latest_owned_input_monotonic": 47526.188516262
+    },
+    {
+      "name": "Standard-Dusk",
+      "image_sha256": "fd566f21ddcd2928fdb0cd9d1040d3b8fdc9e2fb19af9d6752ad0e8898481080",
+      "surface_roles": {
+        "land_rgb": [
+          44,
+          41,
+          27
+        ],
+        "land_pixels": 17159,
+        "water_rgb": [
+          7,
+          7,
+          7
+        ],
+        "baseline_capture": "Standard-Dusk",
+        "land_built_up_share_color": false,
+        "comparison_scope": "exact eligible surface roles; shared land/BUA color does not independently identify built-up geometry; historical comparison excludes changed BUA ink"
+      },
+      "wordmark": {
+        "empty_background_probes": 700,
+        "background_rgb": [
+          29,
+          40,
+          46
+        ],
+        "separate_letter_columns": [
+          6,
+          3
+        ],
+        "pointer_parked_at": [
+          5,
+          5
+        ]
+      },
+      "edge_negative_rejected": true,
+      "edge_probe_pixels": 3232,
+      "repeated_edge_pixels": 246,
+      "build_commit": "78eccb8b7f21b260ded57d3ba763f884d60c8180",
+      "chart": {
+        "canvas_pixels": {
+          "height": 566,
+          "width": 1014
+        },
+        "latitude": 47.6,
+        "database_entries": 1,
+        "follow": false,
+        "quilt_members": [
+          {
+            "type": 5,
+            "native_scale": 12000,
+            "file": "US5SEAFL.000",
+            "index": 0
+          }
+        ],
+        "opengl_enabled": true,
+        "quilt_reference": 0,
+        "scale_bar": {
+          "height": 12,
+          "y": 527,
+          "width": 82,
+          "x": 18
+        },
+        "depth_unit_type": 1,
+        "quilt": true,
+        "scale_ppm": 0.150000006,
+        "longitude": -122.36,
+        "depth_units_visible": true
+      },
+      "presentation": {
+        "status": "Standard OpenCPN presentation",
+        "requested": "Standard"
+      },
+      "water_pixels": 355524,
+      "water_color_counts": {
+        "(7, 7, 7)": 349391,
+        "(12, 14, 15)": 2324,
+        "(21, 27, 33)": 0,
+        "(22, 35, 47)": 3809,
+        "(85, 97, 120)": 0
+      },
+      "land_or_built_area_pixels": 86014,
+      "built_area_color_shared_with_land": false,
+      "owned_values": {
+        "Latitude": {
+          "device_id": "",
+          "stale_after_ms": 5000,
+          "name": "Latitude",
+          "quality": "LIVE",
+          "observed_monotonic_ms": "47527990",
+          "validity": "Measured",
+          "value": 47.6,
+          "aging_after_ms": 2000,
+          "unit": "deg",
+          "age_ms": 59,
+          "source": "OpenCPN selected navigation (sensor identity unavailable)"
+        },
+        "Longitude": {
+          "device_id": "",
+          "stale_after_ms": 5000,
+          "name": "Longitude",
+          "quality": "LIVE",
+          "observed_monotonic_ms": "47527990",
+          "validity": "Measured",
+          "value": -122.36,
+          "aging_after_ms": 2000,
+          "unit": "deg",
+          "age_ms": 59,
+          "source": "OpenCPN selected navigation (sensor identity unavailable)"
+        },
+        "Speed over ground": {
+          "device_id": "",
+          "stale_after_ms": 5000,
+          "name": "Speed over ground",
+          "quality": "LIVE",
+          "observed_monotonic_ms": "47527990",
+          "validity": "Measured",
+          "value": 3,
+          "aging_after_ms": 2000,
+          "unit": "kn",
+          "age_ms": 59,
+          "source": "OpenCPN selected navigation (sensor identity unavailable)"
+        },
+        "Course over ground": {
+          "device_id": "",
+          "stale_after_ms": 5000,
+          "name": "Course over ground",
+          "quality": "LIVE",
+          "observed_monotonic_ms": "47527990",
+          "validity": "Measured",
+          "value": 90,
+          "aging_after_ms": 2000,
+          "unit": "deg true",
+          "age_ms": 59,
+          "source": "OpenCPN selected navigation (sensor identity unavailable)"
+        }
+      },
+      "latest_owned_input_monotonic": 47528.290150136
+    },
+    {
+      "name": "Standard-Night",
+      "image_sha256": "7e07ae8541a18f95b5a924c84dc0bf990611d75ab954ddb5165bedc8bbcc0b86",
+      "surface_roles": {
+        "land_rgb": [
+          13,
+          10,
+          8
+        ],
+        "land_pixels": 17162,
+        "water_rgb": [
+          7,
+          7,
+          7
+        ],
+        "baseline_capture": "Standard-Night",
+        "land_built_up_share_color": false,
+        "comparison_scope": "exact eligible surface roles; shared land/BUA color does not independently identify built-up geometry; historical comparison excludes changed BUA ink"
+      },
+      "wordmark": {
+        "empty_background_probes": 700,
+        "background_rgb": [
+          12,
+          17,
+          21
+        ],
+        "separate_letter_columns": [
+          6,
+          3
+        ],
+        "pointer_parked_at": [
+          5,
+          5
+        ]
+      },
+      "edge_negative_rejected": true,
+      "edge_probe_pixels": 3232,
+      "repeated_edge_pixels": 263,
+      "build_commit": "78eccb8b7f21b260ded57d3ba763f884d60c8180",
+      "chart": {
+        "canvas_pixels": {
+          "height": 566,
+          "width": 1014
+        },
+        "latitude": 47.6,
+        "database_entries": 1,
+        "follow": false,
+        "quilt_members": [
+          {
+            "type": 5,
+            "native_scale": 12000,
+            "file": "US5SEAFL.000",
+            "index": 0
+          }
+        ],
+        "opengl_enabled": true,
+        "quilt_reference": 0,
+        "scale_bar": {
+          "height": 12,
+          "y": 527,
+          "width": 82,
+          "x": 18
+        },
+        "depth_unit_type": 1,
+        "quilt": true,
+        "scale_ppm": 0.150000006,
+        "longitude": -122.36,
+        "depth_units_visible": true
+      },
+      "presentation": {
+        "status": "Standard OpenCPN presentation",
+        "requested": "Standard"
+      },
+      "water_pixels": 356065,
+      "water_color_counts": {
+        "(3, 4, 19)": 3817,
+        "(7, 7, 7)": 352248,
+        "(42, 48, 60)": 0
+      },
+      "land_or_built_area_pixels": 86155,
+      "built_area_color_shared_with_land": false,
+      "owned_values": {
+        "Latitude": {
+          "device_id": "",
+          "stale_after_ms": 5000,
+          "name": "Latitude",
+          "quality": "LIVE",
+          "observed_monotonic_ms": "47530092",
+          "validity": "Measured",
+          "value": 47.6,
+          "aging_after_ms": 2000,
+          "unit": "deg",
+          "age_ms": 1,
+          "source": "OpenCPN selected navigation (sensor identity unavailable)"
+        },
+        "Longitude": {
+          "device_id": "",
+          "stale_after_ms": 5000,
+          "name": "Longitude",
+          "quality": "LIVE",
+          "observed_monotonic_ms": "47530092",
+          "validity": "Measured",
+          "value": -122.36,
+          "aging_after_ms": 2000,
+          "unit": "deg",
+          "age_ms": 1,
+          "source": "OpenCPN selected navigation (sensor identity unavailable)"
+        },
+        "Speed over ground": {
+          "device_id": "",
+          "stale_after_ms": 5000,
+          "name": "Speed over ground",
+          "quality": "LIVE",
+          "observed_monotonic_ms": "47530092",
+          "validity": "Measured",
+          "value": 3,
+          "aging_after_ms": 2000,
+          "unit": "kn",
+          "age_ms": 1,
+          "source": "OpenCPN selected navigation (sensor identity unavailable)"
+        },
+        "Course over ground": {
+          "device_id": "",
+          "stale_after_ms": 5000,
+          "name": "Course over ground",
+          "quality": "LIVE",
+          "observed_monotonic_ms": "47530092",
+          "validity": "Measured",
+          "value": 90,
+          "aging_after_ms": 2000,
+          "unit": "deg true",
+          "age_ms": 1,
+          "source": "OpenCPN selected navigation (sensor identity unavailable)"
+        }
+      },
+      "latest_owned_input_monotonic": 47530.777393319
+    },
+    {
+      "name": "Standard-Day-return",
+      "image_sha256": "b5fa30c654c64af5797c5a54eb054a829c8ad7c7153c5a68aa3be320162cf585",
+      "surface_roles": {
+        "land_rgb": [
+          200,
+          184,
+          122
+        ],
+        "land_pixels": 17156,
+        "water_rgb": [
+          211,
+          233,
+          237
+        ],
+        "baseline_capture": "Standard-Day-return",
+        "land_built_up_share_color": false,
+        "comparison_scope": "exact eligible surface roles; shared land/BUA color does not independently identify built-up geometry; historical comparison excludes changed BUA ink"
+      },
+      "wordmark": {
+        "empty_background_probes": 700,
+        "background_rgb": [
+          21,
+          35,
+          38
+        ],
+        "separate_letter_columns": [
+          6,
+          3
+        ],
+        "pointer_parked_at": [
+          5,
+          5
+        ]
+      },
+      "edge_negative_rejected": true,
+      "edge_probe_pixels": 3232,
+      "repeated_edge_pixels": 242,
+      "build_commit": "78eccb8b7f21b260ded57d3ba763f884d60c8180",
+      "chart": {
+        "canvas_pixels": {
+          "height": 566,
+          "width": 1014
+        },
+        "latitude": 47.6,
+        "database_entries": 1,
+        "follow": false,
+        "quilt_members": [
+          {
+            "type": 5,
+            "native_scale": 12000,
+            "file": "US5SEAFL.000",
+            "index": 0
+          }
+        ],
+        "opengl_enabled": true,
+        "quilt_reference": 0,
+        "scale_bar": {
+          "height": 12,
+          "y": 527,
+          "width": 82,
+          "x": 18
+        },
+        "depth_unit_type": 1,
+        "quilt": true,
+        "scale_ppm": 0.150000006,
+        "longitude": -122.36,
+        "depth_units_visible": true
+      },
+      "presentation": {
+        "status": "Standard OpenCPN presentation",
+        "requested": "Standard"
+      },
+      "water_pixels": 353471,
+      "water_color_counts": {
+        "(115, 181, 238)": 3656,
+        "(151, 196, 241)": 0,
+        "(170, 195, 240)": 0,
+        "(185, 212, 224)": 2294,
+        "(211, 233, 237)": 347521
+      },
+      "land_or_built_area_pixels": 85928,
+      "built_area_color_shared_with_land": false,
+      "owned_values": {
+        "Latitude": {
+          "device_id": "",
+          "stale_after_ms": 5000,
+          "name": "Latitude",
+          "quality": "LIVE",
+          "observed_monotonic_ms": "47532279",
+          "validity": "Measured",
+          "value": 47.6,
+          "aging_after_ms": 2000,
+          "unit": "deg",
+          "age_ms": 78,
+          "source": "OpenCPN selected navigation (sensor identity unavailable)"
+        },
+        "Longitude": {
+          "device_id": "",
+          "stale_after_ms": 5000,
+          "name": "Longitude",
+          "quality": "LIVE",
+          "observed_monotonic_ms": "47532279",
+          "validity": "Measured",
+          "value": -122.36,
+          "aging_after_ms": 2000,
+          "unit": "deg",
+          "age_ms": 78,
+          "source": "OpenCPN selected navigation (sensor identity unavailable)"
+        },
+        "Speed over ground": {
+          "device_id": "",
+          "stale_after_ms": 5000,
+          "name": "Speed over ground",
+          "quality": "LIVE",
+          "observed_monotonic_ms": "47532279",
+          "validity": "Measured",
+          "value": 3,
+          "aging_after_ms": 2000,
+          "unit": "kn",
+          "age_ms": 78,
+          "source": "OpenCPN selected navigation (sensor identity unavailable)"
+        },
+        "Course over ground": {
+          "device_id": "",
+          "stale_after_ms": 5000,
+          "name": "Course over ground",
+          "quality": "LIVE",
+          "observed_monotonic_ms": "47532279",
+          "validity": "Measured",
+          "value": 90,
+          "aging_after_ms": 2000,
+          "unit": "deg true",
+          "age_ms": 78,
+          "source": "OpenCPN selected navigation (sensor identity unavailable)"
+        }
+      },
+      "latest_owned_input_monotonic": 47532.579745084
+    }
+  ],
+  "status": "passed",
+  "clean_exit": true,
+  "font_evidence": {
+    "policy_source_sha256": "9e26a9b5b5dabe603d14cff54c203f39b669270af88bd7a13705b037c6c859a4",
+    "note": "Source policy and Linux fontconfig inventory recorded; this does not establish native Windows glyph metrics",
+    "Segoe UI Variable Display": {
+      "exit_code": 0,
+      "linux_fontconfig_match": "Liberation Sans\n/usr/share/fonts/liberation/LiberationSans-Regular.ttf"
+    },
+    "Segoe UI": {
+      "exit_code": 0,
+      "linux_fontconfig_match": "Liberation Sans\n/usr/share/fonts/liberation/LiberationSans-Regular.ttf"
+    },
+    "Arial": {
+      "exit_code": 0,
+      "linux_fontconfig_match": "Liberation Sans\n/usr/share/fonts/liberation/LiberationSans-Regular.ttf"
+    }
+  },
+  "additional_source_evidence": {
+    "src/ui/SkagerWordmark.h": "6be60a6ee0bcd98dadf1c97c90c7f4395a84dce8bb6244cb0e78b012e84122e7",
+    "src/ui/Theme.h": "b28adb1f519ec5a1f9b7e2bfab6ec2ab1c7f06656bd129316e9e453ef1ec0776",
+    "src/ui/Shell.cpp": "157831d05c0a24e6cf450b571899f76fa4cc314225fd97eeb643acafdca899cc",
+    "src/integration/ChartCanvasInk.h": "cc1a4d94131f932f2bbd40d330d9003d0086dfc1237449b4215b509377c39f66",
+    "src/integration/ChartRouteLabel.cpp": "c4f6b225ed4e6985370da71559237b5ee6bbc3d2ac62fa4cf530d02b781f017f",
+    "src/integration/ChartRouteLabelRaster.h": "c2ca0bd64ec1203addbd518b2424af91c3ca25f72b250d1f6c80b6e467722f3b",
+    "tools/chart_cardinal_art.py": "e8b4f52df0d558ec715613c9f737776db0f10f844c3f2769a3f35fd8f670158e",
+    "resources/chart-style/v1/cardinals/provenance.json": "a0017453b3ea5a814a613bb50d0f5a676fdf0095e0b5e7a6249ec49fe38c8010"
+  },
+  "loader_selftest": {
+    "upstream": "37fd0cddb7334fe489e9f18aa163977a9c5c84f7",
+    "commissioning_restart_protocol": 0,
+    "version": "0.4.0-beta2",
+    "commit": "78eccb8b7f21b260ded57d3ba763f884d60c8180",
+    "compiler": "GNU 16.2.1 / 8 byte pointers",
+    "plugins_loaded": false,
+    "test_fixtures": true,
+    "resources": {
+      "gshhs/poly-c-1.dat": true,
+      "s57data/s57objectclasses.csv": true,
+      "uidata/styles.xml": true,
+      "s57data/chartsymbols.xml": true
+    },
+    "normal_config_directory": "/etc",
+    "passed": true,
+    "xnav_hardware_output_policy": "test-loopback-only",
+    "build_purpose": "DEVELOPER TEST BUILD",
+    "profile_initialized": false,
+    "contract": "OpenNavX.LoaderSelfTest.1"
+  }
+}

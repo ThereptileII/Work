@@ -1,0 +1,4 @@
+/home/standard/Projects/X-nav-worktrees/evidence-78eccb8-enc/docs/evidence/skager-product-fidelity-78eccb8-linux/verify-evidence.py:52: DeprecationWarning: Image.Image.getdata is deprecated and will be removed in Pillow 14 (2027-10-15). Use get_flattened_data instead.
+  px=list(im.crop((80,68,1094,634)).getdata())
+/home/standard/Projects/X-nav-worktrees/evidence-78eccb8-enc/docs/evidence/skager-product-fidelity-78eccb8-linux/verify-evidence.py:52: DeprecationWarning: Image.Image.getdata is deprecated and will be removed in Pillow 14 (2027-10-15). Use get_flattened_data instead.
+  px=list(im.crop((80,68,1094,634)).getdata())

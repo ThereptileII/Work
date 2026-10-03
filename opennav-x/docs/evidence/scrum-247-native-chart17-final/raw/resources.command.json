@@ -1,0 +1,8 @@
+[
+  "C:\\hostedtoolcache\\windows\\Python\\3.12.10\\x64\\python.exe",
+  "D:\\a\\Work\\Work\\opennav-x\\tools\\generate-xnav-chart-style.py",
+  "--source",
+  "D:\\a\\Work\\Work\\opennav-x\\build\\integration-source\\data\\s57data",
+  "--output",
+  "D:\\a\\Work\\Work\\opennav-x\\evidence\\local\\windows-changed-units\\chart-resources"
+]

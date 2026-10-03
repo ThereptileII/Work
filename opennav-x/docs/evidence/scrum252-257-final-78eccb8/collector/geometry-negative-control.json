@@ -1,0 +1,211 @@
+{
+  "geometry": [
+    {
+      "original_fractions": [
+        0.2,
+        0.35,
+        0.5,
+        0.65,
+        0.8
+      ],
+      "selected": [
+        {
+          "fraction": 0.2,
+          "x": 507,
+          "y": 497
+        },
+        {
+          "fraction": 0.35,
+          "x": 522,
+          "y": 470
+        },
+        {
+          "fraction": 0.5,
+          "x": 537,
+          "y": 442
+        },
+        {
+          "fraction": 0.65,
+          "x": 552,
+          "y": 415
+        },
+        {
+          "fraction": 0.1,
+          "x": 497,
+          "y": 516
+        }
+      ],
+      "excluded": [
+        {
+          "fraction": 0.8,
+          "x": 567,
+          "y": 388,
+          "card_probe_bounds": [
+            [
+              565,
+              365,
+              623,
+              398
+            ]
+          ]
+        }
+      ],
+      "all_card_probe_bounds": [
+        [
+          465,
+          548,
+          523,
+          581
+        ],
+        [
+          565,
+          365,
+          623,
+          398
+        ],
+        [
+          619,
+          181,
+          677,
+          214
+        ]
+      ],
+      "minimum_pixel_separation": 12
+    },
+    {
+      "original_fractions": [
+        0.2,
+        0.35,
+        0.5,
+        0.65,
+        0.8
+      ],
+      "selected": [
+        {
+          "fraction": 0.2,
+          "x": 607,
+          "y": 314
+        },
+        {
+          "fraction": 0.35,
+          "x": 622,
+          "y": 287
+        },
+        {
+          "fraction": 0.5,
+          "x": 637,
+          "y": 259
+        },
+        {
+          "fraction": 0.65,
+          "x": 652,
+          "y": 231
+        },
+        {
+          "fraction": 0.1,
+          "x": 597,
+          "y": 333
+        }
+      ],
+      "excluded": [
+        {
+          "fraction": 0.8,
+          "x": 667,
+          "y": 204,
+          "card_probe_bounds": [
+            [
+              619,
+              181,
+              677,
+              214
+            ]
+          ]
+        }
+      ],
+      "all_card_probe_bounds": [
+        [
+          465,
+          548,
+          523,
+          581
+        ],
+        [
+          565,
+          365,
+          623,
+          398
+        ],
+        [
+          619,
+          181,
+          677,
+          214
+        ]
+      ],
+      "minimum_pixel_separation": 12
+    }
+  ],
+  "negativeControls": [
+    {
+      "missingExposedStrokeRejected": [
+        507,
+        497
+      ]
+    },
+    {
+      "missingExposedStrokeRejected": [
+        522,
+        470
+      ]
+    },
+    {
+      "missingExposedStrokeRejected": [
+        537,
+        442
+      ]
+    },
+    {
+      "missingExposedStrokeRejected": [
+        552,
+        415
+      ]
+    },
+    {
+      "missingExposedStrokeRejected": [
+        497,
+        516
+      ]
+    },
+    {
+      "missingExposedStrokeRejected": [
+        607,
+        314
+      ]
+    },
+    {
+      "missingExposedStrokeRejected": [
+        622,
+        287
+      ]
+    },
+    {
+      "missingExposedStrokeRejected": [
+        637,
+        259
+      ]
+    },
+    {
+      "missingExposedStrokeRejected": [
+        652,
+        231
+      ]
+    },
+    {
+      "missingExposedStrokeRejected": [
+        597,
+        333
+      ]
+    }
+  ],
+  "overlayCardCannotCountAsStroke": true
+}

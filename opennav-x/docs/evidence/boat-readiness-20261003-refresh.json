@@ -1,0 +1,308 @@
+{
+  "schema": 1,
+  "issues": [
+    "SCRUM-17",
+    "SCRUM-215"
+  ],
+  "scope": "Fresh read-only boat access, display, installed identity and recovery readiness; no deployment or launch qualification",
+  "sourceCommit": "78eccb8b7f21b260ded57d3ba763f884d60c8180",
+  "observedFromUtc": "2026-10-03T02:16:46.0451557Z",
+  "observedThroughUtc": "2026-10-03T02:18:39.0535779Z",
+  "access": {
+    "transport": "ssh boat",
+    "services": [
+      {
+        "status": "Running",
+        "name": "RustDesk",
+        "startType": "Automatic"
+      },
+      {
+        "status": "Running",
+        "name": "sshd",
+        "startType": "Automatic"
+      },
+      {
+        "status": "Running",
+        "name": "Tailscale",
+        "startType": "Automatic"
+      }
+    ],
+    "activeSessionRows": 1,
+    "explorerOwnersMatchSshAccount": true
+  },
+  "display": {
+    "video": [
+      {
+        "Name": "Intel(R) UHD Graphics",
+        "CurrentHorizontalResolution": 1920,
+        "CurrentVerticalResolution": 1080,
+        "DriverVersion": "32.0.101.7088"
+      }
+    ],
+    "configuredAppliedDpi": 144,
+    "configuredScalePercent": 150,
+    "actualWindowDpiMeasured": false,
+    "limit": "Registry AppliedDPI belongs to the interactive account; not a fresh per-window/per-monitor measurement or touch acceptance."
+  },
+  "stock": {
+    "sha256": "7c6547562cca7954671eaab72833ca9d788710fd9808b6a699b6dc823852ae0c",
+    "version": "5,12,4",
+    "exists": true
+  },
+  "profile": {
+    "bytes": 21492,
+    "sha256": "d891d88c62657139e1b1c6ff7d9e8acdae726a4e116dbc844126992a39adbdb6"
+  },
+  "installation": {
+    "owner": "OpenNavX.Alpha1.SideBySide.1",
+    "current": "e54582e3425a4ab9a426759144b31478",
+    "previous": "4881df508ac0468e8c66db0a76176368",
+    "stateSha256": "a6ec7cda54cf855ef3ce78bbe63090bf1a799345c0713dc545c2ccc0a003952d",
+    "generations": [
+      {
+        "id": "35b5bd47070f4693a49125ca278d6e4a",
+        "owner": "OpenNavX.Alpha1.SideBySide.1",
+        "exeMatchesOwnership": true,
+        "exeSha256": "56f435d08904ec5a0b8a840fe13625b9476353e7c97a8d2368f16c100b5672e5",
+        "current": false,
+        "ownershipSha256": "83991115ee5c380f79503c7e9266a703403bd75d476baae14323059409958376",
+        "commit": "7827acb7c8b0d708285bd26a4c48d545dd64d139"
+      },
+      {
+        "id": "4090b7c61dfd4c1b884f54008c3a2be6",
+        "owner": "OpenNavX.Alpha1.SideBySide.1",
+        "exeMatchesOwnership": true,
+        "exeSha256": "b3f195b062e6cf737072b4deef5a025fc74f5c8b742751d53b6f35f3e0ac5b66",
+        "current": false,
+        "ownershipSha256": "72b9adc00cf186c02386b93a45ffc84a682cd1622479b477c7a6438ebce13c43",
+        "commit": "8e780edc34f68abd693a5d5f6aecdb3ba05a75c4"
+      },
+      {
+        "id": "4881df508ac0468e8c66db0a76176368",
+        "owner": "OpenNavX.Alpha1.SideBySide.1",
+        "exeMatchesOwnership": true,
+        "exeSha256": "aee52bd2e1e28ba631fa1cefd68d3b1ec5f5d516e2fdd8871c6e447431ad522f",
+        "current": false,
+        "ownershipSha256": "0c0b5e18f74e2fd8de13b8d130b911887087d7e13eb1b6e93840384719dc878a",
+        "commit": "79a95c4f39063c20ca4d5a98c3147080d9813077"
+      },
+      {
+        "id": "e54582e3425a4ab9a426759144b31478",
+        "owner": "OpenNavX.Alpha1.SideBySide.1",
+        "exeMatchesOwnership": true,
+        "exeSha256": "6f20acea9f90c840e0dcfbbf70782c2f1fc2480be7439058b48947cc9f7b91b6",
+        "current": true,
+        "ownershipSha256": "c18363e5a0dd2ed907a92d857660aabdf19e2acf6660481baf7cb3034a431683",
+        "commit": "a3e6e0812e01d2aee8f0b83807527b9a0c0fc79a"
+      }
+    ]
+  },
+  "coldBaseline": [
+    {
+      "launchPermission": false,
+      "liveIniMatches": true,
+      "reviewSha256": "300332ba5fe4a2be25bc4197f86f08784cef0df1efed2234f7c9eea306331c32",
+      "predecessorMatches": true,
+      "savedIniMatches": true,
+      "liveActualEntryCount": 2031,
+      "captureMatches": true,
+      "baselineSha256": "d891d88c62657139e1b1c6ff7d9e8acdae726a4e116dbc844126992a39adbdb6",
+      "liveInventory": {
+        "redirects": 0,
+        "entries": 2031,
+        "mismatches": 0,
+        "matched": 2031
+      },
+      "baselineBytes": 21492,
+      "backupInventory": {
+        "redirects": 0,
+        "entries": 2031,
+        "mismatches": 0,
+        "matched": 2031
+      },
+      "reviewMatches": true,
+      "preservationOnly": true,
+      "captureSha256": "705b10e2984accfd6fce5c7dd9eb18c84aa182bfeff855efa60bd06e3c4d994b",
+      "recordSha256": "543f63c4583140917208a54dac2419540bc418b43143e74a939c618da29d1470"
+    }
+  ],
+  "latestRecovery": {
+    "profile": {
+      "redirects": 0,
+      "entries": 2008,
+      "mismatches": 0,
+      "matched": 2008
+    },
+    "recordSha256": "9f945ac465d056e22c6b410c77e125b6c6d105f05c7a1f0bd39769b54a8aae11",
+    "application": {
+      "redirects": 0,
+      "entries": 2123,
+      "mismatches": 0,
+      "matched": 2123
+    }
+  },
+  "preservedPortable": [
+    {
+      "exeSha256": "6f20acea9f90c840e0dcfbbf70782c2f1fc2480be7439058b48947cc9f7b91b6",
+      "entries": 1257,
+      "manifestSha256": "cc20964137e65a45f75d908efb7e7f2cc05256a242efd92885b43d5ff2e2e619",
+      "markerExists": true
+    }
+  ],
+  "oldReleaseFiles": [
+    {
+      "sha256": "ab84fd30b0b9969bc05ff2ff71934188e9dd0ade7f1987325df5e9ffd67e7e04",
+      "name": "OpenNavX-Beta1-Portable-win64.zip",
+      "bytes": 48893110
+    },
+    {
+      "sha256": "8e1b3432a5a44499ffb41b125f62df07e846b2cfe1ca0936409ed021d413e128",
+      "name": "OpenNavX-Beta1-Setup.exe",
+      "bytes": 43967980
+    },
+    {
+      "sha256": "daf73f76e18ae935459f50228a92f4db33ab91a1f2075cc7b524913ad9c14d16",
+      "name": "OpenNavX-Beta1-source.zip",
+      "bytes": 81824233
+    },
+    {
+      "sha256": "cfa9e9e462aea63da6df5c8cce324d4fd8769e2799b0976d02931f03be0c8e58",
+      "name": "OpenNavX-DeveloperPreview-win64.zip",
+      "bytes": 48386718
+    }
+  ],
+  "historicalShortcuts": [
+    {
+      "name": "Maintain OpenNav.lnk",
+      "targetLeaf": "Maintain.exe",
+      "targetGeneration": "4881df508ac0468e8c66db0a76176368",
+      "argumentsSha256": null,
+      "sha256": "69c5780746da2937f5ef7a094412cbe5a59e061d8cb75469e6f3c0538671b911",
+      "targetExists": true,
+      "group": "OpenNav X"
+    },
+    {
+      "name": "OpenCPN Legacy.lnk",
+      "targetLeaf": "opencpn.exe",
+      "targetGeneration": "4881df508ac0468e8c66db0a76176368",
+      "argumentsSha256": "7afd211fc716ef659617533e15999039c2bdbcffcf5e730f92bbb6878192a9a1",
+      "sha256": "49f0965c1759a96fec1e31487276da13c6289b1cf73ca7b05d729381b74ee107",
+      "targetExists": true,
+      "group": "OpenNav X"
+    },
+    {
+      "name": "OpenNav Safe Mode.lnk",
+      "targetLeaf": "opencpn.exe",
+      "targetGeneration": "4881df508ac0468e8c66db0a76176368",
+      "argumentsSha256": "fca3c7db9add185b1e8c5a2d34cf8a9b35cb5f7f1785bbf8215bfc633445268f",
+      "sha256": "91d7c2963de5a97f25de4a3c982a92c68382bc3b669fc39d40899fa12167d83b",
+      "targetExists": true,
+      "group": "OpenNav X"
+    },
+    {
+      "name": "OpenNav X.lnk",
+      "targetLeaf": "opencpn.exe",
+      "targetGeneration": "4881df508ac0468e8c66db0a76176368",
+      "argumentsSha256": "f087baeba04a4a478554d4a6704be580409a95c47781a436f7c7dd73f0a7b5f7",
+      "sha256": "ba0db91fcdb340ca6a8c97c4f7b94ad66340ef3469794c80e538c8810cdae713",
+      "targetExists": true,
+      "group": "OpenNav X"
+    },
+    {
+      "name": "Maintain OpenNav.lnk",
+      "targetLeaf": "Maintain.exe",
+      "targetGeneration": "e54582e3425a4ab9a426759144b31478",
+      "argumentsSha256": null,
+      "sha256": "ba69343116d3fd5496d27222f9690e4b83b56941703eda78fe082f7514284e7b",
+      "targetExists": true,
+      "group": "OpenNav X Alpha 1"
+    },
+    {
+      "name": "OpenCPN Legacy.lnk",
+      "targetLeaf": "opencpn.exe",
+      "targetGeneration": "e54582e3425a4ab9a426759144b31478",
+      "argumentsSha256": "7afd211fc716ef659617533e15999039c2bdbcffcf5e730f92bbb6878192a9a1",
+      "sha256": "81359916dde5c827a7583aa66c251dfcd65838056ee79a1063580407b9fa1db3",
+      "targetExists": true,
+      "group": "OpenNav X Alpha 1"
+    },
+    {
+      "name": "OpenNav Safe Mode.lnk",
+      "targetLeaf": "opencpn.exe",
+      "targetGeneration": "e54582e3425a4ab9a426759144b31478",
+      "argumentsSha256": "fca3c7db9add185b1e8c5a2d34cf8a9b35cb5f7f1785bbf8215bfc633445268f",
+      "sha256": "7f919248388558b4f245fe97f9e0feca5b58cbb81755ff253f0f1d4c480dae06",
+      "targetExists": true,
+      "group": "OpenNav X Alpha 1"
+    },
+    {
+      "name": "OpenNav X.lnk",
+      "targetLeaf": "opencpn.exe",
+      "targetGeneration": "e54582e3425a4ab9a426759144b31478",
+      "argumentsSha256": "f087baeba04a4a478554d4a6704be580409a95c47781a436f7c7dd73f0a7b5f7",
+      "sha256": "44aa7e71d35b32b9f9dd6e963110726cfc171bd88a8e3bcdf1196f31f9b99e9e",
+      "targetExists": true,
+      "group": "OpenNav X Alpha 1"
+    }
+  ],
+  "tooling": [
+    {
+      "gitStatus": 0,
+      "commit": "20765cf374da5a1ab47dff0b3b427cd24f595455"
+    }
+  ],
+  "finalState": {
+    "applicationAndChartHelperProcesses": 0,
+    "commissioningHelperProcesses": 0,
+    "productScheduledTasks": 0,
+    "runningProductScheduledTasks": 0,
+    "commissioningActive": false,
+    "lastAppMarkerObservationUtc": "2026-10-03T02:18:39.0535779Z",
+    "helperAndTaskObservationUtc": "2026-10-03T02:18:21.7317894Z"
+  },
+  "freeSpaceBytes": 402187268096,
+  "operations": {
+    "applicationLaunched": false,
+    "applicationClosed": false,
+    "packageTransferred": false,
+    "profileEdited": false,
+    "deploymentPerformed": false,
+    "obsoleteFilesRetired": false,
+    "remoteAccessChanged": false,
+    "physicalCommandsSent": false
+  },
+  "inspectionScriptSha256": {
+    "query.ps1": "0a3ed4eed210a833771a4f6d33bbbcc6102db18f6954e3399c34a50dd502ac50",
+    "detail.ps1": "a1d7133353b190d6c74c9827a559dbb91ee33ff323ed47811d89f937c1e4a6e6",
+    "verify.ps1": "b65850b131ac7f0a0adda686b0f19d82e4a8c09d295df1cad07aab516305ea5d",
+    "session.ps1": "ac6e0c142bb13b9941b9cf069024f53633cb66b49b7533c3d34c95e7168eb6ff",
+    "final.ps1": "2213ea7df503e511391e20552efe4cfe0c697ffce81963381a1cda1d67cd68c7"
+  },
+  "readiness": "Existing baseline/recovery bytes remain ready to support a later qualified package; no launch or deployment acceptance granted.",
+  "limits": [
+    "No actual application window, DPI, physical touchscreen, real chart rendering, GL or boat navigation acceptance.",
+    "This checked recorded-file hashes and counts; did not execute the full baseline reader or redo ACL/plugin/output source review.",
+    "Current installed exe hashes match ownership; complete installed payload hashes were not rechecked.",
+    "Old portable marker, executable and accepted manifest match; this is not a fresh full portable payload proof or retirement authorization.",
+    "Old Start Menu target existence/generation and link hashes were inspected; full ownership and external-shortcut review must be repeated before migration/retirement.",
+    "Only sanitized hashes, counts, product names and state are recorded; no account identifiers, chart paths, coordinates, profile content or credentials exported."
+  ],
+  "priorEvidence": "boat-readiness-20261003.json",
+  "candidateNotQualified": {
+    "commit": "61a0a7838b56ad841bb458af6fc62651464bdafe",
+    "run": 37088759582,
+    "note": "Parent-reported candidate identity; this read-only inventory is not candidate acceptance."
+  },
+  "unchangedAgainstPrior": {
+    "stock": true,
+    "profile": true,
+    "installation": true,
+    "coldBaseline": true,
+    "latestRecovery": true,
+    "preservedPortable": true,
+    "historicalShortcuts": true,
+    "tooling": true,
+    "oldReleaseFiles": true
+  },
+  "method": "Existing local read-only inventory scripts transported in memory over ssh boat; no scripts installed. Git inspection disables optional locks. All remote profile/file contents remain remote; only hashes, counts and sanitized product/display state retained."
+}

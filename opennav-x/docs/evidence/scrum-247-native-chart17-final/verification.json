@@ -1,0 +1,552 @@
+{
+  "sourceLocal": "78eccb8b7f21b260ded57d3ba763f884d60c8180",
+  "sourceRemote": "61a0a7838b56ad841bb458af6fc62651464bdafe",
+  "summaryPassed": true,
+  "nativeProductAcceptance": false,
+  "reconstructedPatchedUpstreamTree": "20d5c9bdd59332fd6bf58a8b64a4dae3b5f4683c",
+  "localInputs": {
+    "total": 335,
+    "exact": 22,
+    "gitCrlfOnly": 313
+  },
+  "upstreamInputs": {
+    "total": 1438,
+    "exact": 16,
+    "gitCrlfOnly": 1422
+  },
+  "copiedProductionUnitsMatched": 17,
+  "generatedResourcesRehashed": 7,
+  "generatedResourcesRegenerated": {
+    "chartsymbols.xml": {
+      "local": {
+        "bytes": 2232050,
+        "sha256": "d4e9274e379b30368ac355f90e5c9786e86f7c979fb82c524ebddf366dc6fba9"
+      },
+      "artifact": {
+        "bytes": 2232050,
+        "sha256": "d4e9274e379b30368ac355f90e5c9786e86f7c979fb82c524ebddf366dc6fba9"
+      },
+      "match": "exact"
+    },
+    "manifest.json": {
+      "local": {
+        "bytes": 24210,
+        "sha256": "03533971dfba1bb3cb2cba6ab52b1528a56b4f27c8b4fc118b4b503c25b4bdde"
+      },
+      "artifact": {
+        "bytes": 24210,
+        "sha256": "03533971dfba1bb3cb2cba6ab52b1528a56b4f27c8b4fc118b4b503c25b4bdde"
+      },
+      "match": "exact"
+    },
+    "rastersymbols-dark.png": {
+      "local": {
+        "bytes": 167654,
+        "sha256": "9c91273e3dbe9563d79b2d2b0a757bb83207aa0db9183e8aecc1112070ead724"
+      },
+      "artifact": {
+        "bytes": 167654,
+        "sha256": "9c91273e3dbe9563d79b2d2b0a757bb83207aa0db9183e8aecc1112070ead724"
+      },
+      "match": "exact"
+    },
+    "rastersymbols-day.png": {
+      "local": {
+        "bytes": 197801,
+        "sha256": "a737bdb7d372077c2bfe806c5f020f45b4517029c0b43913084720664c520ea3"
+      },
+      "artifact": {
+        "bytes": 197801,
+        "sha256": "a737bdb7d372077c2bfe806c5f020f45b4517029c0b43913084720664c520ea3"
+      },
+      "match": "exact"
+    },
+    "rastersymbols-dusk.png": {
+      "local": {
+        "bytes": 172357,
+        "sha256": "201f0663bd786d5e1d8ba09d8d43b106df164d5a282f60860258d226adadb6c9"
+      },
+      "artifact": {
+        "bytes": 172357,
+        "sha256": "201f0663bd786d5e1d8ba09d8d43b106df164d5a282f60860258d226adadb6c9"
+      },
+      "match": "exact"
+    },
+    "S52RAZDS.RLE": {
+      "local": {
+        "bytes": 1305627,
+        "sha256": "560e1a1df493d7ae4c8506da814ad936adb13ef93c6f1e2abc93f2819860ff26"
+      },
+      "artifact": {
+        "bytes": 1305627,
+        "sha256": "560e1a1df493d7ae4c8506da814ad936adb13ef93c6f1e2abc93f2819860ff26"
+      },
+      "match": "exact"
+    },
+    "XNavChartResources.h": {
+      "local": {
+        "bytes": 934,
+        "sha256": "8671e6048b569f5fc4d6c0015b955c301f547a6f04d689016fc6b426d815d13d"
+      },
+      "artifact": {
+        "bytes": 934,
+        "sha256": "8671e6048b569f5fc4d6c0015b955c301f547a6f04d689016fc6b426d815d13d"
+      },
+      "match": "exact"
+    }
+  },
+  "generatedConfigHeadersRehashed": 2,
+  "msvcProjectsRehashed": 17,
+  "objects": {
+    "check_chart_ais": {
+      "bytes": 415099,
+      "sha256": "d4513e84ff427151fb666e2f1d695324e7d3d82c4e103ab92d4faf162bfaef25",
+      "coffMachine": "0x014c",
+      "name": "ais.obj"
+    },
+    "check_chart_ChartPresentation": {
+      "bytes": 395457,
+      "sha256": "b76dc108bfbe32e7ccc1c3ddfe1607d9ed2c5bccdb8c831d620f0378a4215186",
+      "coffMachine": "0x014c",
+      "name": "ChartPresentation.obj"
+    },
+    "check_chart_ChartRouteLabel": {
+      "bytes": 246055,
+      "sha256": "a5cac647dac138a3ec58e8bca3e6d5e3a3881427eeddae82b97accc43b9ba47a",
+      "coffMachine": "0x014c",
+      "name": "ChartRouteLabel.obj"
+    },
+    "check_chart_ChartRouteUnderlay": {
+      "bytes": 69719,
+      "sha256": "7a3dab04d6b3156dba8dc1ab3dee9d3daff0995b8d4c8ba3a6c3883926438aa0",
+      "coffMachine": "0x014c",
+      "name": "ChartRouteUnderlay.obj"
+    },
+    "check_chart_ChartRouteUnderlayGeometry": {
+      "bytes": 104231,
+      "sha256": "8d5b4ce4e5a3f8797d2c78b6311ddd7f5164fbb7d9fa7c2fc81b3d5030a7f2f2",
+      "coffMachine": "0x014c",
+      "name": "ChartRouteUnderlayGeometry.obj"
+    },
+    "check_chart_ChartRouteWaypoint": {
+      "bytes": 262810,
+      "sha256": "86203d1cd0e269fe4e7d0add3c23eaed794b224512e5a9ed75125bdd00b9d8f2",
+      "coffMachine": "0x014c",
+      "name": "ChartRouteWaypoint.obj"
+    },
+    "check_chart_chartsymbols": {
+      "bytes": 178112,
+      "sha256": "3a3ebb720cf9d866ce87c30d39406482cba920ad7f2b13b05a33e8b10c156d6f",
+      "coffMachine": "0x014c",
+      "name": "chartsymbols.obj"
+    },
+    "check_chart_chcanv": {
+      "bytes": 1150473,
+      "sha256": "7c54c87cd4fa0262afdeea8f93fba2a23669920ed6c7c7e9ed999d52077fc2c8",
+      "coffMachine": "0x014c",
+      "name": "chcanv.obj"
+    },
+    "check_chart_DepthFont": {
+      "bytes": 173198,
+      "sha256": "c6e37fde08f8ed4fd8520adb83478bf93823bd56b06b085ae12d6aac32192b10",
+      "coffMachine": "0x014c",
+      "name": "DepthFont.obj"
+    },
+    "check_chart_glChartCanvas": {
+      "bytes": 699878,
+      "sha256": "294faea065d98cf297656fdcafb2981556b083c5b058a5284e95b22ea0f2f776",
+      "coffMachine": "0x014c",
+      "name": "glChartCanvas.obj"
+    },
+    "check_chart_OnboardAisPresentation": {
+      "bytes": 98337,
+      "sha256": "47dc6cf31e4d32550326214fb1992be4788605f6c7ab58bb6b97ab35c3b4fa1a",
+      "coffMachine": "0x014c",
+      "name": "OnboardAisPresentation.obj"
+    },
+    "check_chart_OnlineAisOverlay": {
+      "bytes": 100686,
+      "sha256": "51407bc1aa6d46cb37821b7363bcb83473d49d14f8f5329f63d3c6991b99d3ac",
+      "coffMachine": "0x014c",
+      "name": "OnlineAisOverlay.obj"
+    },
+    "check_chart_piano": {
+      "bytes": 304230,
+      "sha256": "8536199dda8992388f2001c1e6fcdfb672a0df4d20cd6fdf03ec99ad8252a027",
+      "coffMachine": "0x014c",
+      "name": "piano.obj"
+    },
+    "check_chart_route_gui": {
+      "bytes": 333343,
+      "sha256": "8ce313096d93cc5e60cad618018e34ec41ea994f752ec48a3d52031033befada",
+      "coffMachine": "0x014c",
+      "name": "route_gui.obj"
+    },
+    "check_chart_route_point_gui": {
+      "bytes": 332568,
+      "sha256": "b6b71cf864573c73afdf47ce1722ed695851eabd671ed47119dfc9c65d9c338e",
+      "coffMachine": "0x014c",
+      "name": "route_point_gui.obj"
+    },
+    "check_chart_s52plib": {
+      "bytes": 642180,
+      "sha256": "5db72d62f1ee57966616894458ea57f96c5c51e8eeb927b61be2efcadbdaa736",
+      "coffMachine": "0x014c",
+      "name": "s52plib.obj"
+    },
+    "check_chart_waypointman_gui": {
+      "bytes": 380321,
+      "sha256": "a5cd285e86dcd79520111e62e33f719f241f34c36eb18a5a9c36db414674ff27",
+      "coffMachine": "0x014c",
+      "name": "waypointman_gui.obj"
+    }
+  },
+  "policy": {
+    "testFixtures": false,
+    "pilotLoopback": false,
+    "openglCompiled": true,
+    "dependencyBuilds": false,
+    "applicationLinked": false
+  },
+  "limits": [
+    "Compile only: no application/dependency link or GUI/rendering/DPI/installer/boat acceptance",
+    "1558 SDK header identities retained in artifact manifest; headers not uploaded for independent byte rehash"
+  ],
+  "github": {
+    "jobs": {
+      "jobs": [
+        {
+          "id": 111103371331,
+          "name": "compile",
+          "status": "completed",
+          "conclusion": "success",
+          "run_id": 37088424481,
+          "logs_url": null,
+          "steps": [
+            {
+              "name": "Set up job",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 1
+            },
+            {
+              "name": "Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 2
+            },
+            {
+              "name": "Fetch supported OpenCPN source",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 3
+            },
+            {
+              "name": "Prove native peer CLI home precondition before GUI startup",
+              "status": "completed",
+              "conclusion": "skipped",
+              "number": 4
+            },
+            {
+              "name": "Install capture dependency",
+              "status": "completed",
+              "conclusion": "skipped",
+              "number": 5
+            },
+            {
+              "name": "Verify component runtime staging guards",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 6
+            },
+            {
+              "name": "Verify strict native drawer geometry oracle",
+              "status": "completed",
+              "conclusion": "skipped",
+              "number": 7
+            },
+            {
+              "name": "Verify strict chart layout and Layers oracle",
+              "status": "completed",
+              "conclusion": "skipped",
+              "number": 8
+            },
+            {
+              "name": "Run selected bounded native proof",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 9
+            },
+            {
+              "name": "Run actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 10
+            },
+            {
+              "name": "Post Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 20
+            },
+            {
+              "name": "Complete job",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 21
+            }
+          ]
+        },
+        {
+          "id": 111103372167,
+          "name": "search-reference",
+          "status": "completed",
+          "conclusion": "skipped",
+          "run_id": 37088424481,
+          "logs_url": null,
+          "steps": null
+        }
+      ]
+    },
+    "artifacts": {
+      "artifacts": [
+        {
+          "id": 11260809354,
+          "name": "native-changed-units-61a0a7838b56ad841bb458af6fc62651464bdafe",
+          "size_in_bytes": 4750589,
+          "url": "https://api.github.com/repos/ThereptileII/Work/actions/artifacts/11260809354",
+          "archive_download_url": "https://api.github.com/repos/ThereptileII/Work/actions/artifacts/11260809354/zip",
+          "expired": false,
+          "created_at": "2026-10-03T02:05:57Z",
+          "expires_at": "2027-01-01T02:03:18Z",
+          "updated_at": "2026-10-03T02:05:57Z",
+          "digest": "sha256:8ef242d0b14a7376cd28c9081c35a7b5476642cb4701ec946447641a2dfeca44",
+          "workflow_run": {
+            "id": 37088424481,
+            "repository_id": 864043804,
+            "head_repository_id": 864043804,
+            "head_branch": "skager-windows-changed-units",
+            "head_sha": "61a0a7838b56ad841bb458af6fc62651464bdafe"
+          }
+        }
+      ]
+    }
+  },
+  "archive": {
+    "bytes": 4750589,
+    "sha256": "8ef242d0b14a7376cd28c9081c35a7b5476642cb4701ec946447641a2dfeca44",
+    "zipEntries": 407,
+    "allCrcPassed": true
+  },
+  "compileLog": {
+    "actualClCompileCommands": 17,
+    "successfulTargetBuilds": 17,
+    "compiler": "MSVC14.44.35207 HostX64/x86",
+    "perTargetElapsed": [
+      "00:00:06.76",
+      "00:00:03.80",
+      "00:00:03.72",
+      "00:00:03.43",
+      "00:00:01.18",
+      "00:00:03.58",
+      "00:00:03.55",
+      "00:00:07.20",
+      "00:00:05.67",
+      "00:00:04.00",
+      "00:00:04.07",
+      "00:00:03.65",
+      "00:00:05.23",
+      "00:00:04.03",
+      "00:00:04.33",
+      "00:00:02.92",
+      "00:00:02.59"
+    ]
+  },
+  "retainedArtifactHashes": {
+    "summary.json": {
+      "bytes": 564527,
+      "sha256": "733a6e6036fb309ad6d6e36d025d843b99d99c84e9a6a2ee70419681d59d0216"
+    },
+    "chart-inputs.json": {
+      "bytes": 537192,
+      "sha256": "50e5caeefad68a520651ee2b858ba7641e345fd6795ce46559052a4d024ddb5a"
+    },
+    "compile.log": {
+      "bytes": 135196,
+      "sha256": "0a89eb48ceba56bca5c8cc8dab2a9aaf41ac7a0807e79915fd921543d630e34b"
+    },
+    "configure.log": {
+      "bytes": 2127,
+      "sha256": "0e339bf262690e3f3b14d3abe50ec194d321a4bd477bcd5ccc9b29af83e4d1f9"
+    },
+    "prepare.log": {
+      "bytes": 2211,
+      "sha256": "bed5ad2b0d7ad2b77bd7a6a5d6c5a6ccf88d09219bfe1cc5e6d361d2db63e5c4"
+    },
+    "verify-source.log": {
+      "bytes": 521,
+      "sha256": "bd2de8032acc307ab3fc6e0aef079dc5f33bedd0ba74664afb361f0612106b13"
+    },
+    "resources.log": {
+      "bytes": 234,
+      "sha256": "ff8b69dabfd52e45fbd4c1b55c46c82c299d3a2cd4f01f91a9c8e5827ca54015"
+    },
+    "compile.command.json": {
+      "bytes": 762,
+      "sha256": "bdfcf4696a7366c68127dcd31bcdc660ebcb78f277f2b9732aa4929a3ea4feb1"
+    },
+    "configure.command.json": {
+      "bytes": 1374,
+      "sha256": "f3823c306b98f4a685caa7997ce8b1d18ab9f58d2bc90f1b978b5c1bd99c2d47"
+    },
+    "prepare.command.json": {
+      "bytes": 138,
+      "sha256": "5f5fb7805791c0719c36c690aff10ad9527dff0798e3a1fe47b03d9db5a11425"
+    },
+    "verify-source.command.json": {
+      "bytes": 138,
+      "sha256": "5f5fb7805791c0719c36c690aff10ad9527dff0798e3a1fe47b03d9db5a11425"
+    },
+    "resources.command.json": {
+      "bytes": 343,
+      "sha256": "61d0e27b970d9faf0235dc94ae42c41f1a73a20662515e7c34b35927dfc1323d"
+    }
+  },
+  "requiredNewInputs": {
+    "resources/chart-style/v1/services/PILBOP02-alpha.json": {
+      "bytes": 1424,
+      "sha256": "8be1b85112c7ea25c5deab4495b28fa5bd2383aec452c08c428f26b3169c6ad5"
+    },
+    "resources/chart-style/v1/services/PILBOP02.svg": {
+      "bytes": 350,
+      "sha256": "ed489486ec5afeb091a213fc4a57496fb483c32ad89a57cdaa446eaf21bad850"
+    },
+    "resources/chart-style/v1/services/RTPBCN02-alpha.json": {
+      "bytes": 1424,
+      "sha256": "4ca4cb14591c363fe9f3f90a7c327e027b667d3d4ad03d65afcf7aa00663315e"
+    },
+    "resources/chart-style/v1/services/RTPBCN02.svg": {
+      "bytes": 383,
+      "sha256": "28d902aa8cfa8f64045959b46b1cfd59d35d7c09b870d4a6e661ca72712a95b5"
+    },
+    "resources/chart-style/v1/services/provenance.json": {
+      "bytes": 2097,
+      "sha256": "d0274cdcbd395a2596251e3b28c1461533628e8d4719ab057ea940618709a236"
+    },
+    "src/integration/ChartRouteLabel.cpp": {
+      "bytes": 6358,
+      "sha256": "6fe52a22e8cb2eb40326d7971af02086edddf4f348e2201b3a8d9a1d584f3ec8"
+    },
+    "tools/chart_service_art.py": {
+      "bytes": 5834,
+      "sha256": "5d579146440d4a4878e6c1daa665b7e27de2ee47379f9d116e72fcc88a42ff46"
+    },
+    "resources/chart-style/v1/cardinals/BOYCAR01-DAY_BRIGHT-rgba.json": {
+      "bytes": 5684,
+      "sha256": "037ecf6a0b9e826862aa6c6ad001792e26b84968464f9364bf263658e710c84d"
+    },
+    "resources/chart-style/v1/cardinals/BOYCAR01-DAY_BRIGHT.svg": {
+      "bytes": 589,
+      "sha256": "9383308ee210e679342d2ef359511d8e1cb3d50de5a95a12a724f19f4f5e540b"
+    },
+    "resources/chart-style/v1/cardinals/BOYCAR01-DUSK-rgba.json": {
+      "bytes": 5684,
+      "sha256": "e9bcad83088b5b9d408b24a0f85635fbaa4ab0168f5744b5ee9f360d1dfb34ba"
+    },
+    "resources/chart-style/v1/cardinals/BOYCAR01-DUSK.svg": {
+      "bytes": 589,
+      "sha256": "01528bbcd929267864e31509fc9fecb487abef4f2987a6946779768edf5fb68a"
+    },
+    "resources/chart-style/v1/cardinals/BOYCAR01-NIGHT-rgba.json": {
+      "bytes": 5684,
+      "sha256": "f092beef921d55cb12fc3f3991630094421bff6f2895ea96b36103ee998a11d8"
+    },
+    "resources/chart-style/v1/cardinals/BOYCAR01-NIGHT.svg": {
+      "bytes": 589,
+      "sha256": "689daecf14fdb0f3ad2e6344e640b565b218c92a9d8a3ed205a45801393c33a8"
+    },
+    "resources/chart-style/v1/cardinals/BOYCAR02-DAY_BRIGHT-rgba.json": {
+      "bytes": 5684,
+      "sha256": "51bbd1a958c38b9da90ad3337317b120d7696cbdaa39345de6a65e409c5935fc"
+    },
+    "resources/chart-style/v1/cardinals/BOYCAR02-DAY_BRIGHT.svg": {
+      "bytes": 722,
+      "sha256": "1d3d9c3a4ceb6b98c04bc442c484bef9949bc38d662e14046b82b59a91d66f80"
+    },
+    "resources/chart-style/v1/cardinals/BOYCAR02-DUSK-rgba.json": {
+      "bytes": 5684,
+      "sha256": "e938d0115903991076623dc39591e146486d6853258ab19fd555afe85a2f43c9"
+    },
+    "resources/chart-style/v1/cardinals/BOYCAR02-DUSK.svg": {
+      "bytes": 722,
+      "sha256": "cff255f35746b6128852f85b38d936b87924577b4ac630ffa8b1818fb63bd300"
+    },
+    "resources/chart-style/v1/cardinals/BOYCAR02-NIGHT-rgba.json": {
+      "bytes": 5684,
+      "sha256": "a9081ffc71bc92b7f6ccd8166d6da0803791898ba0f38f6b10c7c1abfb6dc7c3"
+    },
+    "resources/chart-style/v1/cardinals/BOYCAR02-NIGHT.svg": {
+      "bytes": 722,
+      "sha256": "38f24a72e051c1dfd1777c79f22fb9529f40a65d3761e346f99e3dcd9c1a0398"
+    },
+    "resources/chart-style/v1/cardinals/BOYCAR03-DAY_BRIGHT-rgba.json": {
+      "bytes": 5684,
+      "sha256": "105bd587e541f01f0ccd79de02b840cf9c3d96afa62dd640028d3181011ce460"
+    },
+    "resources/chart-style/v1/cardinals/BOYCAR03-DAY_BRIGHT.svg": {
+      "bytes": 591,
+      "sha256": "f0518dd7386560ec356e2b2e8ad909d97bc0591b5bb4a01072ecfad514b2df0c"
+    },
+    "resources/chart-style/v1/cardinals/BOYCAR03-DUSK-rgba.json": {
+      "bytes": 5684,
+      "sha256": "6b44aa2bafb1b711fcef64e3e777a314166a187260236671b45779a8c27bd8b4"
+    },
+    "resources/chart-style/v1/cardinals/BOYCAR03-DUSK.svg": {
+      "bytes": 591,
+      "sha256": "d450f78e776ca8f5fdacf170ab7ffeb015d3083a3dacf84ac9f52bef95b29415"
+    },
+    "resources/chart-style/v1/cardinals/BOYCAR03-NIGHT-rgba.json": {
+      "bytes": 5684,
+      "sha256": "df8571b1d6953898f7af53d6202c95ecb2c10a3007d0142b4f01192fbade19c4"
+    },
+    "resources/chart-style/v1/cardinals/BOYCAR03-NIGHT.svg": {
+      "bytes": 591,
+      "sha256": "328833bf109170af0cc657fac640632f9fc0e91e36c0dedf31ba943d10d56d48"
+    },
+    "resources/chart-style/v1/cardinals/BOYCAR04-DAY_BRIGHT-rgba.json": {
+      "bytes": 5684,
+      "sha256": "093b0db8141ae85b3388d717d0dff095ad7d6f838055787591261b1ae69126f8"
+    },
+    "resources/chart-style/v1/cardinals/BOYCAR04-DAY_BRIGHT.svg": {
+      "bytes": 722,
+      "sha256": "a139639350f4141f210772b03394cc9a7cac4c3f0d0c0f0dc2166bad66046126"
+    },
+    "resources/chart-style/v1/cardinals/BOYCAR04-DUSK-rgba.json": {
+      "bytes": 5684,
+      "sha256": "3f57e1cea4fb53414571f569153e969de0d6a72657436b479eb45cf7aa387897"
+    },
+    "resources/chart-style/v1/cardinals/BOYCAR04-DUSK.svg": {
+      "bytes": 722,
+      "sha256": "ace1dd95a6bf67d99099c22014a1ff7001678a426f937b147d5bbe822149c1f3"
+    },
+    "resources/chart-style/v1/cardinals/BOYCAR04-NIGHT-rgba.json": {
+      "bytes": 5684,
+      "sha256": "77b567495000c053bca858437e27991b290782bc985bd022f71952806dd6f018"
+    },
+    "resources/chart-style/v1/cardinals/BOYCAR04-NIGHT.svg": {
+      "bytes": 722,
+      "sha256": "017298fa37ad448ed37a3cb19ce5cc29d776d3992dbc563c7a5b5affaf6dc1ca"
+    },
+    "resources/chart-style/v1/cardinals/provenance.json": {
+      "bytes": 7663,
+      "sha256": "ab812e0820920df01a9507152ebcd23d2b2ffbf62d51d59a4e325070a0f5dc7f"
+    },
+    "tools/chart_cardinal_art.py": {
+      "bytes": 7251,
+      "sha256": "fcee04d1cc2c0038f766be89028d957e478f2eae4f238ded58e91dc23942c2e2"
+    }
+  },
+  "remoteTree": "16b058983cad3955ddf04dd2151f9f4167ce33f2",
+  "sdkHeaderManifestEntries": 1558,
+  "archivedCompileCommandTargetsMatched": 17
+}

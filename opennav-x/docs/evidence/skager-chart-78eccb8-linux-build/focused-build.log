@@ -1,0 +1,28 @@
+[1/27] Building CXX object libs/ShapefileCpp/CMakeFiles/ShapefileCppLib.dir/__/__/b2681f8/lib/src/Schema.cpp.o
+[2/27] Building CXX object libs/ShapefileCpp/CMakeFiles/ShapefileCppLib.dir/__/__/b2681f8/lib/src/FeatureIterator.cpp.o
+[3/27] Building CXX object libs/ShapefileCpp/CMakeFiles/ShapefileCppLib.dir/__/__/b2681f8/lib/src/GeometryType.cpp.o
+[4/27] Building CXX object libs/ShapefileCpp/CMakeFiles/ShapefileCppLib.dir/__/__/b2681f8/lib/src/ShapefileReader.cpp.o
+[5/27] Building CXX object libs/ShapefileCpp/CMakeFiles/ShapefileCppLib.dir/__/__/b2681f8/lib/src/Geometry.cpp.o
+[6/27] Building CXX object libs/ShapefileCpp/CMakeFiles/ShapefileCppLib.dir/__/__/b2681f8/lib/src/Bounds.cpp.o
+[7/27] Building CXX object libs/ShapefileCpp/CMakeFiles/ShapefileCppLib.dir/__/__/b2681f8/lib/src/Point.cpp.o
+[8/27] Building CXX object libs/ShapefileCpp/CMakeFiles/ShapefileCppLib.dir/__/__/b2681f8/lib/src/Line.cpp.o
+[9/27] Building CXX object libs/ShapefileCpp/CMakeFiles/ShapefileCppLib.dir/__/__/b2681f8/lib/src/Ring.cpp.o
+[10/27] Building CXX object libs/ShapefileCpp/CMakeFiles/ShapefileCppLib.dir/__/__/b2681f8/lib/src/Polygon.cpp.o
+[11/27] Building CXX object libs/ShapefileCpp/CMakeFiles/ShapefileCppLib.dir/__/__/b2681f8/lib/src/MultiPoint.cpp.o
+[12/27] Building CXX object libs/ShapefileCpp/CMakeFiles/ShapefileCppLib.dir/__/__/b2681f8/lib/src/MultiLine.cpp.o
+[13/27] Building CXX object libs/ShapefileCpp/CMakeFiles/ShapefileCppLib.dir/__/__/b2681f8/lib/src/MultiPolygon.cpp.o
+[14/27] Building CXX object libs/ShapefileCpp/CMakeFiles/ShapefileCppLib.dir/__/__/b2681f8/lib/src/Feature.cpp.o
+[15/27] Building CXX object libs/ShapefileCpp/CMakeFiles/ShapefileCppLib.dir/__/__/b2681f8/lib/src/FieldType.cpp.o
+[16/27] cd /home/standard/Projects/X-nav-worktrees/skager-product-integration/build/xnav-linux/libs/libdnet && /home/standard/Projects/X-nav/.local/sysroot/usr/bin/cmake -E echo Built\ the\ libdnet\ library
+Built the libdnet library
+[17/27] Building CXX object libs/ShapefileCpp/CMakeFiles/ShapefileCppLib.dir/__/__/b2681f8/lib/src/Field.cpp.o
+[18/27] Building CXX object CMakeFiles/opencpn.dir/gui/src/chartdbs.cpp.o
+[19/27] Building CXX object CMakeFiles/opencpn.dir/gui/src/ocpn_plugin_gui.cpp.o
+[20/27] Building CXX object CMakeFiles/opencpn.dir/gui/src/chcanv.cpp.o
+[21/27] Building CXX object CMakeFiles/opencpn.dir/gui/src/shapefile_basemap.cpp.o
+[22/27] Building CXX object CMakeFiles/opencpn.dir/gui/src/glChartCanvas.cpp.o
+[23/27] Building CXX object CMakeFiles/opencpn.dir/home/standard/Projects/X-nav-worktrees/waypoint-touch-regression/src/integration/PreviewDiagnostics.cpp.o
+[24/27] Building CXX object CMakeFiles/opencpn.dir/home/standard/Projects/X-nav-worktrees/waypoint-touch-regression/src/integration/InstallerSelfTest.cpp.o
+[25/27] Linking CXX static library libs/ShapefileCpp/libShapefileCppLib.a
+[26/27] Building CXX object CMakeFiles/opencpn.dir/home/standard/Projects/X-nav-worktrees/waypoint-touch-regression/src/integration/OpenCPNIntegration.cpp.o
+[27/27] Linking CXX executable opencpn

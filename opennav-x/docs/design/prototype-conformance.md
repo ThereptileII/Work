@@ -1,5 +1,16 @@
 # Prototype conformance — in progress
 
+The combined source is now `78eccb8` (published `61a0a783`). It includes exact
+classified cardinal artwork and the actual-active-waypoint name card, together
+with the prior land/Night/service/branding corrections. Its integrated Linux
+build and [native seventeen-unit preflight](../evidence/scrum-247-native-chart17-final/README.md)
+pass. The [sixteen real-ENC comparisons](../evidence/skager-product-fidelity-78eccb8-linux/README.md)
+and [software/GL route/card comparisons](reviews/scrum252-257-final-78eccb8.md)
+also pass their bounded gates. Full native runtime qualification is running on
+that exact published commit. No screen-level acceptance row is changed by
+compilation or a subset of chart states. The public NOAA comparison cell contains no cardinal objects, so those
+images cannot establish actual ENC cardinal recognition.
+
 Exact `f0976cc` now has [sixteen real-ENC comparisons](../evidence/skager-product-fidelity-f0976cc-linux/README.md)
 with corrected land, effective Night surfaces and matte-free approved SKAGER
 artwork. Software and Mesa-GL theme cycles pass; Standard remains pixel-identical
@@ -10,7 +21,9 @@ notifications](reviews/scrum252-fixture-repaint.md); an ordinary repaint shows
 the correct software objects. The narrow fixture correction retains every
 navigation assertion and still needs a fresh integrated capture. It does not
 establish chart conformance acceptance.
-The unchanged stock active-waypoint name also remains low contrast at Night.
+The observed low-contrast active-waypoint name now has a bounded
+[prototype-card correction](reviews/scrum257-active-name.md), preserving the
+upstream active-point symbol and blinking; fresh rendering proof remains required.
 Native Windows runtime and boat review remain open.
 
 Frozen source `1356fd1` (published `9fcd3db`) now has [sixteen corrected real-ENC

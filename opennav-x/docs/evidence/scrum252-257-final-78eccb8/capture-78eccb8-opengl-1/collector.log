@@ -1,0 +1,8 @@
+/tmp/sr252-oin_8m04/profile
+WARNING: The convert command is deprecated in IMv7, use "magick" instead of "convert" or "magick convert"
+
+Traceback (most recent call last):
+  File "/home/standard/Projects/X-nav-worktrees/scrum257-active-name/.local/route257-capture/smoke-navigation-route252.py", line 1029, in <module>
+    assert hits>=2, ('Actual upstream route stroke has wrong/missing ink',x,y,ink,hits)
+           ^^^^^^^
+AssertionError: ('Actual upstream route stroke has wrong/missing ink', 667, 204, (38, 124, 118), 0)

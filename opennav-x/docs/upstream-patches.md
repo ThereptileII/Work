@@ -1,5 +1,23 @@
 # Direct OpenCPN Upstream Modifications
 
+## Actual active waypoint name presentation (SCRUM-257) — 2026-10-03
+
+The chart-presentation patch now obtains a separate label ordinal in the pinned
+`gui/src/route_point_gui.cpp` software and GL paths. Only the actual active point
+from `Routeman::GetpActivePoint()` can retain the prototype name card while its
+upstream active icon blinks. The numbered-marker ordinal remains zero for that
+point; stock icon substitution and blink branches are unchanged. All existing
+custom-icon, shared/layer, selection/edit/drag, anchor/MOB and bounded-route
+eligibility checks remain. GL bounds are invalidated before culling when label
+eligibility changes. Owned label cache lifetime and Standard fallback remain
+unchanged. This is presentation only, with no navigation processing or output.
+
+The [focused review](design/reviews/scrum257-active-name.md) records 76 eligibility
+checks, 93 cache/raster checks, nine-patch application and four actual-source
+object compilations. Integrated software/GL, native Windows and boat rendering
+remain separate gates. The test fixture repaint correction changes only
+`tests/RouteProgressScenario.cpp`, not an upstream navigation hook.
+
 ## Public SKAGER menu and launch help (SCRUM-235) — 2026-10-02
 
 The existing `opencpn-5.12.4-xnav.patch` now names the integrated Legacy mode

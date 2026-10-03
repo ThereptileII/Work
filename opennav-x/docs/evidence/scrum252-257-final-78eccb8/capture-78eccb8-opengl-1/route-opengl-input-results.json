@@ -1,0 +1,30 @@
+{
+  "authority": "Linux development",
+  "fixture": "Synthetic NMEA over loopback; no external devices or production profile",
+  "expected": {
+    "sog_kn": 6.3,
+    "cog_deg": 147,
+    "wind": "unavailable",
+    "depth": "unavailable"
+  },
+  "screenshots": [
+    "route-opengl-01-active-route.png"
+  ],
+  "visual_review": "required",
+  "initial_resize_publication": {
+    "before_ticks": 3,
+    "after_ticks": 7,
+    "footer": {
+      "height": 34,
+      "y": 766,
+      "width": 1280,
+      "x": 0
+    }
+  },
+  "sent": {
+    "rmc": 17,
+    "gga": 17,
+    "ais": 0
+  },
+  "transport_errors": []
+}
