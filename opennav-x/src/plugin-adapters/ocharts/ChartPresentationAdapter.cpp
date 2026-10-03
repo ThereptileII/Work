@@ -55,7 +55,7 @@ wxFont *GeographicNameFont(const char *feature, const char *instruction, bool tx
   return FindOrCreateFont_PlugIn(
       *light ? 6 : role == ChartNameRole::Land ? 9 : 12, wxFONTFAMILY_SWISS,
       *light || role == ChartNameRole::Land ? wxFONTSTYLE_NORMAL : wxFONTSTYLE_ITALIC,
-      wxFONTWEIGHT_NORMAL, false, *light ? light_face : face);
+      wxFONTWEIGHT_NORMAL, false, *light || role == ChartNameRole::Land ? light_face : face);
 }
 
 

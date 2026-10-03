@@ -60,5 +60,8 @@ Focused verification:
 No full application build, broad suite, CI dispatch, remote action or shared
 builder/cache write occurred. The component fixture links existing frozen
 ccc0faa UI libraries read-only and writes its own objects/executable privately.
-Compact exact-source receipts follow separately; Windows/boat acceptance remains
-open rather than inferred from this Linux proof.
+The final exact-source receipt and five object hashes are retained here. The
+initial 274c1cc change requires follow-up 305be1d, which excludes designated
+roles even when their handlers decline. Both commits together are the tested
+implementation. Windows/boat acceptance remains open rather than inferred from
+this Linux proof.

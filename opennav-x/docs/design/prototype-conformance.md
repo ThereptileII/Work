@@ -1,5 +1,11 @@
 # Prototype conformance — in progress
 
+Final source `9dee9b1` / published `aa95750b` closes the ordinary TX/TE font
+policy gap with a verified-SKAGER-only Segoe UI/Arial face. It preserves existing
+sizes, weights and designated geographic/LIGHTS handlers, their fallbacks, and
+Standard/Legacy preferences. [Focused source evidence](../evidence/scrum263-ordinary-chart-face/README.md)
+passes; final integrated native face and boat rendering remain pending.
+
 Current local `ccc0faa` / published `1c3e32d6` adds a narrowly classified
 [white/orange pillar derivative](../evidence/scrum264-white-orange-pillar/README.md).
 Its focused resource/loader/object checks and [16 integrated Linux captures](../evidence/skager-chart-ccc0faa-linux/README.md)

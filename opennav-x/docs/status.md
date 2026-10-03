@@ -1,5 +1,22 @@
 # SKAGER status — 2026-10-03
 
+## Final chart typeface correction under qualification
+
+Application source **`9dee9b148f4d6ebdd20bb4c49229fe19340df209`** is published
+as **`aa95750b0abbd9ffa646407019b3393f2e7b5bce`** with all 4,174 mapped
+blob/mode entries independently verified. The [ordinary chart-font correction](evidence/scrum263-ordinary-chart-face/README.md)
+selects installed Segoe UI, then Arial, only for a newly verified SKAGER
+presentation library. Ordinary text retains its existing size, weight, style,
+content and positioning. Geographic and generated-LIGHTS roles retain their
+own handlers and deliberate fallbacks. Font creation failure retains stock;
+Standard/Legacy and stored user preferences remain unchanged.
+
+Focused actual-method, production-object and fallback checks pass. Final Linux
+integration and focused native core/private compilation are in progress. The
+existing Windows font component now checks the selected HDC face for ordinary
+chart text as well as the UI stack; that result and physical boat review remain
+pending. No all-symbol or screen-level visual acceptance is implied.
+
 ## Current focused Windows repair and classified buoy candidate
 
 Frozen source **`ccc0faad089e89a5b3a0b1f2994f4fa4ee18053d`**, published as

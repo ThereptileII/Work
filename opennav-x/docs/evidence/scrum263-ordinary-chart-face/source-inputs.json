@@ -1,0 +1,11 @@
+{
+  "patches/ocharts-skager-presentation.patch": "435bd40d2bf1e4dba15e05a9bbc073784a7ffea6fa759f8fd828fecdd6ec51fe",
+  "patches/opencpn-5.12.4-chart-presentation.patch": "9ecf04798b61c84a4f298ae04acd9201768026c3095531c5e2767682408b147d",
+  "src/integration/ChartPresentation.cpp": "6ffa0bec55dab162ca0c5fc5d748a599e1c825e774e9528b7b8b88ded4dd3d55",
+  "src/integration/ChartTextFace.h": "4c1b0c41e29ecdac9af7a6fd7446863714539777c1904fa598679ba3ec49b3ab",
+  "src/plugin-adapters/ocharts/ChartPresentationAdapter.cpp": "a50ca1de621df41b624464787ae1293f9d12d64b85f0b6b346fa0575e93112bb",
+  "tests/chart_text_face_test.cpp": "79af0ec53bcf43480c48df86ec3a871c0033197ffbd44a9295b8643715c30359",
+  "tests/ui_font_resolution_test.cpp": "06b9708e947d188d6208bba822e8e4141d0512faf30a1dd3d2535a6d06421656",
+  "tools/prepare-ocharts-adapter.py": "5746518e90db38e5729e1182f4344529d4f2043d63356839e449e185e0a21b1b",
+  "tools/test-chart-text-face.py": "7d60aa0737692601dad28b9e20495ed24c7a75d111874d9ca7f699ffd0276c98"
+}

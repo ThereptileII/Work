@@ -1,0 +1,12 @@
+/tmp/skager-capture-zuwd03u9/SKAGER
+/home/standard/Projects/X-nav-worktrees/scrum263-final-font-captures/.local/font-9dee/pier57/capture-final.py:189: DeprecationWarning: Image.Image.getdata is deprecated and will be removed in Pillow 14 (2027-10-15). Use get_flattened_data instead.
+  pixels=collections.Counter(image.crop((x,y,x+w,y+h)).getdata())
+/home/standard/Projects/X-nav-worktrees/scrum263-final-font-captures/.local/font-9dee/pier57/capture-final.py:113: DeprecationWarning: Image.Image.getdata is deprecated and will be removed in Pillow 14 (2027-10-15). Use get_flattened_data instead.
+  bbox=difference.getbbox();ink=sum(p!=(0,0,0) for p in difference.getdata())
+/tmp/skager-capture-zuwd03u9/Standard
+/home/standard/Projects/X-nav-worktrees/scrum263-final-font-captures/.local/font-9dee/pier57/capture-final.py:189: DeprecationWarning: Image.Image.getdata is deprecated and will be removed in Pillow 14 (2027-10-15). Use get_flattened_data instead.
+  pixels=collections.Counter(image.crop((x,y,x+w,y+h)).getdata())
+/home/standard/Projects/X-nav-worktrees/scrum263-final-font-captures/.local/font-9dee/pier57/capture-final.py:113: DeprecationWarning: Image.Image.getdata is deprecated and will be removed in Pillow 14 (2027-10-15). Use get_flattened_data instead.
+  bbox=difference.getbbox();ink=sum(p!=(0,0,0) for p in difference.getdata())
+Verified private clean application 9dee9b148f4d6ebdd20bb4c49229fe19340df209 and exact upstream result of nine patches
+Two exact-build real-ENC Day captures passed: /home/standard/Projects/X-nav-worktrees/scrum263-final-font-captures/.local/font-9dee/pier57/output/capture-pier57-9dee9b1-software

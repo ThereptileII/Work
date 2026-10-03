@@ -1,5 +1,17 @@
 # Direct OpenCPN Upstream Modifications
 
+## Ordinary chart typeface (SCRUM-263)
+
+The core and private libraries gain an optional presentation-owned text face,
+set only during verified SKAGER construction before any label cache exists.
+At ordinary `RenderT_All` font establishment, a successful Segoe UI/Arial font
+may replace only the face; existing family, style, S-52 size and weight remain.
+The original cached font remains the fallback. Exact geographic and generated
+LIGHTS roles are excluded even when their specialized resolver declines.
+No painter, label string, placement, chart preference or Standard/Legacy path
+is rewritten. Enumeration is cached per module, outside painting. See
+[scope and focused evidence](evidence/scrum263-ordinary-chart-face/README.md).
+
 ## Classified prototype light and special-buoy aliases (SCRUM-264)
 
 The core and private `RenderSY` hooks select only stable library-owned alias

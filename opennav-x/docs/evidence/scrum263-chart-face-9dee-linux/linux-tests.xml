@@ -1,0 +1,2417 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="(empty)"
+	tests="147"
+	failures="0"
+	disabled="0"
+	skipped="0"
+	hostname=""
+	time="21"
+	timestamp="2026-10-03T11:39:13"
+	>
+	<testcase name="DateTimeFormatTest.LMTTimeZoneOneHourEast" classname="DateTimeFormatTest.LMTTimeZoneOneHourEast" time="0.0801604" status="run">
+		<properties/>
+		<system-out>Running main() from /usr/src/debug/gtest/googletest-1.18.0/googletest/src/gtest_main.cc
+Note: Google Test filter = DateTimeFormatTest.LMTTimeZoneOneHourEast
+[==========] Running 1 test from 1 test suite.
+[----------] Global test environment set-up.
+[----------] 1 test from DateTimeFormatTest
+[ RUN      ] DateTimeFormatTest.LMTTimeZoneOneHourEast
+[       OK ] DateTimeFormatTest.LMTTimeZoneOneHourEast (0 ms)
+[----------] 1 test from DateTimeFormatTest (0 ms total)
+
+[----------] Global test environment tear-down
+[==========] 1 test from 1 test suite ran. (0 ms total)
+[  PASSED  ] 1 test.
+</system-out>
+	</testcase>
+	<testcase name="DateTimeFormatTest.LMTTimeZone30MinEast" classname="DateTimeFormatTest.LMTTimeZone30MinEast" time="0.0811329" status="run">
+		<properties/>
+		<system-out>Running main() from /usr/src/debug/gtest/googletest-1.18.0/googletest/src/gtest_main.cc
+Note: Google Test filter = DateTimeFormatTest.LMTTimeZone30MinEast
+[==========] Running 1 test from 1 test suite.
+[----------] Global test environment set-up.
+[----------] 1 test from DateTimeFormatTest
+[ RUN      ] DateTimeFormatTest.LMTTimeZone30MinEast
+[       OK ] DateTimeFormatTest.LMTTimeZone30MinEast (0 ms)
+[----------] 1 test from DateTimeFormatTest (0 ms total)
+
+[----------] Global test environment tear-down
+[==========] 1 test from 1 test suite ran. (0 ms total)
+[  PASSED  ] 1 test.
+</system-out>
+	</testcase>
+	<testcase name="DateTimeFormatTest.LMTTimeZoneWest" classname="DateTimeFormatTest.LMTTimeZoneWest" time="0.082605" status="run">
+		<properties/>
+		<system-out>Running main() from /usr/src/debug/gtest/googletest-1.18.0/googletest/src/gtest_main.cc
+Note: Google Test filter = DateTimeFormatTest.LMTTimeZoneWest
+[==========] Running 1 test from 1 test suite.
+[----------] Global test environment set-up.
+[----------] 1 test from DateTimeFormatTest
+[ RUN      ] DateTimeFormatTest.LMTTimeZoneWest
+[       OK ] DateTimeFormatTest.LMTTimeZoneWest (0 ms)
+[----------] 1 test from DateTimeFormatTest (0 ms total)
+
+[----------] Global test environment tear-down
+[==========] 1 test from 1 test suite ran. (0 ms total)
+[  PASSED  ] 1 test.
+</system-out>
+	</testcase>
+	<testcase name="DateTimeFormatTest.CustomFormatStringEnUS" classname="DateTimeFormatTest.CustomFormatStringEnUS" time="0.0834539" status="run">
+		<properties/>
+		<system-out>Running main() from /usr/src/debug/gtest/googletest-1.18.0/googletest/src/gtest_main.cc
+Note: Google Test filter = DateTimeFormatTest.CustomFormatStringEnUS
+[==========] Running 1 test from 1 test suite.
+[----------] Global test environment set-up.
+[----------] 1 test from DateTimeFormatTest
+[ RUN      ] DateTimeFormatTest.CustomFormatStringEnUS
+[       OK ] DateTimeFormatTest.CustomFormatStringEnUS (0 ms)
+[----------] 1 test from DateTimeFormatTest (0 ms total)
+
+[----------] Global test environment tear-down
+[==========] 1 test from 1 test suite ran. (0 ms total)
+[  PASSED  ] 1 test.
+</system-out>
+	</testcase>
+	<testcase name="DateTimeFormatTest.CustomFormatStringUTC" classname="DateTimeFormatTest.CustomFormatStringUTC" time="0.0802913" status="run">
+		<properties/>
+		<system-out>Running main() from /usr/src/debug/gtest/googletest-1.18.0/googletest/src/gtest_main.cc
+Note: Google Test filter = DateTimeFormatTest.CustomFormatStringUTC
+[==========] Running 1 test from 1 test suite.
+[----------] Global test environment set-up.
+[----------] 1 test from DateTimeFormatTest
+[ RUN      ] DateTimeFormatTest.CustomFormatStringUTC
+[       OK ] DateTimeFormatTest.CustomFormatStringUTC (0 ms)
+[----------] 1 test from DateTimeFormatTest (0 ms total)
+
+[----------] Global test environment tear-down
+[==========] 1 test from 1 test suite ran. (0 ms total)
+[  PASSED  ] 1 test.
+</system-out>
+	</testcase>
+	<testcase name="DateTimeFormatTest.CustomFormatStringEST" classname="DateTimeFormatTest.CustomFormatStringEST" time="0.0794229" status="run">
+		<properties/>
+		<system-out>Running main() from /usr/src/debug/gtest/googletest-1.18.0/googletest/src/gtest_main.cc
+Note: Google Test filter = DateTimeFormatTest.CustomFormatStringEST
+[==========] Running 1 test from 1 test suite.
+[----------] Global test environment set-up.
+[----------] 1 test from DateTimeFormatTest
+[ RUN      ] DateTimeFormatTest.CustomFormatStringEST
+[       OK ] DateTimeFormatTest.CustomFormatStringEST (0 ms)
+[----------] 1 test from DateTimeFormatTest (0 ms total)
+
+[----------] Global test environment tear-down
+[==========] 1 test from 1 test suite ran. (0 ms total)
+[  PASSED  ] 1 test.
+</system-out>
+	</testcase>
+	<testcase name="DateTimeFormatTest.CustomTimeZone" classname="DateTimeFormatTest.CustomTimeZone" time="0.0797905" status="run">
+		<properties/>
+		<system-out>Running main() from /usr/src/debug/gtest/googletest-1.18.0/googletest/src/gtest_main.cc
+Note: Google Test filter = DateTimeFormatTest.CustomTimeZone
+[==========] Running 1 test from 1 test suite.
+[----------] Global test environment set-up.
+[----------] 1 test from DateTimeFormatTest
+[ RUN      ] DateTimeFormatTest.CustomTimeZone
+[       OK ] DateTimeFormatTest.CustomTimeZone (0 ms)
+[----------] 1 test from DateTimeFormatTest (0 ms total)
+
+[----------] Global test environment tear-down
+[==========] 1 test from 1 test suite ran. (0 ms total)
+[  PASSED  ] 1 test.
+</system-out>
+	</testcase>
+	<testcase name="DateTimeFormatTest.ShowTimezoneTrue" classname="DateTimeFormatTest.ShowTimezoneTrue" time="0.0818216" status="run">
+		<properties/>
+		<system-out>Running main() from /usr/src/debug/gtest/googletest-1.18.0/googletest/src/gtest_main.cc
+Note: Google Test filter = DateTimeFormatTest.ShowTimezoneTrue
+[==========] Running 1 test from 1 test suite.
+[----------] Global test environment set-up.
+[----------] 1 test from DateTimeFormatTest
+[ RUN      ] DateTimeFormatTest.ShowTimezoneTrue
+[       OK ] DateTimeFormatTest.ShowTimezoneTrue (0 ms)
+[----------] 1 test from DateTimeFormatTest (0 ms total)
+
+[----------] Global test environment tear-down
+[==========] 1 test from 1 test suite ran. (0 ms total)
+[  PASSED  ] 1 test.
+</system-out>
+	</testcase>
+	<testcase name="DateTimeFormatTest.ShowTimezoneFalse" classname="DateTimeFormatTest.ShowTimezoneFalse" time="0.0823026" status="run">
+		<properties/>
+		<system-out>Running main() from /usr/src/debug/gtest/googletest-1.18.0/googletest/src/gtest_main.cc
+Note: Google Test filter = DateTimeFormatTest.ShowTimezoneFalse
+[==========] Running 1 test from 1 test suite.
+[----------] Global test environment set-up.
+[----------] 1 test from DateTimeFormatTest
+[ RUN      ] DateTimeFormatTest.ShowTimezoneFalse
+[       OK ] DateTimeFormatTest.ShowTimezoneFalse (0 ms)
+[----------] 1 test from DateTimeFormatTest (0 ms total)
+
+[----------] Global test environment tear-down
+[==========] 1 test from 1 test suite ran. (0 ms total)
+[  PASSED  ] 1 test.
+</system-out>
+	</testcase>
+	<testcase name="DateTimeFormatTest.ShowTimezoneDefault" classname="DateTimeFormatTest.ShowTimezoneDefault" time="0.0817917" status="run">
+		<properties/>
+		<system-out>Running main() from /usr/src/debug/gtest/googletest-1.18.0/googletest/src/gtest_main.cc
+Note: Google Test filter = DateTimeFormatTest.ShowTimezoneDefault
+[==========] Running 1 test from 1 test suite.
+[----------] Global test environment set-up.
+[----------] 1 test from DateTimeFormatTest
+[ RUN      ] DateTimeFormatTest.ShowTimezoneDefault
+[       OK ] DateTimeFormatTest.ShowTimezoneDefault (0 ms)
+[----------] 1 test from DateTimeFormatTest (0 ms total)
+
+[----------] Global test environment tear-down
+[==========] 1 test from 1 test suite ran. (0 ms total)
+[  PASSED  ] 1 test.
+</system-out>
+	</testcase>
+	<testcase name="DateTimeFormatTest.LocalTimezoneEST" classname="DateTimeFormatTest.LocalTimezoneEST" time="0.0896672" status="run">
+		<properties/>
+		<system-out>Running main() from /usr/src/debug/gtest/googletest-1.18.0/googletest/src/gtest_main.cc
+Note: Google Test filter = DateTimeFormatTest.LocalTimezoneEST
+[==========] Running 1 test from 1 test suite.
+[----------] Global test environment set-up.
+[----------] 1 test from DateTimeFormatTest
+[ RUN      ] DateTimeFormatTest.LocalTimezoneEST
+[       OK ] DateTimeFormatTest.LocalTimezoneEST (8 ms)
+[----------] 1 test from DateTimeFormatTest (8 ms total)
+
+[----------] Global test environment tear-down
+[==========] 1 test from 1 test suite ran. (8 ms total)
+[  PASSED  ] 1 test.
+</system-out>
+	</testcase>
+	<testcase name="DateTimeFormatTest.LocalTimezoneCETSwedish" classname="DateTimeFormatTest.LocalTimezoneCETSwedish" time="0.0928936" status="run">
+		<properties/>
+		<system-out>Running main() from /usr/src/debug/gtest/googletest-1.18.0/googletest/src/gtest_main.cc
+Note: Google Test filter = DateTimeFormatTest.LocalTimezoneCETSwedish
+[==========] Running 1 test from 1 test suite.
+[----------] Global test environment set-up.
+[----------] 1 test from DateTimeFormatTest
+[ RUN      ] DateTimeFormatTest.LocalTimezoneCETSwedish
+[       OK ] DateTimeFormatTest.LocalTimezoneCETSwedish (9 ms)
+[----------] 1 test from DateTimeFormatTest (10 ms total)
+
+[----------] Global test environment tear-down
+[==========] 1 test from 1 test suite ran. (10 ms total)
+[  PASSED  ] 1 test.
+</system-out>
+	</testcase>
+	<testcase name="MsgFixture.ObservableMsg" classname="MsgFixture.ObservableMsg" time="0.121937" status="run">
+		<properties/>
+		<system-out>Running main() from /usr/src/debug/gtest/googletest-1.18.0/googletest/src/gtest_main.cc
+Note: Google Test filter = MsgFixture.ObservableMsg
+[==========] Running 1 test from 1 test suite.
+[----------] Global test environment set-up.
+[----------] 1 test from MsgFixture
+[ RUN      ] MsgFixture.ObservableMsg
+[       OK ] MsgFixture.ObservableMsg (43 ms)
+[----------] 1 test from MsgFixture (43 ms total)
+
+[----------] Global test environment tear-down
+[==========] 1 test from 1 test suite ran. (43 ms total)
+[  PASSED  ] 1 test.
+</system-out>
+	</testcase>
+	<testcase name="Messaging.NavMsg" classname="Messaging.NavMsg" time="0.121131" status="run">
+		<properties/>
+		<system-out>Running main() from /usr/src/debug/gtest/googletest-1.18.0/googletest/src/gtest_main.cc
+Note: Google Test filter = Messaging.NavMsg
+[==========] Running 1 test from 1 test suite.
+[----------] Global test environment set-up.
+[----------] 1 test from Messaging
+[ RUN      ] Messaging.NavMsg
+[       OK ] Messaging.NavMsg (38 ms)
+[----------] 1 test from Messaging (38 ms total)
+
+[----------] Global test environment tear-down
+[==========] 1 test from 1 test suite ran. (38 ms total)
+[  PASSED  ] 1 test.
+</system-out>
+	</testcase>
+	<testcase name="Messaging.All0183" classname="Messaging.All0183" time="0.117836" status="run">
+		<properties/>
+		<system-out>Running main() from /usr/src/debug/gtest/googletest-1.18.0/googletest/src/gtest_main.cc
+Note: Google Test filter = Messaging.All0183
+[==========] Running 1 test from 1 test suite.
+[----------] Global test environment set-up.
+[----------] 1 test from Messaging
+[ RUN      ] Messaging.All0183
+[       OK ] Messaging.All0183 (38 ms)
+[----------] 1 test from Messaging (38 ms total)
+
+[----------] Global test environment tear-down
+[==========] 1 test from 1 test suite ran. (38 ms total)
+[  PASSED  ] 1 test.
+</system-out>
+	</testcase>
+	<testcase name="Messaging.AppMsg" classname="Messaging.AppMsg" time="0.130518" status="run">
+		<properties/>
+		<system-out>Running main() from /usr/src/debug/gtest/googletest-1.18.0/googletest/src/gtest_main.cc
+Note: Google Test filter = Messaging.AppMsg
+[==========] Running 1 test from 1 test suite.
+[----------] Global test environment set-up.
+[----------] 1 test from Messaging
+[ RUN      ] Messaging.AppMsg
+[       OK ] Messaging.AppMsg (40 ms)
+[----------] 1 test from Messaging (40 ms total)
+
+[----------] Global test environment tear-down
+[==========] 1 test from 1 test suite ran. (40 ms total)
+[  PASSED  ] 1 test.
+</system-out>
+	</testcase>
+	<testcase name="Observable.torture" classname="Observable.torture" time="0.100287" status="run">
+		<properties/>
+		<system-out>Running main() from /usr/src/debug/gtest/googletest-1.18.0/googletest/src/gtest_main.cc
+Note: Google Test filter = Observable.torture
+[==========] Running 1 test from 1 test suite.
+[----------] Global test environment set-up.
+[----------] 1 test from Observable
+[ RUN      ] Observable.torture
+[       OK ] Observable.torture (0 ms)
+[----------] 1 test from Observable (0 ms total)
+
+[----------] Global test environment tear-down
+[==========] 1 test from 1 test suite ran. (0 ms total)
+[  PASSED  ] 1 test.
+</system-out>
+	</testcase>
+	<testcase name="Drivers.Registry" classname="Drivers.Registry" time="0.0779939" status="run">
+		<properties/>
+		<system-out>Running main() from /usr/src/debug/gtest/googletest-1.18.0/googletest/src/gtest_main.cc
+Note: Google Test filter = Drivers.Registry
+[==========] Running 1 test from 1 test suite.
+[----------] Global test environment set-up.
+[----------] 1 test from Drivers
+[ RUN      ] Drivers.Registry
+[       OK ] Drivers.Registry (0 ms)
+[----------] 1 test from Drivers (0 ms total)
+
+[----------] Global test environment tear-down
+[==========] 1 test from 1 test suite ran. (0 ms total)
+[  PASSED  ] 1 test.
+</system-out>
+	</testcase>
+	<testcase name="Navmsg2000.to_string" classname="Navmsg2000.to_string" time="0.0801731" status="run">
+		<properties/>
+		<system-out>Running main() from /usr/src/debug/gtest/googletest-1.18.0/googletest/src/gtest_main.cc
+Note: Google Test filter = Navmsg2000.to_string
+[==========] Running 1 test from 1 test suite.
+[----------] Global test environment set-up.
+[----------] 1 test from Navmsg2000
+[ RUN      ] Navmsg2000.to_string
+[       OK ] Navmsg2000.to_string (0 ms)
+[----------] 1 test from Navmsg2000 (0 ms total)
+
+[----------] Global test environment tear-down
+[==========] 1 test from 1 test suite ran. (0 ms total)
+[  PASSED  ] 1 test.
+</system-out>
+	</testcase>
+	<testcase name="FileDriver.Registration" classname="FileDriver.Registration" time="0.0823861" status="run">
+		<properties/>
+		<system-out>Running main() from /usr/src/debug/gtest/googletest-1.18.0/googletest/src/gtest_main.cc
+Note: Google Test filter = FileDriver.Registration
+[==========] Running 1 test from 1 test suite.
+[----------] Global test environment set-up.
+[----------] 1 test from FileDriver
+[ RUN      ] FileDriver.Registration
+[       OK ] FileDriver.Registration (0 ms)
+[----------] 1 test from FileDriver (0 ms total)
+
+[----------] Global test environment tear-down
+[==========] 1 test from 1 test suite ran. (0 ms total)
+[  PASSED  ] 1 test.
+</system-out>
+	</testcase>
+	<testcase name="FileDriver.output" classname="FileDriver.output" time="0.080265" status="run">
+		<properties/>
+		<system-out>Running main() from /usr/src/debug/gtest/googletest-1.18.0/googletest/src/gtest_main.cc
+Note: Google Test filter = FileDriver.output
+[==========] Running 1 test from 1 test suite.
+[----------] Global test environment set-up.
+[----------] 1 test from FileDriver
+[ RUN      ] FileDriver.output
+[       OK ] FileDriver.output (0 ms)
+[----------] 1 test from FileDriver (0 ms total)
+
+[----------] Global test environment tear-down
+[==========] 1 test from 1 test suite ran. (0 ms total)
+[  PASSED  ] 1 test.
+</system-out>
+	</testcase>
+	<testcase name="Listeners.vector" classname="Listeners.vector" time="0.119764" status="run">
+		<properties/>
+		<system-out>Running main() from /usr/src/debug/gtest/googletest-1.18.0/googletest/src/gtest_main.cc
+Note: Google Test filter = Listeners.vector
+[==========] Running 1 test from 1 test suite.
+[----------] Global test environment set-up.
+[----------] 1 test from Listeners
+[ RUN      ] Listeners.vector
+[       OK ] Listeners.vector (40 ms)
+[----------] 1 test from Listeners (40 ms total)
+
+[----------] Global test environment tear-down
+[==========] 1 test from 1 test suite ran. (40 ms total)
+[  PASSED  ] 1 test.
+</system-out>
+	</testcase>
+	<testcase name="Guernsey.play_log" classname="Guernsey.play_log" time="0.124126" status="run">
+		<properties/>
+		<system-out>Running main() from /usr/src/debug/gtest/googletest-1.18.0/googletest/src/gtest_main.cc
+Note: Google Test filter = Guernsey.play_log
+[==========] Running 1 test from 1 test suite.
+[----------] Global test environment set-up.
+[----------] 1 test from Guernsey
+[ RUN      ] Guernsey.play_log
+[       OK ] Guernsey.play_log (39 ms)
+[----------] 1 test from Guernsey (39 ms total)
+
+[----------] Global test environment tear-down
+[==========] 1 test from 1 test suite ran. (39 ms total)
+[  PASSED  ] 1 test.
+</system-out>
+	</testcase>
+	<testcase name="FindDriver.lookup" classname="FindDriver.lookup" time="0.119675" status="run">
+		<properties/>
+		<system-out>Running main() from /usr/src/debug/gtest/googletest-1.18.0/googletest/src/gtest_main.cc
+Note: Google Test filter = FindDriver.lookup
+[==========] Running 1 test from 1 test suite.
+[----------] Global test environment set-up.
+[----------] 1 test from FindDriver
+[ RUN      ] FindDriver.lookup
+[       OK ] FindDriver.lookup (38 ms)
+[----------] 1 test from FindDriver (38 ms total)
+
+[----------] Global test environment tear-down
+[==========] 1 test from 1 test suite ran. (38 ms total)
+[  PASSED  ] 1 test.
+</system-out>
+	</testcase>
+	<testcase name="Registry.persistence" classname="Registry.persistence" time="0.120462" status="run">
+		<properties/>
+		<system-out>Running main() from /usr/src/debug/gtest/googletest-1.18.0/googletest/src/gtest_main.cc
+Note: Google Test filter = Registry.persistence
+[==========] Running 1 test from 1 test suite.
+[----------] Global test environment set-up.
+[----------] 1 test from Registry
+[ RUN      ] Registry.persistence
+[       OK ] Registry.persistence (39 ms)
+[----------] 1 test from Registry (39 ms total)
+
+[----------] Global test environment tear-down
+[==========] 1 test from 1 test suite ran. (39 ms total)
+[  PASSED  ] 1 test.
+</system-out>
+	</testcase>
+	<testcase name="Position.ParseGGA" classname="Position.ParseGGA" time="0.117965" status="run">
+		<properties/>
+		<system-out>Running main() from /usr/src/debug/gtest/googletest-1.18.0/googletest/src/gtest_main.cc
+Note: Google Test filter = Position.ParseGGA
+[==========] Running 1 test from 1 test suite.
+[----------] Global test environment set-up.
+[----------] 1 test from Position
+[ RUN      ] Position.ParseGGA
+[       OK ] Position.ParseGGA (38 ms)
+[----------] 1 test from Position (38 ms total)
+
+[----------] Global test environment tear-down
+[==========] 1 test from 1 test suite ran. (38 ms total)
+[  PASSED  ] 1 test.
+</system-out>
+	</testcase>
+	<testcase name="Priority.Framework" classname="Priority.Framework" time="0.125187" status="run">
+		<properties/>
+		<system-out>Running main() from /usr/src/debug/gtest/googletest-1.18.0/googletest/src/gtest_main.cc
+Note: Google Test filter = Priority.Framework
+[==========] Running 1 test from 1 test suite.
+[----------] Global test environment set-up.
+[----------] 1 test from Priority
+[ RUN      ] Priority.Framework
+[       OK ] Priority.Framework (44 ms)
+[----------] 1 test from Priority (44 ms total)
+
+[----------] Global test environment tear-down
+[==========] 1 test from 1 test suite ran. (44 ms total)
+[  PASSED  ] 1 test.
+</system-out>
+	</testcase>
+	<testcase name="Priority.DifferentSource" classname="Priority.DifferentSource" time="0.123077" status="run">
+		<properties/>
+		<system-out>Running main() from /usr/src/debug/gtest/googletest-1.18.0/googletest/src/gtest_main.cc
+Note: Google Test filter = Priority.DifferentSource
+[==========] Running 1 test from 1 test suite.
+[----------] Global test environment set-up.
+[----------] 1 test from Priority
+[ RUN      ] Priority.DifferentSource
+[       OK ] Priority.DifferentSource (40 ms)
+[----------] 1 test from Priority (40 ms total)
+
+[----------] Global test environment tear-down
+[==========] 1 test from 1 test suite ran. (40 ms total)
+[  PASSED  ] 1 test.
+</system-out>
+	</testcase>
+	<testcase name="AIS.Decoding" classname="AIS.Decoding" time="0.119653" status="run">
+		<properties/>
+		<system-out>Running main() from /usr/src/debug/gtest/googletest-1.18.0/googletest/src/gtest_main.cc
+Note: Google Test filter = AIS.Decoding
+[==========] Running 1 test from 1 test suite.
+[----------] Global test environment set-up.
+[----------] 1 test from AIS
+[ RUN      ] AIS.Decoding
+[       OK ] AIS.Decoding (38 ms)
+[----------] 1 test from AIS (38 ms total)
+
+[----------] Global test environment tear-down
+[==========] 1 test from 1 test suite ran. (38 ms total)
+[  PASSED  ] 1 test.
+</system-out>
+	</testcase>
+	<testcase name="AIS.AISVDO" classname="AIS.AISVDO" time="0.119605" status="run">
+		<properties/>
+		<system-out>Running main() from /usr/src/debug/gtest/googletest-1.18.0/googletest/src/gtest_main.cc
+Note: Google Test filter = AIS.AISVDO
+[==========] Running 1 test from 1 test suite.
+[----------] Global test environment set-up.
+[----------] 1 test from AIS
+[ RUN      ] AIS.AISVDO
+[       OK ] AIS.AISVDO (38 ms)
+[----------] 1 test from AIS (38 ms total)
+
+[----------] Global test environment tear-down
+[==========] 1 test from 1 test suite ran. (38 ms total)
+[  PASSED  ] 1 test.
+</system-out>
+	</testcase>
+	<testcase name="AIS.AISVDM" classname="AIS.AISVDM" time="0.121044" status="run">
+		<properties/>
+		<system-out>Running main() from /usr/src/debug/gtest/googletest-1.18.0/googletest/src/gtest_main.cc
+Note: Google Test filter = AIS.AISVDM
+[==========] Running 1 test from 1 test suite.
+[----------] Global test environment set-up.
+[----------] 1 test from AIS
+[ RUN      ] AIS.AISVDM
+[       OK ] AIS.AISVDM (38 ms)
+[----------] 1 test from AIS (38 ms total)
+
+[----------] Global test environment tear-down
+[==========] 1 test from 1 test suite ran. (39 ms total)
+[  PASSED  ] 1 test.
+</system-out>
+	</testcase>
+	<testcase name="Navmsg.ActiveMessages" classname="Navmsg.ActiveMessages" time="0.118249" status="run">
+		<properties/>
+		<system-out>Running main() from /usr/src/debug/gtest/googletest-1.18.0/googletest/src/gtest_main.cc
+Note: Google Test filter = Navmsg.ActiveMessages
+[==========] Running 1 test from 1 test suite.
+[----------] Global test environment set-up.
+[----------] 1 test from Navmsg
+[ RUN      ] Navmsg.ActiveMessages
+[       OK ] Navmsg.ActiveMessages (37 ms)
+[----------] 1 test from Navmsg (37 ms total)
+
+[----------] Global test environment tear-down
+[==========] 1 test from 1 test suite ran. (37 ms total)
+[  PASSED  ] 1 test.
+</system-out>
+	</testcase>
+	<testcase name="Instance.StdInstanceChk" classname="Instance.StdInstanceChk" time="0.120429" status="run">
+		<properties/>
+		<system-out>Running main() from /usr/src/debug/gtest/googletest-1.18.0/googletest/src/gtest_main.cc
+Note: Google Test filter = Instance.StdInstanceChk
+[==========] Running 1 test from 1 test suite.
+[----------] Global test environment set-up.
+[----------] 1 test from Instance
+[ RUN      ] Instance.StdInstanceChk
+[       OK ] Instance.StdInstanceChk (41 ms)
+[----------] 1 test from Instance (41 ms total)
+
+[----------] Global test environment tear-down
+[==========] 1 test from 1 test suite ran. (41 ms total)
+[  PASSED  ] 1 test.
+</system-out>
+	</testcase>
+	<testcase name="Instance.WxInstanceChk" classname="Instance.WxInstanceChk" time="0.0793886" status="run">
+		<properties/>
+		<system-out>Running main() from /usr/src/debug/gtest/googletest-1.18.0/googletest/src/gtest_main.cc
+Note: Google Test filter = Instance.WxInstanceChk
+[==========] Running 1 test from 1 test suite.
+[----------] Global test environment set-up.
+[----------] 1 test from Instance
+[ RUN      ] Instance.WxInstanceChk
+[       OK ] Instance.WxInstanceChk (0 ms)
+[----------] 1 test from Instance (0 ms total)
+
+[----------] Global test environment tear-down
+[==========] 1 test from 1 test suite ran. (0 ms total)
+[  PASSED  ] 1 test.
+</system-out>
+	</testcase>
+	<testcase name="IpcClient.IpcGetEndpoint" classname="IpcClient.IpcGetEndpoint" time="0.384617" status="run">
+		<properties/>
+		<system-out>Running main() from /usr/src/debug/gtest/googletest-1.18.0/googletest/src/gtest_main.cc
+Note: Google Test filter = IpcClient.IpcGetEndpoint
+[==========] Running 1 test from 1 test suite.
+[----------] Global test environment set-up.
+[----------] 1 test from IpcClient
+[ RUN      ] IpcClient.IpcGetEndpoint
+[       OK ] IpcClient.IpcGetEndpoint (307 ms)
+[----------] 1 test from IpcClient (307 ms total)
+
+[----------] Global test environment tear-down
+[==========] 1 test from 1 test suite ran. (307 ms total)
+[  PASSED  ] 1 test.
+</system-out>
+	</testcase>
+	<testcase name="IpcClient.Raise" classname="IpcClient.Raise" time="0.389221" status="run">
+		<properties/>
+		<system-out>Running main() from /usr/src/debug/gtest/googletest-1.18.0/googletest/src/gtest_main.cc
+Note: Google Test filter = IpcClient.Raise
+[==========] Running 1 test from 1 test suite.
+[----------] Global test environment set-up.
+[----------] 1 test from IpcClient
+[ RUN      ] IpcClient.Raise
+[       OK ] IpcClient.Raise (308 ms)
+[----------] 1 test from IpcClient (308 ms total)
+
+[----------] Global test environment tear-down
+[==========] 1 test from 1 test suite ran. (309 ms total)
+[  PASSED  ] 1 test.
+</system-out>
+	</testcase>
+	<testcase name="IpcClient.Open" classname="IpcClient.Open" time="0.388976" status="run">
+		<properties/>
+		<system-out>Running main() from /usr/src/debug/gtest/googletest-1.18.0/googletest/src/gtest_main.cc
+Note: Google Test filter = IpcClient.Open
+[==========] Running 1 test from 1 test suite.
+[----------] Global test environment set-up.
+[----------] 1 test from IpcClient
+[ RUN      ] IpcClient.Open
+[       OK ] IpcClient.Open (308 ms)
+[----------] 1 test from IpcClient (308 ms total)
+
+[----------] Global test environment tear-down
+[==========] 1 test from 1 test suite ran. (308 ms total)
+[  PASSED  ] 1 test.
+</system-out>
+	</testcase>
+	<testcase name="Plugin.Basic" classname="Plugin.Basic" time="0.118474" status="run">
+		<properties/>
+		<system-out>Running main() from /usr/src/debug/gtest/googletest-1.18.0/googletest/src/gtest_main.cc
+Note: Google Test filter = Plugin.Basic
+[==========] Running 1 test from 1 test suite.
+[----------] Global test environment set-up.
+[----------] 1 test from Plugin
+[ RUN      ] Plugin.Basic
+[       OK ] Plugin.Basic (38 ms)
+[----------] 1 test from Plugin (38 ms total)
+
+[----------] Global test environment tear-down
+[==========] 1 test from 1 test suite ran. (38 ms total)
+[  PASSED  ] 1 test.
+</system-out>
+	</testcase>
+	<testcase name="WaitContinue.Basic" classname="WaitContinue.Basic" time="0.153916" status="run">
+		<properties/>
+		<system-out>Running main() from /usr/src/debug/gtest/googletest-1.18.0/googletest/src/gtest_main.cc
+Note: Google Test filter = WaitContinue.Basic
+[==========] Running 1 test from 1 test suite.
+[----------] Global test environment set-up.
+[----------] 1 test from WaitContinue
+[ RUN      ] WaitContinue.Basic
+[       OK ] WaitContinue.Basic (75 ms)
+[----------] 1 test from WaitContinue (75 ms total)
+
+[----------] Global test environment tear-down
+[==========] 1 test from 1 test suite ran. (75 ms total)
+[  PASSED  ] 1 test.
+</system-out>
+	</testcase>
+	<testcase name="FormatTime.Basic" classname="FormatTime.Basic" time="0.0811746" status="run">
+		<properties/>
+		<system-out>Running main() from /usr/src/debug/gtest/googletest-1.18.0/googletest/src/gtest_main.cc
+Note: Google Test filter = FormatTime.Basic
+[==========] Running 1 test from 1 test suite.
+[----------] Global test environment set-up.
+[----------] 1 test from FormatTime
+[ RUN      ] FormatTime.Basic
+[       OK ] FormatTime.Basic (0 ms)
+[----------] 1 test from FormatTime (0 ms total)
+
+[----------] Global test environment tear-down
+[==========] 1 test from 1 test suite ran. (0 ms total)
+[  PASSED  ] 1 test.
+</system-out>
+	</testcase>
+	<testcase name="SemanticVersion.Basic" classname="SemanticVersion.Basic" time="0.079915" status="run">
+		<properties/>
+		<system-out>Running main() from /usr/src/debug/gtest/googletest-1.18.0/googletest/src/gtest_main.cc
+Note: Google Test filter = SemanticVersion.Basic
+[==========] Running 1 test from 1 test suite.
+[----------] Global test environment set-up.
+[----------] 1 test from SemanticVersion
+[ RUN      ] SemanticVersion.Basic
+[       OK ] SemanticVersion.Basic (0 ms)
+[----------] 1 test from SemanticVersion (0 ms total)
+
+[----------] Global test environment tear-down
+[==========] 1 test from 1 test suite ran. (0 ms total)
+[  PASSED  ] 1 test.
+</system-out>
+	</testcase>
+	<testcase name="Filter.Create" classname="Filter.Create" time="0.088187" status="run">
+		<properties/>
+		<system-out>Running main() from /usr/src/debug/gtest/googletest-1.18.0/googletest/src/gtest_main.cc
+Note: Google Test filter = Filter.Create
+[==========] Running 1 test from 1 test suite.
+[----------] Global test environment set-up.
+[----------] 1 test from Filter
+[ RUN      ] Filter.Create
+[       OK ] Filter.Create (4 ms)
+[----------] 1 test from Filter (4 ms total)
+
+[----------] Global test environment tear-down
+[==========] 1 test from 1 test suite ran. (4 ms total)
+[  PASSED  ] 1 test.
+</system-out>
+	</testcase>
+	<testcase name="Filter.ListSystemFilters" classname="Filter.ListSystemFilters" time="0.0804048" status="run">
+		<properties/>
+		<system-out>Running main() from /usr/src/debug/gtest/googletest-1.18.0/googletest/src/gtest_main.cc
+Note: Google Test filter = Filter.ListSystemFilters
+[==========] Running 1 test from 1 test suite.
+[----------] Global test environment set-up.
+[----------] 1 test from Filter
+[ RUN      ] Filter.ListSystemFilters
+[       OK ] Filter.ListSystemFilters (1 ms)
+[----------] 1 test from Filter (1 ms total)
+
+[----------] Global test environment tear-down
+[==========] 1 test from 1 test suite ran. (1 ms total)
+[  PASSED  ] 1 test.
+</system-out>
+	</testcase>
+	<testcase name="DriverRegistry.RegisterDriver" classname="DriverRegistry.RegisterDriver" time="1.07984" status="run">
+		<properties/>
+		<system-out>Running main() from /usr/src/debug/gtest/googletest-1.18.0/googletest/src/gtest_main.cc
+Note: Google Test filter = DriverRegistry.RegisterDriver
+[==========] Running 1 test from 1 test suite.
+[----------] Global test environment set-up.
+[----------] 1 test from DriverRegistry
+[ RUN      ] DriverRegistry.RegisterDriver
+11:39:19: Closing N2K socketCAN: vcan0
+11:39:19: Stopping Worker Thread
+11:39:19: SocketCAN ioctl (SIOCGIFINDEX) failed: vcan0: No such device
+11:39:19: SocketCAN socket create failed: vcan0
+11:39:20: StopThread: Stopped in 1 sec.
+[       OK ] DriverRegistry.RegisterDriver (1000 ms)
+[----------] 1 test from DriverRegistry (1000 ms total)
+
+[----------] Global test environment tear-down
+[==========] 1 test from 1 test suite ran. (1000 ms total)
+[  PASSED  ] 1 test.
+</system-out>
+	</testcase>
+	<testcase name="RestServer.start_stop" classname="RestServer.start_stop" time="0.825948" status="run">
+		<properties/>
+		<system-out>Running main() from /usr/src/debug/gtest/googletest-1.18.0/googletest/src/gtest_main.cc
+Note: Google Test filter = RestServer.start_stop
+[==========] Running 1 test from 1 test suite.
+[----------] Global test environment set-up.
+[----------] 1 test from RestServer
+[ RUN      ] RestServer.start_stop
+11:39:20: Debug: Stopping REST service
+11:39:20: Debug: Stopping io thread
+11:39:21: Debug: Stopping REST service
+[       OK ] RestServer.start_stop (744 ms)
+[----------] 1 test from RestServer (744 ms total)
+
+[----------] Global test environment tear-down
+[==========] 1 test from 1 test suite ran. (744 ms total)
+[  PASSED  ] 1 test.
+</system-out>
+	</testcase>
+	<testcase name="RestServer.Ping" classname="RestServer.Ping" time="0.969428" status="run">
+		<properties/>
+		<system-out>Running main() from /usr/src/debug/gtest/googletest-1.18.0/googletest/src/gtest_main.cc
+Note: Google Test filter = RestServer.Ping
+[==========] Running 1 test from 1 test suite.
+[----------] Global test environment set-up.
+[----------] 1 test from RestServer
+[ RUN      ] RestServer.Ping
+  % Total    % Received % Xferd  Average Speed  Time    Time    Time   Current
+                                 Dload  Upload  Total   Spent   Left   Speed
+  0      0   0      0   0      0      0      0                              0100     35 100     35   0      0   5208      0                              0100     35 100     35   0      0   5148      0                              0100     35 100     35   0      0   5097      0                              0
+  % Total    % Received % Xferd  Average Speed  Time    Time    Time   Current
+                                 Dload  Upload  Total   Spent   Left   Speed
+  0      0   0      0   0      0      0      0                              0100     35 100     35   0      0...
+[This part of the test output was removed since it exceeds the threshold of 1024 bytes.]
+</system-out>
+	</testcase>
+	<testcase name="RestServer.Pong" classname="RestServer.Pong" time="0.922015" status="run">
+		<properties/>
+		<system-out>Running main() from /usr/src/debug/gtest/googletest-1.18.0/googletest/src/gtest_main.cc
+Note: Google Test filter = RestServer.Pong
+[==========] Running 1 test from 1 test suite.
+[----------] Global test environment set-up.
+[----------] 1 test from RestServer
+[ RUN      ] RestServer.Pong
+  % Total    % Received % Xferd  Average Speed  Time    Time    Time   Current
+                                 Dload  Upload  Total   Spent   Left   Speed
+  0      0   0      0   0      0      0      0                              0  0     15   0      0   0      0      0      0                              0  0     15   0      0   0      0      0      0                              0  0     15   0      0   0      0      0      0                              0
+11:39:22: Debug: Stopping REST service
+11:39:22: Debug: Stopping io thread
+11:39:22: Debug: Stopping REST service
+[       OK ] RestServer.Pong (832 ms)
+[----------] 1 test from RestServer (832 ms total)
+
+[----------] Global test environment tear-down
+[==========] 1 t...
+[This part of the test output was removed since it exceeds the threshold of 1024 bytes.]
+</system-out>
+	</testcase>
+	<testcase name="RestServer.Version" classname="RestServer.Version" time="0.880041" status="run">
+		<properties/>
+		<system-out>Running main() from /usr/src/debug/gtest/googletest-1.18.0/googletest/src/gtest_main.cc
+Note: Google Test filter = RestServer.Version
+[==========] Running 1 test from 1 test suite.
+[----------] Global test environment set-up.
+[----------] 1 test from RestServer
+[ RUN      ] RestServer.Version
+  % Total    % Received % Xferd  Average Speed  Time    Time    Time   Current
+                                 Dload  Upload  Total   Spent   Left   Speed
+  0      0   0      0   0      0      0      0                              0100     23 100     23   0      0   3674      0                              0100     23 100     23   0      0   3637      0                              0100     23 100     23   0      0   3596      0                              0
+11:39:23: Debug: Stopping REST service
+11:39:23: Debug: Stopping io thread
+11:39:23: Debug: Stopping REST service
+[       OK ] RestServer.Version (795 ms)
+[----------] 1 test from RestServer (795 ms total)
+
+[----------] Global test environment tear-down
+[======...
+[This part of the test output was removed since it exceeds the threshold of 1024 bytes.]
+</system-out>
+	</testcase>
+	<testcase name="RestServer.Object" classname="RestServer.Object" time="1.07071" status="run">
+		<properties/>
+		<system-out>Running main() from /usr/src/debug/gtest/googletest-1.18.0/googletest/src/gtest_main.cc
+Note: Google Test filter = RestServer.Object
+[==========] Running 1 test from 1 test suite.
+[----------] Global test environment set-up.
+[----------] 1 test from RestServer
+[ RUN      ] RestServer.Object
+[       OK ] RestServer.Object (977 ms)
+[----------] 1 test from RestServer (977 ms total)
+
+[----------] Global test environment tear-down
+[==========] 1 test from 1 test suite ran. (977 ms total)
+[  PASSED  ] 1 test.
+</system-out>
+	</testcase>
+	<testcase name="RestServer.CheckWrite" classname="RestServer.CheckWrite" time="1.01605" status="run">
+		<properties/>
+		<system-out>Running main() from /usr/src/debug/gtest/googletest-1.18.0/googletest/src/gtest_main.cc
+Note: Google Test filter = RestServer.CheckWrite
+[==========] Running 1 test from 1 test suite.
+[----------] Global test environment set-up.
+[----------] 1 test from RestServer
+[ RUN      ] RestServer.CheckWrite
+[       OK ] RestServer.CheckWrite (933 ms)
+[----------] 1 test from RestServer (933 ms total)
+
+[----------] Global test environment tear-down
+[==========] 1 test from 1 test suite ran. (933 ms total)
+[  PASSED  ] 1 test.
+</system-out>
+	</testcase>
+	<testcase name="RestServer.PluginMessage" classname="RestServer.PluginMessage" time="1.01948" status="run">
+		<properties/>
+		<system-out>Running main() from /usr/src/debug/gtest/googletest-1.18.0/googletest/src/gtest_main.cc
+Note: Google Test filter = RestServer.PluginMessage
+[==========] Running 1 test from 1 test suite.
+[----------] Global test environment set-up.
+[----------] 1 test from RestServer
+[ RUN      ] RestServer.PluginMessage
+  % Total    % Received % Xferd  Average Speed  Time    Time    Time   Current
+                                 Dload  Upload  Total   Spent   Left   Speed
+  0      0   0      0   0      0      0      0                              0100     35 100     35   0      0   6485      0                              0100     35 100     35   0      0   6402      0                              0100     35 100     35   0      0   6317      0                              0
+  % Total    % Received % Xferd  Average Speed  Time    Time    Time   Current
+                                 Dload  Upload  Total   Spent   Left   Speed
+  0      0   0      0   0      0      0      0                              0100     20 100...
+[This part of the test output was removed since it exceeds the threshold of 1024 bytes.]
+</system-out>
+	</testcase>
+	<testcase name="OpenNavDiagnostics.FreshnessFrameCoherence" classname="OpenNavDiagnostics.FreshnessFrameCoherence" time="0.129205" status="run">
+		<properties/>
+		<system-out>Running main() from /usr/src/debug/gtest/googletest-1.18.0/googletest/src/gtest_main.cc
+Note: Google Test filter = OpenNavDiagnostics.FreshnessFrameCoherence
+[==========] Running 1 test from 1 test suite.
+[----------] Global test environment set-up.
+[----------] 1 test from OpenNavDiagnostics
+[ RUN      ] OpenNavDiagnostics.FreshnessFrameCoherence
+129 diagnostic freshness coherence checks passed
+[       OK ] OpenNavDiagnostics.FreshnessFrameCoherence (47 ms)
+[----------] 1 test from OpenNavDiagnostics (47 ms total)
+
+[----------] Global test environment tear-down
+[==========] 1 test from 1 test suite ran. (47 ms total)
+[  PASSED  ] 1 test.
+</system-out>
+	</testcase>
+	<testcase name="OpenNavPeerUnavailable.RejectsEmptyTransfersInsteadOfClaimingSuccess" classname="OpenNavPeerUnavailable.RejectsEmptyTransfersInsteadOfClaimingSuccess" time="0.0818495" status="run">
+		<properties/>
+		<system-out>Running main() from /usr/src/debug/gtest/googletest-1.18.0/googletest/src/gtest_main.cc
+Note: Google Test filter = OpenNavPeerUnavailable.RejectsEmptyTransfersInsteadOfClaimingSuccess
+[==========] Running 1 test from 1 test suite.
+[----------] Global test environment set-up.
+[----------] 1 test from OpenNavPeerUnavailable
+[ RUN      ] OpenNavPeerUnavailable.RejectsEmptyTransfersInsteadOfClaimingSuccess
+[       OK ] OpenNavPeerUnavailable.RejectsEmptyTransfersInsteadOfClaimingSuccess (0 ms)
+[----------] 1 test from OpenNavPeerUnavailable (0 ms total)
+
+[----------] Global test environment tear-down
+[==========] 1 test from 1 test suite ran. (0 ms total)
+[  PASSED  ] 1 test.
+</system-out>
+	</testcase>
+	<testcase name="OpenNavPeerUnavailable.ForcedSendDoesNotInspectOrSerializeObjects" classname="OpenNavPeerUnavailable.ForcedSendDoesNotInspectOrSerializeObjects" time="0.0808305" status="run">
+		<properties/>
+		<system-out>Running main() from /usr/src/debug/gtest/googletest-1.18.0/googletest/src/gtest_main.cc
+Note: Google Test filter = OpenNavPeerUnavailable.ForcedSendDoesNotInspectOrSerializeObjects
+[==========] Running 1 test from 1 test suite.
+[----------] Global test environment set-up.
+[----------] 1 test from OpenNavPeerUnavailable
+[ RUN      ] OpenNavPeerUnavailable.ForcedSendDoesNotInspectOrSerializeObjects
+[       OK ] OpenNavPeerUnavailable.ForcedSendDoesNotInspectOrSerializeObjects (0 ms)
+[----------] 1 test from OpenNavPeerUnavailable (0 ms total)
+
+[----------] Global test environment tear-down
+[==========] 1 test from 1 test suite ran. (0 ms total)
+[  PASSED  ] 1 test.
+</system-out>
+	</testcase>
+	<testcase name="OpenNavPeerUnavailable.ClearsRetainedVersionWithoutPairingOrFallback" classname="OpenNavPeerUnavailable.ClearsRetainedVersionWithoutPairingOrFallback" time="0.0785968" status="run">
+		<properties/>
+		<system-out>Running main() from /usr/src/debug/gtest/googletest-1.18.0/googletest/src/gtest_main.cc
+Note: Google Test filter = OpenNavPeerUnavailable.ClearsRetainedVersionWithoutPairingOrFallback
+[==========] Running 1 test from 1 test suite.
+[----------] Global test environment set-up.
+[----------] 1 test from OpenNavPeerUnavailable
+[ RUN      ] OpenNavPeerUnavailable.ClearsRetainedVersionWithoutPairingOrFallback
+[       OK ] OpenNavPeerUnavailable.ClearsRetainedVersionWithoutPairingOrFallback (0 ms)
+[----------] 1 test from OpenNavPeerUnavailable (0 ms total)
+
+[----------] Global test environment tear-down
+[==========] 1 test from 1 test suite ran. (0 ms total)
+[  PASSED  ] 1 test.
+</system-out>
+	</testcase>
+	<testcase name="OpenNavPeerUnavailable.DirectKeyCheckRejectsWithoutSendingCredential" classname="OpenNavPeerUnavailable.DirectKeyCheckRejectsWithoutSendingCredential" time="0.0825528" status="run">
+		<properties/>
+		<system-out>Running main() from /usr/src/debug/gtest/googletest-1.18.0/googletest/src/gtest_main.cc
+Note: Google Test filter = OpenNavPeerUnavailable.DirectKeyCheckRejectsWithoutSendingCredential
+[==========] Running 1 test from 1 test suite.
+[----------] Global test environment set-up.
+[----------] 1 test from OpenNavPeerUnavailable
+[ RUN      ] OpenNavPeerUnavailable.DirectKeyCheckRejectsWithoutSendingCredential
+[       OK ] OpenNavPeerUnavailable.DirectKeyCheckRejectsWithoutSendingCredential (0 ms)
+[----------] 1 test from OpenNavPeerUnavailable (0 ms total)
+
+[----------] Global test environment tear-down
+[==========] 1 test from 1 test suite ran. (0 ms total)
+[  PASSED  ] 1 test.
+</system-out>
+	</testcase>
+	<testcase name="OpenNavPilotPresentation.MeasuredMagneticHeadingAndCommands" classname="OpenNavPilotPresentation.MeasuredMagneticHeadingAndCommands" time="0.0801198" status="run">
+		<properties/>
+		<system-out>Running main() from /usr/src/debug/gtest/googletest-1.18.0/googletest/src/gtest_main.cc
+Note: Google Test filter = OpenNavPilotPresentation.MeasuredMagneticHeadingAndCommands
+[==========] Running 1 test from 1 test suite.
+[----------] Global test environment set-up.
+[----------] 1 test from OpenNavPilotPresentation
+[ RUN      ] OpenNavPilotPresentation.MeasuredMagneticHeadingAndCommands
+[       OK ] OpenNavPilotPresentation.MeasuredMagneticHeadingAndCommands (0 ms)
+[----------] 1 test from OpenNavPilotPresentation (0 ms total)
+
+[----------] Global test environment tear-down
+[==========] 1 test from 1 test suite ran. (0 ms total)
+[  PASSED  ] 1 test.
+</system-out>
+	</testcase>
+	<testcase name="OpenNavPilotPresentation.PendingAndTimeoutNeverInventConfirmation" classname="OpenNavPilotPresentation.PendingAndTimeoutNeverInventConfirmation" time="0.0792131" status="run">
+		<properties/>
+		<system-out>Running main() from /usr/src/debug/gtest/googletest-1.18.0/googletest/src/gtest_main.cc
+Note: Google Test filter = OpenNavPilotPresentation.PendingAndTimeoutNeverInventConfirmation
+[==========] Running 1 test from 1 test suite.
+[----------] Global test environment set-up.
+[----------] 1 test from OpenNavPilotPresentation
+[ RUN      ] OpenNavPilotPresentation.PendingAndTimeoutNeverInventConfirmation
+[       OK ] OpenNavPilotPresentation.PendingAndTimeoutNeverInventConfirmation (0 ms)
+[----------] 1 test from OpenNavPilotPresentation (0 ms total)
+
+[----------] Global test environment tear-down
+[==========] 1 test from 1 test suite ran. (0 ms total)
+[  PASSED  ] 1 test.
+</system-out>
+	</testcase>
+	<testcase name="OpenNavPilotPresentation.InvalidFreshnessAndHeading" classname="OpenNavPilotPresentation.InvalidFreshnessAndHeading" time="0.0804097" status="run">
+		<properties/>
+		<system-out>Running main() from /usr/src/debug/gtest/googletest-1.18.0/googletest/src/gtest_main.cc
+Note: Google Test filter = OpenNavPilotPresentation.InvalidFreshnessAndHeading
+[==========] Running 1 test from 1 test suite.
+[----------] Global test environment set-up.
+[----------] 1 test from OpenNavPilotPresentation
+[ RUN      ] OpenNavPilotPresentation.InvalidFreshnessAndHeading
+[       OK ] OpenNavPilotPresentation.InvalidFreshnessAndHeading (0 ms)
+[----------] 1 test from OpenNavPilotPresentation (0 ms total)
+
+[----------] Global test environment tear-down
+[==========] 1 test from 1 test suite ran. (0 ms total)
+[  PASSED  ] 1 test.
+</system-out>
+	</testcase>
+	<testcase name="OpenNavPilotPresentation.PermissionAndReplay" classname="OpenNavPilotPresentation.PermissionAndReplay" time="0.0791143" status="run">
+		<properties/>
+		<system-out>Running main() from /usr/src/debug/gtest/googletest-1.18.0/googletest/src/gtest_main.cc
+Note: Google Test filter = OpenNavPilotPresentation.PermissionAndReplay
+[==========] Running 1 test from 1 test suite.
+[----------] Global test environment set-up.
+[----------] 1 test from OpenNavPilotPresentation
+[ RUN      ] OpenNavPilotPresentation.PermissionAndReplay
+[       OK ] OpenNavPilotPresentation.PermissionAndReplay (0 ms)
+[----------] 1 test from OpenNavPilotPresentation (0 ms total)
+
+[----------] Global test environment tear-down
+[==========] 1 test from 1 test suite ran. (0 ms total)
+[  PASSED  ] 1 test.
+</system-out>
+	</testcase>
+	<testcase name="OpenNavPilotPresentation.ProductStatusOnlyOverridesOldPermission" classname="OpenNavPilotPresentation.ProductStatusOnlyOverridesOldPermission" time="0.080901" status="run">
+		<properties/>
+		<system-out>Running main() from /usr/src/debug/gtest/googletest-1.18.0/googletest/src/gtest_main.cc
+Note: Google Test filter = OpenNavPilotPresentation.ProductStatusOnlyOverridesOldPermission
+[==========] Running 1 test from 1 test suite.
+[----------] Global test environment set-up.
+[----------] 1 test from OpenNavPilotPresentation
+[ RUN      ] OpenNavPilotPresentation.ProductStatusOnlyOverridesOldPermission
+[       OK ] OpenNavPilotPresentation.ProductStatusOnlyOverridesOldPermission (0 ms)
+[----------] 1 test from OpenNavPilotPresentation (0 ms total)
+
+[----------] Global test environment tear-down
+[==========] 1 test from 1 test suite ran. (0 ms total)
+[  PASSED  ] 1 test.
+</system-out>
+	</testcase>
+	<testcase name="OpenNavAnchorView.CurrentPositionAndUnavailableStates" classname="OpenNavAnchorView.CurrentPositionAndUnavailableStates" time="0.0772979" status="run">
+		<properties/>
+		<system-out>Running main() from /usr/src/debug/gtest/googletest-1.18.0/googletest/src/gtest_main.cc
+Note: Google Test filter = OpenNavAnchorView.CurrentPositionAndUnavailableStates
+[==========] Running 1 test from 1 test suite.
+[----------] Global test environment set-up.
+[----------] 1 test from OpenNavAnchorView
+[ RUN      ] OpenNavAnchorView.CurrentPositionAndUnavailableStates
+[       OK ] OpenNavAnchorView.CurrentPositionAndUnavailableStates (0 ms)
+[----------] 1 test from OpenNavAnchorView (0 ms total)
+
+[----------] Global test environment tear-down
+[==========] 1 test from 1 test suite ran. (0 ms total)
+[  PASSED  ] 1 test.
+</system-out>
+	</testcase>
+	<testcase name="OpenNavAnchorView.ChangedPositionAndInvalidObservationsSuppressed" classname="OpenNavAnchorView.ChangedPositionAndInvalidObservationsSuppressed" time="0.0822232" status="run">
+		<properties/>
+		<system-out>Running main() from /usr/src/debug/gtest/googletest-1.18.0/googletest/src/gtest_main.cc
+Note: Google Test filter = OpenNavAnchorView.ChangedPositionAndInvalidObservationsSuppressed
+[==========] Running 1 test from 1 test suite.
+[----------] Global test environment set-up.
+[----------] 1 test from OpenNavAnchorView
+[ RUN      ] OpenNavAnchorView.ChangedPositionAndInvalidObservationsSuppressed
+[       OK ] OpenNavAnchorView.ChangedPositionAndInvalidObservationsSuppressed (0 ms)
+[----------] 1 test from OpenNavAnchorView (0 ms total)
+
+[----------] Global test environment tear-down
+[==========] 1 test from 1 test suite ran. (0 ms total)
+[  PASSED  ] 1 test.
+</system-out>
+	</testcase>
+	<testcase name="OpenNavAnchorView.HistoryOwnedBoundedAndNeverRefreshedByReading" classname="OpenNavAnchorView.HistoryOwnedBoundedAndNeverRefreshedByReading" time="0.0897075" status="run">
+		<properties/>
+		<system-out>Running main() from /usr/src/debug/gtest/googletest-1.18.0/googletest/src/gtest_main.cc
+Note: Google Test filter = OpenNavAnchorView.HistoryOwnedBoundedAndNeverRefreshedByReading
+[==========] Running 1 test from 1 test suite.
+[----------] Global test environment set-up.
+[----------] 1 test from OpenNavAnchorView
+[ RUN      ] OpenNavAnchorView.HistoryOwnedBoundedAndNeverRefreshedByReading
+[       OK ] OpenNavAnchorView.HistoryOwnedBoundedAndNeverRefreshedByReading (4 ms)
+[----------] 1 test from OpenNavAnchorView (4 ms total)
+
+[----------] Global test environment tear-down
+[==========] 1 test from 1 test suite ran. (4 ms total)
+[  PASSED  ] 1 test.
+</system-out>
+	</testcase>
+	<testcase name="OpenNavAnchorGeometry.PinnedMercatorProjectionIncludingAntimeridian" classname="OpenNavAnchorGeometry.PinnedMercatorProjectionIncludingAntimeridian" time="0.0826868" status="run">
+		<properties/>
+		<system-out>Running main() from /usr/src/debug/gtest/googletest-1.18.0/googletest/src/gtest_main.cc
+Note: Google Test filter = OpenNavAnchorGeometry.PinnedMercatorProjectionIncludingAntimeridian
+[==========] Running 1 test from 1 test suite.
+[----------] Global test environment set-up.
+[----------] 1 test from OpenNavAnchorGeometry
+[ RUN      ] OpenNavAnchorGeometry.PinnedMercatorProjectionIncludingAntimeridian
+[       OK ] OpenNavAnchorGeometry.PinnedMercatorProjectionIncludingAntimeridian (0 ms)
+[----------] 1 test from OpenNavAnchorGeometry (0 ms total)
+
+[----------] Global test environment tear-down
+[==========] 1 test from 1 test suite ran. (0 ms total)
+[  PASSED  ] 1 test.
+</system-out>
+	</testcase>
+	<testcase name="OpenNavAnchorGeometry.InvalidCoordinatesUnavailable" classname="OpenNavAnchorGeometry.InvalidCoordinatesUnavailable" time="0.078851" status="run">
+		<properties/>
+		<system-out>Running main() from /usr/src/debug/gtest/googletest-1.18.0/googletest/src/gtest_main.cc
+Note: Google Test filter = OpenNavAnchorGeometry.InvalidCoordinatesUnavailable
+[==========] Running 1 test from 1 test suite.
+[----------] Global test environment set-up.
+[----------] 1 test from OpenNavAnchorGeometry
+[ RUN      ] OpenNavAnchorGeometry.InvalidCoordinatesUnavailable
+[       OK ] OpenNavAnchorGeometry.InvalidCoordinatesUnavailable (0 ms)
+[----------] 1 test from OpenNavAnchorGeometry (0 ms total)
+
+[----------] Global test environment tear-down
+[==========] 1 test from 1 test suite ran. (0 ms total)
+[  PASSED  ] 1 test.
+</system-out>
+	</testcase>
+	<testcase name="OpenNavPassage.CurrentObservationProvenance" classname="OpenNavPassage.CurrentObservationProvenance" time="0.085007" status="run">
+		<properties/>
+		<system-out>Running main() from /usr/src/debug/gtest/googletest-1.18.0/googletest/src/gtest_main.cc
+Note: Google Test filter = OpenNavPassage.CurrentObservationProvenance
+[==========] Running 1 test from 1 test suite.
+[----------] Global test environment set-up.
+[----------] 1 test from OpenNavPassage
+[ RUN      ] OpenNavPassage.CurrentObservationProvenance
+PASS 25 passage provenance checks
+[       OK ] OpenNavPassage.CurrentObservationProvenance (0 ms)
+[----------] 1 test from OpenNavPassage (0 ms total)
+
+[----------] Global test environment tear-down
+[==========] 1 test from 1 test suite ran. (0 ms total)
+[  PASSED  ] 1 test.
+</system-out>
+	</testcase>
+	<testcase name="OpenNavEnergyView.CurrentObservationProvenance" classname="OpenNavEnergyView.CurrentObservationProvenance" time="0.0777649" status="run">
+		<properties/>
+		<system-out>Running main() from /usr/src/debug/gtest/googletest-1.18.0/googletest/src/gtest_main.cc
+Note: Google Test filter = OpenNavEnergyView.CurrentObservationProvenance
+[==========] Running 1 test from 1 test suite.
+[----------] Global test environment set-up.
+[----------] 1 test from OpenNavEnergyView
+[ RUN      ] OpenNavEnergyView.CurrentObservationProvenance
+PASS 14 energy presentation provenance checks
+[       OK ] OpenNavEnergyView.CurrentObservationProvenance (0 ms)
+[----------] 1 test from OpenNavEnergyView (0 ms total)
+
+[----------] Global test environment tear-down
+[==========] 1 test from 1 test suite ran. (0 ms total)
+[  PASSED  ] 1 test.
+</system-out>
+	</testcase>
+	<testcase name="OpenNavInstruments.CurrentDirectionalProvenance" classname="OpenNavInstruments.CurrentDirectionalProvenance" time="0.0790806" status="run">
+		<properties/>
+		<system-out>Running main() from /usr/src/debug/gtest/googletest-1.18.0/googletest/src/gtest_main.cc
+Note: Google Test filter = OpenNavInstruments.CurrentDirectionalProvenance
+[==========] Running 1 test from 1 test suite.
+[----------] Global test environment set-up.
+[----------] 1 test from OpenNavInstruments
+[ RUN      ] OpenNavInstruments.CurrentDirectionalProvenance
+PASS 26 instrument provenance checks
+[       OK ] OpenNavInstruments.CurrentDirectionalProvenance (0 ms)
+[----------] 1 test from OpenNavInstruments (0 ms total)
+
+[----------] Global test environment tear-down
+[==========] 1 test from 1 test suite ran. (0 ms total)
+[  PASSED  ] 1 test.
+</system-out>
+	</testcase>
+	<testcase name="OpenNavSourceHealth.PerMeasurementAndIndependentAis" classname="OpenNavSourceHealth.PerMeasurementAndIndependentAis" time="0.0792029" status="run">
+		<properties/>
+		<system-out>Running main() from /usr/src/debug/gtest/googletest-1.18.0/googletest/src/gtest_main.cc
+Note: Google Test filter = OpenNavSourceHealth.PerMeasurementAndIndependentAis
+[==========] Running 1 test from 1 test suite.
+[----------] Global test environment set-up.
+[----------] 1 test from OpenNavSourceHealth
+[ RUN      ] OpenNavSourceHealth.PerMeasurementAndIndependentAis
+PASS 49 source-health provenance checks
+[       OK ] OpenNavSourceHealth.PerMeasurementAndIndependentAis (0 ms)
+[----------] 1 test from OpenNavSourceHealth (0 ms total)
+
+[----------] Global test environment tear-down
+[==========] 1 test from 1 test suite ran. (0 ms total)
+[  PASSED  ] 1 test.
+</system-out>
+	</testcase>
+	<testcase name="OpenNavFooter.OwnedNavigationAndHealth" classname="OpenNavFooter.OwnedNavigationAndHealth" time="0.0814796" status="run">
+		<properties/>
+		<system-out>Running main() from /usr/src/debug/gtest/googletest-1.18.0/googletest/src/gtest_main.cc
+Note: Google Test filter = OpenNavFooter.OwnedNavigationAndHealth
+[==========] Running 1 test from 1 test suite.
+[----------] Global test environment set-up.
+[----------] 1 test from OpenNavFooter
+[ RUN      ] OpenNavFooter.OwnedNavigationAndHealth
+PASS 44 footer provenance checks
+[       OK ] OpenNavFooter.OwnedNavigationAndHealth (1 ms)
+[----------] 1 test from OpenNavFooter (1 ms total)
+
+[----------] Global test environment tear-down
+[==========] 1 test from 1 test suite ran. (1 ms total)
+[  PASSED  ] 1 test.
+</system-out>
+	</testcase>
+	<testcase name="OpenNavHorizon.OwnedAdviceAndActions" classname="OpenNavHorizon.OwnedAdviceAndActions" time="0.0838815" status="run">
+		<properties/>
+		<system-out>Running main() from /usr/src/debug/gtest/googletest-1.18.0/googletest/src/gtest_main.cc
+Note: Google Test filter = OpenNavHorizon.OwnedAdviceAndActions
+[==========] Running 1 test from 1 test suite.
+[----------] Global test environment set-up.
+[----------] 1 test from OpenNavHorizon
+[ RUN      ] OpenNavHorizon.OwnedAdviceAndActions
+PASS 81 horizon provenance checks
+[       OK ] OpenNavHorizon.OwnedAdviceAndActions (2 ms)
+[----------] 1 test from OpenNavHorizon (2 ms total)
+
+[----------] Global test environment tear-down
+[==========] 1 test from 1 test suite ran. (2 ms total)
+[  PASSED  ] 1 test.
+</system-out>
+	</testcase>
+	<testcase name="OpenNavRouteGeometry.AntimeridianFirstMiddleFinalMatchUpstream" classname="OpenNavRouteGeometry.AntimeridianFirstMiddleFinalMatchUpstream" time="0.0842202" status="run">
+		<properties/>
+		<system-out>Running main() from /usr/src/debug/gtest/googletest-1.18.0/googletest/src/gtest_main.cc
+Note: Google Test filter = OpenNavRouteGeometry.AntimeridianFirstMiddleFinalMatchUpstream
+[==========] Running 1 test from 1 test suite.
+[----------] Global test environment set-up.
+[----------] 1 test from OpenNavRouteGeometry
+[ RUN      ] OpenNavRouteGeometry.AntimeridianFirstMiddleFinalMatchUpstream
+[       OK ] OpenNavRouteGeometry.AntimeridianFirstMiddleFinalMatchUpstream (1 ms)
+[----------] 1 test from OpenNavRouteGeometry (2 ms total)
+
+[----------] Global test environment tear-down
+[==========] 1 test from 1 test suite ran. (2 ms total)
+[  PASSED  ] 1 test.
+</system-out>
+	</testcase>
+	<testcase name="OpenNavRouteGeometry.ActualReverseAndEditChangeRevision" classname="OpenNavRouteGeometry.ActualReverseAndEditChangeRevision" time="0.0809564" status="run">
+		<properties/>
+		<system-out>Running main() from /usr/src/debug/gtest/googletest-1.18.0/googletest/src/gtest_main.cc
+Note: Google Test filter = OpenNavRouteGeometry.ActualReverseAndEditChangeRevision
+[==========] Running 1 test from 1 test suite.
+[----------] Global test environment set-up.
+[----------] 1 test from OpenNavRouteGeometry
+[ RUN      ] OpenNavRouteGeometry.ActualReverseAndEditChangeRevision
+[       OK ] OpenNavRouteGeometry.ActualReverseAndEditChangeRevision (0 ms)
+[----------] 1 test from OpenNavRouteGeometry (0 ms total)
+
+[----------] Global test environment tear-down
+[==========] 1 test from 1 test suite ran. (1 ms total)
+[  PASSED  ] 1 test.
+</system-out>
+	</testcase>
+	<testcase name="OpenNavRouteGeometry.RemovedRouteIsNotDereferencedAndSnapshotSurvivesDeletion" classname="OpenNavRouteGeometry.RemovedRouteIsNotDereferencedAndSnapshotSurvivesDeletion" time="0.107491" status="run">
+		<properties/>
+		<system-out>Running main() from /usr/src/debug/gtest/googletest-1.18.0/googletest/src/gtest_main.cc
+Note: Google Test filter = OpenNavRouteGeometry.RemovedRouteIsNotDereferencedAndSnapshotSurvivesDeletion
+[==========] Running 1 test from 1 test suite.
+[----------] Global test environment set-up.
+[----------] 1 test from OpenNavRouteGeometry
+[ RUN      ] OpenNavRouteGeometry.RemovedRouteIsNotDereferencedAndSnapshotSurvivesDeletion
+[       OK ] OpenNavRouteGeometry.RemovedRouteIsNotDereferencedAndSnapshotSurvivesDeletion (0 ms)
+[----------] 1 test from OpenNavRouteGeometry (0 ms total)
+
+[----------] Global test environment tear-down
+[==========] 1 test from 1 test suite ran. (0 ms total)
+[  PASSED  ] 1 test.
+</system-out>
+	</testcase>
+	<testcase name="OpenNavRouteGeometry.RepeatedObjectAndGuidAreRejected" classname="OpenNavRouteGeometry.RepeatedObjectAndGuidAreRejected" time="0.0831072" status="run">
+		<properties/>
+		<system-out>Running main() from /usr/src/debug/gtest/googletest-1.18.0/googletest/src/gtest_main.cc
+Note: Google Test filter = OpenNavRouteGeometry.RepeatedObjectAndGuidAreRejected
+[==========] Running 1 test from 1 test suite.
+[----------] Global test environment set-up.
+[----------] 1 test from OpenNavRouteGeometry
+[ RUN      ] OpenNavRouteGeometry.RepeatedObjectAndGuidAreRejected
+[       OK ] OpenNavRouteGeometry.RepeatedObjectAndGuidAreRejected (0 ms)
+[----------] 1 test from OpenNavRouteGeometry (0 ms total)
+
+[----------] Global test environment tear-down
+[==========] 1 test from 1 test suite ran. (1 ms total)
+[  PASSED  ] 1 test.
+</system-out>
+	</testcase>
+	<testcase name="OpenNavRouteGeometry.NestedEventGuardRejectsEditThenRestore" classname="OpenNavRouteGeometry.NestedEventGuardRejectsEditThenRestore" time="0.0834183" status="run">
+		<properties/>
+		<system-out>Running main() from /usr/src/debug/gtest/googletest-1.18.0/googletest/src/gtest_main.cc
+Note: Google Test filter = OpenNavRouteGeometry.NestedEventGuardRejectsEditThenRestore
+[==========] Running 1 test from 1 test suite.
+[----------] Global test environment set-up.
+[----------] 1 test from OpenNavRouteGeometry
+[ RUN      ] OpenNavRouteGeometry.NestedEventGuardRejectsEditThenRestore
+[       OK ] OpenNavRouteGeometry.NestedEventGuardRejectsEditThenRestore (0 ms)
+[----------] 1 test from OpenNavRouteGeometry (0 ms total)
+
+[----------] Global test environment tear-down
+[==========] 1 test from 1 test suite ran. (0 ms total)
+[  PASSED  ] 1 test.
+</system-out>
+	</testcase>
+	<testcase name="OpenNavRouteGeometry.OpenRouteOrPointEditRemainsUnavailable" classname="OpenNavRouteGeometry.OpenRouteOrPointEditRemainsUnavailable" time="0.0805148" status="run">
+		<properties/>
+		<system-out>Running main() from /usr/src/debug/gtest/googletest-1.18.0/googletest/src/gtest_main.cc
+Note: Google Test filter = OpenNavRouteGeometry.OpenRouteOrPointEditRemainsUnavailable
+[==========] Running 1 test from 1 test suite.
+[----------] Global test environment set-up.
+[----------] 1 test from OpenNavRouteGeometry
+[ RUN      ] OpenNavRouteGeometry.OpenRouteOrPointEditRemainsUnavailable
+[       OK ] OpenNavRouteGeometry.OpenRouteOrPointEditRemainsUnavailable (0 ms)
+[----------] 1 test from OpenNavRouteGeometry (0 ms total)
+
+[----------] Global test environment tear-down
+[==========] 1 test from 1 test suite ran. (0 ms total)
+[  PASSED  ] 1 test.
+</system-out>
+	</testcase>
+	<testcase name="OpenNavRouteGeometry.CopyRefusesWorkerThread" classname="OpenNavRouteGeometry.CopyRefusesWorkerThread" time="0.0824144" status="run">
+		<properties/>
+		<system-out>Running main() from /usr/src/debug/gtest/googletest-1.18.0/googletest/src/gtest_main.cc
+Note: Google Test filter = OpenNavRouteGeometry.CopyRefusesWorkerThread
+[==========] Running 1 test from 1 test suite.
+[----------] Global test environment set-up.
+[----------] 1 test from OpenNavRouteGeometry
+[ RUN      ] OpenNavRouteGeometry.CopyRefusesWorkerThread
+[       OK ] OpenNavRouteGeometry.CopyRefusesWorkerThread (1 ms)
+[----------] 1 test from OpenNavRouteGeometry (1 ms total)
+
+[----------] Global test environment tear-down
+[==========] 1 test from 1 test suite ran. (1 ms total)
+[  PASSED  ] 1 test.
+</system-out>
+	</testcase>
+	<testcase name="OpenNavMarine.N2kBatteryPreservesInstanceAndSign" classname="OpenNavMarine.N2kBatteryPreservesInstanceAndSign" time="0.0826623" status="run">
+		<properties/>
+		<system-out>Running main() from /usr/src/debug/gtest/googletest-1.18.0/googletest/src/gtest_main.cc
+Note: Google Test filter = OpenNavMarine.N2kBatteryPreservesInstanceAndSign
+[==========] Running 1 test from 1 test suite.
+[----------] Global test environment set-up.
+[----------] 1 test from OpenNavMarine
+[ RUN      ] OpenNavMarine.N2kBatteryPreservesInstanceAndSign
+[       OK ] OpenNavMarine.N2kBatteryPreservesInstanceAndSign (0 ms)
+[----------] 1 test from OpenNavMarine (0 ms total)
+
+[----------] Global test environment tear-down
+[==========] 1 test from 1 test suite ran. (0 ms total)
+[  PASSED  ] 1 test.
+</system-out>
+	</testcase>
+	<testcase name="OpenNavMarine.RealAddressClaimUnifiesPackAcrossDifferentPgns" classname="OpenNavMarine.RealAddressClaimUnifiesPackAcrossDifferentPgns" time="0.0811767" status="run">
+		<properties/>
+		<system-out>Running main() from /usr/src/debug/gtest/googletest-1.18.0/googletest/src/gtest_main.cc
+Note: Google Test filter = OpenNavMarine.RealAddressClaimUnifiesPackAcrossDifferentPgns
+[==========] Running 1 test from 1 test suite.
+[----------] Global test environment set-up.
+[----------] 1 test from OpenNavMarine
+[ RUN      ] OpenNavMarine.RealAddressClaimUnifiesPackAcrossDifferentPgns
+[       OK ] OpenNavMarine.RealAddressClaimUnifiesPackAcrossDifferentPgns (0 ms)
+[----------] 1 test from OpenNavMarine (0 ms total)
+
+[----------] Global test environment tear-down
+[==========] 1 test from 1 test suite ran. (0 ms total)
+[  PASSED  ] 1 test.
+</system-out>
+	</testcase>
+	<testcase name="OpenNavMarine.N2kHighVoltageSaturationIsUnavailable" classname="OpenNavMarine.N2kHighVoltageSaturationIsUnavailable" time="0.0793034" status="run">
+		<properties/>
+		<system-out>Running main() from /usr/src/debug/gtest/googletest-1.18.0/googletest/src/gtest_main.cc
+Note: Google Test filter = OpenNavMarine.N2kHighVoltageSaturationIsUnavailable
+[==========] Running 1 test from 1 test suite.
+[----------] Global test environment set-up.
+[----------] 1 test from OpenNavMarine
+[ RUN      ] OpenNavMarine.N2kHighVoltageSaturationIsUnavailable
+[       OK ] OpenNavMarine.N2kHighVoltageSaturationIsUnavailable (0 ms)
+[----------] 1 test from OpenNavMarine (0 ms total)
+
+[----------] Global test environment tear-down
+[==========] 1 test from 1 test suite ran. (0 ms total)
+[  PASSED  ] 1 test.
+</system-out>
+	</testcase>
+	<testcase name="OpenNavMarine.N2kSocAndSohDoNotInventCapacity" classname="OpenNavMarine.N2kSocAndSohDoNotInventCapacity" time="0.0811359" status="run">
+		<properties/>
+		<system-out>Running main() from /usr/src/debug/gtest/googletest-1.18.0/googletest/src/gtest_main.cc
+Note: Google Test filter = OpenNavMarine.N2kSocAndSohDoNotInventCapacity
+[==========] Running 1 test from 1 test suite.
+[----------] Global test environment set-up.
+[----------] 1 test from OpenNavMarine
+[ RUN      ] OpenNavMarine.N2kSocAndSohDoNotInventCapacity
+[       OK ] OpenNavMarine.N2kSocAndSohDoNotInventCapacity (0 ms)
+[----------] 1 test from OpenNavMarine (0 ms total)
+
+[----------] Global test environment tear-down
+[==========] 1 test from 1 test suite ran. (0 ms total)
+[  PASSED  ] 1 test.
+</system-out>
+	</testcase>
+	<testcase name="OpenNavMarine.N2kRejectsEveryTruncatedEnvelope" classname="OpenNavMarine.N2kRejectsEveryTruncatedEnvelope" time="0.0773432" status="run">
+		<properties/>
+		<system-out>Running main() from /usr/src/debug/gtest/googletest-1.18.0/googletest/src/gtest_main.cc
+Note: Google Test filter = OpenNavMarine.N2kRejectsEveryTruncatedEnvelope
+[==========] Running 1 test from 1 test suite.
+[----------] Global test environment set-up.
+[----------] 1 test from OpenNavMarine
+[ RUN      ] OpenNavMarine.N2kRejectsEveryTruncatedEnvelope
+[       OK ] OpenNavMarine.N2kRejectsEveryTruncatedEnvelope (0 ms)
+[----------] 1 test from OpenNavMarine (0 ms total)
+
+[----------] Global test environment tear-down
+[==========] 1 test from 1 test suite ran. (0 ms total)
+[  PASSED  ] 1 test.
+</system-out>
+	</testcase>
+	<testcase name="OpenNavMarine.N2kHeadingRequiresReferenceProvenance" classname="OpenNavMarine.N2kHeadingRequiresReferenceProvenance" time="0.0813379" status="run">
+		<properties/>
+		<system-out>Running main() from /usr/src/debug/gtest/googletest-1.18.0/googletest/src/gtest_main.cc
+Note: Google Test filter = OpenNavMarine.N2kHeadingRequiresReferenceProvenance
+[==========] Running 1 test from 1 test suite.
+[----------] Global test environment set-up.
+[----------] 1 test from OpenNavMarine
+[ RUN      ] OpenNavMarine.N2kHeadingRequiresReferenceProvenance
+[       OK ] OpenNavMarine.N2kHeadingRequiresReferenceProvenance (0 ms)
+[----------] 1 test from OpenNavMarine (0 ms total)
+
+[----------] Global test environment tear-down
+[==========] 1 test from 1 test suite ran. (0 ms total)
+[  PASSED  ] 1 test.
+</system-out>
+	</testcase>
+	<testcase name="OpenNavMarine.N2kWindDoesNotConfuseNorthAndRelativeAngles" classname="OpenNavMarine.N2kWindDoesNotConfuseNorthAndRelativeAngles" time="0.0826401" status="run">
+		<properties/>
+		<system-out>Running main() from /usr/src/debug/gtest/googletest-1.18.0/googletest/src/gtest_main.cc
+Note: Google Test filter = OpenNavMarine.N2kWindDoesNotConfuseNorthAndRelativeAngles
+[==========] Running 1 test from 1 test suite.
+[----------] Global test environment set-up.
+[----------] 1 test from OpenNavMarine
+[ RUN      ] OpenNavMarine.N2kWindDoesNotConfuseNorthAndRelativeAngles
+[       OK ] OpenNavMarine.N2kWindDoesNotConfuseNorthAndRelativeAngles (0 ms)
+[----------] 1 test from OpenNavMarine (0 ms total)
+
+[----------] Global test environment tear-down
+[==========] 1 test from 1 test suite ran. (0 ms total)
+[  PASSED  ] 1 test.
+</system-out>
+	</testcase>
+	<testcase name="OpenNavMarine.N2kDepthRudderRpmAndTankUnits" classname="OpenNavMarine.N2kDepthRudderRpmAndTankUnits" time="0.0809631" status="run">
+		<properties/>
+		<system-out>Running main() from /usr/src/debug/gtest/googletest-1.18.0/googletest/src/gtest_main.cc
+Note: Google Test filter = OpenNavMarine.N2kDepthRudderRpmAndTankUnits
+[==========] Running 1 test from 1 test suite.
+[----------] Global test environment set-up.
+[----------] 1 test from OpenNavMarine
+[ RUN      ] OpenNavMarine.N2kDepthRudderRpmAndTankUnits
+[       OK ] OpenNavMarine.N2kDepthRudderRpmAndTankUnits (0 ms)
+[----------] 1 test from OpenNavMarine (0 ms total)
+
+[----------] Global test environment tear-down
+[==========] 1 test from 1 test suite ran. (0 ms total)
+[  PASSED  ] 1 test.
+</system-out>
+	</testcase>
+	<testcase name="OpenNavMarine.NmeaMissingValuesNeverBecomeZero" classname="OpenNavMarine.NmeaMissingValuesNeverBecomeZero" time="0.0811906" status="run">
+		<properties/>
+		<system-out>Running main() from /usr/src/debug/gtest/googletest-1.18.0/googletest/src/gtest_main.cc
+Note: Google Test filter = OpenNavMarine.NmeaMissingValuesNeverBecomeZero
+[==========] Running 1 test from 1 test suite.
+[----------] Global test environment set-up.
+[----------] 1 test from OpenNavMarine
+[ RUN      ] OpenNavMarine.NmeaMissingValuesNeverBecomeZero
+[       OK ] OpenNavMarine.NmeaMissingValuesNeverBecomeZero (0 ms)
+[----------] 1 test from OpenNavMarine (0 ms total)
+
+[----------] Global test environment tear-down
+[==========] 1 test from 1 test suite ran. (0 ms total)
+[  PASSED  ] 1 test.
+</system-out>
+	</testcase>
+	<testcase name="OpenNavMarine.NmeaChecksumsStatusAndWindUnits" classname="OpenNavMarine.NmeaChecksumsStatusAndWindUnits" time="0.080815" status="run">
+		<properties/>
+		<system-out>Running main() from /usr/src/debug/gtest/googletest-1.18.0/googletest/src/gtest_main.cc
+Note: Google Test filter = OpenNavMarine.NmeaChecksumsStatusAndWindUnits
+[==========] Running 1 test from 1 test suite.
+[----------] Global test environment set-up.
+[----------] 1 test from OpenNavMarine
+[ RUN      ] OpenNavMarine.NmeaChecksumsStatusAndWindUnits
+[       OK ] OpenNavMarine.NmeaChecksumsStatusAndWindUnits (0 ms)
+[----------] 1 test from OpenNavMarine (0 ms total)
+
+[----------] Global test environment tear-down
+[==========] 1 test from 1 test suite ran. (0 ms total)
+[  PASSED  ] 1 test.
+</system-out>
+	</testcase>
+	<testcase name="OpenNavMarine.SignalKIntegerRatioAndPackIdentity" classname="OpenNavMarine.SignalKIntegerRatioAndPackIdentity" time="0.0799124" status="run">
+		<properties/>
+		<system-out>Running main() from /usr/src/debug/gtest/googletest-1.18.0/googletest/src/gtest_main.cc
+Note: Google Test filter = OpenNavMarine.SignalKIntegerRatioAndPackIdentity
+[==========] Running 1 test from 1 test suite.
+[----------] Global test environment set-up.
+[----------] 1 test from OpenNavMarine
+[ RUN      ] OpenNavMarine.SignalKIntegerRatioAndPackIdentity
+[       OK ] OpenNavMarine.SignalKIntegerRatioAndPackIdentity (0 ms)
+[----------] 1 test from OpenNavMarine (0 ms total)
+
+[----------] Global test environment tear-down
+[==========] 1 test from 1 test suite ran. (0 ms total)
+[  PASSED  ] 1 test.
+</system-out>
+	</testcase>
+	<testcase name="OpenNavMarine.SignalKContextTimestampAndNulls" classname="OpenNavMarine.SignalKContextTimestampAndNulls" time="0.078299" status="run">
+		<properties/>
+		<system-out>Running main() from /usr/src/debug/gtest/googletest-1.18.0/googletest/src/gtest_main.cc
+Note: Google Test filter = OpenNavMarine.SignalKContextTimestampAndNulls
+[==========] Running 1 test from 1 test suite.
+[----------] Global test environment set-up.
+[----------] 1 test from OpenNavMarine
+[ RUN      ] OpenNavMarine.SignalKContextTimestampAndNulls
+[       OK ] OpenNavMarine.SignalKContextTimestampAndNulls (0 ms)
+[----------] 1 test from OpenNavMarine (0 ms total)
+
+[----------] Global test environment tear-down
+[==========] 1 test from 1 test suite ran. (0 ms total)
+[  PASSED  ] 1 test.
+</system-out>
+	</testcase>
+	<testcase name="OpenNavMarine.SignalKFractionalTimestampNativeClockResolution" classname="OpenNavMarine.SignalKFractionalTimestampNativeClockResolution" time="0.0815155" status="run">
+		<properties/>
+		<system-out>Running main() from /usr/src/debug/gtest/googletest-1.18.0/googletest/src/gtest_main.cc
+Note: Google Test filter = OpenNavMarine.SignalKFractionalTimestampNativeClockResolution
+[==========] Running 1 test from 1 test suite.
+[----------] Global test environment set-up.
+[----------] 1 test from OpenNavMarine
+[ RUN      ] OpenNavMarine.SignalKFractionalTimestampNativeClockResolution
+[       OK ] OpenNavMarine.SignalKFractionalTimestampNativeClockResolution (0 ms)
+[----------] 1 test from OpenNavMarine (0 ms total)
+
+[----------] Global test environment tear-down
+[==========] 1 test from 1 test suite ran. (0 ms total)
+[  PASSED  ] 1 test.
+</system-out>
+	</testcase>
+	<testcase name="OpenNavMarine.SignalKSourceMissingAndUnknownPaths" classname="OpenNavMarine.SignalKSourceMissingAndUnknownPaths" time="0.0805745" status="run">
+		<properties/>
+		<system-out>Running main() from /usr/src/debug/gtest/googletest-1.18.0/googletest/src/gtest_main.cc
+Note: Google Test filter = OpenNavMarine.SignalKSourceMissingAndUnknownPaths
+[==========] Running 1 test from 1 test suite.
+[----------] Global test environment set-up.
+[----------] 1 test from OpenNavMarine
+[ RUN      ] OpenNavMarine.SignalKSourceMissingAndUnknownPaths
+[       OK ] OpenNavMarine.SignalKSourceMissingAndUnknownPaths (0 ms)
+[----------] 1 test from OpenNavMarine (0 ms total)
+
+[----------] Global test environment tear-down
+[==========] 1 test from 1 test suite ran. (0 ms total)
+[  PASSED  ] 1 test.
+</system-out>
+	</testcase>
+	<testcase name="OpenNavMarine.SignalKPropulsionAndExplicitExtensionMapping" classname="OpenNavMarine.SignalKPropulsionAndExplicitExtensionMapping" time="0.0809989" status="run">
+		<properties/>
+		<system-out>Running main() from /usr/src/debug/gtest/googletest-1.18.0/googletest/src/gtest_main.cc
+Note: Google Test filter = OpenNavMarine.SignalKPropulsionAndExplicitExtensionMapping
+[==========] Running 1 test from 1 test suite.
+[----------] Global test environment set-up.
+[----------] 1 test from OpenNavMarine
+[ RUN      ] OpenNavMarine.SignalKPropulsionAndExplicitExtensionMapping
+[       OK ] OpenNavMarine.SignalKPropulsionAndExplicitExtensionMapping (0 ms)
+[----------] 1 test from OpenNavMarine (0 ms total)
+
+[----------] Global test environment tear-down
+[==========] 1 test from 1 test suite ran. (0 ms total)
+[  PASSED  ] 1 test.
+</system-out>
+	</testcase>
+	<testcase name="OpenNavMarine.ConfiguredLiveBatteryFeedsEnergyWithoutDemoDefaults" classname="OpenNavMarine.ConfiguredLiveBatteryFeedsEnergyWithoutDemoDefaults" time="0.0791071" status="run">
+		<properties/>
+		<system-out>Running main() from /usr/src/debug/gtest/googletest-1.18.0/googletest/src/gtest_main.cc
+Note: Google Test filter = OpenNavMarine.ConfiguredLiveBatteryFeedsEnergyWithoutDemoDefaults
+[==========] Running 1 test from 1 test suite.
+[----------] Global test environment set-up.
+[----------] 1 test from OpenNavMarine
+[ RUN      ] OpenNavMarine.ConfiguredLiveBatteryFeedsEnergyWithoutDemoDefaults
+[       OK ] OpenNavMarine.ConfiguredLiveBatteryFeedsEnergyWithoutDemoDefaults (0 ms)
+[----------] 1 test from OpenNavMarine (0 ms total)
+
+[----------] Global test environment tear-down
+[==========] 1 test from 1 test suite ran. (0 ms total)
+[  PASSED  ] 1 test.
+</system-out>
+	</testcase>
+	<testcase name="OpenNavMarine.PersistedPropulsionMappingsPreserveAgeAndDomain" classname="OpenNavMarine.PersistedPropulsionMappingsPreserveAgeAndDomain" time="0.0813598" status="run">
+		<properties/>
+		<system-out>Running main() from /usr/src/debug/gtest/googletest-1.18.0/googletest/src/gtest_main.cc
+Note: Google Test filter = OpenNavMarine.PersistedPropulsionMappingsPreserveAgeAndDomain
+[==========] Running 1 test from 1 test suite.
+[----------] Global test environment set-up.
+[----------] 1 test from OpenNavMarine
+[ RUN      ] OpenNavMarine.PersistedPropulsionMappingsPreserveAgeAndDomain
+[       OK ] OpenNavMarine.PersistedPropulsionMappingsPreserveAgeAndDomain (0 ms)
+[----------] 1 test from OpenNavMarine (0 ms total)
+
+[----------] Global test environment tear-down
+[==========] 1 test from 1 test suite ran. (0 ms total)
+[  PASSED  ] 1 test.
+</system-out>
+	</testcase>
+	<testcase name="OpenNavMarine.DcWideRangeVoltageCurrentFromBoatWire" classname="OpenNavMarine.DcWideRangeVoltageCurrentFromBoatWire" time="0.0823825" status="run">
+		<properties/>
+		<system-out>Running main() from /usr/src/debug/gtest/googletest-1.18.0/googletest/src/gtest_main.cc
+Note: Google Test filter = OpenNavMarine.DcWideRangeVoltageCurrentFromBoatWire
+[==========] Running 1 test from 1 test suite.
+[----------] Global test environment set-up.
+[----------] 1 test from OpenNavMarine
+[ RUN      ] OpenNavMarine.DcWideRangeVoltageCurrentFromBoatWire
+[       OK ] OpenNavMarine.DcWideRangeVoltageCurrentFromBoatWire (0 ms)
+[----------] 1 test from OpenNavMarine (0 ms total)
+
+[----------] Global test environment tear-down
+[==========] 1 test from 1 test suite ran. (0 ms total)
+[  PASSED  ] 1 test.
+</system-out>
+	</testcase>
+	<testcase name="OpenNavMarine.DcWideRangeSentinelsAndUnsignedVoltage" classname="OpenNavMarine.DcWideRangeSentinelsAndUnsignedVoltage" time="0.0777812" status="run">
+		<properties/>
+		<system-out>Running main() from /usr/src/debug/gtest/googletest-1.18.0/googletest/src/gtest_main.cc
+Note: Google Test filter = OpenNavMarine.DcWideRangeSentinelsAndUnsignedVoltage
+[==========] Running 1 test from 1 test suite.
+[----------] Global test environment set-up.
+[----------] 1 test from OpenNavMarine
+[ RUN      ] OpenNavMarine.DcWideRangeSentinelsAndUnsignedVoltage
+[       OK ] OpenNavMarine.DcWideRangeSentinelsAndUnsignedVoltage (0 ms)
+[----------] 1 test from OpenNavMarine (0 ms total)
+
+[----------] Global test environment tear-down
+[==========] 1 test from 1 test suite ran. (0 ms total)
+[  PASSED  ] 1 test.
+</system-out>
+	</testcase>
+	<testcase name="OpenNavMarine.DcWideRangePrecedenceKeepsEpochCoherent" classname="OpenNavMarine.DcWideRangePrecedenceKeepsEpochCoherent" time="0.0807264" status="run">
+		<properties/>
+		<system-out>Running main() from /usr/src/debug/gtest/googletest-1.18.0/googletest/src/gtest_main.cc
+Note: Google Test filter = OpenNavMarine.DcWideRangePrecedenceKeepsEpochCoherent
+[==========] Running 1 test from 1 test suite.
+[----------] Global test environment set-up.
+[----------] 1 test from OpenNavMarine
+[ RUN      ] OpenNavMarine.DcWideRangePrecedenceKeepsEpochCoherent
+[       OK ] OpenNavMarine.DcWideRangePrecedenceKeepsEpochCoherent (0 ms)
+[----------] 1 test from OpenNavMarine (0 ms total)
+
+[----------] Global test environment tear-down
+[==========] 1 test from 1 test suite ran. (0 ms total)
+[  PASSED  ] 1 test.
+</system-out>
+	</testcase>
+	<testcase name="OpenNavMarine.EngineTemperaturePreservesFieldMeaningAndLength" classname="OpenNavMarine.EngineTemperaturePreservesFieldMeaningAndLength" time="0.0805402" status="run">
+		<properties/>
+		<system-out>Running main() from /usr/src/debug/gtest/googletest-1.18.0/googletest/src/gtest_main.cc
+Note: Google Test filter = OpenNavMarine.EngineTemperaturePreservesFieldMeaningAndLength
+[==========] Running 1 test from 1 test suite.
+[----------] Global test environment set-up.
+[----------] 1 test from OpenNavMarine
+[ RUN      ] OpenNavMarine.EngineTemperaturePreservesFieldMeaningAndLength
+[       OK ] OpenNavMarine.EngineTemperaturePreservesFieldMeaningAndLength (0 ms)
+[----------] 1 test from OpenNavMarine (0 ms total)
+
+[----------] Global test environment tear-down
+[==========] 1 test from 1 test suite ran. (0 ms total)
+[  PASSED  ] 1 test.
+</system-out>
+	</testcase>
+	<testcase name="OpenNavMarine.TransmissionGearUsesPinnedDecoder" classname="OpenNavMarine.TransmissionGearUsesPinnedDecoder" time="0.084432" status="run">
+		<properties/>
+		<system-out>Running main() from /usr/src/debug/gtest/googletest-1.18.0/googletest/src/gtest_main.cc
+Note: Google Test filter = OpenNavMarine.TransmissionGearUsesPinnedDecoder
+[==========] Running 1 test from 1 test suite.
+[----------] Global test environment set-up.
+[----------] 1 test from OpenNavMarine
+[ RUN      ] OpenNavMarine.TransmissionGearUsesPinnedDecoder
+[       OK ] OpenNavMarine.TransmissionGearUsesPinnedDecoder (0 ms)
+[----------] 1 test from OpenNavMarine (0 ms total)
+
+[----------] Global test environment tear-down
+[==========] 1 test from 1 test suite ran. (0 ms total)
+[  PASSED  ] 1 test.
+</system-out>
+	</testcase>
+	<testcase name="OpenNavMarine.BetaPgnTruncationAndReservedIdentity" classname="OpenNavMarine.BetaPgnTruncationAndReservedIdentity" time="0.0811925" status="run">
+		<properties/>
+		<system-out>Running main() from /usr/src/debug/gtest/googletest-1.18.0/googletest/src/gtest_main.cc
+Note: Google Test filter = OpenNavMarine.BetaPgnTruncationAndReservedIdentity
+[==========] Running 1 test from 1 test suite.
+[----------] Global test environment set-up.
+[----------] 1 test from OpenNavMarine
+[ RUN      ] OpenNavMarine.BetaPgnTruncationAndReservedIdentity
+[       OK ] OpenNavMarine.BetaPgnTruncationAndReservedIdentity (0 ms)
+[----------] 1 test from OpenNavMarine (0 ms total)
+
+[----------] Global test environment tear-down
+[==========] 1 test from 1 test suite ran. (0 ms total)
+[  PASSED  ] 1 test.
+</system-out>
+	</testcase>
+	<testcase name="OpenNavMarine.ErrorCodesCannotBecomePlausibleMeasurements" classname="OpenNavMarine.ErrorCodesCannotBecomePlausibleMeasurements" time="0.0800397" status="run">
+		<properties/>
+		<system-out>Running main() from /usr/src/debug/gtest/googletest-1.18.0/googletest/src/gtest_main.cc
+Note: Google Test filter = OpenNavMarine.ErrorCodesCannotBecomePlausibleMeasurements
+[==========] Running 1 test from 1 test suite.
+[----------] Global test environment set-up.
+[----------] 1 test from OpenNavMarine
+[ RUN      ] OpenNavMarine.ErrorCodesCannotBecomePlausibleMeasurements
+[       OK ] OpenNavMarine.ErrorCodesCannotBecomePlausibleMeasurements (0 ms)
+[----------] 1 test from OpenNavMarine (0 ms total)
+
+[----------] Global test environment tear-down
+[==========] 1 test from 1 test suite ran. (0 ms total)
+[  PASSED  ] 1 test.
+</system-out>
+	</testcase>
+	<testcase name="OpenNavMarine.BoundBoatFieldsUseActualPinnedMarineDecoder" classname="OpenNavMarine.BoundBoatFieldsUseActualPinnedMarineDecoder" time="0.0790364" status="run">
+		<properties/>
+		<system-out>Running main() from /usr/src/debug/gtest/googletest-1.18.0/googletest/src/gtest_main.cc
+Note: Google Test filter = OpenNavMarine.BoundBoatFieldsUseActualPinnedMarineDecoder
+[==========] Running 1 test from 1 test suite.
+[----------] Global test environment set-up.
+[----------] 1 test from OpenNavMarine
+[ RUN      ] OpenNavMarine.BoundBoatFieldsUseActualPinnedMarineDecoder
+[       OK ] OpenNavMarine.BoundBoatFieldsUseActualPinnedMarineDecoder (0 ms)
+[----------] 1 test from OpenNavMarine (0 ms total)
+
+[----------] Global test environment tear-down
+[==========] 1 test from 1 test suite ran. (0 ms total)
+[  PASSED  ] 1 test.
+</system-out>
+	</testcase>
+	<testcase name="OpenNavMarine.NmeaRejectsUntrustedBytesBeforeWxParsing" classname="OpenNavMarine.NmeaRejectsUntrustedBytesBeforeWxParsing" time="0.0767834" status="run">
+		<properties/>
+		<system-out>Running main() from /usr/src/debug/gtest/googletest-1.18.0/googletest/src/gtest_main.cc
+Note: Google Test filter = OpenNavMarine.NmeaRejectsUntrustedBytesBeforeWxParsing
+[==========] Running 1 test from 1 test suite.
+[----------] Global test environment set-up.
+[----------] 1 test from OpenNavMarine
+[ RUN      ] OpenNavMarine.NmeaRejectsUntrustedBytesBeforeWxParsing
+[       OK ] OpenNavMarine.NmeaRejectsUntrustedBytesBeforeWxParsing (0 ms)
+[----------] 1 test from OpenNavMarine (0 ms total)
+
+[----------] Global test environment tear-down
+[==========] 1 test from 1 test suite ran. (0 ms total)
+[  PASSED  ] 1 test.
+</system-out>
+	</testcase>
+	<testcase name="OpenNavMarine.N2kRejectsInvalidPriorityAndBoundedRandomEnvelopes" classname="OpenNavMarine.N2kRejectsInvalidPriorityAndBoundedRandomEnvelopes" time="0.0823531" status="run">
+		<properties/>
+		<system-out>Running main() from /usr/src/debug/gtest/googletest-1.18.0/googletest/src/gtest_main.cc
+Note: Google Test filter = OpenNavMarine.N2kRejectsInvalidPriorityAndBoundedRandomEnvelopes
+[==========] Running 1 test from 1 test suite.
+[----------] Global test environment set-up.
+[----------] 1 test from OpenNavMarine
+[ RUN      ] OpenNavMarine.N2kRejectsInvalidPriorityAndBoundedRandomEnvelopes
+[       OK ] OpenNavMarine.N2kRejectsInvalidPriorityAndBoundedRandomEnvelopes (0 ms)
+[----------] 1 test from OpenNavMarine (0 ms total)
+
+[----------] Global test environment tear-down
+[==========] 1 test from 1 test suite ran. (0 ms total)
+[  PASSED  ] 1 test.
+</system-out>
+	</testcase>
+	<testcase name="OpenNavMarine.SignalKRejectsDeepOrMalformedExternalText" classname="OpenNavMarine.SignalKRejectsDeepOrMalformedExternalText" time="0.0808541" status="run">
+		<properties/>
+		<system-out>Running main() from /usr/src/debug/gtest/googletest-1.18.0/googletest/src/gtest_main.cc
+Note: Google Test filter = OpenNavMarine.SignalKRejectsDeepOrMalformedExternalText
+[==========] Running 1 test from 1 test suite.
+[----------] Global test environment set-up.
+[----------] 1 test from OpenNavMarine
+[ RUN      ] OpenNavMarine.SignalKRejectsDeepOrMalformedExternalText
+[       OK ] OpenNavMarine.SignalKRejectsDeepOrMalformedExternalText (0 ms)
+[----------] 1 test from OpenNavMarine (0 ms total)
+
+[----------] Global test environment tear-down
+[==========] 1 test from 1 test suite ran. (0 ms total)
+[  PASSED  ] 1 test.
+</system-out>
+	</testcase>
+	<testcase name="OpenNavMarine.SignalKUnicodeSourceAndDriverFraming" classname="OpenNavMarine.SignalKUnicodeSourceAndDriverFraming" time="0.0864525" status="run">
+		<properties/>
+		<system-out>Running main() from /usr/src/debug/gtest/googletest-1.18.0/googletest/src/gtest_main.cc
+Note: Google Test filter = OpenNavMarine.SignalKUnicodeSourceAndDriverFraming
+[==========] Running 1 test from 1 test suite.
+[----------] Global test environment set-up.
+[----------] 1 test from OpenNavMarine
+[ RUN      ] OpenNavMarine.SignalKUnicodeSourceAndDriverFraming
+[       OK ] OpenNavMarine.SignalKUnicodeSourceAndDriverFraming (0 ms)
+[----------] 1 test from OpenNavMarine (0 ms total)
+
+[----------] Global test environment tear-down
+[==========] 1 test from 1 test suite ran. (0 ms total)
+[  PASSED  ] 1 test.
+</system-out>
+	</testcase>
+	<testcase name="OpenNavAisClock.UsesPinnedWxUtcTickConvention" classname="OpenNavAisClock.UsesPinnedWxUtcTickConvention" time="0.0820149" status="run">
+		<properties/>
+		<system-out>Running main() from /usr/src/debug/gtest/googletest-1.18.0/googletest/src/gtest_main.cc
+Note: Google Test filter = OpenNavAisClock.UsesPinnedWxUtcTickConvention
+[==========] Running 1 test from 1 test suite.
+[----------] Global test environment set-up.
+[----------] 1 test from OpenNavAisClock
+[ RUN      ] OpenNavAisClock.UsesPinnedWxUtcTickConvention
+[       OK ] OpenNavAisClock.UsesPinnedWxUtcTickConvention (0 ms)
+[----------] 1 test from OpenNavAisClock (0 ms total)
+
+[----------] Global test environment tear-down
+[==========] 1 test from 1 test suite ran. (0 ms total)
+[  PASSED  ] 1 test.
+</system-out>
+	</testcase>
+	<testcase name="OpenNavAisClock.SameElapsedTimeInUtcAndEastAndWestTimezones" classname="OpenNavAisClock.SameElapsedTimeInUtcAndEastAndWestTimezones" time="0.078885" status="run">
+		<properties/>
+		<system-out>Running main() from /usr/src/debug/gtest/googletest-1.18.0/googletest/src/gtest_main.cc
+Note: Google Test filter = OpenNavAisClock.SameElapsedTimeInUtcAndEastAndWestTimezones
+[==========] Running 1 test from 1 test suite.
+[----------] Global test environment set-up.
+[----------] 1 test from OpenNavAisClock
+[ RUN      ] OpenNavAisClock.SameElapsedTimeInUtcAndEastAndWestTimezones
+[       OK ] OpenNavAisClock.SameElapsedTimeInUtcAndEastAndWestTimezones (0 ms)
+[----------] 1 test from OpenNavAisClock (0 ms total)
+
+[----------] Global test environment tear-down
+[==========] 1 test from 1 test suite ran. (0 ms total)
+[  PASSED  ] 1 test.
+</system-out>
+	</testcase>
+	<testcase name="OpenNavAisClock.RetainsStaleObservationAge" classname="OpenNavAisClock.RetainsStaleObservationAge" time="0.100084" status="run">
+		<properties/>
+		<system-out>Running main() from /usr/src/debug/gtest/googletest-1.18.0/googletest/src/gtest_main.cc
+Note: Google Test filter = OpenNavAisClock.RetainsStaleObservationAge
+[==========] Running 1 test from 1 test suite.
+[----------] Global test environment set-up.
+[----------] 1 test from OpenNavAisClock
+[ RUN      ] OpenNavAisClock.RetainsStaleObservationAge
+[       OK ] OpenNavAisClock.RetainsStaleObservationAge (0 ms)
+[----------] 1 test from OpenNavAisClock (0 ms total)
+
+[----------] Global test environment tear-down
+[==========] 1 test from 1 test suite ran. (0 ms total)
+[  PASSED  ] 1 test.
+</system-out>
+	</testcase>
+	<testcase name="OpenNavAisClock.RejectsFutureMissingImplausibleAndOverflowReports" classname="OpenNavAisClock.RejectsFutureMissingImplausibleAndOverflowReports" time="0.089973" status="run">
+		<properties/>
+		<system-out>Running main() from /usr/src/debug/gtest/googletest-1.18.0/googletest/src/gtest_main.cc
+Note: Google Test filter = OpenNavAisClock.RejectsFutureMissingImplausibleAndOverflowReports
+[==========] Running 1 test from 1 test suite.
+[----------] Global test environment set-up.
+[----------] 1 test from OpenNavAisClock
+[ RUN      ] OpenNavAisClock.RejectsFutureMissingImplausibleAndOverflowReports
+[       OK ] OpenNavAisClock.RejectsFutureMissingImplausibleAndOverflowReports (0 ms)
+[----------] 1 test from OpenNavAisClock (0 ms total)
+
+[----------] Global test environment tear-down
+[==========] 1 test from 1 test suite ran. (0 ms total)
+[  PASSED  ] 1 test.
+</system-out>
+	</testcase>
+	<testcase name="OpenNavSettings.PersistsInSharedProfileWithoutChangingOtherEntries" classname="OpenNavSettings.PersistsInSharedProfileWithoutChangingOtherEntries" time="0.0882756" status="run">
+		<properties/>
+		<system-out>Running main() from /usr/src/debug/gtest/googletest-1.18.0/googletest/src/gtest_main.cc
+Note: Google Test filter = OpenNavSettings.PersistsInSharedProfileWithoutChangingOtherEntries
+[==========] Running 1 test from 1 test suite.
+[----------] Global test environment set-up.
+[----------] 1 test from OpenNavSettings
+[ RUN      ] OpenNavSettings.PersistsInSharedProfileWithoutChangingOtherEntries
+11:39:32: SKAGER settings saved (no sensor observations changed)
+[       OK ] OpenNavSettings.PersistsInSharedProfileWithoutChangingOtherEntries (1 ms)
+[----------] 1 test from OpenNavSettings (1 ms total)
+
+[----------] Global test environment tear-down
+[==========] 1 test from 1 test suite ran. (1 ms total)
+[  PASSED  ] 1 test.
+</system-out>
+	</testcase>
+	<testcase name="OpenNavSettings.CorruptRecordPreservedAndFailsClosed" classname="OpenNavSettings.CorruptRecordPreservedAndFailsClosed" time="0.0828216" status="run">
+		<properties/>
+		<system-out>Running main() from /usr/src/debug/gtest/googletest-1.18.0/googletest/src/gtest_main.cc
+Note: Google Test filter = OpenNavSettings.CorruptRecordPreservedAndFailsClosed
+[==========] Running 1 test from 1 test suite.
+[----------] Global test environment set-up.
+[----------] 1 test from OpenNavSettings
+[ RUN      ] OpenNavSettings.CorruptRecordPreservedAndFailsClosed
+11:39:32: Warning: SKAGER Settings rejected; live model disabled: Unsupported settings version
+[       OK ] OpenNavSettings.CorruptRecordPreservedAndFailsClosed (0 ms)
+[----------] 1 test from OpenNavSettings (0 ms total)
+
+[----------] Global test environment tear-down
+[==========] 1 test from 1 test suite ran. (0 ms total)
+[  PASSED  ] 1 test.
+</system-out>
+	</testcase>
+	<testcase name="OpenNavSettings.DisplayPreferencesRoundTripWithoutChangingOlderSettings" classname="OpenNavSettings.DisplayPreferencesRoundTripWithoutChangingOlderSettings" time="0.0886351" status="run">
+		<properties/>
+		<system-out>Running main() from /usr/src/debug/gtest/googletest-1.18.0/googletest/src/gtest_main.cc
+Note: Google Test filter = OpenNavSettings.DisplayPreferencesRoundTripWithoutChangingOlderSettings
+[==========] Running 1 test from 1 test suite.
+[----------] Global test environment set-up.
+[----------] 1 test from OpenNavSettings
+[ RUN      ] OpenNavSettings.DisplayPreferencesRoundTripWithoutChangingOlderSettings
+[       OK ] OpenNavSettings.DisplayPreferencesRoundTripWithoutChangingOlderSettings (5 ms)
+[----------] 1 test from OpenNavSettings (5 ms total)
+
+[----------] Global test environment tear-down
+[==========] 1 test from 1 test suite ran. (5 ms total)
+[  PASSED  ] 1 test.
+</system-out>
+	</testcase>
+	<testcase name="OpenNavSettings.InvalidDisplayRecordPreservedAndInvalidSaveRejected" classname="OpenNavSettings.InvalidDisplayRecordPreservedAndInvalidSaveRejected" time="0.0815741" status="run">
+		<properties/>
+		<system-out>Running main() from /usr/src/debug/gtest/googletest-1.18.0/googletest/src/gtest_main.cc
+Note: Google Test filter = OpenNavSettings.InvalidDisplayRecordPreservedAndInvalidSaveRejected
+[==========] Running 1 test from 1 test suite.
+[----------] Global test environment set-up.
+[----------] 1 test from OpenNavSettings
+[ RUN      ] OpenNavSettings.InvalidDisplayRecordPreservedAndInvalidSaveRejected
+[       OK ] OpenNavSettings.InvalidDisplayRecordPreservedAndInvalidSaveRejected (1 ms)
+[----------] 1 test from OpenNavSettings (1 ms total)
+
+[----------] Global test environment tear-down
+[==========] 1 test from 1 test suite ran. (1 ms total)
+[  PASSED  ] 1 test.
+</system-out>
+	</testcase>
+	<testcase name="OpenNavSettings.DisplayFailedFlushRestoresAppliedValue" classname="OpenNavSettings.DisplayFailedFlushRestoresAppliedValue" time="0.0805652" status="run">
+		<properties/>
+		<system-out>Running main() from /usr/src/debug/gtest/googletest-1.18.0/googletest/src/gtest_main.cc
+Note: Google Test filter = OpenNavSettings.DisplayFailedFlushRestoresAppliedValue
+[==========] Running 1 test from 1 test suite.
+[----------] Global test environment set-up.
+[----------] 1 test from OpenNavSettings
+[ RUN      ] OpenNavSettings.DisplayFailedFlushRestoresAppliedValue
+[       OK ] OpenNavSettings.DisplayFailedFlushRestoresAppliedValue (0 ms)
+[----------] 1 test from OpenNavSettings (0 ms total)
+
+[----------] Global test environment tear-down
+[==========] 1 test from 1 test suite ran. (0 ms total)
+[  PASSED  ] 1 test.
+</system-out>
+	</testcase>
+	<testcase name="OpenNavSettings.FailedFlushRestoresPreviousValue" classname="OpenNavSettings.FailedFlushRestoresPreviousValue" time="0.0805298" status="run">
+		<properties/>
+		<system-out>Running main() from /usr/src/debug/gtest/googletest-1.18.0/googletest/src/gtest_main.cc
+Note: Google Test filter = OpenNavSettings.FailedFlushRestoresPreviousValue
+[==========] Running 1 test from 1 test suite.
+[----------] Global test environment set-up.
+[----------] 1 test from OpenNavSettings
+[ RUN      ] OpenNavSettings.FailedFlushRestoresPreviousValue
+11:39:32: Error: SKAGER settings save failed; previous in-memory settings retained; disk restore: confirmed
+[       OK ] OpenNavSettings.FailedFlushRestoresPreviousValue (1 ms)
+[----------] 1 test from OpenNavSettings (1 ms total)
+
+[----------] Global test environment tear-down
+[==========] 1 test from 1 test suite ran. (1 ms total)
+[  PASSED  ] 1 test.
+</system-out>
+	</testcase>
+	<testcase name="OpenNavSettings.VesselProfileKeepsLegacyRecordAndUnconfiguredEnergy" classname="OpenNavSettings.VesselProfileKeepsLegacyRecordAndUnconfiguredEnergy" time="0.07821" status="run">
+		<properties/>
+		<system-out>Running main() from /usr/src/debug/gtest/googletest-1.18.0/googletest/src/gtest_main.cc
+Note: Google Test filter = OpenNavSettings.VesselProfileKeepsLegacyRecordAndUnconfiguredEnergy
+[==========] Running 1 test from 1 test suite.
+[----------] Global test environment set-up.
+[----------] 1 test from OpenNavSettings
+[ RUN      ] OpenNavSettings.VesselProfileKeepsLegacyRecordAndUnconfiguredEnergy
+[       OK ] OpenNavSettings.VesselProfileKeepsLegacyRecordAndUnconfiguredEnergy (1 ms)
+[----------] 1 test from OpenNavSettings (1 ms total)
+
+[----------] Global test environment tear-down
+[==========] 1 test from 1 test suite ran. (1 ms total)
+[  PASSED  ] 1 test.
+</system-out>
+	</testcase>
+	<testcase name="OpenNavSettings.VesselSaveFailedFlushRestoresAllThreeEntries" classname="OpenNavSettings.VesselSaveFailedFlushRestoresAllThreeEntries" time="0.0810629" status="run">
+		<properties/>
+		<system-out>Running main() from /usr/src/debug/gtest/googletest-1.18.0/googletest/src/gtest_main.cc
+Note: Google Test filter = OpenNavSettings.VesselSaveFailedFlushRestoresAllThreeEntries
+[==========] Running 1 test from 1 test suite.
+[----------] Global test environment set-up.
+[----------] 1 test from OpenNavSettings
+[ RUN      ] OpenNavSettings.VesselSaveFailedFlushRestoresAllThreeEntries
+11:39:32: Error: SKAGER vessel profile save failed; disk restore: confirmed
+[       OK ] OpenNavSettings.VesselSaveFailedFlushRestoresAllThreeEntries (1 ms)
+[----------] 1 test from OpenNavSettings (1 ms total)
+
+[----------] Global test environment tear-down
+[==========] 1 test from 1 test suite ran. (1 ms total)
+[  PASSED  ] 1 test.
+</system-out>
+	</testcase>
+	<testcase name="OpenNavSettings.VesselSavePersistsEditedChartNameAndBattery" classname="OpenNavSettings.VesselSavePersistsEditedChartNameAndBattery" time="0.0840094" status="run">
+		<properties/>
+		<system-out>Running main() from /usr/src/debug/gtest/googletest-1.18.0/googletest/src/gtest_main.cc
+Note: Google Test filter = OpenNavSettings.VesselSavePersistsEditedChartNameAndBattery
+[==========] Running 1 test from 1 test suite.
+[----------] Global test environment set-up.
+[----------] 1 test from OpenNavSettings
+[ RUN      ] OpenNavSettings.VesselSavePersistsEditedChartNameAndBattery
+[       OK ] OpenNavSettings.VesselSavePersistsEditedChartNameAndBattery (0 ms)
+[----------] 1 test from OpenNavSettings (0 ms total)
+
+[----------] Global test environment tear-down
+[==========] 1 test from 1 test suite ran. (1 ms total)
+[  PASSED  ] 1 test.
+</system-out>
+	</testcase>
+	<testcase name="OpenNavSettings.WorkerCannotWriteConfiguration" classname="OpenNavSettings.WorkerCannotWriteConfiguration" time="0.0822653" status="run">
+		<properties/>
+		<system-out>Running main() from /usr/src/debug/gtest/googletest-1.18.0/googletest/src/gtest_main.cc
+Note: Google Test filter = OpenNavSettings.WorkerCannotWriteConfiguration
+[==========] Running 1 test from 1 test suite.
+[----------] Global test environment set-up.
+[----------] 1 test from OpenNavSettings
+[ RUN      ] OpenNavSettings.WorkerCannotWriteConfiguration
+[       OK ] OpenNavSettings.WorkerCannotWriteConfiguration (0 ms)
+[----------] 1 test from OpenNavSettings (0 ms total)
+
+[----------] Global test environment tear-down
+[==========] 1 test from 1 test suite ran. (0 ms total)
+[  PASSED  ] 1 test.
+</system-out>
+	</testcase>
+	<testcase name="OpenNavOnlineAIS.DefaultOffAndPersistentOptInNeedsValidLiveViewport" classname="OpenNavOnlineAIS.DefaultOffAndPersistentOptInNeedsValidLiveViewport" time="0.0810998" status="run">
+		<properties/>
+		<system-out>Running main() from /usr/src/debug/gtest/googletest-1.18.0/googletest/src/gtest_main.cc
+Note: Google Test filter = OpenNavOnlineAIS.DefaultOffAndPersistentOptInNeedsValidLiveViewport
+[==========] Running 1 test from 1 test suite.
+[----------] Global test environment set-up.
+[----------] 1 test from OpenNavOnlineAIS
+[ RUN      ] OpenNavOnlineAIS.DefaultOffAndPersistentOptInNeedsValidLiveViewport
+11:39:32: SKAGER Online AIS: enabled by user
+[       OK ] OpenNavOnlineAIS.DefaultOffAndPersistentOptInNeedsValidLiveViewport (0 ms)
+[----------] 1 test from OpenNavOnlineAIS (0 ms total)
+
+[----------] Global test environment tear-down
+[==========] 1 test from 1 test suite ran. (0 ms total)
+[  PASSED  ] 1 test.
+</system-out>
+	</testcase>
+	<testcase name="OpenNavOnlineAIS.UnknownConfigurationIsPreservedAndDisabled" classname="OpenNavOnlineAIS.UnknownConfigurationIsPreservedAndDisabled" time="0.0872739" status="run">
+		<properties/>
+		<system-out>Running main() from /usr/src/debug/gtest/googletest-1.18.0/googletest/src/gtest_main.cc
+Note: Google Test filter = OpenNavOnlineAIS.UnknownConfigurationIsPreservedAndDisabled
+[==========] Running 1 test from 1 test suite.
+[----------] Global test environment set-up.
+[----------] 1 test from OpenNavOnlineAIS
+[ RUN      ] OpenNavOnlineAIS.UnknownConfigurationIsPreservedAndDisabled
+11:39:33: Warning: SKAGER Online AIS setting invalid; networking disabled
+11:39:33: Warning: SKAGER Online AIS setting invalid; networking disabled
+11:39:33: Warning: SKAGER Online AIS setting invalid; networking disabled
+11:39:33: Warning: SKAGER Online AIS setting invalid; networking disabled
+[       OK ] OpenNavOnlineAIS.UnknownConfigurationIsPreservedAndDisabled (0 ms)
+[----------] 1 test from OpenNavOnlineAIS (0 ms total)
+
+[----------] Global test environment tear-down
+[==========] 1 test from 1 test suite ran. (0 ms total)
+[  PASSED  ] 1 test.
+</system-out>
+	</testcase>
+	<testcase name="OpenNavOnlineAIS.InvalidViewportAndReplayStopNetworking" classname="OpenNavOnlineAIS.InvalidViewportAndReplayStopNetworking" time="0.0831954" status="run">
+		<properties/>
+		<system-out>Running main() from /usr/src/debug/gtest/googletest-1.18.0/googletest/src/gtest_main.cc
+Note: Google Test filter = OpenNavOnlineAIS.InvalidViewportAndReplayStopNetworking
+[==========] Running 1 test from 1 test suite.
+[----------] Global test environment set-up.
+[----------] 1 test from OpenNavOnlineAIS
+[ RUN      ] OpenNavOnlineAIS.InvalidViewportAndReplayStopNetworking
+11:39:33: SKAGER Online AIS: enabled by user
+[       OK ] OpenNavOnlineAIS.InvalidViewportAndReplayStopNetworking (0 ms)
+[----------] 1 test from OpenNavOnlineAIS (0 ms total)
+
+[----------] Global test environment tear-down
+[==========] 1 test from 1 test suite ran. (0 ms total)
+[  PASSED  ] 1 test.
+</system-out>
+	</testcase>
+	<testcase name="OpenNavOnlineAIS.FailedEnableRestoresTheExactPreviousPreference" classname="OpenNavOnlineAIS.FailedEnableRestoresTheExactPreviousPreference" time="0.0806004" status="run">
+		<properties/>
+		<system-out>Running main() from /usr/src/debug/gtest/googletest-1.18.0/googletest/src/gtest_main.cc
+Note: Google Test filter = OpenNavOnlineAIS.FailedEnableRestoresTheExactPreviousPreference
+[==========] Running 1 test from 1 test suite.
+[----------] Global test environment set-up.
+[----------] 1 test from OpenNavOnlineAIS
+[ RUN      ] OpenNavOnlineAIS.FailedEnableRestoresTheExactPreviousPreference
+[       OK ] OpenNavOnlineAIS.FailedEnableRestoresTheExactPreviousPreference (0 ms)
+[----------] 1 test from OpenNavOnlineAIS (0 ms total)
+
+[----------] Global test environment tear-down
+[==========] 1 test from 1 test suite ran. (0 ms total)
+[  PASSED  ] 1 test.
+</system-out>
+	</testcase>
+	<testcase name="OpenNavOnlineAIS.DisableStopsImmediatelyEvenWhenPersistenceFails" classname="OpenNavOnlineAIS.DisableStopsImmediatelyEvenWhenPersistenceFails" time="0.0793638" status="run">
+		<properties/>
+		<system-out>Running main() from /usr/src/debug/gtest/googletest-1.18.0/googletest/src/gtest_main.cc
+Note: Google Test filter = OpenNavOnlineAIS.DisableStopsImmediatelyEvenWhenPersistenceFails
+[==========] Running 1 test from 1 test suite.
+[----------] Global test environment set-up.
+[----------] 1 test from OpenNavOnlineAIS
+[ RUN      ] OpenNavOnlineAIS.DisableStopsImmediatelyEvenWhenPersistenceFails
+11:39:33: SKAGER Online AIS: enabled by user
+[       OK ] OpenNavOnlineAIS.DisableStopsImmediatelyEvenWhenPersistenceFails (0 ms)
+[----------] 1 test from OpenNavOnlineAIS (0 ms total)
+
+[----------] Global test environment tear-down
+[==========] 1 test from 1 test suite ran. (0 ms total)
+[  PASSED  ] 1 test.
+</system-out>
+	</testcase>
+	<testcase name="OpenNavOnlineAIS.CredentialIsSeparateAndDoesNotImplicitlyEnable" classname="OpenNavOnlineAIS.CredentialIsSeparateAndDoesNotImplicitlyEnable" time="0.0808255" status="run">
+		<properties/>
+		<system-out>Running main() from /usr/src/debug/gtest/googletest-1.18.0/googletest/src/gtest_main.cc
+Note: Google Test filter = OpenNavOnlineAIS.CredentialIsSeparateAndDoesNotImplicitlyEnable
+[==========] Running 1 test from 1 test suite.
+[----------] Global test environment set-up.
+[----------] 1 test from OpenNavOnlineAIS
+[ RUN      ] OpenNavOnlineAIS.CredentialIsSeparateAndDoesNotImplicitlyEnable
+[       OK ] OpenNavOnlineAIS.CredentialIsSeparateAndDoesNotImplicitlyEnable (0 ms)
+[----------] 1 test from OpenNavOnlineAIS (0 ms total)
+
+[----------] Global test environment tear-down
+[==========] 1 test from 1 test suite ran. (0 ms total)
+[  PASSED  ] 1 test.
+</system-out>
+	</testcase>
+	<testcase name="OpenNavOnlineAIS.FailedRemovalStillDisablesAndSuccessfulRemovalVerifiesAbsence" classname="OpenNavOnlineAIS.FailedRemovalStillDisablesAndSuccessfulRemovalVerifiesAbsence" time="0.0816323" status="run">
+		<properties/>
+		<system-out>Running main() from /usr/src/debug/gtest/googletest-1.18.0/googletest/src/gtest_main.cc
+Note: Google Test filter = OpenNavOnlineAIS.FailedRemovalStillDisablesAndSuccessfulRemovalVerifiesAbsence
+[==========] Running 1 test from 1 test suite.
+[----------] Global test environment set-up.
+[----------] 1 test from OpenNavOnlineAIS
+[ RUN      ] OpenNavOnlineAIS.FailedRemovalStillDisablesAndSuccessfulRemovalVerifiesAbsence
+11:39:33: SKAGER Online AIS: enabled by user
+11:39:33: SKAGER Online AIS: disabled by user
+11:39:33: SKAGER Online AIS: disabled by user
+[       OK ] OpenNavOnlineAIS.FailedRemovalStillDisablesAndSuccessfulRemovalVerifiesAbsence (1 ms)
+[----------] 1 test from OpenNavOnlineAIS (1 ms total)
+
+[----------] Global test environment tear-down
+[==========] 1 test from 1 test suite ran. (1 ms total)
+[  PASSED  ] 1 test.
+</system-out>
+	</testcase>
+	<testcase name="OpenNavOnlineAIS.WorkerCannotWriteSettingsOrCredentials" classname="OpenNavOnlineAIS.WorkerCannotWriteSettingsOrCredentials" time="0.0818943" status="run">
+		<properties/>
+		<system-out>Running main() from /usr/src/debug/gtest/googletest-1.18.0/googletest/src/gtest_main.cc
+Note: Google Test filter = OpenNavOnlineAIS.WorkerCannotWriteSettingsOrCredentials
+[==========] Running 1 test from 1 test suite.
+[----------] Global test environment set-up.
+[----------] 1 test from OpenNavOnlineAIS
+[ RUN      ] OpenNavOnlineAIS.WorkerCannotWriteSettingsOrCredentials
+[       OK ] OpenNavOnlineAIS.WorkerCannotWriteSettingsOrCredentials (0 ms)
+[----------] 1 test from OpenNavOnlineAIS (0 ms total)
+
+[----------] Global test environment tear-down
+[==========] 1 test from 1 test suite ran. (0 ms total)
+[  PASSED  ] 1 test.
+</system-out>
+	</testcase>
+	<testcase name="OpenNavOnlineAIS.PinnedOrderedBoundingBoxPreservesDatelineAndWorldExtent" classname="OpenNavOnlineAIS.PinnedOrderedBoundingBoxPreservesDatelineAndWorldExtent" time="0.0817297" status="run">
+		<properties/>
+		<system-out>Running main() from /usr/src/debug/gtest/googletest-1.18.0/googletest/src/gtest_main.cc
+Note: Google Test filter = OpenNavOnlineAIS.PinnedOrderedBoundingBoxPreservesDatelineAndWorldExtent
+[==========] Running 1 test from 1 test suite.
+[----------] Global test environment set-up.
+[----------] 1 test from OpenNavOnlineAIS
+[ RUN      ] OpenNavOnlineAIS.PinnedOrderedBoundingBoxPreservesDatelineAndWorldExtent
+[       OK ] OpenNavOnlineAIS.PinnedOrderedBoundingBoxPreservesDatelineAndWorldExtent (0 ms)
+[----------] 1 test from OpenNavOnlineAIS (0 ms total)
+
+[----------] Global test environment tear-down
+[==========] 1 test from 1 test suite ran. (0 ms total)
+[  PASSED  ] 1 test.
+</system-out>
+	</testcase>
+	<testcase name="OpenNavOnlineAIS.InvalidAndOverflowViewportCannotCreateSubscription" classname="OpenNavOnlineAIS.InvalidAndOverflowViewportCannotCreateSubscription" time="0.0816965" status="run">
+		<properties/>
+		<system-out>Running main() from /usr/src/debug/gtest/googletest-1.18.0/googletest/src/gtest_main.cc
+Note: Google Test filter = OpenNavOnlineAIS.InvalidAndOverflowViewportCannotCreateSubscription
+[==========] Running 1 test from 1 test suite.
+[----------] Global test environment set-up.
+[----------] 1 test from OpenNavOnlineAIS
+[ RUN      ] OpenNavOnlineAIS.InvalidAndOverflowViewportCannotCreateSubscription
+[       OK ] OpenNavOnlineAIS.InvalidAndOverflowViewportCannotCreateSubscription (0 ms)
+[----------] 1 test from OpenNavOnlineAIS (0 ms total)
+
+[----------] Global test environment tear-down
+[==========] 1 test from 1 test suite ran. (0 ms total)
+[  PASSED  ] 1 test.
+</system-out>
+	</testcase>
+	<testcase name="OpenNavRecovery.ActualJournalCountsCrashesAndPreservesRetryEvidence" classname="OpenNavRecovery.ActualJournalCountsCrashesAndPreservesRetryEvidence" time="0.0849631" status="run">
+		<properties/>
+		<system-out>Running main() from /usr/src/debug/gtest/googletest-1.18.0/googletest/src/gtest_main.cc
+Note: Google Test filter = OpenNavRecovery.ActualJournalCountsCrashesAndPreservesRetryEvidence
+[==========] Running 1 test from 1 test suite.
+[----------] Global test environment set-up.
+[----------] 1 test from OpenNavRecovery
+[ RUN      ] OpenNavRecovery.ActualJournalCountsCrashesAndPreservesRetryEvidence
+11:39:33: Warning: SKAGER startup recovery: previous SKAGER startup did not finish; consecutive failures 1
+11:39:33: Warning: SKAGER startup recovery: previous SKAGER startup did not finish; consecutive failures 2
+11:39:33: SKAGER startup recovery explicitly reset for a human-requested SKAGER retry
+11:39:33: SKAGER clean close; startup recovery cleared
+[       OK ] OpenNavRecovery.ActualJournalCountsCrashesAndPreservesRetryEvidence (1 ms)
+[----------] 1 test from OpenNavRecovery (1 ms total)
+
+[----------] Global test environment tear-down
+[==========] 1 test from 1 test suite ran. (1 ms total)
+[  PASSED  ] 1 test.
+</system-out>
+	</testcase>
+	<testcase name="OpenNavRecovery.HealthyRequiresDeferredInitializationAndThirtySeconds" classname="OpenNavRecovery.HealthyRequiresDeferredInitializationAndThirtySeconds" time="0.0821061" status="run">
+		<properties/>
+		<system-out>Running main() from /usr/src/debug/gtest/googletest-1.18.0/googletest/src/gtest_main.cc
+Note: Google Test filter = OpenNavRecovery.HealthyRequiresDeferredInitializationAndThirtySeconds
+[==========] Running 1 test from 1 test suite.
+[----------] Global test environment set-up.
+[----------] 1 test from OpenNavRecovery
+[ RUN      ] OpenNavRecovery.HealthyRequiresDeferredInitializationAndThirtySeconds
+11:39:33: Warning: SKAGER startup recovery: previous SKAGER startup did not finish; consecutive failures 1
+11:39:33: Warning: SKAGER startup recovery: previous SKAGER startup did not finish; consecutive failures 2
+11:39:33: SKAGER startup recovery explicitly reset for a human-requested SKAGER retry
+11:39:33: SKAGER startup healthy after 30 seconds of normal application processing
+[       OK ] OpenNavRecovery.HealthyRequiresDeferredInitializationAndThirtySeconds (1 ms)
+[----------] 1 test from OpenNavRecovery (1 ms total)
+
+[----------] Global test environment tear-down
+[==========] 1 test from 1 test suite ran. (1 ms...
+[This part of the test output was removed since it exceeds the threshold of 1024 bytes.]
+</system-out>
+	</testcase>
+	<testcase name="OpenNavRecovery.CorruptJournalFailsClosedWithoutTouchingNavigationData" classname="OpenNavRecovery.CorruptJournalFailsClosedWithoutTouchingNavigationData" time="0.0799372" status="run">
+		<properties/>
+		<system-out>Running main() from /usr/src/debug/gtest/googletest-1.18.0/googletest/src/gtest_main.cc
+Note: Google Test filter = OpenNavRecovery.CorruptJournalFailsClosedWithoutTouchingNavigationData
+[==========] Running 1 test from 1 test suite.
+[----------] Global test environment set-up.
+[----------] 1 test from OpenNavRecovery
+[ RUN      ] OpenNavRecovery.CorruptJournalFailsClosedWithoutTouchingNavigationData
+11:39:33: Warning: SKAGER Startup recovery record could not be verified: Invalid startup recovery record
+11:39:33: SKAGER startup recovery explicitly reset for a human-requested SKAGER retry
+[       OK ] OpenNavRecovery.CorruptJournalFailsClosedWithoutTouchingNavigationData (1 ms)
+[----------] 1 test from OpenNavRecovery (1 ms total)
+
+[----------] Global test environment tear-down
+[==========] 1 test from 1 test suite ran. (1 ms total)
+[  PASSED  ] 1 test.
+</system-out>
+	</testcase>
+	<testcase name="OpenNavDiscovery.RepeatedScansReleaseAllOwnedReferences" classname="OpenNavDiscovery.RepeatedScansReleaseAllOwnedReferences" time="0.334146" status="run">
+		<properties/>
+		<system-out>Running main() from /usr/src/debug/gtest/googletest-1.18.0/googletest/src/gtest_main.cc
+Note: Google Test filter = OpenNavDiscovery.RepeatedScansReleaseAllOwnedReferences
+[==========] Running 1 test from 1 test suite.
+[----------] Global test environment set-up.
+[----------] 1 test from OpenNavDiscovery
+[ RUN      ] OpenNavDiscovery.RepeatedScansReleaseAllOwnedReferences
+[       OK ] OpenNavDiscovery.RepeatedScansReleaseAllOwnedReferences (230 ms)
+[----------] 1 test from OpenNavDiscovery (230 ms total)
+
+[----------] Global test environment tear-down
+[==========] 1 test from 1 test suite ran. (230 ms total)
+[  PASSED  ] 1 test.
+</system-out>
+	</testcase>
+	<testcase name="OpenNavDiscovery.ContextFailureReturnsUnavailableCatalog" classname="OpenNavDiscovery.ContextFailureReturnsUnavailableCatalog" time="0.0788087" status="run">
+		<properties/>
+		<system-out>Running main() from /usr/src/debug/gtest/googletest-1.18.0/googletest/src/gtest_main.cc
+Note: Google Test filter = OpenNavDiscovery.ContextFailureReturnsUnavailableCatalog
+[==========] Running 1 test from 1 test suite.
+[----------] Global test environment set-up.
+[----------] 1 test from OpenNavDiscovery
+[ RUN      ] OpenNavDiscovery.ContextFailureReturnsUnavailableCatalog
+[       OK ] OpenNavDiscovery.ContextFailureReturnsUnavailableCatalog (0 ms)
+[----------] 1 test from OpenNavDiscovery (0 ms total)
+
+[----------] Global test environment tear-down
+[==========] 1 test from 1 test suite ran. (0 ms total)
+[  PASSED  ] 1 test.
+</system-out>
+	</testcase>
+	<testcase name="OpenNavDiscovery.ScanFailureReleasesContext" classname="OpenNavDiscovery.ScanFailureReleasesContext" time="0.0791321" status="run">
+		<properties/>
+		<system-out>Running main() from /usr/src/debug/gtest/googletest-1.18.0/googletest/src/gtest_main.cc
+Note: Google Test filter = OpenNavDiscovery.ScanFailureReleasesContext
+[==========] Running 1 test from 1 test suite.
+[----------] Global test environment set-up.
+[----------] 1 test from OpenNavDiscovery
+[ RUN      ] OpenNavDiscovery.ScanFailureReleasesContext
+[       OK ] OpenNavDiscovery.ScanFailureReleasesContext (0 ms)
+[----------] 1 test from OpenNavDiscovery (0 ms total)
+
+[----------] Global test environment tear-down
+[==========] 1 test from 1 test suite ran. (0 ms total)
+[  PASSED  ] 1 test.
+</system-out>
+	</testcase>
+	<testcase name="Buffer.Single" classname="Buffer.Single" time="0.0796977" status="run">
+		<properties/>
+		<system-out>Running main() from /usr/src/debug/gtest/googletest-1.18.0/googletest/src/gtest_main.cc
+Note: Google Test filter = Buffer.Single
+[==========] Running 1 test from 1 test suite.
+[----------] Global test environment set-up.
+[----------] 1 test from Buffer
+[ RUN      ] Buffer.Single
+[       OK ] Buffer.Single (0 ms)
+[----------] 1 test from Buffer (0 ms total)
+
+[----------] Global test environment tear-down
+[==========] 1 test from 1 test suite ran. (0 ms total)
+[  PASSED  ] 1 test.
+</system-out>
+	</testcase>
+	<testcase name="Buffer.Size_3" classname="Buffer.Size_3" time="0.0825364" status="run">
+		<properties/>
+		<system-out>Running main() from /usr/src/debug/gtest/googletest-1.18.0/googletest/src/gtest_main.cc
+Note: Google Test filter = Buffer.Size_3
+[==========] Running 1 test from 1 test suite.
+[----------] Global test environment set-up.
+[----------] 1 test from Buffer
+[ RUN      ] Buffer.Size_3
+[       OK ] Buffer.Size_3 (0 ms)
+[----------] 1 test from Buffer (0 ms total)
+
+[----------] Global test environment tear-down
+[==========] 1 test from 1 test suite ran. (0 ms total)
+[  PASSED  ] 1 test.
+</system-out>
+	</testcase>
+	<testcase name="Buffer.Hakefjord" classname="Buffer.Hakefjord" time="0.235278" status="run">
+		<properties/>
+		<system-out>Running main() from /usr/src/debug/gtest/googletest-1.18.0/googletest/src/gtest_main.cc
+Note: Google Test filter = Buffer.Hakefjord
+[==========] Running 1 test from 1 test suite.
+[----------] Global test environment set-up.
+[----------] 1 test from Buffer
+[ RUN      ] Buffer.Hakefjord
+[       OK ] Buffer.Hakefjord (156 ms)
+[----------] 1 test from Buffer (156 ms total)
+
+[----------] Global test environment tear-down
+[==========] 1 test from 1 test suite ran. (156 ms total)
+[  PASSED  ] 1 test.
+</system-out>
+	</testcase>
+	<testcase name="Buffer.RateLimit1" classname="Buffer.RateLimit1" time="0.12004" status="run">
+		<properties/>
+		<system-out>Running main() from /usr/src/debug/gtest/googletest-1.18.0/googletest/src/gtest_main.cc
+Note: Google Test filter = Buffer.RateLimit1
+[==========] Running 1 test from 1 test suite.
+[----------] Global test environment set-up.
+[----------] 1 test from Buffer
+[ RUN      ] Buffer.RateLimit1
+[       OK ] Buffer.RateLimit1 (41 ms)
+[----------] 1 test from Buffer (41 ms total)
+
+[----------] Global test environment tear-down
+[==========] 1 test from 1 test suite ran. (41 ms total)
+[  PASSED  ] 1 test.
+</system-out>
+	</testcase>
+	<testcase name="Buffer.RateLimit2" classname="Buffer.RateLimit2" time="0.285585" status="run">
+		<properties/>
+		<system-out>Running main() from /usr/src/debug/gtest/googletest-1.18.0/googletest/src/gtest_main.cc
+Note: Google Test filter = Buffer.RateLimit2
+[==========] Running 1 test from 1 test suite.
+[----------] Global test environment set-up.
+[----------] 1 test from Buffer
+[ RUN      ] Buffer.RateLimit2
+[       OK ] Buffer.RateLimit2 (203 ms)
+[----------] 1 test from Buffer (203 ms total)
+
+[----------] Global test environment tear-down
+[==========] 1 test from 1 test suite ran. (203 ms total)
+[  PASSED  ] 1 test.
+</system-out>
+	</testcase>
+	<testcase name="Buffer.RateAndSizeLimit" classname="Buffer.RateAndSizeLimit" time="0.126169" status="run">
+		<properties/>
+		<system-out>Running main() from /usr/src/debug/gtest/googletest-1.18.0/googletest/src/gtest_main.cc
+Note: Google Test filter = Buffer.RateAndSizeLimit
+[==========] Running 1 test from 1 test suite.
+[----------] Global test environment set-up.
+[----------] 1 test from Buffer
+[ RUN      ] Buffer.RateAndSizeLimit
+[       OK ] Buffer.RateAndSizeLimit (42 ms)
+[----------] 1 test from Buffer (42 ms total)
+
+[----------] Global test environment tear-down
+[==========] 1 test from 1 test suite ran. (42 ms total)
+[  PASSED  ] 1 test.
+</system-out>
+	</testcase>
+	<testcase name="Buffer.OverrunEvent" classname="Buffer.OverrunEvent" time="0.0834874" status="run">
+		<properties/>
+		<system-out>Running main() from /usr/src/debug/gtest/googletest-1.18.0/googletest/src/gtest_main.cc
+Note: Google Test filter = Buffer.OverrunEvent
+[==========] Running 1 test from 1 test suite.
+[----------] Global test environment set-up.
+[----------] 1 test from Buffer
+[ RUN      ] Buffer.OverrunEvent
+[       OK ] Buffer.OverrunEvent (0 ms)
+[----------] 1 test from Buffer (0 ms total)
+
+[----------] Global test environment tear-down
+[==========] 1 test from 1 test suite ran. (0 ms total)
+[  PASSED  ] 1 test.
+</system-out>
+	</testcase>
+	<testcase name="N0183Nuffer.Basic" classname="N0183Nuffer.Basic" time="0.0792041" status="run">
+		<properties/>
+		<system-out>Running main() from /usr/src/debug/gtest/googletest-1.18.0/googletest/src/gtest_main.cc
+Note: Google Test filter = N0183Nuffer.Basic
+[==========] Running 1 test from 1 test suite.
+[----------] Global test environment set-up.
+[----------] 1 test from N0183Nuffer
+[ RUN      ] N0183Nuffer.Basic
+[       OK ] N0183Nuffer.Basic (0 ms)
+[----------] 1 test from N0183Nuffer (0 ms total)
+
+[----------] Global test environment tear-down
+[==========] 1 test from 1 test suite ran. (0 ms total)
+[  PASSED  ] 1 test.
+</system-out>
+	</testcase>
+	<testcase name="IpcServer.Commands" classname="IpcServer.Commands" time="0.360344" status="run">
+		<properties/>
+		<system-out>Running main() from /usr/src/debug/gtest/googletest-1.18.0/googletest/src/gtest_main.cc
+Note: Google Test filter = IpcServer.Commands
+[==========] Running 1 test from 1 test suite.
+[----------] Global test environment set-up.
+[----------] 1 test from IpcServer
+[ RUN      ] IpcServer.Commands
+11:39:35: Debug: Stale AF_UNIX file '/home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/.local/combined-test-home/.opencpn/opencpn-ipc' left.
+[       OK ] IpcServer.Commands (282 ms)
+[----------] 1 test from IpcServer (282 ms total)
+
+[----------] Global test environment tear-down
+[==========] 1 test from 1 test suite ran. (282 ms total)
+[  PASSED  ] 1 test.
+</system-out>
+	</testcase>
+</testsuite>
