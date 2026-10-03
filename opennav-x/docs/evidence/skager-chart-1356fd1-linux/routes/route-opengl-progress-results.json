@@ -1,0 +1,750 @@
+{
+  "xnav_legacy_console_hidden": true,
+  "result": "passed",
+  "fixture": "Synthetic loopback position and test routes; no device output",
+  "checks": [
+    {
+      "route_id": "",
+      "observed_steady_ms": "39906227",
+      "position_steady_ms": "39906094",
+      "state": "NoActiveRoute",
+      "check": "no active route",
+      "revision_scope": "SKAGER session 39902688044921",
+      "position_source": "OpenCPN selected navigation (sensor identity unavailable)",
+      "route_revision": "1",
+      "active_waypoint_id": "",
+      "source": "OpenCPN 5.12.4 normal route progress: active range + subsequent stored legs (NM)"
+    },
+    {
+      "route_pixels": [
+        {
+          "y": 534,
+          "x": 487
+        },
+        {
+          "y": 351,
+          "x": 587
+        },
+        {
+          "y": 167,
+          "x": 687
+        }
+      ],
+      "route_id": "OPENNAV-TEST-route",
+      "observed_steady_ms": "39907241",
+      "position_steady_ms": "39906995",
+      "active_waypoint_index": 0,
+      "state": "RouteChanged",
+      "check": "activation awaiting coherent pass",
+      "revision_scope": "SKAGER session 39902688044921",
+      "stock_active_ink": [
+        200,
+        0,
+        0
+      ],
+      "position_source": "OpenCPN selected navigation (sensor identity unavailable)",
+      "route_revision": "2",
+      "active_waypoint_id": "OPENNAV-TEST-point-1",
+      "source": "OpenCPN 5.12.4 normal route progress: active range + subsequent stored legs (NM)"
+    },
+    {
+      "route_pixels": [
+        {
+          "y": 534,
+          "x": 487
+        },
+        {
+          "y": 351,
+          "x": 587
+        },
+        {
+          "y": 167,
+          "x": 687
+        }
+      ],
+      "route_id": "OPENNAV-TEST-route",
+      "observed_steady_ms": "39908241",
+      "position_steady_ms": "39908197",
+      "active_waypoint_index": 0,
+      "remaining_distance_nm": 20.51547039,
+      "state": "Valid",
+      "check": "first point real upstream progress",
+      "revision_scope": "SKAGER session 39902688044921",
+      "stock_active_ink": [
+        200,
+        0,
+        0
+      ],
+      "position_source": "OpenCPN selected navigation (sensor identity unavailable)",
+      "route_revision": "2",
+      "active_waypoint_id": "OPENNAV-TEST-point-1",
+      "source": "OpenCPN 5.12.4 normal route progress: active range + subsequent stored legs (NM)"
+    },
+    {
+      "route_pixels": [
+        {
+          "y": 534,
+          "x": 487
+        },
+        {
+          "y": 351,
+          "x": 587
+        },
+        {
+          "y": 167,
+          "x": 687
+        }
+      ],
+      "route_id": "OPENNAV-TEST-route",
+      "observed_steady_ms": "39908241",
+      "position_steady_ms": "39908197",
+      "active_waypoint_index": 0,
+      "state": "ActivePointChanged",
+      "check": "consumer invalidates point change",
+      "revision_scope": "SKAGER session 39902688044921",
+      "stock_active_ink": [
+        200,
+        0,
+        0
+      ],
+      "position_source": "OpenCPN selected navigation (sensor identity unavailable)",
+      "route_revision": "2",
+      "active_waypoint_id": "OPENNAV-TEST-point-1",
+      "source": "OpenCPN 5.12.4 normal route progress: active range + subsequent stored legs (NM)"
+    },
+    {
+      "route_pixels": [
+        {
+          "y": 534,
+          "x": 487
+        },
+        {
+          "y": 351,
+          "x": 587
+        },
+        {
+          "y": 167,
+          "x": 687
+        }
+      ],
+      "route_id": "OPENNAV-TEST-route",
+      "observed_steady_ms": "39909241",
+      "position_steady_ms": "39909098",
+      "active_waypoint_index": 1,
+      "state": "ActivePointChanged",
+      "check": "changed active point",
+      "revision_scope": "SKAGER session 39902688044921",
+      "stock_active_ink": [
+        200,
+        0,
+        0
+      ],
+      "position_source": "OpenCPN selected navigation (sensor identity unavailable)",
+      "route_revision": "2",
+      "active_waypoint_id": "OPENNAV-TEST-point-2",
+      "source": "OpenCPN 5.12.4 normal route progress: active range + subsequent stored legs (NM)"
+    },
+    {
+      "route_pixels": [
+        {
+          "y": 534,
+          "x": 487
+        },
+        {
+          "y": 351,
+          "x": 587
+        },
+        {
+          "y": 167,
+          "x": 687
+        }
+      ],
+      "route_id": "OPENNAV-TEST-route",
+      "observed_steady_ms": "39910241",
+      "position_steady_ms": "39909999",
+      "active_waypoint_index": 1,
+      "remaining_distance_nm": 20.54001806,
+      "state": "Valid",
+      "check": "middle point real upstream progress",
+      "revision_scope": "SKAGER session 39902688044921",
+      "stock_active_ink": [
+        200,
+        0,
+        0
+      ],
+      "position_source": "OpenCPN selected navigation (sensor identity unavailable)",
+      "route_revision": "2",
+      "active_waypoint_id": "OPENNAV-TEST-point-2",
+      "source": "OpenCPN 5.12.4 normal route progress: active range + subsequent stored legs (NM)"
+    },
+    {
+      "route_pixels": [
+        {
+          "y": 534,
+          "x": 487
+        },
+        {
+          "y": 351,
+          "x": 587
+        },
+        {
+          "y": 167,
+          "x": 687
+        }
+      ],
+      "route_id": "OPENNAV-TEST-route",
+      "observed_steady_ms": "39911244",
+      "position_steady_ms": "39911201",
+      "active_waypoint_index": 2,
+      "state": "ActivePointChanged",
+      "check": "skipped point transition",
+      "revision_scope": "SKAGER session 39902688044921",
+      "stock_active_ink": [
+        200,
+        0,
+        0
+      ],
+      "position_source": "OpenCPN selected navigation (sensor identity unavailable)",
+      "route_revision": "2",
+      "active_waypoint_id": "OPENNAV-TEST-point-3",
+      "source": "OpenCPN 5.12.4 normal route progress: active range + subsequent stored legs (NM)"
+    },
+    {
+      "route_pixels": [
+        {
+          "y": 534,
+          "x": 487
+        },
+        {
+          "y": 351,
+          "x": 587
+        },
+        {
+          "y": 167,
+          "x": 687
+        }
+      ],
+      "route_id": "OPENNAV-TEST-route",
+      "observed_steady_ms": "39912247",
+      "position_steady_ms": "39912102",
+      "active_waypoint_index": 2,
+      "remaining_distance_nm": 20.55225248,
+      "state": "Valid",
+      "check": "final point real upstream progress",
+      "revision_scope": "SKAGER session 39902688044921",
+      "stock_active_ink": [
+        200,
+        0,
+        0
+      ],
+      "position_source": "OpenCPN selected navigation (sensor identity unavailable)",
+      "route_revision": "2",
+      "active_waypoint_id": "OPENNAV-TEST-point-3",
+      "source": "OpenCPN 5.12.4 normal route progress: active range + subsequent stored legs (NM)"
+    },
+    {
+      "route_pixels": [
+        {
+          "y": 717,
+          "x": 387
+        },
+        {
+          "y": 351,
+          "x": 587
+        },
+        {
+          "y": 167,
+          "x": 687
+        }
+      ],
+      "route_id": "OPENNAV-TEST-route",
+      "observed_steady_ms": "39913248",
+      "position_steady_ms": "39913003",
+      "active_waypoint_index": 1,
+      "state": "RouteChanged",
+      "check": "arrival during normal progress rejects old range",
+      "revision_scope": "SKAGER session 39902688044921",
+      "stock_active_ink": [
+        200,
+        0,
+        0
+      ],
+      "position_source": "OpenCPN selected navigation (sensor identity unavailable)",
+      "route_revision": "3",
+      "active_waypoint_id": "OPENNAV-TEST-point-2",
+      "source": "OpenCPN 5.12.4 normal route progress: active range + subsequent stored legs (NM)"
+    },
+    {
+      "route_pixels": [
+        {
+          "y": 717,
+          "x": 387
+        },
+        {
+          "y": 351,
+          "x": 587
+        },
+        {
+          "y": 167,
+          "x": 687
+        }
+      ],
+      "route_id": "OPENNAV-TEST-route",
+      "observed_steady_ms": "39914249",
+      "position_steady_ms": "39914205",
+      "active_waypoint_index": 1,
+      "remaining_distance_nm": 20.54001806,
+      "state": "Valid",
+      "check": "coherent pass after arrival",
+      "revision_scope": "SKAGER session 39902688044921",
+      "stock_active_ink": [
+        200,
+        0,
+        0
+      ],
+      "position_source": "OpenCPN selected navigation (sensor identity unavailable)",
+      "route_revision": "3",
+      "active_waypoint_id": "OPENNAV-TEST-point-2",
+      "source": "OpenCPN 5.12.4 normal route progress: active range + subsequent stored legs (NM)"
+    },
+    {
+      "route_pixels": [
+        {
+          "y": 167,
+          "x": 687
+        },
+        {
+          "y": 351,
+          "x": 587
+        },
+        {
+          "y": 717,
+          "x": 387
+        }
+      ],
+      "route_id": "OPENNAV-TEST-route",
+      "observed_steady_ms": "39915250",
+      "position_steady_ms": "39915107",
+      "active_waypoint_index": 1,
+      "state": "RouteChanged",
+      "check": "actual route reversal",
+      "revision_scope": "SKAGER session 39902688044921",
+      "stock_active_ink": [
+        200,
+        0,
+        0
+      ],
+      "position_source": "OpenCPN selected navigation (sensor identity unavailable)",
+      "route_revision": "4",
+      "active_waypoint_id": "OPENNAV-TEST-point-2",
+      "source": "OpenCPN 5.12.4 normal route progress: active range + subsequent stored legs (NM)"
+    },
+    {
+      "route_pixels": [
+        {
+          "y": 167,
+          "x": 687
+        },
+        {
+          "y": 351,
+          "x": 587
+        },
+        {
+          "y": 717,
+          "x": 387
+        }
+      ],
+      "route_id": "OPENNAV-TEST-route",
+      "observed_steady_ms": "39916251",
+      "position_steady_ms": "39916008",
+      "active_waypoint_index": 1,
+      "remaining_distance_nm": 27.38691182,
+      "state": "Valid",
+      "check": "coherent reversed route",
+      "revision_scope": "SKAGER session 39902688044921",
+      "stock_active_ink": [
+        200,
+        0,
+        0
+      ],
+      "position_source": "OpenCPN selected navigation (sensor identity unavailable)",
+      "route_revision": "4",
+      "active_waypoint_id": "OPENNAV-TEST-point-2",
+      "source": "OpenCPN 5.12.4 normal route progress: active range + subsequent stored legs (NM)"
+    },
+    {
+      "route_pixels": [
+        {
+          "y": 167,
+          "x": 687
+        },
+        {
+          "y": 351,
+          "x": 587
+        },
+        {
+          "y": 680,
+          "x": 387
+        }
+      ],
+      "route_id": "OPENNAV-TEST-route",
+      "observed_steady_ms": "39917252",
+      "position_steady_ms": "39917210",
+      "active_waypoint_index": 1,
+      "state": "RouteChanged",
+      "check": "actual active route edit",
+      "revision_scope": "SKAGER session 39902688044921",
+      "stock_active_ink": [
+        200,
+        0,
+        0
+      ],
+      "position_source": "OpenCPN selected navigation (sensor identity unavailable)",
+      "route_revision": "5",
+      "active_waypoint_id": "OPENNAV-TEST-point-2",
+      "source": "OpenCPN 5.12.4 normal route progress: active range + subsequent stored legs (NM)"
+    },
+    {
+      "route_pixels": [
+        {
+          "y": 167,
+          "x": 687
+        },
+        {
+          "y": 351,
+          "x": 587
+        },
+        {
+          "y": 680,
+          "x": 387
+        }
+      ],
+      "route_id": "OPENNAV-TEST-route",
+      "observed_steady_ms": "39918253",
+      "position_steady_ms": "39918111",
+      "active_waypoint_index": 1,
+      "remaining_distance_nm": 26.34660598,
+      "state": "Valid",
+      "check": "coherent edited route",
+      "revision_scope": "SKAGER session 39902688044921",
+      "stock_active_ink": [
+        200,
+        0,
+        0
+      ],
+      "position_source": "OpenCPN selected navigation (sensor identity unavailable)",
+      "route_revision": "5",
+      "active_waypoint_id": "OPENNAV-TEST-point-2",
+      "source": "OpenCPN 5.12.4 normal route progress: active range + subsequent stored legs (NM)"
+    },
+    {
+      "route_pixels": [
+        {
+          "y": 167,
+          "x": 687
+        },
+        {
+          "y": 351,
+          "x": 587
+        },
+        {
+          "y": 680,
+          "x": 387
+        }
+      ],
+      "route_id": "OPENNAV-TEST-route",
+      "observed_steady_ms": "39919255",
+      "position_steady_ms": "39919012",
+      "active_waypoint_index": 1,
+      "state": "AmbiguousPoint",
+      "check": "repeated waypoint identity",
+      "revision_scope": "SKAGER session 39902688044921",
+      "stock_active_ink": [
+        200,
+        0,
+        0
+      ],
+      "position_source": "OpenCPN selected navigation (sensor identity unavailable)",
+      "route_revision": "6",
+      "active_waypoint_id": "OPENNAV-TEST-point-2",
+      "source": "OpenCPN 5.12.4 normal route progress: active range + subsequent stored legs (NM)"
+    },
+    {
+      "route_pixels": [
+        {
+          "y": 167,
+          "x": 687
+        },
+        {
+          "y": 351,
+          "x": 587
+        },
+        {
+          "y": 680,
+          "x": 387
+        }
+      ],
+      "route_id": "OPENNAV-TEST-route",
+      "observed_steady_ms": "39920255",
+      "position_steady_ms": "39920214",
+      "active_waypoint_index": 1,
+      "state": "RouteChanged",
+      "check": "restored geometry requires new pass",
+      "revision_scope": "SKAGER session 39902688044921",
+      "stock_active_ink": [
+        200,
+        0,
+        0
+      ],
+      "position_source": "OpenCPN selected navigation (sensor identity unavailable)",
+      "route_revision": "7",
+      "active_waypoint_id": "OPENNAV-TEST-point-2",
+      "source": "OpenCPN 5.12.4 normal route progress: active range + subsequent stored legs (NM)"
+    },
+    {
+      "route_pixels": [
+        {
+          "y": 167,
+          "x": 687
+        },
+        {
+          "y": 351,
+          "x": 587
+        },
+        {
+          "y": 680,
+          "x": 387
+        }
+      ],
+      "route_id": "OPENNAV-TEST-route",
+      "observed_steady_ms": "39921261",
+      "position_steady_ms": "39921115",
+      "active_waypoint_index": 1,
+      "remaining_distance_nm": 26.34660598,
+      "state": "Valid",
+      "check": "restored route",
+      "revision_scope": "SKAGER session 39902688044921",
+      "stock_active_ink": [
+        200,
+        0,
+        0
+      ],
+      "position_source": "OpenCPN selected navigation (sensor identity unavailable)",
+      "route_revision": "7",
+      "active_waypoint_id": "OPENNAV-TEST-point-2",
+      "source": "OpenCPN 5.12.4 normal route progress: active range + subsequent stored legs (NM)"
+    },
+    {
+      "route_pixels": [
+        {
+          "y": 167,
+          "x": 687
+        },
+        {
+          "y": 351,
+          "x": 587
+        },
+        {
+          "y": 680,
+          "x": 387
+        }
+      ],
+      "route_id": "OPENNAV-TEST-route",
+      "observed_steady_ms": "39926333",
+      "position_steady_ms": "39921115",
+      "active_waypoint_index": 1,
+      "state": "StalePosition",
+      "check": "stopped loopback position becomes stale",
+      "revision_scope": "SKAGER session 39902688044921",
+      "stock_active_ink": [
+        200,
+        0,
+        0
+      ],
+      "position_source": "OpenCPN selected navigation (sensor identity unavailable)",
+      "route_revision": "7",
+      "active_waypoint_id": "OPENNAV-TEST-point-2",
+      "source": "OpenCPN 5.12.4 normal route progress: active range + subsequent stored legs (NM)"
+    },
+    {
+      "route_pixels": [
+        {
+          "y": 167,
+          "x": 687
+        },
+        {
+          "y": 351,
+          "x": 587
+        },
+        {
+          "y": 680,
+          "x": 387
+        }
+      ],
+      "route_id": "OPENNAV-TEST-route",
+      "observed_steady_ms": "39928333",
+      "position_steady_ms": "39928322",
+      "active_waypoint_index": 1,
+      "remaining_distance_nm": 26.34660598,
+      "state": "Valid",
+      "check": "fresh position resumes route contract",
+      "revision_scope": "SKAGER session 39902688044921",
+      "stock_active_ink": [
+        200,
+        0,
+        0
+      ],
+      "position_source": "OpenCPN selected navigation (sensor identity unavailable)",
+      "route_revision": "7",
+      "active_waypoint_id": "OPENNAV-TEST-point-2",
+      "source": "OpenCPN 5.12.4 normal route progress: active range + subsequent stored legs (NM)"
+    },
+    {
+      "route_id": "OPENNAV-TEST-route",
+      "observed_steady_ms": "39928333",
+      "position_steady_ms": "39928322",
+      "active_waypoint_index": 1,
+      "state": "NoActiveRoute",
+      "check": "immediate deactivation invalidation",
+      "revision_scope": "SKAGER session 39902688044921",
+      "position_source": "OpenCPN selected navigation (sensor identity unavailable)",
+      "route_revision": "7",
+      "active_waypoint_id": "OPENNAV-TEST-point-2",
+      "source": "OpenCPN 5.12.4 normal route progress: active range + subsequent stored legs (NM)"
+    },
+    {
+      "route_id": "",
+      "observed_steady_ms": "39929337",
+      "position_steady_ms": "39929223",
+      "state": "NoActiveRoute",
+      "check": "deactivated route remains unavailable",
+      "revision_scope": "SKAGER session 39902688044921",
+      "position_source": "OpenCPN selected navigation (sensor identity unavailable)",
+      "route_revision": "8",
+      "active_waypoint_id": "",
+      "source": "OpenCPN 5.12.4 normal route progress: active range + subsequent stored legs (NM)"
+    },
+    {
+      "route_pixels": [
+        {
+          "y": 167,
+          "x": 687
+        },
+        {
+          "y": 351,
+          "x": 587
+        },
+        {
+          "y": 680,
+          "x": 387
+        }
+      ],
+      "route_id": "",
+      "observed_steady_ms": "39929337",
+      "position_steady_ms": "39929223",
+      "state": "RouteChanged",
+      "check": "reactivation awaiting normal progress",
+      "revision_scope": "SKAGER session 39902688044921",
+      "stock_active_ink": [
+        200,
+        0,
+        0
+      ],
+      "position_source": "OpenCPN selected navigation (sensor identity unavailable)",
+      "route_revision": "8",
+      "active_waypoint_id": "",
+      "source": "OpenCPN 5.12.4 normal route progress: active range + subsequent stored legs (NM)"
+    },
+    {
+      "route_pixels": [
+        {
+          "y": 167,
+          "x": 687
+        },
+        {
+          "y": 351,
+          "x": 587
+        },
+        {
+          "y": 680,
+          "x": 387
+        }
+      ],
+      "route_id": "OPENNAV-TEST-route",
+      "observed_steady_ms": "39930341",
+      "position_steady_ms": "39930124",
+      "active_waypoint_index": 1,
+      "state": "RouteChanged",
+      "check": "reactivated route transition",
+      "revision_scope": "SKAGER session 39902688044921",
+      "stock_active_ink": [
+        200,
+        0,
+        0
+      ],
+      "position_source": "OpenCPN selected navigation (sensor identity unavailable)",
+      "route_revision": "9",
+      "active_waypoint_id": "OPENNAV-TEST-point-2",
+      "source": "OpenCPN 5.12.4 normal route progress: active range + subsequent stored legs (NM)"
+    },
+    {
+      "route_pixels": [
+        {
+          "y": 167,
+          "x": 687
+        },
+        {
+          "y": 351,
+          "x": 587
+        },
+        {
+          "y": 680,
+          "x": 387
+        }
+      ],
+      "route_id": "OPENNAV-TEST-route",
+      "observed_steady_ms": "39931343",
+      "position_steady_ms": "39931326",
+      "active_waypoint_index": 1,
+      "remaining_distance_nm": 26.34660598,
+      "state": "Valid",
+      "check": "active route immediately before deletion",
+      "revision_scope": "SKAGER session 39902688044921",
+      "stock_active_ink": [
+        200,
+        0,
+        0
+      ],
+      "position_source": "OpenCPN selected navigation (sensor identity unavailable)",
+      "route_revision": "9",
+      "active_waypoint_id": "OPENNAV-TEST-point-2",
+      "source": "OpenCPN 5.12.4 normal route progress: active range + subsequent stored legs (NM)"
+    },
+    {
+      "route_id": "OPENNAV-TEST-route",
+      "observed_steady_ms": "39931343",
+      "position_steady_ms": "39931326",
+      "active_waypoint_index": 1,
+      "state": "NoActiveRoute",
+      "check": "active deletion invalidates immediately; retained copy safe",
+      "revision_scope": "SKAGER session 39902688044921",
+      "position_source": "OpenCPN selected navigation (sensor identity unavailable)",
+      "route_revision": "9",
+      "active_waypoint_id": "OPENNAV-TEST-point-2",
+      "source": "OpenCPN 5.12.4 normal route progress: active range + subsequent stored legs (NM)"
+    },
+    {
+      "route_id": "",
+      "observed_steady_ms": "39932346",
+      "position_steady_ms": "39932227",
+      "state": "NoActiveRoute",
+      "check": "deleted active route remains unavailable on next normal pass",
+      "revision_scope": "SKAGER session 39902688044921",
+      "position_source": "OpenCPN selected navigation (sensor identity unavailable)",
+      "route_revision": "10",
+      "active_waypoint_id": "",
+      "source": "OpenCPN 5.12.4 normal route progress: active range + subsequent stored legs (NM)"
+    }
+  ],
+  "phase": "done"
+}

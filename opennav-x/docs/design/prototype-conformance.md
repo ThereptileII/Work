@@ -1,5 +1,18 @@
 # Prototype conformance — in progress
 
+Frozen source `1356fd1` (published `9fcd3db`) now has [sixteen corrected real-ENC
+captures and independent review](reviews/skager-chart-1356fd1-linux.md), covering
+software/Mesa-GL through Day → Dusk → Night → Day. The repeated-edge
+defect is absent under the strict negative-control-derived probe, with four
+clean application exits. Two actual upstream route scenarios pass their 26
+checks and exact route-ink probes. This closes the observed Linux reproduction
+of the framebuffer defect; it does not close native Windows or boat gates.
+Dense harbor labels, small light-text readability and special-state route symbols
+remain visual review items. The logo's Night background has a focused correction
+in `8accdd9`, followed by waypoint labels, effective Night chart colors and the
+GTK recapture repair. Their combined native/boat rendering is not qualified.
+All screen-level rows below remain Pending.
+
 The October3 integrated chart review now includes exact-source software
 captures after the LIGHTS and sounding-font changes at
 [`19c900a`](../evidence/skager-chart-19c900a-linux/receipt.json).

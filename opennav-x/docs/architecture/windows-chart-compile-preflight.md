@@ -18,9 +18,9 @@ It refuses combination with component/legacy proof modes, inherits the existing
 15-minute job bound and limits the object build to ten minutes. Root freezes and
 publishes the combined source before its single focused dispatch.
 
-The inventory is sixteen complete source files, not extracted functions:
+The inventory is seventeen complete source files, not extracted functions:
 
-- Local: `ChartPresentation`, `ChartRouteWaypoint`, `ChartRouteUnderlay`,
+- Local: `ChartPresentation`, `ChartRouteWaypoint`, `ChartRouteLabel`, `ChartRouteUnderlay`,
   `ChartRouteUnderlayGeometry`, `OnboardAisPresentation`, `OnlineAisOverlay`.
 - Patched OpenCPN: `chcanv`, `route_gui`, `route_point_gui`, `waypointman_gui`,
   `ais`, `piano`, `s52plib`, `chartsymbols`, `DepthFont` (the sounding-digit atlas source),

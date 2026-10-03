@@ -1,0 +1,207 @@
+{
+  "scope": "Historical exact-commit Linux integrated job evidence only. Not current SKAGER chart source, native Windows, boat or full-run acceptance.",
+  "artifact": {
+    "id": 11257297491,
+    "name": "linux-integration-cf44e938a3539af6e97a03346542f04f3e7895a4",
+    "size_in_bytes": 19492650,
+    "url": "https://api.github.com/repos/ThereptileII/Work/actions/artifacts/11257297491",
+    "archive_download_url": "https://api.github.com/repos/ThereptileII/Work/actions/artifacts/11257297491/zip",
+    "expired": false,
+    "created_at": "2026-10-02T23:30:34Z",
+    "expires_at": "2026-12-31T20:00:15Z",
+    "updated_at": "2026-10-02T23:30:34Z",
+    "digest": "sha256:8013c85316b50b899116d5a0058623af3a439418c4d995996fddf3236b8a5972",
+    "workflow_run": {
+      "id": 37057756273,
+      "repository_id": 864043804,
+      "head_repository_id": 864043804,
+      "head_branch": "opennav-x-beta2-ui",
+      "head_sha": "cf44e938a3539af6e97a03346542f04f3e7895a4"
+    }
+  },
+  "archiveVerification": {
+    "bytes": 19492650,
+    "sha256": "8013c85316b50b899116d5a0058623af3a439418c4d995996fddf3236b8a5972",
+    "entryCount": 4248,
+    "allZipCrcChecksPassed": true
+  },
+  "job": {
+    "id": 111006548201,
+    "name": "Linux integrated regression gate",
+    "status": "completed",
+    "conclusion": "success",
+    "run_id": 37057756273,
+    "logs_url": null,
+    "steps": [
+      {
+        "name": "Build integrated application and run regressions without exceptions",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 6
+      },
+      {
+        "name": "Actual elapsed-time trip and resource stability",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 25
+      },
+      {
+        "name": "Build fixture-free Linux product and run its loader check",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 26
+      },
+      {
+        "name": "Run actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 27
+      }
+    ],
+    "allStepsSuccessful": true
+  },
+  "endurance": {
+    "status": "passed",
+    "requested_seconds": 10800,
+    "release_duration": true,
+    "authority": "Linux development",
+    "scope": "Actual process, DEMO vessel/route/AIS, software chart, repeated UI and dropout recovery; no hardware commands",
+    "samples": 1080,
+    "screenshots": [
+      "start.png",
+      "end.png"
+    ],
+    "harness_commit": "cf44e938a3539af6e97a03346542f04f3e7895a4",
+    "harness_sha256": "7cf8e122462d3ea5ec2d360fea1995ced41937e80e583df064a28dcba2aa5773",
+    "executable": {
+      "path": "/home/runner/work/Work/Work/opennav-x/build/xnav-install/bin/opencpn",
+      "bytes": 24131104,
+      "mtime_ns": 1790971736000000000,
+      "sha256": "e7a1eb42208d011371ce16e172de312a678b66077ad1dac2de0b3d16bd2b5602"
+    },
+    "build_commit": "cf44e938a3539af6e97a03346542f04f3e7895a4",
+    "binary_matches_harness_commit": true,
+    "startup_seconds": 3.5226786010000524,
+    "elapsed_seconds": 10800.197237018001,
+    "resource_growth": {
+      "resident_bytes": -884736.0,
+      "handles": 0.0,
+      "threads": 0.0
+    },
+    "growth_limits": {
+      "resident_bytes": 134217728,
+      "private_bytes": 134217728,
+      "handles": 32,
+      "gdi_objects": 64,
+      "user_objects": 64,
+      "threads": 8
+    },
+    "cpu_percent_one_core": 2.124122936059775,
+    "maximum_page_observation_seconds": 1.2517157299998871,
+    "ui_observation_limit_seconds": 8,
+    "route_progress_samples": 765,
+    "actionCount": 540,
+    "viewportObservationCount": 270,
+    "staleDropouts": 45,
+    "unavailableDropouts": 45,
+    "recoveries": 90,
+    "metricElapsedFirst": 2.193,
+    "metricElapsedLast": 10790.175,
+    "monotonicMetricElapsed": true
+  },
+  "tests": {
+    "xnav-linux-tests": {
+      "total": 147,
+      "failures": 0,
+      "skipped": 0,
+      "testcasesIndependentlyCounted": 147,
+      "timestamp": "2026-10-02T20:10:37"
+    },
+    "production-linux-tests": {
+      "total": 147,
+      "failures": 0,
+      "skipped": 0,
+      "testcasesIndependentlyCounted": 147,
+      "timestamp": "2026-10-02T23:29:57"
+    }
+  },
+  "retainedArtifactFiles": {
+    "soak/results.json": {
+      "bytes": 1069088,
+      "sha256": "b2a13a1b9aad271e3d086e0ab1c6feecc70b80e8c000fcb7d79361b5147c65b5"
+    },
+    "soak/metrics.jsonl": {
+      "bytes": 781536,
+      "sha256": "f9ab2f235ec582cb2461eb1b26d5aaabc823e49d12e1523e88caf05938514f0e"
+    },
+    "xnav-linux-tests.xml": {
+      "bytes": 126676,
+      "sha256": "59162067763d22dd4f3bb9f03bb2196204444884153fa481c5a4dc51557936f1"
+    },
+    "xnav-linux-tests.log": {
+      "bytes": 27492,
+      "sha256": "28ed9f21de95aa3f2df78f7a28191da982e6aae0c4c672bce591883bab1c5a94"
+    },
+    "production-linux-tests.xml": {
+      "bytes": 127530,
+      "sha256": "4360016a139b271feead4c2432a786e852eeca98b2475938dbb3eda36ee63794"
+    },
+    "production-linux-tests.log": {
+      "bytes": 27504,
+      "sha256": "a53a46946dc5282a340b21b3d6cfdf5d7352036f4be5230f04b45d83f6688a65"
+    },
+    "installer-loader-selftest.json": {
+      "bytes": 842,
+      "sha256": "35881ddffccae71437dba7d5b6cb4d68e430ffbb435993ce9324b74cffae9a55"
+    }
+  },
+  "executableIdentityLimitation": "Executable identity is recorded by the original harness; the downloaded evidence artifact does not supply that executable for an independent binary rehash.",
+  "newerLinuxJob": {
+    "observedAt": "2026-10-02T23:43:52Z",
+    "id": 111024324351,
+    "name": "Linux integrated regression gate",
+    "status": "in_progress",
+    "conclusion": null,
+    "run_id": 37063131823,
+    "logs_url": null,
+    "steps": [
+      {
+        "name": "Public ENC chart and plugin rendering gate",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 24
+      },
+      {
+        "name": "Actual elapsed-time trip and resource stability",
+        "status": "in_progress",
+        "conclusion": null,
+        "number": 25
+      },
+      {
+        "name": "Build fixture-free Linux product and run its loader check",
+        "status": "pending",
+        "conclusion": null,
+        "number": 26
+      },
+      {
+        "name": "Run actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02",
+        "status": "pending",
+        "conclusion": null,
+        "number": 27
+      }
+    ]
+  },
+  "productionLoader": {
+    "status": "passed",
+    "checks": 5,
+    "app_sha256": "c142969a96805b2f4e71a1e1b7de538f4b0b06fd7ec863f3b4f009f77aaf1597",
+    "facts": {
+      "commit": "cf44e938a3539af6e97a03346542f04f3e7895a4",
+      "build_purpose": "INSTALLED PRODUCT",
+      "test_fixtures": false,
+      "profile_initialized": false,
+      "plugins_loaded": false,
+      "xnav_hardware_output_policy": "status-only"
+    }
+  }
+}

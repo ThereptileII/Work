@@ -29,10 +29,14 @@ public:
     });
   }
   void Present(const wxPoint &screen);
+  // Reconcile an already visible owned surface after its owner is raised.
+  // This never shows, moves or activates the surface.
+  void RestackAboveOwner();
 #ifdef __WXGTK__
   bool Show(bool show = true) override;
 #endif
 private:
+  void RestackNativeAboveOwner();
   void Shape();
   int radius_;
 #ifdef __WXGTK__

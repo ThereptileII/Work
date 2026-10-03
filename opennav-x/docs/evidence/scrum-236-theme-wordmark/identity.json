@@ -1,0 +1,46 @@
+{
+  "base": "1356fd1603aacbea04d7081d16331e9a181180bb",
+  "scope": "Linux native wx component and isolated Shell object; no Windows or integrated acceptance",
+  "files": {
+    "src/ui/SkagerWordmark.h": {
+      "bytes": 3407,
+      "sha256": "6be60a6ee0bcd98dadf1c97c90c7f4395a84dce8bb6244cb0e78b012e84122e7"
+    },
+    "src/ui/Shell.cpp": {
+      "bytes": 81316,
+      "sha256": "0f6680980e533d0a06d233820ac928539706924d9fffb02e688996e1dfd7e3f6"
+    },
+    "tests/skager_wordmark_test.cpp": {
+      "bytes": 7758,
+      "sha256": "03a7238a3cf51e58279fd224cec0c19744d6bedd9edef2d52f2ac270119bcebc"
+    },
+    "resources/branding/skager-wordmark-approved.png": {
+      "bytes": 1206475,
+      "sha256": "dce92b90a8657d045403cf4508d8220cb0306e6a251d58fbf40e6084ea3ee4ee"
+    },
+    "resources/branding/skager-wordmark.png": {
+      "bytes": 136802,
+      "sha256": "efde82583f0225c61fc32843e746596dd98a017bdb7746949ca6614b7275922f"
+    },
+    "resources/branding/skager.ico": {
+      "bytes": 369214,
+      "sha256": "33867d3f267603668ebc373a1ebf83565b2729817317f3905b4ebe1dc805c1d0"
+    },
+    "src/application/SkagerBrandAsset.h": {
+      "bytes": 838156,
+      "sha256": "cc9f469181717b4fb80986b9406d2d6d078bfdb5971d2e68f6b4072b8dcd2019"
+    },
+    ".local/wordmark-check/skager_wordmark_test": {
+      "bytes": 229368,
+      "sha256": "b00a5d07c3777569677e168584e0e030c3a2355923631c8f2e4d8f0bdc73656a"
+    },
+    ".local/wordmark-check/Shell.o": {
+      "bytes": 2939648,
+      "sha256": "5858d0c1e1221c6c1c288a0ea6a799dced0cf9e70df3b90604e00b5252c17bdb"
+    },
+    "docs/evidence/scrum-236-theme-wordmark/native-component.png": {
+      "bytes": 75247,
+      "sha256": "7f614db26829ff11865edd9791d5c629c66c9a00b430c5e44f1c525e7df19d94"
+    }
+  }
+}

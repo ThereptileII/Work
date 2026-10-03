@@ -1,4 +1,5 @@
 #include "integration/ChartPresentation.h"
+#include "integration/ChartCanvasInk.h"
 #include "integration/ChartNameTypography.h"
 #include "integration/ChartLightLabel.h"
 #include "ui/Controls.h" // Before GL/X11 headers which define None.
@@ -205,7 +206,7 @@ bool ChartActiveRouteInk(ChartCanvas &canvas, wxColour &ink) {
   const auto mode = canvas.GetColorScheme() == GLOBAL_COLOR_SCHEME_NIGHT
       ? ui::LightMode::Night : canvas.GetColorScheme() == GLOBAL_COLOR_SCHEME_DUSK
       ? ui::LightMode::Dusk : ui::LightMode::Day;
-  ink = ui::Colour(ui::ActiveRouteInk(mode));
+  ink = ui::Colour(ChartCanvasInk(mode, ui::ActiveRouteInk(mode)));
   return true;
 }
 bool DefaultChartRouteStyle(Route &route) {

@@ -1,4 +1,5 @@
 #include "integration/ChartRouteUnderlay.h"
+#include "integration/ChartCanvasInk.h"
 #include "ui/Controls.h" // Before GL/X11 headers defining None.
 #include "chcanv.h"
 #include "integration/ChartPresentation.h"
@@ -26,7 +27,7 @@ bool ChartRouteUnderlay::Draw(ocpnDC &dc, ChartCanvas &canvas) const {
                     : canvas.GetColorScheme() == GLOBAL_COLOR_SCHEME_DUSK
                         ? ui::LightMode::Dusk
                         : ui::LightMode::Day;
-  const auto ink = ui::Colour(ui::FloatingTheme(mode).surface);
+  const auto ink = ui::Colour(ChartCanvasInk(mode, ui::FloatingTheme(mode).surface));
   if (auto *native = dc.GetDC()) {
     std::unique_ptr<wxGraphicsContext> gc(
         wxGraphicsContext::CreateFromUnknownDC(*native));

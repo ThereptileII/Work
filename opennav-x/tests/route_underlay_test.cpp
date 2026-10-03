@@ -1,6 +1,7 @@
 // Runs production painter code with real wx software rendering and a recording
 // GL interface. The latter checks submission/state only, never driver output.
 #include "integration/ChartRouteGeometry.h"
+#include "integration/ChartCanvasInk.h"
 #include "integration/ChartRouteUnderlay.h"
 #include "reference-underlay.h"
 #include "tesselator.h"
@@ -131,7 +132,7 @@ bool enabled = true, xnav_mode = true, active = true;
 bool ChartActiveRouteInk(ChartCanvas &c, wxColour &ink) {
   if (!enabled)
     return false;
-  const unsigned colors[]{0x267c76, 0xb0dfc8, 0x91bca2};
+  const unsigned colors[]{0x267c76, 0xb0dfc8, 0x71937e};
   auto v = colors[c.theme];
   ink = wxColour(v >> 16, (v >> 8) & 255, v & 255);
   return true;
@@ -440,8 +441,8 @@ int main(int argc, char **argv) {
     target.GetPixel(70, 80, &unchanged);
     Check(unchanged == *wxBLACK,
           "delicate join left a partial software underlay");
-    const unsigned waters[]{0xd5e5e5, 0x344f59, 0x121e24};
-    const unsigned fills[]{0xf7f8f0, 0x243a40, 0x152129};
+    const unsigned waters[]{0xd5e5e5, 0x344f59, 0x0e171c};
+    const unsigned fills[]{0xf7f8f0, 0x243a40, 0x101a20};
     for (int theme = 0; theme < 3; ++theme) {
       canvas.theme = theme;
       int offset = theme * 190;
@@ -475,9 +476,9 @@ int main(int argc, char **argv) {
             "foreground ordering fixture refused");
       // A stand-in point drawn last makes ordering visible, without claiming
       // production waypoint conformance (the separate waypoint task owns it).
-      target.SetPen(wxPen(opennav::ui::Colour(opennav::ui::ActiveRouteInk(
-                              static_cast<opennav::ui::LightMode>(theme))),
-                          2));
+      wxColour point_ink;
+      Check(ChartActiveRouteInk(canvas,point_ink), "stand-in point ink unavailable");
+      target.SetPen(wxPen(point_ink,2));
       target.SetBrush(wxBrush(opennav::ui::Colour(fills[theme])));
       target.DrawCircle(720, offset + 60, 5);
     }

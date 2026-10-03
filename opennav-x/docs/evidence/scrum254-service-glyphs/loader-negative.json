@@ -1,0 +1,12 @@
+[
+  {
+    "mutation": "PILBOP02 final pivot x=8",
+    "exitCode": 1,
+    "output": "Service loader check 4\n"
+  },
+  {
+    "mutation": "RTPBCN02 final pivot x=8",
+    "exitCode": 1,
+    "output": "Service loader check 3084\n"
+  }
+]

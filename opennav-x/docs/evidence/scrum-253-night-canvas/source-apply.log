@@ -1,0 +1,13 @@
+{
+  "repository": "https://github.com/OpenCPN/OpenCPN.git",
+  "tag": "Release_5.12.4",
+  "commit": "37fd0cddb7334fe489e9f18aa163977a9c5c84f7",
+  "pluginApi": "1.20",
+  "upstreamWindowsApplicationArchitecture": "x86",
+  "requiredWindowsHostArchitecture": "x64",
+  "specificationApplicationArchitecture": "x64",
+  "approvedApplicationArchitecture": "x86",
+  "architectureDecision": "Preserve supported OpenCPN ABI on 64-bit Windows; user approved 2026-09-21"
+}
+HEAD is now at 37fd0cddb Merge branch 'v5.12.x' of github.com:OpenCPN/OpenCPN into v5.12.x
+/home/standard/Projects/X-nav-worktrees/scrum253-night-canvas/build/integration-source

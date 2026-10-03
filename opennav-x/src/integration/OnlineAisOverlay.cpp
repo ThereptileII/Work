@@ -1,5 +1,6 @@
 #include "integration/OnlineAisOverlay.h"
 #include "integration/ChartPresentation.h"
+#include "integration/ChartCanvasInk.h"
 #include "integration/OnlineAisLabels.h"
 #include "ui/Theme.h"
 #include "chcanv.h"
@@ -56,7 +57,15 @@ void OnlineAisOverlay::Draw(ocpnDC &dc, ViewPort &vp, ChartCanvas &canvas) const
   if(!wxIsMainThread()||!canvas.GetShowAIS())return;
   const auto mode=global_color_scheme==GLOBAL_COLOR_SCHEME_NIGHT?ui::LightMode::Night:
       global_color_scheme==GLOBAL_COLOR_SCHEME_DUSK?ui::LightMode::Dusk:ui::LightMode::Day;
-  const auto colors=ui::OnlineChartTheme(mode);
+  auto colors=ui::OnlineChartTheme(mode);
+  wxColour night_land,night_water;
+  if(mode==ui::LightMode::Night && ChartBackground(canvas.GetColorScheme(),night_land,night_water)) {
+    // Only the verified SKAGER chart owns these raw body roles. Standard's
+    // supplemental overlay and stale/lost safety ink stay unchanged.
+    colors.stroke=ChartCanvasInk(mode,colors.stroke);
+    colors.fill=ChartCanvasInk(mode,colors.fill);
+    colors.selected=ChartCanvasInk(mode,colors.selected);
+  }
   const auto pen=dc.GetPen();const auto brush=dc.GetBrush();
   const double scale=canvas.FromDIP(100)/100.0;
   const auto now=vessel::Clock::now();

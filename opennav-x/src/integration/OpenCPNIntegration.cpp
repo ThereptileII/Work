@@ -943,6 +943,12 @@ bool HasXNavTransientSurface() {
   return shell && IsXNav() && shell->HasTransientSurface();
 }
 
+void AfterFrameRecapture() {
+#ifdef __WXGTK__
+  if (shell && IsXNav()) shell->RestackChartControls();
+#endif
+}
+
 bool LoadPersistentPerspective(wxAuiManager &manager, const wxString &perspective) {
   if (shell && IsXNav() && shell->OwnsManager(manager)) {
     OpenNavDashboardLayoutScope dashboard_layout;

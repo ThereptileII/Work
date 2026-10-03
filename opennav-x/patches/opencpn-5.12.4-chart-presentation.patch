@@ -1883,7 +1883,7 @@ diff --git a/libs/s52plib/src/s52plib.cpp b/libs/s52plib/src/s52plib.cpp
 +      else if (!m_pdc) points = static_cast<int>(points / m_ContentScaleFactor);
 +      wxFont *raster_font = FindOrCreateFont_PlugIn(points, styled->GetFamily(),
 +          styled->GetStyle(), styled->GetWeight(), false, styled->GetFaceName());
-+      const S52color *ink = getColor("XNGEO"), *water = getColor("DEPDW");
++      const S52color *ink = getColor(m_ColorScheme == "NIGHT" ? "CHBLK" : "XNGEO"), *water = getColor("DEPDW");
 +      if (!text->light_raster.Build(*raster_font, text->frmtd, raster_scale,
 +              wxColour(ink->R, ink->G, ink->B), wxColour(water->R, water->G, water->B))) {
 +        // Atomic presentation fallback: keep the original stock font and ink.
@@ -2022,3 +2022,94 @@ diff --git a/gui/include/gui/glChartCanvas.h b/gui/include/gui/glChartCanvas.h
  
    void DrawDynamicRoutesTracksAndWaypoints(ViewPort &vp);
    void DrawStaticRoutesTracksAndWaypoints(ViewPort &vp);
+diff --git a/model/include/model/route_point.h b/model/include/model/route_point.h
+--- a/model/include/model/route_point.h
++++ b/model/include/model/route_point.h
+@@ -25,6 +25,8 @@
+ #define _ROUTEPOINT_H__
+ 
+ #include <functional>
++#include <memory>
++namespace opennav { namespace integration { class ChartRouteLabelRaster; } }
+ 
+ #include <wx/bitmap.h>
+ #include <wx/colour.h>
+@@ -510,6 +512,8 @@
+    * Texture identifier for rendered text.
+    */
+   unsigned int m_iTextTexture;
++  // Transient SKAGER paint cache; no waypoint/persisted property ownership.
++  std::shared_ptr<opennav::integration::ChartRouteLabelRaster> m_skagerLabel;
+   /**
+    * Width of the text texture in pixels.
+    */
+diff --git a/gui/src/route_point_gui.cpp b/gui/src/route_point_gui.cpp
+--- a/gui/src/route_point_gui.cpp
++++ b/gui/src/route_point_gui.cpp
+@@ -47,6 +47,8 @@
+ #include "viewport.h"
+ #include "waypointman_gui.h"
+ #include "integration/ChartRouteWaypoint.h"
++#include "integration/ChartRouteLabel.h"
++#include "integration/ChartRouteLabelRaster.h"
+ 
+ extern Multiplexer *g_pMUX;
+ extern ocpnGLOptions g_GLOptions;
+@@ -148,6 +150,14 @@
+     }
+   }
+ 
++  const bool skager_label = opennav::integration::PrepareChartRouteLabel(
++      *canvas, m_point, skager_ordinal);
++  if (skager_label) {
++    auto label_bounds = m_point.m_skagerLabel->bounds;
++    label_bounds.Offset(r);
++    r1.Union(label_bounds);
++  }
++
+   hilitebox = r1;
+   hilitebox.x -= r.x;
+   hilitebox.y -= r.y;
+@@ -187,7 +197,9 @@
+     dc.CalcBoundingBox(r.x + sx2, r.y + sy2);
+   }
+ 
+-  if (m_point.m_bShowName && m_point.m_MarkName.Length()) {
++  if (!opennav::integration::DrawChartRouteLabel(
++          dc, *canvas, m_point, r.x, r.y, skager_label) &&
++      m_point.m_bShowName && m_point.m_MarkName.Length()) {
+     if (m_point.m_pMarkFont) {
+       dc.SetFont(*m_point.m_pMarkFont);
+       dc.SetTextForeground(m_point.m_FontColor);
+@@ -257,7 +269,7 @@
+           m_point.m_IconName, m_point.m_pbmIcon));
+   // Eligibility/scale may change without a viewport change (selection, route
+   // activation, mark-size preference). Rebuild the larger presentation bounds.
+-  if (skager_ordinal) m_point.m_wpBBox.Invalidate();
++  if (skager_ordinal || m_point.m_skagerLabel) m_point.m_wpBBox.Invalidate();
+ 
+   if (m_point.m_wpBBox.GetValid() &&
+       vp.view_scale_ppm == m_point.m_wpBBox_view_scale_ppm &&
+@@ -356,6 +368,11 @@
+     hilitebox.height *= g_MarkScaleFactorExp;
+   }
+ 
++  const bool skager_label = opennav::integration::PrepareChartRouteLabel(
++      *canvas, m_point, skager_ordinal);
++  // Already DIP/mark-scaled: union only after upstream icon scaling.
++  if (skager_label) hilitebox.Union(m_point.m_skagerLabel->bounds);
++
+   float radius;
+   if (g_btouch) {
+     hilitebox.Inflate(20);
+@@ -465,7 +482,9 @@
+     glDisable(GL_TEXTURE_2D);
+   }
+ 
+-  if (m_point.m_bShowName && m_point.m_pMarkFont) {
++  if (!opennav::integration::DrawChartRouteLabel(
++          dc, *canvas, m_point, r.x, r.y, skager_label) &&
++      m_point.m_bShowName && m_point.m_pMarkFont) {
+     int w = m_point.m_NameExtents.x, h = m_point.m_NameExtents.y;
+     if (!m_point.m_iTextTexture && w && h) {
+ #if 0

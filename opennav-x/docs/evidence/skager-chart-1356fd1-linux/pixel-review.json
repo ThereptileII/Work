@@ -1,0 +1,95 @@
+{
+  "day_return": [
+    {
+      "renderer": "software",
+      "style": "SKAGER",
+      "chart_region_xywh": [
+        80,
+        68,
+        1014,
+        566
+      ],
+      "pixels": 573924,
+      "changed_pixels": 0,
+      "changed_bbox_xyxy": null,
+      "tooltip_region_xywh": [
+        1010,
+        68,
+        84,
+        39
+      ],
+      "changed_outside_tooltip": 0
+    },
+    {
+      "renderer": "software",
+      "style": "Standard",
+      "chart_region_xywh": [
+        80,
+        68,
+        1014,
+        566
+      ],
+      "pixels": 573924,
+      "changed_pixels": 3276,
+      "changed_bbox_xyxy": [
+        1010,
+        68,
+        1093,
+        106
+      ],
+      "tooltip_region_xywh": [
+        1010,
+        68,
+        84,
+        39
+      ],
+      "changed_outside_tooltip": 0
+    },
+    {
+      "renderer": "opengl",
+      "style": "SKAGER",
+      "chart_region_xywh": [
+        80,
+        68,
+        1014,
+        566
+      ],
+      "pixels": 573924,
+      "changed_pixels": 3276,
+      "changed_bbox_xyxy": [
+        1010,
+        68,
+        1093,
+        106
+      ],
+      "tooltip_region_xywh": [
+        1010,
+        68,
+        84,
+        39
+      ],
+      "changed_outside_tooltip": 0
+    },
+    {
+      "renderer": "opengl",
+      "style": "Standard",
+      "chart_region_xywh": [
+        80,
+        68,
+        1014,
+        566
+      ],
+      "pixels": 573924,
+      "changed_pixels": 0,
+      "changed_bbox_xyxy": null,
+      "tooltip_region_xywh": [
+        1010,
+        68,
+        84,
+        39
+      ],
+      "changed_outside_tooltip": 0
+    }
+  ],
+  "note": "Tooltip retained unchanged in original captures; no images edited. Comparison excludes only the independently identified visible tooltip in the last metric."
+}

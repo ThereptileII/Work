@@ -32,6 +32,11 @@ def variables(selector):
     return dict(re.findall(r'--([\w-]+):([^;}]+)',re.search(re.escape(selector)+r'\{([^}]+)\}',html)[1]))
 variables_day=variables(':root')
 inks=[variables_day['route'],variables('#app[data-theme=dusk]')['route'],variables('#app[data-theme=night]')['route']]
+# Resolve the immutable canvas ancestor's filter, not just its raw token.
+factor=float(re.search(r'#app\[data-theme=night\] \.chart-canvas\{filter:brightness\(([^)]+)\)',html)[1])
+effective=tuple(round(channel*factor) for channel in bytes.fromhex(inks[2][1:]))
+assert effective==(113,147,126) # Independently reviewed effective Night route ink.
+inks[2]='#'+''.join(f'{channel:02x}' for channel in effective)
 (a.output/'reference-endpoint.h').write_text('const unsigned reference_route_ink[]{'+','.join('0x'+v[1:] for v in inks)+'};\n')
 flags=shlex.split(subprocess.check_output([a.wx_config,'--cxxflags'],text=True))
 libs=shlex.split(subprocess.check_output([a.wx_config,'--libs','std'],text=True))

@@ -62,7 +62,7 @@ namespace opennav::integration {
 bool enabled=true;
 bool ChartActiveRouteInk(ChartCanvas &c,wxColour &ink) {
   if(!enabled) return false;
-  const unsigned colors[]{0x267c76,0xb0dfc8,0x91bca2}; auto v=colors[c.theme];
+  const unsigned colors[]{0x267c76,0xb0dfc8,0x71937e}; auto v=colors[c.theme];
   ink=wxColour(v>>16,(v>>8)&255,v&255); return true;
 }
 #define max(a,b) WINDOWS_MAX_MACRO_MUST_NOT_EXPAND
@@ -140,7 +140,7 @@ int main(int argc,char **argv) {
     Check(target.GetPen().GetWidth()==5&&target.GetPen().GetColour()==*wxRED&&target.GetBrush()==*wxBLUE_BRUSH,"software paint state leaked");
     target.SelectObject(wxNullBitmap); auto image=bmp.ConvertToImage();
     for(int theme=0;theme<3;++theme) {
-      const unsigned expected[]{0x267c76,0xb0dfc8,0x91bca2}; const int y=30+theme*110;
+      const unsigned expected[]{0x267c76,0xb0dfc8,0x71937e}; const int y=30+theme*110;
       unsigned pixel=(image.GetRed(100,y)<<16)|(image.GetGreen(100,y)<<8)|image.GetBlue(100,y);
       Check(pixel==expected[theme],"theme foreground ink changed");
     }

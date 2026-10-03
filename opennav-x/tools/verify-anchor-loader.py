@@ -37,6 +37,7 @@ def main():
     parser.add_argument('--output', type=Path, required=True)
     parser.add_argument('--wx-config', type=Path, required=True)
     parser.add_argument('--wx-prefix', type=Path, required=True)
+    parser.add_argument('--services', action='store_true', help='SCRUM-254 pilot/radar glyphs')
     args = parser.parse_args()
     output = args.output.resolve(); output.mkdir(parents=True,exist_ok=True)
     source = args.source.resolve()
@@ -50,6 +51,10 @@ def main():
     svg = ROOT/'resources/chart-style/v1/anchorage/ACHARE51.svg'
     png = output/'prototype-anchor.png'
     subprocess.run(['rsvg-convert',str(svg),'-o',str(png)],check=True)
+    if args.services:
+        for name in ('PILBOP02','RTPBCN02'):
+            subprocess.run(['rsvg-convert',str(ROOT/'resources/chart-style/v1/services'/(name+'.svg')),'-o',str(output/(name+'.png'))],check=True)
+        png = output
     config = [str(args.wx_config),'--prefix='+str(args.wx_prefix)]
     cflags = shlex.split(subprocess.check_output(config+['--cxxflags'],text=True))
     libs = shlex.split(subprocess.check_output(config+['--libs','core,base'],text=True))
@@ -57,7 +62,7 @@ def main():
                '-DocpnUSE_GL',*cflags]
     for directory in ('libs/s52plib/src','libs/geoprim/src','libs/pugixml'):
         command += ['-I'+str(source/directory)]
-    command += ['-I'+str(output),str(ROOT/'tests/chart_anchor_loader_test.cpp'),
+    command += ['-I'+str(output),str(ROOT/('tests/chart_service_loader_test.cpp' if args.services else 'tests/chart_anchor_loader_test.cpp')),
                 str(source/'libs/pugixml/pugixml.cpp'),*libs,'-lGL','-lGLEW',
                 '-o',str(output/'anchor-loader-test')]
     subprocess.run(command,check=True)

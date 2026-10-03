@@ -1146,3 +1146,24 @@ area-hue colors (including Night brightness). A reverse-equality validator
 protects HPGL, all symbol geometry, global CHMGD and navigation lookups. The
 helper is included in CMake regeneration dependencies and Windows preflight
 input identity. See [real ENC evidence](design/reviews/scrum251-submarine-cable-paint.md).
+
+### SCRUM-228: delayed GTK owner recapture and chart-control stacking
+
+The xnav patch adds a GTK-only hook immediately after the pinned
+`MyFrame::OnRecaptureTimer` owner Raise. It restores only already visible,
+mapped SKAGER-owned chart controls above that owner using the existing native
+restack primitive. The recorded stale-time raising caller is this exact timer;
+the repair does not add polling, focus activation, global topmost state or a
+generic event filter. The existing transient-surface guard and Legacy/Safe
+behavior remain unchanged. See [the focused repair review](design/reviews/scrum228-recapture-repair.md)
+for native inversion/repair pixels, negative control and production objects.
+
+### SCRUM-254: isolated pilot boarding and radar beacon artwork
+
+The verified SKAGER resource generator also derives only the effective
+`PILBOP02` RCID 1 and `RTPBCN02` RCID 2259 bitmap metadata and dedicated atlas
+pixels from the immutable prototype. Existing S-52 rules and renderer remain
+unchanged. Source locks, collision/transparent-moat refusal, full rule-tree
+reverse equality and native loader/crop evidence are documented in
+`docs/design/reviews/scrum254-service-glyphs.md`. Standard/Legacy/Safe retain stock
+resources; full chart, native Windows and boat visual acceptance remain open.

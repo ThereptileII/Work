@@ -55,6 +55,10 @@ def verify_anchor(source, output, metadata, check):
         before_chunks, before = decode(content)
         after_chunks, after = decode((output/name).read_bytes())
         check([(k,v) for k,v in before_chunks if k != b'IDAT'] == [(k,v) for k,v in after_chunks if k != b'IDAT'])
+        # Separately verified SCRUM-254 tiles are excluded from this anchor-only proof.
+        for y in range(1160,1184):
+            for x in (52,84):
+                i=(y*1500+x)*4;after[i:i+96]=before[i:i+96]
         changed = [i for i in range(0,len(before),4) if before[i:i+4] != after[i:i+4]]
         check(len(changed) == 126)
         check(all(20 <= i//4%1500 < 40 and 1160 <= i//4//1500 < 1180 for i in changed))

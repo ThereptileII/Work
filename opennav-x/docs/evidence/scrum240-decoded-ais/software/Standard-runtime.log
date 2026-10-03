@@ -1,0 +1,110 @@
+02:11:11.090 MESSAGE ocpn_app.cpp:1273
+
+________
+
+02:11:11.090    INFO logger.cpp:131 ------- OpenCPN version 5.12.4 restarted at 2026-10-03 -------
+
+02:11:11.090    INFO logger.cpp:131 Using loglevel INFO
+02:11:11.090 MESSAGE ocpn_app.cpp:1296 wxWidgets version: wxWidgets 3.2.11 Linux 64 bit wxGTK
+02:11:11.096 MESSAGE ocpn_app.cpp:1301 OS Version reports as:  7.2
+02:11:11.096 MESSAGE ocpn_app.cpp:1303 MemoryStatus:  mem_total: 7807 mb,  mem_initial: 831 mb
+02:11:11.096 MESSAGE ocpn_app.cpp:1315 OCPN_OSDetail:  x86_64 ; Omarchy ; 4.0.4 ; omarchy ; arch
+02:11:11.096 MESSAGE ocpn_app.cpp:1319 SData_Locn is /home/standard/Projects/X-nav-worktrees/waypoint-touch-regression/build/xnav-install/share/opencpn/
+02:11:11.096 MESSAGE ocpn_app.cpp:1337 PrivateDataDir is /tmp/skager-capture-ii_elfgm/Standard
+02:11:11.099 MESSAGE ocpn_app.cpp:1403 Using existing Config_File: /tmp/skager-capture-ii_elfgm/Standard/opencpn.conf
+02:11:11.099 MESSAGE navutil.cpp:1130 winPluginDir, read from ini file:
+02:11:11.099 MESSAGE navutil.cpp:1177 Setting Viewpoint Lat/Lon 47.6, -122.36
+02:11:11.099 MESSAGE navutil.cpp:3051 Switch InlandEcdis mode Off
+02:11:11.100 MESSAGE ConfigMgr.cpp:526 Creating new Configs catalog: /tmp/skager-capture-ii_elfgm/Standard/Configs/configs.xml
+02:11:11.100 MESSAGE ConfigMgr.cpp:547 Loading Configs catalog: /tmp/skager-capture-ii_elfgm/Standard/Configs/configs.xml
+02:11:11.100 MESSAGE OpenCPNIntegration.cpp:374 SKAGER startup: xnav
+02:11:11.101 MESSAGE styles.cpp:841 Styles loading from /home/standard/Projects/X-nav-worktrees/waypoint-touch-regression/build/xnav-install/share/opencpn/uidata/styles.xml
+02:11:11.102 MESSAGE styles.cpp:818 No styles found at: /home/standard/
+02:11:11.102 MESSAGE styles.cpp:818 No styles found at: /home/standard/.opencpn/
+02:11:11.112 MESSAGE styles.cpp:775 Using SVG Icons
+02:11:11.112 MESSAGE ocpn_app.cpp:1467 Detected display size (horizontal): 338 mm
+02:11:11.112 MESSAGE OCPNPlatform.cpp:1034 Getting DefaultSystemLocale...
+02:11:11.116 MESSAGE ocpn_app.cpp:1507 System default Language:  en_US
+02:11:11.116 MESSAGE ocpn_app.cpp:1510 Config file language:
+02:11:11.116 MESSAGE ocpn_app.cpp:1516 Config file language empty, using system default:  en_US
+02:11:11.116 MESSAGE ocpn_app.cpp:1522 Adjusted App language:  en_US
+02:11:11.116 MESSAGE OCPNPlatform.cpp:1115 ChangeLocale: Language load for:  en_US
+02:11:11.123 MESSAGE OCPNPlatform.cpp:1168 ChangeLocale: Locale Init OK for:  en_US
+02:11:11.123 MESSAGE OCPNPlatform.cpp:1192 Loading catalog for opencpn core.
+02:11:11.126 MESSAGE OCPNPlatform.cpp:1034 Getting DefaultSystemLocale...
+02:11:11.126 MESSAGE ocpn_app.cpp:1529 Opencpn language set to:  en_US
+02:11:11.127 MESSAGE ocpn_app.cpp:1767 Creating MyFrame...size(896, 560)  position(0, 0)
+02:11:11.143 WARNING navmsg_filter.cpp:202 Bad system filter path: /tmp/skager-capture-ii_elfgm/Standard/filters
+02:11:11.149 MESSAGE ocpn_frame.cpp:832  **** Connect stuff
+02:11:11.193 MESSAGE chcanv.cpp:2444 Metrics:  m_display_size_mm: 338     g_Platform->getDisplaySize():  1280:800
+02:11:11.193 MESSAGE chcanv.cpp:2450 monitor size: 1280 800
+02:11:11.193 MESSAGE TCDataSource.cpp:50 Loading Tide/Current data source: /home/standard/Projects/X-nav-worktrees/waypoint-touch-regression/build/xnav-install/share/opencpn/tcdata/harmonics-dwf-20210110-free.tcd
+02:11:11.272 MESSAGE TCDataSource.cpp:50 Loading Tide/Current data source: /home/standard/Projects/X-nav-worktrees/waypoint-touch-regression/build/xnav-install/share/opencpn/tcdata/HARMONICS_NO_US.IDX
+02:11:11.325 MESSAGE chartdb.cpp:219 ChartDB Cache policy:  Max open chart limit is 20.
+02:11:11.325 MESSAGE ocpn_app.cpp:1926 GPS Watchdog Timeout is: 10 sec.
+02:11:11.326 MESSAGE ocpn_app.cpp:2020 OpenCPN Initialized in 371 ms.
+02:11:11.919 MESSAGE ocpn_frame.cpp:4750 OnInitTimer...0
+02:11:11.919 MESSAGE chartdb.cpp:219 ChartDB Cache policy:  Max open chart limit is 20.
+02:11:11.925 MESSAGE chartdbs.cpp:1805 check_cm93 opened dir OK:  /home/standard/Projects/X-nav/.local/noaa-chart/ENC_ROOT
+02:11:12.140 MESSAGE chartdbs.cpp:1980 Searching directory: /home/standard/Projects/X-nav/.local/noaa-chart/ENC_ROOT for *.kap
+02:11:12.140 MESSAGE chartdbs.cpp:1805 check_cm93 opened dir OK:  /home/standard/Projects/X-nav/.local/noaa-chart/ENC_ROOT
+02:11:12.140 MESSAGE chartdbs.cpp:1980 Searching directory: /home/standard/Projects/X-nav/.local/noaa-chart/ENC_ROOT for *.geo
+02:11:12.140 MESSAGE chartdbs.cpp:1805 check_cm93 opened dir OK:  /home/standard/Projects/X-nav/.local/noaa-chart/ENC_ROOT
+02:11:12.141 MESSAGE chartdbs.cpp:1980 Searching directory: /home/standard/Projects/X-nav/.local/noaa-chart/ENC_ROOT for *.000
+02:11:12.141 MESSAGE chartdbs.cpp:1805 check_cm93 opened dir OK:  /home/standard/Projects/X-nav/.local/noaa-chart/ENC_ROOT
+02:11:12.142 MESSAGE chartdbs.cpp:2535 Loading chart data for /home/standard/Projects/X-nav/.local/noaa-chart/ENC_ROOT/US5SEAFL/US5SEAFL.000
+02:11:12.147 MESSAGE chartsymbols.cpp:699 ChartSymbols loaded from /home/standard/Projects/X-nav-worktrees/waypoint-touch-regression/build/xnav-install/share/opencpn/s57data/chartsymbols.xml
+02:11:12.169 MESSAGE ocpn_frame.cpp:8169 Using s57data in /home/standard/Projects/X-nav-worktrees/waypoint-touch-regression/build/xnav-install/share/opencpn/s57data
+02:11:12.214 MESSAGE chartdbs.cpp:2229    Adding chart file: /home/standard/Projects/X-nav/.local/noaa-chart/ENC_ROOT/US5SEAFL/US5SEAFL.000
+02:11:12.214 MESSAGE chartdbs.cpp:1980 Searching directory: /home/standard/Projects/X-nav/.local/noaa-chart/ENC_ROOT for *.s57
+02:11:12.214 MESSAGE chartdbs.cpp:1805 check_cm93 opened dir OK:  /home/standard/Projects/X-nav/.local/noaa-chart/ENC_ROOT
+02:11:12.215 MESSAGE chartdbs.cpp:1980 Searching directory: /home/standard/Projects/X-nav/.local/noaa-chart/ENC_ROOT for 00300000.a
+02:11:12.215 MESSAGE chartdbs.cpp:1805 check_cm93 opened dir OK:  /home/standard/Projects/X-nav/.local/noaa-chart/ENC_ROOT
+02:11:12.215 MESSAGE chartdbs.cpp:1980 Searching directory: /home/standard/Projects/X-nav/.local/noaa-chart/ENC_ROOT for *.mbtiles
+02:11:12.215 MESSAGE chartdbs.cpp:1805 check_cm93 opened dir OK:  /home/standard/Projects/X-nav/.local/noaa-chart/ENC_ROOT
+02:11:12.217 MESSAGE chartdb.cpp:1169 Creating new chart
+02:11:12.217 MESSAGE chartdb.cpp:1283 Initializing Chart /home/standard/Projects/X-nav/.local/noaa-chart/ENC_ROOT/US5SEAFL/US5SEAFL.000
+02:11:12.217 MESSAGE s57chart.cpp:2705 S57chart::Checking SENC file: /tmp/skager-capture-ii_elfgm/Standard/SENC/C989771805D5_US5SEAFL.S57
+02:11:12.217 MESSAGE s57chart.cpp:2808     Rebuilding SENC due to missing SENC file.
+02:11:12.639 MESSAGE waypointman_gui.cpp:83 DPMM: 3.78698   ScaleFactorExp: 1
+02:11:12.639 MESSAGE waypointman_gui.cpp:90 Looking for UserIcons at /tmp/skager-capture-ii_elfgm/Standard/UserIcons/
+02:11:12.639 MESSAGE Osenc.cpp:1058 Preparing to apply ENC updates, target final update is   1.
+02:11:12.746 MESSAGE ocpn_frame.cpp:4750 OnInitTimer...1
+02:11:12.746 MESSAGE comm_drv_factory.cpp:54 MakeCommDriver: TCP:127.0.0.1:38101
+02:11:12.746 MESSAGE comm_drv_n0183_net.cpp:259 Opening TCP connection to 127.0.0.1:38101
+02:11:12.945 MESSAGE ocpn_frame.cpp:4750 OnInitTimer...2
+02:11:12.945 MESSAGE plugin_loader.cpp:471 PluginLoader: loading plugins from /home/standard/.local/lib/opencpn
+02:11:12.945 MESSAGE plugin_loader.cpp:292 Using LD_LIBRARY_PATH: /home/standard/.local/lib/opencpn:/home/standard/Projects/X-nav/.local/sysroot/usr/lib
+02:11:12.946 MESSAGE plugin_loader.cpp:324 Using PATH: /home/standard/.local/bin:/home/standard/Projects/X-nav/.local/sysroot/usr/bin:/home/standard/.codex/tmp/arg0/codex-arg0iyLsZ3:/home/standard/.cache/codex-runtimes/codex-primary-runtime/dependencies/bin/override:/home/standard/.local/share/mise/installs/codex/latest/bin:/home/standard/.local/share/mise/installs/gh/latest/gh_2.101.0_linux_amd64/bin:/home/standard/.local/share/mise/installs/node/26.8.1/bin:/home/standard/.local/share/mise/shims:/usr/share/omarchy/bin:/usr/local/sbin:/usr/local/bin:/usr/bin:/home/standard/.local/bin:/usr/bin/site_perl:/usr/bin/vendor_perl:/usr/bin/core_perl:/home/standard/.cache/codex-runtimes/codex-primary-runtime/dependencies/bin/fallback:/usr/lib/chatgpt/resources
+02:11:12.946 MESSAGE plugin_loader.cpp:476 Loading plugins from dir: /home/standard/.local/lib/opencpn
+02:11:12.946 MESSAGE plugin_loader.cpp:721 PluginLoader searching for PlugIns in location /home/standard/.local/lib/opencpn
+02:11:12.946 MESSAGE plugin_loader.cpp:735    Directory /home/standard/.local/lib/opencpn does not exist.
+02:11:12.997 MESSAGE OCPNPlatform.cpp:1115 ChangeLocale: Language load for:  en_US
+02:11:13.011 MESSAGE OCPNPlatform.cpp:1168 ChangeLocale: Locale Init OK for:  en_US
+02:11:13.011 MESSAGE OCPNPlatform.cpp:1192 Loading catalog for opencpn core.
+02:11:13.017 MESSAGE OCPNPlatform.cpp:1034 Getting DefaultSystemLocale...
+02:11:13.017 MESSAGE comm_drv_n0183_net.cpp:448 TCP NetworkDataStream connection established: TCP:127.0.0.1:38101
+02:11:13.087 MESSAGE ocpn_frame.cpp:4750 OnInitTimer...3
+02:11:13.190 MESSAGE ocpn_frame.cpp:4750 OnInitTimer...4
+02:11:13.688 MESSAGE options.cpp:5299 options: got device count: 3
+02:11:13.805 MESSAGE ocpn_frame.cpp:4750 OnInitTimer...5
+02:11:13.905 MESSAGE ocpn_frame.cpp:4750 OnInitTimer...6
+02:11:14.005 MESSAGE ocpn_frame.cpp:4750 OnInitTimer...7
+02:11:14.005 MESSAGE ocpn_frame.cpp:5034 OnInitTimer...Last Call
+02:11:14.005 MESSAGE ocpn_frame.cpp:5063 OnInitTimer...Finalize Canvases
+02:11:25.982 MESSAGE ocpn_app.cpp:2121 opencpn::MyApp starting exit.
+02:11:25.982 MESSAGE ocpn_app.cpp:2161 LOGBOOK:  2026-10-03 00:11:25 UTC OFF: Lat    0.00000 Lon    0.00000
+02:11:25.982 MESSAGE ocpn_app.cpp:2189 opencpn::MyApp exiting cleanly...
+
+02:11:25.983 MESSAGE ocpn_frame.cpp:5685 Got quitflag from SIGNAL
+02:11:26.038 MESSAGE OpenCPNIntegration.cpp:1018 SKAGER close preparation: preserving shared configuration
+02:11:26.038 MESSAGE RecoveryStore.cpp:83 SKAGER clean close; startup recovery cleared
+02:11:26.330 MESSAGE ocpn_frame.cpp:1831 opencpn::MyFrame exiting cleanly.
+02:11:26.335 MESSAGE chartdb.cpp:287 Chart cache PlugIn purge
+02:11:26.336 MESSAGE comm_drv_n0183_net.cpp:555 Closing NMEA NetworkDataStream 38101
+02:11:26.336 MESSAGE ocpn_frame.cpp:2000 gFrame destroyed.
+02:11:26.336 MESSAGE ocpn_app.cpp:2121 opencpn::MyApp starting exit.
+02:11:26.336 MESSAGE ocpn_app.cpp:2161 LOGBOOK:  2026-10-03 00:11:26 UTC OFF: Lat   47.60000 Lon -122.36000 COG   90.00000 SOG   3.00 kts
+02:11:26.336 MESSAGE TCDataSource.cpp:41 UnLoading Tide/Current data source: /home/standard/Projects/X-nav-worktrees/waypoint-touch-regression/build/xnav-install/share/opencpn/tcdata/harmonics-dwf-20210110-free.tcd
+02:11:26.343 MESSAGE TCDataSource.cpp:41 UnLoading Tide/Current data source: /home/standard/Projects/X-nav-worktrees/waypoint-touch-regression/build/xnav-install/share/opencpn/tcdata/HARMONICS_NO_US.IDX
+02:11:26.347 MESSAGE ocpn_app.cpp:2189 opencpn::MyApp exiting cleanly...

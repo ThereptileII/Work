@@ -1,6 +1,88 @@
 # SKAGER status — 2026-10-03
 
-## Current: SKAGER identity and prototype chart refinements
+## Current: frozen SKAGER candidate enters integrated qualification
+
+The frozen implementation is local
+`1356fd1603aacbea04d7081d16331e9a181180bb`, published as
+`9fcd3db54ee6913cc144ecfc09ec2152078a6eff`. On October 3 at 00:02 UTC it was
+promoted once to the existing `opennav-x-beta2-ui` qualification branch, after
+the targeted Windows failures were fixed and verified. Later local evidence and
+corrections are separate from this frozen executable.
+The exact-source [full run is 37080314681](https://github.com/ThereptileII/Work/actions/runs/37080314681).
+Its Linux and native Windows contract jobs pass. The integrated Linux job built
+the application and passed all 147 CTest cases, then stopped on the resource
+scenario's obsolete `OpenNav` log-prefix expectation. The
+[one-line correction and downloaded failure](evidence/scrum235-linux-resource-log/README.md)
+retain all resource/profile assertions; a focused same-executable rerun passes
+SKAGER, Legacy and Safe with three clean exits. The full job remains failed.
+Native application/package/installer/rendering/endurance qualification continues.
+
+The next local increment includes theme-aware compositing of the approved logo
+(`8accdd9`): original asset bytes and letter geometry remain unchanged, the
+baked-in rectangular matte is removed, and Night uses the prototype's reduced
+brand ink. [Nine focused component drawings](evidence/scrum-236-theme-wordmark/README.md)
+cover three themes and 100/125/150% device sizes. They do not qualify native DPI.
+SCRUM-252 covers the remaining waypoint-name labels; SCRUM-253 covers the
+confirmed difference between raw Night chart tokens and the prototype's
+chart-only brightness rule. These changes are not included in run 37080314681.
+
+The combined next increment now includes waypoint name cards (`559a070`),
+effective Night surfaces and owned overlay ink (`fcc79aa`), and the confirmed
+GTK owner-recapture repair (`1e0a7f1`). Focused source/raster checks pass; the
+waypoint cache includes the two review corrections: failed GL replacement
+keeps stock ownership intact, and transparent texture padding does not enlarge
+the label's hit/cull bounds. The combined `6dd6665` Linux application linked
+successfully in 98 incremental steps. This is build evidence, not visual or
+Windows acceptance. Night hazard ink, safety contours and soundings deliberately remain
+brighter to preserve the measured contrast gates. The [symbol source audit](design/reviews/scrum15-symbol-source-audit.md)
+separates exact artwork candidates from decorative examples that would change
+charted meaning. SCRUM-254 owns the narrow pilot-boarding/radar-beacon artwork
+increment, now integrated as `585fd0f`: both exact prototype assets pass the
+pinned native loader and resource-isolation checks. The built-up-area fill is
+also being corrected from the earlier shore-color policy to the prototype's
+land role. A final combined capture build and native preflight follow these
+bounded changes. No newer combined executable is qualified yet.
+
+- [Native sixteen-unit preflight](evidence/scrum-247-native-chart16/README.md)
+  passed MSVC Win32, including the actual GL canvas and sounding renderer.
+  Downloaded objects, source identity and archive integrity were independently
+  verified. This is compilation evidence, not Windows product acceptance.
+- The frozen Linux integrated build linked successfully after 104 build steps.
+  Sixteen real public ENC captures cover SKAGER and Standard in software and
+  Mesa OpenGL, each through Day → Dusk → Night → Day, with four clean exits.
+  The strict repeated-edge check now passes; the older failing pictures remain.
+  [Captures and independent review](design/reviews/skager-chart-1356fd1-linux.md)
+  retain their precise identities and limitations. Two actual upstream route
+  scenarios also pass 26 checks each, exact projected
+  route-paint samples, stale handling and clean exit. These do not qualify boat
+  GPU, Windows fonts or every route/AIS visual state.
+  The stale-position GL route image omits floating chart controls visible in
+  its software counterpart. SCRUM-228 traced this to the delayed owner recapture
+  and now has a [focused repair](design/reviews/scrum228-recapture-repair.md),
+  including an actual native stacking negative control. The newer integrated
+  application still needs to demonstrate the correction.
+- The [fresh read-only boat audit](evidence/boat-readiness-20261003.md) found
+  remote access running, no application processes and matching stock/profile/
+  recovery hashes. The connected display reports 1920×1080 with configured
+  150% scaling; actual application DPI and the requested 1280×800 comparison
+  remain unmeasured. The accepted Beta1 installation remains unchanged.
+
+The candidate includes customer-facing SKAGER naming, the approved Jira logo
+and Windows icon derivatives, chart/name/light/sounding typography, bounded
+route/waypoint/healthy-AIS presentation, the chart framebuffer repair and the
+scoped submarine-cable color. **Visual conformance is not accepted:** harbor
+label density, small light-description readability, several special-state
+symbols and the newer wordmark's integrated rendering still require review or
+correction. Standard fallback and navigation meaning remain mandatory.
+
+Full native application, fixture-free packaging, installer/recovery, DPI,
+physical display and boat acceptance remain open. No replacement is installed,
+no older generation is removed and no physical command is sent by this batch.
+The previous candidate's [Linux job and three-hour endurance passed](evidence/scrum-224-linux-baseline-4c597955/README.md)
+with both 147-case suites, 1,080 samples and 90 dropout recoveries. This older
+source's pass cannot qualify the frozen candidate or these newer changes.
+
+## Previous: SKAGER identity and prototype chart refinements
 
 The latest user instruction requires the approved SCRUM-89 SKAGER artwork and
 customer-facing name throughout the product. The combined development branch
@@ -75,7 +157,11 @@ verification fix it without changing the patch contents or tamper guards.
 Combined local `19c900afdfca4c3272715c0f998b8941ec45c8df`, published equivalent
 `6f22f688cc1156c8c1e2395c854fff1a38398338`, includes all nine verified patches and
 15 actual chart production units. The corrected [native preflight37077779848](https://github.com/ThereptileII/Work/actions/runs/37077779848)
-is pending. This short compile gate cannot substitute for a full application,
+failed on the preflight helper's missing `OCPN_Sound.h` include path. The complete
+production include set and actual generated sound configuration corrected that
+helper; [failure evidence](evidence/scrum-247-chart-preflight/native-37077779848/receipt.json)
+is retained. The subsequent sixteen-unit preflight above passes. This short
+compile gate cannot substitute for a full application,
 fixture-free package, installer, Windows UI or boat acceptance.
 No physical
 actuator commands or boat-install retirement have been performed by this batch.

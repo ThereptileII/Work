@@ -1,0 +1,11 @@
+2026-10-02T20:10:50.1581688Z 100% tests passed, 0 tests failed out of 147
+2026-10-02T20:10:50.1582103Z Total Test time (real) =  12.65 sec
+2026-10-02T20:15:24.3994827Z   "build_commit": "cf44e938a3539af6e97a03346542f04f3e7895a4",
+2026-10-02T23:22:14.3537835Z   "requested_seconds": 10800,
+2026-10-02T23:22:14.3867819Z   "harness_commit": "cf44e938a3539af6e97a03346542f04f3e7895a4",
+2026-10-02T23:22:14.5572052Z   "build_commit": "cf44e938a3539af6e97a03346542f04f3e7895a4",
+2026-10-02T23:22:14.5574005Z   "elapsed_seconds": 10800.197237018001,
+2026-10-02T23:30:09.3775168Z 100% tests passed, 0 tests failed out of 147
+2026-10-02T23:30:09.3775419Z Total Test time (real) =  12.08 sec
+2026-10-02T23:30:34.2324884Z SHA256 digest of uploaded artifact zip is 8013c85316b50b899116d5a0058623af3a439418c4d995996fddf3236b8a5972
+2026-10-02T23:30:34.4503075Z Artifact linux-integration-cf44e938a3539af6e97a03346542f04f3e7895a4 has been successfully uploaded! Final size is 19492650 bytes. Artifact ID is 11257297491

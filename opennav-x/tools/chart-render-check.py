@@ -132,11 +132,15 @@ def presentation(rgb, style, light, phase):
         from pathlib import Path
         tokens=json.loads((Path(__file__).resolve().parents[1]/'docs/design/prototype-tokens.json').read_text())['themes'][light.lower()]
         colors=[bytes.fromhex(tokens[key].lstrip('#')) for key in ('--land','--water')]
+        if light=='Night':
+            # Final .chart-canvas brightness, independently confirmed in the
+            # canonical Windows Night reference: land1d2925 / water0e171c.
+            colors=[bytes(round(c*.78) for c in rgb) for rgb in colors]
     else:
         dim={'Day':1,'Dusk':.5,'Night':.25}[light]
         colors=[bytes(int(c*dim) for c in rgb) for rgb in ((170,175,80),(170,195,240))]
     result=check(rgb,colors,phase)
-    result.update(style=style,light=light,source='immutable HTML tokens' if style=='XNav' else 'pinned software GSHHSChart::SetColorScheme')
+    result.update(style=style,light=light,source='immutable HTML effective chart-canvas colors' if style=='XNav' else 'pinned software GSHHSChart::SetColorScheme')
     return result
 
 

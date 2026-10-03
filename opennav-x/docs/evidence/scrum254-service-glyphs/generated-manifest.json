@@ -1,0 +1,667 @@
+{
+  "version": 1,
+  "upstreamCommit": "37fd0cddb7334fe489e9f18aa163977a9c5c84f7",
+  "prototypeSha256": "b04573b920b6bccd16afd22f54a909e48afcfd502ce9cd7c69fdf5b6dd895447",
+  "palette": {
+    "DAY_BRIGHT": {
+      "LANDA": [
+        238,
+        238,
+        226
+      ],
+      "XNBUA": [
+        175,
+        191,
+        174
+      ],
+      "XNGEO": [
+        104,
+        123,
+        122
+      ],
+      "XNCBL": [
+        156,
+        134,
+        150
+      ],
+      "CSTLN": [
+        175,
+        191,
+        174
+      ],
+      "DEPDW": [
+        213,
+        229,
+        229
+      ],
+      "CHBLK": [
+        7,
+        7,
+        7
+      ],
+      "CHGRD": [
+        7,
+        7,
+        7
+      ],
+      "DEPMD": [
+        199,
+        220,
+        221
+      ],
+      "DEPMS": [
+        173,
+        203,
+        206
+      ],
+      "DEPVS": [
+        134,
+        172,
+        182
+      ],
+      "DEPIT": [
+        181,
+        201,
+        171
+      ],
+      "DEPCN": [
+        173,
+        203,
+        206
+      ],
+      "DEPSC": [
+        104,
+        123,
+        122
+      ],
+      "SNDG1": [
+        104,
+        123,
+        122
+      ],
+      "SNDG2": [
+        35,
+        62,
+        62
+      ]
+    },
+    "DUSK": {
+      "LANDA": [
+        78,
+        97,
+        93
+      ],
+      "XNBUA": [
+        116,
+        135,
+        121
+      ],
+      "XNGEO": [
+        173,
+        187,
+        177
+      ],
+      "XNCBL": [
+        184,
+        160,
+        177
+      ],
+      "CSTLN": [
+        116,
+        135,
+        121
+      ],
+      "DEPDW": [
+        52,
+        79,
+        89
+      ],
+      "CHBLK": [
+        225,
+        229,
+        216
+      ],
+      "CHGRD": [
+        225,
+        229,
+        216
+      ],
+      "DEPMD": [
+        66,
+        95,
+        105
+      ],
+      "DEPMS": [
+        86,
+        120,
+        128
+      ],
+      "DEPVS": [
+        113,
+        140,
+        147
+      ],
+      "DEPIT": [
+        98,
+        118,
+        107
+      ],
+      "DEPCN": [
+        86,
+        120,
+        128
+      ],
+      "DEPSC": [
+        173,
+        187,
+        177
+      ],
+      "SNDG1": [
+        173,
+        187,
+        177
+      ],
+      "SNDG2": [
+        225,
+        229,
+        216
+      ]
+    },
+    "NIGHT": {
+      "LANDA": [
+        29,
+        41,
+        37
+      ],
+      "XNBUA": [
+        55,
+        68,
+        58
+      ],
+      "XNGEO": [
+        91,
+        104,
+        94
+      ],
+      "XNCBL": [
+        113,
+        99,
+        110
+      ],
+      "CSTLN": [
+        55,
+        68,
+        58
+      ],
+      "DEPDW": [
+        14,
+        23,
+        28
+      ],
+      "CHBLK": [
+        117,
+        133,
+        121
+      ],
+      "CHGRD": [
+        117,
+        133,
+        121
+      ],
+      "DEPMD": [
+        22,
+        35,
+        41
+      ],
+      "DEPMS": [
+        33,
+        51,
+        57
+      ],
+      "DEPVS": [
+        48,
+        66,
+        75
+      ],
+      "DEPIT": [
+        40,
+        53,
+        46
+      ],
+      "DEPCN": [
+        33,
+        51,
+        57
+      ],
+      "DEPSC": [
+        117,
+        133,
+        121
+      ],
+      "SNDG1": [
+        117,
+        133,
+        121
+      ],
+      "SNDG2": [
+        182,
+        195,
+        175
+      ]
+    }
+  },
+  "neutralRasterInk": {
+    "rastersymbols-dusk.png": {
+      "sourceRgb": [
+        54,
+        54,
+        54
+      ],
+      "targetRgb": [
+        225,
+        229,
+        216
+      ],
+      "changedPixels": 42100,
+      "alphaAndGeometryPreserved": true
+    },
+    "rastersymbols-dark.png": {
+      "sourceRgb": [
+        27,
+        27,
+        27
+      ],
+      "targetRgb": [
+        117,
+        133,
+        121
+      ],
+      "changedPixels": 42100,
+      "alphaAndGeometryPreserved": true
+    }
+  },
+  "nightCanvas": {
+    "brightness": 0.78,
+    "roles": {
+      "LANDA": {
+        "raw": [
+          37,
+          52,
+          47
+        ],
+        "effective": [
+          29,
+          41,
+          37
+        ]
+      },
+      "XNBUA": {
+        "raw": [
+          70,
+          87,
+          74
+        ],
+        "effective": [
+          55,
+          68,
+          58
+        ]
+      },
+      "XNGEO": {
+        "raw": [
+          117,
+          133,
+          121
+        ],
+        "effective": [
+          91,
+          104,
+          94
+        ]
+      },
+      "CSTLN": {
+        "raw": [
+          70,
+          87,
+          74
+        ],
+        "effective": [
+          55,
+          68,
+          58
+        ]
+      },
+      "DEPDW": {
+        "raw": [
+          18,
+          30,
+          36
+        ],
+        "effective": [
+          14,
+          23,
+          28
+        ]
+      },
+      "DEPMD": {
+        "raw": [
+          28,
+          45,
+          53
+        ],
+        "effective": [
+          22,
+          35,
+          41
+        ]
+      },
+      "DEPMS": {
+        "raw": [
+          42,
+          65,
+          73
+        ],
+        "effective": [
+          33,
+          51,
+          57
+        ]
+      },
+      "DEPVS": {
+        "raw": [
+          61,
+          85,
+          96
+        ],
+        "effective": [
+          48,
+          66,
+          75
+        ]
+      },
+      "DEPIT": {
+        "raw": [
+          51,
+          68,
+          59
+        ],
+        "effective": [
+          40,
+          53,
+          46
+        ]
+      },
+      "DEPCN": {
+        "raw": [
+          42,
+          65,
+          73
+        ],
+        "effective": [
+          33,
+          51,
+          57
+        ]
+      }
+    },
+    "retainedSafetyInk": [
+      "CHBLK",
+      "CHGRD",
+      "DEPSC",
+      "SNDG1",
+      "SNDG2"
+    ]
+  },
+  "anchorageArtwork": {
+    "rastersymbols-day.png": {
+      "tile": [
+        20,
+        1160,
+        20,
+        20
+      ],
+      "pivot": [
+        10,
+        10
+      ],
+      "serviceRgb": [
+        124,
+        133,
+        138
+      ],
+      "changedPixels": 126,
+      "alphaSha256": "a814de453f8c9158f6767a1ba25a496fae762535f1a79f2edbd116dc4a2a3c83",
+      "atlasDimensionsUnchanged": [
+        1500,
+        1200
+      ]
+    },
+    "rastersymbols-dusk.png": {
+      "tile": [
+        20,
+        1160,
+        20,
+        20
+      ],
+      "pivot": [
+        10,
+        10
+      ],
+      "serviceRgb": [
+        168,
+        187,
+        183
+      ],
+      "changedPixels": 126,
+      "alphaSha256": "a814de453f8c9158f6767a1ba25a496fae762535f1a79f2edbd116dc4a2a3c83",
+      "atlasDimensionsUnchanged": [
+        1500,
+        1200
+      ]
+    },
+    "rastersymbols-dark.png": {
+      "tile": [
+        20,
+        1160,
+        20,
+        20
+      ],
+      "pivot": [
+        10,
+        10
+      ],
+      "serviceRgb": [
+        98,
+        115,
+        108
+      ],
+      "changedPixels": 126,
+      "alphaSha256": "a814de453f8c9158f6767a1ba25a496fae762535f1a79f2edbd116dc4a2a3c83",
+      "atlasDimensionsUnchanged": [
+        1500,
+        1200
+      ]
+    }
+  },
+  "serviceArtwork": {
+    "rastersymbols-day.png": {
+      "PILBOP02": {
+        "effectiveRcid": 1,
+        "tile": [
+          52,
+          1160,
+          24,
+          24
+        ],
+        "pivot": [
+          12,
+          12
+        ],
+        "alphaSha256": "a5939fe16a9ceab9bdd44e5b0182c76407b6c3b0800d5429ce39f510e7f9bc86",
+        "changedPixels": 148,
+        "serviceRgb": [
+          124,
+          133,
+          138
+        ],
+        "atlasDimensionsUnchanged": [
+          1500,
+          1200
+        ]
+      },
+      "RTPBCN02": {
+        "effectiveRcid": 2259,
+        "tile": [
+          84,
+          1160,
+          24,
+          24
+        ],
+        "pivot": [
+          12,
+          12
+        ],
+        "alphaSha256": "4e8e9899f67b94972331aac087f52726aaf53ca4644e6da4d316104e91472ba6",
+        "changedPixels": 156,
+        "serviceRgb": [
+          124,
+          133,
+          138
+        ],
+        "atlasDimensionsUnchanged": [
+          1500,
+          1200
+        ]
+      }
+    },
+    "rastersymbols-dusk.png": {
+      "PILBOP02": {
+        "effectiveRcid": 1,
+        "tile": [
+          52,
+          1160,
+          24,
+          24
+        ],
+        "pivot": [
+          12,
+          12
+        ],
+        "alphaSha256": "a5939fe16a9ceab9bdd44e5b0182c76407b6c3b0800d5429ce39f510e7f9bc86",
+        "changedPixels": 148,
+        "serviceRgb": [
+          168,
+          187,
+          183
+        ],
+        "atlasDimensionsUnchanged": [
+          1500,
+          1200
+        ]
+      },
+      "RTPBCN02": {
+        "effectiveRcid": 2259,
+        "tile": [
+          84,
+          1160,
+          24,
+          24
+        ],
+        "pivot": [
+          12,
+          12
+        ],
+        "alphaSha256": "4e8e9899f67b94972331aac087f52726aaf53ca4644e6da4d316104e91472ba6",
+        "changedPixels": 156,
+        "serviceRgb": [
+          168,
+          187,
+          183
+        ],
+        "atlasDimensionsUnchanged": [
+          1500,
+          1200
+        ]
+      }
+    },
+    "rastersymbols-dark.png": {
+      "PILBOP02": {
+        "effectiveRcid": 1,
+        "tile": [
+          52,
+          1160,
+          24,
+          24
+        ],
+        "pivot": [
+          12,
+          12
+        ],
+        "alphaSha256": "a5939fe16a9ceab9bdd44e5b0182c76407b6c3b0800d5429ce39f510e7f9bc86",
+        "changedPixels": 148,
+        "serviceRgb": [
+          98,
+          115,
+          108
+        ],
+        "atlasDimensionsUnchanged": [
+          1500,
+          1200
+        ]
+      },
+      "RTPBCN02": {
+        "effectiveRcid": 2259,
+        "tile": [
+          84,
+          1160,
+          24,
+          24
+        ],
+        "pivot": [
+          12,
+          12
+        ],
+        "alphaSha256": "4e8e9899f67b94972331aac087f52726aaf53ca4644e6da4d316104e91472ba6",
+        "changedPixels": 156,
+        "serviceRgb": [
+          98,
+          115,
+          108
+        ],
+        "atlasDimensionsUnchanged": [
+          1500,
+          1200
+        ]
+      }
+    }
+  },
+  "geographicNameLookups": 18,
+  "submarineCablePaint": {
+    "name": "CBLSUB06",
+    "RCID": "2012",
+    "color": "XNCBL",
+    "unchangedHPGL": true
+  },
+  "files": {
+    "chartsymbols.xml": {
+      "sha256": "83499e60211dad17233fb2e82add703c449944aa2b5e4e345c892886928c0b33",
+      "bytes": 2232041
+    },
+    "S52RAZDS.RLE": {
+      "sha256": "560e1a1df493d7ae4c8506da814ad936adb13ef93c6f1e2abc93f2819860ff26",
+      "bytes": 1305627
+    },
+    "rastersymbols-day.png": {
+      "sha256": "c2b8a3b646a15d1483b060a4df1a470af278221db0f219a31f18963a94c9979f",
+      "bytes": 196751
+    },
+    "rastersymbols-dusk.png": {
+      "sha256": "1beac21361321e7b71c8270c3430decd2a27954e5eddd987bba79494ad1c8b4a",
+      "bytes": 171356
+    },
+    "rastersymbols-dark.png": {
+      "sha256": "bdf132c9799214470fab355af467768b43f26b86ee6483d9b2363e91714ca434",
+      "bytes": 166498
+    }
+  }
+}

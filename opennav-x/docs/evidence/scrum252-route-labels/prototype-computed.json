@@ -1,0 +1,186 @@
+{
+  "htmlSha256": "b04573b920b6bccd16afd22f54a909e48afcfd502ce9cd7c69fdf5b6dd895447",
+  "themes": {
+    "day": {
+      "text": "L\u00e5ngholmen",
+      "textStyle": {
+        "font-family": "\"Segoe UI Variable Display\", \"Segoe UI\", Arial, sans-serif",
+        "font-size": "10px",
+        "font-weight": "400",
+        "letter-spacing": "normal",
+        "fill": "rgb(35, 62, 62)",
+        "dominant-baseline": "auto",
+        "text-anchor": "start"
+      },
+      "background": {
+        "fill": "rgb(247, 248, 240)",
+        "stroke": "rgba(112, 142, 121, 0.1)",
+        "stroke-width": "1px"
+      },
+      "chart": {
+        "filter": "none"
+      },
+      "textAttrs": [
+        [
+          "class",
+          "map-pop-label"
+        ],
+        [
+          "x",
+          "-8"
+        ],
+        [
+          "y",
+          "34"
+        ]
+      ],
+      "backgroundAttrs": [
+        [
+          "class",
+          "map-pop-bg"
+        ],
+        [
+          "x",
+          "-18"
+        ],
+        [
+          "y",
+          "18"
+        ],
+        [
+          "width",
+          "80"
+        ],
+        [
+          "height",
+          "25"
+        ],
+        [
+          "rx",
+          "5"
+        ]
+      ]
+    },
+    "dusk": {
+      "text": "L\u00e5ngholmen",
+      "textStyle": {
+        "font-family": "\"Segoe UI Variable Display\", \"Segoe UI\", Arial, sans-serif",
+        "font-size": "10px",
+        "font-weight": "400",
+        "letter-spacing": "normal",
+        "fill": "rgb(225, 229, 216)",
+        "dominant-baseline": "auto",
+        "text-anchor": "start"
+      },
+      "background": {
+        "fill": "rgb(36, 58, 64)",
+        "stroke": "rgba(112, 142, 121, 0.1)",
+        "stroke-width": "1px"
+      },
+      "chart": {
+        "filter": "none"
+      },
+      "textAttrs": [
+        [
+          "class",
+          "map-pop-label"
+        ],
+        [
+          "x",
+          "-8"
+        ],
+        [
+          "y",
+          "34"
+        ]
+      ],
+      "backgroundAttrs": [
+        [
+          "class",
+          "map-pop-bg"
+        ],
+        [
+          "x",
+          "-18"
+        ],
+        [
+          "y",
+          "18"
+        ],
+        [
+          "width",
+          "80"
+        ],
+        [
+          "height",
+          "25"
+        ],
+        [
+          "rx",
+          "5"
+        ]
+      ]
+    },
+    "night": {
+      "text": "L\u00e5ngholmen",
+      "textStyle": {
+        "font-family": "\"Segoe UI Variable Display\", \"Segoe UI\", Arial, sans-serif",
+        "font-size": "10px",
+        "font-weight": "400",
+        "letter-spacing": "normal",
+        "fill": "rgb(182, 195, 175)",
+        "dominant-baseline": "auto",
+        "text-anchor": "start"
+      },
+      "background": {
+        "fill": "rgb(21, 33, 41)",
+        "stroke": "rgba(112, 142, 121, 0.1)",
+        "stroke-width": "1px"
+      },
+      "chart": {
+        "filter": "brightness(0.78)"
+      },
+      "textAttrs": [
+        [
+          "class",
+          "map-pop-label"
+        ],
+        [
+          "x",
+          "-8"
+        ],
+        [
+          "y",
+          "34"
+        ]
+      ],
+      "backgroundAttrs": [
+        [
+          "class",
+          "map-pop-bg"
+        ],
+        [
+          "x",
+          "-18"
+        ],
+        [
+          "y",
+          "18"
+        ],
+        [
+          "width",
+          "80"
+        ],
+        [
+          "height",
+          "25"
+        ],
+        [
+          "rx",
+          "5"
+        ]
+      ]
+    }
+  },
+  "browser": "145.0.7632.6"
+}

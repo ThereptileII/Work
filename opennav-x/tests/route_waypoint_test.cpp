@@ -69,7 +69,10 @@ wxColour Colour(std::uint32_t v){return wxColour(v>>16,(v>>8)&255,v&255);}
 }
 namespace opennav::integration {
 bool style=true;
-bool ChartActiveRouteInk(ChartCanvas&c,wxColour&i){i=ui::Colour(ui::ActiveRouteInk(static_cast<ui::LightMode>(c.theme)));return style;}
+bool ChartActiveRouteInk(ChartCanvas&c,wxColour&i){
+ const unsigned effective[]{0x267c76,0xb0dfc8,0x71937e};
+ i=ui::Colour(effective[c.theme]);return style;
+}
 bool DefaultChartRouteStyle(Route&r){return r.eligible;}
 }
 #include "production-marker.h"

@@ -46,6 +46,8 @@ void AfterSettingsReconfigured();
 bool IsTransientXNavPane(const wxWindow *window);
 // Preserve an open XNav sheet/card during upstream's delayed resize raise.
 bool HasXNavTransientSurface();
+// Restore only visible owned chart controls after the pinned GTK resize raise.
+void AfterFrameRecapture();
 bool LoadPersistentPerspective(wxAuiManager &manager, const wxString &perspective);
 void AppendModeMenu(wxMenu& menu);
 bool PrepareClose(wxFileConfig& config);

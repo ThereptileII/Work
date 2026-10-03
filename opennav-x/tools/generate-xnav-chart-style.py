@@ -2,7 +2,7 @@
 """Derive bounded XNav palette resources from verified pinned OpenCPN bytes.
 
 Only the enumerated palette roles, geographic-name ink, two built-up-area fill tokens and a proven
-neutral sprite-ink mask, isolated ACHARE51 artwork tile and CBLSUB06 paint role may change. Original inputs are never modified.
+neutral sprite-ink mask, isolated ACHARE51/PILBOP02/RTPBCN02 artwork tiles and CBLSUB06 paint role may change. Original inputs are never modified.
 """
 import argparse
 import hashlib
@@ -13,6 +13,7 @@ import xml.etree.ElementTree as ET
 from chart_raster_ink import decode, derive
 import chart_anchor_art
 import chart_cable_paint
+import chart_service_art
 
 ROOT=Path(__file__).resolve().parents[1]
 ALLOWED={'LANDA','CSTLN','DEPDW','DEPMD','DEPMS','DEPVS','DEPIT','DEPCN','DEPSC','SNDG1','SNDG2','CHBLK','CHGRD'}
@@ -24,6 +25,11 @@ BUILT_AREA_COLOR='XNBUA'
 GEOGRAPHIC_COLOR='XNGEO'
 ADDED_COLORS={BUILT_AREA_COLOR,GEOGRAPHIC_COLOR,chart_cable_paint.COLOR}
 GEOGRAPHIC_CLASSES={'BUAARE','LNDARE','LNDRGN','SEAARE'}
+# Apply the prototype's chart-only Night brightness once to owned paint inputs.
+# CHBLK/CHGRD, safety contour and soundings deliberately retain brighter ink:
+# dimming them would violate the measured 4/2/3 hazard-contrast guards.
+NIGHT_CANVAS_ROLES={'LANDA','XNBUA','XNGEO','CSTLN','DEPDW','DEPMD','DEPMS','DEPVS','DEPIT','DEPCN'}
+NIGHT_SAFETY_ROLES={'CHBLK','CHGRD','DEPSC','SNDG1','SNDG2'}
 
 def geographic_ink(name, instruction):
     if name not in GEOGRAPHIC_CLASSES:return instruction
@@ -78,6 +84,7 @@ def validate_resource_changes(original, styled, colors):
         styled.find('instruction').text=stock.findtext('instruction')
     chart_anchor_art.restore_bitmap_for_validation(before, after)
     chart_cable_paint.restore_for_validation(before, after)
+    chart_service_art.restore_bitmap_for_validation(before, after)
     # Added nodes must not make whitespace significant in the identity check.
     for tree in (before,after):
         for node in tree.iter():
@@ -96,6 +103,8 @@ def generate(source, output):
         original[name]=pinned_bytes(source/name,identity)
     xml=original['chartsymbols.xml'].decode('utf-8')
     colors={}
+    night_mapping={}
+    assert b'#app[data-theme=night] .chart-canvas{filter:brightness(.78)}' in prototype
     for table,item in definition['themes'].items():
         assert set(item['colors'])==ALLOWED|ADDED_COLORS
         colors[table]={}
@@ -103,6 +112,10 @@ def generate(source, output):
             value=tokens['themes'][item['theme']][value] if value.startswith('--') else value
             assert re.fullmatch('#[0-9a-fA-F]{6}',value)
             colors[table][name]=tuple(int(value[i:i+2],16) for i in (1,3,5))
+            if table=='NIGHT' and name in NIGHT_CANVAS_ROLES:
+                raw=colors[table][name]
+                colors[table][name]=tuple((channel*78+50)//100 for channel in raw)
+                night_mapping[name]={'raw':raw,'effective':colors[table][name]}
             if name==chart_cable_paint.COLOR:
                 colors[table][name]=chart_cable_paint.theme_ink(table,colors[table][name])
         pattern=r'(<color-table name="'+re.escape(table)+r'">)(.*?)(</color-table>)'
@@ -139,6 +152,7 @@ def generate(source, output):
     assert geography_count==18, 'Pinned geographic name lookup count changed'
     xml=chart_anchor_art.relocate(xml)
     xml=chart_cable_paint.recolor(xml)
+    xml=chart_service_art.relocate(xml)
     validate_resource_changes(original['chartsymbols.xml'],xml,colors)
     result=dict(original);result['chartsymbols.xml']=xml.encode('utf-8')
     # Pinned Day ink identifies neutral CHBLK/CHGRD pixels. Theme sheets use
@@ -153,10 +167,12 @@ def generate(source, output):
         raster_ink[name] = {'sourceRgb':source_rgb, 'targetRgb':colors[table]['CHBLK'],
                             'changedPixels':count, 'alphaAndGeometryPreserved':True}
     anchor_art = {}
+    service_art = {}
     for table, name in [('DAY_BRIGHT','rastersymbols-day.png'),
                         ('DUSK','rastersymbols-dusk.png'),
                         ('NIGHT','rastersymbols-dark.png')]:
         result[name], anchor_art[name] = chart_anchor_art.paint(result[name], table)
+        result[name], service_art[name] = chart_service_art.paint(result[name], table)
     output.mkdir(parents=True,exist_ok=True)
     def write(path,content):
         if not path.exists() or path.read_bytes()!=content:path.write_bytes(content)
@@ -164,7 +180,10 @@ def generate(source, output):
     metadata={'version':definition['version'],'upstreamCommit':lock['upstreamCommit'],
               'prototypeSha256':definition['prototypeSha256'],'palette':colors,
               'neutralRasterInk':raster_ink,
+              'nightCanvas':{'brightness':.78,'roles':night_mapping,
+                             'retainedSafetyInk':sorted(NIGHT_SAFETY_ROLES)},
               'anchorageArtwork':anchor_art,
+              'serviceArtwork':service_art,
               'geographicNameLookups':geography_count,
               'submarineCablePaint':{'name':'CBLSUB06','RCID':'2012','color':'XNCBL','unchangedHPGL':True},
               'files':{n:{'sha256':hashlib.sha256(c).hexdigest(),'bytes':len(c)} for n,c in result.items()}}
@@ -184,4 +203,4 @@ def generate(source, output):
 if __name__=='__main__':
     p=argparse.ArgumentParser();p.add_argument('--source',type=Path,required=True);p.add_argument('--output',type=Path,required=True)
     a=p.parse_args();m=generate(a.source,a.output)
-    print('Verified pinned resources; generated three chart palettes, two BUAARE fills, 18 geographic-name ink rules, isolated ACHARE51 artwork, CBLSUB06 paint and resource hashes; other navigation rules unchanged')
+    print('Verified pinned resources; generated three chart palettes, two BUAARE fills, 18 geographic-name ink rules, isolated ACHARE51/PILBOP02/RTPBCN02 artwork, CBLSUB06 paint and resource hashes; other navigation rules unchanged')

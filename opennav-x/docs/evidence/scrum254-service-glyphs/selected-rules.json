@@ -1,0 +1,42 @@
+{
+  "PILBOP02": [
+    {
+      "RCID": "32166",
+      "class": "PILBOP",
+      "table": "Plain",
+      "instruction": "SY(PILBOP02);LS(DASH,2,TRFCF)"
+    },
+    {
+      "RCID": "32507",
+      "class": "PILBOP",
+      "table": "Symbolized",
+      "instruction": "SY(PILBOP02);LC(CTYARE51)"
+    },
+    {
+      "RCID": "31253",
+      "class": "PILBOP",
+      "table": "Simplified",
+      "instruction": "SY(PILBOP02);TE('Plt %s','OBJNAM',3,1,2,'15110',1,-1,CHBLK,21)"
+    },
+    {
+      "RCID": "30476",
+      "class": "PILBOP",
+      "table": "Paper",
+      "instruction": "SY(PILBOP02);TE('Plt %s','OBJNAM',3,1,2,'15110',1,-1,CHBLK,21)"
+    }
+  ],
+  "RTPBCN02": [
+    {
+      "RCID": "31289",
+      "class": "RTPBCN",
+      "table": "Simplified",
+      "instruction": "SY(RTPBCN02)"
+    },
+    {
+      "RCID": "30512",
+      "class": "RTPBCN",
+      "table": "Paper",
+      "instruction": "SY(RTPBCN02)"
+    }
+  ]
+}

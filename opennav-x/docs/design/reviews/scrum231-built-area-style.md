@@ -1,5 +1,11 @@
 # SCRUM-231 — bounded built-up-area paint correction
 
+**Current policy:** XNBUA uses prototype `--land`, including the existing Night
+brightness normalization. The original shore-green policy described below is
+superseded by the user's exact-prototype requirement. See the
+[land-fill correction](scrum231-land-fill-correction.md) for focused proof and
+the intentional changed fill-distinction assertion.
+
 The retained FFE native chart uses verified XNav resources, not Standard. Its
 large mustard regions match stock CHBRN (177,145,57), while ordinary land and
 water already match the prototype. The public ENC archive is hash-pinned; a

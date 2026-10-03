@@ -73,7 +73,7 @@ namespace opennav::integration {
 bool ChartActiveRouteInk(ChartCanvas &c, wxColour &ink) {
   if (!verified)
     return false;
-  const unsigned colors[]{0x267c76, 0xb0dfc8, 0x91bca2};
+  const unsigned colors[]{0x267c76, 0xb0dfc8, 0x71937e};
   const auto rgb = colors[c.theme];
   ink = wxColour(rgb >> 16, (rgb >> 8) & 255, rgb & 255);
   return true;
@@ -165,7 +165,7 @@ int main(int argc, char **argv) {
     ocpnDC dc;
     dc.dc = &native;
     dc.pgc = gc.get();
-    const unsigned waters[]{0xd5e5e5, 0x344f59, 0x121e24};
+    const unsigned waters[]{0xd5e5e5, 0x344f59, 0x0e171c};
     for (int theme = 0; theme < 3; ++theme) {
       canvas.theme = theme;
       int y = theme * 80;

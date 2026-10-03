@@ -259,6 +259,12 @@ set_property(DIRECTORY APPEND PROPERTY CMAKE_CONFIGURE_DEPENDS
   "${OPENNAV_ROOT}/tools/chart_raster_ink.py"
   "${OPENNAV_ROOT}/tools/chart_anchor_art.py"
   "${OPENNAV_ROOT}/tools/chart_cable_paint.py"
+  "${OPENNAV_ROOT}/tools/chart_service_art.py"
+  "${OPENNAV_ROOT}/resources/chart-style/v1/services/PILBOP02.svg"
+  "${OPENNAV_ROOT}/resources/chart-style/v1/services/PILBOP02-alpha.json"
+  "${OPENNAV_ROOT}/resources/chart-style/v1/services/RTPBCN02.svg"
+  "${OPENNAV_ROOT}/resources/chart-style/v1/services/RTPBCN02-alpha.json"
+  "${OPENNAV_ROOT}/resources/chart-style/v1/services/provenance.json"
   "${OPENNAV_ROOT}/resources/chart-style/v1/anchorage/ACHARE51.svg"
   "${OPENNAV_ROOT}/resources/chart-style/v1/anchorage/ACHARE51-alpha.json"
   "${OPENNAV_ROOT}/resources/chart-style/v1/anchorage/provenance.json"
@@ -268,6 +274,7 @@ set_property(DIRECTORY APPEND PROPERTY CMAKE_CONFIGURE_DEPENDS
   "${OPENNAV_ROOT}/docs/design/prototype/src/style.css")
 target_sources(${PACKAGE_NAME} PRIVATE "${OPENNAV_ROOT}/src/integration/ChartPresentation.cpp"
   "${OPENNAV_ROOT}/src/integration/ChartRouteWaypoint.cpp"
+  "${OPENNAV_ROOT}/src/integration/ChartRouteLabel.cpp"
   "${OPENNAV_ROOT}/src/integration/ChartRouteUnderlay.cpp"
   "${OPENNAV_ROOT}/src/integration/ChartRouteUnderlayGeometry.cpp")
 target_include_directories(${PACKAGE_NAME} PRIVATE "${xnav_chart_style}")

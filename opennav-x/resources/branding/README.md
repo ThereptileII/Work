@@ -28,3 +28,27 @@ Stock OpenCPN and Legacy's upstream attribution/about/licensing are preserved.
 The NSIS setup and its generated maintenance/uninstall executable share this ICO.
 Native Explorer/taskbar/shortcut, setup and maintenance rendering at Windows
 96/120/144 DPI remain acceptance gates for the integrated exact commit.
+
+## Native header compositing (SCRUM-235/236)
+
+The committed PNG/ICO/header bytes above remain unchanged. `ui/SkagerWordmark.h`
+removes only the flattened backdrop at runtime for the native shell. It checks
+680 × 214 RGB/no-alpha/no-mask and the decoded-pixel FNV-1a-64 identity
+`7c8a65f6859fcafd` (the existing build-time SHA-256 verification remains in force),
+then validates the background-only margins and inter-row band. The textured
+backdrop is not a single RGB color. A soft green-channel ramp from 52 to 255
+provides neutral coverage for both rows; it preserves pixel positions and adds
+no strokes. This is a reviewed raster-matte approximation, not recovered original
+alpha or vector artwork. A changed source must be explicitly reviewed again.
+
+The validated mask is derived once. The native bitmap is cached by output width
+and actual foreground colors and recomposed when theme or DPI changes. The
+SKAGER row uses prototype `primary` in Day/Dusk and `secondary` in Night, matching
+its `.brand` override; APP uses `accent` (prototype mint). The existing header
+background shows through, including the space between rows. Chart-only Night
+brightness does not apply to the header. Unexpected image identity, dimensions,
+alpha/mask, or background bands retain the original image without recoloring.
+
+Focused Linux wx component evidence is in
+`docs/evidence/scrum-236-theme-wordmark/README.md`. It covers 100/125/150% device
+sizes; it does not replace native Windows integrated DPI/installer acceptance.

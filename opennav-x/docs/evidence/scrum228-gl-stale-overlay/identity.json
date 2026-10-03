@@ -1,0 +1,208 @@
+{
+  "source_commit": "1356fd1603aacbea04d7081d16331e9a181180bb",
+  "binary_sha256": "0aaaf2238828fcf4b42d02c8b7dad7191781ead1bf2ece0c2a9384c1fdc726bf",
+  "scope": "Linux Xvfb/Mesa diagnosis only, not native Windows or boat acceptance",
+  "profiles_copied": false,
+  "files": {
+    "analysis.json": {
+      "bytes": 11243,
+      "sha256": "6f98e9f3d0e6b147e72db8a4aa2f25318c3f65160d5a3954e53f935e2c0985fe"
+    },
+    "failed-xwininfo/failure-attribution.txt": {
+      "bytes": 445,
+      "sha256": "c88fb0a217714de0fffc632520a3fb2d1b2b31e217be4e7215074365438bc461"
+    },
+    "failed-xwininfo/smoke-navigation-stale-probe.py": {
+      "bytes": 69849,
+      "sha256": "dbcacef66c0fc91ac2ce352ee1f858152b011a95de8f482524b09dbd7551c4e2"
+    },
+    "failed-xwininfo/stale-probe-route-opengl-01-active-route.png": {
+      "bytes": 74755,
+      "sha256": "58b50c3a61002cc3908e7ff164ef4c909f4d8872b67b865cb5424883ffcc7f5c"
+    },
+    "failed-xwininfo/stale-probe-route-opengl-02-stale-position.png": {
+      "bytes": 68235,
+      "sha256": "32e5516305311b5f9eed38efded184fed1247b988ccdc8c227da25be7119e4bc"
+    },
+    "failed-xwininfo/stale-probe-route-opengl-input-launch.log": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "failed-xwininfo/stale-probe-route-opengl-input-results.json": {
+      "bytes": 3680,
+      "sha256": "97df144cf46ab1f56778038125fe919dc829eb1b232c549220abbe73524d8562"
+    },
+    "failed-xwininfo/stale-probe-route-opengl-stale-burst-0.json": {
+      "bytes": 28385,
+      "sha256": "551bdd1f6dadd09ee51ce0ebbd54f2b86c4c229f5593770824bd66e7c1aa5662"
+    },
+    "failed-xwininfo/stale-probe-route-opengl-stale-burst-0.png": {
+      "bytes": 73621,
+      "sha256": "20c0902972ef1230523ae22ba18af8c533a1c05eb4269b71ed3ccce929aa2eb2"
+    },
+    "readonly-repeat/prelaunch-alias-error.log": {
+      "bytes": 1693,
+      "sha256": "f67be286c5a7db0ef38aac5814ca387271fe802c01c7f6d4138a3c4ba5e90ccc"
+    },
+    "readonly-repeat/prelaunch-path-error.log": {
+      "bytes": 1149,
+      "sha256": "417299e8d5725d61e14f91715b0daa4caf577c3f26dcdc40e62a5bb39ba6bdc7"
+    },
+    "readonly-repeat/repeat.log": {
+      "bytes": 250,
+      "sha256": "8b7d7fbd2650876519c80c155e8df69de6709a3f539b7bc8de556c7b3f901569"
+    },
+    "readonly-repeat/run.sh": {
+      "bytes": 1076,
+      "sha256": "c27b5bc5da96a41d90fabe4f6e12d632db649404cce351a5ebac181de60ec01e"
+    },
+    "readonly-repeat/smoke-navigation-stale-repeat.py": {
+      "bytes": 70398,
+      "sha256": "b37ecab506f32723765749fffafd290b05d610f04c8ad03a94d7884c5a01ad66"
+    },
+    "readonly-repeat/stale-readonly-repeat-route-opengl-01-active-route.png": {
+      "bytes": 74806,
+      "sha256": "9ad3efe2377df349198658e58c9bc8526db4eb58f84daaa3c620928c6a6a8a67"
+    },
+    "readonly-repeat/stale-readonly-repeat-route-opengl-02-stale-position.png": {
+      "bytes": 74273,
+      "sha256": "9692662f393c20f24142595fc72ef2ced7e78af1b36e11868b21b1b4e378d1d1"
+    },
+    "readonly-repeat/stale-readonly-repeat-route-opengl-input-launch.log": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "readonly-repeat/stale-readonly-repeat-route-opengl-input-results.json": {
+      "bytes": 26392,
+      "sha256": "aa2b1232f7cd1e18c9478ebb7113ba2cce7cc557c23cd27cb6c553ac9313698f"
+    },
+    "readonly-repeat/stale-readonly-repeat-route-opengl-progress-results.json": {
+      "bytes": 21071,
+      "sha256": "cc4ce2b0404e9af4e62980f5e5a8392e3d703c6b9b22ae05f3ab1162364e3d76"
+    },
+    "readonly-repeat/stale-readonly-repeat-route-opengl-stale-burst-0-before-windows.json": {
+      "bytes": 3707,
+      "sha256": "8b584f7e011cb0d571c00c0dd84d864eb92ebd8c36faec6cfa7171212fc2f02f"
+    },
+    "readonly-repeat/stale-readonly-repeat-route-opengl-stale-burst-0-before.json": {
+      "bytes": 28385,
+      "sha256": "df7b33c586721850b24208c8b4ab4a0b70be692c4cf9316ca8225c36af71d09c"
+    },
+    "readonly-repeat/stale-readonly-repeat-route-opengl-stale-burst-0-windows.json": {
+      "bytes": 3707,
+      "sha256": "4843bd1e0dc9d1990177f9c963aa55fbd81c56b69e9829f51018328015721439"
+    },
+    "readonly-repeat/stale-readonly-repeat-route-opengl-stale-burst-0.json": {
+      "bytes": 28385,
+      "sha256": "df7b33c586721850b24208c8b4ab4a0b70be692c4cf9316ca8225c36af71d09c"
+    },
+    "readonly-repeat/stale-readonly-repeat-route-opengl-stale-burst-0.png": {
+      "bytes": 74287,
+      "sha256": "71615d11aee2683ad4e7fe48feb5e806b12f3a95c471add754dac95003b3a497"
+    },
+    "readonly-repeat/stale-readonly-repeat-route-opengl-stale-burst-1-before-windows.json": {
+      "bytes": 3707,
+      "sha256": "7494530552736aa240754d5c0f06ebbc4e3f04c19bcaedfcb3630683b953f9c0"
+    },
+    "readonly-repeat/stale-readonly-repeat-route-opengl-stale-burst-1-before.json": {
+      "bytes": 28385,
+      "sha256": "df7b33c586721850b24208c8b4ab4a0b70be692c4cf9316ca8225c36af71d09c"
+    },
+    "readonly-repeat/stale-readonly-repeat-route-opengl-stale-burst-1-windows.json": {
+      "bytes": 3707,
+      "sha256": "24e5defd7dd80f3867bab763ab5426057a8af4614fb0301c3f4143029f0fd824"
+    },
+    "readonly-repeat/stale-readonly-repeat-route-opengl-stale-burst-1.json": {
+      "bytes": 28385,
+      "sha256": "8f62d7f0b3bb4d955cca6726731b5839bc8c7bb40ca1b068d0ce6609697613ce"
+    },
+    "readonly-repeat/stale-readonly-repeat-route-opengl-stale-burst-1.png": {
+      "bytes": 73659,
+      "sha256": "aedb49bd252d61dfeda253603ea53cc8c2383e5a787f79abd47e97395b39e638"
+    },
+    "readonly-repeat/stale-readonly-repeat-route-opengl-stale-burst-2-before-windows.json": {
+      "bytes": 3707,
+      "sha256": "0100c7045f06715053e90797abf1edf1e7a7728acf78f2f7172e798776a9d845"
+    },
+    "readonly-repeat/stale-readonly-repeat-route-opengl-stale-burst-2-before.json": {
+      "bytes": 28385,
+      "sha256": "8f62d7f0b3bb4d955cca6726731b5839bc8c7bb40ca1b068d0ce6609697613ce"
+    },
+    "readonly-repeat/stale-readonly-repeat-route-opengl-stale-burst-2-windows.json": {
+      "bytes": 3707,
+      "sha256": "7631ddbcd56e2a361094f67572a8fe3dd6b2704d1d335b1da7a222a5a7f06371"
+    },
+    "readonly-repeat/stale-readonly-repeat-route-opengl-stale-burst-2.json": {
+      "bytes": 28385,
+      "sha256": "8f62d7f0b3bb4d955cca6726731b5839bc8c7bb40ca1b068d0ce6609697613ce"
+    },
+    "readonly-repeat/stale-readonly-repeat-route-opengl-stale-burst-2.png": {
+      "bytes": 74215,
+      "sha256": "94b2628104c7ebfdb76f5e38f25a679782409e97f1500b3355021fbf0b9b702a"
+    },
+    "readonly-repeat/stale-readonly-repeat-route-opengl-stale-burst-3-before-windows.json": {
+      "bytes": 3707,
+      "sha256": "0ae314a6a4af571add384fa5aaa000b95486a2890bd3929d326fe999ad793752"
+    },
+    "readonly-repeat/stale-readonly-repeat-route-opengl-stale-burst-3-before.json": {
+      "bytes": 28386,
+      "sha256": "13300c3fe68a185e540b0fccb1a02b5aee4de233b0f7612b4d7f3805bb726bcb"
+    },
+    "readonly-repeat/stale-readonly-repeat-route-opengl-stale-burst-3-windows.json": {
+      "bytes": 3707,
+      "sha256": "7c81f3a0e59ad4fd6235db2af33b7c1c597b87251c49e0b0633028e0629eb4f3"
+    },
+    "readonly-repeat/stale-readonly-repeat-route-opengl-stale-burst-3.json": {
+      "bytes": 28386,
+      "sha256": "13300c3fe68a185e540b0fccb1a02b5aee4de233b0f7612b4d7f3805bb726bcb"
+    },
+    "readonly-repeat/stale-readonly-repeat-route-opengl-stale-burst-3.png": {
+      "bytes": 74242,
+      "sha256": "497ce0e9952579e22a6f567b9388bf16d21d46e23bb2fdc490e58d92bc7679fa"
+    },
+    "readonly-repeat/stale-readonly-repeat-route-opengl-stale-burst-4-before-windows.json": {
+      "bytes": 3707,
+      "sha256": "c91f83ca73747d222841988bc6370553dfcb560e75834e718fdf912edbb32655"
+    },
+    "readonly-repeat/stale-readonly-repeat-route-opengl-stale-burst-4-before.json": {
+      "bytes": 28386,
+      "sha256": "13300c3fe68a185e540b0fccb1a02b5aee4de233b0f7612b4d7f3805bb726bcb"
+    },
+    "readonly-repeat/stale-readonly-repeat-route-opengl-stale-burst-4-windows.json": {
+      "bytes": 3707,
+      "sha256": "95eea63b6ffb577bf466786e8e3c74a347fb8375294583fd0b10642be39b48b6"
+    },
+    "readonly-repeat/stale-readonly-repeat-route-opengl-stale-burst-4.json": {
+      "bytes": 28385,
+      "sha256": "971739951651c674658a653d3ebd6c87f12a7f6f680a6aa27db0c352c1a051ac"
+    },
+    "readonly-repeat/stale-readonly-repeat-route-opengl-stale-burst-4.png": {
+      "bytes": 73608,
+      "sha256": "b39564637370d68a1535d2ec26bf66988f72687e4f5ed02da94f588cbf4741e4"
+    },
+    "readonly-repeat/stale-readonly-repeat-route-opengl-stale-burst-5-before-windows.json": {
+      "bytes": 3707,
+      "sha256": "0823252dd01279dff7dc2f7c6c1e8bde0b8d2fddd726a9c1b6c08635bb4d6966"
+    },
+    "readonly-repeat/stale-readonly-repeat-route-opengl-stale-burst-5-before.json": {
+      "bytes": 28385,
+      "sha256": "971739951651c674658a653d3ebd6c87f12a7f6f680a6aa27db0c352c1a051ac"
+    },
+    "readonly-repeat/stale-readonly-repeat-route-opengl-stale-burst-5-windows.json": {
+      "bytes": 3707,
+      "sha256": "87af0578338adef28868067f34b61444a2b34616817bbe4c3e2f835fab7161f7"
+    },
+    "readonly-repeat/stale-readonly-repeat-route-opengl-stale-burst-5.json": {
+      "bytes": 28385,
+      "sha256": "971739951651c674658a653d3ebd6c87f12a7f6f680a6aa27db0c352c1a051ac"
+    },
+    "readonly-repeat/stale-readonly-repeat-route-opengl-stale-burst-5.png": {
+      "bytes": 74239,
+      "sha256": "b00cf81c21bd23a66fa620ceebc623d47734e843dc82bcb22077fb6cbaf2f424"
+    },
+    "readonly-repeat/x11_readonly.py": {
+      "bytes": 1850,
+      "sha256": "75453b37b63b42d4dd7c5bd6a02d82578d486985e80f05ece973654b62d60a7d"
+    }
+  }
+}

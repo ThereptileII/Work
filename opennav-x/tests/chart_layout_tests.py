@@ -120,7 +120,7 @@ print('Retained Linux Layers capture passes; 9 missing/hidden/duplicate/misident
 palettes={
     ('XNav','Day'):('eeeee2','d5e5e5'),
     ('XNav','Dusk'):('4e615d','344f59'),
-    ('XNav','Night'):('25342f','121e24'),
+    ('XNav','Night'):('1d2925','0e171c'),
     ('Standard','Day'):('aaaf50','aac3f0'),
     ('Standard','Dusk'):('555728','556178'),
     ('Standard','Night'):('2a2b14','2a303c'),

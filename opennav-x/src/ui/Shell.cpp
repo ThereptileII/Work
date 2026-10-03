@@ -1,6 +1,7 @@
 #include "ui/Shell.h"
 #include "application/Brand.h"
 #include "application/SkagerBrandAsset.h"
+#include "ui/SkagerWordmark.h"
 
 #include "smartnav/Advisories.h"
 #include "vessel/DisplayItems.h"
@@ -113,20 +114,19 @@ Shell::Shell(wxFrame &frame, wxAuiManager &manager, ShellActions actions,
   const wxImage logo(logo_stream, wxBITMAP_TYPE_PNG);
   brand->SetMinSize(frame_.FromDIP(wxSize(180,68)));
   brand->SetBackgroundStyle(wxBG_STYLE_PAINT);
-  brand->Bind(wxEVT_PAINT,[this,brand,logo,bitmap=wxBitmap{}](wxPaintEvent &) mutable {
+  brand->Bind(wxEVT_PAINT,[this,brand,logo,wordmark=SkagerWordmark(logo)](wxPaintEvent &) mutable {
     wxAutoBufferedPaintDC dc(brand);
     const auto c=Theme(mode_);
     dc.SetBackground(wxBrush(Colour(c.background))); dc.Clear();
     dc.SetDeviceOrigin(0, (brand->GetClientSize().y-brand->FromDIP(68))/2);
-    // Exact approved SCRUM-89 artwork, fitted into the existing header slot.
-    // Cache per device size so ordinary paints do not resample the bitmap.
+    // Approved glyph geometry with validated coverage and prototype theme ink.
+    // Rejected coverage uses the original logo; cache by device size and ink.
     const auto d=[brand](int x){return brand->FromDIP(x);};
     if (logo.IsOk()) {
       const int width=d(148);
       const int height=width*logo.GetHeight()/logo.GetWidth();
-      if (!bitmap.IsOk() || bitmap.GetWidth()!=width || bitmap.GetHeight()!=height)
-        bitmap=wxBitmap(logo.Scale(width,height,wxIMAGE_QUALITY_HIGH));
-      dc.DrawBitmap(bitmap,d(16),(d(68)-height)/2,true);
+      const auto& bitmap=wordmark.Bitmap(width,mode_);
+      if (bitmap.IsOk()) dc.DrawBitmap(bitmap,d(16),(d(68)-height)/2,true);
     } else {
       dc.SetFont(UiFontWeight(*brand,23,650));
       dc.SetTextForeground(Colour(c.primary));
@@ -628,6 +628,11 @@ bool Shell::HasTransientSurface() const {
       if (owner == &frame_) return true;
   }
   return false;
+}
+
+void Shell::RestackChartControls() {
+  for (auto *overlay : chart_overlays_)
+    static_cast<XNavFloatingSurface *>(overlay)->RestackAboveOwner();
 }
 
 void Shell::UpdateState(const vessel::VesselState &state) {

@@ -123,6 +123,7 @@ public:
   }
   std::vector<ProductGeometry> InteractionControls() const;
   bool HasTransientSurface() const;
+  void RestackChartControls();
   bool RouteCreationActive() const { return actions_.route_creating && actions_.route_creating(); }
   const char *LightName() const;
   void ShowObject(const std::string &id, bool route);

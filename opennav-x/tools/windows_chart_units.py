@@ -10,7 +10,7 @@ import sys
 import tarfile
 
 LOCAL_UNITS = tuple('src/integration/' + name + '.cpp' for name in (
-    'ChartPresentation', 'ChartRouteWaypoint', 'ChartRouteUnderlay',
+    'ChartPresentation', 'ChartRouteWaypoint', 'ChartRouteLabel', 'ChartRouteUnderlay',
     'ChartRouteUnderlayGeometry', 'OnboardAisPresentation', 'OnlineAisOverlay'))
 UPSTREAM_UNITS = tuple('gui/src/' + name + '.cpp' for name in (
     'chcanv', 'glChartCanvas', 'route_gui', 'route_point_gui', 'waypointman_gui', 'ais', 'piano')) + (
@@ -137,7 +137,7 @@ def compile_chart_units(args, evidence, api):
         'tools/windows-chart-headers.lock.json', 'tools/windows-prototype-headers.lock.json',
         'tools/windows-wx.lock.json', 'tools/windows-curl.lock.json',
         'tools/generate-xnav-chart-style.py', 'tools/chart_raster_ink.py', 'tools/chart_anchor_art.py',
-        'tools/chart_cable_paint.py',
+        'tools/chart_cable_paint.py', 'tools/chart_service_art.py',
         'docs/design/prototype-tokens.json', 'docs/design/prototype/src/chart-marker-art.js',
         'docs/design/prototype/src/chart-symbols.js', 'docs/design/prototype/src/chart-symbols.css',
         'docs/design/prototype/src/style.css'}

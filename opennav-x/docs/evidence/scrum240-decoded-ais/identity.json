@@ -1,0 +1,44 @@
+{
+  "sourceCommit": "1356fd1603aacbea04d7081d16331e9a181180bb",
+  "binarySha256": "0aaaf2238828fcf4b42d02c8b7dad7191781ead1bf2ece0c2a9384c1fdc726bf",
+  "sources": {
+    "src/integration/OnboardAisPresentation.cpp": "605991a0d716a7b13c4850bee4170ec071eb18e9102e4bd4b1c9a1a7430ffc47",
+    "src/integration/OnboardAisBody.h": "2e8414c925c5f026198e164b08f70ee675a231abd5b1a3a7fce4167a410e1ab4",
+    "src/integration/OnboardAisPaint.h": "fa69529fb57cbfbc848ea37fcc3bc07024ca7e7c0633d356f736505a1bddf328",
+    "src/integration/NavigationObjects.cpp": "1a5e499f2fc56ed205acf85b03d017061c8feb73d5c705826dd5f919ec4affe2",
+    "src/ui/AisDrawer.cpp": "cbc2fbd296cbc9d02a29b90922cc42af7cd94e45611f4f43d68e60835269abe9",
+    "src/ui/Theme.h": "b28adb1f519ec5a1f9b7e2bfab6ec2ab1c7f06656bd129316e9e453ef1ec0776",
+    "tools/smoke-navigation.py": "b4c3037dd135c44a5b5afd837ff2b0dce691f9485014ba1e69a3796a665f6b13"
+  },
+  "preparedUpstream": {
+    "gui/src/ais.cpp": "81f82a9535bdccc551f4604c4cda4e89c775e6c2de43a679441fa30fc9063040",
+    "model/src/ais_decoder.cpp": "b09275135dc146ba9e7542668ea21c513d298ac97ce6301ae169f8774e3b4a8d"
+  },
+  "collectors": {
+    "capture-ais240.py": "d98de81de60b99d708dafe3eca436e345a7cf37a540ef929c8d708e81f737868",
+    "run-ais240-isolated.sh": "d7da777ab1540fa5883e3d53123718cdea55c59d62722a431e94cff96a0a4b3e",
+    "cache-inputs.py": "ba9d1e7c0cd60974fc9651bd4a3ad661f14406a28be0efdb88124de0aae9c3b5"
+  },
+  "runtimeLogCopies": {
+    "software/SKAGER-runtime.log": {
+      "originalSha256": "b8d7d94176625996163d9a0a481654fd1686f9504635619848d42141eeb0d282",
+      "storedSha256": "0567981c1cf14fc95376da5a87496a51436d0e63641b877c38db1ad64e508588",
+      "normalization": "Trailing whitespace and final empty lines removed only; original cached log retained"
+    },
+    "software/Standard-runtime.log": {
+      "originalSha256": "053c9b88eb253929a2a3e93bfa203b31f61ff41d8d5f3a89261cf066ebc5703c",
+      "storedSha256": "9645b5765b5c85a35f1545cda0be4ea48c324d647ed75624cc05bde641cfbd62",
+      "normalization": "Trailing whitespace and final empty lines removed only; original cached log retained"
+    },
+    "opengl/SKAGER-runtime.log": {
+      "originalSha256": "3e6d7ee04bb303519d382a124ef59fb3886d01dd7fcb22a75d0709946f7de4b9",
+      "storedSha256": "c1d5f208e0cc2684c5d78368eb933d8398020cbc125094d5324af7af05153b68",
+      "normalization": "Trailing whitespace and final empty lines removed only; original cached log retained"
+    },
+    "opengl/Standard-runtime.log": {
+      "originalSha256": "f9201759450ba2fa7e09a8eb11f335fee8d80af81d98fece1d15536edde02f32",
+      "storedSha256": "25fdefc66acff3e58896c2fb1a232f5d1799ff9ff8363178ee57f745f9abdac2",
+      "normalization": "Trailing whitespace and final empty lines removed only; original cached log retained"
+    }
+  }
+}

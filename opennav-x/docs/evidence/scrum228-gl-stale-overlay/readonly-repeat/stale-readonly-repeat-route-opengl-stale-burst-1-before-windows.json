@@ -1,0 +1,231 @@
+{
+  "monotonic_ns": 40620048373059,
+  "completed_monotonic_ns": 40620049789744,
+  "ordering": "XQueryTree siblings bottom to top",
+  "windows": [
+    {
+      "id": 543,
+      "parent": 0,
+      "depth": 0,
+      "name": "",
+      "xywh": [
+        0,
+        0,
+        1280,
+        800
+      ],
+      "map_state": 2,
+      "override_redirect": 0
+    },
+    {
+      "id": 2097153,
+      "parent": 543,
+      "depth": 1,
+      "name": "opencpn",
+      "xywh": [
+        10,
+        10,
+        10,
+        10
+      ],
+      "map_state": 0,
+      "override_redirect": 0
+    },
+    {
+      "id": 2097156,
+      "parent": 543,
+      "depth": 1,
+      "name": "",
+      "xywh": [
+        -1,
+        -1,
+        1,
+        1
+      ],
+      "map_state": 0,
+      "override_redirect": 1
+    },
+    {
+      "id": 2097409,
+      "parent": 543,
+      "depth": 1,
+      "name": "opencpn",
+      "xywh": [
+        0,
+        0,
+        200,
+        200
+      ],
+      "map_state": 0,
+      "override_redirect": 1
+    },
+    {
+      "id": 2097410,
+      "parent": 2097409,
+      "depth": 2,
+      "name": "",
+      "xywh": [
+        -1,
+        -1,
+        1,
+        1
+      ],
+      "map_state": 1,
+      "override_redirect": 0
+    },
+    {
+      "id": 2097401,
+      "parent": 543,
+      "depth": 1,
+      "name": "SKAGER / OpenCPN",
+      "xywh": [
+        0,
+        0,
+        1280,
+        800
+      ],
+      "map_state": 2,
+      "override_redirect": 0
+    },
+    {
+      "id": 2097402,
+      "parent": 2097401,
+      "depth": 2,
+      "name": "",
+      "xywh": [
+        -1,
+        -1,
+        1,
+        1
+      ],
+      "map_state": 2,
+      "override_redirect": 0
+    },
+    {
+      "id": 2097417,
+      "parent": 2097401,
+      "depth": 2,
+      "name": "",
+      "xywh": [
+        80,
+        68,
+        1014,
+        566
+      ],
+      "map_state": 2,
+      "override_redirect": 0
+    },
+    {
+      "id": 2097495,
+      "parent": 543,
+      "depth": 1,
+      "name": "SKAGER follow boat",
+      "xywh": [
+        108,
+        553,
+        142,
+        44
+      ],
+      "map_state": 2,
+      "override_redirect": 0
+    },
+    {
+      "id": 2097496,
+      "parent": 2097495,
+      "depth": 2,
+      "name": "",
+      "xywh": [
+        -1,
+        -1,
+        1,
+        1
+      ],
+      "map_state": 2,
+      "override_redirect": 0
+    },
+    {
+      "id": 2097489,
+      "parent": 543,
+      "depth": 1,
+      "name": "SKAGER chart layers",
+      "xywh": [
+        1016,
+        190,
+        44,
+        44
+      ],
+      "map_state": 2,
+      "override_redirect": 0
+    },
+    {
+      "id": 2097490,
+      "parent": 2097489,
+      "depth": 2,
+      "name": "",
+      "xywh": [
+        -1,
+        -1,
+        1,
+        1
+      ],
+      "map_state": 2,
+      "override_redirect": 0
+    },
+    {
+      "id": 2097483,
+      "parent": 543,
+      "depth": 1,
+      "name": "SKAGER chart orientation",
+      "xywh": [
+        1004,
+        90,
+        68,
+        90
+      ],
+      "map_state": 2,
+      "override_redirect": 0
+    },
+    {
+      "id": 2097484,
+      "parent": 2097483,
+      "depth": 2,
+      "name": "",
+      "xywh": [
+        -1,
+        -1,
+        1,
+        1
+      ],
+      "map_state": 2,
+      "override_redirect": 0
+    },
+    {
+      "id": 2097475,
+      "parent": 543,
+      "depth": 1,
+      "name": "SKAGER chart tools",
+      "xywh": [
+        883,
+        545,
+        189,
+        52
+      ],
+      "map_state": 2,
+      "override_redirect": 0
+    },
+    {
+      "id": 2097478,
+      "parent": 2097475,
+      "depth": 2,
+      "name": "",
+      "xywh": [
+        -1,
+        -1,
+        1,
+        1
+      ],
+      "map_state": 2,
+      "override_redirect": 0
+    }
+  ]
+}

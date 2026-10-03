@@ -61,7 +61,7 @@ bool enabled=true,xnav_mode=true,active=true;
 CogPredictorStyleOwnership cog_style;
 bool ChartActiveRouteInk(ChartCanvas &c,wxColour &ink) {
   if(!enabled) return false;
-  const unsigned colors[]{0x267c76,0xb0dfc8,0x91bca2}; auto v=colors[c.theme];
+  const unsigned colors[]{0x267c76,0xb0dfc8,0x71937e}; auto v=colors[c.theme];
   ink=wxColour(v>>16,(v>>8)&255,v&255); return true;
 }
 #define max(a,b) WINDOWS_MAX_MACRO_MUST_NOT_EXPAND
@@ -154,7 +154,7 @@ int main(int argc,char **argv) {
     Check(target.GetPen().GetWidth()==5&&target.GetBrush()==*wxBLUE_BRUSH,"software state leaked");
     target.SelectObject(wxNullBitmap);auto image=bmp.ConvertToImage();
     for(int theme=0;theme<3;++theme) {
-      int y=30+theme*110;const unsigned colors[]{0x267c76,0xb0dfc8,0x91bca2};
+      int y=30+theme*110;const unsigned colors[]{0x267c76,0xb0dfc8,0x71937e};
       unsigned color=colors[theme];int channels[]{int(color>>16),int((color>>8)&255),int(color&255)};
       int bg[]{213,229,229},actual[]{image.GetRed(32,y),image.GetGreen(32,y),image.GetBlue(32,y)};
       for(int i=0;i<3;++i) Check(std::abs(actual[i]-std::lround(channels[i]*(166./255)+bg[i]*(89./255)))<=1,"software alpha composition changed");

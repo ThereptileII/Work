@@ -1001,6 +1001,10 @@ try:
                     else:
                         tokens = json.loads((root/'docs/design/prototype-tokens.json').read_text())
                         ink = tuple(bytes.fromhex(tokens['themes'][args.theme.lower()]['--route'].lstrip('#')))
+                        if args.theme == 'Night':
+                            # Immutable chart-canvas brightness, before the
+                            # separate inspected GL framebuffer conversion.
+                            ink = tuple(round(channel*.78) for channel in ink)
                     requested_ink = ink
                     if args.renderer == 'opengl':
                         # Pinned ocpnDC shader uniforms divide RGB by 256,

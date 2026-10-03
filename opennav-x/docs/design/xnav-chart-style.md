@@ -15,6 +15,16 @@ application's pinned S-52 resources.
 | Contour / depth detail | #adcbce | #567880 | #2a4149 |
 | Active route | #267c76 | #b0dfc8 | #91bca2 |
 
+These are raw CSS tokens. The final prototype additionally applies
+`brightness(.78)` to its Night chart canvas. SCRUM-253 now normalizes owned
+Night surfaces/ordinary contours, geographic names and eligible overlay paint
+once at their inputs; water becomes #0e171c and land #1d2925. Already-normalized
+roles are unchanged. Safety ink, safety contour, soundings and light descriptions
+remain brighter under explicit navigation-readability exceptions. See the
+[exact role mapping and retained contrast checks](../evidence/scrum-253-night-canvas/README.md).
+Standard, floating controls and raster chart content are not recolored by this
+rule. Actual combined renderer and boat acceptance remain open.
+
 Chart depth units are an actual navigation label, not the prototype's fictional
 location/depth metadata. The native presentation uses the final `.map-disclaimer`
 8px typography, 22px right inset and floating muted ink. It states `Chart depths`
@@ -204,8 +214,11 @@ See the [contrast investigation](reviews/chart-ink-contrast-investigation.md).
 The hash-pinned US5SEAFL chart identifies Seattle and West Seattle as BUAARE
 polygons. Their stock CHBRN fill produced the large mustard regions in the
 retained native XNav capture even though LANDA was correctly themed.
-The separate XNBUA color now uses the exact prototype `--shore` neutral
-(Day #afbfae, Dusk #748779, Night #46574a). Only the fill token in pinned
+The separate XNBUA color now uses the exact prototype `--land` fill
+(Day #eeeee2, Dusk #4e615d, effective Night #1d2925). This supersedes the
+earlier shore-green mapping: the user's exact prototype requirement takes
+precedence over the former separate built-up fill shade. BUAARE remains
+classified and bounded, while its fill intentionally matches ordinary land. Only the fill token in pinned
 BUAARE Area lookups 16/32052 (Plain) and 356/32391 (Symbolized) changes.
 Their boundaries, text, classification, priorities and geometry remain intact.
 This narrowly enumerated exception supersedes the earlier blanket statement
@@ -310,3 +323,10 @@ magenta, cable-area restrictions, ferry lines, dumping-ground boundaries and
 information symbols retain their meanings and rendering. Reverse equality and
 negative resource tests constrain this one node. See
 [real-chart audit and scope](reviews/scrum251-submarine-cable-paint.md).
+
+SCRUM-252 adds the bounded default active-route name treatment documented in
+[the route label review](reviews/scrum252-route-labels.md). It preserves actual
+names and name visibility, every SCRUM-242 eligibility fallback, custom Marks
+appearance and offsets, and stock navigation geometry. Its Night-only label
+palette includes the immutable chart ancestor brightness. Native/real-route/
+boat acceptance remains open.

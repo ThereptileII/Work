@@ -40,6 +40,8 @@ with tempfile.TemporaryDirectory(prefix='xnav-chart-test-') as d:
         check(hashlib.sha256((output/name).read_bytes()).hexdigest()==identity['sha256'])
         if name == 'S52RAZDS.RLE':
             check((output/name).read_bytes()==g.pinned_bytes(source/name,identity))
+    from chart_service_resources_tests import verify_services
+    verify_services(source,output,data,check)
     from chart_anchor_resources_tests import verify_anchor
     verify_anchor(source,output,data,check)
     _,day=g.decode((source/'rastersymbols-day.png').read_bytes())
@@ -52,6 +54,10 @@ with tempfile.TemporaryDirectory(prefix='xnav-chart-test-') as d:
         for y in range(1160,1180):
             start=(y*1500+20)*4
             after[start:start+80]=before[start:start+80]
+        for y in range(1160,1184):
+            for x in (52,84):
+                start=(y*1500+x)*4
+                after[start:start+96]=before[start:start+96]
         check(before[3::4]==after[3::4])
         changed=[i for i in range(0,len(before),4) if before[i:i+4]!=after[i:i+4]]
         check(len(changed)==ink['changedPixels']==42100)
@@ -89,6 +95,11 @@ with tempfile.TemporaryDirectory(prefix='xnav-chart-test-') as d:
     styled=b.findall("symbols/symbol[name='ACHARE51']")[-1].find('bitmap')
     styled.attrib=stock.attrib.copy()
     for tag in ('pivot','graphics-location'):styled.find(tag).attrib=stock.find(tag).attrib.copy()
+    for name in ('PILBOP02','RTPBCN02'):
+        stock=a.findall("symbols/symbol[name='"+name+"']")[-1].find('bitmap')
+        styled=b.findall("symbols/symbol[name='"+name+"']")[-1].find('bitmap')
+        styled.attrib=stock.attrib.copy()
+        for tag in ('pivot','graphics-location'):styled.find(tag).attrib=stock.find(tag).attrib.copy()
     # Independently undo only the cable paint reference before whole-tree proof.
     cables=b.findall("line-styles/line-style[name='CBLSUB06']")
     check(len(cables)==1 and cables[0].attrib=={'RCID':'2012'})
@@ -116,13 +127,35 @@ with tempfile.TemporaryDirectory(prefix='xnav-chart-test-') as d:
             factor=float(re.search(r'\#app\[data-theme=night\] \.chart-canvas\{filter:brightness\(([^)]+)\)',html)[1])
             rgb=tuple(round(channel*factor) for channel in rgb)
         check(data['palette'][table]['XNCBL']==rgb)
+    for table,digest in [('DAY_BRIGHT','031918f6b6fade989023d4d19d4adc3ac03bba8984538b159c18a02a1f1876f8'),
+                         ('DUSK','596390392670a8b780293e340557a9bf151fc3ca2dd6e8bd421982b6d2e67a2a')]:
+        unchanged=ET.parse(output/'chartsymbols.xml').getroot().find("color-tables/color-table[@name='"+table+"']")
+        # Restore only the prior XNBUA shade before the existing whole-table
+        # identity oracle; all other Day/Dusk palette bytes must remain exact.
+        prior=(175,191,174) if table=='DAY_BRIGHT' else (116,135,121)
+        unchanged.find("color[@name='XNBUA']").attrib.update(dict(zip(('r','g','b'),map(str,prior))))
+        check(hashlib.sha256(ET.tostring(unchanged)).hexdigest()==digest)
+    # Literal effective Night colors independently confirmed against the final
+    # CSS and canonical Windows pixels, not copied from generator output.
+    expected_night={'LANDA':(29,41,37),'XNBUA':(29,41,37),'CSTLN':(55,68,58),
+        'DEPDW':(14,23,28),'DEPMD':(22,35,41),'DEPMS':(33,51,57),
+        'DEPVS':(48,66,75),'DEPIT':(40,53,46),'DEPCN':(33,51,57),'XNGEO':(91,104,94)}
+    check(set(data['nightCanvas']['roles'])==set(expected_night))
+    for name,rgb in expected_night.items():check(data['palette']['NIGHT'][name]==rgb)
+    for name in ('CHBLK','CHGRD','DEPSC','SNDG1'):
+        check(data['palette']['NIGHT'][name]==(117,133,121))
+    check(data['palette']['NIGHT']['SNDG2']==(182,195,175))
+    # A blanket dim would fail all three existing safety gates: retain them.
+    for background,minimum in [('DEPDW',4),('DEPVS',2),('LANDA',3)]:
+        check(contrast((91,104,94),data['palette']['NIGHT'][background])<minimum)
     for table,colors in data['palette'].items():
         check(len({tuple(colors[n]) for n in ['DEPDW','DEPMD','DEPMS','DEPVS','DEPIT']})==5)
         check(colors['DEPSC']!=colors['DEPCN'])
         check(colors['SNDG1']!=colors['SNDG2'])
         check(colors['LANDA']!=colors['DEPDW'])
-        check(colors['XNBUA']==colors['CSTLN'])
-        check(colors['XNBUA'] not in [colors[n] for n in ['LANDA','DEPDW','DEPMD','DEPMS','DEPVS','DEPIT']])
+        # SCRUM-231 correction: exact prototype land fill supersedes shore-neutral fill.
+        check(colors['XNBUA']==colors['LANDA'])
+        check(colors['XNBUA'] not in [colors[n] for n in ['DEPDW','DEPMD','DEPMS','DEPVS','DEPIT']])
     for color in g.ALLOWED:
         check(luminance(data['palette']['NIGHT'][color])<luminance(data['palette']['DUSK'][color]))
     # Guard the observed invisible dark ink on the new Night water. These
@@ -140,6 +173,10 @@ with tempfile.TemporaryDirectory(prefix='xnav-chart-test-') as d:
         try:g.validate_resource_changes((source/'chartsymbols.xml').read_bytes(),ET.tostring(tree),data['palette'])
         except AssertionError:check(True)
         else:raise AssertionError('Unexpected resource mutation accepted')
+    # Raw Night surface or a second dim pass must not be accepted as output.
+    reject(lambda t:t.find("color-tables/color-table[@name='NIGHT']/color[@name='LANDA']").set('r','37'))
+    reject(lambda t:t.find("color-tables/color-table[@name='NIGHT']/color[@name='DEPDW']").set('r','11'))
+    reject(lambda t:t.find("color-tables/color-table[@name='NIGHT']/color[@name='CHBLK']").set('r','91'))
     reject(lambda t:t.find("color-tables/color-table/color[@name='CHBRN']").set('r','1'))
     reject(lambda t:setattr(t.find("lookups/lookup[@name='OBSTRN']/instruction"),'text','AC(XNBUA)'))
     reject(lambda t:setattr(t.find("lookups/lookup[@id='16']/instruction"),'text',old.replace('AC(CHBRN)','AC(XNBUA)').replace('16120','15110')))
@@ -160,6 +197,12 @@ with tempfile.TemporaryDirectory(prefix='xnav-chart-test-') as d:
     reject(lambda t:t.findall("symbols/symbol[name='ACHARE51']")[0].find('bitmap/pivot').set('x','11'))
     reject(lambda t:t.findall("symbols/symbol[name='ACHARE51']")[-1].find('bitmap/origin').set('x','1'))
     reject(lambda t:t.findall("symbols/symbol[name='ACHARE51']")[-1].find('bitmap').set('width','21'))
+    for symbol in ('PILBOP02','RTPBCN02'):
+        for tag,attr,value in [('bitmap','width','25'),('bitmap/pivot','x','13'),('bitmap/graphics-location','x','20'),('bitmap/origin','y','1')]:
+            reject(lambda t:t.findall("symbols/symbol[name='"+symbol+"']")[-1].find(tag).set(attr,value))
+    reject(lambda t:t.findall("symbols/symbol[name='PILBOP02']")[0].find('bitmap/pivot').set('x','12'))
+    reject(lambda t:setattr(t.find("lookups/lookup[@name='PILBOP']/instruction"),'text','SY(RTPBCN02)'))
+    reject(lambda t:setattr(t.find("symbols/symbol[name='RTPBCN02']/prefer-bitmap"),'text','no') if t.find("symbols/symbol[name='RTPBCN02']/prefer-bitmap") is not None else t.find("symbols/symbol[name='RTPBCN02']").append(ET.fromstring('<prefer-bitmap>no</prefer-bitmap>')))
     # The cable exception cannot widen into global magenta, widths, geometry,
     # lookup semantics, other cable categories or duplicated/retargeted nodes.
     reject(lambda t:t.find("color-tables/color-table/color[@name='CHMGD']").set('r','1'))

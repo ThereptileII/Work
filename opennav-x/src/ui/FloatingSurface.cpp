@@ -30,6 +30,18 @@ void XNavFloatingSurface::Present(const wxPoint &screen) {
     ShowWithoutActivating();
     Shape();
   }
+  RestackNativeAboveOwner();
+}
+
+void XNavFloatingSurface::RestackAboveOwner() {
+#ifdef __WXGTK__
+  if (!IsShownOnScreen() || !gtk_widget_get_visible(GetHandle()) ||
+      !gtk_widget_get_mapped(GetHandle())) return;
+  RestackNativeAboveOwner();
+#endif
+}
+
+void XNavFloatingSurface::RestackNativeAboveOwner() {
 #ifdef __WXGTK__
   // Restack immediately above the owner without gtk_window_present(), focus
   // changes or a global always-on-top hint. X11 without a window manager must

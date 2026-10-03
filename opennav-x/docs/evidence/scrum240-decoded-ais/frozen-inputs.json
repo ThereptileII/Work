@@ -1,0 +1,24 @@
+{
+  "schema": 1,
+  "commit": "1356fd1603aacbea04d7081d16331e9a181180bb",
+  "upstreamCommit": "37fd0cddb7334fe489e9f18aa163977a9c5c84f7",
+  "patches": {
+    "opencpn-5.12.4-xnav.patch": "0cfbde6fdaaa8dfbb0563aa10e9ffc5e4e03e5ee0e2a72c92492879c7967a2c3",
+    "opencpn-5.12.4-regression-tests.patch": "3ef13652b8f3717d836883d2fbb7a18f35dbd2ca1162ac991fe339e61392dff1",
+    "opencpn-5.12.4-ais-transport.patch": "d343a0a7a77817c55b16734516b7d686dbfc2eb3f4207b43b6099d7d98c9b2f6",
+    "opencpn-5.12.4-chart-presentation.patch": "b908864b81b5f24ebaeab3124dc1c7a7aafed8964084f9717e1ffac39492460e",
+    "opencpn-5.12.4-maintained-curl.patch": "dafa1fec0a69e3a1195db726c2cb26ceeb7535b5e25476ac2e4658d910f44e48",
+    "opencpn-5.12.4-download-trust.patch": "04763cb038ad088a722e76d4f85bde7e356489b697a373458195336d4278412b",
+    "opencpn-5.12.4-wxcurl-trust.patch": "f3ad76fc07b80e6f2c01331894ce5e685f6aa4456a2a3c761e3115c8c21f3d6b",
+    "opencpn-5.12.4-peer-response-buffer.patch": "c335f361766a6982c3d096e93f7c149179deb33134668e110111ac4980064e15",
+    "opencpn-5.12.4-peer-unavailable.patch": "5bf1c2ae4b09043ce18151f766aebd2b881b993f352000e34399de7e8b36b6d3"
+  },
+  "previousAppCommit": "19c900afdfca4c3272715c0f998b8941ec45c8df",
+  "changedUpstreamFiles": [
+    "gui/include/gui/glChartCanvas.h",
+    "gui/src/glChartCanvas.cpp",
+    "libs/s52plib/src/s52plib.cpp",
+    "libs/s52plib/src/s52plib.h"
+  ],
+  "isolation": "Read-only root; private cache writable; original CMake paths remapped"
+}

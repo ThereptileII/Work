@@ -22,6 +22,8 @@ cmake --install build/production-linux 2>&1 | tee evidence/local/production-linu
 if [[ "${1:-}" == "--build-only" ]]; then exit 0; fi
 xvfb-run -a build/production-linux/chart_name_text_test evidence/local/chart-names-production.png
 xvfb-run -a build/production-linux/chart_light_label_test evidence/local/chart-lights-production.png
+xvfb-run -a build/production-linux/skager_wordmark_test evidence/local/skager-wordmark-production.png
+xvfb-run -a build/production-linux/chart_route_label_test evidence/local/chart-route-labels-production.png
 xvfb-run -a build/production-linux/onboard_ais_body_test evidence/local/onboard-ais-production.png
 dbus-run-session -- ctest --test-dir build/production-linux/test --output-on-failure --no-tests=error -E '^tests$' --timeout 90 --output-junit "$root/evidence/local/production-linux-tests.xml" 2>&1 | tee evidence/local/production-linux-tests.log
 python3 tools/smoke-installer-selftest.py --app build/production-install/bin/opencpn
