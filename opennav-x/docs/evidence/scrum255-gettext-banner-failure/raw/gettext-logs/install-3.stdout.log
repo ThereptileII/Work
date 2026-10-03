@@ -1,0 +1,12 @@
+Installing the following packages:
+poedit
+By installing, you accept licenses for the packages.
+poedit v3.9.1 already installed.
+ Use --force to reinstall, specify a version to install, or try upgrade.
+
+Chocolatey installed 0/1 packages. 
+ See the log for details (C:\ProgramData\chocolatey\logs\chocolatey.log).
+
+Warnings:
+ - poedit - poedit v3.9.1 already installed.
+ Use --force to reinstall, specify a version to install, or try upgrade.

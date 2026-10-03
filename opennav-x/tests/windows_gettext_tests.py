@@ -107,6 +107,21 @@ class GettextPrerequisiteTests(unittest.TestCase):
         self.tools()
         with patch.object(g,'native',return_value=({'exitCode':1},'msgfmt (GNU gettext-tools) 0.26')):
             with self.assertRaisesRegex(RuntimeError,'installation was not authorized'):self.ensure()
+    def test_captured_poedit_windows_banner_is_supported(self):
+        self.tools()
+        # Actual Poedit3.9.1 stdout from run37087034276, not a guessed banner.
+        banner='msgfmt.exe (GNU gettext-tools) 0.26\r\n'
+        with patch.object(g,'native',return_value=({'exitCode':0},banner)):
+            fact=g.tool_fact(self.bin/'msgfmt.exe',self.root/'captured')
+        self.assertEqual(fact['versionLine'],banner.strip())
+    def test_exe_suffix_does_not_accept_another_tool_or_suffix(self):
+        self.tools()
+        for banner in ('msgmerge.exe (GNU gettext-tools) 0.26',
+                       'msgfmt.exe.exe (GNU gettext-tools) 0.26',
+                       'msgfmt-other (GNU gettext-tools) 0.26'):
+            with self.subTest(banner=banner),patch.object(g,'native',return_value=({'exitCode':0},banner)):
+                with self.assertRaisesRegex(RuntimeError,'version probe failed'):
+                    g.tool_fact(self.bin/'msgfmt.exe',self.root/'wrong-name')
     def test_wrong_banner_refused(self):
         self.tools()
         with patch.object(g,'native',return_value=({'exitCode':0},'not gettext')):

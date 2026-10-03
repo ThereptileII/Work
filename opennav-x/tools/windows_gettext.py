@@ -114,7 +114,7 @@ def tool_fact(path, logs):
     result, output = native([path, '--version'], 30, logs/path.stem)
     lines = [line.strip() for line in output.splitlines() if line.strip()]
     line = lines[0] if lines else ''
-    if result['exitCode'] != 0 or not re.fullmatch(re.escape(path.stem)+r' \(GNU gettext-tools\) [0-9]+(?:\.[0-9]+)+(?:[-.][A-Za-z0-9]+)*', line):
+    if result['exitCode'] != 0 or not re.fullmatch(re.escape(path.stem)+r'(?:\.exe)? \(GNU gettext-tools\) [0-9]+(?:\.[0-9]+)+(?:[-.][A-Za-z0-9]+)*', line):
         raise RuntimeError('Poedit '+path.name+' version probe failed: '+line)
     if identity(path) != before:
         raise RuntimeError('Poedit tool changed during its version probe')

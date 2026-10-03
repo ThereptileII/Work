@@ -76,3 +76,12 @@ roots, regular-file checks and exact identities remain required. Windows 8.3
 aliases must pass a real same-file proof; junction ancestry must be refused.
 See `docs/evidence/scrum255-gettext-path-failure/` for the unchanged failed
 artifact, precise evidence limits and the pending native alias/junction proof.
+
+The next native proof passed all 23 contracts and confirmed actual 8.3 alias
+acceptance and junction refusal. Poedit then installed successfully, but its
+valid `msgfmt.exe (GNU gettext-tools) 0.26` banner exposed an overly strict
+stem-only parser. The parser now allows only an optional literal `.exe` after
+the exact tool stem, with every other validation unchanged. Failed evidence and
+the captured-banner regression are retained in
+`docs/evidence/scrum255-gettext-banner-failure/`; functional native catalog proof
+still awaits the corrected short workflow.

@@ -1,0 +1,25 @@
+{
+  "command": [
+    "C:\\ProgramData\\chocolatey\\bin\\choco.exe",
+    "install",
+    "poedit",
+    "--yes",
+    "--no-progress",
+    "--limit-output",
+    "--version=3.9.1",
+    "--source=https://community.chocolatey.org/api/v2/",
+    "--execution-timeout=120"
+  ],
+  "exitCode": 0,
+  "timedOut": false,
+  "timeoutSeconds": 180,
+  "ownedProcessCleanup": null,
+  "stdout": {
+    "bytes": 453,
+    "sha256": "0df02b30271a50a89bb8cae7e10e1dcb9155ef9b1264e5ca53309bac1f4dfd35"
+  },
+  "stderr": {
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  }
+}
