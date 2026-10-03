@@ -1,0 +1,25 @@
+name: SKAGER native gettext prerequisite
+on:
+  push:
+    branches: [skager-gettext-prerequisite]
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  gettext:
+    name: Native Poedit prerequisite and translation proof
+    runs-on: windows-2022
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+      - name: Verify bounded acquisition and actual gettext tools
+        shell: pwsh
+        run: |
+          python opennav-x/tools/test-windows-gettext-native.py --evidence opennav-x/evidence/local/windows-gettext-native
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: native-gettext-${{ github.sha }}
+          path: opennav-x/evidence/local/windows-gettext-native
+          if-no-files-found: error

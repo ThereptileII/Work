@@ -1,5 +1,22 @@
 # SKAGER status — 2026-10-03
 
+## Current correction batch: chart labels, Night, land and service symbols
+
+Local `f0976cc65ea63d3ed6f60ac53ec38a856d11b66b` is frozen and published as
+`9a4231f45d978321c612a6a1de66d735d531bbaa`. Its combined Linux application
+[built and staged successfully](evidence/skager-chart-f0976cc-linux-build/README.md).
+The [seventeen-unit native preflight](https://github.com/ThereptileII/Work/actions/runs/37085103227)
+is running separately from the preceding full candidate. Actual public ENC and
+route screenshots are being captured in software and OpenGL from this exact
+executable; no visual acceptance is inferred from compilation.
+
+This batch includes theme-aware approved SKAGER artwork, guarded route-point
+name cards, effective prototype Night chart colors, the GTK chart-control
+recapture fix, exact pilot-boarding/radar-beacon artwork, and the correction of
+built-up-area fill to prototype land. It retains navigation classifications,
+hazard contrast, Standard resources and Legacy/Safe boundaries. No new boat
+installation or old-generation retirement has occurred.
+
 ## Current: frozen SKAGER candidate enters integrated qualification
 
 The frozen implementation is local

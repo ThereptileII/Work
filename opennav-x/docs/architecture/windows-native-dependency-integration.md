@@ -57,3 +57,13 @@ closure, runtime TLS, installer and release acceptance still require native
 Windows evidence. SCRUM-211 separately governs application certificate and
 redirect policy; changing the source-built dependency alone does not establish
 secure download behavior.
+
+## Early Poedit prerequisite
+
+SCRUM-255 now validates both Poedit Gettext tools before any expensive native
+preflight/dependency work, using bounded acquisition through the existing
+Chocolatey provider only when the build explicitly permits installation.
+Exact files are reprobed before CMake, which receives absolute tool paths.
+See [the Gettext boundary and focused proof](windows-gettext-prerequisite.md).
+This prevents a masked stock `win_deps.bat` package failure from consuming the
+maintained dependency build first; it does not bypass those dependency gates.

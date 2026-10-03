@@ -53,6 +53,14 @@ try {
     if ($Architecture -eq 'x64') {
         throw 'OpenCPN 5.12.4 ships Win32 dependencies. An x64 dependency and plugin ABI port is not validated; refusing to mislabel Win32 as x64.'
     }
+    # Stop before curl preflight, stock win_deps or any expensive producer if
+    # the existing Poedit provider cannot supply both usable gettext tools.
+    $GettextReceipt = Join-Path $Evidence "windows-gettext-$Variant.json"
+    Run python @((Join-Path $PSScriptRoot 'windows_gettext.py'), 'ensure',
+        '--allow-install', '--receipt', $GettextReceipt)
+    $GettextFacts = Get-Content -LiteralPath $GettextReceipt -Raw | ConvertFrom-Json
+    $Gettext = $GettextFacts.directory
+    $env:PATH = "$Gettext;$env:PATH"
     if ($Integration) {
         # Exercise the unchanged curl source tests with the reviewed native/MSYS
         # environment before any maintained dependency compilation. The real curl
@@ -182,12 +190,10 @@ try {
     $Wx = Join-Path $Source 'cache/wxWidgets-3.2.8'
     $Build = Join-Path $Root "build/$Variant-windows"
     $Install = Join-Path $Root "build/$Variant-install"
-    $Gettext = @(
-        "$env:ProgramFiles\Poedit\Gettexttools\bin",
-        "${env:ProgramFiles(x86)}\Poedit\Gettexttools\bin"
-    ) | Where-Object { Test-Path (Join-Path $_ 'msgfmt.exe') } | Select-Object -First 1
-    if (-not $Gettext) { throw 'Poedit gettext tools not found after dependency installation' }
-    $env:PATH += ";$Gettext;$Wx\lib\vc14x_dll;$Source\cache\buildwin"
+    # Reprobe the exact approved files after dependency setup; no late PATH
+    # substitute or installer retry is allowed here.
+    Run python @((Join-Path $PSScriptRoot 'windows_gettext.py'), 'verify', '--receipt', $GettextReceipt)
+    $env:PATH = "$Gettext;$env:PATH;$Wx\lib\vc14x_dll;$Source\cache\buildwin"
     $OpenNavArgs = @()
     if ($Integration) {
         $Fixtures = if ($Production) { 'OFF' } else { 'ON' }
@@ -197,6 +203,8 @@ try {
         '-A', $Architecture, '-DCMAKE_POLICY_VERSION_MINIMUM=3.5', '-DCMAKE_BUILD_TYPE=Release',
         "-DwxWidgets_ROOT_DIR=$Wx", "-DwxWidgets_LIB_DIR=$Wx/lib/vc14x_dll",
         '-DwxWidgets_CONFIGURATION=mswu', '-DOCPN_CI_BUILD=ON',
+        "-DGETTEXT_MSGFMT_EXECUTABLE=$Gettext/msgfmt.exe",
+        "-DGETTEXT_MSGMERGE_EXECUTABLE=$Gettext/msgmerge.exe",
         '-DOCPN_BUILD_TEST=ON', '-DOCPN_BUNDLE_WXDLLS=ON',
         '-DOCPN_BUNDLE_DOCS=OFF', '-DOCPN_BUNDLE_GSHHS=ON',
         '-DOCPN_BUNDLE_TCDATA=ON', "-DCMAKE_INSTALL_PREFIX=$Install") + $OpenNavArgs)
