@@ -678,7 +678,11 @@ try:
             data(lambda d:'pressure' in d['settings']['instruments'])
             report['checks'].append('Native palettes, data-rail presets and instrument selection preserve telemetry provenance')
     report['checks'].append('Energy, source, vessel-safety and radar settings pages captured')
-    later=data(lambda d:item(d,'Battery SOC')['value']<item(first,'Battery SOC')['value'])
+    # A genuine waypoint transition intentionally withholds route/arrival
+    # values. Wait for one coherent valid snapshot before comparing progress.
+    later=data(lambda d:d['route']['state']=='Valid' and
+               'remaining_nm' in d['route'] and 'arrival_soc' in d['energy'] and
+               item(d,'Battery SOC')['value']<item(first,'Battery SOC')['value'])
     assert item(later,'Latitude')['value']!=item(first,'Latitude')['value']
     assert later['route']['remaining_nm']<first['route']['remaining_nm']
     assert later['energy']['arrival_soc']!=first['energy']['arrival_soc']

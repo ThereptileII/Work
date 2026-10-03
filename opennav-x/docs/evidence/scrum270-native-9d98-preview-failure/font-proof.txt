@@ -1,0 +1,9 @@
+21292: available: Segoe UI Variable Display=0
+21293: available: Segoe UI=1
+21294: available: Arial=1
+21295: system-font: Segoe UI
+21296: production: px=11 weight=400 selected=Segoe UI GDI-face=Segoe UI dpi=96
+21297: production: px=23 weight=650 selected=Segoe UI GDI-face=Segoe UI dpi=96
+21298: production: px=48 weight=400 selected=Segoe UI GDI-face=Segoe UI dpi=96
+21299: ordinary-chart-policy: selected=Segoe UI GDI-face=Segoe UI dpi=96
+21300: Production family/weight checks passed; native Windows/boat DPI review remains required

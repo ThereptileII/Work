@@ -1,0 +1,21 @@
+2026-10-03T13:16:14.4336917Z ##[group]Run ./opennav-x/tools/test-preview-windows.ps1
+2026-10-03T13:16:14.4337411Z [36;1m./opennav-x/tools/test-preview-windows.ps1[0m
+2026-10-03T13:16:14.4375475Z shell: C:\Program Files\PowerShell\7\pwsh.EXE -command ". '{0}'"
+2026-10-03T13:16:14.4375844Z env:
+2026-10-03T13:16:14.4376081Z   SKAGER_NATIVE_PERL: C:\Strawberry\perl\bin\perl.exe
+2026-10-03T13:16:14.4376392Z   MSYSTEM: MSYS
+2026-10-03T13:16:14.4376658Z   SKAGER_CURL_TEST_PERL: D:\a\_temp\msys64\usr\bin\perl.exe
+2026-10-03T13:16:14.4376982Z ##[endgroup]
+2026-10-03T13:16:16.4831773Z C:\Users\runneradmin\AppData\Local\Temp\OpenNav preview asvvtjbr\OpenNavX-CI-Fixtures\profile
+2026-10-03T13:18:14.3522314Z Traceback (most recent call last):
+2026-10-03T13:18:14.3523003Z   File "D:\a\Work\Work\opennav-x\tools\smoke-preview.py", line 683, in <module>
+2026-10-03T13:18:14.3525924Z     assert later['route']['remaining_nm']<first['route']['remaining_nm']
+2026-10-03T13:18:14.3532882Z            ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^
+2026-10-03T13:18:14.3533507Z KeyError: 'remaining_nm'
+2026-10-03T13:18:14.5490528Z [31;1mException: [0mD:\a\Work\Work\opennav-x\tools\test-preview-windows.ps1:11[0m
+2026-10-03T13:18:14.5491445Z [31;1m[0m[36;1mLine |[0m
+2026-10-03T13:18:14.5492813Z [31;1m[0m[36;1m[36;1m  11 | [0m if ($LASTEXITCODE -ne 0) {[36;1mthrow 'Fixture UI regression failed'[0m}[0m
+2026-10-03T13:18:14.5493719Z [31;1m[0m[36;1m[36;1m[0m[36;1m[0m[36;1m     | [31;1m                           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+2026-10-03T13:18:14.5494528Z [31;1m[0m[36;1m[36;1m[0m[36;1m[0m[36;1m[31;1m[31;1m[36;1m     | [31;1mFixture UI regression failed[0m
+2026-10-03T13:18:14.5679540Z ##[error]Process completed with exit code 1.
+

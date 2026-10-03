@@ -45,7 +45,8 @@ function Wait-FixtureFile([string]$Path,[int]$Seconds=20) {
  while(-not [IO.File]::Exists($Path)){if([DateTime]::UtcNow -ge $until){throw ('Missing fixture record: '+[IO.Path]::GetFileName($Path))};Start-Sleep -Milliseconds 50}
 }
 try {
- foreach($case in @('corrupt-capability','shutdown-copy-hash','success','output-connection')) {
+ foreach($case in @('corrupt-capability','shutdown-copy-hash','success','output-connection','palette-standard')) {
+  $palette=$case -ceq 'palette-standard';$mode=$(if($palette){'--xnav'}else{'--legacy'});$expectedSuccess=$case -cin @('success','palette-standard')
   $fixture=New-BrokerFixture (Join-Path $root $case) $Binaries $sourceTools $fixtureSources $case -WithoutRestartSession
   $proof=Enable-ScheduledBrokerFixture $fixture $sourceTools
   Require ($proof.Count -eq 3) ($case+': Prepare/Arm/Collect/Broker entrypoints exactly match production bytes')
@@ -114,7 +115,7 @@ try {
    Require ((Get-Digest $prepared.record) -ceq $prepared.recordSha256 -and (Get-Digest $coldPath) -ceq $coldDependency[0].sha256) 'Composed negative fixtures restore exact bytes before actual successful Arm/Collect'
   }
   Assert-RestartPrivateDirectory $directory $session.sid;Require $true ($case+': actual private evidence ACL enforced')
-  [IO.File]::WriteAllText((Join-Path $fixture.app 'target-mode.txt'),'--legacy');[IO.File]::WriteAllText((Join-Path $fixture.app 'hold-child.txt'),'marker-only child identity hold');[IO.File]::WriteAllText((Join-Path $fixture.app 'hold-parent-for-scheduler.txt'),'bounded native scheduler fixture')
+  [IO.File]::WriteAllText((Join-Path $fixture.app 'target-mode.txt'),$mode);[IO.File]::WriteAllText((Join-Path $fixture.app 'hold-child.txt'),'marker-only child identity hold');[IO.File]::WriteAllText((Join-Path $fixture.app 'hold-parent-for-scheduler.txt'),'bounded native scheduler fixture')
   $start=New-Object Diagnostics.ProcessStartInfo;$start.FileName=$fixture.executable;$start.Arguments='--parent';$start.WorkingDirectory=$fixture.app;$start.UseShellExecute=$false
   $start.EnvironmentVariables['PATH']=$session.path;$start.EnvironmentVariables['LOCALAPPDATA']=(Join-Path $fixture.root 'local');$start.EnvironmentVariables['APPDATA']=(Join-Path $fixture.root 'roaming')
   $start.EnvironmentVariables['OPENNAV_COMMISSIONING_RESTART_SESSION']=$session.session;$start.EnvironmentVariables['OPENNAV_COMMISSIONING_RESTART_RECORD_SHA256']=$prepared.recordSha256
@@ -136,7 +137,8 @@ try {
     Require ($wrong.exit -ne 0 -and $wrong.stderr.Contains('Parent creation identity differs')) 'actual Arm refuses replaced parent identity before registering a task'
     Require (@(Get-ChildItem -LiteralPath $directory -Filter 'arm-*.json').Count -eq 0) 'wrong parent creates no arm journal'
    }
-   $armArguments=$base+$created+' -Mode --legacy'
+   $armArguments=$base+$created+' -Mode '+$mode
+   if($palette){$armArguments+=' -ChartPalette Standard'}
    $armed=Invoke-FixtureScript $fixture 'RestartCommissioningArm.ps1' $armArguments ($case+'-arm')
    Require ($armed.exit -eq 0) ($case+': actual Arm starts fixed native limited task: '+$armed.stderr)
    $ready=$armed.stdout|ConvertFrom-Json;$armFile=Join-Path $directory ('arm-'+$parent.Id+'-'+$created+'.json');$arm=Read-Record $armFile
@@ -150,28 +152,41 @@ try {
     $early=Invoke-FixtureScript $fixture 'RestartCommissioningArm.ps1' ($armArguments+' -Action Collect') 'early-collect'
     Require ($early.exit -ne 0 -and (Get-ScheduledTask -TaskName $arm.taskName).State.ToString() -ceq 'Running') 'actual Collect refuses to remove a live verifier task'
    }
-   $changed=[IO.File]::ReadAllText($fixture.profile).Replace('InterfaceMode=xnav','InterfaceMode=legacy')
+   if($palette) {
+    $readyPath=Join-Path $transition 'ready.json';$listening=Read-Record $readyPath
+    Require ($arm.chartPalette -ceq 'Standard' -and $listening.chartPalette -ceq 'Standard') 'actual scheduled Arm and listening broker bind the selected palette'
+    Write-Record (Join-Path $transition 'ui-intent-consumed.json') @{owner='OpenNavX.GuardedModeIntent.1';session=$session.session;recordSha256=$prepared.recordSha256;mode=$mode;chartPalette='Standard';fromMode='--xnav';
+      parent=@{pid=$parent.Id.ToString();createdFiletime=$created};command=@{Palette='Standard'};status='consumed-before-ui-action';armSha256=(Get-Digest $armFile);readySha256=(Get-Digest $readyPath);testOnly='Synthetic consumed intent; separate native HWND fixture tests UI'}
+   }
+   $changed=[IO.File]::ReadAllText($fixture.profile)
+   if($palette){$changed=$changed.Replace('ChartPresentationV1=XNav','ChartPresentationV1=Standard')}else{$changed=$changed.Replace('InterfaceMode=xnav','InterfaceMode=legacy')}
    if($case -ceq 'output-connection'){$changed=$changed.Replace('COM8;115200;0;0;','COM8;115200;0;1;')}
    [IO.File]::WriteAllText($fixture.profile,$changed,(New-Object Text.UTF8Encoding($false)))
    [IO.File]::WriteAllText((Join-Path $fixture.app 'parent-release.txt'),'one deliberate marker close')
    Require ($parent.WaitForExit(15000) -and $parent.ExitCode -eq 0) ($case+': genuine parent exits normally')
-   $outcome=Join-Path $transition $(if($case -ceq 'success'){'completion.json'}else{'failure.json'})
+   $outcome=Join-Path $transition $(if($expectedSuccess){'completion.json'}else{'failure.json'})
    Wait-FixtureFile $outcome 120
    Require ($companion.WaitForExit(15000)) ($case+': actual helper terminates after authorization decision')
    $until=[DateTime]::UtcNow.AddSeconds(15)
    do{$task=Get-ScheduledTask -TaskName $arm.taskName;if($task.State.ToString() -ceq 'Ready'){break};Start-Sleep -Milliseconds 100}while([DateTime]::UtcNow -lt $until)
    Require ($task.State.ToString() -ceq 'Ready') ($case+': broker scheduled task has exited before collection')
+   $taskExit=(Get-ScheduledTaskInfo -TaskName $arm.taskName).LastTaskResult
+   if($expectedSuccess){Require ($taskExit -eq 0) ($case+': actual scheduled broker exited normally after completion')}
    $children=@(Get-ChildItem -LiteralPath $fixture.app -Filter 'child--*.txt')
-   if($case -ceq 'success') {
+   if($expectedSuccess) {
     $completion=Read-Record $outcome
     Require ($completion.status -ceq 'child-identity-verified' -and $children.Count -eq 1 -and $companion.ExitCode -eq 0) 'actual Prepare and scheduled Arm chain produces one verified marker child'
    } else {
     Require ($children.Count -eq 0 -and $companion.ExitCode -ne 0 -and -not [IO.File]::Exists((Join-Path $transition 'permit-consumed.json'))) 'actual scheduled broker refuses changed output connection without child or permit'
    }
+   if($palette) {
+    $wrongCollect=Invoke-FixtureScript $fixture 'RestartCommissioningArm.ps1' ($armArguments.Replace('-ChartPalette Standard','-ChartPalette XNav')+' -Action Collect') 'opposite-palette-collect'
+    Require ($wrongCollect.exit -ne 0 -and $wrongCollect.stderr.Contains('Unknown broker task ownership')) 'actual Collect refuses a different palette intent'
+   }
    $collected=Invoke-FixtureScript $fixture 'RestartCommissioningArm.ps1' ($armArguments+' -Action Collect') ($case+'-collect')
    Require ($collected.exit -eq 0 -and ($collected.stdout|ConvertFrom-Json).status -ceq 'broker-task-collected') ($case+': actual Collect succeeds after reviewed task outcome: '+$collected.stderr)
    Require ($null -eq (Get-ScheduledTask -TaskName $arm.taskName -ErrorAction SilentlyContinue) -and [IO.File]::Exists(($armFile+'.collected.json'))) ($case+': only owned task removed and durable collection retained')
-   $cases.Add(@{name=$case;actualPrepare=$true;actualArm=$true;actualCollect=$true;markerChildren=$children.Count;entrypointHashes=$proof;status='passed'})
+   $cases.Add(@{name=$case;scheduledTaskExit=$taskExit;chartPalette=$(if($palette){'Standard'}else{''});syntheticUiIntent=$palette;actualPrepare=$true;actualArm=$true;actualCollect=$true;markerChildren=$children.Count;entrypointHashes=$proof;status='passed'})
    $caseCompleted=$true
   } finally {
    try {

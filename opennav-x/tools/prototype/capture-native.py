@@ -21,6 +21,8 @@ import zipfile
 ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT / "tools"))
 from diagnostic_snapshot import read_json_snapshot
+from recovery_capture_inputs import (verify_package, new_profile, stage_iho, runtime_identity,
+                                     presentation, iho_pixels, day_return, IHO_CENTER, IHO_SHA256, sha)
 
 
 def public_enc():
@@ -63,6 +65,13 @@ def main():
         spec.loader.exec_module(ui)
     parser.add_argument("--build", type=Path, default=ROOT / ("build/production-windows" if windows else "build/production-linux"))
     parser.add_argument("--app", type=Path, default=ROOT / ("build/production-install/opencpn.exe" if windows else "build/production-install/bin/opencpn"))
+    parser.add_argument("--recovery-package", type=Path, help="Audited extracted portable recovery root; no build metadata needed")
+    parser.add_argument("--recovery-archive", type=Path, help="Original independently audited portable recovery ZIP")
+    parser.add_argument("--expected-recovery-archive-sha256")
+    parser.add_argument("--expected-file-manifest-sha256")
+    parser.add_argument("--expected-application-commit", help="Application SHA, distinct from this collector's source SHA")
+    parser.add_argument("--expected-executable-sha256")
+    parser.add_argument("--iho-s64", type=Path, help="Exact retained GB4X0000.000; official test geography, yellow pair only")
     parser.add_argument("--output", type=Path, required=True)
     parser.add_argument("--chart-style", choices=["XNav", "Standard"], default="XNav")
     parser.add_argument("--renderer", choices=["software", "opengl"], default="software")
@@ -78,10 +87,34 @@ def main():
     parser.add_argument("--review-window-guard", action="store_true",
                         help="Windows CI: qualify guarded boat capture against actual native owned windows")
     args = parser.parse_args()
+    if args.iho_s64 and (args.public_enc or not args.navigation_only):
+        parser.error("IHO mode requires --navigation-only and cannot combine with --public-enc")
+    recovery = None
+    if args.recovery_package:
+        if not windows or not args.navigation_only:
+            parser.error("Recovery package review requires disposable Windows and --navigation-only")
+        if any(arg.split("=", 1)[0] in ("--app", "--build") for arg in sys.argv[1:]):
+            parser.error("Recovery mode selects its verified app/profile version; --app/--build are incompatible")
+        if not args.recovery_archive:
+            parser.error("Recovery mode requires its independently audited ZIP")
+        recovery = verify_package(args.recovery_package, args.expected_application_commit,
+                                  args.expected_executable_sha256, args.expected_file_manifest_sha256,
+                                  args.recovery_archive, args.expected_recovery_archive_sha256)
+        args.app = args.recovery_package.absolute() / "app/opencpn.exe"
+    elif any((args.recovery_archive, args.expected_file_manifest_sha256, args.expected_recovery_archive_sha256)):
+        parser.error("Package audit inputs require --recovery-package")
+    if args.expected_executable_sha256:
+        assert sha(args.app) == args.expected_executable_sha256, "Expected application executable differs"
     args.output.mkdir(parents=True, exist_ok=False)
     profile = args.output.resolve() / "profile"
-    subprocess.run([sys.executable, str(ROOT / "tools/prepare-test-profile.py"),
-                    "--build", str(args.build), "--profile", str(profile)], check=True)
+    if recovery:
+        new_profile(profile, recovery["config_version_string"])
+    else:
+        subprocess.run([sys.executable, str(ROOT / "tools/prepare-test-profile.py"),
+                        "--build", str(args.build), "--profile", str(profile)], check=True)
+    if args.iho_s64:
+        charts = args.output.resolve() / "iho-fixture"
+        chart_provenance = stage_iho(args.iho_s64, charts)
     with (profile / "opencpn.conf").open("a") as stream:
         stream.write(f"\n[Settings]\nOpenGL={int(args.renderer == 'opengl')}\n"
                      f"[OpenNav]\nChartPresentationV1={args.chart_style}\n")
@@ -89,6 +122,10 @@ def main():
             charts, chart_provenance = public_enc()
             stream.write(f"\n[ChartDirectories]\nChartDir1={charts.as_posix()}\n"
                          "[Settings/GlobalState]\nVPLatLon=47.6000,-122.3600\nVPScale=0.15\n")
+        elif args.iho_s64:
+            stream.write("\n[Settings]\nChartQuilting=1\n[ChartDirectories]\nChartDir1=" + charts.as_posix() +
+                         "\n[Settings/GlobalState]\nVPLatLon=" + ','.join(map(str, IHO_CENTER)) +
+                         "\nVPScale=0.6\nnSymbolStyle=76\n")
         else:
             stream.write("[Settings/GlobalState]\nVPLatLon=59.0800,18.5000\nVPScale=0.001\n")
         if args.depth_unit:
@@ -106,10 +143,13 @@ def main():
     record = {"authority": "Native Windows development" if windows else "Linux development only", "size": [1280, 800],
               "selected_view": args.view,
               "renderer": args.renderer, "chart_style": args.chart_style,
-              "chart": chart_provenance if args.public_enc else "OpenCPN coastline reference",
+              "chart": chart_provenance if (args.public_enc or args.iho_s64) else "OpenCPN coastline reference",
               "input": "none; isolated disposable profile",
               "source_commit": subprocess.check_output(["git", "rev-parse", "HEAD"], cwd=ROOT, text=True).strip(),
               "executable_sha256": hashlib.sha256(args.app.read_bytes()).hexdigest(), "captures": []}
+    record["expected_application_commit"] = args.expected_application_commit
+    record["recovery_package_audit"] = recovery
+    record["isolation_scope"] = "Fresh disconnected profile; no copied connections/plugins or device commands. Disposable CI desktop required; not an OS network/device sandbox."
     xserver = None if windows else subprocess.Popen(["Xvfb", env["DISPLAY"], "-screen", "0", "1280x800x24", "-nolisten", "tcp"],
                                env=env, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
     if windows:
@@ -242,6 +282,8 @@ def main():
         else:
             subprocess.run(["import", "-window", "root", str(path)], env=env, check=True)
         snapshot = data()
+        if args.expected_application_commit:
+            runtime_identity(snapshot, args.expected_application_commit, recovery is not None)
         # Actual native controls, compared with independently rendered HTML.
         reference = json.loads((ROOT / "docs/design/prototype/reference" /
                                 ("windows" if windows else "linux") / "capture.json").read_text())
@@ -408,11 +450,9 @@ def main():
                         return projection >= .5 and all(min(a,b)-3 <= c <= max(a,b)+3 for a,b,c in zip(surface,ink,color))
                     assert sum(ink_coverage(c) for c in sample) >= 5, f"Floating {label} glyph/text absent (visible flag alone is insufficient)"
             record.setdefault("painted_controls", []).append(name)
-        style = snapshot["runtime"]["chart_presentation"]
-        assert style["requested"] == args.chart_style, "Requested chart style was not retained"
-        assert style["status"].startswith(args.chart_style + " "), "Requested chart style was not active"
+        presentation(snapshot, args.chart_style, bool(args.iho_s64))
         assert snapshot["runtime"]["chart"]["opengl_enabled"] == (args.renderer == "opengl"), "Requested renderer was not active"
-        if args.navigation_only and not args.public_enc and args.chart_style == "XNav":
+        if args.navigation_only and not (args.public_enc or args.iho_s64) and args.chart_style == "XNav":
             from collections import Counter
             from PIL import Image
             theme = snapshot["runtime"]["display"]["light"].lower()
@@ -438,6 +478,12 @@ def main():
             detail = sum(v for _, v in colors.most_common()[3:]) / sum(colors.values())
             assert len(colors) > 20 and detail > .005, "ENC details are absent"
             record.setdefault("chart_checks", []).append({"file": path.name, "colors": len(colors), "detail_fraction": detail})
+        if args.iho_s64:
+            record.setdefault("iho_pair_checks", {})[name] = iho_pixels(
+                path, snapshot, client_origin, args.chart_style, args.renderer, ROOT)
+        if args.navigation_only and name == "navigation-return-day":
+            record["whole_chart_day_return"] = day_return(
+                path, args.output / "navigation-day.png", snapshot, client_origin)
         record["executable_build_commit"] = snapshot["build_commit"]
         (args.output / f"{name}.json").write_text(json.dumps(snapshot, indent=2) + "\n")
         # Settings are a required new service flow, not a fabricated HTML state.
@@ -447,7 +493,7 @@ def main():
     try:
         time.sleep(.6)
         app = subprocess.Popen([str(args.app), "--configdir", str(profile), "--xnav"] +
-                               (["--rebuild_chart_db"] if args.public_enc else []) +
+                               (["--rebuild_chart_db"] if (args.public_enc or args.iho_s64) else []) +
                                (["--no_opengl"] if args.renderer == "software" else []),
                                env=env, stdout=log, stderr=log)
         deadline = time.monotonic() + 75
@@ -460,6 +506,8 @@ def main():
             time.sleep(.2)
         else:
             raise RuntimeError("Application did not finish initialization")
+        if args.expected_application_commit:
+            runtime_identity(data(), args.expected_application_commit, recovery is not None)
         resize_ticks = int(data()["runtime"]["ui_update"]["ticks"])
         resize_started = time.time_ns()
         if windows:
@@ -739,6 +787,21 @@ def main():
                 shutdown_error = type(error).__name__
         if app:
             record["exit_code"] = app.returncode
+        if recovery:
+            try:
+                record["recovery_package_unchanged"] = verify_package(
+                    args.recovery_package, args.expected_application_commit, args.expected_executable_sha256,
+                    args.expected_file_manifest_sha256, args.recovery_archive,
+                    args.expected_recovery_archive_sha256) == recovery
+            except (OSError, ValueError, zipfile.BadZipFile) as error:
+                record["recovery_package_unchanged"] = False
+                record["recovery_package_change"] = str(error)
+                shutdown_error = "Audited package changed during capture"
+        if args.iho_s64:
+            record["iho_source_unchanged"] = sha(args.iho_s64) == IHO_SHA256
+            record["iho_staged_unchanged"] = sha(charts / "GB4X0000.000") == IHO_SHA256
+            if not record["iho_source_unchanged"] or not record["iho_staged_unchanged"]:
+                shutdown_error = "Official test cell changed during capture"
         log.close()
         if xserver:
             xserver.terminate()

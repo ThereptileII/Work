@@ -1,6 +1,26 @@
 # Prototype conformance — in progress
 
-The full candidate is local `d5d7135` / published `b8cfbf8`
+The current frozen candidate is local `1835d1b` / published `9d98a500`
+([CI](https://github.com/ThereptileII/Work/actions/runs/37120549213)). It includes
+the supplied generic beacon, classified yellow buoy and fitted topmark, the
+124-DIP approved SKAGER logo, prototype font choices, and neutral structural
+paint. The [publication receipt](../evidence/skager-symbols-1835-publication.json)
+verifies the entire mapped source tree. A separately reproduced and repaired
+Windows resource-generation mismatch passed its targeted native gate before
+this build was started. Native runtime, actual private-renderer loading and
+physical boat review remain pending; no screen-level row advances.
+
+The [actual yellow-pair canvas review](../evidence/scrum264-yellow-e1d-linux/README.md)
+passes SKAGER software and OpenGL Day/Dusk/Night/Day-return, including the
+canonical empty-instruction repair caught by the preceding failed capture.
+The [generic-beacon comparison](../evidence/scrum264-generic-beacon/README.md)
+proves exact supplied artwork at the resource boundary, not an actual private
+chart. Core and private symbol-table observations are now separate copied
+diagnostics; the private observation still needs native runtime evidence.
+SCRUM-268 retains the inherited Standard OpenGL light-label shift and its
+unchanged-source control. It is neither hidden by a tolerance nor claimed fixed.
+
+The preceding full candidate was local `d5d7135` / published `b8cfbf8`
 ([CI](https://github.com/ThereptileII/Work/actions/runs/37114216075)). It adds the
 final explicit Segoe UI Land-face choice while Water retains its inherited
 stack. The preceding native 70-private/23-core checks pass with exact audited

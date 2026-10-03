@@ -1,5 +1,80 @@
 # SKAGER status — 2026-10-03
 
+## Native application passes build; preview sample timing blocks packaging
+
+The exact `1835d1b` / `9d98a500` native job has now completed with a retained
+[fixture-suite failure](evidence/scrum270-native-9d98-preview-failure/README.md).
+The application build, all 139 native CTests, pointer route gestures, repeated
+crash recovery, 100/125/150% DPI/touch and public ENC checks passed. Independent
+artifact inspection confirms the fresh five-export private DLL, its complete
+source/resource identity and identical private/host presentation resources.
+The actual GDI probe selected Segoe UI for both the UI and ordinary chart text;
+the hosted machine lacks Segoe UI Variable Display and uses the prototype's
+declared fallback. These are native checks, not boat visual acceptance.
+
+At simulated second 115, the preview test accepted a decreased-SOC snapshot
+without checking route validity. The product correctly reported
+`ActivePointChanged` / unavailable and withheld both remaining distance and
+arrival SOC; the test then indexed the absent distance. **SCRUM-270** now has a
+[narrow coherent-sample predicate repair](evidence/scrum270-preview-validity/README.md):
+the actual failed diagnostic and genuine fixture outputs at seconds 114/115/116
+prove the old exception and new valid-sample selection. The twelve-second timeout
+and every original comparison remain unchanged. No production navigation behavior
+changes. The original failure, screenshot and diagnostic
+remain immutable. The fixture-free build, real-host module check and packages
+were skipped; this run supplies no installable candidate. Immediate fixture
+failure upload is added so a future failure can be inspected while
+independent display checks continue. No blind full rerun or boat installation
+has occurred. The current Linux elapsed-time gate continues separately.
+
+## Current frozen combined candidate
+
+Local source/evidence **`1835d1b84df89aff42220ac8bb535e4262034a54`** is published
+as **`9d98a500916e8a7f59dac9735427dde6d3c7d2e5`**. All 4,649 mapped blob/mode
+entries independently reconstruct `bc9e631e57c71992c573f5b5110b497096b23867`;
+the eight unrelated root files are preserved. The
+[full Windows/Linux run](https://github.com/ThereptileII/Work/actions/runs/37120549213)
+started only after the native resource repair and the actual SKAGER software/GL
+yellow-symbol checks below passed. The [publication receipt](evidence/skager-symbols-1835-publication.json)
+keeps exact identities. Native runtime, fresh five-export private package and
+boat acceptance remain pending. No product change will be mixed into this run.
+
+One read-only boat refresh at 11:44 UTC found no meaningful change: no navigation,
+helper or active commissioning process; stock/installed/profile/recovery identities
+and all 117 qualified tools match. Remote access remains healthy. No application
+has been installed, launched or retired on the boat in this cycle.
+
+Separate review tooling is being prepared against that unchanged application:
+the [audited-package collector](evidence/scrum264-native-recovery-collector/README.md)
+can capture the existing Windows payload with public ENC and the exact official
+IHO test cell, without another application build. Its dedicated workflow refuses
+to run until a produced artifact has been independently audited and its exact
+identities recorded. Original licensed test data is excluded from uploads.
+The [guarded palette review](evidence/scrum269-guarded-palette/README.md)
+(SCRUM-269) now follows the actual Layers interface and binds one XNav/Standard
+choice to the normal restart broker. The separate [native tooling run](https://github.com/ThereptileII/Work/actions/runs/37124439890)
+**passed** on exact `70537545011ef3fd2ecb288a404ae3dc94d5d019`, attempt 1:
+14 existing mode HWND cases, 16 palette/reveal HWND cases with normal fixture
+exits, 13 actual broker cases and five Prepare/Arm cases. The downloaded
+[three-gate/bundle receipt](evidence/scrum269-guarded-palette/native-corrected-run.json)
+independently binds all 117 tested Windows operator bytes. This is tooling-only
+proof, with harmless windows and marker/helper fixtures; actual application
+palette selection, native visuals and boat recovery remain pending.
+
+After separate authorization, the existing qualified `ffa2de31` staging operator
+placed those exact 117 files in a new owned versioned directory. Independent
+[staging and preservation checks](evidence/scrum269-guarded-palette/boat-staged-only.json)
+matched every file and completion record; stock, installed ownership/executable,
+profile/state, cold/recovery records, old tools and remote-access health were
+unchanged between 13:09 and 13:12 UTC. No navigation/helper/commissioning process,
+running product task or active commissioning marker was observed. An initial
+read-only stdin wrapper timed out; a subsequent invocation omitted the existing
+per-process execution-policy flag and refused the old helper import before any
+write. Both are retained; corrected transport/staging followed. No new operator,
+application or installer ran, no persistent policy changed, and no physical
+output was issued. The frozen application and all launch/recovery guards remain
+separate from this tooling PASS and staged-only result.
+
 ## Windows resource repair verified; combined candidate awaiting full gates
 
 The exact d5/b8 [full candidate](https://github.com/ThereptileII/Work/actions/runs/37114216075)
@@ -18,8 +93,8 @@ pins both paths and preserves strict byte checks. Its
 passed on remote `c7f3616c5b9d385d39edf25b51f89a3508906071`, mapped exactly
 from isolated `eced8da`: the original interpreter difference is reproduced,
 decoded pixels remain identical, and both explicitly pinned configurations
-produce all seven files byte-for-byte identically. No full build has been
-restarted at this source freeze. No candidate from this
+produce all seven files byte-for-byte identically. The combined replacement
+run above began after that focused proof. No candidate from this
 cycle has been installed or launched on the boat; the existing Linux elapsed-time
 gate continues independently.
 

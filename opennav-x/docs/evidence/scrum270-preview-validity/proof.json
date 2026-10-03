@@ -1,0 +1,82 @@
+{
+  "result": "passed",
+  "base_commit": "48be04c35de20c150e885e797eff16e25db208cb",
+  "failed_snapshot_sha256": "d2d2a125309198258edb53c19b2099a38169bffd796e1ccb75d94578df4eb48c",
+  "failed_run": 37120549213,
+  "failed_artifact": 11275626437,
+  "artifact_sha256": "eb11a4ab014832e3304a387ada3b3f8afe8195f2d3850ee24c1ccaed1f064adc",
+  "old_smoke_preview_sha256": "725eadd1b6b4295bbfc9d1833e874e745f465168e97b8ad6a82f72d344b0c60c",
+  "compiler": "c++ (GCC) 16.2.1 20260810",
+  "command": [
+    "c++",
+    "-std=c++17",
+    "-O0",
+    "-I/home/standard/Projects/X-nav-worktrees/scrum270-preview-validity/src",
+    "/home/standard/Projects/X-nav-worktrees/scrum270-preview-validity/docs/evidence/scrum270-preview-validity/emit.cpp",
+    "/home/standard/Projects/X-nav-worktrees/scrum270-preview-validity/src/vessel/DemoSource.cpp",
+    "/home/standard/Projects/X-nav-worktrees/scrum270-preview-validity/src/vessel/RouteProgress.cpp",
+    "/home/standard/Projects/X-nav-worktrees/scrum270-preview-validity/src/vessel/VesselState.cpp",
+    "/home/standard/Projects/X-nav-worktrees/scrum270-preview-validity/src/smartnav/VesselEnergy.cpp",
+    "/home/standard/Projects/X-nav-worktrees/scrum270-preview-validity/src/smartnav/Energy.cpp",
+    "/home/standard/Projects/X-nav-worktrees/scrum270-preview-validity/tests/support/PreviewEnergyModel.cpp",
+    "-o",
+    ".local/preview-validity-proof/emit"
+  ],
+  "emitter_sha256": "cf7012e99afa98efdc9c0cbc637fdeaa721aa227c3c97ca9fa6aad06b4d824ce",
+  "samples_sha256": "735880ca79024d515c14f31cfe34532bbbe8ea21e8addcd8897c9889c693a0b8",
+  "source_sha256": {
+    "docs/evidence/scrum270-preview-validity/emit.cpp": "45e74a4929e016e0c8eabdcb23a0111c3ae60890d2e0881c61b1bcfec6f63073",
+    "docs/evidence/scrum270-preview-validity/prove.py": "917e362a3be41e9617e4c0fcd9b2730b5f3a838d07577d441fff9ec88a6b14ec",
+    "src/smartnav/Energy.cpp": "b05e383a789a638d88ae657d6feaf559537ce0723742f28e60b1b26726e43416",
+    "src/smartnav/Energy.h": "28fe312bb10ee3dd4dcd45af0d699ec25cb34729ab681bdd1ddff221a9621645",
+    "src/smartnav/VesselEnergy.cpp": "adc91ff427be1af6bba15c056ecd7e66bfc2706fbca2949025e5e6c8cf589dde",
+    "src/smartnav/VesselEnergy.h": "090d3ca74d8595cceb5c958ada74f08ad8b6cbc173be03452156e6de0894902a",
+    "src/vessel/AisState.h": "04722405d3d2afc609b14a6db635083d36472e09f8ac19646306240c016d14ad",
+    "src/vessel/DemoSource.cpp": "6d270fdf215df324ac79ac7fc984f30b2257c6c7625f7f17170d2b8dda62823b",
+    "src/vessel/DemoSource.h": "5b1bd1fdfbca79dd83ff19e55d3b88602dd4dd92be104605bea93ae203e066c2",
+    "src/vessel/RouteProgress.cpp": "307978b2990508358ec89e0c3854d4548c71a1e62498241ff8382bed1315644e",
+    "src/vessel/RouteProgress.h": "101f6110d827a854a622e89fe484d5ac1b323d35f103885dca7c35eec67e7785",
+    "src/vessel/VesselState.cpp": "aa04e3c872c2df8c6cc28f97286fe6c8a5dcc4ba53938f1f320ed7b2bc5b5230",
+    "src/vessel/VesselState.h": "37ebfc3556f851bc9532bf72922403b9a55990d1bf4860b23d0b82c66afac059",
+    "tests/support/PreviewEnergyModel.cpp": "261071a5d023d76818a4f6ed6a09344cccc1f5b647fd30ef18708ec106742b27",
+    "tools/smoke-preview.py": "2cd07e98e4c4e99effbe42c8656ea1aaa04c4f76ae8eaa3d10bbba55747e6af3"
+  },
+  "cases": [
+    {
+      "sample": "initial",
+      "old_predicate": false,
+      "new_predicate": false,
+      "original_three_comparisons": "not evaluated"
+    },
+    {
+      "sample": "114",
+      "old_predicate": true,
+      "new_predicate": true,
+      "original_three_comparisons": "passed"
+    },
+    {
+      "sample": "115",
+      "old_predicate": true,
+      "new_predicate": false,
+      "original_three_comparisons": "not evaluated"
+    },
+    {
+      "sample": "116",
+      "old_predicate": true,
+      "new_predicate": true,
+      "original_three_comparisons": "passed"
+    },
+    {
+      "sample": "native failure",
+      "old_predicate": true,
+      "new_predicate": false,
+      "original_three_comparisons": "not evaluated"
+    }
+  ],
+  "timeout_seconds": 12,
+  "limits": [
+    "No native UI rerun",
+    "No full app build",
+    "Emitter serializes only consumed fields; does not run PreviewDiagnostics"
+  ]
+}

@@ -1,0 +1,2166 @@
+{
+   "build_commit" : "9d98a500916e8a7f59dac9735427dde6d3c7d2e5",
+   "clock" : "live monotonic clock",
+   "ui_page" : "Instrument layout",
+   "evaluation_scope" : "Selected vessel data, route and energy; runtime and candidate health collected separately",
+   "route" : {
+      "position_source" : "DEMO deterministic trip v0.1",
+      "position_monotonic_ms" : "6138453",
+      "quality" : "UNAVAILABLE",
+      "id" : "DEMO-coastal-passage",
+      "waypoint" : "DEMO-Sheltered-bay",
+      "observed_monotonic_ms" : "6138453",
+      "waypoint_count" : 3,
+      "revision" : "1",
+      "state" : "ActivePointChanged",
+      "active_waypoint_index" : 2,
+      "revision_scope" : "DEMO-v0.1",
+      "unit" : "nautical miles",
+      "source" : "DEMO synthetic remaining-distance timeline v0.1 (NM), not OpenCPN live progress"
+   },
+   "publication_monotonic_ms" : "6138458",
+   "build_info" : [
+      "SKAGER Beta 2 / 0.4.0-beta2 / Interface: SKAGER",
+      "OpenCPN 5.12.4 / 37fd0cddb7334fe489e9f18aa163977a9c5c84f7",
+      "Build: 9d98a500916e8a7f59dac9735427dde6d3c7d2e5",
+      "Build purpose: DEVELOPER TEST BUILD",
+      "SKAGER equipment output: test-loopback-only",
+      "Compiler: MSVC 19.44.35229.0 / 4 byte pointers",
+      "Built: 2026-10-03T12:54:19Z / CI: 37120549213",
+      "OS: Windows Server 2022 (build 20348), 64-bit edition / DPI: 96",
+      "Profile: C:\\Users\\RUNNER~1\\AppData\\Local\\Temp\\OpenNav preview asvvtjbr\\OpenNavX-CI-Fixtures\\profile"
+   ],
+   "data" : [
+      {
+         "name" : "Latitude",
+         "quality" : "LIVE",
+         "value" : 59.1145,
+         "device_id" : "",
+         "age_ms" : 0,
+         "observed_monotonic_ms" : "6138453",
+         "validity" : "Measured",
+         "stale_after_ms" : 5000,
+         "aging_after_ms" : 2000,
+         "unit" : "deg",
+         "source" : "DEMO deterministic trip v0.1"
+      },
+      {
+         "name" : "Longitude",
+         "quality" : "LIVE",
+         "value" : 18.868,
+         "device_id" : "",
+         "age_ms" : 0,
+         "observed_monotonic_ms" : "6138453",
+         "validity" : "Measured",
+         "stale_after_ms" : 5000,
+         "aging_after_ms" : 2000,
+         "unit" : "deg",
+         "source" : "DEMO deterministic trip v0.1"
+      },
+      {
+         "name" : "Speed over ground",
+         "quality" : "LIVE",
+         "value" : 6.3,
+         "device_id" : "",
+         "age_ms" : 0,
+         "observed_monotonic_ms" : "6138453",
+         "validity" : "Measured",
+         "stale_after_ms" : 5000,
+         "aging_after_ms" : 2000,
+         "unit" : "kn",
+         "source" : "DEMO deterministic trip v0.1"
+      },
+      {
+         "name" : "Course over ground",
+         "quality" : "LIVE",
+         "value" : 79.80550685,
+         "device_id" : "",
+         "age_ms" : 0,
+         "observed_monotonic_ms" : "6138453",
+         "validity" : "Measured",
+         "stale_after_ms" : 5000,
+         "aging_after_ms" : 2000,
+         "unit" : "deg true",
+         "source" : "DEMO deterministic trip v0.1"
+      },
+      {
+         "name" : "Heading",
+         "quality" : "LIVE",
+         "value" : 81.2110137,
+         "device_id" : "",
+         "age_ms" : 0,
+         "observed_monotonic_ms" : "6138453",
+         "validity" : "Measured",
+         "stale_after_ms" : 5000,
+         "aging_after_ms" : 2000,
+         "unit" : "deg true",
+         "source" : "DEMO deterministic trip v0.1"
+      },
+      {
+         "name" : "Speed through water",
+         "quality" : "LIVE",
+         "value" : 6.010550685,
+         "device_id" : "",
+         "age_ms" : 0,
+         "observed_monotonic_ms" : "6138453",
+         "validity" : "Measured",
+         "stale_after_ms" : 5000,
+         "aging_after_ms" : 2000,
+         "unit" : "kn",
+         "source" : "DEMO deterministic trip v0.1"
+      },
+      {
+         "name" : "Apparent wind speed",
+         "quality" : "LIVE",
+         "value" : 16.35826027,
+         "device_id" : "",
+         "age_ms" : 0,
+         "observed_monotonic_ms" : "6138453",
+         "validity" : "Measured",
+         "stale_after_ms" : 5000,
+         "aging_after_ms" : 2000,
+         "unit" : "kn",
+         "source" : "DEMO deterministic trip v0.1"
+      },
+      {
+         "name" : "Apparent wind angle",
+         "quality" : "LIVE",
+         "value" : 72.4220274,
+         "device_id" : "",
+         "age_ms" : 0,
+         "observed_monotonic_ms" : "6138453",
+         "validity" : "Measured",
+         "stale_after_ms" : 5000,
+         "aging_after_ms" : 2000,
+         "unit" : "deg",
+         "source" : "DEMO deterministic trip v0.1"
+      },
+      {
+         "name" : "True wind speed",
+         "quality" : "LIVE",
+         "value" : 12.90550685,
+         "device_id" : "",
+         "age_ms" : 0,
+         "observed_monotonic_ms" : "6138453",
+         "validity" : "Measured",
+         "stale_after_ms" : 5000,
+         "aging_after_ms" : 2000,
+         "unit" : "kn",
+         "source" : "DEMO deterministic trip v0.1"
+      },
+      {
+         "name" : "True wind angle",
+         "quality" : "LIVE",
+         "value" : 94.31652055,
+         "device_id" : "",
+         "age_ms" : 0,
+         "observed_monotonic_ms" : "6138453",
+         "validity" : "Measured",
+         "stale_after_ms" : 5000,
+         "aging_after_ms" : 2000,
+         "unit" : "deg",
+         "source" : "DEMO deterministic trip v0.1"
+      },
+      {
+         "name" : "Depth below transducer",
+         "quality" : "LIVE",
+         "value" : 8.611013699,
+         "device_id" : "",
+         "age_ms" : 0,
+         "observed_monotonic_ms" : "6138453",
+         "validity" : "Measured",
+         "stale_after_ms" : 5000,
+         "aging_after_ms" : 2000,
+         "unit" : "m",
+         "source" : "DEMO deterministic trip v0.1"
+      },
+      {
+         "name" : "Water temperature",
+         "quality" : "LIVE",
+         "value" : 15.42110137,
+         "device_id" : "",
+         "age_ms" : 0,
+         "observed_monotonic_ms" : "6138453",
+         "validity" : "Measured",
+         "stale_after_ms" : 5000,
+         "aging_after_ms" : 2000,
+         "unit" : "C",
+         "source" : "DEMO deterministic trip v0.1"
+      },
+      {
+         "name" : "Atmospheric pressure",
+         "quality" : "UNAVAILABLE",
+         "device_id" : "",
+         "observed_monotonic_ms" : "0",
+         "validity" : "Invalid",
+         "stale_after_ms" : 5000,
+         "aging_after_ms" : 2000,
+         "unit" : "hPa",
+         "source" : ""
+      },
+      {
+         "name" : "Rudder",
+         "quality" : "LIVE",
+         "value" : 0.4220273984,
+         "device_id" : "",
+         "age_ms" : 0,
+         "observed_monotonic_ms" : "6138453",
+         "validity" : "Measured",
+         "stale_after_ms" : 5000,
+         "aging_after_ms" : 2000,
+         "unit" : "deg",
+         "source" : "DEMO deterministic trip v0.1"
+      },
+      {
+         "name" : "Heel",
+         "quality" : "UNAVAILABLE",
+         "device_id" : "",
+         "observed_monotonic_ms" : "0",
+         "validity" : "Invalid",
+         "stale_after_ms" : 5000,
+         "aging_after_ms" : 2000,
+         "unit" : "deg",
+         "source" : ""
+      },
+      {
+         "name" : "Motor electrical power",
+         "quality" : "LIVE",
+         "value" : 7.252753425,
+         "device_id" : "DEMO / motor-1",
+         "age_ms" : 0,
+         "observed_monotonic_ms" : "6138453",
+         "validity" : "Measured",
+         "stale_after_ms" : 5000,
+         "aging_after_ms" : 2000,
+         "unit" : "kW",
+         "source" : "DEMO deterministic trip v0.1"
+      },
+      {
+         "name" : "Shaft power",
+         "quality" : "ESTIMATED",
+         "value" : 6.382423014,
+         "device_id" : "DEMO / motor-1",
+         "age_ms" : 0,
+         "observed_monotonic_ms" : "6138453",
+         "validity" : "Estimated",
+         "stale_after_ms" : 5000,
+         "aging_after_ms" : 2000,
+         "unit" : "kW",
+         "source" : "DEMO configured assumption v0.1"
+      },
+      {
+         "name" : "Motor speed",
+         "quality" : "LIVE",
+         "value" : 823.1652055,
+         "device_id" : "",
+         "age_ms" : 0,
+         "observed_monotonic_ms" : "6138453",
+         "validity" : "Measured",
+         "stale_after_ms" : 5000,
+         "aging_after_ms" : 2000,
+         "unit" : "RPM",
+         "source" : "DEMO deterministic trip v0.1"
+      },
+      {
+         "name" : "Transmission gear",
+         "quality" : "UNAVAILABLE",
+         "device_id" : "",
+         "observed_monotonic_ms" : "0",
+         "validity" : "Invalid",
+         "stale_after_ms" : 5000,
+         "aging_after_ms" : 2000,
+         "unit" : "0 forward / 1 neutral / 2 reverse",
+         "source" : ""
+      },
+      {
+         "name" : "Regeneration setting",
+         "quality" : "UNAVAILABLE",
+         "device_id" : "",
+         "observed_monotonic_ms" : "0",
+         "validity" : "Invalid",
+         "stale_after_ms" : 5000,
+         "aging_after_ms" : 2000,
+         "unit" : "0 off / 1 one bar / 2 two bars",
+         "source" : ""
+      },
+      {
+         "name" : "Motor temperature",
+         "quality" : "LIVE",
+         "value" : 62.2110137,
+         "device_id" : "",
+         "age_ms" : 0,
+         "observed_monotonic_ms" : "6138453",
+         "validity" : "Measured",
+         "stale_after_ms" : 5000,
+         "aging_after_ms" : 2000,
+         "unit" : "C",
+         "source" : "DEMO deterministic trip v0.1"
+      },
+      {
+         "name" : "Engine coolant temperature",
+         "quality" : "UNAVAILABLE",
+         "device_id" : "",
+         "observed_monotonic_ms" : "0",
+         "validity" : "Invalid",
+         "stale_after_ms" : 5000,
+         "aging_after_ms" : 2000,
+         "unit" : "C",
+         "source" : ""
+      },
+      {
+         "name" : "Battery voltage",
+         "quality" : "LIVE",
+         "value" : 343.2110137,
+         "device_id" : "DEMO / pack-1",
+         "age_ms" : 0,
+         "observed_monotonic_ms" : "6138453",
+         "validity" : "Measured",
+         "stale_after_ms" : 5000,
+         "aging_after_ms" : 2000,
+         "unit" : "V",
+         "source" : "DEMO deterministic trip v0.1"
+      },
+      {
+         "name" : "Battery current (+ discharge)",
+         "quality" : "LIVE",
+         "value" : 22.29751704,
+         "device_id" : "DEMO / pack-1",
+         "age_ms" : 0,
+         "observed_monotonic_ms" : "6138453",
+         "validity" : "Measured",
+         "stale_after_ms" : 5000,
+         "aging_after_ms" : 2000,
+         "unit" : "A",
+         "source" : "DEMO deterministic trip v0.1"
+      },
+      {
+         "name" : "Battery current (source convention)",
+         "quality" : "UNAVAILABLE",
+         "device_id" : "",
+         "observed_monotonic_ms" : "0",
+         "validity" : "Invalid",
+         "stale_after_ms" : 5000,
+         "aging_after_ms" : 2000,
+         "unit" : "A",
+         "source" : ""
+      },
+      {
+         "name" : "Battery SOC",
+         "quality" : "LIVE",
+         "value" : 47.65103358,
+         "device_id" : "DEMO / pack-1",
+         "age_ms" : 0,
+         "observed_monotonic_ms" : "6138453",
+         "validity" : "Measured",
+         "stale_after_ms" : 5000,
+         "aging_after_ms" : 2000,
+         "unit" : "%",
+         "source" : "DEMO deterministic trip v0.1"
+      },
+      {
+         "name" : "Battery SOH",
+         "quality" : "LIVE",
+         "value" : 94,
+         "device_id" : "DEMO / pack-1",
+         "age_ms" : 0,
+         "observed_monotonic_ms" : "6138453",
+         "validity" : "Measured",
+         "stale_after_ms" : 5000,
+         "aging_after_ms" : 2000,
+         "unit" : "%",
+         "source" : "DEMO deterministic trip v0.1"
+      },
+      {
+         "name" : "Usable pack capacity",
+         "quality" : "ESTIMATED",
+         "value" : 48,
+         "device_id" : "DEMO / pack-1",
+         "age_ms" : 0,
+         "observed_monotonic_ms" : "6138453",
+         "validity" : "Estimated",
+         "stale_after_ms" : 5000,
+         "aging_after_ms" : 2000,
+         "unit" : "kWh",
+         "source" : "DEMO configured assumption v0.1"
+      },
+      {
+         "name" : "Whole-pack net discharge",
+         "quality" : "LIVE",
+         "value" : 7.652753425,
+         "device_id" : "DEMO / pack-1",
+         "age_ms" : 0,
+         "observed_monotonic_ms" : "6138453",
+         "validity" : "Measured",
+         "stale_after_ms" : 5000,
+         "aging_after_ms" : 2000,
+         "unit" : "kW",
+         "source" : "DEMO deterministic trip v0.1"
+      },
+      {
+         "name" : "Fresh water tank",
+         "quality" : "LIVE",
+         "value" : 72,
+         "device_id" : "",
+         "age_ms" : 0,
+         "observed_monotonic_ms" : "6138453",
+         "validity" : "Measured",
+         "stale_after_ms" : 5000,
+         "aging_after_ms" : 2000,
+         "unit" : "%",
+         "source" : "DEMO deterministic trip v0.1"
+      },
+      {
+         "name" : "Fuel tank",
+         "quality" : "UNAVAILABLE",
+         "device_id" : "",
+         "observed_monotonic_ms" : "0",
+         "validity" : "Invalid",
+         "stale_after_ms" : 5000,
+         "aging_after_ms" : 2000,
+         "unit" : "%",
+         "source" : ""
+      },
+      {
+         "name" : "Waste tank",
+         "quality" : "LIVE",
+         "value" : 18,
+         "device_id" : "",
+         "age_ms" : 0,
+         "observed_monotonic_ms" : "6138453",
+         "validity" : "Measured",
+         "stale_after_ms" : 5000,
+         "aging_after_ms" : 2000,
+         "unit" : "%",
+         "source" : "DEMO deterministic trip v0.1"
+      },
+      {
+         "name" : "Other fluid tank",
+         "quality" : "UNAVAILABLE",
+         "device_id" : "",
+         "observed_monotonic_ms" : "0",
+         "validity" : "Invalid",
+         "stale_after_ms" : 5000,
+         "aging_after_ms" : 2000,
+         "unit" : "%",
+         "source" : ""
+      },
+      {
+         "name" : "Input rate",
+         "quality" : "UNAVAILABLE",
+         "device_id" : "",
+         "observed_monotonic_ms" : "0",
+         "validity" : "Invalid",
+         "stale_after_ms" : 5000,
+         "aging_after_ms" : 2000,
+         "unit" : "msg/s",
+         "source" : ""
+      }
+   ],
+   "evaluation_monotonic_ms" : "6138453",
+   "settings" : {
+      "data_rail" : [
+         "sog",
+         "depth",
+         "aws",
+         "heading"
+      ],
+      "curve_source" : "",
+      "reserve_percent" : "20",
+      "signal_k_mappings" : [
+      ],
+      "instruments" : [
+         "sog",
+         "cog",
+         "heading",
+         "stw",
+         "aws",
+         "awa",
+         "tws",
+         "twa",
+         "depth",
+         "water_temp",
+         "rudder",
+         "heel",
+         "pressure"
+      ],
+      "consumption" : "Measured whole pack",
+      "capacity_kwh" : "24",
+      "battery_device" : ""
+   },
+   "version" : "0.4.0-beta2",
+   "source_candidates_evaluation_monotonic_ms" : "6138458",
+   "test_fixtures" : true,
+   "runtime" : {
+      "smartnav" : {
+         "route_valid" : false,
+         "reason" : "Route guidance unavailable. Check the active route and GPS.",
+         "ais_event_count" : 1,
+         "event_count" : 1
+      },
+      "online_ais" : {
+         "credential_present" : false,
+         "accepted" : "0",
+         "connection_state" : 0,
+         "rejected" : "0",
+         "chart_marks" : 0,
+         "targets" : 0,
+         "subscription_confirmed" : false,
+         "reconnects" : "0",
+         "enabled" : false
+      },
+      "alerts" : [
+         {
+            "id" : "ais-alarm",
+            "level" : "CRITICAL",
+            "acknowledged" : false,
+            "episode" : "1"
+         }
+      ],
+      "chart_presentation" : {
+         "requested" : "XNav",
+         "core" : {
+            "available" : false
+         },
+         "status" : "SKAGER presentation v1 / verified palette; ENC not loaded; o-charts: no SKAGER adapter loaded",
+         "private_ocharts" : {
+            "available" : false
+         }
+      },
+      "display" : {
+         "native_caption_themed" : false,
+         "footer_region" : {
+            "x" : 8,
+            "height" : 34,
+            "width" : 1264,
+            "y" : 758
+         },
+         "rail_regions" : [
+            {
+               "x" : 1086,
+               "height" : 126,
+               "width" : 186,
+               "label" : "sog",
+               "y" : 141,
+               "visible" : true,
+               "enabled" : true
+            },
+            {
+               "x" : 1086,
+               "height" : 126,
+               "width" : 186,
+               "label" : "depth",
+               "y" : 267,
+               "visible" : true,
+               "enabled" : true
+            },
+            {
+               "x" : 1086,
+               "height" : 125,
+               "width" : 186,
+               "label" : "aws",
+               "y" : 393,
+               "visible" : true,
+               "enabled" : true
+            },
+            {
+               "x" : 1086,
+               "height" : 126,
+               "width" : 186,
+               "label" : "heading",
+               "y" : 518,
+               "visible" : true,
+               "enabled" : true
+            }
+         ],
+         "product_regions" : [
+         ],
+         "footer_middle_visible" : true,
+         "chart_region" : {
+            "x" : 88,
+            "height" : 527,
+            "width" : 998,
+            "y" : 99
+         },
+         "horizon_heading" : {
+            "x" : 113,
+            "height" : 22,
+            "width" : 947,
+            "y" : 640
+         },
+         "horizon_region" : {
+            "x" : 88,
+            "height" : 132,
+            "width" : 997,
+            "y" : 626
+         },
+         "minimum_value_height_dip" : 0,
+         "horizon_full_passage" : {
+            "x" : 982,
+            "height" : 22,
+            "width" : 78,
+            "y" : 640
+         },
+         "product_controls" : [
+            {
+               "x" : 104,
+               "height" : 48,
+               "width" : 64,
+               "label" : "Back",
+               "y" : 163,
+               "visible" : true,
+               "enabled" : true
+            },
+            {
+               "x" : 96,
+               "height" : 52,
+               "width" : 982,
+               "label" : "Back to Display",
+               "y" : 261,
+               "visible" : true,
+               "enabled" : true
+            },
+            {
+               "x" : 104,
+               "height" : 52,
+               "width" : 479,
+               "label" : "Shown / SOG",
+               "y" : 373,
+               "visible" : true,
+               "enabled" : true
+            },
+            {
+               "x" : 591,
+               "height" : 52,
+               "width" : 479,
+               "label" : "Shown / COG",
+               "y" : 373,
+               "visible" : true,
+               "enabled" : true
+            },
+            {
+               "x" : 104,
+               "height" : 52,
+               "width" : 479,
+               "label" : "Shown / HEADING",
+               "y" : 433,
+               "visible" : true,
+               "enabled" : true
+            },
+            {
+               "x" : 591,
+               "height" : 52,
+               "width" : 479,
+               "label" : "Shown / STW",
+               "y" : 433,
+               "visible" : true,
+               "enabled" : true
+            },
+            {
+               "x" : 104,
+               "height" : 52,
+               "width" : 479,
+               "label" : "Shown / APPARENT WIND",
+               "y" : 493,
+               "visible" : true,
+               "enabled" : true
+            },
+            {
+               "x" : 591,
+               "height" : 52,
+               "width" : 479,
+               "label" : "Shown / APPARENT ANGLE",
+               "y" : 493,
+               "visible" : true,
+               "enabled" : true
+            },
+            {
+               "x" : 104,
+               "height" : 52,
+               "width" : 479,
+               "label" : "Shown / TRUE WIND",
+               "y" : 553,
+               "visible" : true,
+               "enabled" : true
+            },
+            {
+               "x" : 591,
+               "height" : 52,
+               "width" : 479,
+               "label" : "Shown / TRUE ANGLE",
+               "y" : 553,
+               "visible" : true,
+               "enabled" : true
+            },
+            {
+               "x" : 104,
+               "height" : 52,
+               "width" : 479,
+               "label" : "Shown / DEPTH",
+               "y" : 613,
+               "visible" : true,
+               "enabled" : true
+            },
+            {
+               "x" : 591,
+               "height" : 52,
+               "width" : 479,
+               "label" : "Shown / WATER TEMP",
+               "y" : 613,
+               "visible" : true,
+               "enabled" : true
+            },
+            {
+               "x" : 104,
+               "height" : 52,
+               "width" : 479,
+               "label" : "Shown / PRESSURE",
+               "y" : 673,
+               "visible" : true,
+               "enabled" : true
+            },
+            {
+               "x" : 591,
+               "height" : 52,
+               "width" : 479,
+               "label" : "Shown / RUDDER",
+               "y" : 673,
+               "visible" : true,
+               "enabled" : true
+            },
+            {
+               "x" : 104,
+               "height" : 52,
+               "width" : 479,
+               "label" : "Shown / HEEL",
+               "y" : 733,
+               "visible" : false,
+               "enabled" : true
+            },
+            {
+               "x" : 591,
+               "height" : 52,
+               "width" : 479,
+               "label" : "Add / BATTERY SOC",
+               "y" : 733,
+               "visible" : false,
+               "enabled" : true
+            },
+            {
+               "x" : 104,
+               "height" : 52,
+               "width" : 479,
+               "label" : "Add / BATTERY",
+               "y" : 793,
+               "visible" : false,
+               "enabled" : true
+            },
+            {
+               "x" : 591,
+               "height" : 52,
+               "width" : 479,
+               "label" : "Add / PACK CURRENT",
+               "y" : 793,
+               "visible" : false,
+               "enabled" : true
+            },
+            {
+               "x" : 104,
+               "height" : 52,
+               "width" : 479,
+               "label" : "Add / PACK DISCHARGE",
+               "y" : 853,
+               "visible" : false,
+               "enabled" : true
+            },
+            {
+               "x" : 591,
+               "height" : 52,
+               "width" : 479,
+               "label" : "Add / MOTOR POWER",
+               "y" : 853,
+               "visible" : false,
+               "enabled" : true
+            },
+            {
+               "x" : 104,
+               "height" : 52,
+               "width" : 479,
+               "label" : "Add / MOTOR SPEED",
+               "y" : 913,
+               "visible" : false,
+               "enabled" : true
+            },
+            {
+               "x" : 591,
+               "height" : 52,
+               "width" : 479,
+               "label" : "Add / MOTOR TEMP",
+               "y" : 913,
+               "visible" : false,
+               "enabled" : true
+            },
+            {
+               "x" : 104,
+               "height" : 52,
+               "width" : 479,
+               "label" : "Add / FRESH WATER",
+               "y" : 973,
+               "visible" : false,
+               "enabled" : true
+            },
+            {
+               "x" : 591,
+               "height" : 52,
+               "width" : 479,
+               "label" : "Add / FUEL",
+               "y" : 973,
+               "visible" : false,
+               "enabled" : true
+            },
+            {
+               "x" : 104,
+               "height" : 52,
+               "width" : 479,
+               "label" : "Add / WASTE",
+               "y" : 1033,
+               "visible" : false,
+               "enabled" : true
+            }
+         ],
+         "can_scroll_down" : true,
+         "horizon_events" : [
+            {
+               "x" : 113,
+               "height" : 53,
+               "width" : 188,
+               "y" : 685
+            },
+            {
+               "x" : 301,
+               "height" : 53,
+               "width" : 262,
+               "y" : 685
+            },
+            {
+               "x" : 0,
+               "height" : 0,
+               "width" : 0,
+               "y" : 0
+            },
+            {
+               "x" : 0,
+               "height" : 0,
+               "width" : 0,
+               "y" : 0
+            }
+         ],
+         "can_scroll_up" : false,
+         "page_scroll_px" : 0,
+         "route_creation_active" : false,
+         "light" : "Day",
+         "interaction_controls" : [
+            {
+               "x" : 915,
+               "height" : 44,
+               "accessible_name" : "Inspect source health",
+               "width" : 120,
+               "label" : "DEMO / Cruising",
+               "y" : 43,
+               "visible" : false,
+               "enabled" : true
+            },
+            {
+               "x" : 615,
+               "height" : 48,
+               "accessible_name" : "Scroll page up",
+               "width" : 64,
+               "label" : "Up",
+               "y" : 35,
+               "visible" : true,
+               "enabled" : false
+            },
+            {
+               "x" : 687,
+               "height" : 48,
+               "accessible_name" : "Scroll page down",
+               "width" : 64,
+               "label" : "Down",
+               "y" : 35,
+               "visible" : true,
+               "enabled" : true
+            },
+            {
+               "x" : 1119,
+               "height" : 44,
+               "accessible_name" : "Search saved routes and waypoints",
+               "width" : 44,
+               "label" : "Search",
+               "y" : 43,
+               "visible" : true,
+               "enabled" : true
+            },
+            {
+               "x" : 1171,
+               "height" : 44,
+               "accessible_name" : "Cycle day, dusk and night palettes",
+               "width" : 44,
+               "label" : "Day",
+               "y" : 43,
+               "visible" : true,
+               "enabled" : true
+            },
+            {
+               "x" : 1223,
+               "height" : 44,
+               "accessible_name" : "Inspect active alerts",
+               "width" : 44,
+               "label" : "Alerts 1",
+               "y" : 43,
+               "visible" : true,
+               "enabled" : true
+            },
+            {
+               "x" : 17,
+               "height" : 61,
+               "accessible_name" : "Navigation",
+               "width" : 61,
+               "label" : "Chart",
+               "y" : 113,
+               "visible" : true,
+               "enabled" : true
+            },
+            {
+               "x" : 17,
+               "height" : 61,
+               "accessible_name" : "Route",
+               "width" : 61,
+               "label" : "Passage",
+               "y" : 179,
+               "visible" : true,
+               "enabled" : true
+            },
+            {
+               "x" : 17,
+               "height" : 61,
+               "accessible_name" : "AIS targets",
+               "width" : 61,
+               "label" : "Traffic",
+               "y" : 245,
+               "visible" : true,
+               "enabled" : true
+            },
+            {
+               "x" : 17,
+               "height" : 61,
+               "accessible_name" : "Energy",
+               "width" : 61,
+               "label" : "Energy",
+               "y" : 331,
+               "visible" : true,
+               "enabled" : true
+            },
+            {
+               "x" : 17,
+               "height" : 61,
+               "accessible_name" : "Vessel instruments",
+               "width" : 61,
+               "label" : "Instruments",
+               "y" : 397,
+               "visible" : true,
+               "enabled" : true
+            },
+            {
+               "x" : 17,
+               "height" : 61,
+               "accessible_name" : "Anchor watch",
+               "width" : 61,
+               "label" : "Anchor",
+               "y" : 463,
+               "visible" : true,
+               "enabled" : true
+            },
+            {
+               "x" : 17,
+               "height" : 61,
+               "accessible_name" : "Radar availability",
+               "width" : 61,
+               "label" : "Radar",
+               "y" : 529,
+               "visible" : true,
+               "enabled" : true
+            },
+            {
+               "x" : 17,
+               "height" : 61,
+               "accessible_name" : "Open navigation menu",
+               "width" : 61,
+               "label" : "Settings",
+               "y" : 637,
+               "visible" : true,
+               "enabled" : true
+            },
+            {
+               "x" : 32,
+               "height" : 32,
+               "accessible_name" : "Vessel profile / name not configured",
+               "width" : 32,
+               "label" : "Vessel profile",
+               "y" : 711,
+               "visible" : true,
+               "enabled" : true
+            },
+            {
+               "x" : 879,
+               "height" : 44,
+               "accessible_name" : "Measure chart distance",
+               "width" : 44,
+               "label" : "Measure",
+               "y" : 541,
+               "visible" : false,
+               "enabled" : true
+            },
+            {
+               "x" : 923,
+               "height" : 44,
+               "accessible_name" : "Waypoint at chart position",
+               "width" : 44,
+               "label" : "Waypoint",
+               "y" : 541,
+               "visible" : false,
+               "enabled" : true
+            },
+            {
+               "x" : 972,
+               "height" : 44,
+               "accessible_name" : "Zoom chart in",
+               "width" : 44,
+               "label" : "+",
+               "y" : 541,
+               "visible" : false,
+               "enabled" : true
+            },
+            {
+               "x" : 1016,
+               "height" : 44,
+               "accessible_name" : "Zoom chart out",
+               "width" : 44,
+               "label" : "−",
+               "y" : 541,
+               "visible" : false,
+               "enabled" : true
+            },
+            {
+               "x" : 996,
+               "height" : 90,
+               "accessible_name" : "Chart orientation: North up",
+               "width" : 68,
+               "label" : "North",
+               "y" : 121,
+               "visible" : false,
+               "enabled" : true
+            },
+            {
+               "x" : 1008,
+               "height" : 44,
+               "accessible_name" : "Chart layers",
+               "width" : 44,
+               "label" : "Layers",
+               "y" : 221,
+               "visible" : false,
+               "enabled" : true
+            },
+            {
+               "x" : 116,
+               "height" : 44,
+               "accessible_name" : "Center chart on boat and follow position",
+               "width" : 142,
+               "label" : "Follow boat",
+               "y" : 545,
+               "visible" : false,
+               "enabled" : true
+            },
+            {
+               "x" : 1226,
+               "height" : 40,
+               "accessible_name" : "Choose the four rail values",
+               "width" : 40,
+               "label" : "Configure instruments",
+               "y" : 100,
+               "visible" : true,
+               "enabled" : true
+            },
+            {
+               "x" : 1105,
+               "height" : 87,
+               "accessible_name" : "Autopilot: Standby / You have the helm",
+               "width" : 149,
+               "label" : "Autopilot",
+               "y" : 657,
+               "visible" : true,
+               "enabled" : true
+            },
+            {
+               "x" : 1086,
+               "height" : 20,
+               "accessible_name" : "Manual STANDBY / requires enabled control",
+               "width" : 20,
+               "label" : "STBY",
+               "y" : 99,
+               "visible" : false,
+               "enabled" : false
+            },
+            {
+               "x" : 1090,
+               "height" : 14,
+               "accessible_name" : "Footer source health",
+               "width" : 162,
+               "label" : "Source health",
+               "y" : 768,
+               "visible" : true,
+               "enabled" : true
+            },
+            {
+               "x" : 982,
+               "height" : 22,
+               "accessible_name" : "Full passage",
+               "width" : 78,
+               "label" : "Full passage",
+               "y" : 640,
+               "visible" : false,
+               "enabled" : true
+            },
+            {
+               "x" : 113,
+               "height" : 53,
+               "accessible_name" : "Horizon now",
+               "width" : 188,
+               "label" : "Horizon now",
+               "y" : 685,
+               "visible" : false,
+               "enabled" : false
+            },
+            {
+               "x" : 301,
+               "height" : 53,
+               "accessible_name" : "Horizon event 1",
+               "width" : 262,
+               "label" : "Horizon event 1",
+               "y" : 685,
+               "visible" : false,
+               "enabled" : false
+            },
+            {
+               "x" : 563,
+               "height" : 53,
+               "accessible_name" : "Horizon event 2",
+               "width" : 263,
+               "label" : "Horizon event 2",
+               "y" : 685,
+               "visible" : false,
+               "enabled" : false
+            },
+            {
+               "x" : 826,
+               "height" : 53,
+               "accessible_name" : "Horizon event 3",
+               "width" : 234,
+               "label" : "Horizon event 3",
+               "y" : 685,
+               "visible" : false,
+               "enabled" : false
+            },
+            {
+               "x" : 88,
+               "height" : 20,
+               "accessible_name" : "Name and save this route",
+               "width" : 20,
+               "label" : "Done",
+               "y" : 626,
+               "visible" : false,
+               "enabled" : true
+            },
+            {
+               "x" : 88,
+               "height" : 20,
+               "accessible_name" : "Undo last route point",
+               "width" : 20,
+               "label" : "Undo",
+               "y" : 626,
+               "visible" : false,
+               "enabled" : false
+            },
+            {
+               "x" : 88,
+               "height" : 20,
+               "accessible_name" : "Cancel route creation",
+               "width" : 20,
+               "label" : "Cancel",
+               "y" : 626,
+               "visible" : false,
+               "enabled" : true
+            },
+            {
+               "x" : 974,
+               "height" : 44,
+               "accessible_name" : "Close this page",
+               "width" : 80,
+               "label" : "Close",
+               "y" : 127,
+               "visible" : false,
+               "enabled" : true
+            },
+            {
+               "x" : 104,
+               "height" : 48,
+               "accessible_name" : "Back",
+               "width" : 64,
+               "label" : "Back",
+               "y" : 163,
+               "visible" : true,
+               "enabled" : true
+            },
+            {
+               "x" : 96,
+               "height" : 52,
+               "accessible_name" : "Back to Display",
+               "width" : 982,
+               "label" : "Back to Display",
+               "y" : 261,
+               "visible" : true,
+               "enabled" : true
+            },
+            {
+               "x" : 104,
+               "height" : 52,
+               "accessible_name" : "Shown / SOG",
+               "width" : 479,
+               "label" : "Shown / SOG",
+               "y" : 373,
+               "visible" : true,
+               "enabled" : true
+            },
+            {
+               "x" : 591,
+               "height" : 52,
+               "accessible_name" : "Shown / COG",
+               "width" : 479,
+               "label" : "Shown / COG",
+               "y" : 373,
+               "visible" : true,
+               "enabled" : true
+            },
+            {
+               "x" : 104,
+               "height" : 52,
+               "accessible_name" : "Shown / HEADING",
+               "width" : 479,
+               "label" : "Shown / HEADING",
+               "y" : 433,
+               "visible" : true,
+               "enabled" : true
+            },
+            {
+               "x" : 591,
+               "height" : 52,
+               "accessible_name" : "Shown / STW",
+               "width" : 479,
+               "label" : "Shown / STW",
+               "y" : 433,
+               "visible" : true,
+               "enabled" : true
+            },
+            {
+               "x" : 104,
+               "height" : 52,
+               "accessible_name" : "Shown / APPARENT WIND",
+               "width" : 479,
+               "label" : "Shown / APPARENT WIND",
+               "y" : 493,
+               "visible" : true,
+               "enabled" : true
+            },
+            {
+               "x" : 591,
+               "height" : 52,
+               "accessible_name" : "Shown / APPARENT ANGLE",
+               "width" : 479,
+               "label" : "Shown / APPARENT ANGLE",
+               "y" : 493,
+               "visible" : true,
+               "enabled" : true
+            },
+            {
+               "x" : 104,
+               "height" : 52,
+               "accessible_name" : "Shown / TRUE WIND",
+               "width" : 479,
+               "label" : "Shown / TRUE WIND",
+               "y" : 553,
+               "visible" : true,
+               "enabled" : true
+            },
+            {
+               "x" : 591,
+               "height" : 52,
+               "accessible_name" : "Shown / TRUE ANGLE",
+               "width" : 479,
+               "label" : "Shown / TRUE ANGLE",
+               "y" : 553,
+               "visible" : true,
+               "enabled" : true
+            },
+            {
+               "x" : 104,
+               "height" : 52,
+               "accessible_name" : "Shown / DEPTH",
+               "width" : 479,
+               "label" : "Shown / DEPTH",
+               "y" : 613,
+               "visible" : true,
+               "enabled" : true
+            },
+            {
+               "x" : 591,
+               "height" : 52,
+               "accessible_name" : "Shown / WATER TEMP",
+               "width" : 479,
+               "label" : "Shown / WATER TEMP",
+               "y" : 613,
+               "visible" : true,
+               "enabled" : true
+            },
+            {
+               "x" : 104,
+               "height" : 52,
+               "accessible_name" : "Shown / PRESSURE",
+               "width" : 479,
+               "label" : "Shown / PRESSURE",
+               "y" : 673,
+               "visible" : true,
+               "enabled" : true
+            },
+            {
+               "x" : 591,
+               "height" : 52,
+               "accessible_name" : "Shown / RUDDER",
+               "width" : 479,
+               "label" : "Shown / RUDDER",
+               "y" : 673,
+               "visible" : true,
+               "enabled" : true
+            },
+            {
+               "x" : 104,
+               "height" : 52,
+               "accessible_name" : "Shown / HEEL",
+               "width" : 479,
+               "label" : "Shown / HEEL",
+               "y" : 733,
+               "visible" : false,
+               "enabled" : true
+            },
+            {
+               "x" : 591,
+               "height" : 52,
+               "accessible_name" : "Add / BATTERY SOC",
+               "width" : 479,
+               "label" : "Add / BATTERY SOC",
+               "y" : 733,
+               "visible" : false,
+               "enabled" : true
+            },
+            {
+               "x" : 104,
+               "height" : 52,
+               "accessible_name" : "Add / BATTERY",
+               "width" : 479,
+               "label" : "Add / BATTERY",
+               "y" : 793,
+               "visible" : false,
+               "enabled" : true
+            },
+            {
+               "x" : 591,
+               "height" : 52,
+               "accessible_name" : "Add / PACK CURRENT",
+               "width" : 479,
+               "label" : "Add / PACK CURRENT",
+               "y" : 793,
+               "visible" : false,
+               "enabled" : true
+            },
+            {
+               "x" : 104,
+               "height" : 52,
+               "accessible_name" : "Add / PACK DISCHARGE",
+               "width" : 479,
+               "label" : "Add / PACK DISCHARGE",
+               "y" : 853,
+               "visible" : false,
+               "enabled" : true
+            },
+            {
+               "x" : 591,
+               "height" : 52,
+               "accessible_name" : "Add / MOTOR POWER",
+               "width" : 479,
+               "label" : "Add / MOTOR POWER",
+               "y" : 853,
+               "visible" : false,
+               "enabled" : true
+            },
+            {
+               "x" : 104,
+               "height" : 52,
+               "accessible_name" : "Add / MOTOR SPEED",
+               "width" : 479,
+               "label" : "Add / MOTOR SPEED",
+               "y" : 913,
+               "visible" : false,
+               "enabled" : true
+            },
+            {
+               "x" : 591,
+               "height" : 52,
+               "accessible_name" : "Add / MOTOR TEMP",
+               "width" : 479,
+               "label" : "Add / MOTOR TEMP",
+               "y" : 913,
+               "visible" : false,
+               "enabled" : true
+            },
+            {
+               "x" : 104,
+               "height" : 52,
+               "accessible_name" : "Add / FRESH WATER",
+               "width" : 479,
+               "label" : "Add / FRESH WATER",
+               "y" : 973,
+               "visible" : false,
+               "enabled" : true
+            },
+            {
+               "x" : 591,
+               "height" : 52,
+               "accessible_name" : "Add / FUEL",
+               "width" : 479,
+               "label" : "Add / FUEL",
+               "y" : 973,
+               "visible" : false,
+               "enabled" : true
+            },
+            {
+               "x" : 104,
+               "height" : 52,
+               "accessible_name" : "Add / WASTE",
+               "width" : 479,
+               "label" : "Add / WASTE",
+               "y" : 1033,
+               "visible" : false,
+               "enabled" : true
+            },
+            {
+               "x" : 977,
+               "height" : 44,
+               "accessible_name" : "Close sheet",
+               "width" : 86,
+               "label" : "Close",
+               "y" : 130,
+               "visible" : false,
+               "enabled" : true
+            },
+            {
+               "x" : 683,
+               "height" : 44,
+               "accessible_name" : "Back",
+               "width" : 94,
+               "label" : "Back",
+               "y" : 120,
+               "visible" : false,
+               "enabled" : true
+            },
+            {
+               "x" : 1021,
+               "height" : 28,
+               "accessible_name" : "Edit Harbour mouth",
+               "width" : 28,
+               "label" : "Edit Harbour mouth",
+               "y" : 434,
+               "visible" : false,
+               "enabled" : false
+            },
+            {
+               "x" : 1021,
+               "height" : 28,
+               "accessible_name" : "Edit Outer channel",
+               "width" : 28,
+               "label" : "Edit Outer channel",
+               "y" : 511,
+               "visible" : false,
+               "enabled" : false
+            },
+            {
+               "x" : 1021,
+               "height" : 28,
+               "accessible_name" : "Edit Sheltered bay",
+               "width" : 28,
+               "label" : "Edit Sheltered bay",
+               "y" : 588,
+               "visible" : false,
+               "enabled" : false
+            },
+            {
+               "x" : 697,
+               "height" : 48,
+               "accessible_name" : "End navigation",
+               "width" : 172,
+               "label" : "End navigation",
+               "y" : 791,
+               "visible" : false,
+               "enabled" : false
+            },
+            {
+               "x" : 877,
+               "height" : 48,
+               "accessible_name" : "Reverse route",
+               "width" : 172,
+               "label" : "Reverse route",
+               "y" : 791,
+               "visible" : false,
+               "enabled" : false
+            },
+            {
+               "x" : 697,
+               "height" : 48,
+               "accessible_name" : "Plot a new passage",
+               "width" : 352,
+               "label" : "Plot a new passage",
+               "y" : 851,
+               "visible" : false,
+               "enabled" : false
+            },
+            {
+               "x" : 697,
+               "height" : 48,
+               "accessible_name" : "Passage library",
+               "width" : 352,
+               "label" : "Passage library",
+               "y" : 911,
+               "visible" : false,
+               "enabled" : true
+            },
+            {
+               "x" : 977,
+               "height" : 44,
+               "accessible_name" : "Close sheet",
+               "width" : 86,
+               "label" : "Close",
+               "y" : 130,
+               "visible" : false,
+               "enabled" : true
+            },
+            {
+               "x" : 649,
+               "height" : 44,
+               "accessible_name" : "Back",
+               "width" : 94,
+               "label" : "Back",
+               "y" : 120,
+               "visible" : false,
+               "enabled" : true
+            },
+            {
+               "x" : 663,
+               "height" : 37,
+               "accessible_name" : "Settings section: Vessel",
+               "width" : 52,
+               "label" : "Vessel",
+               "y" : 221,
+               "visible" : false,
+               "enabled" : true
+            },
+            {
+               "x" : 720,
+               "height" : 37,
+               "accessible_name" : "Settings section: Navigation",
+               "width" : 75,
+               "label" : "Navigation",
+               "y" : 221,
+               "visible" : false,
+               "enabled" : true
+            },
+            {
+               "x" : 800,
+               "height" : 37,
+               "accessible_name" : "Settings section: Sensors",
+               "width" : 59,
+               "label" : "Sensors",
+               "y" : 221,
+               "visible" : false,
+               "enabled" : true
+            },
+            {
+               "x" : 864,
+               "height" : 37,
+               "accessible_name" : "Settings section: Autopilot",
+               "width" : 67,
+               "label" : "Autopilot",
+               "y" : 221,
+               "visible" : false,
+               "enabled" : true
+            },
+            {
+               "x" : 936,
+               "height" : 37,
+               "accessible_name" : "Settings section: Radar",
+               "width" : 50,
+               "label" : "Radar",
+               "y" : 221,
+               "visible" : false,
+               "enabled" : true
+            },
+            {
+               "x" : 991,
+               "height" : 37,
+               "accessible_name" : "Settings section: Display",
+               "width" : 58,
+               "label" : "Display",
+               "y" : 221,
+               "visible" : false,
+               "enabled" : true
+            },
+            {
+               "x" : 663,
+               "height" : 37,
+               "accessible_name" : "Settings section: System",
+               "width" : 56,
+               "label" : "System",
+               "y" : 263,
+               "visible" : false,
+               "enabled" : true
+            },
+            {
+               "x" : 724,
+               "height" : 37,
+               "accessible_name" : "Settings section: Help",
+               "width" : 45,
+               "label" : "Help",
+               "y" : 263,
+               "visible" : false,
+               "enabled" : true
+            },
+            {
+               "x" : 663,
+               "height" : 72,
+               "accessible_name" : "Navigation preferences",
+               "width" : 386,
+               "label" : "Navigation preferences",
+               "y" : 323,
+               "visible" : false,
+               "enabled" : true
+            },
+            {
+               "x" : 663,
+               "height" : 72,
+               "accessible_name" : "Chart presentation",
+               "width" : 386,
+               "label" : "Chart presentation",
+               "y" : 395,
+               "visible" : false,
+               "enabled" : true
+            },
+            {
+               "x" : 663,
+               "height" : 72,
+               "accessible_name" : "Charts & coverage",
+               "width" : 386,
+               "label" : "Charts & coverage",
+               "y" : 467,
+               "visible" : false,
+               "enabled" : true
+            },
+            {
+               "x" : 663,
+               "height" : 72,
+               "accessible_name" : "Alarms & thresholds",
+               "width" : 386,
+               "label" : "Alarms & thresholds",
+               "y" : 539,
+               "visible" : false,
+               "enabled" : true
+            },
+            {
+               "x" : 663,
+               "height" : 72,
+               "accessible_name" : "Passage library",
+               "width" : 386,
+               "label" : "Passage library",
+               "y" : 611,
+               "visible" : false,
+               "enabled" : true
+            },
+            {
+               "x" : 663,
+               "height" : 72,
+               "accessible_name" : "Waypoints",
+               "width" : 386,
+               "label" : "Waypoints",
+               "y" : 683,
+               "visible" : false,
+               "enabled" : true
+            },
+            {
+               "x" : 977,
+               "height" : 44,
+               "accessible_name" : "Close sheet",
+               "width" : 86,
+               "label" : "Close",
+               "y" : 130,
+               "visible" : false,
+               "enabled" : true
+            },
+            {
+               "x" : 683,
+               "height" : 44,
+               "accessible_name" : "Back",
+               "width" : 94,
+               "label" : "Back",
+               "y" : 120,
+               "visible" : false,
+               "enabled" : true
+            },
+            {
+               "x" : 701,
+               "height" : 40,
+               "accessible_name" : "Sort AIS by closest approach",
+               "width" : 170,
+               "label" : "Closest approach",
+               "y" : 225,
+               "visible" : false,
+               "enabled" : false
+            },
+            {
+               "x" : 875,
+               "height" : 40,
+               "accessible_name" : "Sort AIS by range",
+               "width" : 170,
+               "label" : "Range",
+               "y" : 225,
+               "visible" : false,
+               "enabled" : false
+            },
+            {
+               "x" : 697,
+               "height" : 48,
+               "accessible_name" : "Online AIS settings",
+               "width" : 352,
+               "label" : "Online AIS settings",
+               "y" : 685,
+               "visible" : false,
+               "enabled" : true
+            },
+            {
+               "x" : 977,
+               "height" : 44,
+               "accessible_name" : "Close sheet",
+               "width" : 86,
+               "label" : "Close",
+               "y" : 130,
+               "visible" : false,
+               "enabled" : true
+            },
+            {
+               "x" : 683,
+               "height" : 44,
+               "accessible_name" : "Back",
+               "width" : 94,
+               "label" : "Back",
+               "y" : 120,
+               "visible" : false,
+               "enabled" : true
+            },
+            {
+               "x" : 697,
+               "height" : 48,
+               "accessible_name" : "−10° magnetic course",
+               "width" : 83,
+               "label" : "−10°",
+               "y" : 444,
+               "visible" : false,
+               "enabled" : false
+            },
+            {
+               "x" : 697,
+               "height" : 48,
+               "accessible_name" : "Standby",
+               "width" : 172,
+               "label" : "Standby",
+               "y" : 512,
+               "visible" : false,
+               "enabled" : false
+            },
+            {
+               "x" : 787,
+               "height" : 48,
+               "accessible_name" : "−1° magnetic course",
+               "width" : 83,
+               "label" : "−1°",
+               "y" : 444,
+               "visible" : false,
+               "enabled" : false
+            },
+            {
+               "x" : 878,
+               "height" : 48,
+               "accessible_name" : "Auto",
+               "width" : 171,
+               "label" : "Auto",
+               "y" : 512,
+               "visible" : false,
+               "enabled" : false
+            },
+            {
+               "x" : 877,
+               "height" : 48,
+               "accessible_name" : "+1° magnetic course",
+               "width" : 82,
+               "label" : "+1°",
+               "y" : 444,
+               "visible" : false,
+               "enabled" : false
+            },
+            {
+               "x" : 697,
+               "height" : 48,
+               "accessible_name" : "Track",
+               "width" : 172,
+               "label" : "Track",
+               "y" : 580,
+               "visible" : false,
+               "enabled" : false
+            },
+            {
+               "x" : 966,
+               "height" : 48,
+               "accessible_name" : "+10° magnetic course",
+               "width" : 83,
+               "label" : "+10°",
+               "y" : 444,
+               "visible" : false,
+               "enabled" : false
+            },
+            {
+               "x" : 878,
+               "height" : 48,
+               "accessible_name" : "Wind",
+               "width" : 171,
+               "label" : "Wind",
+               "y" : 580,
+               "visible" : false,
+               "enabled" : false
+            },
+            {
+               "x" : 1001,
+               "height" : 49,
+               "accessible_name" : "Enable control",
+               "width" : 48,
+               "label" : "Enable control",
+               "y" : 643,
+               "visible" : false,
+               "enabled" : true
+            },
+            {
+               "x" : 697,
+               "height" : 48,
+               "accessible_name" : "Autopilot setup & diagnostics",
+               "width" : 352,
+               "label" : "Autopilot setup & diagnostics",
+               "y" : 897,
+               "visible" : false,
+               "enabled" : true
+            },
+            {
+               "x" : 977,
+               "height" : 44,
+               "accessible_name" : "Close sheet",
+               "width" : 86,
+               "label" : "Close",
+               "y" : 130,
+               "visible" : false,
+               "enabled" : true
+            },
+            {
+               "x" : 683,
+               "height" : 44,
+               "accessible_name" : "Back",
+               "width" : 94,
+               "label" : "Back",
+               "y" : 120,
+               "visible" : false,
+               "enabled" : true
+            },
+            {
+               "x" : 699,
+               "height" : 46,
+               "accessible_name" : "Alarm radius",
+               "width" : 350,
+               "label" : "Alarm radius",
+               "y" : 567,
+               "visible" : false,
+               "enabled" : false
+            },
+            {
+               "x" : 697,
+               "height" : 48,
+               "accessible_name" : "Set anchor & start watch",
+               "width" : 352,
+               "label" : "Set anchor & start watch",
+               "y" : 781,
+               "visible" : false,
+               "enabled" : false
+            },
+            {
+               "x" : 977,
+               "height" : 44,
+               "accessible_name" : "Close sheet",
+               "width" : 86,
+               "label" : "Close",
+               "y" : 130,
+               "visible" : false,
+               "enabled" : true
+            },
+            {
+               "x" : 683,
+               "height" : 44,
+               "accessible_name" : "Back",
+               "width" : 94,
+               "label" : "Back",
+               "y" : 120,
+               "visible" : false,
+               "enabled" : true
+            },
+            {
+               "x" : 1001,
+               "height" : 49,
+               "accessible_name" : "ENC text labels",
+               "width" : 48,
+               "label" : "ENC text labels",
+               "y" : -52,
+               "visible" : false,
+               "enabled" : false
+            },
+            {
+               "x" : 1001,
+               "height" : 49,
+               "accessible_name" : "AIS vessels",
+               "width" : 48,
+               "label" : "AIS vessels",
+               "y" : 6,
+               "visible" : false,
+               "enabled" : true
+            },
+            {
+               "x" : 1001,
+               "height" : 49,
+               "accessible_name" : "Depth soundings",
+               "width" : 48,
+               "label" : "Depth soundings",
+               "y" : 64,
+               "visible" : false,
+               "enabled" : false
+            },
+            {
+               "x" : 701,
+               "height" : 40,
+               "accessible_name" : "North up",
+               "width" : 112,
+               "label" : "North up",
+               "y" : 400,
+               "visible" : false,
+               "enabled" : true
+            },
+            {
+               "x" : 817,
+               "height" : 40,
+               "accessible_name" : "Course up",
+               "width" : 112,
+               "label" : "Course up",
+               "y" : 400,
+               "visible" : false,
+               "enabled" : true
+            },
+            {
+               "x" : 933,
+               "height" : 40,
+               "accessible_name" : "Head up",
+               "width" : 112,
+               "label" : "Head up",
+               "y" : 400,
+               "visible" : false,
+               "enabled" : true
+            },
+            {
+               "x" : 697,
+               "height" : 48,
+               "accessible_name" : "Chart palette preferences",
+               "width" : 352,
+               "label" : "Chart palette preferences",
+               "y" : 682,
+               "visible" : false,
+               "enabled" : true
+            }
+         ]
+      },
+      "navigation_footer" : {
+         "position_state" : "Current",
+         "position" : "59° 06.870′ N   018° 52.080′ E",
+         "cog_state" : "Current",
+         "health_summary" : "Inspect quality",
+         "historical" : true,
+         "health_state" : "Uncertain",
+         "health_source" : "Test data",
+         "cog" : "080°",
+         "navigation_state" : "TEST DATA",
+         "xte" : "—"
+      },
+      "pilot" : {
+         "actual_heading_magnetic_deg" : 80,
+         "wind_capability" : true,
+         "locked_heading_quality" : "UNAVAILABLE",
+         "mode_age_ms" : 504,
+         "output_unavailable" : false,
+         "track_capability" : true,
+         "fresh" : true,
+         "feedback_sequence" : "107",
+         "adapter" : "DEMO",
+         "control_capability" : false,
+         "simulated" : true,
+         "command_detail" : "Confirmed by subsequent matching pilot feedback",
+         "actual_heading_quality" : "LIVE",
+         "command_id" : "3",
+         "command_state" : "Confirmed",
+         "connection_epoch" : "0",
+         "source" : "DEMO simulated pilot feedback",
+         "mode" : "STANDBY",
+         "enabled" : false
+      },
+      "replay" : {
+         "allows_hardware_control" : true,
+         "active" : false
+      },
+      "test_fixtures" : true,
+      "plugins" : [
+         {
+            "name" : "ChartDownloader",
+            "api" : 113,
+            "version" : "1.4",
+            "initialized" : false,
+            "file" : "chartdldr_pi.dll",
+            "enabled" : false
+         },
+         {
+            "name" : "Dashboard",
+            "api" : 108,
+            "version" : "1.2",
+            "initialized" : true,
+            "file" : "dashboard_pi.dll",
+            "enabled" : true
+         },
+         {
+            "name" : "GRIB",
+            "api" : 116,
+            "version" : "5.0",
+            "initialized" : false,
+            "file" : "grib_pi.dll",
+            "enabled" : false
+         },
+         {
+            "name" : "WMM",
+            "api" : 108,
+            "version" : "1.1",
+            "initialized" : false,
+            "file" : "wmm_pi.dll",
+            "enabled" : false
+         }
+      ],
+      "ui_update" : {
+         "last_ms" : 0.4903,
+         "ticks" : "488",
+         "scope" : "Shell update callback including diagnostics; excludes asynchronous chart painting",
+         "mean_ms" : 5.803504508,
+         "timer_period_ms" : 250,
+         "maximum_ms" : 41.7236
+      },
+      "chart" : {
+         "longitude" : 18.5,
+         "quilt" : true,
+         "follow" : false,
+         "scale_bar" : {
+            "x" : 191,
+            "height" : 30,
+            "width" : 29,
+            "y" : 465
+         },
+         "depth_units_visible" : true,
+         "depth_unit_type" : 0,
+         "latitude" : 59.08,
+         "opengl_enabled" : false,
+         "scale_ppm" : 0.003000000026,
+         "canvas_pixels" : {
+            "height" : 527,
+            "width" : 998
+         }
+      },
+      "build_purpose" : "DEVELOPER TEST BUILD",
+      "test_workspace_perspective" : "layout2|name=ChartCanvas;caption=;state=770;dir=5;layer=0;row=0;pos=0;prop=100000;bestw=5;besth=5;minw=252;minh=761;maxw=-1;maxh=-1;floatx=-1;floaty=-1;floatw=-1;floath=-1|name=OpenNavTop;caption=;state=131580;dir=1;layer=10;row=0;pos=0;prop=100000;bestw=-1;besth=68;minw=-1;minh=68;maxw=-1;maxh=-1;floatx=-1;floaty=-1;floatw=-1;floath=-1|name=OpenNavTools;caption=;state=131580;dir=4;layer=5;row=0;pos=0;prop=100000;bestw=80;besth=-1;minw=80;minh=-1;maxw=-1;maxh=-1;floatx=-1;floaty=-1;floatw=-1;floath=-1|name=OpenNavData;caption=;state=131580;dir=2;layer=5;row=0;pos=0;prop=100000;bestw=186;besth=-1;minw=186;minh=-1;maxw=-1;maxh=-1;floatx=-1;floaty=-1;floatw=-1;floath=-1|name=OpenNavActions;caption=;state=508;dir=3;layer=10;row=0;pos=0;prop=100000;bestw=-1;besth=34;minw=-1;minh=-1;maxw=-1;maxh=-1;floatx=-1;floaty=-1;floatw=-1;floath=-1|name=OpenNavHorizon;caption=;state=131582;dir=3;layer=1;row=0;pos=0;prop=100000;bestw=-1;besth=132;minw=-1;minh=132;maxw=-1;maxh=-1;floatx=-1;floaty=-1;floatw=-1;floath=-1|name=OpenNavPage;caption=;state=258;dir=5;layer=0;row=0;pos=0;prop=100000;bestw=20;besth=20;minw=-1;minh=-1;maxw=-1;maxh=-1;floatx=-1;floaty=-1;floatw=-1;floath=-1|name=OpenNavProduct;caption=;state=256;dir=5;layer=0;row=0;pos=0;prop=100000;bestw=20;besth=20;minw=-1;minh=-1;maxw=-1;maxh=-1;floatx=-1;floaty=-1;floatw=-1;floath=-1|dock_size(5,0,0)=254|dock_size(1,10,0)=68|dock_size(4,5,0)=80|dock_size(2,5,0)=186|dock_size(3,10,0)=34|",
+      "ais_selected_mmsi" : 0,
+      "recording" : {
+         "captured" : 0,
+         "published" : 0,
+         "error" : "",
+         "active" : false
+      }
+   },
+   "energy" : {
+      "range_input" : "",
+      "arrival_input" : "Active route distance",
+      "range_quality" : "CURRENT INPUTS",
+      "arrival_validity" : "Active route distance invalid / outside model domain",
+      "model" : "DEMO: 48 kWh usable, 15% reserve; constant speed and whole-pack discharge",
+      "arrival_quality" : "UNAVAILABLE",
+      "range_nm" : 12.90211772
+   },
+   "text_data" : [
+      {
+         "name" : "Gear",
+         "quality" : "LIVE",
+         "value" : "Forward",
+         "age_ms" : 0,
+         "observed_monotonic_ms" : "6138453",
+         "validity" : "Measured",
+         "source" : "DEMO motor controller"
+      },
+      {
+         "name" : "Regeneration",
+         "quality" : "LIVE",
+         "value" : "Inactive",
+         "age_ms" : 0,
+         "observed_monotonic_ms" : "6138453",
+         "validity" : "Measured",
+         "source" : "DEMO motor controller"
+      },
+      {
+         "name" : "Connectivity",
+         "quality" : "LIVE",
+         "value" : "Isolated demo source",
+         "age_ms" : 0,
+         "observed_monotonic_ms" : "6138453",
+         "validity" : "Measured",
+         "source" : "DEMO internal generator"
+      }
+   ],
+   "publication_clock" : "live monotonic clock",
+   "build_purpose" : "DEVELOPER TEST BUILD",
+   "data_mode" : "DEMO",
+   "xnav_hardware_output_policy" : "test-loopback-only"
+}

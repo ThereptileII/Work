@@ -12,6 +12,9 @@ if($PSVersionTable.PSEdition -ne 'Desktop') {
 if(@(Get-Process -Name opencpn -ErrorAction SilentlyContinue).Count){throw 'No existing OpenCPN process permitted during isolated marker tests.'}
 $sourceTools=Join-Path $PSScriptRoot 'boat';$fixtureSources=Join-Path (Split-Path $PSScriptRoot -Parent) 'tests/commissioning-restart'
 . (Join-Path $sourceTools 'RestartCommissioning.ps1')
+# This harness now replays completed journals itself. Add-Type in the separate
+# broker process does not initialize this PowerShell process's wire decoder.
+Initialize-RestartNative
 . (Join-Path $sourceTools 'Commissioning.ps1')
 . (Join-Path $fixtureSources 'New-BrokerFixture.ps1')
 . (Join-Path $fixtureSources 'BrokerMarkerCleanup.ps1')
@@ -35,9 +38,12 @@ function Require($Condition,[string]$Label){if(-not $Condition){throw $Label};$c
 function WaitMarker([string]$Path,[int]$Seconds=15){$until=[DateTime]::UtcNow.AddSeconds($Seconds);while(-not [IO.File]::Exists($Path)){if([DateTime]::UtcNow -ge $until){throw ('Missing fixture marker: '+[IO.Path]::GetFileName($Path))};Start-Sleep -Milliseconds 20}}
 $status='failed';$failure=$null;$taskName=$null
 try {
- foreach($case in @('success','output-connection','plugin-bytes','expired','consumed','receipt-recording-failure')) {
+ foreach($case in @('success','output-connection','plugin-bytes','expired','consumed','receipt-recording-failure','palette-standard','palette-xnav','palette-opposite','palette-unarmed','palette-missing-intent','palette-mutated-ready','palette-replay-tamper')) {
   $fixture=New-BrokerFixture (Join-Path $root $case) $Binaries $sourceTools $fixtureSources $case
-  [IO.File]::WriteAllText((Join-Path $fixture.app 'target-mode.txt'),'--legacy')
+  $paletteCase=$case -clike 'palette-*';$mode=$(if($paletteCase){'--xnav'}else{'--legacy'})
+  $palette=$(if(-not $paletteCase -or $case -ceq 'palette-unarmed'){''}elseif($case -ceq 'palette-xnav'){'XNav'}else{'Standard'})
+  $expectedSuccess=$case -cin @('success','palette-standard','palette-xnav','palette-replay-tamper')
+  [IO.File]::WriteAllText((Join-Path $fixture.app 'target-mode.txt'),$mode)
   [IO.File]::WriteAllText((Join-Path $fixture.app 'hold-child.txt'),'explicit marker-only PID verification window')
   $start=New-Object Diagnostics.ProcessStartInfo;$start.FileName=$fixture.executable;$start.Arguments='--parent';$start.WorkingDirectory=$fixture.app;$start.UseShellExecute=$false
   $start.EnvironmentVariables['PATH']=$fixture.session.path
@@ -60,10 +66,18 @@ try {
    if($case -ceq 'consumed'){$null=New-Item -ItemType Directory -Path $fixture.transition;Write-Record (Join-Path $fixture.transition 'permit-consumed.json') @{testOnly='interrupted consumed transition'}}
    $run=New-Object Diagnostics.ProcessStartInfo
    $run.FileName=Join-Path $env:WINDIR 'System32\WindowsPowerShell\v1.0\powershell.exe'
-   $run.Arguments='-NoProfile -NonInteractive -ExecutionPolicy Bypass -File "'+(Join-Path $fixture.scripts 'RestartCommissioningBroker.ps1')+'" -SessionRecord "'+$fixture.record+'" -ExpectedSha256 '+$fixture.recordSha256+' -ParentProcessId '+$parent.Id+' -ParentCreatedFiletime '+$created+' -Mode --legacy'
+   $run.Arguments='-NoProfile -NonInteractive -ExecutionPolicy Bypass -File "'+(Join-Path $fixture.scripts 'RestartCommissioningBroker.ps1')+'" -SessionRecord "'+$fixture.record+'" -ExpectedSha256 '+$fixture.recordSha256+' -ParentProcessId '+$parent.Id+' -ParentCreatedFiletime '+$created+' -Mode '+$mode
+   if($palette){$run.Arguments+=' -ChartPalette '+$palette}
    $run.WorkingDirectory=$fixture.scripts;$run.UseShellExecute=$false;$run.RedirectStandardOutput=$true;$run.RedirectStandardError=$true
    $run.EnvironmentVariables['LOCALAPPDATA']=(Join-Path $fixture.root 'local')
    $run.EnvironmentVariables['OPENNAV_BROKER_FIXTURE_IDENTITY_SHA256']=$fixture.identityHash
+   if($palette) {
+    # Synthetic UI intent only; the separate HWND fixture exercises real
+    # selection/confirmation. The actual production broker is never replaced.
+    $armPath=Join-Path $fixture.sessionDirectory ('arm-'+$parent.Id+'-'+$created+'.json')
+    Write-Record $armPath @{owner=$script:RestartOwner;session=$fixture.session.session;recordSha256=$fixture.recordSha256;mode=$mode;chartPalette=$palette;
+      parentPid=$parent.Id.ToString();parentCreatedFiletime=$created;transition=$fixture.transition;execute=$run.FileName;arguments=$run.Arguments;testOnly='Synthetic Arm fixture, no UI operation'}
+   }
    $broker=[Diagnostics.Process]::Start($run);$outTask=$broker.StandardOutput.ReadToEndAsync();$errTask=$broker.StandardError.ReadToEndAsync()
    if($case -cin @('expired','consumed')) {
     Require ($broker.WaitForExit(15000) -and $broker.ExitCode -ne 0) ($case+': broker refuses before opening authorization pipe')
@@ -72,7 +86,17 @@ try {
     while(-not [IO.File]::Exists($ready) -and -not $broker.HasExited -and [DateTime]::UtcNow -lt $until){Start-Sleep -Milliseconds 20}
     if(-not [IO.File]::Exists($ready)){$detail=if($errTask.IsCompleted){$errTask.GetAwaiter().GetResult()}else{'broker stderr still pending; no blocking read'};throw ('Actual broker failed to publish readiness: '+$detail)}
     Require (-not $parent.HasExited) ($case+': parent held alive until broker ready')
-    $text=[IO.File]::ReadAllText($fixture.profile).Replace('InterfaceMode=xnav','InterfaceMode=legacy')
+    if($palette -and $case -cne 'palette-missing-intent') {
+     Write-Record (Join-Path $fixture.transition 'ui-intent-consumed.json') @{owner='OpenNavX.GuardedModeIntent.1';session=$fixture.session.session;recordSha256=$fixture.recordSha256;
+       mode=$mode;chartPalette=$palette;fromMode='--xnav';parent=@{pid=$parent.Id.ToString();createdFiletime=$created};command=@{Palette=$palette};status='consumed-before-ui-action';
+       armSha256=(Get-Digest $armPath);readySha256=(Get-Digest $ready);testOnly='Synthetic consumed UI intent, no HWND claim'}
+     if($case -ceq 'palette-mutated-ready'){[IO.File]::AppendAllText($ready,' ')}
+    }
+    $text=[IO.File]::ReadAllText($fixture.profile)
+    if($paletteCase){
+     $actual=$(if($case -cin @('palette-xnav','palette-opposite')){'XNav'}else{'Standard'})
+     $text=$text.Replace('ChartPresentationV1=XNav',('ChartPresentationV1='+$actual))
+    }else{$text=$text.Replace('InterfaceMode=xnav','InterfaceMode=legacy')}
     if($case -ceq 'output-connection'){$text=$text.Replace('COM8;115200;0;0;','COM8;115200;0;1;')}
     [IO.File]::WriteAllText($fixture.profile,$text,(New-Object Text.UTF8Encoding($false)))
     if($case -ceq 'plugin-bytes'){[IO.File]::AppendAllText($fixture.plugin,'unreviewed change')}
@@ -84,10 +108,23 @@ try {
    Require ($companion.WaitForExit(15000)) ($case+': actual helper exits after permit or refusal')
    $children=@(Get-ChildItem -LiteralPath $fixture.app -Filter 'child--*.txt')
    $permit=Join-Path $fixture.transition 'permit-consumed.json';$completion=Join-Path $fixture.transition 'completion.json'
-   if($case -ceq 'success') {
+   if($expectedSuccess) {
     Require ($broker.ExitCode -eq 0 -and $companion.ExitCode -eq 0 -and $children.Count -eq 1) 'success: exact broker/audit/helper produces one marker child'
     Require ([IO.File]::Exists($completion) -and [IO.File]::Exists($permit)) 'success: consumed-before-allow and verified child completion retained'
-    $record=Read-Record $completion;$child=Get-Process -Id ([int]$record.child.pid)
+    $record=Read-Record $completion
+    if($palette) {
+     $permitted=Read-Record $permit
+     Require ($permitted.chartPalette -ceq $palette -and $permitted.paletteProof.intentSha256 -ceq (Get-Digest (Join-Path $fixture.transition 'ui-intent-consumed.json'))) ($case+': actual broker permit binds immutable selected palette')
+     $replaySession=Read-Record $fixture.record;$replaySession|Add-Member recordSha256 $fixture.recordSha256
+     $chain=Get-RestartBaseline $replaySession $fixture.record $record.child -ReviewOnly
+     Require ($chain.mode -ceq '--xnav' -and $chain.completedTransitions -eq 1 -and $chain.completionSha256 -ceq (Get-Digest $completion)) ($case+': actual completed palette child replays through production journal reader')
+     if($case -ceq 'palette-replay-tamper') {
+      $intent=Join-Path $fixture.transition 'ui-intent-consumed.json';[IO.File]::AppendAllText($intent,' ')
+      $rejected=$false;try{$null=Get-RestartBaseline $replaySession $fixture.record $record.child -ReviewOnly}catch{$rejected=$_.Exception.Message -clike '*Palette intent chain changed*'}
+      Require $rejected 'palette replay refuses changed consumed intent after actual successful native child'
+     }
+    }
+    $child=Get-Process -Id ([int]$record.child.pid)
     try{Require ($child.Path -ieq $fixture.executable -and $child.StartTime.ToUniversalTime().ToFileTimeUtc().ToString() -ceq $record.child.createdFiletime) 'success: actual retained child identity matches durable broker receipt'}finally{$child.Dispose()}
    } elseif($case -ceq 'receipt-recording-failure') {
     Require ($broker.ExitCode -ne 0 -and $children.Count -eq 1 -and [IO.File]::Exists($permit) -and -not [IO.File]::Exists($completion)) 'receipt failure: actual child exists but permit remains consumed without accepted completion'
@@ -100,7 +137,7 @@ try {
    $stdout=$outTask.GetAwaiter().GetResult();$stderr=$errTask.GetAwaiter().GetResult()
    [IO.File]::WriteAllText((Join-Path $Evidence ($case+'-stdout.txt')),$stdout)
    [IO.File]::WriteAllText((Join-Path $Evidence ($case+'-stderr.txt')),$stderr)
-   $cases.Add(@{name=$case;brokerExit=$broker.ExitCode;helperExit=$companion.ExitCode;markerChildren=$children.Count;realApplication=$false})
+   $cases.Add(@{name=$case;requestedMode=$mode;chartPalette=$palette;syntheticUiIntent=$paletteCase;brokerExit=$broker.ExitCode;helperExit=$companion.ExitCode;markerChildren=$children.Count;realApplication=$false})
    $caseCompleted=$true
   } finally {
    # Release only our marker protocol; never Stop-Process/Kill any application.

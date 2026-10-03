@@ -1,7 +1,7 @@
 # Read-only vessel/UI review. No application launch or equipment commands.
 . (Join-Path $PSScriptRoot 'Common.ps1')
 function Get-WindowReviewActions {
-  return @('Capture','Resize1280x800','Menu','Navigation','Routes','Waypoints','AIS','Instruments','Advice','PilotView','Anchor','Settings','Sources','Display','ToggleFullscreen','ToggleOrientation','Route','Energy','Diagnostics','System','Alerts','Escape','CyclePalette','ZoomIn','ZoomOut','Center','PanRight','PageUp','PageDown','SelectFirstVisibleWaypoint','SelectFirstVisibleAis')
+  return @('Capture','Resize1280x800','Menu','Navigation','Routes','Waypoints','AIS','Instruments','Advice','PilotView','Anchor','Settings','Sources','Display','ToggleFullscreen','ToggleOrientation','Route','Energy','Diagnostics','System','Alerts','Escape','CyclePalette','ZoomIn','ZoomOut','Center','PanRight','PageUp','PageDown','SelectFirstVisibleWaypoint','SelectFirstVisibleAis','Layers','ChartPalettePreferences','RevealChartPalettePreference')
 }
 function Convert-WindowReviewChart($Data,[string]$Commit,[datetime]$Written,[datetime]$Now) {
   if($Commit -cnotmatch '^[a-f0-9]{40}$' -or $Written -gt $Now -or ($Now-$Written).TotalSeconds -gt 5 -or $Data.build_commit -cne $Commit -or

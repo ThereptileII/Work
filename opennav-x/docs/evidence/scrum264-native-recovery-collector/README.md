@@ -1,0 +1,105 @@
+# SCRUM-264 — audited recovery-package native capture supplement
+
+Collector-only change based on application source `1835d1b`. It does not rebuild,
+modify or qualify the frozen `9d98a500916e8a7f59dac9735427dde6d3c7d2e5`
+application. No native launch, CI dispatch or boat action was performed here.
+
+The existing collector requires `include/config.h`, which the native package
+artifacts do not retain. `package-preview.py` already copies its exact version
+and date into the hash-bound packaged `profile/opencpn.conf`. The explicit
+recovery mode validates the independently audited original ZIP hash, every ZIP
+CRC, the ZIP/extracted file inventory, all payload hashes, `FILE_SHA256.json`,
+`PRODUCT_BUILD.json`, expected executable and application commit, fixture-off and
+status-only policy. Links/reparse paths, path escape/ambiguity, missing or extra
+files, duplicate JSON/config keys and mismatched identities are refused. ZIP
+entry metadata independently refuses symbolic links, special file types and DOS
+directory/reparse attributes; unspecified or explicit regular-file types are
+allowed. The portable marker must contain the exact package-preview text (LF or
+native CRLF). Non-object product JSON is rejected by the shared status-only guard.
+Only `ConfigVersionString` is read from that packaged profile into a NEW test
+profile. Connections, plugins, credentials, routes and preferences are not copied.
+The existing `--build` mode remains available. Recovery mode refuses app/build
+overrides and requires disposable Windows plus `--navigation-only`.
+
+## Invocation after independent artifact audit
+
+Run the exact collector checkout on a disposable GitHub Actions Windows desktop,
+serially, using the original portable ZIP and its unchanged extracted directory.
+All hash arguments must come from the independent same-run artifact audit, not
+values inferred by this invocation. `GITHUB_ACTIONS=true` is an existing required
+runner observation, not a switch to authorize use on another computer.
+
+```powershell
+python tools/prototype/capture-native.py `
+  --recovery-package <extracted/SKAGER-Beta2-Portable-Recovery> `
+  --recovery-archive <SKAGER-Beta2-Portable-Recovery.zip> `
+  --expected-recovery-archive-sha256 <audited-zip-sha256> `
+  --expected-file-manifest-sha256 <audited-FILE_SHA256.json-sha256> `
+  --expected-executable-sha256 <audited-app/opencpn.exe-sha256> `
+  --expected-application-commit 9d98a500916e8a7f59dac9735427dde6d3c7d2e5 `
+  --navigation-only --public-enc `
+  --chart-style XNav --renderer software --output <new-output-directory>
+```
+
+For the official IHO scene replace `--public-enc` with
+`--iho-s64 <retained/GB4X0000.000>`. Repeat each scene only for the selected
+`XNav`/`Standard` and `software`/`opengl` combinations. Each invocation captures
+Day → Dusk → Night → Day return and requires a normal exit. Requested GL must
+actually be enabled; software fallback cannot pass. No fixture-enabled app or
+synthetic chart object is required. There is no live/simulated input feed.
+
+The IHO input is exact SHA256
+`c70d9e0f53e149270f85900f8576082db86781d64fbb71aa7d5ceb4af4aa22e3`.
+It is official S-64 presentation-test geography, **not an operational nautical
+ENC**. The retained e1 collector's actual pair is BOYSPP 254 (yellow, shape 3,
+CATSPM 27) and TOPMAR 257 (yellow, TOPSHP 7), both at latitude `-32.3471615`, longitude
+`61.169588`. Requested scale is 0.6; actual upstream observed scale must remain
+`0.5826126536`, with the single exact cell/quilt, canvas 1014×566, no follow and
+saved/effective Simplified table 76. Input is copied into a fresh isolated fixture
+directory; source and staged cell are rehashed after shutdown.
+
+## Assertions and retained evidence
+
+`capture.json` records collector source SHA separately from the expected and
+observed application SHA, executable/package identities, input provenance,
+renderer, themes, controls and exit. Every screenshot has copied runtime
+observations. Core/private observations are checked separately; this public-ENC
+review requires the private adapter to remain explicitly unavailable. The former
+incorrect `XNav ` status-prefix assertion now requires the exact existing
+`SKAGER presentation v1 / pinned symbols` status and unchanged no-adapter suffix.
+
+Existing native layout/paint/control and renderer assertions remain. Both scenes
+now require exact unmasked whole-chart Day return and retain the difference on
+failure. IHO additionally retains a 72×72 source-pair crop and compares predeclared
+body/head rectangles with source-hashed, renderer-specific retained e1 images.
+The fitted-head rectangle excludes the co-located light at the center; no color
+search, movable sample or inferred debugger observation is used. Standard uses
+its own original-mark reference. These are strict new Windows pixel comparisons:
+any platform raster/density difference fails for inspection, rather than becoming
+an automatic tolerance. A matching crop does not claim an MSVC renderer-entry
+trace or runtime alias-name observation.
+
+Fourteen focused offline unittest cases passed in 0.613 seconds; Python compilation,
+CLI help and `git diff --check` also passed. Offline tests exercise valid identity/version-only profile creation, mismatched
+external identity, altered fixture/output policy, missing/extra/modified payload,
+ZIP versus manifest inconsistency, forged ZIP link/FIFO/device/reparse/directory
+metadata, wrong marker, non-object product JSON, path/link/duplicate refusal and wrong cell
+refusal. All 12 retained renderer/style/theme probe images pass their exact
+reference. Erasing the fitted head or body fails. The known retained Standard GL
+whole-chart Day-return shift remains a failing negative control. Tests do not
+execute the identity fixture's dummy executable bytes.
+
+## Boundaries before execution
+
+This harness requires the disposable CI desktop and a new disconnected profile;
+it is not an OS network/device sandbox. The existing status-only application
+policy is checked, and runtime pilot/control state must remain disabled. Bundled
+plugin discovery and OpenCPN startup are not a claim of universal I/O silence.
+Run serially with other app tests because upstream uses a fixed local REST port.
+The audited extracted package should remain unchanged between runs; edits or
+unexpected package-side writes are refused on the final verification and on the next invocation.
+
+No generic `_bcngn`/`_slgto` scene or initialized private o-charts canvas is added.
+Windows font-face tracing, physical GPU, helper/licensed chart execution and boat
+acceptance remain outside this supplement. The native first execution is still
+pending; passing offline guards does not establish native acceptance.

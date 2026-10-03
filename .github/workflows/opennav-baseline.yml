@@ -535,8 +535,16 @@ jobs:
             if ($Result -ne 0) { exit $Result }
           }
       - name: Retain complete fixture UI and scenario regression suite
+        id: fixture_ui
         if: ${{ !cancelled() && steps.integrated.conclusion == 'success' }}
         run: ./opennav-x/tools/test-preview-windows.ps1
+      - name: Preserve first fixture failure before independent display checks
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: ${{ !cancelled() && steps.fixture_ui.conclusion == 'failure' }}
+        with:
+          name: windows-fixture-failure-${{ github.sha }}
+          path: opennav-x/evidence/local/preview-*
+          if-no-files-found: error
       - name: Capture successful same-job Windows dependency closure
         if: ${{ success() && steps.integrated.conclusion == 'success' }}
         run: |

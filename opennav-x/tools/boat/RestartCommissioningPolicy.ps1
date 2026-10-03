@@ -64,7 +64,20 @@ function Assert-RestartScalar([string]$Kind,[string]$Value) {
     }
   }
 }
-function Assert-RestartIniDelta($Before,$After,[string]$Mode) {
+# An absent intent preserves the historical closed policy. It is never a
+# generic scalar exception and can only accompany an explicit SKAGER restart.
+function Assert-RestartChartPalette([string]$Mode,[string]$ChartPalette='') {
+  if($ChartPalette -and ($Mode -cne '--xnav' -or $ChartPalette -cnotin @('XNav','Standard'))){throw 'Chart palette requires exact XNav/Standard intent and --xnav.'}
+}
+function Get-RestartChartPalette($Record) {
+  $property=$Record.PSObject.Properties['chartPalette']
+  if($null -eq $property){return ''}
+  if($property.Value -isnot [string]){throw 'Chart palette intent must be a string.'}
+  Assert-RestartChartPalette $Record.mode $property.Value
+  return $property.Value
+}
+function Assert-RestartIniDelta($Before,$After,[string]$Mode,[string]$ChartPalette='') {
+  Assert-RestartChartPalette $Mode $ChartPalette
   if($Mode -cnotin @('--xnav','--legacy','--safe-mode')){throw 'Invalid target mode.'}
   $original=$Before;$Before=[Collections.Generic.Dictionary[string,string]]::new([StringComparer]::Ordinal)
   foreach($key in $original.Keys){$Before.Add($key,$original[$key])}
@@ -80,6 +93,8 @@ function Assert-RestartIniDelta($Before,$After,[string]$Mode) {
     if($key -ceq 'OpenNav/InterfaceMode') {
       if($Mode -ceq '--safe-mode' -or $After[$key] -cne $Mode.Substring(2)){throw 'Persisted interface does not match explicit restart.'}
       if($was -and $Before[$key] -cnotin @('xnav','legacy')){throw 'Original persisted interface invalid.'}
+    } elseif($key -ceq 'OpenNav/ChartPresentationV1') {
+      if(-not $ChartPalette -or $After[$key] -cne $ChartPalette -or ($was -and $Before[$key] -cnotin @('XNav','Standard'))){throw 'Palette delta differs from the explicitly armed choice.'}
     } elseif($key -ceq 'AUI/AUIPerspective') {
       if(-not $was){throw 'AUI needs a separately reviewed existing baseline.'}
       Assert-RestartAuiDelta $Before[$key] $After[$key]
@@ -94,6 +109,7 @@ function Assert-RestartIniDelta($Before,$After,[string]$Mode) {
     $changes.Add([pscustomobject]@{key=$key;before=$(if($was){$Before[$key]}else{$null});after=$After[$key]})
   }
   if($Mode -cne '--safe-mode' -and $After['OpenNav/InterfaceMode'] -cne $Mode.Substring(2)){throw 'Target mode was not persisted by normal close.'}
+  if($ChartPalette -and (-not $After.ContainsKey('OpenNav/ChartPresentationV1') -or $After['OpenNav/ChartPresentationV1'] -cne $ChartPalette)){throw 'Resulting chart palette differs from explicit intent, including no-delta restarts.'}
   return $changes.ToArray()
 }
 function Assert-RestartDecimal($Value,[string]$Label,[bool]$AllowZero=$false) {
