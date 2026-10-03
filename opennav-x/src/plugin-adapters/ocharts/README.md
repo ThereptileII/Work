@@ -9,7 +9,7 @@ The adapter must never be named `*_pi.dll` or be independently discovered.
 
 ## Presentation boundary
 
-The patch changes one plugin initialization call, preserving its stock CSV
+The patch changes one renderer initialization call, preserving its stock CSV
 registrar, helper, decryption, license and plugin-data paths. The private library
 receives the host's copied binding only after the host qualifies both DLLs.
 Binding has no renderer side effects, refuses malformed UTF-8, non-absolute paths,
@@ -100,3 +100,13 @@ No package, release, licensing or boat acceptance is implied by this port.
 The accompanying host review identified an over-capacity Win32 path conversion
 that must be checked before constructing wxString; the root owner corrected it.
 Host explicit read locks bracket load/bind/status, not the later `create_pi` call.
+
+SCRUM-267 adds four observation-only activity calls at Init entry/completion,
+DeInit and plugin destruction. The separate `skager_chart_point_style_v1` export
+copies the actual private renderer getter only while that renderer is active,
+valid and selected, on the application thread. It borrows the pointer for that
+single read and never retains it. Failed initialization, fallback, absent renderer,
+DeInit/destruction and off-thread queries cannot expose a table. Existing binding
+and status v1 layouts/reserved fields are unchanged; package verification now
+requires the additional export. The focused runner also checks this observation
+and its host-side decoder, without launching any renderer.

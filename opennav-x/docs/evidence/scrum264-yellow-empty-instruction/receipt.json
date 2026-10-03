@@ -1,0 +1,85 @@
+{
+  "results": {
+    "core": {
+      "sourceSha256": "81249b229533e602e7d9a6bb04982c3b160be7e5d3e200444970bf4f2e481752",
+      "methodsSha256": "1ebf017b61f98f4f4ba75c67faa30c4572d4e975d815348c0c5d214a6c5c94e9",
+      "lookupTypeSha256": "5d6c78f3e2242b609851e5b46e0374adbcc24dc2a2e118ab79b6a8d1c638281c",
+      "compileCommand": [
+        "c++",
+        "-std=c++17",
+        "-Wall",
+        "-Wextra",
+        "-Werror",
+        "-Wno-unused-function",
+        "-Wno-deprecated-copy",
+        "-I/home/standard/Projects/X-nav/.local/sysroot/usr/lib/wx/include/gtk3-unicode-3.2",
+        "-I/home/standard/Projects/X-nav/.local/sysroot/usr/include/wx-3.2",
+        "-DWXUSINGDLL",
+        "-D__WXGTK3__",
+        "-D__WXGTK__",
+        "-D_FILE_OFFSET_BITS=64",
+        "-I.local/parser/core/override",
+        "-I/home/standard/Projects/X-nav-worktrees/scrum264-yellow-empty-instruction/src",
+        "-I.local/parser/core",
+        "-I/home/standard/Projects/X-nav-worktrees/scrum264-combined-linux-33d90c3/build/integration-source/libs/s52plib/src",
+        "-I/home/standard/Projects/X-nav-worktrees/scrum264-combined-linux-33d90c3/build/integration-source/libs/geoprim/src",
+        "-I/home/standard/Projects/X-nav-worktrees/scrum264-combined-linux-33d90c3/build/integration-source/libs/pugixml",
+        "/home/standard/Projects/X-nav-worktrees/scrum264-yellow-empty-instruction/tests/chart_yellow_lookup_parser_test.cpp",
+        "/home/standard/Projects/X-nav-worktrees/scrum264-combined-linux-33d90c3/build/integration-source/libs/pugixml/pugixml.cpp",
+        "-L/home/standard/Projects/X-nav/.local/sysroot/usr/lib",
+        "-lwx_gtk3u_core-3.2",
+        "-lwx_baseu-3.2",
+        "-o",
+        ".local/parser/core/fixture"
+      ],
+      "result": "73 yellow parser checks passed\n",
+      "negativeControls": {
+        "old-empty-only": 1,
+        "prefix-only": 1,
+        "ignore-rule-list": 1
+      }
+    },
+    "private": {
+      "sourceSha256": "a88dd1739236032b23548a70e45bf9b8c649118678b36743ee5e754b47e6c208",
+      "methodsSha256": "c4c8ea24469f4123b8c284d46f4a1acd29da5677270d3c46b67a2f68be0e650c",
+      "lookupTypeSha256": "6a5379f622a8fe4c284df62787a6963b9c1a7eb19ec32cc3d27dd5fcdb642f11",
+      "compileCommand": [
+        "c++",
+        "-std=c++17",
+        "-Wall",
+        "-Wextra",
+        "-Werror",
+        "-Wno-unused-function",
+        "-Wno-deprecated-copy",
+        "-I/home/standard/Projects/X-nav/.local/sysroot/usr/lib/wx/include/gtk3-unicode-3.2",
+        "-I/home/standard/Projects/X-nav/.local/sysroot/usr/include/wx-3.2",
+        "-DWXUSINGDLL",
+        "-D__WXGTK3__",
+        "-D__WXGTK__",
+        "-D_FILE_OFFSET_BITS=64",
+        "-DPRIVATE_LOOKUP",
+        "-I.local/parser/private/override",
+        "-I/home/standard/Projects/X-nav-worktrees/scrum264-yellow-empty-instruction/src",
+        "-I.local/parser/private",
+        "-I/home/standard/Projects/X-nav-worktrees/scrum259-adapter-preparation/.local/pinned-source/libs/s52plib/src",
+        "-I/home/standard/Projects/X-nav-worktrees/scrum259-adapter-preparation/.local/pinned-source/libs/geoprim/src",
+        "-I/home/standard/Projects/X-nav-worktrees/scrum259-adapter-preparation/.local/pinned-source/libs/pugixml",
+        "/home/standard/Projects/X-nav-worktrees/scrum264-yellow-empty-instruction/tests/chart_yellow_lookup_parser_test.cpp",
+        "/home/standard/Projects/X-nav-worktrees/scrum264-combined-linux-33d90c3/build/integration-source/libs/pugixml/pugixml.cpp",
+        "-L/home/standard/Projects/X-nav/.local/sysroot/usr/lib",
+        "-lwx_gtk3u_core-3.2",
+        "-lwx_baseu-3.2",
+        "-o",
+        ".local/parser/private/fixture"
+      ],
+      "result": "77 yellow parser checks passed\n",
+      "negativeControls": {
+        "old-empty-only": 1,
+        "prefix-only": 1,
+        "ignore-rule-list": 1
+      }
+    }
+  },
+  "headerSha256": "feb82319b1b2d372d2b512ff9a7775bca7b752bcf09e64919482152a6405549d",
+  "limits": "Real ProcessLookups/BuildLookup with actual core value/private pointer types and product guard; fixture containers/objects. No actual canvas, native Windows, GL, plugin or boat execution."
+}

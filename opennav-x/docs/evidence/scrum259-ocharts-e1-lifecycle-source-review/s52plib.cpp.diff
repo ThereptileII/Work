@@ -1,0 +1,65 @@
+--- d5/libs/s52plib/src/s52plib.cpp
++++ e1/libs/s52plib/src/s52plib.cpp
+@@ -49,6 +49,7 @@
+ #ifdef SKAGER_OCHARTS_ADAPTER
+ #include "integration/ChartLightSymbol.h"
+ #include "integration/ChartSpecialBuoySymbol.h"
++#include "integration/ChartYellowBuoySymbol.h"
+ #endif
+ #ifdef SKAGER_OCHARTS_ADAPTER
+ #include "integration/ChartNameText.h"
+@@ -3507,6 +3508,17 @@
+         m_presentationLightSymbols,
+         rzRules->LUP && rzRules->LUP->TNAM == SIMPLIFIED,
+         rzRules->obj, rules->razRule->name.SYNM);
++    const char *yellowAlias = opennav::integration::PresentationYellowBuoyAlias(
++        m_presentationLightSymbols,
++        rzRules->LUP && rzRules->LUP->TNAM == SIMPLIFIED,
++        rzRules->obj, rules->razRule->name.SYNM);
++    if (yellowAlias && rules->razRule->definition.SYDF == 'R') {
++      auto found = _symb_sym->find(wxString::FromUTF8(yellowAlias));
++      if (found != _symb_sym->end() && found->second &&
++          found->second->definition.SYDF == 'R' &&
++          !memcmp(found->second->name.SYNM, yellowAlias, 8))
++        paintRule = found->second;
++    }
+     // Dusk loses orange recognition at the required contrast; use stock.
+     const bool buoyTheme = m_ColorScheme == "DAY" ||
+                            m_ColorScheme == "DAY_BRIGHT" || m_ColorScheme == "NIGHT";
+@@ -6664,6 +6676,26 @@
+   return DoRenderObjectTextOnly(NULL, rzRules);
+ }
+ 
++#ifdef SKAGER_OCHARTS_ADAPTER
++void s52plib::RenderPresentationYellowTopmark(ObjRazRules *rzRules) {
++  if (!opennav::integration::PresentationYellowTopmark(
++          m_presentationLightSymbols, rzRules)) return;
++  // Both pieces must exist before adding a fitted head to an otherwise empty
++  // Simplified TOPMAR rule. Each Rule/cache remains owned by this library.
++  auto body = _symb_sym->find("XNSPPY01");
++  auto head = _symb_sym->find("XNSPPT01");
++  if (body == _symb_sym->end() || !body->second ||
++      body->second->definition.SYDF != 'R' ||
++      memcmp(body->second->name.SYNM, "XNSPPY01", 8) ||
++      head == _symb_sym->end() || !head->second ||
++      head->second->definition.SYDF != 'R' ||
++      memcmp(head->second->name.SYNM, "XNSPPT01", 8)) return;
++  wxPoint point;
++  GetPointPixSingle(rzRules, rzRules->obj->y, rzRules->obj->x, &point);
++  RenderRasterSymbol(rzRules, head->second, point, 0);
++}
++#endif
++
+ int s52plib::DoRenderObject(wxDC *pdcin, ObjRazRules *rzRules) {
+   // TODO  Debugging
+         //if(rzRules->obj->Index == 6775)
+@@ -6676,6 +6708,9 @@
+   if (!ObjectRenderCheckRules(rzRules, true)) return 0;
+ 
+   m_pdc = pdcin;  // use this DC
++#ifdef SKAGER_OCHARTS_ADAPTER
++  RenderPresentationYellowTopmark(rzRules);
++#endif
+   Rules *rules = rzRules->LUP->ruleList;
+ 
+   while (rules != NULL) {

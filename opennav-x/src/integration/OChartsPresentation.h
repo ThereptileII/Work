@@ -1,4 +1,5 @@
 #pragma once
+#include "integration/OChartsPointStyle.h"
 #include <functional>
 #include <string>
 #include <wx/dynlib.h>
@@ -13,4 +14,5 @@ bool LoadQualifiedOChartsPresentation(
 // Main-thread copied diagnostics. No plugin/chart object or function pointer is
 // retained after unloading. A query never initializes a renderer.
 std::string OChartsPresentationStatus();
+OChartsPointStyle ReadOChartsPointStyle();
 }

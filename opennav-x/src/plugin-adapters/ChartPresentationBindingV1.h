@@ -55,3 +55,22 @@ typedef int32_t (SKAGER_CHART_CALL *SkagerBindChartPresentationV1)(
     const SkagerChartBindingV1*);
 typedef int32_t (SKAGER_CHART_CALL *SkagerGetChartPresentationStatusV1)(
     SkagerChartPresentationStatusV1*);
+
+/* Separate v1 observation ABI: existing binding/status layout and reserved
+ * fields remain unchanged. Caller provides exact size/version and zero other
+ * fields. Main-thread only; rejected queries leave caller bytes unchanged.
+ * Zero is unavailable, never a guessed chart table. No query initializes the
+ * renderer or changes its policy. */
+#define SKAGER_CHART_POINT_STYLE_VERSION 1u
+#define SKAGER_CHART_POINT_STYLE_EXPORT "skager_chart_point_style_v1"
+#define SKAGER_CHART_POINT_STYLE_SIMPLIFIED 76u
+#define SKAGER_CHART_POINT_STYLE_PAPER 82u
+typedef struct SkagerChartPointStyleV1 {
+  uint32_t structBytes;
+  uint32_t version;
+  uint32_t available;
+  uint32_t effectivePointStyle;
+  uint32_t reserved[8];
+} SkagerChartPointStyleV1;
+typedef int32_t (SKAGER_CHART_CALL *SkagerGetChartPointStyleV1)(
+    SkagerChartPointStyleV1*);

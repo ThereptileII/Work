@@ -80,4 +80,23 @@ std::string OChartsPresentationStatus() {
   return last_refusal.empty() ? "o-charts: no SKAGER adapter loaded"
                               : "o-charts: SKAGER presentation unavailable / " + last_refusal;
 }
+OChartsPointStyle ReadOChartsPointStyle() {
+  if (!wxIsMainThread() || !loaded_module) return {};
+  const auto* plugins = PluginLoader::GetInstance()->GetPlugInArray();
+  for (unsigned i = 0; i < plugins->GetCount(); ++i) {
+    const auto* plugin = plugins->Item(i);
+    if (!plugin->m_init_state || plugin->m_plugin_file != loaded_original ||
+        !plugin->m_library.IsLoaded() ||
+        plugin->m_library.GetLibHandle() != loaded_module) continue;
+    const auto query = reinterpret_cast<SkagerGetChartPointStyleV1>(
+        plugin->m_library.GetSymbol(SKAGER_CHART_POINT_STYLE_EXPORT));
+    SkagerChartPointStyleV1 observation{};
+    observation.structBytes = sizeof(observation);
+    observation.version = SKAGER_CHART_POINT_STYLE_VERSION;
+    if (!query || query(&observation) != 1) return {};
+    return DecodeOChartsPointStyle(observation);
+  }
+  return {};
+}
+
 }

@@ -1,0 +1,38 @@
+{
+  "schema": 1,
+  "status": "passed",
+  "scope": "Independent exact-run early restart attestation artifact audit only",
+  "observedUtc": "2026-10-03T10:11:27.660147+00:00",
+  "localSource": "d5d71356d806ea8c3518644d10728a24f1334d1d",
+  "remoteSource": "b8cfbf809450208f723095ffb4e00d7800b619a5",
+  "runId": 37114216075,
+  "runAttempt": 1,
+  "artifactId": 11271282491,
+  "artifactBytes": 335,
+  "artifactSha256": "f3b01f48c1293aab3bfb49c8c398f09e8d4f91540ff3a07d4e33875ffd8a43aa",
+  "archiveDigestMatchesGitHub": true,
+  "zipCrcPassed": true,
+  "exactZipMembers": [
+    "qualified.json"
+  ],
+  "receiptIdentityPassed": true,
+  "gateJobs": {
+    "transport": 111177754640,
+    "maintenance": 111177754837,
+    "broker": 111178161834,
+    "prepareArm": 111178161834
+  },
+  "jobAndStepStatusPassed": true,
+  "actualBoat": false,
+  "workflowSha256": "8f32171fd7f4a5e58d82c92390c38f3d75d7669dc7f6d90d1f239714a6ddf02f",
+  "collectionNotes": [
+    "Initial Python default-user-agent download returned HTTP 403; same still-valid signed URL downloaded successfully with browser User-Agent. No workflow rerun.",
+    "Initial local verification wrapper had a JSON null/Python NameError before validations; corrected serialization and completed all listed byte/receipt/API checks."
+  ],
+  "limits": [
+    "No application, helper or installer was executed by this audit.",
+    "No new tests, builds, CI dispatch, deployment or boat actions.",
+    "No independent rehash of native test executables: this 335-byte artifact contains only the attestation.",
+    "Full candidate, product package, Windows UI, endurance and physical boat acceptance are not established by this receipt."
+  ]
+}

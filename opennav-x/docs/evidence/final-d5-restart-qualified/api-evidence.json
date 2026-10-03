@@ -1,0 +1,207 @@
+{
+  "artifact": {
+    "id": 11271282491,
+    "name": "commissioning-restart-qualified-b8cfbf809450208f723095ffb4e00d7800b619a5",
+    "size_in_bytes": 335,
+    "url": "https://api.github.com/repos/ThereptileII/Work/actions/artifacts/11271282491",
+    "archive_download_url": "https://api.github.com/repos/ThereptileII/Work/actions/artifacts/11271282491/zip",
+    "expired": false,
+    "created_at": "2026-10-03T09:51:44Z",
+    "expires_at": "2027-01-01T09:47:11Z",
+    "updated_at": "2026-10-03T09:51:44Z",
+    "digest": "sha256:f3b01f48c1293aab3bfb49c8c398f09e8d4f91540ff3a07d4e33875ffd8a43aa",
+    "workflow_run": {
+      "id": 37114216075,
+      "repository_id": 864043804,
+      "head_repository_id": 864043804,
+      "head_branch": "opennav-x-beta2-ui",
+      "head_sha": "b8cfbf809450208f723095ffb4e00d7800b619a5"
+    }
+  },
+  "jobs": [
+    {
+      "id": 111177754640,
+      "name": "Native Win32 commissioning restart process boundary",
+      "status": "completed",
+      "conclusion": "success",
+      "run_id": 37114216075,
+      "logs_url": null,
+      "steps": [
+        {
+          "name": "Set up job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 1
+        },
+        {
+          "name": "Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 2
+        },
+        {
+          "name": "Compile actual restart helper with marker-only test processes",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 3
+        },
+        {
+          "name": "Exercise native process and pipe boundary without OpenCPN or hardware",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 4
+        },
+        {
+          "name": "Run actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 5
+        },
+        {
+          "name": "Post Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 10
+        },
+        {
+          "name": "Complete job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 11
+        }
+      ]
+    },
+    {
+      "id": 111177754837,
+      "name": "Native boat recovery and commissioning contracts",
+      "status": "completed",
+      "conclusion": "success",
+      "run_id": 37114216075,
+      "logs_url": null,
+      "steps": [
+        {
+          "name": "Set up job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 1
+        },
+        {
+          "name": "Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 2
+        },
+        {
+          "name": "Exercise disposable maintenance transactions in Windows PowerShell 5.1",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 3
+        },
+        {
+          "name": "Verify closed navigation copies without vessel data",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 4
+        },
+        {
+          "name": "Run actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 5
+        },
+        {
+          "name": "Post Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 10
+        },
+        {
+          "name": "Complete job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 11
+        }
+      ]
+    },
+    {
+      "id": 111178161834,
+      "name": "Actual restart broker with disposable marker-only installation",
+      "status": "completed",
+      "conclusion": "success",
+      "run_id": 37114216075,
+      "logs_url": null,
+      "steps": [
+        {
+          "name": "Set up job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 1
+        },
+        {
+          "name": "Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 2
+        },
+        {
+          "name": "Compile the same-commit actual helper and marker-only processes",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 3
+        },
+        {
+          "name": "Exercise the unchanged broker, full audit, refusals and receipt uncertainty",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 4
+        },
+        {
+          "name": "Exercise actual Prepare and scheduled Arm Collect against marker-only fixtures",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 5
+        },
+        {
+          "name": "Run actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 6
+        },
+        {
+          "name": "Attest same-run restart gates after native tests and evidence upload",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 7
+        },
+        {
+          "name": "Run actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 8
+        },
+        {
+          "name": "Post Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 16
+        },
+        {
+          "name": "Complete job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 17
+        }
+      ]
+    }
+  ],
+  "run": {
+    "id": 37114216075,
+    "head_sha": "b8cfbf809450208f723095ffb4e00d7800b619a5",
+    "path": ".github/workflows/opennav-baseline.yml",
+    "run_attempt": 1,
+    "status": "in_progress",
+    "conclusion": null,
+    "html_url": "https://github.com/ThereptileII/Work/actions/runs/37114216075",
+    "created_at": "2026-10-03T09:47:11Z"
+  }
+}

@@ -1,0 +1,61 @@
+{
+  "scope": "Candidate actual source pair for later capture; retained GDAL audit reread, chart bytes independently rehashed; no new chart decoding or app render",
+  "sourceAuditSha256": "567c4dea09a1d05a11919174e10268b7e75ea9e5ac85c281a10097bd0360e15b",
+  "sourceFiles": {
+    "GB4X0000.000": {
+      "bytes": 945697,
+      "sha256": "c70d9e0f53e149270f85900f8576082db86781d64fbb71aa7d5ceb4af4aa22e3"
+    }
+  },
+  "kind": "IHO-S64-official-test-data-not-real-world",
+  "buoy": {
+    "RCID": 254,
+    "PRIM": 1,
+    "GRUP": 2,
+    "OBJL": 19,
+    "RVER": 1,
+    "AGEN": 540,
+    "FIDN": 29141051,
+    "FIDS": 1,
+    "LNAM": "021C01BCA83B0001",
+    "LNAM_REFS": [
+      "021C01BCA83C0001",
+      "021C01BCA83D0001",
+      "021C01BCA83E0001"
+    ],
+    "FFPT_RIND": [
+      2,
+      2,
+      2
+    ],
+    "BOYSHP": 3,
+    "CATSPM": [
+      "27"
+    ],
+    "COLOUR": [
+      "6"
+    ],
+    "ogrFid": 253,
+    "longitude": 61.169588,
+    "latitude": -32.3471615
+  },
+  "topmark": {
+    "RCID": 257,
+    "PRIM": 1,
+    "GRUP": 2,
+    "OBJL": 144,
+    "RVER": 1,
+    "AGEN": 540,
+    "FIDN": 29141054,
+    "FIDS": 1,
+    "LNAM": "021C01BCA83E0001",
+    "COLOUR": [
+      "6"
+    ],
+    "TOPSHP": 7,
+    "ogrFid": 256,
+    "longitude": 61.169588,
+    "latitude": -32.3471615
+  },
+  "runtimeUniquenessStillRequired": true
+}

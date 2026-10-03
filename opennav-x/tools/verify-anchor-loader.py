@@ -93,7 +93,13 @@ def main():
         # Production object lookup and light dispatch; description text generation
         # is outside this fixture and receives an empty deterministic callback.
         index=function((source/'gui/src/s57obj.cpp').read_text(),'int S57Obj::GetAttributeIndex(')
-        (output/'light-render-methods.inc').write_text(index+''.join(methods.values())+render)
+        source_render=(source/'libs/s52plib/src/s52plib.cpp').read_text()
+        yellow_lookup=function(source_render,'LUPrec *s52plib::FindBestLUP(')
+        yellow_sort=function(source_render,'int CompareLUPObjects(')
+        yellow_head=function(source_render,'void s52plib::RenderPresentationYellowTopmark(')
+        object_render=function(source_render,'int s52plib::DoRenderObject(')
+        assert object_render.index('ObjectRenderCheckRules') < object_render.index('m_pdc =') < object_render.index('RenderPresentationYellowTopmark')
+        (output/'light-render-methods.inc').write_text(index+''.join(methods.values())+render+yellow_head+object_render+yellow_sort+yellow_lookup)
         if args.private_source:
             private=(args.private_source/'libs/s52plib/src/s52cnsy.cpp').read_text()
             for signature,body in methods.items():
@@ -104,9 +110,14 @@ def main():
             private_enable=function((args.private_render_source/'libs/s52plib/src/s52plib.h').read_text(),'void EnablePresentationLightSymbols(')
             assert private_render.replace('SKAGER_OCHARTS_ADAPTER','OPENNAV_X')==render
             assert private_enable==enable
+            assert function((args.private_render_source/'libs/s52plib/src/s52plib.cpp').read_text(),'void s52plib::RenderPresentationYellowTopmark(')==yellow_head
             private_render_proof=hashlib.sha256(private_render.encode()).hexdigest()
         (output/'light-render-receipt.json').write_text(json.dumps({
             'renderBodySha256':hashlib.sha256(render.encode()).hexdigest(),
+            'yellowHeadBodySha256':hashlib.sha256(yellow_head.encode()).hexdigest(),
+            'objectRenderBodySha256':hashlib.sha256(object_render.encode()).hexdigest(),
+            'lookupBodySha256':hashlib.sha256(yellow_lookup.encode()).hexdigest(),
+            'lookupSortBodySha256':hashlib.sha256(yellow_sort.encode()).hexdigest(),
             'privateRenderBodySha256':private_render_proof,
             'conditionalBodies':{k:hashlib.sha256(v.encode()).hexdigest() for k,v in methods.items()},
             'limits':'Actual loader/RenderSY/conditional bodies; fixture objects and recorded painter calls. No full canvas, GL draw, plugin or boat.'},indent=2)+'\n')
@@ -137,6 +148,15 @@ def main():
         for theme in ('DAY_BRIGHT','DUSK','NIGHT'):
             name='XNSPPW01-'+theme
             subprocess.run(['rsvg-convert',str(ROOT/'resources/chart-style/v1/special-buoy'/(name+'.svg')),'-o',str(output/(name+'.png'))],check=True)
+    if args.seamarks:
+        for name in ('XNSPPY01','XNSPPT01'):
+            for theme in ('DAY_BRIGHT','DUSK','NIGHT'):
+                stem=name+'-'+theme
+                subprocess.run(['rsvg-convert',str(ROOT/'resources/chart-style/v1/yellow-buoy'/(stem+'.svg')),'-o',str(output/(stem+'.png'))],check=True)
+    if args.seamarks:
+        for theme in ('DAY_BRIGHT','DUSK','NIGHT'):
+            stem='XNBCNG01-'+theme
+            subprocess.run(['rsvg-convert',str(ROOT/'resources/chart-style/v1/generic-beacon'/(stem+'.svg')),'-o',str(output/(stem+'.png'))],check=True)
     cflags = shlex.split(subprocess.check_output(config+['--cxxflags'],text=True))
     libs = shlex.split(subprocess.check_output(config+['--libs','core,base'],text=True))
     command = ['g++','-std=c++17','-Wall','-Wextra','-Werror','-Wno-unused-parameter','-Wno-deprecated-copy',
@@ -169,6 +189,8 @@ def main():
             'ignore-orientation':original.replace('paintRule->name.SYNM, rzRules->obj->att_array, rzRules->obj->n_attr);','paintRule->name.SYNM, nullptr, 0);'),
             'buoy-disabled-instance':original.replace('m_presentationLightSymbols,\n        rzRules->LUP','true,\n        rzRules->LUP'),
             'buoy-paper-table':original.replace('rzRules->LUP && rzRules->LUP->TNAM == SIMPLIFIED,','true,'),
+            'yellow-head-guard':original.replace('m_presentationLightSymbols, rzRules)) return;', 'false, rzRules) && false) return;'),
+            'yellow-visibility-order':original.replace('if (!ObjectRenderCheckRules(rzRules, true)) return 0;', 'RenderPresentationYellowTopmark(rzRules); if (!ObjectRenderCheckRules(rzRules, true)) return 0;').replace('    RenderPresentationYellowTopmark(rzRules);\n#endif','    /* moved by negative control */\n#endif'),
             'buoy-theme':original.replace('if (buoyAlias && buoyTheme &&','if (buoyAlias && (buoyTheme || true) &&')}
         try:
             for name,changed in mutations.items():
@@ -182,7 +204,7 @@ def main():
             (output/'light-render-methods.inc').write_text(original)
         # Leave the retained executable corresponding to the unmodified source.
         subprocess.run(command,check=True,capture_output=True)
-        print('Actual RenderSY negative controls rejected light instance/ORIENT and buoy instance/Paper-table/theme bypasses')
+        print('Actual render negative controls rejected light instance/ORIENT, buoy instance/Paper/theme, yellow fitted-head and visibility-order bypasses')
 
 
 if __name__ == '__main__':

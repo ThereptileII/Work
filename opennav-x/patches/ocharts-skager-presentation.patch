@@ -924,3 +924,117 @@ diff --git a/libs/s52plib/src/s52plib.cpp b/libs/s52plib/src/s52plib.cpp
          wxFont* faceFont = FindOrCreateFont_PlugIn(
              fontSize, wxFONTFAMILY_SWISS, templateFont->GetStyle(), fontweight_t,
              false, m_presentationTextFace);
+
+diff --git a/src/o-charts_pi.cpp b/src/o-charts_pi.cpp
+--- a/src/o-charts_pi.cpp
++++ b/src/o-charts_pi.cpp
+@@ -554,10 +554,12 @@
+ 
+ o_charts_pi::~o_charts_pi()
+ {
++    skager::ocharts::SetChartPresentationActive(false);
+ }
+ 
+ int o_charts_pi::Init(void)
+ {
++    skager::ocharts::SetChartPresentationActive(false);
+ 
+     //  Get the path of the PlugIn itself
+     g_pi_filename = GetPlugInPath(this);
+@@ -747,6 +749,7 @@
+     pAlternateKey = &keyMapSystem;
+ 
+     init_S52Library();
++    skager::ocharts::SetChartPresentationActive(true);
+ 
+     // Establish the system build type for server identification
+     /*
+@@ -771,6 +774,7 @@
+ 
+ bool o_charts_pi::DeInit(void)
+ {
++    skager::ocharts::SetChartPresentationActive(false);
+     SaveConfig();
+ 
+ //    delete pinfoDlg;
+
+diff --git a/libs/s52plib/src/s52plib.cpp b/libs/s52plib/src/s52plib.cpp
+--- a/libs/s52plib/src/s52plib.cpp
++++ b/libs/s52plib/src/s52plib.cpp
+@@ -49,6 +49,7 @@
+ #ifdef SKAGER_OCHARTS_ADAPTER
+ #include "integration/ChartLightSymbol.h"
+ #include "integration/ChartSpecialBuoySymbol.h"
++#include "integration/ChartYellowBuoySymbol.h"
+ #endif
+ #ifdef SKAGER_OCHARTS_ADAPTER
+ #include "integration/ChartNameText.h"
+@@ -3507,6 +3508,17 @@
+         m_presentationLightSymbols,
+         rzRules->LUP && rzRules->LUP->TNAM == SIMPLIFIED,
+         rzRules->obj, rules->razRule->name.SYNM);
++    const char *yellowAlias = opennav::integration::PresentationYellowBuoyAlias(
++        m_presentationLightSymbols,
++        rzRules->LUP && rzRules->LUP->TNAM == SIMPLIFIED,
++        rzRules->obj, rules->razRule->name.SYNM);
++    if (yellowAlias && rules->razRule->definition.SYDF == 'R') {
++      auto found = _symb_sym->find(wxString::FromUTF8(yellowAlias));
++      if (found != _symb_sym->end() && found->second &&
++          found->second->definition.SYDF == 'R' &&
++          !memcmp(found->second->name.SYNM, yellowAlias, 8))
++        paintRule = found->second;
++    }
+     // Dusk loses orange recognition at the required contrast; use stock.
+     const bool buoyTheme = m_ColorScheme == "DAY" ||
+                            m_ColorScheme == "DAY_BRIGHT" || m_ColorScheme == "NIGHT";
+@@ -6664,6 +6676,26 @@
+   return DoRenderObjectTextOnly(NULL, rzRules);
+ }
+ 
++#ifdef SKAGER_OCHARTS_ADAPTER
++void s52plib::RenderPresentationYellowTopmark(ObjRazRules *rzRules) {
++  if (!opennav::integration::PresentationYellowTopmark(
++          m_presentationLightSymbols, rzRules)) return;
++  // Both pieces must exist before adding a fitted head to an otherwise empty
++  // Simplified TOPMAR rule. Each Rule/cache remains owned by this library.
++  auto body = _symb_sym->find("XNSPPY01");
++  auto head = _symb_sym->find("XNSPPT01");
++  if (body == _symb_sym->end() || !body->second ||
++      body->second->definition.SYDF != 'R' ||
++      memcmp(body->second->name.SYNM, "XNSPPY01", 8) ||
++      head == _symb_sym->end() || !head->second ||
++      head->second->definition.SYDF != 'R' ||
++      memcmp(head->second->name.SYNM, "XNSPPT01", 8)) return;
++  wxPoint point;
++  GetPointPixSingle(rzRules, rzRules->obj->y, rzRules->obj->x, &point);
++  RenderRasterSymbol(rzRules, head->second, point, 0);
++}
++#endif
++
+ int s52plib::DoRenderObject(wxDC *pdcin, ObjRazRules *rzRules) {
+   // TODO  Debugging
+         //if(rzRules->obj->Index == 6775)
+@@ -6676,6 +6708,9 @@
+   if (!ObjectRenderCheckRules(rzRules, true)) return 0;
+ 
+   m_pdc = pdcin;  // use this DC
++#ifdef SKAGER_OCHARTS_ADAPTER
++  RenderPresentationYellowTopmark(rzRules);
++#endif
+   Rules *rules = rzRules->LUP->ruleList;
+ 
+   while (rules != NULL) {
+
+diff --git a/libs/s52plib/src/s52plib.h b/libs/s52plib/src/s52plib.h
+--- a/libs/s52plib/src/s52plib.h
++++ b/libs/s52plib/src/s52plib.h
+@@ -440,6 +440,9 @@
+   bool PreloadOBJLFromCSV(const wxString &csv_file);
+ 
+   int DoRenderObject(wxDC *pdcin, ObjRazRules *rzRules);
++#ifdef SKAGER_OCHARTS_ADAPTER
++  void RenderPresentationYellowTopmark(ObjRazRules *rzRules);
++#endif
+   int DoRenderObjectTextOnly(wxDC *pdcin, ObjRazRules *rzRules);
+ 
+   //    Area Renderers

@@ -24,7 +24,7 @@ include_directories(BEFORE "${P}/opencpn-libs/api-17" "${CMAKE_BINARY_DIR}/inclu
 add_compile_definitions(UNICODE _UNICODE ocpnUSE_GL ocpnUSE_GLSL __OCPN_USE_GLEW__
   __OCPN_USE_CURL__ SKAGER_OCHARTS_ADAPTER _CRT_NONSTDC_NO_DEPRECATE _CRT_SECURE_NO_DEPRECATE)
 # API17 otherwise dllexports host API classes and their generated methods.
-# The .def owns create/destroy; private bind/status have explicit exports.
+# The .def owns create/destroy; private copied-data exports are explicit.
 add_compile_definitions("DECL_EXP=")
 add_subdirectory("${P}/opencpn-libs/api-17" api)
 foreach(lib cpl dsa wxJSON iso8211 tinyxml geoprim pugixml s52plib)
@@ -42,7 +42,7 @@ add_library(skager-ocharts-adapter SHARED ${SRC} "${P}/libs/gdal/src/s57classreg
   "${SKAGER_PREPARED}/local/src/plugin-adapters/ocharts/ChartPresentationAdapter.cpp"
   "${SKAGER_PREPARED}/local/src/integration/ChartNameAlphaWindows.cpp")
 file(WRITE "${CMAKE_BINARY_DIR}/adapter.def"
-  "LIBRARY skager-ocharts-adapter\nEXPORTS\n create_pi\n destroy_pi\n skager_bind_chart_presentation_v1\n skager_chart_presentation_status_v1\n")
+  "LIBRARY skager-ocharts-adapter\nEXPORTS\n create_pi\n destroy_pi\n skager_bind_chart_presentation_v1\n skager_chart_presentation_status_v1\n skager_chart_point_style_v1\n")
 target_sources(skager-ocharts-adapter PRIVATE "${CMAKE_BINARY_DIR}/adapter.def")
 set_target_properties(skager-ocharts-adapter PROPERTIES PREFIX "" OUTPUT_NAME "skager-ocharts-adapter")
 target_link_libraries(skager-ocharts-adapter PRIVATE ocpn::api_wx32

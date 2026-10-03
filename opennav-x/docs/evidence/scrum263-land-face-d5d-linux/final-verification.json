@@ -1,0 +1,12 @@
+{
+  "sourceCommit": "d5d71356d806ea8c3518644d10728a24f1334d1d",
+  "suiteRepeated": false,
+  "fontComponentSha256": "53fb5e5a403d02b38528069e87f3725149e101758e64b2f6624b919c750e417e",
+  "fontComponentSourceSha256": "06b9708e947d188d6208bba822e8e4141d0512faf30a1dd3d2535a6d06421656",
+  "policySources": {
+    "src/integration/ChartPresentation.cpp": "32339b83be2c3b9ff81fb31bfbf8313628a7f1596092921a98693ae0a140a358",
+    "src/plugin-adapters/ocharts/ChartPresentationAdapter.cpp": "4d39d64843c215c3f369a1fdbacce71b86f7af45a43d7f41c24f877c68b60c90",
+    "src/integration/ChartTextFace.h": "4c1b0c41e29ecdac9af7a6fd7446863714539777c1904fa598679ba3ec49b3ab"
+  },
+  "postCaptureExecutableAndResourcesRechecked": true
+}

@@ -1,0 +1,51 @@
+12672: 99-test_fuzz_v3name.t ................... ok
+12673: 99-test_fuzz_x509.t ..................... ok
+12674: All tests successful.
+12675: Files=347, Tests=4283, 1315 wallclock secs ( 5.53 usr +  0.61 sys =  6.14 CPU)
+12676: Result: PASS
+12677: 
+14006: 13/13 Test #13: zlib_add_subdirectory_exclude_test .............   Passed    0.02 sec
+14007: 
+14008: 100% tests passed, 0 tests failed out of 13
+14009: 
+14010: Total Test time (real) =  12.55 sec
+14011: === stage: install zlib ===
+17694:   TESTINFO: "curl lacks Unicode support" 1 time (1703)
+17695:   TESTINFO: "Test requires a Unix system" 1 time (2072)
+17696:   TESTDONE: 1569 tests out of 1569 reported OK: 100%
+17697:   Building Custom Rule D:/a/Work/Work/opennav-x/build/windows-curl-8.22.0/curl-8.22.0/tests/CMakeLists.txt
+17698: -- Installing: D:/a/Work/Work/opennav-x/build/windows-curl-8.22.0/install/share/man/man1/curl.1
+17699: -- Installing: D:/a/Work/Work/opennav-x/build/windows-curl-8.22.0/install/lib/libcurl.lib
+17744: Built and verified curl 8.22.0 with OpenSSL 3.5.9 for Win32/x86
+17745: Verified pinned resources; generated three chart palettes, bounded structural fill/outline and geographic-name ink, isolated anchor/service/cardinal and classified seamark artwork, cable/ferry paint and resource hashes; other navigation rules unchanged
+17746: Prepared exact adapter sources; native build and acceptance remain pending.
+17747: -- Selecting Windows SDK version 10.0.26100.0 to target Windows 10.0.20348.
+17748: -- The C compiler identification is MSVC 19.44.35229.0
+17749: -- The CXX compiler identification is MSVC 19.44.35229.0
+17758: -- Detecting CXX compile features
+17759: -- Detecting CXX compile features - done
+17760: -- Found Python3: C:/hostedtoolcache/windows/Python/3.14.7/x64/python3.exe (found version "3.14.7") found components: Interpreter
+17761: -- Found wxWidgets: debug;D:/a/Work/Work/opennav-x/build/ocharts-prepared/sdk/wx/lib/vc14x_dll/wxbase32ud.lib;optimized;D:/a/Work/Work/opennav-x/build/ocharts-prepared/sdk/wx/lib/vc14x_dll/wxbase32u.lib;debug;D:/a/Work/Work/opennav-x/build/ocharts-prepared/sdk/wx/lib/vc14x_dll/wxmsw32ud_core.lib;optimized;D:/a/Work/Work/opennav-x/build/ocharts-prepared/sdk/wx/lib/vc14x_dll/wxmsw32u_core.lib;debug;D:/a/Work/Work/opennav-x/build/ocharts-prepared/sdk/wx/lib/vc14x_dll/wxbase32ud_net.lib;optimized;D:/a/Work/Work/opennav-x/build/ocharts-prepared/sdk/wx/lib/vc14x_dll/wxbase32u_net.lib;debug;D:/a/Work/Work/opennav-x/build/ocharts-prepared/sdk/wx/lib/vc14x_dll/wxbase32ud_xml.lib;optimized;D:/a/Work/Work/opennav-x/build/ocharts-prepared/sdk/wx/lib/vc14x_dll/wxbase32u_xml.lib;debug;D:/a/Work/Work/opennav-x/build/ocharts-prepared/sdk/wx/lib/vc14x_dll/wxmsw32ud_html.lib;optimized;D:/a/Work/Work/opennav-x/build/ocharts-prepared/sdk/wx/lib/vc14x_dll/wxmsw32u_html.lib;debug;D:/a/Work/Work/opennav-x/build/ocharts-prepared/sdk/wx/lib/vc14x_dll/wxmsw32ud_adv.lib;optimized;D:/a/Work/Work/opennav-x/build/ocharts-prepared/sdk/wx/lib/vc14x_dll/wxmsw32u_adv.lib;debug;D:/a/Work/Work/opennav-x/build/ocharts-prepared/sdk/wx/lib/vc14x_dll/wxmsw32ud_stc.lib;optimized;D:/a/Work/Work/opennav-x/build/ocharts-prepared/sdk/wx/lib/vc14x_dll/wxmsw32u_stc.lib;debug;D:/a/Work/Work/opennav-x/build/ocharts-prepared/sdk/wx/lib/vc14x_dll/wxmsw32ud_aui.lib;optimized;D:/a/Work/Work/opennav-x/build/ocharts-prepared/sdk/wx/lib/vc14x_dll/wxmsw32u_aui.lib;debug;D:/a/Work/Work/opennav-x/build/ocharts-prepared/sdk/wx/lib/vc14x_dll/wxmsw32ud_gl.lib;optimized;D:/a/Work/Work/opennav-x/build/ocharts-prepared/sdk/wx/lib/vc14x_dll/wxmsw32u_gl.lib;debug;D:/a/Work/Work/opennav-x/build/ocharts-prepared/sdk/wx/lib/vc14x_dll/wxscintillad.lib;optimized;D:/a/Work/Work/opennav-x/build/ocharts-prepared/sdk/wx/lib/vc14x_dll/wxscintilla.lib;debug;D:/a/Work/Work/opennav-x/build/ocharts-prepared/sdk/wx/lib/vc14x_dll/wxpngd.lib;optimized;D:/a/Work/Work/opennav-x/build/ocharts-prepared/sdk/wx/lib/vc14x_dll/wxpng.lib;debug;D:/a/Work/Work/opennav-x/build/ocharts-prepared/sdk/wx/lib/vc14x_dll/wxtiffd.lib;optimized;D:/a/Work/Work/opennav-x/build/ocharts-prepared/sdk/wx/lib/vc14x_dll/wxtiff.lib;debug;D:/a/Work/Work/opennav-x/build/ocharts-prepared/sdk/wx/lib/vc14x_dll/wxjpegd.lib;optimized;D:/a/Work/Work/opennav-x/build/ocharts-prepared/sdk/wx/lib/vc14x_dll/wxjpeg.lib;debug;D:/a/Work/Work/opennav-x/build/ocharts-prepared/sdk/wx/lib/vc14x_dll/wxzlibd.lib;optimized;D:/a/Work/Work/opennav-x/build/ocharts-prepared/sdk/wx/lib/vc14x_dll/wxzlib.lib;debug;D:/a/Work/Work/opennav-x/build/ocharts-prepared/sdk/wx/lib/vc14x_dll/wxregexud.lib;optimized;D:/a/Work/Work/opennav-x/build/ocharts-prepared/sdk/wx/lib/vc14x_dll/wxregexu.lib;debug;D:/a/Work/Work/opennav-x/build/ocharts-prepared/sdk/wx/lib/vc14x_dll/wxexpatd.lib;optimized;D:/a/Work/Work/opennav-x/build/ocharts-prepared/sdk/wx/lib/vc14x_dll/wxexpat.lib;opengl32;glu32;imm32;gdiplus;msimg32;winmm;comctl32;uuid;oleacc;uxtheme;rpcrt4;shlwapi;version;wsock32 (found suitable version "3.2.8", minimum required is "3.2") found components: base core net xml html adv stc aui gl scintilla png tiff jpeg zlib regex expat missing components: lexilla
+17762: -- Found OpenGL: opengl32
+17763: CMake Deprecation Warning at D:/a/Work/Work/opennav-x/build/ocharts-prepared/source/opencpn-libs/api-17/CMakeLists.txt:5 (cmake_minimum_required):
+17968:   sha256.c
+17969:      Creating library D:/a/Work/Work/opennav-x/build/ocharts-native/Release/skager-ocharts-adapter.lib and object D:/a/Work/Work/opennav-x/build/ocharts-native/Release/skager-ocharts-adapter.exp
+17970:   skager-ocharts-adapter.vcxproj -> D:\a\Work\Work\opennav-x\build\ocharts-native\Release\skager-ocharts-adapter.dll
+17971: Verified usable Poedit msgfmt/msgmerge: C:\Program Files\Poedit\GettextTools\bin
+17972: -- Selecting Windows SDK version 10.0.26100.0 to target Windows 10.0.20348.
+17973: -- The C compiler identification is MSVC 19.44.35229.0
+18246: -- Found Threads: TRUE
+18247: -- Found wxWidgets: debug;D:/a/Work/Work/opennav-x/build/integration-source/cache/wxWidgets-3.2.8/lib/vc14x_dll/wxmsw32ud_core.lib;optimized;D:/a/Work/Work/opennav-x/build/integration-source/cache/wxWidgets-3.2.8/lib/vc14x_dll/wxmsw32u_core.lib;debug;D:/a/Work/Work/opennav-x/build/integration-source/cache/wxWidgets-3.2.8/lib/vc14x_dll/wxbase32ud.lib;optimized;D:/a/Work/Work/opennav-x/build/integration-source/cache/wxWidgets-3.2.8/lib/vc14x_dll/wxbase32u.lib;debug;D:/a/Work/Work/opennav-x/build/integration-source/cache/wxWidgets-3.2.8/lib/vc14x_dll/wxmsw32ud_aui.lib;optimized;D:/a/Work/Work/opennav-x/build/integration-source/cache/wxWidgets-3.2.8/lib/vc14x_dll/wxmsw32u_aui.lib;gdiplus;msimg32;winmm;comctl32;uuid;oleacc;uxtheme;rpcrt4;shlwapi;version;wsock32 (found suitable version "3.2.8", minimum required is "3.2") found components: core base aui
+18248: -- Found Python3: C:/hostedtoolcache/windows/Python/3.14.7/x64/python3.exe (found version "3.14.7") found components: Interpreter
+18249: Approved source, wordmark, embedded bytes and nine Windows icon sizes verified
+18250: Verified pinned resources; generated three chart palettes, bounded structural fill/outline and geographic-name ink, isolated anchor/service/cardinal and classified seamark artwork, cable/ferry paint and resource hashes; other navigation rules unchanged
+18251: Traceback (most recent call last):
+18256:     result = verify(args.package, args.resources)
+18257:   File "D:\a\Work\Work\opennav-x\tools\verify-ocharts-adapter-package.py", line 121, in verify
+18258:     raise ValueError('Adapter chart resource manifest differs')
+18259: ValueError: Adapter chart resource manifest differs
+18260: CMake Error at D:/a/Work/Work/opennav-x/src/integration/OpenCPN.cmake:420 (message):
+18261:   Private chart adapter source/package verification failed
+18262: Call Stack (most recent call first):
+18263:   CMakeLists.txt:2776 (include)
+18264: 

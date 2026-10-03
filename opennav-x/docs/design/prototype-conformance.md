@@ -1,5 +1,11 @@
 # Prototype conformance — in progress
 
+The full candidate is local `d5d7135` / published `b8cfbf8`
+([CI](https://github.com/ThereptileII/Work/actions/runs/37114216075)). It adds the
+final explicit Segoe UI Land-face choice while Water retains its inherited
+stack. The preceding native 70-private/23-core checks pass with exact audited
+inputs. No screen-level row advances until actual native and boat review.
+
 Final source `9dee9b1` / published `aa95750b` closes the ordinary TX/TE font
 policy gap with a verified-SKAGER-only Segoe UI/Arial face. It preserves existing
 sizes, weights and designated geographic/LIGHTS handlers, their fallbacks, and

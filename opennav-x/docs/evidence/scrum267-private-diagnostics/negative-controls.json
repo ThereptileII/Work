@@ -1,0 +1,17 @@
+[
+  {
+    "mutation": "no-active-gate",
+    "exit": 1,
+    "reason": "no observation before completed Init"
+  },
+  {
+    "mutation": "inferred-table",
+    "exit": 1,
+    "reason": "must observe actual Paper, never infer Simplified from selected status"
+  },
+  {
+    "mutation": "unchecked-host-reserved",
+    "exit": 1,
+    "reason": "malformed observation accepted as valid"
+  }
+]

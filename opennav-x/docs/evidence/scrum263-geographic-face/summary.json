@@ -1,0 +1,12 @@
+{
+  "sourceCommit": "e61c29e19a862bb21d46ed1dce098b2a170cc13c",
+  "resolverAssertions": 336,
+  "availabilityCombinationsPerResolver": 8,
+  "originalPolicyNegativeControls": 2,
+  "productionObjects": 2,
+  "sourceFiles": {
+    "src/integration/ChartPresentation.cpp": "32339b83be2c3b9ff81fb31bfbf8313628a7f1596092921a98693ae0a140a358",
+    "src/plugin-adapters/ocharts/ChartPresentationAdapter.cpp": "4d39d64843c215c3f369a1fdbacce71b86f7af45a43d7f41c24f877c68b60c90"
+  },
+  "limit": "Availability and FontMgr factory calls are fixture-controlled; no native font substitution, full chart render, CI or boat acceptance."
+}

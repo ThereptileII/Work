@@ -1,0 +1,7 @@
+-- Building for: Visual Studio 17 2022
+-- Selecting Windows SDK version 10.0.26100.0 to target Windows 10.0.20348.
+-- Found Python3: C:/hostedtoolcache/windows/Python/3.12.10/x64/python.exe (found version "3.12.10") found components: Interpreter
+Verified pinned resources; generated three chart palettes, bounded structural fill/outline and geographic-name ink, isolated anchor/service/cardinal and classified seamark artwork, cable/ferry paint and resource hashes; other navigation rules unchanged
+-- Configuring done (50.0s)
+-- Generating done (0.0s)
+-- Build files have been written to: D:/a/Work/Work/opennav-x/evidence/local/chart-resource-python/production

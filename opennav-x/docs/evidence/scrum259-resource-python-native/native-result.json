@@ -1,0 +1,249 @@
+{
+  "entry": {
+    "executable": "C:\\hostedtoolcache\\windows\\Python\\3.12.10\\x64\\python.exe",
+    "binary": {
+      "sha256": "4d6f5f81a4bca11191c4c7c6b43632694d0a4ce74e068619d8fdc161d469859a",
+      "bytes": 104952
+    },
+    "version": "3.12.10 (tags/v3.12.10:0cc8128, Apr  8 2025, 12:21:36) [MSC v.1943 64 bit (AMD64)]",
+    "zlibCompile": "1.3.1",
+    "zlibRuntime": "1.3.1",
+    "zlibNg": null
+  },
+  "passed": true,
+  "contractOnly": false,
+  "sourceCommit": "c7f3616c5b9d385d39edf25b51f89a3508906071",
+  "collector": {
+    "sha256": "2fc87959b2bc4bc22d519905f86205602e9d720e3b3739f7d8a9507e5009067f",
+    "bytes": 8654
+  },
+  "generator": {
+    "sha256": "442438cf89acd2818c6664452aaf2db5fee28ed5bd67249d194753d539f5eb8a",
+    "bytes": 15569
+  },
+  "sourceLock": {
+    "sha256": "2b00d604a0ab9a0dc3a7b50885a3d712475bd26159cd0f5c29c52654e5952f23",
+    "bytes": 819
+  },
+  "sourceFiles": {
+    "chartsymbols.xml": {
+      "sha256": "84f93522576ed5872b24865cf6161872ed0b4b634f77c64ca697a04d3568e886",
+      "bytes": 2231495
+    },
+    "S52RAZDS.RLE": {
+      "sha256": "560e1a1df493d7ae4c8506da814ad936adb13ef93c6f1e2abc93f2819860ff26",
+      "bytes": 1305627
+    },
+    "rastersymbols-day.png": {
+      "sha256": "ee1020a8b94b312faba8c146974e49147d280e5ef3cc13f3cd688bbfd54dde0c",
+      "bytes": 250509
+    },
+    "rastersymbols-dusk.png": {
+      "sha256": "56d6191b954978d0a85484b490228aab467610bfbf646c814af003428a766c2d",
+      "bytes": 169019
+    },
+    "rastersymbols-dark.png": {
+      "sha256": "179cb516fd1a7795e8ab9ecbb8d4d5d88bf15cf42e5528c2f4e3ea2340320c33",
+      "bytes": 163832
+    }
+  },
+  "runs": {
+    "unpinned": {
+      "command": [
+        "cmake",
+        "-S",
+        "D:\\a\\Work\\Work\\opennav-x\\evidence\\local\\chart-resource-python\\cmake-source",
+        "-B",
+        "D:\\a\\Work\\Work\\opennav-x\\evidence\\local\\chart-resource-python\\unpinned",
+        "-DGENERATOR_SCRIPT:FILEPATH=D:\\a\\Work\\Work\\opennav-x\\tools\\generate-xnav-chart-style.py",
+        "-DRESOURCE_SOURCE:PATH=D:\\a\\Work\\Work\\opennav-x\\evidence\\local\\chart-resource-python\\source"
+      ],
+      "python": {
+        "executable": "C:\\hostedtoolcache\\windows\\Python\\3.14.7\\x64\\python.exe",
+        "version": "3.14.7 (tags/v3.14.7:823f032, Aug  5 2026, 10:51:32) [MSC v.1944 64 bit (AMD64)]",
+        "sha256": "4942b86a6597e5aee0128daa00050ed79bc21f6e709a78eb19cbfeb0c2f39ac9",
+        "zlibCompile": "1.3.1.zlib-ng",
+        "zlibRuntime": "1.3.1.zlib-ng",
+        "zlibNg": "2.2.4"
+      },
+      "resources": {
+        "chartsymbols.xml": {
+          "sha256": "5aca020aae65f3bcb38ff548ee183868dca72811cdd33dd26cc89d2c726738e3",
+          "bytes": 2242894
+        },
+        "manifest.json": {
+          "sha256": "34b1c89f95f856e8fa5ddf5465d27765955af1eb9972bf91b358e3b18abedf90",
+          "bytes": 85084
+        },
+        "rastersymbols-dark.png": {
+          "sha256": "c187b5ebcc54ee481c8a71880cfca8933da8e1ae6b5c2d5af9bfb54ec7a59eb7",
+          "bytes": 168069
+        },
+        "rastersymbols-day.png": {
+          "sha256": "9569ec1e433b33b2d178787f9f9e86fbc29fa43b78a9317d8e97fe3f7dc30153",
+          "bytes": 196379
+        },
+        "rastersymbols-dusk.png": {
+          "sha256": "270ba6ae5f2e5492683441717bcd881ba5fd1d6dcb58c5b19dd72dfdcb0359e0",
+          "bytes": 173348
+        },
+        "S52RAZDS.RLE": {
+          "sha256": "560e1a1df493d7ae4c8506da814ad936adb13ef93c6f1e2abc93f2819860ff26",
+          "bytes": 1305627
+        },
+        "XNavChartResources.h": {
+          "sha256": "e31f9dc345564dc2dc9af340034f77af4c33d1c86819fae425bbe2e6ced43538",
+          "bytes": 934
+        }
+      },
+      "differentFiles": [
+        "manifest.json",
+        "rastersymbols-dark.png",
+        "rastersymbols-day.png",
+        "rastersymbols-dusk.png",
+        "XNavChartResources.h"
+      ]
+    },
+    "development": {
+      "command": [
+        "cmake",
+        "-S",
+        "D:\\a\\Work\\Work\\opennav-x\\evidence\\local\\chart-resource-python\\cmake-source",
+        "-B",
+        "D:\\a\\Work\\Work\\opennav-x\\evidence\\local\\chart-resource-python\\development",
+        "-DPython3_EXECUTABLE:FILEPATH=C:\\hostedtoolcache\\windows\\Python\\3.12.10\\x64\\python.exe",
+        "-DGENERATOR_SCRIPT:FILEPATH=D:\\a\\Work\\Work\\opennav-x\\tools\\generate-xnav-chart-style.py",
+        "-DRESOURCE_SOURCE:PATH=D:\\a\\Work\\Work\\opennav-x\\evidence\\local\\chart-resource-python\\source"
+      ],
+      "python": {
+        "executable": "C:\\hostedtoolcache\\windows\\Python\\3.12.10\\x64\\python.exe",
+        "version": "3.12.10 (tags/v3.12.10:0cc8128, Apr  8 2025, 12:21:36) [MSC v.1943 64 bit (AMD64)]",
+        "sha256": "4d6f5f81a4bca11191c4c7c6b43632694d0a4ce74e068619d8fdc161d469859a",
+        "zlibCompile": "1.3.1",
+        "zlibRuntime": "1.3.1",
+        "zlibNg": null
+      },
+      "resources": {
+        "chartsymbols.xml": {
+          "sha256": "5aca020aae65f3bcb38ff548ee183868dca72811cdd33dd26cc89d2c726738e3",
+          "bytes": 2242894
+        },
+        "manifest.json": {
+          "sha256": "12cfbce4686fce9a89e15f45105195c9f09a51ae4e3e9932aa7ba803ae205a52",
+          "bytes": 85084
+        },
+        "rastersymbols-dark.png": {
+          "sha256": "55aa9eb7bb9624ca6d730c47e481c2eea2c9dbdefef2f5ccebf54e67bc9eb116",
+          "bytes": 169663
+        },
+        "rastersymbols-day.png": {
+          "sha256": "865c7238985b2ea7e2d2c46d2612f70b0d2e3b4992a33f6bf3cd2fb5fee59de9",
+          "bytes": 199897
+        },
+        "rastersymbols-dusk.png": {
+          "sha256": "33fa1b8f539a5f90b2d220599ee9fe926cf11f86b60ce643b720037ba4e26446",
+          "bytes": 174289
+        },
+        "S52RAZDS.RLE": {
+          "sha256": "560e1a1df493d7ae4c8506da814ad936adb13ef93c6f1e2abc93f2819860ff26",
+          "bytes": 1305627
+        },
+        "XNavChartResources.h": {
+          "sha256": "fef00119d6b820abe8725be6b8243490da4c056dcaff25c89575f4e1b6c94266",
+          "bytes": 934
+        }
+      },
+      "differentFiles": []
+    },
+    "production": {
+      "command": [
+        "cmake",
+        "-S",
+        "D:\\a\\Work\\Work\\opennav-x\\evidence\\local\\chart-resource-python\\cmake-source",
+        "-B",
+        "D:\\a\\Work\\Work\\opennav-x\\evidence\\local\\chart-resource-python\\production",
+        "-DPython3_EXECUTABLE:FILEPATH=C:\\hostedtoolcache\\windows\\Python\\3.12.10\\x64\\python.exe",
+        "-DGENERATOR_SCRIPT:FILEPATH=D:\\a\\Work\\Work\\opennav-x\\tools\\generate-xnav-chart-style.py",
+        "-DRESOURCE_SOURCE:PATH=D:\\a\\Work\\Work\\opennav-x\\evidence\\local\\chart-resource-python\\source"
+      ],
+      "python": {
+        "executable": "C:\\hostedtoolcache\\windows\\Python\\3.12.10\\x64\\python.exe",
+        "version": "3.12.10 (tags/v3.12.10:0cc8128, Apr  8 2025, 12:21:36) [MSC v.1943 64 bit (AMD64)]",
+        "sha256": "4d6f5f81a4bca11191c4c7c6b43632694d0a4ce74e068619d8fdc161d469859a",
+        "zlibCompile": "1.3.1",
+        "zlibRuntime": "1.3.1",
+        "zlibNg": null
+      },
+      "resources": {
+        "chartsymbols.xml": {
+          "sha256": "5aca020aae65f3bcb38ff548ee183868dca72811cdd33dd26cc89d2c726738e3",
+          "bytes": 2242894
+        },
+        "manifest.json": {
+          "sha256": "12cfbce4686fce9a89e15f45105195c9f09a51ae4e3e9932aa7ba803ae205a52",
+          "bytes": 85084
+        },
+        "rastersymbols-dark.png": {
+          "sha256": "55aa9eb7bb9624ca6d730c47e481c2eea2c9dbdefef2f5ccebf54e67bc9eb116",
+          "bytes": 169663
+        },
+        "rastersymbols-day.png": {
+          "sha256": "865c7238985b2ea7e2d2c46d2612f70b0d2e3b4992a33f6bf3cd2fb5fee59de9",
+          "bytes": 199897
+        },
+        "rastersymbols-dusk.png": {
+          "sha256": "33fa1b8f539a5f90b2d220599ee9fe926cf11f86b60ce643b720037ba4e26446",
+          "bytes": 174289
+        },
+        "S52RAZDS.RLE": {
+          "sha256": "560e1a1df493d7ae4c8506da814ad936adb13ef93c6f1e2abc93f2819860ff26",
+          "bytes": 1305627
+        },
+        "XNavChartResources.h": {
+          "sha256": "fef00119d6b820abe8725be6b8243490da4c056dcaff25c89575f4e1b6c94266",
+          "bytes": 934
+        }
+      },
+      "differentFiles": []
+    }
+  },
+  "scope": "Resources and CMake discovery only; no native module or app build/load",
+  "equalSizeDifferentBytesRejected": true,
+  "entryResources": {
+    "chartsymbols.xml": {
+      "sha256": "5aca020aae65f3bcb38ff548ee183868dca72811cdd33dd26cc89d2c726738e3",
+      "bytes": 2242894
+    },
+    "manifest.json": {
+      "sha256": "12cfbce4686fce9a89e15f45105195c9f09a51ae4e3e9932aa7ba803ae205a52",
+      "bytes": 85084
+    },
+    "rastersymbols-dark.png": {
+      "sha256": "55aa9eb7bb9624ca6d730c47e481c2eea2c9dbdefef2f5ccebf54e67bc9eb116",
+      "bytes": 169663
+    },
+    "rastersymbols-day.png": {
+      "sha256": "865c7238985b2ea7e2d2c46d2612f70b0d2e3b4992a33f6bf3cd2fb5fee59de9",
+      "bytes": 199897
+    },
+    "rastersymbols-dusk.png": {
+      "sha256": "33fa1b8f539a5f90b2d220599ee9fe926cf11f86b60ce643b720037ba4e26446",
+      "bytes": 174289
+    },
+    "S52RAZDS.RLE": {
+      "sha256": "560e1a1df493d7ae4c8506da814ad936adb13ef93c6f1e2abc93f2819860ff26",
+      "bytes": 1305627
+    },
+    "XNavChartResources.h": {
+      "sha256": "fef00119d6b820abe8725be6b8243490da4c056dcaff25c89575f4e1b6c94266",
+      "bytes": 934
+    }
+  },
+  "unpinnedDecodedPixelEquality": {
+    "rastersymbols-dark.png": true,
+    "rastersymbols-day.png": true,
+    "rastersymbols-dusk.png": true
+  },
+  "unpinnedSemanticManifestEquality": true,
+  "unboundFailureReproduced": true
+}

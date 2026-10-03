@@ -1,0 +1,43 @@
+{
+"LUPrec.INST":56,
+"LUPrec.ATTArray":32,
+"LUPrec.ruleList":120,
+"s52plib.m_presentationLightSymbols":778,
+"LUPrec.RCID":0,
+"S57Obj.Primitive_type":8,
+"S57Obj.x":48,
+"S57Obj.y":56,
+"S57Obj.m_chart_context":320,
+"S57Obj.attVal":24,
+"chart_context.pFloatingATONArray":32,
+"s52plib.vp_plib":2400,
+"s52plib.m_nSymbolStyle":0,
+"VPointCompat.pix_width":0,
+"VPointCompat.pix_height":4,
+"ObjRazRules.obj":8,
+"ObjRazRules.LUP":0,
+"S57Obj.att_array":16,
+"S57Obj.n_attr":32,
+"S57Obj.FeatureName":0,
+"S57Obj.Index":40,
+"S57Obj.m_lat":152,
+"S57Obj.m_lon":160,
+"Rules.razRule":16,
+"Rule.name":4,
+"Rule.definition":12,
+"LUPrec.TNAM":24,
+"wxPoint.x":0,
+"wxPoint.y":4,
+"pointerBytes":8}
+
+/tmp/skager-capture-igs42woo/s64-yellow-SKAGER
+Verified private clean application 33d90c38cd1a628c21d0ca159647012d98649d2e and exact upstream result of nine patches
+Traceback (most recent call last):
+  File "/home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/evidence/local/combined-33d90c3/iho/capture-s64.py", line 155, in <module>
+    trace_proof=check_trace(trace_records(trace),scene,style)
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/evidence/local/combined-33d90c3/iho/capture-s64.py", line 106, in check_trace
+    i.require(len(done)==2 and all(r['reason']=='all_requested_geometry_observed' for r in done),'Bounded renderer trace did not observe requested geometry')
+  File "/home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/evidence/local/combined-33d90c3/iho/cache-inputs-readonly.py", line 21, in require
+    raise RuntimeError(message)
+RuntimeError: Bounded renderer trace did not observe requested geometry

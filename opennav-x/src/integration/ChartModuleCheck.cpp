@@ -2,6 +2,7 @@
 #include <wx/jsonval.h>
 #ifdef __WXMSW__
 #include "integration/ChartModulePe.h"
+#include "integration/OChartsPointStyle.h"
 #include "integration/OChartsModuleLoader.h"
 #include "integration/PluginPresentationFallback.h"
 #include "SkagerOChartsPackage.h"
@@ -90,6 +91,14 @@ bool CheckChartModule(const wxString& original, const wxString& install,
     const bool copied=query && query(&state)==1 && ValidOChartsStatus(state);
     report["binding_state"]=int(state.state);report["binding_reason"]=int(state.reason);
     valid=valid && copied && state.state==SKAGER_CHART_BOUND_PENDING_INITIALIZATION;
+    const auto observe=reinterpret_cast<SkagerGetChartPointStyleV1>(
+        library.GetSymbol(SKAGER_CHART_POINT_STYLE_EXPORT));
+    SkagerChartPointStyleV1 point{};point.structBytes=sizeof(point);
+    point.version=SKAGER_CHART_POINT_STYLE_VERSION;
+    const bool unavailable=observe && observe(&point)==1 &&
+        ValidOChartsPointStyle(point) && !point.available;
+    report["point_style_unavailable_before_init"]=unavailable;
+    valid=valid && unavailable;
     report["imports"]=wxJSONValue(wxJSONTYPE_ARRAY);
     for(const auto& dll:imports) report["imports"].Append(wxString::FromUTF8(dll));
     report["host_imports_resolved"]=true;

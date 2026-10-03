@@ -1,0 +1,8 @@
+{
+  "applicationCommit": "e1d01367692f7b8c866be369417e68c836c5d563",
+  "preservedFailedBuild": "/home/standard/Projects/X-nav-worktrees/scrum264-combined-linux-33d90c3-frozen",
+  "preservedExecutableSha256": "f8b97d34fe0e470fcb609b51fc6557063e7129acbccf497de3f14fa735af38eb",
+  "namespacePhysicalRoot": "/home/standard/Projects/X-nav-worktrees/scrum264-combined-linux-33d90c3",
+  "namespaceVirtualRoot": "/home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29",
+  "scope": "Affected application target and install only, no147 or separate resource suite rerun"
+}

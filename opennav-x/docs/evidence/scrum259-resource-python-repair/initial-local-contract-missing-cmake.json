@@ -1,0 +1,29 @@
+{
+  "entry": {
+    "executable": "/usr/bin/python3.14",
+    "binary": {
+      "sha256": "d78f9cf7178ecff09963551399855543c297f37ac207e626228bfe43cb26a70c",
+      "bytes": 14424
+    },
+    "version": "3.14.7 (main, Aug 10 2026, 07:46:56) [GCC 16.1.1 20260728]",
+    "zlibCompile": "1.3.2",
+    "zlibRuntime": "1.3.2",
+    "zlibNg": null
+  },
+  "passed": false,
+  "contractOnly": true,
+  "sourceFiles": {},
+  "runs": {
+    "unpinned": {
+      "command": [
+        "cmake",
+        "-S",
+        "/home/standard/Projects/X-nav-worktrees/fix-resource-python-identity/.local/python-contract/cmake-source",
+        "-B",
+        "/home/standard/Projects/X-nav-worktrees/fix-resource-python-identity/.local/python-contract/unpinned"
+      ]
+    }
+  },
+  "scope": "Resources and CMake discovery only; no native module or app build/load",
+  "equalSizeDifferentBytesRejected": true
+}

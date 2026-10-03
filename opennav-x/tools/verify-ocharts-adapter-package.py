@@ -18,7 +18,7 @@ prep = importlib.util.module_from_spec(_spec)
 _spec.loader.exec_module(prep)
 DLL = 'skager-ocharts-adapter.dll'
 EXPORTS = {'create_pi', 'destroy_pi', 'skager_bind_chart_presentation_v1',
-           'skager_chart_presentation_status_v1'}
+           'skager_chart_presentation_status_v1', 'skager_chart_point_style_v1'}
 # Direct imports only. The qualified application's modern libcurl supplies TLS.
 IMPORTS = {'opencpn.exe', 'libcurl.dll', 'zlib1.dll', 'glew32.dll',
            'kernel32.dll', 'user32.dll', 'gdi32.dll', 'gdiplus.dll', 'advapi32.dll', 'shell32.dll',
@@ -87,7 +87,7 @@ def pe_contract(data):
         raise ValueError('Missing exports')
     base = offset(exp, 40)
     functions, names, addresses, name_table, ordinals = read('<IIIII', base + 20)
-    if names != 4 or functions != 4:
+    if names != len(EXPORTS) or functions != len(EXPORTS):
         raise ValueError('Unexpected export inventory')
     exports = []
     for n in range(names):

@@ -31,8 +31,8 @@ def pe(import_name=b'opencpn.exe', exported=None):
     # section RVA1000 maps file offset400.
     put('<IIIII', 0x600, 0x1500, 0, 0, 0x1300, 0x1500)
     data[0x700:0x700 + len(import_name) + 1] = import_name + b'\0'
-    put('<IIIII', 0x514, 4, 4, 0x1400, 0x1420, 0x1440)
     names = sorted(v.EXPORTS) if exported is None else exported
+    put('<IIIII', 0x514, len(names), len(names), 0x1400, 0x1420, 0x1440)
     cursor = 0x900
     for n, name in enumerate(names):
         put('<I', 0x800 + n * 4, 0x1700 + n)
@@ -102,7 +102,11 @@ class Guards(unittest.TestCase):
 
     def test_wrong_export(self):
         with self.assertRaisesRegex(ValueError, 'contract'):
-            v.pe_contract(pe(exported=['create_pi', 'destroy_pi', 'wrong', 'other']))
+            v.pe_contract(pe(exported=sorted(v.EXPORTS - {'skager_chart_point_style_v1'}) + ['wrong']))
+
+    def test_missing_point_style_export(self):
+        with self.assertRaisesRegex(ValueError, 'inventory'):
+            v.pe_contract(pe(exported=sorted(v.EXPORTS - {'skager_chart_point_style_v1'})))
 
     def test_truncated(self):
         for length in (0, 62, 140, 400, 2048):

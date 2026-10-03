@@ -373,8 +373,21 @@ ORIENT, direct TOPSHP, missing/duplicate/malformed attributes and unknown scheme
 retain the original Rule. Day keeps stock orange, Night uses the documented
 owned legibility lift, and Dusk retains stock after the brighter trial lost
 orange recognition. See [scope and focused evidence](../evidence/scrum264-white-orange-pillar/README.md).
-Generic beacon
-composition, remaining Paper Chart art and actual native/private-chart display
+The supplied generic beacon now has owned `XNBCNG01` artwork for the existing
+Simplified generic `_bcngn` and `_slgto` fallback selections only; exact original
+definitions, classified and Paper consumers remain unchanged. See the
+[generic-beacon resource proof](../evidence/scrum264-generic-beacon/README.md).
+The supplied yellow special-mark body now maps only proven yellow BOYSPP11
+selections to `XNSPPY01`. Its X is separate `XNSPPT01` artwork and requires an
+explicit typed yellow TOPSHP7 on a unique eligible co-located same-chart buoy.
+Only the original empty Simplified TOPMAR fallback is extended, after normal
+upstream visibility checks; no inferred topmark, changed lookup, Paper override
+or temporary renderer-rule ownership is introduced. The
+[yellow body/head proof](../evidence/scrum264-yellow-special/README.md) records
+the exact classification, fallback and actual-method boundaries. The three
+follow-up aliases occupy disjoint atlas tiles and retain the upstream coordinate
+and scale handling.
+Remaining Paper Chart art and actual native/private-chart display
 qualification remain open. See `docs/evidence/scrum264-seamark-art/README.md`
 and the complete preceding family audit for exact boundaries and evidence.
 

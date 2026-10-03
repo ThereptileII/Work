@@ -23,7 +23,20 @@ $Variant = if ($Production) { 'production' } elseif ($Integration) { 'xnav' } el
 $Evidence = Join-Path $Root 'evidence/local'
 New-Item -ItemType Directory -Force $Evidence | Out-Null
 Start-Transcript -Path (Join-Path $Evidence "windows-$Variant-$Architecture.log")
+# Capture the entry interpreter before dependency setup changes PATH. CMake's
+# independent discovery may otherwise choose another Python/zlib encoder.
+$PythonIdentityJson = & python -c 'import hashlib,json,pathlib,sys,zlib; p=pathlib.Path(sys.executable).resolve(); print(json.dumps({"executable":str(p),"sha256":hashlib.sha256(p.read_bytes()).hexdigest(),"version":sys.version,"zlibCompile":zlib.ZLIB_VERSION,"zlibRuntime":zlib.ZLIB_RUNTIME_VERSION,"zlibNg":getattr(zlib,"ZLIBNG_VERSION",None)}))'
+if ($LASTEXITCODE -ne 0) { throw 'Cannot identify the entry Python interpreter' }
+$PythonIdentity = $PythonIdentityJson | ConvertFrom-Json
+$BuildPython = [string]$PythonIdentity.executable
+if (-not [IO.Path]::IsPathFullyQualified($BuildPython) -or
+    -not (Test-Path -LiteralPath $BuildPython -PathType Leaf)) {
+    throw 'Entry Python did not report an absolute existing executable'
+}
+$PythonCMakeArgument = "-DPython3_EXECUTABLE:FILEPATH=$BuildPython"
+$PythonIdentityJson | Set-Content -LiteralPath (Join-Path $Evidence "windows-$Variant-python.json") -Encoding utf8
 function Run([string]$Program, [string[]]$Arguments) {
+    if ($Program -ceq 'python') { $Program = $BuildPython }
     & $Program @Arguments 2>&1 | Tee-Object -FilePath (Join-Path $Evidence 'windows-native-output.log') -Append
     if ($LASTEXITCODE -ne 0) { throw "$Program failed with exit code $LASTEXITCODE" }
 }
@@ -48,6 +61,7 @@ function Build-PrivateOCharts([bool]$Reuse) {
         run = $env:GITHUB_RUN_ID; attempt = $env:GITHUB_RUN_ATTEMPT
         job = $env:GITHUB_JOB; commit = $env:GITHUB_SHA
         script = Digest (Join-Path $PSScriptRoot 'build-pristine-windows.ps1')
+        python = $BuildPython; pythonSha256 = Digest $BuildPython
     }
     foreach ($Value in $Identity.Values) {
         if (-not $Value) { throw 'Private adapter requires complete same-job identity' }
@@ -79,7 +93,7 @@ function Build-PrivateOCharts([bool]$Reuse) {
             '--openssl-prefix', $OpenSslPrefix, '--zlib-prefix', $ZlibPrefix, '--resources', $Resources)
         Run cmake @('-S', (Join-Path $Root 'cmake/ocharts-adapter'), '-B', $NativeBuild,
             '-G', 'Visual Studio 17 2022', '-A', 'Win32', '-DCMAKE_POLICY_VERSION_MINIMUM=3.5',
-            "-DSKAGER_PREPARED:PATH=$Prepared")
+            "-DSKAGER_PREPARED:PATH=$Prepared", $PythonCMakeArgument)
         Run cmake @('--build', $NativeBuild, '--config', 'Release', '--target',
             'skager-ocharts-adapter', '--parallel', '2')
         Run python @((Join-Path $PSScriptRoot 'prepare-ocharts-adapter.py'),
@@ -289,7 +303,7 @@ try {
         $OpenNavArgs = @("-DOPENNAV_ROOT=$Root", "-DOPENNAV_ENABLE_ROUTE_SCENARIO=$Fixtures", "-DXNAV_ENABLE_TEST_FIXTURES=$Fixtures", "-DXNAV_ENABLE_PILOT_LOOPBACK_TESTS=$Fixtures", "-DSKAGER_OCHARTS_PACKAGE=$OChartsPackage")
     }
     Run cmake (@('-S', $Source, '-B', $Build, '-G', 'Visual Studio 17 2022',
-        '-A', $Architecture, '-DCMAKE_POLICY_VERSION_MINIMUM=3.5', '-DCMAKE_BUILD_TYPE=Release',
+        '-A', $Architecture, $PythonCMakeArgument, '-DCMAKE_POLICY_VERSION_MINIMUM=3.5', '-DCMAKE_BUILD_TYPE=Release',
         "-DwxWidgets_ROOT_DIR=$Wx", "-DwxWidgets_LIB_DIR=$Wx/lib/vc14x_dll",
         '-DwxWidgets_CONFIGURATION=mswu', '-DOCPN_CI_BUILD=ON',
         "-DGETTEXT_MSGFMT_EXECUTABLE=$Gettext/msgfmt.exe",

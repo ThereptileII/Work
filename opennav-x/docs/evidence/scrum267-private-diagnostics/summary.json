@@ -1,0 +1,116 @@
+{
+  "schema": 1,
+  "issue": "SCRUM-267",
+  "scope": "copied actual private-table diagnostic and explicit core scope; no selection/preference change",
+  "base": "d5d71356d806ea8c3518644d10728a24f1334d1d",
+  "abi": {
+    "existingBindingAndStatusHeaderPrefixUnchanged": true,
+    "additionalExport": "skager_chart_point_style_v1",
+    "pointStyleVersion": 1,
+    "exactPackageExportCount": 5
+  },
+  "lifecycle": {
+    "pinnedOriginalFileCount": 219,
+    "onlyChangedUpstreamFileVersusBase": "src/o-charts_pi.cpp",
+    "basePatchedPluginSha256": "1ad2286fc4d41541e043626716da980b91bf911fd4ecb4fe8a153ed7ac4feb68",
+    "newPatchedPluginSha256": "4ca4224a54b4cc1c2740fbdd10695ef883572827698ac448a2532666c01f8e4c",
+    "onlyDelta": "four activity calls: Init entry=false/completion=true, DeInit=false, destructor=false",
+    "unchangedHelperSources": {
+      "src/Osenc.cpp": "6ce66dc6df9c5c066a0533a27288f9b9e8a2bb2ebb870b46fb1bde8cb4ff91b4",
+      "src/fpr.cpp": "875a0d7807aa16a5a5443e29e8ef537232d5c5dd800483c08087f0ae74335e91",
+      "src/oernc_inStream.cpp": "d3be05a471a22434317be517abf559cc611e509be2303a8d09c7f40dd4fe3e57"
+    },
+    "sourceComparisonSha256": "6021b2a043e063e1c45c12149577240149a1633db5822c80fcec0fb1ad2749d9"
+  },
+  "checks": {
+    "observationAndHostCopyChecks": 84,
+    "packageGuardTests": 17,
+    "hostPeParserCases": 21,
+    "oldBindingContract": "passed unchanged",
+    "negativeControls": [
+      {
+        "mutation": "no-active-gate",
+        "exit": 1,
+        "reason": "no observation before completed Init"
+      },
+      {
+        "mutation": "inferred-table",
+        "exit": 1,
+        "reason": "must observe actual Paper, never infer Simplified from selected status"
+      },
+      {
+        "mutation": "unchecked-host-reserved",
+        "exit": 1,
+        "reason": "malformed observation accepted as valid"
+      }
+    ],
+    "objects": [
+      {
+        "unit": "OChartsPresentation",
+        "exit": 0,
+        "objectSha256": "0e2a7ead25c962676db6e1daade1e76a25b867f2b80c4572e1b4193817a7575f"
+      },
+      {
+        "unit": "OpenCPNIntegration",
+        "exit": 0,
+        "objectSha256": "a462bebe6d77b6e9948bd37322838719d7f7ba08b46d5ce7bdc87cfbef191103"
+      },
+      {
+        "unit": "ChartPresentationAdapter",
+        "exit": 0,
+        "objectSha256": "bec5cd666901c9d188cded2dacfc614baca87e9deb9b375d8be5694c87bf7db7"
+      },
+      {
+        "unit": "o-charts_pi",
+        "exit": 0,
+        "objectSha256": "6bff6c15cfe0595a798cd76ac315cf9b0cd6876c8f173f24dc58ebfcdc4949a8"
+      }
+    ],
+    "compilerSetupCorrections": [
+      "Added actual installed shapelib include directory to the reused host compile recipe.",
+      "Selected existing real SCRUM-267 patched core S52 headers instead of stale integration headers."
+    ],
+    "privateCommandReceiptSha256": "30a4d265c14177964075ecd551d4e1244aacf58ed45f5485276df0ed37be456a"
+  },
+  "consumers": {
+    "activeNativeCapture": "tools/prototype/capture-native.py uses unchanged requested/status only",
+    "historicalFrozenCollectors": [
+      "docs/evidence/skager-chart-ccc0faa-linux/collector/pier57/capture-final.py",
+      "docs/evidence/scrum263-chart-face-9dee-linux/collector/pier57/capture-final.py",
+      "docs/evidence/skager-chart-9632421-linux/pier57/collector/capture-final.py",
+      "docs/evidence/skager-chart-9632421-linux/coast/collector/capture-final.py",
+      "docs/evidence/skager-chart-5c05eb5-linux/collector/pier57/capture-final.py"
+    ],
+    "historicalTreatment": "Retained unchanged; future derived collectors must read chart_presentation.core fields.",
+    "additionalRootPrivateScriptConsumers": 0
+  },
+  "sourceHashes": {
+    "cmake/ocharts-adapter/Targets.cmake": "de944c6c0b99cbf94da8282264274b57ca69dd11202be166a030579cc35b3325",
+    "docs/architecture/ocharts-presentation-adapter.md": "2b6b31db5542191a1741cb64db2ce929a8ac460cc0acfeaab274db2ef206f798",
+    "patches/ocharts-skager-presentation.patch": "8545b797584e61fd707a5ef85c2f93f8db4c62c493580cb1eeb40eb0891010be",
+    "src/integration/ChartModuleCheck.cpp": "3660d41fa8d2ce3e6e9c3210c96577323ccdfb49193613c633e0f93acba5a7ac",
+    "src/integration/ChartModulePe.h": "3f84df7d0be6f4ec190c5710d55b381cb1aa465022c68c90aff8fc8de3847d0b",
+    "src/integration/OChartsPresentation.cpp": "a0d3d3809080fc1e287515a3133c64f06acdd51126fa03b5a524bd27ce3d59e3",
+    "src/integration/OChartsPresentation.h": "425dd9d095327445a97c975e77baa68e56ff61a4bea76d93ddcefd89645d5621",
+    "src/integration/OpenCPNIntegration.cpp": "aac47c98d529eff76f24058ee1c5a02b90bacee9dc63e05d4800ed6c63ec349b",
+    "src/plugin-adapters/ChartPresentationBindingV1.h": "72a9e19e8d457cdfc543cd0ec6571bf6b6eb30a4a6f4c547f0f047c631e8967f",
+    "src/plugin-adapters/ocharts/ChartPresentationAdapter.cpp": "c7f8077b7b445b63dca339c749790f8c1e6ed573e632bd8ed135b882f6285831",
+    "src/plugin-adapters/ocharts/ChartPresentationAdapter.h": "7fcc05c31c82fa29818fe4ea90c352c1f96874b65b2aff7bcb41ad9f97a87ae2",
+    "src/plugin-adapters/ocharts/README.md": "f05dc407f70922907430884660428c3ece2894722c091db319cff21742ea0039",
+    "src/plugin-adapters/ocharts/tests/run_tests.py": "d34715d8a6c6afe4cb59cd3266ad628a3dbd03bc237bd82cfa77d2e7d149d2ae",
+    "tools/prepare-ocharts-adapter.py": "598cc97c4f6a0e5f2775a9d193f977c1f25d46cc1633e21b5b27c1fe9436b822",
+    "tools/test-chart-module-pe.py": "f82f7ae919d3e1fcd2b31dbd1a73a09f1137bce30bcf57a239021f41937275e3",
+    "tools/test-chart-module-windows.py": "6d69aed766c0a1ee870c7dcac84d31076cbe23b71822e57f33f0d8debffe61ec",
+    "tools/test-ocharts-adapter-preparation.py": "c03a3d08bc13f663f2a5499699fc1117c62bdd2278d1d38312b71a861496a504",
+    "tools/verify-ocharts-adapter-package.py": "85d4925907316b2f3ed48b0e70947d948b3345c4e6906a851fce2c2a0453bbf4",
+    "src/integration/OChartsPointStyle.h": "afc41b931e0ee0f894b3e98c70b20ca73db47604cdcd400e01ecffbff4cc6f1f",
+    "src/plugin-adapters/ocharts/PointStyleObservation.h": "9174f3077c8007263414994b7067fe1fcabacf4f9aed001d017df6de5c2b0ddf",
+    "src/plugin-adapters/ocharts/tests/point_style_test.cpp": "18e5e1dd255c341c733a474165e2ffed1402e1cc5bfd124b23577ae55b8b16a7"
+  },
+  "limits": [
+    "Linux objects and actual copied-data/parser methods only; no linked/running plugin, app, chart, hardware or boat.",
+    "Exact native MSVC DLL export/import/package binding and pre-Init unavailable observation need fresh same-revision CI.",
+    "Actual native host Init/table/mode/fallback/DeInit/unload and licensed boat chart diagnostics remain pending.",
+    "The existing closed vendor helper/dongle limitation and output quarantine/cold-baseline guards remain."
+  ]
+}

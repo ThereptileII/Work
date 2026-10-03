@@ -12,9 +12,11 @@
 #include <limits>
 #include "integration/ChartLightSymbol.h"
 #include "integration/ChartSpecialBuoySymbol.h"
+#include "integration/ChartYellowBuoySymbol.h"
 #define private public
 #include "chartsymbols.h"
 #undef private
+WX_DEFINE_SORTED_ARRAY(LUPrec*, wxArrayOfLUPrec);
 class s52plib {
  public:
   wxArrayPtrVoid *pAlloc;
@@ -28,6 +30,21 @@ class s52plib {
   wxPoint paintedPoint{};
 #include "light-enable-method.inc"
   int RenderSY(ObjRazRules*, Rules*);
+  int DoRenderObject(wxDC*,ObjRazRules*);
+  LUPrec* FindBestLUP(wxArrayOfLUPrec*, unsigned, unsigned, S57Obj*, bool);
+  void RenderPresentationYellowTopmark(ObjRazRules*);
+  wxDC* m_pdc=nullptr;
+  bool visible=true;
+  int visibilityChecks=0;
+  bool ObjectRenderCheckRules(ObjRazRules*,bool) { ++visibilityChecks; return visible; }
+  void RenderTX(ObjRazRules*,Rules*) {}
+  void RenderTE(ObjRazRules*,Rules*) {}
+  void RenderLS(ObjRazRules*,Rules*) {}
+  void RenderGLLS(ObjRazRules*,Rules*) {}
+  void RenderLC(ObjRazRules*,Rules*) {}
+  void RenderMPS(ObjRazRules*,Rules*) {}
+  void RenderCARC(ObjRazRules*,Rules*) {}
+  void GetAndAddCSRules(ObjRazRules*,Rules*) {}
   void GetPointPixSingle(ObjRazRules*,double,double,wxPoint* point) {
     *point=wxPoint(101,202); // Geometry projection is outside this fixture.
   }
@@ -137,6 +154,8 @@ static void CheckPillarDispatch(s52plib& owner,std::map<wxString,Rule*>& symbols
   Check(!std::memcmp(stock,&saved,sizeof saved) && rules.razRule==stock);
 }
 
+#include "chart_yellow_buoy_cases.inc"
+
 static void CheckLightDispatch(s52plib& owner,std::map<wxString,Rule*>& symbols) {
   for(int i=11;i<=13;++i) {
     const auto originalName="LIGHTS"+std::to_string(i);
@@ -229,19 +248,20 @@ int main(int argc, char **argv) {
     loader.ProcessColorTables(tables);
     auto definitions = doc.child("chartsymbols").child("symbols");
     loader.ProcessSymbols(definitions);
-    const char *names[] = {"XNLAT013","XNLAT014","XNLAT023","XNLAT024","XNCAN072","XNCAN073","XNCON066","XNCON067","BOYISD12","BOYSAW12","XNLIT011","XNLIT012","XNLIT013","XNSPPW01"};
-    const int rcids[] = {60001,60002,60003,60004,60005,60006,60007,60008,2049,1294,60009,60010,60011,60012};
+    const char *names[] = {"XNLAT013","XNLAT014","XNLAT023","XNLAT024","XNCAN072","XNCAN073","XNCON066","XNCON067","BOYISD12","BOYSAW12","XNLIT011","XNLIT012","XNLIT013","XNSPPW01","XNSPPY01","XNBCNG01","XNSPPT01"};
+    const int rcids[] = {60001,60002,60003,60004,60005,60006,60007,60008,2049,1294,60009,60010,60011,60012,60013,60014,60015};
+    const int atlasX[] = {244,276,308,340,372,404,436,468,500,532,564,596,628,660,692,724,756};
     const char *themes[] = {"DAY_BRIGHT", "DUSK", "NIGHT"};
     wxRect rect;
     loader.GetGLTextureRect(rect,"ACHARE51");
     Check(rect == wxRect(20,1160,20,20));
-    for (int n=0; n<14; ++n) {
+    for (int n=0; n<int(sizeof(names)/sizeof(names[0])); ++n) {
       auto rule = symbols.at(names[n]);
       Check(rule->RCID == rcids[n] && rule->definition.SYDF == 'R');
       Check(rule->pos.symb.pivot_x.SYCL == 12 && rule->pos.symb.pivot_y.SYRW == 14);
       Check(rule->pos.symb.bnbox_w.SYHL == 24 && rule->pos.symb.bnbox_h.SYVL == 28);
       loader.GetGLTextureRect(rect,names[n]);
-      Check(rect == wxRect(244+32*n,1160,24,28));
+      Check(rect == wxRect(atlasX[n],1160,24,28));
       for (int theme=0; theme<3; ++theme) {
         wxImage svg(svgFile+"/"+names[n]+"-"+themes[theme]+".png",wxBITMAP_TYPE_PNG);
         Check(svg.IsOk() && svg.HasAlpha() && svg.GetWidth()==24 && svg.GetHeight()==28);
@@ -261,12 +281,12 @@ int main(int argc, char **argv) {
           for (int ch=0;ch<3;++ch)
             Check(std::abs(rgb[ch]*a/255.0-reference[ch]*a/255.0)<=1.01);
         }
-        Check(pixels>=40);
+        Check(pixels >= (!std::strcmp(names[n], "XNSPPT01") ? 30 : 40));
         Check(tile.SaveFile(out+"/"+names[n]+"-"+themes[theme]+".png",wxBITMAP_TYPE_PNG));
       }
     }
     CheckLightDispatch(owner,symbols);
-    CheckPillarDispatch(owner,symbols);
+    CheckPillarDispatch(owner,symbols); CheckYellowDispatch(owner,symbols); CheckYellowLookups(owner,doc.child("chartsymbols").child("lookups"));
     for (auto &entry:symbols) {
       free(entry.second->colRef.SCRF);
       free(entry.second->vector.SVCT);

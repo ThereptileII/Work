@@ -1,0 +1,27 @@
+{
+  "identity": {
+    "run": "37114216075",
+    "attempt": "1",
+    "job": "windows-integration",
+    "commit": "b8cfbf809450208f723095ffb4e00d7800b619a5",
+    "script": "00f29a6743cfa47d7113be1eb6d14b3bf0c431d28a2c62f801aa443504312696"
+  },
+  "package": {
+    "manifest.json": {
+      "sha256": "1e63a710d5151df2aab47278d752444cb62df223ed769bc6962bf37095720cc8",
+      "bytes": 11535
+    },
+    "skager-ocharts-adapter.dll": {
+      "sha256": "6ae8618513007efa10318d41235bfe887ff07103c9147a4bc1ef2d5364068e60",
+      "bytes": 1325568
+    },
+    "corresponding-source.zip": {
+      "sha256": "27a33d12498250bd509396e79961c46f89ea7715a2a74f9e3e02d41aa531cb90",
+      "bytes": 5618416
+    }
+  },
+  "preparation": {
+    "sha256": "b4c974fac80820d3e0d3b4363a34c82696df13b67392ab5119240fc6b4c3aff2",
+    "bytes": 337270
+  }
+}

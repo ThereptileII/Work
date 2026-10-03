@@ -1,0 +1,161 @@
+{
+  "schema": 1,
+  "kind": "bounded-source-review-not-runtime-attestation",
+  "issue": "SCRUM-259",
+  "appSource": "d5d71356d806ea8c3518644d10728a24f1334d1d",
+  "candidateMappingSuppliedByRoot": "b8cfbf809450208f723095ffb4e00d7800b619a5",
+  "vendorSource": {
+    "source": {
+      "repository": "bdbcat/o-charts_pi",
+      "commit": "c98bf5f0654a6aee52cd9a6b9fabc0d1cf8047e8"
+    },
+    "gitlink": {
+      "repository": "leamas/opencpn-libs",
+      "commit": "38762f4e7b8faf39133cc40efc99b12b5200f04b"
+    }
+  },
+  "verifiedOriginalFileCount": 219,
+  "changedVendorFiles": [
+    {
+      "path": "libs/s52plib/src/DepthFont.cpp",
+      "originalLfSha256": "653ec237a5d79cd8590aa46174f13cad8a0d253ad8b804a8408efaa98b5e028c",
+      "derivedSha256": "4013054dc8e35202bfd928c363b0e3a70f6decca544582e30622aee25f0b7095"
+    },
+    {
+      "path": "libs/s52plib/src/DepthFont.h",
+      "originalLfSha256": "209f2ebb0cd654ae7d44a17710fd8d2f758d05c54402ce9e32fc0b6bbfc2e133",
+      "derivedSha256": "a9afa157bfdcba571613b8d07a007492338d307255eb2893fae92b0b0cf6ab35"
+    },
+    {
+      "path": "libs/s52plib/src/chartsymbols.cpp",
+      "originalLfSha256": "a88dd1739236032b23548a70e45bf9b8c649118678b36743ee5e754b47e6c208",
+      "derivedSha256": "ca74f61ca58510fb83081f46434cf95ca1a7536235f2fbf5d087e8ee4e7fd355"
+    },
+    {
+      "path": "libs/s52plib/src/chartsymbols.h",
+      "originalLfSha256": "918fc6d0729299435478caa909b47643181e012a225a32f22b84ad15e4490954",
+      "derivedSha256": "5e55ee3c8450679fb9ac8d32a862733d296b1421381ee7e7163796fed804937a"
+    },
+    {
+      "path": "libs/s52plib/src/s52plib.cpp",
+      "originalLfSha256": "fe9be32112dfa0b8f00a83d72b3f3c67bf1134e403c357593ac9153bc3021d2f",
+      "derivedSha256": "ca4f661f5ce267b129745057a55ef070907287df03308cda85c5bf26edde5698"
+    },
+    {
+      "path": "libs/s52plib/src/s52plib.h",
+      "originalLfSha256": "1586243a5ea5c915f6bb119342ef8a6856f876e307838ed10930dfde8b4ce9d3",
+      "derivedSha256": "fb14898b53b97ecc230aa8e7ae63fc58b8a97d976a76cb7416d073487e835067"
+    },
+    {
+      "path": "libs/s52plib/src/s52s57.h",
+      "originalLfSha256": "da106a80633b2e0fb9000b06f98e0b770fe23f7bde42116bcefced70fa38816a",
+      "derivedSha256": "261f7b2f0aaa79d7cd6084ad2921d565638e35e8b3fb0237a7760c2ed16d36fd"
+    },
+    {
+      "path": "libs/wxcurl/src/base.cpp",
+      "originalLfSha256": "bff38a6ef64ba374232a04f67b4637b80cda9c0e90f9ee2855f0b92296a21f6c",
+      "derivedSha256": "318b7b9ce3f57574f41179d2a88d50eeb349a09df49a8c93a5f0ff6e4b2cde55"
+    },
+    {
+      "path": "libs/wxcurl/src/wx/curl/base.h",
+      "originalLfSha256": "634fc2b64aefdcec60d39dcb2478c387a5a334d68424a1a5d42cc4ff65ad5f91",
+      "derivedSha256": "11518959b97f0bf296b0f851fa74665b1de9ea3ca755c0eba42feee89d8d350a"
+    },
+    {
+      "path": "src/eSENCChart.cpp",
+      "originalLfSha256": "e42a59ff86e77d5f1d4222e35265a5f5f49dfb76eeceb81bc4b84c93e31e09cb",
+      "derivedSha256": "69457c981abb382c2370f2686e1180c1b2e89da92de9e23a72c0c7e80c130282"
+    },
+    {
+      "path": "src/o-charts_pi.cpp",
+      "originalLfSha256": "54056c0c8d6d7d32839a0aa0bff63bcfd9a117a90c81ef0e2968eed4e477652c",
+      "derivedSha256": "1ad2286fc4d41541e043626716da980b91bf911fd4ecb4fe8a153ed7ac4feb68"
+    }
+  ],
+  "pluginOnlyChanges": [
+    "include ChartPresentationAdapter.h",
+    "init_S52Library replaces new s52plib with CreateChartPresentation"
+  ],
+  "unchangedBoundaryFileSha256Lf": {
+    "src/fpr.cpp": "875a0d7807aa16a5a5443e29e8ef537232d5c5dd800483c08087f0ae74335e91",
+    "src/Osenc.cpp": "6ce66dc6df9c5c066a0533a27288f9b9e8a2bb2ebb870b46fb1bde8cb4ff91b4",
+    "src/oernc_inStream.cpp": "d3be05a471a22434317be517abf559cc611e509be2303a8d09c7f40dd4fe3e57",
+    "src/ochartShop.cpp": "58500f1c2cdc24e2d6d30052a773b159b99b7a2f5a47c88a0c51fb7b8ffb1729",
+    "src/o-charts_pi.h": "4074b9dad17ac3e96badfab6be721ba8092cf39dd787732c077b41f501d0070f"
+  },
+  "retainedReviewSha256": {
+    "o-charts_pi.dll.source-review.json": "27abb6139aeaf374aa8811201998b38c5cf6d72978815218f9b08e8496a14d85",
+    "retained-plugin-shutdown-review.json": "d7ec389ac13ace85e5fd48d243e47f77be05d541517699b7f9505663f2abcb60",
+    "charts-build.json": "87af86651e555fdce160262eeaf7c4b66164afeaf5942de1b531fe12938b15e6",
+    "charts-source-binary-identity.json": "e400cb0e01c3f2896e72b154c20f514111e10ba83a700639874901c3c6113be4",
+    "archive-audit.json": "081842cf3fc66a6e734b567d6b20cd0d9bfda123f9df3f1562eb350519f01828"
+  },
+  "privateCompleteComparisonSha256": "670a2da65fc23dbd9e6d40289d0fa5611569fd1ad4d8329ab2fec198ac17a491",
+  "ownedBuildInputSha256Lf": {
+    "tools/ocharts-adapter-source.lock.json": "0aaab29b5ad626f2215e5787b64ec7e3153f6a75223976370dbebb3967557353",
+    "cmake/ocharts-adapter/CMakeLists.txt": "f68ca2a54abc5d4b81c3f8be01ca356298027df0a14fcb0e7d675a26ea611c0e",
+    "cmake/ocharts-adapter/PreparedPath.cmake": "d1627b157d95ffdeeebcad95260434c8137d4a59a31fb9298a99208f65895d4a",
+    "cmake/ocharts-adapter/Targets.cmake": "1b79b92620a0ff44de262f8b09d924f54a2867213c497ce9c573b9325e8588eb",
+    "tools/prepare-ocharts-adapter.py": "5746518e90db38e5729e1182f4344529d4f2043d63356839e449e185e0a21b1b",
+    "tools/verify-ocharts-adapter-package.py": "13c07a40b37a8934590677a421b01d852c0b3c8e5403d743fad996f132c58a21",
+    "tools/windows-wx.lock.json": "d8ceb7b75af2803eae6aca8adb2ea404b695dc573416d3f7899b80ecaf089d28",
+    "tools/windows-curl.lock.json": "e3c2f9346cc3b793bca1813840e1d81148eaaba7a202421cf0e44dcf307ed888",
+    "tools/windows-zlib.lock.json": "9b1bc99c1ed47647744d523d65f4fb18f2a52d96aab24c85acf5c334c0dc0fb5",
+    "tools/windows-openssl.lock.json": "df596603e33a205e62e04c3418a2d6f157ea989d50936700d440c2678b40ae23",
+    "tools/curl_package.py": "fa9f82a96840c277e2c95b510b66a8d8f02ab900cb1fd539c52880124963f90a",
+    "tools/openssl_package.py": "5bb8a1fd4f68ea80dbe4e1c49fb0d2f3fa20584d1bfa8748a0eac9fdeca64063",
+    "tools/test-downloader-trust-windows.ps1": "3a686a8094ca06faf6e6d8e240ab475325d6e28248156a1e63be259c194f7deb",
+    "tests/downloader_trust/CMakeLists.txt": "bf7f20d727e0cef2542fc8f6bbd740e40e5461acfc9016211dcbab8084d9b4fa",
+    "tools/wxcurl-trust-probe.cpp": "06807b802164ca71f90384cd322fcf3d64fa4717e87ee44af80ba17d3f3d5463",
+    "tools/downloader-trust-probe.cpp": "9b72de42e87940e7a57eefce4a82de1ce7b15b64f22e1605ba6db5e73c42ff3d",
+    "tools/downloader-trust-server.py": "1b3b2134be4d89cd8ceee9e66eb4e318b5b4b55545543f5fdaf6c12b861fd3ff",
+    "patches/ocharts-skager-presentation.patch": "435bd40d2bf1e4dba15e05a9bbc073784a7ffea6fa759f8fd828fecdd6ec51fe",
+    "patches/ocharts-wxcurl-trust.patch": "e68b0a767f6a27d0136fa7e6b82ca96eac69f934f5fe54a13b314750bbb3d567",
+    "src/plugin-adapters/ChartPresentationBindingV1.h": "6af194362907b8801735d9e47ef07b71ef5bb3d572345d3814d6394787a34161",
+    "src/plugin-adapters/ocharts/ChartPresentationAdapter.h": "cc467555c63d378e23e3cdba19b2050892f0bd0ba58b1224a31368dbf5107969",
+    "src/plugin-adapters/ocharts/ChartPresentationAdapter.cpp": "4d39d64843c215c3f369a1fdbacce71b86f7af45a43d7f41c24f877c68b60c90",
+    "src/plugin-adapters/ocharts/BindingState.h": "82e4f94910c7af63772d90d23771f5328d4c0543b94390d35be8a2d04cf07e5c",
+    "src/plugin-adapters/ocharts/OwnedPresentationValidation.h": "002d63e03dac37ebd4a4b4f2b4510706b3777635f04dfc9d84ad0b893021888f",
+    "src/plugin-adapters/ocharts/ResourceVerification.h": "7b6b6e6b430cbc9e0a275653261ba056face4c04b1d9c0fd9f167fb8e5be587c",
+    "src/integration/ChartNameTypography.h": "23688fca7f9ed456e7458fe1228e0bf9908660a953732cb6e6749c5838e1f4d9",
+    "src/integration/ChartNameText.h": "da096196bd661f5e5bb47fdab0946a8987f707cf961f5eb9197090355a140635",
+    "src/integration/ChartTextFace.h": "4c1b0c41e29ecdac9af7a6fd7446863714539777c1904fa598679ba3ec49b3ab",
+    "src/integration/ChartNameSpacing.h": "2f37a592dd4c311a371441cc42560a68286d65cb442a061a739dbcce9e5cd6f6",
+    "src/integration/ChartNameAlphaWindows.cpp": "01d26462e5b2cd9b54cfc9f138c7b4f2f2b0842c07c535906e0f871105d826f6",
+    "src/integration/ChartLightLabel.h": "64d1fa48773369339402acd12d0be91847a5c69e145b8a072268c752a579e9ee",
+    "src/integration/ChartLightSymbol.h": "c3d52a12d12562f601eae930f59ea4ebefa62925975f51ec05c875f0687a5b04",
+    "src/integration/ChartSpecialBuoySymbol.h": "24e1af5d565b522d00f5d8103c14b5bcadfb0075a3c4fcebcf2e832e22e8c8c4",
+    "src/integration/ChartSoundingFont.h": "02d27cb56d7af4f292640e59ec0326ba7b6555406956e6419a367b5bab124021",
+    "src/integration/ChartCanvasInk.h": "cc1a4d94131f932f2bbd40d330d9003d0086dfc1237449b4215b509377c39f66",
+    "src/ui/Theme.h": "b28adb1f519ec5a1f9b7e2bfab6ec2ab1c7f06656bd129316e9e453ef1ec0776"
+  },
+  "additionalHostInputSha256": {
+    "src/integration/OChartsPresentation.cpp": "786433ec772a5eec8949d1c2f675e90de2f5c6b7dd41fcad167b659771d6c071",
+    "src/integration/OChartsModuleLoader.cpp": "3377137cd14df0acebbcbe75da4123357480ed18c27e24b6382b8b1006c8c42b",
+    "src/integration/PluginPresentationFallback.h": "4cb1c941047f0c89d7cb57e8022830cf28aabacb515a1c84fe0f53aeb23bfe90",
+    "src/integration/ChartPresentation.cpp": "32339b83be2c3b9ff81fb31bfbf8313628a7f1596092921a98693ae0a140a358",
+    "patches/opencpn-5.12.4-chart-presentation.patch": "9ecf04798b61c84a4f298ae04acd9201768026c3095531c5e2767682408b147d"
+  },
+  "conclusions": {
+    "pluginConstructorBodyChanged": false,
+    "pluginInitBodyChanged": false,
+    "initRendererCalleeChanged": true,
+    "pluginCallbacksTimersChanged": false,
+    "pluginDeInitDestructorChanged": false,
+    "helperProtocolSourceChanged": false,
+    "newActuatorWritePathIdentified": false,
+    "networkPolicyChanged": true
+  },
+  "pending": [
+    "downloaded exact candidate adapter DLL/imports/source/resource/package digests and source closure match",
+    "actual native host load/bind/factory/Init/render/status/unload with maintained dependency closure",
+    "fresh installed plugin/helper/runtime tree and source evidence pinned into commissioning plan",
+    "guarded boat startup/idle/chart/mode/shutdown observation and restored profile verification"
+  ],
+  "limitations": [
+    "No build, test, app, plugin, helper or boat command executed.",
+    "Source equality is not equality of rebuilt machine code or imported dependency behavior.",
+    "Retained closed helper/dongle vendor trust limitation remains; no claim of electrically silent USB.",
+    "This is not a fresh commissioning plan, launch audit, shutdown attestation or acceptance."
+  ]
+}

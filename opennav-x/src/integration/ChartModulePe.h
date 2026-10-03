@@ -77,20 +77,22 @@ inline bool ChartModulePe(const std::vector<unsigned char>& b,
        std::find(imports.begin(),imports.end(),"wxmsw32u_core_vc14x.dll")==imports.end())return false;
     const auto exports=u(opt+96,4), exportSize=u(opt+100,4);
     if(!exports || exportSize<40) return false;
+    const std::set<std::string> expected{"create_pi","destroy_pi",
+      "skager_bind_chart_presentation_v1","skager_chart_presentation_status_v1",
+      "skager_chart_point_style_v1"};
     const auto at=offset(exports,40);
-    if(u(at+20,4)!=4 || u(at+24,4)!=4)return false;
+    if(u(at+20,4)!=expected.size() || u(at+24,4)!=expected.size())return false;
     const auto addresses=u(at+28,4), names=u(at+32,4), ordinals=u(at+36,4);
-    const auto addr=offset(addresses,16), namesAt=offset(names,16), ord=offset(ordinals,8);
+    const auto addr=offset(addresses,4*expected.size()), namesAt=offset(names,4*expected.size()), ord=offset(ordinals,2*expected.size());
     std::set<std::string> found;std::set<unsigned> slots;
-    for(unsigned n=0;n<4;++n) {
+    for(unsigned n=0;n<expected.size();++n) {
       found.insert(name(u(namesAt+4*n,4)));
-      const auto slot=u(ord+2*n,2);if(slot>=4 || !slots.insert(slot).second)return false;
+      const auto slot=u(ord+2*n,2);if(slot>=expected.size() || !slots.insert(slot).second)return false;
       const auto entry=u(addr+4*slot,4);
       if(!entry || (entry>=exports && std::uint64_t(entry)<std::uint64_t(exports)+exportSize))return false;
       offset(entry,1);
     }
-    return found==std::set<std::string>{"create_pi","destroy_pi",
-      "skager_bind_chart_presentation_v1","skager_chart_presentation_status_v1"};
+    return found==expected;
   } catch(const std::exception&) { return false; }
 }
 } // namespace opennav::integration

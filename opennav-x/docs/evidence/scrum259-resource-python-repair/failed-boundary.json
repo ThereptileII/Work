@@ -1,0 +1,26 @@
+{
+  "failedLocalSource": "d5d71356d806ea8c3518644d10728a24f1334d1d",
+  "failedRemoteSource": "b8cfbf809450208f723095ffb4e00d7800b619a5",
+  "run": 37114216075,
+  "artifactId": 11271783971,
+  "packageManifestSha256": "1e63a710d5151df2aab47278d752444cb62df223ed769bc6962bf37095720cc8",
+  "packageResourceManifest": {
+    "sha256": "12cfbce4686fce9a89e15f45105195c9f09a51ae4e3e9932aa7ba803ae205a52",
+    "bytes": 85084
+  },
+  "packageResourceHeader": {
+    "sha256": "fef00119d6b820abe8725be6b8243490da4c056dcaff25c89575f4e1b6c94266",
+    "bytes": 934
+  },
+  "sealedDll": {
+    "sha256": "6ae8618513007efa10318d41235bfe887ff07103c9147a4bc1ef2d5364068e60",
+    "bytes": 1325568,
+    "name": "skager-ocharts-adapter.dll",
+    "machine": "I386"
+  },
+  "hostGeneratedResourcesInArtifact": false,
+  "canonicalResourcesMatchedByIndependentMonitor": true,
+  "observedPathPython": "C:\\hostedtoolcache\\windows\\Python\\3.12.10\\x64",
+  "observedCMakePython": "C:/hostedtoolcache/windows/Python/3.14.7/x64/python3.exe",
+  "actualNativeReproductionPending": true
+}

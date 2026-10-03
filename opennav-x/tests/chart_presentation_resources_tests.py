@@ -52,6 +52,10 @@ with tempfile.TemporaryDirectory(prefix='xnav-chart-test-') as d:
     verify_seamarks(source,output,data,check)
     from chart_special_buoy_resources_tests import verify_special_buoy
     verify_special_buoy(source,output,check)
+    from chart_generic_beacon_resources_tests import verify_generic_beacon
+    verify_generic_beacon(source,output,check)
+    from chart_yellow_buoy_resources_tests import verify_yellow_buoy
+    verify_yellow_buoy(source,output,check)
     from chart_cardinal_resources_tests import verify_cardinals
     verify_cardinals(source,output,data,check)
     from chart_service_resources_tests import verify_services
@@ -114,6 +118,11 @@ with tempfile.TemporaryDirectory(prefix='xnav-chart-test-') as d:
             expected=expected.replace('LS(SOLD,1,LANDF)','LS(SOLD,1,XNSHR)',1)
         if 1029 <= int(stock.get('id')) <= 1044:
             expected=re.sub(r'^SY\(BOYLAT\d{2}\)','SY('+SELECTED[int(stock.get('id'))-1029]+')',expected)
+        if stock.get('id') in {'1696','1708'}:
+            check(stock.get('RCID')=={'1696':'31748','1708':'31760'}[stock.get('id')])
+            check(stock.get('name')=={'1696':'_bcngn','1708':'_slgto'}[stock.get('id')])
+            check(stock.findtext('table-name')=='Simplified' and expected.startswith('SY(BCNGEN01);'))
+            expected=expected.replace('SY(BCNGEN01)','SY(XNBCNG01)',1)
         check(styled.findtext('instruction')==expected)
         styled.find('instruction').text=stock.findtext('instruction')
         check(ET.tostring(stock)==ET.tostring(styled))
@@ -130,7 +139,7 @@ with tempfile.TemporaryDirectory(prefix='xnav-chart-test-') as d:
         styled=b.findall("symbols/symbol[name='"+name+"']")[-1].find('bitmap')
         styled.attrib=stock.attrib.copy()
         for tag in ('pivot','graphics-location'):styled.find(tag).attrib=stock.find(tag).attrib.copy()
-    for name in (*ALIASES,'XNSPPW01'):b.find('symbols').remove(b.find("symbols/symbol[name='"+name+"']"))
+    for name in (*ALIASES,'XNSPPW01','XNBCNG01','XNSPPY01','XNSPPT01'):b.find('symbols').remove(b.find("symbols/symbol[name='"+name+"']"))
     # Independently undo only the cable paint reference before whole-tree proof.
     cables=b.findall("line-styles/line-style[name='CBLSUB06']")
     check(len(cables)==1 and cables[0].attrib=={'RCID':'2012'})

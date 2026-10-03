@@ -21,6 +21,8 @@ import chart_service_art
 import chart_cardinal_art
 import chart_seamark_art
 import chart_special_buoy_art
+import chart_generic_beacon_art
+import chart_yellow_buoy_art
 import chart_day_neutral_ink
 import chart_structure_paint
 import chart_construction_hatch
@@ -54,6 +56,8 @@ def styled_instruction(lookup):
         instruction=chart_structure_paint.instruction(lookup)
     if lookup.get('id') in chart_seamark_art.SELECTORS:
         instruction=chart_seamark_art.instruction(lookup)
+    if lookup.get('id') in chart_generic_beacon_art.SELECTORS:
+        instruction=chart_generic_beacon_art.instruction(lookup)
     if lookup.get('id') in BUILT_AREA_LOOKUPS:
         assert instruction==BUILT_AREA_INSTRUCTION
         instruction=instruction.replace('AC(CHBRN)','AC(XNBUA)')
@@ -103,6 +107,8 @@ def validate_resource_changes(original, styled, colors):
     chart_service_art.restore_bitmap_for_validation(before, after)
     chart_cardinal_art.restore_bitmap_for_validation(before, after)
     chart_special_buoy_art.restore_for_validation(before, after)
+    chart_generic_beacon_art.restore_for_validation(before, after)
+    chart_yellow_buoy_art.restore_for_validation(before, after)
     chart_seamark_art.restore_for_validation(before, after)
     # Added nodes must not make whitespace significant in the identity check.
     for tree in (before,after):
@@ -178,6 +184,8 @@ def generate(source, output):
     xml=chart_cardinal_art.relocate(xml)
     xml=chart_seamark_art.relocate(xml)
     xml=chart_special_buoy_art.relocate(xml)
+    xml=chart_generic_beacon_art.relocate(xml)
+    xml=chart_yellow_buoy_art.relocate(xml)
     validate_resource_changes(original['chartsymbols.xml'],xml,colors)
     result=dict(original);result['chartsymbols.xml']=xml.encode('utf-8')
     # Pinned Day ink identifies neutral CHBLK/CHGRD pixels. Theme sheets use
@@ -199,6 +207,8 @@ def generate(source, output):
     seamark_art = {}
     construction_hatch = {}
     special_buoy = {}
+    generic_beacon = {}
+    yellow_buoy = {}
     for table, name in [('DAY_BRIGHT','rastersymbols-day.png'),
                         ('DUSK','rastersymbols-dusk.png'),
                         ('NIGHT','rastersymbols-dark.png')]:
@@ -207,6 +217,8 @@ def generate(source, output):
         result[name], cardinal_art[name] = chart_cardinal_art.paint(result[name], table)
         result[name], seamark_art[name] = chart_seamark_art.paint(result[name], table)
         result[name], special_buoy[name] = chart_special_buoy_art.paint(result[name], table)
+        result[name], generic_beacon[name] = chart_generic_beacon_art.paint(result[name], table)
+        result[name], yellow_buoy[name] = chart_yellow_buoy_art.paint(result[name], table)
         result[name], construction_hatch[name] = chart_construction_hatch.paint(result[name], table, colors[table][chart_construction_hatch.COLOR])
     output.mkdir(parents=True,exist_ok=True)
     def write(path,content):
@@ -223,6 +235,8 @@ def generate(source, output):
               'seamarkArtwork':seamark_art,
               'constructionHatch':construction_hatch,
               'specialBuoyArtwork':special_buoy,
+              'genericBeaconArtwork':generic_beacon,
+              'yellowBuoyArtwork':yellow_buoy,
               'geographicNameLookups':geography_count,
               'structuralAreaPaint':{'color':'XNSTR','lookupIds':sorted(chart_structure_paint.RULES),
                                      'outlineColor':'XNSHR','outlineLookupIds':sorted(chart_structure_paint.OUTLINE_RULES),

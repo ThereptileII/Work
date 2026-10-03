@@ -1,0 +1,17 @@
+{
+  "passed": true,
+  "checks": 46918,
+  "source": "33d90c38cd1a628c21d0ca159647012d98649d2e",
+  "manifestSha256": "ffa75c9d097a143e58aa13f9300b04bebac0836ab849bd4284401df1866f4b2a",
+  "ownedTileCount": 17,
+  "themes": [
+    "DAY_BRIGHT",
+    "DUSK",
+    "NIGHT"
+  ],
+  "negativeControlsReused": 7,
+  "exercisedMethodReceiptsEqual": true,
+  "fixtureSha256": "123f9f9cd589917de2a2840db6cf81b6dc9a309c9319f23bc85e9b7b4ea13ce8",
+  "binarySha256": "8d7c73cd152f1052102deefa0e30137f1b3b12e21c4b1e70fa988f42bd45b4e2",
+  "scope": "Actual pinned loader/lookup/conditional/RenderSY/DoRenderObject methods with fixture containers, projection and painter call boundaries; not real chart canvas, GL painting, private DLL execution, Windows or boat acceptance."
+}

@@ -1,0 +1,22 @@
+{
+  "base": "d5d71356d806ea8c3518644d10728a24f1334d1d",
+  "sourceInputs": {
+    "src/integration/ChartYellowBuoySymbol.h": "c401c4f3e4086404800a3e8f0c3544cb31be11d1d4d869ca7a3a659cd7f42404",
+    "patches/opencpn-5.12.4-chart-presentation.patch": "ea148ab5d432ac57771e623ca6f2523fb0392f803466ee08a86261d17c80ee1a",
+    "patches/ocharts-skager-presentation.patch": "fe3d76deff3fbbabe3fdb098058752a79e48ebc410dc22095f74520951fea2cd",
+    "tools/generate-xnav-chart-style.py": "5f924cfc6b741c6f655eb808dd40e2ad639f002b4d6ac07214b344fc0ac851c6",
+    "tools/chart_yellow_buoy_art.py": "a3d5adab538c74c4ba1ef82bfc62fc82f9e973ae13286bb1dab0db89ea8d91d3",
+    "tools/derive-yellow-buoy-art.py": "f6c65d74c40e3f359a24272302749160affe1e2944dcfd7fc22fd082a4a36edf",
+    "tools/verify-anchor-loader.py": "f86b124410137bddb2044dcbf42037ecc3df3fa4050a786e78505ee9e72007ca",
+    "tests/chart_seamark_loader_test.cpp": "fd7d6a7984541107c855f20396ae10222069547f8711d1e3027d68aea0277ac8",
+    "tests/chart_yellow_buoy_cases.inc": "a5fe1f522ca6a3b030ccc6a57a968a859b6bc3f9def91c2268068444c54a3fb4",
+    "tests/chart_yellow_buoy_resources_tests.py": "8ba2f0f5a75983dbbbe7ef1e980655ee3ae46b69ba420c8960d03e86038c468b"
+  },
+  "generatedManifestSha256": "d1c00e4f78152cc7e89b4eff1dbd4cfde9d2a148d14d77a835ccc59acc1b7bdb",
+  "resourceChecks": 490,
+  "actualMethodChecks": 43962,
+  "actualMethodMutationControls": 7,
+  "productionObjectCompiles": 3,
+  "preparationChecks": 16,
+  "actualCanvasNativeBoatAcceptance": false
+}

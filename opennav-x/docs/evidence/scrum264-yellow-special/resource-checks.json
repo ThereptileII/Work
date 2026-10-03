@@ -1,0 +1,7 @@
+{
+  "passed": true,
+  "checks": 490,
+  "wholePrecedingXmlAndAllAtlasInverse": true,
+  "neighborsAndRleUnchanged": true,
+  "scope": "Two owned aliases only; no full resource suite"
+}

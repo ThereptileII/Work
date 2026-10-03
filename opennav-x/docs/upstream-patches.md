@@ -12,6 +12,11 @@ No painter, label string, placement, chart preference or Standard/Legacy path
 is rewritten. Enumeration is cached per module, outside painting. See
 [scope and focused evidence](evidence/scrum263-ordinary-chart-face/README.md).
 
+The geographic resolver separately follows the prototype's explicit Segoe UI
+family for Land labels; Water keeps the inherited main stack. This changes only
+the two core/private face-choice expressions. Sizes, weights, tracking, opacity,
+LIGHTS behavior and resources are unchanged. [Exact resolver evidence](evidence/scrum263-geographic-face/README.md).
+
 ## Classified prototype light and special-buoy aliases (SCRUM-264)
 
 The core and private `RenderSY` hooks select only stable library-owned alias
@@ -1262,3 +1267,34 @@ labels and upstream scale/placement remain unchanged. The source-locked exact
 prototype paths, category-color limits and focused native-loader evidence are in
 `docs/design/reviews/scrum256-cardinal-glyphs.md`. Standard/Legacy remains stock;
 Windows, real-ENC recognition and boat acceptance are not claimed.
+
+### SCRUM-264: supplied generic beacon resource mapping
+
+The resource generator derives `XNBCNG01` from the immutable prototype and
+redirects only the two pinned Simplified generic lookup tokens (1696/31748 and
+1708/31760). It does not edit renderer code, original BCNGEN01 definitions,
+classified/Paper consumers, topmarks or Standard resources. The source locks,
+whole-resource inverse tests and exact prototype crop comparison are recorded
+in [the focused evidence](evidence/scrum264-generic-beacon/README.md).
+
+### SCRUM-264: explicit yellow special-mark composition
+
+The core/private chart presentation patches share `ChartYellowBuoySymbol.h`.
+`RenderSY` can select a verified yellow body only after the original lookup chose
+BOYSPP11 and typed attributes prove the supported class. A separate fitted-X
+call follows `ObjectRenderCheckRules` and DC setup in `DoRenderObject`; it accepts
+only the original empty Simplified TOPMAR rule and an explicit TOPSHP7/COLOUR6
+object with one matching eligible floating platform. It draws an existing
+library-owned raster Rule and leaves upstream lookups, caches, priorities,
+projection and Standard behavior intact. See the
+[focused source and mutation proof](evidence/scrum264-yellow-special/README.md).
+
+### SCRUM-267: private point-style observation
+
+Four activity calls in the private plugin's Init/DeInit/destructor govern the
+new copied-data observation export. No existing binding/status ABI layout or
+chart-selection behavior changes. Host diagnostics distinguish core from private
+effective-table observations; unavailable private data is never inferred from
+requested style. The strict native/package export inventory includes the new
+export. Exact lifecycle and unchanged-helper source hashes are recorded in
+[the observation evidence](evidence/scrum267-private-diagnostics/README.md).

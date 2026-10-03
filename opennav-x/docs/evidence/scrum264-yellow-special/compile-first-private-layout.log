@@ -1,0 +1,8 @@
+core-s52plib 0
+private-s52plib 1
+In file included from /home/standard/Projects/X-nav-worktrees/scrum264-yellow-special/.local/yellow/patched-private/libs/s52plib/src/s52plib.cpp:52:
+/home/standard/Projects/X-nav-worktrees/scrum264-yellow-special/src/integration/ChartYellowBuoySymbol.h: In function ‘bool opennav::integration::PresentationYellowTopmark(bool, const ObjRazRules*)’:
+/home/standard/Projects/X-nav-worktrees/scrum264-yellow-special/src/integration/ChartYellowBuoySymbol.h:71:52: error: request for member ‘empty’ in ‘((LUPrec*)rz->_ObjRazRules::LUP)->LUPrec::INST’, which is of pointer type ‘wxString*’ (maybe you meant to use ‘->’ ?)
+   71 |       !rz->LUP->ATTArray.empty() || !rz->LUP->INST.empty() || rz->LUP->ruleList ||
+      |                                                    ^~~~~
+

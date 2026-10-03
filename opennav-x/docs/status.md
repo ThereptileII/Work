@@ -1,5 +1,107 @@
 # SKAGER status — 2026-10-03
 
+## Windows resource repair verified; combined candidate awaiting full gates
+
+The exact d5/b8 [full candidate](https://github.com/ThereptileII/Work/actions/runs/37114216075)
+failed native host configuration at 10:58 UTC. OpenSSL passed, zlib passed 13/13,
+curl passed 1,569/1,569 and the private chart DLL linked successfully. The next
+host configure rejected **“Adapter chart resource manifest differs”**. The
+failure is tracked in SCRUM-259; no application crash or linker failure is
+inferred. The [downloaded failure audit](evidence/scrum259-full-b8cf-failure/README.md)
+verifies the linked four-export private package and all 5,812 artifact CRCs.
+Its host generated resources were not retained. The build used Python 3.12.10
+for initial generation but CMake selected 3.14.7 for the host; those Windows
+versions use different PNG compression implementations. The
+[entry-interpreter repair](evidence/scrum259-resource-python-repair/README.md)
+pins both paths and preserves strict byte checks. Its
+[focused native proof](evidence/scrum259-resource-python-native/README.md)
+passed on remote `c7f3616c5b9d385d39edf25b51f89a3508906071`, mapped exactly
+from isolated `eced8da`: the original interpreter difference is reproduced,
+decoded pixels remain identical, and both explicitly pinned configurations
+produce all seven files byte-for-byte identically. No full build has been
+restarted at this source freeze. No candidate from this
+cycle has been installed or launched on the boat; the existing Linux elapsed-time
+gate continues independently.
+
+## Isolated symbol and private-observation follow-ups
+
+The supplied generic beacon is implemented in `85ea050` (isolated source
+`2b90485`), with [exact prototype/resource evidence](evidence/scrum264-generic-beacon/README.md):
+2,118 focused checks, two original Simplified generic selections, preserved
+classified/Paper consumers and exact Day/Dusk/Night comparisons. The yellow
+body and explicitly fitted X from `5ad1c94` are integrated as `559d161`, with
+[classification and source proof](evidence/scrum264-yellow-special/README.md).
+Combined application source **`33d90c3`** passes the
+[integrated Linux build and 147 regressions](evidence/scrum264-combined-33d-linux/README.md).
+The separate [combined resource batch](evidence/scrum264-combined-resource-33d/README.md)
+passes 79,177 resource checks and 17 private preparation tests. These suites are
+distinct from the 147 integrated cases. The
+[17-tile actual-loader check](evidence/scrum264-combined-loader-33d90c3/README.md)
+passes 46,918 checks across all three themes. Its methods match the separately
+tested seven negative controls, which were not redundantly repeated. These are not Windows or boat visual
+acceptance; the documented positive IHO objects are official test geography.
+Actual software canvas validation then caught a missing yellow X: the real
+loader represents an empty instruction as U+001F, whereas the new topmark guard
+expected a zero-length string. The failed capture and runtime values are
+retained in the integrated evidence. The narrow canonical no-op repair in
+**`e1d0136`** passes [both actual pinned parsers](evidence/scrum264-yellow-empty-instruction/README.md)
+(150 checks and six mutation refusals). Its affected-target build/install and
+[actual yellow body/fitted-head software and OpenGL captures](evidence/scrum264-yellow-e1d-linux/README.md)
+pass all SKAGER themes and exact whole-chart Day return. Standard software also
+passes. The 147-case batch and complete resource suite were not repeated.
+
+The same review found an inherited Standard OpenGL light-label shift. One
+frozen-33 control reproduces all 503 changed pixels; corresponding entire chart
+regions match e1 exactly in every theme, without masking. Its failed assertion
+is retained, not reported as a pass. **SCRUM-268** tracks the original text-cache
+behavior and pending native applicability. No Standard renderer correction was
+introduced in this candidate. SCRUM-264 enters Testing; native private-renderer
+and boat recognition/readability remain required.
+
+`a6b2d01` (isolated source `f5fbd3a`) closes the private diagnostic-observation gap:
+[copied actual private table state](evidence/scrum267-private-diagnostics/README.md)
+is lifetime/thread gated and separate from core state. Focused contract, package,
+PE refusal and affected Linux-object checks pass; SCRUM-267 is Testing pending
+native/boat acceptance. The [incremental lifecycle source review](design/reviews/scrum259-ocharts-e1-lifecycle-source-review.md)
+verifies all 219 locked inputs and the four new observation-only activity calls;
+a fresh five-export package/runtime receipt is required. These follow-ups are
+**not** in the frozen d5/b8 candidate
+below. Its running results must not be attributed to the newer source.
+
+## Full candidate after focused Windows repair
+
+Frozen application **`d5d71356d806ea8c3518644d10728a24f1334d1d`** is published
+exactly as **`b8cfbf809450208f723095ffb4e00d7800b619a5`**, mapped tree
+`111fac745157fd70cc83be81d09b0f3a6da7ecd5` (4,249 verified blob/mode entries).
+The [full native/Linux candidate](https://github.com/ThereptileII/Work/actions/runs/37114216075)
+started only after both [audited native compilation checks](evidence/skager-final-font-native-9dee9b1/README.md)
+passed: 70 private-renderer and 23 core chart objects. Those checks apply to
+the preceding 9dee source; the final two-line [Land label face correction](evidence/scrum263-geographic-face/README.md)
+has separate actual-resolver/object proof and will be qualified by the full run.
+The noncritical face-choice adjustment did not cause another 93-object preflight.
+
+The prototype explicitly uses Segoe UI for Land annotations while Water names
+inherit the main stack. Both core and private renderers now preserve that
+distinction, with no size, tracking, opacity or resource changes. The preceding
+[9dee integrated Linux evidence](evidence/scrum263-chart-face-9dee-linux/README.md)
+passes 147/147 tests and four exact chart comparisons; the initial isolated
+Wayland/Xvfb launcher failure and corrected font-probe retry remain recorded.
+The [final d5 integrated Linux build, font probe and two original Day captures](evidence/scrum263-land-face-d5d-linux/README.md)
+pass. Both full chart and identity-panel comparisons are exactly equal to 9dee;
+the 147-test suite was deliberately not repeated for the two-line face choice.
+The native run then reached private DLL linking but failed the host resource
+identity check described above. Host runtime, packaging, actual font resolution
+and boat rendering remain pending. No candidate has
+been installed or launched on the boat in this cycle.
+
+The [same-run native restart receipt](evidence/final-d5-restart-qualified/README.md)
+has been downloaded and independently verified: all four gates passed, exact
+candidate/run/attempt identities match, and `actualBoat:false` is preserved.
+The [read-only boat refresh](evidence/boat-readiness-final-d5-20261003.md)
+verifies the unchanged real installation/profile, complete recovery hashes and
+117 qualified staged tools. Retain that exact tool bundle for the later review;
+neither receipt is an application-package or boat-rendering acceptance.
+
 ## Final chart typeface correction under qualification
 
 Application source **`9dee9b148f4d6ebdd20bb4c49229fe19340df209`** is published
@@ -11,8 +113,8 @@ content and positioning. Geographic and generated-LIGHTS roles retain their
 own handlers and deliberate fallbacks. Font creation failure retains stock;
 Standard/Legacy and stored user preferences remain unchanged.
 
-Focused actual-method, production-object and fallback checks pass. Final Linux
-integration and focused native core/private compilation are in progress. The
+Focused actual-method, production-object and fallback checks pass. The exact
+9dee Linux integration and audited native core/private compilation pass. The
 existing Windows font component now checks the selected HDC face for ordinary
 chart text as well as the UI stack; that result and physical boat review remain
 pending. No all-symbol or screen-level visual acceptance is implied.

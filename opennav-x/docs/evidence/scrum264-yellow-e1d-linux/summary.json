@@ -1,0 +1,52 @@
+{
+  "schema": 1,
+  "applicationCommit": "e1d01367692f7b8c866be369417e68c836c5d563",
+  "status": "targeted-yellow-pair-passed-inherited-standard-gl-return-failure-retained",
+  "authority": "Linux development evidence only; native Windows, packaged private adapter and boat remain separate",
+  "build": {
+    "target": "opencpn plus install",
+    "exit": 0,
+    "incrementalSteps": 29,
+    "full147Repeated": false,
+    "resourceSuiteRepeated": false,
+    "installedElfSha256": "8f5d3b898636c6f4461c0b1898569462ead32ff0403d7c9ab11f462947d24c08",
+    "manifestSha256": "ffa75c9d097a143e58aa13f9300b04bebac0836ab849bd4284401df1866f4b2a"
+  },
+  "frozenD5Preserved": true,
+  "failed33SourceBuildAndEvidencePreserved": "/home/standard/Projects/X-nav-worktrees/scrum264-combined-linux-33d90c3-frozen",
+  "yellowPair": {
+    "software": "Day/Dusk/Night/Day-return passed",
+    "opengl": "Day/Dusk/Night/Day-return passed",
+    "actualBody": "BOYSPP254/Index253 BOYSPP11 -> XNSPPY01",
+    "actualIndependentHead": "TOPMAR257/Index256 -> XNSPPT01",
+    "effectiveAndLookupTable": 76,
+    "actualPainterAnchor": [
+      507,
+      283
+    ],
+    "wholeChartDayReturnEqual": {
+      "software": true,
+      "opengl": true
+    },
+    "nativeSizeVisualInspection": "1280x800 originals and72x72 pair crop inspected; separate fitted X visible above body, no clipping or pair mismatch observed",
+    "sourceKind": "Official IHO S64 test geography, not operational nautical ENC",
+    "requestedScalePpm": 0.6,
+    "actualScalePpm": 0.5826126536
+  },
+  "Standard": {
+    "software": "Original BOYSPP11 and whole-chart Day-return passed",
+    "opengl": "Original BOYSPP11 retained; Day-return assertion fails",
+    "inheritedControl": "Exactly one no-build frozen33 Standard-only GL control reproduced503 changed pixels in same bbox526,280\u2013595,299; every corresponding whole-chart theme image equals e1 exactly, without mask",
+    "diagnosticTranslationPixels": -14,
+    "sourceMechanism": "Stock GL cache-hit/miss avgCharWidth initialization is consistent with identical glyphs translated14px; no runtime font-metric values were injected or modified. Not established as a regression introduced by this repair.",
+    "assertionRetained": true
+  },
+  "privateDiagnostics": {
+    "available": false
+  },
+  "limitations": [
+    "Standard GL Day-return remains a retained failure, not waived or relabeled passed",
+    "No full147 repeat; previous33 pass retained separately",
+    "No native Windows/private-host or boat acceptance"
+  ]
+}

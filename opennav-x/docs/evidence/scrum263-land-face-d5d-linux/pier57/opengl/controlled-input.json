@@ -1,0 +1,64 @@
+{
+  "scope": "Owned simulated loopback RMC into actual OpenCPN input path; not live navigation",
+  "connections": [
+    {
+      "peer": "127.0.0.1",
+      "connected_monotonic": 75327.720543449
+    }
+  ],
+  "sent": [
+    {
+      "sent_monotonic": 75328.021239798,
+      "sentence": "$GPRMC,095027,A,4736.000,N,12221.600,W,3.0,90.0,031026,,,A*55"
+    },
+    {
+      "sent_monotonic": 75328.321495678,
+      "sentence": "$GPRMC,095028,A,4736.000,N,12221.600,W,3.0,90.0,031026,,,A*5A"
+    },
+    {
+      "sent_monotonic": 75328.62186882,
+      "sentence": "$GPRMC,095028,A,4736.000,N,12221.600,W,3.0,90.0,031026,,,A*5A"
+    },
+    {
+      "sent_monotonic": 75328.92236889,
+      "sentence": "$GPRMC,095028,A,4736.000,N,12221.600,W,3.0,90.0,031026,,,A*5A"
+    },
+    {
+      "sent_monotonic": 75329.222899998,
+      "sentence": "$GPRMC,095029,A,4736.000,N,12221.600,W,3.0,90.0,031026,,,A*5B"
+    },
+    {
+      "sent_monotonic": 75329.523193721,
+      "sentence": "$GPRMC,095029,A,4736.000,N,12221.600,W,3.0,90.0,031026,,,A*5B"
+    },
+    {
+      "sent_monotonic": 75329.823740209,
+      "sentence": "$GPRMC,095029,A,4736.000,N,12221.600,W,3.0,90.0,031026,,,A*5B"
+    },
+    {
+      "sent_monotonic": 75330.124532479,
+      "sentence": "$GPRMC,095029,A,4736.000,N,12221.600,W,3.0,90.0,031026,,,A*5B"
+    },
+    {
+      "sent_monotonic": 75330.425980486,
+      "sentence": "$GPRMC,095030,A,4736.000,N,12221.600,W,3.0,90.0,031026,,,A*53"
+    },
+    {
+      "sent_monotonic": 75330.726551148,
+      "sentence": "$GPRMC,095030,A,4736.000,N,12221.600,W,3.0,90.0,031026,,,A*53"
+    },
+    {
+      "sent_monotonic": 75331.026825172,
+      "sentence": "$GPRMC,095030,A,4736.000,N,12221.600,W,3.0,90.0,031026,,,A*53"
+    },
+    {
+      "sent_monotonic": 75331.327228256,
+      "sentence": "$GPRMC,095031,A,4736.000,N,12221.600,W,3.0,90.0,031026,,,A*52"
+    },
+    {
+      "sent_monotonic": 75331.62791252,
+      "sentence": "$GPRMC,095031,A,4736.000,N,12221.600,W,3.0,90.0,031026,,,A*52"
+    }
+  ],
+  "errors": []
+}

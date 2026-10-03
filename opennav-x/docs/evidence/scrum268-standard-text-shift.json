@@ -1,0 +1,18 @@
+{
+  "source": "e1d01367692f7b8c866be369417e68c836c5d563",
+  "standardChangedPixels": 503,
+  "chartRelativeBounds": [
+    526,
+    280,
+    595,
+    299
+  ],
+  "identicalLabelTranslationPixels": -14,
+  "skagerChartDayReturnExact": true,
+  "standardInputHashes": {
+    "s64-yellow-Standard-Day.png": "010d6eeaf563f184ac526b6e98f6e33690df779d9062e2e50579b6a7302a5f74",
+    "s64-yellow-Standard-Day-return.png": "66496a571aa420210b1f0daa9c4e3b41f9bd3bab158d5fa8c202064cb58e0a35"
+  },
+  "sourceFinding": "Stock RenderT_All initializes avgCharWidth from X; GL TexFont cache miss alone overwrites M width; theme clears text objects without necessarily clearing glyph cache. No Piano overlap. Runtime individual width values were not instrumented.",
+  "frozen33Control": "Independently re-compared all four whole chart regions against actual frozen33 control PNGs; exact in all four, no mask. Control process executed by boat_readiness_refresh only."
+}

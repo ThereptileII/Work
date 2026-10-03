@@ -1,0 +1,40 @@
+{
+  "chart_bounds": [
+    80,
+    68,
+    1094,
+    634
+  ],
+  "chart_relative_bbox": null,
+  "changed_pixels": 0,
+  "day_chart": {
+    "canvas_pixels": {
+      "height": 566,
+      "width": 1014
+    },
+    "latitude": -32.3471615,
+    "database_entries": 1,
+    "follow": false,
+    "quilt_members": [
+      {
+        "type": 5,
+        "native_scale": 52000,
+        "file": "GB4X0000.000",
+        "index": 0
+      }
+    ],
+    "opengl_enabled": true,
+    "quilt_reference": 0,
+    "scale_bar": {
+      "height": 29,
+      "y": 505,
+      "width": 25,
+      "x": 191
+    },
+    "depth_unit_type": 1,
+    "quilt": true,
+    "scale_ppm": 0.5826126536,
+    "longitude": 61.169588,
+    "depth_units_visible": true
+  }
+}

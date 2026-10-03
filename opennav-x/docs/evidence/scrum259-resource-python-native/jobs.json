@@ -1,0 +1,109 @@
+{
+  "total_count": 2,
+  "jobs": [
+    {
+      "id": 111191742361,
+      "run_id": 37119161157,
+      "workflow_name": "SKAGER native o-charts loader guards",
+      "head_branch": "skager-ocharts-loader",
+      "run_url": "https://api.github.com/repos/ThereptileII/Work/actions/runs/37119161157",
+      "run_attempt": 1,
+      "node_id": "CR_kwDOM4BDHM8AAAAZ44tXmQ",
+      "head_sha": "c7f3616c5b9d385d39edf25b51f89a3508906071",
+      "url": "https://api.github.com/repos/ThereptileII/Work/actions/jobs/111191742361",
+      "html_url": "https://github.com/ThereptileII/Work/actions/runs/37119161157/job/111191742361",
+      "status": "completed",
+      "conclusion": "success",
+      "created_at": "2026-10-03T11:17:08Z",
+      "started_at": "2026-10-03T11:17:10Z",
+      "completed_at": "2026-10-03T11:21:22Z",
+      "name": "Native resource Python identity only",
+      "steps": [
+        {
+          "name": "Set up job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 1,
+          "started_at": "2026-10-03T11:17:11Z",
+          "completed_at": "2026-10-03T11:17:12Z"
+        },
+        {
+          "name": "Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 2,
+          "started_at": "2026-10-03T11:17:12Z",
+          "completed_at": "2026-10-03T11:17:33Z"
+        },
+        {
+          "name": "Reproduce discovery drift and verify explicit interpreter",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 3,
+          "started_at": "2026-10-03T11:17:33Z",
+          "completed_at": "2026-10-03T11:21:17Z"
+        },
+        {
+          "name": "Run actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 4,
+          "started_at": "2026-10-03T11:21:17Z",
+          "completed_at": "2026-10-03T11:21:19Z"
+        },
+        {
+          "name": "Post Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 8,
+          "started_at": "2026-10-03T11:21:19Z",
+          "completed_at": "2026-10-03T11:21:20Z"
+        },
+        {
+          "name": "Complete job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 9,
+          "started_at": "2026-10-03T11:21:20Z",
+          "completed_at": "2026-10-03T11:21:20Z"
+        }
+      ],
+      "check_run_url": "https://api.github.com/repos/ThereptileII/Work/check-runs/111191742361",
+      "labels": [
+        "windows-2022"
+      ],
+      "runner_id": 1000003291,
+      "runner_name": "GitHub Actions 1000003291",
+      "runner_group_id": 0,
+      "runner_group_name": "GitHub Actions"
+    },
+    {
+      "id": 111191743337,
+      "run_id": 37119161157,
+      "workflow_name": "SKAGER native o-charts loader guards",
+      "head_branch": "skager-ocharts-loader",
+      "run_url": "https://api.github.com/repos/ThereptileII/Work/actions/runs/37119161157",
+      "run_attempt": 1,
+      "node_id": "CR_kwDOM4BDHM8AAAAZ44tbaQ",
+      "head_sha": "c7f3616c5b9d385d39edf25b51f89a3508906071",
+      "url": "https://api.github.com/repos/ThereptileII/Work/actions/jobs/111191743337",
+      "html_url": "https://github.com/ThereptileII/Work/actions/runs/37119161157/job/111191743337",
+      "status": "completed",
+      "conclusion": "skipped",
+      "created_at": "2026-10-03T11:17:09Z",
+      "started_at": "2026-10-03T11:17:09Z",
+      "completed_at": "2026-10-03T11:17:08Z",
+      "name": "Native Win32 private chart loader boundaries",
+      "steps": [],
+      "check_run_url": "https://api.github.com/repos/ThereptileII/Work/check-runs/111191743337",
+      "labels": [
+        "windows-2022"
+      ],
+      "runner_id": null,
+      "runner_name": null,
+      "runner_group_id": null,
+      "runner_group_name": null
+    }
+  ]
+}
+

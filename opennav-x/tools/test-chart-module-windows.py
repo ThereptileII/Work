@@ -47,12 +47,14 @@ def main():
         'tools/test-windows-changed-units.py','tests/windows_ocharts_loader/inputs.lock.json',
         'src/integration/InstallerSelfTest.cpp','src/integration/InstallerSelfTest.h',
         'src/integration/ChartModuleCheck.cpp','src/integration/ChartModuleCheck.h',
-        'src/integration/ChartModulePe.h','src/integration/OChartsModuleLoader.cpp',
+        'src/integration/ChartModulePe.h','src/integration/OChartsPointStyle.h',
+        'src/integration/OChartsModuleLoader.cpp',
         'src/integration/OChartsModuleLoader.h','src/integration/PluginPresentationFallback.h',
         'src/integration/SkagerOChartsPackage.h.in','src/integration/OpenCPN.cmake',
         'src/plugin-adapters/ChartPresentationBindingV1.h',
         'src/plugin-adapters/ocharts/ChartPresentationAdapter.cpp',
-        'src/plugin-adapters/ocharts/BindingState.h','patches/opencpn-5.12.4-xnav.patch'):
+        'src/plugin-adapters/ocharts/BindingState.h',
+        'src/plugin-adapters/ocharts/PointStyleObservation.h','patches/opencpn-5.12.4-xnav.patch'):
         sources[name]=identity(ROOT/name)
     repository=Path(subprocess.check_output(['git','rev-parse','--show-toplevel'],cwd=ROOT,text=True).strip()).resolve()
     if repository!=ROOT and ROOT!=repository/'opennav-x':
@@ -107,7 +109,7 @@ def main():
             result['test_fixtures'] or not module['passed'] or not module['module_loaded'] or
             not module['unload_succeeded'] or not module['host_imports_resolved'] or
             not module['child_process_creation_blocked'] or not module['resources_verified'] or
-            not module['loaded_modules_observed'] or
+            not module['loaded_modules_observed'] or not module['point_style_unavailable_before_init'] or
             module['factory_called'] or module['plugin_initialized'] or module['original_dll_executed'] or
             module['binding_state']!=1 or module['binding_reason']!=0 or
             module['original_sha256']!=lock['dllSha256'] or

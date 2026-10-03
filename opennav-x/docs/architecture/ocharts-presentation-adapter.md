@@ -72,6 +72,24 @@ does not initialize anything. Host diagnostics query only a currently loaded
 matching module and retain no plugin/chart pointer after its lifetime. A bound
 module alone is never reported as a successfully initialized renderer.
 
+The separate `skager_chart_point_style_v1` copied observation leaves both existing
+v1 layouts and reserved fields unchanged. It reads the actual initialized private
+library's effective table on the application thread, gated by Init completion,
+selected presentation, `m_bOK` and non-null renderer. Init entry, DeInit and plugin
+destruction revoke observation. In this pinned source the sole renderer delete is
+failed initialization, immediately followed by clearing its pointer on the same
+thread. No renderer address or function pointer is retained by diagnostics or
+passed across the DLL boundary. The host also requires the matching currently
+loaded container to remain initialized. Unavailable states omit the effective table.
+
+Diagnostic JSON explicitly scopes core values to `chart_presentation.core`
+(`available`, `saved_point_style`, `effective_point_style`) and the independent
+private observation to `chart_presentation.private_ocharts` (`available` and,
+only when observed, `effective_point_style`). Requested presentation and existing
+initialization status remain separate. Neither core state nor selected status is
+used to manufacture private table data. Native exported-call/lifecycle and real
+chart observations remain required after this source change.
+
 ## Required evidence
 
 Acceptance still needs native Win32 imports and export/ABI checks, binding and

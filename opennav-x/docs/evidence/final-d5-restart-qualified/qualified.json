@@ -1,0 +1,12 @@
+{
+  "broker": "success",
+  "actualBoat": false,
+  "runAttempt": "1",
+  "runId": "37114216075",
+  "prepareArm": "success",
+  "commit": "b8cfbf809450208f723095ffb4e00d7800b619a5",
+  "maintenance": "success",
+  "owner": "OpenNavX.CI.RestartGates.1",
+  "transport": "success",
+  "schema": 1
+}

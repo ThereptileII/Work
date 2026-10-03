@@ -1,0 +1,14 @@
+{
+  "applicationSource": "33d90c38cd1a628c21d0ca159647012d98649d2e",
+  "checks": {
+    "chartResources": 79177,
+    "privatePreparation": 17
+  },
+  "inputSha256": {
+    "tests/chart_presentation_resources_tests.py": "e5010f4bb9e731a7508191058fa5c3e24d1f9a93c373a720a28ceb4b6e5eaa4d",
+    "tools/generate-xnav-chart-style.py": "e9ad7b138eca70dbb6c050f19216bd10672418df859f71cf04c0fcf551ae923f",
+    "tools/test-ocharts-adapter-preparation.py": "c03a3d08bc13f663f2a5499699fc1117c62bdd2278d1d38312b71a861496a504"
+  },
+  "manifestSha256": "ffa75c9d097a143e58aa13f9300b04bebac0836ab849bd4284401df1866f4b2a",
+  "scope": "Combined resource inverse/negative checks and private source preparation; not application rendering or Windows acceptance"
+}

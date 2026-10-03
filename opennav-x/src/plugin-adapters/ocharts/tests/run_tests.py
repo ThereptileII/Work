@@ -34,6 +34,9 @@ try:
     run([os.environ.get('CXX', 'c++'), *common, '-Wall', '-Wextra', '-Werror',
          str(Path(__file__).with_name('binding_test.cpp')), '-o', str(output / 'binding_test')])
     run([str(output / 'binding_test')])
+    run([os.environ.get('CXX', 'c++'), *common, '-Wall', '-Wextra', '-Werror',
+         str(Path(__file__).with_name('point_style_test.cpp')), '-o', str(output / 'point_style_test')])
+    run([str(output / 'point_style_test')])
     run([os.environ.get('CC', 'cc'), '-c', str(source / 'src/sha256.c'),
          '-o', str(output / 'sha256.o')])
     run([os.environ.get('CXX', 'c++'), *common, *cflags,

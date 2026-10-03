@@ -22,6 +22,7 @@
 #include "integration/RuntimeDiagnostics.h"
 #include "integration/SettingsStore.h"
 #include "integration/ChartPresentation.h"
+#include "integration/OChartsPresentation.h"
 #include "integration/OnlineAis.h"
 #include "integration/OnlineAisOverlay.h"
 #include "integration/AisViewport.h"
@@ -698,12 +699,18 @@ void Attach(MyFrame& frame, wxAuiManager& manager, wxFileConfig& config) {
         integration::ReadRuntimeDiagnostics(*frame.GetPrimaryCanvas());
     runtime["chart_presentation"]["status"] = wxString::FromUTF8(integration::ChartPresentationStatus());
     runtime["chart_presentation"]["requested"] = wxString(integration::XNavChartRequested() ? "XNav" : "Standard");
+    runtime["chart_presentation"]["core"]["available"] = ps52plib != nullptr;
     if (ps52plib) {
-      runtime["chart_presentation"]["saved_point_style"] =
+      runtime["chart_presentation"]["core"]["saved_point_style"] =
           static_cast<int>(ps52plib->m_nSymbolStyle);
-      runtime["chart_presentation"]["effective_point_style"] =
+      runtime["chart_presentation"]["core"]["effective_point_style"] =
           static_cast<int>(ps52plib->GetEffectiveSymbolStyle());
     }
+    const auto private_style = integration::ReadOChartsPointStyle();
+    runtime["chart_presentation"]["private_ocharts"]["available"] = private_style.available;
+    if (private_style.available)
+      runtime["chart_presentation"]["private_ocharts"]["effective_point_style"] =
+          static_cast<int>(private_style.effective_point_style);
     runtime["test_fixtures"] = integration::TestFixturesEnabled();
     runtime["build_purpose"] = wxString::FromUTF8(integration::BuildPurpose().data());
     if (online_ais) {

@@ -1,5 +1,6 @@
 #include "plugin-adapters/ocharts/ChartPresentationAdapter.h"
 #include "plugin-adapters/ocharts/BindingState.h"
+#include "plugin-adapters/ocharts/PointStyleObservation.h"
 #include "integration/ChartNameTypography.h"
 #include "integration/ChartTextFace.h"
 #include "integration/ChartLightLabel.h"
@@ -14,9 +15,12 @@
 #include <cstdint>
 #include <memory>
 
+extern s52plib* ps52plib;
+
 namespace skager::ocharts {
 namespace {
 BindingState binding;
+PointStyleObservation point_style;
 using namespace opennav::integration;
 wxFont *GeographicNameFont(const char *feature, const char *instruction, bool tx,
                            double *tracking, unsigned char *opacity, bool *light) {
@@ -60,6 +64,9 @@ wxFont *GeographicNameFont(const char *feature, const char *instruction, bool tx
 
 
 } // namespace
+void SetChartPresentationActive(bool active) {
+  point_style.SetActive(active && wxIsMainThread());
+}
 s52plib* CreateChartPresentation(const wxString& stockDirectory) {
   const auto path=binding.BeginInitialization();
   if (path[0] && wxIsMainThread()) {
@@ -100,4 +107,20 @@ SKAGER_ADAPTER_EXPORT int32_t SKAGER_CHART_CALL skager_bind_chart_presentation_v
 SKAGER_ADAPTER_EXPORT int32_t SKAGER_CHART_CALL skager_chart_presentation_status_v1(
     SkagerChartPresentationStatusV1* status) {
   try {return skager::ocharts::binding.ReadStatus(status) ? 1 : 0;} catch (...) {return 0;}
+}
+
+SKAGER_ADAPTER_EXPORT int32_t SKAGER_CHART_CALL skager_chart_point_style_v1(
+    SkagerChartPointStyleV1* observation) {
+  try {
+    // ps52plib is created/deleted by Init on this same thread. DeInit and the
+    // plugin destructor revoke observation before their existing work; the only
+    // failed-Init delete immediately nulls ps52plib. Never dereference off-thread.
+    if (!wxIsMainThread()) return 0;
+    SkagerChartPresentationStatusV1 status{};
+    status.structBytes = sizeof(status);
+    status.version = SKAGER_CHART_BINDING_VERSION;
+    return skager::ocharts::binding.ReadStatus(&status) &&
+        skager::ocharts::point_style.Read(observation, true,
+            status.state == SKAGER_CHART_SELECTED, ps52plib) ? 1 : 0;
+  } catch (...) { return 0; }
 }
