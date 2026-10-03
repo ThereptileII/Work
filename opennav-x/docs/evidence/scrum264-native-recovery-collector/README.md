@@ -17,7 +17,8 @@ directory/reparse attributes; unspecified or explicit regular-file types are
 allowed. The portable marker must contain the exact package-preview text (LF or
 native CRLF). Non-object product JSON is rejected by the shared status-only guard.
 Only `ConfigVersionString` is read from that packaged profile into a NEW test
-profile. Connections, plugins, credentials, routes and preferences are not copied.
+profile. Connections, profile plugins, credentials, routes and preferences are
+not copied. Immutable bundled binaries under `app/plugins` stay byte-identical.
 The existing `--build` mode remains available. Recovery mode refuses app/build
 overrides and requires disposable Windows plus `--navigation-only`.
 
@@ -96,10 +97,52 @@ it is not an OS network/device sandbox. The existing status-only application
 policy is checked, and runtime pilot/control state must remain disabled. Bundled
 plugin discovery and OpenCPN startup are not a claim of universal I/O silence.
 Run serially with other app tests because upstream uses a fixed local REST port.
-The audited extracted package should remain unchanged between runs; edits or
-unexpected package-side writes are refused on the final verification and on the next invocation.
+The audited extracted package remains unchanged between runs. Each capture uses
+`output/disposable-package/app/opencpn.exe` with its own sibling `profile` and
+`logs`. The marker stays present, so the unchanged application enforces portable
+isolation. All immutable copied files/directories are sealed before and after;
+only these two fresh runtime trees may change. Links/reparse/hardlinks/special
+files and case aliases are refused, including within the mutable trees. The
+copied original `FILE_SHA256.json` is documentary: its original profile/log
+hashes do not describe the intentionally fresh profile. No install occurs.
+
+The original ZIP and extracted package receive the same complete final checks.
+Copied binaries, profiles, logs and chart input/database files are excluded from
+the evidence artifact. Only the bounded disconnected-session OpenCPN log and
+final diagnostic snapshot are copied out explicitly; normal screenshots and
+per-capture observations remain retained.
 
 No generic `_bcngn`/`_slgto` scene or initialized private o-charts canvas is added.
 Windows font-face tracing, physical GPU, helper/licensed chart execution and boat
 acceptance remain outside this supplement. The native first execution is still
 pending; passing offline guards does not establish native acceptance.
+
+## Pre-dispatch production-boundary correction — 2026-10-03
+
+Source inspection caught two deterministic integration errors before the first
+native collector dispatch. The former collector pointed at the original
+portable executable but requested `output/profile`; production `PreviewProfile`
+correctly rejects that external path. It also looked for the diagnostic JSON in
+the profile, although portable `ParseCommandLine` explicitly assigns the package
+`logs` directory. `OPENNAV_TEST_PROFILE` never bypasses either production rule.
+
+The corrected collector launches the copied payload described above and polls
+its actual portable logs path, including timestamp/freshness checks. Generated
+notice and 1280×800 defaults are retained by the existing `new_profile` helper;
+no old profile settings are transferred. Upstream `BasePlatform` still writes
+`opencpn.log` to `GetPrivateDataDir()` / the explicitly requested profile, which
+remains the initialization check. Application source is unchanged.
+
+Twenty offline cases pass (the original fourteen plus six copy/immutability
+cases). A tiny CMake probe links the **unchanged production PortableProfile.cpp**:
+four boundary checks reproduce the former invocation's refusal, accept the
+copied executable's explicit/default own profile, still reject another external
+profile, and check own logs plus both original/copy immutability. The identity
+fixture's dummy executable is never run. The retained
+[Linux result](portable-boundary-linux.json) is a path-contract check, not an
+OpenCPN launch or native qualification. The dedicated Windows review workflow
+compiles this same tiny probe with MSVC Win32 before any actual package capture;
+it does not rebuild the application. All renderer/pixel/Day-return gates remain
+unchanged. Focused CLI/Python/diff checks also pass. Initial local CMake discovery
+needed the existing bundled runtime and library path; no application failure
+was involved.
