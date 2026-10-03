@@ -1,0 +1,31 @@
+{
+  "status": "passed",
+  "groups": 20,
+  "checks": [
+    "First exact attempt publishes one workspace-global locator",
+    "Global locator binds exact owner, private intent and digest",
+    "Portable ACL marker explicitly substitutes for Windows ACL inspection",
+    "Duplicate attempt is refused without overwriting its global marker",
+    "Fresh capture cannot authorize a second attempt for the same helper identity",
+    "Original global marker remains unchanged after duplicate refusals",
+    "Legacy per-run locator refuses migration to a new global attempt",
+    "Legacy refusal occurs before creating a global ledger",
+    "Portable foreign-ACL marker refuses a fresh helper attempt",
+    "Reparse-point global ledger refuses attempt publication",
+    "Reparse refusal writes no marker through redirected path",
+    "Normal stop wrapper reserves globally before legacy locator and transport",
+    "Normal stop wrapper refuses duplicate retry before transport",
+    "Normal duplicate retry does not dispatch transport",
+    "Orphan stop wrapper reserves globally before legacy locator and transport",
+    "Orphan stop wrapper refuses duplicate retry before transport",
+    "Orphan duplicate retry does not dispatch transport",
+    "Parses ChartHelperShutdown.ps1",
+    "Parses stop-chart-helper.ps1",
+    "Parses stop-orphan-chart-helper.ps1"
+  ],
+  "platform": "portable-with-explicit-acl-substitution",
+  "nativeAclExecuted": false,
+  "nativeShutdownTransportExecuted": false,
+  "vendorHelperExecuted": false,
+  "boatAccess": false
+}

@@ -1,0 +1,22 @@
+{
+  "status": "passed",
+  "environment": "linux-powershell-portable-contracts",
+  "count": 12,
+  "checks": [
+    "Entry point parses without touching native environment",
+    "Exactly one COM8 direction byte changes; GPS, UTF8, CRLF, filters and every other byte remain exact",
+    "Optional UTF8 BOM is retained without text reserialization",
+    "Wrong/duplicate port, protocol, direction, enabled state, Garmin flag, other output and malformed input are refused",
+    "Strict profile audit sees only the intended connection direction change",
+    "Restoration reviews view persistence but refuses changed connection, output or chart-directory configuration",
+    "Inventory covers the exact actual loader-root set and complete candidate list without duplicates or omissions",
+    "Every candidate is reviewed; inert helper/dependency bytes stay in the full inventory without execution",
+    "Missing/duplicate/mismatched DLLs and fabricated or unknown retained provenance fail closed",
+    "Evidence and non-plugin dependency changes invalidate the review",
+    "Quarantine is outside recursive roots and PATH; disabling a DLL in a subdirectory is refused",
+    "Child PATH and working directory are explicit app/System32/Windows paths without inheriting ambiguous entries"
+  ],
+  "boatAccess": false,
+  "applicationLaunched": false,
+  "productOrBoatAcceptance": false
+}

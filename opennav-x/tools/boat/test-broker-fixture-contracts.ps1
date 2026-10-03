@@ -58,6 +58,16 @@ try {
  # fail before any launch or pipe operation.
  . (Join-Path $temporary 'Commissioning.ps1')
  $checks.Add('Copied broker dependency closure imports the actual commissioning audit and resource policy')
+ if(@($script:RestartDependencies|Where-Object {$_ -ceq 'ColdBaseline.ps1'}).Count -ne 1){throw 'Cold baseline reader must be pinned exactly once in every fresh restart session'}
+ $cold=Join-Path $temporary 'ColdBaseline.ps1';$coldSaved=$cold+'.saved'
+ if((Get-FileHash -LiteralPath $cold -Algorithm SHA256).Hash -cne (Get-FileHash -LiteralPath (Join-Path $PSScriptRoot 'ColdBaseline.ps1') -Algorithm SHA256).Hash){throw 'Cold baseline copy differs from session dependency source'}
+ $checks.Add('Fresh restart dependency closure pins exactly one byte-identical cold-baseline reader')
+ Move-Item -LiteralPath $cold -Destination $coldSaved
+ try {
+   $refused=$false;try{. (Join-Path $temporary 'Commissioning.ps1')}catch{$refused=$true}
+   if(-not $refused){throw 'Missing cold-baseline dependency did not refuse the composed commissioning reader'}
+ } finally {Move-Item -LiteralPath $coldSaved -Destination $cold}
+ $checks.Add('Missing cold-baseline module refuses composed audit import before any launch or pipe')
  $resource=Join-Path $temporary 'InstalledResourceReview.ps1';$saved=$resource+'.saved'
  Move-Item -LiteralPath $resource -Destination $saved
  try {

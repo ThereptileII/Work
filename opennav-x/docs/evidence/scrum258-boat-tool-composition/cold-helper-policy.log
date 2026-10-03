@@ -1,0 +1,32 @@
+{
+  "status": "passed",
+  "count": 21,
+  "checks": [
+    "Two exact known-hash helpers with matching SID/session/managed path/source command and absent parents are accepted under an installed-generation context",
+    "Refuses helper sid mismatch",
+    "Refuses helper sessionId mismatch",
+    "Refuses helper path mismatch",
+    "Refuses helper sha256 mismatch",
+    "Refuses helper commandLine mismatch",
+    "Refuses helper startedUtc mismatch",
+    "Refuses a parent PID that has been reused by a live process",
+    "Refuses duplicate captured helper PID",
+    "Refuses a captured helper missing from the current process inventory",
+    "Refuses an unreviewed extra chart helper",
+    "Refuses live OpenCPN",
+    "Refuses an unrelated process from the installed generation plugin tree",
+    "Refuses duplicate candidate PIDs",
+    "Exact current review binds approval, capture hash, and both captured helpers",
+    "Refuses changed approval decision",
+    "Refuses review bound to a changed capture hash",
+    "Refuses changed expected capture hash",
+    "Refuses expired review",
+    "Refuses future-dated review",
+    "Refuses review that changes the exact helper set"
+  ],
+  "filesystemOrchestration": false,
+  "realProcesses": false,
+  "vendorExecution": false,
+  "boatAccess": false,
+  "hardware": false
+}

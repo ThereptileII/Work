@@ -1,0 +1,282 @@
+{
+  "issue": "SCRUM-258",
+  "base": "78eccb8b7f21b260ded57d3ba763f884d60c8180",
+  "acceptedToolSource": "7658f36c50140c35a44678b75675ad9b4e77e526",
+  "acceptedRemoteToolCommit": "20765cf374da5a1ab47dff0b3b427cd24f595455",
+  "priorNativeRun": 36919418416,
+  "priorNativeArtifact": 11191068356,
+  "priorNativeArtifactSha256": "d031f870b1968247a44f2888a2cb21b74a0ba9d7867d449c14ae66c64359f684",
+  "sourceClosure": [
+    {
+      "path": "tools/boat/ColdBaseline.ps1",
+      "sourceCommit": "7658f36c50140c35a44678b75675ad9b4e77e526",
+      "sha256": "bad08971ecb2b42affd3027b0c2bcaf1faad2fd16da14230a734d40f847dcc6f",
+      "exactSourceBytes": true
+    },
+    {
+      "path": "tools/boat/ColdChartHelper.ps1",
+      "sourceCommit": "7658f36c50140c35a44678b75675ad9b4e77e526",
+      "sha256": "4ad506897a21f3890cf3830430c47c3877ccbf26572606e5bb3ad3656e466c6d",
+      "exactSourceBytes": true
+    },
+    {
+      "path": "tools/boat/capture-cold-baseline.ps1",
+      "sourceCommit": "7658f36c50140c35a44678b75675ad9b4e77e526",
+      "sha256": "b016a0d04ddcb12a8c0dcb612bd40a5408be38b364f120e7457a17b3887b4921",
+      "exactSourceBytes": true
+    },
+    {
+      "path": "tools/boat/recover-cold-chart-helpers.ps1",
+      "sourceCommit": "7658f36c50140c35a44678b75675ad9b4e77e526",
+      "sha256": "aff8b033385862b719cbf9a94b1356d105116c3ac8dc65f84c69832a024da9f4",
+      "exactSourceBytes": true
+    },
+    {
+      "path": "tools/boat/CommissioningBaseline.ps1",
+      "sourceCommit": "7658f36c50140c35a44678b75675ad9b4e77e526",
+      "sha256": "10e67791b04fe16b151247eb6b2d975f0325b1170ddd30ae05e2152b9da633b7",
+      "exactSourceBytes": true
+    },
+    {
+      "path": "tools/boat/RestartCommissioning.ps1",
+      "sourceCommit": "7658f36c50140c35a44678b75675ad9b4e77e526",
+      "sha256": "4d7da7f4fddd2148aeb930ca0572b678266496a6d392da80eaa9889c71603e7e",
+      "exactSourceBytes": true
+    },
+    {
+      "path": "tools/boat/ChartHelperShutdown.ps1",
+      "sourceCommit": "7658f36c50140c35a44678b75675ad9b4e77e526",
+      "sha256": "2ad84a9826b28dcfed4f554920c587d6066669caf104617bdd6bbfd1b379f9ff",
+      "exactSourceBytes": true
+    },
+    {
+      "path": "tools/boat/stop-chart-helper.ps1",
+      "sourceCommit": "7658f36c50140c35a44678b75675ad9b4e77e526",
+      "sha256": "224e4f0c682f6597e2072e923920b20be77cbebdbd77a16a0dafddf5d9e64720",
+      "exactSourceBytes": true
+    },
+    {
+      "path": "tools/boat/stop-orphan-chart-helper.ps1",
+      "sourceCommit": "7658f36c50140c35a44678b75675ad9b4e77e526",
+      "sha256": "e8e41ef569c7426aad82541485194e650cc8b1674711ac3a72b360da300948db",
+      "exactSourceBytes": true
+    },
+    {
+      "path": "tools/boat/test-cold-baseline.ps1",
+      "sourceCommit": "7658f36c50140c35a44678b75675ad9b4e77e526",
+      "sha256": "edf3f77e2478bd43ed3606219c9beec58db44c1d6a223786930e17f927c53e7f",
+      "exactSourceBytes": true
+    },
+    {
+      "path": "tools/boat/test-cold-helper-policy.ps1",
+      "sourceCommit": "7658f36c50140c35a44678b75675ad9b4e77e526",
+      "sha256": "43b41292ee046761eccd998b105308ab73df42db92dd456fba34d8addfb651f2",
+      "exactSourceBytes": true
+    },
+    {
+      "path": "tools/boat/test-cold-helper-workflow.ps1",
+      "sourceCommit": "7658f36c50140c35a44678b75675ad9b4e77e526",
+      "sha256": "bb3aa243055f419fcd2eb499f178f6ccf584693949b271d0809b30295985579c",
+      "exactSourceBytes": true
+    },
+    {
+      "path": "tools/boat/test-chart-helper-attempts.ps1",
+      "sourceCommit": "7658f36c50140c35a44678b75675ad9b4e77e526",
+      "sha256": "e9477a3b287e97f867b8aa3ea239a90fc096f1793fa6a59259a6e9af6eab6cd8",
+      "exactSourceBytes": true
+    },
+    {
+      "path": "tools/boat/PortableReview.ps1",
+      "sourceCommit": "78eccb8b7f21b260ded57d3ba763f884d60c8180",
+      "sha256": "98c3136c002e0392226a259a4fc0570a659e349329302319130212e57646515a",
+      "exactSourceBytes": true
+    },
+    {
+      "path": "tools/boat/test-boat-tools.ps1",
+      "sourceCommit": "78eccb8b7f21b260ded57d3ba763f884d60c8180",
+      "sha256": "f0e8383d3fabe2f538b452bcc99b356a585976cee13045a64ebe126d1ad4410a",
+      "exactSourceBytes": true
+    },
+    {
+      "path": "tools/boat/ReviewWindow.ps1",
+      "sourceCommit": "78eccb8b7f21b260ded57d3ba763f884d60c8180",
+      "sha256": "02575d70662c8da5953800223ce016287d93947ce5a918cb99346e01740597cd",
+      "exactSourceBytes": true
+    },
+    {
+      "path": "tools/boat/ReviewWindowNative.cs",
+      "sourceCommit": "78eccb8b7f21b260ded57d3ba763f884d60c8180",
+      "sha256": "aeab79f285651ba73838da4959e7a3a55fee911bf2555725936a733a8d2d6f89",
+      "exactSourceBytes": true
+    },
+    {
+      "path": "tools/boat/RestartWindowNative.cs",
+      "sourceCommit": "78eccb8b7f21b260ded57d3ba763f884d60c8180",
+      "sha256": "941c7d34f17b4777cf9fedb37c0a69714c3a8bef65613e88e0b88eded08d7394",
+      "exactSourceBytes": true
+    },
+    {
+      "path": "tools/boat/RestartWindowReview.ps1",
+      "sourceCommit": "78eccb8b7f21b260ded57d3ba763f884d60c8180",
+      "sha256": "73bd1b42872d3bd2f50f6bb6e8df06352b6bead557d9ac8f8918a3ba94f1906d",
+      "exactSourceBytes": true
+    },
+    {
+      "path": "tools/boat/test-review-window.ps1",
+      "sourceCommit": "78eccb8b7f21b260ded57d3ba763f884d60c8180",
+      "sha256": "3a87be618ab64094843271b23dbb1ff76e8b5e5c82583e05e5108c2fdeec9154",
+      "exactSourceBytes": true
+    },
+    {
+      "path": "tools/boat/test-restart-window-review.ps1",
+      "sourceCommit": "78eccb8b7f21b260ded57d3ba763f884d60c8180",
+      "sha256": "1bd632b4f32d8bc8ef6e19c48ac80949083d88ebe28af2eac855410f37c505f8",
+      "exactSourceBytes": true
+    },
+    {
+      "path": "tools/boat/Common.ps1",
+      "sourceCommit": "78eccb8b7f21b260ded57d3ba763f884d60c8180",
+      "sha256": "a14cfe12c5bda956018b92ce385cb66f09c4ef77c0c4adccfb0ea3e0934c657a",
+      "exactSourceBytes": true
+    },
+    {
+      "path": "tools/boat/InteractiveJob.ps1",
+      "sourceCommit": "78eccb8b7f21b260ded57d3ba763f884d60c8180",
+      "sha256": "92297e9e0a0937a5740192226835b72e34551f95f0e47f738a0c3d3e03fae11e",
+      "exactSourceBytes": true
+    },
+    {
+      "path": "tools/boat/install.ps1",
+      "sourceCommit": "78eccb8b7f21b260ded57d3ba763f884d60c8180",
+      "sha256": "8d6dd67c9cd3eed61efdf3b4057b8aac374f263d6b37d36688e0a54ab2532822",
+      "exactSourceBytes": true
+    },
+    {
+      "path": "tools/boat/update.ps1",
+      "sourceCommit": "78eccb8b7f21b260ded57d3ba763f884d60c8180",
+      "sha256": "cfd74e589f7e4cbe242ded39d4899f0d88fbcb85ef1b365b67ef97c5cdaa94e9",
+      "exactSourceBytes": true
+    },
+    {
+      "path": "tools/boat/commission-read-only.ps1",
+      "sourceCommit": "78eccb8b7f21b260ded57d3ba763f884d60c8180",
+      "sha256": "3ee1727baa2badb960f95107502e9bcab51b270fbec8c8003b67a864c6afdb2e",
+      "exactSourceBytes": true
+    },
+    {
+      "path": "tools/boat/run-mode.ps1",
+      "sourceCommit": "78eccb8b7f21b260ded57d3ba763f884d60c8180",
+      "sha256": "68e5596d7b3587239391f2e80010433c7633bee75cace0a404dbc940ce0b2491",
+      "exactSourceBytes": true
+    },
+    {
+      "path": "tools/boat/verify-commissioning-launch.ps1",
+      "sourceCommit": "78eccb8b7f21b260ded57d3ba763f884d60c8180",
+      "sha256": "4591400aabb008c99b95532ad891ac7429de16992c09f1bb9bb5446eecdb453b",
+      "exactSourceBytes": true
+    },
+    {
+      "path": "tools/boat/RestartCommissioningPrepare.ps1",
+      "sourceCommit": "78eccb8b7f21b260ded57d3ba763f884d60c8180",
+      "sha256": "078657992c0075a17c9fb25079383f6a9d4046b5808d4a53d04b5da387c43d46",
+      "exactSourceBytes": true
+    },
+    {
+      "path": "tools/boat/RestartCommissioningArm.ps1",
+      "sourceCommit": "78eccb8b7f21b260ded57d3ba763f884d60c8180",
+      "sha256": "0b1eab3d100279aac2e992640e0fd64a027ed0f03bc675d3461eda7a7c8b459c",
+      "exactSourceBytes": true
+    },
+    {
+      "path": "tools/boat/RestartCommissioningBroker.ps1",
+      "sourceCommit": "78eccb8b7f21b260ded57d3ba763f884d60c8180",
+      "sha256": "7c131395714179c49f48158ee2ccd34bf3ef1e382e98fecabb2aeebc60c7f190",
+      "exactSourceBytes": true
+    },
+    {
+      "path": "tools/boat/stage-review-tools.ps1",
+      "sourceCommit": "78eccb8b7f21b260ded57d3ba763f884d60c8180",
+      "sha256": "701e03e6ae84137b9b173804393e9b5247b797b5bccd429a42858ab20a548574",
+      "exactSourceBytes": true
+    }
+  ],
+  "portableSuites": [
+    {
+      "suite": "baseline-adoption",
+      "checks": 127,
+      "result": "passed",
+      "reportSha256": "b796fbfb3016b15f915b3487d9d38be0c9b2cf17c64f210647ed42347a4774d1"
+    },
+    {
+      "suite": "broker-fixture-contracts",
+      "checks": 24,
+      "result": "passed",
+      "reportSha256": "e4aad8acd34c85d57decc32d82fc5763c0c18a7ad4bd361993ade9ec8f8e9cd6"
+    },
+    {
+      "suite": "chart-helper-attempts",
+      "checks": 20,
+      "result": "passed",
+      "reportSha256": "969f1ff92e28880fc5e453aa0399b5253fe8243cb7643127755ff653764d4cc4"
+    },
+    {
+      "suite": "cold-baseline",
+      "checks": 36,
+      "result": "passed",
+      "reportSha256": "0c267d94aee43ec84a1e03169dedd722788f0e5392bac07d9a9b924ced33381d"
+    },
+    {
+      "suite": "cold-helper-policy",
+      "checks": 21,
+      "result": "passed",
+      "reportSha256": "7277ebe2c49fe298f340a547d29a9bf76ec716218cc3cbee7971d0328d1beaf9"
+    },
+    {
+      "suite": "cold-helper-workflow",
+      "checks": 33,
+      "result": "passed",
+      "reportSha256": "fbd4efef105c23d46d7dd6acedc4930142f2c840185ddc6bd8396e2008f32303"
+    },
+    {
+      "suite": "commissioning",
+      "checks": 12,
+      "result": "passed",
+      "reportSha256": "39aea3184b8ec76bce2d04adbf9796b6a25074137609f68818e4e0f1da400d98"
+    },
+    {
+      "suite": "restart-commissioning",
+      "checks": 309,
+      "result": "passed",
+      "reportSha256": "ce3aa64b294d3ea62d4b3ae6b4aec8587903b4abf2587307c9d4435861659ba3"
+    },
+    {
+      "suite": "restart-window-review",
+      "checks": 133,
+      "result": "passed",
+      "reportSha256": "ab841097523ec437f9510b603745d5ea0e945320b28dc5e58745bb24b69825b9"
+    },
+    {
+      "suite": "review-window",
+      "checks": 230,
+      "result": "passed",
+      "reportSha256": "fb8d2b979d8d8ce09fc43771af59724715a012592ab57abe0c1373374e7ce9c7"
+    }
+  ],
+  "portableChecks": 945,
+  "changedNativeFixture": "tools/test-commissioning-prepare-arm-windows.ps1",
+  "changedNativeFixtureSha256": "9337cee94f738d373b339bd77384e3590c962577910037b9d4ca56258bc2d8b0",
+  "nativeCompositionExecution": "pending",
+  "remoteStaging": false,
+  "boatAccess": false,
+  "applicationChanged": false,
+  "applicationLaunched": false,
+  "physicalOutput": false,
+  "limits": [
+    "Portable tests use explicit fixture identity/path/ACL substitutions documented in original suites; no Windows ACL or native task proof inferred.",
+    "Changed native Prepare/Arm test parsed and independently source-reviewed only; its actual native run remains required.",
+    "Prior native evidence establishes provenance of restored bytes, not qualification of the composed revision.",
+    "Hash-verified staging and a new independent actual-profile commissioning session remain required."
+  ],
+  "portableRuntime": "PowerShell 7.6.6 on Linux",
+  "independentReview": "prototype_route_style: accepted/current byte closure and added native guard fixture source reviewed; no source corrections required."
+}
