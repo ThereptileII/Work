@@ -15,7 +15,7 @@ from chart_cardinal_art import bitmap_attributes
 
 ROOT = Path(__file__).resolve().parents[1]
 ASSETS = ROOT/'resources/chart-style/v1/seamarks'
-MAPPING_SHA256 = 'ce6d9e8cc9b18532e3235f981bc894d6dd367b67e23530adeab9305b423f226b'
+MAPPING_SHA256 = '50ecd5571f85e7f50d93eaddd4637d15e7f21f7da4728d003784ad7df7a3026e'
 _mapping_bytes = (ASSETS/'mapping.json').read_bytes().replace(b'\r\n', b'\n')
 assert hashlib.sha256(_mapping_bytes).hexdigest() == MAPPING_SHA256
 _mapping = json.loads(_mapping_bytes)
@@ -28,7 +28,7 @@ def source_node(tree, spec):
     assert len(nodes) == 1 and nodes[0].get('RCID') == str(spec['sourceRcid'])
     node = nodes[0]
     assert hashlib.sha256(ET.tostring(node)).hexdigest() == spec['sourceNodeSha256'], 'Seamark source node changed'
-    if spec['source'] == 'LIGHTS13':
+    if spec['source'].startswith('LIGHTS'):
         assert node.findtext('prefer-bitmap') == 'no'
     else:
         assert node.findtext('prefer-bitmap') not in ('no', 'false')
@@ -54,7 +54,7 @@ def styled_node(stock, name, spec):
     node = copy.deepcopy(stock)
     node.set('RCID',str(spec['rcid']))
     node.find('name').text = name
-    if name == 'LIGHTS13': node.find('prefer-bitmap').text = 'yes'
+    if name.startswith('XNLIT'): node.find('prefer-bitmap').text = 'yes'
     x,y,w,h = spec['tile']
     bitmap = node.find('bitmap')
     bitmap.attrib = {'width':str(w),'height':str(h)}
@@ -80,7 +80,6 @@ def restore_for_validation(before, after):
         if name != spec['source']:
             after.find('symbols').remove(nodes[0])
         else:
-            if name == 'LIGHTS13': nodes[0].find('prefer-bitmap').text = 'no'
             bitmap = nodes[0].find('bitmap'); original = stock.find('bitmap')
             bitmap.attrib = original.attrib.copy()
             for tag in ('pivot','graphics-location'):
@@ -139,7 +138,7 @@ def coverage(table):
     for name,spec in SYMBOLS.items():
         item = provenance['symbols'][name]
         assert item['tile'] == spec['tile'] and item['pivot'] == list(PIVOT)
-        assert item['prototypeScale'] == (25/32 if name == 'LIGHTS13' else 27/32)
+        assert item['prototypeScale'] == (25/32 if name.startswith('XNLIT') else 27/32)
         data = json.loads((ASSETS/(name+'-'+table+'-rgba.json')).read_text())
         assert (data['width'],data['height']) == (24,28)
         assert len(data['rows']) == 28 and all(len(row) == 192 for row in data['rows'])

@@ -1,0 +1,75 @@
+{
+  "results": {
+    "core": {
+      "sourceSha256": "5a7c4c4bec2caa6d3e954f220526a97e371d3a806866f45bc284b0ed7de0fb7e",
+      "renderTAllSha256": "5dc9e2650e7880ed8fed581ca0e15c523d95c78b781d927a0d3b28d2c7c588ae",
+      "fontBlockSha256": "f416694a2eecbe3ca0d9a9863db0c07bab4107c8dcf49eb3d8d390d8d9ca438e",
+      "setterSha256": "44207ee20dc9c0655ce11966420cfb3d862f87a82f24eded825741b662167198",
+      "compileCommand": [
+        "c++",
+        "-std=c++17",
+        "-Wall",
+        "-Wextra",
+        "-Werror",
+        "-DOPENNAV_X",
+        "-I/home/standard/Projects/X-nav/.local/sysroot/usr/lib/wx/include/gtk3-unicode-3.2",
+        "-I/home/standard/Projects/X-nav/.local/sysroot/usr/include/wx-3.2",
+        "-DWXUSINGDLL",
+        "-D__WXGTK3__",
+        "-D__WXGTK__",
+        "-D_FILE_OFFSET_BITS=64",
+        "-I/home/standard/Projects/X-nav-worktrees/scrum263-ordinary-chart-font/src",
+        "-I.local/fonts/fixture-roles/core",
+        "/home/standard/Projects/X-nav-worktrees/scrum263-ordinary-chart-font/tests/chart_text_face_test.cpp",
+        "-L/home/standard/Projects/X-nav/.local/sysroot/usr/lib",
+        "-lwx_gtk3u_core-3.2",
+        "-lwx_baseu-3.2",
+        "-o",
+        ".local/fonts/fixture-roles/core/fixture"
+      ],
+      "output": "Installed chart face policy: original template\n202 actual font-establishment checks passed\n",
+      "negatives": {
+        "style-isolation": 1,
+        "specialized-font": 1,
+        "designated-geographic": 1,
+        "generated-light": 1
+      }
+    },
+    "private": {
+      "sourceSha256": "ca4f661f5ce267b129745057a55ef070907287df03308cda85c5bf26edde5698",
+      "renderTAllSha256": "2aca234e74099ede718112eebd7bc4ae78463659b0e2c66c63b33d76e857045f",
+      "fontBlockSha256": "242baf50afe88729d244e7a14bb8517aec647751770b31386944539d529ab273",
+      "setterSha256": "44207ee20dc9c0655ce11966420cfb3d862f87a82f24eded825741b662167198",
+      "compileCommand": [
+        "c++",
+        "-std=c++17",
+        "-Wall",
+        "-Wextra",
+        "-Werror",
+        "-DSKAGER_OCHARTS_ADAPTER",
+        "-I/home/standard/Projects/X-nav/.local/sysroot/usr/lib/wx/include/gtk3-unicode-3.2",
+        "-I/home/standard/Projects/X-nav/.local/sysroot/usr/include/wx-3.2",
+        "-DWXUSINGDLL",
+        "-D__WXGTK3__",
+        "-D__WXGTK__",
+        "-D_FILE_OFFSET_BITS=64",
+        "-I/home/standard/Projects/X-nav-worktrees/scrum263-ordinary-chart-font/src",
+        "-I.local/fonts/fixture-roles/private",
+        "/home/standard/Projects/X-nav-worktrees/scrum263-ordinary-chart-font/tests/chart_text_face_test.cpp",
+        "-L/home/standard/Projects/X-nav/.local/sysroot/usr/lib",
+        "-lwx_gtk3u_core-3.2",
+        "-lwx_baseu-3.2",
+        "-o",
+        ".local/fonts/fixture-roles/private/fixture"
+      ],
+      "output": "Installed chart face policy: original template\n202 actual font-establishment checks passed\n",
+      "negatives": {
+        "style-isolation": 1,
+        "specialized-font": 1,
+        "designated-geographic": 1,
+        "generated-light": 1
+      }
+    }
+  },
+  "limits": "Actual font-establishment blocks and wx fonts; template/cache ownership supplied by fixture. No chart canvas, native Windows HDC, GL draw or persisted profile acceptance."
+}

@@ -27,6 +27,11 @@ if ($Text -notmatch '\[switch\]\$PrivateOCharts\)' -or
     $Text.IndexOf('if ($PrivateOCharts -and $Production)') -lt $Text.IndexOf("Run ctest @(")) {
     throw 'Opt-in/package/installed TLS gate wiring changed'
 }
+if (-not $Text.Contains("'-A', " + '$Architecture, $PythonCMakeArgument,') -or
+    -not $Text.Contains("if (" + '$Program' + " -ceq 'python') { " + '$Program = $BuildPython }') -or
+    $Text.IndexOf('$PythonIdentityJson = & python') -gt $Text.IndexOf('function Run(')) {
+    throw 'Host configure and Python execution must share the entry interpreter'
+}
 $Fixture = Join-Path ([IO.Path]::GetTempPath()) ('ocharts-build-wiring-'+[guid]::NewGuid().ToString('N'))
 $Root = $Fixture
 $Evidence = Join-Path $Root 'evidence/local'
@@ -34,6 +39,8 @@ $Source = Join-Path $Root 'build/integration-source'
 $ZlibPrefix = Join-Path $Root 'build/windows-zlib-1.3.2/install'
 $OpenSslPrefix = Join-Path $Root 'build/windows-openssl-3.5.9/install'
 $Calls = [Collections.Generic.List[object]]::new()
+$BuildPython = (Get-Command python -CommandType Application | Select-Object -First 1).Source
+$PythonCMakeArgument = "-DPython3_EXECUTABLE:FILEPATH=$BuildPython"
 $Fail = ''
 $OldEnv = @{}
 foreach ($Key in @('GITHUB_RUN_ID','GITHUB_RUN_ATTEMPT','GITHUB_JOB','GITHUB_SHA')) {
@@ -45,6 +52,15 @@ function Put([string]$Path,[string]$Value) {
 }
 function Run([string]$Program,[string[]]$Arguments) {
     $Calls.Add(@{program=$Program;arguments=$Arguments})
+    if ($Program -eq 'cmake' -and $Arguments -contains '-S' -and
+        $Arguments -contains (Join-Path $Root 'cmake/ocharts-adapter')) {
+        if ($Arguments -notcontains $PythonCMakeArgument) {
+            throw 'Private native configure must use the captured entry Python'
+        }
+        if ($Arguments -notcontains "-DSKAGER_PREPARED:PATH=$(Join-Path $Root 'build/ocharts-prepared')") {
+            throw 'Private native configure must pass an explicit CMake PATH argument'
+        }
+    }
     if ($Fail -and $Arguments -contains $Fail) { throw "Simulated native/validator failure: $Fail" }
     if ($Arguments -contains '--curl-prefix') {
         $OpenSslIndex = [array]::IndexOf($Arguments, '--openssl-prefix')
@@ -102,6 +118,10 @@ try {
     Build-PrivateOCharts $false
     if(@($Calls|Where-Object {$_.program -eq 'cmake'}).Count -ne 2 -or
        -not(Test-Path (Join-Path $Evidence 'windows-ocharts-first-build.json'))) {throw 'First pass did not build and record'}
+    $OriginalPython=$BuildPython
+    $BuildPython=(Join-Path $Root 'other-python.exe');Put $BuildPython 'different interpreter'
+    Reject {Build-PrivateOCharts $true} 'interpreter drift between development and production'
+    $BuildPython=$OriginalPython
     $Calls.Clear();Build-PrivateOCharts $true
     if(@($Calls|Where-Object {$_.program -eq 'cmake'}).Count -ne 0 -or $Calls.Count -ne 3) {throw 'Reuse rebuilt or skipped validators'}
     Reject {Build-PrivateOCharts $false} 'stale first-build outputs'
@@ -122,7 +142,7 @@ try {
     $Fail='--package';Reject {Build-PrivateOCharts $true} 'current resource/package verification failure';$Fail=''
     $Missing=Join-Path $Root 'build/ocharts-prepared/sdk/lib/curl.lib';Remove-Item $Missing
     Reject {Build-PrivateOCharts $true} 'receipt-only SDK reuse'
-    Write-Output 'Private build wiring passed: PowerShell parse/order, first build, exact reuse, and 16 rejection cases; no native compile claimed.'
+    Write-Output 'Private build wiring passed: PowerShell parse/order, first build, exact reuse, and 17 rejection cases; no native compile claimed.'
 } finally {
     foreach($Key in $OldEnv.Keys){[Environment]::SetEnvironmentVariable($Key,$OldEnv[$Key])}
     Remove-Item -LiteralPath $Fixture -Recurse -Force

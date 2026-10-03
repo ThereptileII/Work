@@ -1,0 +1,28 @@
+{
+  "implementationCommits": [
+    "274c1cc47bbe01fe2aed4c5d57dbe79a1f877718",
+    "305be1df0b7d506acbe9e560a14da86952018f25"
+  ],
+  "base": "ccc0faad089e89a5b3a0b1f2994f4fa4ee18053d",
+  "actualFontEstablishmentAssertions": 404,
+  "guardBypassNegativeControls": 8,
+  "privatePreparationTests": 16,
+  "productionObjectCompiles": 5,
+  "objects": [
+    "core-s52plib",
+    "private-s52plib",
+    "core-presentation",
+    "private-adapter",
+    "private-disabled"
+  ],
+  "component": "updated existing ui_font_resolution_test passed; no installed Segoe UI/Arial on this Linux host",
+  "fixtures": {
+    "core": "727a7c3fbd1b7f4738d031c38ab9583841a9fa828e0750a8247ad117aad36cae",
+    "private": "f76d0fac9dfb0a000f1d5080ad01dcb4ab6c89ca8ca6a222fb1a4d9f1b47b4fe"
+  },
+  "limits": [
+    "No actual candidate Windows or boat HDC evidence yet",
+    "No chart-canvas/GL runtime visual acceptance",
+    "No full app build, broad suite, CI dispatch, remote action or shared cache write"
+  ]
+}

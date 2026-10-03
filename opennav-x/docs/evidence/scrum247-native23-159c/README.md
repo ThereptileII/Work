@@ -1,0 +1,13 @@
+# SCRUM-247 native 23-unit preflight for the light/hatch correction
+
+[Run 37109776549, job 111165274821](https://github.com/ThereptileII/Work/actions/runs/37109776549/job/111165274821) passed on exact remote `159cbeff00d67fbd0b77442b7288407f5d93db2b`, mapped local `5c05eb55c15b67d4014df55896d95452e9cc9d64`.
+
+Root downloaded artifact **11269600836**; this audit independently rehashed and retained that archive, without another download. Its **5,536,328 bytes** and SHA-256 **37a543f05336d2ace308190bad68bb2008fc68a1553265b0c6060a370f57424a** match freshly fetched GitHub metadata. All **516 ZIP entry CRCs** pass.
+
+All **23 actual requested objects** match the native receipts and have I386 COFF machine headers. The compiler is **MSVC19.44.35229.0**, Hostx64/x86, Windows SDK10.0.26100.0. All 23 recorded Release|Win32 projects match archived bytes and use C++17, /MD, disabled fixtures and pilot loopback, with no NOMINMAX definition added. Requested compile targets, 23 copied production sources and both generated configuration headers also match their receipts. The retained complete compile log reports successful builds and no C/C++ or linker errors.
+
+All **447 product inputs** independently match the frozen local source (423 native CRLF, 24 exact). All **1,439 patched OpenCPN inputs** match the independently prepared completed Linux source at the same frozen input (1,406 CRLF, 33 exact). All **seven generated resource files**, including new color-preserving flare aliases and neutral ruin hatching, match that completed build byte-for-byte. Its manifest SHA-256 is `beff73cae53211c4ef0b0c3fa2ed83e5290680f19f48781646e1f1d0d4f88e53`. No regeneration or build was run for this audit.
+
+`verification.json` records object identities, source comparisons, commands and compiler properties. The exact artifact contains all native objects, source copies, projects and generated resource payloads; separate compressed receipts/logs and per-entry inventory are retained for review. **1,560 SDK header hashes are runner-recorded only**: their payloads are outside the artifact and were not independently rehashed here.
+
+This is host production translation-unit compilation only, including private-module host boundaries. It does **not** compile/link the actual private o-charts renderer, link or run the application, inspect visible native rendering, or establish installer, encrypted-chart, licensing or boat acceptance. The older full `d2787c6` diagnostic run is a separate source/run and continues independently. This audit dispatched no CI, changed no refs, ran no additional suite, and made no product edits.

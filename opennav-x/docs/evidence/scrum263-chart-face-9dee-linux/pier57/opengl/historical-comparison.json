@@ -1,0 +1,24 @@
+{
+  "status": "passed",
+  "source_commit": "9dee9b148f4d6ebdd20bb4c49229fe19340df209",
+  "historical_commit": "ccc0faad089e89a5b3a0b1f2994f4fa4ee18053d",
+  "chart_roi": [
+    80,
+    68,
+    1094,
+    634
+  ],
+  "exclusions": [],
+  "captures": [
+    {
+      "name": "SKAGER-Day",
+      "wholeChartDifferenceBounds": null,
+      "historicalImageSha256": "422a75ad3c144c64d3cca0f28918c8751d9a53b7d76435fb902b5443979f7e4f"
+    },
+    {
+      "name": "Standard-Day",
+      "wholeChartDifferenceBounds": null,
+      "historicalImageSha256": "63ce16006b2c12966a10d725c391ab6a8f1ccaa7251d9328621008af63c3d29e"
+    }
+  ]
+}

@@ -1,0 +1,21 @@
+{
+   "upstream" : "37fd0cddb7334fe489e9f18aa163977a9c5c84f7",
+   "commissioning_restart_protocol" : 0,
+   "version" : "0.4.0-beta2",
+   "commit" : "9dee9b148f4d6ebdd20bb4c49229fe19340df209",
+   "compiler" : "GNU 16.2.1 / 8 byte pointers",
+   "plugins_loaded" : false,
+   "test_fixtures" : true,
+   "resources" : {
+      "gshhs/poly-c-1.dat" : true,
+      "s57data/s57objectclasses.csv" : true,
+      "uidata/styles.xml" : true,
+      "s57data/chartsymbols.xml" : true
+   },
+   "normal_config_directory" : "/etc",
+   "passed" : true,
+   "xnav_hardware_output_policy" : "test-loopback-only",
+   "build_purpose" : "DEVELOPER TEST BUILD",
+   "profile_initialized" : false,
+   "contract" : "OpenNavX.LoaderSelfTest.1"
+}

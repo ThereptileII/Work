@@ -658,6 +658,12 @@ jobs:
           path: |
             opennav-x/evidence/local
             opennav-x/build/ocharts-package
+            opennav-x/build/ocharts-chart-style/v1
+            opennav-x/build/ocharts-prepared/resources
+            opennav-x/build/xnav-windows/opennav-chart-style/v1
+            opennav-x/build/production-windows/opennav-chart-style/v1
+            opennav-x/build/xnav-windows/CMakeCache.txt
+            opennav-x/build/production-windows/CMakeCache.txt
             opennav-x/build/ocharts-native/CMakeFiles/CMakeConfigureLog.yaml
             opennav-x/build/ocharts-native/CMakeCache.txt
             opennav-x/build/ocharts-native/Release/skager-ocharts-adapter.dll

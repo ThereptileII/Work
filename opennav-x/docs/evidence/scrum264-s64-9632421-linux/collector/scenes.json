@@ -1,0 +1,785 @@
+{
+  "fixtureSha256": "c70d9e0f53e149270f85900f8576082db86781d64fbb71aa7d5ceb4af4aa22e3",
+  "featureAuditSha256": "567c4dea09a1d05a11919174e10268b7e75ea9e5ac85c281a10097bd0360e15b",
+  "preferredChannelGap": "No CATLAM3/4 or banded preferred-channel BOYLAT in GB4X0000; GB4X0001 also has only two ordinary single-color BOYLAT.",
+  "scenes": [
+    {
+      "id": "s64-lateral",
+      "cell": "GB4X0000",
+      "kind": "official IHO S-64 test geography, not real-world",
+      "center": [
+        -32.5186315,
+        61.0216421
+      ],
+      "scalePpm": 0.3,
+      "features": [
+        {
+          "class": "BOYLAT",
+          "attributes": {
+            "RCID": 219,
+            "PRIM": 1,
+            "GRUP": 2,
+            "OBJL": 17,
+            "RVER": 1,
+            "AGEN": 540,
+            "FIDN": 29141115,
+            "FIDS": 1,
+            "LNAM": "021C01BCA87B0001",
+            "BOYSHP": 1,
+            "CATLAM": 2,
+            "COLOUR": [
+              "4"
+            ],
+            "OBJNAM": "S7",
+            "ogrFid": 218,
+            "longitude": 61.0192483,
+            "latitude": -32.5237974
+          },
+          "expectedPinnedLookup": {
+            "id": "1038",
+            "RCID": "31090",
+            "class": "BOYLAT",
+            "type": "Point",
+            "table": "Simplified",
+            "attributes": [
+              "BOYSHP1",
+              "COLOUR4"
+            ],
+            "instruction": "SY(BOYLAT13);TE('%s','OBJNAM',2,1,2,'15110',-1,-1,CHBLK,21)",
+            "displayPriority": "Hazards",
+            "radarPriority": "On Top",
+            "displayCategory": "Standard"
+          },
+          "expectedSymbols": {
+            "Standard": "BOYLAT13",
+            "XNav": "XNLAT013"
+          },
+          "related": []
+        },
+        {
+          "class": "BOYLAT",
+          "attributes": {
+            "RCID": 224,
+            "PRIM": 1,
+            "GRUP": 2,
+            "OBJL": 17,
+            "RVER": 1,
+            "AGEN": 540,
+            "FIDN": 29140975,
+            "FIDS": 1,
+            "LNAM": "021C01BCA7EF0001",
+            "LNAM_REFS": [
+              "021C01BCA7F00001"
+            ],
+            "FFPT_RIND": [
+              2
+            ],
+            "BOYSHP": 2,
+            "CATLAM": 1,
+            "COLOUR": [
+              "3"
+            ],
+            "OBJNAM": "S6",
+            "ogrFid": 223,
+            "longitude": 61.0240359,
+            "latitude": -32.5134656
+          },
+          "expectedPinnedLookup": {
+            "id": "1039",
+            "RCID": "31091",
+            "class": "BOYLAT",
+            "type": "Point",
+            "table": "Simplified",
+            "attributes": [
+              "BOYSHP2",
+              "COLOUR3"
+            ],
+            "instruction": "SY(BOYLAT24);TE('%s','OBJNAM',2,1,2,'15110',-1,-1,CHBLK,21)",
+            "displayPriority": "Hazards",
+            "radarPriority": "On Top",
+            "displayCategory": "Standard"
+          },
+          "expectedSymbols": {
+            "Standard": "BOYLAT24",
+            "XNav": "XNLAT024"
+          },
+          "related": [
+            {
+              "class": "LIGHTS",
+              "attributes": {
+                "RCID": 223,
+                "PRIM": 1,
+                "GRUP": 2,
+                "OBJL": 75,
+                "RVER": 1,
+                "AGEN": 540,
+                "FIDN": 29140976,
+                "FIDS": 1,
+                "LNAM": "021C01BCA7F00001",
+                "COLOUR": [
+                  "3"
+                ],
+                "LITCHR": 2,
+                "SIGGRP": "(1)",
+                "SIGPER": 5.0,
+                "ogrFid": 222,
+                "longitude": 61.0240359,
+                "latitude": -32.5134656
+              }
+            }
+          ]
+        }
+      ],
+      "exactSelectedFeatureBoundsWSEN": [
+        61.0192483,
+        -32.5237974,
+        61.0240359,
+        -32.5134656
+      ],
+      "symbolTable": "Simplified (nSymbolStyle=76)",
+      "classification": "Expected pinned lookup from supplied attributes; actual emitted paint not yet observed",
+      "sourceFiles": {
+        "GB4X0000.000": {
+          "bytes": 945697,
+          "sha256": "c70d9e0f53e149270f85900f8576082db86781d64fbb71aa7d5ceb4af4aa22e3"
+        }
+      },
+      "scope": "Official IHO S-64 presentation-test geometry, not operational nautical coverage. No object insertion.",
+      "themes": [
+        "Day"
+      ]
+    },
+    {
+      "id": "s64-safe-isolated",
+      "cell": "GB4X0000",
+      "kind": "official IHO S-64 test geography, not real-world",
+      "center": [
+        -32.54495755,
+        61.03466285
+      ],
+      "scalePpm": 0.25,
+      "features": [
+        {
+          "class": "BOYISD",
+          "attributes": {
+            "RCID": 454,
+            "PRIM": 1,
+            "GRUP": 2,
+            "OBJL": 16,
+            "RVER": 1,
+            "AGEN": 540,
+            "FIDN": 29141109,
+            "FIDS": 1,
+            "LNAM": "021C01BCA8750001",
+            "LNAM_REFS": [
+              "021C01BCA8760001",
+              "021C01BCA8770001"
+            ],
+            "FFPT_RIND": [
+              2,
+              2
+            ],
+            "BOYSHP": 4,
+            "COLOUR": [
+              "2",
+              "3",
+              "2"
+            ],
+            "COLPAT": [
+              "1"
+            ],
+            "ogrFid": 453,
+            "longitude": 61.0432378,
+            "latitude": -32.5377607
+          },
+          "expectedPinnedLookup": {
+            "id": "1028",
+            "RCID": "31080",
+            "class": "BOYISD",
+            "type": "Point",
+            "table": "Simplified",
+            "attributes": [],
+            "instruction": "SY(BOYISD12);TE('%s','OBJNAM',2,1,2,'15110',-1,-1,CHBLK,21)",
+            "displayPriority": "Hazards",
+            "radarPriority": "On Top",
+            "displayCategory": "Standard"
+          },
+          "expectedSymbols": {
+            "Standard": "BOYISD12",
+            "XNav": "BOYISD12"
+          },
+          "related": [
+            {
+              "class": "LIGHTS",
+              "attributes": {
+                "RCID": 455,
+                "PRIM": 1,
+                "GRUP": 2,
+                "OBJL": 75,
+                "RVER": 1,
+                "AGEN": 540,
+                "FIDN": 29141110,
+                "FIDS": 1,
+                "LNAM": "021C01BCA8760001",
+                "COLOUR": [
+                  "1"
+                ],
+                "LITCHR": 2,
+                "SIGGRP": "(2)",
+                "SIGPER": 10.0,
+                "ogrFid": 454,
+                "longitude": 61.0432378,
+                "latitude": -32.5377607
+              }
+            },
+            {
+              "class": "TOPMAR",
+              "attributes": {
+                "RCID": 456,
+                "PRIM": 1,
+                "GRUP": 2,
+                "OBJL": 144,
+                "RVER": 1,
+                "AGEN": 540,
+                "FIDN": 29141111,
+                "FIDS": 1,
+                "LNAM": "021C01BCA8770001",
+                "COLOUR": [
+                  "2"
+                ],
+                "TOPSHP": 4,
+                "ogrFid": 455,
+                "longitude": 61.0432378,
+                "latitude": -32.5377607
+              }
+            }
+          ]
+        },
+        {
+          "class": "BOYSAW",
+          "attributes": {
+            "RCID": 1389,
+            "PRIM": 1,
+            "GRUP": 2,
+            "OBJL": 18,
+            "RVER": 1,
+            "AGEN": 540,
+            "FIDN": 29142425,
+            "FIDS": 1,
+            "LNAM": "021C01BCAD990001",
+            "LNAM_REFS": [
+              "021C01BCAD9A0001"
+            ],
+            "FFPT_RIND": [
+              2
+            ],
+            "BOYSHP": 3,
+            "COLOUR": [
+              "3",
+              "1"
+            ],
+            "COLPAT": [
+              "2"
+            ],
+            "OBJNAM": "Fairway",
+            "ogrFid": 1388,
+            "longitude": 61.0260879,
+            "latitude": -32.5521544
+          },
+          "expectedPinnedLookup": {
+            "id": "1046",
+            "RCID": "31098",
+            "class": "BOYSAW",
+            "type": "Point",
+            "table": "Simplified",
+            "attributes": [],
+            "instruction": "SY(BOYSAW12);TE('%s','OBJNAM',2,1,2,'15110',-1,-1,CHBLK,21)",
+            "displayPriority": "Hazards",
+            "radarPriority": "On Top",
+            "displayCategory": "Standard"
+          },
+          "expectedSymbols": {
+            "Standard": "BOYSAW12",
+            "XNav": "BOYSAW12"
+          },
+          "related": [
+            {
+              "class": "LIGHTS",
+              "attributes": {
+                "RCID": 1390,
+                "PRIM": 1,
+                "GRUP": 2,
+                "OBJL": 75,
+                "RVER": 1,
+                "AGEN": 540,
+                "FIDN": 29142426,
+                "FIDS": 1,
+                "LNAM": "021C01BCAD9A0001",
+                "COLOUR": [
+                  "1"
+                ],
+                "LITCHR": 7,
+                "SIGGRP": "(1)",
+                "SIGPER": 8.0,
+                "ogrFid": 1389,
+                "longitude": 61.0260879,
+                "latitude": -32.5521544
+              }
+            }
+          ]
+        }
+      ],
+      "exactSelectedFeatureBoundsWSEN": [
+        61.0260879,
+        -32.5521544,
+        61.0432378,
+        -32.5377607
+      ],
+      "symbolTable": "Simplified (nSymbolStyle=76)",
+      "classification": "Expected pinned lookup from supplied attributes; actual emitted paint not yet observed",
+      "sourceFiles": {
+        "GB4X0000.000": {
+          "bytes": 945697,
+          "sha256": "c70d9e0f53e149270f85900f8576082db86781d64fbb71aa7d5ceb4af4aa22e3"
+        }
+      },
+      "scope": "Official IHO S-64 presentation-test geometry, not operational nautical coverage. No object insertion.",
+      "themes": [
+        "Day",
+        "Night"
+      ]
+    },
+    {
+      "id": "s64-cardinals",
+      "cell": "GB4X0000",
+      "kind": "official IHO S-64 test geography, not real-world",
+      "center": [
+        -32.37658945,
+        61.0300087
+      ],
+      "scalePpm": 0.12,
+      "features": [
+        {
+          "class": "BOYCAR",
+          "attributes": {
+            "RCID": 82,
+            "PRIM": 1,
+            "GRUP": 2,
+            "OBJL": 14,
+            "RVER": 1,
+            "AGEN": 540,
+            "FIDN": 29141015,
+            "FIDS": 1,
+            "LNAM": "021C01BCA8170001",
+            "LNAM_REFS": [
+              "021C01BCA8180001",
+              "021C01BCA8190001",
+              "021C01BCA81A0001"
+            ],
+            "FFPT_RIND": [
+              2,
+              2,
+              2
+            ],
+            "BOYSHP": 4,
+            "CATCAM": 1,
+            "COLOUR": [
+              "2",
+              "6"
+            ],
+            "COLPAT": [
+              "1"
+            ],
+            "OBJNAM": "N Skerries",
+            "ogrFid": 81,
+            "longitude": 61.0334282,
+            "latitude": -32.3630942
+          },
+          "expectedPinnedLookup": {
+            "id": "1022",
+            "RCID": "31074",
+            "class": "BOYCAR",
+            "type": "Point",
+            "table": "Simplified",
+            "attributes": [
+              "CATCAM1"
+            ],
+            "instruction": "SY(BOYCAR01);TE('%s','OBJNAM',2,1,2,'15110',-1,-1,CHBLK,21)",
+            "displayPriority": "Hazards",
+            "radarPriority": "On Top",
+            "displayCategory": "Standard"
+          },
+          "expectedSymbols": {
+            "Standard": "BOYCAR01",
+            "XNav": "BOYCAR01"
+          },
+          "related": [
+            {
+              "class": "LIGHTS",
+              "attributes": {
+                "RCID": 80,
+                "PRIM": 1,
+                "GRUP": 2,
+                "OBJL": 75,
+                "RVER": 1,
+                "AGEN": 540,
+                "FIDN": 29141017,
+                "FIDS": 1,
+                "LNAM": "021C01BCA8190001",
+                "COLOUR": [
+                  "1"
+                ],
+                "LITCHR": 5,
+                "SIGGRP": "(1)",
+                "ogrFid": 79,
+                "longitude": 61.0334282,
+                "latitude": -32.3630942
+              }
+            },
+            {
+              "class": "TOPMAR",
+              "attributes": {
+                "RCID": 79,
+                "PRIM": 1,
+                "GRUP": 2,
+                "OBJL": 144,
+                "RVER": 1,
+                "AGEN": 540,
+                "FIDN": 29141018,
+                "FIDS": 1,
+                "LNAM": "021C01BCA81A0001",
+                "COLOUR": [
+                  "2"
+                ],
+                "TOPSHP": 13,
+                "ogrFid": 78,
+                "longitude": 61.0334282,
+                "latitude": -32.3630942
+              }
+            }
+          ]
+        },
+        {
+          "class": "BOYCAR",
+          "attributes": {
+            "RCID": 4,
+            "PRIM": 1,
+            "GRUP": 2,
+            "OBJL": 14,
+            "RVER": 1,
+            "AGEN": 540,
+            "FIDN": 29142248,
+            "FIDS": 1,
+            "LNAM": "021C01BCACE80001",
+            "LNAM_REFS": [
+              "021C01BCACE60001",
+              "021C01BCACE70001",
+              "021C01BCACE50001"
+            ],
+            "FFPT_RIND": [
+              2,
+              2,
+              2
+            ],
+            "BOYSHP": 4,
+            "CATCAM": 2,
+            "COLOUR": [
+              "2",
+              "6",
+              "2"
+            ],
+            "COLPAT": [
+              "1"
+            ],
+            "OBJNAM": "E Skerries",
+            "ogrFid": 3,
+            "longitude": 61.0438914,
+            "latitude": -32.3809654
+          },
+          "expectedPinnedLookup": {
+            "id": "1023",
+            "RCID": "31075",
+            "class": "BOYCAR",
+            "type": "Point",
+            "table": "Simplified",
+            "attributes": [
+              "CATCAM2"
+            ],
+            "instruction": "SY(BOYCAR02);TE('%s','OBJNAM',2,1,2,'15110',-1,-1,CHBLK,21)",
+            "displayPriority": "Hazards",
+            "radarPriority": "On Top",
+            "displayCategory": "Standard"
+          },
+          "expectedSymbols": {
+            "Standard": "BOYCAR02",
+            "XNav": "BOYCAR02"
+          },
+          "related": [
+            {
+              "class": "LIGHTS",
+              "attributes": {
+                "RCID": 5,
+                "PRIM": 1,
+                "GRUP": 2,
+                "OBJL": 75,
+                "RVER": 1,
+                "AGEN": 540,
+                "FIDN": 29142246,
+                "FIDS": 1,
+                "LNAM": "021C01BCACE60001",
+                "COLOUR": [
+                  "1"
+                ],
+                "LITCHR": 5,
+                "SIGGRP": "(3)",
+                "SIGPER": 5.0,
+                "ogrFid": 4,
+                "longitude": 61.0438914,
+                "latitude": -32.3809654
+              }
+            },
+            {
+              "class": "TOPMAR",
+              "attributes": {
+                "RCID": 7,
+                "PRIM": 1,
+                "GRUP": 2,
+                "OBJL": 144,
+                "RVER": 1,
+                "AGEN": 540,
+                "FIDN": 29142245,
+                "FIDS": 1,
+                "LNAM": "021C01BCACE50001",
+                "COLOUR": [
+                  "2"
+                ],
+                "TOPSHP": 11,
+                "ogrFid": 6,
+                "longitude": 61.0438914,
+                "latitude": -32.3809654
+              }
+            }
+          ]
+        },
+        {
+          "class": "BOYCAR",
+          "attributes": {
+            "RCID": 72,
+            "PRIM": 1,
+            "GRUP": 2,
+            "OBJL": 14,
+            "RVER": 1,
+            "AGEN": 540,
+            "FIDN": 29144027,
+            "FIDS": 1,
+            "LNAM": "021C01BCB3DB0001",
+            "LNAM_REFS": [
+              "021C01BCB3D90001",
+              "021C01BCB3DA0001"
+            ],
+            "FFPT_RIND": [
+              2,
+              2
+            ],
+            "BOYSHP": 4,
+            "CATCAM": 3,
+            "COLOUR": [
+              "6",
+              "2"
+            ],
+            "COLPAT": [
+              "1"
+            ],
+            "OBJNAM": "S Skerries",
+            "ogrFid": 71,
+            "longitude": 61.024495,
+            "latitude": -32.3900847
+          },
+          "expectedPinnedLookup": {
+            "id": "1024",
+            "RCID": "31076",
+            "class": "BOYCAR",
+            "type": "Point",
+            "table": "Simplified",
+            "attributes": [
+              "CATCAM3"
+            ],
+            "instruction": "SY(BOYCAR03);TE('%s','OBJNAM',2,1,2,'15110',-1,-1,CHBLK,21)",
+            "displayPriority": "Hazards",
+            "radarPriority": "On Top",
+            "displayCategory": "Standard"
+          },
+          "expectedSymbols": {
+            "Standard": "BOYCAR03",
+            "XNav": "BOYCAR03"
+          },
+          "related": [
+            {
+              "class": "LIGHTS",
+              "attributes": {
+                "RCID": 71,
+                "PRIM": 1,
+                "GRUP": 2,
+                "OBJL": 75,
+                "RVER": 1,
+                "AGEN": 540,
+                "FIDN": 29144026,
+                "FIDS": 1,
+                "LNAM": "021C01BCB3DA0001",
+                "COLOUR": [
+                  "1"
+                ],
+                "LITCHR": 26,
+                "SIGGRP": "(6)(1)",
+                "ogrFid": 70,
+                "longitude": 61.024495,
+                "latitude": -32.3900847
+              }
+            },
+            {
+              "class": "TOPMAR",
+              "attributes": {
+                "RCID": 70,
+                "PRIM": 1,
+                "GRUP": 2,
+                "OBJL": 144,
+                "RVER": 1,
+                "AGEN": 540,
+                "FIDN": 29144025,
+                "FIDS": 1,
+                "LNAM": "021C01BCB3D90001",
+                "COLOUR": [
+                  "2"
+                ],
+                "TOPSHP": 14,
+                "ogrFid": 69,
+                "longitude": 61.024495,
+                "latitude": -32.3900847
+              }
+            }
+          ]
+        },
+        {
+          "class": "BOYCAR",
+          "attributes": {
+            "RCID": 10,
+            "PRIM": 1,
+            "GRUP": 2,
+            "OBJL": 14,
+            "RVER": 1,
+            "AGEN": 540,
+            "FIDN": 29142075,
+            "FIDS": 1,
+            "LNAM": "021C01BCAC3B0001",
+            "LNAM_REFS": [
+              "021C01BCAC380001",
+              "021C01BCAC390001",
+              "021C01BCAC3A0001"
+            ],
+            "FFPT_RIND": [
+              2,
+              2,
+              2
+            ],
+            "BOYSHP": 4,
+            "CATCAM": 4,
+            "COLOUR": [
+              "6",
+              "2",
+              "6"
+            ],
+            "COLPAT": [
+              "1"
+            ],
+            "OBJNAM": "W Skerries",
+            "ogrFid": 9,
+            "longitude": 61.016126,
+            "latitude": -32.3773986
+          },
+          "expectedPinnedLookup": {
+            "id": "1025",
+            "RCID": "31077",
+            "class": "BOYCAR",
+            "type": "Point",
+            "table": "Simplified",
+            "attributes": [
+              "CATCAM4"
+            ],
+            "instruction": "SY(BOYCAR04);TE('%s','OBJNAM',2,1,2,'15110',-1,-1,CHBLK,21)",
+            "displayPriority": "Hazards",
+            "radarPriority": "On Top",
+            "displayCategory": "Standard"
+          },
+          "expectedSymbols": {
+            "Standard": "BOYCAR04",
+            "XNav": "BOYCAR04"
+          },
+          "related": [
+            {
+              "class": "LIGHTS",
+              "attributes": {
+                "RCID": 12,
+                "PRIM": 1,
+                "GRUP": 2,
+                "OBJL": 75,
+                "RVER": 1,
+                "AGEN": 540,
+                "FIDN": 29142073,
+                "FIDS": 1,
+                "LNAM": "021C01BCAC390001",
+                "COLOUR": [
+                  "1"
+                ],
+                "LITCHR": 5,
+                "SIGGRP": "(9)",
+                "SIGPER": 10.0,
+                "ogrFid": 11,
+                "longitude": 61.016126,
+                "latitude": -32.3773986
+              }
+            },
+            {
+              "class": "TOPMAR",
+              "attributes": {
+                "RCID": 11,
+                "PRIM": 1,
+                "GRUP": 2,
+                "OBJL": 144,
+                "RVER": 1,
+                "AGEN": 540,
+                "FIDN": 29142072,
+                "FIDS": 1,
+                "LNAM": "021C01BCAC380001",
+                "COLOUR": [
+                  "2"
+                ],
+                "TOPSHP": 10,
+                "ogrFid": 10,
+                "longitude": 61.016126,
+                "latitude": -32.3773986
+              }
+            }
+          ]
+        }
+      ],
+      "exactSelectedFeatureBoundsWSEN": [
+        61.016126,
+        -32.3900847,
+        61.0438914,
+        -32.3630942
+      ],
+      "symbolTable": "Simplified (nSymbolStyle=76)",
+      "classification": "Expected pinned lookup from supplied attributes; actual emitted paint not yet observed",
+      "sourceFiles": {
+        "GB4X0000.000": {
+          "bytes": 945697,
+          "sha256": "c70d9e0f53e149270f85900f8576082db86781d64fbb71aa7d5ceb4af4aa22e3"
+        }
+      },
+      "scope": "Official IHO S-64 presentation-test geometry, not operational nautical coverage. No object insertion.",
+      "themes": [
+        "Day"
+      ]
+    }
+  ]
+}

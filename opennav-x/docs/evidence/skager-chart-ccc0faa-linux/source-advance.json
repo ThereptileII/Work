@@ -1,0 +1,14 @@
+{
+  "from": "5c05eb55c15b67d4014df55896d95452e9cc9d64",
+  "to": "ccc0faad089e89a5b3a0b1f2994f4fa4ee18053d",
+  "oldTreeMatchedAllNinePatches": true,
+  "newTreeMatchedAllNinePatches": true,
+  "changes": [
+    {
+      "path": "libs/s52plib/src/s52plib.cpp",
+      "oldSha256": "87f9a18ab6b42924da02ef8aee941ab25bf5c0159a8bc43efc9958b155a52203",
+      "sha256": "25ad7403f9f8a77174471f3852386e9291fefed635bb52008f420a52942fa9f8",
+      "mode": "100755"
+    }
+  ]
+}

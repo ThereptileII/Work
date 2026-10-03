@@ -1,0 +1,78 @@
+{
+  "fixtureSha256": "c70d9e0f53e149270f85900f8576082db86781d64fbb71aa7d5ceb4af4aa22e3",
+  "featureAuditSha256": "567c4dea09a1d05a11919174e10268b7e75ea9e5ac85c281a10097bd0360e15b",
+  "greenPair": {
+    "class": "BOYLAT",
+    "attributes": {
+      "RCID": 228,
+      "PRIM": 1,
+      "GRUP": 2,
+      "OBJL": 17,
+      "RVER": 1,
+      "AGEN": 540,
+      "FIDN": 29140968,
+      "FIDS": 1,
+      "LNAM": "021C01BCA7E80001",
+      "LNAM_REFS": [
+        "021C01BCA7E90001"
+      ],
+      "FFPT_RIND": [
+        2
+      ],
+      "BOYSHP": 1,
+      "CATLAM": 2,
+      "COLOUR": [
+        "4"
+      ],
+      "OBJNAM": "S5",
+      "ogrFid": 227,
+      "longitude": 61.017694,
+      "latitude": -32.5146737
+    },
+    "expectedPinnedLookup": {
+      "id": "1038",
+      "RCID": "31090",
+      "class": "BOYLAT",
+      "type": "Point",
+      "table": "Simplified",
+      "attributes": [
+        "BOYSHP1",
+        "COLOUR4"
+      ],
+      "instruction": "SY(BOYLAT13);TE('%s','OBJNAM',2,1,2,'15110',-1,-1,CHBLK,21)",
+      "displayPriority": "Hazards",
+      "radarPriority": "On Top",
+      "displayCategory": "Standard"
+    },
+    "expectedSymbols": {
+      "Standard": "BOYLAT13",
+      "XNav": "XNLAT013"
+    },
+    "related": [
+      {
+        "class": "LIGHTS",
+        "attributes": {
+          "RCID": 227,
+          "PRIM": 1,
+          "GRUP": 2,
+          "OBJL": 75,
+          "RVER": 1,
+          "AGEN": 540,
+          "FIDN": 29140969,
+          "FIDS": 1,
+          "LNAM": "021C01BCA7E90001",
+          "COLOUR": [
+            "4"
+          ],
+          "LITCHR": 2,
+          "SIGGRP": "(1)",
+          "SIGPER": 5.0,
+          "ogrFid": 226,
+          "longitude": 61.017694,
+          "latitude": -32.5146737
+        }
+      }
+    ]
+  },
+  "independentRead": "pyogrio0.13/GDAL3.12.4 raw.read selected actual RCIDs227/228 again; missing double fields exposed as NaN, not evidence of encoded ORIENT; runtime trace must prove attribute-name absence."
+}

@@ -1,0 +1,230 @@
+[
+  {
+    "renderer": "software",
+    "theme": "Day",
+    "chartDifferenceBoundsScreen": [
+      577,
+      335,
+      598,
+      370
+    ],
+    "changedPixels": 294,
+    "outsideSourceBodyEnvelopesUnchanged": true,
+    "sourceBodyEnvelopes": [
+      [
+        575,
+        333,
+        592,
+        355
+      ],
+      [
+        583,
+        351,
+        600,
+        373
+      ]
+    ],
+    "scope": "Exposed light/name/hatch pixels outside body envelopes stay exact; occluded co-location pixels cannot independently prove light painter identity. No actual per-object rule trace in this run.",
+    "newCoreColors": [
+      {
+        "(213, 229, 229)": 208,
+        "(175, 191, 174)": 12,
+        "(245, 246, 238)": 8,
+        "(210, 226, 226)": 6,
+        "(111, 129, 127)": 6,
+        "(209, 220, 214)": 4,
+        "(192, 185, 152)": 4,
+        "(181, 173, 140)": 4,
+        "(155, 151, 120)": 4,
+        "(120, 137, 135)": 4,
+        "(191, 182, 148)": 4,
+        "(213, 229, 228)": 4
+      },
+      {
+        "(213, 229, 229)": 213,
+        "(175, 191, 174)": 10,
+        "(245, 246, 238)": 8,
+        "(210, 226, 226)": 6,
+        "(111, 129, 127)": 6,
+        "(120, 137, 135)": 4,
+        "(213, 229, 228)": 4,
+        "(189, 206, 206)": 4,
+        "(247, 248, 240)": 4,
+        "(187, 212, 214)": 4,
+        "(193, 216, 217)": 4,
+        "(153, 170, 168)": 3
+      }
+    ]
+  },
+  {
+    "renderer": "software",
+    "theme": "Night",
+    "chartDifferenceBoundsScreen": [
+      577,
+      335,
+      598,
+      370
+    ],
+    "changedPixels": 280,
+    "outsideSourceBodyEnvelopesUnchanged": true,
+    "sourceBodyEnvelopes": [
+      [
+        575,
+        333,
+        592,
+        355
+      ],
+      [
+        583,
+        351,
+        600,
+        373
+      ]
+    ],
+    "scope": "Exposed light/name/hatch pixels outside body envelopes stay exact; occluded co-location pixels cannot independently prove light painter identity. No actual per-object rule trace in this run.",
+    "newCoreColors": [
+      {
+        "(14, 23, 28)": 209,
+        "(55, 68, 58)": 12,
+        "(16, 25, 30)": 6,
+        "(81, 94, 86)": 6,
+        "(17, 27, 33)": 6,
+        "(25, 32, 32)": 4,
+        "(73, 67, 52)": 4,
+        "(81, 77, 59)": 4,
+        "(95, 92, 74)": 4,
+        "(77, 71, 54)": 4,
+        "(15, 23, 28)": 4,
+        "(31, 41, 43)": 4
+      },
+      {
+        "(14, 23, 28)": 216,
+        "(55, 68, 58)": 9,
+        "(16, 25, 30)": 7,
+        "(81, 94, 86)": 6,
+        "(17, 27, 33)": 6,
+        "(16, 26, 32)": 5,
+        "(15, 23, 28)": 4,
+        "(31, 41, 43)": 4,
+        "(87, 99, 91)": 4,
+        "(26, 41, 47)": 4,
+        "(24, 37, 43)": 4,
+        "(57, 67, 65)": 3
+      }
+    ]
+  },
+  {
+    "renderer": "opengl",
+    "theme": "Day",
+    "chartDifferenceBoundsScreen": [
+      577,
+      335,
+      598,
+      370
+    ],
+    "changedPixels": 294,
+    "outsideSourceBodyEnvelopesUnchanged": true,
+    "sourceBodyEnvelopes": [
+      [
+        575,
+        333,
+        592,
+        355
+      ],
+      [
+        583,
+        351,
+        600,
+        373
+      ]
+    ],
+    "scope": "Exposed light/name/hatch pixels outside body envelopes stay exact; occluded co-location pixels cannot independently prove light painter identity. No actual per-object rule trace in this run.",
+    "newCoreColors": [
+      {
+        "(212, 228, 228)": 227,
+        "(174, 190, 173)": 18,
+        "(172, 202, 205)": 9,
+        "(245, 246, 238)": 8,
+        "(209, 225, 225)": 6,
+        "(111, 129, 127)": 6,
+        "(208, 220, 214)": 4,
+        "(192, 185, 152)": 4,
+        "(181, 173, 139)": 4,
+        "(155, 151, 120)": 4,
+        "(120, 137, 135)": 4,
+        "(191, 181, 147)": 4
+      },
+      {
+        "(212, 228, 228)": 236,
+        "(174, 190, 173)": 12,
+        "(172, 202, 205)": 12,
+        "(245, 246, 238)": 8,
+        "(209, 225, 225)": 6,
+        "(111, 129, 127)": 6,
+        "(120, 137, 135)": 4,
+        "(191, 181, 147)": 4,
+        "(212, 228, 227)": 4,
+        "(188, 205, 205)": 4,
+        "(247, 248, 240)": 4,
+        "(212, 229, 229)": 4
+      }
+    ]
+  },
+  {
+    "renderer": "opengl",
+    "theme": "Night",
+    "chartDifferenceBoundsScreen": [
+      577,
+      335,
+      598,
+      370
+    ],
+    "changedPixels": 286,
+    "outsideSourceBodyEnvelopesUnchanged": true,
+    "sourceBodyEnvelopes": [
+      [
+        575,
+        333,
+        592,
+        355
+      ],
+      [
+        583,
+        351,
+        600,
+        373
+      ]
+    ],
+    "scope": "Exposed light/name/hatch pixels outside body envelopes stay exact; occluded co-location pixels cannot independently prove light painter identity. No actual per-object rule trace in this run.",
+    "newCoreColors": [
+      {
+        "(14, 23, 28)": 231,
+        "(55, 68, 58)": 18,
+        "(33, 51, 57)": 9,
+        "(16, 25, 30)": 6,
+        "(81, 94, 86)": 6,
+        "(17, 27, 33)": 6,
+        "(25, 32, 32)": 4,
+        "(73, 67, 52)": 4,
+        "(81, 77, 59)": 4,
+        "(95, 92, 74)": 4,
+        "(77, 71, 54)": 4,
+        "(15, 23, 28)": 4
+      },
+      {
+        "(14, 23, 28)": 240,
+        "(55, 68, 58)": 12,
+        "(33, 51, 57)": 12,
+        "(16, 25, 30)": 6,
+        "(81, 94, 86)": 6,
+        "(17, 27, 33)": 6,
+        "(77, 71, 54)": 4,
+        "(15, 23, 28)": 4,
+        "(31, 41, 43)": 4,
+        "(87, 99, 91)": 4,
+        "(16, 26, 32)": 4,
+        "(57, 67, 65)": 3
+      }
+    ]
+  }
+]

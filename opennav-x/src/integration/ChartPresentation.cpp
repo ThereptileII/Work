@@ -1,6 +1,7 @@
 #include "integration/ChartPresentation.h"
 #include "integration/ChartCanvasInk.h"
 #include "integration/ChartNameTypography.h"
+#include "integration/ChartTextFace.h"
 #include "integration/ChartLightLabel.h"
 #include "ui/Controls.h" // Before GL/X11 headers which define None.
 #include "XNavChartResources.h"
@@ -84,7 +85,7 @@ wxFont *GeographicNameFont(const char *feature, const char *instruction, bool tx
   return FontMgr::Get().FindOrCreateFont(
       *light ? 6 : role == ChartNameRole::Land ? 9 : 12, wxFONTFAMILY_SWISS,
       *light || role == ChartNameRole::Land ? wxFONTSTYLE_NORMAL : wxFONTSTYLE_ITALIC,
-      wxFONTWEIGHT_NORMAL, false, *light ? light_face : face);
+      wxFONTWEIGHT_NORMAL, false, *light || role == ChartNameRole::Land ? light_face : face);
 }
 bool Verify(const wxString &folder) {
   for (const auto &resource : chart_style::generated::resources) {
@@ -165,7 +166,9 @@ s52plib *CreateChartPresentation(const wxString &stock_path,
         // Presentation-local: retain the user's saved Paper/Simplified choice
         // for Standard and Legacy, while this verified style uses its artwork.
         library->EnablePresentationSimplifiedSymbols();
+        library->EnablePresentationLightSymbols();
         library->SetTextFontResolver(GeographicNameFont);
+        library->SetPresentationTextFace(PrototypeChartTextFace());
         library->SetSoundingFontResolver(ChartSoundingFont);
         active = true;
         status = "SKAGER presentation v1 / pinned symbols";

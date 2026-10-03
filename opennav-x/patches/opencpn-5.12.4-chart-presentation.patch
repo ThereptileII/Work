@@ -2406,3 +2406,177 @@ diff --git a/gui/src/chcanv.cpp b/gui/src/chcanv.cpp
      v[_T("OpenCPN S52PLIB BoundaryStyle")] = ps52plib->m_nBoundaryStyle;
      v[_T("OpenCPN S52PLIB ColorShades")] =
          S52_getMarinerParam(S52_MAR_TWO_SHADES);
+
+diff --git a/libs/s52plib/src/s52plib.cpp b/libs/s52plib/src/s52plib.cpp
+--- a/libs/s52plib/src/s52plib.cpp
++++ b/libs/s52plib/src/s52plib.cpp
+@@ -69,6 +69,9 @@
+ 
+ #include "s52plib.h"
+ #ifdef OPENNAV_X
++#include "integration/ChartLightSymbol.h"
++#endif
++#ifdef OPENNAV_X
+ #include "integration/ChartNameText.h"
+ #endif
+ #include "mygeom.h"
+@@ -3487,12 +3490,29 @@
+     wxPoint r, r1;
+     GetPointPixSingle(rzRules, rzRules->obj->y, rzRules->obj->x, &r);
+ 
++    // Keep original vectors and metadata for any actual ORIENT. Owned aliases
++    // are stable library-owned Rules with independent raster caches; never
++    // rewrite the shared conditional Rule or copy its cache ownership.
++    Rule *paintRule = rules->razRule;
++#ifdef OPENNAV_X
++    const char *alias = opennav::integration::PresentationLightAlias(
++        m_presentationLightSymbols, rzRules->obj->FeatureName,
++        paintRule->name.SYNM, rzRules->obj->att_array, rzRules->obj->n_attr);
++    if (alias && paintRule->definition.SYDF == 'V') {
++      auto found = _symb_sym->find(wxString::FromUTF8(alias));
++      if (found != _symb_sym->end() && found->second &&
++          found->second->definition.SYDF == 'R' &&
++          !memcmp(found->second->name.SYNM, alias, 8))
++        paintRule = found->second;
++    }
++#endif
++
+     //  Render a raster or vector symbol, as specified by LUP rules
+-    if (rules->razRule->definition.SYDF == 'V') {
+-      RenderHPGL(rzRules, rules->razRule, r, angle, m_ChartScaleFactorExp);
++    if (paintRule->definition.SYDF == 'V') {
++      RenderHPGL(rzRules, paintRule, r, angle, m_ChartScaleFactorExp);
+     } else {
+-      if (rules->razRule->definition.SYDF == 'R')
+-        RenderRasterSymbol(rzRules, rules->razRule, r, angle);
++      if (paintRule->definition.SYDF == 'R')
++        RenderRasterSymbol(rzRules, paintRule, r, angle);
+     }
+   }
+ 
+diff --git a/libs/s52plib/src/s52plib.h b/libs/s52plib/src/s52plib.h
+--- a/libs/s52plib/src/s52plib.h
++++ b/libs/s52plib/src/s52plib.h
+@@ -353,6 +353,7 @@
+   }
+ 
+   // Todo accessors
++  void EnablePresentationLightSymbols() { m_presentationLightSymbols = true; }
+   LUPname m_nSymbolStyle;
+   LUPname m_nBoundaryStyle;
+   bool m_bOK;
+@@ -427,5 +428,6 @@
+   TextFontResolver m_textFontResolver = nullptr;
+   bool m_useS52DefaultTextColor = false;
+   bool m_presentationSimpleSymbols = false;
++  bool m_presentationLightSymbols = false;
+   int S52_load_Plib(const wxString &PLib, bool b_forceLegacy, bool allowCwdOverride = true);
+   bool S52_flush_Plib();
+
+diff --git a/libs/s52plib/src/s52plib.cpp b/libs/s52plib/src/s52plib.cpp
+--- a/libs/s52plib/src/s52plib.cpp
++++ b/libs/s52plib/src/s52plib.cpp
+@@ -70,6 +70,7 @@
+ #include "s52plib.h"
+ #ifdef OPENNAV_X
+ #include "integration/ChartLightSymbol.h"
++#include "integration/ChartSpecialBuoySymbol.h"
+ #endif
+ #ifdef OPENNAV_X
+ #include "integration/ChartNameText.h"
+@@ -3503,6 +3504,20 @@
+       if (found != _symb_sym->end() && found->second &&
+           found->second->definition.SYDF == 'R' &&
+           !memcmp(found->second->name.SYNM, alias, 8))
++        paintRule = found->second;
++    }
++    const char *buoyAlias = opennav::integration::PresentationSpecialBuoyAlias(
++        m_presentationLightSymbols,
++        rzRules->LUP && rzRules->LUP->TNAM == SIMPLIFIED,
++        rzRules->obj, rules->razRule->name.SYNM);
++    // Dusk loses orange recognition at the required contrast; use stock.
++    const bool buoyTheme = m_ColorScheme == "DAY" ||
++                           m_ColorScheme == "DAY_BRIGHT" || m_ColorScheme == "NIGHT";
++    if (buoyAlias && buoyTheme && rules->razRule->definition.SYDF == 'R') {
++      auto found = _symb_sym->find(wxString::FromUTF8(buoyAlias));
++      if (found != _symb_sym->end() && found->second &&
++          found->second->definition.SYDF == 'R' &&
++          !memcmp(found->second->name.SYNM, buoyAlias, 8))
+         paintRule = found->second;
+     }
+ #endif
+
+diff --git a/libs/s52plib/src/s52plib.h b/libs/s52plib/src/s52plib.h
+--- a/libs/s52plib/src/s52plib.h
++++ b/libs/s52plib/src/s52plib.h
+@@ -190,6 +190,10 @@
+   using TextFontResolver = wxFont *(*)(const char *, const char *, bool,
+                                       double *, unsigned char *, bool *);
+   void SetTextFontResolver(TextFontResolver resolver) { m_textFontResolver = resolver; }
++#ifdef OPENNAV_X
++  // Configure only on a verified new library, before any text is cached.
++  void SetPresentationTextFace(const wxString& face) { m_presentationTextFace = face; }
++#endif
+ 
+   void SetSoundingFontResolver(wxFont (*resolver)(double, double)) {
+     m_soundingFontResolver = resolver;
+@@ -426,6 +430,9 @@
+ 
+ private:
+   TextFontResolver m_textFontResolver = nullptr;
++#ifdef OPENNAV_X
++  wxString m_presentationTextFace;
++#endif
+   bool m_useS52DefaultTextColor = false;
+   bool m_presentationSimpleSymbols = false;
+   bool m_presentationLightSymbols = false;
+
+diff --git a/libs/s52plib/src/s52plib.cpp b/libs/s52plib/src/s52plib.cpp
+--- a/libs/s52plib/src/s52plib.cpp
++++ b/libs/s52plib/src/s52plib.cpp
+@@ -2667,6 +2667,16 @@
+       text->pFont = FindOrCreateFont_PlugIn(
+             fontSize, templateFont->GetFamily(), templateFont->GetStyle(), fontweight_t,
+             false, templateFont->GetFaceName());
++#ifdef OPENNAV_X
++      // Keep ordinary TX/TE's original size/style/weight and stock fallback.
++      // Geographic/LIGHTS handlers remain authoritative for their own fonts.
++      if (!styled && !m_presentationTextFace.empty()) {
++        wxFont* faceFont = FindOrCreateFont_PlugIn(
++            fontSize, templateFont->GetFamily(), templateFont->GetStyle(), fontweight_t,
++            false, m_presentationTextFace);
++        if (faceFont && faceFont->IsOk()) text->pFont = faceFont;
++      }
++#endif
+       if (styled && styled->IsOk()) {
+           text->letter_spacing = tracking; text->text_opacity = opacity;
+           text->pFont = styled;
+
+diff --git a/libs/s52plib/src/s52plib.cpp b/libs/s52plib/src/s52plib.cpp
+--- a/libs/s52plib/src/s52plib.cpp
++++ b/libs/s52plib/src/s52plib.cpp
+@@ -74,6 +74,8 @@
+ #endif
+ #ifdef OPENNAV_X
+ #include "integration/ChartNameText.h"
++#include "integration/ChartNameTypography.h"
++#include "integration/ChartLightLabel.h"
+ #endif
+ #include "mygeom.h"
+ #include "s52utils.h"
+@@ -2670,7 +2672,14 @@
+ #ifdef OPENNAV_X
+       // Keep ordinary TX/TE's original size/style/weight and stock fallback.
+       // Geographic/LIGHTS handlers remain authoritative for their own fonts.
+-      if (!styled && !m_presentationTextFace.empty()) {
++      // A designated handler can deliberately decline (custom LIGHTS font or
++      // failed specialized raster). Preserve that stock fallback as well.
++      if (!styled && !m_presentationTextFace.empty() &&
++          opennav::integration::GeographicChartName(
++              rzRules->obj->FeatureName, rules->INSTstr, bTX) ==
++              opennav::integration::ChartNameRole::Unchanged &&
++          !opennav::integration::IsGeneratedLightDescription(
++              rzRules->obj->FeatureName, rules->INSTstr, bTX)) {
+         wxFont* faceFont = FindOrCreateFont_PlugIn(
+             fontSize, templateFont->GetFamily(), templateFont->GetStyle(), fontweight_t,
+             false, m_presentationTextFace);

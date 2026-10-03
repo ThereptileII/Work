@@ -1,0 +1,32 @@
+{
+  "status": "prepared; waiting for parent exact freeze authorization",
+  "builder": "/home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29",
+  "builderUnchangedCommit": "a3e84771652c920479517f0d16a1dd6133c440d2",
+  "a3eReadonlySnapshot": "a3e-readonly",
+  "buildPlan": "single existing incremental integrated build/install followed by existing integrated ctest once; unchanged standalone geometry fixtures omitted as previously authorized",
+  "scenes": {
+    "coast": {
+      "savedPointStyle": 82,
+      "effectiveSkager": 76,
+      "effectiveStandard": 82,
+      "historicalStandard": "78eccb8",
+      "strictWholeChartDayReturn": true,
+      "strictEdgeNegativeControl": true
+    },
+    "pier57": {
+      "savedPointStyle": 76,
+      "effectiveSkager": 76,
+      "effectiveStandard": 76,
+      "historicalStandard": "a3e8477 explicit76 Pier57",
+      "strictWholeChartDayReturn": true
+    }
+  },
+  "wordmark": "Exact 179x68 native component panel from reviewed263 124DIP reference, bbox30,15,150,51, ink1273 pixels each theme; six positives and eighteen negative controls passed",
+  "pending": [
+    "Parent-authorized full freeze SHA",
+    "Actual incremental build and existing147 test suite",
+    "New staged source/executable/resources seal",
+    "Actual software/OpenGL coast and Pier57 captures",
+    "Independent original-byte visual review and exact Standard/Day-return comparisons"
+  ]
+}

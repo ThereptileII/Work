@@ -1,0 +1,4448 @@
+{
+  "sourceCommit": "5c05eb55c15b67d4014df55896d95452e9cc9d64",
+  "entries": {
+    "bin": {
+      "kind": "directory"
+    },
+    "bin/opencpn": {
+      "kind": "file",
+      "bytes": 26064136,
+      "sha256": "0e7f0500f79f8ca917b3ba0853ce3c205d68e6e1beaffd06377283950e32fd73"
+    },
+    "bin/opencpn-cmd": {
+      "kind": "file",
+      "bytes": 6275088,
+      "sha256": "e2200e37b9ed44f0acd6891680a248e0eb61161f1f3a4560571ff6f07bb948fe"
+    },
+    "bin/opencpn-glutil": {
+      "kind": "file",
+      "bytes": 221176,
+      "sha256": "e3d9b4f8abc90128a850fa9d1a73b2af7aa788fba417de2d19d685c0ae0e974a"
+    },
+    "include": {
+      "kind": "directory"
+    },
+    "include/shapefil.h": {
+      "kind": "file",
+      "bytes": 23182,
+      "sha256": "57ed79c467542e3dede1602516d5bfea4d518618ab84a67e51db67cbd1a87fc4"
+    },
+    "lib": {
+      "kind": "directory"
+    },
+    "lib/libshp.a": {
+      "kind": "file",
+      "bytes": 111720,
+      "sha256": "0889bd1bb4ab015d5547cfd352928a365a5fe4a814a8c4151d42330a09599364"
+    },
+    "lib/opencpn": {
+      "kind": "directory"
+    },
+    "lib/opencpn/libchartdldr_pi.so": {
+      "kind": "file",
+      "bytes": 6058576,
+      "sha256": "58ec8dc9cfbef9dc441427c65fa093f3056211fee636c56d111240b46cd5c978"
+    },
+    "lib/opencpn/libdashboard_pi.so": {
+      "kind": "file",
+      "bytes": 1625696,
+      "sha256": "a808629a963aaffb9ac88677570535224326d40ba14e970d3b69fd0f539a0140"
+    },
+    "lib/opencpn/libgrib_pi.so": {
+      "kind": "file",
+      "bytes": 2054960,
+      "sha256": "f5d8564320bfbe9a8f36a52ed68f5b029b8695c5f988a8aee55aae416bd15ef4"
+    },
+    "lib/opencpn/libwmm_pi.so": {
+      "kind": "file",
+      "bytes": 8667280,
+      "sha256": "a575b29a2b39d85883b114bf896a597e718be636c2e7e21a18dd86761b4d3445"
+    },
+    "lib/pkgconfig": {
+      "kind": "directory"
+    },
+    "lib/pkgconfig/shapelib.pc": {
+      "kind": "file",
+      "bytes": 346,
+      "sha256": "22c78ca1439797cfb3bdfeef214e88d1dd7b5da69b5dce857837b93211d48dc7"
+    },
+    "share": {
+      "kind": "directory"
+    },
+    "share/applications": {
+      "kind": "directory"
+    },
+    "share/applications/opencpn.desktop": {
+      "kind": "file",
+      "bytes": 226,
+      "sha256": "2c6edc70d908c4424131aa0de1b986c5773df2e9b12e9cc2152b531db186d273"
+    },
+    "share/doc": {
+      "kind": "directory"
+    },
+    "share/doc/opencpn": {
+      "kind": "directory"
+    },
+    "share/doc/opencpn/changelog": {
+      "kind": "file",
+      "bytes": 281,
+      "sha256": "4ff013faf7934bb449c23355ac68883a0f1ae7d3ed0a1e99c66769ee457b7553"
+    },
+    "share/doc/opencpn/copyright": {
+      "kind": "file",
+      "bytes": 84893,
+      "sha256": "938b5e810d6119122ed82f49f1b230336c5959648636193ffa36b84a34dba394"
+    },
+    "share/icons": {
+      "kind": "directory"
+    },
+    "share/icons/hicolor": {
+      "kind": "directory"
+    },
+    "share/icons/hicolor/48x48": {
+      "kind": "directory"
+    },
+    "share/icons/hicolor/48x48/apps": {
+      "kind": "directory"
+    },
+    "share/icons/hicolor/48x48/apps/opencpn.png": {
+      "kind": "file",
+      "bytes": 2917,
+      "sha256": "a31a13b54921674f197cdf576a238ead147c00549808fe8edb10ea77eee4c312"
+    },
+    "share/icons/hicolor/64x64": {
+      "kind": "directory"
+    },
+    "share/icons/hicolor/64x64/apps": {
+      "kind": "directory"
+    },
+    "share/icons/hicolor/64x64/apps/opencpn.png": {
+      "kind": "file",
+      "bytes": 5854,
+      "sha256": "df2c5f87713671674f86cae3cfb41fe2f56253da39c10c5bd4e59955f3ed3cc3"
+    },
+    "share/icons/hicolor/scalable": {
+      "kind": "directory"
+    },
+    "share/icons/hicolor/scalable/apps": {
+      "kind": "directory"
+    },
+    "share/icons/hicolor/scalable/apps/opencpn.svg": {
+      "kind": "file",
+      "bytes": 10481,
+      "sha256": "1e8d861d2ceb3f2a437a8d98fe6e41d238658de6ec645ec75d086681c407466a"
+    },
+    "share/locale": {
+      "kind": "directory"
+    },
+    "share/locale/ar_SA": {
+      "kind": "directory"
+    },
+    "share/locale/ar_SA/LC_MESSAGES": {
+      "kind": "directory"
+    },
+    "share/locale/ar_SA/LC_MESSAGES/opencpn-chartdldr_pi.mo": {
+      "kind": "file",
+      "bytes": 1143,
+      "sha256": "7af073f86c2596f1b8bf83e9e1627e315880a7d4c51a0277a051bb26e9e3a9bc"
+    },
+    "share/locale/ar_SA/LC_MESSAGES/opencpn-dashboard_pi.mo": {
+      "kind": "file",
+      "bytes": 2484,
+      "sha256": "1e10038d5aed0efaeeef97378c370f5473d9d64af9a6257f7e45ba2dfee7d69a"
+    },
+    "share/locale/ar_SA/LC_MESSAGES/opencpn-grib_pi.mo": {
+      "kind": "file",
+      "bytes": 567,
+      "sha256": "d8ce059f0c42a24149b31d0c93ac1d2f518729fef910ce42ea2d2b9926069326"
+    },
+    "share/locale/ar_SA/LC_MESSAGES/opencpn-wmm_pi.mo": {
+      "kind": "file",
+      "bytes": 699,
+      "sha256": "9d32317a831571a6233dc5c02d46092fcc281d5be3c73ba1c478baf6110b7f28"
+    },
+    "share/locale/ar_SA/LC_MESSAGES/opencpn.mo": {
+      "kind": "file",
+      "bytes": 27952,
+      "sha256": "5ec6dbefa6779e69bca2d0098b4a069a657af9877dfdd3e75d6ce0b2f269fb43"
+    },
+    "share/locale/bg_BG": {
+      "kind": "directory"
+    },
+    "share/locale/bg_BG/LC_MESSAGES": {
+      "kind": "directory"
+    },
+    "share/locale/bg_BG/LC_MESSAGES/opencpn-chartdldr_pi.mo": {
+      "kind": "file",
+      "bytes": 495,
+      "sha256": "7db10b5267e52f0b63a0b49d502c7a586d737d73e2b9e3ee73ce820682d37967"
+    },
+    "share/locale/bg_BG/LC_MESSAGES/opencpn-dashboard_pi.mo": {
+      "kind": "file",
+      "bytes": 495,
+      "sha256": "058d016b9c549751463f1866333f38b14d6cfff97bbb46d06c2d35ad1efc9068"
+    },
+    "share/locale/bg_BG/LC_MESSAGES/opencpn-grib_pi.mo": {
+      "kind": "file",
+      "bytes": 485,
+      "sha256": "7f88a5dbec55cfca6095603fa32dc733c7ffe5b7cd8232505bff5c984b181c61"
+    },
+    "share/locale/bg_BG/LC_MESSAGES/opencpn-wmm_pi.mo": {
+      "kind": "file",
+      "bytes": 483,
+      "sha256": "c26ff31cbc19150e4dd2eb8a1cb8a569d152e23aaa959f73734f020bf541ef21"
+    },
+    "share/locale/ca_ES": {
+      "kind": "directory"
+    },
+    "share/locale/ca_ES/LC_MESSAGES": {
+      "kind": "directory"
+    },
+    "share/locale/ca_ES/LC_MESSAGES/opencpn-chartdldr_pi.mo": {
+      "kind": "file",
+      "bytes": 7261,
+      "sha256": "60d747675e3ab59d450da29aad128d633a326447cb6f5fcff724ca8d3d85077e"
+    },
+    "share/locale/ca_ES/LC_MESSAGES/opencpn-dashboard_pi.mo": {
+      "kind": "file",
+      "bytes": 4747,
+      "sha256": "a854c66ff17c0f8a60cd1fab4c678c0e8e1349f24a92ac8be757604a396149f2"
+    },
+    "share/locale/ca_ES/LC_MESSAGES/opencpn-grib_pi.mo": {
+      "kind": "file",
+      "bytes": 13993,
+      "sha256": "264706baedc52d352a8404322c0f4dca070cda43adc7df96b06f4fa2fc9286fa"
+    },
+    "share/locale/ca_ES/LC_MESSAGES/opencpn-wmm_pi.mo": {
+      "kind": "file",
+      "bytes": 2553,
+      "sha256": "ade448f29b4d78f4d8089c4332df2542008b10a960411644effc975b8d36c1d6"
+    },
+    "share/locale/ca_ES/LC_MESSAGES/opencpn.mo": {
+      "kind": "file",
+      "bytes": 63781,
+      "sha256": "c15fd3f4afc6780aa1067419466565deefedd16c6d6ef68564d4e12bbb07b223"
+    },
+    "share/locale/cs": {
+      "kind": "directory"
+    },
+    "share/locale/cs/LC_MESSAGES": {
+      "kind": "directory"
+    },
+    "share/locale/cs/LC_MESSAGES/opencpn.mo": {
+      "kind": "file",
+      "bytes": 68474,
+      "sha256": "8ed1b70ac4468ae088bb6af44f26132419e1d2468c0918955fc8c62352ee1e49"
+    },
+    "share/locale/cs_CZ": {
+      "kind": "directory"
+    },
+    "share/locale/cs_CZ/LC_MESSAGES": {
+      "kind": "directory"
+    },
+    "share/locale/cs_CZ/LC_MESSAGES/opencpn-chartdldr_pi.mo": {
+      "kind": "file",
+      "bytes": 6889,
+      "sha256": "31a98442d5f26d168911e04ccfd64919a4ef2cfb10c9f8f437883e87fcd82854"
+    },
+    "share/locale/cs_CZ/LC_MESSAGES/opencpn-dashboard_pi.mo": {
+      "kind": "file",
+      "bytes": 5175,
+      "sha256": "4315c8fca18a554e3ac0549303ba0c8effa00343970228fa53017a07060d24e8"
+    },
+    "share/locale/cs_CZ/LC_MESSAGES/opencpn-grib_pi.mo": {
+      "kind": "file",
+      "bytes": 16611,
+      "sha256": "45d8b13484f708f29d156ca8fe6209d3c0c99f84179bb0256652b5d509946d51"
+    },
+    "share/locale/cs_CZ/LC_MESSAGES/opencpn-wmm_pi.mo": {
+      "kind": "file",
+      "bytes": 2553,
+      "sha256": "25c1e40beb2a0babfbb24239c0e333953467b96d83380a370863471849251214"
+    },
+    "share/locale/da": {
+      "kind": "directory"
+    },
+    "share/locale/da/LC_MESSAGES": {
+      "kind": "directory"
+    },
+    "share/locale/da/LC_MESSAGES/opencpn.mo": {
+      "kind": "file",
+      "bytes": 111752,
+      "sha256": "7dfe60477ffc040faaf1d8e4621da6a4df47662da911a1a8f27b5628c3f30d99"
+    },
+    "share/locale/da_DK": {
+      "kind": "directory"
+    },
+    "share/locale/da_DK/LC_MESSAGES": {
+      "kind": "directory"
+    },
+    "share/locale/da_DK/LC_MESSAGES/opencpn-chartdldr_pi.mo": {
+      "kind": "file",
+      "bytes": 3028,
+      "sha256": "4e127321a07d870af3f92f30b28bbb54cdc07cda7aade324c3a1d6cbb8986c4a"
+    },
+    "share/locale/da_DK/LC_MESSAGES/opencpn-dashboard_pi.mo": {
+      "kind": "file",
+      "bytes": 6003,
+      "sha256": "a0f8bd1b3c29e2b2830fe74c5b455742317280becbd53dbc884559c6a84273e5"
+    },
+    "share/locale/da_DK/LC_MESSAGES/opencpn-grib_pi.mo": {
+      "kind": "file",
+      "bytes": 5606,
+      "sha256": "f4d85802fba430d16ff500e686fc03bba29610ff29fe36b3462a93b122908d16"
+    },
+    "share/locale/da_DK/LC_MESSAGES/opencpn-wmm_pi.mo": {
+      "kind": "file",
+      "bytes": 2319,
+      "sha256": "e8ed74dcd96e4f97296858b274ebc999119324c107b8fba0b756a28a2e58a03e"
+    },
+    "share/locale/de": {
+      "kind": "directory"
+    },
+    "share/locale/de/LC_MESSAGES": {
+      "kind": "directory"
+    },
+    "share/locale/de/LC_MESSAGES/opencpn.mo": {
+      "kind": "file",
+      "bytes": 159890,
+      "sha256": "0a8a29bfe988c68657dfbbaa1a145e4cbec390366a94c201457bf89c59ce3172"
+    },
+    "share/locale/de_DE": {
+      "kind": "directory"
+    },
+    "share/locale/de_DE/LC_MESSAGES": {
+      "kind": "directory"
+    },
+    "share/locale/de_DE/LC_MESSAGES/opencpn-chartdldr_pi.mo": {
+      "kind": "file",
+      "bytes": 9614,
+      "sha256": "b7182c384c2eb854d8b1150ff15c199288af5f2236527717b9aff0841faad794"
+    },
+    "share/locale/de_DE/LC_MESSAGES/opencpn-dashboard_pi.mo": {
+      "kind": "file",
+      "bytes": 7271,
+      "sha256": "09f2c9bf591bf5e67c8302abbfcb2c05e7cf1da069e5df86d973bddfc2728b9b"
+    },
+    "share/locale/de_DE/LC_MESSAGES/opencpn-grib_pi.mo": {
+      "kind": "file",
+      "bytes": 25479,
+      "sha256": "81c97aad56ac7323bb24a72b6d1ed81c7c35e714eaa0c9f9dad8e7d288ccf0fd"
+    },
+    "share/locale/de_DE/LC_MESSAGES/opencpn-wmm_pi.mo": {
+      "kind": "file",
+      "bytes": 4028,
+      "sha256": "349e6499c5d8bbf504d738d3629e6357b810f349c4822db9547dd349847fc71b"
+    },
+    "share/locale/el_GR": {
+      "kind": "directory"
+    },
+    "share/locale/el_GR/LC_MESSAGES": {
+      "kind": "directory"
+    },
+    "share/locale/el_GR/LC_MESSAGES/opencpn-chartdldr_pi.mo": {
+      "kind": "file",
+      "bytes": 12953,
+      "sha256": "e0b422599bdb3d513b51388f3f199f1a56ed726d1efdf28b6a45c06a58548ee7"
+    },
+    "share/locale/el_GR/LC_MESSAGES/opencpn-dashboard_pi.mo": {
+      "kind": "file",
+      "bytes": 7615,
+      "sha256": "c568a2f3f696beca9cf575a22564255f5a7ef076ad65a9b8890acc61fbf96cbb"
+    },
+    "share/locale/el_GR/LC_MESSAGES/opencpn-grib_pi.mo": {
+      "kind": "file",
+      "bytes": 24858,
+      "sha256": "062fa3bcc9fcdda20d1c6c7bb74895d823c804c3b4f76cb8e9530ddc156e3a96"
+    },
+    "share/locale/el_GR/LC_MESSAGES/opencpn-wmm_pi.mo": {
+      "kind": "file",
+      "bytes": 5261,
+      "sha256": "bf61a309c91d83bdfce35557307515b49dbcf1c9bcd0d59a56f3a6d49c160289"
+    },
+    "share/locale/el_GR/LC_MESSAGES/opencpn.mo": {
+      "kind": "file",
+      "bytes": 166257,
+      "sha256": "ec5a630540d78beb4bb1aa071d3f3f25b1f75c4bc1aee37fe9d8430df3813ed3"
+    },
+    "share/locale/en_GB": {
+      "kind": "directory"
+    },
+    "share/locale/en_GB/LC_MESSAGES": {
+      "kind": "directory"
+    },
+    "share/locale/en_GB/LC_MESSAGES/opencpn-chartdldr_pi.mo": {
+      "kind": "file",
+      "bytes": 9464,
+      "sha256": "f8c97e13d98a7e1ac05ec938686df0c1ef895c58700a69b1419904d5c95ebf20"
+    },
+    "share/locale/en_GB/LC_MESSAGES/opencpn-dashboard_pi.mo": {
+      "kind": "file",
+      "bytes": 6817,
+      "sha256": "42d0bf0d8d1b6daf11767e54136f8193e84159f7d1c5d2d526c8fae3c4edd097"
+    },
+    "share/locale/en_GB/LC_MESSAGES/opencpn-grib_pi.mo": {
+      "kind": "file",
+      "bytes": 6661,
+      "sha256": "75cc93d6b3be3019c4aea15a29de40c189fc9b2dcb3ed9cdd096c6f2f399b1cc"
+    },
+    "share/locale/en_GB/LC_MESSAGES/opencpn-wmm_pi.mo": {
+      "kind": "file",
+      "bytes": 4700,
+      "sha256": "35a960af7e5afbbc169f672752dcb9657d32eadc6ab007f25a0f77f688f7970f"
+    },
+    "share/locale/en_GB/LC_MESSAGES/opencpn.mo": {
+      "kind": "file",
+      "bytes": 124377,
+      "sha256": "0b4cb21592a446d346d4bd4bda97e391d2750cb8ccae78d6df3f0395e3e522a1"
+    },
+    "share/locale/es": {
+      "kind": "directory"
+    },
+    "share/locale/es/LC_MESSAGES": {
+      "kind": "directory"
+    },
+    "share/locale/es/LC_MESSAGES/opencpn.mo": {
+      "kind": "file",
+      "bytes": 160775,
+      "sha256": "e8bd7d2831e7d49fb42f46fa36a98b69433d175a658b72de56cbed836d81f8bd"
+    },
+    "share/locale/es_ES": {
+      "kind": "directory"
+    },
+    "share/locale/es_ES/LC_MESSAGES": {
+      "kind": "directory"
+    },
+    "share/locale/es_ES/LC_MESSAGES/opencpn-chartdldr_pi.mo": {
+      "kind": "file",
+      "bytes": 10278,
+      "sha256": "1deaeb187bd0c1aa90cfff73980b0f64acaf239d7ff744991fb9623d5ea0eed7"
+    },
+    "share/locale/es_ES/LC_MESSAGES/opencpn-dashboard_pi.mo": {
+      "kind": "file",
+      "bytes": 7418,
+      "sha256": "5be8ed1662497c62f5cfd8a604ae7dfad91637b36c6952a3eb72c9cff11d0a00"
+    },
+    "share/locale/es_ES/LC_MESSAGES/opencpn-grib_pi.mo": {
+      "kind": "file",
+      "bytes": 26187,
+      "sha256": "138d0e35eab315d157db57003abef76ffbc0744f5d19ff247fa35fc2ac342d4d"
+    },
+    "share/locale/es_ES/LC_MESSAGES/opencpn-wmm_pi.mo": {
+      "kind": "file",
+      "bytes": 5200,
+      "sha256": "04be1749a125c1dbfffc5a6184fca32209dcd2b4c50e71e24119f41a85f9c4a1"
+    },
+    "share/locale/et": {
+      "kind": "directory"
+    },
+    "share/locale/et/LC_MESSAGES": {
+      "kind": "directory"
+    },
+    "share/locale/et/LC_MESSAGES/opencpn.mo": {
+      "kind": "file",
+      "bytes": 154305,
+      "sha256": "16d5347d0d0b20a372c312690154b1fd0a7754550800fa9bd9aeb7d3a5e140d7"
+    },
+    "share/locale/et_EE": {
+      "kind": "directory"
+    },
+    "share/locale/et_EE/LC_MESSAGES": {
+      "kind": "directory"
+    },
+    "share/locale/et_EE/LC_MESSAGES/opencpn-chartdldr_pi.mo": {
+      "kind": "file",
+      "bytes": 9663,
+      "sha256": "9ddced9c4028cbd68060ab47888343e3d5c57f24811083ea14817e87dfc00dc8"
+    },
+    "share/locale/et_EE/LC_MESSAGES/opencpn-dashboard_pi.mo": {
+      "kind": "file",
+      "bytes": 6623,
+      "sha256": "f40361cf6976689c6b656565c2a528d2c037f508389eca5a433bcac8d3a1fd43"
+    },
+    "share/locale/et_EE/LC_MESSAGES/opencpn-grib_pi.mo": {
+      "kind": "file",
+      "bytes": 18999,
+      "sha256": "24ac4fe84ea1981f348dec0028bba450e50f697a362a2c05e4e0d3413624411c"
+    },
+    "share/locale/et_EE/LC_MESSAGES/opencpn-wmm_pi.mo": {
+      "kind": "file",
+      "bytes": 4916,
+      "sha256": "34e91823a6ac287c098dbe5e13786061b887b67fb9c0839eccfbe30aebb5cc23"
+    },
+    "share/locale/fi_FI": {
+      "kind": "directory"
+    },
+    "share/locale/fi_FI/LC_MESSAGES": {
+      "kind": "directory"
+    },
+    "share/locale/fi_FI/LC_MESSAGES/opencpn-chartdldr_pi.mo": {
+      "kind": "file",
+      "bytes": 9642,
+      "sha256": "94cdeebfd96951bacc49a9dae2ef957b4b9e26a3dc03581b0d2fa11faa9ba274"
+    },
+    "share/locale/fi_FI/LC_MESSAGES/opencpn-dashboard_pi.mo": {
+      "kind": "file",
+      "bytes": 6682,
+      "sha256": "265ee785f92ff68f797809d09ab0fb259eab2403bd8174f523fe7889f117fb4e"
+    },
+    "share/locale/fi_FI/LC_MESSAGES/opencpn-grib_pi.mo": {
+      "kind": "file",
+      "bytes": 22254,
+      "sha256": "699b1cd89fd0ed1cb176980132ce51c48f564dd653836bfed4bbcf1714a40f1c"
+    },
+    "share/locale/fi_FI/LC_MESSAGES/opencpn-wmm_pi.mo": {
+      "kind": "file",
+      "bytes": 4248,
+      "sha256": "7fd8d189fffa627ffbd604e1a2f1aa508ab716d6ed358722b6d2e9222ee5b2b2"
+    },
+    "share/locale/fi_FI/LC_MESSAGES/opencpn.mo": {
+      "kind": "file",
+      "bytes": 128623,
+      "sha256": "da09d45d8ac5ac14b08fe346ced504e4972cd89bdd60551afd210a119f1d289b"
+    },
+    "share/locale/fil_PH": {
+      "kind": "directory"
+    },
+    "share/locale/fil_PH/LC_MESSAGES": {
+      "kind": "directory"
+    },
+    "share/locale/fil_PH/LC_MESSAGES/opencpn-chartdldr_pi.mo": {
+      "kind": "file",
+      "bytes": 7514,
+      "sha256": "cf9f4e4d6784d1fa360fef4cfafa399dbff2e4b9c065c647586f4c66f2de0c93"
+    },
+    "share/locale/fil_PH/LC_MESSAGES/opencpn-dashboard_pi.mo": {
+      "kind": "file",
+      "bytes": 495,
+      "sha256": "facf2a709fab4f4250a3879fd45c0ee8b9aef31607ed92c7767558ce30d6233e"
+    },
+    "share/locale/fil_PH/LC_MESSAGES/opencpn-grib_pi.mo": {
+      "kind": "file",
+      "bytes": 18640,
+      "sha256": "68ff06de721dbff50f4aa21aff8245b14eaf9cafb477af3e6802742f94b55998"
+    },
+    "share/locale/fil_PH/LC_MESSAGES/opencpn-wmm_pi.mo": {
+      "kind": "file",
+      "bytes": 4260,
+      "sha256": "fe57dfbcbd19d377d018547e55dc2ab74a8b7666952f752f71b466aad8cf495d"
+    },
+    "share/locale/fr": {
+      "kind": "directory"
+    },
+    "share/locale/fr/LC_MESSAGES": {
+      "kind": "directory"
+    },
+    "share/locale/fr/LC_MESSAGES/opencpn.mo": {
+      "kind": "file",
+      "bytes": 162167,
+      "sha256": "ff1aa2ceb52551b97e565fc378706f59aec85cd5b92c1beb1805dd5e67dc371c"
+    },
+    "share/locale/fr_FR": {
+      "kind": "directory"
+    },
+    "share/locale/fr_FR/LC_MESSAGES": {
+      "kind": "directory"
+    },
+    "share/locale/fr_FR/LC_MESSAGES/opencpn-chartdldr_pi.mo": {
+      "kind": "file",
+      "bytes": 10799,
+      "sha256": "11996f7d9e14ff9d353d0bda53320fabc4b346eef5de4ccdfc197acd443cc78c"
+    },
+    "share/locale/fr_FR/LC_MESSAGES/opencpn-dashboard_pi.mo": {
+      "kind": "file",
+      "bytes": 7495,
+      "sha256": "d450b2fb9384d3ecf56be9485df2a16db0d2c240c672d110fe0330ce630ff71a"
+    },
+    "share/locale/fr_FR/LC_MESSAGES/opencpn-grib_pi.mo": {
+      "kind": "file",
+      "bytes": 26371,
+      "sha256": "6ce9ac0f6b0b2f9c479239685b454f89e7a057052d8424bf00bf873698eb4d59"
+    },
+    "share/locale/fr_FR/LC_MESSAGES/opencpn-wmm_pi.mo": {
+      "kind": "file",
+      "bytes": 5072,
+      "sha256": "72aaa9ebe1cfa5e708889826e67933ce57d3deabfbe3d766c6e3c36c3bb535d3"
+    },
+    "share/locale/gl_ES": {
+      "kind": "directory"
+    },
+    "share/locale/gl_ES/LC_MESSAGES": {
+      "kind": "directory"
+    },
+    "share/locale/gl_ES/LC_MESSAGES/opencpn-chartdldr_pi.mo": {
+      "kind": "file",
+      "bytes": 494,
+      "sha256": "ca395d43b2ec5e1a72c181be6d016d486acd5f186e67bcb3b57a4dbc9b6c599b"
+    },
+    "share/locale/gl_ES/LC_MESSAGES/opencpn-dashboard_pi.mo": {
+      "kind": "file",
+      "bytes": 2956,
+      "sha256": "f49cdf461572bcfb151296578518523df40cf56bfb9ee83a176d05ea7a4a57c7"
+    },
+    "share/locale/gl_ES/LC_MESSAGES/opencpn-grib_pi.mo": {
+      "kind": "file",
+      "bytes": 484,
+      "sha256": "21292c142d88400e73d71a2ebdc72e0157e137c480afd23c412877c246ed1972"
+    },
+    "share/locale/gl_ES/LC_MESSAGES/opencpn-wmm_pi.mo": {
+      "kind": "file",
+      "bytes": 482,
+      "sha256": "f08a68a0655354b1ebdd5db29095968dd17945529b5084bc143d40820273e7db"
+    },
+    "share/locale/gl_ES/LC_MESSAGES/opencpn.mo": {
+      "kind": "file",
+      "bytes": 79658,
+      "sha256": "0474beb873ccb9d73da3160a82af3c1c75bfeb13648060657264ece2ffd46e51"
+    },
+    "share/locale/he_IL": {
+      "kind": "directory"
+    },
+    "share/locale/he_IL/LC_MESSAGES": {
+      "kind": "directory"
+    },
+    "share/locale/he_IL/LC_MESSAGES/opencpn-chartdldr_pi.mo": {
+      "kind": "file",
+      "bytes": 542,
+      "sha256": "822d0b9b84ca339960e98036b4ffe7e8eff4adb657c3a934e96ee4be6861146d"
+    },
+    "share/locale/he_IL/LC_MESSAGES/opencpn-dashboard_pi.mo": {
+      "kind": "file",
+      "bytes": 542,
+      "sha256": "e83f08cc3808321b7c26aa3f27b3ac59c151e9e0b0742b5ccbdf2a6f5364592e"
+    },
+    "share/locale/he_IL/LC_MESSAGES/opencpn-grib_pi.mo": {
+      "kind": "file",
+      "bytes": 532,
+      "sha256": "4768682a825cab8f595eb84e9eff1d7e8addeb1a8e41513ec11b4c463af4e1c4"
+    },
+    "share/locale/he_IL/LC_MESSAGES/opencpn-wmm_pi.mo": {
+      "kind": "file",
+      "bytes": 790,
+      "sha256": "8ea4a8194c66091b3935dae59bcc6bb8a32dd70fbdb3ea4d43b8d58634b9a6cc"
+    },
+    "share/locale/he_IL/LC_MESSAGES/opencpn.mo": {
+      "kind": "file",
+      "bytes": 83171,
+      "sha256": "a691f00cd543ac53ad8240cd510d3f21ae9c5209fd7399afbe5e7e9bea17934d"
+    },
+    "share/locale/hi_IN": {
+      "kind": "directory"
+    },
+    "share/locale/hi_IN/LC_MESSAGES": {
+      "kind": "directory"
+    },
+    "share/locale/hi_IN/LC_MESSAGES/opencpn-chartdldr_pi.mo": {
+      "kind": "file",
+      "bytes": 491,
+      "sha256": "16b310cfb43a4213cb2d37660a0cc579a63e4f366b8241bb33c5b01e5da61090"
+    },
+    "share/locale/hi_IN/LC_MESSAGES/opencpn-dashboard_pi.mo": {
+      "kind": "file",
+      "bytes": 491,
+      "sha256": "3f6fc1845bea26107efb694063dcad9543f0cb97f4dd292f8ed3c3710f90d324"
+    },
+    "share/locale/hi_IN/LC_MESSAGES/opencpn-grib_pi.mo": {
+      "kind": "file",
+      "bytes": 1462,
+      "sha256": "86796776afe27e0eee27dd28fef251f63b45da5bfaa9cfea3cc2f2e33c895c6b"
+    },
+    "share/locale/hi_IN/LC_MESSAGES/opencpn-wmm_pi.mo": {
+      "kind": "file",
+      "bytes": 479,
+      "sha256": "d904aab5c9916256bfe24f0bf78dba01eccb6926e643d0845d739e1f14f9cad6"
+    },
+    "share/locale/hu_HU": {
+      "kind": "directory"
+    },
+    "share/locale/hu_HU/LC_MESSAGES": {
+      "kind": "directory"
+    },
+    "share/locale/hu_HU/LC_MESSAGES/opencpn-chartdldr_pi.mo": {
+      "kind": "file",
+      "bytes": 10216,
+      "sha256": "2281056aa8ec04395b2fe21294b9c4527b9f4e7a4a4f32dc864bf63ee3892981"
+    },
+    "share/locale/hu_HU/LC_MESSAGES/opencpn-dashboard_pi.mo": {
+      "kind": "file",
+      "bytes": 6025,
+      "sha256": "de4126dc29686f674f48992636cc96506285982f36949e06705406bf8ee0f7cf"
+    },
+    "share/locale/hu_HU/LC_MESSAGES/opencpn-grib_pi.mo": {
+      "kind": "file",
+      "bytes": 15097,
+      "sha256": "339b0de43035972aab8687d6869aa868c2d41ddfda5525f0a5914a3b1d9d2e8b"
+    },
+    "share/locale/hu_HU/LC_MESSAGES/opencpn-wmm_pi.mo": {
+      "kind": "file",
+      "bytes": 920,
+      "sha256": "63472cb06da2d9cd715e04bda48d651e33a42c7e247bf9ad0fa7555786e85eb6"
+    },
+    "share/locale/hu_HU/LC_MESSAGES/opencpn.mo": {
+      "kind": "file",
+      "bytes": 95391,
+      "sha256": "2585f9ef12c16c37fbf98887e336ef36c8a46689196e3ff8ed1edf93bcdb2ac1"
+    },
+    "share/locale/id_ID": {
+      "kind": "directory"
+    },
+    "share/locale/id_ID/LC_MESSAGES": {
+      "kind": "directory"
+    },
+    "share/locale/id_ID/LC_MESSAGES/opencpn-chartdldr_pi.mo": {
+      "kind": "file",
+      "bytes": 6974,
+      "sha256": "c7a6fc7af567c20934d1c1fbc42b67d6967634ae951d0b1c830028079bd13873"
+    },
+    "share/locale/id_ID/LC_MESSAGES/opencpn-dashboard_pi.mo": {
+      "kind": "file",
+      "bytes": 5046,
+      "sha256": "820a375093ddc45222fb599e70327ee5404fc714def2af579154af228502420b"
+    },
+    "share/locale/id_ID/LC_MESSAGES/opencpn-grib_pi.mo": {
+      "kind": "file",
+      "bytes": 17018,
+      "sha256": "767199d0002349b5f760d25789b1fe40815ad2b370bd9967cbafbf448ecbfac1"
+    },
+    "share/locale/id_ID/LC_MESSAGES/opencpn-wmm_pi.mo": {
+      "kind": "file",
+      "bytes": 3964,
+      "sha256": "c2c1472e30c32609854a6ec46da34723530f5dc15d1a00f0fd2c2d03d892e8cc"
+    },
+    "share/locale/is_IS": {
+      "kind": "directory"
+    },
+    "share/locale/is_IS/LC_MESSAGES": {
+      "kind": "directory"
+    },
+    "share/locale/is_IS/LC_MESSAGES/opencpn-chartdldr_pi.mo": {
+      "kind": "file",
+      "bytes": 966,
+      "sha256": "77af2515917e275853bc4c203934fbf66c2e59a66a2459fb6de4bddb53cd9e95"
+    },
+    "share/locale/is_IS/LC_MESSAGES/opencpn-dashboard_pi.mo": {
+      "kind": "file",
+      "bytes": 2468,
+      "sha256": "e0b8f614509da53f72d6ffadce4f6b475e3d69ba30bbcfc9d1d5101e9be9ae3e"
+    },
+    "share/locale/is_IS/LC_MESSAGES/opencpn-grib_pi.mo": {
+      "kind": "file",
+      "bytes": 2886,
+      "sha256": "3dcf838b675d39d9313e424301c7f6d7c27315242be3f6b56a11942e45f8355b"
+    },
+    "share/locale/is_IS/LC_MESSAGES/opencpn-wmm_pi.mo": {
+      "kind": "file",
+      "bytes": 810,
+      "sha256": "958a09997990274f72c4b579774bd799e7baa6aabef15a1bd5a88445adaf518f"
+    },
+    "share/locale/it": {
+      "kind": "directory"
+    },
+    "share/locale/it/LC_MESSAGES": {
+      "kind": "directory"
+    },
+    "share/locale/it/LC_MESSAGES/opencpn.mo": {
+      "kind": "file",
+      "bytes": 117446,
+      "sha256": "849dbbb9e2d3d45cc95da89b5d64c54c94eee6bd76c5264c0e25b92c16fc449a"
+    },
+    "share/locale/it_IT": {
+      "kind": "directory"
+    },
+    "share/locale/it_IT/LC_MESSAGES": {
+      "kind": "directory"
+    },
+    "share/locale/it_IT/LC_MESSAGES/opencpn-chartdldr_pi.mo": {
+      "kind": "file",
+      "bytes": 10021,
+      "sha256": "c5f339562f7af63f7ae61492e00da63ac9bb1a72bff25dabe82e5fbd2ad83295"
+    },
+    "share/locale/it_IT/LC_MESSAGES/opencpn-dashboard_pi.mo": {
+      "kind": "file",
+      "bytes": 6106,
+      "sha256": "4d3f3f5b9599c40bee7480e13e46f5e56902e38ddc6e1e6d9729973a92abd44a"
+    },
+    "share/locale/it_IT/LC_MESSAGES/opencpn-grib_pi.mo": {
+      "kind": "file",
+      "bytes": 19605,
+      "sha256": "723cc51c8c6bdc570c684d628b850cf8e0fc3c3fba0d82b1f59ba0255d7b46b6"
+    },
+    "share/locale/it_IT/LC_MESSAGES/opencpn-wmm_pi.mo": {
+      "kind": "file",
+      "bytes": 4164,
+      "sha256": "bb9b7430009f19cc3abfb0398e146c2a1276d76ddb34e1fca775b94f0e94ce27"
+    },
+    "share/locale/ja_JP": {
+      "kind": "directory"
+    },
+    "share/locale/ja_JP/LC_MESSAGES": {
+      "kind": "directory"
+    },
+    "share/locale/ja_JP/LC_MESSAGES/opencpn-chartdldr_pi.mo": {
+      "kind": "file",
+      "bytes": 5753,
+      "sha256": "b291ea50c60aa3e9e9e62243849f9bcf2898ca4f0fb8d5191dbddde93081668e"
+    },
+    "share/locale/ja_JP/LC_MESSAGES/opencpn-dashboard_pi.mo": {
+      "kind": "file",
+      "bytes": 5207,
+      "sha256": "5810826951ae39c475019782d4057f40b6fd983aefd90b4f004252ee99408258"
+    },
+    "share/locale/ja_JP/LC_MESSAGES/opencpn-grib_pi.mo": {
+      "kind": "file",
+      "bytes": 18940,
+      "sha256": "0fb623f7b600bffcf05fbc954a0ba78a66985843fd84381f1714572b02cb1faf"
+    },
+    "share/locale/ja_JP/LC_MESSAGES/opencpn-wmm_pi.mo": {
+      "kind": "file",
+      "bytes": 2560,
+      "sha256": "9245b436e9787db6a7c8dae8a2ab0b26a7f36c8e9075968f0c58a250c52471cc"
+    },
+    "share/locale/ja_JP/LC_MESSAGES/opencpn.mo": {
+      "kind": "file",
+      "bytes": 78193,
+      "sha256": "787dde99a9e973e350038e242d5fe487898feba15da7149997c8d4dc612387c6"
+    },
+    "share/locale/ko_KR": {
+      "kind": "directory"
+    },
+    "share/locale/ko_KR/LC_MESSAGES": {
+      "kind": "directory"
+    },
+    "share/locale/ko_KR/LC_MESSAGES/opencpn-chartdldr_pi.mo": {
+      "kind": "file",
+      "bytes": 10108,
+      "sha256": "fe16d0c2ed42766c96096952fb8f6be25c08fc8320cd571e65ea7325378cde9e"
+    },
+    "share/locale/ko_KR/LC_MESSAGES/opencpn-dashboard_pi.mo": {
+      "kind": "file",
+      "bytes": 5954,
+      "sha256": "be61d69c6a4639b1d45f023554bac9edddb2f2842607ae7962f510d12ada249b"
+    },
+    "share/locale/ko_KR/LC_MESSAGES/opencpn-grib_pi.mo": {
+      "kind": "file",
+      "bytes": 475,
+      "sha256": "8172cd98e1da31ea38753bf8757fa557a39b744e7f7574fc8c8b394da5765fde"
+    },
+    "share/locale/ko_KR/LC_MESSAGES/opencpn-wmm_pi.mo": {
+      "kind": "file",
+      "bytes": 702,
+      "sha256": "ee8dfe5efb1953771f3f2cae9d51d8d90a6a911317bd13996e4f37552fcafabb"
+    },
+    "share/locale/mr_IN": {
+      "kind": "directory"
+    },
+    "share/locale/mr_IN/LC_MESSAGES": {
+      "kind": "directory"
+    },
+    "share/locale/mr_IN/LC_MESSAGES/opencpn-chartdldr_pi.mo": {
+      "kind": "file",
+      "bytes": 493,
+      "sha256": "4959a12f6747d92136772160de1d520b3985eae8f0722501a031f26be897de22"
+    },
+    "share/locale/mr_IN/LC_MESSAGES/opencpn-dashboard_pi.mo": {
+      "kind": "file",
+      "bytes": 493,
+      "sha256": "da7658fae638e056d4d97f01c38cab712464e11546e95081521ec37c9dbff693"
+    },
+    "share/locale/mr_IN/LC_MESSAGES/opencpn-grib_pi.mo": {
+      "kind": "file",
+      "bytes": 483,
+      "sha256": "2f09d73c5d29907bb24b82c450342ff44f29dad2bdee1705eb5a78ba7f63aeb7"
+    },
+    "share/locale/mr_IN/LC_MESSAGES/opencpn-wmm_pi.mo": {
+      "kind": "file",
+      "bytes": 481,
+      "sha256": "d683a868bf88c014ff2d34c20f841a36626345aa9d59adcd9ceb57e38bd36210"
+    },
+    "share/locale/nb_NO": {
+      "kind": "directory"
+    },
+    "share/locale/nb_NO/LC_MESSAGES": {
+      "kind": "directory"
+    },
+    "share/locale/nb_NO/LC_MESSAGES/opencpn-chartdldr_pi.mo": {
+      "kind": "file",
+      "bytes": 9339,
+      "sha256": "82198b13377705a4ebdf6224ef637cd7f1d604ecb7a7956a79f18fa660582126"
+    },
+    "share/locale/nb_NO/LC_MESSAGES/opencpn-dashboard_pi.mo": {
+      "kind": "file",
+      "bytes": 5895,
+      "sha256": "ba140fa3980cf0741082da00720d9a3e0b16068f3aa88499ffecf0da27d70ac2"
+    },
+    "share/locale/nb_NO/LC_MESSAGES/opencpn-grib_pi.mo": {
+      "kind": "file",
+      "bytes": 18952,
+      "sha256": "471fd0e15c047a9ce60a2f6467d9781d31b0d60d552640330afeb6a451c74ff3"
+    },
+    "share/locale/nb_NO/LC_MESSAGES/opencpn-wmm_pi.mo": {
+      "kind": "file",
+      "bytes": 3997,
+      "sha256": "6070751f9c43e480efea6a59de292444d8ac9aaf9532f3d4d9200297dd84ab4b"
+    },
+    "share/locale/nb_NO/LC_MESSAGES/opencpn.mo": {
+      "kind": "file",
+      "bytes": 128255,
+      "sha256": "61c07477a1f7cc69377658f1c545f306e4792af614b349f14a00b83a09c1b975"
+    },
+    "share/locale/nl": {
+      "kind": "directory"
+    },
+    "share/locale/nl/LC_MESSAGES": {
+      "kind": "directory"
+    },
+    "share/locale/nl/LC_MESSAGES/opencpn.mo": {
+      "kind": "file",
+      "bytes": 129462,
+      "sha256": "c1962d12e63d698d2ecef2fdc0786a2eb40d1fd4e196635e7293ab38a729a4eb"
+    },
+    "share/locale/nl_NL": {
+      "kind": "directory"
+    },
+    "share/locale/nl_NL/LC_MESSAGES": {
+      "kind": "directory"
+    },
+    "share/locale/nl_NL/LC_MESSAGES/opencpn-chartdldr_pi.mo": {
+      "kind": "file",
+      "bytes": 9854,
+      "sha256": "f49d23f7f8d46dbc5a0e771fead687bc088ecd87ad82a353d892b45fb81fe8f6"
+    },
+    "share/locale/nl_NL/LC_MESSAGES/opencpn-dashboard_pi.mo": {
+      "kind": "file",
+      "bytes": 6024,
+      "sha256": "aa7ad8cb108cec11664b7239edea6bb9ac8c23d22b5e2f48eb6cacad6b6f6f55"
+    },
+    "share/locale/nl_NL/LC_MESSAGES/opencpn-grib_pi.mo": {
+      "kind": "file",
+      "bytes": 19333,
+      "sha256": "1e4b944c6b5f04ebb295d242dd849827dcc8ef165047a3012fac24dab7a5df03"
+    },
+    "share/locale/nl_NL/LC_MESSAGES/opencpn-wmm_pi.mo": {
+      "kind": "file",
+      "bytes": 4285,
+      "sha256": "b50c552d7ec4da352ee824ce2e18b020ff38e6821537c93e39eb09220bb828f7"
+    },
+    "share/locale/pl": {
+      "kind": "directory"
+    },
+    "share/locale/pl/LC_MESSAGES": {
+      "kind": "directory"
+    },
+    "share/locale/pl/LC_MESSAGES/opencpn.mo": {
+      "kind": "file",
+      "bytes": 104910,
+      "sha256": "2dff54ed9f91ac7c2678bfc71f29c4645a55bf34f26407877887cd3fa6dd2f14"
+    },
+    "share/locale/pl_PL": {
+      "kind": "directory"
+    },
+    "share/locale/pl_PL/LC_MESSAGES": {
+      "kind": "directory"
+    },
+    "share/locale/pl_PL/LC_MESSAGES/opencpn-chartdldr_pi.mo": {
+      "kind": "file",
+      "bytes": 8483,
+      "sha256": "b1583feb40505010dfdb78a31e0b384b442c7377ade8f1a197b71731ec2061cc"
+    },
+    "share/locale/pl_PL/LC_MESSAGES/opencpn-dashboard_pi.mo": {
+      "kind": "file",
+      "bytes": 6549,
+      "sha256": "a896176dfd90650f06cc18e141865ecbe8783fadccf0faf76703562512364c96"
+    },
+    "share/locale/pl_PL/LC_MESSAGES/opencpn-grib_pi.mo": {
+      "kind": "file",
+      "bytes": 18610,
+      "sha256": "201789cc8945be69b185ef5fbc6aab2763f284ae3c6399656353f67a6cba3671"
+    },
+    "share/locale/pl_PL/LC_MESSAGES/opencpn-wmm_pi.mo": {
+      "kind": "file",
+      "bytes": 4188,
+      "sha256": "3a78c004680ac7d0094ccb95b5ff7d8e6874fe4202866541aebb9bb99ee3d837"
+    },
+    "share/locale/pt_BR": {
+      "kind": "directory"
+    },
+    "share/locale/pt_BR/LC_MESSAGES": {
+      "kind": "directory"
+    },
+    "share/locale/pt_BR/LC_MESSAGES/opencpn-chartdldr_pi.mo": {
+      "kind": "file",
+      "bytes": 8568,
+      "sha256": "6270dd1f3d78eeb0c9a3c2ecac9916579182126a0c9d3ca8790c0db1d62233b8"
+    },
+    "share/locale/pt_BR/LC_MESSAGES/opencpn-dashboard_pi.mo": {
+      "kind": "file",
+      "bytes": 6075,
+      "sha256": "6ad40df75563deb1842da44e1d507e329d6878c5a8378f19937a758fa316ec69"
+    },
+    "share/locale/pt_BR/LC_MESSAGES/opencpn-grib_pi.mo": {
+      "kind": "file",
+      "bytes": 17906,
+      "sha256": "b86522822f1a792f4ea05273b2b0c4b2399756b44deeac0421736720805ba553"
+    },
+    "share/locale/pt_BR/LC_MESSAGES/opencpn-wmm_pi.mo": {
+      "kind": "file",
+      "bytes": 4294,
+      "sha256": "24404bff35eaecbd6991b82e02e9703efa701bc6e646f1b44f3fd2095590edec"
+    },
+    "share/locale/pt_BR/LC_MESSAGES/opencpn.mo": {
+      "kind": "file",
+      "bytes": 128635,
+      "sha256": "539962dd4e2b8b2d5c07a894a7c6e9f98843ff6d69f7b63a80c4952d3866af55"
+    },
+    "share/locale/pt_PT": {
+      "kind": "directory"
+    },
+    "share/locale/pt_PT/LC_MESSAGES": {
+      "kind": "directory"
+    },
+    "share/locale/pt_PT/LC_MESSAGES/opencpn-chartdldr_pi.mo": {
+      "kind": "file",
+      "bytes": 10061,
+      "sha256": "ab211168fe41e0acfd68712b1b1399c57e15d8d21e2e530f9aa5c53016354725"
+    },
+    "share/locale/pt_PT/LC_MESSAGES/opencpn-dashboard_pi.mo": {
+      "kind": "file",
+      "bytes": 6973,
+      "sha256": "4506a56d58404c13eb203a50cb9422f9a0f2bfd75502bebdb1e1d47a69bd3ed8"
+    },
+    "share/locale/pt_PT/LC_MESSAGES/opencpn-grib_pi.mo": {
+      "kind": "file",
+      "bytes": 22520,
+      "sha256": "81d73ca605e0c61c7b7ec5d95fcef722ccf4d590f89965a10e4cd52e88b20ff4"
+    },
+    "share/locale/pt_PT/LC_MESSAGES/opencpn-wmm_pi.mo": {
+      "kind": "file",
+      "bytes": 4329,
+      "sha256": "371e8f6f137259bdfd3ec7153ce2b7193b5e85a73bc478cf8996ba5563433bd9"
+    },
+    "share/locale/pt_PT/LC_MESSAGES/opencpn.mo": {
+      "kind": "file",
+      "bytes": 130144,
+      "sha256": "ff9fe995d622ecb5da9a4c19e3504deab581fa2f77760d4f57b136a992398e31"
+    },
+    "share/locale/ro_RO": {
+      "kind": "directory"
+    },
+    "share/locale/ro_RO/LC_MESSAGES": {
+      "kind": "directory"
+    },
+    "share/locale/ro_RO/LC_MESSAGES/opencpn-chartdldr_pi.mo": {
+      "kind": "file",
+      "bytes": 538,
+      "sha256": "a147f68677356c677a0bf6e0f58f0a13994f3b84f66f1fa5c114281a779b856a"
+    },
+    "share/locale/ro_RO/LC_MESSAGES/opencpn-dashboard_pi.mo": {
+      "kind": "file",
+      "bytes": 538,
+      "sha256": "e315c5e8d9711d9b203f7e32b70f86c5a4997a206854f4789e9f33bfb402da4b"
+    },
+    "share/locale/ro_RO/LC_MESSAGES/opencpn-grib_pi.mo": {
+      "kind": "file",
+      "bytes": 528,
+      "sha256": "99c83cacc25ec18a25df74289d4b6253b5797471ee3997f5b11a993ce9956f26"
+    },
+    "share/locale/ro_RO/LC_MESSAGES/opencpn-wmm_pi.mo": {
+      "kind": "file",
+      "bytes": 526,
+      "sha256": "66f3837627f34fa77c45e4060174bd78a1aee8ab2bf2f24cd78a173b3ba3e686"
+    },
+    "share/locale/ru": {
+      "kind": "directory"
+    },
+    "share/locale/ru/LC_MESSAGES": {
+      "kind": "directory"
+    },
+    "share/locale/ru/LC_MESSAGES/opencpn.mo": {
+      "kind": "file",
+      "bytes": 208849,
+      "sha256": "e37e128ac041143d9e401d22200510c5f3dd1e10a1e14529daf8080e4d22dc3a"
+    },
+    "share/locale/ru_RU": {
+      "kind": "directory"
+    },
+    "share/locale/ru_RU/LC_MESSAGES": {
+      "kind": "directory"
+    },
+    "share/locale/ru_RU/LC_MESSAGES/opencpn-chartdldr_pi.mo": {
+      "kind": "file",
+      "bytes": 11982,
+      "sha256": "efa8f74ae3c47330cefba218cca1d9077089378a40c748e0072c19975bfd6ea2"
+    },
+    "share/locale/ru_RU/LC_MESSAGES/opencpn-dashboard_pi.mo": {
+      "kind": "file",
+      "bytes": 8804,
+      "sha256": "6d48c680d1d0827a10cfb3ef739a37ffff701c9adf10919ec333eb9c0fb0365d"
+    },
+    "share/locale/ru_RU/LC_MESSAGES/opencpn-grib_pi.mo": {
+      "kind": "file",
+      "bytes": 32248,
+      "sha256": "f8ed3e1f4aefc634174d4d3f2fda9a2124d0822fb11bd0c97b3f434e4888d47c"
+    },
+    "share/locale/ru_RU/LC_MESSAGES/opencpn-wmm_pi.mo": {
+      "kind": "file",
+      "bytes": 5072,
+      "sha256": "ac2ba79b31524e575e9c372232aed59e6b95a84216aae188e12f9ed63d0dc897"
+    },
+    "share/locale/sv": {
+      "kind": "directory"
+    },
+    "share/locale/sv/LC_MESSAGES": {
+      "kind": "directory"
+    },
+    "share/locale/sv/LC_MESSAGES/opencpn.mo": {
+      "kind": "file",
+      "bytes": 156202,
+      "sha256": "c57052ffd88fde07d379f2f27256eb77d77511fe34ff4d519cea898bc639dec4"
+    },
+    "share/locale/sv_SE": {
+      "kind": "directory"
+    },
+    "share/locale/sv_SE/LC_MESSAGES": {
+      "kind": "directory"
+    },
+    "share/locale/sv_SE/LC_MESSAGES/opencpn-chartdldr_pi.mo": {
+      "kind": "file",
+      "bytes": 9751,
+      "sha256": "1730a01a5b06ecd9d53e03e291361c1fdeea2839fc017f827ada69c3e4d0291d"
+    },
+    "share/locale/sv_SE/LC_MESSAGES/opencpn-dashboard_pi.mo": {
+      "kind": "file",
+      "bytes": 7274,
+      "sha256": "00a83528a0913b21774cdc6260ef55c56f4bb991d931a102d06605a038422120"
+    },
+    "share/locale/sv_SE/LC_MESSAGES/opencpn-grib_pi.mo": {
+      "kind": "file",
+      "bytes": 25089,
+      "sha256": "f0de86ac396f4f16a707a24605ae76161fc1543b0500adc3f24c595375ac1ec9"
+    },
+    "share/locale/sv_SE/LC_MESSAGES/opencpn-wmm_pi.mo": {
+      "kind": "file",
+      "bytes": 5042,
+      "sha256": "6c5b68bb810b6ca85222a992e8632639c5ccdabe768e24c8acad8401f21c2d4c"
+    },
+    "share/locale/th_TH": {
+      "kind": "directory"
+    },
+    "share/locale/th_TH/LC_MESSAGES": {
+      "kind": "directory"
+    },
+    "share/locale/th_TH/LC_MESSAGES/opencpn-chartdldr_pi.mo": {
+      "kind": "file",
+      "bytes": 483,
+      "sha256": "feebbdd98d6958679c334621e1f5ec3b7b70f2296062c452a72b02494a022392"
+    },
+    "share/locale/th_TH/LC_MESSAGES/opencpn-dashboard_pi.mo": {
+      "kind": "file",
+      "bytes": 483,
+      "sha256": "0b97b6e381bd714dfce882e59c4242d14cf3b2fb95dc4e575e37f21d1ebc071d"
+    },
+    "share/locale/th_TH/LC_MESSAGES/opencpn-grib_pi.mo": {
+      "kind": "file",
+      "bytes": 473,
+      "sha256": "4f768aaaba5e73b0c575f6cedd3c1de2313bfc04fea9cbd4e17ea8bc601a84df"
+    },
+    "share/locale/th_TH/LC_MESSAGES/opencpn-wmm_pi.mo": {
+      "kind": "file",
+      "bytes": 471,
+      "sha256": "3d588689573d6fd361259e4ce271a23f5389cc9a110e781b8ec3878e2f77a069"
+    },
+    "share/locale/tr_TR": {
+      "kind": "directory"
+    },
+    "share/locale/tr_TR/LC_MESSAGES": {
+      "kind": "directory"
+    },
+    "share/locale/tr_TR/LC_MESSAGES/opencpn-chartdldr_pi.mo": {
+      "kind": "file",
+      "bytes": 8067,
+      "sha256": "a4d326aecbc3664ea4cf28b5141e7f8277fe1ba1925a91a74528bdfe155567cf"
+    },
+    "share/locale/tr_TR/LC_MESSAGES/opencpn-dashboard_pi.mo": {
+      "kind": "file",
+      "bytes": 5045,
+      "sha256": "cc021199f0eaa7a297952b72104b625dc3f9930c61d40f58395d625c9b26fdcf"
+    },
+    "share/locale/tr_TR/LC_MESSAGES/opencpn-grib_pi.mo": {
+      "kind": "file",
+      "bytes": 16775,
+      "sha256": "c1fd908c5f4d2128779866b7c3520508e988ce69792a0eebd21b5fdc4c7cb3fd"
+    },
+    "share/locale/tr_TR/LC_MESSAGES/opencpn-wmm_pi.mo": {
+      "kind": "file",
+      "bytes": 4065,
+      "sha256": "45600c87ff71c8593b48c6a2ecf7735448ee8077fdc01217b6a492779421d655"
+    },
+    "share/locale/tr_TR/LC_MESSAGES/opencpn.mo": {
+      "kind": "file",
+      "bytes": 83702,
+      "sha256": "0890b937ecf72a1a9807fed786ccce5edbe2db65ab4fd8bfa2703e70c49b8a6b"
+    },
+    "share/locale/vi_VN": {
+      "kind": "directory"
+    },
+    "share/locale/vi_VN/LC_MESSAGES": {
+      "kind": "directory"
+    },
+    "share/locale/vi_VN/LC_MESSAGES/opencpn-chartdldr_pi.mo": {
+      "kind": "file",
+      "bytes": 557,
+      "sha256": "8db05c32aa03d67907824e8c09e679ca468581079f95a893dbb5b47da4fbd0ba"
+    },
+    "share/locale/vi_VN/LC_MESSAGES/opencpn-dashboard_pi.mo": {
+      "kind": "file",
+      "bytes": 2521,
+      "sha256": "2b8fd209338d57bcd27c2d635247e7623bc7d642a2634881063b1a1b8e386e6c"
+    },
+    "share/locale/vi_VN/LC_MESSAGES/opencpn-grib_pi.mo": {
+      "kind": "file",
+      "bytes": 479,
+      "sha256": "8b80b6fb095cf4f5d8260b8d3dc46175a17bf4972c3f0bfa5bcab40d93baf596"
+    },
+    "share/locale/vi_VN/LC_MESSAGES/opencpn-wmm_pi.mo": {
+      "kind": "file",
+      "bytes": 1460,
+      "sha256": "19e6453155ee5bbaa5525bcb27c46b11f3bf77812bd4f063b8080de2aa208028"
+    },
+    "share/locale/vi_VN/LC_MESSAGES/opencpn.mo": {
+      "kind": "file",
+      "bytes": 70833,
+      "sha256": "ab1b32a2043c1856c3c11299167a938fea89d6d6caacd0432f2aa309a024ad78"
+    },
+    "share/locale/zh_CN": {
+      "kind": "directory"
+    },
+    "share/locale/zh_CN/LC_MESSAGES": {
+      "kind": "directory"
+    },
+    "share/locale/zh_CN/LC_MESSAGES/opencpn-chartdldr_pi.mo": {
+      "kind": "file",
+      "bytes": 6379,
+      "sha256": "88e94e06a273eec9bef7c053b73283e0a216e401829a06979df0a2a9f089c703"
+    },
+    "share/locale/zh_CN/LC_MESSAGES/opencpn-dashboard_pi.mo": {
+      "kind": "file",
+      "bytes": 4938,
+      "sha256": "42a1c536bd110fec574482c44f2f850040940791e3ceaf1ca24b71330d31cb6d"
+    },
+    "share/locale/zh_CN/LC_MESSAGES/opencpn-grib_pi.mo": {
+      "kind": "file",
+      "bytes": 16011,
+      "sha256": "676e92305f608f0b1218dbf6d9b34132a74aa92bf9721e94ff1f241cd1964b9b"
+    },
+    "share/locale/zh_CN/LC_MESSAGES/opencpn-wmm_pi.mo": {
+      "kind": "file",
+      "bytes": 3498,
+      "sha256": "8718ec82a40b8550aa70a72d7e9328ff5d1dc774fbbf9b62f997d78d21868731"
+    },
+    "share/locale/zh_CN/LC_MESSAGES/opencpn.mo": {
+      "kind": "file",
+      "bytes": 83956,
+      "sha256": "6758cd68d26a062b2bedc6462c748137f38747b8a8e25ba40b8b00bc7e44db3f"
+    },
+    "share/locale/zh_TW": {
+      "kind": "directory"
+    },
+    "share/locale/zh_TW/LC_MESSAGES": {
+      "kind": "directory"
+    },
+    "share/locale/zh_TW/LC_MESSAGES/opencpn-chartdldr_pi.mo": {
+      "kind": "file",
+      "bytes": 501,
+      "sha256": "b84c6105170b339776d7284c8c4b0da8d4f9ab84a6cf1c6b9d98baa1778677df"
+    },
+    "share/locale/zh_TW/LC_MESSAGES/opencpn-dashboard_pi.mo": {
+      "kind": "file",
+      "bytes": 921,
+      "sha256": "d899526cb0345f6d117fd8a05c1e59ec7e4e8352608c85ab9f01b0cb5470d70d"
+    },
+    "share/locale/zh_TW/LC_MESSAGES/opencpn-grib_pi.mo": {
+      "kind": "file",
+      "bytes": 491,
+      "sha256": "3e415c08f998bce58aee4238506482b57283ae0c1be38d683d120c5541ab76d3"
+    },
+    "share/locale/zh_TW/LC_MESSAGES/opencpn-wmm_pi.mo": {
+      "kind": "file",
+      "bytes": 489,
+      "sha256": "39c528933d75761b8aeead20966c1d3a2a7b35e8237e196c0bdc2b95f02dcf85"
+    },
+    "share/locale/zh_TW/LC_MESSAGES/opencpn.mo": {
+      "kind": "file",
+      "bytes": 58478,
+      "sha256": "0bd9f6b9c235423fe7ddc7bef5347e17ae5cd5e7fe3c0957c7403bd874e27f22"
+    },
+    "share/man": {
+      "kind": "directory"
+    },
+    "share/man/man1": {
+      "kind": "directory"
+    },
+    "share/man/man1/opencpn-cmd.1": {
+      "kind": "file",
+      "bytes": 1725,
+      "sha256": "313943db3eb39c26751a50440cebe5773c46d084e92ea698a839dc27beeec212"
+    },
+    "share/man/man1/opencpn.1": {
+      "kind": "file",
+      "bytes": 4908,
+      "sha256": "95ab585e7444af4e2bfdbfb73f92ef024707d75fa8a8c34d266e5cc68770d7cc"
+    },
+    "share/metainfo": {
+      "kind": "directory"
+    },
+    "share/metainfo/opencpn.appdata.xml": {
+      "kind": "file",
+      "bytes": 1979,
+      "sha256": "1db6ea3cc5125c609c9522f426a8da117a575fb401e2e4afaae8af1f39972b76"
+    },
+    "share/opencpn": {
+      "kind": "directory"
+    },
+    "share/opencpn/COPYING.gplv2": {
+      "kind": "file",
+      "bytes": 15170,
+      "sha256": "ead06c5e9b243275923928f60659a759507ab7ce56abebdefbcf6fcd22dba96c"
+    },
+    "share/opencpn/COPYING.gplv3": {
+      "kind": "file",
+      "bytes": 35149,
+      "sha256": "3972dc9744f6499f0f9b2dbf76696f2ae7ad8af9b23dde66d6af86c9dfb36986"
+    },
+    "share/opencpn/COPYING.lgplv2": {
+      "kind": "file",
+      "bytes": 38387,
+      "sha256": "aa88ce596d9abdc70b01e005933da10fcf0e9fc7bd8241c87d2f13389a9127bc"
+    },
+    "share/opencpn/COPYING.lgplv3": {
+      "kind": "file",
+      "bytes": 7652,
+      "sha256": "e3a994d82e644b03a792a930f574002658412f62407f5fee083f2555c5f23118"
+    },
+    "share/opencpn/CoC-1973_2018-InlandECDIS_20220912.pdf": {
+      "kind": "file",
+      "bytes": 98541,
+      "sha256": "3adc3990456bb483c5476d1375f567108d261e073684b262503e9a83f49f0bb4"
+    },
+    "share/opencpn/CoC-909_2013-InlandECDIS_20170308s.pdf": {
+      "kind": "file",
+      "bytes": 309245,
+      "sha256": "74201a0a012587cff6164f99abc10b6af1333b88a130882996f27dc2ca2b430b"
+    },
+    "share/opencpn/LICENSING": {
+      "kind": "file",
+      "bytes": 685,
+      "sha256": "68116f1d7f2fe885bbdc82ea6e6d672f5588b9c6be0f1e3289878b5e54c2e578"
+    },
+    "share/opencpn/LINUX_DEVICES.md": {
+      "kind": "file",
+      "bytes": 142,
+      "sha256": "55ef3db0048a3a7f4ef98ac199a3d27b853cb95869ff8f05cd8cade109cb7f49"
+    },
+    "share/opencpn/authors.html": {
+      "kind": "file",
+      "bytes": 21029,
+      "sha256": "b4cf4375293025b7feda6a08f1a1908e4b5ac2d4b7fb433a03c246c5b6e3e067"
+    },
+    "share/opencpn/basemap_shp": {
+      "kind": "directory"
+    },
+    "share/opencpn/basemap_shp/basemap_crude_10x10.cpg": {
+      "kind": "file",
+      "bytes": 5,
+      "sha256": "3ad3031f5503a4404af825262ee8232cc04d4ea6683d42c5dd0a2f2a27ac9824"
+    },
+    "share/opencpn/basemap_shp/basemap_crude_10x10.dbf": {
+      "kind": "file",
+      "bytes": 7831,
+      "sha256": "da4b846711a6ff32f2c6d561a7a6297ec797525e5e0a293e1ffae3cc4ec4c0b5"
+    },
+    "share/opencpn/basemap_shp/basemap_crude_10x10.prj": {
+      "kind": "file",
+      "bytes": 145,
+      "sha256": "a02a27b1d1982c8516d83398e85a3c8b1aef1713c13ef4d84d7bde17430c07c4"
+    },
+    "share/opencpn/basemap_shp/basemap_crude_10x10.qmd": {
+      "kind": "file",
+      "bytes": 677,
+      "sha256": "cbd763cfdb4d20db363c62e242dc266d0c259db088f1f2907720e6c27861fb5f"
+    },
+    "share/opencpn/basemap_shp/basemap_crude_10x10.shp": {
+      "kind": "file",
+      "bytes": 667204,
+      "sha256": "a49bbf898c537b93f1cc155eba0d4bf7ba69e1eba953c543cc85a34c16d8ab2b"
+    },
+    "share/opencpn/basemap_shp/basemap_crude_10x10.shx": {
+      "kind": "file",
+      "bytes": 3356,
+      "sha256": "c672efe3d7d9f178d6a1ff708a18194c4547f9edea53596015073f3163389e2f"
+    },
+    "share/opencpn/basemap_shp/basemap_low.cpg": {
+      "kind": "file",
+      "bytes": 6,
+      "sha256": "146d6789ffe033a5297c1ad046e6a62ee35319b86b021444f05b6ea2aa8a1f4a"
+    },
+    "share/opencpn/basemap_shp/basemap_low.dbf": {
+      "kind": "file",
+      "bytes": 780656,
+      "sha256": "37775859a00e99da0f4e9991bb216f14670f4804625df06ee151ec488e7d47c5"
+    },
+    "share/opencpn/basemap_shp/basemap_low.prj": {
+      "kind": "file",
+      "bytes": 145,
+      "sha256": "a02a27b1d1982c8516d83398e85a3c8b1aef1713c13ef4d84d7bde17430c07c4"
+    },
+    "share/opencpn/basemap_shp/basemap_low.shp": {
+      "kind": "file",
+      "bytes": 14230152,
+      "sha256": "858cdabe685da0b37bd75b8e66419e0f51151d4fa376f8d3112519d65ab875ab"
+    },
+    "share/opencpn/basemap_shp/basemap_low.shx": {
+      "kind": "file",
+      "bytes": 328756,
+      "sha256": "c91986d09e80ef8f68a138db5db004aa4ac7568eded15c865ef3f2ed389d8297"
+    },
+    "share/opencpn/doc": {
+      "kind": "directory"
+    },
+    "share/opencpn/doc/help_web.html": {
+      "kind": "file",
+      "bytes": 620,
+      "sha256": "30c5135d424cb5bcc7f83d3c1312805d788682f393b97fbe71df713ba172e2f5"
+    },
+    "share/opencpn/filters": {
+      "kind": "directory"
+    },
+    "share/opencpn/filters/all-data.filter.json": {
+      "kind": "file",
+      "bytes": 80,
+      "sha256": "ccf3624e7cf8a750a5fab8faff53dd35a87a0d01b890db701ff08d6bdc81ad7e"
+    },
+    "share/opencpn/filters/all-nmea.filter.json": {
+      "kind": "file",
+      "bytes": 153,
+      "sha256": "306ccc6aea9d72861c090b0eb9c1e49aa0d94394b7b610600ff46ee077933948"
+    },
+    "share/opencpn/filters/default.filter.json": {
+      "kind": "file",
+      "bytes": 272,
+      "sha256": "20e026f5d01ef52120de35494cf6c80272b750877e96b498a6459a1a12682dc8"
+    },
+    "share/opencpn/filters/malformed.filter.json": {
+      "kind": "file",
+      "bytes": 172,
+      "sha256": "a35071e361f644b2681385bcfb507a0217d943031c947d8c937d7449a336ada3"
+    },
+    "share/opencpn/filters/nmea-input.filter.json": {
+      "kind": "file",
+      "bytes": 209,
+      "sha256": "a5f6e6b2641606547d5c61fcf7468bca631e9e83d85cb5ab102b430683498853"
+    },
+    "share/opencpn/filters/nmea-output.filter.json": {
+      "kind": "file",
+      "bytes": 209,
+      "sha256": "a6245d5cefa8df084b263820884f8ca69dc9926925a5fb6dfc97c5146c9a084d"
+    },
+    "share/opencpn/filters/plugin-msg.filter.json": {
+      "kind": "file",
+      "bytes": 135,
+      "sha256": "a34076eff28043c7c66a31e475c9261dfb8abf52576198fc35c4cdb0dc56e672"
+    },
+    "share/opencpn/gshhs": {
+      "kind": "directory"
+    },
+    "share/opencpn/gshhs/poly-c-1.dat": {
+      "kind": "file",
+      "bytes": 3728000,
+      "sha256": "64a95766b76ea487f6a4b65fd8d49c52e867955bccc42874a37da8f06d265410"
+    },
+    "share/opencpn/gshhs/wdb_borders_c.b": {
+      "kind": "file",
+      "bytes": 85144,
+      "sha256": "80f24ac34acda8d71b4a8cc12c4109d6f22ab3521bfc94b4131a6ceea30b68aa"
+    },
+    "share/opencpn/gshhs/wdb_rivers_c.b": {
+      "kind": "file",
+      "bytes": 1557000,
+      "sha256": "7f999d01eb1cc6e1ac0106d830b5791a1131742b9ebde256534c0b1bc22ed320"
+    },
+    "share/opencpn/license.html": {
+      "kind": "file",
+      "bytes": 16887,
+      "sha256": "d8db8bfff119dbef678dc40182468429bad39aa6541d417b4ab9d665f701b7a0"
+    },
+    "share/opencpn/license.txt": {
+      "kind": "file",
+      "bytes": 29486,
+      "sha256": "863c39efe9467a255b4cbd37014aeb8dcf958f252ae27b6c67dea554bd15b69f"
+    },
+    "share/opencpn/ocpn-plugins.xml": {
+      "kind": "file",
+      "bytes": 44,
+      "sha256": "0db71e64fa22a58a51483bfe2303a5bff06be84816ca751d59751d32fd906e42"
+    },
+    "share/opencpn/opencpn.png": {
+      "kind": "file",
+      "bytes": 2917,
+      "sha256": "a31a13b54921674f197cdf576a238ead147c00549808fe8edb10ea77eee4c312"
+    },
+    "share/opencpn/opennav": {
+      "kind": "directory"
+    },
+    "share/opencpn/opennav/chart-style": {
+      "kind": "directory"
+    },
+    "share/opencpn/opennav/chart-style/v1": {
+      "kind": "directory"
+    },
+    "share/opencpn/opennav/chart-style/v1/S52RAZDS.RLE": {
+      "kind": "file",
+      "bytes": 1305627,
+      "sha256": "560e1a1df493d7ae4c8506da814ad936adb13ef93c6f1e2abc93f2819860ff26"
+    },
+    "share/opencpn/opennav/chart-style/v1/chartsymbols.xml": {
+      "kind": "file",
+      "bytes": 2242082,
+      "sha256": "beca42d4f1e1cbe5dd761d3e2182d5ebe935556a94674df5da47aaafe7fb0119"
+    },
+    "share/opencpn/opennav/chart-style/v1/manifest.json": {
+      "kind": "file",
+      "bytes": 70043,
+      "sha256": "beff73cae53211c4ef0b0c3fa2ed83e5290680f19f48781646e1f1d0d4f88e53"
+    },
+    "share/opencpn/opennav/chart-style/v1/rastersymbols-dark.png": {
+      "kind": "file",
+      "bytes": 169565,
+      "sha256": "8606b8f2f7727c2b4f906d55bad92ee0a7331c3fdfce3276dc01eba4e5a0b5c7"
+    },
+    "share/opencpn/opennav/chart-style/v1/rastersymbols-day.png": {
+      "kind": "file",
+      "bytes": 199796,
+      "sha256": "e71bb49aa0c4d18990ed3fef9362989df25a2efc49bc41ff5439bea993d6df06"
+    },
+    "share/opencpn/opennav/chart-style/v1/rastersymbols-dusk.png": {
+      "kind": "file",
+      "bytes": 174185,
+      "sha256": "8a1c1f1db4f2e9d10b1d67687ca96b7f5cbda9ed3e0acdb77162c5a231bb1308"
+    },
+    "share/opencpn/plugins": {
+      "kind": "directory"
+    },
+    "share/opencpn/plugins/chartdldr_pi": {
+      "kind": "directory"
+    },
+    "share/opencpn/plugins/chartdldr_pi/data": {
+      "kind": "directory"
+    },
+    "share/opencpn/plugins/chartdldr_pi/data/button_down.png": {
+      "kind": "file",
+      "bytes": 774,
+      "sha256": "91bb5f872597c2a2446242d7ede4da8e49239893de74718506f6a300350281cd"
+    },
+    "share/opencpn/plugins/chartdldr_pi/data/button_right.png": {
+      "kind": "file",
+      "bytes": 470,
+      "sha256": "6c81bec981653ef2ea6075aed6117732ceda01dbccaa42783e9f7696db1d3be8"
+    },
+    "share/opencpn/plugins/chartdldr_pi/data/chart_sources.xml": {
+      "kind": "file",
+      "bytes": 29197,
+      "sha256": "6e4b74732908d75da0e33be64890f078591c724086e86b861af2892263cd9514"
+    },
+    "share/opencpn/plugins/chartdldr_pi/data/file.png": {
+      "kind": "file",
+      "bytes": 414,
+      "sha256": "edf0574a079db7b9826e587fa5c015330485712ae956cfc0454e06aa9da4d947"
+    },
+    "share/opencpn/plugins/chartdldr_pi/data/folder.png": {
+      "kind": "file",
+      "bytes": 915,
+      "sha256": "e5de00f20b0b34bde0fba78c3bbdb287a6cb52f605405e470cefeae2dd6680f4"
+    },
+    "share/opencpn/plugins/chartdldr_pi/data/folder215.png": {
+      "kind": "file",
+      "bytes": 250,
+      "sha256": "8188a1d7b7d918e6ed6a954d2e2f9f04034e25ba63d3796cc565ae520f73953e"
+    },
+    "share/opencpn/plugins/chartdldr_pi/data/open182.png": {
+      "kind": "file",
+      "bytes": 348,
+      "sha256": "285302507af60abef8041d995b979365556682e1e5e21e3cb04a43bb5d09efe0"
+    },
+    "share/opencpn/plugins/dashboard_pi": {
+      "kind": "directory"
+    },
+    "share/opencpn/plugins/dashboard_pi/data": {
+      "kind": "directory"
+    },
+    "share/opencpn/plugins/dashboard_pi/data/Dashboard.svg": {
+      "kind": "file",
+      "bytes": 7087,
+      "sha256": "76379185db8275852db062b7b24849b80d1aa56e4875408baf03701bcadaac40"
+    },
+    "share/opencpn/plugins/dashboard_pi/data/Dashboard_rollover.svg": {
+      "kind": "file",
+      "bytes": 6508,
+      "sha256": "3afbf90de2899c1587be2a13784d5e21aa2c18f7c070392ed87688eb171b09a0"
+    },
+    "share/opencpn/plugins/dashboard_pi/data/Dashboard_toggled.svg": {
+      "kind": "file",
+      "bytes": 9281,
+      "sha256": "907f09ac1c4720704dd186a0c45eb3ce1ca9373a97306c8fc47dba994069eebc"
+    },
+    "share/opencpn/plugins/dashboard_pi/data/dashboard_pi.svg": {
+      "kind": "file",
+      "bytes": 128806,
+      "sha256": "1cfb37af7d51ef307774c3d7e30d9231b023dce8d19a3ed984f6f4cdd9d459a2"
+    },
+    "share/opencpn/plugins/dashboard_pi/data/dial.svg": {
+      "kind": "file",
+      "bytes": 125696,
+      "sha256": "3dde23271e426d6e17c3bd7b18bdd71f3829744078015f016a609487923d20c3"
+    },
+    "share/opencpn/plugins/dashboard_pi/data/instrument.svg": {
+      "kind": "file",
+      "bytes": 124368,
+      "sha256": "0c25dd331699aab5cb00158979c2a0495f09ba35dbc19d5b19b7a69c130e4bd5"
+    },
+    "share/opencpn/plugins/dashboard_pi/data/minus.svg": {
+      "kind": "file",
+      "bytes": 4826,
+      "sha256": "30ae664fbd42201316c23c4aab5fce6cb3560d169fe382701394f848ca781cff"
+    },
+    "share/opencpn/plugins/dashboard_pi/data/plus.svg": {
+      "kind": "file",
+      "bytes": 5748,
+      "sha256": "dd172bc177e686489496af17c0f844f05d8d3fe837e7185ddc7d8c501446d8d0"
+    },
+    "share/opencpn/plugins/grib_pi": {
+      "kind": "directory"
+    },
+    "share/opencpn/plugins/grib_pi/data": {
+      "kind": "directory"
+    },
+    "share/opencpn/plugins/grib_pi/data/altitude.svg": {
+      "kind": "file",
+      "bytes": 65555,
+      "sha256": "55cbf7ca637cb7a9cd024711d958ec8f53dbc6f7d6a8168be9dd64a1bcf2bc25"
+    },
+    "share/opencpn/plugins/grib_pi/data/curdata.svg": {
+      "kind": "file",
+      "bytes": 60986,
+      "sha256": "59616627a994f782f09349ddc2e650f006926c387f65fd15080544d27739c959"
+    },
+    "share/opencpn/plugins/grib_pi/data/grib.svg": {
+      "kind": "file",
+      "bytes": 165202,
+      "sha256": "2c5ff052563e6aadbd11a4e2562d8d676482764310dc51e435a7a769d8674064"
+    },
+    "share/opencpn/plugins/grib_pi/data/grib_panel_icon.png": {
+      "kind": "file",
+      "bytes": 1451,
+      "sha256": "c6cd76ab0ac4b3deb09e78e2f01b2114bfdeaf59e5b4f7b57887ec0da6d9e740"
+    },
+    "share/opencpn/plugins/grib_pi/data/grib_rollover.svg": {
+      "kind": "file",
+      "bytes": 164726,
+      "sha256": "d87f28e89aabdfff1a333ba7935ecac8a99e3f591314daa7e39cd8e678362616"
+    },
+    "share/opencpn/plugins/grib_pi/data/grib_toggled.svg": {
+      "kind": "file",
+      "bytes": 189006,
+      "sha256": "adeb12dd1844ff7d6a5f90edc421f2b6364a0a239659a29b45d7c8cb40515282"
+    },
+    "share/opencpn/plugins/grib_pi/data/ncurdata.svg": {
+      "kind": "file",
+      "bytes": 62560,
+      "sha256": "0f1430bd96404eaaf01be9416a4cd5659aab0b0fc0f76d83fcefbd8f972a45cb"
+    },
+    "share/opencpn/plugins/grib_pi/data/next.svg": {
+      "kind": "file",
+      "bytes": 58022,
+      "sha256": "413918abfb505e4228bef70b91d511e4c646d83ea281792ed2a2fdfb60e72ac2"
+    },
+    "share/opencpn/plugins/grib_pi/data/now.svg": {
+      "kind": "file",
+      "bytes": 59960,
+      "sha256": "d9bb5373772d50bebbdc0506d4b0e41e4f0012a3a18d52d4dfdf3e962c491776"
+    },
+    "share/opencpn/plugins/grib_pi/data/openfile.svg": {
+      "kind": "file",
+      "bytes": 67382,
+      "sha256": "3b55aea6d651ca0b0a25378693d1b3952379e53f15e9f62959731eca6cd8e9df"
+    },
+    "share/opencpn/plugins/grib_pi/data/play.svg": {
+      "kind": "file",
+      "bytes": 58976,
+      "sha256": "12f0d90cd5aa762f677ccad1dea74809226c883a3f40fbac4cae65de539528ba"
+    },
+    "share/opencpn/plugins/grib_pi/data/prev.svg": {
+      "kind": "file",
+      "bytes": 58022,
+      "sha256": "ce3572d713759f872ae85855db40944c948f3b1696bb3043abd30ad4a3c91983"
+    },
+    "share/opencpn/plugins/grib_pi/data/request.svg": {
+      "kind": "file",
+      "bytes": 63890,
+      "sha256": "32eaaf896c9604314d06f296fb62db91879c9b086d32e52844f0d38d760bcea0"
+    },
+    "share/opencpn/plugins/grib_pi/data/request_end.svg": {
+      "kind": "file",
+      "bytes": 72754,
+      "sha256": "f0c38f50a549a75b038dc679b56c70050f3b234cc7cf7a2ebae1683a3ff66c39"
+    },
+    "share/opencpn/plugins/grib_pi/data/selzone.svg": {
+      "kind": "file",
+      "bytes": 69997,
+      "sha256": "dc3c499b930faf9f431615988d95ddda6156906975dcab47fd8401a60eadc057"
+    },
+    "share/opencpn/plugins/grib_pi/data/setting.svg": {
+      "kind": "file",
+      "bytes": 59829,
+      "sha256": "58b6f533c7e63075dbed5d98fbcbf59b023dbb0b9c291baaad9ee5316023813f"
+    },
+    "share/opencpn/plugins/grib_pi/data/slider.svg": {
+      "kind": "file",
+      "bytes": 57703,
+      "sha256": "cf9a0607fff5a5706817bc4bac18dfb091d46d00ec75380cc9faebbd02a131bf"
+    },
+    "share/opencpn/plugins/grib_pi/data/sources.json": {
+      "kind": "file",
+      "bytes": 94126,
+      "sha256": "dab5d904b8dd9bab1f5d1cf3904535378d3ad36de665a883f52a43674d0f1c02"
+    },
+    "share/opencpn/plugins/grib_pi/data/stop.svg": {
+      "kind": "file",
+      "bytes": 57806,
+      "sha256": "bce5c04390fe041f2c60590c6999bb49625f688009c86833e80ad410b96b9493"
+    },
+    "share/opencpn/plugins/grib_pi/data/zoomto.svg": {
+      "kind": "file",
+      "bytes": 66537,
+      "sha256": "25de15470276edff5507b5641b9b0cf644c8602efc49f053fbb0370c32433a90"
+    },
+    "share/opencpn/plugins/wmm_pi": {
+      "kind": "directory"
+    },
+    "share/opencpn/plugins/wmm_pi/data": {
+      "kind": "directory"
+    },
+    "share/opencpn/plugins/wmm_pi/data/WMM.COF": {
+      "kind": "file",
+      "bytes": 4554,
+      "sha256": "dfa8597825af4e0b87ff4198a5b4fb661b3c49f4cd090cd0164e0259b075582f"
+    },
+    "share/opencpn/plugins/wmm_pi/data/wmm_live.svg": {
+      "kind": "file",
+      "bytes": 4735,
+      "sha256": "044064c5a0af3fc3d41fb884155f8dc3a7638b6de375af722f7862546481267f"
+    },
+    "share/opencpn/plugins/wmm_pi/data/wmm_pi.svg": {
+      "kind": "file",
+      "bytes": 9927,
+      "sha256": "e055e85ce274aa37b78a9169e7d0dd3c182e0d268864a519d537cad870a9655d"
+    },
+    "share/opencpn/s57data": {
+      "kind": "directory"
+    },
+    "share/opencpn/s57data/S52RAZDS.RLE": {
+      "kind": "file",
+      "bytes": 1305627,
+      "sha256": "560e1a1df493d7ae4c8506da814ad936adb13ef93c6f1e2abc93f2819860ff26"
+    },
+    "share/opencpn/s57data/attdecode.csv": {
+      "kind": "file",
+      "bytes": 29983,
+      "sha256": "49bd4c9a91947613a4b6f8b3ac435cf42a30a751bce9a7123d79591786eef03e"
+    },
+    "share/opencpn/s57data/chartsymbols.xml": {
+      "kind": "file",
+      "bytes": 2231495,
+      "sha256": "84f93522576ed5872b24865cf6161872ed0b4b634f77c64ca697a04d3568e886"
+    },
+    "share/opencpn/s57data/rastersymbols-dark.png": {
+      "kind": "file",
+      "bytes": 163832,
+      "sha256": "179cb516fd1a7795e8ab9ecbb8d4d5d88bf15cf42e5528c2f4e3ea2340320c33"
+    },
+    "share/opencpn/s57data/rastersymbols-day.png": {
+      "kind": "file",
+      "bytes": 250509,
+      "sha256": "ee1020a8b94b312faba8c146974e49147d280e5ef3cc13f3cd688bbfd54dde0c"
+    },
+    "share/opencpn/s57data/rastersymbols-dusk.png": {
+      "kind": "file",
+      "bytes": 169019,
+      "sha256": "56d6191b954978d0a85484b490228aab467610bfbf646c814af003428a766c2d"
+    },
+    "share/opencpn/s57data/s57attributes.csv": {
+      "kind": "file",
+      "bytes": 11996,
+      "sha256": "61c3fc9db5cfbc0aaefdcfb17474d64b56db7e7be6238974f6f1a11680a6b2c7"
+    },
+    "share/opencpn/s57data/s57expectedinput.csv": {
+      "kind": "file",
+      "bytes": 40407,
+      "sha256": "deebeea969817da8aa9b3d57801ac530e28e3ed10692f407b8ed80f680fee409"
+    },
+    "share/opencpn/s57data/s57objectclasses.csv": {
+      "kind": "file",
+      "bytes": 41998,
+      "sha256": "5e823ae9b78fa8f976b16231b96548215fb020fb3f83751748c7e767b9ea232a"
+    },
+    "share/opencpn/sounds": {
+      "kind": "directory"
+    },
+    "share/opencpn/sounds/1bells.wav": {
+      "kind": "file",
+      "bytes": 383308,
+      "sha256": "cc18faedd437485f4e7f860d05c7f89b7bfda1b3ad022b737c65a0a44b5b8c8e"
+    },
+    "share/opencpn/sounds/2bells.wav": {
+      "kind": "file",
+      "bytes": 256984,
+      "sha256": "69151a977666a9c81813eb5634ac17b518d92e815d5ed53659ad81e164a26834"
+    },
+    "share/opencpn/sounds/README.bells": {
+      "kind": "file",
+      "bytes": 2494,
+      "sha256": "f64b4fe26f5780205dbbb641e27946985ef597f727c5e589199b18b5f247815c"
+    },
+    "share/opencpn/sounds/beep1.wav": {
+      "kind": "file",
+      "bytes": 22304,
+      "sha256": "68c8e087f0934561ff3b45e05a53f5809f939c63b66fd3845e758d3d9b0640e5"
+    },
+    "share/opencpn/sounds/beep3.wav": {
+      "kind": "file",
+      "bytes": 35324,
+      "sha256": "623f907e7d8d4f83186744c3cc2a84520864291a86fb03a132197e0e9a0cffb8"
+    },
+    "share/opencpn/sounds/beep_ssl.wav": {
+      "kind": "file",
+      "bytes": 100816,
+      "sha256": "6a133937e2c2d6889d618d8084f99d15a3748b281957341c4c811a1b2fab0c38"
+    },
+    "share/opencpn/sounds/phonering1.wav": {
+      "kind": "file",
+      "bytes": 237474,
+      "sha256": "1ade44485c2317d4942d4eb1784ce35b41d823c4f5b04372e76547c27c0c20f6"
+    },
+    "share/opencpn/ssfndata": {
+      "kind": "directory"
+    },
+    "share/opencpn/ssfndata/FreeSans.sfn": {
+      "kind": "file",
+      "bytes": 372928,
+      "sha256": "4b34341dbfd211b646807bda719e81f2ab2938bcb31f9eaf9c3f26b371566a46"
+    },
+    "share/opencpn/tcdata": {
+      "kind": "directory"
+    },
+    "share/opencpn/tcdata/HARMONICS_NO_US": {
+      "kind": "file",
+      "bytes": 7063872,
+      "sha256": "87f87c45165a0c01c311368a1d839e9abb513bac01b001e463201f98b766db71"
+    },
+    "share/opencpn/tcdata/HARMONICS_NO_US.IDX": {
+      "kind": "file",
+      "bytes": 318716,
+      "sha256": "684e72a1e35473ca692184a7ab3c802db732159cedec5270da878714f104c4b1"
+    },
+    "share/opencpn/tcdata/README.harmonics": {
+      "kind": "file",
+      "bytes": 437,
+      "sha256": "105e2bf992d109585cf29f3b80857ad234eaab5e285d387b4dfa57c0c0268588"
+    },
+    "share/opencpn/tcdata/harmonics-dwf-20210110-free.tcd": {
+      "kind": "file",
+      "bytes": 3408893,
+      "sha256": "9c1a68792877c5e7106ee45f94e915a89cf3245946e5ba647893d60d63722a73"
+    },
+    "share/opencpn/uidata": {
+      "kind": "directory"
+    },
+    "share/opencpn/uidata/DragHandle.svg": {
+      "kind": "file",
+      "bytes": 6958,
+      "sha256": "f79d5fa521895e8ef31a5c091ad0ce224d94940ed165e501ea0081f4f49de028"
+    },
+    "share/opencpn/uidata/MUI_flat": {
+      "kind": "directory"
+    },
+    "share/opencpn/uidata/MUI_flat/CompassRose.svg": {
+      "kind": "file",
+      "bytes": 4989,
+      "sha256": "a9caca00936542c198d089cf21b4ab496e79fda427a1ce800130a2a9aca6f1b4"
+    },
+    "share/opencpn/uidata/MUI_flat/CompassRoseBlue.svg": {
+      "kind": "file",
+      "bytes": 4992,
+      "sha256": "344e75b2b60eff2e9ff51baf2b2a3a8f5742bd50d628017ac78d15af1d5ee212"
+    },
+    "share/opencpn/uidata/MUI_flat/CompassRoseMag.svg": {
+      "kind": "file",
+      "bytes": 5763,
+      "sha256": "b93a822fb22af9016980f2e9dde702bf6a93b28e18c3fa165c563fbd831ee714"
+    },
+    "share/opencpn/uidata/MUI_flat/Dashboard.svg": {
+      "kind": "file",
+      "bytes": 5343,
+      "sha256": "eeb728799f3244e7b7c00c9f699a65659e58f49634e2658d18ffb1a16db3ad5d"
+    },
+    "share/opencpn/uidata/MUI_flat/Dashboard_rollover.svg": {
+      "kind": "file",
+      "bytes": 5361,
+      "sha256": "dccd22b338a85d3d543cf58f317893df88b61d83cc196dd6db31e9ea43ba07d3"
+    },
+    "share/opencpn/uidata/MUI_flat/Dashboard_rollover_toggled.svg": {
+      "kind": "file",
+      "bytes": 5386,
+      "sha256": "d96da4270d85ab3cfdd5ae09a29a772a1ffb3645704c84bb75101a7757cc25fd"
+    },
+    "share/opencpn/uidata/MUI_flat/Dashboard_toggled.svg": {
+      "kind": "file",
+      "bytes": 5377,
+      "sha256": "56b7ce8f8ab889b87ad5f7e056cb648013add771df4493d4cde2c5f9f98ff483"
+    },
+    "share/opencpn/uidata/MUI_flat/GRIB.svg": {
+      "kind": "file",
+      "bytes": 3383,
+      "sha256": "d61e4ab997f98b4e761b0af753f155f56f1eefd1bb9e1f73f3f62a9ff5ddc96d"
+    },
+    "share/opencpn/uidata/MUI_flat/GRIB_rollover.svg": {
+      "kind": "file",
+      "bytes": 3401,
+      "sha256": "e71d19ec045944e5737665f76dcd9e2be2345668bc0f36420e12f0758a70da34"
+    },
+    "share/opencpn/uidata/MUI_flat/GRIB_rollover_toggled.svg": {
+      "kind": "file",
+      "bytes": 3397,
+      "sha256": "d7e22355f9de20286bb52506b7959d829d7874013fa18fdf51e1374c4a07fe97"
+    },
+    "share/opencpn/uidata/MUI_flat/GRIB_toggled.svg": {
+      "kind": "file",
+      "bytes": 3388,
+      "sha256": "9aee6e53cab7fac056e21c732efb4e28b7b90fa74f323fbac42a37868db0119b"
+    },
+    "share/opencpn/uidata/MUI_flat/MUI_RMD.svg": {
+      "kind": "file",
+      "bytes": 3151,
+      "sha256": "d393ce7fbb3cd5b3c251a059b79b61f83e85e214ccaca3e23c9220159be0f7aa"
+    },
+    "share/opencpn/uidata/MUI_flat/MUI_Sconfig_1.svg": {
+      "kind": "file",
+      "bytes": 2508,
+      "sha256": "2a6966e8eddf981ad79435bcad1e97efc315a90d5095277a9a9a28d262dcf14f"
+    },
+    "share/opencpn/uidata/MUI_flat/MUI_Sconfig_2.svg": {
+      "kind": "file",
+      "bytes": 3119,
+      "sha256": "40953a79fb7e974d44cfada5d57fb92ebea460161673cacab2f9a26ea1ac3e1a"
+    },
+    "share/opencpn/uidata/MUI_flat/MUI_colorscheme.svg": {
+      "kind": "file",
+      "bytes": 4343,
+      "sha256": "b211311c6b0f208e299c5767d34fa0a1f49491969e0fd35b3c10a9e9ca1a8b34"
+    },
+    "share/opencpn/uidata/MUI_flat/MUI_follow.svg": {
+      "kind": "file",
+      "bytes": 7841,
+      "sha256": "b30cd7221ca71870921a2fb310dc9c7e31ee0c4dc9679e604352555f9cfc90dd"
+    },
+    "share/opencpn/uidata/MUI_flat/MUI_follow_active.svg": {
+      "kind": "file",
+      "bytes": 7881,
+      "sha256": "ad379d85bd6076b575beb5502669b534545aa1e2818e5d4ed12d41b22d3a6c11"
+    },
+    "share/opencpn/uidata/MUI_flat/MUI_follow_ahead.svg": {
+      "kind": "file",
+      "bytes": 7890,
+      "sha256": "27758457f80ca9430ba9ac2f77a2615a30bd7ecef041b7e31ba861926dfc5fed"
+    },
+    "share/opencpn/uidata/MUI_flat/MUI_help.svg": {
+      "kind": "file",
+      "bytes": 521,
+      "sha256": "4d1a0948efd058366c814fa78e1cd67becfab891fd537af473881a4e6d25a41e"
+    },
+    "share/opencpn/uidata/MUI_flat/MUI_menu.svg": {
+      "kind": "file",
+      "bytes": 1898,
+      "sha256": "d959783d3423d552b02c1d465b8a9ba22155d8d6b2f2ae25b64f98064a10908d"
+    },
+    "share/opencpn/uidata/MUI_flat/MUI_menu_rollover.svg": {
+      "kind": "file",
+      "bytes": 1898,
+      "sha256": "d959783d3423d552b02c1d465b8a9ba22155d8d6b2f2ae25b64f98064a10908d"
+    },
+    "share/opencpn/uidata/MUI_flat/MUI_print.svg": {
+      "kind": "file",
+      "bytes": 4369,
+      "sha256": "2a6593b0a6bdbeded94d527520f82e2f82fe4f16b7ef2b33e5c4a28f725eb61f"
+    },
+    "share/opencpn/uidata/MUI_flat/MUI_route.svg": {
+      "kind": "file",
+      "bytes": 9088,
+      "sha256": "f8ed1c28f7801aa6769938d41d76e22e90d85951200b3294bfbd1e5a12838023"
+    },
+    "share/opencpn/uidata/MUI_flat/MUI_route_rollover_toggled.svg": {
+      "kind": "file",
+      "bytes": 9551,
+      "sha256": "5fbb9f8b6d1ce2e880238c3e96ffa6dd920ac30cb4f118abf86b16d568fdd4e9"
+    },
+    "share/opencpn/uidata/MUI_flat/MUI_route_toggled.svg": {
+      "kind": "file",
+      "bytes": 9542,
+      "sha256": "d321cbed01fa9ecc37afadf806933ebfae63ee0264702dbc0c8d40238a633d35"
+    },
+    "share/opencpn/uidata/MUI_flat/MUI_settings.svg": {
+      "kind": "file",
+      "bytes": 5059,
+      "sha256": "095770a54250c2d9b5664212fd71628bd392528ef2d751c4916eda23f5b09cf0"
+    },
+    "share/opencpn/uidata/MUI_flat/MUI_settings_disabled.svg": {
+      "kind": "file",
+      "bytes": 5068,
+      "sha256": "7b27d166f185b002b62d15ee2d9f00eaaf6a023ea06f12f58b818ba3bc476c96"
+    },
+    "share/opencpn/uidata/MUI_flat/MUI_track.svg": {
+      "kind": "file",
+      "bytes": 5168,
+      "sha256": "d723cc4e2b5e92c3a3c781e2b96cb915293e4c6d4ac89e798294bc8557f85074"
+    },
+    "share/opencpn/uidata/MUI_flat/MUI_track_rollover.svg": {
+      "kind": "file",
+      "bytes": 5410,
+      "sha256": "a0c0b59bcd76f3963db6d6e1435ddc4e3a031052a4d0b11e5a3f2ad9ddc411f6"
+    },
+    "share/opencpn/uidata/MUI_flat/MUI_track_rollover_toggled.svg": {
+      "kind": "file",
+      "bytes": 5507,
+      "sha256": "3890ea3a3ffada6295dccde81370a706f436f4bd8a1d2cc9943fd51df9afa7a3"
+    },
+    "share/opencpn/uidata/MUI_flat/MUI_track_toggled.svg": {
+      "kind": "file",
+      "bytes": 5496,
+      "sha256": "9b4349b26ac314d47e696b7277094e9adff44782ae36bdfbe27f29ca4fde6b20"
+    },
+    "share/opencpn/uidata/MUI_flat/MUI_zoom-in.svg": {
+      "kind": "file",
+      "bytes": 2056,
+      "sha256": "8940a91d781c4704f89b75fc072ce76bdc0d7ec5beea4df3a8bff8447bed2616"
+    },
+    "share/opencpn/uidata/MUI_flat/MUI_zoom-out.svg": {
+      "kind": "file",
+      "bytes": 1926,
+      "sha256": "0418dfea9d6fe63c367b0e4e2be93c1cded65ce085802f3f7f883b3d269b17f9"
+    },
+    "share/opencpn/uidata/MUI_flat/WMM.svg": {
+      "kind": "file",
+      "bytes": 28664,
+      "sha256": "acda8a5df8275e6dafd1f3e52ab06b218d781eeb929af1fd71dd1fa463d776b3"
+    },
+    "share/opencpn/uidata/MUI_flat/X_mult.svg": {
+      "kind": "file",
+      "bytes": 465,
+      "sha256": "990512d6effb39c457cd5ef9897d58d064773037ab050ea4d7dc9fa7721d3423"
+    },
+    "share/opencpn/uidata/MUI_flat/check_mark.svg": {
+      "kind": "file",
+      "bytes": 451,
+      "sha256": "be3feb5ab3dd6618723c1ea33710d9805868f2f0dabc3538fb28fed94bbc47a3"
+    },
+    "share/opencpn/uidata/MUI_flat/circle-off.svg": {
+      "kind": "file",
+      "bytes": 1137,
+      "sha256": "f8970f420c9595e1aef295807a9ddd2912e8f49bdf01363a218dd64167660d8e"
+    },
+    "share/opencpn/uidata/MUI_flat/circle-on.svg": {
+      "kind": "file",
+      "bytes": 369,
+      "sha256": "b17eb609c8c0a6eb39cb78d9528d56e9e1a95e4862f7bacf86d4d3346bdaf483"
+    },
+    "share/opencpn/uidata/MUI_flat/exclaim_mark.svg": {
+      "kind": "file",
+      "bytes": 436,
+      "sha256": "121e2086a4e5ed3536af58957220e4889357eb6d85924c452d54ccb6ed47613e"
+    },
+    "share/opencpn/uidata/MUI_flat/gps1Bar.svg": {
+      "kind": "file",
+      "bytes": 17432,
+      "sha256": "73d878102db94f3d0fed62409619a5dda140dc9a6b57d9830da52cefe3a23902"
+    },
+    "share/opencpn/uidata/MUI_flat/gps2Bar.svg": {
+      "kind": "file",
+      "bytes": 15874,
+      "sha256": "5a79d94f8e45ef2ba5361a2903f069899c18ab907d04cc0b21a53e40b1737d73"
+    },
+    "share/opencpn/uidata/MUI_flat/gps3Bar.svg": {
+      "kind": "file",
+      "bytes": 13716,
+      "sha256": "b9c0ac8e4c09f4c375db80ae0b96dbc31c3562c673af8cc40cab63d72e501e03"
+    },
+    "share/opencpn/uidata/MUI_flat/gpsGrn.svg": {
+      "kind": "file",
+      "bytes": 9265,
+      "sha256": "fbd9addb2f560a6894a5721b22ba2d0bd9a2fea7c83c2eadf6f17dafc6a25c7c"
+    },
+    "share/opencpn/uidata/MUI_flat/gpsGry.svg": {
+      "kind": "file",
+      "bytes": 9219,
+      "sha256": "4405f675939bf620e218bd3748ebd9c10e8967f1e77acfd3e71cd11863c88f52"
+    },
+    "share/opencpn/uidata/MUI_flat/gpsRed.svg": {
+      "kind": "file",
+      "bytes": 9243,
+      "sha256": "83c3fdcccec24a30f0ae8f72862258375c7e5bdb590d2a8b7cb735dabdd9a381"
+    },
+    "share/opencpn/uidata/MUI_flat/mob_btn.svg": {
+      "kind": "file",
+      "bytes": 33807,
+      "sha256": "bde885b21d7c804668b74d0683d7cbca036990f1abf50e2db5062e1eac4dc128"
+    },
+    "share/opencpn/uidata/MUI_flat/notification-critical-1.svg": {
+      "kind": "file",
+      "bytes": 3545,
+      "sha256": "73abee4088785d9c9303ad403b6e839794939d46ea93febfc4df33cef4ee2213"
+    },
+    "share/opencpn/uidata/MUI_flat/notification-critical-2.svg": {
+      "kind": "file",
+      "bytes": 3545,
+      "sha256": "73abee4088785d9c9303ad403b6e839794939d46ea93febfc4df33cef4ee2213"
+    },
+    "share/opencpn/uidata/MUI_flat/notification-critical.svg": {
+      "kind": "file",
+      "bytes": 1335,
+      "sha256": "a8129e9dbe7412c1e2ef75a6281a73781b47c7879f154a003e4761563ae0906b"
+    },
+    "share/opencpn/uidata/MUI_flat/notification-info-1.svg": {
+      "kind": "file",
+      "bytes": 3572,
+      "sha256": "83a76cc13060e0c895775119f59478f6a5f809b0556e385dd5a7a8ef8fc1af9e"
+    },
+    "share/opencpn/uidata/MUI_flat/notification-info-2.svg": {
+      "kind": "file",
+      "bytes": 4728,
+      "sha256": "e48a33f57d79bd5e23670b83617aec7b4f73f67dbf3cd355b20fe66f45407311"
+    },
+    "share/opencpn/uidata/MUI_flat/notification-info.svg": {
+      "kind": "file",
+      "bytes": 1340,
+      "sha256": "de63b7321c204ba4cbfa66abb57613700d9981a6fba6accbf69475d8e5acd3c8"
+    },
+    "share/opencpn/uidata/MUI_flat/notification-warning-1.svg": {
+      "kind": "file",
+      "bytes": 3574,
+      "sha256": "994307be1384d9646d34693d3914ff9b2aaa7b4a68f34c389e88c0e0ce9ffea5"
+    },
+    "share/opencpn/uidata/MUI_flat/notification-warning-2.svg": {
+      "kind": "file",
+      "bytes": 3572,
+      "sha256": "83a76cc13060e0c895775119f59478f6a5f809b0556e385dd5a7a8ef8fc1af9e"
+    },
+    "share/opencpn/uidata/MUI_flat/notification-warning.svg": {
+      "kind": "file",
+      "bytes": 1349,
+      "sha256": "7619382e9843af5d4d642dfe19310ad64da5c73d8b17a68e25453813f5978f12"
+    },
+    "share/opencpn/uidata/MUI_flat/setting_gear.svg": {
+      "kind": "file",
+      "bytes": 1349,
+      "sha256": "b3045151f8b9d437f2f663a78b0d72a9640041d0e4db584dc5d594fb0a9f1ea9"
+    },
+    "share/opencpn/uidata/MUI_flat/trash_bin.svg": {
+      "kind": "file",
+      "bytes": 903,
+      "sha256": "af34e53986ad24b5fef62fcf0368ec64ece0695321466116ab6468216482a03c"
+    },
+    "share/opencpn/uidata/eye.svg": {
+      "kind": "file",
+      "bytes": 2194,
+      "sha256": "9e9cad1cd4cb42dcfb04278ea34ff72e5a2cb72218d7e4cc6a159f475e03ac2d"
+    },
+    "share/opencpn/uidata/eyeGray.svg": {
+      "kind": "file",
+      "bytes": 2276,
+      "sha256": "4951a5ad9687729fe64b7324a87831a860086a3c229856698509c1fda9e14f66"
+    },
+    "share/opencpn/uidata/eyex.svg": {
+      "kind": "file",
+      "bytes": 2850,
+      "sha256": "5ac5acafcdb0057fd64560ba04bc3c6cc51e1199d37eaeaf14783a15a477d633"
+    },
+    "share/opencpn/uidata/iENC_All.svg": {
+      "kind": "file",
+      "bytes": 4971,
+      "sha256": "1cc7ffbed25ea435df2aa4348d3da28875309866209f1aa09524ab10f5f336a5"
+    },
+    "share/opencpn/uidata/iENC_Minimum.svg": {
+      "kind": "file",
+      "bytes": 16799,
+      "sha256": "8db3918f3a8b633da4b8cf9b80dcee8252c7db650407fdae0cd87a4534c3a2df"
+    },
+    "share/opencpn/uidata/iENC_RMinus.svg": {
+      "kind": "file",
+      "bytes": 4399,
+      "sha256": "6074827fb7b11a9bcce641515e3424f5f574df10cb7baedc64a459bb96005a21"
+    },
+    "share/opencpn/uidata/iENC_RPlus.svg": {
+      "kind": "file",
+      "bytes": 4143,
+      "sha256": "a3d2dc43a26b4ca8689504e6092740db8fe1139447a5d47730cd42d6b7e148a0"
+    },
+    "share/opencpn/uidata/iENC_Standard.svg": {
+      "kind": "file",
+      "bytes": 13538,
+      "sha256": "daf8193578fd5f70312764f671f4aba4c470f293a965af386634669b774ceb61"
+    },
+    "share/opencpn/uidata/iENC_UserStd.svg": {
+      "kind": "file",
+      "bytes": 7819,
+      "sha256": "78fa09b11ea00b53b223ad61a2a034af7c7a2514c8e74e5027fde56782c7255a"
+    },
+    "share/opencpn/uidata/iconAll.png": {
+      "kind": "file",
+      "bytes": 359,
+      "sha256": "b8d9de48c08e68d445b85cab278b3884122bf320440c923b18e22d125d63bd6c"
+    },
+    "share/opencpn/uidata/iconMinimum.png": {
+      "kind": "file",
+      "bytes": 388,
+      "sha256": "205d9d731db7bdc2acd410772c7f62f207839e7903e4929a24c1ccd10583b99b"
+    },
+    "share/opencpn/uidata/iconRMinus.png": {
+      "kind": "file",
+      "bytes": 422,
+      "sha256": "44532b5277bd6a1c4011424d6c78a4e4ed55636103c8bb2636556946cc238582"
+    },
+    "share/opencpn/uidata/iconRPlus.png": {
+      "kind": "file",
+      "bytes": 279,
+      "sha256": "c560856b18430011e14fdd3e8a2fd23e88a5689398be2efa54464d0666a690af"
+    },
+    "share/opencpn/uidata/iconStandard.png": {
+      "kind": "file",
+      "bytes": 424,
+      "sha256": "608b634e9f206e9ec759097e7675efa184823a59457e89aa6e606295c1310e4b"
+    },
+    "share/opencpn/uidata/iconUserStd.png": {
+      "kind": "file",
+      "bytes": 424,
+      "sha256": "c8497a8163767bb0c6ece2645e93cddffa49259d85a71c56cfbeae03b89a3bc7"
+    },
+    "share/opencpn/uidata/journeyman": {
+      "kind": "directory"
+    },
+    "share/opencpn/uidata/journeyman/CompassRose.svg": {
+      "kind": "file",
+      "bytes": 4966,
+      "sha256": "1bc6d6dab52b65848e7441015fa431f8f6d390454ff17aeadf97838ecb7b1cb9"
+    },
+    "share/opencpn/uidata/journeyman/CompassRoseBlue.svg": {
+      "kind": "file",
+      "bytes": 4969,
+      "sha256": "954750be0d9b99c1b28ac99f621de0430689305a23fcf2d584678607cfcefb94"
+    },
+    "share/opencpn/uidata/journeyman/gps1Bar.svg": {
+      "kind": "file",
+      "bytes": 17408,
+      "sha256": "dbb26543f35c3fca9ab670b2cfad6e96583f0a42e490e828b1f220effa736582"
+    },
+    "share/opencpn/uidata/journeyman/gps2Bar.svg": {
+      "kind": "file",
+      "bytes": 15850,
+      "sha256": "0ce9782c2ae1815d3618f7c947ab5c56c4e77a18682c9d32c6336dbc6cfec9a9"
+    },
+    "share/opencpn/uidata/journeyman/gps3Bar.svg": {
+      "kind": "file",
+      "bytes": 13692,
+      "sha256": "ade834af28a9c9e981b9fc48ca4234411287e51c405ed2ed3018f6d2a65967e8"
+    },
+    "share/opencpn/uidata/journeyman/gpsGrn.svg": {
+      "kind": "file",
+      "bytes": 9241,
+      "sha256": "039c40e32ed812635116b5904fab27f0f7394707df071bb765bdc781eeb62f98"
+    },
+    "share/opencpn/uidata/journeyman/gpsGry.svg": {
+      "kind": "file",
+      "bytes": 9195,
+      "sha256": "0d86cade44eb3fcca246adcceef6c9bb51ea0f3067186fe67b2853fa8dd59c45"
+    },
+    "share/opencpn/uidata/journeyman/gpsRed.svg": {
+      "kind": "file",
+      "bytes": 9220,
+      "sha256": "6e9b97a1b5558049e095a3eeea440abaa8c92883a6e99dd173fe08b79e8fe165"
+    },
+    "share/opencpn/uidata/journeyman_flat": {
+      "kind": "directory"
+    },
+    "share/opencpn/uidata/journeyman_flat/CompassRose.svg": {
+      "kind": "file",
+      "bytes": 4966,
+      "sha256": "1bc6d6dab52b65848e7441015fa431f8f6d390454ff17aeadf97838ecb7b1cb9"
+    },
+    "share/opencpn/uidata/journeyman_flat/CompassRoseBlue.svg": {
+      "kind": "file",
+      "bytes": 4969,
+      "sha256": "954750be0d9b99c1b28ac99f621de0430689305a23fcf2d584678607cfcefb94"
+    },
+    "share/opencpn/uidata/journeyman_flat/gps1Bar.svg": {
+      "kind": "file",
+      "bytes": 17408,
+      "sha256": "dbb26543f35c3fca9ab670b2cfad6e96583f0a42e490e828b1f220effa736582"
+    },
+    "share/opencpn/uidata/journeyman_flat/gps2Bar.svg": {
+      "kind": "file",
+      "bytes": 15850,
+      "sha256": "0ce9782c2ae1815d3618f7c947ab5c56c4e77a18682c9d32c6336dbc6cfec9a9"
+    },
+    "share/opencpn/uidata/journeyman_flat/gps3Bar.svg": {
+      "kind": "file",
+      "bytes": 13692,
+      "sha256": "ade834af28a9c9e981b9fc48ca4234411287e51c405ed2ed3018f6d2a65967e8"
+    },
+    "share/opencpn/uidata/journeyman_flat/gpsGrn.svg": {
+      "kind": "file",
+      "bytes": 9241,
+      "sha256": "039c40e32ed812635116b5904fab27f0f7394707df071bb765bdc781eeb62f98"
+    },
+    "share/opencpn/uidata/journeyman_flat/gpsGry.svg": {
+      "kind": "file",
+      "bytes": 9195,
+      "sha256": "0d86cade44eb3fcca246adcceef6c9bb51ea0f3067186fe67b2853fa8dd59c45"
+    },
+    "share/opencpn/uidata/journeyman_flat/gpsRed.svg": {
+      "kind": "file",
+      "bytes": 9220,
+      "sha256": "6e9b97a1b5558049e095a3eeea440abaa8c92883a6e99dd173fe08b79e8fe165"
+    },
+    "share/opencpn/uidata/markicons": {
+      "kind": "directory"
+    },
+    "share/opencpn/uidata/markicons/1st-Active-Waypoint.svg": {
+      "kind": "file",
+      "bytes": 622,
+      "sha256": "9ee10107d26edda9870b79f8fd12bbb8dda16bd83e3b46500919bf7ecb569868"
+    },
+    "share/opencpn/uidata/markicons/1st-Anchorage.svg": {
+      "kind": "file",
+      "bytes": 736,
+      "sha256": "fee8a61fe83f1ed16f81a11ed9d5c1893552cbee843aaa6b913facc9a828ae63"
+    },
+    "share/opencpn/uidata/markicons/1st-Diamond.svg": {
+      "kind": "file",
+      "bytes": 493,
+      "sha256": "ebb4c7e751b9d21db60d1bbf1041eb5434616b6b90570cd7ca478480263e8a9d"
+    },
+    "share/opencpn/uidata/markicons/1st-Man-Overboard.svg": {
+      "kind": "file",
+      "bytes": 2488,
+      "sha256": "6f2b92a385a10596af99ae0c55c89f78de879741ba65f355f8e1efab98ef2786"
+    },
+    "share/opencpn/uidata/markicons/1st-No-Anchoring.svg": {
+      "kind": "file",
+      "bytes": 1032,
+      "sha256": "53f6cefb1823c3b8c183f93231fb58f7bdd07754d1504c4ed2963c0e34e87ee5"
+    },
+    "share/opencpn/uidata/markicons/Activity-Campfire.svg": {
+      "kind": "file",
+      "bytes": 1908,
+      "sha256": "c2ea92d5231dbed1b2ca2a6069a4d5e8e21c03a467c2f20a73f7e2ced9ded7d1"
+    },
+    "share/opencpn/uidata/markicons/Activity-Camping.svg": {
+      "kind": "file",
+      "bytes": 511,
+      "sha256": "3e2c6c47a4f7b412faf459d729b691dea29a24dba6f4c43f0188cf7078acd3d2"
+    },
+    "share/opencpn/uidata/markicons/Activity-Diving-Scuba-Flag.svg": {
+      "kind": "file",
+      "bytes": 427,
+      "sha256": "eb401e8884ea20fb3dfa2e510fcf40f29993a5c7c550aabdb1aba66aa1b9d93b"
+    },
+    "share/opencpn/uidata/markicons/Activity-Diving-Scuba-Tank.svg": {
+      "kind": "file",
+      "bytes": 6118,
+      "sha256": "7c0d8261571ae57ed559899c51dac9d6cd0c277d8f6c74b62eec8439c6ecb395"
+    },
+    "share/opencpn/uidata/markicons/Activity-Diving-Snorkel.svg": {
+      "kind": "file",
+      "bytes": 2226,
+      "sha256": "f0e01cc25735c4caa4a1f9811c10bb6fe6cb78edf4043a3e76af4769e7265527"
+    },
+    "share/opencpn/uidata/markicons/Activity-Diving-Spearing.svg": {
+      "kind": "file",
+      "bytes": 3376,
+      "sha256": "33f54b62584bdb9ceb35f673e071e58b5128efcf8632b6453e7b7cba88acbc58"
+    },
+    "share/opencpn/uidata/markicons/Activity-Fishing.svg": {
+      "kind": "file",
+      "bytes": 1367,
+      "sha256": "efb375db21aa23a2d2320659ca785163cc233d5baac7aeb15bc74875729d9207"
+    },
+    "share/opencpn/uidata/markicons/Authority-Customs.svg": {
+      "kind": "file",
+      "bytes": 702,
+      "sha256": "4b273e23d54d9929c48caf0ba9b5292dc38a5d058e601435eddcbb82bbf0b0ca"
+    },
+    "share/opencpn/uidata/markicons/Authority-Health.svg": {
+      "kind": "file",
+      "bytes": 578,
+      "sha256": "69c10755ac23652fb7bada6d36093f0d48700c515af35c883812fa38f89cd57c"
+    },
+    "share/opencpn/uidata/markicons/Authority-Immigration.svg": {
+      "kind": "file",
+      "bytes": 745,
+      "sha256": "7c80792981eea6c9260e4698b8c83c458fb388d926b18803473ad6e11de2036e"
+    },
+    "share/opencpn/uidata/markicons/Authority-Police.svg": {
+      "kind": "file",
+      "bytes": 1437,
+      "sha256": "0071f05647cb76c733542dca253f2b4d6179ad0cb3fa018e0ccebf1dca5dc779"
+    },
+    "share/opencpn/uidata/markicons/Authority-Quarantine-Area.svg": {
+      "kind": "file",
+      "bytes": 758,
+      "sha256": "e2bf93196ffce135b81db977a31a2b59cb7ef8f81a4a26c18f3257c13cc96bef"
+    },
+    "share/opencpn/uidata/markicons/Authority-Quarantine-Building.svg": {
+      "kind": "file",
+      "bytes": 603,
+      "sha256": "813b8e0bd014d64924767d76c31b9c293b504886309e0fc06434a5ca88b317d2"
+    },
+    "share/opencpn/uidata/markicons/Authority-Quarantine-Flag.svg": {
+      "kind": "file",
+      "bytes": 841,
+      "sha256": "4fd03ea8dfe9496a95c193e3fc015e1bd194d4804c95ae8335245723744358e9"
+    },
+    "share/opencpn/uidata/markicons/DragHandle.svg": {
+      "kind": "file",
+      "bytes": 2576,
+      "sha256": "83dfb2012a07d75ba5a861b47f9d8312de3196103a6f703afc8a9f82c57113fc"
+    },
+    "share/opencpn/uidata/markicons/Hazard-Airplane.svg": {
+      "kind": "file",
+      "bytes": 751,
+      "sha256": "30c934b8d5852e7adb601a332c20ce44cce888b89f384dafd824c2d20a987e15"
+    },
+    "share/opencpn/uidata/markicons/Hazard-Animals-Crocodile.svg": {
+      "kind": "file",
+      "bytes": 3143,
+      "sha256": "54a49538ce9bff2511144e0dd9b5e5019d52d2ca70629962ef1f36e95ba3d2b8"
+    },
+    "share/opencpn/uidata/markicons/Hazard-Animals-Jellyfish.svg": {
+      "kind": "file",
+      "bytes": 1858,
+      "sha256": "272415de055069b25061caf0e34ef7374550ed664d41cbeca0ccbbe762de174f"
+    },
+    "share/opencpn/uidata/markicons/Hazard-Animals-Shark.svg": {
+      "kind": "file",
+      "bytes": 1359,
+      "sha256": "cafb28722db5e1f4892a76bed0fb230ccd3e4773588b6c9b891be72eff526729"
+    },
+    "share/opencpn/uidata/markicons/Hazard-Danger.svg": {
+      "kind": "file",
+      "bytes": 2787,
+      "sha256": "203438cf2f5769c9a078b93d35176ca1968f0b145c76bc392f1570d067ccb47a"
+    },
+    "share/opencpn/uidata/markicons/Hazard-Dredging.svg": {
+      "kind": "file",
+      "bytes": 1798,
+      "sha256": "e5318965d14083a1a1172b1d24273c193f323341315c554961e4bbfcb07c6ab8"
+    },
+    "share/opencpn/uidata/markicons/Hazard-Fish-Aquatic-Farm.svg": {
+      "kind": "file",
+      "bytes": 755,
+      "sha256": "6830cefc7796fa1e194338ccf01dba4ee5e5c2149752e4e56e7e2e3592a1e5e9"
+    },
+    "share/opencpn/uidata/markicons/Hazard-Fish-Lobster-String.svg": {
+      "kind": "file",
+      "bytes": 643,
+      "sha256": "4a5353bd1ae8b63ec60c2e637ab36902c75935407f9299541e8b2053bd3cc03c"
+    },
+    "share/opencpn/uidata/markicons/Hazard-Fish-Nets.svg": {
+      "kind": "file",
+      "bytes": 1214,
+      "sha256": "bc53380cb72bb5a93b39e914126efdc72fb1f9c42542b5bce603a59d8807169a"
+    },
+    "share/opencpn/uidata/markicons/Hazard-Lighthouse.svg": {
+      "kind": "file",
+      "bytes": 1684,
+      "sha256": "339652830bb95acb0e76936ee58ccbc3e987b1fc42697510daceebf5a09fe127"
+    },
+    "share/opencpn/uidata/markicons/Hazard-Obstruction-Deep.svg": {
+      "kind": "file",
+      "bytes": 436,
+      "sha256": "ef21f6dd56174c1e0aaff0196eadd293ae9f2ebc236d8e205d45c585e6f6dc77"
+    },
+    "share/opencpn/uidata/markicons/Hazard-Obstruction-Dry.svg": {
+      "kind": "file",
+      "bytes": 491,
+      "sha256": "463853467f10031cd73cd29fba37e4589753c4760c790f79670079524de731c1"
+    },
+    "share/opencpn/uidata/markicons/Hazard-Obstruction-Shallow.svg": {
+      "kind": "file",
+      "bytes": 491,
+      "sha256": "828bd69ac9091d486336206ea3b0c9ab09bfaef80f817a3b444accc1aeb74997"
+    },
+    "share/opencpn/uidata/markicons/Hazard-Oil-Platform.svg": {
+      "kind": "file",
+      "bytes": 1422,
+      "sha256": "62bf06a0b6d69cf7cd8342d5fc69cc752635e075e93bd08b2df3fef050e23a1f"
+    },
+    "share/opencpn/uidata/markicons/Hazard-Overfalls.svg": {
+      "kind": "file",
+      "bytes": 1028,
+      "sha256": "b4a718326df949d040a9f2c2c4197d4697a60f2f73b4a5f62a5bd6a340391087"
+    },
+    "share/opencpn/uidata/markicons/Hazard-Pollution-Air.svg": {
+      "kind": "file",
+      "bytes": 879,
+      "sha256": "5f96d78d37bb5b574aa7b8a7c17c2fbfa64b5c71bc456516b3fe5efe6dca8a12"
+    },
+    "share/opencpn/uidata/markicons/Hazard-Pollution-Bio.svg": {
+      "kind": "file",
+      "bytes": 1824,
+      "sha256": "d0781fd62c8400b6bfb117ecb487cc4ea136104ce20aeb0a31e6cf7db0dd12bf"
+    },
+    "share/opencpn/uidata/markicons/Hazard-Pollution-Nuclear.svg": {
+      "kind": "file",
+      "bytes": 699,
+      "sha256": "4040f17bf9616b6e544e57ed7d2fd6d0757f3f448c49e57daacc0dd4471c2631"
+    },
+    "share/opencpn/uidata/markicons/Hazard-Pollution-Oil.svg": {
+      "kind": "file",
+      "bytes": 806,
+      "sha256": "d44d8d7719972d0469a1598078d85e00fb975d7798b2dd670a9190572d2467fc"
+    },
+    "share/opencpn/uidata/markicons/Hazard-Pollution-Quarantine-Area.svg": {
+      "kind": "file",
+      "bytes": 540,
+      "sha256": "998a369acf737e7437a6002fe22c642bf91afa0028662bbf006ebe9113a7c1e7"
+    },
+    "share/opencpn/uidata/markicons/Hazard-Power-Cable.svg": {
+      "kind": "file",
+      "bytes": 632,
+      "sha256": "d9ff2b16874a1085c97393dbfe8293f0a0a26ae52b26ac9247f719915b7c698c"
+    },
+    "share/opencpn/uidata/markicons/Hazard-Power-Line1.svg": {
+      "kind": "file",
+      "bytes": 1045,
+      "sha256": "301d885b27c4a4ebcafb172e9220f91d6755b99ffc5692c93a7af59616e7f012"
+    },
+    "share/opencpn/uidata/markicons/Hazard-Power-Line2.svg": {
+      "kind": "file",
+      "bytes": 1674,
+      "sha256": "dc3936fb9d18e35402527400a9326d692c7f1577c792d23b9b65042a1bd06f43"
+    },
+    "share/opencpn/uidata/markicons/Hazard-Rock-Awash.svg": {
+      "kind": "file",
+      "bytes": 781,
+      "sha256": "00d87fcbb2819d69b37774cddb0174c6df62ccd94d7654f03b5153ee06e4bab0"
+    },
+    "share/opencpn/uidata/markicons/Hazard-Rock-Exposed.svg": {
+      "kind": "file",
+      "bytes": 674,
+      "sha256": "9111b57f9ead663e06035b75ba086add35a7a6c443c4f8187a9025797e6f26d1"
+    },
+    "share/opencpn/uidata/markicons/Hazard-Sandbar.svg": {
+      "kind": "file",
+      "bytes": 684,
+      "sha256": "a0bb5db73bd2ba0efacf65fc522f5c53dfd19b0642e5b7a6ff0ef645339b2561"
+    },
+    "share/opencpn/uidata/markicons/Hazard-Snag.svg": {
+      "kind": "file",
+      "bytes": 562,
+      "sha256": "382472f38658d38cdbdf9046e8b42cc92ac201ef95621380b5428f8594ab7af5"
+    },
+    "share/opencpn/uidata/markicons/Hazard-Warning.svg": {
+      "kind": "file",
+      "bytes": 724,
+      "sha256": "d6889c84d0f6ca88489bf1f52e876dcd763ef4267109b8eb9bc6d2545a60f7b1"
+    },
+    "share/opencpn/uidata/markicons/Hazard-Wind-Farm.svg": {
+      "kind": "file",
+      "bytes": 903,
+      "sha256": "200643b97df86686657ceed8cedbafdc3455299a4f9c0b3c796a04abad08c1e9"
+    },
+    "share/opencpn/uidata/markicons/Hazard-Wreck1.svg": {
+      "kind": "file",
+      "bytes": 869,
+      "sha256": "9071fa92ba0b9712f59513f0b2eec2b5bdbc98344c8fdc7c7c91d05434f994e3"
+    },
+    "share/opencpn/uidata/markicons/Hazard-Wreck2.svg": {
+      "kind": "file",
+      "bytes": 855,
+      "sha256": "3ea966006937f6d7bdef6ad6d5e5920739b1396c2b9867c367c3420a8d92de52"
+    },
+    "share/opencpn/uidata/markicons/Info-Fish-Haven.svg": {
+      "kind": "file",
+      "bytes": 773,
+      "sha256": "3a07142f733139332572615ccd8d0a718d462a6be02992d4e6ff62594888ebaa"
+    },
+    "share/opencpn/uidata/markicons/Info-Fish-Pelagic.svg": {
+      "kind": "file",
+      "bytes": 1144,
+      "sha256": "52ff99c3ebce95c3be12888d44a9f3223a86c0198709343757f08fed218e1a62"
+    },
+    "share/opencpn/uidata/markicons/Info-Fish-Reef.svg": {
+      "kind": "file",
+      "bytes": 2652,
+      "sha256": "1e62e2429d1f72499fd1ce022dab5c1984b5ab82b6c18750b5cf6f378cc1789b"
+    },
+    "share/opencpn/uidata/markicons/Info-Fish-Shark.svg": {
+      "kind": "file",
+      "bytes": 2446,
+      "sha256": "813a0dde65c987799877687463fa4dd9c4aafce080bf9806ecb0358b4d68e03a"
+    },
+    "share/opencpn/uidata/markicons/Info-Fish-Whale.svg": {
+      "kind": "file",
+      "bytes": 1040,
+      "sha256": "e99a67133613a9db8610dc310ae567c3527d4b0f696d479df8ba6065e5cd266b"
+    },
+    "share/opencpn/uidata/markicons/Info-Fish.svg": {
+      "kind": "file",
+      "bytes": 620,
+      "sha256": "7cbbe637781a11cbedcdbe225dedd59924465f7db2f373079102f1067a16d62d"
+    },
+    "share/opencpn/uidata/markicons/Info-Info.svg": {
+      "kind": "file",
+      "bytes": 567,
+      "sha256": "20a4479410c22ad4c652dc72eca915d2c90b92ae77b79e3d9998affc95cbf9c3"
+    },
+    "share/opencpn/uidata/markicons/Info-No-Discharge.svg": {
+      "kind": "file",
+      "bytes": 809,
+      "sha256": "df810721dc558fb2995d9973bbe8953add53f42365c32b130e717a862d74b12e"
+    },
+    "share/opencpn/uidata/markicons/Info-Photo.svg": {
+      "kind": "file",
+      "bytes": 758,
+      "sha256": "6cc8fe7acc3f1ceca52dc9abba7f43fb5c48e60e18bae21f0af463c5e9068f68"
+    },
+    "share/opencpn/uidata/markicons/Info-Video.svg": {
+      "kind": "file",
+      "bytes": 536,
+      "sha256": "b305b4f6eb5eb56294e2b6c2cb05a28c9ad1463797d892351dc123e48778f7c6"
+    },
+    "share/opencpn/uidata/markicons/Landmarks-Bridge1.svg": {
+      "kind": "file",
+      "bytes": 1524,
+      "sha256": "ac3ba7a2c280d49b4f5fb82f705f6ca78a5857694291b97d0110730a33039b3d"
+    },
+    "share/opencpn/uidata/markicons/Landmarks-Bridge2.svg": {
+      "kind": "file",
+      "bytes": 1275,
+      "sha256": "bacc90e1d1a65f46ba662ae21a6a229900996312d37c97aa7b2bc04d3c5fe91e"
+    },
+    "share/opencpn/uidata/markicons/Landmarks-Bridge3.svg": {
+      "kind": "file",
+      "bytes": 1044,
+      "sha256": "c79b0c049b52477d3f6504dd3de3bdda50878851ee9985b9361e866ef3066dbc"
+    },
+    "share/opencpn/uidata/markicons/Landmarks-Pier1.svg": {
+      "kind": "file",
+      "bytes": 1561,
+      "sha256": "0b4a19e8b6b2eda39f678eb0378425c1818f464084c950759fb689006621f371"
+    },
+    "share/opencpn/uidata/markicons/Landmarks-Pier2.svg": {
+      "kind": "file",
+      "bytes": 2042,
+      "sha256": "de1746fd6ff5b0cb5358730a3be23448b8a2398d333b3ccdf097104daadfd9d4"
+    },
+    "share/opencpn/uidata/markicons/Landmarks-Pier3.svg": {
+      "kind": "file",
+      "bytes": 1901,
+      "sha256": "fccc73973a9184e75806139f01d35981ba7fc77905d2f2fb3ba7944bf511ee30"
+    },
+    "share/opencpn/uidata/markicons/Landmarks-Stream-River.svg": {
+      "kind": "file",
+      "bytes": 23921,
+      "sha256": "f4ef00eef4ce43b6921ec4d1be51d08ace028ffb1128456859d0024c247c0de7"
+    },
+    "share/opencpn/uidata/markicons/Landmarks-Waterfall.svg": {
+      "kind": "file",
+      "bytes": 2402,
+      "sha256": "1df3b19574259f52ff1baaa2daca3116c7150005b50a7673b0da99cd58d5dece"
+    },
+    "share/opencpn/uidata/markicons/Marks-Active-Waypoint.svg": {
+      "kind": "file",
+      "bytes": 622,
+      "sha256": "9ee10107d26edda9870b79f8fd12bbb8dda16bd83e3b46500919bf7ecb569868"
+    },
+    "share/opencpn/uidata/markicons/Marks-Beacon-Danger.svg": {
+      "kind": "file",
+      "bytes": 428,
+      "sha256": "2cc372653a495ba4a21950e81319a881094b7ed4c834fac836ee9b84a47a9127"
+    },
+    "share/opencpn/uidata/markicons/Marks-Beacon-SafeWater.svg": {
+      "kind": "file",
+      "bytes": 412,
+      "sha256": "4f1817c5720a505180d5524911a33027026df8718ffa8e4bcd21ac8cf5b0f0b5"
+    },
+    "share/opencpn/uidata/markicons/Marks-Blank.svg": {
+      "kind": "file",
+      "bytes": 313,
+      "sha256": "1542c2fa98f0bbcce92e226c2bad57f880b457768d99718532a12c3be89c00da"
+    },
+    "share/opencpn/uidata/markicons/Marks-Boarding-Location.svg": {
+      "kind": "file",
+      "bytes": 522,
+      "sha256": "8c12569deca4c91b293dfa54fcd3cf6ede7fcebb75cae5d48bec6a7c447b82bc"
+    },
+    "share/opencpn/uidata/markicons/Marks-Boundary.svg": {
+      "kind": "file",
+      "bytes": 654,
+      "sha256": "6c53146e4fd0f48744873a70b357d789aeea52b25f398b7f07b69956912c46c8"
+    },
+    "share/opencpn/uidata/markicons/Marks-Buoy-Danger.svg": {
+      "kind": "file",
+      "bytes": 427,
+      "sha256": "542e5bd512f6d91b92378ee91795efcfb327549f5490a9a82470b5387b248827"
+    },
+    "share/opencpn/uidata/markicons/Marks-Buoy-Safe-Water.svg": {
+      "kind": "file",
+      "bytes": 602,
+      "sha256": "45cfbb04dcdee8b1a6f2275e6a053a68a0fac9e2cbc9859da1d00b43d540f771"
+    },
+    "share/opencpn/uidata/markicons/Marks-Buoy-TypeA.svg": {
+      "kind": "file",
+      "bytes": 550,
+      "sha256": "25710baad27950a50b5e017bbe453c7d181f47c14baa41cd2dd779b538a0580b"
+    },
+    "share/opencpn/uidata/markicons/Marks-Buoy-TypeB.svg": {
+      "kind": "file",
+      "bytes": 623,
+      "sha256": "114cc121c68f6c48ea028140eddc5312a24bed77a665381a22862db326fb8f6f"
+    },
+    "share/opencpn/uidata/markicons/Marks-Cardinal-East-Lighted.svg": {
+      "kind": "file",
+      "bytes": 1199,
+      "sha256": "a791f196ff6a0c47e9ddb20212c2fa57a708a29d9a4ae78fb6a1fe4f5cadbd8a"
+    },
+    "share/opencpn/uidata/markicons/Marks-Cardinal-East.svg": {
+      "kind": "file",
+      "bytes": 1062,
+      "sha256": "daddd1aafb85ab4c81c32e811fd9eadc28c1f8a7a166c608e3323b01910e3df1"
+    },
+    "share/opencpn/uidata/markicons/Marks-Cardinal-Nord-Lighted.svg": {
+      "kind": "file",
+      "bytes": 922,
+      "sha256": "3039f5dbca736a08c4054b1585be5b67e08d750415d8574e3c1e2f9c4847c892"
+    },
+    "share/opencpn/uidata/markicons/Marks-Cardinal-Nord.svg": {
+      "kind": "file",
+      "bytes": 781,
+      "sha256": "687e872658a9a21137c0e35da74c70d555044b10a859b98fcc601b7c8e28f0c6"
+    },
+    "share/opencpn/uidata/markicons/Marks-Cardinal-North-Lighted.svg": {
+      "kind": "file",
+      "bytes": 707,
+      "sha256": "b1fd5a39ceb31bac71f65122f5ac3d08635b15733caf3683f324dcba4c1023e5"
+    },
+    "share/opencpn/uidata/markicons/Marks-Cardinal-North.svg": {
+      "kind": "file",
+      "bytes": 620,
+      "sha256": "8930a14e500d63b839ab46e04286146e8bdf232857365c37a9430bc6c102167e"
+    },
+    "share/opencpn/uidata/markicons/Marks-Cardinal-South-Lighted.svg": {
+      "kind": "file",
+      "bytes": 889,
+      "sha256": "c3235f5626ca8bf956b7ac0a80061860bd16e896a363bb071e69a39287b86693"
+    },
+    "share/opencpn/uidata/markicons/Marks-Cardinal-South.svg": {
+      "kind": "file",
+      "bytes": 749,
+      "sha256": "389c1041c09fc2b1f5f6814a6c54880e85f9062c5eae7ae02b47a1cbf4629900"
+    },
+    "share/opencpn/uidata/markicons/Marks-Cardinal-West-Lighted.svg": {
+      "kind": "file",
+      "bytes": 971,
+      "sha256": "ac3224416c96fbcabdd9faa21b77c97c697d9d4285891302649000aa830a3407"
+    },
+    "share/opencpn/uidata/markicons/Marks-Cardinal-West.svg": {
+      "kind": "file",
+      "bytes": 835,
+      "sha256": "581e84035bf677d7181154d256b8ec55826909dbfb35e6a5ab0a7c859ea488bb"
+    },
+    "share/opencpn/uidata/markicons/Marks-Caution-Lighted.svg": {
+      "kind": "file",
+      "bytes": 853,
+      "sha256": "7b607d06a9a7a8ae8891c2d13153da70b394270a271d66588fc0fbf9b6d5a972"
+    },
+    "share/opencpn/uidata/markicons/Marks-Caution.svg": {
+      "kind": "file",
+      "bytes": 705,
+      "sha256": "2f1c532895a25bd0a8e0d5efc8093be54ee1b6dad10d4030f1c5c2d67cbb50af"
+    },
+    "share/opencpn/uidata/markicons/Marks-Danger-Topmark-Lighted.svg": {
+      "kind": "file",
+      "bytes": 1038,
+      "sha256": "7c527953216733de653e32aee871342c941bb18c7c2654020643a8d99cce036f"
+    },
+    "share/opencpn/uidata/markicons/Marks-Danger-Topmark.svg": {
+      "kind": "file",
+      "bytes": 891,
+      "sha256": "c6f1ccc4c59d2bd614d5669c7071dd1fd7095815c862fb38b4aa2354cc3754c0"
+    },
+    "share/opencpn/uidata/markicons/Marks-Lateral-Port-IALA-A-Lighted.svg": {
+      "kind": "file",
+      "bytes": 669,
+      "sha256": "8bf484483f25136f8437058dceb57b77aead022475448dbd65b1730434fd311a"
+    },
+    "share/opencpn/uidata/markicons/Marks-Lateral-Port-IALA-A.svg": {
+      "kind": "file",
+      "bytes": 524,
+      "sha256": "19d7c5cdb4e1263b5d375388f27ceb7218e7b1ed64c790b326d9856109e26088"
+    },
+    "share/opencpn/uidata/markicons/Marks-Lateral-Port-IALA-B-Lighted.svg": {
+      "kind": "file",
+      "bytes": 671,
+      "sha256": "689caca74765cbdf1087ded4747934579f9b5393f0c15a2641fd2734288349a7"
+    },
+    "share/opencpn/uidata/markicons/Marks-Lateral-Port-IALA-B.svg": {
+      "kind": "file",
+      "bytes": 525,
+      "sha256": "fe6214c8804ca7cd036a9c26f80115872d1f1322f4d88a4925f65ec8ec9b7134"
+    },
+    "share/opencpn/uidata/markicons/Marks-Lateral-Starboard-IALA-A-Lighted.svg": {
+      "kind": "file",
+      "bytes": 668,
+      "sha256": "8d19d3336fe39b0cf7001d0513ca6b37287b9f36d6a26c789e5638dba8b78c88"
+    },
+    "share/opencpn/uidata/markicons/Marks-Lateral-Starboard-IALA-A.svg": {
+      "kind": "file",
+      "bytes": 528,
+      "sha256": "c1f5df5c8727cf046cd1b56120bae2f9995e631c5645d28e75f962d0c8e7ca56"
+    },
+    "share/opencpn/uidata/markicons/Marks-Lateral-Starboard-IALA-B-Lighted.svg": {
+      "kind": "file",
+      "bytes": 669,
+      "sha256": "0c7048c72c97a2223db25c36e0f0e3f788d6f398f0061e84869d58b16144823c"
+    },
+    "share/opencpn/uidata/markicons/Marks-Lateral-Starboard-IALA-B.svg": {
+      "kind": "file",
+      "bytes": 523,
+      "sha256": "c99610944aa833586de6bf8132f290f8a7b32ca0d43219ed3931f74f112250c2"
+    },
+    "share/opencpn/uidata/markicons/Marks-Light-Green.svg": {
+      "kind": "file",
+      "bytes": 525,
+      "sha256": "0c1dce5b0f0e23e66f81781c0e68711e50df328b45683e787a1e67689a81a3e9"
+    },
+    "share/opencpn/uidata/markicons/Marks-Light-Red-Green.svg": {
+      "kind": "file",
+      "bytes": 611,
+      "sha256": "4a8e9bb9cb924db59b253a87e535d32d3fccd81f158279ad34c6bf90905a23fe"
+    },
+    "share/opencpn/uidata/markicons/Marks-Light-Red.svg": {
+      "kind": "file",
+      "bytes": 524,
+      "sha256": "74b88781f19caa7108a47b0d67d287cc53dc2f047a09026bc046ec5269bb2be7"
+    },
+    "share/opencpn/uidata/markicons/Marks-Light-TypeA.svg": {
+      "kind": "file",
+      "bytes": 539,
+      "sha256": "b62c5cc046299cf0f409c63164e8f566c1c100f42f62657971ee2eddf7d45118"
+    },
+    "share/opencpn/uidata/markicons/Marks-Light-TypeB.svg": {
+      "kind": "file",
+      "bytes": 705,
+      "sha256": "2b49458cb90697088cc5ae01195e9523f781b6bfdcb160498e481a1cc7c51f22"
+    },
+    "share/opencpn/uidata/markicons/Marks-Light-Vessel.svg": {
+      "kind": "file",
+      "bytes": 749,
+      "sha256": "161007ab227b3f75e252e1426f14346d2a779341bff2c27ca0fb892512a86064"
+    },
+    "share/opencpn/uidata/markicons/Marks-Mooring-Buoy-Super.svg": {
+      "kind": "file",
+      "bytes": 405,
+      "sha256": "264b08924ee7804fb36e78bf10e7c4c6311ceb241814023fea53249f211729bf"
+    },
+    "share/opencpn/uidata/markicons/Marks-Mooring-Buoy.svg": {
+      "kind": "file",
+      "bytes": 405,
+      "sha256": "2c1988eb8637759bf8d41ecc1b46bd97e3359ef681c4a212239dc93c967fa2bf"
+    },
+    "share/opencpn/uidata/markicons/Marks-Mooring-Float.svg": {
+      "kind": "file",
+      "bytes": 511,
+      "sha256": "841b5dea4fdffeab42fecbd907fa08a3b47bd5fd16cae6ed89f36171f14c3585"
+    },
+    "share/opencpn/uidata/markicons/Marks-Mooring-Pile.svg": {
+      "kind": "file",
+      "bytes": 353,
+      "sha256": "a4d7df37c5dccf1219c99374cd346a5eb329b510a621f57c8cea297e6c7dc7c6"
+    },
+    "share/opencpn/uidata/markicons/Marks-New-Danger-Lighted.svg": {
+      "kind": "file",
+      "bytes": 2554,
+      "sha256": "8ad3e27d968b406c7011e26e488fe9d223d5da8abbaa37e5b5b4f750ee32e8e4"
+    },
+    "share/opencpn/uidata/markicons/Marks-New-Danger.svg": {
+      "kind": "file",
+      "bytes": 2422,
+      "sha256": "721659782a42e9e3df05a24c3fc86f1de216348f44baf689042de1d5e8baafea"
+    },
+    "share/opencpn/uidata/markicons/Marks-Race-Committee-Start-Boat.svg": {
+      "kind": "file",
+      "bytes": 954,
+      "sha256": "422e4917392e2ea332247555ffad2cf9c7febf5fc86026855658779bfe91f3ea"
+    },
+    "share/opencpn/uidata/markicons/Marks-Race-Finish.svg": {
+      "kind": "file",
+      "bytes": 1483,
+      "sha256": "90a845924ab2d95e714a78c35ae6cb41b69ba876e64c63052d363c165782c765"
+    },
+    "share/opencpn/uidata/markicons/Marks-Race-Start.svg": {
+      "kind": "file",
+      "bytes": 465,
+      "sha256": "166f15e862114527a41c2ab49cc9be2bcfb61e8ae3fdae076ef4455f7d892cff"
+    },
+    "share/opencpn/uidata/markicons/Marks-Race-Tetrahedron-Mark1.svg": {
+      "kind": "file",
+      "bytes": 503,
+      "sha256": "e6bb01f1742e7ae45b198ed4bb587c8700a1f3523b16b56e11712e8dbb6b97f2"
+    },
+    "share/opencpn/uidata/markicons/Marks-Race-Tetrahedron-Mark2.svg": {
+      "kind": "file",
+      "bytes": 716,
+      "sha256": "618df4fd8007a98688377d5c6d177e31ccf0dfa7265268e98e44947da463402d"
+    },
+    "share/opencpn/uidata/markicons/Marks-Race-Tetrahedron-Mark3.svg": {
+      "kind": "file",
+      "bytes": 825,
+      "sha256": "bc48b7aab19d95c9078995efe3363fd867d63af10cadfc2bd1c3b22fe83f1bda"
+    },
+    "share/opencpn/uidata/markicons/Marks-Race-Tetrahedron-Mark4.svg": {
+      "kind": "file",
+      "bytes": 494,
+      "sha256": "fdef99a3cde0f9ad1a98de11f3ef7463d77962f4fe67ca2e3f0240dab8e9ab6d"
+    },
+    "share/opencpn/uidata/markicons/Marks-Race-Tetrahedron-Mark5.svg": {
+      "kind": "file",
+      "bytes": 686,
+      "sha256": "0eb73c476f28d586a9a11239472aaf137029ce76d03269834f811ff7c26c9417"
+    },
+    "share/opencpn/uidata/markicons/Marks-Safe-Water-Lighted.svg": {
+      "kind": "file",
+      "bytes": 1663,
+      "sha256": "d5aed10c72637d0465a94cddd73f1cf5cdfad5e1bef458407d2e7c05812516ea"
+    },
+    "share/opencpn/uidata/markicons/Marks-Safe-Water.svg": {
+      "kind": "file",
+      "bytes": 1579,
+      "sha256": "3dbda338bdc5bbb301305383312579dcf6a8048fb23b111243f1559e80480597"
+    },
+    "share/opencpn/uidata/markicons/Sea-Current-Eastbound.svg": {
+      "kind": "file",
+      "bytes": 1873,
+      "sha256": "21b22dd65cdf1c3e67a136f2552c0b354ea8f224fc24409866ecd79b70c01502"
+    },
+    "share/opencpn/uidata/markicons/Sea-Current-N-Eastbound.svg": {
+      "kind": "file",
+      "bytes": 1996,
+      "sha256": "a9accf8b7f7276ee86352d11605318c4fe01787586a8dd6dd5938766ee0762c3"
+    },
+    "share/opencpn/uidata/markicons/Sea-Current-N-Westbound.svg": {
+      "kind": "file",
+      "bytes": 1997,
+      "sha256": "5d3dfeea531a9fe5f0572efdd05a1097fc6a1a154abe33ae156326437713179d"
+    },
+    "share/opencpn/uidata/markicons/Sea-Current-Northbound.svg": {
+      "kind": "file",
+      "bytes": 1872,
+      "sha256": "9ee33de168eef2043b52700effa5b43ef0f25b6d3807364465c1de235fbc867a"
+    },
+    "share/opencpn/uidata/markicons/Sea-Current-S-Eastbound.svg": {
+      "kind": "file",
+      "bytes": 1999,
+      "sha256": "701973b1cea7caa0b6e4b0843279fc39a1cd449812f6095180d14fd50068ffa5"
+    },
+    "share/opencpn/uidata/markicons/Sea-Current-S-Westbound.svg": {
+      "kind": "file",
+      "bytes": 1999,
+      "sha256": "d4a2b499619cdc881752d6d21406846ed7c3cc907b3cc6da6dcd6ab545fbc2e4"
+    },
+    "share/opencpn/uidata/markicons/Sea-Current-Southbound.svg": {
+      "kind": "file",
+      "bytes": 1876,
+      "sha256": "e800c43ab867e5a61571e0a1dfdc1be16a0b05825e0f7e12aed6777398070563"
+    },
+    "share/opencpn/uidata/markicons/Sea-Current-Westbound.svg": {
+      "kind": "file",
+      "bytes": 1874,
+      "sha256": "613d4594530adc8898bcab951a313cd74ad6120f680a66c0caca1a0da6c2f6a3"
+    },
+    "share/opencpn/uidata/markicons/Sea-DepthA-Black.svg": {
+      "kind": "file",
+      "bytes": 523,
+      "sha256": "e9aacd061db6a216a53004d0ac3061730e4d70a0b95170150472406a92c43568"
+    },
+    "share/opencpn/uidata/markicons/Sea-DepthA-Blue.svg": {
+      "kind": "file",
+      "bytes": 547,
+      "sha256": "cb358f99fd4e46359f5562998a2d36bba93f04d272b73f13c7aab2b250107150"
+    },
+    "share/opencpn/uidata/markicons/Sea-DepthA-Green.svg": {
+      "kind": "file",
+      "bytes": 544,
+      "sha256": "94235b5f5b1fe0cbb31ea3e8adb3cd9bed8fe512649542edb3c08e04e66edc62"
+    },
+    "share/opencpn/uidata/markicons/Sea-DepthA-Magenta.svg": {
+      "kind": "file",
+      "bytes": 596,
+      "sha256": "15271c95dd1322d0d48ce6411457a48248f35f9bdc6136da654839b3bcad4caa"
+    },
+    "share/opencpn/uidata/markicons/Sea-DepthA-Orange.svg": {
+      "kind": "file",
+      "bytes": 547,
+      "sha256": "bac406cd924f97585ee14435befb2e33873b816036d2a06139bc1c9c601e34ca"
+    },
+    "share/opencpn/uidata/markicons/Sea-DepthA-Red.svg": {
+      "kind": "file",
+      "bytes": 544,
+      "sha256": "8ddd515247654adee1ef9568faeeeabcd1f6801d3f6da33b75817f2a60f9dc4b"
+    },
+    "share/opencpn/uidata/markicons/Sea-DepthA-White.svg": {
+      "kind": "file",
+      "bytes": 593,
+      "sha256": "5434918df8a36152c58583f150b6216ea907bf5c29ef57df4248fd1ad13481e3"
+    },
+    "share/opencpn/uidata/markicons/Sea-DepthA-Yellow.svg": {
+      "kind": "file",
+      "bytes": 544,
+      "sha256": "310f263b16d0bcf7aedcc350c03dee4c7a4471c90f4dc36272272fa621dc1a17"
+    },
+    "share/opencpn/uidata/markicons/Sea-DepthB-Black.svg": {
+      "kind": "file",
+      "bytes": 466,
+      "sha256": "dd71269ead3d9f1c71e9d8e138789f9645c8b5639aaf3e3ebf632ca826f0c38c"
+    },
+    "share/opencpn/uidata/markicons/Sea-DepthB-Blue.svg": {
+      "kind": "file",
+      "bytes": 478,
+      "sha256": "c0d2e88ad29c20be9dddf06ab6f04218d0974f1bf9d423b6c16882e0d2ce747d"
+    },
+    "share/opencpn/uidata/markicons/Sea-DepthB-Green.svg": {
+      "kind": "file",
+      "bytes": 444,
+      "sha256": "f7b2cccb6fbd0372c7146329cf61a3f7561bfdcb1924f7061f937709b0f17257"
+    },
+    "share/opencpn/uidata/markicons/Sea-DepthB-Magenta.svg": {
+      "kind": "file",
+      "bytes": 441,
+      "sha256": "4fde26d88599cad9343f82123f97c3b0d0d9a193148d84a050632be666831889"
+    },
+    "share/opencpn/uidata/markicons/Sea-DepthB-Orange.svg": {
+      "kind": "file",
+      "bytes": 478,
+      "sha256": "16eb5db8dd9d5742a0d2795c0c3d2d4c337a5cdfcf44f6a1b8b4050420d4a33c"
+    },
+    "share/opencpn/uidata/markicons/Sea-DepthB-Red.svg": {
+      "kind": "file",
+      "bytes": 477,
+      "sha256": "edbd35564e552bebf463122867ea0ef72c2ff2b53eaf0f847da86619515bdeb3"
+    },
+    "share/opencpn/uidata/markicons/Sea-DepthB-White.svg": {
+      "kind": "file",
+      "bytes": 441,
+      "sha256": "b11b3a642cdebed46266f0d930cdcbdadf3dcfc865a6c06f2020554541a18345"
+    },
+    "share/opencpn/uidata/markicons/Sea-DepthB-Yellow.svg": {
+      "kind": "file",
+      "bytes": 444,
+      "sha256": "c881cb8f8afb4d436a4d7f80f24494af8d38f0bae29e4244f18d6020988a802a"
+    },
+    "share/opencpn/uidata/markicons/Sea-Eddies-Black.svg": {
+      "kind": "file",
+      "bytes": 540,
+      "sha256": "8ce162454b23884745b1f19c06d6967a18ce05ee0ce55ab35c2433816acca30c"
+    },
+    "share/opencpn/uidata/markicons/Sea-Eddies-Blue.svg": {
+      "kind": "file",
+      "bytes": 540,
+      "sha256": "b26e34331977ce9678b42d4089576e87f556f7faf4c5a864ae38d52bf4f10386"
+    },
+    "share/opencpn/uidata/markicons/Sea-Eddies-Green.svg": {
+      "kind": "file",
+      "bytes": 543,
+      "sha256": "11f4f30eaeb9b4739596e63379e74b0d2767f1b600bdc467cf2e1befe33f11a2"
+    },
+    "share/opencpn/uidata/markicons/Sea-Eddies-Magenta.svg": {
+      "kind": "file",
+      "bytes": 540,
+      "sha256": "073d03f53b35a430e33884ba3a77f5060ea5356d6dfc7f75736a470ab587afbd"
+    },
+    "share/opencpn/uidata/markicons/Sea-Eddies-Orange.svg": {
+      "kind": "file",
+      "bytes": 540,
+      "sha256": "7824ff940c23de084899f9d1962175243436aaa1e4348c83eaedba768ace7a58"
+    },
+    "share/opencpn/uidata/markicons/Sea-Eddies-Red.svg": {
+      "kind": "file",
+      "bytes": 539,
+      "sha256": "cef7504ff339877710fba74ef177d59612acaeab61b2ad8a1d9757228da8be22"
+    },
+    "share/opencpn/uidata/markicons/Sea-Eddies-White.svg": {
+      "kind": "file",
+      "bytes": 540,
+      "sha256": "7839db5ec14751ba5e98eaa545fae826ce55514351a8d1984316d68f3cdda73e"
+    },
+    "share/opencpn/uidata/markicons/Sea-Eddies-Yellow.svg": {
+      "kind": "file",
+      "bytes": 543,
+      "sha256": "6109f1315c787fb98c5c3b5879f6f48eb9fd2f9eca5b3a5cdc44a7947c34b032"
+    },
+    "share/opencpn/uidata/markicons/Sea-Floor-Coral.svg": {
+      "kind": "file",
+      "bytes": 7460,
+      "sha256": "a4385f34f2cb73096113bc45abda1f9b7c457bceb4f3284ac0a086fe88e24c3f"
+    },
+    "share/opencpn/uidata/markicons/Sea-Floor-Sea-Weed.svg": {
+      "kind": "file",
+      "bytes": 1076,
+      "sha256": "49de3ca1972c3c50efaff400107ad11d02a30317766d859cf69162ec4bb02a18"
+    },
+    "share/opencpn/uidata/markicons/Sea-Floor-Text-Clay.svg": {
+      "kind": "file",
+      "bytes": 815,
+      "sha256": "1648d44585b98c3edc63535d817f55dbafeafe49d4b16bf435e29808ce5278fb"
+    },
+    "share/opencpn/uidata/markicons/Sea-Floor-Text-Coral.svg": {
+      "kind": "file",
+      "bytes": 1385,
+      "sha256": "5a5a3c59bf98afb9ce72c5e9f29d42e69bae924c1902c0e2239f5f9bb61b01a8"
+    },
+    "share/opencpn/uidata/markicons/Sea-Floor-Text-Grass.svg": {
+      "kind": "file",
+      "bytes": 1972,
+      "sha256": "a80898474104dfbd735cd103c010a356805829f06a5eabbf2c0a40a01fa12eb4"
+    },
+    "share/opencpn/uidata/markicons/Sea-Floor-Text-Mud.svg": {
+      "kind": "file",
+      "bytes": 960,
+      "sha256": "e01b1a55d6ed82ce3223185a31a410ee7ced6ec2ef93d27d2943945951a276b1"
+    },
+    "share/opencpn/uidata/markicons/Sea-Floor-Text-Rock.svg": {
+      "kind": "file",
+      "bytes": 1313,
+      "sha256": "bf975631b216eb39ed8760c1d8b7784261307a826eccf9511a07fc8872cb1700"
+    },
+    "share/opencpn/uidata/markicons/Sea-Floor-Text-Sand.svg": {
+      "kind": "file",
+      "bytes": 1217,
+      "sha256": "b8be5dd64a3bd582300db0714762eabd52aa4d05cd71b6c79c8a667e4fb2fe17"
+    },
+    "share/opencpn/uidata/markicons/Sea-Height-Black.svg": {
+      "kind": "file",
+      "bytes": 441,
+      "sha256": "3269322c9ec45a210fc7c996b0c48142f9584fb9feb0c45e88b2a34bb19568bc"
+    },
+    "share/opencpn/uidata/markicons/Sea-Height-Blue.svg": {
+      "kind": "file",
+      "bytes": 478,
+      "sha256": "90c7648356fdc5699676297eba002b5d784e9ffe623d13a8f1b55c76f5b4c437"
+    },
+    "share/opencpn/uidata/markicons/Sea-Height-Green.svg": {
+      "kind": "file",
+      "bytes": 444,
+      "sha256": "7518bf01f3c47c6098288cc7a629ecf3f8498ba6593631f47341feab8125de8b"
+    },
+    "share/opencpn/uidata/markicons/Sea-Height-Magenta.svg": {
+      "kind": "file",
+      "bytes": 441,
+      "sha256": "8e60da2934246e6443e71134ab8e4b8805a11709ce82c8f51206681ac7421c41"
+    },
+    "share/opencpn/uidata/markicons/Sea-Height-Orange.svg": {
+      "kind": "file",
+      "bytes": 478,
+      "sha256": "91216001b2c8dfc522f2e43353f965542709d774aec475be9fee4d0d8f2d79d2"
+    },
+    "share/opencpn/uidata/markicons/Sea-Height-Red.svg": {
+      "kind": "file",
+      "bytes": 477,
+      "sha256": "60756429ed09120f49698a4873075a12c4c4d0dadded123351d70a01505d929c"
+    },
+    "share/opencpn/uidata/markicons/Sea-Height-White.svg": {
+      "kind": "file",
+      "bytes": 441,
+      "sha256": "8caf964fe0ffc191585268ac74799dc3341e24748fecc89ac006937528883231"
+    },
+    "share/opencpn/uidata/markicons/Sea-Height-Yellow.svg": {
+      "kind": "file",
+      "bytes": 444,
+      "sha256": "5e984717fecbd6d581e2bc07434580b3869d2dbe0926cdc4ff8dd5c6906b9734"
+    },
+    "share/opencpn/uidata/markicons/Service-Chandlery.svg": {
+      "kind": "file",
+      "bytes": 518,
+      "sha256": "d3ec41184297d74f9f013441c36e1adef51755a161d4214a9b82c74b3d5342e9"
+    },
+    "share/opencpn/uidata/markicons/Service-Dock-Dinghy.svg": {
+      "kind": "file",
+      "bytes": 826,
+      "sha256": "c72242e7c13dde81536aef2ce4df77577fb9e12e9aa51ef14b79a7556bd9daf8"
+    },
+    "share/opencpn/uidata/markicons/Service-Dock.svg": {
+      "kind": "file",
+      "bytes": 627,
+      "sha256": "9471df19a3cd9ca8803eb39ed9d64280ac1fa369a479a3575a2566923b2f2e61"
+    },
+    "share/opencpn/uidata/markicons/Service-Food.svg": {
+      "kind": "file",
+      "bytes": 1235,
+      "sha256": "600b4585596024342d4479aaf4d42c75245b00658af4508fc11954712abfd4b9"
+    },
+    "share/opencpn/uidata/markicons/Service-Fuel-Jerry-Diesel.svg": {
+      "kind": "file",
+      "bytes": 1100,
+      "sha256": "48c1f64101d9667ed4ccb6d8eccfcd5c7c3f0f6505f1cbe67b8ac645ddc807c7"
+    },
+    "share/opencpn/uidata/markicons/Service-Fuel-Jerry-Petrol.svg": {
+      "kind": "file",
+      "bytes": 1084,
+      "sha256": "497a772967a1ee9d4160de90ffb3199cff84a9843e3e994aef12fb45a33e5ef5"
+    },
+    "share/opencpn/uidata/markicons/Service-Fuel-Jerry.svg": {
+      "kind": "file",
+      "bytes": 1874,
+      "sha256": "c57b5027dd83d175a56a64892cc3b2f4b97c2ecd681b92d93c6bd4be5b0c45e9"
+    },
+    "share/opencpn/uidata/markicons/Service-Fuel-LPG.svg": {
+      "kind": "file",
+      "bytes": 3439,
+      "sha256": "dbf72b387b66941942b6d2002fe361be95d556faf9216075a9ad5fd8fd670153"
+    },
+    "share/opencpn/uidata/markicons/Service-Fuel-Pump-Diesel-Petrol.svg": {
+      "kind": "file",
+      "bytes": 2008,
+      "sha256": "cb397988d3f5b45c9b0f48c79733d74d73a08e50a641430f301c8781e66c17b2"
+    },
+    "share/opencpn/uidata/markicons/Service-Fuel-Pump-Diesel.svg": {
+      "kind": "file",
+      "bytes": 1182,
+      "sha256": "8d43fe2de219de0b34883b6107f50d5072a165b33901e5a4eaac0553ba54bb67"
+    },
+    "share/opencpn/uidata/markicons/Service-Fuel-Pump-Petrol.svg": {
+      "kind": "file",
+      "bytes": 1143,
+      "sha256": "57df120f31e5b16a70c43dc5f9129b881107d6be4c13b54134491d9cc2767040"
+    },
+    "share/opencpn/uidata/markicons/Service-Grocery1.svg": {
+      "kind": "file",
+      "bytes": 1305,
+      "sha256": "1e20ec8eeca4466826165c2d3139d7a188966102b2fbd616c7bf56527b002c82"
+    },
+    "share/opencpn/uidata/markicons/Service-Grocery2.svg": {
+      "kind": "file",
+      "bytes": 2518,
+      "sha256": "0fb23e605465b28403b3993adf7a4703e78ac32a9972c60a9b52173d03b606a7"
+    },
+    "share/opencpn/uidata/markicons/Service-Haulout.svg": {
+      "kind": "file",
+      "bytes": 740,
+      "sha256": "19feaa45bc5b9532257e4ec45f38269b86e6b23fdb4f4169dc13b8f40d9811fe"
+    },
+    "share/opencpn/uidata/markicons/Service-Ice1.svg": {
+      "kind": "file",
+      "bytes": 4372,
+      "sha256": "4229b6781614c735a80de80397d3b2a80a146a161e37ccdfcb20cddbb29869ae"
+    },
+    "share/opencpn/uidata/markicons/Service-Ice2.svg": {
+      "kind": "file",
+      "bytes": 1992,
+      "sha256": "983f51f14b16c5f7770b282a713e4d72bcc059886ce4266ac8c6ff337c6420ec"
+    },
+    "share/opencpn/uidata/markicons/Service-Ice3.svg": {
+      "kind": "file",
+      "bytes": 2433,
+      "sha256": "f9cb5cffb79943930dc6875ed064aa358fe523fbf51702700e1adbb9467fa317"
+    },
+    "share/opencpn/uidata/markicons/Service-Internet-Cafe.svg": {
+      "kind": "file",
+      "bytes": 1198,
+      "sha256": "342c802bc6c02229a92facccdc7d9edf4058aadebd9db1dbf201b697e4bfb8d7"
+    },
+    "share/opencpn/uidata/markicons/Service-Internet-WiFi.svg": {
+      "kind": "file",
+      "bytes": 853,
+      "sha256": "b48c601273eff31142a756c1cbd639722ee69464dd304ee3ba88e64567a869bf"
+    },
+    "share/opencpn/uidata/markicons/Service-Laundry.svg": {
+      "kind": "file",
+      "bytes": 2377,
+      "sha256": "a4e01240a8bb7038a394af278ac7c09257069523f572c4e5350313ffd941a3c3"
+    },
+    "share/opencpn/uidata/markicons/Service-Marina.svg": {
+      "kind": "file",
+      "bytes": 694,
+      "sha256": "c7bb24f595358370eb211df2cb51bfd59d54287fb97df55f6875b6168e482bcd"
+    },
+    "share/opencpn/uidata/markicons/Service-Public-Landing.svg": {
+      "kind": "file",
+      "bytes": 1063,
+      "sha256": "f356008c461f1420187788ac5acc2c3747f710f5050cae60147935f26004cd2f"
+    },
+    "share/opencpn/uidata/markicons/Service-Pump-Out-Boat.svg": {
+      "kind": "file",
+      "bytes": 987,
+      "sha256": "4d7bf9a2feceba3cc2f09e99d2f59577e2cec75cbafa4101ea0c51d6fff819b3"
+    },
+    "share/opencpn/uidata/markicons/Service-Pump-Out-Facility.svg": {
+      "kind": "file",
+      "bytes": 733,
+      "sha256": "cc3ab3fa32958641b153f77fa1c10d3577f92a3a67610a1f3ac3a756cd55966e"
+    },
+    "share/opencpn/uidata/markicons/Service-Repairs.svg": {
+      "kind": "file",
+      "bytes": 993,
+      "sha256": "82613ba31dce053bbfc908a37702929a07a71b4c3e168d3741c027e13237c6e5"
+    },
+    "share/opencpn/uidata/markicons/Service-Water1.svg": {
+      "kind": "file",
+      "bytes": 818,
+      "sha256": "8561ca665888be56ad629c087d1f4a1839c1b61b506adbd3bf14085e3ba14109"
+    },
+    "share/opencpn/uidata/markicons/Service-Water2.svg": {
+      "kind": "file",
+      "bytes": 1480,
+      "sha256": "1cb5506333a38f7001138d047a2ebe97dc78995f91ddfa5c2d50dd60abf024b0"
+    },
+    "share/opencpn/uidata/markicons/Service-Wine&Dine.svg": {
+      "kind": "file",
+      "bytes": 2007,
+      "sha256": "b47efb6e43f501d941007a7a849139d85059eb21844e2e43170a2b4e5491a796"
+    },
+    "share/opencpn/uidata/markicons/Service-Yacht-Club.svg": {
+      "kind": "file",
+      "bytes": 1769,
+      "sha256": "ca04890325cbc87e4e38429b02203b9b099c2f15f08839d6a531e9dcccd9d9fc"
+    },
+    "share/opencpn/uidata/markicons/Symbol-Anchor1.svg": {
+      "kind": "file",
+      "bytes": 906,
+      "sha256": "32578d942bc26990cb1ee6c2cfa9106c719e16574fb6d0d7a5cb6849c9ae96ce"
+    },
+    "share/opencpn/uidata/markicons/Symbol-Anchor2.svg": {
+      "kind": "file",
+      "bytes": 892,
+      "sha256": "1c8fee23eafd8dfe3299e627fc45652557c250f3b018cfa4da52d5e2e9b89d64"
+    },
+    "share/opencpn/uidata/markicons/Symbol-Anchor3.svg": {
+      "kind": "file",
+      "bytes": 903,
+      "sha256": "39cca0932a326a53b71d31b16864c9c75592e6e7961e342522a1da3dbc5c9ae0"
+    },
+    "share/opencpn/uidata/markicons/Symbol-Arrow-Black.svg": {
+      "kind": "file",
+      "bytes": 417,
+      "sha256": "24b439a51ebf2df7083150bdb56d42aa2332b38c5ef51acf3559c1040befbc8a"
+    },
+    "share/opencpn/uidata/markicons/Symbol-Arrow-Blue.svg": {
+      "kind": "file",
+      "bytes": 429,
+      "sha256": "a0ef5fda50a375c1afdcabf18cba07077687fa2351ce7c80cdf95be40112a2f7"
+    },
+    "share/opencpn/uidata/markicons/Symbol-Arrow-Green.svg": {
+      "kind": "file",
+      "bytes": 432,
+      "sha256": "f616c73fa40a763197f1cc481b2ac38448867dc6c74832e22257de3eb0403bbc"
+    },
+    "share/opencpn/uidata/markicons/Symbol-Arrow-Magenta.svg": {
+      "kind": "file",
+      "bytes": 429,
+      "sha256": "53aa619943f1ada3e9dd3e61d5db7d392184f8e9b448aa56b0978ef6d58ebc8f"
+    },
+    "share/opencpn/uidata/markicons/Symbol-Arrow-Orange.svg": {
+      "kind": "file",
+      "bytes": 429,
+      "sha256": "931923e2d8cc4e4ee7b54c7ef2c355c445b8ccabdf3911430419ebe36ecf5591"
+    },
+    "share/opencpn/uidata/markicons/Symbol-Arrow-Red.svg": {
+      "kind": "file",
+      "bytes": 428,
+      "sha256": "0e83aa771d210748213d9702e2a81ab7fba5c64cebab5f484000db987839eb9d"
+    },
+    "share/opencpn/uidata/markicons/Symbol-Arrow-White.svg": {
+      "kind": "file",
+      "bytes": 429,
+      "sha256": "833ebcb81d103ce2862baba5ae48f3a599263e43d25bf5cd84bc5a28942a9495"
+    },
+    "share/opencpn/uidata/markicons/Symbol-Arrow-Yellow.svg": {
+      "kind": "file",
+      "bytes": 432,
+      "sha256": "c219f9e6a9e672a4508726b17ba4f1eb152185dd36d649eb96d1775b6a451d7b"
+    },
+    "share/opencpn/uidata/markicons/Symbol-Circle-Black.svg": {
+      "kind": "file",
+      "bytes": 404,
+      "sha256": "7e4c9ba7a034358998375ff82eb1af741b9548663de5fd662a26c14cc0a42338"
+    },
+    "share/opencpn/uidata/markicons/Symbol-Circle-Blue.svg": {
+      "kind": "file",
+      "bytes": 416,
+      "sha256": "699aaf26434bcf841a1bd371600f8785e31077296ee15da6b6ea9a4fb0b4dde1"
+    },
+    "share/opencpn/uidata/markicons/Symbol-Circle-Green.svg": {
+      "kind": "file",
+      "bytes": 419,
+      "sha256": "29cc3e9576346039730b9b5fc36db9c13fb8476108f3be0056540fc73c257fe8"
+    },
+    "share/opencpn/uidata/markicons/Symbol-Circle-Magenta.svg": {
+      "kind": "file",
+      "bytes": 416,
+      "sha256": "c3afac4c8ef93f6da8bd3da5feb185e8dff332cd2f07a305ac487e2fd1eea52d"
+    },
+    "share/opencpn/uidata/markicons/Symbol-Circle-Orange.svg": {
+      "kind": "file",
+      "bytes": 416,
+      "sha256": "ab2d563f0280c63db00ca3e05016751e1165a9b46160cfa02349a74d539c489e"
+    },
+    "share/opencpn/uidata/markicons/Symbol-Circle-Red.svg": {
+      "kind": "file",
+      "bytes": 415,
+      "sha256": "20e6847783999cebc48db1b43cf975f666af5ac8a982443dd681aa5d5a42cf7c"
+    },
+    "share/opencpn/uidata/markicons/Symbol-Circle-White.svg": {
+      "kind": "file",
+      "bytes": 404,
+      "sha256": "ce5dc3b6dfd949b1cd8a5e0b83fdd24f7a6c12c846650166ab7328e9899ef8c2"
+    },
+    "share/opencpn/uidata/markicons/Symbol-Circle-Yellow.svg": {
+      "kind": "file",
+      "bytes": 419,
+      "sha256": "ff87a6097e13e2dbe03fedcbeba9e09494d14f9b74a6283f7a0690a623fa007c"
+    },
+    "share/opencpn/uidata/markicons/Symbol-Circle.svg": {
+      "kind": "file",
+      "bytes": 436,
+      "sha256": "a917e613ebaa7b24c76338101e66f1922d567c417c3daf14c4e53a875870a7dc"
+    },
+    "share/opencpn/uidata/markicons/Symbol-Diamond-Black.svg": {
+      "kind": "file",
+      "bytes": 455,
+      "sha256": "0b0ed9b35f8b9bbc2e6b6e9fcb589e0c20a0873ecc6bf9851cc8bb793224e8d6"
+    },
+    "share/opencpn/uidata/markicons/Symbol-Diamond-Blue.svg": {
+      "kind": "file",
+      "bytes": 467,
+      "sha256": "da6f92aef9fecba9bbd1cfe0900ecd56c2a78fa4aac9bb217c143400384a077a"
+    },
+    "share/opencpn/uidata/markicons/Symbol-Diamond-Green.svg": {
+      "kind": "file",
+      "bytes": 470,
+      "sha256": "d9fa8ce2ead0884373ae8ec477e814f61bacddd9074b3d2c87628b7d8c7582fb"
+    },
+    "share/opencpn/uidata/markicons/Symbol-Diamond-Magenta.svg": {
+      "kind": "file",
+      "bytes": 467,
+      "sha256": "7bbccd373c3769e4af0e6f61188a0a7b5f3ff7234a96f6d96a377da30364beb0"
+    },
+    "share/opencpn/uidata/markicons/Symbol-Diamond-Orange.svg": {
+      "kind": "file",
+      "bytes": 467,
+      "sha256": "4f4b391a0f6c17b38523f39ce47d9724696eb3f7da3f0a4152fa5cab9da46193"
+    },
+    "share/opencpn/uidata/markicons/Symbol-Diamond-Red.svg": {
+      "kind": "file",
+      "bytes": 466,
+      "sha256": "87cfc87c7732d224418fb2a8c84e53076b4b0f1a9208979a503de25e7db72e97"
+    },
+    "share/opencpn/uidata/markicons/Symbol-Diamond-White.svg": {
+      "kind": "file",
+      "bytes": 455,
+      "sha256": "4a04e1d0da7504522bceaac9c4db8c4a9d366c7d4a884e5b27c9514d98258d51"
+    },
+    "share/opencpn/uidata/markicons/Symbol-Diamond-Yellow.svg": {
+      "kind": "file",
+      "bytes": 458,
+      "sha256": "055c221b5d6c2138c6d07d3313e4208443a232a4ba8f68d7d1f030a7a1b1b6b9"
+    },
+    "share/opencpn/uidata/markicons/Symbol-Empty.svg": {
+      "kind": "file",
+      "bytes": 285,
+      "sha256": "80dcbbe48f3b547212f6a2d8b721ff092e7d8444a564bd6a1292f9858b99ad54"
+    },
+    "share/opencpn/uidata/markicons/Symbol-Exclamation-Black.svg": {
+      "kind": "file",
+      "bytes": 405,
+      "sha256": "491da5214d4333b54f7dfc6a801959e0b138024165001afc13b6366204ea87d1"
+    },
+    "share/opencpn/uidata/markicons/Symbol-Exclamation-Blue.svg": {
+      "kind": "file",
+      "bytes": 417,
+      "sha256": "e8e9146a3aaecaaf02b7ef70921fab9fe62f43ed53fc740c22df4a1d8acd0f17"
+    },
+    "share/opencpn/uidata/markicons/Symbol-Exclamation-Green.svg": {
+      "kind": "file",
+      "bytes": 420,
+      "sha256": "0ddf0a38ef3ec59662c41908bb003dfaf28f625027bdb73a308668cb9ab85a18"
+    },
+    "share/opencpn/uidata/markicons/Symbol-Exclamation-Magenta.svg": {
+      "kind": "file",
+      "bytes": 417,
+      "sha256": "b9376ceea688b476cbf6b96f57f814a339fc387a0652f584c3fd4bd881a7084f"
+    },
+    "share/opencpn/uidata/markicons/Symbol-Exclamation-Orange.svg": {
+      "kind": "file",
+      "bytes": 417,
+      "sha256": "4e39f1888334318302d27ff57a92e2bf539ba594ec8be0db17a274ab33b7fe6c"
+    },
+    "share/opencpn/uidata/markicons/Symbol-Exclamation-Red.svg": {
+      "kind": "file",
+      "bytes": 416,
+      "sha256": "b1b35d9b479c33d4a64d9968e455d38f049e328261e9f47f398117940cf9089c"
+    },
+    "share/opencpn/uidata/markicons/Symbol-Exclamation-White.svg": {
+      "kind": "file",
+      "bytes": 417,
+      "sha256": "006924198c5deb47863cacc8c54e902535e024a5a38f7fce41231387e693c408"
+    },
+    "share/opencpn/uidata/markicons/Symbol-Exclamation-Yellow.svg": {
+      "kind": "file",
+      "bytes": 420,
+      "sha256": "3c625968d3f583c18fc19fec376cf55dcef3a3a017e7b667bda62add00bebff2"
+    },
+    "share/opencpn/uidata/markicons/Symbol-Glow-LargeBlack.svg": {
+      "kind": "file",
+      "bytes": 622,
+      "sha256": "75d171d87000f0f5ac46e3cbb97095fa19ebfddffa9161017980b98fac4b212c"
+    },
+    "share/opencpn/uidata/markicons/Symbol-Glow-LargeBlue.svg": {
+      "kind": "file",
+      "bytes": 637,
+      "sha256": "befca08740248724cc262c144d0c76a0aa7fdeb4ba37aa610d1a385430a6fd47"
+    },
+    "share/opencpn/uidata/markicons/Symbol-Glow-LargeGreen.svg": {
+      "kind": "file",
+      "bytes": 643,
+      "sha256": "ac4da21ee41a085bd2d0e76ea51b86abb8e5410b8d098c01625be5c305dcaf33"
+    },
+    "share/opencpn/uidata/markicons/Symbol-Glow-LargeMagenta.svg": {
+      "kind": "file",
+      "bytes": 640,
+      "sha256": "a8828a207e2e314dd9a5281186c08996320c197cbd97b1a0f86fbf5b4e2ed419"
+    },
+    "share/opencpn/uidata/markicons/Symbol-Glow-LargeOrange.svg": {
+      "kind": "file",
+      "bytes": 640,
+      "sha256": "57ca847b310674d45c4c1f01f6b95410a3973cf185e5915ae093485b35f87ad9"
+    },
+    "share/opencpn/uidata/markicons/Symbol-Glow-LargeRed.svg": {
+      "kind": "file",
+      "bytes": 636,
+      "sha256": "df60718b05cfe1b41a7e86657aed2a1fea98292b40b5cafbad20eba7c2e11690"
+    },
+    "share/opencpn/uidata/markicons/Symbol-Glow-LargeWhite.svg": {
+      "kind": "file",
+      "bytes": 637,
+      "sha256": "0ed02c9a0f0ea14e8d3af29c044e4a002dd4991ef6dc61bb64d9a00e7f0319ed"
+    },
+    "share/opencpn/uidata/markicons/Symbol-Glow-LargeYellow.svg": {
+      "kind": "file",
+      "bytes": 643,
+      "sha256": "8a05af76dace47d838d3e8a059dca2e42154ddea11f762aaa4ebb7157e5aebdb"
+    },
+    "share/opencpn/uidata/markicons/Symbol-Glow-Small-Black.svg": {
+      "kind": "file",
+      "bytes": 622,
+      "sha256": "b73f39f03843ac384465887ca8b59a61f2b2f061f6fabb5e8aa53351ca472479"
+    },
+    "share/opencpn/uidata/markicons/Symbol-Glow-Small-Blue.svg": {
+      "kind": "file",
+      "bytes": 687,
+      "sha256": "30fd6aebf180e5b76770d0e16b464f787f07f708a5ae22fbc35426f6aae5b42e"
+    },
+    "share/opencpn/uidata/markicons/Symbol-Glow-Small-Green.svg": {
+      "kind": "file",
+      "bytes": 643,
+      "sha256": "b4f4a69cc6656d8a027659c6a5008eaf6663aa0edea322aae39c2bef6ee780b9"
+    },
+    "share/opencpn/uidata/markicons/Symbol-Glow-Small-Magenta.svg": {
+      "kind": "file",
+      "bytes": 640,
+      "sha256": "7500c0dcf05b42c068e3da5e137a0270e279513cb8b6a7088671aea0d6ee0e85"
+    },
+    "share/opencpn/uidata/markicons/Symbol-Glow-Small-Orange.svg": {
+      "kind": "file",
+      "bytes": 640,
+      "sha256": "d0df26793124d3941eb11c091bdf6b42f03ff33ef3f550af0eced8a24018e21a"
+    },
+    "share/opencpn/uidata/markicons/Symbol-Glow-Small-Red.svg": {
+      "kind": "file",
+      "bytes": 636,
+      "sha256": "e71e2806b6a5459a7249adc2dc6853639e8b678d5dc0a191655759c6a71e2bf5"
+    },
+    "share/opencpn/uidata/markicons/Symbol-Glow-Small-White.svg": {
+      "kind": "file",
+      "bytes": 637,
+      "sha256": "6a627403711803dfb9d3c8336e26c5d68d498ead78f97b4182f5b3a2f9b31ce2"
+    },
+    "share/opencpn/uidata/markicons/Symbol-Glow-Small-Yellow.svg": {
+      "kind": "file",
+      "bytes": 643,
+      "sha256": "412d17341f88bbe3a5b85ee9d07722ee7e82b5c6528fcabc8345c48ad434ff7a"
+    },
+    "share/opencpn/uidata/markicons/Symbol-Pin-Black.svg": {
+      "kind": "file",
+      "bytes": 543,
+      "sha256": "f0aa7c8d50cc3951b0abd3ff2c32f155107afd8eac5de705c97d4c0ff992d7cf"
+    },
+    "share/opencpn/uidata/markicons/Symbol-Pin-Blue.svg": {
+      "kind": "file",
+      "bytes": 543,
+      "sha256": "e1deb19d9d1e3514b8e3678a748309c7374e4fd630aa873f0638f859b9d4ad84"
+    },
+    "share/opencpn/uidata/markicons/Symbol-Pin-Green.svg": {
+      "kind": "file",
+      "bytes": 543,
+      "sha256": "9175b0f14656753ab8050b47383637621d7675e5ea79695814f7b6c2e38e7070"
+    },
+    "share/opencpn/uidata/markicons/Symbol-Pin-Magenta.svg": {
+      "kind": "file",
+      "bytes": 543,
+      "sha256": "9738041003a53b6fb53d18aa59d7397bb7577d028a70ff7591ecf8cf3cd538d3"
+    },
+    "share/opencpn/uidata/markicons/Symbol-Pin-Orange.svg": {
+      "kind": "file",
+      "bytes": 543,
+      "sha256": "5af05d7a8a3a2c3684fed25a1311e9e71923bc26c2b463dcc786a2917969c76e"
+    },
+    "share/opencpn/uidata/markicons/Symbol-Pin-Red.svg": {
+      "kind": "file",
+      "bytes": 542,
+      "sha256": "d2fd54f6f2d66ea462c8c40d3078f0633e3c0328a991c437747fd4e19efbb015"
+    },
+    "share/opencpn/uidata/markicons/Symbol-Pin-White.svg": {
+      "kind": "file",
+      "bytes": 546,
+      "sha256": "6536c4291ce1be802e210c7966241035c5497f98b0aeae7930ebf35375090cab"
+    },
+    "share/opencpn/uidata/markicons/Symbol-Pin-Yellow.svg": {
+      "kind": "file",
+      "bytes": 543,
+      "sha256": "9c4184046c04c542f3a615f468d1ee065a4e7d57197d9ecced649a42b3cc72ff"
+    },
+    "share/opencpn/uidata/markicons/Symbol-Question-Black.svg": {
+      "kind": "file",
+      "bytes": 655,
+      "sha256": "8eb7b31b6d17d59582954711a7ca14cf2087f2d09324cc6279c06800fafffec8"
+    },
+    "share/opencpn/uidata/markicons/Symbol-Question-Blue.svg": {
+      "kind": "file",
+      "bytes": 667,
+      "sha256": "8ebe0fa3952b9ec7b17f3c1221cb6692f7eb6ada09e3dc59a0153ecd249e84aa"
+    },
+    "share/opencpn/uidata/markicons/Symbol-Question-Green.svg": {
+      "kind": "file",
+      "bytes": 670,
+      "sha256": "0fb6389961188c848031fa195ab51b52c2110d571694a9a9aed634c5a2c07b4b"
+    },
+    "share/opencpn/uidata/markicons/Symbol-Question-Magenta.svg": {
+      "kind": "file",
+      "bytes": 667,
+      "sha256": "d14727dd644e586cae2777cb975b0cddf0e7ff0699402e4629d78eb506aac9df"
+    },
+    "share/opencpn/uidata/markicons/Symbol-Question-Orange.svg": {
+      "kind": "file",
+      "bytes": 667,
+      "sha256": "9b82050dfccb9b8cac2339dc4207be529aafdfeb698ccec51d9b644900445a8e"
+    },
+    "share/opencpn/uidata/markicons/Symbol-Question-Red.svg": {
+      "kind": "file",
+      "bytes": 666,
+      "sha256": "276a3cc6a4d89228ff92dc8dc81966345a9933dc5a4760a656b506cb855f28fb"
+    },
+    "share/opencpn/uidata/markicons/Symbol-Question-White.svg": {
+      "kind": "file",
+      "bytes": 667,
+      "sha256": "30913866c24258ca47671f2e39fdd46958c9bcf59ecfc6c340af1a8997725db9"
+    },
+    "share/opencpn/uidata/markicons/Symbol-Question-Yellow.svg": {
+      "kind": "file",
+      "bytes": 670,
+      "sha256": "241b0beb88270ee5907769f5f4ca795b6ef9ade085b0257533642421deb65da8"
+    },
+    "share/opencpn/uidata/markicons/Symbol-Spot-Black.svg": {
+      "kind": "file",
+      "bytes": 718,
+      "sha256": "1f67389e3e8befddd9a38adaab0f1eafc5ded2ced7a9a5b475979708e68ae990"
+    },
+    "share/opencpn/uidata/markicons/Symbol-Spot-Blue.svg": {
+      "kind": "file",
+      "bytes": 773,
+      "sha256": "a02e926644eddc232462eddd35b45bf0beb9aa6f667e1c75f4a8b0ffc3c839b7"
+    },
+    "share/opencpn/uidata/markicons/Symbol-Spot-Green.svg": {
+      "kind": "file",
+      "bytes": 773,
+      "sha256": "4377754a9f64b38f7fe7780d586340e2fd58b6a5a08dfaa13e4e48b253a8e3bf"
+    },
+    "share/opencpn/uidata/markicons/Symbol-Spot-Magenta.svg": {
+      "kind": "file",
+      "bytes": 773,
+      "sha256": "48d9650103660354495fbbd3c8aacc6762d8f01142bdedbbd09fb1450541d57c"
+    },
+    "share/opencpn/uidata/markicons/Symbol-Spot-Orange.svg": {
+      "kind": "file",
+      "bytes": 788,
+      "sha256": "b7af4aba59cfb29af7c6a2616acf5718b19064e549abab605e40403e36c67e8f"
+    },
+    "share/opencpn/uidata/markicons/Symbol-Spot-Red.svg": {
+      "kind": "file",
+      "bytes": 772,
+      "sha256": "ad452beead4b3372f46da9b07068de565ee09ef659b41724f0fce38b5c1b6288"
+    },
+    "share/opencpn/uidata/markicons/Symbol-Spot-White.svg": {
+      "kind": "file",
+      "bytes": 794,
+      "sha256": "04ae89f57b0bda0ad9723f639ca8340b985b8e5873ae3bb7a836db424d567ff7"
+    },
+    "share/opencpn/uidata/markicons/Symbol-Spot-Yellow.svg": {
+      "kind": "file",
+      "bytes": 773,
+      "sha256": "55ed04fa62200dcd4883f32c547aacae46112b3e9d4044cf7c1f5b0b3e38d9a6"
+    },
+    "share/opencpn/uidata/markicons/Symbol-Square-Black.svg": {
+      "kind": "file",
+      "bytes": 402,
+      "sha256": "b78694a600bee6e6b05c8bd67a28e4aae1bf6f95bf57703b51a4195dc1888319"
+    },
+    "share/opencpn/uidata/markicons/Symbol-Square-Blue.svg": {
+      "kind": "file",
+      "bytes": 414,
+      "sha256": "5b62c8ccf234fb4b080c0f65ef5b9d134a022155c6c5ffbf9e6cbf10c9dea74a"
+    },
+    "share/opencpn/uidata/markicons/Symbol-Square-Green.svg": {
+      "kind": "file",
+      "bytes": 417,
+      "sha256": "52b47117fc7164ecf66f1f22a2acdf3b04d4534878582c2af87281f7d3bff3aa"
+    },
+    "share/opencpn/uidata/markicons/Symbol-Square-Magenta.svg": {
+      "kind": "file",
+      "bytes": 414,
+      "sha256": "119d0510dd9e0af4ca3443cff3e59ff0f5daaef296f737dc1fa74c190372f84b"
+    },
+    "share/opencpn/uidata/markicons/Symbol-Square-Orange.svg": {
+      "kind": "file",
+      "bytes": 414,
+      "sha256": "f2115442eb5012f525c9b53a404ae34e7651eb8e124309d6b7ead9ea210704f4"
+    },
+    "share/opencpn/uidata/markicons/Symbol-Square-Red.svg": {
+      "kind": "file",
+      "bytes": 413,
+      "sha256": "360bba99990c8f8e19536314aaf615b1086c4c066c60e1fd5556f1331f1d4fcc"
+    },
+    "share/opencpn/uidata/markicons/Symbol-Square-White.svg": {
+      "kind": "file",
+      "bytes": 402,
+      "sha256": "5a479add1fc443dbffbd0d5807ae43227d8d1f3549f7b24724d62005267c7e78"
+    },
+    "share/opencpn/uidata/markicons/Symbol-Square-Yellow.svg": {
+      "kind": "file",
+      "bytes": 417,
+      "sha256": "b33b308125f88ea6b8738ea2a581b2cd8959492e9d3cb7ce41a6fb14564ec77a"
+    },
+    "share/opencpn/uidata/markicons/Symbol-Square.svg": {
+      "kind": "file",
+      "bytes": 433,
+      "sha256": "3b399d497e36634649a9323f16f112bb2729f53e54e149351b9c3902a0c1e889"
+    },
+    "share/opencpn/uidata/markicons/Symbol-Star-Black.svg": {
+      "kind": "file",
+      "bytes": 401,
+      "sha256": "692f7a6d6d04d21fc2da39bdcc5d79a1f700372650eeb287cbbcc3545b835f6a"
+    },
+    "share/opencpn/uidata/markicons/Symbol-Star-Blue.svg": {
+      "kind": "file",
+      "bytes": 413,
+      "sha256": "532c96dec700da6bb8c373a58e33940e0db62a4f3200376db5821a104d0624ec"
+    },
+    "share/opencpn/uidata/markicons/Symbol-Star-Green.svg": {
+      "kind": "file",
+      "bytes": 416,
+      "sha256": "3bc15d9adc442ae78dc43213144a2144254fde64874e7e4791260260154f1c40"
+    },
+    "share/opencpn/uidata/markicons/Symbol-Star-Magenta.svg": {
+      "kind": "file",
+      "bytes": 413,
+      "sha256": "2eacffc3094db60387be3d782da4ac3cff1501b6747214517f0a8e508635d0f0"
+    },
+    "share/opencpn/uidata/markicons/Symbol-Star-Orange.svg": {
+      "kind": "file",
+      "bytes": 413,
+      "sha256": "24dfdd69ec2b1dcaf480e56dcf75f0c519a886817615c5ac6f8f7faf508817ca"
+    },
+    "share/opencpn/uidata/markicons/Symbol-Star-Red.svg": {
+      "kind": "file",
+      "bytes": 412,
+      "sha256": "86db4a93fad2abe71254751487c5f36046838ae73729d430cd3573bef3e7006c"
+    },
+    "share/opencpn/uidata/markicons/Symbol-Star-White.svg": {
+      "kind": "file",
+      "bytes": 413,
+      "sha256": "201e7b1a4fd53dfca1efc7bf71df6bfa395c7de0d288989635fdb4be2540df62"
+    },
+    "share/opencpn/uidata/markicons/Symbol-Star-Yellow.svg": {
+      "kind": "file",
+      "bytes": 416,
+      "sha256": "e1dd6f37e81c27519cbf7d7e27ca83213bcf97fee052c79db11db87749f5df91"
+    },
+    "share/opencpn/uidata/markicons/Symbol-Tick-Black.svg": {
+      "kind": "file",
+      "bytes": 561,
+      "sha256": "a16969ff98919998eab21efe5db1e0e521fbdc7612e0dc7f12e22305b0671a7b"
+    },
+    "share/opencpn/uidata/markicons/Symbol-Tick-Blue.svg": {
+      "kind": "file",
+      "bytes": 573,
+      "sha256": "a16f13fbc633f14f390ea6427e3553dbf8cd2b85d104277e7d380c4f649b7829"
+    },
+    "share/opencpn/uidata/markicons/Symbol-Tick-Green.svg": {
+      "kind": "file",
+      "bytes": 576,
+      "sha256": "5f7018fe67c245d2a1c20db96807fd1a1ca1cb67d439215bd33d8bfc1a96551f"
+    },
+    "share/opencpn/uidata/markicons/Symbol-Tick-Magenta.svg": {
+      "kind": "file",
+      "bytes": 573,
+      "sha256": "0dcbb7e1489d6590e61e9c8e4355418b331afc6dbbc7d764c0ff96914266db4a"
+    },
+    "share/opencpn/uidata/markicons/Symbol-Tick-Orange.svg": {
+      "kind": "file",
+      "bytes": 573,
+      "sha256": "178ae41f04273ac7ba85abad4f033937a06ccc50cba129c6cecdcec4efebc813"
+    },
+    "share/opencpn/uidata/markicons/Symbol-Tick-Red.svg": {
+      "kind": "file",
+      "bytes": 572,
+      "sha256": "dce577727ab253a7a45acdf53b954b146c861a4123ef8500c92a08dd9e0e1215"
+    },
+    "share/opencpn/uidata/markicons/Symbol-Tick-White.svg": {
+      "kind": "file",
+      "bytes": 573,
+      "sha256": "284439d6e3df6b5b3c64f3625294bf3b42d8e9ce95b6052356355af7d6232600"
+    },
+    "share/opencpn/uidata/markicons/Symbol-Tick-Yellow.svg": {
+      "kind": "file",
+      "bytes": 576,
+      "sha256": "ecfd25f3aa633b41ba071df3f4a5444c5cc9c34aa7288fc40a013b4441c3d3ec"
+    },
+    "share/opencpn/uidata/markicons/Symbol-Triangle.svg": {
+      "kind": "file",
+      "bytes": 441,
+      "sha256": "26e9d6f219e8179ffc46eefef910c8ea7fc83b418b6b46a3cf334337093f49de"
+    },
+    "share/opencpn/uidata/markicons/Symbol-X-Large-Black.svg": {
+      "kind": "file",
+      "bytes": 504,
+      "sha256": "a393723f298581ade9545c7f7cbf50525ed35aa98013c53b16f861f6e4d8d174"
+    },
+    "share/opencpn/uidata/markicons/Symbol-X-Large-Blue.svg": {
+      "kind": "file",
+      "bytes": 528,
+      "sha256": "569460981c50879d8d9963c02132800c59949a35e862fac578b79395e2ba0dbf"
+    },
+    "share/opencpn/uidata/markicons/Symbol-X-Large-Green.svg": {
+      "kind": "file",
+      "bytes": 534,
+      "sha256": "fc0f674e71b71b915b0e15b6cd818f371479a056db041b912be153ca63aa3c26"
+    },
+    "share/opencpn/uidata/markicons/Symbol-X-Large-Magenta.svg": {
+      "kind": "file",
+      "bytes": 541,
+      "sha256": "65bb6b1cfe3df2843a7d89fb1661bc2e1eb7fc7fc06520a9045deb2da8463338"
+    },
+    "share/opencpn/uidata/markicons/Symbol-X-Large-Orange.svg": {
+      "kind": "file",
+      "bytes": 528,
+      "sha256": "260ccd91e8ae50b091ec1200e93156f64e28bae51cc86c957ff04d3ae1f6a07d"
+    },
+    "share/opencpn/uidata/markicons/Symbol-X-Large-Red.svg": {
+      "kind": "file",
+      "bytes": 526,
+      "sha256": "a032e28b34ac12379b1ec1a7eaf8b866e16833833c71c829485d5e80b2d5e45a"
+    },
+    "share/opencpn/uidata/markicons/Symbol-X-Large-White.svg": {
+      "kind": "file",
+      "bytes": 514,
+      "sha256": "1d16026a803f76031f06ad48b9c05ab36d33b2ec1ceb37f5cc37535cab1acb6b"
+    },
+    "share/opencpn/uidata/markicons/Symbol-X-Large-Yellow.svg": {
+      "kind": "file",
+      "bytes": 486,
+      "sha256": "679e07aa43d6120e6246e0aed9df8036cb6439d01398e534b80e875744c6a1cd"
+    },
+    "share/opencpn/uidata/markicons/Symbol-X-Small-Black.svg": {
+      "kind": "file",
+      "bytes": 455,
+      "sha256": "8623e00c2dea3ddf235fc8fec1f697763c0138fe4844209781c7390e70ce08a7"
+    },
+    "share/opencpn/uidata/markicons/Symbol-X-Small-Blue.svg": {
+      "kind": "file",
+      "bytes": 467,
+      "sha256": "0ee1f06dce9c0d67884d85454d55622c486709f90979afa061fa1071d3ac4810"
+    },
+    "share/opencpn/uidata/markicons/Symbol-X-Small-Green.svg": {
+      "kind": "file",
+      "bytes": 467,
+      "sha256": "f86b6f706aedab19122e0cb3461a9303ad602aaac99abc8d76999c0d8ecf59e8"
+    },
+    "share/opencpn/uidata/markicons/Symbol-X-Small-Magenta.svg": {
+      "kind": "file",
+      "bytes": 467,
+      "sha256": "2ddf05d5ddc3d3d3931217a308b67a1a9a559714a43d1d6f90f89e317da7da3a"
+    },
+    "share/opencpn/uidata/markicons/Symbol-X-Small-Orange.svg": {
+      "kind": "file",
+      "bytes": 467,
+      "sha256": "b59afa1a3077a519505ba483e4b65c8efac5a0bf4a874cadd08a46528f2fcd0c"
+    },
+    "share/opencpn/uidata/markicons/Symbol-X-Small-Red.svg": {
+      "kind": "file",
+      "bytes": 466,
+      "sha256": "92f984e341ba65835c4a9387a030aa2eda58a73d6a50ce93fe2aa20e23842d60"
+    },
+    "share/opencpn/uidata/markicons/Symbol-X-Small-White.svg": {
+      "kind": "file",
+      "bytes": 474,
+      "sha256": "247a6cefb793c8dc6747c23ac676827f600259bfe0dcd3ee960346e987ef074f"
+    },
+    "share/opencpn/uidata/markicons/Symbol-X-Small-Yellow.svg": {
+      "kind": "file",
+      "bytes": 470,
+      "sha256": "5660335542e858eaf04a6766500fc1d7e2ba180e66294d5476fbb739fef4d831"
+    },
+    "share/opencpn/uidata/markicons/Weather-Hurricane-NH.svg": {
+      "kind": "file",
+      "bytes": 593,
+      "sha256": "7fae87cc0ac9cdbdf52ebf14284cfa9d4c5ba62687f0b2fcbbd5c793ef7325ea"
+    },
+    "share/opencpn/uidata/markicons/Weather-Hurricane-SH.svg": {
+      "kind": "file",
+      "bytes": 595,
+      "sha256": "ca76ff1b62ce606806569929943ff42602663c29a741c61ab664b9853a674015"
+    },
+    "share/opencpn/uidata/markicons/Weather-Tropical Depression.svg": {
+      "kind": "file",
+      "bytes": 641,
+      "sha256": "27f98699606d7bdfe83300b3d859c78d874f9dca0409a792939d839ef8c9e1c2"
+    },
+    "share/opencpn/uidata/markicons/Weather-Tropical High.svg": {
+      "kind": "file",
+      "bytes": 525,
+      "sha256": "27cc8dbc88a47a19bb10c48e6b586d44744ee7b91fa8abd67cea3d2fd1d46d90"
+    },
+    "share/opencpn/uidata/markicons/Weather-Tropical-Storm-NH.svg": {
+      "kind": "file",
+      "bytes": 628,
+      "sha256": "4600df0fc91733e6a94cbf7144ca5fa8c2e363e6c602cb6a2b6eef2b186aa2f0"
+    },
+    "share/opencpn/uidata/markicons/Weather-Tropical-Storm-SH.svg": {
+      "kind": "file",
+      "bytes": 630,
+      "sha256": "0b03b708b82eb4ce2a14c0b7c6ac51b30560fd530f6c0c7b418da2625f94f8dd"
+    },
+    "share/opencpn/uidata/package-x-generic.png": {
+      "kind": "file",
+      "bytes": 2450,
+      "sha256": "5f8deb8d6e879c74c86ba73ac3a2c87270bc6708f1e23a947e02df1b6a1fa218"
+    },
+    "share/opencpn/uidata/plus.svg": {
+      "kind": "file",
+      "bytes": 540,
+      "sha256": "2ec4f0ae7ba223785a8842f7bff646d11d9112fd3e19164b94ba548e3174a753"
+    },
+    "share/opencpn/uidata/styles.xml": {
+      "kind": "file",
+      "bytes": 84279,
+      "sha256": "a91bce4036f2c699013beab25bec7c019b6e7f67d96f9503af2d16308373ffd0"
+    },
+    "share/opencpn/uidata/toolicons_journeyman.png": {
+      "kind": "file",
+      "bytes": 82820,
+      "sha256": "ad9f59381120636ce1313e2522d41519f64321e8d2e516f453193c9dfee20550"
+    },
+    "share/opencpn/uidata/toolicons_journeyman_flat.png": {
+      "kind": "file",
+      "bytes": 80884,
+      "sha256": "016b484528393ad2fb3d6ca1889ec3c5658868f961db26fc79d9cf150aae0995"
+    },
+    "share/opencpn/uidata/toolicons_traditional.png": {
+      "kind": "file",
+      "bytes": 166124,
+      "sha256": "057f5d73f45b4bd99d791b73a3c7e6789a810782604fb543eb4d871a0c948605"
+    },
+    "share/opencpn/uidata/traditional": {
+      "kind": "directory"
+    },
+    "share/opencpn/uidata/traditional/4WayMove.svg": {
+      "kind": "file",
+      "bytes": 11408,
+      "sha256": "cf268203e337c7bd9e37d08275c953dcae4167b1a590b2b687f0a40e8ce01b02"
+    },
+    "share/opencpn/uidata/traditional/AIS.svg": {
+      "kind": "file",
+      "bytes": 9678,
+      "sha256": "89130c370a2961070419576cc01b5c7a866c095cdf40d26df15a2b55570dbe0f"
+    },
+    "share/opencpn/uidata/traditional/AIS_AlertGeneral.svg": {
+      "kind": "file",
+      "bytes": 10699,
+      "sha256": "2183ddc8ba5c6bac9bde637c5c3db5e7ad331050674a37b3556570a73b27ce3a"
+    },
+    "share/opencpn/uidata/traditional/AIS_AlertGeneral_Active.svg": {
+      "kind": "file",
+      "bytes": 11303,
+      "sha256": "a79fb654ad3d7aa35306e37953e8b1e61df1ac48770e2044364ddb235fd83d28"
+    },
+    "share/opencpn/uidata/traditional/AIS_AlertGeneral_Active_rollover.svg": {
+      "kind": "file",
+      "bytes": 10709,
+      "sha256": "b974ff199ce8242a140ef592d724e7a0cc1c564de57ebb7b95e51e66bc31db0d"
+    },
+    "share/opencpn/uidata/traditional/AIS_AlertGeneral_rollover.svg": {
+      "kind": "file",
+      "bytes": 10105,
+      "sha256": "67317e784e6d6e8a597fdad6bbbb8dadbd6eb9f21b6ec9b9e2a556a9d0e5be58"
+    },
+    "share/opencpn/uidata/traditional/AIS_Disabled.svg": {
+      "kind": "file",
+      "bytes": 9669,
+      "sha256": "ad0f26bf9a416582f256b7bd9d34acbf7fd04af6a41f5385f229de2e8a478dd8"
+    },
+    "share/opencpn/uidata/traditional/AIS_Disabled_rollover.svg": {
+      "kind": "file",
+      "bytes": 9385,
+      "sha256": "39e82f3b952d4387752ca99523eb81ddd8146e5a583bdcab09ea21db479262fc"
+    },
+    "share/opencpn/uidata/traditional/AIS_Normal_Active.svg": {
+      "kind": "file",
+      "bytes": 10454,
+      "sha256": "6335afabacaea81b11a679dc7ef4bf8f9dce0800aadb2b502843bedad2183d3e"
+    },
+    "share/opencpn/uidata/traditional/AIS_Normal_Active_rollover.svg": {
+      "kind": "file",
+      "bytes": 9853,
+      "sha256": "ba2d8f8538f58468c0e4e5c495223b0bb9f07678a071045e1139e0b2edf82938"
+    },
+    "share/opencpn/uidata/traditional/AIS_Suppressed.svg": {
+      "kind": "file",
+      "bytes": 13025,
+      "sha256": "ff10aa15fb442878f059c109f20833f32a0be7d19d48092d9492b835cc905583"
+    },
+    "share/opencpn/uidata/traditional/AIS_Suppressed_Active.svg": {
+      "kind": "file",
+      "bytes": 12966,
+      "sha256": "1a10a5390561cc5944439ae2da376d03a2c21ae9cad11e24b953f2e2ed593275"
+    },
+    "share/opencpn/uidata/traditional/AIS_Suppressed_Active_rollover.svg": {
+      "kind": "file",
+      "bytes": 12378,
+      "sha256": "30ec8d45d8caf1e6fb15aef813ff0631a2ce674d07841acf4154f92cd2c89a29"
+    },
+    "share/opencpn/uidata/traditional/AIS_Suppressed_rollover.svg": {
+      "kind": "file",
+      "bytes": 11757,
+      "sha256": "b9e36e5e925192e0c53f92263db67b07e24ed7c0e7676fcc57284fc99f372212"
+    },
+    "share/opencpn/uidata/traditional/AIS_rollover.svg": {
+      "kind": "file",
+      "bytes": 9081,
+      "sha256": "411f040d8c49066bf4419accd88b58bde73e88b2dccd33a7d36a347d0d6dc06c"
+    },
+    "share/opencpn/uidata/traditional/CompassRose.svg": {
+      "kind": "file",
+      "bytes": 3450,
+      "sha256": "63b5d16c46d7ada5be845adfec538cb751998fa8e15a72d384c6b7b2bd06190a"
+    },
+    "share/opencpn/uidata/traditional/CompassRoseBlue.png": {
+      "kind": "file",
+      "bytes": 1597,
+      "sha256": "8ec4109039d9ab0f603c6e8e83f7bdf0000e0639e113dabdef72323d2ce5841b"
+    },
+    "share/opencpn/uidata/traditional/CompassRoseBlue.svg": {
+      "kind": "file",
+      "bytes": 5580,
+      "sha256": "161f45cb649b4bb8be0d4aefe4553fd72c4918ffdad7d4f9e725cf3141efc9bc"
+    },
+    "share/opencpn/uidata/traditional/colorscheme.svg": {
+      "kind": "file",
+      "bytes": 6993,
+      "sha256": "acd73b9c46d92cb20d3831d9222968047a7f0c2bf337858a6bfd1dcb0381e269"
+    },
+    "share/opencpn/uidata/traditional/colorscheme_rollover.svg": {
+      "kind": "file",
+      "bytes": 6404,
+      "sha256": "9213165a7eed8047d3a47113d7616e1551f75791e25ce2ab5573ce91365b23ae"
+    },
+    "share/opencpn/uidata/traditional/current.svg": {
+      "kind": "file",
+      "bytes": 9507,
+      "sha256": "f684aaefabd0024bd516b1e35419122928fb65926237a972df8fb07b4e41a532"
+    },
+    "share/opencpn/uidata/traditional/current_rollover.svg": {
+      "kind": "file",
+      "bytes": 8940,
+      "sha256": "b89ba03e85006e6739e0cc3afbacdde76040a67a6fb887a6dc5d7c8951336cb8"
+    },
+    "share/opencpn/uidata/traditional/current_rollover_toggled.svg": {
+      "kind": "file",
+      "bytes": 8940,
+      "sha256": "b89ba03e85006e6739e0cc3afbacdde76040a67a6fb887a6dc5d7c8951336cb8"
+    },
+    "share/opencpn/uidata/traditional/current_toggled.svg": {
+      "kind": "file",
+      "bytes": 8219,
+      "sha256": "50de81163fc135328c144128fbbf1e5e462f96a329778b4f4d131935da1c3864"
+    },
+    "share/opencpn/uidata/traditional/down.svg": {
+      "kind": "file",
+      "bytes": 13767,
+      "sha256": "df3797d1aa8fe4a2ad33d45be439e4a0358c9b26b52df3311aca3fc48683ca5b"
+    },
+    "share/opencpn/uidata/traditional/emblem-default.svg": {
+      "kind": "file",
+      "bytes": 4391,
+      "sha256": "577abda813633540db115c333ff70923d949e4c1e3c4edcbab9572b958bf4298"
+    },
+    "share/opencpn/uidata/traditional/emblem-download.svg": {
+      "kind": "file",
+      "bytes": 1088,
+      "sha256": "89aca272bc7a5fc97ec4925bde3207799e6ca6c7d5c85a49fd7f268c62a55d80"
+    },
+    "share/opencpn/uidata/traditional/emblem-legacy-update.svg": {
+      "kind": "file",
+      "bytes": 5665,
+      "sha256": "573aca8777ea142f9e83dc989685bd9f65c4c11eaa4be2ae6af6afe06e34b677"
+    },
+    "share/opencpn/uidata/traditional/emblem-readonly.svg": {
+      "kind": "file",
+      "bytes": 4650,
+      "sha256": "72d16f9eb66c3b92b60b1dc11e48a115c91f2ae3a3ee8ab49f03610d279e85f4"
+    },
+    "share/opencpn/uidata/traditional/emblem-system.svg": {
+      "kind": "file",
+      "bytes": 6650,
+      "sha256": "d5d3622f3bf230999a98be80aa6296a75261366b1c4ddbae9c6ac9247d0a2ad5"
+    },
+    "share/opencpn/uidata/traditional/emblem-unmanaged.svg": {
+      "kind": "file",
+      "bytes": 5336,
+      "sha256": "5d64fafa018e37e170331fc5f3a1e469d0d52fc36bfcf41d348d2401fcb94b32"
+    },
+    "share/opencpn/uidata/traditional/follow.svg": {
+      "kind": "file",
+      "bytes": 6177,
+      "sha256": "fae00402e84b650ed1328664833685867ca6c73efafb8a99b74ec998090fad8a"
+    },
+    "share/opencpn/uidata/traditional/follow_rollover.svg": {
+      "kind": "file",
+      "bytes": 5611,
+      "sha256": "6b37f8d780c805fe793efd18fefa9286691dd7d2c5ce1da4ba3a3d0f2139f132"
+    },
+    "share/opencpn/uidata/traditional/follow_rollover_toggled.svg": {
+      "kind": "file",
+      "bytes": 5611,
+      "sha256": "6b37f8d780c805fe793efd18fefa9286691dd7d2c5ce1da4ba3a3d0f2139f132"
+    },
+    "share/opencpn/uidata/traditional/follow_toggled.svg": {
+      "kind": "file",
+      "bytes": 4885,
+      "sha256": "c1a7da6d1b153ad5019a7f9c9216ee285c64d18272fc18f4f3baccffff3b6f26"
+    },
+    "share/opencpn/uidata/traditional/ghost.svg": {
+      "kind": "file",
+      "bytes": 3667,
+      "sha256": "1e7748f9336c28d950cee717d720e19b708782b7b89358ca1a28ee22aed759ec"
+    },
+    "share/opencpn/uidata/traditional/gps1Bar.svg": {
+      "kind": "file",
+      "bytes": 9662,
+      "sha256": "d1204596dcde7df5269d24d243a32c0ad35c43e09ea84ca8519cbc32e14bd90d"
+    },
+    "share/opencpn/uidata/traditional/gps2Bar.svg": {
+      "kind": "file",
+      "bytes": 8478,
+      "sha256": "37d8dcf4e47b5466a30d85bc67919b97965a2cc76e9f4198844b7a7081cb3f77"
+    },
+    "share/opencpn/uidata/traditional/gps3Bar.svg": {
+      "kind": "file",
+      "bytes": 7239,
+      "sha256": "c99cc03ae431d1d4fdb4ed5de141a3ff2907fce1cb06f5c050b407935397ffa2"
+    },
+    "share/opencpn/uidata/traditional/gpsGrn.svg": {
+      "kind": "file",
+      "bytes": 4986,
+      "sha256": "aa8f42181f8add3f1dd7c55e5344508081bf3f94dc66f70ebea683420cc5356e"
+    },
+    "share/opencpn/uidata/traditional/gpsGry.svg": {
+      "kind": "file",
+      "bytes": 4936,
+      "sha256": "9b3ffbacaeb348397f1b07e8c315c8b49bfc139306e4dd6a340001d6e508a4a5"
+    },
+    "share/opencpn/uidata/traditional/gpsRed.svg": {
+      "kind": "file",
+      "bytes": 8968,
+      "sha256": "01795f2631fcc7dbcb539353a0a49d6ba3d72b7d2449cd0ed7473bf8ca601fc8"
+    },
+    "share/opencpn/uidata/traditional/grabber.svg": {
+      "kind": "file",
+      "bytes": 3272,
+      "sha256": "0fa6367ba2b47661d20b6da2b492498895ea90f185371d7ee6a397a7ac899a13"
+    },
+    "share/opencpn/uidata/traditional/grabber_ext.svg": {
+      "kind": "file",
+      "bytes": 13484,
+      "sha256": "ebbfa0f318afdbdd2bd911350c8c81704e64672dfe17390067a2ed807e435a70"
+    },
+    "share/opencpn/uidata/traditional/grabber_hi.svg": {
+      "kind": "file",
+      "bytes": 5148,
+      "sha256": "319ec8a3a9dad6e39ec70b42023687174bd717af594d23d1b2c1ce261926b601"
+    },
+    "share/opencpn/uidata/traditional/help.svg": {
+      "kind": "file",
+      "bytes": 19830,
+      "sha256": "4a6ae1d6957af4f07b615a51bf63e4533788d45ead39d71a0b5fd2641e0efe29"
+    },
+    "share/opencpn/uidata/traditional/help_rollover.svg": {
+      "kind": "file",
+      "bytes": 96949,
+      "sha256": "41aec268c1cc91c7eb95656b82a1dbff1d256a1f192c8451e9ae9ecbd8f3f1b5"
+    },
+    "share/opencpn/uidata/traditional/left.svg": {
+      "kind": "file",
+      "bytes": 35899,
+      "sha256": "451e608bdd27164b5a487e5d7b96b8be4cd570b662ad973512c62155a72bb489"
+    },
+    "share/opencpn/uidata/traditional/mob.svg": {
+      "kind": "file",
+      "bytes": 4408,
+      "sha256": "5095c0e917ff56cc088c544270685fe432ed4f5bbf119d8d8a10694a34ba1e55"
+    },
+    "share/opencpn/uidata/traditional/mob_btn.svg": {
+      "kind": "file",
+      "bytes": 34037,
+      "sha256": "9374e293fc23e6260e9871ab4234c321ce9df621eb5f848ae233ed35bcf9e549"
+    },
+    "share/opencpn/uidata/traditional/mob_btn_rollover.svg": {
+      "kind": "file",
+      "bytes": 33728,
+      "sha256": "06746074eafa617a1449e27966811bd090e5f9e149be64adf914c19f910453af"
+    },
+    "share/opencpn/uidata/traditional/packageBox.svg": {
+      "kind": "file",
+      "bytes": 1169,
+      "sha256": "8868e703340ce0832bfe81dce0db526948f421be668ecd503d96eff61eb82dd6"
+    },
+    "share/opencpn/uidata/traditional/pencil.svg": {
+      "kind": "file",
+      "bytes": 56754,
+      "sha256": "6320d7dfc4239bb7ee2d9aee93050893d239a468a9238dbff7a6d342789da502"
+    },
+    "share/opencpn/uidata/traditional/print.svg": {
+      "kind": "file",
+      "bytes": 5966,
+      "sha256": "473f73fb6cb43c13a9404dc1d2335913f8815bb2c5b9306217bc75c7025bb8e2"
+    },
+    "share/opencpn/uidata/traditional/print_rollover.svg": {
+      "kind": "file",
+      "bytes": 5263,
+      "sha256": "f43bf4dd93648b840a2461068edadca7d62967b73254d95822f5cf16f27b9f62"
+    },
+    "share/opencpn/uidata/traditional/right.svg": {
+      "kind": "file",
+      "bytes": 35907,
+      "sha256": "bb54b62f4b4a92db737c077077191867d8e1043dd80554f1d6be8a2269a3de00"
+    },
+    "share/opencpn/uidata/traditional/route.svg": {
+      "kind": "file",
+      "bytes": 7105,
+      "sha256": "f4ad790610eb791e5ba655c4dcbf1b829cd74dcf65221b32f5658bd785a0ad5c"
+    },
+    "share/opencpn/uidata/traditional/route_manager.svg": {
+      "kind": "file",
+      "bytes": 14519,
+      "sha256": "698a458df0b1debe60eadf89743ba52cae85176e8a489d0807cdfb3e51ebf4bb"
+    },
+    "share/opencpn/uidata/traditional/route_manager_rollover.svg": {
+      "kind": "file",
+      "bytes": 13957,
+      "sha256": "22c172384c308d3af8524da1651d669b93cb1cfa72c5b024dd0ec8b07a9d4b39"
+    },
+    "share/opencpn/uidata/traditional/route_rollover.svg": {
+      "kind": "file",
+      "bytes": 6543,
+      "sha256": "06510cc8997567d12afe6bedf3a3421d9d4683891db6dbc9dadf834abfe288a7"
+    },
+    "share/opencpn/uidata/traditional/route_rollover_toggled.svg": {
+      "kind": "file",
+      "bytes": 6543,
+      "sha256": "06510cc8997567d12afe6bedf3a3421d9d4683891db6dbc9dadf834abfe288a7"
+    },
+    "share/opencpn/uidata/traditional/route_toggled.svg": {
+      "kind": "file",
+      "bytes": 5817,
+      "sha256": "e19b459ff9dbb8aee4d9e08cd720798157a52ab4ad4f1ef9c9029ad5ca54ae0e"
+    },
+    "share/opencpn/uidata/traditional/scin.svg": {
+      "kind": "file",
+      "bytes": 24149,
+      "sha256": "e206379b7e14b6814b67b5e62893cbeaa48a8e621d245d3c3016bbf29633bae8"
+    },
+    "share/opencpn/uidata/traditional/scin_disabled.svg": {
+      "kind": "file",
+      "bytes": 19089,
+      "sha256": "c910091f17a78b3ecd5d89ca017f4576113f14f477981bfa9bddb3709e597b1b"
+    },
+    "share/opencpn/uidata/traditional/scin_rollover.svg": {
+      "kind": "file",
+      "bytes": 23588,
+      "sha256": "d3578c23cf33e97c60d8513ff4a4f4b01ea04edff3b288b02ac543a1ff59198a"
+    },
+    "share/opencpn/uidata/traditional/scout.svg": {
+      "kind": "file",
+      "bytes": 23773,
+      "sha256": "7bac2bc6f9bf3688e8226d84c59cf5c65e8df95a0013c343f127e363ba9f7c7a"
+    },
+    "share/opencpn/uidata/traditional/scout_disabled.svg": {
+      "kind": "file",
+      "bytes": 18671,
+      "sha256": "3c07bd0e9478eb464ea1f231a1efce9c115353c657642714bb57b9122c691a90"
+    },
+    "share/opencpn/uidata/traditional/scout_rollover.svg": {
+      "kind": "file",
+      "bytes": 23212,
+      "sha256": "5c049bd40700ba296df8d04e37bcdb1e91cf48a83617a46894fad89da1b47543"
+    },
+    "share/opencpn/uidata/traditional/settings.svg": {
+      "kind": "file",
+      "bytes": 31023,
+      "sha256": "c9e3c33eb2a17d08ad8a17b15e22e2d3f69a51ddaae9bfb0911391782817b8d4"
+    },
+    "share/opencpn/uidata/traditional/settings_disabled.svg": {
+      "kind": "file",
+      "bytes": 44991,
+      "sha256": "0bc8d5af8e7ff6fd6b4013d83465f4a4d3887dabfadb268381a66fd9f9b65620"
+    },
+    "share/opencpn/uidata/traditional/settings_rollover.svg": {
+      "kind": "file",
+      "bytes": 45427,
+      "sha256": "d567d9aa4f5e5ddcfe78652c5815eb83718532dfb657d4a59a73b7a504278df0"
+    },
+    "share/opencpn/uidata/traditional/text.svg": {
+      "kind": "file",
+      "bytes": 82453,
+      "sha256": "9dd4c55ef308d4b09c30cf07423d2162573aa6637fceca669a23480f74d050c7"
+    },
+    "share/opencpn/uidata/traditional/text_rollover.svg": {
+      "kind": "file",
+      "bytes": 82212,
+      "sha256": "c9af3c9e7d8ce10f85ed6906d3693f93c32ac905b991332ffb86551596857ba1"
+    },
+    "share/opencpn/uidata/traditional/text_rollover_toggled.svg": {
+      "kind": "file",
+      "bytes": 82235,
+      "sha256": "04459e30d17059be0309ece11fe63633a389d8a3024ab50b0b4ae2e7c7b65762"
+    },
+    "share/opencpn/uidata/traditional/text_toggled.svg": {
+      "kind": "file",
+      "bytes": 81537,
+      "sha256": "48a8ae67e8b710702fb51e1eb04bafbe06b76e590bb6d9357e6075835d376204"
+    },
+    "share/opencpn/uidata/traditional/tide.svg": {
+      "kind": "file",
+      "bytes": 10319,
+      "sha256": "06a5abe63b7dce209575e861a8c116fc9795181921210831508a22b25cb58fb9"
+    },
+    "share/opencpn/uidata/traditional/tide_rollover.svg": {
+      "kind": "file",
+      "bytes": 9757,
+      "sha256": "56705e67060db6f99e5afe7d3e461e7111f3f3853ac682dd5aa15599f7cd8a7b"
+    },
+    "share/opencpn/uidata/traditional/tide_rollover_toggled.svg": {
+      "kind": "file",
+      "bytes": 9757,
+      "sha256": "56705e67060db6f99e5afe7d3e461e7111f3f3853ac682dd5aa15599f7cd8a7b"
+    },
+    "share/opencpn/uidata/traditional/tide_toggled.svg": {
+      "kind": "file",
+      "bytes": 8813,
+      "sha256": "fcd8ad20e0f15bce241155f30ea3d8ed78c18aa839b4aa2f1b6c7a1a85de10ce"
+    },
+    "share/opencpn/uidata/traditional/track.svg": {
+      "kind": "file",
+      "bytes": 11765,
+      "sha256": "b06c8903ec578856eb0563ceef125d12fae220d75a19f0227165544b03f61bfe"
+    },
+    "share/opencpn/uidata/traditional/track_rollover.svg": {
+      "kind": "file",
+      "bytes": 11203,
+      "sha256": "7d112f69be640a15f5013256380841f475effa74248a30b17ee0ad940ec613e1"
+    },
+    "share/opencpn/uidata/traditional/track_rollover_toggled.svg": {
+      "kind": "file",
+      "bytes": 11203,
+      "sha256": "7d112f69be640a15f5013256380841f475effa74248a30b17ee0ad940ec613e1"
+    },
+    "share/opencpn/uidata/traditional/track_toggled.svg": {
+      "kind": "file",
+      "bytes": 9207,
+      "sha256": "b7735dc1448b526700bc72dad8bc8853101cfff84204907f4d073a57ff58c38f"
+    },
+    "share/opencpn/uidata/traditional/up.svg": {
+      "kind": "file",
+      "bytes": 13766,
+      "sha256": "57c678a2b68cecc85598fd49099f8ed52adcff6a5c406bb44e0f6bf1d7db5443"
+    },
+    "share/opencpn/uidata/traditional/zoomin.svg": {
+      "kind": "file",
+      "bytes": 22700,
+      "sha256": "eb8d6ea10a2465991a6e1dc58ae1f037e4d333bf49a1fae1f5149342230e64aa"
+    },
+    "share/opencpn/uidata/traditional/zoomin_rollover.svg": {
+      "kind": "file",
+      "bytes": 24238,
+      "sha256": "f358bd6a50984942a519169ff9d17fc2a967c499eba2221eb41bd871f638c77b"
+    },
+    "share/opencpn/uidata/traditional/zoomout.svg": {
+      "kind": "file",
+      "bytes": 36814,
+      "sha256": "76c5f01a812f332e00be10abc548aefe3a5555ce152f0760395a9157ad475576"
+    },
+    "share/opencpn/uidata/traditional/zoomout_rollover.svg": {
+      "kind": "file",
+      "bytes": 36315,
+      "sha256": "05391fe6bd75b5fc4327e3c0b78194cd90a06904e5eadbb29db879a2303535b8"
+    },
+    "share/shapelib": {
+      "kind": "directory"
+    },
+    "share/shapelib/shapelib-config-version.cmake": {
+      "kind": "file",
+      "bytes": 2834,
+      "sha256": "aafb685cfc667ad9d7b52b519d144733930ccac93a48690315b482673392ae2c"
+    },
+    "share/shapelib/shapelib-config.cmake": {
+      "kind": "file",
+      "bytes": 906,
+      "sha256": "eb90be2989f2fda163d83e2aa27ff50d502c774092ec16317f5c490077abb9c3"
+    },
+    "share/shapelib/shapelib-targets-release.cmake": {
+      "kind": "file",
+      "bytes": 830,
+      "sha256": "94ee68cb7d390416615efd77fa9696f8bf9fe1261f4ff241c27a08c70d0cc30a"
+    },
+    "share/shapelib/shapelib-targets.cmake": {
+      "kind": "file",
+      "bytes": 4184,
+      "sha256": "0a3467b22d57c61448ead825750731a1124bdafe5d274bad1fddfab4ac324416"
+    }
+  },
+  "entryCount": 945,
+  "verifiedCopy": true,
+  "readonly": true,
+  "recheckedAfterCapture": true
+}

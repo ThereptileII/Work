@@ -1,0 +1,104 @@
+[
+  {
+    "scene": "coast",
+    "theme": "Day",
+    "referenceAccepted": true,
+    "rejected": [
+      "old148",
+      "onePixelMatte",
+      "missingAPP"
+    ],
+    "bbox": [
+      30,
+      15,
+      150,
+      51
+    ],
+    "pixels": 1273
+  },
+  {
+    "scene": "coast",
+    "theme": "Dusk",
+    "referenceAccepted": true,
+    "rejected": [
+      "old148",
+      "onePixelMatte",
+      "missingAPP"
+    ],
+    "bbox": [
+      30,
+      15,
+      150,
+      51
+    ],
+    "pixels": 1273
+  },
+  {
+    "scene": "coast",
+    "theme": "Night",
+    "referenceAccepted": true,
+    "rejected": [
+      "old148",
+      "onePixelMatte",
+      "missingAPP"
+    ],
+    "bbox": [
+      30,
+      15,
+      150,
+      51
+    ],
+    "pixels": 1273
+  },
+  {
+    "scene": "pier57",
+    "theme": "Day",
+    "referenceAccepted": true,
+    "rejected": [
+      "old148",
+      "onePixelMatte",
+      "missingAPP"
+    ],
+    "bbox": [
+      30,
+      15,
+      150,
+      51
+    ],
+    "pixels": 1273
+  },
+  {
+    "scene": "pier57",
+    "theme": "Dusk",
+    "referenceAccepted": true,
+    "rejected": [
+      "old148",
+      "onePixelMatte",
+      "missingAPP"
+    ],
+    "bbox": [
+      30,
+      15,
+      150,
+      51
+    ],
+    "pixels": 1273
+  },
+  {
+    "scene": "pier57",
+    "theme": "Night",
+    "referenceAccepted": true,
+    "rejected": [
+      "old148",
+      "onePixelMatte",
+      "missingAPP"
+    ],
+    "bbox": [
+      30,
+      15,
+      150,
+      51
+    ],
+    "pixels": 1273
+  }
+]

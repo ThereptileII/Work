@@ -1,5 +1,32 @@
 # Direct OpenCPN Upstream Modifications
 
+## Ordinary chart typeface (SCRUM-263)
+
+The core and private libraries gain an optional presentation-owned text face,
+set only during verified SKAGER construction before any label cache exists.
+At ordinary `RenderT_All` font establishment, a successful Segoe UI/Arial font
+may replace only the face; existing family, style, S-52 size and weight remain.
+The original cached font remains the fallback. Exact geographic and generated
+LIGHTS roles are excluded even when their specialized resolver declines.
+No painter, label string, placement, chart preference or Standard/Legacy path
+is rewritten. Enumeration is cached per module, outside painting. See
+[scope and focused evidence](evidence/scrum263-ordinary-chart-face/README.md).
+
+## Classified prototype light and special-buoy aliases (SCRUM-264)
+
+The core and private `RenderSY` hooks select only stable library-owned alias
+Rules after verified SKAGER resource loading. Original LIGHTS11/12/13 vectors
+remain stock; compact light aliases require absence of an ORIENT attribute.
+Encoded directions and all upstream conditional/angle handling are retained.
+The separate special-buoy hook requires Simplified lookup and the exact inspected
+white/orange horizontal-band pillar attributes. It changes no lookup or object
+metadata. Day/Night may use XNSPPW01; Dusk and unknown schemes retain the original
+Rule. Missing or invalid aliases, Standard, disabled integration and unclassified
+objects retain stock. Separate TOPMAR and LIGHTS composition remains unchanged.
+See the [light boundary](evidence/scrum264-oriented-light-aliases/README.md) and
+[buoy boundary](evidence/scrum264-white-orange-pillar/README.md) for exact checks,
+rejected color trial and remaining actual native/boat gates.
+
 ## Effective point-symbol presentation (SCRUM-267) — in progress
 
 The supplied modern art maps to Simplified lookup records, but upstream defaults

@@ -1,6 +1,82 @@
 # SKAGER status — 2026-10-03
 
-## Current combined candidate: SKAGER chart fidelity and branding
+## Final chart typeface correction under qualification
+
+Application source **`9dee9b148f4d6ebdd20bb4c49229fe19340df209`** is published
+as **`aa95750b0abbd9ffa646407019b3393f2e7b5bce`** with all 4,174 mapped
+blob/mode entries independently verified. The [ordinary chart-font correction](evidence/scrum263-ordinary-chart-face/README.md)
+selects installed Segoe UI, then Arial, only for a newly verified SKAGER
+presentation library. Ordinary text retains its existing size, weight, style,
+content and positioning. Geographic and generated-LIGHTS roles retain their
+own handlers and deliberate fallbacks. Font creation failure retains stock;
+Standard/Legacy and stored user preferences remain unchanged.
+
+Focused actual-method, production-object and fallback checks pass. Final Linux
+integration and focused native core/private compilation are in progress. The
+existing Windows font component now checks the selected HDC face for ordinary
+chart text as well as the UI stack; that result and physical boat review remain
+pending. No all-symbol or screen-level visual acceptance is implied.
+
+## Current focused Windows repair and classified buoy candidate
+
+Frozen source **`ccc0faad089e89a5b3a0b1f2994f4fa4ee18053d`**, published as
+**`1c3e32d68b2e12892a62e6fe28d61cfaa2377a45`**, adds the reviewed private
+CMake path repair and the [classified white/orange pillar derivative](evidence/scrum264-white-orange-pillar/README.md).
+All 4,074 mapped blob/mode entries independently reconstruct the remote tree.
+The [short native gate](https://github.com/ThereptileII/Work/actions/runs/37112484119)
+passes the original Windows escape reproduction, normalized paths and all 70
+actual private production translation units. The [independent artifact audit](evidence/scrum259-native70-ccc0/README.md)
+verifies all actual I386 objects and source/resource identities. It does not
+qualify dependency producers, DLL linking, runtime or packaging.
+The [integrated Linux build and real-chart review](evidence/skager-chart-ccc0faa-linux/README.md)
+pass 147/147 regressions, 16 captures and four clean exits. All Standard and
+Day-return chart comparisons are exact; changes remain inside the two buoy bodies.
+
+The buoy alias is restricted to the inspected white/orange horizontal-band
+pillar classification, verified SKAGER presentation and Simplified lookup.
+Day and Night use the supplied prototype's stem/base geometry with preserved
+classification. Dusk retains the original symbol: a tested brighter orange
+lost its recognizable hue and was rejected. Unmapped fixed beacons, physical
+lighthouse towers and directional/sector lights are not claimed to match.
+No candidate from this cycle has been installed or launched on the boat.
+
+## Latest bounded light and hatch correction
+
+Application source **`5c05eb55c15b67d4014df55896d95452e9cc9d64`** combines
+[orientation-preserving compact light aliases](evidence/scrum264-oriented-light-aliases/README.md)
+and [neutral construction-hatch ink](evidence/scrum265-construction-hatch-ink/README.md).
+Original LIGHTS11/12/13 vectors remain entirely stock. Only verified SKAGER
+instances and lights without any ORIENT attribute may select the separate compact
+red/green/white aliases. Directional data, conditional decisions, original Rule
+metadata/lifetime and missing-alias fallback are preserved. The earlier white
+bitmap substitution below is superseded; it is not approved for boat deployment.
+
+Only 192 Day construction-pattern pixels change to prototype neutral ink. The
+pattern geometry, alpha, dashed shoreline and all twelve original conditional
+consumers remain unchanged. Dusk/Night retain their existing transparent tile.
+Global CHBRN and other hazard usage are untouched. This corrects the identified
+brown Pier57 hatch without painting a submerged ruined pier as ordinary land.
+
+The [combined resource proof](evidence/scrum264265-combined-resource-proof/README.md)
+passes 53,377 focused checks and the unchanged whole-resource inverse/negative
+oracles. Exact integrated Linux build/install and 147/147 regressions pass.
+The [Pier57 hatch review](evidence/skager-chart-5c05eb5-linux/README.md) and
+[actual red/green lights](evidence/scrum264-colored-lights-5c05-linux/README.md)
+retain 24 original software/OpenGL captures. Standard historical comparisons and
+complete Day-return checks pass; light changes stay within the real light
+neighborhoods and the hatch change stays within the construction feature.
+
+Exact mapped publication **`159cbeff00d67fbd0b77442b7288407f5d93db2b`** has
+3,805 independently verified blob/mode entries, including eight preserved
+unrelated root files. The [focused Windows changed-unit preflight](https://github.com/ThereptileII/Work/actions/runs/37109776549)
+passes. Its [downloaded artifact audit](evidence/scrum247-native23-159c/README.md)
+verifies all 23 actual I386 objects, 447 product inputs, 1,439 patched upstream
+inputs and seven generated resources against the frozen source/build. It is
+compile qualification, not an application/runtime release gate.
+Physical boat fonts/GPU/display and private-renderer acceptance remain pending.
+No candidate from this correction has been installed on the boat.
+
+## Preceding combined candidate: SKAGER chart fidelity and branding
 
 The next correction batch includes the exact prototype
 [ferry/cable-area ink](evidence/scrum260-area-ink/README.md),
@@ -14,26 +90,46 @@ remaining operator/diagnostic product labels. Customer-facing identity is
 SKAGER with the approved Jira artwork; immutable evidence, compatibility IDs
 and required OpenCPN attribution remain.
 
-Exact application source `a3e84771652c920479517f0d16a1dd6133c440d2`, published
-as `7a9e5496347cf8c0dd31aafc373b65f8621fe5a0`, passes the integrated Linux
-build/install and **147/147** regressions. Its
-[sixteen actual ENC captures](evidence/skager-chart-a3e8477-linux/README.md)
-retain coastlines and pass the original bounded content probes, but **the full
-GL Day-return comparison fails at 1,270 chart-selector pixels**. The initial
-atlas retains stock outline ink until a theme change. That failure is retained;
-it is not a visual pass. Standard historical chart comparisons and software
-theme returns are exact within their documented scope. The
-[focused cache correction](evidence/scrum266-selector-cache/README.md) passes
-21 actual atlas/cache checks and 159 existing brush checks, with the original
-source reproducing the failure. Integrated GL recapture remains required.
-The [current native qualification run](https://github.com/ThereptileII/Work/actions/runs/37100591834)
-stopped at private-adapter preparation after the maintained curl tests passed.
-The adapter resolved `openssl-build.json` under the curl install directory,
-where that producer manifest does not exist. This occurred before adapter or
-application compilation; it is not an application crash. The failure is retained
-and the bounded path correction is being verified before another Windows build.
-Linux qualification continues independently. No Windows package or boat
-acceptance is claimed.
+The preceding frozen application source **`9632421f701c5ec74d7a1360bc713c0034faf9af`**
+is published exactly as **`d2787c649268809a2d99a72c6ad3e104d504f461`**:
+3,306 mapped blobs/modes match and eight unrelated repository files are preserved.
+The [integrated Linux build/install](evidence/skager-chart-9632421-linux/README.md)
+and **147/147** regressions pass. All **32** real NOAA ENC captures pass across
+two scenes, software/Mesa OpenGL, SKAGER/Standard and Day/Dusk/Night/Day-return.
+The entire chart returns to identical Day pixels in all eight cycles, including
+the GL selector. All sixteen Standard historical chart comparisons remain exact
+within their documented toolbar exception. The saved Paper preference stays
+unchanged while SKAGER uses the effective Simplified table. The smaller approved
+header matches its reviewed component at actual size.
+
+The preceding `a3e8477` / `7a9e549` GL selector failure remains in
+[its original evidence](evidence/skager-chart-a3e8477-linux/README.md). The
+[cache correction](evidence/scrum266-selector-cache/README.md) now closes that
+observed **Linux** reproduction without an added mask or tolerance; physical
+GPU and Windows acceptance remain separate.
+
+The preceding [native run 37100591834](https://github.com/ThereptileII/Work/actions/runs/37100591834)
+passed all 1,569 executed maintained-curl upstream tests, then stopped at
+private-adapter dependency-manifest resolution before application compilation.
+It was not an application crash. Explicit producer roots and the complete copied
+header closure now pass [fresh native proof](evidence/scrum259-native-prefix-proof/README.md):
+17 producer/package cases, 15 preparation cases, 16 wiring refusals and 38 actual
+harmless-DLL loader groups. The independently verified artifact belongs to the
+same `d2787c6` source. The [full replacement qualification](https://github.com/ThereptileII/Work/actions/runs/37106815245)
+passes the maintained dependency producers, then stops at private-renderer CMake
+configuration: Windows backslashes in the wxCurl source paths are interpreted
+as escapes. The [retained exact failure](evidence/scrum259-private-configure-d2787/README.md)
+is before private DLL or host application compilation, not an application crash.
+The bounded path repair and direct native configure/object preflight are in
+progress before another full candidate. No tested dependency output binaries
+were retained in this failure artifact, so they cannot be treated as reusable
+verified producer output merely because their logs passed.
+
+Actual private DLL linking/loading, Windows font selection, final
+package/installer and boat rendering remain pending. No candidate has been
+installed on the boat in this cycle. The later source5c05 above also corrects
+the ORIENT boundary identified in this historical candidate. `d2787c6` remains
+prerequisite/diagnostic evidence and is not approved for boat deployment.
 
 The user's additional October 3 feedback is represented by SCRUM-263–267.
 The [approved header wordmark is now 124 DIP](design/reviews/scrum263-header-typeface.md),
@@ -44,7 +140,13 @@ actual native HDC face probe is now in the Windows drawing gate. Its fresh
 Windows result and generic ENC/user-font review remain open. Eleven supplied
 [modern marine/light glyphs](evidence/scrum264-seamark-art/README.md) now have
 bounded resource/loader proof: eight classified lateral aliases, isolated danger,
-safe water and the prototype light circle/rays. The special-purpose buoy remains
+safe water and the prototype light circle/rays. An additional
+[16 official IHO S-64 chart captures](evidence/scrum264-s64-9632421-linux/README.md)
+now verify actual ordinary lateral, isolated-danger, safe-water, four cardinal
+and white-light raster selection in software/Mesa OpenGL, with twelve normal
+application exits. The ordinary red/green short flares and classified long-range
+light treatment remain visibly stock. Preferred-channel actual-chart coverage
+and full native/boat recognition remain open. The special-purpose buoy remains
 stock because its actual white/orange classification cannot safely be painted
 as the prototype's yellow mark. Generic beacons and unproved physical topmark
 composition also remain open.
@@ -62,8 +164,9 @@ effective Simplified table only inside a verified SKAGER presentation instance.
 The saved OpenCPN preference remains unchanged for Standard and Legacy. Actual
 render/query/cache consumers share the same effective selection; diagnostics
 expose saved and effective values. Focused compiled-method/object checks pass.
-The combined application, retained-preference round trip, whole GL theme return,
-actual Windows fonts and boat rendering still require fresh qualification.
+The combined Linux application now proves the retained-preference round trip and
+whole GL theme return. Actual private-renderer execution, Windows fonts and boat
+rendering still require fresh qualification.
 
 ### Preceding integrated candidate and corrected Windows prerequisite
 

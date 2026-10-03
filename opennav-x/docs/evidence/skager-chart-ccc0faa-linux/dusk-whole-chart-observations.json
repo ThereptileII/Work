@@ -1,0 +1,22 @@
+[
+  {
+    "renderer": "software",
+    "style": "SKAGER",
+    "wholeChartDuskDifferenceBounds": null
+  },
+  {
+    "renderer": "software",
+    "style": "Standard",
+    "wholeChartDuskDifferenceBounds": null
+  },
+  {
+    "renderer": "opengl",
+    "style": "SKAGER",
+    "wholeChartDuskDifferenceBounds": null
+  },
+  {
+    "renderer": "opengl",
+    "style": "Standard",
+    "wholeChartDuskDifferenceBounds": null
+  }
+]

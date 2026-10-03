@@ -1,0 +1,3 @@
+{"kind": "trace_error", "error": "Variable 'this' not found."}
+{"kind": "trace_error", "probe": "RenderRasterSymbol", "error": "Variable 'this' not found."}
+{"kind": "inferior_exit", "exit_code": null}

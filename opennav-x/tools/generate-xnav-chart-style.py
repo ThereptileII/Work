@@ -4,7 +4,8 @@
 Only the enumerated palette roles, geographic-name ink, two built-up-area
 and fourteen structural fills, six structural outlines, a proven neutral
 sprite-ink mask, isolated anchor/service/cardinal artwork, eleven classified
-marine/light tiles with sixteen exact alias redirects, and cable/ferry paint
+marine/light tiles with sixteen exact alias redirects, one construction hatch,
+and cable/ferry paint
 roles may change. Original inputs are never modified.
 """
 import argparse
@@ -19,8 +20,10 @@ import chart_cable_paint
 import chart_service_art
 import chart_cardinal_art
 import chart_seamark_art
+import chart_special_buoy_art
 import chart_day_neutral_ink
 import chart_structure_paint
+import chart_construction_hatch
 
 ROOT=Path(__file__).resolve().parents[1]
 ALLOWED={'LANDA','CSTLN','DEPDW','DEPMD','DEPMS','DEPVS','DEPIT','DEPCN','DEPSC','SNDG1','SNDG2','CHBLK','CHGRD'}
@@ -30,7 +33,7 @@ BUILT_AREA_LOOKUPS={'16':('32052','Plain'),'356':('32391','Symbolized')}
 BUILT_AREA_INSTRUCTION="AC(CHBRN);TX(OBJNAM,1,2,3,'16120',0,0,CHBLK,26);LS(SOLD,1,LANDF)"
 BUILT_AREA_COLOR='XNBUA'
 GEOGRAPHIC_COLOR='XNGEO'
-ADDED_COLORS={BUILT_AREA_COLOR,GEOGRAPHIC_COLOR,chart_cable_paint.COLOR,chart_cable_paint.AREA_COLOR,chart_structure_paint.COLOR,chart_structure_paint.OUTLINE_COLOR}
+ADDED_COLORS={chart_construction_hatch.COLOR,BUILT_AREA_COLOR,GEOGRAPHIC_COLOR,chart_cable_paint.COLOR,chart_cable_paint.AREA_COLOR,chart_structure_paint.COLOR,chart_structure_paint.OUTLINE_COLOR}
 GEOGRAPHIC_CLASSES={'BUAARE','LNDARE','LNDRGN','SEAARE'}
 # Apply the prototype's chart-only Night brightness once to owned paint inputs.
 # CHBLK/CHGRD, safety contour and soundings deliberately retain brighter ink:
@@ -96,8 +99,10 @@ def validate_resource_changes(original, styled, colors):
         styled.find('instruction').text=stock.findtext('instruction')
     chart_anchor_art.restore_bitmap_for_validation(before, after)
     chart_cable_paint.restore_for_validation(before, after)
+    chart_construction_hatch.restore_for_validation(before, after)
     chart_service_art.restore_bitmap_for_validation(before, after)
     chart_cardinal_art.restore_bitmap_for_validation(before, after)
+    chart_special_buoy_art.restore_for_validation(before, after)
     chart_seamark_art.restore_for_validation(before, after)
     # Added nodes must not make whitespace significant in the identity check.
     for tree in (before,after):
@@ -166,11 +171,13 @@ def generate(source, output):
     assert geography_count==18, 'Pinned geographic name lookup count changed'
     xml=chart_anchor_art.relocate(xml)
     xml=chart_cable_paint.recolor(xml)
+    xml=chart_construction_hatch.recolor(xml)
     xml=chart_structure_paint.recolor(xml)
     xml=chart_structure_paint.recolor_outlines(xml)
     xml=chart_service_art.relocate(xml)
     xml=chart_cardinal_art.relocate(xml)
     xml=chart_seamark_art.relocate(xml)
+    xml=chart_special_buoy_art.relocate(xml)
     validate_resource_changes(original['chartsymbols.xml'],xml,colors)
     result=dict(original);result['chartsymbols.xml']=xml.encode('utf-8')
     # Pinned Day ink identifies neutral CHBLK/CHGRD pixels. Theme sheets use
@@ -190,6 +197,8 @@ def generate(source, output):
     service_art = {}
     cardinal_art = {}
     seamark_art = {}
+    construction_hatch = {}
+    special_buoy = {}
     for table, name in [('DAY_BRIGHT','rastersymbols-day.png'),
                         ('DUSK','rastersymbols-dusk.png'),
                         ('NIGHT','rastersymbols-dark.png')]:
@@ -197,6 +206,8 @@ def generate(source, output):
         result[name], service_art[name] = chart_service_art.paint(result[name], table)
         result[name], cardinal_art[name] = chart_cardinal_art.paint(result[name], table)
         result[name], seamark_art[name] = chart_seamark_art.paint(result[name], table)
+        result[name], special_buoy[name] = chart_special_buoy_art.paint(result[name], table)
+        result[name], construction_hatch[name] = chart_construction_hatch.paint(result[name], table, colors[table][chart_construction_hatch.COLOR])
     output.mkdir(parents=True,exist_ok=True)
     def write(path,content):
         if not path.exists() or path.read_bytes()!=content:path.write_bytes(content)
@@ -210,6 +221,8 @@ def generate(source, output):
               'serviceArtwork':service_art,
               'cardinalArtwork':cardinal_art,
               'seamarkArtwork':seamark_art,
+              'constructionHatch':construction_hatch,
+              'specialBuoyArtwork':special_buoy,
               'geographicNameLookups':geography_count,
               'structuralAreaPaint':{'color':'XNSTR','lookupIds':sorted(chart_structure_paint.RULES),
                                      'outlineColor':'XNSHR','outlineLookupIds':sorted(chart_structure_paint.OUTLINE_RULES),

@@ -14,7 +14,7 @@ def main():
     mapping=json.loads((ASSETS/'mapping.json').read_text())['symbols']
     prototype=ROOT/'docs/design/prototype'
     script="const fs=require('fs'); const seamarkGuide=JSON.parse(fs.readFileSync(process.argv[1]));"+(prototype/'src/chart-marker-art.js').read_text()+"\nconsole.log(JSON.stringify(Object.fromEntries(JSON.parse(process.argv[2]).map(code=>[code,chartSymbolGraphic({id:'point:'+code,code,kind:'point'},code==='LIGHTS13'?25:27)]))));"
-    art=json.loads(subprocess.check_output([a.node,'-e',script,str(prototype/'src/seamarks.json'),json.dumps([s['source'] for s in mapping.values()])],text=True))
+    art=json.loads(subprocess.check_output([a.node,'-e',script,str(prototype/'src/seamarks.json'),json.dumps([s.get('prototypeSource',s['source']) for s in mapping.values()])],text=True))
     css_sources=(prototype/'src/chart-symbols.css').read_text()+(prototype/'src/style.css').read_text()
     rules=[]
     for selector in ('.chart-marker-art','.lighthouse-point','.lighthouse-rays'):
@@ -24,7 +24,7 @@ def main():
     css=''.join(rules)
     tokens=json.loads((ROOT/'docs/design/prototype-tokens.json').read_text())['themes']
     provenance={'issue':'SCRUM-264','nightBrightness':.78,'rasterizer':subprocess.check_output(['rsvg-convert','--version'],text=True).strip(),'symbols':{},'sources':{},'colors':{}}
-    for name,spec in mapping.items():provenance['symbols'][name]={**spec,'prototypeScale':25/32 if name=='LIGHTS13' else 27/32,'themes':{}}
+    for name,spec in mapping.items():provenance['symbols'][name]={**spec,'prototypeScale':25/32 if name.startswith('XNLIT') else 27/32,'themes':{}}
     for table,theme in [('DAY_BRIGHT','day'),('DUSK','dusk'),('NIGHT','night')]:
         resolved={}
         def replace(m):
@@ -35,7 +35,8 @@ def main():
             resolved[m[1]]=rgb
             return '#'+''.join(f'{v:02x}' for v in rgb)
         for name,spec in mapping.items():
-            svg='<svg xmlns="http://www.w3.org/2000/svg" width="24" height="28" viewBox="0 0 24 28"><style>'+css+'</style><g transform="translate(12 14)">'+art[spec['source']]+'</g></svg>\n'
+            symbol_css=css.replace('var(--mark-yellow)', 'var('+spec['rayRole']+')') if 'rayRole' in spec else css
+            svg='<svg xmlns="http://www.w3.org/2000/svg" width="24" height="28" viewBox="0 0 24 28"><style>'+symbol_css+'</style><g transform="translate(12 14)">'+art[spec.get('prototypeSource',spec['source'])]+'</g></svg>\n'
             svg=re.sub(r'var\((--[^)]+)\)',replace,svg)
             path=ASSETS/(name+'-'+table+'.svg');path.write_text(svg)
             png=a.evidence/(name+'-'+table+'.png')

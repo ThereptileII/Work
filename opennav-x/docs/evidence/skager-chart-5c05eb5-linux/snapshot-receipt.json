@@ -1,0 +1,17 @@
+{
+  "sourceCommit": "9632421f701c5ec74d7a1360bc713c0034faf9af",
+  "source": "/home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install",
+  "snapshot": "/home/standard/Projects/X-nav-worktrees/scrum265-construction-hatch/.local/hatch-light-5c05/963-readonly",
+  "independentlyMatched": true,
+  "entries": 802,
+  "totalBytes": 102675194,
+  "inventorySha256": "e9164a3907372524f5f4dec6c6fdb83a7fbd64f41dc1b662d82f2f3128d308e3",
+  "executable": {
+    "bytes": 26064064,
+    "sha256": "55b5f9f707be6188bf283c4ece5e992caa43352d77c4a7639a195f60d52e27a3"
+  },
+  "chartManifest": {
+    "bytes": 61148,
+    "sha256": "4af8f1245a59d2280fd74b563fd24f98401dfeb4ff8cdabf927352e5df856fc6"
+  }
+}

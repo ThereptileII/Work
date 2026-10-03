@@ -413,12 +413,12 @@
         }
       }
     },
-    "LIGHTS13": {
-      "source": "LIGHTS13",
-      "sourceRcid": 1398,
-      "rcid": 1398,
+    "XNLIT011": {
+      "source": "LIGHTS11",
+      "sourceRcid": 1396,
+      "rcid": 60009,
       "original": [
-        278,
+        247,
         175,
         22,
         22
@@ -437,7 +437,95 @@
         12,
         14
       ],
+      "sourceNodeSha256": "977f81d6fa908c5692cf40920fa558fe054d4200590ae11983f7aef0e5e6fc37",
+      "prototypeSource": "LIGHTS13",
+      "rayRole": "--mark-red",
+      "prototypeScale": 0.78125,
+      "themes": {
+        "DAY_BRIGHT": {
+          "rgbaSha256": "a9c6ad01a31120a1b06d6c582ae86bf3bd6ebfd50583dc83bd023b2a07894024",
+          "changedPixels": 88
+        },
+        "DUSK": {
+          "rgbaSha256": "8ad5cb67fd018bf55872e310c0ad1ae213feadfc49156acdd81d78a99dc74815",
+          "changedPixels": 88
+        },
+        "NIGHT": {
+          "rgbaSha256": "54df4dcc395f5510637f01c080cd0f6cc311c08376bfb3e73e589b8c37e1e44d",
+          "changedPixels": 88
+        }
+      }
+    },
+    "XNLIT012": {
+      "source": "LIGHTS12",
+      "sourceRcid": 1397,
+      "rcid": 60010,
+      "original": [
+        278,
+        205,
+        22,
+        22
+      ],
+      "originalPivot": [
+        0,
+        0
+      ],
+      "tile": [
+        596,
+        1160,
+        24,
+        28
+      ],
+      "pivot": [
+        12,
+        14
+      ],
+      "sourceNodeSha256": "ca9e88ac3770cb41593cfa3b8e98ef476e44eeefff59811824c517e4bf3ebfd9",
+      "prototypeSource": "LIGHTS13",
+      "rayRole": "--mark-green",
+      "prototypeScale": 0.78125,
+      "themes": {
+        "DAY_BRIGHT": {
+          "rgbaSha256": "f7091e98a28c89a9e350e4be3fef7b8dd076184f475f80ee3f8cff10d96469e3",
+          "changedPixels": 88
+        },
+        "DUSK": {
+          "rgbaSha256": "eeecbc6a5415a4faaa360e214ae63bf5bb0a6d63ccd7801fb5b30441dcd4e6a5",
+          "changedPixels": 88
+        },
+        "NIGHT": {
+          "rgbaSha256": "b4db85b6f83e054d899d87b6d6b507a5898f7fa0deb6e0ae483a718e625ee7b0",
+          "changedPixels": 88
+        }
+      }
+    },
+    "XNLIT013": {
+      "source": "LIGHTS13",
+      "sourceRcid": 1398,
+      "rcid": 60011,
+      "original": [
+        278,
+        175,
+        22,
+        22
+      ],
+      "originalPivot": [
+        0,
+        0
+      ],
+      "tile": [
+        628,
+        1160,
+        24,
+        28
+      ],
+      "pivot": [
+        12,
+        14
+      ],
       "sourceNodeSha256": "d61559cd61187c3f7ad6239313d6447223ddf6759ac90d4d842a3893e4fada2b",
+      "prototypeSource": "LIGHTS13",
+      "rayRole": "--mark-yellow",
       "prototypeScale": 0.78125,
       "themes": {
         "DAY_BRIGHT": {
@@ -474,12 +562,6 @@
     "resources/chart-style/v1/seamarks/BOYSAW12-DUSK.svg": "6f3885394171b9613c5e02ead4ea21e78b4b4e03767312fc16cb48ed3262bfd7",
     "resources/chart-style/v1/seamarks/BOYSAW12-NIGHT-rgba.json": "8ebb69c8d3e48d7533f846eae230e1bb49718369966e82f38a27a2667ab8bfb4",
     "resources/chart-style/v1/seamarks/BOYSAW12-NIGHT.svg": "2cd95bbd52ee893b138a6c927ba127e3e27b4814e8efc4763b6d819cc665d66f",
-    "resources/chart-style/v1/seamarks/LIGHTS13-DAY_BRIGHT-rgba.json": "f10ea1f607a5b257a21a36704e18b7bb1bf501668b80b887e0993a0496bb5b45",
-    "resources/chart-style/v1/seamarks/LIGHTS13-DAY_BRIGHT.svg": "7f8b8baaf8644fc339f41d8c58647d4ab7ec50e2709a98d1f35b8623f9c06631",
-    "resources/chart-style/v1/seamarks/LIGHTS13-DUSK-rgba.json": "03aeb3957dae708c07f734ab78d19335935d47c182f0d4c362abf6c7a434a918",
-    "resources/chart-style/v1/seamarks/LIGHTS13-DUSK.svg": "648e6adf78d25d4e27337d3668b3fd6d94d7131082db590cc33cdc7229a1d182",
-    "resources/chart-style/v1/seamarks/LIGHTS13-NIGHT-rgba.json": "8cee428afc70240890c5497bcbdd95b9bf6ce79d16e23ef5d3e992bd50c94fbc",
-    "resources/chart-style/v1/seamarks/LIGHTS13-NIGHT.svg": "f46057d1dc18dab90dc3cf95901c5179928f2a54c20e05e1cf96b2375d7bdc56",
     "resources/chart-style/v1/seamarks/XNCAN072-DAY_BRIGHT-rgba.json": "a53e81260ab115c102c868550acd8c5b9e3e4146ef73d70673db1c48c5319d72",
     "resources/chart-style/v1/seamarks/XNCAN072-DAY_BRIGHT.svg": "0d619870d7c7181ac358273ae8ea0ed34fac09f9f0d381088cee0c0c9078293d",
     "resources/chart-style/v1/seamarks/XNCAN072-DUSK-rgba.json": "74717abbe7a9ba904b2d0f6f8d04cee87d7439b91d38d82b38622ac33622adfb",
@@ -528,7 +610,25 @@
     "resources/chart-style/v1/seamarks/XNLAT024-DUSK.svg": "69016fd4f9097f5081f03b25c3722551a354b8bbae7f545f1a2101c617590d75",
     "resources/chart-style/v1/seamarks/XNLAT024-NIGHT-rgba.json": "b5ae5c1d4b2308d2e7fd4235d7cd75edf16a68fa4a9b315d3e9927767a6dffca",
     "resources/chart-style/v1/seamarks/XNLAT024-NIGHT.svg": "dd25707242dfd84c3b4388aca0da84893fc41b4546a8f25b528d80a114489259",
-    "resources/chart-style/v1/seamarks/mapping.json": "ce6d9e8cc9b18532e3235f981bc894d6dd367b67e23530adeab9305b423f226b"
+    "resources/chart-style/v1/seamarks/XNLIT011-DAY_BRIGHT-rgba.json": "727e7cec8fe042b4a715f99f70343876971e0d7c66c29f74d1836dec4a60bb39",
+    "resources/chart-style/v1/seamarks/XNLIT011-DAY_BRIGHT.svg": "04fcac862f6f54384acf50a6a779987210d016c0c687eedbe964608ebe1f1eac",
+    "resources/chart-style/v1/seamarks/XNLIT011-DUSK-rgba.json": "087c2d137dc6d7579e3192bd4e0624fe3097568e5840a94b2b38c544be6f3dbe",
+    "resources/chart-style/v1/seamarks/XNLIT011-DUSK.svg": "5ef77f14a1c60051f15ee4f5d705c0e00c5f79c9a6882dbe78d15264dad4a33b",
+    "resources/chart-style/v1/seamarks/XNLIT011-NIGHT-rgba.json": "1e547aec885887e368f1dd320ba3008d460eea815dffaae211b34c226345c538",
+    "resources/chart-style/v1/seamarks/XNLIT011-NIGHT.svg": "41d1011386708f86f1bd1c359a544233f850214b4a6ce537a1f692faf32c6f07",
+    "resources/chart-style/v1/seamarks/XNLIT012-DAY_BRIGHT-rgba.json": "fd9539a4092596d344b337711b3a9d948cc50c7380c2f5cb7ccba14d64147f4d",
+    "resources/chart-style/v1/seamarks/XNLIT012-DAY_BRIGHT.svg": "28e7f49446c28868345b09b08f90f5f43f2d867bbb5d1d500da329bba387bc2c",
+    "resources/chart-style/v1/seamarks/XNLIT012-DUSK-rgba.json": "f08d101acbbe3e5023e8f23ba1e1992fb479056e9effb0b7dc6ebfdb16666cac",
+    "resources/chart-style/v1/seamarks/XNLIT012-DUSK.svg": "90a8e41ff589a300e291a492981709460e87156290659db8444c0964dd7e664e",
+    "resources/chart-style/v1/seamarks/XNLIT012-NIGHT-rgba.json": "25df1ae16647b4818b627e0c46d5470b05b016e763ba18da6b4057904f0797ad",
+    "resources/chart-style/v1/seamarks/XNLIT012-NIGHT.svg": "1251eb53b6deb538c97db742e417cb0a4bd3a451e742ecee62411ba503bb5a8b",
+    "resources/chart-style/v1/seamarks/XNLIT013-DAY_BRIGHT-rgba.json": "f10ea1f607a5b257a21a36704e18b7bb1bf501668b80b887e0993a0496bb5b45",
+    "resources/chart-style/v1/seamarks/XNLIT013-DAY_BRIGHT.svg": "7f8b8baaf8644fc339f41d8c58647d4ab7ec50e2709a98d1f35b8623f9c06631",
+    "resources/chart-style/v1/seamarks/XNLIT013-DUSK-rgba.json": "03aeb3957dae708c07f734ab78d19335935d47c182f0d4c362abf6c7a434a918",
+    "resources/chart-style/v1/seamarks/XNLIT013-DUSK.svg": "648e6adf78d25d4e27337d3668b3fd6d94d7131082db590cc33cdc7229a1d182",
+    "resources/chart-style/v1/seamarks/XNLIT013-NIGHT-rgba.json": "8cee428afc70240890c5497bcbdd95b9bf6ce79d16e23ef5d3e992bd50c94fbc",
+    "resources/chart-style/v1/seamarks/XNLIT013-NIGHT.svg": "f46057d1dc18dab90dc3cf95901c5179928f2a54c20e05e1cf96b2375d7bdc56",
+    "resources/chart-style/v1/seamarks/mapping.json": "50ecd5571f85e7f50d93eaddd4637d15e7f21f7da4728d003784ad7df7a3026e"
   },
   "colors": {
     "DAY_BRIGHT": {

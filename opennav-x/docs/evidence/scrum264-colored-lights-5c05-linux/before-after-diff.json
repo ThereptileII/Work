@@ -1,0 +1,38 @@
+[
+  {
+    "renderer": "software",
+    "chartBounds": [
+      80,
+      68,
+      1094,
+      634
+    ],
+    "changedPixels": 470,
+    "changedBounds": [
+      446,
+      137,
+      686,
+      213
+    ],
+    "greenLightRegionChanges": 236,
+    "redLightRegionChanges": 234
+  },
+  {
+    "renderer": "opengl",
+    "chartBounds": [
+      80,
+      68,
+      1094,
+      634
+    ],
+    "changedPixels": 404,
+    "changedBounds": [
+      446,
+      137,
+      685,
+      213
+    ],
+    "greenLightRegionChanges": 203,
+    "redLightRegionChanges": 201
+  }
+]

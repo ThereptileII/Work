@@ -1,0 +1,32 @@
+# SCRUM-264: compact colored lights with orientation-preserving fallback
+
+The source correction keeps original LIGHTS11/12/13 vector resources entirely unchanged and introduces library-owned raster aliases XNLIT011/012/013. Only a verified SKAGER core/private presentation instance selects the alias, and only for a LIGHTS object with no ORIENT attribute. Any ORIENT presence keeps the original Rule, pivot, bounds, HPGL and upstream angle handling, including non-finite/malformed attributes. This guard does not sanitize an invalid attribute or bypass upstream validation. Missing, null, wrong-name or non-raster aliases fall back to the original Rule. There is no shared Rule mutation or temporary cache-owning copy.
+
+This corrects the earlier unconditional LIGHTS13 bitmap preference in frozen 9632421. That earlier executable's successful captures do not qualify this correction. No frozen builder/cache changes, application build, CI, plugin/helper or boat execution occurred here.
+
+## Source boundary
+
+Pinned ChartSymbols::BuildSymbol retains HPGL bytes but selects one `Rule.pos` from vector or bitmap metadata. Therefore forcing a bitmap-selected Rule through HPGL would use the wrong pivot/bounds. Stable separate aliases avoid this lifetime/metadata problem. The generated original LIGHTS11/12/13 nodes now match pinned stock completely; added aliases have collision-checked eight-character names, RCIDs 60009–60011, isolated 24×28 tiles and center pivot (12,14).
+
+Actual RenderSY still computes its original angle and projected position. A small guarded block chooses a paint Rule only; all original conditional instructions remain intact. The new include/selection block is guarded by OPENNAV_X in core and SKAGER_OCHARTS_ADAPTER in the private renderer. An explicit per-instance flag defaults false and is enabled only after the existing resource-verification boundary. Standard, unbound/fallback private libraries and disabled integrations keep the original Rules. The new shared helper is included in the private preparation dependency/identity closure; native changed-unit input inventory already includes all tracked src headers.
+
+LIGHTS06 continues to classify short-range red and white/red as LIGHTS11, green and white/green as LIGHTS12, white/yellow/orange as LIGHTS13. Sector and long-range CA, directional/moire question marks, special light classes and description generation are unchanged. Neither global LITRD/LITGN nor the actual conditions, geometry, priority, visibility, color classification or chart preferences are changed.
+
+## Artwork provenance and visible limits
+
+Immutable `docs/design/prototype/src/chart-marker-art.js` supplies LIGHTS13 only: radius3.5 center and four rays from7 to10 chart units. `index.html:106,113–115` supplies point/ray styles and final theme tokens. The red/green variants are explicitly authorized derivatives, not original supplied artwork: only the ray token changes to --mark-red/--mark-green. The neutral floating point, chart-text ring, 1.5/1.3 strokes and 25/32 scale remain. Night chart brightness .78 is applied exactly once. All immutable source/derived asset hashes remain in the seamark provenance file. Day, Dusk and Night contact sheets were inspected at native size; original SVG/RGBA assets are version controlled.
+
+Co-located buoy and light composition is deliberately unchanged. Isolated danger keeps its two class spheres; safe water keeps its sphere; the real light contributes its own circle/rays. Existing Simplified TOPMAR lookup1262/RCID31314 is empty, so the observed extra circle is not a duplicated TOPMAR paint. Generic beacons, special-purpose buoys, remaining Paper artwork and the stock long-range CA circle remain open visual differences. This change does not claim all-family conformance.
+
+## Focused verification
+
+- Generated resources: 53,258 focused seamark assertions, including all eight existing negative whole-resource cases. Original node equality, exact alias nodes/RCIDs, atlas bounds/moats, every owned pixel/alpha, old tiles and all neighboring bytes are checked. Final whole XML inverse validation was rerun after the final helper cleanup and passed. The slow complete resource suite was not repeated.
+- 36,242 actual loader/render/conditional checks: actual ProcessSymbols, BuildSymbol, PNG loading and atlas crop methods execute; actual RenderSY, attribute lookup/accessors and LIGHTS06 execute with fixture object construction and recorded painter calls. Original vector dimensions/pivots are checked. Finite ORIENT0/45/270, NaN/infinity, malformed-attribute presence, missing/null/invalid aliases, disabled instance, unknown class and shared Rule immutability are covered. Full chart projection and painting are not mocked as accepted.
+- Two mutations of the actual extracted RenderSY are rejected by unchanged assertions: bypassing instance enable, and bypassing ORIENT presence. The original method is restored and the retained fixture executable rebuilt after these controls.
+- Core and private RenderSY bodies match after normalizing their compile guard; actual private loader/conditional methods match the pinned executed bodies. Fifteen adapter preparation tests pass with the new header closure.
+- All nine core patches and both private patches apply in isolated exact-source copies. Resulting s52plib.cpp/h bytes equal the source used for object compilation.
+- Six actual Linux object compiles pass: core s52plib and ChartPresentation, private s52plib and ChartPresentationAdapter, plus core/private s52plib with their integration disabled. The enabled units compile software and GL branches. Commands, compiler output and object hashes are retained; no final app or private DLL link was performed.
+
+Diagnostic preparation errors are retained separately: the first method extraction matched a forward declaration, the initial compile receipt used a wrong object-key separator, and trimming a patch's final blank context required correcting that hunk's line count. These were resolved before final tests/patch verification; they were not application runtime failures. The exact failed logs are kept without weakening assertions.
+
+Actual revised red/green/white chart captures, ORIENT-positive chart rendering, native Windows and private o-charts rendering, and physical boat readability remain pending. Root will batch them with the next exact combined candidate. Existing frozen captures remain evidence for their original source only.

@@ -1,0 +1,73 @@
+Day 148 DIP 100% row 0: runs=6 lit=1305 peak=254
+Day 148 DIP 100% row 1: runs=3 lit=128 peak=216
+Day 148 DIP 100% row 0: peak contrast=14.5649
+Day 148 DIP 100% row 1: peak contrast=9.24243
+Day 148 DIP 125% row 0: runs=6 lit=2082 peak=254
+Day 148 DIP 125% row 1: runs=3 lit=183 peak=224
+Day 148 DIP 125% row 0: peak contrast=14.5649
+Day 148 DIP 125% row 1: peak contrast=9.90933
+Day 148 DIP 150% row 0: runs=6 lit=2892 peak=254
+Day 148 DIP 150% row 1: runs=3 lit=251 peak=226
+Day 148 DIP 150% row 0: peak contrast=14.5649
+Day 148 DIP 150% row 1: peak contrast=10.0726
+Day 124 DIP 100% row 0: runs=6 lit=946 peak=253
+Day 124 DIP 100% row 1: runs=3 lit=91 peak=214
+Day 124 DIP 100% row 0: peak contrast=14.4365
+Day 124 DIP 100% row 1: peak contrast=9.22077
+Day 124 DIP 125% row 0: runs=6 lit=1424 peak=254
+Day 124 DIP 125% row 1: runs=3 lit=138 peak=221
+Day 124 DIP 125% row 0: peak contrast=14.5649
+Day 124 DIP 125% row 1: peak contrast=9.70935
+Day 124 DIP 150% row 0: runs=6 lit=2070 peak=254
+Day 124 DIP 150% row 1: runs=3 lit=186 peak=225
+Day 124 DIP 150% row 0: peak contrast=14.5649
+Day 124 DIP 150% row 1: peak contrast=9.98742
+Dusk 148 DIP 100% row 0: runs=6 lit=1305 peak=254
+Dusk 148 DIP 100% row 1: runs=3 lit=128 peak=216
+Dusk 148 DIP 100% row 0: peak contrast=11.6909
+Dusk 148 DIP 100% row 1: peak contrast=6.08831
+Dusk 148 DIP 125% row 0: runs=6 lit=2082 peak=254
+Dusk 148 DIP 125% row 1: runs=3 lit=183 peak=224
+Dusk 148 DIP 125% row 0: peak contrast=11.6909
+Dusk 148 DIP 125% row 1: peak contrast=6.44913
+Dusk 148 DIP 150% row 0: runs=6 lit=2892 peak=254
+Dusk 148 DIP 150% row 1: runs=3 lit=251 peak=226
+Dusk 148 DIP 150% row 0: peak contrast=11.6909
+Dusk 148 DIP 150% row 1: peak contrast=6.56913
+Dusk 124 DIP 100% row 0: runs=6 lit=946 peak=253
+Dusk 124 DIP 100% row 1: runs=3 lit=91 peak=214
+Dusk 124 DIP 100% row 0: peak contrast=11.5818
+Dusk 124 DIP 100% row 1: peak contrast=5.9743
+Dusk 124 DIP 125% row 0: runs=6 lit=1424 peak=254
+Dusk 124 DIP 125% row 1: runs=3 lit=138 peak=221
+Dusk 124 DIP 125% row 0: peak contrast=11.6909
+Dusk 124 DIP 125% row 1: peak contrast=6.30115
+Dusk 124 DIP 150% row 0: runs=6 lit=2070 peak=254
+Dusk 124 DIP 150% row 1: runs=3 lit=186 peak=225
+Dusk 124 DIP 150% row 0: peak contrast=11.6909
+Dusk 124 DIP 150% row 1: peak contrast=6.50638
+Night 148 DIP 100% row 0: runs=6 lit=1305 peak=254
+Night 148 DIP 100% row 1: runs=3 lit=128 peak=216
+Night 148 DIP 100% row 0: peak contrast=6.32285
+Night 148 DIP 100% row 1: peak contrast=5.56415
+Night 148 DIP 125% row 0: runs=6 lit=2082 peak=254
+Night 148 DIP 125% row 1: runs=3 lit=183 peak=224
+Night 148 DIP 125% row 0: peak contrast=6.32285
+Night 148 DIP 125% row 1: peak contrast=5.85293
+Night 148 DIP 150% row 0: runs=6 lit=2892 peak=254
+Night 148 DIP 150% row 1: runs=3 lit=251 peak=226
+Night 148 DIP 150% row 0: peak contrast=6.32285
+Night 148 DIP 150% row 1: peak contrast=5.982
+Night 124 DIP 100% row 0: runs=6 lit=946 peak=253
+Night 124 DIP 100% row 1: runs=3 lit=91 peak=214
+Night 124 DIP 100% row 0: peak contrast=6.32285
+Night 124 DIP 100% row 1: peak contrast=5.4917
+Night 124 DIP 125% row 0: runs=6 lit=1424 peak=254
+Night 124 DIP 125% row 1: runs=3 lit=138 peak=221
+Night 124 DIP 125% row 0: peak contrast=6.32285
+Night 124 DIP 125% row 1: peak contrast=5.71598
+Night 124 DIP 150% row 0: runs=6 lit=2070 peak=254
+Night 124 DIP 150% row 1: runs=3 lit=186 peak=225
+Night 124 DIP 150% row 0: peak contrast=6.32285
+Night 124 DIP 150% row 1: peak contrast=5.90584
+189932 wordmark checks passed; 18 native before/after theme/size drawings

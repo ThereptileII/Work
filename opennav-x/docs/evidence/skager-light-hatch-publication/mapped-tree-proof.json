@@ -1,0 +1,11 @@
+{
+  "localSource": "5c05eb55c15b67d4014df55896d95452e9cc9d64",
+  "publishedCommit": "159cbeff00d67fbd0b77442b7288407f5d93db2b",
+  "mappedTree": "90d0eeaca8b246339cd7d458671c4dbd7dae20d9",
+  "trackedBlobs": 3805,
+  "unrelatedRootFiles": 8,
+  "omittedUpstreamFetchedByLock": [
+    "upstream/OpenCPN"
+  ],
+  "verified": true
+}

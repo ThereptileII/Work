@@ -1,0 +1,15 @@
+{
+  "sourceCommit": "9dee9b148f4d6ebdd20bb4c49229fe19340df209",
+  "testSourceSha256": "06b9708e947d188d6208bba822e8e4141d0512faf30a1dd3d2535a6d06421656",
+  "componentExecutableSha256": "53fb5e5a403d02b38528069e87f3725149e101758e64b2f6624b919c750e417e",
+  "initialFailure": "Inherited GDK_BACKEND=wayland with WAYLAND_DISPLAY=wayland-1; GTK refused Xvfb before assertions",
+  "retryEnvironment": {
+    "GDK_BACKEND": "x11",
+    "WAYLAND_DISPLAY": "removed",
+    "dedicatedXvfb": 249
+  },
+  "retryCount": 1,
+  "applicationRebuildsAfterLauncherFailure": 0,
+  "suiteExecutions": 1,
+  "scope": "Linux fallback branch only; actual Windows installed face selection remains open"
+}

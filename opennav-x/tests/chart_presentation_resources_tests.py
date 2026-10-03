@@ -31,6 +31,8 @@ with tempfile.TemporaryDirectory(prefix='xnav-chart-test-') as d:
     output=folder/'generated'
     original={p.name:hashlib.sha256(p.read_bytes()).hexdigest() for p in source.iterdir() if p.is_file()}
     data=g.generate(source,output)
+    from chart_construction_hatch_tests import verify as verify_hatch
+    verify_hatch(source,output,check)
     from chart_area_resources_tests import verify_area_ink
     verify_area_ink(source,output,data,check)
     from chart_structure_resources_tests import verify as verify_structures
@@ -48,6 +50,8 @@ with tempfile.TemporaryDirectory(prefix='xnav-chart-test-') as d:
     verify_day_neutral(source,output,data,check)
     from chart_seamark_resources_tests import verify_seamarks,restore_tiles,SELECTED,ALIASES
     verify_seamarks(source,output,data,check)
+    from chart_special_buoy_resources_tests import verify_special_buoy
+    verify_special_buoy(source,output,check)
     from chart_cardinal_resources_tests import verify_cardinals
     verify_cardinals(source,output,data,check)
     from chart_service_resources_tests import verify_services
@@ -121,13 +125,12 @@ with tempfile.TemporaryDirectory(prefix='xnav-chart-test-') as d:
     styled=b.findall("symbols/symbol[name='ACHARE51']")[-1].find('bitmap')
     styled.attrib=stock.attrib.copy()
     for tag in ('pivot','graphics-location'):styled.find(tag).attrib=stock.find(tag).attrib.copy()
-    for name in ('PILBOP02','RTPBCN02','BOYCAR01','BOYCAR02','BOYCAR03','BOYCAR04','BOYISD12','BOYSAW12','LIGHTS13'):
+    for name in ('PILBOP02','RTPBCN02','BOYCAR01','BOYCAR02','BOYCAR03','BOYCAR04','BOYISD12','BOYSAW12'):
         stock=a.findall("symbols/symbol[name='"+name+"']")[-1].find('bitmap')
         styled=b.findall("symbols/symbol[name='"+name+"']")[-1].find('bitmap')
         styled.attrib=stock.attrib.copy()
         for tag in ('pivot','graphics-location'):styled.find(tag).attrib=stock.find(tag).attrib.copy()
-    b.find("symbols/symbol[name='LIGHTS13']/prefer-bitmap").text='no'
-    for name in ALIASES:b.find('symbols').remove(b.find("symbols/symbol[name='"+name+"']"))
+    for name in (*ALIASES,'XNSPPW01'):b.find('symbols').remove(b.find("symbols/symbol[name='"+name+"']"))
     # Independently undo only the cable paint reference before whole-tree proof.
     cables=b.findall("line-styles/line-style[name='CBLSUB06']")
     check(len(cables)==1 and cables[0].attrib=={'RCID':'2012'})
@@ -136,11 +139,14 @@ with tempfile.TemporaryDirectory(prefix='xnav-chart-test-') as d:
     ferry=b.find("line-styles/line-style[name='FERYRT01']")
     check(ferry.attrib=={'RCID':'2019'} and ferry.findtext('color-ref')=='AXNARE')
     ferry.find('color-ref').text='ACHMGD'
+    hatch=b.find("patterns/pattern[name='CROSSX01']")
+    check(hatch.get('RCID')=='3' and hatch.findtext('color-ref')=='AXNHAT')
+    hatch.find('color-ref').text='ACHBRN'
     for section in ['lookups','line-styles','patterns','symbols']:
         check(ET.tostring(a.find(section))==ET.tostring(b.find(section)))
     for stock,styled in zip(a.find('color-tables'),b.find('color-tables')):
         check(stock.attrib==styled.attrib)
-        for name in ('XNBUA','XNGEO','XNCBL','XNARE','XNSTR','XNSHR'):
+        for name in ('XNBUA','XNGEO','XNCBL','XNARE','XNSTR','XNSHR','XNHAT'):
             added=styled.findall("color[@name='"+name+"']")
             check(len(added)==(1 if stock.get('name') in data['palette'] else 0))
             for entry in added:styled.remove(entry)
@@ -164,6 +170,7 @@ with tempfile.TemporaryDirectory(prefix='xnav-chart-test-') as d:
         unchanged.remove(unchanged.find("color[@name='XNARE']"))
         unchanged.remove(unchanged.find("color[@name='XNSTR']"))
         unchanged.remove(unchanged.find("color[@name='XNSHR']"))
+        unchanged.remove(unchanged.find("color[@name='XNHAT']"))
         # Restore only the prior XNBUA shade before the existing whole-table
         # identity oracle; all other Day/Dusk palette bytes must remain exact.
         prior=(175,191,174) if table=='DAY_BRIGHT' else (116,135,121)

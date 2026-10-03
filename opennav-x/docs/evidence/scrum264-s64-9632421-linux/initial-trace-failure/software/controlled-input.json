@@ -1,0 +1,28 @@
+{
+  "scope": "Owned simulated loopback RMC into actual OpenCPN input path; not live navigation",
+  "connections": [
+    {
+      "peer": "127.0.0.1",
+      "connected_monotonic": 66382.020657678
+    }
+  ],
+  "sent": [
+    {
+      "sent_monotonic": 66382.320895556,
+      "sentence": "$GPRMC,072122,A,4736.000,N,12221.600,W,3.0,90.0,031026,,,A*58"
+    },
+    {
+      "sent_monotonic": 66382.621124252,
+      "sentence": "$GPRMC,072122,A,4736.000,N,12221.600,W,3.0,90.0,031026,,,A*58"
+    },
+    {
+      "sent_monotonic": 66382.921334198,
+      "sentence": "$GPRMC,072122,A,4736.000,N,12221.600,W,3.0,90.0,031026,,,A*58"
+    },
+    {
+      "sent_monotonic": 66383.221553908,
+      "sentence": "$GPRMC,072123,A,4736.000,N,12221.600,W,3.0,90.0,031026,,,A*59"
+    }
+  ],
+  "errors": []
+}
