@@ -1,0 +1,253 @@
+{
+  "scope": "Only real core/private trust probe configure and x86 compilation",
+  "runtimeAcceptance": false,
+  "packageAcceptance": false,
+  "dependencyProducerAcceptance": false,
+  "tlsAcceptance": false,
+  "passed": false,
+  "remoteCommit": "9ec668981b9aa86bcd643b84c6f18cfa002b3f74",
+  "runId": "37135421013",
+  "localInputs": {
+    ".gitattributes": {
+      "bytes": 684,
+      "sha256": "448046a586d8a600fc2871815984cdad00623d18fa7b1c2937ed623383d19a4e"
+    },
+    ".github/workflows/skager-trust-compile.yml": {
+      "bytes": 1177,
+      "sha256": "f1541fbea6b8f3d593f4384d4ff5f39ad36f8693e4d88fb7ca4d851882db6bdf"
+    },
+    "cmake/ocharts-adapter/CMakeLists.txt": {
+      "bytes": 517,
+      "sha256": "30a4cf18b476e9c31967c80f1c498e2ed2f636d29f6bcecf3d982194a859d056"
+    },
+    "cmake/ocharts-adapter/PreparedPath.cmake": {
+      "bytes": 288,
+      "sha256": "8ae9f1890a05f8301480cdef98e5356b14d981ebb36000cf4d35db28abe5757a"
+    },
+    "cmake/ocharts-adapter/Targets.cmake": {
+      "bytes": 3381,
+      "sha256": "d13c9451ad5fecd563847d86cb893b0655ed41a32ea97bc41c5c204e70576c70"
+    },
+    "patches/ocharts-skager-presentation.patch": {
+      "bytes": 39424,
+      "sha256": "78d704335b633c8453cfe459e953ac0fff19ea97961d2b341ff10c874c4ebd13"
+    },
+    "patches/ocharts-wxcurl-trust.patch": {
+      "bytes": 3458,
+      "sha256": "e68b0a767f6a27d0136fa7e6b82ca96eac69f934f5fe54a13b314750bbb3d567"
+    },
+    "patches/opencpn-5.12.4-ais-transport.patch": {
+      "bytes": 20677,
+      "sha256": "d343a0a7a77817c55b16734516b7d686dbfc2eb3f4207b43b6099d7d98c9b2f6"
+    },
+    "patches/opencpn-5.12.4-chart-presentation.patch": {
+      "bytes": 105416,
+      "sha256": "ea148ab5d432ac57771e623ca6f2523fb0392f803466ee08a86261d17c80ee1a"
+    },
+    "patches/opencpn-5.12.4-download-trust.patch": {
+      "bytes": 12103,
+      "sha256": "04763cb038ad088a722e76d4f85bde7e356489b697a373458195336d4278412b"
+    },
+    "patches/opencpn-5.12.4-maintained-curl.patch": {
+      "bytes": 551,
+      "sha256": "dafa1fec0a69e3a1195db726c2cb26ceeb7535b5e25476ac2e4658d910f44e48"
+    },
+    "patches/opencpn-5.12.4-peer-response-buffer.patch": {
+      "bytes": 4915,
+      "sha256": "c335f361766a6982c3d096e93f7c149179deb33134668e110111ac4980064e15"
+    },
+    "patches/opencpn-5.12.4-peer-unavailable.patch": {
+      "bytes": 11876,
+      "sha256": "5bf1c2ae4b09043ce18151f766aebd2b881b993f352000e34399de7e8b36b6d3"
+    },
+    "patches/opencpn-5.12.4-regression-tests.patch": {
+      "bytes": 4003,
+      "sha256": "3ef13652b8f3717d836883d2fbb7a18f35dbd2ca1162ac991fe339e61392dff1"
+    },
+    "patches/opencpn-5.12.4-wxcurl-trust.patch": {
+      "bytes": 4944,
+      "sha256": "f3ad76fc07b80e6f2c01331894ce5e685f6aa4456a2a3c761e3115c8c21f3d6b"
+    },
+    "patches/opencpn-5.12.4-xnav.patch": {
+      "bytes": 40721,
+      "sha256": "dfbacadf42502d1d0366745b3a187d256e620b0d2ea7dba9e8912c46e999e0b3"
+    },
+    "src/integration/ChartCanvasInk.h": {
+      "bytes": 652,
+      "sha256": "0035cbe59cb8fa7a8a53db2c4fc02b03263739a610a0a1cc8647475edb6c83c0"
+    },
+    "src/integration/ChartLightLabel.h": {
+      "bytes": 5079,
+      "sha256": "2480404f2283715b359549ef442a1b71881b117cb3eba3928a9e35b8b092229c"
+    },
+    "src/integration/ChartLightSymbol.h": {
+      "bytes": 1031,
+      "sha256": "c419f2e8141c27cd05aa74a6cfa6b7d23d4a0b7cd2d3faccd9b1fc1634265f61"
+    },
+    "src/integration/ChartNameAlphaWindows.cpp": {
+      "bytes": 946,
+      "sha256": "c3e8f7c8ec46de5e80988381217e1dd489726f533e0eb6ef03400fa53da5809a"
+    },
+    "src/integration/ChartNameSpacing.h": {
+      "bytes": 1274,
+      "sha256": "21007bdd438595cad679a9df06620e43c0f52a39074f9a29982e2b80ec1af019"
+    },
+    "src/integration/ChartNameText.h": {
+      "bytes": 2373,
+      "sha256": "306b7d4742596a38adb334dad6c3e33e8f44bd155fa1437d3ef31a6034005a31"
+    },
+    "src/integration/ChartNameTypography.h": {
+      "bytes": 969,
+      "sha256": "dd4d244b8236eae0b365361136b6d4ca7b8bdbbf4b7af2bf312812cf9534aadd"
+    },
+    "src/integration/ChartSoundingFont.h": {
+      "bytes": 1160,
+      "sha256": "fb67564fb9b04df6d0e11fb187ff49f3927a6979cdc33a2411614333d33073a8"
+    },
+    "src/integration/ChartSpecialBuoySymbol.h": {
+      "bytes": 2501,
+      "sha256": "d36d2785fc5b5f107ef395c72bd19bf1f290e83e1cb00f4b6b70de952150eab5"
+    },
+    "src/integration/ChartTextFace.h": {
+      "bytes": 824,
+      "sha256": "09771fe37ed74fbd3d23db0986df74d358337d17e87c0997fc33b0628c46731a"
+    },
+    "src/integration/ChartYellowBuoySymbol.h": {
+      "bytes": 4714,
+      "sha256": "ed86ba2a9687cfb214ede22ae4ddbd4c623fcab35eb0883e92fee376b5520353"
+    },
+    "src/plugin-adapters/ChartPresentationBindingV1.h": {
+      "bytes": 3172,
+      "sha256": "b19186376a4aa357ba7625d2e7c26d3ad4a526d120ea61d36a857f52f3266dde"
+    },
+    "src/plugin-adapters/ocharts/BindingState.h": {
+      "bytes": 4088,
+      "sha256": "c10e46310dc72621d3fac2ac272ed282aab1feb5c565db412ebb2c23062fc870"
+    },
+    "src/plugin-adapters/ocharts/ChartPresentationAdapter.cpp": {
+      "bytes": 6274,
+      "sha256": "db1968182d895e160ea724e9dfb3bfc1221848e61d3159c6678dc5ad5776bda3"
+    },
+    "src/plugin-adapters/ocharts/ChartPresentationAdapter.h": {
+      "bytes": 363,
+      "sha256": "d07fd4f59734ab7a8148fa299a64bbae5d0275b7571aa7152747b902d7d6d465"
+    },
+    "src/plugin-adapters/ocharts/OwnedPresentationValidation.h": {
+      "bytes": 1710,
+      "sha256": "f006ca0df2928fc1969d83220c568063eebf31fd24550550930711018a21b7a1"
+    },
+    "src/plugin-adapters/ocharts/PointStyleObservation.h": {
+      "bytes": 1532,
+      "sha256": "7c11b25cc4912f0ff5ba06bf918efc27d8c71954ea909ed73befe42e898e0ae2"
+    },
+    "src/plugin-adapters/ocharts/ResourceVerification.h": {
+      "bytes": 1396,
+      "sha256": "a23886c78e14ae0a599ae27617b8a69e3ebd52efbae122d3d1ea1872de06a09a"
+    },
+    "src/ui/Theme.h": {
+      "bytes": 4104,
+      "sha256": "1ceb85b81b78e48c773fe73d41f5f426581e15a62bf61527ccdaa8f7aea9cd70"
+    },
+    "tests/downloader_trust/CMakeLists.txt": {
+      "bytes": 1974,
+      "sha256": "d628676f8ca5cce4aeefcf31d850a6ba3a95eaf65253a560ed8f5bbff1822326"
+    },
+    "tests/downloader_trust/InputPaths.cmake": {
+      "bytes": 600,
+      "sha256": "e597be8c825979a8e3ec92bdba8358067a75b1de31ab00ff4ae373804f22ad2f"
+    },
+    "tests/downloader_trust/Targets.cmake": {
+      "bytes": 1589,
+      "sha256": "74ade878f72d96945cc4b38ed14b88804d7ffa32d53111024bdb78cacbc1cc2b"
+    },
+    "tests/windows_trust_compile/CMakeLists.txt": {
+      "bytes": 1240,
+      "sha256": "dd51ce7c0f68e243d2c601e12ac28116b919331fedb6abe5076d1393de995b42"
+    },
+    "tools/curl_package.py": {
+      "bytes": 12766,
+      "sha256": "286ffca81d992270ccd6398829575305d538a889496b96e495e9e3339bb39acb"
+    },
+    "tools/downloader-trust-probe.cpp": {
+      "bytes": 1514,
+      "sha256": "ddb5de3659c2d68a8ca6ce7e67d721152e681e7634d896d35536d42048649bc2"
+    },
+    "tools/downloader-trust-server.py": {
+      "bytes": 2593,
+      "sha256": "21f667fa22ceec4564447ebee9b90078f228f063621b61de498b91931cb3b657"
+    },
+    "tools/ocharts-adapter-source.lock.json": {
+      "bytes": 31085,
+      "sha256": "042a4dc7a25197ff39fa6ab44a2cd33c1ec71d9ca1db162bdebbe02166a078d7"
+    },
+    "tools/ocharts_cmake_path_probe.py": {
+      "bytes": 4342,
+      "sha256": "05d5969a19524714bf02d864dbd1a25666dd2ad33a85d778754deb4b90386a9f"
+    },
+    "tools/openssl_package.py": {
+      "bytes": 9975,
+      "sha256": "fe0c87a9146c03dcbc7a5ba2f4214ac2690d536ebfc8f639681b64da0d41e35d"
+    },
+    "tools/prepare-integration.py": {
+      "bytes": 3366,
+      "sha256": "ee6536b8af6ebb23fe6773b145799b11944b07bafae2757eb2e1a60d6b401368"
+    },
+    "tools/prepare-ocharts-adapter.py": {
+      "bytes": 16873,
+      "sha256": "689318f632878ad4c919df38e4c84407938e0d428271e6d1eebbb831b08ba854"
+    },
+    "tools/test-downloader-trust-paths.py": {
+      "bytes": 2273,
+      "sha256": "4b97d8c3af4e51f1b3862933f4f350915897eeb4f122c80d956b8ae1358099ba"
+    },
+    "tools/test-downloader-trust-windows.ps1": {
+      "bytes": 20005,
+      "sha256": "1bc11880286d5500b9e3bd85a23a34c8ae24ad2b93352c6a0726d1378182d136"
+    },
+    "tools/test-ocharts-compile-windows.py": {
+      "bytes": 10787,
+      "sha256": "fc1b818eaaf8e621a782a3c170a27d1dcbeca4617f7132000988b62116c3a3e7"
+    },
+    "tools/test-trust-compile-windows.py": {
+      "bytes": 11158,
+      "sha256": "7e2672b96c3e7a372aeb26bcf35ed6502cc5c9b4e6a99d01b0d44e1b1c17f769"
+    },
+    "tools/test-windows-changed-units.py": {
+      "bytes": 37232,
+      "sha256": "f7a3084410a11700bb06670222b71d78c9bcc1f417599dcb030c71a56714b180"
+    },
+    "tools/verify-ocharts-adapter-package.py": {
+      "bytes": 13217,
+      "sha256": "be05a9d504a64b6d905f959b45e33531e21dae963666429bb30266d94b1fa85f"
+    },
+    "tools/verify-upstream.py": {
+      "bytes": 718,
+      "sha256": "e5c9d45ba648c9f2556d1bf84624deed263dd16040a941279ec7b64a86cbab77"
+    },
+    "tools/windows-curl.lock.json": {
+      "bytes": 409,
+      "sha256": "af38fa0c570b3ed01cda2fd4511e351c8af2bebedb254cfe9ff5fb6c6f13fe18"
+    },
+    "tools/windows-openssl.lock.json": {
+      "bytes": 805,
+      "sha256": "dd26041ec5b5f85a76010b4e45716d8dc46c85ccb032815aab8059c49e6bc99d"
+    },
+    "tools/windows-wx.lock.json": {
+      "bytes": 1017,
+      "sha256": "2fb563c4de7819d4b10d7a567e59510cd033c3b9cb55ce4ebb654964da60267f"
+    },
+    "tools/windows-zlib.lock.json": {
+      "bytes": 404,
+      "sha256": "3da21aa4827871eac086c48b859fb5a50737bfc15c1e2fbe0ed81ffa15d23995"
+    },
+    "tools/wxcurl-trust-probe.cpp": {
+      "bytes": 2089,
+      "sha256": "f099bc25d9072b49842a3b25cb87f99562259250d8d8c97f27183a69572e0c70"
+    },
+    "upstream.lock.json": {
+      "bytes": 470,
+      "sha256": "a6d7baa663d57ac3bc0f4ddc1cb80013422e2cec0577b71096b7c410ef919175"
+    }
+  },
+  "error": "[WinError 5] Access is denied: 'D:\\\\a\\\\Work\\\\Work\\\\opennav-x\\\\build\\\\trust compile inputs\\\\source-cache\\\\tmpsi9ntjq2' -> 'D:\\\\a\\\\Work\\\\Work\\\\opennav-x\\\\build\\\\trust compile inputs\\\\source-cache\\\\7d5393a1212da0841e28e2f74883cb40fbd75a1f'"
+}

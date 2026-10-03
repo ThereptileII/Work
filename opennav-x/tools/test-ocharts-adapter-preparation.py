@@ -224,9 +224,12 @@ class Guards(unittest.TestCase):
                     self.assertFalse((source / '.git').exists())
 
     def test_native_private_tls_source_selection_and_alpha_closure(self):
-        cmake = (ROOT / 'tests/downloader_trust/CMakeLists.txt').read_text()
+        cmake = ((ROOT / 'tests/downloader_trust/CMakeLists.txt').read_text() +
+                 (ROOT / 'tests/downloader_trust/Targets.cmake').read_text())
         native = (ROOT / 'tools/test-downloader-trust-windows.ps1').read_text()
         recipe = (ROOT / 'cmake/ocharts-adapter/Targets.cmake').read_text()
+        for helper in ('InputPaths.cmake', 'Targets.cmake'):
+            self.assertIn('tests/downloader_trust/' + helper, v.prep.INPUTS)
         self.assertIn('--verify-prepared', cmake)
         self.assertIn('"${SKAGER_OCHARTS_PREPARED}/source/libs/wxcurl/src"', cmake)
         self.assertIn('"${trust_wxcurl_source}/base.cpp"', cmake)

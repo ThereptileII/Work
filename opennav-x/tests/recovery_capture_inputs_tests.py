@@ -168,6 +168,230 @@ class PackageBoundary(unittest.TestCase):
         self.assertFalse(output.exists())
 
 
+class DisposablePackage(unittest.TestCase):
+    # Reuse the input builder without inheriting/rerunning the archive suite.
+    write_product = PackageBoundary.write_product
+    seal = PackageBoundary.seal
+    verify = PackageBoundary.verify
+    tearDown = PackageBoundary.tearDown
+
+    def setUp(self):
+        PackageBoundary.setUp(self)
+        (self.package/'app/plugins').mkdir()
+        (self.package/'app/plugins/dashboard_pi.dll').write_bytes(b'bundled identity, never executed')
+        (self.package/'app/empty-resource-directory').mkdir()
+        (self.package/'logs').mkdir()
+        (self.package/'logs/old.log').write_text('must never copy old logs')
+        (self.package/'profile/routes.gpx').write_text('must never copy routes')
+        (self.package/'profile/plugins').mkdir()
+        (self.package/'profile/plugins/unrelated.dll').write_bytes(b'must never copy profile plugins')
+        self.seal()
+        self.identity = self.verify()
+        self.output = self.base/'output'
+        self.output.mkdir()
+
+    def stage(self):
+        return inputs.stage_disposable_package(self.package, self.output, self.identity)
+
+    def test_portable_paths_exact_payload_fresh_profile_and_mutable_logs(self):
+        original = inputs._capture_tree(self.package)
+        record = self.stage()
+        copied = Path(record['root'])
+        self.assertEqual(Path(record['executable']), copied/'app/opencpn.exe')
+        self.assertEqual(Path(record['profile']), copied/'profile')
+        self.assertEqual(Path(record['logs']), copied/'logs')
+        self.assertEqual(Path(record['profile']).parent, Path(record['executable']).parent.parent)
+        self.assertEqual((copied/'FILE_SHA256.json').read_bytes(), (self.package/'FILE_SHA256.json').read_bytes())
+        for name in ('app/OPENNAV_PORTABLE_PREVIEW','app/opencpn.exe','app/plugins/dashboard_pi.dll','docs/PRODUCT_BUILD.json'):
+            self.assertEqual((copied/name).read_bytes(), (self.package/name).read_bytes())
+        config_text = (copied/'profile/opencpn.conf').read_text()
+        config = inputs.configparser.ConfigParser(interpolation=None, strict=True)
+        config.read_string(config_text)
+        self.assertEqual(dict(config['Settings']), {
+            'configversionstring': 'Version 5.12.4 Build 2026-10-03',
+            'navmessageshown': '1', 'showstatusbar': '1', 'showmenubar': '1'})
+        self.assertEqual(dict(config['Settings/GlobalState']), {
+            'framewinx': '1280', 'framewiny': '800', 'framewinposx': '0',
+            'framewinposy': '0', 'framemax': '0'})
+        self.assertNotIn('DangerousConnection', config_text)
+        self.assertNotIn('Plugins', config_text)
+        self.assertEqual(sorted(p.name for p in (copied/'profile').iterdir()), ['OPENNAV_TEST_PROFILE','opencpn.conf'])
+        self.assertEqual(list((copied/'logs').iterdir()), [])
+        (copied/'profile/opencpn.conf').write_text('new disconnected test settings')
+        (copied/'profile/runtime-cache').mkdir()
+        (copied/'profile/runtime-cache/chart.bin').write_bytes(b'new generated cache')
+        (copied/'logs/opennav-diagnostics.json').write_text('{}')
+        self.assertEqual(inputs.verify_disposable_package(record), record)
+        self.assertEqual(inputs._capture_tree(self.package), original)
+        self.assertEqual(self.verify(), self.identity)
+
+    def test_immutable_file_directory_marker_and_plugin_mutations_refused(self):
+        record = self.stage(); copied = Path(record['root'])
+        for name in ('app/opencpn.exe','app/OPENNAV_PORTABLE_PREVIEW','app/plugins/dashboard_pi.dll','FILE_SHA256.json'):
+            path = copied/name; original = path.read_bytes()
+            path.write_bytes(original+b'changed')
+            with self.subTest(name=name), self.assertRaisesRegex(ValueError,'immutable package'):
+                inputs.verify_disposable_package(record)
+            path.unlink()
+            with self.subTest(missing=name), self.assertRaises(ValueError):
+                inputs.verify_disposable_package(record)
+            path.write_bytes(original)
+        for name, directory in [('app/unlisted.dll',False),('extra-empty',True)]:
+            path = copied/name
+            if directory: path.mkdir()
+            else: path.write_bytes(b'extra')
+            with self.subTest(extra=name), self.assertRaises(ValueError): inputs.verify_disposable_package(record)
+            if directory: path.rmdir()
+            else: path.unlink()
+        for name in ('profile','logs'):
+            path, alias = copied/name, copied/name.title()
+            path.rename(alias)
+            with self.subTest(alias=name), self.assertRaises((ValueError, FileNotFoundError)):
+                inputs.verify_disposable_package(record)
+            alias.rename(path)
+        inputs.verify_disposable_package(record)
+
+    def test_existing_overlap_and_output_alias_refused_without_original_mutation(self):
+        original = inputs._capture_tree(self.package)
+        for output in (self.package, self.package/'app', self.base):
+            with self.subTest(output=output), self.assertRaisesRegex(ValueError,'overlap'):
+                inputs.stage_disposable_package(self.package, output, self.identity)
+        alias = self.output/'Disposable-Package'; alias.mkdir()
+        with self.assertRaisesRegex(ValueError,'case alias'): self.stage()
+        alias.rmdir()
+        self.stage()
+        with self.assertRaisesRegex(ValueError,'already exists'): self.stage()
+        self.assertEqual(inputs._capture_tree(self.package), original)
+
+    def test_changed_original_and_mutable_case_alias_refused_before_copy(self):
+        path = self.package/'app/plugins/dashboard_pi.dll'; original = path.read_bytes()
+        path.write_bytes(original+b'changed')
+        with self.assertRaisesRegex(ValueError,'Original payload changed'): self.stage()
+        self.assertFalse((self.output/'disposable-package').exists())
+        path.write_bytes(original)
+        for name in ('profile','logs'):
+            path, alias = self.package/name, self.package/name.title()
+            path.rename(alias)
+            with self.subTest(name=name), self.assertRaisesRegex(ValueError,'Case-ambiguous|Case alias'): self.stage()
+            alias.rename(path)
+        self.assertFalse((self.output/'disposable-package').exists())
+
+    def test_audited_equivalent_path_and_different_root_boundary(self):
+        other = self.base/'other-package'; other.mkdir()
+        wrong = dict(self.identity, root=str(other))
+        with self.assertRaisesRegex(ValueError,'Verified original package path differs'):
+            inputs.stage_disposable_package(self.package, self.output, wrong)
+        # This real noncanonical spelling reproduces asymmetric normalization
+        # without mocking Path.resolve or requiring an enabled Windows 8.3 volume.
+        equivalent = self.package/'app'/'..'
+        audited = self.verify(root=equivalent)
+        self.assertNotEqual(Path(audited['root']), self.package.resolve())
+        copied = inputs.stage_disposable_package(self.package, self.output, audited)
+        self.assertEqual(Path(copied['original_root']), self.package.resolve())
+        self.assertEqual(inputs.verify_disposable_package(copied), copied)
+        self.assertEqual(self.verify(root=equivalent), audited)
+
+    def test_links_in_original_output_and_mutable_copy_refused(self):
+        probe = self.base/'link-probe'
+        try: probe.symlink_to(self.package, target_is_directory=True)
+        except OSError: self.skipTest('Symlink creation unavailable')
+        with self.assertRaisesRegex(ValueError,'Linked/reparse'):
+            inputs.stage_disposable_package(probe,self.output,self.identity)
+        with self.assertRaisesRegex(ValueError,'Linked/reparse'):
+            inputs.stage_disposable_package(self.package,self.output,dict(self.identity,root=str(probe)))
+        probe.unlink(); probe.symlink_to(self.output,target_is_directory=True)
+        with self.assertRaisesRegex(ValueError,'Linked/reparse'):
+            inputs.stage_disposable_package(self.package,probe,self.identity)
+        probe.unlink()
+        original_link = self.package/'profile/linked'
+        original_link.symlink_to(self.base/'missing')
+        with self.assertRaisesRegex(ValueError,'Linked/reparse'): self.stage()
+        original_link.unlink()
+        record = self.stage(); copied = Path(record['root'])
+        for name in ('profile/outside','logs/outside','app/outside'):
+            link = copied/name; link.symlink_to(self.package, target_is_directory=True)
+            with self.subTest(name=name), self.assertRaisesRegex(ValueError,'Linked/reparse'):
+                inputs.verify_disposable_package(record)
+            link.unlink()
+        # The mutable roots themselves cannot become links either.
+        shutil.rmtree(copied/'logs'); (copied/'logs').symlink_to(self.package/'logs',target_is_directory=True)
+        with self.assertRaisesRegex(ValueError,'Linked/reparse'): inputs.verify_disposable_package(record)
+
+    def test_hardlink_special_file_and_missing_mutable_root_refused(self):
+        import os
+        record = self.stage(); copied = Path(record['root'])
+        os.link(self.package/'app/opencpn.exe',copied/'profile/hardlink')
+        with self.assertRaisesRegex(ValueError,'hard-linked'): inputs.verify_disposable_package(record)
+        (copied/'profile/hardlink').unlink()
+        if hasattr(os,'mkfifo'):
+            os.mkfifo(copied/'logs/fifo')
+            with self.assertRaisesRegex(ValueError,'Non-regular'): inputs.verify_disposable_package(record)
+            (copied/'logs/fifo').unlink()
+        (copied/'logs').rmdir()
+        with self.assertRaises(FileNotFoundError): inputs.verify_disposable_package(record)
+
+
+class NamedIhoScenes(unittest.TestCase):
+    def test_named_source_views_and_wrong_scene_refusal(self):
+        # Reuse actual historical canvas facts, combined only with the current
+        # observer schema. This is a guard fixture, not a new runtime receipt.
+        current = json.loads((ROOT/'docs/evidence/scrum264-yellow-e1d-linux/software/s64-yellow-SKAGER-Day.json').read_text())
+        for name, center, scale, ids in (
+                ('lateral', [-32.5186315, 61.0216421], .3, [219,224]),
+                ('cardinals', [-32.37658945, 61.0300087], .12, [82,4,72,10])):
+            with self.subTest(scene=name):
+                scene = inputs.iho_scene(name)
+                self.assertEqual(scene['center'], center)
+                self.assertEqual(scene['requested_scale_ppm'], scale)
+                self.assertEqual([f['attributes']['RCID'] for f in scene['source_features']], ids)
+                self.assertIsNone(scene['pixel_proof'])
+                self.assertIn('review-required', scene['visual_acceptance'])
+                old = json.loads((ROOT/f'docs/evidence/scrum264-s64-9632421-linux/software/s64-{name}-SKAGER-Day.json').read_text())
+                snapshot = copy.deepcopy(current)
+                snapshot['runtime']['chart'] = old['runtime']['chart']
+                inputs.presentation(snapshot, 'XNav', True, name)
+                with self.assertRaisesRegex(ValueError, 'viewport'):
+                    inputs.presentation(snapshot, 'XNav', True, 'yellow')
+                for field, value in [('scale_ppm', scale+.01), ('quilt', False), ('database_entries', 2),
+                                     ('quilt_members', []), ('follow', True)]:
+                    wrong = copy.deepcopy(snapshot); wrong['runtime']['chart'][field] = value
+                    with self.subTest(field=field), self.assertRaises(ValueError):
+                        inputs.presentation(wrong, 'XNav', True, name)
+        with self.assertRaisesRegex(ValueError, 'Unknown named'):
+            inputs.iho_scene('arbitrary')
+
+    def test_source_lock_allows_only_checkout_eol_and_rejects_changes(self):
+        with tempfile.TemporaryDirectory() as name:
+            root = Path(name)
+            original = inputs.iho_scene('lateral')
+            for item in (original['source_inventory'], original['observed_viewport_receipt']):
+                target = root/item['path']; target.parent.mkdir(parents=True, exist_ok=True)
+                target.write_bytes((ROOT/item['path']).read_bytes().replace(b'\r\n',b'\n').replace(b'\n',b'\r\n'))
+            copied = inputs.iho_scene('lateral',root)
+            self.assertEqual(copied['center'],original['center'])
+            self.assertEqual(copied['observed_scale_ppm'],original['observed_scale_ppm'])
+            target = root/original['source_inventory']['path']
+            target.write_bytes(target.read_bytes().replace(b'61.0216421',b'61.0216422'))
+            with self.assertRaisesRegex(ValueError,'scene source changed'):
+                inputs.iho_scene('lateral',root)
+
+    def test_yellow_default_and_collector_dispatch_remain_bounded(self):
+        import ast
+        yellow = inputs.iho_scene()
+        self.assertEqual(yellow,inputs.iho_scene('yellow'))
+        self.assertEqual(yellow['center'],[-32.3471615,61.169588])
+        self.assertEqual(yellow['observed_scale_ppm'],.5826126536)
+        self.assertEqual(yellow['pixel_proof'],'exact-yellow-pair')
+        tree = ast.parse((ROOT/'tools/prototype/capture-native.py').read_text())
+        gates = [n for n in ast.walk(tree) if isinstance(n,ast.If) and
+                 any(isinstance(c,ast.Call) and isinstance(c.func,ast.Name) and c.func.id=='iho_pixels'
+                     for statement in n.body for c in ast.walk(statement))]
+        exact = [n for n in gates if ast.unparse(n.test)=="args.iho_s64 and args.iho_scene == 'yellow'"]
+        self.assertEqual(len(exact),1)
+        self.assertEqual(sum(isinstance(n,ast.Call) and isinstance(n.func,ast.Name) and n.func.id=='day_return'
+                             for n in ast.walk(tree)),1)
+
+
 class ActualRetainedPixels(unittest.TestCase):
     def setUp(self):
         self.temp = tempfile.TemporaryDirectory()

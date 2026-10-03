@@ -1,11 +1,94 @@
 # SKAGER status — 2026-10-03
 
+## Corrected path/cache gates pass; combined replacement prepared
+
+The [focused native run 37135967220](https://github.com/ThereptileII/Work/actions/runs/37135967220)
+passed at exact source `71470d07d8dd9ac6a3050e2b64093e0892473c97` / local
+`1c4d817c373b85838bc7c1b5d97d11bd026b3454`. SCRUM-272 normalizes native
+CMake paths while retaining the original production targets and TLS assertions.
+The first short run exposed a source-cache publication failure;
+SCRUM-273 prevents competing duplicate writes by giving each locked blob one publisher, preserving parallelism and
+each source path's hash/size verification. The original failure is retained.
+
+Six cache regressions, 24 path checks, the original native configuration failure
+control and ten actual core/private x86 objects passed. The
+[independent original-artifact audit](evidence/scrum272-native-714-compile/README.md)
+binds the source/header closure and four generated projects. Root separately
+verified the archive hash, all 171 CRCs and all ten object bytes. This is compile
+proof, not link/TLS or application acceptance. The next full candidate retains
+those mandatory gates and batches the already native-compiled SCRUM-271
+notification styling; no repeated standalone dependency build was needed.
+
+Supplementary package review now supports
+[named lateral/cardinal IHO scenes](evidence/scrum264-named-iho-review-scenes/README.md)
+with locked provenance and unchanged yellow-pair checks. These require actual
+image review and do not claim complete symbol-family conformance. Boat native
+chart/font/logo acceptance and replacement installation remain pending.
+
+## Production application builds; trust-probe configuration blocks candidate
+
+Local **`8a0ed1f646e2551a55639c1cc3fb609cc2652464`** is published as
+**`442960ba55277845e171f9b95a38838f66c23981`**, independently reconstructed
+tree `3b74065f9f9886ebe73f33f85b71ca8bb469865e` (4,689 mapped entries; eight
+unrelated root files preserved). The [corrected full run](https://github.com/ThereptileII/Work/actions/runs/37126951293)
+started after the focused SCRUM-270 proof below passed. The
+[publication receipt](evidence/scrum270-preview-validity/publication.json)
+keeps the exact identities. Application source, patches, chart assets and CMake
+are unchanged from 1835/9d98. The difference includes the coherent preview
+predicate, immediate failed-fixture upload and separately qualified review tools.
+Native/full/boat acceptance is pending; the current source is frozen and no
+new application has been installed or launched on the boat.
+
+The exact native job `111215213199` passed integrated build/exercise at
+15:10:14 UTC and the formerly failing full preview scenario suite at
+15:15:05 UTC. Startup/loader, pointer chart interaction and repeated crash recovery
+also passed. Its same-job dependency closure and fixture-free product build then
+passed, including **139/139 production CTests**. At 15:30:28 UTC the private
+downloader-trust probe failed CMake configuration on Windows backslash paths
+(`Invalid character escape '\a'`). No TLS assertion ran. **SCRUM-272** tracks
+the narrow path-boundary correction and native proof before another full run.
+The [original failure evidence](evidence/scrum259-native-442-trust-configure/README.md)
+retains the complete production transcript and independent artifact audit.
+No application/setup/probe executable was retained; the private DLL alone does
+not make a review package. Packaging, installer and boat gates remain open.
+Independent DPI/public ENC checks passed with software fallback only, not native
+OpenGL acceptance. The Linux elapsed-time gate continues in the background.
+
+The boat machine produced one isolated **HTML reference** capture in Day, Dusk
+and Night. [Original captures and actual font observations](evidence/scrum263-boat-html-reference-5884701/README.md)
+confirm Segoe UI Variable Display for the visible root typography and Segoe UI
+for geographic land labels. A dual-class landmark resolves to Segoe UI Semibold;
+this does not establish normal-only LIGHTS-description weight. The original HTML
+and its old illustrative logo are unchanged. Existing browser processes and the
+normal navigation profile were preserved; no navigation application was launched.
+This establishes same-machine reference fonts, not physical native UI acceptance.
+
+The supplementary actual-package chart collector now preserves the application's
+portable-profile guard: it runs a verified disposable copy with its own clean
+profile/logs and leaves the audited original package untouched. Pre-dispatch
+inspection caught the former external-profile request and wrong diagnostics
+path. Twenty focused offline cases and four checks linked to the unchanged
+production path guard pass; native launch remains pending. See the
+[bounded collector correction](evidence/scrum264-native-recovery-collector/README.md).
+Its separate native preflight caught asymmetric canonical path comparison before
+CMake or any application launch. The original artifact is retained; the narrow
+plain-path-then-canonical correction and real equivalent-path regression now pass
+[native run 37130959195](https://github.com/ThereptileII/Work/actions/runs/37130959195):
+21 Python cases without skips and four actual MSVC Win32 portable-path checks.
+The downloaded original evidence and exact source hashes are retained. This
+closes the collector path defect, not application/visual acceptance. No additional
+full application build was started.
+
 ## Native application passes build; preview sample timing blocks packaging
 
 The exact `1835d1b` / `9d98a500` native job has now completed with a retained
 [fixture-suite failure](evidence/scrum270-native-9d98-preview-failure/README.md).
 The application build, all 139 native CTests, pointer route gestures, repeated
 crash recovery, 100/125/150% DPI/touch and public ENC checks passed. Independent
+renderer inspection confirms software and permitted fallback only: the hosted
+machine rejected OpenGL, so this result does not qualify native hardware GL.
+The [renderer receipt](evidence/scrum270-native-9d98-preview-failure/renderer-proof.json)
+retains the exact report identity and observations. Independent
 artifact inspection confirms the fresh five-export private DLL, its complete
 source/resource identity and identical private/host presentation resources.
 The actual GDI probe selected Segoe UI for both the UI and ordinary chart text;
@@ -27,7 +110,7 @@ failure upload is added so a future failure can be inspected while
 independent display checks continue. No blind full rerun or boat installation
 has occurred. The current Linux elapsed-time gate continues separately.
 
-## Current frozen combined candidate
+## Preceding combined candidate (native fixture failure retained above)
 
 Local source/evidence **`1835d1b84df89aff42220ac8bb535e4262034a54`** is published
 as **`9d98a500916e8a7f59dac9735427dde6d3c7d2e5`**. All 4,649 mapped blob/mode

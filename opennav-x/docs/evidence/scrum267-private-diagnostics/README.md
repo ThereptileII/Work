@@ -71,3 +71,13 @@ Fresh exact-revision native MSVC build/link, five-export/import/package checks,
 real host pre-Init/Init/fallback/mode/DeInit/unload observations and licensed boat
 chart review remain required. Linux methods/objects do not qualify those gates.
 No full build, unrelated restart suite, CI dispatch or boat operation was run.
+
+## Read-only boat preference check
+
+The [2026-10-03 saved-style observation](boat-saved-point-style.json) confirms
+Paper (82) and Plain boundaries (78) in the unchanged normal profile. The frozen
+442 candidate already enables Simplified locally in both verified presentation
+instances; no user preference rewrite is required. Native/boat review must
+observe each initialized renderer independently, then verify Standard/Legacy
+return to the saved choice. A forced-Simplified test scene or a binding status
+alone cannot qualify this boundary. No application was launched for this check.

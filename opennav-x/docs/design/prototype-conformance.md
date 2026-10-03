@@ -1,13 +1,29 @@
 # Prototype conformance — in progress
 
-The current frozen candidate is local `1835d1b` / published `9d98a500`
-([CI](https://github.com/ThereptileII/Work/actions/runs/37120549213)). It includes
+The current frozen candidate is local `8a0ed1f` / published `442960ba`
+([CI](https://github.com/ThereptileII/Work/actions/runs/37126951293)). Its application
+sources and artwork are unchanged from `1835d1b` / `9d98a500`; the corrected
+[preview timing predicate](../evidence/scrum270-preview-validity/README.md)
+preserves intentional unavailable route/arrival data during waypoint transitions.
+The previous native run passed application compilation, 139 tests, the fresh
+five-export private DLL/resource audit, DPI/touch and public ENC checks. Its
+[renderer receipt](../evidence/scrum270-native-9d98-preview-failure/renderer-proof.json)
+shows that the requested OpenGL phase used software fallback; native hardware
+OpenGL remains unqualified. Its
+[retained failed preview](../evidence/scrum270-native-9d98-preview-failure/README.md)
+blocked product packaging. Actual GDI probes selected the prototype's Segoe UI
+fallback for UI and ordinary chart text; the hosted runner lacks Segoe UI Variable
+Display. Geographic italic canvas-face observation, private renderer runtime and
+physical boat review remain open. The Arial geographic painter fixture is not
+evidence of the production selected face. No screen-level row advances.
+
+The candidate includes
 the supplied generic beacon, classified yellow buoy and fitted topmark, the
 124-DIP approved SKAGER logo, prototype font choices, and neutral structural
-paint. The [publication receipt](../evidence/skager-symbols-1835-publication.json)
+paint. The [current publication receipt](../evidence/scrum270-preview-validity/publication.json)
 verifies the entire mapped source tree. A separately reproduced and repaired
 Windows resource-generation mismatch passed its targeted native gate before
-this build was started. Native runtime, actual private-renderer loading and
+the preceding build was started. Product runtime, actual private-renderer loading and
 physical boat review remain pending; no screen-level row advances.
 
 The [actual yellow-pair canvas review](../evidence/scrum264-yellow-e1d-linux/README.md)

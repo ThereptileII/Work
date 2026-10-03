@@ -1,0 +1,48 @@
+MSBuild version 17.14.60+43b635718 for .NET Framework
+Build started 10/3/2026 4:13:17 PM.
+
+     1>Project "D:\a\Work\Work\opennav-x\evidence\local\trust-native-compile\core\wxcurl-trust-probe.vcxproj" on node 1 (ClCompile target(s)).
+     1>PrepareForBuild:
+         Creating directory "wxcurl-trust-probe.dir\Release\".
+         Structured output is enabled. The formatting of compiler diagnostics will reflect the error hierarchy. See https://aka.ms/cpp/structured-output for more details.
+         Creating directory "wxcurl-trust-probe.dir\Release\wxcurl-t.D0CFA140.tlog\".
+       InitializeBuildStatus:
+         Creating "wxcurl-trust-probe.dir\Release\wxcurl-t.D0CFA140.tlog\unsuccessfulbuild" because "AlwaysCreate" was specified.
+         Touching "wxcurl-trust-probe.dir\Release\wxcurl-t.D0CFA140.tlog\unsuccessfulbuild".
+     1>Project "D:\a\Work\Work\opennav-x\evidence\local\trust-native-compile\core\wxcurl-trust-probe.vcxproj" (1) is building "D:\a\Work\Work\opennav-x\evidence\local\trust-native-compile\core\ZERO_CHECK.vcxproj" (2:3) on node 1 (GetProjectInfoForReference target(s)).
+     2>PrepareForBuild:
+         Structured output is enabled. The formatting of compiler diagnostics will reflect the error hierarchy. See https://aka.ms/cpp/structured-output for more details.
+     2>Done Building Project "D:\a\Work\Work\opennav-x\evidence\local\trust-native-compile\core\ZERO_CHECK.vcxproj" (GetProjectInfoForReference target(s)).
+     1>ClCompile:
+         C:\Program Files\Microsoft Visual Studio\2022\Enterprise\VC\Tools\MSVC\14.44.35207\bin\HostX64\x86\CL.exe /c /I"D:\a\Work\Work\opennav-x\build\trust compile inputs\sdk\include" /I"D:\a\Work\Work\opennav-x\build\integration-source\libs\wxcurl\include" /nologo /W1 /WX- /diagnostics:column /O2 /Ob2 /Oy- /D _UNICODE /D UNICODE /D WIN32 /D _WINDOWS /D NDEBUG /D _CRT_SECURE_NO_WARNINGS /D WXUSINGDLL /D UNICODE /D _UNICODE /D "CMAKE_INTDIR=\"Release\"" /EHsc /MD /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /std:c++17 /Fo"wxcurl-trust-probe.dir\Release\\" /Fd"wxcurl-trust-probe.dir\Release\vc143.pdb" /external:W0 /Gd /TP /analyze- /errorReport:queue  /external:I "D:/a/Work/Work/opennav-x/build/trust compile inputs/sdk/wx/lib/vc14x_dll/mswu" /external:I "D:/a/Work/Work/opennav-x/build/trust compile inputs/sdk/wx/include" "D:\a\Work\Work\opennav-x\build\integration-source\libs\wxcurl\src\base.cpp" "D:\a\Work\Work\opennav-x\build\integration-source\libs\wxcurl\src\http.cpp" "D:\a\Work\Work\opennav-x\tools\wxcurl-trust-probe.cpp"
+         base.cpp
+         http.cpp
+     1>D:\a\Work\Work\opennav-x\build\integration-source\libs\wxcurl\src\base.cpp(162,9): warning C4068: unknown pragma 'GCC' [D:\a\Work\Work\opennav-x\evidence\local\trust-native-compile\core\wxcurl-trust-probe.vcxproj]
+     1>D:\a\Work\Work\opennav-x\build\integration-source\libs\wxcurl\src\base.cpp(192,9): warning C4068: unknown pragma 'GCC' [D:\a\Work\Work\opennav-x\evidence\local\trust-native-compile\core\wxcurl-trust-probe.vcxproj]
+     1>D:\a\Work\Work\opennav-x\build\integration-source\libs\wxcurl\src\base.cpp(439,9): warning C4068: unknown pragma 'clang' [D:\a\Work\Work\opennav-x\evidence\local\trust-native-compile\core\wxcurl-trust-probe.vcxproj]
+     1>D:\a\Work\Work\opennav-x\build\integration-source\libs\wxcurl\src\base.cpp(440,9): warning C4068: unknown pragma 'clang' [D:\a\Work\Work\opennav-x\evidence\local\trust-native-compile\core\wxcurl-trust-probe.vcxproj]
+     1>D:\a\Work\Work\opennav-x\build\integration-source\libs\wxcurl\src\base.cpp(485,9): warning C4068: unknown pragma 'clang' [D:\a\Work\Work\opennav-x\evidence\local\trust-native-compile\core\wxcurl-trust-probe.vcxproj]
+     1>D:\a\Work\Work\opennav-x\build\integration-source\libs\wxcurl\src\base.cpp(505,9): warning C4068: unknown pragma 'clang' [D:\a\Work\Work\opennav-x\evidence\local\trust-native-compile\core\wxcurl-trust-probe.vcxproj]
+     1>D:\a\Work\Work\opennav-x\build\integration-source\libs\wxcurl\src\base.cpp(506,9): warning C4068: unknown pragma 'clang' [D:\a\Work\Work\opennav-x\evidence\local\trust-native-compile\core\wxcurl-trust-probe.vcxproj]
+     1>D:\a\Work\Work\opennav-x\build\integration-source\libs\wxcurl\src\base.cpp(520,9): warning C4068: unknown pragma 'clang' [D:\a\Work\Work\opennav-x\evidence\local\trust-native-compile\core\wxcurl-trust-probe.vcxproj]
+         wxcurl-trust-probe.cpp
+         Generating Code...
+     1>Done Building Project "D:\a\Work\Work\opennav-x\evidence\local\trust-native-compile\core\wxcurl-trust-probe.vcxproj" (ClCompile target(s)).
+
+Build succeeded.
+
+       "D:\a\Work\Work\opennav-x\evidence\local\trust-native-compile\core\wxcurl-trust-probe.vcxproj" (ClCompile target) (1) ->
+       (ClCompile target) -> 
+         D:\a\Work\Work\opennav-x\build\integration-source\libs\wxcurl\src\base.cpp(162,9): warning C4068: unknown pragma 'GCC' [D:\a\Work\Work\opennav-x\evidence\local\trust-native-compile\core\wxcurl-trust-probe.vcxproj]
+         D:\a\Work\Work\opennav-x\build\integration-source\libs\wxcurl\src\base.cpp(192,9): warning C4068: unknown pragma 'GCC' [D:\a\Work\Work\opennav-x\evidence\local\trust-native-compile\core\wxcurl-trust-probe.vcxproj]
+         D:\a\Work\Work\opennav-x\build\integration-source\libs\wxcurl\src\base.cpp(439,9): warning C4068: unknown pragma 'clang' [D:\a\Work\Work\opennav-x\evidence\local\trust-native-compile\core\wxcurl-trust-probe.vcxproj]
+         D:\a\Work\Work\opennav-x\build\integration-source\libs\wxcurl\src\base.cpp(440,9): warning C4068: unknown pragma 'clang' [D:\a\Work\Work\opennav-x\evidence\local\trust-native-compile\core\wxcurl-trust-probe.vcxproj]
+         D:\a\Work\Work\opennav-x\build\integration-source\libs\wxcurl\src\base.cpp(485,9): warning C4068: unknown pragma 'clang' [D:\a\Work\Work\opennav-x\evidence\local\trust-native-compile\core\wxcurl-trust-probe.vcxproj]
+         D:\a\Work\Work\opennav-x\build\integration-source\libs\wxcurl\src\base.cpp(505,9): warning C4068: unknown pragma 'clang' [D:\a\Work\Work\opennav-x\evidence\local\trust-native-compile\core\wxcurl-trust-probe.vcxproj]
+         D:\a\Work\Work\opennav-x\build\integration-source\libs\wxcurl\src\base.cpp(506,9): warning C4068: unknown pragma 'clang' [D:\a\Work\Work\opennav-x\evidence\local\trust-native-compile\core\wxcurl-trust-probe.vcxproj]
+         D:\a\Work\Work\opennav-x\build\integration-source\libs\wxcurl\src\base.cpp(520,9): warning C4068: unknown pragma 'clang' [D:\a\Work\Work\opennav-x\evidence\local\trust-native-compile\core\wxcurl-trust-probe.vcxproj]
+
+    8 Warning(s)
+    0 Error(s)
+
+Time Elapsed 00:00:06.25

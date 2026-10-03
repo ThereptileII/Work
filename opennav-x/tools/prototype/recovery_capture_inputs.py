@@ -1,4 +1,4 @@
-"""Audited package input and a fixed official test scene; never discovers profiles."""
+"""Audited package input and named official test scenes; never discovers profiles."""
 import configparser
 import hashlib
 import json
@@ -135,7 +135,180 @@ def new_profile(profile, version):
         encoding='utf-8')
 
 
-def stage_iho(source, output):
+def _capture_tree(root, *, mutable=False):
+    """Inventory plain files/directories; mutable trees still reject all links."""
+    plain(root)
+    require(root.is_dir(), 'Capture package root is not a directory')
+    files, directories, folded = {}, [], set()
+    for path in sorted(root.rglob('*')):
+        plain(path)
+        relative = path.relative_to(root).as_posix()
+        require(relative.casefold() not in folded, 'Case-ambiguous capture path: ' + relative)
+        folded.add(relative.casefold())
+        parts = path.relative_to(root).parts
+        require(parts[0].casefold() not in ('profile', 'logs') or parts[0] in ('profile', 'logs'),
+                'Case alias of mutable capture tree: ' + relative)
+        require(all(':' not in part and not part.endswith((' ', '.')) for part in parts),
+                'Unsafe capture path: ' + relative)
+        info = path.lstat()
+        directory = stat.S_ISDIR(info.st_mode)
+        require(directory or (stat.S_ISREG(info.st_mode) and info.st_nlink == 1),
+                'Non-regular/hard-linked capture payload: ' + relative)
+        if mutable and parts[0] in ('profile', 'logs'):
+            continue
+        if directory:
+            directories.append(relative)
+        else:
+            files[relative] = {'sha256': sha(path), 'bytes': info.st_size}
+    return {'files': files, 'directories': directories}
+
+
+def _payload_sha(inventory):
+    return hashlib.sha256(json.dumps(inventory, sort_keys=True, separators=(',', ':')).encode()).hexdigest()
+
+
+def stage_disposable_package(package_root, output, verified_identity):
+    """Copy an already audited package, never its packaged profile or logs.
+
+    The caller owns full verify_package checks of the original ZIP/root before
+    and after capture. This boundary checks original bytes against that receipt
+    again before copying, and seals every copied immutable byte independently.
+    """
+    package_root, output = Path(package_root).absolute(), Path(output).absolute()
+    plain(package_root)
+    plain(output)
+    require(output.is_dir(), 'Capture output must be an existing plain directory')
+    package_root, output = package_root.resolve(), output.resolve()
+    require(package_root != output and package_root not in output.parents and output not in package_root.parents,
+            'Capture output and original package must not overlap')
+    destination = output / 'disposable-package'
+    require(not any(path.name.casefold() == destination.name for path in output.iterdir()),
+            'Disposable package or case alias already exists')
+    verified_root = Path(verified_identity['root']).absolute()
+    # Windows may expand an audited TEMP 8.3 spelling during resolve(). Check
+    # the receipt's original path for links before comparing both canonical paths.
+    plain(verified_root)
+    require(package_root == verified_root.resolve(strict=True), 'Verified original package path differs')
+    original = _capture_tree(package_root)
+    manifest_path = package_root / 'FILE_SHA256.json'
+    plain(manifest_path)
+    require(sha(manifest_path) == verified_identity['file_manifest_sha256'], 'Original manifest changed before copy')
+    manifest = json.loads(manifest_path.read_text(encoding='utf-8-sig'), object_pairs_hook=unique_object)
+    require(set(original['files']) == set(manifest) | {'FILE_SHA256.json'}, 'Original payload inventory changed before copy')
+    require(all(original['files'][name]['sha256'] == digest for name, digest in manifest.items()),
+            'Original payload changed before copy')
+    require(manifest['app/opencpn.exe'] == verified_identity['executable_sha256'] and
+            manifest['docs/PRODUCT_BUILD.json'] == verified_identity['product_build_sha256'] and
+            manifest['profile/opencpn.conf'] == verified_identity['packaged_profile_sha256'],
+            'Original identity differs before copy')
+    version = verified_identity['config_version_string']
+    require(isinstance(version, str) and re.fullmatch(r'Version [^\r\n\x00]+ Build [^\r\n\x00]+', version),
+            'Malformed disposable profile version')
+    config = configparser.ConfigParser(interpolation=None, strict=True)
+    config.read_string((package_root / 'profile/opencpn.conf').read_text(encoding='utf-8-sig'))
+    require(config['Settings']['ConfigVersionString'] == version, 'Packaged profile version changed before copy')
+    immutable = {
+        'files': {name: value for name, value in original['files'].items()
+                  if PurePosixPath(name).parts[0] not in ('profile', 'logs')},
+        'directories': [name for name in original['directories']
+                        if PurePosixPath(name).parts[0] not in ('profile', 'logs')]}
+    destination.mkdir(exist_ok=False)
+    # No cleanup on failure: preserve incomplete evidence, never traverse a
+    # potentially substituted tree to remove it or retry into that destination.
+    for name in immutable['directories']:
+        destination.joinpath(*PurePosixPath(name).parts).mkdir(exist_ok=False)
+    for name in immutable['files']:
+        source = package_root.joinpath(*PurePosixPath(name).parts)
+        target = destination.joinpath(*PurePosixPath(name).parts)
+        plain(source)
+        plain(target.parent)
+        with source.open('rb') as stream, target.open('xb') as copied:
+            shutil.copyfileobj(stream, copied)
+    new_profile(destination / 'profile', version)
+    (destination / 'logs').mkdir()
+    receipt = {
+        'schema_version': 1, 'root': str(destination),
+        'executable': str(destination / 'app/opencpn.exe'),
+        'profile': str(destination / 'profile'), 'logs': str(destination / 'logs'),
+        'application_commit': verified_identity['application_commit'],
+        'executable_sha256': verified_identity['executable_sha256'],
+        'original_root': str(package_root),
+        'original_archive_sha256': verified_identity['archive_sha256'],
+        'original_file_manifest_sha256': verified_identity['file_manifest_sha256'],
+        'immutable_payload': immutable, 'immutable_payload_sha256': _payload_sha(immutable),
+        'mutable_roots': ['profile', 'logs'],
+        'profile_policy': 'Only ConfigVersionString transferred; no packaged profile/log content copied',
+        'manifest_policy': 'Original FILE_SHA256.json is documentary; its profile/log hashes do not describe this fresh profile'}
+    verify_disposable_package(receipt)
+    require(_capture_tree(package_root) == original, 'Original package changed during copy')
+    return receipt
+
+
+def verify_disposable_package(receipt):
+    """Pre/post launch seal. No launch or original-package verification occurs."""
+    root = Path(receipt['root'])
+    require(receipt['schema_version'] == 1 and root.is_absolute() and
+            receipt['mutable_roots'] == ['profile', 'logs'], 'Invalid disposable package receipt')
+    for name, relative in (('executable', 'app/opencpn.exe'), ('profile', 'profile'), ('logs', 'logs')):
+        require(receipt[name] == str(root / relative), 'Disposable package paths differ: ' + name)
+    for name in ('profile', 'logs'):
+        plain(root / name)
+        require((root / name).is_dir(), 'Mutable capture root is not a directory: ' + name)
+    require(_payload_sha(receipt['immutable_payload']) == receipt['immutable_payload_sha256'],
+            'Disposable immutable receipt changed')
+    observed = _capture_tree(root, mutable=True)
+    require(observed == receipt['immutable_payload'], 'Copied immutable package changed or gained extra payload')
+    require(observed['files']['app/opencpn.exe']['sha256'] == receipt['executable_sha256'],
+            'Copied executable identity differs')
+    return receipt
+
+
+IHO_SCENES = ('yellow', 'lateral', 'cardinals')
+IHO_SCENE_INVENTORY = 'docs/evidence/scrum264-public-enc-scenes/scenes.json'
+IHO_SCENE_INVENTORY_SHA256 = '1da8b7c03d1bbbd35296531a2c7ea01c3c5aa9261d9b9e9336f6e6c3e3cfb1b3'
+IHO_VIEW_RECEIPTS = {
+    'lateral': '46c1ebfa34ff08cc4cb18c1090d2b001f03d814528735060e6a9230ff3952e84',
+    'cardinals': 'a40d32bbebf5cb08d0648786f949acfc656e20e69d1757ab54d2210191281b5d',
+}
+
+
+def _locked_scene_json(root, relative, expected):
+    path = root / relative
+    raw = path.read_bytes()
+    # Historical JSON is tracked text: Windows checkout may use CRLF. Lock the
+    # exact Git/LF bytes and retain the actual checkout hash as a separate fact.
+    require(hashlib.sha256(raw.replace(b'\r\n', b'\n')).hexdigest() == expected,
+            'Retained IHO scene source changed: ' + relative)
+    return json.loads(raw), {'path': relative, 'git_lf_sha256': expected,
+                             'checkout_sha256': hashlib.sha256(raw).hexdigest()}
+
+
+def iho_scene(name='yellow', root=None):
+    require(name in IHO_SCENES, 'Unknown named IHO scene')
+    if name == 'yellow':
+        return {'scene': name, 'center': list(IHO_CENTER), 'requested_scale_ppm': .6,
+                'observed_scale_ppm': IHO_SCALE, 'pixel_proof': 'exact-yellow-pair',
+                'source_features': [{'class': 'BOYSPP', 'RCID': 254, 'COLOUR': ['6'], 'BOYSHP': 3},
+                                    {'class': 'TOPMAR', 'RCID': 257, 'COLOUR': ['6'], 'TOPSHP': 7}],
+                'source_audit_sha256': '567c4dea09a1d05a11919174e10268b7e75ea9e5ac85c281a10097bd0360e15b'}
+    root = Path(root) if root is not None else Path(__file__).resolve().parents[2]
+    inventory, source = _locked_scene_json(root, IHO_SCENE_INVENTORY, IHO_SCENE_INVENTORY_SHA256)
+    selected = [s for s in inventory if s['id'] == 's64-' + name]
+    require(len(selected) == 1 and selected[0]['cell'] == 'GB4X0000', 'IHO scene inventory differs')
+    selected = selected[0]
+    relative = f'docs/evidence/scrum264-s64-9632421-linux/software/s64-{name}-SKAGER-Day.json'
+    receipt, observed = _locked_scene_json(root, relative, IHO_VIEW_RECEIPTS[name])
+    chart = receipt['runtime']['chart']
+    require([chart['latitude'], chart['longitude']] == selected['center'], 'Retained scene center differs')
+    return {'scene': name, 'center': selected['center'], 'requested_scale_ppm': selected['scalePpm'],
+            'observed_scale_ppm': chart['scale_ppm'], 'pixel_proof': None,
+            'visual_acceptance': 'review-required; no glyph or selected-alias acceptance oracle',
+            'source_features': selected['features'], 'source_inventory': source,
+            'observed_viewport_receipt': observed}
+
+
+def stage_iho(source, output, scene='yellow'):
+    selected = iho_scene(scene)
     source = source.absolute()
     plain(source)
     require(source.name == 'GB4X0000.000' and source.is_file() and sha(source) == IHO_SHA256,
@@ -146,10 +319,7 @@ def stage_iho(source, output):
     require(sha(target) == IHO_SHA256, 'IHO copy identity differs')
     return {'file': source.name, 'sha256': IHO_SHA256,
             'scope': 'Official IHO S-64 presentation-test geography, not an operational nautical ENC',
-            'center': list(IHO_CENTER), 'requested_scale_ppm': .6, 'observed_scale_ppm': IHO_SCALE,
-            'source_features': [{'class': 'BOYSPP', 'RCID': 254, 'COLOUR': ['6'], 'BOYSHP': 3},
-                                {'class': 'TOPMAR', 'RCID': 257, 'COLOUR': ['6'], 'TOPSHP': 7}],
-            'source_audit_sha256': '567c4dea09a1d05a11919174e10268b7e75ea9e5ac85c281a10097bd0360e15b'}
+            **selected}
 
 
 def runtime_identity(snapshot, expected_commit, recovery):
@@ -165,7 +335,8 @@ def runtime_identity(snapshot, expected_commit, recovery):
                 'Pilot/control activation is outside this disconnected capture')
 
 
-def presentation(snapshot, style, iho=False):
+def presentation(snapshot, style, iho=False, scene='yellow'):
+    selected = iho_scene(scene) if iho else None
     p = snapshot['runtime']['chart_presentation']
     require(p['requested'] == style, 'Requested chart style was not retained')
     core_status = 'SKAGER presentation v1 / pinned symbols' if style == 'XNav' else 'Standard OpenCPN presentation'
@@ -177,8 +348,8 @@ def presentation(snapshot, style, iho=False):
         require(p['core'] == {'available': True, 'saved_point_style': 76, 'effective_point_style': 76},
                 'IHO Simplified saved/effective table differs')
         c = snapshot['runtime']['chart']
-        require(abs(c['latitude']-IHO_CENTER[0]) < 1e-7 and abs(c['longitude']-IHO_CENTER[1]) < 1e-7 and
-                abs(c['scale_ppm']-IHO_SCALE) < 1e-7 and c['follow'] is False and c['quilt'] is True,
+        require(abs(c['latitude']-selected['center'][0]) < 1e-7 and abs(c['longitude']-selected['center'][1]) < 1e-7 and
+                abs(c['scale_ppm']-selected['observed_scale_ppm']) < 1e-7 and c['follow'] is False and c['quilt'] is True,
                 'Actual official test viewport differs')
         require(c['canvas_pixels'] == {'width': 1014, 'height': 566} and c['database_entries'] == 1 and
                 c['quilt_members'] == [{'type': 5, 'native_scale': 52000, 'file': 'GB4X0000.000', 'index': c['quilt_reference']}],

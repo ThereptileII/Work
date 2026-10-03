@@ -1,0 +1,12 @@
+{
+  "local_commit": "1c4d817c373b85838bc7c1b5d97d11bd026b3454",
+  "remote_commit": "71470d07d8dd9ac6a3050e2b64093e0892473c97",
+  "remote_tree": "09c767e7c3aca1f5bf8c238bc35dad48977a596e",
+  "mapped_entries": 4727,
+  "unrelated_root_entries_preserved": 8,
+  "independently_reconstructed": true,
+  "branch": "skager-trust-compile",
+  "run_url": "https://github.com/ThereptileII/Work/actions/runs/37135967220",
+  "root_integration_commit": "b8c1de6",
+  "scope": "Repeat only source-cache regression, native path reproduction and actual source compilation. No application/dependency producer build or TLS/runtime acceptance."
+}

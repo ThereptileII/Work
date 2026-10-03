@@ -1298,3 +1298,28 @@ effective-table observations; unavailable private data is never inferred from
 requested style. The strict native/package export inventory includes the new
 export. Exact lifecycle and unchanged-helper source hashes are recorded in
 [the observation evidence](evidence/scrum267-private-diagnostics/README.md).
+
+### SCRUM-271 — upstream notification affordance presentation
+
+`opencpn-5.12.4-chart-presentation.patch` now adds a presentation-only entry hook
+in `NotificationButton::CreateBmp`, an explicit successful-SKAGER-bitmap flag,
+and DPI-size cache invalidation. `ui/NotificationButtonBitmap.h` reuses the
+prototype bell path, 44 DIP icon target, 9 px radius and theme tokens. The
+informational/warning/critical icon names resolved by upstream select cyan,
+amber and red respectively, on the prototype alert surface. Unknown artwork,
+bitmap failure, Legacy and Safe Mode use the unchanged stock drawing body.
+The existing rectangle receives the bitmap's physical size; upstream placement,
+logical hit conversion, click routing and notification-list acknowledgement
+remain authoritative. No illustrative count is added.
+
+For the successful SKAGER bitmap only, the existing texture upload copies its
+alpha and `NotificationButtonBlend` temporarily enables normal alpha blending,
+then restores the incoming blend enable, RGB/alpha factors and equations. Stock
+textures retain their original opaque upload and no blend-state intervention.
+No upstream rendering method is duplicated or replaced. NotificationManager,
+ChartCanvas visibility/count/maximum-severity logic, NotificationsList and its
+GUID acknowledgement code are unchanged.
+
+Focused compilation, paint/cache/source boundaries and unqualified native/GL
+and boat gates are recorded in
+[the SCRUM-271 review](design/reviews/scrum271-notification-style.md).

@@ -1,0 +1,182 @@
+{
+  "source": {
+    "local": "8a0ed1f646e2551a55639c1cc3fb609cc2652464",
+    "remote": "442960ba55277845e171f9b95a38838f66c23981",
+    "remote_tree": "3b74065f9f9886ebe73f33f85b71ca8bb469865e"
+  },
+  "run": 37126951293,
+  "job": 111215213199,
+  "attempt": 1,
+  "artifact": {
+    "id": 11278370208,
+    "bytes": 65649384,
+    "sha256": "f22449f1b34f74ccf0aaad25c33b1a9e450951ab23d6aaea140b4b789640c7dd",
+    "crc_entries_passed": 18448
+  },
+  "first_failure": {
+    "time_utc": "2026-10-03T15:30:28Z",
+    "boundary": "Private downloader trust probe CMake configure after actual production build/install/tests",
+    "source": "tests/downloader_trust/CMakeLists.txt:46",
+    "error": "Invalid character escape '\\a' in OPENNAV_SOURCE_DIR/OPENNAV_TOOLS_DIR source arguments"
+  },
+  "ctest": {
+    "windows-xnav-tests.xml": {
+      "name": "(empty)",
+      "tests": "139",
+      "failures": "0",
+      "disabled": "0",
+      "skipped": "0",
+      "hostname": "",
+      "time": "20",
+      "timestamp": "2026-10-03T15:02:59"
+    },
+    "windows-production-tests.xml": {
+      "name": "(empty)",
+      "tests": "139",
+      "failures": "0",
+      "disabled": "0",
+      "skipped": "0",
+      "hostname": "",
+      "time": "18",
+      "timestamp": "2026-10-03T15:30:03"
+    }
+  },
+  "preview": {
+    "result": "passed; screenshot review required",
+    "checks": 19,
+    "sha256": "e540bae2042137cb6f26c8bc38563e0508d991bc50be6c6a0530896f2c651efd"
+  },
+  "private_package": {
+    "frozen_verifier_exit": 0,
+    "exports": [
+      "create_pi",
+      "destroy_pi",
+      "skager_bind_chart_presentation_v1",
+      "skager_chart_point_style_v1",
+      "skager_chart_presentation_status_v1"
+    ],
+    "dll": {
+      "sha256": "25bbb921e1db697ab79ecc365f83bdc9edd4650c340d2e3cfacea9a5a7942d8f",
+      "bytes": 1328640,
+      "name": "skager-ocharts-adapter.dll",
+      "machine": "I386"
+    },
+    "correspondingSource": {
+      "sha256": "50aadaa84417fa7e7809cf055389d50027dd800cbde41fc1ea8cff69d59ad214",
+      "bytes": 5631072,
+      "path": "corresponding-source.zip"
+    },
+    "source_inputs_match": true,
+    "resource_sets": {
+      "ocharts-chart-style/v1": {
+        "chartsymbols.xml": "f4a20a46b0e5dbc9216f67386a1b0e6dd7c73e982b7b334b0ae795cd2c5f5334",
+        "manifest.json": "ffa75c9d097a143e58aa13f9300b04bebac0836ab849bd4284401df1866f4b2a",
+        "rastersymbols-dark.png": "ab539905f9059ec8398b5e466a71bf7268368d66776cd41ea13706b79047a4f5",
+        "rastersymbols-dusk.png": "882b3486bcabd3a075ae567f42e284ff065e83ebfe5033bb6eb68f655d18202e",
+        "rastersymbols-day.png": "852753fa6b8d32b23cfec81d060496c2602e8f1b590c73c7921e2041b4de745f",
+        "XNavChartResources.h": "292c10d111d815d7876bca72b60cbbd564d0c4fee7dc99c21986c1572dc46b4d",
+        "S52RAZDS.RLE": "560e1a1df493d7ae4c8506da814ad936adb13ef93c6f1e2abc93f2819860ff26"
+      },
+      "ocharts-prepared/resources": {
+        "chartsymbols.xml": "f4a20a46b0e5dbc9216f67386a1b0e6dd7c73e982b7b334b0ae795cd2c5f5334",
+        "manifest.json": "ffa75c9d097a143e58aa13f9300b04bebac0836ab849bd4284401df1866f4b2a",
+        "rastersymbols-day.png": "852753fa6b8d32b23cfec81d060496c2602e8f1b590c73c7921e2041b4de745f",
+        "rastersymbols-dark.png": "ab539905f9059ec8398b5e466a71bf7268368d66776cd41ea13706b79047a4f5",
+        "S52RAZDS.RLE": "560e1a1df493d7ae4c8506da814ad936adb13ef93c6f1e2abc93f2819860ff26",
+        "rastersymbols-dusk.png": "882b3486bcabd3a075ae567f42e284ff065e83ebfe5033bb6eb68f655d18202e",
+        "XNavChartResources.h": "292c10d111d815d7876bca72b60cbbd564d0c4fee7dc99c21986c1572dc46b4d"
+      },
+      "xnav-windows/opennav-chart-style/v1": {
+        "chartsymbols.xml": "f4a20a46b0e5dbc9216f67386a1b0e6dd7c73e982b7b334b0ae795cd2c5f5334",
+        "rastersymbols-dark.png": "ab539905f9059ec8398b5e466a71bf7268368d66776cd41ea13706b79047a4f5",
+        "manifest.json": "ffa75c9d097a143e58aa13f9300b04bebac0836ab849bd4284401df1866f4b2a",
+        "rastersymbols-day.png": "852753fa6b8d32b23cfec81d060496c2602e8f1b590c73c7921e2041b4de745f",
+        "rastersymbols-dusk.png": "882b3486bcabd3a075ae567f42e284ff065e83ebfe5033bb6eb68f655d18202e",
+        "S52RAZDS.RLE": "560e1a1df493d7ae4c8506da814ad936adb13ef93c6f1e2abc93f2819860ff26",
+        "XNavChartResources.h": "292c10d111d815d7876bca72b60cbbd564d0c4fee7dc99c21986c1572dc46b4d"
+      },
+      "production-windows/opennav-chart-style/v1": {
+        "manifest.json": "ffa75c9d097a143e58aa13f9300b04bebac0836ab849bd4284401df1866f4b2a",
+        "chartsymbols.xml": "f4a20a46b0e5dbc9216f67386a1b0e6dd7c73e982b7b334b0ae795cd2c5f5334",
+        "rastersymbols-dark.png": "ab539905f9059ec8398b5e466a71bf7268368d66776cd41ea13706b79047a4f5",
+        "rastersymbols-day.png": "852753fa6b8d32b23cfec81d060496c2602e8f1b590c73c7921e2041b4de745f",
+        "rastersymbols-dusk.png": "882b3486bcabd3a075ae567f42e284ff065e83ebfe5033bb6eb68f655d18202e",
+        "S52RAZDS.RLE": "560e1a1df493d7ae4c8506da814ad936adb13ef93c6f1e2abc93f2819860ff26",
+        "XNavChartResources.h": "292c10d111d815d7876bca72b60cbbd564d0c4fee7dc99c21986c1572dc46b4d"
+      }
+    }
+  },
+  "renderer": {
+    "result": "passed; native screenshot review and physical GPU gate remain separate",
+    "phases": [
+      {
+        "requested": "software",
+        "actual_opengl_enabled": false
+      },
+      {
+        "requested": "opengl",
+        "actual_opengl_enabled": false
+      }
+    ],
+    "native_GL_accepted": false
+  },
+  "missing_payloads": [
+    "opencpn.exe",
+    "Setup.exe",
+    "downloader-trust-probe.exe",
+    "wxcurl-trust-probe.exe"
+  ],
+  "executable_inventory": [
+    "evidence/local/windows-curl-source-early-xnav/build-import-name/CMakeFiles/3.31.6/CompilerIdC/CompilerIdC.exe",
+    "evidence/local/windows-curl-source-early-xnav/build/CMakeFiles/3.31.6/CompilerIdC/CompilerIdC.exe",
+    "evidence/local/windows-curl-source-early-production/build-import-name/CMakeFiles/3.31.6/CompilerIdC/CompilerIdC.exe",
+    "evidence/local/windows-curl-source-early-production/build/CMakeFiles/3.31.6/CompilerIdC/CompilerIdC.exe",
+    "evidence/local/windows-changed-units-xnav/build/CMakeFiles/3.31.6/CompilerIdCXX/CompilerIdCXX.exe",
+    "evidence/local/curl-test-host-binding/cmake-build/CMakeFiles/3.31.6/CompilerIdC/CompilerIdC.exe"
+  ],
+  "scope": "Production application built/installed and139tests passed; private TLS probe did not configure. Real-host module/package/setup/Windows endurance skipped; no development boat or release eligibility.",
+  "artifact_input_hashes": {
+    "evidence/local/windows-production-Win32.log": {
+      "sha256": "649cba1f972a5a463b516b48062c3766139bfd11030687606a61ae7c80d31761",
+      "bytes": 1112921
+    },
+    "evidence/local/windows-xnav-tests.xml": {
+      "sha256": "6fd286dba9118d1dacaf289194346ad6363b9d82bdcb366600ba0995c634d624",
+      "bytes": 122144
+    },
+    "evidence/local/windows-production-tests.xml": {
+      "sha256": "8d6348afa7d657edf22bb8780d4e1f51f94570781b93e445a170fdd7976df903",
+      "bytes": 123045
+    },
+    "evidence/local/charts-results.json": {
+      "sha256": "1537a35eaf36db9dea4b0b208627537f43a4a72bcb52e764d0aca1a4223cabd0",
+      "bytes": 58520
+    },
+    "build/ocharts-package/manifest.json": {
+      "sha256": "fdff288bfbff091e56b47378bbc7b1a87a13f04f16255817268e7e853f2ebecc",
+      "bytes": 11912
+    }
+  },
+  "retained_files": {
+    "windows-ocharts-first-build.json": {
+      "sha256": "cb9c783b4846a828d7884b8e1feea0836e343c4b8be7286eb677e97bed9f577e",
+      "bytes": 1018
+    },
+    "windows-production-python.json": {
+      "sha256": "d51643d33b207a36f444119dffcbefc6ab14124e2c8b5368a3abc38c81ca4bb1",
+      "bytes": 321
+    },
+    "windows-dependency-first-success-receipt.json": {
+      "sha256": "8cff8d339c66e9facda1b744070b00cf3bf4b53903f8f34ce647ebfe5ede6d83",
+      "bytes": 43513
+    },
+    "windows-production-Win32.log.gz": {
+      "sha256": "40e48c083079a8ec2b5c8dab9ce5144693723334ec2e1c62773b1bca73c4316d",
+      "bytes": 49988
+    },
+    "first-error.txt": {
+      "sha256": "c1213962842ec2eaaeb06d9b15ca931f34b865a63b2722fff419ba63ed07f0c5",
+      "bytes": 3144
+    }
+  }
+}

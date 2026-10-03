@@ -34,6 +34,7 @@ INPUTS = (LOCK, RECIPE, 'cmake/ocharts-adapter/PreparedPath.cmake',
           'tools/windows-curl.lock.json', 'tools/windows-zlib.lock.json', 'tools/windows-openssl.lock.json',
           'tools/curl_package.py', 'tools/openssl_package.py',
           'tools/test-downloader-trust-windows.ps1', 'tests/downloader_trust/CMakeLists.txt',
+          'tests/downloader_trust/InputPaths.cmake', 'tests/downloader_trust/Targets.cmake',
           'tools/wxcurl-trust-probe.cpp', 'tools/downloader-trust-probe.cpp',
           'tools/downloader-trust-server.py') + PATCHES + LOCAL
 
@@ -63,7 +64,7 @@ def blob_ok(data, expected):
 
 def fetch_sources(destination, cache):
     lock = json.loads((ROOT / LOCK).read_text())
-    jobs = []
+    jobs = {}
     for key in ('source', 'gitlink'):
         part = lock[key]
         for name, expected in part['files'].items():
@@ -74,9 +75,11 @@ def fetch_sources(destination, cache):
                 raise ValueError('Forbidden binary payload')
             if any(s in name.lower() for s in ('oeserverd', 'oexserverd')):
                 raise ValueError('Forbidden helper payload')
-            jobs.append((part, name, expected, key))
-    def fetch(job):
-        part, name, expected, key = job
+            jobs.setdefault(expected['gitBlob'], []).append((part, name, expected, key))
+    def fetch(group):
+        # A Git blob can have several source paths. One worker owns acquisition
+        # and publication for that identity; independent blobs remain parallel.
+        part, name, expected, key = group[0]
         cached = cache / expected['gitBlob']
         if cached.exists():
             data = cached.read_bytes()
@@ -84,19 +87,21 @@ def fetch_sources(destination, cache):
             url = f"https://raw.githubusercontent.com/{part['repository']}/{part['commit']}/{name}"
             with urllib.request.urlopen(url, timeout=60) as response:
                 data = response.read(expected['bytes'] + 1)
-        if not blob_ok(data, expected):
-            raise ValueError('Source blob differs: ' + name)
+        for _, path_name, path_expected, _ in group:
+            if not blob_ok(data, path_expected):
+                raise ValueError('Source blob differs: ' + path_name)
         if not cached.exists():
             with tempfile.NamedTemporaryFile(dir=cache, delete=False) as stream:
                 stream.write(data)
                 temporary = Path(stream.name)
             temporary.replace(cached)
-        target = destination / ('opencpn-libs' if key == 'gitlink' else '') / name
-        target.parent.mkdir(parents=True, exist_ok=True)
-        target.write_bytes(data)
+        for _, path_name, _, path_key in group:
+            target = destination / ('opencpn-libs' if path_key == 'gitlink' else '') / path_name
+            target.parent.mkdir(parents=True, exist_ok=True)
+            target.write_bytes(data)
     cache.mkdir(parents=True, exist_ok=True)
     with ThreadPoolExecutor(max_workers=8) as pool:
-        list(pool.map(fetch, jobs))
+        list(pool.map(fetch, jobs.values()))
     return lock
 
 

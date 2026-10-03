@@ -1,0 +1,64 @@
+{
+  "schema": 1,
+  "scope": "Private Windows CPython 3.13 x64 prototype reference runtime; no browser or installed fonts",
+  "python": "3.13",
+  "platform": "win_amd64",
+  "packages": [
+    {
+      "name": "greenlet",
+      "version": "3.5.6",
+      "filename": "greenlet-3.5.6-cp313-cp313-win_amd64.whl",
+      "bytes": 324086,
+      "sha256": "5b602b4201b965a8354d74e232364a66ff243dd142e350d035f46169bb36e13d",
+      "url": "https://files.pythonhosted.org/packages/86/da/b7669b09586365654083a62bd0724cf06cb74bd5085a15cdd161271f992f/greenlet-3.5.6-cp313-cp313-win_amd64.whl",
+      "metadata_sha256": "cf2d7aec2b6ba3bafc9c9fddbb767a18921f119e5201d1bdbe64f5a34a27dc3f",
+      "runtime_requires": []
+    },
+    {
+      "name": "pillow",
+      "version": "11.3.0",
+      "filename": "pillow-11.3.0-cp313-cp313-win_amd64.whl",
+      "bytes": 6978450,
+      "sha256": "0bce5c4fd0921f99d2e858dc4d4d64193407e1b99478bc5cacecba2311abde51",
+      "url": "https://files.pythonhosted.org/packages/23/85/397c73524e0cd212067e0c969aa245b01d50183439550d24d9f55781b776/pillow-11.3.0-cp313-cp313-win_amd64.whl",
+      "metadata_sha256": "f64a8de5505192ea2dc96230bd156f3a94009613f21618b21585014996c07aed",
+      "runtime_requires": []
+    },
+    {
+      "name": "playwright",
+      "version": "1.58.0",
+      "filename": "playwright-1.58.0-py3-none-win_amd64.whl",
+      "bytes": 36816005,
+      "sha256": "a2bf639d0ce33b3ba38de777e08697b0d8f3dc07ab6802e4ac53fb65e3907af8",
+      "url": "https://files.pythonhosted.org/packages/41/f8/5ec599c5e59d2f2f336a05b4f318e733077cd5044f24adb6f86900c3e6a7/playwright-1.58.0-py3-none-win_amd64.whl",
+      "metadata_sha256": "a723a92a2c3a9bd0215113e16dd0eaba93026259c40ff4b7f816ff9742281753",
+      "runtime_requires": [
+        "pyee<14,>=13",
+        "greenlet<4.0.0,>=3.1.1"
+      ]
+    },
+    {
+      "name": "pyee",
+      "version": "13.0.1",
+      "filename": "pyee-13.0.1-py3-none-any.whl",
+      "bytes": 15659,
+      "sha256": "af2f8fede4171ef667dfded53f96e2ed0d6e6bd7ee3bb46437f77e3b57689228",
+      "url": "https://files.pythonhosted.org/packages/a0/c4/b4d4827c93ef43c01f599ef31453ccc1c132b353284fc6c87d535c233129/pyee-13.0.1-py3-none-any.whl",
+      "metadata_sha256": "7512d063d60cb405124a6c5fdd2c688d78a4c6b6841b8eeb00a59474ef59d43c",
+      "runtime_requires": [
+        "typing-extensions"
+      ]
+    },
+    {
+      "name": "typing_extensions",
+      "version": "4.16.0",
+      "filename": "typing_extensions-4.16.0-py3-none-any.whl",
+      "bytes": 45571,
+      "sha256": "481caa481374e813c1b176ada14e97f1f67a4539ce9cfeb3f350d78d6370c2e8",
+      "url": "https://files.pythonhosted.org/packages/49/d3/b8441a820a491ddfc024b0b0cf0393375b75ea13866d9c66727e54c2fc80/typing_extensions-4.16.0-py3-none-any.whl",
+      "metadata_sha256": "b05084ca1d50879865178d9fff9fabeab61bdfb1f361bfbde95421ffc8f9be46",
+      "runtime_requires": []
+    }
+  ],
+  "dependency_asset_note": "Official Playwright recorder/trace-viewer Codicon assets remain unmodified with their distribution; no font installation or prototype use."
+}

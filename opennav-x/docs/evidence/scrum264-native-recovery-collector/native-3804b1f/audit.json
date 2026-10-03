@@ -1,0 +1,65 @@
+{
+  "local_source": "dd58c8d03903b712d9f6b1967db0ac277690b1a3",
+  "remote_source": "3804b1f38143be6229b26d5bb2bca21181ca16dc",
+  "run": "37130959195",
+  "attempt": "1",
+  "job": 111225795821,
+  "artifact_id": 11277045734,
+  "artifact_bytes": 2650,
+  "artifact_sha256": "36679a5f5aa7c28d3dd775e18e41607aa0347a8632bc8c2fc65d23f7cf4628ab",
+  "zip_crc_entries": 7,
+  "source_checks": [
+    {
+      "path": "tests/recovery_capture_inputs_tests.py",
+      "native_crlf_sha256": "e6351312b77e763d9ef44b6cdb6155957d74abcff0aa0deee5057ed4baf2fe3c",
+      "git_lf_sha256": "dc82abd1de682cc88d940ce61f26c6b2a3933d1f6ca8cbbaf0b2a0122d949712"
+    },
+    {
+      "path": "src/platform/PortableProfile.cpp",
+      "native_crlf_sha256": "bee2561b6ce43e889ede5c79f417dbac4eab20a3e4aead7ffa2dcb926829ce4f",
+      "git_lf_sha256": "4507caaa3f236c824c78c7f28032acf9880657dc288a6c7039d298d3cafbfa75"
+    },
+    {
+      "path": "tests/portable_capture_boundary_tests.py",
+      "native_crlf_sha256": "19e57d7ef0b3752d97fc6c8934f7bede1ce21564496be43d0a921f226b998031",
+      "git_lf_sha256": "f632ab1697ab7ad3c6192a2ddcba31d0bd93170e37550dd0f21a61b42b0e7e64"
+    },
+    {
+      "path": "src/platform/PortableProfile.h",
+      "native_crlf_sha256": "1c27cd3569783acfa54ece9fda044cc08e513038f11456ec8c594f91bd9bf02a",
+      "git_lf_sha256": "d2b8a8e22f4706c0a826610bd66aa9f13ffba2d0b8883ba2221dd0821b035589"
+    },
+    {
+      "path": "tools/prototype/recovery_capture_inputs.py",
+      "native_crlf_sha256": "6c0b6df6878ba3bc080c14f90dda1fce30b0427a5c97e1155e051d07e4dd4658",
+      "git_lf_sha256": "bdadfa998ec7f52f63ba6d41a6609e50a2a878287dd8ef557261eaca7e8361ed"
+    },
+    {
+      "path": "tests/portable_capture_boundary/probe.cpp",
+      "native_crlf_sha256": "d43f0868c44bb78ac35cc5767df7abfe5c01efefe2ed8fbd0d7dced33082d0a5",
+      "git_lf_sha256": "c69e8e57e5a326ccb9c5682fedee61a754d0009e7648a50857609f7c8667664d"
+    },
+    {
+      "path": "tests/portable_capture_boundary/CMakeLists.txt",
+      "native_crlf_sha256": "b1bfecdab681662e2fc4ccbac72e8f2f4b1d6c13fd6464db0b531883c583db0e",
+      "git_lf_sha256": "a3049bb317185a2c5e3f4129048f216fcbfc8810ea98cf4b16fbe86b874cad9c"
+    }
+  ],
+  "python_tests": 21,
+  "python_skips": 0,
+  "native_guard_checks": {
+    "scope": "Production portable path contract only; no application launch",
+    "platform": "win32",
+    "probe_sha256": "7987692e470299330fbb8442f67e14f27559336b056a7455c05ba842016ded78",
+    "production_source_sha256": "bee2561b6ce43e889ede5c79f417dbac4eab20a3e4aead7ffa2dcb926829ce4f",
+    "checks": [
+      "original collector invocation refused by actual production guard",
+      "actual guard accepts copied package with own explicit/default profile and logs",
+      "copied portable marker still refuses external configdir",
+      "portable log writes preserve copied immutable bytes and complete audited original"
+    ],
+    "result": "PASS"
+  },
+  "result": "PASS",
+  "limitation": "Artifact retains probe hash receipt and compile/execution logs, not executable bytes; no independent probe-binary rehash or application launch claimed."
+}

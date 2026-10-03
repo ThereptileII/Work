@@ -1,0 +1,58 @@
+{
+  "7d5393a1212da0841e28e2f74883cb40fbd75a1f": [
+    "source/COPYING",
+    "source/COPYING.gplv2"
+  ],
+  "793212329c595a4701378b6a0dc7c831df1240d9": [
+    "source/libs/cpl/src/cpl_config.h",
+    "source/libs/gdal/src/cpl_config.h"
+  ],
+  "cb4bdb938c666d39b8f2c718f9f2f9db131c69a8": [
+    "source/libs/cpl/src/cpl_conv.h",
+    "source/libs/gdal/src/cpl_conv.h"
+  ],
+  "45795f18584e20e9f5facf71dc6363840ba3e52d": [
+    "source/libs/cpl/src/cpl_csv.cpp",
+    "source/libs/gdal/src/cpl_csv.cpp"
+  ],
+  "a5821265c464445b9c4204176ad26b89856a495e": [
+    "source/libs/cpl/src/cpl_csv.h",
+    "source/libs/gdal/src/cpl_csv.h"
+  ],
+  "1e3a68fa45a7e931a395cf5bd5064eb883df6e2f": [
+    "source/libs/cpl/src/cpl_error.cpp",
+    "source/libs/gdal/src/cpl_error.cpp"
+  ],
+  "9764cb4e8f0888f1e63736da1c71d7b22439e2b5": [
+    "source/libs/cpl/src/cpl_error.h",
+    "source/libs/gdal/src/cpl_error.h"
+  ],
+  "5ba387521c7cab4c5d378ce1e23ea20084e6af4f": [
+    "source/libs/cpl/src/cpl_findfile.cpp",
+    "source/libs/gdal/src/cpl_findfile.cpp"
+  ],
+  "e578e31838cb213ae89886032d9ae19ab5e99a76": [
+    "source/libs/cpl/src/cpl_path.cpp",
+    "source/libs/gdal/src/cpl_path.cpp"
+  ],
+  "476cb5c01e640f8cba22eec6c697b53450aff94d": [
+    "source/libs/cpl/src/cpl_port.h",
+    "source/libs/gdal/src/cpl_port.h"
+  ],
+  "9d3bbef0eaa690f159af8c5d500356add93ac270": [
+    "source/libs/cpl/src/cpl_string.cpp",
+    "source/libs/gdal/src/cpl_string.cpp"
+  ],
+  "250505351e5a7cd6aff9b1caaae021f7dfa5fcdd": [
+    "source/libs/cpl/src/cpl_string.h",
+    "source/libs/gdal/src/cpl_string.h"
+  ],
+  "d247714cabbd567e0ac4ab55830434142f1bae97": [
+    "source/libs/cpl/src/cpl_vsi.h",
+    "source/libs/gdal/src/cpl_vsi.h"
+  ],
+  "b25fb3dfcf77eb55656627d072910e7a8ebd73db": [
+    "source/libs/cpl/src/cpl_vsisimple.cpp",
+    "source/libs/gdal/src/cpl_vsisimple.cpp"
+  ]
+}

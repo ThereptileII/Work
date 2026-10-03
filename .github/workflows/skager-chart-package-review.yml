@@ -39,6 +39,14 @@ jobs:
               @($Target.renderers | Where-Object { $_ -cnotin @('software','opengl') }).Count -or
               @($Target.renderers | Select-Object -Unique).Count -ne @($Target.renderers).Count -or
               $Target.renderers -cnotcontains 'software') { throw 'Explicit bounded renderer selection required' }
+          # Optional bounded additions; original yellow+Seattle matrix remains.
+          if ($Target.PSObject.Properties.Name -contains 'iho_review_scenes') {
+            if ($Target.iho_review_scenes -isnot [Array] -or @($Target.iho_review_scenes).Count -gt 2 -or
+                @($Target.iho_review_scenes | Where-Object { $_ -cnotin @('lateral','cardinals') }).Count -or
+                @($Target.iho_review_scenes | Select-Object -Unique).Count -ne @($Target.iho_review_scenes).Count) {
+              throw 'Only unique named lateral/cardinals IHO review additions are supported'
+            }
+          }
           $Run = gh api "repos/$env:GITHUB_REPOSITORY/actions/runs/$($Target.producer_run_id)" | ConvertFrom-Json
           if ($LASTEXITCODE -ne 0) { throw 'Producer run lookup failed' }
           if ($Run.head_sha -cne $Target.application_commit -or $Run.run_attempt -ne $Target.producer_run_attempt -or
@@ -84,6 +92,12 @@ jobs:
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
           python opennav-x/tests/recovery_capture_inputs_tests.py
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          cmake -S opennav-x/tests/portable_capture_boundary -B opennav-x/build/portable-capture-boundary -G "Visual Studio 17 2022" -A Win32
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          cmake --build opennav-x/build/portable-capture-boundary --config Release
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          python opennav-x/tests/portable_capture_boundary_tests.py --probe opennav-x/build/portable-capture-boundary/Release/portable-capture-probe.exe --output opennav-x/evidence/local/package-chart-review/portable-boundary.json
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
           python opennav-x/tools/prototype/fetch-iho-review-cell.py --output opennav-x/build/native-iho-review
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
           Copy-Item opennav-x/build/native-iho-review/source-receipt.json opennav-x/evidence/local/package-chart-review/iho-source-receipt.json
@@ -99,11 +113,16 @@ jobs:
             '--expected-file-manifest-sha256',$Target.file_manifest_sha256,
             '--expected-executable-sha256',$Target.executable_sha256,
             '--expected-application-commit',$Target.application_commit,'--navigation-only')
+          $Scenes = @('iho','seattle')
+          if ($Target.PSObject.Properties.Name -contains 'iho_review_scenes') { $Scenes += @($Target.iho_review_scenes) }
           foreach ($Renderer in $Target.renderers) {
-            foreach ($Scene in @('iho','seattle')) {
+            foreach ($Scene in $Scenes) {
               foreach ($Style in @('XNav','Standard')) {
                 $Name = "$Scene-$Renderer-$Style"
-                $Extra = if ($Scene -ceq 'iho') { @('--iho-s64','opennav-x/build/native-iho-review/GB4X0000.000') } else { @('--public-enc') }
+                $Extra = if ($Scene -ceq 'seattle') { @('--public-enc') } else {
+                  $IhoScene = if ($Scene -ceq 'iho') { 'yellow' } else { $Scene }
+                  @('--iho-s64','opennav-x/build/native-iho-review/GB4X0000.000','--iho-scene',$IhoScene)
+                }
                 $Arguments = $Base + $Extra + @('--renderer',$Renderer,'--chart-style',$Style,
                   '--output',"opennav-x/evidence/local/package-chart-review/$Name")
                 python @Arguments 2>&1 | Tee-Object "opennav-x/evidence/local/package-chart-review/$Name.log"
@@ -118,5 +137,6 @@ jobs:
           path: |
             opennav-x/evidence/local/package-chart-review
             !opennav-x/evidence/local/package-chart-review/**/profile/**
+            !opennav-x/evidence/local/package-chart-review/**/disposable-package/**
             !opennav-x/evidence/local/package-chart-review/**/iho-fixture/**
           if-no-files-found: warn

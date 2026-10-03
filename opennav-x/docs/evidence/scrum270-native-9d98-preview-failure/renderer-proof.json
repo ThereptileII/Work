@@ -1,0 +1,86 @@
+{
+  "source_commit": "9d98a500916e8a7f59dac9735427dde6d3c7d2e5",
+  "run": 37120549213,
+  "job": 111196628593,
+  "archive_artifact_id": 11275626437,
+  "input": {
+    "archive_path": "evidence/local/charts-results.json",
+    "bytes": 58523,
+    "sha256": "0db5daca0b18c3fc02e64bf0381c8599e00a4706cc35a92a9b26b0c0deeb0791"
+  },
+  "phases": [
+    {
+      "requested_rendering": "software",
+      "actual_opengl_enabled": false,
+      "recorded_status": "Software requested and observed",
+      "startup_to_enc_seconds": 6.172,
+      "chart": {
+        "longitude": -122.36,
+        "quilt": true,
+        "follow": false,
+        "scale_bar": {
+          "x": 191,
+          "height": 30,
+          "width": 25,
+          "y": 421
+        },
+        "depth_units_visible": true,
+        "quilt_members": [
+          {
+            "index": 0,
+            "native_scale": 12000,
+            "type": 5,
+            "file": "US5SEAFL.000"
+          }
+        ],
+        "depth_unit_type": 1,
+        "latitude": 47.6,
+        "database_entries": 2,
+        "quilt_reference": 0,
+        "opengl_enabled": false,
+        "scale_ppm": 0.150000006,
+        "canvas_pixels": {
+          "height": 483,
+          "width": 1062
+        }
+      }
+    },
+    {
+      "requested_rendering": "opengl",
+      "actual_opengl_enabled": false,
+      "recorded_status": "host rejected OpenGL; verified upstream software fallback; hardware GL gate remains open",
+      "startup_to_enc_seconds": 5.031,
+      "chart": {
+        "longitude": -122.36,
+        "quilt": true,
+        "follow": false,
+        "scale_bar": {
+          "x": 191,
+          "height": 30,
+          "width": 25,
+          "y": 465
+        },
+        "depth_units_visible": true,
+        "quilt_members": [
+          {
+            "index": 0,
+            "native_scale": 12000,
+            "type": 5,
+            "file": "US5SEAFL.000"
+          }
+        ],
+        "depth_unit_type": 1,
+        "latitude": 47.6,
+        "database_entries": 2,
+        "quilt_reference": 0,
+        "opengl_enabled": false,
+        "scale_ppm": 0.1500149965,
+        "canvas_pixels": {
+          "height": 527,
+          "width": 998
+        }
+      }
+    }
+  ],
+  "scope": "Native software and permitted software fallback only. No native OpenGL acceptance. Current candidate and physical boat GPU need their own runtime evidence."
+}

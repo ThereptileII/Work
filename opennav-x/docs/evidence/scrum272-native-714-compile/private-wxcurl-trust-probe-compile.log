@@ -1,0 +1,28 @@
+MSBuild version 17.14.60+43b635718 for .NET Framework
+Build started 10/3/2026 4:13:28 PM.
+
+     1>Project "D:\a\Work\Work\opennav-x\evidence\local\trust-native-compile\private\wxcurl-trust-probe.vcxproj" on node 1 (ClCompile target(s)).
+     1>PrepareForBuild:
+         Creating directory "wxcurl-trust-probe.dir\Release\".
+         Structured output is enabled. The formatting of compiler diagnostics will reflect the error hierarchy. See https://aka.ms/cpp/structured-output for more details.
+         Creating directory "wxcurl-trust-probe.dir\Release\wxcurl-t.42653B48.tlog\".
+       InitializeBuildStatus:
+         Creating "wxcurl-trust-probe.dir\Release\wxcurl-t.42653B48.tlog\unsuccessfulbuild" because "AlwaysCreate" was specified.
+         Touching "wxcurl-trust-probe.dir\Release\wxcurl-t.42653B48.tlog\unsuccessfulbuild".
+     1>Project "D:\a\Work\Work\opennav-x\evidence\local\trust-native-compile\private\wxcurl-trust-probe.vcxproj" (1) is building "D:\a\Work\Work\opennav-x\evidence\local\trust-native-compile\private\ZERO_CHECK.vcxproj" (2:3) on node 1 (GetProjectInfoForReference target(s)).
+     2>PrepareForBuild:
+         Structured output is enabled. The formatting of compiler diagnostics will reflect the error hierarchy. See https://aka.ms/cpp/structured-output for more details.
+     2>Done Building Project "D:\a\Work\Work\opennav-x\evidence\local\trust-native-compile\private\ZERO_CHECK.vcxproj" (GetProjectInfoForReference target(s)).
+     1>ClCompile:
+         C:\Program Files\Microsoft Visual Studio\2022\Enterprise\VC\Tools\MSVC\14.44.35207\bin\HostX64\x86\CL.exe /c /I"D:\a\Work\Work\opennav-x\build\trust compile inputs\sdk\include" /I"D:\a\Work\Work\opennav-x\build\trust compile inputs\private-source\libs\wxcurl\src" /nologo /W1 /WX- /diagnostics:column /O2 /Ob2 /Oy- /D _UNICODE /D UNICODE /D WIN32 /D _WINDOWS /D NDEBUG /D _CRT_SECURE_NO_WARNINGS /D WXUSINGDLL /D UNICODE /D _UNICODE /D "CMAKE_INTDIR=\"Release\"" /EHsc /MD /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /std:c++17 /Fo"wxcurl-trust-probe.dir\Release\\" /Fd"wxcurl-trust-probe.dir\Release\vc143.pdb" /external:W0 /Gd /TP /analyze- /errorReport:queue  /external:I "D:/a/Work/Work/opennav-x/build/trust compile inputs/sdk/wx/lib/vc14x_dll/mswu" /external:I "D:/a/Work/Work/opennav-x/build/trust compile inputs/sdk/wx/include" "D:\a\Work\Work\opennav-x\build\trust compile inputs\private-source\libs\wxcurl\src\base.cpp" "D:\a\Work\Work\opennav-x\build\trust compile inputs\private-source\libs\wxcurl\src\http.cpp" "D:\a\Work\Work\opennav-x\tools\wxcurl-trust-probe.cpp"
+         base.cpp
+         http.cpp
+         wxcurl-trust-probe.cpp
+         Generating Code...
+     1>Done Building Project "D:\a\Work\Work\opennav-x\evidence\local\trust-native-compile\private\wxcurl-trust-probe.vcxproj" (ClCompile target(s)).
+
+Build succeeded.
+    0 Warning(s)
+    0 Error(s)
+
+Time Elapsed 00:00:06.27

@@ -1,0 +1,86 @@
+{
+  "issue": "SCRUM-271",
+  "localImplementation": "7c80fc045c891fcd3af2e58e07f7271bda7f2801",
+  "publishedCandidate": "cc9c277c92b77ae44035295541539f28a4ef80bd",
+  "mappedProductTree": "8e9ab49f0c745de4fc01cbeb8b307ff1b46fa42e",
+  "publicationMappingSource": "Parent independently verified mapping; all 490 compile local inputs reverified here",
+  "run": {
+    "id": 37132173264,
+    "url": "https://github.com/ThereptileII/Work/actions/runs/37132173264",
+    "attempt": 1,
+    "conclusion": "success"
+  },
+  "artifact": {
+    "id": 11277387193,
+    "name": "native-changed-units-cc9c277c92b77ae44035295541539f28a4ef80bd",
+    "bytes": 1437939,
+    "sha256": "1e6394a6aed96c46885633d41dd1cfc30389c5d57cb03ed419e72fae76d75800"
+  },
+  "selection": "notification-unit-only",
+  "object": {
+    "machine": "0x014c x86 COFF",
+    "bytes": 417479,
+    "sha256": "9d68d6ae91c6e26fb8dc94cd369b40a9115a0fb3c747925da69e3b213e9c9d28"
+  },
+  "compiler": "MSVC 14.44.35207 HostX64/x86",
+  "actualCompileCommands": 1,
+  "actualSource": "D:\\a\\Work\\Work\\opennav-x\\build\\integration-source\\gui\\src\\notification_manager_gui.cpp",
+  "warnings": 0,
+  "errors": 0,
+  "noApplicationLink": true,
+  "staticObjectArchiveNote": "Visual Studio OBJECT target invokes Lib.exe for its single-object archive; no Link.exe or product executable",
+  "localInputAudit": {
+    "count": 490,
+    "windowsCrlf": 466,
+    "byteExact": 24
+  },
+  "upstreamInputAudit": {
+    "pinnedCommit": "37fd0cddb7334fe489e9f18aa163977a9c5c84f7",
+    "patches": [
+      "opencpn-5.12.4-xnav.patch",
+      "opencpn-5.12.4-regression-tests.patch",
+      "opencpn-5.12.4-ais-transport.patch",
+      "opencpn-5.12.4-chart-presentation.patch",
+      "opencpn-5.12.4-maintained-curl.patch",
+      "opencpn-5.12.4-download-trust.patch",
+      "opencpn-5.12.4-wxcurl-trust.patch",
+      "opencpn-5.12.4-peer-response-buffer.patch",
+      "opencpn-5.12.4-peer-unavailable.patch"
+    ],
+    "verifiedInputCount": 1429,
+    "byteExactCount": 33,
+    "windowsCrlfCount": 1396,
+    "notificationSourceFromArtifactMatchesReconstructedPinnedPatches": true
+  },
+  "sdkHeaderAudit": {
+    "verifiedHeaderCount": 1560,
+    "byteExactCount": 1539,
+    "windowsCrlfCount": 21,
+    "archiveLocksVerified": true,
+    "dependencyProducerBuilds": false
+  },
+  "generatedResourceHashesVerified": 7,
+  "generatedConfigHashesVerified": 2,
+  "actualCompilerReadClosure": {
+    "upstreamInputs": 53,
+    "nativeToolchainOrWindows": 317,
+    "sdkHeaders": 315,
+    "localInputs": 8,
+    "generatedConfig": 1
+  },
+  "bothNewHeadersActuallyConsumed": true,
+  "policy": {
+    "testFixtures": false,
+    "pilotLoopback": false,
+    "openglCompiled": true,
+    "dependencyBuilds": false,
+    "applicationLinked": false
+  },
+  "nativeProductAcceptance": false,
+  "remaining": [
+    "Application link/runtime and actual notification visibility/count/severity/click/acknowledgement",
+    "Real SW/GL pixel compositing and theme return",
+    "1280x800/1920x1080 placement and 100/125/150percent DPI/hit bounds",
+    "Boat display/touch/GPU acceptance"
+  ]
+}

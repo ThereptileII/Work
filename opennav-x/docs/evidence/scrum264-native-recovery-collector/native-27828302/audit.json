@@ -1,0 +1,66 @@
+{
+  "local_source": "9bdc060cbbb9fb92a5d2e9f53c2c56c4e3436053",
+  "remote_source": "27828302a1c83ecc1f187ae1d79ab9ab5ac0fdfd",
+  "run": "37130634759",
+  "attempt": "1",
+  "artifact_id": 11276721827,
+  "artifact_sha256": "77a8d8c769c95ba9b86aacb95ab38c7fd17653eb0e230ebe6560dbc917f0509a",
+  "artifact_bytes": 1977,
+  "zip_crc_entries": 3,
+  "source_checks": [
+    {
+      "path": "tests/portable_capture_boundary/probe.cpp",
+      "recorded_sha256": "d43f0868c44bb78ac35cc5767df7abfe5c01efefe2ed8fbd0d7dced33082d0a5",
+      "source_eol_match": [
+        "CRLF"
+      ]
+    },
+    {
+      "path": "src/platform/PortableProfile.cpp",
+      "recorded_sha256": "bee2561b6ce43e889ede5c79f417dbac4eab20a3e4aead7ffa2dcb926829ce4f",
+      "source_eol_match": [
+        "CRLF"
+      ]
+    },
+    {
+      "path": "tests/portable_capture_boundary_tests.py",
+      "recorded_sha256": "19e57d7ef0b3752d97fc6c8934f7bede1ce21564496be43d0a921f226b998031",
+      "source_eol_match": [
+        "CRLF"
+      ]
+    },
+    {
+      "path": "tests/recovery_capture_inputs_tests.py",
+      "recorded_sha256": "13c59aefa8a0778d77999dc16f5b1aeb743c862db649d93ca6519f7cbace6609",
+      "source_eol_match": [
+        "CRLF"
+      ]
+    },
+    {
+      "path": "src/platform/PortableProfile.h",
+      "recorded_sha256": "1c27cd3569783acfa54ece9fda044cc08e513038f11456ec8c594f91bd9bf02a",
+      "source_eol_match": [
+        "CRLF"
+      ]
+    },
+    {
+      "path": "tools/prototype/recovery_capture_inputs.py",
+      "recorded_sha256": "c8bde5ba5beb5d1b1ff271184de64a1a2e3f2e4cebddf3eb5b5abd3696f3ef7d",
+      "source_eol_match": [
+        "CRLF"
+      ]
+    },
+    {
+      "path": "tests/portable_capture_boundary/CMakeLists.txt",
+      "recorded_sha256": "b1bfecdab681662e2fc4ccbac72e8f2f4b1d6c13fd6464db0b531883c583db0e",
+      "source_eol_match": [
+        "CRLF"
+      ]
+    }
+  ],
+  "result": "FAILED: 20 tests, 2 failures, 4 errors; all six staging cases hit resolved-versus-absolute root comparison",
+  "skips": 0,
+  "native_cpp_probe": "not configured, compiled or run",
+  "first_source_failure": "recovery_capture_inputs.py:187 Verified original package path differs",
+  "limitation": "Log does not print canonical path spellings; Windows short/long path spelling cause is inferred from unequal normalization, not observed strings."
+}

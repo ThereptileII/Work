@@ -1,0 +1,46 @@
+name: SKAGER portable capture boundary
+on:
+  push:
+    branches: [skager-portable-capture]
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  capture-boundary:
+    name: Native portable collector paths, no application build
+    runs-on: windows-2022
+    timeout-minutes: 7
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+      - name: Compile unchanged production path guard and exercise isolated copies
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = 'Stop'
+          $Out = 'opennav-x/evidence/local/portable-capture-boundary'
+          New-Item -ItemType Directory $Out -ErrorAction Stop | Out-Null
+          $Sources = @{}
+          foreach ($Path in @('src/platform/PortableProfile.cpp','src/platform/PortableProfile.h',
+              'tools/prototype/recovery_capture_inputs.py','tests/recovery_capture_inputs_tests.py',
+              'tests/portable_capture_boundary_tests.py','tests/portable_capture_boundary/probe.cpp',
+              'tests/portable_capture_boundary/CMakeLists.txt')) {
+            $Sources[$Path] = (Get-FileHash "opennav-x/$Path" -Algorithm SHA256).Hash.ToLowerInvariant()
+          }
+          @{commit=$env:GITHUB_SHA;run=$env:GITHUB_RUN_ID;attempt=$env:GITHUB_RUN_ATTEMPT;
+            scope='Collector path isolation; unchanged production guard; no OpenCPN launch';sources=$Sources} |
+            ConvertTo-Json -Depth 4 | Set-Content -Encoding utf8 "$Out/source.json"
+          python -m pip install Pillow==11.3.0 2>&1 | Tee-Object "$Out/dependencies.log"
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          python opennav-x/tests/recovery_capture_inputs_tests.py 2>&1 | Tee-Object "$Out/offline.log"
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          cmake -S opennav-x/tests/portable_capture_boundary -B opennav-x/build/portable-capture-boundary -G "Visual Studio 17 2022" -A Win32 2>&1 | Tee-Object "$Out/configure.log"
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          cmake --build opennav-x/build/portable-capture-boundary --config Release 2>&1 | Tee-Object "$Out/compile.log"
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          python opennav-x/tests/portable_capture_boundary_tests.py --probe opennav-x/build/portable-capture-boundary/Release/portable-capture-probe.exe --output "$Out/portable-boundary.json" 2>&1 | Tee-Object "$Out/boundary.log"
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: portable-capture-boundary-${{ github.sha }}
+          path: opennav-x/evidence/local/portable-capture-boundary
+          if-no-files-found: error
