@@ -1,0 +1,46 @@
+{
+  "BUISGL01-pinned-Day.png": {
+    "bytes": 220,
+    "sha256": "576ed236374438614abe9d897dcc1ec7e103094919a5ff27193b2fadd062328c"
+  },
+  "BUISGL01-pinned-Dusk.png": {
+    "bytes": 184,
+    "sha256": "e58128eb4e93108ff56c25a7305e2a91d1b243461692c07aefcef7b27c71c4ad"
+  },
+  "BUISGL01-pinned-Night.png": {
+    "bytes": 175,
+    "sha256": "64737a06e098dd20e99cb4ebb2afb16e671ef266a50ea0716c59d7acdbde6870"
+  },
+  "README.md": {
+    "bytes": 5985,
+    "sha256": "4d95804a78f31cae2f413ace37c002049cd996715bb9d27da3acc2c526f07bb1"
+  },
+  "actual-Day-square-context.png": {
+    "bytes": 250,
+    "sha256": "8a15f9083a44a3664e14ee5c8b1094a72c3b5a893edb5bf03aa916ec0bea76ab"
+  },
+  "actual-Day-square-exact9.png": {
+    "bytes": 207,
+    "sha256": "3c23cf9240c8a5a06c8db1111314081d04409d90218a6297f5a44834d26e0b8f"
+  },
+  "inspect-cell.py": {
+    "bytes": 1726,
+    "sha256": "d44b649c3d8b820d78893bcd40d99692b0c1c0e6f438e1c826daebc2b304aa8e"
+  },
+  "inspect-resources.py": {
+    "bytes": 4733,
+    "sha256": "01ef44e3da9ac02c90a1fe2e8a53ee58b9aa660776fe00b5d4d007a45f21e6b2"
+  },
+  "proposed-contrast.json": {
+    "bytes": 3533,
+    "sha256": "5eefb430cd592b64cf8a5df5bdbb836ab0af52125af995ffdb762602f875f0d1"
+  },
+  "resource-audit.json": {
+    "bytes": 12177,
+    "sha256": "6cd97d00af67228021cdbdf8ad4826228ac2e6de6ddb4a625e0e522d54d0e611"
+  },
+  "source.json": {
+    "bytes": 1751,
+    "sha256": "4f05e65557aa3db98b0244bd3dd0c8029152ee77e3fde7c08f08cd1b3f07a0d3"
+  }
+}

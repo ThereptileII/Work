@@ -18,7 +18,7 @@
 WX_DECLARE_LIST(S52_TextC, TextObjList);
 WX_DEFINE_LIST(TextObjList);
 struct VPointCompat { int pix_width=1000, pix_height=800; double rotation=0; wxRect rv_rect; };
-struct TexFontCache { wxFont *key=nullptr; TexFont *cache=nullptr; };
+struct TexFontCache { TexFont *cache=nullptr; wxFont *key=nullptr; };
 #define TXF_CACHE 8
 class s52plib {
  public:
@@ -40,10 +40,22 @@ wxFont *FindOrCreateFont_PlugIn(int size,wxFontFamily family,wxFontStyle style,
   fonts.push_back(std::make_unique<wxFont>(fontContentScale*size,family,style,weight,underline,face));
   return fonts.back().get();
 }
-// These stock glyph-cache functions must not execute in this focused fixture.
+// Deterministic glyph metrics at the dependency boundary, taken from the
+// retained LNDELV trace. Cache selection, ownership and all positioning execute
+// the actual extracted RenderText body; no positioning algorithm is copied.
+static bool glyphCacheFixture=false;
+static int glyphBuilds=0, metricQueries=0;
 TexFont::TexFont() {} TexFont::~TexFont() {}
-void TexFont::Build(wxFont&,double,double,bool) { throw std::runtime_error("Unexpected glyph-cache branch"); }
-void TexFont::GetTextExtent(const wxString&,int*,int*) { throw std::runtime_error("Unexpected glyph-cache branch"); }
+void TexFont::Build(wxFont&,double,double,bool) {
+  if(!glyphCacheFixture)throw std::runtime_error("Unexpected glyph-cache branch");
+  ++glyphBuilds;
+}
+void TexFont::GetTextExtent(const wxString& text,int* width,int* height) {
+  if(!glyphCacheFixture)throw std::runtime_error("Unexpected glyph-cache branch");
+  if(text=="M") { ++metricQueries;if(width)*width=16;if(height)*height=22; }
+  else if(text=="26.2") { if(width)*width=38;if(height)*height=22; }
+  else throw std::runtime_error("Unexpected glyph input");
+}
 
 static GLuint nextTexture=1;
 static std::vector<GLuint> deleted;
@@ -66,6 +78,7 @@ static int checks=0;
 static void Check(bool value,const char *why) { ++checks;if(!value)throw std::runtime_error(why); }
 
 int main(int argc,char **argv) {
+  const bool cacheOnly=argc==2 && std::string(argv[1])=="--glyph-cache-only";
   if(!wxEntryStart(argc,argv)||!wxTheApp->CallOnInit())return 2;
   int result=0;
   try {
@@ -73,6 +86,40 @@ int main(int argc,char **argv) {
     wxFont font(12,wxFONTFAMILY_SWISS,wxFONTSTYLE_ITALIC,wxFONTWEIGHT_NORMAL,false,"Arial");
     wxBitmap bitmap(1000,800,24);wxMemoryDC dc(bitmap);
     dc.SetFont(font);
+    // Real cache/text phases: each new text represents the ordinary text cache
+    // invalidation on a theme change. The atlas remains owned by this renderer.
+    glyphCacheFixture=true;
+    for(double dip:{1.,.8,.5}) for(bool stockInk:{false,true}) {
+      s52plib owner;owner.m_dipfactor=dip;owner.m_useS52DefaultTextColor=!stockInk;
+      owner.m_FinalTextScaleFactor=owner.m_TextScaleFactor/dip;
+      wxRect first;
+      auto* originalFont=&font;
+      const int buildsBefore=glyphBuilds;
+      for(int phase=0;phase<4;++phase) {
+        S52_TextC text;text.frmtd="26.2";text.pFont=originalFont;text.pcol=&ink;
+        text.avgCharWidth=9;text.xoffs=1;text.yoffs=-1;
+        text.hjust='3';text.vjust='2';
+        wxRect bounds;
+        const int queriesBefore=metricQueries;
+        Check(owner.RenderText(nullptr,&text,957,129,&bounds,nullptr,false),"Ordinary glyph text draws in each cache phase");
+        Check(glyphBuilds==buildsBefore+1,"Theme text recreation reuses the existing atlas");
+        if(phase==0)first=bounds;
+        Check(bounds==first,"Day/Dusk/Night/Day text phases keep identical placement");
+        Check(metricQueries==queriesBefore+1,"Every text obtains the existing atlas metric");
+        Check(text.avgCharWidth==static_cast<int>(16*dip),"Cache hit retains the original first-draw metric");
+        if(dip==1)Check(bounds==wxRect(973,108,38,22),"Original traced first-draw rectangle is preserved");
+      }
+      // Different font identity must still allocate a separate cache entry.
+      wxFont secondFont=font;
+      S52_TextC other;other.frmtd="26.2";other.pFont=&secondFont;other.pcol=&ink;
+      other.avgCharWidth=9;other.xoffs=1;other.yoffs=-1;other.hjust='3';other.vjust='2';
+      wxRect otherBounds;
+      Check(owner.RenderText(nullptr,&other,957,129,&otherBounds,nullptr,false),"Different font renders");
+      Check(glyphBuilds==buildsBefore+2&&otherBounds==first,"Separate atlas miss preserves equivalent geometry");
+      for(auto& entry:owner.s_txf) { delete entry.cache;entry.cache=nullptr;entry.key=nullptr; }
+    }
+    glyphCacheFixture=false;
+    if(!cacheOnly) {
     for(double content:{1.,2.}) for(double userScale:{.75,1.,1.5})
     for(double dip:{1.,.8,2./3.,.5}) for(double rotation:{0.,.4,1.5707963267948966}) {
       fontContentScale=content;
@@ -151,6 +198,7 @@ int main(int argc,char **argv) {
       Check(drawn==!styled,"Styled rejected name reports false; stock behavior retained");
       Check(owner.CheckTextRectList(nav,&c)==!styled,"Invisible styled name must not suppress subsequent navigation label");
       Check(owner.m_textObjList.GetCount()==(styled?1u:2u),"Only actually drawn styled names register");
+    }
     }
     dc.SelectObject(wxNullBitmap);fonts.clear();
     std::cout<<checks<<" actual RenderText DPI, overlap, registration, cache and color checks passed\n";

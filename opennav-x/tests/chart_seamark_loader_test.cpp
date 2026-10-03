@@ -285,6 +285,27 @@ int main(int argc, char **argv) {
         Check(tile.SaveFile(out+"/"+names[n]+"-"+themes[theme]+".png",wxBITMAP_TYPE_PNG));
       }
     }
+    // Separate9x9 generic-building check; the17 prior24x28 cases remain exact.
+    auto building = symbols.at("XNBLDG01");
+    Check(building->RCID == 60016 && building->definition.SYDF == 'R');
+    Check(building->pos.symb.pivot_x.SYCL == 4 && building->pos.symb.pivot_y.SYRW == 4);
+    Check(building->pos.symb.bnbox_w.SYHL == 9 && building->pos.symb.bnbox_h.SYVL == 9);
+    Check(!std::strcmp(building->colRef.SCRF, "WXNBLOKXNBLF"));
+    loader.GetGLTextureRect(rect,"XNBLDG01");
+    Check(rect == wxRect(788,1160,9,9));
+    const int buildingFill[3][3] = {{124,133,138},{168,187,183},{98,115,108}};
+    for (int theme=0;theme<3;++theme) {
+      Check(loader.LoadRasterFileForColorTable(loader.FindColorTable(themes[theme]),true,ChartCtx(false,0)));
+      auto original = loader.GetImage("BUISGL01");
+      auto tile = loader.GetImage("XNBLDG01");
+      Check(tile.IsOk() && tile.HasAlpha() && tile.GetWidth()==9 && tile.GetHeight()==9);
+      for (int y=0;y<9;++y) for (int x=0;x<9;++x)
+        Check(tile.GetAlpha(x,y)==original.GetAlpha(x,y));
+      Check(tile.GetRed(4,4)==buildingFill[theme][0] &&
+            tile.GetGreen(4,4)==buildingFill[theme][1] &&
+            tile.GetBlue(4,4)==buildingFill[theme][2]);
+      Check(tile.SaveFile(out+"/XNBLDG01-"+themes[theme]+".png",wxBITMAP_TYPE_PNG));
+    }
     CheckLightDispatch(owner,symbols);
     CheckPillarDispatch(owner,symbols); CheckYellowDispatch(owner,symbols); CheckYellowLookups(owner,doc.child("chartsymbols").child("lookups"));
     for (auto &entry:symbols) {

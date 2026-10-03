@@ -1,6 +1,85 @@
 # SKAGER status — 2026-10-03
 
-## Current local correction batch — actual GL light point still open
+## SCRUM-278 — focused Windows environment proof prepared
+
+The shared parent setup is integrated as `970671d`, with the existing Gettext
+receipt bound to dependency reuse in `7568bf7`. Build and AIS callers preserve
+the same native-Perl/Gettext prefix order; AIS verifies existing tools without
+installing them or rewriting captured identities. The 13 helper checks, 12
+initial receipt/order cases and one additional receipt-tamper case pass locally.
+
+`eab2e95` adds a [short native proof](evidence/scrum278-parent-context-proof/README.md)
+on its own CI branch. It uses the actual unchanged tool-facts helper and exact
+producer setup span, requiring omitted-prefix rejection and byte-exact restored
+facts. Thirteen preparation checks pass; native execution is still pending.
+This is not a dependency/application rebuild or AIS runtime acceptance. The
+full candidate branch stays at failed `63c1029` until this focused proof passes.
+No boat changes have been made.
+
+## Current full qualification — 63c1029 native AIS gate failed
+
+Frozen local **`d18da7ccc94b175d1f4a09a0019ab7e4b4f55d31`** is published as
+**`63c1029584a325a961fa89794071cbf053c2e966`** in
+[run 37147671879](https://github.com/ThereptileII/Work/actions/runs/37147671879).
+The [independently reconstructed5113-entry tree](evidence/skager-combined-d18-publication.json)
+preserves all eight unrelated root files. This single full replacement starts
+after the focused certificate/native-source checks and the combined normal
+49-step Linux Release build/link/install pass. Application/resources/patches
+match exact preflight326daf7; later changes are documentation and optional
+native capture tooling. The native integrated build/mode checks, fixture UI and
+dependency receipt capture passed, but step 18 (same-job AIS runtime gate) failed.
+The [original native artifact](evidence/scrum274-native-63-path/README.md) proves
+that OpenSSL parent verification rejected only `environment.PATHSha256`; all
+other tool and source facts match. AIS configure/build/runtime had not started.
+Root independently verified the original archive hash, all 13,395 CRCs and the
+sole-field difference. SCRUM-278 owns restoring the same parent initialization
+used by the successful dependency build, with a short native proof before a
+full replacement. Exact environment verification will not be relaxed.
+Production, subsequent TLS and product packaging were skipped.
+No eligible boat package or replacement full run is claimed.
+
+Both actual software light/fog and R/W/Gsector theme sets pass16captures with
+clean exits. Actual MesaGL now dispatches the previously missing XNLIT013 light
+point and preserves FOGSIG01. The mixed-sector GL set passes8 SKAGER/Standard
+captures, including exact whole-chart Day returns and three successful fan
+builds/draws. Full light/fog GL theme comparison remains **failed**:355 changed
+pixels in numeric26.2 near the chart edge, separate from the light/fog glyphs.
+Original images/assertions are retained; it is not accepted as mere antialiasing.
+A [single read-only actual metric trace](evidence/scrum268-326-elevation-metrics/README.md)
+confirms LNDELV28 elevation8m→26.2ft: the first atlas miss changes average width9
+to16, while subsequent hits keep9, shifting otherwise unchanged text7px left.
+All four traced images exactly match the original failed captures. SCRUM-268 now
+owns the minimal core/private consistency correction, integrated locally as
+`a8481a8`. Its [actual corrected Linux chart gate](evidence/scrum268-5bb-linux-canvas/README.md)
+passes at exact `5bb7e05`: normal29-step incremental build/link/install,12
+OpenGL captures, three exact unmasked Day returns and three clean exits. Root
+verified all116 retained evidence files and inspected Day/Night/Standard images.
+The initial Day chart is unchanged; subsequent differences are confined to the
+diagnosed elevation label. Native/private-DLL/boat acceptance remains open;
+this correction is **not** in the frozen63c1029 Windows candidate.
+
+That visual investigation continues independently of Windows qualification.
+The observed brown point below the light is now identified as generic BUISGL36.
+The [isolated default-building alias](evidence/scrum265-building-point-alias/README.md)
+is integrated locally as `78ef9ff`, after 128 focused checks, independent
+source review and verification of 26 input/output identities. Only Simplified lookup 1091 uses prototype neutral
+inks; all 81 alpha values, geometry, original/Paper/conspicuous symbols and
+classification remain intact. The [actual 27e93e4 Linux canvas gate](evidence/scrum265-27e-linux-canvas/README.md)
+now passes: eight software/Mesa captures, two exact unmasked Day returns and
+two clean exits after the normal 28-step incremental build. Root independently
+verified all 146 evidence identities and recomputed the eight before/after image
+comparisons: zero changed chart pixels outside the two actual building tiles.
+The single loader and combined-resource checks also pass; their assertion
+totals are not separate test-case counts. Brighter
+Dusk/Night generic ink relative to the preserved conspicuous tile is an explicit
+unaccepted readability boundary. This addition also remains outside frozen candidate 63c1029.
+The [all-round light review](design/reviews/scrum264-all-round-light-boundary.md)
+confirms that the prototype supplies no full-circle range-ring replacement;
+its retained upstream outline and Night paint remain visible differences.
+No package, full visual conformance, private renderer or boat acceptance is
+claimed. The boat installation and frozen candidate application stay unchanged.
+
+## Pre-publication correction record — original GL light point failure
 
 The native certificate-fixture repair passes its [short Windows gate](https://github.com/ThereptileII/Work/actions/runs/37145287262)
 at exact `a191102c6f150f47980bdb1c774878483c203b99` / local `827cf9b`.

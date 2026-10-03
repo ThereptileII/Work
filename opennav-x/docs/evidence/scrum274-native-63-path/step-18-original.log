@@ -1,0 +1,28 @@
+2026-10-03T20:57:39.8853310Z ##[group]Run python opennav-x/tools/test-ais-runtime-gate.py 2>&1 | Tee-Object opennav-x/evidence/local/ais-runtime-guards.log
+2026-10-03T20:57:39.8854437Z [36;1mpython opennav-x/tools/test-ais-runtime-gate.py 2>&1 | Tee-Object opennav-x/evidence/local/ais-runtime-guards.log[0m
+2026-10-03T20:57:39.8855131Z [36;1mif ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }[0m
+2026-10-03T20:57:39.8855959Z [36;1mpython opennav-x/tools/windows_dependency_reuse.py verify --root opennav-x 2>&1 | Tee-Object opennav-x/evidence/local/ais-runtime-receipt-check.log[0m
+2026-10-03T20:57:39.8856756Z [36;1mif ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }[0m
+2026-10-03T20:57:39.8857727Z [36;1m./opennav-x/tools/build-openssl-windows.ps1 -IntegrationSource opennav-x/build/integration-source -VerifyToolFactsOnly 2>&1 | Tee-Object opennav-x/evidence/local/ais-runtime-openssl-tool-check.log[0m
+2026-10-03T20:57:39.8858717Z [36;1mif ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }[0m
+2026-10-03T20:57:39.8859507Z [36;1m./opennav-x/tools/build-zlib-windows.ps1 -VerifyToolFactsOnly 2>&1 | Tee-Object opennav-x/evidence/local/ais-runtime-zlib-tool-check.log[0m
+2026-10-03T20:57:39.8860232Z [36;1mif ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }[0m
+2026-10-03T20:57:39.8860654Z [36;1mpython opennav-x/tools/test-ais-runtime-windows.py[0m
+2026-10-03T20:57:39.8861071Z [36;1mif ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }[0m
+2026-10-03T20:57:39.8902121Z shell: C:\Program Files\PowerShell\7\pwsh.EXE -command ". '{0}'"
+2026-10-03T20:57:39.8902527Z env:
+2026-10-03T20:57:39.8902813Z   SKAGER_NATIVE_PERL: C:\Strawberry\perl\bin\perl.exe
+2026-10-03T20:57:39.8903158Z   MSYSTEM: MSYS
+2026-10-03T20:57:39.8903597Z   SKAGER_CURL_TEST_PERL: D:\a\_temp\msys64\usr\bin\perl.exe
+2026-10-03T20:57:39.8903952Z ##[endgroup]
+2026-10-03T20:57:40.4477130Z [31;1m...[0m
+2026-10-03T20:57:40.4502828Z [31;1m----------------------------------------------------------------------[0m
+2026-10-03T20:57:40.4520580Z [31;1mRan 3 tests in 0.010s[0m
+2026-10-03T20:57:40.4741916Z [31;1m[0m
+2026-10-03T20:57:40.4751195Z [31;1mOK[0m
+2026-10-03T20:57:42.0307697Z [31;1mException: [0mD:\a\Work\Work\opennav-x\tools\windows-native-tool-facts.ps1:305[0m
+2026-10-03T20:57:42.0308706Z [31;1m[0m[36;1mLine |[0m
+2026-10-03T20:57:42.0309270Z [31;1m[0m[36;1m[36;1m 305 | [0m         [36;1mthrow "Native tool facts changed: $Kind"[0m
+2026-10-03T20:57:42.0309895Z [31;1m[0m[36;1m[36;1m[0m[36;1m[0m[36;1m     | [31;1m         ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+2026-10-03T20:57:42.0310574Z [31;1m[0m[36;1m[36;1m[0m[36;1m[0m[36;1m[31;1m[31;1m[36;1m     | [31;1mNative tool facts changed: openssl-parent[0m
+2026-10-03T20:57:42.0847829Z ##[error]Process completed with exit code 1.

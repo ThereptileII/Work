@@ -110,6 +110,7 @@ def main():
             'tools/test-windows-changed-units.py', 'tools/prepare-integration.py', 'tools/verify-upstream.py',
             'tools/windows_dependency_receipt.py', 'tools/windows_dependency_reuse.py',
             'tools/windows_dependency_stage.py', 'tools/windows_dependency_evidence.py',
+            'tools/windows-parent-environment.ps1',
             'tools/test-ais-runtime-gate.py'})
         local = {name: ROOT / name for name in selected}
         workflow = '.github/workflows/opennav-baseline.yml'

@@ -1,0 +1,45 @@
+{
+  "scope": "local preparation only; native execution pending",
+  "inputs": [
+    {
+      "path": "tools/test-windows-parent-context.ps1",
+      "bytes": 8986,
+      "sha256": "40355630d7473e85646b08145587f7ce9b2d3d4abf70a4e0225496cb7a1ff52b"
+    },
+    {
+      "path": ".github/workflows/skager-parent-context.yml",
+      "bytes": 4636,
+      "sha256": "b53288c8b69634c8aea55d631e9c628181d71dc28f81cc3810ee6ef67408a8ae"
+    },
+    {
+      "path": "tools/windows-parent-environment.ps1",
+      "bytes": 1865,
+      "sha256": "d422218dcffeb36126580eeb545c4a2e66903cfd5e64fa43133e6a66a54c3091"
+    },
+    {
+      "path": "tools/windows-native-tool-facts.ps1",
+      "bytes": 17425,
+      "sha256": "ecf8dc81c01591d5d35f3f25a8c9d2683eaf5e930c33e77fc0b4fabad43d9f8c"
+    },
+    {
+      "path": "tools/build-openssl-windows.ps1",
+      "bytes": 14386,
+      "sha256": "62d56b9d031b4f276e75074933d2fd40c1a65daf0df5b01b17bc1d2773c13bf3"
+    },
+    {
+      "path": "tools/windows_gettext.py",
+      "bytes": 9750,
+      "sha256": "05679f075120edc2cd82f553249a48a0ea25ab89fe12a0aa714263afd5095894"
+    },
+    {
+      "path": "tools/windows-openssl.lock.json",
+      "bytes": 786,
+      "sha256": "df596603e33a205e62e04c3418a2d6f157ea989d50936700d440c2678b40ae23"
+    },
+    {
+      "path": "docs/evidence/scrum278-parent-context-proof/local-guards.ps1",
+      "bytes": 2829,
+      "sha256": "435e8e4a7c241d8c4bfca5aa135a6bc758bb289a766ecc0be8a7386ae826e311"
+    }
+  ]
+}

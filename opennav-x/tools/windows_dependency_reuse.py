@@ -45,6 +45,8 @@ PATCHES = (
 # receipt's workspace path boundary.
 INPUTS = tuple(sorted((
     "tools/build-pristine-windows.ps1",
+    "tools/windows-parent-environment.ps1",
+    "evidence/local/windows-gettext-xnav.json",
     "tools/windows_gettext.py",
     "tools/build-openssl-windows.ps1",
     "tools/build-zlib-windows.ps1",

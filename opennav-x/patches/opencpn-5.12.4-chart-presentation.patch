@@ -3006,3 +3006,23 @@ diff --git a/gui/include/gui/notification_manager_gui.h b/gui/include/gui/notifi
      if (fabs(prule->parm7 - xscale) > .00001) {
        ClearRulesCache(prule);
      }
+--- a/libs/s52plib/src/s52plib.cpp
++++ b/libs/s52plib/src/s52plib.cpp
+@@ -2219,10 +2219,14 @@
+         f_cache = s_txf[i].cache;
+         f_cache->Build(*ptext->pFont, m_TextScaleFactor, m_dipfactor);
+ 
+-        int wac;
+-        f_cache->GetTextExtent(_T("M"), &wac, 0);
+-        ptext->avgCharWidth = wac * m_dipfactor;
+       }
++
++      // Text objects can be recreated while the glyph atlas survives (e.g.
++      // a color-scheme change). Use the original atlas M metric on both cache
++      // hits and misses, so TX offsets do not depend on which label built it.
++      int wac;
++      f_cache->GetTextExtent(_T("M"), &wac, 0);
++      ptext->avgCharWidth = wac * m_dipfactor;
+ 
+       int w, h;
+       f_cache->GetTextExtent(ptext->frmtd, &w, &h);

@@ -1,0 +1,56 @@
+[
+  {
+    "class": "BUISGL",
+    "ogrFid": 34,
+    "position": [
+      -32.3768207,
+      61.0311125
+    ],
+    "attributes": {
+      "RCID": 35,
+      "PRIM": 1,
+      "GRUP": 2,
+      "OBJL": 12,
+      "RVER": 1,
+      "AGEN": 540,
+      "FIDN": 29142482,
+      "FIDS": 1,
+      "LNAM": "021C01BCADD20001"
+    },
+    "projectedChart": [
+      533.5803826032137,
+      343.3051433997539
+    ],
+    "projectedScreen": [
+      613.5803826032137,
+      411.3051433997539
+    ]
+  },
+  {
+    "class": "BUISGL",
+    "ogrFid": 35,
+    "position": [
+      -32.3772903,
+      61.0310718
+    ],
+    "attributes": {
+      "RCID": 36,
+      "PRIM": 1,
+      "GRUP": 2,
+      "OBJL": 12,
+      "RVER": 1,
+      "AGEN": 540,
+      "FIDN": 29142483,
+      "FIDS": 1,
+      "LNAM": "021C01BCADD30001"
+    },
+    "projectedChart": [
+      530.9417934033767,
+      379.3533766277598
+    ],
+    "projectedScreen": [
+      610.9417934033767,
+      447.3533766277598
+    ]
+  }
+]

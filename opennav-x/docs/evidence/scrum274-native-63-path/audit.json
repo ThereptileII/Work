@@ -1,0 +1,84 @@
+{
+  "run": 37147671879,
+  "job": 111276021896,
+  "remote": "63c1029584a325a961fa89794071cbf053c2e966",
+  "local": "d18da7ccc94b175d1f4a09a0019ab7e4b4f55d31",
+  "artifact": {
+    "id": 11285152311,
+    "name": "windows-integration-63c1029584a325a961fa89794071cbf053c2e966",
+    "size_in_bytes": 53015878,
+    "url": "https://api.github.com/repos/ThereptileII/Work/actions/artifacts/11285152311",
+    "archive_download_url": "https://api.github.com/repos/ThereptileII/Work/actions/artifacts/11285152311/zip",
+    "expired": false,
+    "created_at": "2026-10-03T21:05:23Z",
+    "expires_at": "2027-01-01T19:22:48Z",
+    "updated_at": "2026-10-03T21:05:23Z",
+    "digest": "sha256:a6031fb49dd1c83016431fc904264f5f49116b3d45de4e664033510f33091136",
+    "workflow_run": {
+      "id": 37147671879,
+      "repository_id": 864043804,
+      "head_repository_id": 864043804,
+      "head_branch": "opennav-x-beta2-ui",
+      "head_sha": "63c1029584a325a961fa89794071cbf053c2e966"
+    }
+  },
+  "archive": {
+    "bytes": 53015878,
+    "sha256": "a6031fb49dd1c83016431fc904264f5f49116b3d45de4e664033510f33091136"
+  },
+  "zip_crc_entries_passed": 13395,
+  "retained_entries": {
+    "evidence/local/windows-openssl-parent-tool-facts.json": {
+      "bytes": 3885,
+      "sha256": "fa1b46748f7c50ae4d7c637e61f50a8cb3cc6d2cba8467b9c04175cecb1f2773"
+    },
+    "evidence/local/windows-openssl-parent-tool-facts.json.observed.json": {
+      "bytes": 3885,
+      "sha256": "01a96584a51ba3b0bcd7291e02607bc3ff9b698672a09510c432bf13f3d43c2f"
+    },
+    "evidence/local/ais-runtime-guards.log": {
+      "bytes": 106,
+      "sha256": "45f9eff500276d5f54b97829bdfc267ce1d5c61ddc5c3c8b1b3b7817be27c615"
+    }
+  },
+  "decoded_terminal_job_log": {
+    "bytes": 7139617,
+    "sha256": "85b82e7bdcaf32b44845ec8c611568b5eb2f73f3e105baa42bd92ceda95c6a5f"
+  },
+  "original_excerpt_line_range": [
+    22107,
+    22134
+  ],
+  "fact_differences": [
+    {
+      "field": "environment.PATHSha256",
+      "captured": "585ef513a45a58368b1d08ef9e0ebafd5fe73ec383c016a5db38a86c8f7289c5",
+      "observed": "4830bf6b621083bb5bb49d50de71423796d98418c92dc0fdc24e885b45231d23"
+    }
+  ],
+  "production_source_windows_crlf_verified": {
+    "tools/build-openssl-windows.ps1": {
+      "bytes": 14618,
+      "sha256": "a57a2a468999daf8ba655c2328fd645d002c184ce370ca916d99cf5cc43dabc7"
+    },
+    "tools/windows-native-tool-facts.ps1": {
+      "bytes": 17733,
+      "sha256": "909d5aca764ae461618d02a58592bf0d6f3d7a6846e4b5483aad818aa04e6cd0"
+    }
+  },
+  "same_job_receipt": {
+    "identity": {
+      "bytes": 43513,
+      "sha256": "b81244b9ab772200c637967d7c6e594a915937a7707e17ae4a6f24c150641ee3"
+    },
+    "context": {
+      "architecture": "Win32",
+      "githubSha": "63c1029584a325a961fa89794071cbf053c2e966",
+      "job": "windows-integration",
+      "runAttempt": "1",
+      "runId": "37147671879"
+    }
+  },
+  "ais_runtime_outputs_present": [],
+  "scope": "Failure investigation only. No AIS native configure/compile/runtime occurred; no production/TLS/package/boat acceptance."
+}

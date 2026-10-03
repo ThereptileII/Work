@@ -5,7 +5,7 @@ Only the enumerated palette roles, geographic-name ink, two built-up-area
 and fourteen structural fills, six structural outlines, a proven neutral
 sprite-ink mask, isolated anchor/service/cardinal artwork, eleven classified
 marine/light tiles with sixteen exact alias redirects, one construction hatch,
-and cable/ferry paint
+one exact generic-building point alias, and cable/ferry paint
 roles may change. Original inputs are never modified.
 """
 import argparse
@@ -26,6 +26,7 @@ import chart_yellow_buoy_art
 import chart_day_neutral_ink
 import chart_structure_paint
 import chart_construction_hatch
+import chart_building_point
 
 ROOT=Path(__file__).resolve().parents[1]
 ALLOWED={'LANDA','CSTLN','DEPDW','DEPMD','DEPMS','DEPVS','DEPIT','DEPCN','DEPSC','SNDG1','SNDG2','CHBLK','CHGRD'}
@@ -35,12 +36,12 @@ BUILT_AREA_LOOKUPS={'16':('32052','Plain'),'356':('32391','Symbolized')}
 BUILT_AREA_INSTRUCTION="AC(CHBRN);TX(OBJNAM,1,2,3,'16120',0,0,CHBLK,26);LS(SOLD,1,LANDF)"
 BUILT_AREA_COLOR='XNBUA'
 GEOGRAPHIC_COLOR='XNGEO'
-ADDED_COLORS={chart_construction_hatch.COLOR,BUILT_AREA_COLOR,GEOGRAPHIC_COLOR,chart_cable_paint.COLOR,chart_cable_paint.AREA_COLOR,chart_structure_paint.COLOR,chart_structure_paint.OUTLINE_COLOR}
+ADDED_COLORS=chart_building_point.COLORS|{chart_construction_hatch.COLOR,BUILT_AREA_COLOR,GEOGRAPHIC_COLOR,chart_cable_paint.COLOR,chart_cable_paint.AREA_COLOR,chart_structure_paint.COLOR,chart_structure_paint.OUTLINE_COLOR}
 GEOGRAPHIC_CLASSES={'BUAARE','LNDARE','LNDRGN','SEAARE'}
 # Apply the prototype's chart-only Night brightness once to owned paint inputs.
 # CHBLK/CHGRD, safety contour and soundings deliberately retain brighter ink:
 # dimming them would violate the measured 4/2/3 hazard-contrast guards.
-NIGHT_CANVAS_ROLES={chart_structure_paint.COLOR,chart_structure_paint.OUTLINE_COLOR,'LANDA','XNBUA','XNGEO','CSTLN','DEPDW','DEPMD','DEPMS','DEPVS','DEPIT','DEPCN'}
+NIGHT_CANVAS_ROLES=chart_building_point.COLORS|{chart_structure_paint.COLOR,chart_structure_paint.OUTLINE_COLOR,'LANDA','XNBUA','XNGEO','CSTLN','DEPDW','DEPMD','DEPMS','DEPVS','DEPIT','DEPCN'}
 NIGHT_SAFETY_ROLES={'CHBLK','CHGRD','DEPSC','SNDG1','SNDG2'}
 
 def geographic_ink(name, instruction):
@@ -61,6 +62,8 @@ def styled_instruction(lookup):
     if lookup.get('id') in BUILT_AREA_LOOKUPS:
         assert instruction==BUILT_AREA_INSTRUCTION
         instruction=instruction.replace('AC(CHBRN)','AC(XNBUA)')
+    if lookup.get('id') == '1091':
+        instruction=chart_building_point.instruction(lookup)
     instruction=geographic_ink(lookup.get('name'),instruction)
     return chart_structure_paint.outline_instruction(lookup,instruction)
 
@@ -109,6 +112,7 @@ def validate_resource_changes(original, styled, colors):
     chart_special_buoy_art.restore_for_validation(before, after)
     chart_generic_beacon_art.restore_for_validation(before, after)
     chart_yellow_buoy_art.restore_for_validation(before, after)
+    chart_building_point.restore_for_validation(before, after)
     chart_seamark_art.restore_for_validation(before, after)
     # Added nodes must not make whitespace significant in the identity check.
     for tree in (before,after):
@@ -186,6 +190,7 @@ def generate(source, output):
     xml=chart_special_buoy_art.relocate(xml)
     xml=chart_generic_beacon_art.relocate(xml)
     xml=chart_yellow_buoy_art.relocate(xml)
+    xml=chart_building_point.relocate(xml)
     validate_resource_changes(original['chartsymbols.xml'],xml,colors)
     result=dict(original);result['chartsymbols.xml']=xml.encode('utf-8')
     # Pinned Day ink identifies neutral CHBLK/CHGRD pixels. Theme sheets use
@@ -209,6 +214,7 @@ def generate(source, output):
     special_buoy = {}
     generic_beacon = {}
     yellow_buoy = {}
+    building_point = {}
     for table, name in [('DAY_BRIGHT','rastersymbols-day.png'),
                         ('DUSK','rastersymbols-dusk.png'),
                         ('NIGHT','rastersymbols-dark.png')]:
@@ -219,6 +225,7 @@ def generate(source, output):
         result[name], special_buoy[name] = chart_special_buoy_art.paint(result[name], table)
         result[name], generic_beacon[name] = chart_generic_beacon_art.paint(result[name], table)
         result[name], yellow_buoy[name] = chart_yellow_buoy_art.paint(result[name], table)
+        result[name], building_point[name] = chart_building_point.paint(result[name], table, colors[table])
         result[name], construction_hatch[name] = chart_construction_hatch.paint(result[name], table, colors[table][chart_construction_hatch.COLOR])
     output.mkdir(parents=True,exist_ok=True)
     def write(path,content):
@@ -237,6 +244,7 @@ def generate(source, output):
               'specialBuoyArtwork':special_buoy,
               'genericBeaconArtwork':generic_beacon,
               'yellowBuoyArtwork':yellow_buoy,
+              'buildingPointArtwork':building_point,
               'geographicNameLookups':geography_count,
               'structuralAreaPaint':{'color':'XNSTR','lookupIds':sorted(chart_structure_paint.RULES),
                                      'outlineColor':'XNSHR','outlineLookupIds':sorted(chart_structure_paint.OUTLINE_RULES),

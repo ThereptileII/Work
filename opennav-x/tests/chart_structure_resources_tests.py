@@ -80,6 +80,9 @@ def verify(source, generated, check):
     # All line/point variants, including CATMOR6 chain and CATMOR7 buoys, stay exact.
     for old, new in zip(before.findall('lookups/lookup'), after.findall('lookups/lookup')):
         if old.get('name') in ('BUISGL','FLODOC','MORFAC','PONTON') and old.findtext('type') != 'Area':
+            if old.get('id')=='1091':
+                restored=copy.deepcopy(new);check(restored.findtext('instruction')=='SY(XNBLDG01)');restored.find('instruction').text='SY(BUISGL01)'
+                check(ET.tostring(old)==ET.tostring(restored));continue
             check(ET.tostring(old) == ET.tostring(new))
     reject(lambda tree: setattr(tree.find("lookups/lookup[@id='768']/instruction"), 'text', 'LS(DASH,1,XNSTR)'))
     reject(lambda tree: setattr(tree.find("lookups/lookup[@id='1185']/instruction"), 'text', 'AC(XNSTR);SY(BOYMOR11)'))

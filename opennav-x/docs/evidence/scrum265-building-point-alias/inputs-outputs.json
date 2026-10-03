@@ -1,0 +1,144 @@
+{
+  "schema": 1,
+  "baseCommit": "46237a4868112103e9eed7b3a237642e2fbc36ba",
+  "source": "/home/standard/Projects/X-nav-worktrees/scrum275-linux-e6ef384/build/integration-source/data/s57data",
+  "baseline": "/home/standard/Projects/X-nav-worktrees/scrum275-linux-e6ef384/build/xnav-install/share/opencpn/opennav/chart-style/v1",
+  "generated": "/home/standard/Projects/X-nav-worktrees/scrum265-building-point/.local/building-point/generated",
+  "sourceFiles": {
+    "chartsymbols.xml": {
+      "sha256": "84f93522576ed5872b24865cf6161872ed0b4b634f77c64ca697a04d3568e886",
+      "bytes": 2231495
+    },
+    "rastersymbols-day.png": {
+      "sha256": "ee1020a8b94b312faba8c146974e49147d280e5ef3cc13f3cd688bbfd54dde0c",
+      "bytes": 250509
+    },
+    "rastersymbols-dusk.png": {
+      "sha256": "56d6191b954978d0a85484b490228aab467610bfbf646c814af003428a766c2d",
+      "bytes": 169019
+    },
+    "rastersymbols-dark.png": {
+      "sha256": "179cb516fd1a7795e8ab9ecbb8d4d5d88bf15cf42e5528c2f4e3ea2340320c33",
+      "bytes": 163832
+    }
+  },
+  "baselineFiles": {
+    "S52RAZDS.RLE": {
+      "sha256": "560e1a1df493d7ae4c8506da814ad936adb13ef93c6f1e2abc93f2819860ff26",
+      "bytes": 1305627
+    },
+    "chartsymbols.xml": {
+      "sha256": "f4a20a46b0e5dbc9216f67386a1b0e6dd7c73e982b7b334b0ae795cd2c5f5334",
+      "bytes": 2245002
+    },
+    "manifest.json": {
+      "sha256": "ffa75c9d097a143e58aa13f9300b04bebac0836ab849bd4284401df1866f4b2a",
+      "bytes": 107463
+    },
+    "rastersymbols-dark.png": {
+      "sha256": "ab539905f9059ec8398b5e466a71bf7268368d66776cd41ea13706b79047a4f5",
+      "bytes": 170162
+    },
+    "rastersymbols-day.png": {
+      "sha256": "852753fa6b8d32b23cfec81d060496c2602e8f1b590c73c7921e2041b4de745f",
+      "bytes": 200449
+    },
+    "rastersymbols-dusk.png": {
+      "sha256": "882b3486bcabd3a075ae567f42e284ff065e83ebfe5033bb6eb68f655d18202e",
+      "bytes": 174807
+    }
+  },
+  "generatedFiles": {
+    "S52RAZDS.RLE": {
+      "sha256": "560e1a1df493d7ae4c8506da814ad936adb13ef93c6f1e2abc93f2819860ff26",
+      "bytes": 1305627
+    },
+    "XNavChartResources.h": {
+      "sha256": "ff5ab6015b877f4ec00d0617d94a1bae01ff9f7eae47ce66fa7b363ce21a852e",
+      "bytes": 934
+    },
+    "chartsymbols.xml": {
+      "sha256": "a4f7d248d2b64c245b56e3dca7114ead7fcf3644df91ea06d0924ac907cdfd62",
+      "bytes": 2246138
+    },
+    "manifest.json": {
+      "sha256": "15a6bb831392088990737d688bc7716efa42f1d950f051c7a0dd909ee3065e2d",
+      "bytes": 110084
+    },
+    "rastersymbols-dark.png": {
+      "sha256": "5af009cc4cab653df44e26dc6661fc773502dbabe3f857d28bd9a246373ac6d6",
+      "bytes": 170254
+    },
+    "rastersymbols-day.png": {
+      "sha256": "106696b1169b0bf00990b9d2a2bb133269b1a835e02f1346340f278d252e76dd",
+      "bytes": 200625
+    },
+    "rastersymbols-dusk.png": {
+      "sha256": "ff9be20135a9aa2a0e1d37e11209d4e43777de6931854de6456b8f3d5277990e",
+      "bytes": 174947
+    }
+  },
+  "implementationInputs": {
+    "tools/chart_building_point.py": {
+      "sha256": "fa01153dc2e022c03384f8a379aacb68d025d74e341735b5fc702580f8216ed8",
+      "bytes": 5009
+    },
+    "tools/derive-building-point.py": {
+      "sha256": "d584706b5a6e2300dee28ed7db5dfea639ec2ad10417c739814b95215b596c93",
+      "bytes": 3766
+    },
+    "tools/generate-xnav-chart-style.py": {
+      "sha256": "4d5e0069f2892a56145f28db6f666fafdfca442a5e95aefca177e7b05a65f3e8",
+      "bytes": 16574
+    },
+    "resources/chart-style/v1/building-point/recipe.json": {
+      "sha256": "0d5dfa911e9aec2c244249e6d38934852aa293302b9ac8ff6841cce9fa071145",
+      "bytes": 2976
+    },
+    "resources/chart-style/v1/definition.json": {
+      "sha256": "72395a6b199e15c81780002de684f36ff8b17838639c44c401a842abfd89b0cd",
+      "bytes": 8323
+    },
+    "tests/chart_building_point_resources_tests.py": {
+      "sha256": "15f931743d286983ef30f00e7ee63a01b2cefb622993025f1e45211a14565d2d",
+      "bytes": 9219
+    },
+    "tests/chart_seamark_loader_test.cpp": {
+      "sha256": "e81d73e5257398c2ecf6742e79bdcf4bdd6c97b7258c5cae8cfd19ac0e2da545",
+      "bytes": 18259
+    },
+    "src/integration/OpenCPN.cmake": {
+      "sha256": "5ab4ce3ba21b3180926b5a9922ab451aa1e41d4c66835f1f47ea0649ac6a9c8a",
+      "bytes": 31958
+    },
+    "tools/windows_chart_units.py": {
+      "sha256": "1aef3e35f9a9bff7954eb90187d153c08b231e8ec9690995039118178df27317",
+      "bytes": 14381
+    }
+  },
+  "focusedCommand": [
+    "python3",
+    "tests/chart_building_point_resources_tests.py",
+    "--source",
+    "/home/standard/Projects/X-nav-worktrees/scrum275-linux-e6ef384/build/integration-source/data/s57data",
+    "--generated",
+    "/home/standard/Projects/X-nav-worktrees/scrum265-building-point/.local/building-point/generated",
+    "--baseline",
+    "/home/standard/Projects/X-nav-worktrees/scrum275-linux-e6ef384/build/xnav-install/share/opencpn/opennav/chart-style/v1"
+  ],
+  "focusedChecks": 128,
+  "focusedExit": 0,
+  "recipeReproductionByteIdentical": true,
+  "limits": [
+    "Resource and normalized XML inverse only",
+    "No application or native build/replay",
+    "No full integrated suite or C++ loader rerun",
+    "No private renderer or boat acceptance"
+  ],
+  "comparisonCorrection": {
+    "initialPinnedConspicuousDifferencePixelsPerTheme": 2,
+    "priorGeneratedConspicuousEqualsNew": true,
+    "originalComparisonRetained": "pinned-source-comparison.png",
+    "mainComparison": "theme-comparison.png"
+  }
+}

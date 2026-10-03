@@ -1,0 +1,97 @@
+{
+  "source": "5bb7e0584029c72ce21f9230e246dad5771dc321",
+  "clean_source": true,
+  "binarySha256": "118d8157a1df4473edbafc835c4fcb7e1624c4c5419853afd59f70bfaa112359",
+  "buildBinarySha256": "3717908c627c496d47adecb55fa1f273e86930fde64cf571a09875fd50ae3662",
+  "reports": {
+    "iho": {
+      "status": "passed",
+      "captures": 8,
+      "clean_exit": true,
+      "source": "5bb7e0584029c72ce21f9230e246dad5771dc321",
+      "exe": "118d8157a1df4473edbafc835c4fcb7e1624c4c5419853afd59f70bfaa112359",
+      "reportSha256": "6dc7c9ff9f80330ea247d91a75e93b6e254c72ecd7c4311602ee89e85d3cddc6"
+    },
+    "yellow": {
+      "status": "passed",
+      "captures": 4,
+      "clean_exit": true,
+      "source": "5bb7e0584029c72ce21f9230e246dad5771dc321",
+      "exe": "118d8157a1df4473edbafc835c4fcb7e1624c4c5419853afd59f70bfaa112359",
+      "reportSha256": "2e92ae05c40073a3c8fc7529a95e10308e54a3425b2acf292950663cdb3e0b89"
+    }
+  },
+  "cycles": [
+    {
+      "scene": "s64-light-fog",
+      "style": "SKAGER",
+      "dayReturn": {
+        "equal": true,
+        "changed_pixels": 0,
+        "chart_bbox": null
+      },
+      "traceErrorCount": 0,
+      "inferiorExit": 0
+    },
+    {
+      "scene": "s64-light-fog",
+      "style": "Standard",
+      "dayReturn": {
+        "equal": true,
+        "changed_pixels": 0,
+        "chart_bbox": null
+      },
+      "traceErrorCount": 0,
+      "inferiorExit": 0
+    },
+    {
+      "scene": "s64-yellow",
+      "style": "Standard",
+      "dayReturn": {
+        "equal": true,
+        "changed_pixels": 0,
+        "chart_bbox": null
+      },
+      "traceErrorCount": 0,
+      "inferiorExit": 0
+    }
+  ],
+  "fixedVsOriginal326SKAGER": {
+    "Day": {
+      "equal": true,
+      "changed_pixels": 0,
+      "chart_bbox": null
+    },
+    "Dusk": {
+      "equal": false,
+      "changed_pixels": 356,
+      "chart_bbox": [
+        967,
+        112,
+        1010,
+        125
+      ]
+    },
+    "Night": {
+      "equal": false,
+      "changed_pixels": 356,
+      "chart_bbox": [
+        967,
+        112,
+        1010,
+        125
+      ]
+    },
+    "Day-return": {
+      "equal": false,
+      "changed_pixels": 355,
+      "chart_bbox": [
+        967,
+        112,
+        1010,
+        125
+      ]
+    }
+  },
+  "scope": "Only12 authorized actualGL captures; no retry, no software/matrix repeat; original failure not overwritten"
+}

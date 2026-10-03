@@ -1,0 +1,20 @@
+/tmp/skager-capture-rw189pjr/s64-light-fog-SKAGER
+/home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/evidence/local/scrum268-5bb/iho/capture-s64.py:187: DeprecationWarning: Image.Image.getdata is deprecated and will be removed in Pillow 14 (2027-10-15). Use get_flattened_data instead.
+  pixels=collections.Counter(image.crop((x,y,x+w,y+h)).getdata())
+/home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/evidence/local/scrum268-5bb/iho/capture-s64.py:187: DeprecationWarning: Image.Image.getdata is deprecated and will be removed in Pillow 14 (2027-10-15). Use get_flattened_data instead.
+  pixels=collections.Counter(image.crop((x,y,x+w,y+h)).getdata())
+/home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/evidence/local/scrum268-5bb/iho/capture-s64.py:187: DeprecationWarning: Image.Image.getdata is deprecated and will be removed in Pillow 14 (2027-10-15). Use get_flattened_data instead.
+  pixels=collections.Counter(image.crop((x,y,x+w,y+h)).getdata())
+/home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/evidence/local/scrum268-5bb/iho/capture-s64.py:187: DeprecationWarning: Image.Image.getdata is deprecated and will be removed in Pillow 14 (2027-10-15). Use get_flattened_data instead.
+  pixels=collections.Counter(image.crop((x,y,x+w,y+h)).getdata())
+/tmp/skager-capture-rw189pjr/s64-light-fog-Standard
+/home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/evidence/local/scrum268-5bb/iho/capture-s64.py:187: DeprecationWarning: Image.Image.getdata is deprecated and will be removed in Pillow 14 (2027-10-15). Use get_flattened_data instead.
+  pixels=collections.Counter(image.crop((x,y,x+w,y+h)).getdata())
+/home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/evidence/local/scrum268-5bb/iho/capture-s64.py:187: DeprecationWarning: Image.Image.getdata is deprecated and will be removed in Pillow 14 (2027-10-15). Use get_flattened_data instead.
+  pixels=collections.Counter(image.crop((x,y,x+w,y+h)).getdata())
+/home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/evidence/local/scrum268-5bb/iho/capture-s64.py:187: DeprecationWarning: Image.Image.getdata is deprecated and will be removed in Pillow 14 (2027-10-15). Use get_flattened_data instead.
+  pixels=collections.Counter(image.crop((x,y,x+w,y+h)).getdata())
+/home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/evidence/local/scrum268-5bb/iho/capture-s64.py:187: DeprecationWarning: Image.Image.getdata is deprecated and will be removed in Pillow 14 (2027-10-15). Use get_flattened_data instead.
+  pixels=collections.Counter(image.crop((x,y,x+w,y+h)).getdata())
+Verified private clean application 5bb7e0584029c72ce21f9230e246dad5771dc321 and exact upstream result of nine patches
+Eight exact-build source-scene and Standard captures passed: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/evidence/local/scrum268-5bb/iho/output/capture-5bb7e05-s64-light-fog-opengl

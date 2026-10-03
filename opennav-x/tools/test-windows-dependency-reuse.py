@@ -16,6 +16,44 @@ import windows_dependency_reuse as reuse
 
 
 class SameJobReuseReceiptTests(unittest.TestCase):
+    def test_existing_gettext_receipt_is_bound_without_refresh(self):
+        name = 'evidence/local/windows-gettext-xnav.json'
+        self.assertIn(name, reuse.INPUTS)
+        self.assertFalse(any('windows-gettext-xnav-logs' in item for item in reuse.INPUTS))
+        path = self.root / name
+        path.write_text(json.dumps({'status': 'passed', 'directory': 'original-gettext'}))
+        self.capture()
+        path.write_text(json.dumps({'status': 'passed', 'directory': 'different-gettext'}))
+        tampered = path.read_bytes()
+        with self.assertRaisesRegex(ValueError, 'job identity'):
+            reuse.verify_same_job(self.root)
+        self.assertEqual(path.read_bytes(), tampered)  # Verification never refreshes it.
+
+    def test_build_and_ais_share_parent_setup_before_producer(self):
+        root = Path(__file__).resolve().parents[1]
+        build = (root / 'tools/build-pristine-windows.ps1').read_text()
+        workflow = root / '.github/workflows/opennav-baseline.yml'
+        if not workflow.is_file():
+            workflow = root.parent / '.github/workflows/opennav-baseline.yml'
+        ais = workflow.read_text().split('id: ais_runtime', 1)[1].split('      - name:', 1)[0]
+        for text in (build, ais):
+            self.assertIn('windows-parent-environment.ps1', text)
+            self.assertLess(text.index('Initialize-WindowsNativePerl'), text.index('Initialize-WindowsGettext'))
+            self.assertLess(text.index('Initialize-WindowsGettext'), text.index('build-openssl-windows.ps1'))
+        self.assertIn('-Mode Ensure', build)
+        self.assertIn('-Mode Verify', ais)
+        self.assertIn('windows-gettext-xnav.json', ais)
+        self.assertNotIn('-Mode Ensure', ais)
+        self.assertNotIn('--allow-install', ais)
+
+    def test_parent_initialization_source_is_bound(self):
+        name = 'tools/windows-parent-environment.ps1'
+        self.assertIn(name, reuse.INPUTS)
+        self.capture()
+        (self.root / name).write_bytes(b'changed parent setup')
+        with self.assertRaisesRegex(ValueError, 'job identity'):
+            reuse.verify_same_job(self.root)
+
     def setUp(self):
         self.temporary = tempfile.TemporaryDirectory(prefix="same-job-reuse-")
         self.addCleanup(self.temporary.cleanup)

@@ -1,0 +1,2434 @@
+{
+  "schema": 1,
+  "commit": "326daf73cdbeb0e7219ccb47b88967bc6a67ceaf",
+  "binary_sha256": "0617b1380237489d5e9c7ab5a80ea388a5ad1540bf021c63658d494f5fddae4c",
+  "build_flags": {
+    "OCPN_BUILD_TEST": "ON",
+    "OPENNAV_ENABLE_ROUTE_SCENARIO": "ON",
+    "XNAV_ENABLE_PILOT_LOOPBACK_TESTS": "ON",
+    "XNAV_ENABLE_TEST_FIXTURES": "ON"
+  },
+  "manifest_sha256": "ffa75c9d097a143e58aa13f9300b04bebac0836ab849bd4284401df1866f4b2a",
+  "resource_files": {
+    "chartsymbols.xml": {
+      "sha256": "f4a20a46b0e5dbc9216f67386a1b0e6dd7c73e982b7b334b0ae795cd2c5f5334",
+      "bytes": 2245002
+    },
+    "S52RAZDS.RLE": {
+      "sha256": "560e1a1df493d7ae4c8506da814ad936adb13ef93c6f1e2abc93f2819860ff26",
+      "bytes": 1305627
+    },
+    "rastersymbols-day.png": {
+      "sha256": "852753fa6b8d32b23cfec81d060496c2602e8f1b590c73c7921e2041b4de745f",
+      "bytes": 200449
+    },
+    "rastersymbols-dusk.png": {
+      "sha256": "882b3486bcabd3a075ae567f42e284ff065e83ebfe5033bb6eb68f655d18202e",
+      "bytes": 174807
+    },
+    "rastersymbols-dark.png": {
+      "sha256": "ab539905f9059ec8398b5e466a71bf7268368d66776cd41ea13706b79047a4f5",
+      "bytes": 170162
+    }
+  },
+  "source_evidence": {
+    "src/integration/ChartNameTypography.h": "23688fca7f9ed456e7458fe1228e0bf9908660a953732cb6e6749c5838e1f4d9",
+    "src/integration/ChartTextFace.h": "4c1b0c41e29ecdac9af7a6fd7446863714539777c1904fa598679ba3ec49b3ab",
+    "src/integration/ChartCogPredictor.h": "3e7841bb311bb9d4951be082a669f4737ee978dd426df4899a22bc9971033c90",
+    "src/integration/ChartPresentation.cpp": "32339b83be2c3b9ff81fb31bfbf8313628a7f1596092921a98693ae0a140a358",
+    "patches/opencpn-5.12.4-xnav.patch": "dfbacadf42502d1d0366745b3a187d256e620b0d2ea7dba9e8912c46e999e0b3",
+    "patches/opencpn-5.12.4-chart-presentation.patch": "487d6c34ceb1dee498f4da0ad5986d211e7935e9f21a7968511c198e60fcf1f3",
+    "resources/chart-style/v1/definition.json": "bd15a26d1767b91cbfaac6fc93c364246fe95e3441149fb9fed6d2675b64d4e4",
+    "docs/design/prototype-tokens.json": "111ee35527a974b2df6c2c4af0afd04e5aebdf14bad3004a98be9064aef790c6",
+    "src/application/SkagerBrandAsset.h": "cc9f469181717b4fb80986b9406d2d6d078bfdb5971d2e68f6b4072b8dcd2019",
+    "resources/branding/provenance.json": "f639aa4ffa1194fb527388b15b2f9880746829d4120e30b4ddca32b0326557a6",
+    "tools/chart_cable_paint.py": "462e92d27cfbf553454c286bc074e166699922fcab0b6874f40c9d7984186822",
+    "tools/chart_day_neutral_ink.py": "0f136c0e9764c7750ab581ef3c9b0c35c976563ceb88d8598eeee5a0e7761840",
+    "src/ui/SkagerWordmark.h": "c2fc3d1afdf88bfd2e884d541e7b3ad4463702cece09057e38f4d496deda9928",
+    "src/integration/OpenCPNIntegration.cpp": "aac47c98d529eff76f24058ee1c5a02b90bacee9dc63e05d4800ed6c63ec349b",
+    "src/integration/ChartCaFan.h": "18f57fd41fa2503412ac96f0571793e8de38d6b7f7a7b5547d219fe7113b7dc8",
+    "src/integration/ChartCaLightPoint.h": "9bd5b3a03422d5b920a9a978e6ee49f4bc6db94fbd5f3b59621f7841d9a05e0d",
+    "src/ais/Provider.h": "cbbf30f2d55bec7b1be3a6b8acf73c17976986e08c4aa33d088f4dc34d75c210",
+    "src/ais/AisStreamProvider.cpp": "1b7d713f3e832119c02150f8aa283a1aae482daf2f1408b5cbcf21449963768b",
+    "src/ais/AisStreamSession.cpp": "5f715a56a9aefdecbadf9faf297b833d9f76d322bb76443fdcdc4a907af883dc",
+    "tools/chart_anchor_art.py": "af9d7ad15bb78a7eaa8f8ff39256c74e56724b95d782cc2638d0a16ebbbc1904",
+    "tools/chart_cardinal_art.py": "e8b4f52df0d558ec715613c9f737776db0f10f844c3f2769a3f35fd8f670158e",
+    "tools/chart_construction_hatch.py": "a1dc22dd3a1d08ed195bcceb55f10ff29578a58f16ef1f5f517192830be459b4",
+    "tools/chart_generic_beacon_art.py": "bfdb78bb9ff10c7bb05f2ea086d5f4280028c9c4875f5a93108b4189cae48415",
+    "tools/chart_raster_ink.py": "ffffd4365cdf534b77110cd26ca068fc86a55286e66b8baa5c18811389bfb294",
+    "tools/chart_seamark_art.py": "fcafdb7de6926378ff74ec1ebee2656c84f2f91f1d93d4856e3ede0832341f91",
+    "tools/chart_service_art.py": "86002da05b15a6f59098d424e794adb383b1c9ba270a90834056d7f8b86a8cc8",
+    "tools/chart_special_buoy_art.py": "488a76b80b55f3a443fe2c965e5c7725e7cf39fba1158cd156eef358ca8fbc19",
+    "tools/chart_structure_paint.py": "aebe01e1ed890e425a5f1b18e4fc876b00ebb11d78da6382c7c3540128f03ec0",
+    "tools/chart_yellow_buoy_art.py": "a3d5adab538c74c4ba1ef82bfc62fc82f9e973ae13286bb1dab0db89ea8d91d3"
+  },
+  "authority": "Linux Xvfb opengl development visuals only; not native Windows, production or boat acceptance",
+  "runtime_identity": "Still required from loader self-test and actual capture diagnostics",
+  "renderer_requested": "opengl",
+  "scope": "Official IHO S-64 presentation-test geometry, not operational nautical ENC; explicit source scene; controlled simulated loopback RMC; no Demo or injected chart objects",
+  "scene_source": {
+    "cell": "GB4X0000.000",
+    "source_sha256": "c70d9e0f53e149270f85900f8576082db86781d64fbb71aa7d5ceb4af4aa22e3",
+    "coordinate_order": "latitude,longitude",
+    "scope": "Official IHO S-64 presentation-test geography, not operational ENC",
+    "decoder": "pyogrio/GDAL, UPDATES=APPLY, point WKB decoded with Shapely; all non-null attributes retained; absent/null fields omitted",
+    "scale_basis": "Requested .6 -> expected .5826126536 reuses retained canonical 1014x566 IHO viewport calibration; this is not a newly observed sector-rwg capture",
+    "scenes": [
+      {
+        "id": "s64-sector-rwg",
+        "center": [
+          -32.4843207,
+          60.9650566
+        ],
+        "scalePpm": 0.6,
+        "themes": [
+          "Day",
+          "Dusk",
+          "Night",
+          "Day"
+        ],
+        "features": [
+          {
+            "class": "LIGHTS",
+            "attributes": {
+              "RCID": "620-1881-1882",
+              "PRIM": 1,
+              "GRUP": 2,
+              "OBJL": 75,
+              "RVER": 1,
+              "AGEN": 540,
+              "FIDN": 29142318,
+              "FIDS": 1,
+              "LNAM": "021C01BCAD2E0001",
+              "COLOUR": [
+                "4"
+              ],
+              "LITCHR": 8,
+              "SECTR1": 257.0,
+              "SECTR2": 275.0,
+              "SIGGRP": "(2)",
+              "SIGPER": 8.0,
+              "VALNMR": 6.0,
+              "latitude": -32.4843207,
+              "longitude": 60.9650566
+            },
+            "expectedRaster": "XNLIT013"
+          }
+        ],
+        "source_features": [
+          {
+            "class": "LIGHTS",
+            "position_lat_lon": [
+              -32.4843207,
+              60.9650566
+            ],
+            "attributes": {
+              "RCID": 620,
+              "PRIM": 1,
+              "GRUP": 2,
+              "OBJL": 75,
+              "RVER": 1,
+              "AGEN": 540,
+              "FIDN": 29142318,
+              "FIDS": 1,
+              "LNAM": "021C01BCAD2E0001",
+              "COLOUR": [
+                "4"
+              ],
+              "LITCHR": 8,
+              "SECTR1": 257.0,
+              "SECTR2": 275.0,
+              "SIGGRP": "(2)",
+              "SIGPER": 8.0,
+              "VALNMR": 6.0
+            }
+          },
+          {
+            "class": "LIGHTS",
+            "position_lat_lon": [
+              -32.4843207,
+              60.9650566
+            ],
+            "attributes": {
+              "RCID": 1881,
+              "PRIM": 1,
+              "GRUP": 2,
+              "OBJL": 75,
+              "RVER": 1,
+              "AGEN": 540,
+              "FIDN": 29142319,
+              "FIDS": 1,
+              "LNAM": "021C01BCAD2F0001",
+              "COLOUR": [
+                "3"
+              ],
+              "LITCHR": 8,
+              "SECTR1": 295.0,
+              "SECTR2": 300.0,
+              "SIGGRP": "(2)",
+              "SIGPER": 8.0,
+              "VALNMR": 6.0
+            }
+          },
+          {
+            "class": "LIGHTS",
+            "position_lat_lon": [
+              -32.4843207,
+              60.9650566
+            ],
+            "attributes": {
+              "RCID": 1882,
+              "PRIM": 1,
+              "GRUP": 2,
+              "OBJL": 75,
+              "RVER": 1,
+              "AGEN": 540,
+              "FIDN": 29142320,
+              "FIDS": 1,
+              "LNAM": "021C01BCAD300001",
+              "COLOUR": [
+                "1"
+              ],
+              "HEIGHT": 4.0,
+              "LITCHR": 8,
+              "OBJNAM": "Arnund",
+              "SECTR1": 275.0,
+              "SECTR2": 295.0,
+              "SIGGRP": "(2)",
+              "SIGPER": 8.0,
+              "VALNMR": 8.0
+            }
+          }
+        ],
+        "expectedCA": [
+          [
+            "LITGN",
+            77.0,
+            95.0
+          ],
+          [
+            "LITRD",
+            115.0,
+            120.0
+          ],
+          [
+            "LITYW",
+            95.0,
+            115.0
+          ]
+        ]
+      }
+    ]
+  },
+  "chart_source_files": {
+    "GB4X0000.000": "c70d9e0f53e149270f85900f8576082db86781d64fbb71aa7d5ceb4af4aa22e3"
+  },
+  "captures": [
+    {
+      "name": "s64-sector-rwg-SKAGER-Day",
+      "image_sha256": "890735203639f2fd170bbdfd907ce63ab873d193560b39a6d64901c4801ad84a",
+      "scene": "s64-sector-rwg",
+      "chart": {
+        "canvas_pixels": {
+          "height": 566,
+          "width": 1014
+        },
+        "latitude": -32.4843207,
+        "database_entries": 1,
+        "follow": false,
+        "quilt_members": [
+          {
+            "type": 5,
+            "native_scale": 52000,
+            "file": "GB4X0000.000",
+            "index": 0
+          }
+        ],
+        "opengl_enabled": true,
+        "quilt_reference": 0,
+        "scale_bar": {
+          "height": 29,
+          "y": 505,
+          "width": 25,
+          "x": 191
+        },
+        "depth_unit_type": 1,
+        "quilt": true,
+        "scale_ppm": 0.5826126536,
+        "longitude": 60.9650566,
+        "depth_units_visible": true
+      },
+      "presentation": {
+        "status": "SKAGER presentation v1 / pinned symbols; o-charts: no SKAGER adapter loaded",
+        "private_ocharts": {
+          "available": false
+        },
+        "requested": "XNav",
+        "core": {
+          "available": true,
+          "saved_point_style": 76,
+          "effective_point_style": 76
+        }
+      },
+      "source_feature_crops": [
+        {
+          "class": "LIGHTS",
+          "source_rcid": "620-1881-1882",
+          "bounds": [
+            551,
+            315,
+            623,
+            387
+          ],
+          "draw": {
+            "kind": "RenderRasterSymbol",
+            "class": "LIGHTS",
+            "object_index": 1881,
+            "latitude": -32.4843207,
+            "longitude": 60.9650566,
+            "lookup_table": 76,
+            "lookup_rcid": 31183,
+            "priority": 56,
+            "effective_symbol_table": 76,
+            "symbol": "XNLIT013",
+            "definition": 82,
+            "attribute_names": [
+              "catgeo",
+              "COLOUR",
+              "HEIGHT",
+              "LITCHR",
+              "OBJNAM",
+              "SECTR1",
+              "SECTR2",
+              "SIGGRP",
+              "SIGPER",
+              "VALNMR"
+            ],
+            "has_ORIENT": false,
+            "pixel_x": 507,
+            "pixel_y": 283,
+            "canvas_width": 1014,
+            "canvas_height": 566
+          },
+          "sha256": "d19ddac5439284ffee3bd4ec587e980445a17838bc0a16aa5858a059f7537f48"
+        }
+      ],
+      "trace": {
+        "fan_proof": [
+          {
+            "kind": "fan_build",
+            "object_index": 619,
+            "original_ca": "OUTLW, 4,LITGN, 2, 77.0,  95.0,  10.0,  25.0;TX('Occ(2) 8s',3,2,3,'15110',2,0,CHBLK,23)\u001f",
+            "geometry": {
+              "radius": 37.86982345581055,
+              "start": 77.0,
+              "end": 95.0,
+              "pixelScale": 1.0,
+              "center": [
+                507,
+                283
+              ],
+              "leg1": [
+                598,
+                262
+              ],
+              "leg2": [
+                600,
+                291
+              ]
+            },
+            "result": 1
+          },
+          {
+            "kind": "fan_gl_draw",
+            "object_index": 619,
+            "original_ca": "OUTLW, 4,LITGN, 2, 77.0,  95.0,  10.0,  25.0;TX('Occ(2) 8s',3,2,3,'15110',2,0,CHBLK,23)\u001f",
+            "result": 1
+          },
+          {
+            "kind": "fan_build",
+            "object_index": 1880,
+            "original_ca": "OUTLW, 4,LITRD, 2,115.0, 120.0,  10.0,  25.0;TX('Occ(2) 8s',3,2,3,'15110',2,0,CHBLK,23)\u001f",
+            "geometry": {
+              "radius": 37.86982345581055,
+              "start": 115.0,
+              "end": 120.0,
+              "pixelScale": 1.0,
+              "center": [
+                507,
+                283
+              ],
+              "leg1": [
+                592,
+                322
+              ],
+              "leg2": [
+                588,
+                330
+              ]
+            },
+            "result": 1
+          },
+          {
+            "kind": "fan_gl_draw",
+            "object_index": 1880,
+            "original_ca": "OUTLW, 4,LITRD, 2,115.0, 120.0,  10.0,  25.0;TX('Occ(2) 8s',3,2,3,'15110',2,0,CHBLK,23)\u001f",
+            "result": 1
+          },
+          {
+            "kind": "fan_build",
+            "object_index": 1881,
+            "original_ca": "OUTLW, 4,LITYW, 2, 95.0, 115.0,  10.0,  25.0;TX('Occ(2) 8s 13ft',3,2,3,'15110',2,1,CHBLK,23)\u001f",
+            "geometry": {
+              "radius": 37.86982345581055,
+              "start": 95.0,
+              "end": 115.0,
+              "pixelScale": 1.0,
+              "center": [
+                507,
+                283
+              ],
+              "leg1": [
+                600,
+                291
+              ],
+              "leg2": [
+                592,
+                322
+              ]
+            },
+            "result": 1
+          },
+          {
+            "kind": "fan_gl_draw",
+            "object_index": 1881,
+            "original_ca": "OUTLW, 4,LITYW, 2, 95.0, 115.0,  10.0,  25.0;TX('Occ(2) 8s 13ft',3,2,3,'15110',2,1,CHBLK,23)\u001f",
+            "result": 1
+          }
+        ],
+        "read_only_trace_complete": true,
+        "debugger_timing_note": "Entry probes disabled before settled snapshots; no inferior calls or model writes. CA and fog follow normal renderer entry; added light point reached actual raster painter.",
+        "draws": [],
+        "arc_draws": [
+          {
+            "kind": "RenderCARC",
+            "class": "LIGHTS",
+            "object_index": 619,
+            "latitude": -32.4843207,
+            "longitude": 60.9650566,
+            "lookup_table": 76,
+            "lookup_rcid": 31183,
+            "priority": 56,
+            "effective_symbol_table": 76,
+            "instruction": "OUTLW, 4,LITGN, 2, 77.0,  95.0,  10.0,  25.0;TX('Occ(2) 8s',3,2,3,'15110',2,0,CHBLK,23)\u001f",
+            "attribute_names": [
+              "catgeo",
+              "COLOUR",
+              "LITCHR",
+              "SECTR1",
+              "SECTR2",
+              "SIGGRP",
+              "SIGPER",
+              "VALNMR"
+            ],
+            "has_ORIENT": false
+          },
+          {
+            "kind": "RenderCARC",
+            "class": "LIGHTS",
+            "object_index": 1880,
+            "latitude": -32.4843207,
+            "longitude": 60.9650566,
+            "lookup_table": 76,
+            "lookup_rcid": 31183,
+            "priority": 56,
+            "effective_symbol_table": 76,
+            "instruction": "OUTLW, 4,LITRD, 2,115.0, 120.0,  10.0,  25.0;TX('Occ(2) 8s',3,2,3,'15110',2,0,CHBLK,23)\u001f",
+            "attribute_names": [
+              "catgeo",
+              "COLOUR",
+              "LITCHR",
+              "SECTR1",
+              "SECTR2",
+              "SIGGRP",
+              "SIGPER",
+              "VALNMR"
+            ],
+            "has_ORIENT": false
+          },
+          {
+            "kind": "RenderCARC",
+            "class": "LIGHTS",
+            "object_index": 1881,
+            "latitude": -32.4843207,
+            "longitude": 60.9650566,
+            "lookup_table": 76,
+            "lookup_rcid": 31183,
+            "priority": 56,
+            "effective_symbol_table": 76,
+            "instruction": "OUTLW, 4,LITYW, 2, 95.0, 115.0,  10.0,  25.0;TX('Occ(2) 8s 13ft',3,2,3,'15110',2,1,CHBLK,23)\u001f",
+            "attribute_names": [
+              "catgeo",
+              "COLOUR",
+              "HEIGHT",
+              "LITCHR",
+              "OBJNAM",
+              "SECTR1",
+              "SECTR2",
+              "SIGGRP",
+              "SIGPER",
+              "VALNMR"
+            ],
+            "has_ORIENT": false
+          }
+        ],
+        "raster_draws": [
+          {
+            "kind": "RenderRasterSymbol",
+            "class": "LIGHTS",
+            "object_index": 1881,
+            "latitude": -32.4843207,
+            "longitude": 60.9650566,
+            "lookup_table": 76,
+            "lookup_rcid": 31183,
+            "priority": 56,
+            "effective_symbol_table": 76,
+            "symbol": "XNLIT013",
+            "definition": 82,
+            "attribute_names": [
+              "catgeo",
+              "COLOUR",
+              "HEIGHT",
+              "LITCHR",
+              "OBJNAM",
+              "SECTR1",
+              "SECTR2",
+              "SIGGRP",
+              "SIGPER",
+              "VALNMR"
+            ],
+            "has_ORIENT": false,
+            "pixel_x": 507,
+            "pixel_y": 283,
+            "canvas_width": 1014,
+            "canvas_height": 566
+          }
+        ]
+      },
+      "water_pixels": 294250,
+      "owned_values": {
+        "Latitude": {
+          "device_id": "",
+          "stale_after_ms": 5000,
+          "name": "Latitude",
+          "quality": "LIVE",
+          "observed_monotonic_ms": "109396094",
+          "validity": "Measured",
+          "value": 47.6,
+          "aging_after_ms": 2000,
+          "unit": "deg",
+          "age_ms": 73,
+          "source": "OpenCPN selected navigation (sensor identity unavailable)"
+        },
+        "Longitude": {
+          "device_id": "",
+          "stale_after_ms": 5000,
+          "name": "Longitude",
+          "quality": "LIVE",
+          "observed_monotonic_ms": "109396094",
+          "validity": "Measured",
+          "value": -122.36,
+          "aging_after_ms": 2000,
+          "unit": "deg",
+          "age_ms": 73,
+          "source": "OpenCPN selected navigation (sensor identity unavailable)"
+        },
+        "Speed over ground": {
+          "device_id": "",
+          "stale_after_ms": 5000,
+          "name": "Speed over ground",
+          "quality": "LIVE",
+          "observed_monotonic_ms": "109396094",
+          "validity": "Measured",
+          "value": 3,
+          "aging_after_ms": 2000,
+          "unit": "kn",
+          "age_ms": 73,
+          "source": "OpenCPN selected navigation (sensor identity unavailable)"
+        },
+        "Course over ground": {
+          "device_id": "",
+          "stale_after_ms": 5000,
+          "name": "Course over ground",
+          "quality": "LIVE",
+          "observed_monotonic_ms": "109396094",
+          "validity": "Measured",
+          "value": 90,
+          "aging_after_ms": 2000,
+          "unit": "deg true",
+          "age_ms": 73,
+          "source": "OpenCPN selected navigation (sensor identity unavailable)"
+        }
+      }
+    },
+    {
+      "name": "s64-sector-rwg-SKAGER-Dusk",
+      "image_sha256": "3b5c07c6e86f3b0c9c86a86b58bf2a373cb66844aef6182139384c3ed82980ec",
+      "scene": "s64-sector-rwg",
+      "chart": {
+        "canvas_pixels": {
+          "height": 566,
+          "width": 1014
+        },
+        "latitude": -32.4843207,
+        "database_entries": 1,
+        "follow": false,
+        "quilt_members": [
+          {
+            "type": 5,
+            "native_scale": 52000,
+            "file": "GB4X0000.000",
+            "index": 0
+          }
+        ],
+        "opengl_enabled": true,
+        "quilt_reference": 0,
+        "scale_bar": {
+          "height": 29,
+          "y": 505,
+          "width": 25,
+          "x": 191
+        },
+        "depth_unit_type": 1,
+        "quilt": true,
+        "scale_ppm": 0.5826126536,
+        "longitude": 60.9650566,
+        "depth_units_visible": true
+      },
+      "presentation": {
+        "status": "SKAGER presentation v1 / pinned symbols; o-charts: no SKAGER adapter loaded",
+        "private_ocharts": {
+          "available": false
+        },
+        "requested": "XNav",
+        "core": {
+          "available": true,
+          "saved_point_style": 76,
+          "effective_point_style": 76
+        }
+      },
+      "source_feature_crops": [
+        {
+          "class": "LIGHTS",
+          "source_rcid": "620-1881-1882",
+          "bounds": [
+            551,
+            315,
+            623,
+            387
+          ],
+          "draw": {
+            "kind": "RenderRasterSymbol",
+            "class": "LIGHTS",
+            "object_index": 1881,
+            "latitude": -32.4843207,
+            "longitude": 60.9650566,
+            "lookup_table": 76,
+            "lookup_rcid": 31183,
+            "priority": 56,
+            "effective_symbol_table": 76,
+            "symbol": "XNLIT013",
+            "definition": 82,
+            "attribute_names": [
+              "catgeo",
+              "COLOUR",
+              "HEIGHT",
+              "LITCHR",
+              "OBJNAM",
+              "SECTR1",
+              "SECTR2",
+              "SIGGRP",
+              "SIGPER",
+              "VALNMR"
+            ],
+            "has_ORIENT": false,
+            "pixel_x": 507,
+            "pixel_y": 283,
+            "canvas_width": 1014,
+            "canvas_height": 566
+          },
+          "sha256": "c16efd0ce35359e21a10d4fbef3b8e3d861da5980d14dcc3f3a44a4e24c00af5"
+        }
+      ],
+      "trace": {
+        "fan_proof": [
+          {
+            "kind": "fan_build",
+            "object_index": 619,
+            "original_ca": "OUTLW, 4,LITGN, 2, 77.0,  95.0,  10.0,  25.0;TX('Occ(2) 8s',3,2,3,'15110',2,0,CHBLK,23)\u001f",
+            "geometry": {
+              "radius": 37.86982345581055,
+              "start": 77.0,
+              "end": 95.0,
+              "pixelScale": 1.0,
+              "center": [
+                507,
+                283
+              ],
+              "leg1": [
+                598,
+                262
+              ],
+              "leg2": [
+                600,
+                291
+              ]
+            },
+            "result": 1
+          },
+          {
+            "kind": "fan_gl_draw",
+            "object_index": 619,
+            "original_ca": "OUTLW, 4,LITGN, 2, 77.0,  95.0,  10.0,  25.0;TX('Occ(2) 8s',3,2,3,'15110',2,0,CHBLK,23)\u001f",
+            "result": 1
+          },
+          {
+            "kind": "fan_build",
+            "object_index": 1880,
+            "original_ca": "OUTLW, 4,LITRD, 2,115.0, 120.0,  10.0,  25.0;TX('Occ(2) 8s',3,2,3,'15110',2,0,CHBLK,23)\u001f",
+            "geometry": {
+              "radius": 37.86982345581055,
+              "start": 115.0,
+              "end": 120.0,
+              "pixelScale": 1.0,
+              "center": [
+                507,
+                283
+              ],
+              "leg1": [
+                592,
+                322
+              ],
+              "leg2": [
+                588,
+                330
+              ]
+            },
+            "result": 1
+          },
+          {
+            "kind": "fan_gl_draw",
+            "object_index": 1880,
+            "original_ca": "OUTLW, 4,LITRD, 2,115.0, 120.0,  10.0,  25.0;TX('Occ(2) 8s',3,2,3,'15110',2,0,CHBLK,23)\u001f",
+            "result": 1
+          },
+          {
+            "kind": "fan_build",
+            "object_index": 1881,
+            "original_ca": "OUTLW, 4,LITYW, 2, 95.0, 115.0,  10.0,  25.0;TX('Occ(2) 8s 13ft',3,2,3,'15110',2,1,CHBLK,23)\u001f",
+            "geometry": {
+              "radius": 37.86982345581055,
+              "start": 95.0,
+              "end": 115.0,
+              "pixelScale": 1.0,
+              "center": [
+                507,
+                283
+              ],
+              "leg1": [
+                600,
+                291
+              ],
+              "leg2": [
+                592,
+                322
+              ]
+            },
+            "result": 1
+          },
+          {
+            "kind": "fan_gl_draw",
+            "object_index": 1881,
+            "original_ca": "OUTLW, 4,LITYW, 2, 95.0, 115.0,  10.0,  25.0;TX('Occ(2) 8s 13ft',3,2,3,'15110',2,1,CHBLK,23)\u001f",
+            "result": 1
+          }
+        ],
+        "read_only_trace_complete": true,
+        "debugger_timing_note": "Entry probes disabled before settled snapshots; no inferior calls or model writes. CA and fog follow normal renderer entry; added light point reached actual raster painter.",
+        "draws": [],
+        "arc_draws": [
+          {
+            "kind": "RenderCARC",
+            "class": "LIGHTS",
+            "object_index": 619,
+            "latitude": -32.4843207,
+            "longitude": 60.9650566,
+            "lookup_table": 76,
+            "lookup_rcid": 31183,
+            "priority": 56,
+            "effective_symbol_table": 76,
+            "instruction": "OUTLW, 4,LITGN, 2, 77.0,  95.0,  10.0,  25.0;TX('Occ(2) 8s',3,2,3,'15110',2,0,CHBLK,23)\u001f",
+            "attribute_names": [
+              "catgeo",
+              "COLOUR",
+              "LITCHR",
+              "SECTR1",
+              "SECTR2",
+              "SIGGRP",
+              "SIGPER",
+              "VALNMR"
+            ],
+            "has_ORIENT": false
+          },
+          {
+            "kind": "RenderCARC",
+            "class": "LIGHTS",
+            "object_index": 1880,
+            "latitude": -32.4843207,
+            "longitude": 60.9650566,
+            "lookup_table": 76,
+            "lookup_rcid": 31183,
+            "priority": 56,
+            "effective_symbol_table": 76,
+            "instruction": "OUTLW, 4,LITRD, 2,115.0, 120.0,  10.0,  25.0;TX('Occ(2) 8s',3,2,3,'15110',2,0,CHBLK,23)\u001f",
+            "attribute_names": [
+              "catgeo",
+              "COLOUR",
+              "LITCHR",
+              "SECTR1",
+              "SECTR2",
+              "SIGGRP",
+              "SIGPER",
+              "VALNMR"
+            ],
+            "has_ORIENT": false
+          },
+          {
+            "kind": "RenderCARC",
+            "class": "LIGHTS",
+            "object_index": 1881,
+            "latitude": -32.4843207,
+            "longitude": 60.9650566,
+            "lookup_table": 76,
+            "lookup_rcid": 31183,
+            "priority": 56,
+            "effective_symbol_table": 76,
+            "instruction": "OUTLW, 4,LITYW, 2, 95.0, 115.0,  10.0,  25.0;TX('Occ(2) 8s 13ft',3,2,3,'15110',2,1,CHBLK,23)\u001f",
+            "attribute_names": [
+              "catgeo",
+              "COLOUR",
+              "HEIGHT",
+              "LITCHR",
+              "OBJNAM",
+              "SECTR1",
+              "SECTR2",
+              "SIGGRP",
+              "SIGPER",
+              "VALNMR"
+            ],
+            "has_ORIENT": false
+          }
+        ],
+        "raster_draws": [
+          {
+            "kind": "RenderRasterSymbol",
+            "class": "LIGHTS",
+            "object_index": 1881,
+            "latitude": -32.4843207,
+            "longitude": 60.9650566,
+            "lookup_table": 76,
+            "lookup_rcid": 31183,
+            "priority": 56,
+            "effective_symbol_table": 76,
+            "symbol": "XNLIT013",
+            "definition": 82,
+            "attribute_names": [
+              "catgeo",
+              "COLOUR",
+              "HEIGHT",
+              "LITCHR",
+              "OBJNAM",
+              "SECTR1",
+              "SECTR2",
+              "SIGGRP",
+              "SIGPER",
+              "VALNMR"
+            ],
+            "has_ORIENT": false,
+            "pixel_x": 507,
+            "pixel_y": 283,
+            "canvas_width": 1014,
+            "canvas_height": 566
+          }
+        ]
+      },
+      "water_pixels": 294675,
+      "owned_values": {
+        "Latitude": {
+          "device_id": "",
+          "stale_after_ms": 5000,
+          "name": "Latitude",
+          "quality": "LIVE",
+          "observed_monotonic_ms": "109397113",
+          "validity": "Measured",
+          "value": 47.6,
+          "aging_after_ms": 2000,
+          "unit": "deg",
+          "age_ms": 212,
+          "source": "OpenCPN selected navigation (sensor identity unavailable)"
+        },
+        "Longitude": {
+          "device_id": "",
+          "stale_after_ms": 5000,
+          "name": "Longitude",
+          "quality": "LIVE",
+          "observed_monotonic_ms": "109397113",
+          "validity": "Measured",
+          "value": -122.36,
+          "aging_after_ms": 2000,
+          "unit": "deg",
+          "age_ms": 212,
+          "source": "OpenCPN selected navigation (sensor identity unavailable)"
+        },
+        "Speed over ground": {
+          "device_id": "",
+          "stale_after_ms": 5000,
+          "name": "Speed over ground",
+          "quality": "LIVE",
+          "observed_monotonic_ms": "109397113",
+          "validity": "Measured",
+          "value": 3,
+          "aging_after_ms": 2000,
+          "unit": "kn",
+          "age_ms": 212,
+          "source": "OpenCPN selected navigation (sensor identity unavailable)"
+        },
+        "Course over ground": {
+          "device_id": "",
+          "stale_after_ms": 5000,
+          "name": "Course over ground",
+          "quality": "LIVE",
+          "observed_monotonic_ms": "109397113",
+          "validity": "Measured",
+          "value": 90,
+          "aging_after_ms": 2000,
+          "unit": "deg true",
+          "age_ms": 212,
+          "source": "OpenCPN selected navigation (sensor identity unavailable)"
+        }
+      }
+    },
+    {
+      "name": "s64-sector-rwg-SKAGER-Night",
+      "image_sha256": "379bf157a610a97a568e35606421facb3ab6c694a0e292713d6a6d76192891e2",
+      "scene": "s64-sector-rwg",
+      "chart": {
+        "canvas_pixels": {
+          "height": 566,
+          "width": 1014
+        },
+        "latitude": -32.4843207,
+        "database_entries": 1,
+        "follow": false,
+        "quilt_members": [
+          {
+            "type": 5,
+            "native_scale": 52000,
+            "file": "GB4X0000.000",
+            "index": 0
+          }
+        ],
+        "opengl_enabled": true,
+        "quilt_reference": 0,
+        "scale_bar": {
+          "height": 29,
+          "y": 505,
+          "width": 25,
+          "x": 191
+        },
+        "depth_unit_type": 1,
+        "quilt": true,
+        "scale_ppm": 0.5826126536,
+        "longitude": 60.9650566,
+        "depth_units_visible": true
+      },
+      "presentation": {
+        "status": "SKAGER presentation v1 / pinned symbols; o-charts: no SKAGER adapter loaded",
+        "private_ocharts": {
+          "available": false
+        },
+        "requested": "XNav",
+        "core": {
+          "available": true,
+          "saved_point_style": 76,
+          "effective_point_style": 76
+        }
+      },
+      "source_feature_crops": [
+        {
+          "class": "LIGHTS",
+          "source_rcid": "620-1881-1882",
+          "bounds": [
+            551,
+            315,
+            623,
+            387
+          ],
+          "draw": {
+            "kind": "RenderRasterSymbol",
+            "class": "LIGHTS",
+            "object_index": 1881,
+            "latitude": -32.4843207,
+            "longitude": 60.9650566,
+            "lookup_table": 76,
+            "lookup_rcid": 31183,
+            "priority": 56,
+            "effective_symbol_table": 76,
+            "symbol": "XNLIT013",
+            "definition": 82,
+            "attribute_names": [
+              "catgeo",
+              "COLOUR",
+              "HEIGHT",
+              "LITCHR",
+              "OBJNAM",
+              "SECTR1",
+              "SECTR2",
+              "SIGGRP",
+              "SIGPER",
+              "VALNMR"
+            ],
+            "has_ORIENT": false,
+            "pixel_x": 507,
+            "pixel_y": 283,
+            "canvas_width": 1014,
+            "canvas_height": 566
+          },
+          "sha256": "f7556d3149aa557f9a2ea265a7d5968caf3e6495737706a6162f1ddeba50dd52"
+        }
+      ],
+      "trace": {
+        "fan_proof": [
+          {
+            "kind": "fan_build",
+            "object_index": 619,
+            "original_ca": "OUTLW, 4,LITGN, 2, 77.0,  95.0,  10.0,  25.0;TX('Occ(2) 8s',3,2,3,'15110',2,0,CHBLK,23)\u001f",
+            "geometry": {
+              "radius": 37.86982345581055,
+              "start": 77.0,
+              "end": 95.0,
+              "pixelScale": 1.0,
+              "center": [
+                507,
+                283
+              ],
+              "leg1": [
+                598,
+                262
+              ],
+              "leg2": [
+                600,
+                291
+              ]
+            },
+            "result": 1
+          },
+          {
+            "kind": "fan_gl_draw",
+            "object_index": 619,
+            "original_ca": "OUTLW, 4,LITGN, 2, 77.0,  95.0,  10.0,  25.0;TX('Occ(2) 8s',3,2,3,'15110',2,0,CHBLK,23)\u001f",
+            "result": 1
+          },
+          {
+            "kind": "fan_build",
+            "object_index": 1880,
+            "original_ca": "OUTLW, 4,LITRD, 2,115.0, 120.0,  10.0,  25.0;TX('Occ(2) 8s',3,2,3,'15110',2,0,CHBLK,23)\u001f",
+            "geometry": {
+              "radius": 37.86982345581055,
+              "start": 115.0,
+              "end": 120.0,
+              "pixelScale": 1.0,
+              "center": [
+                507,
+                283
+              ],
+              "leg1": [
+                592,
+                322
+              ],
+              "leg2": [
+                588,
+                330
+              ]
+            },
+            "result": 1
+          },
+          {
+            "kind": "fan_gl_draw",
+            "object_index": 1880,
+            "original_ca": "OUTLW, 4,LITRD, 2,115.0, 120.0,  10.0,  25.0;TX('Occ(2) 8s',3,2,3,'15110',2,0,CHBLK,23)\u001f",
+            "result": 1
+          },
+          {
+            "kind": "fan_build",
+            "object_index": 1881,
+            "original_ca": "OUTLW, 4,LITYW, 2, 95.0, 115.0,  10.0,  25.0;TX('Occ(2) 8s 13ft',3,2,3,'15110',2,1,CHBLK,23)\u001f",
+            "geometry": {
+              "radius": 37.86982345581055,
+              "start": 95.0,
+              "end": 115.0,
+              "pixelScale": 1.0,
+              "center": [
+                507,
+                283
+              ],
+              "leg1": [
+                600,
+                291
+              ],
+              "leg2": [
+                592,
+                322
+              ]
+            },
+            "result": 1
+          },
+          {
+            "kind": "fan_gl_draw",
+            "object_index": 1881,
+            "original_ca": "OUTLW, 4,LITYW, 2, 95.0, 115.0,  10.0,  25.0;TX('Occ(2) 8s 13ft',3,2,3,'15110',2,1,CHBLK,23)\u001f",
+            "result": 1
+          }
+        ],
+        "read_only_trace_complete": true,
+        "debugger_timing_note": "Entry probes disabled before settled snapshots; no inferior calls or model writes. CA and fog follow normal renderer entry; added light point reached actual raster painter.",
+        "draws": [],
+        "arc_draws": [
+          {
+            "kind": "RenderCARC",
+            "class": "LIGHTS",
+            "object_index": 619,
+            "latitude": -32.4843207,
+            "longitude": 60.9650566,
+            "lookup_table": 76,
+            "lookup_rcid": 31183,
+            "priority": 56,
+            "effective_symbol_table": 76,
+            "instruction": "OUTLW, 4,LITGN, 2, 77.0,  95.0,  10.0,  25.0;TX('Occ(2) 8s',3,2,3,'15110',2,0,CHBLK,23)\u001f",
+            "attribute_names": [
+              "catgeo",
+              "COLOUR",
+              "LITCHR",
+              "SECTR1",
+              "SECTR2",
+              "SIGGRP",
+              "SIGPER",
+              "VALNMR"
+            ],
+            "has_ORIENT": false
+          },
+          {
+            "kind": "RenderCARC",
+            "class": "LIGHTS",
+            "object_index": 1880,
+            "latitude": -32.4843207,
+            "longitude": 60.9650566,
+            "lookup_table": 76,
+            "lookup_rcid": 31183,
+            "priority": 56,
+            "effective_symbol_table": 76,
+            "instruction": "OUTLW, 4,LITRD, 2,115.0, 120.0,  10.0,  25.0;TX('Occ(2) 8s',3,2,3,'15110',2,0,CHBLK,23)\u001f",
+            "attribute_names": [
+              "catgeo",
+              "COLOUR",
+              "LITCHR",
+              "SECTR1",
+              "SECTR2",
+              "SIGGRP",
+              "SIGPER",
+              "VALNMR"
+            ],
+            "has_ORIENT": false
+          },
+          {
+            "kind": "RenderCARC",
+            "class": "LIGHTS",
+            "object_index": 1881,
+            "latitude": -32.4843207,
+            "longitude": 60.9650566,
+            "lookup_table": 76,
+            "lookup_rcid": 31183,
+            "priority": 56,
+            "effective_symbol_table": 76,
+            "instruction": "OUTLW, 4,LITYW, 2, 95.0, 115.0,  10.0,  25.0;TX('Occ(2) 8s 13ft',3,2,3,'15110',2,1,CHBLK,23)\u001f",
+            "attribute_names": [
+              "catgeo",
+              "COLOUR",
+              "HEIGHT",
+              "LITCHR",
+              "OBJNAM",
+              "SECTR1",
+              "SECTR2",
+              "SIGGRP",
+              "SIGPER",
+              "VALNMR"
+            ],
+            "has_ORIENT": false
+          }
+        ],
+        "raster_draws": [
+          {
+            "kind": "RenderRasterSymbol",
+            "class": "LIGHTS",
+            "object_index": 1881,
+            "latitude": -32.4843207,
+            "longitude": 60.9650566,
+            "lookup_table": 76,
+            "lookup_rcid": 31183,
+            "priority": 56,
+            "effective_symbol_table": 76,
+            "symbol": "XNLIT013",
+            "definition": 82,
+            "attribute_names": [
+              "catgeo",
+              "COLOUR",
+              "HEIGHT",
+              "LITCHR",
+              "OBJNAM",
+              "SECTR1",
+              "SECTR2",
+              "SIGGRP",
+              "SIGPER",
+              "VALNMR"
+            ],
+            "has_ORIENT": false,
+            "pixel_x": 507,
+            "pixel_y": 283,
+            "canvas_width": 1014,
+            "canvas_height": 566
+          }
+        ]
+      },
+      "water_pixels": 294694,
+      "owned_values": {
+        "Latitude": {
+          "device_id": "",
+          "stale_after_ms": 5000,
+          "name": "Latitude",
+          "quality": "LIVE",
+          "observed_monotonic_ms": "109400706",
+          "validity": "Measured",
+          "value": 47.6,
+          "aging_after_ms": 2000,
+          "unit": "deg",
+          "age_ms": 203,
+          "source": "OpenCPN selected navigation (sensor identity unavailable)"
+        },
+        "Longitude": {
+          "device_id": "",
+          "stale_after_ms": 5000,
+          "name": "Longitude",
+          "quality": "LIVE",
+          "observed_monotonic_ms": "109400706",
+          "validity": "Measured",
+          "value": -122.36,
+          "aging_after_ms": 2000,
+          "unit": "deg",
+          "age_ms": 203,
+          "source": "OpenCPN selected navigation (sensor identity unavailable)"
+        },
+        "Speed over ground": {
+          "device_id": "",
+          "stale_after_ms": 5000,
+          "name": "Speed over ground",
+          "quality": "LIVE",
+          "observed_monotonic_ms": "109400706",
+          "validity": "Measured",
+          "value": 3,
+          "aging_after_ms": 2000,
+          "unit": "kn",
+          "age_ms": 203,
+          "source": "OpenCPN selected navigation (sensor identity unavailable)"
+        },
+        "Course over ground": {
+          "device_id": "",
+          "stale_after_ms": 5000,
+          "name": "Course over ground",
+          "quality": "LIVE",
+          "observed_monotonic_ms": "109400706",
+          "validity": "Measured",
+          "value": 90,
+          "aging_after_ms": 2000,
+          "unit": "deg true",
+          "age_ms": 203,
+          "source": "OpenCPN selected navigation (sensor identity unavailable)"
+        }
+      }
+    },
+    {
+      "name": "s64-sector-rwg-SKAGER-Day-return",
+      "image_sha256": "4241d91bb745c8048595490c486b0cefd789df21e8d0c4fce0124c9afc02464d",
+      "scene": "s64-sector-rwg",
+      "chart": {
+        "canvas_pixels": {
+          "height": 566,
+          "width": 1014
+        },
+        "latitude": -32.4843207,
+        "database_entries": 1,
+        "follow": false,
+        "quilt_members": [
+          {
+            "type": 5,
+            "native_scale": 52000,
+            "file": "GB4X0000.000",
+            "index": 0
+          }
+        ],
+        "opengl_enabled": true,
+        "quilt_reference": 0,
+        "scale_bar": {
+          "height": 29,
+          "y": 505,
+          "width": 25,
+          "x": 191
+        },
+        "depth_unit_type": 1,
+        "quilt": true,
+        "scale_ppm": 0.5826126536,
+        "longitude": 60.9650566,
+        "depth_units_visible": true
+      },
+      "presentation": {
+        "status": "SKAGER presentation v1 / pinned symbols; o-charts: no SKAGER adapter loaded",
+        "private_ocharts": {
+          "available": false
+        },
+        "requested": "XNav",
+        "core": {
+          "available": true,
+          "saved_point_style": 76,
+          "effective_point_style": 76
+        }
+      },
+      "source_feature_crops": [
+        {
+          "class": "LIGHTS",
+          "source_rcid": "620-1881-1882",
+          "bounds": [
+            551,
+            315,
+            623,
+            387
+          ],
+          "draw": {
+            "kind": "RenderRasterSymbol",
+            "class": "LIGHTS",
+            "object_index": 1881,
+            "latitude": -32.4843207,
+            "longitude": 60.9650566,
+            "lookup_table": 76,
+            "lookup_rcid": 31183,
+            "priority": 56,
+            "effective_symbol_table": 76,
+            "symbol": "XNLIT013",
+            "definition": 82,
+            "attribute_names": [
+              "catgeo",
+              "COLOUR",
+              "HEIGHT",
+              "LITCHR",
+              "OBJNAM",
+              "SECTR1",
+              "SECTR2",
+              "SIGGRP",
+              "SIGPER",
+              "VALNMR"
+            ],
+            "has_ORIENT": false,
+            "pixel_x": 507,
+            "pixel_y": 283,
+            "canvas_width": 1014,
+            "canvas_height": 566
+          },
+          "sha256": "d19ddac5439284ffee3bd4ec587e980445a17838bc0a16aa5858a059f7537f48"
+        }
+      ],
+      "trace": {
+        "fan_proof": [
+          {
+            "kind": "fan_build",
+            "object_index": 619,
+            "original_ca": "OUTLW, 4,LITGN, 2, 77.0,  95.0,  10.0,  25.0;TX('Occ(2) 8s',3,2,3,'15110',2,0,CHBLK,23)\u001f",
+            "geometry": {
+              "radius": 37.86982345581055,
+              "start": 77.0,
+              "end": 95.0,
+              "pixelScale": 1.0,
+              "center": [
+                507,
+                283
+              ],
+              "leg1": [
+                598,
+                262
+              ],
+              "leg2": [
+                600,
+                291
+              ]
+            },
+            "result": 1
+          },
+          {
+            "kind": "fan_gl_draw",
+            "object_index": 619,
+            "original_ca": "OUTLW, 4,LITGN, 2, 77.0,  95.0,  10.0,  25.0;TX('Occ(2) 8s',3,2,3,'15110',2,0,CHBLK,23)\u001f",
+            "result": 1
+          },
+          {
+            "kind": "fan_build",
+            "object_index": 1880,
+            "original_ca": "OUTLW, 4,LITRD, 2,115.0, 120.0,  10.0,  25.0;TX('Occ(2) 8s',3,2,3,'15110',2,0,CHBLK,23)\u001f",
+            "geometry": {
+              "radius": 37.86982345581055,
+              "start": 115.0,
+              "end": 120.0,
+              "pixelScale": 1.0,
+              "center": [
+                507,
+                283
+              ],
+              "leg1": [
+                592,
+                322
+              ],
+              "leg2": [
+                588,
+                330
+              ]
+            },
+            "result": 1
+          },
+          {
+            "kind": "fan_gl_draw",
+            "object_index": 1880,
+            "original_ca": "OUTLW, 4,LITRD, 2,115.0, 120.0,  10.0,  25.0;TX('Occ(2) 8s',3,2,3,'15110',2,0,CHBLK,23)\u001f",
+            "result": 1
+          },
+          {
+            "kind": "fan_build",
+            "object_index": 1881,
+            "original_ca": "OUTLW, 4,LITYW, 2, 95.0, 115.0,  10.0,  25.0;TX('Occ(2) 8s 13ft',3,2,3,'15110',2,1,CHBLK,23)\u001f",
+            "geometry": {
+              "radius": 37.86982345581055,
+              "start": 95.0,
+              "end": 115.0,
+              "pixelScale": 1.0,
+              "center": [
+                507,
+                283
+              ],
+              "leg1": [
+                600,
+                291
+              ],
+              "leg2": [
+                592,
+                322
+              ]
+            },
+            "result": 1
+          },
+          {
+            "kind": "fan_gl_draw",
+            "object_index": 1881,
+            "original_ca": "OUTLW, 4,LITYW, 2, 95.0, 115.0,  10.0,  25.0;TX('Occ(2) 8s 13ft',3,2,3,'15110',2,1,CHBLK,23)\u001f",
+            "result": 1
+          }
+        ],
+        "read_only_trace_complete": true,
+        "debugger_timing_note": "Entry probes disabled before settled snapshots; no inferior calls or model writes. CA and fog follow normal renderer entry; added light point reached actual raster painter.",
+        "draws": [],
+        "arc_draws": [
+          {
+            "kind": "RenderCARC",
+            "class": "LIGHTS",
+            "object_index": 619,
+            "latitude": -32.4843207,
+            "longitude": 60.9650566,
+            "lookup_table": 76,
+            "lookup_rcid": 31183,
+            "priority": 56,
+            "effective_symbol_table": 76,
+            "instruction": "OUTLW, 4,LITGN, 2, 77.0,  95.0,  10.0,  25.0;TX('Occ(2) 8s',3,2,3,'15110',2,0,CHBLK,23)\u001f",
+            "attribute_names": [
+              "catgeo",
+              "COLOUR",
+              "LITCHR",
+              "SECTR1",
+              "SECTR2",
+              "SIGGRP",
+              "SIGPER",
+              "VALNMR"
+            ],
+            "has_ORIENT": false
+          },
+          {
+            "kind": "RenderCARC",
+            "class": "LIGHTS",
+            "object_index": 1880,
+            "latitude": -32.4843207,
+            "longitude": 60.9650566,
+            "lookup_table": 76,
+            "lookup_rcid": 31183,
+            "priority": 56,
+            "effective_symbol_table": 76,
+            "instruction": "OUTLW, 4,LITRD, 2,115.0, 120.0,  10.0,  25.0;TX('Occ(2) 8s',3,2,3,'15110',2,0,CHBLK,23)\u001f",
+            "attribute_names": [
+              "catgeo",
+              "COLOUR",
+              "LITCHR",
+              "SECTR1",
+              "SECTR2",
+              "SIGGRP",
+              "SIGPER",
+              "VALNMR"
+            ],
+            "has_ORIENT": false
+          },
+          {
+            "kind": "RenderCARC",
+            "class": "LIGHTS",
+            "object_index": 1881,
+            "latitude": -32.4843207,
+            "longitude": 60.9650566,
+            "lookup_table": 76,
+            "lookup_rcid": 31183,
+            "priority": 56,
+            "effective_symbol_table": 76,
+            "instruction": "OUTLW, 4,LITYW, 2, 95.0, 115.0,  10.0,  25.0;TX('Occ(2) 8s 13ft',3,2,3,'15110',2,1,CHBLK,23)\u001f",
+            "attribute_names": [
+              "catgeo",
+              "COLOUR",
+              "HEIGHT",
+              "LITCHR",
+              "OBJNAM",
+              "SECTR1",
+              "SECTR2",
+              "SIGGRP",
+              "SIGPER",
+              "VALNMR"
+            ],
+            "has_ORIENT": false
+          }
+        ],
+        "raster_draws": [
+          {
+            "kind": "RenderRasterSymbol",
+            "class": "LIGHTS",
+            "object_index": 1881,
+            "latitude": -32.4843207,
+            "longitude": 60.9650566,
+            "lookup_table": 76,
+            "lookup_rcid": 31183,
+            "priority": 56,
+            "effective_symbol_table": 76,
+            "symbol": "XNLIT013",
+            "definition": 82,
+            "attribute_names": [
+              "catgeo",
+              "COLOUR",
+              "HEIGHT",
+              "LITCHR",
+              "OBJNAM",
+              "SECTR1",
+              "SECTR2",
+              "SIGGRP",
+              "SIGPER",
+              "VALNMR"
+            ],
+            "has_ORIENT": false,
+            "pixel_x": 507,
+            "pixel_y": 283,
+            "canvas_width": 1014,
+            "canvas_height": 566
+          }
+        ]
+      },
+      "water_pixels": 294250,
+      "owned_values": {
+        "Latitude": {
+          "device_id": "",
+          "stale_after_ms": 5000,
+          "name": "Latitude",
+          "quality": "LIVE",
+          "observed_monotonic_ms": "109402803",
+          "validity": "Measured",
+          "value": 47.6,
+          "aging_after_ms": 2000,
+          "unit": "deg",
+          "age_ms": 209,
+          "source": "OpenCPN selected navigation (sensor identity unavailable)"
+        },
+        "Longitude": {
+          "device_id": "",
+          "stale_after_ms": 5000,
+          "name": "Longitude",
+          "quality": "LIVE",
+          "observed_monotonic_ms": "109402803",
+          "validity": "Measured",
+          "value": -122.36,
+          "aging_after_ms": 2000,
+          "unit": "deg",
+          "age_ms": 209,
+          "source": "OpenCPN selected navigation (sensor identity unavailable)"
+        },
+        "Speed over ground": {
+          "device_id": "",
+          "stale_after_ms": 5000,
+          "name": "Speed over ground",
+          "quality": "LIVE",
+          "observed_monotonic_ms": "109402803",
+          "validity": "Measured",
+          "value": 3,
+          "aging_after_ms": 2000,
+          "unit": "kn",
+          "age_ms": 209,
+          "source": "OpenCPN selected navigation (sensor identity unavailable)"
+        },
+        "Course over ground": {
+          "device_id": "",
+          "stale_after_ms": 5000,
+          "name": "Course over ground",
+          "quality": "LIVE",
+          "observed_monotonic_ms": "109402803",
+          "validity": "Measured",
+          "value": 90,
+          "aging_after_ms": 2000,
+          "unit": "deg true",
+          "age_ms": 209,
+          "source": "OpenCPN selected navigation (sensor identity unavailable)"
+        }
+      }
+    },
+    {
+      "name": "s64-sector-rwg-Standard-Day",
+      "image_sha256": "f6af11f64857c55ceaacf7e09d180c77736f2079011ccd7cd4069487f2d34389",
+      "scene": "s64-sector-rwg",
+      "chart": {
+        "canvas_pixels": {
+          "height": 566,
+          "width": 1014
+        },
+        "latitude": -32.4843207,
+        "database_entries": 1,
+        "follow": false,
+        "quilt_members": [
+          {
+            "type": 5,
+            "native_scale": 52000,
+            "file": "GB4X0000.000",
+            "index": 0
+          }
+        ],
+        "opengl_enabled": true,
+        "quilt_reference": 0,
+        "scale_bar": {
+          "height": 12,
+          "y": 527,
+          "width": 69,
+          "x": 18
+        },
+        "depth_unit_type": 1,
+        "quilt": true,
+        "scale_ppm": 0.5826126536,
+        "longitude": 60.9650566,
+        "depth_units_visible": true
+      },
+      "presentation": {
+        "status": "Standard OpenCPN presentation; o-charts: no SKAGER adapter loaded",
+        "private_ocharts": {
+          "available": false
+        },
+        "requested": "Standard",
+        "core": {
+          "available": true,
+          "saved_point_style": 76,
+          "effective_point_style": 76
+        }
+      },
+      "source_feature_crops": [],
+      "trace": {
+        "fan_proof": [],
+        "read_only_trace_complete": true,
+        "debugger_timing_note": "Entry probes disabled before settled snapshots; no inferior calls or model writes. CA and fog follow normal renderer entry; added light point reached actual raster painter.",
+        "draws": [],
+        "arc_draws": [
+          {
+            "kind": "RenderCARC",
+            "class": "LIGHTS",
+            "object_index": 619,
+            "latitude": -32.4843207,
+            "longitude": 60.9650566,
+            "lookup_table": 76,
+            "lookup_rcid": 31183,
+            "priority": 56,
+            "effective_symbol_table": 76,
+            "instruction": "OUTLW, 4,LITGN, 2, 77.0,  95.0,  10.0,  25.0;TX('Occ(2) 8s',3,2,3,'15110',2,0,CHBLK,23)\u001f",
+            "attribute_names": [
+              "catgeo",
+              "COLOUR",
+              "LITCHR",
+              "SECTR1",
+              "SECTR2",
+              "SIGGRP",
+              "SIGPER",
+              "VALNMR"
+            ],
+            "has_ORIENT": false
+          },
+          {
+            "kind": "RenderCARC",
+            "class": "LIGHTS",
+            "object_index": 1880,
+            "latitude": -32.4843207,
+            "longitude": 60.9650566,
+            "lookup_table": 76,
+            "lookup_rcid": 31183,
+            "priority": 56,
+            "effective_symbol_table": 76,
+            "instruction": "OUTLW, 4,LITRD, 2,115.0, 120.0,  10.0,  25.0;TX('Occ(2) 8s',3,2,3,'15110',2,0,CHBLK,23)\u001f",
+            "attribute_names": [
+              "catgeo",
+              "COLOUR",
+              "LITCHR",
+              "SECTR1",
+              "SECTR2",
+              "SIGGRP",
+              "SIGPER",
+              "VALNMR"
+            ],
+            "has_ORIENT": false
+          },
+          {
+            "kind": "RenderCARC",
+            "class": "LIGHTS",
+            "object_index": 1881,
+            "latitude": -32.4843207,
+            "longitude": 60.9650566,
+            "lookup_table": 76,
+            "lookup_rcid": 31183,
+            "priority": 56,
+            "effective_symbol_table": 76,
+            "instruction": "OUTLW, 4,LITYW, 2, 95.0, 115.0,  10.0,  25.0;TX('Occ(2) 8s 13ft',3,2,3,'15110',2,1,CHBLK,23)\u001f",
+            "attribute_names": [
+              "catgeo",
+              "COLOUR",
+              "HEIGHT",
+              "LITCHR",
+              "OBJNAM",
+              "SECTR1",
+              "SECTR2",
+              "SIGGRP",
+              "SIGPER",
+              "VALNMR"
+            ],
+            "has_ORIENT": false
+          }
+        ],
+        "raster_draws": []
+      },
+      "water_pixels": 291254,
+      "owned_values": {
+        "Latitude": {
+          "device_id": "",
+          "stale_after_ms": 5000,
+          "name": "Latitude",
+          "quality": "LIVE",
+          "observed_monotonic_ms": "109411237",
+          "validity": "Measured",
+          "value": 47.6,
+          "aging_after_ms": 2000,
+          "unit": "deg",
+          "age_ms": 49,
+          "source": "OpenCPN selected navigation (sensor identity unavailable)"
+        },
+        "Longitude": {
+          "device_id": "",
+          "stale_after_ms": 5000,
+          "name": "Longitude",
+          "quality": "LIVE",
+          "observed_monotonic_ms": "109411237",
+          "validity": "Measured",
+          "value": -122.36,
+          "aging_after_ms": 2000,
+          "unit": "deg",
+          "age_ms": 49,
+          "source": "OpenCPN selected navigation (sensor identity unavailable)"
+        },
+        "Speed over ground": {
+          "device_id": "",
+          "stale_after_ms": 5000,
+          "name": "Speed over ground",
+          "quality": "LIVE",
+          "observed_monotonic_ms": "109411237",
+          "validity": "Measured",
+          "value": 3,
+          "aging_after_ms": 2000,
+          "unit": "kn",
+          "age_ms": 49,
+          "source": "OpenCPN selected navigation (sensor identity unavailable)"
+        },
+        "Course over ground": {
+          "device_id": "",
+          "stale_after_ms": 5000,
+          "name": "Course over ground",
+          "quality": "LIVE",
+          "observed_monotonic_ms": "109411237",
+          "validity": "Measured",
+          "value": 90,
+          "aging_after_ms": 2000,
+          "unit": "deg true",
+          "age_ms": 49,
+          "source": "OpenCPN selected navigation (sensor identity unavailable)"
+        }
+      }
+    },
+    {
+      "name": "s64-sector-rwg-Standard-Dusk",
+      "image_sha256": "23482874991244cc1e9ffdf10956f05ed3c407ca6072abeed8aa2d7ee974d8ab",
+      "scene": "s64-sector-rwg",
+      "chart": {
+        "canvas_pixels": {
+          "height": 566,
+          "width": 1014
+        },
+        "latitude": -32.4843207,
+        "database_entries": 1,
+        "follow": false,
+        "quilt_members": [
+          {
+            "type": 5,
+            "native_scale": 52000,
+            "file": "GB4X0000.000",
+            "index": 0
+          }
+        ],
+        "opengl_enabled": true,
+        "quilt_reference": 0,
+        "scale_bar": {
+          "height": 12,
+          "y": 527,
+          "width": 69,
+          "x": 18
+        },
+        "depth_unit_type": 1,
+        "quilt": true,
+        "scale_ppm": 0.5826126536,
+        "longitude": 60.9650566,
+        "depth_units_visible": true
+      },
+      "presentation": {
+        "status": "Standard OpenCPN presentation; o-charts: no SKAGER adapter loaded",
+        "private_ocharts": {
+          "available": false
+        },
+        "requested": "Standard",
+        "core": {
+          "available": true,
+          "saved_point_style": 76,
+          "effective_point_style": 76
+        }
+      },
+      "source_feature_crops": [],
+      "trace": {
+        "fan_proof": [],
+        "read_only_trace_complete": true,
+        "debugger_timing_note": "Entry probes disabled before settled snapshots; no inferior calls or model writes. CA and fog follow normal renderer entry; added light point reached actual raster painter.",
+        "draws": [],
+        "arc_draws": [
+          {
+            "kind": "RenderCARC",
+            "class": "LIGHTS",
+            "object_index": 619,
+            "latitude": -32.4843207,
+            "longitude": 60.9650566,
+            "lookup_table": 76,
+            "lookup_rcid": 31183,
+            "priority": 56,
+            "effective_symbol_table": 76,
+            "instruction": "OUTLW, 4,LITGN, 2, 77.0,  95.0,  10.0,  25.0;TX('Occ(2) 8s',3,2,3,'15110',2,0,CHBLK,23)\u001f",
+            "attribute_names": [
+              "catgeo",
+              "COLOUR",
+              "LITCHR",
+              "SECTR1",
+              "SECTR2",
+              "SIGGRP",
+              "SIGPER",
+              "VALNMR"
+            ],
+            "has_ORIENT": false
+          },
+          {
+            "kind": "RenderCARC",
+            "class": "LIGHTS",
+            "object_index": 1880,
+            "latitude": -32.4843207,
+            "longitude": 60.9650566,
+            "lookup_table": 76,
+            "lookup_rcid": 31183,
+            "priority": 56,
+            "effective_symbol_table": 76,
+            "instruction": "OUTLW, 4,LITRD, 2,115.0, 120.0,  10.0,  25.0;TX('Occ(2) 8s',3,2,3,'15110',2,0,CHBLK,23)\u001f",
+            "attribute_names": [
+              "catgeo",
+              "COLOUR",
+              "LITCHR",
+              "SECTR1",
+              "SECTR2",
+              "SIGGRP",
+              "SIGPER",
+              "VALNMR"
+            ],
+            "has_ORIENT": false
+          },
+          {
+            "kind": "RenderCARC",
+            "class": "LIGHTS",
+            "object_index": 1881,
+            "latitude": -32.4843207,
+            "longitude": 60.9650566,
+            "lookup_table": 76,
+            "lookup_rcid": 31183,
+            "priority": 56,
+            "effective_symbol_table": 76,
+            "instruction": "OUTLW, 4,LITYW, 2, 95.0, 115.0,  10.0,  25.0;TX('Occ(2) 8s 13ft',3,2,3,'15110',2,1,CHBLK,23)\u001f",
+            "attribute_names": [
+              "catgeo",
+              "COLOUR",
+              "HEIGHT",
+              "LITCHR",
+              "OBJNAM",
+              "SECTR1",
+              "SECTR2",
+              "SIGGRP",
+              "SIGPER",
+              "VALNMR"
+            ],
+            "has_ORIENT": false
+          }
+        ],
+        "raster_draws": []
+      },
+      "water_pixels": 291707,
+      "owned_values": {
+        "Latitude": {
+          "device_id": "",
+          "stale_after_ms": 5000,
+          "name": "Latitude",
+          "quality": "LIVE",
+          "observed_monotonic_ms": "109412238",
+          "validity": "Measured",
+          "value": 47.6,
+          "aging_after_ms": 2000,
+          "unit": "deg",
+          "age_ms": 199,
+          "source": "OpenCPN selected navigation (sensor identity unavailable)"
+        },
+        "Longitude": {
+          "device_id": "",
+          "stale_after_ms": 5000,
+          "name": "Longitude",
+          "quality": "LIVE",
+          "observed_monotonic_ms": "109412238",
+          "validity": "Measured",
+          "value": -122.36,
+          "aging_after_ms": 2000,
+          "unit": "deg",
+          "age_ms": 199,
+          "source": "OpenCPN selected navigation (sensor identity unavailable)"
+        },
+        "Speed over ground": {
+          "device_id": "",
+          "stale_after_ms": 5000,
+          "name": "Speed over ground",
+          "quality": "LIVE",
+          "observed_monotonic_ms": "109412238",
+          "validity": "Measured",
+          "value": 3,
+          "aging_after_ms": 2000,
+          "unit": "kn",
+          "age_ms": 199,
+          "source": "OpenCPN selected navigation (sensor identity unavailable)"
+        },
+        "Course over ground": {
+          "device_id": "",
+          "stale_after_ms": 5000,
+          "name": "Course over ground",
+          "quality": "LIVE",
+          "observed_monotonic_ms": "109412238",
+          "validity": "Measured",
+          "value": 90,
+          "aging_after_ms": 2000,
+          "unit": "deg true",
+          "age_ms": 199,
+          "source": "OpenCPN selected navigation (sensor identity unavailable)"
+        }
+      }
+    },
+    {
+      "name": "s64-sector-rwg-Standard-Night",
+      "image_sha256": "91d651db983cb6ad885f2f90bf99576991ef1c134d29bbbdd0ea68292ec547cc",
+      "scene": "s64-sector-rwg",
+      "chart": {
+        "canvas_pixels": {
+          "height": 566,
+          "width": 1014
+        },
+        "latitude": -32.4843207,
+        "database_entries": 1,
+        "follow": false,
+        "quilt_members": [
+          {
+            "type": 5,
+            "native_scale": 52000,
+            "file": "GB4X0000.000",
+            "index": 0
+          }
+        ],
+        "opengl_enabled": true,
+        "quilt_reference": 0,
+        "scale_bar": {
+          "height": 12,
+          "y": 527,
+          "width": 69,
+          "x": 18
+        },
+        "depth_unit_type": 1,
+        "quilt": true,
+        "scale_ppm": 0.5826126536,
+        "longitude": 60.9650566,
+        "depth_units_visible": true
+      },
+      "presentation": {
+        "status": "Standard OpenCPN presentation; o-charts: no SKAGER adapter loaded",
+        "private_ocharts": {
+          "available": false
+        },
+        "requested": "Standard",
+        "core": {
+          "available": true,
+          "saved_point_style": 76,
+          "effective_point_style": 76
+        }
+      },
+      "source_feature_crops": [],
+      "trace": {
+        "fan_proof": [],
+        "read_only_trace_complete": true,
+        "debugger_timing_note": "Entry probes disabled before settled snapshots; no inferior calls or model writes. CA and fog follow normal renderer entry; added light point reached actual raster painter.",
+        "draws": [],
+        "arc_draws": [
+          {
+            "kind": "RenderCARC",
+            "class": "LIGHTS",
+            "object_index": 619,
+            "latitude": -32.4843207,
+            "longitude": 60.9650566,
+            "lookup_table": 76,
+            "lookup_rcid": 31183,
+            "priority": 56,
+            "effective_symbol_table": 76,
+            "instruction": "OUTLW, 4,LITGN, 2, 77.0,  95.0,  10.0,  25.0;TX('Occ(2) 8s',3,2,3,'15110',2,0,CHBLK,23)\u001f",
+            "attribute_names": [
+              "catgeo",
+              "COLOUR",
+              "LITCHR",
+              "SECTR1",
+              "SECTR2",
+              "SIGGRP",
+              "SIGPER",
+              "VALNMR"
+            ],
+            "has_ORIENT": false
+          },
+          {
+            "kind": "RenderCARC",
+            "class": "LIGHTS",
+            "object_index": 1880,
+            "latitude": -32.4843207,
+            "longitude": 60.9650566,
+            "lookup_table": 76,
+            "lookup_rcid": 31183,
+            "priority": 56,
+            "effective_symbol_table": 76,
+            "instruction": "OUTLW, 4,LITRD, 2,115.0, 120.0,  10.0,  25.0;TX('Occ(2) 8s',3,2,3,'15110',2,0,CHBLK,23)\u001f",
+            "attribute_names": [
+              "catgeo",
+              "COLOUR",
+              "LITCHR",
+              "SECTR1",
+              "SECTR2",
+              "SIGGRP",
+              "SIGPER",
+              "VALNMR"
+            ],
+            "has_ORIENT": false
+          },
+          {
+            "kind": "RenderCARC",
+            "class": "LIGHTS",
+            "object_index": 1881,
+            "latitude": -32.4843207,
+            "longitude": 60.9650566,
+            "lookup_table": 76,
+            "lookup_rcid": 31183,
+            "priority": 56,
+            "effective_symbol_table": 76,
+            "instruction": "OUTLW, 4,LITYW, 2, 95.0, 115.0,  10.0,  25.0;TX('Occ(2) 8s 13ft',3,2,3,'15110',2,1,CHBLK,23)\u001f",
+            "attribute_names": [
+              "catgeo",
+              "COLOUR",
+              "HEIGHT",
+              "LITCHR",
+              "OBJNAM",
+              "SECTR1",
+              "SECTR2",
+              "SIGGRP",
+              "SIGPER",
+              "VALNMR"
+            ],
+            "has_ORIENT": false
+          }
+        ],
+        "raster_draws": []
+      },
+      "water_pixels": 291894,
+      "owned_values": {
+        "Latitude": {
+          "device_id": "",
+          "stale_after_ms": 5000,
+          "name": "Latitude",
+          "quality": "LIVE",
+          "observed_monotonic_ms": "109415544",
+          "validity": "Measured",
+          "value": 47.6,
+          "aging_after_ms": 2000,
+          "unit": "deg",
+          "age_ms": 217,
+          "source": "OpenCPN selected navigation (sensor identity unavailable)"
+        },
+        "Longitude": {
+          "device_id": "",
+          "stale_after_ms": 5000,
+          "name": "Longitude",
+          "quality": "LIVE",
+          "observed_monotonic_ms": "109415544",
+          "validity": "Measured",
+          "value": -122.36,
+          "aging_after_ms": 2000,
+          "unit": "deg",
+          "age_ms": 217,
+          "source": "OpenCPN selected navigation (sensor identity unavailable)"
+        },
+        "Speed over ground": {
+          "device_id": "",
+          "stale_after_ms": 5000,
+          "name": "Speed over ground",
+          "quality": "LIVE",
+          "observed_monotonic_ms": "109415544",
+          "validity": "Measured",
+          "value": 3,
+          "aging_after_ms": 2000,
+          "unit": "kn",
+          "age_ms": 217,
+          "source": "OpenCPN selected navigation (sensor identity unavailable)"
+        },
+        "Course over ground": {
+          "device_id": "",
+          "stale_after_ms": 5000,
+          "name": "Course over ground",
+          "quality": "LIVE",
+          "observed_monotonic_ms": "109415544",
+          "validity": "Measured",
+          "value": 90,
+          "aging_after_ms": 2000,
+          "unit": "deg true",
+          "age_ms": 217,
+          "source": "OpenCPN selected navigation (sensor identity unavailable)"
+        }
+      }
+    },
+    {
+      "name": "s64-sector-rwg-Standard-Day-return",
+      "image_sha256": "f35c5478c5ae51ca741df9abd6935da847e034d6fe401361bd0016be630fae03",
+      "scene": "s64-sector-rwg",
+      "chart": {
+        "canvas_pixels": {
+          "height": 566,
+          "width": 1014
+        },
+        "latitude": -32.4843207,
+        "database_entries": 1,
+        "follow": false,
+        "quilt_members": [
+          {
+            "type": 5,
+            "native_scale": 52000,
+            "file": "GB4X0000.000",
+            "index": 0
+          }
+        ],
+        "opengl_enabled": true,
+        "quilt_reference": 0,
+        "scale_bar": {
+          "height": 12,
+          "y": 527,
+          "width": 69,
+          "x": 18
+        },
+        "depth_unit_type": 1,
+        "quilt": true,
+        "scale_ppm": 0.5826126536,
+        "longitude": 60.9650566,
+        "depth_units_visible": true
+      },
+      "presentation": {
+        "status": "Standard OpenCPN presentation; o-charts: no SKAGER adapter loaded",
+        "private_ocharts": {
+          "available": false
+        },
+        "requested": "Standard",
+        "core": {
+          "available": true,
+          "saved_point_style": 76,
+          "effective_point_style": 76
+        }
+      },
+      "source_feature_crops": [],
+      "trace": {
+        "fan_proof": [],
+        "read_only_trace_complete": true,
+        "debugger_timing_note": "Entry probes disabled before settled snapshots; no inferior calls or model writes. CA and fog follow normal renderer entry; added light point reached actual raster painter.",
+        "draws": [],
+        "arc_draws": [
+          {
+            "kind": "RenderCARC",
+            "class": "LIGHTS",
+            "object_index": 619,
+            "latitude": -32.4843207,
+            "longitude": 60.9650566,
+            "lookup_table": 76,
+            "lookup_rcid": 31183,
+            "priority": 56,
+            "effective_symbol_table": 76,
+            "instruction": "OUTLW, 4,LITGN, 2, 77.0,  95.0,  10.0,  25.0;TX('Occ(2) 8s',3,2,3,'15110',2,0,CHBLK,23)\u001f",
+            "attribute_names": [
+              "catgeo",
+              "COLOUR",
+              "LITCHR",
+              "SECTR1",
+              "SECTR2",
+              "SIGGRP",
+              "SIGPER",
+              "VALNMR"
+            ],
+            "has_ORIENT": false
+          },
+          {
+            "kind": "RenderCARC",
+            "class": "LIGHTS",
+            "object_index": 1880,
+            "latitude": -32.4843207,
+            "longitude": 60.9650566,
+            "lookup_table": 76,
+            "lookup_rcid": 31183,
+            "priority": 56,
+            "effective_symbol_table": 76,
+            "instruction": "OUTLW, 4,LITRD, 2,115.0, 120.0,  10.0,  25.0;TX('Occ(2) 8s',3,2,3,'15110',2,0,CHBLK,23)\u001f",
+            "attribute_names": [
+              "catgeo",
+              "COLOUR",
+              "LITCHR",
+              "SECTR1",
+              "SECTR2",
+              "SIGGRP",
+              "SIGPER",
+              "VALNMR"
+            ],
+            "has_ORIENT": false
+          },
+          {
+            "kind": "RenderCARC",
+            "class": "LIGHTS",
+            "object_index": 1881,
+            "latitude": -32.4843207,
+            "longitude": 60.9650566,
+            "lookup_table": 76,
+            "lookup_rcid": 31183,
+            "priority": 56,
+            "effective_symbol_table": 76,
+            "instruction": "OUTLW, 4,LITYW, 2, 95.0, 115.0,  10.0,  25.0;TX('Occ(2) 8s 13ft',3,2,3,'15110',2,1,CHBLK,23)\u001f",
+            "attribute_names": [
+              "catgeo",
+              "COLOUR",
+              "HEIGHT",
+              "LITCHR",
+              "OBJNAM",
+              "SECTR1",
+              "SECTR2",
+              "SIGGRP",
+              "SIGPER",
+              "VALNMR"
+            ],
+            "has_ORIENT": false
+          }
+        ],
+        "raster_draws": []
+      },
+      "water_pixels": 291254,
+      "owned_values": {
+        "Latitude": {
+          "device_id": "",
+          "stale_after_ms": 5000,
+          "name": "Latitude",
+          "quality": "LIVE",
+          "observed_monotonic_ms": "109417948",
+          "validity": "Measured",
+          "value": 47.6,
+          "aging_after_ms": 2000,
+          "unit": "deg",
+          "age_ms": 190,
+          "source": "OpenCPN selected navigation (sensor identity unavailable)"
+        },
+        "Longitude": {
+          "device_id": "",
+          "stale_after_ms": 5000,
+          "name": "Longitude",
+          "quality": "LIVE",
+          "observed_monotonic_ms": "109417948",
+          "validity": "Measured",
+          "value": -122.36,
+          "aging_after_ms": 2000,
+          "unit": "deg",
+          "age_ms": 190,
+          "source": "OpenCPN selected navigation (sensor identity unavailable)"
+        },
+        "Speed over ground": {
+          "device_id": "",
+          "stale_after_ms": 5000,
+          "name": "Speed over ground",
+          "quality": "LIVE",
+          "observed_monotonic_ms": "109417948",
+          "validity": "Measured",
+          "value": 3,
+          "aging_after_ms": 2000,
+          "unit": "kn",
+          "age_ms": 190,
+          "source": "OpenCPN selected navigation (sensor identity unavailable)"
+        },
+        "Course over ground": {
+          "device_id": "",
+          "stale_after_ms": 5000,
+          "name": "Course over ground",
+          "quality": "LIVE",
+          "observed_monotonic_ms": "109417948",
+          "validity": "Measured",
+          "value": 90,
+          "aging_after_ms": 2000,
+          "unit": "deg true",
+          "age_ms": 190,
+          "source": "OpenCPN selected navigation (sensor identity unavailable)"
+        }
+      }
+    }
+  ],
+  "status": "passed",
+  "clean_exit": true,
+  "font_evidence": {
+    "policy_source_sha256": "32339b83be2c3b9ff81fb31bfbf8313628a7f1596092921a98693ae0a140a358",
+    "note": "Source policy and Linux fontconfig inventory recorded; this does not establish native Windows glyph metrics",
+    "Segoe UI Variable Display": {
+      "exit_code": 0,
+      "linux_fontconfig_match": "Liberation Sans\n/usr/share/fonts/liberation/LiberationSans-Regular.ttf"
+    },
+    "Segoe UI": {
+      "exit_code": 0,
+      "linux_fontconfig_match": "Liberation Sans\n/usr/share/fonts/liberation/LiberationSans-Regular.ttf"
+    },
+    "Arial": {
+      "exit_code": 0,
+      "linux_fontconfig_match": "Liberation Sans\n/usr/share/fonts/liberation/LiberationSans-Regular.ttf"
+    }
+  },
+  "additional_source_evidence": {
+    "src/ui/SkagerWordmark.h": "c2fc3d1afdf88bfd2e884d541e7b3ad4463702cece09057e38f4d496deda9928",
+    "src/ui/Theme.h": "b28adb1f519ec5a1f9b7e2bfab6ec2ab1c7f06656bd129316e9e453ef1ec0776",
+    "src/ui/Shell.cpp": "ed022b04450b0a24fec10cb3303551f35ab7e8dd01161918d18daa3ce322ad02",
+    "src/integration/ChartCanvasInk.h": "cc1a4d94131f932f2bbd40d330d9003d0086dfc1237449b4215b509377c39f66",
+    "src/integration/ChartRouteLabel.cpp": "c4f6b225ed4e6985370da71559237b5ee6bbc3d2ac62fa4cf530d02b781f017f",
+    "src/integration/ChartRouteLabelRaster.h": "c2ca0bd64ec1203addbd518b2424af91c3ca25f72b250d1f6c80b6e467722f3b",
+    "tools/chart_cardinal_art.py": "e8b4f52df0d558ec715613c9f737776db0f10f844c3f2769a3f35fd8f670158e",
+    "resources/chart-style/v1/cardinals/provenance.json": "a0017453b3ea5a814a613bb50d0f5a676fdf0095e0b5e7a6249ec49fe38c8010"
+  },
+  "mesa_renderer": "name of display: :276\ndisplay: :276  screen: 0\ndirect rendering: Yes\nExtended renderer info (GLX_MESA_query_renderer):\n    Vendor: Mesa (0xffffffff)\n    Device: llvmpipe (LLVM 22.1.8, 256 bits) (0xffffffff)\n    Version: 26.2.2\n    Accelerated: no\n    Video memory: 7807MB\n    Unified memory: yes\n    Preferred profile: core (0x1)\n    Max core profile version: 4.6\n    Max compat profile version: 4.6\n    Max GLES1 profile version: 1.1\n    Max GLES[23] profile version: 3.2\nMemory info (GL_ATI_meminfo):\n    VBO free memory - total: 0 MB, largest block: 0 MB\n    VBO free aux. memory - total: 3897 MB, largest block: 3897 MB\n    Texture free memory - total: 0 MB, largest block: 0 MB\n    Texture free aux. memory - total: 3897 MB, largest block: 3897 MB\n    Renderbuffer free memory - total: 0 MB, largest block: 0 MB\n    Renderbuffer free aux. memory - total: 3897 MB, largest block: 3897 MB\nMemory info (GL_NVX_gpu_memory_info):\n    Dedicated video memory: 0 MB\n    Total available memory: 7807 MB\n    Currently available dedicated video memory: 0 MB\nOpenGL vendor string: Mesa\nOpenGL renderer string: llvmpipe (LLVM 22.1.8, 256 bits)\nOpenGL core profile version string: 4.6 (Core Profile) Mesa 26.2.2-arch1.1\nOpenGL core profile shading language version string: 4.60\nOpenGL core profile context flags: (none)\nOpenGL core profile profile mask: core profile\n\nOpenGL version string: 4.6 (Compatibility Profile) Mesa 26.2.2-arch1.1\nOpenGL shading language version string: 4.60\nOpenGL context flags: (none)\nOpenGL profile mask: compatibility profile\n\nOpenGL ES profile version string: OpenGL ES 3.2 Mesa 26.2.2-arch1.1\nOpenGL ES profile shading language version string: OpenGL ES GLSL ES 3.20\n\n",
+  "loader_selftest": {
+    "upstream": "37fd0cddb7334fe489e9f18aa163977a9c5c84f7",
+    "commissioning_restart_protocol": 0,
+    "version": "0.4.0-beta2",
+    "commit": "326daf73cdbeb0e7219ccb47b88967bc6a67ceaf",
+    "compiler": "GNU 16.2.1 / 8 byte pointers",
+    "plugins_loaded": false,
+    "test_fixtures": true,
+    "resources": {
+      "gshhs/poly-c-1.dat": true,
+      "s57data/s57objectclasses.csv": true,
+      "uidata/styles.xml": true,
+      "s57data/chartsymbols.xml": true
+    },
+    "normal_config_directory": "/etc",
+    "passed": true,
+    "xnav_hardware_output_policy": "test-loopback-only",
+    "build_purpose": "DEVELOPER TEST BUILD",
+    "profile_initialized": false,
+    "contract": "OpenNavX.LoaderSelfTest.1"
+  },
+  "day_return_checks": [
+    {
+      "image": "s64-sector-rwg-SKAGER-Day-return",
+      "bounds": [
+        80,
+        68,
+        1094,
+        634
+      ],
+      "equal": true,
+      "mask": null
+    },
+    {
+      "image": "s64-sector-rwg-Standard-Day-return",
+      "bounds": [
+        80,
+        68,
+        1094,
+        634
+      ],
+      "equal": true,
+      "mask": null
+    }
+  ],
+  "symbol_table_receipts": [
+    {
+      "style": "XNav",
+      "persisted_nSymbolStyle": 76,
+      "scope": "Persisted preference plus explicitly scoped core diagnostics; private adapter unavailable; actual object table independently traced"
+    },
+    {
+      "style": "Standard",
+      "persisted_nSymbolStyle": 76,
+      "scope": "Persisted preference plus explicitly scoped core diagnostics; private adapter unavailable; actual object table independently traced"
+    }
+  ]
+}

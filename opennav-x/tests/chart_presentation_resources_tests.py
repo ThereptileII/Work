@@ -56,6 +56,8 @@ with tempfile.TemporaryDirectory(prefix='xnav-chart-test-') as d:
     verify_generic_beacon(source,output,check)
     from chart_yellow_buoy_resources_tests import verify_yellow_buoy
     verify_yellow_buoy(source,output,check)
+    from chart_building_point_resources_tests import verify as verify_building_point
+    verify_building_point(source,output,check)
     from chart_cardinal_resources_tests import verify_cardinals
     verify_cardinals(source,output,data,check)
     from chart_service_resources_tests import verify_services
@@ -97,6 +99,10 @@ with tempfile.TemporaryDirectory(prefix='xnav-chart-test-') as d:
     changed=[];geographic=[]
     for stock,styled in zip(a.find('lookups'),b.find('lookups')):
         expected=stock.findtext('instruction')
+        if stock.get('id')=='1091':
+            check(stock.attrib=={'id':'1091','RCID':'31143','name':'BUISGL'} and stock.findtext('table-name')=='Simplified' and stock.findtext('type')=='Point')
+            check(expected=='SY(BUISGL01)' and styled.findtext('instruction')=='SY(XNBLDG01)')
+            expected='SY(XNBLDG01)'
         if stock.get('id') in expected_ids:
             rcid,table=expected_ids[stock.get('id')]
             check(stock.attrib=={'id':stock.get('id'),'RCID':rcid,'name':'BUAARE'})
@@ -139,7 +145,7 @@ with tempfile.TemporaryDirectory(prefix='xnav-chart-test-') as d:
         styled=b.findall("symbols/symbol[name='"+name+"']")[-1].find('bitmap')
         styled.attrib=stock.attrib.copy()
         for tag in ('pivot','graphics-location'):styled.find(tag).attrib=stock.find(tag).attrib.copy()
-    for name in (*ALIASES,'XNSPPW01','XNBCNG01','XNSPPY01','XNSPPT01'):b.find('symbols').remove(b.find("symbols/symbol[name='"+name+"']"))
+    for name in (*ALIASES,'XNSPPW01','XNBCNG01','XNSPPY01','XNSPPT01','XNBLDG01'):b.find('symbols').remove(b.find("symbols/symbol[name='"+name+"']"))
     # Independently undo only the cable paint reference before whole-tree proof.
     cables=b.findall("line-styles/line-style[name='CBLSUB06']")
     check(len(cables)==1 and cables[0].attrib=={'RCID':'2012'})
@@ -155,7 +161,7 @@ with tempfile.TemporaryDirectory(prefix='xnav-chart-test-') as d:
         check(ET.tostring(a.find(section))==ET.tostring(b.find(section)))
     for stock,styled in zip(a.find('color-tables'),b.find('color-tables')):
         check(stock.attrib==styled.attrib)
-        for name in ('XNBUA','XNGEO','XNCBL','XNARE','XNSTR','XNSHR','XNHAT'):
+        for name in ('XNBUA','XNGEO','XNCBL','XNARE','XNSTR','XNSHR','XNHAT','XNBLF','XNBLO'):
             added=styled.findall("color[@name='"+name+"']")
             check(len(added)==(1 if stock.get('name') in data['palette'] else 0))
             for entry in added:styled.remove(entry)
@@ -180,6 +186,8 @@ with tempfile.TemporaryDirectory(prefix='xnav-chart-test-') as d:
         unchanged.remove(unchanged.find("color[@name='XNSTR']"))
         unchanged.remove(unchanged.find("color[@name='XNSHR']"))
         unchanged.remove(unchanged.find("color[@name='XNHAT']"))
+        unchanged.remove(unchanged.find("color[@name='XNBLF']"))
+        unchanged.remove(unchanged.find("color[@name='XNBLO']"))
         # Restore only the prior XNBUA shade before the existing whole-table
         # identity oracle; all other Day/Dusk palette bytes must remain exact.
         prior=(175,191,174) if table=='DAY_BRIGHT' else (116,135,121)
@@ -190,7 +198,7 @@ with tempfile.TemporaryDirectory(prefix='xnav-chart-test-') as d:
         check(hashlib.sha256(ET.tostring(unchanged)).hexdigest()==digest)
     # Literal effective Night colors independently confirmed against the final
     # CSS and canonical Windows pixels, not copied from generator output.
-    expected_night={'XNSHR':(55,68,58),'XNSTR':(29,41,37),'LANDA':(29,41,37),'XNBUA':(29,41,37),'CSTLN':(55,68,58),
+    expected_night={'XNBLF':(98,115,108),'XNBLO':(107,119,109),'XNSHR':(55,68,58),'XNSTR':(29,41,37),'LANDA':(29,41,37),'XNBUA':(29,41,37),'CSTLN':(55,68,58),
         'DEPDW':(14,23,28),'DEPMD':(22,35,41),'DEPMS':(33,51,57),
         'DEPVS':(48,66,75),'DEPIT':(40,53,46),'DEPCN':(33,51,57),'XNGEO':(91,104,94)}
     check(set(data['nightCanvas']['roles'])==set(expected_night))

@@ -561,6 +561,11 @@ jobs:
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
           python opennav-x/tools/windows_dependency_reuse.py verify --root opennav-x 2>&1 | Tee-Object opennav-x/evidence/local/ais-runtime-receipt-check.log
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          $ParentPython = & python -c 'import pathlib,sys; print(pathlib.Path(sys.executable).resolve())'
+          if ($LASTEXITCODE -ne 0) { throw 'Cannot identify AIS parent Python' }
+          . ./opennav-x/tools/windows-parent-environment.ps1
+          Initialize-WindowsNativePerl
+          $null = Initialize-WindowsGettext -Python $ParentPython -Receipt ./opennav-x/evidence/local/windows-gettext-xnav.json -Mode Verify -Log ./opennav-x/evidence/local/ais-runtime-gettext-check.log
           ./opennav-x/tools/build-openssl-windows.ps1 -IntegrationSource opennav-x/build/integration-source -VerifyToolFactsOnly 2>&1 | Tee-Object opennav-x/evidence/local/ais-runtime-openssl-tool-check.log
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
           ./opennav-x/tools/build-zlib-windows.ps1 -VerifyToolFactsOnly 2>&1 | Tee-Object opennav-x/evidence/local/ais-runtime-zlib-tool-check.log

@@ -1,0 +1,26 @@
+140 actual RenderText DPI, overlap, registration, cache and color checks passed
+140 actual RenderText DPI, overlap, registration, cache and color checks passed
+Day/Dusk/Night/Day text phases keep identical placement
+Traceback (most recent call last):
+  File "/home/standard/Projects/X-nav-worktrees/scrum268-text-cache-metric/tools/verify-chart-name-boundary.py", line 71, in <module>
+    if __name__=='__main__':main()
+                            ~~~~^^
+  File "/home/standard/Projects/X-nav-worktrees/scrum268-text-cache-metric/tools/verify-chart-name-boundary.py", line 69, in main
+    print(result.stdout+result.stderr,end='');result.check_returncode()
+                                              ~~~~~~~~~~~~~~~~~~~~~~~^^
+  File "/usr/lib/python3.14/subprocess.py", line 509, in check_returncode
+    raise CalledProcessError(self.returncode, self.args, self.stdout,
+                             self.stderr)
+subprocess.CalledProcessError: Command '['/home/standard/Projects/X-nav-worktrees/scrum268-text-cache-metric/.local/check-core-original/chart-name-boundary-test', '--glyph-cache-only']' returned non-zero exit status 1.
+Day/Dusk/Night/Day text phases keep identical placement
+Traceback (most recent call last):
+  File "/home/standard/Projects/X-nav-worktrees/scrum268-text-cache-metric/tools/verify-chart-name-boundary.py", line 71, in <module>
+    if __name__=='__main__':main()
+                            ~~~~^^
+  File "/home/standard/Projects/X-nav-worktrees/scrum268-text-cache-metric/tools/verify-chart-name-boundary.py", line 69, in main
+    print(result.stdout+result.stderr,end='');result.check_returncode()
+                                              ~~~~~~~~~~~~~~~~~~~~~~~^^
+  File "/usr/lib/python3.14/subprocess.py", line 509, in check_returncode
+    raise CalledProcessError(self.returncode, self.args, self.stdout,
+                             self.stderr)
+subprocess.CalledProcessError: Command '['/home/standard/Projects/X-nav-worktrees/scrum268-text-cache-metric/.local/check-private-original/chart-name-boundary-test', '--glyph-cache-only']' returned non-zero exit status 1.

@@ -1,0 +1,179 @@
+{
+  "scope": "Analytical opaque sRGB token contrast against effective chart land; not rasterized/native acceptance",
+  "proposal": {
+    "Day": {
+      "tokens": {
+        "fill": "--mark-service",
+        "outline": "--mark-black"
+      },
+      "rawPrototypeFill": [
+        124,
+        133,
+        138
+      ],
+      "rawPrototypeOutline": [
+        83,
+        100,
+        95
+      ],
+      "chartBrightness": 1,
+      "proposedFill": [
+        124,
+        133,
+        138
+      ],
+      "proposedOutline": [
+        83,
+        100,
+        95
+      ],
+      "actualLand": [
+        238,
+        238,
+        226
+      ],
+      "pointFillVsLand": {
+        "stock": 2.5740516647210754,
+        "proposed": 3.2198175017824138
+      },
+      "pointOutlineVsLand": {
+        "stock": 4.470599555097418,
+        "proposed": 5.352772558444266
+      },
+      "outlineVsFill": {
+        "stock": 1.7367948034492358,
+        "proposed": 1.662445947784649
+      },
+      "unchangedConspicuousBUISGL11": {
+        "fillLANDF": [
+          139,
+          102,
+          31
+        ],
+        "outlineCHBLK": [
+          83,
+          100,
+          95
+        ],
+        "fillVsLand": 4.470599555097418,
+        "outlineVsLand": 5.352772558444266
+      }
+    },
+    "Dusk": {
+      "tokens": {
+        "fill": "--mark-service",
+        "outline": "--mark-black"
+      },
+      "rawPrototypeFill": [
+        168,
+        187,
+        183
+      ],
+      "rawPrototypeOutline": [
+        195,
+        206,
+        194
+      ],
+      "chartBrightness": 1,
+      "proposedFill": [
+        168,
+        187,
+        183
+      ],
+      "proposedOutline": [
+        195,
+        206,
+        194
+      ],
+      "actualLand": [
+        78,
+        97,
+        93
+      ],
+      "pointFillVsLand": {
+        "stock": 2.0927332444459568,
+        "proposed": 3.2760859321609495
+      },
+      "pointOutlineVsLand": {
+        "stock": 1.6968490013137925,
+        "proposed": 4.050261577433129
+      },
+      "outlineVsFill": {
+        "stock": 1.2333055226632712,
+        "proposed": 1.2363111534017432
+      },
+      "unchangedConspicuousBUISGL11": {
+        "fillLANDF": [
+          76,
+          56,
+          17
+        ],
+        "outlineCHBLK": [
+          225,
+          229,
+          216
+        ],
+        "fillVsLand": 1.6968490013137925,
+        "outlineVsLand": 5.13829005113611
+      }
+    },
+    "Night": {
+      "tokens": {
+        "fill": "--mark-service",
+        "outline": "--mark-black"
+      },
+      "rawPrototypeFill": [
+        126,
+        148,
+        138
+      ],
+      "rawPrototypeOutline": [
+        137,
+        152,
+        140
+      ],
+      "chartBrightness": 0.78,
+      "proposedFill": [
+        98,
+        115,
+        108
+      ],
+      "proposedOutline": [
+        107,
+        119,
+        109
+      ],
+      "actualLand": [
+        29,
+        41,
+        37
+      ],
+      "pointFillVsLand": {
+        "stock": 1.2926276292771615,
+        "proposed": 2.9998383802621307
+      },
+      "pointOutlineVsLand": {
+        "stock": 1.2478802280550367,
+        "proposed": 3.212243927681147
+      },
+      "outlineVsFill": {
+        "stock": 1.035858730842998,
+        "proposed": 1.0708056636706063
+      },
+      "unchangedConspicuousBUISGL11": {
+        "fillLANDF": [
+          23,
+          17,
+          5
+        ],
+        "outlineCHBLK": [
+          117,
+          133,
+          121
+        ],
+        "fillVsLand": 1.2478802280550367,
+        "outlineVsLand": 3.8588682186180314
+      }
+    }
+  }
+}

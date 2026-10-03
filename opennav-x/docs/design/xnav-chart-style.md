@@ -1,5 +1,15 @@
 # XNav chart presentation — source inspection and palette contract
 
+Current generic-building follow-on: the [observed IHO brown square](../evidence/scrum265-lighthouse-building-audit/README.md)
+is BUISGL36. Only its pinned default Simplified rule 1091 now selects the
+[isolated neutral building alias](../evidence/scrum265-building-point-alias/README.md).
+This preserves the 9×9 shape, alpha, classification and original Standard/Paper/
+conspicuous rules. Prototype service/neutral inks are a documented role mapping;
+the prototype has no dedicated custom building drawing. Actual canvas and
+native/boat recognition remain open, particularly the brighter generic
+Dusk/Night tile beside preserved conspicuous artwork. No blanket brown filter
+or full conformance claim follows from this change.
+
 The native chart remains OpenCPN 5.12.4, pinned to
 `37fd0cddb7334fe489e9f18aa163977a9c5c84f7`. The prototype is fictional geography,
 not chart data. Its symbol vendor snapshot is `1bf728e17feaae05fddad3aad5be677e15c1e89c`;

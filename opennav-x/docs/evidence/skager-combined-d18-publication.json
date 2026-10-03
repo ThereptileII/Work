@@ -1,0 +1,23 @@
+{
+  "local_commit": "d18da7ccc94b175d1f4a09a0019ab7e4b4f55d31",
+  "remote_commit": "63c1029584a325a961fa89794071cbf053c2e966",
+  "remote_tree": "cf045e6af4de732ca4bbac30ee966fb49355ee2b",
+  "mapped_entries": 5113,
+  "unrelated_root_files_preserved": 8,
+  "upstream": "37fd0cddb7334fe489e9f18aa163977a9c5c84f7",
+  "source_verified": true,
+  "application_preflight_source": "326daf73cdbeb0e7219ccb47b88967bc6a67ceaf",
+  "application_delta_from_preflight": [],
+  "tooling_delta_from_preflight": [
+    ".github/workflows/skager-chart-package-review.yml",
+    "tests/recovery_capture_inputs_tests.py",
+    "tools/prototype/capture-native.py",
+    "tools/prototype/recovery_capture_inputs.py"
+  ],
+  "other_delta": "Retained original evidence and technical documentation only",
+  "published_utc": "2026-10-03T19:22:46Z",
+  "workflow_run": 37147671879,
+  "workflow_url": "https://github.com/ThereptileII/Work/actions/runs/37147671879",
+  "qualification": "in progress; no release or boat acceptance",
+  "open_visual_gate": "Actual GL light/fog Day-return has355 changed pixels in numeric26.2 label; original assertion remains failed. Actual new light point and mixed-sectorGL dispatch verified; full sector theme returns pass."
+}

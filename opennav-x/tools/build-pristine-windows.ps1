@@ -132,23 +132,14 @@ function Build-PrivateOCharts([bool]$Reuse) {
     $script:OChartsPackage = $Package
 }
 $OChartsPackage = ''
+. (Join-Path $PSScriptRoot 'windows-parent-environment.ps1')
 try {
     if ($ReuseVerifiedDependencies -and -not $PrivateOCharts -and
         (Test-Path -LiteralPath (Join-Path $Evidence 'windows-ocharts-first-build.json'))) {
         throw 'Production pass must preserve the first pass PrivateOCharts selection'
     }
     if ($Integration) {
-        if (-not (Test-Path -LiteralPath $env:SKAGER_NATIVE_PERL -PathType Leaf)) {
-            throw 'The native OpenSSL build Perl was not selected before MSYS2 setup'
-        }
-        $NativePerl = (Resolve-Path -LiteralPath $env:SKAGER_NATIVE_PERL).Path
-        $env:PATH = "$(Split-Path $NativePerl -Parent);$env:PATH"
-        if ((Get-Command perl.exe -CommandType Application -ErrorAction Stop | Select-Object -First 1).Source -ine $NativePerl) {
-            throw 'OpenSSL build Perl differs from the preselected native tool'
-        }
-        if (-not (Test-Path -LiteralPath $env:SKAGER_CURL_TEST_PERL -PathType Leaf)) {
-            throw 'MSYS2 curl test Perl was not selected'
-        }
+        Initialize-WindowsNativePerl
     }
     Run python @((Join-Path $PSScriptRoot 'verify-upstream.py'))
     if (-not [Environment]::Is64BitOperatingSystem) { throw 'Windows x64 host required' }
@@ -158,11 +149,8 @@ try {
     # Stop before curl preflight, stock win_deps or any expensive producer if
     # the existing Poedit provider cannot supply both usable gettext tools.
     $GettextReceipt = Join-Path $Evidence "windows-gettext-$Variant.json"
-    Run python @((Join-Path $PSScriptRoot 'windows_gettext.py'), 'ensure',
-        '--allow-install', '--receipt', $GettextReceipt)
-    $GettextFacts = Get-Content -LiteralPath $GettextReceipt -Raw | ConvertFrom-Json
-    $Gettext = $GettextFacts.directory
-    $env:PATH = "$Gettext;$env:PATH"
+    $Gettext = Initialize-WindowsGettext -Python $BuildPython -Receipt $GettextReceipt -Mode Ensure `
+        -Log (Join-Path $Evidence 'windows-native-output.log')
     if ($Integration) {
         # Exercise the unchanged curl source tests with the reviewed native/MSYS
         # environment before any maintained dependency compilation. The real curl

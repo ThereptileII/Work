@@ -1,0 +1,87 @@
+{
+  "source": "/home/standard/Projects/X-nav-worktrees/scrum275-linux-e6ef384/evidence/local/scrum268-5bb/iho/fixture/GB4X0000.000",
+  "sourceSha256": "c70d9e0f53e149270f85900f8576082db86781d64fbb71aa7d5ceb4af4aa22e3",
+  "decoder": {
+    "pyogrio": "0.13.0",
+    "gdal": [
+      3,
+      12,
+      4
+    ]
+  },
+  "scope": "Direct original source decode and projection only; no new runtime probe; official IHO test geography",
+  "targetScreen": [
+    611,
+    448
+  ],
+  "nearbyPointRadiusPixels": 45,
+  "sceneCenter": [
+    -32.3760351,
+    61.0307025
+  ],
+  "actualScalePpm": 0.5826126536,
+  "canvas": [
+    1014,
+    566
+  ],
+  "screenOrigin": [
+    80,
+    68
+  ],
+  "nearby": [
+    {
+      "class": "BUISGL",
+      "ogrFid": 34,
+      "position": [
+        -32.3768207,
+        61.0311125
+      ],
+      "attributes": {
+        "RCID": 35,
+        "PRIM": 1,
+        "GRUP": 2,
+        "OBJL": 12,
+        "RVER": 1,
+        "AGEN": 540,
+        "FIDN": 29142482,
+        "FIDS": 1,
+        "LNAM": "021C01BCADD20001"
+      },
+      "projectedChart": [
+        533.5803826032137,
+        343.3051433997539
+      ],
+      "projectedScreen": [
+        613.5803826032137,
+        411.3051433997539
+      ]
+    },
+    {
+      "class": "BUISGL",
+      "ogrFid": 35,
+      "position": [
+        -32.3772903,
+        61.0310718
+      ],
+      "attributes": {
+        "RCID": 36,
+        "PRIM": 1,
+        "GRUP": 2,
+        "OBJL": 12,
+        "RVER": 1,
+        "AGEN": 540,
+        "FIDN": 29142483,
+        "FIDS": 1,
+        "LNAM": "021C01BCADD30001"
+      },
+      "projectedChart": [
+        530.9417934033767,
+        379.3533766277598
+      ],
+      "projectedScreen": [
+        610.9417934033767,
+        447.3533766277598
+      ]
+    }
+  ]
+}

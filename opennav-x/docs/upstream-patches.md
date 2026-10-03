@@ -1410,3 +1410,35 @@ validated non-clone multipoint container before scalar access. Independent
 malformed points retain refusal; no sounding data or painter changes. The
 [negative reproduction and 147/147/145 focused checks](evidence/scrum275-multipoint-sounding/README.md)
 precede actual combined canvas/native verification.
+
+### SCRUM-268: ordinary GL text metric consistency
+
+Both core and private `s52plib::RenderText` measured atlas `M` width only when
+creating a glyph atlas. A new text object reusing it kept the different upstream
+`X` width, so identical chart labels shifted after palette changes. The two
+bounded hunks move the existing measurement/assignment immediately outside that
+cache-miss branch. Font, formatted content, anchor, offsets, scale, rotation,
+decluttering and paint calls are unchanged. This intentionally fixes ordinary
+Standard/Legacy text too, retaining its original first-draw placement. It adds
+one cached character-extent query, no new atlas/font/allocation. Software and
+specialized whole-label paths are unchanged.
+
+[Actual-method negative controls and core/private checks](evidence/scrum268-cache-metric-consistency/README.md)
+and [the corrected Linux application/canvas proof](evidence/scrum268-5bb-linux-canvas/README.md)
+retain original failures and exact source/binary identities. Native Windows,
+private DLL runtime and boat acceptance remain separate; frozen63c1029 excludes
+this later correction.
+
+### SCRUM-265: default building point resource alias
+
+`XNBLDG01`/RCID60016 redirects only pinned Simplified BUISGL lookup 1091/31143. Its
+9×9 atlas tile at (788,1160) preserves pivot (4,4) and all 81 alpha values. The original
+symbol and Paper/specialized/CONVIS1 rules remain untouched. Two isolated inks
+use prototype service/neutral roles; a source-locked signed per-pixel transfer
+retains the original two-pen geometry and baked edge filtering. Its vector
+geometry is byte-identical, changing only the two color bindings. No painter,
+conditional calculation, global CHBRN/LANDF or private C++ hook changes.
+Existing manifest/header copying carries the new resource into the private
+adapter package. [Source, inverse proof and explicit night limitations](evidence/scrum265-building-point-alias/README.md)
+precede actual canvas/native/boat review; this is not claimed as supplied custom
+building artwork.

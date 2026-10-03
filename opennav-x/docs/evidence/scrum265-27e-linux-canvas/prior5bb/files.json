@@ -1,0 +1,74 @@
+{
+  "build/xnav-linux/opencpn": {
+    "sha256": "3717908c627c496d47adecb55fa1f273e86930fde64cf571a09875fd50ae3662",
+    "bytes": 26125992
+  },
+  "build/xnav-install/bin/opencpn": {
+    "sha256": "118d8157a1df4473edbafc835c4fcb7e1624c4c5419853afd59f70bfaa112359",
+    "bytes": 26125992
+  },
+  "build/xnav-linux/include/OpenNavBuild.h": {
+    "sha256": "816c5707999c2177f7d6baf391715dc2c8ee97a59622e17d0c8d59065c27ec61",
+    "bytes": 243
+  },
+  "build/xnav-install/share/opencpn/s57data/S52RAZDS.RLE": {
+    "sha256": "560e1a1df493d7ae4c8506da814ad936adb13ef93c6f1e2abc93f2819860ff26",
+    "bytes": 1305627
+  },
+  "build/xnav-install/share/opencpn/s57data/attdecode.csv": {
+    "sha256": "49bd4c9a91947613a4b6f8b3ac435cf42a30a751bce9a7123d79591786eef03e",
+    "bytes": 29983
+  },
+  "build/xnav-install/share/opencpn/s57data/chartsymbols.xml": {
+    "sha256": "84f93522576ed5872b24865cf6161872ed0b4b634f77c64ca697a04d3568e886",
+    "bytes": 2231495
+  },
+  "build/xnav-install/share/opencpn/s57data/rastersymbols-dark.png": {
+    "sha256": "179cb516fd1a7795e8ab9ecbb8d4d5d88bf15cf42e5528c2f4e3ea2340320c33",
+    "bytes": 163832
+  },
+  "build/xnav-install/share/opencpn/s57data/rastersymbols-day.png": {
+    "sha256": "ee1020a8b94b312faba8c146974e49147d280e5ef3cc13f3cd688bbfd54dde0c",
+    "bytes": 250509
+  },
+  "build/xnav-install/share/opencpn/s57data/rastersymbols-dusk.png": {
+    "sha256": "56d6191b954978d0a85484b490228aab467610bfbf646c814af003428a766c2d",
+    "bytes": 169019
+  },
+  "build/xnav-install/share/opencpn/s57data/s57attributes.csv": {
+    "sha256": "61c3fc9db5cfbc0aaefdcfb17474d64b56db7e7be6238974f6f1a11680a6b2c7",
+    "bytes": 11996
+  },
+  "build/xnav-install/share/opencpn/s57data/s57expectedinput.csv": {
+    "sha256": "deebeea969817da8aa9b3d57801ac530e28e3ed10692f407b8ed80f680fee409",
+    "bytes": 40407
+  },
+  "build/xnav-install/share/opencpn/s57data/s57objectclasses.csv": {
+    "sha256": "5e823ae9b78fa8f976b16231b96548215fb020fb3f83751748c7e767b9ea232a",
+    "bytes": 41998
+  },
+  "build/xnav-install/share/opencpn/opennav/chart-style/v1/S52RAZDS.RLE": {
+    "sha256": "560e1a1df493d7ae4c8506da814ad936adb13ef93c6f1e2abc93f2819860ff26",
+    "bytes": 1305627
+  },
+  "build/xnav-install/share/opencpn/opennav/chart-style/v1/chartsymbols.xml": {
+    "sha256": "f4a20a46b0e5dbc9216f67386a1b0e6dd7c73e982b7b334b0ae795cd2c5f5334",
+    "bytes": 2245002
+  },
+  "build/xnav-install/share/opencpn/opennav/chart-style/v1/manifest.json": {
+    "sha256": "ffa75c9d097a143e58aa13f9300b04bebac0836ab849bd4284401df1866f4b2a",
+    "bytes": 107463
+  },
+  "build/xnav-install/share/opencpn/opennav/chart-style/v1/rastersymbols-dark.png": {
+    "sha256": "ab539905f9059ec8398b5e466a71bf7268368d66776cd41ea13706b79047a4f5",
+    "bytes": 170162
+  },
+  "build/xnav-install/share/opencpn/opennav/chart-style/v1/rastersymbols-day.png": {
+    "sha256": "852753fa6b8d32b23cfec81d060496c2602e8f1b590c73c7921e2041b4de745f",
+    "bytes": 200449
+  },
+  "build/xnav-install/share/opencpn/opennav/chart-style/v1/rastersymbols-dusk.png": {
+    "sha256": "882b3486bcabd3a075ae567f42e284ff065e83ebfe5033bb6eb68f655d18202e",
+    "bytes": 174807
+  }
+}

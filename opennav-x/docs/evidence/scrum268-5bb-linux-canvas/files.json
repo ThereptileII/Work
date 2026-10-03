@@ -1,0 +1,466 @@
+{
+  "advance-patched-source.py": {
+    "bytes": 2223,
+    "sha256": "d8d3b7cb28b6bb5c7a89b7735ddc74a4471e6fd5956c59fad35d2e114f729779"
+  },
+  "audit.json": {
+    "bytes": 2359,
+    "sha256": "c955835ab0a5508f30fb0395f76187ee75853cccdcde93f3de15a5a8ed943ee8"
+  },
+  "build/build.exit": {
+    "bytes": 2,
+    "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa"
+  },
+  "build/build.log": {
+    "bytes": 130326,
+    "sha256": "bd6978b44945da7cb7d4d236f80261051d11a9bed4b1d946a8e5303dadb0a75a"
+  },
+  "build/xnav-linux-build.log": {
+    "bytes": 3782,
+    "sha256": "ebb899dbcf94241310e20f6de61e63687835702d063d51f941d98f647678a532"
+  },
+  "build/xnav-linux-configure.log": {
+    "bytes": 6990,
+    "sha256": "81d0baa3a60cfb3f5d154c1f5efd7d7441f5eb48b3cfa220a1a8bd59a2d383e3"
+  },
+  "build/xnav-linux-install.log": {
+    "bytes": 118910,
+    "sha256": "5dfdca61c3c26f55463af8fc55e518e57108f0c3161b9dea957de95aefa2fa6d"
+  },
+  "build-prefix.sh": {
+    "bytes": 1171,
+    "sha256": "8d0cf4a7cafbefd90543c5bf0865d3c8220d6e38a5ed2b7e3dadc4365fa28814"
+  },
+  "iho/cache-inputs-readonly.py": {
+    "bytes": 4630,
+    "sha256": "0528801cfb7b27faa8027869ad8ee5ab07b6475e27544c6bf93f04e6e8c1750d"
+  },
+  "iho/capture-s64.py": {
+    "bytes": 22886,
+    "sha256": "532f1cc9c9ecc7ecaa0003d274cd2a91aaa04a6da965ef98b1fd175ce630ef05"
+  },
+  "iho/compile-layout.py": {
+    "bytes": 1576,
+    "sha256": "e258c114c1d6794aca8067fcefd9f5e9caa98b49b06b6e94dca18a7f8819168e"
+  },
+  "iho/inputs/frozen-inputs.json": {
+    "bytes": 1158,
+    "sha256": "5c8cc9bc7aade6b533b8f48beab080db19b9732f923df44f2d01512593457775"
+  },
+  "iho/inputs/staged-inputs.json": {
+    "bytes": 4481,
+    "sha256": "fcb91b84cc16bb85dd532f38221bcd94ca32a19975d38b92c23ee45d2541ea5b"
+  },
+  "iho/layout.cpp": {
+    "bytes": 1085,
+    "sha256": "a915c35d6a72eec8b5c0dc4f52cc23e4f6499a350d6930bebaa090aaaef3e877"
+  },
+  "iho/layout.json": {
+    "bytes": 639,
+    "sha256": "a6b0e18c60e741a607129f15e02e22da341e0bc9a91b2dceebf443fab38b2bfe"
+  },
+  "iho/output/capture-5bb7e05-s64-light-fog-opengl/controlled-input.json": {
+    "bytes": 9356,
+    "sha256": "ba2998f907aa0ddad51611020be3f2e61cb932a66596d8ca5504da30c38d71a9"
+  },
+  "iho/output/capture-5bb7e05-s64-light-fog-opengl/loader-selftest.json": {
+    "bytes": 715,
+    "sha256": "e21f336df7ffcd970a54664ff513e777057ff601450684568b6a637d52e51590"
+  },
+  "iho/output/capture-5bb7e05-s64-light-fog-opengl/mesa-renderer.txt": {
+    "bytes": 1691,
+    "sha256": "f188890f91fee79a5b632560ae5720093b35a0e10f9c5e6a7a782c110d16f648"
+  },
+  "iho/output/capture-5bb7e05-s64-light-fog-opengl/report.json": {
+    "bytes": 68154,
+    "sha256": "6dc7c9ff9f80330ea247d91a75e93b6e254c72ecd7c4311602ee89e85d3cddc6"
+  },
+  "iho/output/capture-5bb7e05-s64-light-fog-opengl/s64-light-fog-SKAGER-Day-FOGSIG-33.png": {
+    "bytes": 1894,
+    "sha256": "7a95eafccb57ac2f1af37f6b2cf7d590e540eecc5d2f3f9cc1833d13e2a3541d"
+  },
+  "iho/output/capture-5bb7e05-s64-light-fog-opengl/s64-light-fog-SKAGER-Day-LIGHTS-32.png": {
+    "bytes": 1894,
+    "sha256": "7a95eafccb57ac2f1af37f6b2cf7d590e540eecc5d2f3f9cc1833d13e2a3541d"
+  },
+  "iho/output/capture-5bb7e05-s64-light-fog-opengl/s64-light-fog-SKAGER-Day-return-FOGSIG-33.png": {
+    "bytes": 1894,
+    "sha256": "7a95eafccb57ac2f1af37f6b2cf7d590e540eecc5d2f3f9cc1833d13e2a3541d"
+  },
+  "iho/output/capture-5bb7e05-s64-light-fog-opengl/s64-light-fog-SKAGER-Day-return-LIGHTS-32.png": {
+    "bytes": 1894,
+    "sha256": "7a95eafccb57ac2f1af37f6b2cf7d590e540eecc5d2f3f9cc1833d13e2a3541d"
+  },
+  "iho/output/capture-5bb7e05-s64-light-fog-opengl/s64-light-fog-SKAGER-Day-return.json": {
+    "bytes": 31546,
+    "sha256": "894dcffe2633f2849a43b86a14249d7cecc5bcba562939de0fcfaa6adb2d7023"
+  },
+  "iho/output/capture-5bb7e05-s64-light-fog-opengl/s64-light-fog-SKAGER-Day-return.png": {
+    "bytes": 124039,
+    "sha256": "fe816942c6e8c6032fe27bc2ea334ec3169e3d30e51db468ccceb1f078489466"
+  },
+  "iho/output/capture-5bb7e05-s64-light-fog-opengl/s64-light-fog-SKAGER-Day.json": {
+    "bytes": 28660,
+    "sha256": "2041fe611ce2fe69c39d82fc26b073cf24d29f304a7d9fe694919c726246ade5"
+  },
+  "iho/output/capture-5bb7e05-s64-light-fog-opengl/s64-light-fog-SKAGER-Day.png": {
+    "bytes": 123973,
+    "sha256": "12d8edd9c2e5805e879c3d515724663b83bed7ea6eb2788a4b850368625f2e0c"
+  },
+  "iho/output/capture-5bb7e05-s64-light-fog-opengl/s64-light-fog-SKAGER-Dusk-FOGSIG-33.png": {
+    "bytes": 1830,
+    "sha256": "3caca48f9223913b2e860d667d923a55bd493cbec11a850ef00bdcef0be5aeb7"
+  },
+  "iho/output/capture-5bb7e05-s64-light-fog-opengl/s64-light-fog-SKAGER-Dusk-LIGHTS-32.png": {
+    "bytes": 1830,
+    "sha256": "3caca48f9223913b2e860d667d923a55bd493cbec11a850ef00bdcef0be5aeb7"
+  },
+  "iho/output/capture-5bb7e05-s64-light-fog-opengl/s64-light-fog-SKAGER-Dusk.json": {
+    "bytes": 31545,
+    "sha256": "3841e0f64d0f6ca59b3a5cc46586800baf0f5d655b0038583b226bf39c812b0d"
+  },
+  "iho/output/capture-5bb7e05-s64-light-fog-opengl/s64-light-fog-SKAGER-Dusk.png": {
+    "bytes": 112992,
+    "sha256": "a2c1d855960f8355ff8827c90b3cf2f992411c9b8e1686e1f04df70a6fdf7325"
+  },
+  "iho/output/capture-5bb7e05-s64-light-fog-opengl/s64-light-fog-SKAGER-Night-FOGSIG-33.png": {
+    "bytes": 1753,
+    "sha256": "0b96f7a45056ae3164332974fc1e49fb9307f95782454eee198c438252bd18e1"
+  },
+  "iho/output/capture-5bb7e05-s64-light-fog-opengl/s64-light-fog-SKAGER-Night-LIGHTS-32.png": {
+    "bytes": 1753,
+    "sha256": "0b96f7a45056ae3164332974fc1e49fb9307f95782454eee198c438252bd18e1"
+  },
+  "iho/output/capture-5bb7e05-s64-light-fog-opengl/s64-light-fog-SKAGER-Night.json": {
+    "bytes": 31555,
+    "sha256": "39bd2c2fcfd50aab22936c9be9eeb05ea794ae790db54ae59640385ff7b7a943"
+  },
+  "iho/output/capture-5bb7e05-s64-light-fog-opengl/s64-light-fog-SKAGER-Night.png": {
+    "bytes": 109025,
+    "sha256": "a10351b2782f2f2e4ac412b4b3cf479a7f34632d34589c9132ed822ef5a6d34c"
+  },
+  "iho/output/capture-5bb7e05-s64-light-fog-opengl/s64-light-fog-SKAGER-inferior.pid": {
+    "bytes": 3,
+    "sha256": "0fd42b3f73c448b34940b339f87d07adf116b05c0227aad72e8f0ee90533e699"
+  },
+  "iho/output/capture-5bb7e05-s64-light-fog-opengl/s64-light-fog-SKAGER-launch.log": {
+    "bytes": 8981,
+    "sha256": "fdae7747577c26b6019b8e08554720b9d91b3222ffe7d7d67cb2f801a9d9de9f"
+  },
+  "iho/output/capture-5bb7e05-s64-light-fog-opengl/s64-light-fog-SKAGER-profile/opencpn.conf": {
+    "bytes": 12142,
+    "sha256": "a6454f7c78fc05e8e176784fdc4a6640c122e0437b69b81e7315cf5d2f150d16"
+  },
+  "iho/output/capture-5bb7e05-s64-light-fog-opengl/s64-light-fog-SKAGER-profile/opencpn.log": {
+    "bytes": 21042,
+    "sha256": "43eec2bab9f704da9860474b8d19682da422b41926434bbf03a620e38cbbfdc0"
+  },
+  "iho/output/capture-5bb7e05-s64-light-fog-opengl/s64-light-fog-SKAGER-profile/opennav-diagnostics.json": {
+    "bytes": 36970,
+    "sha256": "e54f43337cd1aacde5306f6761a76763e05dc91048f06a9551cf96bb6224737c"
+  },
+  "iho/output/capture-5bb7e05-s64-light-fog-opengl/s64-light-fog-SKAGER-trace.jsonl": {
+    "bytes": 2571,
+    "sha256": "f3792c5d7f73810453c57f8f8b20d015ac4cc234c24a3c2ef5bd48d73d34558f"
+  },
+  "iho/output/capture-5bb7e05-s64-light-fog-opengl/s64-light-fog-Standard-Day-FOGSIG-33.png": {
+    "bytes": 1289,
+    "sha256": "c3e5d398198937781524e7a5a56612424b66314c81f0870a1e32788da7f9d3f2"
+  },
+  "iho/output/capture-5bb7e05-s64-light-fog-opengl/s64-light-fog-Standard-Day-return-FOGSIG-33.png": {
+    "bytes": 1289,
+    "sha256": "c3e5d398198937781524e7a5a56612424b66314c81f0870a1e32788da7f9d3f2"
+  },
+  "iho/output/capture-5bb7e05-s64-light-fog-opengl/s64-light-fog-Standard-Day-return.json": {
+    "bytes": 31547,
+    "sha256": "536650ca81f8814b21574b6375f80c2f0cad175e88cb5be62aa3689decd48b46"
+  },
+  "iho/output/capture-5bb7e05-s64-light-fog-opengl/s64-light-fog-Standard-Day-return.png": {
+    "bytes": 128727,
+    "sha256": "ad8a3e431fe2ef278637a56d816d7459070d8736d2e46e35c8edd3ef588e601d"
+  },
+  "iho/output/capture-5bb7e05-s64-light-fog-opengl/s64-light-fog-Standard-Day.json": {
+    "bytes": 28657,
+    "sha256": "d0b623dae6d9531ffe56a54af78ed9103b3d9503cebc2066ba6d37b49aae6d62"
+  },
+  "iho/output/capture-5bb7e05-s64-light-fog-opengl/s64-light-fog-Standard-Day.png": {
+    "bytes": 128661,
+    "sha256": "c7c239aceb62715b419ca7b0f579798a9b64cfb72b0ad40b2fe38bfabe328bf2"
+  },
+  "iho/output/capture-5bb7e05-s64-light-fog-opengl/s64-light-fog-Standard-Dusk-FOGSIG-33.png": {
+    "bytes": 1097,
+    "sha256": "caea1648aa73b3a8e5d8b51b7c9727dc37d19c55b9d6e3d98c6edbe6c859f114"
+  },
+  "iho/output/capture-5bb7e05-s64-light-fog-opengl/s64-light-fog-Standard-Dusk.json": {
+    "bytes": 31550,
+    "sha256": "38201c1634e290fa419c7ac5148dc111b39ae01597ad05e1bf0499fce8abcf83"
+  },
+  "iho/output/capture-5bb7e05-s64-light-fog-opengl/s64-light-fog-Standard-Dusk.png": {
+    "bytes": 111817,
+    "sha256": "66960108889515a28d28ec6181974f8b2b0bf106fff8678ba9358c88c2f6a1d3"
+  },
+  "iho/output/capture-5bb7e05-s64-light-fog-opengl/s64-light-fog-Standard-Night-FOGSIG-33.png": {
+    "bytes": 983,
+    "sha256": "075df01ba73acffefa979acd5644c0bf891c56a2f3f6d791d85faefffd3404d1"
+  },
+  "iho/output/capture-5bb7e05-s64-light-fog-opengl/s64-light-fog-Standard-Night.json": {
+    "bytes": 31551,
+    "sha256": "1b7dc00bf6a33cbea25aba65c5c777dd40c4164b1865d02f6f75514c3aa10e7a"
+  },
+  "iho/output/capture-5bb7e05-s64-light-fog-opengl/s64-light-fog-Standard-Night.png": {
+    "bytes": 105223,
+    "sha256": "7aeb84818ab21e6f5e285bb172e1319110c94d495ab69390f8d9ad597d336c8a"
+  },
+  "iho/output/capture-5bb7e05-s64-light-fog-opengl/s64-light-fog-Standard-inferior.pid": {
+    "bytes": 3,
+    "sha256": "e52d08747b9d7a6d04551bb86ee3f7ee6c49f7477c8cd66f77448378cc30b92b"
+  },
+  "iho/output/capture-5bb7e05-s64-light-fog-opengl/s64-light-fog-Standard-launch.log": {
+    "bytes": 8949,
+    "sha256": "63b7bc550fff0410076fdb9b097296f83ae390a464f076738786ab5bfe7f67c6"
+  },
+  "iho/output/capture-5bb7e05-s64-light-fog-opengl/s64-light-fog-Standard-profile/opencpn.conf": {
+    "bytes": 12146,
+    "sha256": "a993958e6b0d3e9bf42aaa429c8a1c5b9bf698b7682ec9bef38e23faf50c5b9f"
+  },
+  "iho/output/capture-5bb7e05-s64-light-fog-opengl/s64-light-fog-Standard-profile/opencpn.log": {
+    "bytes": 20949,
+    "sha256": "da55f0cbbff90f19079fdae0f209670184a01ffee974fa43fd859b83baab5398"
+  },
+  "iho/output/capture-5bb7e05-s64-light-fog-opengl/s64-light-fog-Standard-profile/opennav-diagnostics.json": {
+    "bytes": 36971,
+    "sha256": "d360332f9bf5b19ee1c381558fd99ed2de86e395b3b753a57b135cf848c0db34"
+  },
+  "iho/output/capture-5bb7e05-s64-light-fog-opengl/s64-light-fog-Standard-trace.jsonl": {
+    "bytes": 2135,
+    "sha256": "830e0be0a94913dd3a1b19d4dee2861e1035ab0abcfdafdc3f96a403e7e68cc6"
+  },
+  "iho/output/layout-compile-final.log": {
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "iho/output/layout-receipt.json": {
+    "bytes": 7739,
+    "sha256": "f48aef9695e1bc80f0359011cbce78e7bb68fdd5e23e7d6d7d78f57fb17e0e45"
+  },
+  "iho/output/opengl-s64-light-fog.exit": {
+    "bytes": 2,
+    "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa"
+  },
+  "iho/output/opengl-s64-light-fog.log": {
+    "bytes": 2932,
+    "sha256": "4152fe0b138bb55ebadcc6595c2d5ef702cb70e7e429480d8db0353b33480948"
+  },
+  "iho/output/setup.exit": {
+    "bytes": 2,
+    "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa"
+  },
+  "iho/output/setup.log": {
+    "bytes": 5239,
+    "sha256": "0ad51e8505800cf685a44b1ab1f35084ee1607dfc846fa0b4c44341767e1ae81"
+  },
+  "iho/render-probe.gdb": {
+    "bytes": 6745,
+    "sha256": "92c7f878c8e13e11ad0e91214727a3aff4e233aec8b05da9788e2db955d766ef"
+  },
+  "iho/scenes.json": {
+    "bytes": 6593,
+    "sha256": "9a60a5c2789b723a9ee056c8cb8c40ba74307783898324af1c4682b20b5ec8a7"
+  },
+  "iho/seal-inputs.py": {
+    "bytes": 2973,
+    "sha256": "b94095a5b74e4c499e8efdecc01f74f4bfff4901343f9096ce32bccf1486be1b"
+  },
+  "prior326/OpenNavBuild.h": {
+    "bytes": 243,
+    "sha256": "0d6de688c60a29bf90b0497125794c51039b38f0b4e4bf6efb7be57dddbdd085"
+  },
+  "prior326/SHA256SUMS": {
+    "bytes": 356,
+    "sha256": "125e3da5c397c2f44d462068f35562f9c78ad86a9445e74a75a79a9b6d4634a8"
+  },
+  "private-closure.json": {
+    "bytes": 38083,
+    "sha256": "78be3d1bc8df68b8108cde9035c7010c28ed449e116a8d8cbf3423b5212b184a"
+  },
+  "run-build.sh": {
+    "bytes": 1878,
+    "sha256": "e3a2286878623ded8d7870b7df646ffd68e573a999f424cd32d2e0262bbf1490"
+  },
+  "run-capture.sh": {
+    "bytes": 1976,
+    "sha256": "1222eab1701733e553c9c9ed098d38926f3f69e39bd721e2ded747ef4bf76e30"
+  },
+  "run-setup.sh": {
+    "bytes": 1136,
+    "sha256": "347c0fa5e78a860ef5c5dd9b0e6035ba794086cc6d1e379161f722f07db253d5"
+  },
+  "run-yellow.sh": {
+    "bytes": 1946,
+    "sha256": "df665f35128d6c8d47e2539d7d6870842c0c8853a9fd9b485709b0708e53cbeb"
+  },
+  "setup-yellow.sh": {
+    "bytes": 1139,
+    "sha256": "8aa705f30acf0454729d740a4330bed602ea11a83af7264288793bd275169b49"
+  },
+  "source-advance.json": {
+    "bytes": 461,
+    "sha256": "8b8418dc68077f2fb50beaf4fe7ca94ec906664b68262d4e995ee8c1e355a466"
+  },
+  "verify-private.py": {
+    "bytes": 2250,
+    "sha256": "33a77bcfd0523979c4fa1b3b969a5f8819a4d119730168eaf24adf1e8d8c86bb"
+  },
+  "yellow/cache-inputs-readonly.py": {
+    "bytes": 4630,
+    "sha256": "0528801cfb7b27faa8027869ad8ee5ab07b6475e27544c6bf93f04e6e8c1750d"
+  },
+  "yellow/capture-s64.py": {
+    "bytes": 22006,
+    "sha256": "4725fd8e375198e9a395f4a153376a7000ffa84da6b46f7775c1023fbcb66510"
+  },
+  "yellow/compile-layout.py": {
+    "bytes": 1576,
+    "sha256": "e258c114c1d6794aca8067fcefd9f5e9caa98b49b06b6e94dca18a7f8819168e"
+  },
+  "yellow/inputs/frozen-inputs.json": {
+    "bytes": 1158,
+    "sha256": "5c8cc9bc7aade6b533b8f48beab080db19b9732f923df44f2d01512593457775"
+  },
+  "yellow/inputs/staged-inputs.json": {
+    "bytes": 4481,
+    "sha256": "fcb91b84cc16bb85dd532f38221bcd94ca32a19975d38b92c23ee45d2541ea5b"
+  },
+  "yellow/layout.cpp": {
+    "bytes": 1085,
+    "sha256": "a915c35d6a72eec8b5c0dc4f52cc23e4f6499a350d6930bebaa090aaaef3e877"
+  },
+  "yellow/layout.json": {
+    "bytes": 639,
+    "sha256": "a6b0e18c60e741a607129f15e02e22da341e0bc9a91b2dceebf443fab38b2bfe"
+  },
+  "yellow/output/capture-5bb7e05-s64-yellow-opengl/controlled-input.json": {
+    "bytes": 4752,
+    "sha256": "655e019dfd9a92b6682ce751482c63dbe367211f005424882ae4ab0809aff5cb"
+  },
+  "yellow/output/capture-5bb7e05-s64-yellow-opengl/loader-selftest.json": {
+    "bytes": 715,
+    "sha256": "e21f336df7ffcd970a54664ff513e777057ff601450684568b6a637d52e51590"
+  },
+  "yellow/output/capture-5bb7e05-s64-yellow-opengl/mesa-renderer.txt": {
+    "bytes": 1691,
+    "sha256": "8fe4180c56ebbb295d77955c608d1bd84c58aec785bf3636ff0c057c6bf6f7f8"
+  },
+  "yellow/output/capture-5bb7e05-s64-yellow-opengl/report.json": {
+    "bytes": 31442,
+    "sha256": "2e92ae05c40073a3c8fc7529a95e10308e54a3425b2acf292950663cdb3e0b89"
+  },
+  "yellow/output/capture-5bb7e05-s64-yellow-opengl/s64-yellow-Standard-Day-BOYSPP-254.png": {
+    "bytes": 1225,
+    "sha256": "9e554834ea3907d707e0024850d3b31dcbc541dd35e5bef15a0045c9ab409906"
+  },
+  "yellow/output/capture-5bb7e05-s64-yellow-opengl/s64-yellow-Standard-Day-return-BOYSPP-254.png": {
+    "bytes": 1225,
+    "sha256": "9e554834ea3907d707e0024850d3b31dcbc541dd35e5bef15a0045c9ab409906"
+  },
+  "yellow/output/capture-5bb7e05-s64-yellow-opengl/s64-yellow-Standard-Day-return.json": {
+    "bytes": 31544,
+    "sha256": "cad6576cd7400a15709549c8a2297135de6f80e9158a670e238a3e9beedf23d3"
+  },
+  "yellow/output/capture-5bb7e05-s64-yellow-opengl/s64-yellow-Standard-Day-return.png": {
+    "bytes": 80870,
+    "sha256": "a529ac0c748fb660c0eee68c6d3a62036a5ab8831e305421e694af5ce2af7977"
+  },
+  "yellow/output/capture-5bb7e05-s64-yellow-opengl/s64-yellow-Standard-Day.json": {
+    "bytes": 28655,
+    "sha256": "8f4e499ea95cea46d1882c0676939838cefdfa0b9bf660e1cdd7e526d6fdf3e6"
+  },
+  "yellow/output/capture-5bb7e05-s64-yellow-opengl/s64-yellow-Standard-Day.png": {
+    "bytes": 80806,
+    "sha256": "f93f44d7376fcd66da913a2c365032347211ff9953ddbc57e2c60f1396a93a85"
+  },
+  "yellow/output/capture-5bb7e05-s64-yellow-opengl/s64-yellow-Standard-Dusk-BOYSPP-254.png": {
+    "bytes": 1059,
+    "sha256": "84ac463f9e77b264bf828fe68e23fe62d80de9ee8b5db5d70d3000d528ee568d"
+  },
+  "yellow/output/capture-5bb7e05-s64-yellow-opengl/s64-yellow-Standard-Dusk.json": {
+    "bytes": 31544,
+    "sha256": "3e393d9f23907bf21afbc8fa32dc9eae51afebce0d1fe3bafd11768f1271291d"
+  },
+  "yellow/output/capture-5bb7e05-s64-yellow-opengl/s64-yellow-Standard-Dusk.png": {
+    "bytes": 76967,
+    "sha256": "5de5f5db945f4db66fec235a28fe071ab0e3ca4ea7cb51aa458a95e85004ed9e"
+  },
+  "yellow/output/capture-5bb7e05-s64-yellow-opengl/s64-yellow-Standard-Night-BOYSPP-254.png": {
+    "bytes": 991,
+    "sha256": "923a0b187349cfaf99fb20c7b444eb124538966f8ebea0fd8de482190dc00509"
+  },
+  "yellow/output/capture-5bb7e05-s64-yellow-opengl/s64-yellow-Standard-Night.json": {
+    "bytes": 31548,
+    "sha256": "27ce91b2de41e035ed4d19ccf52bffcc069dcc3be03d7fbd1354205504985f3e"
+  },
+  "yellow/output/capture-5bb7e05-s64-yellow-opengl/s64-yellow-Standard-Night.png": {
+    "bytes": 75633,
+    "sha256": "83d770b8493ef3a96a3de51c1363de7f3169d54459b70b99821d7ed44517b252"
+  },
+  "yellow/output/capture-5bb7e05-s64-yellow-opengl/s64-yellow-Standard-inferior.pid": {
+    "bytes": 3,
+    "sha256": "0fd42b3f73c448b34940b339f87d07adf116b05c0227aad72e8f0ee90533e699"
+  },
+  "yellow/output/capture-5bb7e05-s64-yellow-opengl/s64-yellow-Standard-launch.log": {
+    "bytes": 8949,
+    "sha256": "3906dd336bfa6b3e891026db7105c70a75415450b634b1d2cb67ddf6c5747e8c"
+  },
+  "yellow/output/capture-5bb7e05-s64-yellow-opengl/s64-yellow-Standard-profile/opencpn.conf": {
+    "bytes": 12148,
+    "sha256": "0a0665096506a00d0d8d1668a3b7d5c431833e3d4bf8827fe792382bc2c530d9"
+  },
+  "yellow/output/capture-5bb7e05-s64-yellow-opengl/s64-yellow-Standard-profile/opencpn.log": {
+    "bytes": 20963,
+    "sha256": "59c49149d7b4542f09cabc9f8a939a3643c9f6438bad4412dd0e63b6562667d7"
+  },
+  "yellow/output/capture-5bb7e05-s64-yellow-opengl/s64-yellow-Standard-profile/opennav-diagnostics.json": {
+    "bytes": 36968,
+    "sha256": "401e1b2b2779766cf05bbdfc2a17db0d77faaacae4b683e3a8bb581cfcb55513"
+  },
+  "yellow/output/capture-5bb7e05-s64-yellow-opengl/s64-yellow-Standard-trace.jsonl": {
+    "bytes": 1535,
+    "sha256": "83ab8327db58cad7fb6bf022b2b596df4d833749b1446fd7735a76fceb178a36"
+  },
+  "yellow/output/layout-compile-final.log": {
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "yellow/output/layout-receipt.json": {
+    "bytes": 7745,
+    "sha256": "dd572924ec676cc9437b6afc45837f48c0c9f4efc972cf2c113d18261cf475fa"
+  },
+  "yellow/output/opengl-s64-yellow.exit": {
+    "bytes": 2,
+    "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa"
+  },
+  "yellow/output/opengl-s64-yellow.log": {
+    "bytes": 1627,
+    "sha256": "7f81949cd15a7a018830868a09d67037af39e151eba5a46a67b9a540b0496252"
+  },
+  "yellow/output/setup.exit": {
+    "bytes": 2,
+    "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa"
+  },
+  "yellow/output/setup.log": {
+    "bytes": 5239,
+    "sha256": "0ad51e8505800cf685a44b1ab1f35084ee1607dfc846fa0b4c44341767e1ae81"
+  },
+  "yellow/render-probe.gdb": {
+    "bytes": 4872,
+    "sha256": "31174341f88f97f7135487d3b722b5acf5038773c3361e1a43889a5590ff71b8"
+  },
+  "yellow/scenes.json": {
+    "bytes": 1963,
+    "sha256": "88e0fec835ac3ac533836ec8053442b5055efffe79455e0ce9f3eec70e6fd8ce"
+  },
+  "yellow/seal-inputs.py": {
+    "bytes": 2973,
+    "sha256": "b94095a5b74e4c499e8efdecc01f74f4bfff4901343f9096ce32bccf1486be1b"
+  }
+}

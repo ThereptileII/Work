@@ -1,0 +1,44 @@
+{
+  "_ZN7s52plib11RenderT_AllEP12_ObjRazRulesP6_Rulesb": {
+    "kind": "RenderT_All",
+    "virtual_address": "0x10f7d70",
+    "file_offset": 17792368,
+    "bytes": "554889e54881ecd001000048895dd848"
+  },
+  "_ZN7s52plib10RenderTextEP4wxDCP9S52_TextCiiP6wxRectP6S57Objb": {
+    "kind": "RenderText",
+    "virtual_address": "0x10f4e60",
+    "file_offset": 17780320,
+    "bytes": "55660fefc04889e541574989ff415649"
+  },
+  "_ZN7TexFont5BuildER6wxFontddb": {
+    "kind": "Build",
+    "virtual_address": "0x111d1a0",
+    "file_offset": 17944992,
+    "bytes": "554889e54881ec6001000048895dd848"
+  },
+  "_ZN7TexFont13GetTextExtentEPKcPiS2_": {
+    "kind": "GetTextExtent_char",
+    "virtual_address": "0x111adf0",
+    "file_offset": 17935856,
+    "bytes": "530fbe064989d24989c984c00f84a600"
+  },
+  "_ZN7TexFont13GetTextExtentERK8wxStringPiS3_": {
+    "kind": "GetTextExtent_wx",
+    "virtual_address": "0x111b490",
+    "file_offset": 17937552,
+    "bytes": "4883ec68488b05e5804e0048895c2438"
+  },
+  "_ZN7TexFont12RenderStringEPKciif": {
+    "kind": "RenderString_char",
+    "virtual_address": "0x111ceb0",
+    "file_offset": 17944240,
+    "bytes": "0f28c8660f6ed1660f6ec24883ec1866"
+  },
+  "_ZN7TexFont12RenderStringERK8wxStringiif": {
+    "kind": "RenderString_wx",
+    "virtual_address": "0x111cfa0",
+    "file_offset": 17944480,
+    "bytes": "4883ec7848895c24484889f348896c24"
+  }
+}

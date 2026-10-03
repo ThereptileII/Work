@@ -1,6 +1,30 @@
 # Prototype conformance — in progress
 
-The current frozen candidate is local `96c0c27` / published `15452e5`
+## Current qualification and review boundaries
+
+The current frozen Windows candidate is local `d18da7c` / published `63c1029`
+([CI](https://github.com/ThereptileII/Work/actions/runs/37147671879));
+[its complete source mapping](../evidence/skager-combined-d18-publication.json)
+is verified. Native qualification is still running. It includes the124-DIP
+SKAGER wordmark, prototype font stack, classified buoy/light artwork, neutral
+structural paint and compact ordinary sector fans. See the
+[explicit supplied-artwork coverage](reviews/scrum264265-current-artwork-coverage.md)
+for unmapped variants; catalogue availability does not mean every stock glyph
+has a redesigned counterpart.
+
+[Actual combined326 Linux canvas evidence](../evidence/scrum275276-326-linux-canvas/README.md)
+qualifies24 software/Mesa captures and retains the separate failed elevation-label
+Day return. The [corrected5bb focused actual GL gate](../evidence/scrum268-5bb-linux-canvas/README.md)
+then passes12 images and three exact Day returns. That small chart-text cache fix
+is integrated locally as `a8481a8`, **not** present in the frozen Windows build.
+Root reviewed full Day/Night/Standard images and independently verified116
+retained files. No Windows/boat or complete-screen row advances from Linux proof.
+Ordinary all-round light circles, classified fallback symbols and stock overzoom
+warnings remain visible; these images are not prototype-perfect screen acceptance.
+
+## Retained earlier qualification history
+
+The preceding frozen candidate was local `96c0c27` / published `15452e5`
 ([CI](https://github.com/ThereptileII/Work/actions/runs/37136712793)); its
 [publication receipt](../evidence/skager-combined-96c0-publication.json) binds the
 exact mapped source. The 2026-10-03 18:07 UTC native job observation confirms
