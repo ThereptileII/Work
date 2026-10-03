@@ -1,0 +1,421 @@
+{
+  "sourceLocal": "f0976cc65ea63d3ed6f60ac53ec38a856d11b66b",
+  "sourceRemote": "9a4231f45d978321c612a6a1de66d735d531bbaa",
+  "summaryPassed": true,
+  "nativeProductAcceptance": false,
+  "reconstructedPatchedUpstreamTree": "b55b3bf72da3690ac2724e6663568d75cad12723",
+  "localInputs": {
+    "total": 308,
+    "exact": 21,
+    "gitCrlfOnly": 287
+  },
+  "upstreamInputs": {
+    "total": 1438,
+    "exact": 16,
+    "gitCrlfOnly": 1422
+  },
+  "copiedProductionUnitsMatched": 17,
+  "generatedResourcesRehashed": 7,
+  "generatedResourcesRegenerated": {
+    "chartsymbols.xml": {
+      "local": {
+        "bytes": 2232038,
+        "sha256": "980eb621e5c8cc52815bb25e3e288daf71ca9a8551b9509b65b7447e03b54d7c"
+      },
+      "artifact": {
+        "bytes": 2232038,
+        "sha256": "980eb621e5c8cc52815bb25e3e288daf71ca9a8551b9509b65b7447e03b54d7c"
+      },
+      "match": "exact"
+    },
+    "manifest.json": {
+      "local": {
+        "bytes": 10838,
+        "sha256": "7c1f9e41f7dbd99b322a5c1cc9a4c0b73b8ad3ba3505c7da89f05ddc5e4abe39"
+      },
+      "artifact": {
+        "bytes": 10838,
+        "sha256": "7c1f9e41f7dbd99b322a5c1cc9a4c0b73b8ad3ba3505c7da89f05ddc5e4abe39"
+      },
+      "match": "exact"
+    },
+    "rastersymbols-dark.png": {
+      "local": {
+        "bytes": 166498,
+        "sha256": "bdf132c9799214470fab355af467768b43f26b86ee6483d9b2363e91714ca434"
+      },
+      "artifact": {
+        "bytes": 166498,
+        "sha256": "bdf132c9799214470fab355af467768b43f26b86ee6483d9b2363e91714ca434"
+      },
+      "match": "exact"
+    },
+    "rastersymbols-day.png": {
+      "local": {
+        "bytes": 196751,
+        "sha256": "c2b8a3b646a15d1483b060a4df1a470af278221db0f219a31f18963a94c9979f"
+      },
+      "artifact": {
+        "bytes": 196751,
+        "sha256": "c2b8a3b646a15d1483b060a4df1a470af278221db0f219a31f18963a94c9979f"
+      },
+      "match": "exact"
+    },
+    "rastersymbols-dusk.png": {
+      "local": {
+        "bytes": 171356,
+        "sha256": "1beac21361321e7b71c8270c3430decd2a27954e5eddd987bba79494ad1c8b4a"
+      },
+      "artifact": {
+        "bytes": 171356,
+        "sha256": "1beac21361321e7b71c8270c3430decd2a27954e5eddd987bba79494ad1c8b4a"
+      },
+      "match": "exact"
+    },
+    "S52RAZDS.RLE": {
+      "local": {
+        "bytes": 1305627,
+        "sha256": "560e1a1df493d7ae4c8506da814ad936adb13ef93c6f1e2abc93f2819860ff26"
+      },
+      "artifact": {
+        "bytes": 1305627,
+        "sha256": "560e1a1df493d7ae4c8506da814ad936adb13ef93c6f1e2abc93f2819860ff26"
+      },
+      "match": "exact"
+    },
+    "XNavChartResources.h": {
+      "local": {
+        "bytes": 934,
+        "sha256": "e9998bbe1ce17cf00007cf02402da9b70222bce1bc54b2cf60efbdedd1e04104"
+      },
+      "artifact": {
+        "bytes": 934,
+        "sha256": "e9998bbe1ce17cf00007cf02402da9b70222bce1bc54b2cf60efbdedd1e04104"
+      },
+      "match": "exact"
+    }
+  },
+  "generatedConfigHeadersRehashed": 2,
+  "msvcProjectsRehashed": 17,
+  "objects": {
+    "check_chart_ais": {
+      "bytes": 415099,
+      "sha256": "446bb2289a7bbbcaa93e6237eabdc919c17b13bd4c905c380621915d4a7b9f73",
+      "coffMachine": "0x014c",
+      "name": "ais.obj"
+    },
+    "check_chart_ChartPresentation": {
+      "bytes": 395457,
+      "sha256": "36d9797fbee9e96674ceb3af4b127e2e584cd9deee59de8714c589f29a16b377",
+      "coffMachine": "0x014c",
+      "name": "ChartPresentation.obj"
+    },
+    "check_chart_ChartRouteLabel": {
+      "bytes": 246055,
+      "sha256": "a7a9acb81049a7dc75f2b6911e5cd292b21b7645a816424216f4bb4e591e52aa",
+      "coffMachine": "0x014c",
+      "name": "ChartRouteLabel.obj"
+    },
+    "check_chart_ChartRouteUnderlay": {
+      "bytes": 69719,
+      "sha256": "ff86f3acd63b5997aefea6f7acb2b275ec7e5505a75388b8529ce7b245ffa8f1",
+      "coffMachine": "0x014c",
+      "name": "ChartRouteUnderlay.obj"
+    },
+    "check_chart_ChartRouteUnderlayGeometry": {
+      "bytes": 104231,
+      "sha256": "5d1911f36d3aac586753f34d9966e3f6d21609bd2ea0297c503cc657a401b6ab",
+      "coffMachine": "0x014c",
+      "name": "ChartRouteUnderlayGeometry.obj"
+    },
+    "check_chart_ChartRouteWaypoint": {
+      "bytes": 262361,
+      "sha256": "fffe251bb261eebed9e1abf573772a5f636a049facdef931fffd39d927e0def2",
+      "coffMachine": "0x014c",
+      "name": "ChartRouteWaypoint.obj"
+    },
+    "check_chart_chartsymbols": {
+      "bytes": 178112,
+      "sha256": "46931bec8ee48d2e2403d16d6192667c47e1413a10752ca2d57bae8a6c8db7bb",
+      "coffMachine": "0x014c",
+      "name": "chartsymbols.obj"
+    },
+    "check_chart_chcanv": {
+      "bytes": 1150473,
+      "sha256": "08318bdc9198f419580697c45e76058d064c225cdd14bc72b86da16c0f626f96",
+      "coffMachine": "0x014c",
+      "name": "chcanv.obj"
+    },
+    "check_chart_DepthFont": {
+      "bytes": 173198,
+      "sha256": "4940516422818085898d7b239195773ad18319c9251f5763ab2806d6d95c9377",
+      "coffMachine": "0x014c",
+      "name": "DepthFont.obj"
+    },
+    "check_chart_glChartCanvas": {
+      "bytes": 699878,
+      "sha256": "dbde2b6c9c3834afe2165aad1727d64a27bcbc64d69dccd7c0f9d1a84414cce1",
+      "coffMachine": "0x014c",
+      "name": "glChartCanvas.obj"
+    },
+    "check_chart_OnboardAisPresentation": {
+      "bytes": 98337,
+      "sha256": "b4ed7f322afee1e449ed18385033bda0cca5fbaf569c39a5380a4bbcb3d7b1c3",
+      "coffMachine": "0x014c",
+      "name": "OnboardAisPresentation.obj"
+    },
+    "check_chart_OnlineAisOverlay": {
+      "bytes": 100686,
+      "sha256": "e0427728543eab52f0e5c472bfd426250c28f49bb28a2dc63844d82d5ac31764",
+      "coffMachine": "0x014c",
+      "name": "OnlineAisOverlay.obj"
+    },
+    "check_chart_piano": {
+      "bytes": 304230,
+      "sha256": "ab80033a6915d5a98287be210db643c10692edff00c3d347a95e19a35d2f6544",
+      "coffMachine": "0x014c",
+      "name": "piano.obj"
+    },
+    "check_chart_route_gui": {
+      "bytes": 333343,
+      "sha256": "213cbf289f5471b6a4f274528f9d72d9e4400bd3246b207c4671eb9e94cac717",
+      "coffMachine": "0x014c",
+      "name": "route_gui.obj"
+    },
+    "check_chart_route_point_gui": {
+      "bytes": 332548,
+      "sha256": "7932fd9c5fdd63084be78504b9bda203c356b23187b11e11a57e043777dc3396",
+      "coffMachine": "0x014c",
+      "name": "route_point_gui.obj"
+    },
+    "check_chart_s52plib": {
+      "bytes": 642180,
+      "sha256": "74d6581806d962e23b6bc234369b725057d37a7e39e5d773c93f98d5da3d36f6",
+      "coffMachine": "0x014c",
+      "name": "s52plib.obj"
+    },
+    "check_chart_waypointman_gui": {
+      "bytes": 380321,
+      "sha256": "5e688de076ff594af214b7c2b75bbcf89e63385d59b592f987b25490664b2a80",
+      "coffMachine": "0x014c",
+      "name": "waypointman_gui.obj"
+    }
+  },
+  "policy": {
+    "testFixtures": false,
+    "pilotLoopback": false,
+    "openglCompiled": true,
+    "dependencyBuilds": false,
+    "applicationLinked": false
+  },
+  "limits": [
+    "Compile only: no application/dependency link or GUI/rendering/DPI/installer/boat acceptance",
+    "1558 SDK header identities retained in artifact manifest; headers not uploaded for independent byte rehash"
+  ],
+  "github": {
+    "jobs": {
+      "jobs": [
+        {
+          "id": 111093615789,
+          "name": "compile",
+          "status": "completed",
+          "conclusion": "success",
+          "run_id": 37085103227,
+          "logs_url": null,
+          "steps": [
+            {
+              "name": "Set up job",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 1
+            },
+            {
+              "name": "Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 2
+            },
+            {
+              "name": "Fetch supported OpenCPN source",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 3
+            },
+            {
+              "name": "Prove native peer CLI home precondition before GUI startup",
+              "status": "completed",
+              "conclusion": "skipped",
+              "number": 4
+            },
+            {
+              "name": "Install capture dependency",
+              "status": "completed",
+              "conclusion": "skipped",
+              "number": 5
+            },
+            {
+              "name": "Verify component runtime staging guards",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 6
+            },
+            {
+              "name": "Verify strict native drawer geometry oracle",
+              "status": "completed",
+              "conclusion": "skipped",
+              "number": 7
+            },
+            {
+              "name": "Verify strict chart layout and Layers oracle",
+              "status": "completed",
+              "conclusion": "skipped",
+              "number": 8
+            },
+            {
+              "name": "Run selected bounded native proof",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 9
+            },
+            {
+              "name": "Run actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 10
+            },
+            {
+              "name": "Post Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 20
+            },
+            {
+              "name": "Complete job",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 21
+            }
+          ]
+        },
+        {
+          "id": 111093616902,
+          "name": "search-reference",
+          "status": "completed",
+          "conclusion": "skipped",
+          "run_id": 37085103227,
+          "logs_url": null,
+          "steps": null
+        }
+      ]
+    },
+    "artifacts": {
+      "artifacts": [
+        {
+          "id": 11259832267,
+          "name": "native-changed-units-9a4231f45d978321c612a6a1de66d735d531bbaa",
+          "size_in_bytes": 4743383,
+          "url": "https://api.github.com/repos/ThereptileII/Work/actions/artifacts/11259832267",
+          "archive_download_url": "https://api.github.com/repos/ThereptileII/Work/actions/artifacts/11259832267/zip",
+          "expired": false,
+          "created_at": "2026-10-03T01:13:43Z",
+          "expires_at": "2027-01-01T01:10:58Z",
+          "updated_at": "2026-10-03T01:13:43Z",
+          "digest": "sha256:072eebb0bc27f8616d063c4c16e67889d4f25815417b82cceb4be079802c5f3e",
+          "workflow_run": {
+            "id": 37085103227,
+            "repository_id": 864043804,
+            "head_repository_id": 864043804,
+            "head_branch": "skager-windows-changed-units",
+            "head_sha": "9a4231f45d978321c612a6a1de66d735d531bbaa"
+          }
+        }
+      ]
+    }
+  },
+  "archive": {
+    "bytes": 4743383,
+    "sha256": "072eebb0bc27f8616d063c4c16e67889d4f25815417b82cceb4be079802c5f3e",
+    "zipEntries": 407,
+    "allCrcPassed": true
+  },
+  "compileLog": {
+    "actualClCompileCommands": 17,
+    "successfulTargetBuilds": 17,
+    "compiler": "MSVC14.44.35207 HostX64/x86",
+    "perTargetElapsed": [
+      "00:00:07.52",
+      "00:00:04.17",
+      "00:00:04.11",
+      "00:00:03.83",
+      "00:00:01.26",
+      "00:00:03.87",
+      "00:00:03.87",
+      "00:00:07.76",
+      "00:00:06.22",
+      "00:00:04.33",
+      "00:00:04.43",
+      "00:00:03.94",
+      "00:00:05.54",
+      "00:00:04.34",
+      "00:00:04.62",
+      "00:00:03.17",
+      "00:00:02.79"
+    ]
+  },
+  "retainedArtifactHashes": {
+    "summary.json": {
+      "bytes": 559456,
+      "sha256": "ecc0612174f077b51e184a85dca72e5744df3ef48375b5da23fc04b743cd602b"
+    },
+    "chart-inputs.json": {
+      "bytes": 532337,
+      "sha256": "9b4a1da7880cd108050ab1124fc266cb19be6247a7ff5e54cca44bc3ee495302"
+    },
+    "compile.log": {
+      "bytes": 135196,
+      "sha256": "79187dd07e95b1b50b3da513373b2a7712aea74a672f4250c00d5d860b9222e0"
+    },
+    "configure.log": {
+      "bytes": 2127,
+      "sha256": "ea4539af9d20adeaae966e85b499a8da19baba64807ccd2ece7ad6e21ec9f020"
+    },
+    "prepare.log": {
+      "bytes": 2211,
+      "sha256": "9e23823036d9f27907b1c7c0080d9488c2df83ffcc93dd251d366db8cc330db5"
+    },
+    "verify-source.log": {
+      "bytes": 521,
+      "sha256": "bd2de8032acc307ab3fc6e0aef079dc5f33bedd0ba74664afb361f0612106b13"
+    }
+  },
+  "requiredNewInputs": {
+    "resources/chart-style/v1/services/PILBOP02-alpha.json": {
+      "bytes": 1424,
+      "sha256": "8be1b85112c7ea25c5deab4495b28fa5bd2383aec452c08c428f26b3169c6ad5"
+    },
+    "resources/chart-style/v1/services/PILBOP02.svg": {
+      "bytes": 350,
+      "sha256": "ed489486ec5afeb091a213fc4a57496fb483c32ad89a57cdaa446eaf21bad850"
+    },
+    "resources/chart-style/v1/services/RTPBCN02-alpha.json": {
+      "bytes": 1424,
+      "sha256": "4ca4cb14591c363fe9f3f90a7c327e027b667d3d4ad03d65afcf7aa00663315e"
+    },
+    "resources/chart-style/v1/services/RTPBCN02.svg": {
+      "bytes": 383,
+      "sha256": "28d902aa8cfa8f64045959b46b1cfd59d35d7c09b870d4a6e661ca72712a95b5"
+    },
+    "resources/chart-style/v1/services/provenance.json": {
+      "bytes": 2097,
+      "sha256": "d0274cdcbd395a2596251e3b28c1461533628e8d4719ab057ea940618709a236"
+    },
+    "src/integration/ChartRouteLabel.cpp": {
+      "bytes": 6278,
+      "sha256": "e7130cb278fde9445d22caef7f600892b3dbc2fae685e94a5e53f4a1c2a6db94"
+    },
+    "tools/chart_service_art.py": {
+      "bytes": 5834,
+      "sha256": "5d579146440d4a4878e6c1daa665b7e27de2ee47379f9d116e72fcc88a42ff46"
+    }
+  }
+}

@@ -21,6 +21,6 @@
     "abi": "OpenSSL major version 3; product Win32/x86 compatibility remains to be qualified",
     "instructions": "NOTES-WINDOWS.md and INSTALL.md from the verified 3.5.9 archive"
   },
-  "securityAndReleaseStatus": "Source and license provenance only. Exact XNav production DLL hashes, PE imports, binary qualification, and release approval remain pending.",
+  "securityAndReleaseStatus": "Source and license provenance only. Exact SKAGER production DLL hashes, PE imports, binary qualification, and release approval remain pending.",
   "supersedes": "docs/third-party/OpenSSL-3.0.5/provenance.json"
 }

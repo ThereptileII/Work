@@ -1,5 +1,18 @@
 # Prototype conformance — in progress
 
+Exact `f0976cc` now has [sixteen real-ENC comparisons](../evidence/skager-product-fidelity-f0976cc-linux/README.md)
+with corrected land, effective Night surfaces and matte-free approved SKAGER
+artwork. Software and Mesa-GL theme cycles pass; Standard remains pixel-identical
+to the retained baseline. The [route comparison](reviews/scrum252-integrated-f0976cc.md)
+initially fails the software name-card/circle/understroke check while the GL
+route scenario passes. [Direct fixture mutations omitted normal repaint
+notifications](reviews/scrum252-fixture-repaint.md); an ordinary repaint shows
+the correct software objects. The narrow fixture correction retains every
+navigation assertion and still needs a fresh integrated capture. It does not
+establish chart conformance acceptance.
+The unchanged stock active-waypoint name also remains low contrast at Night.
+Native Windows runtime and boat review remain open.
+
 Frozen source `1356fd1` (published `9fcd3db`) now has [sixteen corrected real-ENC
 captures and independent review](reviews/skager-chart-1356fd1-linux.md), covering
 software/Mesa-GL through Day → Dusk → Night → Day. The repeated-edge

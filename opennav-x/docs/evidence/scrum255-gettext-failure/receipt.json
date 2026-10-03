@@ -1,0 +1,21 @@
+{
+  "run": 37080314681,
+  "job": 111080247315,
+  "remoteCommit": "9fcd3db54ee6913cc144ecfc09ec2152078a6eff",
+  "localCommit": "1356fd1603aacbea04d7081d16331e9a181180bb",
+  "artifact": 11260087803,
+  "bytes": 20009975,
+  "zipSha256": "e081a53c6638e20a5b852659d88fc5c8857ec9f564faaf30b507fb77e9fe6485",
+  "crcEntries": 5787,
+  "sourceLog": {
+    "name": "windows-xnav-Win32.log",
+    "bytes": 5368668,
+    "sha256": "c786665eecc646fdf1087d78d6d30b743e53b7fd1e27fd6770092171a16798f7"
+  },
+  "failure": "Poedit acquisition HTTP504 was masked by upstream batch success; missing gettext discovered after maintained dependency builds",
+  "applicationCompilationStarted": false,
+  "productCrashObserved": false,
+  "curlReportedPassed": 1569,
+  "curlReportedSkipped": 503,
+  "nextIssue": "SCRUM-255"
+}

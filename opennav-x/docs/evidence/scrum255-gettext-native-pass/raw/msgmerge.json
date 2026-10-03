@@ -1,0 +1,21 @@
+{
+  "command": [
+    "C:\\Program Files\\Poedit\\GettextTools\\bin\\msgmerge.exe",
+    "--quiet",
+    "--output-file=D:\\a\\Work\\Work\\opennav-x\\evidence\\local\\windows-gettext-native\\merged.po",
+    "D:\\a\\Work\\Work\\opennav-x\\evidence\\local\\windows-gettext-native\\sample.po",
+    "D:\\a\\Work\\Work\\opennav-x\\evidence\\local\\windows-gettext-native\\sample.pot"
+  ],
+  "exitCode": 0,
+  "timedOut": false,
+  "timeoutSeconds": 30,
+  "ownedProcessCleanup": null,
+  "stdout": {
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "stderr": {
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  }
+}

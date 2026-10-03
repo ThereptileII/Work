@@ -1,0 +1,15 @@
+test_capture_never_replaces_existing_receipt_or_preserved_source (__main__.SameJobReuseReceiptTests.test_capture_never_replaces_existing_receipt_or_preserved_source) ... ok
+test_changed_prefix_bytes_or_extra_file_refuse_reuse (__main__.SameJobReuseReceiptTests.test_changed_prefix_bytes_or_extra_file_refuse_reuse) ... ok
+test_changed_producer_fact_log_or_input_refuses_reuse (__main__.SameJobReuseReceiptTests.test_changed_producer_fact_log_or_input_refuses_reuse) ... ok
+test_checkout_root_workflow_is_bound_by_commit_not_nested_path (__main__.SameJobReuseReceiptTests.test_checkout_root_workflow_is_bound_by_commit_not_nested_path) ... ok
+test_different_job_attempt_commit_and_non_ci_context_refuse (__main__.SameJobReuseReceiptTests.test_different_job_attempt_commit_and_non_ci_context_refuse) ... ok
+test_first_success_round_trip_and_later_preflight_overwrite (__main__.SameJobReuseReceiptTests.test_first_success_round_trip_and_later_preflight_overwrite) ... ok
+test_late_capture_failure_removes_preserved_copy_without_receipt (__main__.SameJobReuseReceiptTests.test_late_capture_failure_removes_preserved_copy_without_receipt) ... ok
+test_missing_fact_and_tampered_preserved_source_refuse_reuse (__main__.SameJobReuseReceiptTests.test_missing_fact_and_tampered_preserved_source_refuse_reuse) ... ok
+test_missing_success_assertion_or_failed_evidence_never_writes_receipt (__main__.SameJobReuseReceiptTests.test_missing_success_assertion_or_failed_evidence_never_writes_receipt) ... ok
+test_zlib_facts_from_actual_producer_paths_are_consumed_and_bound (__main__.SameJobReuseReceiptTests.test_zlib_facts_from_actual_producer_paths_are_consumed_and_bound) ... ok
+
+----------------------------------------------------------------------
+Ran 10 tests in 0.289s
+
+OK

@@ -1,0 +1,674 @@
+[
+  {
+    "kind": "context",
+    "return_rax": 93825086399264,
+    "call": 0,
+    "stack": "#0  0x00007ffff753da59 in wxGraphicsContext::CreateFromUnknownDC(wxDC const&) () from /home/standard/Projects/X-nav/.local/sysroot/usr/lib/libwx_gtk3u_core-3.2.so.0\n#1  0x0000555556397a05 in opennav::integration::ChartRouteUnderlay::Draw(ocpnDC&, ChartCanvas&) const ()\n#2  0x000055555615bd92 in RouteGui::Draw(ocpnDC&, ChartCanvas*, LLBBox const&) ()\n#3  0x0000555555e43952 in ChartCanvas::DrawOverlayObjects(ocpnDC&, wxRegion const&) ()\n#4  0x0000555555e47398 in ChartCanvas::OnPaint(wxPaintEvent&) ()\n",
+    "native_dc_vtable": "vtable for wxMemoryDC + 16 in section .data.rel.ro of /home/standard/Projects/X-nav-worktrees/skager-product-fidelity/.local/integrated-fidelity/install/bin/opencpn\n"
+  },
+  {
+    "kind": "ordinal",
+    "return_rax": 0,
+    "call": 0,
+    "stack": "#0  0x00005555563912e0 in opennav::integration::ChartRouteWaypointOrdinal(ChartCanvas&, RoutePoint&, bool) ()\n#1  0x0000555556184a86 in RoutePointGui::Draw(ocpnDC&, ChartCanvas*, wxPoint*, bool) ()\n#2  0x00005555561578d9 in RouteGui::Draw(ocpnDC&, ChartCanvas*, LLBBox const&)::{lambda(opennav::integration::ChartRouteUnderlay*)#1}::operator()(opennav::integration::ChartRouteUnderlay*) const ()\n#3  0x000055555615bbb2 in RouteGui::Draw(ocpnDC&, ChartCanvas*, LLBBox const&) ()\n#4  0x0000555555e43952 in ChartCanvas::DrawOverlayObjects(ocpnDC&, wxRegion const&) ()\n",
+    "pinned_icon": 1
+  },
+  {
+    "kind": "label_prepare",
+    "return_rax": 0,
+    "call": 0,
+    "stack": "#0  0x0000555556393d3b in opennav::integration::PrepareChartRouteLabel(ChartCanvas&, RoutePoint&, int) ()\n#1  0x0000555556184c00 in RoutePointGui::Draw(ocpnDC&, ChartCanvas*, wxPoint*, bool) ()\n#2  0x00005555561578d9 in RouteGui::Draw(ocpnDC&, ChartCanvas*, LLBBox const&)::{lambda(opennav::integration::ChartRouteUnderlay*)#1}::operator()(opennav::integration::ChartRouteUnderlay*) const ()\n#3  0x000055555615bbb2 in RouteGui::Draw(ocpnDC&, ChartCanvas*, LLBBox const&) ()\n#4  0x0000555555e43952 in ChartCanvas::DrawOverlayObjects(ocpnDC&, wxRegion const&) ()\n",
+    "ordinal": 0
+  },
+  {
+    "kind": "waypoint_draw",
+    "return_rax": 0,
+    "call": 0,
+    "stack": "#0  0x000055555639175b in opennav::integration::DrawChartRouteWaypoint(ocpnDC&, ChartCanvas&, int, int, int) ()\n#1  0x0000555556184d48 in RoutePointGui::Draw(ocpnDC&, ChartCanvas*, wxPoint*, bool) ()\n#2  0x00005555561578d9 in RouteGui::Draw(ocpnDC&, ChartCanvas*, LLBBox const&)::{lambda(opennav::integration::ChartRouteUnderlay*)#1}::operator()(opennav::integration::ChartRouteUnderlay*) const ()\n#3  0x000055555615bbb2 in RouteGui::Draw(ocpnDC&, ChartCanvas*, LLBBox const&) ()\n#4  0x0000555555e43952 in ChartCanvas::DrawOverlayObjects(ocpnDC&, wxRegion const&) ()\n",
+    "ordinal": 0
+  },
+  {
+    "kind": "ordinal",
+    "return_rax": 0,
+    "call": 1,
+    "stack": "#0  0x00005555563912e0 in opennav::integration::ChartRouteWaypointOrdinal(ChartCanvas&, RoutePoint&, bool) ()\n#1  0x0000555556184a86 in RoutePointGui::Draw(ocpnDC&, ChartCanvas*, wxPoint*, bool) ()\n#2  0x000055555615745a in RouteGui::Draw(ocpnDC&, ChartCanvas*, LLBBox const&)::{lambda(opennav::integration::ChartRouteUnderlay*)#1}::operator()(opennav::integration::ChartRouteUnderlay*) const ()\n#3  0x000055555615bbb2 in RouteGui::Draw(ocpnDC&, ChartCanvas*, LLBBox const&) ()\n#4  0x0000555555e43952 in ChartCanvas::DrawOverlayObjects(ocpnDC&, wxRegion const&) ()\n",
+    "pinned_icon": 1
+  },
+  {
+    "kind": "label_prepare",
+    "return_rax": 0,
+    "call": 1,
+    "stack": "#0  0x0000555556393d3b in opennav::integration::PrepareChartRouteLabel(ChartCanvas&, RoutePoint&, int) ()\n#1  0x0000555556184c00 in RoutePointGui::Draw(ocpnDC&, ChartCanvas*, wxPoint*, bool) ()\n#2  0x000055555615745a in RouteGui::Draw(ocpnDC&, ChartCanvas*, LLBBox const&)::{lambda(opennav::integration::ChartRouteUnderlay*)#1}::operator()(opennav::integration::ChartRouteUnderlay*) const ()\n#3  0x000055555615bbb2 in RouteGui::Draw(ocpnDC&, ChartCanvas*, LLBBox const&) ()\n#4  0x0000555555e43952 in ChartCanvas::DrawOverlayObjects(ocpnDC&, wxRegion const&) ()\n",
+    "ordinal": 0
+  },
+  {
+    "kind": "waypoint_draw",
+    "return_rax": 0,
+    "call": 1,
+    "stack": "#0  0x000055555639175b in opennav::integration::DrawChartRouteWaypoint(ocpnDC&, ChartCanvas&, int, int, int) ()\n#1  0x0000555556184d48 in RoutePointGui::Draw(ocpnDC&, ChartCanvas*, wxPoint*, bool) ()\n#2  0x000055555615745a in RouteGui::Draw(ocpnDC&, ChartCanvas*, LLBBox const&)::{lambda(opennav::integration::ChartRouteUnderlay*)#1}::operator()(opennav::integration::ChartRouteUnderlay*) const ()\n#3  0x000055555615bbb2 in RouteGui::Draw(ocpnDC&, ChartCanvas*, LLBBox const&) ()\n#4  0x0000555555e43952 in ChartCanvas::DrawOverlayObjects(ocpnDC&, wxRegion const&) ()\n",
+    "ordinal": 0
+  },
+  {
+    "kind": "ordinal",
+    "return_rax": 2,
+    "call": 2,
+    "stack": "#0  0x00005555563912e0 in opennav::integration::ChartRouteWaypointOrdinal(ChartCanvas&, RoutePoint&, bool) ()\n#1  0x0000555556184a86 in RoutePointGui::Draw(ocpnDC&, ChartCanvas*, wxPoint*, bool) ()\n#2  0x00005555561574f8 in RouteGui::Draw(ocpnDC&, ChartCanvas*, LLBBox const&)::{lambda(opennav::integration::ChartRouteUnderlay*)#1}::operator()(opennav::integration::ChartRouteUnderlay*) const ()\n#3  0x000055555615bbb2 in RouteGui::Draw(ocpnDC&, ChartCanvas*, LLBBox const&) ()\n#4  0x0000555555e43952 in ChartCanvas::DrawOverlayObjects(ocpnDC&, wxRegion const&) ()\n",
+    "pinned_icon": 1
+  },
+  {
+    "kind": "label_prepare",
+    "return_rax": 1,
+    "call": 2,
+    "stack": "#0  0x0000555556393d3b in opennav::integration::PrepareChartRouteLabel(ChartCanvas&, RoutePoint&, int) ()\n#1  0x0000555556184c00 in RoutePointGui::Draw(ocpnDC&, ChartCanvas*, wxPoint*, bool) ()\n#2  0x00005555561574f8 in RouteGui::Draw(ocpnDC&, ChartCanvas*, LLBBox const&)::{lambda(opennav::integration::ChartRouteUnderlay*)#1}::operator()(opennav::integration::ChartRouteUnderlay*) const ()\n#3  0x000055555615bbb2 in RouteGui::Draw(ocpnDC&, ChartCanvas*, LLBBox const&) ()\n#4  0x0000555555e43952 in ChartCanvas::DrawOverlayObjects(ocpnDC&, wxRegion const&) ()\n",
+    "ordinal": 2
+  },
+  {
+    "kind": "context",
+    "return_rax": 93825055786240,
+    "call": 1,
+    "stack": "#0  0x00007ffff753da59 in wxGraphicsContext::CreateFromUnknownDC(wxDC const&) () from /home/standard/Projects/X-nav/.local/sysroot/usr/lib/libwx_gtk3u_core-3.2.so.0\n#1  0x0000555556391aa8 in opennav::integration::DrawChartRouteWaypoint(ocpnDC&, ChartCanvas&, int, int, int) ()\n#2  0x0000555556184d48 in RoutePointGui::Draw(ocpnDC&, ChartCanvas*, wxPoint*, bool) ()\n#3  0x00005555561574f8 in RouteGui::Draw(ocpnDC&, ChartCanvas*, LLBBox const&)::{lambda(opennav::integration::ChartRouteUnderlay*)#1}::operator()(opennav::integration::ChartRouteUnderlay*) const ()\n#4  0x000055555615bbb2 in RouteGui::Draw(ocpnDC&, ChartCanvas*, LLBBox const&) ()\n",
+    "native_dc_vtable": "vtable for wxMemoryDC + 16 in section .data.rel.ro of /home/standard/Projects/X-nav-worktrees/skager-product-fidelity/.local/integrated-fidelity/install/bin/opencpn\n"
+  },
+  {
+    "kind": "waypoint_draw",
+    "return_rax": 1,
+    "call": 2,
+    "stack": "#0  0x000055555639175b in opennav::integration::DrawChartRouteWaypoint(ocpnDC&, ChartCanvas&, int, int, int) ()\n#1  0x0000555556184d48 in RoutePointGui::Draw(ocpnDC&, ChartCanvas*, wxPoint*, bool) ()\n#2  0x00005555561574f8 in RouteGui::Draw(ocpnDC&, ChartCanvas*, LLBBox const&)::{lambda(opennav::integration::ChartRouteUnderlay*)#1}::operator()(opennav::integration::ChartRouteUnderlay*) const ()\n#3  0x000055555615bbb2 in RouteGui::Draw(ocpnDC&, ChartCanvas*, LLBBox const&) ()\n#4  0x0000555555e43952 in ChartCanvas::DrawOverlayObjects(ocpnDC&, wxRegion const&) ()\n",
+    "ordinal": 2
+  },
+  {
+    "kind": "context",
+    "return_rax": 93825055786240,
+    "call": 2,
+    "stack": "#0  0x00007ffff753da59 in wxGraphicsContext::CreateFromUnknownDC(wxDC const&) () from /home/standard/Projects/X-nav/.local/sysroot/usr/lib/libwx_gtk3u_core-3.2.so.0\n#1  0x00005555563901e8 in opennav::integration::DrawChartRouteSegment(ocpnDC&, ChartCanvas&, double, double, double, double, bool, bool) ()\n#2  0x0000555556156d12 in RouteGui::RenderSegment(ocpnDC&, int, int, int, int, ViewPort&, bool, int, ChartCanvas*, bool, bool, bool, opennav::integration::ChartRouteUnderlay*, unsigned long) ()\n#3  0x00005555561575e1 in RouteGui::Draw(ocpnDC&, ChartCanvas*, LLBBox const&)::{lambda(opennav::integration::ChartRouteUnderlay*)#1}::operator()(opennav::integration::ChartRouteUnderlay*) const ()\n#4  0x000055555615bbb2 in RouteGui::Draw(ocpnDC&, ChartCanvas*, LLBBox const&) ()\n",
+    "native_dc_vtable": "vtable for wxMemoryDC + 16 in section .data.rel.ro of /home/standard/Projects/X-nav-worktrees/skager-product-fidelity/.local/integrated-fidelity/install/bin/opencpn\n"
+  },
+  {
+    "kind": "ordinal",
+    "return_rax": 3,
+    "call": 3,
+    "stack": "#0  0x00005555563912e0 in opennav::integration::ChartRouteWaypointOrdinal(ChartCanvas&, RoutePoint&, bool) ()\n#1  0x0000555556184a86 in RoutePointGui::Draw(ocpnDC&, ChartCanvas*, wxPoint*, bool) ()\n#2  0x00005555561574f8 in RouteGui::Draw(ocpnDC&, ChartCanvas*, LLBBox const&)::{lambda(opennav::integration::ChartRouteUnderlay*)#1}::operator()(opennav::integration::ChartRouteUnderlay*) const ()\n#3  0x000055555615bbb2 in RouteGui::Draw(ocpnDC&, ChartCanvas*, LLBBox const&) ()\n#4  0x0000555555e43952 in ChartCanvas::DrawOverlayObjects(ocpnDC&, wxRegion const&) ()\n",
+    "pinned_icon": 1
+  },
+  {
+    "kind": "label_prepare",
+    "return_rax": 1,
+    "call": 3,
+    "stack": "#0  0x0000555556393d3b in opennav::integration::PrepareChartRouteLabel(ChartCanvas&, RoutePoint&, int) ()\n#1  0x0000555556184c00 in RoutePointGui::Draw(ocpnDC&, ChartCanvas*, wxPoint*, bool) ()\n#2  0x00005555561574f8 in RouteGui::Draw(ocpnDC&, ChartCanvas*, LLBBox const&)::{lambda(opennav::integration::ChartRouteUnderlay*)#1}::operator()(opennav::integration::ChartRouteUnderlay*) const ()\n#3  0x000055555615bbb2 in RouteGui::Draw(ocpnDC&, ChartCanvas*, LLBBox const&) ()\n#4  0x0000555555e43952 in ChartCanvas::DrawOverlayObjects(ocpnDC&, wxRegion const&) ()\n",
+    "ordinal": 3
+  },
+  {
+    "kind": "context",
+    "return_rax": 93825086426816,
+    "call": 3,
+    "stack": "#0  0x00007ffff753da59 in wxGraphicsContext::CreateFromUnknownDC(wxDC const&) () from /home/standard/Projects/X-nav/.local/sysroot/usr/lib/libwx_gtk3u_core-3.2.so.0\n#1  0x0000555556391aa8 in opennav::integration::DrawChartRouteWaypoint(ocpnDC&, ChartCanvas&, int, int, int) ()\n#2  0x0000555556184d48 in RoutePointGui::Draw(ocpnDC&, ChartCanvas*, wxPoint*, bool) ()\n#3  0x00005555561574f8 in RouteGui::Draw(ocpnDC&, ChartCanvas*, LLBBox const&)::{lambda(opennav::integration::ChartRouteUnderlay*)#1}::operator()(opennav::integration::ChartRouteUnderlay*) const ()\n#4  0x000055555615bbb2 in RouteGui::Draw(ocpnDC&, ChartCanvas*, LLBBox const&) ()\n",
+    "native_dc_vtable": "vtable for wxMemoryDC + 16 in section .data.rel.ro of /home/standard/Projects/X-nav-worktrees/skager-product-fidelity/.local/integrated-fidelity/install/bin/opencpn\n"
+  },
+  {
+    "kind": "waypoint_draw",
+    "return_rax": 1,
+    "call": 3,
+    "stack": "#0  0x000055555639175b in opennav::integration::DrawChartRouteWaypoint(ocpnDC&, ChartCanvas&, int, int, int) ()\n#1  0x0000555556184d48 in RoutePointGui::Draw(ocpnDC&, ChartCanvas*, wxPoint*, bool) ()\n#2  0x00005555561574f8 in RouteGui::Draw(ocpnDC&, ChartCanvas*, LLBBox const&)::{lambda(opennav::integration::ChartRouteUnderlay*)#1}::operator()(opennav::integration::ChartRouteUnderlay*) const ()\n#3  0x000055555615bbb2 in RouteGui::Draw(ocpnDC&, ChartCanvas*, LLBBox const&) ()\n#4  0x0000555555e43952 in ChartCanvas::DrawOverlayObjects(ocpnDC&, wxRegion const&) ()\n",
+    "ordinal": 3
+  },
+  {
+    "kind": "context",
+    "return_rax": 93825086426816,
+    "call": 4,
+    "stack": "#0  0x00007ffff753da59 in wxGraphicsContext::CreateFromUnknownDC(wxDC const&) () from /home/standard/Projects/X-nav/.local/sysroot/usr/lib/libwx_gtk3u_core-3.2.so.0\n#1  0x00005555563901e8 in opennav::integration::DrawChartRouteSegment(ocpnDC&, ChartCanvas&, double, double, double, double, bool, bool) ()\n#2  0x0000555556156d12 in RouteGui::RenderSegment(ocpnDC&, int, int, int, int, ViewPort&, bool, int, ChartCanvas*, bool, bool, bool, opennav::integration::ChartRouteUnderlay*, unsigned long) ()\n#3  0x00005555561575e1 in RouteGui::Draw(ocpnDC&, ChartCanvas*, LLBBox const&)::{lambda(opennav::integration::ChartRouteUnderlay*)#1}::operator()(opennav::integration::ChartRouteUnderlay*) const ()\n#4  0x000055555615bbb2 in RouteGui::Draw(ocpnDC&, ChartCanvas*, LLBBox const&) ()\n",
+    "native_dc_vtable": "vtable for wxMemoryDC + 16 in section .data.rel.ro of /home/standard/Projects/X-nav-worktrees/skager-product-fidelity/.local/integrated-fidelity/install/bin/opencpn\n"
+  },
+  {
+    "kind": "context",
+    "return_rax": 93825048926448,
+    "call": 5,
+    "stack": "#0  0x00007ffff753da59 in wxGraphicsContext::CreateFromUnknownDC(wxDC const&) () from /home/standard/Projects/X-nav/.local/sysroot/usr/lib/libwx_gtk3u_core-3.2.so.0\n#1  0x0000555556397a05 in opennav::integration::ChartRouteUnderlay::Draw(ocpnDC&, ChartCanvas&) const ()\n#2  0x000055555615bd92 in RouteGui::Draw(ocpnDC&, ChartCanvas*, LLBBox const&) ()\n#3  0x0000555555e43952 in ChartCanvas::DrawOverlayObjects(ocpnDC&, wxRegion const&) ()\n#4  0x0000555555e47398 in ChartCanvas::OnPaint(wxPaintEvent&) ()\n",
+    "native_dc_vtable": "vtable for wxMemoryDC + 16 in section .data.rel.ro of /home/standard/Projects/X-nav-worktrees/skager-product-fidelity/.local/integrated-fidelity/install/bin/opencpn\n"
+  },
+  {
+    "kind": "ordinal",
+    "return_rax": 0,
+    "call": 4,
+    "stack": "#0  0x00005555563912e0 in opennav::integration::ChartRouteWaypointOrdinal(ChartCanvas&, RoutePoint&, bool) ()\n#1  0x0000555556184a86 in RoutePointGui::Draw(ocpnDC&, ChartCanvas*, wxPoint*, bool) ()\n#2  0x00005555561578d9 in RouteGui::Draw(ocpnDC&, ChartCanvas*, LLBBox const&)::{lambda(opennav::integration::ChartRouteUnderlay*)#1}::operator()(opennav::integration::ChartRouteUnderlay*) const ()\n#3  0x000055555615bbb2 in RouteGui::Draw(ocpnDC&, ChartCanvas*, LLBBox const&) ()\n#4  0x0000555555e43952 in ChartCanvas::DrawOverlayObjects(ocpnDC&, wxRegion const&) ()\n",
+    "pinned_icon": 1
+  },
+  {
+    "kind": "label_prepare",
+    "return_rax": 0,
+    "call": 4,
+    "stack": "#0  0x0000555556393d3b in opennav::integration::PrepareChartRouteLabel(ChartCanvas&, RoutePoint&, int) ()\n#1  0x0000555556184c00 in RoutePointGui::Draw(ocpnDC&, ChartCanvas*, wxPoint*, bool) ()\n#2  0x00005555561578d9 in RouteGui::Draw(ocpnDC&, ChartCanvas*, LLBBox const&)::{lambda(opennav::integration::ChartRouteUnderlay*)#1}::operator()(opennav::integration::ChartRouteUnderlay*) const ()\n#3  0x000055555615bbb2 in RouteGui::Draw(ocpnDC&, ChartCanvas*, LLBBox const&) ()\n#4  0x0000555555e43952 in ChartCanvas::DrawOverlayObjects(ocpnDC&, wxRegion const&) ()\n",
+    "ordinal": 0
+  },
+  {
+    "kind": "ordinal",
+    "return_rax": 0,
+    "call": 5,
+    "stack": "#0  0x00005555563912e0 in opennav::integration::ChartRouteWaypointOrdinal(ChartCanvas&, RoutePoint&, bool) ()\n#1  0x0000555556184a86 in RoutePointGui::Draw(ocpnDC&, ChartCanvas*, wxPoint*, bool) ()\n#2  0x000055555615745a in RouteGui::Draw(ocpnDC&, ChartCanvas*, LLBBox const&)::{lambda(opennav::integration::ChartRouteUnderlay*)#1}::operator()(opennav::integration::ChartRouteUnderlay*) const ()\n#3  0x000055555615bbb2 in RouteGui::Draw(ocpnDC&, ChartCanvas*, LLBBox const&) ()\n#4  0x0000555555e43952 in ChartCanvas::DrawOverlayObjects(ocpnDC&, wxRegion const&) ()\n",
+    "pinned_icon": 1
+  },
+  {
+    "kind": "label_prepare",
+    "return_rax": 0,
+    "call": 5,
+    "stack": "#0  0x0000555556393d3b in opennav::integration::PrepareChartRouteLabel(ChartCanvas&, RoutePoint&, int) ()\n#1  0x0000555556184c00 in RoutePointGui::Draw(ocpnDC&, ChartCanvas*, wxPoint*, bool) ()\n#2  0x000055555615745a in RouteGui::Draw(ocpnDC&, ChartCanvas*, LLBBox const&)::{lambda(opennav::integration::ChartRouteUnderlay*)#1}::operator()(opennav::integration::ChartRouteUnderlay*) const ()\n#3  0x000055555615bbb2 in RouteGui::Draw(ocpnDC&, ChartCanvas*, LLBBox const&) ()\n#4  0x0000555555e43952 in ChartCanvas::DrawOverlayObjects(ocpnDC&, wxRegion const&) ()\n",
+    "ordinal": 0
+  },
+  {
+    "kind": "ordinal",
+    "return_rax": 2,
+    "call": 6,
+    "stack": "#0  0x00005555563912e0 in opennav::integration::ChartRouteWaypointOrdinal(ChartCanvas&, RoutePoint&, bool) ()\n#1  0x0000555556184a86 in RoutePointGui::Draw(ocpnDC&, ChartCanvas*, wxPoint*, bool) ()\n#2  0x00005555561574f8 in RouteGui::Draw(ocpnDC&, ChartCanvas*, LLBBox const&)::{lambda(opennav::integration::ChartRouteUnderlay*)#1}::operator()(opennav::integration::ChartRouteUnderlay*) const ()\n#3  0x000055555615bbb2 in RouteGui::Draw(ocpnDC&, ChartCanvas*, LLBBox const&) ()\n#4  0x0000555555e43952 in ChartCanvas::DrawOverlayObjects(ocpnDC&, wxRegion const&) ()\n",
+    "pinned_icon": 1
+  },
+  {
+    "kind": "label_prepare",
+    "return_rax": 1,
+    "call": 6,
+    "stack": "#0  0x0000555556393d3b in opennav::integration::PrepareChartRouteLabel(ChartCanvas&, RoutePoint&, int) ()\n#1  0x0000555556184c00 in RoutePointGui::Draw(ocpnDC&, ChartCanvas*, wxPoint*, bool) ()\n#2  0x00005555561574f8 in RouteGui::Draw(ocpnDC&, ChartCanvas*, LLBBox const&)::{lambda(opennav::integration::ChartRouteUnderlay*)#1}::operator()(opennav::integration::ChartRouteUnderlay*) const ()\n#3  0x000055555615bbb2 in RouteGui::Draw(ocpnDC&, ChartCanvas*, LLBBox const&) ()\n#4  0x0000555555e43952 in ChartCanvas::DrawOverlayObjects(ocpnDC&, wxRegion const&) ()\n",
+    "ordinal": 2
+  },
+  {
+    "kind": "context",
+    "return_rax": 93825048926448,
+    "call": 6,
+    "stack": "#0  0x00007ffff753da59 in wxGraphicsContext::CreateFromUnknownDC(wxDC const&) () from /home/standard/Projects/X-nav/.local/sysroot/usr/lib/libwx_gtk3u_core-3.2.so.0\n#1  0x0000555556391aa8 in opennav::integration::DrawChartRouteWaypoint(ocpnDC&, ChartCanvas&, int, int, int) ()\n#2  0x0000555556184d48 in RoutePointGui::Draw(ocpnDC&, ChartCanvas*, wxPoint*, bool) ()\n#3  0x00005555561574f8 in RouteGui::Draw(ocpnDC&, ChartCanvas*, LLBBox const&)::{lambda(opennav::integration::ChartRouteUnderlay*)#1}::operator()(opennav::integration::ChartRouteUnderlay*) const ()\n#4  0x000055555615bbb2 in RouteGui::Draw(ocpnDC&, ChartCanvas*, LLBBox const&) ()\n",
+    "native_dc_vtable": "vtable for wxMemoryDC + 16 in section .data.rel.ro of /home/standard/Projects/X-nav-worktrees/skager-product-fidelity/.local/integrated-fidelity/install/bin/opencpn\n"
+  },
+  {
+    "kind": "waypoint_draw",
+    "return_rax": 1,
+    "call": 4,
+    "stack": "#0  0x000055555639175b in opennav::integration::DrawChartRouteWaypoint(ocpnDC&, ChartCanvas&, int, int, int) ()\n#1  0x0000555556184d48 in RoutePointGui::Draw(ocpnDC&, ChartCanvas*, wxPoint*, bool) ()\n#2  0x00005555561574f8 in RouteGui::Draw(ocpnDC&, ChartCanvas*, LLBBox const&)::{lambda(opennav::integration::ChartRouteUnderlay*)#1}::operator()(opennav::integration::ChartRouteUnderlay*) const ()\n#3  0x000055555615bbb2 in RouteGui::Draw(ocpnDC&, ChartCanvas*, LLBBox const&) ()\n#4  0x0000555555e43952 in ChartCanvas::DrawOverlayObjects(ocpnDC&, wxRegion const&) ()\n",
+    "ordinal": 2
+  },
+  {
+    "kind": "context",
+    "return_rax": 93825048926448,
+    "call": 7,
+    "stack": "#0  0x00007ffff753da59 in wxGraphicsContext::CreateFromUnknownDC(wxDC const&) () from /home/standard/Projects/X-nav/.local/sysroot/usr/lib/libwx_gtk3u_core-3.2.so.0\n#1  0x00005555563901e8 in opennav::integration::DrawChartRouteSegment(ocpnDC&, ChartCanvas&, double, double, double, double, bool, bool) ()\n#2  0x0000555556156d12 in RouteGui::RenderSegment(ocpnDC&, int, int, int, int, ViewPort&, bool, int, ChartCanvas*, bool, bool, bool, opennav::integration::ChartRouteUnderlay*, unsigned long) ()\n#3  0x00005555561575e1 in RouteGui::Draw(ocpnDC&, ChartCanvas*, LLBBox const&)::{lambda(opennav::integration::ChartRouteUnderlay*)#1}::operator()(opennav::integration::ChartRouteUnderlay*) const ()\n#4  0x000055555615bbb2 in RouteGui::Draw(ocpnDC&, ChartCanvas*, LLBBox const&) ()\n",
+    "native_dc_vtable": "vtable for wxMemoryDC + 16 in section .data.rel.ro of /home/standard/Projects/X-nav-worktrees/skager-product-fidelity/.local/integrated-fidelity/install/bin/opencpn\n"
+  },
+  {
+    "kind": "ordinal",
+    "return_rax": 3,
+    "call": 7,
+    "stack": "#0  0x00005555563912e0 in opennav::integration::ChartRouteWaypointOrdinal(ChartCanvas&, RoutePoint&, bool) ()\n#1  0x0000555556184a86 in RoutePointGui::Draw(ocpnDC&, ChartCanvas*, wxPoint*, bool) ()\n#2  0x00005555561574f8 in RouteGui::Draw(ocpnDC&, ChartCanvas*, LLBBox const&)::{lambda(opennav::integration::ChartRouteUnderlay*)#1}::operator()(opennav::integration::ChartRouteUnderlay*) const ()\n#3  0x000055555615bbb2 in RouteGui::Draw(ocpnDC&, ChartCanvas*, LLBBox const&) ()\n#4  0x0000555555e43952 in ChartCanvas::DrawOverlayObjects(ocpnDC&, wxRegion const&) ()\n",
+    "pinned_icon": 1
+  },
+  {
+    "kind": "label_prepare",
+    "return_rax": 1,
+    "call": 7,
+    "stack": "#0  0x0000555556393d3b in opennav::integration::PrepareChartRouteLabel(ChartCanvas&, RoutePoint&, int) ()\n#1  0x0000555556184c00 in RoutePointGui::Draw(ocpnDC&, ChartCanvas*, wxPoint*, bool) ()\n#2  0x00005555561574f8 in RouteGui::Draw(ocpnDC&, ChartCanvas*, LLBBox const&)::{lambda(opennav::integration::ChartRouteUnderlay*)#1}::operator()(opennav::integration::ChartRouteUnderlay*) const ()\n#3  0x000055555615bbb2 in RouteGui::Draw(ocpnDC&, ChartCanvas*, LLBBox const&) ()\n#4  0x0000555555e43952 in ChartCanvas::DrawOverlayObjects(ocpnDC&, wxRegion const&) ()\n",
+    "ordinal": 3
+  },
+  {
+    "kind": "context",
+    "return_rax": 93825048926448,
+    "call": 8,
+    "stack": "#0  0x00007ffff753da59 in wxGraphicsContext::CreateFromUnknownDC(wxDC const&) () from /home/standard/Projects/X-nav/.local/sysroot/usr/lib/libwx_gtk3u_core-3.2.so.0\n#1  0x0000555556391aa8 in opennav::integration::DrawChartRouteWaypoint(ocpnDC&, ChartCanvas&, int, int, int) ()\n#2  0x0000555556184d48 in RoutePointGui::Draw(ocpnDC&, ChartCanvas*, wxPoint*, bool) ()\n#3  0x00005555561574f8 in RouteGui::Draw(ocpnDC&, ChartCanvas*, LLBBox const&)::{lambda(opennav::integration::ChartRouteUnderlay*)#1}::operator()(opennav::integration::ChartRouteUnderlay*) const ()\n#4  0x000055555615bbb2 in RouteGui::Draw(ocpnDC&, ChartCanvas*, LLBBox const&) ()\n",
+    "native_dc_vtable": "vtable for wxMemoryDC + 16 in section .data.rel.ro of /home/standard/Projects/X-nav-worktrees/skager-product-fidelity/.local/integrated-fidelity/install/bin/opencpn\n"
+  },
+  {
+    "kind": "waypoint_draw",
+    "return_rax": 1,
+    "call": 5,
+    "stack": "#0  0x000055555639175b in opennav::integration::DrawChartRouteWaypoint(ocpnDC&, ChartCanvas&, int, int, int) ()\n#1  0x0000555556184d48 in RoutePointGui::Draw(ocpnDC&, ChartCanvas*, wxPoint*, bool) ()\n#2  0x00005555561574f8 in RouteGui::Draw(ocpnDC&, ChartCanvas*, LLBBox const&)::{lambda(opennav::integration::ChartRouteUnderlay*)#1}::operator()(opennav::integration::ChartRouteUnderlay*) const ()\n#3  0x000055555615bbb2 in RouteGui::Draw(ocpnDC&, ChartCanvas*, LLBBox const&) ()\n#4  0x0000555555e43952 in ChartCanvas::DrawOverlayObjects(ocpnDC&, wxRegion const&) ()\n",
+    "ordinal": 3
+  },
+  {
+    "kind": "context",
+    "return_rax": 93825048926448,
+    "call": 9,
+    "stack": "#0  0x00007ffff753da59 in wxGraphicsContext::CreateFromUnknownDC(wxDC const&) () from /home/standard/Projects/X-nav/.local/sysroot/usr/lib/libwx_gtk3u_core-3.2.so.0\n#1  0x00005555563901e8 in opennav::integration::DrawChartRouteSegment(ocpnDC&, ChartCanvas&, double, double, double, double, bool, bool) ()\n#2  0x0000555556156d12 in RouteGui::RenderSegment(ocpnDC&, int, int, int, int, ViewPort&, bool, int, ChartCanvas*, bool, bool, bool, opennav::integration::ChartRouteUnderlay*, unsigned long) ()\n#3  0x00005555561575e1 in RouteGui::Draw(ocpnDC&, ChartCanvas*, LLBBox const&)::{lambda(opennav::integration::ChartRouteUnderlay*)#1}::operator()(opennav::integration::ChartRouteUnderlay*) const ()\n#4  0x000055555615bbb2 in RouteGui::Draw(ocpnDC&, ChartCanvas*, LLBBox const&) ()\n",
+    "native_dc_vtable": "vtable for wxMemoryDC + 16 in section .data.rel.ro of /home/standard/Projects/X-nav-worktrees/skager-product-fidelity/.local/integrated-fidelity/install/bin/opencpn\n"
+  },
+  {
+    "kind": "context",
+    "return_rax": 93825048763552,
+    "call": 10,
+    "stack": "#0  0x00007ffff753da59 in wxGraphicsContext::CreateFromUnknownDC(wxDC const&) () from /home/standard/Projects/X-nav/.local/sysroot/usr/lib/libwx_gtk3u_core-3.2.so.0\n#1  0x0000555556397a05 in opennav::integration::ChartRouteUnderlay::Draw(ocpnDC&, ChartCanvas&) const ()\n#2  0x000055555615bd92 in RouteGui::Draw(ocpnDC&, ChartCanvas*, LLBBox const&) ()\n#3  0x0000555555e43952 in ChartCanvas::DrawOverlayObjects(ocpnDC&, wxRegion const&) ()\n#4  0x0000555555e47398 in ChartCanvas::OnPaint(wxPaintEvent&) ()\n",
+    "native_dc_vtable": "vtable for wxMemoryDC + 16 in section .data.rel.ro of /home/standard/Projects/X-nav-worktrees/skager-product-fidelity/.local/integrated-fidelity/install/bin/opencpn\n"
+  },
+  {
+    "kind": "ordinal",
+    "return_rax": 1,
+    "call": 8,
+    "stack": "#0  0x00005555563912e0 in opennav::integration::ChartRouteWaypointOrdinal(ChartCanvas&, RoutePoint&, bool) ()\n#1  0x0000555556184a86 in RoutePointGui::Draw(ocpnDC&, ChartCanvas*, wxPoint*, bool) ()\n#2  0x00005555561578d9 in RouteGui::Draw(ocpnDC&, ChartCanvas*, LLBBox const&)::{lambda(opennav::integration::ChartRouteUnderlay*)#1}::operator()(opennav::integration::ChartRouteUnderlay*) const ()\n#3  0x000055555615bbb2 in RouteGui::Draw(ocpnDC&, ChartCanvas*, LLBBox const&) ()\n#4  0x0000555555e43952 in ChartCanvas::DrawOverlayObjects(ocpnDC&, wxRegion const&) ()\n",
+    "pinned_icon": 1
+  },
+  {
+    "kind": "label_prepare",
+    "return_rax": 1,
+    "call": 8,
+    "stack": "#0  0x0000555556393d3b in opennav::integration::PrepareChartRouteLabel(ChartCanvas&, RoutePoint&, int) ()\n#1  0x0000555556184c00 in RoutePointGui::Draw(ocpnDC&, ChartCanvas*, wxPoint*, bool) ()\n#2  0x00005555561578d9 in RouteGui::Draw(ocpnDC&, ChartCanvas*, LLBBox const&)::{lambda(opennav::integration::ChartRouteUnderlay*)#1}::operator()(opennav::integration::ChartRouteUnderlay*) const ()\n#3  0x000055555615bbb2 in RouteGui::Draw(ocpnDC&, ChartCanvas*, LLBBox const&) ()\n#4  0x0000555555e43952 in ChartCanvas::DrawOverlayObjects(ocpnDC&, wxRegion const&) ()\n",
+    "ordinal": 1
+  },
+  {
+    "kind": "context",
+    "return_rax": 93825086011552,
+    "call": 11,
+    "stack": "#0  0x00007ffff753da59 in wxGraphicsContext::CreateFromUnknownDC(wxDC const&) () from /home/standard/Projects/X-nav/.local/sysroot/usr/lib/libwx_gtk3u_core-3.2.so.0\n#1  0x0000555556391aa8 in opennav::integration::DrawChartRouteWaypoint(ocpnDC&, ChartCanvas&, int, int, int) ()\n#2  0x0000555556184d48 in RoutePointGui::Draw(ocpnDC&, ChartCanvas*, wxPoint*, bool) ()\n#3  0x00005555561578d9 in RouteGui::Draw(ocpnDC&, ChartCanvas*, LLBBox const&)::{lambda(opennav::integration::ChartRouteUnderlay*)#1}::operator()(opennav::integration::ChartRouteUnderlay*) const ()\n#4  0x000055555615bbb2 in RouteGui::Draw(ocpnDC&, ChartCanvas*, LLBBox const&) ()\n",
+    "native_dc_vtable": "vtable for wxMemoryDC + 16 in section .data.rel.ro of /home/standard/Projects/X-nav-worktrees/skager-product-fidelity/.local/integrated-fidelity/install/bin/opencpn\n"
+  },
+  {
+    "kind": "waypoint_draw",
+    "return_rax": 1,
+    "call": 6,
+    "stack": "#0  0x000055555639175b in opennav::integration::DrawChartRouteWaypoint(ocpnDC&, ChartCanvas&, int, int, int) ()\n#1  0x0000555556184d48 in RoutePointGui::Draw(ocpnDC&, ChartCanvas*, wxPoint*, bool) ()\n#2  0x00005555561578d9 in RouteGui::Draw(ocpnDC&, ChartCanvas*, LLBBox const&)::{lambda(opennav::integration::ChartRouteUnderlay*)#1}::operator()(opennav::integration::ChartRouteUnderlay*) const ()\n#3  0x000055555615bbb2 in RouteGui::Draw(ocpnDC&, ChartCanvas*, LLBBox const&) ()\n#4  0x0000555555e43952 in ChartCanvas::DrawOverlayObjects(ocpnDC&, wxRegion const&) ()\n",
+    "ordinal": 1
+  },
+  {
+    "kind": "ordinal",
+    "return_rax": 1,
+    "call": 9,
+    "stack": "#0  0x00005555563912e0 in opennav::integration::ChartRouteWaypointOrdinal(ChartCanvas&, RoutePoint&, bool) ()\n#1  0x0000555556184a86 in RoutePointGui::Draw(ocpnDC&, ChartCanvas*, wxPoint*, bool) ()\n#2  0x000055555615745a in RouteGui::Draw(ocpnDC&, ChartCanvas*, LLBBox const&)::{lambda(opennav::integration::ChartRouteUnderlay*)#1}::operator()(opennav::integration::ChartRouteUnderlay*) const ()\n#3  0x000055555615bbb2 in RouteGui::Draw(ocpnDC&, ChartCanvas*, LLBBox const&) ()\n#4  0x0000555555e43952 in ChartCanvas::DrawOverlayObjects(ocpnDC&, wxRegion const&) ()\n",
+    "pinned_icon": 1
+  },
+  {
+    "kind": "label_prepare",
+    "return_rax": 1,
+    "call": 9,
+    "stack": "#0  0x0000555556393d3b in opennav::integration::PrepareChartRouteLabel(ChartCanvas&, RoutePoint&, int) ()\n#1  0x0000555556184c00 in RoutePointGui::Draw(ocpnDC&, ChartCanvas*, wxPoint*, bool) ()\n#2  0x000055555615745a in RouteGui::Draw(ocpnDC&, ChartCanvas*, LLBBox const&)::{lambda(opennav::integration::ChartRouteUnderlay*)#1}::operator()(opennav::integration::ChartRouteUnderlay*) const ()\n#3  0x000055555615bbb2 in RouteGui::Draw(ocpnDC&, ChartCanvas*, LLBBox const&) ()\n#4  0x0000555555e43952 in ChartCanvas::DrawOverlayObjects(ocpnDC&, wxRegion const&) ()\n",
+    "ordinal": 1
+  },
+  {
+    "kind": "context",
+    "return_rax": 93825086011552,
+    "call": 12,
+    "stack": "#0  0x00007ffff753da59 in wxGraphicsContext::CreateFromUnknownDC(wxDC const&) () from /home/standard/Projects/X-nav/.local/sysroot/usr/lib/libwx_gtk3u_core-3.2.so.0\n#1  0x0000555556391aa8 in opennav::integration::DrawChartRouteWaypoint(ocpnDC&, ChartCanvas&, int, int, int) ()\n#2  0x0000555556184d48 in RoutePointGui::Draw(ocpnDC&, ChartCanvas*, wxPoint*, bool) ()\n#3  0x000055555615745a in RouteGui::Draw(ocpnDC&, ChartCanvas*, LLBBox const&)::{lambda(opennav::integration::ChartRouteUnderlay*)#1}::operator()(opennav::integration::ChartRouteUnderlay*) const ()\n#4  0x000055555615bbb2 in RouteGui::Draw(ocpnDC&, ChartCanvas*, LLBBox const&) ()\n",
+    "native_dc_vtable": "vtable for wxMemoryDC + 16 in section .data.rel.ro of /home/standard/Projects/X-nav-worktrees/skager-product-fidelity/.local/integrated-fidelity/install/bin/opencpn\n"
+  },
+  {
+    "kind": "waypoint_draw",
+    "return_rax": 1,
+    "call": 7,
+    "stack": "#0  0x000055555639175b in opennav::integration::DrawChartRouteWaypoint(ocpnDC&, ChartCanvas&, int, int, int) ()\n#1  0x0000555556184d48 in RoutePointGui::Draw(ocpnDC&, ChartCanvas*, wxPoint*, bool) ()\n#2  0x000055555615745a in RouteGui::Draw(ocpnDC&, ChartCanvas*, LLBBox const&)::{lambda(opennav::integration::ChartRouteUnderlay*)#1}::operator()(opennav::integration::ChartRouteUnderlay*) const ()\n#3  0x000055555615bbb2 in RouteGui::Draw(ocpnDC&, ChartCanvas*, LLBBox const&) ()\n#4  0x0000555555e43952 in ChartCanvas::DrawOverlayObjects(ocpnDC&, wxRegion const&) ()\n",
+    "ordinal": 1
+  },
+  {
+    "kind": "ordinal",
+    "return_rax": 0,
+    "call": 10,
+    "stack": "#0  0x00005555563912e0 in opennav::integration::ChartRouteWaypointOrdinal(ChartCanvas&, RoutePoint&, bool) ()\n#1  0x0000555556184a86 in RoutePointGui::Draw(ocpnDC&, ChartCanvas*, wxPoint*, bool) ()\n#2  0x00005555561574f8 in RouteGui::Draw(ocpnDC&, ChartCanvas*, LLBBox const&)::{lambda(opennav::integration::ChartRouteUnderlay*)#1}::operator()(opennav::integration::ChartRouteUnderlay*) const ()\n#3  0x000055555615bbb2 in RouteGui::Draw(ocpnDC&, ChartCanvas*, LLBBox const&) ()\n#4  0x0000555555e43952 in ChartCanvas::DrawOverlayObjects(ocpnDC&, wxRegion const&) ()\n",
+    "pinned_icon": 1
+  },
+  {
+    "kind": "label_prepare",
+    "return_rax": 0,
+    "call": 10,
+    "stack": "#0  0x0000555556393d3b in opennav::integration::PrepareChartRouteLabel(ChartCanvas&, RoutePoint&, int) ()\n#1  0x0000555556184c00 in RoutePointGui::Draw(ocpnDC&, ChartCanvas*, wxPoint*, bool) ()\n#2  0x00005555561574f8 in RouteGui::Draw(ocpnDC&, ChartCanvas*, LLBBox const&)::{lambda(opennav::integration::ChartRouteUnderlay*)#1}::operator()(opennav::integration::ChartRouteUnderlay*) const ()\n#3  0x000055555615bbb2 in RouteGui::Draw(ocpnDC&, ChartCanvas*, LLBBox const&) ()\n#4  0x0000555555e43952 in ChartCanvas::DrawOverlayObjects(ocpnDC&, wxRegion const&) ()\n",
+    "ordinal": 0
+  },
+  {
+    "kind": "waypoint_draw",
+    "return_rax": 0,
+    "call": 8,
+    "stack": "#0  0x000055555639175b in opennav::integration::DrawChartRouteWaypoint(ocpnDC&, ChartCanvas&, int, int, int) ()\n#1  0x0000555556184d48 in RoutePointGui::Draw(ocpnDC&, ChartCanvas*, wxPoint*, bool) ()\n#2  0x00005555561574f8 in RouteGui::Draw(ocpnDC&, ChartCanvas*, LLBBox const&)::{lambda(opennav::integration::ChartRouteUnderlay*)#1}::operator()(opennav::integration::ChartRouteUnderlay*) const ()\n#3  0x000055555615bbb2 in RouteGui::Draw(ocpnDC&, ChartCanvas*, LLBBox const&) ()\n#4  0x0000555555e43952 in ChartCanvas::DrawOverlayObjects(ocpnDC&, wxRegion const&) ()\n",
+    "ordinal": 0
+  },
+  {
+    "kind": "context",
+    "return_rax": 93825056086096,
+    "call": 13,
+    "stack": "#0  0x00007ffff753da59 in wxGraphicsContext::CreateFromUnknownDC(wxDC const&) () from /home/standard/Projects/X-nav/.local/sysroot/usr/lib/libwx_gtk3u_core-3.2.so.0\n#1  0x00005555563901e8 in opennav::integration::DrawChartRouteSegment(ocpnDC&, ChartCanvas&, double, double, double, double, bool, bool) ()\n#2  0x0000555556156d12 in RouteGui::RenderSegment(ocpnDC&, int, int, int, int, ViewPort&, bool, int, ChartCanvas*, bool, bool, bool, opennav::integration::ChartRouteUnderlay*, unsigned long) ()\n#3  0x00005555561575e1 in RouteGui::Draw(ocpnDC&, ChartCanvas*, LLBBox const&)::{lambda(opennav::integration::ChartRouteUnderlay*)#1}::operator()(opennav::integration::ChartRouteUnderlay*) const ()\n#4  0x000055555615bbb2 in RouteGui::Draw(ocpnDC&, ChartCanvas*, LLBBox const&) ()\n",
+    "native_dc_vtable": "vtable for wxMemoryDC + 16 in section .data.rel.ro of /home/standard/Projects/X-nav-worktrees/skager-product-fidelity/.local/integrated-fidelity/install/bin/opencpn\n"
+  },
+  {
+    "kind": "ordinal",
+    "return_rax": 3,
+    "call": 11,
+    "stack": "#0  0x00005555563912e0 in opennav::integration::ChartRouteWaypointOrdinal(ChartCanvas&, RoutePoint&, bool) ()\n#1  0x0000555556184a86 in RoutePointGui::Draw(ocpnDC&, ChartCanvas*, wxPoint*, bool) ()\n#2  0x00005555561574f8 in RouteGui::Draw(ocpnDC&, ChartCanvas*, LLBBox const&)::{lambda(opennav::integration::ChartRouteUnderlay*)#1}::operator()(opennav::integration::ChartRouteUnderlay*) const ()\n#3  0x000055555615bbb2 in RouteGui::Draw(ocpnDC&, ChartCanvas*, LLBBox const&) ()\n#4  0x0000555555e43952 in ChartCanvas::DrawOverlayObjects(ocpnDC&, wxRegion const&) ()\n",
+    "pinned_icon": 1
+  },
+  {
+    "kind": "label_prepare",
+    "return_rax": 1,
+    "call": 11,
+    "stack": "#0  0x0000555556393d3b in opennav::integration::PrepareChartRouteLabel(ChartCanvas&, RoutePoint&, int) ()\n#1  0x0000555556184c00 in RoutePointGui::Draw(ocpnDC&, ChartCanvas*, wxPoint*, bool) ()\n#2  0x00005555561574f8 in RouteGui::Draw(ocpnDC&, ChartCanvas*, LLBBox const&)::{lambda(opennav::integration::ChartRouteUnderlay*)#1}::operator()(opennav::integration::ChartRouteUnderlay*) const ()\n#3  0x000055555615bbb2 in RouteGui::Draw(ocpnDC&, ChartCanvas*, LLBBox const&) ()\n#4  0x0000555555e43952 in ChartCanvas::DrawOverlayObjects(ocpnDC&, wxRegion const&) ()\n",
+    "ordinal": 3
+  },
+  {
+    "kind": "context",
+    "return_rax": 93825056086096,
+    "call": 14,
+    "stack": "#0  0x00007ffff753da59 in wxGraphicsContext::CreateFromUnknownDC(wxDC const&) () from /home/standard/Projects/X-nav/.local/sysroot/usr/lib/libwx_gtk3u_core-3.2.so.0\n#1  0x0000555556391aa8 in opennav::integration::DrawChartRouteWaypoint(ocpnDC&, ChartCanvas&, int, int, int) ()\n#2  0x0000555556184d48 in RoutePointGui::Draw(ocpnDC&, ChartCanvas*, wxPoint*, bool) ()\n#3  0x00005555561574f8 in RouteGui::Draw(ocpnDC&, ChartCanvas*, LLBBox const&)::{lambda(opennav::integration::ChartRouteUnderlay*)#1}::operator()(opennav::integration::ChartRouteUnderlay*) const ()\n#4  0x000055555615bbb2 in RouteGui::Draw(ocpnDC&, ChartCanvas*, LLBBox const&) ()\n",
+    "native_dc_vtable": "vtable for wxMemoryDC + 16 in section .data.rel.ro of /home/standard/Projects/X-nav-worktrees/skager-product-fidelity/.local/integrated-fidelity/install/bin/opencpn\n"
+  },
+  {
+    "kind": "waypoint_draw",
+    "return_rax": 1,
+    "call": 9,
+    "stack": "#0  0x000055555639175b in opennav::integration::DrawChartRouteWaypoint(ocpnDC&, ChartCanvas&, int, int, int) ()\n#1  0x0000555556184d48 in RoutePointGui::Draw(ocpnDC&, ChartCanvas*, wxPoint*, bool) ()\n#2  0x00005555561574f8 in RouteGui::Draw(ocpnDC&, ChartCanvas*, LLBBox const&)::{lambda(opennav::integration::ChartRouteUnderlay*)#1}::operator()(opennav::integration::ChartRouteUnderlay*) const ()\n#3  0x000055555615bbb2 in RouteGui::Draw(ocpnDC&, ChartCanvas*, LLBBox const&) ()\n#4  0x0000555555e43952 in ChartCanvas::DrawOverlayObjects(ocpnDC&, wxRegion const&) ()\n",
+    "ordinal": 3
+  },
+  {
+    "kind": "context",
+    "return_rax": 93825056086096,
+    "call": 15,
+    "stack": "#0  0x00007ffff753da59 in wxGraphicsContext::CreateFromUnknownDC(wxDC const&) () from /home/standard/Projects/X-nav/.local/sysroot/usr/lib/libwx_gtk3u_core-3.2.so.0\n#1  0x00005555563901e8 in opennav::integration::DrawChartRouteSegment(ocpnDC&, ChartCanvas&, double, double, double, double, bool, bool) ()\n#2  0x0000555556156d12 in RouteGui::RenderSegment(ocpnDC&, int, int, int, int, ViewPort&, bool, int, ChartCanvas*, bool, bool, bool, opennav::integration::ChartRouteUnderlay*, unsigned long) ()\n#3  0x00005555561575e1 in RouteGui::Draw(ocpnDC&, ChartCanvas*, LLBBox const&)::{lambda(opennav::integration::ChartRouteUnderlay*)#1}::operator()(opennav::integration::ChartRouteUnderlay*) const ()\n#4  0x000055555615bbb2 in RouteGui::Draw(ocpnDC&, ChartCanvas*, LLBBox const&) ()\n",
+    "native_dc_vtable": "vtable for wxMemoryDC + 16 in section .data.rel.ro of /home/standard/Projects/X-nav-worktrees/skager-product-fidelity/.local/integrated-fidelity/install/bin/opencpn\n"
+  },
+  {
+    "kind": "context",
+    "return_rax": 93825049206400,
+    "call": 16,
+    "stack": "#0  0x00007ffff753da59 in wxGraphicsContext::CreateFromUnknownDC(wxDC const&) () from /home/standard/Projects/X-nav/.local/sysroot/usr/lib/libwx_gtk3u_core-3.2.so.0\n#1  0x0000555556397a05 in opennav::integration::ChartRouteUnderlay::Draw(ocpnDC&, ChartCanvas&) const ()\n#2  0x000055555615bd92 in RouteGui::Draw(ocpnDC&, ChartCanvas*, LLBBox const&) ()\n#3  0x0000555555e43952 in ChartCanvas::DrawOverlayObjects(ocpnDC&, wxRegion const&) ()\n#4  0x0000555555e47398 in ChartCanvas::OnPaint(wxPaintEvent&) ()\n",
+    "native_dc_vtable": "vtable for wxMemoryDC + 16 in section .data.rel.ro of /home/standard/Projects/X-nav-worktrees/skager-product-fidelity/.local/integrated-fidelity/install/bin/opencpn\n"
+  },
+  {
+    "kind": "ordinal",
+    "return_rax": 1,
+    "call": 12,
+    "stack": "#0  0x00005555563912e0 in opennav::integration::ChartRouteWaypointOrdinal(ChartCanvas&, RoutePoint&, bool) ()\n#1  0x0000555556184a86 in RoutePointGui::Draw(ocpnDC&, ChartCanvas*, wxPoint*, bool) ()\n#2  0x00005555561578d9 in RouteGui::Draw(ocpnDC&, ChartCanvas*, LLBBox const&)::{lambda(opennav::integration::ChartRouteUnderlay*)#1}::operator()(opennav::integration::ChartRouteUnderlay*) const ()\n#3  0x000055555615bbb2 in RouteGui::Draw(ocpnDC&, ChartCanvas*, LLBBox const&) ()\n#4  0x0000555555e43952 in ChartCanvas::DrawOverlayObjects(ocpnDC&, wxRegion const&) ()\n",
+    "pinned_icon": 1
+  },
+  {
+    "kind": "label_prepare",
+    "return_rax": 1,
+    "call": 12,
+    "stack": "#0  0x0000555556393d3b in opennav::integration::PrepareChartRouteLabel(ChartCanvas&, RoutePoint&, int) ()\n#1  0x0000555556184c00 in RoutePointGui::Draw(ocpnDC&, ChartCanvas*, wxPoint*, bool) ()\n#2  0x00005555561578d9 in RouteGui::Draw(ocpnDC&, ChartCanvas*, LLBBox const&)::{lambda(opennav::integration::ChartRouteUnderlay*)#1}::operator()(opennav::integration::ChartRouteUnderlay*) const ()\n#3  0x000055555615bbb2 in RouteGui::Draw(ocpnDC&, ChartCanvas*, LLBBox const&) ()\n#4  0x0000555555e43952 in ChartCanvas::DrawOverlayObjects(ocpnDC&, wxRegion const&) ()\n",
+    "ordinal": 1
+  },
+  {
+    "kind": "context",
+    "return_rax": 93825049206400,
+    "call": 17,
+    "stack": "#0  0x00007ffff753da59 in wxGraphicsContext::CreateFromUnknownDC(wxDC const&) () from /home/standard/Projects/X-nav/.local/sysroot/usr/lib/libwx_gtk3u_core-3.2.so.0\n#1  0x0000555556391aa8 in opennav::integration::DrawChartRouteWaypoint(ocpnDC&, ChartCanvas&, int, int, int) ()\n#2  0x0000555556184d48 in RoutePointGui::Draw(ocpnDC&, ChartCanvas*, wxPoint*, bool) ()\n#3  0x00005555561578d9 in RouteGui::Draw(ocpnDC&, ChartCanvas*, LLBBox const&)::{lambda(opennav::integration::ChartRouteUnderlay*)#1}::operator()(opennav::integration::ChartRouteUnderlay*) const ()\n#4  0x000055555615bbb2 in RouteGui::Draw(ocpnDC&, ChartCanvas*, LLBBox const&) ()\n",
+    "native_dc_vtable": "vtable for wxMemoryDC + 16 in section .data.rel.ro of /home/standard/Projects/X-nav-worktrees/skager-product-fidelity/.local/integrated-fidelity/install/bin/opencpn\n"
+  },
+  {
+    "kind": "waypoint_draw",
+    "return_rax": 1,
+    "call": 10,
+    "stack": "#0  0x000055555639175b in opennav::integration::DrawChartRouteWaypoint(ocpnDC&, ChartCanvas&, int, int, int) ()\n#1  0x0000555556184d48 in RoutePointGui::Draw(ocpnDC&, ChartCanvas*, wxPoint*, bool) ()\n#2  0x00005555561578d9 in RouteGui::Draw(ocpnDC&, ChartCanvas*, LLBBox const&)::{lambda(opennav::integration::ChartRouteUnderlay*)#1}::operator()(opennav::integration::ChartRouteUnderlay*) const ()\n#3  0x000055555615bbb2 in RouteGui::Draw(ocpnDC&, ChartCanvas*, LLBBox const&) ()\n#4  0x0000555555e43952 in ChartCanvas::DrawOverlayObjects(ocpnDC&, wxRegion const&) ()\n",
+    "ordinal": 1
+  },
+  {
+    "kind": "ordinal",
+    "return_rax": 1,
+    "call": 13,
+    "stack": "#0  0x00005555563912e0 in opennav::integration::ChartRouteWaypointOrdinal(ChartCanvas&, RoutePoint&, bool) ()\n#1  0x0000555556184a86 in RoutePointGui::Draw(ocpnDC&, ChartCanvas*, wxPoint*, bool) ()\n#2  0x000055555615745a in RouteGui::Draw(ocpnDC&, ChartCanvas*, LLBBox const&)::{lambda(opennav::integration::ChartRouteUnderlay*)#1}::operator()(opennav::integration::ChartRouteUnderlay*) const ()\n#3  0x000055555615bbb2 in RouteGui::Draw(ocpnDC&, ChartCanvas*, LLBBox const&) ()\n#4  0x0000555555e43952 in ChartCanvas::DrawOverlayObjects(ocpnDC&, wxRegion const&) ()\n",
+    "pinned_icon": 1
+  },
+  {
+    "kind": "label_prepare",
+    "return_rax": 1,
+    "call": 13,
+    "stack": "#0  0x0000555556393d3b in opennav::integration::PrepareChartRouteLabel(ChartCanvas&, RoutePoint&, int) ()\n#1  0x0000555556184c00 in RoutePointGui::Draw(ocpnDC&, ChartCanvas*, wxPoint*, bool) ()\n#2  0x000055555615745a in RouteGui::Draw(ocpnDC&, ChartCanvas*, LLBBox const&)::{lambda(opennav::integration::ChartRouteUnderlay*)#1}::operator()(opennav::integration::ChartRouteUnderlay*) const ()\n#3  0x000055555615bbb2 in RouteGui::Draw(ocpnDC&, ChartCanvas*, LLBBox const&) ()\n#4  0x0000555555e43952 in ChartCanvas::DrawOverlayObjects(ocpnDC&, wxRegion const&) ()\n",
+    "ordinal": 1
+  },
+  {
+    "kind": "context",
+    "return_rax": 93825049206400,
+    "call": 18,
+    "stack": "#0  0x00007ffff753da59 in wxGraphicsContext::CreateFromUnknownDC(wxDC const&) () from /home/standard/Projects/X-nav/.local/sysroot/usr/lib/libwx_gtk3u_core-3.2.so.0\n#1  0x0000555556391aa8 in opennav::integration::DrawChartRouteWaypoint(ocpnDC&, ChartCanvas&, int, int, int) ()\n#2  0x0000555556184d48 in RoutePointGui::Draw(ocpnDC&, ChartCanvas*, wxPoint*, bool) ()\n#3  0x000055555615745a in RouteGui::Draw(ocpnDC&, ChartCanvas*, LLBBox const&)::{lambda(opennav::integration::ChartRouteUnderlay*)#1}::operator()(opennav::integration::ChartRouteUnderlay*) const ()\n#4  0x000055555615bbb2 in RouteGui::Draw(ocpnDC&, ChartCanvas*, LLBBox const&) ()\n",
+    "native_dc_vtable": "vtable for wxMemoryDC + 16 in section .data.rel.ro of /home/standard/Projects/X-nav-worktrees/skager-product-fidelity/.local/integrated-fidelity/install/bin/opencpn\n"
+  },
+  {
+    "kind": "waypoint_draw",
+    "return_rax": 1,
+    "call": 11,
+    "stack": "#0  0x000055555639175b in opennav::integration::DrawChartRouteWaypoint(ocpnDC&, ChartCanvas&, int, int, int) ()\n#1  0x0000555556184d48 in RoutePointGui::Draw(ocpnDC&, ChartCanvas*, wxPoint*, bool) ()\n#2  0x000055555615745a in RouteGui::Draw(ocpnDC&, ChartCanvas*, LLBBox const&)::{lambda(opennav::integration::ChartRouteUnderlay*)#1}::operator()(opennav::integration::ChartRouteUnderlay*) const ()\n#3  0x000055555615bbb2 in RouteGui::Draw(ocpnDC&, ChartCanvas*, LLBBox const&) ()\n#4  0x0000555555e43952 in ChartCanvas::DrawOverlayObjects(ocpnDC&, wxRegion const&) ()\n",
+    "ordinal": 1
+  },
+  {
+    "kind": "ordinal",
+    "return_rax": 0,
+    "call": 14,
+    "stack": "#0  0x00005555563912e0 in opennav::integration::ChartRouteWaypointOrdinal(ChartCanvas&, RoutePoint&, bool) ()\n#1  0x0000555556184a86 in RoutePointGui::Draw(ocpnDC&, ChartCanvas*, wxPoint*, bool) ()\n#2  0x00005555561574f8 in RouteGui::Draw(ocpnDC&, ChartCanvas*, LLBBox const&)::{lambda(opennav::integration::ChartRouteUnderlay*)#1}::operator()(opennav::integration::ChartRouteUnderlay*) const ()\n#3  0x000055555615bbb2 in RouteGui::Draw(ocpnDC&, ChartCanvas*, LLBBox const&) ()\n#4  0x0000555555e43952 in ChartCanvas::DrawOverlayObjects(ocpnDC&, wxRegion const&) ()\n",
+    "pinned_icon": 1
+  },
+  {
+    "kind": "label_prepare",
+    "return_rax": 0,
+    "call": 14,
+    "stack": "#0  0x0000555556393d3b in opennav::integration::PrepareChartRouteLabel(ChartCanvas&, RoutePoint&, int) ()\n#1  0x0000555556184c00 in RoutePointGui::Draw(ocpnDC&, ChartCanvas*, wxPoint*, bool) ()\n#2  0x00005555561574f8 in RouteGui::Draw(ocpnDC&, ChartCanvas*, LLBBox const&)::{lambda(opennav::integration::ChartRouteUnderlay*)#1}::operator()(opennav::integration::ChartRouteUnderlay*) const ()\n#3  0x000055555615bbb2 in RouteGui::Draw(ocpnDC&, ChartCanvas*, LLBBox const&) ()\n#4  0x0000555555e43952 in ChartCanvas::DrawOverlayObjects(ocpnDC&, wxRegion const&) ()\n",
+    "ordinal": 0
+  },
+  {
+    "kind": "context",
+    "return_rax": 93825049206400,
+    "call": 19,
+    "stack": "#0  0x00007ffff753da59 in wxGraphicsContext::CreateFromUnknownDC(wxDC const&) () from /home/standard/Projects/X-nav/.local/sysroot/usr/lib/libwx_gtk3u_core-3.2.so.0\n#1  0x00005555563901e8 in opennav::integration::DrawChartRouteSegment(ocpnDC&, ChartCanvas&, double, double, double, double, bool, bool) ()\n#2  0x0000555556156d12 in RouteGui::RenderSegment(ocpnDC&, int, int, int, int, ViewPort&, bool, int, ChartCanvas*, bool, bool, bool, opennav::integration::ChartRouteUnderlay*, unsigned long) ()\n#3  0x00005555561575e1 in RouteGui::Draw(ocpnDC&, ChartCanvas*, LLBBox const&)::{lambda(opennav::integration::ChartRouteUnderlay*)#1}::operator()(opennav::integration::ChartRouteUnderlay*) const ()\n#4  0x000055555615bbb2 in RouteGui::Draw(ocpnDC&, ChartCanvas*, LLBBox const&) ()\n",
+    "native_dc_vtable": "vtable for wxMemoryDC + 16 in section .data.rel.ro of /home/standard/Projects/X-nav-worktrees/skager-product-fidelity/.local/integrated-fidelity/install/bin/opencpn\n"
+  },
+  {
+    "kind": "ordinal",
+    "return_rax": 3,
+    "call": 15,
+    "stack": "#0  0x00005555563912e0 in opennav::integration::ChartRouteWaypointOrdinal(ChartCanvas&, RoutePoint&, bool) ()\n#1  0x0000555556184a86 in RoutePointGui::Draw(ocpnDC&, ChartCanvas*, wxPoint*, bool) ()\n#2  0x00005555561574f8 in RouteGui::Draw(ocpnDC&, ChartCanvas*, LLBBox const&)::{lambda(opennav::integration::ChartRouteUnderlay*)#1}::operator()(opennav::integration::ChartRouteUnderlay*) const ()\n#3  0x000055555615bbb2 in RouteGui::Draw(ocpnDC&, ChartCanvas*, LLBBox const&) ()\n#4  0x0000555555e43952 in ChartCanvas::DrawOverlayObjects(ocpnDC&, wxRegion const&) ()\n",
+    "pinned_icon": 1
+  },
+  {
+    "kind": "label_prepare",
+    "return_rax": 1,
+    "call": 15,
+    "stack": "#0  0x0000555556393d3b in opennav::integration::PrepareChartRouteLabel(ChartCanvas&, RoutePoint&, int) ()\n#1  0x0000555556184c00 in RoutePointGui::Draw(ocpnDC&, ChartCanvas*, wxPoint*, bool) ()\n#2  0x00005555561574f8 in RouteGui::Draw(ocpnDC&, ChartCanvas*, LLBBox const&)::{lambda(opennav::integration::ChartRouteUnderlay*)#1}::operator()(opennav::integration::ChartRouteUnderlay*) const ()\n#3  0x000055555615bbb2 in RouteGui::Draw(ocpnDC&, ChartCanvas*, LLBBox const&) ()\n#4  0x0000555555e43952 in ChartCanvas::DrawOverlayObjects(ocpnDC&, wxRegion const&) ()\n",
+    "ordinal": 3
+  },
+  {
+    "kind": "context",
+    "return_rax": 93825049206400,
+    "call": 20,
+    "stack": "#0  0x00007ffff753da59 in wxGraphicsContext::CreateFromUnknownDC(wxDC const&) () from /home/standard/Projects/X-nav/.local/sysroot/usr/lib/libwx_gtk3u_core-3.2.so.0\n#1  0x0000555556391aa8 in opennav::integration::DrawChartRouteWaypoint(ocpnDC&, ChartCanvas&, int, int, int) ()\n#2  0x0000555556184d48 in RoutePointGui::Draw(ocpnDC&, ChartCanvas*, wxPoint*, bool) ()\n#3  0x00005555561574f8 in RouteGui::Draw(ocpnDC&, ChartCanvas*, LLBBox const&)::{lambda(opennav::integration::ChartRouteUnderlay*)#1}::operator()(opennav::integration::ChartRouteUnderlay*) const ()\n#4  0x000055555615bbb2 in RouteGui::Draw(ocpnDC&, ChartCanvas*, LLBBox const&) ()\n",
+    "native_dc_vtable": "vtable for wxMemoryDC + 16 in section .data.rel.ro of /home/standard/Projects/X-nav-worktrees/skager-product-fidelity/.local/integrated-fidelity/install/bin/opencpn\n"
+  },
+  {
+    "kind": "waypoint_draw",
+    "return_rax": 1,
+    "call": 12,
+    "stack": "#0  0x000055555639175b in opennav::integration::DrawChartRouteWaypoint(ocpnDC&, ChartCanvas&, int, int, int) ()\n#1  0x0000555556184d48 in RoutePointGui::Draw(ocpnDC&, ChartCanvas*, wxPoint*, bool) ()\n#2  0x00005555561574f8 in RouteGui::Draw(ocpnDC&, ChartCanvas*, LLBBox const&)::{lambda(opennav::integration::ChartRouteUnderlay*)#1}::operator()(opennav::integration::ChartRouteUnderlay*) const ()\n#3  0x000055555615bbb2 in RouteGui::Draw(ocpnDC&, ChartCanvas*, LLBBox const&) ()\n#4  0x0000555555e43952 in ChartCanvas::DrawOverlayObjects(ocpnDC&, wxRegion const&) ()\n",
+    "ordinal": 3
+  },
+  {
+    "kind": "context",
+    "return_rax": 93825049206400,
+    "call": 21,
+    "stack": "#0  0x00007ffff753da59 in wxGraphicsContext::CreateFromUnknownDC(wxDC const&) () from /home/standard/Projects/X-nav/.local/sysroot/usr/lib/libwx_gtk3u_core-3.2.so.0\n#1  0x00005555563901e8 in opennav::integration::DrawChartRouteSegment(ocpnDC&, ChartCanvas&, double, double, double, double, bool, bool) ()\n#2  0x0000555556156d12 in RouteGui::RenderSegment(ocpnDC&, int, int, int, int, ViewPort&, bool, int, ChartCanvas*, bool, bool, bool, opennav::integration::ChartRouteUnderlay*, unsigned long) ()\n#3  0x00005555561575e1 in RouteGui::Draw(ocpnDC&, ChartCanvas*, LLBBox const&)::{lambda(opennav::integration::ChartRouteUnderlay*)#1}::operator()(opennav::integration::ChartRouteUnderlay*) const ()\n#4  0x000055555615bbb2 in RouteGui::Draw(ocpnDC&, ChartCanvas*, LLBBox const&) ()\n",
+    "native_dc_vtable": "vtable for wxMemoryDC + 16 in section .data.rel.ro of /home/standard/Projects/X-nav-worktrees/skager-product-fidelity/.local/integrated-fidelity/install/bin/opencpn\n"
+  },
+  {
+    "kind": "context",
+    "return_rax": 93825087024288,
+    "call": 22,
+    "stack": "#0  0x00007ffff753da59 in wxGraphicsContext::CreateFromUnknownDC(wxDC const&) () from /home/standard/Projects/X-nav/.local/sysroot/usr/lib/libwx_gtk3u_core-3.2.so.0\n#1  0x0000555556397a05 in opennav::integration::ChartRouteUnderlay::Draw(ocpnDC&, ChartCanvas&) const ()\n#2  0x000055555615bd92 in RouteGui::Draw(ocpnDC&, ChartCanvas*, LLBBox const&) ()\n#3  0x0000555555e43952 in ChartCanvas::DrawOverlayObjects(ocpnDC&, wxRegion const&) ()\n#4  0x0000555555e47398 in ChartCanvas::OnPaint(wxPaintEvent&) ()\n",
+    "native_dc_vtable": "vtable for wxMemoryDC + 16 in section .data.rel.ro of /home/standard/Projects/X-nav-worktrees/skager-product-fidelity/.local/integrated-fidelity/install/bin/opencpn\n"
+  },
+  {
+    "kind": "ordinal",
+    "return_rax": 1,
+    "call": 16,
+    "stack": "#0  0x00005555563912e0 in opennav::integration::ChartRouteWaypointOrdinal(ChartCanvas&, RoutePoint&, bool) ()\n#1  0x0000555556184a86 in RoutePointGui::Draw(ocpnDC&, ChartCanvas*, wxPoint*, bool) ()\n#2  0x00005555561578d9 in RouteGui::Draw(ocpnDC&, ChartCanvas*, LLBBox const&)::{lambda(opennav::integration::ChartRouteUnderlay*)#1}::operator()(opennav::integration::ChartRouteUnderlay*) const ()\n#3  0x000055555615bbb2 in RouteGui::Draw(ocpnDC&, ChartCanvas*, LLBBox const&) ()\n#4  0x0000555555e43952 in ChartCanvas::DrawOverlayObjects(ocpnDC&, wxRegion const&) ()\n",
+    "pinned_icon": 1
+  },
+  {
+    "kind": "label_prepare",
+    "return_rax": 1,
+    "call": 16,
+    "stack": "#0  0x0000555556393d3b in opennav::integration::PrepareChartRouteLabel(ChartCanvas&, RoutePoint&, int) ()\n#1  0x0000555556184c00 in RoutePointGui::Draw(ocpnDC&, ChartCanvas*, wxPoint*, bool) ()\n#2  0x00005555561578d9 in RouteGui::Draw(ocpnDC&, ChartCanvas*, LLBBox const&)::{lambda(opennav::integration::ChartRouteUnderlay*)#1}::operator()(opennav::integration::ChartRouteUnderlay*) const ()\n#3  0x000055555615bbb2 in RouteGui::Draw(ocpnDC&, ChartCanvas*, LLBBox const&) ()\n#4  0x0000555555e43952 in ChartCanvas::DrawOverlayObjects(ocpnDC&, wxRegion const&) ()\n",
+    "ordinal": 1
+  },
+  {
+    "kind": "context",
+    "return_rax": 93825087024288,
+    "call": 23,
+    "stack": "#0  0x00007ffff753da59 in wxGraphicsContext::CreateFromUnknownDC(wxDC const&) () from /home/standard/Projects/X-nav/.local/sysroot/usr/lib/libwx_gtk3u_core-3.2.so.0\n#1  0x0000555556391aa8 in opennav::integration::DrawChartRouteWaypoint(ocpnDC&, ChartCanvas&, int, int, int) ()\n#2  0x0000555556184d48 in RoutePointGui::Draw(ocpnDC&, ChartCanvas*, wxPoint*, bool) ()\n#3  0x00005555561578d9 in RouteGui::Draw(ocpnDC&, ChartCanvas*, LLBBox const&)::{lambda(opennav::integration::ChartRouteUnderlay*)#1}::operator()(opennav::integration::ChartRouteUnderlay*) const ()\n#4  0x000055555615bbb2 in RouteGui::Draw(ocpnDC&, ChartCanvas*, LLBBox const&) ()\n",
+    "native_dc_vtable": "vtable for wxMemoryDC + 16 in section .data.rel.ro of /home/standard/Projects/X-nav-worktrees/skager-product-fidelity/.local/integrated-fidelity/install/bin/opencpn\n"
+  },
+  {
+    "kind": "waypoint_draw",
+    "return_rax": 1,
+    "call": 13,
+    "stack": "#0  0x000055555639175b in opennav::integration::DrawChartRouteWaypoint(ocpnDC&, ChartCanvas&, int, int, int) ()\n#1  0x0000555556184d48 in RoutePointGui::Draw(ocpnDC&, ChartCanvas*, wxPoint*, bool) ()\n#2  0x00005555561578d9 in RouteGui::Draw(ocpnDC&, ChartCanvas*, LLBBox const&)::{lambda(opennav::integration::ChartRouteUnderlay*)#1}::operator()(opennav::integration::ChartRouteUnderlay*) const ()\n#3  0x000055555615bbb2 in RouteGui::Draw(ocpnDC&, ChartCanvas*, LLBBox const&) ()\n#4  0x0000555555e43952 in ChartCanvas::DrawOverlayObjects(ocpnDC&, wxRegion const&) ()\n",
+    "ordinal": 1
+  },
+  {
+    "kind": "ordinal",
+    "return_rax": 1,
+    "call": 17,
+    "stack": "#0  0x00005555563912e0 in opennav::integration::ChartRouteWaypointOrdinal(ChartCanvas&, RoutePoint&, bool) ()\n#1  0x0000555556184a86 in RoutePointGui::Draw(ocpnDC&, ChartCanvas*, wxPoint*, bool) ()\n#2  0x000055555615745a in RouteGui::Draw(ocpnDC&, ChartCanvas*, LLBBox const&)::{lambda(opennav::integration::ChartRouteUnderlay*)#1}::operator()(opennav::integration::ChartRouteUnderlay*) const ()\n#3  0x000055555615bbb2 in RouteGui::Draw(ocpnDC&, ChartCanvas*, LLBBox const&) ()\n#4  0x0000555555e43952 in ChartCanvas::DrawOverlayObjects(ocpnDC&, wxRegion const&) ()\n",
+    "pinned_icon": 1
+  },
+  {
+    "kind": "label_prepare",
+    "return_rax": 1,
+    "call": 17,
+    "stack": "#0  0x0000555556393d3b in opennav::integration::PrepareChartRouteLabel(ChartCanvas&, RoutePoint&, int) ()\n#1  0x0000555556184c00 in RoutePointGui::Draw(ocpnDC&, ChartCanvas*, wxPoint*, bool) ()\n#2  0x000055555615745a in RouteGui::Draw(ocpnDC&, ChartCanvas*, LLBBox const&)::{lambda(opennav::integration::ChartRouteUnderlay*)#1}::operator()(opennav::integration::ChartRouteUnderlay*) const ()\n#3  0x000055555615bbb2 in RouteGui::Draw(ocpnDC&, ChartCanvas*, LLBBox const&) ()\n#4  0x0000555555e43952 in ChartCanvas::DrawOverlayObjects(ocpnDC&, wxRegion const&) ()\n",
+    "ordinal": 1
+  },
+  {
+    "kind": "waypoint_draw",
+    "return_rax": 1,
+    "call": 14,
+    "stack": "#0  0x000055555639175b in opennav::integration::DrawChartRouteWaypoint(ocpnDC&, ChartCanvas&, int, int, int) ()\n#1  0x0000555556184d48 in RoutePointGui::Draw(ocpnDC&, ChartCanvas*, wxPoint*, bool) ()\n#2  0x000055555615745a in RouteGui::Draw(ocpnDC&, ChartCanvas*, LLBBox const&)::{lambda(opennav::integration::ChartRouteUnderlay*)#1}::operator()(opennav::integration::ChartRouteUnderlay*) const ()\n#3  0x000055555615bbb2 in RouteGui::Draw(ocpnDC&, ChartCanvas*, LLBBox const&) ()\n#4  0x0000555555e43952 in ChartCanvas::DrawOverlayObjects(ocpnDC&, wxRegion const&) ()\n",
+    "ordinal": 1
+  },
+  {
+    "kind": "ordinal",
+    "return_rax": 2,
+    "call": 18,
+    "stack": "#0  0x00005555563912e0 in opennav::integration::ChartRouteWaypointOrdinal(ChartCanvas&, RoutePoint&, bool) ()\n#1  0x0000555556184a86 in RoutePointGui::Draw(ocpnDC&, ChartCanvas*, wxPoint*, bool) ()\n#2  0x00005555561574f8 in RouteGui::Draw(ocpnDC&, ChartCanvas*, LLBBox const&)::{lambda(opennav::integration::ChartRouteUnderlay*)#1}::operator()(opennav::integration::ChartRouteUnderlay*) const ()\n#3  0x000055555615bbb2 in RouteGui::Draw(ocpnDC&, ChartCanvas*, LLBBox const&) ()\n#4  0x0000555555e43952 in ChartCanvas::DrawOverlayObjects(ocpnDC&, wxRegion const&) ()\n",
+    "pinned_icon": 1
+  },
+  {
+    "kind": "label_prepare",
+    "return_rax": 1,
+    "call": 18,
+    "stack": "#0  0x0000555556393d3b in opennav::integration::PrepareChartRouteLabel(ChartCanvas&, RoutePoint&, int) ()\n#1  0x0000555556184c00 in RoutePointGui::Draw(ocpnDC&, ChartCanvas*, wxPoint*, bool) ()\n#2  0x00005555561574f8 in RouteGui::Draw(ocpnDC&, ChartCanvas*, LLBBox const&)::{lambda(opennav::integration::ChartRouteUnderlay*)#1}::operator()(opennav::integration::ChartRouteUnderlay*) const ()\n#3  0x000055555615bbb2 in RouteGui::Draw(ocpnDC&, ChartCanvas*, LLBBox const&) ()\n#4  0x0000555555e43952 in ChartCanvas::DrawOverlayObjects(ocpnDC&, wxRegion const&) ()\n",
+    "ordinal": 2
+  },
+  {
+    "kind": "waypoint_draw",
+    "return_rax": 1,
+    "call": 15,
+    "stack": "#0  0x000055555639175b in opennav::integration::DrawChartRouteWaypoint(ocpnDC&, ChartCanvas&, int, int, int) ()\n#1  0x0000555556184d48 in RoutePointGui::Draw(ocpnDC&, ChartCanvas*, wxPoint*, bool) ()\n#2  0x00005555561574f8 in RouteGui::Draw(ocpnDC&, ChartCanvas*, LLBBox const&)::{lambda(opennav::integration::ChartRouteUnderlay*)#1}::operator()(opennav::integration::ChartRouteUnderlay*) const ()\n#3  0x000055555615bbb2 in RouteGui::Draw(ocpnDC&, ChartCanvas*, LLBBox const&) ()\n#4  0x0000555555e43952 in ChartCanvas::DrawOverlayObjects(ocpnDC&, wxRegion const&) ()\n",
+    "ordinal": 2
+  },
+  {
+    "kind": "ordinal",
+    "return_rax": 0,
+    "call": 19,
+    "stack": "#0  0x00005555563912e0 in opennav::integration::ChartRouteWaypointOrdinal(ChartCanvas&, RoutePoint&, bool) ()\n#1  0x0000555556184a86 in RoutePointGui::Draw(ocpnDC&, ChartCanvas*, wxPoint*, bool) ()\n#2  0x00005555561574f8 in RouteGui::Draw(ocpnDC&, ChartCanvas*, LLBBox const&)::{lambda(opennav::integration::ChartRouteUnderlay*)#1}::operator()(opennav::integration::ChartRouteUnderlay*) const ()\n#3  0x000055555615bbb2 in RouteGui::Draw(ocpnDC&, ChartCanvas*, LLBBox const&) ()\n#4  0x0000555555e43952 in ChartCanvas::DrawOverlayObjects(ocpnDC&, wxRegion const&) ()\n",
+    "pinned_icon": 1
+  },
+  {
+    "kind": "label_prepare",
+    "return_rax": 0,
+    "call": 19,
+    "stack": "#0  0x0000555556393d3b in opennav::integration::PrepareChartRouteLabel(ChartCanvas&, RoutePoint&, int) ()\n#1  0x0000555556184c00 in RoutePointGui::Draw(ocpnDC&, ChartCanvas*, wxPoint*, bool) ()\n#2  0x00005555561574f8 in RouteGui::Draw(ocpnDC&, ChartCanvas*, LLBBox const&)::{lambda(opennav::integration::ChartRouteUnderlay*)#1}::operator()(opennav::integration::ChartRouteUnderlay*) const ()\n#3  0x000055555615bbb2 in RouteGui::Draw(ocpnDC&, ChartCanvas*, LLBBox const&) ()\n#4  0x0000555555e43952 in ChartCanvas::DrawOverlayObjects(ocpnDC&, wxRegion const&) ()\n",
+    "ordinal": 0
+  },
+  {
+    "kind": "waypoint_draw",
+    "return_rax": 0,
+    "call": 16,
+    "stack": "#0  0x000055555639175b in opennav::integration::DrawChartRouteWaypoint(ocpnDC&, ChartCanvas&, int, int, int) ()\n#1  0x0000555556184d48 in RoutePointGui::Draw(ocpnDC&, ChartCanvas*, wxPoint*, bool) ()\n#2  0x00005555561574f8 in RouteGui::Draw(ocpnDC&, ChartCanvas*, LLBBox const&)::{lambda(opennav::integration::ChartRouteUnderlay*)#1}::operator()(opennav::integration::ChartRouteUnderlay*) const ()\n#3  0x000055555615bbb2 in RouteGui::Draw(ocpnDC&, ChartCanvas*, LLBBox const&) ()\n#4  0x0000555555e43952 in ChartCanvas::DrawOverlayObjects(ocpnDC&, wxRegion const&) ()\n",
+    "ordinal": 0
+  },
+  {
+    "kind": "ordinal",
+    "return_rax": 1,
+    "call": 20,
+    "stack": "#0  0x00005555563912e0 in opennav::integration::ChartRouteWaypointOrdinal(ChartCanvas&, RoutePoint&, bool) ()\n#1  0x0000555556184a86 in RoutePointGui::Draw(ocpnDC&, ChartCanvas*, wxPoint*, bool) ()\n#2  0x00005555561578d9 in RouteGui::Draw(ocpnDC&, ChartCanvas*, LLBBox const&)::{lambda(opennav::integration::ChartRouteUnderlay*)#1}::operator()(opennav::integration::ChartRouteUnderlay*) const ()\n#3  0x000055555615bbb2 in RouteGui::Draw(ocpnDC&, ChartCanvas*, LLBBox const&) ()\n#4  0x0000555555e43952 in ChartCanvas::DrawOverlayObjects(ocpnDC&, wxRegion const&) ()\n",
+    "pinned_icon": 1
+  },
+  {
+    "kind": "label_prepare",
+    "return_rax": 1,
+    "call": 20,
+    "stack": "#0  0x0000555556393d3b in opennav::integration::PrepareChartRouteLabel(ChartCanvas&, RoutePoint&, int) ()\n#1  0x0000555556184c00 in RoutePointGui::Draw(ocpnDC&, ChartCanvas*, wxPoint*, bool) ()\n#2  0x00005555561578d9 in RouteGui::Draw(ocpnDC&, ChartCanvas*, LLBBox const&)::{lambda(opennav::integration::ChartRouteUnderlay*)#1}::operator()(opennav::integration::ChartRouteUnderlay*) const ()\n#3  0x000055555615bbb2 in RouteGui::Draw(ocpnDC&, ChartCanvas*, LLBBox const&) ()\n#4  0x0000555555e43952 in ChartCanvas::DrawOverlayObjects(ocpnDC&, wxRegion const&) ()\n",
+    "ordinal": 1
+  },
+  {
+    "kind": "waypoint_draw",
+    "return_rax": 1,
+    "call": 17,
+    "stack": "#0  0x000055555639175b in opennav::integration::DrawChartRouteWaypoint(ocpnDC&, ChartCanvas&, int, int, int) ()\n#1  0x0000555556184d48 in RoutePointGui::Draw(ocpnDC&, ChartCanvas*, wxPoint*, bool) ()\n#2  0x00005555561578d9 in RouteGui::Draw(ocpnDC&, ChartCanvas*, LLBBox const&)::{lambda(opennav::integration::ChartRouteUnderlay*)#1}::operator()(opennav::integration::ChartRouteUnderlay*) const ()\n#3  0x000055555615bbb2 in RouteGui::Draw(ocpnDC&, ChartCanvas*, LLBBox const&) ()\n#4  0x0000555555e43952 in ChartCanvas::DrawOverlayObjects(ocpnDC&, wxRegion const&) ()\n",
+    "ordinal": 1
+  },
+  {
+    "kind": "ordinal",
+    "return_rax": 1,
+    "call": 21,
+    "stack": "#0  0x00005555563912e0 in opennav::integration::ChartRouteWaypointOrdinal(ChartCanvas&, RoutePoint&, bool) ()\n#1  0x0000555556184a86 in RoutePointGui::Draw(ocpnDC&, ChartCanvas*, wxPoint*, bool) ()\n#2  0x000055555615745a in RouteGui::Draw(ocpnDC&, ChartCanvas*, LLBBox const&)::{lambda(opennav::integration::ChartRouteUnderlay*)#1}::operator()(opennav::integration::ChartRouteUnderlay*) const ()\n#3  0x000055555615bbb2 in RouteGui::Draw(ocpnDC&, ChartCanvas*, LLBBox const&) ()\n#4  0x0000555555e43952 in ChartCanvas::DrawOverlayObjects(ocpnDC&, wxRegion const&) ()\n",
+    "pinned_icon": 1
+  },
+  {
+    "kind": "label_prepare",
+    "return_rax": 1,
+    "call": 21,
+    "stack": "#0  0x0000555556393d3b in opennav::integration::PrepareChartRouteLabel(ChartCanvas&, RoutePoint&, int) ()\n#1  0x0000555556184c00 in RoutePointGui::Draw(ocpnDC&, ChartCanvas*, wxPoint*, bool) ()\n#2  0x000055555615745a in RouteGui::Draw(ocpnDC&, ChartCanvas*, LLBBox const&)::{lambda(opennav::integration::ChartRouteUnderlay*)#1}::operator()(opennav::integration::ChartRouteUnderlay*) const ()\n#3  0x000055555615bbb2 in RouteGui::Draw(ocpnDC&, ChartCanvas*, LLBBox const&) ()\n#4  0x0000555555e43952 in ChartCanvas::DrawOverlayObjects(ocpnDC&, wxRegion const&) ()\n",
+    "ordinal": 1
+  },
+  {
+    "kind": "waypoint_draw",
+    "return_rax": 1,
+    "call": 18,
+    "stack": "#0  0x000055555639175b in opennav::integration::DrawChartRouteWaypoint(ocpnDC&, ChartCanvas&, int, int, int) ()\n#1  0x0000555556184d48 in RoutePointGui::Draw(ocpnDC&, ChartCanvas*, wxPoint*, bool) ()\n#2  0x000055555615745a in RouteGui::Draw(ocpnDC&, ChartCanvas*, LLBBox const&)::{lambda(opennav::integration::ChartRouteUnderlay*)#1}::operator()(opennav::integration::ChartRouteUnderlay*) const ()\n#3  0x000055555615bbb2 in RouteGui::Draw(ocpnDC&, ChartCanvas*, LLBBox const&) ()\n#4  0x0000555555e43952 in ChartCanvas::DrawOverlayObjects(ocpnDC&, wxRegion const&) ()\n",
+    "ordinal": 1
+  },
+  {
+    "kind": "ordinal",
+    "return_rax": 2,
+    "call": 22,
+    "stack": "#0  0x00005555563912e0 in opennav::integration::ChartRouteWaypointOrdinal(ChartCanvas&, RoutePoint&, bool) ()\n#1  0x0000555556184a86 in RoutePointGui::Draw(ocpnDC&, ChartCanvas*, wxPoint*, bool) ()\n#2  0x00005555561574f8 in RouteGui::Draw(ocpnDC&, ChartCanvas*, LLBBox const&)::{lambda(opennav::integration::ChartRouteUnderlay*)#1}::operator()(opennav::integration::ChartRouteUnderlay*) const ()\n#3  0x000055555615bbb2 in RouteGui::Draw(ocpnDC&, ChartCanvas*, LLBBox const&) ()\n#4  0x0000555555e43952 in ChartCanvas::DrawOverlayObjects(ocpnDC&, wxRegion const&) ()\n",
+    "pinned_icon": 1
+  },
+  {
+    "kind": "label_prepare",
+    "return_rax": 1,
+    "call": 22,
+    "stack": "#0  0x0000555556393d3b in opennav::integration::PrepareChartRouteLabel(ChartCanvas&, RoutePoint&, int) ()\n#1  0x0000555556184c00 in RoutePointGui::Draw(ocpnDC&, ChartCanvas*, wxPoint*, bool) ()\n#2  0x00005555561574f8 in RouteGui::Draw(ocpnDC&, ChartCanvas*, LLBBox const&)::{lambda(opennav::integration::ChartRouteUnderlay*)#1}::operator()(opennav::integration::ChartRouteUnderlay*) const ()\n#3  0x000055555615bbb2 in RouteGui::Draw(ocpnDC&, ChartCanvas*, LLBBox const&) ()\n#4  0x0000555555e43952 in ChartCanvas::DrawOverlayObjects(ocpnDC&, wxRegion const&) ()\n",
+    "ordinal": 2
+  },
+  {
+    "kind": "waypoint_draw",
+    "return_rax": 1,
+    "call": 19,
+    "stack": "#0  0x000055555639175b in opennav::integration::DrawChartRouteWaypoint(ocpnDC&, ChartCanvas&, int, int, int) ()\n#1  0x0000555556184d48 in RoutePointGui::Draw(ocpnDC&, ChartCanvas*, wxPoint*, bool) ()\n#2  0x00005555561574f8 in RouteGui::Draw(ocpnDC&, ChartCanvas*, LLBBox const&)::{lambda(opennav::integration::ChartRouteUnderlay*)#1}::operator()(opennav::integration::ChartRouteUnderlay*) const ()\n#3  0x000055555615bbb2 in RouteGui::Draw(ocpnDC&, ChartCanvas*, LLBBox const&) ()\n#4  0x0000555555e43952 in ChartCanvas::DrawOverlayObjects(ocpnDC&, wxRegion const&) ()\n",
+    "ordinal": 2
+  },
+  {
+    "kind": "ordinal",
+    "return_rax": 0,
+    "call": 23,
+    "stack": "#0  0x00005555563912e0 in opennav::integration::ChartRouteWaypointOrdinal(ChartCanvas&, RoutePoint&, bool) ()\n#1  0x0000555556184a86 in RoutePointGui::Draw(ocpnDC&, ChartCanvas*, wxPoint*, bool) ()\n#2  0x00005555561574f8 in RouteGui::Draw(ocpnDC&, ChartCanvas*, LLBBox const&)::{lambda(opennav::integration::ChartRouteUnderlay*)#1}::operator()(opennav::integration::ChartRouteUnderlay*) const ()\n#3  0x000055555615bbb2 in RouteGui::Draw(ocpnDC&, ChartCanvas*, LLBBox const&) ()\n#4  0x0000555555e43952 in ChartCanvas::DrawOverlayObjects(ocpnDC&, wxRegion const&) ()\n",
+    "pinned_icon": 1
+  },
+  {
+    "kind": "label_prepare",
+    "return_rax": 0,
+    "call": 23,
+    "stack": "#0  0x0000555556393d3b in opennav::integration::PrepareChartRouteLabel(ChartCanvas&, RoutePoint&, int) ()\n#1  0x0000555556184c00 in RoutePointGui::Draw(ocpnDC&, ChartCanvas*, wxPoint*, bool) ()\n#2  0x00005555561574f8 in RouteGui::Draw(ocpnDC&, ChartCanvas*, LLBBox const&)::{lambda(opennav::integration::ChartRouteUnderlay*)#1}::operator()(opennav::integration::ChartRouteUnderlay*) const ()\n#3  0x000055555615bbb2 in RouteGui::Draw(ocpnDC&, ChartCanvas*, LLBBox const&) ()\n#4  0x0000555555e43952 in ChartCanvas::DrawOverlayObjects(ocpnDC&, wxRegion const&) ()\n",
+    "ordinal": 0
+  },
+  {
+    "kind": "waypoint_draw",
+    "return_rax": 0,
+    "call": 20,
+    "stack": "#0  0x000055555639175b in opennav::integration::DrawChartRouteWaypoint(ocpnDC&, ChartCanvas&, int, int, int) ()\n#1  0x0000555556184d48 in RoutePointGui::Draw(ocpnDC&, ChartCanvas*, wxPoint*, bool) ()\n#2  0x00005555561578d9 in RouteGui::Draw(ocpnDC&, ChartCanvas*, LLBBox const&)::{lambda(opennav::integration::ChartRouteUnderlay*)#1}::operator()(opennav::integration::ChartRouteUnderlay*) const ()\n#3  0x000055555615bbb2 in RouteGui::Draw(ocpnDC&, ChartCanvas*, LLBBox const&) ()\n#4  0x0000555555e43952 in ChartCanvas::DrawOverlayObjects(ocpnDC&, wxRegion const&) ()\n",
+    "ordinal": 0
+  },
+  {
+    "kind": "waypoint_draw",
+    "return_rax": 0,
+    "call": 21,
+    "stack": "#0  0x000055555639175b in opennav::integration::DrawChartRouteWaypoint(ocpnDC&, ChartCanvas&, int, int, int) ()\n#1  0x0000555556184d48 in RoutePointGui::Draw(ocpnDC&, ChartCanvas*, wxPoint*, bool) ()\n#2  0x000055555615745a in RouteGui::Draw(ocpnDC&, ChartCanvas*, LLBBox const&)::{lambda(opennav::integration::ChartRouteUnderlay*)#1}::operator()(opennav::integration::ChartRouteUnderlay*) const ()\n#3  0x000055555615bbb2 in RouteGui::Draw(ocpnDC&, ChartCanvas*, LLBBox const&) ()\n#4  0x0000555555e43952 in ChartCanvas::DrawOverlayObjects(ocpnDC&, wxRegion const&) ()\n",
+    "ordinal": 0
+  },
+  {
+    "kind": "waypoint_draw",
+    "return_rax": 1,
+    "call": 22,
+    "stack": "#0  0x000055555639175b in opennav::integration::DrawChartRouteWaypoint(ocpnDC&, ChartCanvas&, int, int, int) ()\n#1  0x0000555556184d48 in RoutePointGui::Draw(ocpnDC&, ChartCanvas*, wxPoint*, bool) ()\n#2  0x00005555561574f8 in RouteGui::Draw(ocpnDC&, ChartCanvas*, LLBBox const&)::{lambda(opennav::integration::ChartRouteUnderlay*)#1}::operator()(opennav::integration::ChartRouteUnderlay*) const ()\n#3  0x000055555615bbb2 in RouteGui::Draw(ocpnDC&, ChartCanvas*, LLBBox const&) ()\n#4  0x0000555555e43952 in ChartCanvas::DrawOverlayObjects(ocpnDC&, wxRegion const&) ()\n",
+    "ordinal": 2
+  },
+  {
+    "kind": "waypoint_draw",
+    "return_rax": 1,
+    "call": 23,
+    "stack": "#0  0x000055555639175b in opennav::integration::DrawChartRouteWaypoint(ocpnDC&, ChartCanvas&, int, int, int) ()\n#1  0x0000555556184d48 in RoutePointGui::Draw(ocpnDC&, ChartCanvas*, wxPoint*, bool) ()\n#2  0x00005555561574f8 in RouteGui::Draw(ocpnDC&, ChartCanvas*, LLBBox const&)::{lambda(opennav::integration::ChartRouteUnderlay*)#1}::operator()(opennav::integration::ChartRouteUnderlay*) const ()\n#3  0x000055555615bbb2 in RouteGui::Draw(ocpnDC&, ChartCanvas*, LLBBox const&) ()\n#4  0x0000555555e43952 in ChartCanvas::DrawOverlayObjects(ocpnDC&, wxRegion const&) ()\n",
+    "ordinal": 3
+  }
+]

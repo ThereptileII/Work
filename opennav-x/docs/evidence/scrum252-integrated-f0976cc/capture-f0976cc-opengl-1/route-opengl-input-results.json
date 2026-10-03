@@ -1,0 +1,98 @@
+{
+  "authority": "Linux development",
+  "fixture": "Synthetic NMEA over loopback; no external devices or production profile",
+  "expected": {
+    "sog_kn": 6.3,
+    "cog_deg": 147,
+    "wind": "unavailable",
+    "depth": "unavailable"
+  },
+  "screenshots": [
+    "route-opengl-01-active-route.png"
+  ],
+  "visual_review": "required",
+  "initial_resize_publication": {
+    "before_ticks": 3,
+    "after_ticks": 7,
+    "footer": {
+      "height": 34,
+      "y": 766,
+      "width": 1280,
+      "x": 0
+    }
+  },
+  "active_route_paint": {
+    "style": "XNav",
+    "requested_ink": [
+      38,
+      124,
+      118
+    ],
+    "ink": [
+      38,
+      124,
+      118
+    ],
+    "theme": "Day",
+    "renderer": "opengl",
+    "projection": "pinned ChartCanvas::GetCanvasPointPix",
+    "samples": [
+      {
+        "x": 507,
+        "y": 497,
+        "exact_ink_pixels": 21
+      },
+      {
+        "x": 522,
+        "y": 470,
+        "exact_ink_pixels": 20
+      },
+      {
+        "x": 537,
+        "y": 442,
+        "exact_ink_pixels": 21
+      },
+      {
+        "x": 552,
+        "y": 415,
+        "exact_ink_pixels": 21
+      },
+      {
+        "x": 567,
+        "y": 388,
+        "exact_ink_pixels": 19
+      },
+      {
+        "x": 607,
+        "y": 314,
+        "exact_ink_pixels": 20
+      },
+      {
+        "x": 622,
+        "y": 287,
+        "exact_ink_pixels": 20
+      },
+      {
+        "x": 637,
+        "y": 259,
+        "exact_ink_pixels": 20
+      },
+      {
+        "x": 652,
+        "y": 231,
+        "exact_ink_pixels": 21
+      },
+      {
+        "x": 667,
+        "y": 204,
+        "exact_ink_pixels": 20
+      }
+    ]
+  },
+  "sent": {
+    "rmc": 53,
+    "gga": 53,
+    "ais": 0
+  },
+  "transport_errors": []
+}

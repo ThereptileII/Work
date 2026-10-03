@@ -26,7 +26,7 @@ prerequisite is a separate operation requiring its own backup and approval.
    Use **Browse...** if necessary; Setup rechecks the selected file on **Next**.
    Continue only when the compatibility check succeeds.
    The **Installation action** list offers **Install**, **Update** and **Repair**;
-   an existing registered SKAGER or older OpenNav installation normally selects **Update**.
+   an existing registered SKAGER installation or earlier development version normally selects **Update**.
 3. Read the recovery explanation and keep the backup location.
 4. Choose Legacy and Safe Mode shortcuts if wanted. The SKAGER shortcut and
    Windows maintenance entry are always created.
@@ -75,7 +75,7 @@ key in screenshots or support reports.
 ## Update
 
 Close all modes, run the newer Setup and use **Update**. You do not need to delete
-the previous installed SKAGER or OpenNav version first. Your chart configuration,
+the previous installed version first. Your chart configuration,
 connections, routes, tracks, waypoints and settings stay in the existing profile.
 The previous application generation remains available for rollback.
 
@@ -101,7 +101,7 @@ Do not delete those without checking their contents.
 
 SKAGER uses the **SKAGER** Start-menu folder with **Skager**, **OpenCPN Legacy**,
 **Skager Safe Mode** and **Maintain Skager** shortcuts (depending on your choices).
-Updating migrates verified shortcuts from older OpenNav folders. Rollback restores
+Updating migrates verified shortcuts from earlier development folders. Rollback restores
 that exact retained generation's original folder and labels so its unchanged
 maintainer keeps working. The internal installation directory and registration
 identity stay compatible with earlier versions; do not rename them manually.

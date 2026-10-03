@@ -1,5 +1,34 @@
 # SKAGER status — 2026-10-03
 
+## Current correction batch: chart labels, Night, land and service symbols
+
+Local `f0976cc65ea63d3ed6f60ac53ec38a856d11b66b` is frozen and published as
+`9a4231f45d978321c612a6a1de66d735d531bbaa`. Its combined Linux application
+[built and staged successfully](evidence/skager-chart-f0976cc-linux-build/README.md).
+The [seventeen-unit native preflight](https://github.com/ThereptileII/Work/actions/runs/37085103227)
+passed, with downloaded object/source/resource identities independently verified.
+It is compilation evidence only, separate from the preceding full candidate.
+[Sixteen real-ENC captures](evidence/skager-product-fidelity-f0976cc-linux/README.md)
+pass software/OpenGL Day → Dusk → Night → Day, with four clean exits. Exact
+Night/land colors, matte-free logo and unchanged Standard chart pixels were
+checked. The [active-route comparison](design/reviews/scrum252-integrated-f0976cc.md)
+passes all 26 original assertions and hot-theme label checks in OpenGL, but
+the first software capture lacks the expected name card, numbered circle and
+route understroke. The [diagnosis and repair](design/reviews/scrum252-fixture-repaint.md)
+trace this to direct test-scenario mutations missing the redraw notification
+used by normal route commands. An ordinary theme repaint on the same executable
+shows the correct cards, markers and current geometry. Only the test scenario
+was corrected; all 26 navigation assertions remain intact. A fresh capture of
+the corrected scenario remains required. No release or whole-chart conformance
+is inferred from these captures.
+
+This batch includes theme-aware approved SKAGER artwork, guarded route-point
+name cards, effective prototype Night chart colors, the GTK chart-control
+recapture fix, exact pilot-boarding/radar-beacon artwork, and the correction of
+built-up-area fill to prototype land. It retains navigation classifications,
+hazard contrast, Standard resources and Legacy/Safe boundaries. No new boat
+installation or old-generation retirement has occurred.
+
 ## Current: frozen SKAGER candidate enters integrated qualification
 
 The frozen implementation is local
@@ -15,7 +44,20 @@ scenario's obsolete `OpenNav` log-prefix expectation. The
 [one-line correction and downloaded failure](evidence/scrum235-linux-resource-log/README.md)
 retain all resource/profile assertions; a focused same-executable rerun passes
 SKAGER, Legacy and Safe with three clean exits. The full job remains failed.
-Native application/package/installer/rendering/endurance qualification continues.
+The native job also stopped before application compilation: Chocolatey's Poedit
+download returned HTTP 504, which the upstream batch masked until the later
+gettext check. [Downloaded failure evidence](evidence/scrum255-gettext-failure/README.md)
+is retained. SCRUM-255 now owns early prerequisite verification and bounded
+recovery; no blind full-job rerun is started. This is not an observed application
+crash. Application/package/installer/rendering/endurance acceptance remains open.
+
+The narrow SCRUM-255 repair checks both Poedit tools before expensive builds,
+retries only bounded package-manager failures, and verifies their identities
+again before configuration. Its [separate native prerequisite run](https://github.com/ThereptileII/Work/actions/runs/37086572916)
+stopped in the offline contracts, before acquisition: the lexical-path guard
+mistook canonical Windows path spelling for redirection. That guard is being
+corrected to detect actual reparse components; the failed run is retained.
+No full application build was started for this failed short proof.
 
 The next local increment includes theme-aware compositing of the approved logo
 (`8accdd9`): original asset bytes and letter geometry remain unchanged, the

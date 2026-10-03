@@ -2,7 +2,7 @@
 """Derive bounded XNav palette resources from verified pinned OpenCPN bytes.
 
 Only the enumerated palette roles, geographic-name ink, two built-up-area fill tokens and a proven
-neutral sprite-ink mask, isolated ACHARE51/PILBOP02/RTPBCN02 artwork tiles and CBLSUB06 paint role may change. Original inputs are never modified.
+neutral sprite-ink mask, isolated ACHARE51/PILBOP02/RTPBCN02/BOYCAR01-04 artwork tiles and CBLSUB06 paint role may change. Original inputs are never modified.
 """
 import argparse
 import hashlib
@@ -14,6 +14,7 @@ from chart_raster_ink import decode, derive
 import chart_anchor_art
 import chart_cable_paint
 import chart_service_art
+import chart_cardinal_art
 
 ROOT=Path(__file__).resolve().parents[1]
 ALLOWED={'LANDA','CSTLN','DEPDW','DEPMD','DEPMS','DEPVS','DEPIT','DEPCN','DEPSC','SNDG1','SNDG2','CHBLK','CHGRD'}
@@ -85,6 +86,7 @@ def validate_resource_changes(original, styled, colors):
     chart_anchor_art.restore_bitmap_for_validation(before, after)
     chart_cable_paint.restore_for_validation(before, after)
     chart_service_art.restore_bitmap_for_validation(before, after)
+    chart_cardinal_art.restore_bitmap_for_validation(before, after)
     # Added nodes must not make whitespace significant in the identity check.
     for tree in (before,after):
         for node in tree.iter():
@@ -153,6 +155,7 @@ def generate(source, output):
     xml=chart_anchor_art.relocate(xml)
     xml=chart_cable_paint.recolor(xml)
     xml=chart_service_art.relocate(xml)
+    xml=chart_cardinal_art.relocate(xml)
     validate_resource_changes(original['chartsymbols.xml'],xml,colors)
     result=dict(original);result['chartsymbols.xml']=xml.encode('utf-8')
     # Pinned Day ink identifies neutral CHBLK/CHGRD pixels. Theme sheets use
@@ -168,11 +171,13 @@ def generate(source, output):
                             'changedPixels':count, 'alphaAndGeometryPreserved':True}
     anchor_art = {}
     service_art = {}
+    cardinal_art = {}
     for table, name in [('DAY_BRIGHT','rastersymbols-day.png'),
                         ('DUSK','rastersymbols-dusk.png'),
                         ('NIGHT','rastersymbols-dark.png')]:
         result[name], anchor_art[name] = chart_anchor_art.paint(result[name], table)
         result[name], service_art[name] = chart_service_art.paint(result[name], table)
+        result[name], cardinal_art[name] = chart_cardinal_art.paint(result[name], table)
     output.mkdir(parents=True,exist_ok=True)
     def write(path,content):
         if not path.exists() or path.read_bytes()!=content:path.write_bytes(content)
@@ -184,6 +189,7 @@ def generate(source, output):
                              'retainedSafetyInk':sorted(NIGHT_SAFETY_ROLES)},
               'anchorageArtwork':anchor_art,
               'serviceArtwork':service_art,
+              'cardinalArtwork':cardinal_art,
               'geographicNameLookups':geography_count,
               'submarineCablePaint':{'name':'CBLSUB06','RCID':'2012','color':'XNCBL','unchangedHPGL':True},
               'files':{n:{'sha256':hashlib.sha256(c).hexdigest(),'bytes':len(c)} for n,c in result.items()}}
@@ -203,4 +209,4 @@ def generate(source, output):
 if __name__=='__main__':
     p=argparse.ArgumentParser();p.add_argument('--source',type=Path,required=True);p.add_argument('--output',type=Path,required=True)
     a=p.parse_args();m=generate(a.source,a.output)
-    print('Verified pinned resources; generated three chart palettes, two BUAARE fills, 18 geographic-name ink rules, isolated ACHARE51/PILBOP02/RTPBCN02 artwork, CBLSUB06 paint and resource hashes; other navigation rules unchanged')
+    print('Verified pinned resources; generated three chart palettes, two BUAARE fills, 18 geographic-name ink rules, isolated ACHARE51/PILBOP02/RTPBCN02/BOYCAR01-04 artwork, CBLSUB06 paint and resource hashes; other navigation rules unchanged')

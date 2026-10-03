@@ -2113,3 +2113,51 @@ diff --git a/gui/src/route_point_gui.cpp b/gui/src/route_point_gui.cpp
      int w = m_point.m_NameExtents.x, h = m_point.m_NameExtents.y;
      if (!m_point.m_iTextTexture && w && h) {
  #if 0
+diff --git a/gui/src/route_point_gui.cpp b/gui/src/route_point_gui.cpp
+--- a/gui/src/route_point_gui.cpp
++++ b/gui/src/route_point_gui.cpp
+@@ -94,9 +94,10 @@
+ 
+   //  Substitue icon?
+   if (m_point.m_IconIsDirty) ReLoadIcon();
+-  const int skager_ordinal = opennav::integration::ChartRouteWaypointOrdinal(
++  const int skager_label_ordinal = opennav::integration::ChartRouteLabelOrdinal(
+       *canvas, m_point, WayPointmanGui(*pWayPointMan).IsPinnedRouteDiamond(
+           m_point.m_IconName, m_point.m_pbmIcon));
++  const int skager_ordinal = m_point.m_bIsActive ? 0 : skager_label_ordinal;
+   wxBitmap *pbm;
+   if ((m_point.m_bIsActive) && (m_point.m_IconName != _T("mob")))
+     pbm = pWayPointMan->GetIconBitmap(_T ( "activepoint" ));
+@@ -151,7 +152,7 @@
+   }
+ 
+   const bool skager_label = opennav::integration::PrepareChartRouteLabel(
+-      *canvas, m_point, skager_ordinal);
++      *canvas, m_point, skager_label_ordinal);
+   if (skager_label) {
+     auto label_bounds = m_point.m_skagerLabel->bounds;
+     label_bounds.Offset(r);
+@@ -264,12 +265,13 @@
+     return;
+ 
+   if (m_point.m_IconIsDirty) ReLoadIcon();
+-  const int skager_ordinal = opennav::integration::ChartRouteWaypointOrdinal(
++  const int skager_label_ordinal = opennav::integration::ChartRouteLabelOrdinal(
+       *canvas, m_point, WayPointmanGui(*pWayPointMan).IsPinnedRouteDiamond(
+           m_point.m_IconName, m_point.m_pbmIcon));
++  const int skager_ordinal = m_point.m_bIsActive ? 0 : skager_label_ordinal;
+   // Eligibility/scale may change without a viewport change (selection, route
+   // activation, mark-size preference). Rebuild the larger presentation bounds.
+-  if (skager_ordinal || m_point.m_skagerLabel) m_point.m_wpBBox.Invalidate();
++  if (skager_label_ordinal || m_point.m_skagerLabel) m_point.m_wpBBox.Invalidate();
+ 
+   if (m_point.m_wpBBox.GetValid() &&
+       vp.view_scale_ppm == m_point.m_wpBBox_view_scale_ppm &&
+@@ -369,6 +371,6 @@
+   }
+ 
+   const bool skager_label = opennav::integration::PrepareChartRouteLabel(
+-      *canvas, m_point, skager_ordinal);
++      *canvas, m_point, skager_label_ordinal);
+   // Already DIP/mark-scaled: union only after upstream icon scaling.
+   if (skager_label) hilitebox.Union(m_point.m_skagerLabel->bounds);

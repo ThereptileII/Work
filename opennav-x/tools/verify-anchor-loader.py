@@ -38,7 +38,9 @@ def main():
     parser.add_argument('--wx-config', type=Path, required=True)
     parser.add_argument('--wx-prefix', type=Path, required=True)
     parser.add_argument('--services', action='store_true', help='SCRUM-254 pilot/radar glyphs')
+    parser.add_argument('--cardinals', action='store_true', help='SCRUM-256 classified Simplified cardinal glyphs')
     args = parser.parse_args()
+    assert not (args.services and args.cardinals)
     output = args.output.resolve(); output.mkdir(parents=True,exist_ok=True)
     source = args.source.resolve()
     original = source/'libs/s52plib/src/chartsymbols.cpp'
@@ -55,6 +57,12 @@ def main():
         for name in ('PILBOP02','RTPBCN02'):
             subprocess.run(['rsvg-convert',str(ROOT/'resources/chart-style/v1/services'/(name+'.svg')),'-o',str(output/(name+'.png'))],check=True)
         png = output
+    if args.cardinals:
+        for name in ('BOYCAR01','BOYCAR02','BOYCAR03','BOYCAR04'):
+            for theme in ('DAY_BRIGHT','DUSK','NIGHT'):
+                file=name+'-'+theme
+                subprocess.run(['rsvg-convert',str(ROOT/'resources/chart-style/v1/cardinals'/(file+'.svg')),'-o',str(output/(file+'.png'))],check=True)
+        png = output
     config = [str(args.wx_config),'--prefix='+str(args.wx_prefix)]
     cflags = shlex.split(subprocess.check_output(config+['--cxxflags'],text=True))
     libs = shlex.split(subprocess.check_output(config+['--libs','core,base'],text=True))
@@ -62,7 +70,7 @@ def main():
                '-DocpnUSE_GL',*cflags]
     for directory in ('libs/s52plib/src','libs/geoprim/src','libs/pugixml'):
         command += ['-I'+str(source/directory)]
-    command += ['-I'+str(output),str(ROOT/('tests/chart_service_loader_test.cpp' if args.services else 'tests/chart_anchor_loader_test.cpp')),
+    command += ['-I'+str(output),str(ROOT/('tests/chart_cardinal_loader_test.cpp' if args.cardinals else 'tests/chart_service_loader_test.cpp' if args.services else 'tests/chart_anchor_loader_test.cpp')),
                 str(source/'libs/pugixml/pugixml.cpp'),*libs,'-lGL','-lGLEW',
                 '-o',str(output/'anchor-loader-test')]
     subprocess.run(command,check=True)

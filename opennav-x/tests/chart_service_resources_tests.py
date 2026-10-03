@@ -52,6 +52,11 @@ def verify_services(source, output, metadata, check):
         # approved rectangle for this service-only delta comparison.
         for y in range(1160,1180):
             i=(y*1500+20)*4;after[i:i+80]=before[i:i+80]
+        # SCRUM-256 cardinal tiles have a separate full-pixel/semantic proof.
+        for y in range(1160,1188):
+            for x in (116,148,180,212):
+                start=(y*1500+x)*4
+                after[start:start+96]=before[start:start+96]
         changed=[i for i in range(0,len(before),4) if before[i:i+4]!=after[i:i+4]]
         check(len(changed)==304)
         for symbol,rcid,count,x,pixels,digest in fixtures:

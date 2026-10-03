@@ -1,0 +1,205 @@
+{
+  "issue": "SCRUM-256",
+  "prototypeScale": 0.84375,
+  "strokeWidth": 1.3,
+  "nightBrightness": 0.78,
+  "rasterizer": "rsvg-convert version 2.62.3\n\nlibraries used:\n  cairo 1.18.4\n  pango 1.58.2\n  harfbuzz 14.4.0\n  fontconfig 2.18.3",
+  "symbols": {
+    "BOYCAR01": {
+      "effectiveRcid": 1270,
+      "category": 1,
+      "tile": [
+        116,
+        1160,
+        24,
+        28
+      ],
+      "pivot": [
+        12,
+        14
+      ],
+      "themes": {
+        "DAY_BRIGHT": {
+          "rgbaSha256": "e80ffde30034bd9d28c79af8827682f02b9653f10fda81a2b345323cf6177f66",
+          "changedPixels": 102
+        },
+        "DUSK": {
+          "rgbaSha256": "1e1720055b2e3c1c5e9d8b95ea8e2517063cc0d9876e70b2d6f7fe69db8da522",
+          "changedPixels": 102
+        },
+        "NIGHT": {
+          "rgbaSha256": "711442707cd88f18e7c684240bc6ceec3426c9243e7b3e801a0a9b514fa446e3",
+          "changedPixels": 102
+        }
+      }
+    },
+    "BOYCAR02": {
+      "effectiveRcid": 1271,
+      "category": 2,
+      "tile": [
+        148,
+        1160,
+        24,
+        28
+      ],
+      "pivot": [
+        12,
+        14
+      ],
+      "themes": {
+        "DAY_BRIGHT": {
+          "rgbaSha256": "69fd8ae751627da58960cd97872ec2b2acea5328f0b9538720b0cccd214629bb",
+          "changedPixels": 102
+        },
+        "DUSK": {
+          "rgbaSha256": "de31e530b46c7b043e9a92fa9e951860a7590d40db04bf9d18eecd43f0623229",
+          "changedPixels": 102
+        },
+        "NIGHT": {
+          "rgbaSha256": "c3b6bd3d6a06aeb1d894e510ab798b7d109e9ce39822e71205b08f627f82e177",
+          "changedPixels": 102
+        }
+      }
+    },
+    "BOYCAR03": {
+      "effectiveRcid": 1272,
+      "category": 3,
+      "tile": [
+        180,
+        1160,
+        24,
+        28
+      ],
+      "pivot": [
+        12,
+        14
+      ],
+      "themes": {
+        "DAY_BRIGHT": {
+          "rgbaSha256": "52935ed49d25dd1f9675363debc9936804d9fa0bf86b19f43d07579c3343889c",
+          "changedPixels": 100
+        },
+        "DUSK": {
+          "rgbaSha256": "5e2d0124ae842e7f19490fc3a450226166519b0284c98911d28c4061cbfb6740",
+          "changedPixels": 100
+        },
+        "NIGHT": {
+          "rgbaSha256": "af059cb8e711c835fdf48348f9a770820c89d59a2f47a2656b10c909af9de12f",
+          "changedPixels": 100
+        }
+      }
+    },
+    "BOYCAR04": {
+      "effectiveRcid": 1273,
+      "category": 4,
+      "tile": [
+        212,
+        1160,
+        24,
+        28
+      ],
+      "pivot": [
+        12,
+        14
+      ],
+      "themes": {
+        "DAY_BRIGHT": {
+          "rgbaSha256": "c0c46d8a5afc8fd31448740d1356ea1af4a457032322c0a83426af2d8b242b94",
+          "changedPixels": 100
+        },
+        "DUSK": {
+          "rgbaSha256": "71dd26ff8408876091d1f9e4688113ed65b06056f38fcefb838aa3dc6e9ab641",
+          "changedPixels": 100
+        },
+        "NIGHT": {
+          "rgbaSha256": "b2ad1c67dd10e87432a81ec6a6d176805897674662a43af4f08e5d7b17e4feb9",
+          "changedPixels": 100
+        }
+      }
+    }
+  },
+  "sources": {
+    "docs/design/prototype/src/chart-marker-art.js": "be2c7f44817c29d3714412c7974d3cf07e238f65c7131958b0cb8ff6fbd7816d",
+    "docs/design/prototype/src/seamarks.json": "78377f9622f82b6e2e16b6709fe62056863389ae5f6cc21bc6da9de3ed9cdfd9",
+    "docs/design/prototype/src/chart-symbols.css": "ca7ec18b38bf682600b6c3c39c5798c94b00bbaddd5589119d5fcb77ad599cb3",
+    "docs/design/prototype/src/style.css": "f943f5c91e2b260067e97a80d47fc923b64c3bb715c73a58ce1d4a6bf7a1bb46",
+    "docs/design/prototype-tokens.json": "111ee35527a974b2df6c2c4af0afd04e5aebdf14bad3004a98be9064aef790c6",
+    "resources/chart-style/v1/cardinals/BOYCAR01-DAY_BRIGHT.svg": "e7790abfe2965710671cea7dfa37144cefea2bf41f75f42a1e3cddc3c9594783",
+    "resources/chart-style/v1/cardinals/BOYCAR01-DUSK.svg": "6b9de554b1b165675fc257e08437e6dbb556e9d3be01c34adc3b4485cd6aecc1",
+    "resources/chart-style/v1/cardinals/BOYCAR01-NIGHT.svg": "3e9312c85786efacbd3157804f2f3fe4ec405c281a46f61ea968b993cbae0fae",
+    "resources/chart-style/v1/cardinals/BOYCAR02-DAY_BRIGHT.svg": "dc8071aeba8b50c56027eb3d10d72813cb76e0433a3f7a7b369488c0c00bdae1",
+    "resources/chart-style/v1/cardinals/BOYCAR02-DUSK.svg": "eb8b6ea4b6eedc299e9b5f336c9b274907c1b165a7a36ab6446fecf257f22899",
+    "resources/chart-style/v1/cardinals/BOYCAR02-NIGHT.svg": "cac7433a6a5ff078a1cf62b3027c2ecd18897c94e4b67711734db11aa66c9bba",
+    "resources/chart-style/v1/cardinals/BOYCAR03-DAY_BRIGHT.svg": "bd43f2f19357969c1637dec3826ff29c47ac1569291a5557db21ab6a32acbdea",
+    "resources/chart-style/v1/cardinals/BOYCAR03-DUSK.svg": "15c6fa683fafc2234345952b644ae508786c2484b4b3d577f22f603a9a48a64b",
+    "resources/chart-style/v1/cardinals/BOYCAR03-NIGHT.svg": "d3724e13e87111826c8a9fe7e491a8f16273305e1c7856ef55c5c0ea36c8a970",
+    "resources/chart-style/v1/cardinals/BOYCAR04-DAY_BRIGHT.svg": "e09ba7e2eb4bdfc9e2f15f97bf48fe93aa232d1bcdc5710b1ee997cc70637144",
+    "resources/chart-style/v1/cardinals/BOYCAR04-DUSK.svg": "e8b17c5a446bb685b72f38aa9985384f49849dc29feb92e494a3e89df207a580",
+    "resources/chart-style/v1/cardinals/BOYCAR04-NIGHT.svg": "3a4aee550047c8d14ec791613c446eda7ef9ad495fa9c5d3fdd2687a8d29778b",
+    "resources/chart-style/v1/cardinals/BOYCAR01-DAY_BRIGHT-rgba.json": "79c01f5e43a2ebe954aa10b0a09bd14e2942607ea2158106314d2ee4fdf5f1fa",
+    "resources/chart-style/v1/cardinals/BOYCAR01-DUSK-rgba.json": "3288bb3bd3083c70b0f9e40644ad48a2b049f5f262a11bc485874551a02fb1ee",
+    "resources/chart-style/v1/cardinals/BOYCAR01-NIGHT-rgba.json": "0eb8112181bcacaf2a4471b5f65e8f34272de46ea8d4878a4eae399dd26df000",
+    "resources/chart-style/v1/cardinals/BOYCAR02-DAY_BRIGHT-rgba.json": "e6f01d1fbde83d81750fec295f9c2ec12816fe8ed8004dafe44722f151138fb8",
+    "resources/chart-style/v1/cardinals/BOYCAR02-DUSK-rgba.json": "30dd0465ee65aa54aeb94035eb9f974855670eb766811c2f5902ab859f3b5cba",
+    "resources/chart-style/v1/cardinals/BOYCAR02-NIGHT-rgba.json": "e69532725dc02c6c6cd7da3589193c2954dfc6401321b2d2fa00ebd3b2dbd722",
+    "resources/chart-style/v1/cardinals/BOYCAR03-DAY_BRIGHT-rgba.json": "8c68f6d5e2d98ed69262365071d166b0c93ba354bcdcb47bbfdb25462fc86f52",
+    "resources/chart-style/v1/cardinals/BOYCAR03-DUSK-rgba.json": "e1560e98e1959f3b8e31e6723909ba90efed5082edb13dcd3ce38a27933ec01b",
+    "resources/chart-style/v1/cardinals/BOYCAR03-NIGHT-rgba.json": "a78685f367e0a3a68b0978a6f8d03ac3330688cf723fafc458a85ff3ea6c2720",
+    "resources/chart-style/v1/cardinals/BOYCAR04-DAY_BRIGHT-rgba.json": "2eed650c9b789f63c6b75476dfa13c02e5d50a47ae052689e58bb9713cd6732f",
+    "resources/chart-style/v1/cardinals/BOYCAR04-DUSK-rgba.json": "183d95f64d3ac5d9cfc475905ff5ef59e4d149afb7062bf6f124c9ea9a9171da",
+    "resources/chart-style/v1/cardinals/BOYCAR04-NIGHT-rgba.json": "4925596e1f353ce4f4ffb6ab1554229a0ca73880000abae3d79ce9e8e0220c11"
+  },
+  "colors": {
+    "DAY_BRIGHT": {
+      "black": [
+        83,
+        100,
+        95
+      ],
+      "yellow": [
+        172,
+        141,
+        76
+      ],
+      "water": [
+        213,
+        229,
+        229
+      ]
+    },
+    "DUSK": {
+      "black": [
+        195,
+        206,
+        194
+      ],
+      "yellow": [
+        203,
+        177,
+        122
+      ],
+      "water": [
+        52,
+        79,
+        89
+      ]
+    },
+    "NIGHT": {
+      "black": [
+        107,
+        119,
+        109
+      ],
+      "yellow": [
+        131,
+        112,
+        76
+      ],
+      "water": [
+        14,
+        23,
+        28
+      ]
+    }
+  }
+}

@@ -1,0 +1,27 @@
+{
+  "runId": 37086572916,
+  "jobId": 111098021434,
+  "artifactId": 11261350237,
+  "archiveBytes": 2407,
+  "archiveSha256": "7340c465ee0ddd43a8dcf86a7254185d173ad69e37c7ae5c6c3b5ec2a687cd4f",
+  "zipEntries": 4,
+  "allCrcPassed": true,
+  "localTests": {
+    "total": 23,
+    "passed": 21,
+    "nativeOnlySkipped": 2
+  },
+  "nativeFollowup": "pending",
+  "files": {
+    "contracts.json": "7fb0373cdeac64400f27ca21fb81c6c1d378905c01bf0e65da0834c4f2340e52",
+    "contracts.stdout.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "contracts.stderr.log": "c10fa1e3c0f04988f3ac2da4d156810706cde5d2801ff3687bad3b85c71ec4e3",
+    "summary.json": "3554aae36867242a3ed81f5f32ba46edd67464f4860b172cafe44e5abc101a3d",
+    "local-contracts.log": "35152991487aa4bd63c1864f96642e5da6e32d4512bd77fe7ed29a111d4a72b1",
+    "README.md": "a245c699ab2a9fae7ee051bf2ac684a15d663e8daa83866666d3785273f68b7d"
+  },
+  "correctedInputs": {
+    "tools/windows_gettext.py": "6746e06a477b1d3e9ae657d67a7f995c78e995f3ca4ab5a36eed7c9bccbbe7fe",
+    "tests/windows_gettext_tests.py": "67136b09d7b41748f0f367415503846f5d8e533beda10471074720a97dfa6301"
+  }
+}

@@ -1,0 +1,22 @@
+{
+  "copied_from": "/home/standard/Projects/X-nav-worktrees/skager-product-fidelity/.local/integrated-fidelity/capture-renderers.py",
+  "original_collector_sha256": "dd9d318dcf0dadd85e4eec3d612e9335a3c7c7a52745212665cfef82b64bcfa3",
+  "cache_guard_sha256": "ba9d1e7c0cd60974fc9651bd4a3ad661f14406a28be0efdb88124de0aae9c3b5",
+  "known_build_base": "6dd6665396b465100986cd418e38ba099a117612",
+  "launch_authorized": false,
+  "required_before_launch": [
+    "final exact source commit",
+    "staged executable SHA256",
+    "staged manifest SHA256",
+    "root launch authorization"
+  ],
+  "changes": [
+    "identity arguments required",
+    "private writable output with readonly cache",
+    "pointer parked after theme click and before capture",
+    "exact Night surface/wordmark checks",
+    "retained strict edge probe plus derived negative bytes",
+    "exact1356 baseline reports"
+  ],
+  "planned_surface_contract": "XNBUA equals LANDA in all themes; Night brightness once; baseline comparison excludes changed built-up ink"
+}

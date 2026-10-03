@@ -1,0 +1,8 @@
+Traceback (most recent call last):
+  File "/home/standard/Projects/X-nav-worktrees/scrum256-cardinal-glyphs/tests/chart_presentation_resources_tests.py", line 32, in <module>
+    original={p.name:hashlib.sha256(p.read_bytes()).hexdigest() for p in source.iterdir() if p.is_file()}
+                                                                         ~~~~~~~~~~~~~~^^
+  File "/usr/lib/python3.14/pathlib/__init__.py", line 836, in iterdir
+    with os.scandir(root_dir) as scandir_it:
+         ~~~~~~~~~~^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: '/home/standard/Projects/X-nav-worktrees/scrum256-cardinal-glyphs/upstream/OpenCPN/data/s57data'

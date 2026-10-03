@@ -1,0 +1,10 @@
+{
+  "source": "tools/smoke-navigation.py",
+  "sourceSha256": "25638f0c58b7fff39b18cbcdfe829d1262878fcb6ff11c903695e826d3bde59e",
+  "collectorSha256": "82ab2ceb777578ca4d3260c17fd7674a3444af71e196fd7a1a63ab563db0530a",
+  "preservedOriginalAssertions": 111,
+  "collectorAssertions": 112,
+  "routeScenarioSha256": "2ee7bf7791d15402e60310ae0e7cf2d80224a569b7d85fb9f0a186ad67990626",
+  "preparedOnly": true,
+  "launchRequires": "Explicit parent final source commit and installed executable SHA256; no launch performed"
+}

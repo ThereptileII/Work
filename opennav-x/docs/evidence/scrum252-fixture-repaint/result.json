@@ -1,0 +1,23 @@
+{
+  "onlyAddedRefreshNotifications": true,
+  "originalSourceSha256": "a43b36b4ea05da81491c2d0c7489e2c00c7ac7006422e94b9a02798f3ba0f7da",
+  "newSourceSha256": "2ee7bf7791d15402e60310ae0e7cf2d80224a569b7d85fb9f0a186ad67990626",
+  "mutationStepsRefreshed": [
+    2,
+    4,
+    6,
+    8,
+    10,
+    17,
+    18,
+    20
+  ],
+  "actualDiagnosticCardFillPixels": {
+    "Dusk": 431,
+    "Night": 431,
+    "DayReturn": 431
+  },
+  "originalFailureRetained": true,
+  "changedScenarioObjectCompileExitCode": 0,
+  "integratedFixedScenarioRun": "pending new executable; current captures use frozen f0976cc and ordinary UI repaint only"
+}

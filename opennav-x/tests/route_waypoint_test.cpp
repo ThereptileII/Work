@@ -35,7 +35,7 @@ struct RoutePoint {
  wxString GetIconName(){return icon;} bool IsShared(){return shared;}bool IsDragHandleEnabled(){return drag;}
 };
 struct Route {List<RoutePoint> list;List<RoutePoint>*pRoutePointList=&list;bool eligible=true,m_bIsBeingCreated=false;};
-struct Routeman {Route*active=nullptr;Route*GetpActiveRoute(){return active;}};
+struct Routeman {Route*active=nullptr;RoutePoint*point=nullptr;Route*GetpActiveRoute(){return active;}RoutePoint*GetpActivePoint(){return point;}};
 Routeman manager;Routeman*g_pRouteMan=&manager;List<Route> routes;List<Route>*pRouteList=&routes;
 RoutePoint*pAnchorWatchPoint1=nullptr,*pAnchorWatchPoint2=nullptr;
 float g_MarkScaleFactorExp=1;
@@ -98,6 +98,21 @@ int main(int argc,char**argv){
  for(bool*state:{&p.shared,&p.m_bIsInLayer,&p.m_bIsActive,&p.m_bPtIsSelected,&p.m_bBlink,&p.m_bRPIsBeingEdited,&p.drag,&a.m_bIsBeingCreated}){
  *state=true;Check(ordinal()==0,"special state remains stock");*state=false;
  }
+ // Exercise the actual production eligibility body, including contradictory
+ // flags/pointer identity. Marker eligibility never gains the label exception.
+ auto label=[&](){return ChartRouteLabelOrdinal(*c,p,true);};
+ p.m_bIsActive=p.m_bBlink=true;manager.point=&p;
+ Check(label()==2 && ordinal()==0,"actual active label only; icon stays stock");
+ manager.point=&q;Check(!label(),"active flags on a different pointer stay stock");manager.point=&p;
+ for(bool*state:{&p.shared,&p.m_bIsInLayer,&p.m_bPtIsSelected,&p.m_bRPIsBeingEdited,&p.drag,&a.m_bIsBeingCreated}){
+ *state=true;Check(!label(),"active label retains exclusion");*state=false;
+ }
+ Check(!ChartRouteLabelOrdinal(*c,p,false),"active custom icon remains stock");
+ a.eligible=false;Check(!label(),"active custom route remains stock");a.eligible=true;
+ b.list.Set({&p});routes.Set({&a,&b});Check(!label(),"active point shared across routes");routes.Set({&a});
+ style=false;Check(!label(),"active name Standard/Legacy/Safe");style=true;
+ p.m_bIsActive=false;Check(!label(),"inactive blinking current pointer remains stock");
+ p.m_bBlink=false;manager.point=nullptr;Check(label()==2,"inactive label restores normally");
  p.m_bIsInRoute=false;Check(!ordinal(),"standalone point");p.m_bIsInRoute=true;
  p.icon="mob";Check(!ordinal(),"MOB");p.icon="anchor";Check(!ordinal(),"anchor");p.icon="diamond";
  pAnchorWatchPoint1=&p;Check(!ordinal(),"anchor watch1");pAnchorWatchPoint1=nullptr;pAnchorWatchPoint2=&p;Check(!ordinal(),"anchor watch2");pAnchorWatchPoint2=nullptr;

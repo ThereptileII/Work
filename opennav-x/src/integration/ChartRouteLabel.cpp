@@ -25,7 +25,8 @@ bool PrepareChartRouteLabel(ChartCanvas& canvas, RoutePoint& point, int ordinal)
     }
     return false;
   };
-  // ordinal already applies every SCRUM-242 route/icon/navigation-state guard.
+  // Label ordinal preserves route/icon guards, allowing only the actual active
+  // point to retain its name card while its upstream icon continues blinking.
   if (!ordinal || !point.m_bShowName || point.GetName().empty() ||
       !point.m_pMarkFont || !point.m_pMarkFont->IsOk() || point.m_NameLocationOffsetX != -10 ||
       point.m_NameLocationOffsetY != 8) return fallback();

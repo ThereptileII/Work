@@ -40,6 +40,8 @@ with tempfile.TemporaryDirectory(prefix='xnav-chart-test-') as d:
         check(hashlib.sha256((output/name).read_bytes()).hexdigest()==identity['sha256'])
         if name == 'S52RAZDS.RLE':
             check((output/name).read_bytes()==g.pinned_bytes(source/name,identity))
+    from chart_cardinal_resources_tests import verify_cardinals
+    verify_cardinals(source,output,data,check)
     from chart_service_resources_tests import verify_services
     verify_services(source,output,data,check)
     from chart_anchor_resources_tests import verify_anchor
@@ -56,6 +58,11 @@ with tempfile.TemporaryDirectory(prefix='xnav-chart-test-') as d:
             after[start:start+80]=before[start:start+80]
         for y in range(1160,1184):
             for x in (52,84):
+                start=(y*1500+x)*4
+                after[start:start+96]=before[start:start+96]
+        # SCRUM-256 cardinal tiles have a separate full-pixel/semantic proof.
+        for y in range(1160,1188):
+            for x in (116,148,180,212):
                 start=(y*1500+x)*4
                 after[start:start+96]=before[start:start+96]
         check(before[3::4]==after[3::4])
@@ -95,7 +102,7 @@ with tempfile.TemporaryDirectory(prefix='xnav-chart-test-') as d:
     styled=b.findall("symbols/symbol[name='ACHARE51']")[-1].find('bitmap')
     styled.attrib=stock.attrib.copy()
     for tag in ('pivot','graphics-location'):styled.find(tag).attrib=stock.find(tag).attrib.copy()
-    for name in ('PILBOP02','RTPBCN02'):
+    for name in ('PILBOP02','RTPBCN02','BOYCAR01','BOYCAR02','BOYCAR03','BOYCAR04'):
         stock=a.findall("symbols/symbol[name='"+name+"']")[-1].find('bitmap')
         styled=b.findall("symbols/symbol[name='"+name+"']")[-1].find('bitmap')
         styled.attrib=stock.attrib.copy()

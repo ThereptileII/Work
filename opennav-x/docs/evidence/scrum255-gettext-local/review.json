@@ -1,0 +1,24 @@
+{
+  "issue": "SCRUM-255",
+  "base": "8822151fd918c28bf162a14829fddd83bdd1ae39",
+  "checks": {
+    "offlineContracts": 17,
+    "sameJobDependencyReceiptTests": 10,
+    "powershell7Parser": "passed"
+  },
+  "inputs": {
+    "tools/windows_gettext.py": "9a706d510a6f8a9b02a65bb74aa53b2a5f2aaa03040c4865d4265f648974c8ae",
+    "tools/test-windows-gettext-native.py": "1a3152973db9b198d8f28b32f87a6464b9e858ef3ecb8965bb2c4dd8bd8f23b4",
+    "tools/build-pristine-windows.ps1": "ea7ef8d31f357df4f353978be4be7299e96436b3f6a8cfd54002c56fcb213fb4",
+    "tools/windows_dependency_reuse.py": "469d618f152183d4567fe14a13136c7344637e298b341e26ec86ae4432c5ffe5",
+    "tests/windows_gettext_tests.py": "eae4e4e7cae4e30e87a6fcd12473cf2f6429c9e5796371c8ab9f66fb15cc0275",
+    ".github/workflows/skager-gettext-prerequisite.yml": "78aec814e7015c89dc7574d44891f9a617e3c3d16c6795fc7e7967832d5291d1"
+  },
+  "logs": {
+    "contracts.log": "cd93ee16eee07a4d473bf58d5b71e9c2cfff90599d05fd7fd1d8f4926d39020b",
+    "powershell.log": "b02a386683985b1f142b09710d6343e3e0647566dfc205a5decb332b99531467",
+    "dependency-reuse.log": "5e568928d5aae9ced5ba0988750289f8848dbe646010cea8ee200f584ef3590e"
+  },
+  "nativeProof": "pending disposable Windows workflow",
+  "scope": "Implementation and offline checks only; no app/dependency build, native Windows claim, full CI dispatch or boat action"
+}

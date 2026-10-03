@@ -1,0 +1,24 @@
+{
+  "passed": false,
+  "nativeProductAcceptance": false,
+  "candidate": "abd4905b45b126e524e7989ce7f788ed1c821529",
+  "inputs": {
+    "tools/windows_gettext.py": {
+      "bytes": 9616,
+      "sha256": "c763ba621cff7d549147d183262782bea149bd7577edd31ea9187726356a2de6"
+    },
+    "tools/test-windows-gettext-native.py": {
+      "bytes": 3565,
+      "sha256": "46837d2e65ce3fad64169e8841d857a7fa9b28d1f54dea975ab7f2d0aa29da8e"
+    },
+    "tests/windows_gettext_tests.py": {
+      "bytes": 7977,
+      "sha256": "08aec0bb764c57eb1c8380ef90e78cfbf52fe582257824af0c491df0262a920a"
+    },
+    "tools/build-pristine-windows.ps1": {
+      "bytes": 19510,
+      "sha256": "97eef260edf96d32a73d3c5e55e58b81001bc2c97d122044d75a92708d1c60f8"
+    }
+  },
+  "error": "Native gettext prerequisite contracts failed"
+}

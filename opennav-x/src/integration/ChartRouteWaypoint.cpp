@@ -17,13 +17,20 @@
 extern Routeman *g_pRouteMan;
 extern float g_MarkScaleFactorExp;
 namespace opennav::integration {
-int ChartRouteWaypointOrdinal(ChartCanvas &canvas, RoutePoint &point, bool pinned_icon) {
+static int RoutePointOrdinal(ChartCanvas &canvas, RoutePoint &point,
+                             bool pinned_icon, bool label) {
   wxColour ink;
   if (!ChartActiveRouteInk(canvas, ink)) return 0;
-  if (!wxIsMainThread() || !pinned_icon || !g_pRouteMan || !pRouteList ||
+  if (!wxIsMainThread() || !g_pRouteMan) return 0;
+  // Active icon blinking does not hide the upstream name. Only the actual
+  // current pointer may retain its label; unrelated blinking points stay stock.
+  const bool active_label = label && point.m_bIsActive &&
+      g_pRouteMan->GetpActivePoint() == &point;
+  if (!pinned_icon || !pRouteList ||
       point.GetIconName() != "diamond" || !point.m_bIsInRoute ||
-      point.IsShared() || point.m_bIsInLayer || point.m_bIsActive ||
-      point.m_bPtIsSelected || point.m_bBlink || point.m_bRPIsBeingEdited ||
+      point.IsShared() || point.m_bIsInLayer ||
+      (point.m_bIsActive && !active_label) || point.m_bPtIsSelected ||
+      (point.m_bBlink && !active_label) || point.m_bRPIsBeingEdited ||
       point.IsDragHandleEnabled() || &point == pAnchorWatchPoint1 ||
       &point == pAnchorWatchPoint2 ||
       (point.m_bShowWaypointRangeRings && point.m_iWaypointRangeRingsNumber))
@@ -49,6 +56,12 @@ int ChartRouteWaypointOrdinal(ChartCanvas &canvas, RoutePoint &point, bool pinne
   // Two digits fit the prototype circle. Larger routes retain upstream icons;
   // never truncate, wrap, or fabricate a route ordinal.
   return occurrences == 1 && ordinal <= 99 ? ordinal : 0;
+}
+int ChartRouteWaypointOrdinal(ChartCanvas &canvas, RoutePoint &point, bool pinned_icon) {
+  return RoutePointOrdinal(canvas, point, pinned_icon, false);
+}
+int ChartRouteLabelOrdinal(ChartCanvas &canvas, RoutePoint &point, bool pinned_icon) {
+  return RoutePointOrdinal(canvas, point, pinned_icon, true);
 }
 int ChartRouteWaypointExtent(ChartCanvas &canvas) {
   const double scale = canvas.FromDIP(100) / 100.0 * g_MarkScaleFactorExp;

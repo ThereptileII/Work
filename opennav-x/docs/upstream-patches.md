@@ -1167,3 +1167,12 @@ unchanged. Source locks, collision/transparent-moat refusal, full rule-tree
 reverse equality and native loader/crop evidence are documented in
 `docs/design/reviews/scrum254-service-glyphs.md`. Standard/Legacy/Safe retain stock
 resources; full chart, native Windows and boat visual acceptance remain open.
+
+### SCRUM-256: explicitly classified Simplified cardinal artwork
+
+Only BOYCAR01–04 effective raster metadata and four isolated atlas tiles change
+in verified SKAGER resources. CATCAM1–4, all S-52 selectors, Paper bodies/topmarks,
+labels and upstream scale/placement remain unchanged. The source-locked exact
+prototype paths, category-color limits and focused native-loader evidence are in
+`docs/design/reviews/scrum256-cardinal-glyphs.md`. Standard/Legacy remains stock;
+Windows, real-ENC recognition and boat acceptance are not claimed.

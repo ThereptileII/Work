@@ -1,0 +1,4 @@
+Initial unpublished independent-test development findings (no product corruption):
+1. Pure nominal-RGB tolerance10 incorrectly rejected a Day yellow band: its intentional overlapping antialiased prototype strokes produce RGB154,133,80 versus nominal172,141,76 at alpha217. Replaced that false pure-color assumption with measured nearest-category separation; exact RGBA/hash/native SVG comparison remains strict.
+2. A service-slot collision negative fixture relocated only ACHARE51, leaving service slot52 unclaimed; after staging the existing service relocations too, all14 refusal controls pass. Production collision guard unchanged.
+3. Initial resource test could not find source because an empty submodule directory made the temporary symlink nested. Fixed only the private source path; initial traceback retained.
