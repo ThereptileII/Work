@@ -53,6 +53,9 @@ target_compile_definitions(${PACKAGE_NAME} PRIVATE OPENNAV_X=1)
 # the standalone upstream library and all default presentation paths stay stock.
 target_compile_definitions(S52PLIB PRIVATE OPENNAV_X=1)
 target_include_directories(S52PLIB PRIVATE "${OPENNAV_ROOT}/src")
+if(WIN32)
+  target_link_libraries(S52PLIB PRIVATE opennav_chart_name_alpha)
+endif()
 # Preserve normal plugin preferences while upstream Safe Mode blocks loading.
 # Limit this additional definition to the one affected model translation unit.
 set_property(SOURCE "${CMAKE_SOURCE_DIR}/model/src/plugin_loader.cpp"

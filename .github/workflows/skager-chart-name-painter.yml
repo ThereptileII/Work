@@ -12,7 +12,7 @@ jobs:
     timeout-minutes: 10
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
-      - name: Replay unchanged production painter with failure-safe pixel evidence
+      - name: Replay production painter with failure-safe pixel evidence
         shell: pwsh
         run: |
           python opennav-x/tools/test-chart-name-painter-windows.py --evidence opennav-x/evidence/local/chart-name-painter

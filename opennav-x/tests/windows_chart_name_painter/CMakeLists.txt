@@ -9,9 +9,10 @@ find_package(wxWidgets REQUIRED COMPONENTS base core)
 include(${wxWidgets_USE_FILE})
 # The existing real header painter and its existing offline pixel assertions.
 # No application, chart/profile, unrelated UI or dependency producer build.
-add_executable(chart_name_text_test "${OPENNAV_ROOT}/tests/chart_name_text_test.cpp")
+add_executable(chart_name_text_test "${OPENNAV_ROOT}/tests/chart_name_text_test.cpp"
+  "${OPENNAV_ROOT}/src/integration/ChartNameAlphaWindows.cpp")
 target_include_directories(chart_name_text_test PRIVATE "${OPENNAV_ROOT}/src")
 target_compile_features(chart_name_text_test PRIVATE cxx_std_17)
 target_compile_options(chart_name_text_test PRIVATE /utf-8)
 set_property(TARGET chart_name_text_test PROPERTY MSVC_RUNTIME_LIBRARY MultiThreadedDLL)
-target_link_libraries(chart_name_text_test PRIVATE ${wxWidgets_LIBRARIES})
+target_link_libraries(chart_name_text_test PRIVATE ${wxWidgets_LIBRARIES} gdiplus)

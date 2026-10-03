@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Replay one unchanged production name painter on disposable native Windows."""
+"""Replay one production name painter on disposable native Windows."""
 import argparse
 import importlib.util
 import json
@@ -13,6 +13,7 @@ ROOT = Path(__file__).resolve().parents[1]
 INPUTS = (
     'tests/chart_name_text_test.cpp',
     'src/integration/ChartNameText.h',
+    'src/integration/ChartNameAlphaWindows.cpp',
     'src/integration/ChartNameSpacing.h',
     'tests/windows_chart_name_painter/CMakeLists.txt',
     'tools/test-chart-name-painter-windows.py',
@@ -45,7 +46,7 @@ def main():
         raise ValueError('Unexpected or ambiguous repository layout')
     sources = {str(p): api.record(ROOT / p) for p in INPUTS}
     sources[os.path.relpath(workflow_path, ROOT).replace('\\', '/')] = api.record(workflow_path)
-    report = {'status': 'failed', 'scope': 'one offline geographic name painter; unchanged production header',
+    report = {'status': 'failed', 'scope': 'one offline geographic name painter; Windows GDI+ translucent coverage correction',
               'candidate': subprocess.check_output(['git', 'rev-parse', 'HEAD'], cwd=ROOT, text=True).strip(),
               'sources': sources, 'nativeProductAcceptance': False}
     try:
