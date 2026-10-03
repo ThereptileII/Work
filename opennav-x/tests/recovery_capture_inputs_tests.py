@@ -276,12 +276,29 @@ class DisposablePackage(unittest.TestCase):
             alias.rename(path)
         self.assertFalse((self.output/'disposable-package').exists())
 
+    def test_audited_equivalent_path_and_different_root_boundary(self):
+        other = self.base/'other-package'; other.mkdir()
+        wrong = dict(self.identity, root=str(other))
+        with self.assertRaisesRegex(ValueError,'Verified original package path differs'):
+            inputs.stage_disposable_package(self.package, self.output, wrong)
+        # This real noncanonical spelling reproduces asymmetric normalization
+        # without mocking Path.resolve or requiring an enabled Windows 8.3 volume.
+        equivalent = self.package/'app'/'..'
+        audited = self.verify(root=equivalent)
+        self.assertNotEqual(Path(audited['root']), self.package.resolve())
+        copied = inputs.stage_disposable_package(self.package, self.output, audited)
+        self.assertEqual(Path(copied['original_root']), self.package.resolve())
+        self.assertEqual(inputs.verify_disposable_package(copied), copied)
+        self.assertEqual(self.verify(root=equivalent), audited)
+
     def test_links_in_original_output_and_mutable_copy_refused(self):
         probe = self.base/'link-probe'
         try: probe.symlink_to(self.package, target_is_directory=True)
         except OSError: self.skipTest('Symlink creation unavailable')
         with self.assertRaisesRegex(ValueError,'Linked/reparse'):
             inputs.stage_disposable_package(probe,self.output,self.identity)
+        with self.assertRaisesRegex(ValueError,'Linked/reparse'):
+            inputs.stage_disposable_package(self.package,self.output,dict(self.identity,root=str(probe)))
         probe.unlink(); probe.symlink_to(self.output,target_is_directory=True)
         with self.assertRaisesRegex(ValueError,'Linked/reparse'):
             inputs.stage_disposable_package(self.package,probe,self.identity)

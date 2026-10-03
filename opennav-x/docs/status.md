@@ -21,7 +21,11 @@ inspection caught the former external-profile request and wrong diagnostics
 path. Twenty focused offline cases and four checks linked to the unchanged
 production path guard pass; native launch remains pending. See the
 [bounded collector correction](evidence/scrum264-native-recovery-collector/README.md).
-No additional full application build was started.
+Its separate native preflight caught asymmetric canonical path comparison before
+CMake or any application launch. The original artifact is retained; the narrow
+plain-path-then-canonical correction and real equivalent-path regression pass
+locally. Native retry remains limited to this tiny collector check. No additional
+full application build was started.
 
 ## Native application passes build; preview sample timing blocks packaging
 

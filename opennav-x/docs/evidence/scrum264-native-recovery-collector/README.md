@@ -146,3 +146,32 @@ it does not rebuild the application. All renderer/pixel/Day-return gates remain
 unchanged. Focused CLI/Python/diff checks also pass. Initial local CMake discovery
 needed the existing bundled runtime and library path; no application failure
 was involved.
+
+## First native preflight and canonical-path repair
+
+Local `9bdc060cbbb9fb92a5d2e9f53c2c56c4e3436053` was mapped to remote
+`27828302a1c83ecc1f187ae1d79ab9ab5ac0fdfd`, independently reconstructed tree
+`d66a90bc6b8aba61259243cf6b4b8b4b748dd066` (4,698 entries).
+[Run 37130634759](https://github.com/ThereptileII/Work/actions/runs/37130634759)
+ran the small collector checks only. It failed before configuring/compiling the
+C++ probe or launching OpenCPN: 20 Python cases, two failures and four errors,
+zero skips. All six failures stop at the helper's comparison of a resolved
+package path to an only-absolute audited receipt path.
+
+The original artifact `11276721827` is retained as
+[original.zip](native-27828302/original.zip), 1,977 bytes,
+SHA256 `77a8d8c769c95ba9b86aacb95ab38c7fd17653eb0e230ebe6560dbc917f0509a`;
+all three entries pass CRC. The [independent audit](native-27828302/audit.json)
+checks exact run/commit and all seven source hashes against their actual Windows
+CRLF checkout bytes. The original [job log](native-27828302/job.log) remains.
+The log does not show both path spellings: Windows short/long TEMP spelling is a
+possible cause, not observed proof. The asymmetric canonicalization is the
+confirmed code defect.
+
+The narrow correction checks the receipt's original path for links/reparse
+points **before** resolving it and then compares both canonical paths. No
+case-fold bypass, original audit relaxation or product change is introduced.
+A real `package/app/..` spelling reproduces the defect without mocks; different
+roots and linked receipt paths remain refused. All seven focused staging cases
+and the four production-boundary checks pass locally. The next native suite has
+21 cases; native acceptance remains pending until that corrected run passes.

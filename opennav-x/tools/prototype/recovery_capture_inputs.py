@@ -184,7 +184,11 @@ def stage_disposable_package(package_root, output, verified_identity):
     destination = output / 'disposable-package'
     require(not any(path.name.casefold() == destination.name for path in output.iterdir()),
             'Disposable package or case alias already exists')
-    require(package_root == Path(verified_identity['root']).absolute(), 'Verified original package path differs')
+    verified_root = Path(verified_identity['root']).absolute()
+    # Windows may expand an audited TEMP 8.3 spelling during resolve(). Check
+    # the receipt's original path for links before comparing both canonical paths.
+    plain(verified_root)
+    require(package_root == verified_root.resolve(strict=True), 'Verified original package path differs')
     original = _capture_tree(package_root)
     manifest_path = package_root / 'FILE_SHA256.json'
     plain(manifest_path)
