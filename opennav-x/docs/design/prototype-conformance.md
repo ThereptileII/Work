@@ -1,11 +1,20 @@
 # Prototype conformance — in progress
 
-The current frozen candidate is local `8a0ed1f` / published `442960ba`
-([CI](https://github.com/ThereptileII/Work/actions/runs/37126951293)). Its application
-sources and artwork are unchanged from `1835d1b` / `9d98a500`; the corrected
+The current frozen candidate is local `96c0c27` / published `15452e5`
+([CI](https://github.com/ThereptileII/Work/actions/runs/37136712793)); its
+[publication receipt](../evidence/skager-combined-96c0-publication.json) binds the
+exact mapped source. The 2026-10-03 18:07 UTC native job observation confirms
+integrated modes, chart gestures, repeated recovery and the complete fixture UI
+suite passed. At 18:16 UTC the fixture-free production step failed; cause is
+awaiting its complete transcript. Package and boat qualification remain open.
+It includes the smaller logo, prototype fonts, classified symbols and neutral
+structural paint below, plus the bounded notification-bell refinement. The
+preceding `442960ba` run failed private trust-probe configuration after the
+product build; the narrow path/cache repair passed its separate native gate
+before this replacement was dispatched. The corrected
 [preview timing predicate](../evidence/scrum270-preview-validity/README.md)
 preserves intentional unavailable route/arrival data during waypoint transitions.
-The previous native run passed application compilation, 139 tests, the fresh
+The earlier `9d98a500` native run passed application compilation, 139 tests, the fresh
 five-export private DLL/resource audit, DPI/touch and public ENC checks. Its
 [renderer receipt](../evidence/scrum270-native-9d98-preview-failure/renderer-proof.json)
 shows that the requested OpenGL phase used software fallback; native hardware
@@ -20,7 +29,7 @@ evidence of the production selected face. No screen-level row advances.
 The candidate includes
 the supplied generic beacon, classified yellow buoy and fitted topmark, the
 124-DIP approved SKAGER logo, prototype font choices, and neutral structural
-paint. The [current publication receipt](../evidence/scrum270-preview-validity/publication.json)
+paint. The [current publication receipt](../evidence/skager-combined-96c0-publication.json)
 verifies the entire mapped source tree. A separately reproduced and repaired
 Windows resource-generation mismatch passed its targeted native gate before
 the preceding build was started. Product runtime, actual private-renderer loading and

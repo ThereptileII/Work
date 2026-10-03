@@ -557,6 +557,16 @@ jobs:
       - name: Build native installed product without synthetic data
         id: production
         run: ./opennav-x/tools/build-pristine-windows.ps1 -Architecture Win32 -Integration -Production -ReuseVerifiedDependencies -PrivateOCharts
+      - name: Preserve failed production transcript before independent display checks
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: ${{ !cancelled() && steps.production.conclusion == 'failure' }}
+        with:
+          name: windows-production-failure-${{ github.sha }}
+          path: |
+            opennav-x/evidence/local/windows-production-*
+            opennav-x/evidence/local/windows-native-output.log
+            opennav-x/evidence/local/ocharts-private-wxcurl-trust-windows
+          if-no-files-found: error
       - name: Resolve private chart imports in the real host without plugin initialization
         id: private_module
         run: |
