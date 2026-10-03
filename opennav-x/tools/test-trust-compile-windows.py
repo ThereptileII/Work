@@ -50,6 +50,7 @@ def main():
     try:
         names = set(prep.INPUTS) | {
             'tools/test-trust-compile-windows.py', 'tools/test-downloader-trust-paths.py',
+            'tools/test-ocharts-source-cache.py',
             'tools/test-windows-changed-units.py', 'tools/test-ocharts-compile-windows.py',
             'tools/ocharts_cmake_path_probe.py', 'tools/prepare-integration.py',
             'tools/verify-upstream.py', 'upstream.lock.json', '.gitattributes',
@@ -62,6 +63,7 @@ def main():
             local[workflow] = ROOT.parent / workflow
         report['localInputs'] = {name: api.record(path) for name, path in sorted(local.items())}
         save()
+        api.run([sys.executable, ROOT / 'tools/test-ocharts-source-cache.py'], evidence / 'source-cache-tests.log')
         api.run([sys.executable, ROOT / 'tools/test-downloader-trust-paths.py'], evidence / 'paths.log')
         api.run([sys.executable, ROOT / 'tools/prepare-integration.py'], evidence / 'prepare-core.log')
         core = ROOT / 'build/integration-source'
