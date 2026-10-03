@@ -1,0 +1,122 @@
+name: SKAGER audited Windows package chart review
+on:
+  push:
+    branches: [skager-chart-package-review]
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: skager-chart-package-review-${{ github.sha }}
+  cancel-in-progress: false
+jobs:
+  native-chart-package:
+    name: Existing production payload, native chart captures only
+    runs-on: windows-2022
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+      - name: Verify independently audited target and original artifact ownership
+        id: target
+        shell: pwsh
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          $ErrorActionPreference = 'Stop'
+          # Root commits this record only after auditing the produced artifact.
+          # Its absence refuses the review; never infer trusted hashes here.
+          $Target = Get-Content -Raw opennav-x/docs/evidence/native-package-review-target.json | ConvertFrom-Json
+          if ($Target.application_commit -cnotmatch '^[a-f0-9]{40}$') { throw 'Exact application commit required' }
+          foreach ($Key in @('archive_sha256','file_manifest_sha256','executable_sha256')) {
+            if ($Target.$Key -cnotmatch '^[a-f0-9]{64}$') { throw 'Independently audited SHA256 required' }
+          }
+          foreach ($Key in @('producer_run_id','producer_run_attempt','artifact_id')) {
+            if ([string]$Target.$Key -cnotmatch '^[1-9][0-9]*$') { throw 'Exact producer identity required' }
+          }
+          $Names = @(('beta2-boat-review-pending-endurance-'+$Target.application_commit), ('beta-candidate-'+$Target.application_commit))
+          if ($Target.artifact_name -cnotin $Names) { throw 'Unexpected candidate artifact family' }
+          if ($Target.renderers -isnot [Array] -or @($Target.renderers).Count -lt 1 -or @($Target.renderers).Count -gt 2 -or
+              @($Target.renderers | Where-Object { $_ -cnotin @('software','opengl') }).Count -or
+              @($Target.renderers | Select-Object -Unique).Count -ne @($Target.renderers).Count -or
+              $Target.renderers -cnotcontains 'software') { throw 'Explicit bounded renderer selection required' }
+          $Run = gh api "repos/$env:GITHUB_REPOSITORY/actions/runs/$($Target.producer_run_id)" | ConvertFrom-Json
+          if ($LASTEXITCODE -ne 0) { throw 'Producer run lookup failed' }
+          if ($Run.head_sha -cne $Target.application_commit -or $Run.run_attempt -ne $Target.producer_run_attempt -or
+              $Run.event -cne 'push' -or $Run.path -cne '.github/workflows/opennav-baseline.yml' -or
+              $Run.status -cnotin @('in_progress','completed') -or ($Run.conclusion -and $Run.conclusion -cne 'success')) {
+            throw 'Producer source, attempt, workflow or qualification state differs'
+          }
+          $Artifact = gh api "repos/$env:GITHUB_REPOSITORY/actions/artifacts/$($Target.artifact_id)" | ConvertFrom-Json
+          if ($LASTEXITCODE -ne 0) { throw 'Producer artifact lookup failed' }
+          if ($Artifact.expired -or $Artifact.name -cne $Target.artifact_name -or
+              $Artifact.workflow_run.id -ne $Target.producer_run_id -or
+              $Artifact.workflow_run.head_sha -cne $Target.application_commit) { throw 'Artifact ownership differs' }
+          "artifact_id=$($Target.artifact_id)" | Out-File $env:GITHUB_OUTPUT -Append -Encoding utf8
+          "producer_run_id=$($Target.producer_run_id)" | Out-File $env:GITHUB_OUTPUT -Append -Encoding utf8
+          New-Item -ItemType Directory opennav-x/evidence/local/package-chart-review -ErrorAction Stop | Out-Null
+          @{tooling_commit=$env:GITHUB_SHA;target=$Target;producer_status=$Run.status;producer_conclusion=$Run.conclusion;
+            artifact_created_at=$Artifact.created_at;artifact_size_bytes=$Artifact.size_in_bytes;
+            scope='Supplementary visual review; no application compilation or release acceptance'} |
+            ConvertTo-Json -Depth 5 | Set-Content -Encoding utf8 opennav-x/evidence/local/package-chart-review/target-receipt.json
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          artifact-ids: ${{ steps.target.outputs.artifact_id }}
+          run-id: ${{ steps.target.outputs.producer_run_id }}
+          github-token: ${{ github.token }}
+          path: opennav-x/build/audited-chart-download
+          merge-multiple: true
+      - name: Extract only the independently verified recovery package
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = 'Stop'
+          $Target = Get-Content -Raw opennav-x/docs/evidence/native-package-review-target.json | ConvertFrom-Json
+          $Archive = [IO.Path]::GetFullPath('opennav-x/build/audited-chart-download/SKAGER-Beta2-Portable-Recovery.zip')
+          if ((Get-FileHash -LiteralPath $Archive -Algorithm SHA256).Hash.ToLowerInvariant() -cne $Target.archive_sha256) {
+            throw 'Downloaded recovery ZIP differs from independent artifact audit'
+          }
+          . ./opennav-x/tools/boat/PortableReview.ps1
+          $Package = Expand-ReviewArchive $Archive ([IO.Path]::GetFullPath('opennav-x/build/audited-chart-package'))
+          if ([IO.Path]::GetFileName($Package) -cne 'SKAGER-Beta2-Portable-Recovery') { throw 'Current SKAGER package root required' }
+      - name: Prepare collector dependencies and exact official test input
+        shell: pwsh
+        run: |
+          python -m pip install Pillow==11.3.0
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          python opennav-x/tests/recovery_capture_inputs_tests.py
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          python opennav-x/tools/prototype/fetch-iho-review-cell.py --output opennav-x/build/native-iho-review
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          Copy-Item opennav-x/build/native-iho-review/source-receipt.json opennav-x/evidence/local/package-chart-review/iho-source-receipt.json
+      - name: Capture audited production package serially with truthful renderer checks
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = 'Stop'
+          $Target = Get-Content -Raw opennav-x/docs/evidence/native-package-review-target.json | ConvertFrom-Json
+          $Base = @('opennav-x/tools/prototype/capture-native.py',
+            '--recovery-package','opennav-x/build/audited-chart-package/SKAGER-Beta2-Portable-Recovery',
+            '--recovery-archive','opennav-x/build/audited-chart-download/SKAGER-Beta2-Portable-Recovery.zip',
+            '--expected-recovery-archive-sha256',$Target.archive_sha256,
+            '--expected-file-manifest-sha256',$Target.file_manifest_sha256,
+            '--expected-executable-sha256',$Target.executable_sha256,
+            '--expected-application-commit',$Target.application_commit,'--navigation-only')
+          foreach ($Renderer in $Target.renderers) {
+            foreach ($Scene in @('iho','seattle')) {
+              foreach ($Style in @('XNav','Standard')) {
+                $Name = "$Scene-$Renderer-$Style"
+                $Extra = if ($Scene -ceq 'iho') { @('--iho-s64','opennav-x/build/native-iho-review/GB4X0000.000') } else { @('--public-enc') }
+                $Arguments = $Base + $Extra + @('--renderer',$Renderer,'--chart-style',$Style,
+                  '--output',"opennav-x/evidence/local/package-chart-review/$Name")
+                python @Arguments 2>&1 | Tee-Object "opennav-x/evidence/local/package-chart-review/$Name.log"
+                if ($LASTEXITCODE -ne 0) { throw "Capture refused or failed: $Name. Retain evidence and inspect before retrying." }
+              }
+            }
+          }
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: native-package-chart-review-${{ github.sha }}
+          path: |
+            opennav-x/evidence/local/package-chart-review
+            !opennav-x/evidence/local/package-chart-review/**/profile/**
+            !opennav-x/evidence/local/package-chart-review/**/iho-fixture/**
+          if-no-files-found: warn

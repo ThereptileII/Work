@@ -1,5 +1,34 @@
 # SKAGER status — 2026-10-03
 
+## Current frozen combined candidate
+
+Local source/evidence **`1835d1b84df89aff42220ac8bb535e4262034a54`** is published
+as **`9d98a500916e8a7f59dac9735427dde6d3c7d2e5`**. All 4,649 mapped blob/mode
+entries independently reconstruct `bc9e631e57c71992c573f5b5110b497096b23867`;
+the eight unrelated root files are preserved. The
+[full Windows/Linux run](https://github.com/ThereptileII/Work/actions/runs/37120549213)
+started only after the native resource repair and the actual SKAGER software/GL
+yellow-symbol checks below passed. The [publication receipt](evidence/skager-symbols-1835-publication.json)
+keeps exact identities. Native runtime, fresh five-export private package and
+boat acceptance remain pending. No product change will be mixed into this run.
+
+One read-only boat refresh at 11:44 UTC found no meaningful change: no navigation,
+helper or active commissioning process; stock/installed/profile/recovery identities
+and all 117 qualified tools match. Remote access remains healthy. No application
+has been installed, launched or retired on the boat in this cycle.
+
+Separate review tooling is being prepared against that unchanged application:
+the [audited-package collector](evidence/scrum264-native-recovery-collector/README.md)
+can capture the existing Windows payload with public ENC and the exact official
+IHO test cell, without another application build. Its dedicated workflow refuses
+to run until a produced artifact has been independently audited and its exact
+identities recorded. Original licensed test data is excluded from uploads.
+The [guarded palette review](evidence/scrum269-guarded-palette/README.md)
+(SCRUM-269) now follows the actual Layers interface and binds one XNav/Standard
+choice to the normal restart broker. Source review and focused local checks
+pass; a separate native tools gate remains pending. Neither tool change is
+boat acceptance or permission to bypass the existing launch/recovery guards.
+
 ## Windows resource repair verified; combined candidate awaiting full gates
 
 The exact d5/b8 [full candidate](https://github.com/ThereptileII/Work/actions/runs/37114216075)
@@ -18,8 +47,8 @@ pins both paths and preserves strict byte checks. Its
 passed on remote `c7f3616c5b9d385d39edf25b51f89a3508906071`, mapped exactly
 from isolated `eced8da`: the original interpreter difference is reproduced,
 decoded pixels remain identical, and both explicitly pinned configurations
-produce all seven files byte-for-byte identically. No full build has been
-restarted at this source freeze. No candidate from this
+produce all seven files byte-for-byte identically. The combined replacement
+run above began after that focused proof. No candidate from this
 cycle has been installed or launched on the boat; the existing Linux elapsed-time
 gate continues independently.
 

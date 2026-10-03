@@ -101,6 +101,8 @@ namespace OpenNavX {
     // control (in particular key storage, route changes or hardware commands).
     public static bool IsPrototypeSurface(string title,string[] directLabels,string[] headingLabels) {
       switch(title) {
+        case "SKAGER chart layers":return SameLabels(directLabels,"Layers") && SameLabels(headingLabels);
+        case "Chart presentation":return SameLabels(directLabels) && SameLabels(headingLabels,"Close");
         case "SKAGER chart tools":return SameLabels(directLabels,"Measure","Waypoint","+","\u2212");
         case "SKAGER chart orientation":return SameLabels(directLabels,"North") || SameLabels(directLabels,"Course");
         case "SKAGER follow boat":return SameLabels(directLabels,"Follow boat");
@@ -136,7 +138,7 @@ namespace OpenNavX {
         try {
           if(!IsWindowVisible(h) || IsIconic(h) || GetWindow(h,4)!=frame || Owner(h)!=(uint)pid || IsChild(frame,h))return true;
           var title=Text(h);
-          if(title!="SKAGER chart tools" && title!="SKAGER chart orientation" && title!="SKAGER follow boat" && title!="SKAGER passage" && title!="SKAGER vessel traffic" && title!="SKAGER preferences" && title!="SKAGER anchor watch" && title!="SKAGER autopilot" && title!="SKAGER alerts" && title!="SKAGER source health")return true;
+          if(title!="SKAGER chart layers" && title!="Chart presentation" && title!="SKAGER chart tools" && title!="SKAGER chart orientation" && title!="SKAGER follow boat" && title!="SKAGER passage" && title!="SKAGER vessel traffic" && title!="SKAGER preferences" && title!="SKAGER anchor watch" && title!="SKAGER autopilot" && title!="SKAGER alerts" && title!="SKAGER source health")return true;
           var direct=DirectLabels(h,pid);var heading=new List<string>();
           foreach(var child in Children(h))if(GetParent(child)==h && Owner(child)==(uint)pid)
             foreach(var label in DirectLabels(child,pid))if(label=="Close" || label=="Back")heading.Add(label);
@@ -148,7 +150,7 @@ namespace OpenNavX {
                signature=IsPrototypeSurface(title,direct,heading.ToArray());
           if(!unique || !enabled || !sameDpi || !size || !contained || !signature)
             throw new InvalidOperationException(String.Format("Owned prototype surface {0} refused: unique={1}, enabled={2}, dpi={3}, size={4}, contained={5}, signature={6}.",title,unique,enabled,sameDpi,size,contained,signature));
-          if((title=="SKAGER passage" || title=="SKAGER vessel traffic" || title=="SKAGER preferences" || title=="SKAGER anchor watch" || title=="SKAGER autopilot" || title=="SKAGER alerts" || title=="SKAGER source health") && ++drawers>1)throw new InvalidOperationException("More than one prototype sheet is visible.");
+          if((title=="Chart presentation" || title=="SKAGER passage" || title=="SKAGER vessel traffic" || title=="SKAGER preferences" || title=="SKAGER anchor watch" || title=="SKAGER autopilot" || title=="SKAGER alerts" || title=="SKAGER source health") && ++drawers>1)throw new InvalidOperationException("More than one prototype sheet is visible.");
           Array.Sort(direct,StringComparer.Ordinal);heading.Sort(StringComparer.Ordinal);
           result.Add(new SurfaceInfo{Handle=h.ToInt64(),Title=title,Signature=String.Join("|",direct)+"/"+String.Join("|",heading.ToArray()),Dpi=dpi,Bounds=rect});
           return true;
@@ -336,6 +338,7 @@ namespace OpenNavX {
         case "Advice":return new string[]{"SmartNav advisories"};case "PilotView":return new string[]{"Autopilot"};
         case "Anchor":return new string[]{"Anchor watch"};case "Settings":return new string[]{"Settings"};
         case "Sources":return new string[]{"SENSORS"};case "Route":return new string[]{"Route"};
+        case "Layers":return new string[]{"Layers"};case "RevealChartPalettePreference":case "ChartPalettePreferences":return new string[]{"Chart palette preferences"};
         case "Display":return new string[]{"DISPLAY"};case "ToggleFullscreen":return new string[]{"Fullscreen / window"};
         case "ToggleOrientation":return new string[]{"North","Course"};
         case "Energy":return new string[]{"Energy"};case "Diagnostics":return new string[]{"Diagnostics"};
@@ -349,6 +352,7 @@ namespace OpenNavX {
     public static string ActionContext(string action) {
       ActionLabels(action); // Unknown actions have no context, even without a window.
       switch(action) {
+        case "Layers":return "SKAGER chart layers";case "RevealChartPalettePreference":case "ChartPalettePreferences":return "Chart presentation";
         case "Display":return "SKAGER product page: Settings";
         case "ToggleFullscreen":return "SKAGER product page: Display";
         case "ToggleOrientation":return "Navigation chart tools";
@@ -411,13 +415,65 @@ namespace OpenNavX {
       if(matches.Count!=1 || !ScopedButton(frame,pid,matches[0],action))throw new InvalidOperationException("Reviewed button must be unique, enabled, fully visible and in its exact source-reviewed page or chart rail.");
       return matches[0];
     }
+    private static IntPtr ResolvePaletteNavigation(IntPtr frame,int pid,string action,bool allowClipped=false) {
+      if(action!="Layers" && action!="ChartPalettePreferences")throw new InvalidOperationException("Unknown palette navigation.");
+      var info=AssertFrame(frame,pid);AssertCapture(frame,pid,info);IntPtr surface=IntPtr.Zero;
+      foreach(var item in info.Surfaces)if(item.Title==ActionContext(action)){if(surface!=IntPtr.Zero)throw new InvalidOperationException("Duplicate palette surface.");surface=new IntPtr(item.Handle);}
+      if(surface==IntPtr.Zero)throw new InvalidOperationException("Exact owned source-reviewed palette surface required.");
+      var matches=new List<IntPtr>();string caption=ActionLabels(action)[0];
+      foreach(var h in Children(surface))if(Owner(h)==(uint)pid && Text(h)==caption && Class(h)!="Static")matches.Add(h);
+      if(matches.Count!=1 || !IsWindowVisible(matches[0]) || !IsWindowEnabled(matches[0]) || (action=="Layers" && GetParent(matches[0])!=surface))throw new InvalidOperationException("Unique visible fixed palette navigation action required.");
+      var button=matches[0];var bounds=Bounds(button);
+      if(allowClipped)return button;
+      if(!Contains(info.Bounds,bounds))throw new InvalidOperationException("Palette navigation lies outside frame.");
+      for(var parent=GetParent(button);parent!=IntPtr.Zero && parent!=frame;parent=GetParent(parent))if(!Contains(Bounds(parent),bounds))throw new InvalidOperationException("Expose the clipped palette navigation control normally before review.");
+      return button;
+    }
+    [StructLayout(LayoutKind.Sequential)] private struct ScrollInfo {public uint Size,Mask;public int Min,Max;public uint Page;public int Pos,TrackPos;}
+    [DllImport("user32.dll")] private static extern bool GetScrollInfo(IntPtr h,int bar,ref ScrollInfo info);
+    private static ScrollInfo PaletteScroll(IntPtr body) {
+      var info=new ScrollInfo();info.Size=(uint)Marshal.SizeOf(typeof(ScrollInfo));info.Mask=0x17;
+      if(!GetScrollInfo(body,1,ref info) || info.Min!=0 || info.Max<0 || info.Max>100000 || info.Page<1 || info.Page>100000 || info.Pos<0 || info.Pos>info.Max)throw new InvalidOperationException("Bounded native palette body scroll state required.");
+      return info;
+    }
+    private static bool PaletteTargetVisible(IntPtr frame,IntPtr body,IntPtr button) {
+      var r=Bounds(button);
+      return Contains(Bounds(frame),r) && Contains(Bounds(body),r);
+    }
+    // Only the existing Chart presentation body's native vertical page scroll.
+    // No arbitrary HWND/key/wheel amount or product-setting action is exposed.
+    public static void RevealChartPalettePreference(IntPtr frame,int pid) {
+      var target=ResolvePaletteNavigation(frame,pid,"ChartPalettePreferences",true);var body=GetParent(target);var surface=GetParent(body);
+      if(body==IntPtr.Zero || surface==IntPtr.Zero || Text(surface)!="Chart presentation" || GetWindow(surface,4)!=frame ||
+         Owner(body)!=(uint)pid || !IsWindowEnabled(body) || !Contains(Bounds(surface),Bounds(body)))throw new InvalidOperationException("Exact direct scrolled palette body required.");
+      string kind=Class(body);var geometry=Bounds(body);
+      for(int attempt=0;attempt<16;attempt++) {
+        var info=AssertFrame(frame,pid);AssertCapture(frame,pid,info);
+        if(ResolvePaletteNavigation(frame,pid,"ChartPalettePreferences",true)!=target || GetParent(target)!=body || GetParent(body)!=surface ||
+           Class(body)!=kind || !SameRect(Bounds(body),geometry) || Owner(body)!=(uint)pid)throw new InvalidOperationException("Palette body changed during reveal.");
+        if(PaletteTargetVisible(frame,body,target)){ResolvePaletteNavigation(frame,pid,"ChartPalettePreferences");return;}
+        var before=PaletteScroll(body);if(before.Pos>=before.Max-(int)before.Page+1)throw new InvalidOperationException("Palette target still clipped at end of scroll range.");
+        UIntPtr result;if(SendMessageTimeoutW(body,0x115,new UIntPtr(3),IntPtr.Zero,0x2,1000,out result)==IntPtr.Zero)throw new InvalidOperationException("Palette page scroll uncertain; no retry.");
+        Thread.Sleep(100);
+        var current=AssertFrame(frame,pid);AssertCapture(frame,pid,current);
+        if(ResolvePaletteNavigation(frame,pid,"ChartPalettePreferences",true)!=target || GetParent(target)!=body || GetParent(body)!=surface ||
+           Class(body)!=kind || !SameRect(Bounds(body),geometry) || Owner(body)!=(uint)pid)throw new InvalidOperationException("Palette body changed after scroll.");
+        var after=PaletteScroll(body);if(after.Pos<=before.Pos || after.Min!=before.Min || after.Max!=before.Max || after.Page!=before.Page)throw new InvalidOperationException("Palette scroll made no bounded progress or range changed.");
+      }
+      throw new InvalidOperationException("Palette reveal bound exceeded; target not clicked.");
+    }
     public static void Click(IntPtr frame,int pid,string action) {
+      if(action=="RevealChartPalettePreference"){RevealChartPalettePreference(frame,pid);return;}
+      if(action=="Layers" || action=="ChartPalettePreferences") {
+        var target=ResolvePaletteNavigation(frame,pid,action);
+        ClickReviewedButton(frame,pid,target,delegate{return ResolvePaletteNavigation(frame,pid,action);},true);return;
+      }
       var button=ResolveButton(frame,pid,action);
       ClickReviewedButton(frame,pid,button,delegate{return ResolveButton(frame,pid,action);});
     }
-    private static void ClickReviewedButton(IntPtr frame,int pid,IntPtr button,Func<IntPtr> resolve=null) {
+    private static void ClickReviewedButton(IntPtr frame,int pid,IntPtr button,Func<IntPtr> resolve=null,bool ownedPaletteSurface=false) {
       AssertFrame(frame,pid);
-      if(!IsWindowVisible(button) || !IsWindowEnabled(button) || Owner(button)!=(uint)pid || !IsChild(frame,button))
+      if(!IsWindowVisible(button) || !IsWindowEnabled(button) || Owner(button)!=(uint)pid || (!IsChild(frame,button) && !ownedPaletteSurface))
         throw new InvalidOperationException("Reviewed button identity changed before press.");
       Rect screen,client;
       if(!GetWindowRect(button,out screen) || !GetClientRect(button,out client) || client.Width<24 || client.Height<24)throw new InvalidOperationException("Reviewed button geometry unavailable.");
@@ -430,7 +486,7 @@ namespace OpenNavX {
       var down=SendMessageTimeoutW(button,0x201,new UIntPtr(1),position,0x2,1000,out result);
       if(down==IntPtr.Zero)throw new InvalidOperationException("Reviewed press result uncertain; no release or retry to an unverified control.");
       AssertFrame(frame,pid);Rect heldScreen,heldClient;
-      if(!IsWindowVisible(button) || !IsWindowEnabled(button) || Owner(button)!=(uint)pid || !IsChild(frame,button) ||
+      if(!IsWindowVisible(button) || !IsWindowEnabled(button) || Owner(button)!=(uint)pid || (!IsChild(frame,button) && !ownedPaletteSurface) ||
           GetParent(button)!=parent || Text(button)!=caption || Class(button)!=kind || Text(parent)!=parentCaption ||
           !GetWindowRect(button,out heldScreen) || !GetClientRect(button,out heldClient) ||
           heldScreen.Left!=screen.Left || heldScreen.Top!=screen.Top || heldScreen.Right!=screen.Right || heldScreen.Bottom!=screen.Bottom ||

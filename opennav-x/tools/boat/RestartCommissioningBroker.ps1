@@ -6,9 +6,11 @@ param(
  [Parameter(Mandatory=$true)][string]$ExpectedSha256,
  [Parameter(Mandatory=$true)][uint32]$ParentProcessId,
  [Parameter(Mandatory=$true)][string]$ParentCreatedFiletime,
- [Parameter(Mandatory=$true)][ValidateSet('--xnav','--legacy','--safe-mode')][string]$Mode
+ [Parameter(Mandatory=$true)][ValidateSet('--xnav','--legacy','--safe-mode')][string]$Mode,
+ [string]$ChartPalette=''
 )
 . (Join-Path $PSScriptRoot 'RestartCommissioning.ps1')
+Assert-RestartChartPalette $Mode $ChartPalette
 Initialize-RestartNative
 $session=Read-RestartSession $SessionRecord $ExpectedSha256
 $nativePowerShell=Join-Path ([Environment]::GetFolderPath('System')) 'WindowsPowerShell\v1.0\powershell.exe'
@@ -24,12 +26,13 @@ try {
  $null=$parentHandle.Handle
  if($parentHandle.HasExited -or $parentHandle.StartTime.ToUniversalTime().ToFileTimeUtc().ToString() -cne $ParentCreatedFiletime){throw 'Parent exited/reused while arming.'}
  $baseline=Get-RestartBaseline $session $SessionRecord $parent
+ if($ChartPalette -and $baseline.mode -cne '--xnav'){throw 'Palette intent requires current SKAGER parent.'}
  $pipe=[OpenNavX.RestartCommissioningNative]::NewPipe($session.session,$session.sid)
  $directory=Assert-LocalPath $baseline.nextDirectory
  if(Test-Path -LiteralPath $directory){throw 'This parent transition has already been armed; do not retry.'}
  $null=New-Item -ItemType Directory -Path $directory
  $ownsDirectory=$true
- Write-Record (Join-Path $directory 'ready.json') @{owner=$script:RestartOwner;session=$session.session;recordSha256=$ExpectedSha256;parent=$parent;broker=$broker;mode=$Mode;beforeSha256=$baseline.sha256;createdUtc=[DateTime]::UtcNow.ToString('o')}
+ Write-Record (Join-Path $directory 'ready.json') @{owner=$script:RestartOwner;session=$session.session;recordSha256=$ExpectedSha256;parent=$parent;broker=$broker;mode=$Mode;chartPalette=$ChartPalette;beforeSha256=$baseline.sha256;createdUtc=[DateTime]::UtcNow.ToString('o')}
  [pscustomobject]@{status='listening-for-one-explicit-restart';parentPid=$parent.pid;mode=$Mode;directory=$directory} | ConvertTo-Json -Compress
  [OpenNavX.RestartCommissioningNative]::Connect($pipe,[DateTime]::UtcNow.AddSeconds(120))
  $deadline=[DateTime]::UtcNow.AddSeconds(120)
@@ -53,9 +56,11 @@ try {
  # Parse the exact retained bytes whose digest was proven during the copy.
  # Never prove a live A hash while accidentally parsing a transient B version.
  $beforeValues=Read-RestartIni $baseline.path;$afterValues=Read-RestartIni $postCopy
- $changes=@(Assert-RestartIniDelta $beforeValues $afterValues $Mode)
+ $paletteProof=$null
+ if($ChartPalette){$paletteProof=Read-RestartPaletteProof $directory $session $parent $Mode $ChartPalette $baseline.sha256}
+ $changes=@(Assert-RestartIniDelta $beforeValues $afterValues $Mode $ChartPalette)
  Assert-InputOnlyProfile $afterValues
- Write-Record (Join-Path $directory 'reviewed-delta.json') @{owner=$script:RestartOwner;beforeSha256=$baseline.sha256;afterSha256=$postHash;mode=$Mode;changes=$changes}
+ Write-Record (Join-Path $directory 'reviewed-delta.json') @{owner=$script:RestartOwner;beforeSha256=$baseline.sha256;afterSha256=$postHash;mode=$Mode;chartPalette=$ChartPalette;changes=$changes}
  # Only an in-memory audit copy gets the newly PROVEN hash. The independent
  # boat-target audit remains immutable, and the complete cold verifier still
  # checks quarantine, every plugin/helper tree, stock and active transaction.
@@ -70,9 +75,11 @@ try {
  # expensive full-tree audit, not merely when the request first arrived.
  $session=Read-RestartSession $SessionRecord $ExpectedSha256
  if((Get-Digest $session.profile) -cne $postHash -or (Get-Digest $postCopy) -cne $postHash -or [DateTime]::UtcNow -ge $deadline){throw 'Profile/deadline changed before permit consumption.'}
+ if($ChartPalette){$null=Read-RestartPaletteProof $directory $session $parent $Mode $ChartPalette $baseline.sha256 $paletteProof}
  $permitId=New-RestartToken;$issued=[DateTime]::UtcNow;$expires=$issued.AddSeconds(10)
  $permit=@{owner=$script:RestartOwner;status='consumed-before-allow';session=$session.session;recordSha256=$ExpectedSha256;permitId=$permitId;requestSha256=$requestHash;
- mode=$Mode;parent=$parent;helper=$helper;beforeSha256=$baseline.sha256;profileSha256=$postHash;issuedFiletime=$issued.ToFileTimeUtc().ToString();expiresFiletime=$expires.ToFileTimeUtc().ToString()}
+ mode=$Mode;chartPalette=$ChartPalette;parent=$parent;helper=$helper;beforeSha256=$baseline.sha256;profileSha256=$postHash;issuedFiletime=$issued.ToFileTimeUtc().ToString();expiresFiletime=$expires.ToFileTimeUtc().ToString()}
+ if($ChartPalette){$permit.paletteProof=$paletteProof}
  $permitPath=Publish-RestartPermit $directory $permit
  $fields=[string[]]@($script:RestartMagic,'ALLOW',$session.session,$ExpectedSha256,$request['nonce'],$requestHash,$permit.issuedFiletime,$permit.expiresFiletime,
  $session.executable,$session.executableSha256,$session.helper,$session.helperSha256,$session.profile,$postHash,$environment.workingDirectory,$environment.path,$permitId)

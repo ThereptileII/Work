@@ -8,7 +8,8 @@ function Assert-RestartReady($Ready,$Arm,$Session,[datetime]$Now) {
      $Ready.session -cne $Session.session -or $Arm.session -cne $Session.session -or
      $Ready.recordSha256 -cne $Session.recordSha256 -or $Arm.recordSha256 -cne $Session.recordSha256 -or
      $Ready.parent.pid -cne $Arm.parentPid -or $Ready.parent.createdFiletime -cne $Arm.parentCreatedFiletime -or
-     $Ready.mode -cne $Arm.mode -or $Arm.mode -cnotin @('--xnav','--legacy','--safe-mode')) {throw 'Exact immutable Arm and listening readiness identities required.'}
+     $Ready.mode -cne $Arm.mode -or $Arm.mode -cnotin @('--xnav','--legacy','--safe-mode') -or
+     (Get-RestartChartPalette $Ready) -cne (Get-RestartChartPalette $Arm)) {throw 'Exact immutable Arm and listening readiness identities required.'}
   foreach($value in @($Arm.parentPid,$Arm.parentCreatedFiletime,$Ready.broker.pid,$Ready.broker.createdFiletime)){Assert-RestartDecimal $value 'ready identity'}
   $at=[datetime]::Parse($Ready.createdUtc).ToUniversalTime();$armed=[datetime]::Parse($Arm.createdUtc).ToUniversalTime()
   if($at -gt $Now -or $armed -gt $at -or ($at-$armed).TotalSeconds -gt 30 -or ($Now-$at).TotalSeconds -ge 90){throw 'Listening readiness expired; no UI command may be retried.'}
@@ -16,7 +17,7 @@ function Assert-RestartReady($Ready,$Arm,$Session,[datetime]$Now) {
 function Assert-RestartWindowAction([string]$Action,[string]$Mode,[string]$ReviewAction) {
   if($Mode -cnotin @('--xnav','--legacy','--safe-mode')){throw 'Only an exact installed mode may be reviewed.'}
   if($Action -ceq 'RequestGuardedMode') {
-    if($ReviewAction -cne 'RequestMode'){throw 'One explicit mode action required.'}
+    if($ReviewAction -cnotin @('RequestMode','RequestChartPalette') -or ($ReviewAction -ceq 'RequestChartPalette' -and $Mode -cne '--xnav')){throw 'One explicit source-reviewed mode or SKAGER palette action required.'}
   } elseif($Action -ceq 'ReviewRestartChild') {
     $allowed=if($Mode -ceq '--xnav'){Get-WindowReviewActions}else{@('Capture','Resize1280x800')}
     if($ReviewAction -cnotin $allowed){throw 'Only fixed display actions for this proven child mode are permitted.'}
@@ -46,9 +47,12 @@ function Read-RestartWindowReview($Job,[switch]$IntentWritten) {
     if($Job.readySha256 -cnotmatch '^[a-f0-9]{64}$' -or (Get-Digest $readyPath) -cne $Job.readySha256){throw 'Immutable broker readiness required.'}
     $ready=Read-Record $readyPath
     Assert-RestartReady $ready $arm $session ([datetime]::UtcNow)
-    if($arm.parentPid -cne $process.pid -or $arm.parentCreatedFiletime -cne $process.createdFiletime -or $arm.mode -cne $Job.mode){throw 'Requested mode or parent differs from Arm.'}
+    if($arm.parentPid -cne $process.pid -or $arm.parentCreatedFiletime -cne $process.createdFiletime -or $arm.mode -cne $Job.mode -or (Get-RestartChartPalette $arm) -cne (Get-RestartChartPalette $Job)){throw 'Requested mode or parent differs from Arm.'}
     $execute=Join-Path ([Environment]::GetFolderPath('System')) 'WindowsPowerShell\v1.0\powershell.exe'
     $arguments='-NoProfile -NonInteractive -ExecutionPolicy Bypass -File "'+(Join-Path $PSScriptRoot 'RestartCommissioningBroker.ps1')+'" -SessionRecord "'+$Job.sessionRecord+'" -ExpectedSha256 '+$Job.sessionRecordSha256+' -ParentProcessId '+$process.pid+' -ParentCreatedFiletime '+$process.createdFiletime+' -Mode '+$Job.mode
+    $palette=Get-RestartChartPalette $Job
+    if(($Job.reviewAction -ceq 'RequestChartPalette') -ne [bool]$palette){throw 'Exact palette action and intent required together.'}
+    if($palette){$arguments+=' -ChartPalette '+$palette}
     if($arm.execute -ine $execute -or $arm.arguments -cne $arguments -or $arm.taskName -cnotmatch '^OpenNavX-RestartReview-[a-f0-9]{32}$'){throw 'Arm task differs from the fixed broker invocation.'}
     $task=Get-ScheduledTask -TaskName $arm.taskName -ErrorAction Stop
     Assert-RestartTaskIdentity $task $arm $session.sid -ExpectedState Running
@@ -114,15 +118,23 @@ function Invoke-RestartWindowReview($Job) {
         mode=$proof.mode;buildCommit=$Job.buildCommit;generation=$Job.generation;sessionRecordSha256=$Job.sessionRecordSha256;
         utc=[datetime]::UtcNow.ToString('o');before=$before;actuatorCommandsIssuedByTool=$false;physicalBusSilenceNotClaimed=$true;launchPerformedByTool=$false}
       if($Job.action -ceq 'RequestGuardedMode') {
-        $command=[OpenNavX.RestartWindowNative]::InspectModeCommand($frame,$process.Id,$proof.mode,$Job.mode)
+        $palette=Get-RestartChartPalette $Job
+        $command=if($palette){[OpenNavX.RestartWindowNative]::InspectPaletteCommand($frame,$process.Id,$palette)}else{[OpenNavX.RestartWindowNative]::InspectModeCommand($frame,$process.Id,$proof.mode,$Job.mode)}
         Write-Record $proof.intent @{owner='OpenNavX.GuardedModeIntent.1';session=$proof.session.session;recordSha256=$Job.sessionRecordSha256;
-          armSha256=$Job.armSha256;readySha256=$Job.readySha256;parent=$proof.process;mode=$Job.mode;fromMode=$proof.mode;
+          armSha256=$Job.armSha256;readySha256=$Job.readySha256;parent=$proof.process;mode=$Job.mode;chartPalette=$palette;fromMode=$proof.mode;
           command=$command;beforeImageSha256=$before.sha256;status='consumed-before-ui-action';utc=[datetime]::UtcNow.ToString('o')}
         $Job|Add-Member -NotePropertyName intentSha256 -NotePropertyValue (Get-Digest $proof.intent)
         # A disappearing listener, changed file or failed UI send consumes this
         # request forever. It can never fall back to a cold/unarmed launch.
         $null=Read-RestartWindowReview $Job -IntentWritten
-        [OpenNavX.RestartWindowNative]::RequestMode($frame,$process.Id,$command)
+        if($palette) {
+          $sheet=[OpenNavX.RestartWindowNative]::OpenPaletteConfirmation($frame,$process.Id,$command)
+          # The same already-consumed intent covers selection and confirmation.
+          # Recheck the listener, files and expiry immediately before final save.
+          $null=Read-RestartWindowReview $Job -IntentWritten
+          [OpenNavX.RestartWindowNative]::ConfirmPalette($frame,$process.Id,$command,$sheet)
+          $result.chartPalette=$palette;$result.confirmation=$sheet
+        } else {[OpenNavX.RestartWindowNative]::RequestMode($frame,$process.Id,$command)}
         $result.outcome='UI request sent once; child success requires broker completion and receipt';$result.requestedMode=$Job.mode
         $result.intentFile=$proof.intent;$result.intentSha256=$Job.intentSha256;$result.command=$command;$result.childSuccessClaimed=$false
       } else {

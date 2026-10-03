@@ -3,11 +3,12 @@ param(
  [Parameter(Mandatory=$true)][string]$SessionRecord,
  [Parameter(Mandatory=$true)][ValidatePattern('^[a-f0-9]{64}$')][string]$ExpectedSessionSha256,
  [Parameter(Mandatory=$true)][ValidatePattern('^[a-f0-9]{40}$')][string]$ExpectedCommit,
- [Parameter(Mandatory=$true)][ValidateSet('RequestMode','ReviewChild')][string]$Action,
+ [Parameter(Mandatory=$true)][ValidateSet('RequestMode','RequestChartPalette','ReviewChild')][string]$Action,
  [string]$Mode,[uint32]$ParentProcessId,[string]$ParentCreatedFiletime,
  [string]$ExpectedArmSha256,[string]$ExpectedReadySha256,
  [string]$CompletionFile,[string]$ExpectedCompletionSha256,
- [string]$ReviewAction='Capture'
+ [string]$ReviewAction='Capture',
+ [string]$ChartPalette=''
 )
 . (Join-Path $PSScriptRoot 'RestartWindowReview.ps1')
 Initialize-RestartNative
@@ -15,11 +16,13 @@ $record=Assert-LocalPath $SessionRecord;$session=Read-RestartSession $record $Ex
 $job=[pscustomobject]@{action='';reviewAction='';sessionRecord=$record;sessionRecordSha256=$ExpectedSessionSha256;
  workspace=$session.workspace;executable=$session.executable;executableSha256=$session.executableSha256;generation=$session.generation;
  buildCommit=$ExpectedCommit;helperFiles=@($script:RestartWindowFiles|ForEach-Object {@{name=$_;sha256=(Get-Digest (Join-Path $PSScriptRoot $_))}})}
-if($Action -ceq 'RequestMode') {
+Assert-RestartChartPalette $Mode $ChartPalette
+if(($Action -ceq 'RequestChartPalette') -ne [bool]$ChartPalette){throw 'Only RequestChartPalette accepts/requires explicit XNav/Standard.'}
+if($Action -cin @('RequestMode','RequestChartPalette')) {
  if($Mode -cnotin @('--xnav','--legacy','--safe-mode') -or -not $ParentProcessId -or -not $ParentCreatedFiletime -or
     $CompletionFile -or $ExpectedCompletionSha256 -or $ReviewAction -cne 'Capture'){throw 'RequestMode needs exact parent, mode and Arm/readiness hashes only.'}
- $job.action='RequestGuardedMode';$job.reviewAction='RequestMode'
- $job|Add-Member -NotePropertyMembers @{processId=$ParentProcessId;processCreatedFiletime=$ParentCreatedFiletime;mode=$Mode;
+ $job.action='RequestGuardedMode';$job.reviewAction=$Action
+ $job|Add-Member -NotePropertyMembers @{processId=$ParentProcessId;processCreatedFiletime=$ParentCreatedFiletime;mode=$Mode;chartPalette=$ChartPalette;
    armFile=(Join-Path ([IO.Path]::GetDirectoryName($record)) ('arm-'+$ParentProcessId+'-'+$ParentCreatedFiletime+'.json'));
    armSha256=$ExpectedArmSha256;readySha256=$ExpectedReadySha256}
 } else {

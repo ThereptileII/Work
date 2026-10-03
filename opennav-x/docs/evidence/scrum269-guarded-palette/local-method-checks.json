@@ -1,0 +1,47 @@
+{
+  "applicationBase": "1835d1b84df89aff42220ac8bb535e4262034a54",
+  "status": "local-method-checks-passed-native-pending",
+  "checks": {
+    "restart-policy": {
+      "status": "passed",
+      "checks": 309,
+      "applicationLaunched": false,
+      "physicalOutput": false
+    },
+    "review-window": {
+      "status": "passed",
+      "count": 233,
+      "nativeActionsExecuted": false,
+      "boatAccess": false,
+      "hardwareCommands": false
+    },
+    "restart-window": {
+      "status": "passed",
+      "checks": 187,
+      "nativeWindowExecuted": false,
+      "applicationLaunched": false,
+      "boatTouched": false,
+      "physicalOutput": false
+    }
+  },
+  "sourceSha256": {
+    "tests/commissioning-restart/palette-window-fixture.ps1": "5cdc2c80f7b2d85f63b007864a3848a31ff6e9139ee55ff0567a5eed394f4c36",
+    "tools/boat/RestartCommissioning.ps1": "236112451d9d0e9f43160888dc10a61809db14ccdc0088f2ecc71d2034268188",
+    "tools/boat/RestartCommissioningArm.ps1": "b5e8244d3b24d344b820ca2cb2fdac8092c7aae596d31bc2b5bff6a31261fb58",
+    "tools/boat/RestartCommissioningBroker.ps1": "812f9db855db20048ba450cbb404d267c347e8c15e2fd9c831fcf067339e5280",
+    "tools/boat/RestartCommissioningPolicy.ps1": "4dd5756e55ca2879ee3076bd6b7f4d0a5c686af883d34c023176d97c903394af",
+    "tools/boat/RestartWindowNative.cs": "6790936228ea73c7e555c715cc9e34a58d4228ca27a69546b71b9d5a7adb531c",
+    "tools/boat/RestartWindowReview.ps1": "0ce0e2c96066b9f04850c8b1c106bd0eb2704024c1296f21af9076886fe8444f",
+    "tools/boat/ReviewWindow.ps1": "cc702d83fdc94821b6be4f75763e6534fe3969c5d0e4ef648a054b9f630fc5af",
+    "tools/boat/ReviewWindowNative.cs": "ae84cdf070e65017f9df8268f743ecd2cf7efd823e444bf18ecac8c3d4eb5cc1",
+    "tools/boat/review-restart-window.ps1": "f5b41c678e4b489eb8cd105ec576c308047bcd9897630f91e7773dbbcc0c7bf5",
+    "tools/boat/test-restart-window-review.ps1": "5e390d81d3e3b2e1658aea23b4e6d94b20bf71c4e2ae8e6fa8cce205796fe31c",
+    "tools/boat/test-review-window.ps1": "10ea519e4d22d916a34fd8194498f050958c83538b9f3b5fb3d1842af9ad1889",
+    "tools/test-chart-palette-window-native.ps1": "e0acd9854b95722d6c6753b121ad8991817dc6258593f72be9bf23f00d725f12",
+    "tools/test-restart-window-native.ps1": "79f53db6586679f50a6a3852cc404b66ee72d2b0cb39affc31241eeb41c689c4"
+  },
+  "nativeWindowExecuted": false,
+  "boatTouched": false,
+  "applicationModified": false,
+  "newToolCompositionQualified": false
+}

@@ -59,6 +59,99 @@ namespace OpenNavX {
     private static bool Intersects(Rect a,Rect b) {return b.Right>a.Left && b.Left<a.Right && b.Bottom>a.Top && b.Top<a.Bottom;}
     private static Rect Bounds(IntPtr h) {Rect r;if(DwmGetWindowAttribute(h,9,out r,16)!=0 && !GetWindowRect(h,out r))throw new InvalidOperationException("Window bounds unavailable.");return r;}
     private static MonitorInfo Monitor(IntPtr h) {var m=new MonitorInfo();m.Size=(uint)Marshal.SizeOf(typeof(MonitorInfo));if(!GetMonitorInfoW(MonitorFromWindow(h,2),ref m))throw new InvalidOperationException("Monitor unavailable.");return m;}
+    public sealed class PaletteCommand {public long Target,Page;public string Palette,Caption;}
+    public sealed class PaletteSheet {public long Handle,Accept;public Rect Bounds;public uint Dpi;}
+    [DllImport("user32.dll",SetLastError=true)] private static extern bool PostMessageW(IntPtr h,uint msg,UIntPtr w,IntPtr l);
+    public static string PaletteCaption(string palette) {
+      switch(palette){case "XNav":return "SKAGER";case "Standard":return "Standard";default:throw new InvalidOperationException("Exact XNav/Standard choice required.");}
+    }
+    private static bool SameRect(Rect a,Rect b){return a.Left==b.Left && a.Top==b.Top && a.Right==b.Right && a.Bottom==b.Bottom;}
+    private static void ButtonVisible(IntPtr button,IntPtr container,int pid,Rect bounds) {
+      Rect r;if(Owner(button)!=(uint)pid || !IsChild(container,button) || !IsWindowVisible(button) || !IsWindowEnabled(button) ||
+        Class(button)=="Static" || !GetWindowRect(button,out r) || !Contains(bounds,r))throw new InvalidOperationException("Exact palette control unavailable.");
+      for(var parent=GetParent(button);parent!=IntPtr.Zero && parent!=container;parent=GetParent(parent)) {
+        Rect pr;if(!GetWindowRect(parent,out pr) || !Contains(pr,r))throw new InvalidOperationException("Palette control clipped by its parent.");
+      }
+      var hit=WindowFromPoint(new Point{X=(r.Left+r.Right)/2,Y=(r.Top+r.Bottom)/2});
+      if(hit!=button && !IsChild(button,hit))throw new InvalidOperationException("Palette control obscured.");
+    }
+    public static PaletteCommand InspectPaletteCommand(IntPtr frame,int pid,string palette) {
+      var root=AssertFrame(frame,pid,"--xnav");AssertCapture(frame,pid,root);var caption=PaletteCaption(palette);
+      var pages=new List<IntPtr>();var buttons=new List<IntPtr>();Exception failure=null;
+      EnumChildWindows(frame,delegate(IntPtr h,IntPtr p){try{
+        if(Owner(h)!=(uint)pid || !IsWindowVisible(h))return true;
+        if(Text(h)=="SKAGER product page: Display" && IsWindowEnabled(h))pages.Add(h);
+        if(Text(h)==caption && Class(h)!="Static")buttons.Add(h);
+        return true;
+      }catch(Exception e){failure=e;return false;}},IntPtr.Zero);
+      if(failure!=null || pages.Count!=1 || buttons.Count!=1 || GetParent(buttons[0])!=pages[0])throw new InvalidOperationException("Unique actual ProductPanel Display palette button required.",failure);
+      ButtonVisible(buttons[0],frame,pid,root.Bounds);
+      return new PaletteCommand{Target=buttons[0].ToInt64(),Page=pages[0].ToInt64(),Palette=palette,Caption=caption};
+    }
+    private static void SamePalette(PaletteCommand a,PaletteCommand b) {
+      if(a==null || b==null || a.Target!=b.Target || a.Page!=b.Page || a.Palette!=b.Palette || a.Caption!=b.Caption)throw new InvalidOperationException("Palette choice control changed; consumed request cannot retry.");
+    }
+    // Selection itself cannot save: source ProductSettings always opens this
+    // exact modal first. Both clicks nevertheless require the same consumed
+    // broker intent; no ordinary ReviewWindow action exposes either one.
+    public static PaletteSheet OpenPaletteConfirmation(IntPtr frame,int pid,PaletteCommand expected) {
+      if(expected==null)throw new InvalidOperationException("Inspected palette required.");
+      SamePalette(expected,InspectPaletteCommand(frame,pid,expected.Palette));
+      PressPalette(new IntPtr(expected.Target),delegate{SamePalette(expected,InspectPaletteCommand(frame,pid,expected.Palette));});
+      var deadline=DateTime.UtcNow.AddSeconds(3);
+      while(GetForegroundWindow()==frame && DateTime.UtcNow<deadline)Thread.Sleep(25);
+      return InspectPaletteSheet(frame,pid,expected);
+    }
+    public static PaletteSheet InspectPaletteSheet(IntPtr frame,int pid,PaletteCommand choice) {
+      if(choice==null || choice.Caption!=PaletteCaption(choice.Palette))throw new InvalidOperationException("Exact inspected choice required.");
+      var page=new IntPtr(choice.Page);var selected=new IntPtr(choice.Target);
+      if(Owner(frame)!=(uint)pid || GetParent(frame)!=IntPtr.Zero || Text(frame)!=Title("--xnav") || IsWindowEnabled(frame) ||
+         IsIconic(frame) || !IsWindowVisible(frame) || !IsChild(frame,page) || Text(page)!="SKAGER product page: Display" ||
+         GetParent(selected)!=page || Owner(selected)!=(uint)pid || Text(selected)!=choice.Caption || !IsWindowVisible(selected))throw new InvalidOperationException("Palette modal lost its exact disabled parent/choice.");
+      var dialog=GetForegroundWindow();var owner=GetWindow(dialog,4);var root=Bounds(frame);var rect=Bounds(dialog);var dpi=GetDpiForWindow(frame);
+      if(dialog==IntPtr.Zero || dialog==frame || Owner(dialog)!=(uint)pid || (owner!=frame && owner!=page) ||
+         IsChild(frame,dialog) || !IsWindowVisible(dialog) || !IsWindowEnabled(dialog) || Text(dialog)!="Change chart style" ||
+         !Contains(root,rect) || !Contains(Monitor(frame).Monitor,root) || GetDpiForWindow(dialog)!=dpi || dpi<72 || dpi>384)throw new InvalidOperationException("Exact owned foreground Change chart style modal required.");
+      // The source sheet has no edit fields and precisely these two actions;
+      // require the actual detail/title too, not a generic same-caption modal.
+      var buttons=new List<IntPtr>();int cancel=0,title=0,detail=0;Exception failure=null;
+      EnumChildWindows(dialog,delegate(IntPtr h,IntPtr p){try{
+        if(!IsWindowVisible(h))return true;
+        if(Owner(h)!=(uint)pid || Class(h).IndexOf("EDIT",StringComparison.OrdinalIgnoreCase)>=0)throw new InvalidOperationException("Unexpected palette sheet input.");
+        var text=Text(h);
+        if(GetParent(h)==dialog && Class(h)!="Static" && text.Length>0 && text!="Cancel" && text!="Save and restart")throw new InvalidOperationException("Unexpected direct palette sheet action.");
+        if(text=="Change chart style")title++;
+        if(text.Replace("\r","").Replace("\n"," ")=="Restart SKAGER to apply the chart presentation. Routes, charts and navigation settings are preserved.")detail++;
+        if(Class(h)!="Static" && text=="Save and restart"){ButtonVisible(h,dialog,pid,rect);if(GetParent(h)!=dialog)throw new InvalidOperationException("Confirmation must be direct modal action.");buttons.Add(h);}
+        if(Class(h)!="Static" && text=="Cancel"){ButtonVisible(h,dialog,pid,rect);if(GetParent(h)!=dialog)throw new InvalidOperationException("Cancel must be direct modal action.");cancel++;}
+        return true;
+      }catch(Exception e){failure=e;return false;}},IntPtr.Zero);
+      if(failure!=null || buttons.Count!=1 || cancel!=1 || title!=1 || detail!=1)throw new InvalidOperationException("Exact source-reviewed palette sheet signature required.",failure);
+      bool obscured=false;
+      EnumWindows(delegate(IntPtr h,IntPtr p){try{if(h==dialog)return false;if(IsWindowVisible(h) && !IsIconic(h) && Intersects(rect,Bounds(h)))obscured=true;return true;}catch(Exception e){failure=e;return false;}},IntPtr.Zero);
+      if(failure!=null || obscured)throw new InvalidOperationException("Palette confirmation obscured.",failure);
+      return new PaletteSheet{Handle=dialog.ToInt64(),Accept=buttons[0].ToInt64(),Bounds=rect,Dpi=dpi};
+    }
+    public static void ConfirmPalette(IntPtr frame,int pid,PaletteCommand choice,PaletteSheet expected) {
+      Action verify=delegate{
+        var actual=InspectPaletteSheet(frame,pid,choice);
+        if(expected==null || actual.Handle!=expected.Handle || actual.Accept!=expected.Accept || actual.Dpi!=expected.Dpi || !SameRect(actual.Bounds,expected.Bounds))throw new InvalidOperationException("Palette sheet replaced or moved; consumed request cannot retry.");
+      };
+      verify();PressPalette(new IntPtr(expected.Accept),verify);
+      // Enqueued once, not a success assertion. The app may now exit normally;
+      // only native receipt plus exact broker completion establishes a child.
+    }
+    private static void PressPalette(IntPtr button,Action verify) {
+      verify();Rect screen,client;UIntPtr result;
+      if(!GetWindowRect(button,out screen) || !GetClientRect(button,out client) || client.Width<48 || client.Height<48)throw new InvalidOperationException("Palette action geometry unavailable.");
+      var point=new IntPtr((client.Width/2)|((client.Height/2)<<16));
+      if(SendMessageTimeoutW(button,0x201,new UIntPtr(1),point,0x2,1000,out result)==IntPtr.Zero)throw new InvalidOperationException("Palette press uncertain; no retry or release.");
+      verify();Rect held,heldClient;
+      if(!GetWindowRect(button,out held) || !GetClientRect(button,out heldClient) || !SameRect(screen,held) || !SameRect(client,heldClient))throw new InvalidOperationException("Palette action moved during press.");
+      // A wx ShowModal runs inside the button-up handler. Posting the one
+      // release permits observing that modal without a SendMessage timeout.
+      if(!PostMessageW(button,0x202,UIntPtr.Zero,point))throw new InvalidOperationException("Palette release uncertain; never retry.");
+    }
     public static string Title(string mode) {
       switch(mode) {case "--xnav":return "SKAGER / OpenCPN";case "--legacy":return "SKAGER Legacy / OpenCPN";case "--safe-mode":return "SKAGER Safe Mode / OpenCPN";default:throw new InvalidOperationException("Unknown installed mode.");}
     }

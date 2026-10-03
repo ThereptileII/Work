@@ -59,3 +59,6 @@ finally {
  [IO.File]::WriteAllText((Join-Path $evidencePath 'native-window-results.json'),(@{status=$(if($errorText){'failed'}else{'passed'});error=$errorText;cases=$results.ToArray();
   nativeHelperSha256=(Get-Digest (Join-Path $PSScriptRoot 'boat\RestartWindowNative.cs'));fixtureSha256=(Get-Digest $fixture);productLaunched=$false;physicalOutput=$false}|ConvertTo-Json -Depth 10))
 }
+# Same disposable native gate also checks the separately armed chart palette
+# controls and bounded actual drawer scrolling; no product is started.
+& (Join-Path $PSScriptRoot 'test-chart-palette-window-native.ps1') -Evidence (Join-Path $evidencePath 'chart-palette') -IsolatedLocal:$IsolatedLocal

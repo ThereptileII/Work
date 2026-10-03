@@ -1,0 +1,81 @@
+{
+  "scope": "Retained e1 actual Linux renderer-specific pixel references; cross-platform equality is a strict new native check, not prequalified Windows acceptance. No renderer entry trace inferred.",
+  "references": {
+    "software/SKAGER/Day": {
+      "path": "docs/evidence/scrum264-yellow-e1d-linux/software/s64-yellow-SKAGER-Day-BOYSPP-254.png",
+      "sha256": "5e3de18a71e55aadf6d30c4361bae78f21f3dc2d6d9998cb2463f55ad24d942a"
+    },
+    "software/SKAGER/Dusk": {
+      "path": "docs/evidence/scrum264-yellow-e1d-linux/software/s64-yellow-SKAGER-Dusk-BOYSPP-254.png",
+      "sha256": "c137ca9b167f4c08090e2274522a5879c41d2e6f3dbfe4eeeec2614826bea639"
+    },
+    "software/SKAGER/Night": {
+      "path": "docs/evidence/scrum264-yellow-e1d-linux/software/s64-yellow-SKAGER-Night-BOYSPP-254.png",
+      "sha256": "20a6d57cef9d380f4b34f7fce16d6b1c65addced55df04403507cf96012578be"
+    },
+    "software/Standard/Day": {
+      "path": "docs/evidence/scrum264-yellow-e1d-linux/software/s64-yellow-Standard-Day-BOYSPP-254.png",
+      "sha256": "8c5fdba19ce25519d4b5ef05139b3464115c3dc6f09b5467d23f7b5d8f026151"
+    },
+    "software/Standard/Dusk": {
+      "path": "docs/evidence/scrum264-yellow-e1d-linux/software/s64-yellow-Standard-Dusk-BOYSPP-254.png",
+      "sha256": "cd60b83955ea39e52d5a5120373f9f65375d6f207b28da27bdf4c8fa5c1eb215"
+    },
+    "software/Standard/Night": {
+      "path": "docs/evidence/scrum264-yellow-e1d-linux/software/s64-yellow-Standard-Night-BOYSPP-254.png",
+      "sha256": "62c14bef1267126d8d8c39e65114392844840fd153e26d987ceacf6f058657fd"
+    },
+    "opengl/SKAGER/Day": {
+      "path": "docs/evidence/scrum264-yellow-e1d-linux/opengl/s64-yellow-SKAGER-Day-BOYSPP-254.png",
+      "sha256": "abb4cd86a691b139741131c66d56d42850eea1d217dfccbc921d484dffcc091f"
+    },
+    "opengl/SKAGER/Dusk": {
+      "path": "docs/evidence/scrum264-yellow-e1d-linux/opengl/s64-yellow-SKAGER-Dusk-BOYSPP-254.png",
+      "sha256": "feb70d429d9426e1ef049d0c891d3cd9182c6e15c29906650d756115a590bd3c"
+    },
+    "opengl/SKAGER/Night": {
+      "path": "docs/evidence/scrum264-yellow-e1d-linux/opengl/s64-yellow-SKAGER-Night-BOYSPP-254.png",
+      "sha256": "4cde4e40cc0b4ed411bdcba7a10610c01080bc9bce3ebdff69e464e5cf2fc66e"
+    },
+    "opengl/Standard/Day": {
+      "path": "docs/evidence/scrum264-yellow-e1d-linux/opengl/s64-yellow-Standard-Day-BOYSPP-254.png",
+      "sha256": "9e554834ea3907d707e0024850d3b31dcbc541dd35e5bef15a0045c9ab409906"
+    },
+    "opengl/Standard/Dusk": {
+      "path": "docs/evidence/scrum264-yellow-e1d-linux/opengl/s64-yellow-Standard-Dusk-BOYSPP-254.png",
+      "sha256": "e2f58988c30040c200ca492958fc9d65bddbff83797ddce09afc7ef31f90cf15"
+    },
+    "opengl/Standard/Night": {
+      "path": "docs/evidence/scrum264-yellow-e1d-linux/opengl/s64-yellow-Standard-Night-BOYSPP-254.png",
+      "sha256": "2f82a90ac1f5c2239c16ad573e05dee383519552cedf12f70c74bc0324e89869"
+    }
+  },
+  "cropCenter": [
+    36,
+    36
+  ],
+  "probes": {
+    "SKAGER": {
+      "body": [
+        -1,
+        3,
+        2,
+        10
+      ],
+      "fittedHead": [
+        -4,
+        -11,
+        4,
+        -4
+      ]
+    },
+    "Standard": {
+      "originalMark": [
+        -6,
+        -6,
+        7,
+        7
+      ]
+    }
+  }
+}
