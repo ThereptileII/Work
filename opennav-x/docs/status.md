@@ -14,26 +14,42 @@ remaining operator/diagnostic product labels. Customer-facing identity is
 SKAGER with the approved Jira artwork; immutable evidence, compatibility IDs
 and required OpenCPN attribution remain.
 
-Exact application source `a3e84771652c920479517f0d16a1dd6133c440d2`, published
-as `7a9e5496347cf8c0dd31aafc373b65f8621fe5a0`, passes the integrated Linux
-build/install and **147/147** regressions. Its
-[sixteen actual ENC captures](evidence/skager-chart-a3e8477-linux/README.md)
-retain coastlines and pass the original bounded content probes, but **the full
-GL Day-return comparison fails at 1,270 chart-selector pixels**. The initial
-atlas retains stock outline ink until a theme change. That failure is retained;
-it is not a visual pass. Standard historical chart comparisons and software
-theme returns are exact within their documented scope. The
-[focused cache correction](evidence/scrum266-selector-cache/README.md) passes
-21 actual atlas/cache checks and 159 existing brush checks, with the original
-source reproducing the failure. Integrated GL recapture remains required.
-The [current native qualification run](https://github.com/ThereptileII/Work/actions/runs/37100591834)
-stopped at private-adapter preparation after the maintained curl tests passed.
-The adapter resolved `openssl-build.json` under the curl install directory,
-where that producer manifest does not exist. This occurred before adapter or
-application compilation; it is not an application crash. The failure is retained
-and the bounded path correction is being verified before another Windows build.
-Linux qualification continues independently. No Windows package or boat
-acceptance is claimed.
+Current frozen application source **`9632421f701c5ec74d7a1360bc713c0034faf9af`**
+is published exactly as **`d2787c649268809a2d99a72c6ad3e104d504f461`**:
+3,306 mapped blobs/modes match and eight unrelated repository files are preserved.
+The [integrated Linux build/install](evidence/skager-chart-9632421-linux/README.md)
+and **147/147** regressions pass. All **32** real NOAA ENC captures pass across
+two scenes, software/Mesa OpenGL, SKAGER/Standard and Day/Dusk/Night/Day-return.
+The entire chart returns to identical Day pixels in all eight cycles, including
+the GL selector. All sixteen Standard historical chart comparisons remain exact
+within their documented toolbar exception. The saved Paper preference stays
+unchanged while SKAGER uses the effective Simplified table. The smaller approved
+header matches its reviewed component at actual size.
+
+The preceding `a3e8477` / `7a9e549` GL selector failure remains in
+[its original evidence](evidence/skager-chart-a3e8477-linux/README.md). The
+[cache correction](evidence/scrum266-selector-cache/README.md) now closes that
+observed **Linux** reproduction without an added mask or tolerance; physical
+GPU and Windows acceptance remain separate.
+
+The preceding [native run 37100591834](https://github.com/ThereptileII/Work/actions/runs/37100591834)
+passed all 1,569 executed maintained-curl upstream tests, then stopped at
+private-adapter dependency-manifest resolution before application compilation.
+It was not an application crash. Explicit producer roots and the complete copied
+header closure now pass [fresh native proof](evidence/scrum259-native-prefix-proof/README.md):
+17 producer/package cases, 15 preparation cases, 16 wiring refusals and 38 actual
+harmless-DLL loader groups. The independently verified artifact belongs to the
+same `d2787c6` source. The [full replacement qualification](https://github.com/ThereptileII/Work/actions/runs/37106815245)
+is running once at that exact commit. Actual private DLL linking/loading,
+Windows font selection, final package/installer and boat rendering are still
+pending. No candidate has been installed on the boat in this cycle. A subsequent source
+review found that short-light objects can carry an explicit ORIENT even outside
+the conditional directional branch. The current white bitmap replacement must
+preserve that original vector cue. SCRUM-264 is correcting this with untouched
+stock light definitions and verified-instance raster aliases only when ORIENT
+is absent, alongside prototype-shaped red/green short-light variants. This is a
+separate pending correction; `d2787c6` remains prerequisite/diagnostic evidence
+and is not approved for boat deployment while this boundary is unresolved.
 
 The user's additional October 3 feedback is represented by SCRUM-263–267.
 The [approved header wordmark is now 124 DIP](design/reviews/scrum263-header-typeface.md),
@@ -44,7 +60,13 @@ actual native HDC face probe is now in the Windows drawing gate. Its fresh
 Windows result and generic ENC/user-font review remain open. Eleven supplied
 [modern marine/light glyphs](evidence/scrum264-seamark-art/README.md) now have
 bounded resource/loader proof: eight classified lateral aliases, isolated danger,
-safe water and the prototype light circle/rays. The special-purpose buoy remains
+safe water and the prototype light circle/rays. An additional
+[16 official IHO S-64 chart captures](evidence/scrum264-s64-9632421-linux/README.md)
+now verify actual ordinary lateral, isolated-danger, safe-water, four cardinal
+and white-light raster selection in software/Mesa OpenGL, with twelve normal
+application exits. The ordinary red/green short flares and classified long-range
+light treatment remain visibly stock. Preferred-channel actual-chart coverage
+and full native/boat recognition remain open. The special-purpose buoy remains
 stock because its actual white/orange classification cannot safely be painted
 as the prototype's yellow mark. Generic beacons and unproved physical topmark
 composition also remain open.
@@ -62,8 +84,9 @@ effective Simplified table only inside a verified SKAGER presentation instance.
 The saved OpenCPN preference remains unchanged for Standard and Legacy. Actual
 render/query/cache consumers share the same effective selection; diagnostics
 expose saved and effective values. Focused compiled-method/object checks pass.
-The combined application, retained-preference round trip, whole GL theme return,
-actual Windows fonts and boat rendering still require fresh qualification.
+The combined Linux application now proves the retained-preference round trip and
+whole GL theme return. Actual private-renderer execution, Windows fonts and boat
+rendering still require fresh qualification.
 
 ### Preceding integrated candidate and corrected Windows prerequisite
 

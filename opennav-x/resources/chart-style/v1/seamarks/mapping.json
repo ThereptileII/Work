@@ -260,12 +260,12 @@
       ],
       "sourceNodeSha256": "64678f1bc372712a728b361a1ecfe4e09f4a435b532d385f580c78a5df28b7b0"
     },
-    "LIGHTS13": {
-      "source": "LIGHTS13",
-      "sourceRcid": 1398,
-      "rcid": 1398,
+    "XNLIT011": {
+      "source": "LIGHTS11",
+      "sourceRcid": 1396,
+      "rcid": 60009,
       "original": [
-        278,
+        247,
         175,
         22,
         22
@@ -284,7 +284,65 @@
         12,
         14
       ],
-      "sourceNodeSha256": "d61559cd61187c3f7ad6239313d6447223ddf6759ac90d4d842a3893e4fada2b"
+      "sourceNodeSha256": "977f81d6fa908c5692cf40920fa558fe054d4200590ae11983f7aef0e5e6fc37",
+      "prototypeSource": "LIGHTS13",
+      "rayRole": "--mark-red"
+    },
+    "XNLIT012": {
+      "source": "LIGHTS12",
+      "sourceRcid": 1397,
+      "rcid": 60010,
+      "original": [
+        278,
+        205,
+        22,
+        22
+      ],
+      "originalPivot": [
+        0,
+        0
+      ],
+      "tile": [
+        596,
+        1160,
+        24,
+        28
+      ],
+      "pivot": [
+        12,
+        14
+      ],
+      "sourceNodeSha256": "ca9e88ac3770cb41593cfa3b8e98ef476e44eeefff59811824c517e4bf3ebfd9",
+      "prototypeSource": "LIGHTS13",
+      "rayRole": "--mark-green"
+    },
+    "XNLIT013": {
+      "source": "LIGHTS13",
+      "sourceRcid": 1398,
+      "rcid": 60011,
+      "original": [
+        278,
+        175,
+        22,
+        22
+      ],
+      "originalPivot": [
+        0,
+        0
+      ],
+      "tile": [
+        628,
+        1160,
+        24,
+        28
+      ],
+      "pivot": [
+        12,
+        14
+      ],
+      "sourceNodeSha256": "d61559cd61187c3f7ad6239313d6447223ddf6759ac90d4d842a3893e4fada2b",
+      "prototypeSource": "LIGHTS13",
+      "rayRole": "--mark-yellow"
     }
   },
   "selectors": {

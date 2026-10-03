@@ -9,15 +9,17 @@ from chart_raster_ink import decode,derive
 from chart_day_neutral_ink import derive_day
 
 # Independent oracle, not imported from the production mapping/helper.
-ALIASES=('XNLAT013','XNLAT014','XNLAT023','XNLAT024','XNCAN072','XNCAN073','XNCON066','XNCON067')
-ORIGINALS=('BOYLAT13','BOYLAT14','BOYLAT23','BOYLAT24','BOYCAN72','BOYCAN73','BOYCON66','BOYCON67')
-NAMES=ALIASES+('BOYISD12','BOYSAW12','LIGHTS13')
+ALIASES=('XNLAT013','XNLAT014','XNLAT023','XNLAT024','XNCAN072','XNCAN073','XNCON066','XNCON067','XNLIT011','XNLIT012','XNLIT013')
+ORIGINALS=('BOYLAT13','BOYLAT14','BOYLAT23','BOYLAT24','BOYCAN72','BOYCAN73','BOYCON66','BOYCON67','LIGHTS11','LIGHTS12','LIGHTS13')
+NAMES=ALIASES[:8]+('BOYISD12','BOYSAW12')+ALIASES[8:]
 SELECTED=('XNCON066','XNCON067','XNCAN072','XNCAN073','XNCAN072','XNCAN073','XNCON066','XNCON067',
           'XNLAT014','XNLAT013','XNLAT024','XNLAT023','XNLAT024','XNLAT023','XNLAT014','XNLAT013')
 
 def restore_tiles(before,after):
-    # Exactly eleven transparent 24x28 slots. No broad atlas row exclusions.
-    for x in (244,276,308,340,372,404,436,468,500,532,564):
+    from chart_construction_hatch_tests import restore_hatch
+    restore_hatch(before,after)
+    # Exactly thirteen transparent 24x28 slots. No broad atlas row exclusions.
+    for x in (244,276,308,340,372,404,436,468,500,532,564,596,628):
         for y in range(1160,1188):
             i=(y*1500+x)*4;after[i:i+96]=before[i:i+96]
 
@@ -49,13 +51,15 @@ def verify_seamarks(source,output,metadata,check):
         check(n.find('bitmap').attrib=={'width':'24','height':'28'})
         check(n.find('bitmap/pivot').attrib=={'x':'12','y':'14'})
         check(n.find('bitmap/graphics-location').attrib=={'x':str(244+32*i),'y':'1160'})
-        original=stock.find("symbols/symbol[name='"+(ORIGINALS[i] if i<8 else name)+"']")
+        source_name=ORIGINALS[i if i<8 else i-2] if name in ALIASES else name
+        original=stock.find("symbols/symbol[name='"+source_name+"']")
         restored=copy.deepcopy(n)
-        if i<8:
-            check(n.get('RCID')==str(60001+i) and n.get('RCID') not in original_rcids)
-            check(ET.tostring(current.find("symbols/symbol[name='"+ORIGINALS[i]+"']"))==ET.tostring(original))
-            restored.set('RCID',original.get('RCID'));restored.find('name').text=ORIGINALS[i]
-        if name=='LIGHTS13':
+        if name in ALIASES:
+            alias_index=ALIASES.index(name)
+            check(n.get('RCID')==str(60001+alias_index) and n.get('RCID') not in original_rcids)
+            check(ET.tostring(current.find("symbols/symbol[name='"+source_name+"']"))==ET.tostring(original))
+            restored.set('RCID',original.get('RCID'));restored.find('name').text=source_name
+        if name.startswith('XNLIT'):
             check(n.findtext('prefer-bitmap')=='yes' and original.findtext('prefer-bitmap')=='no')
             restored.find('prefer-bitmap').text='no'
         restored.find('bitmap').attrib=original.find('bitmap').attrib.copy()
@@ -75,11 +79,12 @@ def verify_seamarks(source,output,metadata,check):
             for n in svg.iter():n.tag=n.tag.rsplit('}',1)[-1]
             check(svg.attrib=={'width':'24','height':'28','viewBox':'0 0 24 28'})
             outer=svg.find('g');check(outer.get('transform')=='translate(12 14)')
-            marker=outer.find('g');check(marker.get('transform')==('scale(0.78125)' if name=='LIGHTS13' else 'scale(0.84375)'))
-            if name=='LIGHTS13':
+            marker=outer.find('g');check(marker.get('transform')==('scale(0.78125)' if name.startswith('XNLIT') else 'scale(0.84375)'))
+            if name.startswith('XNLIT'):
                 check(marker.find('circle').attrib=={'class':'lighthouse-point','r':'3.5'})
                 check(marker.find('path').attrib=={'class':'lighthouse-rays','d':'M0-7V-10M7 0H10M0 7V10M-7 0H-10'})
                 check('.lighthouse-point{fill:'+ink('floating')+';stroke:'+ink('chart-text') in svg.findtext('style'))
+                check('.lighthouse-rays{stroke:'+ink('mark-'+{'XNLIT011':'red','XNLIT012':'green','XNLIT013':'yellow'}[name])+';stroke-width:1.3}' in svg.findtext('style'))
             else:
                 shape=marker.find('g');nodes=list(shape);head=shape.find('g')
                 check([n.get('stroke') for n in nodes[1:1+len(bands[i])]]==[ink('mark-'+b) for b in bands[i]])
@@ -88,10 +93,10 @@ def verify_seamarks(source,output,metadata,check):
                 elif i in (2,3,4,5):check(head.find('rect').attrib=={'x':'-2.6','y':'-11','width':'5.2','height':'4.5','rx':'.4'})
                 elif i==8:check([n.attrib for n in head]==[{'cy':'-12','r':'2.2'},{'cy':'-6','r':'2.2'}])
                 elif i==9:check(head.find('circle').attrib=={'cy':'-9','r':'3'})
-    check(len(current.find('symbols'))==len(stock.find('symbols'))+8)
+    check(len(current.find('symbols'))==len(stock.find('symbols'))+11)
     # No physical topmark, special-purpose (including actual white/orange),
     # inland beacon, Paper Chart body, other light or cardinal node changes here.
-    for name in ('BOYSPP11','BCNGEN01','LIGHTS11','LIGHTS12','LITDEF11','LIGHTS81','LIGHTS82','QUESMRK1'):
+    for name in ('BOYSPP11','BCNGEN01','LIGHTS11','LIGHTS12','LIGHTS13','LITDEF11','LIGHTS81','LIGHTS82','QUESMRK1'):
         check([ET.tostring(n) for n in current.findall("symbols/symbol[name='"+name+"']")]==[ET.tostring(n) for n in stock.findall("symbols/symbol[name='"+name+"']")])
     _,day=decode((source/'rastersymbols-day.png').read_bytes())
     for table,file,neutral in [('DAY_BRIGHT','rastersymbols-day.png',None),('DUSK','rastersymbols-dusk.png',(54,54,54)),('NIGHT','rastersymbols-dark.png',(27,27,27))]:
@@ -123,8 +128,8 @@ def verify_seamarks(source,output,metadata,check):
     mutations=[
         lambda t:t.find("symbols/symbol[name='XNLAT013']").set('RCID','1270'),
         lambda t:setattr(t.find("symbols/symbol[name='LIGHTS13']/vector/HPGL"),'text','PU0,0;'),
-        lambda t:t.find("symbols/symbol[name='LIGHTS13']/bitmap/pivot").set('x','0'),
-        lambda t:setattr(t.find("symbols/symbol[name='LIGHTS13']/prefer-bitmap"),'text','no'),
+        lambda t:t.find("symbols/symbol[name='XNLIT013']/bitmap/pivot").set('x','0'),
+        lambda t:setattr(t.find("symbols/symbol[name='XNLIT013']/prefer-bitmap"),'text','no'),
         lambda t:setattr(t.find("lookups/lookup[@id='1030']/attrib-code"),'text','BOYSHP2'),
         lambda t:setattr(t.find("lookups/lookup[@id='1058']/instruction"),'text','SY(XNCAN072)'),
         lambda t:t.find('symbols').append(copy.deepcopy(t.find("symbols/symbol[name='XNLAT013']"))),

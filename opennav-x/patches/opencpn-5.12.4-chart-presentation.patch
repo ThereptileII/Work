@@ -2406,3 +2406,69 @@ diff --git a/gui/src/chcanv.cpp b/gui/src/chcanv.cpp
      v[_T("OpenCPN S52PLIB BoundaryStyle")] = ps52plib->m_nBoundaryStyle;
      v[_T("OpenCPN S52PLIB ColorShades")] =
          S52_getMarinerParam(S52_MAR_TWO_SHADES);
+
+diff --git a/libs/s52plib/src/s52plib.cpp b/libs/s52plib/src/s52plib.cpp
+--- a/libs/s52plib/src/s52plib.cpp
++++ b/libs/s52plib/src/s52plib.cpp
+@@ -69,6 +69,9 @@
+ 
+ #include "s52plib.h"
+ #ifdef OPENNAV_X
++#include "integration/ChartLightSymbol.h"
++#endif
++#ifdef OPENNAV_X
+ #include "integration/ChartNameText.h"
+ #endif
+ #include "mygeom.h"
+@@ -3487,12 +3490,29 @@
+     wxPoint r, r1;
+     GetPointPixSingle(rzRules, rzRules->obj->y, rzRules->obj->x, &r);
+ 
++    // Keep original vectors and metadata for any actual ORIENT. Owned aliases
++    // are stable library-owned Rules with independent raster caches; never
++    // rewrite the shared conditional Rule or copy its cache ownership.
++    Rule *paintRule = rules->razRule;
++#ifdef OPENNAV_X
++    const char *alias = opennav::integration::PresentationLightAlias(
++        m_presentationLightSymbols, rzRules->obj->FeatureName,
++        paintRule->name.SYNM, rzRules->obj->att_array, rzRules->obj->n_attr);
++    if (alias && paintRule->definition.SYDF == 'V') {
++      auto found = _symb_sym->find(wxString::FromUTF8(alias));
++      if (found != _symb_sym->end() && found->second &&
++          found->second->definition.SYDF == 'R' &&
++          !memcmp(found->second->name.SYNM, alias, 8))
++        paintRule = found->second;
++    }
++#endif
++
+     //  Render a raster or vector symbol, as specified by LUP rules
+-    if (rules->razRule->definition.SYDF == 'V') {
+-      RenderHPGL(rzRules, rules->razRule, r, angle, m_ChartScaleFactorExp);
++    if (paintRule->definition.SYDF == 'V') {
++      RenderHPGL(rzRules, paintRule, r, angle, m_ChartScaleFactorExp);
+     } else {
+-      if (rules->razRule->definition.SYDF == 'R')
+-        RenderRasterSymbol(rzRules, rules->razRule, r, angle);
++      if (paintRule->definition.SYDF == 'R')
++        RenderRasterSymbol(rzRules, paintRule, r, angle);
+     }
+   }
+ 
+diff --git a/libs/s52plib/src/s52plib.h b/libs/s52plib/src/s52plib.h
+--- a/libs/s52plib/src/s52plib.h
++++ b/libs/s52plib/src/s52plib.h
+@@ -353,6 +353,7 @@
+   }
+ 
+   // Todo accessors
++  void EnablePresentationLightSymbols() { m_presentationLightSymbols = true; }
+   LUPname m_nSymbolStyle;
+   LUPname m_nBoundaryStyle;
+   bool m_bOK;
+@@ -427,5 +428,6 @@
+   TextFontResolver m_textFontResolver = nullptr;
+   bool m_useS52DefaultTextColor = false;
+   bool m_presentationSimpleSymbols = false;
++  bool m_presentationLightSymbols = false;
+   int S52_load_Plib(const wxString &PLib, bool b_forceLegacy, bool allowCwdOverride = true);
+   bool S52_flush_Plib();

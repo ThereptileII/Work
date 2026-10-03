@@ -347,9 +347,20 @@ boat acceptance remains open.
 
 The owned resource derivative now maps the sixteen exact Simplified marine
 BOYLAT selectors 1029–1044 to eight private ordinary/preferred-channel glyphs,
-and gives BOYISD12/BOYSAW12 the supplied prototype Simplified artwork. LIGHTS13
-uses the centered prototype circle/rays with an explicit raster preference;
-its color/sector/range conditional procedures remain unchanged. Source lookup
+and gives BOYISD12/BOYSAW12 the supplied prototype Simplified artwork. Verified
+core/private presentation instances select XNLIT011/012/013 compact light aliases
+only when the actual LIGHTS object has no ORIENT attribute. The original
+LIGHTS11/12/13 vectors, pivots and bounds remain stock, including the correction
+to the earlier unconditional LIGHTS13 bitmap preference. Any ORIENT presence
+(including malformed/non-finite values) retains upstream vector/angle handling;
+this guard does not validate or sanitize the attribute. Missing/invalid aliases,
+Standard and disabled integrations retain the original Rule.
+
+The supplied package maps LIGHTS13 only. Red/green are explicit derivatives of
+its exact circle/rays geometry using prototype --mark-red/--mark-green for the
+rays; neutral point fill/ring and 25/32 scale remain identical. No global
+LITRD/LITGN recoloring occurs. Color/sector/range conditional procedures and
+co-located buoy/TOPMAR composition remain unchanged. Source lookup
 order, physical TOPMAR, unknown/inland/Paper Chart users and original glyphs are
 preserved. All owned colors apply the prototype Night brightness exactly once.
 
@@ -358,3 +369,7 @@ actual white/orange buoys must not acquire a yellow/X mark. Generic beacon
 composition, remaining Paper Chart art and actual native/private-chart display
 qualification remain open. See `docs/evidence/scrum264-seamark-art/README.md`
 and the complete preceding family audit for exact boundaries and evidence.
+
+The orientation correction and focused core/private source evidence are in
+`docs/evidence/scrum264-oriented-light-aliases/README.md`. Actual revised
+red/green ENC captures and native/private-chart/boat qualification remain open.

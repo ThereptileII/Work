@@ -165,6 +165,7 @@ s52plib *CreateChartPresentation(const wxString &stock_path,
         // Presentation-local: retain the user's saved Paper/Simplified choice
         // for Standard and Legacy, while this verified style uses its artwork.
         library->EnablePresentationSimplifiedSymbols();
+        library->EnablePresentationLightSymbols();
         library->SetTextFontResolver(GeographicNameFont);
         library->SetSoundingFontResolver(ChartSoundingFont);
         active = true;

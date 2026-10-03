@@ -1,0 +1,26 @@
+{
+  "docs/evidence/skager-chart-9632421-linux/pier57/software/SKAGER-Day.png": {
+    "bytes": 132497,
+    "sha256": "657462070ee0b249fb25cbd872b4b7d6b43e4d2b6d8a655fff27cf9d4715b6a4"
+  },
+  "docs/evidence/skager-chart-9632421-linux/pier57/software/SKAGER-Day.json": {
+    "bytes": 28518,
+    "sha256": "ec2276d8c2440c31e59d9b5b1dbb9d3611cfd2ba530872d79f3b962af3929d70"
+  },
+  "docs/evidence/skager-chart-9632421-linux/pier57/software/report.json": {
+    "bytes": 41028,
+    "sha256": "eb2de73ef0763f89dd905ae89a79c9b0733b5f45531a1a7b7ac30a69293ded5e"
+  },
+  "docs/evidence/skager-chart-9632421-linux/pier57/opengl/SKAGER-Day.png": {
+    "bytes": 96453,
+    "sha256": "56dd5dc1294a97ac2b7e12011eba7a60e4e3dbd3f2f4e0bde16a85646857e5c3"
+  },
+  "docs/evidence/skager-chart-9632421-linux/pier57/opengl/SKAGER-Day.json": {
+    "bytes": 28517,
+    "sha256": "1563d4cd0802641e0a4a3eabcd7689356769f41f4bfca8950e5bfa947605189d"
+  },
+  "docs/evidence/skager-chart-9632421-linux/pier57/opengl/report.json": {
+    "bytes": 41000,
+    "sha256": "86d0bebc68b412101a43d31ca385c943e70347ef6995a423b283c5a894b01dfa"
+  }
+}

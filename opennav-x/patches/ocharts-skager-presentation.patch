@@ -750,3 +750,69 @@
        top = razRules[i][point_type];
  
        while (top != NULL) {
+
+diff --git a/libs/s52plib/src/s52plib.cpp b/libs/s52plib/src/s52plib.cpp
+--- a/libs/s52plib/src/s52plib.cpp
++++ b/libs/s52plib/src/s52plib.cpp
+@@ -47,6 +47,9 @@
+ 
+ #include "s52plib.h"
+ #ifdef SKAGER_OCHARTS_ADAPTER
++#include "integration/ChartLightSymbol.h"
++#endif
++#ifdef SKAGER_OCHARTS_ADAPTER
+ #include "integration/ChartNameText.h"
+ #endif
+ #include "mygeom.h"
+@@ -3465,12 +3468,29 @@
+     wxPoint r, r1;
+     GetPointPixSingle(rzRules, rzRules->obj->y, rzRules->obj->x, &r);
+ 
++    // Keep original vectors and metadata for any actual ORIENT. Owned aliases
++    // are stable library-owned Rules with independent raster caches; never
++    // rewrite the shared conditional Rule or copy its cache ownership.
++    Rule *paintRule = rules->razRule;
++#ifdef SKAGER_OCHARTS_ADAPTER
++    const char *alias = opennav::integration::PresentationLightAlias(
++        m_presentationLightSymbols, rzRules->obj->FeatureName,
++        paintRule->name.SYNM, rzRules->obj->att_array, rzRules->obj->n_attr);
++    if (alias && paintRule->definition.SYDF == 'V') {
++      auto found = _symb_sym->find(wxString::FromUTF8(alias));
++      if (found != _symb_sym->end() && found->second &&
++          found->second->definition.SYDF == 'R' &&
++          !memcmp(found->second->name.SYNM, alias, 8))
++        paintRule = found->second;
++    }
++#endif
++
+     //  Render a raster or vector symbol, as specified by LUP rules
+-    if (rules->razRule->definition.SYDF == 'V') {
+-      RenderHPGL(rzRules, rules->razRule, r, angle, m_ChartScaleFactorExp);
++    if (paintRule->definition.SYDF == 'V') {
++      RenderHPGL(rzRules, paintRule, r, angle, m_ChartScaleFactorExp);
+     } else {
+-      if (rules->razRule->definition.SYDF == 'R')
+-        RenderRasterSymbol(rzRules, rules->razRule, r, angle);
++      if (paintRule->definition.SYDF == 'R')
++        RenderRasterSymbol(rzRules, paintRule, r, angle);
+     }
+   }
+ 
+diff --git a/libs/s52plib/src/s52plib.h b/libs/s52plib/src/s52plib.h
+--- a/libs/s52plib/src/s52plib.h
++++ b/libs/s52plib/src/s52plib.h
+@@ -348,6 +348,7 @@
+     return m_presentationSimpleSymbols ? SIMPLIFIED : m_nSymbolStyle;
+   }
+ 
++  void EnablePresentationLightSymbols() { m_presentationLightSymbols = true; }
+   LUPname m_nSymbolStyle;
+   LUPname m_nBoundaryStyle;
+   bool m_bOK;
+@@ -422,5 +423,6 @@
+   TextFontResolver m_textFontResolver = nullptr;
+   bool m_useS52DefaultTextColor = false;
+   bool m_presentationSimpleSymbols = false;
++  bool m_presentationLightSymbols = false;
+   int S52_load_Plib(const wxString &PLib, bool b_forceLegacy, bool allowCwdOverride = true);
+   bool S52_flush_Plib();

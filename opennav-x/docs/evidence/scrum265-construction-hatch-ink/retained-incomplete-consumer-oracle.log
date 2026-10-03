@@ -1,0 +1,11 @@
+Traceback (most recent call last):
+  File "/home/standard/Projects/X-nav-worktrees/scrum265-construction-hatch/tests/chart_construction_hatch_tests.py", line 99, in <module>
+    verify(a.source,a.generated,check)
+    ~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/standard/Projects/X-nav-worktrees/scrum265-construction-hatch/tests/chart_construction_hatch_tests.py", line 44, in verify
+    check(users==['181','522','830','1253'])
+    ~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/standard/Projects/X-nav-worktrees/scrum265-construction-hatch/tests/chart_construction_hatch_tests.py", line 98, in check
+    count+=1;assert value, 'Construction hatch check '+str(count)
+                    ^^^^^
+AssertionError: Construction hatch check 5

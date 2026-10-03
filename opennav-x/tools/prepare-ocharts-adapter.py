@@ -23,7 +23,7 @@ LOCAL = ('src/plugin-adapters/ChartPresentationBindingV1.h',
          'src/integration/ChartNameTypography.h', 'src/integration/ChartNameText.h',
          'src/integration/ChartNameSpacing.h',
          'src/integration/ChartNameAlphaWindows.cpp',
-         'src/integration/ChartLightLabel.h', 'src/integration/ChartSoundingFont.h',
+         'src/integration/ChartLightLabel.h', 'src/integration/ChartLightSymbol.h', 'src/integration/ChartSoundingFont.h',
          'src/integration/ChartCanvasInk.h', 'src/ui/Theme.h')
 RECIPE = 'cmake/ocharts-adapter/CMakeLists.txt'
 INPUTS = (LOCK, RECIPE, 'tools/prepare-ocharts-adapter.py',

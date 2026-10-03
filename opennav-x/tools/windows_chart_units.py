@@ -143,7 +143,7 @@ def compile_chart_units(args, evidence, api):
         'tools/windows-chart-headers.lock.json', 'tools/windows-prototype-headers.lock.json',
         'tools/windows-wx.lock.json', 'tools/windows-curl.lock.json',
         'tools/generate-xnav-chart-style.py', 'tools/chart_raster_ink.py', 'tools/chart_day_neutral_ink.py', 'tools/chart_anchor_art.py',
-        'tools/chart_cable_paint.py', 'tools/chart_structure_paint.py', 'tools/chart_service_art.py', 'tools/chart_cardinal_art.py', 'tools/chart_seamark_art.py',
+        'tools/chart_cable_paint.py', 'tools/chart_structure_paint.py', 'tools/chart_construction_hatch.py', 'tools/chart_service_art.py', 'tools/chart_cardinal_art.py', 'tools/chart_seamark_art.py',
         'docs/design/prototype-tokens.json', 'docs/design/prototype/src/chart-marker-art.js',
         'docs/design/prototype/src/chart-symbols.js', 'docs/design/prototype/src/chart-symbols.css',
         'docs/design/prototype/src/style.css', 'docs/design/prototype/src/seamarks.json'}

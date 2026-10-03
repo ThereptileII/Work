@@ -30,6 +30,16 @@ def method(source, name):
     return source[match.start():end]+'\n'
 
 
+def function(text, signature):
+    start=text.index(signature); opening=text.index('{',start)
+    while ';' in text[start:opening].split('\n',1)[0]:
+        start=text.index(signature,start+len(signature));opening=text.index('{',start)
+    depth=1; end=opening+1
+    while depth:
+        depth += (text[end]=='{')-(text[end]=='}'); end+=1
+    return text[start:end]+'\n'
+
+
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('--source', type=Path, required=True)
@@ -41,6 +51,7 @@ def main():
     parser.add_argument('--cardinals', action='store_true', help='SCRUM-256 classified Simplified cardinal glyphs')
     parser.add_argument('--seamarks', action='store_true', help='SCRUM-264 exact marine aliases and LIGHTS13')
     parser.add_argument('--private-source', type=Path, help='Optional pinned o-charts source for exact shared loader-body comparison')
+    parser.add_argument('--private-render-source', type=Path, help='Patched private renderer for exact RenderSY/enable-body comparison')
     args = parser.parse_args()
     assert sum((args.services,args.cardinals,args.seamarks)) <= 1
     output = args.output.resolve(); output.mkdir(parents=True,exist_ok=True)
@@ -73,6 +84,33 @@ def main():
         start = conditional.index('wxString _selSYcol(')
         end = conditional.index('\nstatic double _DEPVAL01',start)
         (output/'light-selector-method.inc').write_text(conditional[start:end])
+        render=function((source/'libs/s52plib/src/s52plib.cpp').read_text(),'int s52plib::RenderSY(')
+        enable=function((source/'libs/s52plib/src/s52plib.h').read_text(),'void EnablePresentationLightSymbols(')
+        (output/'light-enable-method.inc').write_text(enable)
+        methods={signature:function(conditional,signature) for signature in (
+            'bool GetDoubleAttr(S57Obj *obj,', 'bool GetStringAttr(S57Obj *obj,',
+            'static int _parseList(', 'static void *LIGHTS06(void *param)\n')}
+        # Production object lookup and light dispatch; description text generation
+        # is outside this fixture and receives an empty deterministic callback.
+        index=function((source/'gui/src/s57obj.cpp').read_text(),'int S57Obj::GetAttributeIndex(')
+        (output/'light-render-methods.inc').write_text(index+''.join(methods.values())+render)
+        if args.private_source:
+            private=(args.private_source/'libs/s52plib/src/s52cnsy.cpp').read_text()
+            for signature,body in methods.items():
+                assert body==function(private,signature), 'Private light conditional differs: '+signature
+        private_render_proof=None
+        if args.private_render_source:
+            private_render=function((args.private_render_source/'libs/s52plib/src/s52plib.cpp').read_text(),'int s52plib::RenderSY(')
+            private_enable=function((args.private_render_source/'libs/s52plib/src/s52plib.h').read_text(),'void EnablePresentationLightSymbols(')
+            assert private_render.replace('SKAGER_OCHARTS_ADAPTER','OPENNAV_X')==render
+            assert private_enable==enable
+            private_render_proof=hashlib.sha256(private_render.encode()).hexdigest()
+        (output/'light-render-receipt.json').write_text(json.dumps({
+            'renderBodySha256':hashlib.sha256(render.encode()).hexdigest(),
+            'privateRenderBodySha256':private_render_proof,
+            'conditionalBodies':{k:hashlib.sha256(v.encode()).hexdigest() for k,v in methods.items()},
+            'limits':'Actual loader/RenderSY/conditional bodies; fixture objects and recorded painter calls. No full canvas, GL draw, plugin or boat.'},indent=2)+'\n')
+
 
     svg = ROOT/'resources/chart-style/v1/anchorage/ACHARE51.svg'
     png = output/'prototype-anchor.png'
@@ -88,7 +126,7 @@ def main():
                 subprocess.run(['rsvg-convert',str(ROOT/'resources/chart-style/v1/cardinals'/(file+'.svg')),'-o',str(output/(file+'.png'))],check=True)
         png = output
     if args.seamarks:
-        names=('XNLAT013','XNLAT014','XNLAT023','XNLAT024','XNCAN072','XNCAN073','XNCON066','XNCON067','BOYISD12','BOYSAW12','LIGHTS13')
+        names=('XNLAT013','XNLAT014','XNLAT023','XNLAT024','XNCAN072','XNCAN073','XNCON066','XNCON067','BOYISD12','BOYSAW12','XNLIT011','XNLIT012','XNLIT013')
         for name in names:
             for theme in ('DAY_BRIGHT','DUSK','NIGHT'):
                 file=name+'-'+theme
@@ -98,7 +136,7 @@ def main():
     cflags = shlex.split(subprocess.check_output(config+['--cxxflags'],text=True))
     libs = shlex.split(subprocess.check_output(config+['--libs','core,base'],text=True))
     command = ['g++','-std=c++17','-Wall','-Wextra','-Werror','-Wno-unused-parameter','-Wno-deprecated-copy',
-               '-DocpnUSE_GL',*cflags]
+               '-DocpnUSE_GL',*(['-DOPENNAV_X'] if args.seamarks else []),*cflags]
     for directory in ('libs/s52plib/src','libs/geoprim/src','libs/pugixml'):
         command += ['-I'+str(source/directory)]
     command += ['-I'+str(ROOT/'src'),'-I'+str(output),str(ROOT/('tests/chart_seamark_loader_test.cpp' if args.seamarks else 'tests/chart_cardinal_loader_test.cpp' if args.cardinals else 'tests/chart_service_loader_test.cpp' if args.services else 'tests/chart_anchor_loader_test.cpp')),
@@ -120,6 +158,24 @@ def main():
     (output/'loader.json').write_text(json.dumps(evidence,indent=2)+'\n')
     print(result.stdout+result.stderr,end='')
     result.check_returncode()
+    if args.seamarks:
+        original=(output/'light-render-methods.inc').read_text()
+        mutations={
+            'disabled-instance':original.replace('m_presentationLightSymbols, rzRules->obj->FeatureName,','true, rzRules->obj->FeatureName,'),
+            'ignore-orientation':original.replace('paintRule->name.SYNM, rzRules->obj->att_array, rzRules->obj->n_attr);','paintRule->name.SYNM, nullptr, 0);')}
+        try:
+            for name,changed in mutations.items():
+                assert changed!=original
+                (output/'light-render-methods.inc').write_text(changed)
+                subprocess.run(command,check=True,capture_output=True)
+                negative=subprocess.run([str(output/'anchor-loader-test'),str(args.generated.resolve()),str(png),str(output)],env=env,text=True,capture_output=True)
+                (output/(name+'-negative.log')).write_text(negative.stdout+negative.stderr)
+                assert negative.returncode==1 and 'Seamark loader check' in negative.stderr
+        finally:
+            (output/'light-render-methods.inc').write_text(original)
+        # Leave the retained executable corresponding to the unmodified source.
+        subprocess.run(command,check=True,capture_output=True)
+        print('Actual RenderSY negative controls rejected disabled-instance and ORIENT bypasses')
 
 
 if __name__ == '__main__':

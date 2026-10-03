@@ -1,0 +1,332 @@
+{
+  "localSource": "9632421f701c5ec74d7a1360bc713c0034faf9af",
+  "remoteSource": "d2787c649268809a2d99a72c6ad3e104d504f461",
+  "run": 37105753486,
+  "job": 111153804937,
+  "artifact": 11267139081,
+  "artifactIdentity": {
+    "bytes": 17262,
+    "sha256": "293784c4c0772336508f65162ab4880ea766a162f7ab534d6db19ba579108c27"
+  },
+  "githubDigestMatched": true,
+  "zipEntries": 35,
+  "allCrcsPassed": true,
+  "checks": {
+    "producerPackage": 17,
+    "preparation": 15,
+    "wiringRejections": 16,
+    "nativeLoader": 38
+  },
+  "runnerSourceComparisons": {
+    "src/integration/OChartsModuleLoader.cpp": {
+      "match": true,
+      "form": "Windows CRLF",
+      "bytes": 7868,
+      "sha256": "3d0afe5241f42b7acb0e6f702c1258b9afaa02bb81be0102d2584d3cca24ed47"
+    },
+    "src/integration/OChartsModuleLoader.h": {
+      "match": true,
+      "form": "Windows CRLF",
+      "bytes": 1296,
+      "sha256": "38cdda23e1a8c9c516b5b53b9a5ee8d76285adf520395418332bf51327690896"
+    },
+    "src/integration/PluginPresentationLoader.cpp": {
+      "match": true,
+      "form": "Windows CRLF",
+      "bytes": 427,
+      "sha256": "a06d7e0d430172ab4e829416bcb882a27300a6d857dd2858c859280832cd1df4"
+    },
+    "src/integration/PluginPresentationLoader.h": {
+      "match": true,
+      "form": "Windows CRLF",
+      "bytes": 709,
+      "sha256": "e25cc7ea7856768c41951a16edaf4ea9386213be4a0fdfafa4907764b0764213"
+    },
+    "src/integration/PluginPresentationFallback.h": {
+      "match": true,
+      "form": "Windows CRLF",
+      "bytes": 1721,
+      "sha256": "a4ba741c17df9a73f70dae515c3bc363088d397b34cc429a9fc4eb68b72fd525"
+    },
+    "src/plugin-adapters/ChartPresentationBindingV1.h": {
+      "match": true,
+      "form": "Windows CRLF",
+      "bytes": 2315,
+      "sha256": "4f8b4e10d8e302c868e20b9b72241a8215cceac3d8fad9ad9e8c62634492ef7e"
+    },
+    "src/plugin-adapters/ocharts/BindingState.h": {
+      "match": true,
+      "form": "Windows CRLF",
+      "bytes": 4088,
+      "sha256": "c10e46310dc72621d3fac2ac272ed282aab1feb5c565db412ebb2c23062fc870"
+    },
+    "tests/windows_ocharts_loader/CMakeLists.txt": {
+      "match": true,
+      "form": "Windows CRLF",
+      "bytes": 2177,
+      "sha256": "08b985909e533fdf10d25d0f16ddddef3d4bbea2c6a2fdde732148fdb485d114"
+    },
+    "tests/windows_ocharts_loader/fixture.cpp": {
+      "match": true,
+      "form": "Windows CRLF",
+      "bytes": 3507,
+      "sha256": "618751e07b73799478ee3b90d2e5edff3d1f7bf34f2142522f0104d8ccc93f35"
+    },
+    "tests/windows_ocharts_loader/loader_test.cpp": {
+      "match": true,
+      "form": "Windows CRLF",
+      "bytes": 18523,
+      "sha256": "5238ae39e8f4cba7095908fc3773687e1d18904693c884b45208737a3ba1aa00"
+    },
+    "tests/windows_ocharts_loader/inputs.lock.json": {
+      "match": true,
+      "form": "Windows CRLF",
+      "bytes": 1183,
+      "sha256": "7520333aba2a38f2bca5f4316a5faa8b229dbbb057e84dc1a57e8882bc53feae"
+    },
+    "tools/test-ocharts-loader-windows.py": {
+      "match": true,
+      "form": "Windows CRLF",
+      "bytes": 9980,
+      "sha256": "d4b9f25705ca2d440c171adaeacc91b351c462fe1d149294c700527f938a6100"
+    },
+    "tools/test-windows-changed-units.py": {
+      "match": true,
+      "form": "Windows CRLF",
+      "bytes": 37232,
+      "sha256": "f7a3084410a11700bb06670222b71d78c9bcc1f417599dcb030c71a56714b180"
+    },
+    "tools/windows-wx.lock.json": {
+      "match": true,
+      "form": "Windows CRLF",
+      "bytes": 1017,
+      "sha256": "2fb563c4de7819d4b10d7a567e59510cd033c3b9cb55ce4ebb654964da60267f"
+    },
+    "../.github/workflows/skager-ocharts-loader.yml": {
+      "match": true,
+      "form": "Windows CRLF",
+      "bytes": 1793,
+      "sha256": "ce3caf488143ea0c2fc6514093c752eb1a5d34396d63fe80b95707bd1d19248c"
+    }
+  },
+  "publishedSourceComparisons": {
+    ".github/workflows/skager-ocharts-loader.yml": {
+      "bytes": 1755,
+      "sha256": "eda136d3bcecec3f2c6f6e4b5255e81b30c1ac481c27312e9699786a6a415d65",
+      "remotePath": ".github/workflows/skager-ocharts-loader.yml",
+      "gitBlob": "dae691bfcbc7110e16e4917c1e7eb23d32da3b8e"
+    },
+    "cmake/ocharts-adapter/CMakeLists.txt": {
+      "bytes": 3621,
+      "sha256": "98d547c1842b353cb178ef3b1520022a99d984d085d1c7ccde3a7f0690753862",
+      "remotePath": "opennav-x/cmake/ocharts-adapter/CMakeLists.txt",
+      "gitBlob": "b1747fd8f3c69db9d4a0984768b80f140b54f925"
+    },
+    "patches/ocharts-skager-presentation.patch": {
+      "bytes": 28003,
+      "sha256": "744d9cea66002eb4bd2be0a92b622d981784a3b48aae1c06572547dfeb5594ae",
+      "remotePath": "opennav-x/patches/ocharts-skager-presentation.patch",
+      "gitBlob": "a912f1007885ab301d609e9302da499b4cfd364c"
+    },
+    "patches/ocharts-wxcurl-trust.patch": {
+      "bytes": 3458,
+      "sha256": "e68b0a767f6a27d0136fa7e6b82ca96eac69f934f5fe54a13b314750bbb3d567",
+      "remotePath": "opennav-x/patches/ocharts-wxcurl-trust.patch",
+      "gitBlob": "248ce8cff01363ddfa01cf54f7ba8d044c61b347"
+    },
+    "src/integration/ChartCanvasInk.h": {
+      "bytes": 638,
+      "sha256": "cc1a4d94131f932f2bbd40d330d9003d0086dfc1237449b4215b509377c39f66",
+      "remotePath": "opennav-x/src/integration/ChartCanvasInk.h",
+      "gitBlob": "52e52ae5947548f3aef175baa823b78d1c87ed01"
+    },
+    "src/integration/ChartLightLabel.h": {
+      "bytes": 4969,
+      "sha256": "64d1fa48773369339402acd12d0be91847a5c69e145b8a072268c752a579e9ee",
+      "remotePath": "opennav-x/src/integration/ChartLightLabel.h",
+      "gitBlob": "d8ccac000042c92e07ad42052f419de53be73174"
+    },
+    "src/integration/ChartNameAlphaWindows.cpp": {
+      "bytes": 925,
+      "sha256": "01d26462e5b2cd9b54cfc9f138c7b4f2f2b0842c07c535906e0f871105d826f6",
+      "remotePath": "opennav-x/src/integration/ChartNameAlphaWindows.cpp",
+      "gitBlob": "c417fd67cfbcc414597886f8c95fec68dfcb751d"
+    },
+    "src/integration/ChartNameSpacing.h": {
+      "bytes": 1241,
+      "sha256": "2f37a592dd4c311a371441cc42560a68286d65cb442a061a739dbcce9e5cd6f6",
+      "remotePath": "opennav-x/src/integration/ChartNameSpacing.h",
+      "gitBlob": "682ac18f8bbbd8259451c608721ca07a5d5beb6e"
+    },
+    "src/integration/ChartNameText.h": {
+      "bytes": 2307,
+      "sha256": "da096196bd661f5e5bb47fdab0946a8987f707cf961f5eb9197090355a140635",
+      "remotePath": "opennav-x/src/integration/ChartNameText.h",
+      "gitBlob": "f58c62d1d5bfd69c4c9f7b64ef92a275b26b38f3"
+    },
+    "src/integration/ChartNameTypography.h": {
+      "bytes": 943,
+      "sha256": "23688fca7f9ed456e7458fe1228e0bf9908660a953732cb6e6749c5838e1f4d9",
+      "remotePath": "opennav-x/src/integration/ChartNameTypography.h",
+      "gitBlob": "9da37b1e9e97d13871457d05efd9c948f08bd06f"
+    },
+    "src/integration/ChartSoundingFont.h": {
+      "bytes": 1134,
+      "sha256": "02d27cb56d7af4f292640e59ec0326ba7b6555406956e6419a367b5bab124021",
+      "remotePath": "opennav-x/src/integration/ChartSoundingFont.h",
+      "gitBlob": "b62fdf904d03ce9ef853b83c2a735bc1cd096e27"
+    },
+    "src/plugin-adapters/ChartPresentationBindingV1.h": {
+      "bytes": 2258,
+      "sha256": "6af194362907b8801735d9e47ef07b71ef5bb3d572345d3814d6394787a34161",
+      "remotePath": "opennav-x/src/plugin-adapters/ChartPresentationBindingV1.h",
+      "gitBlob": "99589293d298ab0d37cafa9a161934e3e12ff0b7"
+    },
+    "src/plugin-adapters/ocharts/BindingState.h": {
+      "bytes": 3994,
+      "sha256": "82e4f94910c7af63772d90d23771f5328d4c0543b94390d35be8a2d04cf07e5c",
+      "remotePath": "opennav-x/src/plugin-adapters/ocharts/BindingState.h",
+      "gitBlob": "c0525bdc42a3cd22f9eb9720961f63fd8f5961d0"
+    },
+    "src/plugin-adapters/ocharts/ChartPresentationAdapter.cpp": {
+      "bytes": 4961,
+      "sha256": "4e3a1c48ec54b813ecb7a7d66793016990ba3a58f8f95cb3d1804fa621288dde",
+      "remotePath": "opennav-x/src/plugin-adapters/ocharts/ChartPresentationAdapter.cpp",
+      "gitBlob": "0840c75d93a279661016e7f17f146c2548fbc9f0"
+    },
+    "src/plugin-adapters/ocharts/ChartPresentationAdapter.h": {
+      "bytes": 226,
+      "sha256": "cc467555c63d378e23e3cdba19b2050892f0bd0ba58b1224a31368dbf5107969",
+      "remotePath": "opennav-x/src/plugin-adapters/ocharts/ChartPresentationAdapter.h",
+      "gitBlob": "f66839441b81d587db83c4892802791f357e9f22"
+    },
+    "src/plugin-adapters/ocharts/OwnedPresentationValidation.h": {
+      "bytes": 1674,
+      "sha256": "002d63e03dac37ebd4a4b4f2b4510706b3777635f04dfc9d84ad0b893021888f",
+      "remotePath": "opennav-x/src/plugin-adapters/ocharts/OwnedPresentationValidation.h",
+      "gitBlob": "6fa870559f95a9af9ee3dbcdeb8e1f03ff0ccd06"
+    },
+    "src/plugin-adapters/ocharts/ResourceVerification.h": {
+      "bytes": 1363,
+      "sha256": "7b6b6e6b430cbc9e0a275653261ba056face4c04b1d9c0fd9f167fb8e5be587c",
+      "remotePath": "opennav-x/src/plugin-adapters/ocharts/ResourceVerification.h",
+      "gitBlob": "a31be185133276059eb65583fe46cce191d95fee"
+    },
+    "src/ui/Theme.h": {
+      "bytes": 4009,
+      "sha256": "b28adb1f519ec5a1f9b7e2bfab6ec2ab1c7f06656bd129316e9e453ef1ec0776",
+      "remotePath": "opennav-x/src/ui/Theme.h",
+      "gitBlob": "f5668f4f15df35832eacf6f09e7a20d10001b5cf"
+    },
+    "tests/downloader_trust/CMakeLists.txt": {
+      "bytes": 3378,
+      "sha256": "bf7f20d727e0cef2542fc8f6bbd740e40e5461acfc9016211dcbab8084d9b4fa",
+      "remotePath": "opennav-x/tests/downloader_trust/CMakeLists.txt",
+      "gitBlob": "90504a3703efb8d3957522c94e35814602983625"
+    },
+    "tools/build-pristine-windows.ps1": {
+      "bytes": 25298,
+      "sha256": "ae7effaaa41c3f699c266271171c6190e9d35b9c67229c31c6abb2efa9b02f38",
+      "remotePath": "opennav-x/tools/build-pristine-windows.ps1",
+      "gitBlob": "c214dee60eb0aaaae62744b2d84fd479e4bdec65"
+    },
+    "tools/curl_package.py": {
+      "bytes": 12564,
+      "sha256": "fa9f82a96840c277e2c95b510b66a8d8f02ab900cb1fd539c52880124963f90a",
+      "remotePath": "opennav-x/tools/curl_package.py",
+      "gitBlob": "75fd7b253ab65d4d9f346efb21d47d15e0d38845"
+    },
+    "tools/downloader-trust-probe.cpp": {
+      "bytes": 1469,
+      "sha256": "9b72de42e87940e7a57eefce4a82de1ce7b15b64f22e1605ba6db5e73c42ff3d",
+      "remotePath": "opennav-x/tools/downloader-trust-probe.cpp",
+      "gitBlob": "89648d0b6dc6069447cf28dd31aaa9bd544424aa"
+    },
+    "tools/downloader-trust-server.py": {
+      "bytes": 2522,
+      "sha256": "1b3b2134be4d89cd8ceee9e66eb4e318b5b4b55545543f5fdaf6c12b861fd3ff",
+      "remotePath": "opennav-x/tools/downloader-trust-server.py",
+      "gitBlob": "45ea5950dfbe8f8728cbd93e56aab8eb1ba183f1"
+    },
+    "tools/ocharts-adapter-source.lock.json": {
+      "bytes": 30171,
+      "sha256": "0aaab29b5ad626f2215e5787b64ec7e3153f6a75223976370dbebb3967557353",
+      "remotePath": "opennav-x/tools/ocharts-adapter-source.lock.json",
+      "gitBlob": "ae797e0e5dece4026465c9f3aec59fc4eddb767f"
+    },
+    "tools/openssl_package.py": {
+      "bytes": 9803,
+      "sha256": "5bb8a1fd4f68ea80dbe4e1c49fb0d2f3fa20584d1bfa8748a0eac9fdeca64063",
+      "remotePath": "opennav-x/tools/openssl_package.py",
+      "gitBlob": "f6e273ab380908eae229c92d956f02e63e4d4e35"
+    },
+    "tools/prepare-ocharts-adapter.py": {
+      "bytes": 16139,
+      "sha256": "a4263bdb9282b4b7f0f08dde5487fb84c8af4fa3367030b7e386f8cb3306ff0e",
+      "remotePath": "opennav-x/tools/prepare-ocharts-adapter.py",
+      "gitBlob": "8924fcc3d408c74363afea038b840eb09e4eb69f"
+    },
+    "tools/test-curl-package.py": {
+      "bytes": 22115,
+      "sha256": "85903366cc6373f1e12d5e9bc3f4efc30adb0b372ac179abbd3f317e691031e0",
+      "remotePath": "opennav-x/tools/test-curl-package.py",
+      "gitBlob": "7bdceb2e21f849ae3b8a6f1054ae66c7aab9cc9a"
+    },
+    "tools/test-downloader-trust-windows.ps1": {
+      "bytes": 19783,
+      "sha256": "3a686a8094ca06faf6e6d8e240ab475325d6e28248156a1e63be259c194f7deb",
+      "remotePath": "opennav-x/tools/test-downloader-trust-windows.ps1",
+      "gitBlob": "fe584270cf6528e2e2f21db3e11e63df84735035"
+    },
+    "tools/test-ocharts-adapter-preparation.py": {
+      "bytes": 15626,
+      "sha256": "377a03b50fe973e637574e2c4bea009ee07a9ac37a4b320008fd492877dd78eb",
+      "remotePath": "opennav-x/tools/test-ocharts-adapter-preparation.py",
+      "gitBlob": "efb3ebe99939365bc3627ef75299b178d5ef07c7"
+    },
+    "tools/test-ocharts-build-wiring.ps1": {
+      "bytes": 8038,
+      "sha256": "258172e0e9e1cc390cfba8661e4be86a8d224e80b1d11035f4bcccfcd9007438",
+      "remotePath": "opennav-x/tools/test-ocharts-build-wiring.ps1",
+      "gitBlob": "96408fc9ee031fa56b1a37d3e5e32b5bda3da833"
+    },
+    "tools/verify-ocharts-adapter-package.py": {
+      "bytes": 12923,
+      "sha256": "13c07a40b37a8934590677a421b01d852c0b3c8e5403d743fad996f132c58a21",
+      "remotePath": "opennav-x/tools/verify-ocharts-adapter-package.py",
+      "gitBlob": "658ce6cfde5fa04a67b7d14d33f862a6ebcc1cff"
+    },
+    "tools/windows-curl.lock.json": {
+      "bytes": 398,
+      "sha256": "e3c2f9346cc3b793bca1813840e1d81148eaaba7a202421cf0e44dcf307ed888",
+      "remotePath": "opennav-x/tools/windows-curl.lock.json",
+      "gitBlob": "ce06e15e46e227319798c7e9949f03736917f078"
+    },
+    "tools/windows-openssl.lock.json": {
+      "bytes": 786,
+      "sha256": "df596603e33a205e62e04c3418a2d6f157ea989d50936700d440c2678b40ae23",
+      "remotePath": "opennav-x/tools/windows-openssl.lock.json",
+      "gitBlob": "1a88a10ae7b724ff4bf19a0041f1f159c944d02d"
+    },
+    "tools/windows-wx.lock.json": {
+      "bytes": 992,
+      "sha256": "d8ceb7b75af2803eae6aca8adb2ea404b695dc573416d3f7899b80ecaf089d28",
+      "remotePath": "opennav-x/tools/windows-wx.lock.json",
+      "gitBlob": "e98371531fb98de80aa7223adff9451d930d317b"
+    },
+    "tools/windows-zlib.lock.json": {
+      "bytes": 394,
+      "sha256": "9b1bc99c1ed47647744d523d65f4fb18f2a52d96aab24c85acf5c334c0dc0fb5",
+      "remotePath": "opennav-x/tools/windows-zlib.lock.json",
+      "gitBlob": "ba0d070d3d1d728f43951d32082ab66aa57002b6"
+    },
+    "tools/wxcurl-trust-probe.cpp": {
+      "bytes": 2031,
+      "sha256": "06807b802164ca71f90384cd322fcf3d64fa4717e87ee44af80ba17d3f3d5463",
+      "remotePath": "opennav-x/tools/wxcurl-trust-probe.cpp",
+      "gitBlob": "e6cc4adaae2fa64c1aac48ad34a4505bce0ab964"
+    }
+  },
+  "publishedSourcesLimit": "Commit-pinned remote bytes match local; contract step does not archive independent runner hashes for these inputs. Loader 15 source hashes are independently matched above.",
+  "nativeProductAcceptance": false
+}

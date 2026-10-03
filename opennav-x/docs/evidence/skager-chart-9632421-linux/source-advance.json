@@ -1,0 +1,56 @@
+{
+  "from": "a3e84771652c920479517f0d16a1dd6133c440d2",
+  "to": "e1289334cdc6887c7e8b399fcc3f94ddba0e25a9",
+  "oldTreeMatchedAllNinePatches": true,
+  "newTreeMatchedAllNinePatches": true,
+  "changes": [
+    {
+      "path": "gui/include/gui/piano.h",
+      "oldSha256": "20b038c604d5762dd606f9a2b63e09e70166d952dd38ee4c82844c61b2e412fd",
+      "sha256": "643bdfaf5c83f999d787b53f477ed9835be40b50129be7c9077376baf09d0071",
+      "mode": "100644"
+    },
+    {
+      "path": "gui/src/chcanv.cpp",
+      "oldSha256": "77792a68b2b62adddcfc0f6044e27e333d37d0880b7c99b066831d2898c6c0b2",
+      "sha256": "430d138c82c5b9ceaadc0444ad90fc03feda57cd48676a9da398c0c4eda18caf",
+      "mode": "100644"
+    },
+    {
+      "path": "gui/src/cm93.cpp",
+      "oldSha256": "eff55d16a883a2c6fb07b42f5a452b3cbfc2a0757c0d86d4b1f16a8479c702d6",
+      "sha256": "6e90d0da5cc6aa286269fe23670847eed8694ec2265bcabf17f98ba91c3e0cf5",
+      "mode": "100644"
+    },
+    {
+      "path": "gui/src/piano.cpp",
+      "oldSha256": "172bf0eecab51041449bae8433729297b55c703a414051b82be9f23066cae518",
+      "sha256": "09ef38ebea33ea8bb91860e6eb58fbf9c720b22d85fe4113ab5ee6c037a6ca4d",
+      "mode": "100644"
+    },
+    {
+      "path": "gui/src/pluginmanager.cpp",
+      "oldSha256": "ed359751a267bda00383ae37c3051a1324672bcb57385bdcb15424125f1eb90a",
+      "sha256": "6d1a0e151e0e57480c27df19c83fcc51d4001b146db3232f02de1d87db0a2626",
+      "mode": "100644"
+    },
+    {
+      "path": "gui/src/s57chart.cpp",
+      "oldSha256": "94214f9e688851ca4991c2fabb016b571f862bd6279c9809fb2ff5ae46634635",
+      "sha256": "312c0704c05e2bee0fe02ca5d84cfbd866e2d86324b02e088f8f9fa692fa27f3",
+      "mode": "100644"
+    },
+    {
+      "path": "libs/s52plib/src/s52plib.cpp",
+      "oldSha256": "5d51c402c606da5b7b17e16b7f9410421d835d587f6e906108dcab0282ad80f0",
+      "sha256": "846ff3546d98dc408af6fb5f235d697679e468a739af69afdc592326a268a405",
+      "mode": "100755"
+    },
+    {
+      "path": "libs/s52plib/src/s52plib.h",
+      "oldSha256": "6cecdf25aea2f409b73117fc77504568e6ace5d9ca37a77ff7b0c58159afb9b1",
+      "sha256": "1e4a374d13f3a8c4329c46ef3178958dd3ef44ada2d8df6104151ce8a887e180",
+      "mode": "100755"
+    }
+  ]
+}

@@ -1,0 +1,74 @@
+{
+  "historical_commit": "a3e84771652c920479517f0d16a1dd6133c440d2",
+  "source_commit": "9632421f701c5ec74d7a1360bc713c0034faf9af",
+  "chart_roi": [
+    80,
+    68,
+    1094,
+    634
+  ],
+  "wordmark_roi": [
+    8,
+    8,
+    174,
+    58
+  ],
+  "only_exclusion": [
+    883,
+    545,
+    1072,
+    597
+  ],
+  "outside_roi": "Dynamic clock/input ages/caption are retained in whole images but were never part of the historical chart/wordmark equality oracle.",
+  "captures": [
+    {
+      "name": "SKAGER-Day",
+      "historical_image_sha256": "dbd37257cd66d098c055ae14e2d50a97a0a64f86d1c7886a505b29293d8c6b36",
+      "changed_chart_pixels_outside_toolbar": 15828,
+      "wordmark_identical": false
+    },
+    {
+      "name": "SKAGER-Dusk",
+      "historical_image_sha256": "c1eb136af135abd14f4affc729849950a210bb9238ec5d4676eca207223b34a3",
+      "changed_chart_pixels_outside_toolbar": 15829,
+      "wordmark_identical": false
+    },
+    {
+      "name": "SKAGER-Night",
+      "historical_image_sha256": "738214e2ec045fb336b06c1e2f712cc3c89a51e331851dac599afaf352143753",
+      "changed_chart_pixels_outside_toolbar": 15810,
+      "wordmark_identical": false
+    },
+    {
+      "name": "SKAGER-Day-return",
+      "historical_image_sha256": "f271840290778fef4e24805a58d93a26345a8e497d2beeef2e4951cb1321c27b",
+      "changed_chart_pixels_outside_toolbar": 15828,
+      "wordmark_identical": false
+    },
+    {
+      "name": "Standard-Day",
+      "historical_image_sha256": "f3e9266dd203c81e007848ba0ed0c19ad107d9596a972f5a580094c4fc477c6c",
+      "changed_chart_pixels_outside_toolbar": 0,
+      "wordmark_identical": false
+    },
+    {
+      "name": "Standard-Dusk",
+      "historical_image_sha256": "e7b6def15a75f3b1333ee89753cb1f0a629919066b453c8b3074785e0ad72362",
+      "changed_chart_pixels_outside_toolbar": 0,
+      "wordmark_identical": false
+    },
+    {
+      "name": "Standard-Night",
+      "historical_image_sha256": "b8e81de5289614336d8389a34529c84324702eb98d21a99b0229b9397ccf2582",
+      "changed_chart_pixels_outside_toolbar": 0,
+      "wordmark_identical": false
+    },
+    {
+      "name": "Standard-Day-return",
+      "historical_image_sha256": "ed50ee70bbafa96b563c07866acf585aba15a93a1e90fa15a02bbcaab95dcfa5",
+      "changed_chart_pixels_outside_toolbar": 0,
+      "wordmark_identical": false
+    }
+  ],
+  "status": "passed"
+}

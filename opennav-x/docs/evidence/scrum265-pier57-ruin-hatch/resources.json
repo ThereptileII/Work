@@ -1,0 +1,53 @@
+{
+  "lookup": "<lookup id=\"181\" RCID=\"32216\" name=\"SLCONS\">\n            <type>Area</type>\n            <disp-prio>Routing</disp-prio>\n            <radar-prio>On Top</radar-prio>\n            <table-name>Plain</table-name>\n            <instruction>CS(SLCONS03)</instruction>\n            <display-cat>Standard</display-cat>\n            <comment>12410</comment>\n        </lookup>\n        ",
+  "pattern": "<pattern RCID=\"3\">\n                        <name>CROSSX01</name>\n                        <definition>R</definition>\n                        <filltype>L</filltype>\n                        <spacing>C</spacing>\n                        <description>General Cross Hatch pattern, Angle 0</description>\n                        <bitmap width=\"16\" height=\"16\">\n                                <distance min=\"0\" max=\"0\" />\n                                <pivot x=\"8\" y=\"8\" />\n                                <origin x=\"0\" y=\"0\" />\n                                <graphics-location x=\"400\" y=\"1040\" />\n                        </bitmap>\n                        <color-ref>ACHBRN</color-ref>\n                </pattern>\n\n                ",
+  "stockAndStyledLookupIdentical": true,
+  "stockAndStyledPatternIdentical": true,
+  "tiles": {
+    "rastersymbols-day.png": {
+      "bounds": [
+        400,
+        1040,
+        416,
+        1056
+      ],
+      "decodedRgbaSha256": "d160f03e2a7bfb503d8102c94765e7780043f774f17f71c6762e0324f21055c7",
+      "stockAndStyledIdentical": true
+    },
+    "rastersymbols-dusk.png": {
+      "bounds": [
+        400,
+        1040,
+        416,
+        1056
+      ],
+      "decodedRgbaSha256": "4ab894760b4d2518a56d7f03e98f1c91ddb01b915a22ef9e09ab3071e1d5cb79",
+      "stockAndStyledIdentical": true
+    },
+    "rastersymbols-dark.png": {
+      "bounds": [
+        400,
+        1040,
+        416,
+        1056
+      ],
+      "decodedRgbaSha256": "4ab894760b4d2518a56d7f03e98f1c91ddb01b915a22ef9e09ab3071e1d5cb79",
+      "stockAndStyledIdentical": true
+    }
+  },
+  "attributeMeanings": {
+    "60:4": "pier ( jetty)",
+    "81:2": "ruined",
+    "187:3": "always under water/submerged"
+  },
+  "inputSha256": {
+    "build/integration-source/libs/s52plib/src/s52cnsy.cpp": "b27ece30ace23032d0b916c392230d1523e734cbf51a47338085a04a80fc2a7e",
+    "build/integration-source/gui/src/viewport.cpp": "767d2f07ed5645af117c23e9393f8fd11c70d456d382106f324efa5f03c69fe0",
+    "build/integration-source/model/src/georef.cpp": "8da02302cff5e1116e49bbe2b36030156551280b27473da305b001e18d24e8f9",
+    "build/xnav-install/share/opencpn/s57data/chartsymbols.xml": "84f93522576ed5872b24865cf6161872ed0b4b634f77c64ca697a04d3568e886",
+    "build/xnav-install/share/opencpn/s57data/s57attributes.csv": "61c3fc9db5cfbc0aaefdcfb17474d64b56db7e7be6238974f6f1a11680a6b2c7",
+    "build/xnav-install/share/opencpn/s57data/s57expectedinput.csv": "deebeea969817da8aa9b3d57801ac530e28e3ed10692f407b8ed80f680fee409",
+    "build/xnav-install/share/opencpn/opennav/chart-style/v1/chartsymbols.xml": "c483a79be2ef2e60af9f7acc1e63cc2fd390f5f66345db11670ba1a93cbd025c",
+    "build/xnav-install/share/opencpn/opennav/chart-style/v1/manifest.json": "4af8f1245a59d2280fd74b563fd24f98401dfeb4ff8cdabf927352e5df856fc6"
+  }
+}

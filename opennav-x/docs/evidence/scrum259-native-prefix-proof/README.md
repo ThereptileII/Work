@@ -1,0 +1,11 @@
+# SCRUM-259 exact native producer and preparation proof
+
+[Run 37105753486, job 111153804937](https://github.com/ThereptileII/Work/actions/runs/37105753486/job/111153804937) completed successfully on 2026-10-03. Exact remote `d2787c649268809a2d99a72c6ad3e104d504f461` maps to local `9632421f701c5ec74d7a1360bc713c0034faf9af`.
+
+Downloaded artifact **11267139081** is retained as `artifact.zip`: **17,262 bytes**, SHA-256 **293784c4c0772336508f65162ab4880ea766a162f7ab534d6db19ba579108c27**, independently matching GitHub's digest. All **35 entries** pass CRC verification; `archive-inventory.json` records each entry's hash, size and CRC.
+
+Actual native logs confirm **17** producer/package tests, **15** preparation tests, PowerShell first-build/reuse wiring with **16 rejection cases**, and **38** actual native loader checks. The new producer tests cover separate-prefix acceptance and unchanged co-located package rejection, wrong expected/recorded roots, missing/changed receipts and files, and co-located decoys. Preparation includes actual copied-header closure and both missing-header negative controls. No test or threshold was removed.
+
+All **15** runner-recorded loader source/workflow hashes independently match the frozen local source, accounting only for native checkout CRLF. Separately, all **36** relevant preparation inputs, contracts, orchestration and workflow files were fetched at the exact remote commit and byte-compared against local source. `verification.json` records those comparisons and Git blob identities. The contract step does not independently archive runner hashes for all its own inputs; the remote source comparison is commit identity evidence, not a claim that unarchived runner bytes were rehashed. Binary/SDK hashes in `summary.json` are runner receipts; this compact artifact contains logs rather than native binary payloads.
+
+The unchanged loader receipt reports no vendor or plugin factory execution and retains the existing invalid-handle fault-test limitation. These passed fixture and path-semantics gates do **not** compile/link the actual private renderer, resolve its API17 imports inside OpenCPN, or qualify TLS, encrypted charts, licensing, visible rendering, installer or physical boat behavior. No full workflow, branch change, application launch or additional suite was dispatched by this audit.

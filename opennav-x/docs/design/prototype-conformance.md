@@ -1,23 +1,33 @@
 # Prototype conformance — in progress
 
-The a3e8477 Linux application now has 147 passing regressions and sixteen real
-ENC images, but its **complete GL Day-return comparison fails** at the chart
-selector (1,270 pixels). See [retained evidence](../evidence/skager-chart-a3e8477-linux/README.md).
-The bounded atlas-cache correction has focused proof; complete recapture is
-pending. New user feedback additionally requires the supplied modern buoy/light
-art, remaining brown structural fills, prototype font verification and a
-smaller logo (SCRUM-263–266). The 124 DIP wordmark has component proof; it does
-not establish an accepted full-screen or boat result. No row below is advanced
-by these partial results.
+Frozen local `9632421` / published `d2787c6` now has an integrated Linux build,
+147 passing regressions and [32 real NOAA ENC captures](../evidence/skager-chart-9632421-linux/README.md).
+All whole-chart Day returns are exact in software and Mesa OpenGL, closing the
+retained a3e selector reproduction. All sixteen Standard historical comparisons
+remain unchanged within the existing toolbar exception. Actual diagnostics
+prove that the effective SKAGER Simplified table does not overwrite the saved
+Paper preference. Every captured header matches the approved 124-DIP component.
+An additional [16 IHO S-64 captures](../evidence/scrum264-s64-9632421-linux/README.md)
+prove actual classified symbol/raster selection with twelve clean exits. Ordinary
+red/green short flares, classified long-range lights and central physical
+lighthouse artwork visibly remain stock; no all-light matching is claimed.
+These are bounded Linux results, not Windows, private o-charts or boat acceptance.
 
-The next integrated batch includes eleven classified prototype marine/light
-assets, fourteen structural land fills, six shoreline outlines, the 124 DIP
-wordmark and a verified-instance Simplified symbol selection which preserves the
-saved Standard/Legacy preference. Resource/method proofs do not establish actual
-chart readability. Unmapped special-purpose buoys, fixed beacons and physical
-topmark composition remain explicit gaps. Full software/GL, Windows and boat
-captures are pending. The current full native run stopped on dependency-manifest
-path resolution before application compilation; it provides no new UI pass.
+The combined batch includes eleven classified prototype marine/light assets,
+fourteen structural land fills, six shoreline outlines, and the smaller logo.
+The UI already requests the prototype's exact ordered font stack. Actual native
+face selection remains a Windows gate; a read-only boat inventory confirms all
+three named families exist but does not prove which face the application uses.
+Unmapped special-purpose buoys and fixed beacons remain explicit gaps. Hazard
+patterns and classified long-range/sector lights retain their navigational meaning.
+No screen-level acceptance row is advanced by partial symbol or resource proof.
+
+The preceding full native run failed producer-manifest resolution before any
+application compilation. Its producer-root/header-closure repair passed the
+[exact native prerequisite proof](../evidence/scrum259-native-prefix-proof/README.md).
+The [complete replacement run](https://github.com/ThereptileII/Work/actions/runs/37106815245)
+is now executing at that same frozen source. Windows screenshots, actual private
+renderer and physical boat comparisons remain required.
 
 The latest correction batch adds exact ferry/cable-area paint (SCRUM-260),
 40,482 role-proven Day neutral pixels (SCRUM-261), and the native chart-toolbar

@@ -1,0 +1,36 @@
+{
+  "base": "58b854e1920995d953d8bad19911b1930cd9a176",
+  "sourceSha256": {
+    "src/integration/ChartLightSymbol.h": "c3d52a12d12562f601eae930f59ea4ebefa62925975f51ec05c875f0687a5b04",
+    "src/integration/ChartPresentation.cpp": "c8ebccb932abb3bbd6c95a5da4b6b9e81475710a98a132bdb717c742eac73fd8",
+    "src/plugin-adapters/ocharts/ChartPresentationAdapter.cpp": "f15eb015187e6e69b4fc28ba2120c25356316c8d0186bc460afe487e7b836220",
+    "patches/opencpn-5.12.4-chart-presentation.patch": "c7b7c6cdb9089bd37e7659c743d104a8cf64cb947117dabdc8fe60bf5e3546aa",
+    "patches/ocharts-skager-presentation.patch": "f422ced7c9abc5607834ea556b03c5e40aaa76c0289809ee8d0e62b38f739210",
+    "tools/chart_seamark_art.py": "fcafdb7de6926378ff74ec1ebee2656c84f2f91f1d93d4856e3ede0832341f91",
+    "tools/derive-seamark-art.py": "afa9215b9330ac42bc3f65fa0713bb6cf7e97272e9f5ed35366330ce7011443d",
+    "tools/prepare-ocharts-adapter.py": "ff75d4b35d39c7d07646d6fd3b17bea9d816619d24c50b51dc98928c508e2850",
+    "tools/verify-anchor-loader.py": "8c5e89361765d069f0cc2f6fc803cc160cb39a1d2c59ed6dcb5b4add0cf1c179",
+    "tests/chart_seamark_loader_test.cpp": "93d379563afc2543d76ac9749c7f3b21282e0f80fe89c6eddb4b8c6cdccddfb6",
+    "tests/chart_seamark_resources_tests.py": "e63d61e32bb09959361c282d0dde7bb1e7e1082be743b76b350ef1bf0e2cb231",
+    "tests/chart_presentation_resources_tests.py": "00a5295094b70961879db7325381625f83352b4332f7380a005dd7411c0572d1",
+    "resources/chart-style/v1/seamarks/mapping.json": "50ecd5571f85e7f50d93eaddd4637d15e7f21f7da4728d003784ad7df7a3026e",
+    "resources/chart-style/v1/seamarks/provenance.json": "7271cd46b06f62bec1a53b189e66e3a26c1a25cb3ce5d40e094ac5a7d06e603c"
+  },
+  "generatedManifestSha256": "383fd24fe67be915be2c5097b6e5e3368d46a0a1c0f99e91fb783e76fd44d3a0",
+  "resourceChecks": 53258,
+  "loaderRenderConditionalChecks": 36242,
+  "preparationTests": 15,
+  "negativeRenderControls": [
+    "disabled-instance",
+    "ignore-orientation"
+  ],
+  "actualObjectCompiles": [
+    "core-s52plib.o",
+    "core-presentation.o",
+    "private-s52plib.o",
+    "private-adapter.o",
+    "private-disabled.o",
+    "core-disabled.o"
+  ],
+  "remaining": "Combined actual ENC/GL/native/private-plugin/boat rendering required; no application rebuilt or launched for this increment."
+}

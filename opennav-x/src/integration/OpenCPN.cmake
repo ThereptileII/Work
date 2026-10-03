@@ -272,6 +272,7 @@ set_property(DIRECTORY APPEND PROPERTY CMAKE_CONFIGURE_DEPENDS
   "${OPENNAV_ROOT}/tools/chart_anchor_art.py"
   "${OPENNAV_ROOT}/tools/chart_cable_paint.py"
   "${OPENNAV_ROOT}/tools/chart_structure_paint.py"
+  "${OPENNAV_ROOT}/tools/chart_construction_hatch.py"
   "${OPENNAV_ROOT}/tools/chart_service_art.py"
   "${OPENNAV_ROOT}/tools/chart_cardinal_art.py"
   "${OPENNAV_ROOT}/tools/chart_seamark_art.py"
