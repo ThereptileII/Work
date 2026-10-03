@@ -23,10 +23,11 @@ LOCAL = ('src/plugin-adapters/ChartPresentationBindingV1.h',
          'src/integration/ChartNameTypography.h', 'src/integration/ChartNameText.h',
          'src/integration/ChartNameSpacing.h',
          'src/integration/ChartNameAlphaWindows.cpp',
-         'src/integration/ChartLightLabel.h', 'src/integration/ChartLightSymbol.h', 'src/integration/ChartSoundingFont.h',
+         'src/integration/ChartLightLabel.h', 'src/integration/ChartLightSymbol.h', 'src/integration/ChartSpecialBuoySymbol.h', 'src/integration/ChartSoundingFont.h',
          'src/integration/ChartCanvasInk.h', 'src/ui/Theme.h')
 RECIPE = 'cmake/ocharts-adapter/CMakeLists.txt'
-INPUTS = (LOCK, RECIPE, 'tools/prepare-ocharts-adapter.py',
+INPUTS = (LOCK, RECIPE, 'cmake/ocharts-adapter/PreparedPath.cmake',
+          'cmake/ocharts-adapter/Targets.cmake', 'tools/prepare-ocharts-adapter.py',
           'tools/verify-ocharts-adapter-package.py', 'tools/windows-wx.lock.json',
           'tools/windows-curl.lock.json', 'tools/windows-zlib.lock.json', 'tools/windows-openssl.lock.json',
           'tools/curl_package.py', 'tools/openssl_package.py',

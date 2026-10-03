@@ -1,0 +1,62 @@
+{
+  "historical_commit": "9632421f701c5ec74d7a1360bc713c0034faf9af",
+  "source_commit": "5c05eb55c15b67d4014df55896d95452e9cc9d64",
+  "chart_roi": [
+    80,
+    68,
+    1094,
+    634
+  ],
+  "wordmark_roi": [
+    8,
+    8,
+    174,
+    58
+  ],
+  "only_exclusion": [
+    883,
+    545,
+    1072,
+    597
+  ],
+  "outside_roi": "Dynamic clock/input ages/caption are retained in whole images but were never part of the historical chart/wordmark equality oracle.",
+  "captures": [
+    {
+      "name": "SKAGER-Day",
+      "historical_image_sha256": "56dd5dc1294a97ac2b7e12011eba7a60e4e3dbd3f2f4e0bde16a85646857e5c3",
+      "changed_chart_pixels_outside_toolbar": 2085,
+      "wordmark_identical": true
+    },
+    {
+      "name": "SKAGER-Night",
+      "historical_image_sha256": "4cc1332f6e0a259601d0545871cef76a8be699d1d56e47ac83be10e9db7e55d4",
+      "changed_chart_pixels_outside_toolbar": 0,
+      "wordmark_identical": true
+    },
+    {
+      "name": "SKAGER-Day-return",
+      "historical_image_sha256": "deed5e07ad442eca9a2b96224421a96dfd88d2ffe4a1c808045fc9bc33f1a990",
+      "changed_chart_pixels_outside_toolbar": 2085,
+      "wordmark_identical": true
+    },
+    {
+      "name": "Standard-Day",
+      "historical_image_sha256": "b112a69dd406bad456e41ae13ea8289c3e6d9963ca30014f7216c998b632f577",
+      "changed_chart_pixels_outside_toolbar": 0,
+      "wordmark_identical": true
+    },
+    {
+      "name": "Standard-Night",
+      "historical_image_sha256": "bbf5b794697e160ec766975d643802c6b8032c148db7520567fd7d3349f1682d",
+      "changed_chart_pixels_outside_toolbar": 0,
+      "wordmark_identical": true
+    },
+    {
+      "name": "Standard-Day-return",
+      "historical_image_sha256": "225832e79c30cd8925e1bbd973fe2ed3c872e93719f720009370b12471d54f3a",
+      "changed_chart_pixels_outside_toolbar": 0,
+      "wordmark_identical": true
+    }
+  ],
+  "status": "passed"
+}

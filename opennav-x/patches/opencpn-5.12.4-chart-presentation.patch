@@ -2472,3 +2472,36 @@ diff --git a/libs/s52plib/src/s52plib.h b/libs/s52plib/src/s52plib.h
 +  bool m_presentationLightSymbols = false;
    int S52_load_Plib(const wxString &PLib, bool b_forceLegacy, bool allowCwdOverride = true);
    bool S52_flush_Plib();
+
+diff --git a/libs/s52plib/src/s52plib.cpp b/libs/s52plib/src/s52plib.cpp
+--- a/libs/s52plib/src/s52plib.cpp
++++ b/libs/s52plib/src/s52plib.cpp
+@@ -70,6 +70,7 @@
+ #include "s52plib.h"
+ #ifdef OPENNAV_X
+ #include "integration/ChartLightSymbol.h"
++#include "integration/ChartSpecialBuoySymbol.h"
+ #endif
+ #ifdef OPENNAV_X
+ #include "integration/ChartNameText.h"
+@@ -3503,6 +3504,20 @@
+       if (found != _symb_sym->end() && found->second &&
+           found->second->definition.SYDF == 'R' &&
+           !memcmp(found->second->name.SYNM, alias, 8))
++        paintRule = found->second;
++    }
++    const char *buoyAlias = opennav::integration::PresentationSpecialBuoyAlias(
++        m_presentationLightSymbols,
++        rzRules->LUP && rzRules->LUP->TNAM == SIMPLIFIED,
++        rzRules->obj, rules->razRule->name.SYNM);
++    // Dusk loses orange recognition at the required contrast; use stock.
++    const bool buoyTheme = m_ColorScheme == "DAY" ||
++                           m_ColorScheme == "DAY_BRIGHT" || m_ColorScheme == "NIGHT";
++    if (buoyAlias && buoyTheme && rules->razRule->definition.SYDF == 'R') {
++      auto found = _symb_sym->find(wxString::FromUTF8(buoyAlias));
++      if (found != _symb_sym->end() && found->second &&
++          found->second->definition.SYDF == 'R' &&
++          !memcmp(found->second->name.SYNM, buoyAlias, 8))
+         paintRule = found->second;
+     }
+ #endif

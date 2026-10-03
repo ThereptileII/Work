@@ -50,6 +50,8 @@ with tempfile.TemporaryDirectory(prefix='xnav-chart-test-') as d:
     verify_day_neutral(source,output,data,check)
     from chart_seamark_resources_tests import verify_seamarks,restore_tiles,SELECTED,ALIASES
     verify_seamarks(source,output,data,check)
+    from chart_special_buoy_resources_tests import verify_special_buoy
+    verify_special_buoy(source,output,check)
     from chart_cardinal_resources_tests import verify_cardinals
     verify_cardinals(source,output,data,check)
     from chart_service_resources_tests import verify_services
@@ -128,7 +130,7 @@ with tempfile.TemporaryDirectory(prefix='xnav-chart-test-') as d:
         styled=b.findall("symbols/symbol[name='"+name+"']")[-1].find('bitmap')
         styled.attrib=stock.attrib.copy()
         for tag in ('pivot','graphics-location'):styled.find(tag).attrib=stock.find(tag).attrib.copy()
-    for name in ALIASES:b.find('symbols').remove(b.find("symbols/symbol[name='"+name+"']"))
+    for name in (*ALIASES,'XNSPPW01'):b.find('symbols').remove(b.find("symbols/symbol[name='"+name+"']"))
     # Independently undo only the cable paint reference before whole-tree proof.
     cables=b.findall("line-styles/line-style[name='CBLSUB06']")
     check(len(cables)==1 and cables[0].attrib=={'RCID':'2012'})

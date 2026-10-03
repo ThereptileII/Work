@@ -1,0 +1,150 @@
+{
+  "issue": "SCRUM-264",
+  "sourceXmlSha256": "84f93522576ed5872b24865cf6161872ed0b4b634f77c64ca697a04d3568e886",
+  "orangeSource": "BOYPIL81/43 CHCOR, exact Paper1947 attributes. Day unchanged; fixed Night HLS-lightness lift meets >=3:1 against styled depth fills without a global palette edit. Dusk retains source ink in the unused alias tile and is ineligible at RenderSY; its tested lift lost orange recognition.",
+  "sourceNodeSha256": "1b0eb8455a8eb0e26eabe725252de415fc074f3a1985736d67b6f83ef45cd2a3",
+  "tile": [
+    660,
+    1160,
+    24,
+    28
+  ],
+  "pivot": [
+    12,
+    14
+  ],
+  "prototypeScale": 0.84375,
+  "derivation": "Prototype stem/base circle only; no head/topmark. Neutral silhouette, white/orange horizontal bands. No physical stripe measurements asserted.",
+  "nightLegibilityException": {
+    "reason": "Prototype has no orange role; stock Night CHCOR fails visible band recognition. Dusk lift is rejected as cream; stock Rule remains active there.",
+    "hlsLightnessStep": 32982,
+    "hlsDenominator": 65535,
+    "preserveSourceHueAndSaturation": true,
+    "precedingRgb": [
+      207,
+      112,
+      49
+    ],
+    "requiredSolidContrast": 3,
+    "waterRoles": [
+      "DEPDW",
+      "DEPMD",
+      "DEPMS",
+      "DEPVS",
+      "DEPIT"
+    ]
+  },
+  "themes": {
+    "DAY_BRIGHT": {
+      "rgbaSha256": "f8140ad81822563d785da392785c66bd3d5dab59ebe1f9239c2945e3789890e9",
+      "changedPixels": 50,
+      "colors": {
+        "neutral": [
+          83,
+          100,
+          95
+        ],
+        "white": [
+          246,
+          247,
+          239
+        ],
+        "water": [
+          213,
+          229,
+          229
+        ],
+        "orange": [
+          235,
+          125,
+          54
+        ]
+      },
+      "sourceOrange": [
+        235,
+        125,
+        54
+      ],
+      "orangeLiftException": false,
+      "eligibleForAlias": true
+    },
+    "DUSK": {
+      "rgbaSha256": "6e5da16bc913c745e1871f8867236c26338d13a13a44b80966de53d59f9f15f4",
+      "changedPixels": 50,
+      "colors": {
+        "neutral": [
+          195,
+          206,
+          194
+        ],
+        "white": [
+          215,
+          222,
+          207
+        ],
+        "water": [
+          52,
+          79,
+          89
+        ],
+        "orange": [
+          75,
+          38,
+          19
+        ]
+      },
+      "sourceOrange": [
+        75,
+        38,
+        19
+      ],
+      "orangeLiftException": false,
+      "eligibleForAlias": false
+    },
+    "NIGHT": {
+      "rgbaSha256": "de6b0f993481a24f44c34af0b8bb126ae7d5b7cfcf903a2d1531fa9a234f180a",
+      "changedPixels": 50,
+      "colors": {
+        "neutral": [
+          107,
+          119,
+          109
+        ],
+        "white": [
+          128,
+          136,
+          125
+        ],
+        "water": [
+          14,
+          23,
+          28
+        ],
+        "orange": [
+          208,
+          113,
+          49
+        ]
+      },
+      "sourceOrange": [
+        52,
+        28,
+        12
+      ],
+      "orangeLiftException": true,
+      "eligibleForAlias": true
+    }
+  },
+  "sources": {
+    "docs/design/prototype/src/chart-marker-art.js": "be2c7f44817c29d3714412c7974d3cf07e238f65c7131958b0cb8ff6fbd7816d",
+    "docs/design/prototype/src/chart-symbols.css": "ca7ec18b38bf682600b6c3c39c5798c94b00bbaddd5589119d5fcb77ad599cb3",
+    "docs/design/prototype-tokens.json": "111ee35527a974b2df6c2c4af0afd04e5aebdf14bad3004a98be9064aef790c6",
+    "tools/derive-special-buoy-art.py": "73e87304a10ff7cdd73fe056839a737269e8e3637c7178b3d3b5ce3cde5f6d6c",
+    "resources/chart-style/v1/special-buoy/XNSPPW01-DAY_BRIGHT-rgba.json": "fe8dbdb7e727156c7f4461b87997a1b77acf4552b95e93bb1a0f44b0642f31d6",
+    "resources/chart-style/v1/special-buoy/XNSPPW01-DAY_BRIGHT.svg": "3de66adff6f0502c8ca48cc053424c1d41e2f2546637df86086bb5fa09631fa7",
+    "resources/chart-style/v1/special-buoy/XNSPPW01-DUSK-rgba.json": "e58e60de2a66b45924e949b1b8757a184e0dae363d080448f6a9237dbc17eb48",
+    "resources/chart-style/v1/special-buoy/XNSPPW01-DUSK.svg": "431b0d10e408608b9c5aec9c047f749526fd899bc8d929b0af78bfb39ae7f106",
+    "resources/chart-style/v1/special-buoy/XNSPPW01-NIGHT-rgba.json": "a55a844690ba9a53ab860d3f1cfedf63b7afec78555fea5cc65a4847757cd8b8",
+    "resources/chart-style/v1/special-buoy/XNSPPW01-NIGHT.svg": "dcb65117cf5346059413c3f053fa81815942aea1269a31ae9d76222aeb83bd3f"
+  }
+}

@@ -1,6 +1,42 @@
 # SKAGER status — 2026-10-03
 
-## Current combined candidate: SKAGER chart fidelity and branding
+## Latest bounded light and hatch correction
+
+Application source **`5c05eb55c15b67d4014df55896d95452e9cc9d64`** combines
+[orientation-preserving compact light aliases](evidence/scrum264-oriented-light-aliases/README.md)
+and [neutral construction-hatch ink](evidence/scrum265-construction-hatch-ink/README.md).
+Original LIGHTS11/12/13 vectors remain entirely stock. Only verified SKAGER
+instances and lights without any ORIENT attribute may select the separate compact
+red/green/white aliases. Directional data, conditional decisions, original Rule
+metadata/lifetime and missing-alias fallback are preserved. The earlier white
+bitmap substitution below is superseded; it is not approved for boat deployment.
+
+Only 192 Day construction-pattern pixels change to prototype neutral ink. The
+pattern geometry, alpha, dashed shoreline and all twelve original conditional
+consumers remain unchanged. Dusk/Night retain their existing transparent tile.
+Global CHBRN and other hazard usage are untouched. This corrects the identified
+brown Pier57 hatch without painting a submerged ruined pier as ordinary land.
+
+The [combined resource proof](evidence/scrum264265-combined-resource-proof/README.md)
+passes 53,377 focused checks and the unchanged whole-resource inverse/negative
+oracles. Exact integrated Linux build/install and 147/147 regressions pass.
+The [Pier57 hatch review](evidence/skager-chart-5c05eb5-linux/README.md) and
+[actual red/green lights](evidence/scrum264-colored-lights-5c05-linux/README.md)
+retain 24 original software/OpenGL captures. Standard historical comparisons and
+complete Day-return checks pass; light changes stay within the real light
+neighborhoods and the hatch change stays within the construction feature.
+
+Exact mapped publication **`159cbeff00d67fbd0b77442b7288407f5d93db2b`** has
+3,805 independently verified blob/mode entries, including eight preserved
+unrelated root files. The [focused Windows changed-unit preflight](https://github.com/ThereptileII/Work/actions/runs/37109776549)
+passes. Its [downloaded artifact audit](evidence/scrum247-native23-159c/README.md)
+verifies all 23 actual I386 objects, 447 product inputs, 1,439 patched upstream
+inputs and seven generated resources against the frozen source/build. It is
+compile qualification, not an application/runtime release gate.
+Physical boat fonts/GPU/display and private-renderer acceptance remain pending.
+No candidate from this correction has been installed on the boat.
+
+## Preceding combined candidate: SKAGER chart fidelity and branding
 
 The next correction batch includes the exact prototype
 [ferry/cable-area ink](evidence/scrum260-area-ink/README.md),
@@ -14,7 +50,7 @@ remaining operator/diagnostic product labels. Customer-facing identity is
 SKAGER with the approved Jira artwork; immutable evidence, compatibility IDs
 and required OpenCPN attribution remain.
 
-Current frozen application source **`9632421f701c5ec74d7a1360bc713c0034faf9af`**
+The preceding frozen application source **`9632421f701c5ec74d7a1360bc713c0034faf9af`**
 is published exactly as **`d2787c649268809a2d99a72c6ad3e104d504f461`**:
 3,306 mapped blobs/modes match and eight unrelated repository files are preserved.
 The [integrated Linux build/install](evidence/skager-chart-9632421-linux/README.md)
@@ -40,16 +76,20 @@ header closure now pass [fresh native proof](evidence/scrum259-native-prefix-pro
 17 producer/package cases, 15 preparation cases, 16 wiring refusals and 38 actual
 harmless-DLL loader groups. The independently verified artifact belongs to the
 same `d2787c6` source. The [full replacement qualification](https://github.com/ThereptileII/Work/actions/runs/37106815245)
-is running once at that exact commit. Actual private DLL linking/loading,
-Windows font selection, final package/installer and boat rendering are still
-pending. No candidate has been installed on the boat in this cycle. A subsequent source
-review found that short-light objects can carry an explicit ORIENT even outside
-the conditional directional branch. The current white bitmap replacement must
-preserve that original vector cue. SCRUM-264 is correcting this with untouched
-stock light definitions and verified-instance raster aliases only when ORIENT
-is absent, alongside prototype-shaped red/green short-light variants. This is a
-separate pending correction; `d2787c6` remains prerequisite/diagnostic evidence
-and is not approved for boat deployment while this boundary is unresolved.
+passes the maintained dependency producers, then stops at private-renderer CMake
+configuration: Windows backslashes in the wxCurl source paths are interpreted
+as escapes. The [retained exact failure](evidence/scrum259-private-configure-d2787/README.md)
+is before private DLL or host application compilation, not an application crash.
+The bounded path repair and direct native configure/object preflight are in
+progress before another full candidate. No tested dependency output binaries
+were retained in this failure artifact, so they cannot be treated as reusable
+verified producer output merely because their logs passed.
+
+Actual private DLL linking/loading, Windows font selection, final
+package/installer and boat rendering remain pending. No candidate has been
+installed on the boat in this cycle. The later source5c05 above also corrects
+the ORIENT boundary identified in this historical candidate. `d2787c6` remains
+prerequisite/diagnostic evidence and is not approved for boat deployment.
 
 The user's additional October 3 feedback is represented by SCRUM-263–267.
 The [approved header wordmark is now 124 DIP](design/reviews/scrum263-header-typeface.md),

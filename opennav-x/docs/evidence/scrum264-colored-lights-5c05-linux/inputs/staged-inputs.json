@@ -1,0 +1,58 @@
+{
+  "schema": 1,
+  "commit": "5c05eb55c15b67d4014df55896d95452e9cc9d64",
+  "binary_sha256": "0e7f0500f79f8ca917b3ba0853ce3c205d68e6e1beaffd06377283950e32fd73",
+  "build_flags": {
+    "OCPN_BUILD_TEST": "ON",
+    "OPENNAV_ENABLE_ROUTE_SCENARIO": "ON",
+    "XNAV_ENABLE_PILOT_LOOPBACK_TESTS": "ON",
+    "XNAV_ENABLE_TEST_FIXTURES": "ON"
+  },
+  "manifest_sha256": "beff73cae53211c4ef0b0c3fa2ed83e5290680f19f48781646e1f1d0d4f88e53",
+  "resource_files": {
+    "chartsymbols.xml": {
+      "sha256": "beca42d4f1e1cbe5dd761d3e2182d5ebe935556a94674df5da47aaafe7fb0119",
+      "bytes": 2242082
+    },
+    "S52RAZDS.RLE": {
+      "sha256": "560e1a1df493d7ae4c8506da814ad936adb13ef93c6f1e2abc93f2819860ff26",
+      "bytes": 1305627
+    },
+    "rastersymbols-day.png": {
+      "sha256": "e71bb49aa0c4d18990ed3fef9362989df25a2efc49bc41ff5439bea993d6df06",
+      "bytes": 199796
+    },
+    "rastersymbols-dusk.png": {
+      "sha256": "8a1c1f1db4f2e9d10b1d67687ca96b7f5cbda9ed3e0acdb77162c5a231bb1308",
+      "bytes": 174185
+    },
+    "rastersymbols-dark.png": {
+      "sha256": "8606b8f2f7727c2b4f906d55bad92ee0a7331c3fdfce3276dc01eba4e5a0b5c7",
+      "bytes": 169565
+    }
+  },
+  "source_evidence": {
+    "src/integration/ChartNameTypography.h": "23688fca7f9ed456e7458fe1228e0bf9908660a953732cb6e6749c5838e1f4d9",
+    "src/integration/ChartCogPredictor.h": "3e7841bb311bb9d4951be082a669f4737ee978dd426df4899a22bc9971033c90",
+    "src/integration/ChartPresentation.cpp": "c8ebccb932abb3bbd6c95a5da4b6b9e81475710a98a132bdb717c742eac73fd8",
+    "patches/opencpn-5.12.4-xnav.patch": "dfbacadf42502d1d0366745b3a187d256e620b0d2ea7dba9e8912c46e999e0b3",
+    "patches/opencpn-5.12.4-chart-presentation.patch": "c7b7c6cdb9089bd37e7659c743d104a8cf64cb947117dabdc8fe60bf5e3546aa",
+    "resources/chart-style/v1/definition.json": "bd15a26d1767b91cbfaac6fc93c364246fe95e3441149fb9fed6d2675b64d4e4",
+    "docs/design/prototype-tokens.json": "111ee35527a974b2df6c2c4af0afd04e5aebdf14bad3004a98be9064aef790c6",
+    "src/application/SkagerBrandAsset.h": "cc9f469181717b4fb80986b9406d2d6d078bfdb5971d2e68f6b4072b8dcd2019",
+    "resources/branding/provenance.json": "f639aa4ffa1194fb527388b15b2f9880746829d4120e30b4ddca32b0326557a6",
+    "tools/chart_cable_paint.py": "462e92d27cfbf553454c286bc074e166699922fcab0b6874f40c9d7984186822",
+    "tools/chart_day_neutral_ink.py": "0f136c0e9764c7750ab581ef3c9b0c35c976563ceb88d8598eeee5a0e7761840",
+    "src/ui/SkagerWordmark.h": "c2fc3d1afdf88bfd2e884d541e7b3ad4463702cece09057e38f4d496deda9928",
+    "src/integration/OpenCPNIntegration.cpp": "6a678db6af47c8697955977b3984beda0a58f04002fe0e178b45e77ae2d511a2",
+    "tools/chart_anchor_art.py": "af9d7ad15bb78a7eaa8f8ff39256c74e56724b95d782cc2638d0a16ebbbc1904",
+    "tools/chart_cardinal_art.py": "e8b4f52df0d558ec715613c9f737776db0f10f844c3f2769a3f35fd8f670158e",
+    "tools/chart_construction_hatch.py": "a1dc22dd3a1d08ed195bcceb55f10ff29578a58f16ef1f5f517192830be459b4",
+    "tools/chart_raster_ink.py": "ffffd4365cdf534b77110cd26ca068fc86a55286e66b8baa5c18811389bfb294",
+    "tools/chart_seamark_art.py": "fcafdb7de6926378ff74ec1ebee2656c84f2f91f1d93d4856e3ede0832341f91",
+    "tools/chart_service_art.py": "86002da05b15a6f59098d424e794adb383b1c9ba270a90834056d7f8b86a8cc8",
+    "tools/chart_structure_paint.py": "aebe01e1ed890e425a5f1b18e4fc876b00ebb11d78da6382c7c3540128f03ec0"
+  },
+  "authority": "Private Linux development capture only; not Windows or boat acceptance",
+  "runtime_identity": "Still required from loader self-test and actual capture diagnostics"
+}

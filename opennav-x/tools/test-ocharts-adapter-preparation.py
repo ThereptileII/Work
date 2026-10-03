@@ -222,7 +222,7 @@ class Guards(unittest.TestCase):
     def test_native_private_tls_source_selection_and_alpha_closure(self):
         cmake = (ROOT / 'tests/downloader_trust/CMakeLists.txt').read_text()
         native = (ROOT / 'tools/test-downloader-trust-windows.ps1').read_text()
-        recipe = (ROOT / 'cmake/ocharts-adapter/CMakeLists.txt').read_text()
+        recipe = (ROOT / 'cmake/ocharts-adapter/Targets.cmake').read_text()
         self.assertIn('--verify-prepared', cmake)
         self.assertIn('"${SKAGER_OCHARTS_PREPARED}/source/libs/wxcurl/src"', cmake)
         self.assertIn('"${trust_wxcurl_source}/base.cpp"', cmake)
@@ -243,6 +243,23 @@ class Guards(unittest.TestCase):
         self.assertIn('Remove-OwnedTrust', native)
         self.assertIn("$Fields.bad_option_blocked -cne 'true'", native)
         self.assertIn("$GetOk -ne $Expected -or $HeadOk -ne $Expected", native)
+
+    def test_native_recipe_include_source_closure(self):
+        entry = ROOT / v.prep.RECIPE
+        pending = [entry]
+        visited = set()
+        while pending:
+            path = pending.pop()
+            if path in visited:
+                continue
+            visited.add(path)
+            self.assertIn(path.relative_to(ROOT).as_posix(), v.prep.INPUTS)
+            for name in re.findall(r'include\("\$\{CMAKE_CURRENT_LIST_DIR\}/([^"\n]+)"\)', path.read_text()):
+                pending.append(path.parent / name)
+        self.assertEqual(len(visited), 3)
+        entry_text = entry.read_text()
+        self.assertLess(entry_text.index('PreparedPath.cmake'), entry_text.index('--verify-prepared'))
+        self.assertLess(entry_text.index('--verify-prepared'), entry_text.index('Targets.cmake'))
 
     def test_trust_patch_policy(self):
         patch = (ROOT / 'patches/ocharts-wxcurl-trust.patch').read_text()

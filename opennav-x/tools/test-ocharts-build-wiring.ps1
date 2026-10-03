@@ -45,6 +45,12 @@ function Put([string]$Path,[string]$Value) {
 }
 function Run([string]$Program,[string[]]$Arguments) {
     $Calls.Add(@{program=$Program;arguments=$Arguments})
+    if ($Program -eq 'cmake' -and $Arguments -contains '-S' -and
+        $Arguments -contains (Join-Path $Root 'cmake/ocharts-adapter')) {
+        if ($Arguments -notcontains "-DSKAGER_PREPARED:PATH=$(Join-Path $Root 'build/ocharts-prepared')") {
+            throw 'Private native configure must pass an explicit CMake PATH argument'
+        }
+    }
     if ($Fail -and $Arguments -contains $Fail) { throw "Simulated native/validator failure: $Fail" }
     if ($Arguments -contains '--curl-prefix') {
         $OpenSslIndex = [array]::IndexOf($Arguments, '--openssl-prefix')

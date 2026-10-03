@@ -1,0 +1,3 @@
+/home/standard/Projects/X-nav-worktrees/scrum265-construction-hatch/.local/hatch-light-5c05/pier57/compare-captures.py:21: DeprecationWarning: Image.Image.getdata is deprecated and will be removed in Pillow 14 (2027-10-15). Use get_flattened_data instead.
+  changed=sum(pixel!=(0,0,0) for pixel in exposed.crop(chart).getdata())
+Exact historical Standard and hot-return comparison passed: /home/standard/Projects/X-nav-worktrees/scrum265-construction-hatch/.local/hatch-light-5c05/pier57/output/capture-pier57-5c05eb5-opengl

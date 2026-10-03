@@ -1,0 +1,23 @@
+{
+  "patches/ocharts-skager-presentation.patch": "1b223ba60529c02e54c55401897962797f86043f88961194206dff15b43a1770",
+  "patches/opencpn-5.12.4-chart-presentation.patch": "3c75d620420f91886e82e727ba059b7136ba170e899a3702ed56c1c409485c22",
+  "resources/chart-style/v1/special-buoy/XNSPPW01-DAY_BRIGHT-rgba.json": "fe8dbdb7e727156c7f4461b87997a1b77acf4552b95e93bb1a0f44b0642f31d6",
+  "resources/chart-style/v1/special-buoy/XNSPPW01-DAY_BRIGHT.svg": "3de66adff6f0502c8ca48cc053424c1d41e2f2546637df86086bb5fa09631fa7",
+  "resources/chart-style/v1/special-buoy/XNSPPW01-DUSK-rgba.json": "e58e60de2a66b45924e949b1b8757a184e0dae363d080448f6a9237dbc17eb48",
+  "resources/chart-style/v1/special-buoy/XNSPPW01-DUSK.svg": "431b0d10e408608b9c5aec9c047f749526fd899bc8d929b0af78bfb39ae7f106",
+  "resources/chart-style/v1/special-buoy/XNSPPW01-NIGHT-rgba.json": "a55a844690ba9a53ab860d3f1cfedf63b7afec78555fea5cc65a4847757cd8b8",
+  "resources/chart-style/v1/special-buoy/XNSPPW01-NIGHT.svg": "dcb65117cf5346059413c3f053fa81815942aea1269a31ae9d76222aeb83bd3f",
+  "resources/chart-style/v1/special-buoy/provenance.json": "858315370152e8d4807fa6e93d838bc81cb6c3e2e73c85fb5d24750ae0a2582b",
+  "src/integration/ChartSpecialBuoySymbol.h": "24e1af5d565b522d00f5d8103c14b5bcadfb0075a3c4fcebcf2e832e22e8c8c4",
+  "src/integration/OpenCPN.cmake": "2d26c7e716a24e1750f3405bdb5358aa3047bb076e2e60579a4d08a6d0092ba0",
+  "tests/chart_presentation_resources_tests.py": "fda78832135dbea08f304ac6fa77c7b0956f5a749596e8f6346adafb13754718",
+  "tests/chart_seamark_loader_test.cpp": "4c98c17bbc5492d32319fa32df39d1f37dd0222969fcbdf1ee1f9f9f5f8df6b4",
+  "tests/chart_seamark_resources_tests.py": "b140ab9c6ca2947654ff083e786695246a06c7d52321263be3b7ee87254c0d1b",
+  "tests/chart_special_buoy_resources_tests.py": "c79d69003824d299e9602a120a0431a6f08f724115a29d31929af9cd629fd582",
+  "tools/chart_special_buoy_art.py": "488a76b80b55f3a443fe2c965e5c7725e7cf39fba1158cd156eef358ca8fbc19",
+  "tools/derive-special-buoy-art.py": "73e87304a10ff7cdd73fe056839a737269e8e3637c7178b3d3b5ce3cde5f6d6c",
+  "tools/generate-xnav-chart-style.py": "8c7ead71029341376a92726f3bdfafd00ef6ab675b425a5617dfbfd71f95028c",
+  "tools/prepare-ocharts-adapter.py": "4172f0b194fcdac13c4febbe8800d6906bf614e5e5b190e4245efe478dc42f59",
+  "tools/verify-anchor-loader.py": "ea391811afbbce82e55cf1e69717ae37a44fdbe790d46926151a1fe59964ab54",
+  "tools/windows_chart_units.py": "48791b152602c9e8114ab2958aa4861b80913fef3368e62b929af15cb59c644f"
+}

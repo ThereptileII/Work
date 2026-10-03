@@ -79,7 +79,7 @@ function Build-PrivateOCharts([bool]$Reuse) {
             '--openssl-prefix', $OpenSslPrefix, '--zlib-prefix', $ZlibPrefix, '--resources', $Resources)
         Run cmake @('-S', (Join-Path $Root 'cmake/ocharts-adapter'), '-B', $NativeBuild,
             '-G', 'Visual Studio 17 2022', '-A', 'Win32', '-DCMAKE_POLICY_VERSION_MINIMUM=3.5',
-            "-DSKAGER_PREPARED=$Prepared")
+            "-DSKAGER_PREPARED:PATH=$Prepared")
         Run cmake @('--build', $NativeBuild, '--config', 'Release', '--target',
             'skager-ocharts-adapter', '--parallel', '2')
         Run python @((Join-Path $PSScriptRoot 'prepare-ocharts-adapter.py'),

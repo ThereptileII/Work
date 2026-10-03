@@ -1,0 +1,11 @@
+{
+  "checks": 2235,
+  "baselineManifestSha256": "beff73cae53211c4ef0b0c3fa2ed83e5290680f19f48781646e1f1d0d4f88e53",
+  "manifestSha256": "12cfbce4686fce9a89e15f45105195c9f09a51ae4e3e9932aa7ba803ae205a52",
+  "changedPixelsPerTheme": 50,
+  "wholeXmlInverse": true,
+  "wholeRgbaInverse": true,
+  "negativeXmlCases": 6,
+  "nightSolidContrastAtLeast": 3,
+  "duskDispatch": "stock Rule; lifted cream rejected"
+}

@@ -1,0 +1,14 @@
+{
+  "run": 37106815245,
+  "job": 111157801437,
+  "remoteSource": "d2787c649268809a2d99a72c6ad3e104d504f461",
+  "localSource": "9632421f701c5ec74d7a1360bc713c0034faf9af",
+  "artifact": 11269716695,
+  "bytes": 20219722,
+  "sha256": "d181f56fd51e385059bca5c510dd707157abcff3ceae5a4a9fef27a63ddde81c",
+  "zipEntries": 5801,
+  "allCrcsPassed": true,
+  "phase": "private adapter CMake configure",
+  "privateRendererCompiled": false,
+  "integratedApplicationBuildReached": false
+}

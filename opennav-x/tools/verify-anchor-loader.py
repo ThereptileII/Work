@@ -133,6 +133,10 @@ def main():
                 subprocess.run(['rsvg-convert',str(ROOT/'resources/chart-style/v1/seamarks'/(file+'.svg')),'-o',str(output/(file+'.png'))],check=True)
         png = output
     config = [str(args.wx_config),'--prefix='+str(args.wx_prefix)]
+    if args.seamarks:
+        for theme in ('DAY_BRIGHT','DUSK','NIGHT'):
+            name='XNSPPW01-'+theme
+            subprocess.run(['rsvg-convert',str(ROOT/'resources/chart-style/v1/special-buoy'/(name+'.svg')),'-o',str(output/(name+'.png'))],check=True)
     cflags = shlex.split(subprocess.check_output(config+['--cxxflags'],text=True))
     libs = shlex.split(subprocess.check_output(config+['--libs','core,base'],text=True))
     command = ['g++','-std=c++17','-Wall','-Wextra','-Werror','-Wno-unused-parameter','-Wno-deprecated-copy',
@@ -162,7 +166,10 @@ def main():
         original=(output/'light-render-methods.inc').read_text()
         mutations={
             'disabled-instance':original.replace('m_presentationLightSymbols, rzRules->obj->FeatureName,','true, rzRules->obj->FeatureName,'),
-            'ignore-orientation':original.replace('paintRule->name.SYNM, rzRules->obj->att_array, rzRules->obj->n_attr);','paintRule->name.SYNM, nullptr, 0);')}
+            'ignore-orientation':original.replace('paintRule->name.SYNM, rzRules->obj->att_array, rzRules->obj->n_attr);','paintRule->name.SYNM, nullptr, 0);'),
+            'buoy-disabled-instance':original.replace('m_presentationLightSymbols,\n        rzRules->LUP','true,\n        rzRules->LUP'),
+            'buoy-paper-table':original.replace('rzRules->LUP && rzRules->LUP->TNAM == SIMPLIFIED,','true,'),
+            'buoy-theme':original.replace('if (buoyAlias && buoyTheme &&','if (buoyAlias && (buoyTheme || true) &&')}
         try:
             for name,changed in mutations.items():
                 assert changed!=original
@@ -175,7 +182,7 @@ def main():
             (output/'light-render-methods.inc').write_text(original)
         # Leave the retained executable corresponding to the unmodified source.
         subprocess.run(command,check=True,capture_output=True)
-        print('Actual RenderSY negative controls rejected disabled-instance and ORIENT bypasses')
+        print('Actual RenderSY negative controls rejected light instance/ORIENT and buoy instance/Paper-table/theme bypasses')
 
 
 if __name__ == '__main__':

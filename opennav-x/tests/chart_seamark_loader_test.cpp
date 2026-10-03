@@ -11,6 +11,7 @@
 #include <deque>
 #include <limits>
 #include "integration/ChartLightSymbol.h"
+#include "integration/ChartSpecialBuoySymbol.h"
 #define private public
 #include "chartsymbols.h"
 #undef private
@@ -19,6 +20,7 @@ class s52plib {
   wxArrayPtrVoid *pAlloc;
   std::map<wxString, Rule *> *_symb_sym;
   bool m_presentationLightSymbols = false;
+  wxString m_ColorScheme = "DAY";
   double m_ChartScaleFactorExp = 1.0;
   Rule* painted = nullptr;
   char painter = 0;
@@ -79,6 +81,61 @@ struct LightFixture : S57Obj {
     strings[name]=value;Add(name,strings[name].data(),OGR_STR);
   }
 };
+
+struct PillarFixture : LightFixture {
+  int shape=4;
+  PillarFixture() {
+    std::memcpy(FeatureName,"BOYSPP",7); Primitive_type=GEO_POINT;
+    Add("BOYSHP",&shape,OGR_INT);
+    String("COLOUR","1,11"); String("COLPAT","1"); String("CATSPM","27");
+  }
+};
+
+static void CheckPillarDispatch(s52plib& owner,std::map<wxString,Rule*>& symbols) {
+  auto stock=symbols.at("BOYSPP11"); Rule saved=*stock;
+  auto alias=symbols.at("XNSPPW01");
+  Rules rules{}; rules.razRule=stock; char instruction[]="BOYSPP11)"; rules.INSTstr=instruction;
+  LUPrec lookup{}; lookup.TNAM=SIMPLIFIED;
+  auto draw=[&](S57Obj& object) { ObjRazRules rz{}; rz.obj=&object; rz.LUP=&lookup; owner.RenderSY(&rz,&rules); };
+  PillarFixture valid; owner.m_presentationLightSymbols=false; draw(valid); Check(owner.painted==stock);
+  owner.EnablePresentationLightSymbols(); draw(valid);
+  Check(owner.painted==alias && owner.painter=='R' && owner.paintedPoint==wxPoint(101,202));
+  Check(owner.paintedAngle==0 && rules.razRule==stock && !std::memcmp(stock,&saved,sizeof saved));
+  for(const char* scheme:{"DAY","DUSK","NIGHT","DAY","DAY_BRIGHT","UNKNOWN","","dusk"}) {
+    owner.m_ColorScheme=scheme; draw(valid);
+    const bool eligible=owner.m_ColorScheme=="DAY" || owner.m_ColorScheme=="DAY_BRIGHT" || owner.m_ColorScheme=="NIGHT";
+    Check(owner.painted==(eligible?alias:stock) && rules.razRule==stock);
+    Check(!std::memcmp(stock,&saved,sizeof saved));
+  }
+  owner.m_ColorScheme="DAY";
+  lookup.TNAM=PAPER_CHART; draw(valid); Check(owner.painted==stock); lookup.TNAM=SIMPLIFIED;
+  for(int shape:{1,2,3,5,6,7,8,0,-1}) { PillarFixture x; x.shape=shape; draw(x); Check(owner.painted==stock); }
+  for(const char* color:{"6","1","11","11,1","1,11,6","1, 11","01,11","1,11 ",""}) {
+    PillarFixture x; x.entries[1].value=const_cast<char*>(color); draw(x); Check(owner.painted==stock);
+  }
+  for(const char* pattern:{"2","1,2","01",""}) { PillarFixture x; x.entries[2].value=const_cast<char*>(pattern); draw(x); Check(owner.painted==stock); }
+  for(const char* category:{"14","27,1","027",""}) { PillarFixture x; x.entries[3].value=const_cast<char*>(category); draw(x); Check(owner.painted==stock); }
+  for(int index=0;index<4;++index) {
+    PillarFixture x; x.entries[index].value=nullptr; draw(x); Check(owner.painted==stock);
+    PillarFixture wrong; wrong.entries[index].valType=OGR_REAL; draw(wrong); Check(owner.painted==stock);
+    PillarFixture list; list.entries[index].valType=OGR_INT_LST; draw(list); Check(owner.painted==stock);
+    PillarFixture duplicate; const char* names[]={"BOYSHP","COLOUR","COLPAT","CATSPM"};
+    duplicate.Add(names[index],duplicate.entries[index].value,duplicate.entries[index].valType); draw(duplicate); Check(owner.painted==stock);
+    PillarFixture missing; std::memcpy(missing.att_array+index*6,"UNKNWN",6); draw(missing); Check(owner.painted==stock);
+  }
+  for(const char* name:{"ORIENT","TOPSHP"}) { PillarFixture x; x.Number(name,0); draw(x); Check(owner.painted==stock); }
+  PillarFixture other; std::memcpy(other.FeatureName,"BOYLAT",7); draw(other); Check(owner.painted==stock);
+  PillarFixture area; area.Primitive_type=GEO_AREA; draw(area); Check(owner.painted==stock);
+  PillarFixture count; ++count.n_attr; Check(!opennav::integration::PresentationSpecialBuoyAlias(true,true,&count,"BOYSPP11"));
+  PillarFixture duplicateUnknown; duplicateUnknown.String("OBJNAM","Actual warning buoy"); draw(duplicateUnknown); Check(owner.painted==alias);
+  const auto size=symbols.size(); symbols.erase("XNSPPW01"); draw(valid); Check(owner.painted==stock && symbols.size()==size-1);
+  symbols["XNSPPW01"]=nullptr; draw(valid); Check(owner.painted==stock);
+  symbols["XNSPPW01"]=alias; auto kind=alias->definition.SYDF; alias->definition.SYDF='V'; draw(valid); Check(owner.painted==stock); alias->definition.SYDF=kind;
+  auto name=alias->name.SYNM[0];alias->name.SYNM[0]='?';draw(valid);Check(owner.painted==stock);alias->name.SYNM[0]=name;
+  Check(!opennav::integration::PresentationSpecialBuoyAlias(true,true,nullptr,"BOYSPP11"));
+  Check(!opennav::integration::PresentationSpecialBuoyAlias(true,true,&valid,"BOYSPP25"));
+  Check(!std::memcmp(stock,&saved,sizeof saved) && rules.razRule==stock);
+}
 
 static void CheckLightDispatch(s52plib& owner,std::map<wxString,Rule*>& symbols) {
   for(int i=11;i<=13;++i) {
@@ -172,13 +229,13 @@ int main(int argc, char **argv) {
     loader.ProcessColorTables(tables);
     auto definitions = doc.child("chartsymbols").child("symbols");
     loader.ProcessSymbols(definitions);
-    const char *names[] = {"XNLAT013","XNLAT014","XNLAT023","XNLAT024","XNCAN072","XNCAN073","XNCON066","XNCON067","BOYISD12","BOYSAW12","XNLIT011","XNLIT012","XNLIT013"};
-    const int rcids[] = {60001,60002,60003,60004,60005,60006,60007,60008,2049,1294,60009,60010,60011};
+    const char *names[] = {"XNLAT013","XNLAT014","XNLAT023","XNLAT024","XNCAN072","XNCAN073","XNCON066","XNCON067","BOYISD12","BOYSAW12","XNLIT011","XNLIT012","XNLIT013","XNSPPW01"};
+    const int rcids[] = {60001,60002,60003,60004,60005,60006,60007,60008,2049,1294,60009,60010,60011,60012};
     const char *themes[] = {"DAY_BRIGHT", "DUSK", "NIGHT"};
     wxRect rect;
     loader.GetGLTextureRect(rect,"ACHARE51");
     Check(rect == wxRect(20,1160,20,20));
-    for (int n=0; n<13; ++n) {
+    for (int n=0; n<14; ++n) {
       auto rule = symbols.at(names[n]);
       Check(rule->RCID == rcids[n] && rule->definition.SYDF == 'R');
       Check(rule->pos.symb.pivot_x.SYCL == 12 && rule->pos.symb.pivot_y.SYRW == 14);
@@ -209,6 +266,7 @@ int main(int argc, char **argv) {
       }
     }
     CheckLightDispatch(owner,symbols);
+    CheckPillarDispatch(owner,symbols);
     for (auto &entry:symbols) {
       free(entry.second->colRef.SCRF);
       free(entry.second->vector.SVCT);

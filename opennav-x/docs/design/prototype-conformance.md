@@ -1,6 +1,24 @@
 # Prototype conformance — in progress
 
-Frozen local `9632421` / published `d2787c6` now has an integrated Linux build,
+Frozen local `5c05eb5` / published `159cbeff` has a fresh integrated Linux build,
+147 passing regressions and 24 original real-chart images covering the corrected
+[short red/green light aliases](../evidence/scrum264-colored-lights-5c05-linux/README.md)
+and [neutral construction hatch](../evidence/skager-chart-5c05eb5-linux/README.md).
+Software/Mesa OpenGL, Standard comparisons and entire Day-return checks pass.
+Original light vectors remain stock when an ORIENT attribute exists; no encoded
+direction is discarded. The [native 23-unit compile gate](https://github.com/ThereptileII/Work/actions/runs/37109776549)
+passes at the exact mapped revision, but is not application or visual acceptance.
+The unchanged font/header inputs retain the qualification boundaries below.
+
+The [remaining family inventory](../evidence/scrum264-remaining-symbol-boundaries/README.md)
+distinguishes supplied custom SVGs from stock catalogue entries. No direct custom
+physical-tower or classified fixed-beacon artwork exists in the prototype. The
+white/orange special-purpose derivative is being implemented with explicit class
+guards; it is not part of the frozen source or images above. Long-range/sector
+lights and other unmapped families remain open, subject to navigation meaning.
+Windows/private-renderer/physical boat acceptance remains pending.
+
+The preceding local `9632421` / published `d2787c6` has an integrated Linux build,
 147 passing regressions and [32 real NOAA ENC captures](../evidence/skager-chart-9632421-linux/README.md).
 All whole-chart Day returns are exact in software and Mesa OpenGL, closing the
 retained a3e selector reproduction. All sixteen Standard historical comparisons
@@ -9,8 +27,9 @@ prove that the effective SKAGER Simplified table does not overwrite the saved
 Paper preference. Every captured header matches the approved 124-DIP component.
 An additional [16 IHO S-64 captures](../evidence/scrum264-s64-9632421-linux/README.md)
 prove actual classified symbol/raster selection with twelve clean exits. Ordinary
-red/green short flares, classified long-range lights and central physical
-lighthouse artwork visibly remain stock; no all-light matching is claimed.
+red/green short flares (corrected in the later source above), classified long-range
+lights and central physical lighthouse artwork visibly remain stock in those
+historical images; no all-light matching is claimed.
 These are bounded Linux results, not Windows, private o-charts or boat acceptance.
 
 The combined batch includes eleven classified prototype marine/light assets,
@@ -26,8 +45,11 @@ The preceding full native run failed producer-manifest resolution before any
 application compilation. Its producer-root/header-closure repair passed the
 [exact native prerequisite proof](../evidence/scrum259-native-prefix-proof/README.md).
 The [complete replacement run](https://github.com/ThereptileII/Work/actions/runs/37106815245)
-is now executing at that same frozen source. Windows screenshots, actual private
-renderer and physical boat comparisons remain required.
+passes maintained dependency producers but stops on a private-renderer CMake
+Windows-path escape before private DLL or application compilation. The exact
+[failure receipt](../evidence/scrum259-private-configure-d2787/README.md) remains
+retained; a focused configure/object repair gate is in progress. Windows
+screenshots, actual private renderer and physical boat comparisons remain required.
 
 The latest correction batch adds exact ferry/cable-area paint (SCRUM-260),
 40,482 role-proven Day neutral pixels (SCRUM-261), and the native chart-toolbar
